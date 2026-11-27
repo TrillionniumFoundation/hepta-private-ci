@@ -1,0 +1,56 @@
+{
+  "status": "PASS_SCOPED_STATIC_COOPERATING_LOCAL_WRITER_LEASE_REVIEW",
+  "freeze_sha256": "b345cd71f3be3a8ce1468d419e580bafb36a423e5ec7facde4cf10f588e84a80",
+  "review_mode": "Source reading, AST parsing and byte/hash comparison only. No candidate imports, qualifier, worker, model or inference execution. RUN_ONCE absent at review.",
+  "frozen_files_verified": 17,
+  "python_files_ast_parsed": 12,
+  "input_files_verified": 3,
+  "input_bytes": 4255195,
+  "reuse": "guarded_core.py byteexact latest V3 guarded_delivery.py; seven other runtime dependencies byteexact V3. NumPy/Linux external dependencies remain; unused legacy dispatch is not exercised.",
+  "lease_review": [
+    "Existing canonical trusted root, regular single-link nofollow lock inode; nonblocking exclusive flock acquired before core constructor/backend identity work. Stable lock file is never unlinked. Constructor failures close descriptor.",
+    "Public start/restore/publish/work check owner PID/open descriptor/path inode and nonblocking instance operation gate. Explicit close/context release; post-close refusal; failed concurrent close does not unlock holder.",
+    "Closing independent contender fd cannot release holder independently opened flock. Crash release requires all open-description references closed; CLOEXEC is not fork lifetime protection. Forked PID use/close refusal is source-only, not runtime-qualified.",
+    "Returned Attempt is not hostile-code isolated; core/direct backend/manual mutations violate cooperative wrapper protocol. Whole-root exclusion intentionally changes new-adapter lifecycle: previous instance must close first."
+  ],
+  "qualification_counts": {
+    "actual_models": 0,
+    "actual_inferences": 0,
+    "training": 0,
+    "entered_mock_calls_including_killed": 1,
+    "returned_mock_calls": 0,
+    "holder_refusals": 3,
+    "contender_refusals": 1,
+    "recovery_checks": 6,
+    "recovery_refusals": 6,
+    "worker_processes": 3
+  },
+  "chronology_and_failures": "Bound READY validates own holder PID/freeze/request/reservation hash; contender launched while holder alive and completely reaped before own holder WNOHANG check/SIGKILL/reap, then independent recovery. Handled exceptions cleanup own active PID map. No arbitrary PID kill, takeover or retry. Hard supervisor termination cleanup is not guaranteed.",
+  "unknown_effect": "Reserved snapshot restores indeterminate, controller/generator each 1 with zero prefix; publish and same-identity start refuse. No generated/piece artifacts. All entered/killed work charged, no refund.",
+  "resources": {
+    "role_actual_CPU_seconds": 4,
+    "role_OS_CPU_seconds": 5,
+    "role_alarm_seconds": 30,
+    "supervisor_OS_CPU_seconds": 5,
+    "method_actual_subtree_CPU_seconds": 17,
+    "sum_OS_CPU_seconds": 20,
+    "output_bytes": 33554432,
+    "per_file_bytes": 8388608,
+    "per_process_AS_bytes": 536870912,
+    "largest_terminal_RSS_bytes": 268435456,
+    "accounting": "Outer wait4 includes supervisor and all reaped workers once, including discarded/killed work. Concurrent RSS is not summed. Outer observed prefix additional; outer final tail unknown, source/review/history additional."
+  },
+  "scope_exclusions": [
+    "Only cooperating local Linux writer API in trusted stable root; no distributed/global exactly-once, hostile deletion/replacement, inherited-FD lifetime, external production authority or directory-fsync/powerloss guarantee.",
+    "New wrapper has not been qualified with actual backend/full chronological chain; existing real-core evidence remains separate.",
+    "Original remote/platform/scientific/data holds unchanged."
+  ],
+  "execution_authorization": "Static pass only; any once-only qualification requires parent admission.",
+  "review_file_outside_freeze": true,
+  "prior_finding_resolution": {
+    "prior_freeze_sha256": "6d66a4487682497f555af78e5ca2ab5d30941fc7475e140e68b9a9417dde217b",
+    "finding": "Entry _check runs before gate. A close racing that precheck may surface OSError/TypeError rather than ContractError when fd closes or becomes None. This remains fail-closed before core/provider and does not defeat lease exclusion; uniform racing error taxonomy is not qualified.",
+    "resolution": "Only guarded_delivery.py changed. _operation now checks PID, acquires nonblocking gate, then checks fd/inode under gate; __enter__ also uses _operation. Concurrent close cannot close descriptor during guarded precheck. Constructor checks occur before exposure. All final 17 hashes reverified, updated wrapper AST parsed; tests/counts/budgets unchanged, RUN_ONCE absent. Prior freeze preserved; prior review attachment was subsequently overwritten by concurrent copy of final review. See PRIOR_REVIEW_PROVENANCE_CORRECTION.json; old review original bytes are not claimed preserved."
+  },
+  "prior_review_attachment_provenance": "See PRIOR_REVIEW_PROVENANCE_CORRECTION.json. Filename PRIOR_SOURCE_REVIEW_6d66a448.json actually contains a final-review copy, not original prior review."
+}

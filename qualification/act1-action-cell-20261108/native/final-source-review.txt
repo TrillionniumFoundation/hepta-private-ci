@@ -1,0 +1,5 @@
+已只读核对 green-r4 测试树 aa2afbb8eaa8b0c4d9e5c3c93abf03fa7cba4951 与最终格式树 74fad34ae160c07c5844450ac2dbe9c23a1214c3 的衔接：post-green-r4-formatting.patch 仅调整 destination.rs 中 sqlite_home 表达式的一处换行，反向重建的测试侧 blob 6bd8379c52e30ac7231051d962ae6586efd486af 与格式侧 blob 118c955cdd34010190271991ec6d70a959403818 均匹配 patch，去除空白后内容完全相同。
+已核对精确 6ddfca24 的 codex-state SQLite shim，源码 blob 为 ec847b1c29b46ce74e7043fab8bac1c00eb8dbda；目的域 writer 仍把同一 root/destination.sqlite3 显式传给 FULL/WAL durable evidence pool，observer 与 oracle 也显式打开同一路径，业务事实和评分查询 SQL 均未改变。
+观察连接通过 open_durable_observation_pool 使用 create_if_missing(false)、read_only(true)，并为每个连接安装拒绝提交的 commit hook，因此不会误建空库、转读其他数据库或写入目的域，observer 自身的证据留存仍位于独立 observations 目录。
+上述 shim 与只读连接变更已包含在 green-r4 测试树中，原始 receipt 记录 150 项通过、零失败和零跳过，maintenance-r2 的 fix 与 fmt 均退出 0，实际 Clippy 日志无 warning/error/Fixed 且已核对日志摘要。
+未发现阻断或需要在最终纯格式化后重复运行测试的具体风险；本审查未修改 source，结论仍限定于已声明的受控 ACT-1 fixture 与受信任 observer，不能扩展为生产目的域接线、通用 exactly-once、累计预算或学习收益已获资格验证。

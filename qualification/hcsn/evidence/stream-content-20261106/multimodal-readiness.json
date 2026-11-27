@@ -1,0 +1,1712 @@
+{
+  "schema": "hcsn-multimodal-input-readiness.v1",
+  "created_utc": "2026-11-06T08:08:26.579767+00:00",
+  "scope": "Read-only exact-source/asset inventory and interface diagnosis. No encoder inference, model training, model download, new experiment budget or scientific quality test was performed.",
+  "status": "HISTORICAL_INPUTS_IDENTIFIED_NEW_STRONG_MULTIMODAL_CORE_EXPERIMENT_BLOCKED",
+  "source_commits": {
+    "boundary_pr4814": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+    "runtime_pr4815": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+    "replay_pr4816": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+    "original_executed_v14_source": "eee65cf3cdb99a165d0476a25a2426c3e7987006",
+    "v13_baseline": "3b9a136c56e9e743d7ecba852d621e1ecabf6bba",
+    "current_content_candidate": "5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1"
+  },
+  "retrieval_verification": {
+    "objects_read": 41,
+    "text_source_or_receipt_files": 39,
+    "small_npz_files_read": 2,
+    "all_git_blob_sha1_and_content_sha256_recomputed": true,
+    "new_model_forwards": 0,
+    "optimizer_updates": 0,
+    "cuda_training_attempts": 0,
+    "scope_limit": "Only the two small NPZ payloads were downloaded. Model checkpoint identities and the 3.27MB audio cache are read from exact metadata/receipts; current live host custody is unverified."
+  },
+  "source_documents": [
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/BOUNDARY.md",
+      "ref": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+      "git_blob_sha": "f6d396db0c6e384d86d72af7ef047ac3be2cae56",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/11d5d14d57f1252cd92ffae5e7b344e9b827536e/experiments/hcsn_v14_causal_io_20261104/BOUNDARY.md",
+      "content_sha256": "232e012b196af612e47973e11888e07fdf6337b3eeff8cf7e30e90e4c46ebcb7",
+      "bytes": 1734,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/RUNTIME.md",
+      "ref": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+      "git_blob_sha": "bab7ebf000d15541da7ccde873ced647ef565cdc",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5/experiments/hcsn_v14_causal_io_20261104/RUNTIME.md",
+      "content_sha256": "0c00a6837e41e9fc08e6e6e89cf088749cb373b8868e882b21580587b5dd7784",
+      "bytes": 1822,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/ENGINEERING_PROTOCOL.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "0d184161c7f370e63d9baf655bd0850bf46a53cd",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/ENGINEERING_PROTOCOL.json",
+      "content_sha256": "c4aa7458fef3ce5ffb365fda7a1779e1b9e660c2822f4657fec3ed85d85e62e4",
+      "bytes": 1687,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/ACCEPTANCE.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "3ca051c1d9a86a80eb76c33541809fe057df63c9",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/ACCEPTANCE.json",
+      "content_sha256": "92933d442bf92cc8af72abdd753daa79e3056d9c414cf9a97bb9176b4fda426e",
+      "bytes": 7031,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/KNOWN_EXPOSURE.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "bb3eddb904954cd5563161bf6448caf7cdd91da2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/KNOWN_EXPOSURE.json",
+      "content_sha256": "f47bc777fd999d8885a2702d64e5064db8504f2272127283fbc4d82d5434d61b",
+      "bytes": 35814,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "a1b9274faa552f83ff60d774ee0f0ea4812d809a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+      "content_sha256": "f000028355f4a2d936c650a32070dbfa936e21202b7e5ef1ebf20026dd9daa08",
+      "bytes": 10411,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/media_audit.py",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "04fea93a68a983c3ef327c4dcfc37dfb023fd0e9",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/media_audit.py",
+      "content_sha256": "b9fec568921295c2bc5c6259483c0607e24b1f410f31d90f4f79cc2a18d280c9",
+      "bytes": 10634,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/engineering_replay.py",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "59a00dc049d05550bcc98bcfd26c278b7be5dc29",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/engineering_replay.py",
+      "content_sha256": "d28639dd028f43712d45ace29bc55465248e858049a8d5892dc7b438cd65e9b3",
+      "bytes": 9809,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "2072613f3aa4787eecdd5742ce82795dd55be8cb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+      "content_sha256": "a6fe6134829b531a51304d5921decc8f1b62c6f7e90f0ad269d4961e888fa59f",
+      "bytes": 8479,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/evidence/engineering-001/RESULT.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "7b498d687c4df69668755902d671a31a1d6081a3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/engineering-001/RESULT.json",
+      "content_sha256": "d3a5c6a03b30f9b30cc401f36e71b38d7a18e88e022bab6e20cd84b4f5d6d6bd",
+      "bytes": 11136,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/evidence/SOURCE_PUBLICATION.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "ce5aca9d005ce190f7021196a1c3eeeb5c50b615",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/SOURCE_PUBLICATION.json",
+      "content_sha256": "d91960887e592036e642f5c9ee8e2572e5168bbded983ddbf5ba8301b3cff644",
+      "bytes": 5353,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/boundary.py",
+      "ref": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+      "git_blob_sha": "c843570d213c05b1fbc4a8dada401b49db2e124a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/11d5d14d57f1252cd92ffae5e7b344e9b827536e/experiments/hcsn_v14_causal_io_20261104/boundary.py",
+      "content_sha256": "a8ab4676be5ac3188043662d34c78f206b0adc08a1215bbdf3a547a27e8f2428",
+      "bytes": 9253,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/runtime.py",
+      "ref": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+      "git_blob_sha": "7896d07a257a9eedcd92f734aa14e411ee793382",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5/experiments/hcsn_v14_causal_io_20261104/runtime.py",
+      "content_sha256": "406ab11a7cbffe788490c98d50e165bdcd86ae51b1a2ebbca9186d713d8603f9",
+      "bytes": 11238,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/QUALIFICATION_PLAN.md",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "31bc7fb8ff635bae9c44d201e7b4592a552829c6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/QUALIFICATION_PLAN.md",
+      "content_sha256": "d51fd230ad672bb3384f40dca738401f12cc85a4bc2f70cb55f94687f8e8a2b4",
+      "bytes": 7506,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/REPORT_ZH.md",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "0cd257207a0300aae4d6fffc22a7de2323e65c87",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/REPORT_ZH.md",
+      "content_sha256": "58c63136702c1040b5ca7b41298c2e5471465f2ae1bc52c65bf39858bbb74aa8",
+      "bytes": 5888,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "27d945603207634f0b102b83d11c83ac51035a0a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+      "content_sha256": "9dbb8423c54e902a509ea85331c3b617eb97971f429c10a684169c251fc57215",
+      "bytes": 12003,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/PLAN.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "973491abf0ade790a01af228bceb943a335eb2f3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/PLAN.json",
+      "content_sha256": "e545cc3814fe070408054620be339d9f23e0cad788278668b01ea81571bc9c48",
+      "bytes": 11110,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "51ad119383c96816b189d352f78450825462706c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+      "content_sha256": "928283927bd6b0c7e5b7425384a342140fe29c10f668733bb5573efdecad0f19",
+      "bytes": 28567,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/TRAIN.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "1cb38027831aa717ac5cdec706252faabc9c3f24",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/TRAIN.json",
+      "content_sha256": "eef6d6e96c7c2b29f28dba6a2295c418ae70d270ef2d2923b779cb38152260d9",
+      "bytes": 26016,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/TRAIN.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "05ccc1429affc2378c3178d56f9287014d7c8c01",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/TRAIN.json",
+      "content_sha256": "e2d6c9b1a13e4b94d1cbb751f8d471c867ea4743dcf175ee5e30cf15d747f1b9",
+      "bytes": 25999,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/CACHE_PLAN.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "32cff72f176db4fb01fd3d75bf398ad10bbf49ef",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/CACHE_PLAN.json",
+      "content_sha256": "db59ca10aa6e1e845c0fc0137cc7f9ed6484b017bd219a1d6e94250a4fddb896",
+      "bytes": 2436,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/FORWARD_PLAN.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "2fbaf8015ebdc67d085fac09bb773353386fdd8b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/FORWARD_PLAN.json",
+      "content_sha256": "9c3cde14fef7faf2fb54ad74eb7a80842e29cbbb7135a4ef7a739d874539efd5",
+      "bytes": 2069,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/ORIGINAL_ASSET_LOOKUP.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "4748dfa12b8715dfe0de4d3052051c35173eec01",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/ORIGINAL_ASSET_LOOKUP.json",
+      "content_sha256": "0cdd8efbde86d01ffac0d6a3c9d00668a3d081bf67ab415f923c80e7475876b4",
+      "bytes": 921,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/README.md",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "d6eae5df28da125f785997ac752f96756c27afe7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/README.md",
+      "content_sha256": "102b01b4b57823bdaa28b21d24571d8a90c0fb7cd9971de1761f2636c6fdda79",
+      "bytes": 5676,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/USED_DESCRIPTOR_IDENTITY.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "d5199e49eeb1f62f245269cdd3f9cd9410f63792",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/USED_DESCRIPTOR_IDENTITY.json",
+      "content_sha256": "bd423b2a8170e4b47b290c8478fb6942e07fd2f4d08c0a1b145124c499ffe107",
+      "bytes": 21156,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/cache_contract.py",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "95caa776601f6f362f9b98d724c63991b11d387a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/cache_contract.py",
+      "content_sha256": "abe18fa9775efc07725987d7c063a1dc8cc578da7004e06d8c3f653e672e2b09",
+      "bytes": 6600,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "59bff31ab3b7ce5e0d8d1823af2c5015e55811ae",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+      "content_sha256": "bd9fd1046cc7425f0d580544ff37893f8c2307d787e8e2aa71fa496e5bd0af78",
+      "bytes": 8864,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/CHECKPOINT.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "041d941e54732e862835972f9464316ab840e7f3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/CHECKPOINT.json",
+      "content_sha256": "e889ebdfa1e4a48171223a080223b4a31cc67504e30d72d3d65506579e761bfa",
+      "bytes": 1549,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/COPIES.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "8e52991b752aded885364a156f7be391bebcf267",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/COPIES.json",
+      "content_sha256": "96805cf2861e204b8ebaa6238ee9d923ea5c3035747d5d8e03dbb087722623a6",
+      "bytes": 3064,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/cache_contract001/RESULT.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "6c99f5206ea7721238e4ea6c1130aba3b7cfe0bc",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/cache_contract001/RESULT.json",
+      "content_sha256": "31e344abc567ae027c6704b1bc67b84b603c9ae29717c3f194c85709fbe9a933",
+      "bytes": 1479,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/frontend/forward001/RESULT.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "d15936209b3ad50c755b516738be11da01737c5b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/forward001/RESULT.json",
+      "content_sha256": "5772a4a6c2a50ea2030437d7a6383a7b99f5666bbc6150e5afa50a9dbb3d8510",
+      "bytes": 1599,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/joint_core/data.py",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "057b342ca81f7ec5594bc8aa3703e15f15ead5c7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/data.py",
+      "content_sha256": "97dd9fb11e32257f183084a75de103125a9adbd43ef956b6600ae78f9d38d445",
+      "bytes": 4604,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "e1a1fa85fafbbe9e167cda318aa0efe9f08863ee",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py",
+      "content_sha256": "1b5efffde74c64f2e1f0f7ca1ed4e7b4d10f0de80cc23a9294c483d7cc7177c5",
+      "bytes": 7679,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_causal_execution_v3/av_probe.py",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "78e185d107cb034a749224014385de0b837fb4eb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_causal_execution_v3/av_probe.py",
+      "content_sha256": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127",
+      "bytes": 13700,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/evidence/EVIDENCE_MANIFEST.json",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "c025aad1f8e6b71546e60185991dbc2533c0916c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/EVIDENCE_MANIFEST.json",
+      "content_sha256": "26bb55ce98b68bb2c449c5d644bda01994c0b8cadfa19cf0b0e971759aa2b2d4",
+      "bytes": 4628,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/test_boundary.py",
+      "ref": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+      "git_blob_sha": "43bf7ac0ca66209765c52e09e1634adfb6f0878f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/11d5d14d57f1252cd92ffae5e7b344e9b827536e/experiments/hcsn_v14_causal_io_20261104/test_boundary.py",
+      "content_sha256": "c81de304753b4508877252e70127f5750a1618a569de70d3f76dc794dfc34ff8",
+      "bytes": 8822,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v14_causal_io_20261104/test_runtime.py",
+      "ref": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+      "git_blob_sha": "25c92d5823cfc4a36eab26fe5f7173a8b2005349",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5/experiments/hcsn_v14_causal_io_20261104/test_runtime.py",
+      "content_sha256": "4afed10b9ff44f5945f3306c5719f19f544ce66d88049ab8da0230bba1ef8a4c",
+      "bytes": 13756,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/async_av-TRAIN.npz",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "f88142997f47d113a457952177e24c20851776e1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/async_av-TRAIN.npz",
+      "binary": true,
+      "content_sha256": "8b5bee878b00dccba4bc4984ff5d60ae38a82a5f54452ff43ddc526f1dbf39b9",
+      "bytes": 31524,
+      "git_blob_verified": true
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/NORMALIZATION.npz",
+      "ref": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "git_blob_sha": "5a5648199016f3922d287a90134d74f2aca6c97b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/NORMALIZATION.npz",
+      "binary": true,
+      "content_sha256": "5d6255f69c3f808f13142da520efa0821802af6b693955f290c0acb341559e0e",
+      "bytes": 1215,
+      "git_blob_verified": true
+    },
+    {
+      "path": "qualification/hcsn/stream_time.py",
+      "ref": "5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1",
+      "git_blob_sha": "ed64999ce06bb4e990f4ac41d8d09ec46ba4c22d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1/qualification/hcsn/stream_time.py",
+      "content_sha256": "dc42264efd340e8a5136062568681c23d7667129ab9237f82515d69ba195265d",
+      "bytes": 11918,
+      "git_blob_verified": true
+    },
+    {
+      "path": "qualification/hcsn/content_model.py",
+      "ref": "5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1",
+      "git_blob_sha": "00a7a6e3f469dff9813c4c358a32bf3a124aa707",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1/qualification/hcsn/content_model.py",
+      "content_sha256": "5309333bb9c46238553ecb9c24fadcafd8f80c4c081ce2a6304b17b47513f64b",
+      "bytes": 9697,
+      "git_blob_verified": true
+    }
+  ],
+  "identity_cross_checks": [
+    {
+      "name": "candidate roster matches V14 loader anchor",
+      "passed": true,
+      "actual": "9dbb8423c54e902a509ea85331c3b617eb97971f429c10a684169c251fc57215",
+      "expected": "9dbb8423c54e902a509ea85331c3b617eb97971f429c10a684169c251fc57215",
+      "source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+        "git_blob_sha": "a1b9274faa552f83ff60d774ee0f0ea4812d809a",
+        "content_sha256": "f000028355f4a2d936c650a32070dbfa936e21202b7e5ef1ebf20026dd9daa08",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+        "code_symbol": "ROSTER_SHA256"
+      }
+    },
+    {
+      "name": "original plan matches frozen roster",
+      "passed": true,
+      "actual": "e545cc3814fe070408054620be339d9f23e0cad788278668b01ea81571bc9c48",
+      "expected": "e545cc3814fe070408054620be339d9f23e0cad788278668b01ea81571bc9c48",
+      "source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+        "git_blob_sha": "27d945603207634f0b102b83d11c83ac51035a0a",
+        "content_sha256": "9dbb8423c54e902a509ea85331c3b617eb97971f429c10a684169c251fc57215",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+        "field": "/plan_sha256"
+      }
+    },
+    {
+      "name": "joint TRAIN NPZ matches plan",
+      "passed": true,
+      "actual": "8b5bee878b00dccba4bc4984ff5d60ae38a82a5f54452ff43ddc526f1dbf39b9",
+      "expected": "8b5bee878b00dccba4bc4984ff5d60ae38a82a5f54452ff43ddc526f1dbf39b9",
+      "source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/PLAN.json",
+        "git_blob_sha": "973491abf0ade790a01af228bceb943a335eb2f3",
+        "content_sha256": "e545cc3814fe070408054620be339d9f23e0cad788278668b01ea81571bc9c48",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/PLAN.json",
+        "field": "/input_sha256/async_av-TRAIN.npz"
+      }
+    },
+    {
+      "name": "hx_full metadata matches roster",
+      "passed": true,
+      "actual": "928283927bd6b0c7e5b7425384a342140fe29c10f668733bb5573efdecad0f19",
+      "expected": "928283927bd6b0c7e5b7425384a342140fe29c10f668733bb5573efdecad0f19",
+      "source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+        "git_blob_sha": "27d945603207634f0b102b83d11c83ac51035a0a",
+        "content_sha256": "9dbb8423c54e902a509ea85331c3b617eb97971f429c10a684169c251fc57215",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+        "field": "/models"
+      }
+    },
+    {
+      "name": "hx_full declared weight matches roster",
+      "passed": true,
+      "actual": "38415f642984e5c850fa8d0c5fbdaf1a8a116d140074b434a0a9dee7dc0b59b1",
+      "expected": "38415f642984e5c850fa8d0c5fbdaf1a8a116d140074b434a0a9dee7dc0b59b1",
+      "source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+        "git_blob_sha": "51ad119383c96816b189d352f78450825462706c",
+        "content_sha256": "928283927bd6b0c7e5b7425384a342140fe29c10f668733bb5573efdecad0f19",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+        "field": "/weights_sha256"
+      }
+    },
+    {
+      "name": "gru metadata matches roster",
+      "passed": true,
+      "actual": "eef6d6e96c7c2b29f28dba6a2295c418ae70d270ef2d2923b779cb38152260d9",
+      "expected": "eef6d6e96c7c2b29f28dba6a2295c418ae70d270ef2d2923b779cb38152260d9",
+      "source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+        "git_blob_sha": "27d945603207634f0b102b83d11c83ac51035a0a",
+        "content_sha256": "9dbb8423c54e902a509ea85331c3b617eb97971f429c10a684169c251fc57215",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+        "field": "/models"
+      }
+    },
+    {
+      "name": "gru declared weight matches roster",
+      "passed": true,
+      "actual": "6457203522b4e2ca6383442711f3ef9d35892e7c7455775c74a1754af4a1d6fb",
+      "expected": "6457203522b4e2ca6383442711f3ef9d35892e7c7455775c74a1754af4a1d6fb",
+      "source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/TRAIN.json",
+        "git_blob_sha": "1cb38027831aa717ac5cdec706252faabc9c3f24",
+        "content_sha256": "eef6d6e96c7c2b29f28dba6a2295c418ae70d270ef2d2923b779cb38152260d9",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/TRAIN.json",
+        "field": "/weights_sha256"
+      }
+    },
+    {
+      "name": "ssm metadata matches roster",
+      "passed": true,
+      "actual": "e2d6c9b1a13e4b94d1cbb751f8d471c867ea4743dcf175ee5e30cf15d747f1b9",
+      "expected": "e2d6c9b1a13e4b94d1cbb751f8d471c867ea4743dcf175ee5e30cf15d747f1b9",
+      "source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+        "git_blob_sha": "27d945603207634f0b102b83d11c83ac51035a0a",
+        "content_sha256": "9dbb8423c54e902a509ea85331c3b617eb97971f429c10a684169c251fc57215",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+        "field": "/models"
+      }
+    },
+    {
+      "name": "ssm declared weight matches roster",
+      "passed": true,
+      "actual": "742baacf03b6bade5a9f863d1e837dbdd0d3e9317dc30c3e3080584bc019d4d8",
+      "expected": "742baacf03b6bade5a9f863d1e837dbdd0d3e9317dc30c3e3080584bc019d4d8",
+      "source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/TRAIN.json",
+        "git_blob_sha": "05ccc1429affc2378c3178d56f9287014d7c8c01",
+        "content_sha256": "e2d6c9b1a13e4b94d1cbb751f8d471c867ea4743dcf175ee5e30cf15d747f1b9",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/TRAIN.json",
+        "field": "/weights_sha256"
+      }
+    },
+    {
+      "name": "shared normalization payload matches original metadata",
+      "passed": true,
+      "actual": "5d6255f69c3f808f13142da520efa0821802af6b693955f290c0acb341559e0e",
+      "expected": "5d6255f69c3f808f13142da520efa0821802af6b693955f290c0acb341559e0e",
+      "source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+        "git_blob_sha": "51ad119383c96816b189d352f78450825462706c",
+        "content_sha256": "928283927bd6b0c7e5b7425384a342140fe29c10f668733bb5573efdecad0f19",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+        "field": "/normalization_sha256"
+      }
+    }
+  ],
+  "actual_small_binary_inspection": [
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/async_av-TRAIN.npz",
+      "bytes": 31524,
+      "sha256": "8b5bee878b00dccba4bc4984ff5d60ae38a82a5f54452ff43ddc526f1dbf39b9",
+      "arrays": {
+        "x": {
+          "shape": [
+            240,
+            6,
+            55
+          ],
+          "dtype": "float64",
+          "raw_sha256": "12694fefcb697422bc0504f92fbb5df8d92171014f557b901cf281367d0a4ad6",
+          "first_sequence_dt": [
+            1.0,
+            1.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "first_sequence_modality_flags": [
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "y": {
+          "shape": [
+            240,
+            6
+          ],
+          "dtype": "int64",
+          "raw_sha256": "0c3614eec98fe6105505292c0e49b48fc2e0171eb0bf05912002f3607c9179e2",
+          "unique_values": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "groups": {
+          "shape": [
+            240
+          ],
+          "dtype": "int64",
+          "raw_sha256": "8012eb70a1ace42e612e2fdc224e7664f0c4af5bf0ac31de879aaecf12b735a9"
+        },
+        "center": {
+          "shape": [
+            55
+          ],
+          "dtype": "float64",
+          "raw_sha256": "13f7d1e602a1692c93eb51e45701184b9ecf3bce326095427481412a6d455a9a"
+        },
+        "scale": {
+          "shape": [
+            55
+          ],
+          "dtype": "float64",
+          "raw_sha256": "3aba263a4025ac9ee0fa68deee25ad9e1cf9f4b84664e18be2d2087450379efb"
+        }
+      }
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/NORMALIZATION.npz",
+      "bytes": 1215,
+      "sha256": "5d6255f69c3f808f13142da520efa0821802af6b693955f290c0acb341559e0e",
+      "arrays": {
+        "center": {
+          "shape": [
+            55
+          ],
+          "dtype": "float64",
+          "raw_sha256": "13f7d1e602a1692c93eb51e45701184b9ecf3bce326095427481412a6d455a9a"
+        },
+        "scale": {
+          "shape": [
+            55
+          ],
+          "dtype": "float64",
+          "raw_sha256": "3aba263a4025ac9ee0fa68deee25ad9e1cf9f4b84664e18be2d2087450379efb"
+        }
+      }
+    }
+  ],
+  "reusable_inputs": {
+    "historical_real_recording": {
+      "source": {
+        "actor": "1002",
+        "bytes": 342981,
+        "clip": "1002_DFA_ANG_XX",
+        "emotion": "ANG",
+        "original_emotion_label": 0,
+        "sentence": "DFA",
+        "sentence_target": 0,
+        "sha256": "a52ffd181bdba96805956fb627960fe47cade90988cdb1688d1f86be1e71e366",
+        "split": "train",
+        "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_DFA_ANG_XX.flv"
+      },
+      "source_reference": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+        "git_blob_sha": "2072613f3aa4787eecdd5742ce82795dd55be8cb",
+        "content_sha256": "a6fe6134829b531a51304d5921decc8f1b62c6f7e90f0ad269d4961e888fa59f",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+        "field": "/source"
+      },
+      "selection": "lexicographically first TRAIN clip",
+      "role": "historical exposed TRAIN development",
+      "new_holdout_eligible": false,
+      "raw_payload_read_this_audit": false,
+      "raw_payload_in_v14_evidence_archive": false,
+      "archive_exclusion_reference": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/evidence/EVIDENCE_MANIFEST.json",
+        "git_blob_sha": "c025aad1f8e6b71546e60185991dbc2533c0916c",
+        "content_sha256": "26bb55ce98b68bb2c449c5d644bda01994c0b8cadfa19cf0b0e971759aa2b2d4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/EVIDENCE_MANIFEST.json",
+        "field": "/raw_media_and_image_excluded"
+      },
+      "decoder_source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/media_audit.py",
+        "git_blob_sha": "04fea93a68a983c3ef327c4dcfc37dfb023fd0e9",
+        "content_sha256": "b9fec568921295c2bc5c6259483c0607e24b1f410f31d90f4f79cc2a18d280c9",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/media_audit.py",
+        "code_symbol": "main"
+      },
+      "native_prefix": {
+        "channels": 1,
+        "end_seconds": "1.027000",
+        "full_recording_statistics": false,
+        "native_rate": 44100,
+        "normalization": false,
+        "origin_seconds": "0.027000",
+        "resampling": false,
+        "sample_hi_exclusive": 45290,
+        "sample_index_clock_assumption": "continuous decoded audio from stream start; not physical sync proof",
+        "sample_lo": 1191
+      },
+      "accepted_16k_audio_identity": {
+        "accepted_hash_equal": true,
+        "accepted_sha256": "6cbf87f61dbfa0d5c239ef71f5af2f85ff7b3d3e882a3d7fdaa3270506767249",
+        "clock_equal": true,
+        "expected_accepted_sha256": "6cbf87f61dbfa0d5c239ef71f5af2f85ff7b3d3e882a3d7fdaa3270506767249",
+        "hash_scope": "IDENTITY stores cropped-then-resampled 16k mono float32; native hash unavailable",
+        "historical_native_pcm_hash": null,
+        "index_equal": true
+      },
+      "derived_image": {
+        "height": 360,
+        "png_sha256": "9f6dc4ca6ec5ff81edb8dd75fb4e1a75c292e28f0531526b402c6fed87b226b8",
+        "source_frame_index": 15,
+        "source_pts_seconds": "0.527000",
+        "width": 480
+      },
+      "native_prefix_reference": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+        "git_blob_sha": "2072613f3aa4787eecdd5742ce82795dd55be8cb",
+        "content_sha256": "a6fe6134829b531a51304d5921decc8f1b62c6f7e90f0ad269d4961e888fa59f",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+        "field": "/prefix"
+      },
+      "derived_image_reference": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+        "git_blob_sha": "2072613f3aa4787eecdd5742ce82795dd55be8cb",
+        "content_sha256": "a6fe6134829b531a51304d5921decc8f1b62c6f7e90f0ad269d4961e888fa59f",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+        "field": "/frame"
+      }
+    },
+    "official_audio_encoder": {
+      "checkpoint_file_name": "wav2vec2_fairseq_base_ls960_asr_ls960.pth",
+      "official_url": "https://download.pytorch.org/torchaudio/models/wav2vec2_fairseq_base_ls960_asr_ls960.pth",
+      "bytes": 377664473,
+      "sha256": "488fd4f16de84438ffc945334278c1b9fb9b7159a806c1080b16111a958c945d",
+      "official_bundle": "torchaudio.pipelines.WAV2VEC2_ASR_BASE_960H",
+      "torch": "2.6.0+cpu",
+      "torchaudio": "2.6.0+cpu",
+      "included_in_source_bundle": false,
+      "identity_verification_scope": "receipt-reported; CHECKPOINT.json source bytes were independently verified, but the 377664473-byte model payload was not downloaded or rehashed in this audit",
+      "checkpoint_payload_read_and_hash_verified_this_audit": false,
+      "current_materialized_checkpoint_verified": false,
+      "qualified_for_new_strong_frontend_experiment": false,
+      "historical_storage_locator": "CHECKPOINT.json field /path; no live-host possession inferred",
+      "manifest": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/CHECKPOINT.json",
+        "git_blob_sha": "041d941e54732e862835972f9464316ab840e7f3",
+        "content_sha256": "e889ebdfa1e4a48171223a080223b4a31cc67504e30d72d3d65506579e761bfa",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/CHECKPOINT.json"
+      },
+      "loader": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+        "git_blob_sha": "59bff31ab3b7ce5e0d8d1823af2c5015e55811ae",
+        "content_sha256": "bd9fd1046cc7425f0d580544ff37893f8c2307d787e8e2aa71fa496e5bd0af78",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+        "code_symbol": "LocalSpeech"
+      },
+      "accepted_input": {
+        "sample_rate_hz": 16000,
+        "samples": 16000,
+        "dtype": "float32",
+        "cropping": "native PCM prefix before contextual encoding"
+      },
+      "output_contract": {
+        "hidden": [
+          49,
+          768
+        ],
+        "ctc_logits": [
+          49,
+          29
+        ],
+        "descriptor": [
+          1536
+        ],
+        "descriptor_definition": "last hidden layer mean and population standard deviation"
+      },
+      "output_contract_source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+        "git_blob_sha": "59bff31ab3b7ce5e0d8d1823af2c5015e55811ae",
+        "content_sha256": "bd9fd1046cc7425f0d580544ff37893f8c2307d787e8e2aa71fa496e5bd0af78",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+        "code_symbol": "LocalSpeech.infer"
+      },
+      "past_execution": {
+        "three_forward_receipt": {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v13_followup_20261102/frontend/forward001/RESULT.json",
+          "git_blob_sha": "d15936209b3ad50c755b516738be11da01737c5b",
+          "content_sha256": "5772a4a6c2a50ea2030437d7a6383a7b99f5666bbc6150e5afa50a9dbb3d8510",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/forward001/RESULT.json"
+        },
+        "actual_pretrained_forwards": 3,
+        "cache_replay_receipt": {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v13_followup_20261102/frontend/cache_contract001/RESULT.json",
+          "git_blob_sha": "6c99f5206ea7721238e4ea6c1130aba3b7cfe0bc",
+          "content_sha256": "31e344abc567ae027c6704b1bc67b84b603c9ae29717c3f194c85709fbe9a933",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/cache_contract001/RESULT.json"
+        },
+        "cache_replay_actual_forwards": 1,
+        "cache_replay_descriptor_bitwise_equal": true,
+        "strong_audio_reference_qualified": false
+      },
+      "required_runtime_source_pins": {
+        "torchaudio/pipelines/_wav2vec2/impl.py": "cdd5c58f2b493b932f9c1fb76b283351414ac424e440653f397feb85487d7349",
+        "torchaudio/pipelines/_wav2vec2/utils.py": "43cfdf58e4762439c7bb44d34661f346323704e25ad21188025d1c8ed00b82c4",
+        "torchaudio/models/wav2vec2/model.py": "67654de8a6c338e76ae49b4fee5c4f41e6f062ab312a6b3512ee088c326d65a4",
+        "torchaudio/models/wav2vec2/components.py": "0d1996f861d87fe25178283fd25d68bcd58906701abde3cedd2daf3d8fb5cdee"
+      },
+      "runtime_pin_source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/frontend/FORWARD_PLAN.json",
+        "git_blob_sha": "2fbaf8015ebdc67d085fac09bb773353386fdd8b",
+        "content_sha256": "9c3cde14fef7faf2fb54ad74eb7a80842e29cbbb7135a4ef7a739d874539efd5",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/FORWARD_PLAN.json",
+        "field": "/source_and_input_sha256"
+      }
+    },
+    "historical_audio_cache": {
+      "required_files": [
+        {
+          "path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/COHORT.json",
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "git_blob_sha": "683252279dfb7fb13a326635cf6fb91850b762c9",
+          "bytes": 136792,
+          "sha256": "9272d2e7939a240557b0bada9f2c0fd161f64521702da63c03ed276bb2dd9e51",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/COHORT.json",
+          "sha256_source": {
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/COPIES.json",
+            "git_blob_sha": "8e52991b752aded885364a156f7be391bebcf267",
+            "content_sha256": "96805cf2861e204b8ebaa6238ee9d923ea5c3035747d5d8e03dbb087722623a6",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/COPIES.json",
+            "field": "/files"
+          },
+          "payload_read_and_hash_verified_this_audit": false,
+          "verification_scope": "Current Git directory metadata and retained source receipt; payload not downloaded in this audit"
+        },
+        {
+          "path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/IDENTITY.json",
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "git_blob_sha": "8a9bc0b147bb1120c2b35ef0fe76c84b1473d8f5",
+          "bytes": 249139,
+          "sha256": "ac52fa2560e36f967d428bc84220148477f0f8e38feca020a14421c73ca1c8f2",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/IDENTITY.json",
+          "sha256_source": {
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/COPIES.json",
+            "git_blob_sha": "8e52991b752aded885364a156f7be391bebcf267",
+            "content_sha256": "96805cf2861e204b8ebaa6238ee9d923ea5c3035747d5d8e03dbb087722623a6",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/COPIES.json",
+            "field": "/files"
+          },
+          "payload_read_and_hash_verified_this_audit": false,
+          "verification_scope": "Current Git directory metadata and retained source receipt; payload not downloaded in this audit"
+        },
+        {
+          "path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/features.npz",
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "git_blob_sha": "e962bd2d456760a6b6c11552e851811f8cbf3df8",
+          "bytes": 3267336,
+          "sha256": "caa50b4db7e189492adea93be0ecd8bad4a4a4bc9ceab3d7961ef28eba6ff4bc",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/features.npz",
+          "sha256_source": {
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/COPIES.json",
+            "git_blob_sha": "8e52991b752aded885364a156f7be391bebcf267",
+            "content_sha256": "96805cf2861e204b8ebaa6238ee9d923ea5c3035747d5d8e03dbb087722623a6",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/COPIES.json",
+            "field": "/files"
+          },
+          "payload_read_and_hash_verified_this_audit": false,
+          "verification_scope": "Current Git directory metadata and retained source receipt; payload not downloaded in this audit"
+        }
+      ],
+      "recordings": 288,
+      "actors": 24,
+      "raw_recording_bytes": 89552339,
+      "descriptor_width": 1536,
+      "used_columns": "0:1536; no CTC features or transcripts",
+      "used_descriptor_sha256": "850be53723aabe55d0970f000a3556532c5cf9538dedce69fd5e7fab137f9fd4",
+      "descriptor_identity_source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/frontend/USED_DESCRIPTOR_IDENTITY.json",
+        "git_blob_sha": "d5199e49eeb1f62f245269cdd3f9cd9410f63792",
+        "content_sha256": "bd423b2a8170e4b47b290c8478fb6942e07fd2f4d08c0a1b145124c499ffe107",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/USED_DESCRIPTOR_IDENTITY.json"
+      },
+      "raw_identity_receipt": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/frontend/cache_contract001/RESULT.json",
+        "git_blob_sha": "6c99f5206ea7721238e4ea6c1130aba3b7cfe0bc",
+        "content_sha256": "31e344abc567ae027c6704b1bc67b84b603c9ae29717c3f194c85709fbe9a933",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/cache_contract001/RESULT.json"
+      },
+      "role": "historical TRAIN; previous actor-OOF is development evidence",
+      "new_holdout_eligible": false,
+      "not_joint_core_input": "The 288-record audio cache and 24-record joint corpus are different source sets; no row alignment or padding/truncation conversion is authorized by the existing artifacts."
+    },
+    "historical_joint_core_replay": {
+      "roster": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json",
+        "git_blob_sha": "27d945603207634f0b102b83d11c83ac51035a0a",
+        "content_sha256": "9dbb8423c54e902a509ea85331c3b617eb97971f429c10a684169c251fc57215",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/CANDIDATES.json"
+      },
+      "plan": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/PLAN.json",
+        "git_blob_sha": "973491abf0ade790a01af228bceb943a335eb2f3",
+        "content_sha256": "e545cc3814fe070408054620be339d9f23e0cad788278668b01ea81571bc9c48",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/PLAN.json"
+      },
+      "input": {
+        "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/async_av-TRAIN.npz",
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "git_blob_sha": "f88142997f47d113a457952177e24c20851776e1",
+        "bytes": 31524,
+        "sha256": "8b5bee878b00dccba4bc4984ff5d60ae38a82a5f54452ff43ddc526f1dbf39b9",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/async_av-TRAIN.npz",
+        "sha256_source": {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/PLAN.json",
+          "git_blob_sha": "973491abf0ade790a01af228bceb943a335eb2f3",
+          "content_sha256": "e545cc3814fe070408054620be339d9f23e0cad788278668b01ea81571bc9c48",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/PLAN.json",
+          "field": "/input_sha256/async_av-TRAIN.npz"
+        },
+        "payload_read_and_hash_verified_this_audit": true,
+        "verification_scope": "Exact bytes verified locally"
+      },
+      "models": [
+        {
+          "family": "hx_full",
+          "task": "async_av",
+          "seed": 13301,
+          "classes": 6,
+          "parameter_count": 31430,
+          "train_metadata": {
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+            "git_blob_sha": "51ad119383c96816b189d352f78450825462706c",
+            "content_sha256": "928283927bd6b0c7e5b7425384a342140fe29c10f668733bb5573efdecad0f19",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json"
+          },
+          "weights": {
+            "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/weights.pt",
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "git_blob_sha": "8681ea8048173a31e329068dea98bfe60eb5f5af",
+            "bytes": 256185,
+            "sha256": "38415f642984e5c850fa8d0c5fbdaf1a8a116d140074b434a0a9dee7dc0b59b1",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/weights.pt",
+            "sha256_source": {
+              "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+              "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+              "git_blob_sha": "51ad119383c96816b189d352f78450825462706c",
+              "content_sha256": "928283927bd6b0c7e5b7425384a342140fe29c10f668733bb5573efdecad0f19",
+              "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+              "field": "/weights_sha256"
+            },
+            "payload_read_and_hash_verified_this_audit": false,
+            "verification_scope": "Current Git directory metadata and retained source receipt; payload not downloaded in this audit"
+          },
+          "normalization": {
+            "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/NORMALIZATION.npz",
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "git_blob_sha": "5a5648199016f3922d287a90134d74f2aca6c97b",
+            "bytes": 1215,
+            "sha256": "5d6255f69c3f808f13142da520efa0821802af6b693955f290c0acb341559e0e",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/NORMALIZATION.npz",
+            "sha256_source": {
+              "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+              "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+              "git_blob_sha": "51ad119383c96816b189d352f78450825462706c",
+              "content_sha256": "928283927bd6b0c7e5b7425384a342140fe29c10f668733bb5573efdecad0f19",
+              "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-hx_full-13301/TRAIN.json",
+              "field": "/normalization_sha256"
+            },
+            "payload_read_and_hash_verified_this_audit": true,
+            "verification_scope": "Exact bytes verified locally"
+          },
+          "reuse_scope": "Historical six-class row55 CPU replay only; no supplied weight conversion into the new HX value-gating content model"
+        },
+        {
+          "family": "gru",
+          "task": "async_av",
+          "seed": 13301,
+          "classes": 6,
+          "parameter_count": 32550,
+          "train_metadata": {
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/TRAIN.json",
+            "git_blob_sha": "1cb38027831aa717ac5cdec706252faabc9c3f24",
+            "content_sha256": "eef6d6e96c7c2b29f28dba6a2295c418ae70d270ef2d2923b779cb38152260d9",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/TRAIN.json"
+          },
+          "weights": {
+            "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/weights.pt",
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "git_blob_sha": "a915b7c240751848a5d32cd22a00d9318f5d6869",
+            "bytes": 264069,
+            "sha256": "6457203522b4e2ca6383442711f3ef9d35892e7c7455775c74a1754af4a1d6fb",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/weights.pt",
+            "sha256_source": {
+              "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+              "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/TRAIN.json",
+              "git_blob_sha": "1cb38027831aa717ac5cdec706252faabc9c3f24",
+              "content_sha256": "eef6d6e96c7c2b29f28dba6a2295c418ae70d270ef2d2923b779cb38152260d9",
+              "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/TRAIN.json",
+              "field": "/weights_sha256"
+            },
+            "payload_read_and_hash_verified_this_audit": false,
+            "verification_scope": "Current Git directory metadata and retained source receipt; payload not downloaded in this audit"
+          },
+          "normalization": {
+            "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/NORMALIZATION.npz",
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "git_blob_sha": "5a5648199016f3922d287a90134d74f2aca6c97b",
+            "bytes": 1215,
+            "sha256": "5d6255f69c3f808f13142da520efa0821802af6b693955f290c0acb341559e0e",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/NORMALIZATION.npz",
+            "sha256_source": {
+              "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+              "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/TRAIN.json",
+              "git_blob_sha": "1cb38027831aa717ac5cdec706252faabc9c3f24",
+              "content_sha256": "eef6d6e96c7c2b29f28dba6a2295c418ae70d270ef2d2923b779cb38152260d9",
+              "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-gru-13301/TRAIN.json",
+              "field": "/normalization_sha256"
+            },
+            "payload_read_and_hash_verified_this_audit": false,
+            "verification_scope": "Current Git directory metadata and retained source receipt; payload not downloaded in this audit"
+          },
+          "reuse_scope": "Historical six-class row55 CPU replay only; no supplied weight conversion into the new HX value-gating content model"
+        },
+        {
+          "family": "ssm",
+          "task": "async_av",
+          "seed": 13301,
+          "classes": 6,
+          "parameter_count": 29382,
+          "train_metadata": {
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/TRAIN.json",
+            "git_blob_sha": "05ccc1429affc2378c3178d56f9287014d7c8c01",
+            "content_sha256": "e2d6c9b1a13e4b94d1cbb751f8d471c867ea4743dcf175ee5e30cf15d747f1b9",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/TRAIN.json"
+          },
+          "weights": {
+            "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/weights.pt",
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "git_blob_sha": "7e235d3d465c1613bf8605a356faf1825f679def",
+            "bytes": 239231,
+            "sha256": "742baacf03b6bade5a9f863d1e837dbdd0d3e9317dc30c3e3080584bc019d4d8",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/weights.pt",
+            "sha256_source": {
+              "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+              "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/TRAIN.json",
+              "git_blob_sha": "05ccc1429affc2378c3178d56f9287014d7c8c01",
+              "content_sha256": "e2d6c9b1a13e4b94d1cbb751f8d471c867ea4743dcf175ee5e30cf15d747f1b9",
+              "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/TRAIN.json",
+              "field": "/weights_sha256"
+            },
+            "payload_read_and_hash_verified_this_audit": false,
+            "verification_scope": "Current Git directory metadata and retained source receipt; payload not downloaded in this audit"
+          },
+          "normalization": {
+            "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/NORMALIZATION.npz",
+            "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+            "git_blob_sha": "5a5648199016f3922d287a90134d74f2aca6c97b",
+            "bytes": 1215,
+            "sha256": "5d6255f69c3f808f13142da520efa0821802af6b693955f290c0acb341559e0e",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/NORMALIZATION.npz",
+            "sha256_source": {
+              "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+              "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/TRAIN.json",
+              "git_blob_sha": "05ccc1429affc2378c3178d56f9287014d7c8c01",
+              "content_sha256": "e2d6c9b1a13e4b94d1cbb751f8d471c867ea4743dcf175ee5e30cf15d747f1b9",
+              "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/fit-async_av-ssm-13301/TRAIN.json",
+              "field": "/normalization_sha256"
+            },
+            "payload_read_and_hash_verified_this_audit": false,
+            "verification_scope": "Current Git directory metadata and retained source receipt; payload not downloaded in this audit"
+          },
+          "reuse_scope": "Historical six-class row55 CPU replay only; no supplied weight conversion into the new HX value-gating content model"
+        }
+      ],
+      "required_original_source_closure": {
+        "experiments/continuous_spiking_network/__init__.py": "192d1f289893035488c967e19332d164c1b2687c127c627ae88ad24ac9db07bc",
+        "experiments/continuous_spiking_network/data.py": "b8a84e49451001ee3448dd3e22bbdc0f9e153a6864056c77069052c7d048829b",
+        "experiments/hcsn_causal_execution_v3/__init__.py": "4d77d70d4f664e21e538b23f5f0bf845f0c5efa02ac670d37ef13a699c37feaa",
+        "experiments/hcsn_causal_execution_v3/av_probe.py": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127",
+        "experiments/hcsn_hx_unified_v3/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "experiments/hcsn_hx_unified_v3/hx.py": "f7089527461983ebfd53ce82d95a124314a797fc57ed40386ad2e8d4b75e1d19",
+        "experiments/hcsn_mechanism_content_v2/__init__.py": "9d7409cd830465f83202846e2d68976fb1cc33bf619e40115287555f38ead365",
+        "experiments/hcsn_mechanism_content_v2/binding_data.py": "0b496b552a9686da23381640015acf43120eb5737ff895b022c32f3edf20e00c",
+        "experiments/hcsn_mechanism_content_v2/data.py": "ca866b1dee8977255bedd8655b247bc8212db9c000ab221cd6b84d0c5721277e",
+        "experiments/hcsn_task_value_v1/__init__.py": "39d9c6a49be667f172380147c8b8ecf844c0f8d542c8acd72dfd5f6deafa39b6",
+        "experiments/hcsn_task_value_v1/async_av.py": "82650e912388cfe5e7534676024e3133841061324537ee2fbe36cd04fc06788c",
+        "experiments/hcsn_v13_followup_20261102/joint_core/PROTOCOL.json": "778938681294bf4e45fe4e33d8c8381f47ca8c08fa5592ec5c39856f91fa7322",
+        "experiments/hcsn_v13_followup_20261102/joint_core/campaign.py": "3760db42f332cac14134b2f98af8d8d0c2a506c9c0e5cede085b93928ee25be6",
+        "experiments/hcsn_v13_followup_20261102/joint_core/data.py": "97dd9fb11e32257f183084a75de103125a9adbd43ef956b6600ae78f9d38d445",
+        "experiments/hcsn_v13_followup_20261102/joint_core/hx_torch.py": "3a14bd9afb403848427d6c77d936445da7ddd72f18cbdb45cc10de4a31493f49",
+        "experiments/hcsn_v13_followup_20261102/joint_core/model.py": "cd8666ebcbfb23e9d3d7b283c1814ead4246cb91f8f5ee76705fd38b25c1f7e4",
+        "experiments/hcsn_v7_support_20261101/content_interface/content_interface.py": "2dd6f4cc0204f5d77a7a5ab993d0710088d47848e2977bc44351519fc6d50c92",
+        "experiments/hcsn_v8_execution_20261101/frontend/__init__.py": "b1ba835e26e080f34adfabab53734560ce38f083e9e361430c0623487f3db700",
+        "experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py": "1b5efffde74c64f2e1f0f7ca1ed4e7b4d10f0de80cc23a9294c483d7cc7177c5",
+        "experiments/hcsn_v8_execution_20261101/frontend/replay.py": "4a813a54eaa0d115c62e3f9538e9db549edb5eb3c1f4a882cc80dc5d0c862518",
+        "recovered/v3/experiments/hcsn_free_boundary_v1/datasets.py": "f87e8f8531483313013d64a413b207c26ab14c09f82500088b506b5a682bc794"
+      },
+      "bridge": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+        "git_blob_sha": "a1b9274faa552f83ff60d774ee0f0ea4812d809a",
+        "content_sha256": "f000028355f4a2d936c650a32070dbfa936e21202b7e5ef1ebf20026dd9daa08",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+        "code_symbol": "verify_candidates / V13Core"
+      },
+      "entry": {
+        "module": "experiments.hcsn_v14_causal_io_20261104.engineering_replay",
+        "arguments": [
+          "--out",
+          "<new-empty-evidence-directory>"
+        ],
+        "invoked_this_audit": false,
+        "scope": "Original historical checkpoint compatibility only; not new-A quality"
+      },
+      "entry_source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/engineering_replay.py",
+        "git_blob_sha": "59a00dc049d05550bcc98bcfd26c278b7be5dc29",
+        "content_sha256": "d28639dd028f43712d45ace29bc55465248e858049a8d5892dc7b438cd65e9b3",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/engineering_replay.py",
+        "code_symbol": "context / main"
+      },
+      "output": "six-class probabilities; accepted AV packet content is empty",
+      "output_source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/ACCEPTANCE.json",
+        "git_blob_sha": "3ca051c1d9a86a80eb76c33541809fe057df63c9",
+        "content_sha256": "92933d442bf92cc8af72abdd753daa79e3056d9c414cf9a97bb9176b4fda426e",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/ACCEPTANCE.json",
+        "field": "/neural_replay"
+      },
+      "original_execution_runtime": {
+        "torch": "2.10.0+cpu",
+        "numpy": "2.2.6",
+        "dtype": "float64",
+        "threads": 1
+      },
+      "execution_runtime_source": {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/evidence/engineering-001/RESULT.json",
+        "git_blob_sha": "7b498d687c4df69668755902d671a31a1d6081a3",
+        "content_sha256": "d3a5c6a03b30f9b30cc401f36e71b38d7a18e88e022bab6e20cd84b4f5d6d6bd",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/engineering-001/RESULT.json",
+        "field": "/families/0/execution"
+      }
+    },
+    "durable_addressor": {
+      "source": {
+        "commit": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+        "path": "experiments/hcsn_v14_causal_io_20261104/runtime.py",
+        "git_blob_sha": "7896d07a257a9eedcd92f734aa14e411ee793382",
+        "content_sha256": "406ab11a7cbffe788490c98d50e165bdcd86ae51b1a2ebbca9186d713d8603f9",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5/experiments/hcsn_v14_causal_io_20261104/runtime.py",
+        "code_symbol": "Session.complete / Session.query"
+      },
+      "boundary": {
+        "commit": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+        "path": "experiments/hcsn_v14_causal_io_20261104/boundary.py",
+        "git_blob_sha": "c843570d213c05b1fbc4a8dada401b49db2e124a",
+        "content_sha256": "a8ab4676be5ac3188043662d34c78f206b0adc08a1215bbdf3a547a27e8f2428",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/11d5d14d57f1252cd92ffae5e7b344e9b827536e/experiments/hcsn_v14_causal_io_20261104/boundary.py",
+        "code_symbol": "Packet / FrozenInput"
+      },
+      "address_definition": "digest of packet fingerprint, epoch and read_id",
+      "query_output": [
+        "exact acquired content string",
+        "source/time/content citations",
+        "explicit unknown"
+      ],
+      "learned_semantic_retriever": false,
+      "actual_av_content_empty": true,
+      "text_image_fixture_source": {
+        "commit": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+        "path": "experiments/hcsn_v14_causal_io_20261104/test_boundary.py",
+        "git_blob_sha": "43bf7ac0ca66209765c52e09e1634adfb6f0878f",
+        "content_sha256": "c81de304753b4508877252e70127f5750a1618a569de70d3f76dc794dfc34ff8",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/11d5d14d57f1252cd92ffae5e7b344e9b827536e/experiments/hcsn_v14_causal_io_20261104/test_boundary.py",
+        "code_symbol": "source / packet / FixtureCore"
+      },
+      "fixture_origin": "fixture; artificial two-dimensional features for all four modalities",
+      "current_content_candidate_addressor": {
+        "commit": "5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1",
+        "path": "qualification/hcsn/content_model.py",
+        "git_blob_sha": "00a7a6e3f469dff9813c4c358a32bf3a124aa707",
+        "content_sha256": "5309333bb9c46238553ecb9c24fadcafd8f80c4c081ce2a6304b17b47513f64b",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1/qualification/hcsn/content_model.py",
+        "code_symbol": "route_content"
+      },
+      "current_content_candidate_scope": "typed binary one-hot keys and values; no semantic mapping from real encoder vectors"
+    }
+  },
+  "per_modality_readiness": [
+    {
+      "modality": "audio",
+      "available": [
+        "Real pinned TRAIN FLV and native crop recipe",
+        "Official 377MB checkpoint identity and strict local loader",
+        "288-row historical cache with 1536 used descriptor coordinates"
+      ],
+      "required_existing_files": [
+        "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/CHECKPOINT.json",
+        "experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+        "experiments/hcsn_v13_followup_20261102/frontend/FORWARD_PLAN.json",
+        "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/COHORT.json",
+        "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/IDENTITY.json",
+        "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/features.npz"
+      ],
+      "source_refs": [
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+          "git_blob_sha": "59bff31ab3b7ce5e0d8d1823af2c5015e55811ae",
+          "content_sha256": "bd9fd1046cc7425f0d580544ff37893f8c2307d787e8e2aa71fa496e5bd0af78",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+          "code_symbol": "LocalSpeech"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v13_followup_20261102/frontend/cache_contract001/RESULT.json",
+          "git_blob_sha": "6c99f5206ea7721238e4ea6c1130aba3b7cfe0bc",
+          "content_sha256": "31e344abc567ae027c6704b1bc67b84b603c9ae29717c3f194c85709fbe9a933",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/cache_contract001/RESULT.json"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+          "git_blob_sha": "a1b9274faa552f83ff60d774ee0f0ea4812d809a",
+          "content_sha256": "f000028355f4a2d936c650a32070dbfa936e21202b7e5ef1ebf20026dd9daa08",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+          "code_symbol": "V13Core.step"
+        }
+      ],
+      "missing": [
+        "Verified current checkpoint/runtime possession",
+        "Same-world aligned content task and answer/citation labels",
+        "Frozen 1536-feature interface to common content addressor/core; row55 cannot accept it",
+        "Qualified strong audio content accuracy and full inference cost"
+      ],
+      "status": "HISTORICAL_ENCODER_ASSET_IDENTIFIED_NOT_CONNECTED_TO_NEW_TASK"
+    },
+    {
+      "modality": "video",
+      "available": [
+        "Pinned real TRAIN FLV",
+        "Native PTS and prefix decoder audit",
+        "Historical low-resolution AV feature/replay source"
+      ],
+      "required_existing_files": [
+        "experiments/hcsn_v14_causal_io_20261104/media_audit.py",
+        "experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+        "experiments/hcsn_v13_followup_20261102/joint_core/data.py",
+        "experiments/hcsn_causal_execution_v3/av_probe.py"
+      ],
+      "source_refs": [
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+          "git_blob_sha": "2072613f3aa4787eecdd5742ce82795dd55be8cb",
+          "content_sha256": "a6fe6134829b531a51304d5921decc8f1b62c6f7e90f0ad269d4961e888fa59f",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+          "field": "/raw_media/video_stream"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_causal_execution_v3/av_probe.py",
+          "git_blob_sha": "78e185d107cb034a749224014385de0b837fb4eb",
+          "content_sha256": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_causal_execution_v3/av_probe.py",
+          "code_symbol": "prefix_features"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v13_followup_20261102/joint_core/data.py",
+          "git_blob_sha": "057b342ca81f7ec5594bc8aa3703e15f15ead5c7",
+          "content_sha256": "97dd9fb11e32257f183084a75de103125a9adbd43ef956b6600ae78f9d38d445",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/data.py",
+          "code_symbol": "row_from_cache"
+        }
+      ],
+      "missing": [
+        "Frozen strong video encoder checkpoint/preprocessing/output contract",
+        "Actual causal encoder execution on the shared accepted prefix",
+        "Time-aligned content annotations and semantic binding interface"
+      ],
+      "status": "RAW_HISTORICAL_VIDEO_IDENTIFIED_STRONG_VIDEO_FRONTEND_MISSING_IN_INSPECTED_CLOSURE"
+    },
+    {
+      "modality": "image",
+      "available": [
+        "One genuine derived frame: 480x360, index15, PTS0.527s, retained PNG hash",
+        "Generic image packet/storage engineering fixtures"
+      ],
+      "required_existing_files": [
+        "experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+        "experiments/hcsn_v14_causal_io_20261104/media_audit.py",
+        "experiments/hcsn_v14_causal_io_20261104/boundary.py",
+        "experiments/hcsn_v14_causal_io_20261104/test_boundary.py"
+      ],
+      "source_refs": [
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+          "git_blob_sha": "2072613f3aa4787eecdd5742ce82795dd55be8cb",
+          "content_sha256": "a6fe6134829b531a51304d5921decc8f1b62c6f7e90f0ad269d4961e888fa59f",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/evidence/media-audit-001/report.json",
+          "field": "/frame"
+        },
+        {
+          "commit": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+          "path": "experiments/hcsn_v14_causal_io_20261104/test_boundary.py",
+          "git_blob_sha": "43bf7ac0ca66209765c52e09e1634adfb6f0878f",
+          "content_sha256": "c81de304753b4508877252e70127f5750a1618a569de70d3f76dc794dfc34ff8",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/11d5d14d57f1252cd92ffae5e7b344e9b827536e/experiments/hcsn_v14_causal_io_20261104/test_boundary.py",
+          "code_symbol": "source / packet"
+        }
+      ],
+      "missing": [
+        "Frozen image encoder and actual feature output",
+        "Real image-content query/citation target",
+        "Neural image adapter accepted by current model"
+      ],
+      "new_world_warning": "The frame is derived from the same exposed video; it is not a new independent source or cohort.",
+      "status": "REAL_FRAME_DIAGNOSTIC_ONLY_NO_TRAINED_IMAGE_ADAPTER"
+    },
+    {
+      "modality": "text",
+      "available": [
+        "Exact text packet and content-addressed retrieval contract",
+        "Synthetic Unicode/long-retention fixtures"
+      ],
+      "required_existing_files": [
+        "experiments/hcsn_v14_causal_io_20261104/boundary.py",
+        "experiments/hcsn_v14_causal_io_20261104/runtime.py",
+        "experiments/hcsn_v14_causal_io_20261104/test_boundary.py",
+        "experiments/hcsn_v14_causal_io_20261104/test_runtime.py"
+      ],
+      "source_refs": [
+        {
+          "commit": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+          "path": "experiments/hcsn_v14_causal_io_20261104/test_boundary.py",
+          "git_blob_sha": "43bf7ac0ca66209765c52e09e1634adfb6f0878f",
+          "content_sha256": "c81de304753b4508877252e70127f5750a1618a569de70d3f76dc794dfc34ff8",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/11d5d14d57f1252cd92ffae5e7b344e9b827536e/experiments/hcsn_v14_causal_io_20261104/test_boundary.py",
+          "code_symbol": "packet"
+        },
+        {
+          "commit": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+          "path": "experiments/hcsn_v14_causal_io_20261104/test_runtime.py",
+          "git_blob_sha": "25c92d5823cfc4a36eab26fe5f7173a8b2005349",
+          "content_sha256": "4afed10b9ff44f5945f3306c5719f19f544ce66d88049ab8da0230bba1ef8a4c",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5/experiments/hcsn_v14_causal_io_20261104/test_runtime.py",
+          "code_symbol": "test_exact_retrieval_survives_1024_intervening_reads_and_restart"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v14_causal_io_20261104/ACCEPTANCE.json",
+          "git_blob_sha": "3ca051c1d9a86a80eb76c33541809fe057df63c9",
+          "content_sha256": "92933d442bf92cc8af72abdd753daa79e3056d9c414cf9a97bb9176b4fda426e",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/ACCEPTANCE.json",
+          "field": "/neural_replay"
+        }
+      ],
+      "missing": [
+        "Genuine same-world timed text/transcript and provenance",
+        "Frozen tokenizer/text encoder with dimensions and weights",
+        "Grounded factual answers and source-span labels",
+        "Trained text adapter; V13 bridge rejects text packets"
+      ],
+      "status": "GENERIC_STORAGE_AND_SYNTHETIC_FIXTURES_ONLY"
+    }
+  ],
+  "exposure_and_admission": {
+    "known_recording_union_count": 312,
+    "official_audio_recordings": 288,
+    "official_audio_actors": 24,
+    "joint_recordings": 24,
+    "joint_actors": 4,
+    "recording_intersection": [],
+    "actor_intersection": [],
+    "historical_owner_ledger_complete": false,
+    "unresolved": [
+      "v5/v6 original owner inputs",
+      "all later calibration/selection/inspection cohorts",
+      "authentic capture sessions/worlds",
+      "encoder pretraining coverage"
+    ],
+    "source": {
+      "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "path": "experiments/hcsn_v14_causal_io_20261104/KNOWN_EXPOSURE.json",
+      "git_blob_sha": "bb3eddb904954cd5563161bf6448caf7cdd91da2",
+      "content_sha256": "f47bc777fd999d8885a2702d64e5064db8504f2272127283fbc4d82d5434d61b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/KNOWN_EXPOSURE.json"
+    },
+    "heldout_policy": "All identified recordings/features and prior scores are historical development. Empty intersection of two known sets does not certify fresh heldout or pretraining purity.",
+    "boundary_currently_accepts_only": "development",
+    "boundary_source": {
+      "commit": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+      "path": "experiments/hcsn_v14_causal_io_20261104/boundary.py",
+      "git_blob_sha": "c843570d213c05b1fbc4a8dada401b49db2e124a",
+      "content_sha256": "a8ab4676be5ac3188043662d34c78f206b0adc08a1215bbdf3a547a27e8f2428",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/11d5d14d57f1252cd92ffae5e7b344e9b827536e/experiments/hcsn_v14_causal_io_20261104/boundary.py",
+      "code_symbol": "FrozenInput.__init__"
+    },
+    "new_qualification_protocol": {
+      "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "path": "experiments/hcsn_v14_causal_io_20261104/QUALIFICATION_PLAN.md",
+      "git_blob_sha": "31bc7fb8ff635bae9c44d201e7b4592a552829c6",
+      "content_sha256": "d51fd230ad672bb3384f40dca738401f12cc85a4bc2f70cb55f94687f8e8a2b4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/QUALIFICATION_PLAN.md"
+    }
+  },
+  "decisive_interface_blockers": [
+    {
+      "id": "encoder_width_and_semantics",
+      "observed": {
+        "audio_descriptor_width": 1536,
+        "legacy_row_width": 55,
+        "legacy_modalities": [
+          "audio",
+          "video"
+        ],
+        "legacy_classes": 6
+      },
+      "sources": [
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+          "git_blob_sha": "59bff31ab3b7ce5e0d8d1823af2c5015e55811ae",
+          "content_sha256": "bd9fd1046cc7425f0d580544ff37893f8c2307d787e8e2aa71fa496e5bd0af78",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py",
+          "code_symbol": "LocalSpeech.infer"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+          "git_blob_sha": "a1b9274faa552f83ff60d774ee0f0ea4812d809a",
+          "content_sha256": "f000028355f4a2d936c650a32070dbfa936e21202b7e5ef1ebf20026dd9daa08",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+          "code_symbol": "ROW / V13Core.step / V13Core.output"
+        }
+      ],
+      "consequence": "There is no qualified common adapter from genuine encoder output to content core/addressor. Truncation, padding, reshaping or rebranding class probabilities would change the task and cannot close this gap."
+    },
+    {
+      "id": "event_assimilation_is_not_elapsed_time",
+      "observed": {
+        "train_tensor_shape": [
+          240,
+          6,
+          55
+        ],
+        "first_sequence_source_frontier_deltas_seconds": [
+          1.0,
+          1.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "first_sequence_modalities": [
+          "audio",
+          "audio",
+          "audio",
+          "video",
+          "video",
+          "video"
+        ],
+        "old_row_dt_rule": "row[34] = now - previous_global, where now=max(accepted audio level, accepted video level)",
+        "zero_duration_events": "Later video acquisitions can add information while global source frontier is unchanged"
+      },
+      "sources": [
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001/async_av-TRAIN.npz",
+          "git_blob_sha": "f88142997f47d113a457952177e24c20851776e1",
+          "content_sha256": "8b5bee878b00dccba4bc4984ff5d60ae38a82a5f54452ff43ddc526f1dbf39b9",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/results/run001/async_av-TRAIN.npz"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v13_followup_20261102/joint_core/data.py",
+          "git_blob_sha": "057b342ca81f7ec5594bc8aa3703e15f15ead5c7",
+          "content_sha256": "97dd9fb11e32257f183084a75de103125a9adbd43ef956b6600ae78f9d38d445",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/data.py",
+          "code_symbol": "row_from_cache"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+          "git_blob_sha": "a1b9274faa552f83ff60d774ee0f0ea4812d809a",
+          "content_sha256": "f000028355f4a2d936c650a32070dbfa936e21202b7e5ef1ebf20026dd9daa08",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+          "code_symbol": "V13Core.step"
+        },
+        {
+          "commit": "5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1",
+          "path": "qualification/hcsn/content_model.py",
+          "git_blob_sha": "00a7a6e3f469dff9813c4c358a32bf3a124aa707",
+          "content_sha256": "5309333bb9c46238553ecb9c24fadcafd8f80c4c081ce2a6304b17b47513f64b",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1/qualification/hcsn/content_model.py",
+          "code_symbol": "AddressedContentModel.stream"
+        },
+        {
+          "commit": "5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1",
+          "path": "qualification/hcsn/stream_time.py",
+          "git_blob_sha": "ed64999ce06bb4e990f4ac41d8d09ec46ba4c22d",
+          "content_sha256": "dc42264efd340e8a5136062568681c23d7667129ab9237f82515d69ba195265d",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1/qualification/hcsn/stream_time.py",
+          "code_symbol": "stream_held_inputs"
+        }
+      ],
+      "current_frozen_content_entry": "Explicitly rejects nonpositive intervals; it does not silently discard these events.",
+      "lower_level_held_input_semantics": "Zero duration observes existing state without advance; it does not ingest a new content event.",
+      "required_decision": "Define an event assimilation operation separately from continuous evolution. Never change zero durations to epsilon/0.1 or average them to bypass the guard."
+    },
+    {
+      "id": "source_clock_is_not_measured_arrival_clock",
+      "sources": [
+        {
+          "commit": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+          "path": "experiments/hcsn_v14_causal_io_20261104/boundary.py",
+          "git_blob_sha": "c843570d213c05b1fbc4a8dada401b49db2e124a",
+          "content_sha256": "a8ab4676be5ac3188043662d34c78f206b0adc08a1215bbdf3a547a27e8f2428",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/11d5d14d57f1252cd92ffae5e7b344e9b827536e/experiments/hcsn_v14_causal_io_20261104/boundary.py",
+          "code_symbol": "FrozenInput"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v14_causal_io_20261104/ACCEPTANCE.json",
+          "git_blob_sha": "3ca051c1d9a86a80eb76c33541809fe057df63c9",
+          "content_sha256": "92933d442bf92cc8af72abdd753daa79e3056d9c414cf9a97bb9176b4fda426e",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/ACCEPTANCE.json",
+          "field": "/boundary/physical_sync_calibration_measured"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v13_followup_20261102/joint_core/data.py",
+          "git_blob_sha": "057b342ca81f7ec5594bc8aa3703e15f15ead5c7",
+          "content_sha256": "97dd9fb11e32257f183084a75de103125a9adbd43ef956b6600ae78f9d38d445",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v13_followup_20261102/joint_core/data.py",
+          "code_symbol": "schedules / row_from_cache"
+        }
+      ],
+      "observed": "Historical accepted-source-frontier deltas and synthetic schedules are not measured online sensor arrival intervals.",
+      "required_decision": "Select the physical state clock and same-time event ordering/grouping before designing the new experiment."
+    },
+    {
+      "id": "content_output_and_semantic_addressing_absent",
+      "sources": [
+        {
+          "commit": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+          "path": "experiments/hcsn_v14_causal_io_20261104/runtime.py",
+          "git_blob_sha": "7896d07a257a9eedcd92f734aa14e411ee793382",
+          "content_sha256": "406ab11a7cbffe788490c98d50e165bdcd86ae51b1a2ebbca9186d713d8603f9",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5/experiments/hcsn_v14_causal_io_20261104/runtime.py",
+          "code_symbol": "Session.query"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v14_causal_io_20261104/engineering_replay.py",
+          "git_blob_sha": "59a00dc049d05550bcc98bcfd26c278b7be5dc29",
+          "content_sha256": "d28639dd028f43712d45ace29bc55465248e858049a8d5892dc7b438cd65e9b3",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/engineering_replay.py",
+          "code_symbol": "packet"
+        },
+        {
+          "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+          "path": "experiments/hcsn_v14_causal_io_20261104/ACCEPTANCE.json",
+          "git_blob_sha": "3ca051c1d9a86a80eb76c33541809fe057df63c9",
+          "content_sha256": "92933d442bf92cc8af72abdd753daa79e3056d9c414cf9a97bb9176b4fda426e",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/ACCEPTANCE.json",
+          "field": "/neural_replay"
+        }
+      ],
+      "observed": "AV packets have empty content; the neural output is six-class probabilities. Durable exact packet lookup is not semantic content recall.",
+      "required_decision": "Freeze real factual queries, answer/citation ground truth and a shared addressor that never receives labels or hidden source identity as predictive features."
+    }
+  ],
+  "minimal_deterministic_adapter_spec": {
+    "status": "SPECIFICATION_ONLY_NOT_IMPLEMENTED_OR_TRAINED",
+    "input_carrier": {
+      "fields": [
+        "source_byte_hash",
+        "source_family/session/world identity",
+        "encoder_hash and feature_dimension",
+        "modality",
+        "source_start_ns/source_end_ns",
+        "sample_times_ns",
+        "arrival_ns",
+        "status",
+        "read_id",
+        "feature_vector",
+        "acquired_content and source spans"
+      ],
+      "provenance_fields_visible_to_policy": false
+    },
+    "steps": [
+      "Verify native source bytes and a causal accepted crop before contextual encoding. Use existing Packet/FrozenInput checks and keep role=development for these historical inputs.",
+      "Bind actual encoder identity, runtime and output dimensions. The existing audio output is 1536 real coordinates; text/video/image encoders remain unsupported until exact assets are registered. No truncation or padding into row55.",
+      "Represent every accepted observation as an event. Preserve source time and arrival time separately; retain equal timestamps and typed missing/error status.",
+      "Advance continuous state only for genuine elapsed duration using the previously accepted held input. Ingest a newly accepted event through a separately specified content/state update, even when elapsed duration is zero.",
+      "Use stable read_id/epoch and atomic content/receipt commit so an event is ingested at most once on replay. Reuse V14 late-result cancellation and exact acquired-content storage boundaries.",
+      "Keep the legacy row55 checkpoint replay as a separately named historical adapter. It cannot become new-A or strong-encoder evidence merely by changing the entry point.",
+      "Until event assimilation, output semantics and fixed addressor are frozen, the adapter may produce validated acquired-event records only. It must not emit a quality/adoption pass."
+    ],
+    "deterministic_acceptance_cases": [
+      "Two distinct accepted events at identical physical time are both retained exactly once; no artificial dt is introduced",
+      "Future native samples and hidden labels cannot enter an encoder prefix or event features",
+      "Wrong source/encoder/dimension and unsupported modalities are rejected with explicit states",
+      "Retry/RESET preserves the registered content/clock semantics and rejects a cancelled late result",
+      "Every core receives identical accepted events, encoder outputs and addressor results under fixed-information replay"
+    ],
+    "source_basis": [
+      {
+        "commit": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+        "path": "experiments/hcsn_v14_causal_io_20261104/boundary.py",
+        "git_blob_sha": "c843570d213c05b1fbc4a8dada401b49db2e124a",
+        "content_sha256": "a8ab4676be5ac3188043662d34c78f206b0adc08a1215bbdf3a547a27e8f2428",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/11d5d14d57f1252cd92ffae5e7b344e9b827536e/experiments/hcsn_v14_causal_io_20261104/boundary.py"
+      },
+      {
+        "commit": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+        "path": "experiments/hcsn_v14_causal_io_20261104/runtime.py",
+        "git_blob_sha": "7896d07a257a9eedcd92f734aa14e411ee793382",
+        "content_sha256": "406ab11a7cbffe788490c98d50e165bdcd86ae51b1a2ebbca9186d713d8603f9",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5/experiments/hcsn_v14_causal_io_20261104/runtime.py"
+      },
+      {
+        "commit": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+        "path": "experiments/hcsn_v14_causal_io_20261104/QUALIFICATION_PLAN.md",
+        "git_blob_sha": "31bc7fb8ff635bae9c44d201e7b4592a552829c6",
+        "content_sha256": "d51fd230ad672bb3384f40dca738401f12cc85a4bc2f70cb55f94687f8e8a2b4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8fac2b5f51255902db92c7a8fad9036a2fa3617c/experiments/hcsn_v14_causal_io_20261104/QUALIFICATION_PLAN.md"
+      },
+      {
+        "commit": "5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1",
+        "path": "qualification/hcsn/stream_time.py",
+        "git_blob_sha": "ed64999ce06bb4e990f4ac41d8d09ec46ba4c22d",
+        "content_sha256": "dc42264efd340e8a5136062568681c23d7667129ab9237f82515d69ba195265d",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1/qualification/hcsn/stream_time.py"
+      }
+    ]
+  },
+  "scientific_decisions_still_required": [
+    {
+      "decision": "Event update J versus continuous evolution Phi",
+      "source_determined": false,
+      "detail": "Choose whether a shared measurement update modifies external content memory, neural state, or both; define query behavior immediately after a zero-duration event. The current frozen held-input mechanism supplies no such J."
+    },
+    {
+      "decision": "Physical clock and simultaneous-event semantics",
+      "source_determined": false,
+      "detail": "Choose source-time or arrival-time dynamics with measured synchronization; define order-independent grouping or a fixed causal event ordering."
+    },
+    {
+      "decision": "Real content task and target",
+      "source_determined": false,
+      "detail": "Define same-world factual queries, overwrites, aliases, missingness and citations. Old six-emotion probabilities are a different target."
+    },
+    {
+      "decision": "Common encoder/addressor/head and information boundary",
+      "source_determined": "Requirement fixed; concrete multimodal assets/interfaces incomplete",
+      "detail": "Freeze actual weights, dimensions and costs. Preserve source identity only as provenance, never as label-bearing features."
+    },
+    {
+      "decision": "Effective parameter/search/time budget and primary success threshold",
+      "source_determined": false,
+      "detail": "The existing qualification plan explicitly requires numerical budgets and thresholds before confirmation; no new budget is created here."
+    },
+    {
+      "decision": "Historical versus new confirmation data",
+      "source_determined": true,
+      "detail": "Identified old recordings, features and exposed results are development only. New independent capture and honest incomplete-pretraining-history statements are required for prospective confirmation."
+    }
+  ],
+  "final_claims": {
+    "new_real_multimodal_experiment_executed": false,
+    "strong_common_frontend_connected": false,
+    "new_hx_core_quality_increment_established": false,
+    "new_budget_created": false,
+    "all_six_user_gates_closed": false,
+    "model_downloaded_or_trained": false
+  },
+  "audit_limitations": [
+    "No live-host checkpoint/cache possession check was performed; historical absolute workspace locators are intentionally not republished here.",
+    "Repository source/receipt and two small NPZ byte identities were independently checked; prior media/encoder execution outcomes are historical receipt observations, not this audit rerunning them.",
+    "No global claim that a missing modality asset is absent elsewhere in the organization; the missingness conclusions concern this exact inspected source/dependency closure."
+  ]
+}

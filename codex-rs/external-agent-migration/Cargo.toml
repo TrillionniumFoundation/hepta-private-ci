@@ -14,7 +14,6 @@ workspace = true
 
 [dependencies]
 codex-app-server-protocol = { path = "../app-server-protocol" }
-chrono = { workspace = true }
 codex-analytics = { workspace = true }
 codex-config = { workspace = true }
 codex-core = { workspace = true }
@@ -30,8 +29,9 @@ codex-thread-store = { workspace = true }
 codex-utils-output-truncation = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-serde_yaml = { workspace = true }
+codex-utils-yaml = { workspace = true }
 sha2 = { workspace = true }
+time = { workspace = true, features = ["formatting", "parsing"] }
 toml = { workspace = true }
 tokio = { workspace = true, features = ["rt", "sync"] }
 tracing = { workspace = true }

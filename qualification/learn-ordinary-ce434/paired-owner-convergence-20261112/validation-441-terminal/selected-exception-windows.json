@@ -1,0 +1,136 @@
+{
+  "schema": "original-441-hash-bound-exception-windows-v1",
+  "source_sha": "441de918b863dd15b2faeae920017c1b4b08f59d",
+  "source_log": {
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-441de918b863-validation-v1/source-suite.log",
+    "bytes": 384649,
+    "sha256": "579750613553fa90ce30c2fc4965e8760b964ef80d84ef633515d5ece15010d4"
+  },
+  "source_json": {
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-441de918b863-validation-v1/source-suite.json",
+    "bytes": 130164,
+    "sha256": "a628f9b0bc2b03a4b4ae3542a15d3d57b79949d924080d8bdf73f02c2c17c666"
+  },
+  "summary": {
+    "expected_methods": 423,
+    "tests_run": 423,
+    "failures": 5,
+    "errors": 69,
+    "skipped": 0,
+    "elapsed_seconds": 307.5101711349562,
+    "passed": false
+  },
+  "affected_method_ids": [
+    "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_exact_original_paired_and_closed_cohort_edges",
+    "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_domains_are_actual_literals_in_the_original_functions",
+    "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_complete_guard_records_and_exact_caller_delta_are_installed",
+    "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+    "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_private_adoption_data_cannot_create_signers_or_reconnect",
+    "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+    "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_exact_private_edges_and_unregistered_callers"
+  ],
+  "full_error_headers": 69,
+  "full_failure_headers": 5,
+  "selection": "first complete ERROR block per distinct method; every FAIL block; no test or verifier rerun",
+  "blocks": [
+    {
+      "kind": "ERROR",
+      "method": "test_exact_original_paired_and_closed_cohort_edges",
+      "start_line": 499,
+      "end_line": 519,
+      "bytes": 1759,
+      "sha256": "77bfcbdfdab4f21a668fb0cd11b62e7b49691fa20d6259cf3c392d4bb7b5b4f4",
+      "text": "ERROR: test_exact_original_paired_and_closed_cohort_edges (test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_exact_original_paired_and_closed_cohort_edges) (boundary='learning_paired_source_checkpoint')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 528, in _verify_boundary\n    matched = any(\n              ^^^^\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 529, in <genexpr>\n    has_authority_call(code, boundary.receiver_type, method, fields)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/hepta_typed_callers.py\", line 212, in has_authority_call\n    raise UnresolvedTypedReceiver(\nhepta_typed_callers.UnresolvedTypedReceiver: unresolved possible CircuitTaskPolicyProjectionV1::checkpoint_before receiver\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py\", line 356, in test_exact_original_paired_and_closed_cohort_edges\n    PROOF._verify_boundary(ROOT, row, sources, ())\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 533, in _verify_boundary\n    raise VerificationFailure(\noriginal_on_policy_evaluation_proof.VerificationFailure: learning_paired_source_checkpoint: codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs: unresolved possible CircuitTaskPolicyProjectionV1::checkpoint_before receiver\n\n"
+    },
+    {
+      "kind": "ERROR",
+      "method": "test_domains_are_actual_literals_in_the_original_functions",
+      "start_line": 521,
+      "end_line": 532,
+      "bytes": 1431,
+      "sha256": "f9b442be3339e381327ea5af22113344f5dc166a99d59f3db6144c815650e383",
+      "text": "ERROR: test_domains_are_actual_literals_in_the_original_functions (test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_domains_are_actual_literals_in_the_original_functions) (literal={'path': 'codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs', 'function': 'fn pair_contract(', 'marker': 'let mut bytes = b\"hepta.intelligence-eval.on-policy-pair-contract.v1\".to_vec();'})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_paired_product_source_closure.py\", line 161, in test_domains_are_actual_literals_in_the_original_functions\n    self.verifies(literal[\"path\"], decoy)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_paired_product_source_closure.py\", line 68, in verifies\n    first, after = source_marker_span(source, literal[\"marker\"], start, end + 1)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/rust_source_marker_support.py\", line 35, in source_marker_span\n    raise ValueError(f\"Rust mutation marker not found: {marker!r}\")\nValueError: Rust mutation marker not found: 'let mut bytes = b\"hepta.intelligence-eval.on-policy-pair-contract.v1\".to_vec();'\n\n"
+    },
+    {
+      "kind": "ERROR",
+      "method": "test_original_channels_model_finish_and_owner_effects_remain_real",
+      "start_line": 846,
+      "end_line": 860,
+      "bytes": 1688,
+      "sha256": "bc9146fe51c3869d6ee9de62ae6fd43b167d1a369cf50eabb16c3ad01eaf2094",
+      "text": "ERROR: test_original_channels_model_finish_and_owner_effects_remain_real (test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real) (case={'path': 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs', 'function': 'fn read_model_for_adoption(', 'marker': 'operation.require_owner(self)?'})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 88, in test_original_channels_model_finish_and_owner_effects_remain_real\n    self.rejects(case)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 54, in rejects\n    self.verifies(path, source)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 43, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 646, in _verify_function_order\n    raise VerificationFailure(\npositive_root_suffix_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs: unique top-level code marker required: let original = match action\n\n"
+    },
+    {
+      "kind": "ERROR",
+      "method": "test_private_adoption_data_cannot_create_signers_or_reconnect",
+      "start_line": 1068,
+      "end_line": 1082,
+      "bytes": 4769,
+      "sha256": "8e2ceb02063d8dfc2484e84f357a536d07b54f1503e2c4a44108b37b8e404273",
+      "text": "ERROR: test_private_adoption_data_cannot_create_signers_or_reconnect (test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_private_adoption_data_cannot_create_signers_or_reconnect)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 109, in test_private_adoption_data_cannot_create_signers_or_reconnect\n    self.verifies(row[\"path\"], source)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 43, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 595, in _verify_required_order\n    raise VerificationFailure(\npositive_root_suffix_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn original_selection(: required code order missing: ['fn original_selection(', '&self,', 'snapshot: &LearningIterationSnapshotV1,', 'action: Action,', \") -> Result<OriginalCandidateOperationEvidence<'_>, Error> {\", 'self.require_adoption_cut(snapshot, Stage::Selection, action)?;', 'let operation = CandidateOriginalOperation::begin(self, snapshot).await?;', 'self.begin_adoption()?;', 'let completed = self.read_model_for_adoption(&operation).await?;', 'let context = publication_context(self, &operation, &completed)?;', 'let (selector, version) = self.bind_adoption_selection(', '&operation, &completed,', 'self.common.origin == Origin::Recovered || action == Action::Readback,', ')?;', 'context.authenticate_material(completed.material(), auth::now()?, false)', '.map_err(|_| Error::CommitUncertain)?;', 'let published = match action {', 'Action::Execute => {', 'self.require_adoption_effect(snapshot).await?;', 'let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;', 'let cancellation = RootResidentLearningEffectGateV3::training_cancellation(gate);', 'let result = OriginalCircuitModelVersionClientV1::publish_original_version(', 'version.as_ref(), cancellation,', ').await;', 'self.require_adoption_effect(snapshot).await', '.map_err(|_| Error::CommitUncertain)?;', 'result.map_err(|_| Error::CommitUncertain)?', '}', 'Action::Readback => OriginalCircuitModelVersionClientV1::readback(version.as_ref())', '.await.map_err(|_| Error::CommitUncertain)?,', '};', 'let publication = published.publication().ok_or(Error::OwnerUnavailable(', ',', '))?;', 'if published.authority() != AuthorityPosture::DENY_ALL', '|| publication.authority() != AuthorityPosture::DENY_ALL', '{', 'return Err(Error::CommitUncertain);', '}', '{', 'let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;', 'if lane.publication.as_ref().is_some_and(|saved| saved != publication) {', 'return Err(Error::CommitUncertain);', '}', 'lane.publication = Some(publication.clone());', '}', 'context.authenticate_material(completed.material(), auth::now()?, action == Action::Execute)', '.map_err(|_| Error::CommitUncertain)?;', 'let original = match action {', 'Action::Execute => {', 'self.require_adoption_effect(snapshot).await', '.map_err(|_| Error::CommitUncertain)?;', 'let result = OriginalCircuitModelSelectionCommandClientV1::execute_selection(', 'selector.as_ref(),', ').await;', 'self.require_adoption_effect(snapshot).await', '.map_err(|_| Error::CommitUncertain)?;', 'result.map_err(|_| Error::CommitUncertain)?', '}', 'Action::Readback => OriginalCircuitModelSelectionCommandClientV1::readback(', 'selector.as_ref(),', ').await.map_err(|_| Error::CommitUncertain)?,', '};', 'let closed = CandidateOriginalOperation::close(operation).await', '.map_err(|_| Error::CommitUncertain)?;', 'require_published_selection(publication, &original)?;', 'let evidence = closed.selection(completed, original.clone(), publication.clone())', '.map_err(|_| Error::CommitUncertain)?;', 'self.require_live_deadline().map_err(|_| Error::CommitUncertain)?;', 'let mut lane = self.adoption.try_lock().map_err(|_| Error::CommitUncertain)?;', 'if lane.selection.as_ref().is_some_and(|saved| saved != &original) {', 'return Err(Error::CommitUncertain);', '}', 'lane.selection = Some(original);', 'lane.failed = false;', 'Ok(evidence)', '}']\n\n"
+    },
+    {
+      "kind": "ERROR",
+      "method": "test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "start_line": 1084,
+      "end_line": 1100,
+      "bytes": 4345,
+      "sha256": "c456b43b64e54d4316c73a9deb7852b4a54c03394b5f1d46058ef4556a592301",
+      "text": "ERROR: test_readiness_and_full_original_s_c_evidence_remain_separate (test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate) (case={'path': 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs', 'function': 'fn await_original_candidate_c(', 'marker': 'for _ in 0..127'})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 98, in test_readiness_and_full_original_s_c_evidence_remain_separate\n    self.rejects(case)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 54, in rejects\n    self.verifies(path, source)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 43, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 595, in _verify_required_order\n    raise VerificationFailure(\npositive_root_suffix_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn original_next_use(: required code order missing: ['fn original_next_use(', '&self,', 'snapshot: &LearningIterationSnapshotV1,', 'action: Action,', \") -> Result<OriginalCandidateOperationEvidence<'_>, Error> {\", 'self.require_adoption_cut(snapshot, Stage::NextUse, action)?;', 'let operation = CandidateOriginalOperation::begin(self, snapshot).await?;', 'self.begin_adoption()?;', 'let completed = self.read_model_for_adoption(&operation).await?;', 'let context = publication_context(self, &operation, &completed)?;', 'let (observer, readiness, selection, publication) = self.bind_adoption_next_use(', '&operation, &completed, action,', ').await?;', 'context.authenticate_material(completed.material(), auth::now()?, false)', '.map_err(|_| Error::CommitUncertain)?;', 'let ready = match action {', 'Action::Execute => self.await_original_candidate_c(', 'snapshot, readiness.as_ref(), &context, &completed,', ').await?,', 'Action::Readback => OriginalCircuitCandidateCompletionReadinessClientV1::read_current(', 'readiness.as_ref(),', ').await.map_err(|_| Error::CommitUncertain)?.ok_or(Error::CommitUncertain)?,', '};', 'if ready.publication_digest() != publication.publication_digest()', '|| ready.source_input_digest() != publication.task_digest()', '|| ready.source_publication_digest().is_none()', '{', 'return Err(Error::CommitUncertain);', '}', 'let original = match action {', 'Action::Execute => {', 'self.require_adoption_effect(snapshot).await?;', 'let result = OriginalCircuitCandidateNextUseCommandClientV1::attest_completed_task(', 'observer.as_ref(),', ').await;', 'self.require_adoption_effect(snapshot).await', '.map_err(|_| Error::CommitUncertain)?;', 'result.map_err(|_| Error::CommitUncertain)?', '}', 'Action::Readback => OriginalCircuitCandidateNextUseCommandClientV1::readback(', 'observer.as_ref(),', ').await.map_err(|_| Error::CommitUncertain)?,', '};', 'if ready.observation() != &original.receipt().observation {', 'return Err(Error::CommitUncertain);', '}', 'let closed = CandidateOriginalOperation::close(operation).await', '.map_err(|_| Error::CommitUncertain)?;', 'let evidence = closed.next_use(completed, selection, original.clone(), publication, ready)', '.map_err(|_| Error::CommitUncertain)?;', 'self.require_live_deadline().map_err(|_| Error::CommitUncertain)?;', 'let mut lane = self.adoption.try_lock().map_err(|_| Error::CommitUncertain)?;', 'if lane.next_use.as_ref().is_some_and(|saved| saved != &original) {', 'return Err(Error::CommitUncertain);', '}', 'lane.next_use = Some(original);', 'lane.failed = false;', 'Ok(evidence)', '}']\n\n"
+    },
+    {
+      "kind": "ERROR",
+      "method": "test_exact_private_edges_and_unregistered_callers",
+      "start_line": 1588,
+      "end_line": 1608,
+      "bytes": 1816,
+      "sha256": "2a69cf982874b37e441d1abbaf3ea5178164edd46d3b0e36960d8bd4e4229c69",
+      "text": "ERROR: test_exact_private_edges_and_unregistered_callers (test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_exact_private_edges_and_unregistered_callers) (boundary='learning_positive_publication_context_authenticate')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 528, in _verify_boundary\n    matched = any(\n              ^^^^\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 529, in <genexpr>\n    has_authority_call(code, boundary.receiver_type, method, fields)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/hepta_typed_callers.py\", line 212, in has_authority_call\n    raise UnresolvedTypedReceiver(\nhepta_typed_callers.UnresolvedTypedReceiver: unresolved possible OriginalCircuitModelPublicationContextV1::authenticate receiver\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_positive_model_version_source_closure.py\", line 360, in test_exact_private_edges_and_unregistered_callers\n    PROOF._verify_boundary(ROOT, row, sources, (), fields_by_receiver_type=fields)\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py\", line 533, in _verify_boundary\n    raise VerificationFailure(\npositive_model_version_proof.VerificationFailure: learning_positive_publication_context_authenticate: codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs: unresolved possible OriginalCircuitModelPublicationContextV1::authenticate receiver\n\n"
+    },
+    {
+      "kind": "FAIL",
+      "method": "test_complete_guard_records_and_exact_caller_delta_are_installed",
+      "start_line": 1610,
+      "end_line": 1616,
+      "bytes": 715,
+      "sha256": "627c783902a6ba30f173f5d815a088f97517bd3d124559cb79dd9f7fa5a5ab68",
+      "text": "FAIL: test_complete_guard_records_and_exact_caller_delta_are_installed (test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_complete_guard_records_and_exact_caller_delta_are_installed) (path='codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 61, in test_complete_guard_records_and_exact_caller_delta_are_installed\n    self.assertEqual(self.manifest[\"protected_file\"].count(row), 1)\nAssertionError: 0 != 1\n\n"
+    },
+    {
+      "kind": "FAIL",
+      "method": "test_complete_guard_records_and_exact_caller_delta_are_installed",
+      "start_line": 1618,
+      "end_line": 1624,
+      "bytes": 708,
+      "sha256": "2d7062daf6ccfd578b276286e628ba7863010c34daa78e68e7fb221ad5bd694d",
+      "text": "FAIL: test_complete_guard_records_and_exact_caller_delta_are_installed (test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_complete_guard_records_and_exact_caller_delta_are_installed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 61, in test_complete_guard_records_and_exact_caller_delta_are_installed\n    self.assertEqual(self.manifest[\"protected_file\"].count(row), 1)\nAssertionError: 0 != 1\n\n"
+    },
+    {
+      "kind": "FAIL",
+      "method": "test_complete_guard_records_and_exact_caller_delta_are_installed",
+      "start_line": 1626,
+      "end_line": 1632,
+      "bytes": 711,
+      "sha256": "3f14c5d0f73d37d6cf85670fcd4ad24c57bf8e7851975a7294fa7aee92ab682f",
+      "text": "FAIL: test_complete_guard_records_and_exact_caller_delta_are_installed (test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_complete_guard_records_and_exact_caller_delta_are_installed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 61, in test_complete_guard_records_and_exact_caller_delta_are_installed\n    self.assertEqual(self.manifest[\"protected_file\"].count(row), 1)\nAssertionError: 0 != 1\n\n"
+    },
+    {
+      "kind": "FAIL",
+      "method": "test_complete_guard_records_and_exact_caller_delta_are_installed",
+      "start_line": 1634,
+      "end_line": 1640,
+      "bytes": 711,
+      "sha256": "365b3ace99283006e22823716e2e31a0c1af00d46029f8432c6425be3847d4f6",
+      "text": "FAIL: test_complete_guard_records_and_exact_caller_delta_are_installed (test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_complete_guard_records_and_exact_caller_delta_are_installed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 61, in test_complete_guard_records_and_exact_caller_delta_are_installed\n    self.assertEqual(self.manifest[\"protected_file\"].count(row), 1)\nAssertionError: 0 != 1\n\n"
+    },
+    {
+      "kind": "FAIL",
+      "method": "test_complete_guard_records_and_exact_caller_delta_are_installed",
+      "start_line": 1642,
+      "end_line": 1652,
+      "bytes": 838,
+      "sha256": "2bb31d5b569b9c5fa738d1d22733f284fdf333f9d218a237b71de70123bf38c6",
+      "text": "FAIL: test_complete_guard_records_and_exact_caller_delta_are_installed (test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_complete_guard_records_and_exact_caller_delta_are_installed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py\", line 61, in test_complete_guard_records_and_exact_caller_delta_are_installed\n    self.assertEqual(self.manifest[\"protected_file\"].count(row), 1)\nAssertionError: 0 != 1\n\n----------------------------------------------------------------------\nRan 423 tests in 306.565s\n\nFAILED (failures=5, errors=69)\n"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "attempts": 1,
+  "authority": "DENY_ALL",
+  "cost": {
+    "child_block_inputs": 0,
+    "child_block_outputs": 179000,
+    "child_involuntary_context_switches": 1015,
+    "child_peak_rss_bytes": 215773184,
+    "child_system_seconds": 0.369282,
+    "child_user_seconds": 1.198554,
+    "child_voluntary_context_switches": 356,
+    "energy_joules": null,
+    "parent_cpu_seconds": 0.014491898000000059,
+    "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads.",
+    "total_cpu_seconds": 1.582327898,
+    "wall_seconds": 1.56190665000031
+  },
+  "enforced_resources": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 60,
+    "single_file_bytes": 134217728
+  },
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 60,
+    "input_bytes": 536870912,
+    "max_dataset_rows": 512,
+    "max_datasets": 8,
+    "output_bytes": 2097152,
+    "wall_seconds": 120
+  },
+  "progress": {
+    "adapter_calls_attempted": 0,
+    "admitted_source_copy_bytes": 91582945,
+    "encoder_batches_attempted": 4,
+    "encoder_batches_completed": 4,
+    "encoder_calls_attempted": 1,
+    "encoder_loads_attempted": 1,
+    "executor_calls_attempted": 0,
+    "staging_copy_bytes": 91582945
+  },
+  "reason": "ClosureError: Original float32 encoder output is not byte-identical to its prepared dataset",
+  "schema": "hepta.v13.feature-and-reference-replay.v1",
+  "status": "REJECTED",
+  "worker_exit": 0,
+  "worker_output": {
+    "stderr": {
+      "bytes": 579,
+      "captured_bytes": 579,
+      "complete": true,
+      "sha256": "d87906e73e797acf712f29b4ddbed4dd1f4bf55172005382dcc7502c171bc63f"
+    },
+    "stdout": {
+      "bytes": 558,
+      "captured_bytes": 558,
+      "complete": true,
+      "sha256": "17cc0cdb50c1930505c330bd00f322aafad7fabe4799a913143b0d23c9ffc376"
+    }
+  },
+  "worker_stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_replay.py\", line 91, in _worker_main\n    result.update(execute_reference(config, limits, progress))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_worker.py\", line 289, in execute_reference\n    raise ClosureError(\nclosure_io.ClosureError: Original float32 encoder output is not byte-identical to its prepared dataset\n",
+  "worker_stdout": "{\"authority\":\"DENY_ALL\",\"enforced_resources\":{\"address_space_bytes\":4294967296,\"cpu_seconds\":60,\"single_file_bytes\":134217728},\"progress\":{\"adapter_calls_attempted\":0,\"admitted_source_copy_bytes\":91582945,\"encoder_batches_attempted\":4,\"encoder_batches_completed\":4,\"encoder_calls_attempted\":1,\"encoder_loads_attempted\":1,\"executor_calls_attempted\":0,\"staging_copy_bytes\":91582945},\"reason\":\"ClosureError: Original float32 encoder output is not byte-identical to its prepared dataset\",\"schema\":\"hepta.v13.feature-and-reference-replay.v1\",\"status\":\"REJECTED\"}\n",
+  "worker_termination": "completed"
+}

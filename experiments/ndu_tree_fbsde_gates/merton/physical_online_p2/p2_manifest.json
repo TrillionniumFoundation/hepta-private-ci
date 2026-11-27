@@ -1,0 +1,11 @@
+{
+  "schema": "hepta.ndu-merton.token-portfolio-p1.v1",
+  "actions": [
+    {"name": "direct", "token_ceiling": 0, "latency_ceiling_ms": 0},
+    {"name": "reason", "token_ceiling": 96, "latency_ceiling_ms": 4096},
+    {"name": "verify", "token_ceiling": 128, "latency_ceiling_ms": 4096}
+  ],
+  "token_budget": 256,
+  "latency_budget_ms": 8192,
+  "token_tariff": "1/2048"
+}

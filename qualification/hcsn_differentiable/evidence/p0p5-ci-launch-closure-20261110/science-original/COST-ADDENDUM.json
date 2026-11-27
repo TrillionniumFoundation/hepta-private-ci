@@ -1,0 +1,29 @@
+{
+  "cloud_recovery_complete_command_CPU_seconds": null,
+  "cloud_recovery_complete_command_wall_seconds": 0.017973579,
+  "cloud_recovery_report_CPU_is_pre_final_archive_prefix": true,
+  "frozen_capsule_sha256": "b56a1b2f53c978c4b09f70e54e5f14dd33a1df941330eeb5e445e6e2413812ad",
+  "hosted_billing": null,
+  "hosted_job_CPU_seconds": null,
+  "independent_readback": {
+    "archives": 51,
+    "errors": [],
+    "manifests": [
+      "qualification/hcsn_differentiable/evidence/p0p5-20261110/MANIFEST.json",
+      "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/MANIFEST.json",
+      "qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/MANIFEST.json",
+      "qualification/hcsn_differentiable/evidence/p0p5-resource-closure-20261110/MANIFEST.json",
+      "qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json",
+      "qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json"
+    ],
+    "relative_links": 287,
+    "verified_files": 1053
+  },
+  "model_or_CI_reruns": 0,
+  "native_CPU_scope": "gh child wait4 exact; script own CPU measured before RESULT serialization/print; not complete native job CPU",
+  "native_gh_child_CPU_seconds": 0.21539799999999998,
+  "native_script_CPU_prefix_seconds": 0.145007037,
+  "native_whole_script_wall_seconds": 5.02699671080336,
+  "nested_timers_not_added": true,
+  "schema": "science-artifact-collection-cost-addendum-v1"
+}

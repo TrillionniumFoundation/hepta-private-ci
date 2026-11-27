@@ -1,0 +1,82 @@
+{
+  "created_at": "2026-11-11T02:33:56.525120+00:00",
+  "commit": "7b5ff407bb33ccbf1fc067aefb9c2b37e202ed55",
+  "tree": "759aab567611416d20b96aa25a0df29974b62f1b",
+  "parents": [
+    "cb0598a9099a0d828ce73aedb51e397e600e49d1"
+  ],
+  "worktree": "/workspace/scratch/f7c0ded86bcc/hepta-p0-training-adapter",
+  "branch": "codex/cell-p0-matrix-diagnostic-f7c0",
+  "clean": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "blob": "bc6b518fb1016af209319b7e7e4eda0f96999c52",
+      "sha256": "737a92f3af84b4ba1356f36307c6b2c3ca81a0fe22bc24829fe620ff1d656e09"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/sync_tests.rs",
+      "blob": "31ffc6a9806768dd93f12f02228dc9c5f54e6d4f",
+      "sha256": "aa42e1eebd256f356089e00857718310deb5aa93721bad161b0252ad18156acd"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+      "blob": "56cb4b9d8a9a597d4b1f7097087f98bd80e409dd",
+      "sha256": "0db33a2e8505870351f54fb53c4b0d11b698ee162c88167af54499dd379e4fae"
+    }
+  ],
+  "patch": {
+    "path": "/workspace/scratch/f7c0ded86bcc/p0-cb0598-ci-observation/matrix-diagnostic-7b5ff407.patch",
+    "bytes": 16512,
+    "sha256": "da32a4c1fbf8a9d809c0346ec64cbd18e2bfaf5c4940ad5dc16a4ccc7de0824e"
+  },
+  "validation": {
+    "source_base": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "commands": [
+      {
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "cb0598a9099a0d828ce73aedb51e397e600e49d1"
+        ],
+        "cwd": "/workspace/scratch/f7c0ded86bcc/hepta-p0-training-adapter/codex-rs",
+        "started_at": "2026-11-11T02:33:09.812944+00:00",
+        "finished_at": "2026-11-11T02:33:10.634993+00:00",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f7c0ded86bcc/p0-cb0598-ci-observation/matrix-diagnostic-fmt.log"
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "cwd": "/workspace/scratch/f7c0ded86bcc/hepta-p0-training-adapter",
+        "started_at": "2026-11-11T02:33:10.635020+00:00",
+        "finished_at": "2026-11-11T02:33:10.653451+00:00",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f7c0ded86bcc/p0-cb0598-ci-observation/matrix-diagnostic-diffcheck.log"
+      }
+    ],
+    "native_tests": "not run; explicit resource constraint"
+  },
+  "review_scope": {
+    "upstream_version": "matrix-sdk 0.19.1 native features e2e-encryption/sqlite/rustls-aws-lc-rs; vendored sqlite patch",
+    "boxed_return_types": {
+      "ClientBuilder::build": "matrix_sdk::ClientBuildError",
+      "DynStateStore::remove_kv_data": "matrix_sdk_base::store::StoreError",
+      "Client::set_session_callbacks": "matrix_sdk::Error",
+      "Client::restore_session": "matrix_sdk::Error",
+      "EventCache::subscribe": "matrix_sdk::event_cache::EventCacheError",
+      "tokio::time::timeout": "tokio::time::error::Elapsed",
+      "filesystem": "std::io::Error",
+      "JSON": "serde_json::Error",
+      "system_time_ms": "existing MatrixSdkError (already classified by existing helper)"
+    },
+    "source_bounds": "Error + Send + Sync + static required by helper; owned SDK/store fields and native erased sources inspected; no compilation performed",
+    "compatibility": "Removed Clone/Copy/Eq/PartialEq; all 6 existing Result equality assertions preserve exact error-variant checks through matches; production matrixd propagates through transparent wrapper, no per-variant retry consumer found",
+    "flow": "Same 5 second constant; same restore attempt; same single fresh login fallback after dropping sidecar; exact success paths and configuration/identity classifications preserved",
+    "limits": "Diagnostic change only. Existing Error::source linear chain traverses fallback; restore retained in field and Debug. Original Matrix Initialization cause remains unknown until new execution."
+  }
+}

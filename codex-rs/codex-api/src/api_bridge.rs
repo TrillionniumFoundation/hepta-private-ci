@@ -4,8 +4,6 @@ use crate::rate_limits::parse_promo_message;
 use crate::rate_limits::parse_rate_limit_for_limit;
 use crate::rate_limits::parse_rate_limit_reached_type;
 use base64::Engine;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_protocol::auth::PlanType;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
@@ -131,10 +129,11 @@ pub fn map_api_error(err: ApiError) -> CodexErr {
                                     snapshot.rate_limit_reached_type = rate_limit_reached_type;
                                     snapshot
                                 });
-                            let resets_at = err
-                                .error
-                                .resets_at
-                                .and_then(|seconds| DateTime::<Utc>::from_timestamp(seconds, 0));
+                            let resets_at = err.error.resets_at.and_then(|seconds| {
+                                codex_utils_time::Timestamp::from_timestamp(
+                                    seconds, /*nanoseconds*/ 0,
+                                )
+                            });
                             return CodexErr::UsageLimitReached(UsageLimitReachedError {
                                 plan_type: err.error.plan_type,
                                 resets_at,

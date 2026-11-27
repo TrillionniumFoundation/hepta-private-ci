@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "kind": "diagnostic_native_attempt_not_common_head_gate",
+  "command": "just test -p codex-hepta-agentd --lib -E 'test(original_training_receipt_)'",
+  "workdir": "/workspace/scratch/f7c0ded86bcc/hepta-p0-training-owner",
+  "explicitEnvironment": {
+    "PATH_prefix": "/workspace/scratch/f7c0ded86bcc/toolchain/installed/bin:/workspace/scratch/1f3ba4601505/tools/just-1.51.0",
+    "CARGO_TARGET_DIR": "/workspace/scratch/f7c0ded86bcc/rmcp-target"
+  },
+  "observedTerminal": "nextest cargo test --no-run build command exited 101; no compiler diagnostic or kill cause in captured log",
+  "testcasesExecuted": 0,
+  "sourceImmutableDuringInvocation": false,
+  "sourceHistory": [
+    "precommit/unformatted owner",
+    "18aaf83508c6b82d48aeabf0cd592a66af57de03",
+    "1ab7982ca10653be1df1afbd31995cc5ae325882",
+    "054c1861d5793d5c4ff44694245a4a69745cf7c7",
+    "fefd37ff17b3daa7a494c5040b6e84adb8956a29"
+  ],
+  "logPath": "/workspace/scratch/f7c0ded86bcc/p0-training-owner-native-attempt1.log",
+  "logSha256": "5be5c2d6f0c0509a182e161df1126077a078dcffba42bca150822df630b590c4",
+  "logBytes": 1241,
+  "recordedAtUtc": "2026-11-11T01:22:41.161720+00:00"
+}

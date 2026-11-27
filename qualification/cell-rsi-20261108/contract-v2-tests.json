@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/workspace/scratch/858e972109d9/contract/scripts",
+    "-p",
+    "test_hepta_cell_joint_config.py",
+    "-v"
+  ],
+  "source_sha256": {
+    "scripts/hepta_cell_joint_config.py": "789d25338b198d592999eaffc8f1f6ac69350cd2aff481b121fedd38ceec843d",
+    "scripts/test_hepta_cell_joint_config.py": "896c49e334ea315ec88697d881d0c9530cda55223015e6dac76fe6aa31f1545d"
+  },
+  "exit_code": 0,
+  "wall_seconds": 4.609573185000045,
+  "finished_at_utc": "2026-11-08T09:05:44.804618+00:00",
+  "source_unchanged": true
+}

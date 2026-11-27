@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn-n256-independent-uniformization-primitive-source-freeze-v1",
+  "identity": "hcsn-n256-independent-uniformization-primitive-20261114-c06d-001",
+  "base_commit": "0edada80594c6c2e7df6ed39f14a9fccf7779f15",
+  "parent_draft": 6316,
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-uniformization-primitive.yml": "94337bada409666cf6299392835109f21f149c6f3154b0b6ff09d24e35e48931",
+    "qualification/hcsn_currentstate_n256_uniformization_primitive/README.md": "3acdc487864dbe385901f0fe92b7bb23a8fe49b122b8ab4d645786affc77829a",
+    "qualification/hcsn_currentstate_n256_uniformization_primitive/REQUEST.json": "2f390f942615da9c27aa2ce598df5b4adae83136c789a2baa8e5acf419344e22",
+    "qualification/hcsn_currentstate_n256_uniformization_primitive/__init__.py": "fd67cc9c856701c6619762f09e5721055e12d654e831e66dc7eeb4496f2f2137",
+    "qualification/hcsn_currentstate_n256_uniformization_primitive/uniformization.py": "1a89ee6bb9e1ece948013bb98998424ef8f022078c6fa0a012a0ebec03927d35",
+    "qualification/hcsn_currentstate_n256_uniformization_primitive/test_uniformization.py": "ceed76158e2a8ec3f2970088b04a6ccf8dd63208dbfef7d662bfc30a62269038",
+    "qualification/hcsn_currentstate_n256_uniformization_primitive/verify_source.py": "1af20f010b47662e167b6232a8529f9876004e9727c3dac3c2f1940b786a8b28"
+  },
+  "local_fixture_history": {
+    "initial_run_passed": 4,
+    "initial_run_failed": 1,
+    "initial_failure_scope": "test oracle Decimal context only; primitive source unchanged",
+    "corrected_assertions_enabled_passed": 5,
+    "corrected_optimized_mode_passed": 5
+  },
+  "execution_counts": {
+    "n256_dynamic_runs": 0,
+    "n256_matrix_actions": 0,
+    "candidate_calls": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0,
+    "new_numerical_idempotency_keys": 0
+  },
+  "truncation_bound_scope": "Decimal-rounded primitive action only; input and finite-precision rounding remain uncertified",
+  "n256_provider_qualified": false,
+  "largegrid_qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}

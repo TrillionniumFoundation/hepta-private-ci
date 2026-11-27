@@ -8,7 +8,7 @@ fn fixture() -> (IssuerRegistration, SignedMessage) {
     let issuer = IssuerRegistration {
         issuer_id: StableId::new("issuer:one").unwrap(),
         key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
         revoked: false,
     };
     let claims = SignedMessageClaims {
@@ -22,7 +22,13 @@ fn fixture() -> (IssuerRegistration, SignedMessage) {
         expires_at_ms: 2_000,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    (issuer, SignedMessage { claims, signature })
+    (
+        issuer,
+        SignedMessage {
+            claims,
+            signature: signature.into(),
+        },
+    )
 }
 
 #[test]
@@ -83,5 +89,31 @@ fn trusted_registration_and_current_expiry_are_required() {
             /*now_ms*/ 1_000
         ),
         Err(Error::ScopeMismatch)
+    ));
+}
+
+#[test]
+fn delivery_identity_matches_original_admission_and_never_authenticates_by_itself() {
+    let (issuer, mut message) = fixture();
+    let admitted = message
+        .authenticate(
+            &issuer,
+            message.claims.scope_digest,
+            message.claims.payload_digest,
+            /*now_ms*/ 1_000,
+        )
+        .unwrap();
+    assert_eq!(message.delivery_id(), admitted.receipt().envelope_digest);
+    let original_id = message.delivery_id();
+    message.signature[0] ^= 1;
+    assert_ne!(message.delivery_id(), original_id);
+    assert!(matches!(
+        message.authenticate(
+            &issuer,
+            message.claims.scope_digest,
+            message.claims.payload_digest,
+            /*now_ms*/ 1_000
+        ),
+        Err(Error::InvalidSignature)
     ));
 }

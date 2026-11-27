@@ -1,0 +1,1649 @@
+[
+  {
+    "job_id": 131446361279,
+    "raw_log_sha256": "30ebc0e94932733c91e9923649d6b0675e24f46e5e431fa741a58fccb7cc6064",
+    "raw_log_bytes": 411713,
+    "checkout": [
+      {
+        "line": 201,
+        "next_line": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99"
+      }
+    ],
+    "target_failure_events": [
+      {
+        "line": 3210,
+        "text": "FAIL: //codex-rs/exec-server:exec-server-exec_process-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-exec_process-test/test.log)"
+      }
+    ],
+    "unique_failed_method_names": [
+      "remote_windows_sandbox_process_accepts_process_write"
+    ],
+    "original_result_occurrences": [
+      {
+        "line": 3249,
+        "text": "test result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 1.02s"
+      },
+      {
+        "line": 3487,
+        "text": "Executed 35 out of 144 tests: 92 tests pass, 1 fails locally, and 51 were skipped."
+      },
+      {
+        "line": 3530,
+        "text": "test result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 1.02s"
+      }
+    ],
+    "failure_sections": [
+      {
+        "method": "remote_windows_sandbox_process_accepts_process_write",
+        "first_line": 3242,
+        "end_line": 3245,
+        "hints": [
+          {
+            "line": 3243,
+            "text": "Error: exec-server rejected request (-32603): legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "remote_windows_sandbox_process_accepts_process_write",
+        "first_line": 3523,
+        "end_line": 3526,
+        "hints": [
+          {
+            "line": 3524,
+            "text": "Error: exec-server rejected request (-32603): legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      }
+    ],
+    "complete_fresh_method_roster": false,
+    "note": "Result occurrences may repeat because original Bazel retries and diagnostic log replay. Bazel target counts, caches, skipped targets, and Rust method counts are not aggregated together."
+  },
+  {
+    "job_id": 131446361296,
+    "raw_log_sha256": "32628f4f89abd326c66c187d213b8d112403d020704508bf227e77a014bd8636",
+    "raw_log_bytes": 804063,
+    "checkout": [
+      {
+        "line": 179,
+        "next_line": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99"
+      }
+    ],
+    "target_failure_events": [
+      {
+        "line": 3117,
+        "text": "FAIL: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log)"
+      },
+      {
+        "line": 3504,
+        "text": "FAIL: //codex-rs/app-server:app-server-all-test (shard 2 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_2_of_16/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 3506,
+        "text": "FAIL: //codex-rs/app-server:app-server-all-test (shard 3 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_3_of_16/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 3522,
+        "text": "FAIL: //codex-rs/app-server:app-server-all-test (shard 11 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_11_of_16/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 4011,
+        "text": "FAIL: //codex-rs/app-server:app-server-all-test (shard 16 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_16_of_16/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 4012,
+        "text": "FAIL: //codex-rs/cli:cli-sandbox_cloud_config-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.log)"
+      },
+      {
+        "line": 4145,
+        "text": "FAIL: //codex-rs/app-server:app-server-all-test (shard 11 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_11_of_16/test_attempts/attempt_2.log)"
+      },
+      {
+        "line": 4148,
+        "text": "FAIL: //codex-rs/app-server:app-server-all-test (shard 2 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_2_of_16/test_attempts/attempt_2.log)"
+      },
+      {
+        "line": 4153,
+        "text": "FAIL: //codex-rs/app-server:app-server-all-test (shard 11 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_11_of_16/test.log)"
+      },
+      {
+        "line": 4616,
+        "text": "FAIL: //codex-rs/app-server:app-server-all-test (shard 2 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_2_of_16/test.log)"
+      },
+      {
+        "line": 4618,
+        "text": "FAILED: //codex-rs/app-server:app-server-all-test (Summary)"
+      },
+      {
+        "line": 5637,
+        "text": "FAILED: //codex-rs/app-server:app-server-all-test (Summary)"
+      }
+    ],
+    "unique_failed_method_names": [
+      "desktop::tests::readonly_preserves_private_and_default_desktop_access",
+      "desktop::tests::workspace_private_desktop_checks_the_exact_capability",
+      "spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite",
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+      "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+      "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+      "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+      "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+      "unified_exec::tests::restricted_token_rejects_managed_network_before_spawn",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "suite::v2::plugin_list::app_server_startup_refreshes_cached_remote_catalog_without_blocking_plugin_list",
+      "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+      "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_4_reapplies_an_implicitly_selected_configured_default_role",
+      "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+      "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+      "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image"
+    ],
+    "original_result_occurrences": [
+      {
+        "line": 3219,
+        "text": "test result: FAILED. 80 passed; 2 failed; 1 ignored; 0 measured; 103 filtered out; finished in 1.41s"
+      },
+      {
+        "line": 3437,
+        "text": "test result: FAILED. 76 passed; 10 failed; 0 ignored; 0 measured; 100 filtered out; finished in 0.10s"
+      },
+      {
+        "line": 3483,
+        "text": "test result: FAILED. 13 passed; 2 failed; 2 ignored; 0 measured; 169 filtered out; finished in 0.02s"
+      },
+      {
+        "line": 4008,
+        "text": "test result: FAILED. 53 passed; 1 failed; 0 ignored; 0 measured; 900 filtered out; finished in 39.69s"
+      },
+      {
+        "line": 4032,
+        "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.80s"
+      },
+      {
+        "line": 4140,
+        "text": "test result: FAILED. 49 passed; 1 failed; 1 ignored; 0 measured; 903 filtered out; finished in 38.89s"
+      },
+      {
+        "line": 4330,
+        "text": "test result: FAILED. 59 passed; 2 failed; 1 ignored; 0 measured; 892 filtered out; finished in 53.20s"
+      },
+      {
+        "line": 4470,
+        "text": "test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 892 filtered out; finished in 47.26s"
+      },
+      {
+        "line": 4610,
+        "text": "test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 892 filtered out; finished in 38.98s"
+      },
+      {
+        "line": 4875,
+        "text": "test result: FAILED. 56 passed; 1 failed; 1 ignored; 0 measured; 896 filtered out; finished in 62.59s"
+      },
+      {
+        "line": 5125,
+        "text": "test result: FAILED. 56 passed; 1 failed; 1 ignored; 0 measured; 896 filtered out; finished in 66.74s"
+      },
+      {
+        "line": 5375,
+        "text": "test result: FAILED. 56 passed; 1 failed; 1 ignored; 0 measured; 896 filtered out; finished in 64.83s"
+      },
+      {
+        "line": 5630,
+        "text": "Executed 60 out of 151 tests: 106 tests pass, 3 fail locally, and 42 were skipped."
+      },
+      {
+        "line": 5778,
+        "text": "test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 892 filtered out; finished in 38.98s"
+      },
+      {
+        "line": 5801,
+        "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.80s"
+      },
+      {
+        "line": 5957,
+        "text": "test result: FAILED. 76 passed; 10 failed; 0 ignored; 0 measured; 100 filtered out; finished in 0.10s"
+      },
+      {
+        "line": 6003,
+        "text": "test result: FAILED. 13 passed; 2 failed; 2 ignored; 0 measured; 169 filtered out; finished in 0.02s"
+      }
+    ],
+    "failure_sections": [
+      {
+        "method": "desktop::tests::readonly_preserves_private_and_default_desktop_access",
+        "first_line": 3208,
+        "end_line": 3210,
+        "hints": [
+          {
+            "line": 3209,
+            "text": "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "desktop::tests::workspace_private_desktop_checks_the_exact_capability",
+        "first_line": 3211,
+        "end_line": 3214,
+        "hints": [
+          {
+            "line": 3212,
+            "text": "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite",
+        "first_line": 3312,
+        "end_line": 3317,
+        "hints": [
+          {
+            "line": 3314,
+            "text": "thread 'spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite' (7704) panicked at windows-sandbox-rs/src\\spawn_prep.rs:549:10:"
+          },
+          {
+            "line": 3315,
+            "text": "legacy env prep: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+        "first_line": 3318,
+        "end_line": 3320,
+        "hints": [
+          {
+            "line": 3319,
+            "text": "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "first_line": 3321,
+        "end_line": 3323,
+        "hints": [
+          {
+            "line": 3322,
+            "text": "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+        "first_line": 3324,
+        "end_line": 3380,
+        "hints": [
+          {
+            "line": 3340,
+            "text": "thread 'token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells' (2764) panicked at windows-sandbox-rs/src\\token_tests.rs:499:5:"
+          },
+          {
+            "line": 3341,
+            "text": "assertion failed: `(left == right)`"
+          },
+          {
+            "line": 3343,
+            "text": "Diff < left / right > :"
+          },
+          {
+            "line": 3346,
+            "text": "<        None,"
+          },
+          {
+            "line": 3347,
+            "text": "<        None,"
+          },
+          {
+            "line": 3348,
+            "text": ">        Some("
+          },
+          {
+            "line": 3349,
+            "text": ">            ("
+          },
+          {
+            "line": 3350,
+            "text": ">                PermissionDenied,"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+        "first_line": 3381,
+        "end_line": 3398,
+        "hints": [
+          {
+            "line": 3383,
+            "text": "thread 'unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn' (1016) panicked at windows-sandbox-rs/src\\unified_exec\\acl_setup_tests.rs:346:9:"
+          },
+          {
+            "line": 3384,
+            "text": "assertion failed: `(left == right)`"
+          },
+          {
+            "line": 3386,
+            "text": "Diff < left / right > :"
+          },
+          {
+            "line": 3388,
+            "text": "<    \"legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy\","
+          },
+          {
+            "line": 3389,
+            "text": "<    None,"
+          },
+          {
+            "line": 3390,
+            "text": ">    \"apply legacy deny-write ACL to D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmp6vqceI\\\\protected.txt\","
+          },
+          {
+            "line": 3391,
+            "text": ">    Some("
+          },
+          {
+            "line": 3392,
+            "text": ">        5,"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+        "first_line": 3399,
+        "end_line": 3403,
+        "hints": [
+          {
+            "line": 3401,
+            "text": "thread 'unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells' (1776) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "first_line": 3404,
+        "end_line": 3408,
+        "hints": [
+          {
+            "line": 3406,
+            "text": "thread 'unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit' (8716) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+        "first_line": 3409,
+        "end_line": 3413,
+        "hints": [
+          {
+            "line": 3411,
+            "text": "thread 'unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn' (2324) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+        "first_line": 3414,
+        "end_line": 3418,
+        "hints": [
+          {
+            "line": 3416,
+            "text": "thread 'unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides' (8900) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+        "first_line": 3419,
+        "end_line": 3424,
+        "hints": [
+          {
+            "line": 3421,
+            "text": "thread 'unified_exec::tests::legacy_non_tty_cmd_emits_output' (9728) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::restricted_token_rejects_managed_network_before_spawn",
+        "first_line": 3461,
+        "end_line": 3472,
+        "hints": [
+          {
+            "line": 3463,
+            "text": "thread 'unified_exec::tests::restricted_token_rejects_managed_network_before_spawn' (7260) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:263:9:"
+          },
+          {
+            "line": 3464,
+            "text": "assertion failed: `(left == right)`"
+          },
+          {
+            "line": 3466,
+            "text": "Diff < left / right > :"
+          },
+          {
+            "line": 3467,
+            "text": "<legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          },
+          {
+            "line": 3468,
+            "text": ">managed networking requires the elevated Windows sandbox backend"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+        "first_line": 3473,
+        "end_line": 3478,
+        "hints": [
+          {
+            "line": 3475,
+            "text": "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (512) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:777:10:"
+          }
+        ]
+      },
+      {
+        "method": "suite::v2::plugin_list::app_server_startup_refreshes_cached_remote_catalog_without_blocking_plugin_list",
+        "first_line": 3976,
+        "end_line": 4004,
+        "hints": [
+          {
+            "line": 3999,
+            "text": "Error: remote catalog cache did not match within the original deadline: expected [\"plugins~Plugin_11111111111111111111111111111111\"], last observed [\"plugins~Plugin_00000000000000000000000000000000\"]"
+          },
+          {
+            "line": 4001,
+            "text": "Caused by:"
+          },
+          {
+            "line": 4002,
+            "text": "    deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+        "first_line": 4021,
+        "end_line": 4028,
+        "hints": [
+          {
+            "line": 4023,
+            "text": "thread 'sandbox_fetches_and_enforces_cloud_managed_permission_profile' (10372) panicked at cli/tests/sandbox_cloud_config.rs:148:5:"
+          },
+          {
+            "line": 4024,
+            "text": "cloud-managed sandbox profile was not enforced: status=Some(1); stdout=; stderr=windows sandbox failed: disabled Windows sandbox level cannot launch a sandbox session"
+          }
+        ]
+      },
+      {
+        "method": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_4_reapplies_an_implicitly_selected_configured_default_role",
+        "first_line": 4099,
+        "end_line": 4136,
+        "hints": [
+          {
+            "line": 4134,
+            "text": "Error: deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+        "first_line": 4223,
+        "end_line": 4259,
+        "hints": [
+          {
+            "line": 4258,
+            "text": "Error: deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+        "first_line": 4260,
+        "end_line": 4325,
+        "hints": [
+          {
+            "line": 4323,
+            "text": "Error: deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+        "first_line": 4401,
+        "end_line": 4466,
+        "hints": [
+          {
+            "line": 4464,
+            "text": "Error: deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+        "first_line": 4541,
+        "end_line": 4606,
+        "hints": [
+          {
+            "line": 4604,
+            "text": "Error: deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+        "first_line": 4697,
+        "end_line": 4871,
+        "hints": [
+          {
+            "line": 4742,
+            "text": "thread 'suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image' (3408) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:"
+          },
+          {
+            "line": 4743,
+            "text": "Verifications failed:"
+          },
+          {
+            "line": 4745,
+            "text": "\tExpected range of matching incoming requests: == 1"
+          },
+          {
+            "line": 4746,
+            "text": "\tNumber of matched incoming requests: 0"
+          }
+        ]
+      },
+      {
+        "method": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+        "first_line": 4947,
+        "end_line": 5121,
+        "hints": [
+          {
+            "line": 4992,
+            "text": "thread 'suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image' (7316) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:"
+          },
+          {
+            "line": 4993,
+            "text": "Verifications failed:"
+          },
+          {
+            "line": 4995,
+            "text": "\tExpected range of matching incoming requests: == 1"
+          },
+          {
+            "line": 4996,
+            "text": "\tNumber of matched incoming requests: 0"
+          }
+        ]
+      },
+      {
+        "method": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+        "first_line": 5197,
+        "end_line": 5371,
+        "hints": [
+          {
+            "line": 5242,
+            "text": "thread 'suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image' (6096) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:"
+          },
+          {
+            "line": 5243,
+            "text": "Verifications failed:"
+          },
+          {
+            "line": 5245,
+            "text": "\tExpected range of matching incoming requests: == 1"
+          },
+          {
+            "line": 5246,
+            "text": "\tNumber of matched incoming requests: 0"
+          }
+        ]
+      },
+      {
+        "method": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+        "first_line": 5709,
+        "end_line": 5774,
+        "hints": [
+          {
+            "line": 5772,
+            "text": "Error: deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+        "first_line": 5790,
+        "end_line": 5797,
+        "hints": [
+          {
+            "line": 5792,
+            "text": "thread 'sandbox_fetches_and_enforces_cloud_managed_permission_profile' (10372) panicked at cli/tests/sandbox_cloud_config.rs:148:5:"
+          },
+          {
+            "line": 5793,
+            "text": "cloud-managed sandbox profile was not enforced: status=Some(1); stdout=; stderr=windows sandbox failed: disabled Windows sandbox level cannot launch a sandbox session"
+          }
+        ]
+      },
+      {
+        "method": "spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite",
+        "first_line": 5832,
+        "end_line": 5837,
+        "hints": [
+          {
+            "line": 5834,
+            "text": "thread 'spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite' (7704) panicked at windows-sandbox-rs/src\\spawn_prep.rs:549:10:"
+          },
+          {
+            "line": 5835,
+            "text": "legacy env prep: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+        "first_line": 5838,
+        "end_line": 5840,
+        "hints": [
+          {
+            "line": 5839,
+            "text": "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "first_line": 5841,
+        "end_line": 5843,
+        "hints": [
+          {
+            "line": 5842,
+            "text": "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+        "first_line": 5844,
+        "end_line": 5900,
+        "hints": [
+          {
+            "line": 5860,
+            "text": "thread 'token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells' (2764) panicked at windows-sandbox-rs/src\\token_tests.rs:499:5:"
+          },
+          {
+            "line": 5861,
+            "text": "assertion failed: `(left == right)`"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+        "first_line": 5901,
+        "end_line": 5918,
+        "hints": [
+          {
+            "line": 5903,
+            "text": "thread 'unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn' (1016) panicked at windows-sandbox-rs/src\\unified_exec\\acl_setup_tests.rs:346:9:"
+          },
+          {
+            "line": 5904,
+            "text": "assertion failed: `(left == right)`"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+        "first_line": 5919,
+        "end_line": 5923,
+        "hints": [
+          {
+            "line": 5921,
+            "text": "thread 'unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells' (1776) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "first_line": 5924,
+        "end_line": 5928,
+        "hints": [
+          {
+            "line": 5926,
+            "text": "thread 'unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit' (8716) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+        "first_line": 5929,
+        "end_line": 5933,
+        "hints": [
+          {
+            "line": 5931,
+            "text": "thread 'unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn' (2324) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+        "first_line": 5934,
+        "end_line": 5938,
+        "hints": [
+          {
+            "line": 5936,
+            "text": "thread 'unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides' (8900) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+        "first_line": 5939,
+        "end_line": 5944,
+        "hints": [
+          {
+            "line": 5941,
+            "text": "thread 'unified_exec::tests::legacy_non_tty_cmd_emits_output' (9728) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::restricted_token_rejects_managed_network_before_spawn",
+        "first_line": 5981,
+        "end_line": 5992,
+        "hints": [
+          {
+            "line": 5983,
+            "text": "thread 'unified_exec::tests::restricted_token_rejects_managed_network_before_spawn' (7260) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:263:9:"
+          },
+          {
+            "line": 5984,
+            "text": "assertion failed: `(left == right)`"
+          }
+        ]
+      },
+      {
+        "method": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+        "first_line": 5993,
+        "end_line": 5998,
+        "hints": [
+          {
+            "line": 5995,
+            "text": "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (512) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:777:10:"
+          }
+        ]
+      }
+    ],
+    "complete_fresh_method_roster": false,
+    "note": "Result occurrences may repeat because original Bazel retries and diagnostic log replay. Bazel target counts, caches, skipped targets, and Rust method counts are not aggregated together."
+  },
+  {
+    "job_id": 131446361182,
+    "raw_log_sha256": "2192f19521689ba76f710c08e830744cda892cb85522fa222734c28bae0f68dc",
+    "raw_log_bytes": 646816,
+    "checkout": [
+      {
+        "line": 188,
+        "next_line": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99"
+      }
+    ],
+    "target_failure_events": [
+      {
+        "line": 3110,
+        "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 3 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 3348,
+        "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 3 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test_attempts/attempt_2.log)"
+      },
+      {
+        "line": 3349,
+        "text": "FAIL: //codex-rs/ext/queue:queue-queue_service-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/ext/queue/queue-queue_service-test/test.log)"
+      },
+      {
+        "line": 3427,
+        "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 3 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test.log)"
+      },
+      {
+        "line": 3429,
+        "text": "FAILED: //codex-rs/tui:tui-unit-tests (Summary)"
+      },
+      {
+        "line": 5357,
+        "text": "FAILED: //codex-rs/tui:tui-unit-tests (Summary)"
+      }
+    ],
+    "unique_failed_method_names": [
+      "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+      "core_error_after_started_never_releases_ambiguous_dispatch",
+      "explicitly_started_rejected_queue_messages_remain_durable",
+      "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery"
+    ],
+    "original_result_occurrences": [
+      {
+        "line": 3417,
+        "text": "test result: FAILED. 36 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 57.72s"
+      },
+      {
+        "line": 3538,
+        "text": "test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 3702 filtered out; finished in 18.28s"
+      },
+      {
+        "line": 3621,
+        "text": "test result: ok. 78 passed; 0 failed; 0 ignored; 0 measured; 3703 filtered out; finished in 2.05s"
+      },
+      {
+        "line": 3705,
+        "text": "test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 1.34s"
+      },
+      {
+        "line": 3787,
+        "text": "test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 0.48s"
+      },
+      {
+        "line": 3883,
+        "text": "test result: ok. 91 passed; 0 failed; 0 ignored; 0 measured; 3690 filtered out; finished in 0.19s"
+      },
+      {
+        "line": 3994,
+        "text": "test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 7.21s"
+      },
+      {
+        "line": 4101,
+        "text": "test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 3702 filtered out; finished in 8.18s"
+      },
+      {
+        "line": 4184,
+        "text": "test result: ok. 78 passed; 0 failed; 0 ignored; 0 measured; 3703 filtered out; finished in 1.07s"
+      },
+      {
+        "line": 4268,
+        "text": "test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 1.11s"
+      },
+      {
+        "line": 4350,
+        "text": "test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 0.47s"
+      },
+      {
+        "line": 4446,
+        "text": "test result: ok. 91 passed; 0 failed; 0 ignored; 0 measured; 3690 filtered out; finished in 0.18s"
+      },
+      {
+        "line": 4557,
+        "text": "test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 3.20s"
+      },
+      {
+        "line": 4664,
+        "text": "test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 3702 filtered out; finished in 7.23s"
+      },
+      {
+        "line": 4747,
+        "text": "test result: ok. 78 passed; 0 failed; 0 ignored; 0 measured; 3703 filtered out; finished in 0.75s"
+      },
+      {
+        "line": 4831,
+        "text": "test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 0.97s"
+      },
+      {
+        "line": 4913,
+        "text": "test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 0.30s"
+      },
+      {
+        "line": 5009,
+        "text": "test result: ok. 91 passed; 0 failed; 0 ignored; 0 measured; 3690 filtered out; finished in 0.14s"
+      },
+      {
+        "line": 5120,
+        "text": "test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 2.11s"
+      },
+      {
+        "line": 5350,
+        "text": "Executed 43 out of 147 tests: 100 tests pass, 2 fail locally, and 45 were skipped."
+      },
+      {
+        "line": 5427,
+        "text": "test result: FAILED. 36 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 57.72s"
+      },
+      {
+        "line": 5518,
+        "text": "test result: ok. 91 passed; 0 failed; 0 ignored; 0 measured; 3690 filtered out; finished in 0.14s"
+      },
+      {
+        "line": 5629,
+        "text": "test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 2.11s"
+      }
+    ],
+    "failure_sections": [
+      {
+        "method": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "first_line": 3396,
+        "end_line": 3401,
+        "hints": [
+          {
+            "line": 3397,
+            "text": "Error: timed out waiting for `D:\\tmp\\.tmpB0WZLB\\queue_blocking_prompt_hook.entered`"
+          },
+          {
+            "line": 3399,
+            "text": "Caused by:"
+          },
+          {
+            "line": 3400,
+            "text": "    deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "core_error_after_started_never_releases_ambiguous_dispatch",
+        "first_line": 3402,
+        "end_line": 3407,
+        "hints": [
+          {
+            "line": 3403,
+            "text": "Error: timed out waiting for `D:\\tmp\\.tmpNjBjiN\\queue_blocking_prompt_hook.entered`"
+          },
+          {
+            "line": 3405,
+            "text": "Caused by:"
+          },
+          {
+            "line": 3406,
+            "text": "    deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "explicitly_started_rejected_queue_messages_remain_durable",
+        "first_line": 3408,
+        "end_line": 3411,
+        "hints": [
+          {
+            "line": 3409,
+            "text": "Error: deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "first_line": 3978,
+        "end_line": 3990,
+        "hints": [
+          {
+            "line": 3980,
+            "text": "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (5716) panicked at tui/src/lib.rs:3265:9:"
+          },
+          {
+            "line": 3981,
+            "text": "assertion failed: `(left == right)`"
+          },
+          {
+            "line": 3983,
+            "text": "Diff < left / right > :"
+          },
+          {
+            "line": 3984,
+            "text": "<\"D:\\\\tmp\\\\.tmpTNSSiB\\\\sqlite-home\\\\logs_2.sqlite\""
+          },
+          {
+            "line": 3985,
+            "text": ">\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpTNSSiB\\\\sqlite-home\\\\logs_2.sqlite\""
+          }
+        ]
+      },
+      {
+        "method": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "first_line": 4541,
+        "end_line": 4553,
+        "hints": [
+          {
+            "line": 4543,
+            "text": "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (8044) panicked at tui/src/lib.rs:3265:9:"
+          },
+          {
+            "line": 4544,
+            "text": "assertion failed: `(left == right)`"
+          },
+          {
+            "line": 4546,
+            "text": "Diff < left / right > :"
+          },
+          {
+            "line": 4547,
+            "text": "<\"D:\\\\tmp\\\\.tmprfWdvH\\\\sqlite-home\\\\logs_2.sqlite\""
+          },
+          {
+            "line": 4548,
+            "text": ">\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmprfWdvH\\\\sqlite-home\\\\logs_2.sqlite\""
+          }
+        ]
+      },
+      {
+        "method": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "first_line": 5104,
+        "end_line": 5116,
+        "hints": [
+          {
+            "line": 5106,
+            "text": "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (4600) panicked at tui/src/lib.rs:3265:9:"
+          },
+          {
+            "line": 5107,
+            "text": "assertion failed: `(left == right)`"
+          },
+          {
+            "line": 5109,
+            "text": "Diff < left / right > :"
+          },
+          {
+            "line": 5110,
+            "text": "<\"D:\\\\tmp\\\\.tmpebqRov\\\\sqlite-home\\\\logs_2.sqlite\""
+          },
+          {
+            "line": 5111,
+            "text": ">\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpebqRov\\\\sqlite-home\\\\logs_2.sqlite\""
+          }
+        ]
+      },
+      {
+        "method": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "first_line": 5406,
+        "end_line": 5411,
+        "hints": [
+          {
+            "line": 5407,
+            "text": "Error: timed out waiting for `D:\\tmp\\.tmpB0WZLB\\queue_blocking_prompt_hook.entered`"
+          },
+          {
+            "line": 5409,
+            "text": "Caused by:"
+          },
+          {
+            "line": 5410,
+            "text": "    deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "core_error_after_started_never_releases_ambiguous_dispatch",
+        "first_line": 5412,
+        "end_line": 5417,
+        "hints": [
+          {
+            "line": 5413,
+            "text": "Error: timed out waiting for `D:\\tmp\\.tmpNjBjiN\\queue_blocking_prompt_hook.entered`"
+          },
+          {
+            "line": 5415,
+            "text": "Caused by:"
+          },
+          {
+            "line": 5416,
+            "text": "    deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "explicitly_started_rejected_queue_messages_remain_durable",
+        "first_line": 5418,
+        "end_line": 5421,
+        "hints": [
+          {
+            "line": 5419,
+            "text": "Error: deadline has elapsed"
+          }
+        ]
+      },
+      {
+        "method": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "first_line": 5613,
+        "end_line": 5625,
+        "hints": [
+          {
+            "line": 5615,
+            "text": "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (4600) panicked at tui/src/lib.rs:3265:9:"
+          },
+          {
+            "line": 5616,
+            "text": "assertion failed: `(left == right)`"
+          }
+        ]
+      }
+    ],
+    "complete_fresh_method_roster": false,
+    "note": "Result occurrences may repeat because original Bazel retries and diagnostic log replay. Bazel target counts, caches, skipped targets, and Rust method counts are not aggregated together."
+  },
+  {
+    "job_id": 131446137061,
+    "raw_log_sha256": "a2732fbb2fc47978da6bf8d98859637bf33b8a6fe79756cbd4629b09fce9100f",
+    "raw_log_bytes": 1753644,
+    "checkout": [
+      {
+        "line": 9589,
+        "next_line": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99"
+      }
+    ],
+    "target_failure_events": [],
+    "unique_failed_method_names": [],
+    "original_result_occurrences": [],
+    "failure_sections": [],
+    "complete_fresh_method_roster": false,
+    "note": "Result occurrences may repeat because original Bazel retries and diagnostic log replay. Bazel target counts, caches, skipped targets, and Rust method counts are not aggregated together."
+  },
+  {
+    "job_id": 131446360485,
+    "raw_log_sha256": "e5f0fb037eba4dbc4031df14b78c67e3686a525526007e3b43511624d095ba44",
+    "raw_log_bytes": 97456,
+    "checkout": [
+      {
+        "line": 200,
+        "next_line": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99"
+      }
+    ],
+    "target_failure_events": [],
+    "unique_failed_method_names": [],
+    "original_result_occurrences": [],
+    "failure_sections": [],
+    "complete_fresh_method_roster": false,
+    "note": "Result occurrences may repeat because original Bazel retries and diagnostic log replay. Bazel target counts, caches, skipped targets, and Rust method counts are not aggregated together."
+  },
+  {
+    "job_id": 131446361430,
+    "raw_log_sha256": "c0ea89f2cea7a24693b1f123f6ffae48bf6b184acf9a8d70aca4ef6b19e9d165",
+    "raw_log_bytes": 603146,
+    "checkout": [
+      {
+        "line": 201,
+        "next_line": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99"
+      }
+    ],
+    "target_failure_events": [],
+    "unique_failed_method_names": [],
+    "original_result_occurrences": [],
+    "failure_sections": [],
+    "complete_fresh_method_roster": false,
+    "note": "Result occurrences may repeat because original Bazel retries and diagnostic log replay. Bazel target counts, caches, skipped targets, and Rust method counts are not aggregated together."
+  },
+  {
+    "job_id": 131446360965,
+    "raw_log_sha256": "38de777eabb4e173ee979871e6bff2c4382f79ab6bdfb35b32dffda71d0b5726",
+    "raw_log_bytes": 473577,
+    "checkout": [
+      {
+        "line": 200,
+        "next_line": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99"
+      }
+    ],
+    "target_failure_events": [],
+    "unique_failed_method_names": [],
+    "original_result_occurrences": [],
+    "failure_sections": [],
+    "complete_fresh_method_roster": false,
+    "note": "Result occurrences may repeat because original Bazel retries and diagnostic log replay. Bazel target counts, caches, skipped targets, and Rust method counts are not aggregated together."
+  },
+  {
+    "job_id": 131446361362,
+    "raw_log_sha256": "4bb11a4edce764c7eb685870a6736f3521b052543823545413d818eab705a182",
+    "raw_log_bytes": 996996,
+    "checkout": [
+      {
+        "line": 211,
+        "next_line": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99"
+      }
+    ],
+    "target_failure_events": [
+      {
+        "line": 3443,
+        "text": "FAIL: //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/hepta-matrix-sdk/hepta-matrix-sdk-store_version_migration-test/test.log)"
+      },
+      {
+        "line": 9528,
+        "text": "FAIL: //codex-rs/hepta-agentd:hepta-agentd-cognitive_product_e2e-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-cognitive_product_e2e-test/test.log)"
+      },
+      {
+        "line": 9566,
+        "text": "FAIL: //codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-supervisord_product_e2e-test/test.log)"
+      },
+      {
+        "line": 9598,
+        "text": "FAIL: //codex-rs/hepta-agentd:hepta-agentd-two_agent_turn_recovery-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-two_agent_turn_recovery-test/test.log)"
+      },
+      {
+        "line": 9623,
+        "text": "TIMEOUT: //codex-rs/hepta-neuron:hepta-neuron-unit-tests (Summary)"
+      },
+      {
+        "line": 9843,
+        "text": "FAIL: //codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-five_agent_rolling_upgrade-test/test.log)"
+      },
+      {
+        "line": 9916,
+        "text": "FAIL: //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-cognitive-product-qualification-test/test.log)"
+      },
+      {
+        "line": 9973,
+        "text": "FAIL: //codex-rs/app-server:app-server-all-test (shard 15 of 16) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_15_of_16/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 9976,
+        "text": "FAIL: //codex-rs/app-server:app-server-all-test (shard 6 of 16) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_6_of_16/test_attempts/attempt_1.log)"
+      }
+    ],
+    "unique_failed_method_names": [
+      "encrypted_state_identity_session_and_queues_survive_restart",
+      "five_running_agents_share_only_with_the_explicit_consumer",
+      "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+      "killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live",
+      "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated"
+    ],
+    "original_result_occurrences": [
+      {
+        "line": 3462,
+        "text": "test result: FAILED. 0 passed; 1 failed; 2 ignored; 0 measured; 0 filtered out; finished in 51.03s"
+      },
+      {
+        "line": 9563,
+        "text": "test result: FAILED. 8 passed; 1 failed; 4 ignored; 0 measured; 0 filtered out; finished in 105.94s"
+      },
+      {
+        "line": 9585,
+        "text": "test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 60.65s"
+      },
+      {
+        "line": 9616,
+        "text": "test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 71.09s"
+      },
+      {
+        "line": 9911,
+        "text": "test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 154.60s"
+      },
+      {
+        "line": 9962,
+        "text": "test result: FAILED. 8 passed; 1 failed; 4 ignored; 0 measured; 0 filtered out; finished in 311.64s"
+      }
+    ],
+    "failure_sections": [
+      {
+        "method": "encrypted_state_identity_session_and_queues_survive_restart",
+        "first_line": 3454,
+        "end_line": 3458,
+        "hints": [
+          {
+            "line": 3456,
+            "text": "Error: Initialization { stage: \"login_or_restore.build.timeout\", source: Some(Elapsed(())) }"
+          }
+        ]
+      },
+      {
+        "method": "five_running_agents_share_only_with_the_explicit_consumer",
+        "first_line": 9551,
+        "end_line": 9559,
+        "hints": [
+          {
+            "line": 9557,
+            "text": "Error: five-Agent federation visibility mismatch: consumer=1, authorized=true, received=false"
+          }
+        ]
+      },
+      {
+        "method": "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+        "first_line": 9578,
+        "end_line": 9581,
+        "hints": [
+          {
+            "line": 9579,
+            "text": "Error: invalid supervisor value: supervisord read timed out"
+          }
+        ]
+      },
+      {
+        "method": "killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live",
+        "first_line": 9609,
+        "end_line": 9612,
+        "hints": [
+          {
+            "line": 9610,
+            "text": "Error: Condition failed: `queue_b.list(&thread_b.id).await?.data == vec![b_queued.clone()]`"
+          }
+        ]
+      },
+      {
+        "method": "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated",
+        "first_line": 9855,
+        "end_line": 9907,
+        "hints": [
+          {
+            "line": 9905,
+            "text": "Error: 019153a4-3088-7e03-a56a-9b1964f75dda is not healthy at final boundary"
+          }
+        ]
+      },
+      {
+        "method": "five_running_agents_share_only_with_the_explicit_consumer",
+        "first_line": 9937,
+        "end_line": 9958,
+        "hints": [
+          {
+            "line": 9943,
+            "text": "Error: turn ended with Turn {"
+          }
+        ]
+      }
+    ],
+    "complete_fresh_method_roster": false,
+    "note": "Result occurrences may repeat because original Bazel retries and diagnostic log replay. Bazel target counts, caches, skipped targets, and Rust method counts are not aggregated together."
+  },
+  {
+    "job_id": 131446361489,
+    "raw_log_sha256": "28d6d16d3fa8dba0f9ec72a01bb50a1b35baafb54df116c1f89b90efc5462234",
+    "raw_log_bytes": 347521,
+    "checkout": [
+      {
+        "line": 198,
+        "next_line": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99"
+      }
+    ],
+    "target_failure_events": [
+      {
+        "line": 3095,
+        "text": "FAIL: //codex-rs/exec-server:exec-server-file_system_windows-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.log)"
+      },
+      {
+        "line": 3348,
+        "text": "FAIL: //codex-rs/core:core-all-test (shard 1 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 3362,
+        "text": "FAIL: //codex-rs/core:core-all-test (shard 4 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_4_of_16/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 3369,
+        "text": "FAIL: //codex-rs/core:core-all-test (shard 7 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 3374,
+        "text": "FAIL: //codex-rs/core:core-all-test (shard 6 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_6_of_16/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 3375,
+        "text": "FAIL: //codex-rs/core:core-all-test (shard 10 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_10_of_16/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 3376,
+        "text": "FAIL: //codex-rs/core:core-all-test (shard 13 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_13_of_16/test_attempts/attempt_1.log)"
+      }
+    ],
+    "unique_failed_method_names": [
+      "file_system_operations_can_reject_junctions_in_any_path_component::test_case_1_local",
+      "file_system_operations_can_reject_junctions_in_any_path_component::test_case_2_remote",
+      "file_system_remote_fs_helper_respects_windows_sandbox_write_policy",
+      "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_1_local",
+      "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_2_remote",
+      "shared::file_system_create_directory_creates_nested_directories::test_case_5_local_sandboxed_no_follow",
+      "shared::file_system_create_directory_creates_nested_directories::test_case_6_remote_sandboxed_no_follow",
+      "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_1_local",
+      "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_2_remote",
+      "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_3_local_sandboxed",
+      "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_4_remote_sandboxed",
+      "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_1_local",
+      "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_2_remote",
+      "shared::file_system_walk_honors_read_sandbox::test_case_1_local",
+      "shared::file_system_walk_honors_read_sandbox::test_case_2_remote",
+      "shared::file_system_write_file_writes_bytes::test_case_5_local_sandboxed_no_follow",
+      "shared::file_system_write_file_writes_bytes::test_case_6_remote_sandboxed_no_follow"
+    ],
+    "original_result_occurrences": [
+      {
+        "line": 3276,
+        "text": "test result: FAILED. 40 passed; 17 failed; 2 ignored; 0 measured; 0 filtered out; finished in 10.79s"
+      }
+    ],
+    "failure_sections": [
+      {
+        "method": "file_system_operations_can_reject_junctions_in_any_path_component::test_case_1_local",
+        "first_line": 3163,
+        "end_line": 3165,
+        "hints": [
+          {
+            "line": 3164,
+            "text": "Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "file_system_operations_can_reject_junctions_in_any_path_component::test_case_2_remote",
+        "first_line": 3166,
+        "end_line": 3168,
+        "hints": [
+          {
+            "line": 3167,
+            "text": "Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "file_system_remote_fs_helper_respects_windows_sandbox_write_policy",
+        "first_line": 3169,
+        "end_line": 3171,
+        "hints": [
+          {
+            "line": 3170,
+            "text": "Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+          }
+        ]
+      },
+      {
+        "method": "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_1_local",
+        "first_line": 3172,
+        "end_line": 3177,
+        "hints": [
+          {
+            "line": 3173,
+            "text": "Error: mode=local"
+          },
+          {
+            "line": 3175,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_2_remote",
+        "first_line": 3178,
+        "end_line": 3183,
+        "hints": [
+          {
+            "line": 3179,
+            "text": "Error: mode=remote"
+          },
+          {
+            "line": 3181,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_create_directory_creates_nested_directories::test_case_5_local_sandboxed_no_follow",
+        "first_line": 3184,
+        "end_line": 3189,
+        "hints": [
+          {
+            "line": 3185,
+            "text": "Error: mode=local, sandboxed=true"
+          },
+          {
+            "line": 3187,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_create_directory_creates_nested_directories::test_case_6_remote_sandboxed_no_follow",
+        "first_line": 3190,
+        "end_line": 3195,
+        "hints": [
+          {
+            "line": 3191,
+            "text": "Error: mode=remote, sandboxed=true"
+          },
+          {
+            "line": 3193,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_1_local",
+        "first_line": 3196,
+        "end_line": 3201,
+        "hints": [
+          {
+            "line": 3197,
+            "text": "Error: mode=local"
+          },
+          {
+            "line": 3199,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_2_remote",
+        "first_line": 3202,
+        "end_line": 3207,
+        "hints": [
+          {
+            "line": 3203,
+            "text": "Error: mode=remote"
+          },
+          {
+            "line": 3205,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_3_local_sandboxed",
+        "first_line": 3208,
+        "end_line": 3213,
+        "hints": [
+          {
+            "line": 3209,
+            "text": "Error: mode=local, sandboxed=true"
+          },
+          {
+            "line": 3211,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_4_remote_sandboxed",
+        "first_line": 3214,
+        "end_line": 3219,
+        "hints": [
+          {
+            "line": 3215,
+            "text": "Error: mode=remote, sandboxed=true"
+          },
+          {
+            "line": 3217,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_1_local",
+        "first_line": 3220,
+        "end_line": 3225,
+        "hints": [
+          {
+            "line": 3221,
+            "text": "Error: mode=local"
+          },
+          {
+            "line": 3223,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_2_remote",
+        "first_line": 3226,
+        "end_line": 3231,
+        "hints": [
+          {
+            "line": 3227,
+            "text": "Error: mode=remote"
+          },
+          {
+            "line": 3229,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_walk_honors_read_sandbox::test_case_1_local",
+        "first_line": 3232,
+        "end_line": 3237,
+        "hints": [
+          {
+            "line": 3233,
+            "text": "Error: mode=local"
+          },
+          {
+            "line": 3235,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_walk_honors_read_sandbox::test_case_2_remote",
+        "first_line": 3238,
+        "end_line": 3243,
+        "hints": [
+          {
+            "line": 3239,
+            "text": "Error: mode=remote"
+          },
+          {
+            "line": 3241,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_write_file_writes_bytes::test_case_5_local_sandboxed_no_follow",
+        "first_line": 3244,
+        "end_line": 3249,
+        "hints": [
+          {
+            "line": 3245,
+            "text": "Error: mode=local, sandboxed=true"
+          },
+          {
+            "line": 3247,
+            "text": "Caused by:"
+          }
+        ]
+      },
+      {
+        "method": "shared::file_system_write_file_writes_bytes::test_case_6_remote_sandboxed_no_follow",
+        "first_line": 3250,
+        "end_line": 3256,
+        "hints": [
+          {
+            "line": 3251,
+            "text": "Error: mode=remote, sandboxed=true"
+          },
+          {
+            "line": 3253,
+            "text": "Caused by:"
+          }
+        ]
+      }
+    ],
+    "complete_fresh_method_roster": false,
+    "note": "Result occurrences may repeat because original Bazel retries and diagnostic log replay. Bazel target counts, caches, skipped targets, and Rust method counts are not aggregated together."
+  }
+]

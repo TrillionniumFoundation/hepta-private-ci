@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "review": "Original Q24 Trainer read-only B adapter",
+  "status": "static_review_no_blocker_identified_in_reviewed_scope",
+  "reviewed_manifest_git_blob": "1a519ee2afe6def91ac0e32853db7d424005cd25",
+  "reviewed_callers_delta_git_blob": "04061df7563ea8eca6820d6295137121bdc90a06",
+  "source_base": "11a9aeccfe60693ff1f6181f732630a758cf466b",
+  "integration_context_source": "261d54cfba2d639ff3622924dfce583da6012486",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback.rs",
+      "git_blob": "06910dbdecaf411c18cbf14e81f919af1be4f4d7",
+      "sha256": "2f45ebd77a86eb56a9c2d16e363ef6c9676f4661587ec5936288e43ac27b8a46",
+      "bytes": 6784
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_source.rs",
+      "git_blob": "6b335b727ae582ee19b0422335a2057a5af828b5",
+      "sha256": "ed19950bd9d871a1b864fa1213f908a0efe7e1d656df189188ec42353456478a",
+      "bytes": 3406
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "git_blob": "674a863f1c05c1cd22131eb8f17bca84d2a49848",
+      "sha256": "957c3f012fca609bacd3f812668522e35275edee70157e3aebe387f8687aab59",
+      "bytes": 22151
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_sources.rs",
+      "git_blob": "a33a75e46fc91475638cf1165873ae00ad1c8ded",
+      "sha256": "e5806564f81878275771a9e6beefb30980c886142a5b9bc3f986a21303fdb8e5",
+      "bytes": 2790
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "git_blob": "0d889ad2a039ab20bc6114ca352b1e25692c8ba9",
+      "sha256": "a8cf724e81d0cc36c4665b76525ed3e7f910889a79e7cf3fc86394ee7054af63",
+      "bytes": 12559
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "git_blob": "adaffd12941e8602276955e64f558c3d0ef8d3fc",
+      "sha256": "d7f6a11048e62fbfea08044e72e59285c20bd19c95afb418c32c9031f8d175e3",
+      "bytes": 28777
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs",
+      "git_blob": "ef9ae26ef59b55db4766f1f6f43b1558d9efaa0d",
+      "sha256": "ff3aa2f56ec23505c1f2587278b6e705180da3bb158173f6c1a0c5ba20cfd7e4",
+      "bytes": 7802
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_handoff.rs",
+      "git_blob": "7e53fc8b9069119067128324c3a247fb7fa5f6fa",
+      "sha256": "48a365268f7d15ec13bcbaf4380ebb08efd0b6a54794d478cd4e4b6898a5ba1c",
+      "bytes": 4129
+    }
+  ],
+  "receipt_owner_preimage": {
+    "git_blob": "6ac67eb020ed0a1f6d95350bd551c29349e9c629",
+    "bytes": 21929,
+    "sha256": "b1e1fc0d7886e4da8a8810ab00ae20ed6c92666a735267b4974104be7b02a4b3"
+  },
+  "additional_read_sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_material.rs",
+      "git_blob": "5f6a4f69252f844167b3ac05765ad5ce1967b164",
+      "source": "261d54cfba2d639ff3622924dfce583da6012486"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+      "git_blob": "94ffbcfd0db944429f21cac6f80a0e9e7c2df7ea",
+      "source": "261d54cfba2d639ff3622924dfce583da6012486"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs",
+      "git_blob": "805f56d8dc86d1bc6a47c537ae7e0e1b637c1609",
+      "bytes": 10780,
+      "sha256": "bce6feddacd121c0824b3771479792620a01f402933462721784f5e558106f67"
+    }
+  ],
+  "method_comparison": [
+    {
+      "fn": "prepare",
+      "equal_after_exact_source_type_rename": true,
+      "old_bytes": 3077,
+      "new_bytes": 3053
+    },
+    {
+      "fn": "authenticate_roles",
+      "equal_after_exact_source_type_rename": true,
+      "old_bytes": 1761,
+      "new_bytes": 1737
+    },
+    {
+      "fn": "validate_config",
+      "equal_after_exact_source_type_rename": true,
+      "old_bytes": 2112,
+      "new_bytes": 2112
+    },
+    {
+      "old_fn": "attest_original_completion",
+      "new_fn": "attest_original_sources",
+      "equal_after_source_type_and_borrowed_trainer_enum_rename": true
+    },
+    {
+      "old_fn": "readback",
+      "new_fn": "readback_sources",
+      "equal_after_source_type_and_borrowed_trainer_enum_rename": true
+    },
+    {
+      "old_fn": "authenticate_completed",
+      "new_fn": "authenticate_completed",
+      "equal_after_source_type_and_borrowed_trainer_enum_rename": true
+    },
+    {
+      "old_fn": "read_original_execution",
+      "new_fn": "read_original_execution",
+      "equal_after_source_type_and_borrowed_trainer_enum_rename": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "same_original_custody",
+      "conclusion": "The public readback handle has private original Prepared, Training and cancellation Arcs and exact Dataset/Training cuts. Its product constructor is private to the original aggregate lane; installation compares all three Arc identities and the exact Dataset. No public raw receipt provider, mutable trainer, key, fit or attestation API is introduced."
+    },
+    {
+      "id": "lock_order",
+      "conclusion": "Evaluation holds the original aggregate lane, then readback enters only the distinct Training try-acquire semaphore/mutex. The readback does not call aggregate admission again. install paths release the first Training read before reading the cap. Model dispatch calls evaluation.complete before and after with_original_trainer, not while retaining its Training permit. No new lock wait cycle was identified; contention remains a refusal rather than a waiting acquire."
+    },
+    {
+      "id": "current_source_and_cancellation",
+      "conclusion": "Export and installation remain inside aggregate in_lane with original Root/source pre/post checks and original cancellation drop-fence. The cap checks its shared cancellation flag before/after source and cut checks, and checks context before/after its actual original Training read. Training additionally checks its private original Dataset provenance before/after completion read. Missing, Pending and current source invalidity are not converted to NoUpdate. The cap is only Training evidence access, not a standalone Root publication credential."
+    },
+    {
+      "id": "independent_B_preserved",
+      "conclusion": "Original receipt owner prepare, authenticate_roles, validate_config, attest, completed-authentication and readback bodies are unchanged after the exact closed-source enum/type/method renames listed above. Actual runner/holdout/execution-key readback, current Generator/Evaluator signatures, exact original trainer principal and signed actor separation remain. Original external EvidenceClient API is retained as a wrapper with its original pinned-client path."
+    },
+    {
+      "id": "no_manual_training_evidence",
+      "conclusion": "The already integrated read_original_training_material returns exact native candidate completion, scope and Training cut from actual owner reads. The new original_training_readback returns the retained native attestation from that same owner. A host can pass the opaque cap to OriginalQ24 inputs and install completed B without copying/signing intermediate Training evidence or running a second evidence server against the aggregate. Actual independent B plans, holdout, execution owners and signing capabilities still have to be supplied and executed."
+    },
+    {
+      "id": "CALLERS_review",
+      "conclusion": "The semantic delta adds 12 exact boundaries and four protected file blocks, adjusts actual external-readback callers, and retains public legacy wrappers with empty product caller sets. Guard order for receipt-owner signing, execution-key restriction and original independent role checks is preserved under the new method names. Official typed scan of the final formatted integrated source was not run by this reviewer."
+    },
+    {
+      "id": "test_scope",
+      "conclusion": "Three added component methods exercise actual original Dataset/native Training readback, copied receipt/source/fence rejection, missing completion without fit, source withdrawal, cancellation flag and corrected Dataset invalidity, with original durable bytes preserved. They use fixture custody and do not execute independent B or Root enrollment. The cancellation test sets the shared flag; it is not a new in-flight future-drop or whole-chain recovery execution."
+    }
+  ],
+  "real_root_fixture_handoff": {
+    "model_fixture_git_blob": "80d0d2ea7274b003169a6f02de8d727c94b8cb37",
+    "model_registration_product_git_blob": "275842b2fd966afa349697705ab90095a913d0ff",
+    "broker_parent_git_blob": "3cf71bb856056a879542076760b0d1616f14dab8",
+    "broker_fixture_git_blob": "8fa0cd2da93152c314117775d18aa9b977685a94",
+    "broker_child_git_blob": "4cf3919de35a65eb4f5bb153088bd666ff47a593",
+    "limitations": "Existing broker fixture is synthetic EvaluationNoUpdate and lacks actual A/B/Model-factory production preparation. Its real Root/pidfd/five-lane/claim-dispatch/CURRENT mechanics may be reused; synthetic scope/material/checkpoint history must be replaced by the new actual Prepared and owner outputs. Pins were sent to the component-chain author."
+  },
+  "blockers": [],
+  "executed": {
+    "cargo": false,
+    "native_tests": false,
+    "root_tests": false,
+    "official_typed_scan": false
+  },
+  "acceptance": {
+    "ordinary_complete_loops": 0,
+    "ordinary_positive_adoption": 0,
+    "ordinary_no_update_or_rollback": 0,
+    "independent_business_C": false,
+    "physical_cold_restart": false
+  }
+}

@@ -1,0 +1,61 @@
+name: Control runtime convergence
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: convergence mode
+        required: true
+        default: verify
+        type: choice
+        options:
+          - verify
+          - apply
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-runtime-convergence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply convergence patch
+        if: inputs.mode == 'apply'
+        run: python3 scripts/control_runtime_converge.py --apply
+      - name: Verify convergence patch
+        run: python3 scripts/control_runtime_converge.py --verify
+      - name: Format
+        working-directory: codex-rs
+        run: cargo fmt --all -- --check
+      - name: Control plane package tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-control-plane --all-targets
+      - name: Agentd control caller tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-agentd cognitive_context --all-targets
+      - name: Strict lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-control-plane -p codex-hepta-agentd --all-targets --all-features -- -D warnings
+      - name: Commit generated convergence changes
+        if: inputs.mode == 'apply'
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'control.runtime: close integrity and maturity gaps'
+          git push origin HEAD:${{ github.ref_name }}

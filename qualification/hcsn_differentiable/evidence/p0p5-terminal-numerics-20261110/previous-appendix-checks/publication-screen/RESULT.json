@@ -1,0 +1,14 @@
+{
+  "findings": [],
+  "main_entry_CPU_seconds": 0.335756765,
+  "main_entry_wall_seconds": 0.33585330900677945,
+  "manifest_sha256": "c014034c6be627876f18eec594cb0332144912f2714b62b0be5a71cc53257fcf",
+  "patterns": [
+    "github-token",
+    "private-key",
+    "aws-access-id"
+  ],
+  "scanned_files_and_recursive_zip_members": 744,
+  "schema": "limited-credential-pattern-screen-v1",
+  "scope": "Limited local byte-pattern screen with recursive ZIP expansion; not a security certification. Base64 text is not decoded by this screen. No model/oracle/native job run."
+}

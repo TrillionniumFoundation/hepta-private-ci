@@ -1,0 +1,54 @@
+{
+  "schema": "hcsn-n256-reference-provider-feasibility-source-freeze-v1",
+  "identity": "hcsn-n256-reference-provider-feasibility-20261114-c06d-001",
+  "base_commit": "78bd463156f40a1853d8bedbc2d00e1e2d6ee539",
+  "parent_draft": 6313,
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-reference-provider-hold.yml": "7a9c124a0f0d9729d03018d1e4330b33b3a5ce690f8a516c6bf68ad9055e6ad3",
+    "qualification/hcsn_currentstate_n256_reference_provider_hold/README.md": "27a469ccbef3ce15045c1bbfd1bf9a33146b98d57e3dea8d6bd21c9995c8fdea",
+    "qualification/hcsn_currentstate_n256_reference_provider_hold/REQUEST.json": "44cef248f3ac8bd34bc2a8886fc6aec2b1e9cdfdec9eea1e1beb3e675c4e2054",
+    "qualification/hcsn_currentstate_n256_reference_provider_hold/__init__.py": "5fe1875b2f5f33eea03552c3c80c69ca64881195b3d9e5318ac21e1239bf4d79",
+    "qualification/hcsn_currentstate_n256_reference_provider_hold/method_hold.py": "0bef9eba2d831464c51edd813ea888f545d57b352128ca541f895f5b04f7729b",
+    "qualification/hcsn_currentstate_n256_reference_provider_hold/static_inspector.py": "81477d4b7f485b1e2b44c41783eeadaa7c384116c4e4694391c293bd3037c574",
+    "qualification/hcsn_currentstate_n256_reference_provider_hold/test_static.py": "f8f1fc88615e0cb1bd98d5604a3f5582d1b7ceaa546b2b0a5966ff7023e31a77"
+  },
+  "bindings": {
+    "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+    "candidate_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+    "oracle_source_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+    "comparator_source_sha256": "d20bfd4ae57e783d506a571e9a9ecb1deed836a8abbafa6e870f2879595972cf",
+    "reference_interface_source_sha256": "2c870cf7b530726a525f32ebee6a3efd0894ca24f7ce958238a0527d35a03783",
+    "coordinate_denominator": 18225028,
+    "capsules": 14
+  },
+  "static_controls": {
+    "fixture_tests": 5,
+    "assertions_enabled_passed": true,
+    "optimized_mode_passed": true,
+    "shared_scipy_kernel_detected": true,
+    "distinct_small_fixture_not_mislabeled": true,
+    "future_independence_record_fail_closed": true,
+    "all_certificates_required": true,
+    "provider_source_admission_and_key_null": true
+  },
+  "execution_counts": {
+    "new_numerical_idempotency_keys": 0,
+    "reference_provider_calls": 0,
+    "n256_dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "candidate_calls": 0,
+    "oracle_calls": 0,
+    "n256_serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "preserved_history": {
+    "red_6295": true,
+    "red_unknown_6302": true,
+    "red_joint_hold_6303": true
+  },
+  "status": "NOT_SCIENTIFICALLY_ADMITTED_SOURCE_HOLD",
+  "largegrid_qualification": false,
+  "all_closed": false
+}

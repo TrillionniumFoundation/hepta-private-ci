@@ -1,0 +1,55 @@
+name: Hepta Equal-Size Matched Head P2 source-only (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-replacement-p0/matched_head.py"
+      - "qualification/stem-replacement-p0/matched_head_review.py"
+      - "qualification/stem-replacement-p0/test_matched_head.py"
+      - "qualification/stem-replacement-p0/MATCHED_HEAD_P2.md"
+      - ".github/workflows/hepta-stem-matched-head-p2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p2-matched-source-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-only-numeric-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Install pinned CPU numeric dependencies only
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python -m pip install --only-binary=:all: "numpy==2.2.6"
+          python -m pip check
+      - name: True Torch Head SGD, independent NumPy replay and adversarial fixtures
+        env:
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          cd qualification/stem-replacement-p0
+          python -m py_compile matched_head.py matched_head_review.py test_matched_head.py
+          python -m unittest -q test_matched_head
+          python -O -m unittest -q test_matched_head
+          python - <<'PY'
+          import matched_head as m
+          assert m.PARAMS == 4161 and m.STEPS == 40
+          assert m.FIT_SCHEMA.endswith('.v1') and m.SCHEMA.endswith('.v1')
+          assert m.INITIALIZATION == 'hepta.stem.head-init.pcg64-f32.v2'
+          assert m.tensor_digest(m.initial_head_arrays(41)) == '72236efb02d5da0b23ded8442bb2f68a7d2768ee53b1bb1ba089a0c8dc97f16f'
+          print('synthetic_matched_head=true pretrained_encoder=false scored_original_human_labels=false production_authorized=false')
+          PY

@@ -1,0 +1,164 @@
+{
+  "schema": "hepta.hosted-original-evidence.v1",
+  "source_sha": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "source_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "run": 43267838695,
+  "job": 131356096885,
+  "conclusion": "failure",
+  "whole_log": {
+    "bytes": 3746884,
+    "sha256": "ef3dd7e9a41f5c7c6007a5331344af64d94c6664f0258b327a57f527b9a3e9f8",
+    "git_sha1": "05959d7ae1d58248d9d234770327a0cf7ef15a1f"
+  },
+  "parts_join": "concatenate native.job.log.part00..part11 raw bytes without separators",
+  "source_closure": {
+    "methods": 414,
+    "failures": 0,
+    "errors": 0
+  },
+  "parser": {
+    "methods": 16,
+    "failures": 0,
+    "errors": 0
+  },
+  "ordinary": {
+    "announced": 1738,
+    "passed": 1730,
+    "failed": 7,
+    "timed_out": 1,
+    "skipped_by_filter": 98,
+    "retries": 0,
+    "summary_elapsed_seconds": 828.757,
+    "collector_failures": 8,
+    "junit_bytes": 433525,
+    "junit_sha256": "c1f14d92dab835a9cf7f1ad9415b7b39d7122046501a834a8c41a04cd41b1154"
+  },
+  "source_inventory_observations": {
+    "count": 15220,
+    "checkout_before_tests_final_sha256": "5d4d76b72b7896c9e81119db1ee5aaa7db4a086961c157f9c6949e520e4a721e",
+    "source_dirty": false,
+    "complete_inventory_payload_in_this_archive": false,
+    "meaning": "Three original snapshot records agree; full inventory member itself has not been downloaded in this review."
+  },
+  "root_fix_fmt": "NOT_REACHED_AFTER_ORDINARY_FAILURE",
+  "caller": "IN_PROGRESS_AT_SEPARATE_LAST_OBSERVATION; NOT_AN_INHERITED_PASS",
+  "claims_boundary": "Only exact edaf source. Expected panic tests and final failure reprints are not new failures or retries. Ordinary results do not qualify scientific effects or Root recovery.",
+  "items": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part00",
+      "sha": "76d384db7c52b8fb900b2dce6faa7946e18a922b",
+      "bytes": 340000,
+      "sha256": "281f8a705df9e4c966bbf7d5b91a48c6916bdaf60ea8eb276a78ce64e42bd52e",
+      "start": 0,
+      "end": 340000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part01",
+      "sha": "55b8ab9f78db4a72f842e014191ec4b99906ea2d",
+      "bytes": 340000,
+      "sha256": "52a001577446602d0630e1fe9e1014eb2e2cf81d1918161fb02b158769e19701",
+      "start": 340000,
+      "end": 680000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part02",
+      "sha": "08f1c3e7e9dc33db0ada494c0f96a51b0d531c76",
+      "bytes": 340000,
+      "sha256": "a121384fd9795e265c70951422ee9c3e94b276194b139ebe6c6c6f06f331c380",
+      "start": 680000,
+      "end": 1020000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part03",
+      "sha": "785933a143e5189eae7943d65f8441cf47e415c7",
+      "bytes": 340000,
+      "sha256": "2f1d14b8f49f8fdd3b8e5d65baf707638d921b8e17fcec3f7410e6edd377fe1b",
+      "start": 1020000,
+      "end": 1360000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part04",
+      "sha": "c81f0b27b8bfb7a26c66c6e4b4258f1a443193e5",
+      "bytes": 340000,
+      "sha256": "bf53f98ab6393f056bdd6e77b42e83afc33f9b035df853dd97f26219d3d69bf4",
+      "start": 1360000,
+      "end": 1700000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part05",
+      "sha": "30bf5656728da3a4bffb3fab271d008d88344089",
+      "bytes": 340000,
+      "sha256": "b4adce8ac44cef7e251c9997314d2807481eb1c2a54f63fd7001a176c8d88973",
+      "start": 1700000,
+      "end": 2040000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part06",
+      "sha": "2c00fcb7d6005b4f3383646b50f7ae790233f537",
+      "bytes": 340000,
+      "sha256": "f4c4f803d2cd754f46c454e1cf725c6939309f45643d164269ec492c8e1cb4d9",
+      "start": 2040000,
+      "end": 2380000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part07",
+      "sha": "25a7ca1b7f77c37bbdbd6b8edcca2f6731e591b6",
+      "bytes": 340000,
+      "sha256": "9e200852fae64d7469b5ebcff3b3efb7a563e132b833764fed4ac2a647d780f5",
+      "start": 2380000,
+      "end": 2720000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part08",
+      "sha": "a6653b6a60a9904d2d171d677eced0b91cd3ea44",
+      "bytes": 340000,
+      "sha256": "6fa12cce5b0a20ad909eb5aa054de32d8176fe567d43e63db71794bef61943bb",
+      "start": 2720000,
+      "end": 3060000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part09",
+      "sha": "3d8301eba6578b1eb938f0247664228fb04aa730",
+      "bytes": 340000,
+      "sha256": "8a121c5d519f0aeebaf8962c7c3b90369159e641254714fc5bfdc6997a069fc8",
+      "start": 3060000,
+      "end": 3400000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part10",
+      "sha": "b2557172d4af79799080a16c688f50b74a59e262",
+      "bytes": 340000,
+      "sha256": "dae353e720867558bab000d56880ea17dcafa5aac75e502b28c3a721e0cc338b",
+      "start": 3400000,
+      "end": 3740000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part11",
+      "sha": "0b15c54f48de24df46e4bee729127af934ee7c14",
+      "bytes": 6884,
+      "sha256": "ac9117bd18c29822071759e92385733ea3a0f51684cbb9c8ab4e87d00b255802",
+      "start": 3740000,
+      "end": 3746884
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/execution-records.original.jsonl",
+      "sha": "b7886e17bed4b592ca040a6b66675a5af3ba7b9e",
+      "bytes": 6299,
+      "sha256": "1190a590ec4de467f2a7af8cd0412202fc1580298b3c870a7ebec018f5a498c4"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/jobs.original.json",
+      "sha": "ee54eeed2eb2a465060ea3d65cce674656e11663",
+      "bytes": 6338,
+      "sha256": "046b7b06fea6c492313c28bacef22197474c8ab9166cb4dcc80bbc0231456c25"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/failure-tail.original.log",
+      "sha": "48c873e78aa594816c87537a45c7188ffdf577ea",
+      "bytes": 17726,
+      "sha256": "33ae5710943289558cd68373101e6f4d2723c9d692d490f6c28a79ee8faad135",
+      "start": 3723160,
+      "end": 3740886
+    }
+  ]
+}

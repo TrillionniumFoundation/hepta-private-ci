@@ -1,0 +1,65 @@
+{
+  "after": {
+    "commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+    "dirty": false,
+    "parents": [
+      "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "5066cb8bdd3e4f598d747d48aae0a64a21e8cbfc"
+    ],
+    "tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+    "dirty": false,
+    "parents": [
+      "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "5066cb8bdd3e4f598d747d48aae0a64a21e8cbfc"
+    ],
+    "tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 356.50904710200007,
+  "exit_code": 0,
+  "finished_at": "2026-11-11T03:25:27.492886+00:00",
+  "job": "native",
+  "lane": "source-head",
+  "log_bytes": 828081,
+  "log_file": "ordinary.json.fc0abbcc1eb14c21898256f3df6ef403.log",
+  "log_sha256": "4f400b542443c7916885db77b6712edf6376c34c0f7fd4794935e0ed8bf4c709",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 1158,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "42946454461",
+  "schema_version": 1,
+  "source_sha": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "started_at": "2026-11-11T03:19:30.983306+00:00",
+  "status": "passed",
+  "tested_sha": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

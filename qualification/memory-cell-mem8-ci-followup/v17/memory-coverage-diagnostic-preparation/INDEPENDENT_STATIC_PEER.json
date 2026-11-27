@@ -1,0 +1,130 @@
+{
+  "schema": "mem8.memory-coverage-v12.independent-static-peer.v1",
+  "reviewed_at_utc": "2026-11-11 18:25:48 UTC",
+  "status": "NO_STATIC_MUST_FIX_DIAGNOSTIC_ONLY_NOT_FORMATTED_OR_NATIVE_QUALIFIED",
+  "reviewer": "mem_experiment_review",
+  "base": {
+    "commit": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+    "tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f"
+  },
+  "changed_path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+  "preimage": {
+    "bytes": 17808,
+    "sha256": "e9f92be64d7a4b4b5521a1b6c98ab678ca50291f2f32ae681b4634b606c1a810",
+    "git_blob": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
+  },
+  "postimage": {
+    "bytes": 17873,
+    "sha256": "5ecb8bce0adb6d0151eb1ed23405489757354482f70b1b33d1232b35afc85d3c",
+    "git_blob": "9e40f57c40be855653f1cc7a716740a89bf60cf5",
+    "actual_git_full_text_readback": true
+  },
+  "derivation": {
+    "unique_preimage_occurrences": 1,
+    "old_statement": "    assert_eq!(coverage.completed_peers, 16);",
+    "new_statement": "    assert_eq!(\n        coverage.completed_peers, 16,\n        \"typed federation coverage: {coverage:?}\"\n    );",
+    "whole_file_forward_equal_actual_postimage": true,
+    "whole_file_inverse_equal_exact_preimage": true,
+    "byte_delta": 65,
+    "reconstructed_patch": {
+      "bytes": 581,
+      "sha256": "1ccf096ac8bfeaa273dda303644b4a3de2026e2d5161de871181075c848aef34",
+      "git_blob": "06fb66322c85706289fb5602948f1ad499450ebe",
+      "provenance": "Independently reconstructed from complete Git pre/post bytes in this review; not asserted to recover an unavailable original scratch patch identity."
+    }
+  },
+  "exact_source_chain": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+      "commit": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "bytes": 17808,
+      "sha256": "e9f92be64d7a4b4b5521a1b6c98ab678ca50291f2f32ae681b4634b606c1a810",
+      "git_blob": "7f397fe3e35205bae51ef95c4475315559c2b0ea",
+      "full_exact_commit_path_body_equals_full_git_blob_body": true
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/src/v2.rs",
+      "commit": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "bytes": 37849,
+      "sha256": "4fb02e14794c11469fc8a47159345af7f9b0cf42ad61fd1010d42e3d8995a2aa",
+      "git_blob": "760d972ef2adec706a2cbeada5727a1c379f2e4d",
+      "full_exact_commit_path_body_equals_full_git_blob_body": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "commit": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "bytes": 29442,
+      "sha256": "0bf8c12c692050d1d1aa8a35a2fdd93f354d94aa33aa0e9b5a2dc0a93af58332",
+      "git_blob": "7ebaa81ffcff4b5f7dbbb706670da2b7d3a0d7d2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "commit": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "bytes": 47495,
+      "sha256": "a1078bef3cddf047f6f74b8234b2017f218b84ed9a09bc4c6baec25aa00fb201",
+      "git_blob": "7ad7a60f7832b037819ae1966b25054d048c641f"
+    }
+  ],
+  "findings": [
+    {
+      "check": "Test-only compilation boundary",
+      "result": "PASS_STATIC",
+      "evidence": "lib.rs has #[cfg(test)] immediately before #[path = \"cognitive_runtime_tests.rs\"] mod cognitive_runtime_tests. No production source is modified."
+    },
+    {
+      "check": "Typed return and complete Debug field closure",
+      "result": "PASS_STATIC",
+      "evidence": "retrieve_product_federated returns Result<(FederatedRetrievalBatch, FederatedCoverageV2), CognitiveStoreError>. FederatedCoverageV2 and nested FederatedFailureCoverageV2 use derived Debug; all 11 leaf fields are u32 counters. No fact text, query text, prompt, token, path, credential or owner/request identifier is carried in this Debug object.",
+      "top_level_fields": [
+        "pub requested_peers: u32,",
+        "pub completed_peers: u32,",
+        "pub failed_peers: u32,",
+        "pub truncated_peers: u32,",
+        "pub omitted_peer_candidates: u32,",
+        "pub truncated_items: u32,",
+        "pub failures: FederatedFailureCoverageV2,"
+      ],
+      "nested_failure_fields": [
+        "pub discovery_unavailable: u32,",
+        "pub deadline_or_cancelled: u32,",
+        "pub authority_rejected: u32,",
+        "pub integrity_rejected: u32,",
+        "pub transport_unavailable: u32,"
+      ]
+    },
+    {
+      "check": "Existing assertion semantics and order",
+      "result": "PASS_STATIC",
+      "evidence": "The original completed_peers equality with 16 is preserved at the same position, after empty batch/requested_peers checks and before failed_peers/truncated_peers/omitted_peer_candidates checks. The only added argument is the Debug failure message; all other file bytes are identical after the inverse replacement."
+    },
+    {
+      "check": "Input, timing, retry, and dispatch boundaries",
+      "result": "PASS_STATIC",
+      "evidence": "No loop, call, await, threshold, deadline, grant, source set, request, test name or test annotation changes. The original 17-owner setup, retrieval call and all subsequent checks remain byte-for-byte unchanged.",
+      "test_annotations_before": 8,
+      "test_annotations_after": 8
+    },
+    {
+      "check": "No diagnostic-as-repair claim",
+      "result": "PASS_SCOPE",
+      "evidence": "This candidate may reveal the typed coverage classification when the existing equality fails. It does not establish the original shortfall's cause or remedy, and cannot convert an original failed qualification to PASS."
+    }
+  ],
+  "execution_scope": {
+    "source_text_hash_and_inverse_checks_only": true,
+    "local_Rust_or_Python_source_execution": 0,
+    "native_tests": 0,
+    "CI_or_source_gate_runs": 0,
+    "model_requests": 0,
+    "H_calls": 0,
+    "source_refs_changed": false
+  },
+  "environment_note": "The workspace was unavailable. This review used actual Git text and a whole-file reconstruction; it does not claim recovery of inaccessible original local manifest/patch files. Three standard SHA1/SHA256 known-answer vectors were checked before hashing source bytes.",
+  "h_scope_clarification": {
+    "git_blob": "df983c76341a6e00f475ea0d0abb31530e95117a",
+    "bytes": 1830,
+    "sha256": "5bee2b69733681f9a05ed9160114e8e24349776564ac9e1d0d98a584713038c2",
+    "full_utf8_readback": true,
+    "meaning": "Existing user authorization includes reasonable read-only work; the prior H stop is an evidence/identity limitation, not a new permission requirement. Original sealed evidence is unchanged."
+  }
+}

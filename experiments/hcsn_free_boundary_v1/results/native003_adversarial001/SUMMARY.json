@@ -1,0 +1,530 @@
+{
+  "by_price": [
+    {
+      "execution_provenance": "reused actual native003 read_all execution at this price; no new full-prefix computation",
+      "ordinary_accuracy": 0.546875,
+      "ordinary_inference_cpu_per_episode": 0.10518722246093751,
+      "ordinary_mean_reads": 32,
+      "ordinary_utility": 0.38687499999999997,
+      "read_price": 0.005,
+      "validation_selected_prefix": 32,
+      "value_head_accuracy": 0.546875,
+      "value_head_mean_reads": 32.0,
+      "value_head_utility": 0.38687499999999997,
+      "value_minus_ordinary_utility": 0.0
+    },
+    {
+      "execution_provenance": "new actual fixed1 execution, shared across prices because fixed1 has no price-dependent model computation",
+      "ordinary_accuracy": 0.1015625,
+      "ordinary_inference_cpu_per_episode": 0.00319112546875,
+      "ordinary_mean_reads": 1,
+      "ordinary_utility": 0.0815625,
+      "read_price": 0.02,
+      "validation_selected_prefix": 1,
+      "value_head_accuracy": 0.2734375,
+      "value_head_mean_reads": 16.4375,
+      "value_head_utility": -0.05531250000000001,
+      "value_minus_ordinary_utility": -0.136875
+    },
+    {
+      "execution_provenance": "new actual fixed1 execution, shared across prices because fixed1 has no price-dependent model computation",
+      "ordinary_accuracy": 0.1015625,
+      "ordinary_inference_cpu_per_episode": 0.00319112546875,
+      "ordinary_mean_reads": 1,
+      "ordinary_utility": 0.0515625,
+      "read_price": 0.05,
+      "validation_selected_prefix": 1,
+      "value_head_accuracy": 0.1015625,
+      "value_head_mean_reads": 1.0,
+      "value_head_utility": 0.05156249999999999,
+      "value_minus_ordinary_utility": -6.938893903907228e-18
+    }
+  ],
+  "classification": "posthoc adversarial audit; does not replace registered native003 results",
+  "costs": {
+    "audit_orchestrator_cumulative_self_cpu_seconds": 0.126305,
+    "complete_fixed1_worker_cpu_seconds": 2.4123900000000003,
+    "fixed1_inference_cpu_per_episode": 0.00319112546875,
+    "incremental_audit_cpu_seconds": 2.538695,
+    "new_fixed1_actual_model_steps": 128,
+    "no_other_head_training_charged": true,
+    "original_plus_new_audit_setup_charged_seconds": 4.786232701999974,
+    "saved_trace_setup_conservatively_charged_seconds": 2.7909609769999992,
+    "scope": "Reuse of original traces/references is explicit; deployment charge conservatively includes full saved trace setup plus original and new audit setup. Incremental audit CPU counts only new worker and parent work. Final orchestrator serialization follows the self accounting cutoff"
+  },
+  "limitation": "Baseline family was requested after fresh native003 results were known. VAL-only choice and locked code prevent fresh fitting, but do not turn this into a preregistered fresh-holdout confirmation. Use it to challenge claims of advantage over strong ordinary controllers",
+  "main_summary_sha256": "d77d73c891b4a5d0ab1b35008bee61a3d919693dee360bbb0618068f56c918ed",
+  "ordinary_macro_utility": 0.17333333333333334,
+  "scenario_rows": [
+    {
+      "ordinary_cpu_charge_per_episode": 0.15923918313993748,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.38687499999999997,
+      "read_price": 0.005,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0,
+      "value_head_scenario_utility": 0.38687499999999997,
+      "value_minus_ordinary_scenario_utility": 0.0
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.15923918313993748,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.38685907608168596,
+      "read_price": 0.005,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_head_scenario_utility": 0.38685356909854574,
+      "value_minus_ordinary_scenario_utility": -5.506983140224353e-06
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.15923918313993748,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.38671576081686004,
+      "read_price": 0.005,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0.001,
+      "value_head_scenario_utility": 0.3866606909854575,
+      "value_minus_ordinary_scenario_utility": -5.5069831402521086e-05
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.15923918313993748,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.3852826081686006,
+      "read_price": 0.005,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0.01,
+      "value_head_scenario_utility": 0.3847319098545756,
+      "value_minus_ordinary_scenario_utility": -0.0005506983140249888
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.1105924185288375,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.38687499999999997,
+      "read_price": 0.005,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0,
+      "value_head_scenario_utility": 0.38687499999999997,
+      "value_minus_ordinary_scenario_utility": 0.0
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.1105924185288375,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.38686394075814706,
+      "read_price": 0.005,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_head_scenario_utility": 0.3868583607293162,
+      "value_minus_ordinary_scenario_utility": -5.5800288308871515e-06
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.1105924185288375,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.3867644075814711,
+      "read_price": 0.005,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0.001,
+      "value_head_scenario_utility": 0.38670860729316214,
+      "value_minus_ordinary_scenario_utility": -5.580028830898254e-05
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.1105924185288375,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.3857690758147116,
+      "read_price": 0.005,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0.01,
+      "value_head_scenario_utility": 0.3852110729316216,
+      "value_minus_ordinary_scenario_utility": -0.0005580028830899919
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.1057277420677275,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.38687499999999997,
+      "read_price": 0.005,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0,
+      "value_head_scenario_utility": 0.38687499999999997,
+      "value_minus_ordinary_scenario_utility": 0.0
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.1057277420677275,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.3868644272257932,
+      "read_price": 0.005,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_head_scenario_utility": 0.3868588398923932,
+      "value_minus_ordinary_scenario_utility": -5.58733339994788e-06
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.1057277420677275,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.38676927225793223,
+      "read_price": 0.005,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0.001,
+      "value_head_scenario_utility": 0.3867133989239326,
+      "value_minus_ordinary_scenario_utility": -5.5873333999645336e-05
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.1057277420677275,
+      "ordinary_read_only_utility": 0.38687499999999997,
+      "ordinary_scenario_utility": 0.3858177225793227,
+      "read_price": 0.005,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0.01,
+      "value_head_scenario_utility": 0.3852589892393262,
+      "value_minus_ordinary_scenario_utility": -0.0005587333399964534
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.05724308614774997,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.0815625,
+      "read_price": 0.02,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0,
+      "value_head_scenario_utility": -0.05531250000000001,
+      "value_minus_ordinary_scenario_utility": -0.136875
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.05724308614774997,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.08155677569138522,
+      "read_price": 0.02,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_head_scenario_utility": -0.05532699822788628,
+      "value_minus_ordinary_scenario_utility": -0.1368837739192715
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.05724308614774997,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.08150525691385224,
+      "read_price": 0.02,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0.001,
+      "value_head_scenario_utility": -0.055457482278862755,
+      "value_minus_ordinary_scenario_utility": -0.136962739192715
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.05724308614774997,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.0809900691385225,
+      "read_price": 0.02,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0.01,
+      "value_head_scenario_utility": -0.05676232278862751,
+      "value_minus_ordinary_scenario_utility": -0.13775239192715
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.008596321536649996,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.0815625,
+      "read_price": 0.02,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0,
+      "value_head_scenario_utility": -0.05531250000000001,
+      "value_minus_ordinary_scenario_utility": -0.136875
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.008596321536649996,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.08156164036784633,
+      "read_price": 0.02,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_head_scenario_utility": -0.05532220659711582,
+      "value_minus_ordinary_scenario_utility": -0.13688384696496214
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.008596321536649996,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.08155390367846335,
+      "read_price": 0.02,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0.001,
+      "value_head_scenario_utility": -0.055409565971158155,
+      "value_minus_ordinary_scenario_utility": -0.1369634696496215
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.008596321536649996,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.0814765367846335,
+      "read_price": 0.02,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0.01,
+      "value_head_scenario_utility": -0.05628315971158151,
+      "value_minus_ordinary_scenario_utility": -0.137759696496215
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.00373164507554,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.0815625,
+      "read_price": 0.02,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0,
+      "value_head_scenario_utility": -0.05531250000000001,
+      "value_minus_ordinary_scenario_utility": -0.136875
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.00373164507554,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.08156212683549244,
+      "read_price": 0.02,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_head_scenario_utility": -0.05532172743403878,
+      "value_minus_ordinary_scenario_utility": -0.1368838542695312
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.00373164507554,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.08155876835492445,
+      "read_price": 0.02,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0.001,
+      "value_head_scenario_utility": -0.055404774340387694,
+      "value_minus_ordinary_scenario_utility": -0.13696354269531213
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.00373164507554,
+      "ordinary_read_only_utility": 0.0815625,
+      "ordinary_scenario_utility": 0.0815251835492446,
+      "read_price": 0.02,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0.01,
+      "value_head_scenario_utility": -0.05623524340387691,
+      "value_minus_ordinary_scenario_utility": -0.13776042695312152
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.05724308614774997,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.0515625,
+      "read_price": 0.05,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0,
+      "value_head_scenario_utility": 0.05156249999999999,
+      "value_minus_ordinary_scenario_utility": -6.938893903907228e-18
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.05724308614774997,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.05155677569138522,
+      "read_price": 0.05,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_head_scenario_utility": 0.05155578044776293,
+      "value_minus_ordinary_scenario_utility": -9.95243622285702e-07
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.05724308614774997,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.05150525691385225,
+      "read_price": 0.05,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0.001,
+      "value_head_scenario_utility": 0.05149530447762943,
+      "value_minus_ordinary_scenario_utility": -9.952436222822325e-06
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.05724308614774997,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.0509900691385225,
+      "read_price": 0.05,
+      "scenario_episodes": 1000,
+      "utility_units_per_cpu_second": 0.01,
+      "value_head_scenario_utility": 0.050890544776294365,
+      "value_minus_ordinary_scenario_utility": -9.952436222813305e-05
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.008596321536649996,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.0515625,
+      "read_price": 0.05,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0,
+      "value_head_scenario_utility": 0.05156249999999999,
+      "value_minus_ordinary_scenario_utility": -6.938893903907228e-18
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.008596321536649996,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.051561640367846336,
+      "read_price": 0.05,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_head_scenario_utility": 0.051560572078533394,
+      "value_minus_ordinary_scenario_utility": -1.0682893129415616e-06
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.008596321536649996,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.051553903678463346,
+      "read_price": 0.05,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0.001,
+      "value_head_scenario_utility": 0.05154322078533403,
+      "value_minus_ordinary_scenario_utility": -1.0682893129318471e-05
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.008596321536649996,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.0514765367846335,
+      "read_price": 0.05,
+      "scenario_episodes": 10000,
+      "utility_units_per_cpu_second": 0.01,
+      "value_head_scenario_utility": 0.051369707853340364,
+      "value_minus_ordinary_scenario_utility": -0.00010682893129313614
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.00373164507554,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.0515625,
+      "read_price": 0.05,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0,
+      "value_head_scenario_utility": 0.05156249999999999,
+      "value_minus_ordinary_scenario_utility": -6.938893903907228e-18
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.00373164507554,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.051562126835492446,
+      "read_price": 0.05,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_head_scenario_utility": 0.05156105124161044,
+      "value_minus_ordinary_scenario_utility": -1.0755938820092292e-06
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.00373164507554,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.051558768354924456,
+      "read_price": 0.05,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0.001,
+      "value_head_scenario_utility": 0.05154801241610449,
+      "value_minus_ordinary_scenario_utility": -1.0755938819967392e-05
+    },
+    {
+      "ordinary_cpu_charge_per_episode": 0.00373164507554,
+      "ordinary_read_only_utility": 0.0515625,
+      "ordinary_scenario_utility": 0.051525183549244596,
+      "read_price": 0.05,
+      "scenario_episodes": 100000,
+      "utility_units_per_cpu_second": 0.01,
+      "value_head_scenario_utility": 0.051417624161044964,
+      "value_minus_ordinary_scenario_utility": -0.00010755938819963229
+    }
+  ],
+  "schema": "native003-posthoc-adversarial-results.v1",
+  "selected_using_original_val_only": true,
+  "selection": {
+    "candidate_prefixes": [
+      1,
+      8,
+      16,
+      24,
+      32
+    ],
+    "choices": {
+      "0.005": 32,
+      "0.02": 1,
+      "0.05": 1
+    },
+    "family_was_proposed_after_main_fresh_results": true,
+    "label": "posthoc adversarial baseline, not a registered native003 arm",
+    "schema": "native003-posthoc-fixed-prefix-selection.v1",
+    "selected_at_utc": "2026-10-29T13:34:03.422844+00:00",
+    "selection_parent_cpu_seconds": 0.004006370000000009,
+    "selection_rule": "maximum original-VAL utility independently per price; ties choose smaller prefix",
+    "selection_uses_fresh_outcomes": false,
+    "source_val_trace_sha256": "812caa2895466d0c134c74042b780c1e6ace28f79ff28bd52ea294522651edf4",
+    "validation": {
+      "0.005": [
+        {
+          "accuracy": 0.109375,
+          "mean_utility": 0.10437500000000002,
+          "prefix": 1
+        },
+        {
+          "accuracy": 0.078125,
+          "mean_utility": 0.03812499999999999,
+          "prefix": 8
+        },
+        {
+          "accuracy": 0.125,
+          "mean_utility": 0.045000000000000005,
+          "prefix": 16
+        },
+        {
+          "accuracy": 0.296875,
+          "mean_utility": 0.17687499999999995,
+          "prefix": 24
+        },
+        {
+          "accuracy": 0.546875,
+          "mean_utility": 0.38687499999999997,
+          "prefix": 32
+        }
+      ],
+      "0.02": [
+        {
+          "accuracy": 0.109375,
+          "mean_utility": 0.089375,
+          "prefix": 1
+        },
+        {
+          "accuracy": 0.078125,
+          "mean_utility": -0.08187499999999999,
+          "prefix": 8
+        },
+        {
+          "accuracy": 0.125,
+          "mean_utility": -0.19499999999999998,
+          "prefix": 16
+        },
+        {
+          "accuracy": 0.296875,
+          "mean_utility": -0.18312500000000004,
+          "prefix": 24
+        },
+        {
+          "accuracy": 0.546875,
+          "mean_utility": -0.09312500000000003,
+          "prefix": 32
+        }
+      ],
+      "0.05": [
+        {
+          "accuracy": 0.109375,
+          "mean_utility": 0.059375000000000004,
+          "prefix": 1
+        },
+        {
+          "accuracy": 0.078125,
+          "mean_utility": -0.321875,
+          "prefix": 8
+        },
+        {
+          "accuracy": 0.125,
+          "mean_utility": -0.675,
+          "prefix": 16
+        },
+        {
+          "accuracy": 0.296875,
+          "mean_utility": -0.903125,
+          "prefix": 24
+        },
+        {
+          "accuracy": 0.546875,
+          "mean_utility": -1.053125,
+          "prefix": 32
+        }
+      ]
+    }
+  },
+  "status": "completed",
+  "value_head_macro_utility": 0.1277083333333333,
+  "value_minus_ordinary_macro_utility": -0.04562500000000003
+}

@@ -1,0 +1,116 @@
+{
+  "base_commit": "23c98e77e4d2cc98e8c32caf7db763bc85c6794b",
+  "base_source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+  "boundary": {
+    "actor_seeds": [
+      4401,
+      4402,
+      4403,
+      4404,
+      4405
+    ],
+    "actor_source": "unchanged study001 selected actor checkpoints; no new actor-training cost attributed to zero",
+    "calibration": "one positive temperature fit on training prefixes; all three primary policies share calibrated odds",
+    "cold_replay": "first Python episode per split/policy is replayed from serialized state in-process; first continuing native episode per split/policy restores stream, task cursor and native owner in a new native process",
+    "comparison": "same actor, calibrated odds, SNR/cost/horizon, correctness reward and every paid observation; causal stop",
+    "direct_updates": 100,
+    "native": {
+      "action_authority": "original sparse kernel and native NDU",
+      "actor_seed": 4403,
+      "episodes_per_split_policy": 16,
+      "total_policy_episodes": 96
+    },
+    "new_episode_seed_offset": 100000,
+    "ood_cost": [
+      0.01,
+      0.04,
+      0.12
+    ],
+    "ood_horizon": 24,
+    "ood_snr": [
+      0.15,
+      0.35,
+      0.7,
+      1.1
+    ],
+    "policies": [
+      "fixed",
+      "direct",
+      "value"
+    ],
+    "test_id_size": 64,
+    "test_ood_size": 64,
+    "train_cost": [
+      0.005,
+      0.025,
+      0.08
+    ],
+    "train_horizon": 16,
+    "train_size": 1024,
+    "train_snr": [
+      0.25,
+      0.5,
+      0.8
+    ],
+    "utility_intervals": "four value-minus-fixed/direct contrasts across ID/OOD; 98.75% paired Student-t intervals",
+    "validation_size": 256
+  },
+  "common": {
+    "batch_size": 32,
+    "candidate_cpu_seconds": 12.0,
+    "cpu_milestone_fractions": [
+      0.25,
+      0.5,
+      1.0
+    ],
+    "data_seed": 8123,
+    "depth": 1,
+    "learning_rates": [
+      0.001,
+      0.003
+    ],
+    "length": 32,
+    "max_updates": 4096,
+    "test_size": 512,
+    "train_size": 2048,
+    "val_size": 256,
+    "width": 32
+  },
+  "jobs": {
+    "mechanism": 50,
+    "representation": 84,
+    "scaling": 81
+  },
+  "limits": [
+    "Fresh episode seed does not create a new raw MNIST/FSDD source population.",
+    "Equal process CPU does not imply equal updates, parameter count, energy or optimized GPU cost.",
+    "CPU-budget update counts depend on machine/runtime; input streams and retained checkpoints remain reproducible.",
+    "The natural cell threshold remains learned; task Bellman stopping is a separate value boundary.",
+    "Neural score calibration does not prove Bayesian Markov transition correctness.",
+    "Long-memory grows genuine distractors; joint multimodal length remains null-step stress.",
+    "Original native value-to-action adapter is not evidence of learned sparse-head superiority."
+  ],
+  "native_binary_sha256": "1dc702aea6a448ad84407aeb71dc8f23066205fab79fe7c6859fc02c55e6f7a5",
+  "native_contract_commit": "7bec42aa4f79432f4a724d5295c67f9d69ee5a8d",
+  "native_reference_sha256": "06c3d049f87505ef8a4abe9acd2dccc9ca0d8b4febb927de089475fc0954274f",
+  "primary": {
+    "budget": "12 process-CPU training seconds for each LR; all search overhead charged separately; final step overshoot retained",
+    "mechanism": "HCSN minus each of four paired controls; accuracy; five seeds; per-task 98.75% Student-t CI",
+    "practical_effect_reference": 0.01,
+    "representation_scaling": "descriptive mean and sample SD across three optimization seeds",
+    "selection": "validation CE only across both learning rates and three CPU milestones; fixed candidate-order ties"
+  },
+  "runs_sha256": "9103b76f12b6e68c1458eac88d6f2f07893e86a0c8838587ca90d081ea1d686c",
+  "stream_measurement": {
+    "batch_size": 16,
+    "cases": 55,
+    "repeats": 7,
+    "scope": "full-sequence versus genuine incremental forward; reset and restoration costs separate; persistent state bytes not RSS",
+    "selection": "all representation seed6201 and scaling seed7301 winners, independent of score",
+    "separate_process_replay": "seven MNIST representation winners at seed6201",
+    "sequence_parity_atol": 3e-06,
+    "sequence_parity_rtol": 3e-05,
+    "warmups": 2
+  },
+  "version": "hcsn-compute-stream-v2"
+}

@@ -1,0 +1,32 @@
+{
+  "maintenanceOwner": "This repository; utils/stable-hash",
+  "contract": "Exact legacy Fx32/Fx64/native Hash and Hasher outputs used by Starlark and BM25",
+  "referencePackage": "fxhash 0.2.1",
+  "referenceArchive": "https://static.crates.io/crates/fxhash/fxhash-0.2.1.crate",
+  "referenceArchiveSha256": "c31b6d751ae2c7f11320402d34e41349dd1016f8d5d45e48c4312bc8625af50c",
+  "referenceSourceSha256": "885b72a1c977dc1c3ff4e0652719e62b6d8c3e713403e571afd581283f72df7b",
+  "license": "MIT OR Apache-2.0",
+  "copyright": "Copyright 2015 The Rust Project Developers",
+  "runtimeDependencies": [],
+  "excludedAPIs": [
+    "generic HashMap/HashSet aliases",
+    "BuildHasher aliases",
+    "archived byteorder dependency"
+  ],
+  "oracleComparisons": 1761494,
+  "oracleMismatches": 0,
+  "oraclePlatform": "x86_64-unknown-linux-gnu, native little-endian, Rust 1.96.0",
+  "maintenanceAdvisory": "https://rustsec.org/advisories/RUSTSEC-2025-0057.html",
+  "mechanicalFormatting": {
+    "command": "just fmt",
+    "scope": "Repository-mandated mechanical Rust formatting after scoped tests and just fix",
+    "changedFiles": {
+      "src/stable_hash_tests.rs": {
+        "beforeSha256": "93e8c7fa0a5d649dfd7a352eeaaf7af18f4264fc36172071ddfd89280b252538",
+        "afterSha256": "5e5649b85d52bfbefefebf92925f8a09c0df4401ebea581e56ca051486f8bacc"
+      }
+    },
+    "patch": "HEPTA-formatting.patch",
+    "patchSha256": "288304a5b1f014e7fb4f8e85eba8a60229abda6f814905173c18fbc31ad19c7e"
+  }
+}

@@ -1,0 +1,504 @@
+{
+  "schema": "pred-owner-probe-audit-v1",
+  "purpose": "Read-only discovery of existing native TaskFlow owner databases",
+  "real_owner_records_collected": 0,
+  "business_effect_labels_created": 0,
+  "database_absence_established_globally": false,
+  "source_facts": {
+    "main_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "code_pr": 5668,
+    "code_branch": "research/pred-reexecution-004-20261110-4456",
+    "code_head": "0ccd03731c2acda612bfd50c2c26d5f6dcef7bff",
+    "evidence_pr": 5681,
+    "evidence_branch": "evidence/pred-reexecution-004-20261110-4456",
+    "evidence_head": "a3aa398580cbd052f9decbc08af36deea25c6155",
+    "collector": "scripts/hepta_pred1/native_ledger.py:collect_native",
+    "database_geometry_source": "codex-rs/hepta-paths/src/fleet.rs; codex-rs/hepta-automation/src/store.rs",
+    "database_geometry": "${HEPTA_FLEET_ROOT:-$HOME/.local/share/hepta-vnext/fleet-v1}/agents/<agent>/automation/automation_1.sqlite3",
+    "collection_semantics": "Owner settlement is not independent effect supervision; succeeded/failed rows leave effect duration, cost and business outcome unknown"
+  },
+  "default_path_probes": [
+    {
+      "host": "mac",
+      "operation": "h_view exact default fleet agents directory",
+      "path": "<configured-login-home>/.local/share/hepta-vnext/fleet-v1/agents",
+      "result": "Path not found",
+      "scope": "Exact default path only; alternate fleet root not excluded"
+    },
+    {
+      "host": "desktop",
+      "operation": "h_view exact default fleet agents directory",
+      "path": "<configured-login-home>/.local/share/hepta-vnext/fleet-v1/agents",
+      "result": "Path not found",
+      "scope": "Exact default path only; alternate fleet root not excluded"
+    },
+    {
+      "host": "ai395",
+      "operation": "h_pty bounded Python fleet path inspection",
+      "path": "<configured-login-home>/.local/share/hepta-vnext/fleet-v1",
+      "result": "root_exists=false; databases=[]; current process HEPTA_FLEET_ROOT unset",
+      "scope": "Fresh operator process default path and environment only; arbitrary service-specific roots not excluded"
+    },
+    {
+      "host": "pocket4",
+      "operation": "h_pty bounded Python fleet path inspection",
+      "path": "<configured-login-home>/.local/share/hepta-vnext/fleet-v1",
+      "result": "root_exists=false; databases=[]; current process HEPTA_FLEET_ROOT unset",
+      "scope": "Fresh operator process default path and environment only; service-specific roots not excluded"
+    },
+    {
+      "host": "x230",
+      "operation": "h_pty bounded Python fleet path inspection",
+      "path": "<configured-login-home>/.local/share/hepta-vnext/fleet-v1",
+      "result": "root_exists=false; databases=[]; current process HEPTA_FLEET_ROOT unset",
+      "scope": "Fresh operator process default path and environment only; service-specific roots not excluded"
+    }
+  ],
+  "host_health": [
+    {
+      "host": "ai395",
+      "authenticated": true,
+      "reachable": true,
+      "status": "healthy",
+      "ssh_roundtrip_ms": 444.868125
+    },
+    {
+      "host": "pocket4",
+      "authenticated": true,
+      "reachable": true,
+      "status": "healthy",
+      "ssh_roundtrip_ms": 482.890459
+    },
+    {
+      "host": "x230",
+      "authenticated": true,
+      "reachable": true,
+      "status": "healthy",
+      "ssh_roundtrip_ms": 592.731958
+    }
+  ],
+  "scoped_process_probes": [
+    {
+      "host": "ai395",
+      "idempotency_key": "pred-owner-audit-9e3156-fleet-v1-ai395",
+      "operation": "h_process_start /usr/bin/python3 bounded fleet-root/override and database path discovery",
+      "process_timeout_seconds": 20,
+      "result": "MCP error -32603: MCP request timed out",
+      "job_id": null,
+      "execution_outcome": "unknown; one exact-argument same-key reconciliation also returned MCP error -32603 request timed out; no new-key replay",
+      "same_key_reconciliation_result": "MCP error -32603: MCP request timed out"
+    },
+    {
+      "host": "pocket4",
+      "idempotency_key": "pred-owner-audit-9e3156-fleet-v1-pocket4",
+      "operation": "h_process_start /usr/bin/python3 bounded fleet-root/override and database path discovery",
+      "process_timeout_seconds": 20,
+      "result": "MCP error -32603: MCP request timed out",
+      "job_id": null,
+      "execution_outcome": "unknown; no automatic retry or new-key replay"
+    },
+    {
+      "host": "x230",
+      "idempotency_key": "pred-owner-audit-9e3156-fleet-v1-x230",
+      "operation": "h_process_start /usr/bin/python3 bounded fleet-root/override and database path discovery",
+      "process_timeout_seconds": 20,
+      "result": "MCP error -32603: MCP request timed out",
+      "job_id": null,
+      "execution_outcome": "unknown; no automatic retry or new-key replay"
+    },
+    {
+      "host": "desktop",
+      "idempotency_key": "pred-owner-audit-9e3156-fleet-v1-desktop",
+      "operation": "h_process_start /usr/bin/python3 bounded fleet-root/override and database path discovery",
+      "process_timeout_seconds": 20,
+      "result": "MCP error -32603: MCP request timed out",
+      "job_id": null,
+      "execution_outcome": "unknown; no new-key replay"
+    },
+    {
+      "host": "mac",
+      "idempotency_key": "pred-owner-audit-9e3156-fleet-v1-mac",
+      "operation": "h_process_start /usr/bin/python3 bounded fleet-root/override and database path discovery",
+      "process_timeout_seconds": 20,
+      "result": "MCP error -32603: MCP request timed out",
+      "job_id": null,
+      "execution_outcome": "unknown; no new-key replay"
+    }
+  ],
+  "directory_process_probes": [
+    {
+      "host": "mac",
+      "idempotency_key": "pred-owner-audit-9e3156-dirs-mac",
+      "result": "MCP error -32603: MCP request timed out",
+      "job_id": null
+    },
+    {
+      "host": "rog",
+      "idempotency_key": "pred-owner-audit-9e3156-dirs-rog",
+      "result": "MCP error -32603: MCP request timed out",
+      "job_id": null
+    },
+    {
+      "host": "desktop",
+      "idempotency_key": "pred-owner-audit-9e3156-dirs-desktop",
+      "job_id": "1a1c57f3c3c-2e65-175",
+      "created_unix_ms": 1794314812476,
+      "status_at_unix_ms": 1794314842154,
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "observed_home": "<configured-login-home>",
+      "scope": "Directory discovery only; no owner database collection"
+    }
+  ],
+  "remaining_pending_at_capture": [],
+  "limitations": [
+    "Authenticated host health does not establish database availability or source provenance",
+    "MCP request timeouts do not establish whether the underlying read-only process executed",
+    "No authentic live owner database or action/effect history has been obtained",
+    "No business action or owner database mutation was performed by the audit"
+  ],
+  "final_readonly_reconciliation": {
+    "schema": "pred-owner-job-reconciliation-summary-v1",
+    "hosts_requested": [
+      "ai395",
+      "pocket4",
+      "x230",
+      "desktop",
+      "mac"
+    ],
+    "tool": "h_process_list_page",
+    "limit_per_host": 128,
+    "new_processes_started": 0,
+    "new_idempotency_keys_created": 0,
+    "source": "pred-owner-job-reconciliation.json",
+    "responses": [
+      {
+        "host": "ai395",
+        "response_metadata": {
+          "has_more": true,
+          "inventory_complete": false,
+          "next_cursor": "pending:eb32dae71d95d9ed8a2b64f6a7f874bafb06e80cbf5cd08c947f88ca3e9bb4de:0",
+          "observation_atomic": false,
+          "observation_deadline_seconds": 30,
+          "observation_started_unix_ms": null,
+          "observer_mode": "continuous_background",
+          "snapshot_semantics": "registry_metadata_at_observation",
+          "snapshot_sha256": null,
+          "status_authoritative": false,
+          "total": null,
+          "validation_pending": true
+        },
+        "matching_jobs": [],
+        "returned_job_count": 0
+      },
+      {
+        "host": "pocket4",
+        "response_metadata": {
+          "has_more": true,
+          "inventory_complete": false,
+          "next_cursor": "pending:f6493d197741f6acbf270023614b16651b8d06cf2a4f133f03748698843d17cb:0",
+          "observation_atomic": false,
+          "observation_deadline_seconds": 30,
+          "observation_started_unix_ms": null,
+          "observer_mode": "continuous_background",
+          "snapshot_semantics": "registry_metadata_at_observation",
+          "snapshot_sha256": null,
+          "status_authoritative": false,
+          "total": null,
+          "validation_pending": true
+        },
+        "matching_jobs": [],
+        "returned_job_count": 0
+      },
+      {
+        "host": "x230",
+        "response_metadata": {
+          "has_more": true,
+          "inventory_complete": false,
+          "next_cursor": "pending:3a04e92432c995807520b55f0f0fb6d600cf0928b3c77646a3e4cbff325b5fa3:0",
+          "observation_atomic": false,
+          "observation_deadline_seconds": 30,
+          "observation_started_unix_ms": null,
+          "observer_mode": "continuous_background",
+          "snapshot_semantics": "registry_metadata_at_observation",
+          "snapshot_sha256": null,
+          "status_authoritative": false,
+          "total": null,
+          "validation_pending": true
+        },
+        "matching_jobs": [],
+        "returned_job_count": 0
+      },
+      {
+        "host": "desktop",
+        "response_metadata": {
+          "has_more": true,
+          "inventory_complete": false,
+          "next_cursor": "pending:d0ca2adf29fd3094244c7783f08d09d6d2bb7fd64edb4612800c315151da5a13:0",
+          "observation_atomic": false,
+          "observation_deadline_seconds": 30,
+          "observation_started_unix_ms": null,
+          "observer_mode": "continuous_background",
+          "snapshot_semantics": "registry_metadata_at_observation",
+          "snapshot_sha256": null,
+          "status_authoritative": false,
+          "total": null,
+          "validation_pending": true
+        },
+        "matching_jobs": [],
+        "returned_job_count": 0
+      },
+      {
+        "host": "mac",
+        "response_metadata": {
+          "has_more": true,
+          "inventory_complete": false,
+          "next_cursor": "pending:ff72dbd029c621e28e418ee7fbbbdbc58ba05e4438565d8d71410ec9c418901e:0",
+          "observation_atomic": false,
+          "observation_deadline_seconds": 30,
+          "observation_started_unix_ms": null,
+          "observer_mode": "continuous_background",
+          "snapshot_semantics": "registry_metadata_at_observation",
+          "snapshot_sha256": null,
+          "status_authoritative": false,
+          "total": null,
+          "validation_pending": true
+        },
+        "matching_jobs": [],
+        "returned_job_count": 0
+      }
+    ],
+    "result": "No job identity recovered; every host returned jobs=[], validation_pending=true, inventory_complete=false, total=null, observation_started_unix_ms=null, status_authoritative=false",
+    "absence_of_jobs_established": false,
+    "api_limits": {
+      "process_list_filters": [
+        "host"
+      ],
+      "process_list_page_filters": [
+        "host",
+        "cursor",
+        "limit"
+      ],
+      "process_lookup_by_idempotency_key_exposed": false,
+      "request_history_and_archive_filters": [
+        "after_id",
+        "limit"
+      ],
+      "request_history_and_archive_include_arguments_or_job_output": false,
+      "private_request_history_scope": "shared verified operator credential; request timestamp/tool name alone cannot reliably identify these queries"
+    },
+    "followup": "Stopped without repeated pending-cursor polls; status/output calls require a job_id that these scoped submissions have not returned"
+  },
+  "alternate_read_channels": {
+    "tilde_path_probes": [
+      {
+        "host": "ai395",
+        "path": "ssh://ai395/~/.local/share/hepta-vnext/fleet-v1/agents",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "remote file access requires an absolute target path"
+            }
+          ],
+          "structuredContent": {
+            "error_code": "INVALID_ARGUMENT"
+          },
+          "isError": true
+        }
+      },
+      {
+        "host": "pocket4",
+        "path": "ssh://pocket4/~/.local/share/hepta-vnext/fleet-v1/agents",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "remote file access requires an absolute target path"
+            }
+          ],
+          "structuredContent": {
+            "error_code": "INVALID_ARGUMENT"
+          },
+          "isError": true
+        }
+      },
+      {
+        "host": "x230",
+        "path": "ssh://x230/~/.local/share/hepta-vnext/fleet-v1/agents",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "remote file access requires an absolute target path"
+            }
+          ],
+          "structuredContent": {
+            "error_code": "INVALID_ARGUMENT"
+          },
+          "isError": true
+        }
+      }
+    ],
+    "pty_probe": {
+      "host": "ai395",
+      "idempotency_key": "pred-owner-audit-9e3156-fleet-pty-ai395",
+      "session_id": "dpty-b2d4cafcbb27a610a5ba50f74bcb05be04ecd4675f3db5175d23070af4458b77",
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 172,
+        "bytes_stored": 172,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794317477061,
+        "exit_code": 0,
+        "output_complete": true,
+        "owner_pid": 418304,
+        "pid": 418305,
+        "state": "exited"
+      },
+      "output": {
+        "fleet_root": "<configured-login-home>/.local/share/hepta-vnext/fleet-v1",
+        "fleet_root_override_set": false,
+        "root_exists": false,
+        "databases": [],
+        "database_listing_truncated": false
+      },
+      "chunk_sha256": "1fe56106419d3a02dfb49dba9a8563a86af4966ecb3d430289595ab5aa1630d8",
+      "output_complete": true,
+      "raw_receipt": "pred-owner-pty-probe.json",
+      "scope": "Fresh operator process environment only; does not inspect environment of every already running service; no owner database mutation or business action",
+      "close_requested_after_observed_exit": true,
+      "close_result": {
+        "result": "already_exited",
+        "outcome": "unknown",
+        "termination_confirmed": false,
+        "scope": "Earlier read already proved exited/0; close acknowledgement itself confirms no additional termination"
+      }
+    },
+    "additional_pty_probes": [
+      {
+        "host": "pocket4",
+        "idempotency_key": "pred-owner-audit-9e3156-fleet-pty-pocket4",
+        "session_id": "dpty-4042df1014d53b73649210365f94ecc170a1b579ff39f3412f33b0c032e8a658",
+        "status": {
+          "boot": "97d9600f-e081-465c-9e6e-62651e09806b",
+          "bytes_seen": 589,
+          "bytes_stored": 589,
+          "capture_error": null,
+          "closed": false,
+          "created_unix_ms": 1794317606919,
+          "exit_code": 0,
+          "output_complete": true,
+          "owner_pid": 3735457,
+          "pid": 3735458,
+          "state": "exited"
+        },
+        "output": {
+          "fleet_root": "<configured-login-home>/.local/share/hepta-vnext/fleet-v1",
+          "fleet_root_override_set": false,
+          "root_exists": false,
+          "databases": [],
+          "database_listing_truncated": false,
+          "same_uid_process_name_matches": [
+            {
+              "pid": 3733355,
+              "comm": "hepta-tool-gate"
+            },
+            {
+              "pid": 3735415,
+              "comm": "hepta-ib-execut"
+            }
+          ],
+          "process_match_truncated": false,
+          "same_uid_processes_examined": 146,
+          "process_entries_truncated": false,
+          "process_entries_unavailable": 0,
+          "process_scope": "bounded same-uid /proc comm names only; no command line or environment; absence of matching names does not prove no renamed owner"
+        },
+        "chunk_sha256": "96ad5b9059742e01346b12b19f14271e168c43de2d750060650af723bf742daf",
+        "output_complete": true,
+        "raw_receipt": "pred-owner-pty-extra-probes.json",
+        "close_requested_after_observed_exit": true,
+        "close_response": {
+          "status": "fulfilled",
+          "value": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"pocket4\",\"outcome\":\"unknown\",\"persistent_across_runtime_restart\":true,\"reconcile_warning\":\"Terminal owner is not accepting close. Inspect this session's exit status; this acknowledgement does not confirm termination.\",\"result\":\"already_exited\",\"session_id\":\"dpty-4042df1014d53b73649210365f94ecc170a1b579ff39f3412f33b0c032e8a658\",\"termination_confirmed\":false}"
+              }
+            ],
+            "structuredContent": null,
+            "isError": false
+          }
+        },
+        "scope": "Fresh operator process environment and bounded same-uid /proc comm-name observation; no command line, no sensitive environment, no whole-home scan, no owner database mutation"
+      },
+      {
+        "host": "x230",
+        "idempotency_key": "pred-owner-audit-9e3156-fleet-pty-x230",
+        "session_id": "dpty-99ac87166f516225e75e558a73f5d7370c62427bc019bf6f066e431918813ce9",
+        "status": {
+          "boot": "b19bd1b9-4dbe-4335-96cf-ed98d393efea",
+          "bytes_seen": 500,
+          "bytes_stored": 500,
+          "capture_error": null,
+          "closed": false,
+          "created_unix_ms": 1794317609024,
+          "exit_code": 0,
+          "output_complete": true,
+          "owner_pid": 1434993,
+          "pid": 1434994,
+          "state": "exited"
+        },
+        "output": {
+          "fleet_root": "<configured-login-home>/.local/share/hepta-vnext/fleet-v1",
+          "fleet_root_override_set": false,
+          "root_exists": false,
+          "databases": [],
+          "database_listing_truncated": false,
+          "same_uid_process_name_matches": [],
+          "process_match_truncated": false,
+          "same_uid_processes_examined": 21,
+          "process_entries_truncated": false,
+          "process_entries_unavailable": 0,
+          "process_scope": "bounded same-uid /proc comm names only; no command line or environment; absence of matching names does not prove no renamed owner"
+        },
+        "chunk_sha256": "28ba10b8c99efe041d3f3443e60640117e815452dbb2d56c78456c7e33905463",
+        "output_complete": true,
+        "raw_receipt": "pred-owner-pty-extra-probes.json",
+        "close_requested_after_observed_exit": true,
+        "close_response": {
+          "status": "fulfilled",
+          "value": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"x230\",\"outcome\":\"unknown\",\"persistent_across_runtime_restart\":true,\"reconcile_warning\":\"Terminal owner is not accepting close. Inspect this session's exit status; this acknowledgement does not confirm termination.\",\"result\":\"already_exited\",\"session_id\":\"dpty-99ac87166f516225e75e558a73f5d7370c62427bc019bf6f066e431918813ce9\",\"termination_confirmed\":false}"
+              }
+            ],
+            "structuredContent": null,
+            "isError": false
+          }
+        },
+        "scope": "Fresh operator process environment and bounded same-uid /proc comm-name observation; no command line, no sensitive environment, no whole-home scan, no owner database mutation"
+      }
+    ]
+  },
+  "final_status": {
+    "real_owner_source_located": false,
+    "independent_effect_observer_located": false,
+    "usable_execution_channel_observed": "h_pty on ai395, pocket4 and x230; all bounded probes exited 0 with complete archived output",
+    "primary_blocker": "Authentic TaskFlow owner database/history and independent effect observer not located in the checked scopes",
+    "additional_channel_issue": "h_process_start acknowledgements and durable job registry observations timed out or remained pending; this does not imply all execution is unavailable",
+    "running_name_candidates": "pocket4 same-uid hepta-tool-gate and hepta-ib-execut comm names observed; names do not authenticate a TaskFlow owner",
+    "no_background_task_added": "Only one-shot bounded inspection children; each observed exited 0 before close request",
+    "real_owner_records_collected": 0,
+    "business_effect_labels_created": 0
+  },
+  "publication_redaction": "Login home prefixes removed. Original tool chunk digests refer to original output, not to this redacted summary."
+}

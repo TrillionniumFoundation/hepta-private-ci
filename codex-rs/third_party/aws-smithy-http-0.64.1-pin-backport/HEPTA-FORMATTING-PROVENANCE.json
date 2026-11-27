@@ -1,0 +1,241 @@
+{
+  "schema": "hepta.vendor.repository-formatting.v1",
+  "package_directory": "codex-rs/third_party/aws-smithy-http-0.64.1-pin-backport",
+  "formatting_input_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+  "formatted_source_commit": "f7353f648d4d59444d2496c0dbee3f0cd80479a2",
+  "kind": "repository Rust formatting",
+  "source_files": [
+    {
+      "path": "src/event_stream.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "612e137bcbd053275d2bfd4bdb1741097bd9f6af",
+        "sha256": "ef7e0692354e0fdcf9ff4dd8b4069dae353d29fc11b123888bc507610b8ab082",
+        "bytes": 609
+      },
+      "after": {
+        "oid": "833bf7f644b05d91e9544ea9b1dd2156c9e5d6e4",
+        "sha256": "eac7bfcd43635602b46634ce5331278c0bc7f453ccd759ccce2cf9c115b919d8",
+        "bytes": 784
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/event_stream/receiver.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "f08b72a190b0129ad32a4b5c675c5dcba9816b67",
+        "sha256": "1774bbd559a738094cccb16fcb9b5b44f61d52f702a12d57525d274116461da5",
+        "bytes": 22967
+      },
+      "after": {
+        "oid": "76e2be72d32f8c8b734ec9e47fcca3234dfadc61",
+        "sha256": "7f316b42666335687140452412a529b11fab2b0473e2837085e3b46c6efd52c7",
+        "bytes": 23341
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/event_stream/sender.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "66551d308eefe569dbe96ca8be8269068650b0f5",
+        "sha256": "3dd3ea53103a1d3d67cc705bafbe99ec7a1803abe2811136e0b90e08f04ae0db",
+        "bytes": 15089
+      },
+      "after": {
+        "oid": "bc9bf0782c716e7e505220342e64fa296ba195ab",
+        "sha256": "4460968a23a8bb04c7e65a2edc53783e20cef7bc081edf4dce26af20f2490917",
+        "bytes": 15414
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/futures_stream_adapter.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "74b1adb144af4ca484795b4de395ebcf331ca5c8",
+        "sha256": "5c9b33f01a2bd374a1f1efba37c4288a11f95450a285e31df95f972b198f4ae8",
+        "bytes": 1963
+      },
+      "after": {
+        "oid": "87a5b95daea3cda4599a78c61f58bfef160a2396",
+        "sha256": "11d6da411addc1076ba4c7fa78943fa100bb40fa93368f2576d6c4d383a1e425",
+        "bytes": 1976
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/header.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "17b2ed07066fabb1fc1553d3298a62289e8a8cd5",
+        "sha256": "0648d63263feccb8b6af221c6f98a3936097a9c519bdcabde756d958a2a0fc89",
+        "bytes": 32946
+      },
+      "after": {
+        "oid": "b443acd2f4071f67824e5e07b6d1f64686093a9f",
+        "sha256": "e50fbc1b2c2881c118c4b2d81a17f66099799d67308ef22d439e169ff2dd0966",
+        "bytes": 33293
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/label.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "720b812c5c4d00951436532a86092fd962d1f665",
+        "sha256": "f32be7afcd25db2bc6a94cf80f91df5971ab9025009159e4ef0db6f523c89fc8",
+        "bytes": 2215
+      },
+      "after": {
+        "oid": "2841371fea07d4e0f5162373747e375d921fad4f",
+        "sha256": "72b429b6bbd3ae0c42d2d95032529b489c426cb79114640b7ce778d537d41d7c",
+        "bytes": 2266
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/query.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "4933715be38c3f526688a12a0a537ebe85bf2812",
+        "sha256": "ab13c5a8b2acbe218aa8e25637546520982779010c76cd0a9d98f1f379710557",
+        "bytes": 2961
+      },
+      "after": {
+        "oid": "979ca5a364c08c8da9b72ac901a9091bed5e0086",
+        "sha256": "81178cd5b97047b94086f33804d60f5fa4c6c46cbeac85415ccbcc63f0cccda0",
+        "bytes": 3012
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/urlencode.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "cf97935f608598a40803405e67e3abc286e63bad",
+        "sha256": "ba7a72c1d32c2d2b62ee965d99cdbbbbddea52f7ee12d49614edc5a7ee31cd39",
+        "bytes": 1525
+      },
+      "after": {
+        "oid": "d1dd4e8c36c3a2bf0694e76e7ef1885740af4375",
+        "sha256": "5b683eda1ced4eeb1eecdba4e620b413655052d7cde26438af9afb000beefcfa",
+        "bytes": 1545
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    }
+  ],
+  "source_file_count": 8,
+  "original_control_records": [
+    {
+      "path": "codex-rs/third_party/aws-smithy-http-0.64.1-pin-backport/Cargo.toml",
+      "mode": "100644",
+      "oid": "3d62d233a0d3bc1d2476d458e55238b45d8688b8",
+      "size": 2414,
+      "sha256": "bbc28424b12c6762175c9466ac71d019681b53ac4d206a56b871612e1803fd06"
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-http-0.64.1-pin-backport/HEPTA-PATCH-PROVENANCE.json",
+      "mode": "100644",
+      "oid": "e0240e9051f8e08beaa1a39a29fbef84c4e6b637",
+      "size": 2472,
+      "sha256": "be880c48a7c5e17c477165598dbaf7042b8155ac16d1d7c2b4d14db01da270cc"
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-http-0.64.1-pin-backport/HEPTA-PATCHES.md",
+      "mode": "100644",
+      "oid": "ea9bca4611d4674d56ceba06c754cfcb76b4c369",
+      "size": 895,
+      "sha256": "930312e621d1b1d18431664e0a0f3cba54aa3bd3f63c3f344bd1310fdabf9661"
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-http-0.64.1-pin-backport/HEPTA-PIN-UTILS.patch",
+      "mode": "100644",
+      "oid": "69ce2d5d5dcb59f4b24a64e0dee6cd53c6cb48b4",
+      "size": 413,
+      "sha256": "10726a1f3e59afe401fba181e3ad476808d2025f958cc563da07c6f61c691c6c"
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-http-0.64.1-pin-backport/README.md",
+      "mode": "100644",
+      "oid": "0631f8a788c0a9b8e3514084182c67c13eb2dd59",
+      "size": 618,
+      "sha256": "9bc056dbb268f3d24ec4cd7d563bccbc5907fe0fa9cd7c3e6ea40c121965033a"
+    }
+  ],
+  "preserved_license_files": [
+    {
+      "path": "codex-rs/third_party/aws-smithy-http-0.64.1-pin-backport/LICENSE",
+      "mode": "100644",
+      "oid": "67db8588217f266eb561f75fae738656325deac9",
+      "bytes": 10142,
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+    }
+  ],
+  "formatter": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "732e934ba496d90fbe042b8d41d479ef901643e5"
+    ],
+    "original_command_checkout": "fcff463449abc987a8552b29102cd3e196214b99",
+    "input_files_equal_at_c213": true,
+    "rust_toolchain": "1.96.0",
+    "configuration": [
+      {
+        "path": "codex-rs/rustfmt.toml",
+        "oid": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+        "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+      },
+      {
+        "path": "codex-rs/rust-toolchain.toml",
+        "oid": "917d2492264a35bc9c0feaef41878d8825870866",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      {
+        "path": "scripts/format.py",
+        "oid": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "path": "justfile",
+        "oid": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      }
+    ],
+    "original_run_receipt_sha256": "c42cc5dfd146c96d9138dc8ead8e89ece58a849a69f9022389a7122606fc6ec2",
+    "original_changed_path_manifest_sha256": "b362d3ceecdfb901241b0469e078cf462f42db0eb65c49789df97d8e81375046",
+    "original_full_command_exit": 1,
+    "original_full_command_failure": "A separate historical source archive lacked its Rust edition context; this is not a full-repository formatting-pass receipt."
+  },
+  "review": {
+    "import_targets_aliases_visibility_and_attached_attributes_equal": true,
+    "comments_byte_equal": true,
+    "non_import_literals_equal": true,
+    "remaining_changes": "Trailing commas, single-expression closure/match block layout, return semicolons, and same-order adjacent derive grouping as emitted by rustfmt.",
+    "method": "Exact Git/SHA/mode checks and complete normalized changed-token classification; not a compiler AST equivalence proof or a new whole-package functional audit.",
+    "runtime_tests_run_for_this_formatting_change": false,
+    "new_runtime_or_scientific_qualification": false
+  },
+  "dependencies_and_features_changed_by_this_formatting_change": false,
+  "minimal_dependency_patch_files_rewritten": false,
+  "license_or_upstream_readme_files_rewritten": false
+}

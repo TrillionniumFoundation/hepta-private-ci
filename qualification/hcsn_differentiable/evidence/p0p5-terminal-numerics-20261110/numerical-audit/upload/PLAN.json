@@ -1,0 +1,179 @@
+{
+  "archive_identity_not_recompressed_or_renamed": true,
+  "bootstrap_receipt": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/receipt.json",
+  "collection_receipt": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1/COLLECTION-RECEIPT.json",
+  "execution_resource_contract": {
+    "cpu_quota_percent": 100,
+    "enforcer": "h_process_start timeout_seconds",
+    "memory_max_bytes": 1073741824,
+    "nice": 19,
+    "stable_key": "hcsn-terminal-numerics-draft-upload-c385-v1",
+    "whole_hard_wall_seconds": 2400
+  },
+  "original_archive": {
+    "bytes": 34050599,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1.zip",
+    "sha256": "e96030a4c1a29031e56c406d7cc72cee9d141a0edb4701e3a83d60b5d5e32c52"
+  },
+  "output": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/terminal-numerics-draft-upload-v1",
+  "receipt_asset_name": "hcsn-terminal-numerics-collector-receipts-20261110-v1.zip",
+  "receipt_inputs": [
+    {
+      "bytes": 1661,
+      "member": "collector-launch/collector-start.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/collector-start.json",
+      "sha256": "f222473bd2efaa7d620486c42b001558fa15446ca95143078cabb7f696295296"
+    },
+    {
+      "bytes": 1273,
+      "member": "collector-launch/download-receipt.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/download-receipt.json",
+      "sha256": "936e9ee2f123a1fec4b67e985eca621c4dfdcdafcc36a00c9145ae20cb70e5d1"
+    },
+    {
+      "bytes": 49258,
+      "member": "collector-launch/git-response.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/git-response.json",
+      "sha256": "7aa48d5cc91d125540591b852b64ec4255e8a4002b5c890d18d515bb9a6c4121"
+    },
+    {
+      "bytes": 0,
+      "member": "collector-launch/git.stderr",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/git.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 686,
+      "member": "collector-launch/launch.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/launch.json",
+      "sha256": "ccf754c85760df5988e3dc2771af675a98264fd2e3a41c8156dc64b1fea9b9eb"
+    },
+    {
+      "bytes": 35529,
+      "member": "collector-launch/program.zip",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/program.zip",
+      "sha256": "442196e551dffe877fedcef3ac25c5dd0de19010273692ffdee851fef61a6846"
+    },
+    {
+      "bytes": 2939,
+      "member": "collector-launch/receipt.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/receipt.json",
+      "sha256": "43d0581a893ac2ec1e478082f7897ac73c53e62673ad01ded885001694ef02d9"
+    },
+    {
+      "bytes": 8401,
+      "member": "collector-launch/source.py",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/source.py",
+      "sha256": "57dad8edb6c09aa65925f5ea80279990d6ee0e099a5629eb3fdc183a904eaf82"
+    },
+    {
+      "bytes": 0,
+      "member": "collector-launch/stderr",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 441,
+      "member": "collector-launch/stdout",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-launch-v1/stdout",
+      "sha256": "7d83df37606a195b9219d11e24ac9882ac83325cb7ee470b52bb8f103206d156"
+    },
+    {
+      "bytes": 8567,
+      "member": "postmortem/COLLECTION-RECEIPT.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1/COLLECTION-RECEIPT.json",
+      "sha256": "8461128602a2ca104d71401e4d42f59510aac37a96d79942a6c8e2344a409804"
+    },
+    {
+      "bytes": 194004,
+      "member": "postmortem/SUMMARY.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1/SUMMARY.json",
+      "sha256": "c50b137cb66f9dc29217f919098cb592285a5395cbf60f6381681b264d531812"
+    },
+    {
+      "bytes": 750901,
+      "member": "postmortem/RESULT.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1/RESULT.json",
+      "sha256": "56a33e26617f8abcdae1b4cf8dab59520753782407d0cee130124831df6fa374"
+    },
+    {
+      "bytes": 136056,
+      "member": "postmortem/ORIGINAL-MANIFEST.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1/ORIGINAL-MANIFEST.json",
+      "sha256": "05721bd57e5731f3da988b62611b720b0a22ceb49bb866a7098267d1dc9452a7"
+    },
+    {
+      "bytes": 14377,
+      "member": "collector-source/collect_terminal.py",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1/collect_terminal.py",
+      "sha256": "d86e43126a2445db5467e2b0de2d8ec5f3e7481a646561d1a0c8173bde5953ad"
+    },
+    {
+      "bytes": 9254,
+      "member": "collector-source/metadata_summary.py",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1/metadata_summary.py",
+      "sha256": "3fd9d3c3b55840a343eace682d31e74e2b95bd66dbc34853176e6105da86409b"
+    },
+    {
+      "bytes": 8414,
+      "member": "collector-source/test_metadata_guards.py",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1/test_metadata_guards.py",
+      "sha256": "abd77ecb88b51471242e79df63c421cb700e46d20e1269940c916e6450174700"
+    },
+    {
+      "bytes": 3327,
+      "member": "collector-source/validate_and_freeze.py",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1/validate_and_freeze.py",
+      "sha256": "ecccfc1e1383be00e4ef4bf9493f630ac04a25000ef6f9e397f5b6b45f968d3b"
+    },
+    {
+      "bytes": 7806,
+      "member": "publication-inventory/RESULT.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/terminal-numerics-draft-input-inventory-v1/RESULT.json",
+      "sha256": "107b7b2cf9111329c36753a814f72982d583e2573bb2f44cbb83432a73fe36cd"
+    },
+    {
+      "bytes": 4782,
+      "member": "publication-inventory/source.py",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/terminal-numerics-draft-input-inventory-v1/source.py",
+      "sha256": "e8adaeaa25a2fa1eb2b02ca18bf9393923ef830199e7aa4955cea3800c35d52c"
+    },
+    {
+      "bytes": 1207,
+      "member": "publication-inventory/GNU-TIME.txt",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/terminal-numerics-draft-input-inventory-v1.time.txt",
+      "sha256": "d6975c65a56ef70b5fdcfaa9e24bb4a9c8f7e1160bc407768bafc87dbc05cba1"
+    },
+    {
+      "bytes": 1246,
+      "member": "publication-plan/RESOURCE-CONTRACT.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/terminal-numerics-draft-uploader-program-v1/RESOURCE-CONTRACT.json",
+      "sha256": "f8a12d4b815b4e9e0cfc326c82c769f04ac91da3e7936bd4b64fb78350a24fef"
+    },
+    {
+      "bytes": 2001,
+      "member": "publication-plan/ROOT-STATIC-REVIEW.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/terminal-numerics-draft-uploader-program-v1/ROOT-STATIC-REVIEW.json",
+      "sha256": "d2f0e710fe7ce4f416de8d000ec5cd276bf5c572f94a1dbf7913675e5be99ab4"
+    },
+    {
+      "bytes": 1557,
+      "member": "publication-plan/INDEPENDENT-STATIC-REVIEW.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/terminal-numerics-draft-uploader-program-v1/INDEPENDENT-STATIC-REVIEW.json",
+      "sha256": "fed9467fd410d19b0d0ca1c42a7b1d2d7732864abe940b10a41e55880c4de63b"
+    },
+    {
+      "bytes": 1060,
+      "member": "publication-plan/UPLOAD-INTENT.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/terminal-numerics-draft-uploader-program-v1/UPLOAD-INTENT.json",
+      "sha256": "5daddc3f4c693f4f567adfc5a90c7d577e98d54eef783aa4016b146e03c688fb"
+    }
+  ],
+  "schema": "terminal-numerics-draft-upload-input-v1",
+  "scientific_and_numerical_admission": "HOLD",
+  "source": {
+    "bytes": 13296,
+    "sha256": "8409832f5c6561075634fc86cae060fc9c3212c4098679fb00b9d38dbc181cc3"
+  },
+  "source_inventory_no_models_loaded": true
+}

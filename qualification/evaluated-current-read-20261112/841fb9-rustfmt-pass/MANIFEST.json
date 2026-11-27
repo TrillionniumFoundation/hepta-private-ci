@@ -1,0 +1,31 @@
+{
+  "source_head": "841fb932deb95cf4368ef01e28f0c8081a1c48fa",
+  "actual_execution_commit": "caa4f25994631f1355c656eee85fa52adf0c675d",
+  "actual_execution_tree": "b3be3ac47b29385ffbb402e42b24a7e0aa3bdd29",
+  "actual_execution_parents": [
+    "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "841fb932deb95cf4368ef01e28f0c8081a1c48fa"
+  ],
+  "source_tree_equal": true,
+  "run_id": 43239905696,
+  "job_id": 131258485129,
+  "conclusion": "success",
+  "command": "cargo fmt -- --config imports_granularity=Item --check",
+  "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "diff_hunks": 0,
+  "no_transfer_to_followup_head": true,
+  "original_files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/841fb9-rustfmt-pass/job.original.log",
+      "blob_sha": "0530af3093ff2099248818c2e8b535204045c9d8",
+      "bytes": 134555,
+      "sha256": "992343ab13e6b27315a685e203d649a760135f620ff0fa7b868e60901b2a617d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/841fb9-rustfmt-pass/execution-commit.original.json",
+      "blob_sha": "51c644a9920297a94e3bfd8b8312207f637d73e7",
+      "bytes": 2798,
+      "sha256": "dffc493e1cd9c576594c46a2f3eb6ae04d35b192194a20b3e6acae8fd279adb6"
+    }
+  ]
+}

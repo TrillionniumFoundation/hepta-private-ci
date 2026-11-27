@@ -1,0 +1,44 @@
+name: Context compiler worktree export
+
+on:
+  push:
+    branches:
+      - work/context-compiler-v2-closure-20260927
+    paths:
+      - .github/workflows/context-compiler-worktree-export.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: context-compiler-worktree-export
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 20
+    steps:
+      - name: Check out closure branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/context-compiler-v2-closure-20260927
+          fetch-depth: 1
+          clean: true
+      - name: Package worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar \
+            --exclude='.git' \
+            --exclude='target' \
+            --exclude='node_modules' \
+            -czf /tmp/hepta-context-compiler-worktree.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-context-compiler-worktree
+          path: /tmp/hepta-context-compiler-worktree.tar.gz
+          if-no-files-found: error
+          retention-days: 1

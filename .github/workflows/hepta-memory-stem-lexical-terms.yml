@@ -1,0 +1,131 @@
+name: MemoryCell pinned FTS question-term ablation
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_lexical_terms.py"
+      - "scripts/memory_cell/stem_lexical_probe.py"
+      - "scripts/memory_cell/test_stem_lexical_terms.py"
+      - ".github/workflows/hepta-memory-stem-lexical-terms.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: stem-lexical-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Scoped Python format and train-only protocol
+        run: |
+          set -euo pipefail
+          mkdir /tmp/lexical-contract
+          python3 -m pip install uv==0.8.22 numpy==1.26.4
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stem_lexical_terms.py' -v 2>&1 | tee /tmp/lexical-contract/tests.log
+          uv run --frozen --project scripts ruff format --diff scripts/memory_cell/stem_lexical_terms.py scripts/memory_cell/stem_lexical_probe.py scripts/memory_cell/test_stem_lexical_terms.py > /tmp/lexical-contract/format.diff 2>&1 || true
+          cat /tmp/lexical-contract/format.diff
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/stem_lexical_terms.py scripts/memory_cell/stem_lexical_probe.py scripts/memory_cell/test_stem_lexical_terms.py 2>&1 | tee /tmp/lexical-contract/format.log
+      - name: Preserve exact source and failure logs
+        if: always()
+        run: |
+          set -euo pipefail
+          cp scripts/memory_cell/stem_lexical*.py scripts/memory_cell/test_stem_lexical_terms.py /tmp/lexical-contract/
+          git rev-parse HEAD > /tmp/lexical-contract/tested-commit.txt
+          (cd /tmp/lexical-contract && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-lexical-contract
+          path: /tmp/lexical-contract
+          if-no-files-found: error
+  original-index-replay:
+    needs: contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pin original source, model dependencies and provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/lexical-run
+          git rev-parse HEAD > /tmp/lexical-run/tested-commit.txt
+          python3 -m venv /tmp/lexical-py
+          /tmp/lexical-py/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/lexical-py/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/lexical-py/bin/pip freeze > /tmp/lexical-run/environment.txt
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > /tmp/stem-strict-original.zip
+          printf '%s  %s\n' 1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 /tmp/stem-strict-original.zip | sha256sum -c -
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Verify native source archive and original MiniLM identity
+        run: |
+          set -euo pipefail
+          /tmp/lexical-py/bin/python - <<'PY'
+          import tarfile
+          from pathlib import PurePosixPath, Path
+          from native import digest
+          from pretrained import file_inventory
+          with tarfile.open('/tmp/memory-inputs.tar.gz', 'r:gz') as archive:
+              members = archive.getmembers()
+              if len(members) > 10000 or sum(x.size for x in members) > 2*1024**3:
+                  raise ValueError('oversized original source')
+              for item in members:
+                  p = PurePosixPath(item.name)
+                  if (p.is_absolute() or '..' in p.parts or not p.parts
+                          or p.parts[0] != 'memory-inputs'
+                          or not (item.isfile() or item.isdir())):
+                      raise ValueError('unsafe original source path')
+              archive.extractall('/tmp', members=members, filter='data')
+          if digest(file_inventory(Path('/tmp/memory-inputs/encoder'))) != '5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a':
+              raise ValueError('original frozen retriever moved')
+          PY
+      - name: Reopen original time-cut indices and freeze label-blind decisions
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/lexical-run/resources.txt \
+            /tmp/lexical-py/bin/python scripts/memory_cell/stem_lexical_probe.py \
+            --strict-zip /tmp/stem-strict-original.zip \
+            --staged /tmp/memory-inputs \
+            --out /tmp/lexical-run/receipts \
+            2>&1 | tee /tmp/lexical-run/replay.log
+      - name: Retain original receipts and all failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir /tmp/lexical-run/source
+          cp scripts/memory_cell/stem_lexical*.py scripts/memory_cell/test_stem_lexical_terms.py /tmp/lexical-run/source/
+          cp .github/workflows/hepta-memory-stem-lexical-terms.yml /tmp/lexical-run/source/
+          (cd /tmp/lexical-run && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-lexical-replay
+          path: /tmp/lexical-run
+          if-no-files-found: error

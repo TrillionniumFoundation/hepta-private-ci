@@ -1,0 +1,69 @@
+{
+  "active_wall_seconds": 73.20046174200252,
+  "attempts": [
+    {
+      "attempt": 1,
+      "completed": false,
+      "completed_test_groups": [],
+      "cpu_seconds": 0.9132468719999999,
+      "error": {
+        "message": "Tracked bytes/mode differ",
+        "type": "RuntimeError"
+      },
+      "wall_seconds": 1.9607252569985576
+    },
+    {
+      "attempt": 2,
+      "completed": false,
+      "completed_test_groups": [
+        {
+          "name": "common-python-controls",
+          "passed": 74,
+          "skipped": 0,
+          "tests": 74
+        },
+        {
+          "name": "aws-auth-tests",
+          "passed": 5,
+          "skipped": 0,
+          "tests": 5
+        }
+      ],
+      "cpu_seconds": 19.060856504,
+      "error": {
+        "message": "ui-dependency-metadata unexpected exit",
+        "type": "RuntimeError"
+      },
+      "wall_seconds": 25.052535447990522
+    },
+    {
+      "attempt": 3,
+      "completed": true,
+      "completed_test_groups": [
+        {
+          "name": "common-python-controls",
+          "passed": 74,
+          "skipped": 0,
+          "tests": 74
+        },
+        {
+          "name": "aws-auth-tests",
+          "passed": 5,
+          "skipped": 0,
+          "tests": 5
+        },
+        {
+          "name": "native-ui-package",
+          "passed": 33,
+          "skipped": 0,
+          "tests": 33
+        }
+      ],
+      "cpu_seconds": 43.413115702999995,
+      "error": null,
+      "wall_seconds": 46.18720103701344
+    }
+  ],
+  "cpu_seconds": 63.387219079,
+  "nested_steps_not_additive": true
+}

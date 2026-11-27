@@ -1,0 +1,65 @@
+{
+  "schema": "renderer-v3-preparation-final-handoff-v1",
+  "status": "prepared_not_authorized_for_actual_execution",
+  "program_manifest": {
+    "bytes": 2876,
+    "sha256": "eb88492821fed51acd1f3280e5b895bb7c54510d1900591dee3049f1a4396071"
+  },
+  "program_zip": {
+    "bytes": 47899,
+    "sha256": "a884cb12eb20ce2c8655f48812d36063c433ef563a287bda9a415f0a99d1abe6"
+  },
+  "source_runtime": {
+    "input_contract.py": {
+      "bytes": 13770,
+      "sha256": "87249f37695d40a96d87b058be6760d151d22c4c11d86edbcce457f20c8dba4a"
+    },
+    "native_analysis_envelope.py": {
+      "bytes": 12616,
+      "sha256": "ca662d285e7f88113c8055bbb4fcbe4af013feb5dbc5fc5b4ae9244f11f5f7db"
+    },
+    "native_observation_parsers.py": {
+      "bytes": 5516,
+      "sha256": "7e5233efabba65c9bb3dc555cec84f3b66722219e161623f9f0fcddc31e18e86"
+    },
+    "render_c2_resources.py": {
+      "bytes": 14032,
+      "sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef"
+    }
+  },
+  "main_187_lines_equal_old_v2": true,
+  "new_core_manifest": "f2d1ce683591a9b8575aab2d0981bf67b9e465bf9686a8da2e87a2246a0ea70e",
+  "supervisor_entry": "6e6be1db16c1a05f49806b63f8024111ed25c02bda61510dcde4a9e4e3a39be0",
+  "owner_validation_scope": {
+    "first_candidate_tests": 6,
+    "final_candidate_tests": 8,
+    "same_final_source_before_after": true,
+    "no_whole_renderer_positive_test": true
+  },
+  "independent_review": {
+    "original_helper_probe_calls": 5,
+    "closure_calls": 5,
+    "closure_expected_outcomes": true,
+    "original_postcheck_source_unchanged": false,
+    "original_before_count": 9,
+    "original_after_count": 7,
+    "later_full_roster_hash_count": 9,
+    "posthoc_rebind_not_recreated_contemporaneous_after": true,
+    "no_probe_rerun": true,
+    "review": {
+      "bytes": 5395,
+      "sha256": "3a1cacec4ca5056cd340a9a041b4f843d213a9ef7b4df002764c8abf0828350b"
+    }
+  },
+  "three_prospective_gaps_closed": [
+    "child wall plus finalization must fit complete GNU native wall",
+    "core own prefix plus exact worker CPU must fit complete OS child CPU",
+    "actual complete OS child command equals native request-derived launcher command"
+  ],
+  "native_admission_scope": "155s/512MiB original native metadata plus120s child; not1950s auditor and not a renderer execution allowance.",
+  "actual_render_or_Matplotlib_import_or_C2_or_model_or_E_access": false,
+  "execution_authorized": false,
+  "scientific_admission": "HOLD",
+  "future_gate": "Actual originals plus a new exact root render decision, then one bounded real render and visual QA.",
+  "freeze_note": "Program FREEZE was written before the independent posthoc coverage addendum. It remains unchanged; this final external handoff binds that later evidence."
+}

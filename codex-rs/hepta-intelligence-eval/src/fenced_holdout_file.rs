@@ -4,6 +4,8 @@
 //! On a shared filesystem whose locks and fsync are linearizable across hosts,
 //! the same format can coordinate host failover. Recovery accepts an
 //! independently retained minimum anchor and fails closed on rollback.
+//! Every load and CAS replays the same physical grammar. Observed uncertainty
+//! poisons this handle; the poison is not a persistent cross-process fence.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -22,10 +24,20 @@ use crate::FinalHoldoutCasAnchorV1;
 use crate::FinalHoldoutCasRecordV1;
 use crate::FinalHoldoutCasStoreError;
 use crate::FinalHoldoutCasStoreV1;
-use crate::FinalHoldoutJournalV1;
 use crate::HoldoutWriterFenceV1;
 use crate::closure::decode_holdout_plan;
 use crate::closure::encode_holdout_plan;
+use crate::holdout_envelope::HoldoutJournalV2;
+use crate::holdout_envelope::HoldoutPlanEnvelopeV2;
+use crate::holdout_file_lock::AcquiredFile;
+use crate::paired_plan::decode_paired_plan;
+use crate::paired_plan::encode_paired_plan;
+
+#[path = "fenced_holdout_file_replay.rs"]
+mod physical;
+
+#[path = "fenced_holdout_current.rs"]
+mod current;
 
 const MAGIC: &[u8; 8] = b"HEPTFC01";
 const HEADER: usize = 72;
@@ -34,6 +46,11 @@ const MAX_FRAME: usize = 4096;
 const MAX_RECORDS: usize = 1_000_000;
 const EVENT_FENCE: u8 = 0;
 const EVENT_PLAN: u8 = 1;
+const EVENT_PAIRED_PLAN: u8 = 2;
+
+#[cfg(feature = "qualification-owned-file-read")]
+#[path = "fenced_holdout_file_observation.rs"]
+mod observation;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LockedFileCasErrorV1 {
@@ -57,16 +74,18 @@ impl fmt::Display for LockedFileCasErrorV1 {
 impl StdError for LockedFileCasErrorV1 {}
 
 pub struct LockedFileFinalHoldoutCasStoreV1 {
-    file: File,
+    file: AcquiredFile,
     binding: Digest32,
     state: Option<FinalHoldoutCasRecordV1>,
     length: u64,
+    image_digest: Digest32,
+    history_digest: Digest32,
     poisoned: bool,
 }
 
 impl LockedFileFinalHoldoutCasStoreV1 {
-    pub fn create(mut file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+    pub fn create(file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
+        let mut file = acquire(file, binding)?;
         if file.metadata().map_err(io_error)?.len() != 0 {
             return Err(LockedFileCasErrorV1::AlreadyInitialized);
         }
@@ -77,91 +96,134 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         file.write_all(&header)
             .and_then(|()| file.sync_all())
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
-        Ok(Self {
+        let observed = current::read_physical(&mut file, binding, None)
+            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
+        if observed.bytes != header || observed.state.is_some() {
+            return Err(LockedFileCasErrorV1::Indeterminate);
+        }
+        let mut store = Self {
             file,
             binding,
             state: None,
             length: HEADER as u64,
+            image_digest: Digest32::of_bytes(&header),
+            history_digest: observed.history_digest,
             poisoned: false,
-        })
+        };
+        store
+            .require_physical_current()
+            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
+        Ok(store)
     }
 
+    /// Recover the original physical history against the retained minimum
+    /// prefix. This never initializes, repairs or advances an external anchor.
     pub fn recover(
-        mut file: File,
+        file: File,
         binding: Digest32,
         minimum: Option<FinalHoldoutCasAnchorV1>,
     ) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
-        let length = file.metadata().map_err(io_error)?.len();
-        if length > MAX_BYTES {
-            return Err(LockedFileCasErrorV1::Capacity);
+        let mut file = acquire(file, binding)?;
+        let bytes = physical::read_stable_image(&mut file)?;
+        let state = physical::replay_image(&bytes, binding, minimum)?;
+        let observed = current::read_physical(&mut file, binding, minimum)?;
+        if observed.bytes != bytes || observed.state != state {
+            return Err(LockedFileCasErrorV1::Indeterminate);
         }
-        file.seek(SeekFrom::Start(0)).map_err(io_error)?;
-        let mut bytes = Vec::new();
-        (&mut file)
-            .take(MAX_BYTES + 1)
-            .read_to_end(&mut bytes)
-            .map_err(io_error)?;
-        if bytes.len() as u64 != length {
-            return Err(LockedFileCasErrorV1::Corrupt);
-        }
-        if bytes.len() < HEADER {
-            return Err(LockedFileCasErrorV1::MissingHeader);
-        }
-        if &bytes[..8] != MAGIC
-            || &bytes[8..40] != binding.as_array()
-            || &bytes[40..HEADER] != Digest32::of_bytes(&bytes[..40]).as_array()
-        {
-            return Err(LockedFileCasErrorV1::Corrupt);
-        }
-
-        let mut state: Option<FinalHoldoutCasRecordV1> = None;
-        let mut minimum_witnessed = minimum.is_none();
-        let mut cursor = HEADER;
-        while cursor < bytes.len() {
-            let raw = bytes
-                .get(cursor..cursor + 4)
-                .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            let count = u32::from_be_bytes([raw[0], raw[1], raw[2], raw[3]]) as usize;
-            if !(1..=MAX_FRAME).contains(&count) {
-                return Err(LockedFileCasErrorV1::Capacity);
-            }
-            cursor += 4;
-            let payload = bytes
-                .get(cursor..cursor + count)
-                .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            cursor += count;
-            let checksum = bytes
-                .get(cursor..cursor + 32)
-                .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            cursor += 32;
-            if checksum != Digest32::of_bytes(payload).as_array() {
-                return Err(LockedFileCasErrorV1::Corrupt);
-            }
-            state = Some(replay_event(binding, state, payload)?);
-            if minimum.is_some_and(|anchor| {
-                state
-                    .as_ref()
-                    .is_some_and(|record| record_anchor(record) == anchor)
-            }) {
-                minimum_witnessed = true;
-            }
-        }
-        validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;
         file.sync_all()
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
+        if physical::read_stable_image(&mut file)? != bytes
+            || current::read_physical(&mut file, binding, minimum)?.bytes != observed.bytes
+        {
+            return Err(LockedFileCasErrorV1::Indeterminate);
+        }
         Ok(Self {
             file,
             binding,
             state,
-            length,
+            length: bytes.len() as u64,
+            image_digest: Digest32::of_bytes(&bytes),
+            history_digest: observed.history_digest,
             poisoned: false,
         })
     }
 
+    fn require_physical_current(&mut self) -> Result<Vec<u8>, FinalHoldoutCasStoreError> {
+        self.file
+            .check_process()
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
+        if self.poisoned {
+            return Err(FinalHoldoutCasStoreError::Indeterminate);
+        }
+        self.poisoned = true;
+        let bytes = physical::read_stable_image(&mut self.file)
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
+        if bytes.len() as u64 != self.length
+            || Digest32::of_bytes(&bytes) != self.image_digest
+            || physical::replay_image(&bytes, self.binding, /*minimum*/ None)
+                .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
+                != self.state
+        {
+            return Err(FinalHoldoutCasStoreError::Indeterminate);
+        }
+        self.poisoned = false;
+        Ok(bytes)
+    }
+
+    /// Qualification-only physical bytes from the original locked file.
+    /// The read is bounded (at most 8 MiB), keeps the lock and restores the
+    /// cursor on success or failure. No cached state substitutes for a read.
+    #[cfg(any(test, feature = "qualification-file-observation"))]
+    pub(crate) fn qualification_unpoisoned_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<Vec<u8>, LockedFileCasErrorV1> {
+        use crate::qualification_file_observation::ObservationError;
+
+        self.file
+            .check_process()
+            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
+        if self.poisoned {
+            return Err(LockedFileCasErrorV1::Indeterminate);
+        }
+        match crate::qualification_file_observation::read(&mut self.file, maximum_bytes) {
+            Ok(bytes) => Ok(bytes),
+            Err(ObservationError::Capacity) => Err(LockedFileCasErrorV1::Capacity),
+            Err(ObservationError::Io(error)) => {
+                self.poisoned = true;
+                Err(io_error(error))
+            }
+        }
+    }
+
+    /// Last physically verified anchor, suitable as a retained recovery floor.
+    /// This metadata accessor is not a fresh CURRENT read; load checks the file.
     #[must_use]
     pub fn anchor(&self) -> Option<FinalHoldoutCasAnchorV1> {
         self.state.as_ref().map(record_anchor)
+    }
+
+    fn require_current(&mut self) -> Result<current::PhysicalCurrent, FinalHoldoutCasStoreError> {
+        if self.poisoned {
+            return Err(FinalHoldoutCasStoreError::Indeterminate);
+        }
+        let stable = self.require_physical_current()?;
+        let observed = current::read_physical(&mut self.file, self.binding, None);
+        match observed {
+            Ok(current)
+                if current.bytes == stable
+                    && current.bytes.len() as u64 == self.length
+                    && current.history_digest == self.history_digest
+                    && current.state == self.state =>
+            {
+                self.poisoned = false;
+                Ok(current)
+            }
+            _ => {
+                self.poisoned = true;
+                Err(FinalHoldoutCasStoreError::Indeterminate)
+            }
+        }
     }
 }
 
@@ -176,17 +238,8 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         if binding != self.binding {
             return Err(FinalHoldoutCasStoreError::Conflict);
         }
-        if self
-            .file
-            .metadata()
-            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
-            .len()
-            != self.length
-        {
-            self.poisoned = true;
-            return Err(FinalHoldoutCasStoreError::Indeterminate);
-        }
-        Ok(self.state.clone())
+        let current = self.require_current()?;
+        Ok(current.state)
     }
 
     fn compare_and_swap(
@@ -201,26 +254,18 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         if binding != self.binding || next.binding != binding {
             return Err(FinalHoldoutCasStoreError::Conflict);
         }
-        if self
-            .file
-            .metadata()
-            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
-            .len()
-            != self.length
-        {
-            self.poisoned = true;
-            return Err(FinalHoldoutCasStoreError::Indeterminate);
-        }
+        let current = self.require_current()?;
+        let mut expected_image = current.bytes.clone();
         next.validate(binding)
             .map_err(|_| FinalHoldoutCasStoreError::Rejected)?;
-        let current_digest = self.state.as_ref().map(|record| record.state_digest);
+        let current_digest = current.state.as_ref().map(|record| record.state_digest);
         if current_digest != expected {
             return Err(FinalHoldoutCasStoreError::Conflict);
         }
-        if self.state.as_ref().is_some_and(|current| current == next) {
-            return Ok(());
+        if current.state.as_ref().is_some_and(|record| record == next) {
+            return self.require_current().map(|_| ());
         }
-        let payload = transition_payload(self.state.as_ref(), next)
+        let payload = transition_payload(current.state.as_ref(), next)
             .map_err(|_| FinalHoldoutCasStoreError::Rejected)?;
         if payload.len() > MAX_FRAME {
             return Err(FinalHoldoutCasStoreError::Rejected);
@@ -235,6 +280,8 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         let mut frame = (payload.len() as u32).to_be_bytes().to_vec();
         frame.extend_from_slice(&payload);
         frame.extend_from_slice(Digest32::of_bytes(&payload).as_array());
+        expected_image.extend_from_slice(&frame);
+        self.poisoned = true;
         let write = self
             .file
             .seek(SeekFrom::Start(self.length))
@@ -244,9 +291,35 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
             self.poisoned = true;
             return Err(FinalHoldoutCasStoreError::Indeterminate);
         }
-        self.state = Some(next.clone());
-        self.length = next_length;
-        Ok(())
+        let observed = physical::read_stable_image(&mut self.file)
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
+        if observed != expected_image
+            || physical::replay_image(&observed, binding, /*minimum*/ None)
+                .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
+                .as_ref()
+                != Some(next)
+        {
+            return Err(FinalHoldoutCasStoreError::Indeterminate);
+        }
+        let observed = current::read_physical(&mut self.file, self.binding, None);
+        match observed {
+            Ok(current)
+                if current.bytes == expected_image
+                    && current.bytes.len() as u64 == next_length
+                    && current.state.as_ref() == Some(next) =>
+            {
+                self.state = current.state;
+                self.length = next_length;
+                self.history_digest = current.history_digest;
+                self.image_digest = Digest32::of_bytes(&current.bytes);
+                self.poisoned = false;
+                Ok(())
+            }
+            _ => {
+                self.poisoned = true;
+                Err(FinalHoldoutCasStoreError::Indeterminate)
+            }
+        }
     }
 }
 
@@ -283,9 +356,17 @@ fn transition_payload(
                 .records
                 .last()
                 .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            let encoded =
-                encode_holdout_plan(&record.plan).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            let mut payload = vec![EVENT_PLAN];
+            let (tag, encoded) = match &record.plan {
+                HoldoutPlanEnvelopeV2::CrossFold(plan) => (
+                    EVENT_PLAN,
+                    encode_holdout_plan(plan).map_err(|_| LockedFileCasErrorV1::Corrupt)?,
+                ),
+                HoldoutPlanEnvelopeV2::Paired(plan) => (
+                    EVENT_PAIRED_PLAN,
+                    encode_paired_plan(plan).map_err(|_| LockedFileCasErrorV1::Corrupt)?,
+                ),
+            };
+            let mut payload = vec![tag];
             payload.extend_from_slice(&encoded);
             Ok(payload)
         }
@@ -306,31 +387,41 @@ fn replay_event(
                     if fence.generation <= current.fence.generation {
                         return Err(LockedFileCasErrorV1::Rollback);
                     }
-                    FinalHoldoutJournalV1::from_snapshot_with_record_limit(
+                    HoldoutJournalV2::from_snapshot_with_record_limit(
                         current.journal.clone(),
                         MAX_RECORDS,
                     )
                     .map_err(|_| LockedFileCasErrorV1::Corrupt)?
                 }
-                None => FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
+                None => HoldoutJournalV2::with_record_limit(MAX_RECORDS)
                     .map_err(|_| LockedFileCasErrorV1::Corrupt)?,
             };
             FinalHoldoutCasRecordV1::new(binding, fence, journal.snapshot())
                 .map_err(|_| LockedFileCasErrorV1::Corrupt)
         }
-        EVENT_PLAN => {
+        EVENT_PLAN | EVENT_PAIRED_PLAN => {
             let current = current.ok_or(LockedFileCasErrorV1::Corrupt)?;
-            let plan =
-                decode_holdout_plan(&payload[1..]).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            let mut journal = FinalHoldoutJournalV1::from_snapshot_with_record_limit(
+            let mut journal = HoldoutJournalV2::from_snapshot_with_record_limit(
                 current.journal.clone(),
                 MAX_RECORDS,
             )
             .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            let receipt = journal
-                .consume(journal.head_digest(), &plan)
-                .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            if receipt.disposition != crate::HoldoutUseDispositionV1::Recorded {
+            let disposition = if tag == EVENT_PLAN {
+                let plan = decode_holdout_plan(&payload[1..])
+                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+                journal
+                    .consume(journal.head_digest(), &plan)
+                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?
+                    .disposition
+            } else {
+                let plan =
+                    decode_paired_plan(&payload[1..]).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+                journal
+                    .consume_paired(journal.head_digest(), &plan)
+                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?
+                    .disposition
+            };
+            if disposition != crate::HoldoutUseDispositionV1::Recorded {
                 return Err(LockedFileCasErrorV1::Corrupt);
             }
             FinalHoldoutCasRecordV1::new(binding, current.fence, journal.snapshot())
@@ -426,14 +517,14 @@ fn record_anchor(record: &FinalHoldoutCasRecordV1) -> FinalHoldoutCasAnchorV1 {
     }
 }
 
-fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
+fn acquire(file: File, binding: Digest32) -> Result<AcquiredFile, LockedFileCasErrorV1> {
     if binding.is_zero() {
         return Err(LockedFileCasErrorV1::Binding);
     }
     if !file.metadata().map_err(io_error)?.is_file() {
         return Err(LockedFileCasErrorV1::NotRegular);
     }
-    file.try_lock().map_err(|error| match error {
+    AcquiredFile::acquire(file).map_err(|error| match error {
         TryLockError::WouldBlock => LockedFileCasErrorV1::Busy,
         TryLockError::Error(error) => LockedFileCasErrorV1::Io(error.kind()),
     })

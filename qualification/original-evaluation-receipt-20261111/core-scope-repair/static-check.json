@@ -1,0 +1,32 @@
+{
+  "exact_scope_wrap_only": true,
+  "all_assertions_preserved": true,
+  "all_durations_preserved": true,
+  "only_changed_path": "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+  "git_diff_check_exit": 0,
+  "git_write_tree_exit": 0,
+  "candidate_tree": "d6bec884bb7eccde708063b93f05ea4280b2408b",
+  "base_missing_unchanged_blob": {
+    "path": "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+    "oid": "29a9bfe7b7cbadf407a437af48f325d477973a9f"
+  },
+  "initial_git_write_tree_failure": 128,
+  "base_blob_recovery": {
+    "method": "GitHub fetch_blob exact SHA; content hash checked before writing only isolated clone object store",
+    "objects": [
+      "29a9bfe7b7cbadf407a437af48f325d477973a9f",
+      "46d1874128b54ebaefc7678ef8833df7b2343490"
+    ],
+    "production_source_edits": 0
+  },
+  "whole_tree_changed_paths": [
+    "codex-rs/core/src/unified_exec/async_watcher_tests.rs"
+  ],
+  "git_cached_diff_check_exit": 0,
+  "counts": {
+    "before_assertions": 29,
+    "after_assertions": 29,
+    "before_duration_expressions": 6,
+    "after_duration_expressions": 6
+  }
+}

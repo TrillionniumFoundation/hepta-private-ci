@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/upload_fresh42_completed_v1.py"
+    ],
+    "created_unix_ms": 1794337407507,
+    "cwd": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "env_keys": [
+      "PYTHONDONTWRITEBYTECODE"
+    ],
+    "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1c6d80213-5074-26d",
+    "idempotency_key": "native-fresh42-terminal-draft-upload-c385-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1c6d80213-5074-26d",
+    "request_digest": "021ba846067bdf62ce68432bae22ae504b567002916546664a866c1fee14e9bd",
+    "request_fingerprint": 151900031157002082,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1c6d80213-5074-26d"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1c6d80213-5074-26d"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

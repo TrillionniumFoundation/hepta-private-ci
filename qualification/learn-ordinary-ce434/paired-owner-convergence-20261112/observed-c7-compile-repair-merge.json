@@ -1,0 +1,571 @@
+{
+  "schema": "learn-observed-c7-compile-repair-merge-v1",
+  "source_base": "c7f5d1950713e592a120807a06b700cd229c35b0",
+  "source_tree": "2f6faa8fc5a3bf2a8e923748a45ec8d56a4a3d1b",
+  "first_parent": "7ac3a6fb5c1e1e56af50c7e030ccd0ae64f4caaf",
+  "ordered_parents": [
+    "7ac3a6fb5c1e1e56af50c7e030ccd0ae64f4caaf",
+    "fafef9d15b7b435aa58034dda7e3993dce9f2a0b",
+    "c08e23e7d94eb44b9c6730f5a1b3dd727f028b49",
+    "b4e16702ce860b0fbee057592227407049dec93d",
+    "8f15799bf0d38752567bd56bbd8a751dad051229",
+    "b8a6a5fad509d41ef24d9039fae258ef04a4bc68",
+    "3d8441ba6de93dcc18350eb7374a2bdc4ed227ea"
+  ],
+  "observed_original": {
+    "source_commit": "fafef9d15b7b435aa58034dda7e3993dce9f2a0b",
+    "source_methods": 423,
+    "source_passed": 423,
+    "source_failures": 0,
+    "source_errors": 0,
+    "source_skips": 0,
+    "source_json_sha256": "96157deb03e58d739f45d26b3a742977004c5c187c4d3bc8bfbae2f1856dc898",
+    "native_evidence_commit": "c08e23e7d94eb44b9c6730f5a1b3dd727f028b49",
+    "original_pty": {
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "host": "desktop",
+      "persistent_across_runtime_restart": true,
+      "reused": true,
+      "session_id": "dpty-31bafa10555af2d5b1bb2ab3613dbb81e722f0190b53ea217f84d61a2271ccf0",
+      "status": {
+        "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+        "bytes_seen": 520,
+        "bytes_stored": 520,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794484293516,
+        "exit_code": 1,
+        "output_complete": true,
+        "owner_pid": 935374,
+        "pid": 935392,
+        "state": "exited"
+      }
+    },
+    "helper_build_exit": 0,
+    "helper_verify_exit": 0,
+    "native_exit": 101,
+    "native_compiler_errors": 36,
+    "native_tests_executed": 0,
+    "source_before_after_clean": true,
+    "caller_self_test_exit": 0,
+    "diagnostic_counts_by_path": {
+      "hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs": 6,
+      "hepta-agentd/src/cell_q24_training_source_operation_tests.rs": 22,
+      "hepta-agentd/src/circuit_deep_training_readback_support_tests.rs": 3,
+      "hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs": 1,
+      "hepta-agentd/src/circuit_original_evaluation_host_tests.rs": 2,
+      "hepta-agentd/src/cell_q24_training_candidate_tests.rs": 1,
+      "hepta-agentd/src/circuit_retained_version_issuer_tests.rs": 1
+    }
+  },
+  "repairs": [
+    {
+      "owner": "Source",
+      "commit": "8f15799bf0d38752567bd56bbd8a751dad051229",
+      "assigned_errors": 26,
+      "root_review": {
+        "exactEdits": [
+          [
+            "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+            "    assert_eq!(material.bundle(), candidate);\n",
+            "    assert_eq!(material.bundle(), candidate.as_ref());\n"
+          ],
+          [
+            "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+            "use crate::OriginalCellQ24TrainingStageErrorV1 as StageError;\n",
+            "use pretty_assertions::assert_eq;\nuse pretty_assertions::assert_ne;\n\nuse crate::OriginalCellQ24TrainingStageErrorV1 as StageError;\n"
+          ],
+          [
+            "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+            "use crate::learning_iteration_evidence_client::material::bootstrap_ports as material_ports;",
+            "use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;"
+          ],
+          [
+            "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+            "use pretty_assertions::assert_eq;\n",
+            "use pretty_assertions::assert_eq;\nuse pretty_assertions::assert_ne;\n"
+          ],
+          [
+            "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+            "#[cfg(test)]\npub(crate) use material::retained_version_dataset_fixture;",
+            "#[cfg(test)]\npub(crate) use material::bootstrap_ports as original_material_bootstrap_test_ports;\n#[cfg(test)]\npub(crate) use material::retained_version_dataset_fixture;"
+          ]
+        ],
+        "fullRead": true,
+        "treeExact": true,
+        "manifestUnchanged": true,
+        "sourceCommit": "8f15799bf0d38752567bd56bbd8a751dad051229"
+      },
+      "audit_blob": "b8e1b143d45daa99e30105ba3797b223c8a5c96a"
+    },
+    {
+      "owner": "Evaluator",
+      "commit": "3d8441ba6de93dcc18350eb7374a2bdc4ed227ea",
+      "assigned_errors": 8,
+      "root_review": {
+        "exactSixEdits": true,
+        "treeExact": true,
+        "manifestUnchanged": true,
+        "sourcePinsFullRead": 7
+      },
+      "audit_blob": "c1c0cd95542d39051068ab53b5eebd5c742e5a1a"
+    },
+    {
+      "owner": "Model-Version",
+      "commit": "b8a6a5fad509d41ef24d9039fae258ef04a4bc68",
+      "assigned_errors": 2,
+      "root_review": {
+        "exactFiveEdits": true,
+        "treeExact": true,
+        "manifestUnchanged": true,
+        "productionMethodPrivateUnchanged": true
+      },
+      "audit_blob": "484ca758f920712578caae92470636d4d3200a03"
+    }
+  ],
+  "production_effects": {
+    "description": "All source edits are fixture code or cfg(test) module/import items; original production function bodies and visibility remain unchanged.",
+    "grants_keys_policies_added": false,
+    "statistical_profile_changed": false,
+    "caller_manifest_changed": false
+  },
+  "unchanged_pins": [
+    {
+      "path": "CALLERS.toml",
+      "sha": "16c487a051ad08b6d1a00a1165ad4acd750c39e1"
+    },
+    {
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "sha": "672a90aef6c8791265891fd31b9b2cadb8660952"
+    },
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "sha": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "sha": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "sha": "025813e20504f31d12dae2092a0807a1a4066419"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "sha": "935a1addd32da00f7ace31107885954f479532c3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "sha": "e8400d75ebd2822e5477b38cf49e44ce38ad0733"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "sha": "d467d499a6d20e4e77a913889294d05c7159d91f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "sha": "127ebac10af813a04e4844efdb9e7fa2d381fe71"
+    }
+  ],
+  "original_gate_function_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "function": "pub(super) fn require_stage(",
+      "bytes": 985,
+      "sha256": "41ba69eada8c3a36fc57a4aa8571ee785f8c9dafcfd11860e6f429a6a579db0a",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "e8400d75ebd2822e5477b38cf49e44ce38ad0733",
+      "final_entire_function_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "function": "fn execute_stage<'a>(",
+      "bytes": 1438,
+      "sha256": "65e7dcb3f1ca708c5e7dc8c14a47194f0e3c3efabe012f21ccbb143f1850f518",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "d467d499a6d20e4e77a913889294d05c7159d91f",
+      "final_entire_function_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "function": "pub(super) fn verify_checkpoint_evidence(",
+      "bytes": 626,
+      "sha256": "80eebfc50ca8e51447df8031530f8dd9d9be10820b105bebe8674fe10c96acc3",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "127ebac10af813a04e4844efdb9e7fa2d381fe71",
+      "final_entire_function_equal": true
+    }
+  ],
+  "inventory": {
+    "boundaries": 710,
+    "complete_protected_records": 489,
+    "explicit_qa_callers": 565,
+    "source_methods": 423,
+    "source_modules": 59,
+    "native_cases": 190,
+    "native_groups": 41,
+    "root_ignored_cases": 29,
+    "tracked_rust_files": 6766
+  },
+  "original_launcher_inspection": {
+    "commit": "b4e16702ce860b0fbee057592227407049dec93d",
+    "result_blob": "ec6d9be38af816b8e74bd6746193547b0b671ae9",
+    "script_blob": "9831f0f57ba089708a6ccd2f184a88427e744fd9",
+    "target_executed": false,
+    "ordinary_authority_or_live_custody_proven": false,
+    "assessment": "unknown_from_static_ast"
+  },
+  "changes": [
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-source/export-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "56d801c1a21fe2d5b533e3041a3e3245fe63274a"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-source/native-as-observed.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "753697ea7477ac0c80081de660c30ed78867f6f0"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-source/outer-as-observed.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f4176bdf318467b4eafbb7fb034381e67617ed90"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-source/source-suite.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e1983d873a1edbe9afda4ba3996a021a2ec7d5b7"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-source/source-suite.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "faade9e50a400eed8c367252b7dafe4788140cc1"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/outer-as-observed.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f4176bdf318467b4eafbb7fb034381e67617ed90"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/native-as-observed.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b3718352f9c011662dba5c6cccba77d58e186b2d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/outer-native.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b291e39223605c3e6fe34639a0e6a8b60f5db1b9"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/v8-private-input-readback.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "78114add8ba41f304ce6880169bc7b8a00f4babf"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/helper-build.driver.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d17335a804e3460a121db714bb737d98219767d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/helper-verify.driver.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74c81cc9be88fdf0e8d3a6550e763c15235d8c7f"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/focused-native.driver.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1aa4a41e0e0fb71589382982039fff091111b46f"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/focused-native.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0eb8bc593ecbd5db8abb8b700c478f9ddfd05c98"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/helpers-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ca4151de42233086c79d6295ad4404807fb28d2"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/helpers-env.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c42e772c68ee96550196d8a425a9878cf4f75ed4"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b8be170a60de44f3c55fa990a4e773a6a08de7b3"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "03a448ef362d6a54a249eac277caf99916fbcde1"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/helpers-codex-hepta-infer-worker-host.jsonl.part-0002.base64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4dbc143673821ebab35ad68b2c26d1e04e30246d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/helpers-codex-hepta-infer-worker-host.stderr.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f86a09afbfa2fce04b1b688475e2f5c77bfffee0"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/initial/export-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "290c31b7811af91a5377def55b30c9e02e58942c"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/outer-as-observed.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9dcfb071629ebef11b67bbf01cfd12e1ff10ee53"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/native-as-observed.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c479b1dfdc4b3cfee3fd25acdd00b314361f6237"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/outer-native.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f328fdf8ab588264e4497310ea4753e0662f4a5e"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/outer-self-test.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/v8-private-input-readback.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "78114add8ba41f304ce6880169bc7b8a00f4babf"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/helper-build.driver.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d17335a804e3460a121db714bb737d98219767d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/helper-verify.driver.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74c81cc9be88fdf0e8d3a6550e763c15235d8c7f"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/focused-native.driver.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5577e8400d840bafb06b6cb6146d8906ad3501ca"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/focused-junit.driver.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a1a8801a4a028c8c2c0fa83aa82166754cf5aedb"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/focused-native.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19939bf605c1afb904d9009c57006743561bee01"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/focused-native.junit.summary.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f9b6ca404f2f8c77fb8c17f4bcf2a88a9bebc21e"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/helpers-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ca4151de42233086c79d6295ad4404807fb28d2"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/helpers-env.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c42e772c68ee96550196d8a425a9878cf4f75ed4"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b8be170a60de44f3c55fa990a4e773a6a08de7b3"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "03a448ef362d6a54a249eac277caf99916fbcde1"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/helpers-codex-hepta-infer-worker-host.jsonl.part-0002.base64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4dbc143673821ebab35ad68b2c26d1e04e30246d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/helpers-codex-hepta-infer-worker-host.stderr.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f86a09afbfa2fce04b1b688475e2f5c77bfffee0"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/focused-native.execution.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f387d6c2f9a5b525b7a542e11145543c83dd6abc"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/export-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b9b7c6696e31a61bb4b31dcc5775aefc2b4c99d4"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/original-launcher-ast-20261112/result.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec6d9be38af816b8e74bd6746193547b0b671ae9"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/original-launcher-ast-20261112/execution.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8baea33e71490a9e4150d60cf4abbed1ebec3e24"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7bec702b0bb67808cacc33f186fdeb673f4742ba"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "824d1e8396a6e5b8a240fb415a4083bd2d31796b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f1d8a67715bdc4a7208e1f84564a2edfbf1b242f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a951a3ffee5928c3ccee848033b0d071603d5798"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a285e5277c9ab7077183bf6cd77b2dd26112e1a8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dd031f845a02cbb94f250b9566c6b66ee6816c1d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e282f95d5d7e9bb02810983eaa35ad5824d95584"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "771a33453238653a587632c04bf62b988421fb1b"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/retained-issuer-fixture-c7-20261112/source-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "484ca758f920712578caae92470636d4d3200a03"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3fceb43cdf0f153c7ab87661463b062efb540c5e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8b70bdb504fda547e75e7942803f3b440540a68c"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/e-fixture-native-compile-repair-20261112/contract.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c1c0cd95542d39051068ab53b5eebd5c742e5a1a"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/e-fixture-native-compile-repair-20261112/fixture-compile-repair.patch",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "97ca01f1d5eb10465c43221fc7a5ba1d71a21676"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/source-fixture-compile-repair-20261112/source-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b8e1b143d45daa99e30105ba3797b223c8a5c96a"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-native/terminal/original-pty-terminal.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6da106c1ed66c7909473ac453a466956d692d38f"
+    }
+  ],
+  "execution_status": {
+    "new_source_suite": false,
+    "new_native": false,
+    "new_full_caller": false,
+    "new_root29": false,
+    "final_fix_fmt": false
+  },
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "evidence_limits": "Original C7 results remain pinned to C7. This merge itself is only source and evidence assembly, and requires its own original H validation. No existing Rust or daemon process was signalled."
+}

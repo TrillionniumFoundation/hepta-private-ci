@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.protected-hia-reconciliation.v1",
+  "snapshot_utc": "2026-11-16T21:33:58.712716+00:00",
+  "candidate": "9dd3cf3cd8120b76499b9301b9fc568f77d8c1c6",
+  "candidate_tree": "287374b63ee68a43d4aab7597eea5c90ea67195c",
+  "remote_heads": 7318,
+  "protected_new_hia_names": 87,
+  "extra_legacy_substring_names": 20,
+  "eligible_original_heads": 7230,
+  "retained_original_heads": 1821,
+  "remaining_original_heads": 5409,
+  "complete_review": {
+    "file": "complete-protection-review.json.gz",
+    "raw_bytes": 80804,
+    "raw_sha256": "65ec1af9e267dddc5e0527ccffe447db79a262cf829c32b6fe5d34ab2cf63944",
+    "compression": "gzip, lossless; original complete JSON preserved"
+  },
+  "original_parent_gets": {
+    "file": "new-union-parent-get-originals.json.gz",
+    "raw_sha256": "a5bd53cb7bbe78259b1862b62006e7557f5e0bdd73b2fb616289a6cb12c43576"
+  },
+  "basis": "All twenty additional substring matches were present with the same head in the original classification, had protected_hia=false, and contain no protected current/prior/original head or marker in their complete ancestry. Name matching alone does not reclassify legacy branches as newly added HIA.",
+  "external_advance": "219c6b0aa296f030cf5ef868921c55f48f44b72d -> 6f0e6a12357a8648ea59612c4ab7cbf91139553f -> 29dab5b2c9f2353ca2d27426fb9b6763ba214e46 -> 16d52179819a0ad1994b67a422ebbd09b8f07bc2; the last head has the preserved proof of protected marker f02bb9f3344cdff4e361cca4353540ca0193bd21 ancestry",
+  "ref_writes": 0,
+  "retirement_authorization_from_this_receipt": false
+}

@@ -1,0 +1,555 @@
+{
+  "schema_version": 1,
+  "kind": "original-retention-admission",
+  "source_parent": "bc0412a26792cae1094b4fa30aee1e0a0fed7bb9",
+  "parent_tree": "c898dd4e9bbf034bf372682ae1e78a98eed2f2d3",
+  "parent_manifest_blob": "fdd86bbe2af6ed8ed452f4cc7de4a279d96daed3",
+  "replace_complete_records": [
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+        "required": [
+          "const MAX_BYTES: usize = 131_072;",
+          "const PAGE_BYTES: usize = 8192;",
+          "const MAX_MEMBERS: usize = 17;",
+          "pub struct OriginalCellEvaluationModelMaterialV1 {",
+          "context: Context,",
+          "evaluation: Receipt,",
+          "bytes: Vec<u8>,",
+          "observed_at: u64,",
+          "pub(crate) fn original_model_transfer_body(",
+          "pub(crate) fn from_original_model_response(",
+          "pub(crate) fn original_publication_expiry(",
+          "pub(crate) fn require_original_selector_material("
+        ],
+        "forbidden": [
+          "Clone",
+          "Deserialize",
+          "Serialize",
+          "SigningKey",
+          "UnixStream::connect",
+          "CellQualificationOwnerV1::",
+          "pub bytes:",
+          "pub context:",
+          "pub evaluation:",
+          "pub observed_at:",
+          "pub fn from_original_model_response",
+          "pub fn original_model_transfer_body",
+          "impl From<"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn original_model_transfer_body(",
+            "sequence": [
+              "fn original_model_transfer_body(",
+              "&self.bytes"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn from_original_model_response(",
+            "sequence": [
+              "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+              "Context::from_original_training(",
+              "material.scope.clone()",
+              "registration.clone()",
+              "material.verifier.clone()",
+              "training,",
+              "context.initial()? != material.initial",
+              "codec::Body::decode(&bytes)?",
+              "body.encode()? != bytes",
+              "let current = super::now()?",
+              "super::require_clock(lower, current)?",
+              "verify::material(&context, evaluation, &bytes, current)?",
+              "Digest32::of_bytes(&bytes)",
+              "observed_at: current"
+            ],
+            "top_level": [
+              "let context = Context::from_original_training(",
+              "let body = codec::Body::decode(&bytes)?",
+              "let current = super::now()?"
+            ]
+          },
+          {
+            "function": "fn authority(",
+            "sequence": [
+              "fn authority(",
+              "AuthorityPosture::DENY_ALL"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn authenticate_current(",
+            "sequence": [
+              "current < self.observed_at || Digest32::of_bytes(&self.bytes) != self.binding",
+              "Err(Error::CommitUncertain)",
+              "verify::material(&self.context, &self.evaluation, &self.bytes, current)?",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_original_selector_material(",
+            "sequence": [
+              "self.authenticate_current(current)?",
+              "codec::Body::decode(&self.bytes)?",
+              "body.members.first()",
+              "decode(&primary.generator)?",
+              "decode(&primary.evaluator)?",
+              "decode(&primary.execution)?",
+              "config.scope != self.context.scope",
+              "config.verifier.trust_digest() != self.context.verifier.trust_digest()",
+              "config.verifier.scope_digest() != self.context.verifier.scope_digest()",
+              "config.verifier.objective_digest() != self.context.verifier.objective_digest()",
+              "config.training_evidence != self.context.training_evidence",
+              "&config.evaluation_evidence != self.evaluation.attestation()",
+              "config.decision.request != self.evaluation.snapshot().request",
+              "config.decision.owners != self.evaluation.snapshot().owners",
+              "config.decision.receipts.len() != 5",
+              "config.decision.receipts[..4] != self.evaluation.snapshot().receipts",
+              "primary.record != serde_json::to_vec(config.qualification.comparison())?",
+              "config.qualification.comparison() != config.evaluation.plan().record()",
+              "Digest32::of_bytes(&primary.qualification) != config.qualification.product().evidence_digest",
+              "generator != config.product_evidence.generator_plan",
+              "evaluator != config.product_evidence.evaluator_bundle",
+              "&execution != config.execution_evidence.attestation()",
+              "OriginalProductEvaluationExecutionEvidenceV1::signing_payload(&config.execution_evidence)",
+              "OriginalProductEvaluationExecutionEvidenceV1::original_record(&config.execution_evidence)",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "self.authenticate_current(current)?",
+              "let body = codec::Body::decode(&self.bytes)?"
+            ]
+          },
+          {
+            "function": "fn original_publication_expiry(",
+            "sequence": [
+              "self.authenticate_current(current)?",
+              "codec::Body::decode(&self.bytes)?",
+              "self.context.training_evidence.expires_at",
+              ".min(self.evaluation.attestation().expires_at)",
+              "for member in &body.members",
+              "&member.generator",
+              "&member.evaluator",
+              "&member.execution",
+              "&member.freeze",
+              "decode(encoded)?",
+              "self.context.verifier.verify(role, &signed, &payload, current)?",
+              "expiry.min(signed.expires_at).min(verified.principal().expires_at)",
+              "if expiry <= current",
+              "return Err(Error::Binding(",
+              "Ok(expiry)"
+            ],
+            "top_level": [
+              "self.authenticate_current(current)?",
+              "for member in &body.members",
+              "if expiry <= current"
+            ]
+          },
+          {
+            "function": "fn require_original_model_input(",
+            "sequence": [
+              "training != &self.context.training",
+              "training_evidence != &self.context.training_evidence",
+              "current < self.observed_at",
+              "return Err(Error::Binding(",
+              "verify::material(&self.context, &self.evaluation, &self.bytes, current)?",
+              "if !checked.qualified",
+              "return Err(Error::Binding(",
+              "evaluation: self.evaluation.receipt().clone()",
+              "candidate: checked.candidate",
+              "material: checked.material"
+            ],
+            "top_level": [
+              "if !checked.qualified"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+        "required": [
+          "const MAX_BYTES: usize = 131_072;",
+          "const PAGE_BYTES: usize = 8192;",
+          "const MAX_MEMBERS: usize = 17;",
+          "pub struct OriginalCellEvaluationModelMaterialV1 {",
+          "context: Context,",
+          "evaluation: Receipt,",
+          "bytes: Vec<u8>,",
+          "observed_at: u64,",
+          "pub(crate) fn original_model_transfer_body(",
+          "pub(crate) fn from_original_model_response(",
+          "pub(crate) fn original_publication_expiry(",
+          "pub(crate) fn require_original_selector_material("
+        ],
+        "forbidden": [
+          "Clone",
+          "Deserialize",
+          "Serialize",
+          "SigningKey",
+          "UnixStream::connect",
+          "CellQualificationOwnerV1::",
+          "pub bytes:",
+          "pub context:",
+          "pub evaluation:",
+          "pub observed_at:",
+          "pub fn from_original_model_response",
+          "pub fn original_model_transfer_body",
+          "impl From<"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn original_model_transfer_body(",
+            "sequence": [
+              "fn original_model_transfer_body(",
+              "&self.bytes"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn from_original_model_response(",
+            "sequence": [
+              "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+              "Context::from_original_training(",
+              "material.scope.clone()",
+              "registration.clone()",
+              "material.verifier.clone()",
+              "training,",
+              "context.initial()? != material.initial",
+              "codec::Body::decode(&bytes)?",
+              "body.encode()? != bytes",
+              "let current = super::now()?",
+              "super::require_clock(lower, current)?",
+              "verify::material(&context, evaluation, &bytes, current)?",
+              "Digest32::of_bytes(&bytes)",
+              "observed_at: current"
+            ],
+            "top_level": [
+              "let context = Context::from_original_training(",
+              "let body = codec::Body::decode(&bytes)?",
+              "let current = super::now()?"
+            ]
+          },
+          {
+            "function": "fn authority(",
+            "sequence": [
+              "fn authority(",
+              "AuthorityPosture::DENY_ALL"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn authenticate_current(",
+            "sequence": [
+              "current < self.observed_at || Digest32::of_bytes(&self.bytes) != self.binding",
+              "Err(Error::CommitUncertain)",
+              "verify::material(&self.context, &self.evaluation, &self.bytes, current)?",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_original_selector_material(",
+            "sequence": [
+              "self.require_original_model_input(\n            &self.context.training,\n            &self.context.training_evidence,\n            current,\n        )?",
+              "codec::Body::decode(&self.bytes)?",
+              "body.members.first()",
+              "decode(&primary.generator)?",
+              "decode(&primary.evaluator)?",
+              "decode(&primary.execution)?",
+              "config.scope != self.context.scope",
+              "config.verifier.trust_digest() != self.context.verifier.trust_digest()",
+              "config.verifier.scope_digest() != self.context.verifier.scope_digest()",
+              "config.verifier.objective_digest() != self.context.verifier.objective_digest()",
+              "config.training_evidence != self.context.training_evidence",
+              "&config.evaluation_evidence != self.evaluation.attestation()",
+              "config.decision.request != self.evaluation.snapshot().request",
+              "config.decision.owners != self.evaluation.snapshot().owners",
+              "config.decision.receipts.len() != 5",
+              "config.decision.receipts[..4] != self.evaluation.snapshot().receipts",
+              "primary.record != serde_json::to_vec(config.qualification.comparison())?",
+              "config.qualification.comparison() != config.evaluation.plan().record()",
+              "Digest32::of_bytes(&primary.qualification) != config.qualification.product().evidence_digest",
+              "generator != config.product_evidence.generator_plan",
+              "evaluator != config.product_evidence.evaluator_bundle",
+              "&execution != config.execution_evidence.attestation()",
+              "OriginalProductEvaluationExecutionEvidenceV1::signing_payload(&config.execution_evidence)",
+              "OriginalProductEvaluationExecutionEvidenceV1::original_record(&config.execution_evidence)",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "self.require_original_model_input(\n            &self.context.training,\n            &self.context.training_evidence,\n            current,\n        )?",
+              "let body = codec::Body::decode(&self.bytes)?"
+            ]
+          },
+          {
+            "function": "fn original_publication_expiry(",
+            "sequence": [
+              "self.authenticate_current(current)?",
+              "codec::Body::decode(&self.bytes)?",
+              "self.context.training_evidence.expires_at",
+              ".min(self.evaluation.attestation().expires_at)",
+              "for member in &body.members",
+              "&member.generator",
+              "&member.evaluator",
+              "&member.execution",
+              "&member.freeze",
+              "decode(encoded)?",
+              "self.context.verifier.verify(role, &signed, &payload, current)?",
+              "expiry.min(signed.expires_at).min(verified.principal().expires_at)",
+              "if expiry <= current",
+              "return Err(Error::Binding(",
+              "Ok(expiry)"
+            ],
+            "top_level": [
+              "self.authenticate_current(current)?",
+              "for member in &body.members",
+              "if expiry <= current"
+            ]
+          },
+          {
+            "function": "fn require_original_model_input(",
+            "sequence": [
+              "training != &self.context.training",
+              "training_evidence != &self.context.training_evidence",
+              "current < self.observed_at",
+              "Digest32::of_bytes(&self.bytes) != self.binding",
+              "return Err(Error::Binding(",
+              "verify::material(&self.context, &self.evaluation, &self.bytes, current)?",
+              "if !checked.qualified",
+              "return Err(Error::Binding(",
+              "evaluation: self.evaluation.receipt().clone()",
+              "candidate: checked.candidate",
+              "material: checked.material"
+            ],
+            "top_level": [
+              "if !checked.qualified"
+            ]
+          }
+        ]
+      },
+      "reason": "Route Selector through the same full authenticated panel Model-admission gate; keep read-only authenticate_current unchanged and retain full byte binding."
+    }
+  ],
+  "add_complete_protected_records": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "required": [
+        "pub(super) struct Checked {",
+        "pub qualified: bool,",
+        "pub(super) fn material("
+      ],
+      "forbidden": [
+        "SigningKey",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "OpenOptions",
+        "Deserialize",
+        "pub fn material(",
+        "pub struct Checked",
+        "checked_members.iter().any(",
+        "qualified: primary.qualified",
+        "qualified: true",
+        "qualified: false",
+        "permit_all",
+        "unwrap_or",
+        "if false"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn material(",
+          "sequence": [
+            "context.authenticate(current)?",
+            "Body::decode(bytes)?",
+            "decode_original_owner_snapshot_v1(&body.snapshot)?",
+            "learning_owner_evidence::decode(&body.evaluation)?",
+            "payload != learning_iteration_receipt_signing_bytes_v1(expected.receipt())?",
+            "super::super::wire::authenticate_completed(context, snapshot, signed, current)?",
+            "&actual != expected",
+            "body.context != super::wire::binding(context, expected, current)?",
+            "body.members.len() != context.registration.retention().len() + 1",
+            "LearningIterationCoordinatorV1::from_snapshot(context.training.clone())?",
+            "let mut checked_members",
+            "for (index, (raw, task)) in body",
+            ".members",
+            ".iter()",
+            ".zip(",
+            "std::iter::once(context.registration.primary()).chain(context.registration.retention())",
+            "member::verify(raw, context, task, &generator, current)?",
+            "member::cohort(raw, &checked, context, task, &generator, current)?",
+            "!namespaces.insert(raw.execution_namespace)",
+            "!namespaces.insert(raw.qualification_namespace)",
+            "serde_json::from_slice(&raw.record)?",
+            "training_digest",
+            "serde_json::from_slice(&raw.snapshots)?",
+            "serde_json::to_vec(&snapshots)? != raw.snapshots",
+            "crate::cell_composed_q24::validate_manifest(bundle, manifest)",
+            "snapshot",
+            "cuts[0].is_zero() || cuts[1].is_zero() || cuts[0] == cuts[1]",
+            "run == context.training.request.source_run_id.as_str()",
+            "!runs.insert(run.to_owned())",
+            "for value in [",
+            "raw.binding",
+            "cohort,",
+            "checked.qualification",
+            "checked.authentication",
+            "else if !checked.retention.is_empty()",
+            "checked_members.push(checked)",
+            "let primary = &checked_members[0]",
+            "let mut retention = checked_members",
+            ".skip(1)",
+            ".map(|member| member.qualification)",
+            "retention.sort_unstable()",
+            "retention.is_empty()",
+            "retention.windows(2).any(|pair| pair[0] == pair[1])",
+            "primary.retention != retention",
+            "Digest32::of_bytes(&panel) != body.panel",
+            "primary.qualification != expected.receipt().evidence_digest",
+            "primary.evaluator_issued_at != expected.receipt().observed_unix_seconds",
+            "let qualified = checked_members.iter().all(|member| member.qualified)",
+            "let disposition = if primary.qualified",
+            "LearningEvaluationDispositionV1::Qualified",
+            "LearningEvaluationDispositionV1::NoUpdate",
+            "expected.receipt().observation",
+            "LearningIterationObservationV1::Evaluation",
+            "candidate_bundle: candidate",
+            "evaluation_profile: context.registration.evaluation_profile()",
+            "disposition,",
+            "Ok(Checked {",
+            "candidate,",
+            "material: model_material.ok_or(Error::CommitUncertain)?",
+            "qualified,"
+          ],
+          "top_level": [
+            "let generator = context.authenticate(current)?",
+            "for (index, (raw, task)) in body",
+            "let primary = &checked_members[0]",
+            "let qualified = checked_members.iter().all(|member| member.qualified)",
+            "let disposition = if primary.qualified",
+            "if expected.receipt().observation",
+            "Ok(Checked {"
+          ]
+        },
+        {
+          "function": "fn digest(",
+          "sequence": [
+            "serde_json::from_value(value.clone())?",
+            "Ok(Digest32::from_array(bytes))"
+          ],
+          "top_level": []
+        }
+      ]
+    }
+  ],
+  "add_complete_boundaries": [],
+  "append_inventory_ids": [],
+  "source_edits": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "before_blob": "c9b8a264cbf51fbf4c405042e1252e931717524a",
+      "edits": [
+        {
+          "old": "    let disposition = if primary.qualified {",
+          "now": "    // The original Evaluation signature records the primary Product verdict.\n    // Admission additionally requires every authenticated retention verdict;\n    // a known Ineligible result remains observable and is never a retention pass.\n    let qualified = checked_members.iter().all(|member| member.qualified);\n    let disposition = if primary.qualified {",
+          "count": 1
+        },
+        {
+          "old": "        qualified: primary.qualified,",
+          "now": "        qualified,",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+      "before_blob": "937aa106c53844ea17c42549ee22414bba89b0a6",
+      "edits": [
+        {
+          "old": "        self.authenticate_current(current)?;\n        let body = codec::Body::decode(&self.bytes)?;\n        let primary = body.members.first().ok_or(Error::Binding(\"original primary panel\"))?;",
+          "now": "        self.require_original_model_input(\n            &self.context.training,\n            &self.context.training_evidence,\n            current,\n        )?;\n        let body = codec::Body::decode(&self.bytes)?;\n        let primary = body.members.first().ok_or(Error::Binding(\"original primary panel\"))?;",
+          "count": 1
+        },
+        {
+          "old": "            || training_evidence != &self.context.training_evidence\n            || current < self.observed_at",
+          "now": "            || training_evidence != &self.context.training_evidence\n            || current < self.observed_at\n            || Digest32::of_bytes(&self.bytes) != self.binding",
+          "count": 1
+        },
+        {
+          "old": "    /// Match the original Selector's already enrolled primary evidence to\n    /// this complete actually read panel. No qualification seal is decoded.",
+          "now": "    /// Require the same complete panel acceptance as Model admission, then\n    /// match the original Selector's already enrolled primary evidence.\n    /// No qualification seal is decoded or upgraded.",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "before_blob": "d9899de9014bdf470b4b7afafbad77e59f21f4c7",
+      "edits": [
+        {
+          "old": "    material.fixture_original_material_preimages(fixture.at)?;\n    let frames",
+          "now": "    material.fixture_original_material_preimages(fixture.at)?;\n    // The actual complete Ineligible panel remains readable. Selector\n    // admission stops at the same verified panel gate before interpreting\n    // any comparison pin; this test does not create a Qualified Model.\n    assert!(matches!(\n        material.require_original_selector_material(&fixture.original.config, fixture.at),\n        Err(CommandError::Binding(\"NoUpdate has no model proposal\"))\n    ));\n    let frames",
+          "count": 1
+        },
+        {
+          "old": "    assert_eq!(recovered.original_evaluation(), &evaluation);\n    assert_eq!(close(client, peer)?, frames);",
+          "now": "    assert_eq!(recovered.original_evaluation(), &evaluation);\n    recovered.fixture_original_material_preimages(fixture.at)?;\n    assert!(matches!(\n        recovered.require_original_selector_material(&fixture.original.config, fixture.at),\n        Err(CommandError::Binding(\"NoUpdate has no model proposal\"))\n    ));\n    assert_eq!(close(client, peer)?, frames);",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "before_blob": "a998ae96bb4669e6d1fc51bb84d744f327b8c37d",
+      "edits": [
+        {
+          "old": "        // Alter a byte in each authenticated preimage independently; keeping\n        // claimed digests and the original signatures cannot make it valid.\n        for field in 0..16 {\n            let mut body = Body::decode(&self.bytes)?;\n            let member = &mut body.members[0];\n            let value = match field {\n                0 => &mut member.record,\n                1 => &mut member.holdout,\n                2 => &mut member.plan,\n                3 => &mut member.request,\n                4 => &mut member.decision,\n                5 => &mut member.qualification,\n                6 => &mut member.estimand,\n                7 => &mut member.roles,\n                8 => &mut member.generator,\n                9 => &mut member.evaluator,\n                10 => &mut member.execution,\n                11 => &mut member.execution_record,\n                12 => &mut member.cohort,\n                13 => &mut member.freeze,\n                14 => &mut member.snapshots,\n                _ => &mut body.evaluation,\n            };\n            let last = value.last_mut().expect(\"nonempty original preimage\");\n            *last ^= 1;\n            assert!(\n                verify::material(&self.context, &self.evaluation, &body.encode()?, current)\n                    .is_err(),\n                \"changed original preimage {field}\"\n            );\n        }\n",
+          "now": "        // Alter a byte in each authenticated preimage independently; keeping\n        // claimed digests and the original signatures cannot make it valid.\n        for member_index in 0..body.members.len() {\n            for field in 0..15 {\n                let mut body = Body::decode(&self.bytes)?;\n                let member = &mut body.members[member_index];\n                let value = match field {\n                    0 => &mut member.record,\n                    1 => &mut member.holdout,\n                    2 => &mut member.plan,\n                    3 => &mut member.request,\n                    4 => &mut member.decision,\n                    5 => &mut member.qualification,\n                    6 => &mut member.estimand,\n                    7 => &mut member.roles,\n                    8 => &mut member.generator,\n                    9 => &mut member.evaluator,\n                    10 => &mut member.execution,\n                    11 => &mut member.execution_record,\n                    12 => &mut member.cohort,\n                    13 => &mut member.freeze,\n                    _ => &mut member.snapshots,\n                };\n                let last = value.last_mut().expect(\"nonempty original preimage\");\n                *last ^= 1;\n                assert!(\n                    verify::material(&self.context, &self.evaluation, &body.encode()?, current)\n                        .is_err(),\n                    \"changed original member {member_index} preimage {field}\"\n                );\n            }\n        }\n        let mut corrupted_evaluation = Body::decode(&self.bytes)?;\n        *corrupted_evaluation\n            .evaluation\n            .last_mut()\n            .expect(\"nonempty original Evaluation\") ^= 1;\n        assert!(\n            verify::material(\n                &self.context,\n                &self.evaluation,\n                &corrupted_evaluation.encode()?,\n                current,\n            )\n            .is_err(),\n            \"changed original Evaluation envelope\"\n        );\n",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "result": {
+    "boundaries": 686,
+    "protected_records": 464,
+    "unowned_complete_raw_records_equal": 1148,
+    "new_source_methods": 4,
+    "existing_native_case_names_preserved": true
+  },
+  "semantics": [
+    "All original panel members, signatures, scope, snapshots, cohort evidence, namespaces and complete nonempty retention set are authenticated before computing adoption eligibility.",
+    "Checked.qualified is the conjunction of the authenticated primary and every authenticated retention qualification result.",
+    "The original Evaluation receipt still describes its original primary Product verdict. Its payload, signature, evidence ID, validity window and read-only interpretation are unchanged.",
+    "Model admission rejects a false aggregate. Selector invokes that same pure Model-input acceptance check before checking its original comparison pin; it performs no Model effect.",
+    "Read-only authenticate_current remains available for authentic Ineligible material and never implies retention success or rollback.",
+    "No original metric roles, superiority/noninferiority margins, OPE arithmetic, confidence parameters, 64-episode cap, grants or owner custody are changed."
+  ],
+  "validation": {
+    "positive_records": 2,
+    "cases": 32,
+    "rejected": 32,
+    "errors": []
+  },
+  "native_mechanism_extension": {
+    "file": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+    "existing_case": "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+    "checks": [
+      "Actual original primary and nonempty retention material remains readable through real transport and cold recovery.",
+      "Both fresh and cold material reject Selector admission at the same qualified-panel gate; the existing helper separately rejects Model admission.",
+      "Original E journal/witness and upstream source/Cell/execution/qualification bytes remain unchanged.",
+      "Each of 15 authenticated preimages in each of the two real members, plus the original E envelope, is independently corrupted and rejected (31 distinct preimage changes)."
+    ],
+    "limitation": "The existing fixture's actual primary and retention are Ineligible. Its Selector config is a comparison pin used only to verify rejection before interpreting that pin. This is not an accepted positive Selector or Version configuration."
+  },
+  "limitations": [
+    "No original Python scanner, Rust compilation or native tests were executed by this agent.",
+    "The primary-Eligible/retention-Ineligible rejection path is protected by source mutation controls, but no fully real eligible-primary panel has been produced for native effect coverage.",
+    "A fully actual qualified primary plus retention panel followed by Model/Prepared/FinalUse/Version effects is still unverified.",
+    "Ordinary A/B/C/cold-restart acceptance remains zero."
+  ]
+}

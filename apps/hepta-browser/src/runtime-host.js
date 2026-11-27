@@ -24,6 +24,8 @@ export class BrowserProfileHost {
   #authority;
   #journal;
   #clock;
+  #setTimer;
+  #clearTimer;
   #driverCallTimeoutMs;
   #profiles = new Map();
   #openingProfiles = new Set();
@@ -34,10 +36,22 @@ export class BrowserProfileHost {
     authority,
     journal,
     clock = () => Date.now(),
+    setTimer = (callback, delayMs) => {
+      const handle = setTimeout(callback, delayMs);
+      handle.unref?.();
+      return handle;
+    },
+    clearTimer = (handle) => clearTimeout(handle),
     driverCallTimeoutMs = DEFAULT_DRIVER_CALL_TIMEOUT_MS,
   }) {
     requireRecord(driver, "driver");
-    for (const method of ["start", "observe", "dispatch", "reconcile", "stop"]) {
+    for (const method of [
+      "start",
+      "observe",
+      "dispatch",
+      "reconcile",
+      "stop",
+    ]) {
       if (typeof driver[method] !== "function") {
         throw new TypeError(`driver.${method} must be a function`);
       }
@@ -47,17 +61,30 @@ export class BrowserProfileHost {
       throw new TypeError("authority.withVerifiedUse must be a function");
     }
     requireRecord(journal, "journal");
-    for (const method of ["recordDispatch", "recordObservation", "getOperation", "listOperations"]) {
+    for (const method of [
+      "recordDispatch",
+      "recordObservation",
+      "getOperation",
+      "listOperations",
+    ]) {
       if (typeof journal[method] !== "function") {
         throw new TypeError(`journal.${method} must be a function`);
       }
     }
-    if (typeof clock !== "function") throw new TypeError("clock must be a function");
+    if (typeof clock !== "function")
+      throw new TypeError("clock must be a function");
+    if (typeof setTimer !== "function" || typeof clearTimer !== "function") {
+      throw new TypeError(
+        "profile lease scheduler must provide setTimer and clearTimer",
+      );
+    }
     positiveInteger(driverCallTimeoutMs, "driverCallTimeoutMs");
     this.#driver = driver;
     this.#authority = authority;
     this.#journal = journal;
     this.#clock = clock;
+    this.#setTimer = setTimer;
+    this.#clearTimer = clearTimer;
     this.#driverCallTimeoutMs = driverCallTimeoutMs;
   }
 
@@ -65,7 +92,10 @@ export class BrowserProfileHost {
     requireRecord(input, "input");
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
-      if (this.#profiles.has(profileId) || this.#openingProfiles.has(profileId)) {
+      if (
+        this.#profiles.has(profileId) ||
+        this.#openingProfiles.has(profileId)
+      ) {
         throw new TypeError("profile is already open or opening");
       }
       this.#openingProfiles.add(profileId);
@@ -74,20 +104,36 @@ export class BrowserProfileHost {
         const manifestDigest = digest(input.manifestDigest, "manifestDigest");
         const grantDigest = digest(input.grantDigest, "grantDigest");
         const generation = positiveInteger(input.generation, "generation");
-        const expiresAtMs = futureDeadline(input.expiresAtMs, this.#clock(), "expiresAtMs");
-        if (!Array.isArray(input.allowedOrigins) || input.allowedOrigins.length > MAX_ORIGINS) {
+        const expiresAtMs = futureDeadline(
+          input.expiresAtMs,
+          this.#clock(),
+          "expiresAtMs",
+        );
+        if (
+          !Array.isArray(input.allowedOrigins) ||
+          input.allowedOrigins.length > MAX_ORIGINS
+        ) {
           throw new TypeError("allowedOrigins is not a bounded array");
         }
-        const allowedOrigins = new Set(input.allowedOrigins.map(canonicalOrigin));
+        const allowedOrigins = new Set(
+          input.allowedOrigins.map(canonicalOrigin),
+        );
         if (allowedOrigins.size !== input.allowedOrigins.length) {
           throw new TypeError("allowedOrigins contains duplicates");
         }
-        if (!Array.isArray(input.effectGrants) || input.effectGrants.length > MAX_EFFECT_GRANTS) {
+        if (
+          !Array.isArray(input.effectGrants) ||
+          input.effectGrants.length > MAX_EFFECT_GRANTS
+        ) {
           throw new TypeError("effectGrants must be a bounded array");
         }
         const effectGrants = new Map();
         for (const rawGrant of input.effectGrants) {
-          const grant = parseEffectGrant(rawGrant, this.#clock(), allowedOrigins);
+          const grant = parseEffectGrant(
+            rawGrant,
+            this.#clock(),
+            allowedOrigins,
+          );
           if (effectGrants.has(grant.grantDigest)) {
             throw new TypeError("effectGrants contains duplicate grantDigest");
           }
@@ -108,7 +154,8 @@ export class BrowserProfileHost {
           ),
           "driver start observation",
         );
-        if (observed.started !== true) throw new TypeError("driver did not observe profile start");
+        if (observed.started !== true)
+          throw new TypeError("driver did not observe profile start");
         const processId = stableId(observed.processId, "processId");
         const state = {
           profileId,
@@ -123,8 +170,14 @@ export class BrowserProfileHost {
           allowedOrigins,
           effectGrants,
           operations: new Map(),
+          fenced: false,
+          stopped: false,
+          stopReason: null,
+          stopError: null,
+          leaseTimer: null,
         };
         this.#profiles.set(profileId, state);
+        this.#scheduleLease(state);
         return freezeResult({
           kind: "BrowserSessionV1",
           profileId,
@@ -147,10 +200,16 @@ export class BrowserProfileHost {
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, true);
-      const grant = parseEffectGrant(input.effectGrant, this.#clock(), state.allowedOrigins);
+      const grant = parseEffectGrant(
+        input.effectGrant,
+        this.#clock(),
+        state.allowedOrigins,
+      );
       const prior = state.effectGrants.get(grant.grantDigest);
       if (prior && canonicalDigest(prior) !== canonicalDigest(grant)) {
-        throw new TypeError("effect grant identity was reused with changed semantics");
+        throw new TypeError(
+          "effect grant identity was reused with changed semantics",
+        );
       }
       if (!prior && state.effectGrants.size >= MAX_EFFECT_GRANTS) {
         throw new TypeError("profile effect grant capacity is exhausted");
@@ -171,7 +230,10 @@ export class BrowserProfileHost {
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, true);
-      const observationBudget = positiveInteger(input.observationBudget, "observationBudget");
+      const observationBudget = positiveInteger(
+        input.observationBudget,
+        "observationBudget",
+      );
       if (observationBudget > 1_000_000) {
         throw new TypeError("observationBudget exceeds profile limit");
       }
@@ -188,7 +250,10 @@ export class BrowserProfileHost {
         ),
         "driver page observation",
       );
-      const pageGeneration = positiveInteger(observed.pageGeneration, "pageGeneration");
+      const pageGeneration = positiveInteger(
+        observed.pageGeneration,
+        "pageGeneration",
+      );
       if (pageGeneration <= state.pageGeneration) {
         throw new TypeError("page generation did not advance");
       }
@@ -216,12 +281,8 @@ export class BrowserProfileHost {
     requireRecord(input, "input");
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
-      const state = this.#profile(input, true);
-      const { operationId, requestSemantics, requestDigest } = admitNewOperation(
-        state,
-        input,
-        this.#clock(),
-      );
+      const state = this.#profile(input, false);
+      const operationId = stableId(input.operationId, "operationId");
       let prior = state.operations.get(operationId);
       if (!prior) {
         const durable = await this.#journal.getOperation(
@@ -229,17 +290,36 @@ export class BrowserProfileHost {
           state.generation,
           operationId,
         );
-        if (durable) prior = this.#entryFromDurable(durable, requestSemantics);
+        if (durable) {
+          prior = this.#entryFromDurable(
+            durable,
+            this.#requestSemanticsFromDurableInput(state, input, durable),
+          );
+        }
       }
       if (prior) {
-        if (prior.requestDigest !== requestDigest) {
-          throw new TypeError("operation identity was reused with changed semantics");
+        if (
+          prior.requestDigest !==
+          reconciliationRequestDigest(state, input, prior.semantics)
+        ) {
+          throw new TypeError(
+            "operation identity was reused with changed semantics",
+          );
         }
-        if (!state.operations.has(operationId) && !prior.receipt.terminalObserved) {
+        if (
+          !state.operations.has(operationId) &&
+          !prior.receipt.terminalObserved
+        ) {
           state.operations.set(operationId, prior);
         }
         return prior.receipt;
       }
+      this.#assertNewEffectAllowed(state);
+      const { requestSemantics, requestDigest } = admitNewOperation(
+        state,
+        input,
+        this.#clock(),
+      );
       if (this.#activeOperationCount(state) >= MAX_OUTSTANDING_OPERATIONS) {
         throw new TypeError("profile operation capacity is exhausted");
       }
@@ -259,14 +339,23 @@ export class BrowserProfileHost {
                 verified.witnessDigest,
                 "verifiedUseTokenWitnessDigest",
               );
-              if (digest(verified.requestDigest, "verified requestDigest") !== requestDigest) {
-                throw new TypeError("final-use authority did not bind the admitted request");
+              if (
+                digest(verified.requestDigest, "verified requestDigest") !==
+                requestDigest
+              ) {
+                throw new TypeError(
+                  "final-use authority did not bind the admitted request",
+                );
               }
               if (
-                positiveInteger(verified.authorityEpoch, "verified authorityEpoch") !==
-                requestSemantics.authorityEpoch
+                positiveInteger(
+                  verified.authorityEpoch,
+                  "verified authorityEpoch",
+                ) !== requestSemantics.authorityEpoch
               ) {
-                throw new TypeError("final-use authority epoch changed before dispatch");
+                throw new TypeError(
+                  "final-use authority epoch changed before dispatch",
+                );
               }
               const semantics = Object.freeze({
                 ...requestSemantics,
@@ -288,9 +377,15 @@ export class BrowserProfileHost {
               // This fsync and the local worker dispatch execute inside the
               // final-use fence. A successful revocation update therefore
               // cannot slip between final validation and effect dispatch.
-              await this.#journal.recordDispatch(this.#durableRecord(state, entry));
+              await this.#journal.recordDispatch(
+                this.#durableRecord(state, entry),
+              );
               state.operations.set(operationId, entry);
-              return this.#callDriver("dispatch", semantics, requestSemantics.deadlineMs);
+              return this.#callDriver(
+                "dispatch",
+                semantics,
+                requestSemantics.deadlineMs,
+              );
             },
           ),
           "driver dispatch observation",
@@ -301,7 +396,9 @@ export class BrowserProfileHost {
           entry.semanticDigest,
           observed,
         );
-        entry.phase = entry.receipt.terminalObserved ? "terminal" : "indeterminate";
+        entry.phase = entry.receipt.terminalObserved
+          ? "terminal"
+          : "indeterminate";
       } catch (error) {
         if (!entry) throw error;
         entry.phase = "indeterminate";
@@ -334,16 +431,24 @@ export class BrowserProfileHost {
           operationId,
         );
         if (!durable) {
-          throw new TypeError("operation has not crossed the browser effect boundary");
+          throw new TypeError(
+            "operation has not crossed the browser effect boundary",
+          );
         }
         prior = this.#entryFromDurable(
           durable,
           this.#requestSemanticsFromDurableInput(state, input, durable),
         );
-        if (!prior.receipt.terminalObserved) state.operations.set(operationId, prior);
+        if (!prior.receipt.terminalObserved)
+          state.operations.set(operationId, prior);
       }
-      if (prior.requestDigest !== reconciliationRequestDigest(state, input, prior.semantics)) {
-        throw new TypeError("operation reconciliation changed immutable semantics");
+      if (
+        prior.requestDigest !==
+        reconciliationRequestDigest(state, input, prior.semantics)
+      ) {
+        throw new TypeError(
+          "operation reconciliation changed immutable semantics",
+        );
       }
       if (prior.receipt.terminalObserved) return prior.receipt;
       try {
@@ -361,7 +466,9 @@ export class BrowserProfileHost {
           prior.semanticDigest,
           observed,
         );
-        prior.phase = prior.receipt.terminalObserved ? "terminal" : "indeterminate";
+        prior.phase = prior.receipt.terminalObserved
+          ? "terminal"
+          : "indeterminate";
       } catch (error) {
         prior.phase = "indeterminate";
         prior.receipt = indeterminateReceipt(
@@ -385,7 +492,11 @@ export class BrowserProfileHost {
     const generation = positiveInteger(input.generation, "generation");
     const operationId = stableId(input.operationId, "operationId");
     return exclusive(this.#locks, `${profileId}:${generation}`, async () => {
-      const durable = await this.#journal.getOperation(profileId, generation, operationId);
+      const durable = await this.#journal.getOperation(
+        profileId,
+        generation,
+        operationId,
+      );
       if (!durable) throw new TypeError("persisted operation does not exist");
       if (input.principalId !== durable.principalId) {
         throw new TypeError("principal does not own persisted operation");
@@ -404,9 +515,12 @@ export class BrowserProfileHost {
       );
       const requestDigest = canonicalDigest(semantics);
       if (requestDigest !== durable.requestDigest) {
-        throw new TypeError("persisted reconciliation changed immutable semantics");
+        throw new TypeError(
+          "persisted reconciliation changed immutable semantics",
+        );
       }
-      if (durable.terminalObserved === true) return this.#receiptFromDurable(durable);
+      if (durable.terminalObserved === true)
+        return this.#receiptFromDurable(durable);
       const effectSemantics = Object.freeze({
         ...semantics,
         verifiedUseTokenWitnessDigest: durable.verifiedUseTokenWitnessDigest,
@@ -440,7 +554,13 @@ export class BrowserProfileHost {
             : "reconcile_error",
         );
       }
-      await this.#journal.recordObservation({ ...durable, ...receipt });
+      await this.#journal.recordObservation({
+        ...durable,
+        status: receipt.status,
+        outcomeDigest: receipt.outcomeDigest,
+        terminalObserved: receipt.terminalObserved,
+        observationReason: receipt.observationReason,
+      });
       return receipt;
     });
   }
@@ -450,38 +570,39 @@ export class BrowserProfileHost {
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, false);
+      await this.#stopState(state, "explicit_close");
       const durable = await this.#journal.listOperations(
         state.profileId,
         state.generation,
       );
-      if (
-        durable.some((entry) => entry.terminalObserved !== true) ||
-        [...state.operations.values()].some((entry) => !entry.receipt.terminalObserved)
-      ) {
-        throw new TypeError("profile has indeterminate browser effects requiring reconciliation");
-      }
-      const observed = requireRecord(
-        await this.#callDriver(
-          "stop",
-          {
-            profileId: state.profileId,
-            processId: state.processId,
-            generation: state.generation,
-          },
-          this.#clock() + this.#driverCallTimeoutMs,
-        ),
-        "driver stop observation",
+      const unresolvedIds = new Set(
+        durable
+          .filter((entry) => entry.terminalObserved !== true)
+          .map((entry) => entry.operationId),
       );
-      if (observed.stopped !== true) throw new TypeError("driver did not observe profile stop");
-      this.#profiles.delete(state.profileId);
+      for (const [operationId, entry] of state.operations) {
+        if (!entry.receipt.terminalObserved) unresolvedIds.add(operationId);
+      }
+      const retired = unresolvedIds.size === 0;
+      if (retired) this.#profiles.delete(state.profileId);
       return freezeResult({
-        kind: "BrowserProfileClosedV1",
+        kind: retired ? "BrowserProfileClosedV1" : "BrowserProfileFencedV1",
         profileId: state.profileId,
         processId: state.processId,
         generation: state.generation,
         terminalObserved: true,
+        executionStopped: true,
+        retired,
+        unresolvedOperationCount: unresolvedIds.size,
+        stopReason: state.stopReason,
       });
     });
+  }
+
+  #assertNewEffectAllowed(state) {
+    if (this.#clock() >= state.expiresAtMs || state.fenced || state.stopped) {
+      throw new TypeError("profile grant has expired or execution is fenced");
+    }
   }
 
   #profile(input, requireLiveGrant) {
@@ -494,10 +615,55 @@ export class BrowserProfileHost {
     if (input.generation !== state.generation) {
       throw new TypeError("profile generation mismatch");
     }
-    if (requireLiveGrant && this.#clock() >= state.expiresAtMs) {
-      throw new TypeError("profile grant has expired");
-    }
+    if (requireLiveGrant) this.#assertNewEffectAllowed(state);
     return state;
+  }
+
+  #scheduleLease(state) {
+    if (state.leaseTimer !== null || state.fenced || state.stopped) return;
+    const remaining = Math.max(0, state.expiresAtMs - this.#clock());
+    const delayMs = Math.min(remaining, 2_147_483_647);
+    state.leaseTimer = this.#setTimer(() => {
+      state.leaseTimer = null;
+      void exclusive(this.#locks, state.profileId, async () => {
+        if (this.#profiles.get(state.profileId) !== state || state.stopped)
+          return;
+        if (this.#clock() < state.expiresAtMs) {
+          this.#scheduleLease(state);
+          return;
+        }
+        try {
+          await this.#stopState(state, "profile_expired");
+        } catch (error) {
+          state.stopError = String(error?.message ?? error).slice(0, 512);
+        }
+      });
+    }, delayMs);
+  }
+
+  async #stopState(state, reason) {
+    state.fenced = true;
+    state.stopReason ??= reason;
+    if (state.leaseTimer !== null) {
+      this.#clearTimer(state.leaseTimer);
+      state.leaseTimer = null;
+    }
+    if (state.stopped) return;
+    const observed = requireRecord(
+      await this.#callDriver(
+        "stop",
+        {
+          profileId: state.profileId,
+          processId: state.processId,
+          generation: state.generation,
+        },
+        this.#clock() + this.#driverCallTimeoutMs,
+      ),
+      "driver stop observation",
+    );
+    if (observed.stopped !== true)
+      throw new TypeError("driver did not observe profile stop");
+    state.stopped = true;
   }
 
   #activeOperationCount(state) {
@@ -635,20 +801,29 @@ export class BrowserProfileHost {
     };
     const normalizedInput = { ...input, deadlineMs: Number.MAX_SAFE_INTEGER };
     const admitted = admitNewOperation(typedState, normalizedInput, 1);
-    return Object.freeze({ ...admitted.requestSemantics, deadlineMs: durable.deadlineMs });
+    return Object.freeze({
+      ...admitted.requestSemantics,
+      deadlineMs: durable.deadlineMs,
+    });
   }
 
   async #withVerifiedUse(request, deadlineMs, consumer) {
     let enter;
-    const entered = new Promise((resolve) => { enter = resolve; });
+    const entered = new Promise((resolve) => {
+      enter = resolve;
+    });
     let finishConsumer;
-    const consumerFinished = new Promise((resolve) => { finishConsumer = resolve; });
+    const consumerFinished = new Promise((resolve) => {
+      finishConsumer = resolve;
+    });
     let enteredOnce = false;
 
     const authorityCall = Promise.resolve().then(() =>
       this.#authority.withVerifiedUse(request, async (verified) => {
         if (enteredOnce) {
-          throw new TypeError("final-use authority invoked the consumer more than once");
+          throw new TypeError(
+            "final-use authority invoked the consumer more than once",
+          );
         }
         enteredOnce = true;
         enter();

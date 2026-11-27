@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.grid_control_tests",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/grid_control_validation001"
+  ],
+  "complete_child_cpu_seconds": 3.898521,
+  "coordinator_cpu_seconds": 0.0008170440000000029,
+  "exit_code": 0,
+  "logged_output": "experiments/hcsn_distributional_v2/results/grid_control_validation001.process.log",
+  "peak_rss_kib_linux": 208484,
+  "schema": "hcsn-grid-control-execution.v1",
+  "source_sha256": {
+    "distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "grid_control_reference.py": "1aea0f50b1a8328394a2c2260dd89fc8203d416e73e1db8c3d38baf2e7ce2d84",
+    "grid_control_tests.py": "aebdf943a97e130d46ac51e9f997813721c05d699647523a3a09108938e7e214",
+    "model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f"
+  },
+  "system_cpu_seconds": 0.675211,
+  "user_cpu_seconds": 3.22331,
+  "utc": "2026-10-30T01:38:47.897510+00:00",
+  "wall_seconds": 14.165692787999888
+}

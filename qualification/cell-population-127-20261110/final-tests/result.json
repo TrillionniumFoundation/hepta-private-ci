@@ -1,0 +1,293 @@
+{
+  "errors": 0,
+  "failures": 0,
+  "finished_utc": "2026-11-10T12:58:03.412463+00:00",
+  "passed": true,
+  "skipped": 0,
+  "source_clean_after": true,
+  "source_commit": "d1dc9dfdd30aafa708fa15ed0bd44be7fa87b683",
+  "test_log_sha256": "f4b3baf44c0394d854759e6e573dc9928c686030a17868238b4ff5ca39ae1081",
+  "tests": [
+    {
+      "seconds": 0.0005970960000922787,
+      "test": "test_hepta_cells_bundle.BundleTests.test_explicit_adapter_and_temporal_scopes"
+    },
+    {
+      "seconds": 0.0003653960000065126,
+      "test": "test_hepta_cells_bundle.BundleTests.test_frozen_base_domain_and_state_cannot_change_in_local_training"
+    },
+    {
+      "seconds": 0.0002263720000428293,
+      "test": "test_hepta_cells_bundle.BundleTests.test_invalid_or_noop_successor_rejected"
+    },
+    {
+      "seconds": 0.00016709500005163136,
+      "test": "test_hepta_cells_bundle.BundleTests.test_native_compatibility_bundle_and_reset_conformance"
+    },
+    {
+      "seconds": 0.00022938699999031087,
+      "test": "test_hepta_cells_bundle.BundleTests.test_rollback_is_new_successor_and_partition_affects_plan"
+    },
+    {
+      "seconds": 0.0060084529998221115,
+      "test": "test_hepta_cells_composition.ComponentCompositionTests.test_retrieval_verification_numeric_and_effect_share_one_lifecycle"
+    },
+    {
+      "seconds": 0.0015481309999358928,
+      "test": "test_hepta_cells_lifecycle.DeterministicTests.test_configuration_substitution_is_bound_even_with_same_declared_bundle"
+    },
+    {
+      "seconds": 0.0001692890000413172,
+      "test": "test_hepta_cells_lifecycle.DeterministicTests.test_exact_retriever_enforces_independent_views"
+    },
+    {
+      "seconds": 0.00016975900007309974,
+      "test": "test_hepta_cells_lifecycle.DeterministicTests.test_rule_grammar_and_numeric_algorithms"
+    },
+    {
+      "seconds": 0.0016222090000610478,
+      "test": "test_hepta_cells_lifecycle.OwnerCapacityTests.test_checkpoint_write_failure_cannot_commit_create_or_transition"
+    },
+    {
+      "seconds": 0.006181146000017179,
+      "test": "test_hepta_cells_lifecycle.OwnerCapacityTests.test_each_global_creation_limit_rejects_before_initializer_and_retains_evidence"
+    },
+    {
+      "seconds": 0.003432073999874774,
+      "test": "test_hepta_cells_lifecycle.OwnerCapacityTests.test_full_global_quotas_survive_reopen_without_blocking_replay_or_readback"
+    },
+    {
+      "seconds": 0.0038330029999542603,
+      "test": "test_hepta_cells_lifecycle.OwnerCapacityTests.test_global_epoch_and_checkpoint_limits_reject_transition_without_partial_publish"
+    },
+    {
+      "seconds": 0.0661283199999616,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_actual_process_exit_leaves_durable_pending_without_replay"
+    },
+    {
+      "seconds": 0.0029552839998814306,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_adopt_reset_rollback_retain_replay_and_refuse_old_hidden"
+    },
+    {
+      "seconds": 0.0015591470000799745,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_bad_inputs_are_rejected_before_reservation"
+    },
+    {
+      "seconds": 0.0014642579999417649,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_budget_failure_is_durable_and_preserves_old_state"
+    },
+    {
+      "seconds": 0.003491572000029919,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_confirmed_effect_overrun_preserves_state_and_requires_explicit_recovery"
+    },
+    {
+      "seconds": 0.0030522869999458635,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_effect_readback_requires_original_cost_and_never_reinvokes"
+    },
+    {
+      "seconds": 0.0011791790000188485,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_initialization_cannot_change_the_qualified_identity"
+    },
+    {
+      "seconds": 0.0013891480000438605,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_invalid_result_retains_pending_reservation_and_attempt"
+    },
+    {
+      "seconds": 0.0015379149999716901,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_observed_timeout_is_not_replaced_with_zero_cost"
+    },
+    {
+      "seconds": 0.0022894080000241956,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_partition_state_view_and_payload_are_detached"
+    },
+    {
+      "seconds": 0.001453291999951034,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_readback_cannot_publish_state_under_a_changed_identity"
+    },
+    {
+      "seconds": 0.00168281800006298,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_restart_replays_exact_receipt_without_callback"
+    },
+    {
+      "seconds": 0.0017813229999319447,
+      "test": "test_hepta_cells_lifecycle.OwnerTests.test_restore_compatible_state_never_refunds_budget"
+    },
+    {
+      "seconds": 0.02705932000003486,
+      "test": "test_hepta_cells_population_owner.PopulationOwnerTests.test_aba_fences_stale_run_and_excludes_its_observations_from_new_epoch"
+    },
+    {
+      "seconds": 0.012558389999867359,
+      "test": "test_hepta_cells_population_owner.PopulationOwnerTests.test_all_seven_lineages_execute_and_semantic_successor_keeps_shared_base"
+    },
+    {
+      "seconds": 0.024000603999866144,
+      "test": "test_hepta_cells_population_owner.PopulationOwnerTests.test_capacity_and_stale_run_cannot_change_current_version"
+    },
+    {
+      "seconds": 0.010627608999811855,
+      "test": "test_hepta_cells_population_owner.PopulationOwnerTests.test_failed_cutover_rolls_back_current_version_and_consumption"
+    },
+    {
+      "seconds": 0.15469794299997375,
+      "test": "test_hepta_cells_population_owner.PopulationOwnerTests.test_fresh_process_loads_adopted_parameters_but_resets_new_run_hidden_state"
+    },
+    {
+      "seconds": 0.021660181000015655,
+      "test": "test_hepta_cells_population_owner.PopulationOwnerTests.test_only_fresh_committed_observations_enable_reset_adoption_and_new_run"
+    },
+    {
+      "seconds": 0.014527949000012086,
+      "test": "test_hepta_cells_population_owner.PopulationOwnerTests.test_real_candidate_cannot_change_frozen_training_or_evaluation_rule"
+    },
+    {
+      "seconds": 0.009173405999945317,
+      "test": "test_hepta_cells_population_owner.PopulationOwnerTests.test_reopen_refuses_missing_policy_or_corrupt_population_admission"
+    },
+    {
+      "seconds": 0.012611398999979428,
+      "test": "test_hepta_cells_population_owner.PopulationOwnerTests.test_reopen_without_plan_cannot_bypass_frozen_cadence_or_family"
+    },
+    {
+      "seconds": 0.01613842200004001,
+      "test": "test_hepta_cells_population_owner.PopulationOwnerTests.test_rollback_does_not_refund_consumed_observations_or_work"
+    },
+    {
+      "seconds": 0.0005757849999099562,
+      "test": "test_hepta_cells_population_plan.PopulationPlanTests.test_canonical_order_roundtrip_and_detached_records"
+    },
+    {
+      "seconds": 0.0011596609999742213,
+      "test": "test_hepta_cells_population_plan.PopulationPlanTests.test_complete_policy_changes_change_commitment"
+    },
+    {
+      "seconds": 0.00018376999992142373,
+      "test": "test_hepta_cells_population_plan.PopulationPlanTests.test_extra_plastic_instances_consume_cap_even_with_same_lineage"
+    },
+    {
+      "seconds": 0.00016438100010418566,
+      "test": "test_hepta_cells_population_plan.PopulationPlanTests.test_frozen_instances_can_scale_without_enabling_updates"
+    },
+    {
+      "seconds": 0.00023964199999682023,
+      "test": "test_hepta_cells_population_plan.PopulationPlanTests.test_kernel_family_and_training_policy_cannot_be_relabelled"
+    },
+    {
+      "seconds": 0.0010367310001129226,
+      "test": "test_hepta_cells_population_plan.PopulationPlanTests.test_lineage_coverage_and_population_bounds"
+    },
+    {
+      "seconds": 0.0001502199997958087,
+      "test": "test_hepta_cells_population_plan.PopulationPlanTests.test_repeated_runs_keep_one_logical_update_point_and_owner_scope"
+    },
+    {
+      "seconds": 0.0006360430002132489,
+      "test": "test_hepta_cells_population_plan.PopulationPlanTests.test_strict_record_fields_and_bounded_types"
+    },
+    {
+      "seconds": 0.013072133999912694,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_base_mutation_and_provider_shape_fail_closed"
+    },
+    {
+      "seconds": 0.0007460049998826435,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_batch_compatibility_covers_domain_and_encoder_and_preserves_order"
+    },
+    {
+      "seconds": 0.00042341099992881936,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_budget_rejections_happen_before_any_encode_and_are_cell_local"
+    },
+    {
+      "seconds": 0.0007320039999285655,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_component_rejects_binding_owner_and_work_budget_before_provider"
+    },
+    {
+      "seconds": 0.002577279999968596,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_cross_entropy_objective_learns_from_labels"
+    },
+    {
+      "seconds": 0.000602052999965963,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_every_binding_mismatch_is_rejected_before_encoding"
+    },
+    {
+      "seconds": 0.0037120550000508956,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_low_rank_head_learns_and_both_factors_update"
+    },
+    {
+      "seconds": 0.00024100299992824148,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_memory_counts_actual_shared_arrays_once_across_encoders_and_cells"
+    },
+    {
+      "seconds": 0.0018462579998868023,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_real_gradient_training_returns_candidate_and_preserves_base_and_active_head"
+    },
+    {
+      "seconds": 0.0041545139999925595,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_semantic_component_uses_real_bundle_and_durable_owner_candidate_lifecycle"
+    },
+    {
+      "seconds": 0.0017740830001002905,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_shared_batch_global_limits_reject_before_any_call"
+    },
+    {
+      "seconds": 0.0004027709999263607,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_training_receipts_retain_real_host_costs_on_success_and_failure"
+    },
+    {
+      "seconds": 0.00021346300013647124,
+      "test": "test_hepta_cells_semantic.SemanticTests.test_two_cells_share_backend_without_sharing_heads_state_views_or_budget"
+    },
+    {
+      "seconds": 0.0008239589999448071,
+      "test": "test_hepta_cells_temporal.TemporalCellTests.test_candidates_and_future_observations_do_not_rewrite_observed_belief"
+    },
+    {
+      "seconds": 0.026521350999928472,
+      "test": "test_hepta_cells_temporal.TemporalCellTests.test_checkpoint_exactly_resumes_hidden_and_next_optimizer_update"
+    },
+    {
+      "seconds": 0.0027476609998302592,
+      "test": "test_hepta_cells_temporal.TemporalCellTests.test_diagonal_recurrence_trains_but_hcsn_cannot_silently_fallback"
+    },
+    {
+      "seconds": 0.0004043629999159748,
+      "test": "test_hepta_cells_temporal.TemporalCellTests.test_failed_attempt_retains_cost_and_parent_weights"
+    },
+    {
+      "seconds": 0.0009466290000545996,
+      "test": "test_hepta_cells_temporal.TemporalCellTests.test_owner_episode_cursor_and_finiteness_are_enforced"
+    },
+    {
+      "seconds": 0.007691180999927383,
+      "test": "test_hepta_cells_temporal.TemporalCellTests.test_rejects_invalid_optimizer_even_with_a_matching_file_hash"
+    },
+    {
+      "seconds": 0.02762416900009157,
+      "test": "test_hepta_cells_temporal.TemporalCellTests.test_true_learning_is_isolated_and_requires_new_hidden_state"
+    },
+    {
+      "seconds": 0.004855843000086679,
+      "test": "test_hepta_cells_temporal.TemporalCellTests.test_unknown_labels_do_not_consume_adam_momentum"
+    },
+    {
+      "seconds": 0.0014607929999783664,
+      "test": "test_hepta_cells_temporal_component.TemporalComponentTests.test_budget_scope_and_bundle_rejections_happen_before_kernel_work"
+    },
+    {
+      "seconds": 0.00821823499995844,
+      "test": "test_hepta_cells_temporal_component.TemporalComponentTests.test_durable_retry_and_trained_candidate_adoption_reset"
+    },
+    {
+      "seconds": 0.015780658000039693,
+      "test": "test_hepta_cells_temporal_qualification.TemporalQualificationTests.test_audit_detects_corrupt_analytic_gradient_without_mutating_parent"
+    },
+    {
+      "seconds": 0.018467287000021315,
+      "test": "test_hepta_cells_temporal_qualification.TemporalQualificationTests.test_bounds_and_unknown_labels_do_not_claim_gradient_evidence"
+    },
+    {
+      "seconds": 0.07308393799985424,
+      "test": "test_hepta_cells_temporal_qualification.TemporalQualificationTests.test_post_training_derivatives_and_restore_use_actual_shared_kernel"
+    }
+  ],
+  "tests_run": 70
+}

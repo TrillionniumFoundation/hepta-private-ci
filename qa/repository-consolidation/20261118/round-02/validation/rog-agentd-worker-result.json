@@ -1,0 +1,19 @@
+{
+  "status": "native_build_failed_terminal_receipt_unavailable",
+  "observed_utc": "2026-11-18T02:13:48.554622+00:00",
+  "job_id": "1a1ec4878e2-392-4440",
+  "source_commit": "69ad8206f4341d04ec1a76ad329d468b390f40ae",
+  "source_tree": "662666b3b996ba4ce87bce5782aa22c99b96f25e",
+  "native_tests_passed": null,
+  "native_log_bytes": 94208,
+  "native_log_sha256": "073f9b220e759c337a4bd7d9b3d9a31ed68b4f413128bd70e25694ddb55d5b95",
+  "partial_build_error": "linking with cc failed: exit status 1",
+  "terminal_publication_error": "Exact owned systemd unit journal proves OSError 28 No space left on device while publishing terminal receipt; systemd exit 1/FAILURE. Later free-space observation does not negate the earlier failure.",
+  "journal_log": "rog-linker-diagnostic-journal.log",
+  "no_owned_processes_remain": true,
+  "resource_observation_later": {
+    "disk_free_bytes": 40695812096,
+    "target_kib": 1797120
+  },
+  "native_pass_claimed": false
+}

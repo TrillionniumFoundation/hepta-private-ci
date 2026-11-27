@@ -1,0 +1,20 @@
+{
+  "analysis_seal_sha256": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+  "command": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/summarize_online.py",
+    "--study",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002",
+    "--audit",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/ONLINE_AUDIT.json"
+  ],
+  "cwd": "/workspace/scratch/9bbd63a0445f/hepta-hcsn",
+  "environment_overrides": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "input_audit_sha256": "28b5288ee617fb62c090af145d780e4edf4271711b9e5f6e4ece13886370f017",
+  "schema": "hcsn-online-analysis-command-v1"
+}

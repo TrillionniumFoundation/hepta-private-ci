@@ -1,0 +1,432 @@
+{
+  "schema": "rrsnn-v4-post-result-operator-roundoff-diagnosis-1",
+  "created_at_utc": "2026-10-29T15:38:46.751768+00:00",
+  "identity": {
+    "matrix_status_sha256": "7299d8b6c851aec33b0a9ef59a390e0eaa10a5375f992a0d14119fb07c08699c",
+    "selection_sha256": "dbad2690403992f75c46105722670026e7e13acb523f4973f4726a91d6e5d6bd",
+    "pre_data_protocol_sha256": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+    "original_comparison_files_verified": 60,
+    "original_matrix_identity": {
+      "selection_sha256": "dbad2690403992f75c46105722670026e7e13acb523f4973f4726a91d6e5d6bd",
+      "publication_receipt_sha256": "682f84a5faaaa3e8dd83a6c53810393ec8227859c1c731355e8978c2094f0b02",
+      "pre_data_protocol_sha256": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+      "controller_sha256": "8a686fc74d441c0ea8dc03651f9ee8adb77ae73fdc083021b7ccace50f2bfeee",
+      "runner_sha256": "cb695390e69ebb896193ab517965ee1777de6fcbb7abd7237b783cf9b0c9a0e7",
+      "cpu_affinity": [
+        2
+      ],
+      "seeds": [
+        101,
+        211,
+        307,
+        401,
+        503
+      ],
+      "datasets": [
+        "test",
+        "shift",
+        "paired"
+      ],
+      "replays": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "frozen_source_sha256": {
+      "__init__.py": "227d288ec36b913d650a35915373df53b20d7c22cf3547f6106ffece9af6f0cb",
+      "aggregate.py": "eb4157f0f149089a35e66a51f1fd4a808aeab53e8edc5acef8f0eee43dffe671",
+      "baselines.py": "14d06b7189982bdef8b737c912e2704a8d2647385789c60f5a9760f279037325",
+      "evaluate.py": "04509ce268f11b02e8c601e605adafe7e1dd114582e4c236f56a91dea048162c",
+      "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+      "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+      "prepare_data.py": "592abdc964eb515db6abee381ff99a9867bd4e644943e1ce48e897672c508e7c",
+      "task.py": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4",
+      "train.py": "0abc20779fc64aa1ec0ff0d24ec1b6fe4ad84a585f60ec22b8d53a9c66860825",
+      "train_matrix.py": "39aad256271acc8763db88b96992824382fd44492b48cbe971329eefa108c31a",
+      "validate_baselines.py": "e676aa43ad32c3133f1adee2bd8a1e852df7c103b580671364a3f302ef53a6e4",
+      "validate_models.py": "ab79f903c340473ee959056f91c384769f93ca5a4464d9d870818b271145fe82",
+      "validate_task.py": "3f44689c64369cbe5a8ed9d0ddcf0f9020e9ebd034c6dff93c694bc3772b46d7",
+      "validate_training.py": "c5f4f84a31214533e5cb82d3adb08b6644fa2e1f467becd8025a9496a3269855"
+    }
+  },
+  "diagnostic_source_sha256": "5900758c186b271112fc0c8de6cbedff97f1b1ba0eb7a64c11df23404f17a781",
+  "fixture_file": "results/numerical_roundoff_operator_diagnostic.npz",
+  "fixture_sha256": "68db8015618da58adc6c6d92c460a8fb61260c2bed9986ce4a169f871b1642ff",
+  "cpu_affinity": [
+    2
+  ],
+  "free_disk_bytes_before": 235343872,
+  "scope": "Post-result diagnostic; independent conservative operator grid. This is not task evidence, a new heldout result, or a replacement for the original 60 comparisons.",
+  "fixture": {
+    "drift_count": 65,
+    "cost_count": 65,
+    "points": 4225,
+    "drift_interval": [
+      -1.1423912339336473,
+      1.1423912339336473
+    ],
+    "cost_interval": [
+      0.2,
+      0.98
+    ],
+    "input_rounding": "Both methods receive exactly identical float32 inputs.",
+    "envelope_source": "Frozen RRPolicy.controls in models.py; independent rectangular envelope, not all points are jointly reachable.",
+    "sigma": 0.4,
+    "discount": 0.4,
+    "refractory": 0.1
+  },
+  "shipped_against_root_float32": {
+    "max_abs": 1.1920928955078125e-06,
+    "rms_abs": 1.9633268443001746e-07,
+    "unequal_values": 1711,
+    "number_of_values": 4225,
+    "argmax": {
+      "index": [
+        63,
+        32
+      ],
+      "drift_float32_input": 1.1066914796829224,
+      "cost_float32_input": 0.5899999737739563,
+      "left": 2.149174213409424,
+      "right": 2.1491754055023193
+    }
+  },
+  "proposed_against_root_float32": {
+    "max_abs": 0.0,
+    "rms_abs": 0.0,
+    "unequal_values": 0,
+    "number_of_values": 4225,
+    "argmax": {
+      "index": [
+        0,
+        0
+      ],
+      "drift_float32_input": -1.1423912048339844,
+      "cost_float32_input": 0.20000000298023224,
+      "left": 0.26706740260124207,
+      "right": 0.26706740260124207
+    }
+  },
+  "clamped_shipped_against_clamped_root": {
+    "max_abs": 1.1920928955078125e-06,
+    "rms_abs": 1.6004641640601423e-07,
+    "unequal_values": 1414,
+    "number_of_values": 4225,
+    "argmax": {
+      "index": [
+        63,
+        32
+      ],
+      "drift_float32_input": 1.1066914796829224,
+      "cost_float32_input": 0.5899999737739563,
+      "left": 2.149174213409424,
+      "right": 2.1491754055023193
+    }
+  },
+  "clamped_proposal_against_clamped_root": {
+    "max_abs": 0.0,
+    "rms_abs": 0.0,
+    "unequal_values": 0,
+    "number_of_values": 4225,
+    "argmax": {
+      "index": [
+        0,
+        0
+      ],
+      "drift_float32_input": -1.1423912048339844,
+      "cost_float32_input": 0.20000000298023224,
+      "left": 0.550000011920929,
+      "right": 0.550000011920929
+    }
+  },
+  "double_analytic_against_double_root": {
+    "max_abs": 8.997247391562269e-13,
+    "rms_abs": 1.2962140180844382e-13,
+    "unequal_values": 2746,
+    "number_of_values": 4225,
+    "argmax": {
+      "index": [
+        60,
+        62
+      ],
+      "drift_float32_input": 0.9995923042297363,
+      "cost_float32_input": 0.9556249976158142,
+      "left": 2.645568124210394,
+      "right": 2.645568124209494
+    }
+  },
+  "double_analytic_against_scipy_lambert": {
+    "max_abs": 8.881784197001252e-16,
+    "rms_abs": 1.3306242742564497e-16,
+    "unequal_values": 539,
+    "number_of_values": 4225,
+    "argmax": {
+      "index": [
+        55,
+        39
+      ],
+      "drift_float32_input": 0.8210936784744263,
+      "cost_float32_input": 0.6753125190734863,
+      "left": 2.0150572915178895,
+      "right": 2.0150572915178886
+    }
+  },
+  "gamma_float32_against_float64": {
+    "max_abs": 1.7123266431440243e-06,
+    "rms_abs": 3.6162934130668234e-07,
+    "unequal_values": 4225,
+    "number_of_values": 4225,
+    "argmax": {
+      "index": [
+        1,
+        0
+      ],
+      "drift_float32_input": -1.1066914796829224,
+      "cost_float32_input": 0.20000000298023224,
+      "left": 14.186102867126465,
+      "right": 14.186101154799822
+    }
+  },
+  "staged_roundoff": {
+    "all_double_analytic": {
+      "against_double_root": {
+        "max_abs": 8.997247391562269e-13,
+        "rms_abs": 1.2962140180844382e-13,
+        "unequal_values": 2746,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            60,
+            62
+          ],
+          "drift_float32_input": 0.9995923042297363,
+          "cost_float32_input": 0.9556249976158142,
+          "left": 2.645568124210394,
+          "right": 2.645568124209494
+        }
+      },
+      "after_final_float32_against_root_float32": {
+        "max_abs": 0.0,
+        "rms_abs": 0.0,
+        "unequal_values": 0,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            0,
+            0
+          ],
+          "drift_float32_input": -1.1423912048339844,
+          "cost_float32_input": 0.20000000298023224,
+          "left": 0.26706740260124207,
+          "right": 0.26706740260124207
+        }
+      }
+    },
+    "only_gamma_rounded_float32": {
+      "against_double_root": {
+        "max_abs": 9.120430464193419e-07,
+        "rms_abs": 1.6138274474249673e-07,
+        "unequal_values": 4225,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            63,
+            64
+          ],
+          "drift_float32_input": 1.1066914796829224,
+          "cost_float32_input": 0.9800000190734863,
+          "left": 2.8017890518280937,
+          "right": 2.80178996387114
+        }
+      },
+      "after_final_float32_against_root_float32": {
+        "max_abs": 9.5367431640625e-07,
+        "rms_abs": 1.670315047694405e-07,
+        "unequal_values": 1578,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            63,
+            30
+          ],
+          "drift_float32_input": 1.1066914796829224,
+          "cost_float32_input": 0.565625011920929,
+          "left": 2.104530096054077,
+          "right": 2.1045310497283936
+        }
+      }
+    },
+    "gamma_and_lambert_input_z_rounded_float32": {
+      "against_double_root": {
+        "max_abs": 1.1316265005056891e-06,
+        "rms_abs": 1.863764683378166e-07,
+        "unequal_values": 4225,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            63,
+            63
+          ],
+          "drift_float32_input": 1.1066914796829224,
+          "cost_float32_input": 0.9678124785423279,
+          "left": 2.782772593734166,
+          "right": 2.7827737253606664
+        }
+      },
+      "after_final_float32_against_root_float32": {
+        "max_abs": 1.1920928955078125e-06,
+        "rms_abs": 1.9154488182742551e-07,
+        "unequal_values": 1618,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            63,
+            32
+          ],
+          "drift_float32_input": 1.1066914796829224,
+          "cost_float32_input": 0.5899999737739563,
+          "left": 2.149174213409424,
+          "right": 2.1491754055023193
+        }
+      }
+    },
+    "gamma_lambert_input_z_and_w_output_rounded_float32": {
+      "against_double_root": {
+        "max_abs": 1.1465352880435375e-06,
+        "rms_abs": 1.8764500573674616e-07,
+        "unequal_values": 4225,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            63,
+            63
+          ],
+          "drift_float32_input": 1.1066914796829224,
+          "cost_float32_input": 0.9678124785423279,
+          "left": 2.7827725788253783,
+          "right": 2.7827737253606664
+        }
+      },
+      "after_final_float32_against_root_float32": {
+        "max_abs": 1.1920928955078125e-06,
+        "rms_abs": 1.9203593060982656e-07,
+        "unequal_values": 1608,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            63,
+            32
+          ],
+          "drift_float32_input": 1.1066914796829224,
+          "cost_float32_input": 0.5899999737739563,
+          "left": 2.149174213409424,
+          "right": 2.1491754055023193
+        }
+      }
+    },
+    "shipped_all_outer_arithmetic_float32": {
+      "against_double_root": {
+        "max_abs": 1.2041707266874369e-06,
+        "rms_abs": 1.9426278251646577e-07,
+        "unequal_values": 4225,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            63,
+            54
+          ],
+          "drift_float32_input": 1.1066914796829224,
+          "cost_float32_input": 0.8581249713897705,
+          "left": 2.608217239379883,
+          "right": 2.6082184435506095
+        }
+      },
+      "after_final_float32_against_root_float32": {
+        "max_abs": 1.1920928955078125e-06,
+        "rms_abs": 1.9633268443001746e-07,
+        "unequal_values": 1711,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            63,
+            32
+          ],
+          "drift_float32_input": 1.1066914796829224,
+          "cost_float32_input": 0.5899999737739563,
+          "left": 2.149174213409424,
+          "right": 2.1491754055023193
+        }
+      }
+    },
+    "proposed_all_double_then_final_float32": {
+      "against_double_root": {
+        "max_abs": 1.1774450792145785e-07,
+        "rms_abs": 3.334222401681831e-08,
+        "unequal_values": 4225,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            59,
+            60
+          ],
+          "drift_float32_input": 0.9638925790786743,
+          "cost_float32_input": 0.9312499761581421,
+          "left": 2.568464517593384,
+          "right": 2.5684646353378917
+        }
+      },
+      "after_final_float32_against_root_float32": {
+        "max_abs": 0.0,
+        "rms_abs": 0.0,
+        "unequal_values": 0,
+        "number_of_values": 4225,
+        "argmax": {
+          "index": [
+            0,
+            0
+          ],
+          "drift_float32_input": -1.1423912048339844,
+          "cost_float32_input": 0.20000000298023224,
+          "left": 0.26706740260124207,
+          "right": 0.26706740260124207
+        }
+      }
+    }
+  },
+  "staging_caution": "Stages replace operations cumulatively; errors are not additive, monotone, or a statistical causal decomposition. Gamma cancellation is only one candidate contribution.",
+  "gradient_fixtures": {
+    "shipped": {
+      "drift": {
+        "maximum_absolute_error": 9.5367431640625e-07,
+        "number_unequal": 20,
+        "fixture_count": 21
+      },
+      "cost": {
+        "maximum_absolute_error": 4.76837158203125e-07,
+        "number_unequal": 4,
+        "fixture_count": 21
+      }
+    },
+    "double_then_final_cast_proposal": {
+      "drift": {
+        "maximum_absolute_error": 0.0,
+        "number_unequal": 0,
+        "fixture_count": 21
+      },
+      "cost": {
+        "maximum_absolute_error": 0.0,
+        "number_unequal": 0,
+        "fixture_count": 21
+      }
+    }
+  },
+  "minimal_precision_proposal": "In a separate experimental wrapper only, call the unchanged frozen_control_boundary with drift.double() and cost.double(), then cast the final threshold to torch.result_type(drift,cost), preserving the original expression output dtype for mixed and zero-dimensional inputs. Preserve all formula constants, branches, clamps, weights, actor seeds, task scheduling, and the original 1e-7 event-time criterion.",
+  "formal_sources_modified": false,
+  "formal_outputs_modified": false,
+  "training_performed": false,
+  "heldout_scenarios_loaded": false,
+  "event_time_tolerance_changed": false,
+  "attribution_boundary": "Forward operator agreement can establish a roundoff mechanism on this envelope; attributing every original closed-loop event-time difference requires a separately labeled same-weight replay. Original failures remain failures."
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "mem8.integrated-bazel-lock.v2.independent-summary.v1",
+  "status": "independently_verified_pass",
+  "scope": "One source-only Bazel lock generation/freshness command; no native tests or model calls.",
+  "base_commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "base_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+  "executed_commit": "65ff5d15075f9193664ab0b5f74e2264cfe0c24c",
+  "executed_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "published_commit_with_same_tree": "189711e3563ea13a5328d52e99a286f082045b98",
+  "published_commit_itself_executed_here": false,
+  "execution_host": "desktop",
+  "dispatch_job": "1a1ca0831b0-2564-40e",
+  "dispatch_key": "mem8-integrated-bazel-lock-via-ai395-ed353817-v2",
+  "desktop_pid": 4044830,
+  "readonly_export_job": "1a1ca1a43ae-2564-490",
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "bazel-lock-update"
+  ],
+  "actual_bazel_command": "bazel mod deps --lockfile_mode=update",
+  "bazel_invocation_id": "fb3e52dd-7d24-4cb9-91b3-67364a71fe08",
+  "started_at": "2026-11-11T09:55:48.899062+00:00",
+  "finished_at": "2026-11-11T09:58:01.170108+00:00",
+  "elapsed_seconds": 132.26949619408697,
+  "phase_budget_seconds": 1200,
+  "phase_count": 1,
+  "maximum_phase_count": 2,
+  "exit_code": 0,
+  "status_from_original_receipt": "passed",
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "raw_log": {
+    "path": "records/lock-generate.json.45b850f753fe4fc2acd7fef7ab986706.log",
+    "bytes": 4987,
+    "sha256": "b9611548ac59c858b88b7bfee1819c2c2b7f2dc7b9e4fa4ca9e50caac34bd13c"
+  },
+  "source_before": {
+    "commit": "65ff5d15075f9193664ab0b5f74e2264cfe0c24c",
+    "dirty": false,
+    "parents": [
+      "2ae5215beaf8d7b7df111a090b82134beae2683d"
+    ],
+    "tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba"
+  },
+  "source_after": {
+    "commit": "65ff5d15075f9193664ab0b5f74e2264cfe0c24c",
+    "dirty": false,
+    "parents": [
+      "2ae5215beaf8d7b7df111a090b82134beae2683d"
+    ],
+    "tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba"
+  },
+  "lock": {
+    "bytes": 1788299,
+    "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+    "git_blob": "1565448430312c7fb7537a48f97e9cd2da945df3"
+  },
+  "lock_drift": false,
+  "patch_bytes": 0,
+  "tools": {
+    "bazel": {
+      "path": "/home/qian-qi/.cache/bazelisk/downloads/sha256/d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8/bin/bazel",
+      "bytes": 77023347,
+      "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8"
+    },
+    "just": {
+      "path": "/home/qian-qi/.cargo/bin/just",
+      "bytes": 5347728,
+      "sha256": "b73359690704c2aaa0cdfb5b262e6fbf819a8be8cdea2d87565dd441dc7b3f8d"
+    }
+  },
+  "tools_unchanged": true,
+  "donor_unchanged": true,
+  "base_checkout_and_index_exact_clean": true,
+  "all_10_preparation_phases_passed": true,
+  "cache_isolation_verified_from_actual_wrapper": true,
+  "native_tests_executed": 0,
+  "model_requests": 0,
+  "source_refs_modified_by_driver": false,
+  "numeric_detached_driver_process_exit_observed": false,
+  "boundary": "The original durable hepta_ci_exec command/wrapper exit 0 and complete successful RESULT are observed; no separate detached-driver numeric OS exit receipt was generated. No whole-CI or native capability pass is inferred. Original v1 preparation failure is retained separately."
+}

@@ -1,0 +1,1974 @@
+{
+  "aggregation": {
+    "epochs": "Last retained complete epoch; seed order is 17, 23, 41.",
+    "independent_training_seeds": 3,
+    "per_summary": "3 training seeds × 8 held-out parameter scenarios = 24 exact policy evaluations",
+    "values": "Within-profile means only. No pooling of different utility objectives; no inferential confidence interval.",
+    "worker_cpu": "Arithmetic mean of 3 POSIX wait4 user+system CPU measurements; includes failed/discarded work."
+  },
+  "allowance_changes": [
+    {
+      "higher_cpu_allowance": 2,
+      "improved_cases": 4,
+      "lower_cpu_allowance": 1,
+      "mean_value_delta": 0.06273315766192128,
+      "method": "actor_critic",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "same_expected_action_counts_all_cases": false,
+      "tied_cases": 20,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 4,
+      "improved_cases": 3,
+      "lower_cpu_allowance": 2,
+      "mean_value_delta": 0.019662800752777765,
+      "method": "actor_critic",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "same_expected_action_counts_all_cases": false,
+      "tied_cases": 21,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 2,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 1,
+      "mean_value_delta": 0.0,
+      "method": "distillation",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 4,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 2,
+      "mean_value_delta": 0.0,
+      "method": "distillation",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 2,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 1,
+      "mean_value_delta": 0.0,
+      "method": "actor_critic",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 4,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 2,
+      "mean_value_delta": 0.0,
+      "method": "actor_critic",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 2,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 1,
+      "mean_value_delta": 0.0,
+      "method": "distillation",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 4,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 2,
+      "mean_value_delta": 0.0,
+      "method": "distillation",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 2,
+      "improved_cases": 4,
+      "lower_cpu_allowance": 1,
+      "mean_value_delta": 0.03722790183055852,
+      "method": "actor_critic",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "same_expected_action_counts_all_cases": false,
+      "tied_cases": 20,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 4,
+      "improved_cases": 3,
+      "lower_cpu_allowance": 2,
+      "mean_value_delta": 0.022108024304444307,
+      "method": "actor_critic",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "same_expected_action_counts_all_cases": false,
+      "tied_cases": 21,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 2,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 1,
+      "mean_value_delta": 0.0,
+      "method": "distillation",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 4,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 2,
+      "mean_value_delta": 0.0,
+      "method": "distillation",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 2,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 1,
+      "mean_value_delta": 0.0,
+      "method": "actor_critic",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 4,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 2,
+      "mean_value_delta": 0.0,
+      "method": "actor_critic",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 2,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 1,
+      "mean_value_delta": 0.0,
+      "method": "distillation",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    },
+    {
+      "higher_cpu_allowance": 4,
+      "improved_cases": 0,
+      "lower_cpu_allowance": 2,
+      "mean_value_delta": 0.0,
+      "method": "distillation",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "same_expected_action_counts_all_cases": true,
+      "tied_cases": 24,
+      "worsened_cases": 0
+    }
+  ],
+  "audit_recomputed_rows": 576,
+  "audit_status": "PASS",
+  "auditor_sha256": "184c4c368328dc7e7e916f26ccc35bd8cd825f5f4a40e5c31d82eaab6281007b",
+  "authority": "none",
+  "cost_scope": {
+    "common_hard_worker_cpu_allowances_seconds": [
+      1,
+      2,
+      4
+    ],
+    "common_max_epochs": 512,
+    "cooperative_training_fraction": 0.9,
+    "hard_signal_observations": 0,
+    "router_training_included": false,
+    "same_allowance_is_same_consumed_cpu": false,
+    "selection": "Last complete epoch; no development/test checkpoint selection.",
+    "separate_scopes": [
+      "shared public training-roster construction",
+      "parent process supervision",
+      "exact confirmation evaluation",
+      "artifact audit and replay"
+    ],
+    "simulated_credits_are_measured_cpu": false,
+    "total_physical_pipeline_cost_matched": false,
+    "worker_includes": [
+      "teacher label preparation",
+      "fitting",
+      "atomic checkpoint serialization",
+      "worker completion bookkeeping"
+    ]
+  },
+  "denominators": {
+    "attempt_events": 144,
+    "available": 72,
+    "comparison_rows": 576,
+    "cpu_allowances_seconds": [
+      1,
+      2,
+      4
+    ],
+    "exact_budget_violations": 0.0,
+    "methods": [
+      "actor_critic",
+      "distillation"
+    ],
+    "profiles": 4,
+    "raw_worker_receipt_joins": 72,
+    "scenarios": 8,
+    "started_events": 72,
+    "terminal_events": 72,
+    "training_seeds": [
+      17,
+      23,
+      41
+    ],
+    "unavailable": 0,
+    "unique_comparison_rows": 576,
+    "unique_workers": 72,
+    "workers": 72
+  },
+  "distillation_wins_counterexamples": [
+    {
+      "actor_critic_minus_distillation": -0.03144391666666663,
+      "actor_critic_value": 0.31855608333333335,
+      "cpu_allowance_seconds": 1,
+      "distillation_value": 0.35,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "scenario_id": "confirmation-06076c4a31b3bb9b",
+      "seed": 41
+    }
+  ],
+  "generated_utc": "2026-11-08T12:11:46.482418+00:00",
+  "higher_allowance_worsening_counterexamples": [],
+  "input_directory": "cpu_repeat_2",
+  "input_identities": {
+    "AUDIT_CPU_REPEAT_2.json": {
+      "bytes": 603,
+      "sha256": "e49cc5e9da5525493e55b85cd9400749ef3b816e5a6f83882fdf0a4ea1859c5a"
+    },
+    "cpu_repeat_2/ARTIFACTS.json": {
+      "bytes": 53434,
+      "sha256": "0e43d0a995c860c22344451aa9fbe3b5fc4e52a397ffa8b8b253fb631ac9f3fa"
+    },
+    "cpu_repeat_2/PLAN.json": {
+      "bytes": 5605,
+      "sha256": "5748ef5d7a47e1e7f741f200fe56e4fc80e9d17bfc2717388f4dea5ab0c45674"
+    },
+    "cpu_repeat_2/RECEIPTS.json": {
+      "bytes": 137376,
+      "sha256": "d41ca9dfb0fea678d90abc6c6f29023111573e25761e3c5d912a050b9f5b9346"
+    },
+    "cpu_repeat_2/REPORT.json": {
+      "bytes": 8393,
+      "sha256": "8e2946383f7f9d9965a0d9d2a17f5dbdc2f568617f7333e0d5348fd07bcc6b71"
+    },
+    "cpu_repeat_2/attempts.jsonl": {
+      "bytes": 13668,
+      "sha256": "6b11caff9d607089c4ddc53c3db5c03957a32e0dc4e74783ba2ddfb6bdb7a3fa"
+    },
+    "cpu_repeat_2/results-29d3a0540d92.jsonl": {
+      "bytes": 207739,
+      "sha256": "15b7151e691d2fe6e18c48a0e9d14d97ed6844bd11a16f78e7158d2b12834227"
+    },
+    "cpu_repeat_2/results-6c4949f90c48.jsonl": {
+      "bytes": 208187,
+      "sha256": "72bcc27515e541b91601728dd2bbf36156d6242fe6634db2f9de9e8b1c89eb75"
+    },
+    "cpu_repeat_2/results-6d077dda5bd1.jsonl": {
+      "bytes": 208102,
+      "sha256": "261839bee4658d2d07c43af37f76d476c0825cc4d92af13cb4f1f61b71780e00"
+    },
+    "cpu_repeat_2/results-97e2016b00cc.jsonl": {
+      "bytes": 208160,
+      "sha256": "8d17078a5e6fcfae713b51981201b23a78f2e51c5175377e294251fab5c3a1df"
+    }
+  },
+  "paired_method_comparisons": [
+    {
+      "actor_critic_minus_distillation_mean": 0.12084370719780092,
+      "actor_critic_wins": 8,
+      "cpu_allowance_seconds": 1,
+      "distillation_wins": 1,
+      "maximum_delta": 0.37492774111111105,
+      "minimum_delta": -0.03144391666666663,
+      "paired_cases": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "ties": 15
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.18357686485972222,
+      "actor_critic_wins": 12,
+      "cpu_allowance_seconds": 2,
+      "distillation_wins": 0,
+      "maximum_delta": 0.37492774111111105,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "ties": 12
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.20323966561249998,
+      "actor_critic_wins": 15,
+      "cpu_allowance_seconds": 4,
+      "distillation_wins": 0,
+      "maximum_delta": 0.37492774111111105,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "ties": 9
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.03609146874999998,
+      "actor_critic_wins": 9,
+      "cpu_allowance_seconds": 1,
+      "distillation_wins": 0,
+      "maximum_delta": 0.09969999999999998,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "ties": 15
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.03609146874999998,
+      "actor_critic_wins": 9,
+      "cpu_allowance_seconds": 2,
+      "distillation_wins": 0,
+      "maximum_delta": 0.09969999999999998,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "ties": 15
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.03609146874999998,
+      "actor_critic_wins": 9,
+      "cpu_allowance_seconds": 4,
+      "distillation_wins": 0,
+      "maximum_delta": 0.09969999999999998,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "ties": 15
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.16721853139478418,
+      "actor_critic_wins": 11,
+      "cpu_allowance_seconds": 1,
+      "distillation_wins": 0,
+      "maximum_delta": 0.3800669504902376,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "ties": 13
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.20444643322534273,
+      "actor_critic_wins": 15,
+      "cpu_allowance_seconds": 2,
+      "distillation_wins": 0,
+      "maximum_delta": 0.3800669504902376,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "ties": 9
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.22655445752978703,
+      "actor_critic_wins": 18,
+      "cpu_allowance_seconds": 4,
+      "distillation_wins": 0,
+      "maximum_delta": 0.3800669504902376,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "ties": 6
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.044812974091835905,
+      "actor_critic_wins": 9,
+      "cpu_allowance_seconds": 1,
+      "distillation_wins": 0,
+      "maximum_delta": 0.12466313209868199,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "ties": 15
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.044812974091835905,
+      "actor_critic_wins": 9,
+      "cpu_allowance_seconds": 2,
+      "distillation_wins": 0,
+      "maximum_delta": 0.12466313209868199,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "ties": 15
+    },
+    {
+      "actor_critic_minus_distillation_mean": 0.044812974091835905,
+      "actor_critic_wins": 9,
+      "cpu_allowance_seconds": 4,
+      "distillation_wins": 0,
+      "maximum_delta": 0.12466313209868199,
+      "minimum_delta": 0.0,
+      "paired_cases": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "ties": 15
+    }
+  ],
+  "plan_sha256": "e8c7e801362651d3b84ea1633c6f2757222b25da4bad9983fc35ad60406faa89",
+  "profiles": [
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.0,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.0,
+      "risk": 0.0
+    },
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.01,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.02,
+      "risk": 0.0
+    },
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.0,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.0,
+      "risk": 0.25
+    },
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.01,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.02,
+      "risk": 0.25
+    }
+  ],
+  "schema": "hepta.ctrl1.cpu-analysis.v1",
+  "scientific_findings": [
+    "Actor-critic has higher mean value in all 12/12 profile × allowance groups; this is not uniform casewise dominance.",
+    "There are 1 paired cases where distillation is better, retained explicitly with identities and both values.",
+    "Actor-critic improves with allowance in both zero-explicit-price profiles, but its value is unchanged across allowances in both priced profiles.",
+    "Distillation value and expected action counts are unchanged for every matched seed/scenario across all three allowances; more fitting did not improve deployed outcomes in this grid.",
+    "Every 4-second distillation worker stops at the common 512-epoch ceiling before using the full CPU allowance; actor-critic workers instead stop cooperatively at the CPU allowance.",
+    "There are 0 matched cases whose actor value worsens when increasing allowance; this is descriptive, not a monotonic-improvement guarantee.",
+    "The successful repeat is the analysis source. First-attempt artifacts remain integrity-rejected and are not pooled, imputed, or used for checkpoint selection.",
+    "Known finite model and three training seeds; these observations do not establish general algorithm superiority, real-task transfer, equal total physical cost, or production adoption."
+  ],
+  "source_manifest_sha256": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+  "status": "ANALYZED_AUDITED_REPEAT_2",
+  "summary": [
+    {
+      "actual_actor_updates_total": 33590,
+      "by_seed": [
+        {
+          "actual_actor_updates": 11362,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 88,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 11264,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.908883
+        },
+        {
+          "actual_actor_updates": 11595,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 90,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 11520,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.923881
+        },
+        {
+          "actual_actor_updates": 10633,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 83,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 10624,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.92482
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 90,
+      "completed_epochs_mean": 87,
+      "completed_epochs_min": 83,
+      "compute_and_stop_regret_mean": 0.0,
+      "controller_credits_mean": 1.3333333333333333,
+      "cpu_allowance_seconds": 1,
+      "discarded_actor_updates_total": 182,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.0,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.6481481481481481,
+      "policy_gap_mean": 0.14828782806352023,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 33408,
+      "risk": 0.0,
+      "stop_regret_mean": 0.0,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.5953333217811343,
+      "worker_cpu_seconds_max": 0.92482,
+      "worker_cpu_seconds_mean": 0.9191946666666666,
+      "worker_cpu_seconds_min": 0.908883,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 80128,
+      "by_seed": [
+        {
+          "actual_actor_updates": 25216,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 197,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 25216,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.9323799999999999
+        },
+        {
+          "actual_actor_updates": 29568,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 231,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 29568,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.944611
+        },
+        {
+          "actual_actor_updates": 25344,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 198,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 25344,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.9326209999999999
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 231,
+      "completed_epochs_mean": 208.66666666666666,
+      "completed_epochs_min": 197,
+      "compute_and_stop_regret_mean": 0.046000028787591976,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 1,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.0,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.5020833333333333,
+      "policy_gap_mean": 0.26913153526132116,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 80128,
+      "risk": 0.0,
+      "stop_regret_mean": 0.046000028787591976,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.47448961458333333,
+      "worker_cpu_seconds_max": 0.944611,
+      "worker_cpu_seconds_mean": 0.9365373333333332,
+      "worker_cpu_seconds_min": 0.9323799999999999,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 65924,
+      "by_seed": [
+        {
+          "actual_actor_updates": 21508,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 168,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 21504,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.844397
+        },
+        {
+          "actual_actor_updates": 22528,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 176,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 22528,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.826416
+        },
+        {
+          "actual_actor_updates": 21888,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 171,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 21888,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.8238949999999998
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 176,
+      "completed_epochs_mean": 171.66666666666666,
+      "completed_epochs_min": 168,
+      "compute_and_stop_regret_mean": 0.0,
+      "controller_credits_mean": 1.5,
+      "cpu_allowance_seconds": 2,
+      "discarded_actor_updates_total": 4,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.0,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.7222222222222222,
+      "policy_gap_mean": 0.08555467040159895,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 65920,
+      "risk": 0.0,
+      "stop_regret_mean": 0.0,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.6580664794430555,
+      "worker_cpu_seconds_max": 1.844397,
+      "worker_cpu_seconds_mean": 1.8315693333333334,
+      "worker_cpu_seconds_min": 1.8238949999999998,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 175872,
+      "by_seed": [
+        {
+          "actual_actor_updates": 59008,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 461,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 59008,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.83116
+        },
+        {
+          "actual_actor_updates": 56960,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 445,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 56960,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.8317279999999998
+        },
+        {
+          "actual_actor_updates": 59904,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 468,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 59904,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.8275229999999998
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 468,
+      "completed_epochs_mean": 458,
+      "completed_epochs_min": 445,
+      "compute_and_stop_regret_mean": 0.046000028787591976,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 2,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.0,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.5020833333333333,
+      "policy_gap_mean": 0.26913153526132116,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 175872,
+      "risk": 0.0,
+      "stop_regret_mean": 0.046000028787591976,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.47448961458333333,
+      "worker_cpu_seconds_max": 1.8317279999999998,
+      "worker_cpu_seconds_mean": 1.830137,
+      "worker_cpu_seconds_min": 1.8275229999999998,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 137853,
+      "by_seed": [
+        {
+          "actual_actor_updates": 45474,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 355,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 45440,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.619343
+        },
+        {
+          "actual_actor_updates": 46592,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 364,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 46592,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.626217
+        },
+        {
+          "actual_actor_updates": 45787,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 357,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 45696,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.634134
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 364,
+      "completed_epochs_mean": 358.6666666666667,
+      "completed_epochs_min": 355,
+      "compute_and_stop_regret_mean": 0.0,
+      "controller_credits_mean": 1.625,
+      "cpu_allowance_seconds": 4,
+      "discarded_actor_updates_total": 125,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.0,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.75,
+      "policy_gap_mean": 0.06589186964882118,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 137728,
+      "risk": 0.0,
+      "stop_regret_mean": 0.0,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.6777292801958333,
+      "worker_cpu_seconds_max": 3.634134,
+      "worker_cpu_seconds_mean": 3.626564666666667,
+      "worker_cpu_seconds_min": 3.619343,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 196608,
+      "by_seed": [
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 17,
+          "termination": "Completed",
+          "worker_cpu_seconds": 2.047958
+        },
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 23,
+          "termination": "Completed",
+          "worker_cpu_seconds": 2.0254659999999998
+        },
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 41,
+          "termination": "Completed",
+          "worker_cpu_seconds": 2.064794
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 512,
+      "completed_epochs_mean": 512,
+      "completed_epochs_min": 512,
+      "compute_and_stop_regret_mean": 0.046000028787591976,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 4,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 3,
+      "latency_weight": 0.0,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.5020833333333333,
+      "policy_gap_mean": 0.26913153526132116,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 196608,
+      "risk": 0.0,
+      "stop_regret_mean": 0.046000028787591976,
+      "termination_counts": {
+        "Completed": 3
+      },
+      "value_mean": 0.47448961458333333,
+      "worker_cpu_seconds_max": 2.064794,
+      "worker_cpu_seconds_mean": 2.0460726666666664,
+      "worker_cpu_seconds_min": 2.0254659999999998,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 33861,
+      "by_seed": [
+        {
+          "actual_actor_updates": 12032,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 94,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 12032,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.924156
+        },
+        {
+          "actual_actor_updates": 10904,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 85,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 10880,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.929806
+        },
+        {
+          "actual_actor_updates": 10925,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 85,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 10880,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.936181
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 94,
+      "completed_epochs_mean": 88,
+      "completed_epochs_min": 85,
+      "compute_and_stop_regret_mean": 0.12113339610972221,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 1,
+      "discarded_actor_updates_total": 69,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.01,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.4583333333333333,
+      "policy_gap_mean": 0.1827550511874999,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 33792,
+      "risk": 0.0,
+      "stop_regret_mean": 0.1111333961097222,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.4387060833333333,
+      "worker_cpu_seconds_max": 0.936181,
+      "worker_cpu_seconds_mean": 0.9300476666666667,
+      "worker_cpu_seconds_min": 0.924156,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 82304,
+      "by_seed": [
+        {
+          "actual_actor_updates": 30080,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 235,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 30080,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.939406
+        },
+        {
+          "actual_actor_updates": 27264,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 213,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 27264,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.941288
+        },
+        {
+          "actual_actor_updates": 24960,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 195,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 24960,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.952583
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 235,
+      "completed_epochs_mean": 214.33333333333334,
+      "completed_epochs_min": 195,
+      "compute_and_stop_regret_mean": 0.03259443465243056,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 1,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.01,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.4302083333333333,
+      "policy_gap_mean": 0.21884651993749993,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 82304,
+      "risk": 0.0,
+      "stop_regret_mean": 0.030094434652430557,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.4026146145833333,
+      "worker_cpu_seconds_max": 0.952583,
+      "worker_cpu_seconds_mean": 0.9444256666666666,
+      "worker_cpu_seconds_min": 0.939406,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 76559,
+      "by_seed": [
+        {
+          "actual_actor_updates": 24751,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 193,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 24704,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.828889
+        },
+        {
+          "actual_actor_updates": 24825,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 193,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 24704,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.8268069999999998
+        },
+        {
+          "actual_actor_updates": 26983,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 210,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 26880,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.8234190000000001
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 210,
+      "completed_epochs_mean": 198.66666666666666,
+      "completed_epochs_min": 193,
+      "compute_and_stop_regret_mean": 0.12113339610972221,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 2,
+      "discarded_actor_updates_total": 271,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.01,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.4583333333333333,
+      "policy_gap_mean": 0.1827550511874999,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 76288,
+      "risk": 0.0,
+      "stop_regret_mean": 0.1111333961097222,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.4387060833333333,
+      "worker_cpu_seconds_max": 1.828889,
+      "worker_cpu_seconds_mean": 1.8263716666666667,
+      "worker_cpu_seconds_min": 1.8234190000000001,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 178432,
+      "by_seed": [
+        {
+          "actual_actor_updates": 61312,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 479,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 61312,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.8261269999999998
+        },
+        {
+          "actual_actor_updates": 62336,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 487,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 62336,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.827785
+        },
+        {
+          "actual_actor_updates": 54784,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 428,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 54784,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.846268
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 487,
+      "completed_epochs_mean": 464.6666666666667,
+      "completed_epochs_min": 428,
+      "compute_and_stop_regret_mean": 0.03259443465243056,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 2,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.01,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.4302083333333333,
+      "policy_gap_mean": 0.21884651993749993,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 178432,
+      "risk": 0.0,
+      "stop_regret_mean": 0.030094434652430557,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.4026146145833333,
+      "worker_cpu_seconds_max": 1.846268,
+      "worker_cpu_seconds_mean": 1.8333933333333332,
+      "worker_cpu_seconds_min": 1.8261269999999998,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 133666,
+      "by_seed": [
+        {
+          "actual_actor_updates": 45255,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 353,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 45184,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.6412259999999996
+        },
+        {
+          "actual_actor_updates": 46555,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 363,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 46464,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.646446
+        },
+        {
+          "actual_actor_updates": 41856,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 327,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 41856,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.645136
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 363,
+      "completed_epochs_mean": 347.6666666666667,
+      "completed_epochs_min": 327,
+      "compute_and_stop_regret_mean": 0.12113339610972221,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 4,
+      "discarded_actor_updates_total": 162,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.01,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.4583333333333333,
+      "policy_gap_mean": 0.1827550511874999,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 133504,
+      "risk": 0.0,
+      "stop_regret_mean": 0.1111333961097222,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.4387060833333333,
+      "worker_cpu_seconds_max": 3.646446,
+      "worker_cpu_seconds_mean": 3.6442693333333334,
+      "worker_cpu_seconds_min": 3.6412259999999996,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 196608,
+      "by_seed": [
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 17,
+          "termination": "Completed",
+          "worker_cpu_seconds": 2.078763
+        },
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 23,
+          "termination": "Completed",
+          "worker_cpu_seconds": 2.0861509999999996
+        },
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 41,
+          "termination": "Completed",
+          "worker_cpu_seconds": 2.255239
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 512,
+      "completed_epochs_mean": 512,
+      "completed_epochs_min": 512,
+      "compute_and_stop_regret_mean": 0.03259443465243056,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 4,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 3,
+      "latency_weight": 0.01,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.4302083333333333,
+      "policy_gap_mean": 0.21884651993749993,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 196608,
+      "risk": 0.0,
+      "stop_regret_mean": 0.030094434652430557,
+      "termination_counts": {
+        "Completed": 3
+      },
+      "value_mean": 0.4026146145833333,
+      "worker_cpu_seconds_max": 2.255239,
+      "worker_cpu_seconds_mean": 2.1400509999999997,
+      "worker_cpu_seconds_min": 2.078763,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 32004,
+      "by_seed": [
+        {
+          "actual_actor_updates": 9410,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 73,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 9344,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.9311809999999999
+        },
+        {
+          "actual_actor_updates": 11714,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 91,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 11648,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.933205
+        },
+        {
+          "actual_actor_updates": 10880,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 85,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 10880,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.925527
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 91,
+      "completed_epochs_mean": 83,
+      "completed_epochs_min": 73,
+      "compute_and_stop_regret_mean": 0.0,
+      "controller_credits_mean": 1.4583333333333333,
+      "cpu_allowance_seconds": 1,
+      "discarded_actor_updates_total": 132,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.0,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.7037037037037037,
+      "policy_gap_mean": 0.11325624840593496,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 31872,
+      "risk": 0.25,
+      "stop_regret_mean": 0.0,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.6202080779512632,
+      "worker_cpu_seconds_max": 0.933205,
+      "worker_cpu_seconds_mean": 0.929971,
+      "worker_cpu_seconds_min": 0.925527,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 82933,
+      "by_seed": [
+        {
+          "actual_actor_updates": 28672,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 224,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 28672,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.9279569999999999
+        },
+        {
+          "actual_actor_updates": 26485,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 206,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 26368,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.937117
+        },
+        {
+          "actual_actor_updates": 27776,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 217,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 27776,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.9283009999999999
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 224,
+      "completed_epochs_mean": 215.66666666666666,
+      "completed_epochs_min": 206,
+      "compute_and_stop_regret_mean": 0.044831988157585975,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 1,
+      "discarded_actor_updates_total": 117,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.0,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.5020833333333333,
+      "policy_gap_mean": 0.28047477980071917,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 82816,
+      "risk": 0.25,
+      "stop_regret_mean": 0.044831988157585975,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.45298954655647905,
+      "worker_cpu_seconds_max": 0.937117,
+      "worker_cpu_seconds_mean": 0.931125,
+      "worker_cpu_seconds_min": 0.9279569999999999,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 66598,
+      "by_seed": [
+        {
+          "actual_actor_updates": 21566,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 168,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 21504,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.829487
+        },
+        {
+          "actual_actor_updates": 23168,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 181,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 23168,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.8406989999999999
+        },
+        {
+          "actual_actor_updates": 21864,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 170,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 21760,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.830764
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 181,
+      "completed_epochs_mean": 173,
+      "completed_epochs_min": 168,
+      "compute_and_stop_regret_mean": 0.0,
+      "controller_credits_mean": 1.625,
+      "cpu_allowance_seconds": 2,
+      "discarded_actor_updates_total": 166,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.0,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.75,
+      "policy_gap_mean": 0.07602834657537644,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 66432,
+      "risk": 0.25,
+      "stop_regret_mean": 0.0,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.6574359797818218,
+      "worker_cpu_seconds_max": 1.8406989999999999,
+      "worker_cpu_seconds_mean": 1.83365,
+      "worker_cpu_seconds_min": 1.829487,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 174592,
+      "by_seed": [
+        {
+          "actual_actor_updates": 54912,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 429,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 54912,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.8311129999999998
+        },
+        {
+          "actual_actor_updates": 60416,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 472,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 60416,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.83088
+        },
+        {
+          "actual_actor_updates": 59264,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 463,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 59264,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.860971
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 472,
+      "completed_epochs_mean": 454.6666666666667,
+      "completed_epochs_min": 429,
+      "compute_and_stop_regret_mean": 0.044831988157585975,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 2,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.0,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.5020833333333333,
+      "policy_gap_mean": 0.28047477980071917,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 174592,
+      "risk": 0.25,
+      "stop_regret_mean": 0.044831988157585975,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.45298954655647905,
+      "worker_cpu_seconds_max": 1.860971,
+      "worker_cpu_seconds_mean": 1.8409879999999998,
+      "worker_cpu_seconds_min": 1.83088,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 130633,
+      "by_seed": [
+        {
+          "actual_actor_updates": 44700,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 349,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 44672,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.640528
+        },
+        {
+          "actual_actor_updates": 43246,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 337,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 43136,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.6352260000000003
+        },
+        {
+          "actual_actor_updates": 42687,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 333,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 42624,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.6269739999999997
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 349,
+      "completed_epochs_mean": 339.6666666666667,
+      "completed_epochs_min": 333,
+      "compute_and_stop_regret_mean": 0.0,
+      "controller_credits_mean": 1.75,
+      "cpu_allowance_seconds": 4,
+      "discarded_actor_updates_total": 201,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.0,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.7777777777777778,
+      "policy_gap_mean": 0.05392032227093213,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 130432,
+      "risk": 0.25,
+      "stop_regret_mean": 0.0,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.679544004086266,
+      "worker_cpu_seconds_max": 3.640528,
+      "worker_cpu_seconds_mean": 3.6342426666666667,
+      "worker_cpu_seconds_min": 3.6269739999999997,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 196608,
+      "by_seed": [
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 17,
+          "termination": "Completed",
+          "worker_cpu_seconds": 1.972053
+        },
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 23,
+          "termination": "Completed",
+          "worker_cpu_seconds": 2.064942
+        },
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 41,
+          "termination": "Completed",
+          "worker_cpu_seconds": 2.163919
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 512,
+      "completed_epochs_mean": 512,
+      "completed_epochs_min": 512,
+      "compute_and_stop_regret_mean": 0.044831988157585975,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 4,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 3,
+      "latency_weight": 0.0,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.5020833333333333,
+      "policy_gap_mean": 0.28047477980071917,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "resource_weight": 0.0,
+      "retained_actor_updates_total": 196608,
+      "risk": 0.25,
+      "stop_regret_mean": 0.044831988157585975,
+      "termination_counts": {
+        "Completed": 3
+      },
+      "value_mean": 0.45298954655647905,
+      "worker_cpu_seconds_max": 2.163919,
+      "worker_cpu_seconds_mean": 2.066971333333333,
+      "worker_cpu_seconds_min": 1.972053,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 32038,
+      "by_seed": [
+        {
+          "actual_actor_updates": 8395,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 65,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 8320,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.939759
+        },
+        {
+          "actual_actor_updates": 11904,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 93,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 11904,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.9296369999999999
+        },
+        {
+          "actual_actor_updates": 11739,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 91,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 11648,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.930398
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 93,
+      "completed_epochs_mean": 83,
+      "completed_epochs_min": 65,
+      "compute_and_stop_regret_mean": 0.11168557791735412,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 1,
+      "discarded_actor_updates_total": 166,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.01,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.4583333333333333,
+      "policy_gap_mean": 0.18044650008446805,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 31872,
+      "risk": 0.25,
+      "stop_regret_mean": 0.10168557791735411,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.42604476310689465,
+      "worker_cpu_seconds_max": 0.939759,
+      "worker_cpu_seconds_mean": 0.9332646666666666,
+      "worker_cpu_seconds_min": 0.9296369999999999,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 82304,
+      "by_seed": [
+        {
+          "actual_actor_updates": 25216,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 197,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 25216,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.9425049999999999
+        },
+        {
+          "actual_actor_updates": 28416,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 222,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 28416,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.9288219999999999
+        },
+        {
+          "actual_actor_updates": 28672,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 224,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 28672,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 0.9287519999999999
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 224,
+      "completed_epochs_mean": 214.33333333333334,
+      "completed_epochs_min": 197,
+      "compute_and_stop_regret_mean": 0.02999710900819029,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 1,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.01,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.4302083333333333,
+      "policy_gap_mean": 0.22525947417630393,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 82304,
+      "risk": 0.25,
+      "stop_regret_mean": 0.027497109008190287,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.3812317890150587,
+      "worker_cpu_seconds_max": 0.9425049999999999,
+      "worker_cpu_seconds_mean": 0.9333596666666666,
+      "worker_cpu_seconds_min": 0.9287519999999999,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 66748,
+      "by_seed": [
+        {
+          "actual_actor_updates": 20736,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 162,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 20736,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.832805
+        },
+        {
+          "actual_actor_updates": 22748,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 177,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 22656,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.827411
+        },
+        {
+          "actual_actor_updates": 23264,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 181,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 23168,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.837899
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 181,
+      "completed_epochs_mean": 173.33333333333334,
+      "completed_epochs_min": 162,
+      "compute_and_stop_regret_mean": 0.11168557791735412,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 2,
+      "discarded_actor_updates_total": 188,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.01,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.4583333333333333,
+      "policy_gap_mean": 0.18044650008446805,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 66560,
+      "risk": 0.25,
+      "stop_regret_mean": 0.10168557791735411,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.42604476310689465,
+      "worker_cpu_seconds_max": 1.837899,
+      "worker_cpu_seconds_mean": 1.832705,
+      "worker_cpu_seconds_min": 1.827411,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 187776,
+      "by_seed": [
+        {
+          "actual_actor_updates": 61952,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 484,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 61952,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.828546
+        },
+        {
+          "actual_actor_updates": 61824,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 483,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 61824,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.827412
+        },
+        {
+          "actual_actor_updates": 64000,
+          "budget_stop_stage": "epoch_boundary",
+          "completed_epochs": 500,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 64000,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 1.8376179999999998
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 500,
+      "completed_epochs_mean": 489,
+      "completed_epochs_min": 483,
+      "compute_and_stop_regret_mean": 0.02999710900819029,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 2,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.01,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.4302083333333333,
+      "policy_gap_mean": 0.22525947417630393,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 187776,
+      "risk": 0.25,
+      "stop_regret_mean": 0.027497109008190287,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.3812317890150587,
+      "worker_cpu_seconds_max": 1.8376179999999998,
+      "worker_cpu_seconds_mean": 1.831192,
+      "worker_cpu_seconds_min": 1.827412,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 138008,
+      "by_seed": [
+        {
+          "actual_actor_updates": 46032,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 359,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 45952,
+          "seed": 17,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.648581
+        },
+        {
+          "actual_actor_updates": 45720,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 357,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 45696,
+          "seed": 23,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.629866
+        },
+        {
+          "actual_actor_updates": 46256,
+          "budget_stop_stage": "partial_epoch",
+          "completed_epochs": 361,
+          "hit_512_epoch_cap": false,
+          "retained_actor_updates": 46208,
+          "seed": 41,
+          "termination": "CooperativeCpuBudgetStop",
+          "worker_cpu_seconds": 3.632612
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 361,
+      "completed_epochs_mean": 359,
+      "completed_epochs_min": 357,
+      "compute_and_stop_regret_mean": 0.11168557791735412,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 4,
+      "discarded_actor_updates_total": 152,
+      "hit_512_epoch_cap_count": 0,
+      "latency_weight": 0.01,
+      "method": "actor_critic",
+      "net_terminal_utility_mean": 0.4583333333333333,
+      "policy_gap_mean": 0.18044650008446805,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 137856,
+      "risk": 0.25,
+      "stop_regret_mean": 0.10168557791735411,
+      "termination_counts": {
+        "CooperativeCpuBudgetStop": 3
+      },
+      "value_mean": 0.42604476310689465,
+      "worker_cpu_seconds_max": 3.648581,
+      "worker_cpu_seconds_mean": 3.6370196666666668,
+      "worker_cpu_seconds_min": 3.629866,
+      "workers": 3
+    },
+    {
+      "actual_actor_updates_total": 196608,
+      "by_seed": [
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 17,
+          "termination": "Completed",
+          "worker_cpu_seconds": 1.929191
+        },
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 23,
+          "termination": "Completed",
+          "worker_cpu_seconds": 1.939188
+        },
+        {
+          "actual_actor_updates": 65536,
+          "budget_stop_stage": null,
+          "completed_epochs": 512,
+          "hit_512_epoch_cap": true,
+          "retained_actor_updates": 65536,
+          "seed": 41,
+          "termination": "Completed",
+          "worker_cpu_seconds": 1.9775899999999997
+        }
+      ],
+      "comparison_rows": 24,
+      "completed_epochs_max": 512,
+      "completed_epochs_mean": 512,
+      "completed_epochs_min": 512,
+      "compute_and_stop_regret_mean": 0.02999710900819029,
+      "controller_credits_mean": 1.0,
+      "cpu_allowance_seconds": 4,
+      "discarded_actor_updates_total": 0,
+      "hit_512_epoch_cap_count": 3,
+      "latency_weight": 0.01,
+      "method": "distillation",
+      "net_terminal_utility_mean": 0.4302083333333333,
+      "policy_gap_mean": 0.22525947417630393,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "resource_weight": 0.02,
+      "retained_actor_updates_total": 196608,
+      "risk": 0.25,
+      "stop_regret_mean": 0.027497109008190287,
+      "termination_counts": {
+        "Completed": 3
+      },
+      "value_mean": 0.3812317890150587,
+      "worker_cpu_seconds_max": 1.9775899999999997,
+      "worker_cpu_seconds_mean": 1.9486563333333333,
+      "worker_cpu_seconds_min": 1.929191,
+      "workers": 3
+    }
+  ],
+  "worker_totals": {
+    "by_method": {
+      "actor_critic": {
+        "discarded_actor_updates": 1818,
+        "retained_actor_updates": 945664,
+        "worker_cpu_seconds": 76.736611
+      },
+      "distillation": {
+        "discarded_actor_updates": 117,
+        "retained_actor_updates": 1830656,
+        "worker_cpu_seconds": 57.848727999999994
+      }
+    },
+    "inclusive_cpu_seconds": 134.585339,
+    "termination_counts": {
+      "Completed": 12,
+      "CooperativeCpuBudgetStop": 60
+    }
+  }
+}

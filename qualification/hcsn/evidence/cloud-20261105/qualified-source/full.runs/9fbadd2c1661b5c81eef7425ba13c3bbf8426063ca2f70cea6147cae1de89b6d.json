@@ -1,0 +1,91 @@
+{
+  "key": "9fbadd2c1661b5c81eef7425ba13c3bbf8426063ca2f70cea6147cae1de89b6d",
+  "source_sha256": "7996234ed0df7e05bfcc33d60c97aa7f9666c897606a9122e0a01b8df57458e6",
+  "config": {
+    "profile": "research",
+    "device": "cuda:0",
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "models": [
+      "hx_dual",
+      "hx_fixed",
+      "hx_call",
+      "hx_risk",
+      "no_rollover",
+      "softplus",
+      "no_recovery",
+      "hx_attention",
+      "population_flux",
+      "population_flux_no_recovery",
+      "gru",
+      "lif",
+      "adaptive_lif",
+      "pif",
+      "transformer",
+      "cfc",
+      "mamba2"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "length": 64,
+    "hidden_size": 64,
+    "batch_size": 64,
+    "train_steps": 400,
+    "learning_rate": 0.001,
+    "dt": 0.1,
+    "latency_repeats": 100,
+    "cpu_threads": 2
+  },
+  "dataset": {
+    "split_sha256": [
+      "8009bf4b1cc4328fa96c0d7284cd2050f1495236cb5ebdd4af96c7addab39def",
+      "f0c87929ef12a3e35a5160bc43e8efce9f52980193210d945155d95e1e68d1f0",
+      "bd98a59e033169eebf03410b5f258a79702414851eef16de03cf9f3c329a5587"
+    ],
+    "constant_predictor_test_mse": 0.1640622913837433
+  },
+  "hardware": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "machine": "x86_64",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "logical_cpu_count": 5,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "torch": "2.8.0+cpu",
+    "device": "cuda:0",
+    "device_name": "AMD EPYC 9V74 80-Core Processor",
+    "cpu_threads": 2,
+    "deterministic_requested": true,
+    "cuda_runtime": null,
+    "cuda_available": false
+  },
+  "software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "ncps": "1.0.1",
+    "mamba-ssm": null,
+    "triton": null,
+    "causal-conv1d": null,
+    "nvidia-ml-py": null
+  },
+  "result": {
+    "task": "adding",
+    "model": "no_rollover",
+    "seed": 0,
+    "status": "unavailable",
+    "training_status": "not_started",
+    "reason": "CUDA requested but unavailable; no CPU fallback"
+  }
+}

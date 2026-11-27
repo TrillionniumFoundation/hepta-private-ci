@@ -1,0 +1,72 @@
+{
+  "disabled_fragment": {
+    "bytes": 802,
+    "path": "/workspace/scratch/c385a7439f8e/complete-os-supervisor-rebind-v3/AUTHORIZATION-FRAGMENT-TEMPLATE.json",
+    "sha256": "9f6ad1f5877f8267f51d4e39a81d5615d7506ad8ee0a7f848cc1c77094c5e0fd"
+  },
+  "execution_authorized": false,
+  "finalization_seconds": 30,
+  "fixed_limits": {
+    "automatic_retry": false,
+    "peak_RSS_bytes": 536870912,
+    "threads": 1,
+    "whole_wall_seconds": 120,
+    "workers": 1
+  },
+  "helper_bytes_unchanged": true,
+  "model_operations": 0,
+  "native_calls": 0,
+  "native_whole_seconds": 155,
+  "plan_sha256_unchanged": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b",
+  "provided_diff": {
+    "bytes": 545,
+    "path": "/workspace/scratch/c385a7439f8e/complete-os-supervisor-rebind-v3/DIFF-v2-to-v3.patch",
+    "sha256": "671df511521c06b256ec9170b5dbd076a225f181d34bb4ca241a154de72c95f0"
+  },
+  "rebind_record": {
+    "bytes": 1226,
+    "path": "/workspace/scratch/c385a7439f8e/complete-os-supervisor-rebind-v3/REBIND.json",
+    "sha256": "75e38e18908b6c94db8118d920d3f41b1373fd5a4cc3323957ddfe3e3a372ea5"
+  },
+  "runtime_AST_equal_except_program_pin": true,
+  "runtime_after": [
+    {
+      "bytes": 16554,
+      "path": "/workspace/scratch/c385a7439f8e/complete-os-supervisor-rebind-v3/complete_os_envelope.py",
+      "sha256": "6e6be1db16c1a05f49806b63f8024111ed25c02bda61510dcde4a9e4e3a39be0"
+    },
+    {
+      "bytes": 15037,
+      "path": "/workspace/scratch/c385a7439f8e/complete-os-supervisor-rebind-v3/os_processes.py",
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    }
+  ],
+  "runtime_before": [
+    {
+      "bytes": 16554,
+      "path": "/workspace/scratch/c385a7439f8e/numerics-exact-recovery-20261111-v1/supervisor-v2/complete_os_envelope.py",
+      "sha256": "7f2762c444031bc3d84131ec4cb6dd74790cbebd4b6a9229c6027886885ec0f9"
+    },
+    {
+      "bytes": 15037,
+      "path": "/workspace/scratch/c385a7439f8e/numerics-exact-recovery-20261111-v1/supervisor-v2/os_processes.py",
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    }
+  ],
+  "schema": "independent-complete-os-rebind-static-review-v1",
+  "scope": [
+    "Read-only exact diff/AST and target-manifest identity check. No supervisor or native execution.",
+    "Root compile-only receipt is not a full functional-test result.",
+    "New nine-case helper lifecycle validation is a separate narrow record and does not exercise supervisor authorization/artifact admission.",
+    "Old lost twelve-test credit is not inherited. The real terminal binding and root decision remain separate future gates."
+  ],
+  "startup_seconds": 5,
+  "status": "one-literal-rebind-verified-no-new-static-blocker",
+  "target_manifest": {
+    "bytes": 3861,
+    "path": "/workspace/scratch/c385a7439f8e/c2-resource-analysis-program-v2/MANIFEST.json",
+    "sha256": "f2d1ce683591a9b8575aab2d0981bf67b9e465bf9686a8da2e87a2246a0ea70e"
+  },
+  "target_manifest_bytes_match_new_pin": true,
+  "tests_run": 0
+}

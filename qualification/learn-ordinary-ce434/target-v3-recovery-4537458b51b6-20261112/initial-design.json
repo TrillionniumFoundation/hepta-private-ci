@@ -1,0 +1,104 @@
+{
+  "schema": "learn.target-v3-recovery-design.v1",
+  "status": "static-design-only; no executable script or H request frozen; no H operation by this agent",
+  "source": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "repo": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1"
+  },
+  "preserved_source": {
+    "sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "repo": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1"
+  },
+  "actual_failure": {
+    "blob": "a02cbaf22fe79ef3af3fd7978b96e0b72f200fdd",
+    "bytes": 677,
+    "sha256": "79c38dfbe3da9022f5529dd3e45eeb829261f35bbe73c5ca0eb2933181f3cbd8",
+    "driver_blob": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+    "line": 36,
+    "operation": "target_info=target_root.lstat()",
+    "exception": "FileNotFoundError",
+    "path": "/data/hepta-learn-ce434-runtime-20261112-v2/target",
+    "stage": "before helper-build, before just test, before first native result checkpoint",
+    "reason_for_absence": "not determined"
+  },
+  "original_protocol": {
+    "script_blob": "a1d3c18689b0957ec11190c24a58b73d60854567",
+    "script_bytes": 5561,
+    "script_sha256": "ad15f71c5de838cccd5554055746dd205b1b30e329a36791142ce0f78d8599a2",
+    "request_blob": "3d3b7900e8345cd7a2522e4712207e5670ec1340",
+    "creation_record_blob": "344a692e8ccf9cdb3262b1b8404a995d525c6ba2",
+    "creation_record_bytes": 2506,
+    "creation_record_sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb",
+    "source": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+    "unchanged_history": true
+  },
+  "proposed_storage": {
+    "root": "/data/hepta-learn-ce434-runtime-20261112-v3",
+    "target": "/data/hepta-learn-ce434-runtime-20261112-v3/target",
+    "evidence_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-4537458b51b6-v3",
+    "path_status": "design proposal, not yet created or dispatched",
+    "new_identity": null,
+    "new_creation_record_hash": null
+  },
+  "required_preconditions": [
+    "Read actual parent/v2 state observations from Root; no invented cause, inode, or proof of disappearance.",
+    "Preserve original /data type/owner/canonical path and device 2067/inode 2 check; preserve original free-space minimum 64*1024**3 bytes. If actual parent no longer matches, stop for a new explicit reviewed observation, not relax the gate.",
+    "Check new v3 root and evidence directory absent including dangling symlinks. Preserve the original v1 target reappearance rejection and add the current v2 target reappearance rejection; preserve old roots, files and receipts without chmod/removal.",
+    "Check both exact 453 isolated source and preserved a671 source clean before and after; verify actual repository roots, not aliases. No fetch/switch/reset/clean in the creation operation.",
+    "Fully hash the existing original V8 manifest and original441 dependency recovery receipt through owned regular no-follow stable descriptors; leave the original v1 environment literal unchanged.",
+    "Fully hash both original0400 V8 assets at their original v1 private-pins paths before any directory creation and again after creation. Missing/replaced assets reject; this operation does not download or copy assets.",
+    "No new jobs, resource budgets, grants, keys, policies or authority are introduced by selecting a new build storage root."
+  ],
+  "creation_order": [
+    "Use the already-reviewed Popen/communicate/wait read-only Git helper, with no signal/timeout path; do not retain subprocess.check_output's implicit exception-time kill behavior.",
+    "Exclusive evidence directory mkdir0700; write starting receipt.",
+    "Exclusive new v3 root mkdir0700 and target mkdir0700, both parents=False/exist_ok=False.",
+    "Read and record actual new root/target device/inode/UID/mode; require canonical directories owned by invoking UID and exact0700.",
+    "Re-read original input full hashes and metadata; require both original source worktrees remain unchanged and clean.",
+    "Write success receipt containing new actual identities, actual453 source/tree before and after, original manifest/recovery hashes, and history reference to untouched e5c/v2 creation record.",
+    "Any failure retains only this attempt's paths and a failed or partial receipt; no cleanup, replay, overwrite of old attempts, signal or inferred success."
+  ],
+  "receipt_boundary": {
+    "schema": "learn.original-build-root-recovery.v1",
+    "success_state": "isolated-build-target-created-original-pins-retained",
+    "actual_source_must_be": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "historical_e5c_record_is_not_new_custody": true,
+    "downloaded": false,
+    "copied": false,
+    "existing_paths_removed_or_changed": false,
+    "process_signals": false,
+    "native_tests_executed": 0,
+    "future_record_sha256": null,
+    "binding_rule": "Root must obtain and independently full-hash the actual successful v3 receipt before freezing a native-only driver that accepts it."
+  },
+  "native_only_follow_on": {
+    "status": "blocked pending actual v3 receipt and Root authorization; no runnable request prepared",
+    "source_runner_rerun": false,
+    "preserve_source443": "Retain the already completed same-source original source-suite and its failed outer provenance; do not rewrite that outer into a passed main.",
+    "minimal_driver_delta": [
+      "CARGO_TARGET_DIR exactv2→exactv3",
+      "target creation receipt exactpath and independently observed fullhash",
+      "creation provenance source/tree exacte5c→actual453 and exacttargetv3; keep strict current dev/inode/uid/mode equality with new receipt"
+    ],
+    "unchanged": [
+      "exact isolated repo guard",
+      "source453/tree8cbd",
+      "all201 native cases/43groups/fourpackages",
+      "just test argv",
+      "threads2/retries0",
+      "existing3600s CI wrapper/60s nextest/8MiB stack",
+      "helper build and verify",
+      "all original V8 hashes/paths/version and original v1 dependency-recovery literal",
+      "all Root/authority/statistical gates"
+    ],
+    "evidence": "New exclusive native-only output; retain original failed native directory, original677B stderr and successful source-suite untouched. Report actual preparation/test state and inner execution rather than synthesize aggregate main PASS.",
+    "post_main201": "Root29 remains independently blocked until actual required201 coverage passes; fullcaller/maintenance must bind actual terminal records and cannot treat missing inner execution as completion."
+  },
+  "limitations": [
+    "Build storage recovery proves no B-before-adoption custody, C FinalUse, ordinary adoption or cold-restart result.",
+    "No executable code was run or produced by this design; actual v3 directory/receipt fields are deliberately null.",
+    "This run failed before the current V8-asset checks, so their present availability is not inferred from prior recovery."
+  ]
+}

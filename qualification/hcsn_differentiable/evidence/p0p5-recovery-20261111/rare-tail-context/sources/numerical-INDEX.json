@@ -1,0 +1,171 @@
+{
+  "archive_identity": {
+    "CRC_and_original_members_verified": true,
+    "bytes": 34050599,
+    "original_files_unchanged": true,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1.zip",
+    "sha256": "e96030a4c1a29031e56c406d7cc72cee9d141a0edb4701e3a83d60b5d5e32c52"
+  },
+  "authenticated_draft_assets": [
+    {
+      "CRC_and_members_verified": true,
+      "anonymous_asset_API": {
+        "HTTP_status": "404",
+        "authorization_header_sent": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/733215514"
+      },
+      "anonymous_asset_browser": {
+        "HTTP_status": "404",
+        "authorization_header_sent": false,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/numerics-terminal-postmortem-v1.zip"
+      },
+      "asset_id": 733215514,
+      "authenticated_full_readback_verified": true,
+      "authenticated_readback_sha256": "e96030a4c1a29031e56c406d7cc72cee9d141a0edb4701e3a83d60b5d5e32c52",
+      "bytes": 34050599,
+      "disposition": "uploaded_once",
+      "name": "numerics-terminal-postmortem-v1.zip",
+      "sha256": "e96030a4c1a29031e56c406d7cc72cee9d141a0edb4701e3a83d60b5d5e32c52"
+    },
+    {
+      "CRC_and_members_verified": true,
+      "anonymous_asset_API": {
+        "HTTP_status": "404",
+        "authorization_header_sent": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/733217675"
+      },
+      "anonymous_asset_browser": {
+        "HTTP_status": "404",
+        "authorization_header_sent": false,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hcsn-terminal-numerics-collector-receipts-20261110-v1.zip"
+      },
+      "asset_id": 733217675,
+      "authenticated_full_readback_verified": true,
+      "authenticated_readback_sha256": "e6c01713ed4b962272b937976be2b989208254b1f02c22b8316dfd0ee2887d46",
+      "bytes": 254590,
+      "disposition": "uploaded_once",
+      "name": "hcsn-terminal-numerics-collector-receipts-20261110-v1.zip",
+      "sha256": "e6c01713ed4b962272b937976be2b989208254b1f02c22b8316dfd0ee2887d46"
+    }
+  ],
+  "direct_FD_inconclusive_total": 576,
+  "direct_FD_resolved_disagreement_total": 6,
+  "domain_gradient_scope": "Basis derivatives and each exported posterior held fixed; not end-to-end network-gradient or complete historical-training coverage.",
+  "domain_state_gradient_flags_true": 12,
+  "external_collection_receipt": {
+    "bytes": 8567,
+    "sha256": "8461128602a2ca104d71401e4d42f59510aac37a96d79942a6c8e2344a409804"
+  },
+  "finite_scope": "Recorded best-checkpoint starting laws; specified actual future gaps; future observations disabled. 48 fixtures0-7 across all6 plus s101/.001 fixture8 only.",
+  "infinite_repeat_failed": 12,
+  "infinite_repeat_sentinels": 18,
+  "logrisk_interpretation": "OrdinaryFP64 FD confirmation gate failed; original primary=false remains. It does not establish a training AD error.",
+  "logrisk_primary_false_count": 6,
+  "logrisk_primary_true_count": 0,
+  "maximum_relative_error": {
+    "name": "hcsn-s307-lr0.001",
+    "original_result": {
+      "bytes": 19104,
+      "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-2.json",
+      "sha256": "2c36a8c244b622c78da4cb798cd31ecb6cd3c89a717d4ed77280ac58228286ef"
+    },
+    "quantity": "discounted_event_count",
+    "stage": "finite-best-2",
+    "value": 0.05070083410015618
+  },
+  "maximum_scaled_error": {
+    "name": "hcsn-s211-lr0.001",
+    "original_result": {
+      "bytes": 22671,
+      "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-1.json",
+      "sha256": "0bc26c2e650b16e7755127ba52c7eeb1ba0ded4859706308c577f1ad7424058d"
+    },
+    "quantity": "event_count",
+    "stage": "finite-best-1",
+    "value": 0.0085718039526671
+  },
+  "original_attempt_returncode": -9,
+  "original_attempt_status": "whole_budget_exhausted",
+  "original_controller_aggregate_exists": false,
+  "original_files_stable_during_collection": true,
+  "original_hard_whole_wall_seconds": 10800,
+  "original_source_input_closure_passed": true,
+  "original_training_adequacy": false,
+  "planned_finite_fixtures": 60,
+  "planned_stages": 96,
+  "pressure_scope": "Separate hypothetical infinite repetition; different starting laws/horizons from the finite burst fixtures.",
+  "qualified_named_finite_fixtures": 49,
+  "refinement_scope": "80-digit computation, orders8/16; order-doubling sensitivity is not a rigorous reference error bound.",
+  "relative_error_is_not_the_general_gate": true,
+  "release_remains_draft": true,
+  "repository_visibility": "public",
+  "scaled_error_definition": "abs(projected-reference)/max(1,abs(reference))",
+  "scaled_error_limit": 0.01,
+  "schema": "terminal-numerics-frozen-evidence-index-v1",
+  "scientific_admission": "HOLD",
+  "stage_observations": {
+    "attempt_artifacts_without_outer_completion": 1,
+    "completed_artifact_chain": 85,
+    "not_observed_to_have_started": 10
+  },
+  "supplemental_domain_vector_records": 10752,
+  "training_trace_scope": "Original byte-capped chronological prefixes do not become complete through supplemental final-checkpoint replay.",
+  "uncompleted_rows": [
+    {
+      "name": "hcsn-s101-lr0.003",
+      "stage": "finite-best-8",
+      "status": "attempt_artifacts_without_outer_completion"
+    },
+    {
+      "name": "hcsn-s211-lr0.001",
+      "stage": "finite-best-8",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s211-lr0.003",
+      "stage": "finite-best-8",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s307-lr0.001",
+      "stage": "finite-best-8",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s307-lr0.003",
+      "stage": "finite-best-8",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s101-lr0.001",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s101-lr0.003",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s211-lr0.001",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s211-lr0.003",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s307-lr0.001",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s307-lr0.003",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    }
+  ],
+  "whole_training_domain_admission": "HOLD"
+}

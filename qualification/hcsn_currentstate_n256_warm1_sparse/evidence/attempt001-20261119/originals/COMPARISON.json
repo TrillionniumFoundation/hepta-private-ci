@@ -1,0 +1,144 @@
+{
+  "all_closed": false,
+  "bitwise_mismatches": 1291,
+  "candidate_oracle_bitwise_equal": false,
+  "canonical_roundtrip_bytes_equal": true,
+  "compared_coordinates": 69728,
+  "comparison_wall_seconds": 0.23404457199999484,
+  "families": {
+    "packet/alpha": {
+      "bitwise_mismatches": 2,
+      "coordinates": 1320,
+      "max_abs_error": 1.4907779871675686e-19,
+      "max_symmetric_rel_error": 1.2847023271977664e-15,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "packet/generator": {
+      "bitwise_mismatches": 0,
+      "coordinates": 65544,
+      "max_abs_error": 0.0,
+      "max_symmetric_rel_error": 0.0,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "packet/output": {
+      "bitwise_mismatches": 0,
+      "coordinates": 264,
+      "max_abs_error": 0.0,
+      "max_symmetric_rel_error": 0.0,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "state/active": {
+      "bitwise_mismatches": 1269,
+      "coordinates": 2550,
+      "max_abs_error": 9.08995101411847e-16,
+      "max_symmetric_rel_error": 5.5018733734279256e-14,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "state/discounted_hit": {
+      "bitwise_mismatches": 5,
+      "coordinates": 10,
+      "max_abs_error": 4.336808689942018e-18,
+      "max_symmetric_rel_error": 4.006971235108724e-15,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "state/mass": {
+      "bitwise_mismatches": 5,
+      "coordinates": 10,
+      "max_abs_error": 7.37257477290143e-17,
+      "max_symmetric_rel_error": 1.3985854807408111e-14,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "state/occupation": {
+      "bitwise_mismatches": 5,
+      "coordinates": 15,
+      "max_abs_error": 3.2526065174565133e-19,
+      "max_symmetric_rel_error": 6.1691972473597234e-15,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "state/upper": {
+      "bitwise_mismatches": 5,
+      "coordinates": 15,
+      "max_abs_error": 6.339783291631441e-132,
+      "max_symmetric_rel_error": 7.271601786362678e-15,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    }
+  },
+  "first_mismatch_examples": [
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.472486115cc8dp-17",
+      "index": 0,
+      "sparse_hex": "0x1.472486115cc10p-17"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.5266939c49630p-16",
+      "index": 1,
+      "sparse_hex": "0x1.5266939c4960bp-16"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.065e3f48e60cbp-15",
+      "index": 2,
+      "sparse_hex": "0x1.065e3f48e607dp-15"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.696352538db1bp-15",
+      "index": 3,
+      "sparse_hex": "0x1.696352538dadap-15"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.d25460f2cfbd7p-15",
+      "index": 4,
+      "sparse_hex": "0x1.d25460f2cfb6cp-15"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.209d6ba0be033p-14",
+      "index": 5,
+      "sparse_hex": "0x1.209d6ba0bdffdp-14"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.5b0b5918dfbacp-14",
+      "index": 6,
+      "sparse_hex": "0x1.5b0b5918dfb66p-14"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.986ec5a6b8ea7p-14",
+      "index": 7,
+      "sparse_hex": "0x1.986ec5a6b8e5dp-14"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.d8bcdaa0316e2p-14",
+      "index": 8,
+      "sparse_hex": "0x1.d8bcdaa031698p-14"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.0df25c8228223p-13",
+      "index": 9,
+      "sparse_hex": "0x1.0df25c82281ffp-13"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.30e7932753092p-13",
+      "index": 10,
+      "sparse_hex": "0x1.30e793275306ap-13"
+    },
+    {
+      "address": "state/active",
+      "dense_hex": "0x1.552f282831124p-13",
+      "index": 11,
+      "sparse_hex": "0x1.552f28283110bp-13"
+    }
+  ],
+  "numerical_tolerance_is_not_original_GO": true,
+  "original_bitwise_requirement_satisfied": false,
+  "original_firststep_contract_admitted": false,
+  "relative_error_definition": "abs(sparse-dense)/max(abs(sparse),abs(dense),1e-300)"
+}

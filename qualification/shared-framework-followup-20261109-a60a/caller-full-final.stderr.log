@@ -1,0 +1,1 @@
+FAIL_HEPTA_CALLER_PROOF: codex-rs/hepta-agentd/src/authority_host_learning_profile.rs:fn new_scoped_v2(: required code order missing: ['Self::new(identity, writer_proof_digest, request, owners)?', 'HostAuthorityLearningScopeV2::new(&initial, scope, update_rule)?', 'profile.schema_version = 2', 'profile.require_binding(identity, &profile.writer_proof_digest)?', 'Ok(profile)']

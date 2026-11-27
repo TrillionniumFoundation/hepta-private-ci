@@ -84,6 +84,18 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Persist immutable base/organ/cell parameter bundles with complete tensor inventories and compatibility/deletion lineage. Preserve scalar ParameterProposalV2 semantics; larger updates require a versioned artifact-reference adapter. Reference-aware GC must retain shared bases still in use; the registry neither trains nor selects its own artifacts.
 
+The first source-backed contract for this boundary is `CellParameterBundleV1`,
+owned by `learning.artifacts` in
+`codex-rs/hepta-learning-artifacts/src/cell_parameter_bundle.rs` with its CAS
+owner in `cell_parameter_bundle_owner.rs`. It binds one
+shared CAS base, cloned or reinitialized adapter/head references, an exact
+parent predecessor, child identity/generation/scope/lineage and a complete
+CAS-artifact manifest. `CellParameterBundleOwnerV1` appends only with a
+compare-and-swap head, returns replayable deny-all receipts, and performs
+rollback by publishing a fresh generation that references the old bundle. It
+does not select, activate or mutate runtime topology; topology proposal and
+canary remain owned by `learning.plasticity`.
+
 Bind circuit routing/termination policy to compatible cell, definition and state versions. TaskFlow continues to own immutable operational definitions; artifact storage is not a second body/run registry. See the
 [Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
 
@@ -92,8 +104,8 @@ Required targeted tests: base replacement, adapter shape/order mismatch, revoked
 The shared contract and record design are in
 [DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
 [organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
-This target does not change the current native implementation, source status or
-product/activation evidence recorded below. No existing wire version is redefined.
+This contract stage does not activate the current runtime, change product
+composition or grant activation evidence. No existing wire version is redefined.
 
 ### Capacity, depth and learning evidence target
 
@@ -118,6 +130,7 @@ Produced contracts:
 - `DomainRead::learning_artifact_registryV1`
 - `DomainRead::operator_sensor_core_registryV1`
 - `LearningArtifactManifestV1`
+- `CellParameterBundleV1`
 - `ModulePort::learning.artifacts::intuition.policy`
 - `ModulePort::learning.artifacts::learning.eval`
 - `ModulePort::learning.artifacts::learning.operator`
@@ -195,6 +208,15 @@ The transaction exposes a digest-bound snapshot and replay constructor. Crash te
 Create-only file writers hold an exclusive advisory file lock through the empty-file check, write and `sync_all`. Readers hold shared locks for bounded reads. The crate does not own the global writer lease, product process, newest-head service or parent-directory fsync. Those are host-owned boundaries and must serialize publication, current-head discovery and final route changes.
 
 Iteration bookkeeping is separately bounded and authority-free. `IterationLedgerV1` can record typed externally produced evidence and replay candidate state, but it does not execute a sandbox, evaluate code, select a candidate, merge source or release an artifact.
+
+Before shutdown, the host closes its routes and records its own durable stop intent.
+The existing owner's `begin_shutdown()` then refuses new mutations without releasing
+the writer fence. The same live owner may finish only a previously issued, exact
+continuation, and immutable acknowledged receipts remain available through readback.
+`is_drained()` reports whether shutdown was requested and no unresolved local write
+or withdrawal fence remains. It is not a readiness or authorization decision; the
+writer fence stays held until drop. A replacement owner must obey the host's durable
+stop intent rather than relying on the previous process's in-memory flag.
 
 ## 8. Failure semantics, recovery and rollback
 

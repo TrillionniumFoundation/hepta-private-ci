@@ -538,7 +538,9 @@ async fn terminal_bound_lease_transitions_audit_compact_journal_atomically() {
     // through a test-only trigger drop; the lifecycle transaction itself must
     // still leave the lease row count and compact row count unchanged.
     for (index, transition) in ["release", "rollback", "expire"].into_iter().enumerate() {
-        let expiry_offset = if transition == "expire" { 1 } else { 3_600 };
+        // Keep the lease live during real SQLite/ledger setup on slow Windows runners.
+        // The expire arm still waits until the real lease deadline below.
+        let expiry_offset = if transition == "expire" { 10 } else { 3_600 };
         let (_temp, store, lease, executor, current_fence, checkpoint) =
             open_bound_executor(130 + index as u8, expiry_offset).await;
         let current = snapshot(current_fence);
@@ -583,7 +585,7 @@ async fn terminal_bound_lease_transitions_audit_compact_journal_atomically() {
                 .binding()
                 .expect("bound lease binding")
                 .lease_expires_at_unix_seconds;
-            for _ in 0..120 {
+            for _ in 0..600 {
                 if unix_seconds() >= expiry {
                     break;
                 }

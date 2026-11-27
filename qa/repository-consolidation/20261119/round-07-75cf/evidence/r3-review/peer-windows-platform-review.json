@@ -1,0 +1,186 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "3fb35102cf852e5059efecc4055ff8c045f8df14",
+  "status": "BLOCKED: current 2-file postimage is Unix-tested only and must not be published unchanged on Windows",
+  "facts": [
+    "App-server unix:// binds codex_uds::UnixListener on Windows; no separate owner-local transport is involved.",
+    "Windows UDS directory preparation only creates the directory; app-server set_control_socket_permissions is a no-op. No current owner-only DACL or connected-token gate was found on this path.",
+    "Unix socket WebSocket upgrades call accept_async directly; TCP WebsocketAuthPolicy/authorize_upgrade is a separate code path.",
+    "Windows ensure_current_user_peer returns Unsupported unconditionally. The proposed unconditional ordinary-listener gate would reject every Windows AF_UNIX connection, including the existing cross-platform WS/RPC/ping regression.",
+    "Agentd uses OwnerLocalListener/Incoming/Stream on Windows and authenticates a real named-pipe client token against an owner-only protected DACL; that does not protect the app-server AF_UNIX stream.",
+    "Changing only cfg to omit Windows avoids the functional regression but leaves its authorization boundary unimplemented, so it is not an accepted resolution."
+  ],
+  "unix_verification": {
+    "job": "1a1f47fed50-ffbe-1040",
+    "passed": 10,
+    "failed": 0,
+    "filtered_out": 142,
+    "native_source_head": "1e681e550a5c5d4584b5882529e531599459dc31",
+    "actual_relevant_preimages_equal_base": true,
+    "old_source_hashes_unchanged": true,
+    "fresh_joint_candidate_ci": false
+  },
+  "format": {
+    "command": "just fmt",
+    "rust_postimages_changed": false,
+    "exit_code": 1,
+    "failure": "Python SDK formatter could not launch uv in isolated runner",
+    "tests_not_repeated_after_format": true
+  },
+  "windows_options": [
+    {
+      "option": "Complete OwnerLocal transport migration",
+      "advantage": "Reuses the existing owner-only DACL, connected handle verification, named-pipe token impersonation, bounded preface/ACK handshake and cancellation surface; no new Cargo dependencies.",
+      "needed_paths": [
+        "codex-rs/app-server-transport/src/transport/unix_socket.rs",
+        "codex-rs/app-server-transport/src/transport/unix_socket_tests.rs",
+        "codex-rs/app-server-client/src/remote.rs",
+        "codex-rs/app-server-client/src/lib.rs",
+        "dedicated Windows app-server transport tests",
+        "app-server transport compatibility documentation"
+      ],
+      "requirements": [
+        "Authenticate OwnerLocalIncoming before WebSocket upgrade/application IO",
+        "Use the same bounded authentication in app-server client and all mock servers",
+        "Do not unlink an AF_UNIX/user path that a named pipe never owned",
+        "Keep Linux inherited owner-or-root behavior and shutdown cancellation",
+        "Run real Windows owner/foreign/anonymous/SQOS/invalid-preface/timeout tests and client-server WS/RPC/ping regression"
+      ],
+      "compatibility": "Windows raw AF_UNIX clients and third-party SDKs would need a coordinated transition; cannot silently claim wire compatibility."
+    },
+    {
+      "option": "Implement Windows AF_UNIX peer-PID plus token identity",
+      "primary_evidence": "Microsoft SDK defines SIO_AF_UNIX_GETPEERPID; OpenAI/codex uses it for authenticating implicitly discovered client-side peers. Exact primary source blobs retained in windows-peer-primary-sources.json.",
+      "advantage": "Maintains AF_UNIX wire compatibility.",
+      "unresolved": "Server-side authorization must justify PID lifetime/reuse, socket delegation, token impersonation/integrity, and failure behavior; the upstream client-side implementation alone is not a server-side security proof.",
+      "required_changes": [
+        "WinSock/System_IO windows-sys feature declaration and canonical dependency/Bazel metadata refresh",
+        "Replace Unsupported Windows gate with fail-closed real peer identity checking",
+        "Update existing UDS tests that currently expect Unsupported",
+        "Run native Windows positive and real unauthorized-peer negative tests before acceptance"
+      ]
+    }
+  ],
+  "source_locations": [
+    {
+      "path": "codex-rs/uds/src/lib.rs",
+      "blob": "74d86e16a7e5d3f89e40781085a4e34023f43196",
+      "locations": [
+        {
+          "line": 142,
+          "text": "pub(super) async fn prepare_private_socket_directory(socket_dir: &Path) -> IoResult<()> {"
+        },
+        {
+          "line": 266,
+          "text": "pub(super) fn ensure_current_user_peer(_stream: &Stream) -> IoResult<()> {"
+        },
+        {
+          "line": 339,
+          "text": "pub(super) async fn prepare_private_socket_directory(socket_dir: &Path) -> IoResult<()> {"
+        },
+        {
+          "line": 340,
+          "text": "tokio::fs::create_dir_all(socket_dir).await"
+        },
+        {
+          "line": 370,
+          "text": "pub(super) fn ensure_current_user_peer(_stream: &Stream) -> IoResult<()> {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/app-server-transport/src/transport/unix_socket.rs",
+      "blob": "f419409fb1004e1e9e74e4ef0e033e4ba880756b",
+      "locations": [
+        {
+          "line": 130,
+          "text": "let websocket_stream = match accept_async(stream).await {"
+        },
+        {
+          "line": 231,
+          "text": "async fn set_control_socket_permissions(_socket_path: &Path) -> IoResult<()> {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/app-server-client/src/remote.rs",
+      "blob": "610412655cffb1445360cdd03e18331e0bcb154d",
+      "locations": [
+        {
+          "line": 1240,
+          "text": "async fn connect_unix_socket_endpoint("
+        },
+        {
+          "line": 1252,
+          "text": "let stream = timeout(CONNECT_TIMEOUT, UnixStream::connect(socket_path.as_path()))"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/app-server-transport/src/transport/unix_socket_tests.rs",
+      "blob": "ac0b2b00c44917e31a2e8da94fddf0e0b689e5cf",
+      "locations": [
+        {
+          "line": 57,
+          "text": "async fn control_socket_acceptor_upgrades_and_forwards_websocket_text_messages_and_pings() {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_windows.rs",
+      "blob": "329ba220740dff209d4696e1246f4add4719564c",
+      "locations": [
+        {
+          "line": 83,
+          "text": "fn create_server("
+        },
+        {
+          "line": 132,
+          "text": "pub(super) async fn authenticate(incoming: Incoming) -> io::Result<OwnerLocalStream> {"
+        },
+        {
+          "line": 159,
+          "text": "pub(super) async fn connect(path: &Path) -> io::Result<OwnerLocalStream> {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_security.rs",
+      "blob": "91042edf01dfdef6b3c74d928fc67a8ffa769407",
+      "locations": [
+        {
+          "line": 149,
+          "text": "pub(super) fn verify_handle(handle: HANDLE, owner: &Sid) -> io::Result<()> {"
+        },
+        {
+          "line": 244,
+          "text": "pub(super) fn authenticate_client(handle: HANDLE, owner: &Sid) -> io::Result<()> {"
+        }
+      ]
+    }
+  ],
+  "publication_decision": "FROZEN_BLOCKED_BY_PARENT: do not publish the current Unix-only-tested postimages, do not cfg-away Windows authorization, and do not introduce an OwnerLocal wire-protocol migration in this consolidation round.",
+  "minimal_af_unix_interface_contract": {
+    "public_signature": "pub fn ensure_current_user_peer(stream: &UnixStream) -> std::io::Result<()>",
+    "unchanged_call_order": "For fresh listeners check the accepted connected peer before WebSocket upgrade, application frames, connection admission, or allocating an unbounded connection task. Preserve Linux inherited owner-or-root policy and cancellation.",
+    "unix": "Retain the current kernel peer-credential implementation and same-euid rule. The existing inherited supervisor owner-or-root exception remains a separate, explicit branch.",
+    "windows_backend": "A Windows implementation must fail closed on unsupported peer-identity API, malformed PID/token data, inaccessible peer token, foreign SID, or a privilege/impersonation policy mismatch. It must derive identity from the accepted socket, not caller metadata, pathname owner, PID files or an asserted username.",
+    "implementation_surface": [
+      "codex-rs/uds/src/lib.rs: delegate the Windows branch to a dedicated Windows peer module without changing UnixStream wire type",
+      "new Windows peer module: WSAIoctl(SIO_AF_UNIX_GETPEERPID) plus owned process/token handles, checked TokenUser SID comparison and documented privilege policy",
+      "codex-rs/uds/Cargo.toml: only required windows-sys features; regenerate canonical Cargo/Bazel metadata as required",
+      "codex-rs/app-server-transport/src/transport/unix_socket.rs: fresh-listener gate only after accepted peer primitive is qualified",
+      "Windows-specific real-process tests and compatibility documentation"
+    ],
+    "unresolved_security_obligation": "SIO_AF_UNIX_GETPEERPID exposes a PID, not an authenticated current thread token. An accepted-socket authorization design must justify peer-process lifetime/PID reuse, socket duplication or delegation, impersonation and elevation. OpenAI upstream client-side daemon verification is implementation evidence, not qualification of this server-side boundary.",
+    "native_windows_release_requirements": [
+      "Actual same-user AF_UNIX child completes WebSocket upgrade, RPC text and ping/pong",
+      "Actual different-user/SID child is rejected before any WebSocket/application reply or capacity admission",
+      "Test unsupported API, zero/invalid PID, exited peer, inaccessible process/token, malformed token buffer and SID mismatch as fail-closed cases",
+      "Exercise impersonating, elevated and duplicated/delegated-socket peers to prove the documented authorization principal",
+      "Exercise cancellation, bounded pre-upgrade work, foreign-connection flooding and resource cleanup without loosening existing timeout or concurrency budgets",
+      "Keep Linux inherited descriptor owner/root, normal-user peer rejection and cancellation regressions; run relevant platform CI under its existing required predicates"
+    ],
+    "not_yet_qualified": true
+  }
+}

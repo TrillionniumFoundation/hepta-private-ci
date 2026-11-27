@@ -1,0 +1,2436 @@
+{
+  "credential_findings": {
+    "actual_credential_values_signed_urls_and_full_host_environment_present_in_public_zip": false,
+    "actual_user_credentials_or_authentication_responses_found_in_original_zip": false,
+    "broad_secret_authorization_keyword_hits_reviewed_as_crate_names_test_names_or_audit_source_identifiers": true,
+    "cargo_build_script_environment_keys_reviewed": [
+      "MIME_TYPES_GENERATED_PATH",
+      "CODEX_BUILD_SOURCE_IDENTITY"
+    ],
+    "complete_ambient_environment_dump_in_command_logs": false,
+    "credential_or_signed_url_pattern_matches_in_original_zip": 0,
+    "official_public_release_redirect_contains_signed_query_privately": true,
+    "original_url_query_keys": [
+      "rev"
+    ],
+    "original_urls_only_hosts": [
+      "github.com",
+      "doc.rust-lang.org"
+    ],
+    "published_download_record": "format-recovery-01/00-download-uv.stdout.PUBLIC.json",
+    "signed_redirect_original_stdout": {
+      "bytes": 1122,
+      "in_original_zip": false,
+      "in_public_zip": false,
+      "path": "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/00-download-uv.stdout.log",
+      "sha256": "3e3100e77ac168ae08fa231b3749744e7d62b8136ee93f8bca5d5e714d4aa744",
+      "unchanged": true
+    }
+  },
+  "dispositions_of_118_original_items": {
+    "copied_verbatim": 83,
+    "copied_verbatim_renamed": 1,
+    "public_index_with_derivation_notice": 1,
+    "public_metadata_derivative": 31,
+    "public_scope_reduction": 2
+  },
+  "original_failure_preservation": {
+    "all_original_files_and_original_zip_unchanged": true,
+    "error_status_commands_source_identities_test_counts_and_raw_log_digests_preserved": true,
+    "native_failed_exec_result_final_and_logs_copied_verbatim": true,
+    "three_python_wrapper_public_copies_change_only_captured_PATH_plus_publication_notice": true
+  },
+  "original_zip": {
+    "bytes": 1589371,
+    "items": 118,
+    "path": "/workspace/scratch/c1a0d7534606/native-validation/NATIVE-EVIDENCE-5A-20261121.zip",
+    "publish_original_zip": false,
+    "sha256": "f7e75e22d11d84759fc6d9c1a7e07e959d3699f6b8c6933b04d86c87f97ddbdb",
+    "unchanged_after_review": true
+  },
+  "per_item_original_inventory_and_scan": [
+    {
+      "bytes": 5219,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "00-three-package-strict-clippy.RESULT.json",
+      "scope": "this native validation task",
+      "sha256": "c7fcc7c6ec6a208dedaf78d2a0defaaaf07e01e867ef03402db04b7b421392bd"
+    },
+    {
+      "bytes": 1719,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "00-three-package-strict-clippy.exec.json",
+      "scope": "this native validation task",
+      "sha256": "a2c2a48cd7fbda9a2c0d7af9a1a7112a7ad7bbc7025a64c31601ff2d45cff363"
+    },
+    {
+      "bytes": 72976,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "00-three-package-strict-clippy.log",
+      "scope": "this native validation task",
+      "sha256": "02bda23da2bdae8404178b4e2aa2e83e975039a359b3c67fb52009daae9c477e"
+    },
+    {
+      "bytes": 2412,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "01-build-codex.ARTIFACTS.json",
+      "scope": "this native validation task",
+      "sha256": "82b379ae10ca4ffd79584ee8fea26c8d0ca0ae8c91fe6982670ab1c8418db3c1"
+    },
+    {
+      "bytes": 4701,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "01-build-codex.RESULT.json",
+      "scope": "this native validation task",
+      "sha256": "358eaf0b88f44b5b963f6b6b6e5b0cca9d4078ac52ea343553943568ab5def33"
+    },
+    {
+      "bytes": 1167086,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "01-build-codex.log",
+      "scope": "this native validation task",
+      "sha256": "49233bdb5b79706623ca4846068bdb2f94896a88f9e00c3b503a0761fa7641a5"
+    },
+    {
+      "bytes": 4544,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "02-build-worker-bins.ARTIFACTS.json",
+      "scope": "this native validation task",
+      "sha256": "8b91fabf9ebedf1e2f86eb3cd617dbbbe3b6af6916eb3dafda1a902078091a3b"
+    },
+    {
+      "bytes": 4765,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "02-build-worker-bins.RESULT.json",
+      "scope": "this native validation task",
+      "sha256": "b324525970586ad01ae1b0f8b2d58dd595f41e98d56b4c050e89d4c596f2763e"
+    },
+    {
+      "bytes": 1077561,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "02-build-worker-bins.log",
+      "scope": "this native validation task",
+      "sha256": "e2862e529e7f74bc5f6c7c5e9583712b14e96beaab2a9fc7f97eacde7449374e"
+    },
+    {
+      "bytes": 1549,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "03-agentd-just-test.exec.json",
+      "scope": "this native validation task",
+      "sha256": "3e9e11dfcb4945097dfbe0de39368dd0468b2e5b109c12f11a5b9ee0a90feb18"
+    },
+    {
+      "bytes": 69371,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "03-agentd-just-test.log",
+      "scope": "this native validation task",
+      "sha256": "474f7a272425d4ea7720ece058373c86356fa840ec7f9658cc87818cce0aa8d8"
+    },
+    {
+      "bytes": 1550,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "04-authbus-just-test.exec.json",
+      "scope": "this native validation task",
+      "sha256": "14cab8f3d4a2ad24d7da8449097068fcfd4accae46873d450a846dbf9ae680d4"
+    },
+    {
+      "bytes": 8761,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "04-authbus-just-test.log",
+      "scope": "this native validation task",
+      "sha256": "fdd09a25dc31cfb9baf5d746d9bddfbbfd1f01c52ef41cb8a521d920487e58de"
+    },
+    {
+      "bytes": 35236,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "ACTUAL-PYTHON3-DISCOVERY.json",
+      "scope": "this native validation task",
+      "sha256": "236b0154165178a62c19ee5385abff620348d7b96f5e1a4655e24cde6e169fab"
+    },
+    {
+      "bytes": 1346,
+      "classification": "audit_runner_or_exact_reviewed_source",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "AUTHBUS-FIXTURE.diff",
+      "scope": "this native validation task",
+      "sha256": "b5142e0789363b4c81d3bad9b1114758c732c795335d1a5c9fab36710fff0f5e"
+    },
+    {
+      "bytes": 3546,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "CURRENT-NATIVE-STATE.json",
+      "scope": "this native validation task",
+      "sha256": "af38c83fe3daefffe57db476d2029143a2af9be7d4c27221d312f3f15c632492"
+    },
+    {
+      "bytes": 32942,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "FINAL.json",
+      "scope": "this native validation task",
+      "sha256": "facb4780be629d9e4d21f131ff1a55211794127c86c7fef540fe43edd2fe7eb0"
+    },
+    {
+      "bytes": 1242,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "FORMAT-RECOVERY-READ-000000.json",
+      "scope": "this native validation task",
+      "sha256": "27d1f2e8acbdbf68674e0dc2b1f7f143ba3f8c735917cab4d3bc047e51631cff"
+    },
+    {
+      "bytes": 3567,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "FORMAT-RECOVERY-READ-000073.json",
+      "scope": "this native validation task",
+      "sha256": "f17f064e126e39068f828de4b18aedd6a11d17f18b9f402df235e86bc0ebfebc"
+    },
+    {
+      "bytes": 604,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "FORMAT-RECOVERY-REQUEST.json",
+      "scope": "this native validation task",
+      "sha256": "f5606091b7976133f88379c8740424a5112b56e02bf80917bbbaf345af79167a"
+    },
+    {
+      "bytes": 580,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 2,
+      "path": "FORMAT-RECOVERY-RESPONSE.json",
+      "scope": "this native validation task",
+      "sha256": "ba0a141aa05fd2059097f390c5bae357bd0658f6a3b90ccde9a0a36b120526ce"
+    },
+    {
+      "bytes": 616,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 2,
+      "path": "FORMAT-RECOVERY-SCRIPT-FILE-INFO.json",
+      "scope": "this native validation task",
+      "sha256": "2888b4dd07ac141593b1e2e8baed4997c98e49f3f4116526ee821c4b00e2ac63"
+    },
+    {
+      "bytes": 3783,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "GITHUB-314-INDEPENDENT-RECONCILIATION.json",
+      "scope": "this native validation task",
+      "sha256": "48ad6b51e0bb4e157fbd325f369212fd0f99079309695e05915bc50632e4f0bf"
+    },
+    {
+      "bytes": 26142,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "LINKER-RESOURCE-INSPECTION.json",
+      "scope": "this native validation task",
+      "sha256": "cced50c52996c27033dcf7f1954a498822bcafe7af24b14311b10753ad8fa3f5"
+    },
+    {
+      "bytes": 19889,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "NATIVE-EVIDENCE-BUNDLE-MANIFEST.json",
+      "scope": "this native validation task",
+      "sha256": "82aa854fad0b19b8c396aad30740cdc537087c03075412b5374f94a8afe476b6"
+    },
+    {
+      "bytes": 2030,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-RECOVERY-READ-000000.json",
+      "scope": "this native validation task",
+      "sha256": "5cfda31b3f58a01265500ec65b4bee9eb1ec0b97e8b1cc5004f132c9fe901c82"
+    },
+    {
+      "bytes": 2281,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-RECOVERY-READ-000315.json",
+      "scope": "this native validation task",
+      "sha256": "6f14bf55ab46b65d4900bbb7e47977b328c58d8041569bed20e218eb18eaade4"
+    },
+    {
+      "bytes": 2288,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-RECOVERY-READ-000705.json",
+      "scope": "this native validation task",
+      "sha256": "6bae0662005679ad54cc9cd176213402612b339140237675d64fb9d41a5d8020"
+    },
+    {
+      "bytes": 2292,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-RECOVERY-READ-001096.json",
+      "scope": "this native validation task",
+      "sha256": "e0958fecf1c2613469c9a457ee50d132131b0512ca08b6f6e81e33047c82b9c5"
+    },
+    {
+      "bytes": 2295,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-RECOVERY-READ-001488.json",
+      "scope": "this native validation task",
+      "sha256": "8d78a888c8d271b586ca9feda6326fac60ca8b73aa85a2ac11038f2b295b9acb"
+    },
+    {
+      "bytes": 2317,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-RECOVERY-READ-001881.json",
+      "scope": "this native validation task",
+      "sha256": "f221d3a0b850d90b29a60eb205469c2ea190a1dd8bc00ffd0e8328669f75a495"
+    },
+    {
+      "bytes": 3623,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-RECOVERY-READ-002276.json",
+      "scope": "this native validation task",
+      "sha256": "951b6e83104eb057a953031828340e5a1b7d31b16f2486b59cfeef7909285312"
+    },
+    {
+      "bytes": 605,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "NATIVE-RECOVERY-REQUEST.json",
+      "scope": "this native validation task",
+      "sha256": "686fd9345a31b0768677fe53cbe26e03f9da15b36e4627171351314124f1fe5b"
+    },
+    {
+      "bytes": 580,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 2,
+      "path": "NATIVE-RECOVERY-RESPONSE.json",
+      "scope": "this native validation task",
+      "sha256": "2945cf3ec42c82eadb0b15b13ada9ead5af33ed6feba5b1f7c9d12cd871a14cb"
+    },
+    {
+      "bytes": 543,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "NATIVE-TARGET-PLAN.json",
+      "scope": "this native validation task",
+      "sha256": "4fb85bd3e481eb16801ee8faa6d8ae7ba223e2c909e0028440a5fef69b13b464"
+    },
+    {
+      "bytes": 6644,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "NATIVE-VALIDATION-INDEX.json",
+      "scope": "this native validation task",
+      "sha256": "21152940886b1d0546135ddbc14202f44aa81cd0888e8845381db80b0457656b"
+    },
+    {
+      "bytes": 2930,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-000000.json",
+      "scope": "this native validation task",
+      "sha256": "31922c593534ca084da8241065190109ffdf8019000a227044c1ca35748bdaaa"
+    },
+    {
+      "bytes": 2351,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-000595.json",
+      "scope": "this native validation task",
+      "sha256": "9222b56824ec650f404e8b2eab535799fa9352b34f78728c8c5668bf3a0a4193"
+    },
+    {
+      "bytes": 2355,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-001007.json",
+      "scope": "this native validation task",
+      "sha256": "30c208fdb871bab00d04d5d0b9ba77d9512f3c9d30dfc188b2def5bedd005439"
+    },
+    {
+      "bytes": 2358,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-001420.json",
+      "scope": "this native validation task",
+      "sha256": "020e1d00252690d0aab972b4eeb746d772034328209c8b40856a51104af61bc6"
+    },
+    {
+      "bytes": 1679,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-001834.json",
+      "scope": "this native validation task",
+      "sha256": "2e44a4a7952c0c9516e6396a153ca1281982224792650f83a43502302a0e5ba3"
+    },
+    {
+      "bytes": 2999,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-002041.json",
+      "scope": "this native validation task",
+      "sha256": "0ca40b9720f42da31a16401278cb73b49a60654df8b8a2a45b96786cc8a74b9a"
+    },
+    {
+      "bytes": 2262,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-002644.json",
+      "scope": "this native validation task",
+      "sha256": "f253e6756db61d3d4e909003b2edab432c1901f255a7d2a1ae463f1780a62ad5"
+    },
+    {
+      "bytes": 6830,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-003026.json",
+      "scope": "this native validation task",
+      "sha256": "92ac2d6d2517676f15b79267ad0ca4d6aa6873aea7c70b3d1d2c8dc49010d3af"
+    },
+    {
+      "bytes": 6854,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-004790.json",
+      "scope": "this native validation task",
+      "sha256": "4ab16f717f6cbe9e9d4aa1a152562690c0711cb440e8be17ff2b19f274deb4f2"
+    },
+    {
+      "bytes": 4215,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-006562.json",
+      "scope": "this native validation task",
+      "sha256": "4a20d6cc14e42fbdb0fe0c8130877ce254b121a6baf5b9be0b2dce05b480927c"
+    },
+    {
+      "bytes": 6879,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "NATIVE-VALIDATION-READ-007537.json",
+      "scope": "this native validation task",
+      "sha256": "5d437831d39d5298821c8b6813ace079ca3d9c697667199496268859afc76d10"
+    },
+    {
+      "bytes": 2114,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "NATIVE-VALIDATION-REQUEST.json",
+      "scope": "this native validation task",
+      "sha256": "e83b4fdcd1e7522c2cc4cf22193565671f2105f223c54ef3d26c85f792e86434"
+    },
+    {
+      "bytes": 580,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 2,
+      "path": "NATIVE-VALIDATION-RESPONSE.json",
+      "scope": "this native validation task",
+      "sha256": "e199716afd5dcf8286a43ff0ab9d348028a9da3b4809de92b8f11c263bfa8c25"
+    },
+    {
+      "bytes": 232973,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "ORIGINAL-AGENTD-TEST-IDENTITIES.json",
+      "scope": "this native validation task",
+      "sha256": "d37229db29ada46b9825f4e74df8ffedf1945f10aefb93cd914da2668705a5cc"
+    },
+    {
+      "bytes": 8463,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "PREFLIGHT.json",
+      "scope": "this native validation task",
+      "sha256": "d3e1a7964275e4b0d51569b9985aff30ceb9debed3b7cd3626940cc1cb6b05c4"
+    },
+    {
+      "bytes": 615,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 2,
+      "path": "RECOVERY-RUNNER-V2-FILE-INFO.json",
+      "scope": "this native validation task",
+      "sha256": "312e9d079823bc6b6ab1fd6e51f62392500bb53b6023001c59e5db0a4c101df5"
+    },
+    {
+      "bytes": 2199,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "RUNTIME-HELPERS.json",
+      "scope": "this native validation task",
+      "sha256": "db1e9de83022c3258016aad8cf3dd45ae1dde41bfb3f1945a637c37cd3f3d200"
+    },
+    {
+      "bytes": 977,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "SOURCE-PREPARED.json",
+      "scope": "this native validation task",
+      "sha256": "cc76d7f5c63c31c488e15f27453bdeec6b3ebbb862a172e2c5e2dc128a94dd1c"
+    },
+    {
+      "bytes": 474,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "TARGET-RELOCATION-01-source.summary.json",
+      "scope": "this native validation task",
+      "sha256": "f5959bb7ca33653c5c5b367ab97df8709f6c24553fa3dce17696a4ce04ba2f82"
+    },
+    {
+      "bytes": 486,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "TARGET-RELOCATION-03-destination.summary.json",
+      "scope": "this native validation task",
+      "sha256": "3b9d5c95702b7ab08f3e60068ea0724e022b7e9374ab39f3c9fd92aca9ce9af3"
+    },
+    {
+      "bytes": 3863,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "TARGET-RELOCATION-FINAL.json",
+      "scope": "this native validation task",
+      "sha256": "edb7eb81f8d56af5b908a76f17d806bc082738249651d5779cdc872f59c851cf"
+    },
+    {
+      "bytes": 1073833,
+      "classification": "owned_target_manifest_only",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "TARGET-RELOCATION-FULL-MANIFEST.json.gz",
+      "scope": "this native validation task",
+      "sha256": "c5418ee910793fdf91d9e89483148d7c73933103de515f809f2850124d3504e3"
+    },
+    {
+      "bytes": 644,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 2,
+      "path": "TARGET-RELOCATION-MANIFEST-FILE-INFO.json",
+      "scope": "this native validation task",
+      "sha256": "8133e2b22461830e83652efaff0b7bf7a040840a0e90275be06fe61d3b196427"
+    },
+    {
+      "bytes": 16455,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "TARGET-RELOCATION-READ-000000.json",
+      "scope": "this native validation task",
+      "sha256": "7990037470321fb1471e84a271fbd277533d0bec9a5958f98a4537457c18281f"
+    },
+    {
+      "bytes": 355,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "TARGET-RELOCATION-REQUEST.json",
+      "scope": "this native validation task",
+      "sha256": "3a24abcc5a82f18d7531bfa59a778556c80b629d2ae53d35d98a8fd0c92afe3e"
+    },
+    {
+      "bytes": 580,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 2,
+      "path": "TARGET-RELOCATION-RESPONSE.json",
+      "scope": "this native validation task",
+      "sha256": "03a87fbd9bf07f70ba0b58a0c9691da8a81efc9dc99b5ccbaf1c075b9e54f847"
+    },
+    {
+      "bytes": 934,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "TARGET-RELOCATION-TERMINAL.json",
+      "scope": "this native validation task",
+      "sha256": "c6e20ada73b0679855e6ee331451bf18480a99ab15493545e6492ed01633d617"
+    },
+    {
+      "bytes": 886,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "UV-READONLY-INSPECTION.json",
+      "scope": "this native validation task",
+      "sha256": "36bb7013e3102da1e0bc71a5089c3e309a1c7f3e98fd570a01f23141f74313eb"
+    },
+    {
+      "bytes": 3382,
+      "classification": "durable_task_transport_receipt",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 4,
+      "path": "UV-READONLY-TERMINAL.json",
+      "scope": "this native validation task",
+      "sha256": "d0a3702cd4745ead14a3b6864872f5073420e33b820b8ed41d1bbb2e3ff03f95"
+    },
+    {
+      "bytes": 1560,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "V8-ASSET-INPUTS.json",
+      "scope": "this native validation task",
+      "sha256": "90ed1eae42950508d3b338334a65dd1cf398136a477abd8a336b324c777173bf"
+    },
+    {
+      "bytes": 2182,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/00-download-uv.RESULT.json",
+      "scope": "this native validation task",
+      "sha256": "5127652618da466f0d31259157415edab082e65d15e668572368a07f402b81cb"
+    },
+    {
+      "bytes": 0,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/00-download-uv.stderr.log",
+      "scope": "this native validation task",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1134,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/01-original-just-fmt.RESULT.json",
+      "scope": "this native validation task",
+      "sha256": "e8295ec3a4f599393248ec5dd883b74136c98ac4eb60a82313290ead71e865c4"
+    },
+    {
+      "bytes": 0,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/01-original-just-fmt.stderr.log",
+      "scope": "this native validation task",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/01-original-just-fmt.stdout.log",
+      "scope": "this native validation task",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1169,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/02-original-just-fmt-check.RESULT.json",
+      "scope": "this native validation task",
+      "sha256": "446bda072e7922c175f359c4386824f8ad435fb10155fe5ad28649e8007ae93b"
+    },
+    {
+      "bytes": 0,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/02-original-just-fmt-check.stderr.log",
+      "scope": "this native validation task",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/02-original-just-fmt-check.stdout.log",
+      "scope": "this native validation task",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 8341,
+      "classification": "audit_runner_or_exact_reviewed_source",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/AFTER-files/codex-rs/hepta-authbus/src/owner_tests.rs",
+      "scope": "this native validation task",
+      "sha256": "14fa4f1826c6f9b1365dc90849438cc556138a964705c17fcc2a95fa2274c93d"
+    },
+    {
+      "bytes": 822,
+      "classification": "audit_runner_or_exact_reviewed_source",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/AFTER.diff",
+      "scope": "this native validation task",
+      "sha256": "4df706d350833debff01c76def70620f49879b0b7075ac3fb6ea111bdedbcb21"
+    },
+    {
+      "bytes": 13148,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/FINAL.json",
+      "scope": "this native validation task",
+      "sha256": "05e05aacbfb21f86de1c4fcf6493b6d9c9e5a88ff14539430693b2a4caf5bb55"
+    },
+    {
+      "bytes": 1557,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/FORMAT-ENVIRONMENT.json",
+      "scope": "this native validation task",
+      "sha256": "517cd07cf5a580fba6a13b4a70167d4962362b5e6d1738579bcced49e8e5c746"
+    },
+    {
+      "bytes": 1129,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/REQUEST.json",
+      "scope": "this native validation task",
+      "sha256": "1696ad0315ea8b4896dac238b59e53a25d0958b61ed18839674ae2543af4d93e"
+    },
+    {
+      "bytes": 4928,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/SOURCE-BEFORE.json",
+      "scope": "this native validation task",
+      "sha256": "71cf265e877967dff33345ae6e036004f47cd5717009183ea556af7e915026bf"
+    },
+    {
+      "bytes": 971,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "format-recovery-01/UV-VERIFIED.json",
+      "scope": "this native validation task",
+      "sha256": "6ec9d3756059295337db3a9ba3b6a9a3f58f302201d83926c58ecf9cbd84773f"
+    },
+    {
+      "bytes": 2397,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "github-script-tests-02-FINAL.json",
+      "scope": "this native validation task",
+      "sha256": "fa599f6c950cd358041270a4f4c3b9d67ad254ebcc8cf5d3ca2d83db2a9c69c0"
+    },
+    {
+      "bytes": 34153,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "github-script-tests-02-TEST-IDENTITIES.json",
+      "scope": "this native validation task",
+      "sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be"
+    },
+    {
+      "bytes": 16332,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "github-script-tests-02-original-command.log",
+      "scope": "this native validation task",
+      "sha256": "010267139ee362cf4a465bb3654bf6f2462ebb9d59c353d4c22b2f9193dada98"
+    },
+    {
+      "bytes": 2405,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "github-script-tests-03-FINAL.json",
+      "scope": "this native validation task",
+      "sha256": "33b068d28b68a6246fa6b730cd6f86f52c425f5d1e221c599ca597e1cc5900b1"
+    },
+    {
+      "bytes": 34153,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "github-script-tests-03-TEST-IDENTITIES.json",
+      "scope": "this native validation task",
+      "sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be"
+    },
+    {
+      "bytes": 5569,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "github-script-tests-03-original-command.log",
+      "scope": "this native validation task",
+      "sha256": "172fce7538d3918e2b5e43b83d1bba63a28cf1423ebb0bf112c33aa953800c30"
+    },
+    {
+      "bytes": 2382,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "github-script-tests-FINAL.json",
+      "scope": "this native validation task",
+      "sha256": "e5bbbed7a36887b842a386abf500b972e7e3b455207cfeb91e25ab8e19d20eb6"
+    },
+    {
+      "bytes": 34153,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "github-script-tests-TEST-IDENTITIES.json",
+      "scope": "this native validation task",
+      "sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be"
+    },
+    {
+      "bytes": 6692,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "github-script-tests-original-command.log",
+      "scope": "this native validation task",
+      "sha256": "5c7a71e6f0dba51e8aa74ee4f386e8ac094391dadc79960dcd2ccc5c3652a18b"
+    },
+    {
+      "bytes": 15033,
+      "classification": "audit_runner_or_exact_reviewed_source",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recover_final_format.py",
+      "scope": "this native validation task",
+      "sha256": "e12244dca88073be320ba90b30062d8c9c343ab1436a172aa07c468e629ee0de"
+    },
+    {
+      "bytes": 4464,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/03-agentd-just-test.RESULT.json",
+      "scope": "this native validation task",
+      "sha256": "ebf2595bce9d86c9a35db901b0e62d46ade785ec054475c22e93f9de658d9ff9"
+    },
+    {
+      "bytes": 1492,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/03-agentd-just-test.exec.json",
+      "scope": "this native validation task",
+      "sha256": "aff9afe714327de75f1b213f93f5683af2c2f68d2c5bf11a8d216f7c6f1a0abf"
+    },
+    {
+      "bytes": 305798,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/03-agentd-just-test.log",
+      "scope": "this native validation task",
+      "sha256": "76f4803270388df62558683eed561bf7e9e28e9c4bb49ca9ca52e12af83bb248"
+    },
+    {
+      "bytes": 4468,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/04-authbus-just-test.RESULT.json",
+      "scope": "this native validation task",
+      "sha256": "293b8ee141670fc82dbdc5ffa7f7cc9160bef8703a991140a281731669c7b0bd"
+    },
+    {
+      "bytes": 1491,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/04-authbus-just-test.exec.json",
+      "scope": "this native validation task",
+      "sha256": "4e80d51b7b9a791964b93178cd6e7d55d28de1b87659326a457657b247519045"
+    },
+    {
+      "bytes": 28000,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/04-authbus-just-test.log",
+      "scope": "this native validation task",
+      "sha256": "06d5fd5f7f2089ebaded2e627e098b65b96fa8d5751e70a2fa81ed5b42159158"
+    },
+    {
+      "bytes": 1102,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/06-final-fmt.RESULT.json",
+      "scope": "this native validation task",
+      "sha256": "3f5fd01b922135969320312252ff730e4ef184b946cd5462f3442fdc1e837fbc"
+    },
+    {
+      "bytes": 421,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/06-final-fmt.stderr.log",
+      "scope": "this native validation task",
+      "sha256": "345c850afea669723e05606ef5c146c522d5e043e795496178bcc899d7c2ebdf"
+    },
+    {
+      "bytes": 0,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/06-final-fmt.stdout.log",
+      "scope": "this native validation task",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1136,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/07-final-fmt-check.RESULT.json",
+      "scope": "this native validation task",
+      "sha256": "4117903d0d4f0f0d63c10024bc491c7ee506d95ad79651392d493bed9a4bc2b6"
+    },
+    {
+      "bytes": 429,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/07-final-fmt-check.stderr.log",
+      "scope": "this native validation task",
+      "sha256": "8def1eb60671b6c1c1fac82a288cb7b8e80c796821f521031f83c2cdf916df1a"
+    },
+    {
+      "bytes": 0,
+      "classification": "original_command_output",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/07-final-fmt-check.stdout.log",
+      "scope": "this native validation task",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 233601,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/AGENTD-TEST-IDENTITY-COMPARISON.json",
+      "scope": "this native validation task",
+      "sha256": "a7e1485ea1ecc1d19631f46afb2959948b2b1bb3d6f35ea993f9ae110e2d24d7"
+    },
+    {
+      "bytes": 6169,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/AUTHBUS-TEST-IDENTITIES.json",
+      "scope": "this native validation task",
+      "sha256": "ccd05a224af50c94e993f147812a0efcd0462b260c4eb710719b7593d8623cad"
+    },
+    {
+      "bytes": 822,
+      "classification": "audit_runner_or_exact_reviewed_source",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/FINAL-FORMAT.diff",
+      "scope": "this native validation task",
+      "sha256": "4df706d350833debff01c76def70620f49879b0b7075ac3fb6ea111bdedbcb21"
+    },
+    {
+      "bytes": 17502,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/FINAL.json",
+      "scope": "this native validation task",
+      "sha256": "5f4289c0a083cfa707dbaa0c2442875b33578b8e0990b82216fd5dc3c8e68aea"
+    },
+    {
+      "bytes": 573,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/FORMAT-LINE-WRAP-PROOF.json",
+      "scope": "this native validation task",
+      "sha256": "05679edfa14cd83fd5e6fd30d6dab2c2e39b67ceb4f7f70cd64cfded671dcd06"
+    },
+    {
+      "bytes": 3033,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/FORMATTING-BEFORE.json",
+      "scope": "this native validation task",
+      "sha256": "e8847157a2f814535f01673b13dfb07cc5a08f9e1354d542ac594c97d6f3db92"
+    },
+    {
+      "bytes": 3671,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/FORMATTING-FINAL.json",
+      "scope": "this native validation task",
+      "sha256": "87dd5432887e7a27d1acacae792467ec8c7ee459043f978c3eeca8c8e8022990"
+    },
+    {
+      "bytes": 8463,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/PREFLIGHT.json",
+      "scope": "this native validation task",
+      "sha256": "ecca68f7009ac4a676788812e8d19a3f609cecb1ef245674b2e86be66f336842"
+    },
+    {
+      "bytes": 1484,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/REQUEST.json",
+      "scope": "this native validation task",
+      "sha256": "9353b8c0f5db7e807d304acb4eb400764d8bd5783a0b64418772587c6c640ed0"
+    },
+    {
+      "bytes": 8194,
+      "classification": "task_plan_provenance_or_evidence_inventory",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/REUSED-PASSED-STAGES.json",
+      "scope": "this native validation task",
+      "sha256": "ca049fbbcf71534b4e4058afec2953c6f998865fdf061836415f6c6e9cb706c7"
+    },
+    {
+      "bytes": 9728,
+      "classification": "source_bound_validation_evidence",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/REUSED-RUNTIME-HELPERS.json",
+      "scope": "this native validation task",
+      "sha256": "b4bd3893be08f43ed1827d9b0ffd0a26bafa1ab07dd5e5ea8b78bece81c943c3"
+    },
+    {
+      "bytes": 8341,
+      "classification": "audit_runner_or_exact_reviewed_source",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "recovery-02/formatted-files/codex-rs/hepta-authbus/src/owner_tests.rs",
+      "scope": "this native validation task",
+      "sha256": "14fa4f1826c6f9b1365dc90849438cc556138a964705c17fcc2a95fa2274c93d"
+    },
+    {
+      "bytes": 10336,
+      "classification": "audit_runner_or_exact_reviewed_source",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "relocate_owned_target.py",
+      "scope": "this native validation task",
+      "sha256": "74e45d59beef26e32445ef94f3a862ef405aedf72fcd32d1b88ec67f556607bb"
+    },
+    {
+      "bytes": 17486,
+      "classification": "audit_runner_or_exact_reviewed_source",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "resume_native_tests.py",
+      "scope": "this native validation task",
+      "sha256": "bb68200c4eb2e9051e10835df4a89972df454e7d9d225bf43e81bf6a5518b055"
+    },
+    {
+      "bytes": 42361,
+      "classification": "audit_runner_or_exact_reviewed_source",
+      "credential_or_signed_url_matches": [],
+      "decoded_views_checked": 1,
+      "path": "run_native_validation.py",
+      "scope": "this native validation task",
+      "sha256": "b8a204ed33848e8f07a470adba720164dd15676cea9f5bd2313895b50664d56c"
+    }
+  ],
+  "per_item_public_changes": [
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 5219,
+      "original_path": "00-three-package-strict-clippy.RESULT.json",
+      "original_sha256": "c7fcc7c6ec6a208dedaf78d2a0defaaaf07e01e867ef03402db04b7b421392bd",
+      "public_bytes": 5219,
+      "public_path": "00-three-package-strict-clippy.RESULT.json",
+      "public_sha256": "c7fcc7c6ec6a208dedaf78d2a0defaaaf07e01e867ef03402db04b7b421392bd"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1719,
+      "original_path": "00-three-package-strict-clippy.exec.json",
+      "original_sha256": "a2c2a48cd7fbda9a2c0d7af9a1a7112a7ad7bbc7025a64c31601ff2d45cff363",
+      "public_bytes": 1719,
+      "public_path": "00-three-package-strict-clippy.exec.json",
+      "public_sha256": "a2c2a48cd7fbda9a2c0d7af9a1a7112a7ad7bbc7025a64c31601ff2d45cff363"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 72976,
+      "original_path": "00-three-package-strict-clippy.log",
+      "original_sha256": "02bda23da2bdae8404178b4e2aa2e83e975039a359b3c67fb52009daae9c477e",
+      "public_bytes": 72976,
+      "public_path": "00-three-package-strict-clippy.log",
+      "public_sha256": "02bda23da2bdae8404178b4e2aa2e83e975039a359b3c67fb52009daae9c477e"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 2412,
+      "original_path": "01-build-codex.ARTIFACTS.json",
+      "original_sha256": "82b379ae10ca4ffd79584ee8fea26c8d0ca0ae8c91fe6982670ab1c8418db3c1",
+      "public_bytes": 2412,
+      "public_path": "01-build-codex.ARTIFACTS.json",
+      "public_sha256": "82b379ae10ca4ffd79584ee8fea26c8d0ca0ae8c91fe6982670ab1c8418db3c1"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 4701,
+      "original_path": "01-build-codex.RESULT.json",
+      "original_sha256": "358eaf0b88f44b5b963f6b6b6e5b0cca9d4078ac52ea343553943568ab5def33",
+      "public_bytes": 4701,
+      "public_path": "01-build-codex.RESULT.json",
+      "public_sha256": "358eaf0b88f44b5b963f6b6b6e5b0cca9d4078ac52ea343553943568ab5def33"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1167086,
+      "original_path": "01-build-codex.log",
+      "original_sha256": "49233bdb5b79706623ca4846068bdb2f94896a88f9e00c3b503a0761fa7641a5",
+      "public_bytes": 1167086,
+      "public_path": "01-build-codex.log",
+      "public_sha256": "49233bdb5b79706623ca4846068bdb2f94896a88f9e00c3b503a0761fa7641a5"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 4544,
+      "original_path": "02-build-worker-bins.ARTIFACTS.json",
+      "original_sha256": "8b91fabf9ebedf1e2f86eb3cd617dbbbe3b6af6916eb3dafda1a902078091a3b",
+      "public_bytes": 4544,
+      "public_path": "02-build-worker-bins.ARTIFACTS.json",
+      "public_sha256": "8b91fabf9ebedf1e2f86eb3cd617dbbbe3b6af6916eb3dafda1a902078091a3b"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 4765,
+      "original_path": "02-build-worker-bins.RESULT.json",
+      "original_sha256": "b324525970586ad01ae1b0f8b2d58dd595f41e98d56b4c050e89d4c596f2763e",
+      "public_bytes": 4765,
+      "public_path": "02-build-worker-bins.RESULT.json",
+      "public_sha256": "b324525970586ad01ae1b0f8b2d58dd595f41e98d56b4c050e89d4c596f2763e"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1077561,
+      "original_path": "02-build-worker-bins.log",
+      "original_sha256": "e2862e529e7f74bc5f6c7c5e9583712b14e96beaab2a9fc7f97eacde7449374e",
+      "public_bytes": 1077561,
+      "public_path": "02-build-worker-bins.log",
+      "public_sha256": "e2862e529e7f74bc5f6c7c5e9583712b14e96beaab2a9fc7f97eacde7449374e"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1549,
+      "original_path": "03-agentd-just-test.exec.json",
+      "original_sha256": "3e9e11dfcb4945097dfbe0de39368dd0468b2e5b109c12f11a5b9ee0a90feb18",
+      "public_bytes": 1549,
+      "public_path": "03-agentd-just-test.exec.json",
+      "public_sha256": "3e9e11dfcb4945097dfbe0de39368dd0468b2e5b109c12f11a5b9ee0a90feb18"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 69371,
+      "original_path": "03-agentd-just-test.log",
+      "original_sha256": "474f7a272425d4ea7720ece058373c86356fa840ec7f9658cc87818cce0aa8d8",
+      "public_bytes": 69371,
+      "public_path": "03-agentd-just-test.log",
+      "public_sha256": "474f7a272425d4ea7720ece058373c86356fa840ec7f9658cc87818cce0aa8d8"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1550,
+      "original_path": "04-authbus-just-test.exec.json",
+      "original_sha256": "14cab8f3d4a2ad24d7da8449097068fcfd4accae46873d450a846dbf9ae680d4",
+      "public_bytes": 1550,
+      "public_path": "04-authbus-just-test.exec.json",
+      "public_sha256": "14cab8f3d4a2ad24d7da8449097068fcfd4accae46873d450a846dbf9ae680d4"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 8761,
+      "original_path": "04-authbus-just-test.log",
+      "original_sha256": "fdd09a25dc31cfb9baf5d746d9bddfbbfd1f01c52ef41cb8a521d920487e58de",
+      "public_bytes": 8761,
+      "public_path": "04-authbus-just-test.log",
+      "public_sha256": "fdd09a25dc31cfb9baf5d746d9bddfbbfd1f01c52ef41cb8a521d920487e58de"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 35236,
+      "original_path": "ACTUAL-PYTHON3-DISCOVERY.json",
+      "original_sha256": "236b0154165178a62c19ee5385abff620348d7b96f5e1a4655e24cde6e169fab",
+      "public_bytes": 35236,
+      "public_path": "ACTUAL-PYTHON3-DISCOVERY.json",
+      "public_sha256": "236b0154165178a62c19ee5385abff620348d7b96f5e1a4655e24cde6e169fab"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1346,
+      "original_path": "AUTHBUS-FIXTURE.diff",
+      "original_sha256": "b5142e0789363b4c81d3bad9b1114758c732c795335d1a5c9fab36710fff0f5e",
+      "public_bytes": 1346,
+      "public_path": "AUTHBUS-FIXTURE.diff",
+      "public_sha256": "b5142e0789363b4c81d3bad9b1114758c732c795335d1a5c9fab36710fff0f5e"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 3546,
+      "original_path": "CURRENT-NATIVE-STATE.json",
+      "original_sha256": "af38c83fe3daefffe57db476d2029143a2af9be7d4c27221d312f3f15c632492",
+      "public_bytes": 3546,
+      "public_path": "CURRENT-NATIVE-STATE.json",
+      "public_sha256": "af38c83fe3daefffe57db476d2029143a2af9be7d4c27221d312f3f15c632492"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 32942,
+      "original_path": "FINAL.json",
+      "original_sha256": "facb4780be629d9e4d21f131ff1a55211794127c86c7fef540fe43edd2fe7eb0",
+      "public_bytes": 32942,
+      "public_path": "FINAL.json",
+      "public_sha256": "facb4780be629d9e4d21f131ff1a55211794127c86c7fef540fe43edd2fe7eb0"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 1242,
+      "original_path": "FORMAT-RECOVERY-READ-000000.json",
+      "original_sha256": "27d1f2e8acbdbf68674e0dc2b1f7f143ba3f8c735917cab4d3bc047e51631cff",
+      "public_bytes": 1397,
+      "public_path": "FORMAT-RECOVERY-READ-000000.json",
+      "public_sha256": "58de7bc10bd0408c897e2f234eede6fe80c01252b0a27ada7305d9a2c20a0ee8"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 3567,
+      "original_path": "FORMAT-RECOVERY-READ-000073.json",
+      "original_sha256": "f17f064e126e39068f828de4b18aedd6a11d17f18b9f402df235e86bc0ebfebc",
+      "public_bytes": 2208,
+      "public_path": "FORMAT-RECOVERY-READ-000073.json",
+      "public_sha256": "dea2e27cb1b91577f2986d2d86258c5318b9c7fdc4ce5f0fe9e8a18e2c11b55b"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 604,
+      "original_path": "FORMAT-RECOVERY-REQUEST.json",
+      "original_sha256": "f5606091b7976133f88379c8740424a5112b56e02bf80917bbbaf345af79167a",
+      "public_bytes": 604,
+      "public_path": "FORMAT-RECOVERY-REQUEST.json",
+      "public_sha256": "f5606091b7976133f88379c8740424a5112b56e02bf80917bbbaf345af79167a"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 580,
+      "original_path": "FORMAT-RECOVERY-RESPONSE.json",
+      "original_sha256": "ba0a141aa05fd2059097f390c5bae357bd0658f6a3b90ccde9a0a36b120526ce",
+      "public_bytes": 1031,
+      "public_path": "FORMAT-RECOVERY-RESPONSE.json",
+      "public_sha256": "b450f74df2f60f15bfddee43a5c510b3b3edb39fe2479d5b485543e374e82395"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 616,
+      "original_path": "FORMAT-RECOVERY-SCRIPT-FILE-INFO.json",
+      "original_sha256": "2888b4dd07ac141593b1e2e8baed4997c98e49f3f4116526ee821c4b00e2ac63",
+      "public_bytes": 616,
+      "public_path": "FORMAT-RECOVERY-SCRIPT-FILE-INFO.json",
+      "public_sha256": "2888b4dd07ac141593b1e2e8baed4997c98e49f3f4116526ee821c4b00e2ac63"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 3783,
+      "original_path": "GITHUB-314-INDEPENDENT-RECONCILIATION.json",
+      "original_sha256": "48ad6b51e0bb4e157fbd325f369212fd0f99079309695e05915bc50632e4f0bf",
+      "public_bytes": 3783,
+      "public_path": "GITHUB-314-INDEPENDENT-RECONCILIATION.json",
+      "public_sha256": "48ad6b51e0bb4e157fbd325f369212fd0f99079309695e05915bc50632e4f0bf"
+    },
+    {
+      "details": [
+        "24-mount full host inventory reduced to the two task-relevant volumes without block-device names or full capacities; memory reduced to MemAvailable; owned-target detailed size listings omitted."
+      ],
+      "disposition": "public_scope_reduction",
+      "original_bytes": 26142,
+      "original_path": "LINKER-RESOURCE-INSPECTION.json",
+      "original_sha256": "cced50c52996c27033dcf7f1954a498822bcafe7af24b14311b10753ad8fa3f5",
+      "public_bytes": 2190,
+      "public_path": "LINKER-RESOURCE-INSPECTION.json",
+      "public_sha256": "9331d7973efdf39a353781b0234825712c83f870118e2a230fc9461026a59859"
+    },
+    {
+      "details": [
+        "Original per-file digest manifest retained under an explicitly private-original provenance label; PUBLIC-CONTENT-MANIFEST.json describes published bytes."
+      ],
+      "disposition": "copied_verbatim_renamed",
+      "original_bytes": 19889,
+      "original_path": "NATIVE-EVIDENCE-BUNDLE-MANIFEST.json",
+      "original_sha256": "82aa854fad0b19b8c396aad30740cdc537087c03075412b5374f94a8afe476b6",
+      "public_bytes": 19889,
+      "public_path": "ORIGINAL-PRIVATE-BUNDLE-CONTENT-MANIFEST.json",
+      "public_sha256": "82aa854fad0b19b8c396aad30740cdc537087c03075412b5374f94a8afe476b6"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2030,
+      "original_path": "NATIVE-RECOVERY-READ-000000.json",
+      "original_sha256": "5cfda31b3f58a01265500ec65b4bee9eb1ec0b97e8b1cc5004f132c9fe901c82",
+      "public_bytes": 1663,
+      "public_path": "NATIVE-RECOVERY-READ-000000.json",
+      "public_sha256": "aecd68e7d90269767d44760949a6046e8b0f32521451dfc1b1c8ac189c17a5cf"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2281,
+      "original_path": "NATIVE-RECOVERY-READ-000315.json",
+      "original_sha256": "6f14bf55ab46b65d4900bbb7e47977b328c58d8041569bed20e218eb18eaade4",
+      "public_bytes": 1748,
+      "public_path": "NATIVE-RECOVERY-READ-000315.json",
+      "public_sha256": "bdd8f72dad011d8fa778a9c9e7fc2439f53c74554dffe1e843cd9446f27d1e84"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2288,
+      "original_path": "NATIVE-RECOVERY-READ-000705.json",
+      "original_sha256": "6bae0662005679ad54cc9cd176213402612b339140237675d64fb9d41a5d8020",
+      "public_bytes": 1753,
+      "public_path": "NATIVE-RECOVERY-READ-000705.json",
+      "public_sha256": "d416754ba21f44a7475f65147ccc76fa7b59bfa811dd10cf606bc5999d34e157"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2292,
+      "original_path": "NATIVE-RECOVERY-READ-001096.json",
+      "original_sha256": "e0958fecf1c2613469c9a457ee50d132131b0512ca08b6f6e81e33047c82b9c5",
+      "public_bytes": 1755,
+      "public_path": "NATIVE-RECOVERY-READ-001096.json",
+      "public_sha256": "f8c34653758ee7d388a2636e11ed6d3fc8546751f7e1738b117bdd5f19a7b0d1"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2295,
+      "original_path": "NATIVE-RECOVERY-READ-001488.json",
+      "original_sha256": "8d78a888c8d271b586ca9feda6326fac60ca8b73aa85a2ac11038f2b295b9acb",
+      "public_bytes": 1756,
+      "public_path": "NATIVE-RECOVERY-READ-001488.json",
+      "public_sha256": "4910dc1751d41dee08b8af9d8a3b71ab9e8159e8e437973dfa47fad51c231156"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2317,
+      "original_path": "NATIVE-RECOVERY-READ-001881.json",
+      "original_sha256": "f221d3a0b850d90b29a60eb205469c2ea190a1dd8bc00ffd0e8328669f75a495",
+      "public_bytes": 1764,
+      "public_path": "NATIVE-RECOVERY-READ-001881.json",
+      "public_sha256": "05aa3c8976a3f453d599146cbb7082b8d8268f85e5c6cadc82fff46f340a2546"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 3623,
+      "original_path": "NATIVE-RECOVERY-READ-002276.json",
+      "original_sha256": "951b6e83104eb057a953031828340e5a1b7d31b16f2486b59cfeef7909285312",
+      "public_bytes": 2230,
+      "public_path": "NATIVE-RECOVERY-READ-002276.json",
+      "public_sha256": "99b3eb8336cb0daf2b09b8c964dd7ab399879362f9faddec0cbe793826e1e2ca"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 605,
+      "original_path": "NATIVE-RECOVERY-REQUEST.json",
+      "original_sha256": "686fd9345a31b0768677fe53cbe26e03f9da15b36e4627171351314124f1fe5b",
+      "public_bytes": 605,
+      "public_path": "NATIVE-RECOVERY-REQUEST.json",
+      "public_sha256": "686fd9345a31b0768677fe53cbe26e03f9da15b36e4627171351314124f1fe5b"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 580,
+      "original_path": "NATIVE-RECOVERY-RESPONSE.json",
+      "original_sha256": "2945cf3ec42c82eadb0b15b13ada9ead5af33ed6feba5b1f7c9d12cd871a14cb",
+      "public_bytes": 1031,
+      "public_path": "NATIVE-RECOVERY-RESPONSE.json",
+      "public_sha256": "f199a9351fd03ea9534e4006a1cafa383b934ed7713b3e93af0592d7c3e74ce3"
+    },
+    {
+      "details": [
+        "Removed tmp_disk/home_disk total and used; retained free space relevant to target selection."
+      ],
+      "disposition": "public_scope_reduction",
+      "original_bytes": 543,
+      "original_path": "NATIVE-TARGET-PLAN.json",
+      "original_sha256": "4fb85bd3e481eb16801ee8faa6d8ae7ba223e2c909e0028440a5fef69b13b464",
+      "public_bytes": 905,
+      "public_path": "NATIVE-TARGET-PLAN.json",
+      "public_sha256": "2754b7207d65b3b2c8dc7d0b0d5b8c053a7d0547bc96e54e0d020e8df6765237"
+    },
+    {
+      "details": [
+        "Added explicit public-derivative provenance and manifest pointers without changing gate results."
+      ],
+      "disposition": "public_index_with_derivation_notice",
+      "original_bytes": 6644,
+      "original_path": "NATIVE-VALIDATION-INDEX.json",
+      "original_sha256": "21152940886b1d0546135ddbc14202f44aa81cd0888e8845381db80b0457656b",
+      "public_bytes": 7324,
+      "public_path": "NATIVE-VALIDATION-INDEX.json",
+      "public_sha256": "a1df5c499f5b13b4c66cf396e68c563ed67c99bc06a2f153c633c76fcd99e322"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid, /text/event/tmp_disk/total, /text/event/tmp_disk/used, /text/event/home_disk/total, /text/event/home_disk/used"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2930,
+      "original_path": "NATIVE-VALIDATION-READ-000000.json",
+      "original_sha256": "31922c593534ca084da8241065190109ffdf8019000a227044c1ca35748bdaaa",
+      "public_bytes": 2291,
+      "public_path": "NATIVE-VALIDATION-READ-000000.json",
+      "public_sha256": "ab92515b87e5812b8e30027968bc928c64ce8513952975285a8ac77cc5bb5934"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2351,
+      "original_path": "NATIVE-VALIDATION-READ-000595.json",
+      "original_sha256": "9222b56824ec650f404e8b2eab535799fa9352b34f78728c8c5668bf3a0a4193",
+      "public_bytes": 1776,
+      "public_path": "NATIVE-VALIDATION-READ-000595.json",
+      "public_sha256": "294661292b1a33ae61b1fad351bc0527653351de3500f871cecbe21280e60c6b"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2355,
+      "original_path": "NATIVE-VALIDATION-READ-001007.json",
+      "original_sha256": "30c208fdb871bab00d04d5d0b9ba77d9512f3c9d30dfc188b2def5bedd005439",
+      "public_bytes": 1778,
+      "public_path": "NATIVE-VALIDATION-READ-001007.json",
+      "public_sha256": "0cc2b01215fdaa89bf677484fa7b01ede4aaa8f9814ed1b01f03557eb744a6b9"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2358,
+      "original_path": "NATIVE-VALIDATION-READ-001420.json",
+      "original_sha256": "020e1d00252690d0aab972b4eeb746d772034328209c8b40856a51104af61bc6",
+      "public_bytes": 1779,
+      "public_path": "NATIVE-VALIDATION-READ-001420.json",
+      "public_sha256": "d9eaf7acc250dc601195a63eeaa76bf26187ba640527e121ef2e3e0946621240"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 1679,
+      "original_path": "NATIVE-VALIDATION-READ-001834.json",
+      "original_sha256": "2e44a4a7952c0c9516e6396a153ca1281982224792650f83a43502302a0e5ba3",
+      "public_bytes": 1552,
+      "public_path": "NATIVE-VALIDATION-READ-001834.json",
+      "public_sha256": "f6052638aaf0e342a567e097b4de6153724febebe82254f24aa48dcd11aab44b"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2999,
+      "original_path": "NATIVE-VALIDATION-READ-002041.json",
+      "original_sha256": "0ca40b9720f42da31a16401278cb73b49a60654df8b8a2a45b96786cc8a74b9a",
+      "public_bytes": 1994,
+      "public_path": "NATIVE-VALIDATION-READ-002041.json",
+      "public_sha256": "5a89fec180f0d698f97396715053017f81dd8a5bb4dd661336f442edfb05cf6f"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2262,
+      "original_path": "NATIVE-VALIDATION-READ-002644.json",
+      "original_sha256": "f253e6756db61d3d4e909003b2edab432c1901f255a7d2a1ae463f1780a62ad5",
+      "public_bytes": 1747,
+      "public_path": "NATIVE-VALIDATION-READ-002644.json",
+      "public_sha256": "ef84193d6ca3c80c296c8d546371ce8b70894243dbecd7b57aaadfbc645030fc"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 6830,
+      "original_path": "NATIVE-VALIDATION-READ-003026.json",
+      "original_sha256": "92ac2d6d2517676f15b79267ad0ca4d6aa6873aea7c70b3d1d2c8dc49010d3af",
+      "public_bytes": 3275,
+      "public_path": "NATIVE-VALIDATION-READ-003026.json",
+      "public_sha256": "1756c51ea6f88e5662d57a76b3234c814d1cf796bc7464e1e37b1d56350fe621"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 6854,
+      "original_path": "NATIVE-VALIDATION-READ-004790.json",
+      "original_sha256": "4ab16f717f6cbe9e9d4aa1a152562690c0711cb440e8be17ff2b19f274deb4f2",
+      "public_bytes": 3283,
+      "public_path": "NATIVE-VALIDATION-READ-004790.json",
+      "public_sha256": "32bedc82b9200d4dd2691c70f45c057f9d2f16fec2570a259179e5d2de33458c"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 4215,
+      "original_path": "NATIVE-VALIDATION-READ-006562.json",
+      "original_sha256": "4a20d6cc14e42fbdb0fe0c8130877ce254b121a6baf5b9be0b2dce05b480927c",
+      "public_bytes": 2400,
+      "public_path": "NATIVE-VALIDATION-READ-006562.json",
+      "public_sha256": "f7bd64b335e6beeef32b9f656e3585b7e8db89819f469384eae8415beed3615b"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 6879,
+      "original_path": "NATIVE-VALIDATION-READ-007537.json",
+      "original_sha256": "5d437831d39d5298821c8b6813ace079ca3d9c697667199496268859afc76d10",
+      "public_bytes": 3320,
+      "public_path": "NATIVE-VALIDATION-READ-007537.json",
+      "public_sha256": "e25b6296c0849c2dd889126dc2c488c5d71aaf9f455ce5cf59ecc01b3332f85c"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 2114,
+      "original_path": "NATIVE-VALIDATION-REQUEST.json",
+      "original_sha256": "e83b4fdcd1e7522c2cc4cf22193565671f2105f223c54ef3d26c85f792e86434",
+      "public_bytes": 2114,
+      "public_path": "NATIVE-VALIDATION-REQUEST.json",
+      "public_sha256": "e83b4fdcd1e7522c2cc4cf22193565671f2105f223c54ef3d26c85f792e86434"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 580,
+      "original_path": "NATIVE-VALIDATION-RESPONSE.json",
+      "original_sha256": "e199716afd5dcf8286a43ff0ab9d348028a9da3b4809de92b8f11c263bfa8c25",
+      "public_bytes": 1033,
+      "public_path": "NATIVE-VALIDATION-RESPONSE.json",
+      "public_sha256": "a1424ea7152cd27447887d724d31fc941c09843b30467488882b0d60f3efb443"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 232973,
+      "original_path": "ORIGINAL-AGENTD-TEST-IDENTITIES.json",
+      "original_sha256": "d37229db29ada46b9825f4e74df8ffedf1945f10aefb93cd914da2668705a5cc",
+      "public_bytes": 232973,
+      "public_path": "ORIGINAL-AGENTD-TEST-IDENTITIES.json",
+      "public_sha256": "d37229db29ada46b9825f4e74df8ffedf1945f10aefb93cd914da2668705a5cc"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 8463,
+      "original_path": "PREFLIGHT.json",
+      "original_sha256": "d3e1a7964275e4b0d51569b9985aff30ceb9debed3b7cd3626940cc1cb6b05c4",
+      "public_bytes": 8463,
+      "public_path": "PREFLIGHT.json",
+      "public_sha256": "d3e1a7964275e4b0d51569b9985aff30ceb9debed3b7cd3626940cc1cb6b05c4"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 615,
+      "original_path": "RECOVERY-RUNNER-V2-FILE-INFO.json",
+      "original_sha256": "312e9d079823bc6b6ab1fd6e51f62392500bb53b6023001c59e5db0a4c101df5",
+      "public_bytes": 615,
+      "public_path": "RECOVERY-RUNNER-V2-FILE-INFO.json",
+      "public_sha256": "312e9d079823bc6b6ab1fd6e51f62392500bb53b6023001c59e5db0a4c101df5"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 2199,
+      "original_path": "RUNTIME-HELPERS.json",
+      "original_sha256": "db1e9de83022c3258016aad8cf3dd45ae1dde41bfb3f1945a637c37cd3f3d200",
+      "public_bytes": 2199,
+      "public_path": "RUNTIME-HELPERS.json",
+      "public_sha256": "db1e9de83022c3258016aad8cf3dd45ae1dde41bfb3f1945a637c37cd3f3d200"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 977,
+      "original_path": "SOURCE-PREPARED.json",
+      "original_sha256": "cc76d7f5c63c31c488e15f27453bdeec6b3ebbb862a172e2c5e2dc128a94dd1c",
+      "public_bytes": 977,
+      "public_path": "SOURCE-PREPARED.json",
+      "public_sha256": "cc76d7f5c63c31c488e15f27453bdeec6b3ebbb862a172e2c5e2dc128a94dd1c"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 474,
+      "original_path": "TARGET-RELOCATION-01-source.summary.json",
+      "original_sha256": "f5959bb7ca33653c5c5b367ab97df8709f6c24553fa3dce17696a4ce04ba2f82",
+      "public_bytes": 474,
+      "public_path": "TARGET-RELOCATION-01-source.summary.json",
+      "public_sha256": "f5959bb7ca33653c5c5b367ab97df8709f6c24553fa3dce17696a4ce04ba2f82"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 486,
+      "original_path": "TARGET-RELOCATION-03-destination.summary.json",
+      "original_sha256": "3b9d5c95702b7ab08f3e60068ea0724e022b7e9374ab39f3c9fd92aca9ce9af3",
+      "public_bytes": 486,
+      "public_path": "TARGET-RELOCATION-03-destination.summary.json",
+      "public_sha256": "3b9d5c95702b7ab08f3e60068ea0724e022b7e9374ab39f3c9fd92aca9ce9af3"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 3863,
+      "original_path": "TARGET-RELOCATION-FINAL.json",
+      "original_sha256": "edb7eb81f8d56af5b908a76f17d806bc082738249651d5779cdc872f59c851cf",
+      "public_bytes": 3863,
+      "public_path": "TARGET-RELOCATION-FINAL.json",
+      "public_sha256": "edb7eb81f8d56af5b908a76f17d806bc082738249651d5779cdc872f59c851cf"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1073833,
+      "original_path": "TARGET-RELOCATION-FULL-MANIFEST.json.gz",
+      "original_sha256": "c5418ee910793fdf91d9e89483148d7c73933103de515f809f2850124d3504e3",
+      "public_bytes": 1073833,
+      "public_path": "TARGET-RELOCATION-FULL-MANIFEST.json.gz",
+      "public_sha256": "c5418ee910793fdf91d9e89483148d7c73933103de515f809f2850124d3504e3"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 644,
+      "original_path": "TARGET-RELOCATION-MANIFEST-FILE-INFO.json",
+      "original_sha256": "8133e2b22461830e83652efaff0b7bf7a040840a0e90275be06fe61d3b196427",
+      "public_bytes": 644,
+      "public_path": "TARGET-RELOCATION-MANIFEST-FILE-INFO.json",
+      "public_sha256": "8133e2b22461830e83652efaff0b7bf7a040840a0e90275be06fe61d3b196427"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 16455,
+      "original_path": "TARGET-RELOCATION-READ-000000.json",
+      "original_sha256": "7990037470321fb1471e84a271fbd277533d0bec9a5958f98a4537457c18281f",
+      "public_bytes": 6507,
+      "public_path": "TARGET-RELOCATION-READ-000000.json",
+      "public_sha256": "77f84a2564aabce2ad54c5ef380525b95ab96f40e25f7210c9d7b254905303ce"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 355,
+      "original_path": "TARGET-RELOCATION-REQUEST.json",
+      "original_sha256": "3a24abcc5a82f18d7531bfa59a778556c80b629d2ae53d35d98a8fd0c92afe3e",
+      "public_bytes": 355,
+      "public_path": "TARGET-RELOCATION-REQUEST.json",
+      "public_sha256": "3a24abcc5a82f18d7531bfa59a778556c80b629d2ae53d35d98a8fd0c92afe3e"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 580,
+      "original_path": "TARGET-RELOCATION-RESPONSE.json",
+      "original_sha256": "03a87fbd9bf07f70ba0b58a0c9691da8a81efc9dc99b5ccbaf1c075b9e54f847",
+      "public_bytes": 1033,
+      "public_path": "TARGET-RELOCATION-RESPONSE.json",
+      "public_sha256": "57637bac3a6e348b1dc201dcc064702269e47455476a52e1605a6b002a239620"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /status/boot, /status/owner_pid, /status/pid"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 934,
+      "original_path": "TARGET-RELOCATION-TERMINAL.json",
+      "original_sha256": "c6e20ada73b0679855e6ee331451bf18480a99ab15493545e6492ed01633d617",
+      "public_bytes": 1339,
+      "public_path": "TARGET-RELOCATION-TERMINAL.json",
+      "public_sha256": "7fdf7a027402410460254a06866cee34880f16af35cd3a4eceb6eeffeaac2aff"
+    },
+    {
+      "details": [
+        "Removed complete path_environment; all uv absence findings retained."
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 886,
+      "original_path": "UV-READONLY-INSPECTION.json",
+      "original_sha256": "36bb7013e3102da1e0bc71a5089c3e309a1c7f3e98fd570a01f23141f74313eb",
+      "public_bytes": 1245,
+      "public_path": "UV-READONLY-INSPECTION.json",
+      "public_sha256": "1105d7daaf438e9e7d937460368fb3b356a418c0c3f92edc19b93fddd4ca8536"
+    },
+    {
+      "details": [
+        "Removed unnecessary host/process/runtime archive metadata; retained durable session identity, states, actual exits, byte cursors and validation progress.",
+        "Removed fields: /archive_path, /bytes_hex, /status/boot, /status/owner_pid, /status/pid, /text/event/path_environment"
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 3382,
+      "original_path": "UV-READONLY-TERMINAL.json",
+      "original_sha256": "d0a3702cd4745ead14a3b6864872f5073420e33b820b8ed41d1bbb2e3ff03f95",
+      "public_bytes": 2323,
+      "public_path": "UV-READONLY-TERMINAL.json",
+      "public_sha256": "12e93ce739796ed5b10df6fe7eabf01ec2176b7bf6430f5d89c48fb8eb506dbe"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1560,
+      "original_path": "V8-ASSET-INPUTS.json",
+      "original_sha256": "90ed1eae42950508d3b338334a65dd1cf398136a477abd8a336b324c777173bf",
+      "public_bytes": 1560,
+      "public_path": "V8-ASSET-INPUTS.json",
+      "public_sha256": "90ed1eae42950508d3b338334a65dd1cf398136a477abd8a336b324c777173bf"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 2182,
+      "original_path": "format-recovery-01/00-download-uv.RESULT.json",
+      "original_sha256": "5127652618da466f0d31259157415edab082e65d15e668572368a07f402b81cb",
+      "public_bytes": 2182,
+      "public_path": "format-recovery-01/00-download-uv.RESULT.json",
+      "public_sha256": "5127652618da466f0d31259157415edab082e65d15e668572368a07f402b81cb"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 0,
+      "original_path": "format-recovery-01/00-download-uv.stderr.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_bytes": 0,
+      "public_path": "format-recovery-01/00-download-uv.stderr.log",
+      "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1134,
+      "original_path": "format-recovery-01/01-original-just-fmt.RESULT.json",
+      "original_sha256": "e8295ec3a4f599393248ec5dd883b74136c98ac4eb60a82313290ead71e865c4",
+      "public_bytes": 1134,
+      "public_path": "format-recovery-01/01-original-just-fmt.RESULT.json",
+      "public_sha256": "e8295ec3a4f599393248ec5dd883b74136c98ac4eb60a82313290ead71e865c4"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 0,
+      "original_path": "format-recovery-01/01-original-just-fmt.stderr.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_bytes": 0,
+      "public_path": "format-recovery-01/01-original-just-fmt.stderr.log",
+      "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 0,
+      "original_path": "format-recovery-01/01-original-just-fmt.stdout.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_bytes": 0,
+      "public_path": "format-recovery-01/01-original-just-fmt.stdout.log",
+      "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1169,
+      "original_path": "format-recovery-01/02-original-just-fmt-check.RESULT.json",
+      "original_sha256": "446bda072e7922c175f359c4386824f8ad435fb10155fe5ad28649e8007ae93b",
+      "public_bytes": 1169,
+      "public_path": "format-recovery-01/02-original-just-fmt-check.RESULT.json",
+      "public_sha256": "446bda072e7922c175f359c4386824f8ad435fb10155fe5ad28649e8007ae93b"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 0,
+      "original_path": "format-recovery-01/02-original-just-fmt-check.stderr.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_bytes": 0,
+      "public_path": "format-recovery-01/02-original-just-fmt-check.stderr.log",
+      "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 0,
+      "original_path": "format-recovery-01/02-original-just-fmt-check.stdout.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_bytes": 0,
+      "public_path": "format-recovery-01/02-original-just-fmt-check.stdout.log",
+      "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 8341,
+      "original_path": "format-recovery-01/AFTER-files/codex-rs/hepta-authbus/src/owner_tests.rs",
+      "original_sha256": "14fa4f1826c6f9b1365dc90849438cc556138a964705c17fcc2a95fa2274c93d",
+      "public_bytes": 8341,
+      "public_path": "format-recovery-01/AFTER-files/codex-rs/hepta-authbus/src/owner_tests.rs",
+      "public_sha256": "14fa4f1826c6f9b1365dc90849438cc556138a964705c17fcc2a95fa2274c93d"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 822,
+      "original_path": "format-recovery-01/AFTER.diff",
+      "original_sha256": "4df706d350833debff01c76def70620f49879b0b7075ac3fb6ea111bdedbcb21",
+      "public_bytes": 822,
+      "public_path": "format-recovery-01/AFTER.diff",
+      "public_sha256": "4df706d350833debff01c76def70620f49879b0b7075ac3fb6ea111bdedbcb21"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 13148,
+      "original_path": "format-recovery-01/FINAL.json",
+      "original_sha256": "05e05aacbfb21f86de1c4fcf6493b6d9c9e5a88ff14539430693b2a4caf5bb55",
+      "public_bytes": 13148,
+      "public_path": "format-recovery-01/FINAL.json",
+      "public_sha256": "05e05aacbfb21f86de1c4fcf6493b6d9c9e5a88ff14539430693b2a4caf5bb55"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1557,
+      "original_path": "format-recovery-01/FORMAT-ENVIRONMENT.json",
+      "original_sha256": "517cd07cf5a580fba6a13b4a70167d4962362b5e6d1738579bcced49e8e5c746",
+      "public_bytes": 1557,
+      "public_path": "format-recovery-01/FORMAT-ENVIRONMENT.json",
+      "public_sha256": "517cd07cf5a580fba6a13b4a70167d4962362b5e6d1738579bcced49e8e5c746"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1129,
+      "original_path": "format-recovery-01/REQUEST.json",
+      "original_sha256": "1696ad0315ea8b4896dac238b59e53a25d0958b61ed18839674ae2543af4d93e",
+      "public_bytes": 1129,
+      "public_path": "format-recovery-01/REQUEST.json",
+      "public_sha256": "1696ad0315ea8b4896dac238b59e53a25d0958b61ed18839674ae2543af4d93e"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 4928,
+      "original_path": "format-recovery-01/SOURCE-BEFORE.json",
+      "original_sha256": "71cf265e877967dff33345ae6e036004f47cd5717009183ea556af7e915026bf",
+      "public_bytes": 4928,
+      "public_path": "format-recovery-01/SOURCE-BEFORE.json",
+      "public_sha256": "71cf265e877967dff33345ae6e036004f47cd5717009183ea556af7e915026bf"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 971,
+      "original_path": "format-recovery-01/UV-VERIFIED.json",
+      "original_sha256": "6ec9d3756059295337db3a9ba3b6a9a3f58f302201d83926c58ecf9cbd84773f",
+      "public_bytes": 971,
+      "public_path": "format-recovery-01/UV-VERIFIED.json",
+      "public_sha256": "6ec9d3756059295337db3a9ba3b6a9a3f58f302201d83926c58ecf9cbd84773f"
+    },
+    {
+      "details": [
+        "Only environment_overrides.PATH redacted; the original failed wrapper receipt remains untouched in the private ZIP and local filesystem."
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2397,
+      "original_path": "github-script-tests-02-FINAL.json",
+      "original_sha256": "fa599f6c950cd358041270a4f4c3b9d67ad254ebcc8cf5d3ca2d83db2a9c69c0",
+      "public_bytes": 2858,
+      "public_path": "github-script-tests-02-FINAL.json",
+      "public_sha256": "4f75539ebd812e8b3a6a21d80d40e2995b14943c2bf573774a30ff3887562e3d"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 34153,
+      "original_path": "github-script-tests-02-TEST-IDENTITIES.json",
+      "original_sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be",
+      "public_bytes": 34153,
+      "public_path": "github-script-tests-02-TEST-IDENTITIES.json",
+      "public_sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 16332,
+      "original_path": "github-script-tests-02-original-command.log",
+      "original_sha256": "010267139ee362cf4a465bb3654bf6f2462ebb9d59c353d4c22b2f9193dada98",
+      "public_bytes": 16332,
+      "public_path": "github-script-tests-02-original-command.log",
+      "public_sha256": "010267139ee362cf4a465bb3654bf6f2462ebb9d59c353d4c22b2f9193dada98"
+    },
+    {
+      "details": [
+        "Only environment_overrides.PATH redacted; the original failed wrapper receipt remains untouched in the private ZIP and local filesystem."
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2405,
+      "original_path": "github-script-tests-03-FINAL.json",
+      "original_sha256": "33b068d28b68a6246fa6b730cd6f86f52c425f5d1e221c599ca597e1cc5900b1",
+      "public_bytes": 2866,
+      "public_path": "github-script-tests-03-FINAL.json",
+      "public_sha256": "a6b1058171204d20d6a9e3f0a83505ab6b84b391f942f465401efb92e8ee6969"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 34153,
+      "original_path": "github-script-tests-03-TEST-IDENTITIES.json",
+      "original_sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be",
+      "public_bytes": 34153,
+      "public_path": "github-script-tests-03-TEST-IDENTITIES.json",
+      "public_sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 5569,
+      "original_path": "github-script-tests-03-original-command.log",
+      "original_sha256": "172fce7538d3918e2b5e43b83d1bba63a28cf1423ebb0bf112c33aa953800c30",
+      "public_bytes": 5569,
+      "public_path": "github-script-tests-03-original-command.log",
+      "public_sha256": "172fce7538d3918e2b5e43b83d1bba63a28cf1423ebb0bf112c33aa953800c30"
+    },
+    {
+      "details": [
+        "Only environment_overrides.PATH redacted; the original failed wrapper receipt remains untouched in the private ZIP and local filesystem."
+      ],
+      "disposition": "public_metadata_derivative",
+      "original_bytes": 2382,
+      "original_path": "github-script-tests-FINAL.json",
+      "original_sha256": "e5bbbed7a36887b842a386abf500b972e7e3b455207cfeb91e25ab8e19d20eb6",
+      "public_bytes": 2840,
+      "public_path": "github-script-tests-FINAL.json",
+      "public_sha256": "ee2bee1d517d112f1dc6d529a0e090d08c02754c80cec9d565e649afe0fb5fe3"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 34153,
+      "original_path": "github-script-tests-TEST-IDENTITIES.json",
+      "original_sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be",
+      "public_bytes": 34153,
+      "public_path": "github-script-tests-TEST-IDENTITIES.json",
+      "public_sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 6692,
+      "original_path": "github-script-tests-original-command.log",
+      "original_sha256": "5c7a71e6f0dba51e8aa74ee4f386e8ac094391dadc79960dcd2ccc5c3652a18b",
+      "public_bytes": 6692,
+      "public_path": "github-script-tests-original-command.log",
+      "public_sha256": "5c7a71e6f0dba51e8aa74ee4f386e8ac094391dadc79960dcd2ccc5c3652a18b"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 15033,
+      "original_path": "recover_final_format.py",
+      "original_sha256": "e12244dca88073be320ba90b30062d8c9c343ab1436a172aa07c468e629ee0de",
+      "public_bytes": 15033,
+      "public_path": "recover_final_format.py",
+      "public_sha256": "e12244dca88073be320ba90b30062d8c9c343ab1436a172aa07c468e629ee0de"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 4464,
+      "original_path": "recovery-02/03-agentd-just-test.RESULT.json",
+      "original_sha256": "ebf2595bce9d86c9a35db901b0e62d46ade785ec054475c22e93f9de658d9ff9",
+      "public_bytes": 4464,
+      "public_path": "recovery-02/03-agentd-just-test.RESULT.json",
+      "public_sha256": "ebf2595bce9d86c9a35db901b0e62d46ade785ec054475c22e93f9de658d9ff9"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1492,
+      "original_path": "recovery-02/03-agentd-just-test.exec.json",
+      "original_sha256": "aff9afe714327de75f1b213f93f5683af2c2f68d2c5bf11a8d216f7c6f1a0abf",
+      "public_bytes": 1492,
+      "public_path": "recovery-02/03-agentd-just-test.exec.json",
+      "public_sha256": "aff9afe714327de75f1b213f93f5683af2c2f68d2c5bf11a8d216f7c6f1a0abf"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 305798,
+      "original_path": "recovery-02/03-agentd-just-test.log",
+      "original_sha256": "76f4803270388df62558683eed561bf7e9e28e9c4bb49ca9ca52e12af83bb248",
+      "public_bytes": 305798,
+      "public_path": "recovery-02/03-agentd-just-test.log",
+      "public_sha256": "76f4803270388df62558683eed561bf7e9e28e9c4bb49ca9ca52e12af83bb248"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 4468,
+      "original_path": "recovery-02/04-authbus-just-test.RESULT.json",
+      "original_sha256": "293b8ee141670fc82dbdc5ffa7f7cc9160bef8703a991140a281731669c7b0bd",
+      "public_bytes": 4468,
+      "public_path": "recovery-02/04-authbus-just-test.RESULT.json",
+      "public_sha256": "293b8ee141670fc82dbdc5ffa7f7cc9160bef8703a991140a281731669c7b0bd"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1491,
+      "original_path": "recovery-02/04-authbus-just-test.exec.json",
+      "original_sha256": "4e80d51b7b9a791964b93178cd6e7d55d28de1b87659326a457657b247519045",
+      "public_bytes": 1491,
+      "public_path": "recovery-02/04-authbus-just-test.exec.json",
+      "public_sha256": "4e80d51b7b9a791964b93178cd6e7d55d28de1b87659326a457657b247519045"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 28000,
+      "original_path": "recovery-02/04-authbus-just-test.log",
+      "original_sha256": "06d5fd5f7f2089ebaded2e627e098b65b96fa8d5751e70a2fa81ed5b42159158",
+      "public_bytes": 28000,
+      "public_path": "recovery-02/04-authbus-just-test.log",
+      "public_sha256": "06d5fd5f7f2089ebaded2e627e098b65b96fa8d5751e70a2fa81ed5b42159158"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1102,
+      "original_path": "recovery-02/06-final-fmt.RESULT.json",
+      "original_sha256": "3f5fd01b922135969320312252ff730e4ef184b946cd5462f3442fdc1e837fbc",
+      "public_bytes": 1102,
+      "public_path": "recovery-02/06-final-fmt.RESULT.json",
+      "public_sha256": "3f5fd01b922135969320312252ff730e4ef184b946cd5462f3442fdc1e837fbc"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 421,
+      "original_path": "recovery-02/06-final-fmt.stderr.log",
+      "original_sha256": "345c850afea669723e05606ef5c146c522d5e043e795496178bcc899d7c2ebdf",
+      "public_bytes": 421,
+      "public_path": "recovery-02/06-final-fmt.stderr.log",
+      "public_sha256": "345c850afea669723e05606ef5c146c522d5e043e795496178bcc899d7c2ebdf"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 0,
+      "original_path": "recovery-02/06-final-fmt.stdout.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_bytes": 0,
+      "public_path": "recovery-02/06-final-fmt.stdout.log",
+      "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1136,
+      "original_path": "recovery-02/07-final-fmt-check.RESULT.json",
+      "original_sha256": "4117903d0d4f0f0d63c10024bc491c7ee506d95ad79651392d493bed9a4bc2b6",
+      "public_bytes": 1136,
+      "public_path": "recovery-02/07-final-fmt-check.RESULT.json",
+      "public_sha256": "4117903d0d4f0f0d63c10024bc491c7ee506d95ad79651392d493bed9a4bc2b6"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 429,
+      "original_path": "recovery-02/07-final-fmt-check.stderr.log",
+      "original_sha256": "8def1eb60671b6c1c1fac82a288cb7b8e80c796821f521031f83c2cdf916df1a",
+      "public_bytes": 429,
+      "public_path": "recovery-02/07-final-fmt-check.stderr.log",
+      "public_sha256": "8def1eb60671b6c1c1fac82a288cb7b8e80c796821f521031f83c2cdf916df1a"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 0,
+      "original_path": "recovery-02/07-final-fmt-check.stdout.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_bytes": 0,
+      "public_path": "recovery-02/07-final-fmt-check.stdout.log",
+      "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 233601,
+      "original_path": "recovery-02/AGENTD-TEST-IDENTITY-COMPARISON.json",
+      "original_sha256": "a7e1485ea1ecc1d19631f46afb2959948b2b1bb3d6f35ea993f9ae110e2d24d7",
+      "public_bytes": 233601,
+      "public_path": "recovery-02/AGENTD-TEST-IDENTITY-COMPARISON.json",
+      "public_sha256": "a7e1485ea1ecc1d19631f46afb2959948b2b1bb3d6f35ea993f9ae110e2d24d7"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 6169,
+      "original_path": "recovery-02/AUTHBUS-TEST-IDENTITIES.json",
+      "original_sha256": "ccd05a224af50c94e993f147812a0efcd0462b260c4eb710719b7593d8623cad",
+      "public_bytes": 6169,
+      "public_path": "recovery-02/AUTHBUS-TEST-IDENTITIES.json",
+      "public_sha256": "ccd05a224af50c94e993f147812a0efcd0462b260c4eb710719b7593d8623cad"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 822,
+      "original_path": "recovery-02/FINAL-FORMAT.diff",
+      "original_sha256": "4df706d350833debff01c76def70620f49879b0b7075ac3fb6ea111bdedbcb21",
+      "public_bytes": 822,
+      "public_path": "recovery-02/FINAL-FORMAT.diff",
+      "public_sha256": "4df706d350833debff01c76def70620f49879b0b7075ac3fb6ea111bdedbcb21"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 17502,
+      "original_path": "recovery-02/FINAL.json",
+      "original_sha256": "5f4289c0a083cfa707dbaa0c2442875b33578b8e0990b82216fd5dc3c8e68aea",
+      "public_bytes": 17502,
+      "public_path": "recovery-02/FINAL.json",
+      "public_sha256": "5f4289c0a083cfa707dbaa0c2442875b33578b8e0990b82216fd5dc3c8e68aea"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 573,
+      "original_path": "recovery-02/FORMAT-LINE-WRAP-PROOF.json",
+      "original_sha256": "05679edfa14cd83fd5e6fd30d6dab2c2e39b67ceb4f7f70cd64cfded671dcd06",
+      "public_bytes": 573,
+      "public_path": "recovery-02/FORMAT-LINE-WRAP-PROOF.json",
+      "public_sha256": "05679edfa14cd83fd5e6fd30d6dab2c2e39b67ceb4f7f70cd64cfded671dcd06"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 3033,
+      "original_path": "recovery-02/FORMATTING-BEFORE.json",
+      "original_sha256": "e8847157a2f814535f01673b13dfb07cc5a08f9e1354d542ac594c97d6f3db92",
+      "public_bytes": 3033,
+      "public_path": "recovery-02/FORMATTING-BEFORE.json",
+      "public_sha256": "e8847157a2f814535f01673b13dfb07cc5a08f9e1354d542ac594c97d6f3db92"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 3671,
+      "original_path": "recovery-02/FORMATTING-FINAL.json",
+      "original_sha256": "87dd5432887e7a27d1acacae792467ec8c7ee459043f978c3eeca8c8e8022990",
+      "public_bytes": 3671,
+      "public_path": "recovery-02/FORMATTING-FINAL.json",
+      "public_sha256": "87dd5432887e7a27d1acacae792467ec8c7ee459043f978c3eeca8c8e8022990"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 8463,
+      "original_path": "recovery-02/PREFLIGHT.json",
+      "original_sha256": "ecca68f7009ac4a676788812e8d19a3f609cecb1ef245674b2e86be66f336842",
+      "public_bytes": 8463,
+      "public_path": "recovery-02/PREFLIGHT.json",
+      "public_sha256": "ecca68f7009ac4a676788812e8d19a3f609cecb1ef245674b2e86be66f336842"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 1484,
+      "original_path": "recovery-02/REQUEST.json",
+      "original_sha256": "9353b8c0f5db7e807d304acb4eb400764d8bd5783a0b64418772587c6c640ed0",
+      "public_bytes": 1484,
+      "public_path": "recovery-02/REQUEST.json",
+      "public_sha256": "9353b8c0f5db7e807d304acb4eb400764d8bd5783a0b64418772587c6c640ed0"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 8194,
+      "original_path": "recovery-02/REUSED-PASSED-STAGES.json",
+      "original_sha256": "ca049fbbcf71534b4e4058afec2953c6f998865fdf061836415f6c6e9cb706c7",
+      "public_bytes": 8194,
+      "public_path": "recovery-02/REUSED-PASSED-STAGES.json",
+      "public_sha256": "ca049fbbcf71534b4e4058afec2953c6f998865fdf061836415f6c6e9cb706c7"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 9728,
+      "original_path": "recovery-02/REUSED-RUNTIME-HELPERS.json",
+      "original_sha256": "b4bd3893be08f43ed1827d9b0ffd0a26bafa1ab07dd5e5ea8b78bece81c943c3",
+      "public_bytes": 9728,
+      "public_path": "recovery-02/REUSED-RUNTIME-HELPERS.json",
+      "public_sha256": "b4bd3893be08f43ed1827d9b0ffd0a26bafa1ab07dd5e5ea8b78bece81c943c3"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 8341,
+      "original_path": "recovery-02/formatted-files/codex-rs/hepta-authbus/src/owner_tests.rs",
+      "original_sha256": "14fa4f1826c6f9b1365dc90849438cc556138a964705c17fcc2a95fa2274c93d",
+      "public_bytes": 8341,
+      "public_path": "recovery-02/formatted-files/codex-rs/hepta-authbus/src/owner_tests.rs",
+      "public_sha256": "14fa4f1826c6f9b1365dc90849438cc556138a964705c17fcc2a95fa2274c93d"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 10336,
+      "original_path": "relocate_owned_target.py",
+      "original_sha256": "74e45d59beef26e32445ef94f3a862ef405aedf72fcd32d1b88ec67f556607bb",
+      "public_bytes": 10336,
+      "public_path": "relocate_owned_target.py",
+      "public_sha256": "74e45d59beef26e32445ef94f3a862ef405aedf72fcd32d1b88ec67f556607bb"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 17486,
+      "original_path": "resume_native_tests.py",
+      "original_sha256": "bb68200c4eb2e9051e10835df4a89972df454e7d9d225bf43e81bf6a5518b055",
+      "public_bytes": 17486,
+      "public_path": "resume_native_tests.py",
+      "public_sha256": "bb68200c4eb2e9051e10835df4a89972df454e7d9d225bf43e81bf6a5518b055"
+    },
+    {
+      "details": [],
+      "disposition": "copied_verbatim",
+      "original_bytes": 42361,
+      "original_path": "run_native_validation.py",
+      "original_sha256": "b8a204ed33848e8f07a470adba720164dd15676cea9f5bd2313895b50664d56c",
+      "public_bytes": 42361,
+      "public_path": "run_native_validation.py",
+      "public_sha256": "b8a204ed33848e8f07a470adba720164dd15676cea9f5bd2313895b50664d56c"
+    },
+    {
+      "details": [
+        "Omitted the entire transient redirect URL, including all query parameters; retained official URL and actual verified size/hash only."
+      ],
+      "disposition": "new_public_minimal_download_derivative",
+      "original_bytes": 1122,
+      "original_path": "format-recovery-01/00-download-uv.stdout.log",
+      "original_sha256": "3e3100e77ac168ae08fa231b3749744e7d62b8136ee93f8bca5d5e714d4aa744",
+      "public_bytes": 1036,
+      "public_path": "format-recovery-01/00-download-uv.stdout.PUBLIC.json",
+      "public_sha256": "8e6c27834fdde7de4f5e3c35d5e233a7ec790a99c65ab0814dc6b8cd3978e047",
+      "source_location": "private_local_raw_stdout_not_in_original_zip"
+    }
+  ],
+  "public_changes": "/workspace/scratch/c1a0d7534606/native-validation/publication-staging-01/PUBLICATION-CHANGES.json",
+  "public_manifest": "/workspace/scratch/c1a0d7534606/native-validation/publication-staging-01/PUBLIC-CONTENT-MANIFEST.json",
+  "public_zip": {
+    "all_public_entries_roundtrip_verified": true,
+    "bytes": 1605908,
+    "items": 122,
+    "path": "/workspace/scratch/c1a0d7534606/native-validation/NATIVE-EVIDENCE-5A-20261121-PUBLIC.zip",
+    "sha256": "1fe917ebc21b0e4e9ddae589623d6bdab2327c62897a07920e658336cd8141b0",
+    "suitable_for_repository_publication": true
+  },
+  "publication_recommendation": "Commit only the PUBLIC ZIP and this review/its public manifests. Do not bulk-publish the raw native-validation directory or the original ZIP.",
+  "retained_task_scope": [
+    "exact source heads/trees/control hashes and source/formatter deltas",
+    "complete original command logs, compiler artifacts, all test identities and all real failures",
+    "durable task/session identities, timings, output-completion facts and actual exit codes",
+    "selected executable hashes, relevant nonsecret overrides and task-specific input/output paths",
+    "relative full manifest of only the task-owned target for verified contents and hardlinks",
+    "only source/destination filesystem/quota/free-space facts needed to assess the actual recovery"
+  ],
+  "review_scope": "purely local inspection of all 118 original ZIP items, nested tool text/hex and the owned-target gzip manifest",
+  "schema_version": 1,
+  "status": "public_derivative_ready_original_zip_not_recommended_for_git",
+  "tests_or_remote_tasks_executed_during_review": false,
+  "why_original_is_not_minimal": [
+    "complete 24-mount inventory and unrelated block-device/external-volume details",
+    "full ambient PATH in the uv diagnostic and three Python wrapper receipts",
+    "boot UUID/process IDs/internal terminal archive paths and duplicate hex transport payloads",
+    "unrelated full volume capacity/used figures and memory/swap inventory"
+  ]
+}

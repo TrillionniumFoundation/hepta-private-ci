@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_static_code_review",
+  "reviewer": "/root/fence_review",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 5591,
+  "reviewed_source": "111d5773145dbe4add99a28b2d1111916a3dbd3b",
+  "base_source": "4674a34528d0097949cc7d604f60de94585d0ba0",
+  "result": "NO_P0_OR_P1_STATIC_FINDINGS",
+  "native_compilation_performed_by_reviewer": false,
+  "runtime_test_results_inferred": false,
+  "automated_caller_scan_performed": false,
+  "pending_validation": {
+    "run_id": 42744390844,
+    "status_at_assignment": "queued",
+    "not_reinterpreted_as_pass": true
+  },
+  "reviewed_blobs": {
+    "codex-rs/hepta-agentd/src/notes_document_observer.rs": "f9cf4269b9b09f8135023451afd9df81d30a455b",
+    "codex-rs/hepta-agentd/src/notes_document_observer_tests.rs": "404e9a2cfc3e4f77b54ed0aa48b4600238968dff",
+    ".github/workflows/hepta-act2-observer.yml": "5f7c2b71e20e6669e229663eef9bce36451a9c9a",
+    "CALLERS.toml": "c1a1b945171cdb20723e398cabe6a7888fa0abdb",
+    "codex-rs/hepta-agentd/BUILD.bazel": "679f0f86e3c01a1ca3638199ff2e8286519823f9"
+  },
+  "checks": [
+    {
+      "area": "observer_lifecycle",
+      "result": "Attachment constructors create one observer. Root attachment and adapter preserve clones; status uses a clone sharing the same Arc fence."
+    },
+    {
+      "area": "locking_and_bounds",
+      "result": "try_lock refuses busy or poisoned state before nonce generation or exchange. No std MutexGuard crosses an await. The bounded original exchange runs synchronously; only one fixed-target NotesDocumentState is retained."
+    },
+    {
+      "area": "rollback_content_and_errors",
+      "result": "Lower revisions and differing digests at the same revision are rejected without replacing the previous accepted fence. Nonce/protocol/transport errors return before updating the fence. Equal revision/content with receipt_pending changes remains allowed."
+    },
+    {
+      "area": "unknown_projection",
+      "result": "The existing thread status caller converts failed current readback to None; original_notes_status preserves historical receipt while current goal/runtime remain UNKNOWN. No dispatch, retirement, cancellation or new effect authority is added."
+    },
+    {
+      "area": "previous_recovery_target",
+      "result": "This method reads previous receipt metadata, not document state. It does not require a document revision fence and still uses the existing separately guarded recovery channel."
+    },
+    {
+      "area": "test_type_and_ownership_semantics",
+      "result": "No obvious Rust compilation or ownership issue in the two added tests. The cases array consists solely of Copy tuples and may be captured by value while reused by the parent test. Revision type is constrained by NotesDocumentState to u64. Thread return error conversion follows existing tests. Arc/Mutex observer output is already used by production spawn_blocking."
+    },
+    {
+      "area": "test_behavior",
+      "result": "The first real socketpair test alternates shared clones over revisions 8,8,9,8,9,9,10; checks retirement, regression rejection, same-revision content mismatch rejection, unchanged fence recovery, fresh nonces and zero effect bytes. The second coordinates an actually in-flight read, checks immediate concurrent refusal, original response completion, no queued read request and zero effect bytes."
+    },
+    {
+      "area": "build_inventory",
+      "result": "No new file, module, dependency or compile-time resource input is introduced. Existing BUILD.bazel source globs include these existing Rust files. No BUILD or lock update is required for this delta."
+    },
+    {
+      "area": "caller_inventory",
+      "result": "No new production caller or tracked boundary symbol is added. Existing methods and their production call sites are unchanged. CALLERS.toml excludes _tests.rs from product caller inventory and has no protected entry for notes_document_observer.rs. No CALLERS edit is required by this delta; this static inspection does not replace the full repository scanner."
+    },
+    {
+      "area": "workflow",
+      "result": "The existing pinned test/lint/formatter procedure is retained; the new branch is added to its push trigger. Source-specific native acceptance remains pending until the new run completes."
+    }
+  ],
+  "findings": [],
+  "scope_limits": [
+    "Fence orders accepted document exchanges within one attachment and its clones.",
+    "It does not guarantee monotone delivery of later asynchronous status reports.",
+    "It is reset by a new attachment or daemon restart; durable antirollback remains open.",
+    "The socketpair tests are controlled destination integration tests, not real App fault qualification.",
+    "No learned hierarchy, independent task benefit, production authority or complete ACT-2 promotion is established."
+  ]
+}

@@ -1,9 +1,19 @@
 load("//:defs.bzl", "codex_rust_crate")
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
 
 codex_rust_crate(
     name = "hepta-memory",
-    compile_data = glob(["migrations/**"]),
+    compile_data = glob(["migrations/**"]) + [
+        "tests/fixtures/android-bound-text-v1.json",
+        "tests/fixtures/notes-target-v1.json",
+        "tests/fixtures/notes-model-v1.json",
+        "tests/fixtures/notes-recovery-v1.json",
+        "tests/fixtures/notes-document-state-v1.json",
+        "tests/fixtures/notes-previous-receipt-v1.json",
+    ],
     crate_name = "codex_hepta_memory",
+    test_shard_counts = {"hepta-memory-unit-tests": 4},
+    unit_test_flaky = False,
 )
 
 # Caller evidence inspected by the Hepta contracts tests.
@@ -12,4 +22,18 @@ exports_files(
         "src/cognitive_federation_tests.rs",
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)
+
+qualification_lease_clock_library(
+    name = "hepta-memory",
+    compile_data = glob(["migrations/**"]) + [
+        "tests/fixtures/android-bound-text-v1.json",
+        "tests/fixtures/notes-target-v1.json",
+        "tests/fixtures/notes-model-v1.json",
+        "tests/fixtures/notes-recovery-v1.json",
+        "tests/fixtures/notes-document-state-v1.json",
+        "tests/fixtures/notes-previous-receipt-v1.json",
+    ],
+    crate_features = ["qualification-lease-clock"],
+    crate_name = "codex_hepta_memory",
 )

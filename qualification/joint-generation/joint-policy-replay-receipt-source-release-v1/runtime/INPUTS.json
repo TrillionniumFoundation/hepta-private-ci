@@ -1,0 +1,95 @@
+{
+  "inputs": {
+    "content": {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+      "bytes": 1560407,
+      "sha256": "64806d1b67b3b071e8b35246a77412e3da76ccf1cd283306f49290296a634150"
+    },
+    "actor": {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+      "bytes": 12303,
+      "sha256": "37a504cbd5da31fdc5476d3a30ee9314248554ce0d04797e823d273ebec53035"
+    },
+    "fixture": {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz",
+      "bytes": 76344,
+      "sha256": "970deb6a478d772738bda40f09776035aa28fa318b4b95d77521915bda5e52b5"
+    },
+    "state": {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+      "bytes": 6473,
+      "sha256": "e2c6ab063df6f5a8a9d013e62b2cbfe147010078690e1d1c8070944830219e9d"
+    },
+    "complete": {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+      "bytes": 320,
+      "sha256": "7927836d412b538db94f207461bd978a3f18fdeda1d757911160f64318c0bacb"
+    },
+    "source_freeze": {
+      "path": "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+      "bytes": 1272,
+      "sha256": "649479caf0e78092c7fe70fb42d9153a68b1f788a3482e1a3b3dc4b2f19b2505"
+    },
+    "source_saved_review": {
+      "path": "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "bytes": 9601,
+      "sha256": "2f515a81bc3e7a350421ceb91d163ff3973424f07850c01eef58eb29ad079a54"
+    },
+    "old_request": {
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+      "bytes": 48449,
+      "sha256": "f6516bd94d8a0819d3b008599a8606baae5e3eae3fc771937e4a61ddbe5c6c63"
+    },
+    "old_wire": {
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+      "bytes": 34884,
+      "sha256": "1fb4562c61b2745c7993c8831a079d500e6b48c4aeb50d1e44e59f08e56c1514"
+    },
+    "old_route": {
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+      "bytes": 1247,
+      "sha256": "dd88f6af048cf5a09abea85569b87a877a427529e025656097d6e20cb3f6c25e"
+    },
+    "old_artifact": {
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+      "bytes": 12818,
+      "sha256": "2acd070cdc031d37ff516ee8d9be2abdb69bce1cb192884983caae265c003224"
+    },
+    "prior_saved_review": {
+      "path": "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+      "bytes": 6119,
+      "sha256": "cc423a3350698cb2d514fd8107f09f71efc2700ee8fbce2fde4283615efcefff"
+    },
+    "prior_freeze": {
+      "path": "joint-policy-delivery-candidate-v2/FREEZE.json",
+      "bytes": 2427,
+      "sha256": "7389bbb0ac2188ef48a1ee17f9b1b9241c6a35e8fb1388711945080ac5a895ee"
+    },
+    "legacy_core": {
+      "path": "joint-policy-output-budget-outcome-candidate-v2/live_core.py",
+      "bytes": 14580,
+      "sha256": "e052e9373c129934c0deace91d1177b685687b4919184a7c5d8fd5f76b6c7475"
+    },
+    "legacy_freeze": {
+      "path": "joint-policy-output-budget-outcome-candidate-v2/FREEZE.json",
+      "bytes": 2803,
+      "sha256": "399073abcb2aabe008eaedf69dc09d183f1364cf33b17f82f583994795ed5791"
+    },
+    "legacy_saved_review": {
+      "path": "joint-policy-output-budget-outcome-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+      "bytes": 7530,
+      "sha256": "3ed14eee219a68e6e749d6b0337d72e9e17f6c8167e4e58668d8535bb1534bf9"
+    },
+    "eof_freeze": {
+      "path": "joint-policy-active-channel-fault-candidate-v1/FREEZE.json",
+      "bytes": 2604,
+      "sha256": "82abe08b0447b3ba45afff37857c18f793eebf02158b6ff2ccb46097d5ec8ec2"
+    },
+    "eof_saved_review": {
+      "path": "joint-policy-active-channel-fault-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "bytes": 7258,
+      "sha256": "f34e327df18484df9762de7d32e574cf16920a74a1b01407b72c7a4413c09cf4"
+    }
+  },
+  "new_run_id": "policy-replay-receipt-eof-row0"
+}

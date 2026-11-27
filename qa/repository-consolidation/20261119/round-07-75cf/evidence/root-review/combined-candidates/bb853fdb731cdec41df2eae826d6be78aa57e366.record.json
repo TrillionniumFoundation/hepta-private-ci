@@ -1,0 +1,25 @@
+{
+  "tip": "bb853fdb731cdec41df2eae826d6be78aa57e366",
+  "prior": "08fd92aaaea5313d05ed7a0a17db2be5f6e31940",
+  "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "approved_tree": "dd414ff4f558eac8c233f5f28e4159e64d5b6eea",
+  "fixed_automatic_tree": "0a857c6cda10ec42f5dbafcfb8cfde16f709c22b",
+  "actual_automatic_tree": "c06876a23412bd8a7ad6656f1cce44b131d44e56",
+  "fixed_exit": 1,
+  "actual_exit": 1,
+  "actual_conflicts": [
+    "codex-rs/v8-poc/BUILD.bazel"
+  ],
+  "resolution_paths": [
+    ".github/workflows/hepta-v8-windows-sandbox.yml",
+    "codex-rs/v8-poc/BUILD.bazel",
+    "codex-rs/v8-poc/src/lib.rs"
+  ],
+  "changes_from_review_base": [
+    ".github/workflows/hepta-v8-windows-sandbox.yml"
+  ],
+  "resolved_tree": "a71b857a6e91c57fe206e214cd240c9af454d108",
+  "expected_composed_tree": "a71b857a6e91c57fe206e214cd240c9af454d108",
+  "commit": "1bcbe6350191c2bc748fc4b4b532c7dede15cd6f",
+  "reason": "Retain the existing Once allocator initialization and concurrency regression instead of restoring the historical test mutex. Add the original sandbox Windows workflow with COMMIT_SHA bound to the actual checkout. Static checks pass; Windows execution remains a CI gate."
+}

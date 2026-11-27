@@ -1,0 +1,103 @@
+{
+  "schema": "rrsnn-v4-isolated-precision-repair-design-1",
+  "created_at_utc": "2026-10-29T15:44:09.666852+00:00",
+  "candidate": "rr_full_scalar_fp64_post_result",
+  "source_sha256": "4347e6c9798502d430a5af2ac2fbf6ace8b5712f000255b9f9c217af44c63e65",
+  "original_matrix_status_sha256": "7299d8b6c851aec33b0a9ef59a390e0eaa10a5375f992a0d14119fb07c08699c",
+  "original_matrix_report_sha256": "7aa487e5eb27858ffb5c995c9e87fd5475fd1c7144a781888b6fa687e6648a76",
+  "operator_diagnostic_sha256": "ba797fcb1e1fc928bdf4d683cc6c7f432e61bebc5da5d8fa09a1fe7ff745b6ad",
+  "original_numerical_controller_sha256": "8a686fc74d441c0ea8dc03651f9ee8adb77ae73fdc083021b7ccace50f2bfeee",
+  "original_selection_sha256": "dbad2690403992f75c46105722670026e7e13acb523f4973f4726a91d6e5d6bd",
+  "pre_data_protocol_sha256": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+  "candidate_change": "Only promote floating Tensor drift and cost to float64 for the entire existing frozen_control_boundary expression, including gamma/z/W/final h, then cast the output to torch.result_type(drift,cost).",
+  "controls_binding": "PrecisionRRPolicy reuses the exact RRPolicy.controls code object with an isolated globals dictionary differing only at frozen_control_boundary. No shared global monkeypatch and no original source edit.",
+  "preserved": [
+    "Lambert W0 branch and 16 iterations",
+    "all scalar constants",
+    "autograd through casts",
+    "output broadcasting and original floating Tensor result dtype",
+    "external threshold clamp",
+    "all selected weights and buffers",
+    "initialization and actor/query seed rules",
+    "task observations and resource/output queues",
+    "original fixed Brent references",
+    "original event-time tolerance 1e-7",
+    "all original failure flags and primary utility conclusions"
+  ],
+  "qualified_contract": "CPU floating Tensor float32 and float64, mixed dtype, scalar and broadcast fixtures. Non-floating/non-Tensor inputs are rejected. No CUDA, integer input, dynamic-QVI, production Cell or full-state equivalence qualification.",
+  "reference_plan": "Execute actual repaired paths for all 5 seeds x 3 datasets x 4 latent replays. Reuse exact SHA-bound original Brent spike/type/time/count/task/delivery/budget/utility records. Verify complete source/checkpoint/scenario/initial-state/actor-seed/query identity before comparison.",
+  "reference_limit": "Original Brent records do not contain raw per-step full state or RNG digests. Repair does not claim these are equal across the 60 production replays. Separate fresh two-path development fixtures compare full recorded step fields/RNG.",
+  "development_plan": {
+    "model_seed": 901990,
+    "normal_actor_seed": 901991,
+    "paired_scenario_seed": 901992,
+    "paired_actor_seed": 901993,
+    "normal_query_base": 901100,
+    "paired_query_base": 901300,
+    "normal_scenarios": 2,
+    "strict_paired_groups": 1,
+    "floating_dtype_broadcast_fixtures": 6,
+    "negative_input_fixtures": 2,
+    "value_limits": {
+      "float32": 2e-06,
+      "float64": 2e-11
+    },
+    "gradient_limits": {
+      "float32": 2e-06,
+      "float64": 2e-10
+    },
+    "closed_loop_event_time_tolerance": 1e-07,
+    "requires_no_discrete_action_count_delivery_or_query_utility_difference": true,
+    "requires_no_step_indices_counts_or_RNG_difference": true
+  },
+  "required_publication_files": [
+    "precision_repair.py",
+    "precision_repair_design.json",
+    "precision_repair_development.json",
+    "precision_audit/independent_repair_review.json"
+  ],
+  "publication_rule": "No production repair replay before root verifies immutable committed bytes for source/design/development/review and supplies the matching publication receipt.",
+  "publication_receipt_schema": {
+    "repository": "owner/repository",
+    "commit_sha": "40hex",
+    "recorded_at_utc": "ISO8601 with zone",
+    "remote_bytes_verified": true,
+    "files": {
+      "v4-relative-name": {
+        "repository_path": "committed path",
+        "sha256": "64hex",
+        "git_blob_sha": "40hex"
+      }
+    }
+  },
+  "datasets": [
+    "test",
+    "shift",
+    "paired"
+  ],
+  "training_seeds": [
+    101,
+    211,
+    307,
+    401,
+    503
+  ],
+  "latent_replays": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "event_time_tolerance": 1e-07,
+  "production_cpu_affinity": [
+    2
+  ],
+  "expected_comparison_files": 60,
+  "expected_scenario_path_comparisons": 15360,
+  "original_results_replaced": false,
+  "new_training_performed": false,
+  "primary_acceptance_changed": false,
+  "output_directory_pattern": "results/rr_full/seed_<seed>/precision_repair/evaluation_<dataset>_rep<replay>.json.gz",
+  "interpretation": "Post-result engineering verification. A successful precision repair does not retroactively make the original numerical gate pass, change the original utility evidence, select new checkpoints, or establish model superiority. Nested paths/query draws are not independent new scenarios.",
+  "resource_guards": "Original 200MiB minimum disk guard before and after each output; only CPU2; exact-identity resume; preserve failed attempts; no automatic cleanup."
+}

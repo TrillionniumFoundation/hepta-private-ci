@@ -1,0 +1,95 @@
+{
+  "schema": "ctrl.fit40.frozen-gap-attempt.v1",
+  "recorded_at_utc": "2026-11-11 00:08:26 UTC",
+  "decision": "HOLD_NO_GO",
+  "state": "UNKNOWN",
+  "operation_key": "ctrl-fit40-gap-20261111-f7c0ded86bcc-v1",
+  "native_dispatch_submission_count": 1,
+  "native_dispatch_replay_count": 0,
+  "new_key_after_unknown": false,
+  "business_job_id": null,
+  "original_v4_business_replayed": false,
+  "original_v4_operation_key": "ctrl-native-macro-collect-e802-20261110-v4",
+  "diagnostic_implementation_commit": "13de10b55b0f16cf1548dab193fbb8ac11d3b4cd",
+  "evidence_parent_commit": "602cd5695092a82f876fd122243b971b5b88eee8",
+  "source_pins": {
+    "candidate_coverage.py": {
+      "bytes": 14398,
+      "sha256": "3d44b74354a3a56b69467e1c019606de7f360666d7fa09a8cee4fe2f71c5872b"
+    },
+    "candidate_coverage_legacy.py": {
+      "bytes": 16027,
+      "sha256": "daba119e74d2f306731c063c30da9a6fb1a8717636ab4061d20e71e138632799"
+    },
+    "candidate_gap_diagnostic.py": {
+      "bytes": 16971,
+      "sha256": "1da02aea4aabb7e21486110fc0ec545fe9d683e5e0383311df568e33f649753e"
+    }
+  },
+  "runner_sha256": "9ae984d4a1764c1e211391cd67c03db779a72adcd35238f7f7cf3950047f20c9",
+  "dispatch_stdin_bytes": 49901,
+  "input_preflight": {
+    "request": {
+      "bytes": 7550,
+      "sha256": "3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e",
+      "version": "66306:95452169:7550:1794296380225821793:1794296380225821793",
+      "file_info_succeeded": true
+    },
+    "collection": {
+      "bytes": 39942,
+      "sha256": "7be396821d6a16352b5e71b66f0a374962153c269063134ced06b4ce924d9ee6",
+      "version": "66306:46048195:39942:1794211128026025745:1794211128026025745",
+      "file_info_succeeded": true
+    },
+    "records": {
+      "bytes": 9496351,
+      "sha256": "43f1c63fe378a783cc57d475ad1841c4235b7d1eaa335c2e0fdd2126f73d1a85",
+      "version": "66306:49321864:9496351:1794058028070480694:1794058028070480694",
+      "file_info_succeeded": true
+    }
+  },
+  "dispatch_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "output_probes": [
+    {
+      "name": "RECEIPT.json",
+      "result": "NOT_FOUND_AT_OBSERVATION",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    {
+      "name": "result/RESULT.json",
+      "result": "NOT_FOUND_AT_OBSERVATION",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    {
+      "name": "isolated_stage_directory",
+      "result": "NOT_FOUND_AT_OBSERVATION",
+      "error_code": "INVALID_ARGUMENT"
+    }
+  ],
+  "absence_interpretation": "No retained output existed at the observed path when probed. This does not prove nonexecution, nonadmission, or terminal failure. No replay was submitted.",
+  "actual_gap_categories": null,
+  "verified_final_source_and_input_state": null,
+  "observed_native_terminal": null,
+  "scope": {
+    "historical_train_sources": 40,
+    "historical_rows": 200,
+    "historical_states": 160,
+    "planned_model_inference_calls": 0,
+    "planned_ocr_calls": 0,
+    "planned_training_steps": 0,
+    "future_label_reads_allowed": false,
+    "new_independent_tasks_observed": 0,
+    "production_admission": false,
+    "adoption_action": "NoUpdate"
+  },
+  "full_physical_cost_observed": false,
+  "next_step": "Reconcile the original operation with the runtime's durable job registry or recover this operation's output; do not resubmit with a new key."
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="6" skipped="0" failures="0" errors="0" uuid="093ada39-4395-41a4-a430-3e12790c083f" timestamp="2026-11-12T14:14:50.559+08:00" time="0.074">
+    <testsuite name="codex-hepta-agentd" tests="6" skipped="0" errors="0" failures="0">
+        <testcase name="authority_host_service::generation_initial::transport::source_capture::tests::original_source_capture_commands_reject_peer_chosen_material" classname="codex-hepta-agentd" timestamp="2026-11-12T14:14:50.563+08:00" time="0.007"/>
+        <testcase name="runtime::tests::source_capture_tests::source_capture_runtime_cancellation_without_actual_drain_is_refused" classname="codex-hepta-agentd" timestamp="2026-11-12T14:14:50.563+08:00" time="0.008"/>
+        <testcase name="runtime::tests::source_capture_tests::source_capture_control_retains_connection_error_without_stopping_other_requests" classname="codex-hepta-agentd" timestamp="2026-11-12T14:14:50.563+08:00" time="0.009"/>
+        <testcase name="runtime::tests::source_capture_tests::source_capture_control_supervisor_abort_cannot_acknowledge_join" classname="codex-hepta-agentd" timestamp="2026-11-12T14:14:50.563+08:00" time="0.029"/>
+        <testcase name="runtime::tests::source_capture_tests::source_capture_control_waits_for_accepted_connection_before_join_receipt" classname="codex-hepta-agentd" timestamp="2026-11-12T14:14:50.563+08:00" time="0.030"/>
+        <testcase name="runtime::tests::source_capture_tests::source_capture_runtime_requires_actual_drain_join_and_state_release" classname="codex-hepta-agentd" timestamp="2026-11-12T14:14:50.563+08:00" time="0.069"/>
+    </testsuite>
+</testsuites>

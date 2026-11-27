@@ -42,7 +42,11 @@
         "issuer_key_ids",
         "frontier",
         "capacity",
-        "revocation_head"
+        "revocation_head",
+        "revocation_head_sha256",
+        "authentication_profile",
+        "shares_owner",
+        "check_unclaimed_grant"
       ]
     },
     {
@@ -160,6 +164,9 @@
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs",
+        "codex-rs/hepta-agentd/src/production_authority.rs",
+        "codex-rs/hepta-agentd/src/root_production_inputs.rs",
         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
       ]
     },
@@ -172,7 +179,9 @@
       ],
       "allowedCallers": [
         "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-        "codex-rs/hepta-agentd/src/browser_servo.rs"
+        "codex-rs/hepta-agentd/src/browser_servo.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs"
       ]
     },
     {
@@ -224,8 +233,6 @@
       ],
       "allowedCallers": [
         "codex-rs/hepta-memory/src/production_writer.rs",
-        "codex-rs/hepta-ndu/src/owner.rs",
-        "codex-rs/hepta-operations/src/durable_store.rs",
         "codex-rs/hepta-prompt-registry/src/admission.rs",
         "codex-rs/hepta-prompt-registry/src/durable.rs",
         "codex-rs/hepta-runtime/src/organs.rs"
@@ -249,7 +256,10 @@
       "callPatterns": [
         "\\bdispatch_final_use_with_witness\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs"
+      ]
     },
     {
       "id": "final_use_dispatch_raw",
@@ -259,7 +269,9 @@
         "\\.\\s*with_dispatch_boundary\\s*\\(",
         "FinalUseAuthority\\s*::\\s*with_dispatch_boundary\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-operations/src/durable_dispatch.rs"
+      ]
     },
     {
       "id": "final_use_revocation_update",
@@ -271,7 +283,9 @@
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-agentd/src/root_authority_session.rs",
         "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
       ]
     },
@@ -307,7 +321,9 @@
         "FinalUseRevocationFeedVerifier\\s*::\\s*new\\s*\\(",
         "FinalUseRevocationFeedVerifier\\s*::\\s*new_with_keys\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs"
+      ]
     },
     {
       "id": "final_use_revocation_feed_apply",
@@ -318,7 +334,8 @@
         "FinalUseRevocationFeedVerifier\\s*::\\s*apply\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+        "codex-rs/hepta-ndu/src/owner_current.rs"
       ]
     },
     {
@@ -400,7 +417,9 @@
         "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_clock\\s*\\(",
         "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_trust\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+      ]
     },
     {
       "id": "authority_lease_put",
@@ -410,7 +429,12 @@
         "\\.\\s*put_lease\\s*\\(",
         "AuthorityLeaseRegistry\\s*::\\s*put_lease\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+        "codex-rs/hepta-agentd/src/deployment_notes.rs",
+        "codex-rs/hepta-agentd/src/deployment_calculator.rs",
+        "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs"
+      ]
     },
     {
       "id": "authority_lease_revoke",
@@ -451,7 +475,12 @@
         "AuthorityLeaseVerifier\\s*::\\s*verify_use\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-fleet/src/authority_port.rs"
+        "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+        "codex-rs/hepta-agentd/src/deployment_writer.rs",
+        "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+        "codex-rs/hepta-fleet/src/authority_port.rs",
+        "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
       ]
     },
     {
@@ -481,7 +510,11 @@
         "\\.\\s*with_dispatch_boundary\\s*\\(",
         "AuthorityLeaseVerifier\\s*::\\s*with_dispatch_boundary\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+        "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
+      ]
     },
     {
       "id": "authority_lease_dispatch_witness",
@@ -491,6 +524,7 @@
         "\\bdispatch_authority_lease_with_witness\\s*\\("
       ],
       "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_writer.rs",
         "codex-rs/hepta-fleet/src/authority_port.rs"
       ]
     },
@@ -503,7 +537,8 @@
         "FinalUseAuthority\\s*::\\s*with_verified_effect\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-automation/src/authorized_effect.rs"
+        "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "codex-rs/hepta-ndu/src/owner.rs"
       ]
     },
     {

@@ -1,0 +1,79 @@
+{
+  "energy_joules": null,
+  "fits": 6,
+  "hcsn_formal_study_started": false,
+  "llm_vlm_serving_measured": false,
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "process_cpu_seconds": 1.2210558610000002,
+  "production_qualified": false,
+  "protocol_digest": "c9789027c6d8fe6781e144f2a9baa5c1b00c6f024852acd4f14776834fb4554b",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "scientific_winner_selected": false,
+  "source_manifest_digest": "75ca760f624326039a164488cf7e5113e1ecd2576c18596cb5616d8f3138d7b2",
+  "source_snapshot_sha256": "099aa3fb835612680ea545f183241b3dd394cf3568e44fa30ae3610f08df5af9",
+  "status": "engineering_probe_completed",
+  "summary": [
+    {
+      "accuracy_after": 1.0,
+      "kind": "gru",
+      "nll_after": 7.266163557408806e-05,
+      "nll_before": 0.944891495787404,
+      "parameters": 770,
+      "rule_accuracy": 1.0,
+      "seed": 41,
+      "train_cpu_seconds": 0.070396867
+    },
+    {
+      "accuracy_after": 1.0,
+      "kind": "diag_ssm",
+      "nll_after": 0.08840549561452413,
+      "nll_before": 0.6705445666522448,
+      "parameters": 794,
+      "rule_accuracy": 1.0,
+      "seed": 41,
+      "train_cpu_seconds": 0.03819483100000004
+    },
+    {
+      "accuracy_after": 1.0,
+      "kind": "gru",
+      "nll_after": 1.2480413780463495e-05,
+      "nll_before": 0.698781070905434,
+      "parameters": 770,
+      "rule_accuracy": 1.0,
+      "seed": 67,
+      "train_cpu_seconds": 0.08170349600000004
+    },
+    {
+      "accuracy_after": 1.0,
+      "kind": "diag_ssm",
+      "nll_after": 0.0984990809394659,
+      "nll_before": 0.7153226985691843,
+      "parameters": 794,
+      "rule_accuracy": 1.0,
+      "seed": 67,
+      "train_cpu_seconds": 0.03148976000000003
+    },
+    {
+      "accuracy_after": 1.0,
+      "kind": "gru",
+      "nll_after": 2.3680210805621105e-05,
+      "nll_before": 0.7130445522000779,
+      "parameters": 770,
+      "rule_accuracy": 1.0,
+      "seed": 89,
+      "train_cpu_seconds": 0.084165406
+    },
+    {
+      "accuracy_after": 1.0,
+      "kind": "diag_ssm",
+      "nll_after": 0.17731840031775123,
+      "nll_before": 0.698155560000828,
+      "parameters": 794,
+      "rule_accuracy": 1.0,
+      "seed": 89,
+      "train_cpu_seconds": 0.040910557999999986
+    }
+  ],
+  "wall_seconds": 1.351571582010365
+}

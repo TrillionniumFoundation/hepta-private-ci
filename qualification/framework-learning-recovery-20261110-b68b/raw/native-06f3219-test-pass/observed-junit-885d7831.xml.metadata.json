@@ -1,0 +1,74 @@
+{
+  "bytes": 20505,
+  "case_set_qualified": true,
+  "counts": {
+    "executed": 75,
+    "failed": 0,
+    "passed": 75,
+    "skipped": 0
+  },
+  "freshness_qualified": true,
+  "mtime_ns": 1794319588513173943,
+  "original_path": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b/codex-rs/target/nextest/local/junit.xml",
+  "required_cases": {
+    "completed_and_intermediate_histories_read_original_evaluation_after_work_expiry": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "learning_iteration_evidence_client::tests::evaluation::recovery::completed_and_intermediate_histories_read_original_evaluation_after_work_expiry",
+        "outcome": "passed",
+        "seconds": "6.429"
+      }
+    ],
+    "corrupted_or_replaced_evaluation_history_is_refused_before_owner_io": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "learning_iteration_evidence_client::tests::evaluation::recovery::corrupted_or_replaced_evaluation_history_is_refused_before_owner_io",
+        "outcome": "passed",
+        "seconds": "3.124"
+      }
+    ],
+    "expired_learning_readback_allows_multiple_bounded_original_owner_reads": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::expired_learning_readback_allows_multiple_bounded_original_owner_reads",
+        "outcome": "passed",
+        "seconds": "0.268"
+      }
+    ],
+    "full_learning_actor_leaves_completion_unclaimed_then_delivers_once": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::full_learning_actor_leaves_completion_unclaimed_then_delivers_once",
+        "outcome": "passed",
+        "seconds": "2.273"
+      }
+    ],
+    "learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint",
+        "outcome": "passed",
+        "seconds": "0.101"
+      }
+    ],
+    "lost_learning_delivery_response_reconciles_without_repeating_stages": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::lost_learning_delivery_response_reconciles_without_repeating_stages",
+        "outcome": "passed",
+        "seconds": "2.107"
+      }
+    ],
+    "stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing",
+        "outcome": "passed",
+        "seconds": "0.126"
+      }
+    ]
+  },
+  "retained_path": "observed-junit-885d7831.xml",
+  "sha256": "e390fe7db52460fca225482d2ca3ad97d46ff1b0ce2ebc8631132317e182df76",
+  "stable_during_read": true
+}

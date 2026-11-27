@@ -1,0 +1,64 @@
+{
+  "schema": "hcsn-authentic-n256-roster-v1",
+  "status": "PASS",
+  "admission": "HOLD_NO_NUMERICAL_EXECUTION",
+  "all_closed": false,
+  "historical_N256_export_present": false,
+  "new_export_only": true,
+  "input_sha256": {
+    "metadata": "88e84dd3aea396d34c7e2dd08d31f2e30bf694c20516dccde57e6dd1b0c2a3c6",
+    "state": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c",
+    "phase": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+    "npz_b64": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb",
+    "npz": "c98a3339504c908081dbf77d2235a18de96da06b1ebda7b1c0f9192af1570eb8"
+  },
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "arrays": {
+    "active.npy": {
+      "shape": [
+        257
+      ],
+      "npy_sha256": "8a0ad1b68c542d567376a0c4f5d2c67d063d3e3bda7a5fc0c83e60104d9a0e67",
+      "payload_sha256": "879b51dfd8e7a0e29ca2e08d7471a12e7e7b451427c0b8fdef51c2c48b4d48b7",
+      "first_fp64_le": "0000000000000000",
+      "last_fp64_le": "b3050bac8ce98028"
+    },
+    "content.npy": {
+      "shape": [
+        257,
+        4
+      ],
+      "npy_sha256": "565b0e15371f4fff7158f9a7ab2ca51296ac16a813372f46a3db66497e9ec791",
+      "payload_sha256": "ef2f22de83c131edec3b9ce545f2037e460461ec6fc362c36e7c7e488f997d3e",
+      "first_fp64_le": "0000000000000000",
+      "last_fp64_le": "0eba9b3f309e4ba8"
+    },
+    "nodes.npy": {
+      "shape": [
+        257
+      ],
+      "npy_sha256": "60cad3e1108f5f6faeb81741e65b9e5c03b5691df8457c03970df037dff701fe",
+      "payload_sha256": "5d56d3de1238999a644d8cff3c7b2e3ba60ec3d66038e9dc81d9980de371a400",
+      "first_fp64_le": "0000000000000000",
+      "last_fp64_le": "0000000000002040"
+    }
+  },
+  "interior_nodes": 255,
+  "channels": 5,
+  "capsules": 14,
+  "packet_tuples": 185,
+  "coordinate_spans": 625,
+  "fp64_coordinate_denominator": 18225028,
+  "coordinate_identity_sha256": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "events_including_cold_restore": 46,
+  "transition_segments": 45,
+  "largest_capsule_coordinates": 3444164,
+  "largest_pending_packets": 22,
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "oracle_calls": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "execution_key": null,
+  "largegrid_qualification": false
+}

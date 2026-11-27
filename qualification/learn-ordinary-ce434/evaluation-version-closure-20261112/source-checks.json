@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+  "performed": "Pure JavaScript source projection and exact API byte preservation only",
+  "raw_manifest": {
+    "base": "48844493c046fdd79734ddd2c1866314023a15cb",
+    "changed": 9,
+    "unchanged": 1140,
+    "unowned_raw_equal": true,
+    "counts": {
+      "boundary": 686,
+      "protected_file": 463
+    }
+  },
+  "source_edit_reversal": [
+    {
+      "path": "cell_q24_model_read_host_operation.rs",
+      "edits": 9,
+      "base_blob": "15f975727af65c9076a9c48c981ca5ed1bda1980"
+    },
+    {
+      "path": "circuit_model_selection_receipt_remote.rs",
+      "edits": 10,
+      "base_blob": "99f3f3e35669317d82d738c7c9308044cd6f692d"
+    },
+    {
+      "path": "circuit_model_version_host.rs",
+      "edits": 3,
+      "base_blob": "7f3c72f17c6f50914881e14776e5018f47af1ff9"
+    },
+    {
+      "path": "circuit_model_version_client.rs",
+      "edits": 6,
+      "base_blob": "394532edc720e8bf9c405285a002eaf79634e194"
+    },
+    {
+      "path": "circuit_model_version_state.rs",
+      "edits": 8,
+      "base_blob": "7f9da85c007eb995e98867be03b942a65ebfc858"
+    },
+    {
+      "path": "circuit_model_version_task.rs",
+      "edits": 4,
+      "base_blob": "5570a22b6b55b1b3c99bbc49102797460ed6ee12"
+    },
+    {
+      "path": "circuit_model_version_service.rs",
+      "edits": 7,
+      "base_blob": "03106c90bc652bbbbce658bb21adc5003f02c5f9"
+    },
+    {
+      "path": "circuit_model_version_effect.rs",
+      "edits": 15,
+      "base_blob": "6fdff45b375c19cb4c6c5e0d85270af18192d20d"
+    }
+  ],
+  "method_inventory": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "method_count": 6,
+      "preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_continuation_source_closure.py",
+      "method_count": 8,
+      "preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "method_count": 6,
+      "preserved": true
+    }
+  ],
+  "selector_ordered_marker_projection": {
+    "selected": 193,
+    "rejected": 193,
+    "errors": [],
+    "positive": [
+      "circuit_model_selection_receipt_owner.rs",
+      "circuit_model_selection_receipt_sources.rs",
+      "circuit_model_selection_receipt_binding.rs"
+    ]
+  },
+  "changed_function_guard_projection": {
+    "positive": 9,
+    "count": 47,
+    "rejected": 47,
+    "errors": []
+  },
+  "evaluator_host_projection": {
+    "cases": 118,
+    "rejected": 118,
+    "errors": [],
+    "positiveErrors": []
+  },
+  "not_run": [
+    "Python QA",
+    "original typed whole-repository caller scanner",
+    "rustfmt",
+    "Rust compilation",
+    "native mechanisms",
+    "ordinary A/B/C/cold-restart acceptance"
+  ],
+  "ordinary_accepted": 0,
+  "pending": [
+    "Parent must run the actual fixed-source Python scanner and native mechanisms after all independently owned repairs merge.",
+    "Full real qualified primary/retention E to Model/Version effect coverage is not established.",
+    "Production evaluator-only candidate-inference custody remains unestablished."
+  ]
+}

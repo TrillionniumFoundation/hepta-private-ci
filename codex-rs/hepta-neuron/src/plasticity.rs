@@ -15,6 +15,22 @@ use codex_hepta_types::StableId;
 
 use crate::SparseCheckpoint;
 
+pub mod real_time_credit;
+mod temporal_credit;
+
+pub use temporal_credit::FrozenTemporalCreditProposalV1;
+pub use temporal_credit::TemporalCreditArmV1;
+pub use temporal_credit::TemporalCreditContractV1;
+pub use temporal_credit::TemporalCreditError;
+pub use temporal_credit::TemporalCreditReceiptV1;
+pub use temporal_credit::TemporalEligibilityActionV1;
+pub use temporal_credit::TemporalFeedbackV1;
+pub use temporal_credit::TemporalGroupDeltaV1;
+pub use temporal_credit::TemporalSplitV1;
+pub use temporal_credit::accumulate_frozen_temporal_credit_q24;
+pub use temporal_credit::accumulate_temporal_credit_q24;
+pub use temporal_credit::accumulate_temporal_credit_q24_online_prefix;
+
 const Q: i64 = 1 << 24;
 const ELIGIBILITY_L1: i64 = 4 * Q;
 const MAX_HISTORY: usize = 1024;
@@ -147,10 +163,11 @@ pub fn accumulate_plasticity(
     let eligibility = aggregate_eligibility(signal_history)?;
     validate_modulator(independent_modulator)?;
     validate_trust_region(trust_region)?;
-    let mut groups = parameter_groups.to_vec();
-    if !(1..=MAX_GROUPS).contains(&groups.len()) {
+    if !(1..=MAX_GROUPS).contains(&parameter_groups.len()) {
         return Err(PlasticityError::GroupCountOutOfRange);
     }
+    // Sort bounded references; caller-owned projection payloads are not cloned.
+    let mut groups = parameter_groups.iter().collect::<Vec<_>>();
     groups.sort_by(|left, right| left.group_id.cmp(&right.group_id));
     let mut seen = BTreeSet::new();
     for group in &groups {
@@ -213,7 +230,7 @@ pub fn accumulate_plasticity(
 
     let eligibility_digest = eligibility_history_digest(signal_history);
     let modulator_digest = modulator_digest(independent_modulator);
-    let modulator_broadcast_digest = group_map_digest(&groups);
+    let modulator_broadcast_digest = group_map_digest(groups.iter().copied());
     let trust_region_digest = trust_region_digest(trust_region);
     let statistics_digest = statistics_digest(
         eligibility_digest,
@@ -379,7 +396,9 @@ fn modulator_digest(modulator: &IndependentModulatorV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn group_map_digest(groups: &[ParameterGroupMapV1]) -> Digest32 {
+fn group_map_digest<'a>(
+    groups: impl ExactSizeIterator<Item = &'a ParameterGroupMapV1>,
+) -> Digest32 {
     let mut bytes = b"hepta.neuron.parameter-group-map.v1".to_vec();
     for group in groups {
         push_id(&mut bytes, &group.group_id);

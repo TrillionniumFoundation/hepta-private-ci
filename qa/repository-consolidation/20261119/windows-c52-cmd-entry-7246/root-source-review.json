@@ -1,0 +1,63 @@
+{
+  "status": "PASS_ROOT_SOURCE_REVIEW_ONLY",
+  "base": "d7ca10d1390f1b372145e573a95c23e714bf26b3",
+  "candidate_source_manifest_sha256": "a57eae1edd124888d0d91f70dbd0c1bcfbf7682b33bdb37844ac369f031e1aa0",
+  "paths": [
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/cmd_entry_probe.py",
+      "before": null,
+      "after": {
+        "bytes": 12772,
+        "sha256": "bd5f2d801259f9ceda55954c3fa12ddbe8436567fe65fb28ace8a669aedbe6df",
+        "git_blob": "9574a8a5781dad9e6777ea8e5ba9f620ada864e4"
+      }
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/win32_api.py",
+      "before": {
+        "bytes": 26813,
+        "sha256": "9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10",
+        "git_blob": "a0778bba1382d70922cc0bd10f6429ef89eb3557"
+      },
+      "after": {
+        "bytes": 27193,
+        "sha256": "8ab21a803609960daf9e2769179b1250d3cec78b7b8337f6f3ce5fe51e7fce45",
+        "git_blob": "5ad0173094ae74bc4433f99b6547d074a6f27c24"
+      }
+    },
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "before": {
+        "bytes": 54143,
+        "sha256": "5b0b0b99851bd3a4799838e531dd30a5782370c8a269bd418f2259bacd0e32c6",
+        "git_blob": "fde62cb0cfbeb80ddc4472c876766f7d56e2ff44"
+      },
+      "after": {
+        "bytes": 58833,
+        "sha256": "1208ea5ab9f68c50e595d34aab26bc9faabefaaef9336b3f13fc3e861381d957",
+        "git_blob": "e9f8ac0216a7df06e12f467faae59c749d575bbe"
+      }
+    }
+  ],
+  "original_probe_sha256": "d73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192",
+  "review": {
+    "all_three_source_paths_read_in_full_diff": true,
+    "all_original_preimages_match_root": true,
+    "entire_win32_api_ast_equal_after_removing_only_fixed_selector": true,
+    "default_command_text_exact": true,
+    "original_workflow_semantics_preserved_except_new_path_filter_two_api_pins_and_two_steps": true,
+    "unchanged_original_batch_invoked_directly": true,
+    "original_batch_failure_still_makes_diagnostic_fail": true,
+    "no_privilege_acl_token_environment_handle_or_original_batch_predicate_change": true,
+    "only_fixed_commands_and_owned_fixtures": true,
+    "python_compile_without_import_or_execution": true
+  },
+  "qualification_limits": [
+    "No Windows process or PowerShell parser/runtime was executed in this local review.",
+    "The earlier LPAC cmd failure remains unresolved; inline comparison cannot replace the original batch gate.",
+    "An actual new PR head is necessary because the unchanged workflow supports pull_request only.",
+    "Explicit whole-workflow Codespell retains the original MSVC /Fo finding; neither the dictionary nor ignore rules were changed."
+  ],
+  "public_ref_writes": [],
+  "main_updated": false
+}

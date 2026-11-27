@@ -1,0 +1,44 @@
+{
+  "source_commit": "100e0b1a603bd7047ca77179d662dc3e9f763804",
+  "production_source_changes": 0,
+  "modified_tests": 3,
+  "existing_test_names_preserved": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_physical_tests.rs",
+      "test_names_preserved_exactly": [
+        "original_holdout_load_refuses_same_length_corruption_and_restored_bytes",
+        "original_holdout_cas_refuses_corruption_before_idempotent_return",
+        "original_holdout_consumption_refuses_corruption_then_restoration",
+        "original_holdout_physical_length_changes_never_repair_or_clear_refusal"
+      ],
+      "assertion_macro_count_before": 20,
+      "assertion_macro_count_after": 24,
+      "any_error_assertions_added": false,
+      "ignore_or_skip_added": false
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_release_tests.rs",
+      "test_names_preserved_exactly": [
+        "original_holdout_release_requires_actual_borrow_and_refuses_receipt_replay",
+        "original_holdout_release_corruption_then_restore_never_reaches_fit",
+        "original_holdout_release_postcheck_survives_provider_ignoring_borrow",
+        "original_holdout_release_indeterminate_response_cannot_release_again"
+      ],
+      "assertion_macro_count_before": 26,
+      "assertion_macro_count_after": 30,
+      "any_error_assertions_added": false,
+      "ignore_or_skip_added": false
+    }
+  ],
+  "negative_controls": [
+    "Physical bit corruption still yields exact Store(Indeterminate).",
+    "Restoring exact original bytes does not clear the latched raw-read error.",
+    "First execution after uncertainty yields owner Indeterminate; later execution and reads yield Poisoned.",
+    "Failed physical consume attempts leave restored bytes unchanged.",
+    "Both provider callback paths preserve initial counts after every refused restored attempt.",
+    "Original release success, receipt replay refusal, and provider Indeterminate controls remain byte-identical."
+  ],
+  "unchanged_reference_test": "fenced_holdout::tests::indeterminate_original_read_remains_fenced_after_store_recovers",
+  "reference_test_controls": "Preserves load count, CAS count, and record after a one-shot store fault; a newly recovered owner can read original history."
+}

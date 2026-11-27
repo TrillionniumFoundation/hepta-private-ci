@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.learn.maintenance-inert-draft-peer-review.v1",
+  "status": "NARROW STATIC REVIEW ONLY; normal-path findings corrected; not a frozen runnable maintenance request",
+  "source": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+  },
+  "inputs": {
+    "inert_script": {
+      "git_blob": "c5a8a9f0a21aa660bad1e1cc0b34c01919849117",
+      "bytes": 37500,
+      "sha256": "b24bc557e36392ac9f447868f5bb31320b09540fcf152e0910545164266c3a78"
+    },
+    "prior_draft": "cb8af14eb5427bf52f0196df48ec1414258b408d",
+    "normal_path_revision": "fffce0b6295d1b6239a0bc654491c04fd3a4eabe",
+    "null_binding_template": "fa0e410ef34d1c0b72fc5cd3c8f78d3178a75a99",
+    "prior_revision_status_only": "fc8b068ba8b13b137ce42677053fafd40c1dad55",
+    "original_contract": "c8de8bd8a54552972d73d96be087d9e909c322dc",
+    "original_checklist": "a1c46fa5c0280fecae492b44f7d60803d5d1435e",
+    "isolated_binding": "7bfb863311ccac5ae2d8253fd868d00973c419db",
+    "original_fullcaller": "1e3f26115da3d0e101eafed24aa88549e7546d02",
+    "original_native": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+    "actual_helper_producer": "f5b702a55b44c081c6d8f5556da3a2152a33eec3"
+  },
+  "reviewed_findings": [
+    {
+      "finding": "Earlier cb8 checked only the main native-wrapper exit, not the original focused-native test child.",
+      "correction": "The normal completed-native branch now requires the same hash-bound focused-native.json, exact source/tested/lane/before/201 command and repo/codex-rs cwd, actual terminal status and finished_at, integer child returncode==command_exit_code, and separate original classifier/step/wrapper accounting. Partial inner state rejects; ordinary test failure is not relabelled success."
+    },
+    {
+      "finding": "Earlier bound helper branch could load exports without proving the original main verified them.",
+      "correction": "Both actual original helper-build and helper-verify step exits must be int0 before importing exactly the two CARGO_BIN_EXE aliases. The existing producer itself defines those two aliases only; no HOME/CARGO_HOME/RUSTUP_HOME/target/PATH keys can be supplied by helper JSON."
+    },
+    {
+      "finding": "The temporary fffce revision labelled unchanged source using only Git clean plus HEAD/tree.",
+      "correction": "c5 removes exactly those six lines and adds a two-line explanation. Reverse replacement recovers the whole fffce file. Post-maintenance SHA/tree stay None; no dirty or merely Git-clean worktree is assigned a newly proven commit identity."
+    }
+  ],
+  "remaining_verified_scope": [
+    "BINDING=None rejects at the beginning of main before any target read, directory creation or subprocess; all actual template hashes and output/runtime dispositions remain null.",
+    "Fullcaller requires the launcher/direct recorder plus each actual phase's original/started record and matching run_id/PID/command/source tuple. Observation-limit/unreaped is rejected. Original self-test gate failure can explain an unstarted verify without fabricating a receipt.",
+    "Conditional Root29 non-execution uses the actual failed original main201 admission; if the original Root test was dispatched, its actual original terminal is required. No ordinary-task acceptance-success prerequisite was added.",
+    "Historical-v2 runtime uses original creation identities, original441 recovery and original V8 bytes/resources. TMPDIR must be the actual retained native path; helper JSON cannot introduce arbitrary environment keys or a new global cache.",
+    "Only original five-package just fix then just fmt --base be8adcbb5e9925f72e05330b8fb30509cba4544b are maintenance commands. Each waits on its same Popen; unknown completion cannot advance. A nonzero fix result remains even if fmt later returns zero.",
+    "The entire write_bytes/command/Git/postimage/snapshot section remains byte-identical to reviewed cb8. Three phases retain complete NUL status, binary diffs, stable copied postimages and explicit deletions/symlink target bytes. No test, commit, cleanup, retry or new signal is introduced after maintenance."
+  ],
+  "current_non_admissibility": [
+    "This draft still binds historical v2 and the old main/native directory pairing. It is not the eventual v3/native-only binding.",
+    "The actual current native invocation failed at21cb line36 with no native result, TMPDIR or helper/test invocation. This draft deliberately rejects the missing same-invocation receipt and cannot fill it with old evidence.",
+    "Any actual v3 creation record, subsequent native-only result, conditional Root29 disposition and terminal fullcaller evidence require a separately reviewed final binding; no placeholder is a substitute.",
+    "fc8 status describes fffce and its removed unchanged-source note; it remains prior-revision metadata, not a current c5 contract."
+  ],
+  "limitations": {
+    "H": false,
+    "Python_parse_or_execution": false,
+    "Rust": false,
+    "native_tests": false,
+    "production_edits": false,
+    "PR": false,
+    "dispatch": false,
+    "final_request_approved": false,
+    "ordinary_acceptance": 0
+  }
+}

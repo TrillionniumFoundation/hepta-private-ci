@@ -1,0 +1,224 @@
+"""Read-only evidence for one isolated Fence job; never invokes Fence or a test."""
+from __future__ import annotations
+
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
+import subprocess
+import sys
+import tarfile
+
+SOURCE = "c89540598693697577cda8cba31cb07f6ce65317"
+SOURCE_TREE = "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae"
+ACTION = "c7675fea986c29f1d655753a7a61fd6b4141be8f"
+ACTION_SOURCE = "64acdc94f531728494efbdf2d8f05faa26e90f7a"
+BRANCH = "codex/mem8-fence013-qualification-20261111-ed353817"
+WORKFLOW = ".github/workflows/hepta-mem-fence013-qualification.yml"
+EXPECTED_FILES = {'action.yml': {'bytes': 1520, 'sha256': '26aa17917f78b69320d412e5d4c42617bc458e4f9787afe93055f18e3931430b', 'git_blob': '97e91823b99e6b549291901818ebb918116c06d6'}, 'action/bin/fence': {'bytes': 2203880, 'sha256': '1a1ac7ad60216e7803403645c202e8c8a4e738326350ce340f8138df1c9a5e04', 'git_blob': '77eb796b522a7ae83eb83c42d579f85a41945b3d'}, 'action/bundle-manifest.json': {'bytes': 592, 'sha256': 'ac88a81a8b0a228862a9e286a235c2d219c3b400b739708e3da4c92195465134', 'git_blob': '3f0b00d990f9eca9b630feae63f5b6803379bb03'}, 'action/lib.cts': {'bytes': 112721, 'sha256': '386fa3848d8cf62c3a3874963d3089f48a7992fc7e17555769e1531cbb20eb46', 'git_blob': '61fdf3a2a5561fb8810eb01270c693f7ce5f7859'}, 'action/log.cts': {'bytes': 7961, 'sha256': 'b2b5c364e23671db2c27d60d6c107fe338cbeb7f80788092ef9ac0380dd16947', 'git_blob': '37fff84b487b402162f6b2f60cf39f2834cb105f'}, 'action/main.cts': {'bytes': 30803, 'sha256': '5613a1cb18d1e2ca412160a167963742fb191e585011e7bf0eacf2d6cfb7529f', 'git_blob': '01364e676225b40748f2d9d6b815c012b52dcb76'}, 'action/post.cts': {'bytes': 19042, 'sha256': 'e9c0ed0860922861b494cfaaf1ecd56b9203195d1e0844358070b5f8a7e2f772', 'git_blob': '753f48a7c8dc642ad80abb690191b8a3b3e274f6'}}
+ROOT = Path(os.environ["RUNNER_TEMP"]) / "mem8-fence013-qualification"
+RECORDS = ROOT / "records"
+WORKSPACE = Path(os.environ["GITHUB_WORKSPACE"])
+ACTION_ROOT = Path(os.environ["RUNNER_WORKSPACE"]).parent / "_actions" / "openai" / "fence" / ACTION
+SOURCE_FILES = (
+    ".github/workflows/blob-size-policy.yml",
+    ".github/actions/check-clean-worktree/action.yml",
+    ".github/blob-size-allowlist.txt",
+    "scripts/check_blob_size.py",
+    "scripts/tests/test_blob_size_policy.py",
+)
+
+
+def utc():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def require(condition, code):
+    if not condition:
+        raise RuntimeError(code)
+
+
+def fingerprint(data):
+    return {
+        "bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "git_blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest(),
+    }
+
+
+def write(relative, data):
+    path = ROOT / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("xb") as handle:
+        handle.write(data)
+
+
+def save(relative, value):
+    write(relative, (json.dumps(value, sort_keys=True, indent=2) + "\n").encode())
+
+
+def bounded_file(path, limit):
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    try:
+        first = os.fstat(fd)
+        require(stat.S_ISREG(first.st_mode) and first.st_size <= limit, "not_a_bounded_regular_file")
+        with os.fdopen(fd, "rb", closefd=False) as handle:
+            data = handle.read(limit + 1)
+        last = os.fstat(fd)
+        require(len(data) <= limit, "file_size_bound_exceeded")
+        require((first.st_dev, first.st_ino, first.st_size, first.st_mtime_ns) ==
+                (last.st_dev, last.st_ino, last.st_size, last.st_mtime_ns), "file_changed_during_read")
+        return data, {"mode": oct(stat.S_IMODE(last.st_mode)), "size": last.st_size}
+    finally:
+        os.close(fd)
+
+
+def action_snapshot(phase, retain_bytes):
+    observed = {}
+    for relative, expected in EXPECTED_FILES.items():
+        data, metadata = bounded_file(ACTION_ROOT / relative, expected["bytes"])
+        actual = fingerprint(data)
+        observed[relative] = {**actual, **metadata}
+        save(f"records/action-{phase}/{relative.replace('/', '__')}.json", observed[relative])
+        require(actual == expected, "action_file_identity_mismatch:" + relative)
+        if retain_bytes:
+            write("records/action-runtime/" + relative, data)
+    manifest = json.loads((RECORDS / "action-runtime/action/bundle-manifest.json").read_bytes())
+    require(manifest["source_commit"] == ACTION_SOURCE and manifest["signer_digest"] == ACTION_SOURCE,
+            "reviewed_source_manifest_mismatch")
+    require(manifest["release_tag"] == "v0.13.0" and manifest["repository"] == "openai/fence",
+            "release_manifest_mismatch")
+    require(manifest["artifact_sha256"] == observed["action/bin/fence"]["sha256"],
+            "actual_binary_manifest_mismatch")
+    return observed
+
+
+def git(phase, label, *args):
+    argv = ["git", "-C", str(WORKSPACE), *args]
+    completed = subprocess.run(argv, capture_output=True, timeout=15, check=False)
+    write(f"records/source-{phase}/{label}.stdout", completed.stdout)
+    write(f"records/source-{phase}/{label}.stderr", completed.stderr)
+    save(f"records/source-{phase}/{label}.json", {
+        "argv": argv, "exit_code": completed.returncode,
+        "stdout": fingerprint(completed.stdout), "stderr": fingerprint(completed.stderr),
+    })
+    require(completed.returncode == 0, "source_git_command_failed:" + label)
+    return completed.stdout
+
+
+def source_snapshot(phase):
+    head = git(phase, "head", "rev-parse", "HEAD").decode().strip()
+    tree = git(phase, "tree", "rev-parse", "HEAD^{tree}").decode().strip()
+    parents = git(phase, "parents", "show", "-s", "--format=%P", "HEAD").decode().strip().split()
+    base_tree = git(phase, "base-tree", "rev-parse", SOURCE + "^{tree}").decode().strip()
+    changes = git(phase, "changes", "diff-tree", "--no-commit-id", "--name-status", "-r", "-z", SOURCE, "HEAD")
+    status = git(phase, "status", "status", "--porcelain=v1", "--untracked-files=all", "--ignore-submodules=none")
+    full_tree = git(phase, "full-tree", "ls-tree", "-r", "-z", "HEAD")
+    # Retain physical source changes if a check unexpectedly rewrites a tracked file.
+    git(phase, "worktree-diff", "diff", "--no-ext-diff", "--binary", "HEAD")
+    result = {"head": head, "tree": tree, "parents": parents, "base_tree": base_tree,
+              "clean": status == b"", "full_tree": fingerprint(full_tree), "source_files": {}}
+    save(f"records/source-{phase}/IDENTITY.json", result)
+    require(head == os.environ["GITHUB_SHA"] and parents == [SOURCE], "harness_head_or_parent_mismatch")
+    require(base_tree == SOURCE_TREE, "frozen_source_tree_mismatch")
+    require(changes == b"A\0" + WORKFLOW.encode() + b"\0", "unexpected_harness_change_set")
+    require(status == b"", "source_worktree_not_clean")
+    for relative in SOURCE_FILES:
+        committed = git(phase, "pinned-" + relative.replace("/", "__"), "show", SOURCE + ":" + relative)
+        actual, _ = bounded_file(WORKSPACE / relative, 1024 * 1024)
+        require(actual == committed, "original_policy_source_changed:" + relative)
+        result["source_files"][relative] = fingerprint(actual)
+        if phase == "before":
+            write("records/original-policy-source/" + relative, actual)
+    workflow, _ = bounded_file(WORKSPACE / WORKFLOW, 128 * 1024)
+    result["workflow"] = fingerprint(workflow)
+    if phase == "before":
+        write("records/harness-workflow.yml", workflow)
+    save(f"records/source-{phase}/VERIFIED.json", result)
+    if phase == "after":
+        before = json.loads((RECORDS / "source-before/VERIFIED.json").read_bytes())
+        require(result == before, "source_identity_changed")
+    return result
+
+
+def preflight(record):
+    require(os.environ["GITHUB_EVENT_NAME"] == "push", "not_the_admitted_push_event")
+    require(os.environ["GITHUB_REF"] == "refs/heads/" + BRANCH, "unexpected_branch")
+    require(os.environ["GITHUB_REPOSITORY"] == "TrillionniumFoundation/hepta-private-ci", "unexpected_repository")
+    require(os.environ["HARNESS_BEFORE"] == SOURCE, "push_not_from_frozen_anchor")
+    record["action_files"] = action_snapshot("before", True)
+    record["capture_script"] = fingerprint(Path(__file__).read_bytes())
+
+
+def after(record):
+    for key in ("PREFLIGHT", "FENCE", "CHECKOUT", "SOURCE_BEFORE", "RANGE", "POLICY_TESTS", "POLICY_CHECK", "CLEAN"):
+        value = os.environ[key + "_OUTCOME"]
+        require(value in {"success", "failure", "cancelled", "skipped"}, "unknown_step_outcome")
+        record.setdefault("step_outcomes_before_posts", {})[key.lower()] = value
+    record["fence_post_outcome"] = "NOT_YET_OBSERVED_REQUIRES_TERMINAL_FULL_JOB_LOG"
+    record["qualification_result"] = "NOT_FINAL"
+    problems = []
+    if record["step_outcomes_before_posts"]["checkout"] == "success":
+        try:
+            record["source_after"] = source_snapshot("after")
+        except Exception as error:
+            problems.append({"phase": "source_after", "type": type(error).__name__, "code": str(error)})
+    else:
+        record["source_after"] = {"status": "NOT_OBSERVED_CHECKOUT_NOT_SUCCESS"}
+    try:
+        record["action_after"] = action_snapshot("after", False)
+    except Exception as error:
+        problems.append({"phase": "action_after", "type": type(error).__name__, "code": str(error)})
+    record["capture_problems"] = problems
+    require(not problems, "evidence_after_capture_incomplete_or_changed")
+
+
+def archive():
+    rows = []
+    for path in sorted(ROOT.rglob("*")):
+        if path.is_dir():
+            continue
+        require(path.is_file() and not path.is_symlink(), "unexpected_evidence_member")
+        relative = path.relative_to(ROOT).as_posix()
+        rows.append({"path": relative, **fingerprint(path.read_bytes())})
+    save("MANIFEST.json", {"schema": "mem-fence013-pre-post-artifact-v1", "files": rows,
+                           "fence_post_not_in_this_artifact": True, "final_job_log_required": True})
+    with tarfile.open(ROOT / "mem-fence013-qualification.tar.xz", "w:xz") as handle:
+        for row in rows:
+            handle.add(ROOT / row["path"], arcname=row["path"], recursive=False)
+        handle.add(ROOT / "MANIFEST.json", arcname="MANIFEST.json", recursive=False)
+
+
+def main():
+    phase = sys.argv[1]
+    require(phase in {"preflight", "before", "after"}, "unexpected_capture_phase")
+    record = {"schema": "mem-fence013-qualification-capture-v1", "phase": phase,
+              "started_at": utc(), "source_anchor": SOURCE, "source_tree": SOURCE_TREE,
+              "harness_sha": os.environ["GITHUB_SHA"], "action_commit": ACTION,
+              "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "native_tests_started_by_capture": 0, "model_requests": 0}
+    code = 0
+    try:
+        if phase == "preflight":
+            preflight(record)
+        elif phase == "before":
+            record["source_before"] = source_snapshot("before")
+        else:
+            after(record)
+        record["capture_status"] = "complete"
+    except Exception as error:
+        code = 1
+        record["capture_status"] = "failed"
+        record["error"] = {"type": type(error).__name__, "code": str(error)}
+    record["completed_at"] = utc()
+    save(f"records/{phase.upper()}_CAPTURE.json", record)
+    if phase == "after":
+        archive()
+    print(json.dumps({"phase": phase, "capture_status": record["capture_status"], "exit_code": code}))
+    return code
+
+
+if __name__ == "__main__":
+    sys.exit(main())

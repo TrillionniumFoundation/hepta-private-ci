@@ -1,0 +1,37 @@
+{
+  "base_sha": "603238ba4721b2e9656c4647ce41c5f1664c1154",
+  "source_git_blob": "2cb25a6b17dd23e845768ad44a1f3ba22034e9dd",
+  "patch_sha256": "d23089ec6928044766f7936731190fe71421529d51a74be06af70bd4c4d08cdd",
+  "files": [
+    {
+      "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+      "sha256": "49287adb1ca36cde0900e9e8f90d490508569cec977d6872741b9c16642ecc23"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/tests/manifest_only.rs",
+      "sha256": "f6b39cd748bd679bda0adb6e72be10ce91d8c5de7df2342533f85018ac37b5ef"
+    }
+  ],
+  "regressions": {
+    "baseline_failed": 2,
+    "fixed_passed": 2,
+    "skipped": 0
+  },
+  "boundary_probes": {
+    "passed": 7,
+    "total": 7
+  },
+  "clippy_exit_code": 0,
+  "fmt_exit_code": 0,
+  "scope": "Isolated Linux Rust crate harness with pinned production dependencies and copied just test/run-nextest. Not native Windows or full Bazel validation. No remote writes.",
+  "format_identity_reconciliation": {
+    "tested_source_sha256": "bd04b1b75a4933359855ddfe7351e2a49dd1d2ffd79590a698647d0994b1af11",
+    "final_source_sha256": "49287adb1ca36cde0900e9e8f90d490508569cec977d6872741b9c16642ecc23",
+    "difference": "just fmt removed exactly one extra LF byte at EOF; tested bytes equal final bytes + 0x0a. No other byte differs.",
+    "tested_bytes": 8467,
+    "final_bytes": 8466,
+    "proof": "SHA-256(final_file_bytes + b\"\\n\") equals the boundaries.json tested source SHA-256.",
+    "source_of_extra_lf": "The GitHub fetch_file response content added a final LF; removing it from the baseline produced canonical Git blob 2cb25a6b17dd23e845768ad44a1f3ba22034e9dd.",
+    "reran_tests": false
+  }
+}

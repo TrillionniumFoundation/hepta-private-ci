@@ -388,11 +388,7 @@ impl CognitiveStore {
         request.validate()?;
         attempt.validate()?;
 
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.begin_write_transaction().await?;
         let identity_sha256 = logical_identity_digest(
             self.owner_agent_id(),
             &request.logical_turn_id,
@@ -428,7 +424,9 @@ impl CognitiveStore {
             ));
         }
         let head = rows.last().cloned();
-        let now = now_unix_seconds()?;
+        let now = self
+            .local_lease_now_unix_seconds()
+            .map_err(LogicalTurnRegistryError::Clock)?;
 
         if let Some(head) = head.as_ref() {
             if head.matches_request(&request, &attempt) {
@@ -731,7 +729,9 @@ impl CognitiveStore {
         .fetch_optional(&mut *transaction)
         .await
         .map_err(crate::cognitive_store::unavailable)?;
-        let observed_at_unix_seconds = now_unix_seconds()?;
+        let observed_at_unix_seconds = self
+            .local_lease_now_unix_seconds()
+            .map_err(LogicalTurnRegistryError::Clock)?;
         let Some(identity) = identity else {
             transaction
                 .commit()
@@ -979,7 +979,9 @@ async fn ensure_requested_lease(
                 && previous.lease_expires_at_unix_seconds
                     == Some(request.lease_expires_at_unix_seconds)
             {
-                let now = now_unix_seconds()?;
+                let now = store
+                    .local_lease_now_unix_seconds()
+                    .map_err(LogicalTurnRegistryError::Clock)?;
                 if previous
                     .lease_expires_at_unix_seconds
                     .is_some_and(|expiry| expiry <= now)
@@ -1133,7 +1135,12 @@ async fn verify_or_load_requested_lease(
     {
         return Ok(None);
     }
-    if !allow_expired && lease.lease_expires_at_unix_seconds.unwrap_or(0) <= now_unix_seconds()? {
+    if !allow_expired
+        && lease.lease_expires_at_unix_seconds.unwrap_or(0)
+            <= store
+                .local_lease_now_unix_seconds()
+                .map_err(LogicalTurnRegistryError::Clock)?
+    {
         return Ok(None);
     }
     Ok(Some(lease))

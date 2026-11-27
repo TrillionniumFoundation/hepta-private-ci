@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "scripts/memory_cell_mem3/run.py",
+    "--fixture",
+    "qualification/memory-cell-mem3-composition/fixture.json",
+    "--native",
+    "/workspace/scratch/a6b21bc72124/mem2-native-projection/target/debug/examples/mem1_fast_memory",
+    "--first-experiment-evidence",
+    "/workspace/scratch/a6b21bc72124/candidate-real-result/RUN_RECEIPT.json",
+    "--output",
+    "/workspace/scratch/a6b21bc72124/mem3-campaign-v1"
+  ],
+  "child_cpu_seconds": 6.891197999999999,
+  "cpu_scope": "Linux waited child usage for the Python runner and its waited native descendants",
+  "cwd": "/workspace/scratch/a6b21bc72124/hepta-private-ci",
+  "energy_joules": null,
+  "exit_code": 0,
+  "finished_at": "2026-11-09T12:43:19.016761+00:00",
+  "first_candidate_evidence_sha256": "020ead824388c3ef994d72f65befd8479d8fe7369922171158e7aa7c514688c3",
+  "provider_charges": null,
+  "registered_campaign_attempts": 1,
+  "source_base_commit": "d13761500aba28634238ec23fb1d62eae5cf81ec",
+  "source_commit": "1407c79571f0386304cc2718e0c3d26824672e1c",
+  "started_at": "2026-11-09T12:43:10.956037+00:00",
+  "training_seed_selection": "fixed 0..4; no reruns or tuning",
+  "wall_seconds": 8.060734252000657
+}

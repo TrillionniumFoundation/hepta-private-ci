@@ -1,0 +1,265 @@
+{
+  "Adam_one_update_existing_inventory_convention": {
+    "boundary": "Convention from existing independent learning inventory; not measured hardware instruction counts.",
+    "content": {
+      "compare_ops": 2,
+      "div_ops": 196687,
+      "pow_ops": 40,
+      "scalar_ops": 852386,
+      "sqrt_ops": 65563
+    },
+    "policy": {
+      "compare_ops": 2,
+      "div_ops": 874,
+      "pow_ops": 8,
+      "scalar_ops": 3799,
+      "sqrt_ops": 292
+    }
+  },
+  "CPU_feasibility": {
+    "measured": false,
+    "uniform_content_GMAC_per_second_needed_if_entire_1800s_available": 0.2635633777777778,
+    "warning": "Other costs make the real requirement higher; no throughput promise."
+  },
+  "JJ_forward_non_MAC_inventory_per_image": {
+    "bias_add_ops": 6558,
+    "boundary": "Forward known primitives only; clipping comparisons, RNG backend primitives, anchor/gradient scalar operations and dispatch memory work require implementation-level ledger before fit.",
+    "decoded_mu_clip_values": 2352,
+    "entropic_exp_calls": 4,
+    "entropic_log_calls": 1,
+    "mean_qI_add_ops": 1536,
+    "mean_qI_div_ops": 32,
+    "residual_add_ops": 3984,
+    "softmax_div_ops": 30,
+    "softmax_exp_calls": 30,
+    "softmax_max_compare_ops": 27,
+    "softmax_sub_ops": 30,
+    "softmax_sum_add_ops": 27,
+    "tanh_calls": 4176,
+    "terminal_K4_Gaussian_random_variables": 3136,
+    "terminal_MSE_difference_square_each": 3136,
+    "terminal_MSE_sum_add_ops": 3132,
+    "terminal_quality_exp_calls": 4,
+    "terminal_sample_clip_values": 3136,
+    "terminal_sample_multiply_and_add_each": 3136
+  },
+  "content_costs": {
+    "backward_MAC": {
+      "initial": 194464,
+      "observe": 70208,
+      "reobserve": {
+        "I": 68864,
+        "J": 70208,
+        "T": 7488
+      },
+      "sequences": {
+        "II": 788256,
+        "IJ": 798112,
+        "IT": 570752,
+        "JI": 799456,
+        "JJ": 809312,
+        "JT": 581952,
+        "TI": 509376,
+        "TJ": 519232,
+        "TT": 291872
+      },
+      "updates": {
+        "I": 227360,
+        "J": 237216,
+        "T": 9856
+      }
+    },
+    "forward_MAC": {
+      "initial": 129376,
+      "observe": 41376,
+      "reobserve": {
+        "I": 40704,
+        "J": 41376,
+        "T": 3744
+      },
+      "sequences": {
+        "II": 440384,
+        "IJ": 445312,
+        "IT": 330848,
+        "JI": 445984,
+        "JJ": 450912,
+        "JT": 336448,
+        "TI": 293888,
+        "TJ": 298816,
+        "TT": 184352
+      },
+      "updates": {
+        "I": 114464,
+        "J": 119392,
+        "T": 4928
+      }
+    }
+  },
+  "content_forward_backward_MAC_per_image": {
+    "II": 1228640,
+    "IJ": 1243424,
+    "IT": 901600,
+    "JI": 1245440,
+    "JJ": 1260224,
+    "JT": 918400,
+    "TI": 803264,
+    "TJ": 818048,
+    "TT": 476224
+  },
+  "content_modules": {
+    "C": {
+      "backward_MAC": 50176,
+      "copies": 1,
+      "forward_MAC": 50176,
+      "inputs": 784,
+      "outputs": 64,
+      "parameters": 50240
+    },
+    "I_initial": {
+      "backward_MAC": 114464,
+      "copies": 49,
+      "forward_MAC": 64288,
+      "inputs": 82,
+      "outputs": 16,
+      "parameters": 1328
+    },
+    "I_update": {
+      "backward_MAC": 202272,
+      "copies": 49,
+      "forward_MAC": 101920,
+      "inputs": 130,
+      "outputs": 16,
+      "parameters": 2096
+    },
+    "T_initial": {
+      "backward_MAC": 4096,
+      "copies": 1,
+      "forward_MAC": 2048,
+      "inputs": 64,
+      "outputs": 32,
+      "parameters": 2080
+    },
+    "T_update": {
+      "backward_MAC": 9216,
+      "copies": 1,
+      "forward_MAC": 4608,
+      "inputs": 144,
+      "outputs": 32,
+      "parameters": 4640
+    },
+    "feedback": {
+      "backward_MAC": 6144,
+      "copies": 1,
+      "forward_MAC": 3072,
+      "inputs": 96,
+      "outputs": 32,
+      "parameters": 3104
+    },
+    "image_head": {
+      "backward_MAC": 25088,
+      "copies": 49,
+      "forward_MAC": 12544,
+      "inputs": 16,
+      "outputs": 16,
+      "parameters": 272
+    },
+    "qI": {
+      "backward_MAC": 62720,
+      "copies": 49,
+      "forward_MAC": 37632,
+      "inputs": 48,
+      "outputs": 16,
+      "parameters": 784
+    },
+    "qT": {
+      "backward_MAC": 1344,
+      "copies": 1,
+      "forward_MAC": 672,
+      "inputs": 42,
+      "outputs": 16,
+      "parameters": 688
+    },
+    "text_head": {
+      "backward_MAC": 640,
+      "copies": 1,
+      "forward_MAC": 320,
+      "inputs": 32,
+      "outputs": 10,
+      "parameters": 330
+    }
+  },
+  "memory_bytes": {
+    "B64_all_affine_concat_input_reservation": 11277312,
+    "B64_explicit_JJ_tape_and_K4_terminal_arrays": 7373824,
+    "TRAIN_float32_images_if_materialized": 188160000,
+    "TRAIN_uint8_images": 47040000,
+    "same_size_backward_workspace_reservation": 18651136,
+    "transport_RGB_replication_per_output": 9408,
+    "transport_gray_float32_per_output": 3136,
+    "weights_FP64": 526824,
+    "weights_grad_Adam_m_v_FP64": 2107296
+  },
+  "not_in_MAC_total": [
+    "tanh and derivatives, softmax, bias/residual/clip/reductions",
+    "K4 Gaussian RNG, terminal samples, exp/log risk and gradients",
+    "Adam, policy labels/scoring, path selection and input preprocessing",
+    "data IO, memory traffic, dispatch/packing, compiler, serialization"
+  ],
+  "parameters": {
+    "content": 65562,
+    "parameter_arrays": 24,
+    "policy": 291,
+    "total": 65853
+  },
+  "planning_workloads_MAC": {
+    "actor_three_OOF_folds_plus_full_256_steps_B64_3_seeds": 114819072,
+    "all_nine_10000_select_rows_3_seeds_once": 20875200000,
+    "all_nine_512_fit_sources_3_seeds": 1068810240,
+    "content_40000_fit_4_epochs_3_seeds_uniform_mean": 474414080000,
+    "content_same_workload_JJ_worst": 604907520000,
+    "three_actions_512_fit_sources_3_seeds": 692600832
+  },
+  "policy_MAC_per_row": {
+    "backward_MAC": 304,
+    "forward_MAC": 280
+  },
+  "policy_modules": {
+    "hidden": {
+      "backward_MAC": 256,
+      "copies": 1,
+      "forward_MAC": 256,
+      "inputs": 32,
+      "outputs": 8,
+      "parameters": 264
+    },
+    "values": {
+      "backward_MAC": 48,
+      "copies": 1,
+      "forward_MAC": 24,
+      "inputs": 8,
+      "outputs": 3,
+      "parameters": 27
+    }
+  },
+  "schema": "hepta.fashion-candidate.integer-inventory.v1",
+  "scope": "Analytic affine MACs and explicitly listed buffers, no model execution.",
+  "shared_label_forward_MAC_per_image": {
+    "all_nine_sequences": 695840,
+    "one_J_prefix_three_final_actions": 450912
+  },
+  "static_inventory": {
+    "CNN": {
+      "forward_MAC": 323008,
+      "parameters": 63075
+    },
+    "deep_MLP": {
+      "forward_MAC": 438528,
+      "parameters": 439962
+    },
+    "direct_MLP": {
+      "forward_MAC": 100992,
+      "parameters": 101850
+    }
+  },
+  "uniform_nine_sequence_mean_MAC": "2965088/3"
+}

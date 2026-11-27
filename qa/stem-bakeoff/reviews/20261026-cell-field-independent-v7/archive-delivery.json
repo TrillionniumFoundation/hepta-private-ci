@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.cell-field-archive-delivery.v7-v7b",
+  "archive": {
+    "file_name": "cell-field-v7-v7b-complete-evidence.tar.gz",
+    "bytes": 151993631,
+    "sha256": "0a823de5a654011e5383396bdbd948dcc06c7a020bd0c323b66191397ec1af7c"
+  },
+  "manifest": {
+    "file_name": "cell-field-v7-v7b-complete-evidence.manifest.json",
+    "bytes": 4029034,
+    "sha256": "91445ea818d61f8cd3046030250e950e29d1035eca1c339d13719b73abeb4a69"
+  },
+  "verification_receipt": {
+    "file_name": "cell-field-v7-v7b-complete-evidence.receipt.json",
+    "bytes": 1865,
+    "sha256": "be7f85099c1add84635d5f624ff7ba0dadeb368c06298c833ad50e8023fb86c2",
+    "status": "PASS",
+    "members_verified": 10738,
+    "logical_evidence_files": 10737
+  },
+  "local_download_available": true,
+  "library_upload_executed": false,
+  "library_file_id": null,
+  "delivery_status": "LOCAL_VERIFIED_COPY_AVAILABLE; LIBRARY_UPLOAD_BLOCKED_PENDING_EXPLICIT_DESTINATION_AUTHORIZATION",
+  "approval_review": {
+    "decision": "rejected",
+    "action": "upload the complete archive and manifest to the current user's ChatGPT Library",
+    "reason": "The automatic reviewer classified full training trajectories, checkpoints, controller state and internal evidence as sensitive organizational data and required explicit user-authored authorization to disclose them to this destination.",
+    "workaround_attempted": false
+  },
+  "scientific_acceptance": false,
+  "raw_files_deleted": false
+}

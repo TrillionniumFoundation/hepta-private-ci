@@ -1,0 +1,70 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/workspace/scratch/c385a7439f8e/c2-resource-os-supervisor-validation-attempt-01/source",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "costs_nested": true,
+  "exact_wait4_test_child_CPU_seconds": 0.30283499999999997,
+  "exact_wait4_test_child_peak_RSS_bytes": 21164032,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "returncode": 0,
+  "schema": "complete-os-supervisor-stdlib-validation-v1",
+  "scope": "Synthetic fixtures only; no frozen core execution, C2/model/E read, forward or oracle.",
+  "source_after": {
+    "complete_os_envelope.py": {
+      "bytes": 16194,
+      "sha256": "98673730cb4d30696e9d70e877cccac33bfb776e41705d4cceb6f327246a8e24"
+    },
+    "os_processes.py": {
+      "bytes": 14874,
+      "sha256": "6454f57dde49f02b3d5f5a67d969bccd09d54539f0c5d904fdf0c5b05e27efc7"
+    },
+    "test_complete_os_envelope.py": {
+      "bytes": 6618,
+      "sha256": "bb074e07f6b357b275c1d27b4c9e897768be7a1623cbc4bd96f5f0f31e3c7bdb"
+    },
+    "test_os_processes.py": {
+      "bytes": 5642,
+      "sha256": "ac18090763c05901b724e0f6aca629cdb83e35938af28359e697ed9d34a6d0ef"
+    }
+  },
+  "source_before": {
+    "complete_os_envelope.py": {
+      "bytes": 16194,
+      "sha256": "98673730cb4d30696e9d70e877cccac33bfb776e41705d4cceb6f327246a8e24"
+    },
+    "os_processes.py": {
+      "bytes": 14874,
+      "sha256": "6454f57dde49f02b3d5f5a67d969bccd09d54539f0c5d904fdf0c5b05e27efc7"
+    },
+    "test_complete_os_envelope.py": {
+      "bytes": 6618,
+      "sha256": "bb074e07f6b357b275c1d27b4c9e897768be7a1623cbc4bd96f5f0f31e3c7bdb"
+    },
+    "test_os_processes.py": {
+      "bytes": 5642,
+      "sha256": "ac18090763c05901b724e0f6aca629cdb83e35938af28359e697ed9d34a6d0ef"
+    }
+  },
+  "source_unchanged": true,
+  "stderr": {
+    "bytes": 1819,
+    "sha256": "899d0aff95ecf8833930f0ee8d80beeae3e5af42cfeb7c4d17c903a02ff572a1"
+  },
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "test_child_contains_its_own_short_synthetic_children": true,
+  "timed_out": false,
+  "timing_scope": "Complete test subprocess Popen-before to wait4-after; driver hashing/receipt/exit excluded.",
+  "whole_test_child_wall_seconds": 0.7082864149997476
+}

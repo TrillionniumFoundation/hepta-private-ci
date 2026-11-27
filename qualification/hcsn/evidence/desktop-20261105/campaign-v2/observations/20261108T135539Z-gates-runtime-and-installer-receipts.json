@@ -1,0 +1,321 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-observation-v6",
+  "observed_utc": "2026-11-08T13:55:39.614411Z",
+  "progress_file": {
+    "path_relative_to_task_root": "campaigns/full-v2/progress.json",
+    "sha256": "0214a828e7a31c652b2b9b10df2841f391d81ff39ecc6017fcc2fe951ef98109",
+    "size_bytes": 14153,
+    "updated_utc": "2026-11-08T13:55:39.614411+00:00"
+  },
+  "campaign": {
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "process_state": "running",
+    "systemd_active_state": "active",
+    "systemd_sub_state": "running",
+    "systemd_result": "success",
+    "exec_main_status": 0,
+    "active_stage": "full",
+    "active_stage_started_utc": "2026-11-06T08:08:57.361720+00:00",
+    "progress_reported_completed_cuda_runs": 88,
+    "requested_cuda_runs": 170,
+    "registered_run_indexes": {
+      "completed": 88,
+      "failed": 0,
+      "unavailable": 0
+    },
+    "interpretation": "88 is the progress-reported terminal registration count, not an independently audited checkpoint/weight/attempt/budget count.",
+    "disk_free_bytes_at_progress_snapshot": 177898455040,
+    "control_filesystem_free_bytes_at_progress_snapshot": 163624779776
+  },
+  "frozen_references": {
+    "expected_research_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "expected_candidate_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "expected_campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "expected_campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "expected_original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "local_campaign_manifest_reverified": false,
+    "local_campaign_archive_reverified": false,
+    "local_full_runtime_manifest": "not found at task-root or campaigns/full-v2 expected locations",
+    "note": "No local source/manifest mismatch is asserted because the pinned local campaign manifest and archive were not re-read."
+  },
+  "stage_receipts": {
+    "baseline_strict_tests": {
+      "path_relative": "campaigns/full-v2/baseline-strict-tests.json",
+      "sha256": "02a5d1263744cbae6e2f60b64452b13dc5c1b9bd0353968b62b2d423a68144b8",
+      "status": "passed",
+      "tests_discovered": 95,
+      "tests_run": 95,
+      "passed": 95,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "candidate_strict_tests": {
+      "path_relative": "campaigns/full-v2/candidate-strict-tests.json",
+      "sha256": "cf42cc90b6dbaf9755c554a118ad1eca38b8fca476515fa44075e43ee66093b0",
+      "status": "passed",
+      "tests_discovered": 109,
+      "tests_run": 109,
+      "passed": 109,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "original_a_fullshape": {
+      "path_relative": "campaigns/full-v2/original-a-fullshape.json",
+      "sha256": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98",
+      "status": "completed",
+      "scope": "one random-initialized FP32 CUDA training step; not one of the 170 runs",
+      "optimizer_steps_completed": 1,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "peak_allocated_bytes": 778152960,
+      "peak_reserved_bytes": 799014912,
+      "physical_gpu_energy_joules": null
+    },
+    "original_b_fullshape": {
+      "path_relative": "campaigns/full-v2/original-b-fullshape.json",
+      "sha256": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1",
+      "status": "failed",
+      "failure_stage": "forward",
+      "oom": true,
+      "reason": "CUDA OOM while attempting a 16 MiB allocation; 2.14 GiB reported free at the failing point",
+      "optimizer_steps_completed": 0,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "peak_allocated_bytes": 4068922368,
+      "peak_reserved_bytes": 4091543552,
+      "physical_gpu_energy_joules": null,
+      "failure_preserved": true
+    },
+    "parity_cpu": {
+      "path_relative": "campaigns/full-v2/parity-cpu.json",
+      "sha256": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6",
+      "size_bytes": 78949,
+      "version_bound_chunks": [
+        {
+          "offset": 0,
+          "bytes": 65536,
+          "sha256": "a2dbd9136ae32ed95620d4ea06b3d49b55945426d43a5cc924bddd5385163254"
+        },
+        {
+          "offset": 65536,
+          "bytes": 13413,
+          "sha256": "98243d2d0d6d22650fe03be5d40667313652ec265535930e2330214402462532"
+        }
+      ],
+      "status": "passed",
+      "records": 16,
+      "shape": [
+        2,
+        9,
+        2
+      ],
+      "hidden_size": 3,
+      "bins": 32,
+      "scope": "one-update parity fixture, not full-budget qualification"
+    },
+    "parity_cuda": {
+      "path_relative": "campaigns/full-v2/parity-cuda.json",
+      "sha256": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2",
+      "size_bytes": 78945,
+      "version_bound_chunks": [
+        {
+          "offset": 0,
+          "bytes": 65536,
+          "sha256": "0b77ee5353c65f508848768a5fb9070b0745ca1258568d36f8b5b146c6adfdac"
+        },
+        {
+          "offset": 65536,
+          "bytes": 13409,
+          "sha256": "127e5b15f07743acba20ebf14264cb55a8bb9efaa2ba281565daa7503b2ccab2"
+        }
+      ],
+      "status": "passed",
+      "records": 16,
+      "shape": [
+        2,
+        9,
+        2
+      ],
+      "hidden_size": 3,
+      "bins": 32,
+      "scope": "one-update parity fixture, not full-budget qualification"
+    },
+    "candidate_b_fullshape_probes": [
+      {
+        "path_relative": "campaigns/full-v2/candidate-fullshape-population_flux.json",
+        "sha256": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0",
+        "status": "completed",
+        "optimizer_steps_completed": 1,
+        "counts_toward_170_runs": false,
+        "peak_allocated_bytes": 833757184,
+        "peak_reserved_bytes": 857735168,
+        "physical_gpu_energy_joules": null
+      },
+      {
+        "path_relative": "campaigns/full-v2/candidate-fullshape-population_flux_no_recovery.json",
+        "sha256": "8a023efca7a6329ec08e25277f4a5e5c46e33edd32559c6b14792a62a4d3effd",
+        "status": "completed",
+        "optimizer_steps_completed": 1,
+        "counts_toward_170_runs": false,
+        "peak_allocated_bytes": 833757184,
+        "peak_reserved_bytes": 857735168,
+        "physical_gpu_energy_joules": null
+      }
+    ],
+    "original_mamba2_fullshape": {
+      "path_relative": "campaigns/full-v2/original-mamba2-fullshape.json",
+      "sha256": "80e4c5619488bae114595ddacba6867ff4b66f9938e1f8f095dc841f6f712a00",
+      "status": "completed",
+      "optimizer_steps_completed": 1,
+      "counts_toward_170_runs": false,
+      "peak_allocated_bytes": 150528512,
+      "peak_reserved_bytes": 165675008,
+      "physical_gpu_energy_joules": null
+    },
+    "legacy_smoke_separable": {
+      "path_relative": "campaigns/full-v2/legacy-smoke-separable.json",
+      "sha256": "baf59095ebba3adb2d45526be7d43cf9a54d6af8c3dbbd45463374590b13a649",
+      "status": "completed",
+      "device": "cpu",
+      "original_denominator": 48,
+      "requested_b_runs": 3,
+      "completed_b_runs": 3,
+      "audited_b_runs": 3,
+      "training_steps_performed": 0,
+      "candidate_selection_performed": false,
+      "research_qualification_pass": null,
+      "interpretation": "Retain adverse historical smoke results; filtered hidden-trace RMS .1660–.1977 is not final readout prediction RMS and does not establish resolution independence or task superiority."
+    }
+  },
+  "runtime": {
+    "profile_path_relative": "campaigns/full-v2/full.runtime.json",
+    "profile_sha256": "21a9ca457133123d674a41721c3ecb904477efc42953ab51bf03ae66eacbb3e8",
+    "execution_config_path_relative": "campaigns/full-v2/execution-config.json",
+    "execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "device": "cuda:0",
+    "gpu_model": "NVIDIA GeForce RTX 4060",
+    "driver_version": "580.178.04",
+    "cuda_runtime": "12.8",
+    "torch": "2.8.0+cu128",
+    "dtype": "float32",
+    "allocator_fraction": 0.5,
+    "deterministic_algorithms": true,
+    "deterministic_warn_only": true,
+    "float32_matmul_precision": "highest",
+    "cuda_matmul_allow_tf32": false,
+    "cudnn_allow_tf32": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cublas_workspace_config": ":4096:8",
+    "population_checkpoint_steps": 1,
+    "measurement_scope": "shared physical GPU; allocator fraction is per-process and not a device reservation"
+  },
+  "policy_selection": {
+    "selected_policy": 1,
+    "evidence": "Original full-shape B probe returned OOM; both 16-case CPU and CUDA one-update parity receipts passed; both candidate B full-shape one-step probes completed. execution-config records population_checkpoint_steps=1 and cuda_memory_fraction=0.5.",
+    "qualification_limit": "These gates authorize the frozen policy selection only; they do not establish full 170-run success or candidate quality."
+  },
+  "dependencies": {
+    "torch_download_offline_install_job": {
+      "job_id": "1a1aca78192-fc05-562f",
+      "state": "failed",
+      "exit_code": 1,
+      "error": "wheel METADATA identity is ambiguous",
+      "automatic_retry": false
+    },
+    "mamba_wheels_job": {
+      "job_id": "1a1aca7f6ba-fc05-5631",
+      "state": "succeeded",
+      "exit_code": 0,
+      "interpretation": "Wheel/file verification only; not proof of installation."
+    },
+    "mamba_offline_installer_waiter_job": {
+      "job_id": "1a1acadd69c-fc05-5654",
+      "state": "failed",
+      "exit_code": 1,
+      "error": "Torch owned job did not succeed; no automatic retry or installation",
+      "automatic_retry": false
+    },
+    "later_ready_receipts": {
+      "torch": {
+        "path_relative": "envsetup/TORCH_READY.json",
+        "exists": true,
+        "state": "ready",
+        "sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+        "finished_at": "2026-11-06T07:52:35.038411+00:00",
+        "model_computation_performed": false
+      },
+      "mamba": {
+        "path_relative": "envsetup/MAMBA_READY.json",
+        "exists": true,
+        "state": "imports_ready",
+        "sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76",
+        "finished_at": "2026-11-06T07:54:47.091033+00:00",
+        "model_computation_performed": false
+      },
+      "interpretation": "The later readiness receipts exist and are referenced by current progress; they do not change the durable failure status of the originally named installer jobs."
+    },
+    "storage_observation": {
+      "path_relative": "envsetup/storage-observation-latest.json",
+      "exists": true,
+      "sha256": "ac61e2deba919701ee3d19d84bdb0e4cff6eb5c89e2bdaac6a7c705b19ff3dc0",
+      "observed_at": "2026-11-06T05:50:58.552901+00:00",
+      "stale_for_current_free_space_claims": true,
+      "observer_job_id": "1a1acda2df4-fc05-5745",
+      "observer_state": "succeeded",
+      "observer_exit_code": 0
+    }
+  },
+  "github": {
+    "exact_source_ci": {
+      "run_id": 42078258351,
+      "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+      "job_id": 127424159520,
+      "job_name": "kernel-and-mechanisms",
+      "conclusion": "success",
+      "steps_passed": 10,
+      "steps_total": 10
+    },
+    "trusted_main_gpu_probe": {
+      "run_id": 39526325715,
+      "job_id": 127299267982,
+      "conclusion": "cancelled",
+      "run_attempt": 5
+    },
+    "pr_4873": "not modified"
+  },
+  "qualification": {
+    "full_170_run": "open; 88 progress-reported registrations, 82 remaining",
+    "checkpoint_weight_attempt_budget_audit": "open; .runs index not independently read",
+    "full_b_audit_20": "open; no full-b-audit result present at expected path",
+    "mamba2_full_matrix": "open; only one-step preflight probe completed",
+    "complete_shape_parity": "open; current parity files are one-update fixtures only",
+    "full_json": "not yet published at expected output path while full stage remains running",
+    "terminal_json": "not present at expected campaign path",
+    "full_runtime_manifest": "not present at expected task-root or campaign path",
+    "physical_gpu_energy": "null; NVML reports NotSupported and RAPL reads PermissionError; no TDP or power-limit imputation"
+  },
+  "read_limits": {
+    "directory_listing": "A direct SSH listing attempt was refused with admitted-capacity-exhausted; no child was submitted and no retry was attempted.",
+    "known_file_reads": "Known small receipts were read through bounded file metadata and multi-file reads; parity files were read in version-bound chunks with chunk SHA256 receipts.",
+    "no_new_monitoring_job": true
+  },
+  "execution_policy": {
+    "training_started_or_retried": false,
+    "model_budget_changed": false,
+    "source_branch_modified": false,
+    "campaign_outputs_modified": false,
+    "unrelated_processes_stopped": false,
+    "files_deleted": false,
+    "driver_or_system_service_changed": false,
+    "credentials_or_absolute_host_paths_published": false
+  },
+  "publication": {
+    "branch": "research/hcsn-desktop-evidence-20261105",
+    "parent_sha": "61fb690935508c8b6067766b1655b3969cf7cf84",
+    "expected_sha_lease_required": true,
+    "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/observations/20261108T135539Z-gates-runtime-and-installer-receipts.json"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.task_value_run",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/task_value002",
+    "--raw-root",
+    "/workspace/scratch/58af017d4789/raw_data",
+    "--prior-attempt",
+    "experiments/hcsn_distributional_v2/results/task_value001"
+  ],
+  "exit_code": 0,
+  "complete_child_cpu_seconds": 97.56292400000001,
+  "child_user_cpu_seconds": 87.29667,
+  "child_system_cpu_seconds": 10.266254,
+  "wall_seconds": 193.73655108599996,
+  "peak_rss_kib_linux": 291032,
+  "log_sha256": "30672b278d3167145cd309f21cfb25221550f24a17c793dda8fc0adbe1ebd6d2",
+  "measurement": "Outer wait4 covers coordinator startup/imports, all waited study workers and their waited native descendants; phase totals are nested, not additive.",
+  "analysis_parent_self_cpu_seconds_before_report_import": 0.092762359
+}

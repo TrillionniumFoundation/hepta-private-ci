@@ -1,0 +1,35 @@
+{
+  "base_commit": "4b3081c25af86f707a5c0d50c688c959a04af446",
+  "source_commit": "87641f069a7830b46fdeaaf34d417635c5f5d463",
+  "paper_commit": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+  "paper_revision": "revision_2026-09-26-r45",
+  "encoder_revision": "835ad14087e140460703cf0fae09f97d469d65c2",
+  "sourcecode_hashes": {
+    "cell_field_control.py": "b91260462b26492e29d17da4daaa7f16be429e3b6f33e4af587bf0471e15780b",
+    "cell_field_features.py": "e0ed725bcceac72c7c72eff680fb60cc7e117c989f6f7841ef9a6b27e1f24eb9",
+    "cell_field_replay.py": "321b5e5c1768d85a1c908b330d317b37013d32bf971dbd7ed78b49fe8319e795",
+    "cell_field_run.py": "ad69aad9fd309c3e260a029eebbcb29fa65504e07b98d0c010ccd15aa5e32004",
+    "cell_field_state.py": "1e30b346070056123cd198413c8d82b24040179f5aa732f25dadf506e795805f",
+    "cell_learning_metrics.py": "8c20c79dff3cf0e7cbee08648e2409ddb065438a72fcf9c2be56c0646a9aaf16",
+    "cell_learning_models.py": "5b6babba7e036be6273d96455db4cf0c93699a9e6a705805f4caf6ba66f45005"
+  },
+  "source_artifacts": {
+    "qa/stem-bakeoff/cell_field_audit.py": "8483782ae2441ed85d213619a0e55db4fed34a21044f0e8e37dd4f1baa2c106c",
+    "qa/stem-bakeoff/cell_field_control.py": "b91260462b26492e29d17da4daaa7f16be429e3b6f33e4af587bf0471e15780b",
+    "qa/stem-bakeoff/cell_field_data.py": "4cb83eb855c1ab1e322d6ac24857fbd9322c7fe4ff37e589cedf5c11f8e22f62",
+    "qa/stem-bakeoff/cell_field_evaluate.py": "bdf4d4bd3b753a062194309c9480b64408656565a00bb439f790b81c3584bf0c",
+    "qa/stem-bakeoff/cell_field_features.py": "e0ed725bcceac72c7c72eff680fb60cc7e117c989f6f7841ef9a6b27e1f24eb9",
+    "qa/stem-bakeoff/cell_field_protocol.json": "d0f3f8bc92a47bfac4afbb6595b93772b68aa248bf09d6b71fb90be6c64a64f1",
+    "qa/stem-bakeoff/cell_field_replay.py": "321b5e5c1768d85a1c908b330d317b37013d32bf971dbd7ed78b49fe8319e795",
+    "qa/stem-bakeoff/cell_field_run.py": "ad69aad9fd309c3e260a029eebbcb29fa65504e07b98d0c010ccd15aa5e32004",
+    "qa/stem-bakeoff/cell_field_state.py": "1e30b346070056123cd198413c8d82b24040179f5aa732f25dadf506e795805f",
+    "qa/stem-bakeoff/test_cell_field_audit.py": "25ed8277cab12b87118f250b3025988a3574bae270fd6a18a0f30890182de6de",
+    "qa/stem-bakeoff/test_cell_field_control.py": "5e82c7930f4faf90b9158ee5b26bfbb4a6e6abb6af829cd5fef4872502f4d188",
+    "qa/stem-bakeoff/test_cell_field_data.py": "be9650a177f836abf6f8a0591ab188f386eadc5c8b90ab9c85f941d99aac846c",
+    "qa/stem-bakeoff/test_cell_field_evaluate.py": "2ffa7134291f5b5be7536ab8273587e7684355d48d2849cc453f533491ad31fc",
+    "qa/stem-bakeoff/test_cell_field_run.py": "fa735520a57f54746b608d8f1e59a1ce5adbca589797b5d435b4068a53d355f6",
+    "qa/stem-bakeoff/test_cell_field_state.py": "7edc5aade59ed3232a2b527c81c1b165f916536a30716d32e1af39046488ad72"
+  },
+  "initial_audit_publication_commit": "2dd05afb003e2328f564ad7f5481ac337fb35fdb",
+  "publication_correction": "Fast-forward publishes exact auditor used by independent audits and its corresponding test fixture. The initial 35-test log predates these additional fail-closed identity checks; two final auditor tests passed separately. Training, optimizer and evaluation numerical algorithms and outcomes are unchanged."
+}

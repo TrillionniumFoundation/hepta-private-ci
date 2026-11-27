@@ -1,0 +1,77 @@
+{
+  "schema": "perc1.native-real-capture-check.v1",
+  "scientific_status": "HOLD",
+  "scope": "real FUNSD source pixels and actual pretrained inference through unchanged native validator; no Cell process admission",
+  "dataset_sha256": "cf0c6c40debc1d64bac452548f9773c229623656f84b164c150773d70ad8d5a6",
+  "source": {
+    "available_ns": 0,
+    "byte_length": 1484,
+    "description": "Registered rectangle 531,233,56,20; original scan resolution",
+    "episode_id": "funsd-00866042",
+    "group": "52fe933caf5b80bddc7497cdf26528ad1a36a6870a5c629ffaa9dcd11902d999",
+    "id": "funsd-00866042-read",
+    "locator": {
+      "height": 1000,
+      "kind": "image",
+      "origin_sha256": "52fe933caf5b80bddc7497cdf26528ad1a36a6870a5c629ffaa9dcd11902d999",
+      "width": 764,
+      "x0": 531,
+      "x1": 587,
+      "y0": 233,
+      "y1": 253
+    },
+    "path": "captures/funsd-00866042-read.png",
+    "sha256": "8caae65a9a399b7215c60ca0db420f39f70fc3e82ac75aaca79b4a807b6e46a7",
+    "split": "train",
+    "uri": "https://guillaumejaume.github.io/FUNSD/"
+  },
+  "weight_sha256": "047dcff4addef86ea5bc2eff13c9614dc11f47ab1160d0a71a25e7db994f4e1f",
+  "projection_sha256": "514e0d73754ee8b4446476f3945243356212e9d89e5b8da8d7eb27b8cde9f405",
+  "training_groups": 12,
+  "results": [
+    {
+      "representation": "global",
+      "observed_at_micros": 1794224811932315,
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "result": {
+        "actor_raster_bytes": 3360,
+        "canonical_roundtrip_equal": true,
+        "evidence_count": 2,
+        "evidence_raw_bytes": 3360,
+        "evidence_set_digest": "c47aa9f9ed5ce337651ef416a3d6b31a17b152e107a374ad4f82699973b3beb6",
+        "feature_scalars": 16,
+        "raster_sha256": "754e6d7822cdf8090671b7c500f8ba79a7db63c7cb33947ce51f0c25af51b591",
+        "representation": "global",
+        "schema": "perc1.native-readback.v1",
+        "scope": "unchanged native observation decode/validate/encode; no Cell owner admission",
+        "status": "PASS",
+        "wire_bytes": 14967,
+        "wire_sha256": "90ba8174e970471e5254a87f77ddfdcb57eee6b13de163b1b47c25594907cac0"
+      }
+    },
+    {
+      "representation": "dense",
+      "observed_at_micros": 1794224811932315,
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "result": {
+        "actor_raster_bytes": 3360,
+        "canonical_roundtrip_equal": true,
+        "evidence_count": 2,
+        "evidence_raw_bytes": 3360,
+        "evidence_set_digest": "c47aa9f9ed5ce337651ef416a3d6b31a17b152e107a374ad4f82699973b3beb6",
+        "feature_scalars": 32,
+        "raster_sha256": "754e6d7822cdf8090671b7c500f8ba79a7db63c7cb33947ce51f0c25af51b591",
+        "representation": "dense",
+        "schema": "perc1.native-readback.v1",
+        "scope": "unchanged native observation decode/validate/encode; no Cell owner admission",
+        "status": "PASS",
+        "wire_bytes": 15203,
+        "wire_sha256": "fe56e821adac771777d41251bff2a9d54d1b396873c5e99fe538bf823021642f"
+      }
+    }
+  ]
+}

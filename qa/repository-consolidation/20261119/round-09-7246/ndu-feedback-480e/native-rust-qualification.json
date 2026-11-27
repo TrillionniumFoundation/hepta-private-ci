@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.ndu480e.native-rust-qualification.v1",
+  "source_commit": "83154c9ff185a4c2e6e41de4a23c3ac6acfb62a8",
+  "source_tree": "647e88d88611b35a3dca1c0425ae3d121c4dfb7d",
+  "status": "PASS",
+  "steps": [
+    {
+      "name": "original-rust-tests",
+      "argv": [
+        "$USER_CARGO_BIN/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-ndu",
+        "feedback_generation"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 37.45998787879944,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 4022,
+      "stderr_sha256": "b8c7dc2c4beb58707c3f80afad2285ec05dffb11ddef91d3cfa5b701940d537c"
+    },
+    {
+      "name": "production-binary-build",
+      "argv": [
+        "$USER_CARGO_BIN/cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-ndu",
+        "--bin",
+        "ndu-feedback-generation"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.314786434173584,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 507,
+      "stderr_sha256": "6fa37f85925b18c3946968ce84dbef226626de6080b19a4a7a2eb1bd1be7c197"
+    },
+    {
+      "name": "original-native-parity",
+      "argv": [
+        "$QUALIFICATION_ROOT/python/bin/python",
+        "$QUALIFICATION_ROOT/source-candidate/experiments/multimodal_output_portfolio/v3/native_parity.py",
+        "--binary",
+        "$QUALIFICATION_ROOT/cargo-target/debug/ndu-feedback-generation",
+        "--receipt",
+        "$QUALIFICATION_ROOT/qualification/native-parity.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.11446833610534668,
+      "stdout_bytes": 127,
+      "stdout_sha256": "8502c6b3dea0d42c600ba30dc90fa15832c68894f44bc3f80fb3b84e176bcdbc",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "started_at": 1795112250.6944253,
+  "scope": "Original six Rust feedback-generation tests and unmodified original v3 native_parity against a real compiled binary. No production deployment or heldout efficacy claim.",
+  "verified_files_before": 2444,
+  "versions": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "nextest": "cargo-nextest 0.9.152 (26ebeda79 2026-11-13)\nrelease: 0.9.152\ncommit-hash: 26ebeda79b9ae1d008cf64ddb01984bcaa6e1239\ncommit-date: 2026-11-13\nhost: x86_64-unknown-linux-gnu",
+    "just": "just 1.58.0"
+  },
+  "original_tests": {
+    "passed": [
+      "observed_feedback_drives_charged_actions_and_terminal_sealing",
+      "finite_values_fixed_costs_and_snapshots_are_checked_before_mutation",
+      "reserve_and_depth_limits_override_higher_refinement_values",
+      "emission_wins_small_ties_independent_of_table_order",
+      "persistent_protocol_executes_feedback_before_next_choice",
+      "bounded_protocol_rejects_oversized_and_unfinished_sessions"
+    ],
+    "count": 6,
+    "assertions_modified": false
+  },
+  "parity": {
+    "randomized_sessions": 256,
+    "additional_u64_overflow_session": 1,
+    "persistent_processes": 1,
+    "returncode": 0,
+    "requests_checked": 5400,
+    "choices": {
+      "emit": 257,
+      "refine": 64
+    },
+    "expected_errors_checked": {
+      "CostMismatch": 321,
+      "InvalidConfiguration": 5,
+      "InvalidOutputs": 257,
+      "InvalidProtocol": 1,
+      "InvalidTable": 642,
+      "NonFiniteValue": 963,
+      "PendingExecution": 578,
+      "Sealed": 514,
+      "SessionSequence": 257,
+      "SnapshotMismatch": 963
+    },
+    "mismatches": 0,
+    "binary_sha256": "82480fdece93adf1d765f9b6e3aebdba53447936e165ed6bfffe7ad77fde3add",
+    "source_sha256": {
+      "codex-rs/Cargo.lock": "77b97b277e334533fafeedc0dd5294ee0adaf71b8890e56adf3cf68d54370cc8",
+      "codex-rs/hepta-ndu/BUILD.bazel": "f2d1b5135da40059f000209620f1a206162b77204d5faab580836c1bb3a7d756",
+      "codex-rs/hepta-ndu/Cargo.toml": "148c46d91de168e8160bc7d98fe590df471d016ab84901b19b93735a0af72e8c",
+      "codex-rs/hepta-ndu/src/bin/ndu-feedback-generation.rs": "206117e7ab1f6c721aae9d14950f0036d6ca3e30e86844bd5b5feb430a3df1e1",
+      "codex-rs/hepta-ndu/src/feedback_generation.rs": "520f53dcbf8abf015602f0eaeb2835b5a300787b815716e33ba340e8c4fa5e47",
+      "codex-rs/hepta-ndu/src/feedback_generation_protocol.rs": "40ef09bcc845c94b5be0112d8af0fbdbf1049aa7392603c9cc6c521f94b025b0",
+      "codex-rs/hepta-ndu/src/feedback_generation_tests.rs": "3ae374998d29f2ec876b1506ea764f5a66f28eaccfdeb656cce62bc75938f376",
+      "codex-rs/hepta-ndu/src/lib.rs": "ee837939bd14509175d9b68926dd6830f5ef7c91b2474e1450783a1cc28e2fad",
+      "experiments/multimodal_output_portfolio/v3/native_parity.py": "1ec4e6b0332f01e009fc8148c3ff5fc1d90e887baa9ddfc84a91cb3f4174a231"
+    },
+    "transcript_gzip_sha256": "46c2929d1e54763288b8e09d84e11f9aea6812374826359eaad0ba019f3446db"
+  },
+  "verified_files_after": 2444,
+  "source_files_unchanged": true,
+  "git_worktree_clean": true,
+  "finished_at": 1795112288.7479973
+}

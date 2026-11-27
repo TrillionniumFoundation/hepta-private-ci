@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.mem15.execution-checkpoint.v1",
+  "historical_observation": true,
+  "observed_at_utc": "2026-11-12T09:28:08Z",
+  "source_commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+  "source_tree": "fe00b2618f39e942ec6b1a8af2d63ec585e5f892",
+  "codex_rs_tree": "ed240f298fa2cbb104c65054596e64e7d1e9bca8",
+  "job_id": "1a1cf155b58-2564-197e",
+  "idempotency_key": "mem15-native-a-exit-capture-bbbcc630-20261112-ef0c-v1",
+  "launch_state": "launched",
+  "reused": false,
+  "request_digest": "79ce892948f8f3840d89dcb7cf97eb579b172de2e04483406511f9490f5eb253",
+  "wrapper": {
+    "bytes": 34099,
+    "sha256": "ec700c2c9f5ad2cabb8b845e357661976e4dd370b0badb2cf5ceeb7153de1e38"
+  },
+  "submitted_payload": {
+    "bytes": 34745,
+    "sha256": "bcc42e9504cb45dad5488c65fb100688049f0801052d64df9384a287e27abebe"
+  },
+  "source_or_budget_changed": false,
+  "model_generation_authorized": false,
+  "model_generation_count": null,
+  "physical_http_count": null,
+  "compiled_or_capture_outcomes_established_by_this_checkpoint": false,
+  "scientific_acceptance": "HOLD",
+  "independent_wrapper_review": {
+    "mode": "read-only; no execution",
+    "resolved_findings": [
+      "require unchanged compiled binary postimages for success",
+      "bind actual HTTP interval inside C OS lifetime and original listener interval; tombstone window covers C exit"
+    ],
+    "remaining_concrete_blockers": []
+  }
+}

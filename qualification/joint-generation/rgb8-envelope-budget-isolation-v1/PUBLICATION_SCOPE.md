@@ -1,0 +1,9 @@
+# Versioned RGB8 adapter regression evidence
+
+This namespace publishes the original 14-file locally reviewed package and its two independent reviews without changing their bytes. The original README/VALIDATION statements that publication had not occurred are historical pre-publication context. This note and the publication manifest provide the later release boundary; the earlier records are not retroactively rewritten.
+
+The useful code change is a one-line shallow copy of the bounded integer budget dictionary returned by the older RGB8 TEXT+IMAGE adapter. It fixes a distinct aliasing site and preserves the legacy implementation as regression evidence. The recorded five-test qualification and 28 observations are reused; no new test or model has been run for publication. Source imports include original model/data dependencies for the actual encoder, but no model construction/inference/training or dataset generation occurred in the admitted test.
+
+This is an isolated evidence/reference implementation, not a patch to the current Fashion runtime, a production owner interface or an auto-integrated library release. Existing consumers do not automatically switch to this namespace. Frozen tests require compatible Python and NumPy and are supplied for inspection, not a new scientific run authorization. Exact stored feature hashes and runtime assertions are not independently saved full feature tensors. The old independent reviews retain all limits and costs.
+
+Original complete-child CPU0.164622 seconds and supervisor prefix0.002725896 seconds plus unknown tail/preparation/review remain charged historical work. Publication preparation and checking are extra administrative costs, not a second qualification or scientific improvement. No data/owner hold is lifted; no merge, deployment, permissions or policy changes. Broad main-to-branch oversize violations remain separate.

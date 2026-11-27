@@ -1,0 +1,158 @@
+{
+  "archive": {
+    "bytes": 2887128,
+    "chunks": 8,
+    "index_sha256": "a2fb1dc26e84eaa99bd0857dea7e2290ed069e4dba5e940430b6bb06315d5f80",
+    "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/packaging/bundles/open_text_final_20261030",
+    "sha256": "5ce3179ad1cbab559659eb2f36265dc3071af071ee6cfb27dd5f9640e38693dd"
+  },
+  "checkpoint": {
+    "bytes": 3156046,
+    "historical_updates": 16,
+    "joint_tensor_sha256": "227f25ed9e17fc10cd762dda5739ef3f911a8cf3e0be833a6c8d0ce22e5013dc",
+    "new_training_updates": 0,
+    "parent_bytes_recovered": false,
+    "parent_sha256_from_training_receipt": "9032b0750ea07c9ad5f9d0fb657d0ce16fd67ccacde1a653908207cbfdb542dc",
+    "prefix_tensor_sha256": "d9ccbbcf160a597f930c6cb6ea843323085f4d90a390e0df0733bb5059452655",
+    "sha256": "33c1aa759bddb5e9b33b906e1796de7a6f89e5b5916711f99033584b3cbafb97",
+    "training_resume_qualified": false
+  },
+  "excluded": [
+    "Original parent byte recovery",
+    "Optimizer resume",
+    "Frozen LM/prefix execution",
+    "Natural multimodal quality",
+    "Adoption benefit",
+    "Complete historical training cost"
+  ],
+  "export": {
+    "model_config": {
+      "boundary": "direct",
+      "depth": 1,
+      "mode": "dual",
+      "verify_mode": "allow",
+      "width": 32
+    },
+    "native_math": "fp64-linux-libm-v1",
+    "original_model_mutated": false,
+    "parameters": 596985,
+    "public_sha256": "86c55417fdf2abdd065fc9828c40260aed0ded4a0d607c551e15b2f6b5fd2c00",
+    "schema": "hepta.native-content-export.v3",
+    "tensor_count": 67,
+    "weights_bytes": 4778937,
+    "weights_sha256": "41ce6de8a9095e1ef6b8756c3117a160ed40acfad8b297390de95083664d223e"
+  },
+  "historical_fixed_fact_passes": {
+    "shuffled_state": 0,
+    "state": 0,
+    "zero_state": 0
+  },
+  "historical_receipts": {
+    "protocol.json": "c4eaa44e93dba0361210fdfa9782fcade54859a4025bd399451a13fa3d3a30bb",
+    "report.json": "f88b467c8e31d079fa3e95077ac264974933b7bffa39ade2670294c3b93ca51f"
+  },
+  "public": {
+    "bytes": 78188,
+    "generator": "mechanism_data.batch",
+    "ids": [
+      3
+    ],
+    "path": "joint-trained-public.hps",
+    "scope": "Exact historical synthetic mechanism input; no natural-task evidence.",
+    "sha256": "86c55417fdf2abdd065fc9828c40260aed0ded4a0d607c551e15b2f6b5fd2c00",
+    "split": "v3-native-implementation"
+  },
+  "qualification": "Asset recovery only. Agentd lifecycle and actual helper numeric results are separate evidence.",
+  "schema": "hepta.historical-joint-descendant-fixture.v1",
+  "source_files": {
+    "hepta_core.py": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+    "mechanism_data.py": "bb6308d68d59d34c60332327a52b6758541097a7266a56d793e17f891b82e42b",
+    "model.py": "dcc20924b31d5bae40609c67b464f0662c0e6c492ba8500e14326b09ec29555e",
+    "v3/model.py": "16e285818a0e70d60da50ebec6e1bd15ecdc75a09df1db08caf43772f60cf612",
+    "v3/native_bridge.py": "51a8406c9c871f7b50f13ac049c75cdd173bd2bc4e1834b962d298736124803c",
+    "v3/open_domain.py": "bce96cdd873296ab581fe9b913d2c6c94aa5a7b1331f1ddccab25bf8383cf851"
+  },
+  "source_root": "experiments/multimodal_output_portfolio/joint_hepta_20261029",
+  "source_sha": "18dac3ccd30317893ad922792c12400390522f00",
+  "synthetic_weights": false,
+  "weight_chunks": [
+    {
+      "bytes": 393216,
+      "offset": 0,
+      "path": "joint-trained-weights-000.bin",
+      "sha256": "c0151daa279d72e366f62faaaa8ed528f1089f327c2445a5a587a95f178e6667"
+    },
+    {
+      "bytes": 393216,
+      "offset": 393216,
+      "path": "joint-trained-weights-001.bin",
+      "sha256": "9632f90fa888c2f7f653209871afa5ba55279462e9993790e5e3e56d6c753bca"
+    },
+    {
+      "bytes": 393216,
+      "offset": 786432,
+      "path": "joint-trained-weights-002.bin",
+      "sha256": "d051ea202fbd7fe77ae84f360a8adc8896a9c04549dcb4d549da7fcc001a6b39"
+    },
+    {
+      "bytes": 393216,
+      "offset": 1179648,
+      "path": "joint-trained-weights-003.bin",
+      "sha256": "2ce64d3c25c2b9e88c2ad8a7db99dccd01bf0c7a657ade047f259b1f8626a784"
+    },
+    {
+      "bytes": 393216,
+      "offset": 1572864,
+      "path": "joint-trained-weights-004.bin",
+      "sha256": "bd14152782c58d6528cfc85f05ceccc5733c353b57808cb28198a4f41b7373f9"
+    },
+    {
+      "bytes": 393216,
+      "offset": 1966080,
+      "path": "joint-trained-weights-005.bin",
+      "sha256": "a59e59604ed0933b96a678c1836aee008abbb427ba3b820f56b5e5c34b8052e4"
+    },
+    {
+      "bytes": 393216,
+      "offset": 2359296,
+      "path": "joint-trained-weights-006.bin",
+      "sha256": "cfc4ed7876408d0c489910351ab769d58844a71797f1ae1f4ef7a2fad6d63a5f"
+    },
+    {
+      "bytes": 393216,
+      "offset": 2752512,
+      "path": "joint-trained-weights-007.bin",
+      "sha256": "c56e673a958d25902dba8d3bb60e0dea0254a79cc441b0228effe2a0f896646b"
+    },
+    {
+      "bytes": 393216,
+      "offset": 3145728,
+      "path": "joint-trained-weights-008.bin",
+      "sha256": "21e9ffad5eb6930834c1df422db0cf7f6b9a65bc848e049f3f20e6f8cc11f01c"
+    },
+    {
+      "bytes": 393216,
+      "offset": 3538944,
+      "path": "joint-trained-weights-009.bin",
+      "sha256": "c51b091e5326e663f43c8fd4b1e184e1f1d5add4b34260f16ded1f023c07bfbb"
+    },
+    {
+      "bytes": 393216,
+      "offset": 3932160,
+      "path": "joint-trained-weights-010.bin",
+      "sha256": "b5dddbf0b919a5e8d709879ad699c0108a8e953cc7c2eb4168f0dcb9ade576a0"
+    },
+    {
+      "bytes": 393216,
+      "offset": 4325376,
+      "path": "joint-trained-weights-011.bin",
+      "sha256": "6adcdb79cd487f292f5a21300468901226f9acad02823880215e92e40518492e"
+    },
+    {
+      "bytes": 60345,
+      "offset": 4718592,
+      "path": "joint-trained-weights-012.bin",
+      "sha256": "332d25ab4ded2a59b693ec0514e1041ac9ac1d597dbb70aedd08a704be912e0a"
+    }
+  ]
+}

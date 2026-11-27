@@ -1,0 +1,34 @@
+{
+  "diff_bytes": 0,
+  "diff_check_exit": 0,
+  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source": "34eacaec1c94032f4980807e4a6f7c3516a7dafc",
+  "status": "",
+  "steps": [
+    {
+      "command": [
+        "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin/just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd",
+        "--locked",
+        "--offline"
+      ],
+      "elapsed_seconds": 243.8150515749585,
+      "exit_code": 0,
+      "name": "fix"
+    },
+    {
+      "command": [
+        "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin/just",
+        "fmt",
+        "--base",
+        "ed1ea5691798a2dbffbbcc8216f2929e67724af7"
+      ],
+      "elapsed_seconds": 0.1756801400333643,
+      "exit_code": 0,
+      "name": "fmt"
+    }
+  ],
+  "tests_rerun_after_maintenance": false
+}

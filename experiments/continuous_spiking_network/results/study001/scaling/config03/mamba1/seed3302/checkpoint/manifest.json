@@ -1,0 +1,307 @@
+{
+  "config": {
+    "architecture": "mamba1",
+    "classes": 4,
+    "depth": 2,
+    "input_dim": 64,
+    "match_cell_budget": false,
+    "seed": 3302,
+    "width": 128
+  },
+  "extra": {
+    "selected_step": 40
+  },
+  "format": "concatenated_state_v1",
+  "parts": [
+    {
+      "file": "state_000.npz",
+      "sha256": "c175aa8a1bebfe2d313de0c7030fcd775c1f99feb9a314abd2391e6e08d7ce5a"
+    },
+    {
+      "file": "state_001.npz",
+      "sha256": "b21d76855dfa2df9c27b3429be85b33a7cde103b4c068a0eb262ee4f93727533"
+    },
+    {
+      "file": "state_002.npz",
+      "sha256": "c8b3abb28861c2079788032e82a7b3ce2491cf8f82e11e51c8b1deaa995729a9"
+    }
+  ],
+  "tensors": [
+    {
+      "dtype": "<f4",
+      "name": "frontend.0.weight",
+      "nbytes": 33792,
+      "offset": 0,
+      "sha256": "6050c8827e24b693912569bf0cfc5982e821753875c76681ba25e0673b8093f1",
+      "shape": [
+        128,
+        66
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "frontend.0.bias",
+      "nbytes": 512,
+      "offset": 33792,
+      "sha256": "3fcb7973cb66a8ca4f9b12f69d517ee9634e1beef9db3420cc530c0dc7e5f6dc",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "frontend.1.weight",
+      "nbytes": 512,
+      "offset": 34304,
+      "sha256": "743db34fdadde1972eb415a3061be52bcb6f41a0974505af9e48006780deac94",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "frontend.1.bias",
+      "nbytes": 512,
+      "offset": 34816,
+      "sha256": "3fa51e77c4cac08df81544f7e58481fb7f2a84b7ee46c8f2fedb5662e586ded0",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "readout.weight",
+      "nbytes": 2048,
+      "offset": 35328,
+      "sha256": "2efbb329afb969067932fb29b539fc567b5b45970a55f6735ba85fe942d20030",
+      "shape": [
+        4,
+        128
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "readout.bias",
+      "nbytes": 16,
+      "offset": 37376,
+      "sha256": "a816b411f489f2c7a0d80488fc7827b9fde1f637ad6edf622ccbd52cda0515d4",
+      "shape": [
+        4
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.0.norm.weight",
+      "nbytes": 512,
+      "offset": 37392,
+      "sha256": "3ed98431bdd2dd2f85d24fe8e04114d2fd529f15918dbbf2595026cdfa63d304",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.0.mixer.A_log",
+      "nbytes": 16384,
+      "offset": 37904,
+      "sha256": "c49f11b3e585675e1ac558980e0f56bb69d7ddafce932989ad990bcd73c2f975",
+      "shape": [
+        256,
+        16
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.0.mixer.D",
+      "nbytes": 1024,
+      "offset": 54288,
+      "sha256": "787392f3bf4c153f1fa4f6ef2600bf966b3b6fec13b5fa2bcf6eeb76ed1e06e7",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.0.mixer.in_proj.weight",
+      "nbytes": 262144,
+      "offset": 55312,
+      "sha256": "16652020308c41fe6356b6280a22a50232a701d2eeefafb4142b14747b119c7f",
+      "shape": [
+        512,
+        128
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.0.mixer.conv1d.weight",
+      "nbytes": 4096,
+      "offset": 317456,
+      "sha256": "91f44a9160abe954fc7825017e6770fad2af980d5e18c675c031b6c222605248",
+      "shape": [
+        256,
+        1,
+        4
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.0.mixer.conv1d.bias",
+      "nbytes": 1024,
+      "offset": 321552,
+      "sha256": "7110a23138dcdcfe9b7c9d3000d17e7769bb0d36d29e65e5871f13f6bb3d2c67",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.0.mixer.x_proj.weight",
+      "nbytes": 40960,
+      "offset": 322576,
+      "sha256": "dc8c4606a26108d80ba0ee9107c10217fd7e5a167199b9af0b5fbd2252691484",
+      "shape": [
+        40,
+        256
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.0.mixer.dt_proj.weight",
+      "nbytes": 8192,
+      "offset": 363536,
+      "sha256": "0b0d45218b02a721f0afdc024e20022382dc467fd7e41373847b09ed7fddb330",
+      "shape": [
+        256,
+        8
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.0.mixer.dt_proj.bias",
+      "nbytes": 1024,
+      "offset": 371728,
+      "sha256": "18ad4f9dcbfc40ce6400e097ea3f46fe9a50602088b5410a6e9e918ed4f9bc60",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.0.mixer.out_proj.weight",
+      "nbytes": 131072,
+      "offset": 372752,
+      "sha256": "bfbb1b33bade7cbabaa0d243891edb8496af0f1fac9060a1ed2021bd1195b12f",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.1.norm.weight",
+      "nbytes": 512,
+      "offset": 503824,
+      "sha256": "53568c9d7045022bc47c52f199fad4c6e5541dfbe2f1069f21854f2c9f512529",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.1.mixer.A_log",
+      "nbytes": 16384,
+      "offset": 504336,
+      "sha256": "ad882a3f6029a7217b082a282bfe6275d2d90e56e809a33d9b0ec94baa93b277",
+      "shape": [
+        256,
+        16
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.1.mixer.D",
+      "nbytes": 1024,
+      "offset": 520720,
+      "sha256": "ddf96802820decf9503c109469ffc7eef8e9482d6396e949b5f318045976220c",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.1.mixer.in_proj.weight",
+      "nbytes": 262144,
+      "offset": 521744,
+      "sha256": "7d25fa16b530ad822a4f09ade8865e5ad1c1b051929a475d002c38809ec38959",
+      "shape": [
+        512,
+        128
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.1.mixer.conv1d.weight",
+      "nbytes": 4096,
+      "offset": 783888,
+      "sha256": "5a9499d5ceed4a6f49e9bd1f9473c275f673a5f5814126b5dba142439e64028b",
+      "shape": [
+        256,
+        1,
+        4
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.1.mixer.conv1d.bias",
+      "nbytes": 1024,
+      "offset": 787984,
+      "sha256": "bbfa17533a716c1161ecece9d2f0e0be755cde91508656935edbd34d4b144a5c",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.1.mixer.x_proj.weight",
+      "nbytes": 40960,
+      "offset": 789008,
+      "sha256": "abc8c0103309233903d9f27f06d947c0c3df44d9a6b52b17e551a25a7e2a112b",
+      "shape": [
+        40,
+        256
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.1.mixer.dt_proj.weight",
+      "nbytes": 8192,
+      "offset": 829968,
+      "sha256": "fa91cc86bcf882ce50f7bfd4c6cfca952e8b204f43f69871f4e54ffe02917a3c",
+      "shape": [
+        256,
+        8
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.1.mixer.dt_proj.bias",
+      "nbytes": 1024,
+      "offset": 838160,
+      "sha256": "678cf57c4487164253923d6072901795f7e2f0a40ededfea04c0572f953666c0",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "dtype": "<f4",
+      "name": "backbone.blocks.1.mixer.out_proj.weight",
+      "nbytes": 131072,
+      "offset": 839184,
+      "sha256": "99697fb380059d27baa34f92a2daaa809e18d3e6b4f2aacda62401ff90088ad7",
+      "shape": [
+        128,
+        256
+      ]
+    }
+  ]
+}

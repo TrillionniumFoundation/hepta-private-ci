@@ -59,7 +59,8 @@ create_openai_url(None, 3);
 Install the required tooling once:
 
 ```bash
-cargo install --locked cargo-dylint dylint-link
+cargo install --locked cargo-dylint --version 5.0.0
+cargo install --locked dylint-link --version 5.0.0
 rustup toolchain install nightly-2025-09-18 \
   --component llvm-tools-preview \
   --component rustc-dev \
@@ -70,7 +71,7 @@ Run the lint crate tests:
 
 ```bash
 cd tools/argument-comment-lint
-cargo test
+python3 with_pinned_clippy.py -- cargo test
 ```
 
 GitHub releases also publish a DotSlash file named
@@ -173,3 +174,20 @@ To override an explicitly narrow target selection, or to be explicit in scripts:
 ```bash
 ./tools/argument-comment-lint/run-prebuilt-linter.py -p codex-core -- --all-targets
 ```
+
+## Clippy source for Dylint 5.0.0
+
+Dylint 5.0.0 builds its driver by cloning Clippy and looking up `master`.
+[Clippy renamed that branch to `main`](https://github.com/trailofbits/dylint/commit/f1ed83623faead3799afd91533f8647715272c33).
+The test wrapper supplies an isolated mirror whose local `master` name points
+at the exact `clippy_utils.rev` already declared in this package. It verifies
+the commit and nightly, retains the ancestry needed by Dylint's original
+channel lookup, and applies the URL mapping only to the child command.
+The temporary mirror is removed after the command finishes.
+
+The wrapper requires Python 3.11 or later and Git. It fetches the public pinned
+source without credential helpers. It does not update Dylint, the nightly,
+Cargo dependencies, Rust flags, lint expectations or the original test command.
+An unavailable commit or mismatched nightly fails preparation; it never falls
+back to a branch tip or skips the UI test. CI's existing job timeout still
+covers preparation and the complete test run.

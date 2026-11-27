@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "qualification": "ACT-2 current-goal tool success maintained exact source",
+  "result": "SCOPED_NATIVE_PASS_ON_MAINTAINED_SOURCE",
+  "full_act2_promotion": "HOLD",
+  "audited_at_utc": "2026-11-10T07:39:00Z",
+  "source": {
+    "commit": "631e99f78898543e8dc1e8671632baf73945940e",
+    "tree": "9e5eb5acbed52758844804679647d316f401cb56",
+    "parent": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+    "companion_commit": "fd8d56c52b971c2d5d0e6430f296803b43ef60a3",
+    "companion_tree": "347fbb7e9931006c749b5bef0e1550c54bc08f27"
+  },
+  "run": {
+    "id": 42771121382,
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "native_job_id": 129684885621,
+    "format_job_id": 129684885374
+  },
+  "tests": {
+    "automation": {"passed": 169, "failed": 0, "skipped": 2, "elapsed_seconds": 286.41705249500006},
+    "notes_selected": {"passed": 12, "failed": 0, "skipped": 778, "elapsed_seconds": 499.50039488100015},
+    "real_app_selected": {"passed": 1, "failed": 0, "skipped": 789, "elapsed_seconds": 7.673450874999844},
+    "locked_companion_build_exit": 0,
+    "scoped_fix_exit": 0
+  },
+  "source_integrity": {
+    "all_command_before_after_commit_tree_equal": true,
+    "all_commands_exit_zero": true,
+    "timeout_observed": false,
+    "output_truncation_observed": false,
+    "tracked_source_after_clean": true,
+    "official_format_patch_bytes": 0,
+    "final_source_patch_bytes": 0
+  },
+  "actual_app": {
+    "json_bytes": 22939,
+    "json_sha256": "adcc08422a41cc2678b4ed863779b84229127aa2b8ed998c42cdbe7c40b93dce",
+    "tools": ["hepta_notes_replace", "hepta_notes_status"],
+    "first_current_goal": [true, true],
+    "recovered_current_goal": [true, true],
+    "historical_goal_after_edits": [false, false],
+    "repeated_current_goal": [[true, true], [true, true], [true, true]],
+    "current_readback_unavailable": [false, false],
+    "effect_dispatch_attempts": 3,
+    "issuer_requests": 4,
+    "recovery_effect_replay": false,
+    "recovery_requested_new_grant": false,
+    "complete_model_facing_handler_exercised": false,
+    "production_authority": false,
+    "notes_durable_tombstone_qualified": false,
+    "native_kernel_qualified": false,
+    "pixels_qualified": false
+  },
+  "artifacts": {
+    "native": {"id": 13743459047, "bytes": 72887, "sha256": "799795be18a34ea0866ad69f128e903e9fac158744a3ec4448eb9cdfc660f679"},
+    "format": {"id": 13742643595, "bytes": 57850, "sha256": "9c13f8e4829de00c3ccd4308daa9f830d64b92a315c52c7895270119cce9fef1"}
+  },
+  "limits": [
+    "The shared production predicate is exercised, not the complete DynamicToolCall authorization and transport handler.",
+    "Receipt retirement is not a destination no-effect tombstone.",
+    "Persistent common rollback, cancellation races, production authority, complete repository CI and learned hierarchy benefit remain open."
+  ]
+}

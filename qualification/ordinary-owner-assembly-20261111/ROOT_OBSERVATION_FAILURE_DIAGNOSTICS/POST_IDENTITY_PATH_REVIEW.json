@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "title": "Post-identity path accessibility review of the two original Root components",
+  "status": "static review; no additional confirmed permission defect",
+  "baseline_commit": "2d3a240d48aaa733775b134877c43981db50b702",
+  "baseline_tree": "ad39b87c16dd6799ba16015ec70b7021ac9c1e16",
+  "fixture_overlays": {
+    "publication_fixture": "8c5b2644f7ca39b20832850bd38b46352d89f785",
+    "publication_child": "29b40417626ada0a4df3f07c3bbc4a3f54b54854",
+    "publication_manifest": "ec3cca60b0a80584f8ee9cd15d14a8baa0c82332",
+    "initial_fixture_reported_by_owner": "adb691cc4a90f5039e7960c1e39b39e2cb79d337",
+    "initial_child_reported_by_owner": "c6ffe2f2404ce7f5ef66fe8212ade93f0ac7399b",
+    "initial_manifest_reported_by_owner": "0b801823fb8fce9a5db3d131d17c7945b48866c7"
+  },
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "git_blob": "60d210626d1bde702a7e848e21235d69c48611c0",
+      "bytes": 13853
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "git_blob": "1b9d802c993b3b52df72a130975c214a31c18f2d",
+      "bytes": 19430
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "git_blob": "50cbe55f7af1969f68d9c98e7ec9317b38b3c8dc",
+      "bytes": 7048
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "git_blob": "09cd6a9d43e7df874d1a0895539914a78a9cd9be",
+      "bytes": 13390
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "git_blob": "debcdc14f0c329c0f753c835192fb4c15bef974e",
+      "bytes": 7919
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "git_blob": "5bf4322f0c3320f30be998191d54cbb9e15ce091",
+      "bytes": 9155
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      "git_blob": "77b578235471b9d99e2aeea832647ea52524c3d6",
+      "bytes": 7294
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_material_tests.rs",
+      "git_blob": "f4c6e9c029b114bec90ea82dc1fdb4b14d9ec00e",
+      "bytes": 7353
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_artifacts_tests.rs",
+      "git_blob": "2363be5133730a592e1c7f5883b82dc2fe7a8230",
+      "bytes": 17017
+    }
+  ],
+  "paths": [
+    {
+      "operation": "Publication child original handoffs",
+      "access": "Already received original File descriptors; rewind/read use retained FDs.",
+      "finding": "No pathname reopen of protected bootstrap/profile files."
+    },
+    {
+      "operation": "Registered identity",
+      "access": "Original canonicalize of actual ordinary fleet/workspace.",
+      "finding": "Addressed only by the separately frozen0710 fixture repair; original production validation unchanged."
+    },
+    {
+      "operation": "Original five-lane connects",
+      "access": "/run/hgp-*/{observation,issuer,checkpoint,device-frontier,notes-frontier}.sock",
+      "finding": "Fixture config locates every socket in its original Root:60001 mode02710 parent. Original binder sets sockets0660, verifiesRoot UID/dedicated GID and validates root-owned nonwritable ancestors."
+    },
+    {
+      "operation": "Learning checkpoint connect",
+      "access": "Parent of config.sockets.observation joined with learning-checkpoint-v1.sock.",
+      "finding": "Same original runtime parent; BoundLearning verifiesRoot/dedicatedGID and sets0660."
+    },
+    {
+      "operation": "Publication CURRENT purpose connect",
+      "access": "Parent of config.sockets.observation joined with the fixed publication socket name.",
+      "finding": "Same original runtime parent; BoundPublication validates original fixed paths and sets0660."
+    },
+    {
+      "operation": "Publication original FinalUse journal",
+      "access": "/run/hgp-*/consumer-local/{device,notes}",
+      "finding": "Fixture constructs consumer-local as60001:60001 mode0700. Original read_bootstrap validates its canonical path/UID/GID/mode. Actual child opens original schema3 FinalUseAuthority; its claims file is under that same child-owned state. Protected Rootfrontiers are accessed through original sockets."
+    },
+    {
+      "operation": "Publication model/Artifact",
+      "access": "Root owns model Files and original artifact materials used byRoot enrollment.",
+      "finding": "This publication child does not open model or Artifact paths. It consumes original Root CURRENT/FinalUse interfaces; no need to changeRoot material permissions."
+    },
+    {
+      "operation": "Initial model/Artifact",
+      "access": "/run/hgp-*/model and /run/hgp-*/artifacts.",
+      "finding": "Source owner independently reviewed this branch; the existing bounded/no-symlink assignment gives actual child directories0700/files0600 after creation. Original material.load opens only model base/encoder/heads. Transfer.inputs/reopen uses original artifact-root snapshot/payload paths and original signed trust/current/lease/withdrawal inputs; original parentwriter is dropped before childreopen."
+    },
+    {
+      "operation": "Initial target journal/witness",
+      "access": "Original SCM_RIGHTS File descriptors; protected path ancestors remain private.",
+      "finding": "Child does not need to reopen those files by pathname, so Root0700 ancestors remain unchanged."
+    },
+    {
+      "operation": "Process identity",
+      "access": "/proc/sys/kernel/random/boot_id and the registered child's own /proc/PID/stat and status.",
+      "finding": "Original verify_process still checks exactstart/UID/GID/capabilities/NoNewPrivileges. These are not the fixture's privateRoot directory paths."
+    }
+  ],
+  "scope_limits": [
+    "No claim that static accessibility proves later Root protocol/currentness/timeout stages pass.",
+    "No new source, permission, identity, grant, test or timeout changes.",
+    "No h reads or native/Cargo/Root invocation.",
+    "No ordinary task, independent C, or physical restart acceptance."
+  ],
+  "conclusion": "No second confirmed Root-only-ancestor bug was found in these actual post-identity component paths. Keep the current private permissions and run the original newly frozen component source under root's scheduler."
+}

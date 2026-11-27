@@ -123,8 +123,10 @@ impl EvidenceTrust {
                 .map_err(|error| invalid(&error.to_string()))?,
             key_epoch: Generation::new(configured.key_epoch)
                 .map_err(|error| invalid(&error.to_string()))?,
-            verifying_key: VerifyingKey::from_bytes(&hex_bytes(&configured.public_key_hex)?)
-                .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
+            verifying_key: codex_hepta_authbus::AuthBusVerifyingKey::Ed25519(
+                VerifyingKey::from_bytes(&hex_bytes(&configured.public_key_hex)?)
+                    .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
+            ),
             revoked: configured.revoked,
         })
     }

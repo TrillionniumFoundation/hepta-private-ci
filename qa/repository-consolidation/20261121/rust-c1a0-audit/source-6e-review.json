@@ -1,0 +1,510 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/branch_protection_audit",
+  "reviewed_at_utc": "2026-11-21T13:15:26.998618+00:00",
+  "decision": "APPROVE_BOUNDED_FMT_SOURCE_AND_EXACT_V3_VALIDATION_BINDINGS; NO_MAIN_OR_FULL_REPOSITORY_QUALIFICATION",
+  "source": {
+    "commit": "6e97ba31efe03adaf798e46ef7c26fe96cd85b05",
+    "tree": "32e6d67edc08532569deaee27a72c2004ce904f1",
+    "parents": [
+      "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d"
+    ],
+    "object_sha256": "e82e392cbfea57f47621febe8d3e23c3bff12b97a0c4ddf498050e82030d3070",
+    "object_bytes": 1475
+  },
+  "parent": {
+    "commit": "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d",
+    "tree": "3bd4870ff4d8a1da3d9d1434ba5ba1c329c62d18",
+    "parents": [
+      "132b3227ae1978b5ae2eba5b64efef53158a92f6"
+    ],
+    "object_sha256": "6a408ac8de311e84046125944c5aa0c79f5a837b104014dc5fc1e73c74ad97c0",
+    "object_bytes": 988
+  },
+  "source_files": {
+    "scripts/format.py": {
+      "sha256": "374839d73d51cddde230f514888cd05532f791534bdd35c1842df19b8b2e2be9",
+      "git_blob": "6c4cefea2bb802da031ee7a0fbeb434f2089cc74",
+      "bytes": 30773
+    },
+    "scripts/test_hepta_format_scope.py": {
+      "sha256": "a11eb6fa3d5d4f8fc5edfcec680e20f11dd9f8a4a977005b625dea3db743377c",
+      "git_blob": "24754274f167b8d8f3f4bcfb321b70387e1a0a2e",
+      "bytes": 30370
+    }
+  },
+  "prior_reviews": {
+    "v2_static": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/fmt-scope-v2-review/INDEPENDENT-FMT-SCOPE-V2-REVIEW.json",
+      "sha256": "baf15a3ce07199cd0e2a00fa290d99f97662bf42cb1e72432f05d2aa92af8f55"
+    },
+    "v3_incremental_static": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/fmt-scope-v3-review/INDEPENDENT-FMT-SCOPE-V3-REVIEW.json",
+      "sha256": "323825b540832ae307ea8f5a3d89ed46d742823b3c0cf4a6a3912fa96369a9ea"
+    },
+    "parent_publication": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/FINAL-PUBLICATION-REVIEW.json",
+      "sha256": "4c5b2134de6c9a53506c4e58de9513852856676fe22637f33195efa5e1abb82d"
+    },
+    "prior_reports_overwritten": false
+  },
+  "tree_boundary": {
+    "complete_leaf_count": 59349,
+    "complete_path_mode_oid_Merkle_reconstruction_matches_source_tree": true,
+    "added_or_removed_paths": [],
+    "changed_modes_or_types": [],
+    "only_changed_paths_from_parent": [
+      "scripts/format.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "unchanged_leaves_from_parent": 59347,
+    "changed_paths_from_base": [
+      ".github/workflows/hepta-architecture-convergence.yml",
+      "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+      "codex-rs/hepta-agentd/src/neuron_generation_learning_readback_test_support.rs",
+      "codex-rs/hepta-authbus/src/owner_tests.rs",
+      "scripts/format.py",
+      "scripts/memory_cell/procedural_bundle_trial.py",
+      "scripts/memory_cell/procedural_observations.py",
+      "scripts/memory_cell/test_procedural_bundle_trial.py",
+      "scripts/memory_cell/test_procedural_observations.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "unchanged_leaves_from_base": 59337,
+    "all_34_historical_payloads_and_original_metadata_unchanged": true,
+    "whole_repository_blob_payload_materialized_claim": false,
+    "Rust_source_tree_identical_to_actual_native_5a": "2c6b4d3b59589e0ffea5a7147b50152769fa0280"
+  },
+  "source_review": {
+    "new_exact_records": 34,
+    "32_AUDIT_records_have_existing_copy_only_packaging_and_provenance": true,
+    "two_additional_records": [
+      {
+        "path": "qualification/main-consolidation/historical-continuations/continuation-20261021/research/reader-2969/source/codex-rs/hepta-ndu/src/recursive.rs",
+        "git_blob": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d",
+        "sha256": "8f5b71cbbc217d4b07a0d4797944eedf5d3c3bd3884cd6fbcb304a48318102fb",
+        "bytes": 5219,
+        "mode": "100644"
+      },
+      {
+        "path": "research/rrsnn_v4/hepta/bootstrap_runtime_preformat.rs",
+        "git_blob": "9304d15bfe16f6e69af0b01b97a9eb110ff314a6",
+        "sha256": "df98ccc5ca1d7c87f4e1ab5bf99aca9b3190b2bab4e00e758c0caeed6d2aa154",
+        "bytes": 18942,
+        "mode": "100644"
+      }
+    ],
+    "original_ten_entries_unchanged": true,
+    "original_evidence_records": 39,
+    "original_vendor_fixtures": 5,
+    "exact_total": 44,
+    "no_directory_or_glob_skip": true,
+    "prefixes_only_validate_registry_record_eligibility": true,
+    "exact_path_size_digest_and_symlink_guards_preserved": true,
+    "formatter_commands_scope_functions_and_edition_rules_unchanged": true,
+    "all_41_test_identities_preserved": true,
+    "original_test_bodies_unchanged": 39,
+    "original_test_bodies_strengthened": 2,
+    "ordered_neighbor_assertion_preserves_order_and_duplicate_detection": true
+  },
+  "actual_v3_tests": {
+    "record": "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/actual-scope-tests-result.json",
+    "base_plus_two_file_overlay_equals_immutable_source_tree": true,
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "scripts.test_hepta_format_scope"
+    ],
+    "exit_code": 0,
+    "test_count": 41,
+    "executed_identity_list_exactly_equals_original_AST_identity_list": true,
+    "executed_identities": [
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_all_remains_full_even_in_clean_checkout",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_build_metadata_is_preserved_while_starlark_sources_are_formatted",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_changed_ruff_configuration_checks_the_owning_python_tree",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_clean_checkout_does_not_start_any_formatter",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_committed_ruff_config_change_uses_requested_base",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_deleted_configuration_rechecks_owner_without_deleted_source",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_deleted_rust_configuration_rechecks_its_subtree_and_other_actual_edit",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_dependency_only_pyproject_edit_does_not_reformat_untouched_tree",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_exact_base_includes_committed_work_and_rejects_unknown_base",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_exact_historical_rust_records_do_not_exempt_neighboring_source",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_explicit_full_python_scope_includes_github_helpers",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_github_python_and_scripts_share_one_scoped_tool_invocation",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_github_ruff_configuration_affects_only_its_own_tree",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_historical_rust_inventory_cannot_register_production_source",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_historical_rust_record_mutation_fails_before_format",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_independent_qualification_rust_edit_keeps_its_own_edition",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_missing_relocated_record_fails_before_full_and_scoped_format",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_missing_verbatim_input_is_an_error_even_without_local_source_edits",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_nested_configuration_selects_subtree_and_other_actual_edits",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_nested_rust_config_limits_tools_to_existing_owner_sources",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_newline_filename_is_not_split_and_symlink_escape_is_rejected",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_python_310_python_only_scope_requires_no_toml_dependency",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_python_only_does_not_construct_rust_bazel_sdk_or_just_commands",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_python_version_changes_affect_inferred_ruff_target",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_real_staged_unstaged_new_and_deleted_paths",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_relocated_inventory_rejects_production_and_noncanonical_paths",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_relocated_record_byte_drift_fails_before_full_and_scoped_format",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_relocated_record_symlink_is_rejected_even_with_identical_bytes",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_relocated_records_preserve_bytes_and_keep_neighbors_and_active_rust",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_relocated_rust_configuration_keeps_unregistered_neighbors_in_scope",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_rust_configuration_expansion_keeps_only_unregistered_source_inputs",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_rust_does_not_guess_an_inherited_edition_without_its_owner",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_rust_edition_comes_from_nearest_or_explicit_workspace",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_rust_formatter_executes_in_owner_context_without_touching_neighbor",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_rust_uses_own_edition_without_recursively_formatting_neighbors",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_sdk_scopes_both_lint_and_format_to_changed_files",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_verbatim_inputs_are_unchanged_and_unregistered_sources_still_run",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_verbatim_inventory_cannot_register_a_source_outside_its_fixed_prefix",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_verbatim_single_byte_mutation_fails_before_full_or_scoped_format",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_verbatim_symlink_escape_is_rejected_even_with_identical_bytes",
+      "scripts.test_hepta_format_scope.FormatterScopeTests.test_workflow_only_edit_does_not_start_python_tools"
+    ],
+    "before_after_source_hashes": {
+      "scripts/format.py": "374839d73d51cddde230f514888cd05532f791534bdd35c1842df19b8b2e2be9",
+      "scripts/test_hepta_format_scope.py": "a11eb6fa3d5d4f8fc5edfcec680e20f11dd9f8a4a977005b625dea3db743377c"
+    },
+    "log_sha256": "71502284a4f4852b4469a91785697baea4f00d9c940df0528e180dc2271fc6fb",
+    "log_bytes": 7947,
+    "original_suite_native_fixture_format_probes_executed": true,
+    "repository_full_formatter_executed_by_unit_suite": false
+  },
+  "scope_plan": {
+    "record": "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/actual-full-scope-summary.json",
+    "original_paths": 4247,
+    "verified_exact_exemptions": 44,
+    "remaining_original_Rust_commands_planned": 4203,
+    "errors": [],
+    "all_4203_original_arguments_flags_editions_and_owning_cwd_unchanged": true,
+    "only_original_snapshot_root_rebased_to_root_checkout": true,
+    "original_scope_blobs_bind_exactly_to_6cb": true,
+    "unchanged_Rust_payloads_since_6cb": 4198,
+    "five_prior_Rust_edits_preserved_from_reviewed_55e": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+        "original_6cb_blob": "389136532ef4c6f6abbb5a6aeb358c2b1fffd963",
+        "reviewed_55e_and_6e97_blob": "2b92e0a38ccfa4fadf07cda7fbfaa0f44e1bc0f1"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "original_6cb_blob": "1007c7a767d36494e327da538760988bd7faa1c8",
+        "reviewed_55e_and_6e97_blob": "b1ea163ca43fdcffe0c50118c4dc37ff652995bf"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+        "original_6cb_blob": "3a8d21d2c5d10154f746ae781dacffaa6de23a36",
+        "reviewed_55e_and_6e97_blob": "b08197190ade39809e0982772a3ec201a9fbf832"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback_test_support.rs",
+        "original_6cb_blob": "a0c426d1ad2d4f8b882574f34810e7d44eb3252a",
+        "reviewed_55e_and_6e97_blob": "3211c686d400e62ce196289957d9d3ec559c49eb"
+      },
+      {
+        "path": "codex-rs/hepta-authbus/src/owner_tests.rs",
+        "original_6cb_blob": "b4523b470b6c866776b3c5ae2b66801e74ef94d1",
+        "reviewed_55e_and_6e97_blob": "8045757f7ea65d48534409f07541f5400712b116"
+      }
+    ],
+    "ten_executable_research_diagnostic_fixture_inputs_preserved": [
+      "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.rs",
+      "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_support.rs",
+      "qualification/hcsn_training/native_fixture.rs",
+      "qualification/hcsn_training/supervisor_fixture.rs",
+      "research/rrsnn_v4/hepta/native_owner/src/config.rs",
+      "research/rrsnn_v4/hepta/native_owner/src/main.rs",
+      "research/rrsnn_v4/hepta/native_owner/src/model.rs",
+      "research/rrsnn_v4/hepta/native_owner/src/repair.rs",
+      "research/rrsnn_v4/hepta/rr_bridge_native/src/main.rs",
+      "scripts/diagnostics/windows_retained_identity.rs"
+    ],
+    "native_formatter_executed_for_4203": false,
+    "full_plan_uncompressed_sha256": "280b77eb840e52999dc76b825592da39e615539240e44d2a4b45096dacadd8ab"
+  },
+  "actual_formatter_gates": {
+    "fmt_command": [
+      "/workspace/scratch/c1a0d7534606/publication/tools/just",
+      "fmt",
+      "--base",
+      "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d"
+    ],
+    "fmt_exit_code": 0,
+    "check_command": [
+      "/workspace/scratch/c1a0d7534606/publication/tools/just",
+      "fmt",
+      "--base",
+      "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d",
+      "--check"
+    ],
+    "check_exit_code": 0,
+    "scope": "only the two new Python files changed from parent 55e",
+    "source_bytes_changed_by_formatting": 0,
+    "source_sha256_before_after_identical": true,
+    "tests_rerun_after_formatting": false,
+    "full_locked_ruff_command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+      "--cache-dir",
+      "/workspace/scratch/c1a0d7534606/format-repair/uv-cache",
+      "run",
+      "--frozen",
+      "--offline",
+      "--project",
+      "scripts",
+      "ruff",
+      "format",
+      "--check",
+      "scripts",
+      ".github"
+    ],
+    "full_locked_ruff_exit_code": 0,
+    "full_locked_ruff_already_formatted_file_count": 1145,
+    "full_ruff_stdout_sha256": "55ebd15e0d7f4264fd627f7487857f94c1f6118b369c4ec8f1c21c5694bc7204",
+    "native_4203_Rust_commands_or_required_CI_aggregate_pass_claim": false
+  },
+  "ancestry_and_protection": {
+    "new_ancestors_from_parent": [
+      "6e97ba31efe03adaf798e46ef7c26fe96cd85b05"
+    ],
+    "new_ancestors_since_base": [
+      "0847396844638608708608072ec94961bb20458b",
+      "132b3227ae1978b5ae2eba5b64efef53158a92f6",
+      "394e28812368f5174b890cea51ff13e882231756",
+      "4a120a0bba8b493407930924822eb6cf38279976",
+      "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d",
+      "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "6e97ba31efe03adaf798e46ef7c26fe96cd85b05",
+      "8016166226cd6206ba09c83fa64acc91eca368ba",
+      "dbed60c6372a148a934e48e9a08ba88aa2a536e2"
+    ],
+    "candidate_ancestor_count": 44910,
+    "all_traversed_parents_known": true,
+    "known_protected_nodes": 1469,
+    "known_HIA_intersection": [],
+    "STOP_anchor_or_descendant_intersection": [],
+    "STOP_proof": "The complete ancestor traversal excludes the STOP anchor; no ancestor can descend from that anchor without including it.",
+    "STOP_source_payload_opened_or_executed": false,
+    "historical_551st_pin_identity_remains_missing": true,
+    "complete_original_historical_pin_identity_claim": false,
+    "ref_snapshot_sha256": "fb1a5b2164cf4e7ccb78ce0caa73b218f54d15890dca702e5fa4f5c91386bd93",
+    "ref_snapshot_is_fresh_write_lease": false,
+    "branch_coverage_unchanged_from_parent": {
+      "ordinary": 7264,
+      "ordinary_contained_by_candidate": 2858,
+      "ordinary_not_contained_by_candidate": 4406,
+      "protected": 538,
+      "main": 1
+    },
+    "branch_deletion_authorized_by_this_report": false
+  },
+  "latest_native_receipts_kept_separate": {
+    "record": "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/FINAL.json",
+    "record_sha256": "5f4289c0a083cfa707dbaa0c2442875b33578b8e0990b82216fd5dc3c8e68aea",
+    "actual_source": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "actual_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+    "original_test_stages": [
+      {
+        "stage": "03-agentd-just-test",
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "test",
+          "-p",
+          "codex-hepta-agentd",
+          "--locked"
+        ],
+        "actual_source": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+        "actual_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+        "command_exit_code": 0,
+        "wrapper_exit_code": 0,
+        "passed": 1605,
+        "failed": 0,
+        "source_before_after_clean": true,
+        "full_log_sha256": "76f4803270388df62558683eed561bf7e9e28e9c4bb49ca9ca52e12af83bb248",
+        "full_log_bytes": 305798
+      },
+      {
+        "stage": "04-authbus-just-test",
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "test",
+          "-p",
+          "codex-hepta-authbus",
+          "--locked"
+        ],
+        "actual_source": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+        "actual_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+        "command_exit_code": 0,
+        "wrapper_exit_code": 0,
+        "passed": 51,
+        "failed": 0,
+        "source_before_after_clean": true,
+        "full_log_sha256": "06d5fd5f7f2089ebaded2e627e098b65b96fa8d5751e70a2fa81ed5b42159158",
+        "full_log_bytes": 28000
+      }
+    ],
+    "overall_status": "failed",
+    "overall_exit_code": 1,
+    "final_fmt_and_check_exit_codes": [
+      1,
+      1
+    ],
+    "final_fmt_failure_evidence": "Both recorded stderr files report missing uv; preserved original failure.",
+    "post_format_tree": "f80cd064b5237c75b0703df376344edd17e3a745",
+    "post_format_changed_file": "codex-rs/hepta-authbus/src/owner_tests.rs",
+    "post_format_source_retested": false,
+    "post_format_native_tree_equals_this_source_tree": false,
+    "native_tests_executed_on_6e97_claim": false,
+    "full_native_aggregate_pass_claim": false
+  },
+  "limitations": [
+    "This report approves the bounded formatter source change and binds existing exact execution receipts; it does not qualify main or complete the full branch audit.",
+    "The 4,203 Rust commands were planned and compared, not executed by this scope audit.",
+    "The successful final local fmt/check gate covered only the two Python files changed from 55e; it is not the original broad native formatter gate.",
+    "Native Agentd/AuthBus tests actually passed on clean 5a; the same recovery aggregate remains failed because final fmt/check could not launch uv.",
+    "Native post-format owner_tests bytes have not been retested and are not part of 6e97.",
+    "The original 551st historical HIA pin identity remains unrecovered; protection is only complete relative to the recovered set and recorded snapshot.",
+    "No fresh ref comparison or branch deletion was performed. Previously uncovered 4,406 ordinary names and main qualification remain unresolved.",
+    "Original Architecture completion, Musl 500 ms diagnostic, Windows owner portability and macOS native checks are not solved by this formatter patch."
+  ],
+  "actions": {
+    "tests_formatter_or_repository_code_executed_by_this_reviewer": false,
+    "root_source_index_refs_changed_by_this_reviewer": false,
+    "remote_jobs_queried_or_controlled": false,
+    "remote_refs_changed": false,
+    "own_review_files_written": true
+  },
+  "evidence_manifest": {
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/FINAL-PUBLICATION-REVIEW.json": {
+      "bytes": 34864,
+      "sha256": "4c5b2134de6c9a53506c4e58de9513852856676fe22637f33195efa5e1abb82d"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/fmt-scope-v2-review/INDEPENDENT-FMT-SCOPE-V2-REVIEW.json": {
+      "bytes": 66283,
+      "sha256": "baf15a3ce07199cd0e2a00fa290d99f97662bf42cb1e72432f05d2aa92af8f55"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/fmt-scope-v3-review/INDEPENDENT-FMT-SCOPE-V3-REVIEW.json": {
+      "bytes": 13445,
+      "sha256": "323825b540832ae307ea8f5a3d89ed46d742823b3c0cf4a6a3912fa96369a9ea"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/fmt-scope-v3-review/source-6e97-full-tree.nul": {
+      "bytes": 8368479,
+      "sha256": "2b7e9df7b6af0abf16917b65a46364bc860b5fca66b5e1a67ee415bacf81ea54"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/published-full-tree.nul": {
+      "bytes": 8368479,
+      "sha256": "a3a16783b438ed8a8b47081137ef282f79c69254823a07b3d2cb7c7ba3cc9c33"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/base-full-tree.nul": {
+      "bytes": 8368479,
+      "sha256": "a485ce5fc85e5e4d6c8c47c0a161bbbe2682081a42cc5eb1cfb88b392968df1c"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/candidate/scripts/format.py": {
+      "bytes": 30773,
+      "sha256": "374839d73d51cddde230f514888cd05532f791534bdd35c1842df19b8b2e2be9"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/candidate/scripts/test_hepta_format_scope.py": {
+      "bytes": 30370,
+      "sha256": "a11eb6fa3d5d4f8fc5edfcec680e20f11dd9f8a4a977005b625dea3db743377c"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/actual-scope-tests-result.json": {
+      "bytes": 959,
+      "sha256": "7f4dff1310ae860edf373519ecfeb1c43851e44841ca01253336c96879b013ad"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/actual-scope-tests.log": {
+      "bytes": 7947,
+      "sha256": "71502284a4f4852b4469a91785697baea4f00d9c940df0528e180dc2271fc6fb"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/actual-full-scope-summary.json": {
+      "bytes": 1178,
+      "sha256": "9ad72f4c85249f717ff6ef9d1e7308f7453743309927ad7d1b0e97924353f8e8"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/actual-full-scope-plan.json.gz": {
+      "bytes": 48295,
+      "sha256": "f0ba2bb328727c553432653dea416774eb41d98896ebfdc282226f75355b2849"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/rust-scope-classification.json": {
+      "bytes": 3431906,
+      "sha256": "cc97ce5b670f4dd108c6475be6666b0cff482f01342270e9847a2d64f223f432"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/final-python-fmt-result.json": {
+      "bytes": 1169,
+      "sha256": "6dc515123789282f59f98cd02a17a1f4a418cd84182ef488fdedf7115df79ba3"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/final-python-fmt-check-result.json": {
+      "bytes": 323,
+      "sha256": "1fc537de19a38fac2c55827335ebb0847a6915444ca541a5165e179da5259ae6"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/final-python-fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/final-python-fmt-check.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/final-python-format.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/full-ruff-check-result.json": {
+      "bytes": 811,
+      "sha256": "c5c0115ce3cfd0c8fffad4ef68a21c03795790b4ccebaee79d5d7ab6ac534773"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/SNAPSHOT-COMPLETE-KNOWN-PARENTS.tsv": {
+      "bytes": 6678080,
+      "sha256": "89800bf995e3476cc666c9d9f490d9265e78818f6806759c47bf4ff691c9cdbd"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/PROTECTED-7803-KNOWN-DESCENDANTS.json": {
+      "bytes": 67577,
+      "sha256": "0656ccf81becd2ed88be551bdd3c24c381cc8fb625e70a43604d165df19c73fe"
+    },
+    "/workspace/scratch/c1a0d7534606/remote-heads-before-publication.tsv": {
+      "bytes": 770833,
+      "sha256": "fb1a5b2164cf4e7ccb78ce0caa73b218f54d15890dca702e5fa4f5c91386bd93"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/FINAL.json": {
+      "bytes": 17502,
+      "sha256": "5f4289c0a083cfa707dbaa0c2442875b33578b8e0990b82216fd5dc3c8e68aea"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/03-agentd-just-test.exec.json": {
+      "bytes": 1492,
+      "sha256": "aff9afe714327de75f1b213f93f5683af2c2f68d2c5bf11a8d216f7c6f1a0abf"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/03-agentd-just-test.log": {
+      "bytes": 305798,
+      "sha256": "76f4803270388df62558683eed561bf7e9e28e9c4bb49ca9ca52e12af83bb248"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/04-authbus-just-test.exec.json": {
+      "bytes": 1491,
+      "sha256": "4e80d51b7b9a791964b93178cd6e7d55d28de1b87659326a457657b247519045"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/04-authbus-just-test.log": {
+      "bytes": 28000,
+      "sha256": "06d5fd5f7f2089ebaded2e627e098b65b96fa8d5751e70a2fa81ed5b42159158"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/06-final-fmt.stderr.log": {
+      "bytes": 421,
+      "sha256": "345c850afea669723e05606ef5c146c522d5e043e795496178bcc899d7c2ebdf"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/06-final-fmt.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/07-final-fmt-check.stderr.log": {
+      "bytes": 429,
+      "sha256": "8def1eb60671b6c1c1fac82a288cb7b8e80c796821f521031f83c2cdf916df1a"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/07-final-fmt-check.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/FINAL-FORMAT.diff": {
+      "bytes": 822,
+      "sha256": "4df706d350833debff01c76def70620f49879b0b7075ac3fb6ea111bdedbcb21"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "tree": "b248dd1cc18b0568504b89725e105656e8b1e27c",
+  "manifest_blob": "d1083684c3cdd2bf900d48848cd64b28817b1385",
+  "manifest_path": "qualification/evaluated-current-read-20261112/source84-e0616-weak-sender-fix/MANIFEST.json",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "base": "edaca64612927bfd04a41faac7331f4965acc623",
+      "bytes": 17603,
+      "sha256": "ace4fd0d4ac2cf8218333bbc42cc7c3605d1608a5c40462b75dac2ff33963c45",
+      "git_blob": "022ca082e2846c4c969f883c53f591b4400b8282",
+      "edits": [
+        {
+          "before": "impl NeuronGenerationRuntimeHandleV2 {\n",
+          "after": "impl NeuronGenerationRuntimeHandleV2 {\n    #[cfg(test)]\n    pub(crate) fn qualification_file_sender(&self) -> mpsc::WeakSender<GenerationCommand> {\n        self.sender.downgrade()\n    }\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "base": "734b249c7cc0ac37209ed9d47f53072ca58a956e",
+      "bytes": 14196,
+      "sha256": "b1a41815873567dd6d9fbd0a297faa6172ccb690be83b1df09ba2a93e736c85a",
+      "git_blob": "37446dfe1c2bb22db40b995a8a4c00db69c1665e",
+      "edits": [
+        {
+          "before": "            sender: handle.sender.downgrade(),\n",
+          "after": "            sender: handle.qualification_file_sender(),\n"
+        }
+      ]
+    }
+  ],
+  "all_post_bytes_git_readback": true,
+  "published": false
+}

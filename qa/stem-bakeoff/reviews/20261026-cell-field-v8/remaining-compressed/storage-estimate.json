@@ -1,0 +1,44 @@
+{
+  "bavail_bytes": 0,
+  "bfree_bytes": 258670592,
+  "conservative_new96_all_step_joint_trial_payload_estimate_bytes": 353894400,
+  "estimate_scope": "All complete existing compressed policy ledgers are streamed only for expanded-byte lengths; new96 remaining traces can differ. No candidate outcome or causal inference.",
+  "euid": 0,
+  "extra_plan_checkpoint_io_reserve_bytes": 50000000,
+  "groups": {
+    "full_h8": {
+      "max_times96": 118281408,
+      "records": 143,
+      "uncompressed_max": 1232098,
+      "uncompressed_median": 248114,
+      "uncompressed_min": 59775
+    },
+    "future_field_h8": {
+      "max_times96": 117038880,
+      "records": 142,
+      "uncompressed_max": 1219155,
+      "uncompressed_median": 250645.5,
+      "uncompressed_min": 60003
+    },
+    "loss2_h8": {
+      "max_times96": 129617760,
+      "records": 142,
+      "uncompressed_max": 1350185,
+      "uncompressed_median": 287739.5,
+      "uncompressed_min": 70802
+    },
+    "myopic_h1": {
+      "max_times96": 108294624,
+      "records": 143,
+      "uncompressed_max": 1128069,
+      "uncompressed_median": 252907,
+      "uncompressed_min": 194918
+    }
+  },
+  "new_optimizer_or_solver_calls": 0,
+  "observed_raw_record_count": 570,
+  "partially_written_or_unreadable": 0,
+  "recommendation": "At least450MB genuinely writable headroom before starting96; empirical previous maximum alone is not a worst-case guarantee. No frozen writer edits.",
+  "schema": "hepta.remaining-terminal-storage-preflight.v8",
+  "selection_labels_or_outcome_metrics_parsed": false
+}

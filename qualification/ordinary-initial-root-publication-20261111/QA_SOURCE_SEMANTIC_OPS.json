@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.exact-source-ops.v1",
+  "base_commit": "89b3b44747bedbc80732f73eda2405b7a397b926",
+  "base_tree": "1eba30f512a0fcd0463417c5f14537493cd8b104",
+  "purpose": "Restore same-file/external caller accounting, preserve original and retained source negatives, and retain cfg(test) masking for the private CurrentStore test variant.",
+  "apply_contract": "For each operation require the stated exact old fragment count before replacing. Apply only these operations to shared CALLERS; do not overwrite unrelated concurrent metadata.",
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+      "preimage_git_blob": "c12ccfa926a6117563e3bc9fbbfb1d2425701f84",
+      "preimage_sha256": "4cbdd09c7cdda5c2607cab065cda0b13b0cbb3a5aeffd86e802caa38b47a9cff",
+      "postimage_sha256": "6128faf8dfe2857f50a46276e5ff6c41d77c28e073a94351a757e1ab21a86713",
+      "postimage_bytes": 15236
+    },
+    {
+      "path": "CALLERS.toml",
+      "preimage_git_blob": "54470dc74b5c536f089f92753e1492d269b51d46",
+      "preimage_sha256": "da4c30e64d81d85112d0ed053b249f1a84d03e376e4eef717c48d58b12fbed85",
+      "postimage_sha256": "078c6c23580e58a66d05a1321155ad38d64053efc44af35577314b9f8742f6ff",
+      "postimage_bytes": 597852
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "preimage_git_blob": "689dc845d2af7f1b32d88fbaa6f02bdb1cd99d0a",
+      "preimage_sha256": "e37193957034e8462dbc12d5753478d12669623e4ac0a24a3a8b28c2dc056c59",
+      "postimage_sha256": "c012f74430e0e9c5e05e4717bb4ad590f0acd2f559027137db5eaace69209198",
+      "postimage_bytes": 18640
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "preimage_git_blob": "cb7dae50f397a58393cdf09a58b4637a8bc827bd",
+      "preimage_sha256": "92a579fa6d6596a9ff8170dcd1740af8e6674162182a3d82a899a9fb4795c091",
+      "postimage_sha256": "a93959a0a2d52357d3034ea57be7d568b5a47557af29448057ea3a34d4ea5e4a",
+      "postimage_bytes": 5156
+    }
+  ],
+  "operations": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+      "old": "            \"evaluation_original_sources_attest\": (OWNER, EVALUATION_STAGE),\n            \"evaluation_original_sources_readback\": (OWNER, EVALUATION_STAGE),",
+      "new": "            # The checker excludes the boundary's definition file. The same-file\n            # external-client wrappers remain covered by their protected markers\n            # and deletion mutants below; only the real stage is an outside caller.\n            \"evaluation_original_sources_attest\": (EVALUATION_STAGE,),\n            \"evaluation_original_sources_readback\": (EVALUATION_STAGE,),",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "[[boundary]]\nid = \"evaluation_original_sources_attest\"\nsymbol = \"OriginalCellEvaluationReceiptOwnerV1::attest_original_sources\"\nreceiver_type = \"OriginalCellEvaluationReceiptOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs\"\ndefinition_markers = [\"fn attest_original_sources<\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs\",\"codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs\"]\ncaller_markers = []\n",
+      "new": "[[boundary]]\nid = \"evaluation_original_sources_attest\"\nsymbol = \"OriginalCellEvaluationReceiptOwnerV1::attest_original_sources\"\nreceiver_type = \"OriginalCellEvaluationReceiptOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs\"\ndefinition_markers = [\"fn attest_original_sources<\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs\"]\ncaller_markers = []\n",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "[[boundary]]\nid = \"evaluation_original_sources_readback\"\nsymbol = \"OriginalCellEvaluationReceiptOwnerV1::readback_sources\"\nreceiver_type = \"OriginalCellEvaluationReceiptOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs\"\ndefinition_markers = [\"fn readback_sources<\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs\",\"codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs\"]\ncaller_markers = []\n",
+      "new": "[[boundary]]\nid = \"evaluation_original_sources_readback\"\nsymbol = \"OriginalCellEvaluationReceiptOwnerV1::readback_sources\"\nreceiver_type = \"OriginalCellEvaluationReceiptOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs\"\ndefinition_markers = [\"fn readback_sources<\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs\"]\ncaller_markers = []\n",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "old": "PUBLICATION_SESSION = AGENT + \"authority_host_generation_publication_session.rs\"\n",
+      "new": "PUBLICATION_SESSION = AGENT + \"authority_host_generation_publication_session.rs\"\nINITIAL_SESSION = AGENT + \"authority_host_generation_initial_session.rs\"\n",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "old": "        REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION,\n",
+      "new": "        REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION, INITIAL_SESSION,\n",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "old": "        self.rejects(DELIVERY, \"fn run(\", \"if !claimed && matches!(self.source, CircuitLearningSourceV1::OriginalObjective)\")",
+      "new": "        self.rejects(DELIVERY, \"fn run(\", \"if !claimed && self.source.requires_original_objective()\")",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "old": "        self.rejects(DELIVERY, \"fn run(\", \"state.require_circuit_learning_source(request)\")",
+      "new": "        self.rejects(DELIVERY, \"fn run(\", \"state.require_circuit_learning_source(request)\")\n        self.rejects(\n            DELIVERY, \"fn run(\", \"else if self.source.requires_original_objective()\",\n            replacement=\"else if false\",\n        )\n        self.rejects(DELIVERY, \"fn run(\", \".require_circuit_learning_source(&source_request)\")",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "old": "    def test_pending_guard_must_execute_at_top_level(self):",
+      "new": "    def test_each_original_source_kind_cannot_fall_back_to_host_stage_owners(self):\n        branches = (\n            \"Self::HostStageOwners => false,\\n\"\n            \"            Self::OriginalObjective | Self::OriginalQ24 => true,\"\n        )\n        for replacement in (\n            \"Self::HostStageOwners | Self::OriginalObjective => false,\\n\"\n            \"            Self::OriginalQ24 => true,\",\n            \"Self::HostStageOwners | Self::OriginalQ24 => false,\\n\"\n            \"            Self::OriginalObjective => true,\",\n        ):\n            with self.subTest(replacement=replacement):\n                self.rejects(\n                    DELIVERY, \"fn requires_original_objective(\", branches,\n                    replacement=replacement,\n                )\n\n    def test_retained_original_source_cannot_be_dropped_or_use_current_outbox(self):\n        for path, function, marker, replacement in (\n            (DELIVERY, \"fn take_circuit_delivery(\",\n             \"retained_source: self.retained_source.take()\", \"retained_source: None\"),\n            (DELIVERY, \"fn attach_sources(\",\n             \"return state.attach_original_retained_learning_source(Arc::clone(source));\", \"\"),\n            (DELIVERY, \"fn run(\",\n             \"source.observe_retained_learning(state.identity()).await?;\", \"\"),\n            (DELIVERY, \"fn run(\",\n             \"self.requests.as_slice() != std::slice::from_ref(source.request())\", \"false\"),\n            (DELIVERY, \"fn run(\",\n             \"source.original_outbox(state.identity(), source.request())?\", \"store\"),\n            (SOURCE, \"fn require_circuit_learning_source(\",\n             \"return self\\n                .require_registered_retained_source(request, source)\\n                .await\",\n             \"return Ok(())\"),\n        ):\n            with self.subTest(path=path, marker=marker):\n                self.rejects(path, function, marker, replacement=replacement)\n\n    def test_pending_guard_must_execute_at_top_level(self):",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "\"crate::reconcile_circuit_learning_v1(\", \"let source_state: Arc<AgentdState> = Arc::clone(&state)\"",
+      "new": "\"crate::reconcile_circuit_learning_v1(\", \"else if self.source.requires_original_objective()\", \"let source_state: Arc<AgentdState> = Arc::clone(&state)\"",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "required = [\"Self::HostStageOwners => false\",\"Self::OriginalObjective | Self::OriginalQ24 => true\"]\nforbidden = []\nrequired_function_order = [\n",
+      "new": "required = [\"Self::HostStageOwners => false\",\"Self::OriginalObjective | Self::OriginalQ24 => true\"]\nforbidden = []\nrequired_function_order = [\n  { function = \"fn requires_original_objective(\", sequence = [\"Self::HostStageOwners => false\",\"Self::OriginalObjective | Self::OriginalQ24 => true\"] },\n",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "old": "    Test(Arc<dyn AuthorityFrontierStore<CurrentHead>>),",
+      "new": "    Test {\n        store: Arc<dyn AuthorityFrontierStore<CurrentHead>>,\n    },",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "old": "Store::Test(store) =>",
+      "new": "Store::Test { store } =>",
+      "expected_occurrences": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "old": "store: Store::Test(store),",
+      "new": "store: Store::Test { store },",
+      "expected_occurrences": 1
+    }
+  ]
+}

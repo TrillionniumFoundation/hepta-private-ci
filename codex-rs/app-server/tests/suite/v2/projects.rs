@@ -830,6 +830,27 @@ async fn projects_validate_filters_cursors_and_sqlite_less_assignment() -> Resul
     Ok(())
 }
 
+// Global skill watcher updates are unrelated to a fork's response/lifecycle
+// ordering. Every other message remains visible to the original ordering guard.
+async fn read_next_message_ignoring_global_skills_changes(
+    server: &mut TestAppServer,
+) -> Result<JSONRPCMessage> {
+    loop {
+        let message = server.read_next_message().await?;
+        if !matches!(
+            &message,
+            JSONRPCMessage::Notification(notification)
+                if notification.method == "skills/changed"
+                    && matches!(
+                        notification.params.as_ref(),
+                        Some(serde_json::Value::Object(params)) if params.is_empty()
+                    )
+        ) {
+            return Ok(message);
+        }
+    }
+}
+
 #[tokio::test]
 async fn assigned_forks_inherit_projects_for_persistent_and_ephemeral_children() -> Result<()> {
     let responses = create_mock_responses_server_repeating_assistant("Done").await;
@@ -877,7 +898,9 @@ async fn assigned_forks_inherit_projects_for_persistent_and_ephemeral_children()
             ..Default::default()
         })
         .await?;
-    let JSONRPCMessage::Response(response) = server.read_next_message().await? else {
+    let JSONRPCMessage::Response(response) =
+        read_next_message_ignoring_global_skills_changes(&mut server).await?
+    else {
         panic!("thread/fork must respond before lifecycle notifications");
     };
     assert_eq!(response.id, RequestId::Integer(fork_id));
@@ -893,7 +916,9 @@ async fn assigned_forks_inherit_projects_for_persistent_and_ephemeral_children()
             ..Default::default()
         })
         .await?;
-    let JSONRPCMessage::Response(response) = server.read_next_message().await? else {
+    let JSONRPCMessage::Response(response) =
+        read_next_message_ignoring_global_skills_changes(&mut server).await?
+    else {
         panic!("ephemeral thread/fork must respond before lifecycle notifications");
     };
     assert_eq!(response.id, RequestId::Integer(ephemeral_id));

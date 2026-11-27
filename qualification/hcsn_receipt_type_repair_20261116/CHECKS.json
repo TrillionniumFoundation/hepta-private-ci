@@ -1,0 +1,77 @@
+[
+  {
+    "name": "receipt-type-green",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "-v",
+      "qualification.hcsn_currentstate_n256_terminal_publication_intent.test_terminal_publication",
+      "qualification.hcsn_currentstate_n256_execution_receipt_publisher_intent.test_publisher",
+      "qualification.hcsn_currentstate_n256_execution_receipt_contract.test_receipt_contract",
+      "qualification.hcsn_currentstate_n256_execution_admission_bridge.test_admission_bridge",
+      "qualification.hcsn_currentstate_n256_execution_freeze_protocol.test_execution_freeze",
+      "qualification.hcsn_currentstate_n256_provider_fullstate_bridge.test_bridge"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr_tail": "_and_nonfinite_reject (qualification.hcsn_currentstate_n256_provider_fullstate_bridge.test_bridge.ProviderFullstateBridgeTests.test_short_long_duplicate_and_nonfinite_reject) ... ok\ntest_small_stream_is_bounded_deterministic_and_exact (qualification.hcsn_currentstate_n256_provider_fullstate_bridge.test_bridge.ProviderFullstateBridgeTests.test_small_stream_is_bounded_deterministic_and_exact) ... ok\n\n----------------------------------------------------------------------\nRan 33 tests in 0.066s\n\nOK\n"
+  },
+  {
+    "name": "receipt-type-green-opt",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-O",
+      "-m",
+      "unittest",
+      "-v",
+      "qualification.hcsn_currentstate_n256_terminal_publication_intent.test_terminal_publication",
+      "qualification.hcsn_currentstate_n256_execution_receipt_publisher_intent.test_publisher",
+      "qualification.hcsn_currentstate_n256_execution_receipt_contract.test_receipt_contract",
+      "qualification.hcsn_currentstate_n256_execution_admission_bridge.test_admission_bridge",
+      "qualification.hcsn_currentstate_n256_execution_freeze_protocol.test_execution_freeze",
+      "qualification.hcsn_currentstate_n256_provider_fullstate_bridge.test_bridge"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr_tail": "_and_nonfinite_reject (qualification.hcsn_currentstate_n256_provider_fullstate_bridge.test_bridge.ProviderFullstateBridgeTests.test_short_long_duplicate_and_nonfinite_reject) ... ok\ntest_small_stream_is_bounded_deterministic_and_exact (qualification.hcsn_currentstate_n256_provider_fullstate_bridge.test_bridge.ProviderFullstateBridgeTests.test_small_stream_is_bounded_deterministic_and_exact) ... ok\n\n----------------------------------------------------------------------\nRan 33 tests in 0.023s\n\nOK\n"
+  },
+  {
+    "name": "receipt-type-verify-hcsn_currentstate_n256_execution_receipt_contract",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_currentstate_n256_execution_receipt_contract.verify_source"
+    ],
+    "exit": 0,
+    "stdout": "PASS_CURRENTSTATE_N256_EXECUTION_RECEIPT_CONTRACT_HOLD\n",
+    "stderr_tail": ""
+  },
+  {
+    "name": "receipt-type-verify-hcsn_currentstate_n256_execution_receipt_publisher_intent",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_currentstate_n256_execution_receipt_publisher_intent.verify_source"
+    ],
+    "exit": 0,
+    "stdout": "PASS_N256_EXECUTION_RECEIPT_PUBLISHER_SOURCE_HOLD\n",
+    "stderr_tail": ""
+  },
+  {
+    "name": "receipt-type-verify-hcsn_currentstate_n256_terminal_publication_intent",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_currentstate_n256_terminal_publication_intent.verify_source"
+    ],
+    "exit": 0,
+    "stdout": "PASS_N256_TERMINAL_PUBLICATION_SOURCE_HOLD\n",
+    "stderr_tail": ""
+  }
+]

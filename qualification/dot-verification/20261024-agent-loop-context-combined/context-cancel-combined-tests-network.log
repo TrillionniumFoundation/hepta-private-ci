@@ -1,0 +1,110 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+ Downloading crates ...
+  Downloaded zmij v1.0.23
+  Downloaded itoa v1.0.18
+  Downloaded zeroize v1.9.1
+  Downloaded serde_core v1.0.229
+  Downloaded memchr v2.8.3
+  Downloaded semver v1.0.28
+  Downloaded serde_derive v1.0.229
+  Downloaded bitflags v2.13.2
+  Downloaded serde v1.0.229
+  Downloaded serde_json v1.0.154
+  Downloaded syn v2.0.119
+  Downloaded rustix v1.1.5
+  Downloaded libc v0.2.191
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling version_check v0.9.5
+   Compiling generic-array v0.14.7
+   Compiling typenum v1.20.1
+   Compiling syn v3.0.9
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling zeroize v1.9.1
+   Compiling digest v0.10.7
+   Compiling cfg-if v1.0.5
+   Compiling semver v1.0.28
+   Compiling cpufeatures v0.2.17
+   Compiling const-oid v0.9.6
+   Compiling der v0.7.10
+   Compiling rustc_version v0.4.1
+   Compiling serde_core v1.0.229
+   Compiling curve25519-dalek v4.1.3
+   Compiling spki v0.7.3
+   Compiling sha2 v0.10.9
+   Compiling syn v2.0.119
+   Compiling zmij v1.0.23
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling pkcs8 v0.10.2
+   Compiling serde_json v1.0.154
+   Compiling rustix v1.1.5
+   Compiling signature v2.2.0
+   Compiling subtle v2.6.1
+   Compiling serde v1.0.229
+   Compiling ed25519 v2.2.3
+   Compiling serde_derive v1.0.229
+   Compiling bitflags v2.13.2
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling linux-raw-sys v0.12.1
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-context-combined/codex-rs/hepta-types)
+   Compiling tokio-macros v2.7.2
+   Compiling pin-project-lite v0.2.17
+   Compiling thiserror v2.0.21
+   Compiling tokio v1.53.3
+   Compiling codex-hepta-wire v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-context-combined/codex-rs/hepta-wire)
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-context-combined/codex-rs/hepta-contracts)
+   Compiling thiserror-impl v2.0.21
+   Compiling futures-sink v0.3.34
+   Compiling futures-core v0.3.34
+   Compiling bytes v1.12.1
+   Compiling tokio-util v0.7.20
+   Compiling codex-hepta-context-compiler v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-context-combined/codex-rs/hepta-context-compiler)
+   Compiling yansi v1.0.1
+   Compiling diff v0.1.13
+   Compiling pretty_assertions v1.4.1
+   Compiling codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-context-combined/codex-rs/hepta-agent-loop)
+    Finished `test` profile [unoptimized] target(s) in 32.64s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID cf3bc84b-f4fb-4a0f-b970-69b464b3eb3d with nextest profile: local
+    Starting 24 tests across 4 binaries
+        PASS [   0.003s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_unchanged_revision
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_skipped_revision
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_unchanged_revision
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_token_drift
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_round_drift
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_token_drift
+        PASS [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_round_drift
+        PASS [   0.005s] codex-hepta-agent-loop::context_owner context_recompile_preserves_mandatory_instruction_and_tool
+        PASS [   0.006s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_skipped_revision
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop cancellation_waits_for_effect_owner_acknowledgement
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop commit_interruption_reconciles_effect_without_executing_it_twice
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop foreign_completion_cannot_dispatch_a_tool
+        PASS [   0.005s] codex-hepta-agent-loop::context_owner foreign_objective_cannot_reuse_valid_context_receipts
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop deadline_cancels_a_stalled_stream_without_terminal_success
+        PASS [   0.006s] codex-hepta-agent-loop::context_owner revoked_context_is_rejected_before_native_dispatch
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop duplicate_provider_calls_are_rejected_before_any_effect
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop oversized_context_is_rejected_before_provider_dispatch
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop partial_stream_never_executes_tools_and_reconnect_uses_original_request
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop reconnect_does_not_reset_the_original_deadline
+        PASS [   0.008s] codex-hepta-agent-loop::context_owner output_reservation_must_fit_the_existing_model_profile
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop text_only_completion_without_retained_provider_items_is_rejected
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop streamed_tool_turn_commits_before_dispatch_and_resumes_model
+        PASS [   0.005s] codex-hepta-agent-loop::owner_loop stalled_model_cancellation_does_not_prevent_effect_cancellation
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop unresolved_effect_keeps_exact_key_across_loop_instances
+────────────
+     Summary [   0.014s] 24 tests run: 24 passed, 0 skipped

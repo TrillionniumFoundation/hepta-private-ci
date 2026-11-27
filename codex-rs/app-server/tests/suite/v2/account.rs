@@ -9,8 +9,6 @@ use app_test_support::DEFAULT_CLIENT_NAME;
 use app_test_support::encode_id_token;
 use app_test_support::write_chatgpt_auth;
 use app_test_support::write_models_cache;
-use chrono::Duration as ChronoDuration;
-use chrono::Utc;
 use codex_app_server_protocol::Account;
 use codex_app_server_protocol::AccountLoginCompletedNotification;
 use codex_app_server_protocol::AccountUpdatedNotification;
@@ -60,6 +58,7 @@ use std::path::Path;
 use std::time::Duration;
 use tempfile::TempDir;
 use test_case::test_case;
+use time::Duration as TimeDuration;
 use tokio::time::timeout;
 use url::Url;
 use wiremock::Mock;
@@ -1654,6 +1653,7 @@ async fn logout_managed_bedrock_preserves_changed_provider_without_experimental_
                 version: "0.1.0".to_string(),
             },
             Some(InitializeCapabilities {
+                process_indeterminate: false,
                 experimental_api: false,
                 ..Default::default()
             }),
@@ -1712,6 +1712,7 @@ async fn managed_bedrock_login_requires_experimental_api() -> Result<()> {
                 version: "0.1.0".to_string(),
             },
             Some(InitializeCapabilities {
+                process_indeterminate: false,
                 experimental_api: false,
                 ..Default::default()
             }),
@@ -3054,7 +3055,9 @@ async fn get_account_omits_chatgpt_after_permanent_refresh_failure() -> Result<(
             .account_id(WORKSPACE_ID_STALE)
             .email("user@example.com")
             .plan_type("pro")
-            .last_refresh(Some(Utc::now() - ChronoDuration::days(9))),
+            .last_refresh(Some(
+                codex_utils_time::Timestamp::now() - TimeDuration::days(9),
+            )),
         AuthCredentialsStoreMode::File,
     )?;
 

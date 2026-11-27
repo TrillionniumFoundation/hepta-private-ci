@@ -8,6 +8,9 @@
 use std::error::Error as StdError;
 use std::fmt;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -28,6 +31,23 @@ use crate::SignedArtifactWriterLeaseV1;
 use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
+
+#[path = "owner_service_readback.rs"]
+mod readback;
+
+#[path = "owner_service_durable_drain.rs"]
+mod durable_drain;
+#[path = "owner_service_durable_inputs.rs"]
+mod durable_inputs;
+
+use durable_drain::DurableDrain;
+
+#[path = "owner_service_preparation.rs"]
+mod preparation;
+
+pub use preparation::OriginalArtifactPreparationErrorV1;
+pub use preparation::OriginalArtifactPreparedPublicationV1;
+pub use preparation::OriginalArtifactPublicationContextV1;
 
 #[derive(Clone, Debug)]
 pub struct LearningArtifactOwnerServiceConfigV1 {
@@ -50,12 +70,41 @@ pub struct LearningArtifactPublishRequestV1 {
     pub now: u64,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningArtifactOwnerServiceStatusV1 {
+    pub ready: bool,
+    pub draining: bool,
+    pub recovery_required: Option<StableId>,
+    pub successful_requests: u64,
+    pub rejected_requests: u64,
+    pub terminal_replays: u64,
+    pub authority: AuthorityPosture,
+}
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum DurableDrainState {
+    NotRequested,
+    Uncertain,
+    Confirmed,
+}
+
 pub struct LearningArtifactOwnerService {
     host: LearningArtifactOwnerHost,
     withdrawal_registry: DatasetWithdrawalRegistry,
     registry: ArtifactRegistry,
     storage_binding: Digest32,
     recovery_required: Option<StableId>,
+    withdrawal_pending: bool,
+    draining: bool,
+    durable_drain: DurableDrain,
+    durable_drain_state: DurableDrainState,
+    last_admission_ms: u64,
+    successful_requests: u64,
+    rejected_requests: u64,
+    terminal_replays: u64,
+    original_preparation_instance: Arc<()>,
+    original_preparation_fenced: AtomicBool,
+    original_preparation_active: bool,
 }
 
 impl fmt::Debug for LearningArtifactOwnerService {
@@ -81,6 +130,8 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
         }
+        let registry_id = config.trust.registry_id.clone();
+        let scope = config.trust.withdrawal_scope_digest;
         let host = match config.required_current_head {
             Some(current) => LearningArtifactOwnerHost::open_with_required_current_head(
                 &config.root,
@@ -96,6 +147,29 @@ impl LearningArtifactOwnerService {
                 config.now,
             )?,
         };
+        if let Some(current) = host.discover_current_head(config.now)?
+            && current.signed.binding != config.storage_binding
+        {
+            return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
+        }
+        let withdrawal_registry = host.recover_original_withdrawal_frontier(
+            &config.withdrawal_registry,
+            config.storage_binding,
+        )?;
+        let durable_drain = DurableDrain::new(
+            host.original_store_root(),
+            &registry_id,
+            scope,
+            config.storage_binding,
+        );
+        let draining = durable_drain
+            .requested()
+            .map_err(ArtifactOwnerHostError::from)?;
+        let durable_drain_state = if draining {
+            DurableDrainState::Confirmed
+        } else {
+            DurableDrainState::NotRequested
+        };
         let registry = host.recover_current_registry(config.now)?;
         let recovery = host.recovery_required_operations()?;
         if recovery.len() > 1 {
@@ -106,10 +180,21 @@ impl LearningArtifactOwnerService {
             .map(|checkpoint| checkpoint.operation_id.clone());
         Ok(Self {
             host,
-            withdrawal_registry: config.withdrawal_registry,
+            withdrawal_registry,
             registry,
             storage_binding: config.storage_binding,
             recovery_required,
+            withdrawal_pending: false,
+            draining,
+            durable_drain,
+            durable_drain_state,
+            last_admission_ms: config.now,
+            successful_requests: 0,
+            rejected_requests: 0,
+            terminal_replays: 0,
+            original_preparation_instance: Arc::new(()),
+            original_preparation_fenced: AtomicBool::new(false),
+            original_preparation_active: false,
         })
     }
 
@@ -120,11 +205,19 @@ impl LearningArtifactOwnerService {
 
     /// Return the exact authenticated CURRENT registry view for read-only
     /// product consumers. This delegates current-head discovery, signature
-    /// validation and snapshot binding to the fenced artifact owner.
+    /// validation and snapshot binding to the fenced artifact owner. A pending
+    /// publication can be inspected through its original-operation readback,
+    /// but is not exposed as a ready product view before reconciliation.
     pub fn current_registry_view(
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
+        self.require_original_withdrawal()?;
+        if let Some(operation_id) = self.recovery_required() {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                operation_id.clone(),
+            ));
+        }
         Ok(self.host.current_registry_view(now)?)
     }
 
@@ -138,12 +231,75 @@ impl LearningArtifactOwnerService {
         self.recovery_required.as_ref()
     }
 
+    /// Readiness reflects the local writer fence only. A transport must still
+    /// verify its own authentication and independent current-head freshness.
+    /// Use the trusted host clock, never the time from a wire request.
+    #[must_use]
+    pub fn status(&self, now: u64) -> LearningArtifactOwnerServiceStatusV1 {
+        LearningArtifactOwnerServiceStatusV1 {
+            ready: !self.draining
+                && self.recovery_required.is_none()
+                && !self.original_preparation_fenced.load(Ordering::Acquire)
+                && now >= self.last_admission_ms
+                && self.host.check_current_writer(now).is_ok()
+                && self.require_original_withdrawal().is_ok(),
+            draining: self.draining,
+            recovery_required: self.recovery_required.clone(),
+            successful_requests: self.successful_requests,
+            rejected_requests: self.rejected_requests,
+            terminal_replays: self.terminal_replays,
+            authority: AuthorityPosture::DENY_ALL,
+        }
+    }
+
+    /// Refuse new writes without releasing the writer fence. A previously
+    /// admitted split publication can still finish with its exact continuation.
+    pub fn begin_shutdown(&mut self) {
+        self.draining = true;
+    }
+
+    /// Keep new admission closed across reopening this store. An error
+    /// leaves admission closed in this process and never acknowledges the stop.
+    /// The embedding owner supplies authorization; the record grants none.
+    pub fn begin_drain_durable(&mut self) -> Result<(), LearningArtifactOwnerServiceError> {
+        self.draining = true;
+        self.durable_drain_state = DurableDrainState::Uncertain;
+        self.durable_drain
+            .persist()
+            .map_err(ArtifactOwnerHostError::from)?;
+        self.durable_drain_state = DurableDrainState::Confirmed;
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn durable_drain_requested(&self) -> bool {
+        self.durable_drain_state == DurableDrainState::Confirmed
+    }
+
+    /// Whether the current owner is draining with no local write left unresolved.
+    ///
+    /// This is lifecycle observation only. It does not prove deployment readiness,
+    /// a current witness, or an authorization to reopen the writer. The writer
+    /// remains fenced until the service is dropped.
+    #[must_use]
+    pub fn is_drained(&self) -> bool {
+        self.draining
+            && self.durable_drain_state != DurableDrainState::Uncertain
+            && self.recovery_required.is_none()
+            && !self.original_preparation_active
+            && !self.original_preparation_fenced.load(Ordering::Acquire)
+            && self.require_original_withdrawal().is_ok()
+    }
+
     /// Install an authenticated newer withdrawal frontier. The service accepts
     /// only an exact monotonic prefix extension in the same scope.
     pub fn install_withdrawal_frontier(
         &mut self,
         next: DatasetWithdrawalRegistry,
     ) -> Result<(), LearningArtifactOwnerServiceError> {
+        if self.draining {
+            return Err(LearningArtifactOwnerServiceError::ShuttingDown);
+        }
         if next.scope_digest() != self.withdrawal_registry.scope_digest() {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
         }
@@ -154,7 +310,14 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
         }
+        self.withdrawal_pending = true;
+        self.host.install_original_withdrawal_frontier(
+            &self.withdrawal_registry,
+            &next,
+            self.storage_binding,
+        )?;
         self.withdrawal_registry = next;
+        self.withdrawal_pending = false;
         Ok(())
     }
 
@@ -167,6 +330,33 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        let result = self.publish_request(request);
+        if result.is_ok() {
+            self.successful_requests = self.successful_requests.saturating_add(1);
+        } else {
+            self.rejected_requests = self.rejected_requests.saturating_add(1);
+        }
+        result
+    }
+
+    fn publish_request(
+        &mut self,
+        request: LearningArtifactPublishRequestV1,
+    ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        if self.draining && !self.durable_drain_requested() {
+            return Err(LearningArtifactOwnerServiceError::ShuttingDown);
+        }
+        self.require_original_withdrawal()?;
+        // The new split protocol has already consumed this instance's write
+        // entrance. Only its private fresh continuation may finish it; the
+        // legacy reconciliation method must not bypass a lost continuation.
+        if self.original_preparation_active {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                self.recovery_required
+                    .clone()
+                    .ok_or(LearningArtifactOwnerServiceError::UnexpectedPhase)?,
+            ));
+        }
         if let Some(blocked) = &self.recovery_required
             && blocked != &request.operation_id
         {
@@ -182,14 +372,64 @@ impl LearningArtifactOwnerService {
                 Ok(receipt)
             }
             Err(error) => {
-                if let Some(recovery) = self.host.recover_publication(&operation_id)?
-                    && recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged
-                {
-                    self.recovery_required = Some(operation_id);
+                match self.host.recover_publication(&operation_id) {
+                    Err(recovery_error) => {
+                        self.recovery_required = Some(operation_id);
+                        return Err(recovery_error.into());
+                    }
+                    Ok(Some(recovery))
+                        if recovery.checkpoint.phase
+                            != ArtifactPublicationPhaseV1::Acknowledged =>
+                    {
+                        self.recovery_required = Some(operation_id);
+                    }
+                    Ok(_)
+                        if matches!(
+                            error,
+                            LearningArtifactOwnerServiceError::Host(
+                                ArtifactOwnerHostError::Indeterminate
+                            ) | LearningArtifactOwnerServiceError::Host(
+                                ArtifactOwnerHostError::Storage(
+                                    crate::ArtifactStorageError::Indeterminate
+                                )
+                            )
+                        ) =>
+                    {
+                        self.recovery_required = Some(operation_id);
+                    }
+                    Ok(_) => {}
                 }
                 Err(error)
             }
         }
+    }
+
+    /// Read only the exact acknowledged immutable publication. This performs
+    /// no resume, registry append, signature, witness update or payload write.
+    pub fn read_original_publication(
+        &self,
+        operation: &StableId,
+    ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        self.require_original_withdrawal()?;
+        let retained = self
+            .host
+            .recover_publication(operation)?
+            .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
+        if retained.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged {
+            return Err(ArtifactOwnerHostError::Indeterminate.into());
+        }
+        receipt_from_checkpoint(&retained.checkpoint)
+    }
+
+    fn require_original_withdrawal(&self) -> Result<(), ArtifactOwnerHostError> {
+        if self.withdrawal_pending {
+            return Err(ArtifactOwnerHostError::Indeterminate);
+        }
+        self.host.require_original_withdrawal_frontier(
+            &self.withdrawal_registry,
+            self.storage_binding,
+        )?;
+        Ok(())
     }
 
     fn publish_inner(
@@ -206,29 +446,77 @@ impl LearningArtifactOwnerService {
         }
 
         let checkpoint = self.host.recover_publication(&request.operation_id)?;
+        if self.draining && checkpoint.is_none() {
+            return Err(LearningArtifactOwnerServiceError::ShuttingDown);
+        }
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
-                return receipt_from_checkpoint(&recovery.checkpoint);
+                let receipt = receipt_from_checkpoint(&recovery.checkpoint)?;
+                self.host
+                    .check_acknowledged_head(&recovery.checkpoint, &request.signed_current_head)?;
+                if self.recovery_required.is_some() {
+                    self.registry = self.host.recover_current_registry(request.now)?;
+                }
+                self.terminal_replays = self.terminal_replays.saturating_add(1);
+                return Ok(receipt);
             }
         }
+        if request.now < self.last_admission_ms {
+            return Err(LearningArtifactOwnerServiceError::NonMonotonicTime);
+        }
+        self.host.check_current_writer(request.now)?;
+        self.host.verify_live_publication_head(
+            &request.signed_current_head,
+            request.expected_registry_predecessor_head,
+            request.now,
+        )?;
+        if checkpoint.is_none() {
+            if request.now < request.admission.admitted_at {
+                return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+            }
+            validate_request_material(request, request.admission.withdrawal_head_digest)?;
+        }
+        self.last_admission_ms = request.now;
 
         let predecessor = self
             .host
             .recover_registry_by_head(request.expected_registry_predecessor_head)?;
         let mut staged = predecessor.clone();
-        let mut transaction = self.host.begin_publication(
-            request.operation_id.clone(),
-            request.admission.clone(),
-            &self.withdrawal_registry,
-            &predecessor,
-            request.expected_registry_predecessor_head,
-            request.now,
-        )?;
+        let mut transaction = if checkpoint.is_some() {
+            let prepared = ArtifactPublicationTransactionV1::begin(
+                request.operation_id.clone(),
+                request.admission.clone(),
+                &self.withdrawal_registry,
+                &predecessor,
+                request.expected_registry_predecessor_head,
+                request.now,
+            )?;
+            self.host.require_recovery_prepared_checkpoint(&prepared)?;
+            prepared
+        } else {
+            self.host.begin_publication(
+                request.operation_id.clone(),
+                request.admission.clone(),
+                &self.withdrawal_registry,
+                &predecessor,
+                request.expected_registry_predecessor_head,
+                request.now,
+            )?
+        };
         self.host
             .stage_compatibility_registration(&transaction, &mut staged, request.now)?;
 
         if let Some(recovery) = checkpoint {
+            if staged.snapshot().head_digest != request.signed_current_head.witness.head_digest {
+                return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+            }
+            durable_inputs::verify_durable_inputs(
+                self.host.original_store_root(),
+                &staged,
+                request,
+                &recovery.checkpoint,
+            )?;
             transaction = rebuild_transaction(
                 transaction,
                 &staged,
@@ -287,6 +575,27 @@ fn validate_request_against_checkpoint(
         || checkpoint.withdrawal_head_digest != request.admission.withdrawal_head_digest
         || checkpoint.expected_registry_predecessor_head
             != request.expected_registry_predecessor_head
+    {
+        return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+    }
+    validate_request_material(request, checkpoint.withdrawal_head_digest)
+}
+
+fn validate_request_material(
+    request: &LearningArtifactPublishRequestV1,
+    original_withdrawal_head: Digest32,
+) -> Result<(), LearningArtifactOwnerServiceError> {
+    // An acknowledged replay observes an old fact, not new publication
+    // authority: a later expiry or withdrawal must not erase that receipt.
+    crate::verify_artifact_admission_v3(
+        &request.admission,
+        original_withdrawal_head,
+        request.admission.admitted_at,
+    )
+    .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
+    let manifest = &request.admission.validated_manifest.manifest;
+    if u64::try_from(request.payload.len()).ok() != Some(manifest.encoded_size_bytes)
+        || Digest32::of_bytes(&request.payload) != manifest.bytes_digest
     {
         return Err(LearningArtifactOwnerServiceError::RequestMismatch);
     }
@@ -395,6 +704,8 @@ pub enum LearningArtifactOwnerServiceError {
     Publication(ArtifactPublicationError),
     InvalidConfiguration,
     WithdrawalFrontierConflict,
+    ShuttingDown,
+    NonMonotonicTime,
     RecoveryConflict,
     RecoveryRequired(StableId),
     RequestMismatch,
@@ -424,7 +735,19 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 }
 
 #[cfg(test)]
+#[path = "owner_service_readback_tests.rs"]
+mod publication_readback_tests;
+
+#[cfg(all(test, unix))]
+#[path = "owner_service_crash_tests.rs"]
+mod process_crash_tests;
+
+#[cfg(test)]
 mod tests {
+    #[cfg(target_os = "linux")]
+    mod original_read_view {
+        include!("owner_read_view_tests.rs");
+    }
     use super::*;
 
     use std::fs;
@@ -446,17 +769,23 @@ mod tests {
 
     static NEXT_TEST_DIR: AtomicU64 = AtomicU64::new(1);
 
-    struct TestDir(PathBuf);
+    pub(super) struct TestDir(pub(super) PathBuf);
 
     impl TestDir {
-        fn new() -> Self {
+        pub(super) fn new() -> Self {
             let id = NEXT_TEST_DIR.fetch_add(1, Ordering::Relaxed);
             let path = std::env::temp_dir().join(format!(
                 "hepta-learning-artifact-service-{}-{id}",
                 std::process::id()
             ));
             let _ = fs::remove_dir_all(&path);
-            fs::create_dir_all(&path).fixture("create service test dir");
+            let builder = &mut fs::DirBuilder::new();
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::DirBuilderExt;
+                builder.mode(0o700);
+            }
+            builder.create(&path).fixture("create service test dir");
             Self(path)
         }
     }
@@ -467,19 +796,19 @@ mod tests {
         }
     }
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).fixture("stable id")
     }
 
-    fn digest(value: &str) -> Digest32 {
+    pub(super) fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn key() -> SigningKey {
+    pub(super) fn key() -> SigningKey {
         SigningKey::from_bytes(&[9u8; 32])
     }
 
-    fn scope() -> DatasetWithdrawalScopeV1 {
+    pub(super) fn scope() -> DatasetWithdrawalScopeV1 {
         DatasetWithdrawalScopeV1 {
             authority_domain_id: id("dataset-authority"),
             registry_id: id("withdrawals"),
@@ -499,7 +828,7 @@ mod tests {
         }
     }
 
-    fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
+    pub(super) fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
         ArtifactOwnerTrustV1 {
             registry_id: id("learning-artifacts"),
             withdrawal_scope_digest: scope_digest,
@@ -511,7 +840,7 @@ mod tests {
         }
     }
 
-    fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
+    pub(super) fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
         let mut lease = SignedArtifactWriterLeaseV1 {
             lease_id: id("writer-lease"),
             producer_id: id("trainer"),
@@ -529,7 +858,7 @@ mod tests {
         lease
     }
 
-    fn manifest() -> LearningArtifactManifestV2 {
+    pub(super) fn manifest() -> LearningArtifactManifestV2 {
         LearningArtifactManifestV2 {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,
@@ -554,7 +883,7 @@ mod tests {
         }
     }
 
-    fn publish_request(
+    pub(super) fn publish_request(
         key: &SigningKey,
         withdrawals: &DatasetWithdrawalRegistry,
         predecessor: Digest32,
@@ -642,7 +971,56 @@ mod tests {
             staged.snapshot().head_digest,
         );
 
+        let mut invalid_signature = request.clone();
+        invalid_signature.signed_current_head.signature[0] ^= 1;
+        let mut invalid_payload = request.clone();
+        invalid_payload.payload[0] ^= 1;
+        for invalid in [invalid_signature, invalid_payload] {
+            assert!(service.publish(invalid).is_err());
+            assert!(
+                service
+                    .host
+                    .recover_publication(&request.operation_id)
+                    .fixture("preflight must not create a checkpoint")
+                    .is_none()
+            );
+            assert_eq!(service.registry().snapshot().head_digest, predecessor);
+            assert!(service.recovery_required().is_none());
+        }
+
         let receipt = service.publish(request.clone()).fixture("publish");
+        let mut changed_payload = request.clone();
+        changed_payload.payload[0] ^= 1;
+        let mut truncated = request.clone();
+        truncated.payload.truncate(truncated.payload.len() - 1);
+        let mut extended = request.clone();
+        extended.payload.push(0);
+        let mut changed_manifest = request.clone();
+        changed_manifest
+            .admission
+            .validated_manifest
+            .manifest
+            .training_code_digest = digest("changed-code-with-retained-admission-digest");
+        let mut changed_admission_time = request.clone();
+        changed_admission_time.admission.admitted_at += 1;
+        let before_conflicts = service.registry().snapshot();
+        for changed in [
+            changed_payload,
+            truncated,
+            extended,
+            changed_manifest,
+            changed_admission_time,
+        ] {
+            assert!(
+                matches!(
+                    service.publish(changed),
+                    Err(LearningArtifactOwnerServiceError::RequestMismatch)
+                ),
+                "same publication operation must refuse changed request bytes"
+            );
+            assert_eq!(service.registry().snapshot(), before_conflicts);
+            assert!(service.recovery_required().is_none());
+        }
         let retry = service.publish(request.clone()).fixture("terminal retry");
         assert_eq!(retry, receipt);
         let current_view = service
@@ -654,24 +1032,48 @@ mod tests {
         );
         assert!(!current_view.witness_digest().is_zero());
         assert!(!current_view.trust_digest().is_zero());
-        let current = request.signed_current_head;
+        let current = request.signed_current_head.clone();
         drop(service);
 
-        let reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-            root: directory.0.clone(),
-            trust: trust(&key, scope_digest),
-            writer_lease: lease(&key, scope_digest),
-            required_current_head: Some(current),
-            withdrawal_registry: withdrawals,
-            storage_binding: digest("binding"),
-            now: 21,
-        })
-        .fixture("reopen service");
+        let mut reopened =
+            LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+                root: directory.0.clone(),
+                trust: trust(&key, scope_digest),
+                writer_lease: lease(&key, scope_digest),
+                required_current_head: Some(current),
+                withdrawal_registry: withdrawals,
+                storage_binding: digest("binding"),
+                now: 21,
+            })
+            .fixture("reopen service");
         assert_eq!(
             reopened.registry().snapshot().head_digest,
             receipt.registry_head_digest
         );
         assert!(reopened.recovery_required().is_none());
+        let mut changed_after_reopen = request.clone();
+        changed_after_reopen.payload[0] ^= 1;
+        assert!(
+            matches!(
+                reopened.publish(changed_after_reopen),
+                Err(LearningArtifactOwnerServiceError::RequestMismatch)
+            ),
+            "cold retry must bind the original publication bytes"
+        );
+        assert_eq!(
+            reopened
+                .publish(request.clone())
+                .fixture("cold exact retry"),
+            receipt
+        );
+        let mut historical = request;
+        historical.now = 2_000;
+        assert_eq!(
+            reopened
+                .publish(historical)
+                .fixture("historical receipt after manifest expiry"),
+            receipt
+        );
         assert_eq!(
             reopened
                 .current_registry_view(21)

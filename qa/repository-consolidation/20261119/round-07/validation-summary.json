@@ -1,0 +1,38 @@
+{
+  "source27": {
+    "manifest_sha256": "924a309105f4c935e8d2f793758f854d0f61f407eed2e7bb0ac8f1366b7b932d",
+    "all_index_and_final_commit_postimages_verified": true,
+    "report": "qa/repository-consolidation/20261119/round-03/local-time-compatibility/REPORT.md"
+  },
+  "protected_files": {
+    "passed": 826,
+    "boundary_rows": 1652,
+    "seconds": 4.13279549699655,
+    "provenance": "Observed actual root scoped protected-source verifier exit0, followed by original migration unittest exit0."
+  },
+  "caller_mutation_tests": {
+    "passed": 30,
+    "failures": 0,
+    "skipped": 0,
+    "seconds": 1.763
+  },
+  "full_local_caller_verifier": {
+    "state": "in_progress",
+    "qualification_claimed": false,
+    "command": "python scripts/verify_hepta_callers.py verify",
+    "started_on_same_Rust_and_caller_source": "before evidence-only and research-only followup merges;27sourcepostimages reverified unchanged"
+  },
+  "repository_format": {
+    "last_exit": 0,
+    "output": "No changed files need formatting. Use --all for a full repository check.\n",
+    "initial_failure": "Sparse checkout omitted two exact required original Rust evidence files; materialized original Git bytes and matched both declared hashes before retry."
+  },
+  "retained_whitespace": {
+    "whole_history_raw_diff_exit": 2,
+    "source": "retained-history-whitespace-result.json",
+    "small_merge_raw_diff_exit": 2,
+    "small_merge_reason": "All308 lines of one original Windows cross-check log use CRLF; source-only whitespace check exit0. Original evidence bytes were preserved.",
+    "required_gate_weakened": false
+  },
+  "main_qualification": false
+}

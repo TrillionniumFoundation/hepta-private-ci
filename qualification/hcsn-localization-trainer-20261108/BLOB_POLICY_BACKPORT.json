@@ -1,0 +1,45 @@
+{
+  "blob_checks": {
+    "scripts/check_blob_size.py": {
+      "actual": "18bc6175c274abaeabe3ef0c32d82627d498bbe7",
+      "donor": "18bc6175c274abaeabe3ef0c32d82627d498bbe7"
+    },
+    "scripts/tests/test_blob_size_policy.py": {
+      "actual": "71f726876ee37adab36594e53eedb144934da3f1",
+      "donor": "71f726876ee37adab36594e53eedb144934da3f1"
+    }
+  },
+  "changed_lines": 176,
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts/tests",
+    "-p",
+    "test_blob_size_policy.py",
+    "-v"
+  ],
+  "commit": "1970b75cbbac93d0e498bbf41da92dd1febebfa7",
+  "commit_output": "[detached HEAD 1970b75cbb] ci: backport exact-content blob pins for HCSN evidence\n 2 files changed, 167 insertions(+), 9 deletions(-)\n create mode 100644 scripts/tests/test_blob_size_policy.py\n",
+  "donor_commit": "63b2bd5ffd0de6ab4726961e69765924a5b0e25c",
+  "exit_code": 0,
+  "numstat": "39\t9\tscripts/check_blob_size.py\n128\t0\tscripts/tests/test_blob_size_policy.py\n",
+  "parent": "d7ff5b5aab5543c12666bd15084e27a46a6e2198",
+  "paths": [
+    "scripts/check_blob_size.py",
+    "scripts/tests/test_blob_size_policy.py"
+  ],
+  "schema": "hcsn-blob-policy-backport-v1",
+  "sha256": {
+    "scripts/check_blob_size.py": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3",
+    "scripts/tests/test_blob_size_policy.py": "f5017bd436f694f25b3d605fd247d34b47d3b4aa73a2c3c3c9539c39e8348231"
+  },
+  "stat": " scripts/check_blob_size.py             |  48 ++++++++++---\n scripts/tests/test_blob_size_policy.py | 128 +++++++++++++++++++++++++++++++++\n 2 files changed, 167 insertions(+), 9 deletions(-)\n",
+  "stderr": "test_exact_binary_pin_preserves_asset_without_allowing_changed_bytes (test_blob_size_policy.BlobSizePolicyTests.test_exact_binary_pin_preserves_asset_without_allowing_changed_bytes) ... ok\ntest_legacy_exact_asset_entry_remains_supported_without_a_prefix_match (test_blob_size_policy.BlobSizePolicyTests.test_legacy_exact_asset_entry_remains_supported_without_a_prefix_match) ... ok\ntest_malformed_or_conflicting_pins_fail_closed (test_blob_size_policy.BlobSizePolicyTests.test_malformed_or_conflicting_pins_fail_closed) ... ok\ntest_original_limit_accepts_boundary_and_refuses_one_extra_byte (test_blob_size_policy.BlobSizePolicyTests.test_original_limit_accepts_boundary_and_refuses_one_extra_byte) ... ok\ntest_pin_preserves_exact_paths_with_spaces (test_blob_size_policy.BlobSizePolicyTests.test_pin_preserves_exact_paths_with_spaces) ... ok\ntest_pin_uses_requested_head_even_if_worktree_has_different_bytes (test_blob_size_policy.BlobSizePolicyTests.test_pin_uses_requested_head_even_if_worktree_has_different_bytes) ... ok\ntest_same_bytes_at_an_unlisted_path_are_refused (test_blob_size_policy.BlobSizePolicyTests.test_same_bytes_at_an_unlisted_path_are_refused) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.545s\n\nOK\n",
+  "stdout": "",
+  "tree": "dc2f2311543311efa923a3e393c593505700d69e",
+  "wall_seconds": 0.5781229509739205
+}

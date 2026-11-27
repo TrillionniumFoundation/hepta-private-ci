@@ -1,0 +1,49 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "--lib",
+    "--test-threads",
+    "2"
+  ],
+  "source": "/workspace/scratch/785b7e652ed6/hepta-daemon",
+  "target": "/workspace/scratch/d037ec5d32c5/target",
+  "source_before": {
+    "objects": 13705,
+    "sha256": "ec842fc957c683cea743e8cacd896f8485ae28daf56d0d3ef5b1d4322d3eddb3"
+  },
+  "started_unix": 1794230712.5080318,
+  "disk_free_bytes": 309915648,
+  "tests_after_fix_or_fmt": false,
+  "environment": {
+    "PATH": "/workspace/scratch/d037ec5d32c5/cargo/bin:/workspace/scratch/d037ec5d32c5/rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/override:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin:/opt/codex/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/fallback",
+    "CARGO_HOME": "/workspace/scratch/d037ec5d32c5/cargo",
+    "RUSTUP_HOME": "/workspace/scratch/d037ec5d32c5/rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_TARGET_DIR": "/workspace/scratch/d037ec5d32c5/target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "LIBCLANG_PATH": "/usr/lib/llvm-19/lib",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "phase": "failed",
+  "pid": 6,
+  "log": "/workspace/scratch/785b7e652ed6/native-evidence/attempt-01/agentd-artifacts-lib.log",
+  "exit_code": 101,
+  "finished_unix": 1794230724.0936294,
+  "elapsed_seconds": 11.58559775352478,
+  "source_after": {
+    "objects": 13705,
+    "sha256": "ec842fc957c683cea743e8cacd896f8485ae28daf56d0d3ef5b1d4322d3eddb3"
+  },
+  "log_sha256": "c7f54da03219ac91ca5e9c8d26212b6611a1f40fef999f7ce64d616a6c20e6c7",
+  "log_bytes": 708,
+  "source_unchanged": true
+}

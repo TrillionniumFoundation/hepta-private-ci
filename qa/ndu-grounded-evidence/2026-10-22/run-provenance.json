@@ -1,0 +1,372 @@
+{
+  "schema": "hepta.grounded-pilot-provenance.v1",
+  "code_commit": "6941ffd1dec86a71b8241c6c691e812ee1e8b64c",
+  "repository": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+  "pr_number": 3213,
+  "protocol_sha256": "47888294da05a7e0faa4b912b58738fc245f9c6c42d0bd03354284e3a55733cf",
+  "cohort_manifest_sha256": "71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d",
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "logical_cpu_count": 9,
+    "cpu_max": "800000 100000",
+    "memory_max": "8589934592",
+    "workers": 2,
+    "torch_threads_per_worker": 4,
+    "device": "cpu",
+    "dtype": "float32",
+    "timing_note": "warm resident episode wall and process CPU times; batch elapsed and worker initialization recorded separately",
+    "dependencies": {
+      "torch": "2.10.0+cpu",
+      "torchvision": "0.25.0+cpu",
+      "transformers": "5.20.2",
+      "tokenizers": "0.23.3",
+      "numpy": "2.2.6",
+      "Pillow": "11.3.0",
+      "safetensors": "0.8.0",
+      "huggingface-hub": "2.2.0"
+    }
+  },
+  "phases": {
+    "collect": {
+      "identity": {
+        "phase": "collect",
+        "split": "train",
+        "budget_cap": 10.0,
+        "combinations": [
+          [
+            "explore",
+            23,
+            0.5
+          ],
+          [
+            "explore",
+            41,
+            0.5
+          ]
+        ],
+        "sources": 128,
+        "cohort_sha256": "71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d",
+        "checkpoint_sha256": {
+          "cells.pt": "1508a2f4f633b1fa44e05f2a7b750c642e3a39360cf59224d3d4790f31a04396"
+        },
+        "implementation_sha256": {
+          "backend.py": "3fd05ef337b16596c85f95ccf6803ae725de6afefff248395c908b8a683dd1b3",
+          "cells.py": "a28b5875a4fc788e3d36813c53a83965529349226ed6ce6bbe69bc45945d63ff",
+          "policies.py": "1076fdcd89b150862192d72363143cdd2aeae5049f7175c674542e3e9a1fd78f",
+          "verification.py": "c3cd349fd515d6f6cd6621a22f6d6efc095181c4ea15e296e086f44ebd602477",
+          "generation.py": "6edb25c2a243cedfba3e85e844d4f19f3f2a1aef4977e930cf5894ee145d4a90"
+        }
+      },
+      "status": "complete",
+      "episodes": 256,
+      "resumed": 0,
+      "this_execution_seconds": 340.4037017540031,
+      "journal_sha256": "379286fcd4d76004cb427716743c3151c4cdf5d09c65b418ccd06f50f6114b7b",
+      "actual_episode_seconds": 668.4103471930139
+    },
+    "selection": {
+      "identity": {
+        "schema_version": 2,
+        "phase": "selection",
+        "split": "dev",
+        "budget_cap": 10.0,
+        "workers": 2,
+        "threads_per_worker": 4,
+        "combinations": [
+          [
+            "base",
+            23,
+            0.5
+          ],
+          [
+            "static_cells",
+            23,
+            0.5
+          ],
+          [
+            "ndu",
+            23,
+            0.0
+          ],
+          [
+            "ndu",
+            23,
+            0.5
+          ],
+          [
+            "ndu",
+            23,
+            1.0
+          ]
+        ],
+        "sources": 32,
+        "cohort_sha256": "71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d",
+        "checkpoint_sha256": {
+          "cells.pt": "1508a2f4f633b1fa44e05f2a7b750c642e3a39360cf59224d3d4790f31a04396",
+          "policies.pt": "8d4918001e86c863edad47fb9c99d522aaadf7c1a3cba27482615b06ca2d4a06",
+          "verifier.json": "be1cf3dd0adcbaafd3437c0b291e825ce1c58ae936deecb2e534312f4ef231b7"
+        },
+        "implementation_sha256": {
+          "backend.py": "3fd05ef337b16596c85f95ccf6803ae725de6afefff248395c908b8a683dd1b3",
+          "cells.py": "a28b5875a4fc788e3d36813c53a83965529349226ed6ce6bbe69bc45945d63ff",
+          "policies.py": "1076fdcd89b150862192d72363143cdd2aeae5049f7175c674542e3e9a1fd78f",
+          "verification.py": "c3cd349fd515d6f6cd6621a22f6d6efc095181c4ea15e296e086f44ebd602477",
+          "generation.py": "f253b31919272cb0fe192f3175478a6e9b6e4650977f2c01e7a3c1fefbdc290b",
+          "experiment.py": "d793d6aaa48a382ce3fa04ce1cdefc71429d1019acc47353761a60ea0b393e7d",
+          "evaluate.py": "c3e763031e0c367ffd6a6a389157fd191e69967f0ff26588e5a3e366a810a17c",
+          "cohort.py": "59963dc86f5e687c6c4a56781d11921ae5e7cd6f378175d7b38e33766958eb06",
+          "protocol.json": "47888294da05a7e0faa4b912b58738fc245f9c6c42d0bd03354284e3a55733cf"
+        }
+      },
+      "status": "complete",
+      "completed_unix": 1792673349.0297859,
+      "episodes": 160,
+      "resumed": 0,
+      "this_execution_seconds": 226.4258904590024,
+      "journal_sha256": "2fc10b7febec43622cb0113736d9915fdf6fe44eaea64cf141cc05a2637d2e5e",
+      "actual_episode_seconds": 439.64608144602244,
+      "worker_initializations": [
+        {
+          "worker_pid": 17,
+          "load_seconds": 2.4242734419967746,
+          "frozen_tensor_sha256": "3f9608404767fe85ef707e8788cd18994c93aac3233d5ab407918f18f840c02b",
+          "threads": 4
+        },
+        {
+          "worker_pid": 14,
+          "load_seconds": 2.445550115997321,
+          "frozen_tensor_sha256": "3f9608404767fe85ef707e8788cd18994c93aac3233d5ab407918f18f840c02b",
+          "threads": 4
+        }
+      ],
+      "timing_scope": "parallel worker online wall sum is not batch elapsed; initialization, IPC scheduling and independent scoring are in batch elapsed"
+    },
+    "calibration": {
+      "identity": {
+        "schema_version": 2,
+        "phase": "calibration",
+        "split": "calibration",
+        "budget_cap": 10.0,
+        "workers": 2,
+        "threads_per_worker": 4,
+        "combinations": [
+          [
+            "base",
+            23,
+            0.0
+          ],
+          [
+            "static_cells",
+            23,
+            0.0
+          ],
+          [
+            "learned_router",
+            23,
+            0.0
+          ],
+          [
+            "best_of_n",
+            23,
+            0.0
+          ],
+          [
+            "mean_only",
+            23,
+            0.0
+          ],
+          [
+            "risk_actor_critic",
+            23,
+            0.0
+          ],
+          [
+            "ndu",
+            23,
+            0.0
+          ],
+          [
+            "ablate_covariance",
+            23,
+            0.0
+          ],
+          [
+            "ablate_fixed_weights",
+            23,
+            0.0
+          ],
+          [
+            "ablate_crossmodal",
+            23,
+            0.0
+          ],
+          [
+            "ablate_missing_modality",
+            23,
+            0.0
+          ],
+          [
+            "ablate_shuffled_pair",
+            23,
+            0.0
+          ]
+        ],
+        "sources": 32,
+        "cohort_sha256": "71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d",
+        "checkpoint_sha256": {
+          "cells.pt": "1508a2f4f633b1fa44e05f2a7b750c642e3a39360cf59224d3d4790f31a04396",
+          "policies.pt": "8d4918001e86c863edad47fb9c99d522aaadf7c1a3cba27482615b06ca2d4a06",
+          "verifier.json": "be1cf3dd0adcbaafd3437c0b291e825ce1c58ae936deecb2e534312f4ef231b7"
+        },
+        "implementation_sha256": {
+          "backend.py": "3fd05ef337b16596c85f95ccf6803ae725de6afefff248395c908b8a683dd1b3",
+          "cells.py": "a28b5875a4fc788e3d36813c53a83965529349226ed6ce6bbe69bc45945d63ff",
+          "policies.py": "1076fdcd89b150862192d72363143cdd2aeae5049f7175c674542e3e9a1fd78f",
+          "verification.py": "c3cd349fd515d6f6cd6621a22f6d6efc095181c4ea15e296e086f44ebd602477",
+          "generation.py": "f253b31919272cb0fe192f3175478a6e9b6e4650977f2c01e7a3c1fefbdc290b",
+          "experiment.py": "d793d6aaa48a382ce3fa04ce1cdefc71429d1019acc47353761a60ea0b393e7d",
+          "evaluate.py": "c3e763031e0c367ffd6a6a389157fd191e69967f0ff26588e5a3e366a810a17c",
+          "cohort.py": "59963dc86f5e687c6c4a56781d11921ae5e7cd6f378175d7b38e33766958eb06",
+          "protocol.json": "47888294da05a7e0faa4b912b58738fc245f9c6c42d0bd03354284e3a55733cf"
+        }
+      },
+      "status": "complete",
+      "completed_unix": 1792673924.1886742,
+      "episodes": 384,
+      "resumed": 0,
+      "this_execution_seconds": 499.23740178899607,
+      "journal_sha256": "96c97edfe853746c98edf6f9b595f78e0a2977c80824bbcd8a1b78d313219e0c",
+      "actual_episode_seconds": 985.5068163689866,
+      "worker_initializations": [
+        {
+          "worker_pid": 14,
+          "load_seconds": 2.2442631300000357,
+          "frozen_tensor_sha256": "3f9608404767fe85ef707e8788cd18994c93aac3233d5ab407918f18f840c02b",
+          "threads": 4
+        },
+        {
+          "worker_pid": 17,
+          "load_seconds": 2.455035778999445,
+          "frozen_tensor_sha256": "3f9608404767fe85ef707e8788cd18994c93aac3233d5ab407918f18f840c02b",
+          "threads": 4
+        }
+      ],
+      "timing_scope": "parallel worker online wall sum is not batch elapsed; initialization, IPC scheduling and independent scoring are in batch elapsed"
+    },
+    "test": {
+      "identity": {
+        "schema_version": 2,
+        "phase": "test",
+        "split": "test",
+        "budget_cap": 10.0,
+        "workers": 2,
+        "threads_per_worker": 4,
+        "combinations": [
+          [
+            "base",
+            23,
+            0.0
+          ],
+          [
+            "static_cells",
+            23,
+            0.0
+          ],
+          [
+            "learned_router",
+            23,
+            0.0
+          ],
+          [
+            "best_of_n",
+            23,
+            0.0
+          ],
+          [
+            "mean_only",
+            23,
+            0.0
+          ],
+          [
+            "risk_actor_critic",
+            23,
+            0.0
+          ],
+          [
+            "ndu",
+            23,
+            0.0
+          ],
+          [
+            "ablate_covariance",
+            23,
+            0.0
+          ],
+          [
+            "ablate_fixed_weights",
+            23,
+            0.0
+          ],
+          [
+            "ablate_crossmodal",
+            23,
+            0.0
+          ],
+          [
+            "ablate_missing_modality",
+            23,
+            0.0
+          ],
+          [
+            "ablate_shuffled_pair",
+            23,
+            0.0
+          ]
+        ],
+        "sources": 64,
+        "cohort_sha256": "71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d",
+        "checkpoint_sha256": {
+          "cells.pt": "1508a2f4f633b1fa44e05f2a7b750c642e3a39360cf59224d3d4790f31a04396",
+          "policies.pt": "8d4918001e86c863edad47fb9c99d522aaadf7c1a3cba27482615b06ca2d4a06",
+          "verifier-calibrated.json": "ca82557fd6f2dfefa28ca766387e2cbbc387a3adf8bc4352233cdb72a6bb8d19"
+        },
+        "implementation_sha256": {
+          "backend.py": "3fd05ef337b16596c85f95ccf6803ae725de6afefff248395c908b8a683dd1b3",
+          "cells.py": "a28b5875a4fc788e3d36813c53a83965529349226ed6ce6bbe69bc45945d63ff",
+          "policies.py": "1076fdcd89b150862192d72363143cdd2aeae5049f7175c674542e3e9a1fd78f",
+          "verification.py": "c3cd349fd515d6f6cd6621a22f6d6efc095181c4ea15e296e086f44ebd602477",
+          "generation.py": "f253b31919272cb0fe192f3175478a6e9b6e4650977f2c01e7a3c1fefbdc290b",
+          "experiment.py": "d793d6aaa48a382ce3fa04ce1cdefc71429d1019acc47353761a60ea0b393e7d",
+          "evaluate.py": "c3e763031e0c367ffd6a6a389157fd191e69967f0ff26588e5a3e366a810a17c",
+          "cohort.py": "59963dc86f5e687c6c4a56781d11921ae5e7cd6f378175d7b38e33766958eb06",
+          "protocol.json": "47888294da05a7e0faa4b912b58738fc245f9c6c42d0bd03354284e3a55733cf"
+        }
+      },
+      "status": "complete",
+      "completed_unix": 1792674972.4821699,
+      "episodes": 768,
+      "resumed": 0,
+      "this_execution_seconds": 1013.1259289279988,
+      "journal_sha256": "b9e7e0a53622b9b87e29507684684389aaf798e97bf53b0d4e93f44570786e39",
+      "actual_episode_seconds": 2012.57559528594,
+      "worker_initializations": [
+        {
+          "worker_pid": 14,
+          "load_seconds": 2.1555292120028753,
+          "frozen_tensor_sha256": "3f9608404767fe85ef707e8788cd18994c93aac3233d5ab407918f18f840c02b",
+          "threads": 4
+        },
+        {
+          "worker_pid": 17,
+          "load_seconds": 2.3715796940014116,
+          "frozen_tensor_sha256": "3f9608404767fe85ef707e8788cd18994c93aac3233d5ab407918f18f840c02b",
+          "threads": 4
+        }
+      ],
+      "timing_scope": "parallel worker online wall sum is not batch elapsed; initialization, IPC scheduling and independent scoring are in batch elapsed"
+    }
+  },
+  "receipt_version_note": "Collect retains its original v1 receipt. Later phase v2 code/guards and instrumentation differ; independent audit verifies unchanged complete train scores and training targets. This is not a same-version execution claim."
+}

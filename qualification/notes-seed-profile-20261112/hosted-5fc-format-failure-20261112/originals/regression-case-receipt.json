@@ -1,0 +1,16 @@
+{
+  "status": "FINITE_SEED_REGRESSION_METHODS_PASSED",
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "source_tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+  "expected_methods": 5,
+  "passing_lines": {
+    "original_notes_seed_profile_does_not_supply_notes_execution_owners": "        PASS [   0.017s] codex-hepta-agentd config::notes_seed::tests::original_notes_seed_profile_does_not_supply_notes_execution_owners",
+    "original_notes_seed_profile_rejects_mixed_configurations_in_both_orders": "        PASS [   0.046s] codex-hepta-agentd config::notes_seed::tests::original_notes_seed_profile_rejects_mixed_configurations_in_both_orders",
+    "original_notes_seed_profile_rechecks_files_before_runtime": "        PASS [   0.030s] codex-hepta-agentd config::notes_seed::tests::original_notes_seed_profile_rechecks_files_before_runtime",
+    "seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state": "        PASS [   0.161s] codex-hepta-agentd app_runtime::tests::seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state",
+    "standard_profile_rejects_original_notes_seed_before_model_contact": "        PASS [   0.573s] codex-hepta-agentd::notes_thread_seed_product standard_profile_rejects_original_notes_seed_before_model_contact"
+  },
+  "log_sha256": "73fc8578ed2c094d50672fd1e5252d407ce232f40d664f30b1254f0a42c22619",
+  "production_authority": false,
+  "owner_decision": null
+}

@@ -1,0 +1,33 @@
+{
+  "command": [
+    "python3",
+    "scripts/hepta_ci_exec.py",
+    "--timeout-seconds",
+    "7200",
+    "--minimum-tests",
+    "1",
+    "--output",
+    "/home/runner/work/_temp/daemon-learning-records/ordinary.json",
+    "--",
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "required_euid": 1001
+}

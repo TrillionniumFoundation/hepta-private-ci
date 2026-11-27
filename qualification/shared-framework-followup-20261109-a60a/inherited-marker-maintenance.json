@@ -1,0 +1,20 @@
+{
+  "scope": "CALLERS exact-format markers only; no Rust source edited",
+  "changes": [
+    {
+      "old": "HostAuthorityLearningScopeV2::new(&initial, scope, update_rule)?",
+      "new": "HostAuthorityLearningScopeV2::new(\n            &initial,\n            scope,\n            update_rule,\n        )?"
+    },
+    {
+      "old": "self.update_rule.parse::<Digest32>()",
+      "new": "self\n            .update_rule\n            .parse::<Digest32>()"
+    }
+  ],
+  "manifest_sha256": "6a51f9d4df18651695e91b0ac97d5e04188d2fda96d66eea24a238932408d125",
+  "all_protected_rows": {
+    "passed": 165,
+    "failed": 1,
+    "remaining": "existing SQL literals cannot survive lexical string stripping"
+  },
+  "full_boundary_scan": "NOT_RESTARTED"
+}

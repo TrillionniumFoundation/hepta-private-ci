@@ -1,0 +1,529 @@
+{
+  "parent": "1862467ec580bebb540406504c3c62a1de51cf84",
+  "parent_tree": "76a34825c1bac086137b07e8ab0ec67e3774f120",
+  "boundary_count": 603,
+  "protected_count": 417,
+  "new_boundary_ids": [
+    "learning_positive_model_original_context",
+    "learning_positive_model_original_predecessors",
+    "learning_positive_publication_context_model",
+    "learning_positive_publication_context_receipt",
+    "learning_positive_publication_context_authenticate",
+    "learning_positive_publication_context_material",
+    "learning_positive_publication_context_version_pin",
+    "learning_positive_publication_prepare",
+    "learning_positive_publication_publish",
+    "learning_positive_publication_task",
+    "learning_positive_publication_recover",
+    "learning_positive_selection_owner_consume",
+    "learning_positive_selection_owner_profile",
+    "learning_positive_selection_owner_factory",
+    "learning_positive_selection_remote_attest",
+    "learning_positive_selection_remote_readback",
+    "learning_positive_selection_client_create",
+    "learning_positive_selection_client_recover",
+    "learning_positive_selection_client_bind",
+    "learning_positive_selection_client_attest",
+    "learning_positive_selection_client_readback",
+    "learning_positive_selection_client_evidence",
+    "learning_positive_selection_receipt_context",
+    "learning_positive_selection_owner_serve",
+    "learning_positive_selection_owner_evidence",
+    "learning_positive_version_client_bind",
+    "learning_positive_version_client_recover",
+    "learning_positive_version_client_publish",
+    "learning_positive_version_client_readback",
+    "learning_positive_version_owner_create",
+    "learning_positive_version_owner_recover",
+    "learning_positive_version_owner_publish",
+    "learning_positive_version_owner_readback",
+    "learning_positive_version_owner_serve",
+    "learning_positive_version_owner_ordinary",
+    "learning_positive_version_owner_run_c",
+    "learning_positive_version_owner_selection_read",
+    "learning_positive_version_owner_next_use_read",
+    "learning_positive_version_owner_readiness",
+    "learning_positive_version_original_issuer_attenuation",
+    "learning_positive_version_original_issuer_request",
+    "learning_positive_published_next_use_version_serve",
+    "learning_positive_published_readiness_version_serve"
+  ],
+  "modified_boundary_ids": [
+    "circuit_feature_original_selection_observation",
+    "learning_original_source_input_current",
+    "learning_artifact_original_publication_service_readback",
+    "learning_original_owner_command_channel",
+    "learning_original_model_root_record",
+    "learning_original_material_initial_context_check",
+    "learning_original_material_dataset_context_check",
+    "learning_positive_published_context_model",
+    "learning_positive_published_context_selection",
+    "learning_positive_published_client_current",
+    "learning_positive_published_client_context",
+    "learning_positive_published_owner_create",
+    "learning_positive_published_version_serve"
+  ],
+  "protected_records": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+      "functions": [
+        "fn with_original_model(",
+        "fn from_original_model(",
+        "fn from_original_receipt(",
+        "fn authenticate_at_current(",
+        "fn duplicate_response_pin(",
+        "fn original_version_binding(",
+        "fn authenticate_material("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_binding.rs",
+      "functions": [
+        "fn require_previous(",
+        "fn require_published("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+      "functions": [
+        "fn into_original_task(",
+        "fn publish_original_model_task(",
+        "fn load_original_selection(",
+        "fn drop(",
+        "fn require_not_cancelled(",
+        "fn require_predecessor_window("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs",
+      "functions": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_model_version_issuer.rs",
+      "functions": [
+        "fn into_original_model_version_issuer(",
+        "fn request_for_original_model_version("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_wire.rs",
+      "functions": [
+        "fn new(",
+        "fn require_initial(",
+        "fn require_context(",
+        "fn decode(",
+        "fn digest("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+      "functions": [
+        "fn drop(",
+        "fn bind_original_stage_channel(",
+        "fn recover_original_stage_channel(",
+        "fn bind(",
+        "fn exchange("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+      "functions": [
+        "fn from_original_owners(",
+        "fn recover_from_original_owners(",
+        "fn new(",
+        "fn require_lifetime(",
+        "fn original_predecessors("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version.rs",
+      "functions": [
+        "fn require_clock("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+      "functions": [
+        "fn drop(",
+        "fn publish_original(",
+        "fn require_not_cancelled("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_state.rs",
+      "functions": [
+        "fn require_prepared_control(",
+        "fn read_original("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_artifact.rs",
+      "functions": [
+        "fn new(",
+        "fn read_current(",
+        "fn require_same("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+      "functions": [
+        "fn require_completed_a(",
+        "fn install_original(",
+        "fn observe("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+      "functions": [
+        "fn serve_commands(",
+        "fn command_response(",
+        "fn serve_original_ordinary(",
+        "fn run_original_c(",
+        "fn wait_installed(",
+        "fn serve_original_selection_readback(",
+        "fn original_next_use_reader(",
+        "fn remaining_lifetime(",
+        "fn drop(",
+        "fn require_not_cancelled(",
+        "fn serve_original_next_use_readback(",
+        "fn serve_original_completion_readiness("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_owner.rs",
+      "functions": [
+        "fn create(",
+        "fn recover(",
+        "fn attest_original_selection(",
+        "fn readback(",
+        "fn read_original(",
+        "fn authenticate_completed(",
+        "fn into_command_owner(",
+        "fn original_command_profile("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_binding.rs",
+      "functions": [
+        "fn validate_config(",
+        "fn authenticate_roles(",
+        "fn authenticate(",
+        "fn receipt(",
+        "fn sign_original(",
+        "fn signature_expiry(",
+        "fn new_work_time(",
+        "fn now(",
+        "fn sign_original_until("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+      "functions": [
+        "fn attest_original_remote_selection(",
+        "fn readback_remote(",
+        "fn remote_result(",
+        "fn remote_operation("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_wire.rs",
+      "functions": [
+        "fn require_context(",
+        "fn require_request(",
+        "fn encode_completed(",
+        "fn decode_completed(",
+        "fn authenticate_completed(",
+        "fn require_selection_context(",
+        "fn authenticate_receipt("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs",
+      "functions": [
+        "fn original_publication_context(",
+        "fn drop(",
+        "fn from_original_stream(",
+        "fn recover_from_original_stream(",
+        "fn bind_original_stage_channel(",
+        "fn bind_original_stream(",
+        "fn execute_selection(",
+        "fn readback(",
+        "fn receipt_attestation(",
+        "fn exchange(",
+        "fn require_clock("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs",
+      "functions": [
+        "fn from_original_receipt_owner(",
+        "fn serve_command_channel(",
+        "fn command_response(",
+        "fn original_response(",
+        "fn original_state(",
+        "fn serve_commands(",
+        "fn serve_evidence_readback("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_evidence.rs",
+      "functions": [
+        "fn serve_evidence_channel(",
+        "fn evidence_response("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs",
+      "functions": [
+        "fn from_original_owners(",
+        "fn serve_readback(",
+        "fn serve_original_candidate_channel(",
+        "fn response(",
+        "fn require_task_input_current(",
+        "fn require_original_selection(",
+        "fn read_original(",
+        "fn serve_original_next_use_channel(",
+        "fn serve_original_readiness_channel("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command.rs",
+      "functions": [
+        "fn require_original_context(",
+        "fn original_predecessors_for_publication("
+      ]
+    }
+  ],
+  "modified_e_comment_records": [
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_read_operation.rs"
+  ],
+  "preserved_unowned_records": 1200,
+  "style_only": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+      "annotations": 2,
+      "parameters": [
+        "new_work"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+      "annotations": 13,
+      "parameters": [
+        "val",
+        "v",
+        "new_work"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs",
+      "annotations": 5,
+      "parameters": [
+        "new_work"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+      "annotations": 3,
+      "parameters": [
+        "new_work",
+        "execute"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs",
+      "annotations": 2,
+      "parameters": [
+        "execution_requested"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs",
+      "annotations": 3,
+      "parameters": [
+        "execute",
+        "val"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_read_operation.rs",
+      "annotations": 1,
+      "parameters": [
+        "v"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_wire.rs",
+      "annotations": 1,
+      "parameters": [
+        "new_work"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+      "annotations": 4,
+      "parameters": [
+        "new_work",
+        "v",
+        "val"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+      "annotations": 4,
+      "parameters": [
+        "new_work"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+      "annotations": 7,
+      "parameters": [
+        "new_work",
+        "val"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_state.rs",
+      "annotations": 3,
+      "parameters": [
+        "new_work"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+      "annotations": 9,
+      "parameters": [
+        "val",
+        "v",
+        "new_work"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+      "annotations": 2,
+      "parameters": [
+        "v",
+        "val"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_binding.rs",
+      "annotations": 1,
+      "parameters": [
+        "new_work"
+      ]
+    }
+  ],
+  "new_source_tokens_changed": false,
+  "ordinary_acceptance": 0,
+  "native": "not_run",
+  "python": "not_run",
+  "fullcaller": "not_run",
+  "qa_migration": [
+    {
+      "path": "qa/b4-no-bypass/test_positive_circuit_next_use_source_closure.py",
+      "changed": [
+        "learning_positive_published_context_model",
+        "learning_positive_published_context_selection",
+        "learning_positive_published_client_current",
+        "learning_positive_published_client_context",
+        "learning_positive_published_owner_create",
+        "learning_positive_published_version_serve"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+      "changed": [
+        "circuit_feature_original_selection_observation"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "changed": [
+        "circuit_feature_original_selection_observation",
+        "complete original Selector new private functions"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "changed": [
+        "learning_original_owner_command_channel"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "changed": [
+        "circuit_feature_original_selection_observation",
+        "learning_original_owner_command_channel",
+        "learning_original_material_initial_context_check",
+        "learning_original_material_dataset_context_check"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "changed": [
+        "learning_original_owner_command_channel"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "changed": [
+        "learning_original_owner_command_channel"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "changed": [
+        "learning_original_source_input_current"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "changed": [
+        "learning_original_owner_command_channel"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "changed": [
+        "learning_original_owner_command_channel",
+        "learning_original_material_initial_context_check",
+        "learning_original_material_dataset_context_check"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "changed": [
+        "learning_original_owner_command_channel",
+        "learning_original_model_root_record",
+        "learning_original_material_initial_context_check",
+        "learning_original_material_dataset_context_check"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_operation_source_closure.py",
+      "changed": [
+        "use same offset-preserving source mask for comment-only parameter annotations"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+      "changed": [
+        "learning_artifact_original_publication_service_readback"
+      ]
+    }
+  ],
+  "new_qa_methods": 7,
+  "validation": [
+    "JS exact raw required/forbidden/function order/top-level checks for all 23 owned plus 2 E style records",
+    "all new and modified ID rows inventoried without removal; all unowned records preserved byte for byte",
+    "style annotations preserve exact Rust code tokens"
+  ],
+  "native_uncovered": [
+    "Version actual prepare -> original issuer -> publish -> actual C configuration release",
+    "post-effect E/Model Finish failure or cancellation retains actual owner bytes and releases no C capability"
+  ],
+  "root_gate": "Candidate positive S/C route and actual production custody still require integration and fixed native/ordinary verification"
+}

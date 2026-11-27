@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.mem8.v7.actual-source-materialization.v1",
+  "source_commit": "63a4c2492848e9560750c32bebaacce2762bf2a2",
+  "source_tree": "7592d3546c460ba1a2f543167be27eeba973c2b7",
+  "parent": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+  "actual_create_commit": {
+    "sha": "63a4c2492848e9560750c32bebaacce2762bf2a2"
+  },
+  "actual_git_commit": {
+    "sha": "63a4c2492848e9560750c32bebaacce2762bf2a2",
+    "node_id": "C_kwDOTrgxoNoAKDYzYTRjMjQ5Mjg0OGU5NTYwNzUwYzMyYmViYWFjY2UyNzYyYmYyYTI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/63a4c2492848e9560750c32bebaacce2762bf2a2",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/63a4c2492848e9560750c32bebaacce2762bf2a2",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-11T14:45:21Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-11T14:45:21Z"
+    },
+    "tree": {
+      "sha": "7592d3546c460ba1a2f543167be27eeba973c2b7",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/7592d3546c460ba1a2f543167be27eeba973c2b7"
+    },
+    "message": "MEM8: isolate setup helper handles and record only matched responses",
+    "parents": [
+      {
+        "sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b0547d2f874c0aeb54dabd3491caa2bee49fcb0b"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "full_changed_source_readbacks": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "full_content_equal": true,
+      "sha": "3083576944936cafd820750e5724117b95839224"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup_process.rs",
+      "full_content_equal": true,
+      "sha": "f6375ad4d0c95eb1461064af1f9a2c0555588a97"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup_process_tests.rs",
+      "full_content_equal": true,
+      "sha": "13b8aa4c69951a4b573eab636403179530f84ded"
+    },
+    {
+      "path": "codex-rs/core/tests/common/responses.rs",
+      "full_content_equal": true,
+      "sha": "2285b1427a7ee93190d7b1f2f8c5fdb1d4ccabe6"
+    },
+    {
+      "path": "codex-rs/core/tests/common/responses_matcher_tests.rs",
+      "full_content_equal": true,
+      "sha": "06478ad82022669240018435d6c1f432cf0331b0"
+    }
+  ],
+  "complete_tree_reconstructed_from_fully_verified_parent": true,
+  "reconstructed_file_count": 14053,
+  "actual_created_root_matches_recomputed_complete_tree": true,
+  "full_recursive_api_read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/github.fetch`\n\nCaused by:\n    Transport closed"
+      }
+    ],
+    "isError": true
+  },
+  "refs_changed": false,
+  "source_gate_executed": false,
+  "native_tests_executed": 0,
+  "model_requests": 0
+}

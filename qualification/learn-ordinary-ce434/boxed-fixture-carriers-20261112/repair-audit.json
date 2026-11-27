@@ -1,0 +1,369 @@
+{
+  "schema": "hepta.learn.boxed-fixture-carrier-repair.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent": {
+    "commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9"
+  },
+  "scope": "Two cfg(test) fixture constructor boundaries and their matching owning finish receivers. No production behavior, source guard, authority, test body, stack limit or deadline change.",
+  "evidence": {
+    "actual_commit": "5ad5f7ad54a9a34e3a9b0c2c4e4110ef3a578ea1",
+    "tree": "f5b705baca274d2b5f20e8a8dd2725a18b5bb93f",
+    "original_manifest": "21b97a17511e168954f69941a2f2a2240ef51158",
+    "original_result_blob": "7175893c9664da9c991842bf3a269004db7ebd73",
+    "original_result_bytes": 77325,
+    "original_result_sha256": "4316893cfebf21e9022cb5371eafa83856962fda951d13898c46864c4b001536",
+    "original_symbols_blob": "21679dae1f0bd42ae8a7d346b1544bc15f5037c5",
+    "all_original_raw_files_verified": 38,
+    "exact_added_git_paths_verified": 39,
+    "direct_parent_a671_verified": true,
+    "canonical_git_commit_and_tree_verified": true,
+    "original_elf_before_after_sha256": "6be8aa9483e58df56f8cac926f0c76bda85a17ecc1675605cf749efee41e46c2",
+    "missing_original_family": [
+      "HostFixture.new"
+    ],
+    "prior_one_inner_box": "a671 already contains Box::pin(preregistered()).await. Root's actual native execution still failed all thirteen common Panel/Host cases with stack-overflow diagnostics.",
+    "detailed_entry_analysis_file": "qualification/learn-ordinary-ce434/boxed-fixture-carriers-20261112/original-frame-analysis.json",
+    "peak_stack_measured": false,
+    "postrepair_compiled_frames_measured": false
+  },
+  "decisions": [
+    {
+      "boundary": "PanelFixture::completed",
+      "before": "async fn returning Result<Self>; only the inner preregistered future is boxed.",
+      "after": "Ordinary private fn returning an opaque Future whose concrete representation is Pin<Box<the same async move body>>, with Result<Box<Self>> output.",
+      "purpose": "Avoid embedding/moving the full completed future and its by-value fixture result in all higher-level caller futures. Keep original preregistration, retention-before-primary sequence, evidence, original owners and error propagation."
+    },
+    {
+      "boundary": "HostFixture::new",
+      "before": "async fn returning Result<Self>, destructuring PanelFixture by value then holding HostFixture by value.",
+      "after": "The same opaque pinned boxed future shape and Result<Box<Self>> output; move every field once out of the owned Box<PanelFixture> and construct Box<HostFixture> at the original Self-construction point.",
+      "purpose": "Keep the large fixture result behind one owning pointer for the ten Host-derived cases, without boxing individual owner fields or editing test bodies."
+    },
+    {
+      "boundary": "Both finish methods",
+      "before": "Owning Self receiver.",
+      "after": "Owning Box<Self> receiver; Host retains mut. Bodies are byte-identical.",
+      "purpose": "Consume the same fixture and every original owner in the exact existing explicit order without moving the full fixture back into a by-value finish future."
+    }
+  ],
+  "exact_edits": [
+    {
+      "file": "circuit_original_evaluation_panel_tests.rs",
+      "label": "pin_completed_future_and_box_its_original_fixture_result",
+      "before": "async fn completed(peer: TrainingPeer) -> anyhow::Result<Self> {\n        let (original, mut primary_b, mut retention_b, registration) = Box::pin(preregistered()).await?;\n        assert_eq!(primary_b.at, retention_b.at);\n        let at = primary_b.at;\n        // Actual retention completes first. Only its original publication\n        // digest enters the primary B's signed product declaration.\n        let mut retention =\n            completed_member(&mut retention_b, &original, &registration, Vec::new()).await?;\n        let retained = retention.qualification.product().evidence_digest;\n        let mut primary =\n            completed_member(&mut primary_b, &original, &registration, vec![retained]).await?;\n        if matches!(peer, TrainingPeer::RenewedRetention) {\n            let renewed = original.evaluation.renewed_qualification_training()?;\n            assert_ne!(renewed, retention.config.training_evidence);\n            retention.renewed_training_peer(renewed)?;\n        }\n        let panel = Panel::from_original_owners(\n            registration,\n            primary.take_original_member(),\n            vec![retention.take_original_member()],\n        )?;\n        Ok(Self {\n            panel,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            at,\n        })\n    }",
+      "after": "fn completed(\n        peer: TrainingPeer,\n    ) -> impl std::future::Future<Output = anyhow::Result<Box<Self>>> {\n        Box::pin(async move {\n            let (original, mut primary_b, mut retention_b, registration) = Box::pin(preregistered()).await?;\n            assert_eq!(primary_b.at, retention_b.at);\n            let at = primary_b.at;\n            // Actual retention completes first. Only its original publication\n            // digest enters the primary B's signed product declaration.\n            let mut retention =\n                completed_member(&mut retention_b, &original, &registration, Vec::new()).await?;\n            let retained = retention.qualification.product().evidence_digest;\n            let mut primary =\n                completed_member(&mut primary_b, &original, &registration, vec![retained]).await?;\n            if matches!(peer, TrainingPeer::RenewedRetention) {\n                let renewed = original.evaluation.renewed_qualification_training()?;\n                assert_ne!(renewed, retention.config.training_evidence);\n                retention.renewed_training_peer(renewed)?;\n            }\n            let panel = Panel::from_original_owners(\n                registration,\n                primary.take_original_member(),\n                vec![retention.take_original_member()],\n            )?;\n            Ok(Box::new(Self {\n                panel,\n                original,\n                primary_b,\n                retention_b,\n                primary,\n                retention,\n                at,\n            }))\n        })\n    }"
+    },
+    {
+      "file": "circuit_original_evaluation_panel_tests.rs",
+      "label": "consume_the_same_boxed_panel_fixture_at_finish",
+      "before": "    async fn finish(self) -> anyhow::Result<[usize; 2]> {",
+      "after": "    async fn finish(self: Box<Self>) -> anyhow::Result<[usize; 2]> {"
+    },
+    {
+      "file": "circuit_original_evaluation_host_support_tests.rs",
+      "label": "pin_host_future_and_box_its_original_fixture_result",
+      "before": "pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Self> {\n        let PanelFixture {\n            panel,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            at,\n        } = PanelFixture::completed(TrainingPeer::Original).await?;\n        let input = &primary.config;\n        let config = OriginalCellEvaluationReceiptConfigV1 {\n            training: input.training.clone(),\n            scope: input.scope.clone(),\n            plan: input.plan.clone(),\n            signing: OriginalCellEvaluationSigningConfigV1 {\n                plan: input.plan.product_plan().clone(),\n                execution_namespace: input.execution_namespace,\n                signer: original.credentials.evaluator.clone(),\n                verifier: input.verifier.clone(),\n                maximum_signature_lifetime_seconds: 600,\n            },\n        };\n        let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;\n        let mut fixture = Self {\n            host: None,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            config,\n            at,\n            directory,\n        };\n        let (file, witness) = fixture.files(/*create*/ true)?;\n        let mut evaluator = OriginalCellEvaluationReceiptOwnerV1::create(\n            file,\n            witness,\n            fixture.config.clone(),\n            SigningKey::from_bytes(&[42; 32]),\n        )?;\n        if pending_claim {\n            evaluator.fixture_pending_original_host()?;\n        }\n        let mut host = evaluator.into_original_evaluation_host(panel)?;\n        host.fixture_original_clock(at)?;\n        fixture.host = Some(Arc::new(host));\n        Ok(fixture)\n    }",
+      "after": "pub(super) fn new(\n        pending_claim: bool,\n    ) -> impl std::future::Future<Output = anyhow::Result<Box<Self>>> {\n        Box::pin(async move {\n            let PanelFixture {\n                panel,\n                original,\n                primary_b,\n                retention_b,\n                primary,\n                retention,\n                at,\n            } = *PanelFixture::completed(TrainingPeer::Original).await?;\n            let input = &primary.config;\n            let config = OriginalCellEvaluationReceiptConfigV1 {\n                training: input.training.clone(),\n                scope: input.scope.clone(),\n                plan: input.plan.clone(),\n                signing: OriginalCellEvaluationSigningConfigV1 {\n                    plan: input.plan.product_plan().clone(),\n                    execution_namespace: input.execution_namespace,\n                    signer: original.credentials.evaluator.clone(),\n                    verifier: input.verifier.clone(),\n                    maximum_signature_lifetime_seconds: 600,\n                },\n            };\n            let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;\n            let mut fixture = Box::new(Self {\n                host: None,\n                original,\n                primary_b,\n                retention_b,\n                primary,\n                retention,\n                config,\n                at,\n                directory,\n            });\n            let (file, witness) = fixture.files(/*create*/ true)?;\n            let mut evaluator = OriginalCellEvaluationReceiptOwnerV1::create(\n                file,\n                witness,\n                fixture.config.clone(),\n                SigningKey::from_bytes(&[42; 32]),\n            )?;\n            if pending_claim {\n                evaluator.fixture_pending_original_host()?;\n            }\n            let mut host = evaluator.into_original_evaluation_host(panel)?;\n            host.fixture_original_clock(at)?;\n            fixture.host = Some(Arc::new(host));\n            Ok(fixture)\n        })\n    }"
+    },
+    {
+      "file": "circuit_original_evaluation_host_support_tests.rs",
+      "label": "consume_the_same_boxed_host_fixture_at_finish",
+      "before": "    pub(super) async fn finish(mut self) -> anyhow::Result<[usize; 2]> {",
+      "after": "    pub(super) async fn finish(mut self: Box<Self>) -> anyhow::Result<[usize; 2]> {"
+    }
+  ],
+  "complete_source_pre_post": [
+    {
+      "file": "circuit_original_evaluation_panel_tests.rs",
+      "before": "a3d0236846992a2115fadad63fadbfb0d1f54c6b",
+      "after": "a170dd97b062dbc0838afc92c1ac93042ae3b64d",
+      "bytes": 8977,
+      "sha256": "8afca9f926450aa2850d2fe4b715be9237cee0df79ea6fb6d0997f1d17f5418b",
+      "functionCount": 8,
+      "changedFunctions": [
+        "completed",
+        "finish"
+      ],
+      "unchangedFunctionHashes": [
+        {
+          "name": "completed_member",
+          "sha256": "d37c608b9c7f1c8a2ef7741592763ab75889663ad47149b1cec8a2894d7e909e"
+        },
+        {
+          "name": "read",
+          "sha256": "71f01db26c83b0d159907351b051b8d1c66261441e074b3bd92ab074e2e636e1"
+        },
+        {
+          "name": "bytes",
+          "sha256": "779f02e7ece8ad3f6417993a66b63037e1e4c81ddbee51560a57c19b0aa59209"
+        },
+        {
+          "name": "original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+          "sha256": "bbd7e760541cf4c1655e131a62b0cf0f4be0e0930bb416477776a31c493ee6a4"
+        },
+        {
+          "name": "original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+          "sha256": "571221a6b8fbd3ce2ef7daad53b1758f2c74eef298c7e48bdce850d7a3614d63"
+        },
+        {
+          "name": "original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+          "sha256": "2ec9ad18ff1304754fa77d43e821f1c256d020d6f3aada1546b29022196eaee8"
+        }
+      ],
+      "awaitCount": 20,
+      "cloneCount": 3,
+      "wholeReverseEqual": true
+    },
+    {
+      "file": "circuit_original_evaluation_host_support_tests.rs",
+      "before": "4afd556d729875e5e9e1a415535118ce26714266",
+      "after": "4ca274451d2b6b778c186f4402576ec256d590af",
+      "bytes": 6638,
+      "sha256": "5b979a5a2b7c0e544212310396188db0fdf117c457093853ed9429bec004bfe5",
+      "functionCount": 8,
+      "changedFunctions": [
+        "new",
+        "finish"
+      ],
+      "unchangedFunctionHashes": [
+        {
+          "name": "files",
+          "sha256": "15863ae11a15958fb01bcc7e0acbe5dd9da635673995de52f0e380d7bbaedb58"
+        },
+        {
+          "name": "original_files",
+          "sha256": "497b03d8ba8fc5793646582bf2e3749fb92522a2f04e068b80913934acec3ed0"
+        },
+        {
+          "name": "upstream_files",
+          "sha256": "a85b43cd9d2366d64ec884c867215cdca9991c6f1610f8a870351d72bd463f78"
+        },
+        {
+          "name": "commands",
+          "sha256": "a69cc9e9112cc62ea7b105fc4799c2958e9a17bd1f024a71e899ab7fc0c467bd"
+        },
+        {
+          "name": "recover",
+          "sha256": "783bf0cc71f49bc8748864a0c035fbd91e133cef36b254d040b5b113e8a39d52"
+        },
+        {
+          "name": "finish",
+          "sha256": "e684688ee70f3d834b6897cda31c2dc1b97761c77a1a826d38866355868442b7"
+        }
+      ],
+      "awaitCount": 2,
+      "cloneCount": 8,
+      "wholeReverseEqual": true
+    }
+  ],
+  "original_business_body_projections": {
+    "panel": {
+      "before": "\n        let (original, mut primary_b, mut retention_b, registration) = Box::pin(preregistered()).await?;\n        assert_eq!(primary_b.at, retention_b.at);\n        let at = primary_b.at;\n        // Actual retention completes first. Only its original publication\n        // digest enters the primary B's signed product declaration.\n        let mut retention =\n            completed_member(&mut retention_b, &original, &registration, Vec::new()).await?;\n        let retained = retention.qualification.product().evidence_digest;\n        let mut primary =\n            completed_member(&mut primary_b, &original, &registration, vec![retained]).await?;\n        if matches!(peer, TrainingPeer::RenewedRetention) {\n            let renewed = original.evaluation.renewed_qualification_training()?;\n            assert_ne!(renewed, retention.config.training_evidence);\n            retention.renewed_training_peer(renewed)?;\n        }\n        let panel = Panel::from_original_owners(\n            registration,\n            primary.take_original_member(),\n            vec![retention.take_original_member()],\n        )?;\n        Ok(Self {\n            panel,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            at,\n        })\n    ",
+      "after": "\n        let (original, mut primary_b, mut retention_b, registration) = Box::pin(preregistered()).await?;\n        assert_eq!(primary_b.at, retention_b.at);\n        let at = primary_b.at;\n        // Actual retention completes first. Only its original publication\n        // digest enters the primary B's signed product declaration.\n        let mut retention =\n            completed_member(&mut retention_b, &original, &registration, Vec::new()).await?;\n        let retained = retention.qualification.product().evidence_digest;\n        let mut primary =\n            completed_member(&mut primary_b, &original, &registration, vec![retained]).await?;\n        if matches!(peer, TrainingPeer::RenewedRetention) {\n            let renewed = original.evaluation.renewed_qualification_training()?;\n            assert_ne!(renewed, retention.config.training_evidence);\n            retention.renewed_training_peer(renewed)?;\n        }\n        let panel = Panel::from_original_owners(\n            registration,\n            primary.take_original_member(),\n            vec![retention.take_original_member()],\n        )?;\n        Ok(Box::new(Self {\n            panel,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            at,\n        }))\n    ",
+      "exactBeforeReturn": "        Ok(Self {\n            panel,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            at,\n        })",
+      "exactAfterReturn": "        Ok(Box::new(Self {\n            panel,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            at,\n        }))"
+    },
+    "host": {
+      "before": "\n        let PanelFixture {\n            panel,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            at,\n        } = PanelFixture::completed(TrainingPeer::Original).await?;\n        let input = &primary.config;\n        let config = OriginalCellEvaluationReceiptConfigV1 {\n            training: input.training.clone(),\n            scope: input.scope.clone(),\n            plan: input.plan.clone(),\n            signing: OriginalCellEvaluationSigningConfigV1 {\n                plan: input.plan.product_plan().clone(),\n                execution_namespace: input.execution_namespace,\n                signer: original.credentials.evaluator.clone(),\n                verifier: input.verifier.clone(),\n                maximum_signature_lifetime_seconds: 600,\n            },\n        };\n        let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;\n        let mut fixture = Self {\n            host: None,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            config,\n            at,\n            directory,\n        };\n        let (file, witness) = fixture.files(/*create*/ true)?;\n        let mut evaluator = OriginalCellEvaluationReceiptOwnerV1::create(\n            file,\n            witness,\n            fixture.config.clone(),\n            SigningKey::from_bytes(&[42; 32]),\n        )?;\n        if pending_claim {\n            evaluator.fixture_pending_original_host()?;\n        }\n        let mut host = evaluator.into_original_evaluation_host(panel)?;\n        host.fixture_original_clock(at)?;\n        fixture.host = Some(Arc::new(host));\n        Ok(fixture)\n    ",
+      "after": "\n        let PanelFixture {\n            panel,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            at,\n        } = *PanelFixture::completed(TrainingPeer::Original).await?;\n        let input = &primary.config;\n        let config = OriginalCellEvaluationReceiptConfigV1 {\n            training: input.training.clone(),\n            scope: input.scope.clone(),\n            plan: input.plan.clone(),\n            signing: OriginalCellEvaluationSigningConfigV1 {\n                plan: input.plan.product_plan().clone(),\n                execution_namespace: input.execution_namespace,\n                signer: original.credentials.evaluator.clone(),\n                verifier: input.verifier.clone(),\n                maximum_signature_lifetime_seconds: 600,\n            },\n        };\n        let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;\n        let mut fixture = Box::new(Self {\n            host: None,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            config,\n            at,\n            directory,\n        });\n        let (file, witness) = fixture.files(/*create*/ true)?;\n        let mut evaluator = OriginalCellEvaluationReceiptOwnerV1::create(\n            file,\n            witness,\n            fixture.config.clone(),\n            SigningKey::from_bytes(&[42; 32]),\n        )?;\n        if pending_claim {\n            evaluator.fixture_pending_original_host()?;\n        }\n        let mut host = evaluator.into_original_evaluation_host(panel)?;\n        host.fixture_original_clock(at)?;\n        fixture.host = Some(Arc::new(host));\n        Ok(fixture)\n    ",
+      "exactBeforeFixture": "        let mut fixture = Self {\n            host: None,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            config,\n            at,\n            directory,\n        };",
+      "exactAfterFixture": "        let mut fixture = Box::new(Self {\n            host: None,\n            original,\n            primary_b,\n            retention_b,\n            primary,\n            retention,\n            config,\n            at,\n            directory,\n        });"
+    }
+  },
+  "body_projection_checks": {
+    "panelBodyUnwrapExact": true,
+    "hostBodyUnwrapExact": true,
+    "constructionFieldOrderUnchanged": true,
+    "finishBodiesByteEqual": true,
+    "originalExtraClones": 0,
+    "originalAwaitCountUnchanged": true
+  },
+  "unaffected_cases": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "source_blob": "d1a24c7351d25c9c0728541b011a6608b451b9dc",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "body_sha256": "2e6f27163a2fe00050871bb45dc7e92030756618b3e34863e0fb5cea6486a884",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "source_blob": "d1a24c7351d25c9c0728541b011a6608b451b9dc",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "body_sha256": "341ec4de5ae18d6571610c37a37f7f7d309836e4c758359510d398f95b3284a1",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "source_blob": "d1a24c7351d25c9c0728541b011a6608b451b9dc",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "body_sha256": "8e609be09bd74f89a8cb08c471ae49bb7245b1e61e295afcd61884422de9c25b",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "source_blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "body_sha256": "910e9d1f07bafaf636af255f79cf05bbd51fab59f0422b15f3f02c9db13c5db7",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "source_blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "body_sha256": "3955cbf23de4b7066f3ee2207671989457de4b4ca5e993eb321002da6d3f5903",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "source_blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "body_sha256": "0601ee7a0c1bfd6128017f4149b4290979c1f1c57f792c4d42054ad5159e9d02",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "source_blob": "9f7ce3293e9e50b4128e8c312f88c95961b11ddb",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry",
+      "body_sha256": "8ecf5191af88c6ecc501adb6e2ce90804799b1a47cc409a39b527ca723c261fb",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "source_blob": "9f7ce3293e9e50b4128e8c312f88c95961b11ddb",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_reads_two_trainers_per_call_and_whole_export",
+      "body_sha256": "05eaf1ba211ec033c2fef6bba62b284b69798cd4435d791e9a2ab4bd921f41f2",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "source_blob": "9f7ce3293e9e50b4128e8c312f88c95961b11ddb",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_rejects_equal_evidence_on_another_connection",
+      "body_sha256": "968ef2bf84df322ee4b95ba727a03f4878bf5f7a00c40096cad8ec5040de6552",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "source_blob": "9f7ce3293e9e50b4128e8c312f88c95961b11ddb",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel",
+      "body_sha256": "6c3eb900c26b00af75c75c7939c018ef988d4ee3d4dc5cf9ec94a790df021d24",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "source_blob": "a3d0236846992a2115fadad63fadbfb0d1f54c6b",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "body_sha256": "ad49099d788bc131e65ce2ba6be460b8730093189e681760d6d97cfafbdbabc2",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "source_blob": "a3d0236846992a2115fadad63fadbfb0d1f54c6b",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "body_sha256": "632b29b58533909d3940dbfb172d23a1b1e497b2a34b1c93f1bafdf86179245a",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "source_blob": "a3d0236846992a2115fadad63fadbfb0d1f54c6b",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "body_sha256": "1eb23700cf4cf3e6a4e3ad26f80d4bcb5ce591375557fa642603b62eb4c1f585",
+      "body_byte_equal": true,
+      "original_diagnostic": [
+        "process aborted with signal 6 (SIGABRT)"
+      ]
+    }
+  ],
+  "owner_and_lifetime_review": {
+    "box_is_an_owning_test_only_representation": true,
+    "no_arc_or_owner_clone_added": true,
+    "no_borrowed_owner_substituted_for_original_owned_value": true,
+    "host_consumes_all_fields_from_one_original_box": true,
+    "field_declaration_and_construction_order_unchanged": true,
+    "original_field_borrows_and_config_clones_unchanged": true,
+    "panel_finish_explicit_order": [
+      "drop panel",
+      "primary.finish",
+      "retention.finish",
+      "drop primary_b",
+      "drop retention_b",
+      "original.finish().await"
+    ],
+    "host_finish_explicit_order": [
+      "drop host.take",
+      "primary.finish",
+      "retention.finish",
+      "drop primary_b",
+      "drop retention_b",
+      "original.finish().await"
+    ],
+    "no_spawn_or_new_runtime": true,
+    "no_new_await_or_current_read_removed": true,
+    "no_receipt_resigning_reconnect_or_repeated_effect": true,
+    "eager_allocation_difference": "The fixture future is now allocated when the helper is called. Its original business body and original I/O still start only when that future is polled. This is test memory representation, not a new authorization or operation.",
+    "limits": "Box::pin and Box::new can still create temporary values; the Host owned Box destructure still moves fields. Native compilation, run behavior and any remaining stack pressure require the original validation gate."
+  },
+  "integration": {
+    "root_verified_other_fixes": "58bb796c285e47a049423390a3bdd44607e6c44b",
+    "this_commit_parent_remains_actual_compiled_a671": true,
+    "no_overlap_with_other_two_test_source_fixes": true,
+    "require_true_union_before_final_same_source_run": true,
+    "current_a671_CALLERS_left_untouched": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+    "boundary_protected_inventory_unchanged": true,
+    "original_443_source_methods_201_native_cases_29_root_cases_not_added_removed_or_split": true
+  },
+  "validation": {
+    "whole_source_exact_forward_and_reverse_replay": true,
+    "all_thirteen_case_function_bodies_byte_identical": true,
+    "all_other_functions_in_changed_files_byte_identical": 12,
+    "modified_production_files": 0,
+    "source_qa_changes": 0,
+    "verifier_changes": 0,
+    "new_tests": 0,
+    "removed_tests": 0,
+    "h_execution": false,
+    "rust_compilation": false,
+    "native_pass_claimed": false,
+    "stack_budget_bytes": 8388608,
+    "per_case_timeout_seconds": 60,
+    "existing_budgets_modified": false,
+    "ordinary_acceptance": 0
+  }
+}

@@ -1,0 +1,1333 @@
+{
+  "schema": "ctrl1.native-source-final.v4",
+  "base_sha": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_real_runtime/objective.py"
+      ],
+      "returncode": 0,
+      "stdout": "100644 blob ca2a6aad749815d15f84a613c8058b3a07c03e8f\tscripts/ndu_real_runtime/objective.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "hash-object",
+        "--",
+        "scripts/ndu_real_runtime/objective.py"
+      ],
+      "returncode": 0,
+      "stdout": "ca2a6aad749815d15f84a613c8058b3a07c03e8f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_real_runtime/finite_entropic_golden.json"
+      ],
+      "returncode": 0,
+      "stdout": "100644 blob bc43a6f53def4420f1b3270ede66371d3b1bd62f\tscripts/ndu_real_runtime/finite_entropic_golden.json\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "hash-object",
+        "--",
+        "scripts/ndu_real_runtime/finite_entropic_golden.json"
+      ],
+      "returncode": 0,
+      "stdout": "bc43a6f53def4420f1b3270ede66371d3b1bd62f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/ndu_ctrl1",
+        "-t",
+        "scripts",
+        "-p",
+        "test_ctrl1_*.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "test_all_unavailable_attempts_still_have_their_full_rows (ndu_ctrl1.test_ctrl1_cpu_evidence.RosterTests.test_all_unavailable_attempts_still_have_their_full_rows) ... ok\ntest_duplicate_worker_or_case_is_not_a_complete_denominator (ndu_ctrl1.test_ctrl1_cpu_evidence.RosterTests.test_duplicate_worker_or_case_is_not_a_complete_denominator) ... ok\ntest_frozen_plan_denominators_cannot_be_silently_changed (ndu_ctrl1.test_ctrl1_cpu_evidence.RosterTests.test_frozen_plan_denominators_cannot_be_silently_changed) ... ok\ntest_parent_failure_has_terminal_event_and_inventoried_original (ndu_ctrl1.test_ctrl1_cpu_evidence.RosterTests.test_parent_failure_has_terminal_event_and_inventoried_original) ... ok\ntest_unavailable_scores_and_receipt_cost_substitution_are_rejected (ndu_ctrl1.test_ctrl1_cpu_evidence.RosterTests.test_unavailable_scores_and_receipt_cost_substitution_are_rejected) ... ok\ntest_clean_exit_requires_a_valid_completion_receipt (ndu_ctrl1.test_ctrl1_cpu_evidence.TerminationTests.test_clean_exit_requires_a_valid_completion_receipt) ... ok\ntest_complete_epoch_is_bound_to_attempt_and_initial_only_is_unavailable (ndu_ctrl1.test_ctrl1_cpu_evidence.TerminationTests.test_complete_epoch_is_bound_to_attempt_and_initial_only_is_unavailable) ... ok\ntest_only_explicit_cpu_signal_is_eligible_not_sigkill_or_other_signals (ndu_ctrl1.test_ctrl1_cpu_evidence.TerminationTests.test_only_explicit_cpu_signal_is_eligible_not_sigkill_or_other_signals) ... ok\ntest_current_source_drift_is_rejected_and_historical_mode_is_explicit (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_current_source_drift_is_rejected_and_historical_mode_is_explicit) ... ok\ntest_duplicate_comparison_does_not_preserve_denominator (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_duplicate_comparison_does_not_preserve_denominator) ... ok\ntest_duplicate_profile_and_cross_split_identity_are_rejected (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_duplicate_profile_and_cross_split_identity_are_rejected) ... ok\ntest_file_hash_tamper_is_rejected (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_file_hash_tamper_is_rejected) ... ok\ntest_forged_kernel_probability_is_rejected (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_forged_kernel_probability_is_rejected) ... ok\ntest_held_out_scenarios_cannot_enter_development_evidence (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_held_out_scenarios_cannot_enter_development_evidence) ... ok\ntest_jsonl_nonfinite_and_duplicate_fields_are_rejected (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_jsonl_nonfinite_and_duplicate_fields_are_rejected) ... ok\ntest_manifest_traversal_and_manifest_symlink_are_rejected (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_manifest_traversal_and_manifest_symlink_are_rejected) ... ok\ntest_missing_and_duplicate_sampled_originals_are_rejected (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_missing_and_duplicate_sampled_originals_are_rejected) ... ok\ntest_missing_attempt_completion_is_rejected (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_missing_attempt_completion_is_rejected) ... ok\ntest_real_small_runner_has_complete_bound_originals (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_real_small_runner_has_complete_bound_originals) ... ok\ntest_reconciled_but_wrong_compute_charge_is_rejected (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_reconciled_but_wrong_compute_charge_is_rejected) ... ok\ntest_router_cannot_switch_to_another_self_consistent_fast_reference (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_router_cannot_switch_to_another_self_consistent_fast_reference) ... ok\ntest_selection_is_recomputed_from_original_development (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_selection_is_recomputed_from_original_development) ... ok\ntest_self_consistent_checkpoint_cannot_replace_the_other_training_run (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_self_consistent_checkpoint_cannot_replace_the_other_training_run) ... ok\ntest_summary_cannot_cherry_pick_original_metrics (ndu_ctrl1.test_ctrl1_evidence.EvidenceTests.test_summary_cannot_cherry_pick_original_metrics) ... ok\ntest_gain_with_costs_passes_but_ties_and_extra_cost_do_not (ndu_ctrl1.test_ctrl1_learning.AdoptionTests.test_gain_with_costs_passes_but_ties_and_extra_cost_do_not) ... ok\ntest_profile_drift_units_missing_identity_and_unknown_fields_reject (ndu_ctrl1.test_ctrl1_learning.AdoptionTests.test_profile_drift_units_missing_identity_and_unknown_fields_reject) ... ok\ntest_test_split_missing_nonfinite_unpaired_and_budget_evidence_reject (ndu_ctrl1.test_ctrl1_learning.AdoptionTests.test_test_split_missing_nonfinite_unpaired_and_budget_evidence_reject) ... ok\ntest_hard_cpu_limit_retains_failed_attempt_and_inclusive_cpu (ndu_ctrl1.test_ctrl1_learning.BudgetWorkerTests.test_hard_cpu_limit_retains_failed_attempt_and_inclusive_cpu) ... ok\ntest_actual_actor_gradient_matches_independent_finite_difference (ndu_ctrl1.test_ctrl1_learning.LearningTests.test_actual_actor_gradient_matches_independent_finite_difference) ... ok\ntest_cpu_stop_rolls_back_partial_epoch_but_retains_its_actual_cost (ndu_ctrl1.test_ctrl1_learning.LearningTests.test_cpu_stop_rolls_back_partial_epoch_but_retains_its_actual_cost) ... ok\ntest_distillation_retains_all_labels_and_extra_teacher_work (ndu_ctrl1.test_ctrl1_learning.LearningTests.test_distillation_retains_all_labels_and_extra_teacher_work) ... ok\ntest_inference_hard_mask_overrides_adverse_actor_weights (ndu_ctrl1.test_ctrl1_learning.LearningTests.test_inference_hard_mask_overrides_adverse_actor_weights) ... ok\ntest_known_boundary_and_future_compute_charge_prevent_false_continuation (ndu_ctrl1.test_ctrl1_learning.LearningTests.test_known_boundary_and_future_compute_charge_prevent_false_continuation) ... ok\ntest_real_joint_backup_learning_distinguishes_known_success_and_failure (ndu_ctrl1.test_ctrl1_learning.LearningTests.test_real_joint_backup_learning_distinguishes_known_success_and_failure) ... ok\ntest_seeded_replay_and_checkpoint_preserve_actions_and_parameters (ndu_ctrl1.test_ctrl1_learning.LearningTests.test_seeded_replay_and_checkpoint_preserve_actions_and_parameters) ... ok\ntest_teacher_budget_exhaustion_has_no_candidate_or_filtered_label_subset (ndu_ctrl1.test_ctrl1_learning.LearningTests.test_teacher_budget_exhaustion_has_no_candidate_or_filtered_label_subset) ... ok\ntest_training_bounds_reject_before_creating_a_candidate (ndu_ctrl1.test_ctrl1_learning.LearningTests.test_training_bounds_reject_before_creating_a_candidate) ... ok\ntest_complete_support_respects_limits_and_exact_probability (ndu_ctrl1.test_ctrl1_model.ModelTests.test_complete_support_respects_limits_and_exact_probability) ... ok\ntest_correlation_reversal_preserves_marginals_and_changes_value (ndu_ctrl1.test_ctrl1_model.ModelTests.test_correlation_reversal_preserves_marginals_and_changes_value) ... ok\ntest_irrelevant_paid_observation_does_not_create_value (ndu_ctrl1.test_ctrl1_model.ModelTests.test_irrelevant_paid_observation_does_not_create_value) ... ok\ntest_posterior_conditions_on_signal_time_and_cost (ndu_ctrl1.test_ctrl1_model.ModelTests.test_posterior_conditions_on_signal_time_and_cost) ... ok\ntest_profile_and_backup_reject_invalid_domains (ndu_ctrl1.test_ctrl1_model.ModelTests.test_profile_and_backup_reject_invalid_domains) ... ok\ntest_repair_changes_belief_without_revealing_outcome (ndu_ctrl1.test_ctrl1_model.ModelTests.test_repair_changes_belief_without_revealing_outcome) ... ok\ntest_worst_support_admission_not_expected_consumption (ndu_ctrl1.test_ctrl1_model.ModelTests.test_worst_support_admission_not_expected_consumption) ... ok\ntest_bellman_matches_independent_policy_tree_enumeration (ndu_ctrl1.test_ctrl1_model.OracleTests.test_bellman_matches_independent_policy_tree_enumeration) ... ok\ntest_oracle_and_tree_have_explicit_caps (ndu_ctrl1.test_ctrl1_model.OracleTests.test_oracle_and_tree_have_explicit_caps) ... ok\ntest_small_risk_remains_finite_and_approaches_risk_neutral (ndu_ctrl1.test_ctrl1_model.OracleTests.test_small_risk_remains_finite_and_approaches_risk_neutral) ... ok\ntest_mean_prediction_is_evaluated_on_actual_joint_outcomes (ndu_ctrl1.test_ctrl1_policies.JointEvaluationTests.test_mean_prediction_is_evaluated_on_actual_joint_outcomes) ... ok\ntest_nested_policy_value_counts_each_successor_base_fee_once (ndu_ctrl1.test_ctrl1_policies.JointEvaluationTests.test_nested_policy_value_counts_each_successor_base_fee_once) ... ok\ntest_compute_fallback_and_emergency_never_exceed_budget (ndu_ctrl1.test_ctrl1_policies.PlanningCostTests.test_compute_fallback_and_emergency_never_exceed_budget) ... ok\ntest_future_value_pays_same_charge_and_leaf_is_not_free (ndu_ctrl1.test_ctrl1_policies.PlanningCostTests.test_future_value_pays_same_charge_and_leaf_is_not_free) ... ok\ntest_partial_comparison_returns_legal_action_and_pays_all_work (ndu_ctrl1.test_ctrl1_policies.PlanningCostTests.test_partial_comparison_returns_legal_action_and_pays_all_work) ... ok\ntest_prepaid_invocation_matches_predicted_and_actual_budget (ndu_ctrl1.test_ctrl1_policies.PlanningCostTests.test_prepaid_invocation_matches_predicted_and_actual_budget) ... ok\ntest_voi_after_observation_delivers_and_cannot_repair_as_fallback (ndu_ctrl1.test_ctrl1_policies.PlanningCostTests.test_voi_after_observation_delivers_and_cannot_repair_as_fallback) ... ok\ntest_compute_then_stop_regret_cannot_hide_exhausted_budget (ndu_ctrl1.test_ctrl1_profiles.ProfileCompatibilityTests.test_compute_then_stop_regret_cannot_hide_exhausted_budget) ... ok\ntest_existing_native_shared_entropic_golden_vectors (ndu_ctrl1.test_ctrl1_profiles.ProfileCompatibilityTests.test_existing_native_shared_entropic_golden_vectors) ... ok\ntest_separate_q32_reference_matches_pinned_deterministic_fixture (ndu_ctrl1.test_ctrl1_profiles.ProfileCompatibilityTests.test_separate_q32_reference_matches_pinned_deterministic_fixture) ... ok\ntest_checkpoint_replay_and_critical_identity_rejection (ndu_ctrl1.test_ctrl1_routing.RoutingTests.test_checkpoint_replay_and_critical_identity_rejection) ... ok\ntest_different_reference_or_unpaid_actionable_input_rejects (ndu_ctrl1.test_ctrl1_routing.RoutingTests.test_different_reference_or_unpaid_actionable_input_rejects) ... ok\ntest_positive_prediction_requests_paid_slow_and_nonpositive_uses_fast (ndu_ctrl1.test_ctrl1_routing.RoutingTests.test_positive_prediction_requests_paid_slow_and_nonpositive_uses_fast) ... ok\ntest_true_returns_keep_positive_negative_and_no_gain_cases (ndu_ctrl1.test_ctrl1_routing.RoutingTests.test_true_returns_keep_positive_negative_and_no_gain_cases) ... ok\n\n----------------------------------------------------------------------\nRan 61 tests in 1.333s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "var",
+        "GIT_AUTHOR_IDENT"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "var",
+        "GIT_COMMITTER_IDENT"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "scripts/ndu_ctrl1/__init__.py",
+        "scripts/ndu_ctrl1/model.py",
+        "scripts/ndu_ctrl1/oracle.py",
+        "scripts/ndu_ctrl1/test_ctrl1_model.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "scripts/ndu_ctrl1/__init__.py\nscripts/ndu_ctrl1/model.py\nscripts/ndu_ctrl1/oracle.py\nscripts/ndu_ctrl1/test_ctrl1_model.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--numstat"
+      ],
+      "returncode": 0,
+      "stdout": "1\t0\tscripts/ndu_ctrl1/__init__.py\n282\t0\tscripts/ndu_ctrl1/model.py\n120\t0\tscripts/ndu_ctrl1/oracle.py\n203\t0\tscripts/ndu_ctrl1/test_ctrl1_model.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: add finite belief environment and exhaustive reference"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 174f3b5] ctrl1: add finite belief environment and exhaustive reference\n 4 files changed, 606 insertions(+)\n create mode 100644 scripts/ndu_ctrl1/__init__.py\n create mode 100644 scripts/ndu_ctrl1/model.py\n create mode 100644 scripts/ndu_ctrl1/oracle.py\n create mode 100644 scripts/ndu_ctrl1/test_ctrl1_model.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "174f3b51105cdf257ec5996391ba94acad248214\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "scripts/ndu_ctrl1/policies.py",
+        "scripts/ndu_ctrl1/evaluation.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "scripts/ndu_ctrl1/evaluation.py\nscripts/ndu_ctrl1/policies.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--numstat"
+      ],
+      "returncode": 0,
+      "stdout": "216\t0\tscripts/ndu_ctrl1/evaluation.py\n274\t0\tscripts/ndu_ctrl1/policies.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: meter bounded planning and exact charged policy evaluation"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 6509997] ctrl1: meter bounded planning and exact charged policy evaluation\n 2 files changed, 490 insertions(+)\n create mode 100644 scripts/ndu_ctrl1/evaluation.py\n create mode 100644 scripts/ndu_ctrl1/policies.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "6509997a2e09461192cfc0aec66e1f7fec484fba\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "scripts/ndu_ctrl1/test_ctrl1_policies.py",
+        "scripts/ndu_ctrl1/test_ctrl1_profiles.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "scripts/ndu_ctrl1/test_ctrl1_policies.py\nscripts/ndu_ctrl1/test_ctrl1_profiles.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--numstat"
+      ],
+      "returncode": 0,
+      "stdout": "185\t0\tscripts/ndu_ctrl1/test_ctrl1_policies.py\n74\t0\tscripts/ndu_ctrl1/test_ctrl1_profiles.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: test joint forecasts, computation costs and profile boundaries"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 7b8080d] ctrl1: test joint forecasts, computation costs and profile boundaries\n 2 files changed, 259 insertions(+)\n create mode 100644 scripts/ndu_ctrl1/test_ctrl1_policies.py\n create mode 100644 scripts/ndu_ctrl1/test_ctrl1_profiles.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "7b8080d59c8fe3c50f190565b9de1f7f22154763\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "scripts/ndu_ctrl1/learning.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "scripts/ndu_ctrl1/learning.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--numstat"
+      ],
+      "returncode": 0,
+      "stdout": "616\t0\tscripts/ndu_ctrl1/learning.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: add matched opportunity actor critic and evaluated distillation"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 05b35d5] ctrl1: add matched opportunity actor critic and evaluated distillation\n 1 file changed, 616 insertions(+)\n create mode 100644 scripts/ndu_ctrl1/learning.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "05b35d5d28277aab110e3b1cd84442dbd3f922b3\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "scripts/ndu_ctrl1/budget_sensitivity.py",
+        "scripts/ndu_ctrl1/test_ctrl1_learning.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "scripts/ndu_ctrl1/budget_sensitivity.py\nscripts/ndu_ctrl1/test_ctrl1_learning.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--numstat"
+      ],
+      "returncode": 0,
+      "stdout": "313\t0\tscripts/ndu_ctrl1/budget_sensitivity.py\n324\t0\tscripts/ndu_ctrl1/test_ctrl1_learning.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: enforce independent CPU budgets and checkpoint recovery"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 2e20f88] ctrl1: enforce independent CPU budgets and checkpoint recovery\n 2 files changed, 637 insertions(+)\n create mode 100644 scripts/ndu_ctrl1/budget_sensitivity.py\n create mode 100644 scripts/ndu_ctrl1/test_ctrl1_learning.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "2e20f88b5a3d4cda0cbcba4436f6e20945344118\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "scripts/ndu_ctrl1/routing.py",
+        "scripts/ndu_ctrl1/test_ctrl1_routing.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "scripts/ndu_ctrl1/routing.py\nscripts/ndu_ctrl1/test_ctrl1_routing.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--numstat"
+      ],
+      "returncode": 0,
+      "stdout": "376\t0\tscripts/ndu_ctrl1/routing.py\n134\t0\tscripts/ndu_ctrl1/test_ctrl1_routing.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: learn compute routing from downstream paid value"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 92cff9e] ctrl1: learn compute routing from downstream paid value\n 2 files changed, 510 insertions(+)\n create mode 100644 scripts/ndu_ctrl1/routing.py\n create mode 100644 scripts/ndu_ctrl1/test_ctrl1_routing.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "92cff9e1b8c3bf6b2c34df9191bdda0e91d77928\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "scripts/ndu_ctrl1/run.py",
+        "scripts/ndu_ctrl1/sensitivity_run.py",
+        "scripts/ndu_ctrl1/README.md"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "scripts/ndu_ctrl1/README.md\nscripts/ndu_ctrl1/run.py\nscripts/ndu_ctrl1/sensitivity_run.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--numstat"
+      ],
+      "returncode": 0,
+      "stdout": "190\t0\tscripts/ndu_ctrl1/README.md\n586\t0\tscripts/ndu_ctrl1/run.py\n394\t0\tscripts/ndu_ctrl1/sensitivity_run.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: retain complete frozen experiment and cost sensitivity rosters"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 8962ccf] ctrl1: retain complete frozen experiment and cost sensitivity rosters\n 3 files changed, 1170 insertions(+)\n create mode 100644 scripts/ndu_ctrl1/README.md\n create mode 100644 scripts/ndu_ctrl1/run.py\n create mode 100644 scripts/ndu_ctrl1/sensitivity_run.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "8962ccf114d7974b48af013279d8e4b2eac55841\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "scripts/ndu_ctrl1/verify.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "scripts/ndu_ctrl1/verify.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--numstat"
+      ],
+      "returncode": 0,
+      "stdout": "786\t0\tscripts/ndu_ctrl1/verify.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: audit source identities, raw outcomes and adoption evidence"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 9958615] ctrl1: audit source identities, raw outcomes and adoption evidence\n 1 file changed, 786 insertions(+)\n create mode 100644 scripts/ndu_ctrl1/verify.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "995861598194abfb4bbf6c6f14291d5b270c4c16\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "scripts/ndu_ctrl1/test_ctrl1_evidence.py",
+        ".github/workflows/hepta-ndu-recursion.yml"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": ".github/workflows/hepta-ndu-recursion.yml\nscripts/ndu_ctrl1/test_ctrl1_evidence.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--numstat"
+      ],
+      "returncode": 0,
+      "stdout": "6\t0\t.github/workflows/hepta-ndu-recursion.yml\n302\t0\tscripts/ndu_ctrl1/test_ctrl1_evidence.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: reject semantic evidence tampering and run tests in NDU CI"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 dde4f0c] ctrl1: reject semantic evidence tampering and run tests in NDU CI\n 2 files changed, 308 insertions(+)\n create mode 100644 scripts/ndu_ctrl1/test_ctrl1_evidence.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "dde4f0c2d2ba08346b1f9255d0782ff7ef8abb36\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--numstat"
+      ],
+      "returncode": 0,
+      "stdout": "245\t0\tscripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: retain abnormal CPU exits and complete attempt denominators"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 472c825] ctrl1: retain abnormal CPU exits and complete attempt denominators\n 1 file changed, 245 insertions(+)\n create mode 100644 scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "472c825a87220574acc5338afe59558e1ad2038f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--name-only",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": ".github/workflows/hepta-ndu-recursion.yml\nscripts/ndu_ctrl1/README.md\nscripts/ndu_ctrl1/__init__.py\nscripts/ndu_ctrl1/budget_sensitivity.py\nscripts/ndu_ctrl1/evaluation.py\nscripts/ndu_ctrl1/learning.py\nscripts/ndu_ctrl1/model.py\nscripts/ndu_ctrl1/oracle.py\nscripts/ndu_ctrl1/policies.py\nscripts/ndu_ctrl1/routing.py\nscripts/ndu_ctrl1/run.py\nscripts/ndu_ctrl1/sensitivity_run.py\nscripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py\nscripts/ndu_ctrl1/test_ctrl1_evidence.py\nscripts/ndu_ctrl1/test_ctrl1_learning.py\nscripts/ndu_ctrl1/test_ctrl1_model.py\nscripts/ndu_ctrl1/test_ctrl1_policies.py\nscripts/ndu_ctrl1/test_ctrl1_profiles.py\nscripts/ndu_ctrl1/test_ctrl1_routing.py\nscripts/ndu_ctrl1/verify.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "472c825a87220574acc5338afe59558e1ad2038f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "returncode": 0,
+      "stdout": "be9fd07a56c7eee678dfa8558f08303ce76d6fba\n",
+      "stderr": ""
+    }
+  ],
+  "stages": [
+    {
+      "message": "ctrl1: add finite belief environment and exhaustive reference",
+      "paths": [
+        "scripts/ndu_ctrl1/__init__.py",
+        "scripts/ndu_ctrl1/model.py",
+        "scripts/ndu_ctrl1/oracle.py",
+        "scripts/ndu_ctrl1/test_ctrl1_model.py"
+      ],
+      "numstat": "1\t0\tscripts/ndu_ctrl1/__init__.py\n282\t0\tscripts/ndu_ctrl1/model.py\n120\t0\tscripts/ndu_ctrl1/oracle.py\n203\t0\tscripts/ndu_ctrl1/test_ctrl1_model.py\n",
+      "commit": "174f3b51105cdf257ec5996391ba94acad248214"
+    },
+    {
+      "message": "ctrl1: meter bounded planning and exact charged policy evaluation",
+      "paths": [
+        "scripts/ndu_ctrl1/policies.py",
+        "scripts/ndu_ctrl1/evaluation.py"
+      ],
+      "numstat": "216\t0\tscripts/ndu_ctrl1/evaluation.py\n274\t0\tscripts/ndu_ctrl1/policies.py\n",
+      "commit": "6509997a2e09461192cfc0aec66e1f7fec484fba"
+    },
+    {
+      "message": "ctrl1: test joint forecasts, computation costs and profile boundaries",
+      "paths": [
+        "scripts/ndu_ctrl1/test_ctrl1_policies.py",
+        "scripts/ndu_ctrl1/test_ctrl1_profiles.py"
+      ],
+      "numstat": "185\t0\tscripts/ndu_ctrl1/test_ctrl1_policies.py\n74\t0\tscripts/ndu_ctrl1/test_ctrl1_profiles.py\n",
+      "commit": "7b8080d59c8fe3c50f190565b9de1f7f22154763"
+    },
+    {
+      "message": "ctrl1: add matched opportunity actor critic and evaluated distillation",
+      "paths": [
+        "scripts/ndu_ctrl1/learning.py"
+      ],
+      "numstat": "616\t0\tscripts/ndu_ctrl1/learning.py\n",
+      "commit": "05b35d5d28277aab110e3b1cd84442dbd3f922b3"
+    },
+    {
+      "message": "ctrl1: enforce independent CPU budgets and checkpoint recovery",
+      "paths": [
+        "scripts/ndu_ctrl1/budget_sensitivity.py",
+        "scripts/ndu_ctrl1/test_ctrl1_learning.py"
+      ],
+      "numstat": "313\t0\tscripts/ndu_ctrl1/budget_sensitivity.py\n324\t0\tscripts/ndu_ctrl1/test_ctrl1_learning.py\n",
+      "commit": "2e20f88b5a3d4cda0cbcba4436f6e20945344118"
+    },
+    {
+      "message": "ctrl1: learn compute routing from downstream paid value",
+      "paths": [
+        "scripts/ndu_ctrl1/routing.py",
+        "scripts/ndu_ctrl1/test_ctrl1_routing.py"
+      ],
+      "numstat": "376\t0\tscripts/ndu_ctrl1/routing.py\n134\t0\tscripts/ndu_ctrl1/test_ctrl1_routing.py\n",
+      "commit": "92cff9e1b8c3bf6b2c34df9191bdda0e91d77928"
+    },
+    {
+      "message": "ctrl1: retain complete frozen experiment and cost sensitivity rosters",
+      "paths": [
+        "scripts/ndu_ctrl1/run.py",
+        "scripts/ndu_ctrl1/sensitivity_run.py",
+        "scripts/ndu_ctrl1/README.md"
+      ],
+      "numstat": "190\t0\tscripts/ndu_ctrl1/README.md\n586\t0\tscripts/ndu_ctrl1/run.py\n394\t0\tscripts/ndu_ctrl1/sensitivity_run.py\n",
+      "commit": "8962ccf114d7974b48af013279d8e4b2eac55841"
+    },
+    {
+      "message": "ctrl1: audit source identities, raw outcomes and adoption evidence",
+      "paths": [
+        "scripts/ndu_ctrl1/verify.py"
+      ],
+      "numstat": "786\t0\tscripts/ndu_ctrl1/verify.py\n",
+      "commit": "995861598194abfb4bbf6c6f14291d5b270c4c16"
+    },
+    {
+      "message": "ctrl1: reject semantic evidence tampering and run tests in NDU CI",
+      "paths": [
+        "scripts/ndu_ctrl1/test_ctrl1_evidence.py",
+        ".github/workflows/hepta-ndu-recursion.yml"
+      ],
+      "numstat": "6\t0\t.github/workflows/hepta-ndu-recursion.yml\n302\t0\tscripts/ndu_ctrl1/test_ctrl1_evidence.py\n",
+      "commit": "dde4f0c2d2ba08346b1f9255d0782ff7ef8abb36"
+    },
+    {
+      "message": "ctrl1: retain abnormal CPU exits and complete attempt denominators",
+      "paths": [
+        "scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py"
+      ],
+      "numstat": "245\t0\tscripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py\n",
+      "commit": "472c825a87220574acc5338afe59558e1ad2038f"
+    }
+  ],
+  "pushed": false,
+  "strict_ast_parity": false,
+  "executable_ast_parity": true,
+  "docstring_cleandoc_parity": true,
+  "files": [
+    {
+      "path": "scripts/ndu_ctrl1/__init__.py",
+      "before_sha256": "1d30d626478e0655db28f9dbceefb6bfeaa1deaedde86a56218facd341f11b7c",
+      "after_sha256": "1d30d626478e0655db28f9dbceefb6bfeaa1deaedde86a56218facd341f11b7c",
+      "before_bytes": 78,
+      "after_bytes": 78,
+      "changed": false,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "5b2a3fee5af514581fca9d6f9aea7024c0f6db20fe4184cc39162bc6c3a5f6d2",
+      "after_ast_sha256": "5b2a3fee5af514581fca9d6f9aea7024c0f6db20fe4184cc39162bc6c3a5f6d2",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/budget_sensitivity.py",
+      "before_sha256": "dffab065e1518f8de1156a32bed5a6b361dff133c3dd9684c9fe8855c4e2c98b",
+      "after_sha256": "7868f0da26447e3c1f631a3aeb09cef7b1fdf9cfb3d36847e676046bebca663e",
+      "before_bytes": 11324,
+      "after_bytes": 12054,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "10881d894f17d19800f53d77fc9a6dadfeb3ec1bbc4e62621ff06c8c6a383cc1",
+      "after_ast_sha256": "10881d894f17d19800f53d77fc9a6dadfeb3ec1bbc4e62621ff06c8c6a383cc1",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/evaluation.py",
+      "before_sha256": "9fa8a89e6a07a157bb1c6085701d8aa4397e37563614ecdd3d83b2b833b3f437",
+      "after_sha256": "15bdb99af470a20984e37c9a171432a80b2bac7aee563015bdc66d4a38dd6f3e",
+      "before_bytes": 8572,
+      "after_bytes": 8590,
+      "changed": true,
+      "strict_ast_equal": false,
+      "before_ast_sha256": "4897fd5371898bc880e625fed94b6acbea51c9b9a4c73076a6fe30431542bd80",
+      "after_ast_sha256": "8108ab838dbeaf4ec101d5d671ec73569f8141625d7a395f459f1c135dd43508",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [
+        {
+          "node": "module.body[11]",
+          "before": "Execute one public-belief trajectory and retain every realized charge.\n\nIts discounted path return is NOT an estimator of a nested risk-sensitive CE.\nExpectations of payoff, resource cost and time remain ordinary sample means.\n",
+          "after": "Execute one public-belief trajectory and retain every realized charge.\n\n    Its discounted path return is NOT an estimator of a nested risk-sensitive CE.\n    Expectations of payoff, resource cost and time remain ordinary sample means.\n    ",
+          "cleandoc_equal": true
+        },
+        {
+          "node": "module.body[10]",
+          "before": "Exact reachable-policy graph; oracle work is strictly offline reference.\n\nThe NDU value is nested CE, while all other fields are expectations under the\nactual joint kernel. The ideal oracle excludes online computation overhead.\n",
+          "after": "Exact reachable-policy graph; oracle work is strictly offline reference.\n\n    The NDU value is nested CE, while all other fields are expectations under the\n    actual joint kernel. The ideal oracle excludes online computation overhead.\n    ",
+          "cleandoc_equal": true
+        }
+      ],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/learning.py",
+      "before_sha256": "8ab6621797b789029560a4bde7e72a68e54db296b3d829c3ffce8e21fd809482",
+      "after_sha256": "695784397aaa7d2cd7a0f3a9c3315d8aca414104448a42120731da2d3519f011",
+      "before_bytes": 20642,
+      "after_bytes": 22484,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "f4398bfedb779b30c37c5817e20e54a49d0030951f1c0bb32118a2689d01a918",
+      "after_ast_sha256": "f4398bfedb779b30c37c5817e20e54a49d0030951f1c0bb32118a2689d01a918",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/model.py",
+      "before_sha256": "2895944ca45cbce9d01f5a54c2fcd52edefab05f38937b0995a135f21804afe6",
+      "after_sha256": "6001a45f067a7f439a8ae930368baa5959ba3bf0f714d5e113a598147187173f",
+      "before_bytes": 9591,
+      "after_bytes": 10421,
+      "changed": true,
+      "strict_ast_equal": false,
+      "before_ast_sha256": "55bba8173c10e4f66c049fd307a03ee15e68d0cfd8377223bf0f1ae835ebf9e0",
+      "after_ast_sha256": "900dee786d9606f7a5ac1e1bda14b2c84e11654516150dbe8b7a33cdece099e1",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [
+        {
+          "node": "module.body[19]",
+          "before": "Nested finite-entropic edge backup with explicit immediate resource cost.\n\nThe resource charge is outside temporal discount but inside this edge's CE.\nCallers supply observed terminal rewards, or frozen forecast values when making\na prediction; evaluation must always use the environment's terminal rewards.\n",
+          "after": "Nested finite-entropic edge backup with explicit immediate resource cost.\n\n    The resource charge is outside temporal discount but inside this edge's CE.\n    Callers supply observed terminal rewards, or frozen forecast values when making\n    a prediction; evaluation must always use the environment's terminal rewards.\n    ",
+          "cleandoc_equal": true
+        }
+      ],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/oracle.py",
+      "before_sha256": "303401b1a0e23bc39a76eb0cfd070d03a624d4e2539444e40c2d579c3c898ad5",
+      "after_sha256": "0a07c19116253f34fda5cf2c0b2361756bbd424607bf0e2035d5d0de87256382",
+      "before_bytes": 4426,
+      "after_bytes": 4644,
+      "changed": true,
+      "strict_ast_equal": false,
+      "before_ast_sha256": "11a127f917261a87382cbe74821fbe69f25f2033e4e7511b152aa22a84bc7a6d",
+      "after_ast_sha256": "584888f4b7d3339123790b8a3baced7a39c7f7da1c968f5d67c7dbb562b6f11b",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [
+        {
+          "node": "module.body[5]",
+          "before": "Enumerate complete contingent policy trees for tiny validation instances.\n\nUnlike DP this forms the Cartesian product of every child policy choice, using\nno maximizing continuation and no shared backup implementation. A hard cap\nrejects instances too large for this independent check.\n",
+          "after": "Enumerate complete contingent policy trees for tiny validation instances.\n\n    Unlike DP this forms the Cartesian product of every child policy choice, using\n    no maximizing continuation and no shared backup implementation. A hard cap\n    rejects instances too large for this independent check.\n    ",
+          "cleandoc_equal": true
+        }
+      ],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/policies.py",
+      "before_sha256": "512df0e097e4eb2c9e7d92e62663ac12fc7cc125606e41a2dac870cc8f9d575e",
+      "after_sha256": "3f82b001f42ea528d70e64f1805586a494dd64d564c4a6a722f012e2850587f5",
+      "before_bytes": 10848,
+      "after_bytes": 10920,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "a0b33e04a1ff8655cd59f5027d60cfa4ecd2db199d680860224c6b860a06f157",
+      "after_ast_sha256": "a0b33e04a1ff8655cd59f5027d60cfa4ecd2db199d680860224c6b860a06f157",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/routing.py",
+      "before_sha256": "8d805be6669be3eb564194a99e46d0dc917a08fb2f4b674b9ca21ba42410bbba",
+      "after_sha256": "ad3d41c6f2d14560d5be8d7ee093c26c7d8673bbe66a2ee9fa99f7900f9cfea3",
+      "before_bytes": 13036,
+      "after_bytes": 14426,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "f6fb9eb3fa965c271abf35a87ec81cb8f4d24411841562a20101d06a9d64c082",
+      "after_ast_sha256": "f6fb9eb3fa965c271abf35a87ec81cb8f4d24411841562a20101d06a9d64c082",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/run.py",
+      "before_sha256": "d5a721a64c5cec4b27bf7d74c91d9107a6dfa10341af925af8a7b08adfb2f5fc",
+      "after_sha256": "bf220bfdd094613a1cacf32d045b9b29dc150fb3172484ed109b76acbc835933",
+      "before_bytes": 19419,
+      "after_bytes": 23547,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "0735544831a8253447ba187b099c1a030315a2ddd07e08ec090b2cb9aed16e98",
+      "after_ast_sha256": "0735544831a8253447ba187b099c1a030315a2ddd07e08ec090b2cb9aed16e98",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/sensitivity_run.py",
+      "before_sha256": "bfa3e6a2ba38474538a9fc735cf6e4780018be3a7160657785b5ca63431ce47c",
+      "after_sha256": "dfc31f265cf80e03d092d40b17fa27ccb8650ba6967c8bdf01f1d14c39a5a0a5",
+      "before_bytes": 12188,
+      "after_bytes": 16318,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "4cab8288e3aabea56d604e9ee05573008739cbad5264e9a1723aef17d7ac3a75",
+      "after_ast_sha256": "4cab8288e3aabea56d604e9ee05573008739cbad5264e9a1723aef17d7ac3a75",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_evidence.py",
+      "before_sha256": "6e101b5bb0dbc972a9bb5967b64ac19017f3facc0d0fb6bd1a4ab347aef318ca",
+      "after_sha256": "f6eafac5965d920aa706cb3e38f55f7cfd855a09235254b2c1e3f6dca97efb0c",
+      "before_bytes": 11279,
+      "after_bytes": 11853,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "7fc260a818a77f53218f1487389bde8f92f34f886219dcadc62251ba4ca540fe",
+      "after_ast_sha256": "7fc260a818a77f53218f1487389bde8f92f34f886219dcadc62251ba4ca540fe",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_learning.py",
+      "before_sha256": "df2b424b4f2d572885029b6af4cb4e7e6258c4de128bc1f86e735cd8a0170fc3",
+      "after_sha256": "5e73edfaf25ffe1706d21eecece780047c2b8f49487fe0ca5de59629b7c62860",
+      "before_bytes": 11856,
+      "after_bytes": 12957,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "0d440be6b2c50149c8247091cd61d1804b27559978cf01f9715fd54091a6c3f0",
+      "after_ast_sha256": "0d440be6b2c50149c8247091cd61d1804b27559978cf01f9715fd54091a6c3f0",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_model.py",
+      "before_sha256": "0d285a804f7641a700b99f1e8aade9560089d8873fd9314035479e6089f79b11",
+      "after_sha256": "d0ab9c3cd6681f7ebcf12690d29e69b08f6c83764bbad512d1db42d6244f0e56",
+      "before_bytes": 7762,
+      "after_bytes": 8356,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "6e6e47cadede0bc2dc993e795678fd3a40b722c36a951b98bd23e265d986db11",
+      "after_ast_sha256": "6e6e47cadede0bc2dc993e795678fd3a40b722c36a951b98bd23e265d986db11",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_policies.py",
+      "before_sha256": "39fd3d870aa7ffbd28a9ed69f4de05a225e194e3e2a3f02e1fbb33beeeb2314f",
+      "after_sha256": "96cda9dc2058b1a69f345b0d90be3596239c622e625ed73116a3215636ea75e4",
+      "before_bytes": 7121,
+      "after_bytes": 7738,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "fd0b90f7bbfef0f3155aaf61c9f3be6dc8afd39ddbf815d1f26803dfa137e8a5",
+      "after_ast_sha256": "fd0b90f7bbfef0f3155aaf61c9f3be6dc8afd39ddbf815d1f26803dfa137e8a5",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_profiles.py",
+      "before_sha256": "22fe3fd657b7a633dd33684c68c7ea8c7933eeb4acbba95413c771a1c3be91a4",
+      "after_sha256": "02fef20b3412b4ea159fcc0cbca3021cf2875a26fd30c1100b678eb32d3d536a",
+      "before_bytes": 2951,
+      "after_bytes": 3078,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "3754dea2a9d0e14793e785593cbb4ccf779f62a9eacef1c21b3682c28a0506b2",
+      "after_ast_sha256": "3754dea2a9d0e14793e785593cbb4ccf779f62a9eacef1c21b3682c28a0506b2",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_routing.py",
+      "before_sha256": "ed996e87364a20aafd0a369a428d76ed3a252ba3463cbbee4d96b949aa8aab8e",
+      "after_sha256": "c1d93ef85192d309f0fa1069eea4d26ef2c74cc3d9864a1a7b76f087610737b3",
+      "before_bytes": 5107,
+      "after_bytes": 5543,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "027524d52330deacfe57c9ba0daa2ee45a93f8e4439a3112dfd69d2f6f1b80c7",
+      "after_ast_sha256": "027524d52330deacfe57c9ba0daa2ee45a93f8e4439a3112dfd69d2f6f1b80c7",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/verify.py",
+      "before_sha256": "84e27fa3432b227c283e342a85ed450b241f250b5ff68aca79c51e9a6792e814",
+      "after_sha256": "a69fd54bf5b95f2c4f205d241c1b38adc1becc965d8fd87c7f213f831b59047e",
+      "before_bytes": 27307,
+      "after_bytes": 31617,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "eb22fac7b60a36461a604d87683ace6fde95fd9756d2e06db655d612a03903d9",
+      "after_ast_sha256": "eb22fac7b60a36461a604d87683ace6fde95fd9756d2e06db655d612a03903d9",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/README.md",
+      "before_sha256": "53abd96df6dfeb5bab1f02d5e17bce46d1dee97e617cf432816686f4c3b25570",
+      "after_sha256": "53abd96df6dfeb5bab1f02d5e17bce46d1dee97e617cf432816686f4c3b25570",
+      "before_bytes": 11808,
+      "after_bytes": 11808,
+      "changed": false
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "before_sha256": "fd45c5a1e0600eb8a564eb5e100e2480063294ae1c458c82cb99c3169c8ea2f0",
+      "after_sha256": "fd45c5a1e0600eb8a564eb5e100e2480063294ae1c458c82cb99c3169c8ea2f0",
+      "before_bytes": 6433,
+      "after_bytes": 6433,
+      "changed": false
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py",
+      "before_sha256": "1e9f3d3329bc6bc00b900ec980d8f4c7f51cd4374720ffa44daf5ee9663ee719",
+      "after_sha256": "700461978110ac7b78d5ea879a4056a987fabc845ea7dd9aba777a4047710007",
+      "before_bytes": 8168,
+      "after_bytes": 9585,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "437304c46add6e25a7b387de1a6ea61790f56370d0f9e73d5d1c836d2eb788c0",
+      "after_ast_sha256": "437304c46add6e25a7b387de1a6ea61790f56370d0f9e73d5d1c836d2eb788c0",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    }
+  ],
+  "status": "succeeded",
+  "tests_passed": 61,
+  "head": "472c825a87220574acc5338afe59558e1ad2038f",
+  "tree": "be9fd07a56c7eee678dfa8558f08303ce76d6fba",
+  "formatted_archive_sha256": "75add77e600919536715e4ad96686e3a38b8dff2b8e87630143eb8255ae14574",
+  "run_source_manifest": {
+    "scripts/ndu_ctrl1/__init__.py": {
+      "sha256": "1d30d626478e0655db28f9dbceefb6bfeaa1deaedde86a56218facd341f11b7c",
+      "bytes": 78
+    },
+    "scripts/ndu_ctrl1/budget_sensitivity.py": {
+      "sha256": "7868f0da26447e3c1f631a3aeb09cef7b1fdf9cfb3d36847e676046bebca663e",
+      "bytes": 12054
+    },
+    "scripts/ndu_ctrl1/evaluation.py": {
+      "sha256": "15bdb99af470a20984e37c9a171432a80b2bac7aee563015bdc66d4a38dd6f3e",
+      "bytes": 8590
+    },
+    "scripts/ndu_ctrl1/learning.py": {
+      "sha256": "695784397aaa7d2cd7a0f3a9c3315d8aca414104448a42120731da2d3519f011",
+      "bytes": 22484
+    },
+    "scripts/ndu_ctrl1/model.py": {
+      "sha256": "6001a45f067a7f439a8ae930368baa5959ba3bf0f714d5e113a598147187173f",
+      "bytes": 10421
+    },
+    "scripts/ndu_ctrl1/oracle.py": {
+      "sha256": "0a07c19116253f34fda5cf2c0b2361756bbd424607bf0e2035d5d0de87256382",
+      "bytes": 4644
+    },
+    "scripts/ndu_ctrl1/policies.py": {
+      "sha256": "3f82b001f42ea528d70e64f1805586a494dd64d564c4a6a722f012e2850587f5",
+      "bytes": 10920
+    },
+    "scripts/ndu_ctrl1/routing.py": {
+      "sha256": "ad3d41c6f2d14560d5be8d7ee093c26c7d8673bbe66a2ee9fa99f7900f9cfea3",
+      "bytes": 14426
+    },
+    "scripts/ndu_ctrl1/run.py": {
+      "sha256": "bf220bfdd094613a1cacf32d045b9b29dc150fb3172484ed109b76acbc835933",
+      "bytes": 23547
+    },
+    "scripts/ndu_ctrl1/sensitivity_run.py": {
+      "sha256": "dfc31f265cf80e03d092d40b17fa27ccb8650ba6967c8bdf01f1d14c39a5a0a5",
+      "bytes": 16318
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py": {
+      "sha256": "700461978110ac7b78d5ea879a4056a987fabc845ea7dd9aba777a4047710007",
+      "bytes": 9585
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_evidence.py": {
+      "sha256": "f6eafac5965d920aa706cb3e38f55f7cfd855a09235254b2c1e3f6dca97efb0c",
+      "bytes": 11853
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_learning.py": {
+      "sha256": "5e73edfaf25ffe1706d21eecece780047c2b8f49487fe0ca5de59629b7c62860",
+      "bytes": 12957
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_model.py": {
+      "sha256": "d0ab9c3cd6681f7ebcf12690d29e69b08f6c83764bbad512d1db42d6244f0e56",
+      "bytes": 8356
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_policies.py": {
+      "sha256": "96cda9dc2058b1a69f345b0d90be3596239c622e625ed73116a3215636ea75e4",
+      "bytes": 7738
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_profiles.py": {
+      "sha256": "02fef20b3412b4ea159fcc0cbca3021cf2875a26fd30c1100b678eb32d3d536a",
+      "bytes": 3078
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_routing.py": {
+      "sha256": "c1d93ef85192d309f0fa1069eea4d26ef2c74cc3d9864a1a7b76f087610737b3",
+      "bytes": 5543
+    },
+    "scripts/ndu_ctrl1/verify.py": {
+      "sha256": "a69fd54bf5b95f2c4f205d241c1b38adc1becc965d8fd87c7f213f831b59047e",
+      "bytes": 31617
+    },
+    "scripts/ndu_real_runtime/objective.py": {
+      "sha256": "cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd",
+      "bytes": 3377
+    },
+    "scripts/ndu_real_runtime/finite_entropic_golden.json": {
+      "sha256": "361f37baddd9bbcccbfa16f9b438e14707b22ae7c997863a13b19fe01def02cc",
+      "bytes": 2076
+    }
+  },
+  "base_helpers": {
+    "scripts/ndu_real_runtime/objective.py": {
+      "base_git_blob": "ca2a6aad749815d15f84a613c8058b3a07c03e8f",
+      "local_git_blob": "ca2a6aad749815d15f84a613c8058b3a07c03e8f",
+      "unchanged": true
+    },
+    "scripts/ndu_real_runtime/finite_entropic_golden.json": {
+      "base_git_blob": "bc43a6f53def4420f1b3270ede66371d3b1bd62f",
+      "local_git_blob": "bc43a6f53def4420f1b3270ede66371d3b1bd62f",
+      "unchanged": true
+    }
+  }
+}

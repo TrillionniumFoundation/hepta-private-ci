@@ -126,7 +126,8 @@ async fn plaintext_hostname_redirects_are_rejected_before_dns_can_rebind() -> an
 #[tokio::test]
 async fn same_origin_redirects_enforce_shared_timeout_and_hop_limit() {
     for (delay, timeout_ms, expected_error, expected_requests) in [
-        (Duration::from_millis(100), 175, "timed out", 2),
+        // Give loaded Windows CI room to schedule the first hop; retain exact two-hop proof.
+        (Duration::from_millis(500), 900, "timed out", 2),
         (Duration::ZERO, 5_000, "redirect limit", MAX_REDIRECTS + 1),
     ] {
         let recorder = Arc::new(RecordingRedirectHttpClient {
@@ -148,6 +149,12 @@ async fn same_origin_redirects_enforce_shared_timeout_and_hop_limit() {
         assert!(error.to_string().contains(expected_error), "{error}");
         let requests = recorder.requests.lock().expect("request recorder lock");
         assert_eq!(requests.len(), expected_requests);
+        if expected_error == "timed out" {
+            assert!(
+                requests[1].timeout_ms < requests[0].timeout_ms,
+                "redirect hops must consume the same decreasing timeout budget",
+            );
+        }
     }
 }
 

@@ -1,0 +1,672 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "README.md",
+      "source": "publication-ci-repair/history-batch/README.md",
+      "bytes": 26140,
+      "sha256": "5d711453c56f066efb025b576ee1c2d3a2dbdcfbd252b3300f4711f5ad459e07",
+      "prior_published_commit": "87b141833f2a43e0e87fdb3d4a168e1dacde7a0f",
+      "prior_published_sha256": "34f6cda42fff5cbce4a107949a79ea607f20fb952e743b78cdcf7f371bc878d1",
+      "publication_change": "Record five reviewed history merges, a new fixed refs snapshot and exact preceding-head CI boundaries.",
+      "previous_manifest_record": {
+        "path": "README.md",
+        "source": "publication-ci-repair/whitespace/README.md",
+        "bytes": 22658,
+        "sha256": "34f6cda42fff5cbce4a107949a79ea607f20fb952e743b78cdcf7f371bc878d1",
+        "prior_published_commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+        "prior_published_sha256": "30ca0b08b948ed36fa89bfe82bb526b0340cea9d7b4e8c550d204777a1e1ed65",
+        "publication_change": "Record the original whitespace-check failure and lossless raw-text archive storage.",
+        "previous_manifest_record": {
+          "path": "README.md",
+          "source": "publication-ci-repair/README-final.md",
+          "bytes": 21077,
+          "sha256": "30ca0b08b948ed36fa89bfe82bb526b0340cea9d7b4e8c550d204777a1e1ed65",
+          "prior_published_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+          "prior_published_sha256": "6014a0608a2b08cfda51aac1a4a474283fec73ae6e0f6cbdda8be42853f4a07a",
+          "publication_change": "Update archive access instructions and record the publication packaging followup."
+        }
+      }
+    },
+    {
+      "path": "STATUS.json",
+      "source": "publication-ci-repair/history-batch/STATUS.json",
+      "bytes": 16379,
+      "sha256": "451fc5ebf1236bb10adc6dcd0b15a7f2a491a5510baf232e45f95d241216838b",
+      "prior_published_commit": "87b141833f2a43e0e87fdb3d4a168e1dacde7a0f",
+      "prior_published_sha256": "06f417dd5bf6961b3107c6285c88cc6ca115056b9045ec0d4baa3be88ace5106",
+      "publication_change": "Record five reviewed history merges, a new fixed refs snapshot and exact preceding-head CI boundaries.",
+      "previous_manifest_record": {
+        "path": "STATUS.json",
+        "source": "publication-ci-repair/whitespace/STATUS.json",
+        "bytes": 6207,
+        "sha256": "06f417dd5bf6961b3107c6285c88cc6ca115056b9045ec0d4baa3be88ace5106",
+        "prior_published_commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+        "prior_published_sha256": "7d89ece2f95c1c0cd18aa442d3483b1390bebbe59087b79849aa2919f55176ea",
+        "publication_change": "Record the original whitespace-check failure and lossless raw-text archive storage.",
+        "previous_manifest_record": {
+          "path": "STATUS.json",
+          "source": "publication-ci-repair/STATUS-final.json",
+          "bytes": 5094,
+          "sha256": "7d89ece2f95c1c0cd18aa442d3483b1390bebbe59087b79849aa2919f55176ea",
+          "prior_published_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+          "prior_published_sha256": "d531229c405ea0d9c79aa9df8f032aa0af2dbb0806d899cfd7dbe91d41c1433e",
+          "publication_change": "Update archive access instructions and record the publication packaging followup."
+        }
+      }
+    },
+    {
+      "path": "branch-snapshot-7803.json",
+      "source": "branch-audit/architecture-audit/SNAPSHOT-7803-REVIEW.json",
+      "bytes": 2759,
+      "sha256": "91c5b1a7dccc59421f698f7cd05fba17912a01f5f274626860a8fff11278fa6c"
+    },
+    {
+      "path": "ref-delta-ancestry.json",
+      "source": "branch-audit/architecture-audit/REF-DELTA-ANCESTRY-REVIEW.json",
+      "bytes": 4422,
+      "sha256": "ae807454d6001b8f76b686be90b369f76701536631f249e34776f3ebada8a60b"
+    },
+    {
+      "path": "protected-7803-current-refs.json",
+      "source": "branch-audit/architecture-audit/PROTECTED-7803-CURRENT-REFS.json",
+      "bytes": 51156,
+      "sha256": "7b00654daf3b761af16c62ac7370065fb3dabc801be8ae4dc698707d96919e35"
+    },
+    {
+      "path": "branch-snapshot-7812.json",
+      "source": "branch-audit/final-lease-7812/FINAL-LEASE-7812-REVIEW.json",
+      "bytes": 7499,
+      "sha256": "a0312c72feb388a83920d61bcbf19ff81fe6b8560fca98a190d5b730dfe551b8"
+    },
+    {
+      "path": "ref-delta-7812-ancestry.json",
+      "source": "branch-audit/final-lease-7812/REF-DELTA-ANCESTRY-REVIEW.json",
+      "bytes": 29848,
+      "sha256": "508de32bb48ed3e7d54a059197d31754ff8886eb9f82e454076b6cb34c04097d"
+    },
+    {
+      "path": "protected-current-refs.json",
+      "source": "branch-audit/final-lease-7812/PROTECTED-7812-CURRENT-REFS.json",
+      "bytes": 51156,
+      "sha256": "a421217a13d99ec5d57f182073f65238b0f33b8d2681174ff836052b272fcb6c"
+    },
+    {
+      "path": "protected-known-descendants.json",
+      "source": "branch-audit/final-lease-7812/PROTECTED-7812-KNOWN-DESCENDANTS.json",
+      "bytes": 67623,
+      "sha256": "9e35146357ae09bed5a2553d7a04f65da0c5f9e108348ba9edab80ab90ab854a"
+    },
+    {
+      "path": "final-source-77-review.json",
+      "source": "branch-audit/final-source-77-review/FINAL-SOURCE-77-REVIEW.json",
+      "bytes": 17900,
+      "sha256": "43bbed3b8ae7cb49aa0e52d08d7f784c08c771669f17ce8f5daef9e7632ef47b"
+    },
+    {
+      "path": "final-source-parent-edge.tsv",
+      "source": "branch-audit/final-source-77-review/APPENDED-PARENT-EDGE.tsv",
+      "bytes": 82,
+      "sha256": "8e97c22304ed9cf27884af72f4eff2801f89c63de906862a3b5f98fc30f9d510"
+    },
+    {
+      "path": "lint-source-proof.json",
+      "source": "seven-fix-review/INDEPENDENT-PROOF.json",
+      "bytes": 3487,
+      "sha256": "354e5ae825b5be3e948ee909c8f1541144cc55a77306e4f5036b6a7e6809f3e5"
+    },
+    {
+      "path": "lint-source-review.md",
+      "source": "seven-fix-review/REVIEW.md",
+      "bytes": 8636,
+      "sha256": "68e7cc63da9c0fffbdd239bc17597315f53d8426431a0409af0b9a05f8abb1e3",
+      "source_bytes": 8631,
+      "source_sha256": "7150e79f207df44c6bcd34f793ab0df05452075aac02a24f3db14595c143b1e4",
+      "original_published_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+      "original_published_blob": "77581877d43f410ed18383eaabc2a4ec444b115c",
+      "editorial_revision": "One Rust term expanded to mutable static items; all other review text, source identities, findings, and qualification statements are unchanged."
+    },
+    {
+      "path": "authbus-fixture-proof.json",
+      "source": "authbus-fixture-independent-review.json",
+      "bytes": 4372,
+      "sha256": "b9741f7a812d53cca673dbd4899fcdab3715f9fd9f933693f8a45d9e115f3972"
+    },
+    {
+      "path": "ruff-source-review.json",
+      "source": "format-repair/format-review.json",
+      "bytes": 20838,
+      "sha256": "9f519bbb3cfafe9c42c508e82ac1c077f748997cd8f0a2055566e65bcb959ad0"
+    },
+    {
+      "path": "history-4a-merge-review.json",
+      "source": "branch-audit/candidate-4a-on-5a/MERGE-REVIEW.json",
+      "bytes": 2445,
+      "sha256": "e4e8097e0a8256d129fe694f1978f794446d7f8ee67a77d42e03705dea17a491"
+    },
+    {
+      "path": "history-dbed-merge-review.json",
+      "source": "branch-audit/candidate-dbed-on-084/MERGE-REVIEW.json",
+      "bytes": 1744,
+      "sha256": "6f94fcf31e46d63d4c533561eb458b9af76467ffd2cab0c85d8a526de8dab3ae"
+    },
+    {
+      "path": "history-dbed-conflicts.json",
+      "source": "branch-audit/candidate-dbed-on-084/CONFLICT-RESOLUTION.json",
+      "bytes": 15965,
+      "sha256": "b3f8fd54ffe89529617ed260787ea9b4aac29f17396947aabb3cde2d917f7fce"
+    },
+    {
+      "path": "history-dbed-original-source-review.json",
+      "source": "branch-audit/candidate-dbed-on-084/ORIGINAL-SYNTAX-REVIEW.json",
+      "bytes": 79379,
+      "sha256": "d86efa1b5d2c846c716b3e4bf3c5165dd4893056c33f7ff0c7477ea115281996"
+    },
+    {
+      "path": "architecture-timeline.json",
+      "source": "branch-audit/architecture-audit/TIMELINE-REVIEW.json",
+      "bytes": 1730,
+      "sha256": "88c6141118beb71247b4097b7ca3cb02126b564e694f84a15be9c00b6af9796b"
+    },
+    {
+      "path": "architecture-budget-review.json",
+      "source": "branch-audit/architecture-audit/PROPOSAL-REVIEW.json",
+      "bytes": 825,
+      "sha256": "292453d0e795aa967fd6f9b064c95da828c14ffaa1362ff37a20b119bb27ed5d"
+    },
+    {
+      "path": "architecture-scope-tests.json",
+      "source": "publication/architecture-scope-test-result.json",
+      "bytes": 771,
+      "sha256": "b5f02f14263fe0953cdb4cbdcdf07253b31af46d3170329720b8c5d225564aef"
+    },
+    {
+      "path": "architecture-scope-tests.log",
+      "source": "publication/architecture-scope-test.log",
+      "bytes": 4216,
+      "sha256": "066adad4f537e4bdbc7feea0e94f7805a17a28366216c01d6fd850d3f3182baf"
+    },
+    {
+      "path": "source-55-review.json",
+      "source": "branch-audit/final-publication-review/FINAL-PUBLICATION-REVIEW.json",
+      "bytes": 34864,
+      "sha256": "4c5b2134de6c9a53506c4e58de9513852856676fe22637f33195efa5e1abb82d"
+    },
+    {
+      "path": "source-6e-review.json",
+      "source": "branch-audit/fmt-scope-v3-review/INDEPENDENT-FMT-SOURCE-6E97-REVIEW.json",
+      "bytes": 26890,
+      "sha256": "c1695739b5bdfabcfa7f61f7e12fe72a404062dc8efffc6ae6d05d002825da57"
+    },
+    {
+      "path": "authbus-final-format-review.json",
+      "source": "publication/AUTHBUS-FINAL-FORMAT-REVIEW.json",
+      "bytes": 714,
+      "sha256": "7c16e87b36107c0136f2552810c937186f8dfceb89084621a164bac7310abc4f"
+    },
+    {
+      "path": "formatter-v3-review.json",
+      "source": "fmt-scope-audit/v3/candidate-review.json",
+      "bytes": 2588,
+      "sha256": "159acd91cf53254a2b405108329149c32f47642f28a489e62e0734c0c225a813"
+    },
+    {
+      "path": "formatter-v3-provenance-34.json",
+      "source": "fmt-scope-audit/v3/evidence-provenance-34.json",
+      "bytes": 129327,
+      "sha256": "9b98901da19d1b1e049f36a1d60c510ee466e8793af96f194ac1ddfd6f1f721b"
+    },
+    {
+      "path": "formatter-v3-tests.json",
+      "source": "fmt-scope-audit/v3/actual-scope-tests-result.json",
+      "bytes": 959,
+      "sha256": "7f4dff1310ae860edf373519ecfeb1c43851e44841ca01253336c96879b013ad"
+    },
+    {
+      "path": "formatter-v3-tests.log",
+      "source": "fmt-scope-audit/v3/actual-scope-tests.log",
+      "bytes": 7947,
+      "sha256": "71502284a4f4852b4469a91785697baea4f00d9c940df0528e180dc2271fc6fb"
+    },
+    {
+      "path": "formatter-v3-full-scope-summary.json",
+      "source": "fmt-scope-audit/v3/actual-full-scope-summary.json",
+      "bytes": 1178,
+      "sha256": "9ad72f4c85249f717ff6ef9d1e7308f7453743309927ad7d1b0e97924353f8e8"
+    },
+    {
+      "path": "formatter-v3-full-scope-plan.json.gz",
+      "source": "fmt-scope-audit/v3/actual-full-scope-plan.json.gz",
+      "bytes": 48295,
+      "sha256": "f0ba2bb328727c553432653dea416774eb41d98896ebfdc282226f75355b2849"
+    },
+    {
+      "path": "formatter-v3-format.json",
+      "source": "fmt-scope-audit/v3/final-python-fmt-result.json",
+      "bytes": 1169,
+      "sha256": "6dc515123789282f59f98cd02a17a1f4a418cd84182ef488fdedf7115df79ba3"
+    },
+    {
+      "path": "formatter-v3-format-check.json",
+      "source": "fmt-scope-audit/v3/final-python-fmt-check-result.json",
+      "bytes": 323,
+      "sha256": "1fc537de19a38fac2c55827335ebb0847a6915444ca541a5165e179da5259ae6"
+    },
+    {
+      "path": "formatter-v3-full-ruff.json",
+      "source": "fmt-scope-audit/v3/full-ruff-check-result.json",
+      "bytes": 811,
+      "sha256": "c5c0115ce3cfd0c8fffad4ef68a21c03795790b4ccebaee79d5d7ab6ac534773"
+    },
+    {
+      "path": "formatter-v3-source.patch.gz",
+      "source": "fmt-scope-audit/v3/cumulative-v3.patch",
+      "bytes": 3889,
+      "sha256": "02bfb1f892c76c1bd251ee62354f92fbc275b6d21b800fd19cb43b76da457ec5",
+      "encoding": "gzip; original bytes preserved without normalization",
+      "decompressed_bytes": 12323,
+      "decompressed_sha256": "1f3930ad7fae5653c195b26f824f5ab12f84a622dcde983a603ac8ef5b8705c8",
+      "decompressed_git_blob": "c1919c806367e997e0d75d94a49385cc427d68f6",
+      "prior_published_commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+      "prior_published_path": "formatter-v3-source.patch",
+      "publication_change": "Lossless compression preserves original patch and log whitespace while keeping the original Git whitespace check enabled."
+    },
+    {
+      "path": "strict-clippy-execution.json",
+      "source": "native-validation/00-three-package-strict-clippy.exec.json",
+      "bytes": 1719,
+      "sha256": "a2c2a48cd7fbda9a2c0d7af9a1a7112a7ad7bbc7025a64c31601ff2d45cff363"
+    },
+    {
+      "path": "codex-helper-build.json",
+      "source": "native-validation/01-build-codex.RESULT.json",
+      "bytes": 4701,
+      "sha256": "358eaf0b88f44b5b963f6b6b6e5b0cca9d4078ac52ea343553943568ab5def33"
+    },
+    {
+      "path": "codex-helper-artifacts.json",
+      "source": "native-validation/01-build-codex.ARTIFACTS.json",
+      "bytes": 2412,
+      "sha256": "82b379ae10ca4ffd79584ee8fea26c8d0ca0ae8c91fe6982670ab1c8418db3c1"
+    },
+    {
+      "path": "native-validation-index.json",
+      "source": "native-validation/NATIVE-VALIDATION-INDEX.json",
+      "bytes": 6644,
+      "sha256": "21152940886b1d0546135ddbc14202f44aa81cd0888e8845381db80b0457656b"
+    },
+    {
+      "path": "native-publication-review.json",
+      "source": "native-validation/NATIVE-PUBLICATION-REVIEW.json",
+      "bytes": 107223,
+      "sha256": "6dcc598a477cf7ed09cd0ea137bffcc6c19597f8e75e6f73dcfde96e481f1435"
+    },
+    {
+      "path": "b4-tests.json",
+      "source": "b4-original-current-result.json",
+      "bytes": 504,
+      "sha256": "b20ef24b1cec6f78162ac09ad2c9b24be2cc17b7d4399bfeb6f2e09a9030c854"
+    },
+    {
+      "path": "b4-tests.log",
+      "source": "b4-original-current.log",
+      "bytes": 1453,
+      "sha256": "9c00c6e16fbd0671b088c93a386ba55ce807bb246220952b527a150b40883465"
+    },
+    {
+      "path": "full-ruff-check.json",
+      "source": "full-ruff-result.json",
+      "bytes": 506,
+      "sha256": "61de8a89937a23481beb792e5f4fce7750cac016eca2883c878bcc39f35ae6a1"
+    },
+    {
+      "path": "github-tests-container-attempt.json",
+      "source": "b4-current-result.json",
+      "bytes": 666,
+      "sha256": "a2a3d20eb3cd0aea819af9f7a7667b3bfc222b35722c7334d5d5622e52790aec"
+    },
+    {
+      "path": "github-tests-container-attempt.log",
+      "source": "b4-current.log",
+      "bytes": 12143,
+      "sha256": "50631bd9e7e8c4a16f6adf5898aa60283208efbb6dfabdac1d60dbac8ae04d87"
+    },
+    {
+      "path": "github-tests-native-sparse-attempt.json",
+      "source": "native-validation/github-script-tests-FINAL.json",
+      "bytes": 2382,
+      "sha256": "e5bbbed7a36887b842a386abf500b972e7e3b455207cfeb91e25ab8e19d20eb6"
+    },
+    {
+      "path": "github-tests-native-sparse-attempt.log",
+      "source": "native-validation/github-script-tests-original-command.log",
+      "bytes": 6692,
+      "sha256": "5c7a71e6f0dba51e8aa74ee4f386e8ac094391dadc79960dcd2ccc5c3652a18b"
+    },
+    {
+      "path": "mac-attempt-terminal.json",
+      "source": "mac-authbus-terminal.json",
+      "bytes": 2395,
+      "sha256": "ce402fb703b63db442d2b481578075def42c6538a081f278038fb6d7545600a2"
+    },
+    {
+      "path": "ci-original-6cb-final-summary.json",
+      "source": "current-ci-final-summary.json",
+      "bytes": 19672,
+      "sha256": "4f7c7e48685827b000148824d70f31e991cbb3ca5d82207f77211ab453f983f8"
+    },
+    {
+      "path": "ci-original-6cb-final-facts.md",
+      "source": "current-ci-final-facts.md",
+      "bytes": 5735,
+      "sha256": "1b5b9e6eadcba02ad4f57e6546f028ead0710293dbe60a4fb2ccd4aae57c2acd"
+    },
+    {
+      "path": "musl-timing-review.json",
+      "source": "branch-audit/musl-audit/MUSL-TIMING-REVIEW.json",
+      "bytes": 14789,
+      "sha256": "dcd368f9155c51af094a7c335a1795040a6e3d802c57bfd73db9747e85389537"
+    },
+    {
+      "path": "musl-source-binding.json",
+      "source": "branch-audit/musl-audit/SOURCE-BINDING.json",
+      "bytes": 3186,
+      "sha256": "dd1c983878d1b3d7636639ec2d741d14f541a52068fc7c9ab111303afee83e57"
+    },
+    {
+      "path": "musl-original-failure.txt.gz",
+      "source": "branch-audit/musl-audit/ORIGINAL-FAILED-TEST-EXCERPT.txt",
+      "bytes": 1624,
+      "sha256": "50a7f1460f7f415e718cde1d5fd0b91bd1591a0303f601ea06edc7b9bc9f3754",
+      "encoding": "gzip; original bytes preserved without normalization",
+      "decompressed_bytes": 8333,
+      "decompressed_sha256": "1a12f148e97b5c6a2e37047657f511e5c534f6129da93afa9a1e48e82f36ae38",
+      "decompressed_git_blob": "e28adc888123edd2cb9303b682c9cbcc55ed3f36",
+      "prior_published_commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+      "prior_published_path": "musl-original-failure.txt",
+      "publication_change": "Lossless compression preserves original patch and log whitespace while keeping the original Git whitespace check enabled."
+    },
+    {
+      "path": "windows-elevated-failures.md",
+      "source": "windows-fixture-audit/windows-four-failure-review.md",
+      "bytes": 4445,
+      "sha256": "bf827997327f48ec4901e6072e3480eff21c501eeb8169c50fa261af90773408"
+    },
+    {
+      "path": "windows-elevated-failures.json",
+      "source": "windows-fixture-audit/windows-four-failure-review.json",
+      "bytes": 16148,
+      "sha256": "09bbce7c5769d16aa1292dc267d9cc73d6e0291e9731ff88cbc4c65167195804"
+    },
+    {
+      "path": "earlier-pr6799-body.md.gz",
+      "source": "publication/pr6799-before.md",
+      "bytes": 24340,
+      "sha256": "d66c700d577e47cd243d0bbddaefa53b946169ce8673790d5437278438af12f8",
+      "encoding": "gzip; original bytes preserved without normalization",
+      "decompressed_bytes": 65533,
+      "decompressed_sha256": "530787fd1c2151bcc634b5dd7a57733de965a90be3ba062261869f19215a6531",
+      "decompressed_git_blob": "256d74bf4981e48cc4879b35726c4464b0dfee58",
+      "prior_published_commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+      "prior_published_path": "earlier-pr6799-body.md",
+      "publication_change": "Lossless compression preserves original patch and log whitespace while keeping the original Git whitespace check enabled."
+    },
+    {
+      "path": "current-refs.tsv.gz",
+      "source": "remote-heads-final-lease.tsv",
+      "bytes": 286176,
+      "sha256": "25455d122c32c765610dab68f4cbd821ff111f3561b0ebd19c7d9c3f72de62f8",
+      "decompressed_bytes": 771902,
+      "decompressed_sha256": "8a958e0afdd2996f0db621873350b520d3ff26e91f29722b81b8ec8fec22d48b"
+    },
+    {
+      "path": "all-current-ref-classifications.json.gz",
+      "source": "branch-audit/final-lease-7812/ALL-CURRENT-REF-CLASSIFICATIONS.json",
+      "bytes": 307540,
+      "sha256": "6757a3362645a79382feb1989ac50073040598197b20ee6b4b18721875dd12f1",
+      "decompressed_bytes": 2452200,
+      "decompressed_sha256": "7a298a7bccc06aca43b0e0d17624e9d94510826fac9d188cfc53f9f24fc71ebe"
+    },
+    {
+      "path": "graph-provenance.json",
+      "source": "generated provenance",
+      "bytes": 759,
+      "sha256": "77ff10e7be00916fd7487aff221d7ed3a629e75c049c5c2934c2139c0d24d4d4"
+    },
+    {
+      "path": "ARCHIVE-PARTS-README.md",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/ARCHIVE-PARTS-README.md",
+      "bytes": 2461,
+      "sha256": "cbdc3cb6a9d36c15018a2074cc1c0f622ad2e877df79a75277b4f4dd012449bb"
+    },
+    {
+      "path": "ARCHIVE-PARTS.json",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/ARCHIVE-PARTS.json",
+      "bytes": 5243,
+      "sha256": "687501a2b1cb864f7119e09c649d013ea8ee646f780b53cebd48da0ef069b24d"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-001.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-001.bin",
+      "bytes": 491520,
+      "sha256": "d8acb00f0e8a13fc22bc0dcde600f3ea1e48f995bfa13be96f47048b19b421ee"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-002.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-002.bin",
+      "bytes": 491520,
+      "sha256": "500a360b83c254bdc3e484c8e1981ebcb5cca71ecb68b7046209cb66dd4bc184"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-003.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-003.bin",
+      "bytes": 491520,
+      "sha256": "6032fb28e1cd0e1c0584a207769b00587aff05df9016855e8df76ce0404adc11"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-004.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-004.bin",
+      "bytes": 491520,
+      "sha256": "38a27aeb20065bf7bb6564eecc0c15d31067566bcd3f5709a15c1c60c508456c"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-005.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-005.bin",
+      "bytes": 491520,
+      "sha256": "897b4383a55b3556e3f1538dd634b34616899e61a77268fe2ad1b118d285e51c"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-006.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-006.bin",
+      "bytes": 491520,
+      "sha256": "5e9a98ef1d0f4ed6534adf93221f75d4d81ccd0478e4285077c646d78dff0a8d"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-007.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-007.bin",
+      "bytes": 491520,
+      "sha256": "b14e274488fefd23c93e197bfa4c6d30cea42d46975c1e7b52bc83832559dff5"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-008.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-008.bin",
+      "bytes": 355658,
+      "sha256": "6b6e30e31b4d9eda7c52699e2408dd6dc6a74de72b244a9fbaa7997892a25254"
+    },
+    {
+      "path": "archive-parts/native-evidence-PUBLIC.zip/part-001.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/native-evidence-PUBLIC.zip/part-001.bin",
+      "bytes": 491520,
+      "sha256": "a9d9251e8be991b053191fa5d430af36824215665cf7fdb0a372e29a98241fda"
+    },
+    {
+      "path": "archive-parts/native-evidence-PUBLIC.zip/part-002.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/native-evidence-PUBLIC.zip/part-002.bin",
+      "bytes": 491520,
+      "sha256": "4f2226fc405bd0248e382d047cc7da5271990043499f83aec793cba4d1bf54e3"
+    },
+    {
+      "path": "archive-parts/native-evidence-PUBLIC.zip/part-003.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/native-evidence-PUBLIC.zip/part-003.bin",
+      "bytes": 491520,
+      "sha256": "6db22a514b67af4dd9ac739a8a8b1eb33cbbabc897284bc3f7d421667c22d17a"
+    },
+    {
+      "path": "archive-parts/native-evidence-PUBLIC.zip/part-004.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/native-evidence-PUBLIC.zip/part-004.bin",
+      "bytes": 131348,
+      "sha256": "96220fc54d388740fa61998e56625c4990e4d4cff023a0661fc246fd8a21a233"
+    },
+    {
+      "path": "reconstruct_archives.py",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/reconstruct_archives.py",
+      "bytes": 6729,
+      "sha256": "b41a6ac79561fdcdee1bb9ec2c26a084a55c846e769d55c7143ec4e7c026eca4"
+    },
+    {
+      "path": "archive-parts-validation.json",
+      "source": "publication-ci-repair/package/VALIDATION-RESULT.json",
+      "bytes": 5023,
+      "sha256": "d501f46fa027a71ef9a766d4229950f2df19b8ccaf0691280fef29ec36b41dc4"
+    },
+    {
+      "path": "history-batch/history-1bc.tar.gz",
+      "source": "publication-ci-repair/history-batch/archives/history-1bc.tar.gz",
+      "bytes": 6508,
+      "sha256": "3821b563138584a10d2514179fe5335ef1063e1bb68ce2cec8dd207cc373cd39",
+      "git_blob": "b041b424582caac5e561f68ec5fc06b74192892b",
+      "storage": "Lossless gzip-compressed tar of selected review records; member hashes in ARCHIVE-INDEX.json.",
+      "decompressed_bytes": 40960,
+      "decompressed_sha256": "3d428e5247459efee91fd2c9520fbce272914a3b276649b312da90a2e4dc9226"
+    },
+    {
+      "path": "history-batch/history-438.tar.gz",
+      "source": "publication-ci-repair/history-batch/archives/history-438.tar.gz",
+      "bytes": 154165,
+      "sha256": "505bd86858ae0237a264164d177144ce18e5a907f6422d103c0e61958de952d5",
+      "git_blob": "51af39ee06bfc19fd654c49f6ce6f59fd0034c36",
+      "storage": "Lossless gzip-compressed tar of selected review records; member hashes in ARCHIVE-INDEX.json.",
+      "decompressed_bytes": 747520,
+      "decompressed_sha256": "32ca587f507948acd9077f4ab8294c39f204ae34dc9e620b656a0c6ee93794b0"
+    },
+    {
+      "path": "history-batch/history-a5a.tar.gz",
+      "source": "publication-ci-repair/history-batch/archives/history-a5a.tar.gz",
+      "bytes": 268101,
+      "sha256": "591ef6ada15f26953aca48e1bbb4dd4ee5d9d3385210a0e375c384e6d7ef95a4",
+      "git_blob": "df1b63e121338ca922e71af96acb859640e3220d",
+      "storage": "Lossless gzip-compressed tar of selected review records; member hashes in ARCHIVE-INDEX.json.",
+      "decompressed_bytes": 1310720,
+      "decompressed_sha256": "ca0d588d6d775e149bfe4d6809b4fed7cdbd7bbc006389425c0ad4f5f43a9f45"
+    },
+    {
+      "path": "history-batch/history-047.tar.gz",
+      "source": "publication-ci-repair/history-batch/archives/history-047.tar.gz",
+      "bytes": 66062,
+      "sha256": "abd515390ecc765e285d03cb23982c53dfa32e774aba17b4e0740ddc7705b903",
+      "git_blob": "e8441c7f5ed46b54efa06c9588b71e7d27ecc3eb",
+      "storage": "Lossless gzip-compressed tar of selected review records; member hashes in ARCHIVE-INDEX.json.",
+      "decompressed_bytes": 143360,
+      "decompressed_sha256": "5dcf7a52f2d14b7f0b482e62424bf276343d8c1139a698124da7223759454574"
+    },
+    {
+      "path": "history-batch/history-c6e.tar.gz",
+      "source": "publication-ci-repair/history-batch/archives/history-c6e.tar.gz",
+      "bytes": 181495,
+      "sha256": "633de2a51e77fe7b07210547e0d96e5a5e2ce0f4641c1bc87bbcc85dbe7804d5",
+      "git_blob": "22a2c6f9242c6bcefccb3917d0c976650e733f68",
+      "storage": "Lossless gzip-compressed tar of selected review records; member hashes in ARCHIVE-INDEX.json.",
+      "decompressed_bytes": 348160,
+      "decompressed_sha256": "92968e00795be06c09448b8d46778c6e872ae009922b84efa1c51d4f5ee9bcc9"
+    },
+    {
+      "path": "history-batch/ci-87-observations.tar.gz",
+      "source": "publication-ci-repair/history-batch/archives/ci-87-observations.tar.gz",
+      "bytes": 315513,
+      "sha256": "e5cbc3c57453e3ce7e7862063054ead836d122abcde2fa629afb1cf2a55960ba",
+      "git_blob": "5780912edea3229226760f31e4e5650f5e4f42fb",
+      "storage": "Lossless gzip-compressed tar of selected review records; member hashes in ARCHIVE-INDEX.json.",
+      "decompressed_bytes": 501760,
+      "decompressed_sha256": "bfe6f329c4ad23b9b3e93f07d2941517b9e1d7240b30e01fa4c7014ce91dc857"
+    },
+    {
+      "path": "history-batch/platform-review-observations.tar.gz",
+      "source": "publication-ci-repair/history-batch/archives/platform-review-observations.tar.gz",
+      "bytes": 18011,
+      "sha256": "2cf7e533cc4d08c9986c7e297a024a810a6691546c07a5891c7201c8a3be2fc4",
+      "git_blob": "40710d3cb3969cd08283136e420d827956b88d30",
+      "storage": "Lossless gzip-compressed tar of selected review records; member hashes in ARCHIVE-INDEX.json.",
+      "decompressed_bytes": 81920,
+      "decompressed_sha256": "2e6ce5488bc0d3a5e7e958a0b7f1f8e6b7ec69286437e92920b18cef5ec21950"
+    },
+    {
+      "path": "history-batch/refs-and-protection-7831.tar.gz",
+      "source": "publication-ci-repair/history-batch/archives/refs-and-protection-7831.tar.gz",
+      "bytes": 358369,
+      "sha256": "8fb5b8c4d134b70274fca9a11e3a30c2e73ce4a32ad0d5d009af7b7fcf001f4a",
+      "git_blob": "2539ba87ecbb6f3e6edceeeb6f9dc9249d366ebe",
+      "storage": "Lossless gzip-compressed tar of selected review records; member hashes in ARCHIVE-INDEX.json.",
+      "decompressed_bytes": 972800,
+      "decompressed_sha256": "464c4e13e351491b34cd6efcd785124d09ab42ca93c771e57e1c3ed9d46db522"
+    },
+    {
+      "path": "history-batch/sequence-proof.tar.gz",
+      "source": "publication-ci-repair/history-batch/archives/sequence-proof.tar.gz",
+      "bytes": 107371,
+      "sha256": "ed394f1f12a2d05af38dbe2009e7268880054af7c56eb0c5ba891c97af7f5ce6",
+      "git_blob": "be63bc766ede854452c33127a863b3a426664d55",
+      "storage": "Lossless gzip-compressed tar of selected review records; member hashes in ARCHIVE-INDEX.json.",
+      "decompressed_bytes": 583680,
+      "decompressed_sha256": "ce254868c44fd0b9bc64e4d139954e600ef299e9eb8ab7e0d4170ec81c55886c"
+    },
+    {
+      "path": "history-batch/HISTORY-BATCH.json",
+      "source": "publication-ci-repair/history-batch/HISTORY-BATCH.json",
+      "bytes": 75651,
+      "sha256": "9adcbb2e93d68a9f8d5fab79d3546633e6c8ed80f6b502a4d4df57157c9d13e1",
+      "git_blob": "95d7bd2338565832257d34ad1c4ccb7967ac171b"
+    },
+    {
+      "path": "history-batch/INDEX.md",
+      "source": "publication-ci-repair/history-batch/INDEX.md",
+      "bytes": 3023,
+      "sha256": "02228c2ea4bae39ac7f43714cbcd2fcd62cacaeb2c74d14da066eb7a6c03f6fe",
+      "git_blob": "80bdffef14138fab44c18ba4e151ba1a8325fde5"
+    }
+  ],
+  "logical_archives": [
+    {
+      "path": "complete-known-parent-graph-7812.tsv.gz",
+      "source": "branch-audit/final-lease-7812/SNAPSHOT-7812-COMPLETE-KNOWN-PARENTS.tsv",
+      "bytes": 3796298,
+      "sha256": "4faa440281f85412a8d3c5463cac94842ec14dde8429eb6737d05201ec827bfb",
+      "decompressed_bytes": 6679884,
+      "decompressed_sha256": "b12717f47aec4f756f90e0669b1c7b2b00462bc97a9ed32dfe6b835827a2e938",
+      "storage": "ordered binary parts in ARCHIVE-PARTS.json",
+      "reconstruction_script": "reconstruct_archives.py"
+    },
+    {
+      "path": "native-evidence-PUBLIC.zip",
+      "source": "native-validation/NATIVE-EVIDENCE-5A-20261121-PUBLIC.zip",
+      "bytes": 1605908,
+      "sha256": "1fe917ebc21b0e4e9ddae589623d6bdab2327c62897a07920e658336cd8141b0",
+      "storage": "ordered binary parts in ARCHIVE-PARTS.json",
+      "reconstruction_script": "reconstruct_archives.py"
+    }
+  ],
+  "prior_published_manifest": {
+    "commit": "87b141833f2a43e0e87fdb3d4a168e1dacde7a0f",
+    "sha256": "ad43d8ad5943b02104b027ab114485b067fe4b8997a3c3a40e36529744cc1c13",
+    "bytes": 24792,
+    "earlier_manifest": {
+      "commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+      "sha256": "e6285b05de14254808f39fbb08af20e6932f31a935df95cbbbf86387f17e1bff",
+      "bytes": 21792,
+      "earlier_manifest": {
+        "commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+        "sha256": "469340c8b81c894eeb31f38245df4591250df71e580af1df0b41785030e27a1b",
+        "bytes": 14579
+      }
+    }
+  }
+}

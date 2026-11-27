@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.mem8.ci-followup.evidence-publication.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_pr": 5873,
+  "source_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+  "source_tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0",
+  "source_parent": "adef61556284cc5b58c4f23a33d7c8455e821c3f",
+  "hosted_mem_run": 42930925227,
+  "files": [
+    {
+      "path": "mem8-ci-followup-96038ccf-evidence-v1.tar.xz",
+      "bytes": 476680,
+      "sha256": "1158898b59a9cb3a684f8e51580b0d793cf8bda2fda52dd957e0850888109416",
+      "git_blob_sha": "1e484076018fb7d9ebc4ffb313783f0e315c2a91"
+    },
+    {
+      "path": "mem8-hosted-mem-96038ccf-evidence-v1.tar.xz",
+      "bytes": 117832,
+      "sha256": "fb168708494e749dff8873d1437c9050d87a80f481f1ca180e61ccf1a05c4958",
+      "git_blob_sha": "793042cb4f5da5ac17fde348a74090a6246ae745"
+    }
+  ],
+  "observed_hosted_mem": {
+    "group_count": 9,
+    "test_executions": 154,
+    "distinct_test_ids": 120,
+    "repeated_executions": 34,
+    "failed": 0,
+    "skipped": 0
+  },
+  "scope": "Original CI diagnostic logs, exact-blob local mechanical repair verification, and existing source-head hosted MEM Python/Torch/OCR tests. No new actor experiment.",
+  "native_desktop_run": "UNKNOWN: original keyed PTY write was not acknowledged; no replacement launch or completed test receipt is claimed.",
+  "claims": {
+    "whole_repository_ci_pass": false,
+    "scientific_acceptance": false,
+    "ordinary_owner_cold_recovery": false,
+    "production_adoption": false
+  }
+}

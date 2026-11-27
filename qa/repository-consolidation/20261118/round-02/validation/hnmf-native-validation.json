@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cargo",
+    "check",
+    "--manifest-path",
+    "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml",
+    "--all-targets",
+    "--locked"
+  ],
+  "exit_code": 0,
+  "ephemeral_lock_sha256_before": "83d91e60b98ed675f6529ab2f1a1eea2b2f03ec4ea1d5629f431c20c690ef968",
+  "ephemeral_lock_sha256_after": "83d91e60b98ed675f6529ab2f1a1eea2b2f03ec4ea1d5629f431c20c690ef968",
+  "lock_unchanged": true,
+  "tracked_changes": [
+    "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
+  ]
+}

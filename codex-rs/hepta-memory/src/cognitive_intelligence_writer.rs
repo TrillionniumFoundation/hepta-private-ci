@@ -36,6 +36,11 @@ const MAX_TYPE_BYTES: usize = 128;
 const MAX_LABEL_BYTES: usize = 1024;
 const MAX_RELATION_BYTES: usize = 128;
 
+pub(crate) struct MemoryCorrectionTarget<'a> {
+    pub(crate) memory_id: &'a StableMemoryId,
+    pub(crate) expected_revision: u64,
+}
+
 #[derive(Clone, Debug)]
 pub(crate) struct CanonicalEntityFact {
     pub(crate) key: String,
@@ -74,11 +79,7 @@ impl CognitiveStore {
         draft: &MemoryDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.begin_write_transaction().await?;
         let receipt = self
             .remember_with_kg_tx(&mut transaction, access, source, draft, facts)
             .await?;
@@ -133,17 +134,15 @@ impl CognitiveStore {
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.begin_write_transaction().await?;
         let receipt = self
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
+                MemoryCorrectionTarget {
+                    memory_id,
+                    expected_revision,
+                },
                 source,
                 draft,
                 facts,
@@ -157,12 +156,15 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
+        target: MemoryCorrectionTarget<'_>,
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let MemoryCorrectionTarget {
+            memory_id,
+            expected_revision,
+        } = target;
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active
@@ -209,11 +211,7 @@ impl CognitiveStore {
         source: &SourceDraft,
         draft: &ForgetMemoryDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.begin_write_transaction().await?;
         let receipt = self
             .forget_with_kg_tx(
                 &mut transaction,

@@ -1,0 +1,13 @@
+{
+  "stage": "eval-A04-3072",
+  "started_utc": "2026-11-10T14:30:06.999413+00:00",
+  "command": [
+    "/workspace/scratch/c385a7439f8e/hcsn-study-env/bin/python",
+    "/workspace/scratch/c385a7439f8e/numerics-width16-v6-audit-v1/runner.py",
+    "eval-A04-3072"
+  ],
+  "concurrency_disclosure": "May overlap the training agent's one-worker PLIF fixed-update diagnostic. Compare per-process UTC intervals; this audit wall time is not a fair-training metric.",
+  "exit_code": 0,
+  "ended_utc": "2026-11-10T14:32:10.985562+00:00",
+  "outer_wall_seconds": 123.98567180400005
+}

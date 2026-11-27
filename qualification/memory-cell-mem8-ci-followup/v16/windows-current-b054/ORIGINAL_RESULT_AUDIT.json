@@ -1,0 +1,666 @@
+{
+  "schema": "mem.windows-current-original-audit.v1",
+  "run_id": 43035590081,
+  "attempt": 1,
+  "job_id": 130573423888,
+  "source_before": {
+    "head": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+    "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+    "trackedChanges": "",
+    "cargoLockSha256": "564bc3f207a9f15cd66b0a18a81e4146522deb43c7cf8e90fc2f3d4d6638fd9b"
+  },
+  "final_source_state": "UNOBSERVED_NO_FINAL_RECEIPT",
+  "job_conclusion": "cancelled",
+  "cancellation_scheduler_cause": "UNKNOWN; timing is compatible with the configured 65-minute job budget but the original record does not identify the scheduler reason",
+  "artifact_id": 13866369445,
+  "artifact_sha256": "fb467cc7e81ed2d8f36177105b42ceff9922bbfce508299d1ef51238a2c1a9d1",
+  "raw_sha256": "bfaddf8ffb3d4d0157af54541fe99f26f665e0f6c6f8025efe919b69e5bf1a5d",
+  "members": [
+    {
+      "path": "canonical-windows-memory-recovery.log",
+      "bytes": 24655,
+      "sha256": "2d787377d8d5a7b54e4afe80be14b5a78284e7f5c8db20f01826df1d371c9983"
+    },
+    {
+      "path": "compiler.txt",
+      "bytes": 201,
+      "sha256": "88b7810119b8cb6083d3f2835d072d7048f479595a7c152b6716f4859675be36"
+    },
+    {
+      "path": "core-exit-observation.log",
+      "bytes": 43072,
+      "sha256": "6bec9918c83eb258d481db9b7182fe7077123d1562f0b827e39f4d56dc53b4b6"
+    },
+    {
+      "path": "driver-exit-unknown.log",
+      "bytes": 2196,
+      "sha256": "f8e777efc5b66ab041fc1516b25518a319a442150a9aa3f50230a0130c3b055a"
+    },
+    {
+      "path": "groups.json",
+      "bytes": 27603,
+      "sha256": "f9ad802088ef4994088055939ddfbeeaeb272e6d93ceb8a9cca52ba5ffd203cd"
+    },
+    {
+      "path": "git-process-cleanup.log",
+      "bytes": 15216,
+      "sha256": "a5105a4507678e93519e8667d4825e01d609cfb1a87db21ac3c085eb52835144"
+    },
+    {
+      "path": "operator-native.log",
+      "bytes": 8239,
+      "sha256": "979b9cbcf402c5f533803b298cf8f3dc0003931fa25e7180d7e30b55c330ff59"
+    },
+    {
+      "path": "original-protected-owner.log",
+      "bytes": 33511,
+      "sha256": "07b4c92fa2fbb4ed0c6ae41a3f345bf14bc877c947295c22b684457f7e5df4c5"
+    },
+    {
+      "path": "retained-mcp.log",
+      "bytes": 42428,
+      "sha256": "f7b2dd4b0fc31e83a99cc87dd6e558be2b7bfd360be459b025f62bdb2fa16629"
+    },
+    {
+      "path": "retained-windows-identity.log",
+      "bytes": 37034,
+      "sha256": "d8e1553529e882326278917c9b8df1825d9bc16325a34a9be0da8ee021e7cc31"
+    },
+    {
+      "path": "retained-windows-materialization.log",
+      "bytes": 23823,
+      "sha256": "0d3cbf61c6f2588dc870ff9ef89078cdfe3f9840da1fc9cf37b1b6b0451ffffa"
+    },
+    {
+      "path": "runner-native-abort.log",
+      "bytes": 16650,
+      "sha256": "df9403f11964fb92c583c764b183f77b9d8f49117f0120ce9696e4df9c78a0e9"
+    },
+    {
+      "path": "runner-native-terminal.log",
+      "bytes": 15346,
+      "sha256": "9404ac40e76650aa2b53d399e4c5a7fc4ec1d505449312d954ef4ca49351649d"
+    },
+    {
+      "path": "sandbox-helper-build.log",
+      "bytes": 626027,
+      "sha256": "8baa1c3fdee036c75881de72eb8ee28d732df8bf11d8a2ded9653d08a4d9ce20"
+    },
+    {
+      "path": "sandbox-helper-preparation.json",
+      "bytes": 1133,
+      "sha256": "8b8a01b1a3c00a94d52ade3989c7e08e854fff996020e7480711df395c08f5f5"
+    },
+    {
+      "path": "sandbox-native-delete-routes.log",
+      "bytes": 27272,
+      "sha256": "8a0016b8bb9eb05176534f72c82d93466133125bc9ed8e9c6f10701b8178e1c1"
+    },
+    {
+      "path": "sandbox-original-failures.log",
+      "bytes": 15803,
+      "sha256": "cbd1320476a076edcc32f826a8d1c6f31b777d38c2151bceba8db338bc334890"
+    },
+    {
+      "path": "shadow-native.log",
+      "bytes": 24460,
+      "sha256": "3eede0bbfb1bc0ec8c0e3e18ccfaaa2fe6d7fc9a7de29e85447232f5ab5f2f2c"
+    },
+    {
+      "path": "source-before.json",
+      "bytes": 230,
+      "sha256": "a49c7aba50a6b63496f5165141c9c9bad21dee1b2064eb5fec1c11e26d3fcf91"
+    },
+    {
+      "path": "temporary-environment.json",
+      "bytes": 230,
+      "sha256": "e0c0af4493be1e294bd2ac00393427e25237b050108951f231756faf6bbab635"
+    }
+  ],
+  "scope_groups": 19,
+  "scope_cases": 167,
+  "completed_groups": 13,
+  "strict_passing_groups": 11,
+  "selected_distinct_cases": 124,
+  "strict_terminal_counts": {
+    "PASS": 122,
+    "LEAK": 1,
+    "FAIL": 1
+  },
+  "groups": [
+    {
+      "id": "retained-windows-identity",
+      "package": "codex-state",
+      "nextest_run_id": "a6305d28-e5b8-4b7b-8cd8-bc30bd958fca",
+      "selected": 8,
+      "skipped": 207,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 8
+      },
+      "cases": {
+        "sqlite_recovery::windows::tests::cold_image_windows_reconnects_to_original_immutable_copy": "PASS",
+        "sqlite_recovery::windows::tests::retained_windows_bundle_is_read_only_and_same_handles": "PASS",
+        "sqlite_recovery::windows::tests::retained_windows_does_not_repair_existing_shared_home": "PASS",
+        "sqlite_recovery::windows::tests::retained_windows_rejects_extra_links_for_each_component": "PASS",
+        "sqlite_recovery::windows::tests::retained_windows_rejects_foreign_read_grants": "PASS",
+        "sqlite_recovery::windows::tests::retained_windows_rejects_new_sidecar_and_mutated_bytes": "PASS",
+        "sqlite_recovery::windows::tests::retained_windows_rejects_parent_junction_and_replacement": "PASS",
+        "sqlite_recovery::windows::tests::retained_windows_replacement_uses_file_id_even_with_same_metadata": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 37034,
+      "raw_sha256": "d8e1553529e882326278917c9b8df1825d9bc16325a34a9be0da8ee021e7cc31",
+      "duration_seconds_includes_compile": 506.531
+    },
+    {
+      "id": "git-process-cleanup",
+      "package": "codex-git-utils",
+      "nextest_run_id": "fe3e5604-c0b0-4962-bb9b-f60abc4a7cdb",
+      "selected": 2,
+      "skipped": 33,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 2
+      },
+      "cases": {
+        "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running": "PASS",
+        "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 15216,
+      "raw_sha256": "a5105a4507678e93519e8667d4825e01d609cfb1a87db21ac3c085eb52835144",
+      "duration_seconds_includes_compile": 224.734
+    },
+    {
+      "id": "retained-mcp",
+      "package": "codex-mcp",
+      "nextest_run_id": "250a4a70-bb5f-4bc9-a4d8-d19d0cd42974",
+      "selected": 3,
+      "skipped": 195,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 3
+      },
+      "cases": {
+        "connection_manager::tests::retained_binding_tests::retained_binding_holds_catalog_until_original_server_budget_expires": "PASS",
+        "connection_manager::tests::retained_binding_tests::retained_binding_preserves_tool_environment_and_catalog_fences": "PASS",
+        "connection_manager::tests::retained_binding_tests::retained_binding_refuses_disabled_tools_and_original_shutdown": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 42428,
+      "raw_sha256": "f7b2dd4b0fc31e83a99cc87dd6e558be2b7bfd360be459b025f62bdb2fa16629",
+      "duration_seconds_includes_compile": 671.953
+    },
+    {
+      "id": "original-protected-owner",
+      "package": "codex-hepta-memory",
+      "nextest_run_id": "12ae074d-c779-4b41-a8f4-9b3a298e96d1",
+      "selected": 14,
+      "skipped": 366,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 14
+      },
+      "cases": {
+        "production_writer::objective_sender::gate_tests::recovered_generation_keeps_its_exclusive_store_fence_after_checkpoint_failure": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_cancelled_acquisition_cannot_return_write_mode": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_excludes_writers_without_dirtying_current": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_never_commits_even_if_query_only_is_disabled": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_acknowledges_exact_terminal_cut_without_an_objective": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_cancelled_publication_retains_receipt_and_never_reopens_writer": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_holds_original_sqlite_lock_through_synchronous_metadata_ack": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_managed_owner_without_bound_capability_cannot_fall_back_to_local_commit": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_revoked_after_current_ack_keeps_application_receipt": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_waits_for_bound_whole_owner_publication": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::observation_tests::protected_checkpoint_read_only_polling_preserves_current_and_rejects_writes": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_invalidates_current_before_normal_owner_writes_and_can_republish": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_lost_current_ack_fences_waiting_and_previously_checked_out_connections": "PASS",
+        "production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_mismatched_dirty_ack_never_opens_commit_permission": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 33511,
+      "raw_sha256": "07b4c92fa2fbb4ed0c6ae41a3f345bf14bc877c947295c22b684457f7e5df4c5",
+      "duration_seconds_includes_compile": 354.281
+    },
+    {
+      "id": "operator-native",
+      "package": "codex-hepta-operator-acceptance",
+      "nextest_run_id": "5a0c70b7-0d4e-4130-b272-6ce030e85773",
+      "selected": 33,
+      "skipped": 0,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 33
+      },
+      "cases": {
+        "ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child": "PASS",
+        "durable::windows::private_tests::foreign_acl_is_rejected_without_repair_or_partial_write": "PASS",
+        "durable::windows::private_tests::private_sidecar_roundtrip_preserves_atomic_replace_and_refuses_duplicate": "PASS",
+        "durable::windows::private_tests::retained_parent_refuses_replacement_and_missing_parent_is_not_created": "PASS",
+        "durable::windows::private_tests::sidecar_lock_is_exclusive_until_its_original_guard_drops": "PASS",
+        "durable::windows::tests::hardlinked_artifacts_are_rejected_before_reading_or_hashing": "PASS",
+        "durable::windows::tests::hardlinks_added_after_open_are_rejected": "PASS",
+        "durable::windows::tests::path_replacement_after_open_is_rejected": "PASS",
+        "g5_trust::tests::exact_head_and_predecessor_binding_is_required": "PASS",
+        "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance": "PASS",
+        "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority": "PASS",
+        "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted": "PASS",
+        "g5_trust::tests::policy_and_revocation_files_must_be_canonical": "PASS",
+        "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge": "PASS",
+        "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance": "PASS",
+        "manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths": "PASS",
+        "manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks": "PASS",
+        "openssh_windows::tests::frozen_private_inputs_deny_writes_deletes_and_directory_replacement": "PASS",
+        "openssh_windows::tests::hardlink_added_to_frozen_input_is_refused": "PASS",
+        "openssh_windows::tests::retained_unknown_verifier_reconciles_only_its_original_child": "PASS",
+        "preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected": "PASS",
+        "tests::durable_time_watermark_rejects_clock_rollback": "PASS",
+        "tests::exact_challenge_boundary_accepts_only_operator_acceptance": "PASS",
+        "tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails": "PASS",
+        "tests::final_consumption_at_expiry_creates_no_claim_or_receipt": "PASS",
+        "tests::read_only_lock_never_creates_missing_state": "PASS",
+        "tests::receipt_repeated_authority_must_match_exact_boundary": "PASS",
+        "tests::unknown_or_noncanonical_stored_json_is_rejected": "PASS",
+        "tests::validity_window_is_half_open_and_policy_bounded": "PASS",
+        "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy": "PASS",
+        "trust::tests::trust_policy_digest_is_external_and_fail_closed": "PASS",
+        "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers": "PASS",
+        "trust::tests::weak_ed25519_public_key_is_rejected_before_openssh": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 8239,
+      "raw_sha256": "979b9cbcf402c5f533803b298cf8f3dc0003931fa25e7180d7e30b55c330ff59",
+      "duration_seconds_includes_compile": 41.25
+    },
+    {
+      "id": "shadow-native",
+      "package": "codex-hepta-shadow-qualification",
+      "nextest_run_id": "56128a08-2343-4ed9-8e96-a4c5f0d1dc6b",
+      "selected": 35,
+      "skipped": 0,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 35
+      },
+      "cases": {
+        "child_tests::drains_and_bounds_stderr_while_hashing_the_full_stream": "PASS",
+        "child_tests::persists_inbound_wire_before_rejecting_invalid_json": "PASS",
+        "driver_tests::app_and_mcp_fsm_persist_before_every_sample_write": "PASS",
+        "driver_tests::failed_pipe_write_keeps_durable_pre_send_and_poisoned_fsm": "PASS",
+        "durable::windows::tests::private_artifact_flush_and_bounded_read_preserve_original_bytes": "PASS",
+        "durable::windows::tests::private_artifacts_reject_foreign_acl_without_repair": "PASS",
+        "durable::windows::tests::private_artifacts_reject_native_hard_links": "PASS",
+        "durable::windows::tests::private_readback_never_initializes_missing_state": "PASS",
+        "importer_tests::imports_exactly_four_artifacts_and_writes_a_checkpoint": "PASS",
+        "importer_tests::inventories_all_broken_samples_before_checkpointing_failure": "PASS",
+        "lane_e_closure_tests::lane_e_causal_candidate_chain_is_digest_bound_and_deny_all": "PASS",
+        "loopback_tests::persists_exact_http_requests_and_responses": "PASS",
+        "observer_tests::rejects_noncanonical_input_before_writing_an_artifact": "PASS",
+        "observer_tests::rejects_out_of_order_or_incomplete_runs_without_minting_tokens": "PASS",
+        "observer_tests::returns_tokens_only_after_four_private_durable_pairs": "PASS",
+        "oracle_tests::loads_the_embedded_frozen_oracle": "PASS",
+        "oracle_tests::rejects_nonofficial_or_mutated_oracle_bytes": "PASS",
+        "product_receipts_tests::validates_exact_row_and_rejects_index_drift": "PASS",
+        "report_tests::inventories_import_semantic_duplicate_and_missing_failures": "PASS",
+        "report_tests::writes_an_exact_report_with_no_authority": "PASS",
+        "request_tests::parses_the_frozen_app_server_pair": "PASS",
+        "request_tests::parses_the_frozen_mcp_pair": "PASS",
+        "request_tests::rejects_noncanonical_or_multiline_requests": "PASS",
+        "runtime_tests::creates_private_surface_layouts_and_strict_configs": "PASS",
+        "runtime_tests::rejects_an_unpinned_product_binary": "PASS",
+        "sealer_tests::rejects_a_checkpoint_changed_before_sealing": "PASS",
+        "sealer_tests::seals_a_complete_checkpoint_with_every_gate_disabled": "PASS",
+        "sealer_tests::seals_a_failed_checkpoint_without_losing_failures": "PASS",
+        "semantic_verifier_tests::normalizes_dynamic_identity_and_matches_oracle_bytes": "PASS",
+        "semantic_verifier_tests::rejects_semantic_or_identity_divergence": "PASS",
+        "session_tests::extracts_only_bounded_dynamic_identifiers": "PASS",
+        "session_tests::requires_an_explicit_response_result": "PASS",
+        "transport_tests::detects_transport_artifact_changes_after_capture": "PASS",
+        "trial_tests::rejects_an_unbounded_trial_before_creating_runtime_state": "PASS",
+        "value_learning_tests::objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 24460,
+      "raw_sha256": "3eede0bbfb1bc0ec8c0e3e18ccfaaa2fe6d7fc9a7de29e85447232f5ab5f2f2c",
+      "duration_seconds_includes_compile": 129.578
+    },
+    {
+      "id": "sandbox-original-failures",
+      "package": "codex-windows-sandbox",
+      "nextest_run_id": "535d6e1f-3ec7-4698-b832-169c9f6c97af",
+      "selected": 7,
+      "skipped": 180,
+      "exit_code": 0,
+      "strict_pass": false,
+      "counts": {
+        "PASS": 6,
+        "LEAK": 1
+      },
+      "cases": {
+        "token::tests::legacy_workspace_capabilities_refuse_broad_identity_delete_routes": "PASS",
+        "unified_exec::tests::acl_setup_tests::legacy_capture_refuses_before_unwritable_dacl_setup": "PASS",
+        "unified_exec::tests::acl_setup_tests::legacy_session_refuses_before_unwritable_dacl_setup": "PASS",
+        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit": "LEAK",
+        "unified_exec::tests::legacy_non_tty_refuses_before_deny_read_setup": "PASS",
+        "unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output": "PASS",
+        "unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 15803,
+      "raw_sha256": "cbd1320476a076edcc32f826a8d1c6f31b777d38c2151bceba8db338bc334890",
+      "duration_seconds_includes_compile": 22.016
+    },
+    {
+      "id": "sandbox-native-delete-routes",
+      "package": "codex-windows-sandbox",
+      "nextest_run_id": "b9e03d17-7088-4780-aec1-a910b325e060",
+      "selected": 2,
+      "skipped": 185,
+      "exit_code": 1,
+      "strict_pass": false,
+      "counts": {
+        "PASS": 1,
+        "FAIL": 1
+      },
+      "cases": {
+        "token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes": "PASS",
+        "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary": "FAIL"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 1,
+      "raw_bytes": 27272,
+      "raw_sha256": "8a0016b8bb9eb05176534f72c82d93466133125bc9ed8e9c6f10701b8178e1c1",
+      "duration_seconds_includes_compile": 4.562
+    },
+    {
+      "id": "retained-windows-materialization",
+      "package": "codex-state",
+      "nextest_run_id": "27033824-a16a-41e3-ba79-7ec1edfe3ba3",
+      "selected": 1,
+      "skipped": 214,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 1
+      },
+      "cases": {
+        "sqlite_recovery::windows::tests::materialize_tests::retained_windows_materialization_preserves_bound_source_bundle": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 23823,
+      "raw_sha256": "0d3cbf61c6f2588dc870ff9ef89078cdfe3f9840da1fc9cf37b1b6b0451ffffa",
+      "duration_seconds_includes_compile": 3.0
+    },
+    {
+      "id": "canonical-windows-memory-recovery",
+      "package": "codex-hepta-memory",
+      "nextest_run_id": "b77ec0d4-5c09-4d4e-b3be-91a1951c0cd0",
+      "selected": 2,
+      "skipped": 378,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 2
+      },
+      "cases": {
+        "cognitive_store::recovery::tests::windows::canonical_windows_root_reads_retained_cold_image_without_mutating_source": "PASS",
+        "cognitive_store::recovery::tests::windows::canonical_windows_root_recovers_and_reopens_the_original_generation_path": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 24655,
+      "raw_sha256": "2d787377d8d5a7b54e4afe80be14b5a78284e7f5c8db20f01826df1d371c9983",
+      "duration_seconds_includes_compile": 4.016
+    },
+    {
+      "id": "runner-native-terminal",
+      "package": "codex-windows-sandbox",
+      "nextest_run_id": "31c35930-ffea-4e7c-a837-1dbf7ba4363e",
+      "selected": 4,
+      "skipped": 183,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 4
+      },
+      "cases": {
+        "elevated::runner_client::process::tests::native_wait_cancellation_does_not_report_live_process_as_terminal": "PASS",
+        "elevated::runner_client::process::tests::native_wait_does_not_reset_expired_command_budget": "PASS",
+        "elevated::runner_client::process::tests::native_wait_observes_release_and_exact_exit": "PASS",
+        "elevated::runner_client::process::tests::native_wait_rejects_conflicting_exit_message": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 15346,
+      "raw_sha256": "9404ac40e76650aa2b53d399e4c5a7fc4ec1d505449312d954ef4ca49351649d",
+      "duration_seconds_includes_compile": 2.75
+    },
+    {
+      "id": "runner-native-abort",
+      "package": "codex-windows-sandbox",
+      "nextest_run_id": "ad578e63-cbb3-4866-8786-4b431756e1b0",
+      "selected": 12,
+      "skipped": 175,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 12
+      },
+      "cases": {
+        "elevated::runner_client::process::owner::job_tests::owned_broker_abort_terminates_original_private_job_descendant": "PASS",
+        "elevated::runner_client::process::owner::job_tests::owned_broker_normal_exit_preserves_original_job_descendant": "PASS",
+        "elevated::runner_client::process::owner::tests::owned_abort_failure_preserves_live_child_and_unknown_state": "PASS",
+        "elevated::runner_client::process::owner::tests::owned_cancel_aborts_only_retained_child_with_same_deadline": "PASS",
+        "elevated::runner_client::process::owner::tests::owned_early_drop_aborts_exact_child": "PASS",
+        "elevated::runner_client::process::owner::tests::owned_expired_abort_does_not_claim_terminal_or_restart_budget": "PASS",
+        "elevated::runner_client::process::owner::tests::owned_partial_frame_cancellation_aborts_without_control_writer": "PASS",
+        "elevated::runner_client::process::owner::tests::owned_pipe_disconnect_aborts_real_child_without_exit_message": "PASS",
+        "elevated::runner_client::process::pipe_read::tests::pipe_reader_cancelled_live_pipe_returns_error_without_retry": "PASS",
+        "elevated::runner_client::process::pipe_read::tests::pipe_reader_decodes_frame_larger_than_native_pipe_buffer": "PASS",
+        "elevated::runner_client::process::pipe_read::tests::pipe_reader_partial_frame_uses_original_absolute_deadline": "PASS",
+        "elevated::runner_client::process::pipe_read::tests::pipe_reader_preserves_original_partial_eof_and_size_limit": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 16650,
+      "raw_sha256": "df9403f11964fb92c583c764b183f77b9d8f49117f0120ce9696e4df9c78a0e9",
+      "duration_seconds_includes_compile": 3.062
+    },
+    {
+      "id": "driver-exit-unknown",
+      "package": "codex-utils-pty",
+      "nextest_run_id": "bcd1c7a2-64ff-470c-986c-cd0fcd7c7e69",
+      "selected": 1,
+      "skipped": 25,
+      "exit_code": 0,
+      "strict_pass": true,
+      "counts": {
+        "PASS": 1
+      },
+      "cases": {
+        "tests::driver_terminal_tests::driver_sender_drop_keeps_unknown_exit_and_drains_output": "PASS"
+      },
+      "reprinted_terminal_rows_not_additional_executions": 0,
+      "raw_bytes": 2196,
+      "raw_sha256": "f8e777efc5b66ab041fc1516b25518a319a442150a9aa3f50230a0130c3b055a",
+      "duration_seconds_includes_compile": 26.61
+    }
+  ],
+  "uncompleted_cases": 43,
+  "uncompleted_groups": [
+    {
+      "id": "core-exit-observation",
+      "required_cases": [
+        "unified_exec::process::observation_tests::early_driver_sender_loss_returns_process_failure",
+        "unified_exec::process::observation_tests::late_driver_sender_loss_cannot_be_upgraded_by_write_or_termination",
+        "unified_exec::process::observation_tests::observed_driver_exit_keeps_its_actual_code",
+        "unified_exec::process::remote_observation_tests::remote_stdin_or_handle_errors_do_not_establish_exit",
+        "unified_exec::process::remote_observation_tests::termination_ack_without_exit_is_indeterminate",
+        "unified_exec::process::remote_observation_tests::termination_ack_after_observation_loss_stays_indeterminate",
+        "unified_exec::process::remote_observation_tests::observed_exit_survives_concurrent_control_failure",
+        "unified_exec::process::remote_observation_tests::observed_exit_without_code_is_terminal",
+        "unified_exec::process::remote_observation_tests::logical_failure_before_native_exit_preserves_first_failure"
+      ],
+      "expected": 9,
+      "state": "compilation_interrupted_no_test_start"
+    },
+    {
+      "id": "runner-native-custody",
+      "required_cases": [
+        "elevated::runner_client::process::owner::custody_tests::reservation_and_confirmed_exit_release_only_their_exact_slot",
+        "elevated::runner_client::process::owner::custody_tests::session_custody_survives_taken_terminator_and_driver_disconnect",
+        "elevated::runner_client::process::owner::custody_tests::dropped_sync_error_retains_owner_until_late_same_handle_observation",
+        "elevated::runner_client::process::owner::custody_tests::unarmed_startup_abort_keeps_custody_until_zero_wait_terminal_query",
+        "elevated::runner_client::process::owner::custody_tests::failure_fences_admission_before_native_abort_or_wait",
+        "elevated::runner_client::process::owner::custody_tests::cleanup_query_access_failures_fence_without_reclassifying_original_work"
+      ],
+      "expected": 6,
+      "state": "not_started"
+    },
+    {
+      "id": "exec-server-observation-wire",
+      "required_cases": [
+        "client::observation_tests::legacy_server_is_rejected_before_process_admission",
+        "client::observation_tests::transport_failure_without_native_observation_is_not_closed",
+        "client::observation_tests::failure_preserves_observed_exit_with_or_without_numeric_code",
+        "client::observation_tests::unknown_notification_keeps_output_order_and_actual_exit_events",
+        "server::handler::tests::legacy_client_cannot_start_a_process_without_exit_observation",
+        "server::handler::tests::legacy_resume_refuses_before_attaching_to_original_session",
+        "local_process::observation_tests::cancelling_before_effect_releases_only_the_unused_reservation",
+        "local_process::observation_tests::cancelled_exit_watcher_retains_unknown_and_wakes_observers",
+        "local_process::observation_tests::lost_exit_observation_retains_owner_and_fences_other_sessions",
+        "local_process::observation_tests::actual_exit_releases_only_its_original_registry_reservation",
+        "local_process::observation_tests::actual_exit_fact_survives_cancelled_map_publication",
+        "local_process::observation_tests::blocked_stdin_reservation_wakes_for_retained_outcome"
+      ],
+      "expected": 12,
+      "state": "not_started"
+    },
+    {
+      "id": "exec-server-protocol-observation-wire",
+      "required_cases": [
+        "protocol::observation_wire_tests::absent_capability_is_not_implicitly_negotiated",
+        "protocol::observation_wire_tests::observation_failure_has_no_numeric_exit_or_sequence",
+        "protocol::observation_wire_tests::unknown_observation_failure_reasons_are_rejected"
+      ],
+      "expected": 3,
+      "state": "not_started"
+    },
+    {
+      "id": "direct-pty-native-observation",
+      "required_cases": [
+        "win::observation_tests::wait_without_synchronize_is_an_error_not_an_exit",
+        "win::observation_tests::query_failure_after_native_signal_is_not_pending",
+        "win::observation_tests::signaled_process_can_have_exit_code_259"
+      ],
+      "expected": 3,
+      "state": "not_started"
+    },
+    {
+      "id": "legacy-isolation-admission",
+      "required_cases": [
+        "legacy_admission_tests::raw_token_factories_reject_live_base",
+        "legacy_admission_tests::legacy_capture_refuses_before_side_effects",
+        "legacy_admission_tests::legacy_capture_overrides_refuse_before_side_effects",
+        "legacy_admission_tests::legacy_sessions_refuse_before_side_effects",
+        "legacy_admission_tests::legacy_preflight_refuses_before_side_effects",
+        "legacy_admission_tests::legacy_spawn_preparation_refuses_before_side_effects",
+        "legacy_admission_tests::legacy_security_preparation_refuses_before_side_effects",
+        "legacy_admission_tests::public_selector_refuses_legacy_read_only_without_fallback",
+        "legacy_admission_tests::public_selector_refuses_legacy_requests_before_automatic_elevation",
+        "legacy_admission_tests::public_selector_rejects_disabled_level_without_provisioning"
+      ],
+      "expected": 10,
+      "state": "not_started"
+    }
+  ],
+  "outside_delete_original_outcomes": {
+    "ordinary-host-cmd-done": [
+      {
+        "route": "Neither",
+        "file_deleted": false,
+        "directory_deleted": false
+      },
+      {
+        "route": "TargetOnly",
+        "file_deleted": true,
+        "directory_deleted": true
+      },
+      {
+        "route": "ParentOnly",
+        "file_deleted": true,
+        "directory_deleted": true
+      },
+      {
+        "route": "Both",
+        "file_deleted": true,
+        "directory_deleted": true
+      }
+    ],
+    "elevated-child-done": [
+      {
+        "route": "Neither",
+        "file_deleted": false,
+        "directory_deleted": false
+      },
+      {
+        "route": "TargetOnly",
+        "file_deleted": true,
+        "directory_deleted": true
+      },
+      {
+        "route": "ParentOnly",
+        "file_deleted": true,
+        "directory_deleted": true
+      },
+      {
+        "route": "Both",
+        "file_deleted": true,
+        "directory_deleted": true
+      }
+    ]
+  },
+  "helper_preparation": {
+    "command": [
+      "cargo",
+      "build",
+      "--locked",
+      "-p",
+      "codex-windows-sandbox",
+      "--profile",
+      "dev-small",
+      "--message-format=json",
+      "--bin",
+      "codex-windows-sandbox-setup",
+      "--bin",
+      "codex-command-runner"
+    ],
+    "exitCode": 0,
+    "artifacts": [
+      {
+        "name": "codex-windows-sandbox-setup",
+        "source": "D:\\a\\_temp\\hepta-windows-current-target\\dev-small\\codex-windows-sandbox-setup.exe",
+        "testSibling": "D:\\a\\_temp\\hepta-windows-current-target\\dev-small\\deps\\codex-windows-sandbox-setup.exe",
+        "bytes": 35408896,
+        "sha256": "9e963221477d96306aa1843b7b8afdcecb2cd3aadf846ed604d8b58588cdc549"
+      },
+      {
+        "name": "codex-command-runner",
+        "source": "D:\\a\\_temp\\hepta-windows-current-target\\dev-small\\codex-command-runner.exe",
+        "testSibling": "D:\\a\\_temp\\hepta-windows-current-target\\dev-small\\deps\\codex-command-runner.exe",
+        "bytes": 24122368,
+        "sha256": "bc35b4525fcb82a3c83b57a6edf086a3a52dc0fcbc6378bc424462aa69f1f830"
+      }
+    ],
+    "passed": true,
+    "durationSeconds": 849.875
+  },
+  "new_three_hardlink_helper_cases_included": false,
+  "ordinary_control_candidate_included": true,
+  "ordinary_control_token_marker": "verified_before_resume distinct_token=true backup_present=false restore_present=false other_privileges_unchanged=true",
+  "new_executions_by_this_audit": 0,
+  "software_tests_are_memory_benefit_evidence": false
+}

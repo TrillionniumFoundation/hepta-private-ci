@@ -1,0 +1,445 @@
+{
+  "adoption_authorized": false,
+  "common_matching_dimensions": [
+    "model_access",
+    "information",
+    "external_memory",
+    "tools",
+    "training_data",
+    "tuning_data",
+    "evaluation_data",
+    "training_opportunity",
+    "tuning_opportunity",
+    "recovery_mechanism",
+    "resource_limits",
+    "evaluation_rule"
+  ],
+  "cost_policy": {
+    "amortization_counts": [
+      100,
+      1000,
+      10000
+    ],
+    "failed_cancelled_unknown_in_denominator": true,
+    "nested_envelopes_are_additive": false,
+    "research_evaluation_inference_already_included": true,
+    "shared_cost": "full standalone charge to each benefitting method; physical event counted once in campaign total",
+    "unknown_is_zero": false
+  },
+  "cost_units": [
+    "wall_seconds",
+    "cpu_seconds",
+    "energy_joules",
+    "provider_charges"
+  ],
+  "execution_started": false,
+  "experiments": {
+    "A": {
+      "additional_required": "predeclare removed roles before outcomes; match access and training in every ablation",
+      "arms": [
+        "single_agent",
+        "fixed_roles",
+        "differentiated_cells",
+        "cells_without_state",
+        "cells_without_differentiation"
+      ],
+      "capability_gate": "actual separate local state and trainable differentiation; heads or labels alone do not qualify",
+      "primary_contrasts": [
+        {
+          "differentiated_cells": 1,
+          "single_agent": -1
+        },
+        {
+          "differentiated_cells": 1,
+          "fixed_roles": -1
+        }
+      ]
+    },
+    "B": {
+      "arms": [
+        {
+          "controller": "light",
+          "core": "ordinary",
+          "id": "ordinary/light/reset",
+          "memory_mode": "reset"
+        },
+        {
+          "controller": "light",
+          "core": "ordinary",
+          "id": "ordinary/light/persistent",
+          "memory_mode": "persistent"
+        },
+        {
+          "controller": "ndu",
+          "core": "ordinary",
+          "id": "ordinary/ndu/reset",
+          "memory_mode": "reset"
+        },
+        {
+          "controller": "ndu",
+          "core": "ordinary",
+          "id": "ordinary/ndu/persistent",
+          "memory_mode": "persistent"
+        },
+        {
+          "controller": "tuned_fixed",
+          "core": "ordinary",
+          "id": "ordinary/tuned_fixed/reset",
+          "memory_mode": "reset"
+        },
+        {
+          "controller": "tuned_fixed",
+          "core": "ordinary",
+          "id": "ordinary/tuned_fixed/persistent",
+          "memory_mode": "persistent"
+        },
+        {
+          "controller": "voi",
+          "core": "ordinary",
+          "id": "ordinary/voi/reset",
+          "memory_mode": "reset"
+        },
+        {
+          "controller": "voi",
+          "core": "ordinary",
+          "id": "ordinary/voi/persistent",
+          "memory_mode": "persistent"
+        },
+        {
+          "controller": "mpc",
+          "core": "ordinary",
+          "id": "ordinary/mpc/reset",
+          "memory_mode": "reset"
+        },
+        {
+          "controller": "mpc",
+          "core": "ordinary",
+          "id": "ordinary/mpc/persistent",
+          "memory_mode": "persistent"
+        },
+        {
+          "controller": "light",
+          "core": "hepta",
+          "id": "hepta/light/reset",
+          "memory_mode": "reset"
+        },
+        {
+          "controller": "light",
+          "core": "hepta",
+          "id": "hepta/light/persistent",
+          "memory_mode": "persistent"
+        },
+        {
+          "controller": "ndu",
+          "core": "hepta",
+          "id": "hepta/ndu/reset",
+          "memory_mode": "reset"
+        },
+        {
+          "controller": "ndu",
+          "core": "hepta",
+          "id": "hepta/ndu/persistent",
+          "memory_mode": "persistent"
+        },
+        {
+          "controller": "tuned_fixed",
+          "core": "hepta",
+          "id": "hepta/tuned_fixed/reset",
+          "memory_mode": "reset"
+        },
+        {
+          "controller": "tuned_fixed",
+          "core": "hepta",
+          "id": "hepta/tuned_fixed/persistent",
+          "memory_mode": "persistent"
+        },
+        {
+          "controller": "voi",
+          "core": "hepta",
+          "id": "hepta/voi/reset",
+          "memory_mode": "reset"
+        },
+        {
+          "controller": "voi",
+          "core": "hepta",
+          "id": "hepta/voi/persistent",
+          "memory_mode": "persistent"
+        },
+        {
+          "controller": "mpc",
+          "core": "hepta",
+          "id": "hepta/mpc/reset",
+          "memory_mode": "reset"
+        },
+        {
+          "controller": "mpc",
+          "core": "hepta",
+          "id": "hepta/mpc/persistent",
+          "memory_mode": "persistent"
+        }
+      ],
+      "comparison_policy": "same observations, labels, batch boundaries and opportunities; record actual optimizer steps and full cost",
+      "deployment_ablation": "same checkpoint within each pair; preserve training mode; requires an explicit supported deployment profile",
+      "estimands": [
+        "matched_training",
+        "deployment_state_ablation"
+      ],
+      "primary_contrasts": {
+        "hepta_under_light/persistent": {
+          "hepta/light/persistent": 1,
+          "ordinary/light/persistent": -1
+        },
+        "hepta_under_light/reset": {
+          "hepta/light/reset": 1,
+          "ordinary/light/reset": -1
+        },
+        "hepta_under_ndu/persistent": {
+          "hepta/ndu/persistent": 1,
+          "ordinary/ndu/persistent": -1
+        },
+        "hepta_under_ndu/reset": {
+          "hepta/ndu/reset": 1,
+          "ordinary/ndu/reset": -1
+        },
+        "kernel_controller_interaction/persistent": {
+          "hepta/light/persistent": -1,
+          "hepta/ndu/persistent": 1,
+          "ordinary/light/persistent": 1,
+          "ordinary/ndu/persistent": -1
+        },
+        "kernel_controller_interaction/reset": {
+          "hepta/light/reset": -1,
+          "hepta/ndu/reset": 1,
+          "ordinary/light/reset": 1,
+          "ordinary/ndu/reset": -1
+        },
+        "ndu_in_hepta/persistent": {
+          "hepta/light/persistent": -1,
+          "hepta/ndu/persistent": 1
+        },
+        "ndu_in_hepta/reset": {
+          "hepta/light/reset": -1,
+          "hepta/ndu/reset": 1
+        },
+        "ndu_in_ordinary/persistent": {
+          "ordinary/light/persistent": -1,
+          "ordinary/ndu/persistent": 1
+        },
+        "ndu_in_ordinary/reset": {
+          "ordinary/light/reset": -1,
+          "ordinary/ndu/reset": 1
+        },
+        "ndu_vs_mpc/hepta/persistent": {
+          "hepta/mpc/persistent": -1,
+          "hepta/ndu/persistent": 1
+        },
+        "ndu_vs_mpc/hepta/reset": {
+          "hepta/mpc/reset": -1,
+          "hepta/ndu/reset": 1
+        },
+        "ndu_vs_mpc/ordinary/persistent": {
+          "ordinary/mpc/persistent": -1,
+          "ordinary/ndu/persistent": 1
+        },
+        "ndu_vs_mpc/ordinary/reset": {
+          "ordinary/mpc/reset": -1,
+          "ordinary/ndu/reset": 1
+        },
+        "ndu_vs_tuned_fixed/hepta/persistent": {
+          "hepta/ndu/persistent": 1,
+          "hepta/tuned_fixed/persistent": -1
+        },
+        "ndu_vs_tuned_fixed/hepta/reset": {
+          "hepta/ndu/reset": 1,
+          "hepta/tuned_fixed/reset": -1
+        },
+        "ndu_vs_tuned_fixed/ordinary/persistent": {
+          "ordinary/ndu/persistent": 1,
+          "ordinary/tuned_fixed/persistent": -1
+        },
+        "ndu_vs_tuned_fixed/ordinary/reset": {
+          "ordinary/ndu/reset": 1,
+          "ordinary/tuned_fixed/reset": -1
+        },
+        "ndu_vs_voi/hepta/persistent": {
+          "hepta/ndu/persistent": 1,
+          "hepta/voi/persistent": -1
+        },
+        "ndu_vs_voi/hepta/reset": {
+          "hepta/ndu/reset": 1,
+          "hepta/voi/reset": -1
+        },
+        "ndu_vs_voi/ordinary/persistent": {
+          "ordinary/ndu/persistent": 1,
+          "ordinary/voi/persistent": -1
+        },
+        "ndu_vs_voi/ordinary/reset": {
+          "ordinary/ndu/reset": 1,
+          "ordinary/voi/reset": -1
+        },
+        "persistent_minus_reset/hepta/light": {
+          "hepta/light/persistent": 1,
+          "hepta/light/reset": -1
+        },
+        "persistent_minus_reset/hepta/mpc": {
+          "hepta/mpc/persistent": 1,
+          "hepta/mpc/reset": -1
+        },
+        "persistent_minus_reset/hepta/ndu": {
+          "hepta/ndu/persistent": 1,
+          "hepta/ndu/reset": -1
+        },
+        "persistent_minus_reset/hepta/tuned_fixed": {
+          "hepta/tuned_fixed/persistent": 1,
+          "hepta/tuned_fixed/reset": -1
+        },
+        "persistent_minus_reset/hepta/voi": {
+          "hepta/voi/persistent": 1,
+          "hepta/voi/reset": -1
+        },
+        "persistent_minus_reset/ordinary/light": {
+          "ordinary/light/persistent": 1,
+          "ordinary/light/reset": -1
+        },
+        "persistent_minus_reset/ordinary/mpc": {
+          "ordinary/mpc/persistent": 1,
+          "ordinary/mpc/reset": -1
+        },
+        "persistent_minus_reset/ordinary/ndu": {
+          "ordinary/ndu/persistent": 1,
+          "ordinary/ndu/reset": -1
+        },
+        "persistent_minus_reset/ordinary/tuned_fixed": {
+          "ordinary/tuned_fixed/persistent": 1,
+          "ordinary/tuned_fixed/reset": -1
+        },
+        "persistent_minus_reset/ordinary/voi": {
+          "ordinary/voi/persistent": 1,
+          "ordinary/voi/reset": -1
+        },
+        "three_way_interaction": {
+          "hepta/light/persistent": -1,
+          "hepta/light/reset": 1,
+          "hepta/ndu/persistent": 1,
+          "hepta/ndu/reset": -1,
+          "ordinary/light/persistent": 1,
+          "ordinary/light/reset": -1,
+          "ordinary/ndu/persistent": -1,
+          "ordinary/ndu/reset": 1
+        }
+      },
+      "regimes": [
+        "frozen",
+        "joint"
+      ]
+    },
+    "C": {
+      "arms": [
+        "none",
+        "A_only",
+        "B_only",
+        "A_plus_B",
+        "shared_base_then_combine"
+      ],
+      "interaction": {
+        "A_only": -1,
+        "A_plus_B": 1,
+        "B_only": -1,
+        "none": 1
+      },
+      "required": [
+        "complete compatible composition",
+        "original owner selection",
+        "different next task consumes full bundle",
+        "state transition receipt",
+        "model rollback",
+        "separate external effect recovery"
+      ],
+      "state_transitions": [
+        "reset",
+        "migrate"
+      ]
+    },
+    "D": {
+      "arms": [
+        "fixed_graph_adaptive_scheduler",
+        "dynamic_graph_same_scheduler"
+      ],
+      "required": [
+        "actual successor execution graph",
+        "actual message reachability",
+        "state ownership transition",
+        "next task trace",
+        "recovery",
+        "equal maximum capacity and useful routing opportunities"
+      ],
+      "required_operations": [
+        "split",
+        "merge",
+        "rewire"
+      ]
+    },
+    "E": {
+      "arms": [
+        "parent_improver",
+        "descendant_improver"
+      ],
+      "metrics": [
+        "valid/all_attempted",
+        "accepted/all_attempted",
+        "accepted/valid_resolved",
+        "net_quality_change",
+        "total_cost",
+        "rollback_rate",
+        "unseen_task_change"
+      ],
+      "required": [
+        "same starting target bundle",
+        "versioned improver itself",
+        "same full improvement budget",
+        "all attempted candidates",
+        "independent evaluation",
+        "unseen target tasks",
+        "descendant construction cost",
+        "rollback outcomes"
+      ]
+    }
+  },
+  "required_cost_stages": [
+    "preparation",
+    "collection",
+    "training",
+    "search",
+    "controller",
+    "messages",
+    "reencoding",
+    "graph_compile",
+    "evaluation",
+    "migration",
+    "recovery",
+    "io"
+  ],
+  "sample_unit": "independent complete training or improver replicate",
+  "schema": "hepta.cell-causal.protocol.v1",
+  "scientific_acceptance": "HOLD",
+  "source": {
+    "baseline_commit": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+    "commit": "1e9c2890fef92ea63dab472e1bdb0c444c9656b5",
+    "execution_claim": "Only the separately recorded source closure is executed; no full-tree validation claim.",
+    "publication_state": "native_Mac_gh_exact_objects_and_branch_readback_verified",
+    "tree": "20f0836afc9c790fee23ddd150817a6d11550598"
+  },
+  "statistics": {
+    "alpha": 0.05,
+    "confirmatory_use": false,
+    "future_confirmation": "freeze independent evaluator, new fits/groups, effect threshold, multiplicity and power before access",
+    "primary_outcome": "source-balanced paired quality and full resource cost",
+    "resampling": "crossed paired fit and source-group bootstrap; descriptive pilot only",
+    "within_fit_episodes_are_independent_fits": false
+  },
+  "task_unit": "registered source group; episodes nested within group",
+  "training_seeds": [
+    104729,
+    130363
+  ]
+}

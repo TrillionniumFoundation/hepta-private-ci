@@ -88,7 +88,8 @@ impl ExecProcessEvent {
     /// Sequence number used to order process-owned events.
     ///
     /// `Failed` is intentionally unsequenced because it is synthesized by the
-    /// client when the session or transport fails, not emitted by the process.
+    /// client or server when process observation or its transport fails. It is
+    /// not an assertion that the process terminated.
     pub(crate) fn seq(&self) -> Option<u64> {
         match self {
             ExecProcessEvent::Output(chunk) => Some(chunk.seq),
@@ -165,6 +166,17 @@ pub struct ExecProcessEventReceiver {
 }
 
 impl ExecProcessEventReceiver {
+    /// Uses an implementer's existing process event channel without adding a
+    /// producer or fabricating a lifecycle event. An empty replay is expected;
+    /// lag recovery continues through the same process's retained-output read.
+    pub fn from_receiver(live_rx: broadcast::Receiver<ExecProcessEvent>) -> Self {
+        Self {
+            replay: VecDeque::new(),
+            live_rx,
+            _keepalive: None,
+        }
+    }
+
     /// Returns a receiver that remains open without yielding events.
     pub fn empty() -> Self {
         let (live_tx, live_rx) = broadcast::channel(1);

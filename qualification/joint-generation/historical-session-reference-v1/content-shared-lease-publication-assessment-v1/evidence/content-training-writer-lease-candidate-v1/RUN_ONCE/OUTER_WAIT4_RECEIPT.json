@@ -1,0 +1,101 @@
+{
+  "accounting": "Linux wait4 supervisor includes reaped workers; do not add child CPU again. All worker imports, checkpoints, parsing, model inference, failed/cancelled work, byte encoding, artifact hashing/writes and supervisor final receipt tail inside measured subtree. No automatic retry. Logical known IO prefixes and complete retained inventory separate from raw kernel counters.",
+  "artifacts_before_outer_receipt": {
+    "CONTENDER_RESULT.json": {
+      "bytes": 571,
+      "sha256": "b41c5ded3ff8e35aad0f8a76a2239e4b96a77d03e838e91ee2c2c82b6df451cb"
+    },
+    "HOLDER_READY.json": {
+      "bytes": 12255,
+      "sha256": "a3f58f17b16bcda87ab8bcc747dc49e284ca78c60dee20f55cf028677bf6ac60"
+    },
+    "RECOVERED_RESULT.json": {
+      "bytes": 7944,
+      "sha256": "de92bb3ea17c3cb7429ac60552fa60c413967882f4be94e01a8d3bbaef015579"
+    },
+    "RESULT.json": {
+      "bytes": 1983,
+      "sha256": "3ad72139b1007e484b7b9af959a72492bd01df9d96ab23b637f674dade989975"
+    },
+    "WAIT4_RECEIPT.json": {
+      "bytes": 4102,
+      "sha256": "bad0e875b48e63c25a68dae04972104f49fa2391bb0590a0befc4782ce80d624"
+    },
+    "contender.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "contender.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "holder.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "holder.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recover.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recover.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "session-root/.hepta-writer.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "session-root/recovered-copy.json": {
+      "bytes": 5899,
+      "sha256": "aa86e020da83e59fd4c2b458bdfd241eb635d2337f460b1684668a6a3fb60e91"
+    },
+    "session-root/session-first.json": {
+      "bytes": 5899,
+      "sha256": "aa86e020da83e59fd4c2b458bdfd241eb635d2337f460b1684668a6a3fb60e91"
+    },
+    "supervisor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "supervisor.stdout": {
+      "bytes": 3386,
+      "sha256": "eb5b18e66da12551cd2391ae3357fae652c1d0eba748a3c3a7204b33c3458ea7"
+    }
+  },
+  "complete_wait": true,
+  "exit_code": 0,
+  "final_retained_bytes": 46093,
+  "inner_children_CPU_seconds": 0.41528899999999996,
+  "kernel_IO_scope": "raw kernel resource counters including reaped child, no conversion to bytes, cached reads/writes need not equal block IO",
+  "kernel_subtree_IO_counters": {
+    "ru_inblock": 0,
+    "ru_nivcsw": 23,
+    "ru_nvcsw": 55,
+    "ru_oublock": 136
+  },
+  "known_CPU_lower_bound_seconds": 0.49415941799999996,
+  "largest_reaped_process_RSS_kib": 27672,
+  "limits": {
+    "method_actual_CPU_cap_seconds": 17,
+    "number_of_children": 3,
+    "outer_scope_excluded": "measurement launcher, source/review and prior run costs additional nonzero",
+    "retained_bytes": 33554432,
+    "sum_OS_CPU_seconds": 20,
+    "supervisor_OS_CPU_seconds": 5,
+    "worker_OS_CPU_seconds": 5,
+    "worker_admission_CPU_seconds": 4
+  },
+  "method_terminal_budget_pass": true,
+  "outer_launcher_CPU_observed_prefix_seconds": 0.030114418,
+  "outer_launcher_unobserved_final_tail": "unknown_not_zero; serialization/write/terminal print and teardown after this sample",
+  "retained_bytes_before_final_receipt": 42039,
+  "retry": false,
+  "source_freeze_sha256": "1d7821a91d10d8a95d8c4fcfcb262aed96fca4da1eacfb921d8a20ffa5135986",
+  "supervisor_complete_CPU_by_difference_seconds": 0.04875600000000002,
+  "wall_seconds": 0.47496381899691187,
+  "whole_method_subtree_CPU_seconds": 0.464045
+}

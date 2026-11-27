@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.final-source-projection.v1",
+  "parent": "7857c9413bd1ee5ca7302499d34b01fa732b1852",
+  "rust_active_paths_changed": 0,
+  "callers_changed": false,
+  "original_contract_bytes_changed": false,
+  "strict_shared_verifier_changed": false,
+  "projection": "One exact policy map-length guard and its original false-substitution mutation follow the reviewed UFCS lint form. Counts, target path, function and original false substitution are asserted.",
+  "original_policy_tests": {
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0
+  },
+  "first_full_source_attempt": {
+    "passed": 1161,
+    "setUpClass_errors": 4,
+    "cause": "Four original contract files absent from local sparse hydration. Original Git objects restored exactly; full source rerun remains required.",
+    "qualified": false
+  },
+  "full_source_rerun": "pending",
+  "protected_branch_names": 63,
+  "live_ref_writes": [],
+  "logs": [
+    {
+      "file": "policy-original-six-tests.log.gz",
+      "original_bytes": 1200,
+      "original_sha256": "7277dffb8e0bc819dbfa2524f554ce0b74950e692321ce8da96838e20979a119"
+    },
+    {
+      "file": "original-missing-contracts-failure.log.gz",
+      "original_bytes": 256081,
+      "original_sha256": "e140822dfe1fc038281b7656f879c8cbb3472f655361ea104e037a1ee50322a8"
+    }
+  ]
+}

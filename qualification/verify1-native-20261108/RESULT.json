@@ -1,0 +1,50 @@
+{
+  "agentd_targets": {
+    "failed": 0,
+    "passed": 4,
+    "skipped": 0,
+    "targets": [
+      "kernel_evidence_product",
+      "verify1_kernel_evidence_product"
+    ]
+  },
+  "bazel_executed": false,
+  "current_trust_revocation_exercised": true,
+  "domain": "sqlite_two_field_engineering_fixture_v1",
+  "evidence_crate": {
+    "failed": 0,
+    "passed": 131,
+    "skip_reason": "existing ignored subprocess crash fixture",
+    "skipped": 1,
+    "skipped_test": "authbus_outbox_tests::crash_delivery_child"
+  },
+  "foreign_proved_claim_cannot_bypass_actual_checker": true,
+  "format_and_fix": {
+    "clippy_source_bytes_unchanged": true,
+    "remaining_warnings": "two existing third_party/i18n-config lifetime warnings",
+    "status": "PASSED",
+    "tests_rerun_after_final_fix_or_fmt": false
+  },
+  "model_inference": false,
+  "new_effect_authority": false,
+  "platforms_executed": [
+    "Linux native x86_64"
+  ],
+  "production_adoption": false,
+  "production_caller_registered": false,
+  "property": "fixture_prefix_goal_and_owner_readback_at_snapshot",
+  "python_to_rust_interop": {
+    "accepted_rows": 0,
+    "cases": 6,
+    "native_checks": 7,
+    "physical_effect_operations": 18,
+    "source_unchanged": true
+  },
+  "qualification_scope": "native engineering fixture integration",
+  "real_agentd_signing_append_query_verification": true,
+  "replay_expiry_tamper_negative_cases_exercised": true,
+  "schema_version": 1,
+  "statistical_guarantee": null,
+  "status": "PASSED",
+  "whole_workspace_tested": false
+}

@@ -1,0 +1,253 @@
+name: runtime.codex convergence bootstrap
+
+on:
+  push:
+    branches:
+      - review/runtime-codex-convergence-20260927
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-convergence-bootstrap
+  cancel-in-progress: true
+
+jobs:
+  apply-and-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact bootstrap candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure repository CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential libcap-dev pkg-config
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Resolve verified sandboxed V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: aarch64-unknown-linux-gnu
+
+      - name: Apply closed-world runtime.codex convergence patch
+        id: apply
+        shell: bash
+        run: |
+          set +e
+          {
+            set -euo pipefail
+            python3 -m py_compile scripts/runtime_codex_convergence_preflight.py
+            python3 scripts/runtime_codex_convergence_preflight.py
+            test ! -e scripts/runtime_codex_convergence_preflight.py
+            python3 -m py_compile scripts/runtime_codex_convergence_preflight_cleanup.py
+            python3 scripts/runtime_codex_convergence_preflight_cleanup.py
+            test ! -e scripts/runtime_codex_convergence_preflight_cleanup.py
+            python3 -m py_compile scripts/runtime_codex_convergence.py
+            python3 -m py_compile scripts/runtime_codex_convergence_fix.py
+            python3 -m py_compile scripts/runtime_codex_quarantine_wire_fix.py
+            python3 scripts/runtime_codex_convergence.py
+            test ! -e scripts/runtime_codex_convergence.py
+            test ! -e .github/workflows/runtime-codex-convergence-bootstrap.yml
+            python3 scripts/runtime_codex_convergence_fix.py
+            test ! -e scripts/runtime_codex_convergence_fix.py
+            python3 scripts/runtime_codex_quarantine_wire_fix.py
+            test ! -e scripts/runtime_codex_quarantine_wire_fix.py
+            python3 -c 'from pathlib import Path; p=Path("docs/modules/runtime.codex/TECHNICAL.md"); p.write_text(p.read_text(encoding="utf-8").rstrip()+"\n", encoding="utf-8")'
+            git diff --check
+          } >"$RUNNER_TEMP/runtime-codex-patch.log" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/runtime-codex-patch.log"
+          exit "$status"
+
+      - name: Publish exact patch failure diagnostic
+        if: failure() && steps.apply.outcome == 'failure'
+        shell: bash
+        env:
+          TARGET_BRANCH: review/runtime-codex-convergence-20260927
+        run: |
+          set -euo pipefail
+          git reset --hard HEAD
+          cp "$RUNNER_TEMP/runtime-codex-patch.log" runtime_codex_patch_failure.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add runtime_codex_patch_failure.txt
+          git commit -m "runtime.codex: retain bootstrap patch failure"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Format owned Rust packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agent-protocol \
+            --package codex-hepta-agentd \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host \
+            --package codex-hepta-codex-adapter
+          git diff --check
+
+      - name: Compile runtime.codex owners and reverse consumers
+        id: compile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set +e
+          cargo check --locked --all-targets \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-codex-adapter \
+            >"$RUNNER_TEMP/runtime-codex-compile.log" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/runtime-codex-compile.log"
+          exit "$status"
+
+      - name: Publish exact compile failure diagnostic
+        if: failure() && steps.compile.outcome == 'failure'
+        shell: bash
+        env:
+          TARGET_BRANCH: review/runtime-codex-convergence-20260927
+        run: |
+          set -euo pipefail
+          git reset --hard HEAD
+          python3 - "$RUNNER_TEMP/runtime-codex-compile.log" <<'PY'
+          from pathlib import Path
+          import sys
+
+          source = Path(sys.argv[1])
+          lines = source.read_text(encoding="utf-8", errors="replace").splitlines()
+          selected: set[int] = set(range(max(0, len(lines) - 400), len(lines)))
+          for index, line in enumerate(lines):
+              lowered = line.lower()
+              if "error[" in lowered or "error:" in lowered or "could not compile" in lowered:
+                  selected.update(range(max(0, index - 12), min(len(lines), index + 36)))
+          output = [
+              "runtime.codex exact compile diagnostic",
+              "source branch: review/runtime-codex-convergence-20260927",
+              "",
+          ]
+          previous = None
+          for index in sorted(selected):
+              if previous is not None and index > previous + 1:
+                  output.append("... omitted ...")
+              output.append(lines[index])
+              previous = index
+          Path("runtime_codex_compile_failure.txt").write_text(
+              "\n".join(output).rstrip() + "\n", encoding="utf-8"
+          )
+          PY
+          rm -f runtime_codex_patch_failure.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A runtime_codex_compile_failure.txt runtime_codex_patch_failure.txt
+          git commit -m "runtime.codex: retain bootstrap compile failure"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Run focused owner and state-machine tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-codex-adapter \
+            --lib -- --test-threads=1
+
+      - name: Run runtime.codex product E2E
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd \
+            --test runtime_codex_product_e2e -- --test-threads=1
+
+      - name: Measure repository product baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-runtime-codex-benchmark.py \
+            --iterations 3 \
+            --output .hepta-evidence/runtime-codex/performance.json \
+            -- bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e -- --test-threads=1'
+
+      - name: Run strict owner lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --all-targets --no-deps \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-codex-adapter \
+            -- -D warnings
+
+      - name: Verify generated source and candidate receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agent-protocol \
+            --package codex-hepta-agentd \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host \
+            --package codex-hepta-codex-adapter -- --check
+          git diff --check
+          cp .hepta-evidence/runtime-codex/performance.json "$RUNNER_TEMP/runtime-codex-performance.json"
+          rm -rf .hepta-evidence
+          git add -A
+          git diff --cached --check
+          CANDIDATE_TREE="$(git write-tree)"
+          CANDIDATE_COMMIT="$(printf '%s\n' 'runtime.codex verified bootstrap candidate' | \
+            git -c user.name=runtime-codex-bootstrap \
+              -c user.email=runtime-codex-bootstrap@users.noreply.github.com \
+              commit-tree "${CANDIDATE_TREE}" -p "$(git rev-parse HEAD)")"
+          mkdir -p .hepta-evidence/runtime-codex
+          cp "$RUNNER_TEMP/runtime-codex-performance.json" \
+            .hepta-evidence/runtime-codex/performance.json
+          python3 -m py_compile scripts/hepta-runtime-codex-evidence.py
+          python3 scripts/hepta-runtime-codex-evidence.py emit \
+            --mode bootstrap \
+            --source-sha "$(git rev-parse HEAD)" \
+            --candidate-sha "${CANDIDATE_COMMIT}" \
+            --candidate-tree "${CANDIDATE_TREE}" \
+            --output .hepta-evidence/runtime-codex/bootstrap.json
+          python3 scripts/hepta-runtime-codex-evidence.py verify \
+            .hepta-evidence/runtime-codex/bootstrap.json
+          rm -rf .hepta-evidence
+          test "$(git write-tree)" = "${CANDIDATE_TREE}"
+
+      - name: Commit verified implementation
+        shell: bash
+        env:
+          TARGET_BRANCH: review/runtime-codex-convergence-20260927
+        run: |
+          set -euo pipefail
+          test -n "$(git status --porcelain)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "runtime.codex: close correctness and qualification gaps"
+          git push origin "HEAD:${TARGET_BRANCH}"

@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.memory.source-owner-wal-review-archive.v1",
+  "compiled_source_head": "3a1431c5879d084bf49b9df67f9792af8f3acbc7",
+  "code_files_verified_against_native_build002": 15,
+  "archive": "source-owner-wal-crash-readonly-review.tar.xz",
+  "bytes": 126292,
+  "sha256": "a07e0236372041f95402c6e0586a2aee53235024c1eb664dc935b7621dc012e5",
+  "members": 25,
+  "all_member_bytes_verified": true,
+  "review_sha256": "8f9588f3db23076377330b21e861fa33823fc0aa1b6da697ef1f8a5bd70fd599",
+  "readme_sha256": "44f0e8acc2e582d2304c82116a15879a75f5235fe5c5ff224c203fc569c834e4",
+  "verdict": "first-generation bootstrap WAL permission risk remains; recovered generation has0600 creation protection; positive cross-process writable crash replay not qualified",
+  "new_SQLite_connections": 0,
+  "new_tests_or_builds": 0,
+  "new_models": 0,
+  "original_source_or_run_writes": 0,
+  "remote_writes": 0,
+  "independent_final_ci_unaffected": true
+}

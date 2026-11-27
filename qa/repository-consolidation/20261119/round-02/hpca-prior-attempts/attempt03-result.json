@@ -1,0 +1,161 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "qualification.hcsn_boundary_audit.test_spatial_generator",
+        "qualification.hcsn_boundary_audit.test_refractory_transport",
+        "qualification.hcsn_boundary_audit.test_phase_delay_oracle",
+        "-v"
+      ],
+      "complete_unskipped_coverage": true,
+      "name": "hcsn-spatial-phase",
+      "returncode": 0,
+      "status": "completed",
+      "tests": 19,
+      "wall_seconds": 1.4407253760000458
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/hcsn_differentiable/c2_successor_v1",
+        "-p",
+        "test_terminal*.py",
+        "-v"
+      ],
+      "complete_unskipped_coverage": true,
+      "name": "c2-terminal",
+      "returncode": 0,
+      "status": "completed",
+      "tests": 51,
+      "wall_seconds": 1.4804480229977344
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/hpca-neuroscience-20261110",
+        "-p",
+        "test_chat_evidence_audit.py",
+        "-v"
+      ],
+      "complete_unskipped_coverage": false,
+      "name": "hpca-normal",
+      "returncode": 1,
+      "status": "completed",
+      "tests": 18,
+      "wall_seconds": 0.6259682899981271
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-O",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/hpca-neuroscience-20261110",
+        "-p",
+        "test_chat_evidence_audit.py",
+        "-v"
+      ],
+      "complete_unskipped_coverage": false,
+      "name": "hpca-optimized",
+      "returncode": 1,
+      "status": "completed",
+      "tests": 18,
+      "wall_seconds": 1.232708357001684
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_boundary_audit.probe_spatial_generator",
+        "--output",
+        "/workspace/scratch/2f490fb85225/hpca-joint-windows-union-20261119-attempt03/spatial.json"
+      ],
+      "complete_unskipped_coverage": true,
+      "name": "spatial-probe",
+      "returncode": 0,
+      "status": "completed",
+      "tests": null,
+      "wall_seconds": 0.7370457460019679
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_boundary_audit.probe_refractory_transport",
+        "/workspace/scratch/2f490fb85225/hpca-joint-windows-union-20261119-attempt03/phase.json"
+      ],
+      "complete_unskipped_coverage": true,
+      "name": "phase-probe",
+      "returncode": 0,
+      "status": "completed",
+      "tests": null,
+      "wall_seconds": 0.36814757799947984
+    }
+  ],
+  "full_hcsn_numerical_qualification": false,
+  "historical_manifest_sha256": "ec51f35c52eb615ba00f5b43d8f4b4c6a99209c14470bbeb35a998992e5b53e8",
+  "hpca_independent_future": false,
+  "independent_complete_c2_replay": false,
+  "manifest_sha256": "b0f30a1c50801d56603d0fa48dd990f5633ee1febf9bf76c7e319b74faf4ec6f",
+  "previous_results_reused": false,
+  "production_qualified": false,
+  "runner_sha256": "b89135bf5a7383e5d2caa966abab43b5cfd32e8bf25a99802b143d204c79e259",
+  "runtime": "3.12.14",
+  "schema": "hcsn-hpca-joint-check-result-v2",
+  "source_assembly_only": true,
+  "source_sha256": {
+    "qualification/hcsn_boundary_audit/probe_refractory_transport.py": "06f811e0d2f012b67c6a40488b4d34a8425e2583da13276d819ddc5263d8f2be",
+    "qualification/hcsn_boundary_audit/probe_spatial_generator.py": "607f7ccc351f5460e3ad3af6c07cdac4311e96394d53a18711e1890975de0068",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+    "qualification/hcsn_boundary_audit/test_phase_delay_oracle.py": "86c353af842e19a6f7b1f6a15e00b99a2ac5b893e084dca21441a44baf40886b",
+    "qualification/hcsn_boundary_audit/test_refractory_transport.py": "2ddb92627dcbe80c2bdcef7f14a17e2f852b6b7031f9f752dc0acf234a9543dc",
+    "qualification/hcsn_boundary_audit/test_spatial_generator.py": "611533442541d3b07d991ff0117f9fa38961610fe6e453590bb1d81907ee9381",
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_boundary.py": "177a23a3d0502a79912efdd2a14a365bc716961698a6949bb45d380ba147e6dd",
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_controller.py": "2b833933013374958ed3cb99ba67818d9754de7f32fbe7edff4866c93278b48d",
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_io.py": "db799aea7014bc60ad00dd7032f8753f356e3460743611d6baf243adfb840378",
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_program_freeze.py": "9a315075b11780c153d8238f83e052072198185bb2fb30127841051ab80aea24",
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_recording.py": "467e25570d0d7adf4f42b025d9a5a93334371e7416237336ceaa116cf1b4bbe0",
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_runner.py": "0f3eca68e459c485fb429522de47a228a38fe940fe5bf2ac8946e17c3fe2e73b",
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_stopping.py": "24c476e2a4b51cab82949ed37de676e2d3b7b2140431c83aebbee66658b20e73",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_controller_strict_terminal_json.py": "c8535af9ed95c0dbc7554ccbfbc341a20e048d923331f88b24c5f13e055b03d8",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_execution_decision_freeze.py": "5cbd249978996ed2d7e1a7acb23736aa662708879a0a0ae44d9eb76096d0ae3a",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py": "7256b9d1750bbc7902a566ea1db54dd3bf8a146eb34e81f91625db4fcd2f6150",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py": "099ef9db99e89e60f152d8cff09e946e45ad906a05e7c09a4be32bcb578b73e1",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_program_source_closure.py": "4683c560762cce92428f08412e7a4a4bc9e81f63b3ff8757d2c26fec6d6aae6c",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_source_freeze_and_fifo.py": "aaf10e8a5d018c5f91c18cdcf18cba5ae4bbae23aac450cbab9e164f9cac7353",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_successor_terminal_strict.py": "f799c647dde867a98a506b0001dcfcafefb21ea2895f0b871dc15d1c95526304",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_successor_wiring.py": "61b294e7979c466bd6faeaf1e489e4c4540c817bbe64ac003b2bf1fd1097269b",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py": "a0d7c0744bfa249f5a5058105213e8fc848cda36bcd1a3505342e4340cf0ea2a",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_result_json_admission.py": "d8ebf7fae4b1c2aa06056bd93e5076620e482dc09f9a0fa40b84638b0ddc1420",
+    "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_stopping.py": "bee950dfc8e1d98829fab62cab89e496aa58c2470f2c5d9b2e5d2dbb3057bdc5",
+    "qualification/hpca-neuroscience-20261110/chat_evidence_audit.py": "be749422d54aae0c6672dc15084ff54805bdabf6448b2e6cc55e272a2c24b870",
+    "qualification/hpca-neuroscience-20261110/chat_wrapper_probe.py": "ddd53e863301fdbc58600f7f90c12e153f2217d3fa527be933fc4130607e4d28",
+    "qualification/hpca-neuroscience-20261110/freegen_contract.py": "268deacf3fa1a01fe6143f0af38fc48fa6845321100ccadaa59c3aa515d5c4f8",
+    "qualification/hpca-neuroscience-20261110/native_lora_ood_probe.py": "b9f61e8133f67af2d126c3730588c1386efcfb2788259f618e092081c2454af8",
+    "qualification/hpca-neuroscience-20261110/real_freegen.py": "230d94cd184f6127d78d5c5671d8b7095307c61b366eb873a73fcc34c4c1056d",
+    "qualification/hpca-neuroscience-20261110/test_chat_evidence_audit.py": "77bd7a10e36c03e84fbe53a2d2f63a795c69f84e24bef7aae219a74169145612",
+    "qualification/hpca-neuroscience-20261110/test_chat_wrapper_probe.py": "a48f5d78ee61889885435f617be8e0af2e0eac15d18d135eb61b100429177d89"
+  },
+  "sources_unchanged": true,
+  "status": "HOLD"
+}

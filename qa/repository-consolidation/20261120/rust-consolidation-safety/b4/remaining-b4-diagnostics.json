@@ -1,0 +1,387 @@
+{
+  "activity": {
+    "new_test_runs": 0,
+    "ref_writes": 0,
+    "scope": "Read-only log/source triage; one create-only diagnostic artifact.",
+    "source_edits": 0
+  },
+  "canonical_manifest": {
+    "bytes": 3467818,
+    "path": "CALLERS.toml",
+    "sha256": "860b25f898ef8784b1e13032dd1cce22111807bba746284a6f4558f0b01dcc48",
+    "source_commit": "0cee57ca617e0324e2df8e9447a2c075a6c76952"
+  },
+  "existing_owner_fix_coverage": {
+    "reason": "No immutable 242/272-file fix manifest or postimages were available to this audit. Earlier recorded 242-file scope was 240 Rust paths plus Cargo.toml/Cargo.lock, but that record is not treated as verified postimage coverage. The three manifest-vs-test tuple failures need corresponding data/test evidence; Rust compile/lint fixes alone do not establish those assertions are resolved.",
+    "status": "UNVERIFIED"
+  },
+  "five_cardinality_modules": {
+    "excluded_error_headers": 1,
+    "excluded_failure_headers": 74,
+    "modules": [
+      "test_original_material_owner_source_closure",
+      "test_original_material_evidence_source_closure",
+      "test_original_material_command_source_closure",
+      "test_original_execution_owner_source_closure",
+      "test_positive_circuit_next_use_source_closure"
+    ]
+  },
+  "job": {
+    "checkout_commit": "dc7f7d4492966dacc59205a048f634badbd28c0f",
+    "checkout_ref": "refs/remotes/pull/6293/merge",
+    "decoded_log_characters": 1548340,
+    "decoded_log_lines": 21388,
+    "id": 135975707018,
+    "name": "repo-checks / build-test",
+    "retrieval": "Complete decoded GitHub Actions job log fetched through github_fetch_workflow_job_logs; all final unittest FAIL/ERROR headers enumerated.",
+    "run_id": 44641448936,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44641448936/job/135975707018"
+  },
+  "original_suite": {
+    "command": "python3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py'",
+    "enumerated_diagnostic_headers": 89,
+    "errors": 6,
+    "failures": 83,
+    "seconds": 292.258,
+    "tests_run": 1343
+  },
+  "preceding_source_verifier": {
+    "meaning": "Existing full caller scanner passed before B4; this does not waive the B4 mutation or owner-edge failures.",
+    "rust_files_scanned": 9128,
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "residual": {
+    "diagnostics": [
+      {
+        "first_cause": "ValueError: substring not found",
+        "kind": "ERROR",
+        "original_log_line": 20152,
+        "subtest": null,
+        "test_id": "test_native_memory_authority_source_closure.NativeMemoryAuthoritySourceClosureTests.test_receipt_cannot_be_published_before_signature_verification"
+      },
+      {
+        "first_cause": "ValueError: substring not found",
+        "kind": "ERROR",
+        "original_log_line": 20168,
+        "subtest": "(path='codex-rs/hepta-agentd/src/runtime.rs', function='run_with_shutdown', marker='config.take_original_q24_outcome_control()')",
+        "test_id": "test_q24_original_outcome_control_source_closure.OriginalQ24OutcomeControlSourceTests.test_runtime_moves_original_custody_after_real_circuit_attachment"
+      },
+      {
+        "first_cause": "ValueError: substring not found",
+        "kind": "ERROR",
+        "original_log_line": 20181,
+        "subtest": "(path='codex-rs/hepta-agentd/src/runtime.rs', function='run_with_shutdown', marker='.circuit_task\\n            .set(bootstrap.handle())')",
+        "test_id": "test_q24_original_outcome_control_source_closure.OriginalQ24OutcomeControlSourceTests.test_runtime_moves_original_custody_after_real_circuit_attachment"
+      },
+      {
+        "first_cause": "ValueError: substring not found",
+        "kind": "ERROR",
+        "original_log_line": 20194,
+        "subtest": "(path='codex-rs/hepta-agentd/src/runtime.rs', function='run_with_shutdown', marker='.circuit_task_invocation\\n            .set(invocation)')",
+        "test_id": "test_q24_original_outcome_control_source_closure.OriginalQ24OutcomeControlSourceTests.test_runtime_moves_original_custody_after_real_circuit_attachment"
+      },
+      {
+        "first_cause": "ValueError: substring not found",
+        "kind": "ERROR",
+        "original_log_line": 20207,
+        "subtest": "(path='codex-rs/hepta-agentd/src/runtime.rs', function='run_with_shutdown', marker='AgentdState::attach_original_q24_outcome_control(&state, producer)?;')",
+        "test_id": "test_q24_original_outcome_control_source_closure.OriginalQ24OutcomeControlSourceTests.test_runtime_moves_original_custody_after_real_circuit_attachment"
+      },
+      {
+        "first_cause": "AssertionError: Tuples differ: ('cod[18 chars]/src/learning_iteration_evaluation_evidence.rs[194 chars].rs') != ('cod[18 chars]/src/authority_host_q24_evaluation_execute.rs'[194 chars].rs')",
+        "kind": "FAIL",
+        "original_log_line": 20220,
+        "subtest": "(boundary='cell_learning_evaluation_receipt_prepare')",
+        "test_id": "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_product_callers_are_exact_without_granting_stage_authority"
+      },
+      {
+        "first_cause": "AssertionError: 0 != 1",
+        "kind": "FAIL",
+        "original_log_line": 20235,
+        "subtest": null,
+        "test_id": "test_lint_preserved_owner_guards_source_closure.LintPreservedOwnerGuardsSourceClosureTests.test_privileged_operation_keeps_explicit_call_and_exact_typed_callers"
+      },
+      {
+        "first_cause": "AssertionError: 0 != 1 : let receipt = self",
+        "kind": "FAIL",
+        "original_log_line": 20244,
+        "subtest": "(path='codex-rs/hepta-bao-adapter/src/final_use_host.rs', replacement='')",
+        "test_id": "test_native_memory_authority_source_closure.NativeMemoryAuthoritySourceClosureTests.test_feed_verification_must_use_original_authority_input_and_time"
+      },
+      {
+        "first_cause": "AssertionError: 0 != 1 : let receipt = self",
+        "kind": "FAIL",
+        "original_log_line": 20259,
+        "subtest": "(path='codex-rs/hepta-bao-adapter/src/final_use_host.rs', replacement='if false {\\nlet receipt = self\\n            .revocation_verifier\\n            .apply(&self.authority, update, now_unix_ms)\\n            .map_err(BaoFinalUseHostError::Control)?;\\n}')",
+        "test_id": "test_native_memory_authority_source_closure.NativeMemoryAuthoritySourceClosureTests.test_feed_verification_must_use_original_authority_input_and_time"
+      },
+      {
+        "first_cause": "AssertionError: 0 != 1 : let receipt = self",
+        "kind": "FAIL",
+        "original_log_line": 20274,
+        "subtest": "(path='codex-rs/hepta-bao-adapter/src/final_use_host.rs', replacement='let receipt = self\\n            .revocation_verifier\\n            .apply(&other_authority, update, now_unix_ms)\\n            .map_err(BaoFinalUseHostError::Control)?;')",
+        "test_id": "test_native_memory_authority_source_closure.NativeMemoryAuthoritySourceClosureTests.test_feed_verification_must_use_original_authority_input_and_time"
+      },
+      {
+        "first_cause": "AssertionError: 0 != 1 : let receipt = self",
+        "kind": "FAIL",
+        "original_log_line": 20289,
+        "subtest": "(path='codex-rs/hepta-bao-adapter/src/final_use_host.rs', replacement='let receipt = self\\n            .revocation_verifier\\n            .apply(&self.authority, update, now_unix_ms)\\n            .map_err(BaoFinalUseHostError::Control).ok();')",
+        "test_id": "test_native_memory_authority_source_closure.NativeMemoryAuthoritySourceClosureTests.test_feed_verification_must_use_original_authority_input_and_time"
+      },
+      {
+        "first_cause": "AssertionError: 0 != 1 : *fresh_until = receipt.valid_until_unix_ms();",
+        "kind": "FAIL",
+        "original_log_line": 20304,
+        "subtest": "(path='codex-rs/hepta-bao-adapter/src/final_use_host.rs', replacement='*fresh_until = u64::MAX;')",
+        "test_id": "test_native_memory_authority_source_closure.NativeMemoryAuthoritySourceClosureTests.test_receipt_must_bind_the_verified_update"
+      },
+      {
+        "first_cause": "AssertionError: Tuples differ: ('cod[26 chars]cuit_original_evaluation_provider.rs', 'codex-[53 chars].rs') != ('cod[26 chars]cuit_evaluation_cohort_custody.rs', 'codex-rs/[53 chars].rs')",
+        "kind": "FAIL",
+        "original_log_line": 20316,
+        "subtest": "(boundary='learning_original_evaluation_cohort_readback_current')",
+        "test_id": "test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_exact_cohort_capture_provider_and_original_policy_edges"
+      },
+      {
+        "first_cause": "AssertionError: Tuples differ: ('cod[285 chars]owner.rs', 'codex-rs/hepta-learning-artifacts/src/selected.rs') != ('cod[285 chars]owner.rs')",
+        "kind": "FAIL",
+        "original_log_line": 21301,
+        "subtest": "(boundary='learning_artifact_verified_current_view')",
+        "test_id": "test_root_publication_existing_owner_source_closure.RootPublicationExistingOwnerSourceClosureTests.test_original_owner_edges_keep_exact_registered_callers"
+      }
+    ],
+    "error_headers": 5,
+    "failure_headers": 9,
+    "groups": [
+      {
+        "actual_source": {
+          "description": "apply_revocation_update locks revocation_lease: Mutex<Option<FinalUseRevocationReceipt>>, matches ClassicalV1 -> apply and MlDsa65V2 -> apply_or_confirm_current, then retains a receipt clone unless an existing same-head lease lasts longer.",
+          "lines": [
+            65,
+            70,
+            187,
+            201,
+            203,
+            207,
+            213,
+            219
+          ],
+          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+        },
+        "coverage": "UNVERIFIED: no immutable other-owner postimages were supplied. This diagnosis does not authorize BAO source or guard changes.",
+        "errors": 1,
+        "expected_apply": "let receipt = self\n            .revocation_verifier\n            .apply(&self.authority, update, now_unix_ms)\n            .map_err(BaoFinalUseHostError::Control)?;",
+        "expected_receipt": "*fresh_until = receipt.valid_until_unix_ms();",
+        "failures": 5,
+        "first_cause": "Four failure records stop at source.count(BAO_APPLY)==1; one fails at source.count(BAO_RECEIPT)==1. The error is source.index(BAO_APPLY). No mutation rejection is reached for these BAO cases.",
+        "module": "test_native_memory_authority_source_closure",
+        "test_methods": [
+          "test_feed_verification_must_use_original_authority_input_and_time",
+          "test_receipt_must_bind_the_verified_update",
+          "test_receipt_cannot_be_published_before_signature_verification"
+        ]
+      },
+      {
+        "actual_source": {
+          "description": "run_with_shutdown is a short delegating wrapper. The four markers remain in run_composed_with_shutdown, including attachment after the circuit task and invocation.",
+          "implementation_line": 69,
+          "marker_lines": [
+            83,
+            232,
+            237,
+            245
+          ],
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "wrapper_line": 53
+        },
+        "coverage": "UNVERIFIED: initial reported Rust-only changes might affect source, but no immutable other-owner postimages establish a resolution.",
+        "errors": 4,
+        "failures": 0,
+        "first_cause": "The mutation helper searches inside fn run_with_shutdown and source.index(marker, start, end+1) fails for each of four markers.",
+        "markers": [
+          "config.take_original_q24_outcome_control()",
+          ".circuit_task\n            .set(bootstrap.handle())",
+          ".circuit_task_invocation\n            .set(invocation)",
+          "AgentdState::attach_original_q24_outcome_control(&state, producer)?;"
+        ],
+        "module": "test_q24_original_outcome_control_source_closure",
+        "test_methods": [
+          "test_runtime_moves_original_custody_after_real_circuit_attachment"
+        ]
+      },
+      {
+        "actual": ".map(crate::OriginalCellQ24TrainingSourceV1::begin_source_operation)",
+        "actual_source": {
+          "description": "The method reference is present beneath an expect(redundant_closure) annotation whose reason requires an explicit typed authority call.",
+          "line": 243,
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        },
+        "coverage": "UNVERIFIED: a source change restoring the expected explicit call could affect this failure, but the other owner's actual postimage was not inspected.",
+        "errors": 0,
+        "expected": ".map(|source| crate::OriginalCellQ24TrainingSourceV1::begin_source_operation(source))",
+        "failures": 1,
+        "first_cause": "After _verify_boundary returns, explicit closure count is 0 rather than 1; the later indirect-call mutation check is not reached.",
+        "module": "test_lint_preserved_owner_guards_source_closure",
+        "test_methods": [
+          "test_privileged_operation_keeps_explicit_call_and_exact_typed_callers"
+        ]
+      },
+      {
+        "actual_product_callers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_projection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_execute.rs"
+        ],
+        "additional_actual_callers": [],
+        "boundary": "cell_learning_evaluation_receipt_prepare",
+        "coverage": "UNVERIFIED. This assertion compares manifest data with the Python expectation before using Rust source. No C2D repair or approval replay was attempted.",
+        "errors": 0,
+        "expected_product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_execute.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_projection.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+        ],
+        "failures": 1,
+        "first_cause": "Exact tuple equality fails before boundary verification. The manifest and test contain the same four paths in different orders.",
+        "missing_actual_callers": [],
+        "module": "test_cell_learning_evaluation_source_closure",
+        "same_members_different_order": true,
+        "test_methods": [
+          "test_product_callers_are_exact_without_granting_stage_authority"
+        ]
+      },
+      {
+        "actual_product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs"
+        ],
+        "additional_actual_callers": [],
+        "boundary": "learning_original_evaluation_cohort_readback_current",
+        "coverage": "UNVERIFIED. This assertion compares manifest data with the Python expectation; no immutable other-owner manifest/test postimages establish a resolution.",
+        "errors": 0,
+        "expected_product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+          "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs"
+        ],
+        "failures": 1,
+        "first_cause": "Exact tuple equality fails before boundary verification; the same two registered paths appear in reverse order.",
+        "missing_actual_callers": [],
+        "module": "test_original_evaluation_provider_source_closure",
+        "same_members_different_order": true,
+        "test_methods": [
+          "test_exact_cohort_capture_provider_and_original_policy_edges"
+        ]
+      },
+      {
+        "actual_product_callers": [
+          "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+          "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs",
+          "codex-rs/hepta-agentd/src/cell_split_owner.rs",
+          "codex-rs/hepta-learning-artifacts/src/selected.rs"
+        ],
+        "actual_source": {
+          "description": "GuardedSelectedCandidateV1::with_current revalidates selection and directly calls self.candidate.with_current(current, consume). The scanner receipt includes this caller.",
+          "lines": [
+            43,
+            59,
+            62
+          ],
+          "path": "codex-rs/hepta-learning-artifacts/src/selected.rs"
+        },
+        "additional_actual_callers": [
+          "codex-rs/hepta-learning-artifacts/src/selected.rs"
+        ],
+        "boundary": "learning_artifact_verified_current_view",
+        "coverage": "UNVERIFIED. A source-only edit cannot by itself change this manifest-vs-test tuple equality. No caller allowlist or owner-edge change was attempted.",
+        "errors": 0,
+        "expected_product_callers": [
+          "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+          "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs",
+          "codex-rs/hepta-agentd/src/cell_split_owner.rs"
+        ],
+        "failures": 1,
+        "first_cause": "Exact tuple equality fails because the manifest contains a sixth registered caller, selected.rs, while the test expects five. This is a caller-set difference, not an order-only difference.",
+        "missing_actual_callers": [],
+        "module": "test_root_publication_existing_owner_source_closure",
+        "same_members_different_order": false,
+        "test_methods": [
+          "test_original_owner_edges_keep_exact_registered_callers"
+        ]
+      }
+    ]
+  },
+  "schema": "hepta.b4-residual-triage.v1",
+  "source_identity": {
+    "head_metadata_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/0cee57ca617e0324e2df8e9447a2c075a6c76952",
+    "merge_metadata_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/dc7f7d4492966dacc59205a048f634badbd28c0f",
+    "reviewed_head_sha": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+    "reviewed_head_tree": "71f75be2e2edf2d46504c2193710a97d5f5314d4",
+    "same_tree": true,
+    "tested_merge_parents": [
+      "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "0cee57ca617e0324e2df8e9447a2c075a6c76952"
+    ],
+    "tested_merge_sha": "dc7f7d4492966dacc59205a048f634badbd28c0f",
+    "tested_merge_tree": "71f75be2e2edf2d46504c2193710a97d5f5314d4"
+  },
+  "sources": [
+    {
+      "git_blob": "1343553438e40534ff19043cb219a9fbd17c8c1b",
+      "path": "qa/b4-no-bypass/test_native_memory_authority_source_closure.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0cee57ca617e0324e2df8e9447a2c075a6c76952/qa/b4-no-bypass/test_native_memory_authority_source_closure.py"
+    },
+    {
+      "git_blob": "0222c1bc76dfd550c5887b6ac47276f53488e7b3",
+      "path": "qa/b4-no-bypass/test_q24_original_outcome_control_source_closure.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0cee57ca617e0324e2df8e9447a2c075a6c76952/qa/b4-no-bypass/test_q24_original_outcome_control_source_closure.py"
+    },
+    {
+      "git_blob": "5b6d253f7718b8c9cab514e6095bc607f097f026",
+      "path": "qa/b4-no-bypass/test_lint_preserved_owner_guards_source_closure.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0cee57ca617e0324e2df8e9447a2c075a6c76952/qa/b4-no-bypass/test_lint_preserved_owner_guards_source_closure.py"
+    },
+    {
+      "git_blob": "1d802d0e44f2e003d4c3a48dcbf4bb638de43fe5",
+      "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0cee57ca617e0324e2df8e9447a2c075a6c76952/qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py"
+    },
+    {
+      "git_blob": "6291a0a7f6a9ebe5b80d0e3bb575cf3f1534118c",
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0cee57ca617e0324e2df8e9447a2c075a6c76952/qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py"
+    },
+    {
+      "git_blob": "1f9074e1f26f97df2f07a8093760ee36f59a36f9",
+      "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0cee57ca617e0324e2df8e9447a2c075a6c76952/qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py"
+    },
+    {
+      "git_blob": "a919d24d5c68c4e5db9b22a0633b77445939cce9",
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0cee57ca617e0324e2df8e9447a2c075a6c76952/codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+    },
+    {
+      "git_blob": "e9559e3e44c6d52085b6d0b66ee14a859ff8db7d",
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0cee57ca617e0324e2df8e9447a2c075a6c76952/codex-rs/hepta-agentd/src/runtime.rs"
+    },
+    {
+      "git_blob": "b15011edb7284772907d77290665347a8bfcfc1e",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0cee57ca617e0324e2df8e9447a2c075a6c76952/codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+    },
+    {
+      "git_blob": "d4aea8ec5bafc8aee7529c2d9be878d49f84246a",
+      "path": "codex-rs/hepta-learning-artifacts/src/selected.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0cee57ca617e0324e2df8e9447a2c075a6c76952/codex-rs/hepta-learning-artifacts/src/selected.rs"
+    }
+  ]
+}

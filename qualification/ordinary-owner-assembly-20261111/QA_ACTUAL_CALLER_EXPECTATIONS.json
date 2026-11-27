@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "kind": "fixed_715a_actual_caller_expectation_sync",
+  "base": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+  "scope": "Two QA expectation dictionaries only; preserve exact tuple equality, all deletion and unregistered-source mutants, checker, CALLERS registry, and production source.",
+  "parent_reported_failure": {
+    "qa_log_bytes": 48226,
+    "qa_log_sha256": "773e8ef15d729cebd65e3eb5ad7e84996e75feef49deb07b961ac286a502e97d",
+    "progress_sha256": "bd1f7d5fd80b8cfe1a8fb7fb0171bb80dc0709588172c14159a2d9f5b873794c",
+    "tests": 211,
+    "failures": 4,
+    "elapsed_seconds": 48.917,
+    "protected_passes": 356,
+    "raw_log_not_fetched_by_this_delta": true
+  },
+  "actual_caller_source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "blob": "2a802e52f81c6cbda3b36b93a7855a8dc4e96f9f",
+      "calls": [
+        "receive_root_learning_handoff",
+        "RootLearningHandoffV1::connect",
+        "AgentdConfig::with_root_learning_inputs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+      "blob": "ecba0a36c6f5e8741a7fb62aeae98dc38a8a9c65",
+      "calls": [
+        "OriginalCellQ24LearningStageOwnersV1::with_original_publication"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "operations": [
+        {
+          "old": "    \"root_learning_original_purpose_receive\": (LAUNCHER,),",
+          "new": "    \"root_learning_original_purpose_receive\": (\n        LAUNCHER, AGENT + \"production_launcher_late_writer.rs\",\n    ),",
+          "expected_count": 1
+        },
+        {
+          "old": "    \"root_learning_original_handoff_consume\": (LAUNCHER,),",
+          "new": "    \"root_learning_original_handoff_consume\": (\n        LAUNCHER, AGENT + \"production_launcher_late_writer.rs\",\n    ),",
+          "expected_count": 1
+        },
+        {
+          "old": "    \"root_learning_original_config_hold\": (LAUNCHER,),",
+          "new": "    \"root_learning_original_config_hold\": (\n        LAUNCHER, AGENT + \"production_launcher_late_writer.rs\",\n    ),",
+          "expected_count": 1
+        }
+      ],
+      "preimage": "0153b93c21edc31a44cca9581ddc96773ac0ecb1",
+      "preimage_sha256": "c012f74430e0e9c5e05e4717bb4ad590f0acd2f559027137db5eaace69209198",
+      "bytes": 18820,
+      "sha256": "52a25d3505b4926946f6cda8fac2ab7f93a8a555fceb404cd941accbc4ab1e55",
+      "tests_unchanged": 14,
+      "postimage": "943e58340c85c52841d3451c2c19d0e0b7c4fec3"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "operations": [
+        {
+          "old": "    \"q24_publication_original_lane\": (\n        AGENT + \"cell_q24_publication_driver.rs\",\n        AGENT + \"cell_q24_publication_current.rs\",\n        AGENT + \"cell_q24_publication_root_stage.rs\",\n    ),",
+          "new": "    \"q24_publication_original_lane\": (\n        AGENT + \"cell_q24_publication_driver.rs\",\n        AGENT + \"cell_q24_publication_current.rs\",\n        AGENT + \"cell_q24_publication_root_stage.rs\",\n        AGENT + \"cell_q24_publication_successor_current.rs\",\n    ),",
+          "expected_count": 1
+        }
+      ],
+      "preimage": "6804faa407e5b0db543901e3768d0c97e1cfab68",
+      "preimage_sha256": "d4fae538c5a98af3152e2b50fc9838bc0c11873db7b80b3bf9dfa8c20bf7d7ec",
+      "bytes": 4547,
+      "sha256": "6dc536c78a226a4baba0b48f96b348f1034402a61a3151b82613e769e5730355",
+      "tests_unchanged": 3,
+      "postimage": "77d75cddf264cceaa7374dbbaa7b3f7f91654e43"
+    }
+  ],
+  "validation": {
+    "unique_replacements_checked": true,
+    "all_test_class_bodies_byte_equal": true,
+    "existing_test_methods_unchanged": [
+      14,
+      3
+    ],
+    "new_test_methods": 0,
+    "checker_modified": false,
+    "registry_modified": false,
+    "production_modified": false,
+    "qa_executed": false,
+    "native_executed": false,
+    "ref_updated": false,
+    "qualification_pass": false
+  }
+}

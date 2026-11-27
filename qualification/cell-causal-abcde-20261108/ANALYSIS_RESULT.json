@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.causal-b.analysis-execution.v1",
+  "status": "DESCRIPTIVE_ONLY_HOLD",
+  "launch_spec_sha256": "77e4bb8f3dc7a9a3d09a05255c8028742d047e11ef64b9931070bf86eb17cd1a",
+  "original_evaluation_result": {
+    "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/EVALUATION_RESULT.json",
+    "sha256": "a85da401d28ea6a97ff63d5104ad522166a82203a97f058fcde63a5d8c6d5fd1",
+    "bytes": 1478
+  },
+  "outputs": {
+    "B_ANALYSIS.json": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/analysis-b-v1/B_ANALYSIS.json",
+      "sha256": "64886fec9deca29abe5b9cb52b383f8cee5dd073a76bf8d894580d9953bb3f70",
+      "bytes": 603081
+    },
+    "B_ANALYSIS.txt": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/analysis-b-v1/B_ANALYSIS.txt",
+      "sha256": "6a7538a6a9942c7e8e330e73b48d36c844f0d11683f0282c53fc8c8be41fb509",
+      "bytes": 3444
+    }
+  },
+  "compressed_report": {
+    "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/analysis-b-v1/B_ANALYSIS.json.gz",
+    "sha256": "7fb6658e4103684df38d2defb138dbb0e30778b91acdd3314b75d8aa0b2ff74a",
+    "bytes": 31528
+  },
+  "gates": {
+    "training_complete": true,
+    "constructor_initialization_complete": true,
+    "selected_profile_roster_complete": true,
+    "all_search_trials_complete": true,
+    "planned_training_jobs": 56,
+    "observed_training_jobs": 56,
+    "training_status_counts": {
+      "completed": 56
+    },
+    "planned_profiles": 80,
+    "selected_profiles": 80,
+    "planned_search_trials": 80,
+    "recorded_search_trials": 80,
+    "unavailable_training_candidates": 0,
+    "same_prefit_checkpoint_required": false,
+    "initialization_scope": "seeded constructor before mode-specific content pretraining",
+    "full_improvement_budget_complete": false
+  },
+  "original_terminal_status_counts": {
+    "Completed": 916,
+    "BudgetStop": 44
+  },
+  "analysis_terminal_status_counts": {
+    "Completed": 960
+  },
+  "analysis_wall_seconds": 3.443373486865312,
+  "analysis_cpu_seconds": 3.4353840530000004,
+  "energy_joules": null,
+  "provider_charges": null,
+  "original_rows_mutated": false,
+  "adoption_authorized": false
+}

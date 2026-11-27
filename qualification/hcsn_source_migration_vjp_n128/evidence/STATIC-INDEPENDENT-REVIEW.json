@@ -1,0 +1,136 @@
+{
+  "schema": "hcsn-post-failure-independent-static-review-v1",
+  "identity": "hcsn-original-visit897-source-migration-vjp-n128-stage1",
+  "reviewed_source_commit": "c06232839ce00b128bdeeff4b3cdcb0e5e13bdcd",
+  "inventory_commit": "75743e7ff99950a57e90308331d2fd5c26e2de06",
+  "source_inventory_sha256": "be07d138438b3da4616aafc57252276a9abe3e84233b7ec24ac380b407461fdf",
+  "checks": [
+    {
+      "name": "exact_identity",
+      "passed": true
+    },
+    {
+      "name": "one_unique_key",
+      "passed": true
+    },
+    {
+      "name": "exact_42F_2adjoint_0optimizer_budget",
+      "passed": true
+    },
+    {
+      "name": "N128_only",
+      "passed": true
+    },
+    {
+      "name": "fixed_T_002",
+      "passed": true
+    },
+    {
+      "name": "fixed_delay_02",
+      "passed": true
+    },
+    {
+      "name": "fixed_visit897",
+      "passed": true
+    },
+    {
+      "name": "one_law_only",
+      "passed": true
+    },
+    {
+      "name": "inventory_hashes_exact",
+      "passed": true
+    },
+    {
+      "name": "6223_selected_bytes",
+      "passed": true
+    },
+    {
+      "name": "6234_N128_metadata_bytes",
+      "passed": true
+    },
+    {
+      "name": "6234_N128_array_bytes",
+      "passed": true
+    },
+    {
+      "name": "migration_source_bytes",
+      "passed": true
+    },
+    {
+      "name": "no_Adam_constructor",
+      "passed": true
+    },
+    {
+      "name": "no_optimizer_step_call",
+      "passed": true
+    },
+    {
+      "name": "no_unbounded_child_process",
+      "passed": true
+    },
+    {
+      "name": "no_subprocess_run",
+      "passed": true
+    },
+    {
+      "name": "source_forward_cap_literal",
+      "passed": true
+    },
+    {
+      "name": "source_adjoint_cap_literal",
+      "passed": true
+    },
+    {
+      "name": "source_optimizer_zero_literal",
+      "passed": true
+    },
+    {
+      "name": "ten_direction_denominator",
+      "passed": true
+    },
+    {
+      "name": "two_fixed_FD_scales",
+      "passed": true
+    },
+    {
+      "name": "transpose_gate_literal",
+      "passed": true
+    },
+    {
+      "name": "retained_scalar_cap",
+      "passed": true
+    },
+    {
+      "name": "reverse_RHS_cap",
+      "passed": true
+    },
+    {
+      "name": "reverse_step_cap",
+      "passed": true
+    },
+    {
+      "name": "sparse_Jacobian_cap",
+      "passed": true
+    },
+    {
+      "name": "explicit_nonqualification",
+      "passed": true
+    },
+    {
+      "name": "fail_closed_no_readmission_status",
+      "passed": true
+    }
+  ],
+  "checks_passed": 29,
+  "checks_failed": 0,
+  "candidate_imports": 0,
+  "candidate_forwards": 0,
+  "candidate_adjoints": 0,
+  "candidate_optimizer_updates": 0,
+  "python_compile_passed": true,
+  "review_status": "CLEAR_POST_FAILURE_NOT_ADMISSION",
+  "original_admission_job_status": "RED_STOP_NO_READMISSION",
+  "numerical_execution_authorized": false,
+  "note": "This review was performed after the authoritative format failure. It verifies frozen bytes and static invariants only; it does not satisfy or replace the failed pre-admission job and does not authorize a rerun under any key."
+}

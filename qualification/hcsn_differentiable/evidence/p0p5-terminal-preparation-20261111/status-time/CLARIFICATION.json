@@ -1,0 +1,36 @@
+{
+  "clarification": "The former 00:25:25Z label abbreviates the request start; it must not be read as an exact native instantaneous sample. Use the full 00:25:25.440Z\u201300:25:38.584Z read span.",
+  "clarified_field": "last_authoritative_original_job_state.observed_utc",
+  "current_state": "unknown",
+  "last_valid_reported_state": "running",
+  "native_exact_observation_timestamp": null,
+  "new_native_calls": 0,
+  "original_job_id": "1a1c74f3308-be2a-75",
+  "original_raw_response": {
+    "bytes": 814,
+    "sha256": "23f5bac294cbcd0847939a0f692fb8fcfa1b4008cd7c2ed8a05a06d608d52709",
+    "source": "/workspace/scratch/c385a7439f8e/c2-epoch-observation-preparation-v9/ORIGINAL-C2-STATUS-2-RAW.json"
+  },
+  "original_records_modified": false,
+  "prior_summary_records": [
+    {
+      "bytes": 815,
+      "sha256": "c699b49eac6f7873d48776cab478e0039f7a248db3e62b142fbc576c7add98e7",
+      "source": "/workspace/scratch/c385a7439f8e/c2-sparse-control-observation-20261111-v1/SUMMARY.json"
+    },
+    {
+      "bytes": 1561,
+      "sha256": "cbfd75011b1d387dd8ea5a91c4456dab2e1555ecd8d1c3ef664abc9ec460c890",
+      "source": "/workspace/scratch/c385a7439f8e/c2-sparse-control-observation-20261111-v2/SUMMARY.json"
+    }
+  ],
+  "read_span": {
+    "control_wall_seconds": 13.144,
+    "requested_utc": "2026-11-11T00:25:25.440Z",
+    "returned_utc": "2026-11-11T00:25:38.584Z"
+  },
+  "reason": "The running systemd payload has no at_unix_ms or equivalent native timestamp. The original raw wrapper records only this request/return span.",
+  "reported_state": "running",
+  "schema": "source-bound-status-time-clarification-v1",
+  "state_conclusion_changed": false
+}

@@ -1,0 +1,22 @@
+{
+  "scope": "Independent review of native final formatter output only; no tests repeated.",
+  "candidate_sha256": "086b1e41c146827e06f3171f794b75f581ac0d54e8a4253fb75ad0bc43f7c64e",
+  "final_sha256": "c112c681a81c332a8cd18417ac2315ceeff571d12b825753ca7341868f7f366d",
+  "final_git_blob": "bf7448d7830386e584d919f176e40d144f14b256",
+  "final_bytes": 9837,
+  "single_exact_change": "rustfmt inserts a block containing the unchanged tail expression in the Replay match arm and removes expression/trailing-call commas; no semicolon or new statement is introduced.",
+  "case_function_and_arguments_unchanged": true,
+  "first_durable_job": {
+    "id": "1a1f532fd9f-ffbe-12a0",
+    "exit": 1,
+    "cause": "final-source equality check expected pre-format bytes; just test/fix/fmt all exited zero"
+  },
+  "original_tests": {
+    "passed": 3,
+    "skipped": 0
+  },
+  "strict_clippy_claim": false,
+  "retained_warnings": "Only unchanged vendored sqlx-sqlite 40 deprecated time API diagnostics in scoped fix.",
+  "post_fix_fmt_tests_run": false,
+  "all_other_bytes_in_changed_file_unchanged": true
+}

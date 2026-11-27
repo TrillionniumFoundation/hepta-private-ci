@@ -1,0 +1,13 @@
+# Local asynchronous cancel qualification
+
+Frozen ace422cc ran once, exit0 and terminal budget PASS. Independent saved review scoped PASS: `2e65f5eab987b1095200748845339c2946d8fd0f7c5c07cdaf2b1fd3c5c1274f`.
+
+Actual supervisor PID8 independently verified producer PID9 ack2. It sent a bounded cancellation through a private pipe; writer sampled real monotonic time, persisted control-observed, cancellation intent, cancelled snapshot and ACK metadata. Supervisor independently verified ACK and only then killed/reaped producer; PID10 subsequently loaded the old midpoint for audit and refused publication. Prefix remains8,227B, two charged tickets, no piece02intent. Recovery has two cold model restores but zero new inference.
+
+22checks/14refusals; 4model restores,1selective serving/Actor prediction/encoded row,0Adam/reference calls. Metadata-only controls cover split writes,EOF/partialEOF/oversize/noncanonical,wrongidentity/boolsequence,expired-at-entry/wrong-epoch/injectedreverse. They are not actual backend channel faults or real reboot tests. Two readonly refusals occur before READY/command/terminalmarker; saved inventory pair unchanged. Duplicate confirmed cancel and rollback/corrupt ACK evidence preserve old state. Old BLOCKED source and freeze retained.
+
+Timestamp evidence (ns): send_begin230853109268365, write_complete230853109292231, observed230853109507661, intent_return230853113557973, ack_pre_send230853116106886, ack_received230853121926015. These establish the defined causal partial order, not exact kernel arrival or a hard real-time latency guarantee. The run used one instrumented cooperative boundary after ack2, not arbitrary concurrent interleavings or NumPy preemption.
+
+47files/2,241,797B. Whole reaped subtree .589606 CPU seconds = workers .407995 + supervisor .181611; outer prefix .035851879, known lower bound .625457879 plus unknown tail; largest RSS33,452KiB. All control negatives, clock sampling, metadata nonce randomness, killed work and cold restores are included once. Prior reconnect lower .631649905 remains separately retained; selected pair1.257107784 plus two unknown tails, not lifetime.
+
+Same-supervisor external epoch and inherited FD identify a trusted local control context only; not production owner authentication, remote client acknowledgement, reboot attestation, general text/audio or natural-data benefit. All new recovered views are read-only, not successful live continuation. Active-backend malformed channel/expiry-during-compute and pending-alarm/exec-failure injection were not newly tested. File fsync/link is not powerloss durability; hard ancestor death/kernel/storage can still prevent full receipts. No strict256 or production activation.

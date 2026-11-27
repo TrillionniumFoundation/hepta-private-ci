@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "observed_utc": "2026-11-11T03:03:11Z",
+  "current_code_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "current_code_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "native_status": "PENDING_HOSTED_LINUX",
+  "runs": [
+    {
+      "id": 42946454385,
+      "name": "v8-canary",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42946454332,
+      "name": "Production HOS2 owner proposal",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 42946454461,
+      "name": "Hepta daemon learning native",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42946454356,
+      "name": "Hepta shared Cell framework",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42946454598,
+      "name": "Hepta architecture convergence",
+      "status": "pending",
+      "conclusion": null
+    },
+    {
+      "id": 42946454563,
+      "name": "blocking-ci",
+      "status": "pending",
+      "conclusion": null
+    },
+    {
+      "id": 42946454319,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

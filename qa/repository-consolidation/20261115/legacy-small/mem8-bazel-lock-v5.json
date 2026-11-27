@@ -1,0 +1,44 @@
+{
+  "base": "e0422af0d3fcd5de92143ed6c9e47d122176af4c",
+  "incoming": "d03aa4c87d4f9fe9c1f99fbe319f829d9eef6158",
+  "preview_tree": "53bd4c36a99e2a06fbcf67193f3f851252fad156",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Complete 286-line driver and 161-line workflow read; fixed old branch and source identity, pinned driver SHA, owned cache, exact strict wrapper, one lock command, raw receipt pins and fail-on-lock/source drift preserved. No native project tests, model requests, source refs or remote pushes.",
+  "qualification": false,
+  "historical_driver_executed": false,
+  "python_ast_paths": [
+    ".github/scripts/mem8_bazel_lock_v5.py"
+  ],
+  "bash_n_blocks": [
+    "Retain this independent lock-check invocation",
+    "Bind the source and retain the exact gate harness",
+    "Run one exact-source 1200-second Bazel lock command"
+  ],
+  "embedded_python_ast_blocks": 2,
+  "powershell_read_only_not_executed_or_parsed": [],
+  "incoming_file_pins": {
+    ".github/scripts/mem8_bazel_lock_v5.py": {
+      "bytes": 16393,
+      "sha256": "08da7b6f91f57932359f2c6937abc24f6f5f21bfc14a321c4053d7af200ed323",
+      "git_blob": "03c70dc522ccb076ad6fa12fff1937bd3a023435"
+    },
+    ".github/workflows/hepta-mem8-bazel-lock-v5.yml": {
+      "bytes": 6784,
+      "sha256": "c3c85a6b43ac422f14411b1881051f764e4e4f1e1c16065cd97ef2c1f54944f7",
+      "git_blob": "e4724d93ee94387beb3c0edbd15345063c5e5c61"
+    }
+  },
+  "final_changed_file_pins": {
+    ".github/scripts/mem8_bazel_lock_v5.py": {
+      "bytes": 16393,
+      "sha256": "08da7b6f91f57932359f2c6937abc24f6f5f21bfc14a321c4053d7af200ed323",
+      "git_blob": "03c70dc522ccb076ad6fa12fff1937bd3a023435"
+    },
+    ".github/workflows/hepta-mem8-bazel-lock-v5.yml": {
+      "bytes": 6784,
+      "sha256": "c3c85a6b43ac422f14411b1881051f764e4e4f1e1c16065cd97ef2c1f54944f7",
+      "git_blob": "e4724d93ee94387beb3c0edbd15345063c5e5c61"
+    }
+  }
+}

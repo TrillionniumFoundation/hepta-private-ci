@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.codespell-false-positive-review.v1",
+  "head": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+  "base": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+  "actual_ci_checkout": "31deda5085818cb0b59ddcd2909445fb9ab3d2c2",
+  "job_id": 128708184562,
+  "run_id": 42473016939,
+  "source_retrieval": "Read-only GitHub connector at complete commit SHAs",
+  "readbacks": [
+    {
+      "label": "ignore",
+      "blob_sha": "0da447f000de188776a33e770c2d2d77b37f97ee",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b86dcb2ac3c9ebcef480a78b06dd003881c87ba3/.codespellignore"
+    },
+    {
+      "label": "base-ignore",
+      "blob_sha": "0da447f000de188776a33e770c2d2d77b37f97ee",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5/.codespellignore"
+    },
+    {
+      "label": "config",
+      "blob_sha": "49a7dfe79422a261e9769e1fcc486e4f06b4e46e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b86dcb2ac3c9ebcef480a78b06dd003881c87ba3/.codespellrc"
+    },
+    {
+      "label": "cargo-log",
+      "blob_sha": "c9854f5cf22d775e8bd22497a4bb12a1863b6816",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b86dcb2ac3c9ebcef480a78b06dd003881c87ba3/qualification/cell-owner-context-20261107/raw/shm/context-native-dev-small.log"
+    },
+    {
+      "label": "head-workspace",
+      "blob_sha": "06ae79338508b4277f35597987bf202a4072b234",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b86dcb2ac3c9ebcef480a78b06dd003881c87ba3/qualification/cell-owner-context-20261107/raw/workspace/context-native-tests.log"
+    },
+    {
+      "label": "base-shm",
+      "blob_sha": "c9854f5cf22d775e8bd22497a4bb12a1863b6816",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5/qualification/cell-owner-context-20261107/raw/shm/context-native-dev-small.log"
+    },
+    {
+      "label": "base-workspace",
+      "blob_sha": "06ae79338508b4277f35597987bf202a4072b234",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5/qualification/cell-owner-context-20261107/raw/workspace/context-native-tests.log"
+    },
+    {
+      "label": "merge-ignore",
+      "blob_sha": "0da447f000de188776a33e770c2d2d77b37f97ee",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/31deda5085818cb0b59ddcd2909445fb9ab3d2c2/.codespellignore"
+    },
+    {
+      "label": "merge-config",
+      "blob_sha": "49a7dfe79422a261e9769e1fcc486e4f06b4e46e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/31deda5085818cb0b59ddcd2909445fb9ab3d2c2/.codespellrc"
+    },
+    {
+      "label": "merge-shm",
+      "blob_sha": "c9854f5cf22d775e8bd22497a4bb12a1863b6816",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/31deda5085818cb0b59ddcd2909445fb9ab3d2c2/qualification/cell-owner-context-20261107/raw/shm/context-native-dev-small.log"
+    },
+    {
+      "label": "merge-workspace",
+      "blob_sha": "06ae79338508b4277f35597987bf202a4072b234",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/31deda5085818cb0b59ddcd2909445fb9ab3d2c2/qualification/cell-owner-context-20261107/raw/workspace/context-native-tests.log"
+    }
+  ],
+  "cargo_lock": {
+    "blob_sha": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b86dcb2ac3c9ebcef480a78b06dd003881c87ba3/codex-rs/Cargo.lock",
+    "package_blocks": [
+      "name = \"inout\"\nversion = \"0.1.4\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"879f10e63c20629ecabbb64a8010319738c66a5cd0c29b02d63d272b03751d01\"\ndependencies = [\n \"block-padding 0.3.3\",\n \"generic-array\",\n]",
+      "name = \"inout\"\nversion = \"0.2.2\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"4250ce6452e92010fdf7268ccc5d14faa80bb12fc741938534c58f16804e03c7\"\ndependencies = [\n \"block-padding 0.4.2\",\n \"hybrid-array 0.4.15\",\n]"
+    ]
+  },
+  "log_extract": [
+    "2026-11-08T10:49:56.9576651Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/codespell.yml@refs/pull/5346/merge (31deda5085818cb0b59ddcd2909445fb9ab3d2c2)",
+    "2026-11-08T10:50:02.2356700Z #8 2.145 Successfully installed codespell-2.4.3",
+    "2026-11-08T10:50:08.9609757Z HEAD is now at 31deda5 Merge b86dcb2ac3c9ebcef480a78b06dd003881c87ba3 into 6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "2026-11-08T10:50:10.5566646Z Resulting CLI options  --ignore-words .codespellignore --skip ./.git",
+    "2026-11-08T10:50:23.0359965Z ##[error]./qualification/cell-owner-context-20261107/raw/shm/context-native-dev-small.log:571: inout ==> input, in out",
+    "2026-11-08T10:50:23.0369611Z ##[error]./qualification/cell-owner-context-20261107/raw/shm/context-native-dev-small.log:632: inout ==> input, in out",
+    "2026-11-08T10:50:23.0371836Z ##[error]./qualification/cell-owner-context-20261107/raw/workspace/context-native-tests.log:541: inout ==> input, in out",
+    "2026-11-08T10:50:23.0373961Z ##[error]./qualification/cell-owner-context-20261107/raw/workspace/context-native-tests.log:601: inout ==> input, in out"
+  ],
+  "findings": {
+    "technical_identifier": "inout",
+    "versions": [
+      "0.1.4",
+      "0.2.2"
+    ],
+    "error_occurrences": 4,
+    "raw_cargo_logs_identical_across_base_head_and_merge": true,
+    "ignore_file_identical_across_base_head_and_merge": true,
+    "config_file_identical_between_head_and_merge": true,
+    "minimum_fix": "Append the exact technical crate name inout as one word in .codespellignore.",
+    "proposed_scope": {
+      "repository_path": ".codespellignore",
+      "lines_added": 1,
+      "lines_deleted": 0,
+      "extra_path_exclusions": false,
+      "workflow_changes": false,
+      "raw_evidence_changes": false,
+      "bazel_lock_changes": false
+    },
+    "codespell_validation_after_fix": "NOT_RUN",
+    "candidate_worktree_modified": false,
+    "published": false
+  },
+  "local_verification": {
+    "original_log_matches_native_sha256": true,
+    "log_bytes": 28240,
+    "log_sha256": "154d9dcb903704898651510c756e35c8df0c5070d8bcfa818a2eedb05b0af1c8",
+    "old_ignore_git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee",
+    "proposed_ignore_git_blob": "9e6e911207df68e9adeb40c6899d90f312d64a6a",
+    "old_ignore_sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+    "proposed_ignore_sha256": "289244e5151117c4bb6e67db899c94434b83eed5325b5c80457cadecb5bf3ecd",
+    "proposed_only_delta": "+inout",
+    "raw_log_and_candidate_repository_unmodified": true
+  }
+}

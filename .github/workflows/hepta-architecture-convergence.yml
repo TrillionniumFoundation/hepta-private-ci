@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}
+  # Preserve each exact PR candidate while deduplicating runs of that candidate.
+  group: hepta-architecture-convergence::${{ github.event.pull_request.head.repo.full_name || github.repository }}::${{ github.event.pull_request.number || github.ref_name }}::${{ github.event.pull_request.head.sha || 'manual' }}
   cancel-in-progress: true
 
 env:
@@ -26,7 +27,7 @@ jobs:
   qualification:
     name: Architecture convergence (${{ matrix.lane }})
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -59,15 +60,42 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$PR_NUMBER"
-          ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
-          actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
-          commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
+          identity="$RUNNER_TEMP/hepta-command-records/merge-identity"
+          mkdir -p "$identity"
+          jq -n --arg source "$SOURCE_SHA" --arg base "$BASE_SHA" \
+            --arg pr "$PR_NUMBER" --arg repository "$REPO" \
+            '{schema:"hepta-prospective-merge-observation-v1", expected_source:$source,
+              expected_base:$base, pull_request:$pr, repository:$repository,
+              current_ref_is_not_historical_run_evidence:true}' > "$identity/expected.json"
+          gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge" \
+            > "$identity/ref.json" 2> "$identity/ref.stderr"
+          actual_sha="$(jq -er '.object.sha' "$identity/ref.json")"
+          gh api "repos/$REPO/git/commits/$actual_sha" \
+            > "$identity/commit.json" 2> "$identity/commit.stderr"
+          commit_json="$(cat "$identity/commit.json")"
           mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
+          jq -n --arg source "$SOURCE_SHA" --arg base "$BASE_SHA" \
+            --arg actual "$actual_sha" --argjson parents "$(jq '.parents | map(.sha)' <<<"$commit_json")" \
+            '{schema:"hepta-prospective-merge-parents-v1", expected_source:$source,
+              expected_base:$base, actual_commit:$actual, actual_parents:$parents,
+              two_parents:($parents|length==2), base_matches:($parents[0]==$base),
+              source_matches:($parents[1]==$source)}' > "$identity/parents.json"
+          cat "$identity/parents.json"
           test "${#parents[@]}" -eq 2
           test "${parents[0]}" = "$BASE_SHA"
           test "${parents[1]}" = "$SOURCE_SHA"
           actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
-          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          merge_status=0
+          git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" \
+            > "$identity/merge-tree.stdout" 2> "$identity/merge-tree.stderr" || merge_status=$?
+          expected_tree="$(cat "$identity/merge-tree.stdout")"
+          jq -n --arg actual "$actual_tree" --arg expected "$expected_tree" \
+            --argjson command_exit "$merge_status" \
+            '{schema:"hepta-prospective-merge-tree-v1", actual_tree:$actual,
+              expected_tree:$expected, merge_tree_exit:$command_exit,
+              matches:($command_exit==0 and $actual==$expected)}' > "$identity/tree.json"
+          cat "$identity/tree.json"
+          test "$merge_status" -eq 0
           test "$actual_tree" = "$expected_tree"
           printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
           printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"
@@ -125,17 +153,41 @@ jobs:
       - name: Repository-control rejection regressions
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow scripts.test_hepta_merge_identity_records
+      - name: Cell Split signed observer and target-matrix rejection regressions
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-target-matrix-rejections.json" --minimum-tests 4 -- python3 -m unittest -v scripts.tests.test_hepta_cell_split_target_matrix_security
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config libdbus-1-dev
+      - name: Qualify distro AppArmor Bubblewrap userns profile
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RUNNER_OS" = Linux
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          test "$(sysctl -n kernel.unprivileged_userns_clone)" = 1
+          before="$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)"
+          test "$before" = 1
+          sudo apt-get install -y apparmor-profiles apparmor-utils
+          distro_profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -r "$distro_profile"
+          sudo install -m 0644 "$distro_profile" /etc/apparmor.d/bwrap-userns-restrict
+          sudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = "$before"
+          # Real user and network namespace operations, no mock or elevation
+          # of the E2E process. Fail closed before any expensive compilation.
+          bwrap --unshare-user --unshare-net --uid 0 --gid 0 \
+            --ro-bind / / --dev-bind /dev /dev --proc /proc \
+            /bin/true
+          printf 'AppArmor userns restriction remains %s; confined bwrap smoke passed\n' "$before" \
+            | tee "$RUNNER_TEMP/hepta-command-records/bwrap-apparmor.log"
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
       - name: Expose DotSlash for existing integration tests
@@ -164,17 +216,35 @@ jobs:
           if [ "$locked_status" -eq 0 ]; then
             exit 0
           fi
-          echo "::error::Cargo.lock differs from the exact candidate manifests"
+          echo "::error::Locked Cargo metadata failed; this alone does not establish lockfile drift (see resolver/transport diagnostics)"
           set +e
           cargo metadata --offline --format-version=1 >/dev/null
           offline_status=$?
+          git diff --quiet -- Cargo.lock
+          drift_status=$?
           set -e
           git diff -- Cargo.lock
           git checkout -- Cargo.lock
           if [ "$offline_status" -ne 0 ]; then
-            echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
+            echo "::error::Cargo metadata lock verification unresolved: online and offline resolution failed; inspect resolver output (no lock drift inference)"
+          elif [ "$drift_status" -eq 1 ]; then
+            echo "::error::Cargo.lock differs from the exact candidate manifests"
+          elif [ "$drift_status" -eq 0 ]; then
+            echo "::error::Cargo metadata --locked failed with no observed Cargo.lock drift; inspect resolver output"
+          else
+            echo "::error::Cargo diff could not be checked; source qualification is unresolved"
           fi
           exit "$locked_status"
+      - name: Neuron legacy Tick production denial and mechanism parity
+        if: steps.execution.outputs.run_native == 'true'
+        run: |
+          set -euo pipefail
+          # This external integration test links an ordinary non-cfg(test)
+          # Neuron library; the unit reference path cannot qualify product use.
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -- --check
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-legacy-non-test-deny.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --test legacy_tick_non_test_gate -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-reference-parity.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib runtime::tests -- --nocapture --test-threads=1
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --all-targets -- -D warnings
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
@@ -187,6 +257,13 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
+      - name: Cell Split reference anti-replay and rollback qualification
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
+        run: |
+          set -euo pipefail
+          # This is fixture-only recovery validation, NOT production authorization.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-reference-recovery.json" --minimum-tests 3 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --lib cell_split::tests:: -- --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/scope-lane-incremental-wal.json" --minimum-tests 5 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib scope_lane_wal -- --test-threads=1
       - name: Module lifecycle generations and migration rollback
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
         run: |
@@ -199,6 +276,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-abi.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane module_runtime
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor module_runtime
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-intent-recovery.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --test signed_intent_recovery
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-types topology
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- just test --locked -p codex-hepta-plasticity --lib
       - name: Objective and prompt policy convergence
@@ -283,7 +361,7 @@ jobs:
 
   required:
     name: Architecture required
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     needs: qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 5

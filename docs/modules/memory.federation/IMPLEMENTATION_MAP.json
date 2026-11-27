@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -38,7 +38,8 @@
         "codex-rs/hepta-memory/src/cognitive_runtime.rs",
         "codex-rs/hepta-agentd/src/runtime.rs",
         "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
-      ]
+      ],
+      "sourceBlob": "760d972ef2adec706a2cbeada5727a1c379f2e4d"
     },
     {
       "operation": "observe_cancellation",
@@ -52,7 +53,8 @@
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "760d972ef2adec706a2cbeada5727a1c379f2e4d"
     }
   ],
   "repositoryControlledGaps": [
@@ -150,8 +152,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -173,15 +175,15 @@
   "sourceObjects": [
     {
       "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
-      "object": "61b143142015b17924d9f2804714fb9968b2e9a6"
+      "object": "8fd6d6b52e1ff6f16fa61f74cc5952852b30d7d5"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
-      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+      "object": "28ce06434e6d0ab97e8da925211c50a9c094471b"
     },
     {
       "path": "codex-rs/hepta-memory-federation",
-      "object": "f2fb3418d116d61deae41ade0b4e1f8e9354172d"
+      "object": "88ef08d87dcf6d98372fff8d514adafbe19829a7"
     },
     {
       "path": "codex-rs/hepta-memory-federation/src/v2.rs",
@@ -193,15 +195,22 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
-      "object": "7ad7a60f7832b037819ae1966b25054d048c641f"
+      "object": "4c2061eb540bb19267e0c4af1d3b9453dd403a16"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
-      "object": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
+      "object": "1f4fde2d3b69214b6a681d3e18a64578b9931aa2"
     },
     {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
       "object": "cfe666c5e0d3fbc76b86382b6c3c738bd065a335"
     }
-  ]
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "memory.federation",
+    "previousMapBlob": "15ac734cf551d8c976cb7e8a00db378554c5d1d0",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }

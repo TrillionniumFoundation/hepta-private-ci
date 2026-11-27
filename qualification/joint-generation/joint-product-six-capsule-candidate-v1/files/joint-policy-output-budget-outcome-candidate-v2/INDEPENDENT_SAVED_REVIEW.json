@@ -1,0 +1,80 @@
+{
+  "audit_script_sha256": "13beb28ca016672057ddaea4057f49547f09d400e44a34efbbb6266ca5b1b0cc",
+  "bindings": {
+    "RUN_bytes": 2006738,
+    "RUN_files": 39,
+    "frozen_files": 31,
+    "inputs_terminal_rehashed": 13,
+    "prior_failure_terminal_rehashed": 9,
+    "receipt_inventory_exact": true,
+    "source_review_sha256": "6f4543f21febb163baee0ce1dba122fd3592775892806df2f2d60a170305fbc6"
+  },
+  "boundaries": [
+    "Only fixed row0/outputcap34807 qualification, not arbitrary budget/route proof.",
+    "B is controlled pretemp exception, not actual storage fault/powerloss/postlink lost receipt.",
+    "Known generation rejection is not no-effect/free generation/cancellation; no publication or automatic retry authority.",
+    "No parent harddeath/kernel/disk full-subtree guarantee; own registered processes covered on this successful run.",
+    "Production owner/data403/publication/strict256 holds unchanged."
+  ],
+  "cost": {
+    "accounting": "Workers and supervisor residual partition outerwait subtree, not extra charges. Two rejected generations, failed B write attempt, pure recovery and all negatives/hash/serialization included once; outerprefix extra, tail unknown. Original V1 failure remains charged/nonrefunded. Other historical/source/review and this audit additional nonzero; cumulative engineering index not independently reaudited. Floating last-bit differences retained/rounded honestly.",
+    "display_lower_bound_seconds": 0.411537986,
+    "known_lower_bound_decimal": "0.41153798599999994",
+    "largest_reaped_RSS_kib": 34036,
+    "limits": "Each observed role/outer CPU2s,AS256MiB,FSIZE2MiB. Successful measured subtree below5s and retained below8MiB/100files; terminal qualification not strict aggregate live cap. RSS largest process not simultaneous total.",
+    "outer_prefix_CPU_seconds_decimal": "0.030294986",
+    "outer_tail": "unknown_not_zero",
+    "prior_failed_V1_lower_bound_seconds": 0.427192612,
+    "receipt_supervisor_CPU_seconds": 0.06918399999999997,
+    "selected_V1_plus_V2_display_lower_bound_seconds": 0.838730598,
+    "selected_unknown_tails": 2,
+    "supervisor_residual_derived_decimal": "0.06918399999999994",
+    "terminal_budget_pass": true,
+    "wall_seconds": 0.41710500000044703,
+    "whole_reaped_subtree_CPU_seconds_decimal": "0.38124299999999994",
+    "workers_CPU_seconds_decimal": "0.312059"
+  },
+  "evidence_sha256": {
+    "COST_COVERAGE.json": "99443c45347f988a822e06992826a9f54733ffd8f2faa53b944589883574241c",
+    "FREEZE.json": "399073abcb2aabe008eaedf69dc09d183f1364cf33b17f82f583994795ed5791",
+    "INDEPENDENT_SOURCE_REVIEW.json": "6f4543f21febb163baee0ce1dba122fd3592775892806df2f2d60a170305fbc6",
+    "PRIOR_FAILURE.json": "de77c95b4978ac490d93004b235a3407ed9121143648fc62375cc4ee1d78fdb8",
+    "RUN_ONCE/OUTER_WAIT4_RECEIPT.json": "42aeb5e9051abe0ad4f3e1c43bfd2bfcd53d87d29afe6db5aada60911fce487f",
+    "RUN_ONCE/RESULT.json": "22a832e3adb61b7d4bf6b65164816b4062b2d828bb5ec96643dc086ce604ace0",
+    "RUN_ONCE/ROLE_RECEIPTS.json": "81fbffa70e665595be10e8ad573efc91d3ba4c51de4b5c52721da983ac0fbbaa",
+    "RUN_ONCE/chain/HANDOFF.json": "3eeb9c907240da71c33382b968d644c778f29976cdb3c0e331cf773f67425ddd",
+    "RUN_ONCE/chain/PRODUCER_RESULT.json": "8db0020c7e3d8225aa1cb38e4159184ff12d75650680fab16b1300e7704d885e",
+    "RUN_ONCE/chain/RECOVERY_RESULT.json": "c6bb26893e84688ce520cfca94a3270b52c27dbdfad84d356b368fdb91df547d",
+    "SAVED_FINDINGS.md": "330794420bdbe51ae52853fe31f47af89d7fb3c215f6a8b1ce519881fed7daac"
+  },
+  "method": "Independent stdlib saved-byte/hash/canonical identity/reference/inventory/NPZ header+raw-array reconstruction; source inspection of recovered import closure and executed assertions. No candidate/verifier/model/protocol import or execution, no rerun.",
+  "notes_and_cost": "SAVED_FINDINGS/COST_COVERAGE match evidence and preserve pending status at time reviewed; original result/receipt unmodified.",
+  "prior_failure": "All9 PRIOR_FAILURE pins terminal match. V1 SOURCE/FREEZE/RUN/FAILED review retained: recovery imported NumPy transitively and failed. V1 original SOURCE readiness missed dependency; V2 pass does not erase that failure or retroactively validate it. V1 notes/COST explicitly amended before V2 pinning; do not confuse with earlier hashes recorded in failed review.",
+  "results": {
+    "chronology": "Outer owns supervisor9; producer10 launch->normalreap0 precedes recovery11 launch->normalreap0; both inside supervisor complete outerwait exit0. HANDOFF pins root/lock and both complete classifications. No kill/crash scenario claimed.",
+    "counts": {
+      "Actor_predictions": 2,
+      "Adam": 0,
+      "actual_serves": 2,
+      "detached_refusals": 2,
+      "dynamic_refusals": 3,
+      "encoded_rows": 2,
+      "fresh_models": 0,
+      "model_restores": 2,
+      "new_reference_calls": 0,
+      "producer_checks": 16,
+      "recovery_checks": 5,
+      "recovery_model_restores": 0,
+      "supervisor_checks": 3,
+      "total_checks": 24
+    },
+    "detached_negatives": "BAD-allowed differs only34807->34808; BAD-reserved differs only reserved namespace->64f. Exact saved errors respectively rejection allowed output budget binding / rejection reserved reference binding. Recovery before/after inventory equals full original journal.",
+    "dynamic_refusals": "Three actual producer calls: A/B duplicate start both exact namespace error; A oldreserved publication exact output-budget terminal error. Before/after inventory pairs independently equal reconstructed originals; no extra serving call. These are separate from two detached structural negative records.",
+    "known_A": "72523-byte full rejection record independently reconstructed, including complete original reserved reference, charged session, request/profile/policy/artifact/source/manifest identity, exact route and generated wire. Required publication payload34808(text35,image34773)>allowed34807; transportwire34884. Both tickets charged; zero prefixes/no fragment intent. Historical reserved and rejection samples inside original45-second deadline.",
+    "model_and_reference": "All78 Content and20 Actor complete NPZ headers/raw arrays match pinned input and artifact per-array hashes. Params/Adam unchanged. Both wire bytes exactly prior qualified reference, route numeric fields exact with current artifact/request identity rebound. No new reference/native inference run. Both routes JI; no diversity or utility claim.",
+    "recovery": "Fresh interpreter PID11 passes unchanged first no_backend_modules assertion for numpy/policy_backend/live_core/live_delivery. Top-level closure worker->common/output_budget_verifier/output_budget_pure remains stdlib; producer-only imports excluded from recovery control flow. Saved summaries exactly equal producer and supervisor HANDOFF. No model allocation/serve/Adam; this is readonly classification, not live replay or owner grant. Evidence is source+assertion+saved process result, not independent OS instruction tracing.",
+    "uncommitted_B": "Actual second generation returned exact pinned wire/route; controlled OSError before rejection temp creation leaves only claim+reserved. No rejection/generated/output/temp. Runtime summary remains model_result_uncommitted_unknown, diagnostics_adopted=false, retry/model_restore_authorized=false. Diagnostic saved bytes prove work but are not runtime adoption."
+  },
+  "source_freeze_sha256": "399073abcb2aabe008eaedf69dc09d183f1364cf33b17f82f583994795ed5791",
+  "status": "PASS_SAVED_SCOPED_TYPED_OUTPUT_REJECTION_AND_PURE_RECOVERY"
+}

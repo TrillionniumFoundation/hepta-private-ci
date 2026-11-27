@@ -1,0 +1,415 @@
+{
+  "schema": "ctrl.pinned-report-readonly-evidence.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "input": {
+    "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/factorial/REPORT.json",
+    "expected_bytes": 3108442,
+    "expected_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+    "actual_bytes": 3108442,
+    "actual_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+    "full_report_archived_in_this_tree": false,
+    "full_report_projection_only": true,
+    "stat_comparison": "Exact Python fstat/lstat identity, mode, nlink, size, mtime_ns and ctime_ns checked before/after reading and after analysis; all equal. Raw stdout preserves full 64-bit nanosecond integers."
+  },
+  "execution_source": {
+    "commit": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+    "scope": "Previously verified original campaign source binding; this read-only analysis did not import or re-admit original runtime artifacts",
+    "factorial_blob": "a600941db84ee669c7b422ebedc779d2a5c49006",
+    "macro_cohort_blob": "4091bf82456275a01099e700c837efe9676f1b84"
+  },
+  "analysis_source": {
+    "commit": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+    "path": "qualification/ctrl-real-comparison-20261112/analysis/summarize_ctrl_factorial.py",
+    "blob": "8d86e6661c18c27bb3327c16130db0e9843e3527",
+    "sha256": "bce24def5fe8e0c36beedb2f5a7ff80c64954378643d44661088dd42c590ccc1",
+    "stdlib_only": true,
+    "source_compile_before_input_open": true,
+    "wrapper_sha256": "a0ed385c938659b2f00424a6eee303583e6020a03e52bfa116d870a93629dfdd"
+  },
+  "job": {
+    "host": "ai395",
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "id": "1a1cf1c9b7e-2564-1997",
+    "idempotency_key": "ctrl-report-readonly-862531d11598-v1",
+    "request_digest": "af8e127ea28c15b1bab8503a37ee7cf286a025a8e7f3b8ff29ce75b85148e196",
+    "launch_reused": false,
+    "launch_error": null,
+    "exit_code": 0,
+    "state": "succeeded",
+    "timed_out": false,
+    "output_complete": true,
+    "output_durable": true,
+    "stdout_bytes": 34298,
+    "stdout_sha256": "c563f6d1559d7db10ce7514ca4d10d29bda0a24c5bef541d0844fd4677886161",
+    "stderr_bytes": 0,
+    "new_actor_or_experiment_executed": false,
+    "original_files_modified": false
+  },
+  "retrieval": {
+    "stdout_pages": [
+      {
+        "offset": 0,
+        "next_offset": 16384,
+        "bytes": 16384,
+        "sha256": "64c3563ae2f3632ac190e5205395f38252f3d1c4c3d6224c5a63b0b69925048d",
+        "eof": false
+      },
+      {
+        "offset": 16384,
+        "next_offset": 32768,
+        "bytes": 16384,
+        "sha256": "cc32244ce669a39b15b875fb550981d090f8ce777594fccb43acdd8b57fbced1",
+        "eof": false
+      },
+      {
+        "offset": 32768,
+        "next_offset": 34298,
+        "bytes": 1530,
+        "sha256": "4088150271ab90afa4f56c5e7dae883e1ba91a285e442259c50345ea14c1a253",
+        "eof": true
+      }
+    ],
+    "direct_read_16384": "MCP -32603 timed out; retained in readback-transport.json",
+    "direct_read_32768": "Attempted in the same batch; original return was not retained after the first error. No statistics derived from it.",
+    "async_operations": [
+      "a6d2672b74b3b9e632624fa19dd9bc6e8961759aaab0fe643982a314ea1b8ea6",
+      "69a1ff4024777cfb8bfb1ea52334820cd8010ff875b7a9966202903052146a5b"
+    ],
+    "async_native_payloads_sha256": [
+      "7abdc3d93fe123b16a01a67f0afc6b5e90f4ed879a3e4be0a1203ea399175905",
+      "942a70b42b324ac28b9c6d25b8898b44c553bf3035bc68820d656967067865bf"
+    ],
+    "reassembly": "All cursor ranges contiguous, consistent final size 34298, last EOF true, both asynchronous native payload SHA256 values independently matched; full stdout JSON parsed and report/wrapper/analysis pins checked."
+  },
+  "results": {
+    "denominators": {
+      "arms": 12,
+      "contexts_completed_all_arms": 48,
+      "contexts_per_source_distribution": {
+        "3": 16
+      },
+      "independent_source_units": 16,
+      "matches_16_sources_48_contexts_576_executions": true,
+      "missing_records": 0,
+      "planned_executions": 576,
+      "provided_rows": 576,
+      "registered_contexts": 48,
+      "sources_completed_all_arms": 16,
+      "statuses": {
+        "CANCELLED": 0,
+        "COMPLETED": 576,
+        "FAILED": 0,
+        "NOT_STARTED": 0,
+        "RUNNING": 0,
+        "UNKNOWN": 0
+      }
+    },
+    "stored_mean_audit": {
+      "all_match": true,
+      "comparisons": 276,
+      "mismatch_count": 0,
+      "mismatches": []
+    },
+    "action_totals": {
+      "READ": 62,
+      "STOP": 514,
+      "all_completed_multisets_match": true,
+      "missing_for_completed": 0,
+      "scope": "Only retained COMPLETED action records; unresolved action counts remain unknown",
+      "seed_ambiguous_records": 0,
+      "unresolved_planned": 0
+    },
+    "factorial_DID": {
+      "formula": "(adapted/conditional - adapted/STOP) - (frozen/conditional - frozen/STOP)",
+      "observed_task_cost_net": {
+        "contexts": 48,
+        "direction_counts": [
+          18,
+          0,
+          30
+        ],
+        "observed_subset": -0.00028103644993582983,
+        "primary": -0.00028103644993582983,
+        "sources": 16
+      },
+      "quality": {
+        "contexts": 48,
+        "direction_counts": [
+          0,
+          48,
+          0
+        ],
+        "observed_subset": 0,
+        "primary": 0,
+        "sources": 16
+      }
+    },
+    "all_full_cost_metrics_unknown": true,
+    "conditional_actions": {
+      "frozen": {
+        "READ": 0,
+        "STOP": 48,
+        "matches_completed_multiset": true,
+        "missing_for_completed": 0,
+        "read_flag_counts": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "reason_counts": {
+          "insufficient_calibration": 46,
+          "outside_observed_feature_envelope": 2
+        },
+        "scope": "admitted_COMPLETED_only",
+        "seed_ambiguous_records": 0,
+        "unresolved_planned": 0
+      },
+      "adapted": {
+        "READ": 0,
+        "STOP": 48,
+        "matches_completed_multiset": true,
+        "missing_for_completed": 0,
+        "read_flag_counts": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "reason_counts": {
+          "insufficient_calibration": 48
+        },
+        "scope": "admitted_COMPLETED_only",
+        "seed_ambiguous_records": 0,
+        "unresolved_planned": 0
+      }
+    }
+  },
+  "owner_boundary": {
+    "raw_original_report_decision": "NoUpdate",
+    "raw_original_cohort_decision": "NoUpdate",
+    "raw_labels_hardcoded_in_frozen_source": true,
+    "research_state": "HOLD",
+    "owner_evaluation": "not_evaluated",
+    "owner_decision": null,
+    "native_artifacts_readmitted": false,
+    "original_START_order_rechecked": false,
+    "new_source_confirmation": false,
+    "production_admission": false,
+    "full_cost_benefit_established": false
+  },
+  "interpretation": {
+    "factorial_scope_only": "576 is the current factorial report roster, not the denominator of all collection/training/failed historical campaigns",
+    "arithmetic_scope": "Published analyzer independently recomputed quality and observed_task_cost_net; full_cost_net fields were retained unchanged, not independently recomputed",
+    "original_vs_derived": "Original report fields and six stored comparison objects are under original_report_fields; source-weighted statistics and action counts are under derived_statistics/derived_action_totals",
+    "no_erased_history": "No old run, failure artifact, source pin, original request or previous UNKNOWN probe modified",
+    "exact_integer_preservation": "Archive report-projection.stdout.json bytes directly; do not replace them with a JavaScript JSON parse/stringify round trip."
+  },
+  "artifacts": [
+    {
+      "path": "readonly-wrapper.py",
+      "blob": "03e13c4f110f0f97ad3ae4a4990f8db719616cd0",
+      "bytes": 31583,
+      "sha256": "a0ed385c938659b2f00424a6eee303583e6020a03e52bfa116d870a93629dfdd"
+    },
+    {
+      "path": "process-request.json",
+      "blob": "7cab992cb8d954987981c2de89ededfc044b6c7b",
+      "bytes": 34505,
+      "sha256": "5046eb0541fc5b4c9dc4250592e04ad07604bf99a33d9e4db640f8db3bb40b33"
+    },
+    {
+      "path": "analysis-source.py",
+      "blob": "8d86e6661c18c27bb3327c16130db0e9843e3527",
+      "bytes": 22183,
+      "sha256": "bce24def5fe8e0c36beedb2f5a7ff80c64954378643d44661088dd42c590ccc1"
+    },
+    {
+      "path": "execution-source-factorial.py",
+      "blob": "a600941db84ee669c7b422ebedc779d2a5c49006",
+      "bytes": 21936,
+      "sha256": "31431f1dc3304b841f54e1e4c321ab065c2216c4664710abd42d8d06a79cd3f7"
+    },
+    {
+      "path": "execution-source-macro_cohort.py",
+      "blob": "4091bf82456275a01099e700c837efe9676f1b84",
+      "bytes": 16726,
+      "sha256": "60ba56f797129a03afe1e46a92dfbbe9edb62222f36a4ac0fb5aad3e27f1a701"
+    },
+    {
+      "path": "report-projection.stdout.json",
+      "blob": "3284b70050f7ff8cc2e77db02d3a4f11ee3cb398",
+      "bytes": 34298,
+      "sha256": "c563f6d1559d7db10ce7514ca4d10d29bda0a24c5bef541d0844fd4677886161"
+    },
+    {
+      "path": "stderr.log",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "process-start.sdk-result.json",
+      "blob": "c9f4b32b39fcbcc131b125afc139a2108b0dd4a7",
+      "bytes": 1499,
+      "sha256": "e010a18eeeca111ff40ddc0cf3f2f8cecee2f8c31ba015537af03a2c7aaa2d01"
+    },
+    {
+      "path": "process-status.sdk-result.json",
+      "blob": "7c60618f46ec961fc5810c20a89130e67f625712",
+      "bytes": 956,
+      "sha256": "a797baa40c6632eeddfdca2a37c8da12a9f4c2b91413efd3694e6d2c3bbe11aa"
+    },
+    {
+      "path": "readback-direct-0.sdk-result.json",
+      "blob": "8d4c16fa16a9653b4f7bf14f258aeff676428a4f",
+      "bytes": 53748,
+      "sha256": "4165073a22965762b62d0018c657a2e550e824f55f1115c25608db7309109dc8"
+    },
+    {
+      "path": "readback-async-16384.native-payload.json",
+      "blob": "3f8d8dea6465f3521613ac2a103a38eec0efe5ca",
+      "bytes": 54017,
+      "sha256": "7abdc3d93fe123b16a01a67f0afc6b5e90f4ed879a3e4be0a1203ea399175905"
+    },
+    {
+      "path": "readback-async-32768.native-payload.json",
+      "blob": "757399da4dcee656b9df78ca5745d3fbe3110fc8",
+      "bytes": 5364,
+      "sha256": "942a70b42b324ac28b9c6d25b8898b44c553bf3035bc68820d656967067865bf"
+    },
+    {
+      "path": "readback-transport.json",
+      "blob": "39254b3bcb2020084ba35d6f054d074ab28b1d3d",
+      "bytes": 9497,
+      "sha256": "6c137fec42b5a0e90d77edc94f55990de706ba63aecb0fbdcd41fc222aa7d69b"
+    }
+  ],
+  "all_13_artifact_blobs_independently_read_back_exact": true,
+  "commits_created": 0,
+  "refs_updated": 0
+}

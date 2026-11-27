@@ -1,0 +1,1432 @@
+{
+  "schema": "hcsn-v2-source-baseline.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "caa94dc53f8b8b721ee00076ce060d44a98d7a4f",
+  "base_tree": "96cefa2a77352eeea5511d60645d869310430ff3",
+  "prior_study_identity": "caa1a503288d4986bf2f0bc3608bc211a12e221a45c822bfbd19fdacce953bc3",
+  "restored_git_blobs": [
+    {
+      "path": "experiments/hcsn_free_boundary_v1/.gitignore",
+      "sha": "7a60b85e148f80966a550e5ab6a762a907c69ca6",
+      "size": 19
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/CLOSURE.md",
+      "sha": "53c54b6eba14c9eb8e0889d3a93dc6348d5e96c4",
+      "size": 10855
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/CONDITIONAL_PROTOCOL.json",
+      "sha": "d83f55bb210b1c9591bffa4ed699ec7bf453f710",
+      "size": 13401
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/CONTRACT.md",
+      "sha": "da2aaa191a150cb455f02d9a34fbc1c982f4b4f3",
+      "size": 11521
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/ENVIRONMENT.json",
+      "sha": "cf2516fda653e42d2da5374d7da95dcebfc6ad37",
+      "size": 423
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/EQUAL_UPDATES_CORE002_PROTOCOL.json",
+      "sha": "1d8f801268ec8e7ac751f2a8b3fb442b44cd502c",
+      "size": 246645
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/FAST_SOLVER.md",
+      "sha": "ddc827d8bf87e71783cf55c16b2c03af3d77c498",
+      "size": 11774
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/FLOW_REPAIR.md",
+      "sha": "7ea9a23b9483bc7310896b096cd40d3f0eeedc4e",
+      "size": 12066
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/FREEZE.json",
+      "sha": "f810d4acc403d1a0cbb5a583382d468db5a38f5a",
+      "size": 27435
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/MATH.md",
+      "sha": "98f078983076094e5031b6d64863d770b6767f2e",
+      "size": 11505
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/MOVING_FLOW.md",
+      "sha": "9fbb7adc59c0ef770e96829df58294b97ab54047",
+      "size": 15371
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/NATIVE.md",
+      "sha": "12dd9d2e248ded222180d73abc553462347a8f34",
+      "size": 11315
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/NATIVE003_PROTOCOL.json",
+      "sha": "80f9ef8ec981fea72a60be90f7c004963cc4704c",
+      "size": 6502
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/PROTOCOL.json",
+      "sha": "c877e65ed5939899c3bf1eba794a9d04b58d6a4b",
+      "size": 8976
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/README.md",
+      "sha": "6b04b9c91a342454fa36bd0b0c639561e0e77350",
+      "size": 12705
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/RESULTS.md",
+      "sha": "2977279c1142563b46a8d13a5c8cce15d7263b32",
+      "size": 25384
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/SCALING.md",
+      "sha": "cfaae815ac88feda217f0acecbfe08a4657086d4",
+      "size": 9569
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/analysis.py",
+      "sha": "51c73cb11f425b800a3d30dfb4d4a5daac85df39",
+      "size": 45213
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/analysis_report.py",
+      "sha": "be29ad869c38ba485fb52b5c02d4745fd48afe6b",
+      "size": 32820
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/analysis_secondary.py",
+      "sha": "6e451c86abb65bef7aad3ad68916a78a00f47019",
+      "size": 9371
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/analysis_tests.py",
+      "sha": "ebddea42b5226452812cb12289fb67a99626a304",
+      "size": 16963
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/archive.py",
+      "sha": "d7ebc0873c8fca94daa1ac48fce360d6033e56ca",
+      "size": 11041
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/archive_tests.py",
+      "sha": "9f521b13ee5e686e346db1c62e7d5f32c0dfe57e",
+      "size": 13911
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/archive_streaming_tests.log",
+      "sha": "ad9f141c4046899baf11ed0a00d1c6e065ff9415",
+      "size": 1957
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/archive_streaming_validation.json",
+      "sha": "a9c5f83709c005f84bf010fa6c5ad2e9a2a2fc40",
+      "size": 2214
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.json",
+      "sha": "b455f604424f8f989fab05ee099f564c7344f0e4",
+      "size": 3173804
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.tar.xz.part0000",
+      "sha": "2f1657e42936c0946d343343b9d2a1660c5e690e",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.tar.xz.part0001",
+      "sha": "1cb38694828548fab049d84d2109e8a677b387ed",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.tar.xz.part0002",
+      "sha": "7b470788fbcb35c8477fb1566d5a83e88362f5b7",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.tar.xz.part0003",
+      "sha": "0a0fee5711921ddec429e2dd800569485918933e",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.tar.xz.part0004",
+      "sha": "7d840537a4bf0236cfdc5d188c76a78d2de693e6",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.tar.xz.part0005",
+      "sha": "60a377016fa25c35a41c336caecf54734ffc388c",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.tar.xz.part0006",
+      "sha": "6ab181181eaf7939ff7a8329e223dc72753a712b",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.tar.xz.part0007",
+      "sha": "f30c44b7d18ec61c5d5a42dd70b6576b853860ba",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.tar.xz.part0008",
+      "sha": "027232fe166b4ad0faafabe47b8fb9cf3d227eac",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.tar.xz.part0009",
+      "sha": "455ec393a99a793ef3547e467f49e2f2ff0ac0d7",
+      "size": 484420
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence_REPORT.md",
+      "sha": "0f992b934dad2b3e1e1f46d1dd37dfd8ac03c25c",
+      "size": 6654
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence_VERIFICATION.json",
+      "sha": "add8228a02f8376e8d97297e7e88d9f22395628e",
+      "size": 5355
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/conditional001_evidence.json",
+      "sha": "f979606f226bee8a57e6e54d60d7352f7d45b5a3",
+      "size": 90116
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/conditional001_evidence.tar.xz.part0000",
+      "sha": "d48fa14013568eda52a0efc565b19b61c56d997b",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/conditional001_evidence.tar.xz.part0001",
+      "sha": "b67f5cc9722d80cf6834b5c66f74086631c878b2",
+      "size": 3777332
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/conditional001_evidence_REPORT.md",
+      "sha": "94c337333e5eb1902ed68bd7c35b90bfb84702fa",
+      "size": 1924
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/conditional001_evidence_VERIFICATION.json",
+      "sha": "acaa74fffc435449f5f9753c2fcccf3ba156ce42",
+      "size": 3138
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/duplicate_cleanup_receipt.json",
+      "sha": "ad8935fbf3e0f2268a71f42820c56f78f04b1ffc",
+      "size": 613
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/equal_updates_core002_evidence.json",
+      "sha": "71f2443ce49d5c4bfe562c91b2b0167056bcf0c4",
+      "size": 72567
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/equal_updates_core002_evidence.tar.xz.part0000",
+      "sha": "b0420cd67e78bd700c75db09626ea6025cbf8311",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/equal_updates_core002_evidence.tar.xz.part0001",
+      "sha": "2553bfa357bb0dc2911fe269d61c92339ba33dd1",
+      "size": 710544
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/equal_updates_core002_evidence_PACK.log",
+      "sha": "0b23b15487804c942b78d0d414da2193e40b3af0",
+      "size": 195
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/equal_updates_core002_evidence_REPORT.md",
+      "sha": "a062abaa7fe8222199a43074ecf3f2d041be72ae",
+      "size": 6701
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/equal_updates_core002_evidence_RESTORE.log",
+      "sha": "8ce66137c3d9b3fb9009b96824711e90da7ba58b",
+      "size": 125
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/equal_updates_core002_evidence_VERIFICATION.json",
+      "sha": "5e862420077c9c666b872b47002d9c6e57b36314",
+      "size": 6063
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.json",
+      "sha": "f86b610d4424af014dc0a1c7b251d9d31ef2dfb0",
+      "size": 103834
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0000",
+      "sha": "81ce7a504c59fb1d36f090cde676c906b05a36b0",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0001",
+      "sha": "1a0930c1769047ac98266248a842693a45f7fd05",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0002",
+      "sha": "cb47448ed5c33e255e70010bd5f8677a54ead8f8",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0003",
+      "sha": "c97fa57239979fdc1b7b57a23133aa98556f83b6",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0004",
+      "sha": "762af8fcd516d9c1c2bab7db720e363685507a3b",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0005",
+      "sha": "7b9fb96d85f7b41f5f7fbcdb61c58248fb5b7c36",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0006",
+      "sha": "9832c97f53c2f0f7e02e7ecc50cf747d5d837d98",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0007",
+      "sha": "1682f76b44d2c1e69d238afa46589a074961de2a",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0008",
+      "sha": "c17d38acecf40f7311c721aa1433052582fb3507",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0009",
+      "sha": "688f0324d44cebbf8466bfbebf13e631bc64f26a",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0010",
+      "sha": "edff65974852b25e92c45f5b8c5b37325b8c08fa",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0011",
+      "sha": "c22abe1d4a3fd10f7877fc3c4b987aa57f96d37a",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0012",
+      "sha": "dee8112be4f6817ecdde4b08c7f0250f04a1dd2a",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0013",
+      "sha": "6c42e6bb81650558f3245386a720abb03396d9a8",
+      "size": 1048576
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/original_data.tar.xz.part0014",
+      "sha": "8f8ccac437e2d4fd75c347289ba0ef8ebdb20224",
+      "size": 877792
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.json",
+      "sha": "71281c027cdc8bd7da3845e99c9d627df1895edb",
+      "size": 1351280
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0000",
+      "sha": "3e78705582591bcf87974439e4ed39c9ce347df6",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0001",
+      "sha": "08a94cb901a62aa4ba0bb0dac86217612cfeda60",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0002",
+      "sha": "d1263232482c876bd61a8adc05743e9ed822d49e",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0003",
+      "sha": "aecb3896a288dcabe9f87a596f7c7d8080a226bc",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0004",
+      "sha": "6ede89ddc547d819ab61d9584a452c78852b6f23",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0005",
+      "sha": "82788b422e2e52b8211a9110a66615d8f0e3fb82",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0006",
+      "sha": "2ace2caae97d128feeb741bac474597fa12716d0",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0007",
+      "sha": "561b7dbd3572113ccde7f4b3f68584d76298a096",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0008",
+      "sha": "94d65f8d48e197b4705d00aa7e4b4fc9e61ce9d7",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0009",
+      "sha": "ee8f37922bff9728ae36f723fea9a58cbb0fc9b9",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0010",
+      "sha": "f9e929905b2b55bb5a02c3dedfc11428b093ffdb",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0011",
+      "sha": "9a5cd1dd04b99a857eb02a6a0968e354669e5bf9",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0012",
+      "sha": "5417e9ebce140a12c68ca873b74ce7703317953e",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0013",
+      "sha": "fde56ae39c66599348b1c84dc77bdc6a495b1990",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0014",
+      "sha": "16308d0baa560640a8692215ad5794be040b90a7",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0015",
+      "sha": "600735073bf27613a2e5a9992a1764645ba05a7c",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0016",
+      "sha": "f4fdb46dcc4cab284e5931003a31341302b27ab1",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0017",
+      "sha": "8346a96ebf6b3f98a320f9e6da85705d6b1f3eef",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0018",
+      "sha": "5b083bcdeeed21ccbe399b085ad2828212a33f9d",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0019",
+      "sha": "b34b73c9b0efd4de9682afc53ac7aaf2ecb8d16f",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0020",
+      "sha": "cbef59758c75f16a124e8f59aab172fbdb571d53",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0021",
+      "sha": "78325bb3a474f2549bb08a0b5a40b3578435e536",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0022",
+      "sha": "6962936e9e9116a777e83dcad44e7a29dc4baac7",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0023",
+      "sha": "aa52781ec63bc1eb962edfab9cef82eae06ed9e7",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0024",
+      "sha": "f7fd96a1696b3a49fbe3a92c3d5ae9bf3f9aaa65",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0025",
+      "sha": "7e41fd524a53bed59c056fbe5864139b4ee33215",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0026",
+      "sha": "737177dfdeca37c7b40aecbf6f4bf0d6f4f0e643",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0027",
+      "sha": "c734ce98cf06c8288ca7ce0e3824dc5aa589d2a7",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0028",
+      "sha": "88a1907e71e9c8658ca5b3b5998b3057c767efb5",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0029",
+      "sha": "21a4862a24cd7ef018bfafaaad8ab00094776573",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0030",
+      "sha": "bcdc332740882cc0043703dc234e8b4013f618b0",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0031",
+      "sha": "ceb89468bd423bc3e44cde5e93b65eb67b1a65c8",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0032",
+      "sha": "de05c3b1d83699b540e183a16529f716cf6f73b6",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0033",
+      "sha": "678b2ebefc7c15bcd8ace8040ba812dd307bfc28",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0034",
+      "sha": "4a98202283c88f9d167f9cdcabe5faa664d47e54",
+      "size": 4194304
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.tar.xz.part0035",
+      "sha": "b24e67af2bcb9d3a0be12df1c07293510496ca54",
+      "size": 69104
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence_REPORT.md",
+      "sha": "52913d7839326e0ca355043c396510a35fae546f",
+      "size": 7675
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_evidence_VERIFICATION.json",
+      "sha": "f19e314db640bbea6e809ad7d9ea42244ebe8f6c",
+      "size": 5846
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_stage_cleanup_receipt.json",
+      "sha": "c14b90209bb6b05ecf050d6c16173be80fc0a336",
+      "size": 1472545
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/artifacts/study001_stage_reappearance_review.json",
+      "sha": "526112141cec507dd7cb539957c7f0c56d49c6aa",
+      "size": 5123
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/benchmark_models.py",
+      "sha": "031cc6ad8c11604deb7da43fc6dc5fd124854a5d",
+      "size": 5689
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/closure_audit.py",
+      "sha": "dc671ff123b192bc6ffe4c1347bbd7ca7f13847e",
+      "size": 16295
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/conditional_analysis.py",
+      "sha": "18f9f01a9f1f607492648db37ca8efa4716dcb6d",
+      "size": 31199
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/conditional_analysis_tests.py",
+      "sha": "133d5b3c0ca35299feea5eb0c2c30b4272d7f2ca",
+      "size": 2358
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/conditional_control.py",
+      "sha": "b848bbf404b5bb7b6fea6217ec5746044e0476e0",
+      "size": 11326
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/conditional_control_tests.py",
+      "sha": "49618c8c5f5912445297f6bf89ff4ab02b6c8cee",
+      "size": 6667
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/FSDD_UPSTREAM_README.md",
+      "sha": "46bd0964467843ca17917f63eb0bedd7bfe6a18b",
+      "size": 3978
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/native003/fresh_mnist.json",
+      "sha": "fdaa4b1546dd646e3e78cb6faa0cdc0284294efb",
+      "size": 22358
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/native003/fresh_mnist.npz",
+      "sha": "cf6ed9e341f0667babc714dfddf3c8218928b942",
+      "size": 99520
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/native003/generation_receipt.json",
+      "sha": "814e12ecbe37d65c85df5cd66b8424e49746125a",
+      "size": 1437
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/native003/generation_stdout.txt",
+      "sha": "831f56ede3f9a4a264719b2c2fc8101995c50ab1",
+      "size": 216
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/INDEX.json",
+      "sha": "071bad44c7b5193b7be7a33acf798f73ea5963ff",
+      "size": 1450
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/SOURCES.json",
+      "sha": "69dc54936cebbe8b80012ed47efd3da84c1ca9c6",
+      "size": 101154
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/fsdd.json",
+      "sha": "5bcfd60f33aa7b1d023fe7e64ab5cd57b5a1440c",
+      "size": 319285
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/fsdd.npz",
+      "sha": "7cdb05807024efa28db36da8c945abd6759d509c",
+      "size": 4107234
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/irregular.json",
+      "sha": "c7f3d873b1e809bfa849cdbe974c34d3f21794cf",
+      "size": 86262
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/irregular.npz",
+      "sha": "112a16f86545f42fb21b1100cbf691f5464c2b18",
+      "size": 817273
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/mnist.json",
+      "sha": "2049c336b42bb4c4c76cdcb4e31466f7a34fc61f",
+      "size": 229088
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/mnist.npz",
+      "sha": "009eae638d4cf0f6bb8f81c93673e31a782b6acf",
+      "size": 1367798
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/mqar.json",
+      "sha": "824198847b734600b18d30005bf8f050c7bc7f98",
+      "size": 74720
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/mqar.npz",
+      "sha": "fde0902ec2532c0dfb43317f85804ef9e3ec47d9",
+      "size": 592878
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/multimodal_select.json",
+      "sha": "7e2e4750361244cc438a5c0f3602f33d57fa48f8",
+      "size": 369947
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/multimodal_select.npz",
+      "sha": "5950753f66b0c5545936843a182cf693655a7f76",
+      "size": 5014215
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/selective_copy.json",
+      "sha": "58c1e680c1d0a2965df0882684e9a739feeb3427",
+      "size": 97794
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/selective_copy.npz",
+      "sha": "0150102962c5660fe4290f6163cfdd7ad221a847",
+      "size": 543463
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/datasets.py",
+      "sha": "188bb065ad088c41169a2ed69827a3a7b7577e25",
+      "size": 11164
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/datasets_tests.py",
+      "sha": "9554dd107052b94a20c07105dd8a8388aa807695",
+      "size": 2135
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/distributional_flow.py",
+      "sha": "8fb9cae564a0297c47bb34311a3c7096098fad15",
+      "size": 19033
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/distributional_flow_tests.py",
+      "sha": "3a236f8fbc9e518bcb8979eda8e08ca01d6c18ae",
+      "size": 4622
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/equal_updates_core002.py",
+      "sha": "c4676507864522910e3f3b2c65ed870adeceb7d6",
+      "size": 25018
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/equal_updates_core002_analysis.py",
+      "sha": "10e7b6c4fc05dcf08103cc196d36527a9bab2e81",
+      "size": 34485
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/equal_updates_core002_analysis_tests.py",
+      "sha": "6a7bd6a20f4ef6ea3d9898c5305184ffd427862b",
+      "size": 2281
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/equal_updates_core002_tests.py",
+      "sha": "cb7b9be31aeddd1d1ed52a2c5b22f1eae5bc341a",
+      "size": 5959
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/figures/SOURCES.json",
+      "sha": "b581bb9f2e0eb66d9fcca907b0a9481927f19ef4",
+      "size": 2372
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/figures/content_and_runtime.png",
+      "sha": "70fb7c34e3a2a592906f4f4505f2b6b40c491af1",
+      "size": 239975
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/figures/content_and_runtime.svg",
+      "sha": "3dd4768830cea7ea5f32fde724f31cd89edfc942",
+      "size": 153083
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/live_study.py",
+      "sha": "5b038b257b815488596504e588ec51e8acc84bd8",
+      "size": 29326
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/live_study_tests.py",
+      "sha": "718f221f90ecf5e85b2aa30f0b7a597f1278564f",
+      "size": 5371
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/model.py",
+      "sha": "1e73659c7490610c6b6b7d6cd5ac2e67f70ecd68",
+      "size": 15777
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/model_tests.py",
+      "sha": "1e483c2272319c2e84982eda83c52bdbfdd0fe02",
+      "size": 10644
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/moving_flow.py",
+      "sha": "7358e4284964a6faa836917d3534d47f6f2a6488",
+      "size": 25358
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/moving_flow_tests.py",
+      "sha": "038816e1ac45bafc9bcf41d4b756414cc85107ec",
+      "size": 6782
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_adversarial.py",
+      "sha": "5d7943d936b3aa0d6e09a238992b33e1cb98c65d",
+      "size": 14614
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_common.py",
+      "sha": "65dceddb075e774cdf3165cad8b68e18098b8010",
+      "size": 2644
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_data.py",
+      "sha": "6e456971538c29175862a457e3768d485bc39d15",
+      "size": 11889
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_eval.py",
+      "sha": "ea25258f647ca7ac6b20fb349f24bf0296806aab",
+      "size": 17824
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_heads.py",
+      "sha": "061d47ebcd8b78448945e721f2f5b5cf11a281a6",
+      "size": 5645
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_run.py",
+      "sha": "f254a78ff9fa40ac24d660c3eccc61c8cd3c8752",
+      "size": 13169
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_tests.py",
+      "sha": "d3a2e8b0987e64d16da5327557459320d3e6892a",
+      "size": 8413
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_train.py",
+      "sha": "1fb11dfa111e99d0fb9100105813c00d93f71b5b",
+      "size": 11837
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_bridge.py",
+      "sha": "3674b0e29dbe2e2fd0d0231b1a8605d9db2d7b01",
+      "size": 7481
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_tests.py",
+      "sha": "80656d8bde654bb5917191b290a53badb8b37c21",
+      "size": 3694
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_vendor/MANIFEST.json",
+      "sha": "736e5529365c65b1f051bd169e0c4379fdd502e2",
+      "size": 1870
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_vendor/UPSTREAM_BUILD_RECEIPT.json",
+      "sha": "5922043e73c2adb572a26ec846ecf6690c097f76",
+      "size": 23881
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_vendor/adapter.py",
+      "sha": "5cde9673c1958888846c66547076e8fcf4220b98",
+      "size": 11802
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_vendor/host.part-000.gzpart",
+      "sha": "e442bce7f2eb2bfcd81319e09ebc8a0a47f6a83b",
+      "size": 400000
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_vendor/host.part-001.gzpart",
+      "sha": "7274a5a98efc4fa1ea7fd81e2df3ae52ea27d8a1",
+      "size": 180191
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/oracle.py",
+      "sha": "9c700911385b6becd6c4d21b463cafa1835a5d93",
+      "size": 12653
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/oracle_fast.py",
+      "sha": "6c3cb4d9a2c74db1a649ca3c8c76f8e4f0cb0d17",
+      "size": 11934
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/oracle_fast_tests.py",
+      "sha": "ec29c3e2659662a5b405587a8ee1a8297c74c113",
+      "size": 17219
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/oracle_tests.py",
+      "sha": "f9a075a90cbdcd4e64b445ee4b79598824537b1f",
+      "size": 18839
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/oracle_torch.py",
+      "sha": "bdd71da9e4d93c53f0880b0d974b19c553d93889",
+      "size": 6083
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/plot_results.py",
+      "sha": "d6ed50276f963d0a71d16404fd4728ee8f219356",
+      "size": 5479
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/restore_native.py",
+      "sha": "f572c16096f2f338fe88c6d2bf66beb738f2a827",
+      "size": 2001
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/analysis_preflight001.json",
+      "sha": "964293bf4ac3b12862cc0cd0e7d786ee2a0ee4fb",
+      "size": 2839
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/closure001.json",
+      "sha": "9f04e9fde14db1423debb05d5f494887b383b674",
+      "size": 20837
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/conditional001/AUDIT.json",
+      "sha": "0d17e83623f0d6c481c71e8ca49f51fd8eb1d2aa",
+      "size": 27371
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/conditional001/COMPARISON.json",
+      "sha": "4c2278ef05cc44c8abcdd06291a4932e5fba9050",
+      "size": 87497
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/conditional001/COMPLETE.json",
+      "sha": "c8e8cbc0d3250ae1b9e29f15ec896d352d623e7f",
+      "size": 28993
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/conditional001/REGISTRATION.json",
+      "sha": "57d44d0e1747506e53c2e6cd4bbe9a19f2a38bcd",
+      "size": 5798
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/conditional001/REPORT.md",
+      "sha": "22ed5dae20e3e8e0441498e4f77e515bf9a8baa3",
+      "size": 7195
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/ANALYSIS.json",
+      "sha": "c1de5f8036c2520e640e174858e32b7737b69a86",
+      "size": 388260
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/ANALYSIS.process.log",
+      "sha": "c53f7d1be88896c08b69386d8201236fabbe3d7b",
+      "size": 1693
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/ANALYSIS_EXECUTION.json",
+      "sha": "59e2d51cc8f3216ac9a7273723c2a4071d8d2a4c",
+      "size": 560
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/COMPLETE.json",
+      "sha": "1b8f54d4d07e69504278875608cc0217594dfad1",
+      "size": 20999
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/COMPUTE.csv",
+      "sha": "4bb76f6c78777dd0736385351eb1324b4988b6ef",
+      "size": 1416
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/FINAL_AUDIT.json",
+      "sha": "cc78162179f8ece699e467f9ab870157902eb7c7",
+      "size": 6226
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/FINAL_AUDIT.md",
+      "sha": "3462d1a4586104e98d5fbcc2461594b00e11a33c",
+      "size": 7437
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/README.md",
+      "sha": "d81af65240af3af09671528a082d7123b678ff4a",
+      "size": 1817
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/REFERENCE_PREFIX_AUDIT.json",
+      "sha": "579b4d3f16552b08148ee73654f594bd421ab0d8",
+      "size": 670540
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/REGISTRATION.json",
+      "sha": "275eb4126f878eaa01fc1f3069c494e9e4e8bd2f",
+      "size": 472
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/REPORT.md",
+      "sha": "793eb0bba166fbee937cf3c94b4ab1a94f2eedbc",
+      "size": 9829
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/TABLE.csv",
+      "sha": "e22e7e4a4598339ba3fc22a8b57f072b4efe20b4",
+      "size": 8840
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis001/INDEX.json",
+      "sha": "9cf2e1db674e8d1aef6a0d70474426c0913ffd3c",
+      "size": 1509
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis001/equal_updates_core002_analysis.py",
+      "sha": "76bbcb8263113617948ed8cb1e8929b36ea3e0d9",
+      "size": 29020
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis002/ANALYSIS.json",
+      "sha": "100d20fdbabf3d4030a916657fc25cc2703a52dd",
+      "size": 528200
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis002/COMPUTE.csv",
+      "sha": "9a94be5812c510e9da447a0c088f04e7b72de2cb",
+      "size": 1412
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis002/EXECUTION.json",
+      "sha": "f2ff9556e4e441747868e1f8c82bcf361d967f5e",
+      "size": 1036
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis002/PREFLIGHT.json",
+      "sha": "02ce281ae2d233cb9fb13a17efdd0923b35718b2",
+      "size": 403
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis002/REPORT.md",
+      "sha": "6a419590c3606a26f58cc9e7c6ec0c3e5b100297",
+      "size": 11034
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis002/TABLE.csv",
+      "sha": "25a734e6d95600d9044b59dd40df4ac3c4162107",
+      "size": 9319
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis002/process.log",
+      "sha": "a5cd41c6fec39b53378fc0beb2a676fca0677151",
+      "size": 96
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/equal_updates_core002_preflight001.json",
+      "sha": "a7a36e090438853857d276278ec41c45204c2912",
+      "size": 1464
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/fast_solver001/RESULTS.json",
+      "sha": "453a1cd3ab7045c30c85d88f7d08fbf828ecf592",
+      "size": 653909
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/flow_repair001/results.json",
+      "sha": "6feb8de29f20003cec8df1334468000cf13a2d46",
+      "size": 64623
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/moving_flow001/REFINEMENT.json",
+      "sha": "da1c4eac3b731cdfaa84d6215aeebfdf7abc328d",
+      "size": 11442
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/moving_flow001/results.json",
+      "sha": "e6a235e5d349316380750d68e12fca31f2dea4a0",
+      "size": 237468
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native002/REPORT.md",
+      "sha": "0b50dd11125c273ed64d9f6e85006821987a9b04",
+      "size": 8783
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native002/REVIEW.json",
+      "sha": "b9f5a952af7478b3e35dd74092ba8868b2254d17",
+      "size": 1878
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native002/SUMMARY.json",
+      "sha": "4a0349eb05eb883a683bec651acc06598ed7e81a",
+      "size": 240257
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native003/COST_SCENARIOS.json",
+      "sha": "241a10d738c0eeb780de80446a31a2a3a2a58d65",
+      "size": 163221
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native003/REPORT.md",
+      "sha": "0f97e7b391ec808c04911101d96bb6fbeaa210d3",
+      "size": 16933
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native003/REVIEW.json",
+      "sha": "cbb1924d36cc67a4b26e5c140faab2bd5287fa1c",
+      "size": 3312
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native003/SUMMARY.json",
+      "sha": "71662e322eafc24f5acb47b91fbc0ba2f1989d26",
+      "size": 682323
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native003/receipt_audit.py",
+      "sha": "cd9eb037621c07493d960b2bfaf8c0ebe6877662",
+      "size": 16649
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native003_adversarial001/REPORT.md",
+      "sha": "40453a5adb061009972f71a2ef169bae504e2d2b",
+      "size": 7492
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native003_adversarial001/REVIEW.json",
+      "sha": "ff2cd933045bf59542bafc998971fffe368a00ca",
+      "size": 1062
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/native003_adversarial001/SUMMARY.json",
+      "sha": "76eb11b1de6bba4cc28d9af5564f756294d8ff86",
+      "size": 20596
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/oracle_validation.json",
+      "sha": "37160fabf02421aa9a888993551990608ffa33c3",
+      "size": 23453
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/scaling002/environment.json",
+      "sha": "cee3a2b52ae7a5bbc6a1309d0b72f2402004bd21",
+      "size": 456
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/scaling002/performance.json",
+      "sha": "b360cca9fe54af0625e3f32a57a9e7022286e2bf",
+      "size": 181764
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/scaling002/provenance.json",
+      "sha": "86dbe56f38868d8a0b79c01bb5f196cab1a99676",
+      "size": 733
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/scaling002/streaming.json",
+      "sha": "c67faff2899fc72d225e7d965e3a9178cf4661d9",
+      "size": 1321
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/scaling002/summary.json",
+      "sha": "8cbbf0c51a1c71423290c3363091f443e41c16be",
+      "size": 4410
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/scaling002/width_depth.json",
+      "sha": "3c0e0db2e6d37612e3816636c165f6a70aabb598",
+      "size": 24742
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/COMPLETE.json",
+      "sha": "f62c0648890c7357c953b0aa920b499b420e41d8",
+      "size": 124913
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/IDENTITY.json",
+      "sha": "f810d4acc403d1a0cbb5a583382d468db5a38f5a",
+      "size": 27435
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis001/ANALYSIS.json",
+      "sha": "af623c2d8f08b88f679edd1f70d996bcfff2377e",
+      "size": 968071
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis001/CORE_TABLE.csv",
+      "sha": "daca8b5072b9645b8706fef0ac954efaedd655a1",
+      "size": 16946
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis001/DATA_STRATA.json",
+      "sha": "a86628eb98025df591902d191e8c0caf38c3b113",
+      "size": 515788
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis001/MECHANISM_TABLE.csv",
+      "sha": "1f4d7b08c033bf0e9c7fec43f591b2663e8d92c2",
+      "size": 937
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis001/MODEL_COMPUTE.csv",
+      "sha": "a3a8f96c6101d0278506cf9e84ff14ca2c8a4327",
+      "size": 1767
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis001/REPORT.md",
+      "sha": "8cc563864e19193158ea0062de778d6f71ccd0fb",
+      "size": 23014
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis001/SECONDARY_COVERAGE.csv",
+      "sha": "9911dad067d10a50486f8d4f714245e2e9fdc776",
+      "size": 2120
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis001/SUPPLEMENTARY_AUDIT.json",
+      "sha": "138e5dd8c7d39efc905fb51dfdf09b1e383b4d48",
+      "size": 144578
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis001/TRAINABILITY.json",
+      "sha": "478ffa62e1d7d82be26d167c1c04cd4d912c36ec",
+      "size": 362069
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis001_EXECUTION.json",
+      "sha": "cdbd9add191fe832edf0c93c3b49236989652bd3",
+      "size": 507
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/analysis_report_EXECUTION.json",
+      "sha": "0668180ea7ee6df8cf13b3b2f84b41221e81eb9e",
+      "size": 515
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/secondary128/REPORT.md",
+      "sha": "2e016dc42ed82a510d697c992cd74b342e421a70",
+      "size": 5146
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/secondary128/SECONDARY128.json",
+      "sha": "16d2a6cee0afa5b86e0699c084ce586ff2dd98c9",
+      "size": 858939
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/results/study001/secondary128_EXECUTION.json",
+      "sha": "d9c2674af30b889da565a5598cf87fb7ad8cf7a8",
+      "size": 545
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/run_matrix.py",
+      "sha": "8a7c1a8ec1258c4f1037325b3a07448ff2750a7a",
+      "size": 10913
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/run_native.py",
+      "sha": "367c35839fb3e4c5ceaaa6f5db411c71f699f547",
+      "size": 11744
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/run_native_live.py",
+      "sha": "14f152817ee12c62fd5cf6e347c4fc0ab55bc984",
+      "size": 11170
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/scale.py",
+      "sha": "670a53a393506dd007adefc70c5155e392363d7b",
+      "size": 16205
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/scale_tests.py",
+      "sha": "57a8bbb6487de97f92cdd033c1eb86e1cfb08f4a",
+      "size": 2598
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/training.py",
+      "sha": "dabc50dc2b03d016b6a99e715bfe9503175d8dce",
+      "size": 17911
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/training_tests.py",
+      "sha": "6a7f18e65f9f64926ae99a4545db275384cfffa1",
+      "size": 7131
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/vendor/LICENSE.ncps",
+      "sha": "f91dfe25d84075625855fc6a9d3ec6fbaaf94f06",
+      "size": 340
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/vendor/PROVENANCE.json",
+      "sha": "d077a5497a3b85a7c73bc7cabf40a9a1b2c5ee11",
+      "size": 420
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/vendor/cfc_cell.py",
+      "sha": "a21f8be7e623abbbff58e2f487d42eb1ea0a6e0e",
+      "size": 5727
+    },
+    {
+      "path": "AGENTS.md",
+      "sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "size": 22519
+    },
+    {
+      "path": "experiments/continuous_spiking_network/__init__.py",
+      "sha": "064118989d68694406192b5c70937d0423c8d9a6",
+      "size": 77
+    },
+    {
+      "path": "experiments/continuous_spiking_network/audit.py",
+      "sha": "e3ee856d1ae51301ae3229abafd6a861c1a5da6c",
+      "size": 12283
+    },
+    {
+      "path": "experiments/continuous_spiking_network/audit_checks.py",
+      "sha": "ac6e287bd47bb65882c5e26c2e5cba537df725f0",
+      "size": 18582
+    },
+    {
+      "path": "experiments/continuous_spiking_network/baseline.py",
+      "sha": "fbf371ad57b361804b7e447c3d8cad7e29d7ad4a",
+      "size": 14624
+    },
+    {
+      "path": "experiments/continuous_spiking_network/boundary.py",
+      "sha": "a4532325ecd86a525cf21b0deb4d2d12d405551c",
+      "size": 10197
+    },
+    {
+      "path": "experiments/continuous_spiking_network/boundary_study.py",
+      "sha": "7d03b36d769c8f61379daaf15590772bbd7ec363",
+      "size": 16596
+    },
+    {
+      "path": "experiments/continuous_spiking_network/cell.py",
+      "sha": "23521afecbb4e69f40a7d930d2802a479ae7d426",
+      "size": 7589
+    },
+    {
+      "path": "experiments/continuous_spiking_network/data.py",
+      "sha": "7c5997eec610ffd06051d992c81bf83cecc54784",
+      "size": 22136
+    },
+    {
+      "path": "experiments/continuous_spiking_network/kernels.py",
+      "sha": "f9222deb2443af064346ff67a16b1cd8bec05b8d",
+      "size": 4000
+    },
+    {
+      "path": "experiments/continuous_spiking_network/measure_study.py",
+      "sha": "3a145df3347e118775d4dada8e25a5b2f889725b",
+      "size": 1905
+    },
+    {
+      "path": "experiments/continuous_spiking_network/models.py",
+      "sha": "ec6a0bdb962b24fb6f9f1d3880f4f5607da7f03a",
+      "size": 2942
+    },
+    {
+      "path": "experiments/continuous_spiking_network/performance.py",
+      "sha": "2127b29ab226b7cbbf0b6b036bd95ac2f2fe1f83",
+      "size": 15332
+    },
+    {
+      "path": "experiments/continuous_spiking_network/prepare_data.py",
+      "sha": "67b4062337a515c578a3938c05e8aafdec88035b",
+      "size": 5688
+    },
+    {
+      "path": "experiments/continuous_spiking_network/records.py",
+      "sha": "88f1a2b9570cc2ab63ae8619cdfe04533b7e44ca",
+      "size": 4452
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/__init__.py",
+      "sha": "8c10a8ba8bee52cb6c439475f47f7f1297da3501",
+      "size": 471
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/hitting.py",
+      "sha": "b4b041277814acdc5efdb25d0597b423b6ef4013",
+      "size": 6569
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/one_shot.py",
+      "sha": "49949899aa0aad1413852752b8de2d472820a001",
+      "size": 4042
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/renewal.py",
+      "sha": "7940fc506c5fd7f0feca65195022381f4c3b878c",
+      "size": 9459
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/roots.py",
+      "sha": "89e48485b30a3397cba8ae0bcc7c8689713de669",
+      "size": 2842
+    },
+    {
+      "path": "experiments/continuous_spiking_network/results/study001/analysis/boundary_independent_review.py",
+      "sha": "6f3c964b0e98f0e721be9a28261f9b68f5998335",
+      "size": 17929
+    },
+    {
+      "path": "experiments/continuous_spiking_network/results/study001/analysis/render_figures.py",
+      "sha": "d478c44d813d1deabe12908a541416b102662d93",
+      "size": 18145
+    },
+    {
+      "path": "experiments/continuous_spiking_network/results/study001/analysis/retry_resource_failures.py",
+      "sha": "e46d5b768b53365f7183cf1529abf26de466d459",
+      "size": 3465
+    },
+    {
+      "path": "experiments/continuous_spiking_network/results/study001/analysis/summarize_results.py",
+      "sha": "0652c20b3284b31291113ea369fac0ba0ffe15ba",
+      "size": 35449
+    },
+    {
+      "path": "experiments/continuous_spiking_network/results/study001/analysis/supplementary_audit.py",
+      "sha": "5faa9ebec0ae4e4715762c51c261940367f3b3ea",
+      "size": 20824
+    },
+    {
+      "path": "experiments/continuous_spiking_network/run_study.py",
+      "sha": "c4ad381166419ac750bcb8a21b05de73dcb8c5cc",
+      "size": 6403
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_audit.py",
+      "sha": "8f6e2aa33946da45b6e2f9a9b65b2f09aeb83619",
+      "size": 15479
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_baselines.py",
+      "sha": "ec1cf44c29286e4b63671b2ac8b185441a86e960",
+      "size": 12714
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_boundary_study.py",
+      "sha": "8ebc26003db813ac02e4dc828f5dd01dd4703a88",
+      "size": 3195
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_cell.py",
+      "sha": "da03c7513ef859a2682a9e838a88ba7a9a032567",
+      "size": 8966
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_data.py",
+      "sha": "138cb2498562738ddbbf5f4aaf16cc872842d20a",
+      "size": 9236
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_kernels.py",
+      "sha": "1eecc13283c855288c50d16e2d83c07c1244f92a",
+      "size": 3996
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_performance.py",
+      "sha": "d8fc3e60a291525e329fe1c6acd786d8dfe77cd6",
+      "size": 6273
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_training.py",
+      "sha": "742eaf76180f53d445f0a3216c7052e398f57695",
+      "size": 2705
+    },
+    {
+      "path": "experiments/continuous_spiking_network/train.py",
+      "sha": "68478b45880dd599bc632e1283f9a414321dd262",
+      "size": 10669
+    }
+  ],
+  "restoration_receipt_sha256": "f6123d8d683b85f69c9eeb8c692d857900150522bd74a2f90efadfbde33c49ef",
+  "prior_results_unchanged": true,
+  "scope": "New independent v2 experiment; prior results are not replaced."
+}

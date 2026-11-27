@@ -1,0 +1,107 @@
+{
+  "budget": {
+    "address_space_bytes_per_fit": 8589934592,
+    "cleanup_grace_seconds": 30,
+    "concurrency": 2,
+    "finalization_reserve_seconds": 300,
+    "minimum_available_memory_bytes": 17179869184,
+    "minimum_output_disk_free_bytes": 2147483648,
+    "peak_rss_stop_bytes_per_fit": 6442450944,
+    "scientific_wall_seconds_per_fit": 6000,
+    "threads_per_fit": 1
+  },
+  "controller_affinity": [
+    0,
+    1
+  ],
+  "controller_signals": [],
+  "fits": {
+    "hcsn-s211-lr0.001": {
+      "assigned_cpu": 0,
+      "cleanup_budget_overrun_wall_seconds": 0.0,
+      "cpu_system_seconds": 47.67217,
+      "cpu_total_seconds": 5721.835218,
+      "cpu_user_seconds": 5674.163048,
+      "dispatch_monotonic": 420378.574039716,
+      "exit_code": 0,
+      "external_stop": null,
+      "full_fresh_process_wall_seconds": 5805.587805787043,
+      "hard_killed": false,
+      "identity": "hcsn-c2-independent-continuation-20261119-d741-001-hcsn-s211-lr0.001",
+      "observed_memory_high_water_bytes": 3587870720,
+      "peak_rss_kib": 3503780,
+      "pid": 1036680,
+      "post_deadline_wall_scope": "May include in-flight compute and finalization; no extra scientific budget or qualification credit.",
+      "post_external_stop_wall_seconds": null,
+      "raw_wait_status": 0,
+      "result_error": null,
+      "result_sha256": "4d28b70f559134469ed8726747166284e875d5f5e5e30f5c65285cb44591928f",
+      "result_status": "BUDGET_STOP",
+      "rss_limit_exceeded": false,
+      "scientific_wall_budget_seconds": 6000,
+      "status": "REVIEWABLE_TERMINAL",
+      "stop_receipt_error": null,
+      "wait4_return_monotonic": 426184.161845503,
+      "wall_within_scientific_budget_seconds": 5805.587805787043
+    },
+    "hcsn-s307-lr0.001": {
+      "assigned_cpu": 1,
+      "cleanup_budget_overrun_wall_seconds": 0.0,
+      "cpu_system_seconds": 48.37394,
+      "cpu_total_seconds": 2783.2699629999997,
+      "cpu_user_seconds": 2734.896023,
+      "dispatch_monotonic": 420378.579135526,
+      "exit_code": 0,
+      "external_stop": null,
+      "full_fresh_process_wall_seconds": 2817.803326756053,
+      "hard_killed": false,
+      "identity": "hcsn-c2-independent-continuation-20261119-d741-001-hcsn-s307-lr0.001",
+      "observed_memory_high_water_bytes": 3621642240,
+      "peak_rss_kib": 3536760,
+      "pid": 1036681,
+      "post_deadline_wall_scope": "May include in-flight compute and finalization; no extra scientific budget or qualification credit.",
+      "post_external_stop_wall_seconds": null,
+      "raw_wait_status": 0,
+      "result_error": null,
+      "result_sha256": "4d090fd0feaa9f98a8a255852dc4e7a0e9d554650eadb2c26ff8d58b7fcae57a",
+      "result_status": "COMPLETED_PLATEAU",
+      "rss_limit_exceeded": false,
+      "scientific_wall_budget_seconds": 6000,
+      "status": "REVIEWABLE_TERMINAL",
+      "stop_receipt_error": null,
+      "wait4_return_monotonic": 423196.382462282,
+      "wall_within_scientific_budget_seconds": 2817.803326756053
+    }
+  },
+  "full_six_fit_replay": false,
+  "identity": "hcsn-c2-independent-continuation-20261119-d741-001",
+  "old_controller_terminal": "UNKNOWN",
+  "original_admission_reused": false,
+  "schema": "hcsn-c2-independent-controller-v1",
+  "source_freeze": {
+    "files": {
+      "BINDINGS.json": "68cfdb6f30c7ce1b06e1f0f41f2f7b97c8404b6000e26e13cffc55bedc764070",
+      "COLD_PREFLIGHT_REVIEW.json": "f3f11142c4cdf41c93e97b296f4b12a33191226d6ba67b835d8de469bd46d9f6",
+      "REQUEST.json": "4d437725c071e9aaa8df53b18177f3eab2e3e0b561cacc81caaa3726c0861491",
+      "controller.py": "10e03e9650650a1cd089ba0e19852db13ee85f8df88da0e8cc0d05ac1327006b",
+      "prepare.py": "134c9a74137156ed87c74761a9a8196cbd41f08e24e7969238c08996278d260c",
+      "runner.py": "71ccf6b1dcd1895cb24e2e1008277bd94369bafe15c95b3538e03708c0dcd7da"
+    },
+    "freeze_sha256": "4e537af088a70a4b5ea84ab4493184632b92ba7619663d8e59916f71f4b9f99b",
+    "identity": "hcsn-c2-independent-continuation-20261119-d741-001"
+  },
+  "source_freeze_after": {
+    "files": {
+      "BINDINGS.json": "68cfdb6f30c7ce1b06e1f0f41f2f7b97c8404b6000e26e13cffc55bedc764070",
+      "COLD_PREFLIGHT_REVIEW.json": "f3f11142c4cdf41c93e97b296f4b12a33191226d6ba67b835d8de469bd46d9f6",
+      "REQUEST.json": "4d437725c071e9aaa8df53b18177f3eab2e3e0b561cacc81caaa3726c0861491",
+      "controller.py": "10e03e9650650a1cd089ba0e19852db13ee85f8df88da0e8cc0d05ac1327006b",
+      "prepare.py": "134c9a74137156ed87c74761a9a8196cbd41f08e24e7969238c08996278d260c",
+      "runner.py": "71ccf6b1dcd1895cb24e2e1008277bd94369bafe15c95b3538e03708c0dcd7da"
+    },
+    "freeze_sha256": "4e537af088a70a4b5ea84ab4493184632b92ba7619663d8e59916f71f4b9f99b",
+    "identity": "hcsn-c2-independent-continuation-20261119-d741-001"
+  },
+  "status": "REVIEWABLE_TERMINALS",
+  "subprocesses_started": 2
+}

@@ -1,0 +1,730 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/branch_protection_audit",
+  "reviewed_at_utc": "2026-11-21T12:48:52.055671+00:00",
+  "decision": "PASS_STATIC_PUBLICATION_DIFF_AND_KNOWN_PROTECTION_BOUNDARY; RUNTIME_QUALIFICATION_INCOMPLETE",
+  "candidate": {
+    "commit": "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d",
+    "tree": "3bd4870ff4d8a1da3d9d1434ba5ba1c329c62d18",
+    "parents": [
+      "132b3227ae1978b5ae2eba5b64efef53158a92f6"
+    ],
+    "raw_commit_sha256": "6a408ac8de311e84046125944c5aa0c79f5a837b104014dc5fc1e73c74ad97c0"
+  },
+  "base": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+  "commit_chain": [
+    {
+      "commit": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+      "tree": "08f5d464bedff1c1acbb3abe1d7f28e43827854f",
+      "parents": [
+        "ebe248b21b033fb822f2bb11f9ab1dfd3e42abaf"
+      ],
+      "raw_commit_sha256": "5c00b24444aef706838d553d74bfc78acf15b8e8115066d24ef16362d98cb17b"
+    },
+    {
+      "commit": "8016166226cd6206ba09c83fa64acc91eca368ba",
+      "tree": "8616ba3b3667549340e0ec10eb15fc3df745ad3d",
+      "parents": [
+        "6cbad406a4a203201edc0e103c1377d3664e3fbe"
+      ],
+      "raw_commit_sha256": "803882df23dbf705f546cd11d9fb12f739f4e9fb3576f7e7811c756e18e4bc97"
+    },
+    {
+      "commit": "394e28812368f5174b890cea51ff13e882231756",
+      "tree": "1fb7f68ff46df860d61e6b3d7bfe2a7cca484caa",
+      "parents": [
+        "8016166226cd6206ba09c83fa64acc91eca368ba"
+      ],
+      "raw_commit_sha256": "e627d110307d99d16f65c4b9a8c7686a5f8b5280be36fdebee0af34e69c8a847"
+    },
+    {
+      "commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "parents": [
+        "394e28812368f5174b890cea51ff13e882231756"
+      ],
+      "raw_commit_sha256": "ded3be09dfe27a9fb2716e8635ed4c3dc6184c663c2dff247bfc120337adde3b"
+    },
+    {
+      "commit": "0847396844638608708608072ec94961bb20458b",
+      "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "parents": [
+        "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+        "4a120a0bba8b493407930924822eb6cf38279976"
+      ],
+      "raw_commit_sha256": "7aa428a277ea6e81ebeb82076006e9a25c270a2dc494ebfb7febbfe3065fbc7d"
+    },
+    {
+      "commit": "132b3227ae1978b5ae2eba5b64efef53158a92f6",
+      "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "parents": [
+        "0847396844638608708608072ec94961bb20458b",
+        "dbed60c6372a148a934e48e9a08ba88aa2a536e2"
+      ],
+      "raw_commit_sha256": "86a77ead19741b6e7d439f5f97df3d61425ab46a8c96c9b45f1f239b4bb8741b"
+    },
+    {
+      "commit": "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d",
+      "tree": "3bd4870ff4d8a1da3d9d1434ba5ba1c329c62d18",
+      "parents": [
+        "132b3227ae1978b5ae2eba5b64efef53158a92f6"
+      ],
+      "raw_commit_sha256": "6a408ac8de311e84046125944c5aa0c79f5a837b104014dc5fc1e73c74ad97c0"
+    }
+  ],
+  "scope": "Independent read-only review of the bounded candidate, recorded test bindings, and known protection metadata; not a complete source audit of every branch",
+  "tree_boundary": {
+    "base_leaves": 59349,
+    "parent_leaves": 59349,
+    "candidate_leaves": 59349,
+    "new_delta_from_parent": [
+      ".github/workflows/hepta-architecture-convergence.yml"
+    ],
+    "exact_changed_paths_from_base": [
+      ".github/workflows/hepta-architecture-convergence.yml",
+      "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+      "codex-rs/hepta-agentd/src/neuron_generation_learning_readback_test_support.rs",
+      "codex-rs/hepta-authbus/src/owner_tests.rs",
+      "scripts/memory_cell/procedural_bundle_trial.py",
+      "scripts/memory_cell/procedural_observations.py",
+      "scripts/memory_cell/test_procedural_bundle_trial.py",
+      "scripts/memory_cell/test_procedural_observations.py"
+    ],
+    "unchanged_leaves_from_parent": 59348,
+    "unchanged_leaves_from_base": 59339,
+    "all_existing_path_modes_preserved": true,
+    "no_added_deleted_paths": true,
+    "same_subtrees_as_executed_5a": {
+      "codex-rs": "2c6b4d3b59589e0ffea5a7147b50152769fa0280",
+      "qa/b4-no-bypass": "7c38072dea88f69a70036577f18e7748bb938bb3",
+      "scripts": "669439172e4b0b5a4c60db04472229de4a15c1aa",
+      ".github/scripts": "eec91daf76c6d95480c19434f2d96c7bf6ef2405"
+    },
+    "same_original_controls_as_5a": {
+      "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "codex-rs/Cargo.lock": "902c9f1d6e2b381385b4697d4bdb69bc9f218f12",
+      "codex-rs/Cargo.toml": "a8a239fd98a0732e4baefe6b5008ea3314c54ace",
+      "codex-rs/rust-toolchain.toml": "917d2492264a35bc9c0feaef41878d8825870866",
+      "codex-rs/.config/nextest.toml": "dee9888eb89babc27201e5fd19b640ec319aa79e",
+      "scripts/hepta_ci_exec.py": "0f1b216a754a718acc37e019495be3ffc2fd9b37",
+      "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+    },
+    "complete_tree_metadata_verified": true,
+    "whole_repository_blob_payload_materialized_claim": false
+  },
+  "architecture_budget": {
+    "yaml_path": "jobs.qualification.timeout-minutes",
+    "before": 60,
+    "after": 120,
+    "only_one_yaml_field_changed": true,
+    "exact_text_only_one_number_changed": true,
+    "commands_flags_runners_resources_assertions_selections_unchanged": true,
+    "per_command_timeout_seconds_unchanged": 3600,
+    "product_deadlines_unchanged": true,
+    "native_HIA_60_minute_gate_unchanged": true,
+    "cause_of_original_cancel": "Consistent with the explicit 60-minute job budget, but no cause/actor annotation proves timeout was the cancellation trigger",
+    "performance_gate_relaxed": false,
+    "new_full_Architecture_job_pass_claim": false
+  },
+  "source_reviews_bound_to_exact_blobs": [
+    {
+      "before": "fa76e846c514cc12e23bbd382246b122fccecf7d",
+      "after": "b6163d094b4f91350010c0a400ea2d700deea64e",
+      "review": "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/PROPOSAL-REVIEW.json",
+      "kind": "qualification job wall-clock orchestration budget only, 60 to 120 minutes",
+      "mode": "100644",
+      "path": ".github/workflows/hepta-architecture-convergence.yml"
+    },
+    {
+      "review": "/workspace/scratch/c1a0d7534606/seven-fix-review/INDEPENDENT-PROOF.json",
+      "kind": "test-only Rust cleanup; production portions and existing verifier bodies unchanged",
+      "before": "389136532ef4c6f6abbb5a6aeb358c2b1fffd963",
+      "after": "2b92e0a38ccfa4fadf07cda7fbfaa0f44e1bc0f1",
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs"
+    },
+    {
+      "review": "/workspace/scratch/c1a0d7534606/seven-fix-review/INDEPENDENT-PROOF.json",
+      "kind": "test-only Rust cleanup; production portions and existing verifier bodies unchanged",
+      "before": "1007c7a767d36494e327da538760988bd7faa1c8",
+      "after": "b1ea163ca43fdcffe0c50118c4dc37ff652995bf",
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs"
+    },
+    {
+      "review": "/workspace/scratch/c1a0d7534606/seven-fix-review/INDEPENDENT-PROOF.json",
+      "kind": "test-only Rust cleanup; production portions and existing verifier bodies unchanged",
+      "before": "3a8d21d2c5d10154f746ae781dacffaa6de23a36",
+      "after": "b08197190ade39809e0982772a3ec201a9fbf832",
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs"
+    },
+    {
+      "review": "/workspace/scratch/c1a0d7534606/seven-fix-review/INDEPENDENT-PROOF.json",
+      "kind": "test-only Rust cleanup; production portions and existing verifier bodies unchanged",
+      "before": "a0c426d1ad2d4f8b882574f34810e7d44eb3252a",
+      "after": "3211c686d400e62ce196289957d9d3ec559c49eb",
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback_test_support.rs"
+    },
+    {
+      "before": "b4523b470b6c866776b3c5ae2b66801e74ef94d1",
+      "after": "8045757f7ea65d48534409f07541f5400712b116",
+      "review": "/workspace/scratch/c1a0d7534606/authbus-fixture-independent-review.json",
+      "kind": "private Unix test fixture construction/canonicalization; six test bodies and production owner unchanged",
+      "mode": "100644",
+      "path": "codex-rs/hepta-authbus/src/owner_tests.rs"
+    },
+    {
+      "before": "6f4681e1cd63a3111aa79e9ffa55ac9e21b2fe18",
+      "after": "d56c6140a7676be84ff30f6fb4571bfcb67412e1",
+      "review": "/workspace/scratch/c1a0d7534606/format-repair/format-review.json",
+      "kind": "Ruff formatting; complete Python AST, comments, assertions and test names unchanged; punctuation tokens are not byte-identical",
+      "mode": "100644",
+      "path": "scripts/memory_cell/procedural_bundle_trial.py"
+    },
+    {
+      "before": "dc345bf5ebfa8acb33c711cfffbc1e1fe4d789ab",
+      "after": "2efcd58c0f5ae89b97bacbfe9fa138d96291d421",
+      "review": "/workspace/scratch/c1a0d7534606/format-repair/format-review.json",
+      "kind": "Ruff formatting; complete Python AST, comments, assertions and test names unchanged; punctuation tokens are not byte-identical",
+      "mode": "100644",
+      "path": "scripts/memory_cell/procedural_observations.py"
+    },
+    {
+      "before": "abaac9bfe1d19cc2fe4826ceb356d813e2135a36",
+      "after": "4f613805e0c7731cc98c4b48337ea78cbc92cb52",
+      "review": "/workspace/scratch/c1a0d7534606/format-repair/format-review.json",
+      "kind": "Ruff formatting; complete Python AST, comments, assertions and test names unchanged; punctuation tokens are not byte-identical",
+      "mode": "100644",
+      "path": "scripts/memory_cell/test_procedural_bundle_trial.py"
+    },
+    {
+      "before": "42c4c1c2bd228b287c741d69fe84ee4aef3ed754",
+      "after": "5e9dfc42bf4f9fab63d1d7272e44b9df77d31f67",
+      "review": "/workspace/scratch/c1a0d7534606/format-repair/format-review.json",
+      "kind": "Ruff formatting; complete Python AST, comments, assertions and test names unchanged; punctuation tokens are not byte-identical",
+      "mode": "100644",
+      "path": "scripts/memory_cell/test_procedural_observations.py"
+    }
+  ],
+  "history_merges": [
+    {
+      "GitHub_immutable_commit_object": "0847396844638608708608072ec94961bb20458b",
+      "ordered_parents": [
+        "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+        "4a120a0bba8b493407930924822eb6cf38279976"
+      ],
+      "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "real_default_merge_exit": 1,
+      "conflicted_files": 2,
+      "conflict_hunks": 4,
+      "resolution": "All complete alternative ASTs equal; keep reviewed current formatting",
+      "evidence": "/workspace/scratch/c1a0d7534606/branch-audit/candidate-4a-on-5a/MERGE-REVIEW.json"
+    },
+    {
+      "GitHub_immutable_commit_object": "132b3227ae1978b5ae2eba5b64efef53158a92f6",
+      "ordered_parents": [
+        "0847396844638608708608072ec94961bb20458b",
+        "dbed60c6372a148a934e48e9a08ba88aa2a536e2"
+      ],
+      "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "real_default_merge_exit": 1,
+      "conflicted_files": 10,
+      "conflict_hunks": 18,
+      "resolution": "Original 29-file branch fully reviewed as formatting only (21 Python/8 Rust); retained later current implementation for real default conflicts",
+      "evidence": "/workspace/scratch/c1a0d7534606/branch-audit/candidate-dbed-on-084/MERGE-REVIEW.json"
+    }
+  ],
+  "history_merge_limit": "No ours strategy or fabricated ancestry. Partial write-tree --missing-ok was only a full compared index/path/mode/OID Merkle verification; no whole-payload or compiler qualification is inferred.",
+  "protection": {
+    "snapshot": "/workspace/scratch/c1a0d7534606/remote-heads-before-publication.tsv",
+    "snapshot_sha256": "fb1a5b2164cf4e7ccb78ce0caa73b218f54d15890dca702e5fa4f5c91386bd93",
+    "current_refs": 7803,
+    "all_current_tips_have_complete_parent_graph": true,
+    "known_graph_nodes_including_final": 79060,
+    "known_protected_nodes": 1469,
+    "known_protected_current_names": 538,
+    "protected_current_names_without_hia": 414,
+    "candidate_ancestor_count": 44909,
+    "new_ancestors_since_parent": [
+      "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d"
+    ],
+    "new_ancestors_since_base": [
+      "0847396844638608708608072ec94961bb20458b",
+      "132b3227ae1978b5ae2eba5b64efef53158a92f6",
+      "394e28812368f5174b890cea51ff13e882231756",
+      "4a120a0bba8b493407930924822eb6cf38279976",
+      "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d",
+      "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "8016166226cd6206ba09c83fa64acc91eca368ba",
+      "dbed60c6372a148a934e48e9a08ba88aa2a536e2"
+    ],
+    "candidate_known_HIA_intersection": [],
+    "candidate_STOP_descendant_intersection": [],
+    "STOP_anchor_present_in_complete_current_graph": false,
+    "STOP_absence_interpretation": "All traversed candidate and current-ref parent chains are complete; an absent STOP anchor therefore has no descendant in these chains. No STOP payload fetch is required or performed.",
+    "new_ancestors_known_HIA_intersection": [],
+    "new_ancestors_STOP_descendant_intersection": [],
+    "historical_551st_pin_identity_missing": true,
+    "complete_historical_protection_identity_claim": false,
+    "counts_at_snapshot": {
+      "ordinary": 7264,
+      "ordinary_contained_by_candidate": 2858,
+      "ordinary_not_contained_by_candidate": 4406,
+      "protected": 538,
+      "main": 1
+    },
+    "ordinary_branches_already_in_main": 0,
+    "snapshot_is_fresh_ref_write_lease": false
+  },
+  "validation_records": [
+    {
+      "name": "original Architecture CI scope suite",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.tests.test_hepta_ci_scope"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "observed_tests": 25,
+      "executed_source": "parent 132b worktree plus the sole reviewed workflow overlay",
+      "binding_to_final": "full tree map and read-only local status/blob readback establish equality with immutable 55e81c7 tree",
+      "record": "/workspace/scratch/c1a0d7534606/publication/architecture-scope-test-result.json",
+      "log_sha256": "066adad4f537e4bdbc7feea0e94f7805a17a28366216c01d6fd850d3f3182baf",
+      "not_claimed": "Architecture native qualification or execution of the complete job"
+    },
+    {
+      "name": "original B4 no-bypass suite",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_*.py"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "observed_tests": 1350,
+      "executed_source_commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "executed_source_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "binding_to_final": "all payloads except the one workflow budget field remain identical to 5a; no claim of a new run on final SHA",
+      "record": "/workspace/scratch/c1a0d7534606/b4-original-current-result.json",
+      "log_sha256": "9c00c6e16fbd0671b088c93a386ba55ce807bb246220952b527a150b40883465"
+    },
+    {
+      "name": "Ruff format check scripts and .github",
+      "command": [
+        "uv",
+        "--cache-dir",
+        "/workspace/scratch/c1a0d7534606/format-repair/uv-cache",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "scripts",
+        ".github"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "observed_files": 1145,
+      "executed_source_commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "binding_to_final": "Python payloads unchanged; this does not replace the final original just fmt/check",
+      "record": "/workspace/scratch/c1a0d7534606/full-ruff-result.json"
+    },
+    {
+      "name": "original benchmark_review 10 tests",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/memory_cell",
+        "-p",
+        "test_benchmark_review.py",
+        "-v"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "observed_tests": 10,
+      "executed_source_commit": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+      "executed_source_tree": "08f5d464bedff1c1acbb3abe1d7f28e43827854f",
+      "source_materialized_files": 142,
+      "binding_to_final": "all 8 files in complete static local import closure are exactly unchanged; no dynamic import/eval calls were found in that closure; no rerun claimed",
+      "unchanged_closure": [
+        "scripts/memory_cell/benchmark_coverage.py",
+        "scripts/memory_cell/benchmark_review.py",
+        "scripts/memory_cell/citation_audit.py",
+        "scripts/memory_cell/native.py",
+        "scripts/memory_cell/native_citation.py",
+        "scripts/memory_cell/sessions.py",
+        "scripts/memory_cell/test_benchmark_review.py",
+        "scripts/memory_cell/test_coverage.py"
+      ],
+      "record": "/workspace/scratch/c1a0d7534606/branch-audit/candidate-4a/TEST-RESULT.json",
+      "log_sha256": "36d4ea32c794bcf1e8fe5a1580bd6bf85cdd9d2f9429701e1c23efb3fe441c73"
+    },
+    {
+      "name": "00-three-package-strict-clippy",
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "+1.96.0",
+        "clippy",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-shadow-qualification",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "result": "passed",
+      "command_exit_code": 0,
+      "wrapper_exit_code": 0,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "executed_source_commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "executed_source_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "log_sha256": "02bda23da2bdae8404178b4e2aa2e83e975039a359b3c67fb52009daae9c477e",
+      "binding_to_final": "codex-rs subtree and original controls identical; these are recorded runs on 5a, not CI qualifications of 55e81c7",
+      "record": "/workspace/scratch/c1a0d7534606/native-validation/FINAL.json"
+    },
+    {
+      "name": "01-build-codex",
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "+1.96.0",
+        "build",
+        "--locked",
+        "-p",
+        "codex-cli",
+        "--bin",
+        "codex",
+        "--message-format=json-render-diagnostics"
+      ],
+      "result": "passed",
+      "command_exit_code": 0,
+      "wrapper_exit_code": 0,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "executed_source_commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "executed_source_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "log_sha256": "49233bdb5b79706623ca4846068bdb2f94896a88f9e00c3b503a0761fa7641a5",
+      "binding_to_final": "codex-rs subtree and original controls identical; these are recorded runs on 5a, not CI qualifications of 55e81c7",
+      "record": "/workspace/scratch/c1a0d7534606/native-validation/FINAL.json"
+    },
+    {
+      "name": "02-build-worker-bins",
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "+1.96.0",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bins",
+        "--message-format=json-render-diagnostics"
+      ],
+      "result": "passed",
+      "command_exit_code": 0,
+      "wrapper_exit_code": 0,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "executed_source_commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "executed_source_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "log_sha256": "e2862e529e7f74bc5f6c7c5e9583712b14e96beaab2a9fc7f97eacde7449374e",
+      "binding_to_final": "codex-rs subtree and original controls identical; these are recorded runs on 5a, not CI qualifications of 55e81c7",
+      "record": "/workspace/scratch/c1a0d7534606/native-validation/FINAL.json"
+    },
+    {
+      "name": "03-agentd-just-test",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--locked"
+      ],
+      "result": "failed",
+      "command_exit_code": 101,
+      "wrapper_exit_code": 101,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "executed_source_commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "executed_source_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "log_sha256": "474f7a272425d4ea7720ece058373c86356fa840ec7f9658cc87818cce0aa8d8",
+      "binding_to_final": "codex-rs subtree and original controls identical; these are recorded runs on 5a, not CI qualifications of 55e81c7",
+      "record": "/workspace/scratch/c1a0d7534606/native-validation/FINAL.json"
+    },
+    {
+      "name": "04-authbus-just-test",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-authbus",
+        "--locked"
+      ],
+      "result": "failed",
+      "command_exit_code": 101,
+      "wrapper_exit_code": 101,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "executed_source_commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "executed_source_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "log_sha256": "fdd09a25dc31cfb9baf5d746d9bddfbbfd1f01c52ef41cb8a521d920487e58de",
+      "binding_to_final": "codex-rs subtree and original controls identical; these are recorded runs on 5a, not CI qualifications of 55e81c7",
+      "record": "/workspace/scratch/c1a0d7534606/native-validation/FINAL.json"
+    },
+    {
+      "name": "original .github/scripts unittest discovery suite",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_*.py"
+      ],
+      "original_command_result": "passed",
+      "original_command_exit_code": 0,
+      "original_command_observed_tests": 314,
+      "unique_test_identities": 304,
+      "wrapper_result": "failed",
+      "wrapper_error": "AssertionError('Original 314-case suite identity changed')",
+      "wrapper_failure_explanation": "Added wrapper required 314 unique IDs, but unchanged original unittest discovery executes 10 V8 test IDs twice; actual 314-execution multiset is identical across all three attempts and separate discovery-only same-interpreter check",
+      "executed_source_commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "executed_source_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+      "same_interpreter_discovery_tests_executed": false,
+      "identity_multiset_sha256": "dc0e38103e8e18d0cc8ebd9d275273267fac994e5a18cbccbf40a0bf2994f881",
+      "log_sha256": "172fce7538d3918e2b5e43b83d1bba63a28cf1423ebb0bf112c33aa953800c30",
+      "binding_to_final": ".github/scripts subtree and all relevant payloads unchanged, except the separate workflow budget field already covered by 25 scope tests; no whole-job or new-SHA execution claim",
+      "record": "/workspace/scratch/c1a0d7534606/native-validation/github-script-tests-03-FINAL.json",
+      "identity_receipt": "/workspace/scratch/c1a0d7534606/native-validation/ACTUAL-PYTHON3-DISCOVERY.json",
+      "independent_reconciliation": "/workspace/scratch/c1a0d7534606/native-validation/GITHUB-314-INDEPENDENT-RECONCILIATION.json",
+      "duplicate_class_import_source_bound_to_final": {
+        "path": ".github/scripts/test_run_bazel_v8_canary_changes.py",
+        "blob": "7ce5666fb87fbfafb421e2f3e25ec4f0c588a964",
+        "sha256": "eb83f926890cb204fffd4bff864924eb8316c98132fd09f205ae1cdc30b8e245"
+      },
+      "combined_objective_receipt_files": [
+        "/workspace/scratch/c1a0d7534606/native-validation/github-script-tests-03-FINAL.json",
+        "/workspace/scratch/c1a0d7534606/native-validation/github-script-tests-03-original-command.log",
+        "/workspace/scratch/c1a0d7534606/native-validation/ACTUAL-PYTHON3-DISCOVERY.json"
+      ],
+      "retained_prior_failures": [
+        "attempt 1: sparse checkout missing third_party/v8/BUILD.bazel",
+        "attempt 2: sparse checkout missing 5 original crate Cargo.toml inputs"
+      ],
+      "suite_or_fixture_skips_added": false
+    }
+  ],
+  "runtime_limits": {
+    "native_record": "/workspace/scratch/c1a0d7534606/native-validation/FINAL.json",
+    "native_overall_status": "failed",
+    "native_overall_exit_code": 1,
+    "Agentd_and_AuthBus_original_commands_exit_101_observed_tests_0": true,
+    "AuthBus_failure_evidence": "Full original log reports Disk quota exceeded (os error 122) while compiling mio/bitflags; no test assertion was reached",
+    "Agentd_failure_evidence": "Full 69,371-byte original log, hash verified against exec.json, reports linking with cc failed and ld terminated with signal 7 [Bus error]; command exit101 and no test assertions reached",
+    "final_original_fmt_and_fmt_check_completed": false,
+    "mac_AuthBus_runtime_validation_completed": false,
+    "mac_record": "/workspace/scratch/c1a0d7534606/mac-authbus-terminal.json",
+    "mac_status": "clone stage timed out, tests never started",
+    "original_CI_Architecture_complete": false,
+    "Musl_500ms_original_failure_resolved": false,
+    "Windows_non_Unix_owner_refusal_resolved": false,
+    "cross_host_or_required_aggregate_qualification_claim": false
+  },
+  "release_claims": {
+    "main_qualified": false,
+    "all_branches_semantically_audited": false,
+    "ordinary_branch_consolidation_complete": false,
+    "remote_ref_updates_by_this_review": false,
+    "remote_branch_deletions_by_this_review": false,
+    "HIA_branches_modified_by_this_review": false,
+    "STOP_source_opened_or_modified_by_this_review": false,
+    "parent_audit_repo_source_index_refs_modified_by_this_review": false,
+    "new_tests_executed_by_this_review": false
+  },
+  "limitations": [
+    "Known protection closure is complete relative to recovered pins and the 7,803-ref snapshot, but the original state29 551st pin identity / exact C1430 array was not recovered.",
+    "The 2,858 ordinary names covered by candidate ancestry are not yet covered by main at the recorded snapshot; this report authorizes no branch deletion.",
+    "4,406 ordinary names (4,185 distinct tips) remain outside the candidate; complete ancestry inventory does not constitute source/behavior audit of those tips.",
+    "Latest native original Agentd/AuthBus commands failed before tests, and final original formatting gates did not complete; strict Clippy/helper build successes do not substitute for them.",
+    "The original 314 command succeeded while its added wrapper assertion failed; both facts and earlier missing-input failures remain recorded.",
+    "All runtime records identify their actual source/host and are not relabeled as a final-SHA CI run. Full required checks on the actual publication SHA remain necessary.",
+    "The job budget edit preserves product deadlines and native HIA budget; its ability to complete the original Architecture job is not yet demonstrated.",
+    "Static source review does not resolve owner held C2D work, the Musl diagnostic failure, Windows owner portability, or macOS native verification."
+  ],
+  "evidence_manifest": {
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/base-full-tree.nul": {
+      "bytes": 8368479,
+      "sha256": "a485ce5fc85e5e4d6c8c47c0a161bbbe2682081a42cc5eb1cfb88b392968df1c"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/parent-full-tree.nul": {
+      "bytes": 8368479,
+      "sha256": "199d1693413043fca2aacf7eb3d086b7afff909a37ac41553f2313c31a181618"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/published-full-tree.nul": {
+      "bytes": 8368479,
+      "sha256": "a3a16783b438ed8a8b47081137ef282f79c69254823a07b3d2cb7c7ba3cc9c33"
+    },
+    "/workspace/scratch/c1a0d7534606/audit-repo/.github/workflows/hepta-architecture-convergence.yml": {
+      "bytes": 24548,
+      "sha256": "d7c95b93de32ab5f35fd5afa29f058a58c6e45ce406a9dde2e76ec5d5543859c"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/LOCAL-AUDIT-REPO-READBACK.json": {
+      "bytes": 511,
+      "sha256": "9ef4acf56ca839154f2066011f251a3a1af19d1766dfab914c6f00ac012a146b"
+    },
+    "/workspace/scratch/c1a0d7534606/seven-fix-review/SOURCE-INPUTS.json": {
+      "bytes": 2451,
+      "sha256": "84b1b8a8e9cc634d3f59e51790617932a06dfdcd148d56dfa455f622f3ef9970"
+    },
+    "/workspace/scratch/c1a0d7534606/seven-fix-review/INDEPENDENT-PROOF.json": {
+      "bytes": 3487,
+      "sha256": "354e5ae825b5be3e948ee909c8f1541144cc55a77306e4f5036b6a7e6809f3e5"
+    },
+    "/workspace/scratch/c1a0d7534606/authbus-fixture-independent-review.json": {
+      "bytes": 4372,
+      "sha256": "b9741f7a812d53cca673dbd4899fcdab3715f9fd9f933693f8a45d9e115f3972"
+    },
+    "/workspace/scratch/c1a0d7534606/format-repair/format-review.json": {
+      "bytes": 20838,
+      "sha256": "9f519bbb3cfafe9c42c508e82ac1c077f748997cd8f0a2055566e65bcb959ad0"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/PROPOSAL-REVIEW.json": {
+      "bytes": 825,
+      "sha256": "292453d0e795aa967fd6f9b064c95da828c14ffaa1362ff37a20b119bb27ed5d"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/SNAPSHOT-COMPLETE-KNOWN-PARENTS.tsv": {
+      "bytes": 6678080,
+      "sha256": "89800bf995e3476cc666c9d9f490d9265e78818f6806759c47bf4ff691c9cdbd"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/PROTECTED-7803-KNOWN-DESCENDANTS.json": {
+      "bytes": 67577,
+      "sha256": "0656ccf81becd2ed88be551bdd3c24c381cc8fb625e70a43604d165df19c73fe"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/SNAPSHOT-7803-REVIEW.json": {
+      "bytes": 2759,
+      "sha256": "91c5b1a7dccc59421f698f7cd05fba17912a01f5f274626860a8fff11278fa6c"
+    },
+    "/workspace/scratch/c1a0d7534606/remote-heads-before-publication.tsv": {
+      "bytes": 770833,
+      "sha256": "fb1a5b2164cf4e7ccb78ce0caa73b218f54d15890dca702e5fa4f5c91386bd93"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/ALL-CURRENT-REF-CLASSIFICATIONS.json": {
+      "bytes": 2449177,
+      "sha256": "5d47064321a75e4b9323319e5cf202df945e14ddd73da561bde1bb44e4af95b0"
+    },
+    "/workspace/scratch/c1a0d7534606/publication/architecture-scope-test-result.json": {
+      "bytes": 771,
+      "sha256": "b5f02f14263fe0953cdb4cbdcdf07253b31af46d3170329720b8c5d225564aef"
+    },
+    "/workspace/scratch/c1a0d7534606/publication/architecture-scope-test.log": {
+      "bytes": 4216,
+      "sha256": "066adad4f537e4bdbc7feea0e94f7805a17a28366216c01d6fd850d3f3182baf"
+    },
+    "/workspace/scratch/c1a0d7534606/b4-original-current-result.json": {
+      "bytes": 504,
+      "sha256": "b20ef24b1cec6f78162ac09ad2c9b24be2cc17b7d4399bfeb6f2e09a9030c854"
+    },
+    "/workspace/scratch/c1a0d7534606/b4-original-current.log": {
+      "bytes": 1453,
+      "sha256": "9c00c6e16fbd0671b088c93a386ba55ce807bb246220952b527a150b40883465"
+    },
+    "/workspace/scratch/c1a0d7534606/full-ruff-result.json": {
+      "bytes": 506,
+      "sha256": "61de8a89937a23481beb792e5f4fce7750cac016eca2883c878bcc39f35ae6a1"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/candidate-4a/TEST-RESULT.json": {
+      "bytes": 570,
+      "sha256": "f381723e7e943170108655436fb4e56cf54a2bc675e73bb116574ea17d2e9676"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/candidate-4a/TEST.stderr": {
+      "bytes": 1819,
+      "sha256": "36d4ea32c794bcf1e8fe5a1580bd6bf85cdd9d2f9429701e1c23efb3fe441c73"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/candidate-4a-on-5a/MERGE-REVIEW.json": {
+      "bytes": 2445,
+      "sha256": "e4e8097e0a8256d129fe694f1978f794446d7f8ee67a77d42e03705dea17a491"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/candidate-4a/VALIDATION-SOURCE-MANIFEST.json": {
+      "bytes": 35362,
+      "sha256": "75e1b0a8e856098b0ebed559d1aa9008a7c122d027782e4e4687c244170174eb"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/FINAL.json": {
+      "bytes": 32942,
+      "sha256": "facb4780be629d9e4d21f131ff1a55211794127c86c7fef540fe43edd2fe7eb0"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/00-three-package-strict-clippy.log": {
+      "bytes": 72976,
+      "sha256": "02bda23da2bdae8404178b4e2aa2e83e975039a359b3c67fb52009daae9c477e"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/04-authbus-just-test.log": {
+      "bytes": 8761,
+      "sha256": "fdd09a25dc31cfb9baf5d746d9bddfbbfd1f01c52ef41cb8a521d920487e58de"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/03-agentd-just-test.log": {
+      "bytes": 69371,
+      "sha256": "474f7a272425d4ea7720ece058373c86356fa840ec7f9658cc87818cce0aa8d8"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/github-script-tests-03-FINAL.json": {
+      "bytes": 2405,
+      "sha256": "33b068d28b68a6246fa6b730cd6f86f52c425f5d1e221c599ca597e1cc5900b1"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/github-script-tests-03-original-command.log": {
+      "bytes": 5569,
+      "sha256": "172fce7538d3918e2b5e43b83d1bba63a28cf1423ebb0bf112c33aa953800c30"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/github-script-tests-TEST-IDENTITIES.json": {
+      "bytes": 34153,
+      "sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/github-script-tests-02-TEST-IDENTITIES.json": {
+      "bytes": 34153,
+      "sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/github-script-tests-03-TEST-IDENTITIES.json": {
+      "bytes": 34153,
+      "sha256": "4ab2aaab5d62ca2d7dda2cd4882e39496370b2c369ffbaf94b3b2dd1750711be"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/ACTUAL-PYTHON3-DISCOVERY.json": {
+      "bytes": 35236,
+      "sha256": "236b0154165178a62c19ee5385abff620348d7b96f5e1a4655e24cde6e169fab"
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/GITHUB-314-INDEPENDENT-RECONCILIATION.json": {
+      "bytes": 3783,
+      "sha256": "48ad6b51e0bb4e157fbd325f369212fd0f99079309695e05915bc50632e4f0bf"
+    },
+    "/workspace/scratch/c1a0d7534606/audit-repo/.github/scripts/test_run_bazel_v8_canary_changes.py": {
+      "bytes": 365,
+      "sha256": "eb83f926890cb204fffd4bff864924eb8316c98132fd09f205ae1cdc30b8e245"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/candidate-dbed-on-084/MERGE-REVIEW.json": {
+      "bytes": 1744,
+      "sha256": "6f94fcf31e46d63d4c533561eb458b9af76467ffd2cab0c85d8a526de8dab3ae"
+    }
+  }
+}

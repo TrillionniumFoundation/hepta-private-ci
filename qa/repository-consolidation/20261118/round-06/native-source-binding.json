@@ -1,0 +1,97 @@
+{
+  "base": "f571db956745d0702baba6da800b6c923aed34cc",
+  "behavior_commit": "bd7e4c6e643c52e104ef6b7c6e334206557a2968",
+  "behavior_tree": "9f09c2ab3f2d4f31a589713ac65c51f118c5eb29",
+  "final_commit": "527b17514817c3b154cd47bec011f4876eea6597",
+  "final_tree": "eb68de83232bcc2f7b1ef61cf65c83f9d34b62f4",
+  "maintenance": "Three equivalent is_multiple_of lint rewrites; behavior tests preceded fix/fmt and a final compile-only bins check followed maintenance.",
+  "source_patch": {
+    "path": "native-final-source.patch.gz",
+    "payload_bytes": 26746,
+    "payload_sha256": "5765912e2b3c7156304972f2f80ddddabc2555b293781002669782b93f123ca0",
+    "sha256": "122e2b7d8b4633437b87d0a8765f4294406708eed8a5d8430244b6b31553bd80"
+  },
+  "files": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "qualified_bytes": 423052,
+      "qualified_sha256": "761922a8fc9690bf9a4a11a80dc5abac9947d2fe84f0030d9873d597e500e886",
+      "composed_bytes": 422894,
+      "composed_sha256": "2f3aa756eac4628d357c91cbcf6aabf3263852d25aa28a2514015d16424ea6b6",
+      "exact_qualified_source": false,
+      "disposition": "Combined canonical lock retains the exact arc-swap 1.9.2 dependency edge and the independently validated RMCP and external-agent migrations"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "qualified_bytes": 5668,
+      "qualified_sha256": "93d8250390d2bae807df3132cfccc366116e16b48a461817fa08dfd84abfddd2",
+      "composed_bytes": 5668,
+      "composed_sha256": "93d8250390d2bae807df3132cfccc366116e16b48a461817fa08dfd84abfddd2",
+      "exact_qualified_source": true,
+      "disposition": "Exact final native source"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_checkpoint_expiry_tests.rs",
+      "qualified_bytes": 9741,
+      "qualified_sha256": "17cb3b80d8a383c5995e54f3ffa5f4fa696d3473944789c78f1f03406d144635",
+      "composed_bytes": 9741,
+      "composed_sha256": "17cb3b80d8a383c5995e54f3ffa5f4fa696d3473944789c78f1f03406d144635",
+      "exact_qualified_source": true,
+      "disposition": "Exact final native source"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs",
+      "qualified_bytes": 11670,
+      "qualified_sha256": "e5418d68dde08434dd5391c037eed53c2e89988d914420cd6a433785c87b34d3",
+      "composed_bytes": 11670,
+      "composed_sha256": "e5418d68dde08434dd5391c037eed53c2e89988d914420cd6a433785c87b34d3",
+      "exact_qualified_source": true,
+      "disposition": "Exact final native source"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "qualified_bytes": 18245,
+      "qualified_sha256": "1d932a091d2d1361a0baaea051c7a7b26e62d2e1cda0f6339e3d59343337669b",
+      "composed_bytes": 18245,
+      "composed_sha256": "1d932a091d2d1361a0baaea051c7a7b26e62d2e1cda0f6339e3d59343337669b",
+      "exact_qualified_source": true,
+      "disposition": "Exact final native source"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "qualified_bytes": 25289,
+      "qualified_sha256": "173db5b117813ffc662a16efd9e715329fa96302192f862bf1a18e1aef7f559c",
+      "composed_bytes": 25289,
+      "composed_sha256": "173db5b117813ffc662a16efd9e715329fa96302192f862bf1a18e1aef7f559c",
+      "exact_qualified_source": true,
+      "disposition": "Exact final native source"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "qualified_bytes": 17308,
+      "qualified_sha256": "4a13727749da3ba9f4ba8fd8c307540521e5fc2ddd950cf7583481a990afe15c",
+      "composed_bytes": 17308,
+      "composed_sha256": "4a13727749da3ba9f4ba8fd8c307540521e5fc2ddd950cf7583481a990afe15c",
+      "exact_qualified_source": true,
+      "disposition": "Exact final native source"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+      "qualified_bytes": 8496,
+      "qualified_sha256": "f8fd7cfa95f6be7321d8a614e50fdbe7939e6d1f9be6b1511c06b989dee0c278",
+      "composed_bytes": 8496,
+      "composed_sha256": "f8fd7cfa95f6be7321d8a614e50fdbe7939e6d1f9be6b1511c06b989dee0c278",
+      "exact_qualified_source": true,
+      "disposition": "Exact final native source"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "qualified_bytes": 13426,
+      "qualified_sha256": "9361830d550c5750fb94941f77c30835f3b88fca21c6c26593a9e618be09689d",
+      "composed_bytes": 13426,
+      "composed_sha256": "9361830d550c5750fb94941f77c30835f3b88fca21c6c26593a9e618be09689d",
+      "exact_qualified_source": true,
+      "disposition": "Exact final native source"
+    }
+  ]
+}

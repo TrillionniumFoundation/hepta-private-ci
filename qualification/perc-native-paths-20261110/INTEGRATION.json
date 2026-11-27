@@ -1,0 +1,55 @@
+{
+  "target_base": "74128de4165d7947ee218a58b0b1d971ce9c7277",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "preimage": "17da38650745923743630d38d3eb0327b7a55d1f",
+      "postimage": "d71d32c264e3bdb2be879cc6793c28ce83918149",
+      "source": "190e2cee65d35770511539f40c3e1f07905c41c2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_credit_signed_tests.rs",
+      "preimage": "6724634a8e9aba1fc409311046a11f701191d23f",
+      "postimage": "4c59f0a411c6a08ab33589cff9a3544684fc62eb",
+      "source": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_driver_tests.rs",
+      "preimage": "0c59b61c9546707970ac7aa364e51250628a5632",
+      "postimage": "ca30daa0e41273b0664bb7f7f756b98c63519f1f",
+      "source": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_drain_tests.rs",
+      "preimage": "c63c4757cf7e61715856a974b5cd242164e10d09",
+      "postimage": "57d4b77745cb44e1238e4cd26b525d71622aeb1a",
+      "source": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_expired_recovery_tests.rs",
+      "preimage": "605dacc1fa363158204af33703e054f37ffc882d",
+      "postimage": "49cd687c8a7aefacdf33a501e8d8c2da9c0d42cd",
+      "source": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_recovery_budget_tests.rs",
+      "preimage": "6ec5515761cc071f91589697d13f68f0dc98c27d",
+      "postimage": "85ebb85d50f3cda5125728662299b4b571a90ba2",
+      "source": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_task_readback_tests.rs",
+      "preimage": "05067ee9a2d1a0757d2adb25afa5300ef64043ee",
+      "postimage": "2d1c68d55e153846c69b75621ba4e58589bf995f",
+      "source": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+    }
+  ],
+  "excluded": [
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_learning_outbox_tests.rs",
+      "reason": "Absent at target741; no source parent can safely be substituted"
+    }
+  ],
+  "native_windows_execution": false,
+  "scope": "Exact-source test-fixture backports only; production strict-path guards and PERC scientific gate unchanged"
+}

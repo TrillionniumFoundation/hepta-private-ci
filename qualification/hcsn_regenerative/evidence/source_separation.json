@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-candidate-source-separation.v1",
+  "original_campaign_source": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "original_campaign_python_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+  "new_candidate_base": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "inherited_hcsn_python_map_sha256": "af79079221266970c636022fc7f6e142f997f071c27387f884864c0d6e1fc19e",
+  "inherited_difference_from_original_campaign": [
+    "baselines.py"
+  ],
+  "note": "Only baselines.py differs in the inherited product integration; new work keeps the complete inherited hcsn and hcsn_training trees unchanged. Original campaign evidence cannot qualify new regenerative code.",
+  "new_packages": [
+    "qualification/hcsn_regenerative",
+    "qualification/hcsn_causal"
+  ],
+  "inherited_files_checked": 1205,
+  "changed_inherited_files": [],
+  "reference_dependencies_match_original_campaign": {
+    "reference.py": true,
+    "population.py": true,
+    "checks.py": true
+  }
+}

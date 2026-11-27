@@ -1,0 +1,174 @@
+{
+  "accounting_complete": false,
+  "peak_vram_bytes": null,
+  "previous_ledger": "../p0p5-20261110/COSTS.json",
+  "rows": [
+    {
+      "artifact": "review/final-curation-delta-review-v2/EXECUTION.json",
+      "id": "final-curation-delta-review-v2",
+      "phase": "Independent retained-evidence review",
+      "scope": "Complete measured review subprocess only; no model/oracle/training. Manual inspection, report writing and later archive construction are outside this timer.",
+      "waited_child_cpu_seconds": 0.49149999999999994,
+      "whole_waited_process_wall_seconds": 0.550129093000578
+    },
+    {
+      "artifact": "review/current-continuum-scope-closure-v1/EXECUTION.json",
+      "id": "current-continuum-scope-closure-v1",
+      "phase": "Independent retained-evidence review",
+      "scope": "Complete measured review subprocess only; no model/oracle/training. Manual inspection, report writing and later archive construction are outside this timer.",
+      "waited_child_cpu_seconds": 0.062453,
+      "whole_waited_process_wall_seconds": 0.06336093999925652
+    },
+    {
+      "artifact": "review/c1-aggregate-originals-addendum-v1/EXECUTION.json",
+      "id": "c1-aggregate-originals-addendum-v1",
+      "phase": "Independent retained-evidence review",
+      "scope": "Complete measured review subprocess only; no model/oracle/training. Manual inspection, report writing and later archive construction are outside this timer.",
+      "waited_child_cpu_seconds": 0.14638299999999999,
+      "whole_waited_process_wall_seconds": 0.15964589700161014
+    },
+    {
+      "artifact": "review/final-hcsn-plan-independent-review-v1/EXECUTION.json",
+      "id": "final-hcsn-plan-independent-review-v1",
+      "phase": "Independent retained-evidence review",
+      "scope": "Complete measured review subprocess only; no model/oracle/training. Manual inspection, report writing and later archive construction are outside this timer.",
+      "waited_child_cpu_seconds": 0.07729899999999999,
+      "whole_waited_process_wall_seconds": 0.07946504200299387
+    },
+    {
+      "artifact": "review/c1-clock-outcomes-independent-review-v1/EXECUTION.json",
+      "id": "c1-clock-outcomes-independent-review-v1",
+      "phase": "Independent retained-evidence review",
+      "scope": "Complete measured review subprocess only; no model/oracle/training. Manual inspection, report writing and later archive construction are outside this timer.",
+      "waited_child_cpu_seconds": 0.072479,
+      "whole_waited_process_wall_seconds": 0.07350931499968283
+    },
+    {
+      "artifact": "publication/review-profile-assets-v1/RESULT.json",
+      "children_cpu_seconds": 4.602256000000001,
+      "id": "review-profile-upload",
+      "own_cpu_seconds": 0.7581342310000001,
+      "phase": "Authenticated archival upload and full readback",
+      "scope": "controller wall includes profile packaging, validation and network waits; own/child CPU separate; command wall and package wall are overlapping subsets",
+      "whole_controller_wall_seconds": 87.56026838184334
+    },
+    {
+      "artifact": "original42/receipts-v1/upload-RESULT.json",
+      "children_cpu_seconds": 16.52671,
+      "id": "original42-upload",
+      "own_cpu_seconds": 2.776038884,
+      "phase": "Authenticated archival upload and full readback",
+      "scope": "controller wall includes archive verification and all network waits; prior archive process charged separately; command wall is overlapping subset; own and child CPU separate",
+      "whole_controller_wall_seconds": 250.0843668510206
+    },
+    {
+      "artifact": "original42/receipts-v1/archive-original-receipt.json",
+      "children_cpu_seconds": 0.0019219999999999999,
+      "cost_scope": "main-entry wall includes integrity checks and all archive work; per-archive times are overlapping subsets",
+      "full_process_cpu_seconds": 33.509774775,
+      "id": "original42-archive",
+      "own_cpu_seconds": 33.413253949,
+      "scope_note": "Retain original report-time samples; not an independent post-exit rusage measurement.",
+      "whole_wall_seconds": 33.604482806054875
+    },
+    {
+      "artifact": "original42/receipts-v1/launcher-final-original.json",
+      "children_cpu_seconds": 95899.50280799999,
+      "id": "original42-whole-launcher",
+      "nested_commands": [
+        {
+          "argv": [
+            "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+            "-B",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8/proposals/localization-v3",
+            "-p",
+            "test_cores.py",
+            "-v"
+          ],
+          "dispatch_wall_unix": 1794322151.009846,
+          "name": "frozen-source-thirteen-tests",
+          "pid": 1486991,
+          "returncode": 0,
+          "stderr_sha256": "382c7ee72428f173f0b2012e68fa783cad76d5d1a45d74b2b8e039fd3f0a1923",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "whole_process_wall_seconds": 4.778163708979264
+        },
+        {
+          "argv": [
+            "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+            "-B",
+            "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8/proposals/localization-v3/campaign.py",
+            "--plan",
+            "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-plan.json",
+            "--output",
+            "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2"
+          ],
+          "dispatch_wall_unix": 1794322155.8013794,
+          "name": "full-campaign",
+          "pid": 1487187,
+          "returncode": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "2d72d8d7cc1bfa267c02719cfa3dd1427a45c1abd7ad803141beebacc9750ae8",
+          "whole_process_wall_seconds": 14378.17251284211
+        }
+      ],
+      "scope": "Encloses extraction, frozen thirteen-test child, complete campaign controller and its training descendants. Do not add the campaign or fit subscopes to this total.",
+      "whole_wall_seconds": 14383.004945022054
+    },
+    {
+      "artifact": "original42/terminal-small/campaign-v2/RESULT.json",
+      "children_cpu_seconds": 95753.22109199999,
+      "controller_cpu_seconds": 141.52445035,
+      "id": "original42-controller",
+      "scope": "Nested in original42-whole-launcher; includes all42 original fits. Controller wall and sum of overlapping fit durations are different quantities.",
+      "sum_attempt_wall_seconds": 95769.85116350604,
+      "whole_wall_seconds": 14378.056994209997
+    },
+    {
+      "adequate_attempts": 0,
+      "artifact": "original42/receipts-v1/HCSN-TERMINAL-SUMMARY.json",
+      "attempts": 6,
+      "id": "original-six-HCSN",
+      "peak_rss_bytes": 4074352640,
+      "scope": "Subset of original42-controller; six budget-exhausted attempts, all diagnostics passed. Retain partial-epoch work in complete outer costs.",
+      "sum_attempt_wall_seconds": 86261.1154101817
+    },
+    {
+      "artifact": "verification/evidence-integrity-current-closure-v1-receipt.json",
+      "child_cpu_seconds": 0.42061699999999996,
+      "id": "evidence-integrity-current-closure-v1-receipt",
+      "scope": "Exact described local subprocess; no scientific oracle or training.",
+      "whole_process_wall_seconds": 0.4760749279994343
+    },
+    {
+      "artifact": "verification/current-protocol-just-fmt-v2.json",
+      "child_cpu_seconds": 0.162264,
+      "id": "current-protocol-just-fmt-v2",
+      "scope": "Exact described local subprocess; no scientific oracle or training.",
+      "whole_process_wall_seconds": 0.1639155880002363
+    },
+    {
+      "artifact": "verification/current-protocol-just-fmt-v1.json",
+      "child_cpu_seconds": null,
+      "formatter_started": false,
+      "id": "formatter-entry-preflight-failure",
+      "scope": "Missing executable before formatter start; retained separately from the completed cached entry.",
+      "whole_process_wall_seconds": null
+    }
+  ],
+  "rules": [
+    "Never add enclosing and nested timings.",
+    "Original baseline36+C1 cost subsets and all failed tuning remain in the previous ledger.",
+    "Archive/upload/review costs are separate from model fitting.",
+    "Unknown energy, physical-host reservation, human work and provider cost are not zero."
+  ],
+  "schema": "hcsn-followup-costs-v1",
+  "scientific_benefit_established": false,
+  "total_currency_cost": null,
+  "total_elapsed_seconds": null,
+  "total_energy_joules": null
+}

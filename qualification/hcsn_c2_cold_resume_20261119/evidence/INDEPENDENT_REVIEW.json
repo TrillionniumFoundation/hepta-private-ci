@@ -1,0 +1,120 @@
+{
+  "archive_sha256": "04b96233a5421433b8ef9fe1d8e019ba28721fc1543d187591a742ee4bc55261",
+  "cold_repeats": [
+    {
+      "all_saved_state_tensor_bytes_equal": true,
+      "fit": "hcsn-s211-lr0.001",
+      "reported_gradient_hashes_and_metrics_equal": true
+    },
+    {
+      "all_saved_state_tensor_bytes_equal": true,
+      "fit": "hcsn-s307-lr0.001",
+      "reported_gradient_hashes_and_metrics_equal": true
+    }
+  ],
+  "full_six_fit_replay": false,
+  "gradient_evidence_limit": "Hashes of actual backward-produced gradients are instrumented by the executed source; this reader compares those hashes but does not regenerate gradients.",
+  "independent_complete_training_replays": 0,
+  "independent_review_forward_calls": 0,
+  "independent_review_optimizer_calls": 0,
+  "optimizer_completed_events": 4,
+  "original_controller_terminal": "UNKNOWN",
+  "original_runtime_exact_replay": false,
+  "reviews": [
+    {
+      "cost": {
+        "name": "hcsn-s211-lr0.001-replica1",
+        "peak_rss_bytes": 3222208512,
+        "pid": 947142,
+        "returncode": 0,
+        "scope": "exact per-PID wait4 through process exit",
+        "system_cpu_seconds": 6.997833,
+        "timed_out": false,
+        "user_cpu_seconds": 58.026767,
+        "wall_seconds": 65.5053217819659
+      },
+      "full_original_checkpoint_bytes_equal_after_deserialization": true,
+      "micro_forwards_reported": 4,
+      "name": "hcsn-s211-lr0.001-replica1",
+      "optimizer_completed_events": 1,
+      "original_metric_absolute_differences": {
+        "events": 0,
+        "gradient_norm": 0.0,
+        "loss": 0.0,
+        "micro_forward_calls": 0
+      }
+    },
+    {
+      "cost": {
+        "name": "hcsn-s211-lr0.001-replica2",
+        "peak_rss_bytes": 3272966144,
+        "pid": 950360,
+        "returncode": 0,
+        "scope": "exact per-PID wait4 through process exit",
+        "system_cpu_seconds": 6.657982,
+        "timed_out": false,
+        "user_cpu_seconds": 58.336879,
+        "wall_seconds": 65.20509607496206
+      },
+      "full_original_checkpoint_bytes_equal_after_deserialization": true,
+      "micro_forwards_reported": 4,
+      "name": "hcsn-s211-lr0.001-replica2",
+      "optimizer_completed_events": 1,
+      "original_metric_absolute_differences": {
+        "events": 0,
+        "gradient_norm": 0.0,
+        "loss": 0.0,
+        "micro_forward_calls": 0
+      }
+    },
+    {
+      "cost": {
+        "name": "hcsn-s307-lr0.001-replica1",
+        "peak_rss_bytes": 3205382144,
+        "pid": 954784,
+        "returncode": 0,
+        "scope": "exact per-PID wait4 through process exit",
+        "system_cpu_seconds": 5.912418,
+        "timed_out": false,
+        "user_cpu_seconds": 51.422677,
+        "wall_seconds": 57.493264915945474
+      },
+      "full_original_checkpoint_bytes_equal_after_deserialization": true,
+      "micro_forwards_reported": 4,
+      "name": "hcsn-s307-lr0.001-replica1",
+      "optimizer_completed_events": 1,
+      "original_metric_absolute_differences": {
+        "events": 0,
+        "gradient_norm": 0.0,
+        "loss": 0.0,
+        "micro_forward_calls": 0
+      }
+    },
+    {
+      "cost": {
+        "name": "hcsn-s307-lr0.001-replica2",
+        "peak_rss_bytes": 3210440704,
+        "pid": 957045,
+        "returncode": 0,
+        "scope": "exact per-PID wait4 through process exit",
+        "system_cpu_seconds": 6.024014,
+        "timed_out": false,
+        "user_cpu_seconds": 51.820927,
+        "wall_seconds": 58.492624828009866
+      },
+      "full_original_checkpoint_bytes_equal_after_deserialization": true,
+      "micro_forwards_reported": 4,
+      "name": "hcsn-s307-lr0.001-replica2",
+      "optimizer_completed_events": 1,
+      "original_metric_absolute_differences": {
+        "events": 0,
+        "gradient_norm": 0.0,
+        "loss": 0.0,
+        "micro_forward_calls": 0
+      }
+    }
+  ],
+  "scientific_admission": "HOLD",
+  "status": "VERIFIED_BOUNDED_COLD_RESUME",
+  "verified_member_count": 41
+}

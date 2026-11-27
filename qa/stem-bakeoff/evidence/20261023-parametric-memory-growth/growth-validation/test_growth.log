@@ -1,0 +1,18 @@
+Tool-captured stdout transcript; saved after execution, without rerunning tests.
+Command:
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/tmp/parametric-runtime-1d69f04ee9f4:/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell:/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_growth OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=1 /workspace/scratch/1d69f04ee9f4/parametric-venv/bin/python -B -m unittest discover -s scripts/memory_cell_growth -p test_growth.py -v
+Working directory: /workspace/scratch/1d69f04ee9f4/hepta-private-ci
+Exec session: 91206; output chunk IDs: 9a0542, adf2e8.
+Exit code: 0
+
+test_actual_arrivals_preserve_ancestry_and_execute_closed_fresh_readers (test_growth.GrowthDecoderTests.test_actual_arrivals_preserve_ancestry_and_execute_closed_fresh_readers) ... `torch_dtype` is deprecated! Use `dtype` instead!
+ok
+test_new_sources_must_be_distinct_and_rejected_before_any_model_call (test_growth.GrowthDecoderTests.test_new_sources_must_be_distinct_and_rejected_before_any_model_call) ... ok
+test_revoked_old_or_new_sources_are_rejected_before_model_load_or_fit (test_growth.GrowthDecoderTests.test_revoked_old_or_new_sources_are_rejected_before_model_load_or_fit) ... ok
+test_ties_keep_parent_and_split_requires_two_over_eligible_cheaper (test_growth.GrowthPolicyTests.test_ties_keep_parent_and_split_requires_two_over_eligible_cheaper) ... ok
+test_unmatched_costs_nonboolean_or_final_scores_are_rejected (test_growth.GrowthPolicyTests.test_unmatched_costs_nonboolean_or_final_scores_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 24.472s
+
+OK

@@ -1,0 +1,44 @@
+{
+  "schema": "hcsn-secondcycle-cost-unit-clarification-v1",
+  "provenance": "Documentation-only read-only count derivation; no numerical rerun or raw receipt rewrite.",
+  "executing_source_commit": "c3a5b3d64693222dc44687c82079084860a01dd9",
+  "mathematical_source_and_original_bytes_unchanged": true,
+  "kernels": {
+    "evaluations": 72,
+    "series_terms": 2127264,
+    "wall_seconds": 50.94856894899931,
+    "cpu_seconds": 50.46436611,
+    "peak_rss_kib_linux": 77496
+  },
+  "references": {
+    "api_evaluations": 192,
+    "cached_domain_api_evaluations": 156,
+    "erlang_api_evaluations": 36,
+    "mpmath_adaptive_quadrature_calls": 576,
+    "components_per_positive_deadline_api_call": [
+      "M",
+      "H",
+      "A_hit_loss"
+    ],
+    "frozen_api_evaluation_cap": 224,
+    "derived_max_component_quadratures_at_cap": 672,
+    "finite_control_scipy_quad_calls": 54,
+    "finite_control_expm_cache_misses": 1156,
+    "wall_seconds": 299.1121463689997,
+    "cpu_seconds": 297.97631346599997,
+    "peak_rss_kib_linux": 233004
+  },
+  "clarifications": [
+    "192 and224 count reference API evaluations, not adaptive quadratures",
+    "All192 executed API deadlines were positive, each executes three mp.quad calls",
+    "54 scipy.quad calls belong to the independent small-matrix finite control and are separate from the576 mpmath calls",
+    "1156 counts actual cache-miss finite expm reference evaluations, not total quadrature callback evaluations",
+    "Measured wall/CPU/RSS already include this complete executed work and are unchanged",
+    "No per-component reference timing or complete model cost is inferred"
+  ],
+  "reruns": {
+    "candidate_kernels": 0,
+    "analytic_references": 0,
+    "finite_expm_controls": 0
+  }
+}

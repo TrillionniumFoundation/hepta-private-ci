@@ -1,0 +1,98 @@
+{
+  "classification": "pre-fix source reconstructed by reverting only exact-invocation guard patch",
+  "vulnerable_source_sha256": "0a35741d731bb5a5fb912b8976254d66377f6a3f6b9b3fbaad6943c1e2159827",
+  "actual_child_cut_exit": 17,
+  "observed_claimed_success": true,
+  "observed_invocation": "foreign-self-consistent-operation",
+  "expected_original_invocation": "original:0",
+  "raw_result": {
+    "complete": true,
+    "partial": true,
+    "duplicate_effects": 0,
+    "effect_count": 1,
+    "effect_records": [
+      {
+        "goal": "payload",
+        "invocation": "foreign-self-consistent-operation",
+        "key": 0,
+        "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5",
+        "task_id": "original",
+        "version": 1
+      }
+    ],
+    "claimed_success": true,
+    "false_success": false,
+    "primitive_calls": 6,
+    "owner_requests": null,
+    "independent_oracle_queries": 1,
+    "lost_replies": 0,
+    "duration_ns": 101637681,
+    "events": [
+      {
+        "action": "inspect",
+        "observation": {
+          "complete": false,
+          "index": 0,
+          "matched": 0,
+          "staged": false
+        }
+      },
+      {
+        "action": "stage",
+        "reply": {
+          "status": "staged"
+        }
+      },
+      {
+        "action": "apply"
+      },
+      {
+        "action": "inspect",
+        "observation": {
+          "complete": true,
+          "index": 1,
+          "matched": 1,
+          "staged": false
+        }
+      },
+      {
+        "action": "inspect",
+        "observation": {
+          "complete": true,
+          "index": 1,
+          "matched": 1,
+          "staged": false
+        }
+      },
+      {
+        "action": "inspect",
+        "observation": {
+          "complete": true,
+          "index": 1,
+          "matched": 1,
+          "staged": false
+        }
+      }
+    ],
+    "success_proposed": true,
+    "effect_knowledge": "CONFIRMED_COMPLETE",
+    "state": "RUNNING",
+    "reconciliation_allowed": true,
+    "pause_count": 0,
+    "repair_count": 0,
+    "end_to_end_ns": 101727378,
+    "contract": {
+      "task_id": "original",
+      "version": 1,
+      "goals_digest": "8dcdf4ea2f1af90a9a1dac9830e3d632084587532c7dac6e3927e849d34a48dd",
+      "deadline_ns": 2536308492255,
+      "max_retries": 1
+    },
+    "full_lifetime_cost_qualified": false,
+    "owner_request_attempts": 6,
+    "current_process_owner_requests": 3,
+    "accounting_scope": "durable primitive intents; actual historical owner requests unknown",
+    "process_crash_recovery": true,
+    "model_hidden_state_restored": false
+  }
+}

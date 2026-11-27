@@ -1,0 +1,23 @@
+    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+    Updating git repository `https://github.com/openai-oss-forks/crossterm`
+    Updating git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+    Updating crates.io index
+    Updating git repository `https://github.com/dzbarsky/rules_rust`
+    Updating git repository `https://github.com/helix-editor/nucleo.git`
+error: failed to get `nix` as a dependency of package `os_info v3.15.0`
+    ... which satisfies dependency `os_info = "^3.12.0"` (locked to 3.15.0) of package `codex-analytics v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/analytics)`
+
+Caused by:
+  failed to load source for dependency `nix`
+
+Caused by:
+  unable to update registry `crates-io`
+
+Caused by:
+  download of 3/n/nix failed
+
+Caused by:
+  curl failed
+
+Caused by:
+  [55] Failed sending data to the peer (OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0)

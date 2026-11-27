@@ -1,0 +1,88 @@
+{
+  "activation": false,
+  "after_registry_head": "4d0f3392f824501eab039228564a8108f99f612a1f4cdd9f81a24932d01d4ceb",
+  "aggregates": [
+    {
+      "available": false,
+      "criterion_met": false,
+      "estimate": 0.0037450887994052986,
+      "gate": "task",
+      "lower_bound": -710.0,
+      "lower_bound_semantics": "conservative NLL-difference support floor from float64 tiny clipping; not a bootstrap lower CI",
+      "observations": 512,
+      "threshold": -0.001,
+      "upper_bound": 0.01294973312359518
+    },
+    {
+      "available": false,
+      "criterion_met": false,
+      "estimate": -0.015349331419011231,
+      "gate": "retention",
+      "lower_bound": -710.0,
+      "lower_bound_semantics": "conservative NLL-difference support floor from float64 tiny clipping; not a bootstrap lower CI",
+      "observations": 512,
+      "threshold": 0.0,
+      "upper_bound": 0.04235368526365621
+    },
+    {
+      "available": false,
+      "criterion_met": false,
+      "estimate": 1.1483444763326418,
+      "gate": "total_cost",
+      "lower_bound": 0.0,
+      "lower_bound_semantics": "zero support floor; upper is maximum measured CPU ratio, not a CI",
+      "observations": 3,
+      "threshold": 3.0,
+      "upper_bound": 1.1483444763326418
+    }
+  ],
+  "all_numeric_gates_pass": false,
+  "before_registry_head": "4d0f3392f824501eab039228564a8108f99f612a1f4cdd9f81a24932d01d4ceb",
+  "candidate_published": false,
+  "candidate_sha256": "ba351910ef9e85dfb5e79ad26614aff86e5b00dd6397591f4e98ae1f2042a9dd",
+  "compiled_source_sha256": {
+    "census": "bd745ed0f14fc9b33bf8b806670a529acc128cbf2e81b5c1ea0379d334154770",
+    "main": "c8f3232ecca004561e3be482e289c6a510b4930633356accfd9bb51a20e022f4",
+    "native_candidate_review": "9cc33363a127cd6cecf6b3f88b2ce6d8fbe88f084b6474f88d74197f7d0c2513",
+    "native_trained_cell": "c8399c8240c0c7e5919a50a7e5a6c3cd302ff6e75da2bc164177f3b9d9d1dcaa",
+    "native_typed_owner": "6ac9683ffb262cd58d5dddca0540021d4e4157105ee6f5b8748424120ce47317",
+    "owner": "12098169a7309fda148cd19fd98e515fc44cc0a275374cb35a55329b9360966a",
+    "parity": "ad74e712828bd262d3ce6b2ffa1084440dfc6c70226097fddc64fb51279868ac",
+    "payload": "d3f03c99763656e71ff089bc2ed6043cb473c920ea3b8b49ee03abb3538a40d6",
+    "positive": "2303ab29ec6586aedd2b0d39fe5435a3a04beaae07db3745179c3d511a86a2a5",
+    "positive_owner": "126ff5196d521850050d3c590302ebb14809ccb578e9698ada744c2ba1974eb6",
+    "report": "2d20524e1d60958afabb1e76686c48846a0b98b2dc85453f87e6cd9b8661110a",
+    "serve": "37cd090e75834b3fedffee59076677f49f7c2e52b6259d70d974142f805411cf"
+  },
+  "gate_input_sha256": "5c6497b35d48939d1bedea149962051cea893a3b6c016c2e132acf7415c4fa64",
+  "native_result": "GateUnavailable(task)",
+  "owner_bytes_unchanged": true,
+  "owner_file_sha256": {
+    "heads/1-b0c1c92371a94fb8abbad183a637653b1663547103af5d58ed8590d95a4fe786.head": "2fd9f6b8acb18374d9e127223bcc4cee664e0abcaeedcfdf289ad91c5d583e17",
+    "payloads/all12-typed-warmup-v5-1c18bbd690e3320dc596688015f95043e12df95431b8c41ec930900b5d03089d.bin": "1c18bbd690e3320dc596688015f95043e12df95431b8c41ec930900b5d03089d",
+    "registries/4d0f3392f824501eab039228564a8108f99f612a1f4cdd9f81a24932d01d4ceb-4bdb6411155c6191345f2422cbae52e66c2b04169c174eb39615d616f8a6f4b7.snapshot": "4bdb6411155c6191345f2422cbae52e66c2b04169c174eb39615d616f8a6f4b7",
+    "transactions/75d9ce85e9fcb429630115fae618d8f2c56220f7330572ac495fc31c3370922c-0.checkpoint": "9b3a5f57413a79217eb371dda5361c72e3170fff0d47621175365f321ddaf210",
+    "transactions/75d9ce85e9fcb429630115fae618d8f2c56220f7330572ac495fc31c3370922c-1.checkpoint": "f435716fb1ffb969e37c709310a0d92f9caebde1f39ceca2601181148830e81d",
+    "transactions/75d9ce85e9fcb429630115fae618d8f2c56220f7330572ac495fc31c3370922c-2.checkpoint": "f0e64f6aeeb8ab824e82a7c56315d557e16a1ff74f1b7ca44b57063e20e92ae7",
+    "transactions/75d9ce85e9fcb429630115fae618d8f2c56220f7330572ac495fc31c3370922c-3.checkpoint": "0b0844c67d9c1703ecaf0503a107064a6454450765ae1731b3ef8babee2580c4",
+    "transactions/75d9ce85e9fcb429630115fae618d8f2c56220f7330572ac495fc31c3370922c-4.checkpoint": "d7e1f8bb71a57bec55b204f95e7cc9ad351eb541901e14c7d8e414919e86597d",
+    "witnesses/1-bfbda51370934d3eb4e81e4e0dbe9fa316227405fbea6a9c4831b6478c9ff370.witness": "04cf14cd97ab03d1a30ddec042e98a7c5be8e55486e48f430961105ceeab53b5",
+    "writer/owner.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "parameter_scope": "actual all12 typed float64 linear/gated native serving payload; scientific rejection prevents candidate publication and activation",
+  "policy_digest": "ace2588fae0fcc13e344443fcbe0d861718e43ef0d7eb247c051b91b7b071da1",
+  "predecessor_sha256": "1c18bbd690e3320dc596688015f95043e12df95431b8c41ec930900b5d03089d",
+  "production_authority": false,
+  "protocol_sha256": "654994abfb66e8872b0d6632b7d80d5058ad5af06adc2d2dea0de628395ba05e",
+  "report_sha256": "89a988a9717f2d003e6cc86e63b74cc53a2ce605052be94c6760a24413cfde46",
+  "review_archive": {
+    "encoding": "native V1 canonical signing bytes followed by 64-byte Ed25519 signature",
+    "reviewer_public_key_hex": "a09aa5f47a6759802ff955f8dc2d2a14a5c99d23be97f864127ff9383455a4f0",
+    "signed_review_hex": "68657074612e6c6561726e696e672d6172746966616374732e736369656e74696669632d7265766965772e7631000000000000001b72657365617263682d72657669657765722d657068656d6572616c000000000000002872657365617263682d696d706f72742d616c6c31322d74797065642d63616e6469646174652d76350000000000000001ace2588fae0fcc13e344443fcbe0d861718e43ef0d7eb247c051b91b7b071da1e7957ebed2b2380b3dac3ca0359dbd19e198a56df6a9cfbd842ceb1a5f7b8f384d0f3392f824501eab039228564a8108f99f612a1f4cdd9f81a24932d01d4ceb89a988a9717f2d003e6cc86e63b74cc53a2ce605052be94c6760a24413cfde46000000000000006addfe22000000006addff4ec42a3c37655cd372331c29aadb64e3633523f75d093595d9e42735c6e854efec1432afa429eb940a0943a473e8922a51e2e73c26f9502143f4014079355dc20f",
+    "trust_scope": "public ephemeral research identity only"
+  },
+  "review_digest": "5ae41754402964b56eabb373b55a237e1664461095ba3a66bcc307af208f0ad6",
+  "schema": "hepta.real-report-native-rejection.v5",
+  "signed_negative_review_submitted": true,
+  "trust_scope": "public ephemeral research owner/reviewer keys; no production trust installed"
+}

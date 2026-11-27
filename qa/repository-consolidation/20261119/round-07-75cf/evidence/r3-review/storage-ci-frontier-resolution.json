@@ -1,0 +1,19 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "a8ce72907288d1836612446b87cb1d5c184993ac",
+  "genuine_merge_preview": "c5bfb8e680f33cd1f315b174d37ce5f6ecdc5635",
+  "genuine_merge_exit": 1,
+  "conflict_path": ".github/workflows/blocking-ci.yml",
+  "conflict_regions": 1,
+  "resolved_blob": "5030246c36af4ff1da58461f1cc00c948491127f",
+  "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+  "same_entire_tree": true,
+  "incoming_environment": {
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0"
+  },
+  "decision": "The current four-shard native job already contains all four exact incoming storage-reduction environment values. Keep the current 75-minute job budget and NEXTEST_TEST_THREADS=2, shard strategy, required owner/reverse-consumer selection and exact-source workflow. The original incoming commit changed only these four environment values; its 40-minute unchanged context is older policy and must not revert current exhaustive-shard execution.",
+  "validation": "No executable content changed after the explicit one-region resolution. Full resulting tree is identical to base, so no workflow run or duplicate compilation is claimed or necessary. No refs moved."
+}

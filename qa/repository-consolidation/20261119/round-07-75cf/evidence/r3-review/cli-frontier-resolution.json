@@ -1,0 +1,36 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "37d108ccb5251d2851911c081c58c652fc384683",
+  "incoming_parent": "52591dba2de2b5bd48bb48cab03f9bef195b141a",
+  "normal_merge_preview": "1ffbe66e2698d3acee996341b222bdf846a36723",
+  "conflicts": [
+    "codex-rs/cli/src/hepta.rs"
+  ],
+  "resolution": {
+    "path": "codex-rs/cli/src/hepta.rs",
+    "blob": "ffa7ff0fe18de77608e1402b364e20dd80c3b8a3",
+    "reason": "Both sides directly include main_impl.rs under their own crate-level recursion limit. Current adds explanatory comments and existing entrypoint_root_regression_tests; preserve them. No incoming implementation change is discarded."
+  },
+  "automatic_other_paths": {
+    "codex-rs/cli/src/main.rs": {
+      "current": "0831917cf5a2c3f4a3b587da0f85920bd184f6b3",
+      "automatic_merge": "0831917cf5a2c3f4a3b587da0f85920bd184f6b3",
+      "unchanged": true
+    },
+    "codex-rs/cli/src/lib.rs": {
+      "current": "cfe2d172e7baef7d3b23b7b0638ee71115429a71",
+      "automatic_merge": "cfe2d172e7baef7d3b23b7b0638ee71115429a71",
+      "unchanged": true
+    },
+    "codex-rs/cli/src/main_impl.rs": {
+      "current": "1bd3eb0bfb183f6a436ba56220906f91b49f0679",
+      "automatic_merge": "1bd3eb0bfb183f6a436ba56220906f91b49f0679",
+      "unchanged": true
+    }
+  },
+  "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+  "tree_equals_current": true,
+  "refs_written": false,
+  "runtime_tests_rerun": false,
+  "validation": "The real merge-tree preview changes only the conflict-marked hepta.rs; after the single semantic resolution the complete tree exactly matches current."
+}

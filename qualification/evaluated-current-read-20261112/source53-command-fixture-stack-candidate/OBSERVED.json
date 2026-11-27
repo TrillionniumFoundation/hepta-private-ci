@@ -1,0 +1,100 @@
+{
+  "source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "job": {
+    "job_id": 131459876749,
+    "bytes": 3842011,
+    "sha256": "2fa1c1754d8e5e3ff600915650bc17e09d7a71ce41795ffcf3f1b58f2c7b3529",
+    "git_blob_sha": "d65c69055773436a43f0a065a34d68fba6c36608"
+  },
+  "counts": {
+    "run": 1783,
+    "pass": 1768,
+    "fail": 10,
+    "sigabrt": 4,
+    "timeout": 1
+  },
+  "cases": [
+    {
+      "line": 13841,
+      "status": "SIGABRT",
+      "elapsed": "3.338s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_lost_ack_recovers_only_exact_readback",
+      "occurrences": [
+        {
+          "line": 13841,
+          "status": "SIGABRT",
+          "elapsed": "3.338s"
+        },
+        {
+          "line": 32101,
+          "status": "SIGABRT",
+          "elapsed": "3.338s"
+        }
+      ]
+    },
+    {
+      "line": 13847,
+      "status": "SIGABRT",
+      "elapsed": "0.380s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_lost_ack_recovers_only_exact_readback",
+      "occurrences": [
+        {
+          "line": 13847,
+          "status": "SIGABRT",
+          "elapsed": "0.380s"
+        },
+        {
+          "line": 32180,
+          "status": "SIGABRT",
+          "elapsed": "0.380s"
+        }
+      ]
+    },
+    {
+      "line": 13848,
+      "status": "SIGABRT",
+      "elapsed": "0.415s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_once_reads_originals_and_readonly_evidence",
+      "occurrences": [
+        {
+          "line": 13848,
+          "status": "SIGABRT",
+          "elapsed": "0.415s"
+        },
+        {
+          "line": 32191,
+          "status": "SIGABRT",
+          "elapsed": "0.415s"
+        }
+      ]
+    },
+    {
+      "line": 13849,
+      "status": "SIGABRT",
+      "elapsed": "0.552s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim",
+      "occurrences": [
+        {
+          "line": 13849,
+          "status": "SIGABRT",
+          "elapsed": "0.552s"
+        },
+        {
+          "line": 32202,
+          "status": "SIGABRT",
+          "elapsed": "0.552s"
+        }
+      ]
+    }
+  ],
+  "tail": {
+    "bytes": 30014,
+    "git_blob_sha": "5c908ff80c03b1186d75522dee07ecfa730ab116",
+    "sha256": "63fe814adb1dc912a222648497de6c8e0de9e06c1274146e7ca2df8e2a5e60b5"
+  },
+  "claim": "Actual stack-overflow failures; no backtrace, instruction address or measured future layout."
+}

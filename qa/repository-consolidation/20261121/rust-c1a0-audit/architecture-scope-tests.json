@@ -1,0 +1,21 @@
+{
+  "base_commit": "132b3227ae1978b5ae2eba5b64efef53158a92f6",
+  "base_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+  "changed_path": ".github/workflows/hepta-architecture-convergence.yml",
+  "before_blob": "fa76e846c514cc12e23bbd382246b122fccecf7d",
+  "after_blob": "b6163d094b4f91350010c0a400ea2d700deea64e",
+  "change": "jobs.qualification.timeout-minutes 60 -> 120",
+  "yaml_documents_otherwise_identical": true,
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "-v",
+    "scripts.tests.test_hepta_ci_scope"
+  ],
+  "exit_code": 0,
+  "seconds": 0.24370598793029785,
+  "log_bytes": 4216,
+  "log_sha256": "066adad4f537e4bdbc7feea0e94f7805a17a28366216c01d6fd850d3f3182baf",
+  "source_after": " M .github/workflows/hepta-architecture-convergence.yml\n"
+}

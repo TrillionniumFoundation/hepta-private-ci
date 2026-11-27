@@ -1,0 +1,62 @@
+{
+  "archive": {
+    "CRC_and_original_members_verified": true,
+    "bytes": 34050599,
+    "original_files_unchanged": true,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1.zip",
+    "sha256": "e96030a4c1a29031e56c406d7cc72cee9d141a0edb4701e3a83d60b5d5e32c52"
+  },
+  "bootstrap_children_peak_RSS_bytes": 33660928,
+  "bootstrap_own_CPU_sample_seconds": 0.196772086,
+  "bootstrap_waited_children_CPU_seconds": 11.635231,
+  "bootstrap_wall_sample_seconds": 13.594199081882834,
+  "collection_receipt_sha256": "8461128602a2ca104d71401e4d42f59510aac37a96d79942a6c8e2344a409804",
+  "download_phase_wall_seconds": 1.9346060550305992,
+  "downloaded_members_verified": 15,
+  "finished_utc": "2026-11-10T22:23:08.229873+00:00",
+  "metadata_argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-program-v1/collect_terminal.py",
+    "--output",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1"
+  ],
+  "metadata_child_address_limit_bytes": 2147483648,
+  "metadata_child_ceiling_seconds": 600,
+  "metadata_pid": 2229733,
+  "metadata_returncode": 0,
+  "metadata_started_utc": "2026-11-10T22:22:56.576704+00:00",
+  "metadata_timed_out": false,
+  "metadata_waited_child_CPU_seconds": 11.4558,
+  "no_model_or_oracle_execution": true,
+  "numeric_retry_count": 0,
+  "original_numerical_budget_extended": false,
+  "original_terminal_receipt_identities": {
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-final-audit-bootstrap-v1/receipt.json": {
+      "bytes": 3716,
+      "sha256": "e8a77c564985459913b3dfd5654d91b51cc533c4090a78af9474d7ebc84ac61a"
+    },
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-final-audit-launch-v1/receipt.json": {
+      "bytes": 1497,
+      "sha256": "bc3293db5a6f39cdbce7b7a956a6e59cfabdbc95268c9cfcf7a5add4653ee367"
+    }
+  },
+  "program_blob": "e1318d30f975b409942f71b283db22c98ea1a0cf",
+  "program_zip_sha256": "442196e551dffe877fedcef3ac25c5dd0de19010273692ffdee851fef61a6846",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "schema": "terminal-numerics-metadata-bootstrap-v1",
+  "source_sha256": "57dad8edb6c09aa65925f5ea80279990d6ee0e099a5629eb3fdc183a904eaf82",
+  "stable_key": "hcsn-terminal-numerics-postmortem-c385-v1",
+  "started_utc": "2026-11-10T22:22:54.635724+00:00",
+  "status": "completed_metadata_collection",
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 441,
+    "sha256": "7d83df37606a195b9219d11e24ac9882ac83325cb7ee470b52bb8f103206d156"
+  },
+  "timing_scope": "Metadata bootstrap sample before final serialization; download and collector timers are nested. No original audit CPU is included.",
+  "whole_metadata_child_wall_seconds": 11.501382886897773
+}

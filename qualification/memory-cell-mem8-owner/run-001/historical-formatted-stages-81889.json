@@ -1,0 +1,776 @@
+{
+  "schema_version": 1,
+  "base_head": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+  "target_head": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+  "target_tree": "146f33459795629d181026eed3a380272f40912f",
+  "base_17_files_remote_readback_verified": true,
+  "target_30_files_remote_readback_verified": true,
+  "method": "Exact original formatter postimages, with later-stage module/fixture additions removed at coherent boundaries; actual Git default textual diffs and full sequential patch replay.",
+  "validation": "No stage compilation or stage-specific formatter run claimed. Whole target native validation is in progress; reconstructed intermediate boundaries require their normal exact-head gates.",
+  "stages": [
+    {
+      "id": "B",
+      "behavior": "Atomic canonical import and durable source/revision bindings; original-writer shared import lock, explicit commit/rollback acknowledgement, native pool fence on uncertainty, and lost-ACK recovery",
+      "case_ids": [
+        "production_writer::episodic::tests::committed_import_reopens_and_reconciles_lost_response_without_rewriting"
+      ],
+      "commands": [
+        "just test --locked -p codex-hepta-memory --lib episodic"
+      ],
+      "expected_cumulative_memory_episodic_tests": 5,
+      "expected_cumulative_agentd_episodic_tests": null,
+      "files": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "2a10b4536954fdd4970776d424e3fc2325ae4d01",
+          "bytes": 11848,
+          "sha256": "9f86bbe355780aee3ee1a27f735ee7216d62e9f13f0ca7239e6fc11a64a225a2",
+          "additions": 219,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "2a10b4536954fdd4970776d424e3fc2325ae4d01",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "1c032b45ac066ce4ed2cf4bd204a9834d59626a9",
+          "bytes": 6083,
+          "sha256": "67eeb411f49a51532b0aa09ccc8b95e538e5e24d4a7c5142a9c73adac54d604e",
+          "additions": 156,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "1c032b45ac066ce4ed2cf4bd204a9834d59626a9",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "484b0aa8bb3db29a5cb64a54d8493d2d5dab5d5e",
+          "bytes": 2558,
+          "sha256": "b72085b50d2567b351290c65cb7be9f6f66b54e70d42b44ddda307000d7612ae",
+          "additions": 76,
+          "deletions": 0,
+          "non_test_file": false,
+          "sha": "484b0aa8bb3db29a5cb64a54d8493d2d5dab5d5e",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "983dbbf40e29ca603732b6b27771e83fba6e9696",
+          "bytes": 2811,
+          "sha256": "7817cbc9fc5454d9f475d8e28196068a60c26ae4adde269d5e7509d7d09ba633",
+          "additions": 86,
+          "deletions": 0,
+          "non_test_file": false,
+          "sha": "983dbbf40e29ca603732b6b27771e83fba6e9696",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer.rs",
+          "preimage_git_blob": "6ca435e1219b4258b0da1a3a05f3dad7dcbf12bd",
+          "postimage_git_blob": "15487c549abfe1cf1251f6a65a4be699b6b381fc",
+          "bytes": 173514,
+          "sha256": "363ee295992d80f0ff35358401a02ae6b460b0bc43fc4bef726c3b26cc8115e0",
+          "additions": 14,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "15487c549abfe1cf1251f6a65a4be699b6b381fc",
+          "preimage": "6ca435e1219b4258b0da1a3a05f3dad7dcbf12bd"
+        },
+        {
+          "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+          "preimage_git_blob": "9114a6184e7793e907cc316fa4327348e107d143",
+          "postimage_git_blob": "fd1fd483385211eac76afc3c41571541c1de6f0f",
+          "bytes": 37044,
+          "sha256": "7fd600aa026621d9950614536a172f27aa6e3c6e438d50bba3dd71afe85fb4bf",
+          "additions": 4,
+          "deletions": 1,
+          "non_test_file": true,
+          "sha": "fd1fd483385211eac76afc3c41571541c1de6f0f",
+          "preimage": "9114a6184e7793e907cc316fa4327348e107d143"
+        }
+      ],
+      "additions": 555,
+      "deletions": 1,
+      "changed_lines": 556,
+      "non_test_additions": 393,
+      "non_test_deletions": 1,
+      "non_test_changed_lines": 394,
+      "patch_bytes": 27819,
+      "patch_sha256": "96e13f686180002c0b4293d6e67d66ebf7082c66663361d12375165cbebafa06",
+      "sequential_patch_replay": true,
+      "boundary_static_review": "Module and type references are supplied within this stage or a predecessor; independent native compilation remains a required gate."
+    },
+    {
+      "id": "C",
+      "behavior": "Six additional original-owner regressions: update/dependency withdrawal, final source and writer revocation rollback, external head changes, Unicode, source metadata identity, Provisional retrieval exclusion",
+      "case_ids": [
+        "production_writer::episodic::regression_tests::update_withdraws_dependent_memory_and_preserves_unrelated_source",
+        "production_writer::episodic::regression_tests::source_and_writer_revocation_roll_back_all_native_changes",
+        "production_writer::episodic::regression_tests::historical_or_incoherent_source_states_cannot_overwrite_native_heads",
+        "production_writer::episodic::regression_tests::actual_python_unicode_export_preserves_exact_observed_fact_bytes",
+        "production_writer::episodic::regression_tests::changed_source_admission_cannot_reuse_an_old_canonical_binding",
+        "production_writer::episodic::regression_tests::custody_preserves_provisional_state_and_cannot_upgrade_it_on_replay"
+      ],
+      "commands": [
+        "just test --locked -p codex-hepta-memory --lib episodic"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": null,
+      "files": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+          "preimage_git_blob": "2a10b4536954fdd4970776d424e3fc2325ae4d01",
+          "postimage_git_blob": "14c9d0685cc8b64a85cb9b1b9a01b8d99d702333",
+          "bytes": 11936,
+          "sha256": "521bb9151d78151b8127575db130a8bfd49f0f7adc03f7e8de91ed3d0ceb03ea",
+          "additions": 4,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "14c9d0685cc8b64a85cb9b1b9a01b8d99d702333",
+          "preimage": "2a10b4536954fdd4970776d424e3fc2325ae4d01"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+          "preimage_git_blob": "484b0aa8bb3db29a5cb64a54d8493d2d5dab5d5e",
+          "postimage_git_blob": "6cb08af29309991e19510cfecd30aaaafa55f6a3",
+          "bytes": 2610,
+          "sha256": "35268abb56896174d6cc093a64e411f5017d6e9fdcbc3cbb8976dab3aab61e0c",
+          "additions": 2,
+          "deletions": 0,
+          "non_test_file": false,
+          "sha": "6cb08af29309991e19510cfecd30aaaafa55f6a3",
+          "preimage": "484b0aa8bb3db29a5cb64a54d8493d2d5dab5d5e"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+          "preimage_git_blob": "a7e503dbefe093750812b0f16471fa519f467906",
+          "postimage_git_blob": "35061a80421612bfbe92d38a20171935db59990d",
+          "bytes": 10963,
+          "sha256": "7febade5edcbe3538f23bb858ff80e21a927db57493cf0b09c296e43654d8489",
+          "additions": 6,
+          "deletions": 0,
+          "non_test_file": false,
+          "sha": "35061a80421612bfbe92d38a20171935db59990d",
+          "preimage": "a7e503dbefe093750812b0f16471fa519f467906"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "d657588ccc28bf1639155fb3fa7f889b27df30dd",
+          "bytes": 14050,
+          "sha256": "680b27a797d578c0a1cc9fe337d7fdfc6625249332865792db3a30b1b15f9172",
+          "additions": 450,
+          "deletions": 0,
+          "non_test_file": false,
+          "sha": "d657588ccc28bf1639155fb3fa7f889b27df30dd",
+          "preimage": null
+        }
+      ],
+      "additions": 462,
+      "deletions": 0,
+      "changed_lines": 462,
+      "non_test_additions": 4,
+      "non_test_deletions": 0,
+      "non_test_changed_lines": 4,
+      "patch_bytes": 24893,
+      "patch_sha256": "634fd3f4c7e8b5b1c8e846ad327fac4f8daa7fd34ed2db1e5d2cf03071676513",
+      "sequential_patch_replay": true,
+      "boundary_static_review": "Module and type references are supplied within this stage or a predecessor; independent native compilation remains a required gate."
+    },
+    {
+      "id": "D1",
+      "behavior": "Typed protocol/client and retained-host wrapper; ordinary control remains unavailable until the embedding configures the source owner. Real UDS refusal verifies no canonical or target effects.",
+      "case_ids": [
+        "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+      ],
+      "commands": [
+        "just test --locked -p codex-hepta-agent-protocol",
+        "just test --locked -p codex-hepta-agentd --lib episodic"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": 1,
+      "files": [
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+          "preimage_git_blob": "b1b72029b494073da34a762fef7e8a698b6699c7",
+          "postimage_git_blob": "826903cc048dfa6b8f502601aed7780fa6ac3a05",
+          "bytes": 47799,
+          "sha256": "eaaf49fa285a196759194d167ef63e78a504aae9d898f55bb524d53d8a99caef",
+          "additions": 8,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "826903cc048dfa6b8f502601aed7780fa6ac3a05",
+          "preimage": "b1b72029b494073da34a762fef7e8a698b6699c7"
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "efcce3892dac9751927696654f5d6a19d12b1d68",
+          "bytes": 926,
+          "sha256": "2059517a8efc9452d9c6a500cf290e519f950630943d7fcacf23f2b622bc2153",
+          "additions": 22,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "efcce3892dac9751927696654f5d6a19d12b1d68",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "preimage_git_blob": "32faabe06eaceadd0332018cce837b0b29118d4a",
+          "postimage_git_blob": "b25075a018bc4ee57b77c828eb074cd70c2de85a",
+          "bytes": 42725,
+          "sha256": "7f4bf3f1dfe67f557e67ecfc3f6930e95d1a6c5063be04210d32a6ebfa6737b5",
+          "additions": 1,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "b25075a018bc4ee57b77c828eb074cd70c2de85a",
+          "preimage": "32faabe06eaceadd0332018cce837b0b29118d4a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/client.rs",
+          "preimage_git_blob": "b5ecac14a4118c69c07d2e7e7afbdbb52755f7b0",
+          "postimage_git_blob": "7e3eecfe91f4534f4fb4b2242ddcfda7760923e8",
+          "bytes": 29749,
+          "sha256": "bf7cff479842870e910c3225f2a486a56f7eb9bafb1cf64dce5119261d4c36a7",
+          "additions": 26,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "7e3eecfe91f4534f4fb4b2242ddcfda7760923e8",
+          "preimage": "b5ecac14a4118c69c07d2e7e7afbdbb52755f7b0"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "preimage_git_blob": "39d127250b8e825292c25f8c34ec360d5d94ff60",
+          "postimage_git_blob": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676",
+          "bytes": 27869,
+          "sha256": "eeec8bb76bb13fba92a85668bc2ee47957eba7e89292197c18dea1b44e23c121",
+          "additions": 19,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676",
+          "preimage": "39d127250b8e825292c25f8c34ec360d5d94ff60"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "preimage_git_blob": "7b9ca2d17d05822cc27fc651cacd9a173bd36acf",
+          "postimage_git_blob": "3ca6f19c84d99d4a37fe508f751c6e3d2cb427d4",
+          "bytes": 59576,
+          "sha256": "ed3a753fed558b9b2526652c7d53770f5411a4e1153bb12fa663d629755e4e8c",
+          "additions": 3,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "3ca6f19c84d99d4a37fe508f751c6e3d2cb427d4",
+          "preimage": "7b9ca2d17d05822cc27fc651cacd9a173bd36acf"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+          "preimage_git_blob": "517d4f7cffb109d401a9002e3ef08d4abf8c7495",
+          "postimage_git_blob": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657",
+          "bytes": 11000,
+          "sha256": "2967ed7ada1cda679f35a85aaec08bf6b04482a9b05ae99c0dcf27eb9c7549fa",
+          "additions": 3,
+          "deletions": 0,
+          "non_test_file": false,
+          "sha": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657",
+          "preimage": "517d4f7cffb109d401a9002e3ef08d4abf8c7495"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "f6503a13683892f29ba41ddfdc34e714695d46c8",
+          "bytes": 3108,
+          "sha256": "82801419dde410c599351bf00faffc64c5f4f1f835c30312d674c118472d9996",
+          "additions": 70,
+          "deletions": 0,
+          "non_test_file": false,
+          "sha": "f6503a13683892f29ba41ddfdc34e714695d46c8",
+          "preimage": null
+        }
+      ],
+      "additions": 152,
+      "deletions": 0,
+      "changed_lines": 152,
+      "non_test_additions": 79,
+      "non_test_deletions": 0,
+      "non_test_changed_lines": 79,
+      "patch_bytes": 10451,
+      "patch_sha256": "9f3b9bd588bbec05f9328937272ea22e427ace46e1ed64e0b87d9dd608c6af78",
+      "sequential_patch_replay": true,
+      "boundary_static_review": "Module and type references are supplied within this stage or a predecessor; independent native compilation remains a required gate."
+    },
+    {
+      "id": "D2",
+      "behavior": "Ordinary configured source/writer ingress with fixed private scope/namespace; bounded retained imports, unresolved Drop accounting, source callback refusal and ordinary readiness/reads fenced even after the response future is gone",
+      "case_ids": [
+        "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context"
+      ],
+      "commands": [
+        "just test --locked -p codex-hepta-agentd --lib episodic"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": 3,
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "preimage_git_blob": "ad42091cd893c1108eb21a766104eee994cf02e5",
+          "postimage_git_blob": "f9f69632f1859aedb23743635a3aad315cd52d65",
+          "bytes": 38713,
+          "sha256": "763fb7764bddc8083604c8ab3f1ed7cb32c1d0950aac3cfeec10c5d1cf7ca5ac",
+          "additions": 6,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "f9f69632f1859aedb23743635a3aad315cd52d65",
+          "preimage": "ad42091cd893c1108eb21a766104eee994cf02e5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+          "preimage_git_blob": "585796c337eda12b490fc72a69337d8c4ca40db4",
+          "postimage_git_blob": "d6d13a226a7fd9778904893368767c4a38c23e01",
+          "bytes": 3410,
+          "sha256": "25c7ec1a8d0679a476d8f2ab45e179c2a2fbe54b68701508992de5aa0305702a",
+          "additions": 1,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "d6d13a226a7fd9778904893368767c4a38c23e01",
+          "preimage": "585796c337eda12b490fc72a69337d8c4ca40db4"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "9372ca25a4cd3071b702be7bdff30f1e9d83792d",
+          "bytes": 1924,
+          "sha256": "3a167bc5719fdcef599b2570780cc506dc6653e941466196e6e75d851eac60e6",
+          "additions": 51,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "9372ca25a4cd3071b702be7bdff30f1e9d83792d",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "14d55512ba40d50872730ccf7ae48ee2b153994a",
+          "bytes": 3995,
+          "sha256": "56886fe8a6248c799b4f9f43ac04bfc2006bc62c553671dbd4858044888bf524",
+          "additions": 106,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "14d55512ba40d50872730ccf7ae48ee2b153994a",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state.rs",
+          "preimage_git_blob": "c9b08d1bab388b135325f519220220e3efa2c549",
+          "postimage_git_blob": "c587df24011d5768295a7cf431948a7d4321c5da",
+          "bytes": 38289,
+          "sha256": "56874b927c3bc17b33a2c07f1e52ed0659ee0c9055a3fa679e7895ca264d5998",
+          "additions": 20,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "c587df24011d5768295a7cf431948a7d4321c5da",
+          "preimage": "c9b08d1bab388b135325f519220220e3efa2c549"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "6585d7ee856310327d1823ca829ae996dda3c2b8",
+          "bytes": 5341,
+          "sha256": "6da2ac65ace12c0e8cf4e0a0dc83b09461a469538bf0b0fe939afad80a0155bf",
+          "additions": 143,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "6585d7ee856310327d1823ca829ae996dda3c2b8",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "preimage_git_blob": "3ca6f19c84d99d4a37fe508f751c6e3d2cb427d4",
+          "postimage_git_blob": "953dbc83ac893475b0574267f5cbdf78b0571452",
+          "bytes": 60052,
+          "sha256": "dda67d7369e89eb8a7c76ceb0afbb11b6425a57c4ab6fd1deebfcfdaf4c63d55",
+          "additions": 13,
+          "deletions": 3,
+          "non_test_file": true,
+          "sha": "953dbc83ac893475b0574267f5cbdf78b0571452",
+          "preimage": "3ca6f19c84d99d4a37fe508f751c6e3d2cb427d4"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "preimage_git_blob": "b25075a018bc4ee57b77c828eb074cd70c2de85a",
+          "postimage_git_blob": "5481bc5bc81558e1246bd3df5e2f081b334266b4",
+          "bytes": 42746,
+          "sha256": "5e6935c2a2ef460651f6428628e7c45f53486402dcf53c88d917da77066ef068",
+          "additions": 1,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "5481bc5bc81558e1246bd3df5e2f081b334266b4",
+          "preimage": "b25075a018bc4ee57b77c828eb074cd70c2de85a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "preimage_git_blob": "13f164a6199f75505368fa9829e26983f098e432",
+          "postimage_git_blob": "d38e4802caf10a4ecaede41c3108ead6ed4c993f",
+          "bytes": 30971,
+          "sha256": "6ac32bcf5308ffd76d799995250b7af7c790948b5af2b2cf045b60591251fd3b",
+          "additions": 14,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "d38e4802caf10a4ecaede41c3108ead6ed4c993f",
+          "preimage": "13f164a6199f75505368fa9829e26983f098e432"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "preimage_git_blob": "f6503a13683892f29ba41ddfdc34e714695d46c8",
+          "postimage_git_blob": "f414ff7b03e87199da97c597c53056628ed5bbc6",
+          "bytes": 10071,
+          "sha256": "f585f55b0cfd9d128584dca765fb64a634d13bfdcb9f8c722ebef4e41bbea32d",
+          "additions": 184,
+          "deletions": 1,
+          "non_test_file": false,
+          "sha": "f414ff7b03e87199da97c597c53056628ed5bbc6",
+          "preimage": "f6503a13683892f29ba41ddfdc34e714695d46c8"
+        }
+      ],
+      "additions": 539,
+      "deletions": 4,
+      "changed_lines": 543,
+      "non_test_additions": 355,
+      "non_test_deletions": 3,
+      "non_test_changed_lines": 358,
+      "patch_bytes": 30554,
+      "patch_sha256": "ae6ba597231400e795ef0dca0c6b1e0272275f37556f96051d47707979592a2f",
+      "sequential_patch_replay": true,
+      "boundary_static_review": "Module and type references are supplied within this stage or a predecessor; independent native compilation remains a required gate."
+    },
+    {
+      "id": "D3",
+      "behavior": "Real App Server/AutomationStore drain and original SQLite owner. Commit and source-revoke cases retain admitted work through cancellation. Running panic case cancels two reply futures, proves queued import did not commit, original pool fences, and real UDS Health/ordinary reads refuse before drain.",
+      "case_ids": [
+        "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement"
+      ],
+      "commands": [
+        "just test --locked -p codex-hepta-agentd --lib episodic"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": 4,
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "preimage_git_blob": "f414ff7b03e87199da97c597c53056628ed5bbc6",
+          "postimage_git_blob": "0cca4e02b3a349e5ee3f7b437637b45a58a9f8c2",
+          "bytes": 10130,
+          "sha256": "1f9186cfcf59a1c00a872ed7a0e655e6ea2710554208a0ce7b0f6c60477dcabc",
+          "additions": 3,
+          "deletions": 0,
+          "non_test_file": false,
+          "sha": "0cca4e02b3a349e5ee3f7b437637b45a58a9f8c2",
+          "preimage": "f414ff7b03e87199da97c597c53056628ed5bbc6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "0ec004e152de5f5482b24506a40a28d7bc006abc",
+          "bytes": 11577,
+          "sha256": "5762ed135d103724bcab6f2543e3166b1250dd9d54c577aad271779943e8ad1a",
+          "additions": 303,
+          "deletions": 0,
+          "non_test_file": false,
+          "sha": "0ec004e152de5f5482b24506a40a28d7bc006abc",
+          "preimage": null
+        }
+      ],
+      "additions": 306,
+      "deletions": 0,
+      "changed_lines": 306,
+      "non_test_additions": 0,
+      "non_test_deletions": 0,
+      "non_test_changed_lines": 0,
+      "patch_bytes": 12672,
+      "patch_sha256": "a43500cf52129781ae32bdd2fb7b8f2dc3b7d41eef2f99392aceb51ac2eda192",
+      "sequential_patch_replay": true,
+      "child_cases": [
+        "commit",
+        "revoke",
+        "panic"
+      ],
+      "child_case_marker": "episodic-drain-case-complete:<case>",
+      "child_case_note": "The single outer nextest case launches commit/revoke/panic children and checks each completion marker in child stdout. Children are not three extra top-level PASS results.",
+      "boundary_static_review": "Module and type references are supplied within this stage or a predecessor; independent native compilation remains a required gate."
+    },
+    {
+      "id": "E",
+      "behavior": "Retain the acknowledged original source observation and require complete typed source freshness before and after ordinary explicit context reads and final revalidation.",
+      "case_ids": [
+        "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context"
+      ],
+      "commands": [
+        "just test --locked -p codex-hepta-agentd --lib episodic"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": 5,
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+          "preimage_git_blob": "9372ca25a4cd3071b702be7bdff30f1e9d83792d",
+          "postimage_git_blob": "483633043e80459023422b0361cfd762136d8fa3",
+          "bytes": 2206,
+          "sha256": "0b0d81d1b8efcced51db88bf139ba47bcef4eb8e488c79b2a5876413caaf2fcd",
+          "additions": 4,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "483633043e80459023422b0361cfd762136d8fa3",
+          "preimage": "9372ca25a4cd3071b702be7bdff30f1e9d83792d"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+          "preimage_git_blob": "14d55512ba40d50872730ccf7ae48ee2b153994a",
+          "postimage_git_blob": "eac6a0a296176332eb0a89e2eadb13f657236062",
+          "bytes": 4813,
+          "sha256": "a453ca69b4dce2a661f4cfd1101ae7ebd19a65883e723291a0ae4dd4132574d2",
+          "additions": 20,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "eac6a0a296176332eb0a89e2eadb13f657236062",
+          "preimage": "14d55512ba40d50872730ccf7ae48ee2b153994a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "595a9aec06808963b580b83f7cb856221d2a7bd5",
+          "bytes": 4791,
+          "sha256": "be21fd5afc24c45e822e9c90eecb5a1a6e169f836a173e02c1799bc653c20d8e",
+          "additions": 146,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "595a9aec06808963b580b83f7cb856221d2a7bd5",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/episodic_source_read_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101",
+          "bytes": 2647,
+          "sha256": "4f941d1e4c8f0ff85e88954863eaf2e2def3dbe5d2bf99b36bcde7e34525d603",
+          "additions": 79,
+          "deletions": 0,
+          "non_test_file": false,
+          "sha": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "preimage_git_blob": "0cca4e02b3a349e5ee3f7b437637b45a58a9f8c2",
+          "postimage_git_blob": "9145d2e46aa9d0f5022f09fde38c3ea97ac56838",
+          "bytes": 13050,
+          "sha256": "4af3dab861a0d64a70eff732f6279c877ef4fdf989c196fa826928c431f1d6ad",
+          "additions": 94,
+          "deletions": 21,
+          "non_test_file": false,
+          "sha": "9145d2e46aa9d0f5022f09fde38c3ea97ac56838",
+          "preimage": "0cca4e02b3a349e5ee3f7b437637b45a58a9f8c2"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "preimage_git_blob": "953dbc83ac893475b0574267f5cbdf78b0571452",
+          "postimage_git_blob": "e53d6ada7c222ad0084b44803bdfbed4789160fa",
+          "bytes": 60831,
+          "sha256": "3bdfa3151dc0a77e6e926c81a1407b0309d841f859612fa54383b72f7760765e",
+          "additions": 21,
+          "deletions": 0,
+          "non_test_file": true,
+          "sha": "e53d6ada7c222ad0084b44803bdfbed4789160fa",
+          "preimage": "953dbc83ac893475b0574267f5cbdf78b0571452"
+        }
+      ],
+      "additions": 364,
+      "deletions": 21,
+      "changed_lines": 385,
+      "non_test_additions": 191,
+      "non_test_deletions": 0,
+      "non_test_changed_lines": 191,
+      "patch_bytes": 22176,
+      "patch_sha256": "c447665d016db1cea2cb5aa57ae2be664cfcebcf2a9775b575ffbcff91c00f00",
+      "sequential_patch_replay": true,
+      "boundary_static_review": "Module and type references are supplied within this stage or a predecessor; independent native compilation remains a required gate."
+    }
+  ],
+  "sequential_replay_reconstructs_exact_target_30_files": true,
+  "final_source": [
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "git_blob": "fd1fd483385211eac76afc3c41571541c1de6f0f",
+      "sha": "fd1fd483385211eac76afc3c41571541c1de6f0f"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
+      "git_blob": "efcce3892dac9751927696654f5d6a19d12b1d68",
+      "sha": "efcce3892dac9751927696654f5d6a19d12b1d68"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "git_blob": "826903cc048dfa6b8f502601aed7780fa6ac3a05",
+      "sha": "826903cc048dfa6b8f502601aed7780fa6ac3a05"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "git_blob": "7e3eecfe91f4534f4fb4b2242ddcfda7760923e8",
+      "sha": "7e3eecfe91f4534f4fb4b2242ddcfda7760923e8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "git_blob": "f9f69632f1859aedb23743635a3aad315cd52d65",
+      "sha": "f9f69632f1859aedb23743635a3aad315cd52d65"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "git_blob": "d6d13a226a7fd9778904893368767c4a38c23e01",
+      "sha": "d6d13a226a7fd9778904893368767c4a38c23e01"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+      "git_blob": "483633043e80459023422b0361cfd762136d8fa3",
+      "sha": "483633043e80459023422b0361cfd762136d8fa3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+      "git_blob": "eac6a0a296176332eb0a89e2eadb13f657236062",
+      "sha": "eac6a0a296176332eb0a89e2eadb13f657236062"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs",
+      "git_blob": "595a9aec06808963b580b83f7cb856221d2a7bd5",
+      "sha": "595a9aec06808963b580b83f7cb856221d2a7bd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read_tests.rs",
+      "git_blob": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101",
+      "sha": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "git_blob": "5481bc5bc81558e1246bd3df5e2f081b334266b4",
+      "sha": "5481bc5bc81558e1246bd3df5e2f081b334266b4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+      "git_blob": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657",
+      "sha": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "git_blob": "9145d2e46aa9d0f5022f09fde38c3ea97ac56838",
+      "sha": "9145d2e46aa9d0f5022f09fde38c3ea97ac56838"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
+      "git_blob": "0ec004e152de5f5482b24506a40a28d7bc006abc",
+      "sha": "0ec004e152de5f5482b24506a40a28d7bc006abc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "git_blob": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676",
+      "sha": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "git_blob": "d38e4802caf10a4ecaede41c3108ead6ed4c993f",
+      "sha": "d38e4802caf10a4ecaede41c3108ead6ed4c993f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "git_blob": "c587df24011d5768295a7cf431948a7d4321c5da",
+      "sha": "c587df24011d5768295a7cf431948a7d4321c5da"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "git_blob": "e53d6ada7c222ad0084b44803bdfbed4789160fa",
+      "sha": "e53d6ada7c222ad0084b44803bdfbed4789160fa"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
+      "git_blob": "6585d7ee856310327d1823ca829ae996dda3c2b8",
+      "sha": "6585d7ee856310327d1823ca829ae996dda3c2b8"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_source.rs",
+      "git_blob": "4589b4d5607d118f822a1d384f1cdd5a599721fc",
+      "sha": "4589b4d5607d118f822a1d384f1cdd5a599721fc"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_source_tests.rs",
+      "git_blob": "d94e1b72c5d04998680147100390fc70e2820e2a",
+      "sha": "d94e1b72c5d04998680147100390fc70e2820e2a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+      "git_blob": "35061a80421612bfbe92d38a20171935db59990d",
+      "sha": "35061a80421612bfbe92d38a20171935db59990d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "git_blob": "0cc27055eb23d1cd78c1b3e18cfde3a372b6351d",
+      "sha": "0cc27055eb23d1cd78c1b3e18cfde3a372b6351d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+      "git_blob": "14c9d0685cc8b64a85cb9b1b9a01b8d99d702333",
+      "sha": "14c9d0685cc8b64a85cb9b1b9a01b8d99d702333"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
+      "git_blob": "d657588ccc28bf1639155fb3fa7f889b27df30dd",
+      "sha": "d657588ccc28bf1639155fb3fa7f889b27df30dd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_snapshot.rs",
+      "git_blob": "08d90381cff19a79eaa35f318175940b12445f11",
+      "sha": "08d90381cff19a79eaa35f318175940b12445f11"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+      "git_blob": "6cb08af29309991e19510cfecd30aaaafa55f6a3",
+      "sha": "6cb08af29309991e19510cfecd30aaaafa55f6a3"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+      "git_blob": "983dbbf40e29ca603732b6b27771e83fba6e9696",
+      "sha": "983dbbf40e29ca603732b6b27771e83fba6e9696"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
+      "git_blob": "1c032b45ac066ce4ed2cf4bd204a9834d59626a9",
+      "sha": "1c032b45ac066ce4ed2cf4bd204a9834d59626a9"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "git_blob": "15487c549abfe1cf1251f6a65a4be699b6b381fc",
+      "sha": "15487c549abfe1cf1251f6a65a4be699b6b381fc"
+    }
+  ],
+  "parent": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+  "proposed_order": [
+    "B",
+    "C",
+    "D1",
+    "D2",
+    "D3",
+    "E"
+  ],
+  "counts_note": "Git default textual added/deleted lines. Non-test counts conservatively include all comments, whitespace, imports and cfg(test) wiring in non-test files; not an estimate of semantic statements.",
+  "d2_split_decision": "Keep D2 coherent: 358 changed lines in non-test files and 185 in test files (543 total), below the agreed <500 non-test / <800 overall review budgets. Configuration, actual control routing, retained owner task, bounded admission, drain tracking and unresolved-owner fencing ship together.",
+  "intermediate_source_note": "The four derived intermediate postimages delete later test-module/fixture changes from actual formatter bytes, or select the already-formatted complete D1 UDS refusal test. No intermediate formatter or compiler pass is claimed.",
+  "target_validation_note": "81889 is the published final target, containing actual formatter postimages and a separately reviewed equivalent Option predicate change. Fresh exact-head native validation is external and currently pending; this manifest proves source composition only.",
+  "retained_boundaries": [
+    "Original source custodian and writer capabilities must come from trusted configuration; request data and digests confer no authority.",
+    "V1 permanently retires imported slots, even for a subsequently valid Python version; this is narrower than write-after-revoke and is not qualified reconstruction.",
+    "E covers explicit CognitiveContext and CognitiveContextRevalidate used by NativeAppServer. Other automatic attachment, recall and search paths still need their own binding.",
+    "Source revalidation is a read linearization point, not an external-effect lease or a shared transaction with the external source.",
+    "Original production custody/provider operation and successor-task memory benefit are not established by these fixture tests."
+  ]
+}

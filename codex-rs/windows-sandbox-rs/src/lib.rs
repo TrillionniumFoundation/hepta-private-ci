@@ -5,6 +5,10 @@
 #[cfg(any(target_os = "windows", test))]
 mod ssh_config_dependencies;
 
+#[cfg(all(test, target_os = "windows"))]
+#[path = "private_state_native_probe_tests.rs"]
+mod private_state_native_probe;
+
 use std::fmt;
 use std::sync::Arc;
 
@@ -46,6 +50,10 @@ pub struct WindowsSandboxProvisioningSettings {
     pub allow_local_binding: bool,
 }
 
+/// Existing broker termination grace, shared with its native exit observer.
+#[cfg(target_os = "windows")]
+pub const RUNNER_TERMINATION_WAIT_MS: u32 = 5_000;
+
 #[cfg(target_os = "windows")]
 mod acl;
 #[cfg(target_os = "windows")]
@@ -54,6 +62,12 @@ mod allow;
 mod audit;
 #[cfg(target_os = "windows")]
 mod cap;
+#[cfg(all(test, target_os = "windows"))]
+#[path = "delete_permission_control_tests.rs"]
+mod delete_permission_control;
+#[cfg(all(test, target_os = "windows"))]
+#[path = "delete_permission_matrix_tests.rs"]
+mod delete_permission_matrix;
 #[cfg(target_os = "windows")]
 mod deny_read_acl;
 #[cfg(target_os = "windows")]
@@ -63,7 +77,14 @@ mod desktop;
 #[cfg(target_os = "windows")]
 mod dpapi;
 #[cfg(target_os = "windows")]
+mod elevated_admission;
+#[cfg(all(target_os = "windows", test))]
+#[path = "elevated_admission_tests.rs"]
+mod elevated_admission_tests;
+#[cfg(target_os = "windows")]
 mod env;
+#[cfg(target_os = "windows")]
+mod filesystem_read_acl;
 #[cfg(target_os = "windows")]
 mod helper_materialization;
 #[cfg(target_os = "windows")]
@@ -71,11 +92,26 @@ mod hide_users;
 #[cfg(target_os = "windows")]
 mod identity;
 #[cfg(target_os = "windows")]
+mod legacy_admission;
+#[cfg(all(target_os = "windows", test))]
+#[path = "legacy_admission_tests.rs"]
+mod legacy_admission_tests;
+#[cfg(target_os = "windows")]
+mod legacy_boundary;
+#[cfg(target_os = "windows")]
 mod logging;
+#[cfg(any(target_os = "windows", test))]
+mod managed_token_policy;
 #[cfg(target_os = "windows")]
 mod path_normalization;
 #[cfg(target_os = "windows")]
+mod prepared_filesystem;
+#[cfg(target_os = "windows")]
 mod process;
+#[cfg(target_os = "windows")]
+mod read_acl_query;
+#[cfg(any(target_os = "windows", test))]
+mod read_role_descriptor;
 #[cfg(target_os = "windows")]
 mod resolved_permissions;
 #[cfg(target_os = "windows")]
@@ -90,6 +126,13 @@ mod winutil;
 mod workspace_acl;
 
 mod deny_read_resolver;
+
+#[cfg(any(target_os = "windows", test))]
+mod capability_plan;
+#[cfg(any(target_os = "windows", test))]
+mod capability_registry;
+#[cfg(any(target_os = "windows", test))]
+mod permission_binding;
 
 #[cfg(target_os = "windows")]
 mod conpty;
@@ -128,6 +171,19 @@ pub(crate) use elevated::ipc_framed;
 
 #[cfg(target_os = "windows")]
 pub(crate) use elevated::runner_client;
+#[cfg(target_os = "windows")]
+pub use token::create_readonly_token_with_cap_from;
+#[cfg(target_os = "windows")]
+pub use token::create_readonly_token_with_caps_from;
+#[cfg(target_os = "windows")]
+pub use token::create_workspace_write_token_with_caps_from;
+
+#[cfg(target_os = "windows")]
+pub use elevated::runner_client::RunnerCleanupReconciliation;
+#[cfg(target_os = "windows")]
+pub use elevated::runner_client::reconcile_runner_cleanup;
+#[cfg(target_os = "windows")]
+pub use legacy_admission::LegacyWindowsSandboxIsolationUnavailable;
 
 #[cfg(target_os = "windows")]
 pub(crate) use elevated::runner_pipe;
@@ -154,7 +210,15 @@ pub use acl::path_write_aces_need_refresh;
 #[cfg(target_os = "windows")]
 pub use audit::apply_world_writable_scan_and_denies_for_permissions;
 #[cfg(target_os = "windows")]
+pub use cap::filesystem_capability_plan;
+#[cfg(target_os = "windows")]
 pub use cap::load_or_create_cap_sids;
+#[cfg(target_os = "windows")]
+pub use cap::require_fresh_filesystem_namespace;
+#[cfg(target_os = "windows")]
+pub use cap::validate_filesystem_capability_plan;
+#[cfg(target_os = "windows")]
+pub use cap::validate_filesystem_capability_plan_roots;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_cap_sid_for_cwd;
 #[cfg(target_os = "windows")]
@@ -163,6 +227,12 @@ pub use cap::workspace_write_cap_sid_for_root;
 pub use cap::workspace_write_root_contains_path;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_write_root_overlaps_path;
+#[cfg(target_os = "windows")]
+pub use capability_plan::FilesystemCapabilityPlan;
+#[cfg(target_os = "windows")]
+pub use capability_plan::FilesystemCapabilityRole;
+#[cfg(target_os = "windows")]
+pub use capability_plan::RootResolutionContext;
 #[cfg(target_os = "windows")]
 pub use conpty::ConptyInstance;
 #[cfg(target_os = "windows")]
@@ -181,9 +251,17 @@ pub use dpapi::protect as dpapi_protect;
 #[cfg(target_os = "windows")]
 pub use dpapi::unprotect as dpapi_unprotect;
 #[cfg(target_os = "windows")]
+pub use elevated_admission::ElevatedWindowsSandboxIsolationUnavailable;
+#[cfg(target_os = "windows")]
+pub use elevated_admission::require_elevated_filesystem_isolation;
+#[cfg(target_os = "windows")]
 pub use elevated_impl::ElevatedSandboxProfileCaptureRequest;
 #[cfg(target_os = "windows")]
 pub use elevated_impl::run_windows_sandbox_capture_for_permission_profile as run_windows_sandbox_capture_for_permission_profile_elevated;
+#[cfg(target_os = "windows")]
+pub use filesystem_read_acl::HeldFilesystemReadAcl;
+#[cfg(target_os = "windows")]
+pub use filesystem_read_acl::observe_filesystem_read_acl;
 #[cfg(target_os = "windows")]
 pub use helper_materialization::resolve_current_exe_for_launch;
 #[cfg(target_os = "windows")]
@@ -226,6 +304,13 @@ pub use ipc_framed::encode_bytes;
 pub use ipc_framed::read_frame;
 #[cfg(target_os = "windows")]
 pub use ipc_framed::write_frame;
+#[cfg(target_os = "windows")]
+pub use legacy_boundary::LegacyFilesystemIsolationUnavailable;
+#[cfg(target_os = "windows")]
+pub use legacy_boundary::WindowsFilesystemIsolationUnavailable;
+#[cfg(target_os = "windows")]
+#[doc(hidden)]
+pub use legacy_boundary::require_qualified_windows_filesystem;
 #[cfg(target_os = "windows")]
 pub use logging::current_log_file_path;
 #[cfg(target_os = "windows")]
@@ -283,6 +368,14 @@ pub use setup::sandbox_dir;
 #[cfg(target_os = "windows")]
 pub use setup::sandbox_secrets_dir;
 #[cfg(target_os = "windows")]
+pub use setup::sandbox_users_path;
+#[cfg(target_os = "windows")]
+pub use setup::setup_marker_path;
+#[cfg(target_os = "windows")]
+pub use setup::validate_filesystem_plan_for_request;
+#[cfg(target_os = "windows")]
+pub use setup::validate_filesystem_plan_marker;
+#[cfg(target_os = "windows")]
 pub use setup_error::SetupErrorCode;
 #[cfg(target_os = "windows")]
 pub use setup_error::SetupErrorReport;
@@ -304,17 +397,13 @@ pub use stdio_bridge::forward_sandbox_session_stdio;
 #[doc(hidden)]
 pub use token::LocalSid;
 #[cfg(target_os = "windows")]
-pub use token::convert_string_sid_to_sid;
+pub use token::UnqualifiedFullRestrictionToken;
 #[cfg(target_os = "windows")]
-pub use token::create_readonly_token_with_cap_from;
+pub use token::convert_string_sid_to_sid;
 #[cfg(target_os = "windows")]
 pub use token::create_readonly_token_with_caps_and_user_from;
 #[cfg(target_os = "windows")]
-pub use token::create_readonly_token_with_caps_from;
-#[cfg(target_os = "windows")]
 pub use token::create_workspace_write_token_with_caps_and_user_from;
-#[cfg(target_os = "windows")]
-pub use token::create_workspace_write_token_with_caps_from;
 #[cfg(target_os = "windows")]
 pub use token::get_current_token_for_restriction;
 #[cfg(target_os = "windows")]
@@ -739,12 +828,15 @@ mod windows_impl {
         cwd: &Path,
         env_map: &HashMap<String, String>,
     ) -> Result<()> {
-        let Ok(permissions) = super::resolved_permissions::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+        match permission_profile {
+            PermissionProfile::Disabled | PermissionProfile::External { .. } => return Ok(()),
+            PermissionProfile::Managed { .. } => {}
+        }
+        super::legacy_admission::require_legacy_filesystem_isolation()?;
+        let permissions = super::resolved_permissions::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
             permission_profile,
             workspace_roots,
-        ) else {
-            return Ok(());
-        };
+        )?;
         if !permissions.uses_write_capabilities_for_cwd(cwd, env_map) {
             return Ok(());
         }

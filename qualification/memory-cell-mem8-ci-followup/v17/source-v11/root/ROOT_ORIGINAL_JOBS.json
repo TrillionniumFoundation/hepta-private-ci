@@ -1,0 +1,153 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 130691870162,
+      "run_id": 43069105073,
+      "workflow_name": "MEM8 V11 source-only gates",
+      "head_branch": "codex/mem8-source-gates-v11-20261111-ed353817",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43069105073",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAebdet0g",
+      "head_sha": "15d51439723126f446185905d609d6f755be9f5a",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/130691870162",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43069105073/job/130691870162",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-11T17:32:11Z",
+      "started_at": "2026-11-11T17:32:14Z",
+      "completed_at": "2026-11-11T17:37:39Z",
+      "name": "source-only",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-11T17:32:15Z",
+          "completed_at": "2026-11-11T17:32:16Z"
+        },
+        {
+          "name": "Retain this source-only invocation identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-11T17:32:16Z",
+          "completed_at": "2026-11-11T17:32:16Z"
+        },
+        {
+          "name": "Checkout this workflow and its separate gate harness",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-11T17:32:16Z",
+          "completed_at": "2026-11-11T17:32:23Z"
+        },
+        {
+          "name": "Checkout the exact pure source candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-11T17:32:23Z",
+          "completed_at": "2026-11-11T17:32:30Z"
+        },
+        {
+          "name": "Install the pinned formatting toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-11T17:32:30Z",
+          "completed_at": "2026-11-11T17:32:39Z"
+        },
+        {
+          "name": "Install the previously qualified DotSlash binary",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-11T17:32:39Z",
+          "completed_at": "2026-11-11T17:32:39Z"
+        },
+        {
+          "name": "Install pinned just",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-11T17:32:39Z",
+          "completed_at": "2026-11-11T17:32:41Z"
+        },
+        {
+          "name": "Install the pinned Python formatter runner",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-11T17:32:41Z",
+          "completed_at": "2026-11-11T17:32:43Z"
+        },
+        {
+          "name": "Bind both checkouts and actual formatting binaries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-11T17:32:43Z",
+          "completed_at": "2026-11-11T17:32:44Z"
+        },
+        {
+          "name": "Run the fixed 600-second independent source-only gate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-11T17:32:44Z",
+          "completed_at": "2026-11-11T17:37:34Z"
+        },
+        {
+          "name": "Retain every available source-gate record",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-11T17:37:34Z",
+          "completed_at": "2026-11-11T17:37:36Z"
+        },
+        {
+          "name": "Post Install the pinned Python formatter runner",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-11-11T17:37:36Z",
+          "completed_at": "2026-11-11T17:37:36Z"
+        },
+        {
+          "name": "Post Checkout the exact pure source candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-11T17:37:36Z",
+          "completed_at": "2026-11-11T17:37:37Z"
+        },
+        {
+          "name": "Post Checkout this workflow and its separate gate harness",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-11-11T17:37:37Z",
+          "completed_at": "2026-11-11T17:37:37Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-11-11T17:37:37Z",
+          "completed_at": "2026-11-11T17:37:37Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/130691870162",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000111542,
+      "runner_name": "GitHub Actions 1000111542",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

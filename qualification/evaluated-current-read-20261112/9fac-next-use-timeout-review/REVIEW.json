@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "scope": "Static preparation only; no format, source gate, Rust build, test, dispatch or retry executed.",
+  "source": {
+    "commit": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+    "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f"
+  },
+  "candidate_tree": "449f1a48a7853fe086680df00552c34f11cb307b",
+  "original_failure": {
+    "method": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+    "run": 43254705812,
+    "job": 131309678676,
+    "log_sha256": "f98ec2b7790efae1808fbc4696e3f6fc5a59bc81aeedf6e1e811a3994f4ea6cc",
+    "original_diagnostic": "before actual publication withdrawal: evidence=OwnerUnavailable(\"original learning evidence owner\"); elapsed=501.722938ms; original_server=Err(Transport(DeadlineElapsed))",
+    "failure_index_blob": "3d9e6598abd60bb22af198b74d3210492e9dcc86",
+    "qualification": "This actual failure does not identify the expensive phase; no repair PASS is claimed."
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "sha": "36e4524baea04320b7610325579f0ff206690fab"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "sha": "867822ffc4de4aa548771108853f1a4d9fd4ef63"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "sha": "9d3d24bd5104be99372c8a55859360e792120605"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "sha": "23e8989ebd2644947b15c80ab9c641a70767de99"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "sha": "01b1f7d02600b16eba09c581e1dab831b7c9e248"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "sha": "0169864d8a5743a1ce00eacf293392a118026d8d"
+    }
+  ],
+  "timer_findings": [
+    "Server exchange_inner waits for the first length byte using owner.end(), the fixed connection lifetime; it creates the 500-ms per-exchange deadline only after that first byte.",
+    "Remaining request bytes, actual callback, final peer checks, and response bytes share that server deadline. An overdue callback is not forcibly cancelled; the following check refuses success.",
+    "Client RootObservationStream::read begins its independent 500-ms deadline before framed_exchange sends the request; it checks the held pidfd, parses the complete response, and checks the same deadline before restoring its stream.",
+    "Thus a server waiting before request arrival does not spend its 500-ms processing deadline. Both sides still keep their existing lifetime and fail-closed behavior."
+  ],
+  "diagnostic": {
+    "actual_callback": "Each test exchange calls fixture_original_evidence_response once; that cfg(test)-only wrapper calls the unchanged private evidence_response once.",
+    "fields": [
+      "request_id",
+      "callback_started_after",
+      "callback_elapsed",
+      "response_bytes",
+      "callback_error",
+      "exchange_elapsed",
+      "original exchange Result<bool>"
+    ],
+    "semantics": "None callback fields mean the original handler was not entered. callback_started_after and exchange_elapsed include the pre-first-byte wait and must not be equated with the 500-ms deadline. callback_elapsed is the original callback duration; synchronous stderr output happens only after exchange returns.",
+    "no_payloads": "Only response length and original typed errors are logged; original response/signature bytes are never printed.",
+    "loops": "The helper retains 1..=128_u64; Ok(false) returns request_id-1; original callback error maps to InvalidRequest; exchange error propagates unchanged through ?; cap exhaustion returns the same Error::Unavailable.",
+    "authority": "The added wrapper is cfg(test), pub(super) only; no public production API, owner constructor, key/signature accessor, retry, reconnect or replacement response is introduced."
+  },
+  "inverse_checks": {
+    "evidence": "Removing the single exact appended cfg(test) impl block reproduces all 3928 original bytes. Every existing production function and token is unchanged.",
+    "support": "Replacing the new serve_evidence closure with the one original closure reproduces all 11057 original bytes. All other helper functions, both 500-ms settings, 300-s lifetime, bounds and channel construction are unchanged.",
+    "test": "The old owner-tests blob 0169864d8a5743a1ce00eacf293392a118026d8d is not changed. Its method names, assertions, actual withdrawal, original bytes checks, counts and error paths are retained."
+  },
+  "native_validation_status": "NOT_RUN",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "base_blob_sha": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c",
+      "bytes": 4400,
+      "sha256": "26156213658cf0b9bf2e0366308dc82b736348da802b5eeeebe55a7e57c62e0d",
+      "git_blob_sha": "3c799bf03fd99dea05f4905845e45c8bf9107627",
+      "readback_equal": true,
+      "base": {
+        "bytes": 3928,
+        "sha256": "7fc3c615118e417c75d95cb2309838b1b468e9fdd70c72bbc20be597bb0f64a7",
+        "git_blob_sha": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "base_blob_sha": "901c0a2fdfb475d4f09477a273a00fe437d47393",
+      "bytes": 12881,
+      "sha256": "2612d41ee5b49db641f288478b2dda7a884fc850d8ed9fdd258c6d1b40ad52e1",
+      "git_blob_sha": "4f54cff102f768355bcf8422cbfbe14250f70d3d",
+      "readback_equal": true,
+      "base": {
+        "bytes": 11057,
+        "sha256": "d3e68a64c6080889f6b1074fea121ef3ff8159c404046a52ada05c0fc1101dc5",
+        "git_blob_sha": "901c0a2fdfb475d4f09477a273a00fe437d47393"
+      }
+    }
+  ]
+}

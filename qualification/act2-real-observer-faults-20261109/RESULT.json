@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_PASS",
+  "full_act2_promotion": false,
+  "source_sha": "4674a34528d0097949cc7d604f60de94585d0ba0",
+  "source_tree": "3adccfc79246e1145123c59c17b93ddb48301dab",
+  "source_parent": "db3324c75cd4ef1e46ee4603a5fd8df240fe8722",
+  "companion_sha": "fd8d56c52b971c2d5d0e6430f296803b43ef60a3",
+  "companion_tree": "347fbb7e9931006c749b5bef0e1550c54bc08f27",
+  "run_id": 42741060239,
+  "run_attempt": 1,
+  "native_job_id": 129581927212,
+  "format_job_id": 129581927036,
+  "run_conclusion": "success",
+  "source_clean_before_and_after": true,
+  "official_format_patch_empty": true,
+  "scoped_fix_changed_source": false,
+  "test_results": {
+    "automation": {
+      "passed": 169,
+      "skipped": 2
+    },
+    "notes_owner_projection": {
+      "passed": 8,
+      "skipped": 778
+    },
+    "real_session_app": {
+      "passed": 1,
+      "skipped": 785
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-automation"
+      ],
+      "elapsed_seconds": 288.76880260100006,
+      "exit_code": 0,
+      "observed_passed_tests": 169,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log_file": "automation.json.9df421d718c648f7b82f17c20829b585.log",
+      "log_sha256": "1c20247563fea9bc0fd41c10c3df8af87beca5fc97623f0f44fad2e1561e4ed3"
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(notes_act2) | test(notes_recovered_writer_persists_lost_reply_and_retires_without_replay) | test(notes_document_observer)"
+      ],
+      "elapsed_seconds": 524.745881236,
+      "exit_code": 0,
+      "observed_passed_tests": 8,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log_file": "notes-owner.json.72def4bbd59f4fb888c59041750b74b1.log",
+      "log_sha256": "e5591f3877f0084da7d0b8bf173dd4fe86661ee686c78cbdf5dda395faccb93f"
+    },
+    {
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/home/runner/work/_temp/act2-ui-target",
+        "rustup",
+        "run",
+        "1.96.0",
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "/home/runner/work/_temp/act2-ui-source/ui/Cargo.toml",
+        "-p",
+        "trill-session",
+        "-p",
+        "trill-app-window",
+        "--bins"
+      ],
+      "elapsed_seconds": 124.06597121099992,
+      "exit_code": 0,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log_file": "ui-build.json.f2bc125434e44c8d92b4572a04628303.log",
+      "log_sha256": "a4b4d16954c8744201d18ad0c98d243d6b874e80c62f7106cb6104fa1bfc9657"
+    },
+    {
+      "command": [
+        "env",
+        "-u",
+        "WAYLAND_DISPLAY",
+        "dbus-run-session",
+        "--",
+        "xvfb-run",
+        "-a",
+        "-s",
+        "-screen 0 1280x800x24 -nolisten tcp",
+        "env",
+        "WINIT_UNIX_BACKEND=x11",
+        "LIBGL_ALWAYS_SOFTWARE=1",
+        "TRILL_NOTES_PROBE_ISOLATED=1",
+        "HEPTA_NOTES_SESSION_BIN=/home/runner/work/_temp/act2-ui-target/debug/trill-session",
+        "HEPTA_NOTES_QUALIFICATION_OUTPUT=/home/runner/work/_temp/act2-records/notes-actual.json",
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(notes_actual_ui_original_owner_roundtrip)",
+        "--run-ignored",
+        "only",
+        "--status-level",
+        "all"
+      ],
+      "elapsed_seconds": 9.824517675999914,
+      "exit_code": 0,
+      "observed_passed_tests": 1,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log_file": "notes-real-gui.json.b67e5c5bd9124bc49c1ea3564ab54965.log",
+      "log_sha256": "cd2829c14af949126b7f0fc2c3868d87badab4423829dc2a4332e2c5f15bfce1"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "elapsed_seconds": 333.16422386399995,
+      "exit_code": 0,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log_file": "fix.json.6ebaeb9c6f55460090fbef193eb96b77.log",
+      "log_sha256": "2c6fc0402361755290b991aae2bf527c500b18919c7403f42666648a59d41e05"
+    }
+  ],
+  "real_app_cases": {
+    "first_goal_before_edits": "terminal/succeeded at revision 1",
+    "first_goal_after_edits": "historical applied, current unsatisfied, runtime unknown at revision 3",
+    "repeated_fresh_reads": 3,
+    "repeated_results_deep_equal": true,
+    "after_app_close": "historical applied and owner committed; current readback absent; goal/runtime unknown",
+    "actual_readback_error": "agentd protocol error: Connection refused (os error 111)",
+    "effect_dispatch_attempts": 3,
+    "issuer_requests": 4,
+    "correlated_app_lifecycles": 1,
+    "independent_trial_count_increase": 0
+  },
+  "learned_hierarchy": {
+    "training": "NOT_RUN",
+    "confirmatory_benefit": "NOT_RUN",
+    "promotion": false
+  },
+  "holds": [
+    "repository broad CI failures",
+    "Notes durable tombstone and cancel/commit races",
+    "stale checkpoint recovery",
+    "generic cross-observation ordering",
+    "real long-computation/network-wait adapters",
+    "production authority",
+    "native kernel and pixels qualification",
+    "learned hierarchy benefit"
+  ],
+  "files": [
+    {
+      "path": "evidence/native-artifact.zip",
+      "bytes": 72539,
+      "sha256": "adc1717322535c821b5e376f224eb211cf9c5120e1926c25a1446a2f9c798135"
+    },
+    {
+      "path": "evidence/formatter-artifact.zip",
+      "bytes": 36532,
+      "sha256": "f5e83fdb4e803efc2b14da77a26a6d5230ff78163eb290d83a08c79e67a3ddbb"
+    },
+    {
+      "path": "evidence/dependency-ci-audit.zip",
+      "bytes": 340363,
+      "sha256": "1cee243843dbf12871a46958a1229be32b268783399f3648d60d6b422cdb8fdc"
+    },
+    {
+      "path": "evidence/github-metadata.zip",
+      "bytes": 9359,
+      "sha256": "387826d3b210e6cae96e17e0058fb1208191bf67777081fc149c9a94f2b932ea"
+    },
+    {
+      "path": "evidence/notes-actual.json",
+      "bytes": 22333,
+      "sha256": "d6419169cbe63b67c882fe2679a8687ded679fac5035cfa17751e038ddbd5d7d"
+    },
+    {
+      "path": "INDEPENDENT_REVIEW.json",
+      "bytes": 7564,
+      "sha256": "dc1b5c561532e475c4bbebcf7ab446dd27a8e85439e16799c39e60d015904521"
+    }
+  ],
+  "lock_sha256": {
+    "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+    "/home/runner/work/_temp/act2-ui-source/ui/Cargo.lock": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f"
+  },
+  "binary_sha256": {
+    "trill-session": "6ec59c62cdeb4849d4c20a1234cac0c9b9fdd9dcbd9cae62cee31112aa409d7d",
+    "trill-app-window": "5af4d1c90a172134942dc3a0bcd242a8c41e32cbc6274a5eddebd4383727715f"
+  },
+  "independent_review": {
+    "result": "PASS_WITH_SCOPE_LIMITS",
+    "checks_passed": 54,
+    "reviewer_type": "separate agent, not independent external acceptance",
+    "file": "INDEPENDENT_REVIEW.json"
+  },
+  "scope_limits": [
+    "Raw binary and lock-file bytes are not in native artifact; recorded digests checked for consistency only",
+    "nextest captures successful stdout; notes-actual.json is retained through the dedicated output file, not independently matched to successful stdout"
+  ]
+}

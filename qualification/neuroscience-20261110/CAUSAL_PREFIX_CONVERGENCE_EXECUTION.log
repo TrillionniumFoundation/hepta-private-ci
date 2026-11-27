@@ -1,0 +1,75 @@
+COMMAND: python3 -m unittest discover -s qualification/neuroscience-20261110 -p test*.py -v
+HOST: ai395, operator login qq; no GPU/model/training/owner access in this run
+PYTHON: Python 3.14.4
+test_cross_lineage_generations_are_independent (test_cadence_generation.GenerationClockTests.test_cross_lineage_generations_are_independent) ... ok
+test_equal_generation_retry_is_not_auto_promoted (test_cadence_generation.GenerationClockTests.test_equal_generation_retry_is_not_auto_promoted) ... ok
+test_rollback_after_denied_opportunity_cannot_be_replayed (test_cadence_generation.GenerationClockTests.test_rollback_after_denied_opportunity_cannot_be_replayed) ... ok
+test_rollback_after_review_cannot_be_reviewed (test_cadence_generation.GenerationClockTests.test_rollback_after_review_cannot_be_reviewed) ... ok
+test_rollback_on_clock_denied_intermediate_is_still_rejected (test_cadence_generation.GenerationClockTests.test_rollback_on_clock_denied_intermediate_is_still_rejected) ... ok
+test_clock_denied_event_still_advances_observed_sequence (test_cadence_sequence_frontier.SequenceFrontierTests.test_clock_denied_event_still_advances_observed_sequence) ... ok
+test_evidence_denied_event_still_advances_observed_sequence (test_cadence_sequence_frontier.SequenceFrontierTests.test_evidence_denied_event_still_advances_observed_sequence) ... ok
+test_lineage_interleaving_and_equal_sequence_remain_valid (test_cadence_sequence_frontier.SequenceFrontierTests.test_lineage_interleaving_and_equal_sequence_remain_valid) ... ok
+test_balanced_family_roster_keeps_seed_randomization_unit (test_cohort_retention.CohortRetentionTests.test_balanced_family_roster_keeps_seed_randomization_unit) ... ok
+test_complete_four_arm_retention_unmodified (test_cohort_retention.CohortRetentionTests.test_complete_four_arm_retention_unmodified) ... ok
+test_mismatched_family_population_rejected (test_cohort_retention.CohortRetentionTests.test_mismatched_family_population_rejected) ... ok
+test_missing_no_eligibility_retention_is_incomplete (test_cohort_retention.CohortRetentionTests.test_missing_no_eligibility_retention_is_incomplete) ... ok
+test_missing_scalar_retention_is_incomplete (test_cohort_retention.CohortRetentionTests.test_missing_scalar_retention_is_incomplete) ... ok
+test_unequal_episode_counts_rejected (test_cohort_retention.CohortRetentionTests.test_unequal_episode_counts_rejected) ... ok
+test_cross_seed_budget_opportunity_drift_is_rejected (test_frozen_evaluator_roster.FrozenEvaluatorRosterTests.test_cross_seed_budget_opportunity_drift_is_rejected) ... ok
+test_cross_seed_evaluator_drift_is_rejected (test_frozen_evaluator_roster.FrozenEvaluatorRosterTests.test_cross_seed_evaluator_drift_is_rejected) ... ok
+test_distinct_task_families_can_have_distinct_prelocked_evaluators (test_frozen_evaluator_roster.FrozenEvaluatorRosterTests.test_distinct_task_families_can_have_distinct_prelocked_evaluators) ... ok
+test_independent_training_seed_ability_digests_may_differ (test_frozen_evaluator_roster.FrozenEvaluatorRosterTests.test_independent_training_seed_ability_digests_may_differ) ... ok
+test_within_seed_evaluator_drift_is_rejected (test_frozen_evaluator_roster.FrozenEvaluatorRosterTests.test_within_seed_evaluator_drift_is_rejected) ... ok
+test_clock_and_independent_eval_both_gate_approval (test_study.CadenceTests.test_clock_and_independent_eval_both_gate_approval) ... ok
+test_must_declare_all_clocks_and_reject_time_regression (test_study.CadenceTests.test_must_declare_all_clocks_and_reject_time_regression) ... ok
+test_action_order_does_not_change_identity_or_result (test_study.CreditTests.test_action_order_does_not_change_identity_or_result) ... ok
+test_all_arms_present (test_study.CreditTests.test_all_arms_present) ... ok
+test_delayed_evidence_decays_and_expires (test_study.CreditTests.test_delayed_evidence_decays_and_expires) ... ok
+test_duplicate_or_forged_feedback_is_rejected (test_study.CreditTests.test_duplicate_or_forged_feedback_is_rejected) ... ok
+test_eval_split_and_overweight_eligibility_rejected (test_study.CreditTests.test_eval_split_and_overweight_eligibility_rejected) ... ok
+test_frozen_prefix_changes_only_when_feedback_becomes_available (test_study.CreditTests.test_frozen_prefix_changes_only_when_feedback_becomes_available) ... ok
+test_frozen_prefix_ignores_future_receipt_count_and_labels (test_study.CreditTests.test_frozen_prefix_ignores_future_receipt_count_and_labels) ... ok
+test_future_feedback_must_not_train_the_past (test_study.CreditTests.test_future_feedback_must_not_train_the_past) ... ok
+test_information_matched_routing_ablation_separates_on_known_fixture (test_study.CreditTests.test_information_matched_routing_ablation_separates_on_known_fixture) ... ok
+test_projected_updates_honor_both_trust_bounds (test_study.CreditTests.test_projected_updates_honor_both_trust_bounds) ... ok
+test_capability_feedback_and_budget_mismatch_fail_closed (test_study.PairedEvidenceTests.test_capability_feedback_and_budget_mismatch_fail_closed) ... ok
+test_claims_cannot_be_certified_by_a_flag (test_study.PairedEvidenceTests.test_claims_cannot_be_certified_by_a_flag) ... ok
+test_missing_arm_is_not_zero_or_success (test_study.PairedEvidenceTests.test_missing_arm_is_not_zero_or_success) ... ok
+test_negative_cost_rejected (test_study.PairedEvidenceTests.test_negative_cost_rejected) ... ok
+test_paired_net_calculation_and_no_production_claim (test_study.PairedEvidenceTests.test_paired_net_calculation_and_no_production_claim) ... ok
+test_reused_outcome_receipt_is_rejected (test_study.PairedEvidenceTests.test_reused_outcome_receipt_is_rejected) ... ok
+test_reused_seed_is_one_independent_cluster (test_study.PairedEvidenceTests.test_reused_seed_is_one_independent_cluster) ... ok
+test_corrected_logical_revision_never_replays_prior_version (test_study.ReplayTests.test_corrected_logical_revision_never_replays_prior_version) ... ok
+test_deletion_and_future_cutoff_cover_all_replay_policies (test_study.ReplayTests.test_deletion_and_future_cutoff_cover_all_replay_policies) ... ok
+test_explicit_identity_cannot_tombstone_unrelated_implicit_event (test_study.ReplayTests.test_explicit_identity_cannot_tombstone_unrelated_implicit_event) ... ok
+test_revocation_is_sticky_and_ambiguous_revision_is_rejected (test_study.ReplayTests.test_revocation_is_sticky_and_ambiguous_revision_is_rejected) ... ok
+test_stratified_replay_gives_old_episode_coverage (test_study.ReplayTests.test_stratified_replay_gives_old_episode_coverage) ... ok
+test_tombstone_blocks_old_and_later_versions_without_owner_regrant (test_study.ReplayTests.test_tombstone_blocks_old_and_later_versions_without_owner_regrant) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 0.004s
+
+OK
+	Command being timed: "python3 -m unittest discover -s qualification/neuroscience-20261110 -p test*.py -v"
+	User time (seconds): 0.02
+	System time (seconds): 0.00
+	Percent of CPU this job got: 97%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.03
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 22308
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 3132
+	Voluntary context switches: 1
+	Involuntary context switches: 5
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

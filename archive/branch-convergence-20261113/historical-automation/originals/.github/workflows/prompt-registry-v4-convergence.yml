@@ -1,0 +1,248 @@
+name: prompt.registry V4 convergence
+
+on:
+  push:
+    branches:
+      - codex/prompt-registry-v4-convergence-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: prompt-registry-v4-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    name: exact-head, merge, recovery, and scale qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_TERM_COLOR: always
+    steps:
+      - name: Check out exact branch history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prepare repository CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install Linux build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential pkg-config libcap-dev bubblewrap
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt, clippy
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Configure verified sandbox V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Install cargo-shear
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: cargo-shear@1.11.2
+          checksum: true
+          fallback: cargo-binstall
+
+      - name: Bind source branch and current main base
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          echo "base_sha=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
+          echo "scaffold_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          test "$(git branch --show-current)" = "codex/prompt-registry-v4-convergence-20260927"
+
+      - name: Materialize deterministic V4 source migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -xzf qualification/bootstrap/prompt-registry-v4.tar.gz
+          rm qualification/bootstrap/prompt-registry-v4.tar.gz
+          python3 -m py_compile \
+            scripts/apply_prompt_registry_v4.py \
+            scripts/generate_prompt_registry_implementation_map.py \
+            scripts/validate_prompt_registry_claims.py \
+            scripts/write_prompt_registry_receipt.py
+          python3 scripts/apply_prompt_registry_v4.py
+          python3 - <<'PY'
+          from pathlib import Path
+          technical = Path("docs/modules/prompt.registry/TECHNICAL.md")
+          appendix = Path("scripts/prompt_registry_technical_v4_appendix.md").read_text(encoding="utf-8")
+          text = technical.read_text(encoding="utf-8")
+          if "## 22. Storage schema V4 and exact product state" not in text:
+              technical.write_text(text.rstrip() + "\n\n" + appendix.strip() + "\n", encoding="utf-8")
+          PY
+          rm scripts/prompt_registry_technical_v4_appendix.md
+          rm -rf scripts/__pycache__
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          git diff --check
+          python3 -m json.tool docs/contracts/PROTOCOL_SCHEMAS.json >/dev/null
+          python3 -m json.tool docs/contracts/CONTRACTS.json >/dev/null
+
+      - name: Exact-head registry tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test -p codex-hepta-prompt-registry --all-targets
+
+      - name: Exact-head optimizer and graph tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-prompt-optimizer --all-targets
+
+      - name: Exact-head Agentd prompt pipeline tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-agentd prompt_runtime --lib
+          cargo test -p codex-hepta-agentd prompt_publisher --lib
+
+      - name: Exact-head strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd \
+            --all-targets -- -D warnings
+
+      - name: Closed-world source and dependency check
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo shear --deny-warnings
+
+      - name: Commit the exact tested source cut
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-qualification-bot"
+          git config user.email "hepta-qualification-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "prompt.registry: materialize V4 durable and send-time closure"
+          source_sha="$(git rev-parse HEAD)"
+          echo "source_sha=${source_sha}" >> "$GITHUB_OUTPUT"
+          git push origin HEAD:codex/prompt-registry-v4-convergence-20260927
+
+      - name: Generate exact source implementation map
+        shell: bash
+        env:
+          PROMPT_REGISTRY_SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
+          PROMPT_REGISTRY_BASE_SHA: ${{ steps.identity.outputs.base_sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/generate_prompt_registry_implementation_map.py
+          python3 scripts/validate_prompt_registry_claims.py
+          git diff --check
+
+      - name: Run 1k, 8k, and 16k scale profile
+        working-directory: codex-rs
+        shell: bash
+        env:
+          PROMPT_REGISTRY_SCALE_PROFILE_OUT: ../artifacts/prompt-registry-scale-profile.json
+        run: |
+          set -euo pipefail
+          mkdir -p ../artifacts
+          cargo test -p codex-hepta-prompt-registry scale_profile_1k_8k_16k_records -- --ignored --nocapture
+          python3 -m json.tool ../artifacts/prompt-registry-scale-profile.json >/dev/null
+
+      - name: Construct fixed-base synthetic merge
+        id: merge
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
+          BASE_SHA: ${{ steps.identity.outputs.base_sha }}
+        run: |
+          set -euo pipefail
+          merge_dir="${RUNNER_TEMP}/prompt-registry-merge"
+          rm -rf "$merge_dir"
+          git worktree add --detach "$merge_dir" "$BASE_SHA"
+          git -C "$merge_dir" config user.name "hepta-qualification-bot"
+          git -C "$merge_dir" config user.email "hepta-qualification-bot@users.noreply.github.com"
+          git -C "$merge_dir" merge --no-ff --no-edit "$SOURCE_SHA"
+          merge_sha="$(git -C "$merge_dir" rev-parse HEAD)"
+          echo "merge_dir=${merge_dir}" >> "$GITHUB_OUTPUT"
+          echo "merge_sha=${merge_sha}" >> "$GITHUB_OUTPUT"
+
+      - name: Synthetic-merge format, tests, and Clippy
+        shell: bash
+        env:
+          MERGE_DIR: ${{ steps.merge.outputs.merge_dir }}
+        run: |
+          set -euo pipefail
+          cd "$MERGE_DIR/codex-rs"
+          cargo fmt --all -- --check
+          cargo test -p codex-hepta-prompt-registry --all-targets
+          cargo test -p codex-hepta-prompt-optimizer --all-targets
+          cargo test -p codex-hepta-agentd prompt_runtime --lib
+          cargo test -p codex-hepta-agentd prompt_publisher --lib
+          cargo clippy \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd \
+            --all-targets -- -D warnings
+          cargo shear --deny-warnings
+
+      - name: Write exact qualification receipt
+        shell: bash
+        env:
+          PROMPT_REGISTRY_SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
+          PROMPT_REGISTRY_BASE_SHA: ${{ steps.identity.outputs.base_sha }}
+          PROMPT_REGISTRY_MERGE_SHA: ${{ steps.merge.outputs.merge_sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/write_prompt_registry_receipt.py
+          python3 scripts/validate_prompt_registry_claims.py
+          git diff --check
+
+      - name: Commit evidence without promoting acceptance or release
+        id: evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+            qualification/prompt.registry \
+            artifacts/prompt-registry-scale-profile.json
+          git commit -m "prompt.registry: retain exact-head and merge qualification receipt"
+          evidence_sha="$(git rev-parse HEAD)"
+          echo "evidence_sha=${evidence_sha}" >> "$GITHUB_OUTPUT"
+          git push origin HEAD:codex/prompt-registry-v4-convergence-20260927
+          python3 scripts/validate_prompt_registry_claims.py
+
+      - name: Retain qualification artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: prompt-registry-v4-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            qualification/prompt.registry/latest.json
+            qualification/prompt.registry/run-${{ github.run_id }}.json
+            artifacts/prompt-registry-scale-profile.json
+            docs/modules/prompt.registry/IMPLEMENTATION_MAP.json

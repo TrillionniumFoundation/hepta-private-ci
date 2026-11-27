@@ -1,0 +1,75 @@
+{
+  "schema": "mem8.v8.root-source-gate-and-materialization-audit.v1",
+  "status": "PASS_SOURCE_ONLY_AND_REVIEWED_PURE_POSTIMAGE",
+  "original_run": 43046107709,
+  "original_job": 130610340916,
+  "attempt": 1,
+  "harness": "68a4b0cddbf11367e763eff7d55a57089d197704",
+  "source_gate_initial_head": "1c063ba9e934f060181d4fc17d724361ba2a37fd",
+  "source_gate_initial_tree": "4e702e173439f422a7d00917d3c94064e42d45aa",
+  "pure_formatted_head": "c89540598693697577cda8cba31cb07f6ce65317",
+  "pure_formatted_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "parent": "1c063ba9e934f060181d4fc17d724361ba2a37fd",
+  "source_gate_seconds": 600,
+  "actual_elapsed_seconds": 212.521569,
+  "python_pass": 18,
+  "python_fail": 0,
+  "python_skip": 0,
+  "cumulative_paths": 116,
+  "prior_114_formatted_paths_byte_identical": true,
+  "complete_final_tree_entries": 14053,
+  "all_three_merkle_trees_recomputed": true,
+  "rust_files": 6204,
+  "full_75046_byte_caller_golden_equal_except_complete_tree_derived_count": true,
+  "authority_granted": false,
+  "retired_name_inventory": 13,
+  "retired_name_hits": 0,
+  "locks_unchanged": [
+    {
+      "bytes": 421005,
+      "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+    },
+    {
+      "bytes": 1788299,
+      "git_blob": "1565448430312c7fb7537a48f97e9cd2da945df3",
+      "path": "MODULE.bazel.lock",
+      "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+    }
+  ],
+  "actual_formatter_delta": [
+    "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+    "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs"
+  ],
+  "full_original_verifier": {
+    "bytes": 15953,
+    "sha256": "6d7145a8dc4b47b807a3439969131367c8bdd79c15663a121f7a3dc34873da1e",
+    "git_blob": "501b4d71c1e5bce1ccfbd29bb9c401587f88e9ac"
+  },
+  "full_original_verifier_result": {
+    "bytes": 22038,
+    "sha256": "d1850169c64b2ff9e9e0c7f2bab3328e0cda72745f0ce30a837706b5dde4dca9",
+    "git_blob": "76690d74ed272eaf2a434d5506932e1304e37c19"
+  },
+  "root_independent_verifier_result_equal": true,
+  "format_only_peer": {
+    "bytes": 3025,
+    "sha256": "0f89a07459dc86794cf6d79e111b41334faf0df637d2dc5212936f2a6032affe",
+    "git_blob": "684b7821ccd6bb647b5fb497a6ccfc8c3e6439fd"
+  },
+  "formatter_patch": {
+    "bytes": 1429,
+    "sha256": "85f0a1b9019bc81013e0392e4f4e6c123834eed0a381e385b93d88104f3a68a9",
+    "git_blob": "217b2b42d3fb1c5f5f232579d5e8a2e83842618a"
+  },
+  "original_zip": {
+    "bytes": 7072031,
+    "sha256": "52ef17f6debe6951b066d27adf00e98451c02359f1a50c3d7e03071e96051709",
+    "git_blob": "215827f3bfcee277e79e90144f3dd59a087a207b"
+  },
+  "native_tests_in_source_gate": 0,
+  "model_calls_in_source_gate": 0,
+  "adoption_gate_closed": false,
+  "original_checkout_after": "Same initial HEAD/tree; two staged formatter edits. Exact formatted tree materialized separately as pure c895."
+}

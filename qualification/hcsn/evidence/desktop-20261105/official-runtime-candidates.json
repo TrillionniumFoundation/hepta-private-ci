@@ -1,0 +1,58 @@
+{
+  "observed_utc": "2026-11-05T15:15:00Z",
+  "purpose": "Official artifact candidates only; not installed or CUDA validated yet",
+  "pytorch_target": "2.8.0+cu128",
+  "triton_target": "3.4.0",
+  "selections": [
+    {
+      "project": "mamba",
+      "tag": "v2.3.1",
+      "release_id": 295044161,
+      "published_at": "2026-03-10T08:13:49Z",
+      "release_url": "https://github.com/state-spaces/mamba/releases/tag/v2.3.1",
+      "asset": {
+        "name": "mamba_ssm-2.3.1+cu12torch2.8cxx11abiTRUE-cp312-cp312-linux_x86_64.whl",
+        "id": 370693254,
+        "size": 533333116,
+        "url": "https://github.com/state-spaces/mamba/releases/download/v2.3.1/mamba_ssm-2.3.1%2Bcu12torch2.8cxx11abiTRUE-cp312-cp312-linux_x86_64.whl",
+        "digest": "sha256:f9e375b47cee1ef27463c9249073f9065f0f8f0f98b32fabfbb8df4bf75e2b66"
+      }
+    },
+    {
+      "project": "causal-conv1d",
+      "tag": "v1.5.4",
+      "release_id": 255796293,
+      "published_at": "2025-10-20T16:52:49Z",
+      "release_url": "https://github.com/Dao-AILab/causal-conv1d/releases/tag/v1.5.4",
+      "asset": {
+        "name": "causal_conv1d-1.5.4+cu12torch2.8cxx11abiTRUE-cp312-cp312-linux_x86_64.whl",
+        "id": 306567977,
+        "size": 151361989,
+        "url": "https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.5.4/causal_conv1d-1.5.4%2Bcu12torch2.8cxx11abiTRUE-cp312-cp312-linux_x86_64.whl",
+        "digest": "sha256:c62338f9b3a914d79326e0f5c127361d6d7f8add87e896d01beb8291c95aa745"
+      }
+    }
+  ],
+  "dependency_observation": {
+    "mamba_setup_git_blob": "3a443f95a1330f4ddc34f1862de5ee56c72a755c",
+    "mamba_requires": [
+      "torch",
+      "packaging",
+      "ninja",
+      "einops",
+      "triton",
+      "transformers"
+    ],
+    "causal_setup_git_blob": "7f5faaa280b989619caa9ecaaf8e3c36ab7de066",
+    "causal_requires": [
+      "torch",
+      "packaging",
+      "ninja"
+    ]
+  },
+  "limits": [
+    "Metadata observations do not validate downloaded wheel bytes, binary ABI, import, kernels, forward or backward.",
+    "Installer must verify whole-file GitHub release SHA256 and inspect wheel METADATA before installation.",
+    "Full registered matrix remains unchanged; package choices are explicit runtime pins."
+  ]
+}

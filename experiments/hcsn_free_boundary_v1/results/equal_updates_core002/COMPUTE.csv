@@ -1,0 +1,9 @@
+model,valid_searches,updates_per_lr,two_lr_training_cpu_to128_median,two_lr_training_cpu_to128_sum,measured_full_search_cpu_median,measured_full_search_cpu_sum,full_search_scope,new_training,new_reference_inference
+free_dual,4,128,39.8991946605,159.41829057399997,46.7656765,187.96377999999999,new fixed128 search,True,False
+legacy_hcsn,18,128,22.705795845500035,408.27859170400006,44.507107500000004,800.580465,"historical original20CPUperLR search, reused, not reexecuted",False,False
+two_gates,18,128,5.001931686499981,91.84013405999984,43.5675965,784.907881,"historical original20CPUperLR search, reused, not reexecuted",False,False
+continuous_rnn,18,128,4.117548021499985,71.65568842900005,43.6025125,786.2725369999999,"historical original20CPUperLR search, reused, not reexecuted",False,False
+cfc,18,128,6.116471158499995,108.58036103900008,43.565636999999995,783.959181,"historical original20CPUperLR search, reused, not reexecuted",False,False
+mamba1,18,128,8.761030505499999,158.80284282800005,43.832603000000006,790.46906,"historical original20CPUperLR search, reused, not reexecuted",False,False
+transformer,18,128,2.333171054500016,42.35974402700012,43.8506005,789.730689,"historical original20CPUperLR search, reused, not reexecuted",False,False
+lif_snn,18,128,5.487620578499986,99.14888843799987,43.5518895,784.801613,"historical original20CPUperLR search, reused, not reexecuted",False,False

@@ -1,0 +1,40 @@
+{
+  "base": "e2c3adbf1098b4a62e46a44376f0b4b0e836eb66",
+  "base_tree": "103963d3e1cd827f9b551d36b4cb02a77eab5fc3",
+  "workflow": {
+    "path": ".github/workflows/hepta-memory-lifecycle-windows-diagnostic.yml",
+    "bytes": 14348,
+    "sha256": "a403d2b9a92f2cdcf3b24e97474b5b08c76dc406dba4b30babf4db3cc96c16c7",
+    "git_blob": "1de195d057e8149b66f5fe40fade6631604b83ae"
+  },
+  "original_registration_failure": {
+    "run": 44353316661,
+    "jobs": 0,
+    "native_executions": 0,
+    "reason": "runner.temp is unavailable in job-level env"
+  },
+  "evidence_archive": {
+    "file": "evidence.tar.gz",
+    "bytes": 148492,
+    "sha256": "0069d89305c39a42a4a4cfaff58debdcdf6a3f6cc1f69516672e8a2828da2d9f",
+    "regular_members": 44,
+    "manifest_sha256": "4ee109eee0cf833bbfa750bec40769cd93c456099e6043fb76fadee4d13b1471",
+    "root_verified_all_member_hashes_and_safe_unique_paths": true
+  },
+  "source_review": {
+    "three_hunks_only": true,
+    "original_case_collector_target_argv_budget_assertions_unchanged": true,
+    "all_existing_workflows_unchanged": true,
+    "root_independent_review_sha256": "6019f5ef0552136f2a02d8162f1e2ea192925730c2848ca68dd9308d59c7f03e"
+  },
+  "validation": {
+    "context_and_bootstrap_controls": "PASS before maintenance",
+    "unchanged_original_21_controls": "byte-bound, not repeated",
+    "codespell": "PASS",
+    "prettier": "PASS; unchanged",
+    "native_just_fmt_job": "1a1efa45e6d-ffbe-581",
+    "native_just_fmt_exit": 0,
+    "tests_after_maintenance": 0,
+    "native_windows_result": "NOT YET RUN"
+  }
+}

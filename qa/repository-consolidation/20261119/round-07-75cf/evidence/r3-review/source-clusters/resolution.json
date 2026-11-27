@@ -1,0 +1,149 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "b35518642af4c77833e4b00753827f893725d0d5",
+  "merge_base": "96777483395f33a581081dfe9d3c16956e73d182",
+  "genuine_merge_tree_preview": "882d2825b4874f56a7e7f4afa498d73d65751891",
+  "genuine_merge_exit": 1,
+  "resolved_tree": "98e380aa1ed03cdd7505f2d861c407e9164138b8",
+  "changed_paths": [
+    "M\texperiments/ndu_mgp_gates/PAIRED_OBSERVED_OUTPUT.md"
+  ],
+  "document_blob": "008ae8cb6b984895a4ba88b5a0ef21705650d201",
+  "protected_ancestor_pins": [],
+  "protection_evidence": "small-merge-review/missing-retry-03/previews/b35518642af4c77833e4b00753827f893725d0d5/preview.json",
+  "source_conflict_regions": [
+    {
+      "region": 1,
+      "decision": "Equivalent comment on group-block resampling; keep current explanation."
+    },
+    {
+      "region": 2,
+      "decision": "Only local comprehension variable names src/source/s differ; identical nonempty source-group cardinality and calibration disjointness validation remain."
+    },
+    {
+      "region": 3,
+      "decision": "Preserve newer complete four-way training/validation/calibration/heldout world and source disjointness. Incoming blank side predates the extension."
+    },
+    {
+      "region": 4,
+      "decision": "Equivalent comment on identical raw-output witness scores; keep current same-world score parity enforcement."
+    },
+    {
+      "region": 5,
+      "decision": "Equivalent paired complete-source-cluster bootstrap explanation; same sampling implementation and arrays already current."
+    },
+    {
+      "region": 6,
+      "decision": "Only line layout of the same cost margin / ratio / gates receipt fields differs."
+    },
+    {
+      "region": 7,
+      "decision": "Keep all current protected cohort, service, frozen-label, hard-budget and overrun receipt fields; draws_per_world remains present."
+    },
+    {
+      "region": 8,
+      "decision": "Retain current explicit caller-supplied/unauthenticated source-manifest nonclaim, and additional current service/budget nonclaims."
+    }
+  ],
+  "test_conflict_regions": [
+    "Keep current training/validation fixture manifests; do not drop inputs required by the current four-way split guard.",
+    "Keep current frozen-label and four-way leakage regression block; incoming predated these additions.",
+    "Keep current failure-loss cap, precise cost ledger and hard-budget regression block; incoming predated these additions."
+  ],
+  "incoming_test_method_comparisons": [
+    {
+      "name": "test_group_resampling_is_locked_and_visible",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_single_source_repeated_views_cannot_count_as_32_worlds",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_relabelled_source_group_rejected",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_calibration_source_overlap_rejected",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_unbalanced_source_groups_rejected",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_cost_uncertainty_fails_even_when_mean_ratio_looks_safe",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_calibration_source_manifest_cannot_repeat_ids",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_same_raw_witness_with_different_score_rejected",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_full_synthetic_strong_ndu_still_cannot_claim_scientific_authority",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_strong_learned_controller_defeats_weak_ndu",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_fractional_mass_tail",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_missing_baseline_cannot_be_hidden",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_partial_heldout_not_presented_as_success",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_leaked_calibration_world_rejected",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_different_model_in_ndu_path_rejected",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_unreconciled_cpu_cost_rejected",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_missing_cost_stage_rejected",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_overspending_denies_provisional_cost_pass",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_protected_task_world_deterioration_is_not_averaged_away",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_missing_protected_coverage_rejected",
+      "equivalence": "Identical AST after removing only the fixture freeze helper required by the current frozen-label schema. The actual test keeps that helper."
+    },
+    {
+      "name": "test_failed_draw_must_stay_in_denominator_as_penalty",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_unwitnessed_decoded_output_rejected",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    },
+    {
+      "name": "test_no_real_decoder_outputs_claimed",
+      "equivalence": "Exact function AST equality, including all constants, assertions and bootstrap counts."
+    }
+  ],
+  "readme_conflict": "Current four-way split amendment already documents complete source blocks, balanced groups, seed/source reuse rejection, exact paired sampling, raw-witness score parity and cost bootstrap upper bound. Preserve that more complete documentation and newer amendments instead of replacing it with the older historical 44-test account; original historical branch text remains reachable through the merged commit ancestry. Keep the incoming one-line overview correction from paired worlds to paired source-group blocks.",
+  "verification": "All incoming test method ASTs checked against current, with only one explicit current-schema fixture-freeze adaptation. Runtime and tests resolve exactly to base blobs; documentation-only tree delta. No duplicate compilation/tests needed. diff --check passed. No refs moved."
+}

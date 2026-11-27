@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "applies_after": "19894714403a97fcd58ca8c592e75761de95687c",
+  "code_scope": "No new authority or lifecycle path; one compilation-only canonical digest conversion",
+  "source_fix": {
+    "base": "19894714403a97fcd58ca8c592e75761de95687c",
+    "path": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+    "preimage": "942991414cbe42361e46b6c27407b828ff652f15",
+    "git_blob": "2e6b0945bfa5cbc7a802eb0a53b69adfa1fd33b5",
+    "sha256": "369268d4a84828adb93d7bfe95e5be94543b4f224dbfe343554e7a7059fd9e80",
+    "bytes": 3098,
+    "operations": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+        "old": "self.original.writer_proof.sha256()?.to_string()",
+        "new": "self.original.writer_proof.sha256()?.as_str().to_owned()"
+      }
+    ],
+    "scope": "Exact canonical Sha256Digest hex text via existing as_str API. Full original bootstrap, verifier Arc, writer proof and process checks unchanged.",
+    "native_executed": false
+  },
+  "docs": [
+    {
+      "path": "qualification/original-q24-successor-20261111/README.md",
+      "preimage": "7bf3266e56857d9223851ce290a1e23dbe9313dc",
+      "git_blob": "684c736200bf81ef5f10630ab5b6b22d22fa4089",
+      "bytes": 8240,
+      "sha256": "3f0eb240949eeecbd9ed76871c41fcc1414f86170d9a2a002144e42aa2be5fee"
+    },
+    {
+      "path": "qualification/original-q24-successor-20261111/SOURCE_GAP.json",
+      "preimage": "c27ef70b09e64af493ba75b2e40dcd6dca7a4ccf",
+      "git_blob": "0a6384a6d28a2806265ffc336d17ab8ef7186507",
+      "bytes": 13024,
+      "sha256": "704996a1cbf4865232cd29454d40b46bb62785f3d979d967896ce70a99d57cf8"
+    }
+  ],
+  "source_reachability": "Guarded internal conditional assembly only; no current ordinary A production route supplies both fresh legitimate Root launch and retained A memory capability",
+  "positive_component": "blocked and not executed",
+  "native_executed_by_author": false,
+  "new_root_parents": 0,
+  "ordinary_complete": 0,
+  "tests_executed_by_author": 0
+}

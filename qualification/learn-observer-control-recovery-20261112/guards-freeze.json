@@ -1,0 +1,36 @@
+{
+  "local_commit": "41dd2778dd90d2d8f8c48ba28a70dbfa03957b90",
+  "tree": "241e8fb88ea0cc10f5d52a30092762e3faa72b14",
+  "base": "4945c98ac9008af1a5589ba0d353b29079c93fac",
+  "remote_parent": "f59ba61abcca1f8428acb45e05b9e47d63d3a692",
+  "commit_object": "tree 241e8fb88ea0cc10f5d52a30092762e3faa72b14\nparent 4945c98ac9008af1a5589ba0d353b29079c93fac\nauthor Codex <codex@openai.com> 1794463642 +0800\ncommitter Codex <codex@openai.com> 1794463642 +0800\n\ntest(agentd): close original Observer control callers and guards\n",
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9dd3ff8102dc99f43750d1fc3a202723c34bd0dd",
+      "bytes": 706202,
+      "sha256": "ec05f704f5d2268e3a83d8de6da5bf6d75e1cc4751ff885a33f3abdc924e815f"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6363f47eb7574c5cd83fc598b6c713a3afd32092",
+      "bytes": 11742,
+      "sha256": "c5b610d37d4aa4d31c9ce1475c825df3bf999ddc00ec02baa1b857261328ad0e"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_original_outcome_control_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e5f64717d26d3503a88fdadbd65a66734d4ec89a",
+      "bytes": 14973,
+      "sha256": "7675b98fc1d709e9e237627bc0ff74dea7425112357be1775938082b1465551e"
+    }
+  ],
+  "manifest_patch_sha256": "6862c826a66a75bf903100ced267888ee14c02f4be870cfd061d7756756af910",
+  "diffstat": " .github/blob-size-allowlist.txt                    |   2 +-\n CALLERS.toml                                       | 126 ++++++++-\n ..._q24_original_outcome_control_source_closure.py | 297 +++++++++++++++++++++\n 3 files changed, 422 insertions(+), 3 deletions(-)\n",
+  "native": "not run"
+}

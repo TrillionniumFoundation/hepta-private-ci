@@ -1,0 +1,26 @@
+--- a/.github/workflows/ndu-windows-storage-probe.yml
++++ b/.github/workflows/ndu-windows-storage-probe.yml
+@@ -140,10 +140,10 @@
+                   "sha256": "72a4a810750bafa704541b9814a22a080774ab5efd7c135bb197f421ba217860"
+               },
+               "codex-rs/Cargo.toml": {
+-                  "bytes": 26035,
+-                  "mode": "100644",
+-                  "oid": "24552d4cb39aa937cb867a81431e109a37b78d0d",
+-                  "sha256": "202f526f1581bb311c5bd27c515409de7085cdbf05150b742d35ecb2489053ba"
++                  "bytes": 27073,
++                  "mode": "100644",
++                  "oid": "520b0ba00e7e1e11f24773e42c21b5324578895b",
++                  "sha256": "033474d5d437dcaab5f771aa3bf1a90a10f768fb3465925a1f3ad2a3137c9f81"
+               },
+               "codex-rs/rust-toolchain.toml": {
+                   "bytes": 78,
+@@ -348,7 +348,7 @@
+           ELEVATED_REFUSAL_METHODS = ['elevated_admission_tests::elevated_raw_token_factories_refuse_live_base_and_capabilities', 'elevated_admission_tests::elevated_capture_refuses_before_provisioning_or_child_launch', 'elevated_admission_tests::elevated_sessions_refuse_before_provisioning_or_child_launch']
+           MIC_COLLECTOR_METHODS = ['test_negative_hypothesis_and_refusal_regression_remain_distinct', 'test_missing_duplicate_and_extra_cases_are_rejected', 'test_isolation_success_or_qualification_cannot_replace_the_negative', 'test_broken_controls_and_wrong_errors_cannot_count_as_counterexamples', 'test_missing_or_inexact_production_refusal_is_rejected', 'test_truncated_ambiguous_or_mistyped_json_is_rejected', 'test_historical_raw_negative_without_admission_proof_cannot_qualify']
+           PROBE_METHODS = ['test_actual_git_rejects_live_and_index_only_source_changes', 'test_complete_transcript_keeps_false_invariant_as_observed_failure', 'test_incomplete_or_duplicated_native_observation_cannot_complete', 'test_dependency_without_existing_checksum_cannot_enter_probe', 'test_actual_git_rejects_unbound_legacy_admission_changes', 'test_refusal_transcript_cannot_certify_permission_observations']
+-          OTHER_LOCK_TOML_SHA256 = "7b7fd2cf755c486e14fa506032f5c5d5e6922873361c74c3ca24d5f2887c572a"
++          OTHER_LOCK_TOML_SHA256 = "5b6a0101389c198fa322f9bd296d773c150d459301be96271bf9636b6ee888b7"
+           ANYHOW_RECORD = {
+               "name": "anyhow",
+               "version": "1.0.104",

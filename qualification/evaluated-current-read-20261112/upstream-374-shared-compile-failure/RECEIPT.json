@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.original-upstream-compile-failure.v1",
+  "observed_at_utc": "2026-11-12 19:30:52 UTC",
+  "source_sha": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "source_tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "run_id": 43288106947,
+  "job_id": 131426787479,
+  "job_conclusion": "failure",
+  "raw_job_log": {
+    "bytes": 120107,
+    "sha256": "0a4cb14332f17a8647f54f7ff67ca1b44399cc15e1789bc284598110d4498610",
+    "git_blob": "fb0c4195260e382900199cd0be2f61a4d65030c8"
+  },
+  "actual_compiler_error": "E0308 authority_host_learning_resident_origin_tests.rs:163: expected OriginalCellQ24TrainingCommandConnectionV1; received OriginalCellQ24TrainingReadbackConnectionV1",
+  "original_execution_receipt": {
+    "after": {
+      "commit": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+      "dirty": false,
+      "parents": [
+        "d3977d9a1bed3e89952c576c45660b04ea674faf"
+      ],
+      "tree": "981c4675a6579dfd9748046d3d01a2268f11c36f"
+    },
+    "base_sha": "",
+    "before": {
+      "commit": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+      "dirty": false,
+      "parents": [
+        "d3977d9a1bed3e89952c576c45660b04ea674faf"
+      ],
+      "tree": "981c4675a6579dfd9748046d3d01a2268f11c36f"
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib"
+    ],
+    "command_exit_code": 101,
+    "elapsed_seconds": 297.60874246000003,
+    "error": "required tests were not observed passing",
+    "exit_code": 101,
+    "finished_at": "2026-11-12T19:29:21.279658+00:00",
+    "job": "owners",
+    "lane": "source-head",
+    "log_bytes": 32727,
+    "log_file": "tests.json.4de855a42a534f5698e0f9d4ac93d1eb.log",
+    "log_sha256": "bacaad644f43d1da6bbd3f09b8ad443583996c77e1a2164a985cbff0ef184c36",
+    "minimum_tests": 1,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 101,
+    "run_attempt": "1",
+    "run_id": "43288106947",
+    "schema_version": 1,
+    "source_sha": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+    "started_at": "2026-11-12T19:24:23.669948+00:00",
+    "status": "failed",
+    "tested_sha": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+  },
+  "observed_passed_tests": 0,
+  "observed_failed_tests": 0,
+  "explanation": "Compilation failed before test execution. Missing fresh JUnit is consequential and no test pass is inferred.",
+  "zip_downloaded": false,
+  "junit_downloaded": false,
+  "all_blockers_closed": false,
+  "owner_decision": null
+}

@@ -1,0 +1,28 @@
+[
+  {
+    "name": "posthoc-red",
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "test_posthoc_signflip_audit.PosthocSignflipTests.test_cli_preserves_input_archive_when_output_aliases_it",
+      "test_posthoc_signflip_audit.PosthocSignflipTests.test_cli_refuses_to_overwrite_existing_report",
+      "test_posthoc_signflip_audit.PosthocSignflipTests.test_cli_creates_new_report_without_modifying_input"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "FF.\n======================================================================\nFAIL: test_cli_preserves_input_archive_when_output_aliases_it (test_posthoc_signflip_audit.PosthocSignflipTests.test_cli_preserves_input_archive_when_output_aliases_it)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/4be89e6b2988/frontier_structure/small_clean_batch/tree/qa/ndu-grounded-generation/test_posthoc_signflip_audit.py\", line 39, in test_cli_preserves_input_archive_when_output_aliases_it\n    with self.assertRaises(SystemExit) as error:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: SystemExit not raised\n\n======================================================================\nFAIL: test_cli_refuses_to_overwrite_existing_report (test_posthoc_signflip_audit.PosthocSignflipTests.test_cli_refuses_to_overwrite_existing_report)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/4be89e6b2988/frontier_structure/small_clean_batch/tree/qa/ndu-grounded-generation/test_posthoc_signflip_audit.py\", line 52, in test_cli_refuses_to_overwrite_existing_report\n    with self.assertRaises(SystemExit) as error:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: SystemExit not raised\n\n----------------------------------------------------------------------\nRan 3 tests in 0.003s\n\nFAILED (failures=2)\n"
+  },
+  {
+    "name": "matrix-red",
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "test_memory_matrix_contract.MemoryMatrixContractTests.test_prediction_inventory_binds_the_bytes_actually_scored"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "F\n======================================================================\nFAIL: test_prediction_inventory_binds_the_bytes_actually_scored (test_memory_matrix_contract.MemoryMatrixContractTests.test_prediction_inventory_binds_the_bytes_actually_scored)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/4be89e6b2988/frontier_structure/small_clean_batch/tree/qa/stem-bakeoff/test_memory_matrix_contract.py\", line 131, in test_prediction_inventory_binds_the_bytes_actually_scored\n    self.assertEqual(receipt[\"arm_metrics\"][\"A\"][\"strict_task_success\"], 1.0)\nAssertionError: 0.875 != 1.0\n\n----------------------------------------------------------------------\nRan 1 test in 0.038s\n\nFAILED (failures=1)\n"
+  }
+]

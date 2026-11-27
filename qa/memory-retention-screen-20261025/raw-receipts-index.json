@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.retention-v2.published-raw-receipts.v1",
+  "records": 345,
+  "uncompressed_bytes": 7115839,
+  "compressed_bytes": 757176,
+  "compressed_sha256": "425ae39965eab637a2476b1ccfa3b3410aa8f392e7c8875bcfeded5626407c32",
+  "includes": "all non-weight screen files: frozen protocol/source/base identities, raw train/read/process/event/withdrawal records, actual checkpoint manifests, SQLite owner databases, stderr, independent audit and test logs",
+  "excluded": "adapter binary weights and runtime/base copies; retained original hashes are not hardware attestation",
+  "local_screen_complete": true,
+  "hosted_independent_replication": false,
+  "exact_executed_source_files": 52,
+  "auditor_source_included": true,
+  "auditor_portability": "the exact executed audit uses original absolute paths and requires original adapter/base weights; the published packet does not on its own reproduce every weight check"
+}

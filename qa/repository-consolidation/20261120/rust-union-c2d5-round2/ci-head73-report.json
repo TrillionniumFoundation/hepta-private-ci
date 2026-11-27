@@ -1,0 +1,1046 @@
+{
+  "schema": "hepta-ci-observed-snapshot07",
+  "head": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "tree": "75127f7175708277f28974daff78cc6e7d92ab0c",
+  "synthetic_merge": "e4d17362d3712556a8495b84f7315edcfb0bc54f",
+  "source_binding": "Synthetic merge and exact head have identical source tree, independently verified.",
+  "observed_at": "2026-11-20T04:01:33.040Z",
+  "actual_qualification": "FAILED_AND_STILL_RUNNING; main-merge gates not satisfied",
+  "snapshots": {
+    "06-checks": {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/snapshot06-checks.json",
+      "sha256": "3740afe54d5b20487a66da5759f01129792ab6cac84314a8629b9b3031e7c49e",
+      "observed_at": "2026-11-20T03:52:37.178Z",
+      "pages": 2,
+      "count": 111,
+      "counts": {
+        "failure": 32,
+        "in_progress": 15,
+        "success": 50,
+        "skipped": 14
+      }
+    },
+    "06-blocking-jobs": {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/snapshot06-blocking-jobs.json",
+      "sha256": "5ed8898a51fc3933cb5723ae4cfe0ad6a06f0032ded84fe8b8335052f188d9c9",
+      "observed_at": "2026-11-20T03:52:35.566Z",
+      "pages": 1,
+      "count": 44,
+      "counts": {
+        "success": 16,
+        "skipped": 6,
+        "failure": 15,
+        "in_progress": 7
+      }
+    },
+    "06-architecture-jobs": {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/snapshot06-architecture-jobs.json",
+      "sha256": "076954686da3c0e6a857676aea022a1e4bf8d90fcf3f17d2ab45ea2cb8e67a57",
+      "observed_at": "2026-11-20T03:52:34.508Z",
+      "pages": 1,
+      "count": 2,
+      "counts": {
+        "success": 1,
+        "in_progress": 1
+      }
+    },
+    "07-checks": {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/snapshot07-checks.json",
+      "sha256": "b94e0f6200906f67bebfd2a4e2357508e2deaff306365d7ac3e2306eef0b16e3",
+      "observed_at": "2026-11-20T04:01:33.040Z",
+      "pages": 2,
+      "count": 113,
+      "counts": {
+        "failure": 41,
+        "success": 53,
+        "skipped": 14,
+        "in_progress": 5
+      }
+    },
+    "07-blocking-jobs": {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/snapshot07-blocking-jobs.json",
+      "sha256": "6d442acc01e551d389dd8aa726a0bf34d670bad73f62fc466d13233c4049ada3",
+      "observed_at": "2026-11-20T04:01:31.501Z",
+      "pages": 1,
+      "count": 45,
+      "counts": {
+        "success": 17,
+        "skipped": 6,
+        "failure": 20,
+        "in_progress": 2
+      }
+    },
+    "07-architecture-jobs": {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/snapshot07-architecture-jobs.json",
+      "sha256": "7922ee82ea4a72a71acafe1ed22b3adc6c780e96b06f68f49db3c9f0e9468726",
+      "observed_at": "2026-11-20T04:01:30.548Z",
+      "pages": 1,
+      "count": 2,
+      "counts": {
+        "success": 1,
+        "in_progress": 1
+      }
+    }
+  },
+  "latest_check_counts": {
+    "failure": 41,
+    "success": 53,
+    "skipped": 14,
+    "in_progress": 5
+  },
+  "latest_blocking_workflow_jobs": {
+    "file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/snapshot07-blocking-jobs.json",
+    "sha256": "6d442acc01e551d389dd8aa726a0bf34d670bad73f62fc466d13233c4049ada3",
+    "observed_at": "2026-11-20T04:01:31.501Z",
+    "pages": 1,
+    "count": 45,
+    "counts": {
+      "success": 17,
+      "skipped": 6,
+      "failure": 20,
+      "in_progress": 2
+    }
+  },
+  "architecture_jobs": [
+    {
+      "id": 136060197805,
+      "name": "Architecture convergence (base-merge)",
+      "status": "completed",
+      "conclusion": "success",
+      "running_steps": []
+    },
+    {
+      "id": 136060198354,
+      "name": "Architecture convergence (source-head)",
+      "status": "in_progress",
+      "conclusion": null,
+      "running_steps": [
+        "Converged authority and browser semantics"
+      ]
+    }
+  ],
+  "still_running_checks": [
+    {
+      "id": 136061097345,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc"
+    },
+    {
+      "id": 136061097309,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin"
+    },
+    {
+      "id": 136060198628,
+      "name": "owners"
+    },
+    {
+      "id": 136060198532,
+      "name": "Execute 20 physically trained temporal weights in real Rust Q24 (shadow)"
+    },
+    {
+      "id": 136060198354,
+      "name": "Architecture convergence (source-head)"
+    }
+  ],
+  "failed_checks": [
+    {
+      "job_id": 136072387083,
+      "check_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136072387083",
+      "root_cause_families": [
+        "aggregate-upstream-failure"
+      ],
+      "log_file": null,
+      "log_sha256": null,
+      "note": "Aggregate required result; upstream failures remain."
+    },
+    {
+      "job_id": 136071305340,
+      "check_name": "Require all 19 original groups and 175 exact cases",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667480117/job/136071305340",
+      "root_cause_families": [
+        "aggregate-upstream-failure"
+      ],
+      "log_file": null,
+      "log_sha256": null,
+      "note": "Aggregate required result; upstream failures remain."
+    },
+    {
+      "job_id": 136068939585,
+      "check_name": "Learning artifacts required",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479352/job/136068939585",
+      "root_cause_families": [
+        "aggregate-upstream-failure"
+      ],
+      "log_file": null,
+      "log_sha256": null,
+      "note": "Aggregate required result; upstream failures remain."
+    },
+    {
+      "job_id": 136066364880,
+      "check_name": "native-owner",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479271/job/136066364880",
+      "root_cause_families": [
+        "neuron-helper-metadata"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136066364880.log",
+      "log_sha256": "a6180bc879efab56b65e0280c86ed4399a2256072d60be54be00e3a1efac2845",
+      "note": null
+    },
+    {
+      "job_id": 136064737861,
+      "check_name": "learning.operator qualification / learning.operator qualification required",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136064737861",
+      "root_cause_families": [
+        "aggregate-upstream-failure"
+      ],
+      "log_file": null,
+      "log_sha256": null,
+      "note": "Aggregate required result; upstream failures remain."
+    },
+    {
+      "job_id": 136062910969,
+      "check_name": "rust-ci / CI results (required)",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136062910969",
+      "root_cause_families": [
+        "aggregate-upstream-failure"
+      ],
+      "log_file": null,
+      "log_sha256": null,
+      "note": "Aggregate required result; upstream failures remain."
+    },
+    {
+      "job_id": 136061597586,
+      "check_name": "rust-ci / Rust format",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061597586",
+      "root_cause_families": [
+        "formatter"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061597586.log",
+      "log_sha256": "e34485561676cf0bc73681dbb0cc452212f019df126259c4ee8ce6e8e142eaf1",
+      "note": null
+    },
+    {
+      "job_id": 136061097396,
+      "check_name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097396",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "boxed-fixtures-and-imports",
+        "legacy-bazel-test-features"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097396.log",
+      "log_sha256": "99d95285bcb8b8d8112f81558679a0c12d5dc0e05cb5cb1ce3f35923d5b583dc",
+      "note": null
+    },
+    {
+      "job_id": 136061097394,
+      "check_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097394",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "windows-clock-precision",
+        "windows-private-state-and-sandbox"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097394.log",
+      "log_sha256": "b699f165f61290d7bcb4313d92e0e93378b890ae6f253f4d7abe987b000e8af8",
+      "note": null
+    },
+    {
+      "job_id": 136061097390,
+      "check_name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097390",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "legacy-bazel-test-features",
+        "macos-fifo-portability"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097390.log",
+      "log_sha256": "b195395a7db19f224eb1dc805c5953699d5f4e0383da881d28a74ef2bb80e9b4",
+      "note": null
+    },
+    {
+      "job_id": 136061097306,
+      "check_name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097306",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "legacy-bazel-test-features"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097306.log",
+      "log_sha256": "0b82d2594a678caf21c5904a57d7e79ff3b65cd15527bb40cfe9ee695a87d793",
+      "note": null
+    },
+    {
+      "job_id": 136061097305,
+      "check_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097305",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "worker-binary-path"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097305.log",
+      "log_sha256": "96aa4aa977cc62f93e5bd3784301ebbe330cfe15aa39864449fee8b754f298d2",
+      "note": null
+    },
+    {
+      "job_id": 136061097296,
+      "check_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097296",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "windows-private-state-and-sandbox"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097296.log",
+      "log_sha256": "42ee5fef7bb752a829e0811e30c7fd89209b6662de3bd8e21d5e4fd30e5619bc",
+      "note": null
+    },
+    {
+      "job_id": 136061097291,
+      "check_name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097291",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "legacy-bazel-test-features"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097291.log",
+      "log_sha256": "2e9df5a5a4126898c2b3aa00571ae9a387cdbe0b547b392bc963e318ebaefc0f",
+      "note": null
+    },
+    {
+      "job_id": 136061097276,
+      "check_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097276",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "windows-infer-durability",
+        "authbus-checkpoint"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097276.log",
+      "log_sha256": "fe29d096bbaed9e2734b59b164152377275050c1a99697581454c761bce55eff",
+      "note": null
+    },
+    {
+      "job_id": 136061097219,
+      "check_name": "learning.operator qualification / learning.operator exact source",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097219",
+      "root_cause_families": [
+        "boxed-fixtures-and-imports"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097219.log",
+      "log_sha256": "736eff2b01802c5548a6d4fd76945485c9bf66d4c19180b2ee90a9d86e979d14",
+      "note": null
+    },
+    {
+      "job_id": 136061097210,
+      "check_name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097210",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "boxed-fixtures-and-imports",
+        "legacy-bazel-test-features"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097210.log",
+      "log_sha256": "b2ff69067fe6b0a595f6b8e1a200044451f2f76f775e782ee508fc1d0985bb60",
+      "note": null
+    },
+    {
+      "job_id": 136061097200,
+      "check_name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097200",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "legacy-bazel-test-features",
+        "macos-fifo-portability",
+        "authbus-checkpoint",
+        "intelligence-objective-weights",
+        "compact-journal"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097200.log",
+      "log_sha256": "4b26a4da3836fde2e2440c824816f1c7fbe3410ecf2fae3e12a6f7087902bc83",
+      "note": null
+    },
+    {
+      "job_id": 136061097184,
+      "check_name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097184",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "legacy-bazel-test-features"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097184.log",
+      "log_sha256": "77f8080a54a4c5b5589135e8d08703bcee7be74008a1ecaa728859eeff04fc3e",
+      "note": null
+    },
+    {
+      "job_id": 136061097182,
+      "check_name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097182",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler",
+        "legacy-bazel-test-features",
+        "macos-fifo-portability"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097182.log",
+      "log_sha256": "8d060b766c05ddf5cfe43f24d9efc74bbaeeb1a2699bab4c3585229d275ee615",
+      "note": null
+    },
+    {
+      "job_id": 136061097135,
+      "check_name": "learning.operator qualification / learning.operator deterministic merge",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061097135",
+      "root_cause_families": [
+        "raw-audit-whitespace"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097135.log",
+      "log_sha256": "3cb3e5507662fee2ba9a97df0eac0885832d6d607508601c5aebebdfebfd570c",
+      "note": null
+    },
+    {
+      "job_id": 136061096850,
+      "check_name": "repo-checks / build-test",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061096850",
+      "root_cause_families": [
+        "b4-source-closure"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061096850.log",
+      "log_sha256": "1acc1297c8c8fd5e62b4d3e87728b365df59bed22aeeff12be292a76c6897ad8",
+      "note": null
+    },
+    {
+      "job_id": 136061096823,
+      "check_name": "sdk / sdks",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479317/job/136061096823",
+      "root_cause_families": [
+        "timestamp-and-signed-offset-compiler"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061096823.log",
+      "log_sha256": "5eb039cf3704780d4607c24e157df94324e4c3037227be48cc62e55fe95c0c08",
+      "note": null
+    },
+    {
+      "job_id": 136060203834,
+      "check_name": "Original regressions (process)",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667480117/job/136060203834",
+      "root_cause_families": [
+        "windows-private-state-and-sandbox"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060203834.log",
+      "log_sha256": "075fbcaa680e7c9def285191039a2c30c0695ee03562d786e951a2f6b1e7de07",
+      "note": null
+    },
+    {
+      "job_id": 136060200446,
+      "check_name": "Staged native episodic owner contracts",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479178/job/136060200446",
+      "root_cause_families": [
+        "formatter"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060200446.log",
+      "log_sha256": "4cba5d65fb8634663c591a2af14b99dce97cee7519b09b22ed4c923778777782",
+      "note": null
+    },
+    {
+      "job_id": 136060200172,
+      "check_name": "training-owner",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479271/job/136060200172",
+      "root_cause_families": [
+        "boxed-fixtures-and-imports"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060200172.log",
+      "log_sha256": "31b6cceddbe9d72dc7a5c3ff073e70983bade0d802e22a40b416b2c6e2c7a15d",
+      "note": null
+    },
+    {
+      "job_id": 136060200161,
+      "check_name": "regression",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479358/job/136060200161",
+      "root_cause_families": [
+        "group-research"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060200161.log",
+      "log_sha256": "4812a0c7e8a303892ed41bc7b1075f2e4d98c657fe8ebf4d0736741d28733fdf",
+      "note": null
+    },
+    {
+      "job_id": 136060199777,
+      "check_name": "Encrypted keyring closure (windows-latest, non-authorizing)",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479505/job/136060199777",
+      "root_cause_families": [
+        "windows-keyring-checkout"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060199777.log",
+      "log_sha256": "7bbb7e75fac707faaee1d4c7d4e1bcee79308e5450eb2d8a235dd2d03ca699f7",
+      "note": null
+    },
+    {
+      "job_id": 136060199564,
+      "check_name": "integral-research",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479359/job/136060199564",
+      "root_cause_families": [
+        "python-research-syntax"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060199564.log",
+      "log_sha256": "424f2f266ff0a82911bbafb73746719557b526dd4c8bfedf1574a2cd26a51c9c",
+      "note": null
+    },
+    {
+      "job_id": 136060199498,
+      "check_name": "startup-and-owner-regressions",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479175/job/136060199498",
+      "root_cause_families": [
+        "boxed-fixtures-and-imports"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060199498.log",
+      "log_sha256": "41637342a316f734649a573c99e3c56a3d6c38c5e04920cb4cb1d029fafe5b43",
+      "note": null
+    },
+    {
+      "job_id": 136060199408,
+      "check_name": "learning.artifacts (merge)",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479352/job/136060199408",
+      "root_cause_families": [
+        "boxed-fixtures-and-imports"
+      ],
+      "log_file": null,
+      "log_sha256": null,
+      "note": null
+    },
+    {
+      "job_id": 136060199386,
+      "check_name": "native-provider-policy",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479374/job/136060199386",
+      "root_cause_families": [
+        "formatter"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060199386.log",
+      "log_sha256": "a2d9529f59855415a901722e7a16400ebc5d90e7cab164c7fdb348a86ccf95e4",
+      "note": null
+    },
+    {
+      "job_id": 136060199302,
+      "check_name": "source-format",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479271/job/136060199302",
+      "root_cause_families": [
+        "formatter"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060199302.log",
+      "log_sha256": "f61867daa7e07a44a492e3f97d378becf30987ed070de068a452660bb804480f",
+      "note": null
+    },
+    {
+      "job_id": 136060199251,
+      "check_name": "Rust UI foundation / base-merge",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479275/job/136060199251",
+      "root_cause_families": [
+        "ui-path-closure"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060199251.log",
+      "log_sha256": "eb14c1af26afe42ad945be19182232ef8414b4c94e502afa33e20d45262bef58",
+      "note": null
+    },
+    {
+      "job_id": 136060199213,
+      "check_name": "Rust UI foundation / source-head",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479275/job/136060199213",
+      "root_cause_families": [
+        "ui-path-closure"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060199213.log",
+      "log_sha256": "d44591c1c8a1bbc3317a29031988f669350047a55f8198ce5eca188a7d19a2f2",
+      "note": null
+    },
+    {
+      "job_id": 136060199151,
+      "check_name": "appcontainer-mechanism",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479268/job/136060199151",
+      "root_cause_families": [
+        "windows-appcontainer-mechanism"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060199151.log",
+      "log_sha256": "ddb2abeae677bd1e4b9ae9062e9b3d18780f8e69001ddc9520768489a5c81145",
+      "note": null
+    },
+    {
+      "job_id": 136060199103,
+      "check_name": "acl-observe",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479268/job/136060199103",
+      "root_cause_families": [
+        "windows-reviewed-cargo-binding"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060199103.log",
+      "log_sha256": "5c9fc9d5f437b2309028126a312c40111ec866f392e1c49bdc51f7f20843daf6",
+      "note": null
+    },
+    {
+      "job_id": 136060199088,
+      "check_name": "learning.artifacts (source)",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479352/job/136060199088",
+      "root_cause_families": [
+        "boxed-fixtures-and-imports"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060199088.log",
+      "log_sha256": "9ec35e2594e0dcc4512e00d3aee69cb6d84d99fed4baf8e4c802cef845cd5f6e",
+      "note": null
+    },
+    {
+      "job_id": 136060198783,
+      "check_name": "numerical-research",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479201/job/136060198783",
+      "root_cause_families": [
+        "python-research-syntax"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060198783.log",
+      "log_sha256": "bef30d8f5480460958d0600198725b8114449afb7f75302b7cfecdd17bdfbe58",
+      "note": null
+    },
+    {
+      "job_id": 136060198595,
+      "check_name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479140/job/136060198595",
+      "root_cause_families": [
+        "formatter"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060198595.log",
+      "log_sha256": "151a066504c8d13950b32b085885d97b8b8757fc8763c86aebc8924a754c5c67",
+      "note": null
+    },
+    {
+      "job_id": 136060198535,
+      "check_name": "native",
+      "actual_status": "completed",
+      "actual_conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44667479202/job/136060198535",
+      "root_cause_families": [
+        "b4-source-closure"
+      ],
+      "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136060198535.log",
+      "log_sha256": "998308ec44080fd6240ebdef8f165cc2d70e991d5883a70674588460eddad8e5",
+      "note": null
+    }
+  ],
+  "root_cause_table": [
+    {
+      "key": "formatter",
+      "jobs": [
+        136060200446,
+        136060199302,
+        136061597586,
+        136060199386,
+        136060198595
+      ],
+      "crate_or_owner": "root formatter batch / app-server / intelligence-eval",
+      "actual_cause": "Actual diff is the same active5 + archived3 in mutating formatter jobs, or the same two active Rust files in cargo-fmt checks. Source-format patch equals the verified MEM artifact byte-for-byte.",
+      "coverage": "Prepared in frozen ordinary candidate; actual after-CI NOT_RUN. Active5 formatting plus exact custody registration for the three unchanged archived records.",
+      "test_or_step": [
+        "just fmt",
+        "cargo fmt --check",
+        "source identity guard"
+      ]
+    },
+    {
+      "key": "timestamp-and-signed-offset-compiler",
+      "jobs": [
+        136061096823,
+        136061097210,
+        136061097396,
+        136061097306,
+        136061097291,
+        136061097182,
+        136061097390,
+        136061097184,
+        136061097200,
+        136061097305,
+        136061097276,
+        136061097394,
+        136061097296
+      ],
+      "crate_or_owner": "ci_repair / tui / app-server / utils-time",
+      "actual_cause": "Actual E0308 for checked_add(isize); E0277 for six Timestamp-to-SystemTime fixture call sites; E0368 for two fixture AddAssign operations.",
+      "coverage": "Prepared in frozen ordinary candidate; actual after-CI NOT_RUN. Stage01 exact15-path manifest.",
+      "test_or_step": [
+        "chat_composer.rs:1597/1598",
+        "thread_processor_tests.rs:1090",
+        "thread_list.rs:202",
+        "thread_resume.rs:5602",
+        "named_session_lookup_tests.rs:403/498",
+        "tui/lib.rs:2023",
+        "session_archive_commands_tests.rs:459/460"
+      ]
+    },
+    {
+      "key": "boxed-fixtures-and-imports",
+      "jobs": [
+        136061097219,
+        136060200172,
+        136060199498,
+        136061097210,
+        136061097396,
+        136060199088,
+        136060199408
+      ],
+      "crate_or_owner": "ci_repair / hepta-agentd",
+      "actual_cause": "Actual E0425/E0433 missing UnixStream/Duration and E0308 at three existing boxed fixture boundaries; the two learning-artifacts cognitive-read lanes stop before native tests.",
+      "coverage": "Prepared in frozen ordinary candidate; actual after-CI NOT_RUN. Stage01 exact15-path manifest.",
+      "test_or_step": [
+        "neuron_cell_evaluation_model_material_connection_support_tests.rs",
+        "cell_q24_task_ledger_history_tests.rs",
+        "cell_q24_training_command_connection_support_tests.rs",
+        "cell_q24_training_candidate_tests.rs"
+      ]
+    },
+    {
+      "key": "legacy-bazel-test-features",
+      "jobs": [
+        136061097210,
+        136061097396,
+        136061097306,
+        136061097291,
+        136061097182,
+        136061097390,
+        136061097184,
+        136061097200
+      ],
+      "crate_or_owner": "branch_audit / Bazel integration-test wiring",
+      "actual_cause": "Generation integration harnesses import generation_driver/model_worker while legacy-local-model-boundary is not enabled in their test dependency graph.",
+      "coverage": "Prepared in frozen ordinary candidate; actual after-CI NOT_RUN. Root-approved test-only Bazel wiring, preserving production feature gates.",
+      "test_or_step": [
+        "generation_owner_execution",
+        "generation_plasticity_rejection",
+        "generation_neuron_calibration"
+      ]
+    },
+    {
+      "key": "windows-clock-precision",
+      "jobs": [
+        136061097394
+      ],
+      "crate_or_owner": "ci_repair / utils-time",
+      "actual_cause": "Actual Windows SystemTime epoch-minus1ns quantizes to epoch; original test observes0 where it expects-1.",
+      "coverage": "Prepared in frozen ordinary candidate; actual after-CI NOT_RUN. Separate stage02 preserves Timestamp1ns representation,100ns native negative round-trip and unconditional precision-aware1ns native coverage.",
+      "test_or_step": [
+        "tests::preserves_signed_epoch_and_duration_refusals"
+      ]
+    },
+    {
+      "key": "macos-fifo-portability",
+      "jobs": [
+        136061097182,
+        136061097390,
+        136061097200
+      ],
+      "crate_or_owner": "original CI recovery owner / hepta-ndu",
+      "actual_cause": "Actual E0425 rustix::fs::mknodat is unavailable on macOS at projection_store_tests.rs:756.",
+      "coverage": "Original-owner repair exists on a separate tree; not qualified for head73 or the current candidate. Original macos-fifo-repair-stage01 is not silently duplicated.",
+      "test_or_step": [
+        "projection_store_tests.rs:756"
+      ]
+    },
+    {
+      "key": "python-research-syntax",
+      "jobs": [
+        136060198783,
+        136060199564
+      ],
+      "crate_or_owner": "root tamper-source batch / hepta-ndu research",
+      "actual_cause": "compileall fails at exact_two_step/test_tamper.py:52 because two function definitions share one line.",
+      "coverage": "Prepared in frozen ordinary candidate; actual after-CI NOT_RUN. Root one-LF repair plus locked Ruff; original six test bodies retained.",
+      "test_or_step": [
+        "native_stem_abcd/exact_two_step/test_tamper.py"
+      ]
+    },
+    {
+      "key": "b4-source-closure",
+      "jobs": [
+        136060198535,
+        136061096850
+      ],
+      "crate_or_owner": "original root/CI/branch/dependency recovery owners / qa/b4-no-bypass",
+      "actual_cause": "Actual head73 full source-closure checks still report6 failures and84 errors, including changed Box/source mutation markers and an expected VerificationFailure not raised.",
+      "coverage": "Original-owner repair exists on a separate tree; not qualified for head73 or the current candidate. Original owner reports1352 tests passing on treef7d7c2b77f3b296e5ca2c3c94fc299b5d5c8d02d; that result is NOT head73 or current-candidate qualification.",
+      "test_or_step": [
+        "full source closure / mutation-control tests"
+      ]
+    },
+    {
+      "key": "raw-audit-whitespace",
+      "jobs": [
+        136061097135
+      ],
+      "crate_or_owner": "root audit metadata custody",
+      "actual_cause": "git diff --cached --check exits2 on a blank line at EOF in git-fetch-help.txt and trailing whitespace in the preserved Q24 stderr record.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains. Coordinator notified; original evidence bytes must be retained, not trimmed.",
+      "test_or_step": [
+        "qa/repository-consolidation/20261120/rust-consolidation-safety/history/native/git-fetch-help.txt:58",
+        "qa/repository-consolidation/20261120/rust-union-c2d5/b4/test_q24_original_outcome_control_source_closure.py.stderr:16"
+      ]
+    },
+    {
+      "key": "ui-path-closure",
+      "jobs": [
+        136060199251,
+        136060199213
+      ],
+      "crate_or_owner": "UI product-foundation workflow owner",
+      "actual_cause": "Actual module-path scope test requires codex-rs/utils/windows-private-state/** in the UI workflow path closure; it is absent.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "scripts/test_hepta_ci_module_path_scopes.py"
+      ]
+    },
+    {
+      "key": "group-research",
+      "jobs": [
+        136060200161
+      ],
+      "crate_or_owner": "group-reasoning research owner",
+      "actual_cause": "Actual Python regression result1 failure/40 errors/1 skipped: missing max_depth data, missing PIL, and a global RNG contamination assertion.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "matched-arm RNG invariant",
+        "max_depth fixture/data consumers",
+        "PIL import consumers"
+      ]
+    },
+    {
+      "key": "windows-keyring-checkout",
+      "jobs": [
+        136060199777
+      ],
+      "crate_or_owner": "Windows keyring / historical evidence custody",
+      "actual_cause": "Checkout fails on two long historical registry snapshot paths before the native test workload.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "qualification/hcsn_training/evidence/20261106/bridge/attempt-01/artifact-store/registries",
+        "qualification/hcsn_training/evidence/20261106/bridge/attempt-02-formatted/artifact-store/registries"
+      ]
+    },
+    {
+      "key": "windows-reviewed-cargo-binding",
+      "jobs": [
+        136060199103
+      ],
+      "crate_or_owner": "NDU native Windows storage observation owner",
+      "actual_cause": "Reviewed mode/OID/SHA/size differs for codex-rs/Cargo.toml; later absent-output failures are secondary.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "acl-observe reviewed source binding"
+      ]
+    },
+    {
+      "key": "windows-appcontainer-mechanism",
+      "jobs": [
+        136060199151
+      ],
+      "crate_or_owner": "Windows appcontainer mechanism owner",
+      "actual_cause": "Actual native observation exists but reports Native mechanism experiment failed; source hashes before/after match. Detailed Windows observation remains to be audited.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "native mechanism experiment"
+      ]
+    },
+    {
+      "key": "worker-binary-path",
+      "jobs": [
+        136061097305
+      ],
+      "crate_or_owner": "ci_repair next read-only diagnosis / hepta-infer-worker-host",
+      "actual_cause": "Both native_host_process_e2e cases fail to launch the actual binary with Windows OS code3 NotFound.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "native_worker_fails_closed_without_an_explicit_profile",
+        "native_worker_help_executes_the_real_binary_without_state"
+      ]
+    },
+    {
+      "key": "windows-infer-durability",
+      "jobs": [
+        136061097276
+      ],
+      "crate_or_owner": "hepta-infer-core / future Windows runtime repair",
+      "actual_cause": "Actual tests fail with Windows file-lock error33, InvalidIdentity(native prepared input v2), and the resulting crash-child failure.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "durable_control::native::tests::*",
+        "durable_control::tests::incremental::*"
+      ]
+    },
+    {
+      "key": "authbus-checkpoint",
+      "jobs": [
+        136061097276,
+        136061097200
+      ],
+      "crate_or_owner": "hepta-authbus / hepta-evidence owners",
+      "actual_cause": "Actual macOS owner tests and Windows/macOS retirement tests report UnsafeCheckpoint.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "owner::tests::{concurrent_mutations,crash_recovery,lease_serialization}",
+        "authbus_recovery::pq_retirement_tests::pq_retirement_requires_the_exact_pinned_revoked_key_and_profile",
+        "authbus_recovery::tests::issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resurrection"
+      ]
+    },
+    {
+      "key": "windows-private-state-and-sandbox",
+      "jobs": [
+        136061097394,
+        136061097296,
+        136060203834
+      ],
+      "crate_or_owner": "Windows private-state / sandbox / network-proxy owners",
+      "actual_cause": "Actual runtime failures include unsafe owner/DACL, fail-closed FILE_DELETE_CHILD refusal, mismatching refusal classification, busy ACL same-plan setup, and elevated token/proxy assertions.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "durable::windows_directory_sync_tests::directory_flush_persists_a_private_artifact",
+        "restricted_tokens_select_stable_routes_and_cleanup",
+        "win::boundary_tests::standalone_runner_refuses_before_token_preparation_or_child_spawn",
+        "win::read_acl::tests::broad_normal_rx_cannot_skip_same_plan_restrictive_readback",
+        "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+        "unified_exec::tests::*"
+      ]
+    },
+    {
+      "key": "neuron-helper-metadata",
+      "jobs": [
+        136066364880
+      ],
+      "crate_or_owner": "hepta-neuron native-owner workflow",
+      "actual_cause": "Actual cell_joint_generation tests report missing actual hepta-joint-propose helper metadata. Existing CI nextest retries are recorded; this agent requested no retries.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "cell_joint_generation::tests::*"
+      ]
+    },
+    {
+      "key": "intelligence-objective-weights",
+      "jobs": [
+        136061097200
+      ],
+      "crate_or_owner": "hepta-intelligence owner",
+      "actual_cause": "Actual vertical tests accept incomplete objective weights where rejection is required, and observe equal digests where normalization expects a changed digest.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "vertical_tests::incomplete_objective_weights_reject_unique_and_abstain_only_recommendations",
+        "vertical_tests::vertical_normalizes_half_weight_without_rewriting_the_admitted_objective"
+      ]
+    },
+    {
+      "key": "compact-journal",
+      "jobs": [
+        136061097200
+      ],
+      "crate_or_owner": "hepta-plasticity owner / diagnosis only",
+      "actual_cause": "Actual terminal-bound compact journal atomicity test fails; full failure retained for owner diagnosis. No held C2D production changes made.",
+      "coverage": "Not covered by the frozen32 candidate; diagnosis/repair remains.",
+      "test_or_step": [
+        "local_compact_executor_tests::terminal_bound_lease_transitions_audit_compact_journal_atomically"
+      ]
+    }
+  ],
+  "per_test_table": {
+    "file": "FAILURE-CASES-snapshot07.json",
+    "sha256": "0a059d47000a1ac30c2362024a1ad565e147019f3f86ca342f1378ca40001609",
+    "rows": 432,
+    "scope": "Observed names only; compilation-blocked tests have no executed-case claim."
+  },
+  "provider_observation": {
+    "job": 136060199386,
+    "tests_run": 6,
+    "tests_passed": 6,
+    "tests_skipped_by_filter": 2479,
+    "strict_core_clippy": "PASS",
+    "final_job": "FAIL due to same two formatter diffs; not whole-CI success"
+  },
+  "candidate_validation": "Prepared fixes are source-reviewed proposals for a different future head. All native/compiler/formatter after-CI remains NOT_RUN. This report records only actual73 results.",
+  "held_c2d_boundary": "No held C2D learning history/exclusive-lease production edits, after-tests or retries.",
+  "agent_actions": {
+    "native_jobs_started": 0,
+    "reruns_requested": 0,
+    "refs_written": 0,
+    "hia_changes": 0
+  },
+  "coverage_manifests": {
+    "root10_sha256": "cbbcd7c1250e35a6780a2c03e5a9f38a268377c412cdaa87346922d59a295361",
+    "compile15_sha256": "9f2de460fadc3a8e790bb0ebe942895ffc0840a18786a922134909dc2a2bb8b1",
+    "clock_stage02_sha256": "e492333e23f724609023b3eca96d3531803c39124fd04f9eff2e780ecc653122"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "archive_sha256": "67444773c017fd73cfef87888e8c9ec27b66fa84eafdbbd859683e5274d62c74",
+  "body_cpu_seconds": 0.01959415299999999,
+  "compressed_bytes": 960,
+  "includes": [
+    "payload/weights.bin",
+    "payload/nested/updates.jsonl",
+    "results/evidence_sealing/tiny_smoke001/SELECTION.json"
+  ],
+  "members": 3,
+  "name": "tiny_smoke001",
+  "pack_cpu_seconds": 0.012102571000000006,
+  "pack_restore_source_sha256": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+  "parts": 1,
+  "restore_cpu_seconds": 0.005549683,
+  "schema": "hcsn-v2-evidence-seal.v1",
+  "scope": "This complete archive process only; pack and restore timers are nested, not additive to whole-process CPU",
+  "source_sha256": "5cb943759e5ffdc91cd4bf2f98f813bfe89ceb90b37cd5799183bab12700a085",
+  "uncompressed_file_bytes": 9034,
+  "verified_restore": {
+    "archive_sha256": "67444773c017fd73cfef87888e8c9ec27b66fa84eafdbbd859683e5274d62c74",
+    "restored_or_already_identical": 3
+  },
+  "whole_process_self_cpu_seconds_through_seal": 0.088732807
+}

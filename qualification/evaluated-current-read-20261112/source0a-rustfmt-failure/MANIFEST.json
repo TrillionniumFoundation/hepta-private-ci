@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "source_head": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "source_tree": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+  "actual_checkout_commit": "1749a97b4c7d5cc76245025b1721e831365c8296",
+  "actual_checkout_tree": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+  "actual_checkout_parents": [
+    "1cb195e590f7f5038a38625a943f259badea489a",
+    "0a5c31b73667b3922d89643cf18f0482fa9a1b87"
+  ],
+  "same_tree": true,
+  "run_id": 43310500072,
+  "job_id": 131505849080,
+  "job_name": "rust-ci / Rust format",
+  "status": "completed",
+  "conclusion": "failure",
+  "completed_at": "2026-11-12T21:30:13Z",
+  "original_command": "cargo fmt -- --config imports_granularity=Item --check",
+  "original_exit": 1,
+  "original_log": {
+    "job_id": 131505849080,
+    "bytes": 147000,
+    "sha256": "df2f72c8e8bc2204085078d7229445e6111f630ca1dd8810d8a6219ec89e31a4",
+    "git_blob_sha": "1eddc53b7d69b9829f9587ad3b5a1711ec621c70"
+  },
+  "hunks": 11,
+  "paths": [
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs"
+  ],
+  "payloads": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure/JOB.log",
+      "git_blob_sha": "1eddc53b7d69b9829f9587ad3b5a1711ec621c70",
+      "bytes": 147000,
+      "sha256": "df2f72c8e8bc2204085078d7229445e6111f630ca1dd8810d8a6219ec89e31a4",
+      "kind": "complete original decoded terminal job log"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure/JOBS_API.json",
+      "git_blob_sha": "9a546e098c857c75c61839acc201661e7ce54a91",
+      "bytes": 78470,
+      "sha256": "d90139e6652d00dc7a99ba63ed379eef5a50251642865f9daa70389f87ed9574",
+      "kind": "original GitHub jobs API response"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure/CHECKOUT_COMMIT_API.json",
+      "git_blob_sha": "0fdc689e80f38c986e287f84cb40007b946fc8c3",
+      "bytes": 2798,
+      "sha256": "3a1b46024fc86108eadd14d859d4640e1cd19f28cb321e45d38b0fbfdbbd26b5",
+      "kind": "original actual synthetic checkout commit API response"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure/REPORTED_HUNKS.json",
+      "git_blob_sha": "aaccd4d19d74fe88917660ed2d721d8b617508f3",
+      "bytes": 9454,
+      "sha256": "4de368d0faf204b56f7be02f9a8c419274a470b296a0f53e4b951cb50e6999f0",
+      "kind": "derived exact timestamp-stripped formatter hunks; original log preserved"
+    }
+  ],
+  "all_payloads_read_back_equal": true,
+  "scope": "Original formatter failure only. Postimage repair is a separate unexecuted candidate; no new formatter success is asserted."
+}

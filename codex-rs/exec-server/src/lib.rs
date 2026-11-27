@@ -1,4 +1,5 @@
 mod arg0_exec_helper;
+mod authorized_read_error;
 mod capability_discovery;
 mod capability_discovery_cache;
 mod client;
@@ -16,6 +17,8 @@ mod forward;
 mod fs_helper;
 mod fs_helper_main;
 mod fs_sandbox;
+#[cfg(target_os = "linux")]
+mod linux_authorized_read;
 mod local_file_system;
 mod local_process;
 mod network_policy_decisions;
@@ -42,6 +45,8 @@ mod shell_snapshot;
 mod telemetry;
 mod trace_context;
 mod websocket_pong_watchdog;
+#[cfg(windows)]
+mod windows_restricted_write;
 
 use codex_exec_server_protocol as protocol;
 

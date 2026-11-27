@@ -1,0 +1,11 @@
+# R16 rigorous global certificate for a nonconvex positive-risk two-step Stem
+
+Input X, P0, epsilon1,epsilon2 are independent uniform two-point variables, 16 exact leaf configurations. P1=P0 xor [epsilon1=+1], P2=P1 xor [epsilon2=+1]. Forward H1=aX and H2=bH1+epsilon2/10. L1=P1/20, L2=(H2-X)^2+P2/50. Two risk-sensitive conditional CE layers have rho0=1/2 and rho1=1 with gamma=9/10; parameter penalty is OUTSIDE the CE, (a²+b²)/4.
+
+Put t=ab and C(t)=gamma E_{X,P0} CE_{rho_P0}[L1+gamma CE_{rho_P1}(L2|X,P1)]. Then J(a,b)=C(ab)+(a²+b²)/4. The terminal Bernoulli CE is exactly u²+1/50+rho_p^{-1}log cosh(rho_p[uX/5+(1-2p)/100]), u=t-1. Its second derivative is >=2. Positive-risk logsumexp preserves convexity, adding nonnegative conditional variance, hence C''(t)>=2 gamma²=81/50 globally.
+
+AM-GM gives (a²+b²)/4>=|ab|/2. Therefore the global nonconvex problem is exactly reducible to strongly convex f(t)=C(t)+|t|/2; equality in the positive product region requires a=b=+sqrt(t) or a=b=-sqrt(t). Directed 10^65 integer interval arithmetic with proven exp/log Taylor tails rigorously verifies f'_+(0)<0 and the opposite gradient signs at exact rational l=69594347096172/10^14 and r=69594347096175/10^14. Thus a unique positive global product minimizer lies in (l,r), with only two sign-related global parameter solutions.
+
+The origin has gradient zero but negative Hessian eigenvalue because f'_+(0)<0. It is an explicit strict saddle. Candidate s=834232264397471/10^15 is rational. At t_hat=s², global strong convexity m=81/50 and rigorously outward-bounded gradient g give distance |s-sqrt(t*)|<=g/(ms), and J(s,s)-J*<=g²/(2m). Verified bounds: component error <=5.344997286e-16, population excess <=1.610474905e-31. All b=0 policies have regret >0.392313224967. The risk-neutral comparator t0=56/81 differs by >0.00458544627, certifying a genuine nonzero-risk shift.
+
+**Limitations:** This exact global argument uses a finite known state law and product-separable parameter structure despite joint nonconvexity. It is not an arbitrary nonlinear deep FBSDE, multi-dimensional unknown model, viscosity PDE or language-model theorem. Numerical solver endpoint flags are FLOAT comparisons to this certified reference set and are not individually interval-enclosed results. No native hardware, global project CI or production admission is asserted.

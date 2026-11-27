@@ -1,0 +1,189 @@
+{
+  "schema": "pred1-review-summary-v1",
+  "status": "simulation_gain_not_established",
+  "recovery_status": "exact_frozen_bytes_recovered",
+  "selected_family": "gru",
+  "primary_comparison": {
+    "descriptive_seed_bootstrap_95": [
+      0.0009548971041130665,
+      0.05340049477512031
+    ],
+    "independent_seed_count": 5,
+    "inference_scope": "exploratory; sign-exchangeability assumed; small-seed CI is descriptive",
+    "mean_difference": 0.019131401961529782,
+    "one_sided_signflip_p": 0.03125,
+    "seed_differences": [
+      9.571539728527555e-05,
+      0.0874420572815845,
+      0.0005700598140318675,
+      0.0034429350979310464,
+      0.004106242216816228
+    ]
+  },
+  "same_architecture_causal_checks": {
+    "gru_no_action": {
+      "descriptive_seed_bootstrap_95": [
+        -0.0003378078101936504,
+        0.04595374680359702
+      ],
+      "independent_seed_count": 5,
+      "inference_scope": "exploratory; sign-exchangeability assumed; small-seed CI is descriptive",
+      "mean_difference": 0.01577880881263453,
+      "one_sided_signflip_p": 0.15625,
+      "seed_differences": [
+        0.0002752725090785866,
+        0.07563151164987594,
+        -0.001095216615884305,
+        0.00011306083586088561,
+        0.003969415684241549
+      ]
+    },
+    "gru_reset": {
+      "descriptive_seed_bootstrap_95": [
+        -0.0007131713894293418,
+        0.05519394121586545
+      ],
+      "independent_seed_count": 5,
+      "inference_scope": "exploratory; sign-exchangeability assumed; small-seed CI is descriptive",
+      "mean_difference": 0.018721107688748195,
+      "one_sided_signflip_p": 0.15625,
+      "seed_differences": [
+        0.00021108276273935044,
+        0.09131350985170311,
+        -0.0019402391600236574,
+        5.176930508062755e-05,
+        0.003969415684241549
+      ]
+    }
+  },
+  "confirmation_episodes_per_variant": 5120,
+  "models": [
+    {
+      "variant": "single_step",
+      "parameters": 3002,
+      "net_utility": -0.030971099421882087,
+      "bayes_regret": 0.09516483198004971,
+      "success_rate": 0.4666015625,
+      "deadline_budget_success_rate": 0.144921875,
+      "complete_environment_cost": 4.6068750000000005,
+      "mean_time": 7.5234375,
+      "time_p95": 9.0,
+      "inference_wall_seconds": 0.01038709179556463,
+      "inference_process_cpu_seconds": 0.010387341199999867,
+      "joint_nll": 2.4743306281193553,
+      "outcome_brier": 0.20754263251328608,
+      "time_crps": 0.6916389129375009,
+      "cost_crps": 0.7116594188671017,
+      "joint_total_variation_to_bayes": 0.2489059585157604
+    },
+    {
+      "variant": "gru",
+      "parameters": 2966,
+      "net_utility": -0.011839697460352305,
+      "bayes_regret": 0.07603343001851992,
+      "success_rate": 0.478515625,
+      "deadline_budget_success_rate": 0.1650390625,
+      "complete_environment_cost": 4.614101562500001,
+      "mean_time": 7.5111328125,
+      "time_p95": 9.0,
+      "inference_wall_seconds": 0.20257316319912205,
+      "inference_process_cpu_seconds": 0.2025282781999998,
+      "joint_nll": 2.461489352689436,
+      "outcome_brier": 0.1993908850312554,
+      "time_crps": 0.6961758429530939,
+      "cost_crps": 0.7129668288593122,
+      "joint_total_variation_to_bayes": 0.23591151454678166
+    },
+    {
+      "variant": "diag_ssm",
+      "parameters": 3035,
+      "net_utility": -0.031114486009841673,
+      "bayes_regret": 0.09530821856800928,
+      "success_rate": 0.4638671875,
+      "deadline_budget_success_rate": 0.146875,
+      "complete_environment_cost": 4.6195703125000005,
+      "mean_time": 7.506640625,
+      "time_p95": 9.0,
+      "inference_wall_seconds": 0.04573038819944486,
+      "inference_process_cpu_seconds": 0.04571931560000024,
+      "joint_nll": 2.46360009832452,
+      "outcome_brier": 0.20683437907485797,
+      "time_crps": 0.6904556334179194,
+      "cost_crps": 0.7112806428956873,
+      "joint_total_variation_to_bayes": 0.24026466772448418
+    },
+    {
+      "variant": "dual_timescale",
+      "parameters": 3017,
+      "net_utility": -0.02921820025914318,
+      "bayes_regret": 0.09341193281731079,
+      "success_rate": 0.47734375,
+      "deadline_budget_success_rate": 0.146484375,
+      "complete_environment_cost": 4.611953125000001,
+      "mean_time": 7.499609375,
+      "time_p95": 9.0,
+      "inference_wall_seconds": 0.21008054560224992,
+      "inference_process_cpu_seconds": 0.2090609852,
+      "joint_nll": 2.4650852244600254,
+      "outcome_brier": 0.20664661463871897,
+      "time_crps": 0.6938180558309056,
+      "cost_crps": 0.7110450823388671,
+      "joint_total_variation_to_bayes": 0.24161374230734492
+    },
+    {
+      "variant": "gru_reset",
+      "parameters": 2966,
+      "net_utility": -0.0305608051491005,
+      "bayes_regret": 0.09475453770726813,
+      "success_rate": 0.4736328125,
+      "deadline_budget_success_rate": 0.148046875,
+      "complete_environment_cost": 4.624648437499999,
+      "mean_time": 7.50390625,
+      "time_p95": 9.0,
+      "inference_wall_seconds": 0.018211974596488288,
+      "inference_process_cpu_seconds": 0.018212552600000008,
+      "joint_nll": 2.4612051397774732,
+      "outcome_brier": 0.20691576241295925,
+      "time_crps": 0.6890245101026451,
+      "cost_crps": 0.7113366131326935,
+      "joint_total_variation_to_bayes": 0.23909639341111083
+    },
+    {
+      "variant": "gru_no_action",
+      "parameters": 2966,
+      "net_utility": -0.027618506272986832,
+      "bayes_regret": 0.09181223883115446,
+      "success_rate": 0.476171875,
+      "deadline_budget_success_rate": 0.14765625,
+      "complete_environment_cost": 4.6203515625,
+      "mean_time": 7.5060546875,
+      "time_p95": 9.0,
+      "inference_wall_seconds": 0.19916360700153746,
+      "inference_process_cpu_seconds": 0.19908075000000025,
+      "joint_nll": 3.1090351763349258,
+      "outcome_brier": 0.23581347563191568,
+      "time_crps": 1.1405767336796686,
+      "cost_crps": 1.0586631516350555,
+      "joint_total_variation_to_bayes": 0.5528483678024753
+    }
+  ],
+  "execution": {
+    "original_training_instances": 48,
+    "repair_training_instances": 2,
+    "replayed_confirmation_instances": 14,
+    "all_training_wall_seconds": 143.9629759600066,
+    "all_training_process_cpu_seconds": 143.43086667799997,
+    "all_training_examples_consumed": 6144000,
+    "original_attempt_elapsed_wall_seconds": 168.828548,
+    "recovery_wall_seconds": 14.446991828997852,
+    "original_total_process_cpu_seconds": null,
+    "physical_cost_complete": false
+  },
+  "nonoverlapping_execution_wall_seconds": 183.27553982899786,
+  "original_source_sha256": "a07f2eb7c06c5ddf98b632a205a1865e75a18cdc09c9e3085a88dd2f01a32583",
+  "source_sha256": "3e78150c8945210b5b20bdcadce32b45c6b1e69b3f93c96bbedadad001f5a673",
+  "config_sha256": "87b0e2598dc1996c922b8b50c4ae83d74bc03edea1d83b3f76a97192c0b1e56e",
+  "real_tool_qualification": "not_run",
+  "hcsn_comparison": "not_run",
+  "autoregressive_rollout_qualification": "not_run"
+}

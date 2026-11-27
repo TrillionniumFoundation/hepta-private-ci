@@ -1,0 +1,46 @@
+{
+  "clippy_previous_job": "1a1f4a6a717-ffbe-10c9",
+  "clippy_exit": 0,
+  "format_command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "fmt"
+  ],
+  "format_exit": 1,
+  "before": {
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "289227743978c6537c9189d70ab5b85cdac705802ba9881568aa0ee82f128d49",
+    "codex-rs/utils/cargo-bin/Cargo.toml": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+    "codex-rs/utils/cargo-bin/BUILD.bazel": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+    "codex-rs/utils/cargo-bin/src/lib.rs": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+    "codex-rs/utils/cargo-bin/tests/lookup_result.rs": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+    "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": "8c11254bcc491d9aeacec29565d5b3d47a7a6361cf24edf6411eff6ec2d3cdfa",
+    "scripts/hepta_ci_dependencies.py": "3aa79281625f94390f6c60f970ecaf315cc096d51ef4c1b8f613e16e6eb90760",
+    "scripts/test_hepta_ci_exec.py": "aad462e4bef23dc73804bf576dbe47c178238ba32b7145340a03646c34413aec",
+    "scripts/test_hepta_native_feedback.py": "45110c2364d1e4c3946f1ef6e03d0fac195ada0805ed3a70242b34723c760ecd",
+    "scripts/format.py": "d42fa841b1aa809d1016508d3091e4c8aedb14bcae0e86b08a4e60f98d7ad2c5"
+  },
+  "after": {
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "289227743978c6537c9189d70ab5b85cdac705802ba9881568aa0ee82f128d49",
+    "codex-rs/utils/cargo-bin/Cargo.toml": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+    "codex-rs/utils/cargo-bin/BUILD.bazel": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+    "codex-rs/utils/cargo-bin/src/lib.rs": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+    "codex-rs/utils/cargo-bin/tests/lookup_result.rs": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+    "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": "8c11254bcc491d9aeacec29565d5b3d47a7a6361cf24edf6411eff6ec2d3cdfa",
+    "scripts/hepta_ci_dependencies.py": "3aa79281625f94390f6c60f970ecaf315cc096d51ef4c1b8f613e16e6eb90760",
+    "scripts/test_hepta_ci_exec.py": "aad462e4bef23dc73804bf576dbe47c178238ba32b7145340a03646c34413aec",
+    "scripts/test_hepta_native_feedback.py": "45110c2364d1e4c3946f1ef6e03d0fac195ada0805ed3a70242b34723c760ecd",
+    "scripts/format.py": "d42fa841b1aa809d1016508d3091e4c8aedb14bcae0e86b08a4e60f98d7ad2c5"
+  },
+  "no_tests_after_format": true,
+  "original_source_after": {
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9",
+    "codex-rs/utils/cargo-bin/Cargo.toml": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+    "codex-rs/utils/cargo-bin/BUILD.bazel": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+    "codex-rs/utils/cargo-bin/src/lib.rs": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+    "codex-rs/utils/cargo-bin/tests/lookup_result.rs": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+    "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": null
+  },
+  "original_source_unchanged": true,
+  "previous_format_exit": 2,
+  "exact_vendor_fixture_count": 5,
+  "previous_format_failure": "partial isolated source lacked the exact verbatim fixture bytes"
+}

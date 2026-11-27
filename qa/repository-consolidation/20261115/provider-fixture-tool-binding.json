@@ -1,0 +1,34 @@
+{
+  "published_head": "8576cdb382d6d49cfccb45d0b07e651fc7aa474e",
+  "job_id": 132877231445,
+  "failure": "two mocked provider tests still depended on a host bubblewrap executable",
+  "reproduction": {
+    "host_tool_PATH": "new empty directory",
+    "selected_tests": 12,
+    "before": {
+      "passed": 10,
+      "failed": 2,
+      "errors": 0,
+      "skipped": 0
+    },
+    "after": {
+      "passed": 12,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "change": "bind the two mocked subprocess cases to explicit regular fixture tool bytes and assert the command path and retained tool digest",
+  "production_provider_unchanged": true,
+  "real_namespace_tests_unchanged": true,
+  "logs": {
+    "before": {
+      "bytes": 3820,
+      "sha256": "6da1ddbe03632819ac30616866eb7ac09e695f59881f1d498458012ae0631788"
+    },
+    "after": {
+      "bytes": 2434,
+      "sha256": "b1d2c46067fa08c8483e8d1e8496526dbe71e120fabf68755d3d760a5aeda7e7"
+    }
+  }
+}

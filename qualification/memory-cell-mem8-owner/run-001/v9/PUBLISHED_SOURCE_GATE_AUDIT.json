@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.mem8.source-ci-v5.root-original-audit.v1",
+  "verified_at_utc": "2026-11-11T12:11:28.029096+00:00",
+  "original_run": 43015979473,
+  "original_job": 130507034042,
+  "workflow_head": "720f7ff5042a66490e2433bf4652c2eef93e4b7d",
+  "source_head_unchanged": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+  "source_initial_tree": "e9ba2746237562d68b1c732bee0f86df9e352cde",
+  "formatted_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "zip": {
+    "bytes": 6299090,
+    "sha256": "6ecc9f1ab22fcaccbf52f0190c9af0e8edef759a0537dbb8f751b227d09b7c80",
+    "regular_members_crc_and_hash_verified": 337
+  },
+  "tar": {
+    "bytes": 1783500,
+    "sha256": "6718333beb6ea7b6faefc2bd026413e8ab1413f24bf4f377a773fc0264dd288a",
+    "git_blob": "eb285beb4588ab1aee652a785881c5d37d932292",
+    "regular_members_verified": 335
+  },
+  "three_complete_trees_independently_recomputed": true,
+  "overlay_paths_verified": 103,
+  "formatter_delta_reviewed_in_full": {
+    "paths": [
+      "codex-rs/app-server-client/BUILD.bazel",
+      "codex-rs/app-server/BUILD.bazel",
+      "codex-rs/app-server/tests/suite/v2/model_list.rs",
+      "codex-rs/app-server/tests/suite/v2/remote_control.rs",
+      "codex-rs/core-plugins/src/remote/catalog_cache.rs",
+      "codex-rs/exec-server/src/fs_helper.rs",
+      "codex-rs/exec-server/src/windows_restricted_write_tests.rs",
+      "codex-rs/ext/hepta-memory/BUILD.bazel",
+      "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+      "codex-rs/hepta-agentd/BUILD.bazel",
+      "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "codex-rs/hepta-codex-adapter/BUILD.bazel",
+      "codex-rs/hepta-cognitive-store/BUILD.bazel",
+      "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs",
+      "codex-rs/hepta-memory/BUILD.bazel",
+      "codex-rs/hepta-memory/src/cognitive_lease_clock_tests.rs",
+      "codex-rs/hepta-memory/src/lib.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_control.rs",
+      "codex-rs/hepta-supervisor/BUILD.bazel",
+      "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs"
+    ],
+    "patch_bytes": 27705,
+    "patch_sha256": "2fab5b3fad7459e925260f1173a07a56fdf15ac71c3ab4a9c5a5d0c13304ae79",
+    "finding": "Rust formatting and import order; BUILD load and keyword argument order, final newline. No semantic change identified."
+  },
+  "source_after": "original HEAD unchanged; exact 21 formatter modifications staged",
+  "original_deadline_seconds": 600,
+  "started_at": "2026-11-11T11:56:16.122508+00:00",
+  "finished_at": "2026-11-11T12:02:50.118524+00:00",
+  "elapsed_seconds": 393.996016,
+  "old_case_names_scanned": 13,
+  "old_case_hits": 0,
+  "caller_rust_files_scanned": 6200,
+  "caller_authority_granted": false,
+  "locks_unchanged": true,
+  "native_tests": 0,
+  "model_requests": 0,
+  "qualification": "SOURCE_GATES_PASSED_AND_FORMAT_DELTA_REVIEWED",
+  "remaining": [
+    "New Bazel dependency graph and lock qualification",
+    "Native tests for the changed source",
+    "Original owner, provider, scientific benefit and independent trust/adoption gates"
+  ]
+}

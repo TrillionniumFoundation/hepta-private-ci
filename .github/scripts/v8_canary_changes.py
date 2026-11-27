@@ -32,7 +32,10 @@ CANARY_PATH_PATTERNS = {
     ".github/workflows/v8-canary.yml",
     "MODULE.bazel",
     "MODULE.bazel.lock",
+    # V8 adapter Bazel features (including Windows sandbox selection) affect the linked artifact.
+    "codex-rs/v8-poc/BUILD.bazel",
     "codex-rs/Cargo.toml",
+    "codex-rs/v8-poc/**",
     "patches/BUILD.bazel",
     "patches/llvm_*.patch",
     "patches/rules_cc_*.patch",
@@ -49,6 +52,8 @@ WINDOWS_SOURCE_BUILD_PATHS = {
     ".github/scripts/v8_canary_changes.py",
     ".github/workflows/rusty-v8-release.yml",
     ".github/workflows/v8-canary.yml",
+    # The adapter can change the Windows sandbox link feature without changing rusty_v8.
+    "codex-rs/v8-poc/BUILD.bazel",
 }
 
 
@@ -123,6 +128,22 @@ def v8_version_at_revision(revision: str, *, root: Path = ROOT) -> str:
     )
 
 
+def historical_v8_version_at_revision(
+    revision: str, *, root: Path = ROOT
+) -> str | None:
+    """Force full canaries if the merge-base lock cannot describe a V8 version.
+
+    A malformed historical lock is *not* acceptance of the candidate. The
+    candidate HEAD must still be parsed strictly, and Git lookup errors must
+    still fail the metadata job.
+    """
+    try:
+        return v8_version_at_revision(revision, root=root)
+    except (ValueError, KeyError):
+        # Invalid legacy TOML and absent/ambiguous v8 entries are unknown.
+        return None
+
+
 def merge_base(base: str, head: str, *, root: Path = ROOT) -> str:
     return git_output("merge-base", base, head, root=root).decode().strip()
 
@@ -161,13 +182,23 @@ def main() -> None:
         raise SystemExit("--base and --head are required unless --force is set")
     else:
         files = changed_files(args.base, args.head)
-        base_version = v8_version_at_revision(merge_base(args.base, args.head))
+        base_version = historical_v8_version_at_revision(
+            merge_base(args.base, args.head)
+        )
+        # Never downgrade a broken candidate HEAD to a passing canary.
         head_version = v8_version_at_revision(args.head)
 
         matched_canary_paths = sorted(matching_canary_paths(files))
         canary = canary_required(files, base_version, head_version)
         windows_source = windows_source_required(files, base_version, head_version)
-        if base_version != head_version:
+        if base_version is None:
+            # Unknown historical V8 version cannot prove these builds safe to
+            # skip. Run both full matrices, including Windows source builds.
+            canary_reason = (
+                "unparseable merge-base Cargo.lock: full V8 validation required"
+            )
+            windows_source_reason = canary_reason
+        elif base_version != head_version:
             canary_reason = f"v8 version changed from {base_version} to {head_version}"
             windows_source_reason = canary_reason
         else:

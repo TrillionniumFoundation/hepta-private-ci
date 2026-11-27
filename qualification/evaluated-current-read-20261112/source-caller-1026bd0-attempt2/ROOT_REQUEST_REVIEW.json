@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.owner1026.root-v2-recovery-review.v1",
+  "original_job": "1a1cfa1d75d-2564-1a75",
+  "original_result_verified": true,
+  "original_driver_terminal_exit": 2,
+  "git_fetch_exit": 128,
+  "qualification_stages_executed": 0,
+  "original_source_inventory_taken": false,
+  "new_source": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "new_request_proposal_git_blob": "a2b068407fbbbf652f5f0d6230143188be7c957b",
+  "new_key": "owner6213-ai395-1026bd0-source-caller-862531d11598-v2",
+  "changed_fields": [
+    "checkout",
+    "evidence output directory",
+    "idempotency_key"
+  ],
+  "runner_byte_identical": true,
+  "runner_sha256": "12f3261828782130fad74565a3b19477bb4ef5e87339481d24d0665dda8c431a",
+  "gates_unchanged": true,
+  "source_unchanged": true,
+  "resource_limits_unchanged": true,
+  "process_registry_terminal_readback": "UNKNOWN_READBACK_TIMEOUT_RETAINED",
+  "native_allowed_by_this_request": false,
+  "scope": "Independent ordinary source validation attempt following preserved terminal Git transfer failure; no scientific actor effects are dispatched.",
+  "dispatch_basis": "Root read the full unchanged original runner. The preserved original RESULT and stdout show fetch failed, exit2, zero qualification stages. After finally writes RESULT and emits this exact terminal, its only remaining statement is raise SystemExit(exit_code). No native/actor dispatch exists in this request. A separate bounded ordinary-source-validation attempt is authorized; this does not relabel or redispatch the original key.",
+  "exact_original_runner_after_terminal": "raise SystemExit(exit_code)",
+  "registry_unknown_does_not_become_success": true
+}

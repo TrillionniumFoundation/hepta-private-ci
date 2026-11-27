@@ -9,9 +9,16 @@
 
 #[path = "embodiment/cart.rs"]
 mod cart;
+mod cell_split_route;
+mod cell_split_route_digest;
+mod cell_split_route_fence;
+mod control_runtime_owner;
+mod control_runtime_publication;
+mod execution_attempt;
 #[path = "embodiment/io.rs"]
 mod io;
 mod module_runtime;
+mod ndu_publication;
 mod organ_graph;
 mod organ_hierarchy;
 mod organ_registry;
@@ -20,9 +27,12 @@ mod organ_wire;
 mod planner;
 mod planner_context;
 mod planner_journal;
+mod planner_journal_store;
 mod planner_ndu;
+mod scope_lane_wal;
 #[path = "embodiment/timing.rs"]
 mod timing;
+mod trusted_clock;
 
 pub use cart::CART_Q24_SCALE;
 pub use cart::CartCommandV1;
@@ -34,6 +44,48 @@ pub use cart::CartSimulatorV1;
 pub use cart::CartStateV1;
 pub use cart::SyntheticCartObservationV1;
 pub use cart::SyntheticCartPlant;
+pub use cell_split_route::CellSplitChildRouteV1;
+pub use cell_split_route::CellSplitDispatchReceiptV1;
+pub use cell_split_route::CellSplitRouteControllerV1;
+pub use cell_split_route::CellSplitRouteErrorV1;
+pub use cell_split_route::CellSplitRouteOwnerV1;
+pub use cell_split_route::CellSplitRoutePhaseV1;
+pub use cell_split_route::CellSplitRouteSelectionV1;
+pub use cell_split_route_digest::cns_child_port_compatibility_digest_v1;
+pub use cell_split_route_digest::cns_circuit_route_digest_v1;
+pub use cell_split_route_digest::cns_organ_abi_digest_v1;
+pub use cell_split_route_digest::cns_organ_abi_set_digest_v1;
+pub use cell_split_route_digest::cns_organ_input_port_digest_v1;
+pub use cell_split_route_digest::cns_organ_termination_port_digest_v1;
+pub use cell_split_route_digest::cns_route_digest_v1;
+pub use cell_split_route_digest::cns_route_port_binding_digest_v1;
+pub use cell_split_route_fence::CellSplitRouteFenceReceiptV1;
+pub use cell_split_route_fence::CellSplitRouteRestartReplayReceiptV1;
+pub use control_runtime_owner::AuthenticatedGlobalStateSnapshotV1;
+pub use control_runtime_owner::AuthenticatedOwnerSummaryV1;
+pub use control_runtime_owner::ControlRuntimeOwnerErrorV1;
+pub use control_runtime_owner::ControlRuntimeOwnerV1;
+pub use control_runtime_owner::Ed25519OwnerPortAuthenticatorV1;
+pub use control_runtime_owner::OwnerPortAdmissionReceiptV1;
+pub use control_runtime_owner::OwnerPortAuthenticationErrorV1;
+pub use control_runtime_owner::SelectedExecutionPlanV1;
+pub use control_runtime_owner::TrustedOwnerProducerV1;
+pub use control_runtime_owner::owner_summary_digest_v1;
+pub use control_runtime_owner::owner_summary_signing_bytes_v1;
+pub use control_runtime_publication::ControlRuntimeDecisionPublisherV1;
+pub use control_runtime_publication::ControlRuntimePublicationErrorV1;
+pub use control_runtime_publication::ControlRuntimePublicationHeadV1;
+pub use control_runtime_publication::ControlRuntimePublicationKindV1;
+pub use control_runtime_publication::ControlRuntimePublicationPayloadV1;
+pub use control_runtime_publication::ControlRuntimePublicationReceiptV1;
+pub use control_runtime_publication::ControlRuntimePublicationV1;
+pub use control_runtime_publication::FileControlRuntimeDecisionPublisherV1;
+pub use control_runtime_publication::InMemoryControlRuntimeDecisionPublisherV1;
+pub use execution_attempt::ExecutionAttemptErrorV1;
+pub use execution_attempt::ExecutionAttemptPhaseV1;
+pub use execution_attempt::ExecutionAttemptV1;
+pub use execution_attempt::ExecutionRetryDispositionV1;
+pub use execution_attempt::ExecutionTerminalOutcomeV1;
 pub use io::EmbodimentIoError;
 pub use io::SyntheticActuatorReceiptV1;
 pub use io::SyntheticCartIoV1;
@@ -53,6 +105,10 @@ pub use module_runtime::RuntimeModuleRegistryError;
 pub use module_runtime::RuntimeModuleRegistryV1;
 pub use module_runtime::RuntimeModuleStateClassV1;
 pub use module_runtime::RuntimeTopologySnapshotV1;
+pub use ndu_publication::NduPublicationErrorV1;
+pub use ndu_publication::NduPublicationLocalFrontierV1;
+pub use ndu_publication::NduPublicationOwnerV1;
+pub use ndu_publication::NduPublicationPendingBeginV1;
 pub use organ_graph::DataflowTiming;
 pub use organ_graph::FailureDomainV1;
 pub use organ_graph::FallbackTerminal;
@@ -134,16 +190,36 @@ pub use planner_context::ObservedContextV1;
 pub use planner_context::plan_observed_context;
 pub use planner_journal::PlannerJournalEntryV1;
 pub use planner_journal::PlannerJournalError;
+pub use planner_journal::PlannerJournalHeadV1;
 pub use planner_journal::PlannerJournalKindV1;
 pub use planner_journal::PlannerJournalV1;
+pub use planner_journal_store::DurablePlannerJournalError;
+pub use planner_journal_store::DurablePlannerJournalV1;
+pub use planner_journal_store::FilePlannerJournalAnchorV1;
+pub use planner_journal_store::FilePlannerJournalStoreV1;
+pub use planner_journal_store::InMemoryPlannerJournalAnchorV1;
+pub use planner_journal_store::InMemoryPlannerJournalStoreV1;
+pub use planner_journal_store::PlannerJournalAnchorV1;
+pub use planner_journal_store::PlannerJournalStoreError;
+pub use planner_journal_store::PlannerJournalStoreV1;
 pub use planner_ndu::EvaluatedPlanV1;
 pub use planner_ndu::NduPlanningError;
 pub use planner_ndu::NduPlanningInputV1;
 pub use planner_ndu::canonical_ndu_planning_policy_digest;
 pub use planner_ndu::evaluate_prepared_plan_with_ndu;
+pub use scope_lane_wal::ScopeLaneEntryV1;
+pub use scope_lane_wal::ScopeLaneFileWalV1;
+pub use scope_lane_wal::ScopeLaneReceiptV1;
+pub use scope_lane_wal::ScopeLaneWalError;
+pub use scope_lane_wal::ScopeLaneWalV1;
+pub use scope_lane_wal::ScopeOwnerEnvelopeV1;
 pub use timing::FixedPriorityTaskV1;
 pub use timing::TimingError;
 pub use timing::fixed_priority_response_times;
+pub use trusted_clock::ManualTrustedClockV1;
+pub use trusted_clock::SystemTrustedClockV1;
+pub use trusted_clock::TrustedClockError;
+pub use trusted_clock::TrustedClockV1;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -285,3 +361,7 @@ fn digest_state(state: &ControlState, intent: &ControlIntent) -> Digest32 {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "organ_registry_lifecycle_tests.rs"]
+mod organ_registry_lifecycle_tests;

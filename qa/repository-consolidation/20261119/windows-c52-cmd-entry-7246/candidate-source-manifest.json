@@ -1,0 +1,54 @@
+{
+  "status": "LOCAL_REVIEW_CANDIDATE_NOT_PUBLISHED_OR_RUN",
+  "baseline_commit": "73e307cae6537bff831ae6abcc7e8ababedfa8c6",
+  "baseline_tree": "8b39bf5dc82dab876d1df5e6e8c20085b963f9fc",
+  "paths": [
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/cmd_entry_probe.py",
+      "before": null,
+      "after": {
+        "bytes": 12772,
+        "sha256": "bd5f2d801259f9ceda55954c3fa12ddbe8436567fe65fb28ace8a669aedbe6df",
+        "git_blob": "9574a8a5781dad9e6777ea8e5ba9f620ada864e4"
+      }
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/win32_api.py",
+      "before": {
+        "bytes": 26813,
+        "sha256": "9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10",
+        "git_blob": "a0778bba1382d70922cc0bd10f6429ef89eb3557"
+      },
+      "after": {
+        "bytes": 27193,
+        "sha256": "8ab21a803609960daf9e2769179b1250d3cec78b7b8337f6f3ce5fe51e7fce45",
+        "git_blob": "5ad0173094ae74bc4433f99b6547d074a6f27c24"
+      }
+    },
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "before": {
+        "bytes": 54143,
+        "sha256": "5b0b0b99851bd3a4799838e531dd30a5782370c8a269bd418f2259bacd0e32c6",
+        "git_blob": "fde62cb0cfbeb80ddc4472c876766f7d56e2ff44"
+      },
+      "after": {
+        "bytes": 58833,
+        "sha256": "1208ea5ab9f68c50e595d34aab26bc9faabefaaef9336b3f13fc3e861381d957",
+        "git_blob": "e9f8ac0216a7df06e12f467faae59c749d575bbe"
+      }
+    }
+  ],
+  "unchanged_original_probe": {
+    "path": ".github/scripts/windows-appcontainer-probe/probe.py",
+    "bytes": 26080,
+    "sha256": "d73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192",
+    "git_blob": "c34050ec7a05b461ffd181986cf572b602eefb11"
+  },
+  "patch": {
+    "path": "candidate.patch",
+    "bytes": 22308,
+    "sha256": "204997b2db55999bcb3fc487979ae79d1115fd6f789c3ad69f9103f342861bb3",
+    "git_blob": "02f61fc3480295848eae6118a54a4171336fd79a"
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "schema": "mem15-reader-off-withhold-observed-body-comparison-v1",
+  "source_commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+  "source_tree": "fe00b2618f39e942ec6b1a8af2d63ec585e5f892",
+  "source_result_sha256": "e67f4e4220995704db06f27d86743021e4fa4308b6daf4cb6b150312fcffa6ca",
+  "left": {
+    "arm": "reader-off",
+    "path": "reader-off/adapter/http-0001/body.bin",
+    "bytes": 26576,
+    "sha256": "0caa5271bfbda34be46cfd243ef4c782e6d5440c384a3c32312ef0e8b46b4e84"
+  },
+  "right": {
+    "arm": "withhold",
+    "path": "withhold/adapter/http-0001/body.bin",
+    "bytes": 26576,
+    "sha256": "1d2040122f59fc4068d0b17b3193d22f329d4b38e384e047575cbfe27bce3089"
+  },
+  "raw_equal": false,
+  "parsed_equal": false,
+  "no_normalization_or_field_removal": true,
+  "differences": [
+    {
+      "path": "$.client_metadata.root_turn_id",
+      "left": "01a1cf46-236b-77e0-98cc-2c957ad70b47",
+      "right": "01a1cf46-68f8-7017-80a5-2ec0868e7d83"
+    },
+    {
+      "path": "$.client_metadata.session_id",
+      "left": "01a1cf46-2343-73dc-b2f8-de76028ab452",
+      "right": "01a1cf46-68c6-7239-9e21-2ca839424800"
+    },
+    {
+      "path": "$.client_metadata.thread_id",
+      "left": "01a1cf46-2343-73dc-b2f8-de76028ab452",
+      "right": "01a1cf46-68c6-7239-9e21-2ca839424800"
+    },
+    {
+      "path": "$.client_metadata.turn_id",
+      "left": "01a1cf46-236b-77e0-98cc-2c957ad70b47",
+      "right": "01a1cf46-68f8-7017-80a5-2ec0868e7d83"
+    },
+    {
+      "path": "$.client_metadata.x-codex-installation-id",
+      "left": "8169d19f-dc98-4ed5-a2e8-a0ea03bfe4e5",
+      "right": "82d3e9ce-6267-4faf-af9e-2ce7a69c7b26"
+    },
+    {
+      "path": "$.client_metadata.x-codex-turn-metadata",
+      "left": "{\"installation_id\":\"8169d19f-dc98-4ed5-a2e8-a0ea03bfe4e5\",\"session_id\":\"01a1cf46-2343-73dc-b2f8-de76028ab452\",\"thread_id\":\"01a1cf46-2343-73dc-b2f8-de76028ab452\",\"agent_name\":\"/root\",\"turn_id\":\"01a1cf46-236b-77e0-98cc-2c957ad70b47\",\"window_id\":\"01a1cf46-2343-73dc-b2f8-de76028ab452:0\",\"context_window_id\":\"01a1cf46-2346-700c-aa8f-b9ab824e021e\",\"request_kind\":\"turn\",\"root_turn_id\":\"01a1cf46-236b-77e0-98cc-2c957ad70b47\",\"sandbox\":\"seccomp\",\"sandbox_mode\":\"read-only\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":false,\"node_repl_disabled\":false,\"turn_started_at_unix_ms\":1794478842734}",
+      "right": "{\"installation_id\":\"82d3e9ce-6267-4faf-af9e-2ce7a69c7b26\",\"session_id\":\"01a1cf46-68c6-7239-9e21-2ca839424800\",\"thread_id\":\"01a1cf46-68c6-7239-9e21-2ca839424800\",\"agent_name\":\"/root\",\"turn_id\":\"01a1cf46-68f8-7017-80a5-2ec0868e7d83\",\"window_id\":\"01a1cf46-68c6-7239-9e21-2ca839424800:0\",\"context_window_id\":\"01a1cf46-68c8-75db-9aa6-492feda8646a\",\"request_kind\":\"turn\",\"root_turn_id\":\"01a1cf46-68f8-7017-80a5-2ec0868e7d83\",\"sandbox\":\"seccomp\",\"sandbox_mode\":\"read-only\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":false,\"node_repl_disabled\":false,\"turn_started_at_unix_ms\":1794478860539}"
+    },
+    {
+      "path": "$.client_metadata.x-codex-window-id",
+      "left": "01a1cf46-2343-73dc-b2f8-de76028ab452:0",
+      "right": "01a1cf46-68c6-7239-9e21-2ca839424800:0"
+    },
+    {
+      "path": "$.input[0].content[0].text",
+      "left": "<skills_instructions>\n## Skills\nA skill is a set of instructions provided through a `SKILL.md` source. Below is the list of skills that can be used. Each entry includes a name, description, and source locator. `file` locators are on the host filesystem, `executor package` locators are owned by their execution environment, `orchestrator package` locators are opaque package identifiers, and `custom resource` locators use their provider's access mechanism.\n### Available skills\n- imagegen: Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas. (file: /tmp/.tmpibWvph/fleet/agents/00000000-0000-4000-8000-00000000c062/home/skills/.system/imagegen/SKILL.md)\n- openai-docs: Use for Codex models/pricing, scheduled tasks, skills, settings, setup, troubleshooting, customization, automations, and self-knowledge—including 'you,' 'your,' 'this app,' or 'this coding agent' when they refer to Codex—and for OpenAI APIs/products and ChatGPT Work. Also use for model choice/migration, prompting, SDKs, Responses, Realtime, agents, evals, and Chat/Work/Codex comparisons. Do not use for generic app/software tasks that merely mention Codex. (file: /tmp/.tmpibWvph/fleet/agents/00000000-0000-4000-8000-00000000c062/home/skills/.system/openai-docs/SKILL.md)\n- plugin-creator: Create and scaffold plugin directories for Codex with a required `.codex-plugin/plugin.json`, optional plugin folders/files, valid manifest defaults, and personal-marketplace entries by default. Use when Codex needs to create a new personal plugin, add optional plugin structure, generate or update marketplace entries for plugin ordering and availability metadata, or update an existing local plugin during development with the CLI-driven cachebuster and reinstall flow. (file: /tmp/.tmpibWvph/fleet/agents/00000000-0000-4000-8000-00000000c062/home/skills/.system/plugin-creator/SKILL.md)\n- skill-creator: Create or update a Codex skill with appropriately scoped instructions and any needed supporting resources. (file: /tmp/.tmpibWvph/fleet/agents/00000000-0000-4000-8000-00000000c062/home/skills/.system/skill-creator/SKILL.md)\n- skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: /tmp/.tmpibWvph/fleet/agents/00000000-0000-4000-8000-00000000c062/home/skills/.system/skill-installer/SKILL.md)\n</skills_instructions>",
+      "right": "<skills_instructions>\n## Skills\nA skill is a set of instructions provided through a `SKILL.md` source. Below is the list of skills that can be used. Each entry includes a name, description, and source locator. `file` locators are on the host filesystem, `executor package` locators are owned by their execution environment, `orchestrator package` locators are opaque package identifiers, and `custom resource` locators use their provider's access mechanism.\n### Available skills\n- imagegen: Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas. (file: /tmp/.tmpAPTu3X/fleet/agents/00000000-0000-4000-8000-00000000c062/home/skills/.system/imagegen/SKILL.md)\n- openai-docs: Use for Codex models/pricing, scheduled tasks, skills, settings, setup, troubleshooting, customization, automations, and self-knowledge—including 'you,' 'your,' 'this app,' or 'this coding agent' when they refer to Codex—and for OpenAI APIs/products and ChatGPT Work. Also use for model choice/migration, prompting, SDKs, Responses, Realtime, agents, evals, and Chat/Work/Codex comparisons. Do not use for generic app/software tasks that merely mention Codex. (file: /tmp/.tmpAPTu3X/fleet/agents/00000000-0000-4000-8000-00000000c062/home/skills/.system/openai-docs/SKILL.md)\n- plugin-creator: Create and scaffold plugin directories for Codex with a required `.codex-plugin/plugin.json`, optional plugin folders/files, valid manifest defaults, and personal-marketplace entries by default. Use when Codex needs to create a new personal plugin, add optional plugin structure, generate or update marketplace entries for plugin ordering and availability metadata, or update an existing local plugin during development with the CLI-driven cachebuster and reinstall flow. (file: /tmp/.tmpAPTu3X/fleet/agents/00000000-0000-4000-8000-00000000c062/home/skills/.system/plugin-creator/SKILL.md)\n- skill-creator: Create or update a Codex skill with appropriately scoped instructions and any needed supporting resources. (file: /tmp/.tmpAPTu3X/fleet/agents/00000000-0000-4000-8000-00000000c062/home/skills/.system/skill-creator/SKILL.md)\n- skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: /tmp/.tmpAPTu3X/fleet/agents/00000000-0000-4000-8000-00000000c062/home/skills/.system/skill-installer/SKILL.md)\n</skills_instructions>"
+    },
+    {
+      "path": "$.input[0].id",
+      "left": "msg_01a1cf46-2374-708b-bf4f-77bcd99493d1",
+      "right": "msg_01a1cf46-6903-769b-8ac1-0cf9c022fcd2"
+    },
+    {
+      "path": "$.input[1].id",
+      "left": "msg_01a1cf46-2374-708b-bf4f-77bd8b2aa3bb",
+      "right": "msg_01a1cf46-6903-769b-8ac1-0cfabdbe0d5d"
+    },
+    {
+      "path": "$.input[2].id",
+      "left": "msg_01a1cf46-238e-75f7-8bb4-facd94cf2d77",
+      "right": "msg_01a1cf46-691d-71ec-b364-31a527ac4ffb"
+    },
+    {
+      "path": "$.prompt_cache_key",
+      "left": "01a1cf46-2343-73dc-b2f8-de76028ab452",
+      "right": "01a1cf46-68c6-7239-9e21-2ca839424800"
+    }
+  ],
+  "token_preflight_entries": [
+    {
+      "arm": "attach",
+      "budget_admitted": false,
+      "execution_passed": true,
+      "input_limit": 1024,
+      "model_generation_count": 0,
+      "original_output": {
+        "bytes": 76400,
+        "sha256": "26159508d5cf382555bd1cebd4da9da84e1fd48e784fdd3f495734ec7e1f7cce"
+      },
+      "prompt_tokens": 7565,
+      "request": {
+        "bytes": 28527,
+        "sha256": "121dc2b444656b3707f366f8455b52bcf91ae8d9418062891178507496cf8b0d"
+      },
+      "status": "REJECTED_INPUT_TOKEN_BUDGET",
+      "worker": {
+        "bytes": 1376,
+        "sha256": "97a2a0a2a63a5e15cbbc41a95fb1d8adbfbb6abdc8853fb694dfd2d9131a8a4e"
+      }
+    },
+    {
+      "arm": "reader-off",
+      "budget_admitted": false,
+      "execution_passed": true,
+      "input_limit": 1024,
+      "model_generation_count": 0,
+      "original_output": {
+        "bytes": 72216,
+        "sha256": "486f9c3e59fe198f9d532c54fd03b215a15f221c80555aea64cc3f00f5dc7c30"
+      },
+      "prompt_tokens": 7007,
+      "request": {
+        "bytes": 27544,
+        "sha256": "3c01b1ae74cb5b7bf1e5fd05ff9fa41a92a88124cca94514b5018f858fbb2453"
+      },
+      "status": "REJECTED_INPUT_TOKEN_BUDGET",
+      "worker": {
+        "bytes": 1376,
+        "sha256": "97a2a0a2a63a5e15cbbc41a95fb1d8adbfbb6abdc8853fb694dfd2d9131a8a4e"
+      }
+    },
+    {
+      "arm": "withhold",
+      "budget_admitted": false,
+      "execution_passed": true,
+      "input_limit": 1024,
+      "model_generation_count": 0,
+      "original_output": {
+        "bytes": 72284,
+        "sha256": "640ecb259ad68847ddca7ea32541ceeb0ebebfd7fa37ab52411ba3a871d0d798"
+      },
+      "prompt_tokens": 7029,
+      "request": {
+        "bytes": 27544,
+        "sha256": "e9a79b8a4f7fb979a90b27224d0c52cecc67abf66cb7d1125bc8e429bb4808a0"
+      },
+      "status": "REJECTED_INPUT_TOKEN_BUDGET",
+      "worker": {
+        "bytes": 1376,
+        "sha256": "97a2a0a2a63a5e15cbbc41a95fb1d8adbfbb6abdc8853fb694dfd2d9131a8a4e"
+      }
+    },
+    {
+      "arm": "tombstone",
+      "status": "NOT_EXECUTED_NO_MAPPED_REQUEST"
+    }
+  ],
+  "interpretation": "The actual full request bodies differ. All differences are retained, including new session/message identifiers and fixture temporary paths. The complete JSON is mapped to a single user message, so these differences also enter the frozen tokenizer. This comparison is observational and does not establish full memory-off or matched model-input token counts."
+}

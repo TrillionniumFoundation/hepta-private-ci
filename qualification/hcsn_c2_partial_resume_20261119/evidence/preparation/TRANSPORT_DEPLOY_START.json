@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-c\",\n      \"import pathlib,sys,json,gzip,base64,hashlib,os\\nfiles=json.loads(gzip.decompress(base64.b64decode(sys.stdin.buffer.read(),validate=True)))\\nexpected={'archive_parts.py':'5fddf33349afce80ea83eb27357cacdbed53ca420b5900f6142cc93d11d70134','upload_archive_parts.py':'2b11f080cb54e78d3eacd822deb0f7b311efc60e5a2248ff97d2593f386dac7f'}\\nif set(files)!=set(expected):raise ValueError('helper roster')\\nroot=pathlib.Path('/Users/qianqi/hepta-c2-partial-resume-evidence-20261119-d741')\\nroot.mkdir(exist_ok=False)\\nfor name,value in files.items():\\n b=value.encode()\\n if hashlib.sha256(b).hexdigest()!=expected[name]:raise ValueError('helper identity')\\n with (root/name).open('xb') as s:s.write(b);s.flush();os.fsync(s.fileno())\\nprint(json.dumps({'root':str(root),'files':expected,'model_calls':0,'optimizer_calls':0},sort_keys=True))\"\n    ],\n    \"created_unix_ms\": 1795085448706,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"main\",\n    \"id\": \"1a1f36e3602-ffbe-d48\",\n    \"idempotency_key\": \"hcsn-c2-partial-resume-artifact-helpers-20261119-d741-001\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1f36e3602-ffbe-d48\",\n    \"request_digest\": \"f9ce2361d4a5ebf730a84eee5a671aadbc0ff0ebd113c8acf7fed5ad6e4ea3e4\",\n    \"request_fingerprint\": 18000363663732894711,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1f36e3602-ffbe-d48\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 73241,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1f36e3602-ffbe-d48\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

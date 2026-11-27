@@ -1,0 +1,15 @@
+{
+  "args": [
+    "-"
+  ],
+  "cpu_quota_percent": 100,
+  "cwd": "/home/qian-qi/hepta-rust-protection-20261120-0cee",
+  "executable": "/usr/bin/python3",
+  "host": "rog",
+  "idempotency_key": "hepta-rust-protection-0cee-hia565-refresh-20261120-v1",
+  "memory_max_bytes": 1073741824,
+  "nice": 10,
+  "source_sha256": "fa234c000606031b2013e5569fff41ad66a46ea92ae2544f67c704981f064661",
+  "stdin_construction": "AUDIT_SOURCE = json.dumps(refresh-audit.py UTF-8 text) + newline; exec(compile(AUDIT_SOURCE, '<hia565-refresh>', 'exec'))",
+  "timeout_seconds": 180
+}

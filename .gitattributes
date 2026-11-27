@@ -2,7 +2,72 @@ codex-rs/app-server-protocol/schema/** linguist-generated
 codex-rs/hooks/schema/generated/** linguist-generated
 # The embedded oracle is hashed byte-for-byte, including its final LF.
 codex-rs/hepta-shadow-qualification/fixtures/live_product_oracle_v2_2f704.json text eol=lf
+# The Perception cross-language fixture has a canonical byte digest.
+codex-rs/hepta-neuron/tests/fixtures/perception-bytes-v1.json text eol=lf
 # SQLx checksums and generated projection comparisons use the exact stored bytes.
+codex-rs/hepta-neuron/tests/fixtures/perception-bytes-v1.json text eol=lf
 codex-rs/hepta-evidence/migrations/*.sql text eol=lf
 codex-rs/hepta-memory/migrations/*.sql text eol=lf
 codex-rs/hepta-supervisor/fixtures/robrix-control-v2/** text eol=lf
+# Native acquisition qualification binds these production/patch bytes exactly.
+codex-rs/utils/path-utils/src/private_state_windows_directory.rs text eol=lf
+.github/fixtures/windows-private-state-acquisition/*.patch text eol=lf
+
+# Preserve original failed transport evidence bytes on every checkout.
+evidence/actual-elf-transport-20261105-93bfc-01/archives/** -text linguist-generated
+evidence/actual-elf-transport-20261105-93bfc-01/transport-index.json -text linguist-generated
+
+# Preserve the reviewed historical workflow byte for byte.
+library-recovery/runtime-codex-target-qualification-20261113/original-workflow.yml -text
+
+# Preserve two archived historical PR replay workflows byte for byte.
+archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/hepta-lifecycle-policy-qualification.yml -text
+archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/hepta-scoped-archive-qualification.yml -text
+
+# Retained PRED hosted logs are pinned to their original bytes, including line endings.
+qualification/pred-history-study-20261112-5028/hosted-130884857137.log -text
+qualification/pred-history-study-20261112-5028/hosted-130884857440.log -text
+qualification/pred-history-study-20261112-5028/hosted-130884857466.log -text
+
+# These recorded CSV exports use CRLF at their original checkout and archive paths.
+AUDIT/2026-10-20-agent-continuation/pr_inventory/disk_candidates.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/asymmetric_2d/GROUPS.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/asymmetric_2d/SCORES.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/asymmetric_2d/WEIGHTS_HEX.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/direct_interval/GROUPS.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/direct_interval/SCORES.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/direct_interval/WEIGHTS_HEX.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/matrix_free/MEAN_COSTS.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/matrix_free/SUMMARY.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/nonproduct_symmetry/GROUPS.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/nonproduct_symmetry/SCORES.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/nonproduct_symmetry/WEIGHTS_HEX.csv text eol=crlf
+codex-rs/hepta-ndu/research/native_stem_abcd/refinement/WEIGHT_INDEX.csv text eol=crlf
+experiments/hcsn_distributional_v2/results/content_analysis002/CORE_TABLE.csv text eol=crlf
+experiments/hcsn_distributional_v2/results/content_analysis_supplement001/CORE_TABLE.csv text eol=crlf
+experiments/hcsn_free_boundary_v1/results/equal_updates_core002/COMPUTE.csv text eol=crlf
+experiments/hcsn_free_boundary_v1/results/equal_updates_core002/TABLE.csv text eol=crlf
+experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis002/COMPUTE.csv text eol=crlf
+experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis002/TABLE.csv text eol=crlf
+experiments/hcsn_free_boundary_v1/results/study001/analysis001/CORE_TABLE.csv text eol=crlf
+experiments/hcsn_free_boundary_v1/results/study001/analysis001/MECHANISM_TABLE.csv text eol=crlf
+experiments/hcsn_free_boundary_v1/results/study001/analysis001/MODEL_COMPUTE.csv text eol=crlf
+experiments/hcsn_free_boundary_v1/results/study001/analysis001/SECONDARY_COVERAGE.csv text eol=crlf
+qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-artifact-inventory.csv text eol=crlf
+qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-feature-forwards.csv text eol=crlf
+qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-feature-stages.csv text eol=crlf
+qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-map-state-by-head.csv text eol=crlf
+qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-map-summary.csv text eol=crlf
+qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-reference-by-anchor.csv text eol=crlf
+qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-run-components.csv text eol=crlf
+qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/mechanism-summary.csv text eol=crlf
+qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/per-step-response-mae.csv text eol=crlf
+qualification/cell-causal-abcde-20261108/B_CONTRASTS.csv text eol=crlf
+qualification/cell-causal-abcde-20261108/B_LOCKED_COMPARATOR.csv text eol=crlf
+qualification/cell-causal-abcde-20261108/B_PROFILES.csv text eol=crlf
+qualification/joint-generation/runs/codex-cloud-core-c1-training-receipt-diagnostic/raw-batch-samples.csv text eol=crlf
+qualification/joint-generation/runs/codex-cloud-core-c1-training-receipt-diagnostic/raw-repeat-samples.csv text eol=crlf
+qualification/joint-generation/runs/codex-cloud-core-c1-training-receipt-diagnostic/raw-row-samples.csv text eol=crlf
+qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/paired-row.csv text eol=crlf
+qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/paired-source.csv text eol=crlf
+qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/paired-source.csv.partial-v1 text eol=crlf

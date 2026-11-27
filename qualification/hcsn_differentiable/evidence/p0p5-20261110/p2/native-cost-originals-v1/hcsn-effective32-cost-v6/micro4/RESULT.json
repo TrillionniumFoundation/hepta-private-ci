@@ -1,0 +1,394 @@
+{
+  "artifacts": {
+    "after.pt": "aae0135296036a1004da0080359b81c243668fc5e4ef83121a83e59085a6a689",
+    "events.jsonl": "29768e160bff49ecc4a3eeb73cd3d423ef3a0deddfee51c5e20bbdd4bb5b8ce5",
+    "initial.pt": "db57e4c71d712c9a7cb89a782da8cc2dd4f635f4851dedd5d63c702a8ca0a9d8",
+    "plan.json": "a44639fe9d742ac87daa59c1c9ae2c8b7c27d6f328fcee6b8e213a73a844cbc6",
+    "training-domain.jsonl": "b8d12fd12720886b6642fa47f5cde48fbbc23432243128b4a8c802694c6ea090"
+  },
+  "common_weights_unchanged": true,
+  "complete_training_epochs": 0,
+  "confirmation_access": false,
+  "cost_geometry": {
+    "cache_frozen_tables": true,
+    "content_coefficients_per_sample": 4368,
+    "grid": {
+      "active_cells": 256,
+      "endpoint": 4.8,
+      "initial_log_std": 0.08,
+      "phase_cells": 16,
+      "quadrature_order": 32,
+      "refractory": 0.2,
+      "tail_rate": 1.0
+    },
+    "layer_count": 1,
+    "physics_trainable": false,
+    "probability_coefficients_per_sample": 273,
+    "state_payload_fp64_bytes_per_sample": 37128,
+    "state_payload_scope": "probability and content only; excludes clocks, snapshots, autograd and temporary work",
+    "transition_matrix_coefficients_per_distinct_gap": 74529
+  },
+  "cpu_seconds": 95.464678391,
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "energy_joules": null,
+  "episode_ids": [
+    "A01-0",
+    "A01-256",
+    "A01-512",
+    "A01-768",
+    "A01-1024",
+    "A01-1280",
+    "A01-1536",
+    "A01-1792",
+    "A01-2048",
+    "A01-2304",
+    "A01-2560",
+    "A01-2816",
+    "A01-3072",
+    "A01-3328",
+    "A01-3584",
+    "A01-3840",
+    "A01-4096",
+    "A01-4352",
+    "A01-4608",
+    "A01-4864",
+    "A01-5120",
+    "A01-5376",
+    "A01-5632",
+    "A02-0",
+    "A02-256",
+    "A02-512",
+    "A02-768",
+    "A02-1024",
+    "A02-1280",
+    "A02-1536",
+    "A02-1792",
+    "A02-2048"
+  ],
+  "events": 8134,
+  "formal_fits_started": 0,
+  "frozen_table_cache": [
+    {
+      "build_seconds": 40.023175853304565,
+      "bytes_scope": "unique table tensor storages; excludes Python keys and allocator overhead",
+      "checkpoint_load_clears_cache": true,
+      "clears": 0,
+      "cold_start_per_fit": true,
+      "entries": 64,
+      "evictions": 0,
+      "hits": 14774,
+      "max_entries": 512,
+      "misses": 64,
+      "mode": "exact_frozen_table_memoization",
+      "peak_table_tensor_bytes": 38997504,
+      "physical_operator_qualification_extended": false,
+      "resident_table_tensor_bytes": 38997504
+    }
+  ],
+  "grid": {
+    "active_cells": 256,
+    "endpoint": 4.8,
+    "initial_log_std": 0.08,
+    "phase_cells": 16,
+    "quadrature_order": 32,
+    "refractory": 0.2,
+    "tail_rate": 1.0
+  },
+  "model": {
+    "disconnected_parameters": null,
+    "frozen_real_scalars": 607,
+    "parameters": [
+      {
+        "name": "frontend.0.weight",
+        "real_scalars": 400,
+        "shape": [
+          16,
+          25
+        ],
+        "trainable": false
+      },
+      {
+        "name": "frontend.0.bias",
+        "real_scalars": 16,
+        "shape": [
+          16
+        ],
+        "trainable": false
+      },
+      {
+        "name": "head.weight",
+        "real_scalars": 176,
+        "shape": [
+          11,
+          16
+        ],
+        "trainable": false
+      },
+      {
+        "name": "head.bias",
+        "real_scalars": 11,
+        "shape": [
+          11
+        ],
+        "trainable": false
+      },
+      {
+        "name": "core.network.layers.0.state_embedding",
+        "real_scalars": 4368,
+        "shape": [
+          273,
+          16
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.physics.raw_mu",
+        "real_scalars": 1,
+        "shape": [],
+        "trainable": false
+      },
+      {
+        "name": "core.network.layers.0.physics.raw_sigma",
+        "real_scalars": 1,
+        "shape": [],
+        "trainable": false
+      },
+      {
+        "name": "core.network.layers.0.physics.raw_log_boundary",
+        "real_scalars": 1,
+        "shape": [],
+        "trainable": false
+      },
+      {
+        "name": "core.network.layers.0.physics.raw_absolute_reset",
+        "real_scalars": 1,
+        "shape": [],
+        "trainable": false
+      },
+      {
+        "name": "core.network.layers.0.likelihood.weight",
+        "real_scalars": 5733,
+        "shape": [
+          273,
+          21
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.likelihood.bias",
+        "real_scalars": 273,
+        "shape": [
+          273
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.write_gate.weight",
+        "real_scalars": 5733,
+        "shape": [
+          273,
+          21
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.write_gate.bias",
+        "real_scalars": 273,
+        "shape": [
+          273
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.content_proposal.weight",
+        "real_scalars": 336,
+        "shape": [
+          16,
+          21
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.content_proposal.bias",
+        "real_scalars": 16,
+        "shape": [
+          16
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.readout.weight",
+        "real_scalars": 336,
+        "shape": [
+          16,
+          21
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.readout.bias",
+        "real_scalars": 16,
+        "shape": [
+          16
+        ],
+        "trainable": true
+      },
+      {
+        "name": "temporal_adapter.weight",
+        "real_scalars": 256,
+        "shape": [
+          16,
+          16
+        ],
+        "trainable": true
+      },
+      {
+        "name": "temporal_adapter.bias",
+        "real_scalars": 16,
+        "shape": [
+          16
+        ],
+        "trainable": true
+      }
+    ],
+    "scalar_identifiability_qualified": false,
+    "scope": "unique registered parameters; complex entries count as two real scalars",
+    "trainable_real_scalars": 17356
+  },
+  "numerical_admission": "HOLD",
+  "peak_rss_bytes": 2306850816,
+  "plan_sha256": "a44639fe9d742ac87daa59c1c9ae2c8b7c27d6f328fcee6b8e213a73a844cbc6",
+  "schema": "hcsn-real-window-cost-probe-v1",
+  "scientific_admission": "HOLD",
+  "scope": "first ABC windows repeated for bounded cost and trained-posterior observation",
+  "source_after": {
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/audit_training.py": "2a745a7821d65e3b33c0d81a7b383fe2d1924fa8eedc0759fc71c477a835200d",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/capacity.py": "f20dffe0929972ea2f7ca19430be3e86f36c8b258fedcd84ecd89e36c395ec3d",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/episodes.py": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/models.py": "59ddde881490a1c99572e645f9b6ef31b27b8164175934877de2a87430e8d877",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/test_capacity.py": "6e09cb95672c961f2804a91624d923d6db6179b2e585aa50ebdf22722806fe6c",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/test_episodes.py": "dc1dc47e854c86c833b6fa497ec29d9642808b307b2a8b3a3736acdaaeeec4c2",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/train_development.py": "4d081f50a9f11c452990c76adab29610c71d20af8c613fa09ef531c32c8b96e0",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/campaign.py": "6d2064bc44d45633eaefae9224fc27ce48ee996bbf9aa83c1ed0e10d39028078",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/cores.py": "44a17c4d6f34442289095d0d27cf1337f9f88523ab6ba2bb996fd34b7c19140f",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/frozen_tables.py": "bd3d938014deefaab2b79b6317145573539d3be9a3210b07632de7619b6955e6",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/hcsn_study_support.py": "5b778a9eeb01dbf8fcff897966ddebe0e2511d14284a5909ac4e4ecfd61b121f",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/profile_hcsn.py": "1797c0ff2830c9c3177b80b64be1100ab2dd70c37e131a04eff13e9cecb574e3",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/test_cores.py": "497f13fd86fe5f5213d9acf7e06fd7e0df38b61063fe71c3a285831c91c873c4",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/train.py": "56994214e579a4c0a3827c9d9d261c7d913c157045b5204ca70ca43ce453f329",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/evidence_chain.py": "a20735bfe660028797a1ac466a6e91c2d9c8362d6308f854183440c06b4d9dbb",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/semantics.py": "b90883ecfc4170227864a7dd0c9def70a37d100096b248435f87fae785534119",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/training_domain.py": "64866abc5e4d4fbbf45469fbd7e4514e5d7dc6432d5c1e2f1d778cdc37836ce1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/training_domain_audit.py": "0e887a7ca32ef08628b49a86c08bbfad9b7fd96ec50aadf85d5e0a8dea4c7960",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/training_domain_finite.py": "3d2079db1158fd4e89fc52cbac2121a94be7ce85374cc546565c2e91991986e5",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+  },
+  "source_before": {
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/audit_training.py": "2a745a7821d65e3b33c0d81a7b383fe2d1924fa8eedc0759fc71c477a835200d",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/capacity.py": "f20dffe0929972ea2f7ca19430be3e86f36c8b258fedcd84ecd89e36c395ec3d",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/episodes.py": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/models.py": "59ddde881490a1c99572e645f9b6ef31b27b8164175934877de2a87430e8d877",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/test_capacity.py": "6e09cb95672c961f2804a91624d923d6db6179b2e585aa50ebdf22722806fe6c",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/test_episodes.py": "dc1dc47e854c86c833b6fa497ec29d9642808b307b2a8b3a3736acdaaeeec4c2",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v2/train_development.py": "4d081f50a9f11c452990c76adab29610c71d20af8c613fa09ef531c32c8b96e0",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/campaign.py": "6d2064bc44d45633eaefae9224fc27ce48ee996bbf9aa83c1ed0e10d39028078",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/cores.py": "44a17c4d6f34442289095d0d27cf1337f9f88523ab6ba2bb996fd34b7c19140f",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/frozen_tables.py": "bd3d938014deefaab2b79b6317145573539d3be9a3210b07632de7619b6955e6",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/hcsn_study_support.py": "5b778a9eeb01dbf8fcff897966ddebe0e2511d14284a5909ac4e4ecfd61b121f",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/profile_hcsn.py": "1797c0ff2830c9c3177b80b64be1100ab2dd70c37e131a04eff13e9cecb574e3",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/test_cores.py": "497f13fd86fe5f5213d9acf7e06fd7e0df38b61063fe71c3a285831c91c873c4",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/train.py": "56994214e579a4c0a3827c9d9d261c7d913c157045b5204ca70ca43ce453f329",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/evidence_chain.py": "a20735bfe660028797a1ac466a6e91c2d9c8362d6308f854183440c06b4d9dbb",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/semantics.py": "b90883ecfc4170227864a7dd0c9def70a37d100096b248435f87fae785534119",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/training_domain.py": "64866abc5e4d4fbbf45469fbd7e4514e5d7dc6432d5c1e2f1d778cdc37836ce1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/training_domain_audit.py": "0e887a7ca32ef08628b49a86c08bbfad9b7fd96ec50aadf85d5e0a8dea4c7960",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/training_domain_finite.py": "3d2079db1158fd4e89fc52cbac2121a94be7ce85374cc546565c2e91991986e5",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+  },
+  "source_unchanged": true,
+  "status": "completed_cost_probe",
+  "steps": [
+    {
+      "backward_seconds": 9.609816859010607,
+      "events": 8134,
+      "forward_seconds": 57.93146813753992,
+      "gradient_norm": 0.23801322590844523,
+      "last_microbatch_diagnostics": {
+        "advance_calls": 256,
+        "bptt": "full",
+        "event_semantics": "conditional expected interval counts, not sampled spikes",
+        "layer_count": 1,
+        "maximum_mass_residual": 4.440892098500626e-16,
+        "maximum_negative_probability": 0.0,
+        "minimum_observation_evidence": 0.9897285265916103,
+        "numerical_admission": "development_only_unqualified",
+        "sequence_position": 256,
+        "truncate_every": null,
+        "truncation_unit": "global shared input positions, including padding"
+      },
+      "loss": 2.392561748103127,
+      "micro_forward_calls": 8,
+      "step": 0,
+      "step_seconds": 67.69824328110553
+    },
+    {
+      "backward_seconds": 9.514560556970537,
+      "events": 8134,
+      "forward_seconds": 15.539891458349302,
+      "gradient_norm": 0.22750669929340578,
+      "last_microbatch_diagnostics": {
+        "advance_calls": 256,
+        "bptt": "full",
+        "event_semantics": "conditional expected interval counts, not sampled spikes",
+        "layer_count": 1,
+        "maximum_mass_residual": 4.440892098500626e-16,
+        "maximum_negative_probability": 0.0,
+        "minimum_observation_evidence": 0.9865716508713692,
+        "numerical_admission": "development_only_unqualified",
+        "sequence_position": 256,
+        "truncate_every": null,
+        "truncation_unit": "global shared input positions, including padding"
+      },
+      "loss": 2.3779197510717376,
+      "micro_forward_calls": 8,
+      "step": 1,
+      "step_seconds": 25.227311251917854
+    }
+  ],
+  "training_adequacy_established": false,
+  "wall_seconds": 95.4864314198494
+}

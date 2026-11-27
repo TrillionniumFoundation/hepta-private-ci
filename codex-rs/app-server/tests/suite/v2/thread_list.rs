@@ -9,8 +9,6 @@ use app_test_support::create_mock_responses_server_repeating_assistant;
 use app_test_support::create_mock_responses_server_sequence;
 use app_test_support::rollout_path;
 use app_test_support::test_absolute_path;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::GitInfo as ApiGitInfo;
 use codex_app_server_protocol::JSONRPCError;
@@ -200,8 +198,11 @@ fn timestamp_at(
 
 #[allow(dead_code)]
 fn set_rollout_mtime(path: &Path, updated_at_rfc3339: &str) -> Result<()> {
-    let parsed = DateTime::parse_from_rfc3339(updated_at_rfc3339)?.with_timezone(&Utc);
-    let times = FileTimes::new().set_modified(parsed.into());
+    let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(updated_at_rfc3339)?;
+    let modified = parsed.to_system_time().ok_or_else(|| {
+        anyhow::anyhow!("rollout timestamp is outside the platform file-time range")
+    })?;
+    let times = FileTimes::new().set_modified(modified);
     OpenOptions::new()
         .append(true)
         .open(path)?
@@ -482,7 +483,8 @@ async fn thread_list_respects_provider_filter() -> Result<()> {
     let thread = &data[0];
     assert_eq!(thread.preview, "X");
     assert_eq!(thread.model_provider, "other_provider");
-    let expected_ts = chrono::DateTime::parse_from_rfc3339("2025-01-02T11:00:00Z")?.timestamp();
+    let expected_ts =
+        codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-02T11:00:00Z")?.timestamp();
     assert_eq!(thread.created_at, expected_ts);
     assert_eq!(thread.updated_at, expected_ts);
     assert_eq!(thread.cwd, test_absolute_path("/"));
@@ -1068,7 +1070,7 @@ async fn thread_list_relation_filters_read_spawn_graph_from_state_db() -> Result
             "mock_provider",
         ),
     ] {
-        let created_at = DateTime::parse_from_rfc3339(created_at)?.with_timezone(&Utc);
+        let created_at = codex_utils_time::Timestamp::parse_from_rfc3339(created_at)?;
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             codex_home.path().join(format!("{thread_id}.jsonl")),
@@ -2095,7 +2097,11 @@ async fn thread_list_sort_recency_at_uses_state_db_order_with_provider_filter() 
     state_db
         .touch_thread_recency_at(
             ThreadId::from_string(&id_new)?,
-            DateTime::<Utc>::from_timestamp(1_800_000_000, 0).expect("timestamp"),
+            codex_utils_time::Timestamp::from_timestamp(
+                /*seconds*/ 1_800_000_000,
+                /*nanoseconds*/ 0,
+            )
+            .expect("timestamp"),
         )
         .await?;
 
@@ -2445,9 +2451,9 @@ async fn thread_list_updated_at_uses_mtime() -> Result<()> {
         .find(|item| item.id == thread_id)
         .expect("expected thread for created rollout");
     let expected_created =
-        chrono::DateTime::parse_from_rfc3339("2025-02-01T10:00:00Z")?.timestamp();
+        codex_utils_time::Timestamp::parse_from_rfc3339("2025-02-01T10:00:00Z")?.timestamp();
     let expected_updated =
-        chrono::DateTime::parse_from_rfc3339("2025-02-05T00:00:00Z")?.timestamp();
+        codex_utils_time::Timestamp::parse_from_rfc3339("2025-02-05T00:00:00Z")?.timestamp();
     assert_eq!(thread.created_at, expected_created);
     assert_eq!(thread.updated_at, expected_updated);
 

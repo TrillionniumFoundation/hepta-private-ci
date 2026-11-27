@@ -1,0 +1,56 @@
+{
+  "ruff_version": "0.15.13",
+  "just_version": "1.46.0",
+  "tested_asts_unchanged": true,
+  "tests_rerun_after_formatting": false,
+  "records": [
+    {
+      "command": [
+        "/workspace/scratch/40a1a085876c/verify-tools/bin/just",
+        "fmt"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "error: Recipe `fmt` could not be run because just could not find the shell: No such file or directory (os error 2)\n"
+    },
+    {
+      "command": [
+        "/workspace/scratch/40a1a085876c/verify-tools/bin/ruff",
+        "format",
+        "experiments/verification_cell_verify1/prospective.py",
+        "experiments/verification_cell_verify1/test_prospective.py",
+        "experiments/verification_cell_verify1/test_treatment.py"
+      ],
+      "exit_code": 0,
+      "stdout": "2 files reformatted, 1 file left unchanged\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/40a1a085876c/verify-tools/bin/ruff",
+        "check",
+        "--select",
+        "F,E9",
+        "experiments/verification_cell_verify1/prospective.py",
+        "experiments/verification_cell_verify1/test_prospective.py",
+        "experiments/verification_cell_verify1/test_treatment.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/40a1a085876c/verify-tools/bin/ruff",
+        "format",
+        "--check",
+        "experiments/verification_cell_verify1/prospective.py",
+        "experiments/verification_cell_verify1/test_prospective.py",
+        "experiments/verification_cell_verify1/test_treatment.py"
+      ],
+      "exit_code": 0,
+      "stdout": "3 files already formatted\n",
+      "stderr": ""
+    }
+  ]
+}

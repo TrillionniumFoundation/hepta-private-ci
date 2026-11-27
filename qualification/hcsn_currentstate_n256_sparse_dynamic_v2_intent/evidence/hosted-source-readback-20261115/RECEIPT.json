@@ -1,0 +1,60 @@
+{
+  "schema": "hcsn-n256-v3-admission-hosted-readback-v1",
+  "created_at": "2026-11-15T09:55:00Z",
+  "evidence_only": true,
+  "source_head": "a0ea6974e5de5e2f7b11d8f43e6360dacb06a1ea",
+  "source_tree": "fe3ba2604d2d199c24b21a49336de47783d84a6e",
+  "pull_request": 6368,
+  "merge_commit": "30e4fe9991611853aac270fa0fb7e5bd3a36b5ce",
+  "merge_tree": "fe3ba2604d2d199c24b21a49336de47783d84a6e",
+  "run_id": 43701110446,
+  "job_id": 132772237059,
+  "job_conclusion": "success",
+  "artifact_id": 14156252234,
+  "artifact_name": "hcsn-n256-sparse-dynamic-v3-admission-source-30e4fe9991611853aac270fa0fb7e5bd3a36b5ce",
+  "artifact_size_bytes": 2945,
+  "artifact_zip_sha256": "541d513600ed48d9c39e4fecb02acddc1decd3cb3303695d89e823e7d7531918",
+  "artifact_member_count": 7,
+  "member_sha256": {
+    "COUNTS.json": "83f652c43140ec1e40be7c90c053b2891008b4af2eb6f73d322791b571c193ce",
+    "REPORT.json": "a12d24d5f6fa1504f6af9618a6e3cf364ce724c9d229657eac966261a379aade",
+    "TEST_OPT_STDERR.txt": "3cc256a49bd6735c82a9dd1f49d90f43ad8e46c6246a6f821550d3bed736768f",
+    "TEST_OPT_STDOUT.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "TEST_STDERR.txt": "9cbc1a90ababeb3548ea9abdcb2b332b30059e2aa698c81e32633153b64a84c4",
+    "TEST_STDOUT.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "VERIFY_SOURCE.txt": "dff7d28722123e3e4fa7b3eac95d5a99070d0abc9c223f8995265075adb8001c"
+  },
+  "git_blobs": {
+    "README.md": "cdf407481ab6602a1f975342cfaf321522a121cd",
+    "JOB_LOG.txt": "6d6c224fbf7d9961301dd6eaa49080f4ca634903",
+    "ORIGINAL.zip": "d5a2d0a3c690b03b60c4b3f8f9f0443a797bec30",
+    "originals/COUNTS.json": "0c34b2382446a357d9a3fbb9292dcc2452c35a06",
+    "originals/REPORT.json": "eed62b683684d01a702f59cd5b0cf2adcc067c99",
+    "originals/TEST_OPT_STDERR.txt": "716004a0fdcfdc76201813903c50155fd1e6d299",
+    "originals/TEST_OPT_STDOUT.txt": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "originals/TEST_STDERR.txt": "7530f0a3fe4d4d56569ccbbe80e0618395f15596",
+    "originals/TEST_STDOUT.txt": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "originals/VERIFY_SOURCE.txt": "e751d7f4ea934964ad1411857e79bef7329e0db6"
+  },
+  "normal_tests": {
+    "passed": 6,
+    "failed": 0,
+    "max_rss_kib": 23196
+  },
+  "optimized_tests": {
+    "passed": 6,
+    "failed": 0,
+    "max_rss_kib": 26484
+  },
+  "counts": {
+    "dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "largegrid_qualification": false,
+  "all_closed": false,
+  "global_status": "HOLD / NoUpdate"
+}

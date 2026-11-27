@@ -1,0 +1,47 @@
+{
+  "upstreamSnapshotSha256": "7a8b4cb34bd3bb01c507c9990faa93d902741a2f08050a60a2f76bacdcd545bd",
+  "maintainedSnapshotSha256": "c9f9e4555fee3b1c4423e7b25fbdacf753e4e6bb5eb1f04eac07cf26f6c1f0b2",
+  "reviewMethod": "Exact programmatic reconstruction from original snapshot; candidate must equal only the enumerated replacements, with no other public-item changes.",
+  "semanticChanges": {
+    "dumpResultFunctions": [
+      "dump_to_file",
+      "dump_to_uncompressed_file",
+      "dump_to_writer",
+      "from_dump_file",
+      "from_reader",
+      "from_uncompressed_data",
+      "from_uncompressed_dump_file"
+    ],
+    "newError": "Box<dyn std::error::Error + Send + Sync + 'static>",
+    "yamlScanErrorEntries": 3,
+    "newYamlType": "yaml_rust2::scanner::ScanError"
+  },
+  "displayPathChanges": {
+    "serdeReexportsToUnderlyingSerdeCore": 184,
+    "semanticEffect": "none: serde 1.0.229 reexports these same serde_core traits"
+  },
+  "consumerAudit": {
+    "codex-tui": "uses highlighting/parsing/theme APIs; does not name dump error or yaml scanner type",
+    "two-face": "dump loaders use inference/unwrap; oracle compiled actual two-face and loaded all installed syntax/theme assets"
+  },
+  "testFunctionModified": false,
+  "automaticSnapshotUpdateUsed": false,
+  "testWorkspaceProfileRestoredFromUpstream": {
+    "aho-corasick": 2,
+    "fancy-regex": 2,
+    "regex-automata": 2,
+    "regex-syntax": 2
+  },
+  "originalSameGraphProof": {
+    "oracleSource": "syntect-original-oracle: only package name renamed; runtime source unchanged",
+    "sharedPackages": 147,
+    "sharedChecksumDrift": 0,
+    "serdeVersion": "1.0.229",
+    "publicApiVersion": "0.50.3",
+    "rustdocToolchain": "nightly-2025-08-02",
+    "originalApiSha256": "28afc5b2d3ba56b4ceac1f46ad710ff243f4dcd3412c6b5b58cb7171c608d412",
+    "candidateApiSha256": "c9f9e4555fee3b1c4423e7b25fbdacf753e4e6bb5eb1f04eac07cf26f6c1f0b2",
+    "assertion": "Original same-graph API equals upstream snapshot with precisely 184 serde:: -> serde_core:: path replacements and no other changes",
+    "maintenanceOnlyDiffSha256": "8d2be8e7c9903b16c109461f981147ea096d442306289f7d8cf55063c937297a"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "base_commit": "0c99a30dbe9307d48aa50ffc63404235ade8ae9c",
+  "changed_files": [
+    {
+      "path": "scripts/hepta_cell_research_gate.py",
+      "base_git_blob": "727c1abf011d8b55915df7902a12628679742fcf",
+      "sha256": "681c73feeb0abbb3fa4af63e2f51de9e02ff90f3aafe0fa45e53dbefe97660d9",
+      "git_blob": "8313c8ae0144143c98ce02307b9912662e70a9a4",
+      "bytes": 30439
+    },
+    {
+      "path": "scripts/hepta_cell_research_units.py",
+      "base_git_blob": "671e90192560d3c17600428f44c9ecd2c8245f54",
+      "sha256": "e81af36e400a7078762348285896d6b1f8639eb2f97ded5467ce03798beffc77",
+      "git_blob": "bfe0d8e146a4957fde450ac7d1da14fd2871e11d",
+      "bytes": 10727
+    },
+    {
+      "path": "scripts/test_hepta_cell_research_units.py",
+      "base_git_blob": "fa2dd3fb5015a6d2a4b772147bb28d9cd511c7d4",
+      "sha256": "e9241adf6a477e6ed30dd2178902738966ce320f90595c23c9048459f39d8c58",
+      "git_blob": "0b4c1071d836a7bd4c7852588a19774202db6765",
+      "bytes": 29587
+    }
+  ],
+  "validation": {
+    "test_count": 76,
+    "test_result": "PASS",
+    "independent_real_confirmations": 0,
+    "scientific_admission": "HOLD",
+    "production_authority": false
+  },
+  "note": "Cloud environment replacement lost the first workspace; these files and logs were rebuilt and re-executed from authenticated base blobs. No tests run after final just fmt; identical Python AST verified.",
+  "evidence": [
+    {
+      "path": "pre-fix-recovered.log",
+      "sha256": "155cc9b5e63494141864fd0d5e7b4adbc4b47254dc5b351f03a5d7c1491aef5d",
+      "bytes": 8629
+    },
+    {
+      "path": "research-post-fix-recovered.log",
+      "sha256": "0705d3bc3ffea40c4cfdcaabdc10835841c76184bc95790a599d24846b4e9b43",
+      "bytes": 13909
+    },
+    {
+      "path": "maintenance.json",
+      "sha256": "8d255da50f997fa774096defe4ad84146b6ebc470db67736022bc671749a2667",
+      "bytes": 1235
+    },
+    {
+      "path": "cost-coverage.patch",
+      "sha256": "9e7400d95d4dcefcba21f6fb208895caef48810438e0ef002693b7fc7bd1b488",
+      "bytes": 9989
+    }
+  ]
+}

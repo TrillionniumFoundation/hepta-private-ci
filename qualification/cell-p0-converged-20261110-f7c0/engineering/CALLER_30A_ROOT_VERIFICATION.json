@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.p0.root-caller-archive-verification.v1",
+  "recorded_at_utc": "2026-11-11T03:31:19.271898+00:00",
+  "source": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "original_directory": "caller-30a",
+  "manifest_entries_verified": 21,
+  "all_original_bundle_files_preserved": 22,
+  "raw_result": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "authority_granted": false,
+  "actual_raw_counts": {
+    "rust_files": 6302,
+    "boundaries": 223,
+    "privileged_inventory": 223,
+    "protected_records": 218,
+    "unique_protected_paths": 173
+  },
+  "source_before_after_and_nine_files_verified": true,
+  "CALLERS_and_verifier_blobs_verified": true,
+  "complete_git_ls_tree_bytes_reproduced": true,
+  "verifier_invocation_count_in_receipt": 1,
+  "exit_code": 0,
+  "costs": {
+    "wall_seconds": 707.9864971160005,
+    "child_user_cpu_seconds": 688.9000550000001,
+    "child_system_cpu_seconds": 3.47934,
+    "child_cpu_seconds_total": 692.379395,
+    "measurement": "monotonic wall time and RUSAGE_CHILDREN deltas surrounding the one verifier subprocess, before post-run Git reads",
+    "excluded": [
+      "preparation/fetch/switch",
+      "before/after source snapshots",
+      "assistant orchestration and communication",
+      "other agents/CI",
+      "archive construction"
+    ],
+    "unmeasured": [
+      "monetary cost",
+      "energy",
+      "whole-session resource cost"
+    ]
+  },
+  "new_verifier_runs_by_root_verification": 0,
+  "native_tests_executed": 0
+}

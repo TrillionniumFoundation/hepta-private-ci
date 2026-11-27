@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.mem8.bazel-v5.revision2-admission.v1",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "superseded_workflow_head": "8ead9735ecd78721f306f03e49dbd57894a474d0",
+  "superseded_original_run": 43020198388,
+  "superseded_original_job": 130521184483,
+  "superseded_result": "failed_version_output_parser_before_any_lock_command",
+  "original_probe": {
+    "exit_code": 0,
+    "timed_out": false,
+    "bytes": 115,
+    "sha256": "70b6e531ac335269d7bedf2b85c21a1328ad74eac8e7a53af047221d983ee276",
+    "elapsed_seconds": 0.616122,
+    "lock_command_phases_started": 0,
+    "source_after": "ABSENT"
+  },
+  "revision2_change": "Separate and preserve Bazel version stdout and stderr; exact stdout version, exit code and original 30s probe/1200s single lock command unchanged",
+  "root_full_patch_and_original_probe_reviewed": true,
+  "independent_peer": "mem_experiment_review",
+  "harness_files": [
+    {
+      "path": ".github/scripts/mem8_bazel_lock_v5.py",
+      "bytes": 16393,
+      "sha256": "08da7b6f91f57932359f2c6937abc24f6f5f21bfc14a321c4053d7af200ed323",
+      "git_blob": "03c70dc522ccb076ad6fa12fff1937bd3a023435"
+    },
+    {
+      "path": ".github/workflows/hepta-mem8-bazel-lock-v5.yml",
+      "bytes": 6784,
+      "sha256": "c3c85a6b43ac422f14411b1881051f764e4e4f1e1c16065cd97ef2c1f54944f7",
+      "git_blob": "e4724d93ee94387beb3c0edbd15345063c5e5c61"
+    }
+  ],
+  "all_full_git_readbacks_equal": true,
+  "tree_create": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "a5bc49fa79c386803f0fe8431da04acf768d7364"
+    },
+    "isError": false
+  },
+  "commit_create": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "d03aa4c87d4f9fe9c1f99fbe319f829d9eef6158"
+    },
+    "isError": false
+  },
+  "trigger_time": {
+    "current_time": "2026-11-11 12:30:31 UTC"
+  },
+  "trigger_request": {
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "branch_name": "codex/mem8-bazel-lock-v5-20261111-ed353817",
+    "expected_sha": "8ead9735ecd78721f306f03e49dbd57894a474d0",
+    "sha": "d03aa4c87d4f9fe9c1f99fbe319f829d9eef6158",
+    "force": false
+  },
+  "trigger_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "success": true
+    },
+    "isError": false
+  },
+  "no_original_run_rerun_request": true,
+  "new_run_terminal": "NOT_OBSERVED_IN_THIS_ADMISSION_RECORD",
+  "native_project_tests": 0,
+  "model_requests": 0
+}

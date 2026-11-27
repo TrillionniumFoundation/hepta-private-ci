@@ -24,6 +24,10 @@ use sha2::Sha256;
 use crate::FleetRegistry;
 use crate::FleetRegistryError;
 
+#[cfg(target_os = "macos")]
+#[path = "release_publication_macos.rs"]
+mod macos_publication;
+
 pub const RELEASE_METADATA_SCHEMA_VERSION: u32 = 2;
 pub const AGENT_RELEASE_STATE_SCHEMA_VERSION: u32 = 1;
 const RELEASE_MANIFEST_FILE: &str = "release.json";
@@ -255,8 +259,14 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
+        #[cfg(target_os = "macos")]
+        let publication =
+            macos_publication::Publication::create(self.layout().releases_root(), &staging)?;
+        #[cfg(all(unix, not(target_os = "macos")))]
+        crate::registry::create_private_directory(&staging)?;
+        #[cfg(not(unix))]
         std::fs::create_dir(&staging)?;
-        let result = (|| {
+        let result: Result<(), FleetRegistryError> = (|| {
             let bin_root = staging.join("bin");
             std::fs::create_dir(&bin_root)?;
             let agentd_program = staging.join(AGENTD_RELEASE_PROGRAM);
@@ -293,11 +303,28 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
-            sync_directory(self.layout().releases_root())?;
+            #[cfg(target_os = "macos")]
+            publication.publish(&final_root)?;
+            #[cfg(not(target_os = "macos"))]
+            {
+                #[cfg(not(target_vendor = "apple"))]
+                set_mode(&staging, /*mode*/ 0o555)?;
+                std::fs::rename(&staging, &final_root)?;
+                #[cfg(target_vendor = "apple")]
+                {
+                    // Darwin requires write access during the directory rename.
+                    set_mode(&final_root, /*mode*/ 0o555)?;
+                    sync_directory(&final_root)?;
+                }
+                sync_directory(self.layout().releases_root())?;
+            }
             Ok(())
         })();
+        // A rejected macOS pathname can now name another inode. Retain that
+        // slot instead of chmodding or removing it during cleanup.
+        #[cfg(target_os = "macos")]
+        result?;
+        #[cfg(not(target_os = "macos"))]
         if let Err(error) = result {
             make_tree_removable(&staging);
             let _ = std::fs::remove_dir_all(&staging);
@@ -893,6 +920,7 @@ fn write_new_json<T: Serialize>(path: &Path, value: &T) -> Result<(), FleetRegis
         .map_err(|error| FleetRegistryError::Corrupt(format!("encode release state: {error}")))?;
     bytes.push(b'\n');
     let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
+    crate::registry::preserve_root_reader_mode(&file, path)?;
     file.write_all(&bytes)?;
     file.sync_all()?;
     Ok(())
@@ -1038,6 +1066,7 @@ fn set_mode(path: &Path, mode: u32) -> Result<(), FleetRegistryError> {
     Ok(())
 }
 
+#[cfg(any(not(target_os = "macos"), test))]
 fn make_tree_removable(path: &Path) {
     if path.exists() {
         let _ = set_mode(path, /*mode*/ 0o755);

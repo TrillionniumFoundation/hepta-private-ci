@@ -1,0 +1,43 @@
+{
+  "schema": "hcsn-campaign-readonly-observation-v1",
+  "observed_at_utc": "2026-11-05 18:19:44 UTC",
+  "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+  "deployed_evidence_commit": "2dfed88fc69b03334001b05ae0948f703ff466e2",
+  "process": {
+    "audit_recorded": true,
+    "backend": "systemd",
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "state": "running",
+    "systemd": {
+      "ActiveState": "active",
+      "Description": "Hepta Runtime job 1a1acdd69f2-fc05-5757 d47233c214bcc8143da5e05871f44372",
+      "ExecMainCode": "0",
+      "ExecMainPID": "356991",
+      "ExecMainStatus": "0",
+      "InvocationID": "639f5d79691948ff8e3f2b7d82d26810",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "running"
+    }
+  },
+  "source_files": [
+    {
+      "path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/progress.json",
+      "sha256": "083996afbf70d20bfdb566b331b4cbcd491852226e569e714871220f6d87e816",
+      "bytes": 564,
+      "text": "{\n  \"schema\": \"hcsn-gated-cuda-campaign-v2\",\n  \"status\": \"waiting_for_pinned_runtime\",\n  \"started_utc\": \"2026-11-05T17:59:19.201114+00:00\",\n  \"pid\": 357002,\n  \"stages\": [],\n  \"completed_cuda_runs\": 0,\n  \"requested_cuda_runs\": 170,\n  \"global_qualification\": \"open\",\n  \"source_branch_ci_not_claimed\": true,\n  \"no_automatic_training_retries\": true,\n  \"budget_change_permitted\": false,\n  \"physical_energy_missing_is_not_zero\": true,\n  \"updated_utc\": \"2026-11-05T18:19:20.042720+00:00\",\n  \"disk_free_bytes\": 31720685568,\n  \"control_filesystem_free_bytes\": 2581835776\n}\n"
+    },
+    {
+      "path": "/data/hcsn-cuda-170run-20261105-r1/envsetup/storage-observation-latest.json",
+      "sha256": "708c41e106e75813762f662d151130c1a543251d8ce98fc24915ce9b7673e9ff",
+      "bytes": 1367,
+      "text": "{\n  \"changes_to_training_or_installation_processes\": false,\n  \"control_filesystem_free_bytes\": 2902335488,\n  \"control_filesystem_free_bytes_after_du\": 2902024192,\n  \"data_free_bytes\": 31805861888,\n  \"data_free_bytes_after_du\": 31805845504,\n  \"disk_threshold_flags\": {\n    \"control_below_1gib\": false,\n    \"data_below_5gib\": false\n  },\n  \"installation_ready_markers_observed\": false,\n  \"mamba_waiter\": {\n    \"automatic_install_attempts\": 0,\n    \"elapsed_seconds\": 4075.6321958500193,\n    \"state\": \"waiting_for_verified_dependencies\",\n    \"updated_at\": \"2026-11-05T18:15:42.236554+00:00\"\n  },\n  \"measurement_atomic\": false,\n  \"observation_index\": 5,\n  \"observed_at\": \"2026-11-05T18:15:44.347153+00:00\",\n  \"old_root_bytes_deleted_by_this_task\": 0,\n  \"schema\": \"hcsn-task-storage-observation-v1\",\n  \"script_sha256\": \"7713f44ad5e519e3d3dd31655089c9a40f8ce5b46403aaa78a59504ba56ffa99\",\n  \"state\": \"observing\",\n  \"task_allocated_bytes\": 3816841216,\n  \"task_apparent_bytes\": 3796001358,\n  \"task_size_scope\": \"this isolated root only, no symlink following\",\n  \"torch\": {\n    \"completed_bytes\": 2735101321,\n    \"elapsed_seconds\": 4517.176475857035,\n    \"inflight_partial_bytes\": 19289442,\n    \"last_payload_at\": \"2026-11-05T18:15:43.148852+00:00\",\n    \"state\": \"download_verified_ranges\",\n    \"total_bytes\": 3918339031,\n    \"wire_bytes_received_this_attempt\": 1810740636\n  }\n}\n"
+    }
+  ],
+  "atomic_snapshot": false,
+  "scope": "Read-only process state plus independently versioned files. Progress is dated 18:19:20 UTC; storage observer is dated 18:15:44 UTC. No launch, retry, installation, budget or source mutation was performed by this observation.",
+  "completed_cuda_runs": 0,
+  "requested_cuda_runs": 170,
+  "global_qualification": "open"
+}

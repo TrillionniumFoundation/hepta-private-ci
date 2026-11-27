@@ -1,0 +1,65 @@
+{
+  "old_source": "acb0 native job 134539435477; first ordinary PASS block only",
+  "new_source": "bd7e4c6e643c52e104ef6b7c6e334206557a2968; fresh ordinary.xml",
+  "old_count": 2672,
+  "new_count": 2682,
+  "old_by_binary": {
+    "codex-hepta-neuron": 376,
+    "codex-hepta-agentd": 1464,
+    "codex-hepta-intelligence-eval": 222,
+    "codex-hepta-contracts": 298,
+    "codex-hepta-learning-artifacts": 150,
+    "codex-hepta-learning-ledger": 162
+  },
+  "new_by_binary": {
+    "codex-hepta-neuron": 382,
+    "codex-hepta-agentd": 1468,
+    "codex-hepta-intelligence-eval": 222,
+    "codex-hepta-contracts": 298,
+    "codex-hepta-learning-artifacts": 150,
+    "codex-hepta-learning-ledger": 162
+  },
+  "added": [
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_research_external_material::tests::research_material_fixture_root_is_physical_and_readable"
+    ],
+    [
+      "codex-hepta-agentd",
+      "root_observation_cache::tests::a_complete_revocation_update_during_a_read_cannot_publish_the_old_head"
+    ],
+    [
+      "codex-hepta-agentd",
+      "root_observation_cache::tests::overlapping_clock_samples_keep_the_maximum_without_false_rollback"
+    ],
+    [
+      "codex-hepta-agentd",
+      "root_observation_cache::tests::refresh_and_parallel_readers_do_not_contend_on_retained_state"
+    ],
+    [
+      "codex-hepta-neuron",
+      "plasticity::temporal_credit::tests::expired_but_available_feedback_counts_as_observed_without_training_credit"
+    ],
+    [
+      "codex-hepta-neuron",
+      "plasticity::temporal_credit::tests::frozen_native_prefix_matches_visible_reference_and_canonical_order"
+    ],
+    [
+      "codex-hepta-neuron",
+      "plasticity::temporal_credit::tests::frozen_native_prefix_no_feedback_is_explicitly_unobserved_and_deny_all"
+    ],
+    [
+      "codex-hepta-neuron",
+      "plasticity::temporal_credit::tests::frozen_native_prefix_preserves_owner_drift_and_eval_split_refusal"
+    ],
+    [
+      "codex-hepta-neuron",
+      "plasticity::temporal_credit::tests::frozen_native_prefix_rejects_post_cutoff_receipts_before_returning_candidate"
+    ],
+    [
+      "codex-hepta-neuron",
+      "plasticity::temporal_credit::tests::future_labels_neither_observe_past_actions_nor_change_frozen_training_digest"
+    ]
+  ],
+  "removed": []
+}

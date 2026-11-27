@@ -1,0 +1,61 @@
+// Pure analysis of the archived 9fac native log; never launches tests.
+// Call deriveNativeShards(rawLog). Durations include FAIL/TIMEOUT and are not Bazel predictions.
+const utf8Bytes = s => {const out=[];for(const c of s){const n=c.codePointAt(0);if(n<128)out.push(n);else if(n<2048)out.push(192|(n>>6),128|(n&63));else if(n<65536)out.push(224|(n>>12),128|((n>>6)&63),128|(n&63));else out.push(240|(n>>18),128|((n>>12)&63),128|((n>>6)&63),128|(n&63));}return out;};
+
+function fnv1a32(name) {
+    let hash = 2166136261;
+    for (const byte of utf8Bytes(name)) hash = Math.imul(hash ^ byte, 16777619) >>> 0;
+    return hash;
+}
+
+function deriveNativeShards(rawLog) {
+    const lines = rawLog.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "").split("\n")
+        .map(line => line.replace(/^\uFEFF/, "").replace(/^\d{4}-\d{2}-\d{2}T[\d:.]+Z /, ""));
+    const records = new Map();
+    let observedStatusLines = 0;
+    for (let index = 0; index < lines.length; index++) {
+        const match = lines[index].match(/^\s*(PASS|FAIL|TIMEOUT)\s+\[\s*([0-9.]+)s\]\s+(\S+)\s+(.+?)\s*$/);
+        if (!match) continue;
+        observedStatusLines++;
+        const record = {
+            crate: match[3], method: match[4], status: match[1],
+            reported_milliseconds: Math.round(Number(match[2]) * 1000),
+            duration_lexeme: match[2], source_log_lines: [index + 1],
+            agentd_shard: match[3] === "codex-hepta-agentd" ? fnv1a32(match[4]) % 8 : null,
+        };
+        const key = record.crate + "\0" + record.method;
+        const saved = records.get(key);
+        if (saved) {
+            if (saved.status !== record.status || saved.duration_lexeme !== record.duration_lexeme)
+                throw new Error("Conflicting terminal observations: " + key);
+            saved.source_log_lines.push(index + 1);
+        } else records.set(key, record);
+    }
+    const methods = [...records.values()].sort((a, b) => {
+        const left = a.crate + "\0" + a.method, right = b.crate + "\0" + b.method;
+        return left < right ? -1 : left > right ? 1 : 0;
+    });
+    if (methods.length !== 1738) throw new Error("Original native denominator differs");
+    const agentd = methods.filter(method => method.crate === "codex-hepta-agentd");
+    if (agentd.length !== 1094) throw new Error("Original agentd denominator differs");
+    const buckets = Array.from({length: 8}, (_, index) => {
+        const selected = agentd.filter(method => method.agentd_shard === index);
+        const workers = [0, 0];
+        for (const method of selected) {
+            const worker = workers[0] <= workers[1] ? 0 : 1;
+            workers[worker] += method.reported_milliseconds;
+        }
+        return {
+            index, native_methods: selected.length,
+            pass: selected.filter(method => method.status === "PASS").length,
+            fail: selected.filter(method => method.status === "FAIL").length,
+            timeout: selected.filter(method => method.status === "TIMEOUT").length,
+            sum_reported_milliseconds: selected.reduce((total, method) => total + method.reported_milliseconds, 0),
+            maximum_reported_milliseconds: Math.max(...selected.map(method => method.reported_milliseconds)),
+            simulated_two_worker_milliseconds: Math.max(...workers),
+        };
+    });
+    if (buckets.reduce((total, bucket) => total + bucket.native_methods, 0) !== agentd.length)
+        throw new Error("Native partition coverage differs");
+    return {observedStatusLines, methods, buckets};
+}

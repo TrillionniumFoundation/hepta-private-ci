@@ -1,0 +1,66 @@
+name: MemoryCell one-shot isolated strong-RAG Ruff candidate
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - ".github/workflows/hepta-memory-strong-rag-format-candidate.yml"
+permissions:
+  contents: read
+jobs:
+  isolated-candidate:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Format only strong-RAG shard code and tests, with no AST change
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/memory-rag-format
+          /tmp/memory-rag-format/bin/pip install uv==0.8.22
+          export PATH="/tmp/memory-rag-format/bin:$PATH"
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          paths = (
+              "scripts/memory_cell/strong_rag_shards.py",
+              "scripts/memory_cell/test_strong_rag_shards.py",
+          )
+          Path("/tmp/ast-before.json").write_text(json.dumps({
+              p: ast.dump(ast.parse(Path(p).read_text())) for p in paths
+          }))
+          PY
+          uv run --frozen --project scripts ruff format scripts/memory_cell/strong_rag_shards.py scripts/memory_cell/test_strong_rag_shards.py
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/strong_rag_shards.py scripts/memory_cell/test_strong_rag_shards.py
+          python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          previous = json.loads(Path("/tmp/ast-before.json").read_text())
+          for p, expected in previous.items():
+              if ast.dump(ast.parse(Path(p).read_text())) != expected:
+                  raise ValueError("formatter modified executable AST: " + p)
+          changed = set(subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines())
+          if not changed or changed - set(previous):
+              raise ValueError("no controlled source changes or out-of-scope formatting")
+          PY
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_shards.py' -v
+          git diff --check
+      - name: Publish inspectable temporary candidate, not the PR head
+        run: |
+          set -euo pipefail
+          git add -- scripts/memory_cell/strong_rag_shards.py scripts/memory_cell/test_strong_rag_shards.py
+          git rm .github/workflows/hepta-memory-strong-rag-format-candidate.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "style(memory-cell): format tested sharded strong-RAG files; remove temporary formatter"
+          git push origin "HEAD:refs/heads/codex/memory-strong-rag-format-${GITHUB_RUN_ID}"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"

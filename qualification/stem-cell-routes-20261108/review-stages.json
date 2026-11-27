@@ -1,0 +1,299 @@
+{
+  "base": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+  "initial_native_stage": "a7e727468da41fe2ac826b8b38178a6958f7ffea",
+  "measurement_records_commit": "209230cc1c00dde85eb17852169d21857f021473",
+  "mechanical_maintenance_commit": "b67016d8c44885afdf0df2507d214b02b141744e",
+  "original_archives_commit": "16cc0db01b02410e28b8f0cd5cc08a28edd17228",
+  "premaintenance_head": "9e3cab866aa6202b99e9546f2c3c52137cc58c86",
+  "source_lines_interpretation": "Line counts describe initial pre-format source additions in each review stage.",
+  "stages": [
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/__init__.py",
+          "sha": "00410bf8ad4ef7081a1e1e175a27fd29c9a8593f",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/requirements.txt",
+          "sha": "f97a9b7d38fcae15250685b39935bd1026498f31",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/bundle.py",
+          "sha": "a10310cc997bcefe22e4e3d44db791eca5102b20",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/component_types.py",
+          "sha": "bcdd840bb2fb46df1e1de21da029e9945b18effc",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/test_hepta_cells_bundle.py",
+          "sha": "111f2132b898930996f967552be8aa917812a99f",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/hepta_cells/__init__.py",
+        "scripts/hepta_cells/requirements.txt",
+        "scripts/hepta_cells/bundle.py",
+        "scripts/hepta_cells/component_types.py",
+        "scripts/test_hepta_cells_bundle.py"
+      ],
+      "sha": "71007a9b5176c4085c6d8167725ae3691ba8ef39",
+      "source_lines": 411,
+      "title": "feat(hepta): define compatible Cell bundles and component contracts",
+      "tree": "d9996dd10f249cef2fef0ca6caf831aab7b5b706"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/lifecycle.py",
+          "sha": "95100e1d34418a96b6c2ce457055c4d52b00518b",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/hepta_cells/lifecycle.py"
+      ],
+      "sha": "db7734d91a647044fb566505c06d7cc93c8d3c01",
+      "source_lines": 431,
+      "title": "feat(hepta): persist bounded Cell lifecycle and recovery",
+      "tree": "4184a2fadb85b9007c1fa1141227f2c35b607b93"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/deterministic.py",
+          "sha": "80577f207e130df8d86ffc08a92505b1361c8577",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/test_hepta_cells_composition.py",
+          "sha": "23c738e2ddee4a9763b265c9876bef883f7e6bde",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/hepta_cells/deterministic.py",
+        "scripts/test_hepta_cells_composition.py"
+      ],
+      "sha": "dfc875e03dedd088ac03cf44b9f56898d4106dc7",
+      "source_lines": 325,
+      "title": "feat(hepta): compose deterministic retrieval rules numbers and tools",
+      "tree": "954d19ab807661e435e141e5d104f8368648f8b4"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/test_hepta_cells_lifecycle.py",
+          "sha": "35818193c69d2db141a2e8931416dd01bdfdd616",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/test_hepta_cells_lifecycle.py"
+      ],
+      "sha": "6235698b028b237a103f1b4d527e474a7090f6b1",
+      "source_lines": 464,
+      "title": "test(hepta): cover Cell identity budgets replay and capacity recovery",
+      "tree": "c6232cb04d04e7dc29718361c042220e9f8e2dc1"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/semantic.py",
+          "sha": "e267515c807bbe230eab33475202d4dd75d37a60",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/hepta_cells/semantic.py"
+      ],
+      "sha": "8edaa97b344499e1364ba585f69b8967adc8e1ca",
+      "source_lines": 427,
+      "title": "feat(hepta): share frozen semantic backends with private trainable heads",
+      "tree": "43e1665042c84230272daa6ad6547424f0b4e43e"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/semantic_component.py",
+          "sha": "35c5097e242def8976d17667020a3e4559c7d3d2",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/test_hepta_cells_semantic.py",
+          "sha": "cbce1d3a9de0fb00a117d736840a91c2b6a45f51",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/hepta_cells/semantic_component.py",
+        "scripts/test_hepta_cells_semantic.py"
+      ],
+      "sha": "c62316a7589226801bf55c8ef9a3a517bee82f7a",
+      "source_lines": 389,
+      "title": "feat(hepta): bind semantic candidates to the common Cell owner",
+      "tree": "bc242e39b3a76b4f63c93544d511d39b370e04ef"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_pred1/__init__.py",
+          "sha": "519cdadba78137553cf332957029117e7eb0bb36",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_pred1/models.py",
+          "sha": "896f7f7dc3965030476f00e7b6bf76655480bf00",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/hepta_pred1/__init__.py",
+        "scripts/hepta_pred1/models.py"
+      ],
+      "sha": "ae76828f9541fb3574e878768694ff9bdf73c745",
+      "source_lines": 318,
+      "title": "chore(hepta): import unchanged PRED-1 recurrent reference kernels",
+      "tree": "3291b271ba1b2adbd6f214ad1e995c690968217b"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/temporal.py",
+          "sha": "7e0670031dd9356f9547c24a8f40d447fdab6fbe",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/temporal_component.py",
+          "sha": "dc41110c8af31727ccf37f2c08cb7f01b8956c15",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/hepta_cells/temporal.py",
+        "scripts/hepta_cells/temporal_component.py"
+      ],
+      "sha": "d0343b464755c29724daa4f325ee190776b1d697",
+      "source_lines": 326,
+      "title": "feat(hepta): add private stateful GRU and diagonal SSM candidates",
+      "tree": "6d80f772ce5dcdd96522578ee875b3a428e4f42b"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/test_hepta_cells_temporal.py",
+          "sha": "7530f66a6a2320280cd410c481b3726dd154561a",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/test_hepta_cells_temporal_component.py",
+          "sha": "0ad1415503e4596068a690376dd81a7e6d580955",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/test_hepta_cells_temporal.py",
+        "scripts/test_hepta_cells_temporal_component.py"
+      ],
+      "sha": "13d0749837c248713fb423a4d56749c6eeddd335",
+      "source_lines": 253,
+      "title": "test(hepta): exercise real temporal gradients and checkpoint continuity",
+      "tree": "356fd7934e278dc34e7782a2654130372224cf07"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/mlx_provider.py",
+          "sha": "d02d3badd2def9710673d0a2169ef4f8f669217d",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/qualify_hepta_semantic_serving.py",
+          "sha": "ced2e5ad5d72f5a41b42ac82347f7a6b4fae35fb",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/hepta_cells/mlx_provider.py",
+        "scripts/qualify_hepta_semantic_serving.py"
+      ],
+      "sha": "f6c24841a3d34e6103604a2050c970a76981b6e2",
+      "source_lines": 460,
+      "title": "feat(hepta): measure one real MLX model serving private Cell heads",
+      "tree": "307fe78286067e8713f8c660bcf9e7b18a69d9a2"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": "scripts/qualify_hepta_cells.py",
+          "sha": "afbff2928605be14c7f250dc9ffb3f33aff1e8c0",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": "scripts/hepta_cells/README.md",
+          "sha": "e764dc51abc4005eac70874af2fe87bcd7a38a48",
+          "type": "blob"
+        },
+        {
+          "mode": "100644",
+          "path": ".github/workflows/hepta-stem-cell-routes.yml",
+          "sha": "d88e48242b04fcd340996525c7457649fead0590",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        "scripts/qualify_hepta_cells.py",
+        "scripts/hepta_cells/README.md",
+        ".github/workflows/hepta-stem-cell-routes.yml"
+      ],
+      "sha": "340f59c281e2bae2e8fd3db97c3f7f2e4d563604",
+      "source_lines": 396,
+      "title": "test(hepta): retain source-bound Cell engineering probes and reproduce them",
+      "tree": "adfac969ab35829f566cca05b5f9793ca575e3cf"
+    },
+    {
+      "entries": [
+        {
+          "mode": "100644",
+          "path": ".github/workflows/hepta-stem-cell-maintenance.yml",
+          "sha": "02ded354f66d18e0d4f0962d3e4e961cd69c3103",
+          "type": "blob"
+        }
+      ],
+      "paths": [
+        ".github/workflows/hepta-stem-cell-maintenance.yml"
+      ],
+      "sha": "9e3cab866aa6202b99e9546f2c3c52137cc58c86",
+      "source_lines": 253,
+      "title": "ci(hepta): run scoped tests before reviewable fix and formatting",
+      "tree": "812524cce73a601c09a27e4dbbf50a86b7c03d76"
+    }
+  ]
+}

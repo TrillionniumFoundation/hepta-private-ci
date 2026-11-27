@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="7" failures="7" errors="0" uuid="286bc57e-c322-40e2-bcf7-6326bf1d9de3" timestamp="2026-11-11T18:49:46.309-05:00" time="82.033">
+    <testsuite name="codex-hepta-agentd" tests="7" disabled="0" errors="0" failures="7">
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch" classname="codex-hepta-agentd" timestamp="2026-11-11T18:49:46.323-05:00" time="17.711">
+            <failure message="thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch&apos; (2282983) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:105:5" type="test failure with exit code 101">thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch&apos; (2282983) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:105:5:
+assertion failed: matches!(client.readback().await,
+    Err(OriginalCircuitSelectionCommandErrorV1::Missing))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 17.69s
+
+</system-out>
+            <system-err>HEPTA_SELECTOR_REMOTE_TRAINER_BEFORE elapsed_us=15247 result=Ok(())
+HEPTA_SELECTOR_REMOTE_PUBLISHED elapsed_us=514505 result=Err(Transport(DeadlineElapsed))
+HEPTA_SELECTOR_REMOTE_READBACK elapsed_us=543067 result=Err(PublishedRead(Transport(DeadlineElapsed)))
+
+thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch&apos; (2282983) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:105:5:
+assertion failed: matches!(client.readback().await,
+    Err(OriginalCircuitSelectionCommandErrorV1::Missing))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation" classname="codex-hepta-agentd" timestamp="2026-11-11T18:49:46.323-05:00" time="42.543">
+            <failure message="Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)" type="test failure with exit code 101">Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)</failure>
+            <system-out>
+running 1 test
+test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation ... FAILED
+
+failures:
+
+failures:
+    learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 42.52s
+
+</system-out>
+            <system-err>HEPTA_DEFERRED_TRAINING_EXECUTE elapsed_us=28579967 result=Ok(())
+HEPTA_DEFERRED_TRAINING_EVIDENCE client_us=501853 total_us=3906761 client=Err(&quot;OwnerUnavailable(\&quot;original learning evidence owner\&quot;)&quot;) server=Err(&quot;original Trainer transport: DeadlineElapsed&quot;)
+Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T18:50:04.038-05:00" time="26.697">
+            <failure message="Error: original published Circuit read capability: original read transport: DeadlineElapsed" type="test failure with exit code 101">Error: original published Circuit read capability: original read transport: DeadlineElapsed
+
+Caused by:
+    0: original read transport: DeadlineElapsed
+    1: DeadlineElapsed
+HEPTA_PUBLISHED_SERVER total_us=625239 result=Err(&quot;original published Circuit read: invalid agentd configuration: Unavailable&quot;)</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 26.68s
+
+</system-out>
+            <system-err>HEPTA_PUBLISHED_SERVER total_us=701747 result=Err(&quot;original TaskSource read: Circuit task needs original owner reconciliation&quot;)
+Error: original published Circuit read capability: original read transport: DeadlineElapsed
+
+Caused by:
+    0: original read transport: DeadlineElapsed
+    1: DeadlineElapsed
+HEPTA_PUBLISHED_SERVER total_us=625239 result=Err(&quot;original published Circuit read: invalid agentd configuration: Unavailable&quot;)
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read" classname="codex-hepta-agentd" timestamp="2026-11-11T18:50:28.867-05:00" time="17.124">
+            <failure message="Error: original read transport: DeadlineElapsed" type="test failure with exit code 101">Error: original read transport: DeadlineElapsed
+
+Caused by:
+    DeadlineElapsed</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 17.10s
+
+</system-out>
+            <system-err>Error: original read transport: DeadlineElapsed
+
+Caused by:
+    DeadlineElapsed
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects" classname="codex-hepta-agentd" timestamp="2026-11-11T18:50:30.735-05:00" time="20.206">
+            <failure message="Error: the malformed response was actually sent" type="test failure with exit code 101">Error: the malformed response was actually sent</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 20.19s
+
+</system-out>
+            <system-err>HEPTA_PUBLISHED_ORIGINAL_READ request_id=1 cut_receipts=3 owner_io_us=1496458 total_handler_us=1520905 bytes=767
+HEPTA_PUBLISHED_ORIGINAL_READ request_id=1 cut_receipts=3 owner_io_us=1505878 total_handler_us=1531655 bytes=767
+Error: the malformed response was actually sent
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap" classname="codex-hepta-agentd" timestamp="2026-11-11T18:50:45.991-05:00" time="16.977">
+            <failure message="Error: original read transport: DeadlineElapsed" type="test failure with exit code 101">Error: original read transport: DeadlineElapsed
+
+Caused by:
+    DeadlineElapsed</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 16.96s
+
+</system-out>
+            <system-err>Error: original read transport: DeadlineElapsed
+
+Caused by:
+    DeadlineElapsed
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T18:50:50.942-05:00" time="17.388">
+            <failure message="thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature&apos; (2317276) panicked at hepta-agentd/src/circuit_learning_read_owner_tests.rs:111:5" type="test failure with exit code 101">thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature&apos; (2317276) panicked at hepta-agentd/src/circuit_learning_read_owner_tests.rs:111:5:
+assertion failed: matches!(selector.readback_remote(remote_selection(&amp;f.config.decision, &amp;live,
+    &amp;trainer)).await,
+    Err(OriginalCircuitSelectionReceiptErrorV1::Owner(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing))))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+HEPTA_PUBLISHED_SERVER total_us=580038 result=Err(&quot;original published Circuit read: invalid agentd configuration: Unavailable&quot;)</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 17.37s
+
+</system-out>
+            <system-err>HEPTA_SELECTOR_REMOTE_TRAINER_BEFORE elapsed_us=12342 result=Ok(())
+HEPTA_SELECTOR_REMOTE_PUBLISHED elapsed_us=514372 result=Err(Transport(DeadlineElapsed))
+HEPTA_SELECTOR_REMOTE_READBACK elapsed_us=538956 result=Err(PublishedRead(Transport(DeadlineElapsed)))
+
+thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature&apos; (2317276) panicked at hepta-agentd/src/circuit_learning_read_owner_tests.rs:111:5:
+assertion failed: matches!(selector.readback_remote(remote_selection(&amp;f.config.decision, &amp;live,
+    &amp;trainer)).await,
+    Err(OriginalCircuitSelectionReceiptErrorV1::Owner(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing))))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+HEPTA_PUBLISHED_SERVER total_us=580038 result=Err(&quot;original published Circuit read: invalid agentd configuration: Unavailable&quot;)
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

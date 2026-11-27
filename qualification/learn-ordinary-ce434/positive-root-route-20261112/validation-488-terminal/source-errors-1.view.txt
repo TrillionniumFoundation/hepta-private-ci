@@ -1,0 +1,146 @@
+506:23|ERROR: test_complete_role_signatures_and_model_record_are_reauthenticated_at_consumption (test_original_candidate_operation_source_closure.OriginalCandidateOperationClosureTests.test_complete_role_signatures_and_model_record_are_reauthenticated_at_consumption)
+507:4e|----------------------------------------------------------------------
+508:a2|Traceback (most recent call last):
+509:1b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_candidate_operation_source_closure.py", line 166, in test_complete_role_signatures_and_model_record_are_reauthenticated_at_consumption
+510:ee|    self.rejects(OP, "fn authenticate_result(", marker)
+511:71|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_candidate_operation_source_closure.py", line 73, in rejects
+512:77|    first, cursor = source_marker_span(source, marker, cursor, end + 1)
+513:8b|                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+514:7a|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/rust_source_marker_support.py", line 35, in source_marker_span
+515:85|    raise ValueError(f"Rust mutation marker not found: {marker!r}")
+516:21|ValueError: Rust mutation marker not found: 'self.model_completion.is_some() || self.evaluation.snapshot() != snapshot'
+517:c5|
+518:0f|======================================================================
+519:eb|ERROR: test_actual_candidate_and_shared_original_edges_remain_exact (test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact) (boundary='learning_original_material_initial_context_check')
+520:4e|----------------------------------------------------------------------
+521:a2|Traceback (most recent call last):
+522:b7|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+523:eb|    matched = any(
+524:19|              ^^^^
+525:92|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+526:20|    has_authority_call(code, boundary.receiver_type, method, fields)
+527:2b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+528:f1|    raise UnresolvedTypedReceiver(
+529:0d|hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial receiver
+530:c5|
+531:8d|The above exception was the direct cause of the following exception:
+532:c5|
+533:a2|Traceback (most recent call last):
+534:39|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py", line 95, in test_actual_candidate_and_shared_original_edges_remain_exact
+535:20|    PROOF._verify_boundary(ROOT, row, sources, ())
+536:51|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 533, in _verify_boundary
+537:1b|    raise VerificationFailure(
+538:a8|original_candidate_stage_proof.VerificationFailure: learning_original_material_initial_context_check: codex-rs/hepta-agentd/src/circuit_model_version_host.rs: unresolved possible OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial receiver
+539:c5|
+540:0f|======================================================================
+541:57|ERROR: test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch (test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch)
+542:4e|----------------------------------------------------------------------
+543:a2|Traceback (most recent call last):
+544:ff|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py", line 197, in test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch
+545:ea|    self.rejects(CORE, "fn validate_recovery<'a>", "self.read_original_evaluation(snapshot).await?")
+546:d2|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py", line 79, in rejects
+547:46|    selected, offset = source_marker_span(source, marker, offset, end + 1)
+548:94|                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+549:7a|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/rust_source_marker_support.py", line 35, in source_marker_span
+550:85|    raise ValueError(f"Rust mutation marker not found: {marker!r}")
+551:3a|ValueError: Rust mutation marker not found: 'self.read_original_evaluation(snapshot).await?'
+552:c5|
+553:0f|======================================================================
+554:d6|ERROR: test_private_original_operation_edges_have_exact_typed_callers (test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_private_original_operation_edges_have_exact_typed_callers) (boundary='learning_original_evaluation_model_read_borrow')
+555:4e|----------------------------------------------------------------------
+556:a2|Traceback (most recent call last):
+557:b7|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+558:eb|    matched = any(
+559:19|              ^^^^
+560:92|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+561:20|    has_authority_call(code, boundary.receiver_type, method, fields)
+562:2b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+563:f1|    raise UnresolvedTypedReceiver(
+564:5c|hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible OriginalCellEvaluationModelReadV1::material receiver
+565:c5|
+566:8d|The above exception was the direct cause of the following exception:
+567:c5|
+568:a2|Traceback (most recent call last):
+569:8c|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_evaluation_operation_source_closure.py", line 104, in test_private_original_operation_edges_have_exact_typed_callers
+570:20|    PROOF._verify_boundary(ROOT, row, sources, ())
+571:51|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 533, in _verify_boundary
+572:1b|    raise VerificationFailure(
+573:b8|original_evaluation_operation_proof.VerificationFailure: learning_original_evaluation_model_read_borrow: codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs: unresolved possible OriginalCellEvaluationModelReadV1::material receiver
+574:c5|
+575:0f|======================================================================
+576:81|ERROR: test_new_private_edges_have_exact_typed_callers (test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_new_private_edges_have_exact_typed_callers) (boundary='learning_original_evaluation_model_read_current')
+577:4e|----------------------------------------------------------------------
+578:a2|Traceback (most recent call last):
+579:b7|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+580:eb|    matched = any(
+581:19|              ^^^^
+582:92|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+583:20|    has_authority_call(code, boundary.receiver_type, method, fields)
+584:2b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+585:f1|    raise UnresolvedTypedReceiver(
+586:f0|hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible OriginalCellEvaluationModelReadV1::require_original_operation_current receiver
+587:c5|
+588:8d|The above exception was the direct cause of the following exception:
+589:c5|
+590:a2|Traceback (most recent call last):
+591:09|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_evaluation_transfer_source_closure.py", line 83, in test_new_private_edges_have_exact_typed_callers
+592:f4|    PROOF._verify_boundary(ROOT, row, sources, (), fields_by_receiver_type=fields)
+593:51|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 533, in _verify_boundary
+594:1b|    raise VerificationFailure(
+595:b8|original_evaluation_transfer_proof.VerificationFailure: learning_original_evaluation_model_read_current: codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs: unresolved possible OriginalCellEvaluationModelReadV1::require_original_operation_current receiver
+596:c5|
+597:0f|======================================================================
+598:1c|ERROR: test_new_private_edges_have_exact_typed_callers (test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_new_private_edges_have_exact_typed_callers) (boundary='learning_original_evaluation_model_body')
+599:4e|----------------------------------------------------------------------
+600:a2|Traceback (most recent call last):
+601:b7|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+602:eb|    matched = any(
+603:19|              ^^^^
+604:92|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+605:20|    has_authority_call(code, boundary.receiver_type, method, fields)
+606:2b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+607:f1|    raise UnresolvedTypedReceiver(
+608:48|hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible OriginalCellEvaluationModelMaterialV1::original_model_transfer_body receiver
+609:c5|
+610:8d|The above exception was the direct cause of the following exception:
+611:c5|
+612:a2|Traceback (most recent call last):
+613:09|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_evaluation_transfer_source_closure.py", line 83, in test_new_private_edges_have_exact_typed_callers
+614:f4|    PROOF._verify_boundary(ROOT, row, sources, (), fields_by_receiver_type=fields)
+615:51|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 533, in _verify_boundary
+616:1b|    raise VerificationFailure(
+617:0f|original_evaluation_transfer_proof.VerificationFailure: learning_original_evaluation_model_body: codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs: unresolved possible OriginalCellEvaluationModelMaterialV1::original_model_transfer_body receiver
+618:c5|
+619:0f|======================================================================
+620:54|ERROR: test_new_private_edges_have_exact_typed_callers (test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_new_private_edges_have_exact_typed_callers) (boundary='learning_original_evaluation_selector_material')
+621:4e|----------------------------------------------------------------------
+622:a2|Traceback (most recent call last):
+623:09|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_evaluation_transfer_source_closure.py", line 83, in test_new_private_edges_have_exact_typed_callers
+624:f4|    PROOF._verify_boundary(ROOT, row, sources, (), fields_by_receiver_type=fields)
+625:8e|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 544, in _verify_boundary
+626:1b|    raise VerificationFailure(
+627:20|original_evaluation_transfer_proof.VerificationFailure: learning_original_evaluation_selector_material: caller set mismatch; missing=['codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs'], unexpected=[]
+628:c5|
+629:0f|======================================================================
+630:44|ERROR: test_actual_continuation_edges_and_private_receivers_remain_exact (test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_actual_continuation_edges_and_private_receivers_remain_exact) (boundary='learning_original_model_operation_begin_read')
+631:4e|----------------------------------------------------------------------
+632:a2|Traceback (most recent call last):
+633:b7|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+634:eb|    matched = any(
+635:19|              ^^^^
+636:92|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+637:20|    has_authority_call(code, boundary.receiver_type, method, fields)
+638:2b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+639:f1|    raise UnresolvedTypedReceiver(
+640:ba|hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible OriginalCellQ24ModelCommandClientV1::begin_original_model_read receiver
+641:c5|
+642:8d|The above exception was the direct cause of the following exception:
+643:c5|
+644:a2|Traceback (most recent call last):
+645:a1|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_continuation_source_closure.py", line 129, in test_actual_continuation_edges_and_private_receivers_remain_exact
+646:20|    PROOF._verify_boundary(ROOT, row, sources, ())
+647:51|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 533, in _verify_boundary
+648:1b|    raise VerificationFailure(
+649:77|original_model_continuation_proof.VerificationFailure: learning_original_model_operation_begin_read: codex-rs/hepta-agentd/src/circuit_model_version_state.rs: unresolved possible OriginalCellQ24ModelCommandClientV1::begin_original_model_read receiver
+650:c5|
+[... 1812 more lines, 2462 total]

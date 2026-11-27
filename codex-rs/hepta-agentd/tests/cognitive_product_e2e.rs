@@ -55,6 +55,7 @@ use core_test_support::responses::ResponseMock;
 use core_test_support::responses::ResponsesRequest;
 use serde_json::Value;
 use serde_json::json;
+use sha2::Digest;
 use tokio::time::timeout;
 use wiremock::Mock;
 use wiremock::MockServer;
@@ -84,6 +85,7 @@ const STABLE_REQUEST_WINDOW: Duration = Duration::from_millis(500);
 struct ProductClient {
     inner: RemoteAppServerClient,
     next_request_id: i64,
+    emit_provider_receipts: bool,
 }
 
 impl ProductClient {
@@ -106,7 +108,14 @@ impl ProductClient {
         Ok(Self {
             inner,
             next_request_id: 1,
+            emit_provider_receipts: false,
         })
+    }
+
+    fn provider_receipt(&self, receipt: Value) {
+        if self.emit_provider_receipts {
+            println!("HEPTA_PROVIDER_QUALIFICATION {receipt}");
+        }
     }
 
     fn request_id(&mut self) -> RequestId {
@@ -156,7 +165,7 @@ impl ProductClient {
         let response: ThreadStartResponse = self
             .inner
             .request_typed(ClientRequest::ThreadStart {
-                request_id,
+                request_id: request_id.clone(),
                 params: ThreadStartParams {
                     model: Some(expected_model.to_string()),
                     model_provider: Some(expected_provider.to_string()),
@@ -183,6 +192,16 @@ impl ProductClient {
             response.cwd.as_path() == workspace,
             "thread started in the wrong workspace"
         );
+        self.provider_receipt(json!({
+            "phase": "thread_started",
+            "rpc_request_id": request_id,
+            "thread_id": &response.thread.id,
+            "requested_model": expected_model,
+            "requested_provider": expected_provider,
+            "observed_app_server_model": &response.model,
+            "observed_app_server_provider": &response.model_provider,
+            "provider_response_model_observed": false,
+        }));
         Ok(response.thread.id)
     }
 
@@ -220,10 +239,10 @@ impl ProductClient {
         let response: TurnStartResponse = self
             .inner
             .request_typed(ClientRequest::TurnStart {
-                request_id,
+                request_id: request_id.clone(),
                 params: TurnStartParams {
                     thread_id: thread_id.to_string(),
-                    client_user_message_id: Some(client_user_message_id),
+                    client_user_message_id: Some(client_user_message_id.clone()),
                     input: vec![V2UserInput::Text {
                         text: text.to_string(),
                         text_elements: Vec::new(),
@@ -232,6 +251,15 @@ impl ProductClient {
                 },
             })
             .await?;
+        self.provider_receipt(json!({
+            "phase": "turn_admitted",
+            "rpc_request_id": request_id,
+            "requested_client_user_message_id": client_user_message_id,
+            "client_admission_key_server_echo_observed": false,
+            "thread_id": thread_id,
+            "observed_turn_id": &response.turn.id,
+            "observed_status": &response.turn.status,
+        }));
         let turn_id = response.turn.id;
         self.wait_for_turn_with_timeout(thread_id, &turn_id, turn_timeout)
             .await?;
@@ -256,6 +284,12 @@ impl ProductClient {
                     && completed.thread_id == thread_id
                     && completed.turn.id == turn_id
                 {
+                    self.provider_receipt(json!({
+                        "phase": "turn_completed_notification",
+                        "observed_thread_id": &completed.thread_id,
+                        "observed_turn_id": &completed.turn.id,
+                        "observed_status": &completed.turn.status,
+                    }));
                     ensure!(
                         completed.turn.status == TurnStatus::Completed,
                         "turn ended with {:#?}",
@@ -839,14 +873,23 @@ async fn real_agentd_local_memory_review_hides_host_tombstone_after_reopen() -> 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[ignore = "set HEPTA_LOCAL_PROVIDER_BASE_URL and HEPTA_LOCAL_PROVIDER_MODEL for a loopback model smoke"]
 async fn real_agentd_loopback_provider_read_only_smoke() -> Result<()> {
+    const PROVIDER_ID: &str = "local_mlx";
     let provider_base_url = std::env::var("HEPTA_LOCAL_PROVIDER_BASE_URL")
         .context("HEPTA_LOCAL_PROVIDER_BASE_URL is required for this ignored smoke")?;
     let model_id = std::env::var("HEPTA_LOCAL_PROVIDER_MODEL")
         .context("HEPTA_LOCAL_PROVIDER_MODEL is required for this ignored smoke")?;
+    let provider_uri = provider_base_url
+        .parse::<http::Uri>()
+        .context("loopback provider URL must be a valid absolute HTTP URI")?;
     ensure!(
-        provider_base_url.starts_with("http://127.0.0.1:")
-            || provider_base_url.starts_with("http://localhost:"),
-        "loopback provider smoke refuses non-local URL: {provider_base_url}"
+        provider_uri.scheme_str() == Some("http")
+            && provider_uri.authority().is_some_and(|authority| {
+                matches!(authority.host(), "127.0.0.1" | "localhost")
+                    && !authority.as_str().contains('@')
+            })
+            && provider_uri.query().is_none()
+            && !provider_base_url.contains('#'),
+        "loopback provider smoke requires a local HTTP authority without user info, query, or fragment"
     );
     ensure!(
         !model_id.trim().is_empty(),
@@ -855,25 +898,82 @@ async fn real_agentd_loopback_provider_read_only_smoke() -> Result<()> {
 
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_A, "workspace-loopback-provider")?;
+    let retained_fixture_root = fleet.retain_fixture_root()?;
+    println!(
+        "HEPTA_PROVIDER_QUALIFICATION {}",
+        json!({
+            "phase": "fixture_retained",
+            "retained_fixture_root": &retained_fixture_root,
+            "root_mode": "0700",
+            "process_cleanup_remains_enabled": true,
+        })
+    );
     MockResponsesConfig::new("http://127.0.0.1:1")
-        .with_model_provider("local_mlx")
-        .with_provider_name("Local MLX qualification provider")
+        .with_model_provider(PROVIDER_ID)
+        .with_provider_name("Local loopback qualification provider")
         .with_provider_base_url(&provider_base_url)
         .with_model(&model_id)
+        .disable_feature(codex_features::Feature::UnboundedConnectionRetries)
         .with_provider_config("supports_websockets = false")
         .with_root_config("model_reasoning_effort = \"minimal\"")
         .write(agent.layout.home_root())?;
+    let config_bytes = std::fs::read(agent.layout.home_root().join("config.toml"))?;
+    let config_sha256 = format!("{:x}", sha2::Sha256::digest(&config_bytes));
 
+    println!(
+        "HEPTA_PROVIDER_QUALIFICATION {}",
+        json!({
+            "phase": "configured",
+            "requested_provider_base_url": provider_base_url,
+            "requested_model": model_id,
+            "requested_provider": PROVIDER_ID,
+            "test_owner_home": agent.layout.home_root(),
+            "retained_fixture_root": retained_fixture_root,
+            "rendered_config_sha256": config_sha256,
+            "turn_completion_timeout_seconds": TURN_TIMEOUT.as_secs(),
+            // MockResponsesConfig renders both retry limits as zero.
+            "request_max_retries": 0,
+            "stream_max_retries": 0,
+            "unbounded_connection_retries": false,
+            "supports_websockets": false,
+            "provider_payload_tool_inventory": "not_observed",
+        })
+    );
     fleet.start(&agent)?;
-    let (control, _health) = fleet.wait_ready(&agent, 1).await?;
+    let (control, health) = fleet.wait_ready(&agent, 1).await?;
     let mut product = ProductClient::connect(&agent, &control).await?;
-    let thread = product.start_thread(&agent.workspace).await?;
-    product
+    product.emit_provider_receipts = true;
+    product.provider_receipt(json!({
+        "phase": "test_owner_ready",
+        "process_id": health.process_id,
+        "agent_id": agent.agent_id.to_string(),
+        "fresh_temporary_fleet": true,
+    }));
+    let thread = product
+        .start_thread_with_expected_provider(&agent.workspace, &model_id, PROVIDER_ID)
+        .await?;
+    let turn_id = product
         .run_turn(
             &thread,
             "Reply with exactly READY. Do not call tools or access external resources.",
         )
         .await?;
+    let thread_read = product.read_thread(&thread).await?;
+    ensure!(
+        thread_read.thread.id == thread,
+        "thread/read returned another thread"
+    );
+    assert_external_read_only_turn(&thread_read, &turn_id, "READY")?;
+    product.provider_receipt(json!({
+        "phase": "persisted_read_only_turn_verified",
+        "observed_thread_id": &thread_read.thread.id,
+        "observed_turn_id": turn_id,
+        "expected_assistant_text": "READY",
+        "full_persisted_items_checked": true,
+        "observed_tool_item_count": 0,
+        "provider_payload_tool_inventory": "not_observed",
+        "physical_provider_request_count": "not_observed",
+    }));
     product.shutdown().await?;
     Ok(())
 }
@@ -1319,9 +1419,21 @@ async fn five_running_agents_share_only_with_the_explicit_consumer() -> Result<(
     seed_verified_agent_memory(&owner, "five-agent-shared-marker", SHARED).await?;
 
     let mut controls = Vec::new();
-    for fixture in fixtures {
-        fleet.start(fixture)?;
-        controls.push(fleet.wait_ready(fixture, 1).await?.0);
+    let bootstrap_started = Instant::now();
+    // Two independent real Agentd bootstraps may overlap; every original
+    // readiness/identity check still completes before federation is granted.
+    for group in fixtures.chunks(/*chunk_size*/ 2) {
+        for fixture in group {
+            fleet.start(fixture)?;
+        }
+        for fixture in group {
+            controls.push(fleet.wait_ready(fixture, 1).await?.0);
+            eprintln!(
+                "FLEET_STAGE federation bootstrap agent={} elapsed={:?}",
+                fixture.agent_id,
+                bootstrap_started.elapsed()
+            );
+        }
     }
     controls[0]
         .memory_federation_grant(
@@ -1352,88 +1464,14 @@ async fn five_running_agents_share_only_with_the_explicit_consumer() -> Result<(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-#[cfg(not(feature = "production-cognitive-write"))]
-async fn unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools() -> Result<()> {
-    const UNAVAILABLE_CALL: &str = "unavailable-recall";
-    const QUERY: &str = "unavailable runtime probe";
-
-    let mut fleet = FleetHarness::new()?;
-    let agent = fleet.register(AGENT_A, "workspace-a")?;
-    let model = responses::start_mock_server().await;
-    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
-    let blocking_path = agent.layout.cognitive_root().join("cognitive_1.sqlite3");
-    std::fs::create_dir(&blocking_path)?;
-
-    fleet.start(&agent)?;
-    let (control, _) = fleet.wait_ready(&agent, 1).await?;
-    ensure!(control.health().await?.ready, "agentd did not stay ready");
-    let mut product = ProductClient::connect(&agent, &control).await?;
-    let thread = product.start_thread(&agent.workspace).await?;
-    let unavailable = responses::mount_sse_sequence(
-        &model,
-        vec![
-            tool_sse(
-                "unavailable-response",
-                UNAVAILABLE_CALL,
-                "recall",
-                json!({ "query": QUERY }),
-            ),
-            final_sse("unavailable-final"),
-        ],
-    )
-    .await;
-    product.run_turn(&thread, QUERY).await?;
-    assert_physical_request_count_stable(&unavailable, 2, "unavailable cognitive read").await?;
-    let requests = unavailable.requests();
-    assert_no_cognitive_reference(&requests[0])?;
-    for operation in ["remember", "correct", "forget"] {
-        ensure!(
-            requests[0]
-                .tool_by_name(COGNITIVE_NAMESPACE, operation)
-                .is_none(),
-            "unavailable runtime incorrectly advertised write tool {operation}"
-        );
-    }
-    for operation in ["recall", "explain"] {
-        ensure!(
-            requests[0]
-                .tool_by_name(COGNITIVE_NAMESPACE, operation)
-                .is_some(),
-            "unavailable runtime incorrectly removed read tool {operation}"
-        );
-    }
-    assert_no_cognitive_reference(&requests[1])?;
-    let output = unavailable
-        .function_call_output_text(UNAVAILABLE_CALL)
-        .context("unavailable tool output did not reach the model")?;
-    let typed: Value = serde_json::from_str(&output)?;
-    ensure!(typed["error"]["code"] == "hepta_cognitive_unavailable");
-    ensure!(
-        typed["error"]["message"]
-            .as_str()
-            .is_some_and(|message| message.contains("storage_unavailable")),
-        "typed error omitted the sanitized stable reason"
-    );
-    ensure!(
-        !output.contains(blocking_path.to_string_lossy().as_ref())
-            && !output.to_ascii_lowercase().contains("sqlite"),
-        "typed unavailable error leaked storage details"
-    );
-
-    product.shutdown().await?;
-    Ok(())
-}
-
-/// The named Agentd product mutation profile has a stronger startup contract
-/// than a read-only build: an unavailable cognitive store must stop before App
-/// Server can serve a turn. The qualification witness feature is deliberately
-/// irrelevant to this gate.
-#[cfg(feature = "production-cognitive-write")]
+/// Every daemon profile requires the real critical cognitive owner for readiness.
+/// Unavailable-runtime tool responses are covered at the extension boundary.
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn cognitive_store_unavailable_fails_closed_before_provider() -> Result<()> {
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_A, "workspace-a-qualification-unavailable")?;
+    let model = responses::start_mock_server().await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
     let blocking_path = agent.layout.cognitive_root().join("cognitive_1.sqlite3");
     std::fs::create_dir(&blocking_path)?;
 
@@ -1464,12 +1502,32 @@ async fn cognitive_store_unavailable_fails_closed_before_provider() -> Result<()
                 .map(|log| String::from_utf8_lossy(&log.bytes))
                 .collect::<String>();
             ensure!(
-                logs.contains("cognitive write runtime unavailable"),
+                logs.contains(if cfg!(feature = "production-cognitive-write") {
+                    "cognitive write runtime unavailable"
+                } else {
+                    "critical cognitive owner unavailable"
+                }),
                 "cognitive-writer startup omitted the fail-closed error; logs={logs:?}"
             );
             ensure!(
                 !snapshot.healthy,
                 "cognitive-writer startup rejection was reported healthy"
+            );
+            ensure!(
+                !agent.layout.agentd_control_socket().exists(),
+                "unavailable critical owner opened the control socket before rejection"
+            );
+            ensure!(
+                !agent.layout.app_server_socket().exists(),
+                "unavailable critical owner opened App Server before rejection"
+            );
+            let requests = model
+                .received_requests()
+                .await
+                .context("provider request recording unavailable")?;
+            ensure!(
+                requests.is_empty(),
+                "unavailable critical owner contacted the provider before rejection"
             );
             return Ok(());
         }
@@ -1638,11 +1696,23 @@ async fn five_real_agents_survive_one_automation_store_failure_without_peer_stal
 
     let mut controls = Vec::new();
     let mut before = Vec::new();
-    for fixture in fixtures {
-        fleet.start(fixture)?;
-        let (control, health) = fleet.wait_ready(fixture, 1).await?;
-        controls.push(control);
-        before.push(health);
+    let bootstrap_started = Instant::now();
+    // Retain each real owner and health snapshot before sabotaging Agent A.
+    // Bound simultaneous bootstrap work to two independent processes.
+    for group in fixtures.chunks(/*chunk_size*/ 2) {
+        for fixture in group {
+            fleet.start(fixture)?;
+        }
+        for fixture in group {
+            let (control, health) = fleet.wait_ready(fixture, 1).await?;
+            controls.push(control);
+            before.push(health);
+            eprintln!(
+                "FLEET_STAGE store-failure bootstrap agent={} elapsed={:?}",
+                fixture.agent_id,
+                bootstrap_started.elapsed()
+            );
+        }
     }
 
     // Materialize Agent A's automation store before sabotaging only that Agent.
@@ -2315,6 +2385,9 @@ async fn read_kg_sqlite_evidence(
             && immutable_relation_count == immutable_relations,
         "immutable KG fact rows did not match their fact-set receipt"
     );
+    // This fresh, single-memory fixture uses G14 revision facts instead of
+    // copying kg_nodes and kg_edges. Require their storage witness and count
+    // active cited facts directly, keeping tombstones out of the projection.
     let (
         generation,
         receipt_fact_set_sha256,
@@ -2342,18 +2415,47 @@ async fn read_kg_sqlite_evidence(
         i64,
         i64,
     ) = sqlx::query_as(
+        // New generations store an immutable revision-fact cut, not legacy
+        // graph copies. Count its physical facts with the exact generation,
+        // memory, and source bindings before checking the receipt below.
         "SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
                 s.generation_sha256, s.publication_sha256,
                 r.entity_count, r.relation_count, r.node_count, r.edge_count,
-                (SELECT COUNT(*) FROM kg_nodes AS n
-                 WHERE n.projection_scope = r.projection_scope
-                   AND n.generation = r.generation
+                (SELECT COUNT(*) FROM kg_revision_entities AS n
+                 JOIN kg_projection_generation_receipts AS h
+                   ON h.projection_scope = r.projection_scope
+                  AND h.trigger_memory_id = n.memory_id
+                  AND h.trigger_memory_revision = n.memory_revision
+                  AND h.generation = (
+                      SELECT MAX(x.generation)
+                      FROM kg_projection_generation_receipts AS x
+                      WHERE x.projection_scope = r.projection_scope
+                        AND x.trigger_memory_id = n.memory_id
+                        AND x.generation <= r.generation
+                  )
+                 JOIN memory_revisions AS m
+                   ON m.memory_id = h.trigger_memory_id
+                  AND m.revision = h.trigger_memory_revision
+                 WHERE m.verification = 'verified' AND m.lifecycle = 'active'
                    AND n.memory_id = r.trigger_memory_id
                    AND n.memory_revision = r.trigger_memory_revision
                    AND n.source_id = ? AND n.source_revision = 1),
-                (SELECT COUNT(*) FROM kg_edges AS e
-                 WHERE e.projection_scope = r.projection_scope
-                   AND e.generation = r.generation
+                (SELECT COUNT(*) FROM kg_revision_relations AS e
+                 JOIN kg_projection_generation_receipts AS h
+                   ON h.projection_scope = r.projection_scope
+                  AND h.trigger_memory_id = e.memory_id
+                  AND h.trigger_memory_revision = e.memory_revision
+                  AND h.generation = (
+                      SELECT MAX(x.generation)
+                      FROM kg_projection_generation_receipts AS x
+                      WHERE x.projection_scope = r.projection_scope
+                        AND x.trigger_memory_id = e.memory_id
+                        AND x.generation <= r.generation
+                  )
+                 JOIN memory_revisions AS m
+                   ON m.memory_id = h.trigger_memory_id
+                  AND m.revision = h.trigger_memory_revision
+                 WHERE m.verification = 'verified' AND m.lifecycle = 'active'
                    AND e.memory_id = r.trigger_memory_id
                    AND e.memory_revision = r.trigger_memory_revision
                    AND e.source_id = ? AND e.source_revision = 1)
@@ -2362,7 +2464,11 @@ async fn read_kg_sqlite_evidence(
            ON s.projection_scope = r.projection_scope AND s.generation = r.generation
          JOIN kg_projection AS p
            ON p.projection_scope = r.projection_scope AND p.generation = r.generation
-         WHERE r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
+         JOIN kg_projection_generation_storage AS storage
+           ON storage.projection_scope = r.projection_scope
+          AND storage.generation = r.generation
+         WHERE storage.storage_mode = 'revision_facts_v1'
+           AND r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
     )
     .bind(expected_source_id)
     .bind(expected_source_id)
@@ -2377,7 +2483,9 @@ async fn read_kg_sqlite_evidence(
     );
     ensure!(
         node_count == actual_node_count && edge_count == actual_edge_count,
-        "current projection rows did not match their generation receipt"
+        "current projection facts did not match generation {generation} for revision \
+         {memory_revision}: nodes {actual_node_count}/{node_count}, \
+         edges {actual_edge_count}/{edge_count}"
     );
     Ok(KgProjectionEvidence {
         generation: u64::try_from(generation)?,

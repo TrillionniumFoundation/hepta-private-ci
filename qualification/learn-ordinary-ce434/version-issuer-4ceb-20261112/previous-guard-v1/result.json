@@ -1,0 +1,35 @@
+{
+  "source_sha": "24057123b8b502ee9e2bb0bfb800315c36293ef0",
+  "source_tree": "9d6558f34e81402329680485f1df556419959165",
+  "state": "failed",
+  "scope": "repair only exact formatter spans and corresponding negative mutation literals; no Rust edits, verifier exemptions or native execution",
+  "steps": [
+    {
+      "name": "fetch-fixed",
+      "exit_code": 0,
+      "bytes": 144,
+      "sha256": "fa336f14429db0d670c7550839048fbeebebeb09890ca7c368c31031f37de19d"
+    },
+    {
+      "name": "create-worktree",
+      "exit_code": 0,
+      "bytes": 2416,
+      "sha256": "5260514099c863014c4527bbc8a0df9fb9db8f71b9e504142891faa54bb2e7fa"
+    },
+    {
+      "name": "patch-protected-spans",
+      "exit_code": 1,
+      "bytes": 774,
+      "sha256": "c47368dc7eca28f646351e228ed0a092d11004809e80580135284cab794ff9b9"
+    }
+  ],
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "error_type": "RuntimeError",
+  "error": "patch-protected-spans failed; original output retained",
+  "source_after": "24057123b8b502ee9e2bb0bfb800315c36293ef0",
+  "source_status_after": ""
+}

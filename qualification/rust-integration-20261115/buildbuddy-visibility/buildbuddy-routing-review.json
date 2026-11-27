@@ -1,0 +1,302 @@
+{
+  "schema": "hepta.buildbuddy-routing-readonly-review.v1",
+  "inspected_head": "2862ad6a8c36f644f7ccee7813a58bcab1363b65",
+  "files": {
+    ".github/scripts/run_bazel_with_buildbuddy.py": "384e69963a09d8bebe108f58b293e0fd5431eb11e16efb544544714c541a177e",
+    ".bazelrc": "cf2d7b0511a3b7872a0be581ce32a6010fdd2c40cff30905d6a9f96d1ca2b2b4",
+    ".github/workflows/bazel.yml": "1a41b65204ac73dab1648fc87d028b6c2feab98e8f2a1eb984fb6384a798919b"
+  },
+  "cases": [
+    {
+      "case": "plain-local-no-key",
+      "explicit_dummy_environment": {},
+      "input": [
+        "build",
+        "//codex-rs/cli:codex"
+      ],
+      "selected_remote_config": null,
+      "command_not_executed": [
+        "bazel",
+        "build",
+        "//codex-rs/cli:codex"
+      ],
+      "network_contacted": false,
+      "expanded_relevant_rc_flags": []
+    },
+    {
+      "case": "repository-ci-linux-no-key",
+      "explicit_dummy_environment": {
+        "GITHUB_ACTIONS": "true",
+        "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
+        "GITHUB_EVENT_NAME": "pull_request"
+      },
+      "input": [
+        "build",
+        "--config=ci-linux",
+        "//codex-rs/cli:codex"
+      ],
+      "selected_remote_config": null,
+      "command_not_executed": [
+        "bazel",
+        "--noexperimental_remote_repo_contents_cache",
+        "build",
+        "//codex-rs/cli:codex"
+      ],
+      "network_contacted": false,
+      "expanded_relevant_rc_flags": []
+    },
+    {
+      "case": "repository-ci-linux-dummy-key",
+      "explicit_dummy_environment": {
+        "GITHUB_ACTIONS": "true",
+        "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
+        "GITHUB_EVENT_NAME": "pull_request",
+        "BUILDBUDDY_API_KEY": "dummy-noncredential"
+      },
+      "input": [
+        "test",
+        "--config=ci-linux",
+        "//codex-rs/..."
+      ],
+      "selected_remote_config": "buildbuddy-generic-rbe",
+      "command_not_executed": [
+        "bazel",
+        "--noexperimental_remote_repo_contents_cache",
+        "test",
+        "--config=buildbuddy-generic-rbe",
+        "--remote_header=x-buildbuddy-api-key=dummy-noncredential",
+        "--config=ci-linux",
+        "//codex-rs/..."
+      ],
+      "network_contacted": false,
+      "expanded_relevant_rc_flags": [
+        {
+          "config": "buildbuddy-generic",
+          "line": 59,
+          "flag": "--bes_backend=grpcs://remote.buildbuddy.io"
+        },
+        {
+          "config": "buildbuddy-generic",
+          "line": 60,
+          "flag": "--bes_results_url=https://app.buildbuddy.io/invocation/"
+        },
+        {
+          "config": "buildbuddy-generic",
+          "line": 61,
+          "flag": "--remote_cache=grpcs://remote.buildbuddy.io"
+        },
+        {
+          "config": "buildbuddy-generic-rbe",
+          "line": 67,
+          "flag": "--remote_executor=grpcs://remote.buildbuddy.io"
+        },
+        {
+          "config": "ci",
+          "line": 99,
+          "flag": "--build_metadata=REPO_URL=https://github.com/openai/codex.git"
+        },
+        {
+          "config": "ci",
+          "line": 100,
+          "flag": "--build_metadata=ROLE=CI"
+        },
+        {
+          "config": "ci",
+          "line": 101,
+          "flag": "--build_metadata=VISIBILITY=PUBLIC"
+        }
+      ]
+    },
+    {
+      "case": "repository-ci-windows-dummy-key",
+      "explicit_dummy_environment": {
+        "GITHUB_ACTIONS": "true",
+        "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
+        "GITHUB_EVENT_NAME": "pull_request",
+        "RUNNER_OS": "Windows",
+        "BUILDBUDDY_API_KEY": "dummy-noncredential"
+      },
+      "input": [
+        "test",
+        "--config=ci-windows",
+        "//codex-rs/..."
+      ],
+      "selected_remote_config": "buildbuddy-generic",
+      "command_not_executed": [
+        "bazel",
+        "--noexperimental_remote_repo_contents_cache",
+        "test",
+        "--config=buildbuddy-generic",
+        "--remote_header=x-buildbuddy-api-key=dummy-noncredential",
+        "--config=ci-windows",
+        "//codex-rs/..."
+      ],
+      "network_contacted": false,
+      "expanded_relevant_rc_flags": [
+        {
+          "config": "buildbuddy-generic",
+          "line": 59,
+          "flag": "--bes_backend=grpcs://remote.buildbuddy.io"
+        },
+        {
+          "config": "buildbuddy-generic",
+          "line": 60,
+          "flag": "--bes_results_url=https://app.buildbuddy.io/invocation/"
+        },
+        {
+          "config": "buildbuddy-generic",
+          "line": 61,
+          "flag": "--remote_cache=grpcs://remote.buildbuddy.io"
+        },
+        {
+          "config": "ci",
+          "line": 99,
+          "flag": "--build_metadata=REPO_URL=https://github.com/openai/codex.git"
+        },
+        {
+          "config": "ci",
+          "line": 100,
+          "flag": "--build_metadata=ROLE=CI"
+        },
+        {
+          "config": "ci",
+          "line": 101,
+          "flag": "--build_metadata=VISIBILITY=PUBLIC"
+        }
+      ]
+    },
+    {
+      "case": "repository-cache-only-dummy-key",
+      "explicit_dummy_environment": {
+        "GITHUB_ACTIONS": "true",
+        "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
+        "GITHUB_EVENT_NAME": "push",
+        "BUILDBUDDY_API_KEY": "dummy-noncredential"
+      },
+      "input": [
+        "build",
+        "//codex-rs/cli:codex"
+      ],
+      "selected_remote_config": "buildbuddy-generic",
+      "command_not_executed": [
+        "bazel",
+        "--noexperimental_remote_repo_contents_cache",
+        "build",
+        "--config=buildbuddy-generic",
+        "--remote_header=x-buildbuddy-api-key=dummy-noncredential",
+        "//codex-rs/cli:codex"
+      ],
+      "network_contacted": false,
+      "expanded_relevant_rc_flags": [
+        {
+          "config": "buildbuddy-generic",
+          "line": 59,
+          "flag": "--bes_backend=grpcs://remote.buildbuddy.io"
+        },
+        {
+          "config": "buildbuddy-generic",
+          "line": 60,
+          "flag": "--bes_results_url=https://app.buildbuddy.io/invocation/"
+        },
+        {
+          "config": "buildbuddy-generic",
+          "line": 61,
+          "flag": "--remote_cache=grpcs://remote.buildbuddy.io"
+        }
+      ]
+    },
+    {
+      "case": "upstream-push-dummy-key",
+      "explicit_dummy_environment": {
+        "GITHUB_ACTIONS": "true",
+        "GITHUB_REPOSITORY": "openai/codex",
+        "GITHUB_EVENT_NAME": "push",
+        "BUILDBUDDY_API_KEY": "dummy-noncredential"
+      },
+      "input": [
+        "build",
+        "--config=ci-linux",
+        "//codex-rs/cli:codex"
+      ],
+      "selected_remote_config": "buildbuddy-openai-rbe",
+      "command_not_executed": [
+        "bazel",
+        "--noexperimental_remote_repo_contents_cache",
+        "build",
+        "--config=buildbuddy-openai-rbe",
+        "--remote_header=x-buildbuddy-api-key=dummy-noncredential",
+        "--config=ci-linux",
+        "//codex-rs/cli:codex"
+      ],
+      "network_contacted": false,
+      "expanded_relevant_rc_flags": [
+        {
+          "config": "buildbuddy-openai",
+          "line": 70,
+          "flag": "--bes_backend=grpcs://openai.buildbuddy.io"
+        },
+        {
+          "config": "buildbuddy-openai",
+          "line": 71,
+          "flag": "--bes_results_url=https://openai.buildbuddy.io/invocation/"
+        },
+        {
+          "config": "buildbuddy-openai",
+          "line": 72,
+          "flag": "--remote_cache=grpcs://openai.buildbuddy.io"
+        },
+        {
+          "config": "buildbuddy-openai-rbe",
+          "line": 78,
+          "flag": "--remote_executor=grpcs://openai.buildbuddy.io"
+        },
+        {
+          "config": "ci",
+          "line": 99,
+          "flag": "--build_metadata=REPO_URL=https://github.com/openai/codex.git"
+        },
+        {
+          "config": "ci",
+          "line": 100,
+          "flag": "--build_metadata=ROLE=CI"
+        },
+        {
+          "config": "ci",
+          "line": 101,
+          "flag": "--build_metadata=VISIBILITY=PUBLIC"
+        }
+      ]
+    }
+  ],
+  "observed_real_ci_evidence": "buildbuddy-runtime-evidence.json",
+  "sources": [
+    {
+      "url": "https://www.buildbuddy.io/docs/guide-metadata/",
+      "claim": "VISIBILITY=PUBLIC overrides authenticated organization-only default to anyone with the link"
+    },
+    {
+      "url": "https://www.buildbuddy.io/docs/rbe-github-actions/",
+      "claim": "Authenticated builds are private to organization by default; public metadata exposes result pages outside organization"
+    }
+  ],
+  "findings": [
+    "No endpoint is enabled by the unconfigured ordinary local Bazel invocation.",
+    "A nonempty configured BUILDBUDDY_API_KEY is the wrapper opt-in; existing workflow injects the configured secret without an additional run-level boolean.",
+    "The TrillionniumFoundation/hepta-private-ci repository identity selects generic BuildBuddy endpoints; it cannot select the OpenAI tenant via normal GitHub repository identity. This routing does not depend on repository visibility; the current repository API reports public.",
+    "Keyed CI configurations inherit PUBLIC visibility and the incorrect upstream repository URL.",
+    "Retained 566 CI logs prove generic BES streaming occurred; anonymous retrieval and the exact externally visible content were not tested."
+  ],
+  "authorityGranted": false,
+  "repository_visibility_observation": {
+    "observed_at_utc": "2026-11-15 11:52:26 UTC",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+    "method": "GET",
+    "full_name": "TrillionniumFoundation/hepta-private-ci",
+    "private": false,
+    "visibility": "public",
+    "description": "Private verification-only mirror for Hepta hosted CI",
+    "limitation": "Current repository metadata is distinct from the name/description and does not prove historical repository visibility or anonymous access to any BuildBuddy invocation.",
+    "raw_response_archive": "audit/privacy-repository-api-raw.json",
+    "raw_response_sha256": "dc7860ede700f49cefe0fe0a5db5887910da79925459056346b82084634d7a9f"
+  }
+}

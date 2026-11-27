@@ -1,0 +1,1023 @@
+{
+  "schema": "hepta.learn.a671.original-validation-terminal.independent-result-audit.v1",
+  "fixed_source": {
+    "sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9"
+  },
+  "evidence_commit": {
+    "sha": "09408731efbdad70742a2ac9679f23ad4650042e",
+    "tree": "d6d66adc06913244cdc291e19baed34a57cc7b57",
+    "parents": [
+      "a6717d7228045e6cb60532966f06e6e02c4a6abe"
+    ]
+  },
+  "evidence_path_prefix": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/",
+  "actual_fixed_ref_reads": [
+    {
+      "name": "source-suite.json",
+      "key": "source_json",
+      "sha": "9d1c9dc6e79c86fcc3aa10fe483c9d7a1f16ae12",
+      "actual_fixed_path": true,
+      "bytes": 89664,
+      "sha256": "10ad0500ea8854cb96c145ba4f043a6486f9ca11f02280428aeb589e16f110d8"
+    },
+    {
+      "name": "source-suite.log",
+      "key": "source_log",
+      "sha": "0bb75f1aa8c1e4a4bf8283e30adfe5d52460e69a",
+      "actual_fixed_path": true,
+      "bytes": 129213,
+      "sha256": "95a9f8b5f26286230c6a30a4fc8320cb97c1813577fa037d693296b228ad10a0"
+    },
+    {
+      "name": "focused-native.junit.xml",
+      "key": "junit",
+      "sha": "1737fc3d0bfd6a605c0bcfee2804c398a117cdcd",
+      "actual_fixed_path": true,
+      "bytes": 75336,
+      "sha256": "cb1057591464fed92d0a050c2a31e7aad39d8c356b7354958396a1016a464fcd"
+    },
+    {
+      "name": "focused-native.junit.summary.json",
+      "key": "summary",
+      "sha": "0fff1cb1882692be0a114ef4420f605534433d26",
+      "actual_fixed_path": true,
+      "bytes": 40315,
+      "sha256": "5f880c611193bf1829d61ed0cfdac01615e0ecc87719b8b17f41df04a30f8863"
+    },
+    {
+      "name": "focused-native.json",
+      "key": "execution_receipt",
+      "sha": "925063e65f83666cc38a13e7f64a90167e68ca78",
+      "actual_fixed_path": true,
+      "bytes": 41101,
+      "sha256": "a7fe131594ff4c31966674c2d67ca053c7bf54b43f8ee9e551fb789caa2f3f17"
+    },
+    {
+      "name": "focused-native.execution.log",
+      "key": "execution_log",
+      "sha": "45b189dbcefff875ac1d69cf2868b5258b923de8",
+      "actual_fixed_path": true,
+      "bytes": 187839,
+      "sha256": "7b87ec048219bacd146d9f7f4de5df7a73f2eceb2d635a4808f34f13a74a4664"
+    },
+    {
+      "name": "outer-as-observed.json",
+      "key": "outer",
+      "sha": "6839a4c985cc39825965808aeead3196b48ae5ee",
+      "actual_fixed_path": true,
+      "bytes": 2396,
+      "sha256": "3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60"
+    },
+    {
+      "name": "native-as-observed.json",
+      "key": "native",
+      "sha": "efe2855cc997b1af10824cd5499dd0ee7a76f807",
+      "actual_fixed_path": true,
+      "bytes": 51057,
+      "sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71"
+    },
+    {
+      "name": "export-manifest.json",
+      "key": "export_manifest",
+      "sha": "2024c4774a60379e7bb3b921a64df97e0571f06c",
+      "actual_fixed_path": true,
+      "bytes": 14007,
+      "sha256": "61b39f6912681f87f1171fb8d2d864bfb92a220589b695b0af7072262595fa13"
+    }
+  ],
+  "source_result": {
+    "actual_methods": 443,
+    "expected_methods": 443,
+    "tests_run": 443,
+    "passed": 406,
+    "failures": 0,
+    "errors": 37,
+    "skipped": 0,
+    "passed_flag": false,
+    "complete_case_ID_multiset_matches_frozen_443": true,
+    "unique_case_records": 443,
+    "reported_suite_seconds": 308.950969964033,
+    "outer_source_process": {
+      "exit_code": 1,
+      "seconds": 310.09494331409223
+    },
+    "exact_error_category": "All37 complete original error tracebacks terminate in KeyError: 'authority'.",
+    "statement_forms": [
+      {
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "count": 36
+      },
+      {
+        "statement": "self.assertTrue(self.manifest[\"authority\"])",
+        "count": 1
+      }
+    ],
+    "error_trace_IDs_bijective_with_all37_JSON_error_cases": true,
+    "all37_errors": [
+      {
+        "index": 1,
+        "id": "test_artifact_publication_readback_source_closure.ArtifactPublicationReadbackClosureTests.test_service_is_the_only_host_caller_and_no_publication_cap_is_created",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+        "line": 93,
+        "function": "test_service_is_the_only_host_caller_and_no_publication_cap_is_created",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 446,
+        "complete_error_block_sha256": "2748526964ea2469264e7a3ba5ddac284ca41ba56b73674d4283bcd497beccc1"
+      },
+      {
+        "index": 2,
+        "id": "test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_product_callers_are_exact_without_granting_stage_authority",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+        "line": 113,
+        "function": "test_product_callers_are_exact_without_granting_stage_authority",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 455,
+        "complete_error_block_sha256": "ab6585cba96e831844090c52e049102ad92ad9b356f919a58df0a30d248f592c"
+      },
+      {
+        "index": 3,
+        "id": "test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_original_recovery_callers_remain_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+        "line": 79,
+        "function": "test_original_recovery_callers_remain_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 464,
+        "complete_error_block_sha256": "972dcdb7b6ab7ec4560d5d56b0421dacef4bdf56afce954a2b3a007627363588"
+      },
+      {
+        "index": 4,
+        "id": "test_original_artifact_head_source_closure.OriginalArtifactHeadSourceClosureTests.test_original_edges_and_unregistered_native_entrances_remain_exact",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_artifact_head_source_closure.py",
+        "line": 983,
+        "function": "test_original_edges_and_unregistered_native_entrances_remain_exact",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 473,
+        "complete_error_block_sha256": "a8d0a9cf88cd41bc021d7292c7667e7a1f7d3b94d9b2ee827eee087cf5ecee3d"
+      },
+      {
+        "index": 5,
+        "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+        "line": 121,
+        "function": "test_original_source_lane_and_complete_model_binding_cannot_be_bypassed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 482,
+        "complete_error_block_sha256": "1de7463e2b7f1f8a9edfd9dcdf74ddb6e4256c88ebe2b9f79dc14271a91871c7"
+      },
+      {
+        "index": 6,
+        "id": "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_real_read_edges_are_registered_and_owner_constructors_remain_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+        "line": 115,
+        "function": "test_real_read_edges_are_registered_and_owner_constructors_remain_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 491,
+        "complete_error_block_sha256": "61e285a3242f69469426e3b779dc22cf40377c979efcd7e92655b83ca66dee65"
+      },
+      {
+        "index": 7,
+        "id": "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_only_actual_concrete_consumers_and_readback_edges_are_admitted",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "line": 106,
+        "function": "test_only_actual_concrete_consumers_and_readback_edges_are_admitted",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 500,
+        "complete_error_block_sha256": "36e496f0a5b7310e81e240c9bc9edde0bd2ff8e561335a9f6cefba4273ae4c19"
+      },
+      {
+        "index": 8,
+        "id": "test_original_evaluation_operation_source_closure.OriginalEvaluationOperationClosureTests.test_unfinished_material_cannot_restore_client_or_publish_a_transferable_proof",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_evaluation_operation_source_closure.py",
+        "line": 150,
+        "function": "test_unfinished_material_cannot_restore_client_or_publish_a_transferable_proof",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 509,
+        "complete_error_block_sha256": "108d6a975a5760e317d38d7f954b14cf849f61f3069803361a0f5efd9f14082d"
+      },
+      {
+        "index": 9,
+        "id": "test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_four_receipt_ports_and_stage_assembly_remain_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+        "line": 151,
+        "function": "test_four_receipt_ports_and_stage_assembly_remain_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 518,
+        "complete_error_block_sha256": "d1d858c3a8409fde128ff076e1cd1d77dc239b4d858dbacd66d5799afd8b789a"
+      },
+      {
+        "index": 10,
+        "id": "test_original_evaluation_transfer_source_closure.OriginalEvaluationTransferSourceClosureTests.test_all_e_transfer_records_validate",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_evaluation_transfer_source_closure.py",
+        "line": 57,
+        "function": "test_all_e_transfer_records_validate",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 527,
+        "complete_error_block_sha256": "c6b7653971b4d85aa46c520a046cb4668a2bad5bb3cd87f8c4ae0995e168f385"
+      },
+      {
+        "index": 11,
+        "id": "test_original_execution_owner_source_closure.OriginalExecutionOwnerSourceClosureTests.test_original_constructors_are_closed_and_selector_gets_only_readback",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_execution_owner_source_closure.py",
+        "line": 130,
+        "function": "test_original_constructors_are_closed_and_selector_gets_only_readback",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 536,
+        "complete_error_block_sha256": "6f59c86dc2a26c4586814ad26861d67c851e4b92f0b92f19c82022411a26b5a2"
+      },
+      {
+        "index": 12,
+        "id": "test_original_material_command_source_closure.OriginalMaterialCommandClosureTests.test_only_original_pair_consumption_opens_custody_and_external_dispatch_stays_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+        "line": 139,
+        "function": "test_only_original_pair_consumption_opens_custody_and_external_dispatch_stays_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 545,
+        "complete_error_block_sha256": "e45319d2e5edbb0dd4c9f2911061e86ed3cb81bb99a77261b4db376183166bf6"
+      },
+      {
+        "index": 13,
+        "id": "test_original_material_source_peer_source_closure.OriginalMaterialSourcePeerClosureTests.test_only_actual_material_edges_open_and_host_handoff_remains_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_material_source_peer_source_closure.py",
+        "line": 92,
+        "function": "test_only_actual_material_edges_open_and_host_handoff_remains_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 554,
+        "complete_error_block_sha256": "7ce454356ff66d60406b2e32d81e45de8ac24dd30b0aba6d1b936a71f8fe04cd"
+      },
+      {
+        "index": 14,
+        "id": "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+        "line": 137,
+        "function": "test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 563,
+        "complete_error_block_sha256": "761560e5115839837c66959488d2026f2c55a30d6c2a18cfa56557fb91bb353e"
+      },
+      {
+        "index": 15,
+        "id": "test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_new_selector_owner_and_root_route_remain_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+        "line": 147,
+        "function": "test_new_selector_owner_and_root_route_remain_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 572,
+        "complete_error_block_sha256": "b33223768f1be9897e379c21337ac3a62a4145e9c47902ad94adfea42dd5700c"
+      },
+      {
+        "index": 16,
+        "id": "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "line": 95,
+        "function": "test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 581,
+        "complete_error_block_sha256": "814ba1631101e4f2d5737597641bd5e50b6793f794cc88c9d78369f780ad7c5e"
+      },
+      {
+        "index": 17,
+        "id": "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "line": 121,
+        "function": "test_only_concrete_original_edges_and_resident_installation_are_registered",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 590,
+        "complete_error_block_sha256": "5ff1740f7398f4995a10595e1e03c6e04a84d03172eecac5471bbe70e6e0807b"
+      },
+      {
+        "index": 18,
+        "id": "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_new_v2_factories_and_legacy_delegation_have_exact_callers",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_panel_bootstrap_source_closure.py",
+        "line": 313,
+        "function": "test_new_v2_factories_and_legacy_delegation_have_exact_callers",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 599,
+        "complete_error_block_sha256": "da2b5d8a7b12ad041ce4e95f9ffba7802b89a0e6c0906791d8fc73ec32d857c4"
+      },
+      {
+        "index": 19,
+        "id": "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_complete_records_are_preserved_as_a_multiset",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_pre_b_policy_source_closure.py",
+        "line": 98,
+        "function": "test_complete_records_are_preserved_as_a_multiset",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 608,
+        "complete_error_block_sha256": "22bec3cfa3b2cb0d67e8ba1b87dde0771f7c0cc01043020b279d5b5447f9045b"
+      },
+      {
+        "index": 20,
+        "id": "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_concrete_live_read_edges_are_exact_and_external_factories_stay_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+        "line": 115,
+        "function": "test_concrete_live_read_edges_are_exact_and_external_factories_stay_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 617,
+        "complete_error_block_sha256": "810b5fc11243bf8c5afd5d79ca0ab8898a39a507178f509bf88b22e35b4f5ab4"
+      },
+      {
+        "index": 21,
+        "id": "test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_public_owner_routes_are_closed_and_actual_original_edges_are_exact",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+        "line": 147,
+        "function": "test_public_owner_routes_are_closed_and_actual_original_edges_are_exact",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 626,
+        "complete_error_block_sha256": "5d1557bbf2943e49c6be38662110e7b206bfbe6d86529e84b65435edf7df8e08"
+      },
+      {
+        "index": 22,
+        "id": "test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_only_actual_readonly_backends_and_consuming_hosts_are_registered",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_readonly_ready_source_closure.py",
+        "line": 153,
+        "function": "test_only_actual_readonly_backends_and_consuming_hosts_are_registered",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 635,
+        "complete_error_block_sha256": "4f40e4cbd8de132eb096fff3713eb0f806318070a78b455ccb193828c413a336"
+      },
+      {
+        "index": 23,
+        "id": "test_original_retention_admission_source_closure.OriginalRetentionAdmissionClosureTests.test_complete_material_records_validate_without_execution_authority",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_retention_admission_source_closure.py",
+        "line": 63,
+        "function": "test_complete_material_records_validate_without_execution_authority",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 644,
+        "complete_error_block_sha256": "c9bc6a2616f7e293392ccb4eb2c9df14c74bf494d4d143c7ebf5a906a140e285"
+      },
+      {
+        "index": 24,
+        "id": "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "line": 96,
+        "function": "test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 653,
+        "complete_error_block_sha256": "506a0c6c009580dea969966af3f764f15133c28f21731e195d706b6dcf17fd0e"
+      },
+      {
+        "index": 25,
+        "id": "test_original_source_operation_source_closure.OriginalSourceOperationClosureTests.test_exact_original_callers_and_private_operations_remain_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_source_operation_source_closure.py",
+        "line": 202,
+        "function": "test_exact_original_callers_and_private_operations_remain_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 662,
+        "complete_error_block_sha256": "6594430f86210d5a051d0f4ef359b27b16bac7ac2ae90e2e62e3752c37654d74"
+      },
+      {
+        "index": 26,
+        "id": "test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+        "line": 124,
+        "function": "test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 671,
+        "complete_error_block_sha256": "1d3687a50af92bfd005d7ceb689b2ad9a597f364f3c6fa68884d10187d743a3c"
+      },
+      {
+        "index": 27,
+        "id": "test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_only_concrete_internal_edges_open_host_factories_stay_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "line": 90,
+        "function": "test_only_concrete_internal_edges_open_host_factories_stay_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 680,
+        "complete_error_block_sha256": "488531a6358d0b6bb2f82518ba3aed88e03d741712dcec19c37d8d51fbe8b761"
+      },
+      {
+        "index": 28,
+        "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_only_concrete_initial_handoff_checks_open",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+        "line": 89,
+        "function": "test_only_concrete_initial_handoff_checks_open",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 689,
+        "complete_error_block_sha256": "3058e8e38c65eef0f37cf93d005d3252f8ec8cd6ff39864cf5901606a3e83523"
+      },
+      {
+        "index": 29,
+        "id": "test_original_training_snapshot_source_closure.OriginalTrainingSnapshotSourceClosureTests.test_only_original_snapshot_and_source_gate_read_stage_without_host_registration",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+        "line": 84,
+        "function": "test_only_original_snapshot_and_source_gate_read_stage_without_host_registration",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 698,
+        "complete_error_block_sha256": "3053b242ea8ca916428436808a00aae1742385078869402af90b06a81697c7d9"
+      },
+      {
+        "index": 30,
+        "id": "test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_only_actual_original_read_edges_open_and_new_authority_stays_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+        "line": 143,
+        "function": "test_only_actual_original_read_edges_open_and_new_authority_stays_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 707,
+        "complete_error_block_sha256": "3b38e220cf2f69c753d98218eeb3087e18564996febdef173dfd673c9efd3f30"
+      },
+      {
+        "index": 31,
+        "id": "test_positive_circuit_next_use_source_closure.PositiveCircuitNextUseSourceClosureTests.test_exact_typed_edges_and_unregistered_callers_are_rejected",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_positive_circuit_next_use_source_closure.py",
+        "line": 165,
+        "function": "test_exact_typed_edges_and_unregistered_callers_are_rejected",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 716,
+        "complete_error_block_sha256": "eb375393c13238fd117641b52eed1c44bf145186db24caa4f29b33d8774b40b1"
+      },
+      {
+        "index": 32,
+        "id": "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_complete_positive_owner_records_validate",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_positive_model_version_source_closure.py",
+        "line": 333,
+        "function": "test_complete_positive_owner_records_validate",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 725,
+        "complete_error_block_sha256": "9207682f65cfca2ed3c8859348921aeaa3a885b3545bcb4b60f553d7d1cdeb79"
+      },
+      {
+        "index": 33,
+        "id": "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+        "line": 167,
+        "function": "test_exact_new_callers_and_external_registration_stay_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 734,
+        "complete_error_block_sha256": "2cb72c5c3081529435601033bc8d632967392a491758512c32838469b1476127"
+      },
+      {
+        "index": 34,
+        "id": "test_retained_publication_source_closure.RetainedPublicationClosureTests.test_only_original_readback_edge_opens_and_host_factories_stay_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+        "line": 104,
+        "function": "test_only_original_readback_edge_opens_and_host_factories_stay_closed",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 743,
+        "complete_error_block_sha256": "1b08ed2d7cbf294bdbd663f340b60ee94ffc163ca830de2a49e7b15f73b6941d"
+      },
+      {
+        "index": 35,
+        "id": "test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_original_issuer_has_only_actual_version_callers",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+        "line": 96,
+        "function": "test_original_issuer_has_only_actual_version_callers",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 752,
+        "complete_error_block_sha256": "db89cc6f8474cee453bb722ebe959c0406414ac7b94f513110e528062aff43f5"
+      },
+      {
+        "index": 36,
+        "id": "test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_inventory_and_exact_product_callers_are_closed",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+        "line": 129,
+        "function": "test_inventory_and_exact_product_callers_are_closed",
+        "statement": "self.assertTrue(self.manifest[\"authority\"])",
+        "log_line": 761,
+        "complete_error_block_sha256": "68915d80480ae91631c8fb9b7d84a716df58f1a0b9d8a8a87f55272526e1e3f5"
+      },
+      {
+        "index": 37,
+        "id": "test_root_learning_scope_source_closure.RootLearningScopeSourceClosureTests.test_scoped_product_caller_sets_remain_exact",
+        "category": "missing-root-authority-table",
+        "exception": "KeyError: 'authority'",
+        "file": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+        "line": 101,
+        "function": "test_scoped_product_caller_sets_remain_exact",
+        "statement": "self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))",
+        "log_line": 770,
+        "complete_error_block_sha256": "428df046034ab54b357331e8266c57e5504ac5bbc2f0d20cb729d4f0f3121907"
+      }
+    ],
+    "new_V2_source_module_results": [
+      {
+        "name": "test_original_panel_bootstrap_source_closure",
+        "counts": {
+          "passed": 6,
+          "error": 1
+        },
+        "case_ids": [
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_actual_dataset_and_queued_writer_require_the_retained_full_policy",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_material_policy_precedes_both_original_journals_and_each_current_read",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_new_v2_factories_and_legacy_delegation_have_exact_callers",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_no_policy_bridge_can_acquire_keys_peers_or_cross_host_arc_identity",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_policy_calls_cannot_move_under_an_extra_condition",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_training_v2_retains_policy_while_v1_has_no_implicit_upgrade",
+          "test_original_panel_bootstrap_source_closure.OriginalPanelBootstrapClosureTests.test_v2_metadata_cannot_become_public_custody_or_deserialized_authority"
+        ]
+      },
+      {
+        "name": "test_original_product_policy_v2_source_closure",
+        "counts": {
+          "passed": 7
+        },
+        "case_ids": [
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_complete_pre_b_policy_and_original_normalization_cannot_be_removed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_complete_records_and_exact_policy_edges_are_installed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_only_the_two_original_freezers_call_the_receipt_seal_helper",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_original_domains_and_limits_are_actual_code",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_policy_metadata_cannot_mint_keys_or_runtime_authority",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_raw_comparison_and_original_seal_bindings_cannot_be_removed",
+          "test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests.test_strict_bounded_codec_and_canonical_full_values_cannot_be_removed"
+        ]
+      },
+      {
+        "name": "test_original_pre_b_policy_source_closure",
+        "counts": {
+          "passed": 5,
+          "error": 1
+        },
+        "case_ids": [
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_actual_policy_guards_cannot_move_to_comments",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_complete_policy_domains_and_json_fields_are_actual_syntax",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_complete_records_are_preserved_as_a_multiset",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_metadata_never_creates_original_owner_authority",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_no_legacy_upgrade_or_post_b_policy_substitution",
+          "test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests.test_original_v2_callers_are_closed"
+        ]
+      }
+    ],
+    "repair_correlation": {
+      "authority_repair_commit": "643d76a29921bbfeae07ed6283f078335158e421",
+      "independent_peer_blob": "cd160cdd03dbc3173a9d33d94976feb3d0ad685f",
+      "meaning": "The actual37 exceptions match the confirmed missing authority table. This is not a rerun of the repaired candidate and does not promise that no later assertion can fail."
+    }
+  },
+  "native_result": {
+    "expected201_tuple_multiset_exact": true,
+    "all201_JUnit_cases_unique": true,
+    "junit_case_counts": {
+      "passed": 184,
+      "failed": 17,
+      "error_tags": 0,
+      "skip_tags": 0,
+      "timeout_cases": 0,
+      "flaky_or_rerun_tags": 0
+    },
+    "original190_actual_membership_counts": {
+      "passed": 173,
+      "failed": 17
+    },
+    "all11_added_metadata_cases_passed": true,
+    "receipt": {
+      "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "tested_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "status": "failed",
+      "returncode": 100,
+      "command_exit_code": 100,
+      "exit_code": 100,
+      "observed_passed_tests": 184,
+      "observed_failed_tests": 17,
+      "minimum_tests": 201,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 636.894452168839,
+      "log_bytes": 187839,
+      "log_sha256": "7b87ec048219bacd146d9f7f4de5df7a73f2eceb2d635a4808f34f13a74a4664"
+    },
+    "junit_collector": {
+      "status": "retained-failed",
+      "total_testcases": 201,
+      "failures": 17,
+      "errors": 0,
+      "skipped_in_xml": 0,
+      "execution_sha256": "a7fe131594ff4c31966674c2d67ca053c7bf54b43f8ee9e551fb789caa2f3f17",
+      "junit_sha256": "cb1057591464fed92d0a050c2a31e7aad39d8c356b7354958396a1016a464fcd"
+    },
+    "original_native_wrapper": {
+      "state": "failed",
+      "native_tests_executed": 201,
+      "exact_selected_cases": true,
+      "native_exit_code": 100,
+      "collection_exit_code": 1
+    },
+    "complete_log_case_checks": {
+      "raw_status_rows": 402,
+      "raw_counts": {
+        "PASS": 366,
+        "FAIL": 8,
+        "SIGABRT": 26,
+        "SLOW": 2
+      },
+      "unique_cases": 201,
+      "duplicate_identical_terminal_rows": 199,
+      "counts": {
+        "PASS": 184,
+        "FAIL": 4,
+        "SIGABRT": 13
+      },
+      "junit_full_statuses_agree": true,
+      "progress_indices_exact_1_through201": true,
+      "known_slow_passing_cases": [
+        {
+          "index": 63,
+          "package": "codex-hepta-agentd",
+          "name": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending"
+        },
+        {
+          "index": 92,
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources"
+        }
+      ],
+      "slow_note": "Two test cases were reported SLOW and also have actual PASS rows and passing JUnit records (41.303s and42.178s). SLOW is not counted as a timeout or skip."
+    },
+    "evidence_independence": "184 is supported by every selected JUnit testcase, complete native log PASS statuses for the exact201 tuples, and the original execution receipt's observed_passed_tests. It is not inferred only by subtracting17 from201.",
+    "failure_counts": {
+      "candidate-exact-expiry-assertion": 1,
+      "provider-original-task-binding": 3,
+      "explicit-stack-overflow": 13
+    },
+    "all17_actual_failures": [
+      {
+        "package": "codex-hepta-agentd",
+        "name": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+        "seconds": 26.307,
+        "classification": "candidate-exact-expiry-assertion",
+        "junit_failure_type": "test failure with exit code 101",
+        "original_failure": "thread 'learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel' (1472579) panicked at hepta-agentd/src/cell_q24_training_candidate_tests.rs:477:5:\nassertion failed: wire::authenticate_receipt(&context, run.training.receipt().clone(),\n        run.training.attestation().clone(),\n        run.training.attestation().expires_at).is_err()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "explicit_stack_overflow_stderr": false,
+        "stderr_sha256": "723ed48465f2edc6c9a6a0f527e5819dcfa3e0919371787ec323ced08b8f1d59"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+        "seconds": 8.576,
+        "classification": "provider-original-task-binding",
+        "junit_failure_type": "test failure with exit code 101",
+        "original_failure": "Error: agentd protocol error: original Circuit source: Circuit task does not match its original admitted task",
+        "explicit_stack_overflow_stderr": false,
+        "stderr_sha256": "fac622fe4da8ce941c3848aeb2aca9d06befb4e4c96713e1a072c5dc5783c943"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+        "seconds": 7.356,
+        "classification": "provider-original-task-binding",
+        "junit_failure_type": "test failure with exit code 101",
+        "original_failure": "Error: agentd protocol error: original Circuit source: Circuit task does not match its original admitted task",
+        "explicit_stack_overflow_stderr": false,
+        "stderr_sha256": "fac622fe4da8ce941c3848aeb2aca9d06befb4e4c96713e1a072c5dc5783c943"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+        "seconds": 7.277,
+        "classification": "provider-original-task-binding",
+        "junit_failure_type": "test failure with exit code 101",
+        "original_failure": "Error: agentd protocol error: original Circuit source: Circuit task does not match its original admitted task",
+        "explicit_stack_overflow_stderr": false,
+        "stderr_sha256": "fac622fe4da8ce941c3848aeb2aca9d06befb4e4c96713e1a072c5dc5783c943"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+        "seconds": 1.254,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "43c99d08e80236c448184104bf6e06d75d95e88bc70582fe4c4ab918caa45af8"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+        "seconds": 1.232,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "b53f1bf5f0ca3b8e9203066afa196ea97336cb84100f0aa880456bd8fba5318f"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+        "seconds": 2.189,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "9b2e35f1e7b83b4c5a886e662d9af7a63c55a8b1ba826f629d426485dc76d14a"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+        "seconds": 2.068,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "7b13976c5ddbdfdf412229e352700b0abe0f991f89ed33f7a6a745b24fa90876"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+        "seconds": 2.062,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "6e284cabf14d5001150b7ff33b9d560743be84d12d9642324795f57f2f79955c"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+        "seconds": 2.059,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "c6b63784deae4e90dcbe825cff10e6e7bcdb7f79711901056c723a2929f29b19"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry",
+        "seconds": 2.066,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "dd72d4752145d05fc4a411fcc7ce835e9532e005aeeaf6596bf33fc02fc89354"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_reads_two_trainers_per_call_and_whole_export",
+        "seconds": 2.065,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "494846d6acc0c867e392a76305084e90a0ccda6482e21143877597c02cee8f59"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_rejects_equal_evidence_on_another_connection",
+        "seconds": 2.061,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "6dc73d89847020a7d67f4aa5d05430c2e58979d2684f898bd263199b976152af"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel",
+        "seconds": 2.072,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "891fcb50bc353fea851bfa63c74844bb6fd50ddf44237680b85df7e8c593da36"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+        "seconds": 2.074,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "c9315b74d3bfa962df005b996c61a285830bd50e2dc871331ee242bde928d85f"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+        "seconds": 2.064,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "6f3a2eca0c57b33dab4980a55283d43095459a3abb1202b04148379ed124de84"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+        "seconds": 2.059,
+        "classification": "explicit-stack-overflow",
+        "junit_failure_type": "test abort",
+        "original_failure": "process aborted with signal 6 (SIGABRT)",
+        "explicit_stack_overflow_stderr": true,
+        "stderr_sha256": "886eca676338496c5c8c1706cf08abf501910fa0ea9d676df935a5719b205f1f"
+      }
+    ],
+    "provider_failure_limit": "All three provider tests actually report the same original admitted-task mismatch. Their complete B/retention/consumption assertions therefore have not passed. The fixed source preimage repair8eda34a7121dc332645b59a7e4d7e1c04dc8266e remains unexecuted here.",
+    "candidate_failure_limit": "The failed Candidate case reaches the end of all eight fault subcases and creates its renewal fixture, then panics at cell_q24_training_candidate_tests.rs477:5 on the exact expires_at is_err assertion. Its later withdrawal/cancellation sections are not claimed completed by this failed case.",
+    "stack_failure_limit": "Every one of the13 SIGABRT cases has its own actual stderr saying 'has overflowed its stack' and 'fatal runtime error: stack overflow, aborting'. This audit records that actual symptom and does not infer the precise overflowing future or a successful fix."
+  },
+  "all11_actual_V2_results": [
+    {
+      "group": "original_pre_b_product_policy_v2",
+      "package": "codex-hepta-intelligence-eval",
+      "cases": [
+        {
+          "name": "product_runner::policy::tests::policy_v2_roundtrip_normalizes_only_order_and_preserves_every_value",
+          "status": "passed",
+          "seconds": 0.008,
+          "log_status": "PASS",
+          "log_duration": "0.008s",
+          "index": 161,
+          "diagnostic_children": 0
+        },
+        {
+          "name": "product_runner::policy::tests::policy_v2_all_pre_b_fields_change_the_commitment_or_are_rejected",
+          "status": "passed",
+          "seconds": 0.021,
+          "log_status": "PASS",
+          "log_duration": "0.021s",
+          "index": 157,
+          "diagnostic_children": 0
+        },
+        {
+          "name": "product_runner::policy::tests::policy_v2_strict_decode_refuses_noncanonical_malformed_and_unbounded_metadata",
+          "status": "passed",
+          "seconds": 0.055,
+          "log_status": "PASS",
+          "log_duration": "0.055s",
+          "index": 163,
+          "diagnostic_children": 0
+        },
+        {
+          "name": "product_runner::policy::tests::policy_v2_remote_metadata_matches_original_local_freeze_without_releasing_data",
+          "status": "passed",
+          "seconds": 0.011,
+          "log_status": "PASS",
+          "log_duration": "0.011s",
+          "index": 160,
+          "diagnostic_children": 0
+        },
+        {
+          "name": "product_runner::policy::tests::policy_v2_late_bindings_cannot_change_policy_or_reuse_old_plan_bytes",
+          "status": "passed",
+          "seconds": 0.012,
+          "log_status": "PASS",
+          "log_duration": "0.012s",
+          "index": 159,
+          "diagnostic_children": 0
+        },
+        {
+          "name": "product_runner::policy::tests::policy_v2_keeps_original_role_fold_and_temporal_rejections",
+          "status": "passed",
+          "seconds": 0.013,
+          "log_status": "PASS",
+          "log_duration": "0.013s",
+          "index": 158,
+          "diagnostic_children": 0
+        },
+        {
+          "name": "product_runner::policy::tests::policy_v2_shared_and_paired_original_commitment_bytes_remain_exact",
+          "status": "passed",
+          "seconds": 0.009,
+          "log_status": "PASS",
+          "log_duration": "0.009s",
+          "index": 162,
+          "diagnostic_children": 0
+        }
+      ]
+    },
+    {
+      "group": "original_pre_b_agentd_policy_v2",
+      "package": "codex-hepta-agentd",
+      "cases": [
+        {
+          "name": "circuit_on_policy_evaluation::policy::tests::v2_full_comparison_and_pair_policy_roundtrip_is_canonical",
+          "status": "passed",
+          "seconds": 0.02,
+          "log_status": "PASS",
+          "log_duration": "0.020s",
+          "index": 33,
+          "diagnostic_children": 0
+        },
+        {
+          "name": "circuit_on_policy_evaluation::policy::tests::v2_panel_profile_commits_every_comparison_and_real_pair_identity",
+          "status": "passed",
+          "seconds": 0.048,
+          "log_status": "PASS",
+          "log_duration": "0.048s",
+          "index": 35,
+          "diagnostic_children": 0
+        },
+        {
+          "name": "circuit_on_policy_evaluation::policy::tests::v2_decoder_rejects_legacy_truncation_tail_and_duplicate_real_identity",
+          "status": "passed",
+          "seconds": 0.02,
+          "log_status": "PASS",
+          "log_duration": "0.020s",
+          "index": 32,
+          "diagnostic_children": 0
+        },
+        {
+          "name": "circuit_on_policy_evaluation::policy::tests::v2_declaration_rejects_known_impossible_complete_policy_contribution",
+          "status": "passed",
+          "seconds": 0.086,
+          "log_status": "PASS",
+          "log_duration": "0.086s",
+          "index": 30,
+          "diagnostic_children": 0
+        }
+      ]
+    }
+  ],
+  "completed_outer": {
+    "state": "failed",
+    "source_after": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "source_status_after": "",
+    "caller_scanner_self_test": {
+      "name": "caller-scanner-self-test",
+      "exit_code": 0,
+      "seconds": 0.18084277911111712,
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    },
+    "formatter_executed": false,
+    "full_caller_executed": false
+  },
+  "future_rebinding_original_precondition": {
+    "outer_full_sha256": "3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60",
+    "outer_bytes": 2396,
+    "native_full_sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71",
+    "native_bytes": 51057,
+    "independently_read_from_fixed_exported_original_bytes": true,
+    "matches_prepared_draft_commit": "2f291dedaa562ed059b69684df783205d02dabc8"
+  },
+  "boundaries": {
+    "original_actual_evidence_read_only": true,
+    "new_H_calls": 0,
+    "new_native_or_Python_runs": 0,
+    "new_source_modifications": 0,
+    "metadata_tests_do_not_prove_actual_preA_launcher_or_B_custody": true,
+    "no_Qualified_E_Model_Version_effect_claim": true,
+    "no_repaired_candidate_pass_claim": true,
+    "ordinary_acceptance": 0
+  }
+}

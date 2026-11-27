@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+    "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.evidence",
@@ -34,7 +34,8 @@
       "sourcePathExists": true,
       "designOperation": "append_receipt",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "913d3c00bc5d11fea9172941b20101f0cc2f527c"
     },
     {
       "operation": "query_claim",
@@ -49,7 +50,8 @@
       "sourcePathExists": true,
       "designOperation": "query_claim",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "913d3c00bc5d11fea9172941b20101f0cc2f527c"
     },
     {
       "operation": "verify_chain",
@@ -64,7 +66,8 @@
       "sourcePathExists": true,
       "designOperation": "verify_chain",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "913d3c00bc5d11fea9172941b20101f0cc2f527c"
     },
     {
       "operation": "recovery_snapshot",
@@ -85,7 +88,8 @@
           "role": "product_restore_verifier",
           "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs"
         }
-      ]
+      ],
+      "sourceBlob": "aff8cdd21913699d6081949b4fa912e4d8aae86e"
     },
     {
       "operation": "append_provider_effect_intent",
@@ -99,7 +103,8 @@
       "sourcePathExists": true,
       "designOperation": "append_provider_effect_intent",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "01e428e7c77ade4cdec70e3bd5ea369be5b53f9b"
     },
     {
       "operation": "reconcile_provider_effect_lookup",
@@ -113,7 +118,8 @@
       "sourcePathExists": true,
       "designOperation": "reconcile_provider_effect_lookup",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "01e428e7c77ade4cdec70e3bd5ea369be5b53f9b"
     }
   ],
   "repositoryControlledGaps": [
@@ -151,19 +157,19 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
-      "object": "8e76af9289721a1ef02d1d0087da442a0cd7adca"
+      "object": "2011bf1b4603a69d622514c6647f2acae5f28167"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
-      "object": "a3e546830527f214c08b6a367c0f708b26a3e9d2"
+      "object": "2ac9d2030f0232dd25dcacd23432f7d77c5a373a"
     },
     {
       "path": "codex-rs/hepta-evidence",
-      "object": "c64498a611cfdf3044d897a870d3398c205b48e3"
+      "object": "7458e071c30101286ba88251e35be3438a6bb2ff"
     },
     {
       "path": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
-      "object": "45b1794ee80a8e4b1067b7b8fd86cb2f2d08c241"
+      "object": "01e428e7c77ade4cdec70e3bd5ea369be5b53f9b"
     },
     {
       "path": "codex-rs/hepta-evidence/src/provider_effect_tests.rs",
@@ -171,11 +177,11 @@
     },
     {
       "path": "codex-rs/hepta-evidence/src/qualification.rs",
-      "object": "4266cd8e4b3639108f1dfe592eb47c05494c3c46"
+      "object": "913d3c00bc5d11fea9172941b20101f0cc2f527c"
     },
     {
       "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
-      "object": "cf8ff628aebfb7cc64ef28e4b33b36c28c7f73f0"
+      "object": "30676fcfbbda6f8283e62b82b26aeb479da9307f"
     },
     {
       "path": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
@@ -185,5 +191,15 @@
       "path": "docs/modules/kernel.evidence/TECHNICAL.md",
       "object": "9e6543e32181d385de16565949449dd026b4343e"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-evidence"
   ]
 }

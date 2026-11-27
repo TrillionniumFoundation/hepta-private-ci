@@ -1,0 +1,271 @@
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
+import subprocess
+import sys
+import tempfile
+import time
+
+SOURCE_SHA = "8bf3881afa8cccff286fc58909995c96f3e0b260"
+SOURCE_TREE = "c8730bab75eabe47a3b0b3260a6203a0d86d1443"
+REPO = Path("/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1")
+EVIDENCE_PARENT = Path("/home/qian-qi/hepta-learn-ce434-evidence-20261111/native")
+LAUNCH = EVIDENCE_PARENT / "fullcaller-8bf3881afa8c-isolated-launch-v1"
+RECORDS = EVIDENCE_PARENT / "fullcaller-8bf3881afa8c-isolated-v1"
+KEY = "learn-ce434-8bf3881afa8c-isolated-full-caller-v1"
+RUNNER_SHA256 = "e1be76aafffdd65fcc36778ba4b00f2feb184cc39149f63791005e2c8d7582a0"
+RUNNER_BYTES = 18927
+RUNNER = "#!/usr/bin/env python3\n\"\"\"Record the fixed full caller proof; never signal a process.\"\"\"\n\nimport argparse\nfrom datetime import datetime, timezone\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport stat\nimport subprocess\nimport tempfile\nimport time\nimport tomllib\nimport uuid\n\nSOURCE_SHA = \"8bf3881afa8cccff286fc58909995c96f3e0b260\"\nSOURCE_TREE = \"c8730bab75eabe47a3b0b3260a6203a0d86d1443\"\nPINS = {\n    \"CALLERS.toml\": \"95c8261a6c3eec23d038ba5aec754d618731d222\",\n    \"scripts/verify_hepta_callers.py\": \"c66fb1f90a61deaa6461f0c7155209ed32903e62\",\n    \"scripts/hepta_typed_callers.py\": \"e23bb8aa42241b429ef5dbce5a4660853b66eb2f\",\n    \"scripts/hepta_ci_exec.py\": \"c9434b3a4afb31f80e323d543936386a2fa738de\",\n    \".github/workflows/hepta-daemon-learning-native.yml\":\n        \"380b6d50f871e7eaa5a8bbc12fb75e59d45b868d\",\n    \"AGENTS.md\": \"faa57cc0db48123e1011f1eb47692cd3bbbcfc3a\",\n}\nEXPECTED_RUST_FILES = 6655\nEXPECTED_BOUNDARIES = 737\nEXPECTED_PROTECTED_RECORDS = 506\nPHASES = ((\"self-test\", 300), (\"verify\", 4800))\nORIGINAL_OUTPUT_LIMIT = 64 * 1024 * 1024\nMAX_OBSERVATION_SECONDS = 10800\nPOLL_SECONDS = 0.25\nHEARTBEAT_SECONDS = 10\n\n\nclass RecordingRejected(Exception):\n    pass\n\n\ndef utc_now():\n    return datetime.now(timezone.utc).isoformat()\n\n\ndef require(condition, code):\n    if not condition:\n        raise RecordingRejected(code)\n\n\ndef git_blob(data):\n    return hashlib.sha1(\n        b\"blob \" + str(len(data)).encode(\"ascii\") + b\"\\0\" + data\n    ).hexdigest()\n\n\ndef write_bytes(path, data):\n    with path.open(\"xb\") as output:\n        output.write(data)\n        output.flush()\n        os.fsync(output.fileno())\n\n\ndef save_json(path, value, *, exclusive=False):\n    data = (json.dumps(value, indent=2, sort_keys=True) + \"\\n\").encode(\"utf-8\")\n    if exclusive:\n        write_bytes(path, data)\n        return\n    descriptor, name = tempfile.mkstemp(prefix=\".pending-\", dir=path.parent)\n    pending = Path(name)\n    try:\n        with os.fdopen(descriptor, \"wb\") as output:\n            output.write(data)\n            output.flush()\n            os.fsync(output.fileno())\n        os.replace(pending, path)\n    finally:\n        pending.unlink(missing_ok=True)\n\n\ndef file_snapshot(path, *, complete):\n    \"\"\"Hash a fixed prefix using a separate descriptor.\"\"\"\n    before = path.stat()\n    require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1,\n            \"record_file_not_private_regular\")\n    remaining = before.st_size\n    digest = hashlib.sha256()\n    with path.open(\"rb\") as source:\n        while remaining:\n            chunk = source.read(min(1024 * 1024, remaining))\n            require(bool(chunk), \"record_file_shrank_during_hash\")\n            remaining -= len(chunk)\n            digest.update(chunk)\n    after = path.stat()\n    stable = (\n        before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns\n    ) == (\n        after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns\n    )\n    require(not complete or stable, \"terminal_log_changed_during_hash\")\n    return {\n        \"file\": path.name,\n        \"prefix_bytes\": before.st_size,\n        \"prefix_sha256\": digest.hexdigest(),\n        \"size_after_snapshot\": after.st_size,\n        \"stable_during_snapshot\": stable,\n        \"complete\": bool(complete and stable),\n    }\n\n\ndef git_output(repo, *args):\n    result = subprocess.run(\n        [\"git\", \"--no-optional-locks\", \"-c\", \"core.fsmonitor=false\",\n         \"-c\", \"core.untrackedCache=false\", *args],\n        cwd=repo, stdin=subprocess.DEVNULL,\n        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,\n    )\n    if result.returncode:\n        raise RecordingRejected(\n            \"git_identity_failed:\" + str(result.returncode) + \":\" + args[0]\n        )\n    return result.stdout\n\n\ndef source_snapshot(repo, records, label):\n    head = git_output(repo, \"rev-parse\", \"HEAD\").decode(\"ascii\").strip()\n    tree = git_output(repo, \"rev-parse\", \"HEAD^{tree}\").decode(\"ascii\").strip()\n    status = git_output(\n        repo, \"status\", \"--porcelain=v1\", \"--untracked-files=all\"\n    )\n    write_bytes(records / (label + \".status.txt\"), status)\n    pins = {}\n    manifest_bytes = None\n    for relative, expected in PINS.items():\n        path = repo / relative\n        require(path.is_file() and not path.is_symlink(),\n                \"source_pin_not_regular:\" + relative)\n        data = path.read_bytes()\n        pins[relative] = {\n            \"git_blob\": git_blob(data),\n            \"expected_git_blob\": expected,\n            \"bytes\": len(data),\n            \"sha256\": hashlib.sha256(data).hexdigest(),\n        }\n        if relative == \"CALLERS.toml\":\n            manifest_bytes = data\n    value = {\n        \"head\": head, \"tree\": tree, \"clean\": not status,\n        \"status_file\": label + \".status.txt\",\n        \"status_bytes\": len(status),\n        \"status_sha256\": hashlib.sha256(status).hexdigest(),\n        \"pins\": pins,\n    }\n    save_json(records / (label + \".json\"), value, exclusive=True)\n    require(head == SOURCE_SHA and tree == SOURCE_TREE and not status,\n            \"fixed_clean_source_required\")\n    require(all(row[\"git_blob\"] == row[\"expected_git_blob\"]\n                for row in pins.values()), \"fixed_source_pin_mismatch\")\n    manifest = tomllib.loads(manifest_bytes.decode(\"utf-8\"))\n    roots = manifest[\"source_roots\"]\n    files = []\n    for relative_root in roots:\n        source_root = (repo / relative_root).resolve()\n        require(source_root.is_relative_to(repo), \"source_root_escapes_repo\")\n        for path in source_root.rglob(\"*.rs\"):\n            require(not path.is_symlink(), \"rust_source_symlink\")\n            files.append(path)\n    names = [path.relative_to(repo).as_posix() for path in sorted(files)]\n    path_bytes = (\"\\n\".join(names) + \"\\n\").encode(\"utf-8\")\n    write_bytes(records / (label + \".rust-paths.txt\"), path_bytes)\n    boundaries = manifest[\"boundary\"]\n    protected = manifest[\"protected_file\"]\n    inventory = {\n        \"source_roots\": roots,\n        \"ignored_path_fragments\": manifest[\"ignored_path_fragments\"],\n        \"rust_files\": len(names),\n        \"rust_paths_file\": label + \".rust-paths.txt\",\n        \"rust_paths_sha256\": hashlib.sha256(path_bytes).hexdigest(),\n        \"boundary_records\": len(boundaries),\n        \"boundary_ids\": [row[\"id\"] for row in boundaries],\n        \"required_boundary_ids\": manifest[\"privileged_inventory\"][\"required_boundary_ids\"],\n        \"protected_records\": len(protected),\n        \"protected_paths_with_multiplicity\": [row[\"path\"] for row in protected],\n    }\n    save_json(records / (label + \".inventory.json\"), inventory, exclusive=True)\n    if label == \"source-before\":\n        write_bytes(records / \"CALLERS.source.toml\", manifest_bytes)\n    require(len(names) == EXPECTED_RUST_FILES, \"unexpected_rust_inventory\")\n    require(len(boundaries) == EXPECTED_BOUNDARIES, \"unexpected_boundary_inventory\")\n    require(len(protected) == EXPECTED_PROTECTED_RECORDS,\n            \"unexpected_protected_record_inventory\")\n    return value, inventory\n\n\ndef validate_receipt(phase, stdout_path, inventory):\n    value = json.loads(stdout_path.read_bytes())\n    if phase == \"self-test\":\n        require(value.get(\"status\") == \"PASS_HEPTA_CALLER_PROOF_SELF_TEST\",\n                \"self_test_receipt_missing\")\n        return {\"status\": value[\"status\"]}\n    require(value.get(\"schema\") == \"hepta.caller-proof-receipt.v2\"\n            and value.get(\"status\") == \"PASS_HEPTA_CALLER_CLOSED_SET\"\n            and value.get(\"authorityGranted\") is False,\n            \"full_caller_receipt_missing\")\n    require(value.get(\"rustFilesScanned\") == EXPECTED_RUST_FILES,\n            \"receipt_rust_inventory_mismatch\")\n    require([row[\"id\"] for row in value[\"boundaries\"]]\n            == inventory[\"boundary_ids\"], \"receipt_boundary_inventory_mismatch\")\n    require(value.get(\"privilegedInventory\")\n            == sorted(inventory[\"required_boundary_ids\"]),\n            \"receipt_required_inventory_mismatch\")\n    require(value.get(\"protectedFiles\")\n            == inventory[\"protected_paths_with_multiplicity\"],\n            \"receipt_complete_protected_records_mismatch\")\n    return {\n        \"status\": value[\"status\"],\n        \"rust_files\": value[\"rustFilesScanned\"],\n        \"boundary_records\": len(value[\"boundaries\"]),\n        \"protected_records\": len(value[\"protectedFiles\"]),\n        \"authority_granted\": False,\n    }\n\n\ndef run_phase(repo, records, phase, budget, inventory, observation_deadline, run_id):\n    command = [\"python3\", \"scripts/verify_hepta_callers.py\", phase]\n    stdout_path = records / (phase + \".stdout.log\")\n    stderr_path = records / (phase + \".stderr.log\")\n    environment = os.environ.copy()\n    environment[\"PYTHONDONTWRITEBYTECODE\"] = \"1\"\n    environment[\"TMPDIR\"] = str(records / \"tmp\")\n    started = time.monotonic()\n    started_at = utc_now()\n    gate = None\n    actual_exit = None\n    original_complete = False\n    heartbeat = 0.0\n\n    with stdout_path.open(\"xb\", buffering=0) as stdout, \\\n            stderr_path.open(\"xb\", buffering=0) as stderr:\n        process = subprocess.Popen(\n            command, cwd=repo, env=environment, stdin=subprocess.DEVNULL,\n            stdout=stdout, stderr=stderr, start_new_session=True,\n        )\n        ownership = {\n            \"run_id\": run_id, \"phase\": phase, \"command\": command,\n            \"child_pid\": process.pid, \"recorder_pid\": os.getpid(),\n            \"started_at\": started_at, \"started_monotonic\": started,\n            \"source_sha\": SOURCE_SHA, \"source_tree\": SOURCE_TREE,\n            \"budget_seconds\": budget,\n            \"classification_exit_is_not_child_exit\": True,\n        }\n        save_json(records / (phase + \".started.json\"), ownership, exclusive=True)\n        while True:\n            now = time.monotonic()\n            elapsed = now - started\n            actual_exit = process.poll()\n            total_output = os.fstat(stdout.fileno()).st_size + os.fstat(stderr.fileno()).st_size\n            if gate is None and (elapsed >= budget or total_output > ORIGINAL_OUTPUT_LIMIT):\n                timed_out = elapsed >= budget\n                gate = {\n                    **ownership,\n                    \"status\": (\"original_budget_timeout\" if timed_out\n                               else \"original_output_limit_exceeded\"),\n                    \"classification_exit_code\": 124 if timed_out else 1,\n                    \"observed_elapsed_seconds\": elapsed,\n                    \"child_exit_at_observation\": actual_exit,\n                    \"logs\": [\n                        file_snapshot(stdout_path, complete=False),\n                        file_snapshot(stderr_path, complete=False),\n                    ],\n                }\n                save_json(records / (phase + \".gate.json\"), gate, exclusive=True)\n            if actual_exit is not None:\n                actual_exit = process.wait()\n                original_complete = True\n                break\n            if now >= observation_deadline:\n                break\n            if now - heartbeat >= HEARTBEAT_SECONDS:\n                save_json(records / (phase + \".status.json\"), {\n                    **ownership,\n                    \"status\": \"observing_after_gate_failure\" if gate else \"running\",\n                    \"elapsed_seconds\": elapsed,\n                    \"stdout_bytes\": os.fstat(stdout.fileno()).st_size,\n                    \"stderr_bytes\": os.fstat(stderr.fileno()).st_size,\n                    \"child_exit\": None,\n                    \"gate_status\": gate[\"status\"] if gate else \"pending\",\n                    \"maximum_run_observation_seconds\": MAX_OBSERVATION_SECONDS,\n                })\n                heartbeat = now\n            time.sleep(min(POLL_SECONDS, max(0.0, observation_deadline - now)))\n\n        finished = time.monotonic()\n        stdout.flush()\n        stderr.flush()\n        os.fsync(stdout.fileno())\n        os.fsync(stderr.fileno())\n        logs = [\n            file_snapshot(stdout_path, complete=original_complete),\n            file_snapshot(stderr_path, complete=original_complete),\n        ]\n\n    receipt = None\n    receipt_error = None\n    if original_complete and actual_exit == 0 and total_output <= ORIGINAL_OUTPUT_LIMIT:\n        try:\n            receipt = validate_receipt(phase, stdout_path, inventory)\n        except Exception as error:\n            receipt_error = {\"type\": type(error).__name__, \"code\": str(error)\n                             if isinstance(error, RecordingRejected) else \"receipt_parse_failed\"}\n    if gate is None:\n        passed = original_complete and actual_exit == 0 and receipt is not None\n        gate = {\n            **ownership,\n            \"status\": (\"passed\" if passed else \"observation_limit\" if not\n                       original_complete else \"original_command_or_receipt_failed\"),\n            \"classification_exit_code\": 0 if passed else 124 if not original_complete else 1,\n            \"observed_elapsed_seconds\": finished - started,\n            \"child_exit_at_observation\": actual_exit,\n            \"logs\": logs,\n        }\n        save_json(records / (phase + \".gate.json\"), gate, exclusive=True)\n\n    result = {\n        **ownership,\n        \"status\": \"terminal\" if original_complete else \"observation_limit_child_not_reaped\",\n        \"finished_observing_at\": utc_now(),\n        \"elapsed_seconds\": finished - started,\n        \"original_process_complete\": original_complete,\n        \"actual_child_exit\": actual_exit if original_complete else None,\n        \"gate_status\": gate[\"status\"],\n        \"gate_classification_exit\": gate[\"classification_exit_code\"],\n        \"late_success_does_not_change_gate\": True,\n        \"logs\": logs, \"receipt\": receipt, \"receipt_error\": receipt_error,\n        \"signals_sent\": [],\n    }\n    save_json(records / (phase + \".original.json\"), result, exclusive=True)\n    save_json(records / (phase + \".status.json\"), result)\n    return result\n\n\ndef main():\n    parser = argparse.ArgumentParser(description=__doc__)\n    parser.add_argument(\"--repo\", type=Path, required=True)\n    parser.add_argument(\"--evidence-dir\", type=Path, required=True)\n    args = parser.parse_args()\n    repo = args.repo.resolve(strict=True)\n    records = args.evidence_dir\n    require(repo.is_dir(), \"existing_worktree_required\")\n    require(records.is_absolute(), \"absolute_new_evidence_directory_required\")\n    parent = records.parent.resolve(strict=True)\n    require(parent == records.parent and not records.is_relative_to(repo),\n            \"evidence_parent_must_be_real_and_outside_source\")\n    require(not records.exists() and not records.is_symlink(),\n            \"evidence_directory_must_not_exist\")\n    os.mkdir(records, mode=0o700)\n    os.mkdir(records / \"tmp\", mode=0o700)\n    run_id = uuid.uuid4().hex\n    started = time.monotonic()\n    result = {\n        \"schema\": \"hepta.original-full-caller-record.v1\",\n        \"run_id\": run_id, \"source_sha\": SOURCE_SHA, \"source_tree\": SOURCE_TREE,\n        \"worktree\": str(repo), \"evidence_directory\": str(records),\n        \"started_at\": utc_now(), \"recorder_pid\": os.getpid(),\n        \"status\": \"running\", \"phases\": [],\n        \"original_budgets\": dict(PHASES),\n        \"original_output_limit_bytes\": ORIGINAL_OUTPUT_LIMIT,\n        \"maximum_run_observation_seconds\": MAX_OBSERVATION_SECONDS,\n        \"ordinary_acceptance\": 0, \"signals_sent\": [],\n    }\n    save_json(records / \"started.json\", result, exclusive=True)\n    exit_code = 2\n    before = after = None\n    inventory_before = inventory_after = None\n    try:\n        before, inventory_before = source_snapshot(repo, records, \"source-before\")\n        result[\"source_before\"] = before\n        for phase, budget in PHASES:\n            if time.monotonic() >= started + MAX_OBSERVATION_SECONDS:\n                raise RecordingRejected(\"observation_limit_before_next_phase\")\n            observed = run_phase(\n                repo, records, phase, budget, inventory_before,\n                started + MAX_OBSERVATION_SECONDS, run_id,\n            )\n            result[\"phases\"].append(observed)\n            save_json(records / \"status.json\", result)\n            if observed[\"gate_classification_exit\"] != 0:\n                break\n        after, inventory_after = source_snapshot(repo, records, \"source-after\")\n        result[\"source_after\"] = after\n        before_identity = dict(before)\n        after_identity = dict(after)\n        before_identity.pop(\"status_file\")\n        after_identity.pop(\"status_file\")\n        require(before_identity == after_identity, \"source_identity_or_pins_changed\")\n        before_inventory = dict(inventory_before)\n        after_inventory = dict(inventory_after)\n        before_inventory.pop(\"rust_paths_file\")\n        after_inventory.pop(\"rust_paths_file\")\n        require(before_inventory == after_inventory, \"source_inventory_changed\")\n        complete = len(result[\"phases\"]) == 2 and all(\n            row[\"original_process_complete\"] and row[\"gate_classification_exit\"] == 0\n            for row in result[\"phases\"]\n        )\n        exit_code = 0 if complete else (\n            124 if any(row[\"gate_classification_exit\"] == 124\n                       for row in result[\"phases\"]) else 1\n        )\n        result[\"status\"] = \"passed_original_gates\" if complete else \"failed_original_gates\"\n    except Exception as error:\n        result[\"status\"] = \"recorder_rejected_or_incomplete\"\n        result[\"error\"] = {\n            \"type\": type(error).__name__,\n            \"code\": str(error) if isinstance(error, RecordingRejected)\n                    else \"recording_failed\",\n        }\n    finally:\n        if after is None:\n            try:\n                saved_after = records / \"source-after.json\"\n                if saved_after.exists():\n                    after = json.loads(saved_after.read_bytes())\n                else:\n                    after, inventory_after = source_snapshot(repo, records, \"source-after\")\n                result[\"source_after\"] = after\n            except Exception as error:\n                result[\"source_after_error\"] = {\"type\": type(error).__name__}\n        result[\"finished_observing_at\"] = utc_now()\n        result[\"elapsed_seconds\"] = time.monotonic() - started\n        result[\"exit_code\"] = exit_code\n        save_json(records / \"result.json\", result, exclusive=True)\n        save_json(records / \"status.json\", result)\n        result_bytes = (records / \"result.json\").read_bytes()\n        write_bytes(records / \"result.sha256\",\n                    (hashlib.sha256(result_bytes).hexdigest() + \"\\n\").encode(\"ascii\"))\n        print(json.dumps({\n            \"run_id\": run_id, \"status\": result[\"status\"], \"exit_code\": exit_code,\n            \"result_file\": str(records / \"result.json\"),\n            \"result_sha256\": hashlib.sha256(result_bytes).hexdigest(),\n        }, sort_keys=True), flush=True)\n    return exit_code\n\n\nif __name__ == \"__main__\":\n    try:\n        raise SystemExit(main())\n    except RecordingRejected as error:\n        print(json.dumps({\"status\": \"not_dispatched\", \"code\": str(error)}), flush=True)\n        raise SystemExit(2)\n".encode("utf-8")
+ENVIRONMENT = os.environ.copy()
+ENVIRONMENT["PYTHONDONTWRITEBYTECODE"] = "1"
+
+
+class LaunchRejected(Exception):
+    pass
+
+
+def require(condition, code):
+    if not condition:
+        raise LaunchRejected(code)
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def error_record(error, fallback):
+    return {
+        "type": type(error).__name__,
+        "code": str(error) if isinstance(error, LaunchRejected) else fallback,
+    }
+
+
+def write_once(path, data):
+    descriptor = os.open(
+        path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+        0o600,
+    )
+    with os.fdopen(descriptor, "wb") as output:
+        output.write(data)
+        output.flush()
+        os.fsync(output.fileno())
+
+
+def atomic_json(path, value):
+    data = (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    descriptor, temporary = tempfile.mkstemp(prefix=".pending-", dir=LAUNCH)
+    temporary = Path(temporary)
+    try:
+        with os.fdopen(descriptor, "wb") as output:
+            output.write(data)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temporary, path)
+        directory = os.open(LAUNCH, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        temporary.unlink(missing_ok=True)
+    return data
+
+
+def identity(info):
+    return (
+        info.st_dev, info.st_ino, info.st_mode, info.st_nlink, info.st_uid,
+        info.st_size, info.st_mtime_ns, info.st_ctime_ns,
+    )
+
+
+def snapshot_file(path, complete):
+    before = path.lstat()
+    require(
+        stat.S_ISREG(before.st_mode) and before.st_nlink == 1
+        and before.st_uid == os.getuid(),
+        "owned_single_regular_evidence_file_required",
+    )
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    with os.fdopen(descriptor, "rb") as original:
+        first = os.fstat(original.fileno())
+        digest = hashlib.file_digest(original, "sha256").hexdigest()
+        last = os.fstat(original.fileno())
+    after = path.lstat()
+    require(identity(before) == identity(first) == identity(last) == identity(after),
+            "evidence_file_changed_during_readback")
+    return {"file": path.name, "bytes": after.st_size, "sha256": digest,
+            "complete": complete}
+
+
+def git_bytes(*arguments):
+    result = subprocess.run(
+        ["git", "--no-optional-locks", "-c", "core.fsmonitor=false",
+         "-c", "core.untrackedCache=false", *arguments],
+        cwd=REPO, env=ENVIRONMENT, stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+    )
+    require(result.returncode == 0, "git_source_observation_failed")
+    return result.stdout
+
+
+def source_snapshot():
+    head = git_bytes("rev-parse", "HEAD").decode("ascii").strip()
+    tree = git_bytes("rev-parse", "HEAD^{tree}").decode("ascii").strip()
+    status = git_bytes("status", "--porcelain=v1", "--untracked-files=all")
+    return {
+        "head": head, "tree": tree, "clean": not status,
+        "status_bytes": len(status), "status_sha256": hashlib.sha256(status).hexdigest(),
+        "status": status.decode("utf-8", errors="backslashreplace"),
+    }
+
+
+def fixed(snapshot):
+    return (snapshot["head"] == SOURCE_SHA and snapshot["tree"] == SOURCE_TREE
+            and snapshot["clean"])
+
+
+def open_log(path):
+    descriptor = os.open(
+        path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+        0o600,
+    )
+    return os.fdopen(descriptor, "wb", buffering=0)
+
+
+def main():
+    require(REPO.resolve(strict=True) == REPO and REPO.is_dir(),
+            "existing_exact_worktree_required")
+    parent_info = EVIDENCE_PARENT.lstat()
+    require(
+        stat.S_ISDIR(parent_info.st_mode) and parent_info.st_uid == os.getuid()
+        and EVIDENCE_PARENT.resolve(strict=True) == EVIDENCE_PARENT,
+        "existing_owned_real_evidence_parent_required",
+    )
+    require(not LAUNCH.is_relative_to(REPO) and not RECORDS.is_relative_to(REPO),
+            "evidence_must_be_outside_source")
+    before = source_snapshot()
+    require(fixed(before), "fixed_clean_source_required_before_launch")
+    require(not os.path.lexists(RECORDS), "recorder_directory_must_not_exist")
+    require(len(RUNNER) == RUNNER_BYTES
+            and hashlib.sha256(RUNNER).hexdigest() == RUNNER_SHA256,
+            "embedded_stamped_runner_changed")
+    os.mkdir(LAUNCH, mode=0o700)
+
+    started = time.monotonic()
+    script = LAUNCH / "full-caller-recorder.py"
+    stdout_path = LAUNCH / "recorder.stdout.log"
+    stderr_path = LAUNCH / "recorder.stderr.log"
+    command = [
+        "/usr/bin/python3", "-I", "-S", "-B", str(script),
+        "--repo", str(REPO), "--evidence-dir", str(RECORDS),
+    ]
+    result = {
+        "schema": "hepta.fixed-full-caller-launch.v1",
+        "idempotency_key": KEY,
+        "source_sha": SOURCE_SHA, "source_tree": SOURCE_TREE,
+        "source_before": before, "source_after": None,
+        "launch_directory": str(LAUNCH), "recorder_evidence_directory": str(RECORDS),
+        "runner_sha256": RUNNER_SHA256, "runner_bytes": RUNNER_BYTES,
+        "command": command, "started_at": now(), "launcher_pid": os.getpid(),
+        "actual_child_pid": None, "actual_child_exit": None,
+        "direct_child_is_full_caller_recorder": True,
+        "verifier_exit_must_be_read_from_original_recorder_records": True,
+        "status": "prepared", "logs": [], "errors": [], "signals_sent": [],
+        "new_environment_values": {"PYTHONDONTWRITEBYTECODE": "1"},
+        "ordinary_acceptance": 0,
+    }
+    process = None
+    stdout = stderr = None
+    try:
+        write_once(script, RUNNER)
+        written = snapshot_file(script, True)
+        require(written["sha256"] == RUNNER_SHA256 and written["bytes"] == RUNNER_BYTES,
+                "written_stamped_runner_changed")
+        result["runner_readback"] = written
+        atomic_json(LAUNCH / "launch-plan.json", result)
+        stdout = open_log(stdout_path)
+        stderr = open_log(stderr_path)
+        process = subprocess.Popen(
+            command, cwd=REPO, env=ENVIRONMENT, stdin=subprocess.DEVNULL,
+            stdout=stdout, stderr=stderr,
+        )
+        result["actual_child_pid"] = process.pid
+        result["status"] = "running"
+        atomic_json(LAUNCH / "launch-started.json", result)
+        result["actual_child_exit"] = process.wait()
+    except Exception as error:
+        result["errors"].append(error_record(error, "launcher_preparation_or_wait_failed"))
+    finally:
+        if process is not None and result["actual_child_exit"] is None:
+            try:
+                result["actual_child_exit"] = process.wait()
+            except Exception as error:
+                result["errors"].append(error_record(error, "owned_child_wait_incomplete"))
+        for output in (stdout, stderr):
+            if output is not None:
+                try:
+                    output.flush()
+                    os.fsync(output.fileno())
+                except Exception as error:
+                    result["errors"].append(error_record(error, "owned_log_flush_failed"))
+                finally:
+                    try:
+                        output.close()
+                    except Exception as error:
+                        result["errors"].append(error_record(error, "owned_log_close_failed"))
+        for path in (stdout_path, stderr_path):
+            if path.exists():
+                try:
+                    result["logs"].append(snapshot_file(
+                        path, process is not None and result["actual_child_exit"] is not None,
+                    ))
+                except Exception as error:
+                    result["errors"].append(error_record(error, "owned_log_readback_failed"))
+        try:
+            result["source_after"] = source_snapshot()
+            require(fixed(result["source_after"]) and result["source_after"] == before,
+                    "source_changed_after_recorder")
+        except Exception as error:
+            result["errors"].append(error_record(error, "source_after_incomplete"))
+
+    actual_exit = result["actual_child_exit"]
+    complete = (process is not None and actual_exit is not None
+                and len(result["logs"]) == 2
+                and all(item["complete"] for item in result["logs"])
+                and not result["errors"])
+    exit_code = 2
+    if complete:
+        exit_code = actual_exit if 0 <= actual_exit <= 255 else 1
+    result["status"] = (
+        "recorder_returned_zero" if complete and actual_exit == 0 else
+        "recorder_returned_nonzero" if complete else "launcher_rejected_or_incomplete"
+    )
+    result["launcher_exit_code"] = exit_code
+    result["finished_at"] = now()
+    result["elapsed_seconds"] = time.monotonic() - started
+    final_bytes = atomic_json(LAUNCH / "launch-result.json", result)
+    result_sha256 = hashlib.sha256(final_bytes).hexdigest()
+    write_once(LAUNCH / "launch-result.sha256",
+               (result_sha256 + "\n").encode("ascii"))
+    print(json.dumps({
+        "status": result["status"], "actual_child_exit": actual_exit,
+        "launcher_exit_code": exit_code,
+        "result_file": str(LAUNCH / "launch-result.json"),
+        "result_sha256": result_sha256,
+    }, sort_keys=True), flush=True)
+    return exit_code
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except Exception as error:
+        print(json.dumps({
+            "status": "launcher_not_completed",
+            "error": error_record(error, "launcher_recording_failed"),
+            "ordinary_acceptance": 0,
+        }, sort_keys=True), flush=True)
+        raise SystemExit(2)

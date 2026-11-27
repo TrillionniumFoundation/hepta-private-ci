@@ -8,6 +8,7 @@ use tokio::sync::Mutex;
 use uuid::Uuid;
 
 use crate::ExecServerRuntimePaths;
+use crate::local_process::ProcessCustodyRegistry;
 use crate::rpc::RpcNotificationSender;
 use crate::rpc::invalid_request;
 use crate::rpc::session_already_attached;
@@ -22,6 +23,7 @@ const DETACHED_SESSION_TTL: Duration = Duration::from_secs(30);
 pub(crate) struct SessionRegistry {
     sessions: Mutex<HashMap<String, Arc<SessionEntry>>>,
     telemetry: ExecServerTelemetry,
+    process_custody: Arc<ProcessCustodyRegistry>,
 }
 
 struct SessionEntry {
@@ -57,6 +59,7 @@ impl SessionRegistry {
         Arc::new(Self {
             sessions: Mutex::new(HashMap::new()),
             telemetry,
+            process_custody: Arc::new(ProcessCustodyRegistry::default()),
         })
     }
 
@@ -100,7 +103,12 @@ impl SessionRegistry {
                 let session_id = Uuid::new_v4().to_string();
                 let entry = Arc::new(SessionEntry::new(
                     session_id.clone(),
-                    ProcessHandler::new(notifications, self.telemetry.clone(), runtime_paths),
+                    ProcessHandler::new(
+                        notifications,
+                        self.telemetry.clone(),
+                        runtime_paths,
+                        Arc::clone(&self.process_custody),
+                    ),
                     connection_id,
                 ));
                 sessions.insert(session_id, Arc::clone(&entry));
@@ -154,6 +162,7 @@ impl Default for SessionRegistry {
         Self {
             sessions: Mutex::new(HashMap::new()),
             telemetry: ExecServerTelemetry::default(),
+            process_custody: Arc::new(ProcessCustodyRegistry::default()),
         }
     }
 }

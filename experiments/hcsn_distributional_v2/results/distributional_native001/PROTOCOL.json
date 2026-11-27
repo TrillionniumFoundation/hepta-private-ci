@@ -1,0 +1,49 @@
+{
+  "active_recovery": "after4 actual reads with nonempty retained distribution; new Python process",
+  "backbone_checkpoint": "experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201/selected.npz",
+  "backbone_checkpoint_sha256": "ac945d89218ebd131246f8d62548656cd4c6e4e40cd1a9dd81d444838019dd96",
+  "backbone_config": {
+    "depth": 1,
+    "grid_cells": 8,
+    "input_dim": 64,
+    "lower": -2.0,
+    "max_independent_chunks": 1048576,
+    "max_physical_substep": 0.36,
+    "name": "distribution_free_dual",
+    "output_dim": 10,
+    "per_token_chunks": true,
+    "physical_channels": 8,
+    "physical_time_scale": 0.1,
+    "precomputed_operators": true,
+    "refractory_stages": 2,
+    "seed": 9201,
+    "uniformization_rate": 8.1,
+    "uniformization_terms": 21,
+    "width": 32
+  },
+  "backbone_content_protocol_sha256": "03070eb0d3fc264ace436f25a06c989bb898f3c33caba83936f5040c660e6b9c",
+  "backbone_seed": 9201,
+  "backbone_training_complete_cpu_seconds": 142.60316,
+  "controller": "Refit the same4-bin transition/correctness task model on thisv2 TRAIN64; no new content/head parameter fitting",
+  "deadline_ticks": 48,
+  "fit_train_images": 64,
+  "fresh_test_quality_claim": false,
+  "output_semantics": "Real-valued task gap from a quantized confidence state. It is piecewise constant in confidence, not a claim of an everywhere-smooth task policy.",
+  "policies": [
+    "tabular_bellman",
+    "tabular_myopic"
+  ],
+  "prices": [
+    0.001,
+    0.005,
+    0.02
+  ],
+  "queue_seed": 83011,
+  "queue_tasks": 3,
+  "quiet_recovery": "after first FIRE and1 of2 task-level quiet ticks; new Python process",
+  "schema": "hcsn-trained-distributional-native-engineering.v1",
+  "selection": "No policy/threshold/hyperparameter selection on theseVAL outcomes; engineering comparison only",
+  "study_id": "distributional_native001",
+  "task_refractory_ticks": 2,
+  "validation_images": 6
+}

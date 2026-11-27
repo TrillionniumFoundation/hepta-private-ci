@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.hosted-original-evidence.v1",
+  "source_sha": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "source_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "run": 43267838959,
+  "job": 131356183446,
+  "conclusion": "success",
+  "whole_log": {
+    "bytes": 376431,
+    "sha256": "1f816792bd7a53601361e7a9d6ed88dd88f8fc02c9d230e48dada7dec876bbce",
+    "git_sha1": "00cd990ac1503656237961ab6245b4bea0f1a86e"
+  },
+  "parts_join": "concatenate windows.job.log.part00..part01 raw bytes without separators",
+  "specific_learning_scope": {
+    "selected": 36,
+    "passed": 36,
+    "failed": 0,
+    "errors": 0,
+    "skipped_in_xml": 0,
+    "filtered_out": 597,
+    "retries": 0,
+    "junit_bytes": 9050,
+    "junit_sha256": "c0a6d8c9398c0a35825b9ee4568baccfa0e28c1416049261c37aabedd3f88b20"
+  },
+  "other_separate_scopes": [
+    15,
+    2,
+    3,
+    2,
+    12
+  ],
+  "source_clean": "actual step success; log/record retained",
+  "boundary": "This Windows selected scope does not qualify full Linux/Root/ordinary suites or proposed unpublished hot-generation fixes.",
+  "items": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-private-pass/windows.job.log.part00",
+      "sha": "271277604c76cc8b0607ba798ae2b87953a438ac",
+      "bytes": 340000,
+      "sha256": "43b09fc28f4552047d021e305ea99b92fe31a2dbced639282e3b2fe2cc401303",
+      "start": 0,
+      "end": 340000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-private-pass/windows.job.log.part01",
+      "sha": "671a346139e99d7182fb4cfb313a2e80614b6acc",
+      "bytes": 36431,
+      "sha256": "e89fb55223dd9c5294e4d0bea0ba7dc4de5c156902b0b6fe0e7d840216fa8ebd",
+      "start": 340000,
+      "end": 376431
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-private-pass/jobs.original.json",
+      "sha": "8971ebf3511b24fc105f81107c2da45b21d4ae6a",
+      "bytes": 4222,
+      "sha256": "ab4741b8526450c137073dab1c4a1e1b1429831dc95156ea2b857fe701be6b4b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-private-pass/windows36-records.original.jsonl",
+      "sha": "ae6ed87765a8945584aebe3c47fa39bcc6044cfb",
+      "bytes": 15675,
+      "sha256": "a52a9993e7ea930f6589af049bca759888cdb1087a14c000595e9bdaac7f37cc"
+    }
+  ],
+  "original_json_records": 2
+}

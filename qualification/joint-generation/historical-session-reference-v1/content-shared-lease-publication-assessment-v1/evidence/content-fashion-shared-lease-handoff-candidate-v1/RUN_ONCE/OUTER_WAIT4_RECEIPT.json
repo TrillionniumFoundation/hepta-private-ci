@@ -1,0 +1,157 @@
+{
+  "accounting": "Linux wait4 supervisor includes reaped workers; do not add child CPU again. All worker imports, checkpoints, parsing, model inference, failed/cancelled work, byte encoding, artifact hashing/writes and supervisor final receipt tail inside measured subtree. No automatic retry. Logical known IO prefixes and complete retained inventory separate from raw kernel counters.",
+  "artifacts_before_outer_receipt": {
+    "AFTER_MODEL.json": {
+      "bytes": 4172492,
+      "sha256": "e4c4058fcd672baae793fb9cd7d49d0180f66b38a801b504e621b344a466982d"
+    },
+    "ALLOW_HANDOFF.json": {
+      "bytes": 129,
+      "sha256": "f19962f08da8066ad47cad4c588cfcf3d70fbb68ad480e5aac6dfbf208693b09"
+    },
+    "CONTENDER_RESULT.json": {
+      "bytes": 420,
+      "sha256": "6a5bf61710697145341d28cd9ed93b1682384d94940a05a0b3d9d34de9c3c4dc"
+    },
+    "HANDOFF_MODEL.json": {
+      "bytes": 4172492,
+      "sha256": "e4c4058fcd672baae793fb9cd7d49d0180f66b38a801b504e621b344a466982d"
+    },
+    "INFERENCE_RESULT.json": {
+      "bytes": 3228,
+      "sha256": "1e7e7ae7f57b49863af4cae658772d0c8edd98b5240a060ba7d1beb25f99c359"
+    },
+    "REQUEST.json": {
+      "bytes": 47329,
+      "sha256": "3f48850aa36ab2b804dbe087997d0442ce16800513a4d1c3c80868b6d0f23335"
+    },
+    "RESULT.json": {
+      "bytes": 2063,
+      "sha256": "1e396a862cef761489a5f0114f40cdd522760a042ea541d9d59cac34a8013ca7"
+    },
+    "SESSION_HANDOFF_RESULT.json": {
+      "bytes": 819,
+      "sha256": "8abe7480f7a72c7ae54ba832b1ba52186fdadc68ccb3384e7fb0426ad3dda572"
+    },
+    "SESSION_READY.json": {
+      "bytes": 967,
+      "sha256": "2c9f2e62ef5cd3b1f2b2e70080ca2863169269ecdf111e0d0b9e90b3f47b73ab"
+    },
+    "WAIT4_RECEIPT.json": {
+      "bytes": 6687,
+      "sha256": "a92120c5a91abea7344c233394e7d6df99c56f60b2d2e8433d023eaddd9eadf7"
+    },
+    "WIRE.json": {
+      "bytes": 35397,
+      "sha256": "01b2bec1521d9a25b8cbbbd03ae81eb8d411fa612020ee0bb786b263fa1d05c4"
+    },
+    "contender.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "contender.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "inference.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "inference.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "session_holder.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "session_holder.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "shared-root/.hepta-writer.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "shared-root/c8321190f31af16464dcac944c289ea10631f0aadfde5cfcaa556dfa84947d93/cancel-intent.json": {
+      "bytes": 88417,
+      "sha256": "f9bfdde2764ff9d63ad45bdfa7b8efb4b0473d05c5e88d199c64ecab4489543f"
+    },
+    "shared-root/c8321190f31af16464dcac944c289ea10631f0aadfde5cfcaa556dfa84947d93/cancelled.json": {
+      "bytes": 88416,
+      "sha256": "dacf5aedb9fd459fba825e1e3b2c4c927ed6e73a1ca3e2e5013c0a0be5466479"
+    },
+    "shared-root/c8321190f31af16464dcac944c289ea10631f0aadfde5cfcaa556dfa84947d93/claim.json": {
+      "bytes": 472,
+      "sha256": "e65823c216097da13b1b500f0f778936998f47faaa57e2f0aacdd07dcd7676f9"
+    },
+    "shared-root/c8321190f31af16464dcac944c289ea10631f0aadfde5cfcaa556dfa84947d93/generated.json": {
+      "bytes": 71963,
+      "sha256": "f53d1646340f9874fc3d17501e4aaa8aff063eb68c53905f718abe35a6864b75"
+    },
+    "shared-root/c8321190f31af16464dcac944c289ea10631f0aadfde5cfcaa556dfa84947d93/piece-00-ack.json": {
+      "bytes": 72033,
+      "sha256": "6780bda43048163a2796469778621b7b7110e02a2cec4fdcdc2009989a2b826e"
+    },
+    "shared-root/c8321190f31af16464dcac944c289ea10631f0aadfde5cfcaa556dfa84947d93/piece-00-intent.json": {
+      "bytes": 71965,
+      "sha256": "a5116edb5fc069123542791fa0d30104738d4102a6e9a1467c7ec5413f9fc0fb"
+    },
+    "shared-root/c8321190f31af16464dcac944c289ea10631f0aadfde5cfcaa556dfa84947d93/piece-01-ack.json": {
+      "bytes": 88417,
+      "sha256": "f9bfdde2764ff9d63ad45bdfa7b8efb4b0473d05c5e88d199c64ecab4489543f"
+    },
+    "shared-root/c8321190f31af16464dcac944c289ea10631f0aadfde5cfcaa556dfa84947d93/piece-01-intent.json": {
+      "bytes": 72035,
+      "sha256": "8cd74549e892a8e0a20e4233e44255a06b81d70efd248232f0202f9889d9477b"
+    },
+    "shared-root/c8321190f31af16464dcac944c289ea10631f0aadfde5cfcaa556dfa84947d93/reserved.json": {
+      "bytes": 1170,
+      "sha256": "c12e78553ccc2b2724b03b836d78c93f977c31ff88106dee0c6621413253cc2b"
+    },
+    "shared-root/selected-session.json": {
+      "bytes": 4175418,
+      "sha256": "710683470e228f1de553fc43d39efab5d38b5b302aa3760a278dd30adcdef291"
+    },
+    "supervisor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "supervisor.stdout": {
+      "bytes": 5669,
+      "sha256": "a61195dcd616c08f2d5b8be1259e1376335d22a7ab506f0dc281db5d2c45de63"
+    }
+  },
+  "complete_wait": true,
+  "exit_code": 0,
+  "final_retained_bytes": 13184675,
+  "inner_children_CPU_seconds": 1.876163,
+  "kernel_IO_scope": "raw kernel resource counters including reaped child, no conversion to bytes, cached reads/writes need not equal block IO",
+  "kernel_subtree_IO_counters": {
+    "ru_inblock": 0,
+    "ru_nivcsw": 145,
+    "ru_nvcsw": 185,
+    "ru_oublock": 25880
+  },
+  "known_CPU_lower_bound_seconds": 2.026655274,
+  "largest_reaped_process_RSS_kib": 60008,
+  "limits": {
+    "method_actual_CPU_cap_seconds": 17,
+    "number_of_children": 3,
+    "outer_scope_excluded": "measurement launcher, source/review and prior run costs additional nonzero",
+    "retained_bytes": 33554432,
+    "sum_OS_CPU_seconds": 20,
+    "supervisor_OS_CPU_seconds": 5,
+    "worker_OS_CPU_seconds": 5,
+    "worker_admission_CPU_seconds": 4
+  },
+  "method_terminal_budget_pass": true,
+  "outer_launcher_CPU_observed_prefix_seconds": 0.048096274,
+  "outer_launcher_unobserved_final_tail": "unknown_not_zero; serialization/write/terminal print and teardown after this sample",
+  "retained_bytes_before_final_receipt": 13177998,
+  "retry": false,
+  "source_freeze_sha256": "461044bb87086d5fe61bf9e70f342495a42622c79d1a0f85e0c4737f146fb659",
+  "supervisor_complete_CPU_by_difference_seconds": 0.10239599999999993,
+  "wall_seconds": 2.0148532570019597,
+  "whole_method_subtree_CPU_seconds": 1.978559
+}

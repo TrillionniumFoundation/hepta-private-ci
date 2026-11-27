@@ -1,0 +1,50 @@
+{
+  "source_commit": "c9d6cb3bdf89fa9065c25b761686fddc9a616609",
+  "source_tree": "5d45f6370129372cc77294088bdfe7e0b0efc28e",
+  "remote_final_commit": "d29f3669ece6696f086c75624dbb44cbaabee134",
+  "remote_final_tree": "5d45f6370129372cc77294088bdfe7e0b0efc28e",
+  "chain": [
+    {
+      "parent": "c9d6cb3bdf89fa9065c25b761686fddc9a616609",
+      "incoming": "b40def20022b37d1cc1ca90a608795e60ebf2777",
+      "sha": "2e59edf38c8088598e01316e8347065fe9d944f8",
+      "tree": "5d45f6370129372cc77294088bdfe7e0b0efc28e"
+    },
+    {
+      "parent": "2e59edf38c8088598e01316e8347065fe9d944f8",
+      "incoming": "e304674acbadedede0b9b1ddf0afe2bf331181e6",
+      "sha": "0da79da532c2e9344f6d37b77a67eee7fdaf20dc",
+      "tree": "5d45f6370129372cc77294088bdfe7e0b0efc28e"
+    },
+    {
+      "parent": "0da79da532c2e9344f6d37b77a67eee7fdaf20dc",
+      "incoming": "372e473d52e69f21e85e1ea6cfa9c3c1aff3e928",
+      "sha": "d29f3669ece6696f086c75624dbb44cbaabee134",
+      "tree": "5d45f6370129372cc77294088bdfe7e0b0efc28e"
+    }
+  ],
+  "all_actual_remote_parent_default_merges_verified": true,
+  "all_conflict_stage_entries_identical_to_preapproved_proofs": true,
+  "all_resolutions_limited_to_preapproved_paths": true,
+  "all_154_source_changes_preserved_at_every_step": true,
+  "full_leaf_count": 59439,
+  "full_leaf_records_sha256": "72f92626eee4f9fc221f54ebf3a7e221d492818152ae00372fda1f3967a29b8b",
+  "final_ancestry_nodes": 45046,
+  "missing_parent_nodes": 0,
+  "known_protected_nodes_checked": 1492,
+  "hia_intersection": [],
+  "stop_intersection": [],
+  "remote_parent_graph_sha256": "4908ee208a89f563b83aebe27ab3577af18d6bfa17c1a07aaefec6bf2427b5b7",
+  "remote_chain_manifest_sha256": "51c77337f291bfcd849055256c8075d2d9a818d35b04108024ee1dfd7e801994",
+  "local_repo": "/workspace/scratch/6d7ee0821539/hia-boundary/new-source-history-c9d6",
+  "local_tracking_ref": "refs/proof/remote-source-three-merges",
+  "proofs": [
+    "remote-b40-REVIEW.json",
+    "remote-e304-REVIEW.json",
+    "remote-372-REVIEW.json"
+  ],
+  "source_bindings": "SOURCE-BINDINGS.json",
+  "remote_mutation_by_reviewer": false,
+  "other_worktree_or_index_mutation": false,
+  "qualification_boundary": "Default merge computations on exact real remote first parents and full leaf metadata equality; no new native testing or qualification claim."
+}

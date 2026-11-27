@@ -1,0 +1,303 @@
+{
+  "schema": "hepta.final-full-caller-rebind.contract.v1",
+  "status": "unstamped-template-not-executed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "original": {
+    "runner_blob": "8e39295637267d3ebc17cd3a57421cf451670dfd",
+    "runner_bytes": 18927,
+    "runner_sha256": "c553da997674fa89fe4c33a0ef3642a919f574baba30c54789cb2076b4863c3d",
+    "contract_blob": "b8be0f2162e77cc69925be29050593801c375d71",
+    "original_contract_sha256": "52c2cc68a370b54924e9814d4586e3d6701cffdce38b862605e5172407dfc605",
+    "previously_executed_or_passed_by_this_preparation": false
+  },
+  "checked_code_basis": {
+    "commit": "a7571fe7ca197de52cd071741b85b14a237d6bd5",
+    "tree": "71382739c728e026f1d3ae4aab146eb770074c7e",
+    "ordered_parents": [
+      "03fa1da937ff510f43e7ddb9d8d5e84a929237d5",
+      "05df3a8cb316b482866f955ae43a0a737d547e47"
+    ],
+    "six_exact_pin_files": [
+      {
+        "path": "CALLERS.toml",
+        "sha": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+        "bytes": 1619553,
+        "sha256": "361e7a05153f8205e8e5f3ab75dd68291757de54b7add2d7115cf61d9ad675da",
+        "full_readback_and_independent_git_hash": true
+      },
+      {
+        "path": "scripts/verify_hepta_callers.py",
+        "sha": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+        "bytes": 38402,
+        "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+        "full_readback_and_independent_git_hash": true
+      },
+      {
+        "path": "scripts/hepta_typed_callers.py",
+        "sha": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+        "bytes": 7672,
+        "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+        "full_readback_and_independent_git_hash": true
+      },
+      {
+        "path": "scripts/hepta_ci_exec.py",
+        "sha": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "bytes": 12863,
+        "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+        "full_readback_and_independent_git_hash": true
+      },
+      {
+        "path": ".github/workflows/hepta-daemon-learning-native.yml",
+        "sha": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+        "bytes": 27362,
+        "sha256": "917566e873e93a169886e32f601ac581248e74523ebb0546ddca07b242dd847d",
+        "full_readback_and_independent_git_hash": true
+      },
+      {
+        "path": "AGENTS.md",
+        "sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "bytes": 22519,
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+        "full_readback_and_independent_git_hash": true
+      }
+    ],
+    "manifest_source_roots": [
+      "codex-rs"
+    ],
+    "expected_boundary_records": 736,
+    "expected_protected_records": 506,
+    "verifier_scoped_rust_files": 6655,
+    "outer_whole_repository_tracked_rust_files": 6777,
+    "final_source_is_not_yet_stamped": true
+  },
+  "exact_template_edits": [
+    {
+      "before": "SOURCE_SHA = \"fde0086022ab2d877ef7d8aae19e07ad17a8593f\"",
+      "after": "SOURCE_SHA = \"__ROOT_FINAL_SOURCE_SHA_40_HEX__\"",
+      "kind": "final_stamp"
+    },
+    {
+      "before": "SOURCE_TREE = \"291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17\"",
+      "after": "SOURCE_TREE = \"__ROOT_FINAL_SOURCE_TREE_40_HEX__\"",
+      "kind": "final_stamp"
+    },
+    {
+      "before": "\"CALLERS.toml\": \"16c487a051ad08b6d1a00a1165ad4acd750c39e1\"",
+      "after": "\"CALLERS.toml\": \"dc445dd052620bb07ebd7b2eee9640d4d4172234\"",
+      "kind": "fixed_manifest"
+    },
+    {
+      "before": "EXPECTED_RUST_FILES = 6766",
+      "after": "EXPECTED_RUST_FILES = 6655",
+      "kind": "source_roots_scope_correction"
+    },
+    {
+      "before": "EXPECTED_BOUNDARIES = 710",
+      "after": "EXPECTED_BOUNDARIES = 736",
+      "kind": "fixed_inventory"
+    },
+    {
+      "before": "EXPECTED_PROTECTED_RECORDS = 489",
+      "after": "EXPECTED_PROTECTED_RECORDS = 506",
+      "kind": "fixed_inventory"
+    }
+  ],
+  "exact_edit_audit": {
+    "edit_count": 6,
+    "all_before_and_after_markers_unique": true,
+    "reverse_all_six_recovers_original_bytes": true,
+    "no_import_or_runtime_function_changes": true,
+    "class_RecordingRejected_through_end_byte_identical": true,
+    "unchanged_runtime_tail_sha256": "25df31034e80eb86b32da0973d85e3a6a8db5271db7d10b6b450212e22d7634a",
+    "only_existing_fixed_source_pin_and_inventory_constants_changed": true,
+    "source_domain_correction": "Original 8e392 copied the FDE whole-repository tracked count 6766 into the source_roots-only counter. The fixed FDE source_roots tree contains 6644 .rs blobs; current a757 contains 6655. Original outer whole-repository counts 6766/6777 remain distinct. No verifier domain or ignore rule is changed.",
+    "source_domain_correction_accepted_by_Root": true,
+    "no_count_from_actual_runtime_or_receipt_is_used_to_rewrite_expected_constants": true
+  },
+  "template": {
+    "blob": "2e6ae028ee0f0402ced542c3d76c89578e45e0b0",
+    "bytes": 18912,
+    "sha256": "f061f442a07a30449b6874bb677fa88b2ef87c41b8471eed8c5b78eb5d623f6b",
+    "not_ready_to_execute": true,
+    "source_sha_placeholder": "__ROOT_FINAL_SOURCE_SHA_40_HEX__",
+    "source_tree_placeholder": "__ROOT_FINAL_SOURCE_TREE_40_HEX__",
+    "placeholder_failure": "If left unstamped, original source_snapshot exact HEAD/tree check rejects before starting self-test or verify; this is not a runnable final recorder.",
+    "suggested_argv": [
+      "python3",
+      "-I",
+      "-S",
+      "-B",
+      "ROOT_OWNED_STAMPED_RECORDER_ABSOLUTE_PATH",
+      "--repo",
+      "EXISTING_FINAL_FIXED_WORKTREE",
+      "--evidence-dir",
+      "NEW_ROOT_OWNED_EVIDENCE_DIRECTORY"
+    ]
+  },
+  "final_stamp_rules": [
+    "Root first fixes the final source commit and canonical tree after all agreed runtime fixture changes.",
+    "Replace the two placeholder literals exactly once with those full lowercase 40-hex identities. Do not accept shortened refs or obtain an alternative source from command-line flags.",
+    "Re-read the final six exact pin paths and final manifest source_roots. The checked a757 values may be reused only if the final tree retains those exact blobs.",
+    "Verify final source_roots .rs inventory independently from the whole-repository tracked inventory. For unchanged a757 Rust membership these are 6655 and 6777 respectively; do not interchange them.",
+    "Keep all protected records and multiplicity, ordered boundary ids, and privileged required ids. No path deduplication or per-path record replacement is allowed.",
+    "Publish and full-readback the complete final stamped runner bytes and recompute their Git blob/SHA256; the template hash is not the final runnable script hash.",
+    "Use an already existing fixed checkout and a fresh exclusive owned evidence directory outside it. Do not edit source, install dependencies, or change grants/keys/policies.",
+    "The final runner file remains outside the verified checkout; this contract carries a template and does not require a self-referential source commit.",
+    "Any changed pin or new Rust source membership requires an explicit fixed-tree inventory update; never relax a check after observing a failed command."
+  ],
+  "original_semantics_preserved": {
+    "workflow": {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+      "job": "caller-proof",
+      "job_timeout_minutes": 100
+    },
+    "execution_helper": {
+      "path": "scripts/hepta_ci_exec.py",
+      "blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "function": "execute_logged"
+    },
+    "verifier": {
+      "path": "scripts/verify_hepta_callers.py",
+      "blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+    },
+    "typed_scanner": {
+      "path": "scripts/hepta_typed_callers.py",
+      "blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+    },
+    "agents": {
+      "path": "AGENTS.md",
+      "blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    "commands": [
+      {
+        "cwd": "exact existing repository root",
+        "argv": [
+          "python3",
+          "scripts/verify_hepta_callers.py",
+          "self-test"
+        ],
+        "original_budget_seconds": 300
+      },
+      {
+        "cwd": "same exact existing repository root",
+        "argv": [
+          "python3",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "original_budget_seconds": 4800
+      }
+    ],
+    "phase_order": "Run self-test once. Start verify once only if self-test's original gate passes. Do not retry, reconnect, invoke scoped verification, or use --base.",
+    "scope": "The unchanged original verify() reads all manifest source_roots, builds the original Rust source index, checks every boundary with the original typed scanner, validates privileged inventory and every protected_file record. No caller proof implementation is copied, altered or replaced.",
+    "original_output_limit_bytes_per_phase": 67108864,
+    "precision": "The recorder separately requires the actual original success receipt with exact ordered boundary ids, sorted privileged inventory, all protected paths WITH multiplicity and 6655 scanned Rust files. It does not turn a partial scan, empty stdout or a process exit alone into a pass."
+  },
+  "original_gate_and_observation_preserved": {
+    "clock": "time.monotonic()",
+    "phase_budget_start": "Immediately before log-file creation and the original phase Popen. The wall budget includes dispatch and observation overhead, not only CPU time.",
+    "pass": "The original direct child must be observed terminal before its 300/4800 second budget, exit 0, remain within the original combined 64 MiB stdout+stderr budget, and emit the complete original expected receipt. Overall success also requires exact source/pin/inventory equality and clean state before and after.",
+    "deadline": "At the first observation at or beyond the original phase deadline, write an exclusive immutable phase.gate.json with status original_budget_timeout and classification_exit_code 124. This 124 is the recorder's gate classification, NOT the Python child's actual exit.",
+    "output_limit": "At the first observation beyond the original combined 64 MiB phase limit, write original_output_limit_exceeded with classification 1. Keep recording the original files; do not truncate bytes to manufacture a complete log.",
+    "late_terminal": "Continue observing the SAME Popen child after a gate failure. Reap it if it terminates, and record the actual exit and final complete raw log hashes separately. A late actual exit 0 and valid receipt cannot overwrite the earlier failed gate.",
+    "maximum_total_active_observation_seconds": 10800,
+    "observation_origin": "Recorder start before source preflight; the same deadline is shared by both phases.",
+    "observation_end": "If that deadline is reached while the original child is still running, stop active observation, leave actual_child_exit null and original_process_complete false, mark log snapshots partial, and return a failed/timeout classification. Do not claim the unobserved eventual terminal state.",
+    "direct_log_descriptors": "stdout and stderr are direct exclusive regular files, not pipes owned only by the observer. Closing the observer's descriptors does not close the still-running child's duplicated descriptors; it may continue writing after the observation limit.",
+    "no_signals": "No os.kill, killpg, terminate, send_signal, signal import, PID-based termination or subprocess timeout-kill is present. Only the Popen handle created by this invocation is polled/waited; no existing Rust/daemon or externally supplied PID is adopted.",
+    "after_observation_limit": "Root must treat the eventual child exit as unknown under this recording. No automatic new run or inference from PID disappearance is permitted; preserve the original directory and files.",
+    "snapshot_scope": "Partial hashes cover the recorded prefix_bytes, not a final future stream. Final complete hashes are taken after the actual direct child has been reaped and require stable file metadata across hashing.",
+    "precision_limits": "Polling and filesystem I/O can conservatively reject near-deadline completion; no exact kernel exit timestamp is claimed. Metadata collection, fsync and bounded-prefix hashing may add wall time after the observation decision. The 10800 value is an active process-observation cutoff, not a signal-based hard kill deadline.",
+    "original_CI_difference": "The original CI helper merges streams and kills its newly created command group when its deadline/output bound fails. This standalone recorder preserves the same acceptance budgets, records streams separately, and sends no signals so a late original terminal result can be observed. It does not claim the literal workflow or its 100-minute job ran.",
+    "not_an_extended_pass_budget": "10800 seconds is solely the observation window. It is not a replacement for 4800 seconds, and does not authorize changing original CI limits.",
+    "supervisor_scope": "No-signal guarantees describe this recorder only. They do not certify an external H/PTY supervisor's lifecycle policy or supervise escaped descendants. Root retains ownership of that external dispatch/observation."
+  },
+  "target_v2_provenance": {
+    "used_by_caller_recorder": false,
+    "reason": "The original recorder and both commands are pure Python caller verification. No target, V8 artifact, or recovery record is read or written by this script. Child environment changes remain only PYTHONDONTWRITEBYTECODE and TMPDIR.",
+    "new_record_blob": "344a692e8ccf9cdb3262b1b8404a995d525c6ba2",
+    "record_bytes": 2506,
+    "record_sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb",
+    "full_api_readback_and_independent_git_hash": true,
+    "creation_source_sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+    "creation_source_tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76",
+    "meaning": "The e5c creation source identifies the original target-v2 initialization operation only. It is not this final verifier's source identity and must not be compared for equality with the final SOURCE_SHA/TREE.",
+    "runtime_root": "/data/hepta-learn-ce434-runtime-20261112-v2",
+    "target": "/data/hepta-learn-ce434-runtime-20261112-v2/target",
+    "uid": 1000,
+    "creation_root_identity": {
+      "device": 2067,
+      "inode": 26345747,
+      "mode": "0o40700",
+      "uid": 1000,
+      "nlink": 3
+    },
+    "creation_target_identity": {
+      "device": 2067,
+      "inode": 26345748,
+      "mode": "0o40700",
+      "uid": 1000,
+      "nlink": 2
+    },
+    "creation_identity_is_not_an_added_runtime_gate": true,
+    "old_original_manifest_sha256_unchanged": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+    "old_original_recovery_sha256_unchanged": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc",
+    "original_v1_V8_artifacts_unchanged": [
+      {
+        "key": "RUSTY_V8_ARCHIVE",
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "bytes": 29366352,
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+      },
+      {
+        "key": "RUSTY_V8_SRC_BINDING_PATH",
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "bytes": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+      }
+    ],
+    "no_artifact_copy_download_or_old_record_rewrite": true,
+    "no_CARGO_TARGET_DIR_or_V8_environment_change_in_caller_recorder": true,
+    "no_new_target_or_recovery_gate": true,
+    "no_H_target_inspection_performed_by_this_preparation": true,
+    "creation_source_equal_final_source_required": false
+  },
+  "inventory_correction_evidence": {
+    "complete_scanned_source_paths": "source-root-rust-paths.txt",
+    "scope_audit": "source-domain-audit.json",
+    "boundary_records": 736,
+    "protected_records_with_multiplicity": 506,
+    "source_roots_count": 6655,
+    "whole_repo_tracked_count": 6777,
+    "outside_source_roots": 122,
+    "outside_distribution": {
+      "apps": 98,
+      "bazel": 3,
+      "tools": 13,
+      "qualification": 8
+    },
+    "actual_host_rglob_not_observed": true,
+    "actual_original_gate_still_required": true,
+    "tree_hash_verifications_including_repeated_tree_identities": 3060
+  },
+  "source_and_native_inventories_separate": {
+    "source_modules": 62,
+    "source_methods": 443,
+    "native_groups": 43,
+    "native_cases": 201,
+    "root_uid_cases": 29,
+    "these_are_not_executed_or_proved_by_the_caller_recorder": true,
+    "exact_inventory_contract_commit": "bc848a7e57b85d2249dd88abef23e1bcd1bda431"
+  },
+  "preparation": {
+    "Git_API_reads_and_pure_V8_only": true,
+    "Python_parse_compile_or_execution": false,
+    "H_query_or_dispatch": false,
+    "main_verifier_or_typed_scanner_modification": false,
+    "source_scope_change": false,
+    "timeout_or_output_limit_change": false,
+    "new_gate_added": false,
+    "ordinary_acceptance": 0
+  }
+}

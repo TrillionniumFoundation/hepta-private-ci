@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.historical-automation.additional2-replay-custody.v1",
+  "base_commit": "639f84c1aafa6fb5044b690ae21706a7782861ef",
+  "original_113_manifest_unchanged": true,
+  "additional4_patch_unchanged": true,
+  "paths": [
+    {
+      "source_path": ".github/workflows/hepta-lifecycle-policy-qualification.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/hepta-lifecycle-policy-qualification.yml",
+      "source_commit": "639f84c1aafa6fb5044b690ae21706a7782861ef",
+      "source_tree": "ebc4fd8f39ed68d769dfb567b26c5449d45f72a1",
+      "git_blob": "c00946e3ed47fc0fe87df5638a4ac7e7f08120e4",
+      "git_mode": "100644",
+      "bytes": 12180,
+      "sha256": "26acbc82cfb058e4b2c57b43f0a18c52fbc3051acf1a8f6f56cc3ee88817ef7f",
+      "first117_review_commit": "3f40cc95c9fb7843dd1c4100aa42ad290832b498",
+      "first117_review_blob": "c00946e3ed47fc0fe87df5638a4ac7e7f08120e4",
+      "first117_review_sha256": "26acbc82cfb058e4b2c57b43f0a18c52fbc3051acf1a8f6f56cc3ee88817ef7f",
+      "byte_identical_to_first117_review": true,
+      "original_materializing_input": {
+        "sequence": 63,
+        "input_head": "1c010d02c538c6fff36e1d3df9f8fa38bf774851",
+        "merge_commit": "748bcf42abb6c7ac504cae70fe09a854ff171c44",
+        "postimage": "c00946e3ed47fc0fe87df5638a4ac7e7f08120e4",
+        "status": "A"
+      },
+      "declared_events": {
+        "pull_request": {
+          "types": ["opened", "synchronize", "reopened"],
+          "paths": [
+            ".github/workflows/hepta-lifecycle-policy-qualification.yml"
+          ]
+        }
+      },
+      "workflow_permissions": {
+        "contents": "read"
+      },
+      "job_budgets": {
+        "qualification": "180"
+      },
+      "has_sudo_in_workflow_source": true,
+      "original_review_boundary": {
+        "index": 48,
+        "path": ".github/workflows/hepta-lifecycle-policy-qualification.yml",
+        "recommendation": "include_exact_frozen_hosted_fixture_scope_with_explicit_cost",
+        "trigger": "\u4ec5\u672c workflow \u8def\u5f84\u540c\u4ed3 PR opened/synchronize/reopened\uff1b\u975e workflow_dispatch\uff1b\u4e0d\u66ff\u4ee3\u901a\u7528\u4ea7\u54c1 gate",
+        "permissions": "contents:read\uff1bfixed actions SHA\uff1bGH_TOKEN \u53ea exact history fetch\uff1bcheckout credentials:false",
+        "effects": "\u7cbe\u786e frozen4223fc77944e9beb5651df063158b22ae1a4f701/tree7c19c9903d4e82baf3a61111214ff3fe46605cef\uff0c\u4e0e workflow/PR\u8eab\u4efd\u5206\u5f00\uff1bhosted Ubuntu \u4ec5\u6307\u5b9a /var/lib/hepta-checkpoint-fixtures-run-attempt \u76ee\u5f55\u4f5c Root fixture\uff1b\u9a8c\u8bc1\u6240\u6709ancestor root owner/nonwritable\u3002Cargo/build\u666e\u901a\u7528\u6237\uff0c\u6307\u5b9aignored\u6d4b\u8bd5binary\u7531 sudo runner\uff0c\u53ea\u4fdd\u7559fixture/stack env",
+        "budget": "180min job\uff1bformat600s/Fleet3600s/policy5400s/memoryRoot1800s/CAS900s/fix2700s\uff1bminimum tests4/24/3/1\u3001retries0\u4e0d\u53d8\uff1b22GiB build gate",
+        "dependencies": [
+          "\u56fa\u5b9a\u6e90\u7801 .github/actions/prepare-bazel-ci",
+          "scripts/hepta_ci_exec.py",
+          "scripts/hepta_ci_v8.py",
+          "scripts/hepta_ci_history.py"
+        ],
+        "finding": "\u8303\u56f4\u548c product_qualified=False/physical_device_qualified=False \u660e\u786e\uff1b\u6240\u6709 formatter/fixer \u6e90\u53d8\u52a8\u4fdd\u7559 patch \u5e76 fail\uff0c\u4e0d\u6062\u590d\u540e\u6cbf\u7528\u65e7\u7ed3\u679c\u3002\u56fa\u5b9a\u6e90\u91cd\u653e\u4e0d\u80fd\u5f53\u5f53\u524d\u5019\u9009\u6216\u8bbe\u5907\u8d44\u683c\u3002\u65b0\u589e\u6587\u4ef6\u7b2c\u4e00\u6b21 PR \u4f1a\u4e3b\u52a8\u6d88\u8d39\u539f180min\u9884\u7b97\uff0c\u9700\u663e\u5f0f\u8bb0\u5f55\u8fd9\u4e00\u5165\u53e3\u3002",
+        "semantic_approval": false
+      },
+      "disposition": "Nonexecuting historical preservation outside the active workflow directory; matching PR events must not automatically replay historical programs during this convergence task.",
+      "source_programs_executed": false,
+      "qualification_granted": false
+    },
+    {
+      "source_path": ".github/workflows/hepta-scoped-archive-qualification.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/hepta-scoped-archive-qualification.yml",
+      "source_commit": "639f84c1aafa6fb5044b690ae21706a7782861ef",
+      "source_tree": "ebc4fd8f39ed68d769dfb567b26c5449d45f72a1",
+      "git_blob": "d2044a01a76ca49169717747191137ff1684ec4e",
+      "git_mode": "100644",
+      "bytes": 8974,
+      "sha256": "ecaa636cb0d2ef877e754143e490f2032e5cd8783fd333688f52b4d1949ac65e",
+      "first117_review_commit": "3f40cc95c9fb7843dd1c4100aa42ad290832b498",
+      "first117_review_blob": "d2044a01a76ca49169717747191137ff1684ec4e",
+      "first117_review_sha256": "ecaa636cb0d2ef877e754143e490f2032e5cd8783fd333688f52b4d1949ac65e",
+      "byte_identical_to_first117_review": true,
+      "original_materializing_input": {
+        "sequence": 63,
+        "input_head": "1c010d02c538c6fff36e1d3df9f8fa38bf774851",
+        "merge_commit": "748bcf42abb6c7ac504cae70fe09a854ff171c44",
+        "postimage": "d2044a01a76ca49169717747191137ff1684ec4e",
+        "status": "A"
+      },
+      "declared_events": {
+        "pull_request": {
+          "types": ["opened", "synchronize", "reopened"],
+          "paths": [
+            ".github/workflows/hepta-scoped-archive-qualification.yml",
+            "scripts/hepta_scoped_archive.py",
+            "scripts/test_hepta_scoped_archive.py"
+          ]
+        }
+      },
+      "workflow_permissions": {
+        "contents": "read"
+      },
+      "job_budgets": {
+        "archive": "180",
+        "replay": "90",
+        "coverage": "15"
+      },
+      "has_sudo_in_workflow_source": true,
+      "original_review_boundary": {
+        "index": 59,
+        "path": ".github/workflows/hepta-scoped-archive-qualification.yml",
+        "recommendation": "include_only_explicit_historical_replay_after_archive_helper_review",
+        "trigger": "\u540c\u4ed3PR\u4ec5\u672cworkflow/hepta_scoped_archive.py/test\u8def\u5f84",
+        "permissions": "contents:read\uff1b\u5168\u90e8actions\u56fa\u5b9aSHA\u3001checkout\u4e0d\u6301\u4e45\u51ed\u636e\uff1bGH token\u53eabasehistory\u8bfb\u53d6",
+        "effects": "workflowSHA\u4ee3\u7801\u4e0e4223fc\u51bb\u7ed3product\u5206\u76ee\u5f55\uff1b\u56fa\u5b9ade0d base\uff1bprepare/archive/replay/summarize\uff1b\u540c\u4e00run/attempt archive\u7ed94isolated shard\uff0c\u6536complete coverage\u5e76\u8981\u6c42needs\u548cdisjoint test inventory",
+        "budget": "\u65b0\u5386\u53f2build180min\u30014\u00d790min replay\u3001coverage15min\uff1b\u539flocal profile/retries/124packages\u7531helper\u56fa\u5b9a\uff1bartifact1/14\u5929",
+        "dependencies": [
+          "scripts/hepta_scoped_archive.py",
+          "scripts/test_hepta_scoped_archive.py",
+          "\u56fa\u5b9aproduct scripts/hepta_ci_v8.py"
+        ],
+        "finding": "\u5b9e\u9645\u4f1a\u7f16\u8bd1\u5e76\u6267\u884cELF archived tests\uff0c\u4e0d\u662f\u7eafJSON\u8bfb\u53d6\u3002CIagent\u786e\u8ba4\u786c\u95014223/tree7c19/base de0d/124packages\uff0cproduct_qualified/replaces_required_gate false\u3002\u4e0d\u5c06\u8be5\u5386\u53f2\u52a0\u9884\u7b97\u91cd\u653e\u5f52\u5230\u5f53\u524d\u5019\u9009\u6216\u65e73600\u79d2\u7ed3\u679c\u3002",
+        "semantic_approval": false
+      },
+      "disposition": "Nonexecuting historical preservation outside the active workflow directory; matching PR events must not automatically replay historical programs during this convergence task.",
+      "source_programs_executed": false,
+      "qualification_granted": false
+    }
+  ],
+  "scope": "Two formerly automatic PR replay workflows are archived independently of the four host-operation workflows. This changes workflow discovery only and does not alter any historical payload, helper, experiment result, current CI gate, or source branch.",
+  "qualification_granted": false
+}

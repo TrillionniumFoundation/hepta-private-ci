@@ -1,0 +1,106 @@
+{
+  "schema": "hepta-perc-compute-readiness-note-v1",
+  "observed_at_utc": "2026-11-09T11:39:01.368Z",
+  "task": "PERC frozen pretrained image encoder plus private projection and acquisition-value head",
+  "controller": {
+    "confirmed_hosts": [
+      {
+        "name": "main",
+        "platform": "macos"
+      },
+      {
+        "name": "mac",
+        "platform": "macos"
+      },
+      {
+        "name": "rog",
+        "platform": "linux"
+      }
+    ],
+    "host_inventory_observed": true
+  },
+  "requested_resources": {
+    "accelerator": "T4",
+    "bounded_job_seconds": 120,
+    "estimated_gpu_memory_bytes": 2147483648,
+    "estimate_only": true
+  },
+  "calls": [
+    {
+      "key": "perc-readiness-20261109-compute-help-1",
+      "host": "rog",
+      "job_id": "1a1c010cb8a-5e21-8c4",
+      "outcome": "help_read_success"
+    },
+    {
+      "key": "perc-readiness-20261109-cache-inventory-1",
+      "host": "rog",
+      "job_id": "1a1c00fb782-5e21-8bb",
+      "outcome": "known_cache_inventory_read_success"
+    },
+    {
+      "key": "perc-readiness-20261109-evaluate-t4-1",
+      "host": "rog",
+      "job_id": null,
+      "outcome": "MCP_REQUEST_TIMED_OUT",
+      "same_key_reconciliation": "MCP_REQUEST_TIMED_OUT",
+      "dispatch_status": "UNKNOWN"
+    },
+    {
+      "key": "perc-readiness-20261109-packages-1",
+      "host": "rog",
+      "job_id": null,
+      "outcome": "MCP_REQUEST_TIMED_OUT",
+      "dispatch_status": "UNKNOWN"
+    }
+  ],
+  "blocking_observation": {
+    "tool": "h.view",
+    "message": "direct SSH admitted capacity exhausted; no child submitted; no automatic retry",
+    "interpretation": "This exact read was refused before submission. Earlier timed-out process calls remain unreconciled."
+  },
+  "resource_readiness": "UNKNOWN",
+  "cloud_allocation_requested": false,
+  "cloud_submission_requested": false,
+  "gpu_execution_verified": false,
+  "artifacts_collected": false,
+  "package_availability_verified": false,
+  "caches": {
+    "torch_default_checkpoints_present": false,
+    "huggingface_default_hub_present": false,
+    "all_possible_caches_searched": false,
+    "public_document_corpus_verified": false
+  },
+  "installed_scheduler": {
+    "path": "hepta-compute",
+    "implementation": "release 0.1.0-20261109/hepta_compute.py",
+    "commands": [
+      "evaluate",
+      "plan",
+      "execute",
+      "inspect",
+      "collect"
+    ],
+    "maximum_source_bytes": 2097152,
+    "colab": {
+      "maximum_source_bytes": 262144,
+      "maximum_compute_seconds": 600,
+      "maximum_declared_artifacts": 32,
+      "reserved_artifact_names": [
+        "stdout",
+        "stderr"
+      ]
+    },
+    "kaggle": {
+      "private": true,
+      "internet": false,
+      "input_asset_cli_option_present": false
+    },
+    "automatic_account_rotation": false
+  },
+  "next_action": "Continue lightweight local CPU implementation and validation; recover the original evaluate/package job identities on this same controller before any new evaluation. Allocate only after current readiness is confirmed and a frozen payload exists.",
+  "limitations": [
+    "No account-specific readiness, quota, authorization, allocation, or GPU completion was established.",
+    "No claims about every cache or dataset on ROG can be made from the limited known-path inventory."
+  ]
+}

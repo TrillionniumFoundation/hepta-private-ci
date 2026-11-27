@@ -1,0 +1,52 @@
+{
+  "schema": "hcsn-n256-firststep-resource-snapshot-request-v2",
+  "identity": "hcsn-n256-firststep-resource-snapshot-20261117-c06d-002-after-v1-runtime-rejection",
+  "base_commit": "0b03f43e7f20fdb50fa323ed1f555b26dd0d8c2b",
+  "parent_draft": 6622,
+  "host": "desktop",
+  "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+  "environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "idempotency_key": "hcsn-n256-firststep-resource-snapshot-20261117-c06d-v2-after-v1-runtime-rejection",
+  "snapshot_source_sha256": "22d3a8e6bf751c6f5e00fcdd72ab8771d4270024f3d66cd6ba4c3eb2f4e4c5e2",
+  "predecessor_evidence_sha256": {
+    "PROCESS_START.json": "02a8b39fe7910e3cba7651502652a89e6570149ac05e84b629e58c1f3622de34",
+    "STDERR.txt": "989b562412dc7aeaf6fcf9af1d141aef3ce0f914de8a83b2359aa5b7435eeccc",
+    "TERMINAL.json": "bf47478d85f9fad60c2cce199c4e19ae9740cda766df2ee0faacd6c01c3e3d7c"
+  },
+  "predecessor": {
+    "idempotency_key": "hcsn-n256-firststep-resource-snapshot-20261117-c06d-v1",
+    "job_id": "1a1ece4d9ea-392-4590",
+    "terminal_state": "failed",
+    "exit_code": 1,
+    "timed_out": false,
+    "cancelled": false,
+    "stdout_bytes": 0,
+    "stderr_bytes": 476,
+    "failure": "numpy.__file__ was None under the v1 PYTHONNOUSERSITE=1 override"
+  },
+  "change_from_predecessor": "Remove only the v1 PYTHONNOUSERSITE override; retain the executable, frozen source, resource limits, host, and zero-model scope.",
+  "purpose": "Observe current host, ancestor-cgroup, and exact runtime identity without opening N256 inputs.",
+  "future_envelope": {
+    "coordinate_denominator": 69728,
+    "dynamic_steps": 1,
+    "dense_expm_actions": 2,
+    "expm_orders": [258, 259]
+  },
+  "n256_numerical_execution_allowed": false,
+  "allocation_contract": null,
+  "calendar_contract": null,
+  "n256_input_reads": 0,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "historical_negative_and_unknown_preserved": true,
+  "resource_admitted": false,
+  "all_closed": false
+}

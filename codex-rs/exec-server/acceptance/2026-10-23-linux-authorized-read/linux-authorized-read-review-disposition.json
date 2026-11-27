@@ -1,0 +1,24 @@
+{
+  "observedAt": "2026-10-23T20:39:20.585658+00:00",
+  "reviewedLeaf": "f3ee06d59275582cdcccfdec44bab96e57db6a49",
+  "mainIntegrationApproved": false,
+  "originalScopedPassInvalidated": false,
+  "originalScopedPassScope": "Original24 focused and510 owning reported pass at recorded source; these checks did not cover the newly identified preadmission open-side-effect boundary.",
+  "reviewFindings": [
+    {
+      "finding": "Initial read-open happens before user-path authorization even with NONBLOCK; use O_PATH pin instead.",
+      "status": "Initial O_PATH stage44b4820 original25/25+owner511/511/3 original skipped, fix/fmt0; stage-specific only."
+    },
+    {
+      "finding": "Read-open after path authorization still occurs before replacement identity proof; use strict O_PATH secure reopen, then convert only the private proved regular-file FD through controlled proc link and verify readable descriptor.",
+      "status": "Complete readable-pin chain is applied as44b4820+diff13c0b429f300d754e1508a415402228f4ce78ef089fe222a444f1a019c21722a, original26 focused running, frozen3 files. Not qualified until original owner and fix/fmt complete."
+    }
+  ],
+  "devicesOpenedForTesting": false,
+  "attackOrRaceReproductionPerformed": false,
+  "initialPhaseState": "linux-path-pin-phase-state.json",
+  "nextPhaseState": "linux-readable-pin-chain-phase-state.json",
+  "nextPhaseProposal": "linux-readable-pin-chain-proposed.diff",
+  "nativeAsterinasQualified": false,
+  "finalUnifiedFullQualified": false
+}

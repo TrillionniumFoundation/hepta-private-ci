@@ -1,0 +1,90 @@
+{
+  "candidate_tree": "17c8a04f29b8faec53797c3c24aa003964aa20b8",
+  "checker_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "entries": 355,
+  "failures": [
+    {
+      "error": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs:fn require_successor_session(: required code order missing: ['original.require_current_successor_session()?', 'self.profile.require_context(', 'original.identity()', '&original.writer_proof()?', '&self.initial', '&self.scope']",
+      "index": 336,
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/root_generation_current_client.rs:fn require_successor_context(: required code order missing: ['self.connection.require_same_successor_session(session)?', 'self.observe()?', 'self.profile.initial != initial.head_digest.to_string()', 'self.profile.scope != scope.binding().to_string()', 'self.profile.writer != session.writer_proof()?', 'self.profile.identity != crate::neuron_generation_process_identity_digest_v1(session.identity())?.to_string()', 'self.profile.learning_operation != initial.request.operation_id.as_str()', 'self.fence()', 'self.connection.require_same_successor_session(session)']",
+      "index": 337,
+      "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs:fn require_current_successor_context(: required code order missing: ['self.session.require_current_successor_session()?', 'retained.observe_retained_learning(&self.identity).await?', 'owners.require_current().await', 'self.session.require_current_successor_session()']",
+      "index": 339,
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs:fn register_original_successor(: required code order missing: ['self.inner.in_lane(', 'session.require_current_successor_session()', 'owners.factory.require_successor_session(&session)', 'owners.generation.is_some()', 'inner.successor.set(weak).is_err()']",
+      "index": 340,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/learning_iteration.rs:fn process(: required code order missing: ['authenticate_restored_iteration_v1(', 'while let Some(stage)', 'self.wait_original_successor_stage(state, coordinator.snapshot(), stage).await?', 'if let Some(decision)', 'authenticate_iteration_receipt_v1(', 'decision,', 'self.ports.execute_stage(', 'coordinator.record(receipt, clock()?)?', '.checkpoint(previous, coordinator.snapshot())']",
+      "index": 342,
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs: required marker missing: 'enum Phase { Pending, Installing, Ready, Closed }'",
+      "index": 343,
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs:fn decision_snapshot(: required code order missing: ['CloseOnDrop::new(&self.slot)', 'self.slot.decision(', 'validate_snapshot(&snapshot)', 'cancelled.disarm()']",
+      "index": 344,
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs: required marker missing: 'OriginalQ24 { slot: Arc<crate::circuit_q24_successor::SuccessorSlot> }'",
+      "index": 345,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs:fn run_in_original_successor_lane(: required code order missing: ['self.require_identity(state.identity())?', 'self.handle.require_direct_original_handle()', 'store.owner_agent_id() != &self.identity.agent_id', '(self.owner)(store, state, cancellation).await']",
+      "index": 346,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs:fn observe_learning(: required code order missing: ['self.slot.actual_invocation()', 'source.observe_learning(identity, record, trace)', 'CircuitTaskLearningReadinessV1::Pending(CircuitTaskLearningPendingV1::OwnerUnavailable)']",
+      "index": 347,
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs:fn run(: required code order missing: ['self.install_original_successor(', 'run_in_original_successor_lane(', 'tokio::pin!(work)', 'cancellation.cancelled()', 'slot.close()', 'work.await']",
+      "index": 348,
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs:fn prepare_original_successor(: required_order must contain marker sequences",
+      "index": 349,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs:fn prepare_successor_current(: required code order missing: ['original.require_current().await?', 'original.decision.require_new_work()?', 'validation::feature_target(', 'validation::predecessor(', 'require_successor_admission(', 'owners.with_original_publication(', 'revalidate(', 'require_successor_admission(', 'slot.require_installation_open()', 'current::prepare_selected(', 'require_successor_admission(', 'slot.require_installation_open()']",
+      "index": 350,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs:fn open_original_successor_channel(: required code order missing: ['circuit_q24_task_channel_v1(identity, CircuitQ24TaskProfileV1 {', 'published_task: task.clone()', 'OriginalQ24InstalledSuccessorV1 {', 'runtime.source', 'runtime.cell', 'runtime.bootstrap, runtime.invocation']",
+      "index": 351,
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/production_q24_successor.rs:fn prepare_original_q24_successor(: required code order missing: ['config.require_root_learning_assembled()?', 'self.q24_model.is_some() || self.initial_publication.is_some()', 'OriginalQ24SuccessorSession::capture_original_successor_session(', '&self.root.session', '&self.root.bootstrap', 'config.identity()', 'config.with_original_pending_successor(', 'Ok((self, config, handoff))']",
+      "index": 352,
+      "path": "codex-rs/hepta-agentd/src/production_q24_successor.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/config_q24_successor.rs:fn with_original_pending_successor(: required code order missing: ['self.require_no_circuit_task_profile()?', 'self.require_circuit_task_execution_profile()?', '!(1..=64).contains(&capacity)', 'SuccessorSlot::new_pending_slot()', 'self.learning_iteration_bootstrap.as_mut()', 'learning.prepare_original_successor_context(', 'compose_original_successor_runtime(', 'self.with_circuit_task_bootstrap(bootstrap, invocation)?']",
+      "index": 353,
+      "path": "codex-rs/hepta-agentd/src/config_q24_successor.rs"
+    }
+  ],
+  "native_behavior_executed": false,
+  "official_full_verifier_executed": false,
+  "source_sha": "19894714403a97fcd58ca8c592e75761de95687c"
+}

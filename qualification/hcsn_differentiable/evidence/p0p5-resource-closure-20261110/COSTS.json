@@ -1,0 +1,113 @@
+{
+  "accounting_complete": false,
+  "additive_grand_total": null,
+  "billed_currency": null,
+  "energy_joules": null,
+  "index_curation_cost": "COPY-RECEIPT.json",
+  "previous_ledger": "../p0p5-resource-replay-20261110/COSTS.json",
+  "rows": [
+    {
+      "artifact": "independent-index/OUTER.json",
+      "artifact_identity": {
+        "bytes": 268,
+        "sha256": "842e54e5832f7fe7576aee9ecf687ae76a904c3094d01bb74d77d226d189a48f"
+      },
+      "id": "independent-index-review",
+      "measurements": {
+        "complete_child_wall_seconds": 0.11271611200209009,
+        "waited_child_CPU_seconds": 0.110581
+      },
+      "scope": "Complete read-only child; no resource algorithm, model or oracle rerun."
+    },
+    {
+      "artifact": "verification/integrity-v1-failed-entry/EXECUTION.json",
+      "artifact_identity": {
+        "bytes": 2024,
+        "sha256": "0bf966f26a05025ecfae8d863581339e81cde74e686af30419dafbfce8d0bb08"
+      },
+      "id": "direct-file-import-failure",
+      "measurements": {
+        "waited_child_CPU_seconds": 0.026737999999999998,
+        "whole_child_wall_seconds": 0.028419115998985944
+      },
+      "scope": "Complete failed child. Direct-file entry shadows stdlib operator before verifier main; no evidence check executed."
+    },
+    {
+      "artifact": "verification/integrity-v2/EXECUTION.json",
+      "artifact_identity": {
+        "bytes": 2686,
+        "sha256": "df60aadea4fae4f7dfeedbcab4c0661e244d0dafbed3a0caa4e3ae5b9dec82c5"
+      },
+      "id": "module-integrity-success",
+      "measurements": {
+        "waited_child_CPU_seconds": 0.23763999999999996,
+        "whole_child_wall_seconds": 0.24549877000026754
+      },
+      "scope": "Distinct complete child, established module entry; same verifier and original evidence bytes."
+    },
+    {
+      "artifact": "verification/committed-v1-preflight-failure/PREFLIGHT-FAILURE.json",
+      "artifact_identity": {
+        "bytes": 514,
+        "sha256": "84ae0f259964dd7b97cdbeef6e6d2f02b37ecd0c96759c0910699aad1baf5412"
+      },
+      "id": "Git-wrapper-preflight-failure",
+      "measurements": {
+        "complete_process_wall_seconds": null,
+        "process_CPU_seconds": null
+      },
+      "scope": "Wrapper selected -B as a source path; before child launch, not a failed Git evidence check. Cost unknown."
+    },
+    {
+      "artifact": "verification/committed-v2/EXECUTION.json",
+      "artifact_identity": {
+        "bytes": 104927,
+        "sha256": "0279a1befc71db0f936525ff86b436ba536b2830a8f3f169bc199aa5768baac9"
+      },
+      "id": "Git-object-verification",
+      "measurements": {
+        "waited_child_CPU_seconds": 2.1445519999999996,
+        "whole_child_wall_seconds": 2.1424911829999473
+      },
+      "scope": "Complete child with source/explicit inputs hashed before and after; exact committed files, not ignored worktree availability."
+    },
+    {
+      "artifact": "verification/just-fmt-v1.json",
+      "artifact_identity": {
+        "bytes": 111046,
+        "sha256": "00f9087bcede69d298f6ea293556b733b7e03b34c2067e6a2bfa7736695e8c5e"
+      },
+      "id": "archive-formatter",
+      "measurements": {
+        "waited_child_CPU_seconds": 0.227939,
+        "whole_child_wall_seconds": 0.22369077899929835
+      },
+      "scope": "Complete cached formatter invocation; all 229 frozen snapshot files unchanged."
+    },
+    {
+      "artifact": "independent-index/HOSTED-FIXTURE-COST-ADDENDUM.json",
+      "artifact_identity": {
+        "bytes": 2912,
+        "sha256": "4aef53b59b3fb7aa7468ed214dc8ecbd578f1a8cd00b2a3971346df7b0d3189b"
+      },
+      "id": "hosted-fixture-timing-index",
+      "scope": "Five exact original artifact-member timings, nested within hosted CI and separate from artifact collection; no rerun or complete job total."
+    },
+    {
+      "artifact": "publication/hcsn-resource-evidence-api-progress-v1.json",
+      "artifact_identity": {
+        "bytes": 92860,
+        "sha256": "e8f6c1595d1d254ba69427537a5c606edb1f318bd621b03e0adf26d5f6b115a5"
+      },
+      "id": "API-publication",
+      "measurements": {
+        "billed_currency": null,
+        "complete_transport_wall_seconds": null,
+        "transport_CPU_seconds": null
+      },
+      "scope": "First content-addressed tree request disconnected; branch readback unchanged. Second invocation used smaller batches and verified the exact final tree. API transport wall/CPU/currency unknown; no model/CI rerun."
+    }
+  ],
+  "rule": "Keep failed attempts. Do not sum nested fixture/job/bootstrap/controller costs; unknown costs are not zero.",
+  "schema": "resource-closure-costs-v1"
+}

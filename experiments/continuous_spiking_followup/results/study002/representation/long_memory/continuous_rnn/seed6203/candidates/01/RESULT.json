@@ -1,0 +1,149 @@
+{
+  "arrays_manifest_sha256": "4a420e8df2bea7dca8f13cb2b146dafd62c3d7a524ca5092ca81b6032b763ce7",
+  "budget_exhausted": true,
+  "candidate_index": 1,
+  "checkpoint_manifest_sha256": "f73e635791eddfd6c497a8490e1aa9ff4b4f4206d8ebf360cc2b6501bb54f9eb",
+  "checkpoint_reload_max_error": 0.0,
+  "checkpoint_scope": "inference model state; optimizer/RNG continuation not retained",
+  "costs_seconds": {
+    "reload_cpu": 0.005853926000000342,
+    "reload_wall": 0.005855925002833828,
+    "serialization_cpu": 0.021310816999999815,
+    "serialization_wall": 0.02131581899448065,
+    "training_cpu": 12.000015662999996,
+    "training_wall": 12.00327376396308,
+    "validation_cpu": 0.041062329999995484,
+    "validation_wall": 0.04106761699949857
+  },
+  "cpu_budget_overshoot_seconds": 1.5662999995669225e-05,
+  "cpu_budget_seconds": 12.0,
+  "examples_seen": 30752,
+  "gradient_groups": {
+    "backbone.blocks.0.cell.candidate.bias": {
+      "finite": true,
+      "l1": 0.6474789977073669
+    },
+    "backbone.blocks.0.cell.candidate.weight": {
+      "finite": true,
+      "l1": 14.993514060974121
+    },
+    "backbone.blocks.0.cell.log_rate": {
+      "finite": true,
+      "l1": 0.02189301699399948
+    },
+    "frontend.0.bias": {
+      "finite": true,
+      "l1": 0.9799866676330566
+    },
+    "frontend.0.weight": {
+      "finite": true,
+      "l1": 6.352913856506348
+    },
+    "frontend.1.bias": {
+      "finite": true,
+      "l1": 0.15411490201950073
+    },
+    "frontend.1.weight": {
+      "finite": true,
+      "l1": 0.057298678904771805
+    },
+    "readout.bias": {
+      "finite": true,
+      "l1": 0.34331268072128296
+    },
+    "readout.weight": {
+      "finite": true,
+      "l1": 2.4696197509765625
+    }
+  },
+  "history": [
+    {
+      "crossed_milestone_fractions": [
+        0.25
+      ],
+      "examples_seen": 4992,
+      "final": false,
+      "last_gradient_norm": 0.39335307478904724,
+      "last_train_loss": 1.3717584609985352,
+      "training_cpu_seconds": 3.0068995669999943,
+      "training_wall_seconds": 3.0083431980383466,
+      "update": 156,
+      "validation": {
+        "accuracy": 0.2265625,
+        "brier": 0.7630870342254639,
+        "cases": 256,
+        "cross_entropy": 1.4123162031173706
+      }
+    },
+    {
+      "crossed_milestone_fractions": [
+        0.5
+      ],
+      "examples_seen": 11808,
+      "final": false,
+      "last_gradient_norm": 0.4107341766357422,
+      "last_train_loss": 1.3856455087661743,
+      "training_cpu_seconds": 6.00266093599998,
+      "training_wall_seconds": 6.004642864965717,
+      "update": 369,
+      "validation": {
+        "accuracy": 0.21484375,
+        "brier": 0.7582569122314453,
+        "cases": 256,
+        "cross_entropy": 1.4014201164245605
+      }
+    },
+    {
+      "crossed_milestone_fractions": [
+        1.0
+      ],
+      "examples_seen": 30752,
+      "final": true,
+      "last_gradient_norm": 0.4291747808456421,
+      "last_train_loss": 1.326468586921692,
+      "training_cpu_seconds": 12.000015662999996,
+      "training_wall_seconds": 12.00327376396308,
+      "update": 961,
+      "validation": {
+        "accuracy": 0.21875,
+        "brier": 0.7765384316444397,
+        "cases": 256,
+        "cross_entropy": 1.4434789419174194
+      }
+    }
+  ],
+  "initialization_cpu_seconds": 0.0022490339999983178,
+  "last_update_cpu_seconds": 0.009593656999999922,
+  "learning_rate": 0.003,
+  "minibatch_rng_seed": 6980,
+  "model_config": {
+    "architecture": "continuous_rnn",
+    "classes": 4,
+    "depth": 1,
+    "input_dim": 64,
+    "match_cell_budget": false,
+    "seed": 6203,
+    "width": 32
+  },
+  "parameters": {
+    "backbone": 2112,
+    "frontend": 2208,
+    "matching": null,
+    "readout": 132,
+    "total": 4452
+  },
+  "selected_update": 369,
+  "selected_validation_ce": 1.4014201164245605,
+  "sequence_positions": 984064,
+  "termination": "cpu_budget",
+  "total_cpu_seconds": 12.083175151999999,
+  "total_wall_seconds": 12.083186798001407,
+  "unique_examples_seen": 2048,
+  "update_record_columns": [
+    "loss",
+    "gradient_norm",
+    "cpu_seconds",
+    "wall_seconds"
+  ],
+  "updates_completed": 961
+}

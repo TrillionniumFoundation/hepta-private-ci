@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+    "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -38,7 +38,8 @@
       "operation": "load_model",
       "nativeSymbol": "pub fn load_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "82db913a3e20df2088e96f0791f51fbe5ede35d6"
     },
     {
       "designOperation": "run",
@@ -81,7 +82,8 @@
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "dac0d36abcad8386868938ab6bc37f92a0f01771"
     },
     {
       "designOperation": "unload",
@@ -104,7 +106,8 @@
       "operation": "unload",
       "nativeSymbol": "pub fn unload_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "82db913a3e20df2088e96f0791f51fbe5ede35d6"
     }
   ],
   "repositoryControlledGaps": [
@@ -140,6 +143,16 @@
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
   "sourceRoot": [
+    "codex-rs/hepta-infer-worker-host"
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
     "codex-rs/hepta-infer-worker-host"
   ]
 }

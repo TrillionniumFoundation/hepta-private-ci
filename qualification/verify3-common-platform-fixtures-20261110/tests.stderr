@@ -1,0 +1,17 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+Traceback (most recent call last):
+  File "/workspace/scratch/40a1a085876c/mac-fixture-reconciliation/codex-rs/../scripts/run-nextest.py", line 276, in <module>
+    raise SystemExit(run(sys.argv[1:]))
+                     ^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/40a1a085876c/mac-fixture-reconciliation/codex-rs/../scripts/run-nextest.py", line 239, in run
+    status = subprocess.call(metadata_command, stdout=output)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 389, in call
+    with Popen(*popenargs, **kwargs) as p:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'cargo'
+error: Recipe `test` failed on line 89 with exit code 1

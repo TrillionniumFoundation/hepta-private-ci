@@ -1,0 +1,130 @@
+{
+  "schema": "hepta.p0.blocking-ci-original-log-archive.v1",
+  "run_id": 42937198454,
+  "run_head": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+  "actual_tested_checkout": "3fc1acb49d5bbf9621411c1673de4e50a0bcd71e",
+  "exact_equal_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+  "merge_parents": [
+    "0c99a30dbe9307d48aa50ffc63404235ade8ae9c",
+    "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b"
+  ],
+  "root_independently_read_original_log_diagnostics": true,
+  "findings": [
+    {
+      "job": 130259560078,
+      "kind": "PRETTIER_FORMAT_FAILURE",
+      "paths": [
+        "docs/hepta-generation-learning-readback.md",
+        ".github/workflows/hcsn-differentiable.yml",
+        ".github/workflows/hepta-daemon-learning-native.yml"
+      ],
+      "same_file_blobs_in_cb": true,
+      "reviewed_fix_component": "e453a28965ed0364fd5691129a5a5836ecdc85b9"
+    },
+    {
+      "jobs": [
+        130259560790,
+        130259560908
+      ],
+      "kind": "CLIPPY_AWAIT_HOLDING_INVALID_TYPE",
+      "path": "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+      "line": 162,
+      "same_file_blob_in_cb": true,
+      "original_code_already_explicitly_dropped_guard": true,
+      "reviewed_fix_component": "e453a28965ed0364fd5691129a5a5836ecdc85b9",
+      "runtime_deadlock_claimed": false
+    },
+    {
+      "job": 130259560257,
+      "kind": "DEPENDENCY_DOWNLOAD_TRANSPORT_FAILURE",
+      "dependency": "bindgen",
+      "original_curl_code": 55,
+      "details": "Failed receiving HTTP2 data: 56(Failure when receiving data from the peer)",
+      "cargo_no_run_exit": 101,
+      "native_runtime_cases_executed": 0,
+      "rust_source_error_established": false
+    },
+    {
+      "job": 130259560731,
+      "kind": "MATRIX_REAL_RUNTIME_FAILURE",
+      "test": "encrypted_state_identity_session_and_queues_survive_restart",
+      "actual_result": {
+        "passed": 0,
+        "failed": 1,
+        "ignored": 2
+      },
+      "reported_reopen_elapsed_seconds": 17.460891417,
+      "reported_error": "Initialization",
+      "elapsed_is_not_proof_of_timeout_or_kdf_cause": true,
+      "diagnostic_component": "7b5ff407bb33ccbf1fc067aefb9c2b37e202ed55",
+      "actual_failure_cause_resolved": false
+    },
+    {
+      "jobs": [
+        130259560731,
+        130259560901
+      ],
+      "kind": "AUTH_TARGET_CACHED_PASS",
+      "exact_case_fresh_execution_observed": false,
+      "details": "See ../engineering/AUTH_REFRESH_READBACK_6ec.json"
+    }
+  ],
+  "complete_original_job_logs": [
+    {
+      "job": 130259560078,
+      "path": "job-130259560078.log.gz",
+      "codec": "gzip",
+      "bytes": 40047,
+      "sha256": "7021b192828ef106eb7893eea7e666d18cd6a2740d7ffd74cb4189cba78a6594",
+      "original_bytes": 267753,
+      "original_sha256": "9bc29755caa4fd1236fa59e03593fcac19c0f7069dd238cc9ed690b9206d79a1"
+    },
+    {
+      "job": 130259560257,
+      "path": "job-130259560257.log.gz",
+      "codec": "gzip",
+      "bytes": 15910,
+      "sha256": "fd3fb25a262c13cd735f64b84168336e081c1837084837520761684eef51be5d",
+      "original_bytes": 83805,
+      "original_sha256": "88bf5e5ba5aa453366c1e3b2aa3cf68c6c2384a11acc02b98609a6bc87157126"
+    },
+    {
+      "job": 130259560731,
+      "path": "job-130259560731.log.xz",
+      "codec": "xz",
+      "bytes": 169328,
+      "sha256": "7a37a629c13ebc0b320de71e55dc753e1487e2fee0928eb72e031695638dbf28",
+      "original_bytes": 3526643,
+      "original_sha256": "3e59ac628d490aebaefccc3a3e5e3dd44a48e15b68ee12c3b2da7c44e4d2a587"
+    },
+    {
+      "job": 130259560790,
+      "path": "job-130259560790.log.gz",
+      "codec": "gzip",
+      "bytes": 72350,
+      "sha256": "9b0f2aad0d7ed2fde5933dba28481f357bbd8cc030c34088b050d8255cec2f95",
+      "original_bytes": 547520,
+      "original_sha256": "e81da2e2ab1423234d8b5366dd9327621e9fe3308d3a0d4b73a04938cc5eba03"
+    },
+    {
+      "job": 130259560908,
+      "path": "job-130259560908.log.gz",
+      "codec": "gzip",
+      "bytes": 95361,
+      "sha256": "ed88d95f81bf68f4cf96a174aa7affc5dfcad22721c1206e9dcf95952f9f7b79",
+      "original_bytes": 899031,
+      "original_sha256": "0f25224c714dfa89a258459be9421c78f2f63a3e075c75dc6b9f4cd0795a16de"
+    },
+    {
+      "job": 130259560901,
+      "path": "job-130259560901.log.gz",
+      "codec": "gzip",
+      "bytes": 50611,
+      "sha256": "6b471c63c7228427cc8e4159919ec00ab361b600d27ce7f5af13ab3afac54a39",
+      "original_bytes": 392932,
+      "original_sha256": "c5021900bee2ed5b2d01bf1d200ccb0f114964c61bf3f713e563d3b17770ef52"
+    }
+  ],
+  "source_after_candidate_qualified_by_this_archive": false,
+  "new_ci_or_native_jobs_started": 0
+}

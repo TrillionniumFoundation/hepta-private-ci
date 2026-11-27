@@ -1,0 +1,768 @@
+{
+  "actual_numerical_calls": {
+    "adam_updates": 0,
+    "adjoints": 0,
+    "forwards": 0
+  },
+  "actual_stdlib_controller_processes": 13,
+  "actual_stdlib_toy_processes": 10,
+  "child_cpu_seconds": 0.9650269999999999,
+  "child_reported_max_rss_kib": 20188,
+  "error": null,
+  "exact_process_totals_status": "KNOWN_FOR_COMPLETE_PROTOCOL",
+  "identity": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1",
+  "observed_authoritative_SIGKILL_exits": [
+    {
+      "exit_code": -9,
+      "pid": 2249,
+      "scenario": "pre_popen_kill"
+    },
+    {
+      "exit_code": -9,
+      "pid": 2250,
+      "scenario": "post_spawn_pre_pid_kill"
+    },
+    {
+      "exit_code": -9,
+      "pid": 2252,
+      "scenario": "post_pid_kill"
+    }
+  ],
+  "observed_completed_case_toy_processes": 10,
+  "observed_controller_PIDs": [
+    2231,
+    2233,
+    2235,
+    2237,
+    2239,
+    2241,
+    2243,
+    2245,
+    2247,
+    2249,
+    2250,
+    2252,
+    2254
+  ],
+  "payload_bytes_before_report": 136562,
+  "planned_intentional_SIGKILL_cases": 3,
+  "scenarios": [
+    {
+      "actual_calls_under_test": {
+        "adam_updates": 0,
+        "adjoints": 0,
+        "forwards": 0
+      },
+      "controller_exit": 0,
+      "controller_pid": 2231,
+      "event_count": 3,
+      "known_zero_is_definite": true,
+      "ledger_unknown": [],
+      "passed": true,
+      "planned_kill_hook_verified": false,
+      "scenario": "known_zero",
+      "second_admission_blocked": false,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 1,
+      "toy_children_spawned": 1
+    },
+    {
+      "actual_calls_under_test": {
+        "adam_updates": 0,
+        "adjoints": 0,
+        "forwards": 0
+      },
+      "controller_exit": 0,
+      "controller_pid": 2233,
+      "event_count": 1,
+      "known_zero_is_definite": true,
+      "ledger_unknown": [],
+      "passed": true,
+      "planned_kill_hook_verified": false,
+      "scenario": "no_child",
+      "second_admission_blocked": false,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 0,
+      "toy_children_spawned": 0
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": 0,
+      "controller_pid": 2235,
+      "event_count": 3,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_TERMINAL_UNREPORTED",
+          "exit_code": 0,
+          "label": "toy",
+          "launch_state": "SPAWNED",
+          "maximum_calls": {
+            "adam_updates": 0,
+            "adjoints": 0,
+            "forwards": 0
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:43233514011:1:toy",
+          "pid": 2236,
+          "started": true,
+          "terminal": true
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": false,
+      "scenario": "missing_result",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 1,
+      "toy_children_spawned": 1
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": 0,
+      "controller_pid": 2237,
+      "event_count": 3,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_TERMINAL_UNREPORTED",
+          "exit_code": 0,
+          "label": "toy",
+          "launch_state": "SPAWNED",
+          "maximum_calls": {
+            "adam_updates": 0,
+            "adjoints": 0,
+            "forwards": 0
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:43233514011:1:toy",
+          "pid": 2238,
+          "started": true,
+          "terminal": true
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": false,
+      "scenario": "malformed_result",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 1,
+      "toy_children_spawned": 1
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": 0,
+      "controller_pid": 2239,
+      "event_count": 3,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_TERMINAL_UNREPORTED",
+          "exit_code": 0,
+          "label": "toy",
+          "launch_state": "SPAWNED",
+          "maximum_calls": {
+            "adam_updates": 0,
+            "adjoints": 0,
+            "forwards": 0
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:43233514011:1:toy",
+          "pid": 2240,
+          "started": true,
+          "terminal": true
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": false,
+      "scenario": "unbound_result",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 1,
+      "toy_children_spawned": 1
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": 0,
+      "controller_pid": 2241,
+      "event_count": 3,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_TERMINAL_UNREPORTED",
+          "exit_code": 0,
+          "label": "toy",
+          "launch_state": "SPAWNED",
+          "maximum_calls": {
+            "adam_updates": 0,
+            "adjoints": 0,
+            "forwards": 0
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:43233514011:1:toy",
+          "pid": 2242,
+          "started": true,
+          "terminal": true
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": false,
+      "scenario": "wrong_pid",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 1,
+      "toy_children_spawned": 1
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": 0,
+      "controller_pid": 2243,
+      "event_count": 3,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_TERMINAL_UNREPORTED",
+          "exit_code": 0,
+          "label": "toy",
+          "launch_state": "SPAWNED",
+          "maximum_calls": {
+            "adam_updates": 0,
+            "adjoints": 0,
+            "forwards": 0
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:43233514011:1:toy",
+          "pid": 2244,
+          "started": true,
+          "terminal": true
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": false,
+      "scenario": "wrong_source",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 1,
+      "toy_children_spawned": 1
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": 0,
+      "controller_pid": 2245,
+      "event_count": 3,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_TERMINAL_UNREPORTED",
+          "exit_code": 0,
+          "label": "toy",
+          "launch_state": "SPAWNED",
+          "maximum_calls": {
+            "adam_updates": 0,
+            "adjoints": 0,
+            "forwards": 0
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:43233514011:1:toy",
+          "pid": 2246,
+          "started": true,
+          "terminal": true
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": false,
+      "scenario": "wrong_exit",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 1,
+      "toy_children_spawned": 1
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": 0,
+      "controller_pid": 2247,
+      "event_count": 3,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_TERMINAL_UNREPORTED",
+          "exit_code": 0,
+          "label": "toy",
+          "launch_state": "SPAWNED",
+          "maximum_calls": {
+            "adam_updates": 0,
+            "adjoints": 0,
+            "forwards": 0
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:43233514011:1:toy",
+          "pid": 2248,
+          "started": true,
+          "terminal": true
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": false,
+      "scenario": "noninteger_counter",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 1,
+      "toy_children_spawned": 1
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": -9,
+      "controller_pid": 2249,
+      "event_count": 2,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_STARTING",
+          "exit_code": null,
+          "label": "toy",
+          "launch_state": "STARTING",
+          "maximum_calls": {
+            "adam_updates": 0,
+            "adjoints": 0,
+            "forwards": 0
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:43233514011:1:toy",
+          "pid": null,
+          "started": null,
+          "terminal": false
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": true,
+      "scenario": "pre_popen_kill",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 0,
+      "toy_children_spawned": 0
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": -9,
+      "controller_pid": 2250,
+      "event_count": 4,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_STARTING",
+          "exit_code": null,
+          "label": "toy",
+          "launch_state": "STARTING",
+          "maximum_calls": {
+            "adam_updates": 0,
+            "adjoints": 0,
+            "forwards": 0
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:43233514011:1:toy",
+          "pid": null,
+          "started": null,
+          "terminal": false
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": true,
+      "scenario": "post_spawn_pre_pid_kill",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 1,
+      "toy_children_spawned": 1
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": -9,
+      "controller_pid": 2252,
+      "event_count": 4,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_PENDING_RESULT",
+          "exit_code": null,
+          "label": "toy",
+          "launch_state": "SPAWNED",
+          "maximum_calls": {
+            "adam_updates": 0,
+            "adjoints": 0,
+            "forwards": 0
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:43233514011:1:toy",
+          "pid": 2253,
+          "started": true,
+          "terminal": false
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": true,
+      "scenario": "post_pid_kill",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 1,
+      "toy_children_spawned": 1
+    },
+    {
+      "actual_calls_under_test": null,
+      "controller_exit": 0,
+      "controller_pid": 2254,
+      "event_count": 0,
+      "known_zero_is_definite": false,
+      "ledger_unknown": [
+        {
+          "calls_status": "UNKNOWN_STARTING",
+          "exit_code": null,
+          "label": "seeded-unresolved-intent",
+          "launch_state": "STARTING",
+          "maximum_calls": {
+            "adam_updates": 2,
+            "adjoints": 3,
+            "forwards": 3
+          },
+          "nonce": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1:synthetic-reservation-only",
+          "pid": null,
+          "started": null,
+          "terminal": false
+        }
+      ],
+      "passed": true,
+      "planned_kill_hook_verified": false,
+      "scenario": "starting_no_pid",
+      "second_admission_blocked": true,
+      "selected_AST_sha256": {
+        "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+        "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+        "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+        "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+      },
+      "toy_children_reaped": 0,
+      "toy_children_spawned": 0
+    }
+  ],
+  "scope": "selected original controller AST with stdlib toy adapter; no model or power-loss qualification",
+  "source": {
+    "identity": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1",
+    "selected_AST_sha256": {
+      "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+      "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+      "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+      "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+    },
+    "source_commit": "e6d989320e6ad9310b68f650bc8805618cba34fc",
+    "source_inventory_sha256": "eed349e79d2b9500c142825c7bc9d394a7f3bb72100a3a0f318e9617c78f8b03",
+    "source_sha256": {
+      ".github/workflows/hcsn-controller-ledger-faults.yml": "15496492ebf9a5a856a1352d524009642ab8e0f0ad09523ceccd73a548f05dcb",
+      "qualification/hcsn_adjoint_adam_resume/native_probe.py": "f2e0b5bf8c4c15bbfd2df967749d949acffe22e4093320aa17c7ff9fbdc84ae2",
+      "qualification/hcsn_controller_ledger_faults/REQUEST.json": "fdbb31bdcfe248eca99328fb2388b8aae6bbd6544e8707ae16e5410ad3af415d",
+      "qualification/hcsn_controller_ledger_faults/SPEC.md": "2a9067bc1d4678f92e5a7d914571bdcc75809cb430646d0e85a39bdb2a3d8ae6",
+      "qualification/hcsn_controller_ledger_faults/probe.py": "930174547def4fdab1fe4ebb7797f09edd82b6ed5a6f111683a0e0d9ab91c448"
+    }
+  },
+  "status": "PASS",
+  "supervisor_admissions": [
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "known_zero",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/known_zero"
+      ],
+      "exit_code": 0,
+      "pid": 2231,
+      "scenario": "known_zero",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "no_child",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/no_child"
+      ],
+      "exit_code": 0,
+      "pid": 2233,
+      "scenario": "no_child",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "missing_result",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/missing_result"
+      ],
+      "exit_code": 0,
+      "pid": 2235,
+      "scenario": "missing_result",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "malformed_result",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/malformed_result"
+      ],
+      "exit_code": 0,
+      "pid": 2237,
+      "scenario": "malformed_result",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "unbound_result",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/unbound_result"
+      ],
+      "exit_code": 0,
+      "pid": 2239,
+      "scenario": "unbound_result",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "wrong_pid",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/wrong_pid"
+      ],
+      "exit_code": 0,
+      "pid": 2241,
+      "scenario": "wrong_pid",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "wrong_source",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/wrong_source"
+      ],
+      "exit_code": 0,
+      "pid": 2243,
+      "scenario": "wrong_source",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "wrong_exit",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/wrong_exit"
+      ],
+      "exit_code": 0,
+      "pid": 2245,
+      "scenario": "wrong_exit",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "noninteger_counter",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/noninteger_counter"
+      ],
+      "exit_code": 0,
+      "pid": 2247,
+      "scenario": "noninteger_counter",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "pre_popen_kill",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/pre_popen_kill"
+      ],
+      "exit_code": -9,
+      "pid": 2249,
+      "scenario": "pre_popen_kill",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "post_spawn_pre_pid_kill",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/post_spawn_pre_pid_kill"
+      ],
+      "exit_code": -9,
+      "pid": 2250,
+      "scenario": "post_spawn_pre_pid_kill",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "post_pid_kill",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/post_pid_kill"
+      ],
+      "exit_code": -9,
+      "pid": 2252,
+      "scenario": "post_pid_kill",
+      "state": "TERMINAL"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_controller_ledger_faults.probe",
+        "--worker",
+        "--scenario",
+        "starting_no_pid",
+        "--source",
+        "/home/runner/work/_temp/ledger-fixture-source.json",
+        "--output",
+        "/home/runner/work/_temp/ledger-fixture/starting_no_pid"
+      ],
+      "exit_code": 0,
+      "pid": 2254,
+      "scenario": "starting_no_pid",
+      "state": "TERMINAL"
+    }
+  ],
+  "supervisor_body_cpu_seconds": 0.09174101799999998,
+  "supervisor_startup_imports_included_in_cpu": false,
+  "torch_numpy_scipy_imports": 0,
+  "wall_seconds": 1.9660728309999982
+}

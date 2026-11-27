@@ -1,0 +1,20 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--offline",
+    "--frozen",
+    "--project",
+    "scripts",
+    "ruff",
+    "format",
+    "scripts/memory_cell_network/test_model_process.py"
+  ],
+  "exit": 0,
+  "stdout": "1 file left unchanged\n",
+  "stderr": "",
+  "pinned_ruff_version": "0.15.13",
+  "source_sha256_before_after": "c06fd8ed1adfebe0303df7b290ed155afa8a3d1004bb6875e19fef410b8c2189",
+  "bytes_changed": false,
+  "tests_rerun_after_format": false
+}

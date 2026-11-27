@@ -1,0 +1,173 @@
+{
+  "all_recorded_AD_and_high_precision_FD_meet_original_gate": true,
+  "center_log_error_ULPs": 5.0,
+  "derivative_count": 135,
+  "failing_query": {
+    "derivatives": [
+      {
+        "AD": -6.555154516225537,
+        "AD_scaled_error": 1.3549313254198304e-16,
+        "FP64_FD": -6.555154516305587,
+        "FP64_FD_disposition": "roundoff_limited_not_a_FD_pass",
+        "FP64_FD_roundoff_resolution_estimate": 4.735828231795188e-10,
+        "FP64_FD_scaled_error": 1.2211860542876389e-11,
+        "parameter_index": 0,
+        "primary_derivative_passed": true,
+        "reference_FD": -6.555154516225538,
+        "reference_FD_scaled_error": 2.709862650839661e-16,
+        "reference_derivative": -6.555154516225536,
+        "representable_high": 0.009375008940696716,
+        "representable_low": 0.009374991059303284
+      },
+      {
+        "AD": 0.3136862127481029,
+        "AD_scaled_error": 2.220446049250313e-16,
+        "FP64_FD": 0.3136862126170836,
+        "FP64_FD_disposition": "passed_at_declared_resolution",
+        "FP64_FD_roundoff_resolution_estimate": 2.691887889595888e-10,
+        "FP64_FD_scaled_error": 1.3101902895940043e-10,
+        "parameter_index": 1,
+        "primary_derivative_passed": true,
+        "reference_FD": 0.3136862127482909,
+        "reference_FD_scaled_error": 1.882383138251953e-13,
+        "reference_derivative": 0.31368621274810266,
+        "representable_high": 0.10811690310821533,
+        "representable_low": 0.10811669689178467
+      },
+      {
+        "AD": -0.06994117410738711,
+        "AD_scaled_error": 4.163336342344337e-17,
+        "FP64_FD": -0.06994117429984195,
+        "FP64_FD_disposition": "passed_at_declared_resolution",
+        "FP64_FD_roundoff_resolution_estimate": 2.4253192048219233e-10,
+        "FP64_FD_scaled_error": 1.924548853615704e-10,
+        "parameter_index": 2,
+        "primary_derivative_passed": true,
+        "reference_FD": -0.06994117410738708,
+        "reference_FD_scaled_error": 1.3877787807814457e-17,
+        "reference_derivative": -0.06994117410738707,
+        "representable_high": -0.11999988555908202,
+        "representable_low": -0.12000011444091795
+      },
+      {
+        "AD": 0.1516046648477942,
+        "AD_scaled_error": 2.7755575615628914e-17,
+        "FP64_FD": 0.15160466462184838,
+        "FP64_FD_disposition": "passed_at_declared_resolution",
+        "FP64_FD_roundoff_resolution_estimate": 8.315380131048508e-11,
+        "FP64_FD_scaled_error": 2.2594578985568603e-10,
+        "parameter_index": 3,
+        "primary_derivative_passed": true,
+        "reference_FD": 0.1516046648479023,
+        "reference_FD_scaled_error": 1.0813572259849025e-13,
+        "reference_derivative": 0.15160466484779417,
+        "representable_high": 0.3500003337860107,
+        "representable_low": 0.34999966621398926
+      },
+      {
+        "AD": -0.006726718098708995,
+        "AD_scaled_error": 5.204170427930421e-17,
+        "FP64_FD": -0.006726717499035361,
+        "FP64_FD_disposition": "disagrees_above_resolution",
+        "FP64_FD_roundoff_resolution_estimate": 1.9402553638575388e-10,
+        "FP64_FD_scaled_error": 5.99673686575708e-10,
+        "parameter_index": 4,
+        "primary_derivative_passed": false,
+        "reference_FD": -0.0067267180987090475,
+        "reference_FD_scaled_error": 0.0,
+        "reference_derivative": -0.0067267180987090475,
+        "representable_high": 0.15000014305114745,
+        "representable_low": 0.14999985694885254
+      }
+    ],
+    "inputs": [
+      0.009375,
+      0.1081168,
+      -0.11999999999999998,
+      0.35,
+      0.15
+    ],
+    "log_absolute_error": 3.469446951953614e-17,
+    "log_probability": -0.059354787865658065,
+    "primary_passed": false,
+    "probability": 0.9423723675588515,
+    "probability_absolute_error": 5.156947916826781e-17,
+    "probability_relative_error": 5.47230383058184e-17,
+    "probability_underflow": false,
+    "reference_log_probability": -0.05935478786565803
+  },
+  "failure_AD_absolute_error": 5.204170427930421e-17,
+  "failure_ordinary_FD_absolute_error": 5.99673686575708e-10,
+  "five_full_original_reports_independently_read": false,
+  "inputs": {
+    "final-logrisk-original-v1/hcsn-s101-lr0.001-logrisk.json": {
+      "bytes": 117473,
+      "sha256": "34816d336410dc7b1c85a87737fcb68d304da7102fc676df237e23cc40525c63"
+    },
+    "final-logrisk-six-originals-recovery-v1/hcsn-s101-lr0.003/16384.bin": {
+      "bytes": 16384,
+      "sha256": "1e597f8b1b109381e1900139b0a69d18256cbb7e78ef849035d79322ba817823"
+    },
+    "final-logrisk-six-originals-recovery-v1/hcsn-s211-lr0.001/16384.bin": {
+      "bytes": 16384,
+      "sha256": "1e597f8b1b109381e1900139b0a69d18256cbb7e78ef849035d79322ba817823"
+    },
+    "final-logrisk-six-originals-recovery-v1/hcsn-s211-lr0.003/16384.bin": {
+      "bytes": 16384,
+      "sha256": "1e597f8b1b109381e1900139b0a69d18256cbb7e78ef849035d79322ba817823"
+    },
+    "final-logrisk-six-originals-recovery-v1/hcsn-s307-lr0.001/16384.bin": {
+      "bytes": 16384,
+      "sha256": "1e597f8b1b109381e1900139b0a69d18256cbb7e78ef849035d79322ba817823"
+    },
+    "final-logrisk-six-originals-recovery-v1/hcsn-s307-lr0.003/16384.bin": {
+      "bytes": 16384,
+      "sha256": "1e597f8b1b109381e1900139b0a69d18256cbb7e78ef849035d79322ba817823"
+    },
+    "six-logrisk-query-confirmation-v1/RESULT.json": {
+      "bytes": 14183,
+      "sha256": "e0a90a92bed30ab84ecffb1c362c08aaf43a555acf64554a350f99525a0880ee"
+    },
+    "six-logrisk-query-confirmation-v1/hcsn-s101-lr0.003-query.json": {
+      "bytes": 4189,
+      "sha256": "84b657541bf80b1040fcc941caf6af643094aab52cb1c9d0204c83b4881572cf"
+    },
+    "six-logrisk-query-confirmation-v1/hcsn-s211-lr0.001-query.json": {
+      "bytes": 4189,
+      "sha256": "84b657541bf80b1040fcc941caf6af643094aab52cb1c9d0204c83b4881572cf"
+    },
+    "six-logrisk-query-confirmation-v1/hcsn-s211-lr0.003-query.json": {
+      "bytes": 4189,
+      "sha256": "84b657541bf80b1040fcc941caf6af643094aab52cb1c9d0204c83b4881572cf"
+    },
+    "six-logrisk-query-confirmation-v1/hcsn-s307-lr0.001-query.json": {
+      "bytes": 4189,
+      "sha256": "84b657541bf80b1040fcc941caf6af643094aab52cb1c9d0204c83b4881572cf"
+    },
+    "six-logrisk-query-confirmation-v1/hcsn-s307-lr0.003-query.json": {
+      "bytes": 4189,
+      "sha256": "84b657541bf80b1040fcc941caf6af643094aab52cb1c9d0204c83b4881572cf"
+    }
+  },
+  "interpretation": "The ordinary-FP64 finite-difference confirmation gate failed at the saved query. The ULP-based resolution estimate is not a total function-evaluation/truncation error bound. Center-point ULP error does not bound either finite-difference endpoint. AD and the saved 80-digit derivative references agree at this point; this result does not establish a wrong training gradient.",
+  "max_recomputed_scaled_errors": {
+    "AD": 4.371503159461554e-15,
+    "reference_FD": 1.8190540868527574e-12
+  },
+  "new_qualification_credit": false,
+  "ordinary_FP64_FD_dispositions_recomputed": {
+    "disagrees_above_resolution": 1,
+    "passed_at_declared_resolution": 38,
+    "roundoff_limited_not_a_FD_pass": 96
+  },
+  "original_primary_passed_preserved": false,
+  "same_failure_query_verified_in_five_fragments": [
+    "hcsn-s101-lr0.003",
+    "hcsn-s211-lr0.001",
+    "hcsn-s211-lr0.003",
+    "hcsn-s307-lr0.001",
+    "hcsn-s307-lr0.003"
+  ],
+  "schema": "independent-logrisk-stored-JSON-review-v1",
+  "scope": "One complete original 30-query/135-derivative report and five exact complete-query fragments. No new model, log-risk function, oracle, or finite differences executed."
+}

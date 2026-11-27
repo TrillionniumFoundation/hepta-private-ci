@@ -1,0 +1,651 @@
+name: Hepta MEM candidate and replay controls
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-mem-python.yml
+      - scripts/ndu_real_runtime/**
+      - scripts/ndu_real_materials/**
+      - scripts/memory_cell_mem1/**
+      - scripts/memory_cell_mem3/**
+      - experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py
+      - scripts/hepta_ci_exec.py
+      - codex-rs/hepta-memory/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-infer-worker-host/**
+      - codex-rs/rust-toolchain.toml
+      - .github/actions/setup-ci/**
+      - scripts/format.py
+      - scripts/run-nextest.py
+      - justfile
+  push:
+    branches:
+      - research/mem-integrated-20261109-a6b21bc7
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-mem-python-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONPATH: scripts:.
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  OPENBLAS_NUM_THREADS: "1"
+
+jobs:
+  episodic-integrity:
+    name: Source-memory receipts and post-update revocation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Bind source-head identity before integrity tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mem7-records"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/mem7-records/source-before.txt"
+          git status --porcelain > "$RUNNER_TEMP/mem7-records/worktree-before.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test ! -s "$RUNNER_TEMP/mem7-records/worktree-before.txt"
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.16"
+      - name: Check standard-library integrity and fresh readers
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 24 \
+            --output "$RUNNER_TEMP/mem7-records/tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_episodic_memory \
+            ndu_real_runtime.test_episodic_retrieval \
+            ndu_real_runtime.test_episodic_qualification \
+            ndu_real_runtime.test_revocation_qualification
+      - name: Check frozen protocol and source admission
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 60 --minimum-tests 16 \
+            --output "$RUNNER_TEMP/mem7-records/mem9-admission-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_episodic_causal_contract
+      - name: Check exact provider handoff and ambiguous recovery
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 60 --minimum-tests 24 \
+            --output "$RUNNER_TEMP/mem7-records/mem10-handoff-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_episodic_provider_handoff
+      - name: Check offline provider admission and process supervision
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 42 \
+            --output "$RUNNER_TEMP/mem7-records/mem11-provider-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_episodic_local_provider \
+            test_hepta_ci_exec_deadline test_hepta_ci_exec_output
+      - name: Check controlled diagnostic orchestration without model calls
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 8 \
+            --output "$RUNNER_TEMP/mem7-records/mem12-campaign-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_run_episodic_diagnostic
+
+      - name: Check native HTTP capture and isolated-provider bridge without model calls
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 5 \
+            --output "$RUNNER_TEMP/mem7-records/mem13-native-adapter-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_episodic_native_adapter
+
+      - name: Check independent endpoint and complete preregistered denominator
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 3 \
+            --output "$RUNNER_TEMP/mem7-records/mem14-protocol-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_episodic_diagnostic_protocol
+      - name: Record the isolated revocation campaign
+        run: |
+          python -B -m ndu_real_runtime.run_revocation_qualification \
+            --source-commit "$SOURCE_SHA" --output "$RUNNER_TEMP/mem7-records/campaign"
+      - name: Bind source-head identity after integrity tests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mem7-records"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/mem7-records/source-after.txt"
+          git status --porcelain > "$RUNNER_TEMP/mem7-records/worktree-after.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test ! -s "$RUNNER_TEMP/mem7-records/worktree-after.txt"
+      - name: Retain integrity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem7-integrity-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem7-records
+          if-no-files-found: error
+          retention-days: 14
+  causal-isolation:
+    name: Strict memory-on/off process boundary (no model)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.16"
+      - name: Bind source and provision the namespace tool
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem9-isolation-records"
+          mkdir -p "$records"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-before.txt"
+          git status --porcelain > "$records/worktree-before.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test ! -s "$records/worktree-before.txt"
+          uname -a > "$records/host.txt"
+          python --version >> "$records/host.txt"
+          sudo apt-get update 2>&1 | tee "$records/package-update.log"
+          sudo apt-get install --yes --no-install-recommends bubblewrap apparmor-profiles 2>&1 | tee "$records/package-install.log"
+          bwrap --version >> "$records/host.txt"
+          dpkg-query -W bubblewrap apparmor apparmor-profiles > "$records/namespace-package-versions.txt"
+          # Ubuntu's packaged profile permits bwrap to construct namespaces and
+          # stacks a capability-denying profile on the executed child. Keep the
+          # system-wide user-namespace restriction and the strict launcher intact.
+          profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -f "$profile"
+          test ! -L "$profile"
+          dpkg-query -S "$profile" > "$records/namespace-profile-owner.txt"
+          cp "$profile" "$records/bwrap-userns-restrict"
+          sha256sum "$profile" > "$records/namespace-profile-sha256.txt"
+          sysctl -n kernel.apparmor_restrict_unprivileged_userns > "$records/userns-restriction-before.txt"
+          sudo apparmor_parser --replace "$profile" 2>&1 | tee "$records/namespace-profile-load.log"
+          sysctl -n kernel.apparmor_restrict_unprivileged_userns > "$records/userns-restriction-after.txt"
+          cmp "$records/userns-restriction-before.txt" "$records/userns-restriction-after.txt"
+          sudo cat /sys/kernel/security/apparmor/profiles > "$records/apparmor-loaded-profiles.txt"
+          grep -Fx 'bwrap (enforce)' "$records/apparmor-loaded-profiles.txt"
+          grep -Fx 'unpriv_bwrap (enforce)' "$records/apparmor-loaded-profiles.txt"
+      - name: Record read-only host policy and unchanged strict namespace probe
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 30 --minimum-tests 6 \
+            --output "$RUNNER_TEMP/mem9-isolation-records/host-observer-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_isolation_host
+          python scripts/hepta_ci_exec.py --timeout-seconds 45 \
+            --output "$RUNNER_TEMP/mem9-isolation-records/host-observer.json" \
+            -- python -B -m ndu_real_runtime.isolation_host \
+              --output "$RUNNER_TEMP/mem9-isolation-records/host-capabilities"
+      - name: Execute strict isolation and failure controls
+        env:
+          HEPTA_MEM9_REQUIRE_ISOLATION: "1"
+          HEPTA_MEM9_EVIDENCE_ROOT: ${{ runner.temp }}/mem9-isolation-records/attempts
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 8 \
+            --output "$RUNNER_TEMP/mem9-isolation-records/tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_episodic_isolation
+      - name: Retain final exact-source state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem9-isolation-records"
+          mkdir -p "$records"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-after.txt"
+          git status --porcelain > "$records/worktree-after.txt"
+          git diff --binary HEAD > "$records/source-rewrites.patch"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test ! -s "$records/worktree-after.txt"
+      - name: Retain actual namespace attempts and raw output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem9-isolation-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem9-isolation-records
+          if-no-files-found: error
+          retention-days: 30
+  native-owner:
+    name: Staged native episodic owner contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      SOURCE_REF: ${{ github.event.pull_request.head.ref || github.ref }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Bind exact comparison and staged source presence
+        id: stage
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem-native-records"
+          mkdir -p "$records"
+          exec > >(tee "$records/preflight.log") 2>&1
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            BASE_SHA="$(git rev-parse HEAD^)"
+            echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
+          fi
+          python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-before.txt"
+          git status --porcelain > "$records/worktree-before.txt"
+          printf '%s\n' "$SOURCE_REF" "$SOURCE_SHA" "$BASE_SHA" > "$records/event-identity.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test ! -s "$records/worktree-before.txt"
+          git diff --binary "$BASE_SHA" "$SOURCE_SHA" > "$records/source.patch"
+          git diff --name-only --diff-filter=ACMRT -z "$BASE_SHA" "$SOURCE_SHA" > "$records/source-paths.zlist"
+          tar --null -T "$records/source-paths.zlist" -czf "$records/changed-source-before.tar.gz"
+          memory=false; control=false; protocol=false; drain=false; delivery=false
+          [[ ! -f codex-rs/hepta-memory/src/episodic_source.rs ]] || memory=true
+          [[ ! -f codex-rs/hepta-agentd/src/production_episodic_control_tests.rs ]] || control=true
+          [[ ! -f codex-rs/hepta-agent-protocol/src/episodic.rs ]] || protocol=true
+          [[ ! -f codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs ]] || drain=true
+          [[ ! -f codex-rs/hepta-infer-worker-host/src/native_context_tests.rs ]] || delivery=true
+          printf 'memory=%s\ncontrol=%s\nprotocol=%s\ndrain=%s\ndelivery=%s\n' "$memory" "$control" "$protocol" "$drain" "$delivery" | tee "$records/stages.txt" >> "$GITHUB_OUTPUT"
+          printf 'Absent stages have no native test result; infrastructure success is not owner qualification.\n' >> "$records/stages.txt"
+          cat "$records/stages.txt" >> "$GITHUB_STEP_SUMMARY"
+          [[ "$control" == false || ( "$memory" == true && "$protocol" == true ) ]]
+          [[ "$drain" == false || "$control" == true ]]
+          [[ "$delivery" == false || "$control" == true ]]
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: "1.96.0"
+          components: rustfmt, clippy
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+      - name: Retain native tool versions
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          { rustup show active-toolchain; rustc --version --verbose; cargo --version; just --version; cargo nextest --version; uv --version; } 2>&1 | tee "$RUNNER_TEMP/mem-native-records/tools.log"
+      - name: Format exact PR changes and reject any source rewrite
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 900 \
+            --output "$RUNNER_TEMP/mem-native-records/format.json" \
+            -- just fmt --base "$BASE_SHA"
+      - name: Install existing native build prerequisites
+        if: steps.stage.outputs.memory == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          { sudo apt-get update; sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap; } 2>&1 | tee "$RUNNER_TEMP/mem-native-records/native-prerequisites.log"
+      - name: Resolve repository-verified V8 inputs for the control stage
+        if: steps.stage.outputs.control == 'true'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 900 \
+            --output "$RUNNER_TEMP/mem-native-records/v8-inputs.json" \
+            -- python3 scripts/hepta_ci_v8.py
+      - name: Test staged memory owner contracts on unchanged source
+        if: steps.stage.outputs.memory == 'true'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/mem-native-records/memory-tests.json" \
+            -- just test --locked -p codex-hepta-memory --lib episodic
+      - name: Build and bind the exact Codex executable for real App Server drain
+        if: steps.stage.outputs.drain == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 \
+            --output "$RUNNER_TEMP/mem-native-records/codex-build.json" \
+            -- cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import stat
+          import subprocess
+
+          metadata = json.loads(subprocess.check_output([
+              "cargo", "metadata", "--locked", "--no-deps", "--format-version", "1",
+              "--manifest-path", "codex-rs/Cargo.toml",
+          ]))
+          binary = Path(metadata["target_directory"]) / "debug" / "codex"
+          before = binary.lstat()
+          if not stat.S_ISREG(before.st_mode) or not os.access(binary, os.X_OK):
+              raise SystemExit("exact-source Codex binary is not an executable regular file")
+          digest = hashlib.sha256()
+          with binary.open("rb") as handle:
+              for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                  digest.update(chunk)
+          after = binary.lstat()
+          if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) != (
+              after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns
+          ):
+              raise SystemExit("Codex binary changed while recording its identity")
+          record = {
+              "source_sha": os.environ["SOURCE_SHA"],
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "path": str(binary),
+              "bytes": after.st_size,
+              "sha256": digest.hexdigest(),
+          }
+          records = Path(os.environ["RUNNER_TEMP"]) / "mem-native-records"
+          (records / "codex-binary.json").write_text(json.dumps(record, indent=2) + "\n")
+          with Path(os.environ["GITHUB_ENV"]).open("a") as handle:
+              handle.write(f"CARGO_BIN_EXE_codex={binary}\n")
+          PY
+      - name: Test staged Agentd control contracts on unchanged source
+        if: steps.stage.outputs.control == 'true'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/mem-native-records/agentd-tests.json" \
+            -- just test --locked -p codex-hepta-agentd --lib episodic --no-capture --retries 0
+      - name: Test the qualification feature preserves explicit memory isolation
+        if: steps.stage.outputs.control == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem-native-records"
+          # Nextest 0.9.103 resolves store.dir under the Rust workspace;
+          # its report directory is independent of CARGO_TARGET_DIR.
+          junit="$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml"
+          test -f "$junit"
+          test ! -L "$junit"
+          test ! -e "$records/agentd-nextest.junit.xml"
+          mv "$junit" "$records/agentd-nextest.junit.xml"
+          profile_exit=0
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1200 --minimum-tests 1 \
+            --output "$records/agentd-qualification-profile-tests.json" \
+            -- just test --locked -p codex-hepta-agentd --features qualification-cognitive-write \
+            --lib app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths \
+            --no-capture --retries 0 || profile_exit=$?
+          if [[ -f "$junit" && ! -L "$junit" ]]; then
+            cp "$junit" "$records/agentd-qualification-profile.junit.xml"
+          fi
+          if [[ "$profile_exit" -ne 0 ]]; then
+            exit "$profile_exit"
+          fi
+          python3 - <<'PY'
+          from datetime import datetime
+          import json
+          import os
+          from pathlib import Path
+          import uuid
+          import xml.etree.ElementTree as ET
+
+          records = Path(os.environ["RUNNER_TEMP"]) / "mem-native-records"
+          previous = ET.parse(records / "agentd-nextest.junit.xml").getroot()
+          current = ET.parse(records / "agentd-qualification-profile.junit.xml").getroot()
+          receipt = json.loads((records / "agentd-qualification-profile-tests.json").read_text())
+          cases = current.findall(".//testcase")
+          expected = "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths"
+          if (len(cases) != 1 or cases[0].get("name") != expected
+                  or current.get("tests") != "1" or current.get("failures") != "0"
+                  or current.get("errors") != "0"
+                  or any(cases[0].find(tag) is not None for tag in ("failure", "error", "skipped"))
+                  or receipt["status"] != "passed" or receipt["observed_passed_tests"] != 1
+                  or receipt["observed_failed_tests"] != 0):
+              raise SystemExit("qualification profile did not pass exactly its original case")
+          run_uuid = str(uuid.UUID(current.attrib["uuid"]))
+          if run_uuid == previous.get("uuid"):
+              raise SystemExit("qualification profile reused a previous nextest report")
+          case_time = datetime.fromisoformat(cases[0].attrib["timestamp"])
+          if not (datetime.fromisoformat(receipt["started_at"]) <= case_time
+                  <= datetime.fromisoformat(receipt["finished_at"])):
+              raise SystemExit("qualification profile case is outside its execution interval")
+          PY
+      - name: Test native delivery, replay and legacy attachment on the composed source
+        if: steps.stage.outputs.delivery == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem-native-records"
+          junit="$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml"
+          test -f "$junit"
+          test ! -L "$junit"
+          mv "$junit" "$records/before-delivery.junit.xml"
+          delivery_exit=0
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 --minimum-tests 11 \
+            --output "$records/native-delivery-tests.json" \
+            -- just test --locked -p codex-hepta-infer-worker-host --lib \
+              -E 'test(native_app_server::context::tests::) | test(native_app_server::control::tests::) | test(native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone)' \
+              --no-capture --retries 0 || delivery_exit=$?
+          if [[ -f "$junit" && ! -L "$junit" ]]; then
+            cp "$junit" "$records/native-delivery.junit.xml"
+          fi
+          if [[ "$delivery_exit" -ne 0 ]]; then
+            exit "$delivery_exit"
+          fi
+          python3 - <<'PY'
+          from datetime import datetime
+          import json
+          import os
+          from pathlib import Path
+          import uuid
+          import xml.etree.ElementTree as ET
+
+          records = Path(os.environ["RUNNER_TEMP"]) / "mem-native-records"
+          previous = ET.parse(records / "before-delivery.junit.xml").getroot()
+          current = ET.parse(records / "native-delivery.junit.xml").getroot()
+          receipt = json.loads((records / "native-delivery-tests.json").read_text())
+          cases = current.findall(".//testcase")
+          expected = {
+              "native_app_server::context::tests::delivery_off_withholds_physical_context_but_keeps_revalidation_and_replay",
+              "native_app_server::control::tests::context_delivery_is_bound_before_connection_and_preserves_legacy_admission",
+              "native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity",
+              "native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+              "native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+              "native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown",
+              "native_app_server::control::tests::resume_rejects_configuration_or_capacity_changes_before_reconciliation",
+              "native_app_server::control::tests::resume_rejects_unknown_reserved_stopped_and_digest_only_without_io",
+              "native_app_server::control::tests::resume_retains_uncertainty_and_never_dispatches_missing_terminal_evidence",
+              "native_app_server::control::tests::retained_snapshot_roundtrips_all_fields_with_the_existing_v3_digest",
+              "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+          }
+          if (len(cases) != len(expected) or {case.get("name") for case in cases} != expected
+                  or current.get("tests") != "11" or current.get("failures") != "0"
+                  or current.get("errors") != "0"
+                  or any(case.find(tag) is not None for case in cases for tag in ("failure", "error", "skipped"))
+                  or receipt["status"] != "passed" or receipt["observed_passed_tests"] != 11
+                  or receipt["observed_failed_tests"] != 0):
+              raise SystemExit("native delivery did not pass all eleven selected cases")
+          if str(uuid.UUID(current.attrib["uuid"])) == previous.get("uuid"):
+              raise SystemExit("native delivery reused a previous nextest report")
+          for case in cases:
+              case_time = datetime.fromisoformat(case.attrib["timestamp"])
+              if not (datetime.fromisoformat(receipt["started_at"]) <= case_time
+                      <= datetime.fromisoformat(receipt["finished_at"])):
+                  raise SystemExit("native delivery case is outside its execution interval")
+          PY
+      - name: Test protocol package after the control stage is present
+        if: steps.stage.outputs.control == 'true'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/mem-native-records/protocol-tests.json" \
+            -- just test --locked -p codex-hepta-agent-protocol
+      - name: Run scoped fixes after tests and reject any source rewrite
+        if: steps.stage.outputs.memory == 'true'
+        env:
+          CONTROL_PRESENT: ${{ steps.stage.outputs.control }}
+          DELIVERY_PRESENT: ${{ steps.stage.outputs.delivery }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          packages=(codex-hepta-memory)
+          if [[ "$CONTROL_PRESENT" == true ]]; then
+            packages+=(codex-hepta-agentd codex-hepta-agent-protocol)
+          fi
+          if [[ "$DELIVERY_PRESENT" == true ]]; then
+            packages+=(codex-hepta-infer-worker-host)
+          fi
+          for package in "${packages[@]}"; do
+            python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 \
+              --output "$RUNNER_TEMP/mem-native-records/fix-$package.json" \
+              -- just fix --locked -p "$package"
+          done
+      - name: Retain final source, full rewrite patch and changed files
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem-native-records"
+          mkdir -p "$records"
+          exec > >(tee "$records/final-source.log") 2>&1
+          git rev-parse HEAD HEAD^{tree} > "$records/source-after.txt"
+          git status --porcelain > "$records/worktree-after.txt"
+          git diff --binary HEAD > "$records/source-rewrites.patch"
+          git diff --cached --binary > "$records/index-rewrites.patch"
+          git diff --name-only --diff-filter=ACMRT -z HEAD > "$records/rewrite-paths.zlist"
+          git ls-files --others --exclude-standard -z >> "$records/rewrite-paths.zlist"
+          tar --null -T "$records/rewrite-paths.zlist" -czf "$records/changed-source-after.tar.gz"
+          if [[ -f "$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml" ]]; then
+            cp "$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml" "$records/last-nextest.junit.xml"
+          fi
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          records = Path(os.environ["RUNNER_TEMP"]) / "mem-native-records"
+          identity = records / "codex-binary.json"
+          if identity.exists():
+              before = json.loads(identity.read_text())
+              binary = Path(before["path"])
+              digest = hashlib.sha256()
+              with binary.open("rb") as handle:
+                  for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                      digest.update(chunk)
+              after = dict(before, bytes=binary.stat().st_size, sha256=digest.hexdigest())
+              (records / "codex-binary-after.json").write_text(json.dumps(after, indent=2) + "\n")
+              if before != after or binary.is_symlink():
+                  raise SystemExit("the bound Codex executable changed during native validation")
+          PY
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          cmp "$records/source-before.txt" "$records/source-after.txt"
+          test ! -s "$records/worktree-after.txt"
+      - name: Retain native logs and exact-source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem-native-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem-native-records
+          if-no-files-found: error
+          retention-days: 14
+  python:
+    name: Frozen candidate and coverage contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.16"
+      - name: Retain source and install real CPU actor dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem-records"
+          mkdir -p "$records"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-identity.txt"
+          python --version > "$records/python-version.txt"
+          python -m pip install --disable-pip-version-check \
+            --report "$records/torch-install.json" \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0+cpu'
+          python -m pip install --disable-pip-version-check \
+            --report "$records/numeric-install.json" 'numpy==1.26.4' 'Pillow==12.0.0'
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends tesseract-ocr tesseract-ocr-eng
+          dpkg-query -W 'tesseract*' > "$records/ocr-packages.txt"
+          python -m pip check > "$records/dependency-check.txt"
+          python -m pip freeze --all > "$records/installed-versions.txt"
+      - name: Check real actor and independent candidate evidence
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 300 --minimum-tests 17 \
+            --output "$RUNNER_TEMP/mem-records/candidate-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_candidate_memory \
+            ndu_real_runtime.test_candidate_runtime ndu_real_runtime.test_candidate_retention_report
+      - name: Check identical-support selectors and bound action receipts
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 10 \
+            --output "$RUNNER_TEMP/mem-records/selector-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_candidate_selector \
+            ndu_real_runtime.test_selector_runtime
+      - name: Check replay matching and incomplete-run accounting
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 6 \
+            --output "$RUNNER_TEMP/mem-records/replay-tests.json" \
+            -- python -B -m unittest discover -s scripts/memory_cell_mem1 \
+            -p test_coverage_control.py -v
+      - name: Check full-trajectory replay matching and failure accounting
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 5 \
+            --output "$RUNNER_TEMP/mem-records/trajectory-tests.json" \
+            -- python -B -m unittest discover -s scripts/memory_cell_mem1 \
+            -p test_trajectory_coverage.py -v
+      - name: Check prospective selector plans, failures and independent scoring
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 15 \
+            --output "$RUNNER_TEMP/mem-records/selector-study-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_candidate_selection_plan \
+            ndu_real_runtime.test_run_candidate_selection ndu_real_runtime.test_candidate_selection_report
+      - name: Check frozen cohort and failed-attempt accounting
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 7 \
+            --output "$RUNNER_TEMP/mem-records/candidate-runner-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_run_candidate_retention
+      - name: Check composition paths and partial native failure costs
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 7 \
+            --output "$RUNNER_TEMP/mem-records/composition-tests.json" \
+            -- python -B -m unittest discover -s scripts/memory_cell_mem3 \
+            -p test_mechanism.py -v
+      - name: Check fixed-public retention attribution and fresh-session memory
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 240 --minimum-tests 35 \
+            --output "$RUNNER_TEMP/mem-records/mem6-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_candidate_retention_public_plan \
+            ndu_real_runtime.test_candidate_retention_public \
+            ndu_real_runtime.test_candidate_retention_public_actor \
+            ndu_real_runtime.test_candidate_retention_inference \
+            ndu_real_runtime.test_episodic_memory ndu_real_runtime.test_episodic_retrieval \
+            ndu_real_runtime.test_episodic_qualification
+      - name: Retain final source state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mem-records"
+          git rev-parse HEAD > "$RUNNER_TEMP/mem-records/source-after.txt"
+          git status --porcelain > "$RUNNER_TEMP/mem-records/source-status-after.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Retain test and dependency evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem-python-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem-records
+          if-no-files-found: error
+          retention-days: 14

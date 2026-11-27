@@ -1,0 +1,68 @@
+{
+  "after": {
+    "commit": "73f20ed9a09bc5716484f497654640aedcec268d",
+    "dirty": false,
+    "parents": [
+      "3efb1ec82c7d0cc508a320d717b607709412e9ee"
+    ],
+    "tree": "00837edc418de10fe93077b4176c03c8ffd940f8"
+  },
+  "base_sha": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+  "before": {
+    "commit": "73f20ed9a09bc5716484f497654640aedcec268d",
+    "dirty": false,
+    "parents": [
+      "3efb1ec82c7d0cc508a320d717b607709412e9ee"
+    ],
+    "tree": "00837edc418de10fe93077b4176c03c8ffd940f8"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--no-tests",
+    "fail",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 1061.860923700966,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-11T14:54:20.724467+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 954414,
+  "log_file": "full-native.json.7d3476c90fae4059a8c5531b868f5247.log",
+  "log_sha256": "c96b9beb5222969f85806af09fdd1a67b433b1f50e367fc82da39970fa5a8878",
+  "minimum_tests": 1000,
+  "observed_failed_tests": 32,
+  "observed_passed_tests": 1273,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "73f20ed9a09bc5716484f497654640aedcec268d",
+  "started_at": "2026-11-11T14:36:38.858722+00:00",
+  "status": "failed",
+  "tested_sha": "73f20ed9a09bc5716484f497654640aedcec268d",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/codex-rs"
+}

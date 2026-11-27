@@ -1,0 +1,8 @@
+{
+  "error": "training source/target matching failed: source class 4, target 3",
+  "error_type": "ValueError",
+  "freeze_sha256": "54564cb45d68df584c7b4d842826647f210d35c72057ef1e84c79be195c687f9",
+  "source_commit": "893a13fd165ae530531687933133fbbe2f9f58b4",
+  "test_opened": false,
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py\", line 731, in train\n    shared, bases, train_data, val, common = prepare_shared(plan, run, runtime_plan)\n                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py\", line 302, in prepare_shared\n    take = stratified_indices(train, plan[\"calibration_per_class\"], plan[\"calibration_salt\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/calibration.py\", line 93, in stratified_indices\n    raise ValueError(f\"training source/target matching failed: source class {scene}, target {target}\")\nValueError: training source/target matching failed: source class 4, target 3\n"
+}

@@ -1,0 +1,112 @@
+{
+  "schema": "hcsn-gated-cuda-campaign-v2-independent-observation",
+  "observation_kind": "tenth-full-budget-identity",
+  "observed_at_utc": "2026-11-07T01:30:34.904Z",
+  "source": {
+    "research_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "python_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "frozen_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "pin_scope": "Frozen identity from prior verified observations; archive and original manifest not independently rehashed in this observation.",
+    "terminal_index_source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc"
+  },
+  "execution": {
+    "host_alias": "desktop",
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "campaign_started_utc": "2026-11-05T17:59:19.201114+00:00",
+    "process_state": "running",
+    "stage": "full",
+    "progress_status": "running",
+    "progress_updated_utc": "2026-11-07T01:27:17.978366+00:00",
+    "progress_sha256": "82cd5315233b8f0250a34ed38f4da8742e2ac3be1ab5ae89ba7604c2743d0d33",
+    "progress_scope": "Nonatomic independent reads: process, progress, terminal, checkpoint are not one transaction.",
+    "requested": 170,
+    "completed": 10,
+    "failed": 0,
+    "unavailable": 0,
+    "no_automatic_training_retries": true,
+    "model_budget_change_permitted": false
+  },
+  "result": {
+    "task": "delayed_recall",
+    "model": "hx_fixed",
+    "seed": 4,
+    "attempt_id": "45c2dd42a687498c8a7299e0a79650c7",
+    "started_utc": "2026-11-06T22:25:25.633472+00:00",
+    "finished_utc": "2026-11-06T23:59:50.251920+00:00",
+    "status": "completed",
+    "training_device": "cuda:0",
+    "training_steps_completed": 400,
+    "train_examples": 25600,
+    "train_tokens": 1638400,
+    "validation_best_mse": 0.018502097576856613,
+    "test_mse": 0.01943076215684414,
+    "constant_predictor_test_mse": 0.3302898406982422,
+    "initial_training_mse": 0.317012757062912,
+    "final_training_mse": 0.028945371508598328,
+    "wall_seconds_including_validation": 5198.50405609794,
+    "examples_per_second": 4.924493608881719,
+    "inference_examples_per_second": 16.13731323303493,
+    "latency_p50_ms": 3873.437353526242,
+    "latency_p95_ms": 4490.084670414216,
+    "parameter_count": 5633,
+    "trainable_parameter_count": 5505,
+    "peak_gpu_allocated_bytes": 777970176,
+    "peak_gpu_reserved_bytes": 801112064,
+    "physical_gpu_energy_joules": null,
+    "energy_missing_reason": "NVML NVMLError_NotSupported; RAPL PermissionError",
+    "terminal_cuda_synchronized": true,
+    "b_policy": 1,
+    "checkpoint_size_bytes": 29803,
+    "checkpoint_sha256": "2986ad205bc5b92566188c06b2fe40194ebc077c411f57a21a143f847c63664f",
+    "checkpoint_verified_with_independent_file_info": true,
+    "terminal_relative_path": "campaigns/full-v2/full.runs/0afe21e83b1f8c2e1722ec197539d070b2940e03cc74a7ee75ceb778c1eec184.attempts/45c2dd42a687498c8a7299e0a79650c7.json",
+    "terminal_sha256": "2536347894a031ae0abe7acb37c62560dfa37ee4f7893da30bfad7dcd0734edd",
+    "run_index_relative_path": "campaigns/full-v2/full.runs/0afe21e83b1f8c2e1722ec197539d070b2940e03cc74a7ee75ceb778c1eec184.json",
+    "run_index_sha256": "9ed713a74cffe1514b44927f876975ad42206a0d67f4c5571dd6fdd7bbcaa3c2"
+  },
+  "configuration": {
+    "models": 17,
+    "tasks": 2,
+    "seeds": 5,
+    "steps_per_identity": 400,
+    "batch_size": 64,
+    "length": 64,
+    "hidden_size": 64,
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "population_checkpoint_steps": 1,
+    "cuda_memory_fraction": 0.5,
+    "execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "training_data_split_sha256": [
+      "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+      "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+      "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+    ]
+  },
+  "github": {
+    "exact_source_cpu_ci": {
+      "run_id": 42078258351,
+      "job_id": 127424159520,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "trusted_main_gpu_probe": {
+      "run_id": 39526325715,
+      "job_id": 127299267982,
+      "status": "completed",
+      "conclusion": "cancelled"
+    }
+  },
+  "interpretation": {
+    "completed_per_model_task": "hx_fixed/delayed_recall 5 of 5 seeds; hx_dual/delayed_recall 5 of 5 seeds",
+    "full_b_audit": "Open (0/20 reported; no B identity in completed ten)",
+    "complete_a_b_mamba2_comparison_open": true,
+    "original_b_adverse_results_preserved": true,
+    "physical_energy_not_imputed": true,
+    "no_second_campaign_or_automatic_retry": true
+  }
+}

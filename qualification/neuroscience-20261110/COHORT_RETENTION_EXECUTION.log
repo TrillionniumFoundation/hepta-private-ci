@@ -1,0 +1,107 @@
+HPCA COHORT/RETENTION EXECUTION - 2026-11-11 UTC
+parent_pr_head=ddd8632e5465285ae70d6ef06d71f6bd645667de
+candidate_pr_head=479c816c6626f2fac2e17507644bf6b5d528940f
+host=heptaruntime ai395; python=3.14.4; kind=synthetic contract only
+parent_study_sha256=9d8293ddf6c3fca7161c3b1c1a6360ee35b92baadf4b7b567af74f8a1b995ff1
+candidate_study_sha256=c3e3eaff0e85508eda321d8de7d1b78448d8dedd10bb4a16398b8b4db617fea2
+test_sha256=dc79c094439aba60f73958933b1ab25cf26d6da7edfb944d624a7b0ecebfb49d
+== RED_PARENT ==
+command=/usr/bin/python3 -m unittest -v test_cohort_retention.py
+exit=1; wall_s=0.040776; child_cpu_user_s=0.037631; child_cpu_system_s=0.002970; child_maxrss_kib_upper_bound=23684
+
+test_balanced_family_roster_keeps_seed_randomization_unit (test_cohort_retention.CohortRetentionTests.test_balanced_family_roster_keeps_seed_randomization_unit) ... ok
+test_complete_four_arm_retention_unmodified (test_cohort_retention.CohortRetentionTests.test_complete_four_arm_retention_unmodified) ... ok
+test_mismatched_family_population_rejected (test_cohort_retention.CohortRetentionTests.test_mismatched_family_population_rejected) ... FAIL
+test_missing_no_eligibility_retention_is_incomplete (test_cohort_retention.CohortRetentionTests.test_missing_no_eligibility_retention_is_incomplete) ... FAIL
+test_missing_scalar_retention_is_incomplete (test_cohort_retention.CohortRetentionTests.test_missing_scalar_retention_is_incomplete) ... FAIL
+test_unequal_episode_counts_rejected (test_cohort_retention.CohortRetentionTests.test_unequal_episode_counts_rejected) ... FAIL
+
+======================================================================
+FAIL: test_mismatched_family_population_rejected (test_cohort_retention.CohortRetentionTests.test_mismatched_family_population_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hpca-red-khmjk5nk/test_cohort_retention.py", line 13, in test_mismatched_family_population_rejected
+    with self.assertRaisesRegex(ContractError,"family/episode roster"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+======================================================================
+FAIL: test_missing_no_eligibility_retention_is_incomplete (test_cohort_retention.CohortRetentionTests.test_missing_no_eligibility_retention_is_incomplete)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hpca-red-khmjk5nk/test_cohort_retention.py", line 32, in test_missing_no_eligibility_retention_is_incomplete
+    self.assertIsNone(paired_evidence(x)["mean_retention_difference"])
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0.0 is not None
+
+======================================================================
+FAIL: test_missing_scalar_retention_is_incomplete (test_cohort_retention.CohortRetentionTests.test_missing_scalar_retention_is_incomplete)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hpca-red-khmjk5nk/test_cohort_retention.py", line 28, in test_missing_scalar_retention_is_incomplete
+    self.assertIsNone(paired_evidence(x)["mean_retention_difference"])
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0.0 is not None
+
+======================================================================
+FAIL: test_unequal_episode_counts_rejected (test_cohort_retention.CohortRetentionTests.test_unequal_episode_counts_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hpca-red-khmjk5nk/test_cohort_retention.py", line 16, in test_unequal_episode_counts_rejected
+    with self.assertRaisesRegex(ContractError,"family/episode roster"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.002s
+
+FAILED (failures=4)
+
+== GREEN_CANDIDATE ==
+command=/usr/bin/python3 -m unittest discover -v
+exit=0; wall_s=0.036410; child_cpu_user_s=0.030232; child_cpu_system_s=0.006047; child_maxrss_kib_upper_bound=23684
+
+test_cross_lineage_generations_are_independent (test_cadence_generation.GenerationClockTests.test_cross_lineage_generations_are_independent) ... ok
+test_equal_generation_retry_is_not_auto_promoted (test_cadence_generation.GenerationClockTests.test_equal_generation_retry_is_not_auto_promoted) ... ok
+test_rollback_after_denied_opportunity_cannot_be_replayed (test_cadence_generation.GenerationClockTests.test_rollback_after_denied_opportunity_cannot_be_replayed) ... ok
+test_rollback_after_review_cannot_be_reviewed (test_cadence_generation.GenerationClockTests.test_rollback_after_review_cannot_be_reviewed) ... ok
+test_rollback_on_clock_denied_intermediate_is_still_rejected (test_cadence_generation.GenerationClockTests.test_rollback_on_clock_denied_intermediate_is_still_rejected) ... ok
+test_clock_denied_event_still_advances_observed_sequence (test_cadence_sequence_frontier.SequenceFrontierTests.test_clock_denied_event_still_advances_observed_sequence) ... ok
+test_evidence_denied_event_still_advances_observed_sequence (test_cadence_sequence_frontier.SequenceFrontierTests.test_evidence_denied_event_still_advances_observed_sequence) ... ok
+test_lineage_interleaving_and_equal_sequence_remain_valid (test_cadence_sequence_frontier.SequenceFrontierTests.test_lineage_interleaving_and_equal_sequence_remain_valid) ... ok
+test_balanced_family_roster_keeps_seed_randomization_unit (test_cohort_retention.CohortRetentionTests.test_balanced_family_roster_keeps_seed_randomization_unit) ... ok
+test_complete_four_arm_retention_unmodified (test_cohort_retention.CohortRetentionTests.test_complete_four_arm_retention_unmodified) ... ok
+test_mismatched_family_population_rejected (test_cohort_retention.CohortRetentionTests.test_mismatched_family_population_rejected) ... ok
+test_missing_no_eligibility_retention_is_incomplete (test_cohort_retention.CohortRetentionTests.test_missing_no_eligibility_retention_is_incomplete) ... ok
+test_missing_scalar_retention_is_incomplete (test_cohort_retention.CohortRetentionTests.test_missing_scalar_retention_is_incomplete) ... ok
+test_unequal_episode_counts_rejected (test_cohort_retention.CohortRetentionTests.test_unequal_episode_counts_rejected) ... ok
+test_clock_and_independent_eval_both_gate_approval (test_study.CadenceTests.test_clock_and_independent_eval_both_gate_approval) ... ok
+test_must_declare_all_clocks_and_reject_time_regression (test_study.CadenceTests.test_must_declare_all_clocks_and_reject_time_regression) ... ok
+test_action_order_does_not_change_identity_or_result (test_study.CreditTests.test_action_order_does_not_change_identity_or_result) ... ok
+test_all_arms_present (test_study.CreditTests.test_all_arms_present) ... ok
+test_delayed_evidence_decays_and_expires (test_study.CreditTests.test_delayed_evidence_decays_and_expires) ... ok
+test_duplicate_or_forged_feedback_is_rejected (test_study.CreditTests.test_duplicate_or_forged_feedback_is_rejected) ... ok
+test_eval_split_and_overweight_eligibility_rejected (test_study.CreditTests.test_eval_split_and_overweight_eligibility_rejected) ... ok
+test_future_feedback_must_not_train_the_past (test_study.CreditTests.test_future_feedback_must_not_train_the_past) ... ok
+test_information_matched_routing_ablation_separates_on_known_fixture (test_study.CreditTests.test_information_matched_routing_ablation_separates_on_known_fixture) ... ok
+test_projected_updates_honor_both_trust_bounds (test_study.CreditTests.test_projected_updates_honor_both_trust_bounds) ... ok
+test_capability_feedback_and_budget_mismatch_fail_closed (test_study.PairedEvidenceTests.test_capability_feedback_and_budget_mismatch_fail_closed) ... ok
+test_claims_cannot_be_certified_by_a_flag (test_study.PairedEvidenceTests.test_claims_cannot_be_certified_by_a_flag) ... ok
+test_missing_arm_is_not_zero_or_success (test_study.PairedEvidenceTests.test_missing_arm_is_not_zero_or_success) ... ok
+test_negative_cost_rejected (test_study.PairedEvidenceTests.test_negative_cost_rejected) ... ok
+test_paired_net_calculation_and_no_production_claim (test_study.PairedEvidenceTests.test_paired_net_calculation_and_no_production_claim) ... ok
+test_reused_outcome_receipt_is_rejected (test_study.PairedEvidenceTests.test_reused_outcome_receipt_is_rejected) ... ok
+test_reused_seed_is_one_independent_cluster (test_study.PairedEvidenceTests.test_reused_seed_is_one_independent_cluster) ... ok
+test_corrected_logical_revision_never_replays_prior_version (test_study.ReplayTests.test_corrected_logical_revision_never_replays_prior_version) ... ok
+test_deletion_and_future_cutoff_cover_all_replay_policies (test_study.ReplayTests.test_deletion_and_future_cutoff_cover_all_replay_policies) ... ok
+test_explicit_identity_cannot_tombstone_unrelated_implicit_event (test_study.ReplayTests.test_explicit_identity_cannot_tombstone_unrelated_implicit_event) ... ok
+test_revocation_is_sticky_and_ambiguous_revision_is_rejected (test_study.ReplayTests.test_revocation_is_sticky_and_ambiguous_revision_is_rejected) ... ok
+test_stratified_replay_gives_old_episode_coverage (test_study.ReplayTests.test_stratified_replay_gives_old_episode_coverage) ... ok
+test_tombstone_blocks_old_and_later_versions_without_owner_regrant (test_study.ReplayTests.test_tombstone_blocks_old_and_later_versions_without_owner_regrant) ... ok
+
+----------------------------------------------------------------------
+Ran 37 tests in 0.003s
+
+OK
+
+QUALIFICATION=HOLD_NO_GO; AUTHORITY=DENY_ALL; real_model_runs=0; owner_attestation=NOT_PERFORMED; independent_evaluator=NOT_PERFORMED

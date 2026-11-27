@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "module": "kernel.operations",
-  "role": "durable_current_capability_extension",
+  "role": "standalone_source_evidence",
   "entryCount": 5,
   "entries": [
     {
@@ -10,7 +10,7 @@
       "publicSymbols": [
         "DurableOperationStore::open",
         "DurableOperationStore::prepare_intent",
-        "OperationIntentV1"
+        "DurableOperationIntentV1"
       ],
       "sourceEvidence": [
         {
@@ -113,8 +113,18 @@
           "path": "codex-rs/hepta-operations/src/durable_store.rs",
           "mustContain": [
             "authority.claim(signed, &binding)?",
-            ".with_verified_use(token, &self.binding",
-            "pub async fn observe_terminal("
+            "pub async fn observe_terminal(",
+            "self.execute_authorized_in_transaction(authorized, effect)"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable_dispatch.rs",
+          "mustContain": [
+            "Arc::ptr_eq(&self.dispatch_owner, &authorized.dispatch_owner)",
+            "require_current_lease(&mut tx, &claim, now_millis()?).await?",
+            ".with_dispatch_boundary(token, &authorized.binding, || {",
+            "validate_claim_snapshot(&status, &claim, admitted_at)?",
+            "Ok((admitted_at, effect(&operation.intent)))"
           ]
         }
       ],
@@ -232,5 +242,8 @@
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     }
-  ]
+  ],
+  "owner": "codex-rs/hepta-operations",
+  "productCapabilityCoverageContribution": 0,
+  "productQualification": "not_granted"
 }

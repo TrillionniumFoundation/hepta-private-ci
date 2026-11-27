@@ -1,0 +1,47 @@
+test_original_fp32_failure_has_finite_full_equity_gradients (hcsn.tests.test_far_tail.FarTailTests.test_original_fp32_failure_has_finite_full_equity_gradients) ... ok
+test_positive_pair_against_independent_80_digit_formula (hcsn.tests.test_far_tail.FarTailTests.test_positive_pair_against_independent_80_digit_formula) ... FAIL
+test_tail_difference_parameter_gradient_matches_finite_difference (hcsn.tests.test_far_tail.FarTailTests.test_tail_difference_parameter_gradient_matches_finite_difference) ... ok
+test_autograd_matches_finite_differences (hcsn.tests.test_tensor.PassageTensorTests.test_autograd_matches_finite_differences) ... ok
+test_boundary_atom_and_surviving_t0 (hcsn.tests.test_tensor.PassageTensorTests.test_boundary_atom_and_surviving_t0) ... ok
+test_cdf_time_derivative_is_density (hcsn.tests.test_tensor.PassageTensorTests.test_cdf_time_derivative_is_density) ... ok
+test_discount_taylor_switch_keeps_value_and_gradient (hcsn.tests.test_tensor.PassageTensorTests.test_discount_taylor_switch_keeps_value_and_gradient)
+The near/regular switch must agree with an integral on both sides. ... ok
+test_fp32_gradients_against_differentiated_density_integrals (hcsn.tests.test_tensor.PassageTensorTests.test_fp32_gradients_against_differentiated_density_integrals)
+An independent integral checks every G input without finite-difference noise. ... ok
+test_integrals_float64_and_float32 (hcsn.tests.test_tensor.PassageTensorTests.test_integrals_float64_and_float32) ... ok
+test_invalid_domains_are_rejected (hcsn.tests.test_tensor.PassageTensorTests.test_invalid_domains_are_rejected) ... ok
+test_positive_time_boundary_right_derivatives (hcsn.tests.test_tensor.PassageTensorTests.test_positive_time_boundary_right_derivatives)
+At t>0 the regular density has a nonzero right derivative at x=0 too. ... ok
+test_small_margin_no_rollover_and_tails (hcsn.tests.test_tensor.PassageTensorTests.test_small_margin_no_rollover_and_tails) ... ok
+test_t0_mask_does_not_propagate_nan_gradients (hcsn.tests.test_tensor.PassageTensorTests.test_t0_mask_does_not_propagate_nan_gradients)
+At the discontinuous corner only finite implementation gradients are asserted. ... ok
+test_time_unit_rescaling (hcsn.tests.test_tensor.PassageTensorTests.test_time_unit_rescaling) ... ok
+test_zero_discount_zero_drift_has_correct_gradient (hcsn.tests.test_tensor.PassageTensorTests.test_zero_discount_zero_drift_has_correct_gradient) ... ok
+test_zero_discount_zero_drift_second_derivatives (hcsn.tests.test_tensor.PassageTensorTests.test_zero_discount_zero_drift_second_derivatives)
+Truncated first-passage moments independently determine the Taylor coefficients. ... ok
+test_attention_is_causal_and_optional_mamba_is_not_substituted (hcsn.tests.test_cells.CellTests.test_attention_is_causal_and_optional_mamba_is_not_substituted) ... ok
+test_call_only_skips_first_passage_feature (hcsn.tests.test_cells.CellTests.test_call_only_skips_first_passage_feature) ... ok
+test_each_native_ablation_and_baseline_trains_one_step (hcsn.tests.test_cells.CellTests.test_each_native_ablation_and_baseline_trains_one_step) ... ok
+test_financial_parameter_box_has_nonnegative_continuation_equity (hcsn.tests.test_cells.CellTests.test_financial_parameter_box_has_nonnegative_continuation_equity) ... ok
+test_frozen_update_preserves_bounds_and_zero_time_identity (hcsn.tests.test_cells.CellTests.test_frozen_update_preserves_bounds_and_zero_time_identity) ... ok
+test_full_rollover_backpropagates_to_liquidity_and_input_boundary (hcsn.tests.test_cells.CellTests.test_full_rollover_backpropagates_to_liquidity_and_input_boundary) ... ok
+test_official_cfc_batch_timespans_match_scalar_cell_steps (hcsn.tests.test_cells.CellTests.test_official_cfc_batch_timespans_match_scalar_cell_steps) ... ok
+test_risk_only_preserves_liquidity_and_boundary_sensitivity (hcsn.tests.test_cells.CellTests.test_risk_only_preserves_liquidity_and_boundary_sensitivity) ... ok
+test_value_map_rejects_a_boundary_above_assets_without_clipping (hcsn.tests.test_cells.CellTests.test_value_map_rejects_a_boundary_above_assets_without_clipping) ... ok
+test_conditional_homogeneity_at_all_cell_parameter_corners (hcsn.tests.test_equity_reuse.EquityReuseTests.test_conditional_homogeneity_at_all_cell_parameter_corners) ... ok
+test_prepared_values_and_all_nine_physical_gradients (hcsn.tests.test_equity_reuse.EquityReuseTests.test_prepared_values_and_all_nine_physical_gradients) ... ok
+test_risk_only_and_subclass_features_do_not_prepare_equity (hcsn.tests.test_equity_reuse.EquityReuseTests.test_risk_only_and_subclass_features_do_not_prepare_equity) ... ok
+test_sequence_matches_uncached_public_steps_and_refreshes_graph (hcsn.tests.test_equity_reuse.EquityReuseTests.test_sequence_matches_uncached_public_steps_and_refreshes_graph) ... ok
+
+======================================================================
+FAIL: test_positive_pair_against_independent_80_digit_formula (hcsn.tests.test_far_tail.FarTailTests.test_positive_pair_against_independent_80_digit_formula)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/d741f7769aeb/worktrees/hx-tail-stability/qualification/hcsn/tests/test_far_tail.py", line 36, in test_positive_pair_against_independent_80_digit_formula
+    self.assertLessEqual(abs(float(actual.detach())-expected), absolute+relative*abs(expected))
+AssertionError: 5.7838508389806975e-05 not less than or equal to 2.884387951429221e-05
+
+----------------------------------------------------------------------
+Ran 29 tests in 5.440s
+
+FAILED (failures=1)

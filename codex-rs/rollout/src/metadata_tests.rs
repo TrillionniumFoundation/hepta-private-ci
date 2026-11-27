@@ -4,10 +4,7 @@ use super::*;
 use crate::CompactedItem;
 use crate::RolloutItem;
 use crate::RolloutLine;
-use chrono::DateTime;
-use chrono::NaiveDateTime;
-use chrono::Timelike;
-use chrono::Utc;
+use crate::test_support::private_home;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::GitInfo;
 use codex_protocol::protocol::SessionMeta;
@@ -215,10 +212,9 @@ fn builder_from_items_falls_back_to_filename() {
     })];
 
     let builder = builder_from_items(items.as_slice(), path.as_path()).expect("builder");
-    let naive = NaiveDateTime::parse_from_str("2026-01-27T12-34-56", "%Y-%m-%dT%H-%M-%S")
-        .expect("timestamp");
-    let created_at = DateTime::<Utc>::from_naive_utc_and_offset(naive, Utc)
-        .with_nanosecond(0)
+    let created_at = codex_utils_time::Timestamp::parse_filename_timestamp("2026-01-27T12-34-56")
+        .expect("timestamp")
+        .with_nanosecond(/*nanoseconds*/ 0)
         .expect("nanosecond");
     let expected = ThreadMetadataBuilder::new(
         ThreadId::from_string(&uuid.to_string()).expect("thread id"),
@@ -232,7 +228,7 @@ fn builder_from_items_falls_back_to_filename() {
 
 #[tokio::test]
 async fn backfill_sessions_resumes_from_watermark_and_marks_complete() {
-    let dir = tempdir().expect("tempdir");
+    let dir = private_home().expect("tempdir");
     let codex_home = dir.path().to_path_buf();
     let first_uuid = Uuid::new_v4();
     let second_uuid = Uuid::new_v4();
@@ -304,7 +300,7 @@ async fn backfill_sessions_resumes_from_watermark_and_marks_complete() {
 
 #[tokio::test]
 async fn backfill_sessions_preserves_existing_git_branch_and_fills_missing_git_fields() {
-    let dir = tempdir().expect("tempdir");
+    let dir = private_home().expect("tempdir");
     let codex_home = dir.path().to_path_buf();
     let thread_uuid = Uuid::new_v4();
     let rollout_path = write_rollout_in_sessions(
@@ -355,7 +351,7 @@ async fn backfill_sessions_preserves_existing_git_branch_and_fills_missing_git_f
 
 #[tokio::test]
 async fn backfill_sessions_preserves_existing_paginated_memory_mode() {
-    let dir = tempdir().expect("tempdir");
+    let dir = private_home().expect("tempdir");
     let codex_home = dir.path().to_path_buf();
     let thread_uuid = Uuid::new_v4();
     let rollout_path = write_rollout_in_sessions_with_cwd(
@@ -404,7 +400,7 @@ async fn backfill_sessions_preserves_existing_paginated_memory_mode() {
 
 #[tokio::test]
 async fn backfill_sessions_normalizes_cwd_before_upsert() {
-    let dir = tempdir().expect("tempdir");
+    let dir = private_home().expect("tempdir");
     let codex_home = dir.path().to_path_buf();
     let thread_uuid = Uuid::new_v4();
     let session_cwd = codex_home.join(".");

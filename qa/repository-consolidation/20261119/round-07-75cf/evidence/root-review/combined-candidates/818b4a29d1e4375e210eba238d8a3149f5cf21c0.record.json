@@ -1,0 +1,21 @@
+{
+  "tip": "818b4a29d1e4375e210eba238d8a3149f5cf21c0",
+  "prior": "0adbc74f85cc629e803cdb50fe726689c00aab0f",
+  "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "approved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+  "fixed_automatic_tree": "23eb7f48e0ef1113ae81629a75cf7c567ad76c49",
+  "actual_automatic_tree": "de024132ad6a3d1fc1813f07e6f2d7102774b06c",
+  "fixed_exit": 1,
+  "actual_exit": 1,
+  "actual_conflicts": [
+    "codex-rs/hepta-agentd/src/control.rs"
+  ],
+  "resolution_paths": [
+    "codex-rs/hepta-agentd/src/control.rs"
+  ],
+  "changes_from_review_base": [],
+  "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+  "expected_composed_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+  "commit": "2956211395d8f3d84e601d51076a1497f44dc153",
+  "reason": "The two control.rs conflicts are covered by the same Unix peer helper before permit allocation, the inherited owner/root gate, and the protected Windows named-pipe DACL plus bounded token authentication. Retain the relocated actual-connection test and the additional ordering regression. See r3-review/agentd-peer-frontier-resolution.json."
+}

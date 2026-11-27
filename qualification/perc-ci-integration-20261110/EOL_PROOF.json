@@ -1,0 +1,25 @@
+{
+  "base_sha": "74128de4165d7947ee218a58b0b1d971ce9c7277",
+  "existing_fix_sha": "190e2cee65d35770511539f40c3e1f07905c41c2",
+  "fixture_sha256": "a87e11092e824101aaccaddfe113d5461e5c105ad825c9ace59f363173bae41b",
+  "expected_native_hash": "e08fffef99344a9ff1bd0c70f715dfdf450ecf179732f6cd12e33fc0fa9cb454",
+  "before": {
+    "bytes": 2189,
+    "tail_hex": "5d7d0d0a",
+    "git_payload_equal": false,
+    "native_hash_after_final_byte_removed": "186b9126ee99489794b4023d1ced1166d61cff380fcb646dd4d80c3ca0dbfede",
+    "native_hash_matches": false,
+    "neighbor_crlf": true
+  },
+  "after": {
+    "bytes": 2188,
+    "tail_hex": "7d5d7d0a",
+    "git_payload_equal": true,
+    "native_hash_after_final_byte_removed": "e08fffef99344a9ff1bd0c70f715dfdf450ecf179732f6cd12e33fc0fa9cb454",
+    "native_hash_matches": true,
+    "neighbor_crlf": true
+  },
+  "git_version": "git version 2.52.0",
+  "native_windows_execution": false,
+  "scope": "Actual Git core.autocrlf=true checkout contrast on Linux; not native Windows test execution"
+}

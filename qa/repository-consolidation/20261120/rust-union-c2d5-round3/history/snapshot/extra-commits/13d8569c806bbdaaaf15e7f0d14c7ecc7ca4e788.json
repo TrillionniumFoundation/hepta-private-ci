@@ -1,0 +1,40 @@
+{
+  "sha": "13d8569c806bbdaaaf15e7f0d14c7ecc7ca4e788",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/13d8569c806bbdaaaf15e7f0d14c7ecc7ca4e788",
+  "observed_at": "2026-11-20T05:13:26.391Z",
+  "data": {
+    "sha": "13d8569c806bbdaaaf15e7f0d14c7ecc7ca4e788",
+    "node_id": "C_kwDOTrgxoNoAKDEzZDg1NjljODA2YmJkYWFhZjE1ZTdmMGQxNGM3ZWNjN2NhNGU3ODg",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/13d8569c806bbdaaaf15e7f0d14c7ecc7ca4e788",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/13d8569c806bbdaaaf15e7f0d14c7ecc7ca4e788",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T04:57:42Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T04:57:42Z"
+    },
+    "tree": {
+      "sha": "68ac9723cddd65fddd26aa0a58b36e96eb2eea3b",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/68ac9723cddd65fddd26aa0a58b36e96eb2eea3b"
+    },
+    "message": "refactor(git-utils): use time for Git baseline UTC commit seconds\n\nReplace the sole Chrono Utc clock read with OffsetDateTime::now_utc().unix_timestamp(), preserving signed Unix seconds and zero Git timezone offset. Replace the direct git-utils Chrono dependency with the existing workspace time dependency, and update its Cargo.lock dependency list only.\n\nIncremental RUSTSEC-2026-0543 dependency removal; transitive and other first-party Chrono consumers remain. Requires exact-head Cargo/Bazel lock and platform CI. Preserve all existing failure gates and the Rust fallback.",
+    "parents": [
+      {
+        "sha": "811e50dc4da55c2f22ac89c1ed03e471503ba78e",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/811e50dc4da55c2f22ac89c1ed03e471503ba78e",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/811e50dc4da55c2f22ac89c1ed03e471503ba78e"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  }
+}

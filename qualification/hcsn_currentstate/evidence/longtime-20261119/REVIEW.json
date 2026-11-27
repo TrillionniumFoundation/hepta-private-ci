@@ -1,0 +1,78 @@
+{
+  "all_five_child_hashes_and_source_hashes_verified": true,
+  "all_five_true_terminal_exit0": true,
+  "cases": [
+    {
+      "backward_six_scalars_seconds": 0.021554815000854433,
+      "delay_intervals": 1,
+      "forward_seconds": 0.033211816000402905,
+      "gradient_absolute_error": 2.7755575615628914e-17,
+      "path": "attempt001/case-000.json",
+      "peak_rss_mib": 219.7578125,
+      "sha256": "35ee48ccd7f0293bda9b55fb798aac4b009ea419546bc58b1d2c985a9f838fc2",
+      "state_tensor_bytes": 192,
+      "value_absolute_error": 2.7755575615628914e-17
+    },
+    {
+      "backward_six_scalars_seconds": 0.01777261800089036,
+      "delay_intervals": 4,
+      "forward_seconds": 0.01840908500162186,
+      "gradient_absolute_error": 1.3877787807814457e-16,
+      "path": "attempt001/case-001.json",
+      "peak_rss_mib": 219.16796875,
+      "sha256": "b26f502dbe605933249a4f817ffdf004455c5e9862b55c153bceedec7ad7badd",
+      "state_tensor_bytes": 816,
+      "value_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "backward_six_scalars_seconds": 0.08314692500061938,
+      "delay_intervals": 16,
+      "forward_seconds": 0.02228351500161807,
+      "gradient_absolute_error": 3.552713678800501e-15,
+      "path": "attempt001/case-002.json",
+      "peak_rss_mib": 221.01171875,
+      "sha256": "fc89758d0b89c28e5b0e17d1dd9bbe6a3205be3802c153faab8d564dcb59f8bf",
+      "state_tensor_bytes": 9072,
+      "value_absolute_error": 1.7763568394002505e-15
+    },
+    {
+      "backward_six_scalars_seconds": 0.33739340900137904,
+      "delay_intervals": 32,
+      "forward_seconds": 0.03429555100228754,
+      "gradient_absolute_error": 1.9984014443252818e-15,
+      "path": "attempt001/case-003.json",
+      "peak_rss_mib": 225.578125,
+      "sha256": "2e2904e1567c609ccfbe00969b14cc3739f17da31e2f0ed57e17c6ef0da1039a",
+      "state_tensor_bytes": 34416,
+      "value_absolute_error": 8.881784197001252e-15
+    },
+    {
+      "backward_six_scalars_seconds": 2.3327743070003635,
+      "delay_intervals": 64,
+      "forward_seconds": 0.13437449900084175,
+      "gradient_absolute_error": 9.059419880941277e-14,
+      "path": "attempt001/case-004.json",
+      "peak_rss_mib": 258.5859375,
+      "sha256": "026fad8aa41ae5239287614428b6ccc1e3f203bbb87881787044edf1641cd608",
+      "state_tensor_bytes": 134256,
+      "value_absolute_error": 6.039613253960852e-14
+    }
+  ],
+  "declared_time_limits_satisfied": true,
+  "frozen_diagnostic_commit": "e96fb40efc95428d49472b2ceb31ed3ae289674e",
+  "limitations": [
+    "Only one homogeneous one-state finite CTMC and one parameter are tested.",
+    "Six separate scalar backward calls are measured; this is not one network-loss backward timing.",
+    "Logical tensor bytes exclude Python, allocator, serialized metadata and the retained autograd graph. RSS includes the whole fresh process.",
+    "All quantities are evaluated at delay multiples with fixed event timing; no gradients through delay, logical time or changing boundary geometry are assessed.",
+    "The scalar conversion warning is retained in each original stderr; no rerun was made to remove it.",
+    "Source and saved outputs were independently read; no second numerical execution was made."
+  ],
+  "new_backward_calls": 0,
+  "new_forward_calls": 0,
+  "reference_review": "For exponential active lifetime with rate lambda and deterministic refractory d, kth emission is Gamma(k,lambda)+(k-1)d. The expected emission count is the finite sum of its CDF; refractory mass is EN(T)-EN(T-d), active mass is one minus refractory. Differentiate each gamma CDF to obtain s*exp(-lambda*s)*(lambda*s)^(k-1)/(k-1)!. Signed channel uses exact binary FP64 -0.3. This independently matches the diagnostic index and output ordering.",
+  "report_sha256": "960bab485749cf40c9846bae8ad59014a86f0b76b1814519bb3d5bebcf8328aa",
+  "schema": "hcsn-longtime-readonly-review-v1",
+  "scientific_kernel_commit": "e4a49ce4a9234583b3c6d5e1af85cce74c048b3b",
+  "storage_review": "For these integer-multiple horizons only one pending packet remains. Its generator order is m=2*T/d, alpha has 2*m entries, output m, reset 1, and other state tensors have 13 entries. The logical FP64 payload is 8*(m*m+3*m+14) bytes. This is a property of this implemented representation and example, not a lower bound on every equivalent model."
+}

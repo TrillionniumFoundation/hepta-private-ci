@@ -1,0 +1,35 @@
+{
+  "schema": "mem8.windows-sandbox-fix-d0f.actual-postimage-publication.v1",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "run_id": 43062162500,
+  "job_id": 130667533098,
+  "objects": [
+    {
+      "path": "clippy-postimages/codex-rs/windows-sandbox-rs/src/setup_process.rs",
+      "bytes": 12410,
+      "sha256": "6d0f48bd28cf4f348118ee9071d9b1db4f482c61054dc7067ee6c689ad1deeec",
+      "git_blob": "9e40662b31d10cf3231c3e69e5bcb6b258ad4248",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "ACTUAL_CLIPPY.patch",
+      "bytes": 656,
+      "sha256": "85acadd4ae337e3d63d95ae78c53cf20e8f60166764cc270173621410263c4a3",
+      "git_blob": "f94b5699cd88a11a32be1832a96be5491cc9bc49",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "ACTUAL_CLIPPY_REVIEW.json",
+      "bytes": 1381,
+      "sha256": "5ce88944b802b86699f7c98ebad6a5c738ec5159eb5385e36d7cc553e2a07581",
+      "git_blob": "06aa89f2be3f17fd8ecbdbaf63652915681651e2",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    }
+  ],
+  "original_qualification_remains": "FAIL_DIRTY_SOURCE",
+  "refs_changed": false,
+  "new_native_run": false
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn-two-cycle-independent-references-v1",
+  "status": "HOLD_NO_GO",
+  "all_closed": false,
+  "source_commit": "c3a5b3d64693222dc44687c82079084860a01dd9",
+  "kernel_source_commit": "c3a5b3d64693222dc44687c82079084860a01dd9",
+  "comparison_rows": 24,
+  "quantities_per_row": 14,
+  "analytic_reference_evaluations": 192,
+  "finite_reference_expm_calls": 1156,
+  "candidate_kernel_reruns": 0,
+  "old_DDE_replays": 0,
+  "neural_model_calls": 0,
+  "training_calls": 0,
+  "mesh_changes": 0,
+  "source_before": {
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/audit.py": "289ede82bc6834e88770f1a7cde90597912ba187da398dd5d8e2b90fd1c0532a",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/positive_serial.py": "b0732aeb09f0cdf53069f7d0e2538a672ad3a8cf84d23e94a93a6fc144697fc7",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/analytic_reference.py": "6d24f468ac079cf7932c312bb9a8c22ddb53aceb0f1dc9d2e4087961a425ea46",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/PLAN.json": "f1d0c2da8cbe8fe7ccd9dff1f5f42049b1e2129295587ae0270aac1abf7b9e84"
+  },
+  "source_after": {
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/audit.py": "289ede82bc6834e88770f1a7cde90597912ba187da398dd5d8e2b90fd1c0532a",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/positive_serial.py": "b0732aeb09f0cdf53069f7d0e2538a672ad3a8cf84d23e94a93a6fc144697fc7",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/analytic_reference.py": "6d24f468ac079cf7932c312bb9a8c22ddb53aceb0f1dc9d2e4087961a425ea46",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/PLAN.json": "f1d0c2da8cbe8fe7ccd9dff1f5f42049b1e2129295587ae0270aac1abf7b9e84"
+  },
+  "input_sha256": {
+    "/workspace/scratch/c06d659c1e72/secondcycle/evidence/kernels-attempt001/SUMMARY.json": "43e8608570ce8847f89d4411e68adfc6feb14793a2c284721a5a15083a396e25",
+    "/workspace/scratch/c06d659c1e72/secondcycle/evidence/kernels-attempt001/near800.npz": "b3245183b67e0c54728c40da85951b40986c985e89c5f48bc3fd7c990316076e",
+    "/workspace/scratch/c06d659c1e72/secondcycle/evidence/kernels-attempt001/near800.json": "b9f635ffbbc77f5adfd22d8151ecc15484ef9338fde6d57ef149bca7fa9e4644",
+    "/workspace/scratch/c06d659c1e72/secondcycle/evidence/kernels-attempt001/near960.npz": "cfe979f27e005a8ec995252a47145648c9b019503a692dde9d099c526b5a4a60",
+    "/workspace/scratch/c06d659c1e72/secondcycle/evidence/kernels-attempt001/near960.json": "db538c419721e4c7cd878b9682f324bffb29405d2e653ff4cee0b92f66c2bfdf",
+    "/workspace/scratch/c06d659c1e72/secondcycle/evidence/kernels-attempt001/control_erlang.npz": "42eb5fdc70a4b869c181e45291bedc178c9e49f9f03e2c22fa842c386b28f152",
+    "/workspace/scratch/c06d659c1e72/secondcycle/evidence/kernels-attempt001/control_erlang.json": "0cd6937af99ae9343f4f07527a2b02615079d0c17ed6b7d579902394892984e7",
+    "/workspace/scratch/c06d659c1e72/secondcycle/evidence/kernels-attempt001/control_mixed.npz": "21c0241a0e34f9a4e24ef8b15359c00f13217ba82caaad6fce6aa0a2f9b0288d",
+    "/workspace/scratch/c06d659c1e72/secondcycle/evidence/kernels-attempt001/control_mixed.json": "f031f381bd03de2bddca101a7359b4678361bddda33ab04603fe3077ae5c9f09",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_joint_dde/reference.py": "9e8ea431118229c8eb1bec0fe809faffc158b3decd2157a52331551d675d18de"
+  },
+  "output_sha256": {
+    "ROWS.json": "edb33d6d468e60db6a42cdfaf86e03157518b19cb8aee095bad2302184f43f70",
+    "ANALYTIC_CACHE.json": "1f41b13e45a9b0cba505cc7062e35af3df5c62c43d9163094e4da559ca1718c9"
+  },
+  "wall_seconds": 299.1121463689997,
+  "cpu_seconds": 297.97631346599997,
+  "peak_rss_kib_linux": 233004,
+  "limitations": [
+    "Only two-cycle renewal statistics; not a full spatial state or complete Cell",
+    "Positive-series truncation does not certify roundoff",
+    "Below fixed1e-12 has no relative admission",
+    "Continuum upper bounds do not certify CTMC numerical error",
+    "Finite matrix control uses FP64 expm/quad with no claimed precision refinement",
+    "Exposed development only; no new prospective gate, physical-box or gradient qualification"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 9
+  },
+  "numerical_scope": "2 previously frozen supervised synthetic RGB models; all516 validation rows per model; no training/test/original-digit payloads",
+  "partial_command_gate": "Both seeds must pass all five frozen metrics; both failed unspecified text and image preservation",
+  "provenance": "Legacy generator already has instruction features. Added opt-in serving conditioning, not absent-condition repair. Old original-digit model/FIT/lock were unavailable. New separate synthetic lock only.",
+  "publication_boundary": "No private paths, source IDs, images, checkpoints, per-request model outputs or credentials.",
+  "rust_checks": "Not run: no Rust changed; portable standalone Python scope.",
+  "source_sha256": {
+    "PLAN.md": "8bfe8b6be30a0566b4d7b34248cbff8e4fb06190ce411316bfd0d7269e5cf0da",
+    "control.py": "a5f9c5d53ae6f5668f2dc4ce893bc4c10ea1625573b58514681a69d75c11796b",
+    "test_control.py": "1468621b10ef292e399d3a9e77682813aee10e300939cb0e44c075202fe63d86"
+  },
+  "status": "PASS_NINE_LITERAL_TESTS_AND_COMPLETE_BOUNDED_STUDY",
+  "tests_included_in_child_CPU_seconds": 0.429883
+}

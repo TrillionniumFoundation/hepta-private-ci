@@ -10,6 +10,7 @@
 
 #![forbid(unsafe_code)]
 
+mod cell_split_receipt_gate;
 mod destination_dedupe;
 mod dispatcher;
 mod durable_model;
@@ -19,8 +20,13 @@ mod exact_claim;
 mod ledger;
 mod model;
 mod outbox;
+mod split_receipt_gate;
 mod sqlite;
 
+pub use cell_split_receipt_gate::CellSplitReceiptGate;
+pub use cell_split_receipt_gate::SplitGateError;
+pub use cell_split_receipt_gate::SplitStep;
+pub use cell_split_receipt_gate::VerifiedSplitReceipt;
 pub use destination_dedupe::DestinationApplyStart;
 pub use destination_dedupe::DestinationApplyTransaction;
 pub use destination_dedupe::DestinationDedupeStore;
@@ -61,6 +67,10 @@ pub use outbox::MAX_MODEL_OUTBOX_RECORDS;
 pub use outbox::Outbox;
 pub use outbox::OutboxIntent;
 pub use outbox::OutboxState;
+pub use split_receipt_gate::SplitReceiptErrorV1;
+pub use split_receipt_gate::SplitReceiptGateV1;
+pub use split_receipt_gate::SplitStageReceiptV1;
+pub use split_receipt_gate::SplitStageV1;
 
 #[cfg(test)]
 mod exact_claim_tests;

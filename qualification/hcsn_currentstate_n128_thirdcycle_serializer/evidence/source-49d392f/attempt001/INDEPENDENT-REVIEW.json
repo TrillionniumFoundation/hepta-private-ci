@@ -1,0 +1,53 @@
+{
+  "all_closed": false,
+  "artifact_crc_pass": true,
+  "artifact_members": 9,
+  "checks": {
+    "actual_parent_capsule_hash_exact": true,
+    "capsule_hash_equal_across_processes": true,
+    "coordinate_denominator_exact": true,
+    "coordinate_stream_byte_exact": true,
+    "historical_red_and_unknown_preserved": true,
+    "job_terminal_success": true,
+    "new_magic_and_capsule_identity_bound": true,
+    "qualification_false": true,
+    "source_and_unique_key_exact": true,
+    "state_layout_exact": true,
+    "zip_sha256_exact": true
+  },
+  "coordinate_comparisons": 870739,
+  "executed_by_review": {
+    "dynamic_segments": 0,
+    "matrix_exponentials": 0,
+    "optimizer_updates": 0,
+    "torch_operations": 0
+  },
+  "observed_execution": {
+    "dynamic_segments": 0,
+    "fresh_processes": 2,
+    "matrix_exponentials": 0,
+    "optimizer_updates": 0,
+    "project_max_rss_kib": 23896,
+    "project_wall_seconds": 0.41,
+    "restore_max_rss_kib": 19404,
+    "restore_wall_seconds": 0.34,
+    "torch_operations": 0
+  },
+  "overall": "PASS_ACTUAL_PARENT_SERIALIZER_EVIDENCE_ONLY",
+  "projected_state_scalars": 1975,
+  "qualification": false,
+  "remaining_open": [
+    "third-cycle numerical execution",
+    "target-4 retention",
+    ".4 to .401 accuracy",
+    "383-dimensional operator resource cost",
+    "arbitrary histories",
+    "N256 and N512 dynamics",
+    "finite-domain qualification",
+    "full-network training",
+    "asynchronous complete cost",
+    "HPCA external sealed and retention custody",
+    "same-budget task benefit",
+    "C2 complete six-fit replay"
+  ]
+}

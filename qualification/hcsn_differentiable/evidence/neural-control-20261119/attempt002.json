@@ -1,0 +1,292 @@
+{
+  "study": "affine retention / delayed fixed-reset optimal release",
+  "limits": {
+    "closed_boundary_abs": 1e-10,
+    "implicit_gradient_abs": 2e-06,
+    "boundary_grid_cells": 1.1,
+    "reset_value_relative": 0.0002,
+    "bellman_residual_abs": 2e-07,
+    "learned_boundary_abs": 3e-05,
+    "learned_value_gap": 2e-09,
+    "interface_abs": 1e-10,
+    "qvi_residual_abs": 1e-09
+  },
+  "source_sha256": {
+    "neural_control.py": "60bf3cc067f75a05f83f0f29978c7939fa91a7815858b5cc2becf0e62428dc3f",
+    "neural_control_study.py": "bea9f7d98e0607a624bccf62442955deaa4c33b5f35d652f26dc285e8a82519c",
+    "regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1"
+  },
+  "torch": "2.8.0+cpu",
+  "threads": 1,
+  "wall_seconds": 1.7718321639986243,
+  "cases": [
+    {
+      "task": {
+        "mu": -0.15,
+        "sigma": 0.35,
+        "discount": 0.2,
+        "log_reset": 1.0,
+        "refractory": 0.25,
+        "gain": 1.0,
+        "maintenance": 0.4,
+        "spike_cost": 0.3
+      },
+      "boundary": 0.546649206678534,
+      "reset_value": 2.6288942060276095,
+      "implicit_gradient": [
+        0.5472135519156099,
+        -0.3965593844906091,
+        -0.3495501890558902,
+        0.8729829382404444,
+        -0.2605088959107931,
+        0.10545591420285556,
+        0.12701706175955574,
+        -0.5208757963555928
+      ],
+      "central_difference": [
+        0.5472135518158616,
+        -0.39655938446347955,
+        -0.3495501890937724,
+        0.8729829382381203,
+        -0.2605088959106716,
+        0.10545591421218246,
+        0.12701706175732852,
+        -0.5208757963726107
+      ],
+      "grids": [
+        {
+          "spacing": 0.040000000000000036,
+          "boundary": 0.5600000000000005,
+          "reset_value": 2.6287745209687454,
+          "iterations": 8,
+          "bellman_residual_abs": 1.291411422243982e-12
+        },
+        {
+          "spacing": 0.019999999999999574,
+          "boundary": 0.54,
+          "reset_value": 2.6288757824450117,
+          "iterations": 12,
+          "bellman_residual_abs": 5.6061821851471905e-12
+        },
+        {
+          "spacing": 0.009999999999999787,
+          "boundary": 0.5499999999999998,
+          "reset_value": 2.628887664194185,
+          "iterations": 11,
+          "bellman_residual_abs": 2.4158453015843406e-11
+        }
+      ],
+      "learning": [
+        {
+          "initial_gap": 0.2,
+          "closure_calls": 5,
+          "boundary": 0.546649202074533,
+          "value_gap": -8.881784197001252e-16
+        },
+        {
+          "initial_gap": 1.0,
+          "closure_calls": 6,
+          "boundary": 0.5466492066780795,
+          "value_gap": -4.440892098500626e-16
+        },
+        {
+          "initial_gap": 3.0,
+          "closure_calls": 7,
+          "boundary": 0.5466492066731776,
+          "value_gap": 0.0
+        }
+      ],
+      "errors": {
+        "closed_boundary_abs": 6.661338147750939e-16,
+        "implicit_gradient_abs": 9.974832071435458e-11,
+        "boundary_grid_cells": 0.33507933214658886,
+        "reset_value_relative": 2.488435407290744e-06,
+        "bellman_residual_abs": 2.4158453015843406e-11,
+        "learned_boundary_abs": 4.604000958252641e-09,
+        "learned_value_gap": 8.881784197001252e-16,
+        "interface_abs": 4.440892098500626e-16,
+        "qvi_residual_abs": 1.7763568394002505e-15
+      }
+    },
+    {
+      "task": {
+        "mu": -0.4,
+        "sigma": 0.6,
+        "discount": 0.35,
+        "log_reset": 1.2,
+        "refractory": 0.4,
+        "gain": 0.7,
+        "maintenance": 0.3,
+        "spike_cost": 0.5
+      },
+      "boundary": 0.14857937414030664,
+      "reset_value": 0.725914208368853,
+      "implicit_gradient": [
+        0.4347432560204494,
+        -0.4387502196136297,
+        -0.5989315223310556,
+        0.7712254033454369,
+        -0.19339617425295041,
+        0.48534810813979967,
+        0.3268208523636615,
+        -0.8755798628139162
+      ],
+      "central_difference": [
+        0.4347432559947961,
+        -0.43875021958905686,
+        -0.5989315223497993,
+        0.7712254033361472,
+        -0.19339617426394892,
+        0.48534810823397384,
+        0.3268208523699023,
+        -0.8755798628246046
+      ],
+      "grids": [
+        {
+          "spacing": 0.040000000000000036,
+          "boundary": 0.16000000000000014,
+          "reset_value": 0.7259937291729893,
+          "iterations": 9,
+          "bellman_residual_abs": 1.3020695632803836e-12
+        },
+        {
+          "spacing": 0.019999999999999574,
+          "boundary": 0.14000000000000057,
+          "reset_value": 0.7259111985230771,
+          "iterations": 12,
+          "bellman_residual_abs": 6.258105145207082e-12
+        },
+        {
+          "spacing": 0.009999999999999787,
+          "boundary": 0.15000000000000036,
+          "reset_value": 0.725922835209953,
+          "iterations": 18,
+          "bellman_residual_abs": 2.601829862669547e-11
+        }
+      ],
+      "learning": [
+        {
+          "initial_gap": 0.2,
+          "closure_calls": 8,
+          "boundary": 0.14857937414272304,
+          "value_gap": 0.0
+        },
+        {
+          "initial_gap": 1.0,
+          "closure_calls": 4,
+          "boundary": 0.14857937707512137,
+          "value_gap": 0.0
+        },
+        {
+          "initial_gap": 3.0,
+          "closure_calls": 9,
+          "boundary": 0.14857937413670208,
+          "value_gap": 0.0
+        }
+      ],
+      "errors": {
+        "closed_boundary_abs": 2.220446049250313e-16,
+        "implicit_gradient_abs": 9.417416846346782e-11,
+        "boundary_grid_cells": 0.1420625859693744,
+        "reset_value_relative": 8.626841100034532e-06,
+        "bellman_residual_abs": 2.601829862669547e-11,
+        "learned_boundary_abs": 2.934814724575574e-09,
+        "learned_value_gap": 0.0,
+        "interface_abs": 2.220446049250313e-16,
+        "qvi_residual_abs": 8.881784197001252e-16
+      }
+    },
+    {
+      "task": {
+        "mu": 0.1,
+        "sigma": 0.25,
+        "discount": 0.15,
+        "log_reset": 0.8,
+        "refractory": 0.1,
+        "gain": 1.3,
+        "maintenance": 0.2,
+        "spike_cost": 0.15
+      },
+      "boundary": 0.651849185314199,
+      "reset_value": 12.438448973429733,
+      "implicit_gradient": [
+        0.2141872478851559,
+        -0.45389012755357155,
+        -0.2994619962697266,
+        0.9689844816359308,
+        -0.4418062949161465,
+        0.024065071457437203,
+        0.023858091049284116,
+        -0.24037474069683384
+      ],
+      "central_difference": [
+        0.21418724813759835,
+        -0.4538901275719098,
+        -0.2994619964113987,
+        0.9689844816418435,
+        -0.4418062950817258,
+        0.024065071439867306,
+        0.023858091047213034,
+        -0.24037474068983042
+      ],
+      "grids": [
+        {
+          "spacing": 0.040000000000000036,
+          "boundary": 0.6400000000000006,
+          "reset_value": 12.434423726452373,
+          "iterations": 6,
+          "bellman_residual_abs": 1.2647660696529783e-12
+        },
+        {
+          "spacing": 0.019999999999999574,
+          "boundary": 0.6600000000000001,
+          "reset_value": 12.436664131477624,
+          "iterations": 8,
+          "bellman_residual_abs": 5.8903992794512305e-12
+        },
+        {
+          "spacing": 0.009999999999999787,
+          "boundary": 0.6500000000000004,
+          "reset_value": 12.438295156809593,
+          "iterations": 14,
+          "bellman_residual_abs": 2.4567015088905464e-11
+        }
+      ],
+      "learning": [
+        {
+          "initial_gap": 0.2,
+          "closure_calls": 5,
+          "boundary": 0.6518491799958334,
+          "value_gap": 1.7763568394002505e-15
+        },
+        {
+          "initial_gap": 1.0,
+          "closure_calls": 8,
+          "boundary": 0.6518491853146307,
+          "value_gap": 0.0
+        },
+        {
+          "initial_gap": 3.0,
+          "closure_calls": 13,
+          "boundary": 0.6518491853160695,
+          "value_gap": 0.0
+        }
+      ],
+      "errors": {
+        "closed_boundary_abs": 0.0,
+        "implicit_gradient_abs": 2.5244245582811686e-10,
+        "boundary_grid_cells": 0.1849185314198682,
+        "reset_value_relative": 1.2366221903402383e-05,
+        "bellman_residual_abs": 2.4567015088905464e-11,
+        "learned_boundary_abs": 5.318365636775013e-09,
+        "learned_value_gap": 1.7763568394002505e-15,
+        "interface_abs": 1.7763568394002505e-15,
+        "qvi_residual_abs": 1.7763568394002505e-15
+      }
+    }
+  ],
+  "failures": [],
+  "passed": true
+}

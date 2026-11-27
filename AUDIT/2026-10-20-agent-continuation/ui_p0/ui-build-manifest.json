@@ -1,0 +1,767 @@
+{
+  "schema": "hepta.robrix-ui.build.v1",
+  "browserRuntime": "rust-makepad-wasm",
+  "fixtures": false,
+  "sourceIdentity": {
+    "sha256": "5b3ffd2bdcd76285cccd7602ab8a101f6034b4bfb7809fd8d6c5002fe6953efb",
+    "files": {
+      "rust/Cargo.toml": "a8f8785b15a066f02219150f35bd1ed53ed3e7bb4ab0174e2560fe4d21f0c45e",
+      "rust/Cargo.lock": "9fb1e6c648f6b7fe35e2655be9c2a2f360615050c264a0ce6fba6ef85664419f",
+      "rust/core/Cargo.toml": "b3ae31e06c79323bc0f2bf245f066125ce45d61418460ed64847abe2caa9ea41",
+      "rust/core/src/bin/hepta-control-theme.rs": "c049620713b2468f119cfb6b00c17106a4987deb51bbcaa7503470674572ff14",
+      "rust/core/src/canonical.rs": "fca74b404fd359646e01525d610304f722c3afedb07e73ecffa01876295eceda",
+      "rust/core/src/chat/basic_tests.rs": "157ad9b1bc8fc4cce81bab5ff5ee50b2d6e79ac8a8d5201f6c924a06814eedf4",
+      "rust/core/src/chat/fixtures.rs": "9b5979fb82bb20d19e5d88a557c44e1836ca2d549f4407523fefa6409cbd4ec4",
+      "rust/core/src/chat/integration_tests.rs": "7d39d8152abf6c732ddad36c6fd91370dccb8ac34b99fe8a2c12b1872bbac768",
+      "rust/core/src/chat/partition_tests.rs": "f743b8671422575449d84fcd303af3788cd87cb38b809f0a71371cd67c08a03e",
+      "rust/core/src/chat_owner_tests.rs": "bf6059e8cd775f23fb63fffcc8a9515663e889c5632ab76e17872d1c6985110f",
+      "rust/core/src/chat_owner.rs": "23389393e2d332b1fb0964e671eabe479f3726f31f8b46e6e77cdd65262b2dce",
+      "rust/core/src/chat_timeline.rs": "8833777a27a7c1d7abf0b8f90c53954a91e1f9983239dbb560a6b4b5737369a6",
+      "rust/core/src/chat.rs": "3f53bb9af20787ac406ef7db11059e2e6b88a8c903400bdf319a9eb559a21d82",
+      "rust/core/src/confirmation.rs": "8e87c47c2d7ed160ad47bdc9e0677cd88969514bc00e0ae0311e6695cf4a1e83",
+      "rust/core/src/controller/recovery.rs": "f0f0e851d34fa5d02c3a53764881dc5e6e00e58826ab43392c20a15a08230568",
+      "rust/core/src/controller/types.rs": "d767616d85dcdca42d4c626ef8258729c1e9c2433a7244d4521f4e3ceb2ee944",
+      "rust/core/src/controller.rs": "502aadcaa273f0e0707804054e84390cb5824d69ff9da58b718a16460d906fa1",
+      "rust/core/src/error.rs": "a32cf66c2320e17c93837bac003907feaed525f6b4ffc53584970b107cc7dd78",
+      "rust/core/src/ledger/model.rs": "34f2447f96f6bb538ffd033ea82f4074603aac0d78009385960bc042502db2c9",
+      "rust/core/src/ledger.rs": "f66fd8068ecf2ea99a42625d72c945fd3e2ce67467480b93c11366566ef2df08",
+      "rust/core/src/lib.rs": "35b30e7244bd3df217e455015426530933b58a0eb302c083ce610f833833e988",
+      "rust/core/src/owner_view_tests.rs": "ed42d3b8a0b1694ebbe31029389cd81ec83f51a88e03ca3000f72de47b352d35",
+      "rust/core/src/owner_view.rs": "51baba679272803d868fcb5de408b4ac243595cafa304dffd2a3b74000dd13fb",
+      "rust/core/src/projection.rs": "43ac81bdf0bbf6ccc6681fb32f04bd9dd10f4dadea03ba6660d402cd5db56d3f",
+      "rust/core/src/recovery.rs": "913701c535d28538df9aee4ba03cd845dd09b79d41fe89e71ff55853ef413b98",
+      "rust/core/src/runtime_view_tests.rs": "217b921203f29a3a7a42356e27f57c8d6d47c1bf0d20e43a3a6849e4efcd9c35",
+      "rust/core/src/runtime_view.rs": "6cf3ea02c398a56e4fe40bac2e9806aa3681cb96286abf7c32ae35314b02a538",
+      "rust/core/src/scheduler.rs": "8fb1c605672d63536551558067616e46e95c37d268852414d40fd36afba30220",
+      "rust/core/src/theme.rs": "2c092b52dc376acf0062d8b338c01af126c7df8a61d51c39623b4169b26545b4",
+      "rust/robrix-ui/Cargo.toml": "f71f5b262362c8695fc6587f093937f033c683778a07961ca5fd42eb1caf3700",
+      "rust/robrix-ui/src/app.rs": "626edd08fd0115dc21aa7c834ed6125e18fb6b3ee855d1da2b6eba2d14ca778d",
+      "rust/robrix-ui/src/ime_pointer_gate_tests.rs": "0666e7f07edd709d081898c4dac1b7bd0b117b4217a2f77b7f3d557e865b5075",
+      "rust/robrix-ui/src/ime_pointer_gate.rs": "9de024d05200abd23bcca086d088dd1081f2482a25f1b0311aa89fc683cb4685",
+      "rust/robrix-ui/src/ime_router.rs": "533fb773d9a7d1fa947273de1ebcecc0bf1578ee0c534ef9fe89b213838e53d2",
+      "rust/robrix-ui/src/lib.rs": "67a5d3d30ebe2e90871078ad751707ffb91d839241dcd0ff152796a452ac12ff",
+      "rust/robrix-ui/src/main.rs": "73711d7c5d87c359d08f4678da0952845a3d60c3734865de1192ae5164705243",
+      "rust/robrix-ui/src/native_host/mod.rs": "a3b132d5b1092632e07e3d6926359bacb8580cfac6649fc907c51631f75d7a19",
+      "rust/robrix-ui/src/native_host/render.rs": "a1b56b79da6f69a7c080bc54f55b8b7f5675de5bf4d12f625ee29932537f44a0",
+      "rust/robrix-ui/src/native_status_layout.rs": "1b6c717b5bf19701cda03ec505feb4d7bc3dc476e3118caa4d2d9b231d8ef47e",
+      "rust/robrix-ui/src/native_status.rs": "993357512525aa3f491092f521d7a1df41d3ba9f39c9f0e00698efbdf26b7ad1",
+      "rust/robrix-ui/src/presentation_tests.rs": "6f3ea57649bf67ac2312ea16994afded3dac934f0a5aeac4ac5bf0bdc2db499f",
+      "rust/robrix-ui/src/presentation.rs": "809c4c1117836bf2b1932a25fd0edd78d747914d52f93502930c8a959f7f57b8",
+      "rust/robrix-ui/src/robrix/composer.rs": "6b926da6d62cd36f786a86f0f6a9f98b8ec7b5c5b901564eb2612df94e5190c7",
+      "rust/robrix-ui/src/robrix/dock.rs": "7eb86f7b37ba3b21ae66becef2d5926f77022b91167aa55fd0b50f3be756f392",
+      "rust/robrix-ui/src/robrix/home.rs": "b2941a0bb6f2a898635fb8684e91e2bc1d9d1c4a3e18d11cf8e82e3aa206386e",
+      "rust/robrix-ui/src/robrix/hover_highlight.rs": "13dfc9f78e8c32933ca0c5066fc4157344958924e0095d178ee7e0e9ab21acad",
+      "rust/robrix-ui/src/robrix/mod.rs": "9582784aba50fd7303b42f8ce3d57ab9e22d3e218eb45b09cd9b9282f9679715",
+      "rust/robrix-ui/src/robrix/room.rs": "ccbb327896e0c11b37f47a55c968fe5383222229936fa0f866e0003201ec1ed1",
+      "rust/robrix-ui/src/robrix/rooms.rs": "71b55d9eab582ed5cfccb00fda0556130630dc92ad9d696a4583fbe6412eb00e",
+      "rust/robrix-ui/src/robrix/sidebar_fixture.rs": "40bfc6366013e6544f65822a208d0ac76530fe7e4d4ec41c0456db34bea61e5d",
+      "rust/robrix-ui/src/robrix/styles.rs": "1b9b2c80f238dd2b9117b511669c481d496809dfc3cac8fdb30141b7792d627a",
+      "rust/robrix-ui/src/runtime_status.rs": "207dfe139108f712bf343df008b5dcfed40a999bd6cba12e7ce65cd295bd6627",
+      "rust/robrix-ui/src/visual_theme.rs": "87ee89b0f10c3b021d0680e0f3f2538b06446336f62a17d70701525bff88380e",
+      "rust/robrix-ui/patches/cargo-makepad-toolchain.json": "888113fdcdf158edcf8a9c0c310e854b37dc4bd40b34bf23e4402f1534a95daa",
+      "rust/robrix-ui/patches/cargo-makepad.Cargo.lock": "a7a430f48541ea113a6d8a85153ec3de5c9570953602a212e8a71597e4cca647",
+      "rust/robrix-ui/patches/IME_BRIDGE_REVIEW.md": "8f44cc67c9e374decbdf7dc7f34cc7910b4c2740e81451056b3e1d5bafddd3f8",
+      "rust/robrix-ui/patches/makepad-font-consumer.json": "dfd6a91df070e89835588ea39ee20a2220586e8e840864117e352b6586fcc9dc",
+      "rust/robrix-ui/patches/makepad-font-consumer.patch": "07f195cbd22315f4ef692c3d1b055cd000932b39e7b32e8ef01437dedac03cc7",
+      "rust/robrix-ui/patches/makepad-wasm-clock.json": "a5ccbc518e6f992a39a617383117b8d369093c256aef0048617418b1c16b4537",
+      "rust/robrix-ui/patches/makepad-wasm-clock.patch": "6e73320fb1758e6f4881b23805565bba658041d15093b87f4e99efbcd8f04e81",
+      "rust/robrix-ui/patches/makepad-wasm-fonts.json": "f03c5742535898ebdbd943c08bdaa1082d2fb85dca3edf6bc022fc5d5a511fbe",
+      "rust/robrix-ui/patches/makepad-wasm-fonts.patch": "feb3322cde462863097a695d7e72ea2115f7e8972bd581fd50fecda1eea61e03",
+      "rust/robrix-ui/patches/makepad-wasm-ime.json": "808fff17475401090dbc38eb881da00ffc08504f67972f59fd0d5bae231eb737",
+      "rust/robrix-ui/patches/makepad-wasm-ime.patch": "694a54d1087bd004456a49ff742f7ff94d46df4803ab52c96bc6898f41bf89d4",
+      "rust/robrix-ui/patches/makepad-wasm-instance-layout.json": "7d8952059a0ee5c8e1fc96cf9cb5700d22ccda8e061614446649123c75508124",
+      "rust/robrix-ui/patches/makepad-wasm-instance-layout.patch": "09357ab2aab1346352f608104f6b662559ab50ebde9ab8fe2a457070f6dfa600",
+      "rust/robrix-ui/patches/web-asset-paths.json": "7b16163df6da8c2e100ca5d0118a6e1fe97178d05d7193754049cc21eb5ea915",
+      "rust/robrix-ui/resources/ASSETS.json": "606eb87d18afb9e85f21191fc0db7cc19fa1b6b06c62273f9f69f8bf3befdfe9",
+      "rust/robrix-ui/resources/fonts/MANIFEST.json": "fb9e49a7f14b742ac7e390ceee9be115ad6e04a5f852eec67fb0a126870070a3",
+      "rust/robrix-ui/resources/fonts/NOTICE.txt": "53eac13efa92294d76c9866527f46ceef1bb06804ea943ccbfe4963a4ff1111c",
+      "rust/robrix-ui/resources/fonts/OFL.txt": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
+      "rust/robrix-ui/UPSTREAM.json": "026c4b915afe2e0f2f89962d7ab745b2aabc6133143db5fe2b8e394581c4c3a6",
+      "rust/robrix-ui/build.rs": "8dd0597192b8a04f489670f9f95c311e11cbb091b5ec30cc3866160add8e9938",
+      "tools/build.mjs": "c0c6411fe0f1f021045df30ce2d257629bdecac056c00013f29d182b4c0b6196",
+      "tools/build-robrix.mjs": "7399d3649766f6a919703212cbbfd75467a365a8786fd249b04809725ea52d8d",
+      "tools/check-makepad-dsl.mjs": "e56dc94166c14032a798e3c8414e87c9d4dd75fdbe0b2add0ad4b3c59fcbf63e",
+      "tools/prepare-makepad-platform.mjs": "3fabfc5a76f07ce78b904d2561b6efa6f61c3070da5da076e1d4c2d6e542e352",
+      "tools/emit-static-makepad-bridge.mjs": "ec757c81d05d671af35cfb8e56a501ffd45c247dd9400f5336841ba79cf726df",
+      "tools/robrix-source-identity.mjs": "7402f8a51f6882fca1ba64b591be42a1e6ab823fa01cf44aa21c12105aa09ae8",
+      "tools/prepare-fonts.py": "ae71842ad59684c7fbbb536bb029daaaba889f7cd50dc5927c2e9df23900789c",
+      "tools/run-desktop.py": "28b18a118efb3a160d1d2f5a9e196c6fbecb399588427d947f378f0a9ae4792d",
+      "tools/run-product.py": "31a72a05b78525a9e03690bed4743bddad4d5d74e99197ea78b079d1cf31b6c4",
+      "tools/owned-artifact-lease.mjs": "8082b991059e3d0233e105cc9def6f607f2ac846ff7bed1c86c4194a3268c405",
+      "tools/artifact-lock.py": "26a797c67c2036995a864e9fdc472b02c700945dd4baa3e2c7aadbdc912aa126",
+      "tools/serve-robrix.mjs": "8802df91ba7970a40576da1ce40ec8c9f45e8233e4502fe25039b4e8fe211f14"
+    }
+  },
+  "staticBridge": {
+    "wasmFile": "hepta-robrix.eb21f68382bc243f.wasm",
+    "wasmSha256": "7cd40149f2ecd787e24baefbd9892aa05add6351ab93cbe5789d4db05be306d5",
+    "schemaSha256": "404184dc6421c9bb0739f4e9ab4af3013fc5bd05ddb331d18e27788c01dfbc88",
+    "schemaCodeUnits": 62301,
+    "bridgePath": "makepad_wasm_bridge/wasm_bridge.js",
+    "originalBridgeSha256": "b4effb96f65c0add7ec92428a4fb4f2ef0d7cef9d320bcbeb0e4a5934ad80663",
+    "packagedBridgeSha256": "15baa9d6e4d5c6eb2d41150718bec6464c5d42b79fedc0afedd27f52282490fe",
+    "staticModulePath": "makepad_wasm_bridge/static-message-bridge.js",
+    "staticModuleSha256": "ec4f8f962976ade04b9e64139a49fb6df1652a72d80ed8aee155760944181ce5",
+    "imports": [
+      {
+        "module": "env",
+        "name": "js_monotonic_now",
+        "kind": "function"
+      },
+      {
+        "module": "env",
+        "name": "js_time_now",
+        "kind": "function"
+      },
+      {
+        "module": "env",
+        "name": "js_wake_ui",
+        "kind": "function"
+      },
+      {
+        "module": "env",
+        "name": "js_console_error",
+        "kind": "function"
+      },
+      {
+        "module": "env",
+        "name": "js_console_log",
+        "kind": "function"
+      },
+      {
+        "module": "env",
+        "name": "js_network_http_request",
+        "kind": "function"
+      },
+      {
+        "module": "env",
+        "name": "js_network_http_cancel",
+        "kind": "function"
+      },
+      {
+        "module": "env",
+        "name": "js_network_ws_open",
+        "kind": "function"
+      },
+      {
+        "module": "env",
+        "name": "js_network_ws_send_text",
+        "kind": "function"
+      },
+      {
+        "module": "env",
+        "name": "js_network_ws_send_binary",
+        "kind": "function"
+      },
+      {
+        "module": "env",
+        "name": "js_network_ws_close",
+        "kind": "function"
+      }
+    ],
+    "memoryViewRefresh": "reserve-u32-before-header"
+  },
+  "upstream": {
+    "upstream": "https://github.com/project-robius/robrix",
+    "revision": "f2208f16184e1b2d8307dc9f98375e47b1fcd677",
+    "license": "MIT",
+    "licenseFile": "licenses/ROBRIX-MIT.txt",
+    "makepad": {
+      "repository": "https://github.com/kevinaboos/makepad",
+      "revision": "337566c8b25d47f7e4fff6a202157b65bf183330"
+    },
+    "derivatives": [
+      {
+        "path": "src/robrix/dock.rs",
+        "source": "src/home/light_themed_dock.rs",
+        "sourceSha256": "31d577e7fce821eefd36a68dce80819ef367f297bf028418fb744eb36ca0bb57",
+        "sourceRegion": "1–264,290–305",
+        "adaptation": "Extracted themed splitter/tab/dock; omitted Matrix room tab action extension."
+      },
+      {
+        "path": "src/robrix/home.rs",
+        "source": "src/home/main_desktop_ui.rs",
+        "sourceSha256": "133a370692df79eac1c09c781e3b8af5a7145c24ba2f4bd653f2007e3d0badb7",
+        "sourceRegion": "15–81",
+        "adaptation": "Sidebar/main Dock composition; Hepta Conversation and Console tab factories."
+      },
+      {
+        "path": "src/robrix/home.rs",
+        "source": "src/home/home_screen.rs",
+        "sourceSha256": "0e09a5169341f0d49c12737f3914b02a264f9f46379a57c4b7911b29e93896aa",
+        "sourceRegion": "145–210",
+        "adaptation": "AdaptiveView with cached host layout; Hepta breakpoint and page contents."
+      },
+      {
+        "path": "src/robrix/rooms.rs",
+        "source": "src/home/rooms_list_entry.rs",
+        "sourceSha256": "b4d5a8cd63054e981f036fb3735218b4271bd0bc2b47c035765d7ed1b9cdd85d",
+        "sourceRegion": "37–143,169–210",
+        "adaptation": "Room name/timestamp, selected/hover shader, full-preview hierarchy; Hepta input rows."
+      },
+      {
+        "path": "src/robrix/room.rs",
+        "source": "src/home/room_screen.rs",
+        "sourceSha256": "149b844e5b353fb0f7bf0b6547635931beb4209f01027274ebcfcb92832cac94",
+        "sourceRegion": "235–383,654–740",
+        "adaptation": "Profile/content message hierarchy, PortalList and timeline/composer composition."
+      },
+      {
+        "path": "src/robrix/composer.rs",
+        "source": "src/room/room_input_bar.rs",
+        "sourceSha256": "b6ea16080109287a1d275b7fb8da7f61aa958f794a2c95043e6da8681f219ef4",
+        "sourceRegion": "35–179",
+        "adaptation": "Capped RoundedView, overlay, bottom-aligned input/send; no Matrix send/upload behavior."
+      },
+      {
+        "path": "src/robrix/styles.rs",
+        "source": "src/shared/styles.rs",
+        "sourceSha256": "8fca0bb96de4602ffe818926f28942d3b3e078df907a9009d7facf2371f4a1e2",
+        "sourceRegion": "67–125 and 246",
+        "adaptation": "Semantic color/text style vocabulary and required ListScrollBar definition; Hepta palette, no external resource assets."
+      },
+      {
+        "path": "src/app.rs",
+        "source": "src/app.rs",
+        "sourceSha256": "f814c6497ace510c60a5a79b2e7aa84ced54c8e62de21b53193dd6773a76795a",
+        "sourceRegion": "Root/Window and AppMain",
+        "adaptation": "Same Makepad script registration and application lifecycle; Hepta shared state."
+      },
+      {
+        "path": "src/main.rs",
+        "source": "src/main.rs",
+        "sourceSha256": "bdd2247342af2e5227bc7017554017891c9a7a2226386d6dd6ed9cca24ed0a88",
+        "sourceRegion": "entire entrypoint pattern",
+        "adaptation": "Hepta crate entrypoint."
+      },
+      {
+        "path": "src/robrix/hover_highlight.rs",
+        "source": "src/shared/hover_highlight.rs",
+        "sourceSha256": "2d04b1e207a4eda58ac930baec3e0205981d4b0d1dc873549b74b060a4412591",
+        "sourceRegion": "entire helper",
+        "adaptation": "Copied hover/press animation helper used by room rows."
+      }
+    ],
+    "excluded": [
+      "Robrix logos and separately attributed SVG assets",
+      "Matrix SDK, protocol, room service and authentication behavior"
+    ],
+    "status": "In-progress derived UI; compilation is not runtime or platform qualification."
+  },
+  "artAssets": {
+    "schema": "hepta.ui-art-assets.v1",
+    "assets": [],
+    "archivedAssets": [
+      {
+        "path": "lunar-titanium.png",
+        "sha256": "a4ce44f7dbe73c072e8b762370843f7d291db0505e897ed7473bccb6cb6def35",
+        "bytes": 1136722,
+        "kind": "image-generated standalone background",
+        "created": "2026-10-03",
+        "purpose": "Retained prior Lunar Titanium landscape provenance; not displayed by the current ceramic theme",
+        "source": "User-requested original image generation; not a UI screenshot",
+        "runtime": "Not packaged or displayed by the product renderer; no fetch or build dependency.",
+        "disposition": "Excluded from product runtime package: historical archive with no current Rust Image/resource use.",
+        "sourceCommit": "768c52943abbf473c96ec72d4b30de1f57c4e824",
+        "sourceBlob": "d09dca150163ef3266dfce00148184a0d8cd88d1",
+        "sourcePath": "apps/hepta-control-ui/rust/robrix-ui/resources/lunar-titanium.png",
+        "sourceUrl": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/768c52943abbf473c96ec72d4b30de1f57c4e824/apps/hepta-control-ui/rust/robrix-ui/resources/lunar-titanium.png",
+        "originalRuntimeDisposition": "Local packaged archive asset; no current Image layer and no remote fetch"
+      }
+    ]
+  },
+  "cjkFonts": {
+    "manifestSha256": "fb9e49a7f14b742ac7e390ceee9be115ad6e04a5f852eec67fb0a126870070a3",
+    "bytes": 16874504,
+    "assets": [
+      {
+        "file": "NotoSansSC-Bold.otf",
+        "bytes": 8543168,
+        "sha256": "c6cb5a93abaa9edc8ee7463b7ebb7f42d618d40e6ed2f7a5371c97b0b64767c0",
+        "format": "OTTO",
+        "outlines": "CFF",
+        "codepoints": 30890,
+        "samples": {
+          "中": true,
+          "文": true,
+          "界": true,
+          "面": true,
+          "简": true,
+          "體": true,
+          "日": true,
+          "本": true,
+          "語": true,
+          "か": true,
+          "な": true,
+          "カ": true,
+          "ナ": true,
+          "한": false,
+          "국": false,
+          "어": false,
+          "𠮷": false
+        },
+        "logical": "hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf",
+        "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC/NotoSansSC-Bold.otf",
+        "license_group": "noto-sans-cjk-ofl-1.1"
+      },
+      {
+        "file": "NotoSansSC-Regular.otf",
+        "bytes": 8331336,
+        "sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
+        "format": "OTTO",
+        "outlines": "CFF",
+        "codepoints": 30890,
+        "samples": {
+          "中": true,
+          "文": true,
+          "界": true,
+          "面": true,
+          "简": true,
+          "體": true,
+          "日": true,
+          "本": true,
+          "語": true,
+          "か": true,
+          "な": true,
+          "カ": true,
+          "ナ": true,
+          "한": false,
+          "국": false,
+          "어": false,
+          "𠮷": false
+        },
+        "logical": "hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf",
+        "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC/NotoSansSC-Regular.otf",
+        "license_group": "noto-sans-cjk-ofl-1.1"
+      }
+    ]
+  },
+  "nightly": "rustc 1.101.0-nightly (c36f14571 2026-10-01)",
+  "platformPatch": {
+    "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+    "path": "src/retained_instances.rs",
+    "beforeSha256": "0b046cced620f1eaf9c80d39e99cdefaa3e9cecf23a49ea88a05c55b4132eca0",
+    "afterSha256": "c9b39b14da87b6e9c58d2bdf8637d72a1e641cf0f381aaf246286c71b09b5362",
+    "patchSha256": "6e73320fb1758e6f4881b23805565bba658041d15093b87f4e99efbcd8f04e81",
+    "reason": "std::time::Instant is unsupported on wasm32-unknown-unknown; use existing platform monotonic import. Native code path unchanged."
+  },
+  "instanceLayoutPatch": {
+    "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+    "patchSha256": "09357ab2aab1346352f608104f6b662559ab50ebde9ab8fe2a457070f6dfa600",
+    "files": [
+      {
+        "path": "src/draw_vars.rs",
+        "beforeSha256": "fa44e0b37c00ef33c71ca98607943bd988142b8101ae4aeab99242ef6cf3f900",
+        "afterSha256": "e99349f465aee65f147ff4998bf721892d4927420b2b6f813466d0cd56e003b6"
+      },
+      {
+        "path": "src/draw_list.rs",
+        "beforeSha256": "fb2c0826ec5d819977d726adb9d9e50649499e973f72de95aab07d8b18d54f49",
+        "afterSha256": "7628f98cd7f4e7ea5577254a5cb0bffd8c41780aac4f33cbe849a7cfbc6a754e"
+      }
+    ],
+    "reason": "Move the observed four-byte wasm32 DrawVars tail padding before dyn_instances so as_slice reads the following live shader fields contiguously. Preserve native layout and array capacity; compile-time WASM assertion rejects any remaining tail gap."
+  },
+  "webImePatch": {
+    "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+    "patchSha256": "694a54d1087bd004456a49ff742f7ff94d46df4803ab52c96bc6898f41bf89d4",
+    "files": [
+      {
+        "path": "src/os/web/from_wasm.rs",
+        "beforeSha256": "79119659a29c28da0da68bc71dc01902b70e00305b6992cbf862b25ca9febff5",
+        "afterSha256": "077f9caaa091643cbf85e8a90268953c2403b22c1414e5869a783814bedef374"
+      },
+      {
+        "path": "src/os/web/to_wasm.rs",
+        "beforeSha256": "63656088bcf248d906df60d896bb343ef38c81b584968cc6deb65895c2ce29e0",
+        "afterSha256": "28c93d58d964f9be1f50c91ff12b26460ed2043a031f07b7308504e8547c7b89"
+      },
+      {
+        "path": "src/os/web/web.rs",
+        "beforeSha256": "af79a3f236e6c5fd77ac9ee27ca5de45af7e70831d22edf22db24268bfb8a384",
+        "afterSha256": "b5ab8e398b047150272892c55efca102167a06da184b4983c68d55a77ac1d5b2"
+      },
+      {
+        "path": "src/os/web/web.js",
+        "beforeSha256": "0404897d76bbd81e2225ab62b2fde1c4832e34331706b94c4c00aa71640fe765",
+        "afterSha256": "f2decc893fc78e346e35e61fef83f136088005b04e9f901adffbf2a063a24646"
+      }
+    ],
+    "reason": "Add real full-state Web IME synchronization, UTF-16 caret/selection with scalar-safe wire text, native composition and clipboard lifecycle, and an owner-draw sync boundary without changing product state ownership."
+  },
+  "drawPatch": {
+    "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+    "patchSha256": "feb3322cde462863097a695d7e72ea2115f7e8972bd581fd50fecda1eea61e03",
+    "files": [
+      {
+        "path": "src/text/fonts.rs",
+        "beforeSha256": "5664e8eb982715e9dbf4731df27ea00c7cf3100f6b252224cdff26cb9917f056",
+        "afterSha256": "033718a5958d5e066e45910fce026f0b150b3d29cfdd2d7d02ce16b9f96d3c9b"
+      },
+      {
+        "path": "src/shader/draw_text.rs",
+        "beforeSha256": "21395f32f71dc8d9872975cc1498002407573f1b4b614ab943888c6dc7b7ddb0",
+        "afterSha256": "23603d4c6a7f898a2636fa6088993961e16556845c04fb5c94fec7811a375add"
+      },
+      {
+        "path": "src/text/rasterizer.rs",
+        "beforeSha256": "50bb32eb2c59a58727575f69083d206617cc08230de8ca83c2f03e4bd2063a24",
+        "afterSha256": "c8058b4f41d037de20afac8609dfd50fc91bddbcc027323af7fc9c65697e50d0"
+      }
+    ],
+    "reason": "On non-atomic WASM skip the blocking MSDF worker and route every outline through the existing synchronous SDF path, including explicit MSDF mode overrides. Native/atomic behavior is unchanged. Defer missing-font diagnostics only while the matching registered resource is Loading; terminal absence and errors remain visible and HTTP completion redraws the incomplete family."
+  },
+  "fontConsumerPatch": {
+    "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+    "patchSha256": "07f195cbd22315f4ef692c3d1b055cd000932b39e7b32e8ef01437dedac03cc7",
+    "files": [
+      {
+        "path": "makepad-draw/src/shader/draw_text.rs",
+        "beforeSha256": "23603d4c6a7f898a2636fa6088993961e16556845c04fb5c94fec7811a375add",
+        "afterSha256": "617fa4bde0f63ebbd134bd8638232f43e462bd8d8f835baf7e42ab5bda07964f"
+      },
+      {
+        "path": "makepad-draw/src/text/font.rs",
+        "beforeSha256": "b34baa77458989a0e80865d29a4234ffeae687aeacd9ca4b2d3d49fba5701ddb",
+        "afterSha256": "8367ad39b45a5c90e6489503103e8ec69a758893e46a4e5f319d5792ff134b34"
+      },
+      {
+        "path": "makepad-draw/src/text/loader.rs",
+        "beforeSha256": "5c20120fb099e56f315c258980a7feb17f22cf3199ba658d3b4f7ab60c5a0bd2",
+        "afterSha256": "bdbde12a062e182b08ad503c6549f301a183f85962824b37dd5b442dfa7c1aa3"
+      },
+      {
+        "path": "makepad-platform/src/hepta_font_consumer.rs",
+        "beforeSha256": null,
+        "afterSha256": "b556adbb811ac879005536753d5b9a7730af65c3c3eefcb4fe42dcb9959bd5a6"
+      },
+      {
+        "path": "makepad-platform/src/lib.rs",
+        "beforeSha256": "d4be527bc5dc73d9bc2c1f581ad57244c6d5647f1e726124232d8eecba960584",
+        "afterSha256": "7ee070dee0d8ebc661dcb126a52ebce3130bb99dd41a89a58a2aaa8a56577b8e"
+      },
+      {
+        "path": "makepad-platform/src/script/res.rs",
+        "beforeSha256": "30f5ea8653a393db7eb6547613c60f901ff0a2b01bb4d229b5fd3f09db797879",
+        "afterSha256": "ffcdd4dec2643d969e2b8abd37dc07ab492d35f278dad6eb9321ffd65e210555"
+      },
+      {
+        "path": "makepad-platform/src/os/web/web_network.rs",
+        "beforeSha256": "24dffe35dba1218adaa6d9ab9a12f51631f796e8d9f31114ecb973db34417b14",
+        "afterSha256": "e9d75db43bda8fd8b58b360d83dcf0c4667c8a727ca633bf2a5a729e2663423b"
+      }
+    ],
+    "scope": "Disabled-by-default WASM-only observation of actual HTTP transport/public request mapping, existing adoption, parser success and natural glyph instance emission; no acceptance authority"
+  },
+  "fontConsumerResources": {
+    "/hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf": {
+      "absolutePath": "/home/runner/work/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/rust/target/robrix-build/workspace/robrix-ui/resources/fonts/NotoSansSC-Bold.otf",
+      "dependencyPath": "hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf",
+      "bytes": 8543168,
+      "sha256": "c6cb5a93abaa9edc8ee7463b7ebb7f42d618d40e6ed2f7a5371c97b0b64767c0"
+    },
+    "/hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf": {
+      "absolutePath": "/home/runner/work/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/rust/target/robrix-build/workspace/robrix-ui/resources/fonts/NotoSansSC-Regular.otf",
+      "dependencyPath": "hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf",
+      "bytes": 8331336,
+      "sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9"
+    },
+    "/makepad_widgets/resources/fa-solid-900.ttf": {
+      "absolutePath": "/home/runner/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/resources/fa-solid-900.ttf",
+      "dependencyPath": "makepad_widgets/resources/fa-solid-900.ttf",
+      "bytes": 426112,
+      "sha256": "d2f0593540b0e33ba6de255a54f272d466e31144806956bea8cfdbf7edffc9bd"
+    },
+    "/makepad_widgets/resources/IBMPlexSans-BoldItalic.ttf": {
+      "absolutePath": "/home/runner/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/resources/IBMPlexSans-BoldItalic.ttf",
+      "dependencyPath": "makepad_widgets/resources/IBMPlexSans-BoldItalic.ttf",
+      "bytes": 184656,
+      "sha256": "451f1e35cf09ef4411c9f38e7eb7d4967aef427c52e048dff26cc36393937882"
+    },
+    "/makepad_widgets/resources/IBMPlexSans-Italic.ttf": {
+      "absolutePath": "/home/runner/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/resources/IBMPlexSans-Italic.ttf",
+      "dependencyPath": "makepad_widgets/resources/IBMPlexSans-Italic.ttf",
+      "bytes": 184020,
+      "sha256": "21effb0b8dabbbd6548db1c581c68c6335f6ffaabd6946a6a73ade24dec050eb"
+    },
+    "/makepad_widgets/resources/IBMPlexSans-SemiBold.ttf": {
+      "absolutePath": "/home/runner/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/resources/IBMPlexSans-SemiBold.ttf",
+      "dependencyPath": "makepad_widgets/resources/IBMPlexSans-SemiBold.ttf",
+      "bytes": 182176,
+      "sha256": "391bd290357cb19bacccd66dc82f3213e0c66c34025a4dd3e15c49d3db7c585e"
+    },
+    "/makepad_widgets/resources/IBMPlexSans-Text.ttf": {
+      "absolutePath": "/home/runner/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/resources/IBMPlexSans-Text.ttf",
+      "dependencyPath": "makepad_widgets/resources/IBMPlexSans-Text.ttf",
+      "bytes": 181792,
+      "sha256": "8c358c56c56f76a28cecb8ca10734c1c9cafa01a752dc8364b9ef7de412437dc"
+    },
+    "/makepad_widgets/resources/LiberationMono-Regular.ttf": {
+      "absolutePath": "/home/runner/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/resources/LiberationMono-Regular.ttf",
+      "dependencyPath": "makepad_widgets/resources/LiberationMono-Regular.ttf",
+      "bytes": 108168,
+      "sha256": "3e396ddd3d1c7d3dca1fb16dd64802b32f295f856ac10c0c1f2ab1c738196045"
+    },
+    "/makepad_widgets/resources/LXGWWenKaiBold.ttf": {
+      "absolutePath": "/home/runner/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/resources/LXGWWenKaiBold.ttf",
+      "dependencyPath": "makepad_widgets/resources/LXGWWenKaiBold.ttf",
+      "bytes": 18546748,
+      "sha256": "7a356605eb36c92e29cc64090e2856e4675694572a2ae4da84adbadffecae907"
+    },
+    "/makepad_widgets/resources/LXGWWenKaiRegular.ttf": {
+      "absolutePath": "/home/runner/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/resources/LXGWWenKaiRegular.ttf",
+      "dependencyPath": "makepad_widgets/resources/LXGWWenKaiRegular.ttf",
+      "bytes": 19073964,
+      "sha256": "0819604ad9357afbc6e7cc097328a16ed85143ee0848ffda09fda35a30da6506"
+    },
+    "/makepad_widgets/resources/NewCMMath-Regular.otf": {
+      "absolutePath": "/home/runner/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/resources/NewCMMath-Regular.otf",
+      "dependencyPath": "makepad_widgets/resources/NewCMMath-Regular.otf",
+      "bytes": 1151568,
+      "sha256": "ad746f5307fed53d8e5d7d201f5054abe73f1f47c51040767d898e3481c6e648"
+    },
+    "/makepad_widgets/resources/NotoColorEmoji.ttf": {
+      "absolutePath": "/home/runner/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/resources/NotoColorEmoji.ttf",
+      "dependencyPath": "makepad_widgets/resources/NotoColorEmoji.ttf",
+      "bytes": 10643852,
+      "sha256": "39ee3c587e10e89669b9ff32703261d10d5f9c4dd5ad147b6b5a1c5200591817"
+    }
+  },
+  "drawManifestSha256": "f7ccbd6081eeb3392aae9420054245175c09fcff0dcf3ba021938477c0c4c1a8",
+  "platformManifestSha256": "c281dcf4fd6a561bcd8f9c9de41c1243bab46c561df538359b616abd4da381bc",
+  "canonicalLockSha256": "9fb1e6c648f6b7fe35e2655be9c2a2f360615050c264a0ce6fba6ef85664419f",
+  "generatedLockSha256": "c45c0796c3ec9e61f3a277ee06a89bb3f623db6c98d3cd4780d0c7a590be2c59",
+  "packagerSource": "337566c8b25d47f7e4fff6a202157b65bf183330",
+  "packagerToolchainPatch": {
+    "schema": "hepta.makepad-packager-toolchain.v1",
+    "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+    "path": "tools/cargo_makepad/src/wasm/compile.rs",
+    "beforeSha256": "fc8aacab29e3ef9bc53d45c468f03fcbddaa3591e5ca00fc1e3a8ce70519a11a",
+    "afterSha256": "b3b8e9632fa0b01d3df1d2643bf0587cf2003cbb95108c014843196fa3792736",
+    "literalCount": 2,
+    "toolchain": "nightly-2026-10-02",
+    "rustcVersion": "rustc 1.101.0-nightly (c36f14571 2026-10-01)",
+    "scope": "Only the target-spec and build-std rustup run arguments in an isolated tool archive; no Cargo-cache mutation"
+  },
+  "packagerLockSha256": "a7a430f48541ea113a6d8a85153ec3de5c9570953602a212e8a71597e4cca647",
+  "packagerSha256": "9a6e5ab4087de651730128d5a28028291def958f2b40f7843faf3f5491d9b19b",
+  "threads": false,
+  "webglContext": {
+    "preserveDrawingBuffer": true,
+    "reason": "verified-visible-resize-loss-with-discarded-buffer"
+  },
+  "automaticCrashUpload": false,
+  "viewportZoomRestrictionRemoved": true,
+  "originalFrameworkSha256": "110d268d041fc127ef58e1178bd8bc9dc7e96229d805e25026900d999a232762",
+  "packagedFrameworkSha256": "b70442ed46ab0663323a1d7debd5676cc1dc281ec57d0be2a86f81b9eec078fc",
+  "files": {
+    "bootstrap.js": {
+      "bytes": 872,
+      "sha256": "d7e5a7715958d04e202b8c8999cc164dd6803cf2ba126e893397f467d0d55423"
+    },
+    "hepta_robrix/resources/ASSETS.json": {
+      "bytes": 1269,
+      "sha256": "606eb87d18afb9e85f21191fc0db7cc19fa1b6b06c62273f9f69f8bf3befdfe9"
+    },
+    "hepta_robrix/resources/fonts/MANIFEST.json": {
+      "bytes": 2422,
+      "sha256": "fb9e49a7f14b742ac7e390ceee9be115ad6e04a5f852eec67fb0a126870070a3"
+    },
+    "hepta_robrix/resources/fonts/NOTICE.txt": {
+      "bytes": 559,
+      "sha256": "53eac13efa92294d76c9866527f46ceef1bb06804ea943ccbfe4963a4ff1111c"
+    },
+    "hepta_robrix/resources/fonts/OFL.txt": {
+      "bytes": 4301,
+      "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2"
+    },
+    "hepta_robrix_ui/resources/fonts/NOTICE.txt": {
+      "bytes": 559,
+      "sha256": "53eac13efa92294d76c9866527f46ceef1bb06804ea943ccbfe4963a4ff1111c"
+    },
+    "hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf": {
+      "bytes": 8543168,
+      "sha256": "c6cb5a93abaa9edc8ee7463b7ebb7f42d618d40e6ed2f7a5371c97b0b64767c0"
+    },
+    "hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf": {
+      "bytes": 8331336,
+      "sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9"
+    },
+    "hepta_robrix_ui/resources/fonts/OFL.txt": {
+      "bytes": 4301,
+      "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2"
+    },
+    "hepta-robrix.eb21f68382bc243f.wasm": {
+      "bytes": 11924492,
+      "sha256": "7cd40149f2ecd787e24baefbd9892aa05add6351ab93cbe5789d4db05be306d5"
+    },
+    "index.html": {
+      "bytes": 775,
+      "sha256": "160667cc97f35ae163de20647a3352d30de52809ffd1c84b1ca316e5b5131bee"
+    },
+    "input-platform.css": {
+      "bytes": 630,
+      "sha256": "e834d8af3961733658357831c20c39495b56204f17f7316289ccdca370617a98"
+    },
+    "licenses/MAKEPAD-MIT.txt": {
+      "bytes": 1069,
+      "sha256": "3855d73a873244ec424ac5781d5d8fc8e2a789ff9d2f1cb804bec585a64ea88f"
+    },
+    "licenses/ROBRIX-MIT.txt": {
+      "bytes": 1097,
+      "sha256": "7c370204a7507a3c33398d6377aa69691991b0582a3d92ace8d27d8819b223f7"
+    },
+    "makepad_platform/audio_worklet.js": {
+      "bytes": 3791,
+      "sha256": "1696ac6b5178edd53b15a7ce20edd1953e5d9ea1eba3a8c76e5fe1d7d5b10f68"
+    },
+    "makepad_platform/auto_reload.js": {
+      "bytes": 1469,
+      "sha256": "6467b69ad92548eba401b43409ff274b2dbf3ba6b9317785c00ab7b06defa5cc"
+    },
+    "makepad_platform/full_canvas.css": {
+      "bytes": 1069,
+      "sha256": "fc2b5c019aca47ed87a6da403e6cccbc40b0c17d478f44228b3eca8d23df29de"
+    },
+    "makepad_platform/web_gl.js": {
+      "bytes": 97518,
+      "sha256": "a6a535ab1dd97303b40d783b983b16a89aa0cd995f28f50e1f910dc1d2bdf2d5"
+    },
+    "makepad_platform/web_worker.js": {
+      "bytes": 10717,
+      "sha256": "6ea1f57ea9c4c431d918485d17171e8059045b5828db9626ff4cdcddfc092214"
+    },
+    "makepad_platform/web.js": {
+      "bytes": 87890,
+      "sha256": "b70442ed46ab0663323a1d7debd5676cc1dc281ec57d0be2a86f81b9eec078fc"
+    },
+    "makepad_wasm_bridge/static-message-bridge.js": {
+      "bytes": 127298,
+      "sha256": "ec4f8f962976ade04b9e64139a49fb6df1652a72d80ed8aee155760944181ce5"
+    },
+    "makepad_wasm_bridge/wasm_bridge.js": {
+      "bytes": 23971,
+      "sha256": "15baa9d6e4d5c6eb2d41150718bec6464c5d42b79fedc0afedd27f52282490fe"
+    },
+    "makepad_widgets/resources/fa-solid-900.ttf": {
+      "bytes": 426112,
+      "sha256": "d2f0593540b0e33ba6de255a54f272d466e31144806956bea8cfdbf7edffc9bd"
+    },
+    "makepad_widgets/resources/IBMPlexSans-BoldItalic.ttf": {
+      "bytes": 184656,
+      "sha256": "451f1e35cf09ef4411c9f38e7eb7d4967aef427c52e048dff26cc36393937882"
+    },
+    "makepad_widgets/resources/IBMPlexSans-Italic.ttf": {
+      "bytes": 184020,
+      "sha256": "21effb0b8dabbbd6548db1c581c68c6335f6ffaabd6946a6a73ade24dec050eb"
+    },
+    "makepad_widgets/resources/IBMPlexSans-SemiBold.ttf": {
+      "bytes": 182176,
+      "sha256": "391bd290357cb19bacccd66dc82f3213e0c66c34025a4dd3e15c49d3db7c585e"
+    },
+    "makepad_widgets/resources/IBMPlexSans-Text.ttf": {
+      "bytes": 181792,
+      "sha256": "8c358c56c56f76a28cecb8ca10734c1c9cafa01a752dc8364b9ef7de412437dc"
+    },
+    "makepad_widgets/resources/icons/back.svg": {
+      "bytes": 306,
+      "sha256": "a5afa4a6316b4fe7cf704a825850f9b44b7ca2be94927082b6ade11959cf6135"
+    },
+    "makepad_widgets/resources/icons/close_left_panel.svg": {
+      "bytes": 1848,
+      "sha256": "b5424c732e61392f5b388c2b0f95248632d182433a13b8aa9c02e4473ae33ed7"
+    },
+    "makepad_widgets/resources/icons/icon_draw.svg": {
+      "bytes": 791,
+      "sha256": "72f7ab46845b0abfb5a01208edd330578814f16f11fb81ff9a5fb24d6ef1c0fe"
+    },
+    "makepad_widgets/resources/icons/icon_file.svg": {
+      "bytes": 792,
+      "sha256": "0df20ec2a62be5e1b6ecddd7f1a7c67f4052523297c671b8fb4ed91234efb19e"
+    },
+    "makepad_widgets/resources/icons/icon_folder.svg": {
+      "bytes": 865,
+      "sha256": "6f04b6990decd30cada6fdb5bdf8cefc4b64cbaa5c88eafe9b5f6eb810c25355"
+    },
+    "makepad_widgets/resources/icons/icon_image.svg": {
+      "bytes": 1381,
+      "sha256": "c72a2174638ad01484a417cbca3c553750c4248e5ea70879ad6dcc4f1c73104d"
+    },
+    "makepad_widgets/resources/icons/icon_layout.svg": {
+      "bytes": 1579,
+      "sha256": "0b5ac88625a3f3d69e53911b52a2abf9468203fd1c986ca536861afcf9735950"
+    },
+    "makepad_widgets/resources/icons/icon_select.svg": {
+      "bytes": 851,
+      "sha256": "374b732f376a1cbd3637e7b7b895a576708003787ee4c34a6b6e78855a1d5156"
+    },
+    "makepad_widgets/resources/icons/icon_text_align_justify.svg": {
+      "bytes": 1245,
+      "sha256": "b9b36f101a672da9be6361fa1dd4aa84eb0cf5aeb790cbe166645116e6a5014c"
+    },
+    "makepad_widgets/resources/icons/icon_text_align_left.svg": {
+      "bytes": 1242,
+      "sha256": "d624019d42eff133560f6951c75b9f1c1402c9489699c08494232a9126ecba3a"
+    },
+    "makepad_widgets/resources/icons/icon_text_align_right.svg": {
+      "bytes": 1241,
+      "sha256": "155c55c216aa1c284c4974772a972793efd112a2f1cadf112c35bcb1205c9659"
+    },
+    "makepad_widgets/resources/icons/icon_text.svg": {
+      "bytes": 1704,
+      "sha256": "40afe2d6a05fca94f131b07937ee68b28c3d1c7a7e8e21b3302c1c925d5a6c82"
+    },
+    "makepad_widgets/resources/icons/icon_typography.svg": {
+      "bytes": 1717,
+      "sha256": "6c3e56a42538d6d0e21e1298a27275a7f1441310877efaac2bdfbab46408c09d"
+    },
+    "makepad_widgets/resources/icons/icon_vector.svg": {
+      "bytes": 1760,
+      "sha256": "a04bd179f828767e3491305c89da2afc1e8e3cda7201e348ce9078387c82b5f9"
+    },
+    "makepad_widgets/resources/icons/icon_widget.svg": {
+      "bytes": 1238,
+      "sha256": "33e7a59d1485ec173618808791a259c02029c12ee700bc869a17a7b6278778bd"
+    },
+    "makepad_widgets/resources/icons/open_left_panel.svg": {
+      "bytes": 1892,
+      "sha256": "6709f838e74e285d7831ea16bf8d482e3ed8c677eea6d8ec7530506dbeba972a"
+    },
+    "makepad_widgets/resources/icons/sploded.svg": {
+      "bytes": 249,
+      "sha256": "4a16d4017caf3d1f6b290f8c389768419fe3feafa64551abd9542dfce13726c6"
+    },
+    "makepad_widgets/resources/Inter-OFL.txt": {
+      "bytes": 4376,
+      "sha256": "5dd548d31a85f756e01d63e00d7faf1e324103ed3e9102fcbbabf2cc2db6dd39"
+    },
+    "makepad_widgets/resources/LiberationMono-Regular.ttf": {
+      "bytes": 108168,
+      "sha256": "3e396ddd3d1c7d3dca1fb16dd64802b32f295f856ac10c0c1f2ab1c738196045"
+    },
+    "makepad_widgets/resources/LXGWWenKaiBold.ttf": {
+      "bytes": 18546748,
+      "sha256": "7a356605eb36c92e29cc64090e2856e4675694572a2ae4da84adbadffecae907"
+    },
+    "makepad_widgets/resources/LXGWWenKaiRegular.ttf": {
+      "bytes": 19073964,
+      "sha256": "0819604ad9357afbc6e7cc097328a16ed85143ee0848ffda09fda35a30da6506"
+    },
+    "makepad_widgets/resources/NewCMMath-Regular.otf": {
+      "bytes": 1151568,
+      "sha256": "ad746f5307fed53d8e5d7d201f5054abe73f1f47c51040767d898e3481c6e648"
+    },
+    "makepad_widgets/resources/NotoColorEmoji.ttf": {
+      "bytes": 10643852,
+      "sha256": "39ee3c587e10e89669b9ff32703261d10d5f9c4dd5ad147b6b5a1c5200591817"
+    },
+    "makepad_widgets/resources/RobotoFlex-OFL.txt": {
+      "bytes": 4394,
+      "sha256": "d6f40215beec57d46b0c7faa13b711f05dca9397727ac0627ced941232aad521"
+    },
+    "UPSTREAM.json": {
+      "bytes": 3831,
+      "sha256": "026c4b915afe2e0f2f89962d7ab745b2aabc6133143db5fe2b8e394581c4c3a6"
+    }
+  }
+}

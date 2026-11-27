@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "scope": "Two formatting replacements only; no native source or test result changes.",
+  "original_manifest": {
+    "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/rust_review/c2d-first-layer-proof-publication-v1/repository-entry-candidates.json",
+    "sha256": "8a6f3c7518c480a89460e801082091f8f952808f10d6b9c4cecafc64674351c8"
+  },
+  "replacement_proof": {
+    "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/c2d-evidence-original-gates-v1/formatted-candidates/source-plan-and-semantic-proof.json",
+    "sha256": "eaacbfa011dd1ebbfde4a291cf3b9d537e3942ebdd7f67018f98a6445c5759d0"
+  },
+  "replacements": [
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/c2d-control-source-union/restore.py",
+      "before": {
+        "bytes": 2488,
+        "sha256": "2e16a162ef4778a319e1875773a0634ef71b7fbb1fb4d26a2d65a84d410149de",
+        "gitBlob": "c54dd5ca950d6fa13a0a31bc97c5dba86026aabd"
+      },
+      "after": {
+        "bytes": 2563,
+        "sha256": "15c1f2de0a6dc974324ee88c61bbe9289607ed1dbacbdf25e61fd6bcc6886664",
+        "gitBlob": "e849c4bd7fa427b35c7f0bd18473057045550d5b"
+      },
+      "semantic_equality": true
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/c2d-control-source-union/restore-verification.json",
+      "before": {
+        "bytes": 632,
+        "sha256": "70c890df53b4898099e952a6aa81c5cd8ed9f029af62b05c5cf2a2e57074cd0b",
+        "gitBlob": "509bf51bce505ae144ff652216e7cb1737efaeec"
+      },
+      "after": {
+        "bytes": 612,
+        "sha256": "469594020cdbe27fe48e58916ad9e4cd191c45427ad989f50bb5545f5439a81d",
+        "gitBlob": "2de159cb50952d6388c896efca760b64a09f912e"
+      },
+      "semantic_equality": true
+    }
+  ],
+  "restoration": {
+    "originals": 356,
+    "all_bytes_verified": true,
+    "archive_sha256": "7cde4cf197f5d09e28d33429f73ff72e1d17eff444bc5ec38422c5eb009f5a6d"
+  },
+  "historical_validation": {
+    "original_44_entry_codespell": "PASS",
+    "original_prettier": "FAIL: restore-verification.json formatting",
+    "original_ruff": "FAIL: restore.py formatting",
+    "replacement_locked_checks": "PASS"
+  },
+  "preserved_originals": {
+    "file": "maintenance-originals.tar.gz",
+    "bytes": 17971,
+    "sha256": "c25b266eb7bd9231c0211c7ec220501054e0e4522fa26e0e21ed698c73f81596",
+    "sha": "0fed0b7d9acfba1bb67b50019147a783af40f867",
+    "count": 37,
+    "unique_objects": 30,
+    "format": "An independent gzip compressed tar containing originals-manifest.json and content objects. Verify every object digest before restoring the original paths."
+  },
+  "root_whole_commit_validation": "Separate required gate; these scoped checks do not replace it."
+}

@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.mem9.causal-contract-validation.v1",
+  "finished_at": "2026-11-12T00:37:44.587283+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "selector_source_sha256": "a335533f75545b3f7ef8349ba57801c5bdb8a7ae2d3a40ded1c52c925e15f807",
+  "dependency_source_sha256": "d242ec76144c41fa89906d3f56f85b5b6738220b606fc8b72beac27f3ee21a28",
+  "stages": [
+    {
+      "stage": "b1",
+      "source_sha256": "8f760ec357658702f5a340f377c861741570b7ac0b24a21f6b5d1fe537bc07e3",
+      "tests_sha256": "85c3d97280a4871d5f286fe3f4707e4deca4e4cc60020d108c48d2696b0497ea",
+      "tests_run": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "exact two-file in-memory Python projection; synthetic controls only; not whole repository or actual model/source execution",
+      "log": "test_authenticated_fixture_admits_only_protocol (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_authenticated_fixture_admits_only_protocol) ... ok\ntest_digest_without_trusted_observer_does_not_admit (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_digest_without_trusted_observer_does_not_admit) ... ok\ntest_malformed_and_nan_protocol_returns_hold (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_malformed_and_nan_protocol_returns_hold) ... ok\ntest_registration_does_not_cover_changed_plan (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_registration_does_not_cover_changed_plan) ... ok\ntest_unknown_source_and_boolean_budgets_fail_closed (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_unknown_source_and_boolean_budgets_fail_closed) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.002s\n\nOK\n"
+    },
+    {
+      "stage": "b2",
+      "source_sha256": "9d2ce7f4a62234842bf6519aac9aff684a4ca32b8e336189322a88a2a5aec993",
+      "tests_sha256": "eb6a49ba78c2363cfe2cd213c91a3ab1b29bd794e91b2230702ed7e0980f50d7",
+      "tests_run": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "exact two-file in-memory Python projection; synthetic controls only; not whole repository or actual model/source execution",
+      "log": "test_actual_retrieval_changes_and_failed_actor_are_separate (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_actual_retrieval_changes_and_failed_actor_are_separate) ... ok\ntest_authenticated_fixture_admits_only_protocol (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_authenticated_fixture_admits_only_protocol) ... ok\ntest_complete_fixture_is_scoring_input_never_benefit_or_adoption (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_complete_fixture_is_scoring_input_never_benefit_or_adoption) ... ok\ntest_cost_observation_cannot_move_between_cases_or_sessions (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_cost_observation_cannot_move_between_cases_or_sessions) ... ok\ntest_digest_without_trusted_observer_does_not_admit (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_digest_without_trusted_observer_does_not_admit) ... ok\ntest_early_reader_and_shared_history_rejected (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_early_reader_and_shared_history_rejected) ... ok\ntest_malformed_and_nan_protocol_returns_hold (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_malformed_and_nan_protocol_returns_hold) ... ok\ntest_provider_bytes_must_come_from_the_bound_actor (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_provider_bytes_must_come_from_the_bound_actor) ... ok\ntest_raw_bootstrap_and_memory_off_reject_contradictions (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_raw_bootstrap_and_memory_off_reject_contradictions) ... ok\ntest_raw_evidence_tampering_rejected (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_raw_evidence_tampering_rejected) ... ok\ntest_registration_does_not_cover_changed_plan (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_registration_does_not_cover_changed_plan) ... ok\ntest_request_replay_and_unknown_terminal_rejected (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_request_replay_and_unknown_terminal_rejected) ... ok\ntest_unframed_bootstrap_and_unbound_context_fail_closed (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_unframed_bootstrap_and_unbound_context_fail_closed) ... ok\ntest_unknown_bool_and_negative_costs_rejected (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_unknown_bool_and_negative_costs_rejected) ... ok\ntest_unknown_source_and_boolean_budgets_fail_closed (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_unknown_source_and_boolean_budgets_fail_closed) ... ok\ntest_unknown_synthetic_or_unsettled_model_is_not_counted (ndu_real_runtime.test_episodic_causal_contract.CausalContractTests.test_unknown_synthetic_or_unsettled_model_is_not_counted) ... ok\n\n----------------------------------------------------------------------\nRan 16 tests in 0.046s\n\nOK\n"
+    }
+  ],
+  "real_model_calls": 0,
+  "scored_episodes": 0,
+  "scientific_acceptance": "HOLD",
+  "files": {
+    "b1_source": {
+      "lines": 271,
+      "bytes": 9431,
+      "sha256": "8f760ec357658702f5a340f377c861741570b7ac0b24a21f6b5d1fe537bc07e3",
+      "format_changed_ast": false
+    },
+    "b1_tests": {
+      "lines": 167,
+      "bytes": 5963,
+      "sha256": "85c3d97280a4871d5f286fe3f4707e4deca4e4cc60020d108c48d2696b0497ea",
+      "format_changed_ast": false
+    },
+    "b2_source": {
+      "lines": 584,
+      "bytes": 22646,
+      "sha256": "9d2ce7f4a62234842bf6519aac9aff684a4ca32b8e336189322a88a2a5aec993",
+      "format_changed_ast": false
+    },
+    "b2_tests": {
+      "lines": 459,
+      "bytes": 17682,
+      "sha256": "eb6a49ba78c2363cfe2cd213c91a3ab1b29bd794e91b2230702ed7e0980f50d7",
+      "format_changed_ast": false
+    }
+  },
+  "stage_b2_delta": [
+    {
+      "file": "source",
+      "additions": 313,
+      "deletions": 0
+    },
+    {
+      "file": "tests",
+      "additions": 292,
+      "deletions": 0
+    }
+  ],
+  "github_blobs": {
+    "b1_source": {
+      "sha": "96557e80d4d29f0f1e9dcd30b0b230b3f962bbbd",
+      "same": true
+    },
+    "b1_tests": {
+      "sha": "e2ffba0b678ef9a77c94b07222e356c879fe0dec",
+      "same": true
+    },
+    "b2_source": {
+      "sha": "0f630767d4d312e5805add0c29697a8f7e19d0c3",
+      "same": true
+    },
+    "b2_tests": {
+      "sha": "adadc64a33cbeb051e16ce92832e78fa2b2d3e24",
+      "same": true
+    }
+  }
+}

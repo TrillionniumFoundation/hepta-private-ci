@@ -1,0 +1,173 @@
+{
+  "attribution_limit": "No allocation/time share is assigned to a particular array, score calculation, or function. No speedup or memory saving from an unimplemented optimization is claimed.",
+  "benchmark_inference_uses_torch_no_grad": true,
+  "evaluated_version": "Original frozen rr_full implementation; not the separate precision_repair implementation.",
+  "frozen_source_sha256": {
+    "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+    "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+    "policy_benchmark.py": "538db3796a1548d6920c2282367efeaf78f77489c84b083c7548f06a77a2235e"
+  },
+  "high_water_limit": "The two records reach about1.03GiB high-water RSS during warmup and show almost flat later high-water marks. High-water RSS is monotone by definition; this observation does not prove that live memory never grows or that all possible memory leaks are absent.",
+  "interpretation": "The reported CPU/latency/RSS belongs to the current audited implementation, which still computes training-related full-path statistics during inference. These measurements are not an intrinsic lower bound for all analytic neural operators or an optimized inference implementation.",
+  "method": "Static source inspection and read-only examination of already completed per-round resource records. No new actor, model execution, allocation profiler, or measurement was run.",
+  "new_actor_executed": false,
+  "new_profiling_performed": false,
+  "observed_completed_rr_rounds": [
+    {
+      "final_process_peak_rss_mib": 1056.80078125,
+      "policy_instances": 4096,
+      "pre_warmup_process_peak_rss_mib": 209.3984375,
+      "resource_quality": {
+        "attributed_to_this_policy": false,
+        "limit_event_deltas": {
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "status": "no_new_cgroup_limit_event_observed"
+      },
+      "result_path": "policy_benchmark_results/rr_full/seed_101/instances_4096.json",
+      "result_sha256": "aa62220ac42da2c0d1d98492a2db2f94157f6d35fa5b61a7e78c2f5e2c5dce45",
+      "round_high_water_marks": [
+        {
+          "index": 0,
+          "phase": "warmup",
+          "process_peak_rss_mib": 1052.85546875
+        },
+        {
+          "index": 1,
+          "phase": "warmup",
+          "process_peak_rss_mib": 1056.796875
+        },
+        {
+          "index": 0,
+          "phase": "measured",
+          "process_peak_rss_mib": 1056.796875
+        },
+        {
+          "index": 1,
+          "phase": "measured",
+          "process_peak_rss_mib": 1056.796875
+        },
+        {
+          "index": 2,
+          "phase": "measured",
+          "process_peak_rss_mib": 1056.796875
+        },
+        {
+          "index": 3,
+          "phase": "measured",
+          "process_peak_rss_mib": 1056.796875
+        },
+        {
+          "index": 4,
+          "phase": "measured",
+          "process_peak_rss_mib": 1056.80078125
+        }
+      ],
+      "training_seed": 101
+    },
+    {
+      "final_process_peak_rss_mib": 1054.78515625,
+      "policy_instances": 4096,
+      "pre_warmup_process_peak_rss_mib": 209.19921875,
+      "resource_quality": {
+        "attributed_to_this_policy": false,
+        "limit_event_deltas": {
+          "max": 3503,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "status": "shared_cgroup_pressure_observed"
+      },
+      "result_path": "policy_benchmark_results/rr_full/seed_211/instances_4096.json",
+      "result_sha256": "4341da8a686a3482ba5060e9599de98711ceba9cd9f53111ae82d61db05d8f21",
+      "round_high_water_marks": [
+        {
+          "index": 0,
+          "phase": "warmup",
+          "process_peak_rss_mib": 1054.5
+        },
+        {
+          "index": 1,
+          "phase": "warmup",
+          "process_peak_rss_mib": 1054.75
+        },
+        {
+          "index": 0,
+          "phase": "measured",
+          "process_peak_rss_mib": 1054.765625
+        },
+        {
+          "index": 1,
+          "phase": "measured",
+          "process_peak_rss_mib": 1054.78125
+        },
+        {
+          "index": 2,
+          "phase": "measured",
+          "process_peak_rss_mib": 1054.78125
+        },
+        {
+          "index": 3,
+          "phase": "measured",
+          "process_peak_rss_mib": 1054.78125
+        },
+        {
+          "index": 4,
+          "phase": "measured",
+          "process_peak_rss_mib": 1054.78515625
+        }
+      ],
+      "training_seed": 211
+    }
+  ],
+  "original_implementation_changed": false,
+  "protocol_sha256": "2e07736de24fc60c3520ee7d1bc70ebf987cd5ce309284fa21e8db4166bbe973",
+  "recorded_at_utc": "2026-10-29T16:46:47.164072+00:00",
+  "schema": "rrsnn-v4-frozen-inference-implementation-scope-1",
+  "static_observations": [
+    {
+      "function": "models.sample_interval",
+      "observation": "Generator is represented as dense [B,H,S,S]; the function creates a dense off-diagonal copy, dense transition probabilities and a dense cumulative probability table.",
+      "source_fragments": [
+        "off=matrices.copy()",
+        "probabilities=np.divide(off,rates[:,:,None],out=np.zeros_like(off),where=rates[:,:,None]>0)",
+        "cdf=probabilities.cumsum(-1)"
+      ]
+    },
+    {
+      "function": "models.sample_interval",
+      "observation": "Full-path sufficient statistics are allocated regardless of record_spikes: float64 dwell_times[paths,S] and int32 jump_counts[paths,S,S]. record_spikes gates the optional marked-event Python list, not these dense statistics.",
+      "source_fragments": [
+        "dwell=np.zeros((paths,s),dtype=np.float64)",
+        "transitions=np.zeros((paths,s,s),dtype=np.int32)",
+        "if record_spikes:"
+      ]
+    },
+    {
+      "function": "models.RRPolicy.step",
+      "observation": "The frozen step unconditionally calls interval_log_likelihood after sample_interval, including under inference without autograd; no inference-only branch skips this score computation.",
+      "source_fragments": [
+        "interval_score=interval_log_likelihood(q,sampled[\"jump_counts\"],sampled[\"dwell_times\"]).sum(-1)"
+      ]
+    },
+    {
+      "function": "models.interval_log_likelihood",
+      "observation": "The likelihood calculation constructs dense off-diagonal tensor arithmetic and converts jump counts to the generator dtype before log/sum arithmetic.",
+      "source_fragments": [
+        "off=q*(1-torch.eye(s,dtype=q.dtype,device=q.device))",
+        "n=torch.as_tensor(jump_counts,dtype=q.dtype,device=q.device)",
+        "n*off.clamp(min=1e-30).log()"
+      ]
+    },
+    {
+      "function": "models.RRPolicy.step",
+      "observation": "Observed input events additionally construct an operator remap matrix; this operation remains part of the measured model.step call.",
+      "source_fragments": [
+        "matrix,_=self.operator.remap_matrix(state.boundary.double(),controls[\"boundary\"].double(),controls[\"kick\"].double())"
+      ]
+    }
+  ],
+  "unmeasured_cost_shares_assigned": false
+}

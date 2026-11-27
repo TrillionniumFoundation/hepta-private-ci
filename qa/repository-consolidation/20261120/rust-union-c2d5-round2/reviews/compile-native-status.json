@@ -1,0 +1,47 @@
+{
+  "observed_at": "2026-11-20T03:49:14.159539+00:00",
+  "tools": {
+    "just": null,
+    "rustc": null,
+    "cargo": null,
+    "rustfmt": null
+  },
+  "source_is_partial_snapshot": true,
+  "tests": "NOT_RUN",
+  "rustfmt": "NOT_RUN",
+  "reason": "Required local Rust and just executables are unavailable; parent owns native jobs and no duplicate remote jobs were started.",
+  "commands_pending": [
+    [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-utils-time"
+    ],
+    [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-tui"
+    ],
+    [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-app-server"
+    ],
+    [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    [
+      "just",
+      "fmt"
+    ]
+  ]
+}

@@ -1,0 +1,7 @@
+# Candidate v4: report actual continuation work explicitly
+
+V3, its successful native 53-test/six-parent validation, source capsule and logs remain immutable. V4 changes reporting only. It removes the ambiguous `formal_fits_started: 0` field from the new C2 runner and controller.
+
+`fresh_independent_fits_started` remains zero because C2 resumes the fixed six original seed/LR chains. It is not a statement that no continuation work occurred. The runner records one `continuation_attempts_started` and its existing `new_main_updates` counter advances only after each optimizer step returns successfully. The controller keeps its existing actual process-launch count and now carries verified per-fit completed-update counts into a separate sum. Missing or invalid terminal evidence leaves the completed-update total as an explicit lower bound; it is never converted to a known zero. A failed phase with a valid report retains all its completed updates and costs.
+
+No model, optimization, recovery, input ordering, posterior recording, source/runtime gate, stopping rule or budget changes. The total cap remains43,200 seconds and the600-second finalization reserve remains inside it. The bound v3→v4 patch and SHA maps identify the exact reporting-only changes. A targeted tiny-model replay and reporting failure fixtures check the new fields; this is not another native preflight or a real C2 execution.

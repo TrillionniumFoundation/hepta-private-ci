@@ -1,5 +1,8 @@
 use std::collections::BTreeMap;
 
+#[path = "lane_b_bound.rs"]
+mod bound;
+
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 
@@ -59,6 +62,43 @@ pub struct RunSnapshot {
     pub generation: u64,
     pub fence_digest: String,
     pub deadline_ms: u64,
+}
+
+impl RunSnapshot {
+    /// Project the original durable admission without consulting current owner
+    /// state. The caller must separately authenticate and revalidate the record.
+    pub(crate) fn from_run_start(record: &RunStartRecordV1) -> Result<Self, AgentRunError> {
+        if record.objective_function_v1_digest.is_zero()
+            || record.objective_function_v1_bytes.is_empty()
+        {
+            return Err(AgentRunError::InvalidRunStart(
+                "canonical ObjectiveFunctionV1 identity",
+            ));
+        }
+        if record.disposition != RunStartObjectiveDispositionV1::Compiled {
+            return Err(AgentRunError::InvalidRunStart("objective disposition"));
+        }
+        if record.admission.authority.grants_any() {
+            return Err(AgentRunError::InvalidRunStart("authority"));
+        }
+        let deadline_ms = record
+            .admission
+            .deadline_unix_micros
+            .checked_add(999)
+            .map(|value| value / 1_000)
+            .ok_or(AgentRunError::ArithmeticOverflow)?;
+        Ok(Self {
+            run_id: record.snapshot.run_id.to_string(),
+            request_digest: record.admission.admitted_source_digest.to_string(),
+            objective_digest: record.snapshot.objective_digest.to_string(),
+            body_digest: record.runtime_body_digest.to_string(),
+            artifact_set_digest: record.snapshot.artifact_set_digest.to_string(),
+            authority_epoch: record.snapshot.authority_epoch,
+            generation: record.snapshot.generation,
+            fence_digest: record.snapshot.fence_digest.to_string(),
+            deadline_ms,
+        })
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -133,6 +173,7 @@ pub enum AgentRunError {
 #[derive(Clone, Debug)]
 struct RunRecord {
     snapshot: RunSnapshot,
+    incarnation: u64,
     revision: u64,
     phase: RunPhase,
     context_digest: Option<String>,
@@ -153,6 +194,7 @@ pub struct AgentRunCoordinator {
     runs: BTreeMap<String, RunRecord>,
     accepting_runs: bool,
     max_active_runs: usize,
+    admission_sequence: u64,
 }
 
 impl AgentRunCoordinator {
@@ -172,6 +214,7 @@ impl AgentRunCoordinator {
             runs: BTreeMap::new(),
             accepting_runs: true,
             max_active_runs,
+            admission_sequence: 0,
         })
     }
 
@@ -205,8 +248,13 @@ impl AgentRunCoordinator {
         if self.active_run_count() >= self.max_active_runs || self.runs.len() >= MAX_RETAINED_RUNS {
             return Err(AgentRunError::CapacityExceeded);
         }
+        let incarnation = self
+            .admission_sequence
+            .checked_add(1)
+            .ok_or(AgentRunError::ArithmeticOverflow)?;
         let record = RunRecord {
             snapshot: snapshot.clone(),
+            incarnation,
             revision: 1,
             phase: RunPhase::Admitted,
             context_digest: None,
@@ -216,6 +264,7 @@ impl AgentRunCoordinator {
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(snapshot.run_id, record);
+        self.admission_sequence = incarnation;
         Ok(result)
     }
 
@@ -228,39 +277,7 @@ impl AgentRunCoordinator {
         now_ms: u64,
         record: &RunStartRecordV1,
     ) -> Result<RunReceipt, AgentRunError> {
-        if record.objective_function_v1_digest.is_zero()
-            || record.objective_function_v1_bytes.is_empty()
-        {
-            return Err(AgentRunError::InvalidRunStart(
-                "canonical ObjectiveFunctionV1 identity",
-            ));
-        }
-        if record.disposition != RunStartObjectiveDispositionV1::Compiled {
-            return Err(AgentRunError::InvalidRunStart("objective disposition"));
-        }
-        if record.admission.authority.grants_any() {
-            return Err(AgentRunError::InvalidRunStart("authority"));
-        }
-        let deadline_ms = record
-            .admission
-            .deadline_unix_micros
-            .checked_add(999)
-            .map(|value| value / 1_000)
-            .ok_or(AgentRunError::ArithmeticOverflow)?;
-        self.start_run(
-            now_ms,
-            RunSnapshot {
-                run_id: record.snapshot.run_id.to_string(),
-                request_digest: record.admission.admitted_source_digest.to_string(),
-                objective_digest: record.snapshot.objective_digest.to_string(),
-                body_digest: record.runtime_body_digest.to_string(),
-                artifact_set_digest: record.snapshot.artifact_set_digest.to_string(),
-                authority_epoch: record.snapshot.authority_epoch,
-                generation: record.snapshot.generation,
-                fence_digest: record.snapshot.fence_digest.to_string(),
-                deadline_ms,
-            },
-        )
+        self.start_run(now_ms, RunSnapshot::from_run_start(record)?)
     }
 
     pub fn attach_context(
@@ -297,10 +314,10 @@ impl AgentRunCoordinator {
         if record.phase != RunPhase::Admitted {
             return Err(AgentRunError::InvalidTransition);
         }
+        advance_revision(record)?;
         record.context_digest = Some(attachment.context_digest);
         record.compilation_receipt_digest = Some(attachment.compilation_receipt_digest);
         record.phase = RunPhase::ContextAttached;
-        advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
     }
 
@@ -326,8 +343,8 @@ impl AgentRunCoordinator {
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
         }
-        record.phase = RunPhase::Dispatched;
         advance_revision(record)?;
+        record.phase = RunPhase::Dispatched;
         Ok(receipt(record, /*idempotent*/ false))
     }
 
@@ -357,16 +374,17 @@ impl AgentRunCoordinator {
 
         let disposition = match record.phase {
             RunPhase::Admitted | RunPhase::ContextAttached => {
+                advance_revision(record)?;
                 record.phase = RunPhase::Cancelled;
                 record.cancel_reason = Some(reason.to_string());
-                advance_revision(record)?;
                 CancellationDisposition::CancelledBeforeDispatch
             }
             RunPhase::Dispatched => {
+                let ack_deadline = cancel_ack_deadline(now_ms)?;
+                advance_revision(record)?;
                 record.phase = RunPhase::Cancelling;
                 record.cancel_reason = Some(reason.to_string());
-                record.cancel_ack_deadline_ms = Some(cancel_ack_deadline(now_ms)?);
-                advance_revision(record)?;
+                record.cancel_ack_deadline_ms = Some(ack_deadline);
                 CancellationDisposition::CancellingAfterDispatch
             }
             RunPhase::Cancelling => {
@@ -421,9 +439,11 @@ impl AgentRunCoordinator {
         } else if phase != RunPhase::Indeterminate {
             return Err(AgentRunError::TerminalObservationRequired);
         }
+        // A rejected observation must leave the retained unresolved record
+        // intact, including its capacity hold and non-redispatchable phase.
+        advance_revision(record)?;
         record.phase = phase;
         record.cancel_ack_deadline_ms = None;
-        advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
     }
 
@@ -449,8 +469,13 @@ impl AgentRunCoordinator {
         if self.active_run_count() >= self.max_active_runs || self.runs.len() >= MAX_RETAINED_RUNS {
             return Err(AgentRunError::CapacityExceeded);
         }
+        let incarnation = self
+            .admission_sequence
+            .checked_add(1)
+            .ok_or(AgentRunError::ArithmeticOverflow)?;
         let record = RunRecord {
             snapshot: recovery.snapshot,
+            incarnation,
             revision: recovery.revision,
             phase: RunPhase::Indeterminate,
             context_digest: Some(recovery.context_digest),
@@ -460,16 +485,18 @@ impl AgentRunCoordinator {
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(run_id, record);
+        self.admission_sequence = incarnation;
         Ok(result)
     }
 
     pub fn expire_deadlines(&mut self, now_ms: u64) -> Result<usize, AgentRunError> {
         let mut changed = 0usize;
         for record in self.runs.values_mut() {
+            let next_changed = changed
+                .checked_add(1)
+                .ok_or(AgentRunError::ArithmeticOverflow)?;
             if expire_record(record, now_ms)? {
-                changed = changed
-                    .checked_add(1)
-                    .ok_or(AgentRunError::ArithmeticOverflow)?;
+                changed = next_changed;
             }
         }
         Ok(changed)
@@ -484,15 +511,16 @@ impl AgentRunCoordinator {
             }
             match record.phase {
                 RunPhase::Admitted | RunPhase::ContextAttached => {
+                    advance_revision(record)?;
                     record.phase = RunPhase::Cancelled;
                     record.cancel_reason = Some(reason.to_string());
-                    advance_revision(record)?;
                 }
                 RunPhase::Dispatched => {
+                    let ack_deadline = cancel_ack_deadline(now_ms)?;
+                    advance_revision(record)?;
                     record.phase = RunPhase::Cancelling;
                     record.cancel_reason = Some(reason.to_string());
-                    record.cancel_ack_deadline_ms = Some(cancel_ack_deadline(now_ms)?);
-                    advance_revision(record)?;
+                    record.cancel_ack_deadline_ms = Some(ack_deadline);
                 }
                 RunPhase::Cancelling
                 | RunPhase::Cancelled
@@ -509,15 +537,16 @@ impl AgentRunCoordinator {
         let mut changed = 0usize;
         for record in self.runs.values_mut() {
             if matches!(record.phase, RunPhase::Dispatched | RunPhase::Cancelling) {
+                let next_changed = changed
+                    .checked_add(1)
+                    .ok_or(AgentRunError::ArithmeticOverflow)?;
+                advance_revision(record)?;
                 record.phase = RunPhase::Indeterminate;
                 record.cancel_ack_deadline_ms = None;
                 if record.cancel_reason.is_none() {
                     record.cancel_reason = Some(reason.to_string());
                 }
-                advance_revision(record)?;
-                changed = changed
-                    .checked_add(1)
-                    .ok_or(AgentRunError::ArithmeticOverflow)?;
+                changed = next_changed;
             }
         }
         Ok(changed)
@@ -543,6 +572,16 @@ impl AgentRunCoordinator {
         self.runs
             .get(run_id)
             .map(|record| receipt(record, /*idempotent*/ false))
+    }
+
+    pub(crate) fn run_observation(&self, run_id: &str) -> Option<(RunSnapshot, u64, RunReceipt)> {
+        self.runs.get(run_id).map(|record| {
+            (
+                record.snapshot.clone(),
+                record.incarnation,
+                receipt(record, /*idempotent*/ false),
+            )
+        })
     }
 
     pub fn active_run_count(&self) -> usize {
@@ -678,9 +717,9 @@ fn expire_record(record: &mut RunRecord, now_ms: u64) -> Result<bool, AgentRunEr
             .cancel_ack_deadline_ms
             .is_some_and(|deadline| deadline <= now_ms)
     {
+        advance_revision(record)?;
         record.phase = RunPhase::Indeterminate;
         record.cancel_ack_deadline_ms = None;
-        advance_revision(record)?;
         return Ok(true);
     }
     if record.snapshot.deadline_ms > now_ms {
@@ -688,16 +727,17 @@ fn expire_record(record: &mut RunRecord, now_ms: u64) -> Result<bool, AgentRunEr
     }
     match record.phase {
         RunPhase::Admitted | RunPhase::ContextAttached => {
+            advance_revision(record)?;
             record.phase = RunPhase::Cancelled;
             record.cancel_reason = Some(DEADLINE_CANCEL_REASON.to_string());
-            advance_revision(record)?;
             Ok(true)
         }
         RunPhase::Dispatched => {
+            let ack_deadline = cancel_ack_deadline(now_ms)?;
+            advance_revision(record)?;
             record.phase = RunPhase::Cancelling;
             record.cancel_reason = Some(DEADLINE_CANCEL_REASON.to_string());
-            record.cancel_ack_deadline_ms = Some(cancel_ack_deadline(now_ms)?);
-            advance_revision(record)?;
+            record.cancel_ack_deadline_ms = Some(ack_deadline);
             Ok(true)
         }
         RunPhase::Cancelling
@@ -714,6 +754,7 @@ fn cancel_ack_deadline(now_ms: u64) -> Result<u64, AgentRunError> {
         .ok_or(AgentRunError::ArithmeticOverflow)
 }
 
+// Validate all other fallible inputs before committing this record revision.
 fn advance_revision(record: &mut RunRecord) -> Result<(), AgentRunError> {
     record.revision = record
         .revision
@@ -743,3 +784,7 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
 #[cfg(test)]
 #[path = "lane_b_runtime_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "lane_b_runtime_fault_tests.rs"]
+mod fault_tests;

@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.ordered-artifact-parts.v1",
+  "archive_name": "continuation-02-recovery.tar.xz",
+  "archive_bytes": 596784,
+  "archive_sha256": "d5f3ab431dcb4de41256f94bddf64e0bed0c2d9091ddb430b5cb4472d0045017",
+  "original_repository_path": "qualification/memory-cell-mem12-native-recovered-20261112/continuation-02-recovery.tar.xz",
+  "original_git_commit": "a5ca2bae54d0bca65e72f1920f8157f44b5a4fb8",
+  "original_git_blob": "21682a78f1f47d94c8d94b3585cf1b719213e0d3",
+  "max_part_bytes": 500000,
+  "ordered_parts": [
+    {
+      "path": "continuation-02-recovery.tar.xz.part000",
+      "offset": 0,
+      "bytes": 500000,
+      "sha256": "bace2fbd8e3f549f26773944697f64af08008ed5cd4e17e3c4efac901298b780"
+    },
+    {
+      "path": "continuation-02-recovery.tar.xz.part001",
+      "offset": 500000,
+      "bytes": 96784,
+      "sha256": "3b1ea8a04cfae3df432cb93e1be037e5804adf915f546f46a18c27e8aa3e88c4"
+    }
+  ],
+  "restoration": {
+    "working_directory": "qualification/memory-cell-mem12-native-recovered-20261112",
+    "command": "( set -C; cat continuation-02-recovery.tar.xz.part000 continuation-02-recovery.tar.xz.part001 > continuation-02-recovery.tar.xz )",
+    "verification_command": "printf '%s  %s\\n' 'd5f3ab431dcb4de41256f94bddf64e0bed0c2d9091ddb430b5cb4472d0045017' 'continuation-02-recovery.tar.xz' | sha256sum -c -",
+    "no_overwrite": true,
+    "instructions": "../memory-cell-archive-storage-20261115/README.md"
+  },
+  "storage_only": true,
+  "compression_bytes_unchanged": true
+}

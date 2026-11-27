@@ -1,0 +1,459 @@
+{
+  "schema": "hepta.ordinary-round2-overlap-source-review.v1",
+  "status": "TIME_UNION_PREPARED_IN_SEPARATE_STAGE03; FORMATTER_FOURTH_RECORD_UNION_HANDOFF_PENDING",
+  "input_head": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "review_scope": "Complete nine-path before/after source comparison, exact native artifact evidence, Python AST preservation, and complementary test inventory. No Rust compilation/native execution or new Python test run.",
+  "ownership": "Root owns ordinary repair PR6773 only. Original recovery dependency_repair retains integration/main publisher ownership. All HIA and held C2D production scope remain untouched.",
+  "publication_boundary": "The previously frozen32 source paths plus root-authorized isolated timestamp stage03 only. Do not expand this round to the fourth formatter record or modify either owner's FROZEN artifacts.",
+  "original_time_frozen": {
+    "path": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/FROZEN.json",
+    "bytes": 5417,
+    "sha256": "97baa8363a5a2d2363c41f0118dafecb25ce2aad752e0206c98b42e8c012a1e2",
+    "git_blob": "ab9658a7da9c62153cd1dd4a664759f114dc7849"
+  },
+  "time_nine_findings": {
+    "base_bytes_equal_all_nine": true,
+    "base_assertion_macro_bodies_preserved_both": 602,
+    "all_base_test_names_preserved_both": true,
+    "exact_after_equal_paths": 1,
+    "layout_only_paths": 3,
+    "error_or_fixture_error_policy_paths": 3,
+    "same_method_body_doc_only_path": 1,
+    "test_union_path": 1,
+    "to_system_time_body_sha256": "ccc3ffefae9970511f1049a165bb51987011e831d06d82b84a2207b80b40d79d",
+    "lexical_review_limit": "Exact source-byte and balanced Rust lexical macro review, not compiler AST or native test execution"
+  },
+  "time_nine_paths": [
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor_tests.rs",
+      "same_base": true,
+      "base": {
+        "bytes": 57628,
+        "sha256": "1d8aceada0f8a994b80d1da351e0caa1100f19fa0283d6cef6d46049686c4493",
+        "git_blob": "2b608ef0738f54c455565866e92d90e66e480156"
+      },
+      "original_owner_after": {
+        "bytes": 57788,
+        "sha256": "bcd5beb67c99de5c74c436014ce6797dba4a00ce0bd3cd90ee830a8a7638d6c9",
+        "git_blob": "d5f05481849b7441e17de109a67efed59ce184b1"
+      },
+      "our_after": {
+        "bytes": 57788,
+        "sha256": "bcd5beb67c99de5c74c436014ce6797dba4a00ce0bd3cd90ee830a8a7638d6c9",
+        "git_blob": "d5f05481849b7441e17de109a67efed59ce184b1"
+      },
+      "after_equal": true,
+      "original_owner_after_file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/app-server/src/request_processors/thread_processor_tests.rs",
+      "our_after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage01/after/codex-rs/app-server/src/request_processors/thread_processor_tests.rs",
+      "classification": "BYTE_IDENTICAL",
+      "reason": "Same explicit fallible Timestamp conversion, failure message and existing fixture assertions.",
+      "union_decision": "Keep the common afterimage; no union edit."
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/rollout.rs",
+      "same_base": true,
+      "base": {
+        "bytes": 13043,
+        "sha256": "e7f90d29886a4a801629903cdea4b8fc719655afbd1f1a9b80131b717af609f2",
+        "git_blob": "58925ef00fe2ff3dff237e22cf47cfd59d725c31"
+      },
+      "original_owner_after": {
+        "bytes": 12603,
+        "sha256": "dff9beb33752ad82fc3fc2e00790dc6c17c4ad29224074601deb8c556921ada6",
+        "git_blob": "05fdbcc137f1b5eff43c0ca4b2457ba8f42df09e"
+      },
+      "our_after": {
+        "bytes": 12605,
+        "sha256": "e8c283c6de59478c47b170f8c64a0d022ef940fbacd82196acae93749ccf7c22",
+        "git_blob": "28365554da578b5723e0a2baffd5788b4e093664"
+      },
+      "after_equal": false,
+      "original_owner_after_file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/app-server/tests/common/rollout.rs",
+      "our_after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage01/after/codex-rs/app-server/tests/common/rollout.rs",
+      "classification": "LAYOUT_ONLY",
+      "reason": "Exact same method chain, anyhow error expression and file-time operation; only line breaks around the call differ.",
+      "union_decision": "Keep current round2; retain the existing one Rust test with three real mtime cases, whose separate formatter change is identical in both owners."
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_list.rs",
+      "same_base": true,
+      "base": {
+        "bytes": 78551,
+        "sha256": "c6857cb225112f97590ebd4c07ca20680ed27c212059a104e7507f089d7f41ef",
+        "git_blob": "60a8683da6529cba031112483555f9a800a5bff2"
+      },
+      "original_owner_after": {
+        "bytes": 78699,
+        "sha256": "4d7996e4a0a2460ae2bb63859573bd8b4b8c97135d1b13e850cf501776041606",
+        "git_blob": "77d3eba9824b5b7b138294ac33bf8815200bbb4c"
+      },
+      "our_after": {
+        "bytes": 78701,
+        "sha256": "ec8a2104c2982a68f3e7c90a02f9a1c40ed8cf7bf8196e0a3f1e2d3a6daf283a",
+        "git_blob": "73134fa2d2a1af3ba17e30749f382a29b4c8f8ce"
+      },
+      "after_equal": false,
+      "original_owner_after_file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/app-server/tests/suite/v2/thread_list.rs",
+      "our_after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage01/after/codex-rs/app-server/tests/suite/v2/thread_list.rs",
+      "classification": "LAYOUT_ONLY",
+      "reason": "Exact same method call/error expression and file-time operation; only line breaks differ.",
+      "union_decision": "Keep current round2; final formatter remains a gate."
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "same_base": true,
+      "base": {
+        "bytes": 194711,
+        "sha256": "57bb68e35b7cf9d727cf794c4a25fd1e9f43705beb2cc627155e2057a3799716",
+        "git_blob": "a13ae5ee872d9ac889c1ee2f0a4d393cf9286a2a"
+      },
+      "original_owner_after": {
+        "bytes": 194859,
+        "sha256": "924a08fc14778b1093940976585541b6106f93fb062d2aa57fce533978464882",
+        "git_blob": "024c0692a009eec5feaaa5da5653de35be1747a0"
+      },
+      "our_after": {
+        "bytes": 194861,
+        "sha256": "a0df96d0717a0c0c026586138585f01ea5cd1ba7bff5303571291f98201234c7",
+        "git_blob": "efc0c62ce6326637e5626f943375197035973cd3"
+      },
+      "after_equal": false,
+      "original_owner_after_file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "our_after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage01/after/codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "classification": "LAYOUT_ONLY",
+      "reason": "Exact same method call/error expression and file-time operation; only line breaks differ.",
+      "union_decision": "Keep current round2; final formatter remains a gate."
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "same_base": true,
+      "base": {
+        "bytes": 123162,
+        "sha256": "3a3f1ef5cf36644c4babcad44fd487b07ec26dec0aad33af8c2d1ef5fc42b5b5",
+        "git_blob": "7400fdb968a00926b979ddcd2c6dadb66befb741"
+      },
+      "original_owner_after": {
+        "bytes": 123322,
+        "sha256": "df305063fd62dd3cf58d4cbc1c299fc0c0583d4af182525d74cf9307d2c5df53",
+        "git_blob": "3701adebc71327505ab3f9e482d7c4224eb1c88a"
+      },
+      "our_after": {
+        "bytes": 123328,
+        "sha256": "fe41a089e5d3046c23258cf1739133f0bc797ff0f7117e3767986e1e7f7dce79",
+        "git_blob": "bde176578cba8f8dc7890c2a3f85574460e19c2e"
+      },
+      "after_equal": false,
+      "original_owner_after_file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/tui/src/lib.rs",
+      "our_after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage01/after/codex-rs/tui/src/lib.rs",
+      "classification": "ERROR_TYPE_CORRECTION",
+      "reason": "The helper returns color_eyre::Result. Original-owner afterimage uses anyhow::anyhow! followed by ?; current round2 uses std::io::Error::other at the exact same failure point and message.",
+      "union_decision": "Keep reviewed standard I/O error conversion; do not reintroduce the incompatible anyhow-to-eyre error path. This is source review, not an observed compiler run of the original-owner candidate."
+    },
+    {
+      "path": "codex-rs/tui/src/named_session_lookup_tests.rs",
+      "same_base": true,
+      "base": {
+        "bytes": 16029,
+        "sha256": "5ac4140ae08101f648b4d042d1d259bd5190a9b36e1f624d8b69803bbd90bb5d",
+        "git_blob": "9a218d14b3e8e4030bceb8229ae876837a5a2f66"
+      },
+      "original_owner_after": {
+        "bytes": 16351,
+        "sha256": "888cbdde04632c6c374a9b1e82453c6331002f1af5296145d817ab17ace9eb15",
+        "git_blob": "e884c42df7ed9eca472bc099f574ae13aa0a2cb4"
+      },
+      "our_after": {
+        "bytes": 16363,
+        "sha256": "8bcdb53279c475dcb091a9df27b4a4a681c5d5cdce9c056de566a15cf219b12b",
+        "git_blob": "5904c01a8f4edd2bd164cabe50fce05c011303de"
+      },
+      "after_equal": false,
+      "original_owner_after_file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/tui/src/named_session_lookup_tests.rs",
+      "our_after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage01/after/codex-rs/tui/src/named_session_lookup_tests.rs",
+      "classification": "ERROR_TYPE_CORRECTION",
+      "reason": "Both changed tests return color_eyre::Result. Original-owner afterimages use anyhow::anyhow! with ?; current round2 uses std::io::Error::other. All inputs/assertions/mtime operations otherwise equal.",
+      "union_decision": "Keep reviewed current round2 errors at both sites."
+    },
+    {
+      "path": "codex-rs/tui/src/session_archive_commands_tests.rs",
+      "same_base": true,
+      "base": {
+        "bytes": 15300,
+        "sha256": "a5d9a609a679af73d0e4d9c9f7d1b2ddadc4d749425f5c381015a387f867086c",
+        "git_blob": "f864858c50b7a67555aef8e6a9e61076167f2fb8"
+      },
+      "original_owner_after": {
+        "bytes": 15592,
+        "sha256": "fd2eaf6b320c63c123d612d35220322140e5634a3627170e5a0c47585aa1552d",
+        "git_blob": "bada156ced441b5e01b8f519bceab64b9d2a42bf"
+      },
+      "our_after": {
+        "bytes": 15531,
+        "sha256": "49494245579ce28b44077d52d25b5775f5d7d5bb8f1fb7a3dabcc2bcdfd963f3",
+        "git_blob": "6bdeb9d1408e9b6eaf4b1ff0f42f32face01c7f8"
+      },
+      "after_equal": false,
+      "original_owner_after_file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/tui/src/session_archive_commands_tests.rs",
+      "our_after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage01/after/codex-rs/tui/src/session_archive_commands_tests.rs",
+      "classification": "FIXTURE_FAILURE_POLICY",
+      "reason": "Both use existing checked_add(one hour) with identical fixture values and order. Original-owner turns None into anyhow errors and propagates from a color_eyre::Result test; current round2 explicitly expects both fixed fixture timestamps to be representable.",
+      "union_decision": "Keep current expect assertions: they fail the test on invalid fixture arithmetic, never use a fallback or bypass. No production API or original lookup/archive assertion differs."
+    },
+    {
+      "path": "codex-rs/utils/time/src/lib.rs",
+      "same_base": true,
+      "base": {
+        "bytes": 14793,
+        "sha256": "6a526157aaa3ec685d177aae7f268cecd6dd2943cd0f08c34bcc219866f468f3",
+        "git_blob": "ada3d522975c221122fd2df318d98075c72143fd"
+      },
+      "original_owner_after": {
+        "bytes": 15559,
+        "sha256": "1ba7e8fc5677abee9b0a4cc284dcf9f359e99f22c8bcba3749fc6eed33a80530",
+        "git_blob": "068c4daf0beaaa6330eac5b2455dd64fc0745925"
+      },
+      "our_after": {
+        "bytes": 15473,
+        "sha256": "a1e49c21db9ee909b7720c17488b472e2b8d1c55bd6c4c7c016084a3908f689d",
+        "git_blob": "da9eefdc92e9e1e29a23d99b2b31a0a3291501fd"
+      },
+      "after_equal": false,
+      "original_owner_after_file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/utils/time/src/lib.rs",
+      "our_after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage01/after/codex-rs/utils/time/src/lib.rs",
+      "classification": "METHOD_BODY_BYTE_IDENTICAL",
+      "reason": "to_system_time has the exact same function body: signed i128 total nanoseconds, unsigned normalized Duration and one platform checked epoch add/sub. Only documentation wrapping/wording differs.",
+      "union_decision": "Keep current round2 implementation; no duplicate API or conversion required."
+    },
+    {
+      "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+      "same_base": true,
+      "base": {
+        "bytes": 6211,
+        "sha256": "e9b0f4c037bba5f1ba7813e8c8f54845f6d0657b5e24d6a1a3e7b2f497165eb7",
+        "git_blob": "6f174dd0722f9bb8c3bbdb244b5396b3aa5ead25"
+      },
+      "original_owner_after": {
+        "bytes": 7145,
+        "sha256": "0776fd63095f2c186c0b8b0d124a82e7f29ee5dc903d497589bba325916962d6",
+        "git_blob": "cd60e3aaf9aa0166769d59ab9f9efe36dcdb456c"
+      },
+      "our_after": {
+        "bytes": 10657,
+        "sha256": "dc10c11e9401fe882ae2e737ad033e7c8fc0d18222764369d303861dae83da95",
+        "git_blob": "f87d8dd948cb88b87ffa4bd0124e427032f1a420"
+      },
+      "after_equal": false,
+      "original_owner_after_file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/utils/time/src/timestamp_tests.rs",
+      "our_after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage02/after/codex-rs/utils/time/src/timestamp_tests.rs",
+      "classification": "ADDITIVE_TEST_UNION_REQUIRED",
+      "reason": "Original-owner adds one five-case regression; current stage01 adds three utility regressions and stage02 repairs the actual Windows 1ns-clock expectation while retaining Timestamp 1ns assertions,100ns negative round-trip and unconditional actual-precision 1ns coverage. The original-owner five-case test contains three additional exact input vectors.",
+      "union_decision": "Stage03 appends the entire original-owner added test, byte-for-byte, to the complete stage02 module. Both sets of tests/inputs remain; no import or name conflict."
+    }
+  ],
+  "stage03_union": {
+    "manifest": {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage03/changed-files.json",
+      "bytes": 746,
+      "sha256": "1dbd6d00d4fa612d74a1ea2c0937e1eb45432abef9af71714297c12f932730ef"
+    },
+    "patch": {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage03/timestamp-test-union.patch",
+      "bytes": 1164,
+      "sha256": "2848eea1d60cd82a9fbc6580898fcd7da9a05b1f2d6426c3312d9ea65c0a78ce"
+    },
+    "report": {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage03/REPORT.json",
+      "bytes": 3810,
+      "sha256": "6a5ec1505923f38c2ea7223a4bdac495650dcbea99ab15aba7f6e22364957c83"
+    },
+    "before_git_blob": "f87d8dd948cb88b87ffa4bd0124e427032f1a420",
+    "after_git_blob": "06dfc4157651fe72d23400bb834e15278633724b",
+    "after_sha256": "f702e0efc037b79c4553dab223902d00385bc53f33baaa4260466b36e53a9655",
+    "complete_stage02_prefix_unchanged": true,
+    "original_owner_added_test_suffix_exact_bytes": 934,
+    "original_owner_added_test_suffix_sha256": "848a5c130be9e3800cf9cdbcb5f71cdaa204d04357a1cec65517febfafe84bc8",
+    "new_test_declarations": 1,
+    "loop_cases": 5,
+    "assertion_macro_bodies_added": 1,
+    "test_name": "system_time_conversion_preserves_signed_fraction_and_normalizes_leap_seconds",
+    "imports_or_name_collisions": false,
+    "patch_applicability_exit_code": 0,
+    "native_tests": "NOT_RUN",
+    "rustfmt": "NOT_RUN"
+  },
+  "active_five_and_tamper": {
+    "original_frozen": {
+      "file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/active-format-and-tamper-stage01/FROZEN.json",
+      "bytes": 3850,
+      "sha256": "93fd79854d71ca1d7926e20b44032065182ce14ec9db0cbe4fd841cadab5d490",
+      "git_blob": "107b1d07fff5245439129f5a2748639847932ad0"
+    },
+    "active_five_afterimages_byte_identical": true,
+    "tamper": {
+      "original_owner_blob": "df0a2911ea0770f2d0b4154cdf35efdb5daad255",
+      "current_round2_blob": "5972d5726ebd32aca815887cb3cf1e0e9048094f",
+      "entire_python_AST_equal_ignoring_locations": true,
+      "all_six_test_function_bodies_and_corrupt_AST_string_values_preserved": true,
+      "decision": "Keep the already locked-Ruff-formatted current round2 afterimage. No semantic union edit needed."
+    }
+  },
+  "formatter_handoff": {
+    "owner": "Original main recovery integration/source-union owner; coordinate with original branch_audit. No competing guard rewrite in this round.",
+    "original_frozen": {
+      "file": "/tmp/hepta-branch-audit-ci-20261120-7246/continuation-formatter-custody-stage01/FROZEN.json",
+      "bytes": 13508,
+      "sha256": "adf9a144b44d4398393fb20eb8e77712ffb616617aad53022a4a001ca7281285"
+    },
+    "source_difference": "Current round2 registers exactly the three actually rewritten broker records in the existing original-evidence map under one fixed broker prefix. Original owner keeps the two-record map and adds a separate four-record continuation map with a separate fixed prefix. Both use explicit exact paths, sizes and SHA256 and retain the original physical/path guards; neither is a blanket subtree exclusion.",
+    "fourth_record": {
+      "path": "qualification/main-consolidation/historical-continuations/continuation-20261021/research/reader-2969/source/codex-rs/hepta-ndu/src/recursive.rs",
+      "tar_mode": "0o644",
+      "bytes": 5219,
+      "sha256": "8f5b71cbbc217d4b07a0d4797944eedf5d3c3bd3884cd6fbcb304a48318102fb",
+      "git_blob": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d",
+      "artifact_matches_original_owner_fixture": true
+    },
+    "fourth_record_source": {
+      "artifact": {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/mem-native-73a96f-artifact.zip",
+        "bytes": 10399092,
+        "sha256": "7f5bb0059a224bae67b1452bb5f01698e5286f6ad23b5fa4783042a761cde7c0",
+        "git_blob": "40f6ce186eb924396b81274a95ae1718d07bd69f"
+      },
+      "artifact_id": 14598052955,
+      "run_id": 44667479178,
+      "job_id": 136060200446,
+      "archive_member": "changed-source-before.tar.gz",
+      "original_manifest": {
+        "path": "qualification/main-consolidation/historical-continuations/continuation-20261021/MANIFEST.json",
+        "bytes": 70056,
+        "sha256": "416c48d29d1f5359ee154b3e491f98fe43301942abc3e7e2bb3679f4d13b12b3",
+        "git_blob": "03b03a82a251aa50be39aa3f117a6cb32a1fc007"
+      },
+      "independent_read_this_review": "The four original Rust byte sequences and complete original MANIFEST were read directly from the actual head73 ZIP member and exactly compared to the original-owner fixtures; no formatted output was treated as original evidence.",
+      "original_owner_larger_proof": "The original-owner artifact-capsule-original-byte-proof.json independently records all263 payloads plus manifest and subtree d7840f4325fa2f5312a937084bb648a3c42a3d1a; this review read and hash-bound it without rerunning its full reconstruction."
+    },
+    "test_complement": {
+      "status": "READ_ONLY_PYTHON_AST_COMPARISON",
+      "base_test_methods": 35,
+      "original_owner_test_methods": 38,
+      "our_test_methods": 41,
+      "base_test_names_retained_both": true,
+      "original_owner_extended_base_methods": [
+        "test_exact_historical_rust_records_do_not_exempt_neighboring_source",
+        "test_historical_rust_record_mutation_fails_before_format",
+        "test_historical_rust_inventory_cannot_register_production_source"
+      ],
+      "original_owner_unchanged_base_method_ASTs": 32,
+      "our_unchanged_base_method_ASTs": 35,
+      "original_owner_additional_methods": [
+        "test_continuation_records_preserve_bytes_and_keep_active_and_neighbor_sources",
+        "test_missing_continuation_record_fails_even_without_source_edits",
+        "test_continuation_symlink_alias_is_rejected_even_with_identical_bytes"
+      ],
+      "our_additional_methods": [
+        "test_relocated_records_preserve_bytes_and_keep_neighbors_and_active_rust",
+        "test_relocated_record_byte_drift_fails_before_full_and_scoped_format",
+        "test_missing_relocated_record_fails_before_full_and_scoped_format",
+        "test_relocated_record_symlink_is_rejected_even_with_identical_bytes",
+        "test_relocated_inventory_rejects_production_and_noncanonical_paths",
+        "test_relocated_rust_configuration_keeps_unregistered_neighbors_in_scope"
+      ],
+      "behavioral_complement": [
+        {
+          "topic": "exact registered-record preservation and active source selection",
+          "original_owner": "All four capsule records plus observed active/neighbor formatter probe in mutating mode.",
+          "our": "Three observed broker records plus same active/neighbor probe, explicitly both check modes; separate rustfmt configuration expansion proves neighboring and active Rust still selected."
+        },
+        {
+          "topic": "same-length byte mutation",
+          "original_owner": "Existing baseline mutation test extended across original memory record and all four continuation records.",
+          "our": "Original baseline test body intact; separate broker mutation test covers all three records in full/scoped and check/mutate modes."
+        },
+        {
+          "topic": "missing evidence",
+          "original_owner": "All four continuation records, empty selected source scope.",
+          "our": "All three broker records, full/scoped checks; no-source-change path included."
+        },
+        {
+          "topic": "symlink alias refusal",
+          "original_owner": "Same-byte relative alias inside the same directory for all four records.",
+          "our": "Same-byte target outside repository for all three records; explicit absolute-path escape behavior."
+        },
+        {
+          "topic": "inventory prefix/canonical path refusal",
+          "original_owner": "Keeps old two inputs and adds continuation traversal plus unregistered continuation sibling in the old inventory override.",
+          "our": "Keeps old two inputs unchanged and adds a separate test for production, traversal, backslash, and absolute names under/around the broker prefix."
+        }
+      ],
+      "integration_constraint": "Do not overwrite either complete source file. The original owner must separately review the fourth exact registration and reconcile both sets of tests/extended assertions with the final inventory. Original CONTINUATION_RECORDS-driven tests cannot simply be appended to the current three-record implementation without that deliberate union.",
+      "tests_executed_by_this_review": 0,
+      "source_files_changed_by_this_review": 0
+    },
+    "separate_recorded_local_tests": {
+      "original_owner": "35 baseline PASS;4 new/extended controls against original yield13 assertion failures;38 candidate PASS,0skip. Source-bound original logs were read/hash-verified, not rerun here. Pinned Ruff/full formatter pending there.",
+      "current_round2": "35 unchanged original bodies plus6 new controls;41 candidate PASS and original-implementation negative controls retained in prior frozen report. Actual locked Ruff0.15.13 left both files unchanged. These are separate candidates, not union qualification."
+    },
+    "required_later_action": "Perform an explicit source union preserving the fourth exact custody record and both owners' legitimate controls/old assertions, after the original integration owner reviews its final policy. Do not overwrite either complete formatter or test module. CONTINUATION_RECORDS-driven tests need coordinated inventory integration; do not simply drop them or append them to an incompatible three-record fixture setup.",
+    "this_round_action": "Record and hand off only. No fourth record registration, no additional formatter source/test mutation, no native job."
+  },
+  "evidence": [
+    {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/overlap-round2-review/time-nine-input-bindings.json",
+      "bytes": 17535,
+      "sha256": "d64d5a2d92b4ed3af99bf6819fbb0a057354831e46396d22db6d6a045a738e09"
+    },
+    {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/overlap-round2-review/time-nine-complete-after-diff.patch",
+      "bytes": 11211,
+      "sha256": "c64ee91efddf21da80d9ee07d4464570d2e5c5eaa061bc516b7e53929ea6d254"
+    },
+    {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/overlap-round2-review/time-nine-assertion-proof.json",
+      "bytes": 17409,
+      "sha256": "81514b7204aab339b5e291f312d3dfc0821aca54179538731fe1f0c048572b62"
+    },
+    {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/overlap-round2-review/active-five-and-tamper-proof.json",
+      "bytes": 11294,
+      "sha256": "9413f710bff66cd76929407e520a0df4f77c84c7c4feffccc915a6aff090d4dd"
+    },
+    {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/overlap-round2-review/formatter-overlap-input-bindings.json",
+      "bytes": 23688,
+      "sha256": "f52cdafbf8fe17353e9b0616720e1370e35631d493fd52af576d2484ce1a82a7"
+    },
+    {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/overlap-round2-review/formatter-four-original-artifact-proof.json",
+      "bytes": 2778,
+      "sha256": "48f0a050ce211691ad06495791b53ba4cc4704ae434c8b053eed3acea71a5556"
+    },
+    {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/overlap-round2-review/formatter-test-complement-proof.json",
+      "bytes": 3409,
+      "sha256": "2399bd72d12b82e2d3a7d84681e999fc84d846d9521cb226b206231345f0d042"
+    },
+    {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/overlap-round2-review/formatter-format.py.diff",
+      "bytes": 4063,
+      "sha256": "c0a6826a9963bfbf5a5b51b1fa3b7959d5ed503f9ac1531686313340cd00af04"
+    },
+    {
+      "file": "/workspace/scratch/c2d514464ab5/ci-repair/overlap-round2-review/formatter-test_hepta_format_scope.py.diff",
+      "bytes": 10552,
+      "sha256": "b0bf2794a25752230321afe0c3d716a0ff2ef6973c56a4180b5c507da8e54291"
+    }
+  ],
+  "validation_limits": {
+    "Rust_compile_or_tests": "NOT_RUN",
+    "Rustfmt": "NOT_RUN",
+    "Python_native_behavior_tests": "No new tests in overlap review; only AST parsing and source/log/hash inspection",
+    "same_base_diffs": "All nine beforeimages equal;22 original time frozen artifacts verified,15 active/tamper frozen artifacts verified,62 original formatter frozen artifacts verified",
+    "new_refs_or_commits": 0,
+    "native_jobs_started": 0,
+    "reruns_requested": 0,
+    "FROZEN_files_modified": 0,
+    "HIA_changes": 0,
+    "held_C2D_production_changes": 0
+  }
+}

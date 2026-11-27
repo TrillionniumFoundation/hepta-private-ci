@@ -1,0 +1,23 @@
+{
+  "environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/workspace/scratch/d882890e1711/s3-torch-env/lib/python3.12/site-packages:scripts:."
+  },
+  "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "packages": {
+    "Pillow": "13.0.0",
+    "numpy": "2.3.5",
+    "torch": "2.8.0+cpu"
+  },
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "postfreeze_input_seed": 9100011,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "registered_at": "2026-11-09T08:43:18.017278+00:00",
+  "requested_policy": "dynamic",
+  "source_commit": "a945af5202f61b9c0a7eeb241ca4c72afb5a275a",
+  "training_seed": 41,
+  "training_steps": 12
+}

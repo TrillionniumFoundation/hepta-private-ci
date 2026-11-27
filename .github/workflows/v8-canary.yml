@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: ${{ github.workflow }}::${{ github.event.pull_request.head.repo.full_name || github.repository }}::${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 permissions:
@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   metadata:
-    timeout-minutes: 30
+    timeout-minutes: 90
     runs-on: ubuntu-latest
     outputs:
       # Older revisions can contain a detector that does not emit this output.
@@ -47,6 +47,12 @@ jobs:
           version="$(python3 .github/scripts/rusty_v8_bazel.py resolved-v8-crate-version)"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
+      - name: Verify fail-closed V8 range selection regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s .github/scripts -p 'test_v8_canary_changes.py' -v
+
       - name: Detect V8 canary changes
         id: changes
         env:
@@ -74,7 +80,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    timeout-minutes: 30
+    timeout-minutes: 180
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
@@ -190,21 +196,21 @@ jobs:
           python-version: "3.12"
 
       - name: Set up Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
 
-      - name: Pin installed Cargo binary
+      - name: Pin matching Cargo and rustc for native smoke
         shell: bash
         run: |
           set -euo pipefail
-          rustup_home="${RUSTUP_HOME:-${HOME}/.rustup}"
-          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.95.0-*/bin/cargo' -type f -print -quit)"
-          if [[ -z "${cargo_bin}" || ! -x "${cargo_bin}" ]]; then
-            echo "Rust 1.95.0 Cargo binary is not installed under ${rustup_home}." >&2
+          cargo_bin="$(rustup which --toolchain 1.96.0 cargo)"
+          rustc_bin="$(rustup which --toolchain 1.96.0 rustc)"
+          if [[ ! -x "${cargo_bin}" || ! -x "${rustc_bin}" ]]; then
+            echo "The pinned Rust 1.96.0 Cargo and rustc executables must both be installed." >&2
             exit 1
           fi
-          echo "CARGO_1_95=${cargo_bin}" >> "${GITHUB_ENV}"
+          printf '%s\n' "V8_SMOKE_CARGO=${cargo_bin}" "V8_SMOKE_RUSTC=${rustc_bin}" >> "${GITHUB_ENV}"
 
       - name: Build Bazel V8 release pair
         env:
@@ -320,9 +326,12 @@ jobs:
           (
             cd codex-rs
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
+            RUSTUP_TOOLCHAIN="1.96.0" \
+            RUSTC="${V8_SMOKE_RUSTC}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            "${CARGO_1_95}" "${cargo_args[@]}"
+            RUSTY_V8_EXPECT_SANDBOX="${SANDBOX}" \
+            "${V8_SMOKE_CARGO}" "${cargo_args[@]}"
           )
 
       - name: Upload staged artifacts
@@ -336,7 +345,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 30
+    timeout-minutes: 180
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
@@ -353,6 +362,11 @@ jobs:
             target: aarch64-pc-windows-msvc
 
     steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
@@ -380,9 +394,9 @@ jobs:
           architecture: x64
 
       - name: Set up Codex Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
           targets: ${{ matrix.target }}
 
       - name: Install rusty_v8 Rust toolchain
@@ -471,7 +485,7 @@ jobs:
             cd codex-rs
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
+            cargo +1.96.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
           )
 
       - name: Upload staged artifacts

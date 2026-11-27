@@ -1,0 +1,68 @@
+{
+  "local_sha": "1ce56728eb6b3a2a427ed1924c4fc0c330059544",
+  "github_sha": "fcb9ee36142e62d420301a380a10d576c14cf121",
+  "tree": "b918fa4da39819f21ea44f5930c17135bb947a0d",
+  "local_parents": [
+    "52831c43ea3ce352c38419482f8adf06152a191d"
+  ],
+  "github_parents": [
+    "ceb13e41b9d0f6505e98b155a4fd72b09c127901"
+  ],
+  "blobs": [
+    {
+      "sha": "ce1e3243b0f84de6caddd4cbab54f5679b613b1b",
+      "bytes": 34224
+    },
+    {
+      "sha": "fa76e846c514cc12e23bbd382246b122fccecf7d",
+      "bytes": 24547
+    },
+    {
+      "sha": "9fd85cf50aba1bdd49fa09b21c5ebd114b97c8cc",
+      "bytes": 15095
+    }
+  ],
+  "create_tree": {
+    "sha": "b918fa4da39819f21ea44f5930c17135bb947a0d"
+  },
+  "create_commit": {
+    "sha": "fcb9ee36142e62d420301a380a10d576c14cf121"
+  },
+  "github_commit_readback": {
+    "sha": "fcb9ee36142e62d420301a380a10d576c14cf121",
+    "node_id": "C_kwDOTrgxoNoAKGZjYjllZTM2MTQyZTYyZDQyMDMwMWEzODBhMTBkNTc2YzE0Y2YxMjE",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/fcb9ee36142e62d420301a380a10d576c14cf121",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/fcb9ee36142e62d420301a380a10d576c14cf121",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T17:30:04Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T17:30:04Z"
+    },
+    "tree": {
+      "sha": "b918fa4da39819f21ea44f5930c17135bb947a0d",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/b918fa4da39819f21ea44f5930c17135bb947a0d"
+    },
+    "message": "fix(ci): bind exact required-check lanes and validate explicit CLI roots\n\nUse repository, PR/ref, and head SHA to isolate required PR runs while\nretaining cancellation of duplicate runs of one exact candidate.\n\nValidate the manifest-selected codex.rs and hepta.rs crate roots, their\ncrate-level recursion limits, and direct shared main_impl.rs inclusion.\nKeep the complete scope/dependency/tree test entrypoint and all gates.",
+    "parents": [
+      {
+        "sha": "ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ceb13e41b9d0f6505e98b155a4fd72b09c127901"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "verified": true,
+  "refs_updated": false
+}

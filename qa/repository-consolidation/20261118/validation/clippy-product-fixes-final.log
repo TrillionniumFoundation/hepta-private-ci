@@ -1,0 +1,45 @@
+cargo clippy --tests {args}
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-types)
+    Checking codex-hepta-contracts v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-contracts)
+    Checking codex-hepta-cognitive-types v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-cognitive-types)
+    Checking codex-hepta-intuition v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-intuition)
+    Checking codex-hepta-infer-core v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-infer-core)
+    Checking codex-hepta-neuron v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-neuron)
+warning: method `as_ref` can be confused for the standard trait method `std::convert::AsRef::as_ref`
+   --> hepta-cognitive-types/src/contract.rs:168:5
+    |
+168 | /     pub fn as_ref(&self) -> &T {
+169 | |         &self.0
+170 | |     }
+    | |_____^
+    |
+    = help: consider implementing the trait `std::convert::AsRef` or choosing a less ambiguous method name
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#should_implement_trait
+    = note: `#[warn(clippy::should_implement_trait)]` on by default
+
+warning: `codex-hepta-cognitive-types` (lib) generated 1 warning
+    Checking codex-hepta-memory-retrieval v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-memory-retrieval)
+    Checking codex-hepta-learning-ledger v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-learning-ledger)
+warning: manual implementation of `.is_multiple_of()`
+   --> hepta-learning-ledger/src/witness.rs:185:42
+    |
+185 |             if length < HEADER as u64 || (length - HEADER as u64) % FRAME as u64 != 0 {
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `!(length - HEADER as u64).is_multiple_of(FRAME as u64)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#manual_is_multiple_of
+    = note: `#[warn(clippy::manual_is_multiple_of)]` on by default
+
+warning: `codex-hepta-learning-ledger` (lib) generated 1 warning (run `cargo clippy --fix --lib -p codex-hepta-learning-ledger -- ` to apply 1 suggestion)
+    Checking codex-hepta-wire v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-wire)
+    Checking codex-hepta-intelligence-eval v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-intelligence-eval)
+    Checking codex-hepta-cognitive-read v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-cognitive-read)
+    Checking codex-hepta-objective v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-objective)
+    Checking codex-hepta-prompt-registry v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-prompt-registry)
+    Checking codex-hepta-ndu v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-ndu)
+    Checking codex-hepta-context-compiler v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-context-compiler)
+    Checking codex-hepta-kg v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-kg)
+    Checking codex-hepta-prompt-optimizer v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-prompt-optimizer)
+    Checking codex-hepta-learning-artifacts v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-learning-artifacts)
+    Checking codex-hepta-plasticity v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-plasticity)
+    Checking codex-hepta-intelligence v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-intelligence)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 20.39s

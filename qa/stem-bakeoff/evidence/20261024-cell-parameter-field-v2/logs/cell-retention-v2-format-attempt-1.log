@@ -1,0 +1,9 @@
+==> Just formatter failed
+$ just --unstable --fmt
+[Errno 2] No such file or directory: 'just'
+==> Python scripts formatter failed
+$ uv run --frozen --project scripts ruff format ./scripts/format.py ./scripts/just-shell.py
+error: Failed to initialize cache at `/root/.cache/uv`
+  cause: failed to create directory `/root/.cache/uv`: Read-only file system (os error 30)
+Formatting failed: Just, Python scripts
+error: recipe `fmt` failed on line 51 with exit code 1

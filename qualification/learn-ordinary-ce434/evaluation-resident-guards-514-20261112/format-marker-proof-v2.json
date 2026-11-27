@@ -1,0 +1,195 @@
+{
+  "source": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "rows": [
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/deployment_learning_resident.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/runtime.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/objective_learning_source.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs"
+    }
+  ],
+  "marker_changes": [
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/deployment_learning_resident.rs:None",
+      "old": "self.request_lock.try_lock()",
+      "new": "self\n            .request_lock\n            .try_lock()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/deployment_learning_resident.rs:fn require_current(",
+      "old": "self.issuer.store.load(STATE_OWNER)",
+      "new": "self\n            .issuer\n            .store\n            .load(STATE_OWNER)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/deployment_learning_resident.rs:fn require_current(",
+      "old": "current.head.revoked_grant_ids.contains(&self.signed.grant.grant_id)",
+      "new": "current\n                .head\n                .revoked_grant_ids\n                .contains(&self.signed.grant.grant_id)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn require_fresh_admission_channel(",
+      "old": "self\n            .channel\n            .try_lock()",
+      "new": "self.channel.try_lock()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_resident_registration.rs:fn register_host_resident_learning_v3(",
+      "old": "root, issuer, Arc::new(leases), profile",
+      "new": "root,\n        issuer,\n        Arc::new(leases),\n        profile"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_resident_registration.rs:fn recover_host_resident_learning_v3(",
+      "old": "root, issuer, Arc::new(leases), profile, authorization",
+      "new": "root,\n        issuer,\n        Arc::new(leases),\n        profile,\n        authorization"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_runtime.rs:fn open_original_issuer_custody(",
+      "old": "Ok(OriginalHostIssuerCustodyV3 { clock, leases, issuer, root })",
+      "new": "Ok(OriginalHostIssuerCustodyV3 {\n        clock,\n        leases,\n        issuer,\n        root,\n    })"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_runtime.rs:fn open_registered_issuer(",
+      "old": "OriginalHostIssuerCustodyV3 { clock, leases, issuer, .. }",
+      "new": "OriginalHostIssuerCustodyV3 {\n        clock,\n        leases,\n        issuer,\n        ..\n    }"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/runtime.rs:fn run_with_shutdown(",
+      "old": "delivery, store, Arc::clone(&state), cancellation.clone()",
+      "new": "delivery,\n                    store,\n                    Arc::clone(&state),\n                    cancellation.clone()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/objective_learning_source.rs:fn require_resident_learning_source_candidate(",
+      "old": "self.objective_runtime.get()",
+      "new": "self\n            .objective_runtime\n            .get()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/objective_learning_source.rs:fn require_resident_learning_source_candidate(",
+      "old": "store.bounded_circuit_committed_trace(request.source_run_id.as_str()).await",
+      "new": "store\n            .bounded_circuit_committed_trace(request.source_run_id.as_str())\n            .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/objective_learning_source.rs:fn require_resident_learning_source_candidate(",
+      "old": "store.bounded_circuit_committed_trace(request.source_run_id.as_str()).await",
+      "new": "store\n            .bounded_circuit_committed_trace(request.source_run_id.as_str())\n            .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn prepare_enrollment(",
+      "old": "state.require_resident_learning_source_candidate(request).await",
+      "new": "state\n            .require_resident_learning_source_candidate(request)\n            .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn prepare_enrollment(",
+      "old": "state.attach_circuit_learning_sources(vec![request.source_run_id.clone()])",
+      "new": "state\n            .attach_circuit_learning_sources(vec![request.source_run_id.clone()])"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn prepare_enrollment(",
+      "old": "host.reconcile_learning_outbox(store, Some(&request.source_run_id)).await",
+      "new": "host.reconcile_learning_outbox(store, Some(&request.source_run_id))\n            .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn prepare_enrollment(",
+      "old": "state.require_circuit_learning_source(request).await",
+      "new": "state\n            .require_circuit_learning_source(request)\n            .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn prepare_enrollment(",
+      "old": "state.automation_admission_ready()",
+      "new": "state\n            .automation_admission_ready()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn deliver(",
+      "old": "state.automation_admission_ready()",
+      "new": "state\n                .automation_admission_ready()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn deliver(",
+      "old": "state.require_circuit_learning_source(request).await",
+      "new": "state\n                .require_circuit_learning_source(request)\n                .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn deliver(",
+      "old": "store.claim_circuit_learning(&row.intent, &digest).await",
+      "new": "store\n                .claim_circuit_learning(&row.intent, &digest)\n                .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn deliver(",
+      "old": "state.require_circuit_learning_source(request).await",
+      "new": "state\n                .require_circuit_learning_source(request)\n                .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn deliver(",
+      "old": "state.automation_admission_ready()",
+      "new": "state\n                .automation_admission_ready()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn deliver(",
+      "old": "state.plasticity_admission_ready()",
+      "new": "state\n            .plasticity_admission_ready()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn deliver(",
+      "old": "store.acknowledge_circuit_learning(&row.intent, &digest, &head).await",
+      "new": "store\n            .acknowledge_circuit_learning(&row.intent, &digest, &head)\n            .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/resident_learning_delivery.rs:fn deliver(",
+      "old": "store.retire_acknowledged_circuit_learning(&row.intent, &digest, &head).await",
+      "new": "store\n            .retire_acknowledged_circuit_learning(&row.intent, &digest, &head)\n            .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_task_source_policy.rs:fn read(",
+      "old": "let expected = if candidate_id == selected { 1_000_000 } else { 0 }",
+      "new": "let expected = if candidate_id == selected {\n            1_000_000\n        } else {\n            0\n        }"
+    }
+  ],
+  "qa_changes": [
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "self.request_lock.try_lock()",
+      "new": "self\n            .request_lock\n            .try_lock()"
+    }
+  ],
+  "unresolved": [],
+  "ambiguous": [
+    {
+      "where": "boundary:root_learning_completed_circuit_source:None",
+      "marker": "state.require_circuit_learning_source(request)",
+      "values": [
+        "state\n                .require_circuit_learning_source(request)",
+        "state\n            .require_circuit_learning_source(request)"
+      ]
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_task_source_policy.rs:fn read(",
+      "marker": "entries.iter().any",
+      "values": [
+        "entries\n                .iter()\n                .any",
+        "entries\n        .iter()\n        .any"
+      ]
+    }
+  ]
+}

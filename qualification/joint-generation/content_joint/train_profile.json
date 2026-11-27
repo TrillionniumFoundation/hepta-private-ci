@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.joint-generation.independent-data.v1",
+  "train_seed": 304797655,
+  "sources_per_class": 16,
+  "instructions_per_source": 8,
+  "variants": 2,
+  "vertical_shifts": [-1, 0, 1],
+  "foreground_range": [0.75, 1.0],
+  "background_range": [0.0, 0.04],
+  "original_full_profile_sha256": "eecbcaac4adaf3e54584189baf3ebe678575902d524efd8e4bb42f88127ba6c8",
+  "purpose": "Reconstruct TRAIN physical-source metadata/order only; never generate noisy inputs or another split"
+}

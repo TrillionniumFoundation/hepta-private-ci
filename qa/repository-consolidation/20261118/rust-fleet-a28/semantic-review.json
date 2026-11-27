@@ -1,0 +1,237 @@
+{
+  "status": "PASS",
+  "current": "770179d123b879355b53db1d75f8f9f301280d3e",
+  "incoming": "0e378dd351e0fca99d32f67613639b37c85605da",
+  "merge_base": "7a95aea0002de94d18a11a6e95db3b36cc2c41a8",
+  "reviewed_incoming_commits": [
+    "777e741d25b73d6a52048be34be63fab3fc6d79e",
+    "0e378dd351e0fca99d32f67613639b37c85605da"
+  ],
+  "incoming_semantic_mapping": [
+    {
+      "id": "host_admission",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": "fn ledger() -> LeaseLedger",
+        "start_line": 199
+      },
+      "incoming": {
+        "needle": "fn ledger() -> Result<LeaseLedger, LeaseLedgerError>",
+        "start_line": 197
+      },
+      "decision": "Incoming propagates admit_host Err with ?. Current explicitly asserts the identical admit_host result equals Ok(()), then returns the same ledger. Both fail the test on admission failure; current retains its diagnostic assertion."
+    },
+    {
+      "id": "temporary_directory",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": "let directory = tempfile::tempdir().unwrap_or_else(|error| panic!(\"{error:?}\"));",
+        "start_line": 222
+      },
+      "incoming": {
+        "needle": "let directory = tempfile::tempdir()?;",
+        "start_line": 217
+      },
+      "decision": "Same tempfile setup. Incoming Result-returning test fails on Err; current immediately panics on Err. Neither ignores errors or supplies fallback state."
+    },
+    {
+      "id": "private_permissions",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": "std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))",
+        "start_line": 223
+      },
+      "incoming": {
+        "needle": "std::fs::set_permissions(\n            directory.path(),\n            std::fs::Permissions::from_mode(0o700),\n        )?;",
+        "start_line": 218
+      },
+      "decision": "Same directory and private mode 0700. Current unwrap_or_else panic and incoming ? both fail on permission setup failure."
+    },
+    {
+      "id": "authority_frontier",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": "AuthorityLeaseFrontier::for_empty_epoch(7).unwrap_or_else(|error| panic!(\"{error:?}\"))",
+        "start_line": 228
+      },
+      "incoming": {
+        "needle": "AuthorityLeaseFrontier::for_empty_epoch(7)?",
+        "start_line": 225
+      },
+      "decision": "Same epoch 7; same success prerequisite. No default frontier or suppressed error is introduced."
+    },
+    {
+      "id": "registry_open",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": "let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(",
+        "start_line": 225
+      },
+      "incoming": {
+        "needle": "let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(",
+        "start_line": 222
+      },
+      "decision": "Same private directory, owner security-authority, epoch 7, and FixedClock(2000). Current panics and incoming propagates Err, so both fail setup."
+    },
+    {
+      "id": "issue_binding",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": "let binding = FleetAuthorityPort::binding_for_issue(&grant)",
+        "start_line": 233
+      },
+      "incoming": {
+        "needle": "let binding = FleetAuthorityPort::binding_for_issue(&grant)?;",
+        "start_line": 229
+      },
+      "decision": "Same grant and exact authority binding calculation. Both fail on binding errors."
+    },
+    {
+      "id": "lease_publication",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": ".put_lease(\n                AuthorityLease {",
+        "start_line": 236
+      },
+      "incoming": {
+        "needle": ".put_lease(\n                AuthorityLease {",
+        "start_line": 231
+      },
+      "decision": "Same schema 1, lease id fleet-issue-one, epoch 7, revision 1, binding, times 1000/8000, expected revision 0. Current error panic and incoming propagation are both fail-closed test setup."
+    },
+    {
+      "id": "ledger_call",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": "let mut ledger = ledger();",
+        "start_line": 250
+      },
+      "incoming": {
+        "needle": "let mut ledger = ledger()?;",
+        "start_line": 244
+      },
+      "decision": "This is solely paired return-type plumbing for host_admission. Preserve current asserted helper and its direct LeaseLedger result together."
+    },
+    {
+      "id": "issue_with_witness",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": ".issue_with_witness(&mut ledger, \"fleet-issue-one\", 1, 2_000, grant.clone())",
+        "start_line": 252
+      },
+      "incoming": {
+        "needle": ".issue_with_witness(&mut ledger, \"fleet-issue-one\", 1, 2_000, grant.clone())?;",
+        "start_line": 246
+      },
+      "decision": "Identical issue request, revision, clock argument, and cloned grant. Both require successful issue before inspecting receipt and witness."
+    },
+    {
+      "id": "revoke_setup",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": ".revoke(\"fleet-issue-one\", 1, [9; 32])",
+        "start_line": 268
+      },
+      "incoming": {
+        "needle": "registry.revoke(\"fleet-issue-one\", 1, [9; 32])?;",
+        "start_line": 260
+      },
+      "decision": "Identical revocation id, revision and reason digest. Both fail immediately if revocation itself fails."
+    },
+    {
+      "id": "revoked_negative",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": ".unwrap_or_else(|| panic!(\"revoked lease must be rejected\"))",
+        "start_line": 273
+      },
+      "incoming": {
+        "needle": "Some(FleetAuthorityError::Authority(AuthorityLeaseError::Revoked))",
+        "start_line": 264
+      },
+      "decision": "Incoming asserts issue(...).err() == Some(Authority(Revoked)); current requires err() to be Some, then asserts the contained error equals Authority(Revoked). Both reject Ok and every different Err. No negative assertion is removed."
+    },
+    {
+      "id": "first_binding",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": "let first_binding = FleetAuthorityPort::binding_for_issue(&first)\n",
+        "start_line": 281
+      },
+      "incoming": {
+        "needle": "let first_binding = FleetAuthorityPort::binding_for_issue(&first)?;",
+        "start_line": 272
+      },
+      "decision": "Same initial grant and binding; either error fails the test."
+    },
+    {
+      "id": "changed_binding",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "current": {
+        "needle": "let changed_binding = FleetAuthorityPort::binding_for_issue(&changed)\n",
+        "start_line": 285
+      },
+      "incoming": {
+        "needle": "let changed_binding = FleetAuthorityPort::binding_for_issue(&changed)?;",
+        "start_line": 275
+      },
+      "decision": "Same cpu_millis += 1 mutation and changed binding; either error fails. Scope inequality and payload equality stay exact."
+    },
+    {
+      "id": "result_return_plumbing",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "incoming": "FixtureResult alias, Result helper signature/Ok(ledger), two Result test signatures/Ok(()), and ledger()? call",
+      "decision": "No added behavior or test case. Result-based failure reporting and current panic/assert-based failure reporting both mark the same fixtures failed. Keep current unit-returning tests and direct ledger helper consistently; do not leave partial automatic Result conversion behind."
+    },
+    {
+      "id": "canonical_workspace_input",
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "current": {
+        "needle": "WorkspaceBinding::new(path.canonicalize()?, &fleet.root)",
+        "start_line": 277
+      },
+      "incoming": {
+        "needle": "let canonical = path.canonicalize()?;\n            WorkspaceBinding::new(&canonical, &fleet.root)",
+        "start_line": 277
+      },
+      "decision": "Both canonicalize the just-created workspace path and propagate failure before constructing the binding. WorkspaceBinding::new accepts Into<PathBuf> and immediately calls path.into(); passing the owned PathBuf or borrowing it produces the same path value. Current retains the canonical/no-symlink, directory, and fleet-root non-overlap checks. Incoming adds no Windows test case beyond fixing this same fixture input."
+    }
+  ],
+  "source_invariants": {
+    "incoming_production_authority_prefix_is_base_byte_identical": true,
+    "allocation_grant_fixture_values_identical": true,
+    "host_observation_fixture_values_identical": true,
+    "authority_lease_fixture_values_identical": true,
+    "receipt_and_all_witness_assertions_preserved": true,
+    "scope_inequality_preserved": true,
+    "payload_equality_preserved": true,
+    "same_cpu_increment": true,
+    "current_final_dispatch_uses_verified_time": true,
+    "current_clock_regression_module_preserved": true,
+    "no_denied_expect_unwrap_methods_in_current_authority_file": true,
+    "workspace_lints_deny_expect_and_unwrap": true,
+    "fleet_inherits_workspace_lints": true,
+    "current_binding_accepts_pathbuf_and_canonicalizes": true,
+    "current_binding_rejects_noncanonical_and_control_root_overlap": true,
+    "oracle_all_subsets_both_orders_and_assertions_byte_identical": true,
+    "oracle_same_eight_path_names": true
+  },
+  "revoked_assertion_truth_table": [
+    {
+      "issue_result": "Ok(_)",
+      "incoming_test_passes": false,
+      "current_test_passes": false
+    },
+    {
+      "issue_result": "Err(Authority(Revoked))",
+      "incoming_test_passes": true,
+      "current_test_passes": true
+    },
+    {
+      "issue_result": "Err(any other error)",
+      "incoming_test_passes": false,
+      "current_test_passes": false
+    }
+  ],
+  "qualification": "Source review only. This is not a fresh native/Windows/Clippy qualification. Entire resolved tree is required to equal CURRENT; no source delta means native tests and formatting are not repeated."
+}

@@ -1,0 +1,9 @@
+{
+  "description": "Complete known commit-parent metadata for the fixed 7,812-ref snapshot, including prepared candidate metadata through 6e97. The final 77aae source commit is separately proved in final-source-77-review.json.",
+  "source_file": "branch-audit/final-lease-7812/SNAPSHOT-7812-COMPLETE-KNOWN-PARENTS.tsv",
+  "bytes": 6679884,
+  "sha256": "b12717f47aec4f756f90e0669b1c7b2b00462bc97a9ed32dfe6b835827a2e938",
+  "reproduction": "Fetch the exact tips in current-refs.tsv.gz into an independent bare repository with --filter=tree:0, then inspect git rev-list --parents for all supplied tips. Remote refs may subsequently move; use recorded full OIDs.",
+  "payload_completeness_claim": false,
+  "full_historical_HIA_protection_identity_claim": false
+}

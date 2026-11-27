@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "source_sha": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+  "source_tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
+  "state": "failed",
+  "executed": 7,
+  "passed": 5,
+  "failed": 2,
+  "native_exit_code": 100,
+  "process_exit_code": 1,
+  "source_is_current_pr_head": false,
+  "failures": [
+    {
+      "case": "deferred_training_uses_actual_material_cut_and_original_source_without_precreation",
+      "classification": "actual deferred Training command completed; downstream legacy 500ms Trainer evidence read timed out against the real deep source",
+      "production_gap": true
+    },
+    {
+      "case": "q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap",
+      "classification": "negative fixture waited into inclusive expires_at second rather than strictly past it",
+      "fixed_source": "bf1e7a79a3dbb2d1d927a51c487c69253e9e3d78",
+      "fix_native_verified": false
+    }
+  ],
+  "diagnostics_only": true,
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  }
+}

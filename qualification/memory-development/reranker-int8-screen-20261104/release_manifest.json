@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "kind": "Post-run publication copy with byte-identical executed code/fixtures and new audience-safe documentation/aggregates",
+  "unchanged_executed_source_copies": [
+    "protocol.json",
+    "fixture_builder.py",
+    "fixtures.json",
+    "common.py",
+    "worker.py",
+    "run_primary.py",
+    "test_protocol.py",
+    "runtime_integrity.py",
+    "requirements.txt",
+    ".gitignore"
+  ],
+  "new_publication_files": [
+    "PROTOCOL.md",
+    "aggregate_results.json",
+    "seal.json"
+  ],
+  "original_execution_seal_sha256": "6e709a80985828cad71a16c09265e9734a1b9b6792f4f1fc61c49fefd3cc5c35",
+  "files": {
+    ".gitignore": {
+      "sha256": "e007f7d4af26b4ace69fa009dc102394ceec359683518948919615a4664ff800",
+      "bytes": 122
+    },
+    "PROTOCOL.md": {
+      "sha256": "b663c688fad9f619b6537e0f33dacbfc2681c52e55968ef06753d3f1ce375443",
+      "bytes": 12270
+    },
+    "aggregate_results.json": {
+      "sha256": "2987f50c4881b2d5019a2a53244425e3269281a2d340d9373b9cbd250e6f2214",
+      "bytes": 14297
+    },
+    "common.py": {
+      "sha256": "4ab131333f3689855c849ccd87fa395adc81f02c1c3d97b10cbffce2a7bb974e",
+      "bytes": 10361
+    },
+    "fixture_builder.py": {
+      "sha256": "9bd585463c0a0d18f3b369fb3c702ec89f5bf6e0f1c27aa9fd9fb81b577eaefe",
+      "bytes": 8220
+    },
+    "fixtures.json": {
+      "sha256": "8e2e00f02c02110a50f0e5a863ef67cba935e036134f72d0829c86a807e9ef42",
+      "bytes": 48175
+    },
+    "protocol.json": {
+      "sha256": "c4c08b5e44399c7582dabad19cd55a8a97f402565e9df60b8f157128c7e7f5b4",
+      "bytes": 1578
+    },
+    "requirements.txt": {
+      "sha256": "f220e875dd35128f958fe243a0aaab64a21a0c1510085ab05c4298a8b53e6c77",
+      "bytes": 279
+    },
+    "run_primary.py": {
+      "sha256": "016f876763c71ac6c0d92d0d4fe170663a54cf557d4e67370dd3d1d87891eacb",
+      "bytes": 10919
+    },
+    "runtime_integrity.py": {
+      "sha256": "f6b75bb4b177976a76c9338c65d2ee25ec2d72eac441bb9e9a5e93440b276822",
+      "bytes": 1731
+    },
+    "seal.json": {
+      "sha256": "56544c0a25e2d1d5cea7104f890540b9ab130fb4aff22e5a60d15dcd8214c465",
+      "bytes": 1223
+    },
+    "test_protocol.py": {
+      "sha256": "c006f1992ecb4752afbd7aeee79e16da0edca2c6afe9bdc9cfb95c8d7f5db476",
+      "bytes": 8656
+    },
+    "worker.py": {
+      "sha256": "a64d2629c16bc0b7fbb5f561ebb370e8ab5cdd18794377189219ef8d8a9fcfb0",
+      "bytes": 10288
+    }
+  },
+  "excluded": [
+    "Model weights and tokenizer assets",
+    "Runtime and wheel binaries",
+    "Admission and authorization records",
+    "Installed runtime inventories",
+    "Original worker/session logs and records",
+    "Machine identifiers and actual local paths",
+    "Original preregistration document and internal review reports"
+  ]
+}

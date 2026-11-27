@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.p0.finalfix-local-format-validation.v1",
+  "source_sha": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+  "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "commands": [
+    {
+      "command": [
+        "/workspace/scratch/1f3ba4601505/tools/just-1.51.0/just",
+        "fmt",
+        "--base",
+        "cb0598a9099a0d828ce73aedb51e397e600e49d1"
+      ],
+      "cwd": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix/codex-rs",
+      "started_at_utc": "2026-11-11T03:09:59.366593+00:00",
+      "finished_at_utc": "2026-11-11T03:09:59.845680+00:00",
+      "elapsed_seconds": 0.47908868699960294,
+      "child_user_cpu_seconds": 0.21450999999999998,
+      "child_system_cpu_seconds": 0.299638,
+      "exit_code": 0,
+      "log_file": "just-fmt.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "pnpm",
+        "dlx",
+        "prettier@3.5.3",
+        "--check",
+        "docs/hepta-generation-learning-readback.md",
+        ".github/workflows/hcsn-differentiable.yml",
+        ".github/workflows/hepta-daemon-learning-native.yml"
+      ],
+      "cwd": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix",
+      "started_at_utc": "2026-11-11T03:09:59.845812+00:00",
+      "finished_at_utc": "2026-11-11T03:10:01.871257+00:00",
+      "elapsed_seconds": 2.0254668529996707,
+      "child_user_cpu_seconds": 1.266371,
+      "child_system_cpu_seconds": 0.9248000000000001,
+      "exit_code": 0,
+      "log_file": "prettier-check.log",
+      "log_bytes": 66,
+      "log_sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+        "HEAD"
+      ],
+      "cwd": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix",
+      "started_at_utc": "2026-11-11T03:10:01.871388+00:00",
+      "finished_at_utc": "2026-11-11T03:10:01.942174+00:00",
+      "elapsed_seconds": 0.07080115399912756,
+      "child_user_cpu_seconds": 0.004110999999999976,
+      "child_system_cpu_seconds": 0.03016799999999975,
+      "exit_code": 0,
+      "log_file": "diff-check.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "after_source_sha": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+  "after_source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "after_status": "",
+  "native_tests_executed": 0,
+  "native_scope": "Fresh source-head CI is required; no local native build or tests were run."
+}

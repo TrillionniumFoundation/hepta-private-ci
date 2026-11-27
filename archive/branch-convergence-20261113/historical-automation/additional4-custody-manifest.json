@@ -1,0 +1,207 @@
+{
+  "schema": "hepta.historical-automation.additional4-custody.v1",
+  "base_commit": "639f84c1aafa6fb5044b690ae21706a7782861ef",
+  "original_113_manifest_unchanged": true,
+  "original_113_manifest_sha256": "887a9ed08068ec7935de0bd936a35f0a3ed1ad666307e5e67fda68851f0c2a49",
+  "paths": [
+    {
+      "source_path": ".github/workflows/context-compiler-worktree-export.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/context-compiler-worktree-export.yml",
+      "source_commit": "639f84c1aafa6fb5044b690ae21706a7782861ef",
+      "original_source_commit": "3f40cc95c9fb7843dd1c4100aa42ad290832b498",
+      "git_blob": "fc9a4aba37194b67b11cde18f6ce1cbd2d4cecd9",
+      "git_mode": "100644",
+      "bytes": 1178,
+      "sha256": "b715ba74ae90b9d2ee65f7238f9908ecfac4cc12a03ff9d5b1eed32f564a9795",
+      "materializing_input": {
+        "sequence": 104,
+        "input_head": "621bdb7af67b3eb1fc7a238047448d3cdd978a5a",
+        "merge_commit": "4d83756b5010caf70d1b458d35c31b512fee011b",
+        "postimage": "fc9a4aba37194b67b11cde18f6ce1cbd2d4cecd9",
+        "status": "A"
+      },
+      "original_audit_decision_group": "historical_preservation_only",
+      "original_audit_recommendation": "hold_self_hosted_export_and_unpinned_action",
+      "declared_entrypoints": {
+        "events": {
+          "push": {
+            "branches": ["work/context-compiler-v2-closure-20260927"],
+            "paths": [".github/workflows/context-compiler-worktree-export.yml"]
+          }
+        },
+        "permissions": {
+          "contents": "read"
+        },
+        "concurrency": {
+          "group": "context-compiler-worktree-export",
+          "cancel-in-progress": "true"
+        },
+        "jobs": {
+          "export": {
+            "runs-on": {
+              "group": "trillionnium-android-gpu",
+              "labels": ["self-hosted", "linux", "x64"]
+            },
+            "timeout-minutes": "20"
+          }
+        },
+        "checkout_refs": [
+          {
+            "job": "export",
+            "ref": "work/context-compiler-v2-closure-20260927",
+            "persist_credentials": "<default>"
+          }
+        ],
+        "external_actions": [
+          "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "actions/upload-artifact@v4"
+        ],
+        "unpinned_external_actions": ["actions/upload-artifact@v4"],
+        "reusable_local_workflows": []
+      },
+      "known_hold_or_failure": "No clean-tree assertion or immutable exact source ref binds export; persistent workspace+mutable action inappropriate to approve merely as a harmless source export.",
+      "reason": "Remove a historical executable workflow from the active workflow directory while preserving the exact original bytes and provenance.",
+      "source_program_executed": false,
+      "scientific_or_production_qualification": false
+    },
+    {
+      "source_path": ".github/workflows/desktop-commander-recover-20260925.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/desktop-commander-recover-20260925.yml",
+      "source_commit": "639f84c1aafa6fb5044b690ae21706a7782861ef",
+      "original_source_commit": "3f40cc95c9fb7843dd1c4100aa42ad290832b498",
+      "git_blob": "ee1455edfba21450d472c86ee4c994f170f7d4dd",
+      "git_mode": "100644",
+      "bytes": 1058,
+      "sha256": "f3d0816b58dabb549d8f634b072d1c3d0d04c5cf9ea201a9e4cc1811b5329d02",
+      "materializing_input": {
+        "sequence": 3,
+        "input_head": "3841ef822e10a1b07cb111ca3340a58904895d6a",
+        "merge_commit": "6e1d3fad66fd51a623e4e743073d8fd58757516e",
+        "postimage": "ee1455edfba21450d472c86ee4c994f170f7d4dd",
+        "status": "A"
+      },
+      "original_audit_decision_group": "historical_preservation_only",
+      "original_audit_recommendation": "hold_persistent_host_connector_mutation",
+      "declared_entrypoints": {
+        "events": {
+          "push": {
+            "branches": ["ops/desktop-commander-recover-20260925"]
+          }
+        },
+        "permissions": {},
+        "concurrency": null,
+        "jobs": {
+          "recover": {
+            "name": "Restore Desktop Commander remote device",
+            "runs-on": {
+              "group": "trillionnium-android-gpu",
+              "labels": ["self-hosted", "linux", "x64"]
+            },
+            "timeout-minutes": "10"
+          }
+        },
+        "checkout_refs": [],
+        "external_actions": [],
+        "unpinned_external_actions": [],
+        "reusable_local_workflows": []
+      },
+      "known_hold_or_failure": "No repositorytoken does not make thisread-only. It mutates operatorhost and starts persistentremoteservice; do notactivate.",
+      "reason": "Remove a historical executable workflow from the active workflow directory while preserving the exact original bytes and provenance.",
+      "source_program_executed": false,
+      "scientific_or_production_qualification": false
+    },
+    {
+      "source_path": ".github/workflows/desktop-commander-recover-fleet-20260925.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/desktop-commander-recover-fleet-20260925.yml",
+      "source_commit": "639f84c1aafa6fb5044b690ae21706a7782861ef",
+      "original_source_commit": "3f40cc95c9fb7843dd1c4100aa42ad290832b498",
+      "git_blob": "01fb574977f3327d67b47134c58adb5cc0be5ec2",
+      "git_mode": "100644",
+      "bytes": 3180,
+      "sha256": "fdd791287ff72168301ebd7a30bea81172c9eb4e0fbf8e1e7cff856872905896",
+      "materializing_input": {
+        "sequence": 16,
+        "input_head": "f2149a94af5969639e33a015656f98af9dc28362",
+        "merge_commit": "37f7859623568b334d79e9fa8e92576334676f09",
+        "postimage": "01fb574977f3327d67b47134c58adb5cc0be5ec2",
+        "status": "A"
+      },
+      "original_audit_decision_group": "historical_preservation_only",
+      "original_audit_recommendation": "hold_cross_host_process_mutation_and_action_cancellation",
+      "declared_entrypoints": {
+        "events": {
+          "push": {
+            "branches": ["ops/desktop-commander-recover-fleet-20260925"]
+          }
+        },
+        "permissions": {
+          "actions": "write"
+        },
+        "concurrency": null,
+        "jobs": {
+          "recover": {
+            "name": "Restore through ${{ matrix.runner_name }}",
+            "runs-on": "${{ fromJSON(matrix.labels) }}",
+            "timeout-minutes": "10"
+          }
+        },
+        "checkout_refs": [],
+        "external_actions": [],
+        "unpinned_external_actions": [],
+        "reusable_local_workflows": []
+      },
+      "known_hold_or_failure": "Distinct destructivehost andworkflowcancellationeffects; historicalhostnamecheck is not new executionauthorization.",
+      "reason": "Remove a historical executable workflow from the active workflow directory while preserving the exact original bytes and provenance.",
+      "source_program_executed": false,
+      "scientific_or_production_qualification": false
+    },
+    {
+      "source_path": ".github/workflows/desktop-commander-recover-via-rog-20260925.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/desktop-commander-recover-via-rog-20260925.yml",
+      "source_commit": "639f84c1aafa6fb5044b690ae21706a7782861ef",
+      "original_source_commit": "3f40cc95c9fb7843dd1c4100aa42ad290832b498",
+      "git_blob": "77c0dd879948e2e758a1436dfe0366ee9553fe7a",
+      "git_mode": "100644",
+      "bytes": 3544,
+      "sha256": "ef147bb4cf530015380a0eda5f829ebf8a5d10c92b218fadac18681f358e08e3",
+      "materializing_input": {
+        "sequence": 12,
+        "input_head": "c9f0fd38e8c428718e641fae89f4744f4a2497fd",
+        "merge_commit": "0cac7ba3f05d23e4f1c70b8264a97149a2abcbd9",
+        "postimage": "77c0dd879948e2e758a1436dfe0366ee9553fe7a",
+        "status": "A"
+      },
+      "original_audit_decision_group": "historical_preservation_only",
+      "original_audit_recommendation": "hold_cross_host_process_mutation_and_action_cancellation",
+      "declared_entrypoints": {
+        "events": {
+          "push": {
+            "branches": ["ops/desktop-commander-recover-via-rog-20260925"]
+          }
+        },
+        "permissions": {
+          "actions": "write"
+        },
+        "concurrency": null,
+        "jobs": {
+          "recover-via-rog": {
+            "name": "Restore desktop connector through ROG SSH",
+            "runs-on": ["self-hosted", "linux", "x64", "rog"],
+            "timeout-minutes": "10"
+          }
+        },
+        "checkout_refs": [],
+        "external_actions": [],
+        "unpinned_external_actions": [],
+        "reusable_local_workflows": []
+      },
+      "known_hold_or_failure": "No code ordiagnostic qualification; operational recoveryworkflow cannotbe silently resurrected.",
+      "reason": "Remove a historical executable workflow from the active workflow directory while preserving the exact original bytes and provenance.",
+      "source_program_executed": false,
+      "scientific_or_production_qualification": false
+    }
+  ],
+  "effects": "These four paths cease to be GitHub workflow entrypoints after application. Their original histories, HOLD findings, and exact byte streams remain preserved.",
+  "programs_executed": false,
+  "qualification_granted": false
+}

@@ -1,0 +1,93 @@
+{
+  "status": "VALIDATION_PASSED",
+  "workflow_sha256": "a2a0c3f8c816432925540da4ce5c0eadecf8d42a3c6c00ccc3493cd5f2cfe617",
+  "yaml_parsed": true,
+  "bash_blocks_checked": 6,
+  "named_case_guard_cases": [
+    {
+      "case": "exact",
+      "accepted": true,
+      "expected": true
+    },
+    {
+      "case": "ansi_exact",
+      "accepted": true,
+      "expected": true
+    },
+    {
+      "case": "zero_tests",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "wrong_case",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "case_suffix",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "case_prefix",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "wrong_binary",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "binary_suffix",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "binary_prefix",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "trailing_case_data",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "log_prefix",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "duplicate",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "source_drift",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "hash_drift",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "case": "escaping_log_path",
+      "accepted": false,
+      "expected": false
+    }
+  ],
+  "guard_cases": 15,
+  "original_runner_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+  "original_nextest_summary_cases": 3,
+  "original_log_path": "run(): output.with_name(output.name + uuid suffix + .log); record.log_file = log.name",
+  "nextest_format_references": [
+    "https://nexte.st/docs/running/",
+    "https://nexte.st/docs/glossary/#binary-id"
+  ],
+  "actual_native_test_executed": false,
+  "production_authority": false
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.evaluated-c-independent-fault-case-split-review.v1",
+  "classification": "NO_NEW_STATIC_BLOCKER_FOUND_NOT_RUN_NOT_FMT_NOT_COMPILED",
+  "source_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "candidate_tree": "ab43e1e73697e5480f7835c5d63d1c57c70b053c",
+  "file": {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+    "base_blob": "320a6ce49e5d5016aa1af408a981c464f29e38af",
+    "post_blob": "316d35149c78e6c961a8d942fedb19e9c826e587",
+    "base_bytes": 19569,
+    "post_bytes": 20216,
+    "base_sha256": "49538185200d50bd961647af16f8fde21940b342148788fa166ddad273a0e6fb",
+    "post_sha256": "bd0dfbca029fe2ad237a8687a0a4dbe5b11d42bb5d088e77f10d7d31eacc012a"
+  },
+  "equality": {
+    "other_three": true,
+    "body_equal": true,
+    "transforms": [
+      "Remove one original for loop wrapper, preserve its complete body.",
+      "Remove one indentation level.",
+      "Replace the three finite fault strings with their corresponding closed enum variants.",
+      "Remove only three originally unreachable wildcard arms now made unnecessary by exhaustive enum matching."
+    ]
+  },
+  "findings": [
+    "The original named test now invokes the Trainer case; two separately named tokio tests invoke Evaluator and Selector through the same private boxed helper. Each case still constructs fresh independent real publication/T/B/S/C owners, channels, journals and cleanup.",
+    "The three fault paths retain the same actual withdrawals, exact expected nested error variants, unchanged C/publication bytes, S response/count assertions, T/B peer counts [7,6], [7,7], [8,8], stop/drop and fixture finish. No shared cached receipt or weakened error expectation is introduced.",
+    "All other three original native test function bodies are byte-identical. The original test name is retained; total methods increase by exactly two. Existing worker_threads=2 and transport/time/cap settings remain unchanged.",
+    "The closed enum makes three prior unreachable wildcard arms unnecessary. Removing only the loop wrapper, one indent level, those arms, and replacing the three literals with enum cases reconstructs the helper byte for byte.",
+    "The fixed 56 QA scan has no direct original-method-name match; the existing source-closure native file markers and parent registration remain present. This split does not establish that any single fault now finishes within its unchanged deadline."
+  ],
+  "qa_scan_blob": "9c133311525bf3662e9ca71890ab6c6285c800c3",
+  "limits": [
+    "No runtime, formatting or compiler execution performed.",
+    "Aggregate scheduling/peak concurrency will be governed by the unchanged real test runner; splitting does not claim a resource measurement or test pass."
+  ]
+}

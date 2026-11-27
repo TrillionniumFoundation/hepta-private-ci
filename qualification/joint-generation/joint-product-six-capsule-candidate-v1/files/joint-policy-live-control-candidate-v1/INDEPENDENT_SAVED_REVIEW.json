@@ -1,0 +1,111 @@
+{
+  "audit_script_sha256": "32ef223e06d5ab3239f867fa62a1cc5e75bd8fbae03c74c254d016e5b3e12c3b",
+  "boundaries": [
+    "One actual safe-boundary user_cancel after ack2, not arbitrary interleaving, backend preemption, expiry-during-compute or malformed active-backend fault qualification.",
+    "All restored live views audit-only; no successful live output continuation here. New restored-view fix tested before terminal marker.",
+    "Local inherited pipe and externally held epoch/pins are trusted cooperative context, not owner authentication, remote client acknowledgement or reboot attestation.",
+    "Classword Dress plus grayscale RGB for one known JI row; not general text/audio, diversity or scientific utility.",
+    "File fsync/link not powerloss proof. Hard ancestor death, kernel/storage/cleanup failures can still lose receipts; bounded per-process trial and posthoc terminal caps not strict global/256 proof.",
+    "Original96d9853f remains unexecuted and BLOCKED prior source evidence preserved; no retroactive PASS."
+  ],
+  "evidence_sha256": {
+    "COST_COVERAGE.json": "24d712f2504bd91e10f601ce6eddf824cce4d54ee808bb1c81924cc2b7260300",
+    "FREEZE.json": "ace422cc766e54fa4fb21884815d6a173fcb53e84f507b2dcdc68cc910082129",
+    "INDEPENDENT_SOURCE_REVIEW.json": "494203803512864e9b8b6e06afedeefc85a8d23df6d0d52f88c3612be2bb79a4",
+    "RUN_ONCE/OUTER_WAIT4_RECEIPT.json": "ea5abaf12a8babf419a6120b4699b88b5e64a2912ea9ba055309dbc9bb473b4b",
+    "RUN_ONCE/RESULT.json": "e52a4a62759c19e6692bbde0faffb25c678ac1b08f2b9bd33e3e32319f1d49ed",
+    "RUN_ONCE/ROLE_RECEIPTS.json": "78443b27042b3d98058b3f84752d3c92764fa67916fe0a9544213ce5b5a3da27",
+    "RUN_ONCE/chain/ACK_PACKET.json": "9020bbda354447a1e20f3d9399aa4197d5d212121f83a36a8f81aabd299fad5e",
+    "RUN_ONCE/chain/CONTROL_MANIFEST.json": "2b408d3b579ed815048e7a050a86fa3eb5eac90c192661799db439a9d963846f",
+    "RUN_ONCE/chain/HANDOFF.json": "4879a123d9f75bba73e46813ddcd3b9c64d2dd00b49e25feebbaf6130a33a000",
+    "SAVED_FINDINGS.md": "a2a64d0969aa307fe637249229e493b6cefb33048eb197b88a04388d13619799"
+  },
+  "method": "Independent saved-only stdlib JSON/canonical hashes, full ZIP-NPY headers/raw arrays and journal/prefix reconstruction, with frozen source control-flow inspection. No candidate imports, model, inference, optimizer, RNG draw or protocol execution.",
+  "notes_and_cost": "SAVED_FINDINGS.md and COST_COVERAGE.json consistent with independently checked saved evidence; pending label describes pre-review state. No cumulative index reassessment.",
+  "resources_and_cost": {
+    "accounting": "Killed producer, recovery, supervisor/control negatives, metadata RNG, hashing/IO/imports/teardown included once inside full subtree. Worker and supervisor values partition subtree, not added again. Prefix extra; unknown tail not zero. Prior training/source/reviews and this independent audit additional nonzero. Cumulative engineering index not audited. Float receipt lower .6254578789999999 differs only binary rounding from decimal .625457879.",
+    "fullwait_exit": 0,
+    "known_lower_bound_CPU_seconds": "0.625457879",
+    "largest_reaped_RSS_kib": 33452,
+    "limits": {
+      "AS": [
+        268435456,
+        268435456
+      ],
+      "CPU": [
+        2,
+        2
+      ],
+      "FSIZE": [
+        2097152,
+        2097152
+      ]
+    },
+    "outer_prefix_CPU_seconds": "0.035851879",
+    "outer_tail": "unknown_not_zero",
+    "roles_exit": [
+      -9,
+      0
+    ],
+    "selected_reconnect_plus_current_lower_bound_CPU_seconds": "1.257107784",
+    "selected_unknown_tails": 2,
+    "supervisor_partition_decimal_CPU_seconds": "0.18161100000000006",
+    "terminal_budget_pass": true,
+    "wall_limits": {
+      "handled_failure_cleanup": 15,
+      "outer_initial": 90,
+      "supervisor": 60,
+      "workers": 30
+    },
+    "wall_seconds": 0.6270091700134799,
+    "whole_subtree_CPU_seconds": "0.589606",
+    "worker_CPU_seconds": "0.40799499999999994"
+  },
+  "source_freeze_sha256": "ace422cc766e54fa4fb21884815d6a173fcb53e84f507b2dcdc68cc910082129",
+  "status": "PASS_SAVED_SCOPED_LOCAL_ASYNC_CANCEL_BOUNDARY",
+  "verified": {
+    "RUN_bytes": 2241797,
+    "RUN_files": 47,
+    "cancel": "Observation -> generated cancel-intent -> cancelled -> persisted control-ack all bound to exact current identity/manifest/command and fixed midpoint. next_index2, controller1/generator1 nonrefunded, text35+image8192=8227 bytes preserved. No piece02 intent/output. Caller handoff contains verified ACK, not arbitrary READY record.",
+    "counts": {
+      "Actor_predictions": 1,
+      "checks": 22,
+      "encoded_rows": 1,
+      "fresh_models": 0,
+      "model_restores": 4,
+      "optimizer_steps": 0,
+      "recovery_inference": 0,
+      "recovery_published_bytes": 0,
+      "reference_calls": 0,
+      "refusals": 14,
+      "selective_calls": 1
+    },
+    "counts_basis": "Saved counters and frozen executed control-flow, not independent instruction tracing. Two recovery cold restores remain charged work. Nine malformed/time/identity control refusals are metadata-only; wrong epoch is not actual reboot.",
+    "frozen_files": 31,
+    "full_inventory_match": true,
+    "identity": "Reconstructed current artifact from prior artifact replacing only source_freeze; request from prior replacing artifact/run_id/deadline. Derived namespace, raw/qualified request identities, spec and route. All eight attempt snapshots inner/outer checksums, complete route/wire/session, claim, observation and ACK fixed-name refs independently match. Prior selected wire and route numerics exact.",
+    "lock_instance": [
+      27,
+      671539
+    ],
+    "models": "All Content78 and Actor20 array entries, dtype/shape/raw bytes, parameters/Adam metadata and full AFTER NPZ equal pinned input. Composite artifact array digests independently recalculated.",
+    "original_inputs_terminal_rehashed": 13,
+    "partial_order": {
+      "ack_pre_send_ns": 230853116106886,
+      "ack_received_ns": 230853121926015,
+      "intent_return_ns": 230853113557973,
+      "observed_ns": 230853109507661,
+      "send": {
+        "send_begin_ns": 230853109268365,
+        "write_complete_ns": 230853109292231
+      }
+    },
+    "pipe_and_clock": "Frozen source uses two actual private os.pipe channels with explicit inherited end closure; separate supervisor command and producer ACK records agree byte-for-byte with persisted observation/ACK. OS monotonic samples satisfy send_begin <= observed <= intent_return <= ack_pre_send <= ack_received, separately send_begin <= write_complete <= ack_received. No assumption write_complete precedes observed is required. No syscall tracing or hard-real-time claim.",
+    "processes": "Supervisor8 launches producer9; midpoint independently verified, command and verified ACK/HANDOFF precede own SIGKILL/reap-9; recovery10 starts only afterward and exits0; outer reaps8 exit0. Shared ownership receipts/events consistent, all strict chronological order. Normal path only, not pending-alarm fault injection.",
+    "readonly_and_refusals": "Two pre-command restored-view await/replay refusals exactly read-only, before any terminal marker. READONLY before/after reconstruct exact midpoint inventory. Duplicate same disposition, rollback and bad-ACK before/after reconstruct exact terminal inventory. Recovery old midpoint publish refuses namespace terminal, not treated as successful continuation. Detached bad ACK changes only hash, rejects ACK ref mismatch; original records unchanged.",
+    "root_instance": [
+      27,
+      671533
+    ]
+  }
+}

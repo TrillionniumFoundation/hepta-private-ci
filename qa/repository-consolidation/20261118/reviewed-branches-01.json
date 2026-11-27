@@ -1,0 +1,1819 @@
+{
+  "accepted": [
+    "04a580e0d302621c45d69a062264fede0717e757",
+    "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+    "94846b3a75c6322e86077208a071d7ead3d081da",
+    "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+    "bc1facac14bddae2ea83efa662d8200b8d56a080",
+    "dc3688877e8f979ffe704759255139cb714d87f5",
+    "e6cbdda4ea6c31682e50acc7c6935e076ce3945c",
+    "faa3d1cbd0cd7d64da6f4a7b228daee99a4df29d"
+  ],
+  "accepted_head_count": 8,
+  "candidate": "d2422433dccc232e10256973df68823331928a28",
+  "heads": [
+    {
+      "all_parents_candidate_ancestors": true,
+      "changes": [
+        {
+          "base_changes": [
+            {
+              "merge_base": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+              "new_mode": "100644",
+              "new_oid": "a81c4befe92fb76bb01e2814792d3006d4664f4b",
+              "old_mode": "100644",
+              "old_oid": "baae0460b9724aa1006fb43cd9ebd1cf52cd2e57",
+              "status": "M"
+            }
+          ],
+          "candidate_entry": {
+            "mode": "100644",
+            "oid": "016296eb639027997cb2d1f9ac4d06e18a455317",
+            "type": "blob"
+          },
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "016296eb639027997cb2d1f9ac4d06e18a455317",
+            "type": "blob"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "a81c4befe92fb76bb01e2814792d3006d4664f4b"
+          },
+          "path": "codex-rs/hepta-infer-worker-host/src/neuron_microbatch_tests.rs"
+        }
+      ],
+      "classification": "accepted_semantic_already_covered",
+      "names": [
+        "fix/neuron-microbatch-snapshot-fixture-20261019"
+      ],
+      "parents": [
+        "dc271d4f47028e941decce70cc8ef81fb24d2141"
+      ],
+      "reason": "Candidate separately tests identical snapshots as admissible and the exact one-Q24-unit feature delta as rejected, preserving both behaviors introduced by this commit. It also retains the existing mixed-feature and oversized-batch negatives.",
+      "resolution": "Keep candidate neuron_microbatch_tests.rs, including separate planner_accepts_two_requests_with_identical_snapshots and planner_rejects_one_unit_change_in_second_snapshot_feature cases.",
+      "sha": "04a580e0d302621c45d69a062264fede0717e757",
+      "tests_needed": "Candidate scoped codex-hepta-infer-worker-host microbatch tests in normal qualification; no source behavior changes in this history-resolution batch."
+    },
+    {
+      "all_git_blobs_verified": true,
+      "all_new_regular_non_executable_files": true,
+      "all_parents_candidate_ancestors": true,
+      "archived_scripts_reviewed_not_executed": [
+        "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514_run.py"
+      ],
+      "changes": [
+        {
+          "base_changes": [
+            {
+              "merge_base": "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6",
+              "new_mode": "100644",
+              "new_oid": "8e17bd28967d261a4deeb95ee1fc30cf72a47a07",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "8e17bd28967d261a4deeb95ee1fc30cf72a47a07"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "8e17bd28967d261a4deeb95ee1fc30cf72a47a07"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-marker-map.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6",
+              "new_mode": "100644",
+              "new_oid": "2cb770a8e0d9ccd920e9aa7e7937039869b004e1",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "2cb770a8e0d9ccd920e9aa7e7937039869b004e1"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "2cb770a8e0d9ccd920e9aa7e7937039869b004e1"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v1-raw.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6",
+              "new_mode": "100644",
+              "new_oid": "6ce1428f3ce4c3bdc51187ec6d2bc4d720f3b861",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "6ce1428f3ce4c3bdc51187ec6d2bc4d720f3b861"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "6ce1428f3ce4c3bdc51187ec6d2bc4d720f3b861"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v1-result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6",
+              "new_mode": "100644",
+              "new_oid": "d11fe181294c52013f9fd8a992df6382df8bb51a",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "d11fe181294c52013f9fd8a992df6382df8bb51a"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "d11fe181294c52013f9fd8a992df6382df8bb51a"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v2-boundaries.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6",
+              "new_mode": "100644",
+              "new_oid": "6f9ef9fc829322e7ecd3789814359db8fa49d2af",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "6f9ef9fc829322e7ecd3789814359db8fa49d2af"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "6f9ef9fc829322e7ecd3789814359db8fa49d2af"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v2-boundaries.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6",
+              "new_mode": "100644",
+              "new_oid": "2ac31d56e6dc6b5ade3f3c8dde6405348b8ff2da",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "2ac31d56e6dc6b5ade3f3c8dde6405348b8ff2da"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "2ac31d56e6dc6b5ade3f3c8dde6405348b8ff2da"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v2-raw.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6",
+              "new_mode": "100644",
+              "new_oid": "1fac227878a29a2dc3c0960dc70d29043c5f68e7",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "1fac227878a29a2dc3c0960dc70d29043c5f68e7"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "1fac227878a29a2dc3c0960dc70d29043c5f68e7"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v2-result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6",
+              "new_mode": "100644",
+              "new_oid": "7b24fba8abd77eed70e2edaabc270c1395193113",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "7b24fba8abd77eed70e2edaabc270c1395193113"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "7b24fba8abd77eed70e2edaabc270c1395193113"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514_run.py"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6",
+              "new_mode": "100644",
+              "new_oid": "66e500b573c19eeb44fdc6b91f39cc8fd9d84e37",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "66e500b573c19eeb44fdc6b91f39cc8fd9d84e37"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "66e500b573c19eeb44fdc6b91f39cc8fd9d84e37"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/summary.json"
+        }
+      ],
+      "classification": "accepted_historical_evidence_only",
+      "credential_pattern_scan_hits": 0,
+      "names": [
+        "codex/learn-retained-format-evidence-ce434-20261112-v1"
+      ],
+      "original_file_total_bytes": 32595,
+      "parents": [
+        "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6"
+      ],
+      "reason": "Nine new non-executable dated acceptance files preserve both early and later guard outcomes, bound to 5fecd613... and parent514. Summary explicitly distinguishes executed working postimages from exact-HEAD execution and says no Rust/native or full repository proof. guard514_run.py is an archived runner hardwired to original scratch paths and rejects other source HEADs.",
+      "resolution": "Add all original dated acceptance files unchanged; preserve original failures, source binding and no-native qualification statements.",
+      "sha": "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+      "tests_needed": "Verified eight summary file sizes/SHA-256 values, all Git blob IDs, JSON syntax, archived Python AST syntax and credential-pattern scan. No native pass claimed."
+    },
+    {
+      "all_git_blobs_verified": true,
+      "all_new_regular_non_executable_files": true,
+      "all_parents_candidate_ancestors": true,
+      "archived_scripts_reviewed_not_executed": [
+        "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/run_review.py"
+      ],
+      "changes": [
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "51a12b3770ed2582e2efe4bf0f2f0c4e6056e3e6",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "51a12b3770ed2582e2efe4bf0f2f0c4e6056e3e6"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "51a12b3770ed2582e2efe4bf0f2f0c4e6056e3e6"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/edge-and-protected-v1/raw.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "aaa135ce29b8072c6797ccc057131be8f5cc6b25",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "aaa135ce29b8072c6797ccc057131be8f5cc6b25"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "aaa135ce29b8072c6797ccc057131be8f5cc6b25"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/edge-and-protected-v1/result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "a6cd87b320da64d16dff6842025627ef5232f35b",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "a6cd87b320da64d16dff6842025627ef5232f35b"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "a6cd87b320da64d16dff6842025627ef5232f35b"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/edge-and-protected-v2/raw.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "f904ff7ab0741a94e083caf3501f6cdef11a8382",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "f904ff7ab0741a94e083caf3501f6cdef11a8382"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "f904ff7ab0741a94e083caf3501f6cdef11a8382"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/edge-and-protected-v2/result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "56a6aac7c59f52fd8099331a99176074f6e3802b",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "56a6aac7c59f52fd8099331a99176074f6e3802b"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "56a6aac7c59f52fd8099331a99176074f6e3802b"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/guard-patch-result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "1694e88406cd293b6d716e078d055177d3e3af2a",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "1694e88406cd293b6d716e078d055177d3e3af2a"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "1694e88406cd293b6d716e078d055177d3e3af2a"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/inherited-source-qa-v1/raw.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "0f0c0a576f982ccd158798fb7ee63fc96e62188c",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "0f0c0a576f982ccd158798fb7ee63fc96e62188c"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "0f0c0a576f982ccd158798fb7ee63fc96e62188c"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/inherited-source-qa-v1/result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "28fe52da9292208a6d508b4c56ff185e652826f1",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "28fe52da9292208a6d508b4c56ff185e652826f1"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "28fe52da9292208a6d508b4c56ff185e652826f1"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/inherited-source-qa-v2/raw.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "92fc52219df5238c2349ef4917eca585cc8281a7",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "92fc52219df5238c2349ef4917eca585cc8281a7"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "92fc52219df5238c2349ef4917eca585cc8281a7"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/inherited-source-qa-v2/result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "0261d5385938978c65ad7f3cc243755111883446",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "0261d5385938978c65ad7f3cc243755111883446"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "0261d5385938978c65ad7f3cc243755111883446"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/qualification-summary.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "d13c757d9067f47b8963503f9e3ae468fa7d35db",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "d13c757d9067f47b8963503f9e3ae468fa7d35db"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "d13c757d9067f47b8963503f9e3ae468fa7d35db"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/run_review.py"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+              "new_mode": "100644",
+              "new_oid": "03fb917c7b46b95aa48dab598cb9c9d50276cbc6",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "03fb917c7b46b95aa48dab598cb9c9d50276cbc6"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "03fb917c7b46b95aa48dab598cb9c9d50276cbc6"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/version-postimages-v1.json"
+        }
+      ],
+      "classification": "accepted_historical_evidence_only",
+      "credential_pattern_scan_hits": 0,
+      "names": [
+        "codex/learn-retained-version-source-evidence-ce434-20261112-v1"
+      ],
+      "original_file_total_bytes": 235833,
+      "parents": [
+        "059d65e149469eed44e912f9ec22ee7ea9fce6d6"
+      ],
+      "reason": "Twelve new non-executable dated acceptance files retain affected-source review of059d65e... with85 source cases,29 scoped boundaries and83 protected rows. Qualification summary preserves earlier runs and explicitly excludes Rust/rustfmt/native/full-caller/deployment claims. run_review.py is an archived original-scratch source reviewer, outside active CI/test registrations.",
+      "resolution": "Add all original files unchanged as historical source evidence. Preserve original unsuccessful phases and declared unexecuted native work.",
+      "sha": "94846b3a75c6322e86077208a071d7ead3d081da",
+      "tests_needed": "Verified Git blob identities, JSON/AST syntax, paired raw-log hashes and credential-pattern scan. No current native qualification inferred."
+    },
+    {
+      "all_git_blobs_verified": true,
+      "all_new_regular_non_executable_files": true,
+      "all_parents_candidate_ancestors": true,
+      "archived_scripts_reviewed_not_executed": [
+        "docs/learning/evidence/model-proposal-guards-ce434/run-scope.py"
+      ],
+      "changes": [
+        {
+          "base_changes": [
+            {
+              "merge_base": "624420687740a7071339571ec8e3dd0ba456f521",
+              "new_mode": "100644",
+              "new_oid": "c10eb43b965e85d2dee99ab2b51f6a1bc666f685",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "c10eb43b965e85d2dee99ab2b51f6a1bc666f685"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "c10eb43b965e85d2dee99ab2b51f6a1bc666f685"
+          },
+          "path": "docs/learning/evidence/model-proposal-guards-ce434/README.md"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "624420687740a7071339571ec8e3dd0ba456f521",
+              "new_mode": "100644",
+              "new_oid": "363c68c16ed8ddb5664c740ab606bec2a3de706d",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "363c68c16ed8ddb5664c740ab606bec2a3de706d"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "363c68c16ed8ddb5664c740ab606bec2a3de706d"
+          },
+          "path": "docs/learning/evidence/model-proposal-guards-ce434/baseline.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "624420687740a7071339571ec8e3dd0ba456f521",
+              "new_mode": "100644",
+              "new_oid": "ee5665054edaf5992a88e122d280696400f4f4b3",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "ee5665054edaf5992a88e122d280696400f4f4b3"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "ee5665054edaf5992a88e122d280696400f4f4b3"
+          },
+          "path": "docs/learning/evidence/model-proposal-guards-ce434/baseline.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "624420687740a7071339571ec8e3dd0ba456f521",
+              "new_mode": "100644",
+              "new_oid": "807db9f897c412f51a422fdf10060887d9a12520",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "807db9f897c412f51a422fdf10060887d9a12520"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "807db9f897c412f51a422fdf10060887d9a12520"
+          },
+          "path": "docs/learning/evidence/model-proposal-guards-ce434/evidence-manifest.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "624420687740a7071339571ec8e3dd0ba456f521",
+              "new_mode": "100644",
+              "new_oid": "09f2d702fad55b1277a43ada4400981b51b681ce",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "09f2d702fad55b1277a43ada4400981b51b681ce"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "09f2d702fad55b1277a43ada4400981b51b681ce"
+          },
+          "path": "docs/learning/evidence/model-proposal-guards-ce434/exact-624-final.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "624420687740a7071339571ec8e3dd0ba456f521",
+              "new_mode": "100644",
+              "new_oid": "6ec9eb4b4291eae4d7ccd1267bceb053a733f2f0",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "6ec9eb4b4291eae4d7ccd1267bceb053a733f2f0"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "6ec9eb4b4291eae4d7ccd1267bceb053a733f2f0"
+          },
+          "path": "docs/learning/evidence/model-proposal-guards-ce434/exact-624-final.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "624420687740a7071339571ec8e3dd0ba456f521",
+              "new_mode": "100644",
+              "new_oid": "d3f5d36c1e7345ae36586b441c47e751a3f082b1",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "d3f5d36c1e7345ae36586b441c47e751a3f082b1"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "d3f5d36c1e7345ae36586b441c47e751a3f082b1"
+          },
+          "path": "docs/learning/evidence/model-proposal-guards-ce434/run-scope.py"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "624420687740a7071339571ec8e3dd0ba456f521",
+              "new_mode": "100644",
+              "new_oid": "75ed0943f1a73e8ec0199418866b21e0ef7dfc63",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "75ed0943f1a73e8ec0199418866b21e0ef7dfc63"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "75ed0943f1a73e8ec0199418866b21e0ef7dfc63"
+          },
+          "path": "docs/learning/evidence/model-proposal-guards-ce434/source.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "624420687740a7071339571ec8e3dd0ba456f521",
+              "new_mode": "100644",
+              "new_oid": "47435b72d81e383b3cab5beb1ef5adda8492bd95",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "47435b72d81e383b3cab5beb1ef5adda8492bd95"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "47435b72d81e383b3cab5beb1ef5adda8492bd95"
+          },
+          "path": "docs/learning/evidence/model-proposal-guards-ce434/validation.json"
+        }
+      ],
+      "classification": "accepted_historical_evidence_only",
+      "credential_pattern_scan_hits": 0,
+      "names": [
+        "codex/learn-original-proposal-guards-evidence-ce434-20261112"
+      ],
+      "original_file_total_bytes": 134302,
+      "parents": [
+        "624420687740a7071339571ec8e3dd0ba456f521"
+      ],
+      "reason": "Nine new non-executable files under docs/learning/evidence/model-proposal-guards-ce434 retain exact 624420... source-gate results and the failed formatted baseline. README explicitly limits these to 57 scoped Python methods and denies full caller/native/deployment qualification. Archived run-scope.py uses historical absolute scratch paths; no active workflow/build/test registration changes.",
+      "resolution": "Add all original files byte-for-byte at their original paths. Treat README/logs/script as historical evidence, never as a new current-source result or as an executable entrypoint.",
+      "sha": "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+      "tests_needed": "Verified evidence-manifest sizes/SHA-256/Git blob IDs, JSON parsing, archived Python AST syntax and credential-pattern scan. Normal repository formatting/spelling/blob-policy checks remain."
+    },
+    {
+      "all_parents_candidate_ancestors": true,
+      "changes": [
+        {
+          "base_changes": [
+            {
+              "merge_base": "cc02dba48140765e35627fdb2a61cc714e217339",
+              "new_mode": "100644",
+              "new_oid": "2001d2722a26d930100ecf946bec560bb5eb9104",
+              "old_mode": "100644",
+              "old_oid": "76c2c5b8cc97778cd0321f121fbb95ab8ebfa40f",
+              "status": "M"
+            }
+          ],
+          "candidate_entry": {
+            "mode": "100644",
+            "oid": "0ed62b18e0870689e019ca1b54eb73cb4f56adea",
+            "type": "blob"
+          },
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "0ed62b18e0870689e019ca1b54eb73cb4f56adea",
+            "type": "blob"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "2001d2722a26d930100ecf946bec560bb5eb9104"
+          },
+          "path": "codex-rs/hepta-control-plane/src/scope_lane_wal.rs"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "cc02dba48140765e35627fdb2a61cc714e217339",
+              "new_mode": "100644",
+              "new_oid": "358466eb48435585c68c5bceaebda177b3c56cbe",
+              "old_mode": "100644",
+              "old_oid": "5e5a71cfc802d048eed1ba52b6060abae157c8e2",
+              "status": "M"
+            }
+          ],
+          "candidate_entry": {
+            "mode": "100644",
+            "oid": "603ec3caf6c8fc7bed9419d2b6bae46d2bcef855",
+            "type": "blob"
+          },
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "603ec3caf6c8fc7bed9419d2b6bae46d2bcef855",
+            "type": "blob"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "358466eb48435585c68c5bceaebda177b3c56cbe"
+          },
+          "path": "codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs"
+        }
+      ],
+      "classification": "accepted_semantic_already_covered",
+      "names": [
+        "fix/scope-wal-rustfmt-2788-cc02dba4-20261018"
+      ],
+      "parents": [
+        "cc02dba48140765e35627fdb2a61cc714e217339"
+      ],
+      "reason": "Same parent and same two postimage blobs as faa3d1cbd0cd7d64da6f4a7b228daee99a4df29d; exact formatting is already in candidate. Both independent histories can be retained without source change.",
+      "resolution": "Keep candidate blobs for both paths; record both historical parents without duplicate application.",
+      "sha": "bc1facac14bddae2ea83efa662d8200b8d56a080",
+      "tests_needed": "Candidate formatter/normal qualification; no new semantic change."
+    },
+    {
+      "all_git_blobs_verified": true,
+      "all_new_regular_non_executable_files": true,
+      "all_parents_candidate_ancestors": true,
+      "archived_scripts_reviewed_not_executed": [
+        "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/run_3396_v1.py",
+        "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/run_77bfe_v2.py",
+        "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/run_77bfe_v3_parser.py"
+      ],
+      "changes": [
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "a615e315f4a4f40cc182a47795eafe615c88b50b",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "a615e315f4a4f40cc182a47795eafe615c88b50b"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "a615e315f4a4f40cc182a47795eafe615c88b50b"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/coverage-parser.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/diff-check.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/py-compile.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "d61c48cb10aa292d74bde2b4b734a7eff4b19ff0",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "d61c48cb10aa292d74bde2b4b734a7eff4b19ff0"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "d61c48cb10aa292d74bde2b4b734a7eff4b19ff0"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "c1f7a50480320d920b868390ef1a308d454accc2",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "c1f7a50480320d920b868390ef1a308d454accc2"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "c1f7a50480320d920b868390ef1a308d454accc2"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/retained-source.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "d64b56493a61e1f6f510fc6f1fb7d776e9714e34",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "d64b56493a61e1f6f510fc6f1fb7d776e9714e34"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "d64b56493a61e1f6f510fc6f1fb7d776e9714e34"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/training-source.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "cc21602684b34c13d8bee89420bc7c98fcad25dc",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "cc21602684b34c13d8bee89420bc7c98fcad25dc"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "cc21602684b34c13d8bee89420bc7c98fcad25dc"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/coverage-parser.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/diff-check.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/py-compile.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "23c22afeb310a76ab93da6cd39e89203678d73d8",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "23c22afeb310a76ab93da6cd39e89203678d73d8"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "23c22afeb310a76ab93da6cd39e89203678d73d8"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "975b889f0baf8dfa054ae53948b76abfc586301d",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "975b889f0baf8dfa054ae53948b76abfc586301d"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "975b889f0baf8dfa054ae53948b76abfc586301d"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/retained-source.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "ebd0a6fce4a2ce0a01ae9744fdca6d423b85270f",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "ebd0a6fce4a2ce0a01ae9744fdca6d423b85270f"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "ebd0a6fce4a2ce0a01ae9744fdca6d423b85270f"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/training-source.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "a5c9d248d62a741fe9fe363e2490d3f466497fa3",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "a5c9d248d62a741fe9fe363e2490d3f466497fa3"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "a5c9d248d62a741fe9fe363e2490d3f466497fa3"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v3-parser/coverage-parser.log"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "56cb93633536a45016248b079dda8b5f631aecc5",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "56cb93633536a45016248b079dda8b5f631aecc5"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "56cb93633536a45016248b079dda8b5f631aecc5"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v3-parser/result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "b60b27c13273aee92555899431801d8e48452281",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "b60b27c13273aee92555899431801d8e48452281"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "b60b27c13273aee92555899431801d8e48452281"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/run_3396_v1.py"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "f76b9b50ac49e78050f550f880ff3b92414fb087",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "f76b9b50ac49e78050f550f880ff3b92414fb087"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "f76b9b50ac49e78050f550f880ff3b92414fb087"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/run_77bfe_v2.py"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "b91de175776a1a9dd023448c3d098b0d9331c3cc",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "b91de175776a1a9dd023448c3d098b0d9331c3cc"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "b91de175776a1a9dd023448c3d098b0d9331c3cc"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/run_77bfe_v3_parser.py"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+              "new_mode": "100644",
+              "new_oid": "21dda8e205c750b129cc9022210eacacdf5fbf7b",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "21dda8e205c750b129cc9022210eacacdf5fbf7b"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "21dda8e205c750b129cc9022210eacacdf5fbf7b"
+          },
+          "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/summary.json"
+        }
+      ],
+      "classification": "accepted_historical_evidence_only",
+      "credential_pattern_scan_hits": 0,
+      "names": [
+        "codex/learn-retained-python-evidence-ce434-20261112-v1"
+      ],
+      "original_file_total_bytes": 54506,
+      "parents": [
+        "77bfe71c6021e8da78ff917db3347f7e7a503d65"
+      ],
+      "reason": "Eighteen new non-executable dated acceptance files preserve the original3396 TOML failure,77bfe source-control results and independent parser rerun. Summary binds exact source/tree and explicitly reports all native/full-caller/deployed qualification as false. Three archived run scripts assert exact historical HEAD/tree and use original scratch directories; no active registration changes.",
+      "resolution": "Add original files unchanged, including failed results and all three historical source recipes. Do not run archived recipes or relabel18 source cases plus16 parser cases as current native qualification.",
+      "sha": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "tests_needed": "Verified every summary artifact size/Git blob ID, recorded log SHA-256/length when paired, JSON syntax, archived Python AST syntax and credential-pattern scan."
+    },
+    {
+      "all_git_blobs_verified": true,
+      "all_new_regular_non_executable_files": true,
+      "all_parents_candidate_ancestors": true,
+      "archived_scripts_reviewed_not_executed": [
+        "qualification/learn-ordinary-ce434/issuer-integration-7832-4993-20261112/integrate_original_issuer.py"
+      ],
+      "changes": [
+        {
+          "base_changes": [
+            {
+              "merge_base": "5d6e2f248d04a37a2578f909d86aab4ce0baab26",
+              "new_mode": "100644",
+              "new_oid": "f9ccd075da56fd06b973fcca8811f25523478ea6",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "f9ccd075da56fd06b973fcca8811f25523478ea6"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "f9ccd075da56fd06b973fcca8811f25523478ea6"
+          },
+          "path": "qualification/learn-ordinary-ce434/issuer-integration-7832-4993-20261112/README.md"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5d6e2f248d04a37a2578f909d86aab4ce0baab26",
+              "new_mode": "100644",
+              "new_oid": "f4a32c1a551fc99e82b0424bf09309a8f13d2521",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "f4a32c1a551fc99e82b0424bf09309a8f13d2521"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "f4a32c1a551fc99e82b0424bf09309a8f13d2521"
+          },
+          "path": "qualification/learn-ordinary-ce434/issuer-integration-7832-4993-20261112/automerge-and-methods.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5d6e2f248d04a37a2578f909d86aab4ce0baab26",
+              "new_mode": "100644",
+              "new_oid": "551b951c09838a4eb9551944d49384bbe9b3fd69",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "551b951c09838a4eb9551944d49384bbe9b3fd69"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "551b951c09838a4eb9551944d49384bbe9b3fd69"
+          },
+          "path": "qualification/learn-ordinary-ce434/issuer-integration-7832-4993-20261112/committed-source.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5d6e2f248d04a37a2578f909d86aab4ce0baab26",
+              "new_mode": "100644",
+              "new_oid": "5bc6dcec42a951ba5b833e674f62380ba7ac47d0",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "5bc6dcec42a951ba5b833e674f62380ba7ac47d0"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "5bc6dcec42a951ba5b833e674f62380ba7ac47d0"
+          },
+          "path": "qualification/learn-ordinary-ce434/issuer-integration-7832-4993-20261112/integrate_original_issuer.py"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5d6e2f248d04a37a2578f909d86aab4ce0baab26",
+              "new_mode": "100644",
+              "new_oid": "80b411733a1eeb2093cd4321a84f0865005bc658",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "80b411733a1eeb2093cd4321a84f0865005bc658"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "80b411733a1eeb2093cd4321a84f0865005bc658"
+          },
+          "path": "qualification/learn-ordinary-ce434/issuer-integration-7832-4993-20261112/integration-final.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5d6e2f248d04a37a2578f909d86aab4ce0baab26",
+              "new_mode": "100644",
+              "new_oid": "1daabff5b04479e13f857cbb002146c2d35eeb93",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "1daabff5b04479e13f857cbb002146c2d35eeb93"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "1daabff5b04479e13f857cbb002146c2d35eeb93"
+          },
+          "path": "qualification/learn-ordinary-ce434/issuer-integration-7832-4993-20261112/publication.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5d6e2f248d04a37a2578f909d86aab4ce0baab26",
+              "new_mode": "100644",
+              "new_oid": "9a5178c3bc324ccff095d2a729385c484bab9809",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "9a5178c3bc324ccff095d2a729385c484bab9809"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "9a5178c3bc324ccff095d2a729385c484bab9809"
+          },
+          "path": "qualification/learn-ordinary-ce434/issuer-integration-7832-4993-20261112/root-inventory-final-result.json"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "5d6e2f248d04a37a2578f909d86aab4ce0baab26",
+              "new_mode": "100644",
+              "new_oid": "75a08b04a0b4759b8351e53580ff91a3cf7cb513",
+              "old_mode": "000000",
+              "old_oid": "0000000000000000000000000000000000000000",
+              "status": "A"
+            }
+          ],
+          "candidate_entry": null,
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "75a08b04a0b4759b8351e53580ff91a3cf7cb513"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "75a08b04a0b4759b8351e53580ff91a3cf7cb513"
+          },
+          "path": "qualification/learn-ordinary-ce434/issuer-integration-7832-4993-20261112/root-inventory-final-test.log"
+        }
+      ],
+      "classification": "accepted_historical_evidence_only",
+      "credential_pattern_scan_hits": 0,
+      "names": [
+        "codex/learn-version-issuer-integration-evidence-ce434-20261112-v1"
+      ],
+      "original_file_total_bytes": 67267,
+      "parents": [
+        "5d6e2f248d04a37a2578f909d86aab4ce0baab26"
+      ],
+      "reason": "Eight new non-executable dated qualification files document exact issuer merge5d6e2f... with original parents, conflict decisions and one scoped Python method. README explicitly says formatter/full-source/Rust/native/full-caller did not run. Archived integrate_original_issuer.py can write a checkout only after exact historical HEAD,MERGE_HEAD,base and conflict assertions; it is not installed into any active workflow or script entrypoint.",
+      "resolution": "Add original files unchanged as historical merge/source evidence; retain the script as archived source material and never execute it against the current candidate.",
+      "sha": "e6cbdda4ea6c31682e50acc7c6935e076ce3945c",
+      "tests_needed": "Verified source commit/tree identity, all Git blobs, JSON syntax, archived Python AST syntax and credential-pattern scan; normal repository file policy checks remain."
+    },
+    {
+      "all_parents_candidate_ancestors": true,
+      "changes": [
+        {
+          "base_changes": [
+            {
+              "merge_base": "cc02dba48140765e35627fdb2a61cc714e217339",
+              "new_mode": "100644",
+              "new_oid": "2001d2722a26d930100ecf946bec560bb5eb9104",
+              "old_mode": "100644",
+              "old_oid": "76c2c5b8cc97778cd0321f121fbb95ab8ebfa40f",
+              "status": "M"
+            }
+          ],
+          "candidate_entry": {
+            "mode": "100644",
+            "oid": "0ed62b18e0870689e019ca1b54eb73cb4f56adea",
+            "type": "blob"
+          },
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "0ed62b18e0870689e019ca1b54eb73cb4f56adea",
+            "type": "blob"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "2001d2722a26d930100ecf946bec560bb5eb9104"
+          },
+          "path": "codex-rs/hepta-control-plane/src/scope_lane_wal.rs"
+        },
+        {
+          "base_changes": [
+            {
+              "merge_base": "cc02dba48140765e35627fdb2a61cc714e217339",
+              "new_mode": "100644",
+              "new_oid": "358466eb48435585c68c5bceaebda177b3c56cbe",
+              "old_mode": "100644",
+              "old_oid": "5e5a71cfc802d048eed1ba52b6060abae157c8e2",
+              "status": "M"
+            }
+          ],
+          "candidate_entry": {
+            "mode": "100644",
+            "oid": "603ec3caf6c8fc7bed9419d2b6bae46d2bcef855",
+            "type": "blob"
+          },
+          "chosen_entry": {
+            "mode": "100644",
+            "oid": "603ec3caf6c8fc7bed9419d2b6bae46d2bcef855",
+            "type": "blob"
+          },
+          "historical_final": {
+            "mode": "100644",
+            "oid": "358466eb48435585c68c5bceaebda177b3c56cbe"
+          },
+          "path": "codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs"
+        }
+      ],
+      "classification": "accepted_semantic_already_covered",
+      "names": [
+        "fix/scope-wal-exact-rustfmt-20261018"
+      ],
+      "parents": [
+        "cc02dba48140765e35627fdb2a61cc714e217339"
+      ],
+      "reason": "The only two changes are line wrapping. Candidate contains the exact formatted options.open/map_err chain and owner-only Unix permissions assertion. Later candidate WAL hardening and tests must remain.",
+      "resolution": "Keep candidate blobs for both paths and preserve this source commit as a merge parent with this explicit resolution.",
+      "sha": "faa3d1cbd0cd7d64da6f4a7b228daee99a4df29d",
+      "tests_needed": "No added behavior: candidate formatter/normal qualification. Do not replace newer WAL files with the historical postimages."
+    }
+  ],
+  "historical_manifest_checks": [
+    {
+      "check": "summary_bytes_sha256",
+      "head": "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-marker-map.json"
+    },
+    {
+      "check": "summary_bytes_sha256",
+      "head": "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514_run.py"
+    },
+    {
+      "check": "summary_bytes_sha256",
+      "head": "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v1-raw.log"
+    },
+    {
+      "check": "summary_bytes_sha256",
+      "head": "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v1-result.json"
+    },
+    {
+      "check": "summary_bytes_sha256",
+      "head": "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v2-raw.log"
+    },
+    {
+      "check": "summary_bytes_sha256",
+      "head": "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v2-result.json"
+    },
+    {
+      "check": "summary_bytes_sha256",
+      "head": "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v2-boundaries.log"
+    },
+    {
+      "check": "summary_bytes_sha256",
+      "head": "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-formatted-guards/guard514-v2-boundaries.json"
+    },
+    {
+      "check": "paired_result_raw_sha256",
+      "head": "94846b3a75c6322e86077208a071d7ead3d081da",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/edge-and-protected-v1/raw.log"
+    },
+    {
+      "check": "paired_result_raw_sha256",
+      "head": "94846b3a75c6322e86077208a071d7ead3d081da",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/edge-and-protected-v2/raw.log"
+    },
+    {
+      "check": "paired_result_raw_sha256",
+      "head": "94846b3a75c6322e86077208a071d7ead3d081da",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/inherited-source-qa-v1/raw.log"
+    },
+    {
+      "check": "paired_result_raw_sha256",
+      "head": "94846b3a75c6322e86077208a071d7ead3d081da",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-version-source/inherited-source-qa-v2/raw.log"
+    },
+    {
+      "check": "manifest_bytes_sha256_blob",
+      "head": "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+      "path": "docs/learning/evidence/model-proposal-guards-ce434/README.md"
+    },
+    {
+      "check": "manifest_bytes_sha256_blob",
+      "head": "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+      "path": "docs/learning/evidence/model-proposal-guards-ce434/baseline.log"
+    },
+    {
+      "check": "manifest_bytes_sha256_blob",
+      "head": "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+      "path": "docs/learning/evidence/model-proposal-guards-ce434/baseline.json"
+    },
+    {
+      "check": "manifest_bytes_sha256_blob",
+      "head": "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+      "path": "docs/learning/evidence/model-proposal-guards-ce434/exact-624-final.log"
+    },
+    {
+      "check": "manifest_bytes_sha256_blob",
+      "head": "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+      "path": "docs/learning/evidence/model-proposal-guards-ce434/exact-624-final.json"
+    },
+    {
+      "check": "manifest_bytes_sha256_blob",
+      "head": "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+      "path": "docs/learning/evidence/model-proposal-guards-ce434/source.json"
+    },
+    {
+      "check": "manifest_bytes_sha256_blob",
+      "head": "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+      "path": "docs/learning/evidence/model-proposal-guards-ce434/validation.json"
+    },
+    {
+      "check": "manifest_bytes_sha256_blob",
+      "head": "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+      "path": "docs/learning/evidence/model-proposal-guards-ce434/run-scope.py"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/retained-source.log"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/training-source.log"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/coverage-parser.log"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/py-compile.log"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/diff-check.log"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/retained-source.log"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/training-source.log"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/coverage-parser.log"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/py-compile.log"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/diff-check.log"
+    },
+    {
+      "check": "paired_command_log_size_sha256",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v3-parser/coverage-parser.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/retained-source.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/training-source.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/coverage-parser.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/py-compile.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/diff-check.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v2/result.json"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v3-parser/coverage-parser.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/77bfe-v3-parser/result.json"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/run_3396_v1.py"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/run_77bfe_v2.py"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/run_77bfe_v3_parser.py"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/retained-source.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/training-source.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/coverage-parser.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/py-compile.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/diff-check.log"
+    },
+    {
+      "check": "summary_bytes_blob",
+      "head": "dc3688877e8f979ffe704759255139cb714d87f5",
+      "path": "codex-rs/hepta-agentd/acceptance/2026-11-12-retained-publication-python/3396-v1/result.json"
+    }
+  ],
+  "native_pass_claimed": false,
+  "qualification_scope": "Manual historical-content and semantic-coverage review; no execution of archived scripts. Root must retain explicit chosen blobs and preserve all exact source commit parents.",
+  "source_tree_bindings_verified": [
+    {
+      "actual_git_metadata_match": true,
+      "source_commit": "624420687740a7071339571ec8e3dd0ba456f521",
+      "tree": "4e43a5c24ef29aea69c830470805c6cf61377a4c"
+    },
+    {
+      "actual_git_metadata_match": true,
+      "source_commit": "5fecd6130541eb2cac0d8e8982d2ccfeba91c0e6",
+      "tree": "babaefb6b89fa3ea977de2ef0ff13c5fb8ff386e"
+    },
+    {
+      "actual_git_metadata_match": true,
+      "source_commit": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+      "tree": "377b386d89bc0f950ed260d8ab6fe58b423a9976"
+    },
+    {
+      "actual_git_metadata_match": true,
+      "source_commit": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+      "tree": "05e45678f197219bf6686336af64382d7748a7b9"
+    },
+    {
+      "actual_git_metadata_match": true,
+      "source_commit": "5d6e2f248d04a37a2578f909d86aab4ce0baab26",
+      "tree": "391251e4c87da74dfd5473da03cc46512dbd77c7"
+    }
+  ]
+}

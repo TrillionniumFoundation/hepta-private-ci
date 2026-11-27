@@ -1,0 +1,107 @@
+{
+  "base_commit": "a8df34d5da7562a9e54905b95d7487816c991039",
+  "env": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "numpy": "2.3.5",
+  "python": "3.12.14",
+  "selection": "python3 -m unittest discover -s scripts -p 'test_hepta_cells_*.py' -v",
+  "source_clean_before": true,
+  "source_commit": "d1dc9dfdd30aafa708fa15ed0bd44be7fa87b683",
+  "source_manifest": {
+    "scripts/hepta_cells/__init__.py": {
+      "ast_sha256": "6cd9ec513ee1c55002eb745cac06840a387e3b4480eb043c0a1bccbdf4b8adfd",
+      "sha256": "471b32b04b9cdd19a98294318d7e6be23c4737e0dc27ab646b5dc2fffe6cd2d1"
+    },
+    "scripts/hepta_cells/bundle.py": {
+      "ast_sha256": "863781c4a0741db8fa9b8fd783bccc9db7ad1c32992eb48005df702818d1ef44",
+      "sha256": "cde2cff0bed4d441eb6bbf0321fb1a05c543641ff31a3bf6dfc9eddd4c218e7d"
+    },
+    "scripts/hepta_cells/component_types.py": {
+      "ast_sha256": "a0fafd7158f23175b1f926815691df2ffaf6c37a9f846848c6cab2686f43062e",
+      "sha256": "6281da9d6602666200c421b5801b62fd6ef933c3a7a16e8c338c38b0a5e12862"
+    },
+    "scripts/hepta_cells/deterministic.py": {
+      "ast_sha256": "eb0e619fb864ec1f08deb1f5d1f73d10f30048f4f4e4f03f64b9eb2832d4104c",
+      "sha256": "73a4a199c8bf290c52b54bbb79d915a5123b2813d3fbefa3bca70920dafac1d4"
+    },
+    "scripts/hepta_cells/lifecycle.py": {
+      "ast_sha256": "56be4dccf22739f4146a919911d048f3de611bf250beb0acbef9d5f0b8331bfc",
+      "sha256": "bccfb7ceb74db67889d137331348d8de036dce713a07dfd01629ac7e37f6cc23"
+    },
+    "scripts/hepta_cells/mlx_provider.py": {
+      "ast_sha256": "e8f471b46dd53be1734da6631e20278c40c64f2a09fc5f67a0d7571b5f2c6975",
+      "sha256": "a37c19a528d6b589e7efd6cff7538bf6f72ef3403b373c3c70d13bafafeb501a"
+    },
+    "scripts/hepta_cells/population.py": {
+      "ast_sha256": "2ceb095d2b17cd378017375734d5e8b08050236e9350f9ed6affd079dfbda0e2",
+      "sha256": "d2bdd569e7e6e17d31f5fc9d14b005c74a9da3fc9fe981cd8965ec09a30fc5f4"
+    },
+    "scripts/hepta_cells/population_owner.py": {
+      "ast_sha256": "393e601d6fc763db09a7c42bfe7ab3914e2a7b529af2440d4506752e3fb0521d",
+      "sha256": "bb5d2089843df9d20b9f770f1def285df5565971beeae0982e4e82d4e1c54d50"
+    },
+    "scripts/hepta_cells/semantic.py": {
+      "ast_sha256": "2c36a492733ea874833ff976d4827e075a15a68bb2a3f91c62e3eb64d13227f5",
+      "sha256": "134dcbd903cea0d1bbeae28e13209d7d65a047dd6614f7c6136fd9adf617ca5c"
+    },
+    "scripts/hepta_cells/semantic_component.py": {
+      "ast_sha256": "c2653ef58d019c54c8a1ae138e86ad964fa7e7dd769ff81c2fb9df5ecd55812e",
+      "sha256": "9e010008135899c6d63a7f86c69354c7be22cee3fd2017bf0048e48ef7f6ac0b"
+    },
+    "scripts/hepta_cells/temporal.py": {
+      "ast_sha256": "9d00fb8b5fc68c405654216418db825a57dfc981d4e1521dd0fea59df26bed24",
+      "sha256": "d36cbe01181d5f5353df14a081312a90e8c7e340f85ea0f8b3b0c4cde8619dcb"
+    },
+    "scripts/hepta_cells/temporal_component.py": {
+      "ast_sha256": "2510f6017793ce10226815ddb0f22e15bfa63909a1b51b93350cf4205cd76761",
+      "sha256": "5941121c904c68db59bfee184fafeb858b03945038992c1658bcdaacdea77644"
+    },
+    "scripts/hepta_cells/temporal_qualification.py": {
+      "ast_sha256": "3df3c755d6668a940670eb58df834acd981e792e76bbc4f25b57f56c220aae65",
+      "sha256": "a18362daecfbeb08d645e593078d60d5f7b3c3f3159a97b8c5731d92d05835a9"
+    },
+    "scripts/hepta_pred1/models.py": {
+      "ast_sha256": "d536f9d53b2673909da47e850781a8264da072a19a392b74b9bb03c4fba306fa",
+      "sha256": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7"
+    },
+    "scripts/test_hepta_cells_bundle.py": {
+      "ast_sha256": "0839c60e54ee6e1e8ce01dcb9c3f08d569690a9b0d42662fb6fbb98d7cec4b35",
+      "sha256": "b1bae25382baae09177267e75a7202b9b0441035aedd68efa038a6f8a26dfd11"
+    },
+    "scripts/test_hepta_cells_composition.py": {
+      "ast_sha256": "f1c9a44bcf41c2b2d9b7620c8614ee743eb64ad92f60c475d4d004ca540ef21f",
+      "sha256": "0257765cc6506cb3c5945109ec9422932e4092f423318337337891455aa77749"
+    },
+    "scripts/test_hepta_cells_lifecycle.py": {
+      "ast_sha256": "7603be292a8492789c84c13bf05a8af627c56e5593db4878d3d101e2ca4256f0",
+      "sha256": "9d54ccc19b9ea7045a93517d37b67e42b6eb8f03be915b4edaefab69a87a792a"
+    },
+    "scripts/test_hepta_cells_population_owner.py": {
+      "ast_sha256": "8319e696b1a2acc91f6050f0e96f3e71fd3901458b565dc603459799e51fcb1c",
+      "sha256": "af5df8de52c31729e7df4622b314fcb2f0737deefef9cde5f39dc535a498013b"
+    },
+    "scripts/test_hepta_cells_population_plan.py": {
+      "ast_sha256": "e637cec239f9e4f2c8efb0d2db4e768c1d50063c9f3c5c140adc310cb24e6cea",
+      "sha256": "2ea8db3530f168393522170cfadcd0e553c2c19ba71ebd96b9cca1e6c74005e0"
+    },
+    "scripts/test_hepta_cells_semantic.py": {
+      "ast_sha256": "d4a7cb656de00de5b14c31480cc2635bec2a2ceffff2dbaa43f61f252a699161",
+      "sha256": "23fdcf6b0c2652d1dd70cee1bea0198698c50efa525dc0bf89ebd6c1f32a3771"
+    },
+    "scripts/test_hepta_cells_temporal.py": {
+      "ast_sha256": "e84df9594efe587c69806506e9b81917cbc6b29a742201f0ba9302e411df9e2f",
+      "sha256": "1021f51176dd682d2dc89ceed9ccd48561eeeaa23a58172e2a231fbd2ed14189"
+    },
+    "scripts/test_hepta_cells_temporal_component.py": {
+      "ast_sha256": "d024ad28849d8198d3c0c9c0ea277fea688d56f5f40875c51249d4292f883942",
+      "sha256": "e94fcc91ce0f47c4bca4fff3a3e81c3932d08b6f29de7e51afe9886f95b050fd"
+    },
+    "scripts/test_hepta_cells_temporal_qualification.py": {
+      "ast_sha256": "e2812ac88d940ffc260856cba45eca5c1b86a03685d2747d78c8f92d687eab9f",
+      "sha256": "750b4208a6b9f65d6c9ae529d075716d02d3045ca6bb0139311f44c2a1e700c2"
+    }
+  },
+  "started_utc": "2026-11-10T12:58:02.652631+00:00"
+}

@@ -1,0 +1,44 @@
+{
+  "ai395_scope": "first 50 pty sessions, has_more; no idempotency identity; original UNKNOWN not bound or replayed",
+  "business_actions_started": 0,
+  "historical_ai395_unknown_reconciled": false,
+  "historical_ai395_unknown_replayed": false,
+  "hosts": [
+    {
+      "agentd_name_candidates": 0,
+      "host": "rog",
+      "pages": 6,
+      "reported_last_page": true,
+      "returned_process_records": 675,
+      "scope_limitation": "Name-based candidates only; changing process table, alternate executable names, all disk locations and provenance are unverified",
+      "snapshot_atomic": false
+    },
+    {
+      "agentd_name_candidates": 0,
+      "host": "x230",
+      "pages": 2,
+      "reported_last_page": true,
+      "returned_process_records": 253,
+      "scope_limitation": "Name-based candidates only; changing process table, alternate executable names, all disk locations and provenance are unverified",
+      "snapshot_atomic": false
+    },
+    {
+      "agentd_name_candidates": 0,
+      "host": "mac",
+      "pages": 7,
+      "reported_last_page": true,
+      "returned_process_records": 801,
+      "scope_limitation": "Name-based candidates only; changing process table, alternate executable names, all disk locations and provenance are unverified",
+      "snapshot_atomic": false
+    }
+  ],
+  "live_owner_records_collected": 0,
+  "originals_bytes": 348841,
+  "originals_sha256": "99cb2e5cf05bdde1ed26d1604fb153ed466649c666da75b5e0c5c2eb0687067b",
+  "owner_database_located": false,
+  "projection": "process name/page count subset of retained private tool outputs; not original output bytes",
+  "qualification": "HOLD",
+  "schema": "pred1-source-discovery-projection-v1",
+  "service_configuration_read_calls": 0,
+  "source_absence_established": false
+}

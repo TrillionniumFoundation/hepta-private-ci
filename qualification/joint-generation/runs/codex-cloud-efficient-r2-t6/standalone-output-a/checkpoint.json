@@ -1,0 +1,28 @@
+{
+  "payload": {
+    "cancelled": false,
+    "prefixes": {
+      "image": "89504e470d0a1a0a0000000d49484452000000080000000808020000004b6d29dc0000002249444154789c6364646464c00698b08a6295f88955e2279c24d6287638c948b2ab005d6f030e482021260000000049454e44ae426082",
+      "text": "626c75652063726f7373207269676874"
+    },
+    "spec": {
+      "artifact_sha256": "f3c58831ff5f744cdb026e44d07d5778f7a8e4b39187fbd56ccfba75355fe207",
+      "budget": {
+        "compute_units": 100000,
+        "output_bytes": 4096
+      },
+      "deadline_ns": 11354694287166,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "objective_id": "scene-transform-v1",
+      "run_id": "cloud-t6-affine-smoke"
+    },
+    "spent": {
+      "controller": 341,
+      "generator": 14964
+    }
+  },
+  "sha256": "deb6969b04116ddf68f1c8214cd4f5f1e810f6804a090233e19ddbd0f8369ba3"
+}

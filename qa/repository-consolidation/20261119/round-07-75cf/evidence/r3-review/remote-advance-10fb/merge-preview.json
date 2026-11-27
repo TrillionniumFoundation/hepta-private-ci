@@ -1,0 +1,16 @@
+{
+  "current": "6fa36569564e93bef7e3040bae15df1790e8d22a",
+  "incoming": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+  "command": [
+    "git",
+    "merge-tree",
+    "--write-tree",
+    "6fa36569564e93bef7e3040bae15df1790e8d22a",
+    "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d"
+  ],
+  "exit_code": 128,
+  "wall_seconds": 0.052567767997970805,
+  "tree": null,
+  "conflicts": [],
+  "stderr": "error: Could not read e12e5368dcc6d29127906835d7b209345222dbc7\nerror: collecting merge info failed for trees 9a85ff13cdce6da2b1050b2d6a71687e691effdb, 4952cf83904b145d498e2973a95c33f41f25ba8f, e12e5368dcc6d29127906835d7b209345222dbc7\nfatal: failure to merge\n"
+}

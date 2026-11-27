@@ -1,0 +1,78 @@
+{
+  "schema": "rrsnn.v4.independent-isolated-precision-repair-review.v1",
+  "reviewer": "/root/r5_real_execution",
+  "created_at_utc": "2026-10-29T15:49:06.363924+00:00",
+  "status": "approved_for_isolated_repair_replay",
+  "source_sha256": "4347e6c9798502d430a5af2ac2fbf6ace8b5712f000255b9f9c217af44c63e65",
+  "design_sha256": "19ed74e96a2010137842c63df2a00ed79c8b5d8837fa6c1d6154de1be385e778",
+  "development_sha256": "96929b42e35ad59fad36976c51915e333959fe5669cffc1e64da11f18a909cf5",
+  "remaining_blockers": [],
+  "approval_scope": "The pinned new source, design and development proof are approved for the separately published same-weight 60-case engineering replay only. This is not approval of production deployment, replacement of original results or a claim that the replay has passed.",
+  "reviewed_source_files": [
+    "precision_repair.py",
+    "precision_repair_design.json",
+    "precision_repair_development.json"
+  ],
+  "source_review_findings": [
+    "The complete unchanged scalar boundary formula runs on double inputs with one final torch.result_type cast; W0 branch, constants and iteration count are unchanged.",
+    "The original RRPolicy.controls code object is reused with an independent globals dictionary differing only at the scalar boundary binding. No shared module monkeypatch occurs.",
+    "All selected parameters and buffers are deep-copied unchanged; source class and original bound function remain intact.",
+    "Actual fixed-reference rows are bound to original source/checkpoint/data/initial-state/actor/query identities. Outputs and status use separate precision_repair paths.",
+    "Remote publication is an explicit independently supplied root receipt; this runner verifies its exact local SHA256/Git blob matches and does not claim independent network authentication.",
+    "The runner preserves failed attempts and fixed 200MiB disk guard. all_completed describes execution coverage, not numerical acceptance; every disagreement metric must be assessed afterward."
+  ],
+  "independently_executed_checks": {
+    "original_controls_and_shared_global_unchanged_after_import_and_wrap": true,
+    "identical_controls_code_object": true,
+    "changed_globals": [
+      "frozen_control_boundary"
+    ],
+    "all_model_parameters_and_buffers_equal_with_separate_storage": true,
+    "mixed_zero_dimensional_drift_float64_cost_float32_output_dtype_shape_device_preserved": true,
+    "mixed_case_value_bitwise_equal_to_independent_root": true,
+    "mixed_case_gradient_max_abs_drift_cost": [
+      1.7763568394002505e-15,
+      0.0
+    ],
+    "fixed_reference_detector_rejects_2e_minus7_time_perturbation_at_unchanged_1e_minus7_tolerance": true,
+    "fixed_reference_detector_detects_action_mismatch": true,
+    "production_or_heldout_model_execution_by_reviewer": false
+  },
+  "development_evidence_cross_checked": {
+    "normal_scenarios": 2,
+    "strict_paired_scenarios": 4,
+    "dtype_broadcast_fixtures": 6,
+    "unsupported_input_rejections": 2,
+    "normal_actual_internal_spikes": [
+      5,
+      1
+    ],
+    "paired_actual_internal_spikes": [
+      4,
+      3,
+      8,
+      2
+    ],
+    "all_recorded_step_indices_counts_rng_equal": true,
+    "recorded_boundary_drift_logit_trace_max_abs_difference": 0.0,
+    "event_time_max_abs_difference": 0.0,
+    "task_actions_delivery_expected_and_realized_utilities_equal": true
+  },
+  "production_repair_matrix_started_at_review": false,
+  "production_repair_matrix_pass_claimed": false,
+  "original_numerical_failures_reclassified": false,
+  "original_discrete_path_divergence_acknowledged": true,
+  "original_matrix_report_sha256": "7aa487e5eb27858ffb5c995c9e87fd5475fd1c7144a781888b6fa687e6648a76",
+  "fixed_event_time_tolerance": 1e-07,
+  "frozen_source_count_verified": 14,
+  "all_frozen_sources_unchanged": true,
+  "r5_publication_plan_unchanged": true,
+  "qualifications": [
+    "Only the declared CPU floating-Tensor profile is covered; no integer/CUDA/global parameter-domain or higher-order-gradient qualification.",
+    "Original branch-sensitive CTMC failures include large downstream discrete divergence and remain original failures.",
+    "Finite operator/development agreement does not guarantee all floating inputs or the complete 60-case replay.",
+    "Original Brent records lack per-step full-state/RNG witnesses; the 60-case comparison may claim only stored spike/type/time/count/task/delivery/budget/utility equality.",
+    "Development helper method labels inherited from numerical_control say Frozen RRPolicy; the outer isolated-candidate source/design identity determines the actual promoted analytic branch. This evidence is not relabeled as original frozen evaluation.",
+    "No contemporaneous Brent throughput or production Cell/real-future-utility claim follows from this replay."
+  ]
+}

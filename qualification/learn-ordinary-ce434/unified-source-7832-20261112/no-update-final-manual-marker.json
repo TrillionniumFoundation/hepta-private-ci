@@ -1,0 +1,6 @@
+{
+  "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+  "before": "response.request.require_context(",
+  "after": "response\n            .request\n            .require_context(",
+  "reason": "Existing mutation prefix was shorter than complete CALLERS marker; explicit actual rustfmt span replacement, preserves negative control."
+}

@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "status": "exact_source_published_dedicated_ci_success",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "fcffa43043ec7f36fa680c449c54b9b3446eb6a6",
+  "final_source_commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "final_source_tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+  "source_pr": 5001,
+  "workflow_run_id": 42222767973,
+  "workflow_outcome": "success",
+  "preformat_recovered_snapshot_commit": "e989d51b0da0617aa20a1fccbcbcb4ad01571ff4",
+  "physical_and_local_evidence_commit": "7176667c0807ee49bd6bfc9a571b175f44a243a1",
+  "imported_ai395_tree": "42d568588a7572d4d364a344912ed59492a84487",
+  "physical_execution_source_digest": "e5917bf413f416a6491c10ad797f3f8f31e66dc87b1c1f74a4ddb198495cf50c",
+  "physical_native_executable_sha256": "2a195957ea1f4f0288ec4af7e00210f96ad78b7283b74da59360aea13494ce46",
+  "stages": [
+    {
+      "stage": 1,
+      "branch": "codex/hcsn-physical-cohorts-20261106",
+      "commit": "e9dd4a9a9426949b5eb74ab2d457d741becfac59",
+      "tree": "1a9fef1d5f7d7f4ad72b8aa3d0dd6893fb8107cf",
+      "changed_lines": 457,
+      "pr": 5002
+    },
+    {
+      "stage": 2,
+      "branch": "codex/hcsn-derivative-evidence-20261106",
+      "commit": "8c98b910e687b4136e4425919b4208fece433298",
+      "tree": "bac9fb1223780f2b6c79b8407913fa10985cffe3",
+      "changed_lines": 435,
+      "pr": 5003
+    },
+    {
+      "stage": 3,
+      "branch": "codex/hcsn-time-worker-binding-20261106",
+      "commit": "5d944e63311c566319d124cd337dbd97d0efc49e",
+      "tree": "56303dcc1a72468ead095ef6bdfac648d56e4744",
+      "changed_lines": 220,
+      "pr": 5004
+    },
+    {
+      "stage": 4,
+      "branch": "codex/hcsn-signed-worker-fixtures-20261106",
+      "commit": "4e0d61392bf9b1870d882588009cc76e454958e1",
+      "tree": "057af6ba5233959879cdd55062fab65e1c3d53e3",
+      "changed_lines": 483,
+      "pr": 5005
+    },
+    {
+      "stage": 5,
+      "branch": "codex/hcsn-signed-worker-recovery-20261106",
+      "commit": "8524e52764650ecd0ff9b36c11900e27d2a0b672",
+      "tree": "401d51671e632b0ccb73115fc6efb4df902c7c72",
+      "changed_lines": 278,
+      "pr": 5006
+    },
+    {
+      "stage": 6,
+      "branch": "codex/hcsn-agentd-registration-20261106",
+      "commit": "e1ab8b308dd5489a81b54f6b6405dd8526075156",
+      "tree": "c33083b447ba2b49da65896910050a07827635f5",
+      "changed_lines": 454,
+      "pr": 5007
+    },
+    {
+      "stage": 7,
+      "branch": "codex/hcsn-host-acceptance-20261106",
+      "commit": "af8d977e0bc250141de0bd7238c61be73988f092",
+      "tree": "8b07ad4da4b8da494f9f34651b7ca7f30ed46c27",
+      "changed_lines": 334,
+      "pr": 5008
+    },
+    {
+      "stage": 8,
+      "branch": "codex/hcsn-agentd-terminal-recovery-20261106",
+      "commit": "fb626328f39207460f9bf54e1eda01b6cfcbd6de",
+      "tree": "8551ef2cf64f34c533ae64d27476742312b9f9a4",
+      "changed_lines": 298,
+      "pr": 5009
+    },
+    {
+      "stage": 9,
+      "branch": "codex/hcsn-gap-closure-20261106",
+      "commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+      "tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+      "changed_lines": 355,
+      "initial_commit": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
+      "pr": 5001
+    }
+  ],
+  "local_workspace": {
+    "path": "/workspace/scratch/d216bf53a09d/hepta-hcsn",
+    "historical_head": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+    "last_verified_clean_before_environment_replacement": true,
+    "api_created_trees_matched_local_git": true,
+    "api_commit_objects_reproduced_and_hash_verified": true,
+    "original_workspace_replaced_after_qualification": true,
+    "authoritative_code_retained_in_git": true
+  },
+  "boundaries": {
+    "all_pull_requests_draft": true,
+    "merged": false,
+    "production_deployed": false,
+    "production_trust": false,
+    "production_adoption": false,
+    "scientific_gain_claimed": false,
+    "existing_cuda_campaign_contacted": false,
+    "physical_helper_exercises_agentd_registration": false,
+    "local_ram_only_bridge_raw_lost": true,
+    "new_agentd_recovery_regression_validation": "passed_on_exact_head_ci",
+    "training_block_boundary": "complete numerical state restored as detached initial state"
+  },
+  "previous_qualification": {
+    "head": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
+    "run_id": 42220007503,
+    "dedicated_hcsn_result": "success",
+    "broader_repository_green": false,
+    "corrected_new_caller_with_existing_owner": true
+  },
+  "workflow_attempt": 1,
+  "workflow_completed_at": "2026-11-06T13:22:53Z",
+  "general_repository_ci": {
+    "run_id": 42222768205,
+    "overall_green": false,
+    "repo_checks_job_id": 127911561653,
+    "repo_checks_outcome": "success",
+    "canonical_merge": "c103778518b2f8bb1dbee6db78021150b633e35e",
+    "canonical_merge_tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+    "caller_allowlist_modified": false,
+    "repo_checks_conclusion": "success"
+  },
+  "evidence_retention": {
+    "first_local_ram_outputs_lost": true,
+    "first_source_recovered_exactly": true,
+    "later_executor_replaced_after_ci": true,
+    "final_hosted_artifacts_redownloaded_and_digest_verified": true,
+    "final_evidence_repackaged_without_test_rerun": true,
+    "original_ai395_subtree_unchanged": true
+  },
+  "final_ci_evidence": {
+    "path": "ci-44e5393/evidence.tar.xz",
+    "sha256": "95ab7c184dc8817854c97c8f9e37c135cfecea94d216e2bbc0f9b248db2118d4",
+    "bytes": 297184,
+    "git_blob_sha1": "c7541a07b7d90af36e44a6392eff471718e1dcd4"
+  }
+}

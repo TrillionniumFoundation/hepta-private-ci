@@ -1,0 +1,83 @@
+{
+  "all_original_maps_reconstructed_byte_exactly": true,
+  "captured_refs_sha256": "569b3fdd4ddf3ba0d96cabf89bd78a820900b58c5b510e2afee0dfaab44554f6",
+  "classification_rerun": false,
+  "finished_at_utc": "2026-11-20T02:09:19.768496+00:00",
+  "original_source_map_count": 12,
+  "schema": "hepta.full-commit-coverage-summary.v1",
+  "source_result_sha256": "1a94c299150ebad0feb080d7aa666c8624d16fcd1325c0f9c5b6cb2f3c7fd8ca",
+  "target_aliases": [
+    {
+      "all_counts_and_map_hashes_equal": true,
+      "canonical_target": "integration_0cee",
+      "target": "live_integration"
+    }
+  ],
+  "targets": {
+    "integration_0cee": {
+      "ancestor_commits": 44786,
+      "current_protected_tip_intersection": [],
+      "maps": {
+        "covered": "8666d832f7ce02cdb17c6ac9ab5cf80cb06a4206a6809959b3f26ec883717a89",
+        "frontier": "9b5192b805a11de4ad2903d21917ca3fc1208efd227e6045cbbb64a5e4b684b7",
+        "pending": "93f7dcca5c02a56ce97acf7b8c1d78b837531cc2ccce636fc6db39de58c3bafe"
+      },
+      "ordinary_names_covered": 2826,
+      "ordinary_names_pending": 4344,
+      "pending_distinct_tips": 4124,
+      "pending_frontier_names": 1791,
+      "pending_maximal_tips": 1720,
+      "protected_pin_intersection": [],
+      "sha": "0cee57ca617e0324e2df8e9447a2c075a6c76952"
+    },
+    "live_integration": {
+      "ancestor_commits": 44786,
+      "current_protected_tip_intersection": [],
+      "maps": {
+        "covered": "8666d832f7ce02cdb17c6ac9ab5cf80cb06a4206a6809959b3f26ec883717a89",
+        "frontier": "9b5192b805a11de4ad2903d21917ca3fc1208efd227e6045cbbb64a5e4b684b7",
+        "pending": "93f7dcca5c02a56ce97acf7b8c1d78b837531cc2ccce636fc6db39de58c3bafe"
+      },
+      "ordinary_names_covered": 2826,
+      "ordinary_names_pending": 4344,
+      "pending_distinct_tips": 4124,
+      "pending_frontier_names": 1791,
+      "pending_maximal_tips": 1720,
+      "protected_pin_intersection": [],
+      "sha": "0cee57ca617e0324e2df8e9447a2c075a6c76952"
+    },
+    "main": {
+      "ancestor_commits": 33794,
+      "current_protected_tip_intersection": [],
+      "maps": {
+        "covered": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "frontier": "9b5192b805a11de4ad2903d21917ca3fc1208efd227e6045cbbb64a5e4b684b7",
+        "pending": "a612976769f4b9b39b729299fdeeb958c094030312704dfde642d825e7fa3934"
+      },
+      "ordinary_names_covered": 0,
+      "ordinary_names_pending": 7170,
+      "pending_distinct_tips": 6784,
+      "pending_frontier_names": 1791,
+      "pending_maximal_tips": 1720,
+      "protected_pin_intersection": [],
+      "sha": "732e934ba496d90fbe042b8d41d479ef901643e5"
+    },
+    "repair_4a5de714": {
+      "ancestor_commits": 44787,
+      "current_protected_tip_intersection": [],
+      "maps": {
+        "covered": "8a3ff4ca03b8711aa9997c64ae8b5cd6835239dacdd04bba96aabb2aee0cd49f",
+        "frontier": "ddfa75969012a96bca7091d488c7ccfa33dd175b8c48df9eadc3376de294e028",
+        "pending": "5f52b03a5bd9f762309566453e5f120b0110722732230d46e9a1d805684b47a0"
+      },
+      "ordinary_names_covered": 2827,
+      "ordinary_names_pending": 4343,
+      "pending_distinct_tips": 4123,
+      "pending_frontier_names": 1790,
+      "pending_maximal_tips": 1719,
+      "protected_pin_intersection": [],
+      "sha": "4a5de714ce95889fca83abd3da33cbd74aaac748"
+    }
+  },
+  "unique_coverage_maps": 8
+}

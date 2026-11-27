@@ -1,0 +1,282 @@
+{
+  "schema": "hepta.learn.final-root29-maintenance-inert-contract.v1",
+  "state": "PREPARED_INERT_NO_EXECUTABLE_REQUEST",
+  "source": {
+    "sha": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+    "tree": "c8730bab75eabe47a3b0b3260a6203a0d86d1443",
+    "repo": "/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1"
+  },
+  "authority": {
+    "preparation": "Git APIs and V8 text/hash checks only",
+    "H": false,
+    "Python": false,
+    "Rust": false,
+    "tests": false,
+    "PR_changed": false,
+    "production_source_changed": false,
+    "ordinary_acceptance": 0
+  },
+  "original_templates": {
+    "root29": {
+      "sha": "07a7b440e3b6d8cd23a80ac43b84efbfdc3db392",
+      "bytes": 35123,
+      "sha256": "e2ea4e03052e5028c8e618f55c6625890ca163b5222c7b32e5035027f6a00970"
+    },
+    "maintenance": {
+      "sha": "c5a8a9f0a21aa660bad1e1cc0b34c01919849117",
+      "bytes": 37500,
+      "sha256": "b24bc557e36392ac9f447868f5bb31320b09540fcf152e0910545164266c3a78"
+    }
+  },
+  "postimages": {
+    "root29": {
+      "sha": "057787891e4223e81441db28ba79b34f934bffc7",
+      "bytes": 39520,
+      "sha256": "479f535614629eefdb3ed25da9a2a595fa56e230c706fdea73be8bf91ef854b9"
+    },
+    "maintenance": {
+      "sha": "c948b942a88dd995cbc4ad6cbf85f9be28e090cb",
+      "bytes": 37628,
+      "sha256": "dd4feaf6125ab4852318ccc123d2a441f5a20c6024dcfafe06b371a28e99ba66"
+    }
+  },
+  "exact_changes": {
+    "root29": {
+      "hunks": 35,
+      "removed": 41,
+      "added": 131,
+      "edits": 40
+    },
+    "maintenance": {
+      "hunks": 9,
+      "removed": 18,
+      "added": 20,
+      "edits": 17
+    }
+  },
+  "frozen_main_carrier": {
+    "documentation_commit": "5ff18162722d86414e53fd89666c4d073f4353d5",
+    "contract_blob": "44d74103163b65621638b67d76db91e968648852",
+    "source_runner": {
+      "path": "source-suite-runner.py",
+      "sha": "b9ed6ad2bd778763901c3cc16f8544efb750c30c",
+      "bytes": 71447,
+      "sha256": "522c37f67debe9ddf3b55608440f227977971623f28337a95cedbf337dee62ff"
+    },
+    "native_runner": {
+      "path": "native-runner.py",
+      "sha": "7b38fb189736532092d88f59da6a71dd63498ae3",
+      "bytes": 14371,
+      "sha256": "3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a"
+    },
+    "outer": {
+      "path": "main-carrier.py",
+      "sha": "832bec9def487d219c51508a2e8816f4142fc2cb",
+      "bytes": 107760,
+      "sha256": "27563b4a3ad10a32df7881ea984b1e7a040ffe45d975bf31dda0386c496d04fd"
+    },
+    "caller_recorder": {
+      "path": "full-caller-recorder.py",
+      "sha": "79e985f8b5aed7c13e99eab4e7c19c44d32ba442",
+      "bytes": 18927,
+      "sha256": "e1be76aafffdd65fcc36778ba4b00f2feb184cc39149f63791005e2c8d7582a0"
+    },
+    "inventory": {
+      "source_methods": 445,
+      "source_modules": 62,
+      "native_cases": 201,
+      "native_groups": 43,
+      "fullcaller_boundaries": 737,
+      "complete_protected_records": 506,
+      "scoped_rust_files": 6655
+    },
+    "actual_main_native_fullcaller_terminal": null
+  },
+  "actual_v3": {
+    "receipt": {
+      "sha": "c67c20427461211dcd17af6cead26a1de73a2d0d",
+      "bytes": 12843,
+      "sha256": "1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b"
+    },
+    "receipt_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-4537458b51b6-v3-attempt2/result.json",
+    "original_status_sdk": "6ebe5a037cb814678c63e75d1ce18e7ed846b903",
+    "original_log_sdk": "1f6c213209c27e76d3e95791b6b8aa164c2b381f",
+    "creation_source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "creation_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "tested_source_is_separate": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+    "root_identity": {
+      "device": 2067,
+      "inode": 47972373,
+      "mode": "0o40700",
+      "uid": 1000,
+      "nlink": 3
+    },
+    "target_identity": {
+      "device": 2067,
+      "inode": 47972398,
+      "mode": "0o40700",
+      "uid": 1000,
+      "nlink": 2
+    },
+    "runtime_root": "/data/hepta-learn-ce434-runtime-20261112-v3",
+    "target": "/data/hepta-learn-ce434-runtime-20261112-v3/target",
+    "meaning": "Only the original successful build-target creation. Both templates freshly compare actual owned canonical directory identities to the hash-bound original receipt. This is no native, fullcaller, Root29 or ordinary acceptance result.",
+    "original_441_recovery_v1_target_literal_unchanged": true
+  },
+  "binding_status": {
+    "root29_binding": null,
+    "maintenance_binding": null,
+    "typed_H_requests_created": false,
+    "sentinel_position": "BINDING=None and immediate SystemExit before imports, Path construction or filesystem/subprocess actions.",
+    "root29_actual_future_fields": [
+      "main_native_sha256",
+      "main_execution_sha256"
+    ],
+    "root29_runtime_gate": "The complete actual same-source MAIN/result.json must prove exact201 pass and original helper-build/verify success. The independent MAIN/focused-native.json complete hash must prove original exact201 command, source/tree/clean/cwd, finished actual inner execution and all zero exits. MAIN and inner bytes are retained and reread before Root dispatch and final pass.",
+    "root_dispatch_sequencing": "Root alone binds and dispatches after actual native201 all pass and retrieval of the required same-source validation terminals. The Root29 script does not substitute a native-wrapper return for the original native child, and does not itself claim to validate fullcaller receipts.",
+    "maintenance_actual_future_fields": [
+      "output_name",
+      "receipt_sha256",
+      "fullcaller_phases",
+      "root29",
+      "helper"
+    ],
+    "maintenance_runtime_gate": "The original c5a8 validation_evidence/native_terminal logic is preserved: bound original outer/native/focused-native evidence, every actual started fullcaller phase's complete original terminal, and actual conditional Root29 disposition. Unknown or mismatched child terminals reject. A completed helper failure can only follow the original explicit failure branch; it cannot become native201 pass.",
+    "not_admissible_root29": "Only actual failed native201 gate evidence can justify the preserved not_dispatched_due_to_original_main_gate branch. If native201 is eligible, actual Root29 terminal evidence is required before maintenance.",
+    "source_validation_not_repeated": true,
+    "native201_not_repeated_by_these_templates": true
+  },
+  "root29_preserved": {
+    "original_ordered_cases": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+      "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+      "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+      "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+      "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+      "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+      "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+      "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+      "authority_host_service::resident::authority::tests::checkpoint_expiry::resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committed_bytes",
+      "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate"
+    ],
+    "package": "codex-hepta-agentd",
+    "command_family": "just test --locked --offline",
+    "run_ignored": "only",
+    "test_threads": 1,
+    "retries": 0,
+    "original_recorder_timeout_seconds": 7200,
+    "original_recorder_minimum_tests": 1,
+    "actual_strict_JUnit_required": 29,
+    "JUnit_rejects": [
+      "failure",
+      "error",
+      "skipped",
+      "flakyFailure",
+      "flakyError",
+      "rerunFailure",
+      "rerunError"
+    ],
+    "initiating_uid": "original nonzero user",
+    "root_entry": "sudo -n env -i and existing original UID0 fixture entry only",
+    "source_env_allowlist_unchanged": true,
+    "HOME_and_TMPDIR_not_passed": true,
+    "existing_CARGO_HOME_RUSTUP_HOME_only": true,
+    "namespace": "/run/hepta-learn-root29-8bf3881afa8c-vN",
+    "evidence": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/root-29-8bf3881afa8c-isolated-vN",
+    "mount_cleanup": "Only actual invocation-owned source/bind mount identity and mount_id, and only after actual original Root just-test terminal. Missing/partial/unreadable original terminal preserves the mount and does not chown or signal.",
+    "chown_scope": [
+      "actual dedicated v3 TARGET",
+      "this invocation's new Root29 evidence directory",
+      "this repository's existing codex-rs/target/nextest directory"
+    ],
+    "original_four_Python_convenience_calls_replaced": "git check_output, record_step run, ROOT_SETUP mount run, ROOT_UNMOUNT umount run now use Popen with the same argv/cwd/env/stdout. Exception paths drain or wait that same owned handle; no kill/terminate/send_signal/run/check_output remains in these templates.",
+    "original_inner_recorder_behavior_unchanged": true,
+    "no_ordinary_cold_start_or_adoption_claim": true
+  },
+  "maintenance_preserved": {
+    "evidence": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/maintenance-8bf3881afa8c-isolated-vN",
+    "commands": [
+      [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-neuron"
+      ],
+      [
+        "just",
+        "fmt",
+        "--base",
+        "be8adcbb5e9925f72e05330b8fb30509cba4544b"
+      ]
+    ],
+    "source_mutation_scope": "Only the existing just fix/fmt commands after real prerequisites are bound; preparing the templates does not run them.",
+    "snapshots": [
+      "before-fix",
+      "fix-after",
+      "fmt-after"
+    ],
+    "retained_material": [
+      "complete NUL status",
+      "complete binary full-index diff",
+      "all changed/untracked postimages including binary bytes",
+      "deleted-path records",
+      "symlink target bytes",
+      "actual command stdout/stderr, child exit and complete snapshots"
+    ],
+    "own_child_wait_and_unknown_no_advance": true,
+    "fix_nonzero_not_hidden_by_fmt_zero": true,
+    "all_original_command_snapshot_postimage_native_terminal_function_bytes_unchanged": true,
+    "post_maintenance_sha": null,
+    "post_maintenance_tree": null,
+    "working_tree_commit": null,
+    "postimage_identity_rule": "Git clean status and HEAD tree are never assigned as the dirty working-tree content identity. A later explicit physical postimage review is required; this recorder does not create a commit.",
+    "tests_after_maintenance": [],
+    "commit_or_publish": false,
+    "cleanup_or_process_signals": false
+  },
+  "validation": {
+    "whole_forward_inverse_replay": true,
+    "exact_occurrence_counts": true,
+    "unchanged_blocks": 26,
+    "original_case_count": 29,
+    "final_blobs_full_Git_readback": true,
+    "Python_syntax_or_execution": false,
+    "H_or_native_execution": false,
+    "peer_review": "pending independent E review",
+    "limitations": [
+      "Actual 8bf main201 and fullcaller terminals have not been provided at preparation.",
+      "v3 successful creation cannot satisfy the test prerequisites.",
+      "Root29 mechanisms do not establish ordinary taskA/B/C adoption or a daemon/Root cold restart.",
+      "No post-maintenance tests are added or scheduled."
+    ]
+  }
+}

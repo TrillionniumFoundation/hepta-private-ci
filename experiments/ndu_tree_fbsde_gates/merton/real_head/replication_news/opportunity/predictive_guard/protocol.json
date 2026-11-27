@@ -1,0 +1,13 @@
+{
+  "schema": "hepta.merton.predictive-guard-protocol.v1",
+  "parent_sha": "e605e7aea52b1727cd2c49ef8d23510300c45552",
+  "arms": ["no_update", "fixed8", "shared_neutral", "guarded_neutral", "shared_ndu", "guarded_ndu"],
+  "repeats": 3,
+  "false_alarm_level_per_stream": "1/20",
+  "alternative": "uniform_conditional_count",
+  "fallback": "stop_and_return_already_executed_8_step_head",
+  "data": "same_previously_examined_64_32_32_archival_panel",
+  "new_sources": 0,
+  "assert_fleet_wide_bound": false,
+  "assert_real_predictive_calibration": false
+}

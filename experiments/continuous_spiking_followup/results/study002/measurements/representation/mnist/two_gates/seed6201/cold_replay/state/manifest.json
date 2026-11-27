@@ -1,0 +1,44 @@
+{
+  "arrays": {
+    "elapsed": {
+      "bytes": 128,
+      "dtype": "float64",
+      "sha256": "f9cedc0c24479f692128f115037366f20b44a523ce1a8d369cbce786a0a88522",
+      "shape": [
+        16
+      ]
+    },
+    "layer_000__hidden": {
+      "bytes": 2048,
+      "dtype": "float32",
+      "sha256": "74c2803bbfa90fd9b67f2dd1edbed042ee4e0430b7e1395337eec3845f0e0836",
+      "shape": [
+        16,
+        32
+      ]
+    }
+  },
+  "layer_keys": [
+    [
+      "hidden"
+    ]
+  ],
+  "payload_bytes": 2446,
+  "payload_sha256": "12d72444b6a8a29cee06d5a6d14d850b7e477eb248e6913e2da8847d7c5ae178",
+  "snapshot": {
+    "batch_size": 16,
+    "config": {
+      "architecture": "two_gates",
+      "classes": 10,
+      "depth": 1,
+      "input_dim": 64,
+      "match_cell_budget": false,
+      "seed": 6201,
+      "width": 32
+    },
+    "format": "hcsn-incremental-state-v2",
+    "model_sha256": "344ff67913412b50c253c79f8b8e0634dc31d13b3bff207dc48c5f243d2f2076",
+    "processed_rows": 256,
+    "steps": 16
+  }
+}

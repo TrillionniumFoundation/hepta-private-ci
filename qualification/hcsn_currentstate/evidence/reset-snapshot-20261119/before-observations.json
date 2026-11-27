@@ -1,0 +1,108 @@
+{
+  "interop_threads": 1,
+  "kernel_sha256": "fccee9781c86af243c5f691f876d0dec34296edfedc327d6f4a100bcd2def949",
+  "observations": [
+    {
+      "actual_active": [
+        [
+          0.8,
+          0.2
+        ],
+        [
+          -0.24,
+          -0.06
+        ]
+      ],
+      "aliases_parameter": true,
+      "emitted_reset": [
+        0.25,
+        0.75
+      ],
+      "future_active_score_gradient": [
+        1.0,
+        2.0
+      ],
+      "future_gradient_max_error": 0.0,
+      "independent_future_gradient": [
+        1.0,
+        2.0
+      ],
+      "kind": "atom",
+      "max_active_error": 0.55,
+      "packet_reset_gradient": [
+        1.0,
+        2.0
+      ],
+      "reference_active": [
+        [
+          0.25,
+          0.75
+        ],
+        [
+          -0.075,
+          -0.22499999999999998
+        ]
+      ],
+      "retained_reset_after_update": [
+        0.8,
+        0.2
+      ],
+      "updated_parameter": [
+        0.8,
+        0.2
+      ]
+    },
+    {
+      "actual_active": [
+        [
+          0.7152339938693744,
+          0.03126703668072327
+        ],
+        [
+          -0.2145701981608123,
+          -0.00938011100421698
+        ]
+      ],
+      "aliases_parameter": true,
+      "emitted_reset": [
+        0.25,
+        0.75
+      ],
+      "future_active_score_gradient": [
+        0.14342301882138536,
+        0.31267036680723276
+      ],
+      "future_gradient_max_error": 1.1102230246251565e-16,
+      "independent_future_gradient": [
+        0.14342301882138525,
+        0.31267036680723265
+      ],
+      "kind": "flux",
+      "max_active_error": 0.08598435087198897,
+      "packet_reset_gradient": [
+        1.0,
+        2.0
+      ],
+      "reference_active": [
+        [
+          0.6363513335176125,
+          0.11725138755271224
+        ],
+        [
+          -0.19090540005528372,
+          -0.03517541626581367
+        ]
+      ],
+      "retained_reset_after_update": [
+        0.8,
+        0.2
+      ],
+      "updated_parameter": [
+        0.8,
+        0.2
+      ]
+    }
+  ],
+  "threads": 1,
+  "torch": "2.8.0+cpu"
+}

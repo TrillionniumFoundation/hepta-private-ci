@@ -1,0 +1,35 @@
+{
+  "source_sha": "c7633658aef42077f51fa71a1b727b4653ddb76b",
+  "workflow": {
+    "path": ".github/workflows/hepta-daemon-learning-native.yml",
+    "blob": "30542aef705485940519a346517ec8f6f4a740f8",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c7633658aef42077f51fa71a1b727b4653ddb76b/.github/workflows/hepta-daemon-learning-native.yml"
+  },
+  "root_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd"
+  ],
+  "ordinary_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-intelligence-eval"
+  ],
+  "legacy_driver": {
+    "path": "/home/qq/hepta-learn-ordinary-14cc-round2-20261110/run_native_candidate.py",
+    "read_only_contents_observed": true,
+    "scope": "four packages and a selective expression; not the full three-package + Root7 workflow"
+  },
+  "tools": {
+    "scripts/hepta_ci_exec.py": "c9434b3a4afb31f80e323d543936386a2fa738de",
+    "scripts/hepta_ci_junit.py": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+    "scripts/hepta_cell_test_helpers.py": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+    "scripts/hepta_ci_v8.py": "088b737c0cca7386161e06b254c794bf972380ad",
+    "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+    "codex-rs/.config/nextest.toml": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c"
+  }
+}

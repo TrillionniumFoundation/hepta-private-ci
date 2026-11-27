@@ -1,0 +1,33 @@
+{
+  "schema": "mem8.model-list.wire-cache-repair.static.v1",
+  "status": "candidate_only",
+  "base_commit": "189711e3563ea13a5328d52e99a286f082045b98",
+  "path": "codex-rs/app-server/tests/suite/v2/model_list.rs",
+  "pre": {
+    "bytes": 14030,
+    "git_blob": "bcfad8884054e1eebb9abc27b9fbfc8f0f6a8578",
+    "sha256": "b1e1ca65eba1ae9de01c2b65fe5fe3b1e4045438203f7a760037f176712f93a9"
+  },
+  "post": {
+    "postimage_git_blob": "0295b921099f63f245953eafd9b377db435184a9",
+    "postimage_bytes": 14469,
+    "postimage_sha256": "1136589db852ba45ce9bee975dd10fcf7a48a24c832aca5c0b8019db5a987177"
+  },
+  "patch_bytes": 1315,
+  "patch_sha256": "63f91e235980f85b3599dbfaa26a417933431a745e0a632849bec802b2769c42",
+  "inverse_exact_original_file": true,
+  "changes": "Add one typed ModelsResponse JSON round trip to define the full expected cache catalog; compare the existing complete ModelsCacheEntry.models against that exact decoded catalog.",
+  "unchanged": [
+    "one-response original HTTP mock",
+    "all original model/list assertions",
+    "actual foreground model/list RPC",
+    "full Vec<ModelInfo> cache equality",
+    "cache client_version and fetched_at validity gates",
+    "one shared 10-second absolute deadline",
+    "no cache seeding or production changes"
+  ],
+  "mechanism": "The mock serializes ModelsResponse with a legacy base_instructions String; decoding promotes it into model_messages.instructions_template. The original fixture ModelInfo values lack model_messages, making comparison to the successful cached wire-decoded catalog permanently false.",
+  "native_executed": false,
+  "formatted": false,
+  "additional_runtime_gaps_not_excluded": true
+}

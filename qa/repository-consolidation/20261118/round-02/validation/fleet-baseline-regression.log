@@ -1,0 +1,170 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling typenum v1.20.1
+   Compiling zeroize v1.9.1
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling version_check v0.9.5
+   Compiling cfg-if v1.0.5
+   Compiling cmov v0.5.4
+   Compiling serde_core v1.0.229
+   Compiling const-oid v0.9.6
+   Compiling semver v1.0.28
+   Compiling autocfg v1.5.1
+   Compiling der v0.7.10
+   Compiling ctutils v0.4.8
+   Compiling rustix v1.1.5
+   Compiling generic-array v0.14.7
+   Compiling rustc_version v0.4.1
+   Compiling cpufeatures v0.2.17
+   Compiling zmij v1.0.23
+   Compiling keccak v0.2.2
+   Compiling num-traits v0.2.19
+   Compiling serde_json v1.0.154
+   Compiling linux-raw-sys v0.12.1
+   Compiling curve25519-dalek v4.1.3
+   Compiling serde v1.0.229
+   Compiling hybrid-array v0.4.15
+   Compiling syn v3.0.9
+   Compiling syn v2.0.119
+   Compiling signature v2.2.0
+   Compiling spki v0.7.3
+   Compiling pkcs8 v0.10.2
+   Compiling sponge-cursor v0.1.0
+   Compiling subtle v2.6.1
+   Compiling bitflags v2.13.2
+   Compiling ed25519 v2.2.3
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling digest v0.10.7
+   Compiling anyhow v1.0.104
+   Compiling itoa v1.0.18
+   Compiling sha2 v0.10.9
+   Compiling memchr v2.8.3
+   Compiling crypto-common v0.2.2
+   Compiling module-lattice v0.2.4
+   Compiling winnow v1.0.4
+   Compiling thiserror v2.0.21
+   Compiling libc v0.2.191
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling serde_spanned v1.1.2
+   Compiling digest v0.11.3
+   Compiling shake v0.1.0
+   Compiling signature v3.0.0
+   Compiling ml-dsa v0.1.1
+   Compiling getrandom v0.4.3
+   Compiling winnow v0.7.15
+   Compiling toml_writer v1.1.3+spec-1.1.0
+   Compiling diff v0.1.13
+   Compiling fastrand v2.5.0
+   Compiling once_cell v1.21.4
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling yansi v1.0.1
+   Compiling pretty_assertions v1.4.1
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling toml v0.9.12+spec-1.1.0
+   Compiling tempfile v3.27.0
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/ff772bc098e2/frontier_merge_audit/worktree/codex-rs/hepta-contracts)
+   Compiling codex-hepta-paths v0.0.0 (/workspace/scratch/ff772bc098e2/frontier_merge_audit/worktree/codex-rs/hepta-paths)
+   Compiling codex-hepta-fleet v0.0.0 (/workspace/scratch/ff772bc098e2/frontier_merge_audit/worktree/codex-rs/hepta-fleet)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 19.49s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 689c151c-6dc0-4ab0-8dcb-ed6063741d83 with nextest profile: local
+    Starting 1 test across 3 binaries (45 tests skipped)
+  TRY 1 FAIL [   0.006s] codex-hepta-fleet authority_port::clock_tests::caller_clock_cannot_backdate_an_expired_allocation
+  stdout ───
+
+    running 1 test
+    test authority_port::clock_tests::caller_clock_cannot_backdate_an_expired_allocation ... FAILED
+
+    failures:
+
+    failures:
+        authority_port::clock_tests::caller_clock_cannot_backdate_an_expired_allocation
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 41 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'authority_port::clock_tests::caller_clock_cannot_backdate_an_expired_allocation' (2140) panicked at hepta-fleet/src/authority_port_clock_tests.rs:88:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <Ok(
+    <    LeaseReceipt {
+    <        allocation_id: "expired-allocation",
+    <        lease_generation: 1,
+    <        expires_at_ms: 9000,
+    <        revoked: false,
+    <        outcome: Issued,
+    <        semantic_digest: "37d343c0594f54eb7a2f430c6f1f58566d8e67cff1d04991e0611e6e07cbc6aa",
+    <    },
+    >Err(
+    >    Fleet(
+    >        InvalidTime,
+    >    ),
+     )
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] codex-hepta-fleet authority_port::clock_tests::caller_clock_cannot_backdate_an_expired_allocation
+  TRY 2 FAIL [   0.005s] codex-hepta-fleet authority_port::clock_tests::caller_clock_cannot_backdate_an_expired_allocation
+  stdout ───
+
+    running 1 test
+    test authority_port::clock_tests::caller_clock_cannot_backdate_an_expired_allocation ... FAILED
+
+    failures:
+
+    failures:
+        authority_port::clock_tests::caller_clock_cannot_backdate_an_expired_allocation
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 41 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'authority_port::clock_tests::caller_clock_cannot_backdate_an_expired_allocation' (2142) panicked at hepta-fleet/src/authority_port_clock_tests.rs:88:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <Ok(
+    <    LeaseReceipt {
+    <        allocation_id: "expired-allocation",
+    <        lease_generation: 1,
+    <        expires_at_ms: 9000,
+    <        revoked: false,
+    <        outcome: Issued,
+    <        semantic_digest: "37d343c0594f54eb7a2f430c6f1f58566d8e67cff1d04991e0611e6e07cbc6aa",
+    <    },
+    >Err(
+    >    Fleet(
+    >        InvalidTime,
+    >    ),
+     )
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.013s] 1 test run: 0 passed, 1 failed, 45 skipped
+  TRY 2 FAIL [   0.005s] codex-hepta-fleet authority_port::clock_tests::caller_clock_cannot_backdate_an_expired_allocation
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

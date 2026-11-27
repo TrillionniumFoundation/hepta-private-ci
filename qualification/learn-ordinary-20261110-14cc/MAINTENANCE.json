@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.learn.verified-maintenance-postimage.v1",
+  "status": "PASS_MAINTENANCE_AND_COMPILE_ONLY",
+  "behavior_tested_source": "1b49f8746ec48a333c34f8a00a693c18248709fb",
+  "mechanical_maintenance_commit": "4afbcf04cf329cbcf984793c9d8d51941f072f48",
+  "mechanical_maintenance_tree": "4c3f43b15177a09354a8208b8834bc0926be5736",
+  "guard_alignment_commit": "afd8053f915f481c9273695b1853a78e4131c3c7",
+  "guard_alignment_tree": "ecbe21481da4e2c1daf59a418e16fc7050802e3e",
+  "archive": "maintenance-1b49.tar.gz",
+  "archive_sha256": "799f64c7517a0f4cc6924549e4309886a062f200961f61ca6f8e3cda8ba57400",
+  "archive_prefix": "learn-maintenance-1b49-v1",
+  "postimages_manifest": "learn-maintenance-1b49-v1/postimages.json",
+  "postimage_files": 20,
+  "root_and_independent_remote_byte_verification": "all 20 lengths, SHA-256 values, Git blob identities and changed path set match",
+  "maintenance_patch_sha256": "71b8bb2cdd2cd7218aacbdf746612ee0dd1439a88d23284c6c2006b67f6e8e4a",
+  "executed_driver": "drivers/run_maintenance.py",
+  "executed_driver_sha256": "831e7cbdf8241ad24ad9ee84b0b51f233bf4d02eb4aad79bdb1ae9df316d4107",
+  "steps": {
+    "fix": {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-learning-artifacts"
+      ],
+      "kind": "post-test maintenance or compile-only; no behavior execution",
+      "log_bytes": 24975,
+      "log_sha256": "dc208a4a6c1bae10f565b29153569da7fdcb01945d75f26b60b2af1231a51e7f",
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "source_head": "1b49f8746ec48a333c34f8a00a693c18248709fb",
+      "timed_out": false,
+      "working_directory": "/home/qq/hepta-learn-ordinary-14cc-20261110/source"
+    },
+    "fmt": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "abf75d8e2097785b2ad01897c15a7531eebe6e44"
+      ],
+      "kind": "post-test maintenance or compile-only; no behavior execution",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "source_head": "1b49f8746ec48a333c34f8a00a693c18248709fb",
+      "timed_out": false,
+      "working_directory": "/home/qq/hepta-learn-ordinary-14cc-20261110/source"
+    },
+    "compile-only": {
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "--tests",
+        "--bins"
+      ],
+      "kind": "post-test maintenance or compile-only; no behavior execution",
+      "log_bytes": 19449,
+      "log_sha256": "506d3afdfe55ebe023e3e68bab6333dbae7c36a72b3a4b4254e4ac5bf1bf08c0",
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "source_head": "1b49f8746ec48a333c34f8a00a693c18248709fb",
+      "timed_out": false,
+      "working_directory": "/home/qq/hepta-learn-ordinary-14cc-20261110/source/codex-rs"
+    }
+  },
+  "test_only_clone_removals": [
+    {
+      "file": "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan_tests.rs",
+      "before": "scope.clone()",
+      "after": "scope",
+      "last_use_reviewed": true
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_training_no_update_tests.rs",
+      "before": "legacy_store.clone()",
+      "after": "legacy_store",
+      "last_use_reviewed": true
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/learning_iteration_training_no_update_tests.rs",
+      "before": "original.clone()",
+      "after": "original",
+      "last_use_reviewed": true
+    }
+  ],
+  "production_rust_changes": "formatting only; no semantic change found by independent static review",
+  "guard_alignment_changes": "eight exact CALLERS string values and two mutation anchors differ only in whitespace; all roles, scopes, negation, order, top_level and forbidden sets unchanged",
+  "post_maintenance_static_verification": "post-maintenance-static.json",
+  "behavior_tests_repeated_after_fix_fmt": false,
+  "python_mutation_tests_repeated_after_fix_fmt": false,
+  "whole_repository_caller_scan_repeated_after_fix_fmt": false,
+  "maintenance_finished_utc": "2026-11-10T14:14:13.118016+00:00",
+  "authority_granted": false
+}

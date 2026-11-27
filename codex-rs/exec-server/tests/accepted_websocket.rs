@@ -440,6 +440,7 @@ where
             params.context("initialize request should contain params")?
         )?,
         InitializeParams {
+            process_exit_observation: true,
             client_name: "host-test".to_string(),
             resume_session_id: resume_session_id.map(str::to_string),
         }
@@ -449,6 +450,7 @@ where
         JSONRPCMessage::Response(JSONRPCResponse {
             id,
             result: serde_json::to_value(InitializeResponse {
+                process_exit_observation: true,
                 session_id: session_id.to_string(),
                 environment_info: Some(local_environment_info()),
             })?,

@@ -1,0 +1,96 @@
+{
+  "ref": "4f32a14e12ccb738c65a511d05b36ac388fc328b",
+  "root_tree_status": {
+    "label": "root-tree",
+    "endpoint": "git/trees/4f32a14e12ccb738c65a511d05b36ac388fc328b",
+    "exit_code": 0,
+    "stderr": null
+  },
+  "root_tree_sha": "4f32a14e12ccb738c65a511d05b36ac388fc328b",
+  "rows": [
+    {
+      "label": "workflow",
+      "endpoint": "contents/.github/workflows/repo-checks.yml?ref=4f32a14e12ccb738c65a511d05b36ac388fc328b",
+      "exit_code": 0,
+      "stderr": null,
+      "path": ".github/workflows/repo-checks.yml",
+      "git_blob": "d58e39c0d951005a03f6e36899266739703103b7",
+      "sha256": "be712fbe289f42c91b6b0480cf035b95a8dab4119950b164d0cfc3752401888b",
+      "bytes": 4263,
+      "text": "name: repo-checks\n\non:\n  workflow_call:\n\npermissions:\n  contents: read\n\njobs:\n  build-test:\n    runs-on: ubuntu-latest\n    timeout-minutes: 10\n    env:\n      NODE_OPTIONS: --max-old-space-size=4096\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2\n        with:\n          persist-credentials: false\n\n      - uses: ./.github/actions/setup-ci\n\n      - name: Verify codex-rs Cargo manifests inherit workspace settings\n        run: python3 .github/scripts/verify_cargo_workspace_manifests.py\n\n      - name: Test Cargo manifest migration boundaries\n        run: python3 -m unittest discover -s .github/scripts -p 'test_verify_cargo_workspace_manifests.py'\n\n      - name: Verify Hepta privileged caller closed set\n        run: |\n          python3 scripts/verify_hepta_callers.py self-test\n          python3 scripts/verify_hepta_callers.py verify\n          python3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py'\n          python3 -m unittest discover -s qa/fault-matrix -p 'test_*.py'\n          python3 -m unittest discover -s qa/performance -p 'test_*.py'\n          python3 -m unittest discover -s qa/vertical-slice -p 'test_*.py'\n\n      - name: Verify codex-tui does not import codex-core directly\n        run: python3 .github/scripts/verify_tui_core_boundary.py\n\n      - name: Verify Bazel clippy flags match Cargo workspace lints\n        run: |\n          python3 -m unittest discover -s .github/scripts -p 'test_verify_bazel_clippy_lints.py'\n          python3 .github/scripts/verify_bazel_clippy_lints.py\n\n      - name: Test Bazel wrapper regression suite\n        run: python3 -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'\n\n      - name: Test Codex package builder\n        run: python3 -m unittest discover -s scripts/codex_package -p 'test_*.py'\n\n      - name: Test standalone installer\n        run: python3 -m unittest discover -s scripts/install -p 'test_*.py'\n\n      - name: Test macOS notarization\n        run: python3 -m unittest discover -s .github/scripts/macos-signing -p 'test_notarize_with_akv.py'\n\n      - name: Setup pnpm\n        uses: pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288 # v5\n        with:\n          run_install: false\n\n      - name: Setup Node.js\n        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0\n        with:\n          node-version: 22\n\n      - name: Install dependencies\n        run: pnpm install --frozen-lockfile\n\n      - name: Ensure root README.md contains only ASCII and certain Unicode code points\n        run: ./scripts/asciicheck.py README.md\n      - name: Check root README ToC\n        run: python3 scripts/readme_toc.py README.md\n\n      - name: Install uv\n        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0\n        with:\n          version: \"0.11.3\"\n      - name: Check formatting (run `just fmt` to fix)\n        run: just fmt-check\n\n      - name: Prettier (run `pnpm run format:fix` to fix)\n        run: pnpm run format\n\n      - name: Check for a clean worktree\n        if: always() && !cancelled()\n        uses: ./.github/actions/check-clean-worktree\n\n  native-paths:\n    name: Native Hepta paths on ${{ matrix.os }}\n    runs-on: ${{ matrix.os }}\n    timeout-minutes: 20\n    permissions:\n      contents: read\n    strategy:\n      fail-fast: false\n      matrix:\n        os: [ubuntu-24.04, windows-latest, macos-15]\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2\n        with:\n          persist-credentials: false\n\n      - name: Test wrappers on the native host\n        shell: bash\n        run: python -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'\n\n      - uses: ./.github/actions/setup-ci\n\n      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0\n\n      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49\n        with:\n          tool: nextest@0.9.103\n\n      - name: Test host-native state and fleet roots\n        run: just test --locked -p codex-hepta-paths\n\n      - name: Check for a clean worktree\n        if: always() && !cancelled()\n        uses: ./.github/actions/check-clean-worktree\n"
+    },
+    {
+      "label": "config-.npmrc",
+      "endpoint": "contents/.npmrc?ref=4f32a14e12ccb738c65a511d05b36ac388fc328b",
+      "exit_code": 0,
+      "stderr": null,
+      "path": ".npmrc",
+      "git_blob": "4153fe87bb5f08b63514128adf30f1643ef3f1fc",
+      "sha256": "966e472185f648dcaf0fd13867fdfdc417d40fcb0ba1de99a2a55c5a95b5c815",
+      "bytes": 104,
+      "text": "shamefully-hoist=true\nstrict-peer-dependencies=false\nnode-linker=hoisted\nprefer-workspace-packages=true\n"
+    },
+    {
+      "label": "config-.prettierignore",
+      "endpoint": "contents/.prettierignore?ref=4f32a14e12ccb738c65a511d05b36ac388fc328b",
+      "exit_code": 0,
+      "stderr": null,
+      "path": ".prettierignore",
+      "git_blob": "538bdc7f1658482073bb2cee8f2cd82f8c1bb13c",
+      "sha256": "f6366c3eaff86ed782d7ddfacf80dd4476477d051029e5faba81a668fe9f653d",
+      "bytes": 192,
+      "text": "/codex-cli/dist\n/codex-cli/node_modules\npnpm-lock.yaml\n\n# Generated by scripts/hepta-docs.py; byte identity is enforced by document CI.\ndocs/STATUS.md\n\nprompt.md\n*_prompt.md\n*_instructions.md\n"
+    },
+    {
+      "label": "config-.prettierrc.toml",
+      "endpoint": "contents/.prettierrc.toml?ref=4f32a14e12ccb738c65a511d05b36ac388fc328b",
+      "exit_code": 0,
+      "stderr": null,
+      "path": ".prettierrc.toml",
+      "git_blob": "4c58c583e5fa327928190f625a1095a9c4d9e72f",
+      "sha256": "7b0bd68d96ff06518f3943f9e0acc5c10eb9ebd21dee86e65c86e4c67599a09d",
+      "bytes": 170,
+      "text": "printWidth = 80\nquoteProps = \"consistent\"\nsemi = true\ntabWidth = 2\ntrailingComma = \"all\"\n\n# Preserve existing behavior for markdown/text wrapping.\nproseWrap = \"preserve\"\n"
+    },
+    {
+      "label": "config-package.json",
+      "endpoint": "contents/package.json?ref=4f32a14e12ccb738c65a511d05b36ac388fc328b",
+      "exit_code": 0,
+      "stderr": null,
+      "path": "package.json",
+      "git_blob": "a65950c26b698be87208ab644ee1c464f7759b55",
+      "sha256": "df3c6214aa6956d8d1d2da72a46278037615b31d1deeacefa3f401613ce4bdf8",
+      "bytes": 1548,
+      "text": "{\n  \"name\": \"codex-monorepo\",\n  \"private\": true,\n  \"description\": \"Tools for repo-wide maintenance.\",\n  \"scripts\": {\n    \"format\": \"prettier --check *.json *.md docs/*.md .github/workflows/*.yml **/*.js\",\n    \"format:fix\": \"prettier --write *.json *.md docs/*.md .github/workflows/*.yml **/*.js\",\n    \"write-hooks-schema\": \"cargo run --manifest-path ./codex-rs/Cargo.toml -p codex-hooks --bin write_hooks_schema_fixtures\"\n  },\n  \"devDependencies\": {\n    \"prettier\": \"^3.5.3\"\n  },\n  \"resolutions\": {\n    \"@modelcontextprotocol/sdk\": \"1.32.0\",\n    \"@typescript-eslint/utils\": \"8.71.2\",\n    \"brace-expansion@1\": \"1.1.21\",\n    \"brace-expansion@5\": \"5.0.12\",\n    \"browserslist\": \"4.28.7\",\n    \"esbuild\": \"0.28.1\",\n    \"fast-uri\": \"3.1.8\",\n    \"flatted\": \"3.4.2\",\n    \"glob@10.4.5\": \"10.5.0\",\n    \"handlebars\": \"4.7.10\",\n    \"hono\": \"4.12.25\",\n    \"ip-address\": \"10.3.1\",\n    \"js-yaml@3\": \"3.15.2\",\n    \"js-yaml@4\": \"4.3.2\",\n    \"minimatch@3.1.2\": \"3.1.4\",\n    \"minimatch@9.0.5\": \"9.0.7\",\n    \"nanoid@3\": \"3.3.18\",\n    \"path-to-regexp\": \"8.4.0\",\n    \"picomatch@2.3.1\": \"2.3.2\",\n    \"picomatch@4.0.3\": \"4.0.4\",\n    \"postcss\": \"8.5.23\",\n    \"proxy-addr\": \"2.0.8\",\n    \"rollup\": \"4.59.0\",\n    \"semver\": \"^7.7.1\",\n    \"source-map-js\": \"1.2.2\",\n    \"undici@7\": \"7.29.1\"\n  },\n  \"overrides\": {\n    \"punycode\": \"^2.3.1\"\n  },\n  \"engines\": {\n    \"node\": \">=22\",\n    \"pnpm\": \">=10.34.5\"\n  },\n  \"packageManager\": \"pnpm@10.34.5+sha512.a4ee05f2f73658255bd6a89859c065a45c28a57daefae2c893a168ee2b73168c37b91e83e57ea67654ad03f03031746430e8bce38e362e042605fb8abc80192e\"\n}\n"
+    },
+    {
+      "label": "config-pnpm-lock.yaml",
+      "endpoint": "contents/pnpm-lock.yaml?ref=4f32a14e12ccb738c65a511d05b36ac388fc328b",
+      "exit_code": 0,
+      "stderr": null,
+      "path": "pnpm-lock.yaml",
+      "git_blob": "48ba7c7f117e999a649fb66e4bb5c57e76243101",
+      "sha256": "42e7c955619977812c70b7b44c0aabaaae3d9249cf6777db942e589f2a043081",
+      "bytes": 188964
+    },
+    {
+      "label": "config-pnpm-workspace.yaml",
+      "endpoint": "contents/pnpm-workspace.yaml?ref=4f32a14e12ccb738c65a511d05b36ac388fc328b",
+      "exit_code": 0,
+      "stderr": null,
+      "path": "pnpm-workspace.yaml",
+      "git_blob": "49e7da14d39923ae45ce36669932753e53d06258",
+      "sha256": "8b90bc1ff8f630f155bace92c14d5255353ccd096aca517ddee216847fcfc233",
+      "bytes": 603,
+      "text": "packages:\n  - codex-cli\n  - codex-rs/responses-api-proxy/npm\n  - sdk/typescript\n\nignoredBuiltDependencies:\n  - esbuild\n\nminimumReleaseAge: 10080\nminimumReleaseAgeExclude: []\n\nblockExoticSubdeps: true\nstrictDepBuilds: true\ntrustPolicy: no-downgrade\ntrustPolicyIgnoreAfter: 10080\ntrustPolicyExclude: []\nallowBuilds:\n  # Build only pinned suppliers needed by the TypeScript SDK test tools.\n  \"@modelcontextprotocol/conformance@https://codeload.github.com/modelcontextprotocol/conformance/tar.gz/49103de6ed70804e940637bf3e9e29e4a3f54e64\": true\n  \"@parcel/watcher@2.6.0\": true\n  \"unrs-resolver@1.12.2\": true\n"
+    }
+  ],
+  "native_absolute_tools": {
+    "/opt/homebrew/bin/node": true,
+    "/opt/homebrew/bin/npm": true,
+    "/opt/homebrew/bin/pnpm": false,
+    "/usr/local/bin/node": false,
+    "/usr/bin/node": false
+  },
+  "cached_prettier": []
+}

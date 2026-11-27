@@ -1,0 +1,216 @@
+{
+  "status": "TEXT_PATCHES_REVIEWED_MERGE_UNRESOLVED",
+  "incoming": "233e77ececa9f144bf5d538a24ff060f92f34fd3",
+  "source": "ce90ea283d04edd517051a28b5b92d0951b0ead9",
+  "default_tree": "4d77dcbdafa363afa442839aa0f3889422a3a7d2",
+  "default_merge_exit": 1,
+  "conflict_paths": [
+    "MODULE.bazel.lock",
+    "codex-rs/Cargo.lock",
+    "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst",
+    "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst",
+    "codex-rs/core/src/environment_selection.rs",
+    "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/git-utils/src/git_process_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+    "codex-rs/hepta-automation/tests/automation.rs",
+    "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+    "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+    "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+    "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+    "codex-rs/hepta-matrixd/src/control.rs",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+    "codex-rs/hepta-supervisor/src/supervisor.rs",
+    "codex-rs/hepta-supervisor/src/tick.rs",
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+    "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+    "codex-rs/v8-poc/BUILD.bazel",
+    "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs"
+  ],
+  "original_commits": [
+    {
+      "commit": "b11f44e69cce1d75b7ad71bcde4ceb9f44442cd0",
+      "subject": "test(p0): integrate exact-blob Windows/native blocker fixes from six Drafts",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/01-b11f44e69cce1d75b7ad71bcde4ceb9f44442cd0.patch",
+      "bytes": 12402,
+      "sha256": "98ffd90d2cb9c8c7f473352d1dc90653b4113b217d1bf60dc0535faf9279b3b8",
+      "review": "Integrates six draft repairs: completed protocol enum/exports; Windows PathUri round-trip identity; reverse dependency migration object rewind; real writable Windows directory fsync; host-native absolute fixture; durable restart queued/exhausted evidence. Binary zstd contents not independently expanded yet."
+    },
+    {
+      "commit": "8b550f040bab4811146dcf2f8c5d76bd55657315",
+      "subject": "test(ci): use canonical SQLite shim for two exact-base Clippy fixtures",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/02-8b550f040bab4811146dcf2f8c5d76bd55657315.patch",
+      "bytes": 8243,
+      "sha256": "92fd59d0e9f13f77cf519b8e0d4e67573869bccd3a9310b9b38f9f6ec410fcca",
+      "review": "Migrates two isolated test fixtures to canonical SQLite configuration, retains TempDir lifetime and on-disk reopen/canonicalization assertions."
+    },
+    {
+      "commit": "0e0fc9d1e6ef8e6054fbf3d0bff60bcb723842b1",
+      "subject": "test(evidence): preserve true AuthBus global-capacity coverage across per-issuer limits",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/03-0e0fc9d1e6ef8e6054fbf3d0bff60bcb723842b1.patch",
+      "bytes": 3343,
+      "sha256": "74fd1b670480e0166cc79b83b7b11dbf5b12d413170d913e128fb6eb64fa2ea4",
+      "review": "AuthBus global-capacity test distributes 4095 synthetic rows across eight issuers and uses normal issuer quarantine to preserve per-issuer and global bounds."
+    },
+    {
+      "commit": "405faa6b76808e5276c5b260b967cb39066e8d68",
+      "subject": "test(windows): preserve durable Ledger directory handles in codex-rs/hepta-intelligence",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/04-405faa6b76808e5276c5b260b967cb39066e8d68.patch",
+      "bytes": 2821,
+      "sha256": "39c80c47817b04b870c0663deddf491773e76cd768f28ff4e494e7876eaae2e5",
+      "review": "Uses real writable Windows directory handles for durable evaluated shadow ledger fixtures."
+    },
+    {
+      "commit": "6111172d7865cdfe2bbb3e6c5c67a0c7229f5dbe",
+      "subject": "test(windows): preserve durable Ledger directory handles in codex-rs/hepta-intelligence",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/05-6111172d7865cdfe2bbb3e6c5c67a0c7229f5dbe.patch",
+      "bytes": 1487,
+      "sha256": "10fd62c9f18cbf213240e26a81581599af8754bedcbf89e291726d15cb7a8a61",
+      "review": "Uses real writable Windows directory handles for segment fixtures."
+    },
+    {
+      "commit": "1b5b57d6c702c9121f80cb6719e7256b98521205",
+      "subject": "test(windows): preserve durable Ledger directory handles in codex-rs/hepta-intelligence",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/06-1b5b57d6c702c9121f80cb6719e7256b98521205.patch",
+      "bytes": 1389,
+      "sha256": "64ca05dae0d0bf473490161d36e1b5ce13c8c9f5aa2aa84d7a0e2abb3f2a997f",
+      "review": "Uses real writable Windows directory handles for outcome credit fixtures."
+    },
+    {
+      "commit": "96d713190cd8a1b1bdc6b693ac44aa3c67aea412",
+      "subject": "test(windows): preserve durable Ledger directory handles in codex-rs/hepta-agentd",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/07-96d713190cd8a1b1bdc6b693ac44aa3c67aea412.patch",
+      "bytes": 2421,
+      "sha256": "1c17ed1d4d6c986bd488d7e6edee5c4bac041f2651d0dfcd03ff747795adf176",
+      "review": "Uses real writable Windows directory handles for agent cognitive learning ledger fixtures."
+    },
+    {
+      "commit": "411e542f437db61dcc7d8edec6535917a8cddad8",
+      "subject": "fix(v8-poc): align Windows sandbox Rust feature with linked V8",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/08-411e542f437db61dcc7d8edec6535917a8cddad8.patch",
+      "bytes": 1004,
+      "sha256": "d5b3d2381b47e7f03b1cd58aab667af149f4d725870b320e19be648ffad37b6d",
+      "review": "Aligns Bazel v8-poc sandbox feature with linked Windows sandbox V8."
+    },
+    {
+      "commit": "19088ef4a1f1475f171cfa1d5887ca8b40a05dde",
+      "subject": "test(v8-poc): serialize concurrent sandbox V8 isolate smoke fixtures",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/09-19088ef4a1f1475f171cfa1d5887ca8b40a05dde.patch",
+      "bytes": 1245,
+      "sha256": "84b8b6be7efdf386db41be0b817d8f9136bf499214489a46110bd32b8eee7f21",
+      "review": "Serializes test-only V8 isolate initialization with one static mutex while preserving production concurrency."
+    },
+    {
+      "commit": "48d6f7d7f2ee315ca0083a4badf9992bcb282656",
+      "subject": "fix(supervisor): reconcile digest-bound signed abort after clean recovery",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/10-48d6f7d7f2ee315ca0083a4badf9992bcb282656.patch",
+      "bytes": 13796,
+      "sha256": "da47e3bf017ea39ac4ce503200d6cef29872bec0c52ca657a9bc5f69620fcaf1",
+      "review": "Allows exact digest-bound abort only after a clean process-free recovery cut, requires matching grant/release transaction identities, durably clears restart state, prevents replay of aborted grant; stale directive regression retained."
+    },
+    {
+      "commit": "3f0a4429d1e9e3d644c3432c096c59807b2cf0a8",
+      "subject": "test(windows): resolve exact Bazel setup helper via manifest-only runfiles",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/11-3f0a4429d1e9e3d644c3432c096c59807b2cf0a8.patch",
+      "bytes": 5597,
+      "sha256": "57fd5f2dba86f68737a63ff7672aa076cd25932b16da7aa16cd73a26d6fde349",
+      "review": "Uses exact Windows manifest-only runfile key and requires physical helper existence, preserves real embedded resource assertion; no suffix guessing."
+    },
+    {
+      "commit": "27dbe8084387c1dd1f9ec6fc58439b351ceceacc",
+      "subject": "test(windows): use native Git descendant fixture verified on exact maintenance lock",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/12-27dbe8084387c1dd1f9ec6fc58439b351ceceacc.patch",
+      "bytes": 8454,
+      "sha256": "a497d4128c45e11544664e25316b65393dc54128655548fcaeb275ff2824d194",
+      "review": "Replaces child PowerShell with native test executable, retains real descendant lifetime and readiness; adds bounded output cleanup on readiness failure."
+    },
+    {
+      "commit": "7f1750d4e69b7589b68e3ed2d3f2d30ac83021c9",
+      "subject": "fix(exec-server): reject unsupported authorized reads before fallback on Windows",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/13-7f1750d4e69b7589b68e3ed2d3f2d30ac83021c9.patch",
+      "bytes": 2927,
+      "sha256": "b70ea1960eaec8e2eb4ae3f3142c8a136408433177f45aee1dc9f5f46a919baa",
+      "review": "Adds explicit local stable-handle capability refusal before generic authorized read fallback; unsupported host error asserted without outside-root data disclosure."
+    },
+    {
+      "commit": "deed8a926ac0fc4ca00f931b287a132fef3505ea",
+      "subject": "test(memory): assert sorted full v1-v15 migration history on Windows",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/14-deed8a926ac0fc4ca00f931b287a132fef3505ea.patch",
+      "bytes": 1182,
+      "sha256": "a91a80d30ee651cfcfe5f374e77f1eaee783c9e0ed615d37ae6133d18b692a28",
+      "review": "Equivalent sorted v1-v15 migration assertion intent to earlier b40; current v1-v19 must be retained."
+    },
+    {
+      "commit": "64fad9f1937688237a2053d7135f880790d506f6",
+      "subject": "fix(matrixd): retain missing Windows UDS rendezvous rejection ordering",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/15-64fad9f1937688237a2053d7135f880790d506f6.patch",
+      "bytes": 1952,
+      "sha256": "3f7e572b4978132c225721a37ea1d0f30d242dd6459d6206da4db5fc814112f4",
+      "review": "Reorders missing Windows UDS rendezvous handling before stale ConnectionRefused check, keeps active socket rejection and no-listener regression."
+    },
+    {
+      "commit": "5640c63d9cadeb470a1ede4ef3107acc7c4f0b03",
+      "subject": "style(supervisor): apply exact CI Rustfmt postimage for signed-intent abort",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/16-5640c63d9cadeb470a1ede4ef3107acc7c4f0b03.patch",
+      "bytes": 1693,
+      "sha256": "8caa3201dfd32771a0011f76df3eadf7ee3341790e71616f5675488e51983805",
+      "review": "Rustfmt-only layout of signed abort branch, fully read."
+    },
+    {
+      "commit": "412c2974703e765276aa16b1e9c357be825238b2",
+      "subject": "fix(deps): integrate pinned ctutils 0.4.4 Cargo and Bazel lock pair on maintenance draft",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/17-412c2974703e765276aa16b1e9c357be825238b2.patch",
+      "bytes": 6366,
+      "sha256": "5a25e71f463197bf185150bc085ee3b0e9bc55bb3d86275c54f866d9d3fe7c50",
+      "review": "Paired Cargo/Bazel ctutils 0.4.2\u21920.4.4 lock update, no manifest edits. Needs reconcile against current paired locks rather than overwrite whole generated files."
+    },
+    {
+      "commit": "c09dfe3833bbd3e4923ac756a9e9c4f57c61c07a",
+      "subject": "test(windows): bound exact TUI turn admission races after completion",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/18-c09dfe3833bbd3e4923ac756a9e9c4f57c61c07a.patch",
+      "bytes": 3786,
+      "sha256": "dfd33f50d4ad610ac39dc49c032d76377492c670c08e5bab3eb96e96130fa967",
+      "review": "Bounded 10-second TUI retry only on two exact transient busy/terminalizing errors; other errors still fail."
+    },
+    {
+      "commit": "c78d3c5a0a219e8da79f315312f9e2206187e19c",
+      "subject": "test(core): propagate tracing subscriber into spawned snapshot span",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/19-c78d3c5a0a219e8da79f315312f9e2206187e19c.patch",
+      "bytes": 1311,
+      "sha256": "c41cedf8f40985b19ec819be7ab1ee8e61e1ceb4508f486f9476d980a52a8131",
+      "review": "Propagates current tracing subscriber into spawned snapshot task so span assertions observe real work."
+    },
+    {
+      "commit": "d84d4667709783ca744196effdfee50144c7aa03",
+      "subject": "test(git-utils): use deterministic Rust wrapper fixture for Windows descendant cleanup",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/20-d84d4667709783ca744196effdfee50144c7aa03.patch",
+      "bytes": 5285,
+      "sha256": "22b6c06f285387d6531b93061282c1463e2a0c15d0a5a079b46452893c00e5bc",
+      "review": "Replaces both Windows wrapper and child with the native test executable and private fixture markers; retains real process-tree assertions."
+    },
+    {
+      "commit": "233e77ececa9f144bf5d538a24ff060f92f34fd3",
+      "subject": "style(test): apply pinned Rustfmt to Windows Git native wrapper fixture",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-233-proof/original-patches/21-233e77ececa9f144bf5d538a24ff060f92f34fd3.patch",
+      "bytes": 1071,
+      "sha256": "057d3830c7ecd6b145ed288a1f6a03116216303d0e96755dbf30e2e03f5d071f",
+      "review": "Rustfmt-only native wrapper PID-path layout, fully read."
+    }
+  ],
+  "coverage_and_protection": "protection-and-coverage.json",
+  "retains_unverified_binary_work": true,
+  "blockers": [
+    "26 paths conflict across current APIs, generated schemas, fixture ownership and lockfiles. Whole-current-file resolution is not yet semantically justified.",
+    "Automatic default merge contains at least three nontrivial additions absent from the candidate: explicit exec-server capability denial, V8 smoke-test mutex, and Bao directory-fsync helper. These must be independently reconciled/tested; cannot call result tree-identical or covered.",
+    "Need full decode/compare of generated zstd schema deltas and native Windows compatibility review for directory/runfiles/process fixtures."
+  ],
+  "no_resolution_commit_created": true,
+  "no_native_tests_run": true,
+  "no_remote_mutations": true,
+  "next_action": "Prioritize main PR1365 required gates; this cluster remains pending and has reproducible patches for later source reconciliation."
+}

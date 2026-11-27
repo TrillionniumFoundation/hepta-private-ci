@@ -1,0 +1,22 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+
+exports_files([
+    "close_range.patch",
+    "config.h",
+    "dbus-arch-deps.h",
+    "dbus.BUILD.bazel",
+])
+
+cc_test(
+    name = "native_identity_test",
+    size = "small",
+    srcs = ["native_identity_test.c"],
+    # Hermetic LLVM requires static musl executables and matching C++ runtimes.
+    linkstatic = select({
+        "@llvm//constraints/libc:musl": True,
+        "//conditions:default": False,
+    }),
+    local_defines = ["DBUS_COMPILATION"],
+    target_compatible_with = ["@platforms//os:linux"],
+    deps = ["@dbus//:dbus-1"],
+)

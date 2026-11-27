@@ -1,0 +1,674 @@
+{
+  "base_manifest_sha256": "dd03c1f67a86d00576e114e91e7528b2264a539abc500d6931510089aa26cd90",
+  "result_manifest_sha256": "d922e5114a8043d8885bfc3a0be66a1d1834ad79e66d429044349664518287e1",
+  "existing_caller_extensions": {
+    "agentd_production_writer_host": [
+      "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs"
+    ],
+    "final_use_open_state": [
+      "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs"
+    ],
+    "final_use_claim_raw": [
+      "codex-rs/hepta-ndu/src/owner_current.rs"
+    ],
+    "final_use_delivery_raw": [
+      "codex-rs/hepta-ndu/src/owner_current.rs"
+    ],
+    "final_use_revocation_feed_trust": [
+      "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs"
+    ]
+  },
+  "new_boundaries": [
+    {
+      "id": "memory_native_authorize_memory_cell",
+      "symbol": "ProductionDurableWriter::authorize_memory_cell",
+      "definition_path": "codex-rs/hepta-memory/src/memory_cell_invocation.rs",
+      "definition_markers": [
+        "pub async fn authorize_memory_cell(",
+        "verify_current_authority",
+        "MemoryCellAdmissionV1"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory.rs",
+        "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)authorize_memory_cell\\s*\\("
+    },
+    {
+      "id": "memory_native_admit_memory_cell",
+      "symbol": "ProductionDurableWriter::admit_memory_cell",
+      "definition_path": "codex-rs/hepta-memory/src/memory_cell_invocation.rs",
+      "definition_markers": [
+        "pub async fn admit_memory_cell(",
+        "verify_current_authority",
+        "MemoryCellAdmissionV1"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory.rs",
+        "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)admit_memory_cell\\s*\\("
+    },
+    {
+      "id": "memory_native_revalidate_memory_cell",
+      "symbol": "ProductionDurableWriter::revalidate_memory_cell",
+      "definition_path": "codex-rs/hepta-memory/src/memory_cell_invocation.rs",
+      "definition_markers": [
+        "pub async fn revalidate_memory_cell(",
+        "verify_current_authority",
+        "MemoryCellAdmissionV1"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_model.rs",
+        "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)revalidate_memory_cell\\s*\\("
+    },
+    {
+      "id": "memory_native_revalidate_memory_cell_source",
+      "symbol": "ProductionDurableWriter::revalidate_memory_cell_source",
+      "definition_path": "codex-rs/hepta-memory/src/memory_cell_invocation.rs",
+      "definition_markers": [
+        "pub async fn revalidate_memory_cell_source(",
+        "verify_current_authority",
+        "MemoryCellAdmissionV1"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)revalidate_memory_cell_source\\s*\\("
+    },
+    {
+      "id": "memory_native_finish_memory_cell",
+      "symbol": "ProductionDurableWriter::finish_memory_cell",
+      "definition_path": "codex-rs/hepta-memory/src/memory_cell_invocation.rs",
+      "definition_markers": [
+        "pub async fn finish_memory_cell(",
+        "verify_current_authority",
+        "MemoryCellAdmissionV1"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory.rs",
+        "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)finish_memory_cell\\s*\\("
+    },
+    {
+      "id": "memory_native_source_transaction",
+      "symbol": "ProductionDurableWriter::memory_cell_source_tx",
+      "definition_path": "codex-rs/hepta-memory/src/memory_cell_source.rs",
+      "definition_markers": [
+        "memory_cell_source_tx(",
+        "MemoryCellSourceBindingV1"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-memory/src/memory_cell_invocation.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)memory_cell_source_tx\\s*\\("
+    },
+    {
+      "id": "ndu_native_with_current_reads",
+      "symbol": "NduAuthenticatedOwnerV1::with_current_reads",
+      "definition_path": "codex-rs/hepta-ndu/src/owner_current.rs",
+      "definition_markers": [
+        "pub fn with_current_reads(",
+        "current_projection_snapshot",
+        "current_reads"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bNduAuthenticatedOwnerV1\\s*::\\s*|\\.\\s*)with_current_reads\\s*\\("
+    },
+    {
+      "id": "ndu_native_apply_read_revocation_update",
+      "symbol": "NduAuthenticatedOwnerV1::apply_read_revocation_update",
+      "definition_path": "codex-rs/hepta-ndu/src/owner_current.rs",
+      "definition_markers": [
+        "pub fn apply_read_revocation_update(",
+        "current_projection_snapshot",
+        "current_reads"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs",
+        "codex-rs/hepta-agentd/src/native_memory_host_control.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bNduAuthenticatedOwnerV1\\s*::\\s*|\\.\\s*)apply_read_revocation_update\\s*\\("
+    },
+    {
+      "id": "ndu_native_current_projection_binding",
+      "symbol": "NduAuthenticatedOwnerV1::current_projection_binding",
+      "definition_path": "codex-rs/hepta-ndu/src/owner_current.rs",
+      "definition_markers": [
+        "pub fn current_projection_binding(",
+        "current_projection_snapshot",
+        "current_reads"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_current.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bNduAuthenticatedOwnerV1\\s*::\\s*|\\.\\s*)current_projection_binding\\s*\\("
+    },
+    {
+      "id": "ndu_native_read_current_projection",
+      "symbol": "NduAuthenticatedOwnerV1::read_current_projection",
+      "definition_path": "codex-rs/hepta-ndu/src/owner_current.rs",
+      "definition_markers": [
+        "pub fn read_current_projection(",
+        "current_projection_snapshot",
+        "current_reads"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_current.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bNduAuthenticatedOwnerV1\\s*::\\s*|\\.\\s*)read_current_projection\\s*\\("
+    },
+    {
+      "id": "ndu_native_revalidate_current_projection",
+      "symbol": "NduAuthenticatedOwnerV1::revalidate_current_projection",
+      "definition_path": "codex-rs/hepta-ndu/src/owner_current.rs",
+      "definition_markers": [
+        "pub fn revalidate_current_projection(",
+        "current_projection_snapshot",
+        "current_reads"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_current.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bNduAuthenticatedOwnerV1\\s*::\\s*|\\.\\s*)revalidate_current_projection\\s*\\("
+    },
+    {
+      "id": "memory_native_checked_current_objective",
+      "symbol": "AgentdState::checked_current_objective",
+      "definition_path": "codex-rs/hepta-agentd/src/state_current_objective.rs",
+      "definition_markers": [
+        "fn checked_current_objective(",
+        "CurrentObjectiveReadV1",
+        "run_incarnation"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_current.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bAgentdState\\s*::\\s*|\\.\\s*)checked_current_objective\\s*\\("
+    },
+    {
+      "id": "memory_native_revalidate_current_objective",
+      "symbol": "AgentdState::revalidate_current_objective",
+      "definition_path": "codex-rs/hepta-agentd/src/state_current_objective.rs",
+      "definition_markers": [
+        "fn revalidate_current_objective(",
+        "CurrentObjectiveReadV1",
+        "run_incarnation"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_current.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bAgentdState\\s*::\\s*|\\.\\s*)revalidate_current_objective\\s*\\("
+    },
+    {
+      "id": "memory_native_process_configuration",
+      "symbol": "configure_native_memory_process_v1",
+      "definition_path": "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs",
+      "definition_markers": [
+        "pub async fn configure_native_memory_process_v1(",
+        "native process bootstrap cannot replace installed owners",
+        "CognitiveRecoveryRequirement::ExactCurrentCut"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/main.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "\\bconfigure_native_memory_process_v1\\s*\\("
+    },
+    {
+      "id": "memory_native_registration_new",
+      "symbol": "AgentdNativeMemoryRegistrationV1::new",
+      "definition_path": "codex-rs/hepta-agentd/src/native_memory_registration.rs",
+      "definition_markers": [
+        "pub struct AgentdNativeMemoryRegistrationV1",
+        "pub fn new(",
+        "recovered_source_anchor",
+        "runtime_cancellation.child_token()"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "memory_native_registered_source",
+      "symbol": "AgentdNativeMemoryCell::from_registered_source",
+      "definition_path": "codex-rs/hepta-agentd/src/native_memory.rs",
+      "definition_markers": [
+        "pub(crate) async fn from_registered_source(",
+        "writer.authorize_memory_cell",
+        "retained manifest changed"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_registration.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "memory_native_context_install",
+      "symbol": "AgentdNativeMemoryContextHostV1::attach_with_cancellation",
+      "definition_path": "codex-rs/hepta-agentd/src/native_memory_current.rs",
+      "definition_markers": [
+        "pub(crate) fn attach_with_cancellation(",
+        "state.objective_runtime.get()",
+        "observed.domain.is_zero()",
+        "Arc::downgrade(state)"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_registration.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "memory_native_control_entry",
+      "symbol": "AgentdState::native_memory_control",
+      "definition_path": "codex-rs/hepta-agentd/src/native_memory_control.rs",
+      "definition_markers": [
+        "pub(super) async fn native_memory_control(",
+        "self.require_native_memory_ready()?",
+        "self.refresh_generation()?"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/state_control.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bAgentdState\\s*::\\s*|\\.\\s*)native_memory_control\\s*\\("
+    },
+    {
+      "id": "memory_native_worker_execute",
+      "symbol": "native_memory_process::execute",
+      "definition_path": "codex-rs/hepta-agentd/src/native_memory_process.rs",
+      "definition_markers": [
+        "pub(super) async fn execute(",
+        "if !cfg!(unix)",
+        ".env_clear()",
+        ".kill_on_drop(true)",
+        "tokio::time::timeout_at",
+        "ProcessGroupGuard"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_model.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "memory_native_current_model_guard",
+      "symbol": "NativeMemoryModelPort::execute_with_current_guard",
+      "definition_path": "codex-rs/hepta-agentd/src/native_memory_model.rs",
+      "definition_markers": [
+        "pub(crate) fn execute_with_current_guard(",
+        "current_guard(self.admission.query())?",
+        "self.writer.revalidate_memory_cell"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/native_memory_current_model.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\bNativeMemoryModelPort\\s*::\\s*|\\.\\s*)execute_with_current_guard\\s*\\("
+    }
+  ],
+  "guard_changes": {
+    "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs": {
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs",
+        "required": [],
+        "forbidden": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs",
+        "required": [
+          "config.native_memory_registration().is_some() || config.production_writer_host().is_some()",
+          "descriptor.trust_profile != \"linux-local-compatibility-v1\"",
+          "source.anchor.read(&identity",
+          "source.claim.read(&identity",
+          "source.model.read(&identity",
+          "feed_key.is_weak()",
+          "verify_strict(",
+          "now < signed_feed.update.issued_at_unix_ms",
+          "now >= signed_feed.update.expires_at_unix_ms",
+          "ndu_authority.revocation_head()",
+          "CognitiveRecoveryRequirement::ExactCurrentCut(&anchor)"
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn configure(",
+            "sequence": [
+              "config.native_memory_registration().is_some()",
+              "source.key.validate()",
+              "verifier.current()?",
+              ".verify_strict(",
+              "FinalUseAuthority::open_state_dir_with_clock(",
+              "NduAuthenticatedOwnerV1::open(",
+              "ndu.apply_read_revocation_update(",
+              "AgentdProductionWriterHost::open(",
+              ".with_production_writer_host("
+            ]
+          }
+        ]
+      }
+    },
+    "codex-rs/hepta-ndu/src/owner_current.rs": {
+      "before": {
+        "path": "codex-rs/hepta-ndu/src/owner_current.rs",
+        "required": [],
+        "forbidden": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-ndu/src/owner_current.rs",
+        "required": [
+          "Arc::ptr_eq(&trust.instance, &proof.instance)",
+          "now < proof.observed_unix_ms",
+          "now >= proof.expires_at_unix_ms",
+          "head.authority_epoch != proof.authority_epoch",
+          "head.revoked_grant_ids.contains(&proof.grant_id)",
+          "snapshot != proof.snapshot",
+          "now < *issued_at || now >= feed.valid_until_unix_ms()",
+          "head.authority_epoch != feed.authority_epoch() || head.revision != feed.revision()",
+          "self.authority.revocation_head()? != head"
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn read_current_projection(",
+            "sequence": [
+              "self.current_projection_snapshot(",
+              "self.current_projection_binding(",
+              "self.authority.claim(",
+              "self.authority.with_verified_use(",
+              "self.revalidate_current_projection(",
+              "Ok(proof)"
+            ]
+          }
+        ]
+      }
+    },
+    "codex-rs/hepta-memory/src/memory_cell_invocation.rs": {
+      "before": {
+        "path": "codex-rs/hepta-memory/src/memory_cell_invocation.rs",
+        "required": [],
+        "forbidden": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-memory/src/memory_cell_invocation.rs",
+        "required": [
+          "SELECT COUNT(*) FROM cognitive_local_events WHERE owner_agent_id = ? AND occurrence_key = ?",
+          "self.lease_id() != admission.lease_id",
+          "current != admission.binding",
+          "if !matches!(admitted, LocalAdmission::Queued(_))",
+          "rows != vec![(\"admitted\".to_string(), payload)]"
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn admit_memory_cell(",
+            "sequence": [
+              "self.verify_current_authority().await?",
+              ".memory_cell_source_tx(",
+              "if count != 0",
+              ".admit_in_transaction(",
+              "self.verify_current_authority().await?",
+              "query.validate_at(",
+              "tx.commit()"
+            ]
+          },
+          {
+            "function": "fn finish_memory_cell(",
+            "sequence": [
+              "execution_digest.is_zero()",
+              "self.verify_current_authority().await?",
+              "self.memory_cell_pending_tx(",
+              ".memory_cell_source_tx(",
+              "current != admission.binding",
+              ".apply_in_transaction(",
+              "self.verify_current_authority().await?",
+              "admission.query.validate_at(",
+              "tx.commit()"
+            ]
+          }
+        ]
+      }
+    },
+    "codex-rs/hepta-agentd/src/native_memory_registration.rs": {
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_registration.rs",
+        "required": [],
+        "forbidden": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_registration.rs",
+        "required": [
+          "self.host.get().is_some()",
+          "writer.recovered_source_anchor().is_none()",
+          "source.owner_agent_id() != &state.identity().agent_id",
+          "source.generation() != state.identity().spawn_generation",
+          "runtime_cancellation.child_token()",
+          "cancellation.clone().drop_guard()",
+          "!prepared.belongs_to(&self.context)",
+          "prepared.query().key != source.key"
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn open_shadow(",
+            "sequence": [
+              "self.context.cancellation.is_cancelled()",
+              "!prepared.belongs_to(",
+              "prepared.authorize(",
+              "AgentdNativeMemoryCell::from_registered_source(",
+              "cell.open_shadow(",
+              "self.context.cancellation.is_cancelled()",
+              "pending.disarm()"
+            ]
+          }
+        ]
+      }
+    },
+    "codex-rs/hepta-agentd/src/native_memory_current.rs": {
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_current.rs",
+        "required": [],
+        "forbidden": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_current.rs",
+        "required": [
+          "observed.domain != previous.domain",
+          "observed.monotonic_micros < previous.monotonic_micros",
+          "self.cancellation.cancel()",
+          "current.context().host_generation != serving_generation",
+          "query.deadline_unix_ms > objective.snapshot().deadline_ms",
+          "query != &self.query",
+          "NativeMemoryContextBindingV1::from_checked_owners("
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn authorize(",
+            "sequence": [
+              ".revalidate_current_objective(",
+              ".current_projection_binding(",
+              ".read_current_projection(",
+              ".revalidate_current_objective(",
+              "ndu.revalidate_current_projection(",
+              "self.host.observe_clock()"
+            ]
+          }
+        ]
+      }
+    },
+    "codex-rs/hepta-agentd/src/native_memory_model.rs": {
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_model.rs",
+        "required": [],
+        "forbidden": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_model.rs",
+        "required": [
+          "request != &self.expected || self.attempted",
+          "self.cancellation.is_cancelled()",
+          "self.tick_binding.is_some()",
+          "verify_execution("
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn execute_checked(",
+            "sequence": [
+              "request != &self.expected || self.attempted",
+              "self.writer.revalidate_memory_cell(",
+              "current_guard(self.admission.query())?",
+              "self.attempted = true",
+              "self.dispatches.fetch_add(",
+              "native_memory_process::execute(",
+              "verify_execution(",
+              "self.writer.revalidate_memory_cell("
+            ]
+          }
+        ]
+      }
+    },
+    "codex-rs/hepta-agentd/src/native_memory_process.rs": {
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_process.rs",
+        "required": [],
+        "forbidden": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_process.rs",
+        "required": [
+          "if !cfg!(unix)",
+          "native worker process-group ownership is unavailable",
+          ".env_clear()",
+          "RUNTIME_ENVIRONMENT",
+          ".kill_on_drop(true)",
+          "command.process_group(0)",
+          "OUTPUT_LIMIT + 1",
+          "drop(stdin)",
+          "tokio::time::timeout_at(deadline, communicate)",
+          "drop(stdout)",
+          "drop(stderr)",
+          "group_cleanup_error.is_some()",
+          "REAP_TIMEOUT",
+          "create_new(true)",
+          "libc::O_NOFOLLOW | libc::O_CLOEXEC"
+        ],
+        "forbidden": [
+          "thread::spawn",
+          "std::thread::spawn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn execute_with_environment(",
+            "sequence": [
+              "if !cfg!(unix)",
+              "verify()?",
+              "cancellation.is_cancelled()",
+              "Command::new(",
+              ".env_clear()",
+              ".spawn()",
+              "tokio::time::timeout_at(",
+              "drop(stdout)",
+              "drop(stderr)",
+              "group.terminate()",
+              "write_receipt(&directory.join("
+            ]
+          }
+        ]
+      }
+    },
+    "codex-rs/hepta-neuron/src/runtime_tick.rs": {
+      "before": {
+        "path": "codex-rs/hepta-neuron/src/runtime_tick.rs",
+        "required": [],
+        "forbidden": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-neuron/src/runtime_tick.rs",
+        "required": [
+          "self.journal.remaining_capacity()?",
+          "authority: AuthorityPosture::DENY_ALL",
+          "abstain: true",
+          "self.pending = Some(PendingWitness"
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn tick_profile(",
+            "sequence": [
+              "self.model_request(&input)?",
+              "let current = self.journal.current()?",
+              "verify_owner_context(",
+              "checkpoint.sequence().checked_add(1)",
+              "checkpoint.monotonic_micros()",
+              "checkpoint.body_digest()",
+              "self.journal.remaining_capacity()?",
+              "model.execute(&model_request)?",
+              "self.journal.commit(",
+              "self.witness.compare_and_swap("
+            ]
+          }
+        ]
+      }
+    },
+    "codex-rs/hepta-agentd/src/native_memory_host_control.rs": {
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_host_control.rs",
+        "required": [],
+        "forbidden": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/native_memory_host_control.rs",
+        "required": [
+          "home.mode() & 0o077 != 0",
+          "stream.peer_cred()?.uid() != self.owner_uid",
+          "sequence <= *previous",
+          "session.attempted = true",
+          "shared.cancellation.is_cancelled()",
+          "owner.revalidate_delivery(result)",
+          "stream.try_write(&bytes)"
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn deliver(",
+            "sequence": [
+              "shared.session.claim()",
+              "response_bytes(",
+              "stream.writable()",
+              "owner.revalidate_delivery(result)",
+              "shared.cancellation.is_cancelled()",
+              "stream.try_write(&bytes)"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "old_boundaries_preserved": 1624,
+  "old_protected_files_preserved": 809,
+  "ignored_path_fragments_unchanged": true,
+  "authority_granted": false,
+  "note": "Explicit reviewed source inventory and guard requirements; not native execution qualification.",
+  "rendered_before_eof_normalization_sha256": "5f416ebcb089fc7ea220eea621ab33481ee9dd7be9da7256c4b7b13e0524bc72",
+  "eof_normalization_preserves_parsed_manifest": true
+}

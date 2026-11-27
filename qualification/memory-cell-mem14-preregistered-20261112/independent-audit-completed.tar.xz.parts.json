@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.ordered-artifact-parts.v1",
+  "archive_name": "independent-audit-completed.tar.xz",
+  "archive_bytes": 803660,
+  "archive_sha256": "f37b8560dc79e86bbd5351c17164d4b62ca8d6e2bb4a9398412701a6c6ad02c4",
+  "original_repository_path": "qualification/memory-cell-mem14-preregistered-20261112/independent-audit-completed.tar.xz",
+  "original_git_commit": "a5ca2bae54d0bca65e72f1920f8157f44b5a4fb8",
+  "original_git_blob": "ba064b137347b32e985c694976e49831b82badda",
+  "max_part_bytes": 500000,
+  "ordered_parts": [
+    {
+      "path": "independent-audit-completed.tar.xz.part000",
+      "offset": 0,
+      "bytes": 500000,
+      "sha256": "4053bb88a91909d4fa49e89875271fc8d3da6e2b1e5d0143068ab4feb819ac74"
+    },
+    {
+      "path": "independent-audit-completed.tar.xz.part001",
+      "offset": 500000,
+      "bytes": 303660,
+      "sha256": "fb47f8f85471ed3fbc3691cf1dda6952329b7fd7ea83537d5a39d3761e28f7a4"
+    }
+  ],
+  "restoration": {
+    "working_directory": "qualification/memory-cell-mem14-preregistered-20261112",
+    "command": "( set -C; cat independent-audit-completed.tar.xz.part000 independent-audit-completed.tar.xz.part001 > independent-audit-completed.tar.xz )",
+    "verification_command": "printf '%s  %s\\n' 'f37b8560dc79e86bbd5351c17164d4b62ca8d6e2bb4a9398412701a6c6ad02c4' 'independent-audit-completed.tar.xz' | sha256sum -c -",
+    "no_overwrite": true,
+    "instructions": "../memory-cell-archive-storage-20261115/README.md"
+  },
+  "storage_only": true,
+  "compression_bytes_unchanged": true
+}

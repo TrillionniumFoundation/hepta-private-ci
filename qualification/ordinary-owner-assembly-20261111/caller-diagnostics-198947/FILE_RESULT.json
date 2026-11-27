@@ -1,0 +1,417 @@
+{
+  "authorityGranted": false,
+  "boundaries": [
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+      ],
+      "file_errors": [
+        {
+          "error": "unresolved possible CellQ24TrainingBatchV1::revalidate_source receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
+        }
+      ],
+      "id": "cell_q24_original_dataset_revalidation",
+      "matched_files": [
+        "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+      ],
+      "missing_external_callers": [],
+      "observed_set_incomplete_if_file_errors": true,
+      "receiver_methods": [
+        "revalidate_source"
+      ],
+      "receiver_type": "CellQ24TrainingBatchV1",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [],
+      "visited_files": 4360,
+      "visited_paths_sha256": "f15186e9182c06e35dac95048edb64c8dda78be91ba5c38e7a96513cc1839f44"
+    },
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs"
+      ],
+      "file_errors": [
+        {
+          "error": "unresolved possible OriginalCellQ24SourceReceiptOwnerV1::create receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs"
+        },
+        {
+          "error": "unresolved possible OriginalCellQ24SourceReceiptOwnerV1::create receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs"
+        },
+        {
+          "error": "unresolved possible OriginalCellQ24SourceReceiptOwnerV1::create receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs"
+        },
+        {
+          "error": "unresolved possible OriginalCellQ24SourceReceiptOwnerV1::create receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs"
+        },
+        {
+          "error": "unresolved possible OriginalCellQ24SourceReceiptOwnerV1::create receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs"
+        }
+      ],
+      "id": "learning_original_source_create",
+      "matched_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs"
+      ],
+      "missing_external_callers": [],
+      "observed_set_incomplete_if_file_errors": true,
+      "receiver_methods": [
+        "create"
+      ],
+      "receiver_type": "OriginalCellQ24SourceReceiptOwnerV1",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [],
+      "visited_files": 4360,
+      "visited_paths_sha256": "12824cc5a4ab8924027a363e6414616130e26718d70a4c4940e38f071ae5ed71"
+    },
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [
+        "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+      ],
+      "file_errors": [
+        {
+          "error": "unresolved possible OriginalCellQ24LearningStageOwnersV1::require_current receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
+        }
+      ],
+      "id": "learning_original_q24_stage_require_current",
+      "matched_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+        "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+      ],
+      "missing_external_callers": [],
+      "observed_set_incomplete_if_file_errors": true,
+      "receiver_methods": [
+        "require_current"
+      ],
+      "receiver_type": "OriginalCellQ24LearningStageOwnersV1",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [],
+      "visited_files": 4360,
+      "visited_paths_sha256": "520b3055d1a16c06cc9388de1dd72e3463cf0a17159af967bd864c3b8780099b"
+    },
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+      ],
+      "file_errors": [
+        {
+          "error": "unresolved possible NeuronGenerationCurrentOwnerV1::require_original_root_selection receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
+        }
+      ],
+      "id": "root_generation_current_bound_selection",
+      "matched_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+      ],
+      "missing_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
+      ],
+      "observed_set_incomplete_if_file_errors": true,
+      "receiver_methods": [
+        "require_original_root_selection"
+      ],
+      "receiver_type": "NeuronGenerationCurrentOwnerV1",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [],
+      "visited_files": 4360,
+      "visited_paths_sha256": "86d33467da172ac9373ec858b042d378668691cb9f52da562e97917884cc9497"
+    },
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [
+        "codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs"
+      ],
+      "file_errors": [],
+      "id": "q24_task_original_ledger_open",
+      "matched_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_task_ledger_recovery_support.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+        "codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs"
+      ],
+      "missing_external_callers": [],
+      "observed_set_incomplete_if_file_errors": false,
+      "receiver_methods": [
+        "open_original"
+      ],
+      "receiver_type": "OriginalCellQ24TaskLedgerProducerV1",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_task_ledger_recovery_support.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs"
+      ],
+      "visited_files": 4360,
+      "visited_paths_sha256": "5393e64a77f558199d825c9ec404945139ccc67e9cdead1c8316b428c86e2296"
+    },
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
+      ],
+      "file_errors": [
+        {
+          "error": "unresolved possible OriginalCellQ24TaskLedgerProducerV1::readback receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
+        }
+      ],
+      "id": "q24_task_original_ledger_readback",
+      "matched_files": [],
+      "missing_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
+      ],
+      "observed_set_incomplete_if_file_errors": true,
+      "receiver_methods": [
+        "readback"
+      ],
+      "receiver_type": "OriginalCellQ24TaskLedgerProducerV1",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [],
+      "visited_files": 4360,
+      "visited_paths_sha256": "5393e64a77f558199d825c9ec404945139ccc67e9cdead1c8316b428c86e2296"
+    },
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
+      ],
+      "file_errors": [],
+      "id": "q24_task_original_dataset_prepare",
+      "matched_files": [],
+      "missing_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
+      ],
+      "observed_set_incomplete_if_file_errors": false,
+      "receiver_methods": [
+        "prepare_dataset"
+      ],
+      "receiver_type": "OriginalCellQ24TaskLedgerProducerV1",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [],
+      "visited_files": 4360,
+      "visited_paths_sha256": "5393e64a77f558199d825c9ec404945139ccc67e9cdead1c8316b428c86e2296"
+    },
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [],
+      "file_errors": [
+        {
+          "error": "unresolved possible AgentdConfig::with_q24_learning_task_profile receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs"
+        }
+      ],
+      "id": "q24_task_original_profile_install",
+      "matched_files": [],
+      "missing_external_callers": [],
+      "observed_set_incomplete_if_file_errors": true,
+      "receiver_methods": [
+        "with_q24_learning_task_profile"
+      ],
+      "receiver_type": "AgentdConfig",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [],
+      "visited_files": 4360,
+      "visited_paths_sha256": "7eee4d3337b38067604129fb8477621d5a0dc4ed2b6f55e69457054dabbaec12"
+    },
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [
+        "codex-rs/hepta-agentd/src/runtime.rs"
+      ],
+      "file_errors": [],
+      "id": "q24_task_explicit_delivery_sources",
+      "matched_files": [],
+      "missing_external_callers": [
+        "codex-rs/hepta-agentd/src/runtime.rs"
+      ],
+      "observed_set_incomplete_if_file_errors": false,
+      "receiver_methods": [
+        "attach_sources"
+      ],
+      "receiver_type": "CircuitLearningDeliveryRuntimeV1",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [],
+      "visited_files": 4360,
+      "visited_paths_sha256": "16c99580e964d8933c422dcb155be08d97ed37fbeb71c7a5d3165e642db1a846"
+    },
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_readback.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_readback.rs"
+      ],
+      "file_errors": [],
+      "id": "q24_training_original_readback_construct",
+      "matched_files": [],
+      "missing_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_readback.rs"
+      ],
+      "observed_set_incomplete_if_file_errors": false,
+      "receiver_methods": [
+        "from_original_stage"
+      ],
+      "receiver_type": "OriginalCellQ24TrainingReadbackV1",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [],
+      "visited_files": 4360,
+      "visited_paths_sha256": "c8afcf9aca1223663b5658363bdd3aa28401778b5948298aab198f41733dcac1"
+    },
+    {
+      "definition_errors": [],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_source.rs",
+      "eligible_files": 4360,
+      "expected_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs"
+      ],
+      "file_errors": [
+        {
+          "error": "unresolved possible OriginalCellEvaluationTrainerV1::borrow receiver",
+          "exception_type": "UnresolvedTypedReceiver",
+          "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs"
+        }
+      ],
+      "id": "evaluation_original_trainer_borrow",
+      "matched_files": [],
+      "missing_external_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs"
+      ],
+      "observed_set_incomplete_if_file_errors": true,
+      "receiver_methods": [
+        "borrow"
+      ],
+      "receiver_type": "OriginalCellEvaluationTrainerV1",
+      "skipped_by_original_policy": 2109,
+      "skipped_definition": 1,
+      "status": "diagnosed-all-eligible-files",
+      "unexpected_external_callers": [],
+      "visited_files": 4360,
+      "visited_paths_sha256": "6d9cdeee0337c4b5f099ce03b89e720385e0fde40a5f8fc03340cc9e8d18c2f8"
+    }
+  ],
+  "classification": "DIAGNOSTIC_ONLY_NOT_OFFICIAL_VERIFICATION",
+  "diagnosed_boundary_ids": [
+    "cell_q24_original_dataset_revalidation",
+    "learning_original_source_create",
+    "learning_original_q24_stage_require_current",
+    "root_generation_current_bound_selection",
+    "q24_task_original_ledger_open",
+    "q24_task_original_ledger_readback",
+    "q24_task_original_dataset_prepare",
+    "q24_task_original_profile_install",
+    "q24_task_explicit_delivery_sources",
+    "q24_training_original_readback_construct",
+    "evaluation_original_trainer_borrow"
+  ],
+  "driver_errors": [],
+  "duration_seconds": 92.02810835605487,
+  "finished_at": "2026-11-11T23:59:44.089772+00:00",
+  "full_callers_accepted": false,
+  "native_executed": false,
+  "not_fully_diagnosed_boundary_ids": [],
+  "official_full_verifier_executed": false,
+  "operator_euid": 1000,
+  "operator_uid": 1000,
+  "python_executable": "/usr/bin/python3",
+  "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "retained_original_result": {
+    "bytes": 182100,
+    "failed_boundary_ids": [
+      "cell_q24_original_dataset_revalidation",
+      "learning_original_source_create",
+      "learning_original_q24_stage_require_current",
+      "root_generation_current_bound_selection",
+      "q24_task_original_ledger_open",
+      "q24_task_original_ledger_readback",
+      "q24_task_original_dataset_prepare",
+      "q24_task_original_profile_install",
+      "q24_task_explicit_delivery_sources",
+      "q24_training_original_readback_construct",
+      "evaluation_original_trainer_borrow"
+    ],
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-all-boundary-diagnostic-v1/records/result.json",
+    "sha256": "8007a25bf9dea4424378ae6af8c524aa0c33dd0f3b7a0f7dbd7519f058a336ce"
+  },
+  "schema": "hepta.original-receiver-per-file-diagnostic.v1",
+  "script_sha256": "ae944bee0bda949bd1bb7a7300174063ced646f4700e7cb018fc1264cbbb6ba0",
+  "source_clean_before_after": true,
+  "source_index": {
+    "control_file_count": 369,
+    "ignored_path_fragments": [
+      "/tests/",
+      "/examples/",
+      "_tests.rs"
+    ],
+    "masked_index_sha256": "25b6a5ea726bc7f850e76a91eaf8a89fe94860564c36da47d3db0228f6d7dfcd",
+    "rust_count": 6470,
+    "source_roots": [
+      "codex-rs"
+    ]
+  },
+  "source_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-all-boundary-diagnostic-v1/source",
+  "source_sha": "19894714403a97fcd58ca8c592e75761de95687c",
+  "source_tree": "8c64ab5145f279cafec363130d2a917075800e56",
+  "started_at": "2026-11-11T23:58:12.061692+00:00",
+  "status": "diagnostic-completed-with-findings",
+  "total_file_errors": 11
+}

@@ -1,0 +1,30 @@
+{
+  "core_configuration": {
+    "model_config": {
+      "heads": 1,
+      "initial_leak": 0.001953125,
+      "initial_write": 1.0,
+      "key_dim": 16,
+      "max_step": 0.0625,
+      "value_dim": 8
+    },
+    "task_contract": {
+      "config": {
+        "bindings": 6,
+        "key_vocab": 16,
+        "length": 32,
+        "overwrites": 2,
+        "selected": 4,
+        "value_vocab": 8
+      }
+    }
+  },
+  "development_only": true,
+  "formal_data_or_checkpoints_read": false,
+  "sources": {
+    "PROTOCOL_SPEC.json": "3818ce7a1a7e9bdb8d131d88627a41fab56200c795eebf1ed4f874b60f9ffa9e",
+    "checkpoints.py": "0791cf0428e606303dab0a747f1d8d7fb66c0e2bd08c6ca176c79019f8622713"
+  },
+  "specification_sha256": "3818ce7a1a7e9bdb8d131d88627a41fab56200c795eebf1ed4f874b60f9ffa9e",
+  "untrained": true
+}

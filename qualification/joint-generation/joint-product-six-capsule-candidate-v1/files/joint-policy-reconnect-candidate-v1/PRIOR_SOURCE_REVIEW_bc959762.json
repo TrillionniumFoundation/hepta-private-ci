@@ -1,0 +1,29 @@
+{
+  "documentation_finding": {
+    "issue": "Only poll reap bookkeeping is signal-masked. launch Popen return to live[p.pid] registration is not masked and asynchronous timeout can interrupt this window. Thus no claim of atomic spawn registration or universal cleanup/accounting.",
+    "location": "PLAN Fixed resource graph: OwnlivePID maps and WNOHANG reap use shortSIGALRM-masked registration",
+    "required_resolution": "Narrow wording to masked reap bookkeeping and explicitly scope spawn-return/registration interruption as uncertain child-handle/descendant receipt failure, or implement separately reviewed safe registration. Current qualification does not inject this window.",
+    "runtime_assessment": "No new inevitable normal-path failure found; documentation must not overclaim all-failure guarantee."
+  },
+  "limits": [
+    "Caller now2/deadline100 literal; no trustedclock/auth/clientack.",
+    "Only acknowledged midpoint death, no new unknownmodel/fragmentlostack/cancelcrash.",
+    "Shared current model mathematical reference historicalV2, no fresh independentbaseline.",
+    "No source result admits a run; father separately authorizes once."
+  ],
+  "method": "Static source/AST/hash only; no imports or candidate/model/protocol execution.",
+  "source_freeze_sha256": "bc95976262d8949ac544abecc3ddb5f68150d4d4644cc09c573fde2eadaf8ed0",
+  "status": "SOURCE_CORE_SCOPED_PASS_DOCUMENTATION_CORRECTION_PENDING",
+  "verified": {
+    "RUN_exists": false,
+    "capacity": "Normal41files=5outer+20chain+16delivery; READY published but tmpunlink not reached at kill may retain one extra hardlink path. \u226460 planned/100terminal. Pinned content1560407B<2MiB filecap;16MiB terminal not livequota.",
+    "counts": "5producer+12recover=17checks;2valid exact-message namespace refusals afterleaseacquired, inventorybefore/afteroutside deliveryroot; total4restore1serve1Actor1encode0reference/Adam/fresh. Recovery0inference,4pieces26581B appended to8227B for34808B.",
+    "dependencies": "common helpers defined; verify_midpoint imports Attempt/parsers, no model construction; worker has all NP/io/signal/resource imports; full14module runtime unchanged.",
+    "freeze_files": 22,
+    "identity": "Expected composite from pinned V2 artifact only source_freeze replaced; rawrequest onlyartifact/run_id replaced. Paired provenance/arrays remain identical. Route onlyartifact/requestidentity changed; numerics/wire/input same. Exact slot restricts untrusted READY filename. Physicalroot preknown bysupervisor; lockdev/inode retained.",
+    "inputs": 13,
+    "path": "Producer cold2restore -> real selective1Actor/encode -> generated/acked2 -> independent no-model raw/expectedartifact/namespace/fixedpiece01/route/wire/session reconstruction -> atomicHANDOFF -> ownkill/reap -> new interpreter cold2restore -> two namespace refusals -> saved remaining4pieces.",
+    "resources": "CPUhard/soft2 all4processes AS256MiB FSIZE2MiB; worker30/sup60/outer90 and15cleanup. WNOHANG reap-bookkeeping masked againstSIGALRM; usage+exit+live removal recorded beforeunmask. Complete normal subtree roles/sup once, outerprefix extra/unknowntail.",
+    "runtime_exact_copies": 14
+  }
+}

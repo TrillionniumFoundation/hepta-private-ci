@@ -1,0 +1,358 @@
+{
+  "status": "READ_ONLY_DESIGN_NO_IMPLEMENTATION",
+  "created_at": "2026-11-20T05:09:05.586698+00:00",
+  "head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "tree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+  "repository_path": "codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+  "source": {
+    "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/qualification_performance.rs",
+    "bytes": 9054,
+    "sha256": "b73b6f39a7736868cd11cee9ab0f2a78239b12a0b26eee34cf7da22a710bea8f",
+    "git_blob": "b456c2364345a07f7367bc7e7b688a99ba3c04e5"
+  },
+  "source_transport_receipt": {
+    "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/source-receipt.json",
+    "bytes": 12967,
+    "sha256": "930b49891799bfec97c9cb50b5fc010d3c0549b298b984b6ee9485fb9ff2d24a",
+    "git_blob": "1ddc2bac93a350310010495a504fac8ea7245b06"
+  },
+  "actual_failures": {
+    "jobs": [
+      136085684634,
+      136085684988
+    ],
+    "count_per_job": 18,
+    "expect_result": 15,
+    "unwrap_result": 2,
+    "collapsible_if": 1,
+    "native_after_candidate": "NOT_RUN",
+    "actual_source_job_tree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+    "deterministic_job_identity": "Original workflow creates its own deterministic merge from BASE0cee and SOURCE2b; do not substitute PR synthetic merge SHA for its runtime commit.",
+    "full_logs": [
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/logs/job-136085684634.log",
+        "bytes": 2321201,
+        "sha256": "f37e6df7fac50b4c7812ca013d42dbd6c85d3e1cf9ce6120b3c50eae90211cc7",
+        "git_blob": "d8afefc0e2ea9ae1a27baa264ca506df6a0b4754"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/logs/job-136085684988.log",
+        "bytes": 2373800,
+        "sha256": "fadf85798ccdebc75a841d63c982572850887d97e2198c3c90535c2f9eb0bae2",
+        "git_blob": "4e17b1840934732455082c1b884c4b9b1aec0426"
+      }
+    ]
+  },
+  "owner_overlap": {
+    "scan_roots": [
+      "/tmp/hepta-ci-audit-recovery-20261120",
+      "/tmp/hepta-branch-audit-ci-20261120-7246",
+      "/workspace/scratch/hepta-recovery-7246-20261120",
+      "/workspace/scratch/hepta-dependency-recovery-7246"
+    ],
+    "scan_scope": "Local manifest/MANIFEST/FROZEN/REPORT/PLAN/REVIEW/catalog JSON path matches plus actual automation state07; not a proof that no concurrent owner exists globally.",
+    "manifest_matches": [
+      {
+        "manifest": {
+          "path": "/tmp/hepta-ci-audit-recovery-20261120/native-candidate-source-manifest-v7.json",
+          "bytes": 5520210,
+          "sha256": "dced613d0591fe521a612d19960bfb3b62d65360eae689bd1bfaf9013156b010",
+          "git_blob": "dd547ef11dedc9d6af5804ec1a6948e68ae90a9c"
+        },
+        "exact_entry": {
+          "path": "codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+          "mode": "100644",
+          "type": "blob",
+          "oid": "b456c2364345a07f7367bc7e7b688a99ba3c04e5",
+          "bytes": 9054,
+          "sha256": "b73b6f39a7736868cd11cee9ab0f2a78239b12a0b26eee34cf7da22a710bea8f"
+        },
+        "matches_actual2b_source": true
+      },
+      {
+        "manifest": {
+          "path": "/workspace/scratch/hepta-dependency-recovery-7246/combined-source-composition02/native-materialization01/FINAL-MATERIALIZATION-MANIFEST.json",
+          "bytes": 14527649,
+          "sha256": "61c6400e5d29bc7f41655323f114d7a5ec9b81deb8b8e84cf7e784a8574fb614",
+          "git_blob": "8f25f3846b37fcccb7ed71ea2a00bdc8f3f71e3a"
+        },
+        "exact_entry": {
+          "git_blob": "b456c2364345a07f7367bc7e7b688a99ba3c04e5",
+          "mode": "100644",
+          "path": "codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+          "type": "blob",
+          "bytes": 9054,
+          "sha256": "b73b6f39a7736868cd11cee9ab0f2a78239b12a0b26eee34cf7da22a710bea8f",
+          "source_kind": "readonly_native_supplier",
+          "supplier_path": "/home/qian-qi/hepta-time-72466978/repo/codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+          "supplier_expected": {
+            "path": "codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+            "git_blob": "b456c2364345a07f7367bc7e7b688a99ba3c04e5",
+            "mode": "100644",
+            "bytes": 9054
+          },
+          "sha256_status": "prior_exact_evidence"
+        },
+        "matches_actual2b_source": true
+      },
+      {
+        "manifest": {
+          "path": "/workspace/scratch/hepta-dependency-recovery-7246/combined-source-composition02/native-materialization02/FINAL-MATERIALIZATION-MANIFEST.json",
+          "bytes": 14527924,
+          "sha256": "eaa2b9ca5d5cb2d4a3702926d0adab9b289acba60b60438cec36e57c10ee15b8",
+          "git_blob": "c264e8447c79bb7000d6307224641a4b7a8dd4c5"
+        },
+        "exact_entry": {
+          "git_blob": "b456c2364345a07f7367bc7e7b688a99ba3c04e5",
+          "mode": "100644",
+          "path": "codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+          "type": "blob",
+          "bytes": 9054,
+          "sha256": "b73b6f39a7736868cd11cee9ab0f2a78239b12a0b26eee34cf7da22a710bea8f",
+          "source_kind": "readonly_native_supplier",
+          "supplier_path": "/home/qian-qi/hepta-time-72466978/repo/codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+          "supplier_expected": {
+            "path": "codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+            "git_blob": "b456c2364345a07f7367bc7e7b688a99ba3c04e5",
+            "mode": "100644",
+            "bytes": 9054
+          },
+          "sha256_status": "prior_exact_evidence"
+        },
+        "matches_actual2b_source": true
+      }
+    ],
+    "automation_receipt": {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/automation-owner-overlap.json",
+      "bytes": 100239,
+      "sha256": "7862199282a6fa798489a6ec15da819f68fb7b8a885879c755b079f6ff9ca376",
+      "git_blob": "5b0a77d0eb47b43fbff8063f94d003ff49af34b4"
+    },
+    "automation_updated_at": "2026-11-20T04:54:59.968648+00:00",
+    "active_owner_context": [
+      "真实双锁生成后再从实际Cargo.lock更新Windows storage remainder fingerprint，原37pins其他项/校验保留。之后final source+actual locks跑B4、helper8packages/10bins/17envkeys、28packages/Bellman/full200 just test及最终fmt/strict、跨平台原CI。旧B4 1352PASS仅f7d7，旧fmt43PASS仅其Python范围，均不当作new2b+43 PASS。所有历史失败保留，包括C2D stale rollback BEFORE、EDQUOT、semantic failures；无删断言/skip/ours/force。外部新2b Actions107checks/11FAIL及5 actual formatter postimages/Windows test candidates继续由外部owner处理，下面完整保留其详细记录，不重复其native/日志任务。当前唯一路径是完成本正常物化/解析门，再实际测试，不追加只读探针延迟执行。"
+    ],
+    "conclusion": "All three original-owner source/materialization inventories still bind the same actual failing b456c236 bytes; no changed afterimage for this path found in scanned repair manifests. Original owner plans Bellman all-target acceptance after canonical locks. Keep this read-only design out of current bounded round3 and hand over before future implementation."
+  },
+  "original_assertions": [
+    {
+      "line": 72,
+      "source": "assert_eq!(manifest.selected_points.len(), requested_count);",
+      "sha256": "1438a76f4010b9a5dc66e150f253311513ec85399793085776911d363d8cff9a"
+    },
+    {
+      "line": 116,
+      "source": "assert_eq!(artifact.cells.len(), 1);",
+      "sha256": "3486405b65cfd6c547f6218a3069bfb97a5a23333a0bf12ff941d1f504bc457b"
+    },
+    {
+      "line": 117,
+      "source": "assert_eq!(\n        usize::try_from(artifact.cells[0].sample_count).expect(\"cell count\"),\n        sample_count\n    );",
+      "sha256": "d0b8ecfa6566da7322027f163d5a82a3e7c23446b3a73a7a620b1731ab6a5b70"
+    }
+  ],
+  "original_panic_sites": [
+    {
+      "line": 25,
+      "call": ".expect(\"qualification identity\")"
+    },
+    {
+      "line": 33,
+      "call": ".expect(\"index\")"
+    },
+    {
+      "line": 34,
+      "call": ".expect(\"count\")"
+    },
+    {
+      "line": 36,
+      "call": ".expect(\"coordinate\")"
+    },
+    {
+      "line": 61,
+      "call": ".expect(\"candidate count\")"
+    },
+    {
+      "line": 62,
+      "call": ".expect(\"requested count\")"
+    },
+    {
+      "line": 68,
+      "call": ".unwrap()"
+    },
+    {
+      "line": 71,
+      "call": ".expect(\"sensor-core qualification\")"
+    },
+    {
+      "line": 80,
+      "call": ".expect(\"iteration\")"
+    },
+    {
+      "line": 81,
+      "call": ".expect(\"sample count\")"
+    },
+    {
+      "line": 84,
+      "call": ".expect(\"sample index\")"
+    },
+    {
+      "line": 93,
+      "call": ".expect(\"target\")"
+    },
+    {
+      "line": 102,
+      "call": ".expect(\"generation\")"
+    },
+    {
+      "line": 113,
+      "call": ".unwrap()"
+    },
+    {
+      "line": 115,
+      "call": ".expect(\"tabular qualification\")"
+    },
+    {
+      "line": 118,
+      "call": ".expect(\"cell count\")"
+    },
+    {
+      "line": 195,
+      "call": ".expect(\"JSON row\")"
+    }
+  ],
+  "minimum_future_design": [
+    "Limit any future source patch to this example. Use an explicit standard-library Result error path for StableId/Generation creation, integer TryFrom, WorkControl creation, the real sensor/tabular operations, and JSON formatting; propagate failure to the executable ExitCode::FAILURE. Do not replace expect with panic/match panic/allow or disable this example target.",
+    "Make id, coordinate, sensor_design, run_sensor and run_tabular fallible. Collect iterator construction and measured durations as Result<Vec<_>,_> so any failed element terminates qualification and is never silently omitted. Keep contextual labels from each old expect in returned diagnostics.",
+    "A standard Box<dyn std::error::Error> result can receive the existing IdentityError, WorkControlError, ControlledSensorCoreError and StrictLearnedOperatorError; exact current implementations of std::error::Error are preserved in reference source bindings. Standard TryFromIntError, fmt::Error and I/O errors need no new dependency. Final candidate still needs actual Rust/Clippy validation.",
+    "Extract a fallible run body with a thin main mapping Err to a diagnostic and ExitCode::FAILURE, or an equivalently explicit Result closure. Preserve success JSON bytes/field names and all existing explicit output-directory/write failure branches. Do not report a partial row or qualification success on error.",
+    "Apply only the suggested let-chain collapse to the nested output.parent/create_dir_all error check while preserving the original diagnostic and failure return.",
+    "Keep all three original assert_eq comparisons and inputs. The sample_count conversion remains checked; only its Result is propagated before comparing. Keep both Instant::now placement points, operation invocation count/order, cancellation/budget values, saturating operation formulas, and all measured case/sample sizes unchanged."
+  ],
+  "mandatory_preservation": {
+    "sensor_cases": [
+      [
+        1024,
+        64
+      ],
+      [
+        4096,
+        128
+      ],
+      [
+        8192,
+        192
+      ],
+      [
+        16384,
+        256
+      ]
+    ],
+    "sensor_iterations_per_case": 3,
+    "tabular_cases": [
+      [
+        100000,
+        5
+      ],
+      [
+        500000,
+        3
+      ],
+      [
+        1000000,
+        2
+      ]
+    ],
+    "sensor_work_duration_ms": 120000,
+    "sensor_p99_limit_ms": 120000,
+    "tabular_work_duration_ms": 300000,
+    "tabular_p99_limits_ms": {
+      "100000": 60000,
+      "500000": 180000,
+      "otherwise": 300000
+    },
+    "max_rss_kib": 6291456,
+    "stable_identity_labels_and_evidence_bytes": "unchanged",
+    "sampling_and_evidence_24byte_layout": "unchanged",
+    "assertions_to_keep": 3,
+    "source_test_functions": 0,
+    "no_new_test_skip_or_retry": true,
+    "no_numeric_fallback_or_lossy_cast": true,
+    "no_operation_or_threshold_reduction": true
+  },
+  "type_reference_bindings": [
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+      "bytes": 6693,
+      "sha256": "c29b4dea553c2b8001cb00ee4f1fec136e3f77f15b749d8f0aa22da9c221fb54",
+      "git_blob": "2418059ce3b842a89716004c63123bb4d5cf8d4c",
+      "repository_path": "codex-rs/hepta-bellman-operator/src/learned_strict.rs"
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/lib.rs",
+      "bytes": 14408,
+      "sha256": "71db4a3832cfe79d57370c84ca36e96d1db7e148e4b8e0b46529ff093d98e459",
+      "git_blob": "ce6a9d5156da7846197ffd233e117d1ebe254922",
+      "repository_path": "codex-rs/hepta-bellman-operator/src/lib.rs"
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/sensor_core_controlled.rs",
+      "bytes": 13193,
+      "sha256": "f4eccfbecdaf10d247dfafb3105deaeb1ab06335b6e0ce2c238afe3eb0d2fbde",
+      "git_blob": "419f0cc04e6bf58cb77b6609f6dcdac6d3950a70",
+      "repository_path": "codex-rs/hepta-bellman-operator/src/sensor_core_controlled.rs"
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/work_control.rs",
+      "bytes": 3472,
+      "sha256": "d938c2796e21ec0e08718fdac97189cd2b97db255ab345b0689bf5748317288d",
+      "git_blob": "e5d070ea8162e98353961aa133636c5d965bbfdc",
+      "repository_path": "codex-rs/hepta-bellman-operator/src/work_control.rs"
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-types/src/identity.rs",
+      "bytes": 13344,
+      "sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+      "git_blob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f",
+      "repository_path": "codex-rs/hepta-types/src/identity.rs"
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-types/src/lib.rs",
+      "bytes": 5562,
+      "sha256": "9965c2a5483ff98904e26335115b48b7a4d140e9c5f1b8853410491a1b68d942",
+      "git_blob": "b8cf542ec4c5528450bc6b7df97866f9f6b6d51d",
+      "repository_path": "codex-rs/hepta-types/src/lib.rs"
+    }
+  ],
+  "verified_error_traits": [
+    {
+      "type": "WorkControlError",
+      "source": "work_control.rs",
+      "evidence": "impl StdError for WorkControlError {}"
+    },
+    {
+      "type": "ControlledSensorCoreError",
+      "source": "sensor_core_controlled.rs",
+      "evidence": "impl StdError for ControlledSensorCoreError {"
+    },
+    {
+      "type": "StrictLearnedOperatorError",
+      "source": "learned_strict.rs",
+      "evidence": "impl StdError for StrictLearnedOperatorError {"
+    },
+    {
+      "type": "IdentityError",
+      "source": "codex-rs/hepta-types/src/identity.rs",
+      "evidence": "impl Error for IdentityError {}"
+    }
+  ],
+  "performed": {
+    "source_edits": 0,
+    "native_jobs": 0,
+    "native_tests": "NOT_RUN",
+    "cargo_clippy": "NOT_RUN",
+    "rustfmt": "NOT_RUN",
+    "remote_mutations": 0,
+    "frozen_candidate_changes": 0
+  }
+}

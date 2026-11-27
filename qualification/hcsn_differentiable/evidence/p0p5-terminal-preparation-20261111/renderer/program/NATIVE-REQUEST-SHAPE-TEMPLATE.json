@@ -1,0 +1,42 @@
+{
+  "template_only": true,
+  "execution_authorized": false,
+  "executable": "/usr/bin/time",
+  "args": [
+    "-v",
+    "-o",
+    null,
+    null,
+    "-B",
+    null,
+    "--authorization",
+    null,
+    "--authorization-sha",
+    null,
+    "--binding",
+    null,
+    "--binding-sha",
+    null,
+    "--program",
+    null,
+    "--output",
+    null
+  ],
+  "host": null,
+  "cwd": null,
+  "idempotency_key": null,
+  "timeout_seconds": 155,
+  "cpu_quota_percent": 100,
+  "memory_max_bytes": 536870912,
+  "nice": 10,
+  "stdin": null,
+  "env": {
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "CUDA_VISIBLE_DEVICES": "",
+    "LC_ALL": "C"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn-n256-joint-full-coordinate-comparator-source-freeze-v1",
+  "identity": "hcsn-n256-joint-full-coordinate-comparator-source-20261113-c06d-001",
+  "base_commit": "976962fb89c92f023918bc3e1e756d0b52f4c21d",
+  "parent_draft": 6304,
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-joint-comparator-intent.yml": "62c291f49246987179c6bb4594a5f28aaa3813566006fe57792cbd3c7c8ce268",
+    "qualification/hcsn_currentstate_n256_joint_comparator_intent/__init__.py": "3337a3bd10ef1d8ffbee51f8de82c6670f1d3de73ed3161d99ee595fa181f903",
+    "qualification/hcsn_currentstate_n256_joint_comparator_intent/contract.py": "416b99310e2847a4fa66a7f894e9c3ead937bc7df704aac67a613556e21048aa",
+    "qualification/hcsn_currentstate_n256_joint_comparator_intent/full_coordinate_comparator.py": "d20bfd4ae57e783d506a571e9a9ecb1deed836a8abbafa6e870f2879595972cf",
+    "qualification/hcsn_currentstate_n256_joint_comparator_intent/joint_runner_contract.py": "1a3e99635883810de356d23983b83d1356dbad26b83993cb92d01f2a0a43be67",
+    "qualification/hcsn_currentstate_n256_joint_comparator_intent/static_inspector.py": "cf401e1ae6cb6f295f312ec822221f59104b104c21c7c6af3c01353e1160d7fe",
+    "qualification/hcsn_currentstate_n256_joint_comparator_intent/test_static.py": "28590042aa875961f74e79d11e6381e41c93023f9ec40bdc8b42c42348b3e30b",
+    "qualification/hcsn_currentstate_n256_joint_comparator_intent/REQUEST.json": "e4f988713d6228b0b1b215e9466e0e2ead23ee29612dad449c18981b065bddde",
+    "qualification/hcsn_currentstate_n256_joint_comparator_intent/README.md": "5794c5f20580a648a4061ae55cec5f7b508e53ef1bedcc627aac93412fde3e11"
+  },
+  "bindings": {
+    "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+    "candidate_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+    "oracle_source_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+    "serializer_source_sha256": "3107fb296043de8f3e3c78e13aa940aea38aa64c16dfe68d342d2adb0c7aa97a",
+    "coordinate_denominator": 18225028,
+    "capsules": 14
+  },
+  "static_controls": {
+    "fixture_tests": 5,
+    "assertions_enabled_passed": true,
+    "optimized_mode_passed": true,
+    "frame_order_guard": true,
+    "coordinate_identity_guard": true,
+    "separate_candidate_oracle_error_gates": true,
+    "manifest_error_thresholds_recomputed": true,
+    "signed_error_cancellation_forbidden": true,
+    "three_byte_exact_pair_guards": true,
+    "all_external_admissions_null_fail_closed": true
+  },
+  "execution_counts": {
+    "new_numerical_idempotency_keys": 0,
+    "n256_dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "candidate_calls": 0,
+    "oracle_calls": 0,
+    "n256_serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "preserved_history": {
+    "red_6295": true,
+    "red_unknown_6302": true,
+    "red_joint_hold_6303": true
+  },
+  "unresolved": [
+    "shared independent reference stream interface",
+    "runtime profile and current host or ancestor-cgroup snapshots",
+    "allocation, calendar, and lane or joint admissions",
+    "actual N256 full-coordinate comparison",
+    "warm, coarse, and cold byte-exact N256 saved-state pairs"
+  ],
+  "status": "PASS_SOURCE_INTENT_HOLD_NUMERICAL",
+  "largegrid_qualification": false,
+  "all_closed": false
+}

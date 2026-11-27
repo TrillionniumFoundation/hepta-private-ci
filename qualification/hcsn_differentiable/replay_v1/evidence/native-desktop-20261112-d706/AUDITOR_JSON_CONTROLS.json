@@ -1,0 +1,32 @@
+{
+  "count": 5,
+  "model_calls": 0,
+  "optimizer_calls": 0,
+  "results": [
+    {
+      "case": "duplicate",
+      "reason": "duplicate JSON key",
+      "rejected": true
+    },
+    {
+      "case": "nan",
+      "reason": "nonfinite JSON token: NaN",
+      "rejected": true
+    },
+    {
+      "case": "infinity",
+      "reason": "nonfinite JSON token: Infinity",
+      "rejected": true
+    },
+    {
+      "case": "overflow",
+      "reason": "nonfinite JSON number",
+      "rejected": true
+    },
+    {
+      "case": "finite_roundtrip",
+      "passed": true
+    }
+  ],
+  "schema": "hcsn-c2-auditor-json-controls-v1"
+}

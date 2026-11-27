@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn-n256-execution-receipt-publisher-ci-readback-v1",
+  "source_pr": 6384,
+  "source_head": "b0041c5730e05e2cc0f16ef6cd1e0708c28960df",
+  "source_tree": "3936af1f305dfb8cc623a50bfba51726c8b752b4",
+  "workflow_run_id": 43729835845,
+  "job_id": 132859630053,
+  "job_conclusion": "success",
+  "artifact_id": 14167952451,
+  "artifact_name": "hcsn-n256-execution-receipt-publisher-source-2ccea377b0de94c01e3e92df1222aab7ec2ad877",
+  "artifact_bytes": 2763,
+  "artifact_sha256": "793f12b6a5a8f8e865d1ec078a5e60b8f0178ef58cc8bf9895e07c3de89108a7",
+  "artifact_git_blob": "877727ca010875f59a5c724973cc6ba6835fd77c",
+  "member_count": 7,
+  "uncompressed_bytes": 5147,
+  "members": {
+    "COUNTS.json": {
+      "bytes": 268,
+      "sha256": "02b12a554cbbdd6cb6e5a19352620c997c7ccccafd94cc185ea7038628a717bd"
+    },
+    "REPORT.json": {
+      "bytes": 645,
+      "sha256": "e7bdfd0f39bfab4d328643f2cff141a88d73ce89f2ef738cbe7c9d88497b5f84"
+    },
+    "TEST_OPT_STDOUT.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "TEST_OPT_STDERR.txt": {
+      "bytes": 2093,
+      "sha256": "1967e14921f4310a7360924254b40d89f128b539e38db802839e904cdb2f528e"
+    },
+    "TEST_STDERR.txt": {
+      "bytes": 2091,
+      "sha256": "677c77a90f59a8f7b28ba04582b4210375b1db330df8e73d40b4edf847c267e3"
+    },
+    "TEST_STDOUT.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "VERIFY.txt": {
+      "bytes": 50,
+      "sha256": "63bf4ae9c280550e5721860176b5d988d12a1ec3bb3692f77e483ab39f488b08"
+    }
+  },
+  "job_log_git_blob": "41f847ad764644957fd99caa875621061214651f",
+  "normal_tests": "5/5",
+  "optimized_tests": "5/5",
+  "authentic_receipts_published": 0,
+  "dynamic_runs": 0,
+  "provider_calls": 0,
+  "oracle_calls": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "c2_full_replay_completed": "0/6",
+  "hpca_status": "NO_UPDATE_EXTERNAL_CUSTODY_AND_SAME_BUDGET_BENEFIT_OPEN",
+  "historical_negative_and_unknown_preserved": true,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false
+}

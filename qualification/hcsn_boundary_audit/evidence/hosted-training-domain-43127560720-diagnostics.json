@@ -1,0 +1,155 @@
+{
+  "adapter_git_blob": "04a650c5f676692f7ea316351bcbc3037f5cebcb",
+  "adapter_tests_git_blob": "5daa54fc052b3859fee5c97cd8abf958d9dba1f5",
+  "all_initial_model_digests_equal_recorded_initialization": true,
+  "all_inputs_unchanged": true,
+  "all_retained_positions_audited": true,
+  "by_gap": {
+    "0.001": {
+      "count": 2056,
+      "maximum": 0.731420170595066,
+      "mean": 0.6908143683687911,
+      "median": 0.6977595626786237,
+      "minimum": 0.6494475861502492
+    },
+    "0.003": {
+      "count": 2400,
+      "maximum": 0.5207672307027302,
+      "mean": 0.4648382842225533,
+      "median": 0.4645656789421699,
+      "minimum": 0.43286109040274906
+    },
+    "0.02": {
+      "count": 1936,
+      "maximum": 0.27045460570794366,
+      "mean": 0.2340760399122171,
+      "median": 0.23194979253080178,
+      "minimum": 0.2115292776980654
+    },
+    "0.04": {
+      "count": 2668,
+      "maximum": 0.19877231941901166,
+      "mean": 0.17459998214784117,
+      "median": 0.17380146487192655,
+      "minimum": 0.15741488019614194
+    },
+    "0.08": {
+      "count": 3080,
+      "maximum": 0.13585702528175217,
+      "mean": 0.12079331903775108,
+      "median": 0.12028197429744511,
+      "minimum": 0.10809867906504635
+    },
+    "0.16": {
+      "count": 2196,
+      "maximum": 0.0818485499252783,
+      "mean": 0.07526848248713634,
+      "median": 0.07501663372893863,
+      "minimum": 0.06979768892242026
+    }
+  },
+  "completed_runs": 12,
+  "costs": {
+    "audit": {
+      "process_cpu_seconds": 146.909961286,
+      "process_wall_seconds": 149.4788787739999,
+      "scope": "imports, verification, conversion and all audits; excludes final JSON write"
+    },
+    "wrapper": {
+      "exit_code": 1,
+      "files": {
+        "COMMAND.json": "ba8b2d08fad654dfd0428625c7d4644f60e3c252b2db57cf124635dacedeffa8",
+        "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout.log": "833a55c4d33b18b6ede3696e6073dd8bf4f4c136dadb48b40c32a098e9ff8343"
+      },
+      "source_after": {
+        "qualification/hcsn_boundary_audit/audit_training_domain.py": "8c8bd4219cd0f4d6d802319874b59f9c88d598c19f422030fa0a79fbe583edbf",
+        "qualification/hcsn_boundary_audit/test_training_domain.py": "d2549303034d90ca2863b9bb0c4b48e42d882b62680a0142952f892647b5cce7"
+      },
+      "source_unchanged": true,
+      "wall_seconds": 150.2769915179997
+    }
+  },
+  "input_summary_sha256": "12fa561e6b5e6f710d1239d2a00bcf596da9d0060bf4691473ff337b7b5d0822",
+  "interpretation": "Repeated constant-gap projected continuation differs from the 80-digit continuum reference from the same reconstructed recorded posterior; this is not task-loss error.",
+  "minimum_maximum_scope": "maximum scaled value error per retained batch row, batch size one",
+  "original_training_summary_sha256": "c60378ffc2a51f580a9b7cfd11a09cec5f53d9a9cc37c03b81605bedc54b8715",
+  "other_checks": {
+    "basis_gradient": {
+      "failures": 0,
+      "limit": 2e-09,
+      "maximum": 3.552713678800501e-14
+    },
+    "event_replay": {
+      "failures": 0,
+      "limit": 5e-11,
+      "maximum": 2.1575623232461538e-17
+    },
+    "mass": {
+      "failures": 0,
+      "limit": 5e-11,
+      "maximum": 6.661338147750939e-16
+    },
+    "posterior_gradient": {
+      "failures": 0,
+      "limit": 2e-09,
+      "maximum": 1.8084904799434697e-15
+    }
+  },
+  "qualification": {
+    "continuum_filter_qualified": false,
+    "formal_confirmation_accessed": false,
+    "numerical_qualification": false,
+    "rare_tail_relative_precision_qualified": false,
+    "scientific_admission": "HOLD",
+    "whole_training_trajectory_qualified": false
+  },
+  "schema": "hcsn-factorial-training-domain-diagnostics-v1",
+  "scope": "Postprocessing existing unmodified retained-law audit reports; no new model evaluation.",
+  "status": "HOLD",
+  "training_rows": 384,
+  "untested": "Actual future-gap finite-horizon shadow continuation, true continuum filtering, low-noise training, rare-tail relative precision.",
+  "value_error": {
+    "count": 14336,
+    "maximum": 0.731420170595066,
+    "mean": 0.27847818075606023,
+    "median": 0.17793795960956857,
+    "minimum": 0.06979768892242026
+  },
+  "value_failures": 14336,
+  "visits": 14336,
+  "worst_visit": {
+    "arm": "c0_b1",
+    "continuum_value": [
+      4.5785100728758845
+    ],
+    "dt": [
+      0.001
+    ],
+    "episode_id": "pair_composition/train/00002",
+    "gradient_basis_count": 25,
+    "gradient_posterior_count": 1,
+    "gradient_reference": "80-digit central differences; relative parameter step 1e-25",
+    "gradient_scope": "all basis coefficients, all retained batch posteriors held fixed",
+    "index": 1152,
+    "maximum_basis_gradient_absolute_error": 1.4210854715202004e-14,
+    "maximum_event_replay_error": 0.0,
+    "maximum_mass_error": 2.220446049250313e-16,
+    "maximum_scaled_value_error": 0.731420170595066,
+    "model_sha256": "a74be6c7cc210d8518208b2879cbcd4b31efb437454eb7a949afec05c15b764b",
+    "posterior_phase_mass": [
+      0.04283341820940119
+    ],
+    "posterior_tail_mass": [
+      5.411341172761698e-11
+    ],
+    "projected_value": [
+      7.927324691449992
+    ],
+    "scaled_continuum_gradient_error": 5.5064191221767e-16,
+    "seed": 37,
+    "status": "failed",
+    "update_index": 30,
+    "zero_dt_continuation_probe": 0.1
+  }
+}

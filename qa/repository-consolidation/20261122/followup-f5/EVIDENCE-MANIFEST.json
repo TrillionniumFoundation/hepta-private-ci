@@ -1,0 +1,1518 @@
+{
+  "schema": "hepta.repository-consolidation.evidence-archive.v1",
+  "source_head": "64ddc830635a8ced20e42db3d1767a3467c68ac6",
+  "source_tree": "f3df6f7e2083061d4db674bb446d726fd037c75d",
+  "archive_format": "Decompress each ordered standard gzip wrapper, concatenate the results into evidence.tar.gz, and open the resulting gzip-compressed tar archive.",
+  "archive_bytes": 6466802,
+  "archive_sha256": "9fe5e83b787ea9ec20bee8450dfa1857147e20b599031d92d15d4199d0b5fb28",
+  "parts": [
+    {
+      "path": "evidence.tar.gz.part001.gz",
+      "bytes": 488720,
+      "sha256": "844bb4fd6c828ccdd42186ba05bc471f79a9f2177b4bde49dd85563a42e0e1fe",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part002.gz",
+      "bytes": 491380,
+      "sha256": "4a2adbc6bbaf20228d87e6df45fc50390302649258f0e66c62d0dd34e1789d7e",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part003.gz",
+      "bytes": 491688,
+      "sha256": "5bcda3ef4e1bd9aed5ec2eff72738683094c047e95185d4dbe9e35a228a689bf",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part004.gz",
+      "bytes": 490721,
+      "sha256": "e895bd609de298eb4d44d8b6d7cb4ff4117bc49bb58d4f0bd661ee9e44f03afc",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part005.gz",
+      "bytes": 491688,
+      "sha256": "808f4142c6a56c62dea1e50c471df823b286acb0d2425cabdee7291871e000cd",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part006.gz",
+      "bytes": 491688,
+      "sha256": "969a6022dd6e7f651187299eb00a55d99178d5ec60c7b4d0c108784f1a29e315",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part007.gz",
+      "bytes": 491688,
+      "sha256": "27e6213be680455ffe96d4f370fde7ab838849594e41be516475145e244d9c9f",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part008.gz",
+      "bytes": 491688,
+      "sha256": "e76ecda92f3226599e2057dbc6a64f9383da4201138acfaaaee7de870cfaec58",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part009.gz",
+      "bytes": 491688,
+      "sha256": "a52359a7d251f82221409c5314a133379734a7812e06394b7cc442e2ac3571ec",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part010.gz",
+      "bytes": 491688,
+      "sha256": "474f3b5b21f107585ddd14283367a6ef542b6b9f2eb64dc375706abeaeb1a266",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part011.gz",
+      "bytes": 491688,
+      "sha256": "7bc7978e41b8d15e9822a956a312627c7e020690fbdeab4471d488664b42e828",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part012.gz",
+      "bytes": 490724,
+      "sha256": "1690bc86adce5a537318152669adc26fb9a6a1d5f47e751f89342e56e6eadaed",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part013.gz",
+      "bytes": 491688,
+      "sha256": "027e8b0dc712e76ab50cf85ffe797f672b7c130f0bd6bf4b4af1bb5bd2910e7b",
+      "inner_bytes": 491520
+    },
+    {
+      "path": "evidence.tar.gz.part014.gz",
+      "bytes": 77085,
+      "sha256": "e35ada43774ea5f42b4cd6dd56d552da46f54382f48fcd48cdcb8aca0533ac4d",
+      "inner_bytes": 77042
+    }
+  ],
+  "members": [
+    {
+      "path": "ci-audit/77-independent-review/REVIEW.json",
+      "bytes": 51959,
+      "sha256": "ddc35a79ede127a2659e40cb589a8c034c529c9bfa2eda7fb33c6cec24229410"
+    },
+    {
+      "path": "ci-audit/77-independent-review/ROOT-COMMIT-BINDING.json",
+      "bytes": 667,
+      "sha256": "8113691fa0d122a206dd11a2f08c3bdeef72b36f1aeada3c18ae2a3f2f934c68"
+    },
+    {
+      "path": "ci-audit/77-independent-review/source/FACTORIAL_README.md",
+      "bytes": 5590,
+      "sha256": "e5717079c41ff579f683b8052b9c456880e4bde13e3fabd3a390e4cef60f30e0"
+    },
+    {
+      "path": "ci-audit/77-independent-review/source/factorial.py",
+      "bytes": 17360,
+      "sha256": "febd0a08cefd2b33bdb3846be812ca5fb6506b525fc7ffb174ecfb2cf8898add"
+    },
+    {
+      "path": "ci-audit/77-independent-review/source/factorial_trial_preflight.py",
+      "bytes": 18159,
+      "sha256": "ecc64a65d3ba3e0c315163ca21b560380815454f422a20eeb74dae1a11f4611d"
+    },
+    {
+      "path": "ci-audit/77-independent-review/source/study.py",
+      "bytes": 30896,
+      "sha256": "4af7c3722c94bf77dc7b40e3deab0c208376d7aab31c331d669994f6bc362048"
+    },
+    {
+      "path": "ci-audit/77-independent-review/source/test_episode_roster.py",
+      "bytes": 1764,
+      "sha256": "694b3f7242a26b2b1031ba618d3213eee860b0d384ba23bfa0951cf08ed25b36"
+    },
+    {
+      "path": "ci-audit/77-independent-review/source/test_factorial.py",
+      "bytes": 10437,
+      "sha256": "8fb24b0d0a5d431da4498b766f8cad71be156d874f95ed25f4505f332fd14ba9"
+    },
+    {
+      "path": "ci-audit/77-independent-review/source/test_factorial_trial_preflight.py",
+      "bytes": 10853,
+      "sha256": "8a3e5d04f8279b1d558ccbc6ec2f7fd5ec180598a5aa2194a8c009a66f9b1573"
+    },
+    {
+      "path": "ci-audit/77-independent-review/source/test_partition_overlap.py",
+      "bytes": 1795,
+      "sha256": "54eb22c44b88a37fbbde9e9a370c210200a22dad4021ad8c6e6130f91eaad70c"
+    },
+    {
+      "path": "ci-audit/77-independent-review/source/test_seed_identity.py",
+      "bytes": 2613,
+      "sha256": "327b3c80349dc7f86d31bdb217d8065d01e2e9d8baa438cf1b84686b8c9cd376"
+    },
+    {
+      "path": "ci-audit/combined-f5-followup/PR-BODY-BEFORE.md",
+      "bytes": 8562,
+      "sha256": "4c286d13a1171bce7b6de81e0c041a6d5cfec1b1fda94c32cbc9396643e9f026"
+    },
+    {
+      "path": "ci-audit/combined-f5-followup/package_batch.py",
+      "bytes": 13548,
+      "sha256": "405782a8f062ea87871393758423e32215de624cf1cf39a0ce163541c1bc101e"
+    },
+    {
+      "path": "ci-audit/f5-main-followup-extra/jobs-20261122T1712.json",
+      "bytes": 130365,
+      "sha256": "eac1009c3c8a0bc4118ccf4a8d5e9077f5285eca096cdee6aabc346b0fc4d1f4"
+    },
+    {
+      "path": "ci-audit/f5-main-followup-extra/jobs-20261122T1724.json",
+      "bytes": 130365,
+      "sha256": "eac1009c3c8a0bc4118ccf4a8d5e9077f5285eca096cdee6aabc346b0fc4d1f4"
+    },
+    {
+      "path": "ci-audit/f5-main-followup-extra/windows-shard2-job-137275302954.log",
+      "bytes": 702905,
+      "sha256": "e59cc64ffb879125bb8f3b1a7dc8dc4fe200509b030fa1059b862958ca01c96b"
+    },
+    {
+      "path": "ci-audit/f5-main-followup-extra/windows-shard4-job-137275302745.log",
+      "bytes": 1114351,
+      "sha256": "3c2b0965a3e4b8fa0509296f7bee07cbe00ac850ed1a62b6485a85ad34a65ec4"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/ARTIFACT-INVENTORY.json",
+      "bytes": 6250,
+      "sha256": "054624c3d120a3db6913a0d8b93091f458f98a5976523e93d15ffd4fe215e578"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/EXTRACTED-MANIFEST.json",
+      "bytes": 7891,
+      "sha256": "ef34678f8bd2d607fbf36ce2ee4516fd746055008a5eb749d323a342c2718226"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/JOBS.json",
+      "bytes": 10845,
+      "sha256": "acdf6d445f9691d15a6edb2ce85d0701b82dc8d6fc646b96754729ac892833f2"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/NATIVE-RESULT.json",
+      "bytes": 9555,
+      "sha256": "9bef2a727e2c8bf0b75a3f55a5896df8031427b3f2c5796ad29e1050985764a5"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/aggregate/receipt.json",
+      "bytes": 377,
+      "sha256": "7f75e32de1a5fd51642b04389d44526ed25c3387da79814f7cfd3a7767f5dcf7"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/aggregate-job-137289033632.log",
+      "bytes": 30662,
+      "sha256": "04ebcc046a00a4619c75774de9e5f5f37fd5204a8528f8e998c70e276b6f262e"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/f5-14763989707.zip",
+      "bytes": 51373,
+      "sha256": "e07e21cd304ad8e3bebb6418571a8e38e20f803d8407b97bf75bf8494db51f86"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/f5-14764448879.zip",
+      "bytes": 403,
+      "sha256": "48c60350df6039ef9692fd80d203f4ec22f35fb320abd443dd9500b8b4ee7ffb"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/canonical-windows-memory-recovery.log",
+      "bytes": 24567,
+      "sha256": "a81fd6fb7d124e0da41feda2dc0ae2f61be61c4ee103ccfe3c4e6a3d19a359b2"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/compiler.txt",
+      "bytes": 201,
+      "sha256": "88b7810119b8cb6083d3f2835d072d7048f479595a7c152b6716f4859675be36"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/git-process-cleanup.log",
+      "bytes": 16830,
+      "sha256": "d1464daf4e89ed84bf67f9ddc6d1795dd1a8d1bafeeca4760ab09f3ead966325"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/groups.json",
+      "bytes": 24615,
+      "sha256": "7d0197254d50c9110feb56b2b721c31d3d7fd10512eb306dfbbbbd84519df6e3"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/operator-native.log",
+      "bytes": 8257,
+      "sha256": "208a306161832e260bfed9b6b664ed915443d10caa39c16fbebed49c1358b0a0"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/original-protected-owner.log",
+      "bytes": 34326,
+      "sha256": "cb8fc2d5ab216ff9456281f84936bd6b77a7e83ae0f28e88a654198ea1680762"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/receipt.json",
+      "bytes": 27041,
+      "sha256": "857cc88c047d3ed4a85f49b1efa44e37cc650be6e536a028dcd489090f23355a"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/retained-mcp.log",
+      "bytes": 62902,
+      "sha256": "7481bcb359c156bcd8e887d5040240e41651e5ae79624722b419326da2a541c8"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/retained-windows-identity.log",
+      "bytes": 64005,
+      "sha256": "7ff6f4b2bf8af8202339ac75c370be564ca2ce7df36bd42ef318d9c993e8ba2a"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/retained-windows-materialization.log",
+      "bytes": 23735,
+      "sha256": "8cb4d6d4b79b22b6e7ccb83bdd4f29f1ddfd18ff48b72fc267a27f8f0843b64f"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/shadow-native.log",
+      "bytes": 26100,
+      "sha256": "b406f9d612ca04cfb53887cae72c8c3719d79454504f4d10b72184d2d383b5e5"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/source-after.json",
+      "bytes": 230,
+      "sha256": "bc7689d9a944ab6b8d323b869653f9ea41f780855535169630bebe55f364e872"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/source-before.json",
+      "bytes": 230,
+      "sha256": "bc7689d9a944ab6b8d323b869653f9ea41f780855535169630bebe55f364e872"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/owners/temporary-environment.json",
+      "bytes": 230,
+      "sha256": "e0c0af4493be1e294bd2ac00393427e25237b050108951f231756faf6bbab635"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/compiler.txt",
+      "bytes": 201,
+      "sha256": "88b7810119b8cb6083d3f2835d072d7048f479595a7c152b6716f4859675be36"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/core-exit-observation.log",
+      "bytes": 90837,
+      "sha256": "30520c37ef767575223200da10cfab1c8e73fcd7495b853cb61809f66604d730"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/direct-pty-native-observation.log",
+      "bytes": 1948,
+      "sha256": "8e65d68a83edc64036c312d57c9fcd12082c362ea634552d17e4751174f142b6"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/driver-exit-unknown.log",
+      "bytes": 2251,
+      "sha256": "045777b3f7c7f51a6e5b5646070599f442eddf0549b872f06e96483ffa4e135a"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/exec-server-observation-wire.log",
+      "bytes": 31424,
+      "sha256": "1b700bc09be9c6ab60248b0f61d470991cbeef8171299ce6a00cc2b9fb5d091c"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/exec-server-protocol-observation-wire.log",
+      "bytes": 14997,
+      "sha256": "31fc95314d615179cceb0a5fd686b8720b30643d013e9fcbcb4163f46cede671"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/groups.json",
+      "bytes": 24217,
+      "sha256": "4e51409abf357fba8796f96bf17695f25ad6803774ecd7e7964948494f6cc149"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/legacy-isolation-admission.log",
+      "bytes": 20269,
+      "sha256": "0f668ae25e64936c8ba8aa8111dc691dcfc3924ffa04729c31f10e56cd515a1e"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/receipt.json",
+      "bytes": 28264,
+      "sha256": "89443f55a74e2d731ad2bdf60a96db624e34899285c68adc616f067362ea199b"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/runner-native-abort.log",
+      "bytes": 20903,
+      "sha256": "dbe96cca9bca8dc19759e5f00ebad8db693925bff5c31bcf4ed28ef22a4bd43c"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/runner-native-custody.log",
+      "bytes": 20045,
+      "sha256": "5904e5554d80df7d28d77042e03ccb64657588077a0f43d5f35aac9c27f26c03"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/runner-native-terminal.log",
+      "bytes": 19599,
+      "sha256": "4a6732f91f579ca0f54617b7f5f17c69801db6dac976a4d2bbf7c8246fd99d2e"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/sandbox-helper-build.log",
+      "bytes": 678646,
+      "sha256": "cd3e9bfddbda07357e25fed2e568c5a9ca07aa39220de00231212f18986e3724"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/sandbox-helper-preparation.json",
+      "bytes": 1374,
+      "sha256": "ea477b88a4b24cfaaa8645b45a781309b2f87e8a7c86fc0765153eb219193879"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/sandbox-legacy-delete-admission.log",
+      "bytes": 25991,
+      "sha256": "90079d5ee9417694eee115c6908302aad9dc9ce4ffdf168e7ad9589483169304"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/sandbox-original-failures.log",
+      "bytes": 24569,
+      "sha256": "b45ba4346d789c12f831962862901825b5a05da48215a8a719a7915784ff527a"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/sandbox-original-failures.processes.json",
+      "bytes": 8504,
+      "sha256": "b390f139cffe87fc7a95c446fe1f9efeb311e337fa719c11d2b44165b885a3de"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/source-after.json",
+      "bytes": 230,
+      "sha256": "bc7689d9a944ab6b8d323b869653f9ea41f780855535169630bebe55f364e872"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/source-before.json",
+      "bytes": 230,
+      "sha256": "bc7689d9a944ab6b8d323b869653f9ea41f780855535169630bebe55f364e872"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process/temporary-environment.json",
+      "bytes": 230,
+      "sha256": "e0c0af4493be1e294bd2ac00393427e25237b050108951f231756faf6bbab635"
+    },
+    {
+      "path": "ci-audit/native-f5-full-scope/process-job-137274600568.log",
+      "bytes": 144089,
+      "sha256": "9d284dfe984ad5f11b3d6e7850a7fe194bb41eb6bca82a95b2039f2d67d638d4"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/ACTUAL-DEFAULT-MERGE.json",
+      "bytes": 2750,
+      "sha256": "6c2345076b272a50392b25a03f829e8d48f7e66bea9e8129a4e8f4b831e8c775"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/CODESPELL.json",
+      "bytes": 31,
+      "sha256": "af54be98377f975c8d677c3a8f47cf4a4530b928496998f7dc97cebc1883e638"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/LOCAL-OBJECT-CLOSURE.json",
+      "bytes": 1836,
+      "sha256": "fc5a4496252df4e9143220f2f57a8f470d09a08a1eac49274607a8d7609c3fec"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/PRECHECK-FIRST-ATTEMPT.json",
+      "bytes": 420,
+      "sha256": "b78259bf31555be768bd288a0b0e3bbc041a6845df209f59ccc75a9d3707efa6"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/PROTECTION-7915.json",
+      "bytes": 938,
+      "sha256": "7656ff00d5affa2b0c65603ad8f91c796e204c92cf6fd1b3285d938beb4ea498"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/REMOTE-PREPARED-COMMIT.json",
+      "bytes": 2424,
+      "sha256": "373cf7dd46dfb44a41a632a9794d1b8b304e9b62b9ae8c35f3c6752a4a9a8999"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/ROOT-GATES.json",
+      "bytes": 3371,
+      "sha256": "a4e0668500b5cdaee4f2fc6c6bd0c740987b632734f679eddd9b474b364f713a"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/SOURCE-BINDING.json",
+      "bytes": 23094,
+      "sha256": "0f72a2c31a48868aa424870de00f35a664b327e2eff27de94e1bd3ee2b4870fe"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/actual-ancestors.txt",
+      "bytes": 1848895,
+      "sha256": "6c54ec56e827678f74a59d0ae7627e84679240a7452dac7e7a78547c7f92fd97"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/codespell.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-audit/stacked-77c4/conflict-stages.txt",
+      "bytes": 297,
+      "sha256": "672082ca088732b89b36c92a17d61297e8bbcb8a54b7e37be9481b4f102e3242"
+    },
+    {
+      "path": "ci-audit/stacked-authbus/REMOTE-PREPARED-COMMIT.json",
+      "bytes": 1856,
+      "sha256": "75bad45f6bb922ff34688f43c5a4ecb8d9dbbaec39c782349de91bc5a1559eba"
+    },
+    {
+      "path": "ci-audit/stacked-authbus/ROOT-GATES.json",
+      "bytes": 1103,
+      "sha256": "927422876f28b5860a7cfcc2adb9825aa1f5b530bb72add492dd3ea37510e30a"
+    },
+    {
+      "path": "ci-audit/stacked-authbus/SOURCE-BINDING.json",
+      "bytes": 25262,
+      "sha256": "f1f725086c4e6b6bf6841ce5bb3b22424a911c38f490621b050569f8c56e663d"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/.github__fixtures__windows-current-ci-scope.json",
+      "bytes": 38293,
+      "sha256": "8ff5919abc98db193c83027005e794b523553df8d5c8eb622851788ee6508336"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/.github__scripts__aggregate_windows_current_ci.py",
+      "bytes": 18832,
+      "sha256": "286c45c0079e2e4e71d21aedd407752cf908e08db461fc0492f10b7de7cf65b5"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/.github__scripts__windows_current_ci.py",
+      "bytes": 18040,
+      "sha256": "1b885ce7862faeebe9e215f22300fd47d562bd13778408199c94e47be22d0506"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/.github__workflows__hepta-windows-current-ci.yml",
+      "bytes": 7659,
+      "sha256": "5d28e05abcd6e58d1fdf1e0a3b9ecf21940f35f7d24b23961b2616a1bf2f608c"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/F5-FORMATTER-CUSTODY-RESTORATION.json",
+      "bytes": 15924,
+      "sha256": "b9e00fcfce48ec3431afca36d550063f298941ba2df9164acbb7f3eb5d340b70"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/F5-LINUX-BINARY-IDENTITY.json",
+      "bytes": 62826,
+      "sha256": "9c76339d760a9c5982864f469b01fdee27d9c3a75525b7d6c040ab2b20d54e29"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/MIGRATION-F5.json",
+      "bytes": 9942,
+      "sha256": "275e03ac9c4b09ecd677758b1686e14ca9435b94d69ff6bfc6215e003f0a8307"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/PREBUILD-PLAN.json",
+      "bytes": 2484,
+      "sha256": "58a686c9531f5fc277dd7c6412b96ec54f781962bb8d60acff0cd67f8b008a08"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/codex-rs__hepta-authbus__BUILD.bazel",
+      "bytes": 173,
+      "sha256": "0156a9923118b9818fff6ba4bdba75b84260bc55f8899b90150903f84e8239ba"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/codex-rs__hepta-evidence__BUILD.bazel",
+      "bytes": 175,
+      "sha256": "7ae3f5f2aac6d8b6b67fdb6987b00ce850d69e54cda717b3fa5abb93944d6a6b"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/delivery/FINAL-SOURCE-BINDING.json",
+      "bytes": 4940,
+      "sha256": "34812c8cf76aa4fba4ae8b1cc676a316e278def526642471a6d6a0c9584f0989"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/delivery/FINAL-VALIDATION.json",
+      "bytes": 15473,
+      "sha256": "3da75bc6b7f985105ecda9465754dbf62f16b29f2ea650134d20537653978f2b"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/delivery/authbus-platform-contract.patch",
+      "bytes": 8399,
+      "sha256": "ec5be16b2880e7e344a6d08b23c3bf4107e023169931a48ee8cf2baa28c26a6a"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/delivery/fmt-only.patch",
+      "bytes": 602,
+      "sha256": "ffeb4f58e76d7b4f99e97928d950496b9c0e747b8be4fee172e6504a7f501ce6"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/delivery/postimages/codex-rs/hepta-authbus/src/lib.rs",
+      "bytes": 8025,
+      "sha256": "df53e4a6a783b2e8a8fd01ef95c33eb5e7265b5c05c3af63ef6d76623942eac7"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/delivery/postimages/codex-rs/hepta-authbus/src/owner_windows_tests.rs",
+      "bytes": 5739,
+      "sha256": "099452e6f2385bef00ca76ca0f9c652695c41fbddf6cd04517092b4fadb18088"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/delivery/postimages/codex-rs/hepta-evidence/src/authbus_recovery_tests.rs",
+      "bytes": 14025,
+      "sha256": "1f073d8299cabf272ed365d57c92da1eaa29051ba5c89a0e7d2a5e946511484d"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/delivery/postimages/codex-rs/hepta-evidence/src/authbus_retirement_pq_tests.rs",
+      "bytes": 5793,
+      "sha256": "392d29345962a63a51ad46025b795e0c87a9a2de2ea3caa5010f9f67efff902e"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/docs__lane-a-foundation__auth.authbus__CURRENT_IMPLEMENTATION.md",
+      "bytes": 7874,
+      "sha256": "71949f683b4e29cb104c67e4db71f75473fa16b2148e00ec0b292435d6db809c"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/docs__lane-a-foundation__auth.authbus__PREVERIFIED_REPLAY_V1.md",
+      "bytes": 1545,
+      "sha256": "389253d91f71536ffba79c9866836ed483a7796bc5f7c38d45d6ec18d406ace7"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/docs__modules__auth.authbus__IMPLEMENTATION_MAP.json",
+      "bytes": 2831,
+      "sha256": "46b8416e7981e4638379e27626d73335e21bc2cef65ac041c7720d982770a4cf"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/docs__modules__auth.authbus__TECHNICAL.md",
+      "bytes": 18223,
+      "sha256": "2e82dfdde8687877ce5dbb8c4957e5be364668ea61a3a98681a2c954b5e8f07a"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-final-fmt-attempt1-command.json",
+      "bytes": 2660,
+      "sha256": "d22f043780bed75b699d3b819b904e31fd56c9fd13806d81b6db477620fea93b"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-final-fmt-attempt1.log",
+      "bytes": 319,
+      "sha256": "6209c71b735e6cb041cba9273bf14c4742c88228f8255bf1a871c45c4e9b7a6c"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-final-fmt-command.json",
+      "bytes": 2677,
+      "sha256": "7a3aa992ab1224362fb4066aa25d006ffabe1c16a7627851ea05172ec164982b"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-final-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-linux-fix-command.json",
+      "bytes": 2932,
+      "sha256": "f7452c8676f83b7734d1c775d36ab72a19f736c42c16a4cb09478ba6817bc765"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-linux-fix.log",
+      "bytes": 30483,
+      "sha256": "aa023ff9b62a08fdb23ca72986b8b5eed222fb570e5a2cf069f3a282d81fc25c"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-linux-tests-command.json",
+      "bytes": 2153,
+      "sha256": "58e6a673ffd5ab23304a366a23504a368e772d6bea3c85789edc3b141b341719"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-linux-tests.log",
+      "bytes": 56696,
+      "sha256": "4fa26e7183d4ab6d12cfb4a168fc2a525dfaacafce53d59a2eafc1e300a1f0ce"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-windows-check-command.json",
+      "bytes": 2881,
+      "sha256": "a88c0b4c269d7b44e0f5bbd8ec9299fb9bd0b95dcfb29c885b1e90ce06a8896a"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-windows-check.log",
+      "bytes": 32972,
+      "sha256": "9add77517e276a2320cdb22d33d98aada612142678059356cf3e58c0aa4192c8"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-windows-clippy-command.json",
+      "bytes": 2894,
+      "sha256": "95c24bc53ed7e08f4290bcefb528afedaa05c9f4bba715129f738d8668389c92"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/f5-windows-clippy.log",
+      "bytes": 17917,
+      "sha256": "aece3fa169cf356fe4e74a44475045bcd7b7cddc35133b57b969826b2485d646"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/formatter-custody-restoration.json",
+      "bytes": 4682,
+      "sha256": "2c81c8b9bdb61fda509b1d816dc2891c3ac61eca73047af0a6462bd368b50a1a"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/implementation-b3-base.json",
+      "bytes": 890,
+      "sha256": "57844926a157d500f6ec98bb78cf00ff173bf62705098026df93c0f68bddd3f3"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/implementation-base.json",
+      "bytes": 2597,
+      "sha256": "6e070e03dfe8bed7db047e7ab1be86fdf0c307cc0bfcfb181e9d10c2c596c959"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-cxx-nasm-extracted.json",
+      "bytes": 1981,
+      "sha256": "25d560a9908ada334a3d193e3eb61129fd4f3e2d9e90c757a55a7b1c862d3a31"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-extracted.json",
+      "bytes": 2494,
+      "sha256": "19257113ed9fac8d64c92d13d5469e12711389b38224a9ff44fd74ab5cb539aa"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-header-smoke.json",
+      "bytes": 422,
+      "sha256": "3d79925145f0475d6313535d435d6c1e681633de0199773bcf24c2e3617b2abd"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-header-smoke.o",
+      "bytes": 701,
+      "sha256": "a7d39d81627c51772da9b309eb3fd3058e6b84bf8c4ed65e07973f210bd1e610"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-official-package-index.json",
+      "bytes": 2944,
+      "sha256": "6a479758061003a7264ed7de4aba064edae7d7e306287fa00abf48dea4ccbcdc"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/platform-scope-rationale-b3.json",
+      "bytes": 6314,
+      "sha256": "cf1662c6037352a66768ed836d2fc2601a2fb637f690d1727c7c52b27e95b4a2"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-b3-afterimages/codex-rs/hepta-authbus/src/lib.rs",
+      "bytes": 8025,
+      "sha256": "df53e4a6a783b2e8a8fd01ef95c33eb5e7265b5c05c3af63ef6d76623942eac7"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-b3-afterimages/codex-rs/hepta-authbus/src/owner_windows_tests.rs",
+      "bytes": 5491,
+      "sha256": "5a338298c8f80d7d174cf4fe701b0e9c4cf542675936d70b90258b65f35e93da"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-b3-afterimages/codex-rs/hepta-evidence/src/authbus_recovery_tests.rs",
+      "bytes": 14025,
+      "sha256": "1f073d8299cabf272ed365d57c92da1eaa29051ba5c89a0e7d2a5e946511484d"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-b3-afterimages/codex-rs/hepta-evidence/src/authbus_retirement_pq_tests.rs",
+      "bytes": 5793,
+      "sha256": "392d29345962a63a51ad46025b795e0c87a9a2de2ea3caa5010f9f67efff902e"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-b3-working.patch",
+      "bytes": 1995,
+      "sha256": "8fe31fe0324fe4267fe2a33937c2e47c27b14b7a3a804abf3f49ae1f08c6a55d"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-f5/afterimages/codex-rs/hepta-authbus/src/lib.rs",
+      "bytes": 8025,
+      "sha256": "df53e4a6a783b2e8a8fd01ef95c33eb5e7265b5c05c3af63ef6d76623942eac7"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-f5/afterimages/codex-rs/hepta-authbus/src/owner_windows_tests.rs",
+      "bytes": 5700,
+      "sha256": "d7676d841fcef738f6ba50c8dbdfd5df27b2e8ae96d935fdd9656cd207d9b79c"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-f5/afterimages/codex-rs/hepta-evidence/src/authbus_recovery_tests.rs",
+      "bytes": 14025,
+      "sha256": "1f073d8299cabf272ed365d57c92da1eaa29051ba5c89a0e7d2a5e946511484d"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-f5/afterimages/codex-rs/hepta-evidence/src/authbus_retirement_pq_tests.rs",
+      "bytes": 5793,
+      "sha256": "392d29345962a63a51ad46025b795e0c87a9a2de2ea3caa5010f9f67efff902e"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-f5/source-hashes.json",
+      "bytes": 492,
+      "sha256": "12c522c5250b1517e71def01f085d3e8993a4498c5e450dee93189bb0a5ef946"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-f5/tracked.patch",
+      "bytes": 1995,
+      "sha256": "8fe31fe0324fe4267fe2a33937c2e47c27b14b7a3a804abf3f49ae1f08c6a55d"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-fix/codex-rs/hepta-authbus/src/lib.rs",
+      "bytes": 8025,
+      "sha256": "df53e4a6a783b2e8a8fd01ef95c33eb5e7265b5c05c3af63ef6d76623942eac7"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-fix/codex-rs/hepta-authbus/src/owner_windows_tests.rs",
+      "bytes": 5700,
+      "sha256": "d7676d841fcef738f6ba50c8dbdfd5df27b2e8ae96d935fdd9656cd207d9b79c"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-fix/codex-rs/hepta-evidence/src/authbus_recovery_tests.rs",
+      "bytes": 14025,
+      "sha256": "1f073d8299cabf272ed365d57c92da1eaa29051ba5c89a0e7d2a5e946511484d"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pre-fix/codex-rs/hepta-evidence/src/authbus_retirement_pq_tests.rs",
+      "bytes": 5793,
+      "sha256": "392d29345962a63a51ad46025b795e0c87a9a2de2ea3caa5010f9f67efff902e"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pretest-fmt-check.json",
+      "bytes": 311,
+      "sha256": "0152c8e9294365269c0eca53e7b90c29b8febc021fa1e3a259c80b7862b50683"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pretest-fmt-check.log",
+      "bytes": 1551,
+      "sha256": "99373822b664313725bb94e0852a40872d8723194b3607c2cb073898d654c6df"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/pretest-scope-audit.json",
+      "bytes": 1400,
+      "sha256": "5bb9adfe5dce029de82cd3d9a8d036e76673bc6b21789c925c706536029657f1"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/public-source-map.json",
+      "bytes": 1474,
+      "sha256": "7cce961ede5ff3d43566e370239cb9574dd2b06e6c4047ed4bb1f509227c8d5b"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/qualification__module-execution-dossiers__detail__auth.authbus.md",
+      "bytes": 5545,
+      "sha256": "15886b7b24ae9bb42b6a94c8a375a317bf9e6e7537f2054c3a27b9c45a071996"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/source-map.json",
+      "bytes": 2034,
+      "sha256": "68aa0034bb59cc5084970db05e4d9eef685604788a1e8ffc2d19bfa481f586f9"
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/windows-dependency-tree.log",
+      "bytes": 149915,
+      "sha256": "89e8b4796c02b535a2c6ba230eb980115e9520d008413160dd7f1c36eaadd912"
+    },
+    {
+      "path": "hia-boundary/protection-7915/PROTECTED-NODES.json",
+      "bytes": 68865,
+      "sha256": "57135c4ca556c9481a2813d8dd270ec50c01d16650ef74a7ce9a4b59c8298efe"
+    },
+    {
+      "path": "hia-boundary/protection-7915/PROTECTED-REFS.json",
+      "bytes": 53278,
+      "sha256": "72dd81e13ef6fec5bde6a18d55fd40e3382e7ba9e7d8bec15b18ba7967d7a9ee"
+    },
+    {
+      "path": "hia-boundary/protection-7915/REVIEW.json",
+      "bytes": 4072,
+      "sha256": "00e7744966dae982b034ca4b4a046d0a7c69b84cb7e83a758e4a195c548b1b40"
+    },
+    {
+      "path": "hia-boundary/protection-7915/complete-parent-graph.tsv",
+      "bytes": 6696940,
+      "sha256": "679b432eee082fda8a7c16948429b53b248888c88cdcf84b0f5a2816ebd87528"
+    },
+    {
+      "path": "hia-boundary/protection-7915/new-commit-metadata.json",
+      "bytes": 872,
+      "sha256": "8b5ea268cf05f021c4f6a9876f3f41fb6948600938f388a22186692a5d4428f5"
+    },
+    {
+      "path": "integration-77c4-review/ACTUAL-DEFAULT-MERGE.json",
+      "bytes": 2271,
+      "sha256": "6f03ffc883239ad7630d6e74852d5c3e9302c5fb6eaa8d224257c41bf6fdc081"
+    },
+    {
+      "path": "integration-77c4-review/CALLER-INVENTORY-BINDINGS.json",
+      "bytes": 21460,
+      "sha256": "bc6aed2d7962616cc446c43247c5d4d3a7a7a126d2ff6fd911d4220dfbb47121"
+    },
+    {
+      "path": "integration-77c4-review/CALLER-INVENTORY-REQUESTS.json",
+      "bytes": 12678,
+      "sha256": "6ca7aff1c1338310d61ac0f9ac0ab357420069996f12f7c6e0c2ee85917d55eb"
+    },
+    {
+      "path": "integration-77c4-review/CALLERS-AND-RESOLUTION-PLAN.json",
+      "bytes": 24440,
+      "sha256": "df7265cd7cb0355f327ee611d76c100e6eed2197786f9a3f16500ab1d9731c2b"
+    },
+    {
+      "path": "integration-77c4-review/CLI-VALIDATION.json",
+      "bytes": 2451,
+      "sha256": "7b21035c96de6fabedb60b8cee7b79ae4520d59ebd63f3cf60ec452514ca6942"
+    },
+    {
+      "path": "integration-77c4-review/CURRENT-PACKAGE-TREE.json",
+      "bytes": 104345,
+      "sha256": "2ee0e5d217d5ac2d5f15f4e9fa3e40800ceacad80810c3a799eb1a6d204ff9db"
+    },
+    {
+      "path": "integration-77c4-review/CURRENT-STATIC-REFERENCES.json",
+      "bytes": 860,
+      "sha256": "1ee97af9573a4c3e035d4726db0bb1bb2ae56fd60b94ef2e6236ee77463a6b16"
+    },
+    {
+      "path": "integration-77c4-review/EOF-FORMAT-RESULT.json",
+      "bytes": 1660,
+      "sha256": "483557b26fa18edf13405d1bd72c6a6bb789855c51fdb54f2dff410e91d0ca9c"
+    },
+    {
+      "path": "integration-77c4-review/FINAL-BLOBS.json",
+      "bytes": 8118,
+      "sha256": "2e79db04c950e5095e65e057d20cbdb750e3b540e5b5d38c4f74920a8e841618"
+    },
+    {
+      "path": "integration-77c4-review/FINAL-VALIDATION-before-eof-format.json",
+      "bytes": 21528,
+      "sha256": "c9e26854020b5b5a878e9d10020ba6130d754b6cfa05decd7bc5d1ae9a8bcfce"
+    },
+    {
+      "path": "integration-77c4-review/FINAL-VALIDATION.json",
+      "bytes": 22649,
+      "sha256": "ff405c20cb8f570d04d24ab44322558e52b2a78dab69d56adadc893f6461e082"
+    },
+    {
+      "path": "integration-77c4-review/FORMAT-RESULT.json",
+      "bytes": 7296,
+      "sha256": "3dd14158dbbfe5e0c43204c2a4f173cf7503634794b8fbf2e9816e615f58c766"
+    },
+    {
+      "path": "integration-77c4-review/ORIGINAL-COMMIT-PATHS.json",
+      "bytes": 15897,
+      "sha256": "e709c74b05475b0ded44d7f5e24268c7faec5124c28b9c8c472d9d84548473e6"
+    },
+    {
+      "path": "integration-77c4-review/PATCH-INDEX.json",
+      "bytes": 2850,
+      "sha256": "f44668d80f22d21714a42a19f4c2abfb46281dc513faa66c31017a976213c295"
+    },
+    {
+      "path": "integration-77c4-review/PRE-FORMAT-INPUTS.json",
+      "bytes": 14524,
+      "sha256": "db08c9efb9846003d5174554c5c8d716c8a463de6963c3f76237b95c911cced7"
+    },
+    {
+      "path": "integration-77c4-review/PRETEST-RECONCILIATION.json",
+      "bytes": 1804,
+      "sha256": "3e188fb1e5fcffadda36a1f22f143a03416a26f19587a616de4adf610bd14c1c"
+    },
+    {
+      "path": "integration-77c4-review/SHARED-HELPER-GLOBALS-initial-grouped-imports.json",
+      "bytes": 4401,
+      "sha256": "28de9df8a2f2abbc1d600be9573fe2c0d7fa39bf0155ca1de6a48d799b8bf7f9"
+    },
+    {
+      "path": "integration-77c4-review/SHARED-HELPER-GLOBALS.json",
+      "bytes": 5878,
+      "sha256": "001ebd28973f7145687ee67eff492bc76c4af8831c3c65741a157bcc6e3b1b10"
+    },
+    {
+      "path": "integration-77c4-review/SOURCE-SNAPSHOTS.json",
+      "bytes": 8167,
+      "sha256": "24d639adcf2c3bee80151ae3857cc81256ef03aff187db0d9bd2c9ad557e604b"
+    },
+    {
+      "path": "integration-77c4-review/TEST-RESULTS.json",
+      "bytes": 2173,
+      "sha256": "05059dc8f0d4826fb8ca05a0592e749184c7f22bf01062da8f8dff39f207c5c5"
+    },
+    {
+      "path": "integration-77c4-review/WORKTREE-MATERIALIZATION.json",
+      "bytes": 18902,
+      "sha256": "1bbe8e9c03fc0fdb2f75b06fe9956d72f3dafad2bc40339426f963cd6c4fcc2e"
+    },
+    {
+      "path": "integration-77c4-review/actual-default-merge.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration-77c4-review/actual-default-merge.stdout",
+      "bytes": 282,
+      "sha256": "d23fc2cdf9b33e4eb545f3fd17b1a2b8b504664b90f0176a122854d34896f4d8"
+    },
+    {
+      "path": "integration-77c4-review/actual-default-stages.z",
+      "bytes": 297,
+      "sha256": "6758e96a8e38f9f3301c0aadcb991f0ecc082d0d6f0bfb30eba9ed7e262aad98"
+    },
+    {
+      "path": "integration-77c4-review/actual-default-status.txt",
+      "bytes": 1378,
+      "sha256": "8fb265d3c3155f661972232bf9d5c30f2a5184bad99c908425ab06f44e82b4d6"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/.github/workflows/hepta-cell-research-stages.yml",
+      "bytes": 4316,
+      "sha256": "a36e104ae07bb330ee122d36e3e81abadc6ede7287b9e3591d0a945db8a3251a"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/.github/workflows/hepta-contract-gate.yml",
+      "bytes": 2493,
+      "sha256": "61faff97c373308ded3cde266cad512c3f8795db2646f1a77779a7c8b46aa7f9"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/.github/workflows/hepta-neuroscience-mechanisms.yml",
+      "bytes": 4192,
+      "sha256": "4afd42f6c661c6d8fb07c96a727367a2a071095e9bb8f2a17294658b117ee170"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/.github/workflows/hepta-neuroscience-priority-audit.yml",
+      "bytes": 4817,
+      "sha256": "e5548f104839dfe2db5bec5b0ef4ace36be3324755babda6c7af1ab0cdf92085"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/.github/workflows/hepta-neuroscience-shadow.yml",
+      "bytes": 3822,
+      "sha256": "435f6bf9daca635ee8eb2e98b4d9c03675e742448b0c325c503588f3141b88b1"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/.github/workflows/repo-checks.yml",
+      "bytes": 5401,
+      "sha256": "3d5f02b1260d6f7363f33df75d32862e994f357951e0366d6f61ed3cf92c8191"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/FACTORIAL_PROTOCOL.md",
+      "bytes": 5192,
+      "sha256": "f93f69cb5c54c3951d207cd621bcf3b48b4376502c773dafdbc8e5fedecf1c65"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/FACTORIAL_README.md",
+      "bytes": 3636,
+      "sha256": "c9a0c7e9f54c08a8fe5c51834e1788e0ee0b9b318bfbcdf3211a648f5a0a8f45"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/README.md",
+      "bytes": 14813,
+      "sha256": "abf1b9a93f0d161a0e4df72c209e6985ee73cc8a7d59884a09864a3aa854a84b"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/factorial.py",
+      "bytes": 17360,
+      "sha256": "febd0a08cefd2b33bdb3846be812ca5fb6506b525fc7ffb174ecfb2cf8898add"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/frozen_prefix.py",
+      "bytes": 2350,
+      "sha256": "12af980070ade699f71bf7c339676ae64bc65fe4d8b171a2c05e888d2d6f870a"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/hpca_factorial.py",
+      "bytes": 14594,
+      "sha256": "20ee6494cbbc9af6217924e2884894db6cec5fec191e34c79101ce2a540065fd"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/real_time.py",
+      "bytes": 8453,
+      "sha256": "0d546b05153653fdd70b827e06832320091f7c68309806a010ea1ae72897a098"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/replay_perception_native.py",
+      "bytes": 17139,
+      "sha256": "28c3158115631ef241309bf747b9d15aaac8f7801a4ebf600b4f84f3ee8b62e4"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/source_contrast.py",
+      "bytes": 10416,
+      "sha256": "99895df8124f14de6048695947913df7fba009cfe4b23bb2c56a21cde718cd58"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/study.py",
+      "bytes": 30896,
+      "sha256": "4af7c3722c94bf77dc7b40e3deab0c208376d7aab31c331d669994f6bc362048"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_bounded_iterable_admission.py",
+      "bytes": 1890,
+      "sha256": "a8af7f0aa7a641a2c2fa933b3a5d48bb1e40c5750cc03826db8d41e21a732cc3"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_cadence_generation.py",
+      "bytes": 2460,
+      "sha256": "9eb5c2138a5d6eb2fd49f37783cfe228a1f6d49c55f2fc78aa1e97b2cbda11d6"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_cadence_raw_event_budget.py",
+      "bytes": 1314,
+      "sha256": "5fb011ca531cfceca6645f5a3753662d88db04aea38784b66229af0153fbc16b"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_cadence_sequence_frontier.py",
+      "bytes": 1798,
+      "sha256": "89f2d42cfc8a25853461e00f1988cde6b43eb20af866d07bffd6fa0c9a2fe595"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_cohort_retention.py",
+      "bytes": 2096,
+      "sha256": "dc79c094439aba60f73958933b1ab25cf26d6da7edfb944d624a7b0ecebfb49d"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_converged_prefix_clock.py",
+      "bytes": 2582,
+      "sha256": "4cb77ffb3120e7978e971d659c029dd092b56627e76ec7e317c1c7d7564bc93b"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_credit_mem_budget_union.py",
+      "bytes": 2421,
+      "sha256": "2d7731b43833921306dac8c2a6f31f42b2ee7e224922e1e703d200c83600c892"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_credit_order_invariance.py",
+      "bytes": 1941,
+      "sha256": "1014ff420ae2c662a283bf4e0b3c667320831e1e16e577210a587b2252ea2976"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_factorial.py",
+      "bytes": 10437,
+      "sha256": "8fb24b0d0a5d431da4498b766f8cad71be156d874f95ed25f4505f332fd14ba9"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_frozen_credit_raw_budget.py",
+      "bytes": 2723,
+      "sha256": "507b945e504937c2c297f6913145abc5e46df680017a506c271b12674e263a0c"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_frozen_credit_view.py",
+      "bytes": 3887,
+      "sha256": "d0183d789773b253b42d82e59dee3d45e294aa39db3f13ceafd4c75acdd33ca8"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_frozen_evaluator_roster.py",
+      "bytes": 2213,
+      "sha256": "ea8ce542ecce90de93a633e0bfe72f6a7d5007990f5fc47be9782036e70cf0d0"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_frozen_prefix.py",
+      "bytes": 4389,
+      "sha256": "d54eff4ea3bafab475e4c4cfdb3a5844c563080225c2f93e0a174e285638fd00"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_frozen_replay_prefix.py",
+      "bytes": 3870,
+      "sha256": "73541bd9eb239bd310177429d583cb1fd00a159a80737bba95844ae314d49c82"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_frozen_seeded_mem_convergence.py",
+      "bytes": 3372,
+      "sha256": "489aaf7b8ed6f8177e0de17e266301d46b0d186e7b8e80a772a424211f4814e1"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_hpca_factorial.py",
+      "bytes": 7659,
+      "sha256": "7f326bd79dba2416eddd1d46140c9fa03d05d6e2c8e83d379aabc13269d121fd"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_joint_credit_mem_prefix_budget.py",
+      "bytes": 4836,
+      "sha256": "857965d00c31948fe29c52f4099a654c1b6c549ca2f0ca51d3191e4151af1e01"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_jsonl_admission.py",
+      "bytes": 1916,
+      "sha256": "c8aec135f1f9f073388929d92ed858a3b0964d0d4e48eac7ad8fe1ab6c4a3883"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_prefix_prevalidation.py",
+      "bytes": 2516,
+      "sha256": "2451d73bee42ae779ed04ad0be89c5ad5f996540a995489cb51c809c225e8009"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_real_time.py",
+      "bytes": 5146,
+      "sha256": "4aaa24d071a648c611e999e97bfce62b8675ed38d3dea3900bb649eaeee51cf5"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_replay_perception_native.py",
+      "bytes": 9454,
+      "sha256": "cbfb5c15eaa94347a11d3e37f42792b8bfaf6f994679cad846effbe92eb1fe7b"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_review_generation_fence.py",
+      "bytes": 2198,
+      "sha256": "7452b070dc4753fd7bf2d2da5f44510a2e052581746c6e26924e45051d2714c0"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_seeded_stratified_rotation.py",
+      "bytes": 3426,
+      "sha256": "9f93f595a46b09bf128b286791040c8c62503d47c41a52248bc96fcd0387c106"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_source_contrast.py",
+      "bytes": 5893,
+      "sha256": "ff0b4355d74f64880e3de4bb7d070f475d066595ae17a37d02ce325b3746eff9"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_sparse_no_feedback.py",
+      "bytes": 2943,
+      "sha256": "69b078e4d1588f27f1823b494b12a3e35905b886ec90fe43e82716cb71b74e21"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/current/qualification/neuroscience-20261110/test_study.py",
+      "bytes": 17020,
+      "sha256": "ab148e701becce62ae65bb81405efe3eee8ca6820996db60bf8b3e959bdbf49f"
+    },
+    {
+      "path": "integration-77c4-review/caller-snapshots/incoming/qualification/neuroscience-20261110/study.py",
+      "bytes": 16633,
+      "sha256": "990177b26fca98280456c199ccda4a1b9ca9cc59f83b9e46e2c6269283a22541"
+    },
+    {
+      "path": "integration-77c4-review/checkout.log",
+      "bytes": 104,
+      "sha256": "e2627a1ab0705d181d8fd735b4ccc7cf01495c2fcfa07b121786dcd62db339f7"
+    },
+    {
+      "path": "integration-77c4-review/current-static-references.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration-77c4-review/current-static-references.txt",
+      "bytes": 4334,
+      "sha256": "dc7e9911280648dd814b79a01247265a8e7ce560d25978c8b7a1d83755cb9724"
+    },
+    {
+      "path": "integration-77c4-review/original-patches/2a40d4c9bc78e10316096645944103c6eb07135f.patch",
+      "bytes": 28090,
+      "sha256": "ad549717b87852ad6b0493c8bfe624301bd7e17debe7835d12c4da69df2bcd83"
+    },
+    {
+      "path": "integration-77c4-review/original-patches/6ee56b0d1fb265dfed87df8860655acbae28964b.patch",
+      "bytes": 15641,
+      "sha256": "43a787e309dbcc1c5ddc8999186c1152d16c447f7f490e2d3a03992588a94256"
+    },
+    {
+      "path": "integration-77c4-review/original-patches/77c4b04d90392e90ac02eae1f22b2730417195ee-all-parents.patch",
+      "bytes": 57662,
+      "sha256": "f0faa850d339075e117931c03711b55bf807e70cd38ed0761102f69668ecc788"
+    },
+    {
+      "path": "integration-77c4-review/original-patches/77c4b04d90392e90ac02eae1f22b2730417195ee.patch",
+      "bytes": 12289,
+      "sha256": "d0879c48059f28f5c36d7e5fc24845f541f88f94a015d15c29aeab2faf493f0e"
+    },
+    {
+      "path": "integration-77c4-review/original-patches/789e6d0d87234e584738db346d74548c7e83fc48.patch",
+      "bytes": 22315,
+      "sha256": "b83d81b6bb4579edc5e3aa34a1228ac0c74355500e7a3381e5a62aa39a3bf898"
+    },
+    {
+      "path": "integration-77c4-review/original-patches/8ddb5a655948aef04955e2284a4de3da9df51f6f.patch",
+      "bytes": 19413,
+      "sha256": "cbaf56eb179c941e503a44fd0050c3f6ce9e6b17c366bcff197656d683dfac14"
+    },
+    {
+      "path": "integration-77c4-review/original-patches/b8ea1b0158b0d46b6be342fba4c5521c9f8bd3f7.patch",
+      "bytes": 17284,
+      "sha256": "10268c99d0b0eb8185d26aa986242d93eaa1028cb4437ce0c7f7a74616c07ae5"
+    },
+    {
+      "path": "integration-77c4-review/original-patches/d043d134f099c7c24a8dafdcda77593b97378179.patch",
+      "bytes": 21259,
+      "sha256": "2b23bb7214dc779a36757f7dae4b736c2e0e926a393a1b349a6939393b84274f"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/base/qualification/neuroscience-20261110/factorial.py",
+      "bytes": 13288,
+      "sha256": "f3bb09ce836de42bfbde3448dfe8504062d7dcf9d27d0c02a4abcdbdde40ac6d"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/base/qualification/neuroscience-20261110/test_factorial.py",
+      "bytes": 7319,
+      "sha256": "76b7c6efca9c481d0fb4e55b299c103b353d0454be0f309c8fe91c9e31784cc4"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/current/qualification/neuroscience-20261110/factorial.py",
+      "bytes": 17360,
+      "sha256": "febd0a08cefd2b33bdb3846be812ca5fb6506b525fc7ffb174ecfb2cf8898add"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/current/qualification/neuroscience-20261110/test_factorial.py",
+      "bytes": 10437,
+      "sha256": "8fb24b0d0a5d431da4498b766f8cad71be156d874f95ed25f4505f332fd14ba9"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/default/qualification/neuroscience-20261110/factorial.py",
+      "bytes": 26655,
+      "sha256": "118834db99cf6b86600c39671aaabffb5b863be0f00090f91c5930ab095c008d"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/default/qualification/neuroscience-20261110/test_factorial.py",
+      "bytes": 13956,
+      "sha256": "e52189648e94318005acf94c2be3eefa514a2fc5572e34ea88933a80ce353d1e"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/EPISODE_ROSTER_GATE.md",
+      "bytes": 4258,
+      "sha256": "59fca33af499bafd4251702d81bc8a6824f3dc2359fe0462879a1dbdb533af19"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/EPISODE_ROSTER_GREEN.log",
+      "bytes": 4164,
+      "sha256": "e87f2487046c9799d7a5c597ad5e80f25699b23039cc50d4fa93c222a80c908e"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/EPISODE_ROSTER_RED.log",
+      "bytes": 1433,
+      "sha256": "ea252d6575e2c65f01f71ecd67cf1a4d2761efb8793880522c4a529718861fd4"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/FACTORIAL_CELL_ROSTER_GATE.md",
+      "bytes": 3733,
+      "sha256": "67526ab2f8cf3c7c3b4f95d209a2d960583e46fd59ff506da9ebc2c7bd40a097"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/FACTORIAL_CELL_ROSTER_GREEN.log",
+      "bytes": 5039,
+      "sha256": "5fff5e39440b7eb21c9245ab2ffe1828c1f2273f06f79c89e1564ae8aba8f2f7"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/FACTORIAL_CELL_ROSTER_RED.log",
+      "bytes": 4728,
+      "sha256": "b2b80b4ec50eb80b8f3610c408a3e5c5578cf2f5c71e69b16f1bbacbce83f0b4"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/FACTORIAL_CELL_ROSTER_SOURCE_SHA256.txt",
+      "bytes": 634,
+      "sha256": "f5f3b6722a28e9f063f733a53ce263d02508777780a6e08f0c5392aa0c3d9f67"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/PARTITION_GREEN.log",
+      "bytes": 7332,
+      "sha256": "304ddc7022a61318481aeec9fee0e97d89db0e8c92ead4a2de8666464b541819"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/PARTITION_RED.log",
+      "bytes": 2948,
+      "sha256": "27d32d8f07d00e6b9268644e1877cd3c1525b312451fc389df83ca7a12088dc2"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/PARTITION_ROSTER_CONVERGENCE.md",
+      "bytes": 1916,
+      "sha256": "517c822662fe163bcc84c646e30642ec81eb355cd26fd754c4f4509a0ca7dbe8"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/PARTITION_ROSTER_CONVERGENCE_RESOURCES.log",
+      "bytes": 801,
+      "sha256": "4e69830abf62e1e7c652ce45ab7f3bd5276f829da4c3de98cb5428c69c4725a9"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/PARTITION_ROSTER_CONVERGENCE_TEST.log",
+      "bytes": 7101,
+      "sha256": "fe7bfc71ae36bd1f1e00526171da50b850b76ba46e1ade188baf5ef7cb30161a"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/SEED_IDENTITY_ALIAS_GATE.md",
+      "bytes": 4625,
+      "sha256": "3ddf33bfab8d79da05ae9f5cc14ce497549cd9541f7d81cc12668781fed8dd69"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/SEED_IDENTITY_GREEN.log",
+      "bytes": 6080,
+      "sha256": "81a10454e1be18756043cc171ccd20214cd89972c9a4674c59b8cfcdd4483dfb"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/SEED_IDENTITY_RED.log",
+      "bytes": 4832,
+      "sha256": "133f8d23c22bef57b40603f3899aa23188011e163ee1ec933c0b0cb8f28def3e"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/TRAIN_EVAL_PARTITION_GATE.md",
+      "bytes": 3635,
+      "sha256": "fcf3231e7775f9318e5194bc70f75d830cf761fe496994c29316c85e6c4d0406"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/factorial.py",
+      "bytes": 18160,
+      "sha256": "5910eb520a44a3d084c7cdf3c6ef2a1abe9bfa778d1ff209fa04b94f1af7b09f"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/test_episode_roster.py",
+      "bytes": 1732,
+      "sha256": "7973592a7d636169932f3314b69e29b00de73046dfd909fabcf645ee7184d632"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/test_factorial.py",
+      "bytes": 10838,
+      "sha256": "980a30fa7dd4d8ef6b28f5c16ea7c661f2d3d6043b5e162b154d79e7a2c4d062"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/test_partition_overlap.py",
+      "bytes": 1763,
+      "sha256": "f99f7954f5e8eafb1e9bce02eea49c267ec6d83e9a63865c5ec45938a802cbc1"
+    },
+    {
+      "path": "integration-77c4-review/source-snapshots/incoming/qualification/neuroscience-20261110/test_seed_identity.py",
+      "bytes": 2581,
+      "sha256": "301aa51eff654dbe24791ae5a2f662fb6eb9272b577b765aadf4213cfa6b02d9"
+    },
+    {
+      "path": "integration-77c4-review/validation/changed-whitespace-after-eof.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration-77c4-review/validation/changed-whitespace.log",
+      "bytes": 191,
+      "sha256": "dceb50b6f2f91e66b391e8efc8562d5d567cc81d717c2f9e213fdf7b4b46f13d"
+    },
+    {
+      "path": "integration-77c4-review/validation/cli/legacy.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration-77c4-review/validation/cli/legacy.stdout",
+      "bytes": 3565,
+      "sha256": "4a817a321134c1b0863ccee51748ee9a3ea24c6c48f7a39ad12b3753ea0408d6"
+    },
+    {
+      "path": "integration-77c4-review/validation/cli/legacy_rows.jsonl",
+      "bytes": 17404,
+      "sha256": "d973f4d8a9a6baac26d073017b8eda09d31f79a9a66295ed5c0e496f167b8c4d"
+    },
+    {
+      "path": "integration-77c4-review/validation/cli/registered_cells.json",
+      "bytes": 38,
+      "sha256": "40769acd711bc033a0953d3f45b4af298b783dc799d7ede95bdf898452a1cadf"
+    },
+    {
+      "path": "integration-77c4-review/validation/cli/trial.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration-77c4-review/validation/cli/trial.stdout",
+      "bytes": 3033,
+      "sha256": "27a966cd990b1bd6590866e90a186b9c0e41288f27d6d7e685bba084a1cfdbdd"
+    },
+    {
+      "path": "integration-77c4-review/validation/cli/trial_rows.jsonl",
+      "bytes": 18520,
+      "sha256": "338d13909a5346b67415481107d896450421166fec7038dcfc833c05fe04dde8"
+    },
+    {
+      "path": "integration-77c4-review/validation/original-factorial-scoped.log",
+      "bytes": 7283,
+      "sha256": "9b5c3a1b7b08bb98a90c0a6d27fdbce1700e43a6868b19ba57911a7a549e83c1"
+    },
+    {
+      "path": "integration-77c4-review/validation/original-just-fmt-after-eof.log",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "path": "integration-77c4-review/validation/original-just-fmt.log",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "path": "integration-77c4-review/validation/original-shadow-discovery.log",
+      "bytes": 32019,
+      "sha256": "3f8a6d1af65c0bc81b0c4747b2c9c69c497b39d23595048671fc7072a932f679"
+    },
+    {
+      "path": "integration-e081-review/FINAL-BLOBS.json",
+      "bytes": 19786,
+      "sha256": "05b75e0ea404e8f83352ad253d806431581f5a78b3152e48b29bea5c09b494ee"
+    },
+    {
+      "path": "integration-e081-review/FINAL-VALIDATION.json",
+      "bytes": 9559,
+      "sha256": "5971e365afb94967fb1882f19200d21f13df55a416aedbe398ca36c4a0263984"
+    },
+    {
+      "path": "integration-e081-review/FULL-TREE-RECONCILIATION.json",
+      "bytes": 13728,
+      "sha256": "ac21e04a9c5acb66f87ee69c5404739be93b1878568a07674c44bbc0f84bc0d0"
+    },
+    {
+      "path": "integration-e081-review/HISTORICAL-VALIDATION.json",
+      "bytes": 11841,
+      "sha256": "4cd97d3e2761ab4636d184d6a75afaa4c2d3ccd1d5136473e3be611b25be64fe"
+    },
+    {
+      "path": "integration-e081-review/SAME-KEY-HISTORICAL-RECEIPTS.json",
+      "bytes": 8050,
+      "sha256": "3cbe6a943a53fbe043884136eba6bd32a7eb886da966b8a245e3b7a7b41e4bdb"
+    },
+    {
+      "path": "integration-e081-review/WHITESPACE-RESULT.json",
+      "bytes": 7570,
+      "sha256": "9572bae27203256b02d08d3bbce796505359f0cd19fae65e676b007cadeb0d68"
+    },
+    {
+      "path": "integration-main-retirement/REMOTE-REFRESH-20261122T172135Z.json",
+      "bytes": 995,
+      "sha256": "592db5361f7abf9616af24631957e8cb8c08b0e0653a79c24d6eff57ea9aff51"
+    },
+    {
+      "path": "integration-main-retirement/remote-heads-20261122T165455Z.tsv",
+      "bytes": 782915,
+      "sha256": "60d903c6caeffd94a87abe3eed24163b03276735da8d59aa0d3a2d35125a8e10"
+    },
+    {
+      "path": "integration-main-retirement/remote-heads-20261122T172135Z-canonical.tsv",
+      "bytes": 783024,
+      "sha256": "775122e5d108dfa8fac546c8b767e28e33ed3e919b1d0e772e10bdf5bba8a495"
+    },
+    {
+      "path": "integration-platform-contract-review/REVIEW.json",
+      "bytes": 4092,
+      "sha256": "6c5b2d03bab3d7725ead7c518bc3f022728ab11ffdd9a2cb49788ce79a5bb37d"
+    }
+  ],
+  "omitted_files_with_retained_identity": [
+    {
+      "path": "ci-audit/native-f5-full-scope/f5-14764279434.zip",
+      "bytes": 19410010,
+      "sha256": "a6c158a7821ba58e7c693d120ffc193d88c4062fc9b2dd85bebde4e1e60bfad8",
+      "reason": "Original process artifact includes two compiled native helper executables. Preserve its verified ZIP identity and every text member; individual executable hashes are in EXTRACTED-MANIFEST.json. Local original ZIP is retained and was not executed."
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-packages/binutils-mingw-w64-x86-64_2.44-3+12+b1_amd64.deb",
+      "bytes": 3473344,
+      "sha256": "b53f4a091b16a0d0952b8e3bd6027931641386258f96b37db1f0c62c787221d3",
+      "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-packages/g++-mingw-w64-x86-64-posix_14.2.0-19+27+b1_amd64.deb",
+      "bytes": 15261820,
+      "sha256": "cfa1773c2d0184819050138e587a81606d04a5f92e278b521b72b776d2c256c1",
+      "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-packages/gcc-mingw-w64-base_14.2.0-19+27+b1_amd64.deb",
+      "bytes": 194268,
+      "sha256": "8d2c64b886ab4a435a78ddc4cd3b510f149b65fbd6be8472e8f460627562718a",
+      "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-packages/gcc-mingw-w64-x86-64-posix-runtime_14.2.0-19+27+b1_amd64.deb",
+      "bytes": 13037152,
+      "sha256": "c898d96177574a8a7238564a1e799d8ddfed5a3d2ea005510305f9ad466a6f59",
+      "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-packages/gcc-mingw-w64-x86-64-posix_14.2.0-19+27+b1_amd64.deb",
+      "bytes": 37567656,
+      "sha256": "e32d24cfd1482394f16d9a84c1d0a9f5aa08ee826a79acc383c70cc8c23c4fe5",
+      "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-packages/mingw-w64-common_12.0.0-5_all.deb",
+      "bytes": 5792084,
+      "sha256": "97dce5d0d8aff1cade4786ad4ef5078345477a598829afcac2e7f2fbc5399990",
+      "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-packages/mingw-w64-x86-64-dev_12.0.0-5_all.deb",
+      "bytes": 4871860,
+      "sha256": "0bf89cf7454cccb49cd2a46a6f7b33896f6ae3a1a2fe33e02c40be6155bbb385",
+      "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+    },
+    {
+      "path": "ci-audit/windows-platform-contract/mingw-packages/nasm_2.16.03-1_amd64.deb",
+      "bytes": 418028,
+      "sha256": "e5096e91356d643f54d46f3ede1d8d44e45c81a3995fb057c28ec51e3791818f",
+      "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+    }
+  ],
+  "verification": "All part bytes, reassembled archive bytes, member names, byte lengths and SHA-256 hashes were checked. Every included member still equals its frozen source bytes."
+}

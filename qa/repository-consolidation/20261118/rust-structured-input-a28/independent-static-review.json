@@ -1,0 +1,16 @@
+{
+  "reviewer": "/root/local_candidate_audit",
+  "reviewed_artifact": "expected-final.diff",
+  "reviewed_postimage_sha256": "21b7592e5ac039b380423a467ff74211631c31fa7df3be31d9b0b02f0290900b",
+  "static_verdict": "ACCEPT",
+  "scope": "Only the structured-input test setup replaces the default provider with a loopback HTTP provider shared by ThreadManager and start_thread config.",
+  "preserved": [
+    "production code",
+    "original helper",
+    "5-second observation budget",
+    "structured input values",
+    "original equality assertions"
+  ],
+  "qualification_at_review_time": "Native GREEN pending; static acceptance is not runtime qualification.",
+  "required_inference_boundary": "Retain the controlled six-second WebSocket RED as its own reproducible experiment; it does not establish the unique historical cause of the original Mac Intel flake."
+}

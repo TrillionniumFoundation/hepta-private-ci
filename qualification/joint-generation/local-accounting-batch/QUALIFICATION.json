@@ -1,0 +1,72 @@
+{
+  "AS_limit_bytes": 536870912,
+  "CPU_affinity": [
+    0
+  ],
+  "CPU_limit_seconds": 30,
+  "child_CPU_seconds": 0.21601599999999999,
+  "complete_child_wait": true,
+  "exit_code": 0,
+  "max_rss_kib": 13824,
+  "same_shared_lock": true,
+  "scope": "portable literal-only test suite; no model/data or scientific rerun",
+  "status": "PASS",
+  "stderr": "",
+  "stdout": {
+    "model_or_dataset_reads": false,
+    "status": "PASS_FINITE_SYNTHETIC_ONLY",
+    "test_count": 38,
+    "tests": [
+      "empty",
+      "mixed_shared_and_own",
+      "P40",
+      "P40.000001",
+      "O180",
+      "O180.000001",
+      "S60",
+      "S60.000001",
+      "M120",
+      "M120.000001",
+      "parent_M_0",
+      "parent_M_19.999999",
+      "parent_M_20",
+      "parent_M_20.000001",
+      "parent_M_120",
+      "parent_M_120.000001",
+      "parent_P_40",
+      "parent_P_40.000001",
+      "total_cap_780",
+      "total_cap_780.000001",
+      "duplicate_id",
+      "scope_overlap",
+      "missing_dependency",
+      "cycle",
+      "shared_debit_omitted",
+      "own_T_shared",
+      "bad_receipt",
+      "undercharge",
+      "unknown_basis",
+      "nonfinite",
+      "full_validation_once_per_batch",
+      "no_cross_call_cache",
+      "local_detached_snapshot_and_clock_count",
+      "final_shared_clock_overshoot_rejected",
+      "final_shared_clock_applies_all_cells",
+      "no_public_unverified_batch",
+      "exact_original_formula_AST",
+      "eval_controller_syntax"
+    ],
+    "validation_counts": {
+      "batch": {
+        "carry": 1,
+        "validate": 27
+      },
+      "old": {
+        "carry": 12,
+        "validate": 324
+      }
+    }
+  },
+  "supervisor_and_authoring_cost": "additional unmeasured not zero",
+  "wall_seconds": 0.21682355599477887
+}

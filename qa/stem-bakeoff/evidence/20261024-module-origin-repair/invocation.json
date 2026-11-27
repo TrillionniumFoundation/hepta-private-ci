@@ -1,0 +1,27 @@
+{
+  "python": "/workspace/scratch/f24caf690188/shared-cpu-venv/bin/python",
+  "cwd": "/workspace/scratch/f24caf690188/hepta-module-origin-review/candidate",
+  "unit_command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_module_origin_collector"
+  ],
+  "wrapper_command": [
+    "python",
+    "-I",
+    "-B",
+    "run_evolution_suite.py"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "source_files": 222,
+  "new_source_edits": 0
+}

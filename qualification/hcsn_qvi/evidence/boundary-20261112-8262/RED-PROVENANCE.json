@@ -1,0 +1,25 @@
+{
+  "schema": "hcsn-boundary-red-provenance-v1",
+  "source_commit": "b716471e4eef59b69a4e7fe5547378a79f59562d",
+  "workflow_run_id": 43127251213,
+  "workflow_job_id": 130882355135,
+  "run_attempt": 1,
+  "workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43127251213",
+  "artifact_id": 13903228159,
+  "raw_log_git_blob_sha": "6dba997be2fd09688b8ba117f49b65b075387fe9",
+  "raw_log_path": "RED.native-actions.log",
+  "result": {
+    "tests": 7,
+    "passed": 6,
+    "failed": 1,
+    "errors": 0,
+    "skipped": 0,
+    "failed_test": "test_implicit_boundary_and_value_gradient_against_refitted_costs",
+    "predeclared_absolute_tolerance": 2e-8,
+    "observed_maximum_absolute_difference": 2.75590213e-8
+  },
+  "decision": "Retain original failure. Improve boundary root resolution; do not relax acceptance tolerance.",
+  "new_test_results_pending": true,
+  "scientific_admission": "HOLD_NO_GO",
+  "unrelated_main_fixture_tests_not_counted_as_new_boundary_evidence": true
+}

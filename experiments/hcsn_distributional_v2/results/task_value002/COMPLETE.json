@@ -1,0 +1,265 @@
+{
+  "complete_measured_child_cpu_seconds": 94.855243,
+  "coordinator_self_cpu_seconds_before_report": 0.06733881799999986,
+  "phases": {
+    "evaluate": {
+      "child_peak_rss_kib_linux": 234408,
+      "child_system_cpu_seconds": 7.0825,
+      "child_user_cpu_seconds": 54.634668,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.task_value_run",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/task_value002",
+        "--raw-root",
+        "/workspace/scratch/58af017d4789/raw_data",
+        "--worker",
+        "evaluate"
+      ],
+      "complete_child_cpu_seconds": 61.717168,
+      "exit_code": 0,
+      "log_sha256": "0e9607209a3e4bbfcfc70a380b57a7fe3ace9a380c9a13fa4d3ff0f392fee674",
+      "measurement": "Linux wait4; imports and waited native descendants included",
+      "thread_counts": {
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "wall_seconds": 147.0027116260003
+    },
+    "fit": {
+      "child_peak_rss_kib_linux": 280744,
+      "child_system_cpu_seconds": 1.121176,
+      "child_user_cpu_seconds": 10.63743,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.task_value_run",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/task_value002",
+        "--raw-root",
+        "/workspace/scratch/58af017d4789/raw_data",
+        "--worker",
+        "fit"
+      ],
+      "complete_child_cpu_seconds": 11.758606,
+      "exit_code": 0,
+      "log_sha256": "f3321af2f4beda8db5f36b6a782cdb639185340668343cb9241f63bf11900839",
+      "measurement": "Linux wait4; imports and waited native descendants included",
+      "thread_counts": {
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "wall_seconds": 12.780761699999857
+    },
+    "preflight": {
+      "child_peak_rss_kib_linux": 220624,
+      "child_system_cpu_seconds": 0.294597,
+      "child_user_cpu_seconds": 3.554445,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.task_value_run",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/task_value002",
+        "--raw-root",
+        "/workspace/scratch/58af017d4789/raw_data",
+        "--worker",
+        "preflight"
+      ],
+      "complete_child_cpu_seconds": 3.849042,
+      "exit_code": 0,
+      "log_sha256": "e81b828a3316993c42052949bff3aab1e65e732a2e38bb693022f17b0ee33f77",
+      "measurement": "Linux wait4; imports and waited native descendants included",
+      "thread_counts": {
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "wall_seconds": 4.057034108999687
+    },
+    "prepare": {
+      "child_peak_rss_kib_linux": 291032,
+      "child_system_cpu_seconds": 0.348831,
+      "child_user_cpu_seconds": 3.023837,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.task_value_run",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/task_value002",
+        "--raw-root",
+        "/workspace/scratch/58af017d4789/raw_data",
+        "--worker",
+        "prepare"
+      ],
+      "complete_child_cpu_seconds": 3.372668,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "measurement": "Linux wait4; imports and waited native descendants included",
+      "thread_counts": {
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "wall_seconds": 3.5727427179999722
+    },
+    "recovery_active": {
+      "child_peak_rss_kib_linux": 225156,
+      "child_system_cpu_seconds": 0.20646599999999998,
+      "child_user_cpu_seconds": 2.774167,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.task_value_run",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/task_value002",
+        "--raw-root",
+        "/workspace/scratch/58af017d4789/raw_data",
+        "--worker",
+        "recovery",
+        "--kind",
+        "active"
+      ],
+      "complete_child_cpu_seconds": 2.9806329999999996,
+      "exit_code": 0,
+      "log_sha256": "d4208b47332174db5756227633c9fced820cf9f35c0ae2502cdbd0f17718bb05",
+      "measurement": "Linux wait4; imports and waited native descendants included",
+      "thread_counts": {
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "wall_seconds": 3.339282593000007
+    },
+    "recovery_quiet": {
+      "child_peak_rss_kib_linux": 225152,
+      "child_system_cpu_seconds": 0.101306,
+      "child_user_cpu_seconds": 2.295142,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.task_value_run",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/task_value002",
+        "--raw-root",
+        "/workspace/scratch/58af017d4789/raw_data",
+        "--worker",
+        "recovery",
+        "--kind",
+        "quiet"
+      ],
+      "complete_child_cpu_seconds": 2.396448,
+      "exit_code": 0,
+      "log_sha256": "326cb84675301e9cf2df2a27ac61ab3cea570715762737a5512f57376b6e613f",
+      "measurement": "Linux wait4; imports and waited native descendants included",
+      "thread_counts": {
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "wall_seconds": 2.7967916399998103
+    },
+    "recovery_reference": {
+      "child_peak_rss_kib_linux": 225096,
+      "child_system_cpu_seconds": 0.18198599999999998,
+      "child_user_cpu_seconds": 2.304138,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.task_value_run",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/task_value002",
+        "--raw-root",
+        "/workspace/scratch/58af017d4789/raw_data",
+        "--worker",
+        "recovery",
+        "--kind",
+        "reference"
+      ],
+      "complete_child_cpu_seconds": 2.4861240000000002,
+      "exit_code": 0,
+      "log_sha256": "5d32bc891d044b5cbc545fdf509f5dc8ba1e6e8e9c606873255d5be606577c6c",
+      "measurement": "Linux wait4; imports and waited native descendants included",
+      "thread_counts": {
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "wall_seconds": 2.8608416080001007
+    },
+    "resume_active": {
+      "child_peak_rss_kib_linux": 225084,
+      "child_system_cpu_seconds": 0.184998,
+      "child_user_cpu_seconds": 3.018128,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.task_value_run",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/task_value002",
+        "--raw-root",
+        "/workspace/scratch/58af017d4789/raw_data",
+        "--worker",
+        "recovery",
+        "--kind",
+        "active",
+        "--resume"
+      ],
+      "complete_child_cpu_seconds": 3.203126,
+      "exit_code": 0,
+      "log_sha256": "514d765244aca461d1ec952eeab57c0a32a7aadcdfc58d416764b34c6d7b6f31",
+      "measurement": "Linux wait4; imports and waited native descendants included",
+      "thread_counts": {
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "wall_seconds": 3.91313987500007
+    },
+    "resume_quiet": {
+      "child_peak_rss_kib_linux": 224868,
+      "child_system_cpu_seconds": 0.24826299999999998,
+      "child_user_cpu_seconds": 2.843165,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.task_value_run",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/task_value002",
+        "--raw-root",
+        "/workspace/scratch/58af017d4789/raw_data",
+        "--worker",
+        "recovery",
+        "--kind",
+        "quiet",
+        "--resume"
+      ],
+      "complete_child_cpu_seconds": 3.091428,
+      "exit_code": 0,
+      "log_sha256": "0f0a9fad7079104f9af15e69c22d6ea6958002953874fa1f23dc3a74c63bc20e",
+      "measurement": "Linux wait4; imports and waited native descendants included",
+      "thread_counts": {
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "wall_seconds": 8.818129421000322
+    }
+  },
+  "registry_sha256": "74199eb3757a989a9dc1c5fecb988c3a496fb3e8730e7bfc4aa8d92f30914f66",
+  "scope": "Disjoint measured phase processes; native descendants are nested and not added again",
+  "selection_lock_sha256": "a885d0d2eb93b1933bcdd801143cfadf9205b5f377cdd12ec42fd3c8e370dbaa",
+  "status": "completed"
+}

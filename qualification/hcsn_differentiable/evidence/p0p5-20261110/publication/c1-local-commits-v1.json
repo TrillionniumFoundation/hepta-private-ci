@@ -1,0 +1,29 @@
+[
+  {
+    "file": "proposals/localization-v3/continuation_state.py",
+    "parent": "6d18f16050dabab063a324087a7b4e00618bd1bb",
+    "commit": "372ecd8a8996abbae738850941c9789a7d3070aa",
+    "tree": "5eadae04be7a46b4590ffe4a7126028de5920d95",
+    "branch": "codex/hcsn-p2-continuation-state-20261110-c385",
+    "message": "Bind continuation to original complete epoch-cap evidence",
+    "numstat": "156\t0\tproposals/localization-v3/continuation_state.py"
+  },
+  {
+    "file": "proposals/localization-v3/continuation.py",
+    "parent": "372ecd8a8996abbae738850941c9789a7d3070aa",
+    "commit": "b6f05399f31fc73b42b79042d7a3aafbfd059192",
+    "tree": "aaf9d3dcd545adc0a9b9eb0361bf3c22b9746ab5",
+    "branch": "codex/hcsn-p2-continuation-runner-20261110-c385",
+    "message": "Continue capped development fits within original remaining budgets",
+    "numstat": "375\t0\tproposals/localization-v3/continuation.py"
+  },
+  {
+    "file": "proposals/localization-v3/test_continuation.py",
+    "parent": "b6f05399f31fc73b42b79042d7a3aafbfd059192",
+    "commit": "7477956ee733e1a601270c5d0ecaee17782d4719",
+    "tree": "da62efef8b9835ef69643af3925e6820c2d113c0",
+    "branch": "codex/hcsn-p2-continuation-tests-20261110-c385",
+    "message": "Verify exact continuation and reject incomplete or changed parents",
+    "numstat": "447\t0\tproposals/localization-v3/test_continuation.py"
+  }
+]

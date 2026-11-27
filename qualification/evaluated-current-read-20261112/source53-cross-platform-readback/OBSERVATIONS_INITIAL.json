@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.ci-readback-observation.v1",
+  "source_head": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "source_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "checkout": "7302b0d4d0cd9335c9c505db7995689e8dc9f9c8",
+  "checkout_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "run_id": 43297579660,
+  "as_of_utc": "2026-11-12T20:22:16Z",
+  "scope": "Partial read-only snapshot; no dispatch or retry.",
+  "jobs": [
+    {
+      "job_id": 131460269270,
+      "status": "completed",
+      "conclusion": "success",
+      "fence": {
+        "action": "c7675fea986c29f1d655753a7a61fd6b4141be8f",
+        "release": "v0.13.0",
+        "source": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+        "mode": "audit",
+        "result": "healthy",
+        "controls": {
+          "network": "verified",
+          "sudo": "preserved_verified",
+          "containers": "preserved_verified",
+          "protection_available": false,
+          "readiness": "ready_observation_only",
+          "resident_health": "healthy"
+        },
+        "scope": "Audit observation only, not enforcement qualification; prior v0.10 failure remains historical evidence."
+      },
+      "test_count_scope": "Original blob policy reports 7 tests."
+    },
+    {
+      "job_id": 131460488835,
+      "status": "completed",
+      "conclusion": "success",
+      "observed_wrapper_tests": 48,
+      "test_scope": "Native-path validation wrapper only; not a full Rust unit-test method denominator."
+    },
+    {
+      "job_id": 131460489264,
+      "status": "completed",
+      "conclusion": "success",
+      "observed_build_targets": 1047,
+      "observed_actions": 5500,
+      "elapsed_seconds": 431.526,
+      "scope": "Release build targets/actions; no fresh test-method count."
+    }
+  ],
+  "pending_scope": "Windows Bazel four shards, Windows Clippy, Mac Intel still in progress; Mac ARM queued at this snapshot. Dedicated Windows private-state run is archived separately by repository audit agent."
+}

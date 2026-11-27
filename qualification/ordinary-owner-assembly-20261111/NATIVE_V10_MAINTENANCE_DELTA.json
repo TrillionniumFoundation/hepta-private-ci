@@ -1,0 +1,157 @@
+{
+  "changes": [
+    {
+      "after_bytes": 8392,
+      "after_git_blob": "ae0b152c62d28f338ca89fcd5322ef7ca12d9dbc",
+      "after_sha256": "9101df250bab7e5b9b191bdefe08d90edcc3130112dd2bc418454d7fb68521eb",
+      "before_git_blob": "379abad9c357ae321ba9e74a99e2b9be819c3606",
+      "ops": [
+        {
+          "end": 147,
+          "new": "        if error.get_ref().is_some_and(<(dyn std::error::Error + std::marker::Send + std::marker::Sync + 'static)>::is::<crate::root_generation_initial_client::RootGenerationInitialUncertain>)),\n",
+          "old": "        if error.get_ref().is_some_and(|source|\n            source.is::<crate::root_generation_initial_client::RootGenerationInitialUncertain>())),\n",
+          "start": 145
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs"
+    },
+    {
+      "after_bytes": 3643,
+      "after_git_blob": "fd8fa515f574c789ab2bd74e7bfccb1f6444f5ab",
+      "after_sha256": "0de044aaa17530ce9a4a4fad53bdc206feac3d9c9346ad22ecb04eba35c522fd",
+      "before_git_blob": "5bd60681a52ba7cef7c421aa0daa560d2631ef6f",
+      "ops": [
+        {
+          "end": 42,
+          "new": "        anyhow::ensure!(\n            sent == FRAME.len() as libc::ssize_t,\n            \"{}\",\n            io::Error::last_os_error()\n        );\n",
+          "old": "        anyhow::ensure!(sent == FRAME.len() as libc::ssize_t, \"{}\", io::Error::last_os_error());\n",
+          "start": 41
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fd_tests.rs"
+    },
+    {
+      "after_bytes": 10037,
+      "after_git_blob": "ec7f167f001c878fff0329a72691a6996fe591a0",
+      "after_sha256": "694967d4d378b8dd3c4bb0e92905a933d36ef240f6e6c3139a29bf3c2eab5106",
+      "before_git_blob": "5d50f5b983597e774736a186a0d4e6c0ab7b0e27",
+      "ops": [
+        {
+          "end": 193,
+          "new": "    let mut device = config;\n",
+          "old": "    let mut device = config.clone();\n",
+          "start": 192
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_root_tests.rs"
+    },
+    {
+      "after_bytes": 13127,
+      "after_git_blob": "14c31b49013eeb151fc04d2d13000af4d7bb3bb3",
+      "after_sha256": "baddbb83a9ff201585d64454e76db6bdfc5ccd5c23e884cfedb02b1de84263bb",
+      "before_git_blob": "aadb1da743e554a90b2223e2f3c21e96ac439932",
+      "ops": [
+        {
+          "end": 206,
+          "new": "        if error.get_ref().is_some_and(<(dyn std::error::Error + std::marker::Send + std::marker::Sync + 'static)>::is::<crate::root_generation_current_client::RootGenerationPublicationUncertain>)),\n",
+          "old": "        if error.get_ref().is_some_and(|source| source.is::<crate::root_generation_current_client::RootGenerationPublicationUncertain>())),\n",
+          "start": 205
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs"
+    },
+    {
+      "after_bytes": 29805,
+      "after_git_blob": "eeca436dab40d6b30c765fd95e69b1f3507e7427",
+      "after_sha256": "4deab9a45c068b20f59084817734c2b636f4ea9afcc716c3b49c78ea9ceae375",
+      "before_git_blob": "bb9c64413ea0bd2e3afc27d5ae43be3cf82b3ee2",
+      "ops": [
+        {
+          "end": 345,
+          "new": "            initial.owners,\n",
+          "old": "            initial.owners.clone(),\n",
+          "start": 344
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs"
+    },
+    {
+      "after_bytes": 13766,
+      "after_git_blob": "91b9ffd5a5648de1e75765934040e283717b84b1",
+      "after_sha256": "ca6861af5e6624dd228f578f0fa52b1fec2519ef80b4c4daed637e68b465c2e3",
+      "before_git_blob": "e854b301fc9df33004b6020d23ff87ea1bd0defe",
+      "ops": [
+        {
+          "end": 214,
+          "new": "        let mut previous = trigger.session;\n",
+          "old": "        let mut previous = trigger.session.clone();\n",
+          "start": 213
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_tests.rs"
+    },
+    {
+      "after_bytes": 6531,
+      "after_git_blob": "8b2d78880da5f9f3248e3574502281c94d063df6",
+      "after_sha256": "4cc5874752e724b4a431e8fe6e879efa892e114f886c0c0b0dd2759554fe783c",
+      "before_git_blob": "518f38e75f5037e7043ce381e541e97391bd7c4f",
+      "ops": [
+        {
+          "end": 150,
+          "new": "    let mut decision = captured.decision;\n",
+          "old": "    let mut decision = captured.decision.clone();\n",
+          "start": 149
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_fault_support_tests.rs"
+    },
+    {
+      "after_bytes": 8643,
+      "after_git_blob": "6003965bbaab608b98719672b995eb5c33f8da70",
+      "after_sha256": "480f02056c3ec82cfa961a2100ca941161de9aaa51d56350e4a32db792b039dd",
+      "before_git_blob": "fc09cb648e175a3002d2992cda80484b8d1b8e26",
+      "ops": [
+        {
+          "end": 141,
+          "new": "                .map_err(AgentdError::Protocol)?;\n",
+          "old": "                .map_err(|error| AgentdError::Protocol(error))?;\n",
+          "start": 140
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_task_learning.rs"
+    },
+    {
+      "after_bytes": 22305,
+      "after_git_blob": "9dae7caa808e31b3415116ae94c10c1a9c0c6a63",
+      "after_sha256": "8ae9a5af5ecccd5fcc803a0c54ea272632a26a0455040b9846b753f07bacc188",
+      "before_git_blob": "9bfd9adc7e62332e403dd0f8fd1dc00202aedd49",
+      "ops": [
+        {
+          "end": 473,
+          "new": "    if !bytes.len().is_multiple_of(CLAIM_FRAME_BYTES) {\n",
+          "old": "    if bytes.len() % CLAIM_FRAME_BYTES != 0 {\n",
+          "start": 472
+        }
+      ],
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs"
+    },
+    {
+      "after_bytes": 11675,
+      "after_git_blob": "53a60fdfe382a7a4fe3fdfd96dc04f529e193b72",
+      "after_sha256": "78a3a9dc0826f42984a1c730efbbf7b6752a791262f208ca62134f9e83769c33",
+      "before_git_blob": "2a60ac5da48d9f4097b27a6585504dc82aefb040",
+      "ops": [
+        {
+          "end": 310,
+          "new": "    let reopened = fixture.open_with(configuration, /*max_records*/ 128);\n",
+          "old": "    let mut reopened = fixture.open_with(configuration, /*max_records*/ 128);\n",
+          "start": 309
+        }
+      ],
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs"
+    }
+  ],
+  "mechanism": "Exact native maintenance postimages; compilation state recorded separately; no behavior qualification",
+  "source_sha": "ead730ae96f97f0507f2319a4f7e58c1dac9d940",
+  "source_tree": "b840be6f8c6081f773cd9ecc9b9b8389c544a399"
+}

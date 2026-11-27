@@ -1,0 +1,347 @@
+{
+  "artifact_scope": "All four reports and plans are retained; Granite linear/gated tensors and manifests are retained. Full per-run feature manifests and all private Cell artifacts are reproduced and uploaded by the CI matrix.",
+  "authority": "DENY_ALL",
+  "candidates": {
+    "embeddinggemma2_740m": {
+      "accuracy": {
+        "calibration": {
+          "gated": 0.78125,
+          "linear": 0.78125
+        },
+        "future_1": {
+          "gated": 0.796875,
+          "linear": 0.796875
+        },
+        "future_2": {
+          "gated": 0.7890625,
+          "linear": 0.7890625
+        },
+        "ood": {
+          "gated": 0.734375,
+          "linear": 0.734375
+        }
+      },
+      "checkpoint_inventory_sha256": "036c9188478057bada1b51ef856f3567509daf1e85efb9da283be1a69be0cb9b",
+      "checkpoint_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+      "current_rss_at_end_bytes": 2095579136,
+      "encoder_encode_ms_for_768_rows": 26168.5943409866,
+      "encoder_forward_calls_for_768_rows": 48,
+      "encoder_tensor_bytes": 1084013668,
+      "fanout_4096": {
+        "active_input_events": 1,
+        "actual_private_head_tensor_bytes": 239386624,
+        "actual_shared_encoder_tensor_bytes": 1084013668,
+        "additional_encoder_forward_calls": 0,
+        "cells": 4096,
+        "copy_accounting": {
+          "accounting_kind": "tensor-payload-bytes-not-observed-peak",
+          "global_summary_bytes": 0,
+          "head_input_scratch_bytes": 12713984,
+          "head_output_snapshot_bytes": 180224,
+          "local_state_snapshot_bytes": 131072,
+          "source_snapshot_bytes": 3072
+        },
+        "head_fanout_ms_median": 1354.7130350016232,
+        "head_fanout_ms_samples": [
+          1327.5293840015365,
+          1354.7130350016232,
+          1355.4537029995117
+        ],
+        "private_head_instances": 4096,
+        "private_head_parameters_each": 14611,
+        "process_lifetime_peak_rss_bytes": 2290577408
+      },
+      "gated_ood_coverage_at_0_7": 0.015625,
+      "gated_trainable_parameters": 9997,
+      "independently_trained_private_cell_tasks": 4,
+      "loaded_encoder_parameters": 271002624,
+      "process_lifetime_peak_rss_bytes": 2290577408,
+      "report_file": "reports/embeddinggemma2_740m.json",
+      "report_file_sha256": "1b21714d5fbcc7ce33ec093e2a628dc7c927258d06b51ab3eebffd70d844aeb8",
+      "resident_head_parameters": 14611
+    },
+    "granite97m": {
+      "accuracy": {
+        "calibration": {
+          "gated": 0.7734375,
+          "linear": 0.7734375
+        },
+        "future_1": {
+          "gated": 0.7890625,
+          "linear": 0.7890625
+        },
+        "future_2": {
+          "gated": 0.84375,
+          "linear": 0.84375
+        },
+        "ood": {
+          "gated": 0.7421875,
+          "linear": 0.7421875
+        }
+      },
+      "checkpoint_inventory_sha256": "08bdb7bb7eefb051ac74924787354a3638ba8a0e6fe6ffdd96ae57d6f1402db3",
+      "checkpoint_revision": "835ad14087e140460703cf0fae09f97d469d65c2",
+      "current_rss_at_end_bytes": 1113804800,
+      "encoder_encode_ms_for_768_rows": 2697.522925980593,
+      "encoder_forward_calls_for_768_rows": 48,
+      "encoder_tensor_bytes": 389764864,
+      "fanout_4096": {
+        "active_input_events": 1,
+        "actual_private_head_tensor_bytes": 119848960,
+        "actual_shared_encoder_tensor_bytes": 389764864,
+        "additional_encoder_forward_calls": 0,
+        "cells": 4096,
+        "copy_accounting": {
+          "accounting_kind": "tensor-payload-bytes-not-observed-peak",
+          "global_summary_bytes": 0,
+          "head_input_scratch_bytes": 6422528,
+          "head_output_snapshot_bytes": 180224,
+          "local_state_snapshot_bytes": 131072,
+          "source_snapshot_bytes": 1536
+        },
+        "head_fanout_ms_median": 1252.7944510002271,
+        "head_fanout_ms_samples": [
+          1234.4373479973,
+          1252.7944510002271,
+          1359.5152650013915
+        ],
+        "private_head_instances": 4096,
+        "private_head_parameters_each": 7315,
+        "process_lifetime_peak_rss_bytes": 1264562176
+      },
+      "gated_ood_coverage_at_0_7": 0.0078125,
+      "gated_trainable_parameters": 5005,
+      "independently_trained_private_cell_tasks": 4,
+      "loaded_encoder_parameters": 97441152,
+      "process_lifetime_peak_rss_bytes": 1264562176,
+      "report_file": "reports/granite97m.json",
+      "report_file_sha256": "3e4290ada2f1f36a0cb4f40197ddc1f855109ac1b982940c570a6dc2a116152d",
+      "resident_head_parameters": 7315
+    },
+    "laya_encoder_only": {
+      "accuracy": {
+        "calibration": {
+          "gated": 0.46875,
+          "linear": 0.46875
+        },
+        "future_1": {
+          "gated": 0.4140625,
+          "linear": 0.4140625
+        },
+        "future_2": {
+          "gated": 0.4375,
+          "linear": 0.4375
+        },
+        "ood": {
+          "gated": 0.4140625,
+          "linear": 0.4140625
+        }
+      },
+      "checkpoint_inventory_sha256": "c9a9bb01c3cf28da6c5aeccb1336803913f485a7ce6cde12c81fce9a81b6ee45",
+      "checkpoint_revision": "7b928d828b7b0e022f929d9bd2e44165aa270148",
+      "current_rss_at_end_bytes": 2440540160,
+      "encoder_encode_ms_for_768_rows": 39077.93375897745,
+      "encoder_forward_calls_for_768_rows": 48,
+      "encoder_tensor_bytes": 1579127296,
+      "fanout_4096": {
+        "active_input_events": 1,
+        "actual_private_head_tensor_bytes": 319078400,
+        "actual_shared_encoder_tensor_bytes": 1579127296,
+        "additional_encoder_forward_calls": 0,
+        "cells": 4096,
+        "copy_accounting": {
+          "accounting_kind": "tensor-payload-bytes-not-observed-peak",
+          "global_summary_bytes": 0,
+          "head_input_scratch_bytes": 16908288,
+          "head_output_snapshot_bytes": 180224,
+          "local_state_snapshot_bytes": 131072,
+          "source_snapshot_bytes": 4096
+        },
+        "head_fanout_ms_median": 1445.0551930021902,
+        "head_fanout_ms_samples": [
+          1430.019565999828,
+          1465.16173299824,
+          1445.0551930021902
+        ],
+        "private_head_instances": 4096,
+        "private_head_parameters_each": 19475,
+        "process_lifetime_peak_rss_bytes": 2759720960
+      },
+      "gated_ood_coverage_at_0_7": 0.0,
+      "gated_trainable_parameters": 13325,
+      "independently_trained_private_cell_tasks": 4,
+      "loaded_encoder_parameters": 394781696,
+      "process_lifetime_peak_rss_bytes": 2759720960,
+      "report_file": "reports/laya_encoder_only.json",
+      "report_file_sha256": "e38ed4f6cd4dc7497ded2c7a6ae2c7fe70ee7804e3f8ec99a9c54903d5a4a312",
+      "resident_head_parameters": 19475
+    },
+    "mmbert_small": {
+      "accuracy": {
+        "calibration": {
+          "gated": 0.6171875,
+          "linear": 0.6171875
+        },
+        "future_1": {
+          "gated": 0.6484375,
+          "linear": 0.6484375
+        },
+        "future_2": {
+          "gated": 0.6328125,
+          "linear": 0.6328125
+        },
+        "ood": {
+          "gated": 0.5390625,
+          "linear": 0.5390625
+        }
+      },
+      "checkpoint_inventory_sha256": "37aee9978a592c63ab6281e2bc150ab714c0d2c6aa30817dfa0e6f7a69daec4b",
+      "checkpoint_revision": "abc32620dd4f6ab06f5fbe905dc25f310618e09f",
+      "current_rss_at_end_bytes": 1376165888,
+      "encoder_encode_ms_for_768_rows": 5788.4685630087915,
+      "encoder_forward_calls_for_768_rows": 48,
+      "encoder_tensor_bytes": 561975296,
+      "fanout_4096": {
+        "active_input_events": 1,
+        "actual_private_head_tensor_bytes": 119848960,
+        "actual_shared_encoder_tensor_bytes": 561975296,
+        "additional_encoder_forward_calls": 0,
+        "cells": 4096,
+        "copy_accounting": {
+          "accounting_kind": "tensor-payload-bytes-not-observed-peak",
+          "global_summary_bytes": 0,
+          "head_input_scratch_bytes": 6422528,
+          "head_output_snapshot_bytes": 180224,
+          "local_state_snapshot_bytes": 131072,
+          "source_snapshot_bytes": 1536
+        },
+        "head_fanout_ms_median": 1288.158759001817,
+        "head_fanout_ms_samples": [
+          1282.56533700187,
+          1309.7958710022795,
+          1288.158759001817
+        ],
+        "private_head_instances": 4096,
+        "private_head_parameters_each": 7315,
+        "process_lifetime_peak_rss_bytes": 1457676288
+      },
+      "gated_ood_coverage_at_0_7": 0.0,
+      "gated_trainable_parameters": 5005,
+      "independently_trained_private_cell_tasks": 4,
+      "loaded_encoder_parameters": 140493696,
+      "process_lifetime_peak_rss_bytes": 1457676288,
+      "report_file": "reports/mmbert_small.json",
+      "report_file_sha256": "038e5057d2394df939cdabbb1c469b887655fadbe8987c9353b0c551bd9d1570",
+      "resident_head_parameters": 7315
+    }
+  },
+  "code_file_sha256": {
+    "cell_head_training.py": "db484ab265ace08c5f7d67360e9a478ce3f69c112d20b1c666c6e96fcb1ee08d",
+    "convert_mmbert.py": "b1917669e60e8942bcf6fee0eab2a8e79a72fa4f6bdfdf86d3edd977516b4458",
+    "evidence_gate.py": "ee8386d84db3581c03d1b47d6e3241825f7772e527739f3366ffe17691344244",
+    "feature_bundle.py": "0a40f17c0383d8289a9f66da871c81347ac2896f60d8bdacedcfbba503899fea",
+    "feature_shard.py": "a4a2043fb6bc05fac69d485c16574b2260e68e9dc36768aef6c9b88de37b8d2e",
+    "fetch_real_checkpoint.py": "c9461f296a0b92ec6f549492859dcdf15e5ad2a7fc8efc41573ab2178931795b",
+    "multimodal_bridge.py": "10f83d200bd77aca8fa5f9aa4b3a5ba7c2c387b08b65847bc800227b91b82651",
+    "native_latent.py": "6d8db8a5911d4104d93b7e2084d8c2653fadb3191685b9cad8f34db2ab5fbc29",
+    "offline_shard_distill.py": "69564357ba680575eb5de0627b6a3468b9cd9eacd17a59ce788b1cfb2ada71ed",
+    "prepare_news_cohorts.py": "33fa46322d4e9ee341b1f5ea80f37b79713a7f9420f14df9204766f38b6b45b1",
+    "real_encoder.py": "6728cb9b9ecc4a3280bb8186d920ce174138ac63f7a5b9a362c2b17040f7f638",
+    "real_encoder_candidates.json": "b3ca0936519a2c5f0bd6fcfe997f8e61c953db37aaa2cdc43b641ccdce956cd6",
+    "real_head_fanout.py": "ceac14a698b944f3cfb931f9d0d19d6b3bc7b915140c33c3798906d3c88390df",
+    "real_media_probe.py": "bd9dad46d1ee23bbe1b3672e0ea99f41510c1315366ebe05ac582c80e105f625",
+    "real_model_bakeoff.py": "44aac7c0429e9ab7740648d5baebf6ee6134f18d2ef79420dfef0771d4064e3a",
+    "scale_probe.py": "638dbd0daff9b7cfd03ca67b871ef580ba59033f7c32c0aad556e29a35f61d9d",
+    "stem_bakeoff.py": "5679f72fd7b5f8fd0feeb5f54f14e428ff88a025ed60aff4aa08cac3d8bb26c5",
+    "teacher_forward.py": "ca9f1f5a1b91188905522cc87ef073b5a23cebb56eda867fc40a7d55f235a0c6",
+    "teacher_media_seal.py": "6ac9b19527df6722a1061a37a8672b1e39e4b78e4e463309021d75ac4feed8cc",
+    "teacher_snapshot.py": "51fe50c86b107bf5deb85145d22d49be0a622bc0204c219c3bd45bcae86977a1"
+  },
+  "data_scope": {
+    "calibration_rows": 128,
+    "foundation_pretraining_contamination_excluded": false,
+    "historical_future_1_rows": 128,
+    "historical_future_2_rows": 128,
+    "publisher_ood_rows": 128,
+    "training_rows": 256
+  },
+  "execution_complete": true,
+  "mode": "SHADOW_ONLY",
+  "multimodal_execution": {
+    "quality_qualified": false,
+    "receipt": "image-execution.json",
+    "receipt_file_sha256": "6a84121f178b3f25eb9c3c8532e52718d97e53b9334a3942f70e3652c3178de0"
+  },
+  "post_execution_diagnostics": {
+    "binary_cells_at_baseline_holdout_accuracy": 16,
+    "binary_cells_better_than_constant_prior_ood_nll": 15,
+    "binary_confusion_matrices_retained": false,
+    "binary_constant_class_prior_nll_baseline": 0.5623351446188083,
+    "binary_majority_class_accuracy_baseline": 0.75,
+    "followup_required": "Predeclare a new protocol with fresh final cohorts; retain balanced accuracy, confusion matrices, positive-class recall and AUPRC; do not tune on these final holdouts.",
+    "multiclass_calibration": {
+      "embeddinggemma2_740m": {
+        "coverage_at_0_7": 0.03125,
+        "temperature": 0.25
+      },
+      "granite97m": {
+        "coverage_at_0_7": 0.03125,
+        "temperature": 0.25
+      },
+      "laya_encoder_only": {
+        "coverage_at_0_7": 0.0,
+        "temperature": 0.25
+      },
+      "mmbert_small": {
+        "coverage_at_0_7": 0.0,
+        "temperature": 0.25
+      }
+    },
+    "multiclass_temperature_hits_predeclared_grid_lower_bound": true,
+    "status": "descriptive review only; does not select or qualify a candidate",
+    "useful_positive_class_recognition_qualified": false
+  },
+  "production_activation_allowed": false,
+  "retained_head_artifacts": {
+    "gated": {
+      "directory": "granite-heads/gated",
+      "manifest_sha256": "90acff3a22192f2af4e2e3b4627c4022d6f417ec71b8acb7b7e3a419a23ff1b1",
+      "weights_sha256": "334b70e0a19cd2230b127970ae3d44da3a57a49cb13b2f1808712e6a4adeac07"
+    },
+    "linear": {
+      "directory": "granite-heads/linear",
+      "manifest_sha256": "9800d5a0cabe88ebdeffd62cb48100cc05a58b466d8e94a6724005be016ffc52",
+      "weights_sha256": "1dc1c1944ee61434f4f36fe69a7153766284052c699a0e47e80432f9650f8d5e"
+    }
+  },
+  "schema": "hepta.real-model-research-summary.v1",
+  "selected_production_candidate": null,
+  "source_date_utc": "2026-10-22",
+  "tests": {
+    "command": "python -m unittest discover -s qa/stem-bakeoff -p 'test_*.py' -q",
+    "failed": 0,
+    "passed": 181
+  },
+  "unclosed_qualification_gates": [
+    {
+      "gate": "target-domain-learning-and-coverage",
+      "reason": "historical public news and small fixed samples do not establish target Cell utility; confidence coverage is reported without an acceptance threshold; no production candidate selected"
+    },
+    {
+      "gate": "multimodal-learning-quality",
+      "reason": "actual image tower executed with a procedural image; paired held-out image/audio/video task learning is not qualified"
+    },
+    {
+      "gate": "target-hardware-latency-energy",
+      "reason": "CPU descriptive samples only; no GPU/device p95/p99 or energy evidence"
+    },
+    {
+      "gate": "full-policy-and-state-learning",
+      "reason": "action/value/uncertainty remain untrained and private task Heads use zero local state; Laya arm is encoder-only"
+    },
+    {
+      "gate": "exact-head-terminal-ci-and-parent-admission",
+      "reason": "must be read from live GitHub checks for each exact published head; not inferred from local execution"
+    }
+  ]
+}

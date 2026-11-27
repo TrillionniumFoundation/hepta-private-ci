@@ -1,0 +1,29 @@
+{
+  "status": "V1_INVALID_ARGUMENT_NO_SUCCESSFUL_EXECUTION",
+  "source_commit": "372d84ed9a04cab0e1d873f9cdd534a33689b485",
+  "first_ack": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.shell_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "exact_same_key_retry": {
+    "content": [
+      {
+        "type": "text",
+        "text": "shell source must not contain NUL and is limited to 64 KiB"
+      }
+    ],
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "isError": true
+  },
+  "job_id": null,
+  "successful_native_result": false,
+  "reason": "The identical shell source is over the server's explicit 64KiB validation limit; v2 uses create-only binary transport and a short launcher.",
+  "optimizer_calls_observed": 0
+}

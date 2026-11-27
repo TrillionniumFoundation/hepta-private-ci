@@ -221,6 +221,14 @@ generation from that anchor. Cross-host deployment of this backend additionally
 requires a shared filesystem with qualified linearizable lock and fsync
 semantics.
 
+On Unix, the file CAS and durable journal share cooperative lock ownership.
+The supplied regular file must not have an external owner. Passive handles
+do not keep the owner's lock after it closes or construction fails. Failed
+release remains unavailable rather than allowing a second owner. Inherited
+handles are not active owners; their cached anchors do not prove current
+ownership. Non-Unix lock behavior, stored bytes, and durability ordering
+are unchanged.
+
 The evaluated-shadow caller now consumes only the sealed `ProductQualificationReceiptV1`, rechecks current trust/dataset/candidate bindings and never re-runs low-level signed admission. This leaves one repository-controlled product qualification spine.
 
 ## 7. Runtime, concurrency and transaction model

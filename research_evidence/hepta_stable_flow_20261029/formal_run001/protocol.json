@@ -1,0 +1,576 @@
+{
+  "arms": [
+    "analytic",
+    "matched_c1",
+    "sigmoid",
+    "ordinary",
+    "frozen_flow"
+  ],
+  "batch_size": 32,
+  "candidate_count": 60,
+  "candidates": [
+    {
+      "arm": "analytic",
+      "id": "selective_copy__analytic__s81301__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "analytic",
+      "id": "selective_copy__analytic__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "analytic",
+      "id": "selective_copy__analytic__s81302__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81302,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "analytic",
+      "id": "selective_copy__analytic__s81302__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81302,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "analytic",
+      "id": "selective_copy__analytic__s81303__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81303,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "analytic",
+      "id": "selective_copy__analytic__s81303__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81303,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "selective_copy__matched_c1__s81301__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "selective_copy__matched_c1__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "selective_copy__matched_c1__s81302__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81302,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "selective_copy__matched_c1__s81302__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81302,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "selective_copy__matched_c1__s81303__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81303,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "selective_copy__matched_c1__s81303__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81303,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "selective_copy__sigmoid__s81301__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "selective_copy__sigmoid__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "selective_copy__sigmoid__s81302__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81302,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "selective_copy__sigmoid__s81302__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81302,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "selective_copy__sigmoid__s81303__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81303,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "selective_copy__sigmoid__s81303__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81303,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "ordinary",
+      "id": "selective_copy__ordinary__s81301__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "ordinary",
+      "id": "selective_copy__ordinary__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "ordinary",
+      "id": "selective_copy__ordinary__s81302__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81302,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "ordinary",
+      "id": "selective_copy__ordinary__s81302__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81302,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "ordinary",
+      "id": "selective_copy__ordinary__s81303__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81303,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "ordinary",
+      "id": "selective_copy__ordinary__s81303__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81303,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "selective_copy__frozen_flow__s81301__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "selective_copy__frozen_flow__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "selective_copy__frozen_flow__s81302__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81302,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "selective_copy__frozen_flow__s81302__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81302,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "selective_copy__frozen_flow__s81303__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81303,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "selective_copy__frozen_flow__s81303__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81303,
+      "task": "selective_copy"
+    },
+    {
+      "arm": "analytic",
+      "id": "mqar__analytic__s81301__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "arm": "analytic",
+      "id": "mqar__analytic__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "arm": "analytic",
+      "id": "mqar__analytic__s81302__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81302,
+      "task": "mqar"
+    },
+    {
+      "arm": "analytic",
+      "id": "mqar__analytic__s81302__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81302,
+      "task": "mqar"
+    },
+    {
+      "arm": "analytic",
+      "id": "mqar__analytic__s81303__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81303,
+      "task": "mqar"
+    },
+    {
+      "arm": "analytic",
+      "id": "mqar__analytic__s81303__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81303,
+      "task": "mqar"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "mqar__matched_c1__s81301__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "mqar__matched_c1__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "mqar__matched_c1__s81302__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81302,
+      "task": "mqar"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "mqar__matched_c1__s81302__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81302,
+      "task": "mqar"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "mqar__matched_c1__s81303__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81303,
+      "task": "mqar"
+    },
+    {
+      "arm": "matched_c1",
+      "id": "mqar__matched_c1__s81303__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81303,
+      "task": "mqar"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "mqar__sigmoid__s81301__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "mqar__sigmoid__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "mqar__sigmoid__s81302__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81302,
+      "task": "mqar"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "mqar__sigmoid__s81302__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81302,
+      "task": "mqar"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "mqar__sigmoid__s81303__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81303,
+      "task": "mqar"
+    },
+    {
+      "arm": "sigmoid",
+      "id": "mqar__sigmoid__s81303__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81303,
+      "task": "mqar"
+    },
+    {
+      "arm": "ordinary",
+      "id": "mqar__ordinary__s81301__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "arm": "ordinary",
+      "id": "mqar__ordinary__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "arm": "ordinary",
+      "id": "mqar__ordinary__s81302__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81302,
+      "task": "mqar"
+    },
+    {
+      "arm": "ordinary",
+      "id": "mqar__ordinary__s81302__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81302,
+      "task": "mqar"
+    },
+    {
+      "arm": "ordinary",
+      "id": "mqar__ordinary__s81303__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81303,
+      "task": "mqar"
+    },
+    {
+      "arm": "ordinary",
+      "id": "mqar__ordinary__s81303__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81303,
+      "task": "mqar"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "mqar__frozen_flow__s81301__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "mqar__frozen_flow__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "mqar__frozen_flow__s81302__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81302,
+      "task": "mqar"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "mqar__frozen_flow__s81302__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81302,
+      "task": "mqar"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "mqar__frozen_flow__s81303__lr0.001",
+      "learning_rate": 0.001,
+      "seed": 81303,
+      "task": "mqar"
+    },
+    {
+      "arm": "frozen_flow",
+      "id": "mqar__frozen_flow__s81303__lr0.003",
+      "learning_rate": 0.003,
+      "seed": 81303,
+      "task": "mqar"
+    }
+  ],
+  "claim_rule": "A metric-specific improvement requires quality floors, adjusted lower CI > 0 and minimum mean effect; no general superiority, multimodal, energy, or scaling claim follows",
+  "conditional_memory_exactness": "The rank-one M update exactly integrates fixed key, value, leak and write rates during each tick, for arbitrary finite key norm including zero. Boundary-dependent rates are held at the post-flow value for that tick. The coupled flow-memory system is not an exact analytic solution.",
+  "cpu_definition": "Sum of process_time for training updates including batching, backward, clipping, optimizer, activity accounting and prior-state snapshot; excludes evaluation and file I/O. CPU checkpoints use the last completed update at or below the stated budget.",
+  "dtype": "float32",
+  "environment": {
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "torch": "2.8.0+cpu"
+  },
+  "frozen_flow": "Diagnostic only: analytic controller parameters frozen while v/q/z still evolve; content and rate head train; trainable parameter count differs",
+  "gradient_clip_norm": 1.0,
+  "initialization": "All learned tensors are identical at a shared seed across arms. Initial margin x_star is shared, but the operator-derived recovery equilibrium z_star=g_recovery*Put(x_star) differs by operator; raw initial states are not all identical.",
+  "intervals": "Paired seed mean difference with Bonferroni-adjusted two-sided Student t interval, df=2, per metric/family; normality is untestable at n=3 and intervals are exploratory",
+  "learning_rates": [
+    0.001,
+    0.003
+  ],
+  "metrics": [
+    "accuracy",
+    "cross_entropy",
+    "sequence_accuracy"
+  ],
+  "minimum_mean_effect": {
+    "accuracy": 0.005,
+    "cross_entropy": 0.01
+  },
+  "model_config": {
+    "heads": 1,
+    "initial_leak": 0.001953125,
+    "initial_write": 1.0,
+    "key_dim": 16,
+    "max_step": 0.0625,
+    "value_dim": 8
+  },
+  "multiplicity_scope": "Accuracy and CE are separately declared metric families. No across-metric familywise error control or advantage claim by choosing whichever metric wins.",
+  "new_execution": true,
+  "old_weights_or_raw_data_loaded": false,
+  "optimizer": "Adam",
+  "oracle": "Causal deterministic queue/dictionary contract check only; never a learned model result",
+  "ordinary": "Same parameter and state counts, sigmoid state evolution, independent state-feature rate gates; changes the overall controller rather than isolating the Call/Put shape",
+  "post_training_solver_sensitivity": "For every selected checkpoint, compare test logits, CE and accuracy at registered h and h/2 on the first 64 test episodes. Report both without checkpoint reselection, retraining or replacing primary scores; this is a numerical diagnostic, not extra inferential evidence.",
+  "primary_family": {
+    "comparator": "matched_c1",
+    "comparisons_per_metric": 4,
+    "metrics": [
+      "accuracy",
+      "cross_entropy"
+    ]
+  },
+  "purpose": "Test analytic boundary constraints conditional on shared explicit associative memory and causal task priors",
+  "quality_floor": {
+    "analytic_test_accuracy_every_seed": 0.9,
+    "validation_accuracy_every_seed": 0.9
+  },
+  "secondary_family": {
+    "comparators": [
+      "sigmoid",
+      "ordinary"
+    ],
+    "comparisons_per_metric": 8,
+    "metrics": [
+      "accuracy",
+      "cross_entropy"
+    ]
+  },
+  "seeds": [
+    81301,
+    81302,
+    81303
+  ],
+  "selection": "Lowest validation CE among both learning rates and the two eligible checkpoints, separately for each task/arm/seed/budget; ties by checkpoint name then candidate id",
+  "selection_checkpoints": {
+    "cpu30": [
+      "cpu15",
+      "cpu30"
+    ],
+    "updates384": [
+      "update192",
+      "update384"
+    ]
+  },
+  "sigmoid_redundancy": "a+p=1 makes q feedback depend on g_call-g_put; identical tensor count does not imply identical functional degrees of freedom",
+  "source_sha256": {
+    "audit.py": "9fb7acbc25b489bfeb571e6edd2a9861836a086de5b76f26ebda1590c35c90d9",
+    "data.py": "13ad1d59884821ec76e071a0481911de5d675135abde3e41dc84e07fd5e57772",
+    "flow.py": "bfbfcbc290d8677cf3872418446981d9d7f67ce6656255b31cc5a75f577fa95e",
+    "memory.py": "75b0f6b348b8704116a6e496704a945525a701e119c169f436c7b4c7fabc082a",
+    "models.py": "54e1686a51ae668d5e541cf6e7e8f5fa139c5075cd6894a93fe1f823ab64bc77",
+    "numerics.py": "a1c24cbe295ffc0ab68d44ad314e7e67e113d478cb652cc4ad5a99ac8dd6ce86",
+    "study.py": "12663dc80fb38b18b595812a64f191e70796994ea734d8bfc61c9ec16156ba17",
+    "tests/test_data.py": "dc2b9647145712c36c10a905362b6a3a04a0b3664578888e393a4f9656a2b57f",
+    "tests/test_flow.py": "2f9559ad06746d2366702776d34b60f2b9781c137b3ad5cf56c612a45892b2cf",
+    "tests/test_memory.py": "2286e781169204998b450ae2ba4b4c7da86040ecaa152df75449d4ae54fced68",
+    "tests/test_numerics.py": "d88be39828ce931a4acd8545879948e5446b270ff3f0df6ac091e7cd36013def"
+  },
+  "split_counts": {
+    "test": 512,
+    "train": 1024,
+    "validation": 256
+  },
+  "split_seeds": {
+    "mqar": {
+      "test": 174203,
+      "train": 174201,
+      "validation": 174202
+    },
+    "selective_copy": {
+      "test": 174103,
+      "train": 174101,
+      "validation": 174102
+    }
+  },
+  "study_version": "hepta-explicit-associative-stable-flow-20261029-v1",
+  "task_contract": {
+    "config": {
+      "bindings": 6,
+      "key_vocab": 16,
+      "length": 32,
+      "overwrites": 2,
+      "selected": 4,
+      "value_vocab": 8
+    },
+    "copy_prior": "causal counters driven by observed selection, cue and query roles",
+    "dt": "one time unit per distinct token, not duplicate-token resampling",
+    "input_fields": [
+      "role_onehot",
+      "key_onehot",
+      "value_onehot",
+      "selection"
+    ],
+    "labels_are_model_inputs": false,
+    "mqar_prior": "causal pending-key binder; values cannot enter the query projection",
+    "query_visible_values": false,
+    "readout": "current M times current projected query; no final-memory replay",
+    "version": "hepta-causal-matrix-tasks-20261029-v1"
+  },
+  "test_access": "Only after all 60 candidates finish and validation selection is sealed",
+  "torch_threads": 1,
+  "training_endpoints": {
+    "cpu_seconds": 30,
+    "updates": 384
+  }
+}

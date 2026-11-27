@@ -1,0 +1,164 @@
+{
+  "parent_source": "5daade9e4ce374ac169702d6b59490149ccefd34",
+  "checker_unchanged": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "native_delta_sha256": "8b5a0b6ec799ee49698c75d620bc80fe4c73c2729007375ee055cee5f8e7dc93",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "field": "required_order",
+      "old": "let initial_handoff = options.remove",
+      "new": "let initial_handoff =\n            options.remove",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "field": "required_function_order",
+      "old": "self.0.store(",
+      "new": "self.0\n            .store(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs",
+      "field": "definition_markers",
+      "old": "ATTEMPTS.fetch_update",
+      "new": "ATTEMPTS\n            .fetch_update",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs",
+      "field": "required",
+      "old": "ATTEMPTS.fetch_update",
+      "new": "ATTEMPTS\n            .fetch_update",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs",
+      "field": "required_function_order",
+      "old": "ATTEMPTS.fetch_update",
+      "new": "ATTEMPTS\n            .fetch_update",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs",
+      "field": "required_function_order",
+      "old": "trigger.material_digest.parse",
+      "new": "trigger\n            .material_digest\n            .parse",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "field": "definition_markers",
+      "old": "INITIAL_ATTEMPTS.fetch_update(",
+      "new": "INITIAL_ATTEMPTS\n            .fetch_update(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "field": "required",
+      "old": "INITIAL_ATTEMPTS.fetch_update(",
+      "new": "INITIAL_ATTEMPTS\n            .fetch_update(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "field": "required_function_order",
+      "old": "INITIAL_ATTEMPTS.fetch_update(",
+      "new": "INITIAL_ATTEMPTS\n            .fetch_update(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "field": "required_function_order",
+      "old": "self.files.require_original_initial_files().map_err(initial_registration_uncertain)?",
+      "new": "self.files\n            .require_original_initial_files()\n            .map_err(initial_registration_uncertain)?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "field": "required_function_order",
+      "old": "trigger_file.require_metadata_unchanged().map_err(initial_registration_uncertain)?",
+      "new": "trigger_file\n            .require_metadata_unchanged()\n            .map_err(initial_registration_uncertain)?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "field": "required_function_order",
+      "old": "file.require_original_file().map_err(initial_registration_uncertain)?",
+      "new": "file.require_original_file()\n                .map_err(initial_registration_uncertain)?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs",
+      "field": "required",
+      "old": "issuer_keys: data.issuer_keys.iter()",
+      "new": "issuer_keys: data\n                .issuer_keys\n                .iter()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs",
+      "field": "required_function_order",
+      "old": "reader.locate_selected_original_files(",
+      "new": "reader\n            .locate_selected_original_files(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs",
+      "field": "required_function_order",
+      "old": "reader.locate_selected_original_files(",
+      "new": "reader\n            .locate_selected_original_files(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+      ]
+    }
+  ],
+  "additional_constraints": [
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "reason": "Require both distinct actual worker joins and both original registration error propagation paths after stop, preserving all prior sequences.",
+      "added_sequence": [
+        "drop(stop)",
+        "let registered = match worker",
+        "worker\n                        .join()",
+        "let initial_registered = match initial_worker",
+        "worker.join()",
+        "served?",
+        "if let Some(registered) = initial_registered",
+        "registered?",
+        "if let Some(registered) = registered",
+        "registered?"
+      ]
+    }
+  ],
+  "source_qualified": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0
+}

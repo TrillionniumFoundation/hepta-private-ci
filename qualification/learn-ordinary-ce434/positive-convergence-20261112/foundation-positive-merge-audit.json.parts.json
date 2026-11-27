@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.ordered-artifact-parts.v1",
+  "archive_name": "foundation-positive-merge-audit.json",
+  "archive_bytes": 796708,
+  "archive_sha256": "c88c2a376b0e9d29e04c3cd7039807dbfe70bbd4c5d4cfb4744874ae953e587b",
+  "original_repository_path": "qualification/learn-ordinary-ce434/positive-convergence-20261112/foundation-positive-merge-audit.json",
+  "original_git_commit": "f387d7027039e3fc055fe7c201421f5364e1ab9d",
+  "original_git_blob": "b8e7a9986dc23962268bcff651a40bf2747640aa",
+  "max_part_bytes": 500000,
+  "ordered_parts": [
+    {
+      "path": "foundation-positive-merge-audit.json.part000",
+      "offset": 0,
+      "bytes": 500000,
+      "sha256": "5df23cd807954be408e212b313fa7a5603d16d283b66bde462c260e42d169acd"
+    },
+    {
+      "path": "foundation-positive-merge-audit.json.part001",
+      "offset": 500000,
+      "bytes": 296708,
+      "sha256": "bb3ffdf8d1d53ef943d938c1d30fe604abf2a14eba160ccdbf6c4e7da00a9fca"
+    }
+  ],
+  "restoration": {
+    "working_directory": "qualification/learn-ordinary-ce434/positive-convergence-20261112",
+    "command": "( set -C; cat foundation-positive-merge-audit.json.part000 foundation-positive-merge-audit.json.part001 > foundation-positive-merge-audit.json )",
+    "verification_command": "printf '%s  %s\\n' c88c2a376b0e9d29e04c3cd7039807dbfe70bbd4c5d4cfb4744874ae953e587b foundation-positive-merge-audit.json | sha256sum -c -",
+    "no_overwrite": true,
+    "instructions": "../../learn-evidence-storage-20261115/README.md"
+  },
+  "storage_only": true,
+  "original_bytes_unchanged": true
+}

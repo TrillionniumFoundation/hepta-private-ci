@@ -1,0 +1,171 @@
+{
+  "schema": "hepta.mem8.source-v5-formatted-pure-publication.v1",
+  "source_run": 43015979473,
+  "source_job": 130507034042,
+  "formatted_postimage_publication": "474f9445af136b26e368dee63a72f58f51192138",
+  "tree_request": {
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "base_tree_sha": "e9ba2746237562d68b1c732bee0f86df9e352cde",
+    "tree_elements": [
+      {
+        "path": "codex-rs/app-server-client/BUILD.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "78210a80b760113e7d0525fa1cdbf9e5775cd917"
+      },
+      {
+        "path": "codex-rs/app-server/BUILD.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6a1950908002a2268d018e414ffe8a39f9d00d42"
+      },
+      {
+        "path": "codex-rs/app-server/tests/suite/v2/model_list.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d038c5cc71d2942c939aafeb24172ecafe353938"
+      },
+      {
+        "path": "codex-rs/app-server/tests/suite/v2/remote_control.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1bb5be0f9b89c7e1ec91fe7edd2280155a8226a8"
+      },
+      {
+        "path": "codex-rs/core-plugins/src/remote/catalog_cache.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8fa880dfb37a033c70829073b807004e2513e57a"
+      },
+      {
+        "path": "codex-rs/exec-server/src/fs_helper.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "94ee86eb1143aafb0402fb6f190c19e64d06662e"
+      },
+      {
+        "path": "codex-rs/exec-server/src/windows_restricted_write_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9671a5f0256cb8d76f99bc0b0067fbf46cb6978c"
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/BUILD.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7b8f89b4016aead20b0aa1a99b7f61fbbe211a36"
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4279e4bc2ced0072bb818101671099a5b6d245ba"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/BUILD.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "aca8f28b63f7a89f1a64548124b8750c2ad4adb9"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d0ac20f92f199b829ac8f23348942796724797ec"
+      },
+      {
+        "path": "codex-rs/hepta-codex-adapter/BUILD.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b1c1e3686283bfebcb030cf6ce9062231c3c0680"
+      },
+      {
+        "path": "codex-rs/hepta-cognitive-store/BUILD.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c44e010f80ec4ae9efe44d43b53c1857527d3fa6"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2e206a84941f699d1faf98518a6f31c675115cb0"
+      },
+      {
+        "path": "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6ea3073ba4798fa5c1b7dff75d72ef917c4f5235"
+      },
+      {
+        "path": "codex-rs/hepta-memory/BUILD.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0d0e4f6ec93557eba4a8d52e0ecd5182e9f73c4c"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_lease_clock_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "84875417558a06e4ca9b57cbc5a3dbc8d4b0754e"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/lib.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7ebaa81ffcff4b5f7dbbb706670da2b7d3a0d7d2"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_generation_control.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "82f369cb796d8a10308865e698cfdf29b0df50a2"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e57087c4f55163a050675ba785d30562926ab377"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "96fff2ef3f52a93540b530d7b24018a696466a6b"
+      }
+    ]
+  },
+  "tree_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "c77785ecb368c44ea699769001a47402c9f50591"
+    },
+    "isError": false
+  },
+  "commit_request": {
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "parent_sha": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+    "tree_sha": "c77785ecb368c44ea699769001a47402c9f50591",
+    "message": "Apply reviewed source-gate formatting to MEM8 V5 candidate\n\nRecord the exact formatter output from source-only run 43015979473.\nNo native, dependency-lock, owner, or memory-benefit qualification is claimed."
+  },
+  "commit_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "9bd2f589debdba4a93baa363817c3669cb103721"
+    },
+    "isError": false
+  },
+  "all_21_postimages_full_git_content_readbacks_equal_original_artifact": true,
+  "source_pr_ref_updated": false,
+  "qualification": "source gates only; native and new Bazel graph pending"
+}

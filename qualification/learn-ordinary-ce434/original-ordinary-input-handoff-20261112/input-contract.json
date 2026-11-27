@@ -1,0 +1,736 @@
+{
+  "schema": "hepta.original-ordinary-learning-input-handoff.v1",
+  "document_kind": "审查用输入交接合同；不是运行配置、授权材料或 provision 操作",
+  "source_base": {
+    "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+    "tree": "360375952ff4fa51e817f2c773e5a5bc2a842a27"
+  },
+  "evidence_basis": [
+    {
+      "commit": "29e6dd78880228931c6cc780f3ecaa0ba5f6b532",
+      "path": "qualification/learn-ordinary-ce434/original-evaluator-capability-20261112/source-and-startup-audit.json",
+      "blob": "2ffb7773e280c94871ae3d1136188fcc142e4f6f"
+    },
+    {
+      "commit": "7bb48279f35021f8ec769d9dc4ce63741f2b36b1",
+      "path": "qualification/learn-ordinary-ce434/original-evaluator-capability-20261112/upstream-caller-and-pr5509-audit.json",
+      "blob": "20a648b84a402324f47fef39606cbf4c4430186a"
+    },
+    {
+      "blob": "1cfe0b67e74048de00ef2d1d678dc11946deeea8",
+      "kind": "488/048 paired 源字段可达性只读审查；未确证共享 NDU/时间字段必阻第二臂"
+    }
+  ],
+  "status": {
+    "ordinary_acceptance": {
+      "task_A": 0,
+      "actual_training_or_no_update": 0,
+      "independent_B_and_retention": 0,
+      "positive_adoption": 0,
+      "fresh_session_task_C": 0,
+      "cold_daemon_and_Root_restart": 0
+    },
+    "meaning": "这些计数仅指本次同一固定候选的普通入口验收，不抹除旧真实训练或机制测试。",
+    "host_lookup_this_document": false,
+    "new_source_or_permission_changes": false,
+    "remaining_source_gate": "固定488的 Candidate Selection/NextUse require_stage 仍明确拒绝。交付原材料不自动打开该门；最终统一源码候选仍需完成受保护的真实路由与资格验证。",
+    "source_gate_ref": "positive_gate"
+  },
+  "claim_scope": {
+    "verified_code_scope": "488 的926个 Agentd Rust；全部187个workspace member Cargo.toml；明确catalog内856个相关实现/脚本/文档和96个部署名称匹配配置/历史文件。不是全workspace所有Rust或所有主机。",
+    "not_located": "在上述固定范围尚未定位把原T/E/Model/S/Version/Observer custody交付到普通启动入口的生产launcher调用链，也未取得候选预采用B执行能力的现存原部署入口。",
+    "not_asserted": "不据源码零调用断言仓库外launcher或整台主机上不存在相应实例。现存部署是否提供这些输入，须沿用户给出的真实locator核对。",
+    "historical_exclusion": "PR5509原INPUTS的production_materials为null；真实训练/NoUpdate与Root传输属于其明示研究/fixture范围。旧fixture私钥、目录、过期lease、metadata及已结束worker不填本合同的现存原部署输入。"
+  },
+  "minimal_user_locator_request": {
+    "prompt": "先提供一处已经存在的可信launcher源码/部署入口或配置路径，以及所在原部署/主机或固定源码revision。可只给locator，由后续只读核对继续追踪其已持有的owner能力。",
+    "allowed_information": [
+      "既有launcher或服务单元名称/配置路径/源码URL与revision",
+      "对应原主机或部署标识",
+      "既有owner实例与配置的映射位置",
+      "原评价profile、trust/注册/lease记录的非秘密标识和定位方式",
+      "原持久化状态与重启控制入口的定位方式"
+    ],
+    "do_not_supply_in_chat": [
+      "私钥、token、secret值",
+      "完整环境或无关argv",
+      "把签名DTO、fixture输出或路径文本当作已连接capability"
+    ],
+    "locator_fields": {
+      "existing_launcher_or_configuration": null,
+      "original_deployment_or_host": null,
+      "fixed_source_revision": null,
+      "owner_mapping_reference": null,
+      "pre_adoption_B_authority_reference": null,
+      "frozen_primary_and_retention_profile_reference": null,
+      "original_trust_and_independent_principals_reference": null,
+      "original_restart_and_recovery_reference": null
+    },
+    "null_semantics": "未提供/未定位，不代表不存在；此对象不可作为运行配置。"
+  },
+  "entrypoint_contract": {
+    "checkpoint_mode": {
+      "existing_chain": "原hepta-authority-host CLI → seal_learning_bootstrap/send_root_learning_handoff → AgentdProductionStartup::receive → AgentdRootLearningInputsV1",
+      "actually_delivered": [
+        "sealed bootstrap File",
+        "同原Root pidfd",
+        "原checkpoint连接/恢复数据与上下文"
+      ],
+      "missing_from_this_handoff": [
+        "实际stage owner对象",
+        "resident enrollment连接",
+        "原B推理/任务执行capability",
+        "原Version/C FinalUse能力"
+      ],
+      "required_existing_consumer": {
+        "api": "AgentdConfig::with_root_learning_stage_owners",
+        "inputs": [
+          "Arc<dyn LearningIterationStageOwnerPortsV1>",
+          "LearningEvidenceVerifierV1",
+          "capacity"
+        ]
+      },
+      "gate": "AgentdProductionLaunch::run 调用 require_root_learning_assembled；收到checkpoint但未装配实际owners时拒绝。",
+      "source_refs": [
+        "root_cli",
+        "checkpoint",
+        "startup",
+        "stage_config"
+      ]
+    },
+    "resident_mode": {
+      "existing_config": "AgentdConfig::with_root_resident_learning_enrollment(self) -> (AgentdConfig, AgentdRootResidentEnrollmentV3)",
+      "preconditions": [
+        "已安装实际Circuit task bootstrap和invocation",
+        "已有objective_profile_file和authbus_trust_file",
+        "没有root_learning_inputs、旧learning_iteration_bootstrap或既有resident delivery"
+      ],
+      "mutual_exclusion": "不得将checkpoint mode再叠加为resident mode；配置显式拒绝两者混用。",
+      "root_registration": {
+        "profile_api": "RootResidentLearningProfileV3::new(initial, scope, verifier, intent, lease)",
+        "profile_inputs": [
+          "实际A对应的LearningIterationSnapshotV1",
+          "FrozenLearningScopeV2",
+          "原LearningEvidenceVerifierV1",
+          "原issuer已批准SignedFinalUseGrant intent",
+          "已注册exact-purpose AuthorityLease"
+        ],
+        "registration_api": "register_host_resident_learning_v3(config_file: &Path, profile)",
+        "runtime_api": "RootResidentLearningRegistrationV3::into_candidate_runtime(stages, verifier, capacity)"
+      },
+      "consumer_api": "AgentdRootResidentLearningClientV3::from_original_root_stream(stream, root, held_root_pidfd, profile, verifier, timeout, lifetime) → enrollment.enroll_original_root(root_client)",
+      "root_client_inputs": [
+        "UnixStream（原Root已连接stream）",
+        "AgentdRootAuthorityPeer（原PID/boot_id/process_start_ticks）",
+        "OwnedFd（held原Root pidfd）",
+        "RootResidentLearningProfileV3",
+        "LearningEvidenceVerifierV1",
+        "原timeout/lifetime"
+      ],
+      "runtime_join": "run_original_resident_delivery 消费实际普通A的AutomationStore/Source/outbox事实；profile或工厂存在不构成已装配。",
+      "source_refs": [
+        "resident_config",
+        "resident_registration",
+        "resident_profile",
+        "resident_runtime",
+        "resident_transport",
+        "resident_enroll"
+      ]
+    },
+    "issuer_fact": {
+      "exists": true,
+      "owner": "DeploymentFinalUseIssuer",
+      "purpose_admission": "runtime.learning.resident-admission.v3",
+      "purpose_readback": "runtime.learning.resident-readback.v3",
+      "meaning": "原issuer实现存在，按原policy、pinned lease、epoch、durable sequence和窗口签发；hold_original_resident_intent_v3只核验已有intent。定位该原owner及其已授权记录，不创建issuer/key/新grant/policy。",
+      "source_refs": [
+        "issuer",
+        "resident_intent",
+        "resident_profile"
+      ]
+    }
+  },
+  "owned_stream_contract": {
+    "consumer_factory": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams(material, streams, protocol, baseline)",
+    "initial_parameters": {
+      "material": "OriginalCellQ24MaterialReceiptConfigV1（原initial、FrozenLearningScope、dataset rule、原freeze_plan/evidence、experience/dataset signer公共身份、verifier和签名上限）",
+      "streams": "OriginalCellQ24CandidateStageStreamsV1",
+      "protocol": "原预注册 OriginalCellEvaluationPanelRegistrationV1",
+      "baseline": "Arc<LoadedCellQ24ModelV1>，完整components等于原selected_bundle"
+    },
+    "common_fields": [
+      "experience",
+      "dataset",
+      "trainer",
+      "selector",
+      "version",
+      "next_use",
+      "completion"
+    ],
+    "candidate_additional_fields": [
+      "candidate_material",
+      "evaluator",
+      "model"
+    ],
+    "peer_stream_fields": [
+      "UnixStream stream",
+      "LearningIterationEvidencePeerV1 peer",
+      "OwnedFd original_owner_pidfd",
+      "Duration timeout",
+      "Duration lifetime"
+    ],
+    "task_stream_fields": [
+      "UnixStream stream",
+      "AgentdRootAuthorityPeer peer",
+      "u32 uid（来自原peer身份）",
+      "OwnedFd original_task_pidfd",
+      "Duration timeout",
+      "Duration lifetime"
+    ],
+    "delivery_rule": "10个结构体字段是初始交付的原已连接端点；不是10个可自行创建/重连的地址。各purpose由既有协议在同peer、pidfd和原绝对期限内绑定；没有future T/B/S/C receipt字段。",
+    "lifetime_bounds_from_existing_code": {
+      "ordinary_role_timeout_max_seconds": 30,
+      "completion_timeout_max_milliseconds": 500,
+      "initial_lifetime_max_seconds": 300,
+      "minimum_end_of_all_original_channels": true
+    },
+    "ownership": "原host按现有owner类型保管私有文件、witness和签名key；consumer取得现有类型允许移交的能力。不得建立新的全角色私钥容器，或从checkpoint/DTO/OS root派生角色。",
+    "source_refs": [
+      "common_streams",
+      "candidate_streams",
+      "candidate_bind",
+      "material"
+    ]
+  },
+  "required_original_deliveries": [
+    {
+      "id": "A_task",
+      "phase": "普通A",
+      "original_supplier": "原ordinary task/version host及可信launcher",
+      "existing_api": "AgentdConfig::with_q24_circuit_task_profile(CircuitQ24TaskProfileV1)",
+      "inputs": [
+        "实际已发布基线PublishedCircuitFeatureTaskV1",
+        "原Source journal File+witness",
+        "原Cell journal File+witness",
+        "DurableInferenceControl",
+        "TaskFlowFence",
+        "BoundedCircuitDefinitionV2及原routes",
+        "完整CellCompatibilityBundleV1与实际LoadedCellQ24ModelV1",
+        "原worker_generation、记录/队列上限及实际Circuit/Cell clock"
+      ],
+      "actual_evidence": "原鉴权RunStart进入普通driver，A完成后读原Source publication、Cell决策/私有checkpoint和Automation trace/outbox。",
+      "availability": "待原部署定位与交付；不能由模型材料或bare worker替代published task。",
+      "source_refs": [
+        "task_profile",
+        "task_config"
+      ]
+    },
+    {
+      "id": "experience_dataset_training",
+      "phase": "经验→Dataset→真实Training/NoUpdate",
+      "original_supplier": "原Experience/Dataset/Trainer hosts",
+      "existing_api": "OriginalCellQ24TrainingBootstrapOwnerV1::from_original_custody(custody, config, dataset, cancellation)",
+      "inputs": [
+        "原Experience/Dataset command与readonly evidence/material source连接",
+        "原native training File+witness",
+        "原Generator receipt File+witness与owner已持签名key",
+        "实际baseline model",
+        "已冻结CellQ24DatasetRuleV1、CellQ24SgdRuleV1、freeze_plan/evidence、scope/verifier",
+        "实际opaque Dataset command readback；不是未来Dataset DTO"
+      ],
+      "actual_evidence": "同原source真实首尾读，实际Trainer生成candidate或明确NoUpdate，原journal和签名读回。",
+      "availability": "待原host/连接/原材料定位；签名key只由原owner本地消费，不通过聊天交付。",
+      "source_refs": [
+        "material",
+        "training"
+      ]
+    },
+    {
+      "id": "B_execution",
+      "phase": "采用前独立B与旧能力保留任务",
+      "original_supplier": "已有独立任务执行权限的原B/retention task host",
+      "existing_api_status": "本次未定位能在采用前执行确切candidate的现存E-only原部署capability；不能虚构一个API把candidate数据升级为执行权。",
+      "inputs": [
+        "真实独立于A的B ledger和Source/Cell/Inference owners",
+        "原权限明确覆盖候选和父模型的采用前执行，且绑定实际模型、任务、输入、scope与窗口",
+        "预注册primary及非空retention任务、每臂真实admission/不同run身份及原观察者终态Outcome"
+      ],
+      "actual_evidence": "OriginalCircuitEvaluationSourceOwnersV1 { ledger: LedgerWriter, sources: Vec<OriginalCircuitEvaluationSourceV1> }只能读已完成原事实；Source字段是source readback+identity+run_id。",
+      "availability": "未定位，待原owner提供现存权限与producer入口；不等同于主机上不存在。",
+      "not_authorized_by": [
+        "T candidate/model材料",
+        "E Product signer",
+        "LEARN",
+        "后继C FinalUse",
+        "裸worker或DENY_ALL材料"
+      ],
+      "source_refs": [
+        "evaluation_sources",
+        "evaluation_members",
+        "task_profile"
+      ]
+    },
+    {
+      "id": "E_panel",
+      "phase": "独立评价",
+      "original_supplier": "原Evaluator/holdout/qualification/execution owners和原独立Observer",
+      "existing_api": "原Panel Member owners → OriginalCellEvaluationPanelRegistrationV1 → into_host_from_original_training_readback",
+      "inputs": [
+        "primary及非空retention的原plan_id/task_digest/cohort_rule_digest，形成与Training initial一致的evaluation_profile",
+        "各成员真实candidate/fixed_expert CellGenerationJournalV2",
+        "原CellEvaluationRunnerV1、LockedFileFinalHoldoutCasStoreV1、candidate/baseline plans",
+        "原qualification owner、execution store+witness、实际cohort Source/ledger读能力",
+        "同原T readonly connection与actual opaque Dataset/Training结果"
+      ],
+      "actual_evidence": "全部primary/retention逐次真实读、原签名、原独立终态Outcome、完整freeze和时间窗口。",
+      "availability": "冻结profile的真实可达性、真实数据及有效独立principals均待原owner提供；工厂存在不证明可产生Eligible。",
+      "source_refs": [
+        "evaluation_host",
+        "evaluation_panel",
+        "evaluation_members",
+        "evaluation_sources",
+        "evaluation_separation",
+        "observer_separation"
+      ]
+    },
+    {
+      "id": "Model_S_Version",
+      "phase": "原Proposal/Selection/版本采用",
+      "original_supplier": "原Model/Proposal、Selector、Artifact/CURRENT和Version hosts",
+      "existing_api": [
+        "OriginalCircuitModelSelectionReceiptOwnerV1::into_command_owner(self, context, model_client, live_read_client)",
+        "OriginalCircuitModelVersionHostV1::from_original_owners(predecessors, model, inputs, task, checkpoint, issuer, lifetime)"
+      ],
+      "inputs": [
+        "原Model owner/journal与actualT/E连接和完整已评价candidate",
+        "原Selector receipt journal/witness/key与同原Model/live CURRENT读能力",
+        "原Artifact owner已提交selection及operation/intent checkpoint、原selection verifier",
+        "原CURRENT owner、GenerationUpdate authorities/predecessor/target原文件与witness",
+        "实际A完成PublishedCircuitFeatureCompletionV1与原A Source读回",
+        "原AgentdUnixFinalUseGrantProvider连接及实际C task inputs"
+      ],
+      "actual_evidence": "原S/Artifact/Version各自提交并读回其决定；只能由真正publish产出sealed PublishedCircuitFeatureTaskV1。",
+      "availability": "待原owners及已授权Artifact/FinalUse来源定位；S签名或LEARN不授予C。",
+      "source_refs": [
+        "selector",
+        "version",
+        "publication",
+        "task_c"
+      ]
+    },
+    {
+      "id": "C_task_observer",
+      "phase": "不同输入、全新会话C",
+      "original_supplier": "原C task/session launcher、Version owner及独立NextUse/Observer",
+      "existing_api": "OriginalCircuitModelTaskInputsV1在actual publication后调用既有with_q24_circuit_task_profile；原completion/readiness与next_use连接读回",
+      "inputs": [
+        "原新会话AgentdConfig与identity（实际新spawn/session，而非同对象重标）",
+        "本次验收中实际不同于A的、已授权原C任务内容或模型observation字节；原source scope与独立真实鉴权RunStart另行保留。",
+        "selected真实model及完整bundle",
+        "原C Source/Cell journals+witness、DurableInferenceControl、fence/circuit/routes/clock",
+        "原A Source及identity用于actual completed-A和新会话检查",
+        "原T/S/Version读能力与actual C completion/readiness"
+      ],
+      "actual_evidence": "C实际执行选定版本。分别记录A/C真实任务内容或模型observation字节的独立digest、编码/域及原记录定位，并以实际内容/字节比较确认变化；不以混入run/session/时间字段后的整体摘要不同代替输入变化。新session、新进程身份与独立RunStart分别证明；原Source publication、实际Cell/模型输出、CURRENT/私有状态/NextUse签名保持同一绑定。",
+      "availability": "待原部署交付；C FinalUse独立于B采用前推理权限。",
+      "source_refs": [
+        "task_c",
+        "task_profile",
+        "common_streams",
+        "version"
+      ],
+      "acceptance_only": "不同内容是本次A→C验收的证据要求，不给正常生产C新增永久拒绝重复输入的规则。"
+    },
+    {
+      "id": "cold_restart",
+      "phase": "真daemon与Root冷重启后核验",
+      "original_supplier": "现存原服务的生命周期owner与各持久化owner",
+      "existing_api": [
+        "原服务实际stop/start入口（locator待提供，本合同不执行）",
+        "recover_resident_learning_v3(profile, readback_authorization)",
+        "recover_original_root_stream(..., expected, timeout, lifetime)",
+        "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams(...)",
+        "OriginalCellQ24TrainingBootstrapOwnerV1::recover_original_custody(...)",
+        "OriginalCircuitModelVersionHostV1::recover_from_original_owners(...)",
+        "CircuitQ24TaskOpenModeV1::Recover"
+      ],
+      "inputs": [
+        "原Root registry/checkpoint、Artifact/CURRENT及完整private journals/witness持久化位置与原owner恢复权限",
+        "原部署实际重新启动的新进程身份/held pidfds/已授权恢复连接",
+        "原签名与profile、exact-purpose readback authorization、已保留完整expected snapshot/evidence（仅比较pin）",
+        "原单调时钟域/epoch、版本选择和不确定效果记录"
+      ],
+      "actual_evidence": "分别记录daemon与Root原进程实际终止、实际新进程的PID/start_ticks/boot_id身份与held pidfd；同一OS未重启时boot_id可保持相同，须证明进程实例确实更换。由原owner实际读取磁盘CURRENT、registry/checkpoint及private journals/witness，核对selected版本、私有状态与Pending/Uncertain；不把fixture reopen、同Arc、同进程内owner重新构造或仅worker重建记作daemon/Root冷重启。",
+      "availability": "服务locator和真实cold-restart证据待原部署提供。进程reopen函数/新worker/同进程fixture不等于此验收。",
+      "recovery_rule": "恢复通道保持原readback语义，不从旧pidfd、过期lease、重置deadline/nonce或JSON重建新work；独立请求各自实际I/O，不确定效果不得当作未发生而重放。",
+      "source_refs": [
+        "resident_runtime",
+        "resident_transport",
+        "candidate_streams",
+        "training",
+        "version",
+        "task_profile"
+      ]
+    }
+  ],
+  "frozen_evaluation_and_principals": {
+    "profile_status": "pending_original_owner_supply_and_actual_reachability",
+    "required": "训练前固定exact primary+nonempty retention registration/cohort/plan/profile、真实任务/输入/候选集合、观察窗口、holdout消费与原独立Outcome；positive实例必须由原规则真实给出Qualified/Eligible，另保留正确NoUpdate或回退实例。",
+    "shared_ope_limit": "旧Shared deterministic/OPE组合不能因签名或数据形状合法就被声称可产生positive superiority；本合同不降低旧阈值、不加epsilon、不把旧research统计变成独立B。",
+    "paired_status": "并列paired producer/stats由各自固定源码另行整合；真实原B执行能力、可运行冻结profile、足够且实际独立的输入/结果尚待原owner证明。本合同不把paired数据适配当执行capability。",
+    "principal_status": "pending_current_original_trust_and_independent_principals",
+    "identity_requirements": [
+      "原Activated trust/verifier的scope/objective/epoch/current签名窗口与实际owner映射",
+      "Evaluation相对Training的verify_signed_actor_separation",
+      "positive Selection相对Training和Evaluation的separation",
+      "positive NextUse相对Training、Evaluation、Selection的separation",
+      "原Outcome Observer相对Training generator与Decision generator的principal/controller/credential-chain/signing-key独立检查"
+    ],
+    "clarification": "上述由原验证器和原完整evidence核验；只提供不同角色名称、换显示ID或使用同一测试key不满足。Core RunStart model_tuple与Q24 weight/bundle摘要仍按各自原语义域核对。",
+    "source_refs": [
+      "evaluation_panel",
+      "evaluation_separation",
+      "observer_separation",
+      "stage_separation"
+    ]
+  },
+  "handoff_acceptance": {
+    "first_reviewable_input": "一处真实既有launcher/config locator足以开始定位；不要求用户在聊天中重建所有类型或上传私密owner内容。",
+    "ready_for_ordinary_attempt_only_when": [
+      "原producer实际调用了选定模式的配置/注册/enrollment入口，并在统一固定源码上可追踪",
+      "所列原owned connections和每个owner custody已真实定位、生命周期和权限绑定有效",
+      "B预采用执行能力、冻结profile可达性与独立principals已由原owner证明",
+      "最终源码仍有的positive route/qualification门已由真实实现及验证满足，未凭此文档撤门"
+    ],
+    "required_outcomes": [
+      "至少1个真实正向采用实例",
+      "至少1个正确NoUpdate或回退实例",
+      "不同输入全新会话C实际消费选定版本",
+      "真daemon/Root冷重启后实际版本/私有状态/不确定效果读回"
+    ],
+    "evidence_requirements": {
+      "A_C_content_change": {
+        "scope": "本次验收证据，不是新生产准入规则",
+        "record": "A与C的实际任务内容或模型observation原字节，及其独立digest、域/编码、真实原记录定位",
+        "comparison": "相同内容域/编码下实际内容或字节必须有变化；仅run_id、session、时间、lease或外层整体摘要变化不成立",
+        "separate_identity_proof": "C的新session/进程身份与独立鉴权RunStart另行成立",
+        "normal_production": "不永久禁止正常C重复输入"
+      },
+      "cold_restart": {
+        "processes": [
+          "daemon",
+          "Root"
+        ],
+        "record": "两者旧进程终止与新PID/start_ticks/boot_id/held pidfd的真实身份，原生命周期记录",
+        "boot_semantics": "不要求未重启OS时boot_id改变；要求真实进程实例更换，不能仅重标身份",
+        "durable_readback": "原owner实际磁盘CURRENT、registry/checkpoint、完整private journals/witness与Pending/Uncertain读回",
+        "excluded": [
+          "fixture reopen",
+          "同Arc",
+          "同进程owner重新构造",
+          "仅worker重建"
+        ]
+      }
+    }
+  },
+  "source_refs": {
+    "startup": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "symbols": [
+        "AgentdProductionStartup::receive",
+        "AgentdProductionLaunch::run"
+      ]
+    },
+    "checkpoint": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+      "blob": "c3372a8e6493b8a9f5acc09c2d73a03e452ac22c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+      "symbols": [
+        "send_root_learning_handoff",
+        "RootLearningHandoffV1::connect"
+      ]
+    },
+    "root_cli": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "blob": "a0cc9b78dada59dcb45983a2c1b0bb7444ea1cfa",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "symbols": [
+        "serve-session / serve-fresh-session checkpoint handoff"
+      ]
+    },
+    "stage_config": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "blob": "792703744b84ab6df841035f1e6652e3c7bd71ad",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "symbols": [
+        "AgentdConfig::with_root_learning_stage_owners",
+        "AgentdConfig::require_root_learning_assembled"
+      ]
+    },
+    "resident_config": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/config_resident_learning.rs",
+      "blob": "e4918f2febdc8f64773bb263905b4090b78ce79b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/config_resident_learning.rs",
+      "symbols": [
+        "AgentdConfig::with_root_resident_learning_enrollment"
+      ]
+    },
+    "resident_enroll": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+      "blob": "7c247c1f377e9889b3678fb6ae984ea188c5440a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+      "symbols": [
+        "AgentdRootResidentEnrollmentV3::enroll_original_root",
+        "run_original_resident_delivery"
+      ]
+    },
+    "resident_transport": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "blob": "40b744877e6e3a0e02dea0fdc9fffb8859eefdf7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "symbols": [
+        "AgentdRootResidentLearningClientV3::from_original_root_stream",
+        "recover_original_root_stream"
+      ]
+    },
+    "resident_profile": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+      "blob": "0cb2317f282814db87c0eb355f3aabb7c0ce6143",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+      "symbols": [
+        "RootResidentLearningProfileV3::new"
+      ]
+    },
+    "resident_registration": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+      "blob": "b98abbaf3dd53d92c4c094115c606680896f68eb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+      "symbols": [
+        "register_host_resident_learning_v3"
+      ]
+    },
+    "resident_runtime": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "blob": "3275b6d0de952fab371578336cba1e04215d1ee7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "symbols": [
+        "register_resident_learning_v3",
+        "recover_resident_learning_v3",
+        "into_candidate_runtime"
+      ]
+    },
+    "issuer": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "blob": "1134fa03dbbb4fd66105f34399d7d66058b37bd4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "symbols": [
+        "DeploymentFinalUseIssuer::issue"
+      ]
+    },
+    "resident_intent": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/deployment_learning_resident.rs",
+      "blob": "703245c0c27815e7395810ae065fdc17741923d4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/deployment_learning_resident.rs",
+      "symbols": [
+        "hold_original_resident_intent_v3"
+      ]
+    },
+    "task_config": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "symbols": [
+        "AgentdConfig::with_q24_circuit_task_profile"
+      ]
+    },
+    "task_profile": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "symbols": [
+        "CircuitQ24TaskProfileV1",
+        "CircuitQ24TaskFilesV1",
+        "circuit_q24_task_channel_v1",
+        "CircuitQ24TaskRuntimeV1::install"
+      ]
+    },
+    "common_streams": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "blob": "6a81d66c79e5c38ac0177a6949070dcde5769434",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "symbols": [
+        "OriginalCellQ24NoUpdateStageStreamsV1",
+        "OriginalCellQ24NoUpdatePeerStreamV1",
+        "OriginalCellQ24NoUpdateTaskStreamV1"
+      ]
+    },
+    "candidate_streams": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "blob": "d467d499a6d20e4e77a913889294d05c7159d91f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "symbols": [
+        "OriginalCellQ24CandidateStageStreamsV1",
+        "OriginalCellQ24CandidateStageOwnersV1::from_original_streams",
+        "recover_original_streams"
+      ]
+    },
+    "candidate_bind": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "blob": "46d4b587667f88e7de2580f7d3f605524543871a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "symbols": [
+        "bind"
+      ]
+    },
+    "material": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "blob": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "symbols": [
+        "OriginalCellQ24MaterialReceiptConfigV1"
+      ]
+    },
+    "training": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "blob": "35bf372850718a41f245c996ee91a71c184bed89",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "symbols": [
+        "OriginalCellQ24TrainingBootstrapCustodyV1",
+        "OriginalCellQ24TrainingBootstrapOwnerV1::from_original_custody",
+        "recover_original_custody"
+      ]
+    },
+    "evaluation_host": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "blob": "4b1783790a7bb5c419a4ab8602d35c82c4ed39f4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "symbols": [
+        "into_host_from_original_training_readback"
+      ]
+    },
+    "evaluation_panel": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+      "blob": "c0c67017117f71982a9d294b5b6d61e37844da6d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+      "symbols": [
+        "OriginalCellEvaluationPanelRegistrationV1::new"
+      ]
+    },
+    "evaluation_members": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "blob": "73a783b64f90955ee3f894eac3164a7507058832",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "symbols": [
+        "OriginalCellEvaluationPanelMemberOwnersV1"
+      ]
+    },
+    "evaluation_sources": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_contract.rs",
+      "blob": "afe96b905ff5aa02486a46288f456c2d2e352d2b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_contract.rs",
+      "symbols": [
+        "OriginalCircuitEvaluationSourceOwnersV1",
+        "OriginalCircuitEvaluationSourceV1"
+      ]
+    },
+    "evaluation_separation": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs",
+      "blob": "7604b226b7d830bc6dc638b616d0b7f5109405ca",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs",
+      "symbols": [
+        "verify_signed_actor_separation"
+      ]
+    },
+    "observer_separation": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+      "blob": "0e6fe664a9956863a4c233c359b9813b4cf07451",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+      "symbols": [
+        "Episode::read_episode"
+      ]
+    },
+    "selector": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_owner.rs",
+      "blob": "a6f0d9e29af7f87788991c3c17423d771172fe30",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/circuit_model_selection_receipt_owner.rs",
+      "symbols": [
+        "OriginalCircuitModelSelectionReceiptOwnerV1::into_command_owner"
+      ]
+    },
+    "version": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+      "blob": "7f3c72f17c6f50914881e14776e5018f47af1ff9",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+      "symbols": [
+        "OriginalCircuitModelVersionHostV1::from_original_owners",
+        "recover_from_original_owners"
+      ]
+    },
+    "publication": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+      "blob": "c2a5bb3404f3fb9f4e6b830bf39b3ef793390062",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+      "symbols": [
+        "OriginalCircuitModelPublicationInputsV1"
+      ]
+    },
+    "task_c": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+      "blob": "5570a22b6b55b1b3c99bbc49102797460ed6ee12",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+      "symbols": [
+        "OriginalCircuitModelTaskInputsV1",
+        "require_completed_a"
+      ]
+    },
+    "stage_separation": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "blob": "127ebac10af813a04e4844efdb9e7fa2d381fe71",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "symbols": [
+        "verify_signed_actor_separation"
+      ]
+    },
+    "positive_gate": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "blob": "e8400d75ebd2822e5477b38cf49e44ce38ad0733",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48844493c046fdd79734ddd2c1866314023a15cb/codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "symbols": [
+        "require_stage"
+      ]
+    }
+  }
+}

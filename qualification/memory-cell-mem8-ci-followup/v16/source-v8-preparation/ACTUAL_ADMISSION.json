@@ -1,0 +1,157 @@
+{
+  "schema": "hepta.mem8.v8.actual-source-only-admission.v1",
+  "observed_at": {
+    "current_time": "2026-11-11 15:12:57 UTC"
+  },
+  "source_commit": "1c063ba9e934f060181d4fc17d724361ba2a37fd",
+  "source_tree": "4e702e173439f422a7d00917d3c94064e42d45aa",
+  "harness_commit": "68a4b0cddbf11367e763eff7d55a57089d197704",
+  "harness_tree": "8d655fcdcd7aa88fe9fcbbafd57498184b1b522c",
+  "complete_harness_entries": 14057,
+  "full_input_readbacks": [
+    {
+      "path": ".github/scripts/mem8_source_gates_v8.py",
+      "sha": "0eeeabdb6c8604d0f6dcf4613f9586d2363c7fb1",
+      "encoding": "utf-8",
+      "full_bytes_equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-mem8-source-gates-v8.yml",
+      "sha": "92a1cce46d0540990ac9456c342c9e9057c583f1",
+      "encoding": "utf-8",
+      "full_bytes_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-source-gates-v8/GOLDEN_CALLER_RECEIPT.json",
+      "sha": "d783a943bb7278256bc86dc04dfe99d168c7e013",
+      "encoding": "utf-8",
+      "full_bytes_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-source-gates-v8/INPUT_SOURCE_GATES.json.xz",
+      "sha": "43d97b2f983e8b68b015ff030b8db51f0d2f6ddf",
+      "encoding": "base64",
+      "full_bytes_equal": true
+    }
+  ],
+  "pure_source_parent_verified": true,
+  "gate_seconds": 600,
+  "job_minutes": 20,
+  "exact_python_cases": 18,
+  "retired_names": 13,
+  "expected_rust_count": 6204,
+  "source_paths": 116,
+  "full_raw_controls": {
+    "metadata": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "content": "{\"sha\":\"68a4b0cddbf11367e763eff7d55a57089d197704\",\"node_id\":\"C_kwDOTrgxoNoAKDY4YTRiMGNkZGJmMTEzNjdlNzYzZWZmN2Q1NWE1NzA4OWQxOTc3MDQ\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/68a4b0cddbf11367e763eff7d55a57089d197704\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/68a4b0cddbf11367e763eff7d55a57089d197704\",\"author\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-11-11T15:12:25Z\"},\"committer\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-11-11T15:12:25Z\"},\"tree\":{\"sha\":\"8d655fcdcd7aa88fe9fcbbafd57498184b1b522c\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/8d655fcdcd7aa88fe9fcbbafd57498184b1b522c\"},\"message\":\"ci(mem8): bind V8 original source-only qualification without native or provider execution\",\"parents\":[{\"sha\":\"1c063ba9e934f060181d4fc17d724361ba2a37fd\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1c063ba9e934f060181d4fc17d724361ba2a37fd\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/1c063ba9e934f060181d4fc17d724361ba2a37fd\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+        "title": "68a4b0cddbf11367e763eff7d55a57089d197704",
+        "modified_date": null,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/68a4b0cddbf11367e763eff7d55a57089d197704",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/68a4b0cddbf11367e763eff7d55a57089d197704",
+        "display_title": "68a4b0cddbf11367e763eff7d55a57089d197704",
+        "structuredContent": {
+          "title": "68a4b0cddbf11367e763eff7d55a57089d197704",
+          "content": "{\"sha\":\"68a4b0cddbf11367e763eff7d55a57089d197704\",\"node_id\":\"C_kwDOTrgxoNoAKDY4YTRiMGNkZGJmMTEzNjdlNzYzZWZmN2Q1NWE1NzA4OWQxOTc3MDQ\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/68a4b0cddbf11367e763eff7d55a57089d197704\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/68a4b0cddbf11367e763eff7d55a57089d197704\",\"author\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-11-11T15:12:25Z\"},\"committer\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-11-11T15:12:25Z\"},\"tree\":{\"sha\":\"8d655fcdcd7aa88fe9fcbbafd57498184b1b522c\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/8d655fcdcd7aa88fe9fcbbafd57498184b1b522c\"},\"message\":\"ci(mem8): bind V8 original source-only qualification without native or provider execution\",\"parents\":[{\"sha\":\"1c063ba9e934f060181d4fc17d724361ba2a37fd\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1c063ba9e934f060181d4fc17d724361ba2a37fd\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/1c063ba9e934f060181d4fc17d724361ba2a37fd\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+          "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/68a4b0cddbf11367e763eff7d55a57089d197704"
+        }
+      },
+      "isError": false
+    },
+    "branch_absence": {
+      "content": [
+        {
+          "type": "text",
+          "text": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/refs#get-a-reference\",\"status\":\"404\"}"
+        }
+      ],
+      "structuredContent": {
+        "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/refs#get-a-reference\",\"status\":\"404\"}",
+        "error_code": "NOT_FOUND",
+        "error_data": {
+          "message": "Not Found",
+          "documentation_url": "https://docs.github.com/rest/git/refs#get-a-reference",
+          "status": "404"
+        }
+      },
+      "isError": true
+    },
+    "create": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "branch": "codex/mem8-source-gates-v8-20261111-ed353817"
+      },
+      "isError": false
+    },
+    "before": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "content": "{\"ref\":\"refs/heads/codex/mem8-source-gates-v8-20261111-ed353817\",\"node_id\":\"REF_kwDOTrgxoNoAN3JlZnMvaGVhZHMvY29kZXgvbWVtOC1zb3VyY2UtZ2F0ZXMtdjgtMjAyNjExMTEtZWQzNTM4MTc\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-source-gates-v8-20261111-ed353817\",\"object\":{\"sha\":\"1c063ba9e934f060181d4fc17d724361ba2a37fd\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1c063ba9e934f060181d4fc17d724361ba2a37fd\"}}",
+        "title": "mem8-source-gates-v8-20261111-ed353817",
+        "modified_date": null,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-source-gates-v8-20261111-ed353817",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-source-gates-v8-20261111-ed353817",
+        "display_title": "mem8-source-gates-v8-20261111-ed353817",
+        "structuredContent": {
+          "title": "mem8-source-gates-v8-20261111-ed353817",
+          "content": "{\"ref\":\"refs/heads/codex/mem8-source-gates-v8-20261111-ed353817\",\"node_id\":\"REF_kwDOTrgxoNoAN3JlZnMvaGVhZHMvY29kZXgvbWVtOC1zb3VyY2UtZ2F0ZXMtdjgtMjAyNjExMTEtZWQzNTM4MTc\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-source-gates-v8-20261111-ed353817\",\"object\":{\"sha\":\"1c063ba9e934f060181d4fc17d724361ba2a37fd\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1c063ba9e934f060181d4fc17d724361ba2a37fd\"}}",
+          "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-source-gates-v8-20261111-ed353817"
+        }
+      },
+      "isError": false
+    },
+    "update": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "success": true
+      },
+      "isError": false
+    },
+    "after": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "content": "{\"ref\":\"refs/heads/codex/mem8-source-gates-v8-20261111-ed353817\",\"node_id\":\"REF_kwDOTrgxoNoAN3JlZnMvaGVhZHMvY29kZXgvbWVtOC1zb3VyY2UtZ2F0ZXMtdjgtMjAyNjExMTEtZWQzNTM4MTc\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-source-gates-v8-20261111-ed353817\",\"object\":{\"sha\":\"68a4b0cddbf11367e763eff7d55a57089d197704\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/68a4b0cddbf11367e763eff7d55a57089d197704\"}}",
+        "title": "mem8-source-gates-v8-20261111-ed353817",
+        "modified_date": null,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-source-gates-v8-20261111-ed353817",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-source-gates-v8-20261111-ed353817",
+        "display_title": "mem8-source-gates-v8-20261111-ed353817",
+        "structuredContent": {
+          "title": "mem8-source-gates-v8-20261111-ed353817",
+          "content": "{\"ref\":\"refs/heads/codex/mem8-source-gates-v8-20261111-ed353817\",\"node_id\":\"REF_kwDOTrgxoNoAN3JlZnMvaGVhZHMvY29kZXgvbWVtOC1zb3VyY2UtZ2F0ZXMtdjgtMjAyNjExMTEtZWQzNTM4MTc\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-source-gates-v8-20261111-ed353817\",\"object\":{\"sha\":\"68a4b0cddbf11367e763eff7d55a57089d197704\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/68a4b0cddbf11367e763eff7d55a57089d197704\"}}",
+          "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-source-gates-v8-20261111-ed353817"
+        }
+      },
+      "isError": false
+    }
+  },
+  "source_pr_changed": false,
+  "native_executed_by_this_admission": 0,
+  "model_requests": 0
+}

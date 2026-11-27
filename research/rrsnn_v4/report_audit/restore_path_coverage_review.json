@@ -1,0 +1,1367 @@
+{
+  "schema": "rrsnn_v4.restore_path_coverage_review.v1",
+  "created_at_utc": "2026-10-29T16:57:51.723953+00:00",
+  "status": "concrete_gaps_identified_final_git_and_resource_additions_pending",
+  "read_only_except_this_review": true,
+  "scope": "Active ROOT versus the saved core central directory/manifest, the verified 8dc406ac Git path map, and the originally audited resources candidate rules. Resource measurements are still in progress; no completed resource archive is asserted.",
+  "inputs": {
+    "active_root": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/rrsnn_v4",
+    "core_archive": {
+      "path": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/RR_SNN_V4_Core_Raw_20261029.zip",
+      "bytes": 77386526,
+      "recorded_sha256_from_prepared_receipt": "239e3ba9f786929135a505d001148df5cb82116d0422e8e483f9da37ca272792",
+      "archive_sha256_recomputed": false,
+      "central_directory_members": 3088,
+      "raw_manifest_members": 3086,
+      "raw_manifest_sha256": "3a9ff67a82b800e124109d9644c5512e1d638ea8105a5e459484fb7bd2383fd2",
+      "central_directory_has_no_duplicate_or_extra_members": true,
+      "member_names_and_uncompressed_sizes_match_manifest": true,
+      "all_active_core_member_sizes_match_manifest": true,
+      "raw_payload_sha256_revalidated": false
+    },
+    "published_map": {
+      "path": "resource_audit/core_published_paths.json",
+      "sha256": "da7379c6f932c2147284b9728a20dfc0d2159b09fc68eca01daaf0e981d8764a",
+      "paths": 146,
+      "commit": "8dc406ac222aea1609d7ee89979ad6d7b9fd1028",
+      "network_verification": "Relies on the root-verified map and existing publication receipts; this audit made no network calls."
+    },
+    "original_package_script_sha256": "b4c95e1509eb52b6801e0df90dffe4ce4d095ad8334671b7d25d32bffb88d2d9",
+    "package_script_sha256_at_review": "b4c95e1509eb52b6801e0df90dffe4ce4d095ad8334671b7d25d32bffb88d2d9",
+    "original_resource_patterns": [
+      "policy_benchmark_results/**/*",
+      "resource_audit/**/*",
+      "*cleanup*.json",
+      "*preservation_receipt.json",
+      "*publication*.json",
+      "CONTINUATION_STATE.json",
+      "git_publications.json",
+      "workspace_migration*.json",
+      "raw_archive_receipts/*.json",
+      "execution_logs/*policy-benchmark*.log"
+    ]
+  },
+  "inventory_snapshot": {
+    "noncache_regular_files_including_explicit_build_configs_and_Cargo_locks": 3459,
+    "old_resource_candidates": 136,
+    "uncovered_paths": 99,
+    "uncovered_bytes": 1983974,
+    "pruned_directory_count": 7,
+    "runtime_locks_pyc_target_vendor_toolchain_payloads_not_audited": true
+  },
+  "findings": [
+    {
+      "id": "F01",
+      "priority": "required_preservation",
+      "finding": "The original numerical matrix explicitly references a failed disk-guard attempt by exact path and SHA, but its file is absent from core, the supplied Git map and the old resources rules.",
+      "path": "results/numerical_matrix_attempt_1793287079571872673.json",
+      "sha256": "ec6031b1d89838700029e2b93dd24d9699f229265b508b10fba2be9dabcf30c1",
+      "referenced_by": "results/numerical_matrix_status.json:preserved_prior_failed_attempts",
+      "actual_error": "RuntimeError: disk guard: 203411456 bytes free, need 209715200; no files deleted",
+      "recommended_partition": "resources"
+    },
+    {
+      "id": "F02",
+      "priority": "required_preservation",
+      "finding": "Three prior benchmark development/sizing JSON files and two root-level progress snapshots are also outside all three current partitions. The proposed root/results JSON expansion covers them without rerunning or overwriting them.",
+      "paths": [
+        "policy_benchmark_sizing.json",
+        "policy_benchmark_validation.json",
+        "policy_benchmark_validation_initial.json",
+        "results/evaluation_matrix_progress.json",
+        "results/matrix_progress.json"
+      ],
+      "recommended_partition": "resources"
+    },
+    {
+      "id": "F03",
+      "priority": "required_source_context",
+      "finding": "Ten small historical source, exact upstream recipe, test-wrapper/configuration and dependency-lock files need final Git publication at their current relative paths. They include the exact preformat runtime actually tested and the historical figure source cited by a core-held figure manifest.",
+      "recommended_partition": "final_git",
+      "raw_archive_duplication": false
+    },
+    {
+      "id": "F04",
+      "priority": "required_operational_provenance",
+      "finding": "The remote source-publication verification receipt and reclaimable-cache inventory are unique historical JSON evidence, not reproducible replacements for a future check.",
+      "paths": [
+        "hepta/source_publication_verified.json",
+        "hepta/reclaimable_cache_inventory.json"
+      ],
+      "recommended_partition": "resources_or_verified_final_git_exclusion"
+    },
+    {
+      "id": "F05",
+      "priority": "pending_final_publication",
+      "finding": "Current report/builder changes and report audit records intentionally postdate the supplied map. They must be included in the final source map before declaring complete restoration."
+    }
+  ],
+  "minimal_resource_candidate_increment": {
+    "patterns": [
+      "*.json",
+      "results/*.json"
+    ],
+    "exact_paths": [
+      "hepta/source_publication_verified.json",
+      "hepta/reclaimable_cache_inventory.json"
+    ],
+    "newly_covered_unique_evidence": [
+      {
+        "path": "policy_benchmark_sizing.json",
+        "bytes": 45647,
+        "physical_lines": 1425,
+        "sha256": "6190faa53c091ffe07c312b7c4bf325b4eb0f5f72663c8f551c86a44fe22d81d",
+        "partition": "resources"
+      },
+      {
+        "path": "policy_benchmark_validation.json",
+        "bytes": 17663,
+        "physical_lines": 487,
+        "sha256": "fdcc49d31052e0a62fb3f1678acbadb89927f05be9b350a10eda269e23313ee4",
+        "partition": "resources"
+      },
+      {
+        "path": "policy_benchmark_validation_initial.json",
+        "bytes": 17663,
+        "physical_lines": 487,
+        "sha256": "fdcc49d31052e0a62fb3f1678acbadb89927f05be9b350a10eda269e23313ee4",
+        "partition": "resources"
+      },
+      {
+        "path": "results/evaluation_matrix_progress.json",
+        "bytes": 210281,
+        "physical_lines": 4827,
+        "sha256": "d560378ff8371069c821f8d47a79be32069219e61c159f461008b194b3af1f98",
+        "partition": "resources"
+      },
+      {
+        "path": "results/matrix_progress.json",
+        "bytes": 12825,
+        "physical_lines": 406,
+        "sha256": "d2296901fcf2144afdf6cb189f06f2e288f0045cdf276337ef98ae557876662c",
+        "partition": "resources"
+      },
+      {
+        "path": "results/numerical_matrix_attempt_1793287079571872673.json",
+        "bytes": 2488,
+        "physical_lines": 86,
+        "sha256": "ec6031b1d89838700029e2b93dd24d9699f229265b508b10fba2be9dabcf30c1",
+        "partition": "resources"
+      },
+      {
+        "path": "hepta/source_publication_verified.json",
+        "bytes": 12816,
+        "physical_lines": 273,
+        "sha256": "ddbc6c1f1e33fd092adf6e40ccaef356fa37d8c1d86e2c1929a76237ca1c796c",
+        "partition": "resources"
+      },
+      {
+        "path": "hepta/reclaimable_cache_inventory.json",
+        "bytes": 17840,
+        "physical_lines": 485,
+        "sha256": "70d065558ce66197176a99f9e8f5a1840f724d2176e36006d39eebacf8dae2c4",
+        "partition": "resources"
+      }
+    ],
+    "new_unique_files": 8,
+    "new_unique_bytes": 337223,
+    "rule": "Retain all existing candidates. Git-backed candidates may only be excluded after exact current-byte Git-blob comparison against the final verified map. Do not change the already saved core archive."
+  },
+  "pending_final_git_source_files": [
+    {
+      "path": "hepta/bootstrap_runtime_preformat.rs",
+      "bytes": 18942,
+      "physical_lines": 484,
+      "sha256": "df98ccc5ca1d7c87f4e1ab5bf99aca9b3190b2bab4e00e758c0caeed6d2aa154",
+      "partition": "final_git",
+      "raw_archive_duplicate_required": false
+    },
+    {
+      "path": "hepta/upstream-root-justfile.txt",
+      "bytes": 7839,
+      "physical_lines": 215,
+      "sha256": "9fe8c410c12c3caacb6b6a531a8c124ae257c7041b2ce78388d49c1562843e1c",
+      "partition": "final_git",
+      "raw_archive_duplicate_required": false
+    },
+    {
+      "path": "hepta/upstream_recipes/run-nextest.py",
+      "bytes": 10207,
+      "physical_lines": 277,
+      "sha256": "b3080673ca1eef47d9bead823110f13e9c7ccd8310b2827719d5d1111041fa5c",
+      "partition": "final_git",
+      "raw_archive_duplicate_required": false
+    },
+    {
+      "path": "hepta/upstream_recipes/nextest.toml",
+      "bytes": 5045,
+      "physical_lines": 114,
+      "sha256": "1ec25c048d59621ed75ba2db1c073b38091005d6da97b71d3b77774b3ecbc869",
+      "partition": "final_git",
+      "raw_archive_duplicate_required": false
+    },
+    {
+      "path": "hepta/upstream_recipes/just-shell.py",
+      "bytes": 2031,
+      "physical_lines": 73,
+      "sha256": "8c4e5b73a4d5b62553bdfd0f3dfc5ec39919bf3089cd950426a43879b73cff84",
+      "partition": "final_git",
+      "raw_archive_duplicate_required": false
+    },
+    {
+      "path": "hepta/upstream_recipes/format.py",
+      "bytes": 16600,
+      "physical_lines": 491,
+      "sha256": "3791cbd6b695c49ce2d4e84f250fe07761ec87e60ce1530880a0c7b1ba16e2dd",
+      "partition": "final_git",
+      "raw_archive_duplicate_required": false
+    },
+    {
+      "path": "hepta/crate_validation_build/justfile",
+      "bytes": 276,
+      "physical_lines": 2,
+      "sha256": "e39a62fae163ea646fcce092dfdeb24910d2eb73a513e33f0ecd7bef7a08173a",
+      "partition": "final_git",
+      "raw_archive_duplicate_required": false
+    },
+    {
+      "path": "hepta/crate_validation_build/.cargo/config.toml",
+      "bytes": 169,
+      "physical_lines": 6,
+      "sha256": "f6f6a07e7939496985c439dc8a9856659089ebb779b9311c383a9256b4dd20ed",
+      "partition": "final_git",
+      "raw_archive_duplicate_required": false
+    },
+    {
+      "path": "results/figures_history/layout_01/make_figures_source.py",
+      "bytes": 35675,
+      "physical_lines": 581,
+      "sha256": "82d37f870876c30744239d7cbac5a264a61e319d312e284da5d8e94541595e10",
+      "partition": "final_git",
+      "raw_archive_duplicate_required": false
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/Cargo.lock",
+      "bytes": 5791,
+      "physical_lines": 231,
+      "sha256": "a229b4462b64a9567ec2fdaaa8d395cdc789f3341ade9178d9f9d6f3c1f082b0",
+      "partition": "final_git",
+      "raw_archive_duplicate_required": false
+    }
+  ],
+  "source_publication_batches": [
+    {
+      "batch": 1,
+      "paths": [
+        "hepta/bootstrap_runtime_preformat.rs",
+        "hepta/patched_upstream/codex-rs/Cargo.lock",
+        "hepta/crate_validation_build/justfile",
+        "hepta/crate_validation_build/.cargo/config.toml"
+      ],
+      "physical_lines": 723
+    },
+    {
+      "batch": 2,
+      "paths": [
+        "hepta/upstream_recipes/format.py",
+        "hepta/upstream_recipes/run-nextest.py"
+      ],
+      "physical_lines": 768
+    },
+    {
+      "batch": 3,
+      "paths": [
+        "results/figures_history/layout_01/make_figures_source.py",
+        "hepta/upstream_recipes/nextest.toml",
+        "hepta/upstream_recipes/just-shell.py"
+      ],
+      "physical_lines": 768
+    },
+    {
+      "batch": 4,
+      "paths": [
+        "hepta/upstream-root-justfile.txt"
+      ],
+      "physical_lines": 215
+    }
+  ],
+  "pending_final_git_audit_records": [
+    {
+      "path": "report_audit/closeout_raw_verification_extension.json",
+      "bytes": 638,
+      "physical_lines": 8,
+      "sha256": "9efeb927633c8077cd542f872676a98db3bc8a93696027362ac404cd6f5e1152"
+    },
+    {
+      "path": "report_audit/independent_closeout_incremental_review.json",
+      "bytes": 5461,
+      "physical_lines": 76,
+      "sha256": "c3c4c7b2f44535960d38510801dae5d187ebd457931a052007d736d656deddd3"
+    },
+    {
+      "path": "report_audit/inference_scope_reporting_addendum.json",
+      "bytes": 1020,
+      "physical_lines": 10,
+      "sha256": "b6c96fd080fafe09383ab1a02bd64ad6586fee958d147dc93991d24533cfd2f7"
+    },
+    {
+      "path": "report_audit/scientific_scope_closeout_addendum.json",
+      "bytes": 4648,
+      "physical_lines": 71,
+      "sha256": "f9857ac4ce135245886e76500032218118df68101925b54971f2b7f6ac80bcb6"
+    },
+    {
+      "path": "report_audit/scientific_scope_closeout_review.json",
+      "bytes": 12328,
+      "physical_lines": 264,
+      "sha256": "d70200a60e053bc46f24da751da79e8e242484fe1184ead53e06f21f60dedb85"
+    }
+  ],
+  "already_mapped_paths_requiring_final_git_update": [
+    {
+      "path": "MATHEMATICAL_SCOPE.zh-CN.md",
+      "old_git_blob_sha": "67a3f7e5fe941fa8feb1e3e84d1207e4dce4d478",
+      "current_git_blob_sha": "057da6dcaba9d1ce7fd3f7e01b3a5778616f5aa8",
+      "current_sha256": "181130078ba4edec6932c25ee234d6b5fac6cb8f8656c28ed0fb6cd180eacb29",
+      "bytes": 10646,
+      "partition": "final_git_update_required"
+    },
+    {
+      "path": "REPORT_TEMPLATE.zh-CN.md",
+      "old_git_blob_sha": "3504084dce2720ebac89bfb2e5b9bf7d93fd582c",
+      "current_git_blob_sha": "2e0fff2ab1f73ea1c80bbf13dad9b7966e07cd7d",
+      "current_sha256": "883962c7c9a7254c991b0ba207df5799a38f398fe69e0124e71fd7b5303db406",
+      "bytes": 22530,
+      "partition": "final_git_update_required"
+    },
+    {
+      "path": "build_closeout.py",
+      "old_git_blob_sha": "ae37712b221b228b0f5cd88433c317e6a820a6f5",
+      "current_git_blob_sha": "1aa1d865965e4444987a595e56a315293631d522",
+      "current_sha256": "56690e29b01db894f403d6e0dc0591cd3c44a06926c9db3e7534877e538c79ff",
+      "bytes": 18731,
+      "partition": "final_git_update_required"
+    }
+  ],
+  "dependency_lockfile_review": [
+    {
+      "path": "hepta/native_build/Cargo.lock",
+      "bytes": 5334,
+      "physical_lines": 218,
+      "sha256": "dfb155157938ae075dd6a3d7d471486decf4ed4550ae64192ce8486491f0f9c3",
+      "kind": "dependency_resolution_lock_not_runtime_lock",
+      "current_git_map_contains": true,
+      "archive_rule_excludes_suffix": true,
+      "current_bytes_match_git_blob": true
+    },
+    {
+      "path": "hepta/native_repair_build/Cargo.lock",
+      "bytes": 5327,
+      "physical_lines": 218,
+      "sha256": "e12edd3820e09a3872e0465276bff957b18a6f54da7f5b185983a6b2ff3174e3",
+      "kind": "dependency_resolution_lock_not_runtime_lock",
+      "current_git_map_contains": true,
+      "archive_rule_excludes_suffix": true,
+      "current_bytes_match_git_blob": true
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/Cargo.lock",
+      "bytes": 5791,
+      "physical_lines": 231,
+      "sha256": "a229b4462b64a9567ec2fdaaa8d395cdc789f3341ade9178d9f9d6f3c1f082b0",
+      "kind": "dependency_resolution_lock_not_runtime_lock",
+      "current_git_map_contains": false,
+      "archive_rule_excludes_suffix": true,
+      "required_partition": "final_git_source_context"
+    },
+    {
+      "path": "hepta/rr_bridge_build/Cargo.lock",
+      "bytes": 5328,
+      "physical_lines": 218,
+      "sha256": "c49487d39eab9ac70aa3880c635388690ef657edef07e5dcdaa7b684ebc0f812",
+      "kind": "dependency_resolution_lock_not_runtime_lock",
+      "current_git_map_contains": true,
+      "archive_rule_excludes_suffix": true,
+      "current_bytes_match_git_blob": true
+    }
+  ],
+  "rebuildable_or_duplicate_exclusions": [
+    {
+      "path": "hepta/native_build/.cargo/config.toml",
+      "bytes": 173,
+      "sha256": "5e993f09b5fd8d7f2d1879550be632001d8ce7dce230a92f94efcb4fa3d70ba3",
+      "basis": "explicit_generated_build_file",
+      "builder": "hepta/native_components.py",
+      "function": "build",
+      "qualification": "The published generator fixes the contents given workspace/interpreter paths; fresh cross-host execution must keep a new execution identity. Dependency Cargo.lock files are treated separately, not excluded as generated runtime locks."
+    },
+    {
+      "path": "hepta/native_build/Cargo.toml",
+      "bytes": 643,
+      "sha256": "d9bac7189d4b413e50e3fa96f1e9a016d7f270b38d0189c9952e997730d1a2e0",
+      "basis": "explicit_generated_build_file",
+      "builder": "hepta/native_components.py",
+      "function": "build",
+      "qualification": "The published generator fixes the contents given workspace/interpreter paths; fresh cross-host execution must keep a new execution identity. Dependency Cargo.lock files are treated separately, not excluded as generated runtime locks."
+    },
+    {
+      "path": "hepta/native_build/justfile",
+      "bytes": 404,
+      "sha256": "7040dd91a5a219c7ea039e1836040cd3b038929d10f19d652feb2f597d47fdd7",
+      "basis": "explicit_generated_build_file",
+      "builder": "hepta/native_components.py",
+      "function": "build",
+      "qualification": "The published generator fixes the contents given workspace/interpreter paths; fresh cross-host execution must keep a new execution identity. Dependency Cargo.lock files are treated separately, not excluded as generated runtime locks."
+    },
+    {
+      "path": "hepta/native_repair_build/.cargo/config.toml",
+      "bytes": 173,
+      "sha256": "5e993f09b5fd8d7f2d1879550be632001d8ce7dce230a92f94efcb4fa3d70ba3",
+      "basis": "explicit_generated_build_file",
+      "builder": "hepta/bootstrap_repair.py",
+      "function": "build",
+      "qualification": "The published generator fixes the contents given workspace/interpreter paths; fresh cross-host execution must keep a new execution identity. Dependency Cargo.lock files are treated separately, not excluded as generated runtime locks."
+    },
+    {
+      "path": "hepta/native_repair_build/Cargo.toml",
+      "bytes": 646,
+      "sha256": "0aa7042dff50f684b91f2e48291161eedde173c060132a02517dd781287a34c0",
+      "basis": "explicit_generated_build_file",
+      "builder": "hepta/bootstrap_repair.py",
+      "function": "build",
+      "qualification": "The published generator fixes the contents given workspace/interpreter paths; fresh cross-host execution must keep a new execution identity. Dependency Cargo.lock files are treated separately, not excluded as generated runtime locks."
+    },
+    {
+      "path": "hepta/native_repair_build/justfile",
+      "bytes": 410,
+      "sha256": "6e70cd0609f3c1ce6268eb1bc96cdedbe9b94431685658c256cd67b24a8f5f52",
+      "basis": "explicit_generated_build_file",
+      "builder": "hepta/bootstrap_repair.py",
+      "function": "build",
+      "qualification": "The published generator fixes the contents given workspace/interpreter paths; fresh cross-host execution must keep a new execution identity. Dependency Cargo.lock files are treated separately, not excluded as generated runtime locks."
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/.config/nextest.toml",
+      "bytes": 5045,
+      "sha256": "1ec25c048d59621ed75ba2db1c073b38091005d6da97b71d3b77774b3ecbc869",
+      "basis": "byte_identical_copy_of_planned_git_recipe",
+      "replacement_path": "hepta/upstream_recipes/nextest.toml",
+      "restore_action": "Copy the published recipe to this configuration path when recreating the original scoped nextest context."
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/Cargo.toml",
+      "bytes": 1964,
+      "sha256": "24229aaa8803b908a61c3056eda5bc66116f50e15df14f09cc418f657f5e5c27",
+      "basis": "byte_identical_published_copy",
+      "replacement_path": "hepta/publication_evidence/patched-reduced-workspace-Cargo.toml"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/Cargo.toml",
+      "bytes": 384,
+      "sha256": "7ca860f039344b7629db786ccb069d150ee87838ff8f1211e9a89935da00c16e",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/Cargo.toml",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+      "bytes": 269,
+      "sha256": "98d054d982f2c07ff0a686f31b635166f71ae2d5472dfa767b23b7c347e67d17",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/src/durable_control.rs",
+      "bytes": 29683,
+      "sha256": "2cb7407a89d8ad4839e81abee4814b4a41af98435486308b705f365db264d99e",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+      "bytes": 5586,
+      "sha256": "f67623dae2e833d2fa4e27183ebb63be2ff838a6d3b87a0d833b296b4e345f0d",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/src/durable_history_tests.rs",
+      "bytes": 6729,
+      "sha256": "2ed6f5f02e069824e72c2975661c92d9d850e7d9bab4ab24dd525abb315bd11c",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/src/durable_history_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/src/lib.rs",
+      "bytes": 8071,
+      "sha256": "85c8c13691909f22d864ac43ea322c5fc6d2a504b5a46e4c207d8574f12d73fb",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/src/lib.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/src/lib_tests.rs",
+      "bytes": 2098,
+      "sha256": "706c64c84039d9a043b4d3735403787400525575e16bc840c5f65e04a2b70dc8",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/src/lib_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/src/native_control.rs",
+      "bytes": 32502,
+      "sha256": "bdee48d7589675b597bb734850c08bb18fa94483029657612bee4e71650bd849",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "bytes": 23275,
+      "sha256": "8a703e5b4c87e50a60c941a54dfb95365c550dccbc8394d039365406dd8f59ca",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/src/neuron_feature.rs",
+      "bytes": 12836,
+      "sha256": "32fc64ae461621b4f6a8f20d3ff4e17ded53c6a00d9338fd8594c1539423e72b",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-infer-core/src/neuron_feature_tests.rs",
+      "bytes": 3709,
+      "sha256": "4119b9ca64eef5b6c283ffacc418b6e64d016a99e3ca63fc22cd0d0c164e0561",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-infer-core/src/neuron_feature_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/Cargo.toml",
+      "bytes": 495,
+      "sha256": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/Cargo.toml",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/deletion.rs",
+      "bytes": 4726,
+      "sha256": "3df225977b194e17909a73127f298d84a983e074f3a8aef950dfdabf8c88d417",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/deletion.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/deletion_tests.rs",
+      "bytes": 1832,
+      "sha256": "71a50fc119072b8fe2a36e8431bc4bcbbda9dd5debf6ee24999caba188049745",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/deletion_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/inference_control.rs",
+      "bytes": 4441,
+      "sha256": "f7e89f69319e86d97d506bc3a656b6b061639470fb6475feb62d6f1694e8f4cd",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/inference_control.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/inference_control_tests.rs",
+      "bytes": 4428,
+      "sha256": "121b4974d95688843b4962a74a7759c4d275ab504909d8d26dca7308246f8128",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/inference_control_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/journal.rs",
+      "bytes": 22951,
+      "sha256": "d8bf3aa2183cec3773be8134117166df440a8e0220de33d318e4800a21d5ea1f",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/journal.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
+      "bytes": 8559,
+      "sha256": "6630ce721c6cb875cdb95805a804f62338971afd3df7c4a22762186839dc7928",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/journal_lock.rs",
+      "bytes": 1270,
+      "sha256": "1162918fde01466d9d7b7abb33fd502dca289b970e84b37168ad4e2ca0692252",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/journal_lock.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/journal_segment_tests.rs",
+      "bytes": 8934,
+      "sha256": "d889a32c0a56dc36842acb1889abfe0e2fa03c8839ab4500ab7d2487a1ea0540",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/journal_segment_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/journal_tests.rs",
+      "bytes": 15094,
+      "sha256": "6fe8271500c11fd6e5e445d238e636a9de4edd17e08318ee38bf9b5189f7bab8",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/journal_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/lib.rs",
+      "bytes": 9491,
+      "sha256": "dc441b025b4ddbc8fa1b5622c7f3092406c5a5067c9c1fd886d02578c9d01c37",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/lib.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/lib_tests.rs",
+      "bytes": 1975,
+      "sha256": "add9642dfff13e663d4127d9d119ad6ff7dd19f0e3c8935b9de19f2b0c9a962e",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/lib_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/plasticity.rs",
+      "bytes": 14553,
+      "sha256": "114cfb3367d01612e684021a8961cb7f4d742f8855f90dd792db108081eaa471",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/plasticity.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/plasticity_tests.rs",
+      "bytes": 3939,
+      "sha256": "3d2175a990711873320ba65166aaa77cb45b328214b9356c35cff30ddd2a638b",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/plasticity_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/population_v2.rs",
+      "bytes": 21626,
+      "sha256": "c397c867dac6877f6f9b24569798057e988b1c5aed0befbb6d8f2b1f59446b60",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/population_v2.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/population_v2_tests.rs",
+      "bytes": 4551,
+      "sha256": "a7de122f8fd2d24118f3d894ceeca56c940113992ab972bf8e4f914cfa3f805e",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/population_v2_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/protocol.rs",
+      "bytes": 38284,
+      "sha256": "240a3ae18713aea814dad483c9470c34212a1d4d50a9aae84007e8f3dbc6bf35",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/protocol.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/protocol_tests.rs",
+      "bytes": 11489,
+      "sha256": "5787899890bcd16aaea9042b5924583fa71a3d9f755debf6bc1b05bfa626ee69",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/protocol_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/qualification.rs",
+      "bytes": 8503,
+      "sha256": "b425d7a58aec3c4b29b18875141bcc2d1a6ec1c743ac941ff3cff48694fa4520",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/qualification.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/qualification_tests.rs",
+      "bytes": 4844,
+      "sha256": "c732fb1b35fad52b5108ebc4aa7dd2a4f007ae6ba4d48ac1352e02f91f3876cb",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/qualification_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/runtime.rs",
+      "bytes": 18883,
+      "sha256": "c92c7250cb62f0eaacc3557cc0c846d3cd985388eaab1286fe41cbd5384ded6b",
+      "basis": "explicit_published_patch_and_versioned_final_source",
+      "patch": "hepta/bootstrap_recovery.patch",
+      "source_commit": "fda9689456189c7dad3a1d033b5488d02b29334a",
+      "repository_path": "codex-rs/hepta-neuron/src/runtime.rs",
+      "qualification": "This final formatted source is not relabeled as the preformat source actually tested; that exact preformat file is separately pending Git publication."
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/runtime_tests.rs",
+      "bytes": 17193,
+      "sha256": "320be5a7bdb7b997844da3ca168536f9458b046151e5dbe3d675fe19ed564f9a",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/runtime_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/runtime_types.rs",
+      "bytes": 21134,
+      "sha256": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/sparse.rs",
+      "bytes": 15728,
+      "sha256": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/sparse.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs",
+      "bytes": 3808,
+      "sha256": "055790ef7be81f8db53fb270d82fd845c3d530f2bb62d4fe220526dc8eb97bce",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/sparse_tests.rs",
+      "bytes": 10294,
+      "sha256": "40069dacc61797df327402da7a9f74e7838db5757a124587eaf3f158e6998a8b",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/sparse_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/witness.rs",
+      "bytes": 8398,
+      "sha256": "69bca85b5d839db1fb0552bd521515645045b04a2e696828c30efbce77f57213",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/witness.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-neuron/src/witness_tests.rs",
+      "bytes": 4769,
+      "sha256": "fcd257565eb0017aebbfbbabb6b0d2c59367e044ba0330b018bb52ce976074ac",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-neuron/src/witness_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json",
+      "bytes": 8007,
+      "sha256": "cb26f693ea7832e6b042efa4bf55d573cc08f14546d3f9ef1c0baf4cefd39eba",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/Cargo.toml",
+      "bytes": 268,
+      "sha256": "0df592ec8d8b63b9c8e7f9ca9f74feca802ffbd3b71dd0959c4127b4ad3109b0",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/Cargo.toml",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/bounded.rs",
+      "bytes": 3413,
+      "sha256": "5907602ef8128b3237991e737e2fc687eb5ac9c716505cc7d884eed9523ea2a9",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/bounded.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/bounded_tests.rs",
+      "bytes": 1642,
+      "sha256": "3145c56c2882e91420bc994dd93f3375e1b532b03331826868d0ecfc019077bc",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/bounded_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/canonical_digest.rs",
+      "bytes": 15228,
+      "sha256": "d7df2b3581046fec4d7350747b1a8053a549c6feb33e462802107a4eb4acd391",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/canonical_digest_tests.rs",
+      "bytes": 14679,
+      "sha256": "9985f3ac27b0f357653206f4788cb366b623548c53502d277cd81f1a0f3d8fbe",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/digest.rs",
+      "bytes": 4474,
+      "sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/digest.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/digest_stream_tests.rs",
+      "bytes": 1484,
+      "sha256": "9ff87ab6ffb17f27c2a23762893f641bb55edaff33f8bfb307729d9be8295a6c",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/digest_stream_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/digest_tests.rs",
+      "bytes": 1719,
+      "sha256": "838dc12e305735321c1028dabb7c5dd4e363f1bced8126d2c50eb7527febe37c",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/digest_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/fixed.rs",
+      "bytes": 3717,
+      "sha256": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/fixed.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/fixed_tests.rs",
+      "bytes": 2115,
+      "sha256": "cfa86da0bc63fa273c3124bbd0988fd6bd22383a0338b15ac2a944c80aa5544b",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/fixed_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/identity.rs",
+      "bytes": 13344,
+      "sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/identity.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/identity_tests.rs",
+      "bytes": 5482,
+      "sha256": "c3bba7041a11ead1ccb655fb6491c5835a3020c3f26d4deb22edc94a4f8e34be",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/identity_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/lib.rs",
+      "bytes": 3046,
+      "sha256": "6793a05230b404884f1e2aed89a4369c52ad9a7f7adbb52a39a3ff1bf0ef5283",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/lib.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/numeric_conversion.rs",
+      "bytes": 9505,
+      "sha256": "d183cfb5f6981cb9d767a0d8a90cb895153f932ebc3c635ceb4f0b86e090cbfd",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+      "bytes": 11101,
+      "sha256": "554d51398fdef4cd69ccc43b3f0d4a002a2a8eed20552a8228770bfde364883a",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/numeric_profile.rs",
+      "bytes": 9363,
+      "sha256": "d656fa38fea5a18105da911107caae4d326a653854df0c5baed10d4ab3c6bbe9",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/numeric_profile.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/numeric_profile_tests.rs",
+      "bytes": 1969,
+      "sha256": "fab0d6bd469412e77191e43cb17dde7f9638b07292ea5e2df5ad242cf616ea1a",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/numeric_profile_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/prompt_delivery.rs",
+      "bytes": 4948,
+      "sha256": "f01b741add536a597bf9c87664f83909fd77989d19ff4e2fc2c752d98cfbf593",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/prompt_delivery.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/prompt_delivery_tests.rs",
+      "bytes": 2578,
+      "sha256": "1ad1075b9433c1a31629ba3df0509ce16ae7c70060797d2ea08f21b5a2c63f1a",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/prompt_delivery_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/registry.rs",
+      "bytes": 9460,
+      "sha256": "ad15fac503e3988c3fc5d8892136f91c45bb41a12266de5e037a31a6a690b005",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/registry.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/registry_tests.rs",
+      "bytes": 5008,
+      "sha256": "d964bd53b636362da367fc9edf053c72272d62416ef231b632ee3dda6a5ec59a",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/registry_tests.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/hepta-types/src/topology.rs",
+      "bytes": 14135,
+      "sha256": "e1888c64c8682491837c907a91a960327530251450ecb38e70a60df792adba22",
+      "basis": "unchanged_pinned_upstream_source",
+      "source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repository_path": "codex-rs/hepta-types/src/topology.rs",
+      "source_manifest": "hepta/publication_evidence/upstream_source_manifest.json"
+    },
+    {
+      "path": "hepta/rr_bridge_build/.cargo/config.toml",
+      "bytes": 169,
+      "sha256": "f6f6a07e7939496985c439dc8a9856659089ebb779b9311c383a9256b4dd20ed",
+      "basis": "explicit_generated_build_file",
+      "builder": "hepta/build_rr_bridge.py",
+      "function": "build",
+      "qualification": "The published generator fixes the contents given workspace/interpreter paths; fresh cross-host execution must keep a new execution identity. Dependency Cargo.lock files are treated separately, not excluded as generated runtime locks."
+    },
+    {
+      "path": "hepta/rr_bridge_build/Cargo.toml",
+      "bytes": 676,
+      "sha256": "e62f9e297a7c7fb5d4c01c686eaafbee62afb9a4a38fe1d1d0ee5abac133053d",
+      "basis": "explicit_generated_build_file",
+      "builder": "hepta/build_rr_bridge.py",
+      "function": "build",
+      "qualification": "The published generator fixes the contents given workspace/interpreter paths; fresh cross-host execution must keep a new execution identity. Dependency Cargo.lock files are treated separately, not excluded as generated runtime locks."
+    },
+    {
+      "path": "hepta/rr_bridge_build/justfile",
+      "bytes": 126,
+      "sha256": "2bcd819f293f830909614039866b3f5b181f7235c28038a97c08bece62126560",
+      "basis": "explicit_generated_build_file",
+      "builder": "hepta/build_rr_bridge.py",
+      "function": "build",
+      "qualification": "The published generator fixes the contents given workspace/interpreter paths; fresh cross-host execution must keep a new execution identity. Dependency Cargo.lock files are treated separately, not excluded as generated runtime locks."
+    }
+  ],
+  "temporary_figure_staging_exclusions": [
+    {
+      "path": "results/rr-v4-final-figures-icssp7ca/01_normalized_utility.png",
+      "bytes": 445341,
+      "reason": "Transient partial final-figure staging output; final generated figures and their manifest belong to the final Git publication. No binary payload read."
+    },
+    {
+      "path": "results/rr-v4-final-figures-icssp7ca/01_normalized_utility.svg",
+      "bytes": 47265,
+      "reason": "Transient partial final-figure staging output; final generated figures and their manifest belong to the final Git publication. No binary payload read."
+    },
+    {
+      "path": "results/rr-v4-final-figures-icssp7ca/02_gain_over_primary.png",
+      "bytes": 453027,
+      "reason": "Transient partial final-figure staging output; final generated figures and their manifest belong to the final Git publication. No binary payload read."
+    }
+  ],
+  "unclassified_uncovered_files": [],
+  "python_import_coverage": {
+    "mode": "AST only; no imports executed",
+    "source_files_parsed": 36,
+    "resolved_local_edges": 55,
+    "uncovered_resolved_local_dependencies": [],
+    "source_file_sha256": {
+      "__init__.py": "227d288ec36b913d650a35915373df53b20d7c22cf3547f6106ffece9af6f0cb",
+      "aggregate.py": "eb4157f0f149089a35e66a51f1fd4a808aeab53e8edc5acef8f0eee43dffe671",
+      "baselines.py": "14d06b7189982bdef8b737c912e2704a8d2647385789c60f5a9760f279037325",
+      "build_closeout.py": "56690e29b01db894f403d6e0dc0591cd3c44a06926c9db3e7534877e538c79ff",
+      "delivery_behavior_diagnostic.py": "957e2314c5ccad817097ef6c4afa52716e4925b91d837e3e1ebe4e7549494175",
+      "evaluate.py": "04509ce268f11b02e8c601e605adafe7e1dd114582e4c236f56a91dea048162c",
+      "hepta/bootstrap_repair.py": "0622a4eb534dbeac6844eaf1d5fb9319644e90bb7d44c4ace2078fae8dc49d48",
+      "hepta/build_rr_bridge.py": "5f4ca0f90fa9df24521d10c9283bbe8ee36769cf94fd6f4c59520b5819a45f54",
+      "hepta/native_components.py": "8ca6d134e101d2e3b171adfabbc2648327194e697b9f102292830077e14128cc",
+      "hepta/rr_bridge_artifact.py": "5d20b461da1de422bccf5aff647148059bbb47c4b813373e838f1274331ab98b",
+      "hepta/rr_bridge_backend.py": "910513b7d8b92ebaddda5b8a3cb54889438969755192aa39ef89198b0fcaec39",
+      "hepta/rr_bridge_worker.py": "db8bf2b7817d1ffdd1f54b77802720234b1774facffb46ef9ca5248664329440",
+      "hepta/validate_rr_bridge.py": "d0431a84fc06c00f70fdd8cac22b2a9799f66d005b8192a7c2f029eab8b91639",
+      "make_figures.py": "d3ec4a0428e970734b90e394dd945830fa3a3588f7ca6bf71ed9c78f8c4ed49f",
+      "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+      "numerical_control.py": "8a686fc74d441c0ea8dc03651f9ee8adb77ae73fdc083021b7ccace50f2bfeee",
+      "numerical_matrix_report.py": "a8e9c2f9e193ceb54e83275eb2b20a0e6a0d3788dbc1db32e1eabacda2cf7165",
+      "numerical_roundoff_diagnostic.py": "5900758c186b271112fc0c8de6cbedff97f1b1ba0eb7a64c11df23404f17a781",
+      "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+      "package_raw_evidence.py": "b4c95e1509eb52b6801e0df90dffe4ce4d095ad8334671b7d25d32bffb88d2d9",
+      "policy_benchmark.py": "538db3796a1548d6920c2282367efeaf78f77489c84b083c7548f06a77a2235e",
+      "policy_benchmark_storage_context.py": "15eb9cb94304e623fe617574c76c9851b1f795187b6c0b002eca69e7a2026f35",
+      "policy_benchmark_summary.py": "767496f892fc2f437e11ce17cdfbfee6f4566ea38f2c20197a7c5cda9434b92d",
+      "precision_repair.py": "4347e6c9798502d430a5af2ac2fbf6ace8b5712f000255b9f9c217af44c63e65",
+      "precision_repair_report.py": "6813393371ab5d3dd4264c31afda96fed017533da8117e41125f6e349421e3ea",
+      "prepare_data.py": "592abdc964eb515db6abee381ff99a9867bd4e644943e1ce48e897672c508e7c",
+      "probability_calibration.py": "0bd09c4743f95b701982797dcec78ea667284c332ecb68deb5c2850f5e592eb7",
+      "report_mechanism_contrasts.py": "3bc1efccad84f9c4dc14ad4cd547779b2ba1eed50ee91951df43cfc217fc45bd",
+      "run_evaluation.py": "cb695390e69ebb896193ab517965ee1777de6fcbb7abd7237b783cf9b0c9a0e7",
+      "task.py": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4",
+      "train.py": "0abc20779fc64aa1ec0ff0d24ec1b6fe4ad84a585f60ec22b8d53a9c66860825",
+      "train_matrix.py": "39aad256271acc8763db88b96992824382fd44492b48cbe971329eefa108c31a",
+      "validate_baselines.py": "e676aa43ad32c3133f1adee2bd8a1e852df7c103b580671364a3f302ef53a6e4",
+      "validate_models.py": "ab79f903c340473ee959056f91c384769f93ca5a4464d9d870818b271145fe82",
+      "validate_task.py": "3f44689c64369cbe5a8ed9d0ddcf0f9020e9ebd034c6dff93c694bc3772b46d7",
+      "validate_training.py": "c5f4f84a31214533e5cb82d3adb08b6644fa2e1f467becd8025a9496a3269855"
+    },
+    "edges": [
+      {
+        "importer": "aggregate.py",
+        "dependency": "prepare_data.py"
+      },
+      {
+        "importer": "aggregate.py",
+        "dependency": "task.py"
+      },
+      {
+        "importer": "evaluate.py",
+        "dependency": "baselines.py"
+      },
+      {
+        "importer": "evaluate.py",
+        "dependency": "models.py"
+      },
+      {
+        "importer": "evaluate.py",
+        "dependency": "prepare_data.py"
+      },
+      {
+        "importer": "evaluate.py",
+        "dependency": "task.py"
+      },
+      {
+        "importer": "hepta/bootstrap_repair.py",
+        "dependency": "hepta/native_components.py"
+      },
+      {
+        "importer": "hepta/build_rr_bridge.py",
+        "dependency": "hepta/native_components.py"
+      },
+      {
+        "importer": "hepta/rr_bridge_artifact.py",
+        "dependency": "evaluate.py"
+      },
+      {
+        "importer": "hepta/rr_bridge_artifact.py",
+        "dependency": "hepta/rr_bridge_backend.py"
+      },
+      {
+        "importer": "hepta/rr_bridge_artifact.py",
+        "dependency": "models.py"
+      },
+      {
+        "importer": "hepta/rr_bridge_backend.py",
+        "dependency": "models.py"
+      },
+      {
+        "importer": "hepta/rr_bridge_worker.py",
+        "dependency": "hepta/rr_bridge_backend.py"
+      },
+      {
+        "importer": "hepta/validate_rr_bridge.py",
+        "dependency": "hepta/rr_bridge_backend.py"
+      },
+      {
+        "importer": "models.py",
+        "dependency": "baselines.py"
+      },
+      {
+        "importer": "models.py",
+        "dependency": "operators.py"
+      },
+      {
+        "importer": "numerical_control.py",
+        "dependency": "evaluate.py"
+      },
+      {
+        "importer": "numerical_control.py",
+        "dependency": "models.py"
+      },
+      {
+        "importer": "numerical_control.py",
+        "dependency": "prepare_data.py"
+      },
+      {
+        "importer": "numerical_control.py",
+        "dependency": "run_evaluation.py"
+      },
+      {
+        "importer": "numerical_control.py",
+        "dependency": "task.py"
+      },
+      {
+        "importer": "numerical_control.py",
+        "dependency": "train.py"
+      },
+      {
+        "importer": "numerical_roundoff_diagnostic.py",
+        "dependency": "operators.py"
+      },
+      {
+        "importer": "numerical_roundoff_diagnostic.py",
+        "dependency": "train.py"
+      },
+      {
+        "importer": "policy_benchmark.py",
+        "dependency": "evaluate.py"
+      },
+      {
+        "importer": "policy_benchmark.py",
+        "dependency": "models.py"
+      },
+      {
+        "importer": "policy_benchmark.py",
+        "dependency": "task.py"
+      },
+      {
+        "importer": "precision_repair.py",
+        "dependency": "evaluate.py"
+      },
+      {
+        "importer": "precision_repair.py",
+        "dependency": "models.py"
+      },
+      {
+        "importer": "precision_repair.py",
+        "dependency": "numerical_control.py"
+      },
+      {
+        "importer": "precision_repair.py",
+        "dependency": "operators.py"
+      },
+      {
+        "importer": "precision_repair.py",
+        "dependency": "prepare_data.py"
+      },
+      {
+        "importer": "precision_repair.py",
+        "dependency": "run_evaluation.py"
+      },
+      {
+        "importer": "precision_repair.py",
+        "dependency": "task.py"
+      },
+      {
+        "importer": "precision_repair.py",
+        "dependency": "train.py"
+      },
+      {
+        "importer": "prepare_data.py",
+        "dependency": "task.py"
+      },
+      {
+        "importer": "probability_calibration.py",
+        "dependency": "evaluate.py"
+      },
+      {
+        "importer": "probability_calibration.py",
+        "dependency": "models.py"
+      },
+      {
+        "importer": "probability_calibration.py",
+        "dependency": "prepare_data.py"
+      },
+      {
+        "importer": "probability_calibration.py",
+        "dependency": "run_evaluation.py"
+      },
+      {
+        "importer": "probability_calibration.py",
+        "dependency": "task.py"
+      },
+      {
+        "importer": "report_mechanism_contrasts.py",
+        "dependency": "aggregate.py"
+      },
+      {
+        "importer": "report_mechanism_contrasts.py",
+        "dependency": "prepare_data.py"
+      },
+      {
+        "importer": "run_evaluation.py",
+        "dependency": "aggregate.py"
+      },
+      {
+        "importer": "run_evaluation.py",
+        "dependency": "prepare_data.py"
+      },
+      {
+        "importer": "run_evaluation.py",
+        "dependency": "train.py"
+      },
+      {
+        "importer": "train.py",
+        "dependency": "models.py"
+      },
+      {
+        "importer": "train_matrix.py",
+        "dependency": "train.py"
+      },
+      {
+        "importer": "validate_baselines.py",
+        "dependency": "baselines.py"
+      },
+      {
+        "importer": "validate_models.py",
+        "dependency": "models.py"
+      },
+      {
+        "importer": "validate_models.py",
+        "dependency": "operators.py"
+      },
+      {
+        "importer": "validate_models.py",
+        "dependency": "task.py"
+      },
+      {
+        "importer": "validate_task.py",
+        "dependency": "task.py"
+      },
+      {
+        "importer": "validate_training.py",
+        "dependency": "task.py"
+      },
+      {
+        "importer": "validate_training.py",
+        "dependency": "train.py"
+      }
+    ],
+    "qualification": "This is local source-path coverage, not a runtime dependency-installation test or native rebuild."
+  },
+  "old_evaluation_failures_already_covered": [
+    "execution_attempts/evaluation_attempt_01_disk_guard/evaluation_matrix.log",
+    "execution_attempts/evaluation_attempt_01_disk_guard/evaluation_matrix_progress.json",
+    "execution_attempts/evaluation_attempt_01_disk_guard/evaluation_matrix_status.json",
+    "execution_attempts/evaluation_attempt_02_disk_guard/evaluation_matrix.log",
+    "execution_attempts/evaluation_attempt_02_disk_guard/evaluation_matrix_progress.json",
+    "execution_attempts/evaluation_attempt_02_disk_guard/evaluation_matrix_status.json"
+  ],
+  "native_reconstruction_boundaries": {
+    "exact_62_file_manifest_already_in_git": {
+      "path": "hepta/publication_evidence/upstream_source_manifest.json",
+      "sha256": "317539083a5b5b055402cdbdc3f343172e94d1514ecdd4550d4dcc1b387949d1",
+      "matches_native_build_identity": true
+    },
+    "external_base_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "published_reduced_workspace_manifests": [
+      "hepta/publication_evidence/baseline-reduced-workspace-Cargo.toml",
+      "hepta/publication_evidence/patched-reduced-workspace-Cargo.toml"
+    ],
+    "external_dependency_scope": "Native rebuilding still requires the declared equal upstream source/vendor/toolchain materialization and a new execution manifest on a new host. Existing core executables and published raw proof are preserved. This audit does not claim self-contained toolchain delivery, automatic cross-host execution, or production qualification.",
+    "profile_restore_copy": {
+      "from": "hepta/upstream_recipes/nextest.toml",
+      "to": "hepta/patched_upstream/codex-rs/.config/nextest.toml",
+      "sha256": "1ec25c048d59621ed75ba2db1c073b38091005d6da97b71d3b77774b3ecbc869"
+    }
+  },
+  "frozen_source_identity": {
+    "files": 14,
+    "all_match_pre_data_freeze": true
+  },
+  "closing_condition": "Publish and remotely verify the ten final-Git source-context files plus final reports/audits, extend the resources candidates for the eight unique JSON files, and audit the finished resources manifest with the final Git map. Preserve this review and add a separate closure addendum; current status is not closed.",
+  "limits": [
+    "Only ZIP central directory and RAW_MANIFEST_core.json were read; no large archived member was decompressed or hashed.",
+    "Small JSON/text/source files were read for classification, identities and AST imports; no Torch imports, actor, build, training or validation replay ran.",
+    "This file is the sole audit output; no core archive, frozen source, package rule, runtime lock, or benchmark output was modified.",
+    "Resource directory entries can continue to grow during measurement; coverage here is a timestamped snapshot."
+  ]
+}

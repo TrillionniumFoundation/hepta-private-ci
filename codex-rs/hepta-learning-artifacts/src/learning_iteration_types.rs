@@ -1,0 +1,271 @@
+//! Bounded owner observations for the learning-iteration profile.
+
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+
+use crate::CellCompatibilityBundleV1;
+use crate::CellStatePartitionV1;
+use crate::IterationEnvelopeV1;
+
+/// Explicit learning quotas, separate from foreground reservations.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningIterationBudgetV1 {
+    pub maximum_dataset_rows: u32,
+    pub maximum_dataset_bytes: u64,
+    pub maximum_training_steps: u64,
+    pub maximum_training_milliseconds: u64,
+    pub maximum_artifact_bytes: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningIterationRequestV1 {
+    /// Reused unchanged after timeout or uncertain owner commit.
+    pub operation_id: StableId,
+    pub principal_id: StableId,
+    pub agent_id: StableId,
+    pub cell_id: StableId,
+    pub source_run_id: StableId,
+    pub completed_task_receipt: Digest32,
+    /// The content pin used by the existing artifact/plasticity owner.
+    pub selected_artifact_digest: Digest32,
+    /// Owner-frozen evaluation protocol, selected before dataset/training work.
+    /// The trainer cannot replace this pin with a profile chosen for its result.
+    pub evaluation_profile: Digest32,
+    pub selected_bundle: CellCompatibilityBundleV1,
+    pub envelope: IterationEnvelopeV1,
+    pub budget: LearningIterationBudgetV1,
+}
+
+/// Host-owned identity and trust pins, never chosen by a model response.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningIterationOwnersV1 {
+    pub evidence_trust_digest: Digest32,
+    pub experience: StableId,
+    pub dataset: StableId,
+    pub trainer: StableId,
+    pub evaluator: StableId,
+    pub proposal: StableId,
+    pub selector: StableId,
+    pub next_use_observer: StableId,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LearningIterationStageV1 {
+    Experience,
+    Dataset,
+    Training,
+    Evaluation,
+    Proposal,
+    Selection,
+    NextUse,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LearningEvaluationDispositionV1 {
+    Qualified,
+    NoUpdate,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LearningProposalDispositionV1 {
+    UpdateCandidates,
+    NoAdmissibleUpdate,
+}
+
+/// An original trainer result, distinct from independent evaluation rejection.
+/// This version represents only equality of the final quantized weights.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LearningTrainingNoUpdateReasonV2 {
+    QuantizedWeightsUnchanged,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningTrainingNoUpdateV2 {
+    pub retained_bundle: Digest32,
+    pub dataset: Digest32,
+    /// Must match the original separately held FrozenLearningScopeV2.
+    pub update_rule: Digest32,
+    pub steps: u64,
+    pub milliseconds: u64,
+    pub reason: LearningTrainingNoUpdateReasonV2,
+}
+
+/// A local Selector's decision after a qualified proposal. Deferral or retention
+/// preserves the evaluator's result; neither is a Training/Evaluation NoUpdate.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LearningLocalDispositionV2 {
+    AdoptCandidate,
+    DeferCandidate,
+    RetainParent,
+}
+
+/// Scoped by the original request's principal/agent/cell and Selector trust.
+/// The original Selector attests its actual policy, reason and evidence; these
+/// digests alone confer no authority. Persist this decision before publishing
+/// the selected task owner, then observe the real Selection and NextUse.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningLocalDecisionV2 {
+    pub proposal_head: Digest32,
+    pub candidate_bundle: Digest32,
+    pub selected_bundle: Digest32,
+    pub policy_digest: Digest32,
+    pub reason_digest: Digest32,
+    pub disposition: LearningLocalDispositionV2,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum LearningIterationObservationV1 {
+    Experience {
+        episode_digest: Digest32,
+        completed_task_receipt: Digest32,
+    },
+    Dataset {
+        snapshot_digest: Digest32,
+        episode_digest: Digest32,
+        withdrawal_frontier: Digest32,
+        rows: u32,
+        bytes: u64,
+    },
+    Training {
+        candidate: Box<CellCompatibilityBundleV1>,
+        steps: u64,
+        milliseconds: u64,
+        artifact_bytes: u64,
+    },
+    /// No candidate was produced. The original Generator must attest this
+    /// result; selection and actual retained-model next use remain required.
+    /// Unscoped legacy owners cannot admit or restore this versioned outcome.
+    TrainingNoUpdateV2(LearningTrainingNoUpdateV2),
+    Evaluation {
+        candidate_bundle: Digest32,
+        evaluation_profile: Digest32,
+        disposition: LearningEvaluationDispositionV1,
+    },
+    /// Only after acknowledgement from the existing anchored proposal owner.
+    Proposal {
+        candidate_bundle: Digest32,
+        proposal_id: StableId,
+        composition_digest: Digest32,
+        disposition: LearningProposalDispositionV1,
+    },
+    /// A read-only observation of an independently authorized selection.
+    /// After NoUpdate, candidate_bundle is the unchanged deployed bundle.
+    Selection {
+        candidate_bundle: Digest32,
+        selection_digest: Digest32,
+    },
+    /// Explicit versioned local decision, signed by the original Selector.
+    /// This remains at Selection until the original version owner publishes
+    /// and provides the separate Selection observation. Scoped owners only.
+    LocalDecisionV2(LearningLocalDecisionV2),
+    /// Actual committed use by another task, in the same principal/agent/cell.
+    NextUse {
+        candidate_bundle: Digest32,
+        state_partition: CellStatePartitionV1,
+        checkpoint_digest: Digest32,
+        selection_digest: Digest32,
+        committed_step_receipt: Digest32,
+        state_cutover_receipt: Digest32,
+    },
+    /// A distinct task used the unchanged bundle after an authenticated
+    /// no-update decision. The published task owner is not a model-bundle cutover.
+    RetainedModelNextUse {
+        retained_bundle: Digest32,
+        state_partition: CellStatePartitionV1,
+        checkpoint_digest: Digest32,
+        selection_digest: Digest32,
+        committed_step_receipt: Digest32,
+        task_owner_publication: Digest32,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningIterationReceiptV1 {
+    pub operation_id: StableId,
+    pub predecessor: Digest32,
+    pub actor_id: StableId,
+    /// Authenticated owner result, covering the full observation.
+    pub evidence_digest: Digest32,
+    pub observed_unix_seconds: u64,
+    pub observation: LearningIterationObservationV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningIterationSnapshotV1 {
+    pub request: LearningIterationRequestV1,
+    pub owners: LearningIterationOwnersV1,
+    pub receipts: Vec<LearningIterationReceiptV1>,
+    pub head_digest: Digest32,
+}
+
+impl LearningIterationSnapshotV1 {
+    pub fn local_decision_v2(&self) -> Option<&LearningLocalDecisionV2> {
+        self.receipts
+            .iter()
+            .find_map(|receipt| match &receipt.observation {
+                LearningIterationObservationV1::LocalDecisionV2(decision) => Some(decision),
+                _ => None,
+            })
+    }
+
+    pub fn requires_scoped_owner_v2(&self) -> bool {
+        self.training_no_update_v2().is_some() || self.local_decision_v2().is_some()
+    }
+
+    pub fn training_no_update_v2(&self) -> Option<&LearningTrainingNoUpdateV2> {
+        self.receipts
+            .iter()
+            .find_map(|receipt| match &receipt.observation {
+                LearningIterationObservationV1::TrainingNoUpdateV2(outcome) => Some(outcome),
+                _ => None,
+            })
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LearningIterationDispositionV1 {
+    InProgress,
+    /// The authenticated decision retains the deployed bundle. Selection and
+    /// next-task use remain outstanding until next_stage returns None.
+    NoUpdate,
+    /// Local policy kept the parent despite a qualified proposal. Original
+    /// Selection and actual parent use remain mandatory.
+    LocallyDeferredV2,
+    LocallyRetainedV2,
+    /// Only a committed NextUse observation completes either decision path.
+    UsedByNextTask,
+}
+
+impl LearningIterationObservationV1 {
+    pub const fn stage(&self) -> LearningIterationStageV1 {
+        match self {
+            Self::Experience { .. } => LearningIterationStageV1::Experience,
+            Self::Dataset { .. } => LearningIterationStageV1::Dataset,
+            Self::Training { .. } | Self::TrainingNoUpdateV2(_) => {
+                LearningIterationStageV1::Training
+            }
+            Self::Evaluation { .. } => LearningIterationStageV1::Evaluation,
+            Self::Proposal { .. } => LearningIterationStageV1::Proposal,
+            Self::Selection { .. } | Self::LocalDecisionV2(_) => {
+                LearningIterationStageV1::Selection
+            }
+            Self::NextUse { .. } | Self::RetainedModelNextUse { .. } => {
+                LearningIterationStageV1::NextUse
+            }
+        }
+    }
+}
+
+impl LearningIterationOwnersV1 {
+    pub fn owner(&self, stage: LearningIterationStageV1) -> &StableId {
+        match stage {
+            LearningIterationStageV1::Experience => &self.experience,
+            LearningIterationStageV1::Dataset => &self.dataset,
+            LearningIterationStageV1::Training => &self.trainer,
+            LearningIterationStageV1::Evaluation => &self.evaluator,
+            LearningIterationStageV1::Proposal => &self.proposal,
+            LearningIterationStageV1::Selection => &self.selector,
+            LearningIterationStageV1::NextUse => &self.next_use_observer,
+        }
+    }
+}

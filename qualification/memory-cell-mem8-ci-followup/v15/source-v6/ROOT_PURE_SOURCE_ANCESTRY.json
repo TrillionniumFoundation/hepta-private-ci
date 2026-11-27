@@ -1,0 +1,229 @@
+{
+  "schema": "hepta.mem8.v6.source-base-fetch-depth.v1",
+  "source_head": "421d15080b3cb942be8ac51bbe443e268d124a9e",
+  "base_head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "minimum_first_parent_depth_including_source_and_base": 6,
+  "raw_git_commit_chain": [
+    {
+      "sha": "421d15080b3cb942be8ac51bbe443e268d124a9e",
+      "node_id": "C_kwDOTrgxoNoAKDQyMWQxNTA4MGIzY2I5NDJiZThhYzUxYmJlNDQzZTI2OGQxMjRhOWU",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/421d15080b3cb942be8ac51bbe443e268d124a9e",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/421d15080b3cb942be8ac51bbe443e268d124a9e",
+      "author": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T13:35:55Z"
+      },
+      "committer": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T13:35:55Z"
+      },
+      "tree": {
+        "sha": "df293c7709860ecfc3889e4cabb1f970fb649d8e",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/df293c7709860ecfc3889e4cabb1f970fb649d8e"
+      },
+      "message": "test(mem8): qualify bounded readback and ordinary delete controls with equivalent caller proof",
+      "parents": [
+        {
+          "sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/9bd2f589debdba4a93baa363817c3669cb103721",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/9bd2f589debdba4a93baa363817c3669cb103721"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "node_id": "C_kwDOTrgxoNoAKDliZDJmNTg5ZGViZGJhNGE5M2JhYTM2MzgxN2MzNjY5Y2IxMDM3MjE",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/9bd2f589debdba4a93baa363817c3669cb103721",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/9bd2f589debdba4a93baa363817c3669cb103721",
+      "author": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T12:11:55Z"
+      },
+      "committer": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T12:11:55Z"
+      },
+      "tree": {
+        "sha": "c77785ecb368c44ea699769001a47402c9f50591",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/c77785ecb368c44ea699769001a47402c9f50591"
+      },
+      "message": "Apply reviewed source-gate formatting to MEM8 V5 candidate\n\nRecord the exact formatter output from source-only run 43015979473.\nNo native, dependency-lock, owner, or memory-benefit qualification is claimed.",
+      "parents": [
+        {
+          "sha": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c842e995b047eb2ee7d81c073f14fb2fcaa6bff2"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+      "node_id": "C_kwDOTrgxoNoAKGM4NDJlOTk1YjA0N2ViMmVlN2Q4MWMwNzNmMTRmYjJmY2FhNmJmZjI",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+      "author": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T11:48:21Z"
+      },
+      "committer": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T11:48:21Z"
+      },
+      "tree": {
+        "sha": "e9ba2746237562d68b1c732bee0f86df9e352cde",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/e9ba2746237562d68b1c732bee0f86df9e352cde"
+      },
+      "message": "mem8: freeze v5 holdout lock lifecycle repair for source-only qualification",
+      "parents": [
+        {
+          "sha": "6ce78781977d1ca77d004845b933ec9a99f54a83",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/6ce78781977d1ca77d004845b933ec9a99f54a83",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/6ce78781977d1ca77d004845b933ec9a99f54a83"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "6ce78781977d1ca77d004845b933ec9a99f54a83",
+      "node_id": "C_kwDOTrgxoNoAKDZjZTc4NzgxOTc3ZDFjYTc3ZDAwNDg0NWI5MzNlYzlhOTlmNTRhODM",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/6ce78781977d1ca77d004845b933ec9a99f54a83",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/6ce78781977d1ca77d004845b933ec9a99f54a83",
+      "author": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T11:36:19Z"
+      },
+      "committer": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T11:36:19Z"
+      },
+      "tree": {
+        "sha": "c156a37173be3d2d72cd8c8bcd19e22f4d6bed51",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/c156a37173be3d2d72cd8c8bcd19e22f4d6bed51"
+      },
+      "message": "mem8: freeze v4 reviewed source for qualification; native status unqualified",
+      "parents": [
+        {
+          "sha": "189711e3563ea13a5328d52e99a286f082045b98",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/189711e3563ea13a5328d52e99a286f082045b98",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/189711e3563ea13a5328d52e99a286f082045b98"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "189711e3563ea13a5328d52e99a286f082045b98",
+      "node_id": "C_kwDOTrgxoNoAKDE4OTcxMWUzNTYzZWExM2E1MzI4ZDUyZTk5YTI4NmYwODIwNDViOTg",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/189711e3563ea13a5328d52e99a286f082045b98",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/189711e3563ea13a5328d52e99a286f082045b98",
+      "author": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T10:11:44Z"
+      },
+      "committer": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T10:11:44Z"
+      },
+      "tree": {
+        "sha": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/e253b99e0a5c3b3a680569da0d224fabff0781ba"
+      },
+      "message": "fix: repair owner observation paths and platform qualification fixtures\n\nPreserve same-owner byte observations, explicit Windows admission and helper binding, memory writer serialization, and model catalog readiness without relaxing test budgets or assertions. Keep automation changes diagnostic-only. Complete source gates pass; native and scientific qualification remain required.",
+      "parents": [
+        {
+          "sha": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2ae5215beaf8d7b7df111a090b82134beae2683d",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2ae5215beaf8d7b7df111a090b82134beae2683d"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+      "node_id": "C_kwDOTrgxoNoAKDJhZTUyMTViZWFmOGQ3YjdkZjExMWEwOTBiODIxMzRiZWFlMjY4M2Q",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2ae5215beaf8d7b7df111a090b82134beae2683d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2ae5215beaf8d7b7df111a090b82134beae2683d",
+      "author": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T06:12:19Z"
+      },
+      "committer": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-11T06:12:19Z"
+      },
+      "tree": {
+        "sha": "12159640adcf073b51f3837e75575e11f5c20233",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/12159640adcf073b51f3837e75575e11f5c20233"
+      },
+      "message": "Integrate reviewed MEM8 owner, exact-descriptor and dependency sources\n\nPreserve the original G, provider/Windows and dependency commits as parents.\nThe 112 changed paths are disjoint over common 96038; all postimages are unchanged.\nNative results remain bound to their original commits until this composition is tested.\nIgnored provider diagnostics remain ignored; no original unknown turn is replayed.",
+      "parents": [
+        {
+          "sha": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27"
+        },
+        {
+          "sha": "55951ed9094ae894f0256a3461fd9504ef060473",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/55951ed9094ae894f0256a3461fd9504ef060473",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/55951ed9094ae894f0256a3461fd9504ef060473"
+        },
+        {
+          "sha": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/f1fd544b3e12ed6aca83872cdeda8114a1e058c0"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    }
+  ],
+  "scope": "Pinned commit metadata proves the complete six-commit first-parent chain; source checkout depth6 retains the exact comparison base without fetching all history."
+}

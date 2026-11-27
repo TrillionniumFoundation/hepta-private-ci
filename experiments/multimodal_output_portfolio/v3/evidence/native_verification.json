@@ -1,0 +1,104 @@
+{
+  "baseline_commit": "6ab6aa4107b33917580cc041bc36b6603dad8aaa",
+  "bazel": {
+    "configuration_changed": false,
+    "executed": false,
+    "reason": "Existing codex_rust_crate macro derives binary targets from Cargo metadata; no dependency/manifest or compile-time data was added. Cargo target discovery and compilation succeeded. This is not a Bazel test result."
+  },
+  "binary": "/tmp/hepta-native-target/debug/ndu-feedback-generation",
+  "branch": "research/ndu-feedback-generation-v3",
+  "commands": [
+    {
+      "command": "CARGO_HOME=/tmp/hepta-native-cargo RUSTUP_HOME=/tmp/hepta-native-rustup CARGO_TARGET_DIR=/tmp/hepta-native-target CARGO_BUILD_JOBS=4 PATH=/tmp/hepta-native-cargo/bin:/tmp/hepta-output-portfolio-env/bin:$PATH cargo check --locked -p codex-hepta-ndu",
+      "exit_code": 0,
+      "scope": "Existing actual crate/dependencies compile; this occurred before the new bridge tests and is not the new-code verification."
+    },
+    {
+      "command": "CARGO_HOME=/tmp/hepta-native-cargo RUSTUP_HOME=/tmp/hepta-native-rustup CARGO_TARGET_DIR=/tmp/hepta-native-target CARGO_BUILD_JOBS=4 PATH=/tmp/hepta-native-cargo/bin:/tmp/hepta-output-portfolio-env/bin:$PATH just test --locked -p codex-hepta-ndu",
+      "compile_wall_seconds": 12.17,
+      "exit_code": 0,
+      "new_feedback_tests": 6,
+      "nextest_run_id": "0e33fe20-2d2f-4541-95cf-bc66c6f57f58",
+      "test_wall_seconds": 0.093,
+      "tests_failed": 0,
+      "tests_passed": 80,
+      "tests_skipped": 0,
+      "warning": "Scoped --no-deps metadata caused nextest warnings for registry package IDs absent from metadata; no test failure or skip resulted."
+    },
+    {
+      "build_wall_seconds": 0.63,
+      "command": "CARGO_HOME=/tmp/hepta-native-cargo RUSTUP_HOME=/tmp/hepta-native-rustup CARGO_TARGET_DIR=/tmp/hepta-native-target CARGO_BUILD_JOBS=4 PATH=/tmp/hepta-native-cargo/bin:/tmp/hepta-output-portfolio-env/bin:$PATH cargo build --locked -p codex-hepta-ndu --bin ndu-feedback-generation",
+      "exit_code": 0
+    },
+    {
+      "command": "/tmp/hepta-output-portfolio-env/bin/python experiments/multimodal_output_portfolio/v3/native_parity.py --binary /tmp/hepta-native-target/debug/ndu-feedback-generation --receipt experiments/multimodal_output_portfolio/v3/evidence/native_parity_development.json",
+      "exit_code": 0,
+      "working_directory": "/tmp/hepta-portfolio-work"
+    },
+    {
+      "command": "CARGO_HOME=/tmp/hepta-native-cargo RUSTUP_HOME=/tmp/hepta-native-rustup CARGO_TARGET_DIR=/tmp/hepta-native-target CARGO_BUILD_JOBS=4 PATH=/tmp/hepta-native-cargo/bin:/tmp/hepta-output-portfolio-env/bin:$PATH just fix -p codex-hepta-ndu",
+      "exit_code": 0,
+      "first_sandbox_attempt": {
+        "exit_code": 101,
+        "reason": "Cargo fix could not bind its local TCP build-lock listener; approved escalation succeeded."
+      },
+      "source_changed": false,
+      "wall_seconds": 7.12
+    },
+    {
+      "command": "git diff --check -- codex-rs/hepta-ndu",
+      "exit_code": 0,
+      "working_directory": "/tmp/hepta-portfolio-work"
+    }
+  ],
+  "enforced_invariants": [
+    "A nonzero fixed emit cost remains reserved before every selected refinement.",
+    "Fixed configured costs and every finite action value are checked before mutation, even for an infeasible candidate.",
+    "The current session, version, depth, portfolio index, and latent digest must match each decision.",
+    "A selected action is charged exactly once and blocks another choice until its execution acknowledgement.",
+    "All four text/audio/image/video output hashes are required to seal an emission.",
+    "Sealed sessions reject later actions; a new session requires a strictly increasing session ID.",
+    "Emission wins ties up to the shared 1e-12 threshold, independent of action table order.",
+    "Oversized TSV input and EOF before completed emission fail closed."
+  ],
+  "manifest_or_dependency_changes": false,
+  "nextest": "cargo-nextest 0.9.149 (3fe4ef31972f24e0c94cfe291718eab0fe678260, 2026-10-20)",
+  "process_parity": {
+    "emit_choices": 257,
+    "mismatches": 0,
+    "python_cpu_seconds": 0.053706063,
+    "receipt": "native_parity_development.json",
+    "receipt_sha256": "54a3cb9bea026ee9546dbccf3e75f8f24e46f70519ca3742099cccd9bfc76999",
+    "refine_choices": 64,
+    "requests": 5400,
+    "sessions": 257,
+    "transcript": "native_parity_development.transcript.jsonl.gz",
+    "transcript_sha256": "46c2929d1e54763288b8e09d84e11f9aea6812374826359eaad0ba019f3446db",
+    "wall_seconds": 0.09069933600039803
+  },
+  "remaining_scope": [
+    "Python planner supplies action values; the native bridge does not independently solve Bellman equations.",
+    "Real neural execution/observed-latent feedback coupling requires the separate v3 model rollout evidence.",
+    "Hashes are caller-supplied integrity bindings, not cryptographic attestations that a model kernel ran.",
+    "No production NeuronModelPort/NeuronRuntime dispatch path was changed.",
+    "No claims of open-domain multimodal generalization, global optimum, full FBSDE, or production readiness follow from this development audit."
+  ],
+  "rust_working_directory": "/tmp/hepta-portfolio-work/codex-rs",
+  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "schema": "hepta.feedback-native-verification.v1",
+  "scope": "Development verification of a real codex-hepta-ndu persistent finite-action execution owner. Does not attest production NeuronRuntime binding, neural-kernel execution inside Rust, cryptographic caller authentication, or a native Bellman/FBSDE solver.",
+  "test_order": "All tests and process parity preceded scoped just fix. No tests were rerun after fix. Parent owns final just fmt and source freeze.",
+  "test_source_relation": "These hashes bind the source used by the recorded tests and process parity. Clippy did not change any of them. Any subsequent formatting/final-source build must be recorded separately; this receipt does not silently substitute post-test source hashes.",
+  "tested_binary_sha256": "8226656bb90a5c6fc8f616332556c3addbcc379ec606b4bb0521fc9f8716188d",
+  "tested_source_sha256": {
+    "codex-rs/Cargo.lock": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+    "codex-rs/hepta-ndu/BUILD.bazel": "f2d1b5135da40059f000209620f1a206162b77204d5faab580836c1bb3a7d756",
+    "codex-rs/hepta-ndu/Cargo.toml": "92a89006826453d77ba4fc2dde8629d25d2bd4adad7dff80aba8e86a0b8f6ee7",
+    "codex-rs/hepta-ndu/src/bin/ndu-feedback-generation.rs": "206117e7ab1f6c721aae9d14950f0036d6ca3e30e86844bd5b5feb430a3df1e1",
+    "codex-rs/hepta-ndu/src/feedback_generation.rs": "520f53dcbf8abf015602f0eaeb2835b5a300787b815716e33ba340e8c4fa5e47",
+    "codex-rs/hepta-ndu/src/feedback_generation_protocol.rs": "fdcd3d3c4f542011b356d554f96427e3fa11cf4566ad5505d8e54611ecbd9133",
+    "codex-rs/hepta-ndu/src/feedback_generation_tests.rs": "d8b312045f323e0a941ca1a450237ea895c71a54aa5ad224b4ff9b5e46581b4f",
+    "codex-rs/hepta-ndu/src/lib.rs": "a67506831637fb663639f2b5a286969a338990cf8877ba0ff5c93c4f857199e7",
+    "experiments/multimodal_output_portfolio/v3/native_parity.py": "1ec4e6b0332f01e009fc8148c3ff5fc1d90e887baa9ddfc84a91cb3f4174a231"
+  }
+}

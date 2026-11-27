@@ -1,0 +1,117 @@
+{
+  "observed_utc": "2026-11-08T10:14:48.621387+00:00",
+  "queries": {
+    "ci6dd": {
+      "runs": [
+        {
+          "conclusion": "success",
+          "event": "workflow_dispatch",
+          "head_sha": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42458486774",
+          "id": 42458486774,
+          "name": "Hepta architecture convergence",
+          "path": ".github/workflows/hepta-architecture-convergence.yml",
+          "run_attempt": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "event": "workflow_dispatch",
+          "head_sha": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42458383395",
+          "id": 42458383395,
+          "name": "rust-ci",
+          "path": ".github/workflows/rust-ci.yml",
+          "run_attempt": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "event": "workflow_dispatch",
+          "head_sha": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42458293949",
+          "id": 42458293949,
+          "name": "Lane A foundation truth and native qualification",
+          "path": ".github/workflows/lane-a-foundation.yml",
+          "run_attempt": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "event": "push",
+          "head_sha": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42458142750",
+          "id": 42458142750,
+          "name": "Hepta Cell framework native validation",
+          "path": ".github/workflows/hepta-cell-framework-native.yml",
+          "run_attempt": 1,
+          "status": "completed"
+        }
+      ],
+      "total_count": 4
+    },
+    "integration_ref": {
+      "node_id": "REF_kwDOTrgxoNoAMnJlZnMvaGVhZHMvcmVzZWFyY2gvY2VsbC1jYXVzYWwtYWJjZGUtMjAyNjExMDgtY2Yw",
+      "object": {
+        "sha": "1e9c2890fef92ea63dab472e1bdb0c444c9656b5",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1e9c2890fef92ea63dab472e1bdb0c444c9656b5"
+      },
+      "ref": "refs/heads/research/cell-causal-abcde-20261108-cf0",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/cell-causal-abcde-20261108-cf0"
+    },
+    "main": {
+      "name": "main",
+      "sha": "732e934ba496d90fbe042b8d41d479ef901643e5"
+    },
+    "pr4855": {
+      "base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "base_ref": "main",
+      "draft": true,
+      "head": "a86267a0525448870c47a641fb54cd510543ba7a",
+      "head_ref": "integration/unified-w0-w7-20261105-4d868a11",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4855",
+      "merged": false,
+      "number": 4855,
+      "state": "open",
+      "title": "统一集成 W0–W7：固定 source123，原始 CI 与产品验收收敛"
+    },
+    "pr5213": {
+      "base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "base_ref": "main",
+      "draft": true,
+      "head": "3aed50bf51249dbeae4506663b7029eef623ca14",
+      "head_ref": "codex/cell-p0-p5-convergence-20261106-b520",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5213",
+      "merged": false,
+      "number": 5213,
+      "state": "open",
+      "title": "Converge Cell, Memory, HCSN and product owners under one candidate"
+    },
+    "pr5316": {
+      "base": "03b352760c09ed231aa8be5d841b33d514432c55",
+      "base_ref": "research/ndu-native-noupdate-bridge-20261107-8ef7",
+      "draft": true,
+      "head": "b8d12ad02a2d8311581a4aa69e6cdf07d18f9758",
+      "head_ref": "research/ndu-native-nextuse-source-20261107-8ef7",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5316",
+      "merged": false,
+      "number": 5316,
+      "state": "open",
+      "title": "test(hepta): execute and recover incumbent next use after evaluated NoUpdate"
+    },
+    "pr5343": {
+      "base": "78afd5bde0e6504de5a2e5a8467af1e8301f6bc9",
+      "base_ref": "codex/hcsn-diff-06-qualification-20261108",
+      "draft": true,
+      "head": "bb048cb811c2b755b7e54e97d24c63ec7ec8d1b7",
+      "head_ref": "codex/hcsn-diff-07-evidence-20261108",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5343",
+      "merged": false,
+      "number": 5343,
+      "state": "open",
+      "title": "[HCSN 7/7] Record generated CPU qualification and audit evidence"
+    }
+  },
+  "repo": "TrillionniumFoundation/hepta-private-ci"
+}

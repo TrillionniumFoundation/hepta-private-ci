@@ -1,0 +1,290 @@
+{
+  "base": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "base_tree": "023c017618563a08fe5043551e26f89efd313fa6",
+  "branch": "research/cell-causal-abcde-20261108-cf0",
+  "head": "1e9c2890fef92ea63dab472e1bdb0c444c9656b5",
+  "object_reconciliation_retries": [
+    {
+      "absence_read_back_before_retry": true,
+      "attempt": 1,
+      "error": "Native gh API failed: git/trees: Post \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees\": net/http: TLS handshake timeout\n",
+      "expected_sha": "6ca38f558b2fd7f14655bb4a1c21ebf89f452e3b",
+      "kind": "trees"
+    },
+    {
+      "absence_read_back_before_retry": true,
+      "attempt": 1,
+      "error": "Native gh API failed: git/trees: Post \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees\": dial tcp 140.82.112.6:443: i/o timeout\n",
+      "expected_sha": "16f00942ee074e6c03f85076bbb3e4d4d12f1798",
+      "kind": "trees"
+    }
+  ],
+  "package_sha256": "78d203320e6b42c979d25482281df8eb3d7e75c66ac65f40122043ef9798119e",
+  "preflight": [
+    {
+      "base_blob": null,
+      "new_blob": "e845140f751d3d143b426b5ff385dae5db1dd7ca",
+      "path": "scripts/ndu_real_runtime/causal_protocol.py",
+      "stage": "research: freeze Cell A-E matching and resource contrasts"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "15e75f4cb3b2c57d6ddf4e97c9af557c7b65632e",
+      "path": "scripts/ndu_real_runtime/causal_analysis.py",
+      "stage": "research: retain paired denominators and nonoverlapping cost envelopes"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "666dee6ab2be24b6f3c6674c2c25aa48be431efd",
+      "path": "scripts/ndu_real_runtime/test_causal_protocol.py",
+      "stage": "research: retain paired denominators and nonoverlapping cost envelopes"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "40fd99815b6d5fa6bb0693e91e1cd45b4ab8f995",
+      "path": "scripts/ndu_real_runtime/_causal_checks.py",
+      "stage": "cell: validate dependent bundle composition and original next-use evidence"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "365d92b50332aab9d56a0cad0cd3b589dc6009de",
+      "path": "scripts/ndu_real_runtime/causal_composition.py",
+      "stage": "cell: validate dependent bundle composition and original next-use evidence"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "1f1621887b930dd8b06d74e1c419fc34396feb9b",
+      "path": "scripts/ndu_real_runtime/causal_improver.py",
+      "stage": "cell: validate improver plans and independent evaluation references"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "4a40adb5ee53d6e8614579de4bdd7acab11f5ac7",
+      "path": "scripts/ndu_real_runtime/causal_improver.py",
+      "stage": "cell: retain complete parent and descendant attempt inventories"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "d9ed004cc968170f6f12ee583411866aa0ff08a0",
+      "path": "scripts/ndu_real_runtime/causal_ace.py",
+      "stage": "cell: gate architecture comparisons on implemented local state and parameters"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "5cfbdbdd661d1c2438c380c8e1d1e9fd7d0949ab",
+      "path": "scripts/ndu_real_runtime/test_causal_ace.py",
+      "stage": "tests: cover architecture and composition evidence failures"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "b42ece02acb4c90109253d5a234b78e3757c2910",
+      "path": "scripts/ndu_real_runtime/test_causal_ace.py",
+      "stage": "tests: preserve improver unknowns and strict scalar evidence boundaries"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "49c3a8b04b58777cb21c2a7e4865c18d210b1558",
+      "path": "scripts/ndu_real_runtime/causal_topology.py",
+      "stage": "cell: require actual topology transitions and successor execution traces"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "2d2463a1a62bfc77d0c9d71751cf55eadc2bb36e",
+      "path": "scripts/ndu_real_runtime/test_causal_topology.py",
+      "stage": "cell: require actual topology transitions and successor execution traces"
+    },
+    {
+      "base_blob": "66cb5398edd87bb8fa7eee298c105fae27db3ce1",
+      "new_blob": "f980a001392fb9ce07d482991ccf907453a08f33",
+      "path": "scripts/ndu_real_runtime/fit_loop.py",
+      "stage": "training: match memory ablations on complete episodes and batch schedules"
+    },
+    {
+      "base_blob": "4d2a524e1133a486372f3cf0c80fc8b4ad14cf7f",
+      "new_blob": "8408d8c038e10e272893c2a434811797d2a18e5e",
+      "path": "scripts/ndu_real_runtime/training.py",
+      "stage": "training: match memory ablations on complete episodes and batch schedules"
+    },
+    {
+      "base_blob": "532512569c2c10fa6a16527b9b154017e46b320b",
+      "new_blob": "9071bf33ea0b12bda23a260be1c4f16accd5020e",
+      "path": "scripts/ndu_real_runtime/training_grid.py",
+      "stage": "training: bind paired grids to state modes and original fit receipts"
+    },
+    {
+      "base_blob": "ebe06220b531d78ab77737aebbd1ee1d56d4144b",
+      "new_blob": "362400b41be8620832e3bd17b4ea42fd35dcb8a0",
+      "path": "scripts/ndu_real_runtime/pipeline.py",
+      "stage": "training: bind paired grids to state modes and original fit receipts"
+    },
+    {
+      "base_blob": "27ae4f38cffcafd519d4cdd813689280ff9eb965",
+      "new_blob": "167d62442a8b92f3f31c086ea7bf121f1f895fa2",
+      "path": "scripts/ndu_real_runtime/matrix.py",
+      "stage": "evaluation: separate state-mode profiles and planning comparator selection"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "01d928ad5ad55455eaa740972c2ad815f1e428ca",
+      "path": "scripts/ndu_real_runtime/causal_b_contract.py",
+      "stage": "research: define bounded causal B training contracts"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "db052032b55c0226f4b170a3ebbbb5ad8f7416cd",
+      "path": "scripts/ndu_real_runtime/causal_b.py",
+      "stage": "research: execute complete paired training ledgers under a finite budget"
+    },
+    {
+      "base_blob": null,
+      "new_blob": "9b2513b21d6efeeeeb350a095f01d4079e2c3957",
+      "path": "scripts/ndu_real_runtime/test_causal_b.py",
+      "stage": "research: execute complete paired training ledgers under a finite budget"
+    }
+  ],
+  "read_transport_retries": [
+    {
+      "attempt": 1,
+      "endpoint": "git/trees/614f5c87038dca8c903e2caa31b93b31693b291d",
+      "error": "Get \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/614f5c87038dca8c903e2caa31b93b31693b291d\": dial tcp 140.82.113.5:443: i/o timeout\n"
+    },
+    {
+      "attempt": 1,
+      "endpoint": "git/commits/881ab366dd108a4f4b1df92434a67cd2ff5b7d78",
+      "error": "Get \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/881ab366dd108a4f4b1df92434a67cd2ff5b7d78\": dial tcp 20.250.119.72:443: i/o timeout\n"
+    },
+    {
+      "attempt": 1,
+      "endpoint": "git/trees/16f00942ee074e6c03f85076bbb3e4d4d12f1798",
+      "error": "Get \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/16f00942ee074e6c03f85076bbb3e4d4d12f1798\": net/http: TLS handshake timeout\n"
+    },
+    {
+      "attempt": 1,
+      "endpoint": "git/commits/86744852fcc1c19711e978ccf1954e2b9b13720f",
+      "error": "Get \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/86744852fcc1c19711e978ccf1954e2b9b13720f\": dial tcp 20.250.119.72:443: i/o timeout\n"
+    }
+  ],
+  "schema": "hepta.cell-causal.native-publication.v1",
+  "stages": [
+    {
+      "commit": "a32d53bbb277eb0e8cb6400ce204ffcefe40fc71",
+      "files": [
+        "scripts/ndu_real_runtime/causal_protocol.py"
+      ],
+      "message": "research: freeze Cell A-E matching and resource contrasts",
+      "tree": "b2d8b2a0bd18bcfffe988607caca329031e81078"
+    },
+    {
+      "commit": "6957e6d95357fe595a92e8f2c521ddc22855ae38",
+      "files": [
+        "scripts/ndu_real_runtime/causal_analysis.py",
+        "scripts/ndu_real_runtime/test_causal_protocol.py"
+      ],
+      "message": "research: retain paired denominators and nonoverlapping cost envelopes",
+      "tree": "8a146e6ad0c9db24913233c3ba11dfe65c752255"
+    },
+    {
+      "commit": "abfeefe93b848108ebaa7a27be6e27873a1c806f",
+      "files": [
+        "scripts/ndu_real_runtime/_causal_checks.py",
+        "scripts/ndu_real_runtime/causal_composition.py"
+      ],
+      "message": "cell: validate dependent bundle composition and original next-use evidence",
+      "tree": "614f5c87038dca8c903e2caa31b93b31693b291d"
+    },
+    {
+      "commit": "bf0c1faa2fc137935ddc84f2791de0ac6821c7c9",
+      "files": [
+        "scripts/ndu_real_runtime/causal_improver.py"
+      ],
+      "message": "cell: validate improver plans and independent evaluation references",
+      "tree": "6ca38f558b2fd7f14655bb4a1c21ebf89f452e3b"
+    },
+    {
+      "commit": "69fc11121b5671c44c94029ab8e82d11676d930f",
+      "files": [
+        "scripts/ndu_real_runtime/causal_improver.py"
+      ],
+      "message": "cell: retain complete parent and descendant attempt inventories",
+      "tree": "faf3b7d89d2e0c4c27f3c88a4a3d4ed0c65d9d9d"
+    },
+    {
+      "commit": "881ab366dd108a4f4b1df92434a67cd2ff5b7d78",
+      "files": [
+        "scripts/ndu_real_runtime/causal_ace.py"
+      ],
+      "message": "cell: gate architecture comparisons on implemented local state and parameters",
+      "tree": "55db2f1e5038aef6bf28dd115c99e6fae2fed2bc"
+    },
+    {
+      "commit": "ecd36526b8a6e1659a66612c4bc52134e255fab2",
+      "files": [
+        "scripts/ndu_real_runtime/test_causal_ace.py"
+      ],
+      "message": "tests: cover architecture and composition evidence failures",
+      "tree": "e210823f14cc4cedc4c15b830020d07e6ccbc974"
+    },
+    {
+      "commit": "8a8c41de60be4480936c6cfec96c9148659def66",
+      "files": [
+        "scripts/ndu_real_runtime/test_causal_ace.py"
+      ],
+      "message": "tests: preserve improver unknowns and strict scalar evidence boundaries",
+      "tree": "7928cace03a29d0516655dc6efc381843adc051f"
+    },
+    {
+      "commit": "7b3e1640c57350138f98958b6a93d85e00919e7c",
+      "files": [
+        "scripts/ndu_real_runtime/causal_topology.py",
+        "scripts/ndu_real_runtime/test_causal_topology.py"
+      ],
+      "message": "cell: require actual topology transitions and successor execution traces",
+      "tree": "4e24e35b437546165ab978d32c91f443addd1325"
+    },
+    {
+      "commit": "e961d2158db15c7b970d04e860c61770f4dc5929",
+      "files": [
+        "scripts/ndu_real_runtime/fit_loop.py",
+        "scripts/ndu_real_runtime/training.py"
+      ],
+      "message": "training: match memory ablations on complete episodes and batch schedules",
+      "tree": "872cb26b2b1505eeff8c8b898ebcbbc04a0ee090"
+    },
+    {
+      "commit": "0f0c7dc00358b09c6bf82d8041f656fc8d9fcfd5",
+      "files": [
+        "scripts/ndu_real_runtime/pipeline.py",
+        "scripts/ndu_real_runtime/training_grid.py"
+      ],
+      "message": "training: bind paired grids to state modes and original fit receipts",
+      "tree": "16f00942ee074e6c03f85076bbb3e4d4d12f1798"
+    },
+    {
+      "commit": "0abd4a4ce54cab98578fa7fb83643b2a110f634c",
+      "files": [
+        "scripts/ndu_real_runtime/matrix.py"
+      ],
+      "message": "evaluation: separate state-mode profiles and planning comparator selection",
+      "tree": "041f3df8e9e8512a88bb41c6d484a03d5d885cc2"
+    },
+    {
+      "commit": "86744852fcc1c19711e978ccf1954e2b9b13720f",
+      "files": [
+        "scripts/ndu_real_runtime/causal_b_contract.py"
+      ],
+      "message": "research: define bounded causal B training contracts",
+      "tree": "ece356698f07eeba62cad84a846cd1e3d128e3f8"
+    },
+    {
+      "commit": "1e9c2890fef92ea63dab472e1bdb0c444c9656b5",
+      "files": [
+        "scripts/ndu_real_runtime/causal_b.py",
+        "scripts/ndu_real_runtime/test_causal_b.py"
+      ],
+      "message": "research: execute complete paired training ledgers under a finite budget",
+      "tree": "20f0836afc9c790fee23ddd150817a6d11550598"
+    }
+  ],
+  "status": "PUSHED_READBACK_VERIFIED",
+  "tree": "20f0836afc9c790fee23ddd150817a6d11550598"
+}

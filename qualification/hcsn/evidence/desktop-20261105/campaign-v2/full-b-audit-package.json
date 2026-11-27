@@ -1,0 +1,54 @@
+{
+  "schema": "hcsn-external-full-b-cuda-audit-package-v2",
+  "prepared_at_utc": "2026-11-05T17:56:15.753562+00:00",
+  "status": "prepared and locally controlled only; no Torch numerical or CUDA audit execution",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "original_baseline_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+  "candidate_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "candidate_preparation_manifest_sha256": "9b0cda6b3db4d9ca81ce1caa49d41d76c39902074ac66617fbe3985adebc4343",
+  "candidate_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+  "candidate_benchmark_source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+  "files_sha256": {
+    "audit_full_b_cuda.py": "7a5e27f123ba2f8d32d17385f13650b230c03cd9d51496364bb2da39f082a7de",
+    "PROTOCOL.json": "1b0c726785a406501a83ab33265bb04428b611264120ad502c44e599bd4154e7",
+    "check_non_torch.py": "8fd44e90e7af111a7e1f7c167d17629203558941a48a43019aab6f19da658add",
+    "README.md": "50ed7402370b5f8d7b648782cf0c12a59c9406c68c7328266a02d2c77f2bc34d",
+    "PREDECESSOR-v1-PACKAGE.json": "a41fe7f4adf6a791490f33b94ee3a9643388e30006ab96cb82a507ef705958ae",
+    "negative-controls-v1/RESULT.json": "7dd08c4ce9ac3a849def8ebc8e84524de2fcc77afeff982fc1c383c2a93470f0",
+    "independent-delta-review.json": "8f3dad9252bb2660d7c0f3a1de589a66872bb6207d6a51c702841abef2f63ebf"
+  },
+  "executable_files": [
+    "audit_full_b_cuda.py",
+    "PROTOCOL.json"
+  ],
+  "v1_script_and_protocol_unchanged": true,
+  "predecessor_script_sha256": "5acbb1fa661a67db81fa5148c3c30293aaffb4827f363985e8e3905f17cd7b05",
+  "predecessor_protocol_sha256": "4983e126099ff69221e477012034058035463bd03f853f51cea1299de60fc1db",
+  "uuid_delta": "Uses frozen candidate canonical_gpu_uuid and runtime-profile-v2 raw/canonical physical identity checks; rejects malformed/ordinal/MIG/mismatched forms before any tensor replay.",
+  "unchanged_functions_byte_verified": [
+    "run_grid",
+    "load_checkpoint",
+    "main",
+    "guard"
+  ],
+  "frozen_candidate_package_files_verified": 32,
+  "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "allowed_policies": [
+    0,
+    1
+  ],
+  "original_matrix_denominator": 170,
+  "requested_b_runs": 20,
+  "counts_toward_170_runs": false,
+  "convergence_qualified": null,
+  "numerical_threshold_or_budget_changed": false,
+  "preparation_controls": {
+    "status": "passed",
+    "passed": 25,
+    "failed": 0,
+    "scope": "Synthetic source/config/profile/UUID/ownership controls; Torch import blocked, no model computation."
+  },
+  "independent_review_sha256": "8f3dad9252bb2660d7c0f3a1de589a66872bb6207d6a51c702841abef2f63ebf",
+  "actual_nvml_lookup_scope": "Independent observed nvidia-ml-py13.610.43 accepted both bare and prefixed lookup. No claim that bare lookup itself caused prior energy unavailability.",
+  "physical_energy_qualification": "Open; previously observed NOT_SUPPORTED remains independent of UUID normalization."
+}

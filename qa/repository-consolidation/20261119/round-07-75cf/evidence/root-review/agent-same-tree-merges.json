@@ -1,0 +1,47 @@
+{
+  "start": "638f6774391441f7ea9294f21905adeb6caf4693",
+  "head": "623a05868664263552dc93241f7a37b272acc3cf",
+  "merges": [
+    {
+      "tip": "f1b128f888f021591fdb11b94e28cf467633d70f",
+      "prior_head": "638f6774391441f7ea9294f21905adeb6caf4693",
+      "automatic_tree": "1efe25b8fa138c1d793b4cd6b8167ec4ebac5589",
+      "merge_bases": [
+        "6fe608300f0eb27d2a1e3f6a713997b54ee9de1d"
+      ],
+      "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "commit": "49ebefe90508029e94965125a7f18bd8fab90577",
+      "reason": "The current keyring 4.2/core/ZBus stack has removed the native dbus, dbus-secret-service and libdbus-sys packages. The old vendored keyring-v3 feature and its three lock edges are superseded; restoring them would conflict with the present API and dependency graph."
+    },
+    {
+      "tip": "21eeda36754b523461464a423acfc0c5f6388a01",
+      "prior_head": "49ebefe90508029e94965125a7f18bd8fab90577",
+      "automatic_tree": "12515074c779fc7a8de6d2ad0a3bdaf74ba56da6",
+      "merge_bases": [
+        "dfa24e27eb2ef6ffac1e04afb6a1e3d463c24892"
+      ],
+      "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "commit": "7b8efc003897a83582b998476130d559796c065a",
+      "reason": "RMCP uses the shared synchronous keyring_core::Entry adapter through codex-keyring-store, and the current OAuth documentation explains v4/ZBus and configured fallback. Old direct v3 sync/vendored target flags and unconditional-fallback wording must not be reintroduced.",
+      "conflicts": [
+        "codex-rs/rmcp-client/Cargo.toml",
+        "codex-rs/rmcp-client/src/oauth.rs"
+      ]
+    },
+    {
+      "tip": "08fac00c29e474fada5feede86d89eb22e816d97",
+      "prior_head": "7b8efc003897a83582b998476130d559796c065a",
+      "automatic_tree": "5dc762fca71c1488fb6e618b334524cf277736ad",
+      "merge_bases": [
+        "656a7b3441fb35e22f5db401b9b61d1a0693af5a"
+      ],
+      "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "commit": "623a05868664263552dc93241f7a37b272acc3cf",
+      "reason": "Current source already clones verified slots, teacher targets and each student-forward input. It also returns paired receipts and retains the in-place-student regression. Its late-mutation regression uses a training forward hook instead of replacing optimizer.step, preserving the later optimizer-integrity guards and all additional tests.",
+      "conflicts": [
+        "qa/stem-bakeoff/offline_shard_distill.py",
+        "qa/stem-bakeoff/test_offline_shard_distill.py"
+      ]
+    }
+  ]
+}

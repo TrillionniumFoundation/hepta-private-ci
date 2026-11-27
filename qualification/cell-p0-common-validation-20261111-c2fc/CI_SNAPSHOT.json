@@ -1,0 +1,853 @@
+{
+  "schema": "hepta.final-candidate.ci-readonly-audit.v1",
+  "source": {
+    "pr": 5890,
+    "sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+    "tree": "80f33dcd59cf3721dbec3a9cb2ee695db5187cd5",
+    "parents": [
+      "ca7f62f2932b97b5053c592d6d5bcf30a0759a24",
+      "a15acbf4db6178523a9297033c86e3be0b2725a3"
+    ],
+    "base_sha": "a15acbf4db6178523a9297033c86e3be0b2725a3",
+    "prospective_merge_sha_at_read": "b6314d5a81ecc37370a355a0f5cb28d8e17c7609",
+    "pr_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5890",
+    "freeze_confirmed_by_parent": true,
+    "git_commit_and_tree_independently_read": true,
+    "pr_head_sha_at_latest_read": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+    "pr_updated_at_at_latest_read": "2026-11-11T01:16:52Z"
+  },
+  "snapshot": {
+    "read_started_at": "2026-11-11 01:33:26 UTC",
+    "read_completed_at": "2026-11-11 01:33:33 UTC",
+    "scope": "third and final exact-S read pass requested for evidence freeze; no polling or waiting after this pass",
+    "runs_api_query": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=1e822b3aeac79d9e9fc169f7fc6a48821baa6654&per_page=100",
+    "runs_total_count": 5,
+    "runs_returned": 5,
+    "run_pagination_complete": true,
+    "jobs_query": "per_page=100&filter=all",
+    "all_job_pages_complete": true
+  },
+  "source_binding": {
+    "all_run_top_level_head_sha_match": true,
+    "all_observed_job_head_sha_match": true,
+    "native_actual_checkout_sha": null,
+    "native_checkout_snapshot_observed": false,
+    "caution": "Nested pull_requests[].head.sha in old-run metadata can reflect the PR's current head. Use top-level run.head_sha, each job.head_sha and actual checkout snapshot; never relabel an R run as S.",
+    "native_checkout_assertion_step_passed": true,
+    "native_checkout_assertion_explanation": "The exact-S workflow's Prepare source-bound evidence driver step completed successfully; it asserts checkout commit == SOURCE_SHA and a clean source snapshot. This pass did not fetch successful-job logs or the raw snapshot artifact.",
+    "pr_head_still_frozen_S": true
+  },
+  "decision": "IN_PROGRESS_NO_NATIVE_QUALIFICATION",
+  "runs": [
+    {
+      "id": 42937682992,
+      "name": "Hepta daemon learning native",
+      "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+      "event": "pull_request",
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937682992",
+      "created_at": "2026-11-11T01:16:00Z",
+      "updated_at": "2026-11-11T01:23:04Z",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 130251686051,
+          "name": "native",
+          "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+          "status": "in_progress",
+          "conclusion": null,
+          "runner_name": "GitHub Actions 1000097784",
+          "started_at": "2026-11-11T01:23:04Z",
+          "completed_at": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-11-11T01:23:04Z",
+              "completed_at": "2026-11-11T01:23:06Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-11-11T01:23:06Z",
+              "completed_at": "2026-11-11T01:24:57Z"
+            },
+            {
+              "name": "Prepare source-bound evidence driver",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-11-11T01:24:57Z",
+              "completed_at": "2026-11-11T01:24:58Z"
+            },
+            {
+              "name": "Install native prerequisites",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-11-11T01:24:58Z",
+              "completed_at": "2026-11-11T01:25:09Z"
+            },
+            {
+              "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-11-11T01:25:09Z",
+              "completed_at": "2026-11-11T01:25:11Z"
+            },
+            {
+              "name": "Install repository-pinned uv for Python maintenance",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-11-11T01:25:11Z",
+              "completed_at": "2026-11-11T01:25:15Z"
+            },
+            {
+              "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-11-11T01:25:15Z",
+              "completed_at": "2026-11-11T01:25:15Z"
+            },
+            {
+              "name": "Run sudo install -m 0755 \"$(command -v dotslash)\" /usr/local/bin/dotslash",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8,
+              "started_at": "2026-11-11T01:25:15Z",
+              "completed_at": "2026-11-11T01:25:15Z"
+            },
+            {
+              "name": "Resolve the repository-verified V8 pair",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9,
+              "started_at": "2026-11-11T01:25:15Z",
+              "completed_at": "2026-11-11T01:25:24Z"
+            },
+            {
+              "name": "Record toolchain and fetch locked native dependencies",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10,
+              "started_at": "2026-11-11T01:25:24Z",
+              "completed_at": "2026-11-11T01:25:40Z"
+            },
+            {
+              "name": "Build and pin the same-source joint proposal helper",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-11-11T01:25:40Z",
+              "completed_at": "2026-11-11T01:32:50Z"
+            },
+            {
+              "name": "Run ordinary and Root suites then scoped maintenance",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 12,
+              "started_at": "2026-11-11T01:32:50Z",
+              "completed_at": null
+            },
+            {
+              "name": "Retain raw evidence and recoverable maintenance",
+              "status": "pending",
+              "conclusion": null,
+              "number": 13,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Install repository-pinned uv for Python maintenance",
+              "status": "pending",
+              "conclusion": null,
+              "number": 25,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "pending",
+              "conclusion": null,
+              "number": 26,
+              "started_at": null,
+              "completed_at": null
+            }
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937682992/job/130251686051"
+        }
+      ]
+    },
+    {
+      "id": 42937683233,
+      "name": "blocking-ci",
+      "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+      "event": "pull_request",
+      "path": ".github/workflows/blocking-ci.yml",
+      "status": "queued",
+      "conclusion": null,
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683233",
+      "created_at": "2026-11-11T01:16:00Z",
+      "updated_at": "2026-11-11T01:24:32Z",
+      "jobs_total_count": 3,
+      "jobs": [
+        {
+          "id": 130255148411,
+          "name": "Select blocking CI scope",
+          "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-11-11T01:24:32Z",
+          "completed_at": null,
+          "steps": [],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683233/job/130255148411"
+        },
+        {
+          "id": 130255148724,
+          "name": "Codespell / Check for spelling errors",
+          "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000097815",
+          "started_at": "2026-11-11T01:24:36Z",
+          "completed_at": "2026-11-11T01:25:19Z",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-11-11T01:24:37Z",
+              "completed_at": "2026-11-11T01:24:38Z"
+            },
+            {
+              "name": "Build codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-11-11T01:24:38Z",
+              "completed_at": "2026-11-11T01:24:47Z"
+            },
+            {
+              "name": "Checkout",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-11-11T01:24:47Z",
+              "completed_at": "2026-11-11T01:24:57Z"
+            },
+            {
+              "name": "Annotate locations with typos",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-11-11T01:24:57Z",
+              "completed_at": "2026-11-11T01:24:57Z"
+            },
+            {
+              "name": "Codespell",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-11-11T01:24:57Z",
+              "completed_at": "2026-11-11T01:25:16Z"
+            },
+            {
+              "name": "Check for a clean worktree",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-11-11T01:25:16Z",
+              "completed_at": "2026-11-11T01:25:17Z"
+            },
+            {
+              "name": "Post Checkout",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12,
+              "started_at": "2026-11-11T01:25:17Z",
+              "completed_at": "2026-11-11T01:25:17Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13,
+              "started_at": "2026-11-11T01:25:17Z",
+              "completed_at": "2026-11-11T01:25:17Z"
+            }
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683233/job/130255148724"
+        },
+        {
+          "id": 130255149128,
+          "name": "Blob size policy / Blob size policy",
+          "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-11-11T01:24:32Z",
+          "completed_at": null,
+          "steps": [],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683233/job/130255149128"
+        }
+      ]
+    },
+    {
+      "id": 42937682929,
+      "name": "Hepta architecture convergence",
+      "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+      "event": "pull_request",
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "status": "queued",
+      "conclusion": null,
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937682929",
+      "created_at": "2026-11-11T01:16:00Z",
+      "updated_at": "2026-11-11T01:21:13Z",
+      "jobs_total_count": 2,
+      "jobs": [
+        {
+          "id": 130253804783,
+          "name": "Architecture convergence (base-merge)",
+          "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-11-11T01:21:13Z",
+          "completed_at": null,
+          "steps": [],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937682929/job/130253804783"
+        },
+        {
+          "id": 130253805082,
+          "name": "Architecture convergence (source-head)",
+          "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-11-11T01:21:13Z",
+          "completed_at": null,
+          "steps": [],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937682929/job/130253805082"
+        }
+      ]
+    },
+    {
+      "id": 42937683069,
+      "name": "Hepta Cell research stage evidence",
+      "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+      "event": "pull_request",
+      "path": ".github/workflows/hepta-cell-research-stages.yml",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683069",
+      "created_at": "2026-11-11T01:16:00Z",
+      "updated_at": "2026-11-11T01:22:42Z",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 130251689527,
+          "name": "evidence-gate",
+          "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000097765",
+          "started_at": "2026-11-11T01:22:19Z",
+          "completed_at": "2026-11-11T01:22:41Z",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-11-11T01:22:20Z",
+              "completed_at": "2026-11-11T01:22:21Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-11-11T01:22:21Z",
+              "completed_at": "2026-11-11T01:22:29Z"
+            },
+            {
+              "name": "Check prospective comparison declarations",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-11-11T01:22:29Z",
+              "completed_at": "2026-11-11T01:22:29Z"
+            },
+            {
+              "name": "Verify the actual source and evidence gate",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-11-11T01:22:29Z",
+              "completed_at": "2026-11-11T01:22:38Z"
+            },
+            {
+              "name": "Retain results for the exact source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-11-11T01:22:38Z",
+              "completed_at": "2026-11-11T01:22:39Z"
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10,
+              "started_at": "2026-11-11T01:22:39Z",
+              "completed_at": "2026-11-11T01:22:39Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-11-11T01:22:39Z",
+              "completed_at": "2026-11-11T01:22:39Z"
+            }
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683069/job/130251689527"
+        }
+      ]
+    },
+    {
+      "id": 42937683149,
+      "name": "v8-canary",
+      "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+      "event": "pull_request",
+      "path": ".github/workflows/v8-canary.yml",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683149",
+      "created_at": "2026-11-11T01:16:00Z",
+      "updated_at": "2026-11-11T01:18:39Z",
+      "jobs_total_count": 3,
+      "jobs": [
+        {
+          "id": 130251686555,
+          "name": "metadata",
+          "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000097639",
+          "started_at": "2026-11-11T01:16:09Z",
+          "completed_at": "2026-11-11T01:18:38Z",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-11-11T01:16:10Z",
+              "completed_at": "2026-11-11T01:16:11Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-11-11T01:16:11Z",
+              "completed_at": "2026-11-11T01:18:34Z"
+            },
+            {
+              "name": "Set up Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-11-11T01:18:34Z",
+              "completed_at": "2026-11-11T01:18:34Z"
+            },
+            {
+              "name": "Resolve exact v8 crate version",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-11-11T01:18:34Z",
+              "completed_at": "2026-11-11T01:18:34Z"
+            },
+            {
+              "name": "Detect V8 canary changes",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-11-11T01:18:34Z",
+              "completed_at": "2026-11-11T01:18:35Z"
+            },
+            {
+              "name": "Check for a clean worktree",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-11-11T01:18:35Z",
+              "completed_at": "2026-11-11T01:18:35Z"
+            },
+            {
+              "name": "Post Set up Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-11-11T01:18:35Z",
+              "completed_at": "2026-11-11T01:18:35Z"
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12,
+              "started_at": "2026-11-11T01:18:35Z",
+              "completed_at": "2026-11-11T01:18:35Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13,
+              "started_at": "2026-11-11T01:18:35Z",
+              "completed_at": "2026-11-11T01:18:35Z"
+            }
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683149/job/130251686555"
+        },
+        {
+          "id": 130252757750,
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+          "status": "completed",
+          "conclusion": "skipped",
+          "runner_name": null,
+          "started_at": "2026-11-11T01:18:39Z",
+          "completed_at": "2026-11-11T01:18:38Z",
+          "steps": [],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683149/job/130252757750"
+        },
+        {
+          "id": 130252758027,
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+          "status": "completed",
+          "conclusion": "skipped",
+          "runner_name": null,
+          "started_at": "2026-11-11T01:18:39Z",
+          "completed_at": "2026-11-11T01:18:38Z",
+          "steps": [],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683149/job/130252758027"
+        }
+      ]
+    }
+  ],
+  "native": {
+    "run_id": 42937682992,
+    "job_id": 130251686051,
+    "workflow_triggered": true,
+    "job_status": "in_progress",
+    "runner_assigned": true,
+    "observed_steps": 15,
+    "workflow_source_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+    "workflow_blob": "30542aef705485940519a346517ec8f6f4a740f8",
+    "source_head_lane": true,
+    "source_sha_expression": "github.event.pull_request.head.sha || github.sha",
+    "actual_matched_pr_path": "scripts/test_hepta_cell_research_units.py",
+    "ordinary_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval"
+    ],
+    "ordinary_args": [
+      "--lib",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0"
+    ],
+    "ordinary_stage_execution_observed": false,
+    "root_stage_execution_observed": false,
+    "root_required_euid": 0,
+    "root_parent_count": 7,
+    "root_parents": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd"
+    ],
+    "root_args": [
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "--run-ignored",
+      "only",
+      "--test-threads",
+      "1",
+      "--retries",
+      "0"
+    ],
+    "root_junit_exact_parent_coverage_required": true,
+    "sequential_prerequisites": [
+      "checkout exact SOURCE_SHA and verify clean snapshot",
+      "native prerequisites/toolchain/V8/locked dependency fetch",
+      "same-source codex-hepta-infer-worker-host helper build",
+      "ordinary three-package library suite",
+      "Root bind-mount fixture setup",
+      "Root exact seven parent suite",
+      "helper verification and unchanged pre/post test source"
+    ],
+    "maintenance_boundary": "just fix/fmt and compile-only bins-check occur after behavioral tests; any maintained postimage requires its own identity and is not a behavioral test PASS on S.",
+    "artifact_expected_if_upload_runs": "daemon-learning-native-1e822b3aeac79d9e9fc169f7fc6a48821baa6654-1",
+    "artifact_observed": null,
+    "runner_name": "GitHub Actions 1000097784",
+    "successful_steps": [
+      {
+        "number": 1,
+        "name": "Set up job"
+      },
+      {
+        "number": 2,
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+      },
+      {
+        "number": 3,
+        "name": "Prepare source-bound evidence driver"
+      },
+      {
+        "number": 4,
+        "name": "Install native prerequisites"
+      },
+      {
+        "number": 5,
+        "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532"
+      },
+      {
+        "number": 6,
+        "name": "Install repository-pinned uv for Python maintenance"
+      },
+      {
+        "number": 7,
+        "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a"
+      },
+      {
+        "number": 8,
+        "name": "Run sudo install -m 0755 \"$(command -v dotslash)\" /usr/local/bin/dotslash"
+      },
+      {
+        "number": 9,
+        "name": "Resolve the repository-verified V8 pair"
+      },
+      {
+        "number": 10,
+        "name": "Record toolchain and fetch locked native dependencies"
+      },
+      {
+        "number": 11,
+        "name": "Build and pin the same-source joint proposal helper"
+      }
+    ],
+    "current_step": {
+      "number": 12,
+      "name": "Run ordinary and Root suites then scoped maintenance",
+      "status": "in_progress",
+      "started_at": "2026-11-11T01:32:50Z"
+    },
+    "ordinary_and_root_step": {
+      "number": 12,
+      "name": "Run ordinary and Root suites then scoped maintenance",
+      "status": "in_progress",
+      "started_at": "2026-11-11T01:32:50Z"
+    },
+    "native_terminal_result": null,
+    "helper_build": {
+      "number": 11,
+      "name": "Build and pin the same-source joint proposal helper",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T01:25:40Z",
+      "completed_at": "2026-11-11T01:32:50Z",
+      "step_wall_seconds": 430
+    },
+    "ordinary_individual_status": null,
+    "root_individual_status": null,
+    "ordinary_testcase_count": null,
+    "root_testcase_count": null,
+    "phase_observation_boundary": "Only the combined workflow step is observed in progress. Individual ordinary/Root test execution, compile-vs-test phase and test results cannot be established without logs/JUnit; no separate phase is labeled PASS or pending based on this metadata alone."
+  },
+  "architecture": {
+    "run_id": 42937682929,
+    "status": "queued",
+    "observed_jobs": 2,
+    "declared_pr_lanes": [
+      "source-head",
+      "base-merge"
+    ],
+    "actual_lane_execution_observed": false,
+    "jobs": [
+      {
+        "id": 130253804783,
+        "lane": "base-merge",
+        "status": "queued"
+      },
+      {
+        "id": 130253805082,
+        "lane": "source-head",
+        "status": "queued"
+      }
+    ]
+  },
+  "blocking": {
+    "run_id": 42937683233,
+    "status": "queued",
+    "observed_jobs": 3,
+    "scope_selection_observed": false,
+    "full_repo_or_scoped_fanout": null,
+    "qualification_transfer_from_R_or_parent": false,
+    "scope_job": {
+      "id": 130255148411,
+      "status": "queued"
+    },
+    "codespell_job": {
+      "id": 130255148724,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "blob_policy_job": {
+      "id": 130255149128,
+      "status": "queued"
+    }
+  },
+  "terminal_assessment": {
+    "S_terminal_workflows_observed": 2,
+    "S_success_workflows": [
+      {
+        "id": 42937683069,
+        "name": "Hepta Cell research stage evidence"
+      },
+      {
+        "id": 42937683149,
+        "name": "v8-canary"
+      }
+    ],
+    "S_failed_or_cancelled_jobs_observed": [],
+    "failure_step": null,
+    "source_cause": null,
+    "failure_logs_fetched": 0,
+    "explanation": "No new failure was observed. Architecture source-head/base-merge jobs and blocking scope/blob jobs remain queued. Native helper build succeeded and the combined ordinary/Root/maintenance step is in progress; individual native test results remain unobserved. No success-job logs were fetched."
+  },
+  "R_history": {
+    "sha": "ca7f62f2932b97b5053c592d6d5bcf30a0759a24",
+    "tree": "94ef0b85f18557ff07c2d9567324e1d87546e08c",
+    "runs": [
+      {
+        "id": 42937098541,
+        "name": "blocking-ci",
+        "head_sha": "ca7f62f2932b97b5053c592d6d5bcf30a0759a24",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 42937098605,
+        "name": "Hepta daemon learning native",
+        "head_sha": "ca7f62f2932b97b5053c592d6d5bcf30a0759a24",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 42937098761,
+        "name": "v8-canary",
+        "head_sha": "ca7f62f2932b97b5053c592d6d5bcf30a0759a24",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42937098496,
+        "name": "Hepta Cell research stage evidence",
+        "head_sha": "ca7f62f2932b97b5053c592d6d5bcf30a0759a24",
+        "status": "completed",
+        "conclusion": "cancelled"
+      }
+    ],
+    "cancelled_research": {
+      "run_id": 42937098496,
+      "job_id": 130249750149,
+      "conclusion": "cancelled",
+      "runner_name": "",
+      "steps": [],
+      "failed_step": null,
+      "source_failure_cause": null,
+      "cancellation_reason_verified": false,
+      "note": "Workflow declares cancel-in-progress for the PR ref; timing is consistent with supersession but no causal cancellation log was observed."
+    },
+    "results_transferred_to_S": false,
+    "snapshot_preserved_from_initial": true
+  },
+  "R_to_S": {
+    "changed_files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "path": "qualification/cell-p0-common-20261111-c2fc/INPUTS_AND_BOUNDARIES.json",
+        "additions": 9,
+        "deletions": 3
+      },
+      {
+        "path": "qualification/cell-p0-common-20261111-c2fc/README.md",
+        "additions": 7,
+        "deletions": 0
+      }
+    ],
+    "ahead_by": 2,
+    "behind_by": 0,
+    "additional_code_change": "one exhaustive TrainingNoUpdateV2 match arm from published a15acbf4db6178523a9297033c86e3be0b2725a3",
+    "native_validation_of_that_fix_observed": false
+  },
+  "actions": {
+    "h_calls": 0,
+    "jobs_started_or_rerun": 0,
+    "jobs_cancelled": 0,
+    "shared_source_mutated": false,
+    "job_logs_fetched_this_pass": 0
+  },
+  "raw_manifest": "RAW_MANIFEST.json",
+  "adoption": "HOLD",
+  "real_independent_confirmations_added": 0,
+  "revision": 3,
+  "previous_snapshot": {
+    "path": "S_SNAPSHOT-second.json",
+    "sha256": "233203ed45148e16e36633f67588322520dbb043951896fe567324bb882a6ef5"
+  },
+  "second_raw_inputs": "SECOND_RAW_INPUTS.json",
+  "retained_snapshots": [
+    {
+      "path": "S_SNAPSHOT-initial.json",
+      "sha256": "cdd5e59b938888f0363d16677152f2671bdf9635073dcf14ce1c88ce65fe033b"
+    },
+    {
+      "path": "S_SNAPSHOT-second.json",
+      "sha256": "233203ed45148e16e36633f67588322520dbb043951896fe567324bb882a6ef5"
+    }
+  ],
+  "third_raw_inputs": "THIRD_RAW_INPUTS.json"
+}

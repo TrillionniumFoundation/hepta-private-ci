@@ -1,0 +1,222 @@
+{
+  "CPU": {
+    "additional_raw_only_python_tests_observed": 0,
+    "artifact": {
+      "archive": {
+        "bytes": 64561,
+        "git_blob": "53a3575544115cdb741b69200a2b2e5488992dcc",
+        "sha256": "9f1701a6ae7e130df20af4ffa55dd8e367d813667c4aab755667cfedf8a14754"
+      },
+      "artifact_id": 13873374531,
+      "members": 25
+    },
+    "distinct_case_names": 119,
+    "failed": 0,
+    "fulljob": {
+      "bytes": 96809,
+      "git_blob": "50fbbb40a5cb80aadea51b24b181b87b1e53051b",
+      "sha256": "0fea508e6c341976432a569e6647e52b9a3041ef9c6988f15468ec1f2ad9c4b8"
+    },
+    "test_executions": 119
+  },
+  "all_test_totals": {
+    "distinct_language_qualified_case_names": 153,
+    "executions": 188,
+    "failed": 0
+  },
+  "api_conclusion": "success",
+  "api_status": "completed",
+  "archived_commands_executed_by_reader": 0,
+  "attempt": 1,
+  "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "historical_passes_transferred": false,
+  "ignored_real_provider_test_executions": 0,
+  "integrity": {
+    "additional_raw_only_python_tests_observed": 0,
+    "artifact": {
+      "archive": {
+        "bytes": 51518,
+        "git_blob": "19f3bea191a2e06b9d1fa8502ae4a91f58abc6d3",
+        "sha256": "efd2ffdee707bc95b5a952b9ef5caad0a06255303951f8a844716e97dbb6391d"
+      },
+      "artifact_id": 13874211716,
+      "members": 78
+    },
+    "distinct_case_names": 35,
+    "failed": 0,
+    "fulljob": {
+      "bytes": 38989,
+      "git_blob": "adfc256c3a4f99a72ee5891b85c29c0ec50b30da",
+      "sha256": "b119419a0cbcc560a0ddd777c0dbf4ed8b1a51db81e08f5c405a26c1aeaa712e"
+    },
+    "receipts": [
+      {
+        "artifact_id": 13874211716,
+        "case_ids": [
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_bounded_tombstones_prevent_replay_and_admission_rolls_back",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_byte_admission_failure_preserves_existing_data_and_generation",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_caller_cannot_mutate_stored_provenance_or_returned_record",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_current_authority_is_required_and_snapshot_has_its_identity",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_empty_snapshot_and_valid_old_dependency_chain_remain_readable",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_namespace_isolation_and_foreign_dependency_rejection",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_redigested_snapshot_cannot_move_records_before_their_write",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_redigested_snapshot_requires_a_consistent_historical_roster",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_reverse_key_order_chain_revokes_entire_dependency_closure",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_revoke_removes_payload_and_old_snapshot_never_reactivates_it",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_corruption_and_forged_record_are_rejected",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_rejects_fifo_directory_and_symlink_before_read",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_cannot_create_an_indirect_dependency_cycle",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_revokes_transitive_dependencies_and_filters_old_snapshot",
+          "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_working_state_is_copied_bounded_and_cleared_on_new_session",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_callback_cannot_change_original_source_allowlist",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_exact_kv_and_bm25_only_read_approved_sources",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_foreign_dependency_and_transitive_summary_are_not_retrieved",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_inflight_namespace_or_authority_replacement_aborts_delivery",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_inflight_revocation_of_a_dependency_aborts_summary_delivery",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_modes_separate_store_read_retrieval_and_delivery",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_new_process_cli_reads_then_rejects_revoked_snapshot",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_ranking_cannot_deliver_a_fact_revoked_or_updated_during_the_read",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_real_callback_and_its_ablation_do_not_mutate_evidence",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_receipt_rejects_changed_context_records_or_audit_fields",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_receipts_allow_actual_empty_partial_and_disabled_callback_paths",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_digest_does_not_hide_contradictory_interventions",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_digest_does_not_hide_roster_loss_duplication_or_reordering",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_receipts_reject_malformed_schema_bounds_and_authority",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_record_and_receipt_reject_impossible_chronology",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_separate_writer_process_cannot_revoke_between_retrieval_and_delivery",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_suppressed_delivery_does_not_revalidate_or_emit_revoked_content",
+          "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_uniform_replay_and_icl_are_bounded_deterministic_baselines",
+          "ndu_real_runtime.test_episodic_qualification.FreshProcessQualificationTests.test_exited_writers_new_readers_and_actual_deliveries",
+          "ndu_real_runtime.test_revocation_qualification.RevocationQualificationTests.test_active_post_update_snapshot_and_chain_are_revoked_in_new_readers"
+        ],
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "ndu_real_runtime.test_episodic_memory",
+          "ndu_real_runtime.test_episodic_retrieval",
+          "ndu_real_runtime.test_episodic_qualification",
+          "ndu_real_runtime.test_revocation_qualification"
+        ],
+        "failed": 0,
+        "finished_at": "2026-11-11T16:52:07.254770+00:00",
+        "lane": "source-head",
+        "log": "tests.json.600aad2402ce409cb9e64cae77879a6b.log",
+        "log_identity": {
+          "bytes": 7097,
+          "git_blob": "46f4c8f80891a66cf307ee63e42cc3bafd01fc6a",
+          "sha256": "59f106df4de850553514428241e33778b3cfd332bc0e74a5831f048c33c35e12"
+        },
+        "passed": 35,
+        "receipt": "tests.json",
+        "receipt_identity": {
+          "bytes": 1654,
+          "git_blob": "2096138b2874b000e7e2d5630b0899c70cbcbb2e",
+          "sha256": "834bf56027f69bdf913176ace107bce6d8c3f27f5b8efeeb04ed6a8bdd037913"
+        },
+        "source_before_after_clean": true,
+        "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "started_at": "2026-11-11T16:52:02.334975+00:00",
+        "tested_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      }
+    ],
+    "test_executions": 35
+  },
+  "native_evidence": {
+    "artifact": {
+      "archive": {
+        "bytes": 1413095,
+        "git_blob": "796c09643d1f4d1ab0fb70664f67baa5a3c6621b",
+        "sha256": "b1787753805af121986af7e99be7c09e99aea1ef613ddb8c965de2bdd9a355ff"
+      },
+      "artifact_id": 13874919829,
+      "members": 42
+    },
+    "cli_boundary": "Original build receipt and observed binary byte/hash bindings are retained; the 560 MB executable itself is not in the evidence archive.",
+    "command_receipts": 10,
+    "format_and_three_scoped_fixes": "passed_without_rewrite",
+    "fulljob": {
+      "bytes": 819097,
+      "git_blob": "d401ae45b764df3d2eeb84119aa6ea4de9f890a8",
+      "sha256": "90f130bc1b4f8b3f09ba4a0444c834b306a6ab20b3fa990ce1e590698fa957bc"
+    },
+    "source_files_checked": 224
+  },
+  "native_totals": {
+    "distinct_case_names": 33,
+    "drain_child_markers": 3,
+    "executions": 34,
+    "failed": 0,
+    "feature_profile_reexecution": 1,
+    "nested_drain_markers_are_not_additional_selected_tests": true
+  },
+  "new_scored_memory_actor_episodes": 0,
+  "not_established": [
+    "real successor-task memory benefit",
+    "original owner cold recovery",
+    "independent trust domain",
+    "effect-owner fencing",
+    "all repository required CI"
+  ],
+  "original_jobs": [
+    {
+      "completed_at": "2026-11-11T16:52:13Z",
+      "conclusion": "success",
+      "job_id": 130668436426,
+      "name": "Source-memory receipts and post-update revocation",
+      "started_at": "2026-11-11T16:51:51Z"
+    },
+    {
+      "completed_at": "2026-11-11T16:55:01Z",
+      "conclusion": "success",
+      "job_id": 130668436811,
+      "name": "Frozen candidate and coverage contracts",
+      "started_at": "2026-11-11T16:51:51Z"
+    },
+    {
+      "completed_at": "2026-11-11T17:21:10Z",
+      "conclusion": "success",
+      "job_id": 130668437204,
+      "name": "Staged native episodic owner contracts",
+      "started_at": "2026-11-11T16:51:51Z"
+    }
+  ],
+  "python_totals": {
+    "distinct_case_names": 120,
+    "executions": 154,
+    "overlap_between_integrity_and_CPU": 34
+  },
+  "run_id": 43062473099,
+  "schema": "mem8.d0f.MEM.complete-original.v1",
+  "status": "PASS_ORIGINAL_MEM_WORKFLOW_SOFTWARE_SCOPE",
+  "synthetic_campaign": {
+    "deletion_scope": "logical read exclusion; snapshot bytes remain",
+    "full_owner_cold_recovery": false,
+    "independent_trust_domain": false,
+    "model_calls": 0,
+    "reader_processes": 14,
+    "real_task_benefit": false,
+    "request_response_context_hashes_checked": true,
+    "scenario_ids": [
+      "live_updated_fact",
+      "snapshot_current_fact",
+      "snapshot_active_chain",
+      "restricted_dependency_closure",
+      "snapshot_off",
+      "snapshot_retrieval_off",
+      "snapshot_delivery_off",
+      "revoked_live_fact",
+      "revoked_snapshot_fact",
+      "revoked_snapshot_bm25",
+      "revoked_snapshot_uniform",
+      "revoked_snapshot_icl",
+      "unrelated_snapshot_fact",
+      "unrelated_live_fact"
+    ],
+    "writer_processes": 3
+  },
+  "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+}

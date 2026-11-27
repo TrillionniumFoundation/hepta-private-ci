@@ -1,0 +1,31 @@
+{
+  "boundary": "No paths, private inputs, per-request outputs or model checkpoints published. Finite generated RGB data only, no original digit payloads or TEST generation.",
+  "dependencies": {
+    "reference_commit": "26eb07f4d3978ed6fafcef6c492df65cc892e78b",
+    "root_model_blob": "aa8296aadfb2abea8661ae061b129e5d825a7112",
+    "root_utility_blob": "e633502c552659e62a2ef953a8138abff04a797d",
+    "semantic_transport_module": "../explicit-semantic-transport/transport.py",
+    "support_module": "../explicit-semantic-transport/control.py",
+    "verified": "model.py and utility.py contents fetched at reference commit exactly match executed legacy sources; control/transport copied unchanged from preceding qualified publication"
+  },
+  "full_child_CPU_seconds": 4.924381,
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 7
+  },
+  "primary_gate": false,
+  "raw_control_digest_parity": {
+    "11-raw-additive": true,
+    "11-raw-ndu": true,
+    "23-raw-additive": true,
+    "23-raw-ndu": true
+  },
+  "rust_checks": "Not run; no Rust changes, portable Python helper/test scope",
+  "source_sha256": {
+    "PLAN.md": "a6ff66f32b6d22a4cc72eb051349315aa84ff410172dda857e6013aa08c2b25e",
+    "aligned.py": "fb0306bf3f9fe6eddc270e0e9cf7208c912458b25a81e0a460d25440c6ed52e8",
+    "test_aligned.py": "a29ba431909bd8a9b21451b6be3f663b1ea6ae4e9f620ace923c0997cdf2c6fc"
+  },
+  "status": "PASS_SEVEN_LITERAL_GRADIENT_TESTS_AND_COMPLETE_TRAINING_EXECUTION_NOT_OVERALL_SCIENTIFIC_GATE"
+}

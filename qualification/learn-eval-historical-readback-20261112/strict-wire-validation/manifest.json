@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.strict-source-wire-evidence.v1",
+  "scope": "Linux UID1000 three-test component run; no completed ordinary learning acceptance",
+  "before": {
+    "local_sha": "f2bd9e335e08a24252e5dd2972fb8f58d29875f0",
+    "published_counterpart": "3ba4aa9216e7e1f17501dee5ea50e532bfeb68f7",
+    "tree": "bd4880b83701fd41635429d0903a971204a8bec8",
+    "passed": 2,
+    "failed": 1,
+    "retries": 0
+  },
+  "after": {
+    "local_sha": "202190c3e67c8d27fd1290b3f736cdc495ac37bd",
+    "published_counterpart": "81e88a1ba767c0ffe10ad2023f304c795804c846",
+    "tree": "df78d019a1efae10199bf58d527e5ab5af89f2e9",
+    "passed": 3,
+    "failed": 0,
+    "retries": 0
+  },
+  "files": [
+    {
+      "path": "raw/before-fix-run.json.xz",
+      "original_bytes": 1512,
+      "original_sha256": "9c26935b118f1a9adf542c24194904dc4ad53b5851734bf6e8d64017ed685670",
+      "archive_bytes": 808,
+      "archive_sha256": "0afc12e7965c6966eace976613e69aa2552b854f5f134ab54bf620c878ec4dad"
+    },
+    {
+      "path": "raw/before-fix-command.log.xz",
+      "original_bytes": 33101,
+      "original_sha256": "c493c755394a27d2f4eb079cbbfd5219f954b8b32146a08728cf151dee8f81c1",
+      "archive_bytes": 3820,
+      "archive_sha256": "f0b9d0a6c04688ad617f78cfc1c09457f23511b1559df9d0c7d4f382b14b26f5"
+    },
+    {
+      "path": "raw/before-fix-junit-0.xml.xz",
+      "original_bytes": 2820,
+      "original_sha256": "6ee3c0d07740758b494e87766edaf3b05fe1a76c124731903293510dd746fb84",
+      "archive_bytes": 876,
+      "archive_sha256": "9209d1e4e6dd880bef313289ed370ecc4286825d75083994c162f339bd3269f7"
+    },
+    {
+      "path": "raw/after-fix-run.json.xz",
+      "original_bytes": 1510,
+      "original_sha256": "1f205f2a203957e6f8760784c388d57b93ff2619e09b15c139a503def91ff144",
+      "archive_bytes": 808,
+      "archive_sha256": "a90b50e074e12b46d6b9c1cd608884a0d55eba4df6d49d24454cb4ca7c06629c"
+    },
+    {
+      "path": "raw/after-fix-command.log.xz",
+      "original_bytes": 32057,
+      "original_sha256": "cca0102edb86dfe6090bfea025dc6ef896b6b92e2c102bde2193379133fa024d",
+      "archive_bytes": 3556,
+      "archive_sha256": "638758a24217c9295f6d4ded95cc48647e77602a35cf0eafc586cdbd52d3cdff"
+    },
+    {
+      "path": "raw/after-fix-junit-0.xml.xz",
+      "original_bytes": 1161,
+      "original_sha256": "f5a4036872f2442c49ac4862c4bc0e7477c04d3fc9ea6542c4611ca0a67ad4f1",
+      "archive_bytes": 524,
+      "archive_sha256": "aae2b54cca1d42d59da53c277839400a8229226ecf49043b782ab33693e4bb02"
+    },
+    {
+      "path": "raw/source-root-source-qa.json.xz",
+      "original_bytes": 999,
+      "original_sha256": "8611ee9d4abfdf6468b335200ffaca82fa9dbcb74f6ffd1c39a6724331eadb2a",
+      "archive_bytes": 596,
+      "archive_sha256": "c4e9ae04c19aae885f28485b16a62e477296d9cf6d646469453d0707794b55f4"
+    },
+    {
+      "path": "raw/source-root-source-qa.log.xz",
+      "original_bytes": 4769,
+      "original_sha256": "aa1b50d3c0f2cd5a78ad4147570bd1774680105c8653389c348ac6b458452721",
+      "archive_bytes": 972,
+      "archive_sha256": "107b94573369a98f94a0b9db3d11f170cf8a961b2fb738a8d5004f14b0966010"
+    },
+    {
+      "path": "raw/source-markers-protected.json.xz",
+      "original_bytes": 936,
+      "original_sha256": "0902266dbba1ca7e8e19bc3e3877f0f6f6fdb0d90aa4e6843b9c0fbe499d4ee5",
+      "archive_bytes": 564,
+      "archive_sha256": "51f905e736c7b947bd7e5d3e8ebd89556cac4a435ae400454d2618ba4943c440"
+    },
+    {
+      "path": "raw/source-markers-protected.log.xz",
+      "original_bytes": 198,
+      "original_sha256": "d7476f428f45731b3dcc552b8ecdd2dbed00fd001b1b3346ca426172f3aa10bd",
+      "archive_bytes": 224,
+      "archive_sha256": "05a922cc2e00d7284427313b1498b1bc3d16771df707547e024e427d079d90a6"
+    }
+  ]
+}

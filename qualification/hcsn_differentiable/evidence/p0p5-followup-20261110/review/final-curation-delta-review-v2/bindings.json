@@ -1,0 +1,2624 @@
+[
+  {
+    "id": "cost-19-controller_elapsed_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/RESULT.json",
+      "pointer": "/whole_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/controller_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-19-children_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/RESULT.json",
+      "pointer": "/children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-19-attempt-count",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/RESULT.json",
+      "pointer": "/attempts",
+      "transform": "len"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/attempts"
+    }
+  },
+  {
+    "id": "cost-19-case-0-inner_profile_wall_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/micro4/RESULT.json",
+      "pointer": "/wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/cases/0/inner_profile_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-19-case-0-inner_profile_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/micro4/RESULT.json",
+      "pointer": "/cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/cases/0/inner_profile_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-19-case-0-peak_rss_bytes",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/micro4/RESULT.json",
+      "pointer": "/peak_rss_bytes"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/cases/0/peak_rss_bytes"
+    }
+  },
+  {
+    "id": "cost-19-case-0-updates",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/micro4/RESULT.json",
+      "pointer": "/steps",
+      "transform": "len"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/cases/0/updates_completed"
+    }
+  },
+  {
+    "id": "cost-19-case-0-outer-wall",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/RESULT.json",
+      "pointer": "/attempts/0/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/cases/0/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-19-case-1-inner_profile_wall_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/micro8/RESULT.json",
+      "pointer": "/wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/cases/1/inner_profile_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-19-case-1-inner_profile_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/micro8/RESULT.json",
+      "pointer": "/cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/cases/1/inner_profile_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-19-case-1-peak_rss_bytes",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/micro8/RESULT.json",
+      "pointer": "/peak_rss_bytes"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/cases/1/peak_rss_bytes"
+    }
+  },
+  {
+    "id": "cost-19-case-1-updates",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/micro8/RESULT.json",
+      "pointer": "/steps",
+      "transform": "len"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/cases/1/updates_completed"
+    }
+  },
+  {
+    "id": "cost-19-case-1-outer-wall",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/RESULT.json",
+      "pointer": "/attempts/1/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/cases/1/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-19-outer-sum",
+    "sum_sources": [
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/RESULT.json",
+        "pointer": "/attempts/0/whole_process_wall_seconds"
+      },
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-effective32-cost-v6/RESULT.json",
+        "pointer": "/attempts/1/whole_process_wall_seconds"
+      }
+    ],
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/19/sum_attempt_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-32-controller_elapsed_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+      "pointer": "/whole_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/controller_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-32-children_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+      "pointer": "/children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-32-attempt-count",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+      "pointer": "/attempts",
+      "transform": "len"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/attempts"
+    }
+  },
+  {
+    "id": "cost-32-case-0-inner_profile_wall_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-uncached-b1/RESULT.json",
+      "pointer": "/wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/0/inner_profile_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-32-case-0-inner_profile_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-uncached-b1/RESULT.json",
+      "pointer": "/cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/0/inner_profile_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-32-case-0-peak_rss_bytes",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-uncached-b1/RESULT.json",
+      "pointer": "/peak_rss_bytes"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/0/peak_rss_bytes"
+    }
+  },
+  {
+    "id": "cost-32-case-0-updates",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-uncached-b1/RESULT.json",
+      "pointer": "/steps",
+      "transform": "len"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/0/updates_completed"
+    }
+  },
+  {
+    "id": "cost-32-case-0-outer-wall",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+      "pointer": "/attempts/0/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/0/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-32-case-0-status",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-uncached-b1/RESULT.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/0/status"
+    }
+  },
+  {
+    "id": "cost-32-case-0-complete_training_epochs",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-uncached-b1/RESULT.json",
+      "pointer": "/complete_training_epochs"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/0/complete_training_epochs"
+    }
+  },
+  {
+    "id": "cost-32-case-0-returncode",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+      "pointer": "/attempts/0/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/0/returncode"
+    }
+  },
+  {
+    "id": "cost-32-case-1-inner_profile_wall_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-cached-b1/RESULT.json",
+      "pointer": "/wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/1/inner_profile_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-32-case-1-inner_profile_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-cached-b1/RESULT.json",
+      "pointer": "/cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/1/inner_profile_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-32-case-1-peak_rss_bytes",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-cached-b1/RESULT.json",
+      "pointer": "/peak_rss_bytes"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/1/peak_rss_bytes"
+    }
+  },
+  {
+    "id": "cost-32-case-1-updates",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-cached-b1/RESULT.json",
+      "pointer": "/steps",
+      "transform": "len"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/1/updates_completed"
+    }
+  },
+  {
+    "id": "cost-32-case-1-outer-wall",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+      "pointer": "/attempts/1/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/1/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-32-case-1-status",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-cached-b1/RESULT.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/1/status"
+    }
+  },
+  {
+    "id": "cost-32-case-1-complete_training_epochs",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-cached-b1/RESULT.json",
+      "pointer": "/complete_training_epochs"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/1/complete_training_epochs"
+    }
+  },
+  {
+    "id": "cost-32-case-1-returncode",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+      "pointer": "/attempts/1/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/1/returncode"
+    }
+  },
+  {
+    "id": "cost-32-case-2-inner_profile_wall_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g256-cached-b32/RESULT.json",
+      "pointer": "/wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/2/inner_profile_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-32-case-2-inner_profile_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g256-cached-b32/RESULT.json",
+      "pointer": "/cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/2/inner_profile_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-32-case-2-peak_rss_bytes",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g256-cached-b32/RESULT.json",
+      "pointer": "/peak_rss_bytes"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/2/peak_rss_bytes"
+    }
+  },
+  {
+    "id": "cost-32-case-2-updates",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g256-cached-b32/RESULT.json",
+      "pointer": "/steps",
+      "transform": "len"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/2/updates_completed"
+    }
+  },
+  {
+    "id": "cost-32-case-2-outer-wall",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+      "pointer": "/attempts/2/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/2/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-32-case-2-status",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g256-cached-b32/RESULT.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/2/status"
+    }
+  },
+  {
+    "id": "cost-32-case-2-complete_training_epochs",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g256-cached-b32/RESULT.json",
+      "pointer": "/complete_training_epochs"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/2/complete_training_epochs"
+    }
+  },
+  {
+    "id": "cost-32-case-2-returncode",
+    "source": {
+      "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+      "pointer": "/attempts/2/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/cases/2/returncode"
+    }
+  },
+  {
+    "id": "cost-32-outer-sum",
+    "sum_sources": [
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+        "pointer": "/attempts/0/whole_process_wall_seconds"
+      },
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+        "pointer": "/attempts/1/whole_process_wall_seconds"
+      },
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/RESULT.json",
+        "pointer": "/attempts/2/whole_process_wall_seconds"
+      }
+    ],
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/sum_attempt_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-32-sum_inner_profile_cpu_seconds",
+    "sum_sources": [
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-uncached-b1/RESULT.json",
+        "pointer": "/cpu_seconds"
+      },
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-cached-b1/RESULT.json",
+        "pointer": "/cpu_seconds"
+      },
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g256-cached-b32/RESULT.json",
+        "pointer": "/cpu_seconds"
+      }
+    ],
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/sum_inner_profile_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-32-sum_inner_profile_elapsed_seconds",
+    "sum_sources": [
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-uncached-b1/RESULT.json",
+        "pointer": "/wall_seconds"
+      },
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g128-cached-b1/RESULT.json",
+        "pointer": "/wall_seconds"
+      },
+      {
+        "artifact": "p2/native-cost-originals-v1/hcsn-cost-v1/g256-cached-b32/RESULT.json",
+        "pointer": "/wall_seconds"
+      }
+    ],
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/32/sum_inner_profile_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-28-whole_process_elapsed_seconds",
+    "source": {
+      "artifact": "p2/immutable-v8-original-tests-receipt.json",
+      "pointer": "/whole_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/28/whole_process_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-29-whole_process_elapsed_seconds",
+    "source": {
+      "artifact": "p2/adapter-pilot-preflight.json",
+      "pointer": "/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/29/whole_process_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-30-whole_process_elapsed_seconds",
+    "source": {
+      "artifact": "p2/campaign-v2-native-launch.json",
+      "pointer": "/commands/0/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/30/whole_process_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-31-algorithm_elapsed_seconds",
+    "source": {
+      "artifact": "p2/campaign-v2-native-launch.json",
+      "pointer": "/source_extract_and_hash_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/31/algorithm_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-33-controller_elapsed_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/whole_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/controller_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-33-children_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-33-controller_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/controller_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/controller_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-33-sum_attempt_elapsed_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/sum_attempt_outer_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/sum_attempt_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-33-sum_attempt_wrapper_elapsed_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/sum_attempt_wrapper_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/sum_attempt_wrapper_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-33-native_preflight_elapsed_seconds_included",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/preflight/0/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/native_preflight_elapsed_seconds_included"
+    }
+  },
+  {
+    "id": "cost-33-source_copy_and_hash_seconds_included",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/source_copy_and_hash_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/source_copy_and_hash_seconds_included"
+    }
+  },
+  {
+    "id": "cost-33-attempt_cost_accounting_complete",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/attempt_cost_accounting_complete"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/attempt_cost_accounting_complete"
+    }
+  },
+  {
+    "id": "cost-33-attempts",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/actual_continuations_started"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/attempts"
+    }
+  },
+  {
+    "id": "cost-33-actual_budget_rule",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/actual_budget_rule"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/actual_budget_rule"
+    }
+  },
+  {
+    "id": "cost-33-calendar_scope",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/calendar_scope"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/33/calendar_scope"
+    }
+  },
+  {
+    "id": "cost-34-controller_elapsed_seconds",
+    "source": {
+      "artifact": "publication/cloud-p2-draft-upload-v1-receipt.json",
+      "pointer": "/wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/34/controller_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-34-status",
+    "source": {
+      "artifact": "publication/cloud-p2-draft-upload-v1-receipt.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/34/status"
+    }
+  },
+  {
+    "id": "cost-35-controller_elapsed_seconds",
+    "source": {
+      "artifact": "publication/width16-original-upload-receipt.json",
+      "pointer": "/wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/35/controller_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-35-status",
+    "source": {
+      "artifact": "publication/width16-original-upload-receipt.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/35/status"
+    }
+  },
+  {
+    "id": "cost-36-driver_absolute_process_cpu_sample_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/draft-three-assets-reconcile-v1/receipt.json",
+      "pointer": "/driver_process_cpu_seconds_since_process_start"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/36/driver_absolute_process_cpu_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-36-driver_wall_seconds_after_imports",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/draft-three-assets-reconcile-v1/receipt.json",
+      "pointer": "/driver_wall_seconds_after_imports"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/36/driver_wall_seconds_after_imports"
+    }
+  },
+  {
+    "id": "cost-36-waited_children_cpu_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/draft-three-assets-reconcile-v1/receipt.json",
+      "pointer": "/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/36/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-36-status",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/draft-three-assets-reconcile-v1/receipt.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/36/status"
+    }
+  },
+  {
+    "id": "cost-36-raw-member-hash",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/draft-three-assets-reconcile-v1/receipt.json",
+      "pointer": "",
+      "transform": "sha256"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/36/source_receipt/sha256"
+    }
+  },
+  {
+    "id": "cost-39-driver_absolute_process_cpu_sample_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/official-data-draft-v2/receipt.json",
+      "pointer": "/driver_process_cpu_seconds_since_process_start"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/39/driver_absolute_process_cpu_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-39-driver_wall_seconds_after_imports",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/official-data-draft-v2/receipt.json",
+      "pointer": "/driver_wall_seconds_after_imports"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/39/driver_wall_seconds_after_imports"
+    }
+  },
+  {
+    "id": "cost-39-waited_children_cpu_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/official-data-draft-v2/receipt.json",
+      "pointer": "/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/39/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-39-status",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/official-data-draft-v2/receipt.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/39/status"
+    }
+  },
+  {
+    "id": "cost-39-raw-member-hash",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/official-data-draft-v2/receipt.json",
+      "pointer": "",
+      "transform": "sha256"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/39/source_receipt/sha256"
+    }
+  },
+  {
+    "id": "cost-40-driver_absolute_process_cpu_sample_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/main-receipts.zip!runs/official-data-draft-v3-main/receipt.json",
+      "pointer": "/driver_process_cpu_seconds_since_process_start"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/40/driver_absolute_process_cpu_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-40-driver_wall_seconds_after_imports",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/main-receipts.zip!runs/official-data-draft-v3-main/receipt.json",
+      "pointer": "/driver_wall_seconds_after_imports"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/40/driver_wall_seconds_after_imports"
+    }
+  },
+  {
+    "id": "cost-40-waited_children_cpu_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/main-receipts.zip!runs/official-data-draft-v3-main/receipt.json",
+      "pointer": "/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/40/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-40-status",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/main-receipts.zip!runs/official-data-draft-v3-main/receipt.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/40/status"
+    }
+  },
+  {
+    "id": "cost-40-raw-member-hash",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/main-receipts.zip!runs/official-data-draft-v3-main/receipt.json",
+      "pointer": "",
+      "transform": "sha256"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/40/source_receipt/sha256"
+    }
+  },
+  {
+    "id": "cost-41-driver_absolute_process_cpu_sample_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/main-receipts.zip!runs/official-data-draft-v5-main/receipt.json",
+      "pointer": "/driver_process_cpu_seconds_since_process_start"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/41/driver_absolute_process_cpu_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-41-driver_wall_seconds_after_imports",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/main-receipts.zip!runs/official-data-draft-v5-main/receipt.json",
+      "pointer": "/driver_wall_seconds_after_imports"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/41/driver_wall_seconds_after_imports"
+    }
+  },
+  {
+    "id": "cost-41-waited_children_cpu_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/main-receipts.zip!runs/official-data-draft-v5-main/receipt.json",
+      "pointer": "/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/41/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-41-status",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/main-receipts.zip!runs/official-data-draft-v5-main/receipt.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/41/status"
+    }
+  },
+  {
+    "id": "cost-41-raw-member-hash",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/main-receipts.zip!runs/official-data-draft-v5-main/receipt.json",
+      "pointer": "",
+      "transform": "sha256"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/41/source_receipt/sha256"
+    }
+  },
+  {
+    "id": "cost-42-driver_absolute_process_cpu_sample_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/official-data-draft-v4-desktop/receipt.json",
+      "pointer": "/driver_process_cpu_seconds_since_process_start"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/42/driver_absolute_process_cpu_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-42-driver_wall_seconds_after_imports",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/official-data-draft-v4-desktop/receipt.json",
+      "pointer": "/driver_wall_seconds_after_imports"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/42/driver_wall_seconds_after_imports"
+    }
+  },
+  {
+    "id": "cost-42-waited_children_cpu_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/official-data-draft-v4-desktop/receipt.json",
+      "pointer": "/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/42/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-42-status",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/official-data-draft-v4-desktop/receipt.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/42/status"
+    }
+  },
+  {
+    "id": "cost-42-raw-member-hash",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/desktop-receipts.zip!runs/official-data-draft-v4-desktop/receipt.json",
+      "pointer": "",
+      "transform": "sha256"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/42/source_receipt/sha256"
+    }
+  },
+  {
+    "id": "cost-43-wall_seconds_after_imports",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/control-ledger.json",
+      "encoding": "native_terminal_json",
+      "payload_pointer": "/wall_seconds_after_imports",
+      "pointer": "/archives/desktop/terminal"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/43/wall_seconds_after_imports"
+    }
+  },
+  {
+    "id": "cost-43-absolute_cpu_sample_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/control-ledger.json",
+      "encoding": "native_terminal_json",
+      "payload_pointer": "/process_cpu_seconds_since_process_start",
+      "pointer": "/archives/desktop/terminal"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/43/absolute_cpu_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-44-wall_seconds_after_imports",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/control-ledger.json",
+      "encoding": "native_terminal_json",
+      "payload_pointer": "/wall_seconds_after_imports",
+      "pointer": "/archives/main/terminal"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/44/wall_seconds_after_imports"
+    }
+  },
+  {
+    "id": "cost-44-absolute_cpu_sample_seconds",
+    "source": {
+      "artifact": "publication/draft-asset-reconciliation-v1/control-ledger.json",
+      "encoding": "native_terminal_json",
+      "payload_pointer": "/process_cpu_seconds_since_process_start",
+      "pointer": "/archives/main/terminal"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/44/absolute_cpu_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-37-whole_process_elapsed_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/ARCHIVE-RECEIPT.json",
+      "pointer": "/whole_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/37/whole_process_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-37-own_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/ARCHIVE-RECEIPT.json",
+      "pointer": "/own_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/37/own_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-37-children_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/ARCHIVE-RECEIPT.json",
+      "pointer": "/child_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/37/children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-37-status",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/ARCHIVE-RECEIPT.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/37/status"
+    }
+  },
+  {
+    "id": "cost-37-rss-units",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/ARCHIVE-RECEIPT.json",
+      "pointer": "/peak_rss_kib",
+      "scale": 1024
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/37/peak_rss_bytes"
+    }
+  },
+  {
+    "id": "cost-38-whole_process_elapsed_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/DRAFT-UPLOAD-RESULT.json",
+      "pointer": "/whole_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/38/whole_process_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-38-own_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/DRAFT-UPLOAD-RESULT.json",
+      "pointer": "/own_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/38/own_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-38-children_cpu_seconds",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/DRAFT-UPLOAD-RESULT.json",
+      "pointer": "/children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/38/children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-38-status",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/DRAFT-UPLOAD-RESULT.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/38/status"
+    }
+  },
+  {
+    "id": "cost-45-executions",
+    "source": {
+      "artifact": "p2/continuation-single-clock-v1/SUMMARY.json",
+      "pointer": "/validation_costs"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/45/executions"
+    }
+  },
+  {
+    "id": "cost-46-whole_process_elapsed_seconds",
+    "source": {
+      "artifact": "p2/c2-feasibility-v1/validation-attempt2/RESULT.json",
+      "pointer": "/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/46/whole_process_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-46-child_cpu_seconds",
+    "source": {
+      "artifact": "p2/c2-feasibility-v1/validation-attempt2/RESULT.json",
+      "pointer": "/child_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/46/child_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-46-own_cpu_seconds",
+    "source": {
+      "artifact": "p2/c2-feasibility-v1/validation-attempt2/RESULT.json",
+      "pointer": "/own_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/46/own_cpu_seconds"
+    }
+  },
+  {
+    "expected": false,
+    "id": "c2-46-native_training_started",
+    "target": {
+      "artifact": "p2/c2-feasibility-v1/validation-attempt2/RESULT.json",
+      "pointer": "/native_training_started"
+    }
+  },
+  {
+    "expected": false,
+    "id": "c2-46-native_snapshot_started",
+    "target": {
+      "artifact": "p2/c2-feasibility-v1/validation-attempt2/RESULT.json",
+      "pointer": "/native_snapshot_started"
+    }
+  },
+  {
+    "expected": false,
+    "id": "c2-46-scientific_training_credit",
+    "target": {
+      "artifact": "p2/c2-feasibility-v1/validation-attempt2/RESULT.json",
+      "pointer": "/scientific_training_credit"
+    }
+  },
+  {
+    "id": "cost-48-whole_process_elapsed_seconds",
+    "source": {
+      "artifact": "p2/c2-feasibility-v2/validation/RESULT.json",
+      "pointer": "/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/48/whole_process_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-48-child_cpu_seconds",
+    "source": {
+      "artifact": "p2/c2-feasibility-v2/validation/RESULT.json",
+      "pointer": "/child_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/48/child_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-48-own_cpu_seconds",
+    "source": {
+      "artifact": "p2/c2-feasibility-v2/validation/RESULT.json",
+      "pointer": "/own_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/48/own_cpu_seconds"
+    }
+  },
+  {
+    "expected": false,
+    "id": "c2-48-native_training_started",
+    "target": {
+      "artifact": "p2/c2-feasibility-v2/validation/RESULT.json",
+      "pointer": "/native_training_started"
+    }
+  },
+  {
+    "expected": false,
+    "id": "c2-48-native_snapshot_started",
+    "target": {
+      "artifact": "p2/c2-feasibility-v2/validation/RESULT.json",
+      "pointer": "/native_snapshot_started"
+    }
+  },
+  {
+    "expected": false,
+    "id": "c2-48-scientific_training_credit",
+    "target": {
+      "artifact": "p2/c2-feasibility-v2/validation/RESULT.json",
+      "pointer": "/scientific_training_credit"
+    }
+  },
+  {
+    "id": "cost-46-prior_failed_fixture",
+    "source": {
+      "artifact": "p2/c2-feasibility-v1/validation-attempt2/RESULT.json",
+      "pointer": "/prior_attempt"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/46/prior_failed_fixture"
+    }
+  },
+  {
+    "id": "cost-47-whole_waited_process_wall_seconds",
+    "source": {
+      "artifact": "review/clock-c2-independent-v1/COUNTEREXAMPLE-EXECUTION.json",
+      "pointer": "/whole_waited_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/47/whole_waited_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-47-waited_child_cpu_seconds",
+    "source": {
+      "artifact": "review/clock-c2-independent-v1/COUNTEREXAMPLE-EXECUTION.json",
+      "pointer": "/waited_child_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/47/waited_child_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-49-driver_cpu_sample_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/driver_cpu_sample_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/driver_cpu_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-49-driver_elapsed_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/driver_elapsed_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/driver_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-49-executions/0/expected_returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/0/expected_returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/0/expected_returncode"
+    }
+  },
+  {
+    "id": "cost-49-executions/0/name",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/0/name"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/0/name"
+    }
+  },
+  {
+    "id": "cost-49-executions/0/returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/0/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/0/returncode"
+    }
+  },
+  {
+    "id": "cost-49-executions/0/waited_children_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/0/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/0/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-49-executions/0/whole_process_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/0/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/0/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-49-executions/1/expected_returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/1/expected_returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/1/expected_returncode"
+    }
+  },
+  {
+    "id": "cost-49-executions/1/name",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/1/name"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/1/name"
+    }
+  },
+  {
+    "id": "cost-49-executions/1/returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/1/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/1/returncode"
+    }
+  },
+  {
+    "id": "cost-49-executions/1/waited_children_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/1/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/1/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-49-executions/1/whole_process_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/1/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/1/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-49-executions/2/expected_returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/2/expected_returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/2/expected_returncode"
+    }
+  },
+  {
+    "id": "cost-49-executions/2/name",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/2/name"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/2/name"
+    }
+  },
+  {
+    "id": "cost-49-executions/2/returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/2/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/2/returncode"
+    }
+  },
+  {
+    "id": "cost-49-executions/2/waited_children_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/2/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/2/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-49-executions/2/whole_process_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/2/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/2/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-49-executions/3/expected_returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/3/expected_returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/3/expected_returncode"
+    }
+  },
+  {
+    "id": "cost-49-executions/3/name",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/3/name"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/3/name"
+    }
+  },
+  {
+    "id": "cost-49-executions/3/returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/3/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/3/returncode"
+    }
+  },
+  {
+    "id": "cost-49-executions/3/waited_children_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/3/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/3/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-49-executions/3/whole_process_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/preparation/VALIDATION.json",
+      "pointer": "/executions/3/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/49/executions/3/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-50-driver_cpu_sample_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/driver_cpu_sample_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/driver_cpu_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-50-driver_elapsed_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/driver_elapsed_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/driver_elapsed_seconds"
+    }
+  },
+  {
+    "id": "cost-50-executions/0/expected_returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/0/expected_returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/0/expected_returncode"
+    }
+  },
+  {
+    "id": "cost-50-executions/0/name",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/0/name"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/0/name"
+    }
+  },
+  {
+    "id": "cost-50-executions/0/returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/0/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/0/returncode"
+    }
+  },
+  {
+    "id": "cost-50-executions/0/waited_children_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/0/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/0/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-50-executions/0/whole_process_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/0/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/0/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-50-executions/1/expected_returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/1/expected_returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/1/expected_returncode"
+    }
+  },
+  {
+    "id": "cost-50-executions/1/name",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/1/name"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/1/name"
+    }
+  },
+  {
+    "id": "cost-50-executions/1/returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/1/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/1/returncode"
+    }
+  },
+  {
+    "id": "cost-50-executions/1/waited_children_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/1/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/1/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-50-executions/1/whole_process_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/1/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/1/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-50-executions/2/expected_returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/2/expected_returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/2/expected_returncode"
+    }
+  },
+  {
+    "id": "cost-50-executions/2/name",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/2/name"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/2/name"
+    }
+  },
+  {
+    "id": "cost-50-executions/2/returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/2/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/2/returncode"
+    }
+  },
+  {
+    "id": "cost-50-executions/2/waited_children_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/2/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/2/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-50-executions/2/whole_process_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/2/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/2/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-50-executions/3/expected_returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/3/expected_returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/3/expected_returncode"
+    }
+  },
+  {
+    "id": "cost-50-executions/3/name",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/3/name"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/3/name"
+    }
+  },
+  {
+    "id": "cost-50-executions/3/returncode",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/3/returncode"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/3/returncode"
+    }
+  },
+  {
+    "id": "cost-50-executions/3/waited_children_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/3/waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/3/waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-50-executions/3/whole_process_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/preparation/VALIDATION.json",
+      "pointer": "/executions/3/whole_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/50/executions/3/whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-51-child_peak_rss_bytes",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/launch/receipt.json",
+      "pointer": "/child_peak_rss_bytes"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/51/child_peak_rss_bytes"
+    }
+  },
+  {
+    "id": "cost-51-complete_launcher_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/launch/receipt.json",
+      "pointer": "/complete_launcher_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/51/complete_launcher_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-51-status",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/launch/receipt.json",
+      "pointer": "/status"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/51/status"
+    }
+  },
+  {
+    "id": "cost-51-waited_review_child_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/launch/receipt.json",
+      "pointer": "/waited_review_child_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/51/waited_review_child_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-51-whole_review_process_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v1/launch/receipt.json",
+      "pointer": "/whole_review_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/51/whole_review_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-52-complete_bootstrap_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/bootstrap/receipt.json",
+      "pointer": "/complete_bootstrap_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/52/complete_bootstrap_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-52-complete_waited_children_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/bootstrap/receipt.json",
+      "pointer": "/complete_waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/52/complete_waited_children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-52-download_phase_wall_seconds_included",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/bootstrap/receipt.json",
+      "pointer": "/download_phase_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/52/download_phase_wall_seconds_included"
+    }
+  },
+  {
+    "id": "cost-52-download_phase_waited_children_cpu_seconds_included",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/bootstrap/receipt.json",
+      "pointer": "/download_phase_waited_children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/52/download_phase_waited_children_cpu_seconds_included"
+    }
+  },
+  {
+    "id": "cost-52-nested_review_peak_rss_bytes",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/launch/receipt.json",
+      "pointer": "/child_peak_rss_bytes"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/52/nested_review_peak_rss_bytes"
+    }
+  },
+  {
+    "id": "cost-52-nested_review_waited_child_cpu_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/launch/receipt.json",
+      "pointer": "/waited_review_child_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/52/nested_review_waited_child_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-52-nested_review_whole_process_wall_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/launch/receipt.json",
+      "pointer": "/whole_review_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/52/nested_review_whole_process_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-53-collection_CPU_sample_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/COPY_LIST.json",
+      "pointer": "/collection_CPU_sample_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/53/collection_CPU_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-53-collection_peak_rss_bytes",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/COPY_LIST.json",
+      "pointer": "/collection_peak_rss_bytes"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/53/collection_peak_rss_bytes"
+    }
+  },
+  {
+    "id": "cost-53-collection_wall_sample_seconds",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/COPY_LIST.json",
+      "pointer": "/collection_wall_sample_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/53/collection_wall_sample_seconds"
+    }
+  },
+  {
+    "id": "cost-54-children_cpu_seconds",
+    "source": {
+      "artifact": "review/native-attention-path-v1/RESULT.json",
+      "pointer": "/children_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/54/children_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-54-controller_cpu_seconds",
+    "source": {
+      "artifact": "review/native-attention-path-v1/RESULT.json",
+      "pointer": "/controller_cpu_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/54/controller_cpu_seconds"
+    }
+  },
+  {
+    "id": "cost-54-whole_controller_wall_seconds",
+    "source": {
+      "artifact": "review/native-attention-path-v1/RESULT.json",
+      "pointer": "/whole_controller_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/54/whole_controller_wall_seconds"
+    }
+  },
+  {
+    "id": "cost-54-whole_worker_process_wall_seconds",
+    "source": {
+      "artifact": "review/native-attention-path-v1/RESULT.json",
+      "pointer": "/whole_worker_process_wall_seconds"
+    },
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/rows/54/whole_worker_process_wall_seconds"
+    }
+  },
+  {
+    "id": "status-baseline_adequacy_after_C1",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/output/SUMMARY.json",
+      "pointer": "/combined_baseline_chain_heuristic_adequacy_passes"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/baseline_adequacy_after_C1"
+    }
+  },
+  {
+    "id": "status-baseline_adequacy_after_C1_independently_confirmed",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/output/SUMMARY.json",
+      "pointer": "/combined_baseline_chain_heuristic_adequacy_passes"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/baseline_adequacy_after_C1_independently_confirmed"
+    }
+  },
+  {
+    "id": "status-independent_C1_chain_review_passes",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/output/SUMMARY.json",
+      "pointer": "/C1_audit_counts/passed_completed_C1_chain_artifacts"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/independent_C1_chain_review_passes"
+    }
+  },
+  {
+    "id": "status-independent_baseline36_review_passes",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/output/SUMMARY.json",
+      "pointer": "/original_baseline_passed_records_reused"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/independent_baseline36_review_passes"
+    }
+  },
+  {
+    "id": "status-original_baseline_adequacy_passes",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/output/SUMMARY.json",
+      "pointer": "/original_baseline_heuristic_adequacy_passes"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/original_baseline_adequacy_passes"
+    }
+  },
+  {
+    "id": "status-independent_final_review_completed",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/output/SUMMARY.json",
+      "pointer": "/full42_final_audit"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/independent_final_review_completed"
+    }
+  },
+  {
+    "id": "status-memo-failures",
+    "source": {
+      "artifact": "review/baseline36-c1-native-v1/v2/output/SUMMARY.json",
+      "pointer": "/memorization_failures_retained",
+      "transform": "len"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/original_baseline_memo_failures"
+    }
+  },
+  {
+    "id": "status-original-baselines",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/original_baselines_terminal"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/original_baselines_completed"
+    }
+  },
+  {
+    "id": "status-c1-completed_attempts",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/actual_continuations_started"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/continuation/completed_attempts"
+    }
+  },
+  {
+    "id": "status-c1-started",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/actual_continuations_started"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/continuation/started"
+    }
+  },
+  {
+    "id": "status-c1-actual_source_unchanged",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "/source_unchanged"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/continuation/actual_source_unchanged"
+    }
+  },
+  {
+    "expected": "HOLD",
+    "id": "hold-scientific_benefit",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/gates/scientific_benefit"
+    }
+  },
+  {
+    "expected": "HOLD",
+    "id": "hold-training_comparison",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/gates/training_comparison"
+    }
+  },
+  {
+    "expected": "HOLD",
+    "id": "hold-full_training_numerical_domain",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/gates/full_training_numerical_domain"
+    }
+  },
+  {
+    "expected": "HOLD",
+    "id": "hold-real_multimodal_benefit",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/gates/real_multimodal_benefit"
+    }
+  },
+  {
+    "expected": "HOLD",
+    "id": "hold-continuum_optimal_free_boundary",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/gates/continuum_optimal_free_boundary"
+    }
+  },
+  {
+    "expected": "HOLD",
+    "id": "hold-FP32_and_hardware_efficiency",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/gates/FP32_and_hardware_efficiency"
+    }
+  },
+  {
+    "expected": false,
+    "id": "scope-/fresh42/complete_final_result_observed",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/complete_final_result_observed"
+    }
+  },
+  {
+    "expected": false,
+    "id": "scope-/fresh42/independent_final_review_completed",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/independent_final_review_completed"
+    }
+  },
+  {
+    "expected": false,
+    "id": "scope-/c2_feasibility/native_snapshot_started",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/c2_feasibility/native_snapshot_started"
+    }
+  },
+  {
+    "expected": false,
+    "id": "scope-/c2_feasibility/native_training_started",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/c2_feasibility/native_training_started"
+    }
+  },
+  {
+    "expected": false,
+    "id": "scope-/continuation/prospective_epoch_clock_fix/used_by_original_native_C1",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/continuation/prospective_epoch_clock_fix/used_by_original_native_C1"
+    }
+  },
+  {
+    "expected": false,
+    "id": "scope-/main_modified",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/main_modified"
+    }
+  },
+  {
+    "expected": false,
+    "id": "scope-/energy_measured",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/energy_measured"
+    }
+  },
+  {
+    "expected": false,
+    "id": "scope-/cost_ledger_complete",
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/cost_ledger_complete"
+    }
+  },
+  {
+    "expected": null,
+    "id": "unknown-cost-total_elapsed_seconds",
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/total_elapsed_seconds"
+    }
+  },
+  {
+    "expected": null,
+    "id": "unknown-cost-total_energy_joules",
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/total_energy_joules"
+    }
+  },
+  {
+    "expected": null,
+    "id": "unknown-cost-total_currency_cost",
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/total_currency_cost"
+    }
+  },
+  {
+    "expected": null,
+    "id": "unknown-cost-peak_vram_bytes",
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/peak_vram_bytes"
+    }
+  },
+  {
+    "expected": false,
+    "id": "incomplete-costs",
+    "target": {
+      "artifact": "COSTS.json",
+      "pointer": "/accounting_complete"
+    }
+  },
+  {
+    "expected": 16,
+    "id": "asset-count-/verified_assets",
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/verified_assets",
+      "transform": "len"
+    }
+  },
+  {
+    "expected": 1,
+    "id": "asset-count-/incomplete_assets",
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/incomplete_assets",
+      "transform": "len"
+    }
+  },
+  {
+    "expected": 0,
+    "id": "asset-count-/server_metadata_matched_only",
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/server_metadata_matched_only",
+      "transform": "len"
+    }
+  },
+  {
+    "expected": true,
+    "id": "asset-state-/draft",
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/draft"
+    }
+  },
+  {
+    "expected": false,
+    "id": "asset-state-/published",
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/published"
+    }
+  },
+  {
+    "expected": "starter",
+    "id": "asset-state-/incomplete_assets/0/observed_state",
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/incomplete_assets/0/observed_state"
+    }
+  },
+  {
+    "expected": false,
+    "id": "asset-state-/incomplete_assets/0/authenticated_full_readback_verified",
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/incomplete_assets/0/authenticated_full_readback_verified"
+    }
+  },
+  {
+    "expected": null,
+    "id": "asset-state-/incomplete_assets/0/server_digest",
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/incomplete_assets/0/server_digest"
+    }
+  },
+  {
+    "expected": 1,
+    "id": "asset-state-/incomplete_assets/0/upload_invocations_in_this_work",
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/incomplete_assets/0/upload_invocations_in_this_work"
+    }
+  },
+  {
+    "expected": 404,
+    "id": "asset-state-/incomplete_assets/0/authenticated_readback_http_status",
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/incomplete_assets/0/authenticated_readback_http_status"
+    }
+  },
+  {
+    "id": "c1-asset-size",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/DRAFT-UPLOAD-RESULT.json",
+      "pointer": "/assets/0/bytes"
+    },
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/verified_assets/15/size"
+    }
+  },
+  {
+    "id": "c1-asset-sha256",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/DRAFT-UPLOAD-RESULT.json",
+      "pointer": "/assets/0/sha256"
+    },
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/verified_assets/15/sha256"
+    }
+  },
+  {
+    "id": "c1-asset-asset_id",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/DRAFT-UPLOAD-RESULT.json",
+      "pointer": "/assets/0/asset_id"
+    },
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/verified_assets/15/asset_id"
+    }
+  },
+  {
+    "id": "c1-asset-authenticated_readback_matches",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/DRAFT-UPLOAD-RESULT.json",
+      "pointer": "/assets/0/readback_verified"
+    },
+    "target": {
+      "artifact": "assets.json",
+      "pointer": "/verified_assets/15/authenticated_readback_matches"
+    }
+  },
+  {
+    "id": "c1-archive-receipt-identity",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/ARCHIVE-RECEIPT.json",
+      "pointer": "",
+      "transform": "sha256"
+    },
+    "target": {
+      "artifact": "p2/native-c1-completed-v1/DRAFT-UPLOAD-RESULT.json",
+      "pointer": "/archive_receipt_sha256"
+    }
+  },
+  {
+    "id": "c1-controller-receipt-identity",
+    "source": {
+      "artifact": "p2/native-c1-completed-v1/RESULT.json",
+      "pointer": "",
+      "transform": "sha256"
+    },
+    "target": {
+      "artifact": "p2/native-c1-completed-v1/ARCHIVE-RECEIPT.json",
+      "pointer": "/controller_result_sha256"
+    }
+  },
+  {
+    "id": "native-attention-worker-identity",
+    "source": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "",
+      "transform": "sha256"
+    },
+    "target": {
+      "artifact": "review/native-attention-path-v1/RESULT.json",
+      "pointer": "/worker_result_sha256"
+    }
+  },
+  {
+    "id": "attention-cpu_flash_forward_observed",
+    "source": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/cpu_flash_forward_observed"
+    },
+    "target": {
+      "artifact": "review/native-attention-path-v1/RESULT.json",
+      "pointer": "/cpu_flash_forward_observed"
+    }
+  },
+  {
+    "id": "attention-cpu_flash_backward_observed",
+    "source": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/cpu_flash_backward_observed"
+    },
+    "target": {
+      "artifact": "review/native-attention-path-v1/RESULT.json",
+      "pointer": "/cpu_flash_backward_observed"
+    }
+  },
+  {
+    "id": "attention-optimizer_steps",
+    "source": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/optimizer_steps"
+    },
+    "target": {
+      "artifact": "review/native-attention-path-v1/RESULT.json",
+      "pointer": "/optimizer_steps"
+    }
+  },
+  {
+    "id": "attention-scientific_admission",
+    "source": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/scientific_admission"
+    },
+    "target": {
+      "artifact": "review/native-attention-path-v1/RESULT.json",
+      "pointer": "/scientific_admission"
+    }
+  },
+  {
+    "expected": "cpu",
+    "id": "native-attention-scope-/device",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/device"
+    }
+  },
+  {
+    "expected": "torch.float64",
+    "id": "native-attention-scope-/dtype",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/dtype"
+    }
+  },
+  {
+    "expected": 1,
+    "id": "native-attention-scope-/threads",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/threads"
+    }
+  },
+  {
+    "expected": 1,
+    "id": "native-attention-scope-/interop_threads",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/interop_threads"
+    }
+  },
+  {
+    "expected": [
+      32,
+      256,
+      25
+    ],
+    "id": "native-attention-scope-/input_shape",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/input_shape"
+    }
+  },
+  {
+    "expected": 8134,
+    "id": "native-attention-scope-/valid_events",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/valid_events"
+    }
+  },
+  {
+    "expected": true,
+    "id": "native-attention-scope-/mask_observation/strict_causal_upper_triangle",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/mask_observation/strict_causal_upper_triangle"
+    }
+  },
+  {
+    "expected": true,
+    "id": "native-attention-scope-/model_unchanged",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/model_unchanged"
+    }
+  },
+  {
+    "expected": true,
+    "id": "native-attention-scope-/source_unchanged",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/source_unchanged"
+    }
+  },
+  {
+    "expected": false,
+    "id": "native-attention-scope-/optimized_GPU_baseline_established",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/optimized_GPU_baseline_established"
+    }
+  },
+  {
+    "expected": false,
+    "id": "native-attention-scope-/comparative_speed_or_energy_claim",
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/comparative_speed_or_energy_claim"
+    }
+  },
+  {
+    "id": "attention-v8-identity",
+    "source": {
+      "artifact": "STATUS.json",
+      "pointer": "/fresh42/source_archive_sha256"
+    },
+    "target": {
+      "artifact": "review/native-attention-path-v1/worker-result.json",
+      "pointer": "/source_capsule_sha256"
+    }
+  },
+  {
+    "id": "prospective-clock-test-count",
+    "source": {
+      "artifact": "p2/continuation-single-clock-v1/SUMMARY.json",
+      "pointer": "/total_continuation_tests"
+    },
+    "target": {
+      "artifact": "STATUS.json",
+      "pointer": "/continuation/prospective_epoch_clock_fix/passing_tests"
+    }
+  },
+  {
+    "expected": false,
+    "id": "prospective-clock-no-training",
+    "target": {
+      "artifact": "p2/continuation-single-clock-v1/SUMMARY.json",
+      "pointer": "/native_training_executed"
+    }
+  }
+]

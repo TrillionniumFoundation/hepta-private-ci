@@ -1,0 +1,13 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-c",
+    "import pathlib,json,os,subprocess,time\nroots=['/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1','/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v2']\nids=['1a1ce727d17-2564-167b','1a1ce768bc3-2564-1695']\nr={'sampled_unix':time.time(),'units':{},'matching_processes':[],'job_metadata_files':{}}\nfor job in ids:\n unit='hepta-runtime-job-'+job\n p=subprocess.run(['systemctl','--user','show',unit,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,Result,ExecMainCode,ExecMainStatus,StateChangeTimestamp'],capture_output=True,text=True,timeout=10)\n r['units'][unit]={'returncode':p.returncode,'stdout':p.stdout,'stderr':p.stderr}\n d=pathlib.Path('/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs')/job\n r['job_metadata_files'][job]=sorted(x.name for x in d.iterdir()) if d.exists() else None\nfor p in pathlib.Path('/proc').iterdir():\n if not p.name.isdigit() or int(p.name)==os.getpid():continue\n try:\n  args=p.joinpath('cmdline').read_bytes()[:65536].split(b'\\0')\n  matches=[root for root in roots if any(a==root.encode() or a.startswith(root.encode()+b'/') for a in args)]\n  if not matches:continue\n  stat=p.joinpath('stat').read_text();tail=stat[stat.rfind(')')+2:].split()\n  r['matching_processes'].append({'pid':int(p.name),'ppid':int(tail[1]),'state':tail[0],'start_ticks':int(tail[19]),'matched_run_roots':matches,'cgroup':p.joinpath('cgroup').read_text()})\n except (FileNotFoundError,PermissionError,ProcessLookupError):pass\nprint(json.dumps(r,sort_keys=True))\n"
+  ],
+  "cwd": "/home/qian-qi",
+  "idempotency_key": "hcsn-real-replay-readonly-cancel-forensics-c06d-v1",
+  "timeout_seconds": 60,
+  "cpu_quota_percent": 100,
+  "memory_max_bytes": 268435456
+}

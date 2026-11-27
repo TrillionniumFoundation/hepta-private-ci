@@ -1,0 +1,81 @@
+{
+  "schema": "hcsn-p1-12seed-ood-confirmation-v1",
+  "date": "2026-10-31",
+  "status": "FROZEN_BEFORE_THIS_FOLLOWUP_RUN",
+  "prior_pilot_seen": true,
+  "prior_seed_set": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "independent_seed_set": [
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111
+  ],
+  "parent_pr": 4500,
+  "parent_head_sha": "47e8501c3d6a7f08fdd9595c70a2904bf6274688",
+  "frozen_trainer_blob_sha": "eb81a440d0cd583b9f296788742c3c5be120e965",
+  "task_names": [
+    "selective_copy",
+    "key_value_overwrite"
+  ],
+  "arm_names": [
+    "ordinary",
+    "call",
+    "risk",
+    "margin",
+    "call_risk",
+    "call_margin",
+    "risk_margin",
+    "all_three"
+  ],
+  "jobs": 192,
+  "updates": 120,
+  "batch": 48,
+  "hidden": 20,
+  "train_count": 512,
+  "test_count": 384,
+  "id_length": 12,
+  "ood_length": 28,
+  "frozen_encoder": true,
+  "frozen_basis_source": true,
+  "shared_initialization": true,
+  "matched_signed_slope": true,
+  "matched_parameter_count": 561,
+  "primary_contrast": "all_three - ordinary, paired OOD accuracy, both tasks",
+  "secondary_family": "all 7 nonordinary arms x both tasks; 14 two-sided exact signflip tests",
+  "alpha_familywise": 0.05,
+  "multiplicity": "Holm stepdown across exactly 14 contrasts",
+  "sign_flip_null_assumption": "paired seed differences are sign symmetric under null",
+  "necessary_min_p_5seed": 0.0625,
+  "necessary_min_p_12seed": 0.00048828125,
+  "p1_scientific_success_requires": [
+    "all_three OOD gain >= +0.02 on both tasks",
+    "both Holm-adjusted p <= 0.05",
+    "ID accuracy not worse by >0.02",
+    "same measured full-platform CPU/GPU/energy including finance lookup and table build, inference and training",
+    "negative migration/OOD controlled"
+  ],
+  "full_cost_requirement_not_met_by_this_pilot": true,
+  "no_prod_activation": true,
+  "no_model_selection_or_tuning_after_test": true,
+  "include_all_failures": true,
+  "code_and_data_limitations": [
+    "tiny scalar pretrained-free encoder, not full physical-time HCSN",
+    "reconstructed local HX reference not byte-identical to exact upstream",
+    "same updates does not guarantee same measured full CPU",
+    "exact signflip two-sided with 12 seeds can be feasible but not guarantee significance"
+  ]
+}

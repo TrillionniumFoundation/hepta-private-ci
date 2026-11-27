@@ -1,0 +1,73 @@
+{
+  "schema": "new-bootstrap-setup-delta-validation-v3",
+  "status": "passed",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "test_setup_delta",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/c385a7439f8e/c2-terminal-bootstrap-recovery-v3-validation-attempt-01/source",
+  "PID": 4,
+  "returncode": 0,
+  "timed_out": false,
+  "source_before": {
+    "bootstrap.py": {
+      "bytes": 18282,
+      "sha256": "fedff1dde25bdff874b99ad2a13a0b39a12a4452bd5e38bb262c0f96db77697e"
+    },
+    "os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    },
+    "test_setup_delta.py": {
+      "bytes": 5271,
+      "sha256": "f5f87f6f473acad8acab7fea07d364eb8ff055a5fe4fe963cd33e6e0ceba5b69"
+    },
+    "auditor-core.zip": {
+      "bytes": 73473,
+      "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+    }
+  },
+  "source_after": {
+    "bootstrap.py": {
+      "bytes": 18282,
+      "sha256": "fedff1dde25bdff874b99ad2a13a0b39a12a4452bd5e38bb262c0f96db77697e"
+    },
+    "os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    },
+    "test_setup_delta.py": {
+      "bytes": 5271,
+      "sha256": "f5f87f6f473acad8acab7fea07d364eb8ff055a5fe4fe963cd33e6e0ceba5b69"
+    },
+    "auditor-core.zip": {
+      "bytes": 73473,
+      "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+    }
+  },
+  "source_unchanged": true,
+  "whole_child_wall_seconds": 1.188352169999689,
+  "wait4_child_CPU_seconds": 0.475198,
+  "wait4_peak_RSS_bytes": 20553728,
+  "limits": {
+    "wall_seconds": 30,
+    "address_space_bytes": 268435456
+  },
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "bytes": 644,
+    "sha256": "f06132f3fa8eb4092727a1ac3462aae178420b79dca540b3bd48cbca7ba52b80"
+  },
+  "production_C2_inputs_read": false,
+  "model_or_E_access": false,
+  "actual_audit_or_training_executed": false,
+  "original_lost_14_test_receipt_recreated": false,
+  "scope": "New narrow setup-boundary tests with explicit mock core/preflight records and a real /proc preflight whose Popen is prohibited. No actual core or child workload is launched; complete test-child costs only."
+}

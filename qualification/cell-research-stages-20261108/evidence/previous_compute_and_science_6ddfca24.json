@@ -1,0 +1,1446 @@
+{
+  "colab_execution": {
+    "attempts": {
+      "cloud_submit": 1,
+      "kernel_creation": 1,
+      "release": 1,
+      "runtime_allocation": 1
+    },
+    "cloud_job_id": "315821df-b672-4161-9803-502c52bbdd3c",
+    "controller_provider_deadline_seconds": 600,
+    "data_and_compute_scope": {
+      "gpu_job_started": false,
+      "heldout_reference_used": false,
+      "kaggle_request_touched": false,
+      "model_or_training_data_used": false,
+      "second_cloud_task_started": false
+    },
+    "evidence_ids": [
+      "colab_index",
+      "colab_qualification",
+      "colab_lifecycle",
+      "colab_run_receipt",
+      "colab_release_receipt",
+      "colab_native_provenance"
+    ],
+    "git": {
+      "executable": "/usr/bin/git",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "git version 2.43.0\n"
+    },
+    "hardware": {
+      "affinity_cpu_count": 2,
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+      "logical_cpu_count": 2,
+      "machine": "x86_64",
+      "memory": {
+        "MemAvailable": "12263040 kB",
+        "MemTotal": "13286932 kB"
+      },
+      "nvidia_device_nodes": [],
+      "rlimit_fsize": [
+        33554432,
+        33554432
+      ]
+    },
+    "native_controller_host": "rog",
+    "native_controller_job_id": "1a1b98da7f1-12894-1511",
+    "not_proved": [
+      "真实模型采用或科学获益",
+      "全仓 Rust 编译/运行能力",
+      "GPU/TPU 可用性",
+      "完整学习实验的金额/能耗",
+      "多领域或跨主机 Cell 负载验收"
+    ],
+    "payload_bytes": 19628,
+    "payload_sha256": "e3d4325c9af879e6303c96ed5e8d812a9d631e76f5810c68c9015255bc1d80bd",
+    "proved_scope": "指定 Python 完整性核验工具的 15 个测试在真实 CPU/Git/Python 环境通过并完成资源释放。",
+    "provider": "Google Colab via original HeptaRuntime native adapter",
+    "python": {
+      "executable": "/usr/bin/python3",
+      "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+      "version": "3.13.18 (main, Oct 26 2026, 15:28:15) [GCC 13.3.0]"
+    },
+    "resource_spec": {
+      "accelerator": "NONE",
+      "shape": "STANDARD",
+      "variant": "DEFAULT"
+    },
+    "source_bundle_sha256": "75edfa93073f29cfccf8aa023eee53090409957b237062e6771543ebedeaefd4",
+    "status": "PASSED",
+    "task_wall_limit_seconds": 120,
+    "termination": {
+      "cloud_execution_stopped": true,
+      "cloud_exit_code": 0,
+      "cloud_process_group_alive": false,
+      "owned_kernel": true,
+      "owned_runtime": true,
+      "release_confirmed": true,
+      "release_phase": "released"
+    },
+    "tests": {
+      "complete_stderr_evidence": "colab_test_stderr",
+      "complete_stdout_evidence": "colab_test_stdout",
+      "expected": 15,
+      "gate_exit_code": 0,
+      "observed": 15,
+      "passed": true,
+      "test_process_exit_code": 0
+    },
+    "wall_seconds": {
+      "allocate_cli": 13.640114777954295,
+      "bind_cli": 17.13801308197435,
+      "cloud_child": 1.6408295631408691,
+      "native_controller_lifecycle": 59.661011365999,
+      "release_cli": 8.443757531989831,
+      "run_cli": 20.133833108004183,
+      "test_subprocess": 1.372181468000008,
+      "unittest_reported": 1.118
+    },
+    "wall_time_semantics": "CLI 和控制器墙时包含各自的连接/鉴权/收据回读开销；不等同 provider 账单。"
+  },
+  "derivation": {
+    "base_report_bytes": 46035,
+    "base_report_path": "compute_and_science.json",
+    "base_report_retained_unchanged": true,
+    "base_report_sha256": "f63e3bc1bf5e9d8474a795d708b93fa23c463493271a3bca0fcbf727719acfe0",
+    "new_evidence_ids": [
+      "ci_hook_local_preparation",
+      "ci_hook_local_verification",
+      "ci_hook_native_provenance"
+    ],
+    "packaging_boundary": "Registry references only the three metadata files. Do not recursively include exact-objects.json, exact-objects.json.gz or other source exports merely because metadata inventories their names.",
+    "production_owner_adapter_and_budget_hold_unchanged": true,
+    "scientific_data_and_decisions_unchanged": true,
+    "updated_scope": [
+      "final candidate identity",
+      "whole Git tree equivalence metadata",
+      "intermediate candidate source mapping",
+      "evidence registry byte/hash reverification"
+    ]
+  },
+  "evidence_registry": {
+    "ci_hook_local_preparation": {
+      "bytes": 4303,
+      "description": "Local ROG preparation metadata: one workflow change, parent/new HEAD/tree, clean source, retained author configuration and full-tree equality to the previous execution tree. This is not a GitHub publication or CI conclusion.",
+      "evidence_kind": "metadata",
+      "path": "../../publication/ci-hook-r1/local-preparation.json",
+      "sha256": "a7e9479715470f7d45073e718739ba539c92ac5083fde6024342b3e16c2e61f4"
+    },
+    "ci_hook_local_verification": {
+      "bytes": 1790,
+      "description": "Local copy and Git object verification metadata; only this metadata file is referenced, not the exact-objects source payloads it inventories.",
+      "evidence_kind": "metadata",
+      "path": "../../publication/ci-hook-r1/LOCAL_VERIFICATION.json",
+      "sha256": "17fc204ffbd74fde67832bb177f61bd391ea2479cbe8eeca3c7db3e7385b9c70"
+    },
+    "ci_hook_native_provenance": {
+      "bytes": 23817,
+      "description": "Original HeptaRuntime ROG launch, authoritative terminal status and metadata readbacks for local commit preparation; it does not establish GitHub publication or exact-head CI.",
+      "evidence_kind": "metadata",
+      "path": "../../publication/ci-hook-r1/NATIVE_JOB_PROVENANCE.json",
+      "sha256": "681d5a0248a7df3a72851c784c412ca2a2db0f513fc93205aa99dedc18ce0478"
+    },
+    "colab_cloud_stderr": {
+      "bytes": 2569,
+      "description": "Complete original cloud stderr.",
+      "path": "../colab-phase0-3e76f921/cloud-stderr",
+      "sha256": "704edb7eff6f89fe6077d6b94fcc149feccb5225b06834db711342dc0f27be2a"
+    },
+    "colab_cloud_stdout": {
+      "bytes": 1135,
+      "description": "Complete original cloud stdout, including preflight and final result.",
+      "path": "../colab-phase0-3e76f921/cloud-stdout",
+      "sha256": "f0934151b414e95fbaa50fdda8dc204c34cde4c2b66d2bfaa2b1068acb7597ef"
+    },
+    "colab_index": {
+      "bytes": 4804,
+      "description": "Derived index with the actual source identity, observations, and hashes of original readbacks.",
+      "path": "../colab-phase0-3e76f921/EVIDENCE_INDEX.json",
+      "sha256": "4feec8777bac2453f6933d745076ea91572f1d5cd1c3e95b83ae53f61fe5dcac"
+    },
+    "colab_lifecycle": {
+      "bytes": 43620,
+      "description": "Original native controller record of allocation, binding, run, fetch, and release.",
+      "path": "../colab-phase0-3e76f921/LIFECYCLE_RESULT.json",
+      "sha256": "1395cc28bbca8aba8268ec5e4aed65f2ff412c766fcb5644b6185da4d048baba"
+    },
+    "colab_native_provenance": {
+      "bytes": 15733,
+      "description": "Retained Hepta launch/status, upload verification and adapter observation provenance.",
+      "path": "../colab-phase0-3e76f921/NATIVE_PROVENANCE.json",
+      "sha256": "d579153ace5004d1a3c892b27e44f56373079e6392628c4bf26068aae9f56874"
+    },
+    "colab_qualification": {
+      "bytes": 4804,
+      "description": "Original cloud-produced result, frozen source pins, hardware and complete unittest output.",
+      "path": "../colab-phase0-3e76f921/qualification.json",
+      "sha256": "8f8a344186b7839609132a778f5ed751f9f00601e1cb68aabc6b751cd9d7a281"
+    },
+    "colab_release_receipt": {
+      "bytes": 2994,
+      "description": "Original release result with task ownership and attempt counters.",
+      "path": "../colab-phase0-3e76f921/10-release.json",
+      "sha256": "f0a1477b099ae6acadfa6f717eb57e5dbced4a539ff1bd61bf929bd30a445635"
+    },
+    "colab_run_receipt": {
+      "bytes": 6277,
+      "description": "Original adapter run result and cloud terminal receipt.",
+      "path": "../colab-phase0-3e76f921/04-run.json",
+      "sha256": "30ed9652afd06cdf752b213b5da6abac90cb0559c24d5b699d09c2c44335cdf1"
+    },
+    "colab_test_stderr": {
+      "bytes": 2569,
+      "description": "Complete original unittest output.",
+      "path": "../colab-phase0-3e76f921/test.stderr.txt",
+      "sha256": "704edb7eff6f89fe6077d6b94fcc149feccb5225b06834db711342dc0f27be2a"
+    },
+    "colab_test_stdout": {
+      "bytes": 0,
+      "description": "Complete original test stdout; empty is recorded as zero bytes.",
+      "path": "../colab-phase0-3e76f921/test.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "locked_model_roles": {
+      "bytes": 710207,
+      "description": "Complete selected roles, pair links, model index and fresh verification of 234 referenced files.",
+      "path": "../ai395-materials-20261108/LOCKED_MODEL_ROLE_BINDINGS.json",
+      "sha256": "6d876ddc122903f163b1f5a25d412d5c1ceb5161f05b67997e5ff68e315d0a69"
+    },
+    "materials_fresh_hashes": {
+      "bytes": 49947,
+      "description": "Fresh complete SHA256 and pre/post/end stat observations for twelve historical material files.",
+      "path": "../ai395-materials-20261108/FRESH_MATERIALS_SHA256.json",
+      "sha256": "e0837c4df9ccd61031ccee1faf9d4772aff6caa3ee5241d5163fad69703e98fb"
+    },
+    "materials_native_provenance": {
+      "bytes": 3563,
+      "description": "Original pilot job and all read-only materials observation process statuses.",
+      "path": "../ai395-materials-20261108/MATERIALS_NATIVE_JOB_PROVENANCE.json",
+      "sha256": "2d486692567749ec96a9fd9e097dab6be703aa9ab7a31cc5a15f97825cb5e1ed"
+    },
+    "scientific_gaps": {
+      "bytes": 2839,
+      "description": "Concise qualification interpretation; this is a derived assessment, not a new experimental result.",
+      "path": "../ai395-materials-20261108/QUALIFICATION_GAPS.md",
+      "sha256": "d33238018e45396ce25cafbfce74c89f7a4865870680d70d772e8daa1039667a"
+    },
+    "source_equivalence": {
+      "bytes": 3096,
+      "description": "Read-only comparison of the two explicit Git commits and their Python blobs.",
+      "path": "../colab-phase0-3e76f921/SOURCE_EQUIVALENCE.json",
+      "sha256": "b18bf25e224852b3b15ef753541fa81bded5319b61cf53ed5671c2ae5e97f6e1"
+    },
+    "source_equivalence_job": {
+      "bytes": 1134,
+      "description": "Authoritative completion of the source comparison process.",
+      "path": "../colab-phase0-3e76f921/SOURCE_EQUIVALENCE_NATIVE_JOB.json",
+      "sha256": "a3ad9f66f12704027511becae038c18ba5cdc25542281f0a1e0a5c3e2ed91144"
+    }
+  },
+  "generated_at_utc": "2026-11-08T06:24:43.864981+00:00",
+  "historical_pilot": {
+    "data_scope": {
+      "confirmation_release_recorded_in_design": "DENIED pending externally authenticated owner, model/comparator locks and prospective power plan",
+      "constructed_workflow_families": 5,
+      "development_pilot_groups": 20,
+      "disjoint_train_role_tuning_groups": 8,
+      "heldout_reference_contents_opened_in_this_round": false,
+      "model_fitting_source_groups": 40,
+      "real_domain_count": 1,
+      "retention_validation_groups": 20,
+      "scope": "Five constructed workflows on independently grouped real receipt scans in one domain; actual text and source-image crop outputs",
+      "train_export_counting_rule": "941 unique raw records. The common file repeats the 200+741 component records; three gzip files are not extra observations or independent fits.",
+      "train_export_record_counts_from_fresh_manifest": {
+        "training-common.jsonl": {
+          "original_operations": 400,
+          "raw_bytes": 54216871,
+          "raw_sha256": "82e83acf758986195e7c54c3c837514b9c490d9f694639407631d57128f1c26e",
+          "record_ids_sha256": "25859c01c504be436fa8ab24b35d38a1c3d63028670b9fdf14530f4dae410c8f",
+          "rows": 941,
+          "source_phase": null,
+          "training_cases": 200,
+          "training_source_groups": 40,
+          "unique_record_ids": 941
+        },
+        "training-content.jsonl": {
+          "original_operations": 200,
+          "raw_bytes": 9496351,
+          "raw_sha256": "43f1c63fe378a783cc57d475ad1841c4235b7d1eaa335c2e0fdd2126f73d1a85",
+          "record_ids_sha256": "37b3c928b5ac571364ab004ebed65b78b832c7b21a232a0dcd85438ee311cfe4",
+          "rows": 200,
+          "source_phase": "collection-content",
+          "training_cases": 200,
+          "training_source_groups": 40,
+          "unique_record_ids": 200
+        },
+        "training-transitions.jsonl": {
+          "original_operations": 200,
+          "raw_bytes": 44720520,
+          "raw_sha256": "59888e36a52d35589498c19402212f3ea6203cb0d5adcab6c411e3d4aadd254f",
+          "record_ids_sha256": "4a3e80140fbab4d6e4068b7e145391e8f4d7253fbf5e82523de0cf0f26b3006c",
+          "rows": 741,
+          "source_phase": "collection-transitions",
+          "training_cases": 200,
+          "training_source_groups": 40,
+          "unique_record_ids": 741
+        }
+      }
+    },
+    "evidence_ids": [
+      "materials_fresh_hashes",
+      "locked_model_roles",
+      "materials_native_provenance",
+      "scientific_gaps"
+    ],
+    "host": "ai395",
+    "original_job_status": {
+      "exit_code": 0,
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true
+    },
+    "original_runtime_job_id": "1a1b63011af-12894-2d7",
+    "recorded_scientific_disposition": "历史 development pilot 为 Inconclusive/HOLD；该轮字节复核没有产生新的效应估计或改变采用决定。",
+    "replication_and_process_counts": {
+      "additional_collector_setup_receipts": 2,
+      "behavior_collector_seed": 271828,
+      "collector_setup_records": [
+        {
+          "controller": "shared",
+          "core": "ordinary",
+          "failed_weights_sha256": null,
+          "regime": "frozen",
+          "run_id": "common-collector-bootstrap",
+          "seed": 271828,
+          "stage": "bootstrap",
+          "status": "BOOTSTRAP_READY_NOT_A_FIT",
+          "weights_sha256": "71663f6c137a857721a7340abe767f3a0dc65126c534f3b16225903bf5776f6a"
+        },
+        {
+          "controller": "shared",
+          "core": "ordinary",
+          "failed_weights_sha256": null,
+          "regime": "frozen",
+          "run_id": "common-collector-content",
+          "seed": 271828,
+          "stage": "content",
+          "status": "CONTENT_PRETRAINED",
+          "weights_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54"
+        }
+      ],
+      "counting_rule": "152 = 8 content + 144 controller-fit 网格过程；154 还包括 2 个 collector setup 过程（其中 bootstrap 不算训练 fit）。四个 seed 才是独立完整训练复现单位；profile、LR、core、episode 和收据数量不能增加独立复现数。",
+      "exported_driver_process_receipts": 154,
+      "independent_full_training_replicates": 4,
+      "planned_grid": {
+        "content_training_processes": 8,
+        "controller_fit_processes": 144,
+        "total": 152
+      },
+      "training_seeds": [
+        104729,
+        130363,
+        155921,
+        196613
+      ]
+    },
+    "source": {
+      "code_archive_itself_freshly_rehashed_by_this_observation": false,
+      "code_archive_sha256_recorded_in_freshly_hashed_export_manifest": "6e06a20ade5cdaa02b3d1dd54303a3340b69e5ba9df8dd2c550e9377fa933767",
+      "data_source_repository": "jsdnrs/ICDAR2019-SROIE",
+      "data_source_revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+      "fixed_parent_protocol_commit_recorded_in_design": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+      "historical_code_root": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/code-v3",
+      "historical_evaluator_sha256": "6c79c906eb021069f8e3df36dc2029909d2dd152a47dbc30ad64b1391ba59cfd",
+      "historical_rubric_sha256": "fee667c32ec08286bbaf4e9f70b6489aff55bc7d790dca37fc657e5350084300",
+      "historical_scripts_root": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/code-v3/scripts",
+      "historical_source_is_current_native_cell_tree": false,
+      "runtime_root": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0",
+      "source_boundary": "旧模型关联 ai395 code-v3、原 config/design 与源文件 pins；不由目录名推断 Git execution commit，不把其效应归属给 3e76 或 bf952。",
+      "source_file_pins_reference": {
+        "id": "locked_model_roles",
+        "json_pointer": "/source_records"
+      }
+    },
+    "study_id": "ndu-real-sroie-pilot-20261107"
+  },
+  "joint_freeze_and_authority": {
+    "actual_eight_role_joint_freeze_established": false,
+    "evidence_ids": [
+      "scientific_gaps",
+      "locked_model_roles",
+      "colab_qualification"
+    ],
+    "independent_evaluator_and_adopter_trust_established": false,
+    "production_owner_capability_established": false,
+    "protected_final_use_adoption_established": false,
+    "required_roles": [
+      {
+        "available": "当前原生代码候选和历史 Python runtime 的来源可分别定位。",
+        "minimum_gap": "把实际构建/运行的 runtime 与该候选、真实模型接口、恢复状态及权限链绑定；历史 code-v3 不可写成当前 Cell 执行 tree。",
+        "role": "runtime"
+      },
+      {
+        "available": "8 个按 fit/core 区分的历史 retention incumbents 及字节已核验。",
+        "minimum_gap": "确定本次受保护生产任务的实际 incumbent 身份、代际和回滚前驱。",
+        "role": "incumbent_model"
+      },
+      {
+        "available": "96 个分层选定 profile 和真实权重可寻址。",
+        "minimum_gap": "明确唯一采用对象及其模型/策略组合；整包 archive 或每层 strongest comparator 不等于全局采用 winner。",
+        "role": "candidate_model"
+      },
+      {
+        "available": "历史 trainer/config/source pins 与收据可定位。",
+        "minimum_gap": "证明该训练器的真实输出满足当前 runtime bundle/owner ports，并纳入同一冻结配置。",
+        "role": "trainer"
+      },
+      {
+        "available": "已验证 train-only 导出包与清单的完整字节。",
+        "minimum_gap": "完整联合配置需明确训练、调参、保留与独立确认的权限和角色绑定；本轮未打开 heldout。",
+        "role": "data"
+      },
+      {
+        "available": "历史 config 记录 evaluator 和 rubric SHA。",
+        "minimum_gap": "同一真实组合中验证 evaluator 独立保管、盲评和采用门；校验一个文件摘要不能赋予这些语义。",
+        "role": "evaluator"
+      },
+      {
+        "available": "有历史分阶段/单任务限额及本轮小门实测墙时。",
+        "minimum_gap": "补齐研究、搜索、失败、恢复、状态 IO、通信及部署的总成本，明确未测金额/能耗。",
+        "role": "budget"
+      },
+      {
+        "available": "历史设计明确研究 pilot 允许 Inconclusive/Failed，未授科学采用。",
+        "minimum_gap": "当前真实 owner capability、信任根、撤销/fence 和独立采用判断需绑定具体候选；fixture grant 不能替代生产授权。",
+        "role": "adoption_rules"
+      }
+    ],
+    "why_synthetic_fixtures_do_not_grant_authority": "Fixture 的 synthetic candidate、evaluation 和 grant 只覆盖测试中指定的机制约束；不能推出真实 owner 身份/信任根、独立评价 custody、获益门成立或现实生产操作权限。"
+  },
+  "learning_and_budget_boundaries": {
+    "causal_comparison_requirements": [
+      "same function",
+      "same available information",
+      "same total budget",
+      "separate carry/reset intervention",
+      "replaceable kernel intervention",
+      "independent evaluator/adopter",
+      "net gain, retention and continued learning jointly accepted"
+    ],
+    "evidence_ids": [
+      "materials_fresh_hashes",
+      "colab_index",
+      "scientific_gaps"
+    ],
+    "historical_declared_limits": {
+      "aggregate_cpu_quota_percent": 800,
+      "aggregate_job_memory_bytes": 8589934592,
+      "episode_admission_timer_seconds": 7200,
+      "episode_drain_seconds": 360,
+      "episode_wall_seconds": 60,
+      "finite_training_grid_jobs": 152,
+      "global_total_training_timer_seconds": null,
+      "max_workers": 8,
+      "outer_training_process_timeout_seconds": 660,
+      "training_job_wall_seconds": 600
+    },
+    "historical_net_utility": {
+      "formula": "gross_quality - 0.01 * observed_deployment_wall_seconds",
+      "latency_weight": 0.01,
+      "minimum_useful_effect": 0.05,
+      "retention_noninferiority_margin": 0.02,
+      "weight_semantics": "Prospective research latency trade-off: 100 seconds costs one full quality unit. This is not a provider price, energy conversion, or production owner approval."
+    },
+    "learning_scopes": [
+      "retrieval/candidate ranking",
+      "consequence/quality prediction",
+      "action/stopping policy"
+    ],
+    "non_substitution_rules": [
+      "7200 秒是 episode admission timer，不是训练或全实验总期限。",
+      "本轮 59.661 秒是验证工具小门的控制器墙时，不能代填完整学习研究成本。",
+      "导出脚本的 wall/CPU 仅为打包成本，不能冒充训练或全生命周期成本。",
+      "延迟惩罚系数不是美元价格或能耗换算。",
+      "三份训练 gzip 中 common 重复 component records，不是新增独立观察。"
+    ],
+    "persistent_state_retention_continued_learning_joint_gate_passed": false,
+    "reset_fixture_is_persistent_carry_evidence": false,
+    "timer_semantics": "Stop new episode admissions before the 7200-second deadline; drain already admitted episodes within the declared 360-second bound. This is not a hard total phase kill timer.",
+    "total_cost_inclusions": [
+      "acquisition/registration",
+      "engineering/environment preparation",
+      "collection",
+      "training",
+      "search/tuning",
+      "evaluation",
+      "failed/cancelled/budget-stopped/uncertain attempts",
+      "retries and recovery",
+      "state IO and communication",
+      "actual deployment and native reconciliation"
+    ],
+    "training_phase_bound": "Finite 152-job grid; each subprocess is bounded. The 7200-second admission timer applies to episode phases, not a separate global training timer.",
+    "unknown_or_unmeasured": {
+      "energy_joules": null,
+      "historic_environment_preparation_cost": null,
+      "provider_charges": null
+    },
+    "whole_budget_complete": false
+  },
+  "materials_integrity": {
+    "algorithm": "sha256",
+    "all_original_bindings_agree": true,
+    "all_referenced_bytes_match": true,
+    "all_top_level_files_stable": true,
+    "complete_referenced_file_checks": {
+      "id": "locked_model_roles",
+      "json_pointer": "/referenced_file_checks"
+    },
+    "consistency_boundary": "完整文件 SHA 与读取前后/结束时版本稳定性观察；不是文件系统锁，不保证随后文件不会变化，不认证模型语义或权威。",
+    "distinct_serialized_weight_sha256_count": 54,
+    "evidence_ids": [
+      "materials_fresh_hashes",
+      "locked_model_roles",
+      "materials_native_provenance"
+    ],
+    "fresh_top_level_files": 12,
+    "material_pins": [
+      {
+        "bytes": 18156413,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/0"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/export-v1/models-and-training-receipts.tar.gz",
+        "sha256": "d5814d15757e50e38b37f57620846c2f44f528513c91f52042b927cb7aa9b011",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 599444,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/1"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/export-v1/EXPORT_MANIFEST.json",
+        "sha256": "7cb2801dbccb9b19f1e13a3f324e1ff2c42cb3158ba3573747ff9f303a2e3488",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 1251,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/2"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/export-v1/EXPORT_RECEIPT.json",
+        "sha256": "d52d76dba915a737a793346f511119ef00b1631b0667c56680946b90b228012f",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 7488135,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/3"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/export-training-data-v1/training-common.jsonl.gz",
+        "sha256": "22210daac86a6f62ad1b4f5f8ba0e9e2293992aa0ec906dc00ede8b8637981f0",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 1452454,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/4"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/export-training-data-v1/training-content.jsonl.gz",
+        "sha256": "c1502a730691fbe7c7d2d964d1771011e779a417ee4e79213deae3267829cecd",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 6035639,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/5"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/export-training-data-v1/training-transitions.jsonl.gz",
+        "sha256": "3799a3ff614e94befb72abbea20dcba2e67e48a37b2dbbbcfee3a1a52a2b50bd",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 48257,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/6"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/export-training-data-v1/TRAINING_DATA_MANIFEST.json",
+        "sha256": "d0e0d6f6b49b64d2007b6ba3ac7422624c252f59c3d54fbe9cbdb87dfa833cff",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 1868,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/7"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/export-training-data-v1/EXPORT_RECEIPT.json",
+        "sha256": "c508447af221e7eea70a2a7fd22ac5691b261fcf5969fa437f578160a2454304",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 467830,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/8"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/pilot-run-v1/selection-lock.json",
+        "sha256": "410cc42b2ea09a9532963d5fa67b5e248af55ab86d3b1ffbd274edbcc3dec0ef",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 73573,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/9"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/pilot-run-v1/model-index.json",
+        "sha256": "31f26ba25a32c0e83cdf432b6b5fb3552946bc26c14069fd599eaf2b06164081",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 1821,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/10"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/pilot-config-v1.json",
+        "sha256": "6aeabcbc0761305d8be019c6efcb51906286282cbac3a8172eb2bac81b78ceae",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      },
+      {
+        "bytes": 8666,
+        "evidence_ref": {
+          "id": "materials_fresh_hashes",
+          "json_pointer": "/files/11"
+        },
+        "host": "ai395",
+        "original_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/PILOT_DESIGN.v2.json",
+        "sha256": "034aafa8481e4d8e32f9c907af3af9fd4fa3600c6d865a1db73077b237d4706c",
+        "stable_during_read": true,
+        "stable_through_end_observation": true
+      }
+    ],
+    "observation_utc": "2026-11-08T04:43:54.459829+00:00",
+    "path_open_method": "all absolute components opened descriptor-relative with O_NOFOLLOW; directories use O_DIRECTORY; regular file required; open FDs retained until final recheck",
+    "referenced_file_counts_by_kind": {
+      "control_plan": 104,
+      "training_receipt": 65,
+      "weights": 65
+    },
+    "referenced_files_count": 234,
+    "referenced_weight_paths": 65
+  },
+  "overall": {
+    "candidate_publication_and_required_ci_status": "由总报告的独立 GitHub/CI 原始证据说明；本派生子报告不判定发布或 CI 状态，亦不把同 tree 作为新 HEAD 的执行或 CI 成功。",
+    "candidate_publication_status_assessed": false,
+    "engineering_result": "已证实真实 Colab 小门通过且资源释放，历史材料字节与分层角色绑定可复核。",
+    "final_candidate": {
+      "commit": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+      "tree": "491eace326f335498334fb051c9e8f298ca7a04c"
+    },
+    "full_six_stage_acceptance": false,
+    "minimum_blocker_summary": [
+      "实际八角色联合 freeze 未建立。",
+      "当前 production owner/trust 与真实 PyTorch actor→native bundle/owner ports 适配未建立。",
+      "无唯一全局采用 winner，三作用域 reset 不证明 carry。",
+      "净收益/retention/继续学习、真实结构变化、递归改进器和规模验收未建立；全预算仍不完整。"
+    ],
+    "production_adoption_authority_granted": false,
+    "required_ci_status_assessed": false,
+    "scientific_status": "HOLD"
+  },
+  "reference_path_base": "directory containing this JSON file",
+  "report_construction": {
+    "account_or_identity_accessed_or_changed": false,
+    "evidence_reference_count": 19,
+    "evidence_registry_reverification": {
+      "all_paths_and_hashes_match": true,
+      "checks": {
+        "ci_hook_local_preparation": {
+          "bytes": 4303,
+          "path": "../../publication/ci-hook-r1/local-preparation.json",
+          "sha256": "a7e9479715470f7d45073e718739ba539c92ac5083fde6024342b3e16c2e61f4",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 4303,
+            "ctime_ns": 1794118918578993930,
+            "device": 27,
+            "inode": 1330558,
+            "mtime_ns": 1794118918578993930
+          }
+        },
+        "ci_hook_local_verification": {
+          "bytes": 1790,
+          "path": "../../publication/ci-hook-r1/LOCAL_VERIFICATION.json",
+          "sha256": "17fc204ffbd74fde67832bb177f61bd391ea2479cbe8eeca3c7db3e7385b9c70",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 1790,
+            "ctime_ns": 1794118918579649890,
+            "device": 27,
+            "inode": 1330563,
+            "mtime_ns": 1794118918579649890
+          }
+        },
+        "ci_hook_native_provenance": {
+          "bytes": 23817,
+          "path": "../../publication/ci-hook-r1/NATIVE_JOB_PROVENANCE.json",
+          "sha256": "681d5a0248a7df3a72851c784c412ca2a2db0f513fc93205aa99dedc18ce0478",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 23817,
+            "ctime_ns": 1794118918579308895,
+            "device": 27,
+            "inode": 1330562,
+            "mtime_ns": 1794118918579308895
+          }
+        },
+        "colab_cloud_stderr": {
+          "bytes": 2569,
+          "path": "../colab-phase0-3e76f921/cloud-stderr",
+          "sha256": "704edb7eff6f89fe6077d6b94fcc149feccb5225b06834db711342dc0f27be2a",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 2569,
+            "ctime_ns": 1794114721542252221,
+            "device": 27,
+            "inode": 1329450,
+            "mtime_ns": 1794114721542252221
+          }
+        },
+        "colab_cloud_stdout": {
+          "bytes": 1135,
+          "path": "../colab-phase0-3e76f921/cloud-stdout",
+          "sha256": "f0934151b414e95fbaa50fdda8dc204c34cde4c2b66d2bfaa2b1068acb7597ef",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 1135,
+            "ctime_ns": 1794114721542221665,
+            "device": 27,
+            "inode": 1329428,
+            "mtime_ns": 1794114721542221665
+          }
+        },
+        "colab_index": {
+          "bytes": 4804,
+          "path": "../colab-phase0-3e76f921/EVIDENCE_INDEX.json",
+          "sha256": "4feec8777bac2453f6933d745076ea91572f1d5cd1c3e95b83ae53f61fe5dcac",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 4804,
+            "ctime_ns": 1794114721543036845,
+            "device": 27,
+            "inode": 1329506,
+            "mtime_ns": 1794114721543036845
+          }
+        },
+        "colab_lifecycle": {
+          "bytes": 43620,
+          "path": "../colab-phase0-3e76f921/LIFECYCLE_RESULT.json",
+          "sha256": "1395cc28bbca8aba8268ec5e4aed65f2ff412c766fcb5644b6185da4d048baba",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 43620,
+            "ctime_ns": 1794114721542368166,
+            "device": 27,
+            "inode": 1329490,
+            "mtime_ns": 1794114721542368166
+          }
+        },
+        "colab_native_provenance": {
+          "bytes": 15733,
+          "path": "../colab-phase0-3e76f921/NATIVE_PROVENANCE.json",
+          "sha256": "d579153ace5004d1a3c892b27e44f56373079e6392628c4bf26068aae9f56874",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 15733,
+            "ctime_ns": 1794114721359106856,
+            "device": 27,
+            "inode": 1328964,
+            "mtime_ns": 1794114721359106856
+          }
+        },
+        "colab_qualification": {
+          "bytes": 4804,
+          "path": "../colab-phase0-3e76f921/qualification.json",
+          "sha256": "8f8a344186b7839609132a778f5ed751f9f00601e1cb68aabc6b751cd9d7a281",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 4804,
+            "ctime_ns": 1794114721542011608,
+            "device": 27,
+            "inode": 1329060,
+            "mtime_ns": 1794114721542011608
+          }
+        },
+        "colab_release_receipt": {
+          "bytes": 2994,
+          "path": "../colab-phase0-3e76f921/10-release.json",
+          "sha256": "f0a1477b099ae6acadfa6f717eb57e5dbced4a539ff1bd61bf929bd30a445635",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 2994,
+            "ctime_ns": 1794114721542314845,
+            "device": 27,
+            "inode": 1329474,
+            "mtime_ns": 1794114721542314845
+          }
+        },
+        "colab_run_receipt": {
+          "bytes": 6277,
+          "path": "../colab-phase0-3e76f921/04-run.json",
+          "sha256": "30ed9652afd06cdf752b213b5da6abac90cb0559c24d5b699d09c2c44335cdf1",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 6277,
+            "ctime_ns": 1794114721542285481,
+            "device": 27,
+            "inode": 1329458,
+            "mtime_ns": 1794114721542285481
+          }
+        },
+        "colab_test_stderr": {
+          "bytes": 2569,
+          "path": "../colab-phase0-3e76f921/test.stderr.txt",
+          "sha256": "704edb7eff6f89fe6077d6b94fcc149feccb5225b06834db711342dc0f27be2a",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 2569,
+            "ctime_ns": 1794114721542188354,
+            "device": 27,
+            "inode": 1329411,
+            "mtime_ns": 1794114721542188354
+          }
+        },
+        "colab_test_stdout": {
+          "bytes": 0,
+          "path": "../colab-phase0-3e76f921/test.stdout.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 0,
+            "ctime_ns": 1794114721542011608,
+            "device": 27,
+            "inode": 1329240,
+            "mtime_ns": 1794114721542011608
+          }
+        },
+        "locked_model_roles": {
+          "bytes": 710207,
+          "path": "../ai395-materials-20261108/LOCKED_MODEL_ROLE_BINDINGS.json",
+          "sha256": "6d876ddc122903f163b1f5a25d412d5c1ceb5161f05b67997e5ff68e315d0a69",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 710207,
+            "ctime_ns": 1794113543507890864,
+            "device": 27,
+            "inode": 1328366,
+            "mtime_ns": 1794113543507890864
+          }
+        },
+        "materials_fresh_hashes": {
+          "bytes": 49947,
+          "path": "../ai395-materials-20261108/FRESH_MATERIALS_SHA256.json",
+          "sha256": "e0837c4df9ccd61031ccee1faf9d4772aff6caa3ee5241d5163fad69703e98fb",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 49947,
+            "ctime_ns": 1794113214667540102,
+            "device": 27,
+            "inode": 1328799,
+            "mtime_ns": 1794113214667540102
+          }
+        },
+        "materials_native_provenance": {
+          "bytes": 3563,
+          "path": "../ai395-materials-20261108/MATERIALS_NATIVE_JOB_PROVENANCE.json",
+          "sha256": "2d486692567749ec96a9fd9e097dab6be703aa9ab7a31cc5a15f97825cb5e1ed",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 3563,
+            "ctime_ns": 1794115116533562205,
+            "device": 27,
+            "inode": 1329574,
+            "mtime_ns": 1794115116533562205
+          }
+        },
+        "scientific_gaps": {
+          "bytes": 2839,
+          "path": "../ai395-materials-20261108/QUALIFICATION_GAPS.md",
+          "sha256": "d33238018e45396ce25cafbfce74c89f7a4865870680d70d772e8daa1039667a",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 2839,
+            "ctime_ns": 1794115029940469556,
+            "device": 27,
+            "inode": 1329485,
+            "mtime_ns": 1794115029940469556
+          }
+        },
+        "source_equivalence": {
+          "bytes": 3096,
+          "path": "../colab-phase0-3e76f921/SOURCE_EQUIVALENCE.json",
+          "sha256": "b18bf25e224852b3b15ef753541fa81bded5319b61cf53ed5671c2ae5e97f6e1",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 3096,
+            "ctime_ns": 1794114962893496716,
+            "device": 27,
+            "inode": 1329476,
+            "mtime_ns": 1794114962893496716
+          }
+        },
+        "source_equivalence_job": {
+          "bytes": 1134,
+          "path": "../colab-phase0-3e76f921/SOURCE_EQUIVALENCE_NATIVE_JOB.json",
+          "sha256": "a3ad9f66f12704027511becae038c18ba5cdc25542281f0a1e0a5c3e2ed91144",
+          "stable_during_read": true,
+          "stable_through_end_observation": true,
+          "stat_after_read": {
+            "bytes": 1134,
+            "ctime_ns": 1794115116709566916,
+            "device": 27,
+            "inode": 1329617,
+            "mtime_ns": 1794115116709566916
+          }
+        }
+      },
+      "evidence_count": 19,
+      "method": "Fresh complete local SHA256 with before/after and end-of-pass stat consistency; no external or provider calls.",
+      "verified_at_utc": "2026-11-08T06:24:43.864981+00:00"
+    },
+    "exact_objects_source_payloads_in_registry": false,
+    "frozen_source_mirror_modified": false,
+    "heldout_data_opened": false,
+    "model_checkpoint_deserialized_or_opened": false,
+    "new_evidence_contains_source_object_base64": false,
+    "new_provider_compute_started": false,
+    "new_training_or_evaluation_run": false,
+    "newly_referenced_evidence_count": 3,
+    "publication_or_ci_assessed": false,
+    "source_files_modified_or_reexecuted": false,
+    "used_existing_local_evidence_only": true
+  },
+  "report_scope": "保留原子报告的派生计算/科学汇总：最终候选为 6ddfca24/tree491eace3，真实 Colab 执行身份保持 3e76f921/tree491eace3；只读取既有本地证据，不作发布或 CI 判定，不启动新计算、不打开模型或 heldout、不访问身份、不改源码。",
+  "schema": "hepta.cell-rsi-compute-and-science-report.v1",
+  "selection_and_actor_contract": {
+    "candidate_summaries": 256,
+    "complete_profile_reference": {
+      "id": "locked_model_roles",
+      "json_pointer": "/selected"
+    },
+    "evidence_ids": [
+      "locked_model_roles",
+      "materials_fresh_hashes",
+      "scientific_gaps"
+    ],
+    "global_unique_adoption_winner_present": false,
+    "historical_actor": {
+      "compatibility_gap": "文件 SHA 相同不提供 bundle/manifest 组件映射、owner ports 实现、当前代际授权、持久状态迁移或实际下一任务消费证明。",
+      "current_native_contracts": [
+        "CellCompatibilityBundleV1",
+        "CellBackendManifestV2",
+        "LearningIterationOwnerPortsV1"
+      ],
+      "deployment_artifact": "weights.pt containing a plain PyTorch tensor state_dict",
+      "loader": "ReceiptPortfolioModel(core); torch.load(..., map_location=\"cpu\", weights_only=True); load_state_dict(..., strict=True)",
+      "real_adapter_and_same_lineage_consumption_demonstrated": false,
+      "required_external_inputs": [
+        "core: ordinary or hepta",
+        "controller: initial/light/ndu/tuned_fixed/voi/mpc",
+        "control-plan JSON",
+        "ndu.real.public-case.v1 public projection",
+        "ndu.real.actor-step.v1 ordered public step stream"
+      ],
+      "trainer_fit_status": "FITTED_NOT_ADOPTED"
+    },
+    "joint_frozen_incumbent_pair_link_count": 16,
+    "lock_schema": "ndu.real.comparator-lock.v1",
+    "locked_at": "2026-11-07T14:41:56.500778+00:00",
+    "native_authentication_marker": "SEPARATE_REQUIRED",
+    "pilot_plan_sha256": "139a8c0ce912f4eadb62d80463674ac7295b04fad4c455296654ec7630946880",
+    "primary_pair_links": [
+      {
+        "arm": "A",
+        "controller": "light",
+        "core": "ordinary",
+        "fit_id": "pilot-fit-01",
+        "frozen_counterpart_profile_id": "pilot-fit-01-frozen-A-trial-0",
+        "joint_profile_id": "pilot-fit-01-joint-A-trial-1",
+        "retention_incumbent_profile_id": "pilot-fit-01-retention-incumbent-ordinary"
+      },
+      {
+        "arm": "B",
+        "controller": "ndu",
+        "core": "ordinary",
+        "fit_id": "pilot-fit-01",
+        "frozen_counterpart_profile_id": "pilot-fit-01-frozen-B-trial-0",
+        "joint_profile_id": "pilot-fit-01-joint-B-trial-2",
+        "retention_incumbent_profile_id": "pilot-fit-01-retention-incumbent-ordinary"
+      },
+      {
+        "arm": "C",
+        "controller": "light",
+        "core": "hepta",
+        "fit_id": "pilot-fit-01",
+        "frozen_counterpart_profile_id": "pilot-fit-01-frozen-C-trial-0",
+        "joint_profile_id": "pilot-fit-01-joint-C-trial-2",
+        "retention_incumbent_profile_id": "pilot-fit-01-retention-incumbent-hepta"
+      },
+      {
+        "arm": "D",
+        "controller": "ndu",
+        "core": "hepta",
+        "fit_id": "pilot-fit-01",
+        "frozen_counterpart_profile_id": "pilot-fit-01-frozen-D-trial-2",
+        "joint_profile_id": "pilot-fit-01-joint-D-trial-1",
+        "retention_incumbent_profile_id": "pilot-fit-01-retention-incumbent-hepta"
+      },
+      {
+        "arm": "A",
+        "controller": "light",
+        "core": "ordinary",
+        "fit_id": "pilot-fit-02",
+        "frozen_counterpart_profile_id": "pilot-fit-02-frozen-A-trial-2",
+        "joint_profile_id": "pilot-fit-02-joint-A-trial-1",
+        "retention_incumbent_profile_id": "pilot-fit-02-retention-incumbent-ordinary"
+      },
+      {
+        "arm": "B",
+        "controller": "ndu",
+        "core": "ordinary",
+        "fit_id": "pilot-fit-02",
+        "frozen_counterpart_profile_id": "pilot-fit-02-frozen-B-trial-0",
+        "joint_profile_id": "pilot-fit-02-joint-B-trial-1",
+        "retention_incumbent_profile_id": "pilot-fit-02-retention-incumbent-ordinary"
+      },
+      {
+        "arm": "C",
+        "controller": "light",
+        "core": "hepta",
+        "fit_id": "pilot-fit-02",
+        "frozen_counterpart_profile_id": "pilot-fit-02-frozen-C-trial-2",
+        "joint_profile_id": "pilot-fit-02-joint-C-trial-2",
+        "retention_incumbent_profile_id": "pilot-fit-02-retention-incumbent-hepta"
+      },
+      {
+        "arm": "D",
+        "controller": "ndu",
+        "core": "hepta",
+        "fit_id": "pilot-fit-02",
+        "frozen_counterpart_profile_id": "pilot-fit-02-frozen-D-trial-0",
+        "joint_profile_id": "pilot-fit-02-joint-D-trial-1",
+        "retention_incumbent_profile_id": "pilot-fit-02-retention-incumbent-hepta"
+      },
+      {
+        "arm": "A",
+        "controller": "light",
+        "core": "ordinary",
+        "fit_id": "pilot-fit-03",
+        "frozen_counterpart_profile_id": "pilot-fit-03-frozen-A-trial-0",
+        "joint_profile_id": "pilot-fit-03-joint-A-trial-1",
+        "retention_incumbent_profile_id": "pilot-fit-03-retention-incumbent-ordinary"
+      },
+      {
+        "arm": "B",
+        "controller": "ndu",
+        "core": "ordinary",
+        "fit_id": "pilot-fit-03",
+        "frozen_counterpart_profile_id": "pilot-fit-03-frozen-B-trial-0",
+        "joint_profile_id": "pilot-fit-03-joint-B-trial-0",
+        "retention_incumbent_profile_id": "pilot-fit-03-retention-incumbent-ordinary"
+      },
+      {
+        "arm": "C",
+        "controller": "light",
+        "core": "hepta",
+        "fit_id": "pilot-fit-03",
+        "frozen_counterpart_profile_id": "pilot-fit-03-frozen-C-trial-0",
+        "joint_profile_id": "pilot-fit-03-joint-C-trial-0",
+        "retention_incumbent_profile_id": "pilot-fit-03-retention-incumbent-hepta"
+      },
+      {
+        "arm": "D",
+        "controller": "ndu",
+        "core": "hepta",
+        "fit_id": "pilot-fit-03",
+        "frozen_counterpart_profile_id": "pilot-fit-03-frozen-D-trial-0",
+        "joint_profile_id": "pilot-fit-03-joint-D-trial-2",
+        "retention_incumbent_profile_id": "pilot-fit-03-retention-incumbent-hepta"
+      },
+      {
+        "arm": "A",
+        "controller": "light",
+        "core": "ordinary",
+        "fit_id": "pilot-fit-04",
+        "frozen_counterpart_profile_id": "pilot-fit-04-frozen-A-trial-1",
+        "joint_profile_id": "pilot-fit-04-joint-A-trial-0",
+        "retention_incumbent_profile_id": "pilot-fit-04-retention-incumbent-ordinary"
+      },
+      {
+        "arm": "B",
+        "controller": "ndu",
+        "core": "ordinary",
+        "fit_id": "pilot-fit-04",
+        "frozen_counterpart_profile_id": "pilot-fit-04-frozen-B-trial-0",
+        "joint_profile_id": "pilot-fit-04-joint-B-trial-1",
+        "retention_incumbent_profile_id": "pilot-fit-04-retention-incumbent-ordinary"
+      },
+      {
+        "arm": "C",
+        "controller": "light",
+        "core": "hepta",
+        "fit_id": "pilot-fit-04",
+        "frozen_counterpart_profile_id": "pilot-fit-04-frozen-C-trial-2",
+        "joint_profile_id": "pilot-fit-04-joint-C-trial-1",
+        "retention_incumbent_profile_id": "pilot-fit-04-retention-incumbent-hepta"
+      },
+      {
+        "arm": "D",
+        "controller": "ndu",
+        "core": "hepta",
+        "fit_id": "pilot-fit-04",
+        "frozen_counterpart_profile_id": "pilot-fit-04-frozen-D-trial-0",
+        "joint_profile_id": "pilot-fit-04-joint-D-trial-0",
+        "retention_incumbent_profile_id": "pilot-fit-04-retention-incumbent-hepta"
+      }
+    ],
+    "retention_incumbent_count": 8,
+    "retention_incumbent_reference": {
+      "id": "locked_model_roles",
+      "json_pointer": "/retention_incumbents"
+    },
+    "selected_grid": {
+      "arms": 12,
+      "independent_fits": 4,
+      "training_regimes": 2
+    },
+    "selected_profile_count": 96,
+    "strongest_comparator_choices": [
+      {
+        "arm": "mpc_hepta",
+        "fit_id": "pilot-fit-01",
+        "profile_id": "pilot-fit-01-frozen-mpc_hepta-trial-0",
+        "regime": "frozen"
+      },
+      {
+        "arm": "mpc",
+        "fit_id": "pilot-fit-01",
+        "profile_id": "pilot-fit-01-joint-mpc-trial-2",
+        "regime": "joint"
+      },
+      {
+        "arm": "tuned_fixed_hepta",
+        "fit_id": "pilot-fit-02",
+        "profile_id": "pilot-fit-02-frozen-tuned_fixed_hepta-trial-0",
+        "regime": "frozen"
+      },
+      {
+        "arm": "voi",
+        "fit_id": "pilot-fit-02",
+        "profile_id": "pilot-fit-02-joint-voi-trial-1",
+        "regime": "joint"
+      },
+      {
+        "arm": "tuned_fixed_hepta",
+        "fit_id": "pilot-fit-03",
+        "profile_id": "pilot-fit-03-frozen-tuned_fixed_hepta-trial-0",
+        "regime": "frozen"
+      },
+      {
+        "arm": "voi_hepta",
+        "fit_id": "pilot-fit-03",
+        "profile_id": "pilot-fit-03-joint-voi_hepta-trial-2",
+        "regime": "joint"
+      },
+      {
+        "arm": "mpc_hepta",
+        "fit_id": "pilot-fit-04",
+        "profile_id": "pilot-fit-04-frozen-mpc_hepta-trial-1",
+        "regime": "frozen"
+      },
+      {
+        "arm": "voi_hepta",
+        "fit_id": "pilot-fit-04",
+        "profile_id": "pilot-fit-04-joint-voi_hepta-trial-0",
+        "regime": "joint"
+      }
+    ],
+    "strongest_comparator_count": 8,
+    "strongest_comparator_scope": "各 fit/regime 在 train-role tuning 上锁定比较器，不能推为全局采用 winner 或独立 confirmation 获益。"
+  },
+  "source_identities": {
+    "colab_actual_source": {
+      "commit": "3e76f9217c8b4c89a70e52d049fe5e56ce79a637",
+      "tree": "491eace326f335498334fb051c9e8f298ca7a04c"
+    },
+    "colab_executed_file_scope": [
+      {
+        "bytes": 15041,
+        "name": "hepta_cell_joint_config.py",
+        "sha256": "48f016c10bbf4301f0dc6357f40eca0628bdbad711c36c109cdd0d43c65b3e12"
+      },
+      {
+        "bytes": 12081,
+        "name": "test_hepta_cell_joint_config.py",
+        "sha256": "cf2efcf3487fbe5b99790dfef3068369af557d99aaba5baf045b40b30a2134b5"
+      }
+    ],
+    "final_candidate": {
+      "commit": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+      "tree": "491eace326f335498334fb051c9e8f298ca7a04c"
+    },
+    "full_repository_checkout_in_colab": false,
+    "historical_pilot_effects_attributed_to_final_candidate": false,
+    "intermediate_candidates": [
+      {
+        "commit": "bf952042b3d31fc416f14adfea5c38181580498b",
+        "evidence_ids": [
+          "source_equivalence",
+          "source_equivalence_job"
+        ],
+        "historical_status": "Retained historical source-equivalence evidence; this is not the final candidate.",
+        "mapping_endpoints": {
+          "actual_colab_source": {
+            "commit": "3e76f9217c8b4c89a70e52d049fe5e56ce79a637",
+            "tree": "491eace326f335498334fb051c9e8f298ca7a04c"
+          },
+          "intermediate_candidate": {
+            "commit": "bf952042b3d31fc416f14adfea5c38181580498b",
+            "tree": "4bd0a6b9eda3b2b572972fa40ff1426887626532"
+          }
+        },
+        "role": "intermediate_code_only_candidate",
+        "same_code_mapping_from_colab_actual_source": {
+          "all_python_blobs_match": true,
+          "changed_paths": [
+            {
+              "after": {
+                "kind": "blob",
+                "mode": "100644",
+                "object_id": "ffbc02e0902218dfebeb6260a575613eee101c44"
+              },
+              "before": {
+                "kind": "blob",
+                "mode": "100644",
+                "object_id": "df72376c88ee92371ff62f4151fde98ccac68bf0"
+              },
+              "path": ".github/workflows/hepta-cell-framework-native.yml"
+            }
+          ],
+          "evidence_ids": [
+            "source_equivalence",
+            "source_equivalence_job",
+            "colab_qualification"
+          ],
+          "nonworkflow_tracked_entry_count": 11097,
+          "nonworkflow_tree_entries_exactly_equal": true,
+          "scope": "源字节/树项比较；保持实际云执行 commit/tree 不变，不转写成 bf952 的执行或 CI 成功。"
+        },
+        "tree": "4bd0a6b9eda3b2b572972fa40ff1426887626532"
+      }
+    ],
+    "same_tree_mapping": {
+      "actual_colab_source": {
+        "commit": "3e76f9217c8b4c89a70e52d049fe5e56ce79a637",
+        "tree": "491eace326f335498334fb051c9e8f298ca7a04c"
+      },
+      "boundary": "完整 tree 相同只能证明提交树字节一致。真实 Colab 执行仍绑定 3e76f921；此映射不改写执行 commit，不认证发布、CI、生产 owner 或科学收益。",
+      "comparison_scope": "All committed Git tree entries, including the restored workflow; not a new execution or a full repository checkout in Colab.",
+      "entire_committed_git_tree_equal": true,
+      "evidence_ids": [
+        "ci_hook_local_preparation",
+        "ci_hook_local_verification",
+        "ci_hook_native_provenance"
+      ],
+      "final_candidate": {
+        "commit": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+        "tree": "491eace326f335498334fb051c9e8f298ca7a04c"
+      },
+      "final_candidate_commit_executed_in_colab": false,
+      "final_candidate_parent": "bf952042b3d31fc416f14adfea5c38181580498b",
+      "local_preparation_exit_code": 0,
+      "local_preparation_status": "succeeded",
+      "native_local_preparation_job_id": "rog:1a1b9ce7d9d-12894-16ff",
+      "new_compute_or_test_execution_performed_for_mapping": false,
+      "original_colab_execution_commit_preserved": true
+    },
+    "source_binding_method": "ROG 对固定完整 commit 做 git show 并验证两文件 SHA；云端再次按原 SHA 解包核验后执行这两份文件。"
+  },
+  "stages": [
+    {
+      "confirmed": [
+        "两份冻结 Python 文件在真实 Colab CPU 环境 15/15 通过，原收据和释放结果保留。",
+        "历史模型/数据材料与选择锁引用文件完成新鲜字节核验。",
+        "真实 Colab 执行仍为 3e76f921/tree491eace3；最终候选 6ddfca24 的完整 Git tree 与其一致。旧 bf952 code-only 映射保留为 intermediate candidate 历史证据。"
+      ],
+      "evidence_ids": [
+        "colab_qualification",
+        "colab_run_receipt",
+        "source_equivalence",
+        "materials_fresh_hashes",
+        "locked_model_roles",
+        "scientific_gaps",
+        "ci_hook_local_preparation",
+        "ci_hook_local_verification",
+        "ci_hook_native_provenance"
+      ],
+      "minimum_remaining_evidence": [
+        "一份实际八角色联合冻结配置，把当前 runtime、唯一 incumbent/candidate、trainer、data、evaluator、全预算和采用规则合在一个真实执行组合中。",
+        "该组合的实际 build/runtime provenance、完整必要 CI 及其原始 provider 来源；同字节映射不自动成为最终候选的 CI 或执行记录。",
+        "明确生产 owner、信任根、evaluator/adopter 独立性及真实模型接口适配。"
+      ],
+      "name": "收敛版本与证据",
+      "stage": 0,
+      "status": "partial_engineering_evidence_not_full_acceptance",
+      "why_fixture_pass_is_insufficient": "离线核验器及其 synthetic fixture 检查内容完整性/拒绝路径；不会认证生产 owner、CI provider、模型语义或真实联合运行。"
+    },
+    {
+      "confirmed": [
+        "当前 native successor fixtures 可用于出版/journal/fence/恢复机制的工程证据；总报告须独立引用相应 native test receipt。",
+        "历史 pilot 确有真实权重与 actor 运行材料，但 trainer 的 fit 收据为 FITTED_NOT_ADOPTED。"
+      ],
+      "evidence_ids": [
+        "locked_model_roles",
+        "scientific_gaps"
+      ],
+      "minimum_remaining_evidence": [
+        "把真实 task→候选→独立评价→授权采用→下一任务消费→恢复串成同一个实际模型/状态谱系。",
+        "为旧 weights-only torch actor 到 CellCompatibilityBundleV1、CellBackendManifestV2、LearningIterationOwnerPortsV1 提供并验证真实适配。",
+        "在真实候选上验证当前 owner/trust、撤销/fence、bundle/state 兼容和正常 NoUpdate；保留实际 step receipt、checkpoint、CURRENT/journal readback。"
+      ],
+      "name": "真实后继代消费",
+      "stage": 1,
+      "status": "mechanism_evidence_only_real_model_adoption_not_established",
+      "why_fixture_pass_is_insufficient": "synthetic training/evaluation 和 support worker 的候选选择/签署 grant 不会执行这些历史 PyTorch 权重，也不能证明现实生产信任、获益门或模型兼容。历史研究 Cell 日志亦不等于 protected FinalUse 采用。"
+    },
+    {
+      "confirmed": [
+        "有一个真实收据扫描领域的历史 development pilot、4 个独立训练 seed 和分层配对选择锁。",
+        "已保存 retrieval/ranking、consequence/quality、action/stopping 三个学习作用域的验收边界。"
+      ],
+      "evidence_ids": [
+        "materials_fresh_hashes",
+        "locked_model_roles",
+        "scientific_gaps"
+      ],
+      "historical_decision": "Inconclusive/HOLD；本轮字节核验与工具单元测试没有改变该科学结论。",
+      "measured_scientific_effects_in_this_report": {
+        "continued_learning_gain": null,
+        "net_gain": null,
+        "retention_difference": null
+      },
+      "minimum_remaining_evidence": [
+        "同功能、同信息、同总预算地比较 1/3/7 等计算结构，并让持久 carry/reset 与可替换内核成为分开且可归因的干预。",
+        "提供实际持久状态谱系、跨后续任务的恢复和继续学习；reset fixture 不能代替 carry。",
+        "用独立、预先固定的评价同时通过净收益、retention 与继续学习能力门；补齐总成本和确认性设计。"
+      ],
+      "name": "验证 Cell 的因果收益",
+      "stage": 2,
+      "status": "scientific_HOLD"
+    },
+    {
+      "confirmed": [],
+      "evidence_ids": [
+        "scientific_gaps"
+      ],
+      "minimum_remaining_evidence": [
+        "在有限资源下完成一次真实、已授权的 replace/split/merge/retire。",
+        "给出实际状态迁移、恢复、唯一 writer、权威连续性和 fence 证据。",
+        "对该真实结构变化执行盲评，证明任务收益且保持资源约束。"
+      ],
+      "name": "有限结构塑性",
+      "real_structural_change_with_blinded_benefit_observed_in_this_report": false,
+      "stage": 3,
+      "status": "not_qualified_by_available_evidence"
+    },
+    {
+      "confirmed": [],
+      "evidence_ids": [
+        "materials_fresh_hashes",
+        "scientific_gaps"
+      ],
+      "minimum_remaining_evidence": [
+        "固定旧、新改进器身份和更新规则，对事先未见目标做配对比较。",
+        "记录改进器产生的真实有效改善，以及训练/搜索/评价/失败等完整总成本。",
+        "按预先采用规则证明单位总成本改善更大，或达到同一收益门的成本更低。"
+      ],
+      "name": "改进器递归比较",
+      "paired_unseen_target_improver_result_observed_in_this_report": false,
+      "stage": 4,
+      "status": "not_qualified_by_available_evidence"
+    },
+    {
+      "confirmed": [
+        "本轮使用 Hepta 的 ROG/ai395 控制与材料通道，并完成一个 Colab CPU 小门；这只是控制/执行通道的事实。",
+        "历史研究范围为同一收据领域内的五种构造 workflow。"
+      ],
+      "evidence_ids": [
+        "materials_fresh_hashes",
+        "colab_qualification",
+        "scientific_gaps"
+      ],
+      "minimum_remaining_evidence": [
+        "在更多独立领域、更多实际 Cell 和实际跨主机任务负载上运行已冻结组合。",
+        "共同测量任务质量、p95/p99 等尾延迟、通信、峰值内存、状态 IO、失败恢复和实测总成本。",
+        "证明上述指标在目标规模和故障条件下可承受；控制平面跨主机调用或本轮 Python 测试不构成这一验收。"
+      ],
+      "multi_domain_cell_workload_qualified": false,
+      "multi_host_cell_workload_qualified": false,
+      "name": "扩大领域和规模",
+      "scaled_quality_latency_communication_memory_state_io_recovery_cost_joint_gate": false,
+      "stage": 5,
+      "status": "not_qualified_by_available_evidence"
+    }
+  ]
+}

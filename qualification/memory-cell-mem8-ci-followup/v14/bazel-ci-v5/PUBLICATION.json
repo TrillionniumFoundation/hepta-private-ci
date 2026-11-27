@@ -1,0 +1,120 @@
+{
+  "schema": "hepta.mem8.bazel-ci.v5.immutable-publication.v1",
+  "archive": {
+    "name": "mem8-bazel-ci-v5-original-failure-and-r2-v1.tar.xz",
+    "members": 19,
+    "bytes": 2227572,
+    "sha256": "64c8a448e02fe6011d7f7fca128751aa86e510ac54d7d9f70e3a4a4adfe07b8d",
+    "git_blob": "6870673702938e45129596b52ebd7d2de2e4d130"
+  },
+  "parts": [
+    {
+      "part": 1,
+      "path": "part-01.bin",
+      "offset": 0,
+      "bytes": 450000,
+      "sha256": "8310f58850d06bf0a7abed1ba6bd4e49a1435d9e1db78d1cc30f36bfb5bee1c5",
+      "git_blob": "716945c059ba0c9b18a0e7859f8718cc70476ee5",
+      "actual_created_sha": "716945c059ba0c9b18a0e7859f8718cc70476ee5"
+    },
+    {
+      "part": 2,
+      "path": "part-02.bin",
+      "offset": 450000,
+      "bytes": 450000,
+      "sha256": "28af61d1cb407bf449b5dceedf81e86b659f0a7998bb7d66bf1172afb61e9708",
+      "git_blob": "0a04bf63de697b69d7a7c66e5ff27af4bac22201",
+      "actual_created_sha": "0a04bf63de697b69d7a7c66e5ff27af4bac22201"
+    },
+    {
+      "part": 3,
+      "path": "part-03.bin",
+      "offset": 900000,
+      "bytes": 450000,
+      "sha256": "7a3291c350a3e9462086370e70bfe496e34ec799d5f6a31ddfd524f96666694c",
+      "git_blob": "b034689c195a8722f952a7a59946543273425fb4",
+      "actual_created_sha": "b034689c195a8722f952a7a59946543273425fb4"
+    },
+    {
+      "part": 4,
+      "path": "part-04.bin",
+      "offset": 1350000,
+      "bytes": 450000,
+      "sha256": "c28f3b6e3c6daabc558e75493b6005fb6092fd1b1a4dfcc20537f53ef993a06f",
+      "git_blob": "5e0b4dd9fbe7fac862cc4b37b04fe7cb5e857592",
+      "actual_created_sha": "5e0b4dd9fbe7fac862cc4b37b04fe7cb5e857592"
+    },
+    {
+      "part": 5,
+      "path": "part-05.bin",
+      "offset": 1800000,
+      "bytes": 427572,
+      "sha256": "a26307c2588a05948b55cf7bb9c55cd19a35dbe93276b06b0ae199a55e3d169a",
+      "git_blob": "82a306eb147149d6bb867fb8334f858bceb7fc40",
+      "actual_created_sha": "82a306eb147149d6bb867fb8334f858bceb7fc40"
+    }
+  ],
+  "text_blobs": [
+    {
+      "label": "manifest",
+      "bytes": 4111,
+      "sha256": "e3541c707a67ab2e1d723f7db92730792f5636033e5d5667eebe115cfe450711",
+      "git_blob": "ddf83029d53dd712a298b47f67ee3ebb937a81b6",
+      "full_utf8_readback": true
+    },
+    {
+      "label": "parts_index",
+      "bytes": 1819,
+      "sha256": "3605712bf0903264493f60147de64ec4e80ad5792179361cf4761b142f8e6e27",
+      "git_blob": "1d93efc2805219ef3b33983fe3216ea58b3152ac",
+      "full_utf8_readback": true
+    },
+    {
+      "label": "readme",
+      "bytes": 1928,
+      "sha256": "4bf5b83811302c3a23b944f35652ac8e82ddf2425e35df76ed628d668898dd7a",
+      "git_blob": "f28f95e9c88aaef679b88b3b76a6eb1bca6a36ed",
+      "full_utf8_readback": true
+    },
+    {
+      "label": "verifier",
+      "bytes": 8920,
+      "sha256": "71b8d7b5de42da1cc4dd4b1d85df52e5df22dc5792d4aea9a7ce354e692ceaa2",
+      "git_blob": "6b839b87795932e7ee12775b22b324b3b25bf1a4",
+      "full_utf8_readback": true
+    },
+    {
+      "label": "review_and_erratum",
+      "bytes": 2242,
+      "sha256": "b779eb31aed7755315f3e9562c9a7b71ad13cd0b7d6e85ce9c060e277343cffe",
+      "git_blob": "328835da745e1f9060ba4327e983b9ed8fc7655a",
+      "full_utf8_readback": true
+    }
+  ],
+  "original_runs": [
+    43020198388,
+    43020939762
+  ],
+  "original_jobs": [
+    130521184483,
+    130523679401
+  ],
+  "original_zips_complete": true,
+  "offline_verifier": {
+    "status": "PASS",
+    "all_zip_members": [
+      36,
+      52
+    ],
+    "all_tar_members": [
+      29,
+      44
+    ],
+    "first_lock_phases": 0,
+    "revision2_lock_phases": 1,
+    "revision2_source_clean": true,
+    "locks_unchanged": true
+  },
+  "binary_full_remote_readback": "pending root immutable carrier; actual created-object SHA matched each exact prehashed piece",
+  "ref_mutation": false
+}

@@ -1,0 +1,317 @@
+{
+  "architecture": {
+    "complete_members": 28,
+    "full_original_API_and_artifact_fields_bound": true,
+    "full_original_result_bytes_equal": true,
+    "original_reader_exit": 0,
+    "result": {
+      "all_member_hashes_verified": true,
+      "archive": {
+        "bytes": 702616,
+        "git_blob": "587574aac4de98596b55d840feb1d844b0b14f83",
+        "sha256": "44c090bb96f72f431de52fbc15cf82b70c2ef13358fe21ab6d542f9b2115fe8e"
+      },
+      "archived_native_or_repository_commands_executed": 0,
+      "native": {
+        "base_identical_tree_reuse_condition_source_head_success_met": true,
+        "base_native_execution": 0,
+        "binary_normalization": "Cargo crate underscores and nextest package names map to package::lib; integration targets retain their own target name.",
+        "command_groups": 26,
+        "cross_group_duplicate_ids": [
+          {
+            "binary": "codex-hepta-intelligence-eval::lib",
+            "case": "self_evolution_selection::tests::selector_and_rollback_are_opaque_independent_admissions",
+            "executions": 2
+          },
+          {
+            "binary": "codex-hepta-supervisor::lib",
+            "case": "module_runtime::tests::stateful_promotion_consumes_terminal_writer_handoff",
+            "executions": 2
+          },
+          {
+            "binary": "codex-hepta-types::lib",
+            "case": "topology::tests::related_module_bounds_are_checked_before_digest_allocation",
+            "executions": 2
+          },
+          {
+            "binary": "codex-hepta-types::lib",
+            "case": "topology::tests::selected_digest_cannot_hide_substituted_delta_content",
+            "executions": 2
+          },
+          {
+            "binary": "codex-hepta-types::lib",
+            "case": "topology::tests::split_requires_individually_bound_add_participants",
+            "executions": 2
+          }
+        ],
+        "distinct_package_target_case_ids": 521,
+        "executions": 526,
+        "failed": 0,
+        "one_explicit_ignored_scale_case_executed": true
+      },
+      "original_zip_member_counts": {
+        "13873952864": 20,
+        "13877116867": 65
+      },
+      "package_members": 28,
+      "python": {
+        "base": {
+          "raw_only": 8,
+          "receipted": 136,
+          "total": 144
+        },
+        "distinct_case_names": 146,
+        "executions": 290,
+        "source": {
+          "raw_only": 8,
+          "receipted": 138,
+          "total": 146
+        }
+      },
+      "reader_regenerated_audits_byte_identical": [
+        "ARCH_COMPLETE_ORIGINAL_AUDIT.json"
+      ],
+      "scope": "Original Architecture software/fixture workflow only; advisory transport remains UNKNOWN and other required CI is separate.",
+      "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+      "status": "PASS_FULL_ORIGINAL_ARCHITECTURE_PACKAGE_REPLAY"
+    }
+  },
+  "immutable_commit": "8e0b0f9524a7fb037c59a590f871fdeae03d7552",
+  "native_two": {
+    "API_normalized_projection_boundary": "All captured fields compare; tool-only logs_url:null is explicitly not a raw GitHub field.",
+    "all_73_snapshot_checks_and_result_bytes_equal": true,
+    "all_original_result_fields_equal_except_observer_timestamp": true,
+    "cases": [
+      "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context",
+      "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child"
+    ],
+    "clean_lint_packages": [
+      "codex-core"
+    ],
+    "complete_members": 52,
+    "new_observed_at": "2026-11-11T17:50:45.541312+00:00",
+    "old_observed_at": "2026-11-11T17:37:32.838596+00:00",
+    "original_ZIP_audit_byte_equal": true,
+    "original_qualification": "PASS_TWO_NATIVE_AND_ONE_CLEAN_FIX",
+    "original_reader_exit": 0,
+    "restored_unchanged_frozen_harness_dependencies": [
+      {
+        "bytes": 22659,
+        "git_blob": "62a6c16bfcfd4fc51464149b6d8ce0fe92850efc",
+        "origin": "v17/native-two-preparation original frozen complete archive, prior root full remote replay",
+        "path": ".github/scripts/mem_native_subagent.py",
+        "sha256": "0d00a1070d5693b456deb291f6ff9f254574d6acf2913ec3737e11256fc10183"
+      },
+      {
+        "bytes": 6574,
+        "git_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+        "origin": "v17/native-two-preparation original frozen complete archive, prior root full remote replay",
+        "path": ".github/scripts/mem_native_subagent_support.py",
+        "sha256": "b5c8c1728724e01e90422f80003c1a644418478c62ea3a2228d40255a7f3f136"
+      },
+      {
+        "bytes": 4512,
+        "git_blob": "60294a456f7f99f134b5603db9f9671144d3b146",
+        "origin": "v17/native-two-preparation original frozen complete archive, prior root full remote replay",
+        "path": ".github/workflows/hepta-mem-native-subagent.yml",
+        "sha256": "f0d506bc794f3f01b8aff0c3adf79720d440f15dd7b2ef55af11f565c330f791"
+      },
+      {
+        "bytes": 8180,
+        "git_blob": "8f1ed824112d3464510e5a37683199eaff0c81c0",
+        "origin": "v17/native-two-preparation original frozen complete archive, prior root full remote replay",
+        "path": ".github/fixtures/mem-native-subagent-plan.json",
+        "sha256": "28726c25821004faf5b816bb95a7678b0036516f8db9048d143bbc1b3304a758"
+      }
+    ],
+    "source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+  },
+  "new_native_or_model_executions": 0,
+  "objects": [
+    {
+      "bytes": 460800,
+      "full_remote_bytes_equal": true,
+      "git_blob": "e146598558e3713c6f023cc1d03f926c925453ab",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ARCH_D0F_ORIGINAL.part-001.xz.part",
+      "sha256": "a31071b663ea63019a72cffbac6766e60a6e2e248b9db2bf740d2750673b349b"
+    },
+    {
+      "bytes": 241816,
+      "full_remote_bytes_equal": true,
+      "git_blob": "393bd0ff7dd493df132d7f7fbb2bbe3fd64ad437",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ARCH_D0F_ORIGINAL.part-002.xz.part",
+      "sha256": "fd4e16d0bf750570dfa615b8b2e778e35686d50e1532cd6e5d542bf12fb54554"
+    },
+    {
+      "bytes": 813,
+      "full_remote_bytes_equal": true,
+      "git_blob": "5b050d9d5ae33f25550b8143567270bed7a3a560",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ARCHIVE_INDEX.json",
+      "sha256": "2223f23737e29f96bfcf70ac372ad27c51c72176e7ccb8915fb192b24a1262e5"
+    },
+    {
+      "bytes": 6284,
+      "full_remote_bytes_equal": true,
+      "git_blob": "6b7fb53d873c3a140c551c3925bf7344f11b95bf",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/PACKAGE_MANIFEST.json",
+      "sha256": "bce65ba2624ae906ae135bed1baae8955e04a32f0114688a92abaa39b90a04c3"
+    },
+    {
+      "bytes": 2445,
+      "full_remote_bytes_equal": true,
+      "git_blob": "f6327487f7524efcdd7644194129b05bfce2fee8",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/OFFLINE_PACKAGE_REPLAY.json",
+      "sha256": "cf455d783eda177b8f0a59aed0e202f587a56df1bb2f9239953169d2ce9eaecc"
+    },
+    {
+      "bytes": 426132,
+      "full_remote_bytes_equal": true,
+      "git_blob": "c4f313a35f19aa4e99b57070da79c5e9b50bf062",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ARCH_COMPLETE_ORIGINAL_AUDIT.json",
+      "sha256": "ad4d5b9d647a5915e97d481732df2ab11035cb6661d6908ad3139bd377ebe347"
+    },
+    {
+      "bytes": 4591,
+      "full_remote_bytes_equal": true,
+      "git_blob": "a7937e4769df6604fcfa583e6c56102194ce31bb",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/verify_arch_package.py",
+      "sha256": "f6825d4c3007451053792eb7bdce35e0e584c6f810c938fe291c539305b7f1f1"
+    },
+    {
+      "bytes": 12145,
+      "full_remote_bytes_equal": true,
+      "git_blob": "d3ada25e73c02a9e7ae5663635ef100d8c4a8561",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/audit_arch_complete_original.py",
+      "sha256": "3ee7367064f7d2915a97a177801e6e59c0c77e80826e5e43f52aad53f12b1c40"
+    },
+    {
+      "bytes": 2526,
+      "full_remote_bytes_equal": true,
+      "git_blob": "ee1b0c61a4419f357fb1870c25f90d7ee4003a79",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/README.md",
+      "sha256": "ec42dee7de8fc89b660151942030d787f7f4f556b24a2a7cb0562cd96ff31f9f"
+    },
+    {
+      "bytes": 3624,
+      "full_remote_bytes_equal": true,
+      "git_blob": "395c024906e7b8dba042f7259e458f99dbee458d",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ACTUAL_PUBLICATION.json",
+      "sha256": "23482c48b6fc7417e8d3112697d1e5d8c55f73b4c738a42bdbdd0e0db8d5641a"
+    },
+    {
+      "bytes": 24234,
+      "full_remote_bytes_equal": true,
+      "git_blob": "ec593346714f3e5d6937d942e5cd71f4f9321a53",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ROOT_ORIGINAL_API.json",
+      "sha256": "2142789782e3ebf4b46a8e33071ff048b6874951c981a4878d2c89f4df027bbb"
+    },
+    {
+      "bytes": 136916,
+      "full_remote_bytes_equal": true,
+      "git_blob": "9a07921c19fbc63f9bc3b7a0f184fdb2f997b0f3",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/TWO_NATIVE_ORIGINAL_COMPLETE.tar.xz",
+      "sha256": "b18c066e7603be3f60ea2ba78fadb8b62be7e818bdbd2bf95b11d6dec811388e"
+    },
+    {
+      "bytes": 67370,
+      "full_remote_bytes_equal": true,
+      "git_blob": "106790411f2a1cb3e2a2c5121c3a0f6fa55e737c",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/DELIVERY_PUBLICATION.json",
+      "sha256": "8f207d591a3ddf88b5f7b55889d1148d65cba4d03f4f77762b4ec77a8614f530"
+    },
+    {
+      "bytes": 10944,
+      "full_remote_bytes_equal": true,
+      "git_blob": "e480eaa2506dab7927c23f0d0a1425c985b429ce",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/MEMBER_MANIFEST.json",
+      "sha256": "2debdaaf55bd55eb0fc461c3420411c241c0d59f90b9827225982c2a7c853950"
+    },
+    {
+      "bytes": 50723,
+      "full_remote_bytes_equal": true,
+      "git_blob": "8cc4f6356d33f42ff18dc3e9d8437e6bd16d841a",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/ARCHIVE_INDEX.json",
+      "sha256": "ca063d4698061b3ff9c921c22bb49365c33df13815ddf5358b0250f6676db6d1"
+    },
+    {
+      "bytes": 19914,
+      "full_remote_bytes_equal": true,
+      "git_blob": "642f2f049fced0ee933002ae8474a13a9d668b44",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/audit_original.py",
+      "sha256": "9b1dc69557a841f0d47e7da5b497d636180b0748cbbcab11de7561b46f4191dc"
+    },
+    {
+      "bytes": 8499,
+      "full_remote_bytes_equal": true,
+      "git_blob": "f8cbf27f0bd205a2af5686c8640c82804ea410c1",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/audit_snapshot_proofs_v2.py",
+      "sha256": "ded591966e4e5d23cb825b6fa2fdf70a2517d79c9de46156ff9d07e792363554"
+    },
+    {
+      "bytes": 2681,
+      "full_remote_bytes_equal": true,
+      "git_blob": "7a5ef3ad41354ba3f2ffe74aad6cc5fc0072f1ab",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/SOURCE_SNAPSHOT_READER_CORRECTION.json",
+      "sha256": "c89398e73591997e712c8a5c1b37021278cc8ca2d48a28a8b121fc66456c0d51"
+    },
+    {
+      "bytes": 29465,
+      "full_remote_bytes_equal": true,
+      "git_blob": "49fc3d051b894cd7bd39ac1f5678478c9cec63a5",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/SOURCE_SNAPSHOT_AUDIT_V2.json",
+      "sha256": "57f8caed36c2dec35fd13366ab4d5f5f03edb90522586f948d6c74764090f079"
+    },
+    {
+      "bytes": 9767,
+      "full_remote_bytes_equal": true,
+      "git_blob": "609e5c3571f56b45b680bcde0b40e1b9ed1ef6ce",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/INDEPENDENT_AUDIT.json",
+      "sha256": "2b67d1301259d740490948ed894e864249aba4606e2b5aae03b15f80c6f685b3"
+    },
+    {
+      "bytes": 6021,
+      "full_remote_bytes_equal": true,
+      "git_blob": "b8c663f21202a3e89a5213db559d0d3c2b5ae32a",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/ROOT_ORIGINAL_API.json",
+      "sha256": "3a88a736532585cd094a2b4d6aa20787b4b35d98a7b577c4141c10f22d0b2aa6"
+    },
+    {
+      "bytes": 9610,
+      "full_remote_bytes_equal": true,
+      "git_blob": "94696cc0ae74886f0c5df23fac17d013e0f9c308",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/ROOT_D0F_MEM_REMOTE_REPLAY.json",
+      "sha256": "ec046cb453e869fa2904b0c7e99152b3dad2a18f16101012182d1d005c93cb91"
+    },
+    {
+      "bytes": 5345,
+      "full_remote_bytes_equal": true,
+      "git_blob": "ee9ed1802905b3c183e3df7eb66359b6ef412eaa",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/verify_d0f_mem_remote.py",
+      "sha256": "c36907653c15306d62032426e0259a5bd2bb7ca61376cea1a03bad63b5496903"
+    },
+    {
+      "bytes": 1101,
+      "full_remote_bytes_equal": true,
+      "git_blob": "93af9c2c93bd95841838e23e85d34e7343cf891a",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/REPRODUCIBLE_SCRATCH_CLEANUP.json",
+      "sha256": "8642431a6bb5b02370cef0b9fb833d48da37f6e1ad9186dacae55b38293afcc5"
+    },
+    {
+      "bytes": 1235,
+      "full_remote_bytes_equal": true,
+      "git_blob": "ea6c6e2df0848f42c57614f73dc350e0dfd7e1dd",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/mem-d0f/ROOT_REMOTE_OFFLINE_REPLAY.json",
+      "sha256": "9d7f2f2fa5d136139c8a5504d3139c65ce5254896f03afdbb04fda8b6d0851cb"
+    },
+    {
+      "bytes": 3648,
+      "full_remote_bytes_equal": true,
+      "git_blob": "5cbf254df624d2e0661be3cbda260345d9001e6c",
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/mem-d0f/ROOT_JUNIT_OFFLINE_REPLAY.json",
+      "sha256": "f9df72cb3a235e6803987c0982a7bf4bec99b9c3bd5a89740c7c6e1cc3a1c22e"
+    }
+  ],
+  "schema": "mem8.v17.d0f-architecture-native-two-root-remote-replay.v1"
+}

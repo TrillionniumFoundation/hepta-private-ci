@@ -1,0 +1,181 @@
+{
+  "acquisition_and_execution": {
+    "automatic_retries": 0,
+    "frozen_solver_recipe_changed": false,
+    "github_read_only_acquisition_calls": 31,
+    "github_writes": 0,
+    "model_calls": 0,
+    "network_calls_during_execution": 0,
+    "post_execution_source_pin_drift": false,
+    "qualification_child_calls": 6,
+    "training_updates": 0
+  },
+  "candidate_and_gate_identity_clock_observation": "2026-10-25T13:39:30Z",
+  "controller_process_sha256": "743c7dfe3aa6c6c61d0a118c849596a671a2d9acbe8625bdb265269912dbc579",
+  "execution_finished_utc": "2026-10-25T13:49:19.786475+00:00",
+  "execution_harness_frozen_utc": "2026-10-25T13:47:14.383765+00:00",
+  "execution_started_utc": "2026-10-25T13:49:08.758773+00:00",
+  "exposure_boundary": {
+    "curator_solver_results_observed": 0,
+    "independence_proven": false,
+    "pretraining_exposure_known": false,
+    "reference_implementation_and_assertions_disclosed_by_curator_to_root": false,
+    "root_solver_result_receipt_at_authorization": "root reported none",
+    "unknown_remote_completion_timestamp_claimed": false
+  },
+  "groups": [
+    {
+      "expanded_gate_sha256": "d61332dae776b1ddcdb991840e8cf8e1cc33ce3dc13b41a2e3dba594f119276f",
+      "gate_path": "scripts/test_hepta_workspace.py",
+      "group_basis": "workspace dependency-boundary completeness",
+      "group_wall_seconds": 0.7355477899982361,
+      "historical_reference_oracle_exists": true,
+      "id": "H1",
+      "original_ci_causal_failure_log_available": false,
+      "original_commit": "c6e6a8d6e679400aaece2a039a33ea708d64b856",
+      "original_gate_sha256": "628c215fef8f5e7ed5e53dae1a52e65e261b382b496078c6c78dfa1af721bdcd",
+      "original_target_sha256": "0aa17a7a195263ab120be7882190f86bc6d2b5f3aba1033ceb07d31db541a5ee",
+      "phase_counts": [
+        {
+          "counts": {
+            "collected": 33,
+            "complete_expected_ids": true,
+            "error_records": 0,
+            "failed_methods": 0,
+            "failure_records": 0,
+            "original_methods_pass": true,
+            "passed_methods": 33,
+            "skips": 0,
+            "started": 33
+          },
+          "phase": "original",
+          "qualified": true,
+          "returncode": 0,
+          "wall_seconds": 0.1666210109979147
+        },
+        {
+          "counts": {
+            "collected": 44,
+            "complete_expected_ids": true,
+            "error_records": 0,
+            "failed_methods": 8,
+            "failure_records": 13,
+            "original_methods_pass": true,
+            "passed_methods": 36,
+            "skips": 0,
+            "started": 44
+          },
+          "phase": "expanded",
+          "qualified": true,
+          "returncode": 1,
+          "wall_seconds": 0.21674702699965565
+        },
+        {
+          "counts": {
+            "collected": 44,
+            "complete_expected_ids": true,
+            "error_records": 0,
+            "failed_methods": 0,
+            "failure_records": 0,
+            "original_methods_pass": true,
+            "passed_methods": 44,
+            "skips": 0,
+            "started": 44
+          },
+          "phase": "reference",
+          "qualified": true,
+          "returncode": 0,
+          "wall_seconds": 0.1671505190024618
+        }
+      ],
+      "qualified": true,
+      "support_paths": [],
+      "target_path": "scripts/hepta_workspace.py"
+    },
+    {
+      "expanded_gate_sha256": "309bdb1522218f3bd83b81143a84345a22db589760012f9bf09e421bb6fa9454",
+      "gate_path": "scripts/test_hepta_implementation_maps.py",
+      "group_basis": "Git working-source consistency",
+      "group_wall_seconds": 10.226826127000095,
+      "historical_reference_oracle_exists": true,
+      "id": "H2",
+      "original_ci_causal_failure_log_available": false,
+      "original_commit": "df44a5738cc8444aaa125ca6c9c0e3d821fbbb76",
+      "original_gate_sha256": "c6b430e1b19ae71470214c0cfc409591b0bfdc43cc2a9e045f09b8ecb55b92a7",
+      "original_target_sha256": "cb0bb6c941b7c60c1547baf50e66d7f27568475ed19a68c13a81fa173a3e05a0",
+      "phase_counts": [
+        {
+          "counts": {
+            "collected": 33,
+            "complete_expected_ids": true,
+            "error_records": 0,
+            "failed_methods": 0,
+            "failure_records": 0,
+            "original_methods_pass": true,
+            "passed_methods": 33,
+            "skips": 0,
+            "started": 33
+          },
+          "phase": "original",
+          "qualified": true,
+          "returncode": 0,
+          "wall_seconds": 2.6736875970018446
+        },
+        {
+          "counts": {
+            "collected": 42,
+            "complete_expected_ids": true,
+            "error_records": 0,
+            "failed_methods": 8,
+            "failure_records": 8,
+            "original_methods_pass": true,
+            "passed_methods": 34,
+            "skips": 0,
+            "started": 42
+          },
+          "phase": "expanded",
+          "qualified": true,
+          "returncode": 1,
+          "wall_seconds": 3.6794616249972023
+        },
+        {
+          "counts": {
+            "collected": 42,
+            "complete_expected_ids": true,
+            "error_records": 0,
+            "failed_methods": 0,
+            "failure_records": 0,
+            "original_methods_pass": true,
+            "passed_methods": 42,
+            "skips": 0,
+            "started": 42
+          },
+          "phase": "reference",
+          "qualified": true,
+          "returncode": 0,
+          "wall_seconds": 3.67855946799682
+        }
+      ],
+      "qualified": true,
+      "support_paths": [
+        "scripts/hepta_module_source_roots.py"
+      ],
+      "target_path": "scripts/hepta-implementation-maps.py"
+    }
+  ],
+  "historical_heldout_candidates": 2,
+  "limitations": [
+    "Historical counterfactual execution against genuine historical regression gates, not original CI causal-red evidence.",
+    "Both groups precede the current recipe freeze; neither is a temporal future group.",
+    "Both groups share a repository and tooling; distinct causal families do not prove statistical independence.",
+    "No solver task outcome or retrieval/memory superiority is measured here.",
+    "Frozen source and runtime pins plus local file-only Git constrain this qualification; this is not a hostile-code OS sandbox.",
+    "Curator raw stderr, semantic ID manifests and reference postimages remain private; public summaries contain only identity, counts and reason classes."
+  ],
+  "protocol_sha256": "6ab14752462774ef558bfaae97ec9f3a372b46a64c76b3de2922edefa7f29fb1",
+  "public_result_sha256": "65bbc071e2593c43ded3bbb259301fd5768b2b64be67db70a88a858f3aba3537",
+  "qualified_historical_heldout_groups": 2,
+  "raw_audit_sha256": "1e13dc8f04cc62c0bbe77a989ac1faa1ee91c3f228723033e4856600f7aafa78",
+  "schema": "hepta.blind-historical-heldout-catalogue.v1",
+  "temporal_future_groups": 0
+}

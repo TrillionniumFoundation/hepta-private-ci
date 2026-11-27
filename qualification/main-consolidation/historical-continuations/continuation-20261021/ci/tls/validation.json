@@ -1,0 +1,273 @@
+{
+  "status": "ready_for_parent_review; native Windows qualification pending; cargo-deny remains red for four maintenance advisories",
+  "completed_utc": "2026-10-21T01:26:20.714620+00:00",
+  "base_head": "0cb777545966333a96be265a69d03c9982231bc7",
+  "changed_files": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "base_sha256": "8b458776ce179b326a6f5aef718b302f80fa0af40143bef1d512f0980dd3e0b1",
+      "candidate_sha256": "aa3efcad4d26d4ba8d5b8adbea793955acef36551f00da43ef7b03bbab3bfb5a",
+      "base_bytes": 417849,
+      "candidate_bytes": 417851
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "base_sha256": "9c6e1fdc3e2f51bd4a3a934dd12536bd33e87d5239820d9c589426a07e6717e6",
+      "candidate_sha256": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+      "base_bytes": 1751657,
+      "candidate_bytes": 1751659
+    }
+  ],
+  "patch": {
+    "path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/tls-patch-upgrades.patch",
+    "sha256": "6c4e6840a74eeb86369c4338d9fafbf2882eccacb9bbc1eba80d0a80280d190f"
+  },
+  "source_conservation": {
+    "tracked_files_checked": 9057,
+    "unexpected_changes": 0,
+    "mode_differences": 0
+  },
+  "cargo_updates": [
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "rustls-webpki@0.103.15",
+        "--precise",
+        "0.103.16"
+      ],
+      "started_utc": "2026-10-21T01:14:19.982360+00:00",
+      "finished_utc": "2026-10-21T01:14:24.668269+00:00",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "webpki-root-certs@1.0.9",
+        "--precise",
+        "1.0.10"
+      ],
+      "started_utc": "2026-10-21T01:14:24.668550+00:00",
+      "finished_utc": "2026-10-21T01:14:28.451669+00:00",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "webpki-roots@1.0.9",
+        "--precise",
+        "1.0.10"
+      ],
+      "started_utc": "2026-10-21T01:14:28.452019+00:00",
+      "finished_utc": "2026-10-21T01:14:31.658549+00:00",
+      "exit_code": 0
+    }
+  ],
+  "cargo_lock": {
+    "parsed": true,
+    "only_version_or_checksum_changes": [
+      "rustls-webpki 0.103.15 -> 0.103.16",
+      "webpki-root-certs 1.0.9 -> 1.0.10",
+      "webpki-roots 1.0.9 -> 1.0.10"
+    ],
+    "additional_resolver_changes": "nine cfg(windows) edges from already-locked windows-sys 0.52.0 to 0.59.0; no manual lock edits",
+    "edge_evidence": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/windows-edge-review.json"
+  },
+  "bazel_lock": {
+    "json_parsed": true,
+    "format_before": 28,
+    "format_after": 28,
+    "generated_by": "Bazel 9.3.0 original just bazel-lock-update",
+    "diff_only_three_tls_fact_keys": true,
+    "all_other_json_content_equal": true,
+    "first_complete_update": {
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "start": "2026-10-21T01:22:58.646818+00:00",
+      "end": "2026-10-21T01:23:00.146290+00:00",
+      "returncode": 0,
+      "log": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update-after-fetch.log",
+      "module_lock_sha256": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea"
+    },
+    "repeat_and_original_gate": [
+      {
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "start": "2026-10-21T01:23:46.946396+00:00",
+        "end": "2026-10-21T01:23:47.392086+00:00",
+        "returncode": 0,
+        "log": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update-final.log",
+        "module_lock_before": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+        "module_lock_after": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+        "unchanged": true
+      },
+      {
+        "command": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "start": "2026-10-21T01:23:47.392311+00:00",
+        "end": "2026-10-21T01:23:48.332266+00:00",
+        "returncode": 0,
+        "log": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-check-final.log",
+        "module_lock_before": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+        "module_lock_after": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+        "unchanged": true
+      }
+    ]
+  },
+  "cargo_deny": {
+    "version": "0.19.0",
+    "rust": "1.95.0",
+    "command": [
+      "cargo-deny",
+      "--locked",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--all-features",
+      "check",
+      "--hide-inclusion-graph",
+      "--show-stats"
+    ],
+    "original_job_raw_log_available": false,
+    "exact_source_local_reproduction": true,
+    "advisory_db_head": "e6f94f3760d5e6c54c1b05f204002263bc025524",
+    "baseline_error_counts": {
+      "advisories": 7,
+      "bans": 0,
+      "licenses": 0,
+      "sources": 0
+    },
+    "candidate_error_counts": {
+      "advisories": 4,
+      "bans": 0,
+      "licenses": 0,
+      "sources": 0
+    },
+    "baseline_advisory_ids": [
+      "RUSTSEC-2026-0370",
+      "RUSTSEC-2026-0371",
+      "RUSTSEC-2026-0372",
+      "RUSTSEC-2026-0374",
+      "RUSTSEC-2026-0381",
+      "RUSTSEC-2026-0382",
+      "RUSTSEC-2026-0383"
+    ],
+    "candidate_advisory_ids": [
+      "RUSTSEC-2026-0370",
+      "RUSTSEC-2026-0371",
+      "RUSTSEC-2026-0372",
+      "RUSTSEC-2026-0374"
+    ],
+    "candidate_exit_code": 1,
+    "policy_unchanged": true
+  },
+  "bazel_v8_materialization": {
+    "first_update_failed": "external/v8+/bazel/requirements.txt absent in incomplete repository materialization",
+    "archive_sha256": "164f3d3e0a8b4c02a386d3a88d1b1133d37e5c20be0239fecdcdde414a4340d5",
+    "requirements_sha256": "01b8d01a3fad28211c5a6d243ff3c9d2e90e9437dc2b125861fcec4a8b4a460a",
+    "requirements_bytes": 6248,
+    "remediation": "native bazel fetch --repo=@v8; then original generation and check passed",
+    "manually_modified_external_repo": false
+  },
+  "limitations": [
+    "No native Windows execution; nine Windows edges require platform CI qualification.",
+    "No full Linux/macOS/Windows build matrix executed by this agent.",
+    "Four maintenance advisories intentionally remain errors; this is not an all-green cargo-deny result.",
+    "Parent will merge advanced owner branch 98b40cb; this candidate was generated on exact 0cb77754 and should be reviewed after integration."
+  ],
+  "log_receipts": {
+    "cargo-deny-2968-online.log": {
+      "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/cargo-deny-2968-online.log",
+      "sha256": "a34f7aade1bb9e2d68f881b24e5e4a275c9247a45f2a3c9133d861afc78360ef",
+      "bytes": 75401
+    },
+    "tls-cargo-deny-after.log": {
+      "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-cargo-deny-after.log",
+      "sha256": "5fe4a7d2d997fcbf4062e488b2353897e08b05f5a0de95b693ff1dc50f4fefca",
+      "bytes": 71651
+    },
+    "tls-bazel-lock-update-startup-rejected.log": {
+      "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update-startup-rejected.log",
+      "sha256": "a69ecfbef0fe4bd5f20a8f250f0a1e8bb96953a976384970979331554571fa18",
+      "bytes": 308
+    },
+    "tls-bazel-lock-update-truststore-failure.log": {
+      "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update-truststore-failure.log",
+      "sha256": "bced1c86d953810c256cdedd20821c45a898cad70d3259178bf05ea278d3c6b5",
+      "bytes": 1960
+    },
+    "tls-bazel-lock-update.log": {
+      "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update.log",
+      "sha256": "c95b3ab6b377df945ac3ecd6fc7fd4602c45696dfa2bca4e43fe91f8ad1ea009",
+      "bytes": 5763
+    },
+    "tls-bazel-fetch-v8.log": {
+      "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-fetch-v8.log",
+      "sha256": "beb08f3584a216c925fd180062a420fe09293ee871b2865a123707f31002e422",
+      "bytes": 1382
+    },
+    "tls-bazel-lock-update-after-fetch.log": {
+      "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update-after-fetch.log",
+      "sha256": "6e5228a0295e403226e130a57978262174b009b2124bf684bc7ff4f5c56bcfc2",
+      "bytes": 114
+    },
+    "tls-bazel-lock-update-final.log": {
+      "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update-final.log",
+      "sha256": "cfa74084670676ed1d98ad23413ecc9d8a7608a13d407cc295e5fa0338a284a9",
+      "bytes": 114
+    },
+    "tls-bazel-lock-check-final.log": {
+      "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-check-final.log",
+      "sha256": "04ade2713d6c5b54aebb43ef08db032d2d1f70eb37ec2a3761d5f456257d1645",
+      "bytes": 1010
+    }
+  },
+  "cache_cleanup": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/disk-cleanup.json",
+  "cargo_bin_previous_hash_reconciliation": "/workspace/scratch/337c309bc660/hepta-ci-fix/secondwave/validation.json",
+  "input_equivalence_f740_to_0cb": {
+    "codex-rs/Cargo.lock": {
+      "identical": true,
+      "sha256": "8b458776ce179b326a6f5aef718b302f80fa0af40143bef1d512f0980dd3e0b1"
+    },
+    "MODULE.bazel.lock": {
+      "identical": true,
+      "sha256": "9c6e1fdc3e2f51bd4a3a934dd12536bd33e87d5239820d9c589426a07e6717e6"
+    },
+    "codex-rs/deny.toml": {
+      "identical": true,
+      "sha256": "17639b2e8539fd6192e2d5c86538c149b9c2e9237fc09ce4acc0c7828a588ac7"
+    }
+  },
+  "patch_reverse_apply_check": {
+    "command": [
+      "git",
+      "--no-replace-objects",
+      "apply",
+      "--check",
+      "--reverse",
+      "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/tls-patch-upgrades.patch"
+    ],
+    "exit_code": 0
+  },
+  "completed_cache_cleanup": {
+    "bazel": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/disk-cleanup.json",
+    "cargo_deny": "/workspace/scratch/337c309bc660/hepta-audit/ci/cargo-deny-cache-cleanup.json",
+    "preserved_rustsec_inputs": "/workspace/scratch/337c309bc660/hepta-audit/ci/rustsec-inputs"
+  }
+}

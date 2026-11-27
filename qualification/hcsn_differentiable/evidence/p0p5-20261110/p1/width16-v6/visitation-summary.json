@@ -1,0 +1,152 @@
+{
+  "schema": "hcsn-width16-visited-state-summary-v1",
+  "scope": "Descriptive retained-state evidence; it does not substitute for independent value/reference qualification.",
+  "files": [
+    {
+      "file": "training-probe/training-domain.jsonl",
+      "sha256": "97c94251b63da7ede09cda7208c40d87acaa1c46556b587ae9b29747a3af9857",
+      "records": 512,
+      "model_sha256s": [
+        "965fb27d183a70b7a05c9fc02b96fa698ad386903d243ddc1447c60b2a3b6c8e",
+        "9b98292bd9feb62c48e1dd605b9ab08342dde15aaefbe0bfe83cab4a1b5e9ece"
+      ],
+      "physical_parameter_records": [
+        {
+          "absolute_reset": 1.3771277643359572,
+          "discount": 0.15,
+          "log_boundary": 0.0,
+          "mu": -0.11999999999999998,
+          "sigma": 0.35
+        }
+      ],
+      "posterior_tail_mass_minmax": [
+        0.0,
+        1.8287824593047866e-08
+      ],
+      "posterior_phase_mass_minmax": [
+        0.0,
+        0.11084255714974336
+      ],
+      "posterior_first_cell_mass_minmax": [
+        1.3766388337619821e-11,
+        0.0019437989884792636
+      ],
+      "maximum_mass_residual": 3.3306690738754696e-16,
+      "tiny_gaps": []
+    },
+    {
+      "file": "evaluation-A01-0.jsonl",
+      "sha256": "b5472dd39d6fcd8b4c65112eb1073f429f9758fc68eef526f322b67bf798d1ed",
+      "records": 256,
+      "model_sha256s": [
+        "8f79dd97ad52b4b5506e79027cb8c16ca60b6dd768e02cf5434c6f3e31732c78"
+      ],
+      "physical_parameter_records": [
+        {
+          "absolute_reset": 1.3771277643359572,
+          "discount": 0.15,
+          "log_boundary": 0.0,
+          "mu": -0.11999999999999998,
+          "sigma": 0.35
+        }
+      ],
+      "posterior_tail_mass_minmax": [
+        0.0,
+        1.488950525236231e-09
+      ],
+      "posterior_phase_mass_minmax": [
+        0.0,
+        0.12106132576259608
+      ],
+      "posterior_first_cell_mass_minmax": [
+        1.3943192466627885e-11,
+        0.0020753410092005523
+      ],
+      "maximum_mass_residual": 2.220446049250313e-16,
+      "tiny_gaps": []
+    },
+    {
+      "file": "evaluation-A01-256.jsonl",
+      "sha256": "ce0d4079ffe0c019fe7500d70dd2fb594eef9198d0d468dda7907ef27b7f196f",
+      "records": 256,
+      "model_sha256s": [
+        "8f79dd97ad52b4b5506e79027cb8c16ca60b6dd768e02cf5434c6f3e31732c78"
+      ],
+      "physical_parameter_records": [
+        {
+          "absolute_reset": 1.3771277643359572,
+          "discount": 0.15,
+          "log_boundary": 0.0,
+          "mu": -0.11999999999999998,
+          "sigma": 0.35
+        }
+      ],
+      "posterior_tail_mass_minmax": [
+        0.0,
+        1.5259071769673487e-09
+      ],
+      "posterior_phase_mass_minmax": [
+        3.1086650702331066e-08,
+        0.12074733922308309
+      ],
+      "posterior_first_cell_mass_minmax": [
+        2.268637394241611e-08,
+        0.0020920311158807007
+      ],
+      "maximum_mass_residual": 2.220446049250313e-16,
+      "tiny_gaps": []
+    },
+    {
+      "file": "evaluation-A04-3072.jsonl",
+      "sha256": "c5de2b2edfd6f203bdba916d2c0be0214abf6c03e4bbf4569fe5db5fbb70e966",
+      "records": 256,
+      "model_sha256s": [
+        "8f79dd97ad52b4b5506e79027cb8c16ca60b6dd768e02cf5434c6f3e31732c78"
+      ],
+      "physical_parameter_records": [
+        {
+          "absolute_reset": 1.3771277643359572,
+          "discount": 0.15,
+          "log_boundary": 0.0,
+          "mu": -0.11999999999999998,
+          "sigma": 0.35
+        }
+      ],
+      "posterior_tail_mass_minmax": [
+        0.0,
+        1.363306968119742e-09
+      ],
+      "posterior_phase_mass_minmax": [
+        3.486830984332166e-08,
+        0.11881649405613359
+      ],
+      "posterior_first_cell_mass_minmax": [
+        2.3696953128324107e-08,
+        0.0023663865226080903
+      ],
+      "maximum_mass_residual": 3.3306690738754696e-16,
+      "tiny_gaps": [
+        {
+          "position": 48,
+          "dt": [
+            8e-07
+          ]
+        },
+        {
+          "position": 49,
+          "dt": [
+            1e-07
+          ]
+        }
+      ]
+    }
+  ],
+  "initial_to_after_one_update": {
+    "maximum_posterior_total_variation": 0.15127287105709045,
+    "mean_posterior_total_variation": 0.0886424892341952
+  },
+  "after_one_to_after_two_updates": {
+    "maximum_posterior_total_variation": 0.0442871677862259,
+    "mean_posterior_total_variation": 0.03342909852603409
+  }
+}

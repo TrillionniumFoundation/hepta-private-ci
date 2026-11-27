@@ -1,0 +1,277 @@
+name: GitHub Actions ARM64/x64 isolated qualification
+
+on:
+  push:
+    branches: [ci/gha-runner-isolation-20261016]
+    paths:
+      - .github/workflows/gha-runner-isolation.yml
+
+permissions:
+  contents: read
+
+# Deliberately no workflow-level concurrency group: this is an isolated
+# one-commit investigation of a stuck PR concurrency/dispatcher state.
+# The workflow is branch-scoped and does not run on PRs or on main.
+jobs:
+  arm-codespell:
+    name: ARM64 pinned Codespell production-action qualification
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - name: Report assigned runner identity
+        run: |
+          printf 'runner=%s arch=%s started=%s\n' "$RUNNER_NAME" "$RUNNER_ARCH" "$(date -u +%FT%TZ)"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: codespell-project/codespell-problem-matcher@b80729f885d32f78a716c2f107b4db1025001c42 # v1.1.0
+      - uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
+        with:
+          ignore_words_file: .codespellignore
+      - uses: ./.github/actions/check-clean-worktree
+
+  arm-python:
+    name: ARM64 real blocking-scope Python tests
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Run production scope and dependencies tests
+        run: |
+          set -euo pipefail
+          printf 'runner=%s arch=%s started=%s\n' "$RUNNER_NAME" "$RUNNER_ARCH" "$(date -u +%FT%TZ)"
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.test_hepta_readiness_semantics
+
+  slim-python:
+    name: Ubuntu Slim isolated-container x64 Python control
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Run matching production scope/dependencies tests on container x64
+        run: |
+          set -euo pipefail
+          printf 'runner=%s arch=%s image=%s started=%s\\n' "$RUNNER_NAME" "$RUNNER_ARCH" "$ImageOS" "$(date -u +%FT%TZ)"
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.test_hepta_readiness_semantics
+
+  x64-python:
+    name: Linux x64 real blocking-scope Python control
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Run matching production scope and dependencies tests
+        run: |
+          set -euo pipefail
+          printf 'runner=%s arch=%s started=%s\n' "$RUNNER_NAME" "$RUNNER_ARCH" "$(date -u +%FT%TZ)"
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.test_hepta_readiness_semantics
+
+  slim-contract:
+    name: Validate canonical branch and contract metadata
+    # Exact production development contract check on slim x64 container.
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate branch policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool docs/branch-policy.json >/dev/null
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          policy = json.loads(Path('docs/branch-policy.json').read_text())
+          assert policy['defaultBranch'] == 'main'
+          assert 'main' in policy['protectedBranches']
+          stale = tuple(policy.get('deprecatedPatterns', ()))
+          offenders = []
+          for path in Path('.github/workflows').glob('*.y*ml'):
+              if path.name == 'hepta-contract-gate.yml':
+                  continue
+              text = path.read_text()
+              for token in stale:
+                  if token in text:
+                      offenders.append(f'{path}: {token}')
+          if offenders:
+              raise SystemExit('deprecated branch trigger(s):\n' + '\n'.join(offenders))
+          PY
+      - name: Validate canonical contract and readiness documents
+        env:
+          VERIFICATION_PROFILE: development
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          git diff --quiet
+          git diff --cached --quiet
+          if [ "$VERIFICATION_PROFILE" = qualification ]; then
+            python3 scripts/hepta-technical-receipts.py verify
+            python3 scripts/hepta-implementation-dossiers.py verify
+          fi
+          # Includes module, algorithm, readiness, CNS and HNMF checks.
+          # Historical source evidence is revalidated only by qualification.
+          python3 scripts/hepta-docs.py verify --profile "$VERIFICATION_PROFILE"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  slim-contract-qualification:
+    name: Slim x64 full production contract qualification
+    # Exact production development contract check on slim x64 container.
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate branch policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool docs/branch-policy.json >/dev/null
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          policy = json.loads(Path('docs/branch-policy.json').read_text())
+          assert policy['defaultBranch'] == 'main'
+          assert 'main' in policy['protectedBranches']
+          stale = tuple(policy.get('deprecatedPatterns', ()))
+          offenders = []
+          for path in Path('.github/workflows').glob('*.y*ml'):
+              if path.name == 'hepta-contract-gate.yml':
+                  continue
+              text = path.read_text()
+              for token in stale:
+                  if token in text:
+                      offenders.append(f'{path}: {token}')
+          if offenders:
+              raise SystemExit('deprecated branch trigger(s):\n' + '\n'.join(offenders))
+          PY
+      - name: Validate canonical contract and readiness documents
+        env:
+          VERIFICATION_PROFILE: qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          git diff --quiet
+          git diff --cached --quiet
+          if [ "$VERIFICATION_PROFILE" = qualification ]; then
+            python3 scripts/hepta-technical-receipts.py verify
+            python3 scripts/hepta-implementation-dossiers.py verify
+          fi
+          # Includes module, algorithm, readiness, CNS and HNMF checks.
+          # Historical source evidence is revalidated only by qualification.
+          python3 scripts/hepta-docs.py verify --profile "$VERIFICATION_PROFILE"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  slim-rust-ci-changed:
+    name: Slim x64 exact PR diff Rust CI selector
+    runs-on: ubuntu-slim
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    env:
+      BASE_SHA: f8c9419df6ddeb36ff8b522a50219981fb8d9345
+      HEAD_SHA: eda794e96391b9d253a5d80f343a43738a642b02
+    steps:
+      - name: Checkout exact PR source head without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.HEAD_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Fetch source and base identities, as in production
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$HEAD_SHA"
+      - name: Test production change-selector failure semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p 'test_hepta_rust_ci_feedback.py' -v
+      - name: Run exact production PR change detection
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          changed_paths="$(mktemp "${RUNNER_TEMP}/rust-ci-paths.XXXXXX")"
+          trap 'rm -f "$changed_paths"' EXIT
+          git --no-replace-objects diff --name-only --no-renames -z "$BASE_SHA" "$HEAD_SHA" > "$changed_paths"
+          mapfile -d '' -t files < "$changed_paths"
+          codex=false
+          argument_comment_lint_package=false
+          workflows=false
+          for f in "${files[@]}"; do
+            [[ $f == codex-rs/* || $f == .cargo/* || $f == justfile || $f == rust-toolchain || $f == rust-toolchain.toml || $f == scripts/hepta_workspace.py || $f == scripts/test_hepta_workspace.py || $f == scripts/test_hepta_rust_ci_feedback.py ]] && codex=true
+            [[ $f == tools/argument-comment-lint/* || $f == .github/workflows/rust-ci.yml || $f == .github/workflows/rust-ci-full.yml ]] && argument_comment_lint_package=true
+            [[ $f == .github/* ]] && workflows=true
+          done
+          echo "codex=$codex argument_comment_lint_package=$argument_comment_lint_package workflows=$workflows"
+          test "$workflows" = true
+      - name: Check production scope checkout is clean
+        uses: ./.github/actions/check-clean-worktree
+
+  arm-cargo-manifest:
+    name: ARM64 native Cargo manifest-only preflight
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 318c11c3b5049ebfb0e880cb97aba7adc6ca8029
+          persist-credentials: false
+      - name: Check native Cargo manifest graph
+        run: python3 scripts/hepta_workspace.py
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - name: Validate Cargo metadata for actual source HEAD
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "318c11c3b5049ebfb0e880cb97aba7adc6ca8029"
+          git diff --quiet
+          git diff --cached --quiet
+          cargo metadata --locked --no-deps --format-version 1 > "$RUNNER_TEMP/cargo-workspace-metadata.json"
+      - uses: ./.github/actions/check-clean-worktree
+
+  arm-rust-fmt:
+    name: ARM64 exact production Rust formatter
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 318c11c3b5049ebfb0e880cb97aba7adc6ca8029
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt
+      - name: Real cargo fmt check
+        run: cargo fmt -- --config imports_granularity=Item --check
+      - uses: ./.github/actions/check-clean-worktree

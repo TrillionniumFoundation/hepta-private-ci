@@ -1,0 +1,111 @@
+{
+  "schema": "committed-evidence-coverage-failure-v1",
+  "head": "e2091a72ddbfc801b9823badd6e98380eca1d0df",
+  "working_tree_integrity_pass_is_not_committed_tree_completeness": true,
+  "rows": [
+    {
+      "prefix": "qualification/hcsn_differentiable/evidence/p0p5-20261110",
+      "manifest_files": 472,
+      "git_tree_files": 468,
+      "missing_committed_files": [
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/local-qualification/error-budget.log",
+          "bytes": 103,
+          "sha256": "a479f72d982d2c1b288eeda81ca82e93011c6b9f2595e86e0aa0400c55fc8bb6",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-20261110/local-qualification/error-budget.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/local-qualification/qualification.log",
+          "bytes": 26960,
+          "sha256": "f01f9c17a4b12541d489e47463bc6edde21cf3ba8e1690772ef0df91dcf4ceeb",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-20261110/local-qualification/qualification.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/p0/targeted-tests.log",
+          "bytes": 2858,
+          "sha256": "0820b3f1cedb58d5d069b48e35801bb9d395aec4f3f2d2a5e2665d62cc336ac5",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-20261110/p0/targeted-tests.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/p3/qvi-tests.log",
+          "bytes": 680,
+          "sha256": "9d52325bf33eafc650f0aef8a3ada28dc12ba8199cc0d14393afe4cc13c1817a",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-20261110/p3/qvi-tests.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/p4/generator-tests.log",
+          "bytes": 665,
+          "sha256": "5a0da9fb465d5c2dc436c0faba22d6acbc2b9132a1fb63fba2942fb29c70f20c",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-20261110/p4/generator-tests.log"
+        }
+      ]
+    },
+    {
+      "prefix": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110",
+      "manifest_files": 126,
+      "git_tree_files": 117,
+      "missing_committed_files": [
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/c1-aggregate-originals-addendum-v1/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/c1-aggregate-originals-addendum-v1/stderr.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/c1-aggregate-originals-addendum-v1/stdout.log",
+          "bytes": 2237,
+          "sha256": "c1747c9f98a1bc0edb414dd6d0d892f269621c5a7d1a838443dec2b8f1a9c83e",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/c1-aggregate-originals-addendum-v1/stdout.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/c1-clock-outcomes-independent-review-v1/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/c1-clock-outcomes-independent-review-v1/stderr.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/c1-clock-outcomes-independent-review-v1/stdout.log",
+          "bytes": 2237,
+          "sha256": "f03fd66ad6ebe169f839c366b37c3e85e9ac4297093c2b3f1e27e52559c03502",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/c1-clock-outcomes-independent-review-v1/stdout.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/current-continuum-scope-closure-v1/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/current-continuum-scope-closure-v1/stderr.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/current-continuum-scope-closure-v1/stdout.log",
+          "bytes": 237,
+          "sha256": "b50b333c2639ce6232edd91cf09c22ed56818d77a1ccbe4b7281c9696d7dac8b",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/current-continuum-scope-closure-v1/stdout.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/final-curation-delta-review-v2/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/final-curation-delta-review-v2/stderr.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/final-curation-delta-review-v2/stdout.log",
+          "bytes": 597,
+          "sha256": "ba67594d8446cfafe7feaab902075cb91074c4695fd9b992e5970f47b05f844a",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/final-curation-delta-review-v2/stdout.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/final-hcsn-plan-independent-review-v1/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/final-hcsn-plan-independent-review-v1/stderr.log"
+        },
+        {
+          "path": "qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/final-hcsn-plan-independent-review-v1/stdout.log",
+          "bytes": 229,
+          "sha256": "da175fdfa624bc07cc074478d47077892f83ae8d484669fe45622c94b822c8f3",
+          "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-followup-20261110/review/final-hcsn-plan-independent-review-v1/stdout.log"
+        }
+      ]
+    }
+  ]
+}

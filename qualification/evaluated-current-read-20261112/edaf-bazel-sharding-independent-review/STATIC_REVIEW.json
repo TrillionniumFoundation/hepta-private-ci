@@ -1,0 +1,182 @@
+{
+  "schema": "hepta-static-review-v1",
+  "scope": "Independent static review of the two-file Bazel Agentd unit-test sharding candidate; no test/build/formatter or action dispatch was performed.",
+  "base_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "base_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "candidate_bare_tree": "cd0df1226c65cd92e826aa44006000bbae76fc41",
+  "source_pins": [
+    {
+      "key": "defs_base",
+      "path": "defs.bzl",
+      "git_blob_sha": "ab9b8e8153e3813cbbc068932bf626a0699cd9f2",
+      "bytes": 35087,
+      "sha256": "4e66b41eba180daab2b4e249501420c9c4bc33371d64746faf558b5a7276db09"
+    },
+    {
+      "key": "defs_post",
+      "path": "defs.bzl",
+      "git_blob_sha": "6e1c3955b8dc345bd0cc5a4f1659e1e56f285cc8",
+      "bytes": 35601,
+      "sha256": "72baafaecb8ff10cb5a70e84903a813ea9744046020a2082a835cbed3e16b53a"
+    },
+    {
+      "key": "build_base",
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "git_blob_sha": "679f0f86e3c01a1ca3638199ff2e8286519823f9",
+      "bytes": 7929,
+      "sha256": "cc16bb498028a806f49be839060fb6f092ab0997aec5c0e634b47cb8f4d00f67"
+    },
+    {
+      "key": "build_post",
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "git_blob_sha": "eb09a036e49d1c85cd247f05b9b4b2c17b5dd022",
+      "bytes": 8215,
+      "sha256": "ed21637560b45953b7a41c319c2feeb47dd905720aacbe028a64bd2628f8db8f"
+    },
+    {
+      "key": "launcher_sh",
+      "path": "workspace_root_test_launcher.sh.tpl",
+      "git_blob_sha": "4606fd8b15274f3e52aca493a34f32264d124c06",
+      "bytes": 4713,
+      "sha256": "e292867c613d853887a64ca09bca231e66cc65d48806985c1f16c1c69c1169e5"
+    },
+    {
+      "key": "launcher_bat",
+      "path": "workspace_root_test_launcher.bat.tpl",
+      "git_blob_sha": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69",
+      "bytes": 7627,
+      "sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae"
+    },
+    {
+      "key": "runner_py",
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "git_blob_sha": "953ef39b2194e69531308d098857f439719d5d7e",
+      "bytes": 15346,
+      "sha256": "384e69963a09d8bebe108f58b293e0fd5431eb11e16efb544544714c541a177e"
+    },
+    {
+      "key": "bazelrc",
+      "path": ".bazelrc",
+      "git_blob_sha": "59c6850487b948779389a481de5161c64fd21ff5",
+      "bytes": 14000,
+      "sha256": "cf2d7b0511a3b7872a0be581ce32a6010fdd2c40cff30905d6a9f96d1ca2b2b4"
+    },
+    {
+      "key": "workflow",
+      "path": ".github/workflows/bazel.yml",
+      "git_blob_sha": "73e70ae2300bf6013d69914662d546d8e1b83569",
+      "bytes": 21878,
+      "sha256": "11d5ced3d41620e82e3aa57e842d219dfbd7cc6ddb4027266472987aff99ad89"
+    },
+    {
+      "key": "run_bazel",
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "git_blob_sha": "07553d8511524588369458ba52bf0ff5a6186208",
+      "bytes": 14095,
+      "sha256": "babcfa6dce1c4684f4e96e7ddae6eee8f4fdbcc088fa0360bfa00ccfaf65d104"
+    }
+  ],
+  "base_bindings": [
+    {
+      "path": "defs.bzl",
+      "sha": "ab9b8e8153e3813cbbc068932bf626a0699cd9f2",
+      "bytes": 35087,
+      "sha256": "4e66b41eba180daab2b4e249501420c9c4bc33371d64746faf558b5a7276db09",
+      "matches": true,
+      "full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "sha": "679f0f86e3c01a1ca3638199ff2e8286519823f9",
+      "bytes": 7929,
+      "sha256": "cc16bb498028a806f49be839060fb6f092ab0997aec5c0e634b47cb8f4d00f67",
+      "matches": true,
+      "full_bytes_equal": true
+    }
+  ],
+  "result": "No new static blocker identified in the candidate. Runtime completion, resource consumption, and the actual Bazel method denominator remain unverified.",
+  "diff": {
+    "paths": 2,
+    "added_lines": 17,
+    "deleted_lines": 1,
+    "changes": [
+      "Library-unit-only optional unit_test_threads=0 and unit_test_flaky=None parameters preserve old defaults for every other caller.",
+      "The existing sharded-library flaky=True assignment is followed by an explicit optional override; Agentd selects False.",
+      "Agentd library unit target selects exactly eight shards and two libtest threads per shard. No launcher, workflow, timeout, stack, retry option, test method, assertion, ignore, or filter is changed."
+    ]
+  },
+  "exact_flow": [
+    {
+      "stage": "codex_rust_crate",
+      "facts": "test_shard_counts contains only hepta-agentd-unit-tests:8; no unit_test_args or unit_test_timeout is set for Agentd. unit_test_flaky=False overrides the original True before forwarding **unit_test_kwargs."
+    },
+    {
+      "stage": "inner rust_test",
+      "facts": "The inner hepta-agentd-unit-tests-bin remains manual and is the same real binary. No inner shard_count, flaky retry, args, or thread override is introduced."
+    },
+    {
+      "stage": "workspace_root_test",
+      "facts": "The test=True wrapper receives shard_count=8 and flaky=False. The existing typed test_threads attribute writes RUST_TEST_THREADS=2 through RunEnvironmentInfo. This does not add a libtest argument."
+    },
+    {
+      "stage": "shell launcher",
+      "facts": "The unchanged launcher lists the same binary with --list --format terse, hashes each eligible full method name using FNV-1a32 and selects hash modulo TOTAL_SHARDS. Selected full names are passed with --exact. Original ignore handling and CODEX_BAZEL_TEST_SKIP_FILTERS remain unchanged."
+    },
+    {
+      "stage": "Windows launcher",
+      "facts": "The unchanged launcher applies the same FNV-1a32 UTF-8 hash. Selected methods are split into <=7000-character argument batches; each batch uses --exact and any failed batch leaves final status failure. This is batching, not retries."
+    },
+    {
+      "stage": "workflow target sharding",
+      "facts": "The existing four Windows workflow jobs partition target labels using cksum. A given Agentd target belongs to one workflow job; that job runs its eight method shards. This does not multiply the method roster across all four jobs."
+    },
+    {
+      "stage": "current CI wrappers",
+      "facts": "The reviewed workflow, shell wrapper and Python wrapper contain no --test_arg, --test_filter, --flaky_test_attempts, --runs_per_test, --test_sharding_strategy or --test_timeout override. Explicit libtest arguments or TESTBRIDGE_TEST_ONLY would bypass method sharding in the existing launcher, but the candidate and current workflow introduce neither."
+    }
+  ],
+  "partition_proof": {
+    "domain": "The identical eligible full-method-name roster emitted by the exact binary on each shard, after unchanged existing skip policy.",
+    "bucket": "P_i = { name in R : FNV1a32(UTF8(name)) mod 8 = i }, i in {0,...,7}.",
+    "complete_union": "Every unsigned 32-bit hash has exactly one residue in 0..7; union(P_i)=R.",
+    "disjoint": "For i!=j no name can have both residues, so P_i intersect P_j is empty. Hash collisions place different methods in the same bucket and do not omit or duplicate methods.",
+    "conditions": [
+      "Bazel supplies all eight valid shard indices and the same binary/eligible roster.",
+      "Actual completion must still be checked from each shard's result and logs; a static partition is not eight successful runs.",
+      "No real Bazel --list roster was available in this review. The 1738 native suite and incomplete older Bazel logs must not substitute for the actual new Bazel denominator."
+    ]
+  },
+  "retry_and_deadline": {
+    "configured_test_retry": "The library wrapper's final flaky=False removes the old automatic flaky retry behavior; none of the reviewed command wrappers introduces a test-attempt override.",
+    "deadline": "No unit-test timeout value is introduced or changed. The original 300-second per-test-action limit remains; listing and Windows batch startup consume that same action budget. No claim that any shard will finish within 300 seconds is made.",
+    "other_shapes": "Binary-unit and integration/Wine/Windows-cross target construction is byte-for-byte unchanged. Their existing defaults remain, and the new map selects only the Agentd library unit target."
+  },
+  "resources": {
+    "worker_bound": "If all eight shards run concurrently, the explicit libtest limit permits at most 8*2=16 libtest worker threads for this target. Tokio worker pools, server threads and child processes are not capped by this setting.",
+    "scheduling": "Existing Bazel local/remote execution and jobs limits remain unchanged. GNU/musl use the original Linux config; current Windows workflow selects ci-windows with MSVC, not the separate ci-windows-cross policy.",
+    "risks": [
+      "Two workers per shard is not a global two-thread or memory limit.",
+      "Each shard starts and lists the real binary, adding startup and sandbox/process overhead.",
+      "Per-shard wall time, total memory, load balance and interaction with other scheduled targets require the original CI. No resource or speed estimate is presented as measurement."
+    ]
+  },
+  "preservation": {
+    "production_source_unchanged": true,
+    "test_methods_and_assertions_unchanged": true,
+    "workflow_and_launchers_unchanged": true,
+    "original_skip_ignore_policies_unchanged": true,
+    "default_timeout_unchanged": true,
+    "other_macro_callers_defaults_unchanged": true
+  },
+  "execution_status": {
+    "formatter": "NOT_RUN",
+    "bazel_analysis": "NOT_RUN",
+    "bazel_tests": "NOT_RUN",
+    "native_tests": "NOT_RUN",
+    "source_guards": "NOT_RUN"
+  },
+  "review_boundaries": [
+    "A static source review does not establish Root/owner/research qualification.",
+    "No change to authentication, owner authority, source binding, research evidence or scientific admission is part of this candidate."
+  ]
+}

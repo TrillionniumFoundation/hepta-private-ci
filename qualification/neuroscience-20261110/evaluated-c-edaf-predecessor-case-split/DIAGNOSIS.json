@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.evaluated-c-case-split.diagnosis.v1",
+  "conclusion": "Split three independent original predecessor fault experiments into three ordinary test methods using one common helper. No fixture or effect is removed.",
+  "observed_failure": {
+    "path": "edaf-original-native-failure-excerpt",
+    "blob": "48c873e78aa594816c87537a45c7188ffdf577ea",
+    "bytes": 17726,
+    "sha256": "33ae5710943289558cd68373101e6f4d2723c9d692d490f6c28a79ee8faad135"
+  },
+  "observed_source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "original_result": "TIMEOUT 60.012s; old 286c TIMEOUT 60.014s remains separate history.",
+  "what_the_log_establishes": [
+    "The original method exceeded the per-test time budget.",
+    "Two original S evidence peer exchanges returned Ok(false) with callback_entered=false.",
+    "No precise internal fixture-phase timing was recorded; these two logs do not prove the third fault began or isolate a specific slow constructor."
+  ],
+  "causal_source_facts": [
+    "The original method serially iterates Trainer, Evaluator, Selector.",
+    "Each case separately awaits PublicationFixture::ready, publishes real T/B, obtains actual fresh S, executes actual C, installs exactly one original predecessor fault, verifies the exact refusal, checks full C/publication bytes, and finishes all original owners.",
+    "A withdrawn or fenced original owner must not be reused for the next independent fault. Caching one fixture would change the experiment."
+  ],
+  "preserved": [
+    "Three original independent fixtures and three real C executions.",
+    "Original per-case error enums and exact frame counts.",
+    "Original C journal/witness and CURRENT/retained-C journal/witness comparisons.",
+    "Original selected fault mutation, claim/signing refusal, same original owner shutdown.",
+    "Original timeouts, 128-frame caps, 500ms transport deadlines, and ordinary retries=0."
+  ],
+  "time_budget_qualification": "No configured deadline is raised. Each separately discovered method has the existing per-test timeout; the aggregate available time for the complete three-case roster can therefore exceed the old single-method timeout. This is test scheduling isolation, not a measured performance improvement.",
+  "outcome_limits": [
+    "No claim that an individual fault now passes or finishes under 60s before actual native execution.",
+    "No claim that the other three ~600ms PredecessorUnavailable failures are repaired.",
+    "No production/Root/owner privilege change; no science efficacy evidence."
+  ],
+  "fixture_source": {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+    "blob": "1158844757e5eaac308922eba2476db88442a207"
+  },
+  "run_status": "NOT_RUN",
+  "format_status": "NOT_FMT",
+  "owner_decision": null
+}

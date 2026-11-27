@@ -1,0 +1,21 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--offline",
+    "--frozen",
+    "--project",
+    "scripts",
+    "ruff",
+    "format",
+    "scripts/tests/test_hepta_ci_scope.py"
+  ],
+  "cwd": "/workspace/scratch/75cf41417dcc/r3-review/ceb13-ci-repair/validation",
+  "exit_code": 0,
+  "elapsed_seconds": 0.20372366905212402,
+  "just_available": null,
+  "equivalent_to": "scripts/format.py python_scripts_formatter_group for one changed Python path; no YAML formatter group is configured",
+  "sha256_before": "98fe550b81ada7c478e34695b1ba4d96adef2ca520358b2701ebda6597bf8356",
+  "sha256_after": "98fe550b81ada7c478e34695b1ba4d96adef2ca520358b2701ebda6597bf8356",
+  "changed": false
+}

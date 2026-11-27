@@ -1,0 +1,31 @@
+{
+  "source_base": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "commands": [
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "cb0598a9099a0d828ce73aedb51e397e600e49d1"
+      ],
+      "cwd": "/workspace/scratch/f7c0ded86bcc/hepta-p0-training-adapter/codex-rs",
+      "started_at": "2026-11-11T02:33:09.812944+00:00",
+      "finished_at": "2026-11-11T02:33:10.634993+00:00",
+      "exit_code": 0,
+      "log": "/workspace/scratch/f7c0ded86bcc/p0-cb0598-ci-observation/matrix-diagnostic-fmt.log"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/workspace/scratch/f7c0ded86bcc/hepta-p0-training-adapter",
+      "started_at": "2026-11-11T02:33:10.635020+00:00",
+      "finished_at": "2026-11-11T02:33:10.653451+00:00",
+      "exit_code": 0,
+      "log": "/workspace/scratch/f7c0ded86bcc/p0-cb0598-ci-observation/matrix-diagnostic-diffcheck.log"
+    }
+  ],
+  "native_tests": "not run; explicit resource constraint"
+}

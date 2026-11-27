@@ -1,0 +1,38 @@
+{
+  "status": "PASS_INDEPENDENT_SAVED_EXACT_V3_CHAIN_CANCEL_REVIEW",
+  "source_freeze_sha256": "6c1ba4f5d710134aab2e0ecd1018cea02e15631f960d6796a9787b62efa7aa0f",
+  "result_sha256": "62311a1d1ffff85d4368722cdffe2c002e01ab212d82701e9c1e6520d4b3eae1",
+  "outer_receipt_sha256": "6ae57a604d6a048da4ab137c868f7d32b0417bf4c310a7d13d91b06e9b3cea29",
+  "exact_v3_runtime_files": 17,
+  "inference_checks": 13,
+  "cancellation_rollback_refusals": 3,
+  "journal_packets_verified": 8,
+  "verified": [
+    "28frozen hashes and17runtime files byteexact v3 manifest binding",
+    "three ownPID strict launch/reap/handoffverify sequence,-9/0/0 and fullwait",
+    "checkpoint/READY/resumedload identities; committed token replay refused,discarded pending candidate not recovered",
+    "new HANDOFF equals recovered canonical fullmodel and4172492-byte AFTER_MODEL; no archived model fixture fallback",
+    "3Adam/objective incldiscarded,1random,5allocation,1actualinfer+transport,zeroinferupdates",
+    "wire parity and request/namespace identity;8journals exact hashes/session/prefixcursor/two-ticket state",
+    "cancel-intent equals oldindex2ack,final cancelled marker preserves text35/image8192;3savedview refusals,no thirdpiece",
+    "three guard timers287972389ns nested inside constructor/start,top-level stages nonoverlap; refusal-loop costs remain fullchild residual",
+    "complete recursive outer inventory+stable inner inventory,selfinclusive20751044B; subtree worker+supervisor once"
+  ],
+  "whole_method_subtree_CPU_seconds": "4.0246379999999995",
+  "inner_children_CPU_seconds": "3.72663",
+  "supervisor_complete_CPU_seconds": "0.2980079999999994",
+  "outer_prefix_CPU_seconds": "0.04906905",
+  "known_CPU_lower_bound_seconds": "4.0737070499999995",
+  "guard_CPU_seconds_nested": "0.287972389",
+  "outer_tail": "unknown_not_zero",
+  "retained_bytes": 20751044,
+  "largest_process_RSS_kib": 61020,
+  "reviewer_reran_qualifier_or_model": false,
+  "scope_conclusion": "Exact v3 runtime has now one fresh chronological synthetic train/ownedkill/recover/identityguarded-generation/cancel-intent chain. This closes the previously identified exact-assembly execution gap for this controlled partial-output path,not aggregate coverage of every behavior.",
+  "limitations": [
+    "Controlled partial output8227B then confirmedcancel,not fullimage delivery success.",
+    "Otherdrift/processfault/cancel matrices remain separate historical qualifications,not rerun.",
+    "No scientific advantage,production owner/authentication/globalexactlyonce/concurrentABA/directoryfsync durability or altered remotehold.",
+    "Historical/review costs and unknownoutertail additional; no original10s/12B certification."
+  ]
+}

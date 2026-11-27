@@ -1,0 +1,98 @@
+{
+  "schema": "mem8.d0f.architecture-original.actual-publication.v1",
+  "archive": {
+    "bytes": 702616,
+    "git_blob": "587574aac4de98596b55d840feb1d844b0b14f83",
+    "path": "ARCH_D0F_ORIGINAL.tar.xz",
+    "sha256": "44c090bb96f72f431de52fbc15cf82b70c2ef13358fe21ab6d542f9b2115fe8e"
+  },
+  "members": 28,
+  "parts": [
+    {
+      "bytes": 460800,
+      "git_blob": "e146598558e3713c6f023cc1d03f926c925453ab",
+      "offset": 0,
+      "path": "ARCH_D0F_ORIGINAL.part-001.xz.part",
+      "sha256": "a31071b663ea63019a72cffbac6766e60a6e2e248b9db2bf740d2750673b349b",
+      "actual_git_blob": "e146598558e3713c6f023cc1d03f926c925453ab",
+      "complete_remote_readback": false
+    },
+    {
+      "bytes": 241816,
+      "git_blob": "393bd0ff7dd493df132d7f7fbb2bbe3fd64ad437",
+      "offset": 460800,
+      "path": "ARCH_D0F_ORIGINAL.part-002.xz.part",
+      "sha256": "fd4e16d0bf750570dfa615b8b2e778e35686d50e1532cd6e5d542bf12fb54554",
+      "actual_git_blob": "393bd0ff7dd493df132d7f7fbb2bbe3fd64ad437",
+      "complete_remote_readback": false
+    }
+  ],
+  "texts": [
+    {
+      "path": "ARCHIVE_INDEX.json",
+      "local_relative_path": "arch-publication/ARCHIVE_INDEX.json",
+      "bytes": 813,
+      "sha256": "2223f23737e29f96bfcf70ac372ad27c51c72176e7ccb8915fb192b24a1262e5",
+      "git_blob": "5b050d9d5ae33f25550b8143567270bed7a3a560",
+      "actual_create": true,
+      "full_utf8_readback": true
+    },
+    {
+      "path": "PACKAGE_MANIFEST.json",
+      "local_relative_path": "arch-publication/PACKAGE_MANIFEST.json",
+      "bytes": 6284,
+      "sha256": "bce65ba2624ae906ae135bed1baae8955e04a32f0114688a92abaa39b90a04c3",
+      "git_blob": "6b7fb53d873c3a140c551c3925bf7344f11b95bf",
+      "actual_create": true,
+      "full_utf8_readback": true
+    },
+    {
+      "path": "OFFLINE_PACKAGE_REPLAY.json",
+      "local_relative_path": "arch-publication/OFFLINE_PACKAGE_REPLAY.json",
+      "bytes": 2445,
+      "sha256": "cf455d783eda177b8f0a59aed0e202f587a56df1bb2f9239953169d2ce9eaecc",
+      "git_blob": "f6327487f7524efcdd7644194129b05bfce2fee8",
+      "actual_create": true,
+      "full_utf8_readback": true
+    },
+    {
+      "path": "ARCH_COMPLETE_ORIGINAL_AUDIT.json",
+      "local_relative_path": "ARCH_COMPLETE_ORIGINAL_AUDIT.json",
+      "bytes": 426132,
+      "sha256": "ad4d5b9d647a5915e97d481732df2ab11035cb6661d6908ad3139bd377ebe347",
+      "git_blob": "c4f313a35f19aa4e99b57070da79c5e9b50bf062",
+      "actual_create": true,
+      "full_utf8_readback": true
+    },
+    {
+      "path": "verify_arch_package.py",
+      "local_relative_path": "verify_arch_package.py",
+      "bytes": 4591,
+      "sha256": "f6825d4c3007451053792eb7bdce35e0e584c6f810c938fe291c539305b7f1f1",
+      "git_blob": "a7937e4769df6604fcfa583e6c56102194ce31bb",
+      "actual_create": true,
+      "full_utf8_readback": true
+    },
+    {
+      "path": "audit_arch_complete_original.py",
+      "local_relative_path": "audit_arch_complete_original.py",
+      "bytes": 12145,
+      "sha256": "3ee7367064f7d2915a97a177801e6e59c0c77e80826e5e43f52aad53f12b1c40",
+      "git_blob": "d3ada25e73c02a9e7ae5663635ef100d8c4a8561",
+      "actual_create": true,
+      "full_utf8_readback": true
+    },
+    {
+      "path": "README.md",
+      "local_relative_path": "ARCH_README.md",
+      "bytes": 2526,
+      "sha256": "ec42dee7de8fc89b660151942030d787f7f4f556b24a2a7cb0562cd96ff31f9f",
+      "git_blob": "ee1b0c61a4419f357fb1870c25f90d7ee4003a79",
+      "actual_create": true,
+      "full_utf8_readback": true
+    }
+  ],
+  "binary_full_readback": "PENDING_ROOT_IMMUTABLE_CARRIER",
+  "refs_changed": false,
+  "archived_commands_executed": 0
+}

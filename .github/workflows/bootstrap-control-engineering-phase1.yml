@@ -1,0 +1,108 @@
+name: Bootstrap control.engineering phase 1
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-p0-p2-convergence-20260927
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply exact identity and status patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/bootstrap_control_engineering_phase1.py')
+          text = path.read_text(encoding='utf-8')
+          old = 'python3 -m unittest -v scripts/test_hepta_implementation_maps.py'
+          new = 'python3 scripts/test_hepta_implementation_maps.py -v'
+          if text.count(old) != 1:
+              raise SystemExit('bootstrap quality-test command anchor missing')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+          python3 scripts/bootstrap_control_engineering_phase1.py
+      - name: Run focused source-identity tests
+        id: map-tests
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/test_hepta_implementation_maps.py -v 2>&1 \
+            | tee "$RUNNER_TEMP/control-engineering-map-tests.log"
+          status=${PIPESTATUS[0]}
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Verify generated status
+        id: status-verify
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/control_engineering_status.py verify 2>&1 \
+            | tee "$RUNNER_TEMP/control-engineering-status-verify.log"
+          status=${PIPESTATUS[0]}
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Verify repository gap closure
+        id: gap-closure
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/hepta-gap-closure.py verify 2>&1 \
+            | tee "$RUNNER_TEMP/control-engineering-gap-closure.log"
+          status=${PIPESTATUS[0]}
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Capture patched identity sources and transcripts
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/control-engineering-debug"
+          cp scripts/bootstrap_control_engineering_phase1.py \
+             scripts/hepta-implementation-maps.py \
+             scripts/test_hepta_implementation_maps.py \
+             scripts/control_engineering_status.py \
+             "$RUNNER_TEMP/control-engineering-debug/" || true
+          cp "$RUNNER_TEMP/control-engineering-map-tests.log" \
+             "$RUNNER_TEMP/control-engineering-status-verify.log" \
+             "$RUNNER_TEMP/control-engineering-gap-closure.log" \
+             "$RUNNER_TEMP/control-engineering-debug/" || true
+          git diff --no-ext-diff --binary > "$RUNNER_TEMP/control-engineering-debug/patch.diff" || true
+          git status --short > "$RUNNER_TEMP/control-engineering-debug/status.txt" || true
+          git log -5 --decorate --oneline > "$RUNNER_TEMP/control-engineering-debug/log.txt" || true
+      - name: Retain exact phase-one diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-phase1-debug-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/control-engineering-debug
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce phase-one qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.map-tests.outputs.status }}" = 0
+          test "${{ steps.status-verify.outputs.status }}" = 0
+          test "${{ steps.gap-closure.outputs.status }}" = 0
+      - name: Commit final phase-one source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Control Engineering Bot"
+          git config user.email "hepta-control-engineering@users.noreply.github.com"
+          git add -A
+          test -n "$(git status --porcelain)"
+          git commit -m "control.engineering: make exact observations squash-stable"
+          git push origin HEAD:codex/control-engineering-p0-p2-convergence-20260927

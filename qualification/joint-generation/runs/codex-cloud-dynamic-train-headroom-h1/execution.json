@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "python",
+    "/tmp/hepta-h1-analyze.py"
+  ],
+  "child_process_cpu_seconds": 1.576028,
+  "cost_boundary": "Full worker process/own children includes imports, archive decompression, arithmetic and all worker persistence. Launcher own CPU before this final receipt is separate; waited-child CPU is not added twice. Outer Python startup/final receipt serialization not included in launcher-own counter; descriptive administrative cost, no benchmark/model execution.",
+  "exit_code": 0,
+  "launcher_own_cpu_ns_before_final_receipt": 1205131,
+  "utc_end": "2026-10-23T15:24:43.391990+00:00",
+  "utc_start": "2026-10-23T15:24:41.814528+00:00",
+  "wall_ns_before_final_receipt": 1577499266
+}

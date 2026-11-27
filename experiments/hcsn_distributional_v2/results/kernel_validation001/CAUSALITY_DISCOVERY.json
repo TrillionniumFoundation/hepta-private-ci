@@ -1,0 +1,64 @@
+{
+  "formal_content_training_started": false,
+  "issue": "Adaptive global numerical rate/term/chunk choices produce bounded nonzero prefix differences when future or neighboring coefficients change. Exact exponential invariance does not make its truncated floating-point implementation strictly noninterfering.",
+  "measured_probe_cpu_seconds": 0.028004089999999815,
+  "records": [
+    {
+      "changed_suffix_and_neighbors_solver": {
+        "chunks": 1,
+        "event_error_bound": 1.2233030036931689e-11,
+        "max_chunk_mean": 2.865662216438377,
+        "probability_l1_error_bound": 1.325752785193954e-12,
+        "roundoff_included": false,
+        "terms": 21,
+        "uniformization_rate": 7.960172507131099
+      },
+      "dtype": "torch.float32",
+      "first_solver": {
+        "chunks": 1,
+        "event_error_bound": 1.9998225493554653e-11,
+        "max_chunk_mean": 0.3262503392140232,
+        "probability_l1_error_bound": 5.5996854495751754e-12,
+        "roundoff_included": false,
+        "terms": 9,
+        "uniformization_rate": 3.6250036249999997
+      },
+      "prefix_differences": {
+        "event_vector": 1.4901161193847656e-08,
+        "reward_vector": 1.4901161193847656e-08,
+        "transition": 1.1920928955078125e-07
+      },
+      "unchanged_prefix_coefficients": true
+    },
+    {
+      "changed_suffix_and_neighbors_solver": {
+        "chunks": 1,
+        "event_error_bound": 1.2232973963457891e-11,
+        "max_chunk_mean": 2.8656615347397003,
+        "probability_l1_error_bound": 1.3257467057905478e-12,
+        "roundoff_included": false,
+        "terms": 21,
+        "uniformization_rate": 7.960170929832501
+      },
+      "dtype": "torch.float64",
+      "first_solver": {
+        "chunks": 1,
+        "event_error_bound": 1.999821775449421e-11,
+        "max_chunk_mean": 0.3262503262499999,
+        "probability_l1_error_bound": 5.5996832902538e-12,
+        "roundoff_included": false,
+        "terms": 9,
+        "uniformization_rate": 3.625003624999999
+      },
+      "prefix_differences": {
+        "event_vector": 2.092465090086648e-12,
+        "reward_vector": 1.8832158055204218e-12,
+        "transition": 2.244093799674829e-12
+      },
+      "unchanged_prefix_coefficients": true
+    }
+  ],
+  "resolution": "Neural fixed rate8.1/terms21/one chunk/domain dt<=.36; scalar adaptive mode remains a reference. Source snapshot and original numerical audit retained.",
+  "schema": "hcsn-prefreeze-causality-discovery.v1",
+  "source_sha256": "5e8c8dbbb9130535f77ce515c3500fa9cd27341206feb2134a142882819559d6"
+}

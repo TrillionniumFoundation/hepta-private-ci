@@ -1,0 +1,39 @@
+{
+  "schema": "a32-wine-readonly-frozen-source-v1",
+  "source_head": "e1a4f619a5677d5cdc4f5307d1dc7cf1af61821e",
+  "source_parent": "a32d73f00cfc292ff1ed4ac5cef958ca9f238020",
+  "base_product_tree": "603a3e5b69258e37653a828dda625efe45365d7e",
+  "source_branch": "diagnostic/a32-wine-readonly-native-20261022",
+  "retention": "Complete original three-file harness; byte-identical carriers outside active workflow directory.",
+  "native_wine_execution_performed": false,
+  "contract_tests": {
+    "current_job_isolation": 97,
+    "retained_readonly_harness": 119,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "files": [
+    {
+      "original_path": ".github/scripts/a32_wine_diagnostic.py",
+      "retained_path": "qa/repository-consolidation/20261118/a32-wine-readonly-frozen/.github/scripts/a32_wine_diagnostic.py",
+      "git_blob": "4b15710dc2706071de299cf784fb6645be8720c3",
+      "sha256": "ffbcc3ee97eaafd868ef30500ea8bf24d00c4b96260172d72f8c485aef9c3f88",
+      "bytes": 49045
+    },
+    {
+      "original_path": ".github/scripts/test_a32_wine_diagnostic.py",
+      "retained_path": "qa/repository-consolidation/20261118/a32-wine-readonly-frozen/.github/scripts/test_a32_wine_diagnostic.py",
+      "git_blob": "181df37c728d264175865fbe68ea3a796a63e1a8",
+      "sha256": "c115cc6627eb6e29ed45dbfc26b1ad7c1ae0a8c4db86dd4d905c36dbc9c4b421",
+      "bytes": 70060
+    },
+    {
+      "original_path": ".github/workflows/a32-wine-diagnostic.yml",
+      "retained_path": "qa/repository-consolidation/20261118/a32-wine-readonly-frozen/.github/workflows/a32-wine-diagnostic.yml",
+      "git_blob": "ac344fa01830dc46d0124f175725d2c868dcb448",
+      "sha256": "f9bcc8328dfa76e72f7f09c6814cb5bd3569273f481275914910167f03550731",
+      "bytes": 3262
+    }
+  ]
+}

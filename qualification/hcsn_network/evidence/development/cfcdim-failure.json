@@ -1,0 +1,29 @@
+{
+  "stage": "synthetic smoke before source freeze",
+  "seed": 101,
+  "input_shape": [
+    64,
+    10,
+    2
+  ],
+  "cfc_timespans_shape": [
+    64,
+    10
+  ],
+  "error": "RuntimeError: size of tensor a (6) must match tensor b (64) at dimension 1",
+  "optimizer_calls": 0,
+  "completed_forward_backward_arms": [
+    "flow",
+    "flow_fixed",
+    "flow_mass",
+    "flow_no_return",
+    "flow_erlang4",
+    "gate",
+    "gru"
+  ],
+  "wall_scope": "no formal benchmark costs or qualification",
+  "later_arms_not_reached": [
+    "snn",
+    "transformer"
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "mem8.v17.root-replay-of-new-narrow-raw-view.v1",
+  "parser_git_blob": "bee878b17f525945a9185f37dccea69fa4782cc0",
+  "executed_source_change": "Only remove ES-module export keywords to evaluate the exact pure functions in the tools JavaScript runtime.",
+  "original_full_raw_files_already_hash_verified": 6,
+  "all_six_complete_target_tables_equal_peer": true,
+  "comparison_scope": "Every table field, line_count and all 1753 target rows equal the independently archived companion. Companion rows use [line,label,status,cached,detail] tuples; the exact parser returns named objects.",
+  "target_record_companion": "b60fda336e91b8ad543a8a76983dd07b6c73dd0b",
+  "Mac_memory": {
+    "name": "cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation",
+    "file_line": "hepta-memory/src/cognitive_runtime_tests.rs:466:5",
+    "observed_left": 0,
+    "expected_right": 16,
+    "original_case_terminal_lines": [
+      8675
+    ],
+    "assertion_displays": [
+      {
+        "start_line": 9042,
+        "terminal_line": 9058,
+        "panic_line": "thread 'cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation' (61061) panicked at hepta-memory/src/cognitive_runtime_tests.rs:466:5:",
+        "observed_left": 0,
+        "expected_right": 16,
+        "suite_result": {
+          "passed": 419,
+          "failed": 1,
+          "ignored": 9,
+          "measured": 0,
+          "filtered_out": 0,
+          "elapsed_seconds": 267.84
+        },
+        "original_selected_lines": [
+          "2026-11-11T17:15:13.6211950Z ---- cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation stdout ----",
+          "2026-11-11T17:15:13.6214050Z ",
+          "2026-11-11T17:15:13.6215840Z thread 'cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation' (61061) panicked at hepta-memory/src/cognitive_runtime_tests.rs:466:5:",
+          "2026-11-11T17:15:13.6218940Z assertion failed: `(left == right)`",
+          "2026-11-11T17:15:13.6219820Z ",
+          "2026-11-11T17:15:13.6227060Z Diff < left / right > :",
+          "2026-11-11T17:15:13.6233300Z <0",
+          "2026-11-11T17:15:13.6233910Z >16",
+          "2026-11-11T17:15:13.6234210Z ",
+          "2026-11-11T17:15:13.6234220Z ",
+          "2026-11-11T17:15:13.6235220Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-11-11T17:15:13.6238240Z ",
+          "2026-11-11T17:15:13.6238250Z ",
+          "2026-11-11T17:15:13.6238640Z failures:",
+          "2026-11-11T17:15:13.6240400Z     cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation",
+          "2026-11-11T17:15:13.6244810Z ",
+          "2026-11-11T17:15:13.6246460Z test result: FAILED. 419 passed; 1 failed; 9 ignored; 0 measured; 0 filtered out; finished in 267.84s"
+        ]
+      },
+      {
+        "start_line": 11701,
+        "terminal_line": 11717,
+        "panic_line": "thread 'cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation' (61061) panicked at hepta-memory/src/cognitive_runtime_tests.rs:466:5:",
+        "observed_left": 0,
+        "expected_right": 16,
+        "suite_result": {
+          "passed": 419,
+          "failed": 1,
+          "ignored": 9,
+          "measured": 0,
+          "filtered_out": 0,
+          "elapsed_seconds": 267.84
+        },
+        "original_selected_lines": [
+          "2026-11-11T17:23:09.1713800Z ---- cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation stdout ----",
+          "2026-11-11T17:23:09.1714680Z ",
+          "2026-11-11T17:23:09.1716660Z thread 'cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation' (61061) panicked at hepta-memory/src/cognitive_runtime_tests.rs:466:5:",
+          "2026-11-11T17:23:09.1719100Z assertion failed: `(left == right)`",
+          "2026-11-11T17:23:09.1720250Z ",
+          "2026-11-11T17:23:09.1723110Z \u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :",
+          "2026-11-11T17:23:09.1723830Z \u001b[31m<\u001b[0m\u001b[1;48;5;52;31m0\u001b[0m",
+          "2026-11-11T17:23:09.1724360Z \u001b[32m>\u001b[0m\u001b[1;48;5;22;32m16\u001b[0m",
+          "2026-11-11T17:23:09.1724690Z ",
+          "2026-11-11T17:23:09.1724690Z ",
+          "2026-11-11T17:23:09.1725140Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-11-11T17:23:09.1725920Z ",
+          "2026-11-11T17:23:09.1725920Z ",
+          "2026-11-11T17:23:09.1726090Z failures:",
+          "2026-11-11T17:23:09.1726800Z     cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation",
+          "2026-11-11T17:23:09.1727560Z ",
+          "2026-11-11T17:23:09.1728260Z test result: FAILED. 419 passed; 1 failed; 9 ignored; 0 measured; 0 filtered out; finished in 267.84s"
+        ]
+      }
+    ],
+    "second_display_tail_group_line": 11518,
+    "observed_native_case_failures": 1,
+    "log_tail_is_not_another_execution": true,
+    "typed_failure_category_observed": false,
+    "root_cause": "UNRESOLVED"
+  },
+  "original_lost_Python_parser_recovered_or_executed": false,
+  "comparison_history": {
+    "initial_failure": "Compared object rows directly with the companion's explicit tuple representation.",
+    "narrow_correction": "Map only the five explicitly named row fields to the documented tuple, then require equality of every row and all other fields.",
+    "original_data_unchanged": true
+  },
+  "new_native_tests": 0,
+  "new_model_requests": 0
+}

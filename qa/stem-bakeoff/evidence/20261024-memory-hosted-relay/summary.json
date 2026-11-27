@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.memory.hosted-relay-byte-audit.v1",
+  "source_commit": "c11a9f7fe85f1bbc5e008ac02b5639e1e8502a92",
+  "run_id": 40102776848,
+  "comparisons": 952,
+  "failures": 0,
+  "model_calls": 0,
+  "archive_members": 168,
+  "source_context_files": 41,
+  "main": {
+    "updates": 256,
+    "train_input_tokens": 17345,
+    "supervised_tokens": 512,
+    "decoder_processes": 36,
+    "decoder_rows": 44,
+    "input_tokens": 3168,
+    "generated_tokens": 172,
+    "accuracy": {
+      "adapter": {
+        "correct": 3,
+        "total": 3
+      },
+      "base": {
+        "correct": 0,
+        "total": 3
+      },
+      "shuffled": {
+        "correct": 0,
+        "total": 3
+      },
+      "target_adapter": {
+        "correct": 3,
+        "total": 3
+      },
+      "target_load": {
+        "correct": 32,
+        "total": 32
+      }
+    },
+    "adapter_parameter_bytes": 1843200
+  },
+  "preflight": {
+    "test_cases": 16,
+    "tests_seconds": 33.902,
+    "additional_tiny_updates": 12,
+    "additional_tiny_decoder_rows": 14,
+    "derived_from_exact_source_and_success_log": true,
+    "raw_tiny_process_receipts_retained": false
+  },
+  "load": {
+    "arrival_model": "serial closed loop; fresh decoder process per request",
+    "concurrency": 1,
+    "control_cut": "delivered signed artifact, not online mTLS authority",
+    "p50_seconds": 6.956435145,
+    "p95_seconds": 7.011685334000049,
+    "requests": 32,
+    "requests_per_second": 0.1436466463158592,
+    "wall_seconds": 222.76886248799997,
+    "sum_request_wall_seconds": 222.7460396600003,
+    "coordinator_overhead_seconds": 0.02282282799967561
+  },
+  "transfer": {
+    "downloads": 4,
+    "compressed_bytes": 1843458,
+    "payload_bytes": 2556658,
+    "polls": 35,
+    "listing_bytes_estimate": 28500,
+    "packet_bytes_measured": false
+  },
+  "boundaries": {
+    "physical_hardware_attested": false,
+    "replicated_authority_exercised": false,
+    "direct_cross_host_mtls": false,
+    "positive_current_evidence_read": false,
+    "explicit_old_node_old_generation_replay": false,
+    "complete_runtime_cost": false,
+    "future_task_success": false,
+    "general_memory_blocker_closed": false,
+    "production_accepted": false
+  },
+  "archive_sha256": "2f71f1d3722305cc1001d9fa9bbcb30877c4fa4939548a04211ebd732743fdf7",
+  "original_artifact_count": 6,
+  "scope": "main experiment counts exclude the separately described preflight; full blockers remain open"
+}

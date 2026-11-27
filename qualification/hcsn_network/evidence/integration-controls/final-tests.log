@@ -1,0 +1,26 @@
+test_actual_network_matches_independent_delayed_ode (qualification.hcsn_network.test_network.CoupledFlowTests.test_actual_network_matches_independent_delayed_ode) ... ok
+test_due_release_atom_receives_the_current_sample_write (qualification.hcsn_network.test_network.CoupledFlowTests.test_due_release_atom_receives_the_current_sample_write) ... ok
+test_full_pending_and_message_buffer_cold_forward_continuation (qualification.hcsn_network.test_network.CoupledFlowTests.test_full_pending_and_message_buffer_cold_forward_continuation) ... ok
+test_future_inputs_cannot_reach_earlier_emissions (qualification.hcsn_network.test_network.CoupledFlowTests.test_future_inputs_cannot_reach_earlier_emissions) ... ok
+test_mass_ablation_and_explicit_resource_stop (qualification.hcsn_network.test_network.CoupledFlowTests.test_mass_ablation_and_explicit_resource_stop) ... ok
+test_shared_law_batch_equals_independent_forward_and_vjp (qualification.hcsn_network.test_network.CoupledFlowTests.test_shared_law_batch_equals_independent_forward_and_vjp) ... ok
+test_weight_input_initial_content_and_physics_gradients (qualification.hcsn_network.test_network.CoupledFlowTests.test_weight_input_initial_content_and_physics_gradients) ... ok
+test_boundary_changes_real_flow_and_all_seven_derivatives (qualification.hcsn_network.test_task_physics.TaskPhysicsTests.test_boundary_changes_real_flow_and_all_seven_derivatives) ... ok
+test_fixed_boundary_is_a_distinct_projected_policy (qualification.hcsn_network.test_task_physics.TaskPhysicsTests.test_fixed_boundary_is_a_distinct_projected_policy) ... ok
+test_full_state_value_and_signed_content_conservation (qualification.hcsn_network.test_task_physics.TaskPhysicsTests.test_full_state_value_and_signed_content_conservation) ... ok
+test_rejects_unsupported_law_or_delay_interface (qualification.hcsn_network.test_task_physics.TaskPhysicsTests.test_rejects_unsupported_law_or_delay_interface) ... ok
+test_actual_classifier_boundary_gradient (qualification.hcsn_network.test_benchmark_models.ModelTests.test_actual_classifier_boundary_gradient) ... ok
+test_all_models_batch_forward_backward_and_state_accounting (qualification.hcsn_network.test_benchmark_models.ModelTests.test_all_models_batch_forward_backward_and_state_accounting) ... ok
+test_erlang_full_generator_against_independent_ode (qualification.hcsn_network.test_benchmark_models.ModelTests.test_erlang_full_generator_against_independent_ode) ... ok
+test_all_accumulators_against_independent_ode_and_perpetual_value (qualification.hcsn_network.test_phase_state.PhaseStateTests.test_all_accumulators_against_independent_ode_and_perpetual_value) ... ok
+test_changed_law_or_contract_is_rejected_before_continuation (qualification.hcsn_network.test_phase_state.PhaseStateTests.test_changed_law_or_contract_is_rejected_before_continuation) ... ok
+test_split_whole_gradients_and_fresh_process_complete_record (qualification.hcsn_network.test_phase_state.PhaseStateTests.test_split_whole_gradients_and_fresh_process_complete_record) ... ok
+test_exec_failure_collects_survivor_and_marks_unstarted_tail (qualification.hcsn_network.test_campaign.CampaignTests.test_exec_failure_collects_survivor_and_marks_unstarted_tail) ... {"completed": "survivor", "exit": 0, "wall": 0.2809894410020206}
+ok
+test_resource_rejection_drains_already_running_child (qualification.hcsn_network.test_campaign.CampaignTests.test_resource_rejection_drains_already_running_child) ... {"completed": "live", "exit": 0, "wall": 0.180204625998158}
+ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 6.517s
+
+OK

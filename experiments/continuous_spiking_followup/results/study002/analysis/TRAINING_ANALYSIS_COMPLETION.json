@@ -1,0 +1,111 @@
+{
+  "all_recorded_analysis_child_cpu_seconds_including_failed_v1_and_original_plots": 115.116795,
+  "all_recorded_analysis_wall_seconds": 112.31139334799082,
+  "completed_unix": 1793194834.9469416,
+  "compressed_artifacts_manifest_sha256": "85ccc36f6927debc14a80186a24d752c212a1492a4f77fd87684c18c63952d5e",
+  "corrections": {
+    "ANALYSIS_CORRECTION_01.json": "282d47e2f69dc44993d905b0bc79609249ff0eb62ada43c592ee5a2e461e375f",
+    "ANALYSIS_CORRECTION_02.json": "d7c9f06185a97b29424355f299669dd2a103f1685ab130e6f6cefde394ee3fe4"
+  },
+  "cost_scope": "Six explicitly recorded subprocess executions, including failed v1 audit and original plots; diagnostic, source corrections, metadata inspection, visual inspection and packaging are separate and not assigned zero cost. Benchmark training costs are separately retained in the summary.",
+  "figures": {
+    "all_final_figures_readable": true,
+    "directory": "figures_v2",
+    "manifest_sha256": "484d3efdcae2a3938a353cfee4ce2ace939a3cd0439cb239af2dcaed09b83204",
+    "original_figures_preserved": true,
+    "png_count": 8,
+    "svg_count": 8,
+    "visual_review_sha256": "bf732a2f0311f0289e8113e1485e670da7d092c676f16405424ad577922de19f"
+  },
+  "measurement_audit": {
+    "cases": 55,
+    "cross_process_exact": 7,
+    "parity_disagreements": [
+      "scaling/config00/transformer/seed7301"
+    ],
+    "parity_passed": 54,
+    "sha256": "65468375c54f13e5f156c67a15942b2ddd9955463a6398c2e541a9abd9f10fd8",
+    "status": "passed"
+  },
+  "original_analysis_files_unchanged": 20,
+  "original_analysis_seal": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+  "recorded_analysis_executions": [
+    {
+      "child_cpu_seconds": 29.783013,
+      "exit_code": 1,
+      "max_rss_kib": 566108,
+      "receipt": "execution/training_audit_01/EXECUTION.json",
+      "receipt_sha256": "4d54027c55410de73dbc59ee17e5dbc16d96d2be6753c4ca8c107bfe49ceba04",
+      "stage": "training_audit_01",
+      "wall_seconds": 30.32770209499722
+    },
+    {
+      "child_cpu_seconds": 46.889427,
+      "exit_code": 0,
+      "max_rss_kib": 566572,
+      "receipt": "execution/training_audit_v2_01/EXECUTION.json",
+      "receipt_sha256": "ba67cca368414c4c4c73697b72231c29b14141ff9c5acec7b0a457fb55ba4d4a",
+      "stage": "training_audit_v2_01",
+      "wall_seconds": 47.27919043199654
+    },
+    {
+      "child_cpu_seconds": 3.2402729999999997,
+      "exit_code": 0,
+      "max_rss_kib": 201112,
+      "receipt": "execution/measurement_audit_01/EXECUTION.json",
+      "receipt_sha256": "1fe559ded3c860aff7efdfce7e7918370bb93b4082f2209c5f3eeb5f4ecdac5f",
+      "stage": "measurement_audit_01",
+      "wall_seconds": 2.4376563139958307
+    },
+    {
+      "child_cpu_seconds": 3.8748579999999997,
+      "exit_code": 0,
+      "max_rss_kib": 94844,
+      "receipt": "execution/training_summary_01/EXECUTION.json",
+      "receipt_sha256": "da2114ef9b7b8b3fa3e68152ede94d7dd63dd03ee9b64425b201a4e0a9e01e6c",
+      "stage": "training_summary_01",
+      "wall_seconds": 2.3459083910056506
+    },
+    {
+      "child_cpu_seconds": 12.079777,
+      "exit_code": 0,
+      "max_rss_kib": 135124,
+      "receipt": "execution/training_plots_01/EXECUTION.json",
+      "receipt_sha256": "4e6138b3b65583d876dcfb849333deb1c816bbfb4909b3e5ce02e01bd9005a74",
+      "stage": "training_plots_01",
+      "wall_seconds": 11.529175771996961
+    },
+    {
+      "child_cpu_seconds": 19.249447,
+      "exit_code": 0,
+      "max_rss_kib": 155064,
+      "receipt": "execution/training_plots_v2_01/EXECUTION.json",
+      "receipt_sha256": "44e8449f1a722c0210169172f65902f6aaff4bacbab8cce16c0b61f239bfa65c",
+      "stage": "training_plots_v2_01",
+      "wall_seconds": 18.391760343998612
+    }
+  ],
+  "schema": "hcsn-training-analysis-completion-v1",
+  "scientific_source_seals": {
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+  },
+  "summary": {
+    "all215_result_hashes_match_audit": true,
+    "sha256": "f89e5c2c160544d8e50f3f068e43816c556a328a311ac6c4e57d6e9d2ca35346",
+    "status": "complete",
+    "tables_sha256": "a21c41b6571cc8f172183ffa2cbe1b3fd13bd86437a59eefec196ec889c0532c"
+  },
+  "training_audit": {
+    "candidates": 430,
+    "jobs": 215,
+    "paired_control_groups": 49,
+    "reconstructed_data_groups": 11,
+    "replay_max_abs_error": 0.0,
+    "replayed_checkpoints": 28,
+    "replayed_examples": 14336,
+    "retained_v1_failure_sha256": "876e25918138c077786960fef5fd206583b16d4f8941127bebbd4cbce525cf76",
+    "sha256": "ef5d971948cd708721b668713993e0d3129db32beba66607b4091803c05ee9ad",
+    "status": "passed"
+  }
+}

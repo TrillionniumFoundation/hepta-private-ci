@@ -1,0 +1,132 @@
+{
+  "schema": "mem8.ordinary-control-independent-static-peer.v1",
+  "status": "STATIC_NO_MUST_FIX",
+  "base_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "base_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "candidate_patch": {
+    "bytes": 20987,
+    "sha256": "d30b87c76272def63040cc622436a07809fee9c8b6a86585ee5a52ceda1d4033",
+    "git_blob": "d1cdd34d4de2a4b5bac5b02faf5cc4b661119deb"
+  },
+  "candidate_files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_control_tests.rs",
+      "pre": null,
+      "post": {
+        "bytes": 16802,
+        "sha256": "abc95340c06f26bd5b4191c6ec72206774c70e5867185de67a7f62d73a81f999",
+        "git_blob": "d2d220c002715474a6187b4b4e6ee8ae6d93f0f8"
+      },
+      "added": 316,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "pre": {
+        "bytes": 31194,
+        "sha256": "98e4c116d974abe0704f4c22b1c7d19914dad88ea547b9f45c8e5278e968b76a",
+        "git_blob": "b8b04b2455422194487e6665599c44e2de66cd49"
+      },
+      "post": {
+        "bytes": 31313,
+        "sha256": "ffae596933c17603adf2255450fc022d84b914f381a2f2ab2e93beed1d057927",
+        "git_blob": "22185fc9765823265a99b27e851cd142fcd80e6d"
+      },
+      "added": 3,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "pre": {
+        "bytes": 19580,
+        "sha256": "e095e94297d14ccdd82db3cd6e358b8951aab42798e2c588d3b017ae351d123d",
+        "git_blob": "1f16623dbea1b021a6b67d5e52ff9f90973d5d26"
+      },
+      "post": {
+        "bytes": 19310,
+        "sha256": "e8474d0987bc4d877d6be2154f273beb48169fb31ad077c12a75888b45725a48",
+        "git_blob": "dc0727567a8321afcd7920db2f3087c2328695cc"
+      },
+      "added": 1,
+      "deleted": 10
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "pre": {
+        "bytes": 8102,
+        "sha256": "3f1ae85e68c6001bbc3032b817bd6b6deb913a6b4c77e1def98c401d2603c211",
+        "git_blob": "5e33c4fbea42cf69fcd5e8da2bbbef0943fdd31f"
+      },
+      "post": {
+        "bytes": 7047,
+        "sha256": "dc6105fb5ee5dbf6d63ff0ea493c8c9b7b37580ac60c395ff4989191d530e100",
+        "git_blob": "05623f4354e478853584ef702985869a1beb9c4c"
+      },
+      "added": 4,
+      "deleted": 19
+    }
+  ],
+  "references": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+      "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "bytes": 4086,
+      "sha256": "e42e26ae546bb7e00639a70de5a8609d631d4d6f33976d32de6f4dbf741bcb8f",
+      "git_blob": "38110a69239e9707a324f2d4cf4a1fad932b4132"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/winutil.rs",
+      "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "bytes": 8038,
+      "sha256": "12e2413a588b62ff3cc91c70c626a20801f4f84c0f4ea858ca7eb41e83a92185",
+      "git_blob": "45378b4bb527ce2b202913ab3b21aad9ef4b1828"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/win/job.rs",
+      "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "bytes": 8506,
+      "sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+      "git_blob": "b06035f72d227b4069da677e8104617ae5616283"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd"
+    }
+  ],
+  "actual_offline_checks": {
+    "four_postimages_bytes_sha256_git_blob": true,
+    "three_exact_preimages_match_9bd2_full_tree": true,
+    "new_module_absent_in_9bd2": true,
+    "unified_patch_replay_equals_all_postimages": true,
+    "four_reference_full_bytes_and_base_tree_blobs": true,
+    "native_case_from_host_physical_readback_to_end_unchanged": true,
+    "cmd_case_from_host_matrix_line_assertion_to_end_unchanged": true
+  },
+  "reviewed_contract": {
+    "scope": "cfg(all(test,target_os=windows)) private module; no product token constructor or elevated token changed",
+    "create": "CreateProcessW primary child starts suspended and atomically assigned to owned no-breakaway JobObject via existing attribute helper; exact retained process/thread handles become RAII owned",
+    "token": "Parent handle is TOKEN_QUERY only; child handle TOKEN_QUERY|TOKEN_ADJUST_PRIVILEGES; full TokenId (LowPart,HighPart) must differ before any adjustment",
+    "privileges": "Remove only child SeBackupPrivilege/SeRestorePrivilege when present; ERROR_NOT_ALL_ASSIGNED rejected; full remaining privilege list must match and parent full snapshots must match before resume and after cleanup; child rechecks both absent before request handling",
+    "resume": "Only one ResumeThread site, after token/parent proof and remaining original deadline; previous suspension count must be exactly one",
+    "cleanup": "All post-create Result failures use retained child/job; failure-only wait uses existing 5000ms native termination grace; no resumed unverified fallback; cleanup failure rejects parent before elevated phase",
+    "handles_and_ffi": "Two newly owned inherited file handles only, explicit HANDLE_LIST; bounded aligned 16KiB TokenPrivileges buffer with returned-size/count/stride checks; all required windows-sys0.52 features already declared",
+    "input_and_commands": "Only private serde Native/Cmd stdin request, bounded64KiB; exact same Rust remove_file/remove_dir calls or cmd /d /c original script/environment; no parent case env-skip; unique ignored subprocess case selected explicitly",
+    "budgets": "One original 5000ms execution deadline covers setup through owned-child wait, and original elevated10s unchanged. Failure cleanup may additionally use existing5000ms grace; not a strict5000ms whole-run claim.",
+    "assertions": "Original host four-cell outcomes, PermissionDenied+Win32code, typed legacy refusal, full fixture snapshots, elevated success/denial and physical end-state assertions preserved."
+  },
+  "evidence_limits": [
+    "No Rustfmt, native compilation or Windows execution performed in this static peer.",
+    "Actual token rights and Windows runtime behavior remain for the new exact-head run.",
+    "host.access_diagnostics still describes the parent token, not the new ordinary child; child evidence is the before-resume proof plus its own privilege absence check.",
+    "This fixture does not claim to repair the product elevated delete escape."
+  ],
+  "actions": {
+    "host_requests": 0,
+    "native_runs": 0,
+    "model_calls": 0,
+    "refs_changed": false
+  }
+}

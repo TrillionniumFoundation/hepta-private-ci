@@ -1,0 +1,49 @@
+{
+  "schema": "mem8.v16.identity-bound-h-readonly-projection.v1",
+  "observed_at": {
+    "current_time": "2026-11-11 15:18:54 UTC"
+  },
+  "original_v3_key": "mem8-integrated-repair-source-ai395-ed353817-v3",
+  "process_registry_observation": {
+    "total_reported": 7647,
+    "metadata_rows_read": 128,
+    "inventory_complete": false,
+    "snapshot_sha256": "6b8603cef841ffd2c87d0f7b7b5aa64f5d80453875f6ce2b2a1480a00813cc92",
+    "status_authoritative": false,
+    "metadata_fields": [
+      "created_unix_ms",
+      "execution_mode",
+      "host",
+      "id",
+      "launch_state"
+    ],
+    "original_request_key_available": false,
+    "all_other_job_identifiers_omitted": true
+  },
+  "v4_exact_destination": {
+    "content": [
+      {
+        "type": "text",
+        "text": "remote helper on ai395-lan failed with 1\nstdout:\n\nstderr:\nFileNotFoundError: [Errno 2] No such file or directory: 'mem8-integrated-repair-source-input-ed353817-v4.json.xz'"
+      }
+    ],
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "isError": true
+  },
+  "boundary": {
+    "process_registry_inventory_complete": false,
+    "original_v3_request_key_not_exposed_by_metadata_page": true,
+    "no_inference_of_no_original_job": true,
+    "original_v3_admission_and_terminal_remain_unknown": true,
+    "original_v4_writes_not_replayed": true,
+    "original_v4_staging_not_committed_or_aborted": true,
+    "host_mutations": 0,
+    "process_starts": 0,
+    "model_requests": 0,
+    "destination_absence_does_not_settle_earlier_upload_or_exclude_a_late_write": true,
+    "original_v3_and_v4_unknown_states_unchanged": true
+  },
+  "scope": "One fresh bounded read of the configured ai395 registry and the exact original V4 destination; no new process, upload chunk/commit/abort, permission or model request."
+}

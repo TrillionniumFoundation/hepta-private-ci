@@ -1,0 +1,70 @@
+{
+  "arrays": {
+    "test_group_ids": {
+      "dtype": "<U25",
+      "nbytes": 51200,
+      "offset": 0,
+      "sha256": "fb6895e75c7ab1fe8e57db1f6d1ee5499702f11e394e048a99ef14647bce818d",
+      "shape": [
+        512
+      ]
+    },
+    "test_sample_ids": {
+      "dtype": "<U25",
+      "nbytes": 51200,
+      "offset": 51200,
+      "sha256": "fb6895e75c7ab1fe8e57db1f6d1ee5499702f11e394e048a99ef14647bce818d",
+      "shape": [
+        512
+      ]
+    },
+    "train_group_ids": {
+      "dtype": "<U27",
+      "nbytes": 110592,
+      "offset": 102400,
+      "sha256": "ce815f105367bd91c28d5e59d3553e06a3bfe33dd29e0a47ab4d8db3d0ff4ac9",
+      "shape": [
+        1024
+      ]
+    },
+    "train_sample_ids": {
+      "dtype": "<U27",
+      "nbytes": 110592,
+      "offset": 212992,
+      "sha256": "ce815f105367bd91c28d5e59d3553e06a3bfe33dd29e0a47ab4d8db3d0ff4ac9",
+      "shape": [
+        1024
+      ]
+    },
+    "val_group_ids": {
+      "dtype": "<U24",
+      "nbytes": 24576,
+      "offset": 323584,
+      "sha256": "212c20d9dcde728248a6f92f96278b0e565694efd0a6734eef7f04684285655c",
+      "shape": [
+        256
+      ]
+    },
+    "val_sample_ids": {
+      "dtype": "<U24",
+      "nbytes": 24576,
+      "offset": 348160,
+      "sha256": "212c20d9dcde728248a6f92f96278b0e565694efd0a6734eef7f04684285655c",
+      "shape": [
+        256
+      ]
+    }
+  },
+  "format": "hcsn_followup_arrays_v1",
+  "nbytes": 372736,
+  "parts": [
+    {
+      "file": "arrays_000.npz",
+      "sha256": "88cf1d411d093ba06aba170ad9315c2f1e5c8dac0af37fd29b20aa4d5fc78479"
+    },
+    {
+      "file": "arrays_001.npz",
+      "sha256": "63ec2094952da4ce24a7cf89bdfe7ab0b8df4a34f43c1e057a8bdc9170c3924e"
+    }
+  ]
+}

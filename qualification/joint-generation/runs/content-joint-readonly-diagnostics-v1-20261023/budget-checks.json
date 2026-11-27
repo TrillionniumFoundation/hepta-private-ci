@@ -1,0 +1,20 @@
+{
+  "scope": "pure prospective receipt-state and allocation checks; hand values are not model measurements",
+  "command": ["python3", "-m", "unittest", "content_budget.test_boundary", "-v"],
+  "exit_code": 0,
+  "tests_passed": 5,
+  "unittest_reported_elapsed_seconds": 0.002,
+  "full_process_CPU": null,
+  "full_process_CPU_note": "not separately instrumented; independent software review, never charged to or used to amend the old f5f99 method receipt",
+  "checks": [
+    "exact fixed-slot allocation and conservative unit-tail bound",
+    "unaffordable common preparation rejected before a launch",
+    "post-seal review leaves method immutable and cannot supply free selection",
+    "unused architecture charge and incomplete method seal rejected",
+    "actual method overage retained as failed rather than capped or erased"
+  ],
+  "method_training_runs": 0,
+  "model_outputs_created": 0,
+  "formal_evaluations": 0,
+  "old_result_changes": 0
+}

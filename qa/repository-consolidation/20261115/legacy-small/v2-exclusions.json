@@ -1,0 +1,38 @@
+{
+  "observed_at": "2026-11-15T15:37:33.420974+00:00",
+  "base": "94909bc9f0a0bbd906c3d375b9f4decda7e50ffb",
+  "incoming": "ec23a433bfa9b47f8c9a6c5fa892dda313569cd5",
+  "preview_tree": "3b7e3c349ff5d188b0947ca96263af345c79808d",
+  "normal_merge": true,
+  "conflicts": [],
+  "delta": [
+    "A\tqa/ndu-grounded-generation/V2_EXCLUSIONS.md",
+    "A\tqa/ndu-grounded-generation/test_v2_cohort_integration.py",
+    "A\tqa/ndu-grounded-generation/test_v2_exclusions.py",
+    "A\tqa/ndu-grounded-generation/v2_exclusions.py",
+    "A\tqa/ndu-v2-readiness/2026-10-22/v2-exclusions-640.receipt.json"
+  ],
+  "review": "Reviewed complete immutable exclusion assembler and both test modules. Fixed external SHA pins and exact 384+256 roster, original IDs, file/RGB digests and dHash distance reject reused sources. Existing nonidentical output is never replaced. Image fixture invokes existing cohort builder with download_images=False and local temporary JPEGs. No weights, outcomes, historical image payloads, model training or real new cohort were executed.",
+  "source_corrections": null,
+  "all_incoming_paths_byte_identical": true,
+  "path_sha256": {
+    "qa/ndu-grounded-generation/V2_EXCLUSIONS.md": "8d703f168b1e5ebf0faa42b3c603b1f036cf23aa3a910a4395d0b8a16ef6b4f6",
+    "qa/ndu-grounded-generation/test_v2_cohort_integration.py": "7c6cc0d653d497eb09373024eeeeeb1e47200a1a04ed1d234e9874370cfac1a5",
+    "qa/ndu-grounded-generation/test_v2_exclusions.py": "f5b3a06cfae54325c49bf6929d2eff01a4622eed11e7f832cc8727df74267a5f",
+    "qa/ndu-grounded-generation/v2_exclusions.py": "86964db3ddfec0112e9bcd512569d615ed9d59cf1b68b74833423fd1e8d1e65b",
+    "qa/ndu-v2-readiness/2026-10-22/v2-exclusions-640.receipt.json": "ab810ad999413c6be5f43a42c7c6eb30b6aa71d25cc6e18ade0094007cf1e404"
+  },
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "-v",
+    "test_v2_exclusions",
+    "test_v2_cohort_integration"
+  ],
+  "cwd": "qa/ndu-grounded-generation",
+  "test_exit": 0,
+  "reported_tests": 15,
+  "source_unchanged": true,
+  "qualification": false
+}

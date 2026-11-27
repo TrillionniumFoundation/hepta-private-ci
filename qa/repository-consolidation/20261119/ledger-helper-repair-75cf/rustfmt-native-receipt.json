@@ -1,0 +1,62 @@
+{
+  "source_path": "joint-h3-review/ca77-hepta/postimages/codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+  "remote_upload": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"mode\":384,\"sha256\":\"6d00439a5a340004f97f764c742ed53c911fd8782957722baea301a9e66d5051\",\"size\":20903,\"version\":\"51:2117296:20903:1795110456482028508:1795110456482065407\",\"written\":20903}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "request_command": "python3 - <<'HEPTA_SHADOW_FORMAT'\nimport hashlib,json,pathlib,subprocess,sys\np=pathlib.Path('/tmp/hepta-ca77-vendor-75cf-shadow-20261119.rs');b=p.read_bytes();expected='6d00439a5a340004f97f764c742ed53c911fd8782957722baea301a9e66d5051';assert hashlib.sha256(b).hexdigest()==expected\nrustfmt='/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt'\na=[rustfmt,'--edition','2024','--config','imports_granularity=Item,skip_children=true','--check',str(p)]\nr=subprocess.run(a,stdout=subprocess.PIPE,stderr=subprocess.PIPE)\nrecord={'input_sha256':expected,'input_bytes':len(b),'rustfmt_version':subprocess.check_output([rustfmt,'--version']).decode().strip(),'command':a,'returncode':r.returncode,'stdout':r.stdout.decode(),'stderr':r.stderr.decode(),'input_unchanged':p.read_bytes()==b}\nprint(json.dumps(record,indent=2));assert record['input_unchanged'];sys.exit(r.returncode)\nHEPTA_SHADOW_FORMAT",
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-c\",\n      \"python3 - <<'HEPTA_SHADOW_FORMAT'\\nimport hashlib,json,pathlib,subprocess,sys\\np=pathlib.Path('/tmp/hepta-ca77-vendor-75cf-shadow-20261119.rs');b=p.read_bytes();expected='6d00439a5a340004f97f764c742ed53c911fd8782957722baea301a9e66d5051';assert hashlib.sha256(b).hexdigest()==expected\\nrustfmt='/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt'\\na=[rustfmt,'--edition','2024','--config','imports_granularity=Item,skip_children=true','--check',str(p)]\\nr=subprocess.run(a,stdout=subprocess.PIPE,stderr=subprocess.PIPE)\\nrecord={'input_sha256':expected,'input_bytes':len(b),'rustfmt_version':subprocess.check_output([rustfmt,'--version']).decode().strip(),'command':a,'returncode':r.returncode,'stdout':r.stdout.decode(),'stderr':r.stderr.decode(),'input_unchanged':p.read_bytes()==b}\\nprint(json.dumps(record,indent=2));assert record['input_unchanged'];sys.exit(r.returncode)\\nHEPTA_SHADOW_FORMAT\"\n    ],\n    \"created_unix_ms\": 1795110470764,\n    \"cwd\": \"/tmp\",\n    \"env_keys\": [],\n    \"executable\": \"/bin/sh\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"rog\",\n    \"id\": \"1a1f4ec046c-ffbe-11b9\",\n    \"idempotency_key\": \"ca77-shadow-tests-format-check-75cf-20261119-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1f4ec046c-ffbe-11b9\",\n    \"request_digest\": \"fb4cb92cef7d0aa8d6493ccfe74929c19732ead940e215701dc7448c571becbc\",\n    \"request_fingerprint\": 18108051804397570728,\n    \"ssh_target\": \"rog-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1f4ec046c-ffbe-11b9\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1f4ec046c-ffbe-11b9\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1795110480442,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1f4ec046c-ffbe-11b9\",\n  \"launch_nonce\": \"ab757ad3600ef1988808b1258c9bf77b\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 528,\n      \"stored\": 528\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "logs": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1f4ec046c-ffbe-11b9\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b0a202022696e7075745f736861323536223a202236643030343339613561333430303034663937663736346337343265643533633931316664383738323935373732326261656133303161396536366435303531222c0a202022696e7075745f6279746573223a2032303930332c0a20202272757374666d745f76657273696f6e223a202272757374666d7420312e392e302d737461626c6520286163363866616132306320323032362d30352d323529222c0a202022636f6d6d616e64223a205b0a20202020222f686f6d652f7169616e2d71692f2e7275737475702f746f6f6c636861696e732f312e39362e302d7838365f36342d756e6b6e6f776e2d6c696e75782d676e752f62696e2f72757374666d74222c0a20202020222d2d65646974696f6e222c0a202020202232303234222c0a20202020222d2d636f6e666967222c0a2020202022696d706f7274735f6772616e756c61726974793d4974656d2c736b69705f6368696c6472656e3d74727565222c0a20202020222d2d636865636b222c0a20202020222f746d702f68657074612d636137372d76656e646f722d373563662d736861646f772d32303236313131392e7273220a20205d2c0a20202272657475726e636f6465223a20302c0a2020227374646f7574223a2022222c0a202022737464657272223a2022222c0a202022696e7075745f756e6368616e676564223a20747275650a7d0a\",\n    \"eof\": true,\n    \"next_offset\": 528,\n    \"offset\": 0,\n    \"size\": 528,\n    \"text\": \"{\\n  \\\"input_sha256\\\": \\\"6d00439a5a340004f97f764c742ed53c911fd8782957722baea301a9e66d5051\\\",\\n  \\\"input_bytes\\\": 20903,\\n  \\\"rustfmt_version\\\": \\\"rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)\\\",\\n  \\\"command\\\": [\\n    \\\"/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt\\\",\\n    \\\"--edition\\\",\\n    \\\"2024\\\",\\n    \\\"--config\\\",\\n    \\\"imports_granularity=Item,skip_children=true\\\",\\n    \\\"--check\\\",\\n    \\\"/tmp/hepta-ca77-vendor-75cf-shadow-20261119.rs\\\"\\n  ],\\n  \\\"returncode\\\": 0,\\n  \\\"stdout\\\": \\\"\\\",\\n  \\\"stderr\\\": \\\"\\\",\\n  \\\"input_unchanged\\\": true\\n}\\n\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "result": {
+    "input_sha256": "6d00439a5a340004f97f764c742ed53c911fd8782957722baea301a9e66d5051",
+    "input_bytes": 20903,
+    "rustfmt_version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+    "command": [
+      "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "--edition",
+      "2024",
+      "--config",
+      "imports_granularity=Item,skip_children=true",
+      "--check",
+      "/tmp/hepta-ca77-vendor-75cf-shadow-20261119.rs"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "input_unchanged": true
+  }
+}

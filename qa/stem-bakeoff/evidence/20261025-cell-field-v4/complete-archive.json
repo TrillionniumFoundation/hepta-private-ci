@@ -1,0 +1,18 @@
+{
+  "file_name": "cell-field-v4-complete-evidence.tar.gz",
+  "bytes": 86587644,
+  "sha256": "a0a7f56aaabd2f9db778933fcc26bc8e4828f2d11a7e8a78f1776ef081cee275",
+  "contains": [
+    "complete unchanged pre-evaluation run",
+    "all actual optimizer states and counterfactual paths",
+    "all controller predictions and checkpoints",
+    "held-out scoring labels separate from run",
+    "evaluation, independent audits, native rejection evidence"
+  ],
+  "excludes": [
+    "encoder weights",
+    "original source text corpora",
+    "repository code copies"
+  ],
+  "availability": "saved as complete evidence archive for the user; not copied into the Git repository"
+}

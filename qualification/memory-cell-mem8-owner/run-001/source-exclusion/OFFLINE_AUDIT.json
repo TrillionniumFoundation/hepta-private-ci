@@ -1,0 +1,48 @@
+{
+  "global_exposure_status": "UNKNOWN",
+  "host_job_id": "1a1c917a98a-135c4-3d9",
+  "host_stdout_sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5",
+  "input_files_verified": 17,
+  "known_exclusion_count": 69,
+  "meaning": "Retained metadata and exact per-group provenance verified; no unseen-source or owner authority certification.",
+  "mem5_zip": {
+    "bytes": 151823,
+    "content_members_read": [
+      "PLAN.json",
+      "REQUEST.json"
+    ],
+    "sha256": "86f6969925d6471f7f580586d26621f23c81d7429b7aa483d4a67a526b2d5782",
+    "status": "PASS"
+  },
+  "mem6_archive": {
+    "bytes": 61412948,
+    "logical_members": 10365,
+    "physical_members": 7123,
+    "selected_metadata_members": 7,
+    "sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+    "status": "PASS",
+    "unselected_objects_parsed": 0
+  },
+  "metadata_observed_at_utc": "2026-11-11T05:32:15.447672+00:00",
+  "new_actor_episodes": 0,
+  "new_host_jobs": 0,
+  "new_models": 0,
+  "not_in_known_union_upper_bound": 16,
+  "outputs": {
+    "CAPACITY.json": {
+      "bytes": 15453,
+      "sha256": "b0d2ea6df03c8461024c394e53243d400f512da951ec91dac78e20777cbb714f"
+    },
+    "EXCLUSIONS.json": {
+      "bytes": 70615,
+      "sha256": "807b08e2a831bca804a3623abc096cd0d9f4053f22b7c9af6317220e7cdb5812"
+    }
+  },
+  "schema": "hepta.mem.source-exclusion-offline-audit.v1",
+  "status": "PASS",
+  "upper_bound_by_role": {
+    "development": 7,
+    "retention_validation": 9
+  },
+  "verified_unseen_capacity": null
+}

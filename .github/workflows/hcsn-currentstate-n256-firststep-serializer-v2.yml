@@ -1,0 +1,24 @@
+name: hcsn-currentstate-n256-firststep-serializer-v2
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_firststep_serializer_v2/**"
+      - ".github/workflows/hcsn-currentstate-n256-firststep-serializer-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify source-only bindings
+        run: python -O qualification/hcsn_currentstate_n256_firststep_serializer_v2/verify_source.py
+      - name: Run small stdlib controls
+        run: python -O -m unittest qualification.hcsn_currentstate_n256_firststep_serializer_v2.test_serializer -v

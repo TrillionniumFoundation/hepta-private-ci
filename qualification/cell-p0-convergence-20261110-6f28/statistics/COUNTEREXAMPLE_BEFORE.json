@@ -1,0 +1,24 @@
+{
+  "base_source": "abf75d8e2097785b2ad01897c15a7531eebe6e44",
+  "donor_source": "38f02b7035d01e5129bb204d135c51a2e26d10b3",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_hepta_cell_research_units.ResearchUnitsTests.test_task_aliases_do_not_reweight_distinct_tasks_within_a_family",
+    "test_hepta_cell_research_units.ResearchUnitsTests.test_repeated_task_failures_keep_outcomes_costs_and_unknown_coverage"
+  ],
+  "elapsed_seconds": 0.4673940010000024,
+  "returncode": 1,
+  "source_sha256": {
+    "hepta_cell_research_gate.py": "5fdeb37089b3dcef50f90f02df7513f92478a8ff48a41ca531547f18960e850d",
+    "hepta_cell_research_units.py": "4e916be68fc2997e0bf939e745f6e34f260db0ebda732ff8932ebc0c3d800b27",
+    "hepta_cell_joint_config.py": "6ee9ea0ca1536522e22453f0b763ff79238eb45ad615efdcc372260845ffb52c",
+    "hepta_cell_research_foundation.py": "6dde6ed39d50118a7aa77bee8865e459c67cb70090e7bd42a1fb781edcd2838d",
+    "test_hepta_cell_research_units.py": "f9656a71c96cd0c96b0c48f7813d801bbca4b7a8d892d1239d49e50d52909773",
+    "test_hepta_cell_research_gate.py": "e013794ea4e56205dc5b0c56cd1b850051bdfe91cd17049f716c7eb1999c5807"
+  },
+  "scope": "Two synthetic file-backed counterexamples; expected pre-fix failure, no real task execution."
+}

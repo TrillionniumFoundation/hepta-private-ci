@@ -14,6 +14,7 @@ use app_test_support::MockResponsesConfig;
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::RequestId;
+use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::ThreadReadParams;
 use codex_app_server_protocol::ThreadReadResponse;
@@ -28,6 +29,9 @@ use codex_hepta_agentd::AuthBusTextIngress;
 use codex_hepta_agentd::AuthBusTextState;
 use codex_hepta_agentd::AuthBusTextStatus;
 use codex_hepta_agentd::authbus_text_claims;
+use codex_hepta_agentd::text_session::AgentdTextSession;
+use codex_hepta_agentd::text_session::AgentdTextSessionConfig;
+use codex_hepta_agentd::text_session::TextSessionError;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_state::SqliteConfig;
@@ -38,6 +42,16 @@ use ed25519_dalek::SigningKey;
 use tokio::time::timeout;
 
 mod support;
+#[path = "support/text_approval_product.rs"]
+mod text_approval_product;
+#[path = "support/text_close_product.rs"]
+mod text_close_product;
+#[path = "support/text_large_history_product.rs"]
+mod text_large_history_product;
+#[path = "support/text_slow_approval_product.rs"]
+mod text_slow_approval_product;
+#[path = "support/text_snapshot_boundary_product.rs"]
+mod text_snapshot_boundary_product;
 
 use support::fleet::FleetHarness;
 use support::fleet::connect_app_server_with_experimental;
@@ -84,6 +98,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
     )?;
     let checkpoint_file = checkpoint_root
         .path()
+        .canonicalize()?
         .join("authbus-replay-checkpoint.json");
     let home = AbsolutePathBuf::from_absolute_path(agent.layout.home_root())?;
     let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;
@@ -115,7 +130,70 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         /*revoked*/ false,
     )?;
     let request = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 1)?;
-    let admitted = control.submit_authbus_text(request.clone()).await?;
+    let thread_view: ThreadReadResponse = client
+        .request_typed(ClientRequest::ThreadRead {
+            request_id: take_request_id(&mut request_id),
+            params: ThreadReadParams {
+                thread_id: thread.clone(),
+                include_turns: false,
+            },
+        })
+        .await?;
+    let text_config = AgentdTextSessionConfig {
+        control_socket: agent.layout.agentd_control_socket().to_path_buf(),
+        agent_id: agent.agent_id.clone(),
+        spawn_generation: 1,
+        thread_id: thread.clone(),
+        app_server_session_id: thread_view.thread.session_id,
+        codex_home: agent.layout.home_root().to_path_buf(),
+    };
+    // Actual provider account state comes from this exact original App Server,
+    // without reading a credential file or constructing Hepta human authority.
+    let mut route_file = tempfile::NamedTempFile::new()?;
+    serde_json::to_writer(route_file.as_file_mut(), &text_config)?;
+    route_file.as_file().sync_all()?;
+    let diagnosis =
+        codex_hepta_agentd::text_session::diagnose_existing_provider(route_file.path()).await?;
+    let account: codex_app_server_protocol::GetAccountResponse = client
+        .request_typed(ClientRequest::GetAccount {
+            request_id: take_request_id(&mut request_id),
+            params: codex_app_server_protocol::GetAccountParams {
+                refresh_token: false,
+            },
+        })
+        .await?;
+    ensure!(
+        diagnosis.existing_route_verified
+            && diagnosis.provider_account_configured == account.account.is_some()
+    );
+    ensure!(diagnosis.provider_requires_openai_auth == account.requires_openai_auth);
+    ensure!(
+        diagnosis.hepta_human_authority == "requires_independent_existing_root_human_registration"
+    );
+    ensure!(physical_send_count(&model).await == 0);
+    let mut text_session = AgentdTextSession::connect(text_config.clone()).await?;
+    let mut passive = AgentdTextSession::connect(text_config.clone()).await?;
+    ensure!(passive.requests.history_page(None).await?.turns.is_empty());
+    let attached: ThreadReadResponse = client
+        .request_typed(ClientRequest::ThreadRead {
+            request_id: take_request_id(&mut request_id),
+            params: ThreadReadParams {
+                thread_id: thread.clone(),
+                include_turns: true,
+            },
+        })
+        .await?;
+    ensure!(attached.thread.id == thread);
+    ensure!(attached.thread.session_id == text_config.app_server_session_id);
+    ensure!(
+        attached.thread.turns.is_empty(),
+        "attaching created conversation content"
+    );
+    ensure!(
+        physical_send_count(&model).await == 0,
+        "attaching started a model call"
+    );
+    let admitted = text_session.requests.submit_signed(request.clone()).await?;
     let accepted = wait_queue_accepted(&control, &admitted.delivery_id).await?;
     ensure!(
         accepted.delivery_attempts == 1,
@@ -136,7 +214,75 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
     );
     ensure!(physical_send_count(&model).await == 1);
 
-    let duplicate = control.submit_authbus_text(request).await?;
+    // Drain the actual original subscriber: no protocol DTO or fabricated
+    // terminal record is promoted into a streaming/completion observation.
+    let terminal = timeout(WAIT_TIMEOUT, async {
+        loop {
+            let event = text_session
+                .events
+                .next()
+                .await?
+                .context("text stream ended")?;
+            if let ServerNotification::TurnCompleted(completed) = &event.notification {
+                ensure!(event.thread_id == thread);
+                ensure!(event.message_id == request.message_id);
+                ensure!(event.delivery_id == admitted.delivery_id);
+                ensure!(completed.turn.status == TurnStatus::Completed);
+                return Ok::<_, anyhow::Error>(event);
+            }
+        }
+    })
+    .await??;
+    timeout(WAIT_TIMEOUT, async {
+        loop {
+            let event = passive
+                .events
+                .next()
+                .await?
+                .context("passive original stream ended")?;
+            ensure!(event.thread_id == thread);
+            ensure!(
+                event.message_id.is_empty() && event.delivery_id.is_empty(),
+                "another producer's activity became a local admission"
+            );
+            if let ServerNotification::TurnCompleted(completed) = event.notification {
+                ensure!(
+                    completed.turn.id == terminal.turn_id
+                        && completed.turn.status == TurnStatus::Completed
+                );
+                break;
+            }
+        }
+        Ok::<_, anyhow::Error>(())
+    })
+    .await??;
+    let original_history = passive.requests.history_page(None).await?;
+    ensure!(original_history.turns.len() == 1 && original_history.earlier_cursor.is_none());
+    ensure!(original_history.turns[0].id == terminal.turn_id);
+
+    // Reattachment retains the exact signed message, and the old request handle
+    // cannot submit. The new connection only reconciles the original Core ID.
+    let old_requests = text_session.requests.clone();
+    let resumed = text_session.reattach(text_config.clone()).await?;
+    ensure!(matches!(
+        old_requests.submit_signed(request.clone()).await,
+        Err(TextSessionError::Fenced)
+    ));
+    let recovered = resumed.requests.reconcile(&request.message_id).await?;
+    ensure!(recovered.turn.as_ref().is_some_and(|turn| turn.id == terminal.turn_id && turn.status == TurnStatus::Completed));
+    ensure!(recovered.delivery == Some(accepted.clone()));
+
+    // A fresh client has no copied transient requests. It adopts only the
+    // independently retained exact original, then status-looks up that ID.
+    let restored = AgentdTextSession::connect(text_config).await?;
+    restored.requests.restore_signed(request.clone())?;
+    let restored_view = restored.requests.reconcile(&request.message_id).await?;
+    ensure!(restored_view.delivery == Some(accepted.clone()));
+    ensure!(restored_view.turn.as_ref().is_some_and(|turn| turn.id == terminal.turn_id && turn.status == TurnStatus::Completed));
+    ensure!(restored.requests.submit_signed(request.clone()).await? == accepted);
+    ensure!(physical_send_count(&model).await == 1);
+
+    let duplicate = resumed.requests.submit_signed(request).await?;
     ensure!(
         duplicate == accepted,
         "retained duplicate changed the durable delivery result"
@@ -148,14 +294,41 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
             == accepted,
         "status RPC disagrees with the durable accepted delivery"
     );
-    let mut invalid_signature = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 2)?;
+    // Explicit cancellation before first transport admission must close the
+    // original identity immediately, without waiting for signature expiry.
+    let cancelled = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 2)?;
+    restored.requests.restore_signed(cancelled.clone())?;
+    let closed = restored.requests.interrupt(&cancelled.message_id).await?;
+    ensure!(closed.delivery.is_none());
+    ensure!(closed.queue == codex_app_server_protocol::ThreadQueueReconcileOutcome::Cancelled);
+    let late = control.submit_authbus_text(cancelled).await?;
+    timeout(WAIT_TIMEOUT, async {
+        loop {
+            let status = control
+                .authbus_text_status(late.delivery_id.clone())
+                .await?;
+            if status.state == AuthBusTextState::Quarantined {
+                break;
+            }
+            ensure!(
+                status.state != AuthBusTextState::QueueAccepted,
+                "cancelled original was admitted to Core"
+            );
+            tokio::time::sleep(Duration::from_millis(20)).await;
+        }
+        Ok::<_, anyhow::Error>(())
+    })
+    .await??;
+    ensure!(physical_send_count(&model).await == 1);
+
+    let mut invalid_signature = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 3)?;
     invalid_signature.signature_hex = "00".repeat(64);
     assert_server_rejection(control.submit_authbus_text(invalid_signature).await)?;
     let wrong_thread = signed_text(
         &agent.agent_id,
         &key,
         &disallowed_thread,
-        /*sequence*/ 3,
+        /*sequence*/ 4,
     )?;
     assert_server_rejection(control.submit_authbus_text(wrong_thread).await)?;
     write_trust(
@@ -165,7 +338,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         std::slice::from_ref(&thread),
         /*revoked*/ true,
     )?;
-    let revoked = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 4)?;
+    let revoked = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 5)?;
     assert_server_rejection(control.submit_authbus_text(revoked).await)?;
 
     // Observe subsequent worker polls after the duplicate and failed requests.
@@ -177,9 +350,221 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         physical_send_count(&model).await == 1,
         "duplicate or rejected ingress sent another model request"
     );
+    text_session.events.shutdown().await?;
+    resumed.events.shutdown().await?;
+    restored.events.shutdown().await?;
+    passive.events.shutdown().await?;
     client.shutdown().await?;
     drop(fleet);
     ensure!(physical_send_count(&model).await == 1);
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn cancellation_reconnect_and_duplicate_keep_the_original_real_turn() -> Result<()> {
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(AGENT_ID, "signed-text-cancellation-workspace")?;
+    let model = responses::start_mock_server().await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    // Keep the real provider HTTP request in flight until the original turn is
+    // interrupted. The provider is controlled; Agentd, AuthBus, Core's queue,
+    // rollout persistence, UDS transport, and cancellation are real.
+    wiremock::Mock::given(wiremock::matchers::method("POST"))
+        .and(wiremock::matchers::path_regex(".*/responses"))
+        .respond_with(
+            wiremock::ResponseTemplate::new(200)
+                .insert_header("content-type", "text/event-stream")
+                .set_body_string(responses::sse(vec![responses::ev_completed(
+                    "cancelled-response-must-not-complete",
+                )]))
+                .set_delay(Duration::from_secs(30)),
+        )
+        .mount(&model)
+        .await;
+    let key = SigningKey::from_bytes(&[93; 32]);
+    let trust_file = agent.layout.home_root().join("authbus-trust.json");
+    std::fs::set_permissions(
+        agent.layout.home_root(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
+    write_trust(&trust_file, &agent.agent_id, &key, &[], false)?;
+    let checkpoint_root = tempfile::tempdir()?;
+    std::fs::set_permissions(
+        checkpoint_root.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
+    let checkpoint_file = checkpoint_root
+        .path()
+        .canonicalize()?
+        .join("authbus-replay-checkpoint.json");
+    let home = AbsolutePathBuf::from_absolute_path(agent.layout.home_root())?;
+    let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;
+    let frontier = evidence.authbus_replay_frontier_digest().await?;
+    drop(evidence);
+    write_checkpoint(&checkpoint_file, &agent.agent_id, 1, frontier)?;
+    fleet.start_with_authbus_trust_file(&agent, &trust_file, &checkpoint_file)?;
+    let (control, _) = fleet.wait_ready(&agent, 1).await?;
+    let ingress = control.session_ingress().await?;
+    let client = connect_app_server_with_experimental(
+        &ingress.socket_path,
+        "hepta-text-cancellation-product",
+        64,
+        true,
+    )
+    .await?;
+    let mut request_id = 1;
+    let thread = start_thread(&client, &mut request_id, &agent.workspace).await?;
+    write_trust(
+        &trust_file,
+        &agent.agent_id,
+        &key,
+        std::slice::from_ref(&thread),
+        false,
+    )?;
+    let thread_view: ThreadReadResponse = client
+        .request_typed(ClientRequest::ThreadRead {
+            request_id: take_request_id(&mut request_id),
+            params: ThreadReadParams {
+                thread_id: thread.clone(),
+                include_turns: false,
+            },
+        })
+        .await?;
+    let config = AgentdTextSessionConfig {
+        control_socket: agent.layout.agentd_control_socket().to_path_buf(),
+        agent_id: agent.agent_id.clone(),
+        spawn_generation: 1,
+        thread_id: thread.clone(),
+        app_server_session_id: thread_view.thread.session_id,
+        codex_home: agent.layout.home_root().to_path_buf(),
+    };
+    let session = AgentdTextSession::connect(config.clone())
+        .await
+        .context("cancel stage: attach original session")?;
+    let signed = signed_text(&agent.agent_id, &key, &thread, 1)?;
+    let admitted = session
+        .requests
+        .submit_signed(signed.clone())
+        .await
+        .context("cancel stage: submit signed input")?;
+    let accepted = wait_queue_accepted(&control, &admitted.delivery_id)
+        .await
+        .context("cancel stage: durable queue acceptance")?;
+    let active_turn_id = timeout(WAIT_TIMEOUT, async {
+        loop {
+            let observed = session
+                .requests
+                .reconcile(&signed.message_id)
+                .await
+                .context("cancel stage: reconcile active turn")?;
+            if let Some(turn) = observed.turn
+                && turn.status == TurnStatus::InProgress
+                && physical_send_count(&model).await == 1
+            {
+                return Ok::<_, anyhow::Error>(turn.id);
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    })
+    .await
+    .context("original turn did not reach the controlled provider")??;
+
+    // Reconciliation already selected an authoritative snapshot for this
+    // turn. Do not expect the older, incompatible streaming deltas again.
+    // An interrupt ACK is not a terminal receipt: require the original
+    // persisted interrupted outcome even for simultaneous callers.
+    let request = &session.requests;
+    tokio::try_join!(
+        request.interrupt(&signed.message_id),
+        request.interrupt(&signed.message_id),
+    )
+    .context("cancel stage: concurrent requests for the original interruption")?;
+    timeout(WAIT_TIMEOUT, async {
+        loop {
+            let observed = request
+                .reconcile(&signed.message_id)
+                .await
+                .context("cancel stage: observe the original interrupted snapshot")?;
+            ensure!(observed.message_id == signed.message_id);
+            ensure!(observed.delivery.as_ref() == Some(&accepted));
+            if let Some(turn) = observed.turn {
+                ensure!(turn.id == active_turn_id);
+                if turn.status == TurnStatus::Interrupted {
+                    return Ok::<_, anyhow::Error>(());
+                }
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    })
+    .await
+    .context("original owner did not persist interrupted completion")??;
+
+    let old_requests = session.requests.clone();
+    let resumed = session
+        .reattach(config)
+        .await
+        .context("cancel stage: reattach after interrupted event")?;
+    ensure!(matches!(
+        old_requests.interrupt(&signed.message_id).await,
+        Err(TextSessionError::Fenced)
+    ));
+    timeout(WAIT_TIMEOUT, async {
+        loop {
+            let recovered = resumed
+                .requests
+                .reconcile(&signed.message_id)
+                .await
+                .context("cancel stage: reconcile interrupted turn")?;
+            ensure!(recovered.delivery.as_ref() == Some(&accepted));
+            if let Some(turn) = recovered.turn {
+                ensure!(turn.id == active_turn_id);
+                if turn.status == TurnStatus::Interrupted {
+                    return Ok::<_, anyhow::Error>(());
+                }
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    })
+    .await
+    .context("reconnected owner did not persist the original interruption")??;
+    let duplicate = resumed
+        .requests
+        .submit_signed(signed)
+        .await
+        .context("cancel stage: duplicate after cancellation")?;
+    ensure!(duplicate == accepted);
+    tokio::time::sleep(Duration::from_millis(750)).await;
+    let persisted: ThreadReadResponse = client
+        .request_typed(ClientRequest::ThreadRead {
+            request_id: take_request_id(&mut request_id),
+            params: ThreadReadParams {
+                thread_id: thread,
+                include_turns: true,
+            },
+        })
+        .await?;
+    ensure!(persisted.thread.turns.len() == 1);
+    ensure!(persisted.thread.turns[0].id == active_turn_id);
+    ensure!(persisted.thread.turns[0].status == TurnStatus::Interrupted);
+    ensure!(
+        physical_send_count(&model).await == 1,
+        "cancel, reconnect or duplicate caused a second provider request"
+    );
+    session
+        .events
+        .shutdown()
+        .await
+        .context("cancel stage: shutdown original subscriber")?;
+    resumed
+        .events
+        .shutdown()
+        .await
+        .context("cancel stage: shutdown resumed subscriber")?;
+    client
+        .shutdown()
+        .await
+        .context("cancel stage: shutdown auxiliary client")?;
+    drop(fleet);
     Ok(())
 }
 

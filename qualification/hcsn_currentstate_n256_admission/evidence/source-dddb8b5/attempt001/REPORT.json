@@ -1,0 +1,72 @@
+{
+  "all_closed": false,
+  "capsules": 14,
+  "closed_gate": "authentic_new_export_input_lineage",
+  "decoded_coordinates_checked": 1542,
+  "execution_counts": {
+    "backward_calls": 0,
+    "dynamic_runs": 0,
+    "matrix_exponentials": 0,
+    "optimizer_steps": 0,
+    "oracle_numeric_calls": 0,
+    "serializer_numeric_calls": 0,
+    "torch_calls": 0,
+    "training_runs": 0
+  },
+  "fp64_coordinate_denominator": 18225028,
+  "global_HOLD": true,
+  "historical_N256_export_recovered": false,
+  "historical_N256_missing_statement_preserved": true,
+  "identity": "hcsn-n256-input-lineage-admission-20261113-c06d-001",
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "input_sha256": {
+    "metadata": "88e84dd3aea396d34c7e2dd08d31f2e30bf694c20516dccde57e6dd1b0c2a3c6",
+    "npz": "c98a3339504c908081dbf77d2235a18de96da06b1ebda7b1c0f9192af1570eb8",
+    "npz_b64": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb",
+    "phase": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+    "state": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c"
+  },
+  "largegrid_qualification": false,
+  "new_export_only": true,
+  "original_sha256": {
+    "engineering": "4ee017d5c418f6288c24fbad6f451e0e78524ad048a9b20d75bf5e626bd28376",
+    "export_audit": "a2d04692c564e713b2cd57d7854ee86d6c4277d8b579afd2df2cf111686b451b",
+    "export_receipt": "1d1f65f5dfcaaec8a9d87fb7689e007699a032a9649c4ebdd32537de9ef993c9",
+    "metadata": "88e84dd3aea396d34c7e2dd08d31f2e30bf694c20516dccde57e6dd1b0c2a3c6",
+    "npz_b64": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb",
+    "phase": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+    "roster_audit": "b14d60562ae0144b4369d719568d932756149b9335eb30e67e84f33d2f418fae",
+    "roster_readback": "262621fc68dfb6e2ad91916840adacf91923aebf124ecc77e522b2be82a08b18",
+    "roster_summary": "e3e21bd9f21940e22738b8f06b9b50333d82a923a6d46894316c242b88dd122f",
+    "state": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c",
+    "streaming": "5200a73ded53f421b658ecf84863d28563e25ca7c5ca9b010df09184b99e952d",
+    "streaming_audit": "0d0e26a873f10b71ac363095567699f7885b1ced4be02e23af23fb1914a2f590"
+  },
+  "packet_tuples": 185,
+  "phase_supports_checked": 8,
+  "preserved_results": {
+    "engineering": "RED_RESOURCE_CAP_HOLD",
+    "streaming": "PASS_STREAM_STORAGE_HOLD_DYNAMIC"
+  },
+  "remaining_gates": [
+    "N256 numerical candidate implementation",
+    "independent numerical oracle implementation",
+    "expm workspace and actual RSS profile",
+    "canonical serializer and cold-loader execution",
+    "host and ancestor-cgroup allocation",
+    "concurrency and calendar reservation",
+    "warm/cold byte equality on actual N256 state"
+  ],
+  "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "schema": "hcsn-n256-input-lineage-admission-report-v1",
+  "source_sha256": {
+    "README.md": "f60116f6aff9d5f0b7f512bd6b1389c46c99a1771eac51a7dd3c5b80e1cd5513",
+    "REQUEST.json": "fd50b7719609bbdf76d8e016603087d5318bf8fe698f6421ad62fbc37f850ec9",
+    "__init__.py": "23b148153fabbbab44e985b4cf317e468b7b0ffa0e6fc2a6bc705a89ae6a67d2",
+    "review.py": "0c47d07b49ee88c2dff10c1a2f982d955ae3dc1363407d31c98caa84a57f953f",
+    "test_verify.py": "5ddf82e3c33ff0d45432c56664bf996c5a6518276a660033c35a9cb433307c54",
+    "verify.py": "21e05e5d6012b3191b7439339ef716696c492e28f117c304fa4ad676db3c3dc6"
+  },
+  "status": "PASS_AUTHENTIC_NEW_EXPORT_LINEAGE_HOLD_DYNAMIC",
+  "transition_segments": 45
+}

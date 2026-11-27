@@ -57,7 +57,13 @@ use crate::RoomThreadBinding;
 use crate::RoomThreadBindingDraft;
 use crate::model::MAX_PAGE_ITEMS;
 use crate::model::MAX_PAYLOAD_BYTES;
+use crate::prepare_matrix_storage_directory;
+use crate::validate_matrix_database_paths;
 
+use self::store_diagnostic::SqlxSite;
+
+#[path = "store_diagnostic.rs"]
+mod store_diagnostic;
 #[path = "sync_observation.rs"]
 mod sync_observation;
 #[path = "sync_v2.rs"]
@@ -117,8 +123,9 @@ impl MatrixDurableStore {
         if !config.is_valid() {
             return Err(MatrixDurableError::Invalid);
         }
-        create_private_directory(&root)?;
+        prepare_matrix_storage_directory(&root)?;
         let path = root.join(MATRIX_DB_FILENAME);
+        validate_matrix_database_paths(&path)?;
         let sqlite_home =
             AbsolutePathBuf::try_from(root).map_err(|_| MatrixDurableError::Invalid)?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
@@ -966,7 +973,11 @@ impl MatrixDurableStore {
         if let Some(queued_submission_id) = draft.queued_submission_id.as_deref() {
             validate_local_identity(queued_submission_id)?;
         }
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let mut transaction = self
+            .pool
+            .begin()
+            .await
+            .map_err(SqlxSite::AdmissionBegin.unavailable())?;
         let existing = inbox_dispatch_by_event_tx(&mut transaction, &draft.event_id)
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
@@ -990,7 +1001,10 @@ impl MatrixDurableStore {
                     && existing.queued_submission_id == draft.queued_submission_id
                     && existing.turn_id.as_deref() == Some(&draft.turn_id)
                 {
-                    transaction.commit().await.map_err(unavailable)?;
+                    transaction
+                        .commit()
+                        .await
+                        .map_err(SqlxSite::AdmissionIdempotentCommit.unavailable())?;
                     return Ok(existing);
                 }
                 return Err(MatrixDurableError::Conflict);
@@ -1038,7 +1052,7 @@ impl MatrixDurableStore {
         .bind(&draft.client_user_message_id)
         .execute(&mut *transaction)
         .await
-        .map_err(unavailable)?;
+        .map_err(SqlxSite::AdmissionUpdate.unavailable())?;
         if updated.rows_affected() != 1 {
             return Err(MatrixDurableError::Conflict);
         }
@@ -1059,7 +1073,10 @@ impl MatrixDurableStore {
             updated_at_ms: draft.admitted_at_ms,
             ..existing
         };
-        transaction.commit().await.map_err(unavailable)?;
+        transaction
+            .commit()
+            .await
+            .map_err(SqlxSite::AdmissionCommit.unavailable())?;
         Ok(record)
     }
 
@@ -2628,7 +2645,7 @@ impl MatrixDurableStore {
         .bind(to_i64(recorded_at_ms)?)
         .execute(&mut **transaction)
         .await
-        .map_err(unavailable)?;
+        .map_err(SqlxSite::AppendChange.unavailable())?;
         sqlx::query(
             "DELETE FROM change_log
              WHERE cursor <= (SELECT COALESCE(MAX(cursor), 0) - ? FROM change_log)",
@@ -2636,7 +2653,7 @@ impl MatrixDurableStore {
         .bind(to_i64(self.config.event_capacity as u64)?)
         .execute(&mut **transaction)
         .await
-        .map_err(unavailable)?;
+        .map_err(SqlxSite::TrimChange.unavailable())?;
         Ok(())
     }
 
@@ -2740,11 +2757,19 @@ async fn require_current_binding(
     .bind(room_id.as_str())
     .fetch_optional(&mut **transaction)
     .await
-    .map_err(unavailable)?
+    .map_err(SqlxSite::LoadBinding.unavailable())?
     .ok_or(MatrixDurableError::AccessDenied)?;
-    let owner: String = row.try_get("owner_agent_id").map_err(unavailable)?;
-    let stored_revision = to_u64(row.try_get("revision").map_err(unavailable)?)?;
-    let stored_generation = to_u64(row.try_get("generation").map_err(unavailable)?)?;
+    let owner: String = row
+        .try_get("owner_agent_id")
+        .map_err(SqlxSite::DecodeBinding.unavailable())?;
+    let stored_revision = to_u64(
+        row.try_get("revision")
+            .map_err(SqlxSite::DecodeBinding.unavailable())?,
+    )?;
+    let stored_generation = to_u64(
+        row.try_get("generation")
+            .map_err(SqlxSite::DecodeBinding.unavailable())?,
+    )?;
     if owner != owner_agent_id.as_str()
         || stored_revision != revision
         || stored_generation != generation
@@ -2811,7 +2836,7 @@ async fn room_thread_tx(
     .bind(to_i64(generation)?)
     .fetch_optional(&mut **transaction)
     .await
-    .map_err(unavailable)?
+    .map_err(SqlxSite::LoadRoomThread.unavailable())?
     .map(|row| room_thread_from_row(&row))
     .transpose()
 }
@@ -2830,7 +2855,7 @@ async fn inbox_dispatch_by_event_tx(
     .bind(event_id.as_str())
     .fetch_optional(&mut **transaction)
     .await
-    .map_err(unavailable)?
+    .map_err(SqlxSite::LoadDispatch.unavailable())?
     .map(|row| inbox_dispatch_from_row(&row))
     .transpose()
 }
@@ -2870,7 +2895,7 @@ async fn ensure_dispatch_thread_tx(
     .bind(dispatch.room_id.as_str())
     .fetch_one(&mut **transaction)
     .await
-    .map_err(unavailable)?;
+    .map_err(SqlxSite::CountOtherThread.unavailable())?;
     if conflicting_thread != 0 {
         return Err(MatrixDurableError::Conflict);
     }
@@ -2888,7 +2913,7 @@ async fn ensure_dispatch_thread_tx(
         .bind(project_id)
         .execute(&mut **transaction)
         .await
-        .map_err(unavailable)?;
+        .map_err(SqlxSite::BindRoomThread.unavailable())?;
         if updated.rows_affected() != 1 {
             return Err(MatrixDurableError::Conflict);
         }
@@ -3294,20 +3319,36 @@ fn room_binding_from_row(row: &SqliteRow) -> Result<RoomBinding, MatrixDurableEr
 }
 
 fn room_thread_from_row(row: &SqliteRow) -> Result<RoomThreadBinding, MatrixDurableError> {
-    let project_id: String = row.try_get("project_id").map_err(unavailable)?;
+    let project_id: String = row
+        .try_get("project_id")
+        .map_err(SqlxSite::DecodeRoomThread.unavailable())?;
     validate_stored_identity(&project_id)?;
-    let thread_id: Option<String> = row.try_get("thread_id").map_err(unavailable)?;
+    let thread_id: Option<String> = row
+        .try_get("thread_id")
+        .map_err(SqlxSite::DecodeRoomThread.unavailable())?;
     if let Some(thread_id) = thread_id.as_deref() {
         validate_stored_identity(thread_id)?;
     }
     Ok(RoomThreadBinding {
-        room_id: MatrixRoomId::parse(row.try_get::<String, _>("room_id").map_err(unavailable)?)
-            .map_err(|_| MatrixDurableError::Corrupt)?,
-        binding_revision: to_u64(row.try_get("binding_revision").map_err(unavailable)?)?,
-        generation: to_u64(row.try_get("generation").map_err(unavailable)?)?,
+        room_id: MatrixRoomId::parse(
+            row.try_get::<String, _>("room_id")
+                .map_err(SqlxSite::DecodeRoomThread.unavailable())?,
+        )
+        .map_err(|_| MatrixDurableError::Corrupt)?,
+        binding_revision: to_u64(
+            row.try_get("binding_revision")
+                .map_err(SqlxSite::DecodeRoomThread.unavailable())?,
+        )?,
+        generation: to_u64(
+            row.try_get("generation")
+                .map_err(SqlxSite::DecodeRoomThread.unavailable())?,
+        )?,
         project_id,
         thread_id,
-        changed_at_ms: to_u64(row.try_get("changed_at_ms").map_err(unavailable)?)?,
+        changed_at_ms: to_u64(
+            row.try_get("changed_at_ms")
+                .map_err(SqlxSite::DecodeRoomThread.unavailable())?,
+        )?,
     })
 }
 
@@ -3368,17 +3409,25 @@ fn inbox_from_row(row: &SqliteRow) -> Result<InboxRecord, MatrixDurableError> {
 fn inbox_dispatch_from_row(row: &SqliteRow) -> Result<InboxDispatchRecord, MatrixDurableError> {
     let state = InboxDispatchState::parse(
         row.try_get::<String, _>("state")
-            .map_err(unavailable)?
+            .map_err(SqlxSite::DecodeDispatch.unavailable())?
             .as_str(),
     )
     .ok_or(MatrixDurableError::Corrupt)?;
-    let client_user_message_id: String =
-        row.try_get("client_user_message_id").map_err(unavailable)?;
-    let project_id: String = row.try_get("project_id").map_err(unavailable)?;
-    let thread_id: Option<String> = row.try_get("thread_id").map_err(unavailable)?;
-    let queued_submission_id: Option<String> =
-        row.try_get("queued_submission_id").map_err(unavailable)?;
-    let turn_id: Option<String> = row.try_get("turn_id").map_err(unavailable)?;
+    let client_user_message_id: String = row
+        .try_get("client_user_message_id")
+        .map_err(SqlxSite::DecodeDispatch.unavailable())?;
+    let project_id: String = row
+        .try_get("project_id")
+        .map_err(SqlxSite::DecodeDispatch.unavailable())?;
+    let thread_id: Option<String> = row
+        .try_get("thread_id")
+        .map_err(SqlxSite::DecodeDispatch.unavailable())?;
+    let queued_submission_id: Option<String> = row
+        .try_get("queued_submission_id")
+        .map_err(SqlxSite::DecodeDispatch.unavailable())?;
+    let turn_id: Option<String> = row
+        .try_get("turn_id")
+        .map_err(SqlxSite::DecodeDispatch.unavailable())?;
     validate_stored_identity(&client_user_message_id)?;
     validate_stored_identity(&project_id)?;
     if let Some(thread_id) = thread_id.as_deref() {
@@ -3391,23 +3440,41 @@ fn inbox_dispatch_from_row(row: &SqliteRow) -> Result<InboxDispatchRecord, Matri
         validate_stored_identity(turn_id)?;
     }
     let record = InboxDispatchRecord {
-        event_id: MatrixEventId::parse(row.try_get::<String, _>("event_id").map_err(unavailable)?)
-            .map_err(|_| MatrixDurableError::Corrupt)?,
+        event_id: MatrixEventId::parse(
+            row.try_get::<String, _>("event_id")
+                .map_err(SqlxSite::DecodeDispatch.unavailable())?,
+        )
+        .map_err(|_| MatrixDurableError::Corrupt)?,
         client_user_message_id,
-        room_id: MatrixRoomId::parse(row.try_get::<String, _>("room_id").map_err(unavailable)?)
-            .map_err(|_| MatrixDurableError::Corrupt)?,
-        binding_revision: to_u64(row.try_get("binding_revision").map_err(unavailable)?)?,
-        generation: to_u64(row.try_get("generation").map_err(unavailable)?)?,
+        room_id: MatrixRoomId::parse(
+            row.try_get::<String, _>("room_id")
+                .map_err(SqlxSite::DecodeDispatch.unavailable())?,
+        )
+        .map_err(|_| MatrixDurableError::Corrupt)?,
+        binding_revision: to_u64(
+            row.try_get("binding_revision")
+                .map_err(SqlxSite::DecodeDispatch.unavailable())?,
+        )?,
+        generation: to_u64(
+            row.try_get("generation")
+                .map_err(SqlxSite::DecodeDispatch.unavailable())?,
+        )?,
         project_id,
         state,
         thread_id,
         queued_submission_id,
         turn_id,
-        begun_at_ms: to_u64(row.try_get("begun_at_ms").map_err(unavailable)?)?,
-        updated_at_ms: to_u64(row.try_get("updated_at_ms").map_err(unavailable)?)?,
+        begun_at_ms: to_u64(
+            row.try_get("begun_at_ms")
+                .map_err(SqlxSite::DecodeDispatch.unavailable())?,
+        )?,
+        updated_at_ms: to_u64(
+            row.try_get("updated_at_ms")
+                .map_err(SqlxSite::DecodeDispatch.unavailable())?,
+        )?,
         completed_at_ms: row
             .try_get::<Option<i64>, _>("completed_at_ms")
-            .map_err(unavailable)?
+            .map_err(SqlxSite::DecodeDispatch.unavailable())?
             .map(to_u64)
             .transpose()?,
     };
@@ -3870,19 +3937,6 @@ fn to_u64(value: i64) -> Result<u64, MatrixDurableError> {
 
 fn unavailable(_error: impl std::fmt::Display) -> MatrixDurableError {
     MatrixDurableError::Unavailable
-}
-
-fn create_private_directory(path: &Path) -> Result<(), MatrixDurableError> {
-    fs::create_dir_all(path).map_err(unavailable)?;
-    if path.canonicalize().map_err(unavailable)? != path {
-        return Err(MatrixDurableError::Invalid);
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(path, fs::Permissions::from_mode(0o700)).map_err(unavailable)?;
-    }
-    Ok(())
 }
 
 fn protect_database_file(_path: &Path) -> Result<(), MatrixDurableError> {

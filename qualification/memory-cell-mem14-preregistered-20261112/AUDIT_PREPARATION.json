@@ -1,0 +1,160 @@
+{
+  "audit_code": {
+    "analysis.py": {
+      "bytes": 4824,
+      "sha256": "62b3eede292c79c4509a1442039a179cb0b6acfaa7eb7a9f7922e074f9f979e1"
+    },
+    "audit.py": {
+      "bytes": 34298,
+      "sha256": "280dd8d6e9acd5caeb3e18828835a2ebf86c99a80a4c1bf4da8a2539169393cb"
+    },
+    "evidence.py": {
+      "bytes": 24236,
+      "sha256": "fa20d07f97a1baa24c49009f8bf8bb1063ec1a9ea6f52e980bf2b75c8918daf4"
+    }
+  },
+  "checks_by_category": {
+    "fresh_source_keys_and_request_ids": 1,
+    "frozen_equal_limits": 1,
+    "frozen_helper_payload_pin": 1,
+    "frozen_launch_chronology": 1,
+    "frozen_preexecution_publication": 1,
+    "frozen_reference_plan": 1,
+    "frozen_statistical_contract": 1,
+    "frozen_truth_replacement": 32,
+    "frozen_version_denominator": 1,
+    "launch_reference_pins": 1,
+    "legacy_reference_plan_pin": 1,
+    "legacy_reference_unchanged": 1,
+    "old_actor_worker_profile_identical": 1,
+    "one_embedded_run_helper": 1,
+    "one_frozen_outer_job_binding": 1,
+    "planned_source_and_arm_roster": 32,
+    "public_task_no_truth": 32,
+    "reference_actor_worker_pins": 1,
+    "reference_source_pin": 12,
+    "strict_v1_parser_identity": 1,
+    "three_frozen_source_facts": 32,
+    "v2_label_free_parser_identity": 1
+  },
+  "failures": [],
+  "new_model_calls": 0,
+  "original_job_id": "1a1ced26052-2564-186f",
+  "originals_modified": false,
+  "outcomes_read": 0,
+  "paired_sources": 32,
+  "plan_pin": {
+    "bytes": 30299,
+    "sha256": "1aa291205146cffec039a583640be9c9c33a4afedff8dc31d2cdf32874d4c8e0"
+  },
+  "planned_rows": 320,
+  "remote_execution_calls": 0,
+  "run_helper_sha256": "3329cecaabcaed30d733e40af322942f5486cc53db387e804416e1d9c10524f2",
+  "run_key": "mem14-causal-execute-20261112-ef0c-v1",
+  "schema": "hepta.mem14.independent-audit-preparation.v1",
+  "source_commit": "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d",
+  "source_tree": "491484a45e05d05d2b72fec472f96405c37decac",
+  "statistical_self_check": {
+    "family_size": 9,
+    "fixed_source_denominator": 32,
+    "missing_states": [
+      {
+        "a": false,
+        "b": false,
+        "interval": [
+          0,
+          0
+        ],
+        "lower_95": -0.43270459565057134,
+        "n": 32
+      },
+      {
+        "a": false,
+        "b": true,
+        "interval": [
+          -1,
+          -1
+        ],
+        "lower_95": -1.0,
+        "n": 32
+      },
+      {
+        "a": false,
+        "b": null,
+        "interval": [
+          -1,
+          0
+        ],
+        "lower_95": -1.0,
+        "n": 32
+      },
+      {
+        "a": true,
+        "b": false,
+        "interval": [
+          1,
+          1
+        ],
+        "lower_95": 0.5672954043494287,
+        "n": 32
+      },
+      {
+        "a": true,
+        "b": true,
+        "interval": [
+          0,
+          0
+        ],
+        "lower_95": -0.43270459565057134,
+        "n": 32
+      },
+      {
+        "a": true,
+        "b": null,
+        "interval": [
+          0,
+          1
+        ],
+        "lower_95": -0.43270459565057134,
+        "n": 32
+      },
+      {
+        "a": null,
+        "b": false,
+        "interval": [
+          0,
+          1
+        ],
+        "lower_95": -0.43270459565057134,
+        "n": 32
+      },
+      {
+        "a": null,
+        "b": true,
+        "interval": [
+          -1,
+          0
+        ],
+        "lower_95": -1.0,
+        "n": 32
+      },
+      {
+        "a": null,
+        "b": null,
+        "interval": [
+          -1,
+          1
+        ],
+        "lower_95": -1.0,
+        "n": 32
+      }
+    ],
+    "model_calls": 0,
+    "primary_minimum_complete_net_wins": 14,
+    "primary_radius": 0.43270459565057134,
+    "simultaneous_minimum_complete_net_wins": 19,
+    "simultaneous_radius": 0.569701503579408,
+    "status": "PASS"
+  },
+  "status": "READY"
+}

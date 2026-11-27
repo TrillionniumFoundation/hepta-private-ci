@@ -49,7 +49,10 @@ pub struct LedgerWitnessStore {
     binding: Digest32,
     frontier: LedgerWitnessFrontier,
     length: u64,
+    history_digest: Digest32,
     poisoned: bool,
+    #[cfg(test)]
+    fail_next_advance_write: bool,
 }
 
 impl LedgerWitnessStore {
@@ -71,13 +74,26 @@ impl LedgerWitnessStore {
             binding,
             frontier: LedgerWitnessFrontier::empty(),
             length: HEADER as u64,
+            history_digest: Digest32::of_bytes(&header),
             poisoned: false,
+            #[cfg(test)]
+            fail_next_advance_write: false,
         })
     }
 
     /// Recover the independently retained witness. Only an incomplete final
-    /// frame can be truncated; complete invalid history is corruption.
+    /// frame can be truncated; complete invalid history is corruption. Sync all
+    /// recovered data before serving a frontier: a previous owner may have
+    /// written a complete frame without completing its sync.
     pub fn recover(file: File, binding: Digest32) -> Result<Self, DurableLedgerError> {
+        Self::recover_with_sync(file, binding, File::sync_all)
+    }
+
+    fn recover_with_sync(
+        file: File,
+        binding: Digest32,
+        sync: impl FnOnce(&File) -> std::io::Result<()>,
+    ) -> Result<Self, DurableLedgerError> {
         validate_binding(binding)?;
         let mut file = LockedFile::acquire(file)?;
         let length = file.metadata()?.len();
@@ -96,6 +112,7 @@ impl LedgerWitnessStore {
 
         let mut cursor = HEADER as u64;
         let mut frontier = LedgerWitnessFrontier::empty();
+        let mut history_digest = Digest32::of_bytes(&header);
         while length - cursor >= FRAME as u64 {
             let mut frame = [0_u8; FRAME];
             file.read_exact(&mut frame)?;
@@ -105,20 +122,24 @@ impl LedgerWitnessStore {
             let next = decode_frontier(&frame[..FRAME - 32])?;
             validate_advance(frontier, next)?;
             frontier = next;
+            history_digest = extend_history_digest(history_digest, &frame);
             cursor += FRAME as u64;
         }
         if cursor != length {
             file.set_len(cursor)
-                .and_then(|()| file.sync_all())
                 .map_err(|_| DurableLedgerError::Indeterminate)?;
         }
+        sync(&file).map_err(|_| DurableLedgerError::Indeterminate)?;
         file.seek(SeekFrom::Start(cursor))?;
         Ok(Self {
             file,
             binding,
             frontier,
             length: cursor,
+            history_digest,
             poisoned: false,
+            #[cfg(test)]
+            fail_next_advance_write: false,
         })
     }
 
@@ -127,12 +148,99 @@ impl LedgerWitnessStore {
         self.binding
     }
 
+    #[cfg(feature = "qualification-legacy-write")]
+    pub(crate) fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<Vec<u8>, DurableLedgerError> {
+        if self.poisoned {
+            return Err(DurableLedgerError::Poisoned);
+        }
+        let bytes = self.file.qualification_bytes(maximum_bytes);
+        if matches!(&bytes, Err(DurableLedgerError::Io(_))) {
+            self.poisoned = true;
+        }
+        bytes
+    }
+
     pub fn frontier(&self) -> Result<LedgerWitnessFrontier, DurableLedgerError> {
         if self.poisoned {
             Err(DurableLedgerError::Poisoned)
         } else {
             Ok(self.frontier)
         }
+    }
+
+    /// Re-read this original locked witness without repairing, syncing or
+    /// releasing its handle. The in-memory fingerprint covers every admitted
+    /// frame, including historical frames before the current frontier.
+    /// A changed file fences this owner; restoring bytes cannot rearm it.
+    pub(crate) fn read_current_frontier(
+        &mut self,
+    ) -> Result<LedgerWitnessFrontier, DurableLedgerError> {
+        if self.poisoned {
+            return Err(DurableLedgerError::Poisoned);
+        }
+        let position = match self.file.stream_position() {
+            Ok(position) => position,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error.into());
+            }
+        };
+        let checked = (|| {
+            let length = self.file.metadata()?.len();
+            // A durable ledger admits at most 8,192 records. Keep this read
+            // bounded independently of attacker-controlled on-disk metadata.
+            if length > HEADER as u64 + 8192 * FRAME as u64 {
+                return Err(DurableLedgerError::Capacity);
+            }
+            if length != self.length {
+                return Err(DurableLedgerError::Corrupt);
+            }
+            if length < HEADER as u64 || !(length - HEADER as u64).is_multiple_of(FRAME as u64) {
+                return Err(DurableLedgerError::IncompleteTail);
+            }
+            self.file.seek(SeekFrom::Start(0))?;
+            let mut header = [0_u8; HEADER];
+            self.file.read_exact(&mut header)?;
+            if &header[..8] != MAGIC
+                || &header[8..40] != self.binding.as_array()
+                || Digest32::of_bytes(&header[..40]).as_array() != &header[40..]
+            {
+                return Err(DurableLedgerError::BindingMismatch);
+            }
+            let mut frontier = LedgerWitnessFrontier::empty();
+            let mut history = Digest32::of_bytes(&header);
+            for _ in 0..((length - HEADER as u64) / FRAME as u64) {
+                let mut frame = [0_u8; FRAME];
+                self.file.read_exact(&mut frame)?;
+                if Digest32::of_bytes(&frame[..FRAME - 32]).as_array() != &frame[FRAME - 32..] {
+                    return Err(DurableLedgerError::Corrupt);
+                }
+                let next = decode_frontier(&frame[..FRAME - 32])?;
+                validate_advance(frontier, next)?;
+                frontier = next;
+                history = extend_history_digest(history, &frame);
+            }
+            if self.file.metadata()?.len() != length
+                || frontier != self.frontier
+                || history != self.history_digest
+            {
+                return Err(DurableLedgerError::AnchorMismatch);
+            }
+            Ok(frontier)
+        })();
+        // Restoring the original cursor is mandatory even after rejection.
+        let restored = self.file.seek(SeekFrom::Start(position));
+        let result = match restored {
+            Ok(_) => checked,
+            Err(error) => Err(error.into()),
+        };
+        if result.is_err() {
+            self.poisoned = true;
+        }
+        result
     }
 
     /// Advance exactly one acknowledged ledger record, or replay the exact same
@@ -157,15 +265,28 @@ impl LedgerWitnessStore {
         if self.file.seek(SeekFrom::End(0))? != self.length {
             return Err(DurableLedgerError::Corrupt);
         }
+        #[cfg(test)]
+        if std::mem::take(&mut self.fail_next_advance_write) {
+            return Err(DurableLedgerError::Indeterminate);
+        }
         self.file
             .write_all(&frame)
             .and_then(|()| self.file.sync_all())
             .map_err(|_| DurableLedgerError::Indeterminate)?;
         self.length += frame.len() as u64;
+        self.history_digest = extend_history_digest(self.history_digest, &frame);
         self.frontier = next;
         self.poisoned = false;
         Ok(next)
     }
+}
+
+fn extend_history_digest(previous: Digest32, frame: &[u8]) -> Digest32 {
+    Digest32::of_parts(&[
+        b"hepta.learning-witness.original-history.v1\0",
+        previous.as_array(),
+        frame,
+    ])
 }
 
 fn validate_binding(binding: Digest32) -> Result<(), DurableLedgerError> {
@@ -278,3 +399,12 @@ fn decode_frontier(bytes: &[u8]) -> Result<LedgerWitnessFrontier, DurableLedgerE
 #[cfg(test)]
 #[path = "witness_tests.rs"]
 mod tests;
+
+#[cfg(unix)]
+#[path = "witness_read_only.rs"]
+mod read_only;
+#[cfg(unix)]
+pub(crate) use read_only::inspect_ordinary_witness;
+#[cfg(test)]
+#[path = "witness_current_tests.rs"]
+mod current_tests;

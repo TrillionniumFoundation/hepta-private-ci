@@ -1,0 +1,68 @@
+{
+  "source_tree": "c3995fc4c03db4a139fc0a71525085f47092a683",
+  "source_files": 8,
+  "source_bytes": 65803,
+  "archive_bytes": 20465,
+  "archive_sha256": "ec0188ddee6518f33de5490a7eb3104bb065a0c6269bad69353ad6725c7aac71",
+  "freeze_sha256": "0dd9e4b23ceb8a452a3b108c1cc1c48862d6d1eb754956f0cae6ea1326b924f8",
+  "imports": {
+    "qualification/hcsn_differentiable/__init__.py": [],
+    "qualification/hcsn_differentiable/contract.py": [
+      "from dataclasses import dataclass",
+      "import math",
+      "import torch"
+    ],
+    "qualification/hcsn_differentiable/operator.py": [
+      "from dataclasses import asdict",
+      "from fractions import Fraction",
+      "from functools import lru_cache",
+      "import math",
+      "import torch",
+      "from .contract import FlowReceipt, GridSpec, OperatorTable, PhysicalParameters"
+    ],
+    "qualification/hcsn_differentiable/regenerative.py": [
+      "from dataclasses import dataclass",
+      "import math",
+      "import torch",
+      "from .contract import GridSpec",
+      "from .operator import _check_parameters, _finite, _tensor"
+    ],
+    "qualification/hcsn_differentiable/finite_renewal.py": [
+      "from dataclasses import dataclass",
+      "from fractions import Fraction",
+      "import math",
+      "import torch",
+      "from .operator import _check_parameters, _finite, _first_hit, _tensor",
+      "from .regenerative import _policy"
+    ],
+    "qualification/hcsn_differentiable/neural_control.py": [
+      "import torch",
+      "from torch.autograd.function import once_differentiable",
+      "from .contract import PhysicalParameters",
+      "from .operator import _check_parameters, _finite, _tensor",
+      "from .regenerative import _decay, first_hit_laplace"
+    ],
+    "qualification/hcsn_differentiable/neural_control_study.py": [
+      "import argparse",
+      "import hashlib",
+      "import json",
+      "import math",
+      "from pathlib import Path",
+      "import time",
+      "import traceback",
+      "import numpy as np",
+      "from scipy import sparse",
+      "from scipy.sparse.linalg import spsolve",
+      "from scipy.special import lambertw",
+      "import torch",
+      "from .neural_control import PARAMETER_NAMES, boundary_residual, optimal_boundary, policy_value, refractory_value"
+    ],
+    "qualification/hcsn_differentiable/tests/test_neural_control.py": [
+      "import unittest",
+      "import torch",
+      "from qualification.hcsn_differentiable.finite_renewal import finite_renewal_value",
+      "from qualification.hcsn_differentiable.neural_control import optimal_boundary, optimal_value, physical_parameters, policy_value, refractory_value",
+      "from qualification.hcsn_differentiable.neural_control_study import TASKS, run_study"
+    ]
+  }
+}

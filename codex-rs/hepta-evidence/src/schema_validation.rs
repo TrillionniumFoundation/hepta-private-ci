@@ -38,7 +38,9 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
             "length(key_epoch) = 8",
             "length(sequence) = 8",
             "length(expires_at_ms) = 8",
-            "length(signature) = 64",
+            "auth_version in (1, 2)",
+            "auth_version = 1 and length(signature) = 64",
+            "auth_version = 2 and length(signature) = 3309",
             "length(payload) <= 16384",
             "'queued', 'leased', 'acked', 'expired', 'quarantined'",
             "attempts between 0 and 16",
@@ -307,6 +309,43 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
             "on provider_invocation_terminals",
             "raise(abort",
             "provider invocation terminals are immutable",
+        ],
+    },
+    // Same ORIGINAL Evidence lineage; no new database, writer or authority.
+    SchemaObjectSpec {
+        name: "execution_prepared_envelopes",
+        object_type: "table",
+        table_name: "execution_prepared_envelopes",
+        required_sql_fragments: &[
+            "create table",
+            "effect_key text primary key not null",
+            "schema_version integer not null check (schema_version = 1)",
+            "length(cast(intent_json as blob)) between 1 and 4096",
+            "json_valid(intent_json)",
+            "request_sha256 blob not null check (length(request_sha256) = 32)",
+            "foreign key(effect_key)",
+            "on delete restrict",
+            "without rowid",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "execution_prepared_envelopes_no_update",
+        object_type: "trigger",
+        table_name: "execution_prepared_envelopes",
+        required_sql_fragments: &[
+            "before update on execution_prepared_envelopes",
+            "raise(abort",
+            "execution prepared envelopes are immutable",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "execution_prepared_envelopes_no_delete",
+        object_type: "trigger",
+        table_name: "execution_prepared_envelopes",
+        required_sql_fragments: &[
+            "before delete on execution_prepared_envelopes",
+            "raise(abort",
+            "execution prepared envelopes are immutable",
         ],
     },
     SchemaObjectSpec {
@@ -763,6 +802,7 @@ pub(crate) async fn verify_provider_ephemeral_input_projection(
 }
 
 pub(crate) async fn verify_schema_manifest(pool: &SqlitePool) -> Result<(), EvidenceError> {
+    crate::authbus_crypto_profile::verify_schema(pool).await?;
     for spec in REQUIRED_SCHEMA_OBJECTS
         .iter()
         .chain(authbus_recovery_schema::REQUIRED_SCHEMA_OBJECTS)

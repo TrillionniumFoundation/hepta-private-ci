@@ -1,0 +1,93 @@
+{
+  "all_members_read_back_and_sha256_verified": true,
+  "archive": {
+    "bytes": 95774,
+    "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-controls-raw.tgz",
+    "sha256": "bcef1cae98d72c7e4e641d2433f24ff1f549774845074c32c400d34682c14c4d"
+  },
+  "file_count": 13,
+  "files": [
+    {
+      "bytes": 7977,
+      "content_origin": "retained original attribution, failure log, local repair result or diff bytes",
+      "path": "ci-01-inventory-repair/attribution.json",
+      "sha256": "f67ddd9c1f1e9ac7a96df78ace77edc08cb1f06bbd693aa0bfc9e744295abc3f"
+    },
+    {
+      "bytes": 810,
+      "content_origin": "retained original attribution, failure log, local repair result or diff bytes",
+      "path": "ci-01-inventory-repair/b4-no-bypass-after-result.json",
+      "sha256": "d21da28b2a0daef55006727a27d26b444519d6805282f05321b5107f0801f051"
+    },
+    {
+      "bytes": 116,
+      "content_origin": "retained original attribution, failure log, local repair result or diff bytes",
+      "path": "ci-01-inventory-repair/b4-no-bypass-after.log",
+      "sha256": "e470b6a8db35853fa72b572879bd8a523353f7b283a5adf8c75d5e03b3e606c1"
+    },
+    {
+      "bytes": 1945,
+      "content_origin": "retained original attribution, failure log, local repair result or diff bytes",
+      "path": "ci-01-inventory-repair/cargo-deny-ui-readability.json",
+      "sha256": "c6bcaeb008b88737a588b9f5637d73c59f9a4a0a9715a24c0c06392515636c7f"
+    },
+    {
+      "bytes": 463,
+      "content_origin": "retained original attribution, failure log, local repair result or diff bytes",
+      "path": "ci-01-inventory-repair/inventory-repair-format-result.json",
+      "sha256": "5410a4b0885ce5671b250f780174618bb0a36957d6a32c675cb7e2acda93836b"
+    },
+    {
+      "bytes": 73,
+      "content_origin": "retained original attribution, failure log, local repair result or diff bytes",
+      "path": "ci-01-inventory-repair/inventory-repair-format.log",
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "bytes": 2701,
+      "content_origin": "retained original attribution, failure log, local repair result or diff bytes",
+      "path": "ci-01-inventory-repair/inventory-repair-review.json",
+      "sha256": "095f99311a141ed4f5d94b4fe1d92aff2c5da16de856e073ddc1689a4c97b290"
+    },
+    {
+      "bytes": 840,
+      "content_origin": "retained original attribution, failure log, local repair result or diff bytes",
+      "path": "ci-01-inventory-repair/inventory-repair.diff",
+      "sha256": "11fc948d4d7ae0ac262b1bd41101bad03035afd0b0b24a87404c970932e52ec5"
+    },
+    {
+      "bytes": 3245,
+      "content_origin": "retained original attribution, failure log, local repair result or diff bytes",
+      "path": "ci-01-inventory-repair/job-127995822824-steps.json",
+      "sha256": "894402eb5393cfa0ba3ecc1497be643e668b108de854d0c53df1f05839a96add"
+    },
+    {
+      "bytes": 91061,
+      "content_origin": "retained original attribution, failure log, local repair result or diff bytes",
+      "path": "ci-01-inventory-repair/job-127995822824.log",
+      "sha256": "05444e4ed243cdf9a42303398d6a1d4e4d6491a1621e3d2feced81d619c17ca4"
+    },
+    {
+      "bytes": 542567,
+      "content_origin": "decoded connector tool response JSON; not original network download bytes",
+      "path": "broader-ci-01/v8-arm-cache-job-127972849494.json",
+      "sha256": "c1f3b8a378fdc995e09bcc9c339bbe4a979c9f53c3f17c263e1b0e77345acd18"
+    },
+    {
+      "bytes": 80851,
+      "content_origin": "decoded connector tool response JSON; not original network download bytes",
+      "path": "broader-ci-01/v8-macos-toolchain-job-127972849934.json",
+      "sha256": "e97aea5603e56c40a6232d261872d93d4404467bd7e800b76e235edeb74cf678"
+    },
+    {
+      "bytes": 25863,
+      "content_origin": "decoded connector tool response JSON; not original network download bytes",
+      "path": "broader-ci-01/windows-checkout-job-127995822797.json",
+      "sha256": "07541d37d571e01a5b4c3a3de3d18c4090933395375cc5302bd769b7b157f5da"
+    }
+  ],
+  "limits": "Broader CI inputs are decoded tool responses, not original downloaded archives. Findings apply only to the three inspected jobs; no attribution to unread sibling jobs.",
+  "original_input_files_deleted": false,
+  "schema": "hcsn.ci-controls-retained-files.v1",
+  "source_sha": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca"
+}

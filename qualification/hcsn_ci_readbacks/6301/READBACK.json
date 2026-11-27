@@ -1,0 +1,46 @@
+{
+  "schema": "hcsn-n256-canonical-serializer-hosted-readback-v1",
+  "source_commit": "de254b3dfd7bc607ee3f829d4f8acf3e8ff20129",
+  "run_id": 43401747120,
+  "job_id": 131806037623,
+  "run_attempt": 1,
+  "conclusion": "success",
+  "artifact_id": 14025501880,
+  "artifact_name": "hcsn-n256-canonical-serializer-source-efbac4d47a1c7a1fd7f72eb06fc90bbb062d4fd0",
+  "artifact_size_bytes": 1717,
+  "zip_sha256": "cb97aab9b67b0df91561292df3c0bfee1cbbe2e6c7a42ab1b6a1d1e2516daa17",
+  "members": [
+    {
+      "path": "COUNTS.json",
+      "bytes": 206,
+      "sha256": "f5c3505caa16dcabfadceded23493c6104147272c20897cd74a51268f35ab07b"
+    },
+    {
+      "path": "REPORT.json",
+      "bytes": 944,
+      "sha256": "4f47eba4e7d8c1eabb36cef1fc24d685d93cf9a4539ecd7a236044d058eb879d"
+    },
+    {
+      "path": "TEST_STDERR.txt",
+      "bytes": 1654,
+      "sha256": "31728c5a1aebdfe68414794705b1d730ce0053e1ab9b606c61a62399f5a7400c"
+    },
+    {
+      "path": "TEST_STDOUT.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "reported_counts": {
+    "small_fixture_serializations": 4,
+    "n256_dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "n256_serializer_calls": 0,
+    "candidate_oracle_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "qualification": false,
+  "all_closed": false,
+  "note": "Original hosted ZIP preserved byte-for-byte. This readback verifies source-only small stdlib fixtures; it does not admit or execute N256 dynamics, an N256 packet, the candidate-oracle comparison, Torch, or optimization, and it does not alter historical RED or UNKNOWN evidence."
+}

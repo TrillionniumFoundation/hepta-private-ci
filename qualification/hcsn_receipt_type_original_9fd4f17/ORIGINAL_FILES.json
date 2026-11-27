@@ -1,0 +1,91 @@
+{
+  "schema": "hcsn-receipt-type-repair-original-files-v1",
+  "custody_base_commit": "9fd4f17f28c5d5f729803cd7a61dade5eaf565db",
+  "purpose": "Preserve the pre-repair receipt contract source and the exact publisher/terminal verifier pins and source-freeze records before rejecting noninteger receipt exit codes. Historical HOLD and CI records remain unchanged.",
+  "files": [
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_execution_receipt_contract/README.md",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/contract/README.md.original",
+      "bytes": 897,
+      "sha256": "29e410f131327e40ae42161f1b695ed51d86549192de9d1c2064087a03684100",
+      "git_blob": "24a6f57ea2fb73006a866e798cfa54f86ce2b7d0"
+    },
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_execution_receipt_contract/REQUEST.json",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/contract/REQUEST.json.original",
+      "bytes": 1013,
+      "sha256": "1a2fd322e3b78b9ff68db5f3980d52fe14c336d9bab27bc0a3937afd57772a7c",
+      "git_blob": "1a2fb6499b5d9ed7751a33a50130e4b27b7f6f61"
+    },
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_execution_receipt_contract/SOURCE_FREEZE.json",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/contract/SOURCE_FREEZE.json.original",
+      "bytes": 2514,
+      "sha256": "240f080eaa954a46331e0140d4cc2bbcb26a60d3b2b8c37724dc24ac60fb4347",
+      "git_blob": "976c5660311e351867e54a335693e139fa308255"
+    },
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_execution_receipt_contract/__init__.py",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/contract/__init__.py.original",
+      "bytes": 39,
+      "sha256": "1c26f571d92e7cc76399ef7f0f761ba332be8e468535c651cddddf454969acf2",
+      "git_blob": "0e7e6b219d578316a271f382a74e282741a6be29"
+    },
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_execution_receipt_contract/receipt_contract.py",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/contract/receipt_contract.py.original",
+      "bytes": 5712,
+      "sha256": "de570dd7fd9f82edd547b5e483f585553ea76e64fbcae543e745f7d3521cbf2a",
+      "git_blob": "7eabe850845d7be683782738e7a1db390bd2dcd3"
+    },
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_execution_receipt_contract/test_receipt_contract.py",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/contract/test_receipt_contract.py.original",
+      "bytes": 3716,
+      "sha256": "e0e674840eb0be0e4f36ac4f41730973b53842d48e240367c185b17c0c2078ad",
+      "git_blob": "d74b22f595c712f76ab61f6565df49e84f63438f"
+    },
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_execution_receipt_contract/verify_source.py",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/contract/verify_source.py.original",
+      "bytes": 3212,
+      "sha256": "39aa6e24d63d62860fd5453218515f21424156ae9466c4816a3407b9928f3961",
+      "git_blob": "0151ef55e049339b3c15bbc573ce488b837636ab"
+    },
+    {
+      "original_path": ".github/workflows/hcsn-currentstate-n256-execution-receipt-contract.yml",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/contract/hcsn-currentstate-n256-execution-receipt-contract.yml.original",
+      "bytes": 1104,
+      "sha256": "88ac26fa7c23d0a76f8b13f6764a9ca56896ed4eea83dfcfedb9cb98f0c35db1",
+      "git_blob": "5137e7ab4f4593abbf34c864898f573f60a77d92"
+    },
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_execution_receipt_publisher_intent/verify_source.py",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/publisher/verify_source.py.original",
+      "bytes": 2447,
+      "sha256": "f2623a8cab9e8dd8b271727821c21f30878ad81334a4acd8c71d5651abd4f125",
+      "git_blob": "b4716d494a357dd0002971b02795fe6d412cf657"
+    },
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_execution_receipt_publisher_intent/SOURCE_FREEZE.json",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/publisher/SOURCE_FREEZE.json.original",
+      "bytes": 2575,
+      "sha256": "92f5a1e834f72ae4b4fb3022b0fac14e34c79ab1ede790d3604a047fd79f6f7e",
+      "git_blob": "d97a65e11458339973c068e8af5e7db7c3cc635b"
+    },
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_terminal_publication_intent/verify_source.py",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/terminal/verify_source.py.original",
+      "bytes": 2203,
+      "sha256": "cd13ff2e2d37ac830ed2d27653a669995192859d1a4e6e2645fd5797b58fb468",
+      "git_blob": "ff5e3cc935bffaa20f33db1cd8f0564bf408c51f"
+    },
+    {
+      "original_path": "qualification/hcsn_currentstate_n256_terminal_publication_intent/SOURCE_FREEZE.json",
+      "preserved_path": "qualification/hcsn_receipt_type_original_9fd4f17/terminal/SOURCE_FREEZE.json.original",
+      "bytes": 3368,
+      "sha256": "26324f9882e50f6f9016948cfb20321bf5d276787dee1d64e0d0f8ae4f2b8c7b",
+      "git_blob": "0ef00861c13f4e11fe50ddce005df52a7603d2e3"
+    }
+  ]
+}

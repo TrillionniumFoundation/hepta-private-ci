@@ -199,6 +199,7 @@ pub(crate) struct ConnectionSessionState {
 #[derive(Debug)]
 pub(crate) struct InitializedConnectionSessionState {
     pub(crate) experimental_api_enabled: bool,
+    pub(crate) process_indeterminate_enabled: bool,
     pub(crate) opted_out_notification_methods: HashSet<String>,
     pub(crate) app_server_client_name: String,
     pub(crate) client_version: String,
@@ -229,6 +230,12 @@ impl ConnectionSessionState {
         self.initialized
             .get()
             .is_some_and(|session| session.experimental_api_enabled)
+    }
+
+    pub(crate) fn process_indeterminate_enabled(&self) -> bool {
+        self.initialized
+            .get()
+            .is_some_and(|session| session.process_indeterminate_enabled)
     }
 
     pub(crate) fn opted_out_notification_methods(&self) -> HashSet<String> {
@@ -431,7 +438,8 @@ impl MessageProcessor {
                 auth_manager.clone(),
                 Arc::clone(&thread_manager),
                 config_manager.clone(),
-                config_processor.clone(),
+                outgoing.clone(),
+                analytics_events_client.clone(),
                 request_serialization_queues.clone(),
             );
         let account_processor = AccountRequestProcessor::new(
@@ -1146,7 +1154,7 @@ impl MessageProcessor {
                 .clients_revoke(params)
                 .await
                 .map(|response| Some(response.into())),
-            ClientRequest::ConfigRequirementsRead { params: _, .. } => processor
+            ClientRequest::ConfigRequirementsRead { .. } => processor
                 .config_processor
                 .config_requirements_read()
                 .await
@@ -1205,7 +1213,7 @@ impl MessageProcessor {
                 .unwatch(connection_id, params)
                 .await
                 .map(|response| Some(response.into())),
-            ClientRequest::ModelProviderCapabilitiesRead { params: _, .. } => processor
+            ClientRequest::ModelProviderCapabilitiesRead { .. } => processor
                 .config_processor
                 .model_provider_capabilities_read()
                 .await
@@ -1597,7 +1605,7 @@ impl MessageProcessor {
                     .thread_realtime_stop(&request_id, params)
                     .await
             },
-            ClientRequest::ThreadRealtimeListVoices { params: _, .. } => {
+            ClientRequest::ThreadRealtimeListVoices { .. } => {
                 processor.turn_processor.thread_realtime_list_voices().await
             },
             ClientRequest::ReviewStart { params, .. } => {
@@ -1655,9 +1663,12 @@ impl MessageProcessor {
                     .login_account(request_id.clone(), params)
                     .await
             },
-            ClientRequest::BedrockDiscover { .. } | ClientRequest::BedrockSetup { .. } => Err(
-                crate::error_code::method_not_found("Amazon Bedrock setup is not implemented"),
-            ),
+            ClientRequest::BedrockDiscover { params, .. } => {
+                processor.account_processor.bedrock_discover(params).await
+            },
+            ClientRequest::BedrockSetup { params, .. } => {
+                processor.account_processor.bedrock_setup(params).await
+            },
             ClientRequest::LogoutAccount { .. } => {
                 processor.account_processor
                     .logout_account(request_id.clone())
@@ -1734,11 +1745,18 @@ impl MessageProcessor {
                     .command_exec_terminate(request_id.clone(), params)
                     .await
             },
-            ClientRequest::ProcessSpawn { params, .. } => processor
-                .process_exec_processor
-                .process_spawn(request_id.clone(), params)
-                .await
-                .map(|()| None),
+            ClientRequest::ProcessSpawn { params, .. } => {
+                if !session.process_indeterminate_enabled() {
+                    return Err(invalid_request(
+                        "process/spawn requires negotiated processIndeterminate and both process/exited and process/indeterminate notifications",
+                    ));
+                }
+                processor
+                    .process_exec_processor
+                    .process_spawn(request_id.clone(), params)
+                    .await
+                    .map(|()| None)
+            },
             ClientRequest::ProcessWriteStdin { params, .. } => {
                 processor.process_exec_processor
                     .process_write_stdin(request_id.clone(), params)

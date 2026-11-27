@@ -1,0 +1,914 @@
+{
+  "basis": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+  "created_at_utc": "2026-11-21T11:54:26.796837+00:00",
+  "tool": "ruff 0.15.13",
+  "tool_selected_from": "unchanged scripts/uv.lock",
+  "scope": "Only the four failing Python source/test files; no new tests; no behavior/assertion changes",
+  "commands": [
+    {
+      "name": "version",
+      "argv": [
+        "uv",
+        "--cache-dir",
+        "/workspace/scratch/c1a0d7534606/format-repair/uv-cache",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "scripts",
+        "ruff",
+        "--version"
+      ],
+      "cwd": "/workspace/scratch/c1a0d7534606/format-repair/after",
+      "exit_code": 0,
+      "stdout": "ruff 0.15.13\n",
+      "stderr": ""
+    },
+    {
+      "name": "before-check",
+      "argv": [
+        "uv",
+        "--cache-dir",
+        "/workspace/scratch/c1a0d7534606/format-repair/uv-cache",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "scripts/memory_cell/procedural_bundle_trial.py",
+        "scripts/memory_cell/procedural_observations.py",
+        "scripts/memory_cell/test_procedural_bundle_trial.py",
+        "scripts/memory_cell/test_procedural_observations.py"
+      ],
+      "cwd": "/workspace/scratch/c1a0d7534606/format-repair/after",
+      "exit_code": 1,
+      "stdout": "Would reformat: scripts/memory_cell/procedural_bundle_trial.py\nWould reformat: scripts/memory_cell/procedural_observations.py\nWould reformat: scripts/memory_cell/test_procedural_bundle_trial.py\nWould reformat: scripts/memory_cell/test_procedural_observations.py\n4 files would be reformatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "format",
+      "argv": [
+        "uv",
+        "--cache-dir",
+        "/workspace/scratch/c1a0d7534606/format-repair/uv-cache",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "scripts/memory_cell/procedural_bundle_trial.py",
+        "scripts/memory_cell/procedural_observations.py",
+        "scripts/memory_cell/test_procedural_bundle_trial.py",
+        "scripts/memory_cell/test_procedural_observations.py"
+      ],
+      "cwd": "/workspace/scratch/c1a0d7534606/format-repair/after",
+      "exit_code": 0,
+      "stdout": "4 files reformatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "after-check",
+      "argv": [
+        "uv",
+        "--cache-dir",
+        "/workspace/scratch/c1a0d7534606/format-repair/uv-cache",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "scripts/memory_cell/procedural_bundle_trial.py",
+        "scripts/memory_cell/procedural_observations.py",
+        "scripts/memory_cell/test_procedural_bundle_trial.py",
+        "scripts/memory_cell/test_procedural_observations.py"
+      ],
+      "cwd": "/workspace/scratch/c1a0d7534606/format-repair/after",
+      "exit_code": 0,
+      "stdout": "4 files already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "files": [
+    {
+      "path": "scripts/memory_cell/procedural_bundle_trial.py",
+      "before": {
+        "bytes": 10224,
+        "git_blob": "6f4681e1cd63a3111aa79e9ffa55ac9e21b2fe18",
+        "sha256": "3654fd5514fb002e9aa6d0345f7abf65549a4db73609b0bf6430681b544741f8"
+      },
+      "after": {
+        "bytes": 11281,
+        "git_blob": "d56c6140a7676be84ff30f6fb4571bfcb67412e1",
+        "sha256": "b2b2e82bbe7e05098667939d89cb779b9ee9d98e4c24d4df0b622312d8b89681"
+      },
+      "ast_equal": true,
+      "ast_sha256": "e4fc9ff0721574bf4393da87789089a371922b7f4e1bf1e2efba3916672a8354",
+      "whitespace_insensitive_token_equal": false,
+      "comments_unchanged": true,
+      "token_changes": [
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        }
+      ],
+      "token_change_summary": {
+        "only_formatter_punctuation_insertions": true,
+        "inserted_token_counts": {
+          ",": 15,
+          "(": 4,
+          ")": 4
+        },
+        "existing_non_whitespace_tokens_preserved_in_order": true,
+        "strict_whitespace_insensitive_token_equality": false,
+        "explanation": "Ruff inserted trailing commas and grouping parentheses. Complete AST including type comments is unchanged."
+      },
+      "test_names_unchanged": true,
+      "test_names": [],
+      "assertion_ast_unchanged": true,
+      "assertion_ast_count": 0
+    },
+    {
+      "path": "scripts/memory_cell/procedural_observations.py",
+      "before": {
+        "bytes": 12014,
+        "git_blob": "dc345bf5ebfa8acb33c711cfffbc1e1fe4d789ab",
+        "sha256": "c6e7780b8460f98b18dab6786459283d5bcfdfd6972ab4152484d9374af53af1"
+      },
+      "after": {
+        "bytes": 13720,
+        "git_blob": "2efcd58c0f5ae89b97bacbfe9fa138d96291d421",
+        "sha256": "63c07108a4dd2de56692c2ac9e7d6ee770c35548ab5338c7c200221cb085aa63"
+      },
+      "ast_equal": true,
+      "ast_sha256": "68991050435758153f2e28d6c6238239c186af446f9565775801cbc9eba1d51c",
+      "whitespace_insensitive_token_equal": false,
+      "comments_unchanged": true,
+      "token_changes": [
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ],
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ]
+          ]
+        }
+      ],
+      "token_change_summary": {
+        "only_formatter_punctuation_insertions": true,
+        "inserted_token_counts": {
+          "(": 8,
+          ")": 8,
+          ",": 10
+        },
+        "existing_non_whitespace_tokens_preserved_in_order": true,
+        "strict_whitespace_insensitive_token_equality": false,
+        "explanation": "Ruff inserted trailing commas and grouping parentheses. Complete AST including type comments is unchanged."
+      },
+      "test_names_unchanged": true,
+      "test_names": [],
+      "assertion_ast_unchanged": true,
+      "assertion_ast_count": 0
+    },
+    {
+      "path": "scripts/memory_cell/test_procedural_bundle_trial.py",
+      "before": {
+        "bytes": 5593,
+        "git_blob": "abaac9bfe1d19cc2fe4826ceb356d813e2135a36",
+        "sha256": "0787152037d752d5fc2592c2c5ca1db3d8adb63b68fdc8655d95ddbcb68b8b43"
+      },
+      "after": {
+        "bytes": 6473,
+        "git_blob": "4f613805e0c7731cc98c4b48337ea78cbc92cb52",
+        "sha256": "bd2101332505db990fd26bda073425dd21ca5c3998b88873234c9b22ae910d5f"
+      },
+      "ast_equal": true,
+      "ast_sha256": "2d6b2dadb06aab018167c372110076e92349aebb181862ee9c3882edd86b0c50",
+      "whitespace_insensitive_token_equal": false,
+      "comments_unchanged": true,
+      "token_changes": [
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        }
+      ],
+      "token_change_summary": {
+        "only_formatter_punctuation_insertions": true,
+        "inserted_token_counts": {
+          ",": 7
+        },
+        "existing_non_whitespace_tokens_preserved_in_order": true,
+        "strict_whitespace_insensitive_token_equality": false,
+        "explanation": "Ruff inserted trailing commas and grouping parentheses. Complete AST including type comments is unchanged."
+      },
+      "test_names_unchanged": true,
+      "test_names": [
+        "test_old_and_current_revisions_survive_all_nonoracle_selections",
+        "test_census_generated_before_scoring_and_model_text_is_never_executed",
+        "test_configuration_parser_is_conservative_not_a_shell",
+        "test_oracle_keeps_original_bytes_and_rejects_missing_constraint"
+      ],
+      "assertion_ast_unchanged": true,
+      "assertion_ast_count": 20
+    },
+    {
+      "path": "scripts/memory_cell/test_procedural_observations.py",
+      "before": {
+        "bytes": 6150,
+        "git_blob": "42c4c1c2bd228b287c741d69fe84ee4aef3ed754",
+        "sha256": "0b07d32078cdf78f7a1c52f46c8c235dd46a2cb82fd685f5a57b7a1ef5adf496"
+      },
+      "after": {
+        "bytes": 6727,
+        "git_blob": "5e9dfc42bf4f9fab63d1d7272e44b9df77d31f67",
+        "sha256": "16e1d1259d252c44bc2f82e73581d9b6cd27cbb96b2e7a7703414c000f34a2b1"
+      },
+      "ast_equal": true,
+      "ast_sha256": "a01e7739feb3f225cc3a8bffba37e7b63b32e4aab9485307bd407cf1d2ffe882",
+      "whitespace_insensitive_token_equal": false,
+      "comments_unchanged": true,
+      "token_changes": [
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ],
+            [
+              55,
+              ")"
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              "("
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ")"
+            ],
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        },
+        {
+          "op": "insert",
+          "before": [],
+          "after": [
+            [
+              55,
+              ","
+            ]
+          ]
+        }
+      ],
+      "token_change_summary": {
+        "only_formatter_punctuation_insertions": true,
+        "inserted_token_counts": {
+          "(": 2,
+          ",": 7,
+          ")": 2
+        },
+        "existing_non_whitespace_tokens_preserved_in_order": true,
+        "strict_whitespace_insensitive_token_equality": false,
+        "explanation": "Ruff inserted trailing commas and grouping parentheses. Complete AST including type comments is unchanged."
+      },
+      "test_names_unchanged": true,
+      "test_names": [
+        "test_complete_census_is_reconstructed_from_all_actual_exit_records",
+        "test_mutated_projection_or_exit_result_cannot_become_observed_fact",
+        "test_component_and_joint_results_must_agree",
+        "test_missing_duplicate_and_foreign_records_fail_closed",
+        "test_only_bounded_static_program_inputs_are_accepted",
+        "test_timeout_is_retained_and_not_a_negative_training_label",
+        "test_source_output_and_external_pin_are_all_checked"
+      ],
+      "assertion_ast_unchanged": true,
+      "assertion_ast_count": 18
+    }
+  ],
+  "configs_byte_identical": true,
+  "all_ASTs_equal": true,
+  "all_comments_unchanged": true,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "tests_run": false,
+  "remote_changed": false,
+  "audit_repo_changed": false,
+  "all_token_edits_are_AST_neutral_formatter_punctuation": true,
+  "patch_sha256": "ba0bc906400cfef560ae005fe18f91fb5d9244bd30d951db6bbfd98aed7e70d9",
+  "decision": "APPROVE_FOUR_FILE_LOCKED_RUFF_FORMAT_ONLY_CHANGE",
+  "limitations": [
+    "Strict token equality ignoring whitespace is false because Ruff adds commas and parentheses. All original tokens remain in order; AST and comments equality hold.",
+    "No tests executed. Formatting check covered exactly the four changed files; full repo fmt-check belongs to final candidate validation."
+  ]
+}

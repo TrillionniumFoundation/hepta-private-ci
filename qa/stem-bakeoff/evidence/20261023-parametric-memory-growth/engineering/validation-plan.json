@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.parametric-memory.next-stage-local-test-plan.v1",
+  "unique_test_methods_planned": 46,
+  "suites": [
+    {
+      "name": "existing parametric",
+      "test_methods": 27,
+      "log": "hardening/parametric-tests.log"
+    },
+    {
+      "name": "new admission hardening",
+      "test_methods": 7,
+      "log": "hardening/focused-tests.log"
+    },
+    {
+      "name": "catalog after admission hardening",
+      "test_methods": 6,
+      "log": "selection/catalog-after-admission-hardening.log"
+    },
+    {
+      "name": "new growth plus portability",
+      "test_methods": 6,
+      "log": "../memory-growth-validation-20261023/test-growth-portability-direct.log"
+    }
+  ],
+  "legacy_evolution_tie_regression": "Included in existing parametric27; separate4-suite run is not double counted.",
+  "prior_qa36": "Previous-turn results remain evidence for old source; not relabelled as rerun here.",
+  "required_formatter": "just fmt after code/tests; no test rerun after formatter",
+  "production_accepted": false
+}

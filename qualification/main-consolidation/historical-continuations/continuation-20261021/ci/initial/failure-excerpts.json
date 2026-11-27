@@ -1,0 +1,1847 @@
+[
+  {
+    "job_id": 118400342228,
+    "run_id": 39352639249,
+    "log": "job-118400342228.log",
+    "sha256": "5abb7ebc21603ef9b4ffdb2ec05ba66c0c4df01bbbefe22e65db2f92192fc2d1",
+    "matches": [
+      {
+        "line": 7918,
+        "context": [
+          "2026-10-20T01:35:18.1587605Z rustc-LLVM ERROR: IO failure on output stream: No space left on device",
+          "2026-10-20T01:35:18.1957730Z ##[warning]You are running out of disk space. The runner will stop working when the machine runs out of disk space. Free space left: 0 MB",
+          "2026-10-20T01:35:18.5708581Z error: could not compile `codex-app-server` (test \"all\")",
+          "2026-10-20T01:35:18.5723130Z "
+        ]
+      },
+      {
+        "line": 7923,
+        "context": [
+          "2026-10-20T01:35:18.5748039Z   No space left on device (os error 28)",
+          "2026-10-20T01:35:18.5753022Z ",
+          "2026-10-20T01:35:18.5753237Z Caused by:",
+          "2026-10-20T01:35:18.6607746Z   failed to parse process output: `/home/runner/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name all --edition=2024 app-server/tests/all.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=1 '--deny=clippy::correctness' '--deny=clippy::unwrap_used' '--warn=clippy::unnecessary_to_owned' '--warn=clippy::unnecessary_sort_by' '--warn=clippy::unnecessary_lazy_evaluations' '--warn=clippy::unnecessary_filter_map' '--warn=clippy::uninlined_format_args' '--warn=clippy::trivially_copy_pass_by_ref' '--warn=clippy::redundant_static_lifetimes' '--warn=clippy::redundant_closure_for_method_calls' '--warn=clippy::redundant_closure' '--warn=clippy::redundant_clone' '--warn=clippy::needless_update' '--warn=clippy::needless_question_mark' '--warn=clippy::needless_option_as_deref' '--warn=clippy::needless_late_init' '--warn=clippy::needless_collect' '--warn=clippy::needl"
+        ]
+      },
+      {
+        "line": 7963,
+        "context": [
+          "2026-10-20T01:35:19.8514468Z error: failed to write file /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/debug/incremental/queue_service-1fa3nx7as14na/s-hndgt4cdok-0t75c30-working/dep-graph.part.bin: No space left on device (os error 28)\"",
+          "2026-10-20T01:35:19.8520063Z ",
+          "2026-10-20T01:35:19.9643835Z error: could not compile `codex-queue-extension` (test \"queue_service\") due to 1 previous error",
+          "2026-10-20T01:35:33.3408112Z error: command `/home/runner/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package app_test_support --package codex-agent-extension --package codex-agent-graph-store --package codex-agent-identity --package codex-analytics --package codex-api --package codex-app-server --package codex-app-server-client --package codex-app-server-daemon --package codex-app-server-protocol --package codex-app-server-test-client --package codex-app-server-transport --package codex-apply-patch --package codex-arg0 --package codex-backend-client --package codex-bwrap --package codex-chatgpt --package codex-cli --package codex-client --package codex-cloud-config --package codex-cloud-tasks --package codex-cloud-tasks-client --package codex-cloud-tasks-mock-client --package codex-code-mode --package codex-code-mode-host --package codex-code-mode-protocol --package codex-code-mode-runtime --package codex-config"
+        ]
+      }
+    ]
+  },
+  {
+    "job_id": 118508544531,
+    "run_id": 39386823474,
+    "log": "job-118508544531.log",
+    "sha256": "4b8721e162eda18f4ea0eda79412e377f854737d1616df0d7293c8f284672d00",
+    "matches": [
+      {
+        "line": 7309,
+        "context": [
+          "2026-10-20T07:31:06.8249515Z hepta_repository_controls.ControlError: Write transport did not return an explicit permission denial; authorization is unknown",
+          "2026-10-20T07:31:06.8413657Z ##[error]Process completed with exit code 1.",
+          "2026-10-20T07:31:06.8451830Z ##[group]Run set -euo pipefail",
+          "2026-10-20T07:31:06.8452142Z set -euo pipefail"
+        ]
+      }
+    ]
+  },
+  {
+    "job_id": 118869743561,
+    "run_id": 39490343525,
+    "log": "job-118869743561.log",
+    "sha256": "ca77015646db8833f536e15485567d4e48ac279c30c0757b906fa7a33a2aeb0b",
+    "matches": [
+      {
+        "line": 645,
+        "context": [
+          "2026-10-20T20:33:12.2052196Z ##[error]error: RPC failed; HTTP 503 curl 22 The requested URL returned error: 503",
+          "2026-10-20T20:33:12.2053991Z ##[error]fatal: expected 'packfile'",
+          "2026-10-20T20:33:12.2056579Z ##[error]fatal: clone of 'https://chromium.googlesource.com/external/github.com/jk-jeon/dragonbox.git' into submodule path 'D:/a/hepta-private-ci/hepta-private-ci/upstream-rusty-v8/third_party/dragonbox/src' failed",
+          "2026-10-20T20:33:12.2058111Z Failed to clone 'third_party/dragonbox/src'. Retry scheduled"
+        ]
+      },
+      {
+        "line": 693,
+        "context": [
+          "2026-10-20T20:33:51.5734896Z Failed to clone 'buildtools' a second time, aborting",
+          "2026-10-20T20:33:51.5825177Z ##[group]Removing auth",
+          "2026-10-20T20:33:51.5825554Z Removing SSH command configuration",
+          "2026-10-20T20:33:51.5834932Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" config --local --name-only --get-regexp core\\.sshCommand"
+        ]
+      }
+    ]
+  },
+  {
+    "job_id": 118896513560,
+    "run_id": 39490343769,
+    "log": "job-118896513560.log",
+    "sha256": "8862428404cd41236a78aa2fea5fb7abc2a29f1cb521fed009e5289361dd21b4",
+    "matches": [
+      {
+        "line": 10932,
+        "context": [
+          "2026-10-20T23:55:04.3021270Z WARNING: Remote Cache: No space left on device",
+          "2026-10-20T23:55:04.4192100Z [16,906 / 18,724] Compiling Rust bin //codex-rs/app-server:app-server-unit-tests-bin (103 files); 100s disk-cache, local ... (30 actions, 4 running)",
+          "2026-10-20T23:55:05.5728430Z [16,909 / 18,724] Compiling src/objects/map-updater.cc; 20s disk-cache, darwin-sandbox ... (30 actions, 3 running)",
+          "2026-10-20T23:55:10.2622230Z [16,909 / 18,724] Compiling src/objects/map-updater.cc; 24s disk-cache, darwin-sandbox ... (30 actions, 4 running)"
+        ]
+      },
+      {
+        "line": 11022,
+        "context": [
+          "2026-10-20T23:56:13.5303730Z zstd: error 70 : Write error : cannot write block : No space left on device ",
+          "2026-10-20T23:56:13.5478790Z /opt/homebrew/bin/gtar: cache.tzst: Cannot write: Broken pipe",
+          "2026-10-20T23:56:13.5479940Z /opt/homebrew/bin/gtar: Child returned status 70",
+          "2026-10-20T23:56:13.5480800Z /opt/homebrew/bin/gtar: Error is not recoverable: exiting now"
+        ]
+      }
+    ]
+  },
+  {
+    "job_id": 118896513689,
+    "run_id": 39490343769,
+    "log": "job-118896513689.log",
+    "sha256": "68caa085421f727fa8f778862c59f6f0c3344b50b53f06cc8480900888109ea5",
+    "matches": [
+      {
+        "line": 3727,
+        "context": [
+          "2026-10-20T22:30:30.0971925Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (7396) panicked at git-utils/src\\git_process_tests.rs:121:13:",
+          "2026-10-20T22:30:30.0990427Z wait for Git wrapper child readiness: Err(Elapsed(())); wrapper status before cleanup: Ok(None); child PID file \"D:\\\\tmp\\\\.tmp0yLdVN\\\\child.pid\": Err(Os { code: 2, kind: NotFound, message: \"The system cannot find the file specified.\" }); child ready file \"D:\\\\tmp\\\\.tmp0yLdVN\\\\child-ready\": Ok(false); wrapper output after cleanup: status: exit code: 0; stdout:",
+          "2026-10-20T22:30:30.1002865Z ",
+          "2026-10-20T22:30:30.1022679Z stderr:"
+        ]
+      },
+      {
+        "line": 3736,
+        "context": [
+          "2026-10-20T22:30:30.1345226Z thread 'git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running' (5144) panicked at git-utils/src\\git_process_tests.rs:121:13:",
+          "2026-10-20T22:30:30.1401459Z wait for Git wrapper child readiness: Err(Elapsed(())); wrapper status before cleanup: Ok(None); child PID file \"D:\\\\tmp\\\\.tmpxnA2qu\\\\child.pid\": Err(Os { code: 2, kind: NotFound, message: \"The system cannot find the file specified.\" }); child ready file \"D:\\\\tmp\\\\.tmpxnA2qu\\\\child-ready\": Ok(false); wrapper output after cleanup: status: exit code: 0; stdout:",
+          "2026-10-20T22:30:30.1497036Z ",
+          "2026-10-20T22:30:30.1554300Z stderr:"
+        ]
+      },
+      {
+        "line": 4373,
+        "context": [
+          "2026-10-20T22:44:16.1286204Z thread 'guardian::tests::guardian_reuses_prompt_cache_key_and_appends_prior_reviews' (6052) panicked at core/src\\guardian\\tests.rs:2432:5:",
+          "2026-10-20T22:44:16.1287049Z assertion failed: `(left == right)`: follow-up reminder should be persisted for guardian forks",
+          "2026-10-20T22:44:16.1287411Z ",
+          "2026-10-20T22:44:16.1287533Z Diff < left / right > :"
+        ]
+      },
+      {
+        "line": 4615,
+        "context": [
+          "2026-10-20T22:44:43.1692753Z thread 'agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context' (5564) panicked at core/src\\agent\\control_tests.rs:393:10:",
+          "2026-10-20T22:44:43.1694677Z inject thread resume context: InvalidRequest(\"turn is terminalizing or shutting down and cannot accept injected context\")",
+          "2026-10-20T22:44:43.1696001Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:44:43.1697454Z "
+        ]
+      },
+      {
+        "line": 4715,
+        "context": [
+          "2026-10-20T22:44:43.1786254Z thread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (2664) panicked at core/src\\environment_selection.rs:1284:9:",
+          "2026-10-20T22:44:43.1788284Z blocking snapshot should contain its environment wait span: 2026-10-20T22:42:06.628502Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new",
+          "2026-10-20T22:44:43.1790102Z 2026-10-20T22:42:06.629632Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new",
+          "2026-10-20T22:44:43.1791707Z 2026-10-20T22:42:06.629739Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new"
+        ]
+      }
+    ]
+  },
+  {
+    "job_id": 118912167995,
+    "run_id": 39496724981,
+    "log": "job-118912167995.log",
+    "sha256": "cf05beaa9d9b1f595401447284cd57e53e4da7214e84045fca374ca359667be1",
+    "matches": [
+      {
+        "line": 2965,
+        "context": [
+          "2026-10-20T22:38:44.5198674Z thread 'evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port' (1924) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+          "2026-10-20T22:38:44.5207845Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.5235775Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:38:44.5250443Z "
+        ]
+      },
+      {
+        "line": 2971,
+        "context": [
+          "2026-10-20T22:38:44.5278118Z thread 'evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage' (8644) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+          "2026-10-20T22:38:44.5285189Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.5292471Z ",
+          "2026-10-20T22:38:44.5335738Z ---- evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes stdout ----"
+        ]
+      },
+      {
+        "line": 2976,
+        "context": [
+          "2026-10-20T22:38:44.5356237Z thread 'evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes' (2352) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+          "2026-10-20T22:38:44.5397457Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.5435717Z ",
+          "2026-10-20T22:38:44.5457896Z ---- evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome stdout ----"
+        ]
+      },
+      {
+        "line": 2981,
+        "context": [
+          "2026-10-20T22:38:44.5498265Z thread 'evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome' (680) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+          "2026-10-20T22:38:44.5507162Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.5515270Z ",
+          "2026-10-20T22:38:44.5516177Z ---- evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal stdout ----"
+        ]
+      },
+      {
+        "line": 2986,
+        "context": [
+          "2026-10-20T22:38:44.5542465Z thread 'evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal' (4644) panicked at hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31:",
+          "2026-10-20T22:38:44.5551569Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.5552106Z ",
+          "2026-10-20T22:38:44.5552619Z ---- evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch stdout ----"
+        ]
+      },
+      {
+        "line": 2991,
+        "context": [
+          "2026-10-20T22:38:44.5594992Z thread 'evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch' (3108) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+          "2026-10-20T22:38:44.5616478Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.5619658Z ",
+          "2026-10-20T22:38:44.5620561Z ---- evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded stdout ----"
+        ]
+      },
+      {
+        "line": 2996,
+        "context": [
+          "2026-10-20T22:38:44.5777352Z thread 'evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded' (2012) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+          "2026-10-20T22:38:44.5778596Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.5813958Z ",
+          "2026-10-20T22:38:44.5837356Z ---- outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation stdout ----"
+        ]
+      },
+      {
+        "line": 3001,
+        "context": [
+          "2026-10-20T22:38:44.5901644Z thread 'outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation' (3312) panicked at hepta-intelligence/src\\outcome_credit_v2.rs:378:43:",
+          "2026-10-20T22:38:44.6018364Z directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.6231149Z ",
+          "2026-10-20T22:38:44.6307633Z ---- outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit stdout ----"
+        ]
+      },
+      {
+        "line": 3006,
+        "context": [
+          "2026-10-20T22:38:44.6377131Z thread 'outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit' (1696) panicked at hepta-intelligence/src\\outcome_credit_v2.rs:378:43:",
+          "2026-10-20T22:38:44.6381730Z directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.6382203Z ",
+          "2026-10-20T22:38:44.6459131Z ---- outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append stdout ----"
+        ]
+      },
+      {
+        "line": 3011,
+        "context": [
+          "2026-10-20T22:38:44.6791870Z thread 'outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append' (6956) panicked at hepta-intelligence/src\\outcome_credit_v2.rs:378:43:",
+          "2026-10-20T22:38:44.6926337Z directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.7024713Z ",
+          "2026-10-20T22:38:44.7026160Z ---- evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports stdout ----"
+        ]
+      },
+      {
+        "line": 3016,
+        "context": [
+          "2026-10-20T22:38:44.7044450Z thread 'evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports' (7212) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+          "2026-10-20T22:38:44.7046399Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.7105974Z ",
+          "2026-10-20T22:38:44.7146014Z ---- evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery stdout ----"
+        ]
+      },
+      {
+        "line": 3021,
+        "context": [
+          "2026-10-20T22:38:44.7266242Z thread 'evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery' (1868) panicked at hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31:",
+          "2026-10-20T22:38:44.7425439Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:38:44.7469080Z ",
+          "2026-10-20T22:38:44.7485777Z "
+        ]
+      },
+      {
+        "line": 3537,
+        "context": [
+          "2026-10-20T22:42:04.0221661Z thread 'authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen' (4524) panicked at hepta-authbus/src\\authority_schema_tests.rs:29:60:",
+          "2026-10-20T22:42:04.0234035Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T22:42:04.0248558Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:42:04.0253422Z "
+        ]
+      },
+      {
+        "line": 3734,
+        "context": [
+          "2026-10-20T22:42:04.1521814Z thread 'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes' (2352) panicked at windows-sandbox-rs/src\\token_tests.rs:213:5:",
+          "2026-10-20T22:42:04.1529514Z assertion failed: `(left == right)`",
+          "2026-10-20T22:42:04.1530098Z ",
+          "2026-10-20T22:42:04.1531476Z Diff < left / right > :"
+        ]
+      },
+      {
+        "line": 3751,
+        "context": [
+          "2026-10-20T22:42:04.1739907Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (8112) panicked at windows-sandbox-rs/src\\token_tests.rs:280:5:",
+          "2026-10-20T22:42:04.1741257Z assertion failed: `(left == right)`",
+          "2026-10-20T22:42:04.1741518Z ",
+          "2026-10-20T22:42:04.1745364Z Diff < left / right > :"
+        ]
+      },
+      {
+        "line": 3776,
+        "context": [
+          "2026-10-20T22:42:04.1803080Z thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (5116) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:775:9:",
+          "2026-10-20T22:42:04.1803779Z assertion failed: `(left == right)`: stdout=\"\"",
+          "2026-10-20T22:42:04.1807465Z [2026-10-20 22:41:34.214 windows-sandbox-rs-unit-tests-bin.exe] START: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpytuvFG\\workspace\\delete-fixtures.cmd",
+          "2026-10-20T22:42:04.1808252Z "
+        ]
+      },
+      {
+        "line": 4006,
+        "context": [
+          "2026-10-20T22:42:04.2393398Z thread 'proxy::tests::reserve_windows_managed_listeners_preserves_http_when_socks_port_is_busy' (8012) panicked at network-proxy/src\\proxy.rs:2410:9:",
+          "2026-10-20T22:42:04.2394068Z assertion failed: `(left == right)`",
+          "2026-10-20T22:42:04.2398044Z ",
+          "2026-10-20T22:42:04.2398269Z Diff < left / right > :"
+        ]
+      },
+      {
+        "line": 4185,
+        "context": [
+          "2026-10-20T22:42:22.5926479Z thread 'lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue' (2484) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:31:10:",
+          "2026-10-20T22:42:22.5978531Z called `Result::unwrap()` on an `Err` value: Unavailable",
+          "2026-10-20T22:42:22.6205921Z ",
+          "2026-10-20T22:42:22.6306454Z ---- lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown stdout ----"
+        ]
+      },
+      {
+        "line": 4190,
+        "context": [
+          "2026-10-20T22:42:22.6616507Z thread 'lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown' (7024) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:190:10:",
+          "2026-10-20T22:42:22.6638579Z called `Result::unwrap()` on an `Err` value: Unavailable",
+          "2026-10-20T22:42:22.6664818Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:42:22.6698903Z "
+        ]
+      },
+      {
+        "line": 4196,
+        "context": [
+          "2026-10-20T22:42:22.7048228Z thread 'lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal' (6060) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:217:10:",
+          "2026-10-20T22:42:22.7234678Z called `Result::unwrap()` on an `Err` value: Unavailable",
+          "2026-10-20T22:42:22.7299373Z ",
+          "2026-10-20T22:42:22.7301537Z ---- lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation stdout ----"
+        ]
+      },
+      {
+        "line": 4201,
+        "context": [
+          "2026-10-20T22:42:22.7388654Z thread 'lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation' (9116) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:84:14:",
+          "2026-10-20T22:42:22.7420051Z called `Result::unwrap()` on an `Err` value: Unavailable",
+          "2026-10-20T22:42:22.7420523Z ",
+          "2026-10-20T22:42:22.7433924Z ---- lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts stdout ----"
+        ]
+      },
+      {
+        "line": 4206,
+        "context": [
+          "2026-10-20T22:42:22.7678592Z thread 'lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts' (4048) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:66:10:",
+          "2026-10-20T22:42:22.7684157Z called `Result::unwrap()` on an `Err` value: Unavailable",
+          "2026-10-20T22:42:22.7720065Z ",
+          "2026-10-20T22:42:22.7900439Z ---- lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation stdout ----"
+        ]
+      },
+      {
+        "line": 4211,
+        "context": [
+          "2026-10-20T22:42:22.8047128Z thread 'lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation' (4660) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:150:10:",
+          "2026-10-20T22:42:22.8060425Z called `Result::unwrap()` on an `Err` value: Unavailable",
+          "2026-10-20T22:42:22.8100322Z ",
+          "2026-10-20T22:42:22.8125178Z ---- lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled stdout ----"
+        ]
+      },
+      {
+        "line": 4216,
+        "context": [
+          "2026-10-20T22:42:22.8478161Z thread 'lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled' (8972) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:108:10:",
+          "2026-10-20T22:42:22.8623627Z called `Result::unwrap()` on an `Err` value: Unavailable",
+          "2026-10-20T22:42:22.8768906Z ",
+          "2026-10-20T22:42:22.8795103Z "
+        ]
+      },
+      {
+        "line": 4278,
+        "context": [
+          "2026-10-20T22:42:33.2275218Z thread 'v1_store_migrates_atomically_to_dispatch_outcome_schema' (1244) panicked at hepta-automation/tests/automation.rs:1039:10:",
+          "2026-10-20T22:42:33.2276233Z remove v14 run revision from v1 fixture: Database(SqliteError { code: 1, message: \"error in trigger automation_timer_lifecycle_drain: no such table: main.automation_dispatch_outcomes\" })",
+          "2026-10-20T22:42:33.2280049Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:42:33.2280271Z "
+        ]
+      },
+      {
+        "line": 4417,
+        "context": [
+          "2026-10-20T22:43:43.2999759Z thread 'cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation' (8968) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:163:6:",
+          "2026-10-20T22:43:43.3003846Z descriptor-bound writable recovery: Indeterminate(\"cognitive recovery root is redirected\")",
+          "2026-10-20T22:43:43.3004508Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:43:43.3004866Z "
+        ]
+      },
+      {
+        "line": 4423,
+        "context": [
+          "2026-10-20T22:43:43.3010151Z thread 'cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate' (5584) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48:",
+          "2026-10-20T22:43:43.3011740Z pointer rename: Unavailable(\"Access is denied. (os error 5)\")",
+          "2026-10-20T22:43:43.3012029Z ",
+          "2026-10-20T22:43:43.3015701Z ---- cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers stdout ----"
+        ]
+      },
+      {
+        "line": 4428,
+        "context": [
+          "2026-10-20T22:43:43.3016789Z thread 'cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers' (1908) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:291:5:",
+          "2026-10-20T22:43:43.3017689Z assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+          "2026-10-20T22:43:43.3021412Z     CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor), &authority,",
+          "2026-10-20T22:43:43.3021995Z     &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))"
+        ]
+      },
+      {
+        "line": 4435,
+        "context": [
+          "2026-10-20T22:43:43.3026618Z thread 'cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission' (8348) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:365:5:",
+          "2026-10-20T22:43:43.3027792Z assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+          "2026-10-20T22:43:43.3028396Z     CognitiveRecoveryRequirement::ExactCurrentCut(&tampered), &authority,",
+          "2026-10-20T22:43:43.3032198Z     &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))"
+        ]
+      },
+      {
+        "line": 4442,
+        "context": [
+          "2026-10-20T22:43:43.3037124Z thread 'cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence' (4440) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:248:5:",
+          "2026-10-20T22:43:43.3038212Z assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+          "2026-10-20T22:43:43.3038805Z     CognitiveRecoveryRequirement::ExactCurrentCut(&anchor), &authority,",
+          "2026-10-20T22:43:43.3042488Z     &RecoveryVerifier,).await, Err(CognitiveRecoveryError::Unavailable(_)))"
+        ]
+      },
+      {
+        "line": 4546,
+        "context": [
+          "2026-10-20T22:43:43.3208293Z thread 'cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection' (7364) panicked at hepta-memory/src\\cognitive_store_tests.rs:1094:5:",
+          "2026-10-20T22:43:43.3209141Z assertion failed: `(left == right)`",
+          "2026-10-20T22:43:43.3209375Z ",
+          "2026-10-20T22:43:43.3209482Z Diff < left / right > :"
+        ]
+      },
+      {
+        "line": 4918,
+        "context": [
+          "2026-10-20T22:48:40.8396327Z thread 'tests::thread_read_recovery_keeps_in_progress_indeterminate' (5216) panicked at hepta-codex-adapter/src\\lib_tests.rs:133:6:",
+          "2026-10-20T22:48:40.8400516Z called `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)",
+          "2026-10-20T22:48:40.8401576Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:48:40.8402755Z "
+        ]
+      },
+      {
+        "line": 4924,
+        "context": [
+          "2026-10-20T22:48:40.8417309Z thread 'tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns' (2044) panicked at hepta-codex-adapter/src\\lib_tests.rs:133:6:",
+          "2026-10-20T22:48:40.8429654Z called `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)",
+          "2026-10-20T22:48:40.8441015Z ",
+          "2026-10-20T22:48:40.8453718Z ---- tests::thread_read_recovery_requires_exact_stable_message_and_input stdout ----"
+        ]
+      },
+      {
+        "line": 4929,
+        "context": [
+          "2026-10-20T22:48:40.8586393Z thread 'tests::thread_read_recovery_requires_exact_stable_message_and_input' (3224) panicked at hepta-codex-adapter/src\\lib_tests.rs:133:6:",
+          "2026-10-20T22:48:40.8600288Z called `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)",
+          "2026-10-20T22:48:40.8616220Z ",
+          "2026-10-20T22:48:40.8721569Z "
+        ]
+      },
+      {
+        "line": 5289,
+        "context": [
+          "2026-10-20T22:55:20.5382787Z thread 'request_processors::feedback_processor::tests::doctor_uses_loaded_feedback_thread_cwd' (9124) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T22:55:20.5387704Z `CARGO_BIN_EXE_codex` is unset",
+          "2026-10-20T22:55:20.5391295Z help: if this is running within a unit test, move it to an integration test to gain access to `CARGO_BIN_EXE_codex`",
+          "2026-10-20T22:55:20.5397531Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "line": 5290,
+        "context": [
+          "2026-10-20T22:55:20.5387704Z `CARGO_BIN_EXE_codex` is unset",
+          "2026-10-20T22:55:20.5391295Z help: if this is running within a unit test, move it to an integration test to gain access to `CARGO_BIN_EXE_codex`",
+          "2026-10-20T22:55:20.5397531Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:55:20.5398179Z "
+        ]
+      },
+      {
+        "line": 5455,
+        "context": [
+          "2026-10-20T22:55:20.5999893Z thread 'tests::embedding_runtime_sqlite_home_constraint_is_exact' (5808) panicked at app-server/src/lib.rs:1841:9:",
+          "2026-10-20T22:55:20.6000455Z assertion failed: `(left == right)`",
+          "2026-10-20T22:55:20.6000685Z ",
+          "2026-10-20T22:55:20.6000795Z Diff < left / right > :"
+        ]
+      },
+      {
+        "line": 5621,
+        "context": [
+          "2026-10-20T22:55:30.6657941Z thread 'native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start' (10056) panicked at hepta-infer-worker-host/src\\native_app_server_tests.rs:411:10:",
+          "2026-10-20T22:55:30.6659287Z physical turn start",
+          "2026-10-20T22:55:30.6659836Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:55:30.6662377Z "
+        ]
+      },
+      {
+        "line": 5909,
+        "context": [
+          "2026-10-20T22:58:50.4329839Z thread 'suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip_in_full_access' (10160) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:50.4334707Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:50.4335899Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:58:50.4336267Z "
+        ]
+      },
+      {
+        "line": 5957,
+        "context": [
+          "2026-10-20T22:58:50.4561387Z thread 'suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2' (9236) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:50.4563166Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:50.4563990Z ",
+          "2026-10-20T22:58:50.4563994Z "
+        ]
+      },
+      {
+        "line": 6115,
+        "context": [
+          "2026-10-20T22:58:50.5237850Z thread 'suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_2_unlinked_pull_request' (6308) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:50.5242763Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:50.5243890Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:58:50.5249067Z [mcp stderr] 2026-10-20T22:53:46.825922Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: handshaking with MCP server failed: Send message error Transport [codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: unexpected server response: HTTP 404: , when send initialize request"
+        ]
+      },
+      {
+        "line": 6451,
+        "context": [
+          "2026-10-20T22:58:50.6716917Z thread 'suite::v2::mcp_server_elicitation::mcp_server_openai_form_elicitation_round_trip' (5688) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:50.6718206Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:50.6724200Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:58:50.6724552Z "
+        ]
+      },
+      {
+        "line": 6615,
+        "context": [
+          "2026-10-20T22:58:50.7304669Z thread 'suite::v2::turn_start::turn_start_change_personality_mid_thread_v2' (9112) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:50.7310173Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:50.7311068Z ",
+          "2026-10-20T22:58:50.7311072Z "
+        ]
+      },
+      {
+        "line": 6779,
+        "context": [
+          "2026-10-20T22:58:50.7848967Z thread 'suite::v2::thread_revert::thread_revert_replaces_paginated_history_before_turn' (9604) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:50.7850124Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:50.7850754Z ",
+          "2026-10-20T22:58:50.7850775Z "
+        ]
+      },
+      {
+        "line": 6814,
+        "context": [
+          "2026-10-20T22:58:50.8007466Z thread 'suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db' (2020) panicked at exec/tests\\suite\\resume.rs:290:10:",
+          "2026-10-20T22:58:50.8015216Z Unexpected failure.",
+          "2026-10-20T22:58:50.8015610Z code=1",
+          "2026-10-20T22:58:50.8016343Z stderr=```\"Error: thread/resume: thread/resume failed: thread 01a15b81-109f-719a-befa-d245d60cdd16 is sealed for hard deletion and cannot be resumed (code -32600)\\n\"```"
+        ]
+      },
+      {
+        "line": 7008,
+        "context": [
+          "2026-10-20T22:58:50.8337619Z thread 'suite::v2::thread_list::thread_list_reports_system_error_idle_flag_after_failed_turn' (9964) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:50.8338185Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:50.8338347Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:58:50.8338353Z "
+        ]
+      },
+      {
+        "line": 7041,
+        "context": [
+          "2026-10-20T22:58:50.8415641Z thread 'suite::v2::thread_resume::thread_resume_rejoins_running_paginated_thread_with_initial_page' (6104) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:50.8416454Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:50.8416477Z ",
+          "2026-10-20T22:58:50.8416481Z "
+        ]
+      },
+      {
+        "line": 7172,
+        "context": [
+          "2026-10-20T22:58:50.8615835Z thread 'suite::v2::guardian_v2::guardian_v2_high_risk_actions_require_full_reviews::test_case_1_approved_evidence' (9396) panicked at app-server/tests\\suite\\v2\\guardian_v2.rs:652:5:",
+          "2026-10-20T22:58:50.8618548Z assertion failed: `(left == right)`",
+          "2026-10-20T22:58:50.8618574Z ",
+          "2026-10-20T22:58:50.8618790Z Diff < left / right > :"
+        ]
+      },
+      {
+        "line": 7440,
+        "context": [
+          "2026-10-20T22:58:51.3433263Z thread 'suite::v2::compaction::auto_compaction_remote_emits_started_and_completed_items' (4316) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:51.3435214Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:51.3440410Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:58:51.3442837Z [mcp stderr] 2026-10-20T22:50:34.765235Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: handshaking with MCP server failed: Send message error Transport [codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: unexpected server response: HTTP 404: , when send initialize request"
+        ]
+      },
+      {
+        "line": 7482,
+        "context": [
+          "2026-10-20T22:58:51.4662046Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden' (9408) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:51.4692949Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:51.4708758Z [mcp stderr] 2026-10-20T22:50:36.949733Z  WARN codex_analytics::client: events failed with status 404 Not Found: ",
+          "2026-10-20T22:58:51.4714388Z "
+        ]
+      },
+      {
+        "line": 7518,
+        "context": [
+          "2026-10-20T22:58:51.4987753Z thread 'suite::v2::thread_fork::thread_fork_at_last_turn_id_keeps_only_terminal_prefix' (9304) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:51.4993116Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:51.4993845Z ",
+          "2026-10-20T22:58:51.4994177Z ---- suite::v2::residency::managed_residency_overrides_provider_headers::test_case_2_websocket stdout ----"
+        ]
+      },
+      {
+        "line": 7552,
+        "context": [
+          "2026-10-20T22:58:51.6323023Z thread 'suite::v2::residency::managed_residency_overrides_provider_headers::test_case_2_websocket' (7376) panicked at app-server/tests\\suite\\v2\\residency.rs:166:5:",
+          "2026-10-20T22:58:51.6397752Z assertion failed: `(left == right)`",
+          "2026-10-20T22:58:51.6399090Z ",
+          "2026-10-20T22:58:51.6399307Z Diff < left / right > :"
+        ]
+      },
+      {
+        "line": 8129,
+        "context": [
+          "2026-10-20T22:58:51.8894921Z thread 'suite::v2::compaction::auto_compaction_local_emits_started_and_completed_items' (8952) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:51.8897473Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:51.8898609Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:58:51.8898917Z "
+        ]
+      },
+      {
+        "line": 8170,
+        "context": [
+          "2026-10-20T22:58:51.9301825Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_10_app_reviewer_noncanonical_id' (1252) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:51.9303176Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:51.9304147Z [mcp stderr] 2026-10-20T22:51:42.257527Z  WARN codex_analytics::client: events failed with status 404 Not Found: ",
+          "2026-10-20T22:58:51.9304522Z "
+        ]
+      },
+      {
+        "line": 8212,
+        "context": [
+          "2026-10-20T22:58:51.9493817Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_4_full_access' (9396) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:51.9495699Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: turn start is fenced while the session is terminalizing\" }, id: Integer(3) })",
+          "2026-10-20T22:58:51.9497101Z ",
+          "2026-10-20T22:58:51.9497107Z "
+        ]
+      },
+      {
+        "line": 8674,
+        "context": [
+          "2026-10-20T22:58:52.1163140Z thread 'suite::v2::thread_resume::thread_resume_replays_pending_command_execution_request_approval' (2624) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.1164988Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:52.1165023Z ",
+          "2026-10-20T22:58:52.1165027Z "
+        ]
+      },
+      {
+        "line": 8766,
+        "context": [
+          "2026-10-20T22:58:52.1196867Z thread 'suite::v2::bedrock_setup::setup_bedrock_profile_and_environment' (9052) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.1197664Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: \"Amazon Bedrock setup is not implemented\" }, id: Integer(1) })",
+          "2026-10-20T22:58:52.1197943Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:58:52.1197951Z "
+        ]
+      },
+      {
+        "line": 8851,
+        "context": [
+          "2026-10-20T22:58:52.1312074Z thread 'suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_1_commit_only' (3020) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.1312853Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:52.1315065Z [mcp stderr] 2026-10-20T22:49:59.699396Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: handshaking with MCP server failed: Send message error Transport [codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: unexpected server response: HTTP 404: , when send initialize request",
+          "2026-10-20T22:58:52.1315093Z "
+        ]
+      },
+      {
+        "line": 8893,
+        "context": [
+          "2026-10-20T22:58:52.1529443Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_12_app_reviewer_spoofed_action' (8028) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.1530299Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:52.1530313Z ",
+          "2026-10-20T22:58:52.1530722Z ---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_14_app_default_reviewer_user stdout ----"
+        ]
+      },
+      {
+        "line": 8934,
+        "context": [
+          "2026-10-20T22:58:52.1581934Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_14_app_default_reviewer_user' (2316) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.1582723Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:52.1582729Z ",
+          "2026-10-20T22:58:52.1583098Z ---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_9_app_reviewer_user stdout ----"
+        ]
+      },
+      {
+        "line": 8975,
+        "context": [
+          "2026-10-20T22:58:52.1636846Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_9_app_reviewer_user' (4924) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.1637686Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:52.1637691Z ",
+          "2026-10-20T22:58:52.1638024Z ---- suite::v2::thread_resume::cold_resume_reresolves_persisted_active_permission_profile stdout ----"
+        ]
+      },
+      {
+        "line": 9037,
+        "context": [
+          "2026-10-20T22:58:52.1734890Z thread 'suite::v2::thread_resume::cold_resume_reresolves_persisted_active_permission_profile' (9308) panicked at app-server/tests\\suite\\v2\\thread_resume.rs:1203:9:",
+          "2026-10-20T22:58:52.1735267Z assertion failed: !runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(previous_workspace_root.path())?)",
+          "2026-10-20T22:58:52.1735274Z ",
+          "2026-10-20T22:58:52.1735278Z "
+        ]
+      },
+      {
+        "line": 9297,
+        "context": [
+          "2026-10-20T22:58:52.2350407Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_5_three_denials_interrupt' (7860) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.2351113Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:52.2351119Z ",
+          "2026-10-20T22:58:52.2351430Z ---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_9_app_reviewer_user stdout ----"
+        ]
+      },
+      {
+        "line": 9692,
+        "context": [
+          "2026-10-20T22:58:52.3238224Z thread 'suite::v2::thread_resume::cold_resume_reresolves_persisted_active_permission_profile' (5780) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.3238813Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:52.3238820Z ",
+          "2026-10-20T22:58:52.3238825Z "
+        ]
+      },
+      {
+        "line": 9815,
+        "context": [
+          "2026-10-20T22:58:52.3378670Z thread 'suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip' (10184) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.3380064Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:52.3380421Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:58:52.3380428Z "
+        ]
+      },
+      {
+        "line": 9925,
+        "context": [
+          "2026-10-20T22:58:52.3652472Z thread 'suite::v2::thread_queue::interrupt_preserves_queue_and_queue_start_can_resume_a_non_head_item' (9032) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:",
+          "2026-10-20T22:58:52.3652570Z Verifications failed:",
+          "2026-10-20T22:58:52.3652649Z - Mock #1.",
+          "2026-10-20T22:58:52.3652804Z \tExpected range of matching incoming requests: == 4"
+        ]
+      },
+      {
+        "line": 10093,
+        "context": [
+          "2026-10-20T22:58:52.5073264Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_2_approve_for_me' (2928) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.5074027Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:58:52.5074256Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:58:52.5074261Z "
+        ]
+      },
+      {
+        "line": 10126,
+        "context": [
+          "2026-10-20T22:58:52.5113580Z thread 'suite::v2::thread_resume::thread_resume_rejects_mismatched_path_for_running_thread_id' (9668) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:58:52.5114510Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: turn start is fenced while the session is terminalizing\" }, id: Integer(3) })",
+          "2026-10-20T22:58:52.5114515Z ",
+          "2026-10-20T22:58:52.5166728Z ---- suite::v2::thread_queue::interrupt_preserves_queue_and_queue_start_can_resume_a_non_head_item stdout ----"
+        ]
+      },
+      {
+        "line": 10763,
+        "context": [
+          "2026-10-20T22:59:03.8409162Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_7_managed_guardian_disabled' (9708) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:03.8410735Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:03.8411897Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:59:03.8412207Z "
+        ]
+      },
+      {
+        "line": 10989,
+        "context": [
+          "2026-10-20T22:59:42.8339353Z thread 'suite::v2::client_metadata::turn_start_forwards_client_metadata_to_responses_request_v2' (8084) panicked at app-server/tests\\suite\\v2\\client_metadata.rs:116:5:",
+          "2026-10-20T22:59:42.8340116Z assertion failed: metadata[\"context_window_id\"].as_str().is_some_and(|window_id|",
+          "2026-10-20T22:59:42.8340570Z         uuid::Uuid::parse_str(window_id).is_ok())",
+          "2026-10-20T22:59:42.8340973Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "line": 11034,
+        "context": [
+          "2026-10-20T22:59:42.8456396Z thread 'suite::v2::git_attribution::git_attribution_follows_authenticated_workspace_policy' (5240) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:42.8458142Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:42.8459107Z ",
+          "2026-10-20T22:59:42.8459111Z "
+        ]
+      },
+      {
+        "line": 11315,
+        "context": [
+          "2026-10-20T22:59:49.3764710Z thread 'responses_stream_includes_turn_metadata_header_for_git_workspace_e2e' (8628) panicked at codex-rs/core/tests/common/lib.rs:353:14:",
+          "2026-10-20T22:59:49.3768386Z timeout waiting for event: Elapsed(())",
+          "2026-10-20T22:59:49.3773524Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:59:49.3773959Z "
+        ]
+      },
+      {
+        "line": 11428,
+        "context": [
+          "2026-10-20T22:59:49.6447979Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_1_approved' (9924) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:49.6449306Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:49.6450634Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:59:49.6451114Z "
+        ]
+      },
+      {
+        "line": 11556,
+        "context": [
+          "2026-10-20T22:59:49.7003149Z thread 'suite::v2::mcp_resource_origin::widget_reads_survive_history_modes_compaction_restarts_and_app_only_visibility' (2304) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:",
+          "2026-10-20T22:59:49.7004172Z Verifications failed:",
+          "2026-10-20T22:59:49.7004466Z - Mock #1.",
+          "2026-10-20T22:59:49.7004802Z \tExpected range of matching incoming requests: == 11"
+        ]
+      },
+      {
+        "line": 12072,
+        "context": [
+          "2026-10-20T22:59:50.3677115Z thread 'suite::v2::host_skills::host_skill_catalog_refreshes_once_when_skills_change' (7504) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:50.3679148Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(6) })",
+          "2026-10-20T22:59:50.3680463Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:59:50.3680892Z "
+        ]
+      },
+      {
+        "line": 12256,
+        "context": [
+          "2026-10-20T22:59:50.4126496Z thread 'suite::v2::mcp_resource_origin::widget_reads_survive_history_modes_compaction_restarts_and_app_only_visibility' (7416) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:50.4127633Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(18) })",
+          "2026-10-20T22:59:50.4128244Z ",
+          "2026-10-20T22:59:50.4128247Z "
+        ]
+      },
+      {
+        "line": 12382,
+        "context": [
+          "2026-10-20T22:59:50.4264487Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_3_never' (8060) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:50.4266471Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:50.4267425Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:59:50.4267730Z "
+        ]
+      },
+      {
+        "line": 12417,
+        "context": [
+          "2026-10-20T22:59:50.4345663Z thread 'suite::v2::thread_rollback::thread_rollback_drops_last_turns_and_persists_to_rollout' (8208) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:50.4347282Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:50.4348214Z ",
+          "2026-10-20T22:59:50.4348613Z ---- suite::v2::attestation::attestation_generate_round_trip_adds_header_to_responses_websocket_handshake stdout ----"
+        ]
+      },
+      {
+        "line": 12645,
+        "context": [
+          "2026-10-20T22:59:50.4790768Z thread 'suite::v2::multi_agent_v2_developer_instructions::compacted_full_history_fork_replaces_parent_developer_instructions' (9684) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:50.4792224Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:50.4793031Z ",
+          "2026-10-20T22:59:50.4793293Z ---- suite::v2::plugin_list::plugin_list_honors_global_remote_catalog_cache_ttl stdout ----"
+        ]
+      },
+      {
+        "line": 12707,
+        "context": [
+          "2026-10-20T22:59:50.4995887Z thread 'suite::v2::thread_fork::paginated_thread_fork_at_named_boundaries_keeps_only_terminal_prefix' (1440) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:50.4997326Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:50.4998115Z ",
+          "2026-10-20T22:59:50.4998810Z ---- suite::v2::turn_start::turn_start_explicit_local_environment_updates_legacy_cwd_between_turns stdout ----"
+        ]
+      },
+      {
+        "line": 12751,
+        "context": [
+          "2026-10-20T22:59:50.5164645Z thread 'suite::v2::turn_start::turn_start_explicit_local_environment_updates_legacy_cwd_between_turns' (4656) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:50.5165982Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:50.5166661Z ",
+          "2026-10-20T22:59:50.5167011Z ---- suite::v2::attestation::attestation_generate_round_trip_adds_header_to_responses_websocket_handshake stdout ----"
+        ]
+      },
+      {
+        "line": 13236,
+        "context": [
+          "2026-10-20T22:59:50.5880217Z thread 'suite::v2::thread_resume::thread_resume_rejects_history_when_thread_is_running' (2060) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:50.5880693Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:50.5880699Z ",
+          "2026-10-20T22:59:50.5880893Z ---- suite::v2::turn_start::turn_start_emits_notifications_and_accepts_model_override stdout ----"
+        ]
+      },
+      {
+        "line": 13272,
+        "context": [
+          "2026-10-20T22:59:50.5915956Z thread 'suite::v2::turn_start::turn_start_emits_notifications_and_accepts_model_override' (648) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:50.5917370Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: turn start is fenced while the session is terminalizing\" }, id: Integer(3) })",
+          "2026-10-20T22:59:50.5917440Z ",
+          "2026-10-20T22:59:50.5917444Z "
+        ]
+      },
+      {
+        "line": 13395,
+        "context": [
+          "2026-10-20T22:59:50.6000692Z thread 'suite::v2::realtime_conversation::realtime_mode_uses_client_instructions_on_entry_and_exit' (7416) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:50.6001272Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(5) })",
+          "2026-10-20T22:59:50.6001468Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:59:50.6001473Z "
+        ]
+      },
+      {
+        "line": 13487,
+        "context": [
+          "2026-10-20T22:59:50.6077747Z thread 'sandbox_fetches_and_enforces_cloud_managed_permission_profile' (8528) panicked at cli/tests/sandbox_cloud_config.rs:134:5:",
+          "2026-10-20T22:59:50.6078166Z cloud-managed sandbox profile was not enforced: status=Some(1); stdout=; stderr=windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found",
+          "2026-10-20T22:59:50.6078337Z ; cloud bundle requests=[\"/backend-api/wham/config/bundle\"]",
+          "2026-10-20T22:59:50.6078522Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "line": 13569,
+        "context": [
+          "2026-10-20T22:59:56.5197702Z thread 'suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials' (8476) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:56.5199281Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: \"Amazon Bedrock setup is not implemented\" }, id: Integer(1) })",
+          "2026-10-20T22:59:56.5200613Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T22:59:56.5200986Z "
+        ]
+      },
+      {
+        "line": 13621,
+        "context": [
+          "2026-10-20T22:59:56.5339542Z thread 'suite::v2::guardian_v2::guardian_v2_required_model_bypasses_scoring_and_runs_full_reviews' (3204) panicked at app-server/tests\\suite\\v2\\guardian_v2.rs:652:5:",
+          "2026-10-20T22:59:56.5340072Z assertion failed: `(left == right)`",
+          "2026-10-20T22:59:56.5340205Z ",
+          "2026-10-20T22:59:56.5340293Z Diff < left / right > :"
+        ]
+      },
+      {
+        "line": 13668,
+        "context": [
+          "2026-10-20T22:59:56.5408551Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_11_app_reviewer_spoofed_id' (9336) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:56.5409645Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:56.5410433Z ",
+          "2026-10-20T22:59:56.5410732Z ---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_6_guardian_disabled stdout ----"
+        ]
+      },
+      {
+        "line": 13709,
+        "context": [
+          "2026-10-20T22:59:56.5477315Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_6_guardian_disabled' (6776) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T22:59:56.5478285Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T22:59:56.5478859Z ",
+          "2026-10-20T22:59:56.5478862Z "
+        ]
+      },
+      {
+        "line": 14113,
+        "context": [
+          "2026-10-20T23:00:00.5100281Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_15_persistent' (9020) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T23:00:00.5101130Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T23:00:00.5101761Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:00:00.5101957Z "
+        ]
+      },
+      {
+        "line": 14147,
+        "context": [
+          "2026-10-20T23:00:00.5169908Z thread 'suite::v2::thread_fork::thread_fork_defers_inherited_active_goal_until_next_turn' (6968) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T23:00:00.5171233Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T23:00:00.5172049Z ",
+          "2026-10-20T23:00:00.5172595Z ---- suite::v2::thread_resume::thread_resume_preserves_acknowledged_model_effort_and_approvals_reviewer_update stdout ----"
+        ]
+      },
+      {
+        "line": 14518,
+        "context": [
+          "2026-10-20T23:00:00.5640235Z thread 'suite::v2::thread_resume::thread_resume_replays_pending_file_change_request_approval' (4944) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T23:00:00.5641129Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T23:00:00.5641789Z ",
+          "2026-10-20T23:00:00.5642132Z ---- suite::v2::thread_resume::thread_resume_preserves_acknowledged_model_effort_and_approvals_reviewer_update stdout ----"
+        ]
+      },
+      {
+        "line": 14858,
+        "context": [
+          "2026-10-20T23:06:52.0392717Z thread 'suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials' (9704) panicked at app-server/tests\\suite\\v2\\bedrock_setup.rs:293:9:",
+          "2026-10-20T23:06:52.0393936Z expected \"Amazon Bedrock does not support region `us-west-1`\", got \"Amazon Bedrock setup is not implemented\"",
+          "2026-10-20T23:06:52.0394799Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:06:52.0395104Z "
+        ]
+      },
+      {
+        "line": 14900,
+        "context": [
+          "2026-10-20T23:06:52.0472131Z thread 'suite::v2::mcp_server_elicitation::mcp_server_legacy_sep1034_elicitation_defaults_round_trip' (1752) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T23:06:52.0473642Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T23:06:52.0475078Z ",
+          "2026-10-20T23:06:52.0475498Z ---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_13_app_reviewer_missing_call_id stdout ----"
+        ]
+      },
+      {
+        "line": 14941,
+        "context": [
+          "2026-10-20T23:06:52.0563602Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_13_app_reviewer_missing_call_id' (5328) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T23:06:52.0564578Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+          "2026-10-20T23:06:52.0565114Z ",
+          "2026-10-20T23:06:52.0565381Z ---- suite::v2::thread_resume::thread_resume_keeps_in_flight_turn_streaming stdout ----"
+        ]
+      },
+      {
+        "line": 14973,
+        "context": [
+          "2026-10-20T23:06:52.0628782Z thread 'suite::v2::thread_resume::thread_resume_keeps_in_flight_turn_streaming' (1744) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "2026-10-20T23:06:52.0629776Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: turn start is fenced while the session is terminalizing\" }, id: Integer(3) })",
+          "2026-10-20T23:06:52.0630683Z ",
+          "2026-10-20T23:06:52.0631089Z ---- suite::v2::client_metadata::turn_start_forwards_client_metadata_to_responses_websocket_request_body_v2 stdout ----"
+        ]
+      }
+    ]
+  },
+  {
+    "job_id": 118912168129,
+    "run_id": 39496724981,
+    "log": "job-118912168129.log",
+    "sha256": "eb918762ccef594faf036117cf3ee20efb6adf4ce5f688c365a65f9f7a9b9957",
+    "matches": [
+      {
+        "line": 3841,
+        "context": [
+          "2026-10-20T23:00:28.1301324Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (8272) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:",
+          "2026-10-20T23:00:28.1339393Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))",
+          "2026-10-20T23:00:28.1371506Z     if agent_id == fleet.agent_id)",
+          "2026-10-20T23:00:28.1449179Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "line": 3958,
+        "context": [
+          "2026-10-20T23:00:45.5684575Z thread 'authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed' (7900) panicked at hepta-evidence/src\\authbus_outbox_tests.rs:57:10:",
+          "2026-10-20T23:00:45.5723265Z called `Result::unwrap()` on an `Err` value: Capacity",
+          "2026-10-20T23:00:45.5773314Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:00:45.5932745Z "
+        ]
+      },
+      {
+        "line": 4065,
+        "context": [
+          "2026-10-20T23:01:33.8378227Z thread 'authorized_read_rpc_is_capability_gated_and_denies_outside_root' (7188) panicked at exec-server/tests/authorized_read_rpc.rs:84:13:",
+          "2026-10-20T23:01:33.8388027Z assertion `left == right` failed",
+          "2026-10-20T23:01:33.8488716Z   left: -32600",
+          "2026-10-20T23:01:33.8514816Z  right: -32603"
+        ]
+      },
+      {
+        "line": 4524,
+        "context": [
+          "2026-10-20T23:01:54.2088859Z thread 'script_attribution::tests::invalid_manifest_disables_metrics_without_disabling_attribution' (3116) panicked at core-plugins/src\\script_attribution_tests.rs:260:5:",
+          "2026-10-20T23:01:54.2090127Z assertion failed: `(left == right)`",
+          "2026-10-20T23:01:54.2090641Z ",
+          "2026-10-20T23:01:54.2090788Z Diff < left / right > :"
+        ]
+      },
+      {
+        "line": 5012,
+        "context": [
+          "2026-10-20T23:10:13.3231064Z thread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (5308) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+          "2026-10-20T23:10:13.3340370Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T23:10:13.3522768Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:10:13.3607730Z "
+        ]
+      },
+      {
+        "line": 5018,
+        "context": [
+          "2026-10-20T23:10:13.4035972Z thread 'cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends' (6824) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+          "2026-10-20T23:10:13.4081110Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T23:10:13.4247873Z ",
+          "2026-10-20T23:10:13.4272919Z ---- cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment stdout ----"
+        ]
+      },
+      {
+        "line": 5023,
+        "context": [
+          "2026-10-20T23:10:13.4477169Z thread 'cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment' (4712) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+          "2026-10-20T23:10:13.4511924Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T23:10:13.4539683Z ",
+          "2026-10-20T23:10:13.4618111Z ---- cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently stdout ----"
+        ]
+      },
+      {
+        "line": 5028,
+        "context": [
+          "2026-10-20T23:10:13.4676364Z thread 'cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently' (8580) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+          "2026-10-20T23:10:13.4805363Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T23:10:13.4897348Z ",
+          "2026-10-20T23:10:13.4916814Z ---- cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict stdout ----"
+        ]
+      },
+      {
+        "line": 5033,
+        "context": [
+          "2026-10-20T23:10:13.5130364Z thread 'cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict' (5144) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+          "2026-10-20T23:10:13.5234995Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "2026-10-20T23:10:13.5297943Z ",
+          "2026-10-20T23:10:13.5543528Z ---- cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation stdout ----"
+        ]
+      },
+      {
+        "line": 5038,
+        "context": [
+          "2026-10-20T23:10:13.5591456Z thread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (2108) panicked at hepta-agentd/src\\cognitive_ranker_tests.rs:520:14:",
+          "2026-10-20T23:10:13.5645579Z called `Result::unwrap()` on an `Err` value: Io(Custom { kind: AlreadyExists, error: \"agentd control socket path is not a stale socket: \\\\\\\\?\\\\D:\\\\tmp\\\\.tmppl032D\\\\fleet\\\\run\\\\aaaaaaaaaabaabaaaaaaaaaabde.ctl\" })",
+          "2026-10-20T23:10:13.5705103Z ",
+          "2026-10-20T23:10:13.5808526Z "
+        ]
+      },
+      {
+        "line": 5211,
+        "context": [
+          "2026-10-20T23:10:14.6048531Z thread 'core_error_after_started_never_releases_ambiguous_dispatch' (1380) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:14.6076035Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:14.6151682Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:14.6290756Z "
+        ]
+      },
+      {
+        "line": 5212,
+        "context": [
+          "2026-10-20T23:10:14.6076035Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:14.6151682Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:14.6290756Z ",
+          "2026-10-20T23:10:14.6385901Z ---- completion_panic_retains_exact_authority_in_settlement_guardian stdout ----"
+        ]
+      },
+      {
+        "line": 5217,
+        "context": [
+          "2026-10-20T23:10:14.6433060Z thread 'completion_panic_retains_exact_authority_in_settlement_guardian' (3856) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:14.6508453Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:14.6549553Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:14.6573050Z "
+        ]
+      },
+      {
+        "line": 5223,
+        "context": [
+          "2026-10-20T23:10:14.6753096Z thread 'conflicting_queued_client_ids_fail_closed_before_core_submission' (3948) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:14.6942838Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:14.7085882Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:14.7127467Z "
+        ]
+      },
+      {
+        "line": 5229,
+        "context": [
+          "2026-10-20T23:10:14.7222345Z thread 'caller_abort_after_core_started_keeps_exact_authority_until_persistence' (4300) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:14.7344435Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:14.7549824Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:14.7634399Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "line": 5236,
+        "context": [
+          "2026-10-20T23:10:14.8299039Z thread 'corrupt_rollout_blocks_queue_replay_and_preserves_the_item' (8072) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:14.8334446Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:14.8361268Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:14.8446313Z "
+        ]
+      },
+      {
+        "line": 5242,
+        "context": [
+          "2026-10-20T23:10:14.8775322Z thread 'duplicate_queued_client_ids_dispatch_to_core_once' (5888) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:14.8834718Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:14.8975849Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:14.9197057Z "
+        ]
+      },
+      {
+        "line": 5248,
+        "context": [
+          "2026-10-20T23:10:14.9479234Z thread 'exact_and_legacy_bindings_for_the_same_turn_join_once' (7552) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:14.9631011Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:14.9685498Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:14.9765456Z "
+        ]
+      },
+      {
+        "line": 5254,
+        "context": [
+          "2026-10-20T23:10:15.0158495Z thread 'explicitly_started_rejected_queue_messages_remain_durable' (7824) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.0207582Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.0288259Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.0439879Z "
+        ]
+      },
+      {
+        "line": 5260,
+        "context": [
+          "2026-10-20T23:10:15.0759314Z thread 'externally_changed_queues_dispatch_independently_and_retry_failed_wakes' (1968) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.1048909Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.1197236Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.1285120Z "
+        ]
+      },
+      {
+        "line": 5266,
+        "context": [
+          "2026-10-20T23:10:15.1988651Z thread 'interrupted_turns_pause_queued_messages_but_failed_turns_drain_them' (2936) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.2153772Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.2494369Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.2832308Z "
+        ]
+      },
+      {
+        "line": 5272,
+        "context": [
+          "2026-10-20T23:10:15.3578556Z thread 'invalid_head_is_skipped_and_a_live_user_turn_is_accepted' (1544) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.3873272Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.3982706Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.4305904Z "
+        ]
+      },
+      {
+        "line": 5278,
+        "context": [
+          "2026-10-20T23:10:15.4894852Z thread 'legacy_client_id_without_payload_digest_is_readable_but_cannot_join' (2104) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.5070213Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.5197502Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.5387754Z "
+        ]
+      },
+      {
+        "line": 5284,
+        "context": [
+          "2026-10-20T23:10:15.5584737Z thread 'persisted_admission_reconciles_compressed_rollout' (8868) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.5657775Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.5932753Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.5967522Z "
+        ]
+      },
+      {
+        "line": 5290,
+        "context": [
+          "2026-10-20T23:10:15.6360376Z thread 'persisted_client_id_with_conflicting_payload_fails_closed_from_compressed_rollout' (7380) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.6433776Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.6516835Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.6630064Z "
+        ]
+      },
+      {
+        "line": 5296,
+        "context": [
+          "2026-10-20T23:10:15.6690956Z thread 'registered_queue_lifecycle_starts_messages_in_fifo_order' (7692) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.6990471Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.7037600Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.7312175Z "
+        ]
+      },
+      {
+        "line": 5302,
+        "context": [
+          "2026-10-20T23:10:15.7595358Z thread 'rejected_queue_messages_remain_durable_and_block_followups' (4036) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.7683818Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.7733469Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.7919529Z "
+        ]
+      },
+      {
+        "line": 5308,
+        "context": [
+          "2026-10-20T23:10:15.8058730Z thread 'reserved_to_persisted_legacy_row_deletion_emits_queue_changed' (1472) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.8105157Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.8136693Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.8438228Z "
+        ]
+      },
+      {
+        "line": 5314,
+        "context": [
+          "2026-10-20T23:10:15.8676832Z thread 'resumed_idle_dispatches_input_without_a_loaded_manager' (7080) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.8783816Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.8816306Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.9140803Z "
+        ]
+      },
+      {
+        "line": 5320,
+        "context": [
+          "2026-10-20T23:10:15.9267975Z thread 'rollout_flush_before_dispatch_db_completion_recovers_without_resubmit' (6792) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.9378284Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.9405994Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.9505561Z "
+        ]
+      },
+      {
+        "line": 5326,
+        "context": [
+          "2026-10-20T23:10:15.9593948Z thread 'same_client_id_bound_to_two_turns_is_ambiguous_and_fails_closed' (912) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.9661824Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.9699895Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:15.9811044Z "
+        ]
+      },
+      {
+        "line": 5332,
+        "context": [
+          "2026-10-20T23:10:15.9868881Z thread 'two_queue_services_across_state_runtimes_submit_one_exact_binding' (5764) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:15.9900270Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:15.9990049Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:16.0154900Z "
+        ]
+      },
+      {
+        "line": 5338,
+        "context": [
+          "2026-10-20T23:10:16.0317983Z thread 'starting_a_selected_item_preserves_the_remaining_queue' (2444) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:16.0468608Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:16.0491803Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:16.0575542Z "
+        ]
+      },
+      {
+        "line": 5344,
+        "context": [
+          "2026-10-20T23:10:16.0776135Z thread 'starting_a_selected_item_while_active_leaves_it_queued' (5728) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:16.0880459Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:16.0893443Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:16.0974657Z "
+        ]
+      },
+      {
+        "line": 5389,
+        "context": [
+          "2026-10-20T23:10:16.2603847Z thread 'starts_resolved_agent_prompt_in_forked_thread' (2124) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:16.2616985Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:16.2709829Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:16.2736592Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "line": 5456,
+        "context": [
+          "2026-10-20T23:10:22.7303317Z thread 'startup_tests::memories_startup_creates_memory_root' (7792) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7306207Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7307027Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7307605Z "
+        ]
+      },
+      {
+        "line": 5462,
+        "context": [
+          "2026-10-20T23:10:22.7310833Z thread 'phase2::workspace_roots_tests::consolidation_rebinds_workspace_roots_to_memory_root' (5424) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7314263Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7314952Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7315675Z "
+        ]
+      },
+      {
+        "line": 5468,
+        "context": [
+          "2026-10-20T23:10:22.7318680Z thread 'startup_tests::memories_startup_eligibility_requires_enabled_persistent_root_session' (6420) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7321373Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7333041Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7333985Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "line": 5475,
+        "context": [
+          "2026-10-20T23:10:22.7341884Z thread 'phase2::sandbox_tests::consolidation_uses_canonical_parent_enforcement' (6244) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7343957Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7345055Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7345862Z "
+        ]
+      },
+      {
+        "line": 5481,
+        "context": [
+          "2026-10-20T23:10:22.7348491Z thread 'startup_tests::memories_startup_phase1_provider_default_drives_request_model' (628) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7350347Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7476685Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7477149Z "
+        ]
+      },
+      {
+        "line": 5487,
+        "context": [
+          "2026-10-20T23:10:22.7488867Z thread 'startup_tests::memories_startup_phase2_explicit_model_override_drives_request_model' (8276) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7491939Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7492902Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7495385Z "
+        ]
+      },
+      {
+        "line": 5493,
+        "context": [
+          "2026-10-20T23:10:22.7510812Z thread 'startup_tests::memories_startup_phase1_explicit_model_override_drives_request_model' (8620) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7516041Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7517629Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7518389Z "
+        ]
+      },
+      {
+        "line": 5499,
+        "context": [
+          "2026-10-20T23:10:22.7528041Z thread 'startup_tests::memories_startup_phase1_uses_live_thread_service_tier_and_detached_metadata' (8772) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7531060Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7564175Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7567354Z "
+        ]
+      },
+      {
+        "line": 5505,
+        "context": [
+          "2026-10-20T23:10:22.7588503Z thread 'startup_tests::memories_startup_phase2_provider_default_drives_request_model' (6536) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7592520Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7594388Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7596205Z "
+        ]
+      },
+      {
+        "line": 5511,
+        "context": [
+          "2026-10-20T23:10:22.7599064Z thread 'startup_tests::memories_startup_phase2_prunes_old_extension_resources_without_stage1_input' (5820) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7601607Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7602334Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7602800Z "
+        ]
+      },
+      {
+        "line": 5517,
+        "context": [
+          "2026-10-20T23:10:22.7605123Z thread 'startup_tests::memories_startup_phase2_prunes_old_extension_resources' (2632) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7606625Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7607305Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7607739Z "
+        ]
+      },
+      {
+        "line": 5523,
+        "context": [
+          "2026-10-20T23:10:22.7610706Z thread 'startup_tests::phase2_retries_when_clean_workspace_is_missing_artifacts' (5144) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7613166Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7613857Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7614400Z "
+        ]
+      },
+      {
+        "line": 5529,
+        "context": [
+          "2026-10-20T23:10:22.7617531Z thread 'startup_tests::memories_startup_phase2_tracks_workspace_diff_across_runs' (4080) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:22.7619061Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:22.7619777Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:22.7620228Z "
+        ]
+      },
+      {
+        "line": 5627,
+        "context": [
+          "2026-10-20T23:10:23.1984418Z thread 'async_scorer::extension::tests::computer_use_only_scores_cannot_approve_other_actions' (8100) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:23.2173323Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:23.2271763Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:23.2340364Z "
+        ]
+      },
+      {
+        "line": 5633,
+        "context": [
+          "2026-10-20T23:10:23.2466047Z thread 'async_scorer::extension::tests::contributor_can_disable_parent_compaction_reuse' (5368) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:23.2494922Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:23.2566059Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:23.2636549Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "line": 5640,
+        "context": [
+          "2026-10-20T23:10:23.3185778Z thread 'async_scorer::extension::tests::contributor_bounds_configured_policy_in_luna_developer_instructions' (8780) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:23.3384668Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:23.3465241Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:23.3717736Z "
+        ]
+      },
+      {
+        "line": 5646,
+        "context": [
+          "2026-10-20T23:10:23.4086770Z thread 'async_scorer::extension::tests::contributor_bounds_oversized_actions_and_fairly_truncates_nested_fields' (7784) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:23.4243727Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:23.4278457Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:23.4326569Z "
+        ]
+      },
+      {
+        "line": 5652,
+        "context": [
+          "2026-10-20T23:10:23.4626417Z thread 'async_scorer::extension::tests::contributor_fails_closed_when_action_serialization_fails' (6364) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:23.4628236Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:23.4771327Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:23.4872632Z "
+        ]
+      },
+      {
+        "line": 5658,
+        "context": [
+          "2026-10-20T23:10:23.5760470Z thread 'async_scorer::extension::tests::contributor_fails_closed_when_luna_classification_fails' (5756) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:23.5926444Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:23.5994395Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:23.6110597Z "
+        ]
+      },
+      {
+        "line": 5664,
+        "context": [
+          "2026-10-20T23:10:23.6641855Z thread 'async_scorer::extension::tests::contributor_fails_closed_when_model_configuration_is_invalid' (7504) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:23.6816577Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:23.6907359Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:23.7065619Z "
+        ]
+      },
+      {
+        "line": 5670,
+        "context": [
+          "2026-10-20T23:10:23.7598260Z thread 'async_scorer::extension::tests::contributor_counts_failed_thread_lookups_toward_score_lag' (4676) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:23.7751343Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:23.7830112Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:23.8035620Z "
+        ]
+      },
+      {
+        "line": 5676,
+        "context": [
+          "2026-10-20T23:10:23.8558365Z thread 'async_scorer::extension::tests::contributor_fails_closed_when_thread_lookup_fails' (1232) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:23.8769284Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:23.8852423Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:23.8989728Z "
+        ]
+      },
+      {
+        "line": 5682,
+        "context": [
+          "2026-10-20T23:10:23.9522699Z thread 'async_scorer::extension::tests::contributor_includes_configured_transcript_images' (8300) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:23.9558316Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:23.9637113Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:23.9826024Z "
+        ]
+      },
+      {
+        "line": 5688,
+        "context": [
+          "2026-10-20T23:10:24.0303136Z thread 'async_scorer::extension::tests::contributor_renders_policy_inside_a_configured_prompt' (7900) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.0400089Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.0530997Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.0649382Z "
+        ]
+      },
+      {
+        "line": 5694,
+        "context": [
+          "2026-10-20T23:10:24.1045347Z thread 'async_scorer::extension::tests::contributor_preserves_uncapped_classifier_instructions' (2524) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.1117278Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.1289089Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.1373221Z "
+        ]
+      },
+      {
+        "line": 5700,
+        "context": [
+          "2026-10-20T23:10:24.1973355Z thread 'async_scorer::extension::tests::contributor_reuses_the_latest_compatible_parent_compaction' (1472) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.2332186Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.2656553Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.2758957Z "
+        ]
+      },
+      {
+        "line": 5706,
+        "context": [
+          "2026-10-20T23:10:24.3372707Z thread 'async_scorer::extension::tests::contributor_samples_tool_calls_with_the_existing_luna_pool' (8524) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.3473550Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.3757568Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.3821971Z "
+        ]
+      },
+      {
+        "line": 5712,
+        "context": [
+          "2026-10-20T23:10:24.4080523Z thread 'async_scorer::extension::tests::contributor_sends_compacted_conversation_history_to_luna' (6560) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.4211472Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.4262842Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.4316788Z "
+        ]
+      },
+      {
+        "line": 5718,
+        "context": [
+          "2026-10-20T23:10:24.4678702Z thread 'async_scorer::extension::tests::contributor_skips_models_requiring_managed_guardian_review' (5264) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.4691754Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.4694313Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.4704722Z "
+        ]
+      },
+      {
+        "line": 5724,
+        "context": [
+          "2026-10-20T23:10:24.4734653Z thread 'async_scorer::extension::tests::contributor_uses_catalog_policy_without_a_configured_override' (6188) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.4751737Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.4757232Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.4760263Z "
+        ]
+      },
+      {
+        "line": 5730,
+        "context": [
+          "2026-10-20T23:10:24.4777956Z thread 'async_scorer::extension::tests::contributor_truncates_legacy_prompt_after_appending_policy' (8300) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.4785299Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.4789851Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.4791863Z "
+        ]
+      },
+      {
+        "line": 5736,
+        "context": [
+          "2026-10-20T23:10:24.4816108Z thread 'async_scorer::extension::tests::contributor_uses_configured_prompt_effort_threshold_and_transcript' (3772) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.4818164Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.4818715Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.4819026Z "
+        ]
+      },
+      {
+        "line": 5742,
+        "context": [
+          "2026-10-20T23:10:24.4822315Z thread 'async_scorer::extension::tests::contributor_uses_model_defaults_and_preserves_local_overrides' (700) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.4824690Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.4825222Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.4825560Z "
+        ]
+      },
+      {
+        "line": 5748,
+        "context": [
+          "2026-10-20T23:10:24.4827861Z thread 'async_scorer::extension::tests::sandboxed_shell_classification_respects_review_scope' (2632) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.4829283Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.4829791Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.4830110Z "
+        ]
+      },
+      {
+        "line": 5754,
+        "context": [
+          "2026-10-20T23:10:24.4832586Z thread 'async_scorer::extension::tests::installed_extension_reconnects_after_auth_refresh' (6068) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:10:24.4833999Z `CARGO_BIN_EXE_codex-code-mode-host` is unset",
+          "2026-10-20T23:10:24.4834511Z help: available binary names are \"codex\"",
+          "2026-10-20T23:10:24.4834834Z "
+        ]
+      },
+      {
+        "line": 5912,
+        "context": [
+          "2026-10-20T23:12:17.1395480Z thread 'app::tests::safety_buffering::safety_retry_forks_first_turn_and_continues_without_duplicating_prompt' (3096) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:",
+          "2026-10-20T23:12:17.1397101Z expected 3 Responses API requests",
+          "2026-10-20T23:12:17.1397747Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:12:17.1398270Z "
+        ]
+      },
+      {
+        "line": 6920,
+        "context": [
+          "2026-10-20T23:12:17.4163040Z thread 'app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown' (6824) panicked at tui/src\\app\\tests\\background_exit_tests.rs:229:5:",
+          "2026-10-20T23:12:17.4254155Z assertion failed: `Ok(InsertHistoryCell(PlainHistoryCell { lines: [Line::from(Span::from(\"\u25a0 Failed to interrupt task: turn/interrupt failed: no active turn to interrupt (code -32600)\").red())] }))` does not match `Ok(AppEvent::Exit(ExitMode::ShutdownFirst))`",
+          "2026-10-20T23:12:17.4254569Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:12:17.4254580Z "
+        ]
+      },
+      {
+        "line": 7431,
+        "context": [
+          "2026-10-20T23:12:17.4521603Z thread 'app::tests::safety_buffering::safety_retry_forks_after_the_previous_turn_and_uses_faster_settings' (5016) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:",
+          "2026-10-20T23:12:17.4521759Z expected 4 Responses API requests",
+          "2026-10-20T23:12:17.4522091Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:12:17.4522098Z "
+        ]
+      },
+      {
+        "line": 9520,
+        "context": [
+          "2026-10-20T23:12:17.6356504Z thread 'resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget' (7880) panicked at tui/src\\resume_picker_transcript_preview_tests.rs:366:14:",
+          "2026-10-20T23:12:17.6357246Z start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }",
+          "2026-10-20T23:12:17.6357590Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:12:17.6357599Z "
+        ]
+      },
+      {
+        "line": 10710,
+        "context": [
+          "2026-10-20T23:12:33.1496875Z thread 'app::tests::safety_buffering::safety_retry_replays_older_interruption_notices' (5300) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:",
+          "2026-10-20T23:12:33.1498364Z expected 4 Responses API requests",
+          "2026-10-20T23:12:33.1499157Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:12:33.1499850Z "
+        ]
+      },
+      {
+        "line": 12289,
+        "context": [
+          "2026-10-20T23:12:39.1224860Z thread 'app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time' (4240) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:",
+          "2026-10-20T23:12:39.1225968Z expected 4 Responses API requests",
+          "2026-10-20T23:12:39.1226589Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:12:39.1227315Z "
+        ]
+      },
+      {
+        "line": 13865,
+        "context": [
+          "2026-10-20T23:12:49.6155076Z thread 'app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn' (7244) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:",
+          "2026-10-20T23:12:49.6156551Z expected 5 Responses API requests",
+          "2026-10-20T23:12:49.6157153Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:12:49.6157691Z "
+        ]
+      },
+      {
+        "line": 15971,
+        "context": [
+          "2026-10-20T23:12:49.8267377Z thread 'resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output' (5568) panicked at tui/src\\resume_picker_transcript_preview_tests.rs:366:14:",
+          "2026-10-20T23:12:49.8267799Z start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }",
+          "2026-10-20T23:12:49.8267988Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:12:49.8268107Z "
+        ]
+      }
+    ]
+  },
+  {
+    "job_id": 118912226488,
+    "run_id": 39496724981,
+    "log": "job-118912226488.log",
+    "sha256": "657b466af2c4fd857a862723f18bf1edb24478bdbdef8ba71fb924a499717bc6",
+    "matches": [
+      {
+        "line": 9786,
+        "context": [
+          "2026-10-21T00:08:12.9738450Z error: use of a disallowed method `sqlx::pool::PoolOptions::connect`",
+          "2026-10-21T00:08:12.9739060Z   --> hepta-memory/src/cognitive_schema_tests.rs:10:10",
+          "2026-10-21T00:08:12.9739550Z    |",
+          "2026-10-21T00:08:12.9739870Z 10 |         .connect(\"sqlite::memory:\")"
+        ]
+      },
+      {
+        "line": 9810,
+        "context": [
+          "2026-10-21T00:08:13.0420200Z error: used `expect()` on a `Result` value",
+          "2026-10-21T00:08:13.0422350Z     --> hepta-memory/src/production_writer.rs:3497:9",
+          "2026-10-21T00:08:13.0423500Z      |",
+          "2026-10-21T00:08:13.0423940Z 3497 |         AgentId::parse(\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff\").expect(\"agent\")"
+        ]
+      }
+    ]
+  },
+  {
+    "job_id": 118912241314,
+    "run_id": 39496724981,
+    "log": "job-118912241314.log",
+    "sha256": "b06a8f95bd5c042f4fa11af7046f28ac60a8abcc43fd8d7fc3db8453a6ff8dca",
+    "matches": [
+      {
+        "line": 3465,
+        "context": [
+          "2026-10-20T22:57:37.2391386Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (6212) panicked at git-utils/src\\git_process_tests.rs:94:13:",
+          "2026-10-20T22:57:37.2409130Z wait for Git wrapper child readiness: deadline has elapsed; wrapper status before cleanup: Ok(None); child PID file \"D:\\\\tmp\\\\.tmpkz8vgH\\\\child.pid\": Err(Os { code: 2, kind: NotFound, message: \"The system cannot find the file specified.\" }); child ready file \"D:\\\\tmp\\\\.tmpkz8vgH\\\\child-ready\": Ok(false); wrapper output after cleanup: status: exit code: 0; stdout:",
+          "2026-10-20T22:57:37.2414419Z ",
+          "2026-10-20T22:57:37.2418315Z stderr:"
+        ]
+      },
+      {
+        "line": 3474,
+        "context": [
+          "2026-10-20T22:57:37.2439198Z thread 'git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running' (2032) panicked at git-utils/src\\git_process_tests.rs:94:13:",
+          "2026-10-20T22:57:37.2452811Z wait for Git wrapper child readiness: deadline has elapsed; wrapper status before cleanup: Ok(None); child PID file \"D:\\\\tmp\\\\.tmpKQN2v7\\\\child.pid\": Err(Os { code: 2, kind: NotFound, message: \"The system cannot find the file specified.\" }); child ready file \"D:\\\\tmp\\\\.tmpKQN2v7\\\\child-ready\": Ok(false); wrapper output after cleanup: status: exit code: 0; stdout:",
+          "2026-10-20T22:57:37.2454553Z ",
+          "2026-10-20T22:57:37.2467800Z stderr:"
+        ]
+      },
+      {
+        "line": 4088,
+        "context": [
+          "2026-10-20T23:07:31.1128900Z thread 'agent::control::tests::spawn_agent_fork_last_n_turns_strips_parent_usage_hints' (10164) panicked at core/src\\agent\\control_tests.rs:2758:5:",
+          "2026-10-20T23:07:31.1129942Z bounded fork should not inject child instructions before its canonical context rebuild",
+          "2026-10-20T23:07:31.1130670Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:07:31.1131120Z "
+        ]
+      },
+      {
+        "line": 4523,
+        "context": [
+          "2026-10-20T23:07:53.4699517Z thread 'guardian::tests::guardian_reuses_prompt_cache_key_and_appends_prior_reviews' (8296) panicked at core/src\\guardian\\tests.rs:2431:10:",
+          "2026-10-20T23:07:53.4716115Z committed guardian fork snapshot",
+          "2026-10-20T23:07:53.4735602Z ",
+          "2026-10-20T23:07:53.4755501Z "
+        ]
+      },
+      {
+        "line": 4618,
+        "context": [
+          "2026-10-20T23:07:53.9538800Z thread 'session::tests::session_configured_reports_permission_profile_for_external_sandbox' (7504) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:07:53.9540742Z `CARGO_BIN_EXE_codex` is unset",
+          "2026-10-20T23:07:53.9547646Z help: if this is running within a unit test, move it to an integration test to gain access to `CARGO_BIN_EXE_codex`",
+          "2026-10-20T23:07:53.9561596Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "line": 4619,
+        "context": [
+          "2026-10-20T23:07:53.9540742Z `CARGO_BIN_EXE_codex` is unset",
+          "2026-10-20T23:07:53.9547646Z help: if this is running within a unit test, move it to an integration test to gain access to `CARGO_BIN_EXE_codex`",
+          "2026-10-20T23:07:53.9561596Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-10-20T23:07:53.9723022Z "
+        ]
+      },
+      {
+        "line": 5571,
+        "context": [
+          "2026-10-20T23:08:05.4237806Z thread 'tools::handlers::multi_agents::tests::spawn_agent_reapplies_runtime_sandbox_after_role_config' (2896) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:08:05.4239986Z `CARGO_BIN_EXE_codex` is unset",
+          "2026-10-20T23:08:05.4244590Z help: if this is running within a unit test, move it to an integration test to gain access to `CARGO_BIN_EXE_codex`",
+          "2026-10-20T23:08:05.4247508Z "
+        ]
+      },
+      {
+        "line": 6524,
+        "context": [
+          "2026-10-20T23:08:10.4576420Z thread 'session::tests::fork_startup_context_then_first_turn_diff_snapshot' (2688) panicked at external/rules_rs++crate+crates__assert_cmd-2.2.2/src\\cargo.rs:232:5:",
+          "2026-10-20T23:08:10.4576919Z `CARGO_BIN_EXE_codex` is unset",
+          "2026-10-20T23:08:10.4577834Z help: if this is running within a unit test, move it to an integration test to gain access to `CARGO_BIN_EXE_codex`",
+          "2026-10-20T23:08:10.4578277Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      }
+    ]
+  }
+]

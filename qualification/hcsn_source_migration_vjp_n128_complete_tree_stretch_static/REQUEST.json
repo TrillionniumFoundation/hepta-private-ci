@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn-visit897-n128-complete-tree-stretch-static-request-v1",
+  "identity": "hcsn-visit897-n128-complete-tree-stretch-static-20261112-c06d",
+  "idempotency_key": "hcsn-visit897-n128-complete-tree-stretch-static-20261112-c06d-001",
+  "parent_pr": 6271,
+  "parent_head": "ffcad5a6aa9bea30a66b7f217af93e7e850cd0b5",
+  "purpose": "Bind the complete visit-897 runtime source tree after the separately qualified stretch-field repair, without importing or executing the candidate.",
+  "format_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "ffcad5a6aa9bea30a66b7f217af93e7e850cd0b5"
+  ],
+  "static_only": true,
+  "numerical_identity": null,
+  "numerical_execution_authorized": false,
+  "maximum_candidate_imports": 0,
+  "maximum_model_forwards": 0,
+  "maximum_adjoints": 0,
+  "maximum_backward_attempts": 0,
+  "maximum_optimizer_updates": 0,
+  "branch": "research/hcsn-visit897-n128-complete-tree-stretch-static-20261112-c06d",
+  "base_branch": "research/hcsn-visit897-n128-stretch-field-static-20261112-c06d",
+  "stop_conditions": [
+    "the parent is not Draft #6271 exact head",
+    "any scientific or numerical source byte changes",
+    "any complete-tree source byte or runtime closure mismatches",
+    "any parent RED or UNKNOWN record is reclassified",
+    "any candidate import or numerical operation occurs"
+  ],
+  "global_status": "HOLD",
+  "all_closed": false
+}

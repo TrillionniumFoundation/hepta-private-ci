@@ -1,0 +1,105 @@
+{
+  "schema": "hepta.mem1.independent-control-review.v1",
+  "sources": {
+    "audit_truth.py": "2f49acd4776fe37ddedadf0be2363a434ce583195508aa6d7f7392290617de58",
+    "audit_evidence.py": "75893c202c214f8bf03d1dc19401e7623055521c76d0cd11d122f4649b3ed345",
+    "verify_results.py": "250d7866624f280e27712d5b1b47faf987d22d7b8532dd82fb7b2a78d4ab73d2",
+    "environment.py": "fddc89c1d3536ed5712d034d8551819658800aff655b0683a4af2301e5136039"
+  },
+  "source_unchanged_during_review": true,
+  "checks": [
+    {
+      "case": "unmodified_reference",
+      "accepted": true,
+      "queries": 300,
+      "scientific_qualification": "HOLD",
+      "adoption": "NoUpdate",
+      "expected_rejection": false,
+      "matched_review_expectation": true
+    },
+    {
+      "case": "answer_and_expected_forged_together",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "expected differs from frozen owner truth",
+      "expected_rejection": true,
+      "matched_review_expectation": true
+    },
+    {
+      "case": "owner_boundary_moved_after_queries",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "raw operation roster differs from the frozen plan",
+      "expected_rejection": true,
+      "matched_review_expectation": true
+    },
+    {
+      "case": "owner_generation_boolean_alias",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "event steps and generations must be integers",
+      "expected_rejection": true,
+      "matched_review_expectation": true
+    },
+    {
+      "case": "eligible_boolean_flag_forged",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "eligible differs from frozen owner truth",
+      "expected_rejection": true,
+      "matched_review_expectation": true
+    },
+    {
+      "case": "exposure_blocked_flag_forged",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "blocked differs from frozen source exposure",
+      "expected_rejection": true,
+      "matched_review_expectation": true
+    },
+    {
+      "case": "query_source_changed",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "raw operation roster differs from the frozen plan",
+      "expected_rejection": true,
+      "matched_review_expectation": true
+    },
+    {
+      "case": "b_prequential_summary_forged",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "retention/plasticity summary drift",
+      "expected_rejection": true,
+      "matched_review_expectation": true
+    },
+    {
+      "case": "input_valid_label_changed_but_events_unmodified",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "expected differs from frozen owner truth",
+      "expected_rejection": true,
+      "matched_review_expectation": true
+    },
+    {
+      "case": "out_of_scope_owner_reset_metadata_claim",
+      "accepted": true,
+      "queries": 300,
+      "scientific_qualification": "HOLD",
+      "adoption": "NoUpdate",
+      "expected_rejection": false,
+      "matched_review_expectation": true
+    },
+    {
+      "case": "out_of_scope_output_origin_despite_blocked_exposure",
+      "accepted": true,
+      "queries": 300,
+      "scientific_qualification": "HOLD",
+      "adoption": "NoUpdate",
+      "expected_rejection": false,
+      "matched_review_expectation": true
+    }
+  ],
+  "truth_scope_findings": "No blocking truth-reconstruction or owner-timeline defect found. A matching output can be genuine truth even when its origin/admission is unproved. The validator checks exposure flags, not authentic execution of the retrieval guard, and does not audit reset-metadata claims. No input-manifest authentication is supplied. Existing output scope remains reference-only, HOLD/NoUpdate.",
+  "normal_tests_not_rerun": "Used independent fixture mutations through verify(); parent/owner holds full suite receipts."
+}

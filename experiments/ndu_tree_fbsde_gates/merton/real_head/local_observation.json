@@ -1,0 +1,132 @@
+{
+  "candidate_denominator": 33,
+  "complete_online_lifecycle_cost_qualified": false,
+  "cost_scope": "measured local cached-input lifecycle including ALL pilots, selection, final fit and inference; historical pretrained work recorded separately",
+  "cpu_fee": "declared 0.001 utility units per CPU millisecond; not dollars",
+  "cross_mode": {
+    "fresh_costs_can_change_selected_steps": true,
+    "same_recorded_cost_choices_verified": 48,
+    "same_selection_with_fresh_CPU_measurement": 71,
+    "total_lifecycle_rows_per_mode": 72
+  },
+  "execution_scope": "isolated ChatGPT container; not dot; not a complete repository checkout",
+  "fresh_encoder_calls": 0,
+  "fresh_original_reader_calls": 0,
+  "full_repository_ci_verified": false,
+  "general_fbsde": false,
+  "genuine_parameter_training": true,
+  "head_parameters_per_fit": 5,
+  "horizon_8_result_columns": [
+    "arm",
+    "complete_questions",
+    "candidate_correct",
+    "two_class_brier",
+    "actual_lifecycle_cpu_ms",
+    "actual_optimizer_steps_including_all_pilots"
+  ],
+  "horizon_8_results": [
+    [
+      "no_update",
+      0,
+      17,
+      0.49686492717706704,
+      0.112727,
+      0
+    ],
+    [
+      "fixed_32",
+      1,
+      22,
+      0.46803476282277306,
+      4.117582,
+      128
+    ],
+    [
+      "budget_neutral",
+      1,
+      21,
+      0.465152860143753,
+      45.530748,
+      2096
+    ],
+    [
+      "risk_fixed",
+      1,
+      21,
+      0.465152860143753,
+      44.01807,
+      2096
+    ],
+    [
+      "ndu_discrete",
+      1,
+      21,
+      0.465152860143753,
+      46.989237,
+      2096
+    ],
+    [
+      "augmented_same_profile",
+      1,
+      21,
+      0.465152860143753,
+      47.482317,
+      2096
+    ]
+  ],
+  "hosted_ci_verified": false,
+  "human_labels_from": "SHA-pinned E16 original-human training materials; reconciled union, not inferred from scores",
+  "independent_organization_or_signer": false,
+  "neural_preference_training": false,
+  "new_future_sources": 0,
+  "normal_inherited_finite_tests": 44,
+  "normal_inherited_global_tests": 8,
+  "normal_new_tests": 36,
+  "optimized_inherited_finite_tests": 44,
+  "optimized_inherited_global_tests": 8,
+  "optimized_new_tests": 36,
+  "optimized_nonzero_fit_calls": 492,
+  "optimized_optimizer_steps": 25536,
+  "ordinary_and_optimized_tests_passed": true,
+  "ordinary_nonzero_fit_calls": 492,
+  "ordinary_optimizer_steps": 25560,
+  "original_human_candidate_answers": 33,
+  "original_human_passages": 4,
+  "original_human_questions": 8,
+  "original_parquet_freshly_downloaded": false,
+  "outcome": "One whole-question rescue on this retrospective panel; NDU does not exceed fixed32 or ordinary control, and pilot search costs more. No NDU-specific superiority or prospective generalization.",
+  "parent_sha": "778bb8a32e725b00db59e16cdcdc38fd777ae964",
+  "posture": "RESEARCH_ONLY_DENY_ALL",
+  "production_accepted": false,
+  "question_denominator": 8,
+  "raw_evidence_sha256": {
+    "audit-normal.json": "02b7dac9fd0fbd0752c3c53b8edc71c0e411c9add8366cd1b714a18e7a49a0b8",
+    "audit-optimized.json": "94e9b1fd425be99c7424e6100c1e9ba4889de07e3679d9ae90e1c40a7a048699",
+    "cross-mode.json": "2ef4e9ab42b23200bffaecd4cefe9e8291278bb348deb9480be9ff7a53559b5f",
+    "run-normal/sealed.json": "961a33b0f03eaec8a22d1a7f2ec009a039fcd9a182388842ef17a9f475982de7",
+    "run-optimized/sealed.json": "43d6ba92a1a26f4bee7fbbbb9fa20127203ca22b30ed444e0cf0d470107c9492",
+    "tests-normal.log": "a506f3013231a23b2a54107c187132f7b8a3cc9e88e0e7ae42ba370e7bc0f756",
+    "tests-optimized.log": "a0be050c1da2b0d5049289b0ba3f889e323d7825e83a45e4e7f07b153af600db"
+  },
+  "same_profile_reference_choices_per_mode": 48,
+  "schema": "hepta.ndu-merton-real-head-local-observation.v1",
+  "source_archive_sha256": {
+    "human_score": "8f8ac3c4ed99b4859b9d0258d19c2afdaca1ac194a806130196b3d9980aa91a4",
+    "labels0": "cb303e78cbbb1c9db400591e8a372609766a91213ddbdd323acd119ae1afb976",
+    "labels1": "d17c501eb02709ede687c72e7f5c6d6a32e776d365e7f1bbd01ec4587048d4f5",
+    "reader": "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17"
+  },
+  "source_git_blobs": {
+    ".github/workflows/hepta-ndu-merton-real-head.yml": "a40dd345a543a100c46bfa3583991e1aa9c9cf9c",
+    "experiments/ndu_tree_fbsde_gates/merton/real_head/README.md": "69575c483420850ae09cf064db00aeb3688edbb9",
+    "experiments/ndu_tree_fbsde_gates/merton/real_head/audit_real.py": "6e15018146e7986ed4232b2fa308d89b493fb7db",
+    "experiments/ndu_tree_fbsde_gates/merton/real_head/learning.py": "3636429c5f13517d5e256938bbcc6c32095ca2e7",
+    "experiments/ndu_tree_fbsde_gates/merton/real_head/material.py": "d401bb37054bedef6412769c5b1e71fca753f6aa",
+    "experiments/ndu_tree_fbsde_gates/merton/real_head/test_real.py": "60892a61ff36d6f1ea295f6143d906144af455a3"
+  },
+  "tests_skipped": 0,
+  "verified_lifecycle_rows_per_mode": 72,
+  "whole_question_rescue_source_group": "f8d230a4a66bb62b1543e3697f85dd14",
+  "workflow_bash_blocks_checked": 3,
+  "workflow_yaml_parsed": true
+}

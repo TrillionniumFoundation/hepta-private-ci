@@ -1,0 +1,48 @@
+{
+  "checkpoint_deserialization_performed": false,
+  "corrected_source_result": {
+    "bytes": 4278,
+    "checks_passed": 2683,
+    "path": "RESULT-v2.json",
+    "sha256": "b9c0eba05fb8ef71560616743549a3858c25e81b351f65df7baafaefafb01238",
+    "status": "PASS"
+  },
+  "corrected_verifier_executions": 1,
+  "current_source": {
+    "bytes": 13402,
+    "path": "verify_original_selected_archive.py",
+    "sha256": "9a4b3fde97e9e4e5d6b36e25f7a264799e8a455e4e0bbfd94eab7700a66cd646"
+  },
+  "exact_single_line_removal_verified": true,
+  "frozen_proposal_source_count": 10,
+  "frozen_proposal_sources_unchanged": true,
+  "original_archive_input_file_count": 13,
+  "original_archive_input_files_unchanged": true,
+  "original_controller_terminal": "unknown",
+  "original_result": {
+    "bytes": 4276,
+    "path": "RESULT.json",
+    "sha256": "aafee5e6d1d0b8b58b265fd485c3475c12a55eb079858ca9c5fef7bef1905ab2",
+    "unchanged": true
+  },
+  "original_source": {
+    "archive": "original-verifier-source-v1.zip",
+    "archive_identity": {
+      "bytes": 4476,
+      "sha256": "b70233bf3d383300ee7c62687ee4336c80ba31d8c2b2fc69f679ae21c5628007"
+    },
+    "crc_passed": true,
+    "member": "verify_original_selected_archive.py",
+    "member_identity": {
+      "bytes": 13437,
+      "sha256": "84bbd69df3104cdc594da3e0c8b431f67785d0f4e975c30a7044783fc8e4ee91"
+    },
+    "single_regular_member": true
+  },
+  "other_tests_rerun": false,
+  "qualification": "HOLD_NO_GO",
+  "reason": "Root AGENTS.md Python guidance prohibits use of the __future__ module.",
+  "recorded_at_utc": "2026-11-11T05:31:17.947776+00:00",
+  "schema": "hcsn-archive-verifier-source-correction-v1",
+  "source_change": "Delete exactly one from __future__ import annotations line; no verification-logic change."
+}

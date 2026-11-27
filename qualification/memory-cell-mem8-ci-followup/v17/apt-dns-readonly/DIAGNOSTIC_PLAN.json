@@ -1,0 +1,64 @@
+{
+  "argv": [
+    "python3",
+    "observe_original_domains.py",
+    "--output",
+    "${RUNNER_TEMP}/mem8-apt-dns-c895-observe",
+    "--budget-seconds",
+    "120"
+  ],
+  "attempts_per_domain": 1,
+  "budget_relation": "Independent diagnostic only; 5-minute per-job cap is below all original affected 20/60/120-minute job caps. No original execution is extended or restarted.",
+  "changes_prohibited": [
+    "apt update/install",
+    "mirror/source replacement",
+    "DNS/NSS editing",
+    "network/allowlist editing",
+    "alternate DNS server query",
+    "native/model/provider requests",
+    "current source PR or original run changes"
+  ],
+  "command_timeout_seconds": 10,
+  "configuration_read": [
+    "/etc/apt/sources.list",
+    "/etc/apt/apt-mirrors.txt",
+    "up to 32 .list/.sources entries from /etc/apt/sources.list.d",
+    "/etc/resolv.conf and its two exact systemd-resolve targets",
+    "hosts entry of /etc/nsswitch.conf"
+  ],
+  "fixed_domains": [
+    "azure.archive.ubuntu.com",
+    "archive.ubuntu.com",
+    "security.ubuntu.com",
+    "ports.ubuntu.com",
+    "packages.microsoft.com"
+  ],
+  "next_required_binding": "Root-reviewed isolated workflow/harness identity and original complete terminal artifact; none created or admitted by this candidate.",
+  "original_head": "c89540598693697577cda8cba31cb07f6ce65317",
+  "output_semantics": "Retain all original observation outputs and public configuration hashes before/after. Incomplete configuration, timed-out/nonzero lookup or changed configuration returns nonzero. Successful lookup still does not establish apt HTTP/package readiness, explain the original failed runner, or qualify original CI.",
+  "per_domain_command": [
+    "existing getent",
+    "ahosts",
+    "one fixed observed domain"
+  ],
+  "platforms": [
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm"
+  ],
+  "proposed_job_timeout_minutes_each": 5,
+  "proposed_observation_budget_seconds_each": 120,
+  "schema": "mem.c895.apt-dns.proposed-observation.v1",
+  "script": {
+    "bytes": 8605,
+    "git_blob": "76103d55ec719e2b9944efb832ce74a9f09ee7aa",
+    "sha256": "3f15cdf31bf4060bf0a82d82447bbb1c30445f379c665e8a1c5d22d3b36fc833"
+  },
+  "secret_avoidance": "No auth.conf, key files, environment dump or raw apt source configuration. Only hash and bounded public source URI projection; userinfo/query/fragment/unrecognized path contents omitted.",
+  "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "static_validation": {
+    "native_or_model_execution": false,
+    "network_or_script_execution": false,
+    "python_ast": "PASS"
+  },
+  "status": "UNADMITTED_STATIC_CANDIDATE"
+}

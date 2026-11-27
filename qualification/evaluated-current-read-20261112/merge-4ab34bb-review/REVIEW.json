@@ -1,0 +1,722 @@
+{
+  "schema": "hepta.evaluated-current-fixed-base-merge-review.v1",
+  "status": "STATIC_REVIEW_ONLY_NOT_EXECUTED",
+  "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+  "preserved_current_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "fixed_upstream": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+  "upstream_commits": 1,
+  "upstream_paths": 7,
+  "overlap_with_ours_paths": [],
+  "actual_github_merge": {
+    "sha": "e932bac20aedfa54b0ce60a50e41ecd5da7db7c8",
+    "parents": [
+      "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "1026bd09bc16e0035e8ea28053def5731d0a235e"
+    ],
+    "tree": "5056e8cd161f5b6005ed02b527c52fa1aba2588c",
+    "independently_created_union_tree_equal": true
+  },
+  "proposed_code_tree": "7b2ce6a8dcc8cc466872350d5ad03a0487dd51b4",
+  "proposed_parent_order_if_parent_publishes": [
+    "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "4ab34bbd3ca803213b6eecbaba81af719630f5d0"
+  ],
+  "exact_source_delta_paths": 8,
+  "production_rust_changes": 0,
+  "callers_or_allowlist_changes": 0,
+  "refs_or_commits_created": false,
+  "original_failure": {
+    "job": 131193199972,
+    "log_blob": "3d4f137c29ea1bf8b1078ab125bfd1d7ad282568",
+    "bytes": 26633,
+    "sha256": "b49aedad97eade9d4fd74a1d368fcbd8fab76c2400ec0ddad399f854552b38e8",
+    "source_matches": true,
+    "base_matches": false
+  },
+  "fixture_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "base": {
+        "stage": "base",
+        "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+        "sha": "218cbb06e2e078be28f48d2019cc901aee478499",
+        "encoding": "utf-8",
+        "chars": 13323,
+        "bytes": 13323,
+        "sha256": "dd5d7906176bd4681b103522bcf9f204d5490c7c272122065031f3a965d89870",
+        "git_blob_verified": true
+      },
+      "upstream": {
+        "stage": "upstream",
+        "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+        "sha": "7179071338fb9779017a7e138742ce0b389c086e",
+        "encoding": "utf-8",
+        "chars": 14725,
+        "bytes": 14725,
+        "sha256": "d2a00698917406f0fbdfb8a83d3c51d1d7f61c05b90cc766853e1eaeb70b8b4a",
+        "git_blob_verified": true
+      },
+      "additions": 42,
+      "deletions": 0,
+      "review": "Only flushed elapsed-time stage diagnostics. All 44 assertion invocations and both native tests remain; no success or recovery is inferred from instrumentation."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "base": {
+        "stage": "base",
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+        "sha": "191a74d44cfda509b24919a89144a93ec90b4f70",
+        "encoding": "utf-8",
+        "chars": 19866,
+        "bytes": 19866,
+        "sha256": "c4c61e035f641cd2715af7ee074c46176bfd5c4003f25e7be812c17ec79eb894",
+        "git_blob_verified": true
+      },
+      "upstream": {
+        "stage": "upstream",
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+        "sha": "0169864d8a5743a1ce00eacf293392a118026d8d",
+        "encoding": "utf-8",
+        "chars": 20803,
+        "bytes": 20803,
+        "sha256": "ec21b2dbf8322e171be194a96799334aa17a774d124dd6cfaae5272ef03d254a",
+        "git_blob_verified": true
+      },
+      "additions": 28,
+      "deletions": 11,
+      "review": "Capture the original first evidence error and original peer join without retry or replacement; success still compares the complete original attestation. Expiry uses the shared strictly-after-inclusive-window helper and requires SignedEvidenceError::ValidityWindow. All 66 assertion invocations and six native tests remain."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "base": {
+        "stage": "base",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+        "sha": "0e7f3c909fcc97742e228eb4ad189bd074727604",
+        "encoding": "utf-8",
+        "chars": 11410,
+        "bytes": 11410,
+        "sha256": "6001097fb8a403067d9687cf0c6aaf6afbd1bad0c3f0c1ff89e763218f5776d1",
+        "git_blob_verified": true
+      },
+      "upstream": {
+        "stage": "upstream",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+        "sha": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b",
+        "encoding": "utf-8",
+        "chars": 11581,
+        "bytes": 11581,
+        "sha256": "7d41de1a76a55b8b288a236d0fe570365a957593605e965db5cd493fdc80f480",
+        "git_blob_verified": true
+      },
+      "additions": 7,
+      "deletions": 4,
+      "review": "Box::pin the original qualify_or_readback future; same inputs and retention-first operation. All seven assertion invocations remain."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "base": {
+        "stage": "base",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+        "sha": "f23a3d8e18fddfd000d9d3deab9f01c44633cf3c",
+        "encoding": "utf-8",
+        "chars": 9151,
+        "bytes": 9151,
+        "sha256": "f0d8fb55cd597f686a3f6dc5ba6a0f30f179f83c86cbdf33f9bb438bf8f623e4",
+        "git_blob_verified": true
+      },
+      "upstream": {
+        "stage": "upstream",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+        "sha": "ccc2f10eeba27fe2c2dd2f94a13d1dfc19eeecb4",
+        "encoding": "utf-8",
+        "chars": 9368,
+        "bytes": 9368,
+        "sha256": "8d03478bec93f2410bd6b89bc8befd14948be6ac4d55c081779a4da1272b65b6",
+        "git_blob_verified": true
+      },
+      "additions": 9,
+      "deletions": 3,
+      "review": "Box::pin two enclosing original member/publication futures, without changing original inputs, stack limit, owner paths, or 27 assertion invocations and three tests."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "base": {
+        "stage": "base",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+        "sha": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908",
+        "encoding": "utf-8",
+        "chars": 15931,
+        "bytes": 15931,
+        "sha256": "84179117a002a78c8d39bb1438b6d4d298cb00cbdc0f31f946e7bb476276ea2b",
+        "git_blob_verified": true
+      },
+      "upstream": {
+        "stage": "upstream",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+        "sha": "a5fadf41d93333097f9b3613e07f9ca705f36223",
+        "encoding": "utf-8",
+        "chars": 18775,
+        "bytes": 18775,
+        "sha256": "45448e905bb96b8266201c96c2d246cb89a0e37676559b0a6634d02ee558dc14",
+        "git_blob_verified": true
+      },
+      "additions": 128,
+      "deletions": 54,
+      "review": "Partition the six current-refusal cohorts into three actual tests. Split the old combined missing/renewal/expiry/zero-support test into four actual tests. Keep original physical owner reads, byte pins, one-shot consumption and permanent-fence assertions. Fix the expiry negative to validate its inclusive final valid second, then cross it while the envelope remains live; require exact ValidityWindow. Four original native tests become nine; assertions 55 to 59."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "base": {
+        "stage": "base",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+        "sha": "bcb42c2d31f06a306d0cb3c4032494621b45e69a",
+        "encoding": "utf-8",
+        "chars": 3082,
+        "bytes": 3082,
+        "sha256": "ce45610fd49fdb898e7144adb502c1b7f1d9a1e5ed46ff9fee863c2531ba93b4",
+        "git_blob_verified": true
+      },
+      "upstream": {
+        "stage": "upstream",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+        "sha": "5a462fab5c7b93038596953957434c52e62a00ee",
+        "encoding": "utf-8",
+        "chars": 4438,
+        "bytes": 4438,
+        "sha256": "563d82440c91f580e49dfcc55569900b7777fbd88ac8cfc83eff856540704647",
+        "git_blob_verified": true
+      },
+      "additions": 35,
+      "deletions": 1,
+      "review": "Build the fixture definition in complete original input order, keeping original candidate-to-activation mapping and selected ID. Reject missing, duplicate or extra candidates through map removal/cardinality/empty checks. Assert both selected ID and actual published policy/input order; production admission is unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+      "base": {
+        "stage": "base",
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+        "sha": "9dad4fdd1edabe800a9ef80d876ddeb6a7e6d32b",
+        "encoding": "utf-8",
+        "chars": 15632,
+        "bytes": 15632,
+        "sha256": "1e88352e7772386890d722077d42fdbcd44b96cec0e6ceb58c4223959464d1d0",
+        "git_blob_verified": true
+      },
+      "upstream": {
+        "stage": "upstream",
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+        "sha": "139596784fcb0c337392ed9ed86174582a58de34",
+        "encoding": "utf-8",
+        "chars": 16278,
+        "bytes": 16278,
+        "sha256": "bd866a688d4a501ba7d427bc36fb999b51b49cc789220a636513635c6399a0de",
+        "git_blob_verified": true
+      },
+      "additions": 20,
+      "deletions": 5,
+      "review": "Wait strictly after the inclusive signature expiry second without replacing or renewing evidence, assert the actual clock crossed it, require exact ValidityWindow. All 49 assertion invocations and six tests remain."
+    }
+  ],
+  "exact_patch_application": {
+    "fixture_diffs": 7,
+    "complete_base_to_post_bytes_equal": true,
+    "collector_patch_base_to_post_bytes_equal": true
+  },
+  "lexical_assertion_counts_are_not_a_test_result": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "assertions_before": 44,
+      "assertions_after": 44,
+      "test_attributes_before": 2,
+      "test_attributes_after": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "assertions_before": 66,
+      "assertions_after": 66,
+      "test_attributes_before": 6,
+      "test_attributes_after": 6
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "assertions_before": 7,
+      "assertions_after": 7,
+      "test_attributes_before": 0,
+      "test_attributes_after": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "assertions_before": 27,
+      "assertions_after": 27,
+      "test_attributes_before": 3,
+      "test_attributes_after": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "assertions_before": 55,
+      "assertions_after": 59,
+      "test_attributes_before": 4,
+      "test_attributes_after": 9
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "assertions_before": 1,
+      "assertions_after": 2,
+      "test_attributes_before": 0,
+      "test_attributes_after": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+      "assertions_before": 49,
+      "assertions_after": 49,
+      "test_attributes_before": 6,
+      "test_attributes_after": 6
+    }
+  ],
+  "required_collector_followup": {
+    "path": "scripts/hepta_c_observer_coverage.py",
+    "base_blob": "49a99d7093dbabe467b2dc5053a597f4df320078",
+    "post_blob": "277cfe65e7255ac2dc12c4bf8603eb38dab21460",
+    "bytes": 29352,
+    "sha256": "714c24854884dadce4ab731a9d3cf455bcb9efb04981e2ed32499e1d183a0e4b",
+    "old_count": 3,
+    "new_count": 8,
+    "original_outside_tuple_unchanged": true,
+    "actual_unique_methods": [
+      "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+      "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows",
+      "original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows",
+      "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+      "original_evaluation_provider_refuses_renewed_original_signatures",
+      "original_evaluation_provider_expired_training_signature_permanently_fences_readback",
+      "original_evaluation_provider_zero_support_consumes_holdout_once"
+    ]
+  },
+  "case_mapping": {
+    "old_current_refusal": [
+      "withdraw",
+      "source-bytes",
+      "ledger-bytes",
+      "rollback",
+      "unreleased",
+      "cold-readonly"
+    ],
+    "preserved_cases": [
+      "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+      "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows",
+      "original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows",
+      "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+      "original_evaluation_provider_refuses_renewed_original_signatures",
+      "original_evaluation_provider_expired_training_signature_permanently_fences_readback",
+      "original_evaluation_provider_zero_support_consumes_holdout_once"
+    ],
+    "old_combined_case": "original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+    "old_combined_case_removed_not_aliased": true,
+    "new_total_provider_required_cases": 8,
+    "no_missing_or_skip_relaxation": true,
+    "release_and_original_current_cases_preserved": true
+  },
+  "source_closure_review": {
+    "unchanged_files": [
+      {
+        "path": "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+        "git_blob": "dc325a92cf4c59d4101a5b393d29bbc17f13c9c1",
+        "bytes": 12026,
+        "sha256": "6817fd29ae3ab858f35ace0d8f14cf5bd986d02416f9598f917cf27bb4ea12e6",
+        "methods": 8
+      },
+      {
+        "path": "qa/b4-no-bypass/test_cell_generation_physical_current_source_closure.py",
+        "git_blob": "0e49d7bb154f4bf740870437f18e11ff554d33b3",
+        "bytes": 5796,
+        "sha256": "78f6879458525456006a70130412a68035fa486b9733b8c0b7aaf3c5315110d2",
+        "methods": 4
+      },
+      {
+        "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+        "git_blob": "271ae3f628e4e75a5f3bc21989b5cde763dfdc5f",
+        "bytes": 11430,
+        "sha256": "d5d3f191d7a510e059325636852173f4e0ff5a80070ef2184c435e1531d23b7e",
+        "methods": 8
+      },
+      {
+        "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+        "git_blob": "0a4e6b6414c35aac7fdf8230c5494bf2d9552ea2",
+        "bytes": 6214,
+        "sha256": "38e01ac8e6eb696f2c3aba84fa907b540311f043ea7012a34ae388e80a210e61",
+        "methods": 4
+      },
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+        "git_blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234",
+        "bytes": 33501,
+        "sha256": "d7c324ac68d714371daa6c79e26f32e7a0356945201792d9a135f04ebf9e427d",
+        "methods": 22
+      },
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+        "git_blob": "72d1dc1ce3395b420507aaa6d80fe0401356faf3",
+        "bytes": 15488,
+        "sha256": "479d7783609743ee0841fd1f694ac11dea48394a4f1609918af24868a9175346",
+        "methods": 11
+      },
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+        "git_blob": "776e861fe82c208f6f61af73208a2bff263239ef",
+        "bytes": 22139,
+        "sha256": "2c0ebf4a1e26704f06306d1c951f94487646c1449c6fd406a172f8e23400d4ce",
+        "methods": 13
+      },
+      {
+        "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+        "git_blob": "d817779c00689c384a24309ae77b488575274db1",
+        "bytes": 7569,
+        "sha256": "e0c90058e69dcf5c33b1c3ee3c5de21ac6c3cc282dce3c4683a7ea8af74293a0",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+        "git_blob": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+        "bytes": 7652,
+        "sha256": "d9af5ff23cc7d7eb6d1f8f702bfa3e6d9d55fff7a7b3cbddf179c1e5b6ddf57b",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+        "git_blob": "8d607e733cf950165475cd80b9e3a080b13ed949",
+        "bytes": 8442,
+        "sha256": "36c96acedbed534ce2df59f60afc362ce2cccdf7b9631a1a165b2303cb661fde",
+        "methods": 7
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+        "git_blob": "079d53e9e5e149f108f992417024b20c4a35d183",
+        "bytes": 12042,
+        "sha256": "4bafea87710dff74fc7f371d0794d3944db95c402a42e55753e458143c93338f",
+        "methods": 3
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "git_blob": "bcbb410d42d44a4468549c5d3f9cac8a042f9621",
+        "bytes": 13997,
+        "sha256": "4ac845385257a4505833da3e2721b65c9e7092295a7914a01330c443f31ce42b",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_circuit_experience_v2_source_closure.py",
+        "git_blob": "430088028179f0c28a5dccdb15d05ad748754da1",
+        "bytes": 10261,
+        "sha256": "6b388d1d74b68cf97f482719d713aa6359e22dd433c6ef86c9fc685ffb7ebeef",
+        "methods": 5
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+        "git_blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+        "bytes": 10942,
+        "sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "git_blob": "f54675a31fc4c625991bde34a97f0bd6865964e8",
+        "bytes": 15320,
+        "sha256": "f8a5ab9bca5458a8bafa28fb707c891ac546db9a5cad87f9273c270f14e97c41",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+        "git_blob": "4da0873c757803beb46256d84e27e63b12991347",
+        "bytes": 12997,
+        "sha256": "5a3a115cd814464248a0b00229d79c5bf65b85f8812fae3689a5134863ffd071",
+        "methods": 8
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+        "git_blob": "6b7e5887b39117398119e58a7aa1f6867c741574",
+        "bytes": 18610,
+        "sha256": "dd6c77b43cce19264c864b1e3701e7bae47fe68c999f2b16b568688593427aed",
+        "methods": 10
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+        "git_blob": "53e51a594b88edc30e020dada9713196bd14ff77",
+        "bytes": 14266,
+        "sha256": "da28fc25682272abe94853b9a1104220f383ab0651117576e5d110bc7e005ee0",
+        "methods": 9
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_execution_evidence_source_closure.py",
+        "git_blob": "8570acac6e5e05410d1f9bec844e8125d900ea44",
+        "bytes": 5026,
+        "sha256": "10d2f265b831802d54455754ddf363885f2dc8ae14c143abba39544a59d06af6",
+        "methods": 5
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_execution_owner_source_closure.py",
+        "git_blob": "25c6a315594e997b82cdf36e033f637f1513ebb2",
+        "bytes": 14221,
+        "sha256": "86e693330f9b40f004c8df728673954ed866747b841892db34c65b7d29b7d457",
+        "methods": 9
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_holdout_current_source_closure.py",
+        "git_blob": "ad51db7191f85503e3a4328e55b34fe42f79fcf7",
+        "bytes": 9953,
+        "sha256": "d89d71e16ce768ec6ce7d2d9dafe31088556e348ed1295447d30427027726711",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+        "git_blob": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+        "bytes": 12582,
+        "sha256": "1b9f8b9c9bfdc004521f7007efaf228a7fcb8819059679dd040ac060786af578",
+        "methods": 15
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+        "git_blob": "64c3b5db2071a83ba03cb3664eda595c73ce3e2c",
+        "bytes": 16657,
+        "sha256": "360340bebd217ea3332ba6dcb5feec1c7ac54909aa1383bfa922e53bc15ca19a",
+        "methods": 8
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
+        "git_blob": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8",
+        "bytes": 12731,
+        "sha256": "ef1da57fa2a28f69a5ee3bf4dc9a0e6ce80da918711dc75451f71c34f1a6aba8",
+        "methods": 9
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_owner_source_closure.py",
+        "git_blob": "1f1a92602ab82b3b21786f1af8e6da8c11749d5e",
+        "bytes": 8282,
+        "sha256": "043be8d40175770670e890a48bb833dfd7de82ea93357e2438fbf86deea577a9",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_source_peer_source_closure.py",
+        "git_blob": "34a01df7324eb8b6d51d2b4a18cb00a36ae297c9",
+        "bytes": 14851,
+        "sha256": "9abe391407de4bb7958e2bb4cf5066d579d6b3a5adf71016df509fbdf85d7fec",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+        "git_blob": "d9708db7a15860ef6e38a2b9c87eaab80d83856d",
+        "bytes": 25677,
+        "sha256": "dc3939729b6f4549014fc2a95b01d8343de90e35cd799421e64a83637d5a2a73",
+        "methods": 7
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+        "git_blob": "6fc51eed804792d4f009697f76f2d3c20a5c9827",
+        "bytes": 10167,
+        "sha256": "d06d8d50b02fdb1ae5f5913348e6d9337c0e02515f7ad1e64dbdb1bed03e8039",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "git_blob": "8bc29f5a12ab987532c74104c1a86f54043c967c",
+        "bytes": 17401,
+        "sha256": "c9c1879457efaa872c2ee159a456fe0d751b7e2c5b363f98bca8eb9d40e706d8",
+        "methods": 7
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "git_blob": "f01bc644bea8a29e6c72e19f39855d11a214eef9",
+        "bytes": 21930,
+        "sha256": "4fcaff49e129f625a6f19045a5c7531eb591ea0f8aeefd7073a9b344b16724b2",
+        "methods": 8
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+        "git_blob": "133424ed5a03d6f695f771e514065b2448a21024",
+        "bytes": 16492,
+        "sha256": "dbe513e4d8a7438f7e15164ec592448dcda9ac4c306b76ce6ba129612a07c13a",
+        "methods": 8
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+        "git_blob": "a65614c5bb04d3d22b007213a94c20f318bf73b4",
+        "bytes": 12634,
+        "sha256": "e61cb68bafc1b9e2d80f60e8c1800dd4e4dec5d10e5b9ee367da98ad31b45cf4",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_retained_owner_readback_source_closure.py",
+        "git_blob": "e4795876083d972b5a655a743edcefc42f9bd1f1",
+        "bytes": 10816,
+        "sha256": "255ae04f596f3e4f370416e2165ddb7518ba9b634d60b08db83d180494fbb461",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "git_blob": "4cbcaa9eb129280009bc3b19e357fcd515861f84",
+        "bytes": 16402,
+        "sha256": "6bee7a12ab86e3af34c39d4eedf1626bc9bb1e1f91dd9aff1b12016211a38207",
+        "methods": 7
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+        "git_blob": "3e679a52d4cd0fe50e6a97fe210eb2aa06380e65",
+        "bytes": 18845,
+        "sha256": "d5c5679c54765f3bb7c7e9df1275c30410ed3a40496d63cb7f34847d06959bb5",
+        "methods": 8
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "git_blob": "fae54de0a847b39ca44df7348819056c0ace592c",
+        "bytes": 14911,
+        "sha256": "afd97ecf4b61a52035c967490946e2b86d61887cbeb302ec93f004257a9bdc53",
+        "methods": 9
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+        "git_blob": "52d1e41149ca5d3b20bf5f827e9db9a896df9b83",
+        "bytes": 14189,
+        "sha256": "0bdaff3fb67c65b4d0e605064f1baf7714bbb51c2bff4fdfa3938b9129710d11",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+        "git_blob": "c37513f5fe5298ecc4618b3a819234e7d7f57c42",
+        "bytes": 9668,
+        "sha256": "1209dfbbf5ced035dd30e89739ae2b07bb922778b01b665aa5ca362677d3adb6",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+        "git_blob": "424a41420f1ac9b3c8a4d827862daaba5eb33866",
+        "bytes": 4592,
+        "sha256": "b1a9f47f7d4ea72ed181b5128ead580373260c10444948e467e3f5af9810e560",
+        "methods": 3
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+        "git_blob": "6d0aee2f77f295024fbccb12493f15c77ad67a9a",
+        "bytes": 9898,
+        "sha256": "06248c65a377b1ce3b80e31a9ba00d06240e76d403423ae7fc596842afa07812",
+        "methods": 5
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_dataset_source_closure.py",
+        "git_blob": "fd4d918a4dd06ba0d5fdb1157045f42d38934e3b",
+        "bytes": 8123,
+        "sha256": "1e866661cef9cc36d02e0364be2209e60471cfa3650e9356449bd807c47b036c",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+        "git_blob": "ea4db2d35de8ec8d4b7ae8a3adec8aef4ea17966",
+        "bytes": 7834,
+        "sha256": "0ea1f68517daef9109c7dc273d55b22a2c6ee0984e0fc21ea868d2fe1b911ec9",
+        "methods": 11
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+        "git_blob": "ad0586ddadce2566d705ae0f57011dc672ec2d6b",
+        "bytes": 7781,
+        "sha256": "cf48a5d7c262e17700258fea6c5d146aaed196b8018a9e3b4b62353596f03ea3",
+        "methods": 6
+      },
+      {
+        "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+        "git_blob": "bcf2dbb0824b0a99d9acfd8c54afe51356d212a1",
+        "bytes": 9787,
+        "sha256": "9b71b1793c6969fef17488bd221b01e688464b41c04fade74dc1cbb96e4074ef",
+        "methods": 4
+      },
+      {
+        "path": "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+        "git_blob": "5fb67098c33f4ccc055fb3e8ac18486543680eec",
+        "bytes": 13049,
+        "sha256": "547b93c64daf821fbc4b3b75cc7e1c6225799cd0164f7a24853124a5f6a67034",
+        "methods": 8
+      },
+      {
+        "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+        "git_blob": "f5e1e190546e15ca6802338446a12de414154f49",
+        "bytes": 27663,
+        "sha256": "d334c4528d6f5287ae1bd61e651d7478692768a6eaaf849cd9f3045b8b2d50f5",
+        "methods": 10
+      },
+      {
+        "path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+        "git_blob": "9a842a0ab2f1703fe45648e8db01104cdd8447c3",
+        "bytes": 14463,
+        "sha256": "ed1647a0f6ef13f9022bdc0748fa5071247725732a76658b9b4c07a4ac23eee1",
+        "methods": 11
+      },
+      {
+        "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+        "git_blob": "946afd64457e848e2674519f61b35fef6ce5af31",
+        "bytes": 11172,
+        "sha256": "a4de81eec657ce22f11518495d325df7f305d3aa8f387c60249ae9ea43261818",
+        "methods": 9
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+        "git_blob": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+        "bytes": 4867,
+        "sha256": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e",
+        "methods": 11
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+        "git_blob": "2d0f4bd705fb0159549d9bb1f13d42d3db74afc4",
+        "bytes": 16250,
+        "sha256": "20a6f1d05f29e705e62412bb66b5337edd2ef1f5e322cd45e043b6f82197e25e",
+        "methods": 12
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+        "git_blob": "050bd227cc6ef7c9cf9abdbb04557c330aca82c4",
+        "bytes": 12257,
+        "sha256": "b8566a616b4732e159f82ed7615c189c59adc74b0278b7026e20200f7e658d49",
+        "methods": 8
+      },
+      {
+        "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+        "git_blob": "9a234c73dc6382cb586aea01722bc071c010e0a5",
+        "bytes": 5533,
+        "sha256": "2b17d2ff155974e152d2fcb3bfd13bfcad5dc2df8ad3d7ab1502b59046919926",
+        "methods": 4
+      }
+    ],
+    "actual_method_definitions": 398,
+    "full_text_references_to_changed_fixture_paths_or_removed_name": [],
+    "actual_1026_proof_protected_files": 386,
+    "actual_1026_proof_boundaries": 537,
+    "changed_fixture_paths_in_those_protected_or_caller_rows": [],
+    "additional_source_closure_edits_needed": false,
+    "execution_on_candidate": false
+  },
+  "parser_review": {
+    "path": "scripts/test_hepta_c_observer_coverage.py",
+    "original_method_names": [
+      "test_exact_subset_retains_other_native_cases",
+      "test_each_original_owner_group_is_required_in_both_reports",
+      "test_missing_and_duplicate_required_cases_reject",
+      "test_same_names_require_native_package_and_suite_identity",
+      "test_nested_and_orphan_cases_cannot_supply_coverage",
+      "test_skipped_failed_and_errored_cases_are_not_passes",
+      "test_raw_log_missing_substituted_duplicate_and_failed_rows_reject",
+      "test_retained_execution_uses_exact_original_log_identity",
+      "test_retained_log_aliases_and_path_escape_are_rejected",
+      "test_retained_raw_bytes_cannot_be_changed_truncated_or_extended",
+      "test_retained_execution_refuses_failed_records_bad_identity_and_symlinks",
+      "test_actual_workflow_ordinary_report_wiring_reads_recorded_log",
+      "test_original_evaluator_cases_cannot_be_supplied_by_agentd",
+      "test_workflow_ordinary_executes_all_original_owner_packages",
+      "test_actual_workflow_retains_all_five_maintained_owner_postimages",
+      "test_actual_workflow_still_refuses_maintenance_outside_exact_owner_scope"
+    ],
+    "unchanged_methods": 16,
+    "reasoning": "reports() builds actual EXPECTED_CASES dynamically; group removal in JUnit/native log, required identity and package, missing/duplicate, skipped/failure/rerun statuses, retained raw-log integrity, and actual workflow wiring remain enforced. The collector change updates only exact required method names. Static verification binds every listed new name to one real async test declaration; the parser fixtures do not establish Rust execution.",
+    "original_methods_reexecuted_on_candidate": false
+  },
+  "validation_boundary": "The 1026 source/caller PASS and currently executing 1026 hosted jobs are not transferred to this changed tree. Candidate still needs its own source/parser/caller gates and original native suite, exact new positive coverage, original JUnit/collector and required maintenance. No SourceOwner, Root/UID/boot or scientific-learning success is inferred.",
+  "artifacts": "Full immutable before/after Rust files and collector postimages are included in the separate review tree. No branch/ref was moved."
+}

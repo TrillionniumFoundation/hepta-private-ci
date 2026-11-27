@@ -1,0 +1,21 @@
+{
+  "maintenanceOwner": "This repository",
+  "implementation": "Three reexports; all macro parsing and expansion is provided by pastey 0.2.3",
+  "compatibilityPackageName": "paste",
+  "compatibilityPackageVersion": "1.0.15",
+  "compatibilityReason": "Existing Starlark and V8 source uses paste::{paste,item}; preserving those manifests avoids a V8 source/native ABI migration.",
+  "upstreamAlternative": "https://github.com/as1100k/pastey",
+  "maintenanceAdvisory": "https://rustsec.org/advisories/RUSTSEC-2024-0436.html",
+  "archivedImplementationRetained": false,
+  "registryDependency": "pastey = 0.2.3",
+  "publicReexports": [
+    "expr",
+    "item",
+    "paste"
+  ],
+  "mechanicalFormatting": {
+    "command": "just fmt",
+    "scope": "Repository-mandated mechanical Rust formatting after scoped tests and just fix",
+    "changedFiles": {}
+  }
+}

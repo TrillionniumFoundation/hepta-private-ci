@@ -1,0 +1,41 @@
+{
+  "file_count": 1,
+  "files": [
+    {
+      "carrier_blob": "c42aa9bf02438bfc3bbe61c6b6332b6ede9816c7",
+      "carrier_bytes": 24518,
+      "carrier_path": "qa/repository-consolidation/20261118/frontier-evidence/4aa818ea782ae87c613d89d99af5dc3bc83fd521/blobs/79a24791ab86626b994a2c675d161cdb660862f1.gz",
+      "carrier_sha256": "fb4da3658b35ce6269d67d9b04f4acadeff4e6151a52296ea117a8a4605569d0",
+      "format": "gzip",
+      "original_blob": "79a24791ab86626b994a2c675d161cdb660862f1",
+      "original_bytes": 272970,
+      "original_mode": "100644",
+      "original_path": "qualification/learn-ordinary-ce434/evaluation-resident-guards-514-20261112/complete-row-delta.json",
+      "original_sha256": "d3fd30495a7273da34b5714dc5e3fdf0c45ee53397308092d52d40f3abb3b448",
+      "restored_bytes_verified": true,
+      "source_commit": "4aa818ea782ae87c613d89d99af5dc3bc83fd521"
+    }
+  ],
+  "gzip_metadata": {
+    "compression_level": 9,
+    "filename": "",
+    "mtime": 0
+  },
+  "new_blob_limit_bytes": 262144,
+  "original_manifests_unchanged": true,
+  "qualification": "Historical original records only. No archived program is executed; no historical failure/running result is relabelled as current qualification.",
+  "restore": "Outside the checkout, decompress each complete carrier to original_path, preserving original_mode; require exact original_bytes, original_sha256 and original Git blob identity. Do not overwrite current source or execute archived recipes.",
+  "schema": "hepta.historical-gzip-carriers.v1",
+  "source_commit": "4aa818ea782ae87c613d89d99af5dc3bc83fd521",
+  "source_tree": "72c3b1e873b9281a6912d317a5adaac1bcca656c",
+  "total_original_path_bytes": 272970,
+  "unique_carriers": [
+    {
+      "blob": "c42aa9bf02438bfc3bbe61c6b6332b6ede9816c7",
+      "bytes": 24518,
+      "mode": "100644",
+      "path": "qa/repository-consolidation/20261118/frontier-evidence/4aa818ea782ae87c613d89d99af5dc3bc83fd521/blobs/79a24791ab86626b994a2c675d161cdb660862f1.gz",
+      "sha256": "fb4da3658b35ce6269d67d9b04f4acadeff4e6151a52296ea117a8a4605569d0"
+    }
+  ]
+}

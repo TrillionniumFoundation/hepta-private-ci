@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn-p2-immutable-live-mqar-pair-v1",
+  "date": "2026-10-31",
+  "status": "PRE_REGISTERED_BEFORE_NEW_TRAINING",
+  "research_only": true,
+  "production_activation": false,
+  "all_scientific_blockers_closed": false,
+  "parent_pr": 4510,
+  "parent_head": "7c5ef8b3098a9bb16e1a30e77af1955d93ac4873",
+  "task": "mqar4",
+  "seed": 2,
+  "arms": [
+    "aggregate_count",
+    "physical_event_timestamp"
+  ],
+  "training_cpu_per_arm_seconds": 25,
+  "maximum_cpu_fraction_gap": 0.05,
+  "expected_parameters": 5186,
+  "trainer_git_blob": "a62d8e5056cd9c66947815b4eb8b5af9cf3a84de",
+  "immutable_wrapper_git_blob": "1a959669a9908489887b9833b297cd7b915bcef3",
+  "create_only_receipts_git_blob": "c5bc0c318f58b52f4fd32f03b15e721b3932aeeb",
+  "preexisting_negative_trial_data_are_immutable": true,
+  "prespecified_outcomes": [
+    "both new live v2 jobs consume at least 25 process CPU seconds (not step cap)",
+    "publish exactly one create-only on-disk receipt per arm",
+    "inspect both receipts in new Python process and verify canonical digest",
+    "refuse duplicate/same-key writes and premature full-12 seal",
+    "independent compare paired seed/model/data/event hashes and CPU budget"
+  ],
+  "do_not_upgrade_scientific_gate": true,
+  "limitations": [
+    "non-blind exploratory revisit of earlier v2 trained arm",
+    "same paired seed only",
+    "no full host crash/power loss",
+    "no signflip significance, full memory OOD or platform net benefit"
+  ]
+}

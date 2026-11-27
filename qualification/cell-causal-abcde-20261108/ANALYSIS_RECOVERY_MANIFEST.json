@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.causal-b.analysis-recovery.v1",
+  "original_launch_spec_sha256": "77e4bb8f3dc7a9a3d09a05255c8028742d047e11ef64b9931070bf86eb17cd1a",
+  "artifacts": [
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/ANALYSIS_RESULT.json",
+      "bytes": 2173,
+      "sha256": "5e5b635e191229fe2cd3a2a1b9325e01bf460efc078669bfa8714015ee30ff42"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/B_ANALYSIS.json.gz",
+      "bytes": 31528,
+      "sha256": "7fb6658e4103684df38d2defb138dbb0e30778b91acdd3314b75d8aa0b2ff74a"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/B_ANALYSIS.json",
+      "bytes": 603081,
+      "sha256": "64886fec9deca29abe5b9cb52b383f8cee5dd073a76bf8d894580d9953bb3f70"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/B_ANALYSIS.txt",
+      "bytes": 3444,
+      "sha256": "6a7538a6a9942c7e8e330e73b48d36c844f0d11683f0282c53fc8c8be41fb509"
+    }
+  ],
+  "transport_observations": [
+    "The original start RPC timed out; the original result receipt and immutable output bytes were independently read back without rerunning analysis.",
+    "Durable inventory enumeration exceeded its total source-byte bound; this is an inventory/recovery error, not an analytical failure."
+  ],
+  "analytical_failure": false,
+  "scientific_acceptance": "HOLD",
+  "adoption_authorized": false
+}

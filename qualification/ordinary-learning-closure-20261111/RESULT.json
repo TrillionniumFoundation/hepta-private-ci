@@ -1,0 +1,368 @@
+{
+  "schema": "hepta.ordinary-learning-closure.component-qualification.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 5978,
+  "scope": "Exact-source component integration. Ordinary production learning/adoption/consumption remains unqualified.",
+  "tested_executable_source": {
+    "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+    "parent": "5dcec722472eab39064416d50bf4c4bb7b96b361"
+  },
+  "authority": {
+    "additional_runtime_authority_granted_by_this_change": false,
+    "model_factory_enrolled": false
+  },
+  "ordinary_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_complete_chains": 0,
+    "no_update_or_rollback_complete_chains": 0,
+    "independent_B_accepted": false,
+    "independent_C_FinalUse_accepted": false,
+    "whole_daemon_Root_cold_succession_accepted": false
+  },
+  "component_validation": {
+    "maintenance": {
+      "status": "PASS",
+      "gates": {
+        "fmt-before": {
+          "exit": 0,
+          "source_unchanged": true,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "fix-agentd": {
+          "exit": 0,
+          "source_unchanged": true,
+          "log_sha256": "2a66b4cca676940f7d10a117a556acb10e6f008ce4c1f44aac5cb9fd639b335a"
+        },
+        "fix-artifacts": {
+          "exit": 0,
+          "source_unchanged": true,
+          "log_sha256": "e4bbbd6dc4cc6a63be2bf59523d850ea024beb657acded54b7f9500a9a8e06e1"
+        },
+        "fmt-after": {
+          "exit": 0,
+          "source_unchanged": true,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "native": {
+      "status": "PASS",
+      "source_unchanged": true,
+      "original_worktree_unchanged": true,
+      "same_source_helper_verified_before_and_after": true,
+      "summary_blob": "5ef548330bab8d5106bccabe2a0e5616101498ea",
+      "summary_sha256": "7f7b85a0589b4b28ed7bcfd21c210eb4da6187d438ac5c9cf9a1bda5b151337a",
+      "focused_dataset": {
+        "passed": 4,
+        "failed": 0,
+        "skipped_or_filtered": 985,
+        "included_in_agentd": true
+      },
+      "agentd_library": {
+        "passed": 918,
+        "failed": 0,
+        "skipped": 71,
+        "log_sha256": "4dd763d2d6291d687327cee852e76700427e20cdeb78e3c7cd0cdf08ec63d278"
+      },
+      "learning_artifacts_library": {
+        "passed": 123,
+        "failed": 0,
+        "skipped": 1,
+        "log_sha256": "4d239d72e5fa5d5309ad4e3f934fb6020cf82485fb9be7d8ef77af9b69561e18"
+      },
+      "root_uid0": "not run",
+      "archive_files": 45,
+      "archive_payload_files_independently_verified": 44,
+      "harness_classification": "reconstructed-from-original-request: exact UTF-8 stdin from preserved ef0e request, not an invented original execution file",
+      "archive_source_closure_note": "The archive source_closure sentence points to separate caller evidence. Local runtime_access final attempts remain unknown. The accepted complete caller gate is the hosted 130eaac/49ca result recorded in this outer RESULT."
+    },
+    "full_typed_caller_scan": {
+      "status": "PASS",
+      "source_head": "130eaac29ef73259e10ae167744bda8320796216",
+      "actual_checkout": "49ca46c5f706dc46d463e091e4c68a4a1f0da571",
+      "tree": "56e2cd6fcec86e4fc059d9a25ce53440c7e3a144",
+      "run_id": 43045402540,
+      "job_id": 130609632531,
+      "receipt_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "boundaries": 236,
+      "privileged_inventory": 236,
+      "protected_rules": 229,
+      "rust_files_scanned": 6315,
+      "authorityGranted": false,
+      "full_unfiltered_command": "python3 scripts/verify_hepta_callers.py verify",
+      "raw_log_bytes": 282446,
+      "raw_log_sha256": "5590b51221181d6c8148b285beca8d9259a85947c144c7cb27a41b348cccde41",
+      "raw_log_git_blob": "0a5c4e181518f2d7d847adf7a5351adfddebe117",
+      "local_54de_attempt": "unknown, not used as this PASS",
+      "QA_groups": [
+        {
+          "name": "b4-no-bypass",
+          "passed": 206
+        },
+        {
+          "name": "fault-matrix",
+          "passed": 5
+        },
+        {
+          "name": "performance",
+          "passed": 5
+        },
+        {
+          "name": "vertical-slice",
+          "passed": 5
+        }
+      ],
+      "QA_counts_are_separate_from_native_and_ordinary_counts": true,
+      "raw_log_path": "ci-130eaac/job-130609632531.log",
+      "manifest_path": "ci-130eaac/MANIFEST.json"
+    },
+    "hosted_CI": {
+      "status": "REPO_CHECKS_PASS_WITH_OTHER_WORKFLOW_FAILURES",
+      "all_CI_green": false,
+      "observed_failures": [
+        {
+          "source": "130eaac29ef73259e10ae167744bda8320796216",
+          "run_id": 43045402540,
+          "job_id": 130609383697,
+          "phase": "Fence setup before checkout",
+          "actual_checkout": null,
+          "error": "local_control_inventory_unavailable",
+          "blob_scan_executed": false,
+          "log_blob": "76484425994f350760c95d67fe5a362a123bd381",
+          "log_bytes": 3859,
+          "log_sha256": "f15e1316b3c8d1255298314d0acf4b7658c2856e4d0e277dda4d36173fc0266e"
+        },
+        {
+          "source": "130eaac29ef73259e10ae167744bda8320796216",
+          "run_id": 43045402540,
+          "job_id": 130609630986,
+          "phase": "apt libcap-dev before SDK tests",
+          "actual_checkout": "49ca46c5f706dc46d463e091e4c68a4a1f0da571",
+          "error": "Temporary failure resolving azure.archive.ubuntu.com",
+          "exit": 100,
+          "SDK_tests_executed": false,
+          "log_blob": "6886771da7c9d55dd494ad0033de7286a88850ac",
+          "log_bytes": 23762,
+          "log_sha256": "0dafd2b03cb4b9971157ad6d0ed647afbfe017a6a52321f18131f4609c8649fe"
+        }
+      ],
+      "repo_checks": {
+        "job_id": 130609632531,
+        "conclusion": "success",
+        "completed_at": "2026-11-11T15:24:53Z",
+        "all_steps_success": true,
+        "formatting": "PASS",
+        "prettier": "PASS",
+        "clean_worktree": "PASS",
+        "all_CI_green": false
+      }
+    }
+  },
+  "historical_failures_retained": [
+    {
+      "source": "97a1fcadbf6c6699a86cf7c68210bea3fcdfda3e",
+      "tree": "69aa60e46be91f8c10c1b0d809d72cb52b362430",
+      "local_agentd": {
+        "passed": 907,
+        "failed": 4,
+        "skipped": 71
+      },
+      "hosted_shared": {
+        "passed": 1207,
+        "failed": 4,
+        "skipped": 71
+      },
+      "counts_overlap": true
+    },
+    {
+      "source": "08f963973e02e0f74e499c962635518965f4f68a",
+      "tree": "2b700f32ebd90f88e022432e0a62584e4713a69b",
+      "focused": {
+        "passed": 3,
+        "failed": 1
+      },
+      "hosted_GNU_and_musl_each": {
+        "passed": 910,
+        "failed": 1,
+        "skipped": 71
+      },
+      "reason": "Negative fixture removed mandatory abstain; original Ledger correctly refused before adapter."
+    },
+    {
+      "source": "952f2ae677d5110e369ae11f49af973891002b53",
+      "tree": "22fb6f8d0ecc7ee0f1670088227a8e89feac030d",
+      "status": "stopped-on-formatter-source-drift",
+      "native_tests_run": false
+    },
+    {
+      "source": "5dcec722472eab39064416d50bf4c4bb7b96b361",
+      "tree": "f04d39f6b05051f050ef45e9a8d9f9b31a510a0a",
+      "status": "maintenance-failed-E0004",
+      "native_tests_run": false,
+      "source_unchanged": true
+    }
+  ],
+  "limitations": [
+    "Original task/Dataset host and actual signing/custody capabilities are not installed by ordinary startup.",
+    "Independent B holdout/execution owners and their original evidence are not supplied.",
+    "Root Model reservation, purpose-specific handoff, factory enrollment, ordinary Model dispatch and recovery remain proposed and unimplemented.",
+    "Selector publication/withdrawal and ordinary independent C FinalUse are not qualified.",
+    "Whole daemon/Root exit, successor ownership and cold recovery are not qualified.",
+    "Component fixtures do not certify an ordinary complete chain.",
+    "Chain native vectors remain pinned to afd2; static equality of four protocol blobs is not a native replay from 54de.",
+    "Repeated test lanes and focused subsets are not additive."
+  ],
+  "next_connected_unit": "Actual Root reservation/handoff and complete original stage-owner installation before production launch, with scoped Dataset enrollment, Model route/recovery, independent B and ordinary C capabilities.",
+  "evidence_artifacts": [
+    {
+      "path": "ci-97a1-08f/original-ci-97a1-08f-20261111.tar.xz",
+      "blob": "b5908c9843a57f74c56701382d3cb74ba29ef478",
+      "bytes": 723188,
+      "sha256": "1858edc82f9c0cc0caf66a313b1217570f3772b856f321934f2085302ce6b6e5"
+    },
+    {
+      "path": "ci-97a1-08f/MANIFEST.json",
+      "blob": "8dc6474ae4c8052b53b5d95bce7d44de688ff12c",
+      "bytes": 53378,
+      "sha256": "1894aa898823c118005f4e35b24628baf4ccd2ffd40eccf4fd9d5236b1105c76"
+    },
+    {
+      "path": "dataset-component-history/dataset-component-evidence.tar.xz",
+      "blob": "635054b15d2cde1bc39ca93fc6366564ae47df7f",
+      "bytes": 151696,
+      "sha256": "d7d5b9e00b275bb341a0bb9f9be3c4d84965902c8b208dcb3edb63c493f85324"
+    },
+    {
+      "path": "dataset-component-history/RESULT.json",
+      "blob": "0d7faa9a167e37d268182d69e94b065089d50b58",
+      "bytes": 17509,
+      "sha256": "e6c44640717bef7087b37be6b76e38cb39ac507e0fd73cbfa633ca99df9ba65a"
+    },
+    {
+      "path": "unified-native/original-summary.json",
+      "blob": "5ef548330bab8d5106bccabe2a0e5616101498ea",
+      "bytes": 12533,
+      "sha256": "7f7b85a0589b4b28ed7bcfd21c210eb4da6187d438ac5c9cf9a1bda5b151337a"
+    },
+    {
+      "path": "STATIC_PROTOCOL_COMPARISON.json",
+      "blob": "783c968b6ca6ee63be866c1c478c0d0567ac23c4",
+      "bytes": 2931,
+      "sha256": "5727be8ac026cb807c4c2528533f2ad0674c388e8d71e300c8e88b6d1e7c2e46"
+    },
+    {
+      "path": "assembly-and-callers/runtime-access-evidence.tar.xz",
+      "blob": "3723e1b0226a8439075ba5de454924708c798268",
+      "bytes": 19388,
+      "sha256": "990dd8c0c78f0482d11e5af82b78573ab18bff703e4dbd5ead57476f8061967a"
+    },
+    {
+      "path": "assembly-and-callers/ARCHIVE.json",
+      "blob": "4ed9163fff7a7d7039114848390f30169cd1a609",
+      "bytes": 638,
+      "sha256": "71942f370e2a37999740adfe3802138cab294277ba7e1d290928b42871e6fc11"
+    },
+    {
+      "path": "assembly-and-callers/BUNDLE_MANIFEST.json",
+      "blob": "6d7f1e4b243b58c02964163074cb0581228ec3e8",
+      "bytes": 3375,
+      "sha256": "dfcbb43d2cb409a6640c69206f971845064811b28600209da565e9e8ebba257b"
+    },
+    {
+      "path": "assembly-and-callers/KNOWN_OBSERVATIONS.json",
+      "blob": "6e51eec9af64371340f14fa28f605584fa0f819d",
+      "bytes": 6099,
+      "sha256": "a61b5dcf8993e16a7f502ac24a70f48287027cc963ca1c92e4f1b739bfd9a8d6"
+    },
+    {
+      "path": "assembly-and-callers/README.md",
+      "blob": "cc635c5da4c4e2126a298b90ecb0cf2653e9caa7",
+      "bytes": 2451,
+      "sha256": "eb17ca5022b2ff69fd13bd5bee69e5195df46996aa2cc99888021755e2b6f66b"
+    },
+    {
+      "path": "ci-54de/ci-54de.tar.xz",
+      "blob": "ccdc4ae7373ac9388c3d8f35e47fb8d8975e321d",
+      "bytes": 247320,
+      "sha256": "345221374f44d835d3c38170c4512bff0a2ada9c731eb8a651c263d4bae6d635"
+    },
+    {
+      "path": "ci-54de/MANIFEST.json",
+      "blob": "de5853789c810fc8dc0276a62321ddbd0b74db40",
+      "bytes": 7712,
+      "sha256": "af45aa0a971deaacc3f82d0a457a28dfb7930d27e9094236560e81af1b349c36"
+    },
+    {
+      "path": "unified-native/ordinary-unified-native-evidence.tar.xz",
+      "blob": "b2a169acbb59f14fe5615600e433d16df5ba152b",
+      "bytes": 111220,
+      "sha256": "59bd92072e5655fe6ac28542f2e60744ebfe813288773749e136111292efd465"
+    },
+    {
+      "path": "unified-native/RESULT.json",
+      "blob": "d1f2ed4a020e9f0914a1979f245372a172d40e77",
+      "bytes": 25632,
+      "sha256": "18723881ef9994bd0e408ec11697ef00e505599ecde11a17774bb836796237f5"
+    },
+    {
+      "path": "unified-native/EXPORT.json",
+      "blob": "70eb6ac38e8e6b32a6cad74d79016353aee9a891",
+      "bytes": 2182,
+      "sha256": "b7b79c401a42b87bb267b12983d56a0cd8666751c7042f13f8ca6f0c3bd5d383"
+    },
+    {
+      "path": "ci-130eaac/job-130609383697.log",
+      "blob": "76484425994f350760c95d67fe5a362a123bd381",
+      "bytes": 3859,
+      "sha256": "f15e1316b3c8d1255298314d0acf4b7658c2856e4d0e277dda4d36173fc0266e"
+    },
+    {
+      "path": "ci-130eaac/job-130609630986.log",
+      "blob": "6886771da7c9d55dd494ad0033de7286a88850ac",
+      "bytes": 23762,
+      "sha256": "0dafd2b03cb4b9971157ad6d0ed647afbfe017a6a52321f18131f4609c8649fe"
+    },
+    {
+      "path": "ci-130eaac/job-130609632531.log",
+      "blob": "0a5c4e181518f2d7d847adf7a5351adfddebe117",
+      "bytes": 282446,
+      "sha256": "5590b51221181d6c8148b285beca8d9259a85947c144c7cb27a41b348cccde41"
+    },
+    {
+      "path": "ci-130eaac/MANIFEST.json",
+      "blob": "602d690645a554ec8defd6663f4e6a097bd8d3fc",
+      "bytes": 12098,
+      "sha256": "4aa8a0bcffffc8d3a0a0d24839d430dd9422072e51b8d6be6f75fdfc064e9a4c"
+    }
+  ],
+  "ci_only_child": {
+    "commit": "130eaac29ef73259e10ae167744bda8320796216",
+    "tree": "56e2cd6fcec86e4fc059d9a25ce53440c7e3a144",
+    "parent": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "path": ".github/workflows/repo-checks.yml",
+    "old_blob": "d58e39c0d951005a03f6e36899266739703103b7",
+    "new_blob": "48154e7d3f3fbf3f304490181d71facf623dcbd0",
+    "scope": "CI duration only; no executable Rust source, caller checker or guard change."
+  },
+  "local_caller_attempts": {
+    "5dcec": "last observed running; terminal unknown",
+    "54de": "admission, execution and terminal unknown; exact request retained",
+    "no_additional_local_scan": "hosted full gate is the completion path"
+  },
+  "publication": {
+    "kind": "evidence-only child",
+    "expected_parent": "130eaac29ef73259e10ae167744bda8320796216",
+    "tested_code_commit_unchanged": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "evidence_head_native_execution_claimed": false,
+    "documentation_and_archives_only": true,
+    "recorded_component_native_and_hosted_caller_gates_completed": true
+  },
+  "ci_budget_evidence": {
+    "source_commit": "08f963973e02e0f74e499c962635518965f4f68a",
+    "local_metadata_twin": "3e905f189af5c516cdb6bb3cbd15e0a1f51856a7",
+    "source_tree": "2b700f32ebd90f88e022432e0a62584e4713a69b",
+    "complete_caller_seconds": 962.797,
+    "purpose": "Evidence that the original 600-second whole-job limit was insufficient; not a 54de local caller result."
+  }
+}

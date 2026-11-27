@@ -1,0 +1,39 @@
+{
+  "status": "confirmed counterexample; original concurrency qualification withdrawn; repair pending actual tests",
+  "cause": "SQLite READONLY BEGIN IMMEDIATE does not exclude actual writer commits",
+  "negative_current_source": "8d10ae4b52cb184d0422cfc71eff76f1bfa44654",
+  "jobs": [
+    {
+      "host": "main",
+      "job_id": "1a16abd8dc4-1b6abb-3e8f",
+      "exit_code": 100,
+      "tests_passed": 62,
+      "tests_failed": 1,
+      "tests_timed_out": 1,
+      "source": "8cf175a3cf23cb335462d3c1e91be5f392f49226",
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/hos2-retirement-positive-v1.log",
+      "provenance": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-test-artifacts/hos2-retirement-positive-v1/provenance.json"
+    },
+    {
+      "host": "main",
+      "job_id": "1a16acafdaf-1b6abb-3ecd",
+      "exit_code": 100,
+      "tests_passed": 1,
+      "tests_failed": 1,
+      "source": "8d10ae4b52cb184d0422cfc71eff76f1bfa44654",
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/hos2-retirement-positive-v2.log",
+      "provenance": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-test-artifacts/hos2-retirement-positive-v2/provenance.json",
+      "actual_competitor_result": "Ok(ProductionQueuedReceipt), committed before synchronous metadata callback released",
+      "all_nine_kill_cases_pass_seconds": 22.283
+    }
+  ],
+  "impact": [
+    "Notes retirement physical writer serialization",
+    "HOS2 retirement physical writer serialization",
+    "Objective sender checkpoint physical writer serialization",
+    "Unvalidated pre-effect barrier must use repaired actual writer lock"
+  ],
+  "kept_evidence": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/notes-retirement-validation.json",
+  "old_pass_does_not_prove": "100ms pending can be scheduling delay; direct zero busy_timeout competitor check now required",
+  "production_repair_scope": "same original owner guard and coordinator; private RW-open lock-only connection with commit hook always false, BEGIN then query_only ON, close_on_drop; physical RO ordinary polling remains unchanged"
+}

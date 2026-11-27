@@ -1,0 +1,28 @@
+name: hcsn-currentstate-n256-fp64-sequence
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_fp64_sequence/**"
+      - ".github/workflows/hcsn-currentstate-n256-fp64-sequence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Assertions-enabled fixtures
+        run: python -m unittest qualification.hcsn_currentstate_n256_fp64_sequence.test_fp64_sequence
+      - name: Optimized-mode fixtures
+        run: python -O -m unittest qualification.hcsn_currentstate_n256_fp64_sequence.test_fp64_sequence
+      - name: Bytecode compilation
+        run: python -m py_compile qualification/hcsn_currentstate_n256_fp64_sequence/*.py
+      - name: Exact source freeze and zero-execution ledger
+        run: python qualification/hcsn_currentstate_n256_fp64_sequence/verify_source.py

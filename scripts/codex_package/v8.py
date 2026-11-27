@@ -5,15 +5,20 @@ from __future__ import annotations
 import hashlib
 import os
 import shutil
+import sys
 import tempfile
+import time
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.request import urlopen
 
 from .targets import REPO_ROOT, TargetSpec
 
 DOWNLOAD_TIMEOUT_SECS = 120
+DOWNLOAD_MAX_ATTEMPTS = 3
+DOWNLOAD_RETRYABLE_STATUS_CODES = {502, 503, 504}
 V8_ARTIFACT_PROFILE = "ptrcomp_sandbox_release"
 
 
@@ -170,10 +175,31 @@ def download_file(url: str, dest: Path) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     temp_path = dest.with_suffix(f"{dest.suffix}.tmp")
     temp_path.unlink(missing_ok=True)
-    try:
-        with urlopen(url, timeout=DOWNLOAD_TIMEOUT_SECS) as response:
-            with temp_path.open("wb") as output:
-                shutil.copyfileobj(response, output)
-        temp_path.replace(dest)
-    finally:
-        temp_path.unlink(missing_ok=True)
+    # Only retry transient gateway/service failures for this idempotent GET.
+    # TLS, authorization, missing releases, and checksum failures stay fatal.
+    for attempt in range(1, DOWNLOAD_MAX_ATTEMPTS + 1):
+        print(
+            f"V8 download attempt {attempt}/{DOWNLOAD_MAX_ATTEMPTS}: {url}",
+            file=sys.stderr,
+        )
+        try:
+            with urlopen(url, timeout=DOWNLOAD_TIMEOUT_SECS) as response:
+                with temp_path.open("wb") as output:
+                    shutil.copyfileobj(response, output)
+            temp_path.replace(dest)
+            return
+        except HTTPError as error:
+            if (
+                error.code not in DOWNLOAD_RETRYABLE_STATUS_CODES
+                or attempt == DOWNLOAD_MAX_ATTEMPTS
+            ):
+                raise
+            delay = 2 ** (attempt - 1)
+            print(
+                f"V8 download HTTP {error.code}; retrying in {delay}s",
+                file=sys.stderr,
+            )
+            error.close()
+        finally:
+            temp_path.unlink(missing_ok=True)
+        time.sleep(delay)

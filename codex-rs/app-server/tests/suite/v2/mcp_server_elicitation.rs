@@ -486,6 +486,7 @@ async fn initialize_websocket_client(
                 version: "0.1.0".to_string(),
             },
             capabilities: Some(InitializeCapabilities {
+                process_indeterminate: false,
                 experimental_api: true,
                 extensions: supports_openai_form_elicitation
                     .then(|| HashMap::from([("openai/form".to_string(), serde_json::json!({}))])),
@@ -675,6 +676,7 @@ impl ElicitationRoundTripFixture {
                     version: "0.1.0".to_string(),
                 },
                 Some(InitializeCapabilities {
+                    process_indeterminate: false,
                     experimental_api: true,
                     mcp_server_openai_form_elicitation: true,
                     extensions: Some(HashMap::from([(

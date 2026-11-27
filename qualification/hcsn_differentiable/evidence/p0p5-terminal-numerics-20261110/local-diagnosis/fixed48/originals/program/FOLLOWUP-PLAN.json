@@ -1,0 +1,77 @@
+{
+  "active": {
+    "case_pairs": 42,
+    "comparison": "same event probability summed over fixed Gauss nodes; report p/sqrt(h),p/h,h/h_star and absolute/relative difference when resolvable",
+    "forbidden_claim": "No actual killed/reflected full operator, posterior or perpetual value has been tested by these free-kernel scalars.",
+    "h_rule_per_width_order": "h_star=(width*min_node/sigma)^2; five h=h_star*[1e-4,1e-2,1,1e2,1e4], then fixed h=1e-7 and8e-7; all42 pairs retained, even identical numeric h",
+    "mu": 0,
+    "node_orders": [
+      16,
+      32,
+      64
+    ],
+    "reference": "the exact free-Gaussian uniform-cell formula in NOTE D1, evaluated as scalar FP64 with declared cancellation/underflow bounds or inconclusive flags",
+    "sigma": 0.35,
+    "widths": [
+      0.0375,
+      0.01875
+    ]
+  },
+  "allowed_runtime": "Python standard library only; exact pinned Gauss-node builder; no Torch, mpmath, scipy, model constructors, archived probability arrays, native training or E",
+  "decision_rule": "Report whether the local predictions are supported at resolved scalar points; no numeric or scientific qualification status is upgraded. If any case contradicts the derivation, preserve it before changing the design.",
+  "execution_authorized": false,
+  "fixed_order": [
+    "free Gaussian adjacent-cell cases",
+    "isolated phase cases",
+    "tail moment counterexample",
+    "hash/cost/roster archive"
+  ],
+  "further_real_law_attribution": "Requires a separately bounded and source-bound plan after this toy study; not authorized or implemented here.",
+  "output": [
+    "all fixed inputs/node identities",
+    "all48 toy case records",
+    "FP64 resolution limits/inconclusive entries",
+    "whole/child named CPU/wall/RSS",
+    "unchanged source hashes",
+    "complete roster including failures/unrun"
+  ],
+  "phase": {
+    "cases": 4,
+    "comparison": "absorbing release from isolated stay/down phase chain versus the same initial physical uniform law on[(j-1)omega,j*omega]; finite-chain release by a binomial tail plus exact geometric mean/variance; no reset/active diffusion",
+    "delay": 0.2,
+    "h_over_phase_width": [
+      0.5,
+      0.25,
+      0.125,
+      0.0625
+    ],
+    "initial_j_one_based": 16,
+    "m": 16,
+    "observation_time": 0.1,
+    "record": "do not replace initial uniform-law reference by a deterministic point to inflate the error"
+  },
+  "purpose": "Isolate local mechanisms without trained models or posterior data; not a qualification sweep or P5 benefit test.",
+  "resources": {
+    "RSS_bytes": 268435456,
+    "overrun_or_unresolved": "HOLD and retain all planned/unrun cases and known cost",
+    "retries": 0,
+    "threads": 1,
+    "whole_hard_wall_seconds": 120,
+    "workers": 1
+  },
+  "schema": "hcsn-prospective-fixed-grid-toy-diagnosis-v1",
+  "status": "design_only_not_executed",
+  "tail": {
+    "cases": 2,
+    "claim": "equal Q tail coefficient can hide distinct analytic moments; no actual model tail distribution is inferred",
+    "discount": 0.15,
+    "law": "L+shift+Exp(lambda),L4.8,lambda1",
+    "law_shifts": [
+      0,
+      1
+    ],
+    "moment": "exp(-kappa*(L+shift))*lambda/(lambda+kappa), kappa=(mu+sqrt(mu^2+2*discount*sigma^2))/sigma^2",
+    "mu": -0.12,
+    "sigma": 0.35
+  }
+}

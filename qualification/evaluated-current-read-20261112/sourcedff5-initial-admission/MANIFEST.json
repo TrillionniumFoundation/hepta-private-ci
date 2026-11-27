@@ -1,0 +1,144 @@
+{
+  "schema": "initial-automatic-admission-v1",
+  "source_commit": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+  "source_tree": "682b75ad7c7bf0fdf59b1b4fc803f1f61614c427",
+  "source_parent": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "observation_scope": "Initial head-filtered 9 runs and initial jobs after actual publication. This archive is historical admission evidence, not a current status report or any test outcome.",
+  "clock_observation_after_head_run_lookup": "2026-11-12 21:44:54 UTC",
+  "initial_runs": [
+    {
+      "id": 43313237694,
+      "name": "blocking-ci",
+      "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+      "status": "pending",
+      "conclusion": null,
+      "run_attempt": 1
+    },
+    {
+      "id": 43313237884,
+      "name": "Hepta daemon learning native",
+      "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1
+    },
+    {
+      "id": 43313237443,
+      "name": "Production HOS2 owner proposal",
+      "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+      "status": "completed",
+      "conclusion": "skipped",
+      "run_attempt": 1
+    },
+    {
+      "id": 43313237278,
+      "name": "Hepta Cell local update contracts",
+      "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1
+    },
+    {
+      "id": 43313237419,
+      "name": "v8-canary",
+      "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1
+    },
+    {
+      "id": 43313237380,
+      "name": "Hepta shared Cell framework",
+      "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+      "status": "pending",
+      "conclusion": null,
+      "run_attempt": 1
+    },
+    {
+      "id": 43313237487,
+      "name": "Hepta architecture convergence",
+      "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+      "status": "pending",
+      "conclusion": null,
+      "run_attempt": 1
+    },
+    {
+      "id": 43313237229,
+      "name": "Bazel stable lock proposal",
+      "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1
+    },
+    {
+      "id": 43313237350,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1
+    }
+  ],
+  "initial_jobs": {
+    "native": [
+      {
+        "id": 131514473053,
+        "name": "native",
+        "status": "in_progress"
+      },
+      {
+        "id": 131514473217,
+        "name": "caller-proof",
+        "status": "in_progress"
+      }
+    ],
+    "shared": [],
+    "private": [
+      {
+        "id": 131514545194,
+        "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+        "status": "in_progress"
+      }
+    ],
+    "blocking": []
+  },
+  "manual_dispatch": false,
+  "files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/sourcedff5-initial-admission/RUNS_API.json",
+      "blob": "7a0e8d76009071e5dc89e60efd3ef060e3995c62",
+      "bytes": 138985,
+      "sha256": "e60faa6ccb9ca3d58513a49889a0d1b97bb606b0f52dac97f7f7c851bb16c7cd"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/sourcedff5-initial-admission/NATIVE_JOBS_API.json",
+      "blob": "e0bd2dfbcc2881989fa85eb938285ffe65445409",
+      "bytes": 5299,
+      "sha256": "a1268a1df14a034098fc0deef0a8adb25813af6644f2a14e6a695dbb8b53eba7"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/sourcedff5-initial-admission/SHARED_JOBS_API.json",
+      "blob": "4f9bdd7bcd783d2155d1f2e7dff68294c20eaffa",
+      "bytes": 27,
+      "sha256": "b3dab5870ff3a8209160335de7c1077b89e461d875d9041ac9d8b8ed7c1666f6"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/sourcedff5-initial-admission/WINDOWS_PRIVATE_JOBS_API.json",
+      "blob": "5066b8493cd82064a6c832245116ff8fac4de612",
+      "bytes": 3467,
+      "sha256": "a200839fcd4096390a7dfedd8627e9b3c2fb766e325a433b5bd7d7bc533e929a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/sourcedff5-initial-admission/BLOCKING_JOBS_API.json",
+      "blob": "4f9bdd7bcd783d2155d1f2e7dff68294c20eaffa",
+      "bytes": 27,
+      "sha256": "b3dab5870ff3a8209160335de7c1077b89e461d875d9041ac9d8b8ed7c1666f6"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/sourcedff5-initial-admission/SOURCE_COMMIT_API.json",
+      "blob": "923f4e9080da3c46fff3703811355334838497b3",
+      "bytes": 1587,
+      "sha256": "6f04cef0f7ea864b0475c3f687e5df61af373fb4da680b47f1b515fb79ad4252"
+    }
+  ]
+}

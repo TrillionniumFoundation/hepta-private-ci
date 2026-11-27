@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.native-stem.structure.evidence.r2",
+  "source_commit": "fdff096954184ab67887e510969d581412549d16",
+  "parent_commit": "9631307b604340180b1e706baf96b8ce3aec2f58",
+  "archive": {
+    "filename": "hepta_native_ndu_structure_round2_20261014.zip",
+    "bytes": 26475927,
+    "sha256": "5364a513a42fce964968196a77e6d9c8f41bde1f6a48e22c1420592b94eb9a4f",
+    "verified_content_members": 476,
+    "location": "conversation attachment, not GitHub binary upload"
+  },
+  "runs_completed": 40,
+  "runs_failed": 0,
+  "fitted_models": 33,
+  "untrained_controls": 6,
+  "direct_reference": 1,
+  "unit_tests": 48,
+  "audit_tamper_tests": 3,
+  "tests_skipped": 0,
+  "verified_prediction_panels": 400,
+  "verified_scalar_predictions": 1228800,
+  "replay_maximum_error": 0.0,
+  "source_sha256": {
+    "models.py": "7a90a41254d396fc6e9be9c1d48865bcec8e34c746f57935fe6b355bd4eb5fdd",
+    "problem.py": "58eecc762f5ac5700e52f9a23f3f82be4aad2fa229b1e9d8260fd08ccd2551b7",
+    "run.py": "9d3cd155f514054af26138a2383eb433ebcdc79d6c93a3152ce85a6dc780793c",
+    "structure_sweep.py": "a4ff36bb9ffd7aba34ca4a5ae64dc9d3e37371d596887fd3462f8e1f9f508aef",
+    "structure_trial.py": "95c53b42cec886cb3f3530ab62cbec66001baad0af58c87b7db793843c4d8ad2",
+    "structured.py": "bf3e80d89e0a25e39956dd5fa9f7d82ce0c15e7950b7d50d7a62856bd19b0187",
+    "sweep.py": "c4a9d79c2d0a2fb36984105460e64ab6acd4a308d33306d3bff21993329d8434",
+    "test_native.py": "ea1a1aa93bfc0116a4cf3622df96898fc09042166779ac39520492428e5bf56a",
+    "test_structure.py": "ce94344b10aef0ca6d003266d78ed338a8394857a9dafb4b63119f987fc4aaf6"
+  },
+  "whole_sweep_wall_seconds": 346.822915254,
+  "all_child_cpu_seconds": 345.68770499999994,
+  "primary_structured_C_beats_B": false,
+  "raw_C_beats_B_all_three_seeds": true,
+  "probability_invariance_is_prior_not_learned": true,
+  "project_cloud_execution": false,
+  "production_authorized": false,
+  "full_ci_verified": false,
+  "primary_weights": {
+    "models": 12,
+    "filename": "STRUCTURE_PRIMARY_WEIGHTS.npz",
+    "bytes": 9158,
+    "sha256": "9bca613c3e37c349250bfeb4531645d00f4cb1b893d74c8b0c87f5e98c852eda",
+    "delivery": "conversation companion NPZ and full ZIP JSON/NPY members; not in Git tree"
+  },
+  "rejected_transfer": {
+    "expected_blob": "7ab7e9d16ec33cd2e6c624043ea6896021f3b973",
+    "returned_blob": "a85a65213c4958b22aec4eaa1b3572b847c45468",
+    "reason": "binary transfer checksum mismatch; object excluded from every published tree",
+    "canonical_local_archive_unchanged": true
+  }
+}

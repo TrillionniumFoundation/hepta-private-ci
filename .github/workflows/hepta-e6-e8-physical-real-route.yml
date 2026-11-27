@@ -1,0 +1,234 @@
+name: Hepta E6-E8 shared Stem physical and real archive route (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - "qualification/shared-stem-system2-architecture/**"
+      - ".github/workflows/hepta-e6-e8-physical-real-route.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  e6-head-and-e8-global:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      HEPTA_E14_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
+      HEPTA_E15_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
+      HEPTA_E16_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
+      HEPTA_E17_REAL_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
+      HEPTA_E18_ORIGINAL_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
+      HEPTA_E19_ORIGINAL_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OUTPUT: /tmp/hepta-e6-e8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Pin NumPy and CPU Torch required by the full inherited research tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check numpy==2.3.5
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Seal exact source for independent hosted execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/source-head.txt"
+          python --version | tee "$OUTPUT/python-version.txt"
+          python -m pip freeze > "$OUTPUT/dependencies.txt"
+          sha256sum qualification/shared-stem-system2-architecture/*.py > "$OUTPUT/research-source-sha256.txt"
+      - name: Reacquire pinned original MultiRC model-output source for inherited E14-E19 full-discovery tests
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$HEPTA_E16_ARCHIVE"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' \
+            "$HEPTA_E16_ARCHIVE" | sha256sum -c -
+          sha256sum "$HEPTA_E16_ARCHIVE" > "$OUTPUT/original-multirc-real-source.sha256"
+          test -s "$OUTPUT/original-multirc-real-source.sha256"
+      - name: Restore ALL original SHA-locked E20/E21/E22 + historic E9 inputs before full inherited test discovery
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python qualification/shared-stem-system2-architecture/e22_artifact_fetch.py \
+            --stage full --with-e9 --source-archive "$HEPTA_E16_ARCHIVE" \
+            --out /tmp/hepta-e6-e8-complete-original-evidence --github-env "$GITHUB_ENV" \
+            | tee "$OUTPUT/complete-inherited-original-source-inventory.txt"
+          test -s "$OUTPUT/complete-inherited-original-source-inventory.txt"
+      - name: Bind E23 original blind and restore exact post-seal owner labels for full inherited discovery
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Original model/fold sources from previous E22 full-source restore.
+          args=()
+          for i in 0 1 2 3; do
+            a="HEPTA_E22_E15_FOLD_${i}"
+            b="HEPTA_E22_E16_FOLD_${i}"
+            args+=("--e15-$i" "${!a}" "--e16-$i" "${!b}")
+            printf 'HEPTA_E23_E15_FOLD_%s=%s\n' "$i" "${!a}" >> "$GITHUB_ENV"
+            printf 'HEPTA_E23_E16_FOLD_%s=%s\n' "$i" "${!b}" >> "$GITHUB_ENV"
+          done
+          # E23 mixed full-source regression has no labelblind experiment claim.
+          # A source-bound blind file is still sealed before opening label-owner ZIPs.
+          python qualification/shared-stem-system2-architecture/e22_e16_question_gate.py \
+            --original "$HEPTA_E16_ARCHIVE" "${args[@]}" \
+            --out "$OUTPUT/e23-inherited-original-blind.json"
+          sha256sum "$OUTPUT/e23-inherited-original-blind.json" \
+            > "$OUTPUT/e23-inherited-original-blind.sha256"
+          printf 'HEPTA_E23_ORIGINAL=%s\n' "$HEPTA_E16_ARCHIVE" >> "$GITHUB_ENV"
+          printf 'HEPTA_E23_BLIND=%s\n' "$OUTPUT/e23-inherited-original-blind.json" >> "$GITHUB_ENV"
+          printf 'HEPTA_E23_E15_SCORE_SOURCE=%s\n' "$HEPTA_E22_E15_SCORE_SOURCE" >> "$GITHUB_ENV"
+          printf 'HEPTA_E23_E15_SCORE_MERGE=%s\n' "$HEPTA_E22_E15_SCORE_MERGE" >> "$GITHUB_ENV"
+          printf 'HEPTA_E23_E16_SCORE_SOURCE=%s\n' "$HEPTA_E22_E16_SCORE_SOURCE" >> "$GITHUB_ENV"
+          printf 'HEPTA_E23_E16_SCORE_MERGE=%s\n' "$HEPTA_E22_E16_SCORE_MERGE" >> "$GITHUB_ENV"
+          python qualification/shared-stem-system2-architecture/e23_historical_owner_fetch.py \
+            --out /tmp/hepta-e6-e8-original-E23-owner-inputs --github-env "$GITHUB_ENV" \
+            | tee "$OUTPUT/e23-inherited-original-owner-acquisition.txt"
+      - name: Run fail-closed E0/E6/E7/E8 plus ALL inherited research contracts normally and with -O
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover \
+            -s qualification/shared-stem-system2-architecture -p 'test_*.py' -v \
+            > "$OUTPUT/tests-normal.log" 2>&1 || { tail -100 "$OUTPUT/tests-normal.log"; exit 1; }
+          python -O -W error::ResourceWarning -m unittest discover \
+            -s qualification/shared-stem-system2-architecture -p 'test_*.py' -v \
+            > "$OUTPUT/tests-optimized.log" 2>&1 || { tail -100 "$OUTPUT/tests-optimized.log"; exit 1; }
+          tail -8 "$OUTPUT/tests-normal.log"
+          tail -8 "$OUTPUT/tests-optimized.log"
+      - name: Mandatory independent original #1923 two-sided global oracle parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/shared-stem-system2-architecture/e8_parent_parity.py \
+            | tee "$OUTPUT/e8-parent-independent-oracle-parity.json"
+      - name: Physically execute 64/256/1024/4096 Head banks, equal output two reuse arms
+        shell: bash
+        run: |
+          set -euo pipefail
+          for n in 64 256 1024 4096; do
+            python qualification/shared-stem-system2-architecture/e6_physical.py \
+              --cells "$n" --source-groups 8 --trials 12 \
+              --output "$OUTPUT/head-$n.json" | tee "$OUTPUT/head-$n-stdout.json"
+          done
+      - name: Independent source-and-meter recomputation across 4 physical scales
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/shared-stem-system2-architecture/e6_independent_review.py \
+            --inputs "$OUTPUT/head-64.json" "$OUTPUT/head-256.json" \
+                     "$OUTPUT/head-1024.json" "$OUTPUT/head-4096.json" \
+            --output "$OUTPUT/e6-independent-review.json"
+          sha256sum "$OUTPUT"/*.json > "$OUTPUT/e6-research-artifact-sha256.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e6-e8-physical-head-math-${{ github.run_id }}
+          path: /tmp/hepta-e6-e8/
+          retention-days: 14
+          if-no-files-found: warn
+
+  e7-real-model-paired-original-label-score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e7-original-real
+      PHYSICAL: /tmp/hepta-e7-original-physical-11908591037.zip
+      HISTORICAL: /tmp/hepta-e7-original-labels-11886761368.zip
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Freeze source and preregistered fixed-threshold arm set
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/source-head.txt"
+          sha256sum qualification/shared-stem-system2-architecture/e7*.py > "$OUTPUT/source-sha256.txt"
+      - name: Download only physical pretrained prediction archive; no historical truth present
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11908591037/zip' \
+            -o "$PHYSICAL"
+          echo "d8e2af397d7ea862245fae0337588ab491dd70e8a8a9a42879e4a7f2d4be3afa  $PHYSICAL" | sha256sum -c -
+          sha256sum "$PHYSICAL" > "$OUTPUT/physical-external-source-sha256.txt"
+          test ! -e "$HISTORICAL"
+      - name: Seal five fixed policies from original real model probabilities BEFORE fetching labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$HISTORICAL"
+          python qualification/shared-stem-system2-architecture/e7_route_seal.py \
+            --physical "$PHYSICAL" --output "$OUTPUT/real-prelabel-route-seal.json" \
+            | tee "$OUTPUT/prelabel-seal-stdout.json"
+          sha256sum "$OUTPUT/real-prelabel-route-seal.json" > "$OUTPUT/prelabel-seal-sha256.txt"
+      - name: Download separately pinned original labels only AFTER immutable route seal
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$OUTPUT/prelabel-seal-sha256.txt"
+          curl --fail --location --retry 2 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11886761368/zip' \
+            -o "$HISTORICAL"
+          echo "e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d  $HISTORICAL" | sha256sum -c -
+          sha256sum "$HISTORICAL" > "$OUTPUT/independent-original-label-sha256.txt"
+      - name: Independent per-case numeric replay against ORIGINAL source labels and ORIGINAL physical reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          SEAL_SHA=$(cut -d' ' -f1 "$OUTPUT/prelabel-seal-sha256.txt")
+          python qualification/shared-stem-system2-architecture/e7_independent_score.py \
+            --historical "$HISTORICAL" --physical "$PHYSICAL" \
+            --seal-file "$OUTPUT/real-prelabel-route-seal.json" --seal-sha256 "$SEAL_SHA" \
+            --output "$OUTPUT/real-routed-retrospective-score.json" \
+            | tee "$OUTPUT/score-stdout.json"
+          sha256sum "$OUTPUT/real-routed-retrospective-score.json" > "$OUTPUT/original-score-sha256.txt"
+      - name: Mandatory separate algorithm audit of original labels and model predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/shared-stem-system2-architecture/e7_second_opinion.py \
+            --historical "$HISTORICAL" --physical "$PHYSICAL" \
+            --original-score "$OUTPUT/real-routed-retrospective-score.json" \
+            --output "$OUTPUT/independent-second-algorithm-score.json" \
+            | tee "$OUTPUT/second-score-stdout.json"
+          sha256sum "$OUTPUT/independent-second-algorithm-score.json" > "$OUTPUT/second-score-sha256.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e7-real-prelabel-original-score-${{ github.run_id }}
+          path: /tmp/hepta-e7-original-real/
+          retention-days: 14
+          if-no-files-found: warn

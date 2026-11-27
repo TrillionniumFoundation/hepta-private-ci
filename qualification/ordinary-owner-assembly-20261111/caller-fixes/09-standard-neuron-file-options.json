@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.neuron-openoptions-receiver-narrow-fix.v1",
+  "baseline": {
+    "head": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd"
+  },
+  "source_changes": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "mode": "100644",
+      "git_blob": "8e7e9d5ecc01abee9c8d01aa2228ccd7cedf7dfd",
+      "bytes": 8403,
+      "sha256": "8b72969cf76e10fb777df8e14f64c879ceb49bc66b68729ac72965f44bf675a1"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "SOURCE_DELTA.json",
+      "mode": "100644",
+      "git_blob": "ddbae466b990ac8de07e30873aa207a52420f9ac",
+      "bytes": 1611,
+      "sha256": "218f772effa3ba4c367ac9ee32cced9fb33acb81716e26b6c60b3cac44473465"
+    },
+    {
+      "path": "DIAGNOSTIC.json",
+      "mode": "100644",
+      "git_blob": "9d15781217b2d5acba5f220a2024618db49fb418",
+      "bytes": 2791,
+      "sha256": "5bef41e96d6ea754242972fd01dbdfa5d3247387a8ffd838b10b88b9e610c758"
+    },
+    {
+      "path": "diagnose.py",
+      "mode": "100644",
+      "git_blob": "dc58fab7556d65ace2b262932ae355723767b3c0",
+      "bytes": 4390,
+      "sha256": "3132712f4aa904f58fd1452b5ff08f5994bab3799db26ab961bdb014ad29ca31"
+    },
+    {
+      "path": "INPUT.json",
+      "mode": "100644",
+      "git_blob": "9b39fc22f3ce1b1bb465a75ed37b268c665312bd",
+      "bytes": 54640,
+      "sha256": "b55c1535f8dd63fe04c8e76d38c88cceda531f88e9aa839f1ae33e12e7783719"
+    }
+  ],
+  "original_failure": {
+    "report_git_blob": "5d260233a32de13ca6f3aaa1b7fbfd27c39711be",
+    "report_sha256": "8b005bfb48e336f2d8a703ef7dd749bc897f4f1ef15ace7cd129ab41a9b59762",
+    "original_source": "19894714403a97fcd58ca8c592e75761de95687c",
+    "boundary_index": 259,
+    "boundary_id": "learning_original_source_create",
+    "receiver_type": "OriginalCellQ24SourceReceiptOwnerV1",
+    "method": "create",
+    "per_file_original_error": "unresolved possible OriginalCellQ24SourceReceiptOwnerV1::create receiver"
+  },
+  "fix": "The existing std::fs::OpenOptions builder is assigned to an explicitly typed local before the unchanged checked/create/truncate/read/write/open sequence.",
+  "unchanged": {
+    "flags_and_order": [
+      [
+        "create",
+        true
+      ],
+      [
+        "truncate",
+        false
+      ],
+      [
+        "read",
+        true
+      ],
+      [
+        "write",
+        true
+      ],
+      [
+        "open",
+        "self.0.join(name)"
+      ]
+    ],
+    "checked_wrapper": true,
+    "filesystem_semantics": true,
+    "checker": true,
+    "callers_registry": true,
+    "ignored_paths": true,
+    "fixture_not_added_as_product_caller": true
+  },
+  "circuit": {
+    "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+    "current_blob": "fc4740b284785c41c846baf55ed041fe981683be",
+    "source_changed": false,
+    "historical_ambiguity": true,
+    "current_production_view_create_sites": 0,
+    "reason": "The parent's existing true cfg(test) on start_profile already excludes this historical fixture call. No additional circuit change is delivered or counted as a production repair."
+  },
+  "delegated_other_two_files": "chain_nextuse owns neuron_cell_evaluation_test_support.rs and neuron_generation_runtime_test_support.rs; no edits to them were made here.",
+  "verification": {
+    "local_partial_original_callsite_resolution": "before None; after OpenOptions",
+    "checker_blobs": [
+      "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+    ],
+    "checker_files_stable": true,
+    "input_blob_sha256_pins_checked": true,
+    "full_index": false,
+    "official_verify": false,
+    "native_or_cargo_executed": false,
+    "qualification_pass": false
+  },
+  "refs_changed": false,
+  "shared_or_native_source_modified": false,
+  "next_owner": "Root integrates the exact one-file postimage and runs original formatting/native/full caller gates on its eventual fixed source."
+}

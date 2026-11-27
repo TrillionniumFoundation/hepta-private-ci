@@ -1,0 +1,84 @@
+{
+  "candidate": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "status": "source_review_complete_supervisor_native_pass_tui_native_pending",
+  "heads": [
+    {
+      "sha": "e6df1a22314db7ce36f422f1d91543a0bcb389ff",
+      "parents": [
+        "5fd8ee8b6a333b6385733b9ff8ebe1d076177766"
+      ],
+      "names": [
+        "codex/2751-win-tui-terminalizing-fence-test-20261024-watch11"
+      ],
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "files": [
+        {
+          "path": "codex-rs/tui/src/resume_picker_transcript_preview_tests.rs",
+          "historical_final_blob": "f12b7e29d69a74361340f3929159ddeeec9bebff",
+          "candidate_blob": "116d7b4a0659937fe03a9fa40d2a64c087f38c3f",
+          "resolved_blob": "f12b7e29d69a74361340f3929159ddeeec9bebff",
+          "resolved_sha256": "e8be8b565922660c7a4c58cd122ca490fb23fcaffbe63614371eb2bacd01f910",
+          "resolved_bytes": 18078,
+          "historical_blob_local": false,
+          "resolved_matches_historical": true,
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/e6df1a22314db7ce36f422f1d91543a0bcb389ff/codex-rs/tui/src/resume_picker_transcript_preview_tests.rs",
+          "historical_bytes": 18078,
+          "historical_sha256": "e8be8b565922660c7a4c58cd122ca490fb23fcaffbe63614371eb2bacd01f910"
+        }
+      ],
+      "patch": "e6df1a22.patch",
+      "decisions": [
+        "Candidate already has TypedRequestError and a 10-second retry loop with 10 ms delay, cloned input and unique per-attempt request IDs. Add only the exact core terminalization-fence string beside exact NotIdle, preserving failure for every other server, protocol and transport error.",
+        "Core check_execution_capacity_for_turn_start refuses pending terminalization before registration/routing; app-server wraps the error as failed to submit turn input: {err}. Retrying this rejection cannot duplicate an admitted turn.",
+        "Resolved bytes exactly equal the verified original branch postimage; all transcript assertions and UI output remain unchanged."
+      ]
+    },
+    {
+      "sha": "db66a45393e476cc458f20a9d95095a6e5cc5bc4",
+      "parents": [
+        "1486622b6c5e7354dc23aa5e9443539a2807c089"
+      ],
+      "names": [
+        "wip/dot-4316-exhausted-recovery-claim-20261029"
+      ],
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "files": [
+        {
+          "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+          "historical_final_blob": "edf1383981ff381ebddd263ca07010204e916703",
+          "candidate_blob": "75431770e05206d9a0334cb100589fd5eafcf6a3",
+          "resolved_blob": "ff8af5da34e45b6d3e0d551c3a4472c6cb7ad648",
+          "resolved_sha256": "dcb8cbb54cccfed83d0e15cbcee0e4ed040495b6e430f0a8f3de9c0f6802aff6",
+          "resolved_bytes": 18319,
+          "historical_blob_local": false,
+          "resolved_matches_historical": false,
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/db66a45393e476cc458f20a9d95095a6e5cc5bc4/codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+          "historical_bytes": 14096,
+          "historical_sha256": "7a2cacbc98905c3bbd28d037c034a9ff61116d25184cb1782fd8dac3d7b1b8d8"
+        }
+      ],
+      "patch": "db66a453.patch",
+      "decisions": [
+        "Keep all current typed persisted budget projections, recovered snapshots, typed automatic restart events, precise 250/500/1000 ms backoffs and complete exhausted TickReport equality.",
+        "Port complete original missing semantic tail: capture canonical schema-2 journal bytes, assert exact bytes before/after rejected public restart claim, recover twice in same process, assert inactive state, attempts 3/pending false, idle tick and spawn count 4. Current initial extra tick is 10 seconds rather than historical 2, both inside 300-second window.",
+        "Reuse existing run_root accessor; do not reintroduce old private registry.agents field access. Clone registry only to permit second recovery. Instant advances do not test actual SystemTime expiry/rollback; this remains a shared-FakeDriver same-process recovery test, not daemon-crash qualification."
+      ]
+    }
+  ],
+  "remote_writes": false,
+  "shared_checkout_edits": false,
+  "validation": {
+    "just_fmt": "pass",
+    "git_diff_check": "pass",
+    "supervisor_native": "PASS: 1 test, 0 skipped; just test --locked -p codex-hepta-supervisor --test restart_budget_recovery; nextest run feb21b51-a47b-4234-98d9-0aaed5cc7c14; see supervisor-test.log",
+    "tui_native": "not run here: V8 archive download blocked in this environment according to root; requires native CI"
+  }
+}

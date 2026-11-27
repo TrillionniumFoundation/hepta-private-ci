@@ -1,0 +1,657 @@
+{
+  "capture_receipt_total_time_rows": 1536,
+  "capture_receipt_total_valid_sample_states": 12182,
+  "fits": [
+    {
+      "discarded_parent_completed_updates": 7,
+      "dispatch_utc": "2026-11-10T21:13:44.057721+00:00",
+      "first_actual_gradient_capture": {
+        "capture": {
+          "actual_logged_main_updates_before_step": 559,
+          "capture_grad_enabled": true,
+          "coverage_verified": {
+            "excluded_padded_sample_states": 0,
+            "retained_time_rows": 256,
+            "retained_valid_sample_states": 2048
+          },
+          "effective_batch_index": 0,
+          "epoch": 47,
+          "expected_padded_sample_states": 0,
+          "expected_valid_sample_states": 2048,
+          "footer": {
+            "captures": 1,
+            "drop_reason": null,
+            "dropped_records": 0,
+            "kind": "end",
+            "padded_states_excluded": 0,
+            "prefix_sha256": "818ecc372468b465b0d4d36e34a59af452f5a4d60324734b2e39e8775ad8155f",
+            "retained_records": 256,
+            "seen_records": 256,
+            "source_unchanged": true,
+            "sources_after": {
+              "contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+              "encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+              "network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+              "operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+              "regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+              "training_domain.py": "4dda92ee43218594454a0693fd86ce687a842380d4ac0b4ba5ba6a14fd176ddf",
+              "training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+              "value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+            },
+            "truncated": false,
+            "visited_ranges": {
+              "absolute_reset": [
+                1.3771277643359572,
+                1.3771277643359572
+              ],
+              "discount": [
+                0.15,
+                0.15
+              ],
+              "dt": [
+                0.0051388,
+                0.1081169
+              ],
+              "log_boundary": [
+                0.0,
+                0.0
+              ],
+              "mu": [
+                -0.11999999999999998,
+                -0.11999999999999998
+              ],
+              "reset_margin": [
+                0.32000000000000006,
+                0.32000000000000006
+              ],
+              "sigma": [
+                0.35,
+                0.35
+              ]
+            }
+          },
+          "logical_completed_updates_before_step": 552,
+          "microbatch_range": [
+            0,
+            8
+          ],
+          "network_model_sha256": "3c27044e0da0eee92265257c87c27d0d6095ccde75104143f3a723a4d7ebfac8",
+          "scope": "actual main gradient microbatch; no separate replay",
+          "status": "captured_actual_gradient_microbatch",
+          "trace": {
+            "bytes": 24939691,
+            "sha256": "096706ab16a2c19ae04db10bed04820fd7eca619eadd4cfaacbf699596d94075"
+          }
+        },
+        "slot": "epoch-0047-first-main-microbatch",
+        "step_completed": {
+          "capture": {
+            "bytes": 74573,
+            "sha256": "fc65e0ba1b2c0e41810bdc28e123bcce6430752258271ec84a2e411369ea60d8"
+          },
+          "logical_step": 553,
+          "new_step": 1,
+          "optimizer_step_completed": true,
+          "schema": "hcsn-c2-captured-optimizer-step-completed-v1",
+          "slot": "epoch-0047-first-main-microbatch"
+        }
+      },
+      "full_state_equal_parent_before_first_step_reported": true,
+      "inflight_optimizer_updates_unknown_interval": [
+        0,
+        0
+      ],
+      "last_complete_epoch_event_at_observation": null,
+      "name": "hcsn-s101-lr0.001",
+      "observed_new_optimizer_completions": 5,
+      "parent_full_outer_wall_charged": 14376.351586270845,
+      "pid_at_dispatch": 2132907,
+      "remaining_at_dispatch_seconds": 28823.648413729155,
+      "restored_complete_epoch": 46
+    },
+    {
+      "discarded_parent_completed_updates": 5,
+      "dispatch_utc": "2026-11-10T21:13:44.058202+00:00",
+      "first_actual_gradient_capture": {
+        "capture": {
+          "actual_logged_main_updates_before_step": 569,
+          "capture_grad_enabled": true,
+          "coverage_verified": {
+            "excluded_padded_sample_states": 0,
+            "retained_time_rows": 256,
+            "retained_valid_sample_states": 2048
+          },
+          "effective_batch_index": 0,
+          "epoch": 48,
+          "expected_padded_sample_states": 0,
+          "expected_valid_sample_states": 2048,
+          "footer": {
+            "captures": 1,
+            "drop_reason": null,
+            "dropped_records": 0,
+            "kind": "end",
+            "padded_states_excluded": 0,
+            "prefix_sha256": "103b2ccbe89ed49c13f141e6fa8da7566811ecd70e92abd1fcf157a92c959ccb",
+            "retained_records": 256,
+            "seen_records": 256,
+            "source_unchanged": true,
+            "sources_after": {
+              "contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+              "encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+              "network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+              "operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+              "regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+              "training_domain.py": "4dda92ee43218594454a0693fd86ce687a842380d4ac0b4ba5ba6a14fd176ddf",
+              "training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+              "value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+            },
+            "truncated": false,
+            "visited_ranges": {
+              "absolute_reset": [
+                1.3771277643359572,
+                1.3771277643359572
+              ],
+              "discount": [
+                0.15,
+                0.15
+              ],
+              "dt": [
+                0.0,
+                0.1081166
+              ],
+              "log_boundary": [
+                0.0,
+                0.0
+              ],
+              "mu": [
+                -0.11999999999999998,
+                -0.11999999999999998
+              ],
+              "reset_margin": [
+                0.32000000000000006,
+                0.32000000000000006
+              ],
+              "sigma": [
+                0.35,
+                0.35
+              ]
+            }
+          },
+          "logical_completed_updates_before_step": 564,
+          "microbatch_range": [
+            0,
+            8
+          ],
+          "network_model_sha256": "0257b1009e60d4b6712055c2ec8061f4f3878662c7e3c5b2a9854f1f9465ea20",
+          "scope": "actual main gradient microbatch; no separate replay",
+          "status": "captured_actual_gradient_microbatch",
+          "trace": {
+            "bytes": 24958197,
+            "sha256": "1f86b65c1a79afdba3b462b6616e365025569b77ab765159f1f8bded2699fb7b"
+          }
+        },
+        "slot": "epoch-0048-first-main-microbatch",
+        "step_completed": {
+          "capture": {
+            "bytes": 74586,
+            "sha256": "8326406ed01de22d11a6e4c946ddcad724c307a22271a28f5f093aaec5149cdf"
+          },
+          "logical_step": 565,
+          "new_step": 1,
+          "optimizer_step_completed": true,
+          "schema": "hcsn-c2-captured-optimizer-step-completed-v1",
+          "slot": "epoch-0048-first-main-microbatch"
+        }
+      },
+      "full_state_equal_parent_before_first_step_reported": true,
+      "inflight_optimizer_updates_unknown_interval": [
+        0,
+        0
+      ],
+      "last_complete_epoch_event_at_observation": null,
+      "name": "hcsn-s101-lr0.003",
+      "observed_new_optimizer_completions": 6,
+      "parent_full_outer_wall_charged": 14378.026858798927,
+      "pid_at_dispatch": 2132909,
+      "remaining_at_dispatch_seconds": 28821.973141201073,
+      "restored_complete_epoch": 47
+    },
+    {
+      "discarded_parent_completed_updates": 10,
+      "dispatch_utc": "2026-11-10T21:13:44.058847+00:00",
+      "first_actual_gradient_capture": {
+        "capture": {
+          "actual_logged_main_updates_before_step": 562,
+          "capture_grad_enabled": true,
+          "coverage_verified": {
+            "excluded_padded_sample_states": 0,
+            "retained_time_rows": 256,
+            "retained_valid_sample_states": 2048
+          },
+          "effective_batch_index": 0,
+          "epoch": 47,
+          "expected_padded_sample_states": 0,
+          "expected_valid_sample_states": 2048,
+          "footer": {
+            "captures": 1,
+            "drop_reason": null,
+            "dropped_records": 0,
+            "kind": "end",
+            "padded_states_excluded": 0,
+            "prefix_sha256": "877b3b34d5fa2af24c289549621d09d49cc6d06399452b6aac9e49ae8c893637",
+            "retained_records": 256,
+            "seen_records": 256,
+            "source_unchanged": true,
+            "sources_after": {
+              "contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+              "encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+              "network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+              "operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+              "regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+              "training_domain.py": "4dda92ee43218594454a0693fd86ce687a842380d4ac0b4ba5ba6a14fd176ddf",
+              "training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+              "value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+            },
+            "truncated": false,
+            "visited_ranges": {
+              "absolute_reset": [
+                1.3771277643359572,
+                1.3771277643359572
+              ],
+              "discount": [
+                0.15,
+                0.15
+              ],
+              "dt": [
+                0.0,
+                0.1081168
+              ],
+              "log_boundary": [
+                0.0,
+                0.0
+              ],
+              "mu": [
+                -0.11999999999999998,
+                -0.11999999999999998
+              ],
+              "reset_margin": [
+                0.32000000000000006,
+                0.32000000000000006
+              ],
+              "sigma": [
+                0.35,
+                0.35
+              ]
+            }
+          },
+          "logical_completed_updates_before_step": 552,
+          "microbatch_range": [
+            0,
+            8
+          ],
+          "network_model_sha256": "d9ca500854e842533a62665495781e2bbdc46c4b7e9e059dc1a1726473e5a24f",
+          "scope": "actual main gradient microbatch; no separate replay",
+          "status": "captured_actual_gradient_microbatch",
+          "trace": {
+            "bytes": 24994860,
+            "sha256": "5b9d39cfcf661ef185d0a3adacbec7ee6026ab573049730ce82edb403021fff9"
+          }
+        },
+        "slot": "epoch-0047-first-main-microbatch",
+        "step_completed": {
+          "capture": {
+            "bytes": 74580,
+            "sha256": "7ef970f312231c78cb3a1fd0120bc59b083dbe8ce4e1df02fc43b964b089568a"
+          },
+          "logical_step": 553,
+          "new_step": 1,
+          "optimizer_step_completed": true,
+          "schema": "hcsn-c2-captured-optimizer-step-completed-v1",
+          "slot": "epoch-0047-first-main-microbatch"
+        }
+      },
+      "full_state_equal_parent_before_first_step_reported": true,
+      "inflight_optimizer_updates_unknown_interval": [
+        0,
+        0
+      ],
+      "last_complete_epoch_event_at_observation": null,
+      "name": "hcsn-s211-lr0.001",
+      "observed_new_optimizer_completions": 5,
+      "parent_full_outer_wall_charged": 14377.272928075166,
+      "pid_at_dispatch": 2132906,
+      "remaining_at_dispatch_seconds": 28822.727071924834,
+      "restored_complete_epoch": 46
+    },
+    {
+      "discarded_parent_completed_updates": 1,
+      "dispatch_utc": "2026-11-10T21:13:44.059594+00:00",
+      "first_actual_gradient_capture": {
+        "capture": {
+          "actual_logged_main_updates_before_step": 565,
+          "capture_grad_enabled": true,
+          "coverage_verified": {
+            "excluded_padded_sample_states": 0,
+            "retained_time_rows": 256,
+            "retained_valid_sample_states": 2048
+          },
+          "effective_batch_index": 0,
+          "epoch": 48,
+          "expected_padded_sample_states": 0,
+          "expected_valid_sample_states": 2048,
+          "footer": {
+            "captures": 1,
+            "drop_reason": null,
+            "dropped_records": 0,
+            "kind": "end",
+            "padded_states_excluded": 0,
+            "prefix_sha256": "ce0562880eddc4764687879cd689c90fa51afea0ffc68b342ed1854cc10da590",
+            "retained_records": 256,
+            "seen_records": 256,
+            "source_unchanged": true,
+            "sources_after": {
+              "contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+              "encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+              "network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+              "operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+              "regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+              "training_domain.py": "4dda92ee43218594454a0693fd86ce687a842380d4ac0b4ba5ba6a14fd176ddf",
+              "training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+              "value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+            },
+            "truncated": false,
+            "visited_ranges": {
+              "absolute_reset": [
+                1.3771277643359572,
+                1.3771277643359572
+              ],
+              "discount": [
+                0.15,
+                0.15
+              ],
+              "dt": [
+                0.027029,
+                0.1081168
+              ],
+              "log_boundary": [
+                0.0,
+                0.0
+              ],
+              "mu": [
+                -0.11999999999999998,
+                -0.11999999999999998
+              ],
+              "reset_margin": [
+                0.32000000000000006,
+                0.32000000000000006
+              ],
+              "sigma": [
+                0.35,
+                0.35
+              ]
+            }
+          },
+          "logical_completed_updates_before_step": 564,
+          "microbatch_range": [
+            0,
+            8
+          ],
+          "network_model_sha256": "6ff164319bd1ea7d07c714340ce6205cf9ac91754e63273e89f3ca6535dfc1cb",
+          "scope": "actual main gradient microbatch; no separate replay",
+          "status": "captured_actual_gradient_microbatch",
+          "trace": {
+            "bytes": 25021950,
+            "sha256": "377323bec460508fbab8edebb34b6356daf94e67437e7342205551201684b968"
+          }
+        },
+        "slot": "epoch-0048-first-main-microbatch",
+        "step_completed": {
+          "capture": {
+            "bytes": 74586,
+            "sha256": "c15f66dfa9c8dd2d532b8d815037243a5b1f21c9bafa91b5c953a85d82cea6dd"
+          },
+          "logical_step": 565,
+          "new_step": 1,
+          "optimizer_step_completed": true,
+          "schema": "hcsn-c2-captured-optimizer-step-completed-v1",
+          "slot": "epoch-0048-first-main-microbatch"
+        }
+      },
+      "full_state_equal_parent_before_first_step_reported": true,
+      "inflight_optimizer_updates_unknown_interval": [
+        0,
+        0
+      ],
+      "last_complete_epoch_event_at_observation": null,
+      "name": "hcsn-s211-lr0.003",
+      "observed_new_optimizer_completions": 6,
+      "parent_full_outer_wall_charged": 14376.949902404798,
+      "pid_at_dispatch": 2132911,
+      "remaining_at_dispatch_seconds": 28823.0500975952,
+      "restored_complete_epoch": 47
+    },
+    {
+      "discarded_parent_completed_updates": 8,
+      "dispatch_utc": "2026-11-10T21:13:44.060347+00:00",
+      "first_actual_gradient_capture": {
+        "capture": {
+          "actual_logged_main_updates_before_step": 560,
+          "capture_grad_enabled": true,
+          "coverage_verified": {
+            "excluded_padded_sample_states": 53,
+            "retained_time_rows": 256,
+            "retained_valid_sample_states": 1995
+          },
+          "effective_batch_index": 0,
+          "epoch": 47,
+          "expected_padded_sample_states": 53,
+          "expected_valid_sample_states": 1995,
+          "footer": {
+            "captures": 1,
+            "drop_reason": null,
+            "dropped_records": 0,
+            "kind": "end",
+            "padded_states_excluded": 53,
+            "prefix_sha256": "89fd7f15e4169be9418c92c95f16709b8b345eab7e45c696f6b655376db3ab53",
+            "retained_records": 256,
+            "seen_records": 256,
+            "source_unchanged": true,
+            "sources_after": {
+              "contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+              "encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+              "network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+              "operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+              "regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+              "training_domain.py": "4dda92ee43218594454a0693fd86ce687a842380d4ac0b4ba5ba6a14fd176ddf",
+              "training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+              "value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+            },
+            "truncated": false,
+            "visited_ranges": {
+              "absolute_reset": [
+                1.3771277643359572,
+                1.3771277643359572
+              ],
+              "discount": [
+                0.15,
+                0.15
+              ],
+              "dt": [
+                0.0,
+                0.0810881
+              ],
+              "log_boundary": [
+                0.0,
+                0.0
+              ],
+              "mu": [
+                -0.11999999999999998,
+                -0.11999999999999998
+              ],
+              "reset_margin": [
+                0.32000000000000006,
+                0.32000000000000006
+              ],
+              "sigma": [
+                0.35,
+                0.35
+              ]
+            }
+          },
+          "logical_completed_updates_before_step": 552,
+          "microbatch_range": [
+            0,
+            8
+          ],
+          "network_model_sha256": "be6f002d2487afc3d5d3ed488807fc4105287bf52d5c5b698f6362d699b45bf2",
+          "scope": "actual main gradient microbatch; no separate replay",
+          "status": "captured_actual_gradient_microbatch",
+          "trace": {
+            "bytes": 24424306,
+            "sha256": "e1d8e99ed1b42c4d6e04a7737f43f19475f0718f8ea626afcc30fe6f2fc1ae66"
+          }
+        },
+        "slot": "epoch-0047-first-main-microbatch",
+        "step_completed": {
+          "capture": {
+            "bytes": 73226,
+            "sha256": "ef9762c82b5515111d6c649b4330d69e6758b68abd89b75ff0f8de61c4c586b7"
+          },
+          "logical_step": 553,
+          "new_step": 1,
+          "optimizer_step_completed": true,
+          "schema": "hcsn-c2-captured-optimizer-step-completed-v1",
+          "slot": "epoch-0047-first-main-microbatch"
+        }
+      },
+      "full_state_equal_parent_before_first_step_reported": true,
+      "inflight_optimizer_updates_unknown_interval": [
+        0,
+        0
+      ],
+      "last_complete_epoch_event_at_observation": null,
+      "name": "hcsn-s307-lr0.001",
+      "observed_new_optimizer_completions": 6,
+      "parent_full_outer_wall_charged": 14375.544506336097,
+      "pid_at_dispatch": 2132908,
+      "remaining_at_dispatch_seconds": 28824.455493663903,
+      "restored_complete_epoch": 46
+    },
+    {
+      "discarded_parent_completed_updates": 10,
+      "dispatch_utc": "2026-11-10T21:13:44.061997+00:00",
+      "first_actual_gradient_capture": {
+        "capture": {
+          "actual_logged_main_updates_before_step": 562,
+          "capture_grad_enabled": true,
+          "coverage_verified": {
+            "excluded_padded_sample_states": 53,
+            "retained_time_rows": 256,
+            "retained_valid_sample_states": 1995
+          },
+          "effective_batch_index": 0,
+          "epoch": 47,
+          "expected_padded_sample_states": 53,
+          "expected_valid_sample_states": 1995,
+          "footer": {
+            "captures": 1,
+            "drop_reason": null,
+            "dropped_records": 0,
+            "kind": "end",
+            "padded_states_excluded": 53,
+            "prefix_sha256": "6c6c0e9a915e21f93fa1da489e5436a40900e3696fafa98a028e2e80d16ee874",
+            "retained_records": 256,
+            "seen_records": 256,
+            "source_unchanged": true,
+            "sources_after": {
+              "contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+              "encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+              "network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+              "operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+              "regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+              "training_domain.py": "4dda92ee43218594454a0693fd86ce687a842380d4ac0b4ba5ba6a14fd176ddf",
+              "training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+              "value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+            },
+            "truncated": false,
+            "visited_ranges": {
+              "absolute_reset": [
+                1.3771277643359572,
+                1.3771277643359572
+              ],
+              "discount": [
+                0.15,
+                0.15
+              ],
+              "dt": [
+                0.0,
+                0.0810881
+              ],
+              "log_boundary": [
+                0.0,
+                0.0
+              ],
+              "mu": [
+                -0.11999999999999998,
+                -0.11999999999999998
+              ],
+              "reset_margin": [
+                0.32000000000000006,
+                0.32000000000000006
+              ],
+              "sigma": [
+                0.35,
+                0.35
+              ]
+            }
+          },
+          "logical_completed_updates_before_step": 552,
+          "microbatch_range": [
+            0,
+            8
+          ],
+          "network_model_sha256": "90c60649dab63486b3661d13fd2f251313bdef86041d44732b1483e734da3901",
+          "scope": "actual main gradient microbatch; no separate replay",
+          "status": "captured_actual_gradient_microbatch",
+          "trace": {
+            "bytes": 24444692,
+            "sha256": "e47a528900c780d488348fd1a5d53d40346e5e031d26274499055bc7ccd0c783"
+          }
+        },
+        "slot": "epoch-0047-first-main-microbatch",
+        "step_completed": {
+          "capture": {
+            "bytes": 73226,
+            "sha256": "2da5540b3b59e1125dc855ae45022a40c778834abc977e93a34a7f7ceb9039ee"
+          },
+          "logical_step": 553,
+          "new_step": 1,
+          "optimizer_step_completed": true,
+          "schema": "hcsn-c2-captured-optimizer-step-completed-v1",
+          "slot": "epoch-0047-first-main-microbatch"
+        }
+      },
+      "full_state_equal_parent_before_first_step_reported": true,
+      "inflight_optimizer_updates_unknown_interval": [
+        0,
+        0
+      ],
+      "last_complete_epoch_event_at_observation": null,
+      "name": "hcsn-s307-lr0.003",
+      "observed_new_optimizer_completions": 6,
+      "parent_full_outer_wall_charged": 14376.969628295861,
+      "pid_at_dispatch": 2132910,
+      "remaining_at_dispatch_seconds": 28823.03037170414,
+      "restored_complete_epoch": 46
+    }
+  ],
+  "observed_utc": "2026-11-10T21:17:50.595843+00:00",
+  "original_summary": "first-step/SUMMARY.json",
+  "original_summary_identity": {
+    "bytes": 91920,
+    "sha256": "2f0e67369cad4ae69542539bfbc2ac2070cf28d85839591d391c4aa11eb8bcdd"
+  },
+  "schema": "c2-first-step-original-receipt-index-v1",
+  "scope": "Existing producer witnesses, capture receipts and optimizer event originals. Complete probability trace arrays and checkpoint tensors have not been independently reread by this index.",
+  "whole_training_numerical_admission": "HOLD"
+}

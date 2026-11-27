@@ -1,0 +1,69 @@
+{
+  "status": "passed",
+  "scope": "non-torch rejection checks only; no candidate CUDA execution",
+  "probe_sha256": "f8a2b7c193d2750cafb95446eff314195ca54ebb0305c008a35336f6bd874e08",
+  "base_probe_sha256": "70331f392c9695e0522da52817b3511b544304a6f4e23a169a016a07ea9f1285",
+  "passed": 6,
+  "failed": 0,
+  "baseline_unchanged": true,
+  "frozen_remat_unchanged": true,
+  "candidate_pins": {
+    "qualification/hcsn/rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+    "CANDIDATE.json": "d864fdb4819a7f21c7e1a8178686b6bf9ec82df92cf88609240faa918876f51b",
+    "check_rematerialization.py": "664a508d7e1c70ee81efe077225b5f4f751bb790efc83cecfc6f1494a09bb509"
+  },
+  "records": [
+    {
+      "name": "source-drift",
+      "status": "passed",
+      "child_exit_code": 1,
+      "before_torch_import": true,
+      "reason": "ValueError: source or full config differs from pinned baseline",
+      "receipt_sha256": "c6ef2cec5e3c934b4da03525da3013c2b8146a93194cdcf8100a7ddbb9f871f5"
+    },
+    {
+      "name": "candidate-module-drift",
+      "status": "passed",
+      "child_exit_code": 1,
+      "before_torch_import": true,
+      "reason": "ValueError: candidate module, manifest or checker differs from frozen pins",
+      "receipt_sha256": "fb262bff2276a66a2c73bfa11c1f4ba1e1c87e548638ca5f3676692090f62f81"
+    },
+    {
+      "name": "candidate-manifest-drift",
+      "status": "passed",
+      "child_exit_code": 1,
+      "before_torch_import": true,
+      "reason": "ValueError: candidate module, manifest or checker differs from frozen pins",
+      "receipt_sha256": "37e12d75f3bb328127085af08cc4563018ad0e661b7c8846dea09039a4ec5393"
+    },
+    {
+      "name": "candidate-checker-drift",
+      "status": "passed",
+      "child_exit_code": 1,
+      "before_torch_import": true,
+      "reason": "ValueError: candidate module, manifest or checker differs from frozen pins",
+      "receipt_sha256": "025f5013880eadabd57d9ade29e6c8e905c748e4dc13639e036299eca530e509"
+    },
+    {
+      "name": "existing-output-refused",
+      "status": "passed",
+      "child_exit_code": 2,
+      "receipt_unchanged": true
+    },
+    {
+      "name": "concurrent-initial-claim",
+      "status": "passed",
+      "outcomes": [
+        {
+          "owner": "a",
+          "result": "claimed"
+        },
+        {
+          "owner": "b",
+          "result": "FileExistsError"
+        }
+      ]
+    }
+  ]
+}

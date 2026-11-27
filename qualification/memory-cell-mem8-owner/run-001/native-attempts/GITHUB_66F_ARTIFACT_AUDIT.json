@@ -1,0 +1,575 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "source_sha": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+  "source_tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+  "base_sha": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+  "run_id": 42953532462,
+  "job_id": 130303174020,
+  "artifact_id": 13827244275,
+  "archive": {
+    "bytes": 200988,
+    "sha256": "b67b035fa133050c389ba7f79d81d01cc8726dabc813fecb01e4afe1311ae135",
+    "official_size_and_digest_match": true,
+    "zip_crc_check": "passed"
+  },
+  "receipts": [
+    {
+      "file": "agentd-tests.json",
+      "bytes": 1542,
+      "sha256": "a561826759fa8cebf2c3740454957656ab636a8979b5ec49f0c5f1829a52988e",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "episodic",
+        "--no-capture",
+        "--retries",
+        "0"
+      ],
+      "log_file": "agentd-tests.json.9121630e955b4d809b84638de9e77bee.log",
+      "log_bytes": 49170,
+      "log_sha256": "ac8cdb3d3bb3b435b24646815fda7044c78c24745efe67ee3ee7d5ed281f7bd3",
+      "status": "passed",
+      "before": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "after": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      }
+    },
+    {
+      "file": "codex-build.json",
+      "bytes": 1539,
+      "sha256": "e0ff65aab82ce151918d799459ce8fb6be916c58840a8829141786f63dcab65e",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-cli",
+        "--bin",
+        "codex"
+      ],
+      "log_file": "codex-build.json.9652e549e8fe4232b46a78888891e759.log",
+      "log_bytes": 68572,
+      "log_sha256": "82c74943e422af4c557f46b0510777cc4d882cc1f0f8480696dc65765bb64d03",
+      "status": "passed",
+      "before": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "after": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      }
+    },
+    {
+      "file": "fix-codex-hepta-agent-protocol.json",
+      "bytes": 1494,
+      "sha256": "577a02df8e37a81da3b0e4cc8df84a5ffd61655ebddc909999da46882992da43",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol"
+      ],
+      "log_file": "fix-codex-hepta-agent-protocol.json.ee69c7564c794876aa4401b61846af4b.log",
+      "log_bytes": 828,
+      "log_sha256": "fd928456534f9fce1995bc28ee4370cb5eee162cfe5e08f453b245537f3aaaaf",
+      "status": "passed",
+      "before": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "after": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      }
+    },
+    {
+      "file": "fix-codex-hepta-agentd.json",
+      "bytes": 1476,
+      "sha256": "fef0cf741fca2d849519368efb302584a599e1ebf4d3838e0f53a2382b658ab4",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "log_file": "fix-codex-hepta-agentd.json.e442e8f2e17945f39b8ba1efdc6d44d8.log",
+      "log_bytes": 43460,
+      "log_sha256": "33b4f28bde34e38b927b6901ff8fa4f4a7acd1ec404a803e698b54f27de60f09",
+      "status": "passed",
+      "before": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "after": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      }
+    },
+    {
+      "file": "fix-codex-hepta-memory.json",
+      "bytes": 1481,
+      "sha256": "2a98330a419224599fb68a07a5832919515536deafe0bbcbcd6c1f552604d4dc",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-memory"
+      ],
+      "log_file": "fix-codex-hepta-memory.json.605569209ca04079918834e18253cd07.log",
+      "log_bytes": 25286,
+      "log_sha256": "e99d29e0d0b02fbef22c43ab80951d4908024c228d8731bf3ad80581c45dde11",
+      "status": "passed",
+      "before": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "after": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      }
+    },
+    {
+      "file": "format.json",
+      "bytes": 1471,
+      "sha256": "f55b9de4fd18658c1556bf5651e64781c62fa89728f532a452381c0e45f104e8",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "ad5a4ed6d40a2eceac189afaced5d93137724a52"
+      ],
+      "log_file": "format.json.ebe3ae361e0746d2bc986ab7ee6d6a5e.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "passed",
+      "before": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "after": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      }
+    },
+    {
+      "file": "memory-tests.json",
+      "bytes": 1497,
+      "sha256": "ded449017ad345c4d6abc9b0bc536a634b509c15863805f193b0c8e3f6ff8af7",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "episodic"
+      ],
+      "log_file": "memory-tests.json.298bad6488c84f7aadaaf82b35d7dfdc.log",
+      "log_bytes": 71795,
+      "log_sha256": "0061dae4e66001b175e36eaa18d9cf4b803a339ede11e2d37d37840dd0912669",
+      "status": "passed",
+      "before": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "after": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      }
+    },
+    {
+      "file": "protocol-tests.json",
+      "bytes": 1483,
+      "sha256": "228879f706b6e460cd78cc5733ae52a5bfded34e0e9d36923b7d196c05041bea",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol"
+      ],
+      "log_file": "protocol-tests.json.8fb71bf59b5b4be693d86fff1b13a3e5.log",
+      "log_bytes": 15678,
+      "log_sha256": "814c592f0c8f3c203fead1307d34a42c6bbf01e00b560c2495290e7d3bcf4b32",
+      "status": "passed",
+      "before": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "after": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      }
+    },
+    {
+      "file": "v8-inputs.json",
+      "bytes": 1433,
+      "sha256": "4aeaa78b4fc76e76f817c5a649f08c6d974567fceec2383a1645e99200c6c8e4",
+      "command": [
+        "python3",
+        "scripts/hepta_ci_v8.py"
+      ],
+      "log_file": "v8-inputs.json.1be962daab2c4298ae728f27d1a2b95c.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "passed",
+      "before": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "after": {
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "dirty": false,
+        "parents": [
+          "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a"
+        ],
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      }
+    }
+  ],
+  "tests": [
+    {
+      "receipt": "agentd-tests.json",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 781,
+      "case_ids": [
+        "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+        "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+        "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+        "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+      ],
+      "actual_drain_markers": [
+        "commit",
+        "revoke",
+        "panic"
+      ]
+    },
+    {
+      "receipt": "memory-tests.json",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 420,
+      "case_ids": [
+        "episodic_source::tests::admits_actual_python_unicode_export_with_exact_original_observations",
+        "episodic_source::tests::final_source_check_detects_changed_observation_metadata",
+        "episodic_source::tests::provisional_admission_remains_distinct_from_verified_source_admission",
+        "episodic_source::tests::a_valid_digest_cannot_replace_missing_or_different_source_admission",
+        "production_writer::episodic::regression_tests::actual_python_unicode_export_preserves_exact_observed_fact_bytes",
+        "production_writer::episodic::regression_tests::custody_preserves_provisional_state_and_cannot_upgrade_it_on_replay",
+        "production_writer::episodic::regression_tests::changed_source_admission_cannot_reuse_an_old_canonical_binding",
+        "production_writer::episodic::regression_tests::historical_or_incoherent_source_states_cannot_overwrite_native_heads",
+        "production_writer::episodic::regression_tests::source_and_writer_revocation_roll_back_all_native_changes",
+        "production_writer::episodic::regression_tests::update_withdraws_dependent_memory_and_preserves_unrelated_source",
+        "production_writer::episodic::tests::committed_import_reopens_and_reconciles_lost_response_without_rewriting"
+      ],
+      "actual_drain_markers": []
+    },
+    {
+      "receipt": "protocol-tests.json",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "case_ids": [
+        "capabilities::tests::duplicate_and_invalid_ids_are_rejected",
+        "capabilities::tests::negotiation_is_intersection_with_minor_downgrade",
+        "generation::tests::generation_wire_rejects_unknown_fields_and_unbounded_byte_values",
+        "objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation",
+        "objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission",
+        "objective_tests::objective_start_outcomes_are_strict_wire_types",
+        "objective_tests::signed_objective_control_request_round_trips_inside_frame_bound",
+        "tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+        "generation::tests::maximum_generation_pages_and_inputs_roundtrip_within_existing_frame",
+        "tests::automation_wire_round_trip_is_strict_and_bounded",
+        "tests::capabilities_endpoint_is_additive_and_bounded",
+        "tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive",
+        "tests::host_turn_authority_binding_is_strict_and_fail_closed",
+        "tests::health_wire_round_trip_is_strict_and_bounded",
+        "tests::memory_federation_control_is_typed_strict_and_bounded",
+        "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded"
+      ],
+      "actual_drain_markers": []
+    }
+  ],
+  "original_binary_before_after": {
+    "source_sha": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+    "source_tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+    "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex",
+    "bytes": 559366336,
+    "sha256": "901a4e3246a1396e6dca772d1756f3f610065b4c19c9c4c9317f2060718cdd80"
+  },
+  "source_files_match_accumulated_published_source_map": [
+    {
+      "path": ".github/workflows/hepta-mem-python.yml",
+      "bytes": 20501,
+      "sha256": "07ddeae1884d285cb0f819e60342ecf39557feb221e4669eabe815bf02ee99c0",
+      "git_blob": "a1ecf3968b8d9bbc27099d792c12f1c5833b4e38"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "bytes": 37044,
+      "sha256": "7fd600aa026621d9950614536a172f27aa6e3c6e438d50bba3dd71afe85fb4bf",
+      "git_blob": "fd1fd483385211eac76afc3c41571541c1de6f0f"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
+      "bytes": 926,
+      "sha256": "2059517a8efc9452d9c6a500cf290e519f950630943d7fcacf23f2b622bc2153",
+      "git_blob": "efcce3892dac9751927696654f5d6a19d12b1d68"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "bytes": 47799,
+      "sha256": "eaaf49fa285a196759194d167ef63e78a504aae9d898f55bb524d53d8a99caef",
+      "git_blob": "826903cc048dfa6b8f502601aed7780fa6ac3a05"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7976,
+      "sha256": "e393be0b48ee4bf1dd7d3c9a60d2c9fc4087fd8fb9ad5f198c1245c2db3acdec",
+      "git_blob": "0f25ce6f62ce3e2fd963dda8208913adc17edbbf"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "bytes": 29749,
+      "sha256": "bf7cff479842870e910c3225f2a486a56f7eb9bafb1cf64dce5119261d4c36a7",
+      "git_blob": "7e3eecfe91f4534f4fb4b2242ddcfda7760923e8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 38713,
+      "sha256": "763fb7764bddc8083604c8ab3f1ed7cb32c1d0950aac3cfeec10c5d1cf7ca5ac",
+      "git_blob": "f9f69632f1859aedb23743635a3aad315cd52d65"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "bytes": 3410,
+      "sha256": "25c7ec1a8d0679a476d8f2ab45e179c2a2fbe54b68701508992de5aa0305702a",
+      "git_blob": "d6d13a226a7fd9778904893368767c4a38c23e01"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+      "bytes": 2206,
+      "sha256": "0b0d81d1b8efcced51db88bf139ba47bcef4eb8e488c79b2a5876413caaf2fcd",
+      "git_blob": "483633043e80459023422b0361cfd762136d8fa3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+      "bytes": 4813,
+      "sha256": "a453ca69b4dce2a661f4cfd1101ae7ebd19a65883e723291a0ae4dd4132574d2",
+      "git_blob": "eac6a0a296176332eb0a89e2eadb13f657236062"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs",
+      "bytes": 4791,
+      "sha256": "be21fd5afc24c45e822e9c90eecb5a1a6e169f836a173e02c1799bc653c20d8e",
+      "git_blob": "595a9aec06808963b580b83f7cb856221d2a7bd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read_tests.rs",
+      "bytes": 2647,
+      "sha256": "4f941d1e4c8f0ff85e88954863eaf2e2def3dbe5d2bf99b36bcde7e34525d603",
+      "git_blob": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 42746,
+      "sha256": "5e6935c2a2ef460651f6428628e7c45f53486402dcf53c88d917da77066ef068",
+      "git_blob": "5481bc5bc81558e1246bd3df5e2f081b334266b4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+      "bytes": 11000,
+      "sha256": "2967ed7ada1cda679f35a85aaec08bf6b04482a9b05ae99c0dcf27eb9c7549fa",
+      "git_blob": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "bytes": 13050,
+      "sha256": "4af3dab861a0d64a70eff732f6279c877ef4fdf989c196fa826928c431f1d6ad",
+      "git_blob": "9145d2e46aa9d0f5022f09fde38c3ea97ac56838"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
+      "bytes": 11956,
+      "sha256": "e9fd027aef6b149a37e594457b6e2bfe24f2bb577d7fb2ec33f3fdbd166c6c75",
+      "git_blob": "8e0ca0b1e1860e916d4017b01bacc593597c9102"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "bytes": 27869,
+      "sha256": "eeec8bb76bb13fba92a85668bc2ee47957eba7e89292197c18dea1b44e23c121",
+      "git_blob": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "bytes": 30971,
+      "sha256": "6ac32bcf5308ffd76d799995250b7af7c790948b5af2b2cf045b60591251fd3b",
+      "git_blob": "d38e4802caf10a4ecaede41c3108ead6ed4c993f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "bytes": 38289,
+      "sha256": "56874b927c3bc17b33a2c07f1e52ed0659ee0c9055a3fa679e7895ca264d5998",
+      "git_blob": "c587df24011d5768295a7cf431948a7d4321c5da"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "bytes": 60831,
+      "sha256": "3bdfa3151dc0a77e6e926c81a1407b0309d841f859612fa54383b72f7760765e",
+      "git_blob": "e53d6ada7c222ad0084b44803bdfbed4789160fa"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
+      "bytes": 5341,
+      "sha256": "6da2ac65ace12c0e8cf4e0a0dc83b09461a469538bf0b0fe939afad80a0155bf",
+      "git_blob": "6585d7ee856310327d1823ca829ae996dda3c2b8"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+      "bytes": 10963,
+      "sha256": "7febade5edcbe3538f23bb858ff80e21a927db57493cf0b09c296e43654d8489",
+      "git_blob": "35061a80421612bfbe92d38a20171935db59990d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+      "bytes": 11936,
+      "sha256": "521bb9151d78151b8127575db130a8bfd49f0f7adc03f7e8de91ed3d0ceb03ea",
+      "git_blob": "14c9d0685cc8b64a85cb9b1b9a01b8d99d702333"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
+      "bytes": 14050,
+      "sha256": "680b27a797d578c0a1cc9fe337d7fdfc6625249332865792db3a30b1b15f9172",
+      "git_blob": "d657588ccc28bf1639155fb3fa7f889b27df30dd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+      "bytes": 2610,
+      "sha256": "35268abb56896174d6cc093a64e411f5017d6e9fdcbc3cbb8976dab3aab61e0c",
+      "git_blob": "6cb08af29309991e19510cfecd30aaaafa55f6a3"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+      "bytes": 2794,
+      "sha256": "5a9b67563874477f5ceae27b5a28c53ebcea7236c8df209e99fb1aeefda81efc",
+      "git_blob": "245dc875742fb5e645859bd1cfe8c370e4189f12"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
+      "bytes": 6083,
+      "sha256": "67eeb411f49a51532b0aa09ccc8b95e538e5e24d4a7c5142a9c73adac54d604e",
+      "git_blob": "1c032b45ac066ce4ed2cf4bd204a9834d59626a9"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "bytes": 173514,
+      "sha256": "363ee295992d80f0ff35358401a02ae6b460b0bc43fc4bef726c3b26cc8115e0",
+      "git_blob": "15487c549abfe1cf1251f6a65a4be699b6b381fc"
+    }
+  ],
+  "github_compare_paths_match": true,
+  "empty_final_artifacts": [
+    "source-rewrites.patch",
+    "index-rewrites.patch",
+    "worktree-before.txt",
+    "worktree-after.txt",
+    "rewrite-paths.zlist",
+    "final-source.log"
+  ],
+  "changed_source_after_members": 0,
+  "provenance": {
+    "source_map": "/workspace/scratch/ed3538174819/mem-stage-formatted-81889/STAGE_MANIFEST.json",
+    "subsequent_fixture_source": "/workspace/scratch/ed3538174819/mem8-drain-real-binary-candidate",
+    "single_consumed_store_delete_blob": "245dc875742fb5e645859bd1cfe8c370e4189f12"
+  },
+  "boundaries": [
+    "This is exact-source native software qualification with fixtures, not original source custody or a production actor campaign.",
+    "Filtered tests and historical failed attempts are not counted as passes.",
+    "This GitHub run is independent of the ai395 66f run and F2 run; binary hashes and test counts are not transferred."
+  ]
+}

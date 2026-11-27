@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.fashion-D-preprobe-recovery-v2.v1",
+  "candidate": "research/fashion-mnist-candidate-20261023/plan.json",
+  "candidate_commit": "dedbb0a0d3470dd58bfafbe770c8d916f7ff17cc",
+  "scope": "Only D preprobe on512 FIT groups; no SELECT/SCREEN/officialTEST scoring, no other five arms, no confirmation",
+  "method_CPU_ns": 1800000000000,
+  "method_RSS_bytes": 2147483648,
+  "method_retained_bytes": 2147483648,
+  "shared_CPU_ns": 150000000000,
+  "seed_build_CPU_ns": 450000000000,
+  "content_CPU_ns": 300000000000,
+  "content_bookkeeping_tail_CPU_ns": 50000000,
+  "policy_selection_export_CPU_ns": 150000000000,
+  "unused_SCREEN_tail_CPU_ns": 300000000000,
+  "global_required_tail_CPU_ns": 15000000000,
+  "seed_export_tail_CPU_ns": 5000000000,
+  "tail_boundary": "Required checkpoint/actor exports, reload parity, inputs/identity, machine receipts are method work. Independent prose/review/publication R&D is separately logged, never appended retroactively to method budget. Unused SCREEN allowance is not transferred to content.",
+  "seeds": [
+    11,
+    23,
+    47
+  ],
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "sequence_cycle": [
+    "TT",
+    "TI",
+    "TJ",
+    "IT",
+    "II",
+    "IJ",
+    "JT",
+    "JI",
+    "JJ"
+  ],
+  "initial_checkpoint": "after2 FIT epochs or before next forecast would cross150 content CPU seconds, whichever earlier; record exact updates, no SELECT invocation",
+  "final_checkpoint": "continue the same uniform cycle until next admitted update cannot fit300 content CPU seconds; freeze content before all policy labels",
+  "step_reservation_calibration": "first9 normal training updates, one per path, are retained useful updates; reserve max(5ms,2*maximum observed duration) for later updates. All nine timings retained, no fast-draw retries. Actual overrun is nonzero failure even if forecast was wrong",
+  "bootstrap_step_quote_CPU_ns": 2000000000,
+  "policy_tail_quote_CPU_ns": 25000000000,
+  "label_group_count": 512,
+  "policy_updates": 256,
+  "policy_folds": 3,
+  "policy_step_quote_CPU_ns": 50000000,
+  "policy_source_order": "ascending policy hash from candidate; all duplicate rows retained",
+  "policy_batches": "fixed PCG64DXSM(seed+100000+fold) permutations, repeated to256 updates; fullfit fold3. No threshold search",
+  "policy_tie_order": [
+    "T",
+    "I",
+    "J"
+  ],
+  "negative_conditions": [
+    "any seed three J-prefix final-action free raw oracle mean U does not strictly exceed best of13 fixed sequences",
+    "any seed groupedOOF mean U does not strictly exceed best constant final action",
+    "any cost/resource/source/data/implementation failure"
+  ],
+  "termination": "Retain terminal receipt and nonzero exit for any negative condition; stop before other arms. Evaluate all three prespecified seeds only while no negative condition has appeared. A stopped seed list is reported explicitly; no rerun of measured instance",
+  "positive_interpretation": "Return evidence to parent only; no dynamic win claim and no automatic expansion to other arms",
+  "data_access": "Local verified official TRAIN files only. No downloader/fallback/mirror in runner; directory and both official S3 file HEAD403 denials remain preserved",
+  "marker": "fashion_research/D-PROBE-OPENED.json atomic exclusive creation after cheap frozen-source/local-file preflight, BEFORE all measured intake; smoke/missingfile/known403 creates no marker, measured intake failure does consume it",
+  "runtime": "NumPy2.3.5, single-thread BLAS/OMP/MKL, FP64 content and actor internals, actual float32 transport scoring",
+  "initialization": "ContentModel deterministic seed and per-module generator as source-frozen; exact source is authoritative, no result-based initialization choice",
+  "prior_history": "r1 narrow padded comparison; r2 failures/unopenedtest; COREc1 failed/sealed; D1 failedcost; H2/H3 startupfailures; H4 negativeTRAIN; CLEVR adaptation rejected; content/NDU independent branches remain separate",
+  "supersedes_source_only": "FROZEN.json and1d858c66eec4 preserved; no registeredD measurement yet",
+  "recovery_scope": [
+    "Atomic stage progress and supervisor partial terminal on every worker stop",
+    "CPU/RSS cap kills immediately without flush grace; external stop may TERM then boundedKILL within original cap",
+    "Policy-index/fold preparation in shared150; build starts at preceding exact closing timestamp, transition bookkeeping assigned to following build"
+  ]
+}

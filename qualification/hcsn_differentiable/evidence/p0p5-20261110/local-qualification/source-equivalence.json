@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-exact-test-source-equivalence-v1",
+  "source_capsule": "qualification-root-integrated-source-v1.zip",
+  "source_capsule_sha256": "0f8f62837b72a3530f6a652f7c25b778a7459bad9738539339ae9782a2e0ccdf",
+  "reports": {
+    "qualification-root-integrated-v1.json": "2365037ee58fbee46de2221a7cc8289d43f44ba7ea8568d81ea1e5b8c6121776",
+    "error-budget-root-integrated-v1.json": "b70f5f5e77838d69f521e474a49a192c12f2caacad77a7bcd2bbb4bf41ec24f9"
+  },
+  "same_42_source_file_hashes": true,
+  "archive_attempts_not_used": [
+    "error-budget-root-integrated-source-v1.zip",
+    "error-budget-root-integrated-source-v2.zip"
+  ],
+  "archive_attempt_failure_reasons": [
+    "helper expected per-file hash object but budget uses hash strings",
+    "source documentation changed after both test runs; exact prior bytes exist in the already verified common capsule"
+  ]
+}

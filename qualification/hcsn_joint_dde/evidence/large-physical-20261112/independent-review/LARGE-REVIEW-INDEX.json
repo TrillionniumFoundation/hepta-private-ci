@@ -1,0 +1,36 @@
+{
+  "files": [
+    {
+      "bytes": 37602,
+      "path": "LARGE-RAW-ARRAYS-REVIEW-001.json",
+      "sha256": "b1296a8fa0f66c99c8234941ddfcae0eb6afeec4bde54debe9e6aa41ab08e07f"
+    },
+    {
+      "bytes": 512,
+      "path": "LARGE-RAW-ARRAYS-REVIEW-RED001.json",
+      "sha256": "49c3acdbb00dc775c9afba51000d25432e0567a747bc57e031e17520e48d06c4"
+    },
+    {
+      "bytes": 6310,
+      "path": "LARGE-RAW-ARRAYS-REPRODUCED-002.json",
+      "sha256": "c520770a15b050f3efd667fff0d2cb8427d382e52c0c73a20dfed23ec95b2c3c"
+    },
+    {
+      "bytes": 11516,
+      "path": "reproduce_large_review.py",
+      "sha256": "6907eeef487cc510c4c7688e64c45d1a32ca95a1fbe193fee107575eca7adbc4"
+    },
+    {
+      "bytes": 9707,
+      "path": "reproduce_large_review.tested.py",
+      "sha256": "5438f1dfffcb526a24bd5a1ef79c2bd7a09ce6f69ff467e874b0570329aad6d4"
+    },
+    {
+      "bytes": 978,
+      "path": "INSPECTOR-FORMAT.json",
+      "sha256": "c52ca7ad5dc535938c9352dc7163d122740e319cd20607924c26b74111afda84"
+    }
+  ],
+  "schema": "hcsn-independent-large-review-originals-v1",
+  "scope": "Actual read-only inline raw review001 plus separately executed named reproducer002; zero new candidate kernels, Torch models or optimizer calls. Tested reproducer bytes preserved; published version differs only by formatting and one independent stdlib import ordering, explicitly mapped in INSPECTOR-FORMAT.json. No candidate source was modified. Prior source-shape reviewer RED is retained."
+}

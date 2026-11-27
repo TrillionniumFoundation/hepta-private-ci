@@ -1,0 +1,85 @@
+{
+  "evidence_sha256": {
+    "CAPACITY.json": "759d53884a873762438baf3526c33310f6fc50d9f5977fde5b604458e0c16cfb",
+    "FREEZE.json": "82abe08b0447b3ba45afff37857c18f793eebf02158b6ff2ccb46097d5ec8ec2",
+    "INPUTS.json": "8685984c27e1bfab7ec2ac92a2861dab9347e605c75feef03f0ca07382b86e2c",
+    "PLAN.md": "8e9128809a6ef3627042559a8de5073ca6a5c30e646bc1cc211574b457607e1b",
+    "REFERENCES.json": "3a32c0989a9f55c7b9a851256bbead268cf5d360edae73e0713bc81dfbc7c34d",
+    "supervise.py": "334f81f38d51844656bb4b91096511f22ab3f16557ce4184c687b2065a4d465d",
+    "verify_fault.py": "8aa3f85024592d4dc59d6d1b8b1d3f96b15e8bdecd5d8848acdb4175ac3735e8",
+    "worker.py": "d4b5077df0b104f51106b796f2cd4795cf4503553e013f0e80ac494d0d4255af"
+  },
+  "limitations": [
+    "One instrumented known ack2 local pipeEOF, not spontaneous remote network failure, partialframe, midcompute interruption or all timing boundaries.",
+    "Fault marker presence rejects even corrupt marker, but no corruption mutation test claimed. verify_fault is trusted cooperative protocol evidence, not adversarial authenticated filesystem verifier.",
+    "Production owner/AppServer, actual reboot, remote receipt, naturaldata/403, generaltext/audio, publication and strict256 holds unchanged.",
+    "Hard ancestor death/kernel/storage/cleanup can still defeat complete receipts. Failure qualification must be retained with no retry/limit increase.",
+    "Source PASS does not authorize execution; parent single-run admission still required."
+  ],
+  "method": "Full new worker/supervisor/verify_fault source review, AST parsing and exact source/input/reference hashes only. No imports, candidate/model/RNG/protocol execution.",
+  "resources_and_capacity": {
+    "AS_bytes_each": 268435456,
+    "CPU_soft_hard_each": [
+      2,
+      2
+    ],
+    "FSIZE_bytes_each": 2097152,
+    "accounting": "All original generation, fault handling/IO, cold restores, supervisors/verifiers/imports/cleanup once in fullwait; role and supervisor costs partition subtree. Prefix extra, lasttailunknown. No refund for expected failure, no historical/reference/review cost erasure. Nominal process limits and old measured CPU do not establish strict global budget.",
+    "bytes": "Known fixed wire34884 and ack2prefix8227 make namespace snapshots<256KiB each; full model NPZ<2MiB combined, bounded summary/inventory overhead supports6MiB conservative conditional success. Terminal16MiB is posthoc, not aggregate livehardquota.",
+    "enumeration": "outer5 + chain23 (producer7 artifacts, recovery7, supervisor5, workerlogs4) + namespace8 + rootlock1. Namespace claim/reserved/generated/fourpiece records/fault. Success no temps; failure temps retained and count.",
+    "fixed_processes": 4,
+    "normal_files": 37,
+    "receipt_bytes": 65536,
+    "terminal_bytes": 16777216,
+    "terminal_files": 100,
+    "terminal_subtree_CPU_seconds": 5,
+    "wall_seconds": {
+      "handledcleanup": 15,
+      "outer": 90,
+      "supervisor": 60,
+      "workers": 30
+    }
+  },
+  "run_present": false,
+  "source_freeze_sha256": "82abe08b0447b3ba45afff37857c18f793eebf02158b6ff2ccb46097d5ec8ec2",
+  "status": "PASS_SOURCE_SCOPED_REAL_PREFIX_ACTIVE_CHANNEL_EOF",
+  "verified": {
+    "actual_failure": "Producer makes one real start and publish(stop_after=2), atomically writes READY and enters actual await_cancel. EOF may occur before reader blocks but is genuine read EOF. _fault adds blocked state and exact identity/manifest/observed/error record, then raises. Producer requires exact control channel fault; no further output and saved ChannelEOF: EOF before control frame, unknown_no_automatic_replay, control_ackNone, phasegenerated. No synthetic marker or cancellation.",
+    "all_pins_match": true,
+    "byteexact_predecessor_files": [
+      "attempt.py",
+      "common.py",
+      "content_input.py",
+      "contracts.py",
+      "control_channel.py",
+      "cost.py",
+      "fashion_research/__init__.py",
+      "fashion_research/autodiff.py",
+      "fashion_research/model.py",
+      "fashion_research/transport.py",
+      "guarded_core.py",
+      "guarded_delivery.py",
+      "live_control.py",
+      "live_core.py",
+      "live_delivery.py",
+      "multimodal_contract.py",
+      "owned_process.py",
+      "persistence.py",
+      "policy_backend.py",
+      "route_contract.py",
+      "run_once.py",
+      "verify_control.py"
+    ],
+    "closure": "New worker/supervisor/verify_fault use frozen local closure. live_core/live_delivery/Clock/channel/policy backend/model/ownedfork/run_once and verify_control unchanged. Standard library and NumPy only; no data/remote call.",
+    "counts": "Producer9 checks + recovery8 + supervisor3=20; producer0 refusal and1 expected active control failure, recovery1 refusal. Fourallocation restores, one selective call/Actor prediction/encodedrow, no freshmodel/Adam/reference. Active failure and recovery refusal intentionally separate counters.",
+    "frozen_files": 29,
+    "full_models": "Producer full composite artifact before/after exact; recovery exports full Content/Actor arrays checked against pinned originals and no optimizer updates. Full AFTER artifacts enable saved-only independent comparison.",
+    "joint_verification": "verify_fault calls byteexact full midpoint verifier: expected current request/artifact, derivednamespace, fixedpiece01ref, claim, restored exact snapshot, original route/wire and spent/prefix. Fault canonical bytes/schema/identity/manifest/error/time independently checked and only one added file allowed relative to beforeinventory verified by supervisor before closure. Forbids piece02intent and all observation/cancellation/ACK files. Earlier immutable journal bytes retained by inventory; full per-record saved audit remains separate.",
+    "known_vs_unknown": "Full wire/route known and matched pinned reference; controller1/generator1, prefix8227 and index2 retained. Unknown is control disposition; no model retry permission or known-result erasure. Marker not standalone checkpoint/authenticated proof.",
+    "original_input_pins": 13,
+    "recovery": "Two cold model restores perform original full artifact identity. Same epoch/root/lock/HANDOFF exactly verified; oldack2 restored readonly. clock.live before and after publish, expected error precisely control effect unknown; supervisor disposition required. _terminal_guard precedes readonly, so not readonly/expiry/flock masking. Persistent before/after inventory unchanged, no inference, no prefix growth.",
+    "reference_pins": 5,
+    "sole_writer": "Supervisor creates one pipe after its own exec; producer pass_fds only read, close_fds writer before exec; parent closes read immediately. No write/send to command pipe exists. No inherited writer remains in producer or outer. Parent closes sole writer after midpoint and before inventory independently checked. No reader thread.",
+    "time_and_reap": "Fixed45s request live; boundedawait5s. Checks close_begin<=close_complete and close_begin<=faultobserved<deadline, does not falsely order close_complete before observed. Producer exits normally0 and is reaped before supervisor final verify/HANDOFF and fresh recovery; no fragile final live-PID requirement."
+  }
+}

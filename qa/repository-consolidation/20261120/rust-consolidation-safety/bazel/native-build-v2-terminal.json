@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.native-library-build-terminal.v1",
+  "job_id": "1a1f6bdfade-ffbe-153f",
+  "started_at": "2026-11-20T02:16:48.094Z",
+  "terminal": {
+    "at_unix_ms": 1795142392981,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": true,
+    "exit_code": -15,
+    "job_id": "1a1f6bdfade-ffbe-153f",
+    "launch_nonce": "da91017e6e273ac1bdce1592a3b80f79",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 35513,
+        "stored": 35513
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "cancelled",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "cancel_receipt": {
+    "atomic_identity": true,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "job_id": "1a1f6bdfade-ffbe-153f",
+    "reconcile_via": "process_status",
+    "result": "stop_requested",
+    "supervisor_pid": 747929,
+    "termination_confirmed": false
+  },
+  "outcome": "CANCELLED_INCOMPLETE_NOT_PASS",
+  "reason": "Source-equivalent Linux CI completed all three named library unit-test targets plus five extension-api integration targets. Coordinator authorized stopping this redundant cold LLVM build. No source failure diagnosed by the native partial attempt.",
+  "last_progress": "[8,399 / 13,094] Compiling llvm/lib/Target/AMDGPU/MCTargetDesc/AMDGPUMCTargetDesc.cpp [for tool]; 3s disk-cache, processwrapper-sandbox ... (2 actions running)",
+  "source_hashes_unchanged": true,
+  "source_files": [
+    {
+      "path": "codex-rs/ext/extension-api/BUILD.bazel",
+      "size": 161,
+      "sha256": "24321aabce706f28f8c498be10b50dca5105eafa3fbe7d9699c3024ff1ae0e26",
+      "git_blob_sha1": "037f30c619a54b3bb46b5b080e1ffae5c23d0598"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/BUILD.bazel",
+      "size": 179,
+      "sha256": "0e1fa46c178925ab7c160f82f8708048ad4dfe9e72f5733de136f88456bdd7e2",
+      "git_blob_sha1": "5693595a786d265f819cc15c98654e3e96f264f1"
+    },
+    {
+      "path": "codex-rs/ext/hepta-prompt/BUILD.bazel",
+      "size": 169,
+      "sha256": "661e6abbc064de658fc31ba6842bb95ac49e89e24fd455498e35053399d99249",
+      "git_blob_sha1": "75129eef54403c4632400dff382dc4d56a935e38"
+    },
+    {
+      "path": "defs.bzl",
+      "size": 37838,
+      "sha256": "4721b4acc935c55f5c34c7c38f2648b9f00687cb27df3083df3af5e0562cd576",
+      "git_blob_sha1": "39a06f42c014f0b34f6e59ed3189b030aac4fd59"
+    }
+  ],
+  "effective_cache": "Original .bazelrc content-addressed /home/qian-qi/.cache/bazel-disk-cache, explicitly selected on the continuation; owned output/repository/repo-contents/tmp directories as in root-query-and-census-proof.json.",
+  "logs": {
+    "stdout": {
+      "size": 35513,
+      "sha256": "f224eb3fc92ed451ed7144e5b47a98ada32146a90c817ce65a1ba5a99693a7bc",
+      "git_blob_sha1": "0eb57e7e32e4879660ecce5b8be1a498c31e9645"
+    },
+    "stderr": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  }
+}

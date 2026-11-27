@@ -1,0 +1,30 @@
+{
+  "source_sha": "5993cb909547070e4b56ca9465996a5a946fafca",
+  "full_source_tree": "dfa98997ef9f82773c4c9967ab3034d717961abb",
+  "base_sha": "4ccbef2318c2ff965f2fd3494975ba793fefa876",
+  "synthetic_merge_sha": "9da90d731f521e65a9fbc8384aa725d90e29b5e0",
+  "tested_revision": "source head (explicit workflow checkout), not synthetic merge",
+  "run_id": 39252617291,
+  "job_id": 118059888568,
+  "run_attempt": 1,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39252617291/job/118059888568",
+  "job_status": "completed",
+  "job_conclusion": "success",
+  "passed": 7,
+  "failed": 0,
+  "ignored": 0,
+  "filtered_out": 110,
+  "test_output": [
+    "2026-10-19T12:57:58.9917800Z test scope_lane_wal::tests::export_reopen_roundtrip_and_bad_frame_rejection ... ok",
+    "2026-10-19T12:57:59.0109784Z test scope_lane_wal::tests::file_wal_repairs_incomplete_length_before_new_commits ... ok",
+    "2026-10-19T12:57:59.0316138Z test scope_lane_wal::tests::file_wal_syncs_frames_and_repairs_torn_tail ... ok",
+    "2026-10-19T12:57:59.2337653Z test scope_lane_wal::tests::incremental_scope_lanes_replay_many_distinct_committed_frames ... ok",
+    "2026-10-19T12:57:59.2471937Z test scope_lane_wal::tests::poisoned_scope_writer_cannot_acknowledge_even_an_old_duplicate ... ok",
+    "2026-10-19T12:57:59.2477300Z test scope_lane_wal::tests::scope_lanes_are_independent_and_fenced ... ok",
+    "2026-10-19T12:57:59.2689266Z test scope_lane_wal::tests::torn_tail_recovery_can_append_again_without_overwriting_predecessor ... ok"
+  ],
+  "sha256": "798d518bc0aaec73ce58f2e8cf11e2e81023870c60994f2ef7004a37ac6fe464",
+  "platform": "Windows",
+  "unix_alias_and_mode_tests_executed_here": false,
+  "source_projection_locally_executed": false
+}

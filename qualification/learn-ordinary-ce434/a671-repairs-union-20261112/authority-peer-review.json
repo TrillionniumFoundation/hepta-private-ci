@@ -1,0 +1,183 @@
+{
+  "schema": "hepta.learn.authority-metadata-restoration.independent-peer.v1",
+  "reviewer": "learn_evaluator_budget",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "result": "No blocking finding in the exact authority-table restoration.",
+  "fixed_commit": {
+    "sha": "643d76a29921bbfeae07ed6283f078335158e421",
+    "tree": "cf553399403907f0872c058b2ebab8db11941832",
+    "parents": [
+      "a6717d7228045e6cb60532966f06e6e02c4a6abe"
+    ]
+  },
+  "changed_files": [
+    {
+      "path": "CALLERS.toml",
+      "git_blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+      "status": "modified",
+      "additions": 8,
+      "deletions": 0
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/authority-metadata-restoration-20261112/repair-audit.json",
+      "git_blob": "6ccee3a7f4342b2a136ed6bf5597122ee49c0add",
+      "status": "added",
+      "additions": 504,
+      "deletions": 0
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/authority-metadata-restoration-20261112/repair.patch",
+      "git_blob": "c824329e6245ba853ea948f0128c5ee27207415d",
+      "status": "added",
+      "additions": 15,
+      "deletions": 0
+    }
+  ],
+  "manifest": {
+    "path": "CALLERS.toml",
+    "before": {
+      "ref": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "git_blob": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+      "bytes": 1619553,
+      "sha256": "361e7a05153f8205e8e5f3ab75dd68291757de54b7add2d7115cf61d9ad675da"
+    },
+    "after": {
+      "ref": "643d76a29921bbfeae07ed6283f078335158e421",
+      "git_blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+      "bytes": 1619732,
+      "sha256": "e4f12ac5efe26e375609aefde7c59769f5a4acb72f435f3934a101315db5202e"
+    },
+    "complete_original_1619553_byte_prefix_identical": true,
+    "sole_suffix": {
+      "bytes": 179,
+      "sha256": "f693e2e3dacd89d3f4233daa79a5060332ca09ccaadd1c3403684933934fac1f",
+      "text": "[authority]\nruntime_authority = false\nproduction_caller = false\nproduction_writer = false\nexternal_effect = false\nself_issued_acceptance = false\npromotion = false\nrelease = false\n"
+    },
+    "authority": {
+      "runtime_authority": false,
+      "production_caller": false,
+      "production_writer": false,
+      "external_effect": false,
+      "self_issued_acceptance": false,
+      "promotion": false,
+      "release": false
+    }
+  },
+  "complete_record_preservation": [
+    {
+      "name": "boundary",
+      "before_count": 736,
+      "after_count": 736,
+      "ordered_full_records_byte_identical": true,
+      "ordered_full_records_json_sha256": "1db412020a07ae1f68aff5b3d98a6edcd990ead9540c5ba9f0933d996d309ebb",
+      "multiplicity_and_order_retained": true
+    },
+    {
+      "name": "protected_file",
+      "before_count": 506,
+      "after_count": 506,
+      "ordered_full_records_byte_identical": true,
+      "ordered_full_records_json_sha256": "7717b1a2cb96571691f35dc65e38d676568a13144690d67e0939ca9a419ed9d1",
+      "multiplicity_and_order_retained": true
+    }
+  ],
+  "ordinary_table_preservation": [
+    {
+      "name": "privileged_inventory",
+      "bytes": 32613,
+      "sha256": "55a5a0c86e60f920353d88aae575ebf38cd45bee8e37aafbb8131443edba3dd5",
+      "byte_identical": true
+    }
+  ],
+  "root_preamble": {
+    "bytes": 358,
+    "sha256": "7bdde959b5fc5ff82179d79e0431f0aae3d8b550714f14cf0465d47a6615a6d6",
+    "byte_identical": true
+  },
+  "original_root_metadata": [
+    "schema_version = 2",
+    "plan_id = \"HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN\"",
+    "plan_version = \"8.0.0\"",
+    "source_roots = [\"codex-rs\"]",
+    "ignored_path_fragments = [\"/tests/\", \"/examples/\", \"_tests.rs\"]",
+    "rule = \"Every privileged Hepta boundary has an exact closed set of product call sites. Test, example and definition-only uses do not grant production authority.\""
+  ],
+  "original_authority_sources": [
+    {
+      "source": "product_parent",
+      "ref": "36a494ae6ce41a536f0ddf79a474a0577e9aa853",
+      "git_blob": "06df696b15344b5efa5c76bdf29170fee01e607a",
+      "bytes": 1576127,
+      "authority_header_offset": 1541883,
+      "authority_exact_bytes": 179,
+      "authority_body_byte_identical": true,
+      "boundaries": 717,
+      "protected_records": 492
+    },
+    {
+      "source": "bootstrap_parent",
+      "ref": "676eee82e7334face4b63c8aa3b4c0d286098de0",
+      "git_blob": "210a143b3bd2cdb96fd359ddf436d6d5c7c8ad23",
+      "bytes": 1545695,
+      "authority_header_offset": 1543352,
+      "authority_exact_bytes": 179,
+      "authority_body_byte_identical": true,
+      "boundaries": 716,
+      "protected_records": 489
+    },
+    {
+      "source": "fde",
+      "ref": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+      "git_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+      "bytes": 1537190,
+      "authority_header_offset": 1537011,
+      "authority_exact_bytes": 179,
+      "authority_body_byte_identical": true,
+      "boundaries": 710,
+      "protected_records": 489
+    }
+  ],
+  "merge_boundary": {
+    "merge_sha": "03fa1da937ff510f43e7ddb9d8d5e84a929237d5",
+    "merge_tree": "23bada5abc6754c73f1e681f476d0afe62e410cc",
+    "canonical_parents": [
+      "676eee82e7334face4b63c8aa3b4c0d286098de0",
+      "36a494ae6ce41a536f0ddf79a474a0577e9aa853"
+    ],
+    "manifest_git_blob": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+    "manifest_same_as_a671": true,
+    "authority_present_in_both_parents": true,
+    "authority_missing_from_merge_result": true,
+    "conclusion": "The merge result dropped an existing table from both source parents. Restoring the identical FDE seven-false table repairs metadata loss; it does not change any original authority value, add a grant, or reinterpret an absent table as permission.",
+    "limit": "This establishes the exact Git transition. It does not assert an unobserved generator line or execution cause."
+  },
+  "exact_scope": {
+    "production_rust_files_changed": 0,
+    "verifier_files_changed": 0,
+    "boundary_rows_changed": 0,
+    "protected_records_changed": 0,
+    "required_inventory_changed": false,
+    "source_roots_changed": false,
+    "privilege_granted": false,
+    "gate_or_budget_changed": false,
+    "original_header_plus_seven_lines_only": true,
+    "existing_complete_raw_record_order_and_multiplicity_preserved": true
+  },
+  "review_method": {
+    "full_manifest_blob_readback_and_independent_git_hash": true,
+    "full_prefix_and_suffix_byte_comparison": true,
+    "fixed_ref_and_canonical_parent_tree_read": true,
+    "complete_raw_table_records_compared_in_order": true,
+    "string_and_comment_aware_toml_header_scanning_in_v8": true,
+    "original_python_toml_parser_or_verifier_executed": false,
+    "h_calls": false,
+    "rust_or_native_tests": false,
+    "new_runtime_pass_claim": false,
+    "ordinary_acceptance": 0
+  },
+  "review_inputs": {
+    "owner_repair_audit": "6ccee3a7f4342b2a136ed6bf5597122ee49c0add",
+    "owner_exact_patch": "c824329e6245ba853ea948f0128c5ee27207415d"
+  },
+  "next": "The existing fullcaller stamped package remains unchanged. Rebinding to a future repaired source, tree and manifest waits for Root's final fixed SHA."
+}

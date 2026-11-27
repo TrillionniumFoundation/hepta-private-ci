@@ -1,0 +1,269 @@
+{
+  "cost_rule": "GNU complete process and script prefix are overlapping views. RPC latencies are control-plane delays, not additional training CPU.",
+  "fits": [
+    {
+      "epoch": 54,
+      "fit_terminal_report_observed": false,
+      "latest_D_macroF1": 0.23640943537185857,
+      "name": "hcsn-s101-lr0.001",
+      "outer_terminal_record_observed": false,
+      "pid_exists": true,
+      "stopping": {
+        "best": 0.23994459177529304,
+        "best_epoch": 52,
+        "plateau_anchor": 0.23994459177529304,
+        "stale_epochs": 2
+      },
+      "terminal": null
+    },
+    {
+      "epoch": 55,
+      "fit_terminal_report_observed": false,
+      "latest_D_macroF1": 0.35863839029928113,
+      "name": "hcsn-s101-lr0.003",
+      "outer_terminal_record_observed": false,
+      "pid_exists": true,
+      "stopping": {
+        "best": 0.36077029751081513,
+        "best_epoch": 54,
+        "plateau_anchor": 0.3594838559253407,
+        "stale_epochs": 4
+      },
+      "terminal": null
+    },
+    {
+      "epoch": 54,
+      "fit_terminal_report_observed": false,
+      "latest_D_macroF1": 0.26383927479550473,
+      "name": "hcsn-s211-lr0.001",
+      "outer_terminal_record_observed": false,
+      "pid_exists": true,
+      "stopping": {
+        "best": 0.26877768975555716,
+        "best_epoch": 52,
+        "plateau_anchor": 0.26877768975555716,
+        "stale_epochs": 2
+      },
+      "terminal": null
+    },
+    {
+      "epoch": 50,
+      "fit_terminal_report_observed": true,
+      "latest_D_macroF1": 0.3876091776849658,
+      "name": "hcsn-s211-lr0.003",
+      "outer_terminal_record_observed": true,
+      "pid_exists": false,
+      "stopping": {
+        "best": 0.3910932361454862,
+        "best_epoch": 40,
+        "plateau_anchor": 0.3910932361454862,
+        "stale_epochs": 10
+      },
+      "terminal": {
+        "best_checkpoint_sha256": "e04f89af1ee3e0e0d015217eb3737c8db980b96f3f93535f67134044622f191c",
+        "best_epoch": 40,
+        "common_and_physical_weights_unchanged": true,
+        "cumulative_epochs_completed": 50,
+        "last_checkpoint_sha256": "1fd9f82188a7e376cc5f81b190144f72e477f3043d87d3c0612618fa7a2e1a0f",
+        "new_main_updates": 36,
+        "selected_development": {
+          "accuracy": 0.702272158237356,
+          "balanced_accuracy_present_classes": 0.39214199821693413,
+          "brier_half_sum": 0.23309423742507898,
+          "brier_mean_classes": 0.042380770440923456,
+          "confusion_matrix": [
+            [
+              5619,
+              0,
+              59,
+              2,
+              0,
+              640,
+              268,
+              6,
+              15,
+              0,
+              0
+            ],
+            [
+              37,
+              58,
+              0,
+              58,
+              0,
+              316,
+              8,
+              0,
+              154,
+              0,
+              0
+            ],
+            [
+              333,
+              8,
+              482,
+              77,
+              0,
+              78,
+              121,
+              4,
+              35,
+              2,
+              0
+            ],
+            [
+              3,
+              64,
+              185,
+              9554,
+              0,
+              0,
+              753,
+              236,
+              705,
+              0,
+              0
+            ],
+            [
+              119,
+              0,
+              2,
+              0,
+              0,
+              169,
+              7,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              348,
+              0,
+              181,
+              1,
+              0,
+              3879,
+              467,
+              0,
+              28,
+              87,
+              0
+            ],
+            [
+              190,
+              0,
+              26,
+              1106,
+              0,
+              8,
+              1279,
+              51,
+              594,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              22,
+              456,
+              1,
+              20,
+              211,
+              248,
+              64,
+              0,
+              0
+            ],
+            [
+              0,
+              11,
+              0,
+              571,
+              0,
+              4,
+              45,
+              0,
+              1314,
+              0,
+              0
+            ],
+            [
+              85,
+              0,
+              0,
+              1,
+              0,
+              70,
+              36,
+              0,
+              0,
+              6,
+              0
+            ],
+            [
+              26,
+              0,
+              0,
+              118,
+              0,
+              1,
+              73,
+              0,
+              143,
+              0,
+              0
+            ]
+          ],
+          "ece_15_equal_width_bins": 0.16305902501378883,
+          "events": 31952,
+          "macro_f1_11_classes": 0.3910932361454862,
+          "macro_f1_present_classes": 0.3910932361454862,
+          "nll": 1.0173874314444633
+        },
+        "source_and_parent_inputs_unchanged": true,
+        "status": "completed_development",
+        "stop_reason": "development_plateau",
+        "training_adequacy_established": true
+      }
+    },
+    {
+      "epoch": 54,
+      "fit_terminal_report_observed": false,
+      "latest_D_macroF1": 0.20436349514264887,
+      "name": "hcsn-s307-lr0.001",
+      "outer_terminal_record_observed": false,
+      "pid_exists": true,
+      "stopping": {
+        "best": 0.20436349514264887,
+        "best_epoch": 54,
+        "plateau_anchor": 0.20436349514264887,
+        "stale_epochs": 0
+      },
+      "terminal": null
+    },
+    {
+      "epoch": 54,
+      "fit_terminal_report_observed": false,
+      "latest_D_macroF1": 0.3303247862239514,
+      "name": "hcsn-s307-lr0.003",
+      "outer_terminal_record_observed": false,
+      "pid_exists": true,
+      "stopping": {
+        "best": 0.3350217497123568,
+        "best_epoch": 52,
+        "plateau_anchor": 0.3350217497123568,
+        "stale_epochs": 2
+      },
+      "terminal": null
+    }
+  ],
+  "observed_utc": "2026-11-10T22:00:42.152837+00:00",
+  "original_model_arrays_read": false,
+  "original_training_restarted": false,
+  "schema": "hcsn-c2-epoch-observation-handoff-v2",
+  "scope": "One bounded live metadata observation; producer terminal adequacy is not independent audit or scientific/numerical admission. Five fits active; no early LR selection.",
+  "source_manifest_unchanged": true,
+  "whole_process_cost_original": "GNU-TIME.txt"
+}

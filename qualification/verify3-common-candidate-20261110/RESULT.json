@@ -1,0 +1,74 @@
+{
+  "actual_dispatch_subprocesses": 17,
+  "dispatch_scenarios": 9,
+  "full_physical_cost_complete": false,
+  "full_repository_checks_complete": false,
+  "new_independent_real_tasks": 0,
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "production_authority": "NONE",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "records": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "experiments/verification_cell_verify1",
+        "-t",
+        ".",
+        "-v"
+      ],
+      "elapsed_wall_seconds": 7.476377476001289,
+      "exit_code": 0,
+      "log_sha256": "0e5d162163733e23350bdac6d0dcd641e2cf118989d88d9e37a45e06137449a0",
+      "name": "tests",
+      "started_at_utc": "2026-11-10T07:06:28.076107+00:00"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "experiments.verification_cell_verify1.experiment",
+        "--output",
+        "/workspace/scratch/40a1a085876c/verify-common/sqlite-output",
+        "--groups",
+        "3"
+      ],
+      "elapsed_wall_seconds": 11.141530941000383,
+      "exit_code": 0,
+      "log_sha256": "b43f8c5c8070a70c3c478c42e0d4b6d14c1d019b66e3ed8ffff6f5f76119c42e",
+      "name": "sqlite",
+      "started_at_utc": "2026-11-10T07:06:35.552556+00:00"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "experiments.verification_cell_verify1.dispatch_smoke",
+        "--output",
+        "/workspace/scratch/40a1a085876c/verify-common/dispatch-output"
+      ],
+      "elapsed_wall_seconds": 0.6465642620005383,
+      "exit_code": 0,
+      "log_sha256": "976677f1c7936ec8b8ced38c241221cedaec737d52cebf5a10bfa46e453d3568",
+      "name": "dispatch",
+      "started_at_utc": "2026-11-10T07:06:46.694143+00:00"
+    }
+  ],
+  "schema": "hepta.verify.common-candidate.v1",
+  "scientific_admission": "HOLD",
+  "source_components": [
+    "03f5aadfa59c92b7e1a47235f9e8ce86f659d1a2",
+    "0893ac7a2e8e8126d67f77bad7086df1d739fbc6",
+    "1609a21e5113440bab9de75ccd2afc233e29eec0"
+  ],
+  "sqlite_rows": 72,
+  "tests_passed": 170,
+  "tests_skipped": 0
+}

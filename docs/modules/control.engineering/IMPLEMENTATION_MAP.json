@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
+    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "laneId": "LANE-G-ENGINEERING",
   "module": "control.engineering",
@@ -605,7 +605,7 @@
           "role": "schema_reference"
         }
       ],
-      "sourceBlob": "e79b6a00d04d72e21f23f45046e22300c24724e7"
+      "sourceBlob": "42ddf90dcea5bc4871bb123f6dc63a0dd60aa1be"
     },
     {
       "operation": "publish_integration_queue",
@@ -944,8 +944,8 @@
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "observedAtHead": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
   },
   "observedSourcePaths": [
     "tools/hepta-engineering-control"
@@ -969,7 +969,7 @@
     },
     {
       "path": "tools/hepta-engineering-control",
-      "object": "d980638b1300ab34256dc6ed051641fdc45f5cc1"
+      "object": "d219909ba9d10286c67f981451bc32972d51ed6d"
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
@@ -1013,7 +1013,7 @@
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
-      "object": "e79b6a00d04d72e21f23f45046e22300c24724e7"
+      "object": "42ddf90dcea5bc4871bb123f6dc63a0dd60aa1be"
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/qualification_profile.py",
@@ -1087,5 +1087,11 @@
       "path": "tools/hepta-engineering-control/test_worker_lifecycle.py",
       "object": "caa8a8f49cd8b671010632e616dcdcfac2000e87"
     }
-  ]
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "control.engineering",
+    "previousMapBlob": "4dd8c5a5f55f44d50e6f407528f14bc92f77d1c4",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  }
 }

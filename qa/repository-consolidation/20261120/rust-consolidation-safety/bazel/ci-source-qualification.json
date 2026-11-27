@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.bazel-three-library-ci-qualification.v1",
+  "observed_at": "2026-11-20T02:39:44.800Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "published_commit": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+  "ci_checkout_commit": "3ac734f11379d38ca497435d6c9f43ab4e225a1e",
+  "exact_source_tree": "f289a1e9c1112d6afae4d9423e7f18c0c7be128a",
+  "source_binding": {
+    "method": "GitHub Git commit tree equality plus job checkout log",
+    "trees_equal": true,
+    "synthetic_merge_parents": [
+      "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+      "4a5de714ce95889fca83abd3da33cbd74aaac748"
+    ],
+    "native_four_file_source_record": "four-file-source-record.json",
+    "native_query_proof": "root-query-and-census-proof.json"
+  },
+  "ci": {
+    "workflow_run_id": 44656939483,
+    "linux_bazel_job_id": 136026289154,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44656939483/job/136026289154",
+    "overall_conclusion": "failure",
+    "invocation_id": "edddd702-aa56-4d4e-a8db-0c1b58573c02",
+    "source_checkout_log_lines": [
+      218,
+      220,
+      221
+    ],
+    "passed_targets": [
+      {
+        "line": 10957,
+        "text": "2026-11-20T02:04:39.8215719Z //codex-rs/ext/extension-api:extension-api-capabilities-test             PASSED in 0.1s"
+      },
+      {
+        "line": 10959,
+        "text": "2026-11-20T02:04:39.8217618Z //codex-rs/ext/extension-api:extension-api-model_provider_input-test     PASSED in 0.1s"
+      },
+      {
+        "line": 10961,
+        "text": "2026-11-20T02:04:39.8219975Z //codex-rs/ext/extension-api:extension-api-model_provider_policy-test    PASSED in 0.1s"
+      },
+      {
+        "line": 10963,
+        "text": "2026-11-20T02:04:39.8222554Z //codex-rs/ext/extension-api:extension-api-registry-test                 PASSED in 0.1s"
+      },
+      {
+        "line": 10965,
+        "text": "2026-11-20T02:04:39.8224400Z //codex-rs/ext/extension-api:extension-api-state-test                    PASSED in 0.1s"
+      },
+      {
+        "line": 10967,
+        "text": "2026-11-20T02:04:39.8226255Z //codex-rs/ext/extension-api:extension-api-unit-tests                    PASSED in 0.2s"
+      },
+      {
+        "line": 10981,
+        "text": "2026-11-20T02:04:39.8239489Z //codex-rs/ext/hepta-prompt:hepta-prompt-unit-tests                      PASSED in 0.2s"
+      },
+      {
+        "line": 11007,
+        "text": "2026-11-20T02:04:39.8266915Z //codex-rs/hepta-context-compiler:hepta-context-compiler-unit-tests      PASSED in 0.3s"
+      }
+    ],
+    "passed_unit_test_target_count": 3,
+    "passed_extension_integration_target_count": 5,
+    "full_decoded_log": "ci-linux-bazel-136026289154.decoded.log"
+  },
+  "sdk": {
+    "job_id": 136026288769,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44656939483/job/136026288769",
+    "checkout_commit": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+    "overall_conclusion": "failure",
+    "core_and_prompt_rlib_compilation_observed": true,
+    "app_server_failure": {
+      "file": "codex-rs/app-server/src/request_processors/thread_summary.rs",
+      "line": 190,
+      "error": "E0433: undeclared MultiAgentMode"
+    },
+    "context_compiler_dependency_chain": "not established from SDK; qualification uses explicit source-equivalent Linux Bazel unit-test PASS",
+    "full_decoded_log": "ci-sdk-136026288769.decoded.log"
+  },
+  "qualification": {
+    "configured_roots": "Native before/after CrateInfo query PASS; corrected roots are src/root.rs for all three libraries.",
+    "compiled_and_tested": "Three named unit-test targets and five extension-api integration targets PASS in source-tree-equivalent Linux CI.",
+    "does_not_claim": [
+      "Native three-library build completed",
+      "Overall CI passed",
+      "Core/app-server integration tests passed",
+      "All cross-platform checks passed",
+      "main is mergeable"
+    ],
+    "native_cold_build_decision": "Cancel only owned 1a1f6bdfade-ffbe-153f as redundant after this independent CI proof; native outcome remains cancelled/incomplete, never PASS."
+  },
+  "native_pre_cancel_observation": {
+    "job_id": "1a1f6bdfade-ffbe-153f",
+    "status": {
+      "audit_recorded": true,
+      "backend": "systemd",
+      "job_id": "1a1f6bdfade-ffbe-153f",
+      "state": "running",
+      "systemd": {
+        "ActiveState": "active",
+        "Description": "Hepta Runtime job 1a1f6bdfade-ffbe-153f da91017e6e273ac1bdce1592a3b80f79",
+        "ExecMainCode": "0",
+        "ExecMainPID": "747929",
+        "ExecMainStatus": "0",
+        "InvocationID": "48be6d599d1546738d1648af7f7597f2",
+        "LoadState": "loaded",
+        "Result": "success",
+        "SubState": "running"
+      }
+    },
+    "last_read": {
+      "stdout_bytes": 34258,
+      "stderr_bytes": 0,
+      "last_progress": "[8,313 / 13,094] Compiling llvm/lib/Transforms/Vectorize/SLPVectorizer.cpp [for tool]; 9s disk-cache, processwrapper-sandbox ... (2 actions, 1 running)"
+    }
+  },
+  "preservation": {
+    "github_log_representation": "UTF-8 bytes of the connector's complete decoded job log; timestamps and whitespace retained unchanged.",
+    "native_log_representation": "Exact bytes from durable process_read bytes_hex; preserve raw logs, publish deterministic gzip copies."
+  }
+}

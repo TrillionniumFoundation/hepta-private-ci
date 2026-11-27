@@ -1,0 +1,329 @@
+name: Hepta Windows Memory lifecycle diagnostic
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-memory-lifecycle-windows-diagnostic.yml"
+      - ".github/scripts/test_memory_lifecycle_diagnostic.py"
+      - "codex-rs/ext/hepta-memory/src/local_lifecycle.rs"
+      - "codex-rs/hepta-memory/src/local_lease_outbox.rs"
+      - "codex-rs/hepta-cognitive-store/src/**"
+
+permissions:
+  contents: read
+
+# Independent baseline evidence; neither aggregate required check calls this job.
+# There is no cancellation group shared with another workflow.
+jobs:
+  original-crash-window:
+    name: Windows Memory crash window / original exact case
+    runs-on: windows-latest
+    timeout-minutes: 120
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      MEMORY_CASE: local_lifecycle::tests::indeterminate_crash_window_replays_as_terminal_and_releases
+      MEMORY_TARGET: //codex-rs/ext/hepta-memory:hepta-memory-unit-tests
+    steps:
+      - name: Initialize evidence path and enable Windows long paths
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        env:
+          EVIDENCE_DIR: ${{ runner.temp }}/memory-lifecycle-diagnostic
+        run: |
+          "EVIDENCE_DIR=$env:EVIDENCE_DIR" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          git config --global core.longpaths true
+          exit $LASTEXITCODE
+
+      - name: Check out the exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+
+      - name: Check the original result collector
+        shell: bash
+        run: python -m unittest discover -v -s .github/scripts -p test_memory_lifecycle_diagnostic.py
+
+      - name: Record immutable source and native platform
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import subprocess
+
+          out = Path(os.environ["EVIDENCE_DIR"])
+          out.mkdir(parents=True, exist_ok=False)
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          paths = [
+              "codex-rs/ext/hepta-memory/src/local_lifecycle.rs",
+              "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+              "codex-rs/ext/hepta-memory/BUILD.bazel",
+              "codex-rs/Cargo.lock", "MODULE.bazel", ".bazelversion", ".bazelrc",
+              "defs.bzl", "workspace_root_test_launcher.bat.tpl",
+              ".github/scripts/run-bazel-ci.sh",
+              ".github/workflows/hepta-memory-lifecycle-windows-diagnostic.yml",
+          ]
+          files = []
+          for name in paths:
+              data = Path(name).read_bytes()
+              saved = out / "source" / name
+              saved.parent.mkdir(parents=True, exist_ok=True)
+              saved.write_bytes(data)
+              files.append({"path": name, "bytes": len(data),
+                            "sha256": hashlib.sha256(data).hexdigest(),
+                            "git_blob": git("hash-object", "--", name)})
+          identity = {
+              "expected_source_sha": os.environ["SOURCE_SHA"],
+              "checked_out_sha": git("rev-parse", "HEAD"),
+              "tree": git("rev-parse", "HEAD^{tree}"),
+              "platform": platform.platform(), "system": platform.system(),
+              "machine": platform.machine(), "python": platform.python_version(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "job": os.environ["GITHUB_JOB"],
+              "case": os.environ["MEMORY_CASE"],
+              "target": os.environ["MEMORY_TARGET"], "source_files": files,
+          }
+          (out / "identity.json").write_text(json.dumps(identity, indent=2) + "\n")
+          if identity["system"] != "Windows":
+              raise SystemExit("The diagnostic requires native Windows.")
+          if identity["checked_out_sha"] != identity["expected_source_sha"]:
+              raise SystemExit("The checked-out source does not match the PR head.")
+          subprocess.run(["git", "diff", "--exit-code", "HEAD"], check=True)
+          PY
+
+      - name: Prepare the original Windows Bazel toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+
+      - name: Record runner tool versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          commands = [["bazel", "--version"], ["git", "--version"],
+                      ["rustc", "--version", "--verbose"], ["cl"]]
+          versions = []
+          for command in commands:
+              try:
+                  result = subprocess.run(command, capture_output=True, text=True, check=False)
+                  versions.append({"argv": command, "exit_code": result.returncode,
+                                   "stdout": result.stdout, "stderr": result.stderr})
+              except OSError as error:
+                  versions.append({"argv": command, "error": str(error)})
+          (Path(os.environ["EVIDENCE_DIR"]) / "runner-tools.json").write_text(
+              json.dumps(versions, indent=2) + "\n")
+          # Runner rustc is recorded separately from Bazel's pinned Rust toolchain.
+          if versions[0].get("exit_code") != 0:
+              raise SystemExit("The original Bazel launcher is unavailable.")
+          PY
+
+      - name: Run the original case once without cached results or retries
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          command=(
+            ./.github/scripts/run-bazel-ci.sh
+            --print-failed-action-summary
+            --print-failed-test-logs
+            --windows-msvc-host-platform
+            --remote-download-toplevel
+            --
+            test
+            --platforms=//:windows_x86_64_msvc
+            --flaky_test_attempts=1
+            --runs_per_test=1
+            --cache_test_results=no
+            --test_sharding_strategy=disabled
+            --test_output=all
+            "--test_arg=${MEMORY_CASE}"
+            --test_arg=--exact
+            --test_arg=--nocapture
+            --test_arg=--color=never
+            "--build_metadata=COMMIT_SHA=${SOURCE_SHA}"
+            --
+            "${MEMORY_TARGET}"
+          )
+          python - "${command[@]}" <<'PY'
+          import datetime
+          import json
+          import os
+          from pathlib import Path
+          import sys
+
+          record = {"argv": sys.argv[1:], "cwd": os.getcwd(),
+                    "started_at": datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          (Path(os.environ["EVIDENCE_DIR"]) / "invocation.json").write_text(
+              json.dumps(record, indent=2) + "\n")
+          PY
+          set +e
+          "${command[@]}" 2>&1 | tee "${EVIDENCE_DIR}/bazel.stdout-stderr.log"
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          python - "${statuses[@]}" <<'PY'
+          import datetime
+          import json
+          import os
+          from pathlib import Path
+          import sys
+
+          record = {"bazel_exit_code": int(sys.argv[1]), "tee_exit_code": int(sys.argv[2]),
+                    "completed_at": datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          (Path(os.environ["EVIDENCE_DIR"]) / "execution-result.json").write_text(
+              json.dumps(record, indent=2) + "\n")
+          PY
+          if [[ "${statuses[0]}" -ne 0 ]]; then
+            exit "${statuses[0]}"
+          fi
+          exit "${statuses[1]}"
+
+      - name: Preserve raw results and require exactly one original test
+        if: always()
+        shell: bash
+        env:
+          EVIDENCE_DIR: ${{ runner.temp }}/memory-lifecycle-diagnostic
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import xml.etree.ElementTree as ET
+
+          out = Path(os.environ["EVIDENCE_DIR"])
+          out.mkdir(parents=True, exist_ok=True)
+          errors = []
+          report = {"expected_case": os.environ["MEMORY_CASE"], "errors": errors}
+          try:
+              root = Path(os.environ["BAZEL_OUTPUT_BASE"]) / "execroot" / "_main" / "bazel-out"
+              targets = list(root.glob("*/testlogs/codex-rs/ext/hepta-memory/hepta-memory-unit-tests"))
+              report["target_directories"] = [str(path) for path in targets]
+              logs = []
+              xml_files = []
+              companion_logs = []
+              unexpected_results = []
+              for target in targets:
+                  for path in sorted(target.rglob("*")):
+                      if path.is_file() and path.suffix in (".log", ".xml"):
+                          saved = out / "raw" / path.relative_to(root)
+                          saved.parent.mkdir(parents=True, exist_ok=True)
+                          saved.write_bytes(path.read_bytes())
+                          relative = path.relative_to(target).as_posix()
+                          if relative == "test.log":
+                              logs.append(saved)
+                          elif relative == "test.xml":
+                              xml_files.append(saved)
+                          elif relative == "test.xml.log":
+                              companion_logs.append(saved)
+                          else:
+                              unexpected_results.append(str(saved))
+              identity = json.loads((out / "identity.json").read_text())
+              execution = json.loads((out / "execution-result.json").read_text())
+              report["execution"] = execution
+              actual_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+              if actual_sha != identity["expected_source_sha"]:
+                  errors.append("Checked-out source identity changed.")
+              diff = subprocess.run(["git", "diff", "--exit-code", "HEAD"], capture_output=True)
+              (out / "tracked-source.diff").write_bytes(diff.stdout + diff.stderr)
+              if diff.returncode:
+                  errors.append("Tracked source changed during the diagnostic.")
+              for item in identity["source_files"]:
+                  if hashlib.sha256(Path(item["path"]).read_bytes()).hexdigest() != item["sha256"]:
+                      errors.append("Source bytes changed: " + item["path"])
+              report["unexpected_result_files"] = unexpected_results
+              if len(targets) != 1 or len(logs) != 1 or len(xml_files) != 1 or unexpected_results:
+                  errors.append("Expected one target, one test.log and one native test.xml; retries or missing evidence are invalid.")
+              if len(companion_logs) > 1:
+                  errors.append("Expected at most one direct Windows wrapper output copy.")
+              if companion_logs:
+                  wrapper_bytes = companion_logs[0].read_bytes()
+                  matches = len(logs) == 1 and bool(wrapper_bytes) and logs[0].read_bytes().endswith(wrapper_bytes)
+                  report["wrapper_output_copy"] = {
+                      "path": str(companion_logs[0]), "bytes": len(wrapper_bytes),
+                      "sha256": hashlib.sha256(wrapper_bytes).hexdigest(),
+                      "matches_primary_suffix": matches,
+                  }
+                  if not matches:
+                      errors.append("The Windows wrapper output copy differs from the primary test log.")
+              if len(logs) == 1:
+                  text = logs[0].read_text(errors="replace")
+                  text = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", text)
+                  runs = re.findall(r"(?m)^running (\d+) tests?\s*$", text)
+                  cases = re.findall(r"(?m)^test ([^\r\n]+?) \.\.\.", text)
+                  summaries = re.findall(
+                      r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;",
+                      text,
+                  )
+                  report.update(running_counts=runs, executed_cases=cases, summaries=summaries)
+                  if runs != ["1"] or cases != [os.environ["MEMORY_CASE"]] or len(summaries) != 1:
+                      errors.append("The raw log does not prove exactly one execution of the original case.")
+                  elif (sum(map(int, summaries[0][1:3])) != 1 or summaries[0][3:5] != ("0", "0")):
+                      errors.append("The original case was absent, ignored, measured or duplicated.")
+                  elif summaries[0][0:3] != ("ok", "1", "0"):
+                      errors.append("The original case failed; its unchanged raw failure is preserved.")
+              if len(xml_files) == 1:
+                  document = ET.parse(xml_files[0])
+                  cases = list(document.iter("testcase"))
+                  report["junit_case_count"] = len(cases)
+                  if len(cases) != 1 or list(document.iter("skipped")):
+                      errors.append("JUnit does not contain one non-skipped test.")
+                  if list(document.iter("failure")) or list(document.iter("error")):
+                      errors.append("Native JUnit reports failure.")
+                  for suite in [*document.iter("testsuite"), *document.iter("testsuites")]:
+                      if any(int(suite.get(key, "0")) for key in ("errors", "failures", "skipped", "disabled")):
+                          errors.append("Native JUnit reports a failed or skipped count.")
+                      if "tests" in suite.attrib and int(suite.attrib["tests"]) != 1:
+                          errors.append("Native JUnit does not report exactly one test.")
+              if execution["bazel_exit_code"] or execution["tee_exit_code"]:
+                  errors.append("The original Bazel invocation or complete log capture failed.")
+          except (OSError, ValueError, KeyError, subprocess.SubprocessError, ET.ParseError) as error:
+              errors.append(type(error).__name__ + ": " + str(error))
+          report["result"] = "FAIL" if errors else "PASS"
+          (out / "diagnostic-result.json").write_text(json.dumps(report, indent=2) + "\n")
+          members = [{"path": path.relative_to(out).as_posix(), "bytes": path.stat().st_size,
+                      "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                     for path in sorted(out.rglob("*")) if path.is_file() and path.name != "members.json"]
+          (out / "members.json").write_text(json.dumps(members, indent=2) + "\n")
+          print(json.dumps(report, indent=2))
+          raise SystemExit(1 if errors else 0)
+          PY
+
+      - name: Upload original evidence on every outcome
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: memory-lifecycle-windows-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-lifecycle-diagnostic/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload the original Bazel execution evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: memory-lifecycle-bazel-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bazel-execution-logs/
+          if-no-files-found: warn
+          retention-days: 14

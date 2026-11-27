@@ -1,0 +1,500 @@
+{
+  "adoption_authorized": false,
+  "confirmation_actor_access_authorized": false,
+  "design": {
+    "arms": {
+      "hepta_light_persistent": [
+        "hepta",
+        "light",
+        "persistent"
+      ],
+      "hepta_light_reset": [
+        "hepta",
+        "light",
+        "reset"
+      ],
+      "hepta_mpc_persistent": [
+        "hepta",
+        "mpc",
+        "persistent"
+      ],
+      "hepta_mpc_reset": [
+        "hepta",
+        "mpc",
+        "reset"
+      ],
+      "hepta_ndu_persistent": [
+        "hepta",
+        "ndu",
+        "persistent"
+      ],
+      "hepta_ndu_reset": [
+        "hepta",
+        "ndu",
+        "reset"
+      ],
+      "hepta_tuned_fixed_persistent": [
+        "hepta",
+        "tuned_fixed",
+        "persistent"
+      ],
+      "hepta_tuned_fixed_reset": [
+        "hepta",
+        "tuned_fixed",
+        "reset"
+      ],
+      "hepta_voi_persistent": [
+        "hepta",
+        "voi",
+        "persistent"
+      ],
+      "hepta_voi_reset": [
+        "hepta",
+        "voi",
+        "reset"
+      ],
+      "ordinary_light_persistent": [
+        "ordinary",
+        "light",
+        "persistent"
+      ],
+      "ordinary_light_reset": [
+        "ordinary",
+        "light",
+        "reset"
+      ],
+      "ordinary_mpc_persistent": [
+        "ordinary",
+        "mpc",
+        "persistent"
+      ],
+      "ordinary_mpc_reset": [
+        "ordinary",
+        "mpc",
+        "reset"
+      ],
+      "ordinary_ndu_persistent": [
+        "ordinary",
+        "ndu",
+        "persistent"
+      ],
+      "ordinary_ndu_reset": [
+        "ordinary",
+        "ndu",
+        "reset"
+      ],
+      "ordinary_tuned_fixed_persistent": [
+        "ordinary",
+        "tuned_fixed",
+        "persistent"
+      ],
+      "ordinary_tuned_fixed_reset": [
+        "ordinary",
+        "tuned_fixed",
+        "reset"
+      ],
+      "ordinary_voi_persistent": [
+        "ordinary",
+        "voi",
+        "persistent"
+      ],
+      "ordinary_voi_reset": [
+        "ordinary",
+        "voi",
+        "reset"
+      ]
+    },
+    "behavior_collector_seed": 271828,
+    "budgets": {
+      "aggregate_job_cpu_quota_percent": 400,
+      "aggregate_job_memory_bytes": 4294967296,
+      "automatic_performance_retries": 0,
+      "episode_wall_seconds": 60,
+      "max_workers": 4,
+      "maximum_actions": 8,
+      "maximum_drain_seconds": 360,
+      "phase_budget_semantics": "Existing scheduler stops new admissions with a 90-second reserve and retains every pending/not-started identity; external native execution owns the hard job bound.",
+      "phase_wall_seconds": 1200,
+      "torch_threads_per_worker": 1,
+      "training_job_overhead_seconds": 15,
+      "training_wall_seconds": 900
+    },
+    "controller": {
+      "discount_per_second": 1.0,
+      "horizon": 3,
+      "latency_weight": 0.01,
+      "max_forecasts": 128,
+      "max_sequences": 84,
+      "particles": 2,
+      "risk": 0.25
+    },
+    "estimand": "matched_training",
+    "expected_inventory": {
+      "content_pretraining_jobs": 8,
+      "development_cases": 10,
+      "frozen_shared_fit_jobs": 8,
+      "joint_fit_jobs": 40,
+      "pilot_episodes": 960,
+      "profiles": 80,
+      "retention_validation_cases": 2,
+      "separate_initial_incumbents": 0,
+      "training_jobs": 56,
+      "tuning_cases": 5,
+      "tuning_episodes": 400
+    },
+    "fixed_schedule_candidates": [
+      [
+        "WRITE_TEXT",
+        "RENDER_IMAGE"
+      ]
+    ],
+    "independent_fit_unit": "Training seed; cores, controllers, memory modes, regimes and episodes are paired conditions, not extra training repeats.",
+    "memory_modes": [
+      "reset",
+      "persistent"
+    ],
+    "objective": {
+      "failed_deployment_decision_utility": "-1 - 0.01 * observed wall seconds; unavailable gross score stays null.",
+      "gross": "Independently pinned actual receipt delivery rubric in [0,1].",
+      "net": "gross_quality - 0.01 * observed_deployment_wall_seconds",
+      "retention_scope": "Two retention-validation source groups for the current matched arms; no separate initial-checkpoint incumbent is included."
+    },
+    "permitted_outcome": "Engineering observations only; Inconclusive or Failed, no adoption or RSI claim.",
+    "purpose": "Prospectively fixed real deployment evaluation of the two-seed matched-memory engineering pilot; no retraining or confirmation.",
+    "regimes": [
+      "frozen",
+      "joint"
+    ],
+    "research_accounting": {
+      "energy_joules": null,
+      "phases": [
+        "source_and_model_transfer",
+        "parameter_replay",
+        "tuning",
+        "deployment_evaluation"
+      ],
+      "provider_charges": null,
+      "upstream_collection_and_training": "Original receipts remain separately charged; do not double count nested model/evaluation work."
+    },
+    "schema": "ndu.real.pilot-design.v1",
+    "scope": "Five constructed receipt workflows; two train source groups, one disjoint train-role tuning group, two development groups and two retention-validation groups.",
+    "source_repository": "jsdnrs/ICDAR2019-SROIE",
+    "source_revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+    "source_selection": {
+      "confirmation_release": "DENIED; confirmation and retention_test are outside this execution.",
+      "order": "Unchanged collector study_id and SHA256 ordering; selected-sources bytes must match the collector plan.",
+      "pilot_new_groups": 2,
+      "pilot_retention_groups": 2,
+      "training_groups": 2,
+      "tuning_groups": 1
+    },
+    "statistics": {
+      "analysis": "Retain the full paired observations and failures for the separate causal analysis; this runner does not apply the old 24-contrast inference protocol.",
+      "budget_stop_analysis_policy": {
+        "analysis_only_mapping": "Map BudgetStop to statistical Completed only when an actual evaluator/rubric-bound finite score and an observed finite nonnegative deployment_wall_seconds are both present; otherwise use Unresolved.",
+        "audit": "Retain original and statistical status counts and every BudgetStop adaptation separately.",
+        "energy_or_provider_unknown_blocks_mapping": false,
+        "full_improvement_budget_gate": false,
+        "meaning": "Resolved statistical observation only; no claim of original execution success or acceptable quality.",
+        "original_terminal_status": "Preserve BudgetStop and the original paired rows.",
+        "required_cost_scope": "Measured deployment wall cost used by the frozen utility; energy and provider prices need not be known for this mapping."
+      },
+      "confirmatory_use": false,
+      "episodes_are_independent_training_replicates": false,
+      "independent_training_seeds": 2,
+      "scientific_admission": "HOLD"
+    },
+    "study_id": "cell-causal-v2-collection-20261108-cf0",
+    "training": {
+      "batch_size": 32,
+      "content_epochs": 2,
+      "content_learning_rate": 0.003,
+      "fit_epochs": 2,
+      "head_learning_rates": [
+        0.003
+      ],
+      "max_wall_seconds": 45,
+      "observation_policy": "matched_episodes"
+    },
+    "training_seeds": [
+      104729,
+      130363
+    ],
+    "tuning": {
+      "criterion": "Existing matrix.tune: mean observed net utility, equally weighted source groups and task families.",
+      "fixed_schedule_candidates": 1,
+      "strongest_comparator": "Select among fixed/VOI/MPC on either core separately within each seed/regime/memory mode; six comparator profiles per memory mode.",
+      "tie_break": "Lowest trial index",
+      "trials_per_active_profile": 1
+    }
+  },
+  "design_sha256": "ce3a8a096fd1c2a629124658f90ca3527cf9cc1d25272681a38f2ceb07384f63",
+  "execution": {
+    "episode_wall_seconds": 60.0,
+    "evaluator_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+    "latency_weight": 0.01,
+    "material_root": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2",
+    "ocr_library_dir": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/lib/x86_64-linux-gnu",
+    "pillow_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps",
+    "python": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "reference_index_sha256": "d8086b7cd34b1d8c30463d8fc4cc8ada59d9973e2d8b5248090d4ab1be2b3cb2",
+    "repository_root": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source",
+    "rubric_sha256": "fee667c32ec08286bbaf4e9f70b6489aff55bc7d790dca37fc657e5350084300",
+    "runtime_roots": [
+      "/usr",
+      "/lib",
+      "/lib64",
+      "/etc/ld.so.cache",
+      "/proc/cpuinfo",
+      "/dev/urandom",
+      "/dev/null",
+      "/home/qq/hepta-smollm2-weight-research-20261103/ci-env",
+      "/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu",
+      "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps",
+      "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source",
+      "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root"
+    ],
+    "scripts_root": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts",
+    "source_exposure_ledger_path": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2/public-source-exposure-20261107-v3.json",
+    "source_exposure_ledger_sha256": "6722edfc88e1089bcaf0fba9727c233416830fdc6682b461422d26bdfd4cb6af",
+    "tessdata_dir": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/share/tesseract-ocr/5/tessdata",
+    "tesseract": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/bin/tesseract"
+  },
+  "execution_run_id": "study",
+  "independent_fit_roster": [
+    {
+      "fit_id": "pilot-fit-01",
+      "fit_run_id": "study-fit-104729",
+      "training_seed": 104729
+    },
+    {
+      "fit_id": "pilot-fit-02",
+      "fit_run_id": "study-fit-130363",
+      "training_seed": 130363
+    }
+  ],
+  "quarantined_source_groups": [
+    "merchant-a3992bf7e3041d26a067feab",
+    "merchant-d93e19ca396d00036f1a51d5"
+  ],
+  "reference_index_sha256": "d8086b7cd34b1d8c30463d8fc4cc8ada59d9973e2d8b5248090d4ab1be2b3cb2",
+  "registered_at": "2026-11-08T09:44:13.451599+00:00",
+  "registration_sha256": "d00ee37beea3e3e027fcb8eb302adc6bc3210d5ebcb27320bda2d2cf61309e40",
+  "registry_sha256": "09d5f57c5c4c5f421f16c51febd048b7746d5d52723d825240f8655bf7fbdd07",
+  "rubric_sha256": "fee667c32ec08286bbaf4e9f70b6489aff55bc7d790dca37fc657e5350084300",
+  "schema": "ndu.real.pilot-plan.v1",
+  "selected_sources_sha256": "0a8054ceb0a5874caa89d6b871083752e61688be5da0f47fc513bed2dd965f2b",
+  "source_exposure_ledger_sha256": "6722edfc88e1089bcaf0fba9727c233416830fdc6682b461422d26bdfd4cb6af",
+  "source_pins": [
+    {
+      "bytes": 14705,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py",
+      "sha256": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978"
+    },
+    {
+      "bytes": 74,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/__init__.py",
+      "sha256": "1f0a2d2286ae48aa399b8759c8326e878b4de73bbec0fcc9c2617b58463187a9"
+    },
+    {
+      "bytes": 4685,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/acquire.py",
+      "sha256": "0dac9af6017cef053b117d5c9f72c264fd01412c4bff1816694c502eb35c7d6d"
+    },
+    {
+      "bytes": 3205,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/common.py",
+      "sha256": "85a70ee45bfdea796f5ddf632aa7c6a93e60ccf3ca75e8925fd76e8b07cf2ce0"
+    },
+    {
+      "bytes": 30312,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/coverage.py",
+      "sha256": "f164e862dc5c9c48bcc5eab732e8e0dbbd0f375610b1c64ed201434394259796"
+    },
+    {
+      "bytes": 9284,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/evaluator.py",
+      "sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45"
+    },
+    {
+      "bytes": 5043,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/groups.py",
+      "sha256": "60ed62f2df57cfbfc7441f5504ad39cfcebe4bb3114e2cedd55ca80dc213b3fa"
+    },
+    {
+      "bytes": 17264,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/isolate.py",
+      "sha256": "03e23e125465984d794b011eab2ecf82a84a8b0f6b91ec6ef670fcd421652354"
+    },
+    {
+      "bytes": 11446,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/isolation_probe.py",
+      "sha256": "f2c7cc52ccffb8bba27082c0ffbb9b80d1b4d3488ce835b8c4c2c0c903b1acac"
+    },
+    {
+      "bytes": 20627,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/register.py",
+      "sha256": "85383349aec4388756f9a96755611c94e78cf756fa2ae3ea5a061ca78c9228e0"
+    },
+    {
+      "bytes": 77,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/__init__.py",
+      "sha256": "cb8063131308ce06b535be86ae276281fa6c0cc0f21a1752f29d0c59018ef8a4"
+    },
+    {
+      "bytes": 1644,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/_causal_checks.py",
+      "sha256": "c17c073a94cf29ba442926b2def9e52008b226c13658480f9110e29bc9aa410d"
+    },
+    {
+      "bytes": 17418,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/actor.py",
+      "sha256": "14a368da5cfb218c99ec4eb390aee2c2a386ebac45c362b3f483f8995fad999b"
+    },
+    {
+      "bytes": 8400,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_ace.py",
+      "sha256": "09150a7722e76d116a5761927f9687ba53e7ec1fe7718bb364fd5a39dbad2c65"
+    },
+    {
+      "bytes": 9284,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_analysis.py",
+      "sha256": "2c29852eefe11d3e5294e43bb27974037455754650402ca2ed931fb195c09f3e"
+    },
+    {
+      "bytes": 14618,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_b.py",
+      "sha256": "6f270394edd7f474810fbbefcf3638cca43d03ddc2476ec81a17879e26dd8f6a"
+    },
+    {
+      "bytes": 8128,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_b_contract.py",
+      "sha256": "953e946c9d0c020c5aa1ceb9e1d41e7030f91729260f01e81895b76cdc6d290c"
+    },
+    {
+      "bytes": 15465,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_composition.py",
+      "sha256": "7735155426f12ff31fe31b453a7a29da9ca8e18b1e8593884dd0a0379895d90a"
+    },
+    {
+      "bytes": 23492,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_improver.py",
+      "sha256": "d07e75fcfec61393427e138ed39ecfd0ec284ec6600364b889abd404d6b29ea0"
+    },
+    {
+      "bytes": 10162,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_protocol.py",
+      "sha256": "a450ca58bdb923cc7dd11ecf5ef08fbca55a975ad41e9475df8b0ce8327df8a2"
+    },
+    {
+      "bytes": 16563,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_topology.py",
+      "sha256": "43bfaa9357871dcf3c79ad823e6ec4922244ade43adec767eea275817d0ce092"
+    },
+    {
+      "bytes": 15234,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/controllers.py",
+      "sha256": "0cd9c8da5122d6b7940e322382e9118607d54b14246ee3449feb05904728824b"
+    },
+    {
+      "bytes": 29599,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/episode.py",
+      "sha256": "77876e8b3321276d9e1efca13fad7dada14f338aec93412d4f421d19871af468"
+    },
+    {
+      "bytes": 2076,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/finite_entropic_golden.json",
+      "sha256": "361f37baddd9bbcccbfa16f9b438e14707b22ae7c997863a13b19fe01def02cc"
+    },
+    {
+      "bytes": 12969,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/fit_loop.py",
+      "sha256": "ffed1b606594e637812a01d004c394518d88e497b7ba9720c13466027f1bf8e5"
+    },
+    {
+      "bytes": 17363,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/gradient_check.py",
+      "sha256": "0311796a3f37654fe53e8c1d8d6141b95381787d0f84b0699477889d60a6732e"
+    },
+    {
+      "bytes": 12219,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/interval_costs.py",
+      "sha256": "47e5aeba99a3d7763d607f2a796937ceda4e429ab72b0e41909ce78a8ee3828c"
+    },
+    {
+      "bytes": 25671,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/matrix.py",
+      "sha256": "c3f1792e73a0c92f953568a924f686e1865f97f728210982eee51b5dbfbe4d10"
+    },
+    {
+      "bytes": 15246,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/meter_diagnostic.py",
+      "sha256": "0d2c0a6a1e1df89b28351f22a759470078a30bc9df559f6c4b26859671a57670"
+    },
+    {
+      "bytes": 8563,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/metering.py",
+      "sha256": "268966957ddf16d9824e08041c63f09cb14f6f3e6e14a11aceaf104857089226"
+    },
+    {
+      "bytes": 3133,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/native_worker.py",
+      "sha256": "566e4cd00294998923a08675f90640bfae1ea63c5d540390bdd22e712dbada76"
+    },
+    {
+      "bytes": 10671,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/neural.py",
+      "sha256": "816cf398cb8fa76e13bec7f699a1bf56324788de99c400c9c0a96d2a9484b6f4"
+    },
+    {
+      "bytes": 3377,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/objective.py",
+      "sha256": "cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd"
+    },
+    {
+      "bytes": 10940,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/ocr.py",
+      "sha256": "5cbcaca04a4843b51379bbcc3911ae4453c25b3f0585970ae4d9d414624a47f1"
+    },
+    {
+      "bytes": 15985,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/pipeline.py",
+      "sha256": "a22dc843b9c48b35a65f07e0d72a48b9ec7d6185e74657696b63f7609ef9ce6a"
+    },
+    {
+      "bytes": 7204,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/recursive_objective.py",
+      "sha256": "c811ddff6f4bb31aeae28a47b23265fb7b0255a8a1cc7250a5ff591e96f946f9"
+    },
+    {
+      "bytes": 1106,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/score_worker.py",
+      "sha256": "e40818170025960efd7a45fbc3dd8beba45cdaa872de0bd37038dcaeb626f887"
+    },
+    {
+      "bytes": 22961,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/span_meter.py",
+      "sha256": "3ef63104c27aeb2ee64478ad7461f579dd5f06be05aa4f4c9bcc709e8826a70b"
+    },
+    {
+      "bytes": 17478,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/study.py",
+      "sha256": "3c475c7c36927819b646df001399c68fd30dc03541c355f1f20e55c8c2cbfdd0"
+    },
+    {
+      "bytes": 36667,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/training.py",
+      "sha256": "3231186d09da00f2d78dbb3f25590085055ccd81cff578bfe934e52085469ffe"
+    },
+    {
+      "bytes": 13262,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/training_grid.py",
+      "sha256": "57ef934ed6950e5270471c3a79e33396038f0dca844b29222a4ff339875ea960"
+    },
+    {
+      "bytes": 6000,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/trajectory.py",
+      "sha256": "700a66b30d24dbe39d75c2cd1293cd0ae2719526695a3fa71e725eb56670320e"
+    }
+  ]
+}

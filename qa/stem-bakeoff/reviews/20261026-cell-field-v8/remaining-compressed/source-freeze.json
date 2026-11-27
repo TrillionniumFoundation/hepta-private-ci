@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.remaining-terminal-compressed-source-freeze.v8",
+  "execution_commit": "65a5a1e6bb5034c27168535600a408a34d792e74",
+  "protocol_sha256": "27a84ceccb166766a4c6af299aef259b639486411d344c7f593552c0778e1585",
+  "source_sha256": "660f79d805689b880ba6637e3038eb4251e8f3cc959cb608e282004824ef328a",
+  "source_files": 129,
+  "source_manifest": "remaining-compressed-executed-source.json",
+  "remote_source_blobs_verified": 129,
+  "remote_protocol_blob_verified": true,
+  "remote_stem_tree": "3b82e36c6c34a08295dd2e248cdc74d4c0b749c2",
+  "unused_prior_plain_storage_execution_commit": "6db6e13ada239bd7478820c20b0611f3dd912ebf",
+  "prior_127_sources_unchanged": true,
+  "unchanged_runner_functions": [
+    "frozen_plan",
+    "execute_one",
+    "parity",
+    "run"
+  ],
+  "new_storage_tests_passed": 3,
+  "real_study_fits_before_freeze": 0,
+  "scope": "Storage-only pre-execution revision. Original scientific protocol, controller, method order and policy cost interval unchanged. Every complete ledger byte is retained in deterministic gzip with both compressed and expanded commitments. Serialization/storage errors abort without a complete seal.",
+  "scientific_acceptance": false,
+  "production_authority": false
+}

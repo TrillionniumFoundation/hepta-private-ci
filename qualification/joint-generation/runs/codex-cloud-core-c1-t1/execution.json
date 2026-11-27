@@ -1,0 +1,17 @@
+{
+  "child_complete_cpu_ns": 553682000,
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m independent.run --experiment core-c1 train --freeze core_confirmation/frozen-core-c1-v1.json --out runs/codex-cloud-core-c1-t1",
+  "completed_utc": "2026-10-23T14:24:16.034883+00:00",
+  "core_test_opened": false,
+  "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "execution_commit": "a80b6b6e23e7259d83e402c40d70db44c470d167",
+  "exit_code": 1,
+  "experiment_id": "core-c1",
+  "freeze_sha256": "54564cb45d68df584c7b4d842826647f210d35c72057ef1e84c79be195c687f9",
+  "launcher_own_cpu_ns": 561187,
+  "outer_wall_ns": 554564063,
+  "r2_test_opened": false,
+  "selected_cloud_environment_id": "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5OA",
+  "source_commit": "893a13fd165ae530531687933133fbbe2f9f58b4",
+  "started_utc": "2026-10-23T14:24:15.480324+00:00"
+}

@@ -1,0 +1,43 @@
+{
+  "bindings": [
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/report002/report_receipt.json",
+      "sha256": "e531f9be028d52a20e9c92e987557c70b8bb4c7ed2cabd3426bb7462a2436c8a"
+    },
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/phase_execution/select_20261029T142922Z/finish.json",
+      "sha256": "8c3d4be080c118c48c80d24221b47e56dc27cac1efe34520eb0d750c41945d83"
+    },
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/selection.json",
+      "sha256": "9debe3c16353685924c527006bb679b7704e8621e2c84908618c76576b1f995e"
+    }
+  ],
+  "classification": "digest_verified_deterministic_reconstruction",
+  "created_utc": "2026-10-30T01:07:04.482312+00:00",
+  "original_selection_finish_preserved": true,
+  "restored": [
+    {
+      "bytes": 70,
+      "original_finish_sha256_verified": true,
+      "original_report_binding_verified": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/phase_execution/select_20261029T142922Z/stdout.log",
+      "sha256": "ecb303f16679f5d5cc1e57f8338a00420d13345383bff4ced8f238a16a1f1688"
+    },
+    {
+      "bytes": 0,
+      "original_finish_sha256_verified": true,
+      "original_report_binding_verified": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/phase_execution/select_20261029T142922Z/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "schema": "hepta-deterministic-selection-log-reconstruction-v1",
+  "selection_reexecuted": false,
+  "source": {
+    "basis": "select returns status/selected_count, and main prints indent=2 JSON followed by newline",
+    "path": "experiments/call_put_stable_flow/study.py",
+    "sha256": "12663dc80fb38b18b595812a64f191e70796994ea734d8bfc61c9ec16156ba17"
+  },
+  "timing_regenerated": false
+}

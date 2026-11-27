@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+    "dirty": false,
+    "parents": [
+      "7d31bf9677748330ae17efe964de48d98ba5e542"
+    ],
+    "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+    "dirty": false,
+    "parents": [
+      "7d31bf9677748330ae17efe964de48d98ba5e542"
+    ],
+    "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--test",
+    "notes_thread_seed_product",
+    "-E",
+    "test(original_notes_seed_profile_) | test(seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state) | test(standard_profile_rejects_original_notes_seed_before_model_contact)",
+    "--status-level",
+    "all"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 54.17343724800003,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T13:48:49.665276+00:00",
+  "job": "original-seed",
+  "lane": "source-head",
+  "log_bytes": 177117,
+  "log_file": "seed-regressions.json.b368920ca43b4bf78b41b0cbbc22d351.log",
+  "log_sha256": "73fc8578ed2c094d50672fd1e5252d407ce232f40d664f30b1254f0a42c22619",
+  "minimum_tests": 5,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 5,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "43217423865",
+  "schema_version": 1,
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "started_at": "2026-11-12T13:47:55.491294+00:00",
+  "status": "passed",
+  "tested_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

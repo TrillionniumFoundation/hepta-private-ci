@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "qualification.hcsn_joint_dde.audit_graded",
+    "--input-root",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit",
+    "--output-dir",
+    "evidence/all-graded-001"
+  ],
+  "source_local_commit": "dd7c26b",
+  "start_unix": 1794464517.9979591,
+  "end_unix": 1794464629.0910227,
+  "wall_seconds": 111.09306305900009,
+  "exit_code": 0,
+  "status": "completed",
+  "cpu_user_seconds": 108.402581,
+  "cpu_system_seconds": 2.075395,
+  "max_rss_kib": 392216,
+  "python": "3.12.14"
+}

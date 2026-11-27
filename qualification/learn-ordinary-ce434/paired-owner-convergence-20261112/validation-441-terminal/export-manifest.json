@@ -1,0 +1,85 @@
+{
+  "schema": "original-441-host-evidence-export-v1",
+  "source_sha": "441de918b863dd15b2faeae920017c1b4b08f59d",
+  "parent": "36dd13e597268505b0d1b25b01c9cc429166e108",
+  "files": [
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/outer-result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-441de918b863-validation-v1/result.json",
+      "bytes": 2258,
+      "sha256": "f9723cb6de17d952c365b3e2706806a4312c1b39a0b14a68dd671ada6121688e",
+      "git_blob": "25bddebf2c355afdf4e601e908c790181b024f42"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/source-suite.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-441de918b863-validation-v1/source-suite.json",
+      "bytes": 130164,
+      "sha256": "a628f9b0bc2b03a4b4ae3542a15d3d57b79949d924080d8bdf73f02c2c17c666",
+      "git_blob": "3cb965cf781a5cc7701d72ef911ebcbd9c248d8d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/source-suite.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-441de918b863-validation-v1/source-suite.log",
+      "bytes": 384649,
+      "sha256": "579750613553fa90ce30c2fc4965e8760b964ef80d84ef633515d5ece15010d4",
+      "git_blob": "502d5a1c81205741df5b6f9091ae8e3bcb007b96"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/native-preparation.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-441de918b863-validation-v1/original-full-native.log",
+      "bytes": 776,
+      "sha256": "823146a6b41291c97afbe5346bcae5f57326fbb2f70617bc94faf40109865728",
+      "git_blob": "c7f767c41d41afe21fd96bcef7a41c94c6f4a38e"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/dependency-recovery-pty.log",
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-708de59b312ce3cf5137d8baabd416e4ccbcfaac5d6519d2da1680ac9e0ad3cb/output.log",
+      "bytes": 3584,
+      "sha256": "f69587a190b9fe2a5921875906d6357972966df665fe24f2040ffdb4d1e1e6b5",
+      "git_blob": "9fb021a3920d6a33296149c7c98dfb7c1e2f273b"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/dependency-download.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/dependency-recovery-441de918-v1/download.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/dependency-recovery.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/dependency-recovery-441de918-v1/result.json",
+      "bytes": 3326,
+      "sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc",
+      "git_blob": "fac86c2e14425cba99758bd9952983d06b9d2a49"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/original-pty.log",
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-1d46822c034d54c18ceb3f3f0e5c6ce18d19cf066c4b6e7ae3f67a98a81ba59a/output.log",
+      "bytes": 523,
+      "sha256": "c6e8ebf000a7782b2c317586f32a83d58a7de22fd190d5c526a2cf1e61e7d44b",
+      "git_blob": "d8c6520159d40688163c094f823f7870e8e7b3ab"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/selected-exception-windows.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/diagnostics-441de918-exact-errors-v1/selected-exception-windows.json",
+      "bytes": 24989,
+      "sha256": "90eb4ed9ce903c219bd463fd9d4376cf5b7c2e8dadc1aec58cee1c0ba5679cc1",
+      "git_blob": "9776a6d32f32f4b498bb31c17e75b74512f903ab"
+    }
+  ],
+  "method": "Read complete stable original files, require original known size/hash pins, create Git blobs and an independent index; never change checkout or raw files.",
+  "source_tests": {
+    "tests_run": 423,
+    "failures": 5,
+    "errors": 69,
+    "skipped": 0
+  },
+  "native_tests_executed": 0,
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "not_included": "No unrelated /data directory listing, secrets, credentials, arbitrary host files or production authority material."
+}

@@ -1,0 +1,13 @@
+# Nine ordinary research and evidence frontiers
+
+Nine default three-way merges retain the incoming histories. The exact merge parents and resulting trees are in `normal-merges.json`. The selected live branch snapshot contains 25 newly covered ordinary names relative to the recorded base. All 415 protected pins were excluded from incoming ancestry; no remote branch was changed or deleted by this work.
+
+The production `codex-rs` tree and Cargo/Bazel lockfiles remain byte-identical to the base. Of 1,777 distinct incoming paths, 1,774 remain live byte-for-byte; three original workflows remain byte-for-byte in the readback package while their current entrypoints become strict historical readback. Both already-consumed execution keys have real original terminals. The successor reads their complete archive/source/run/artifact bindings and preserves the original warm1 RED with 1,291 bitwise mismatches across 69,728 coordinates. It does not relaunch either authentic N256 attempt. The original launchers, source freezes, tests, and expected hashes are unchanged.
+
+The corrected t0 contract also retains its exact original terminal-request dependency inside the temporary historical view. The live coupling-repair request is independently pinned and remains live; restoring the old request into the checkout is rejected. All 190 historical-view inputs have fixed size and SHA bindings, and the final review results must equal the original archived independent reports.
+
+Six complete original research archives and all 59 oversized originals have full part/member custody proofs. The size threshold stays 512,000 bytes; each added allowance binds one exact path and SHA. Four complete portable MEM8 packages also passed all 156 member bindings and nested ZIP CRC checks. Four older scripts that depend on unpublished external readbacks retain their actual missing-input failures, without changing their code or inventing qualification.
+
+The two MEM8 `.rs` files are exact historical source records, not compiled Rust modules. Their fixed paths, original tip, Git blobs, sizes, and SHA values are recorded next to the originals. Formatter classification rejects any drift, missing input, symlink/escape, or attempt to register production source; neighboring Rust remains a normal formatter input. The existing Syntect classification and its controls remain intact.
+
+Validation counts and remaining Torch CPU work are explicit in `REVIEW.json`. Original source-control tests, original readback tests in normal and optimized Python, adversarial drift tests, formatter controls, and blob-policy controls passed. Historical custody is not a new scientific, production, or adoption result. The current original scientific HOLD/RED/false flags remain unchanged.

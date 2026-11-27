@@ -1,0 +1,598 @@
+{
+  "observed_start_utc": "2026-11-11 19:08:08 UTC",
+  "observed_end_utc": "2026-11-11 19:08:10 UTC",
+  "source_head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "one_round_only": true,
+  "scopes": [
+    {
+      "scope": "MEM",
+      "id": 43082162285,
+      "kind": "run",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "attempt": 1,
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "created_at": "2026-11-11T18:54:22Z",
+      "updated_at": "2026-11-11T18:54:27Z",
+      "head_matches": true,
+      "attempt_matches": true
+    },
+    {
+      "scope": "MEM",
+      "kind": "jobs",
+      "total_count": 3,
+      "returned_jobs": 3,
+      "counts": {
+        "success": 2,
+        "in_progress": 1
+      },
+      "all_job_identities_match": true,
+      "jobs": [
+        {
+          "id": 130737203635,
+          "name": "Source-memory receipts and post-update revocation",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:26Z",
+          "completed_at": "2026-11-11T18:54:44Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737204060,
+          "name": "Frozen candidate and coverage contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:26Z",
+          "completed_at": "2026-11-11T18:55:41Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737204219,
+          "name": "Staged native episodic owner contracts",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:26Z",
+          "completed_at": null,
+          "current_steps": [
+            "Test staged Agentd control contracts on unchanged source"
+          ],
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "scope": "Architecture",
+      "id": 43082162230,
+      "kind": "run",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "attempt": 1,
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "created_at": "2026-11-11T18:54:22Z",
+      "updated_at": "2026-11-11T18:54:29Z",
+      "head_matches": true,
+      "attempt_matches": true
+    },
+    {
+      "scope": "Architecture",
+      "kind": "jobs",
+      "total_count": 2,
+      "returned_jobs": 2,
+      "counts": {
+        "in_progress": 1,
+        "success": 1
+      },
+      "all_job_identities_match": true,
+      "jobs": [
+        {
+          "id": 130737203006,
+          "name": "Architecture convergence (source-head)",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:27Z",
+          "completed_at": null,
+          "current_steps": [
+            "Converged authority and browser semantics"
+          ],
+          "failed_steps": []
+        },
+        {
+          "id": 130737203723,
+          "name": "Architecture convergence (base-merge)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:28Z",
+          "completed_at": "2026-11-11T18:54:59Z",
+          "current_steps": [],
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "scope": "Private",
+      "id": 43082162225,
+      "kind": "run",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "attempt": 1,
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "created_at": "2026-11-11T18:54:22Z",
+      "updated_at": "2026-11-11T18:54:26Z",
+      "head_matches": true,
+      "attempt_matches": true
+    },
+    {
+      "scope": "Private",
+      "kind": "jobs",
+      "total_count": 1,
+      "returned_jobs": 1,
+      "counts": {
+        "in_progress": 1
+      },
+      "all_job_identities_match": true,
+      "jobs": [
+        {
+          "id": 130737203417,
+          "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:25Z",
+          "completed_at": null,
+          "current_steps": [
+            "Validate Agentd Prompt Runtime integration and reopened state"
+          ],
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "scope": "Windows-current",
+      "id": 43082162284,
+      "kind": "run",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "attempt": 1,
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "created_at": "2026-11-11T18:54:22Z",
+      "updated_at": "2026-11-11T18:54:27Z",
+      "head_matches": true,
+      "attempt_matches": true
+    },
+    {
+      "scope": "Windows-current",
+      "kind": "jobs",
+      "total_count": 1,
+      "returned_jobs": 1,
+      "counts": {
+        "in_progress": 1
+      },
+      "all_job_identities_match": true,
+      "jobs": [
+        {
+          "id": 130737203523,
+          "name": "original-regressions",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:26Z",
+          "completed_at": null,
+          "current_steps": [
+            "Run the original process, transport and backend regressions"
+          ],
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "scope": "Blocking",
+      "id": 43082162592,
+      "kind": "run",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "attempt": 1,
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "created_at": "2026-11-11T18:54:22Z",
+      "updated_at": "2026-11-11T18:54:49Z",
+      "head_matches": true,
+      "attempt_matches": true
+    },
+    {
+      "scope": "Blocking",
+      "kind": "jobs",
+      "total_count": 35,
+      "returned_jobs": 35,
+      "counts": {
+        "success": 18,
+        "queued": 4,
+        "in_progress": 7,
+        "failure": 2,
+        "skipped": 4
+      },
+      "all_job_identities_match": true,
+      "jobs": [
+        {
+          "id": 130737205685,
+          "name": "Select blocking CI scope",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:26Z",
+          "completed_at": "2026-11-11T18:54:49Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737206348,
+          "name": "Blob size policy / Blob size policy",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:26Z",
+          "completed_at": "2026-11-11T18:56:40Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737206435,
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:26Z",
+          "completed_at": "2026-11-11T18:55:00Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737439340,
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:52Z",
+          "completed_at": "2026-11-11T18:57:28Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737439429,
+          "name": "sdk / python-sdk",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:52Z",
+          "completed_at": "2026-11-11T18:56:10Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737439469,
+          "name": "cargo-deny / cargo-deny",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": "2026-11-11T18:56:21Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737439513,
+          "name": "sdk / sdks",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": "2026-11-11T19:02:21Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737439550,
+          "name": "rust-ci / Detect changed areas",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:52Z",
+          "completed_at": "2026-11-11T18:55:07Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737439662,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:52Z",
+          "completed_at": "2026-11-11T18:56:46Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737439664,
+          "name": "repo-checks / build-test",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": "2026-11-11T19:00:09Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737439757,
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:52Z",
+          "completed_at": "2026-11-11T18:55:34Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737439904,
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:49Z",
+          "completed_at": null,
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440250,
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:49Z",
+          "completed_at": null,
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440267,
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:52Z",
+          "completed_at": "2026-11-11T19:01:01Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440316,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": null,
+          "current_steps": [
+            "bazel test shard"
+          ],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440324,
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:49Z",
+          "completed_at": null,
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440336,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": null,
+          "current_steps": [
+            "bazel test shard"
+          ],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440351,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": null,
+          "current_steps": [
+            "bazel build --config=clippy lint targets"
+          ],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440362,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": "2026-11-11T19:00:28Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440384,
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": null,
+          "current_steps": [
+            "bazel build verify-release-build targets"
+          ],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440389,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": null,
+          "current_steps": [
+            "bazel test shard"
+          ],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440402,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:56Z",
+          "completed_at": null,
+          "current_steps": [
+            "bazel test shard"
+          ],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440408,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": null,
+          "current_steps": [
+            "bazel test //..."
+          ],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440436,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-11-11T18:54:49Z",
+          "completed_at": null,
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737440461,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": "2026-11-11T19:02:30Z",
+          "current_steps": [],
+          "failed_steps": [
+            {
+              "number": 7,
+              "name": "bazel test //...",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 130737440544,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-11T18:54:53Z",
+          "completed_at": "2026-11-11T19:02:20Z",
+          "current_steps": [],
+          "failed_steps": [
+            {
+              "number": 7,
+              "name": "bazel test //...",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 130737441355,
+          "name": "Lightweight prose and derived checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "started_at": "2026-11-11T18:54:49Z",
+          "completed_at": "2026-11-11T18:54:49Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737442056,
+          "name": "Hepta scoped native checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "started_at": "2026-11-11T18:54:49Z",
+          "completed_at": "2026-11-11T18:54:49Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737443500,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "started_at": "2026-11-11T18:54:50Z",
+          "completed_at": "2026-11-11T18:54:49Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737600421,
+          "name": "rust-ci / Rust format",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:55:10Z",
+          "completed_at": "2026-11-11T18:55:58Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737600461,
+          "name": "rust-ci / Cargo manifest preflight",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:55:10Z",
+          "completed_at": "2026-11-11T18:55:30Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737600602,
+          "name": "rust-ci / cargo shear",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:55:10Z",
+          "completed_at": "2026-11-11T18:55:57Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737602526,
+          "name": "rust-ci / Argument comment lint package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "started_at": "2026-11-11T18:55:07Z",
+          "completed_at": "2026-11-11T18:55:07Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130737815030,
+          "name": "rust-ci / Rust benchmark smoke",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:55:33Z",
+          "completed_at": "2026-11-11T18:56:55Z",
+          "current_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 130738578865,
+          "name": "rust-ci / CI results (required)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T18:56:58Z",
+          "completed_at": "2026-11-11T18:57:01Z",
+          "current_steps": [],
+          "failed_steps": []
+        }
+      ]
+    }
+  ]
+}

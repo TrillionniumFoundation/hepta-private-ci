@@ -22,6 +22,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use crate::LocalOutcomeState;
@@ -320,7 +321,8 @@ async fn predecessor_mismatch_is_deterministic_not_applied_inside_destination_tr
 }
 
 #[tokio::test]
-async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
+async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch()
+-> Result<(), Box<dyn std::error::Error>> {
     let temp = TempDir::new().expect("temp");
     let store = store(&temp).await;
     let owner = store.owner_agent_id().clone();
@@ -333,9 +335,11 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
     )
     .await
     .expect("production writer");
-    let real_target =
-        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
-            .expect("real target");
+    let real_target = CognitiveSourceOutboxTarget::new(
+        store.clone(),
+        CognitiveAccess::agent_private(owner.clone()),
+    )
+    .expect("real target");
     let target = Arc::new(LostAckTarget {
         inner: real_target.clone(),
     });
@@ -363,6 +367,11 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
         .await
         .expect("dispatch with lost ack");
     assert_eq!(dispatched.state, LocalOutcomeState::Indeterminate);
+    let CognitiveSourceTerminalObservation::Applied { receipt } =
+        real_target.observe_terminal(&dispatched.request).await
+    else {
+        return Err("destination did not retain the actual terminal receipt".into());
+    };
 
     assert_eq!(
         dispatcher
@@ -375,4 +384,150 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
         writer.status(operation_id).await.expect("terminal status"),
         LocalOutcomeState::Committed
     );
+    let expected = terminal_journal_tests::expected_journal(
+        &dispatched.request,
+        serde_json::json!({"disposition": "committed", "receipt": receipt}),
+    );
+    let retained = terminal_journal_tests::retained_journal(&store, operation_id).await?;
+    assert_eq!(retained, expected);
+    assert_eq!(dispatcher.reconcile(&writer, 8).await?, 0);
+
+    drop(dispatcher);
+    drop(real_target);
+    drop(writer);
+    store.pool.close().await;
+    drop(store);
+    let reopened = self::store(&temp).await;
+    assert_eq!(
+        terminal_journal_tests::retained_journal(&reopened, operation_id).await?,
+        expected
+    );
+    Ok(())
 }
+
+#[path = "production_terminal_journal_tests.rs"]
+mod terminal_journal_tests;
+
+// This synthetic observer checks discovery order, not external effects.
+#[derive(Debug, Default)]
+struct UnavailablePrefixTarget {
+    observed: std::sync::Mutex<Vec<String>>,
+    dispatches: std::sync::atomic::AtomicUsize,
+}
+
+impl ProductionOutboxTarget for UnavailablePrefixTarget {
+    fn dispatch<'a>(&'a self, _request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
+        self.dispatches
+            .fetch_add(/*val*/ 1, std::sync::atomic::Ordering::SeqCst);
+        Box::pin(async {
+            ProductionTargetOutcome::Indeterminate {
+                reason: "synthetic target has no terminal observation yet".to_string(),
+            }
+        })
+    }
+}
+
+impl crate::FinalUseProductionOutboxTarget for UnavailablePrefixTarget {
+    fn destination_id(&self) -> &str {
+        COGNITIVE_SOURCE_DESTINATION_V1
+    }
+
+    fn observe_terminal<'a>(
+        &'a self,
+        request: &'a ProductionDispatchRequest,
+    ) -> ProductionTerminalObservationFuture<'a> {
+        Box::pin(async move {
+            let mut seen = self.observed.lock().expect("observer log");
+            let blocked = seen
+                .first()
+                .is_none_or(|first| first == &request.occurrence_key);
+            seen.push(request.occurrence_key.clone());
+            if blocked {
+                ProductionTerminalObservation::Unavailable {
+                    reason: "oldest observed identity remains unavailable".to_string(),
+                }
+            } else {
+                ProductionTerminalObservation::NotApplied {
+                    reason: "synthetic observer establishes no effect for the other identity"
+                        .to_string(),
+                }
+            }
+        })
+    }
+}
+
+#[tokio::test]
+async fn same_destination_unavailable_prefix_does_not_starve_later_operation() {
+    let temp = TempDir::new().expect("temp");
+    let store = store(&temp).await;
+    let owner = store.owner_agent_id().clone();
+    let writer = ProductionDurableWriter::open(
+        store,
+        production_authority(owner.clone()),
+        &AllowVerifier,
+        "production:h4:fairness-regression",
+        /*generation*/ 1,
+    )
+    .await
+    .expect("writer");
+    let target = Arc::new(UnavailablePrefixTarget::default());
+    let issuer = SigningKey::from_bytes(&[91; 32]);
+    let dispatcher =
+        ProductionFinalUseOutboxDispatcher::attach(final_use(&temp, &issuer), target.clone());
+    for operation_id in ["operation:fairness-a", "operation:fairness-b"] {
+        let (draft, payload) = source_payload(operation_id, operation_id.as_bytes());
+        let queued = writer
+            .prepare_operation(
+                operation(&owner, operation_id, &payload, &draft, None),
+                COGNITIVE_SOURCE_TOPIC_V1,
+                &payload,
+            )
+            .await
+            .expect("prepare immutable operation");
+        let binding = writer
+            .final_use_binding(&queued, COGNITIVE_SOURCE_DESTINATION_V1)
+            .await
+            .expect("binding");
+        let signed = signed_final_use(&issuer, binding.clone(), operation_id);
+        let receipt = dispatcher
+            .dispatch(&writer, &signed, &binding, queued)
+            .await
+            .expect("dispatch");
+        assert_eq!(receipt.state, LocalOutcomeState::Indeterminate);
+    }
+    assert_eq!(
+        dispatcher
+            .reconcile(&writer, /*limit*/ 1)
+            .await
+            .expect("first bounded pass"),
+        0
+    );
+    let second = dispatcher
+        .clone()
+        .reconcile(&writer, /*limit*/ 1)
+        .await
+        .expect("second bounded pass");
+    let seen = target.observed.lock().expect("observer log").clone();
+    assert_eq!(seen.len(), 2, "one observer call per pass");
+    assert_ne!(
+        seen[0], seen[1],
+        "unavailable prefix must not hide later identity"
+    );
+    assert_eq!(second, 1);
+    assert_eq!(
+        target.dispatches.load(std::sync::atomic::Ordering::SeqCst),
+        2,
+        "reconciliation must never dispatch"
+    );
+    assert_eq!(
+        writer.status(&seen[0]).await.expect("blocked status"),
+        LocalOutcomeState::Indeterminate
+    );
+    assert_eq!(
+        writer.status(&seen[1]).await.expect("later status"),
+        LocalOutcomeState::Rejected
+    );
+}
+
+#[path = "production_reconciliation_fairness_tests.rs"]
+mod reconciliation_fairness_tests;

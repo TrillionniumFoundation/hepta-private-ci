@@ -1,0 +1,137 @@
+{
+  "commit": "3d3a571dff6d6a22c1ec0329f96eb5fd2164fe24",
+  "parent": "d997f1817d3f4fd1d1d1a0b3bcb0a6288a85fead",
+  "worktreeClean": true,
+  "targetedTests": {
+    "codex-secrets": 9,
+    "codex-utils-stable-hash": 4,
+    "paste-adapter": 4,
+    "wasm-listener-native-compat": 1,
+    "pagable": 35,
+    "starlark_map": 69,
+    "starlark_syntax": 116,
+    "bm25-candidate": 51,
+    "codex-execpolicy": 34,
+    "i18n-config": 6
+  },
+  "targetedPassed": 329,
+  "targetedSkipped": 0,
+  "oldReferenceBm25BaselineGeneration": {
+    "passed": 51,
+    "candidateQualification": false
+  },
+  "legacyHashOracle": {
+    "comparisons": 1761494,
+    "mismatches": 0,
+    "platform": "x86_64 Linux little-endian",
+    "bigEndianHardwareTested": false
+  },
+  "cargoDeny": {
+    "command": "cargo deny --all-features --locked check",
+    "exitCode": 1,
+    "remainingErrors": [
+      "bincode unmaintained",
+      "yaml-rust unmaintained"
+    ],
+    "bans": "ok",
+    "licenses": "ok",
+    "sources": "ok",
+    "policyIgnoreChanges": false,
+    "targetFilterChanges": false
+  },
+  "canonicalBazelLockUpdate": "passed",
+  "i18nActualBazelCquery": "passed",
+  "maintenanceConsumersActualBazelCquery": "passed",
+  "fixAndFormat": "passed; tests preceded final fix/format per repository instructions",
+  "fullDiffWhitespaceCheck": {
+    "exitCode": 2,
+    "diagnostics": 280,
+    "allClassified": true,
+    "classes": [
+      "unchanged upstream fixtures/documents/licenses",
+      "unified diff context encoding"
+    ],
+    "explanation": "Original whitespace-bearing cryptographic fixtures and lexer goldens were deliberately preserved byte-identically; no gate configuration was changed. Rust/manifests/build files scoped whitespace check passed."
+  },
+  "sourcePathNotes": [
+    "Cargo workspace has i18n-config explicit member removed; source/path patch and exclude unchanged",
+    "Entire all-features resolver contains no atomic-polyfill, derivative, fxhash or proc-macro-error2",
+    "Chrono remains as the existing inactive serde_with optional metadata edge; actual cargo-deny bans check passes",
+    "Native-only WASM listener compatibility test is not a browser/WASM runtime qualification",
+    "No full Core/V8 build qualification claimed; no HIA or remote reference was changed"
+  ],
+  "logs": {
+    "age-secrets-tests.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/age-secrets-tests.log",
+      "sha256": "8aa6dc8da11924e431478e435b0a472b34790dcbc86856148d2403a5377b3b8c"
+    },
+    "stable-hash-unit-tests.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/stable-hash-unit-tests.log",
+      "sha256": "685345c0c2bb4d13daebd3fb606380de791add72ae52149be1c9f44a8b2be99d"
+    },
+    "maintenance-adapter-tests.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/maintenance-adapter-tests.log",
+      "sha256": "9a0b3b9f16d50fc99e5317982e909fec5d00fbc0fd5c9e6babe5ab712145465e"
+    },
+    "maintenance-vendor-tests.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/maintenance-vendor-tests.log",
+      "sha256": "c126306f0a62765fd3e87df8e4c3cf5857a6c2dae97edb2451f310c5942734e5"
+    },
+    "bm25-reference-generation.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/bm25-reference-generation.log",
+      "sha256": "f550c1737eb9ceb6cd330a8015d42ef72c6afabf98d3c7fa5af96344dcd977c8"
+    },
+    "bm25-candidate-tests.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/bm25-candidate-tests.log",
+      "sha256": "c3fc1908e9464d66ebfeff1b53797233fc7275cd4955da50f5b2764300b02c47"
+    },
+    "maintenance-execpolicy-tests.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/maintenance-execpolicy-tests.log",
+      "sha256": "82af27aef4efcad2fd55ee51e18a82b37881e677abfa77cf094b3e3e4b8b0226"
+    },
+    "i18n-config-tests.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/i18n-config-tests.log",
+      "sha256": "831af312ae770399fd85565968c3100b2523f07fe6b6ba53521ffc8cb41fe43a"
+    },
+    "maintenance-final-cargo-deny.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/maintenance-final-cargo-deny.log",
+      "sha256": "36cc277645055eea168180cfadb3ea45bd0e7d870c8e67f1937aaae0c6322a9d"
+    },
+    "maintenance-bazel-lock-update.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/maintenance-bazel-lock-update.log",
+      "sha256": "93cf7582a2585a9588962f53c89d35cadffe283537683da9734a0524221b25fa"
+    },
+    "i18n-bazel-graph-before.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/i18n-bazel-graph-before.log",
+      "sha256": "a420633f9c22de0a9edead2a0f50462b31b7893ca5199d06cf587d37ebabbed6"
+    },
+    "i18n-bazel-cquery-after.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/i18n-bazel-cquery-after.log",
+      "sha256": "a8aff6d1ba5c77ea161331a653769ee0077bb707f7a9ee221019d1849fe4e323"
+    },
+    "maintenance-consumers-bazel-cquery.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/maintenance-consumers-bazel-cquery.log",
+      "sha256": "68cf25fa0a0eef8f8d381f292ff1d9b79a55283d85ad2fea69fbf7bc997c83e5"
+    },
+    "maintenance-scoped-fix.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/maintenance-scoped-fix.log",
+      "sha256": "c320af7a1f6a0bfb6d5a8f86f6af559c25fa8a570d2c08244801e1c61c3d67ad"
+    },
+    "maintenance-fmt.log": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/maintenance-fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "maintenance-whitespace-provenance.json": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/maintenance-whitespace-provenance.json",
+      "sha256": "db2cebcfd5e6dd4f8dc68ac302b4ebceacebfeed0c43268cae66f838a6b6120b"
+    },
+    "maintenance-formatting-receipt.json": {
+      "path": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/maintenance-formatting-receipt.json",
+      "sha256": "3788ec34703ab34db606ad5bc07040bc14afd5b37eda1350472d54f012b164f6"
+    }
+  },
+  "locks": {
+    "codex-rs/Cargo.lock": "25111ec56482ab25b3032db3096d0c3e4d84a31a6a87a873d157f58df4def370",
+    "MODULE.bazel.lock": "a631266c8c3e723a8dfb54e515a7dfb40bf8a7404d2a29f3aba5c9f530a6921d"
+  }
+}

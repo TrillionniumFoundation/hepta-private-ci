@@ -1,0 +1,49 @@
+{
+  "version": 3,
+  "base_source": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+  "base_v2_patch_sha256": "b1c8a67a6fde888d7c9fe69a3bbba31670b3cee37cdda0d314274c16d97598eb",
+  "incremental_patch_sha256": "b8d01fa119f606986b8e2c42924bc3ed8701045f814af5e8d6a9159013a9d0aa",
+  "cumulative_patch_sha256": "1f3930ad7fae5653c195b26f824f5ab12f84a622dcde983a603ac8ef5b8705c8",
+  "candidate_root": "/workspace/scratch/c1a0d7534606/fmt-scope-audit/v3/candidate",
+  "candidate_file_sha256": {
+    "scripts/format.py": "374839d73d51cddde230f514888cd05532f791534bdd35c1842df19b8b2e2be9",
+    "scripts/test_hepta_format_scope.py": "a11eb6fa3d5d4f8fc5edfcec680e20f11dd9f8a4a977005b625dea3db743377c"
+  },
+  "v2_files_unchanged": true,
+  "v3_incremental_modified_files": [
+    "scripts/format.py"
+  ],
+  "v3_incremental_scope": "Two explicit immutable-source records, corresponding two fixed prefix validation entries/constants, and explanatory comments. No validator algorithm change.",
+  "new_paths": [
+    {
+      "path": "qualification/main-consolidation/historical-continuations/continuation-20261021/research/reader-2969/source/codex-rs/hepta-ndu/src/recursive.rs",
+      "sha256": "8f5b71cbbc217d4b07a0d4797944eedf5d3c3bd3884cd6fbcb304a48318102fb",
+      "bytes": 5219,
+      "git_blob": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d",
+      "classification": "immutable_original_source_copy"
+    },
+    {
+      "path": "research/rrsnn_v4/hepta/bootstrap_runtime_preformat.rs",
+      "sha256": "df98ccc5ca1d7c87f4e1ab5bf99aca9b3190b2bab4e00e758c0caeed6d2aa154",
+      "bytes": 18942,
+      "git_blob": "9304d15bfe16f6e69af0b01b97a9eb110ff314a6",
+      "classification": "immutable_tested_preformat_source_record"
+    }
+  ],
+  "all_32_v2_records_and_original_ten_records_unchanged": true,
+  "all_ten_executable_inputs_remain_unexempted": true,
+  "history_and_production_rust_unchanged": true,
+  "rust_file_command_and_rust_configuration_scope_byte_identical": true,
+  "test_file_byte_identical_to_reviewed_v2": true,
+  "existing_tests_auto_expand_to_original_records": 39,
+  "existing_neighbor_test_distinct_parent_directories": 26,
+  "existing_neighbor_test_inputs_with_original_neighbor_and_active_rust": 28,
+  "conditional_static_scope_counts_if_applied": {
+    "original_rust_paths": 4247,
+    "verified_exact_exemptions": 44,
+    "remaining_formatter_inputs": 4203
+  },
+  "formatter_or_tests_executed": false,
+  "pass_claim": null,
+  "validation_owner": "root; original 41 scope tests and reviewed Python source formatting only; full b8e8 formatter remains unexecuted pending boundary review/CI."
+}

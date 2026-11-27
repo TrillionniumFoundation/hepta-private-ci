@@ -1,0 +1,49 @@
+{
+  "status": "REVIEWED_NO_SOURCE_BLOCKER",
+  "base": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "files": [
+    {
+      "path": "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+      "mode": "100644",
+      "before_blob": "8a9645104e1308f0080943896d685d33f75ce88a",
+      "after_blob": "ae529b89b7334ea6355b5038c855bbdbd138229c",
+      "sha256": "19401bdd4835f1fc3248e91a21690800cf78f0afd44cf5cd2b6a988ee375ade8",
+      "bytes": 29406
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+      "mode": "100644",
+      "before_blob": "b0db350b9cd2acca3af6de5edec204c119223656",
+      "after_blob": "0a027058e4f8eb206ab7d4f0336f23eab3d9ee96",
+      "sha256": "445230f3c99508b4762382328e42e3db6b6f2676b536c7cfdcf2ada3b8011da3",
+      "bytes": 1114
+    }
+  ],
+  "exact_delta_preservation": true,
+  "git_apply_check": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "initial_review_blocker_resolved": "Unsharded rust_test exports logical rlocationpath, so raw Command::new(env) was insufficient. Final uses existing cargo_bin resolver.",
+  "semantics": [
+    "Only fixture-private child image is stripped; live test executable remains unchanged.",
+    "Exact -S -o output current_exe arguments, STRIP_NLISTS removal, status assertion, copy/seal/hash and all paired-process assertions retained.",
+    "Existing codex-utils-cargo-bin dev dependency resolves manifest-only runfiles to existing absolute paths and rejects invalid declared paths.",
+    "Only missing metadata outside Bazel falls back to the existing system strip; malformed or missing Bazel metadata propagates an error.",
+    "Windows platform excludes LLVM auxiliary binary, and paired_process_product retains cfg(unix).",
+    "LLVM22.1.8 package is public; llvm-strip is executable binary_alias to llvm-objcopy and alias retains basename and runfiles.",
+    "No retry/sharding/skip/source production changes. Dependency is included for all non-Windows integration tests in supervisor by existing macro; correctness scope unchanged."
+  ],
+  "bindings": {
+    "cargo_bin_blob": "1e5dc88d75c94041228cb3e098402fb31928de4f",
+    "supervisor_cargo_blob": "3a5c9f790aca3e0ee660d69d6d8f592b28e76abc",
+    "rules_rs": "v0.0.96",
+    "rules_rust": "f19661ba71f77c993ce1eb082053692610fe4313",
+    "hermetic_llvm": "v0.8.11",
+    "upstream_llvm": "llvmorg-22.1.8"
+  },
+  "native_tests": "NOT_RUN",
+  "formatter": "NOT_RUN",
+  "remaining_validation": "Actual Bazel build and paired process tests must validate artifact availability and execution; static review is not a native PASS."
+}

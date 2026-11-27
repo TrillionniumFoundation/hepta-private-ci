@@ -1,0 +1,152 @@
+{
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/workspace/scratch/4d2e4721a646/cargo",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_TARGET_DIR": "/workspace/scratch/4d2e4721a646/hepta-bimodal-generator-recovered/codex-rs/target",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUSTUP_HOME": "/workspace/scratch/4d2e4721a646/rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0"
+  },
+  "phase": "waiting-for-shared-target-and-resources",
+  "phases": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/workspace/scratch/b68b63394cea/hepta-framework-native-06f3219",
+      "elapsed_seconds": 0.02117565300068236,
+      "finished_at": "2026-11-10T13:58:28.072659+00:00",
+      "name": "source-object-verify",
+      "returncode": 0,
+      "started_at": "2026-11-10T13:58:28.048287+00:00",
+      "stderr": "source-object-verify.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "source-object-verify.stdout.log",
+      "stdout_bytes": 82,
+      "stdout_sha256": "af17c5375a1b0619837f52521d26d0db93fcb86a56afe79c179832037626eb2c"
+    },
+    {
+      "argv": [
+        "just",
+        "--version"
+      ],
+      "cwd": "/workspace/scratch/b68b63394cea/hepta-framework-native-06f3219",
+      "elapsed_seconds": 0.012709094999991066,
+      "finished_at": "2026-11-10T13:58:28.292789+00:00",
+      "name": "just-version",
+      "returncode": 0,
+      "started_at": "2026-11-10T13:58:28.273738+00:00",
+      "stderr": "just-version.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "just-version.stdout.log",
+      "stdout_bytes": 12,
+      "stdout_sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "argv": [
+        "rustc",
+        "--version",
+        "--verbose"
+      ],
+      "cwd": "/workspace/scratch/b68b63394cea/hepta-framework-native-06f3219/codex-rs",
+      "elapsed_seconds": 0.6634985450000386,
+      "finished_at": "2026-11-10T13:58:28.963086+00:00",
+      "name": "rustc-version",
+      "returncode": 0,
+      "started_at": "2026-11-10T13:58:28.297764+00:00",
+      "stderr": "rustc-version.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "rustc-version.stdout.log",
+      "stdout_bytes": 196,
+      "stdout_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "argv": [
+        "rustfmt",
+        "--version"
+      ],
+      "cwd": "/workspace/scratch/b68b63394cea/hepta-framework-native-06f3219/codex-rs",
+      "elapsed_seconds": 0.22523997700045584,
+      "finished_at": "2026-11-10T13:58:29.198455+00:00",
+      "name": "rustfmt-version",
+      "returncode": 0,
+      "started_at": "2026-11-10T13:58:28.966781+00:00",
+      "stderr": "rustfmt-version.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "rustfmt-version.stdout.log",
+      "stdout_bytes": 45,
+      "stdout_sha256": "58e77f09cbe97eb2d0ab9174e5523494d03814f2879c8e187ed66370320abc7c"
+    },
+    {
+      "argv": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "cwd": "/workspace/scratch/b68b63394cea/hepta-framework-native-06f3219/codex-rs",
+      "elapsed_seconds": 0.1323001729997486,
+      "finished_at": "2026-11-10T13:58:29.339327+00:00",
+      "name": "nextest-version",
+      "returncode": 0,
+      "started_at": "2026-11-10T13:58:29.201883+00:00",
+      "stderr": "nextest-version.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "nextest-version.stdout.log",
+      "stdout_bytes": 171,
+      "stdout_sha256": "0525f6ec293e727519a57ddc6b879d5d5eafc896911f2ea5fccadf24033a78f7"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt",
+        "--check",
+        "--base",
+        "abf75d8e2097785b2ad01897c15a7531eebe6e44"
+      ],
+      "cwd": "/workspace/scratch/b68b63394cea/hepta-framework-native-06f3219/codex-rs",
+      "elapsed_seconds": 3.687740751000092,
+      "finished_at": "2026-11-10T13:58:33.037816+00:00",
+      "name": "fmt-check",
+      "returncode": 0,
+      "started_at": "2026-11-10T13:58:29.347180+00:00",
+      "stderr": "fmt-check.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "fmt-check.stdout.log",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "pid": 2,
+  "repo": "/workspace/scratch/b68b63394cea/hepta-framework-native-06f3219",
+  "requested_head": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+  "requested_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+  "resource_observation": {
+    "cgroup_v2_limits_exposed": false,
+    "disk_free_bytes": 6147661824,
+    "memory_bytes": {
+      "MemAvailable": 1380757504,
+      "MemFree": 1020149760,
+      "MemTotal": 10451427328,
+      "Shmem": 4752949248,
+      "SwapTotal": 0
+    },
+    "observed_at": "2026-11-10T14:05:04.910322+00:00",
+    "target_cargo_lock_held": true
+  },
+  "schema": "hepta-framework-native-validation-v1",
+  "selected_native_tests_passed": false,
+  "source_preserved_during_tests": false,
+  "started_at": "2026-11-10T13:58:26.689618+00:00",
+  "state": "running",
+  "updated_at": "2026-11-10T14:05:04.917177+00:00"
+}

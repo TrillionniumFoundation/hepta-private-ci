@@ -1,0 +1,14 @@
+{
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-hepta-intelligence",
+    "-p",
+    "codex-hepta-prompt-optimizer"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 20.655867338180542,
+  "change": "Replace one pre-existing denied expect call in canonical_consumer_v1 test with explicit panic on missing profile; assertion behavior retained."
+}

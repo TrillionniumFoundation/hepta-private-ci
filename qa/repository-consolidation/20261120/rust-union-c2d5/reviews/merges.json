@@ -1,0 +1,120 @@
+{
+  "ancestry_evidence": {
+    "bytes": 301712,
+    "path": "/workspace/scratch/c2d514464ab5/branch-audit/candidate-86ed-independent-review/ANCESTRY.json",
+    "sha256": "96648859d7fe43295e677cb07a7a0553e29972bb07791f35a41cd04018bfa798"
+  },
+  "candidate": "86ed727921cede43bca5f4c8cf0016f4004762d5",
+  "e1_cli_resolution": {
+    "incoming": "e1c187164e9497ca283bc73c20cbf50598ac2ebd",
+    "retained_current_conflict_blobs": {
+      "codex-rs/cli/Cargo.toml": "9cb428e03dfac3cfb84eea9d960ce87070284236",
+      "codex-rs/cli/src/codex.rs": "0831917cf5a2c3f4a3b587da0f85920bd184f6b3",
+      "scripts/tests/test_hepta_ci_scope.py": "b25c587f9da9125e65475fda835161d547961384"
+    },
+    "retained_regression_ast_sha256": "f1688b672962bb2503e0f359134ffa5b40436f3c9e31022558fa134fd5ff64f1",
+    "review": "Current Cargo roots explicitly select src/main.rs and src/hepta.rs; both directly include main_impl.rs with crate-level recursion limit. Current regression checks manifest-selected roots and disallows the crate attribute in the included implementation. Preserving this newer layout retains the incoming depth-limit goal."
+  },
+  "finding": "No static blocker found in the reviewed generic API and four branch conflict resolutions. Native/required CI qualification is still pending.",
+  "formatter_resolutions": [
+    {
+      "commit": "6022d8233ae6ce6a6c16ffe4c415b87154abb65d",
+      "incoming_parent": "66346496a8a7bda8d4349188c3f76631b048ebf0",
+      "tree_identical_to_first_parent": true
+    },
+    {
+      "commit": "48693e0afda9472cc4f266d0fea53a35f626e08d",
+      "incoming_parent": "7c1e29cd73325645c73d4470d7ea82e86796dbb0",
+      "tree_identical_to_first_parent": true
+    },
+    {
+      "commit": "86ed727921cede43bca5f4c8cf0016f4004762d5",
+      "incoming_parent": "9ba16fb20e17f292cefc54eb1d206340b9ce0b88",
+      "tree_identical_to_first_parent": true
+    }
+  ],
+  "formatter_semantics_evidence": {
+    "full_tree_verification": "/workspace/scratch/c2d514464ab5/branch-audit/formatter-three/TREE-VERIFICATION.json",
+    "full_tree_verification_sha256": "78f3c6f4f7709f791177bfeeb853c0ae6e13426c9e77f1d659d2e1b07cd32a87",
+    "review": "/workspace/scratch/c2d514464ab5/branch-audit/formatter-three/REVIEW.json",
+    "review_sha256": "6d360c601fed01464ec97934f8d30ba7f002669874946a74b47856bc3d46d6f7"
+  },
+  "generic_api": {
+    "agentd_build_after": "83e289ed8012721dbdebc3e9f8a57ab33f0e81e2",
+    "agentd_build_before": "330f50f90cfe5dc46249b59d8ba04536e838306d",
+    "agentd_only_new_ast_node_is_named_harness_map": true,
+    "all_other_defs_ast_nodes_unchanged_including_production_and_wine_rules": true,
+    "all_prior_positional_parameters_and_defaults_preserved": true,
+    "appended_parameters": [
+      "integration_test_dependency_replacements",
+      "integration_test_dependency_replacements_by_test"
+    ],
+    "comparison_base": "838bd6167626d02201574aedf4d75f7f012ea8a2",
+    "current_named_map_is_redundant_with_existing_full_unit_map": true,
+    "defs_after": "51274a0b4d6aec875723993e2b16cb94ed4114a7",
+    "defs_before": "39a06f42c014f0b34f6e59ed3189b030aac4fd59",
+    "existing_unit_dependency_entries": {
+      "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+      "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+      "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+      "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+      "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+      "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+      "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+      "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+    },
+    "local_unit_test_library_choice_preserved": true,
+    "map_precedence": [
+      "existing unit-test graph when selected",
+      "filename stem map",
+      "generated target-name map"
+    ],
+    "rust_rule_shapes_updated": [
+      "windows_cross_test_binary",
+      "integration_test_binary",
+      "test_name"
+    ],
+    "same_composed_map_drives_deps_and_aliases": true,
+    "unchanged_dependency_helpers": [
+      {
+        "blob": "140bde6995e31f11dcafaee0484e01baecb99d6c",
+        "path": "bazel/rules/testing/rust_test_dependencies.bzl",
+        "sha256": "b64c9972a9e8d75f3442ed79e1095db1e45c84a62e96c05c7356c04521178074",
+        "unchanged": true
+      },
+      {
+        "blob": "dd0efe60f49fcf5c1b116f4bd77f48e8996c8b4e",
+        "path": "bazel/rules/cargo_crate_aliases.bzl",
+        "sha256": "e057e6280a16d794773b11591058cd34157b96560faaea7d14e6fea877e4441a",
+        "unchanged": true
+      }
+    ]
+  },
+  "limits": [
+    "Static object/source review, not configured Bazel analysis or native execution.",
+    "B4 residual edits and prior recovered Rust source repairs are reviewed/qualified by their separate owners.",
+    "Remote main/integration refs have not changed and no branch is eligible for retirement from main."
+  ],
+  "native_tests_run": 0,
+  "provider_resolution": {
+    "all_other_source_bytes_preserved_after_old_context_import_removal": true,
+    "exact_call_signature_adaptations": 6,
+    "incoming": "59db1216ce3ea110b398751f2d437428bc0d25e7",
+    "incoming_blob": "2d9ff04719564e2a20020c5ed7b390263bde15e7",
+    "retained_current_blob": "d9ca8aa17e9be5102651b748e63701cecdd7b59b",
+    "workflow_blob": "8a10e40c4ce23733a511f82880a9211227070940",
+    "workflow_review": "Pinned 1.96.0 toolchain; just@1.51.0 and nextest@0.9.103; actual client::provider_policy_tests:: filter; no empty test selection; zero retries; strict Clippy and full formatting remain; execution not claimed."
+  },
+  "remote_mutations": 0,
+  "reviewed_at": "2026-11-20T03:04:10.134614+00:00",
+  "schema": "hepta.independent-candidate-static-review.v1",
+  "tree": "0f99d79955c6b9b0a681d47eba92393a9476daff",
+  "windows_resolution": {
+    "incoming": "4235d49823cb408ffdbaa1127c70f27c273f20b6",
+    "incoming_blob": "7f7f2b0007dc07ec8011addb710f24095c9ba1a4",
+    "incoming_child_fixture_exactly_retained": true,
+    "readiness_cleanup_error_timeout_and_survivor_assertion_tail_exactly_retained": true,
+    "retained_current_blob": "4835800ad3bc78a5e99f423a308d11de41d01e98",
+    "wrapper_review": "Current native same-test-executable parent supersedes incoming PowerShell parent. Both wait-for-child and exit-before-timeout lifetimes remain, including inherited pipes and JobObject; child marker and parent marker are separated. Windows execution not claimed."
+  }
+}

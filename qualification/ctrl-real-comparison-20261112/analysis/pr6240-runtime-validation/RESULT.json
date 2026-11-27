@@ -1,0 +1,291 @@
+{
+  "evidence_files": [
+    {
+      "bytes": 301,
+      "path": "preparation.log",
+      "sha256": "fbc145828cd7cea2adb4b201604f3260a520c201497bb38871b4a1b733d49159"
+    },
+    {
+      "bytes": 886,
+      "path": "request.json",
+      "sha256": "a92e34d566ec4265a4463904454bca93b2ab3499a80c0856a52adab0e74bc372"
+    },
+    {
+      "bytes": 53,
+      "path": "runner.py",
+      "sha256": "f567f606ca5de696e1a33b310f6d5759c9a93c02ae71025c4c4c75ade936bec2"
+    },
+    {
+      "bytes": 849,
+      "path": "runtime.log",
+      "sha256": "9626f3aea29f6f9949790079538989626a67520136d704ebb7701efd0d6748bb"
+    },
+    {
+      "bytes": 99508,
+      "path": "source-after.json",
+      "sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c"
+    },
+    {
+      "bytes": 99508,
+      "path": "source-before.json",
+      "sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c"
+    },
+    {
+      "bytes": 1496,
+      "path": "test_ctrl_macro_analysis.json",
+      "sha256": "3bf0e48d19cc1ef026b3204a375b3b3cc1f9684221b226e7bab8b8d329de4480"
+    },
+    {
+      "bytes": 1135,
+      "path": "test_ctrl_macro_analysis.json.12d298f09e034851af84882f6afc158d.log",
+      "sha256": "cf722deb46afb2557a0fe4ec8918045e0c863509bdf1bedfd4cc72abfced5c9b"
+    },
+    {
+      "bytes": 2483,
+      "path": "test_ctrl_macro_analysis.runner.log",
+      "sha256": "a539f6fb483984c2cdbf5c8b916b78b10023743c76c871ccf5c302f7cb2efcb9"
+    },
+    {
+      "bytes": 1499,
+      "path": "test_ctrl_macro_factorial.json",
+      "sha256": "d4280d7b362faa69bb496e5b4b91772bf5820a14b4b85033a7c41374cc625fd5"
+    },
+    {
+      "bytes": 3882,
+      "path": "test_ctrl_macro_factorial.json.95162e3868a54d66ac162c86b6cde75b.log",
+      "sha256": "ca910d70cfd5167e53e6ad0afef188ad955f9900e7c90bb78a58013cb2d89421"
+    },
+    {
+      "bytes": 5233,
+      "path": "test_ctrl_macro_factorial.runner.log",
+      "sha256": "937350c695a9cf8de85dca0e63bac23aa513e9d0e3538d12df13b493b3e2495b"
+    },
+    {
+      "bytes": 1505,
+      "path": "test_summarize_ctrl_factorial.json",
+      "sha256": "a75e5e4ac0e85aab4c240e8f671f11edaa47f2eb59bb4b24b1832d659078dda2"
+    },
+    {
+      "bytes": 718,
+      "path": "test_summarize_ctrl_factorial.json.c191d1abdda9459488b56510764dee67.log",
+      "sha256": "af2f1030fc7661cedc0e2105214b9142f25fe43a5eb9bf31a5aa68c091d360d4"
+    },
+    {
+      "bytes": 2075,
+      "path": "test_summarize_ctrl_factorial.runner.log",
+      "sha256": "aa4471de467144a813184b9bd2b981279606b97360a5513e3e33c4a2ea9a4131"
+    }
+  ],
+  "exit_code": 0,
+  "expected_test_count": 19,
+  "finished_at": "2026-11-12T09:41:38.059370+00:00",
+  "junit": {
+    "path": null,
+    "status": "not_emitted_by_original_unittest_command"
+  },
+  "network_source_fetch": true,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 19,
+  "runtime": {
+    "euid": 1000,
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "module_origins": {
+      "test_ctrl_macro_analysis": "/home/qq/neuro-owner-6240-2411261-862531d11598/scripts/test_ctrl_macro_analysis.py",
+      "test_ctrl_macro_factorial": "/home/qq/neuro-owner-6240-2411261-862531d11598/scripts/test_ctrl_macro_factorial.py",
+      "test_summarize_ctrl_factorial": "/home/qq/neuro-owner-6240-2411261-862531d11598/qualification/ctrl-real-comparison-20261112/analysis/test_summarize_ctrl_factorial.py"
+    },
+    "numpy": "1.26.4",
+    "numpy_file": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/numpy/__init__.py",
+    "pillow": "12.0.0",
+    "pillow_file": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps/PIL/__init__.py",
+    "python": "3.12.16 (main, Oct 26 2026, 14:08:45) [Clang 23.1.3 ]",
+    "uid": 1000
+  },
+  "runtime_probe_exit_code": 0,
+  "schema_version": 1,
+  "source_after": {
+    "bytes": 99508,
+    "path": "source-after.json",
+    "sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c"
+  },
+  "source_before": {
+    "bytes": 99508,
+    "path": "source-before.json",
+    "sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c"
+  },
+  "source_helper_used": false,
+  "source_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+  "source_unchanged": true,
+  "started_at": "2026-11-12T09:41:28.281383+00:00",
+  "status": "passed",
+  "sudo_or_escalation_attempted": false,
+  "suites": [
+    {
+      "expected_count": 11,
+      "module": "test_ctrl_macro_factorial",
+      "record": {
+        "after": {
+          "commit": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+          "dirty": false,
+          "parents": [
+            "3517d1f11294d2a89750f0dcd542181743fdd7c5"
+          ],
+          "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+          "dirty": false,
+          "parents": [
+            "3517d1f11294d2a89750f0dcd542181743fdd7c5"
+          ],
+          "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80"
+        },
+        "command": [
+          "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "test_ctrl_macro_factorial"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.9873274648562074,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T09:41:37.419849+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 3882,
+        "log_file": "test_ctrl_macro_factorial.json.95162e3868a54d66ac162c86b6cde75b.log",
+        "log_sha256": "ca910d70cfd5167e53e6ad0afef188ad955f9900e7c90bb78a58013cb2d89421",
+        "minimum_tests": 11,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 11,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "runner_returncode": 0,
+        "schema_version": 1,
+        "source_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+        "started_at": "2026-11-12T09:41:36.429471+00:00",
+        "status": "passed",
+        "tested_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+        "timed_out": false,
+        "working_directory": "/home/qq/neuro-owner-6240-2411261-862531d11598"
+      }
+    },
+    {
+      "expected_count": 5,
+      "module": "test_ctrl_macro_analysis",
+      "record": {
+        "after": {
+          "commit": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+          "dirty": false,
+          "parents": [
+            "3517d1f11294d2a89750f0dcd542181743fdd7c5"
+          ],
+          "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+          "dirty": false,
+          "parents": [
+            "3517d1f11294d2a89750f0dcd542181743fdd7c5"
+          ],
+          "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80"
+        },
+        "command": [
+          "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "test_ctrl_macro_analysis"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.34729637997224927,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T09:41:37.838542+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 1135,
+        "log_file": "test_ctrl_macro_analysis.json.12d298f09e034851af84882f6afc158d.log",
+        "log_sha256": "cf722deb46afb2557a0fe4ec8918045e0c863509bdf1bedfd4cc72abfced5c9b",
+        "minimum_tests": 5,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 5,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "runner_returncode": 0,
+        "schema_version": 1,
+        "source_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+        "started_at": "2026-11-12T09:41:37.490035+00:00",
+        "status": "passed",
+        "tested_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+        "timed_out": false,
+        "working_directory": "/home/qq/neuro-owner-6240-2411261-862531d11598"
+      }
+    },
+    {
+      "expected_count": 3,
+      "module": "test_summarize_ctrl_factorial",
+      "record": {
+        "after": {
+          "commit": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+          "dirty": false,
+          "parents": [
+            "3517d1f11294d2a89750f0dcd542181743fdd7c5"
+          ],
+          "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+          "dirty": false,
+          "parents": [
+            "3517d1f11294d2a89750f0dcd542181743fdd7c5"
+          ],
+          "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80"
+        },
+        "command": [
+          "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "test_summarize_ctrl_factorial"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.10687049198895693,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T09:41:37.999421+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 718,
+        "log_file": "test_summarize_ctrl_factorial.json.c191d1abdda9459488b56510764dee67.log",
+        "log_sha256": "af2f1030fc7661cedc0e2105214b9142f25fe43a5eb9bf31a5aa68c091d360d4",
+        "minimum_tests": 3,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 3,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "runner_returncode": 0,
+        "schema_version": 1,
+        "source_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+        "started_at": "2026-11-12T09:41:37.890644+00:00",
+        "status": "passed",
+        "tested_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+        "timed_out": false,
+        "working_directory": "/home/qq/neuro-owner-6240-2411261-862531d11598"
+      }
+    }
+  ],
+  "target_object_available_after_local_clone": false,
+  "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80"
+}

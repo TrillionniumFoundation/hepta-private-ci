@@ -1,3 +1,4 @@
+use super::AgentMessageOutput as NativeMessageOutput;
 use super::*;
 use codex_app_server_client::RemoteAppServerObservedEvent;
 use codex_app_server_protocol::AgentMessageDeltaNotification;
@@ -5,6 +6,21 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
+use codex_hepta_agentd::test_support::Arg0DispatchPaths;
+
+/// These test binaries link core_test_support, whose startup constructor
+/// installs the real same-build arg0, filesystem and process helper dispatch.
+pub(super) fn app_server_test_runtime_paths() -> Result<Arg0DispatchPaths> {
+    #[cfg(target_os = "linux")]
+    let codex_linux_sandbox_exe = Some(core_test_support::find_codex_linux_sandbox_exe()?);
+    #[cfg(not(target_os = "linux"))]
+    let codex_linux_sandbox_exe = None;
+    Ok(Arg0DispatchPaths {
+        codex_self_exe: Some(std::env::current_exe()?),
+        codex_linux_sandbox_exe,
+        ..Arg0DispatchPaths::default()
+    })
+}
 
 fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
@@ -43,13 +59,14 @@ fn observed(notification: ServerNotification) -> RemoteAppServerObservedEvent {
 
 fn observe_for_test(
     output: &mut NativeRunOutput,
+    messages: &mut NativeMessageOutput,
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(output, messages, &observed(notification), &binding)
 }
 
-fn output() -> NativeRunOutput {
+pub(super) fn output() -> NativeRunOutput {
     NativeRunOutput {
         thread_id: "thread-a".to_string(),
         turn_id: "turn-a".to_string(),
@@ -64,6 +81,24 @@ fn output() -> NativeRunOutput {
         owner_authority: NativeOwnerAuthority::Unverified,
         codex_terminal_correlation_digest: None,
     }
+}
+
+#[test]
+fn appended_reconciliation_reason_stays_within_durable_utf8_byte_limit() {
+    let note = format!("grace observed: {}", "界".repeat(1024));
+    let reason = append_stop_reason(
+        Some(format!("provider interruption: {}", "界".repeat(1024))),
+        note.clone(),
+    );
+
+    assert!(reason.len() <= MAX_STOP_REASON_BYTES);
+    assert!(reason.is_char_boundary(reason.len()));
+    assert!(reason.ends_with(truncate_utf8(&note, MAX_STOP_REASON_BYTES - 2)));
+
+    let observation_failure = "界".repeat(2048);
+    let bounded_failure = truncate_utf8(&observation_failure, MAX_STOP_REASON_BYTES);
+    assert_eq!(bounded_failure.len(), MAX_STOP_REASON_BYTES - 1);
+    assert!(bounded_failure.is_char_boundary(bounded_failure.len()));
 }
 
 fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification {
@@ -132,9 +167,11 @@ fn lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread() {
 #[test]
 fn only_the_bound_turn_can_complete_the_native_request() {
     let mut output = output();
+    let mut messages = NativeMessageOutput::default();
     assert!(
         !observe_for_test(
             &mut output,
+            &mut messages,
             terminal("thread-b", "turn-a", TurnStatus::Completed)
         )
         .unwrap()
@@ -142,6 +179,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
     assert!(
         !observe_for_test(
             &mut output,
+            &mut messages,
             terminal("thread-a", "turn-b", TurnStatus::Completed)
         )
         .unwrap()
@@ -150,6 +188,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
     assert!(
         observe_for_test(
             &mut output,
+            &mut messages,
             terminal("thread-a", "turn-a", TurnStatus::Interrupted)
         )
         .unwrap()
@@ -163,6 +202,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
 #[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
+    let mut messages = NativeMessageOutput::default();
     let delta = |thread: &str, text: String| {
         ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
             thread_id: thread.to_string(),
@@ -171,12 +211,27 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    observe_for_test(
+        &mut output,
+        &mut messages,
+        delta("unrelated", "discard".to_string()),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut output,
+        &mut messages,
+        delta("thread-a", "model output".to_string()),
+    )
+    .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        observe_for_test(
+            &mut output,
+            &mut messages,
+            delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))
+        )
+        .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -185,9 +240,11 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
 #[test]
 fn in_progress_is_not_a_terminal_observation() {
     let mut output = output();
+    let mut messages = NativeMessageOutput::default();
     assert!(
         observe_for_test(
             &mut output,
+            &mut messages,
             terminal("thread-a", "turn-a", TurnStatus::InProgress)
         )
         .is_err()
@@ -221,11 +278,12 @@ fn actual_usage_is_bound_monotonic_and_survives_terminal_failure() {
         })
     };
     let mut output = output();
-    observe_for_test(&mut output, usage("unrelated", 99)).unwrap();
+    let mut messages = NativeMessageOutput::default();
+    observe_for_test(&mut output, &mut messages, usage("unrelated", 99)).unwrap();
     assert_eq!(output.observed_output_tokens, None);
-    observe_for_test(&mut output, usage("thread-a", 42)).unwrap();
-    assert!(observe_for_test(&mut output, usage("thread-a", -1)).is_err());
-    assert!(observe_for_test(&mut output, usage("thread-a", 41)).is_err());
+    observe_for_test(&mut output, &mut messages, usage("thread-a", 42)).unwrap();
+    assert!(observe_for_test(&mut output, &mut messages, usage("thread-a", -1)).is_err());
+    assert!(observe_for_test(&mut output, &mut messages, usage("thread-a", 41)).is_err());
     assert_eq!(output.observed_output_tokens, Some(42));
     let mut failed = terminal("thread-a", "turn-a", TurnStatus::Failed);
     if let ServerNotification::TurnCompleted(ref mut notification) = failed {
@@ -235,7 +293,7 @@ fn actual_usage_is_bound_monotonic_and_survives_terminal_failure() {
             additional_details: None,
         });
     }
-    assert!(observe_for_test(&mut output, failed).unwrap());
+    assert!(observe_for_test(&mut output, &mut messages, failed).unwrap());
     assert_eq!(output.status, NativeRunStatus::Failed);
     assert_eq!(output.boundary_status, NativeBoundaryStatus::Failed);
     assert_eq!(output.observed_output_tokens, Some(42));
@@ -279,6 +337,7 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
         // This output is bound to the started thread/turn. The same health
         // reducer runs in observe(), before its error triggers TurnInterrupt.
         let mut output = output();
+        let mut messages = NativeMessageOutput::default();
         verify_owner_health(
             &mut output,
             async { Ok(ready_owner()) },
@@ -298,6 +357,7 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
         assert!(
             observe_for_test(
                 &mut output,
+                &mut messages,
                 terminal("thread-a", "turn-a", TurnStatus::Completed)
             )
             .unwrap()
@@ -324,6 +384,7 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
 #[tokio::test]
 async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     let mut timed_out = output();
+    let mut messages = NativeMessageOutput::default();
     verify_owner_health(
         &mut timed_out,
         async { Ok(ready_owner()) },
@@ -338,6 +399,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     );
     observe_for_test(
         &mut timed_out,
+        &mut messages,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
     .unwrap();
@@ -346,6 +408,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     assert!(!timed_out.succeeded());
 
     let mut terminal_first = output();
+    let mut messages = NativeMessageOutput::default();
     verify_owner_health(
         &mut terminal_first,
         async { Ok(ready_owner()) },
@@ -356,6 +419,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     // select! can consume Completed before a simultaneously ready health tick.
     observe_for_test(
         &mut terminal_first,
+        &mut messages,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
     .unwrap();
@@ -378,8 +442,10 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
 #[tokio::test]
 async fn success_requires_both_matching_completion_and_final_ready_owner() {
     let mut output = output();
+    let mut messages = NativeMessageOutput::default();
     observe_for_test(
         &mut output,
+        &mut messages,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
     .unwrap();
@@ -407,27 +473,48 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("token-bound physical turn start");
+    let authority_entry = source
+        .find("let entered_use = match verified_use.enter(&authority_binding)")
+        .expect("final-use authority entry");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
+    assert!(revalidation < authority_entry);
+    assert!(authority_entry < turn_start);
+
+    let (_, send_helper) = source
+        .split_once("async fn send_authorized_turn_start(")
+        .expect("authorized send helper");
+    let (send_helper, _) = send_helper
+        .split_once("\n}")
+        .expect("complete authorized send helper");
+    assert!(send_helper.contains("_entered: EnteredUseToken"));
+    assert!(send_helper.contains(".request_typed_observed(ClientRequest::TurnStart {"));
+    assert_eq!(source.matches("ClientRequest::TurnStart {").count(), 1);
 }
 
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
     use std::sync::Arc;
-    use std::time::SystemTime;
-    use std::time::UNIX_EPOCH;
 
     use codex_hepta_agentd::test_support::CognitiveTestHost;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
     use codex_hepta_infer_core::durable_control::native::NativeReservationState;
     use core_test_support::responses;
+
+    let Some(host_completion) = super::test_process::isolate_host(
+        "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+    )
+    .await?
+    else {
+        return Ok(());
+    };
 
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
     const MODEL: &str = "mock-model";
@@ -442,21 +529,30 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
     let response_mock = responses::mount_sse_once(&server, response).await;
 
-    let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    // Keep the fixture control socket within Darwin's Unix-domain path bound.
+    let fixture = crate::native_app_server::test_process::host_tempdir("hwkr-")?;
+    let root = fixture.path().join("host");
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        app_server_test_runtime_paths()?,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
 
-    let authority_directory = tempfile::tempdir()?;
+    let authority_directory = crate::native_app_server::test_process::host_tempdir("hfua-")?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
         3,
@@ -470,7 +566,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         timeout: Duration::from_secs(20),
     })?
     .with_turn_start_authorizer(Arc::new(authorizer));
-    let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
+    let journal = fixture.path().join("worker.journal");
     let mut durable = DurableInferenceControl::open(&journal, 8)?;
 
     let accepted = driver
@@ -650,6 +746,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let _ = std::fs::remove_file(&journal);
     issuer.await??;
     host.shutdown().await;
+    host_completion.complete()?;
     Ok(())
 }
 
@@ -660,6 +757,7 @@ fn late_completed_cannot_upgrade_cancelled_or_timed_out_boundary() {
         NativeBoundaryStatus::TimedOut,
     ] {
         let mut value = output();
+        let mut messages = NativeMessageOutput::default();
         value.boundary_status = boundary_status;
         value.stop_reason = Some(match boundary_status {
             NativeBoundaryStatus::Cancelled => LOCAL_CANCELLED.to_string(),
@@ -669,6 +767,7 @@ fn late_completed_cannot_upgrade_cancelled_or_timed_out_boundary() {
         assert!(
             observe_for_test(
                 &mut value,
+                &mut messages,
                 terminal("thread-a", "turn-a", TurnStatus::Completed),
             )
             .unwrap()
@@ -763,4 +862,555 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         )
         .is_err()
     );
+}
+
+#[path = "native_message_output_tests.rs"]
+mod message_output;
+
+#[test]
+fn terminal_summary_recovers_missing_delta_without_a_second_turn() {
+    let mut output = output();
+    let mut messages = NativeMessageOutput::default();
+    let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut notification) = event {
+        notification.turn.items_view = TurnItemsView::Summary;
+        notification.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-final".to_string(),
+            text: "verified complete answer".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    assert!(observe_for_test(&mut output, &mut messages, event.clone()).unwrap());
+    assert_eq!(output.output, "verified complete answer");
+    assert_eq!(output.status, NativeRunStatus::Completed);
+    assert!(output.terminal_observed);
+    assert_eq!(output.owner_authority, NativeOwnerAuthority::Unverified);
+    assert!(!output.succeeded());
+    // A duplicate summary must not concatenate the same answer again.
+    let before = output.clone();
+    assert!(observe_for_test(&mut output, &mut messages, event).unwrap());
+    assert_eq!(output, before);
+}
+
+#[test]
+fn terminal_summary_rejects_oversize_and_foreign_transport_before_mutation() {
+    let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut notification) = event {
+        notification.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-final".to_string(),
+            text: "x".repeat(MAX_OUTPUT_BYTES + 1),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    let mut output = output();
+    let mut messages = NativeMessageOutput::default();
+    let before = output.clone();
+    assert!(observe_for_test(&mut output, &mut messages, event.clone()).is_err());
+    assert_eq!(output, before);
+    let foreign = RemoteAppServerObservedEvent::from_test_event(
+        AppServerEvent::ServerNotification(Box::new(event)),
+        8,
+        Some("test-app-server".to_string()),
+        Some("/home/agent".to_string()),
+    );
+    assert!(observe_event(&mut output, &mut messages, &foreign, &binding()).is_err());
+    assert_eq!(output, before);
+}
+
+#[test]
+fn terminal_summary_does_not_duplicate_streamed_content_or_restore_lost_authority() {
+    let mut output = output();
+    let mut messages = NativeMessageOutput::default();
+    observe_for_test(
+        &mut output,
+        &mut messages,
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            item_id: "message-final".to_string(),
+            delta: "already streamed".to_string(),
+        }),
+    )
+    .unwrap();
+    output.owner_authority = NativeOwnerAuthority::Lost {
+        reason: "revoked".to_string(),
+    };
+    let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut notification) = event {
+        notification.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-final".to_string(),
+            text: "already streamed".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    assert!(observe_for_test(&mut output, &mut messages, event).unwrap());
+    assert_eq!(output.output, "already streamed");
+    assert_eq!(output.status, NativeRunStatus::Completed);
+    assert_eq!(output.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert!(output.terminal_observed);
+    assert!(!output.succeeded());
+}
+
+#[test]
+fn message_transport_is_checked_before_any_item_state_mutation() {
+    use codex_app_server_protocol::ItemCompletedNotification;
+    use codex_app_server_protocol::ItemStartedNotification;
+
+    for notification_kind in 0..3 {
+        for transport_kind in 0..3 {
+            let mut output = output();
+            let before = output.clone();
+            let mut messages = NativeMessageOutput::default();
+            let item = ThreadItem::AgentMessage {
+                id: "message-foreign".to_string(),
+                text: "untrusted".to_string(),
+                phase: None,
+                memory_citation: None,
+                delivery: None,
+            };
+            let notification = match notification_kind {
+                0 => ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+                    thread_id: "thread-a".to_string(),
+                    turn_id: "turn-a".to_string(),
+                    item_id: "message-foreign".to_string(),
+                    delta: "untrusted".to_string(),
+                }),
+                1 => ServerNotification::ItemStarted(ItemStartedNotification {
+                    thread_id: "thread-a".to_string(),
+                    turn_id: "turn-a".to_string(),
+                    item,
+                    started_at_ms: 0,
+                }),
+                _ => ServerNotification::ItemCompleted(ItemCompletedNotification {
+                    thread_id: "thread-a".to_string(),
+                    turn_id: "turn-a".to_string(),
+                    item,
+                    completed_at_ms: 1,
+                }),
+            };
+            let foreign = RemoteAppServerObservedEvent::from_test_event(
+                AppServerEvent::ServerNotification(Box::new(notification)),
+                if transport_kind == 0 { 8 } else { 7 },
+                Some(if transport_kind == 1 {
+                    "foreign-app-server".to_string()
+                } else {
+                    "test-app-server".to_string()
+                }),
+                Some(if transport_kind == 2 {
+                    "/home/foreign-agent".to_string()
+                } else {
+                    "/home/agent".to_string()
+                }),
+            );
+            assert!(observe_event(&mut output, &mut messages, &foreign, &binding()).is_err());
+            assert_eq!(output, before);
+
+            // A rejected start must not reserve an earlier item position, and
+            // a rejected completion must not make the real item's delta late.
+            for (item_id, delta) in [
+                ("message-clean-first", "first"),
+                ("message-foreign", "second"),
+            ] {
+                observe_for_test(
+                    &mut output,
+                    &mut messages,
+                    ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+                        thread_id: "thread-a".to_string(),
+                        turn_id: "turn-a".to_string(),
+                        item_id: item_id.to_string(),
+                        delta: delta.to_string(),
+                    }),
+                )
+                .unwrap();
+            }
+            assert_eq!(output.output, "firstsecond");
+            assert_eq!(output.owner_authority, NativeOwnerAuthority::Unverified);
+            assert!(!output.terminal_observed);
+        }
+    }
+}
+
+struct TerminalMessageFixture {
+    output: NativeRunOutput,
+    binding: CodexTurnBinding,
+    input: Vec<UserInput>,
+    response: ThreadReadResponse,
+}
+
+fn terminal_message_fixture() -> Result<TerminalMessageFixture> {
+    let input = vec![UserInput::Text {
+        text: "original fallback prompt".to_string(),
+        text_elements: Vec::new(),
+    }];
+    let mut binding = binding();
+    binding
+        .intent
+        .app_server_binding
+        .as_mut()
+        .ok_or("missing fixture request binding")?
+        .user_input_digest = Digest32::of_bytes(&serde_json::to_vec(&input)?);
+    let mut output = output();
+    observe_event(
+        &mut output,
+        &mut NativeMessageOutput::default(),
+        &observed(terminal("thread-a", "turn-a", TurnStatus::Completed)),
+        &binding,
+    )?;
+    let response = serde_json::from_value(serde_json::json!({
+        "thread": {
+            "id": "thread-a", "sessionId": "session-a", "preview": "",
+            "ephemeral": false, "modelProvider": "provider",
+            "createdAt": 1, "updatedAt": 2, "recencyAt": 2,
+            "status": {"type": "idle"},
+            "cwd": std::env::temp_dir().canonicalize()?,
+            "cliVersion": "test-app-server", "source": "exec",
+            "turns": [{
+                "id": "turn-a",
+                "items": [
+                    {"type": "userMessage", "id": "user-a",
+                     "clientId": "message-a", "content": &input},
+                    {"type": "agentMessage", "id": "answer-a",
+                     "text": "verified retained answer"}
+                ],
+                "itemsView": "full", "status": "completed", "error": null
+            }]
+        }
+    }))?;
+    Ok(TerminalMessageFixture {
+        output,
+        binding,
+        input,
+        response,
+    })
+}
+
+fn observed_terminal_message(
+    response: ThreadReadResponse,
+) -> codex_app_server_client::RemoteAppServerObservedResponse<ThreadReadResponse> {
+    codex_app_server_client::RemoteAppServerObservedResponse::from_test_response(
+        response,
+        "thread/read".to_string(),
+        RequestId::Integer(60),
+        // A fresh initialized read-only connection retains server/home/request.
+        99,
+        Some("test-app-server".to_string()),
+        Some("/home/agent".to_string()),
+    )
+}
+
+#[test]
+fn missing_terminal_message_rejects_mixed_request_turn_provider_and_empty_body() {
+    let fixture = terminal_message_fixture().unwrap();
+    let before = fixture.output.clone();
+    let evidence = observed_terminal_message(fixture.response.clone());
+    assert_eq!(
+        terminal_message_from_observed_response(
+            &fixture.output,
+            &fixture.binding,
+            "message-a",
+            &fixture.input,
+            &evidence,
+        )
+        .unwrap(),
+        "verified retained answer"
+    );
+    assert_eq!(fixture.output, before);
+    assert!(fixture.output.output.is_empty());
+    assert!(!fixture.output.succeeded());
+
+    let mut cases = Vec::new();
+    let mut different_request = fixture.response.clone();
+    let ThreadItem::UserMessage { client_id, .. } = &mut different_request.thread.turns[0].items[0]
+    else {
+        panic!("fixture must contain the original user message");
+    };
+    *client_id = Some("other-request".to_string());
+    cases.push((different_request, "original turn not yet terminal"));
+    let mut different_turn = fixture.response.clone();
+    different_turn.thread.turns[0].id = "other-turn".to_string();
+    cases.push((
+        different_turn,
+        "reconciliation does not prove the exact successful turn",
+    ));
+    let mut different_provider = fixture.response.clone();
+    different_provider.thread.model_provider = "other-provider".to_string();
+    cases.push((different_provider, "reconciliation model provider drifted"));
+    let mut empty_body = fixture.response.clone();
+    empty_body.thread.turns[0]
+        .items
+        .retain(|item| !matches!(item, ThreadItem::AgentMessage { .. }));
+    cases.push((
+        empty_body,
+        "terminal turn has no verifiable assistant message",
+    ));
+    for (response, expected_error) in cases {
+        let observed = observed_terminal_message(response);
+        assert_eq!(
+            terminal_message_from_observed_response(
+                &fixture.output,
+                &fixture.binding,
+                "message-a",
+                &fixture.input,
+                &observed,
+            )
+            .unwrap_err(),
+            expected_error,
+        );
+        assert_eq!(fixture.output, before);
+    }
+}
+
+#[test]
+fn missing_terminal_message_rejects_duplicate_id_with_unbound_first_body() {
+    let fixture = terminal_message_fixture().unwrap();
+    let mut response = fixture.response.clone();
+    let mut conflicting = response.thread.turns[0].clone();
+    let ThreadItem::UserMessage { client_id, .. } = &mut conflicting.items[0] else {
+        panic!("fixture must contain the original user message");
+    };
+    *client_id = Some("other-request".to_string());
+    let ThreadItem::AgentMessage { text, .. } = &mut conflicting.items[1] else {
+        panic!("fixture must contain the retained assistant message");
+    };
+    *text = "unbound first body with the same turn ID".to_string();
+    response.thread.turns.insert(0, conflicting);
+    let observed = observed_terminal_message(response);
+    // Adapter selects the second entry by exact request/input. Content may not
+    // independently choose the first entry merely because the IDs coincide.
+    assert!(
+        adapt_observed_thread_read_reconciliation(
+            &fixture.binding.intent,
+            "message-a",
+            &fixture.input,
+            &observed,
+        )
+        .unwrap()
+        .is_some()
+    );
+    assert_eq!(
+        terminal_message_from_observed_response(
+            &fixture.output,
+            &fixture.binding,
+            "message-a",
+            &fixture.input,
+            &observed,
+        )
+        .unwrap_err(),
+        "thread/read contains duplicate original turn IDs",
+    );
+    assert!(fixture.output.output.is_empty());
+    assert_eq!(
+        fixture.output.owner_authority,
+        NativeOwnerAuthority::Unverified
+    );
+    assert!(!fixture.output.succeeded());
+}
+
+#[cfg(unix)]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn missing_terminal_message_reads_original_rpc_without_second_dispatch() -> Result<()> {
+    use codex_hepta_agentd::test_support::CognitiveTestHost;
+    use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+    use core_test_support::responses;
+
+    let Some(host_completion) = super::test_process::isolate_host(
+        "native_app_server::tests::missing_terminal_message_reads_original_rpc_without_second_dispatch",
+    ).await? else { return Ok(()); };
+    const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13";
+    const MODEL: &str = "mock-model";
+    const REQUEST: &str = "native-terminal-content-recovery";
+    const PROMPT: &str = "retain this exact original answer";
+    const ANSWER: &str = "verified answer from the original retained turn";
+
+    let server = responses::start_mock_server().await;
+    let response = responses::sse(vec![
+        responses::ev_response_created("resp-terminal-content-recovery"),
+        responses::ev_assistant_message("msg-terminal-content-recovery", ANSWER),
+        responses::ev_completed("resp-terminal-content-recovery"),
+    ]);
+    let response_mock = responses::mount_sse_once(&server, response).await;
+    let fixture = crate::native_app_server::test_process::host_tempdir("hntr-")?;
+    let host = CognitiveTestHost::start(
+        fixture.path().join("host"),
+        codex_hepta_contracts::AgentId::parse(AGENT_ID)?,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        app_server_test_runtime_paths()?,
+    )
+    .await?;
+    let authority_directory = crate::native_app_server::test_process::host_tempdir("hfua-")?;
+    let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
+        authority_directory.path(),
+        1,
+    )
+    .await?;
+    let driver = AppServerModelDriver::new(NativeWorkerConfig {
+        agentd_socket: host.control_socket().to_path_buf(),
+        agent_id: host.agent_id().clone(),
+        generation: 1,
+        model: MODEL.to_string(),
+        timeout: Duration::from_secs(20),
+    })?
+    .with_turn_start_authorizer(Arc::new(authorizer));
+    let mut durable = DurableInferenceControl::open(fixture.path().join("worker.journal"), 8)?;
+    let accepted = driver
+        .run(
+            &mut durable,
+            NativeAdmission {
+                request_id: REQUEST.to_string(),
+                maximum_in_flight: 1,
+            },
+            PROMPT.to_string(),
+            None,
+            &CancellationToken::new(),
+        )
+        .await?;
+    assert!(accepted.succeeded());
+    assert_eq!(accepted.output, ANSWER);
+    assert_eq!(response_mock.requests().len(), 1);
+
+    let original_record = durable
+        .native_record(REQUEST)
+        .cloned()
+        .ok_or("missing original native record")?;
+    let dispatch = original_record
+        .dispatch
+        .as_ref()
+        .ok_or("missing original dispatch")?;
+    let payload: Digest32 = dispatch
+        .codex_payload_digest
+        .as_deref()
+        .ok_or("missing original payload digest")?
+        .parse()?;
+    let input = vec![UserInput::Text {
+        text: PROMPT.to_string(),
+        text_elements: Vec::new(),
+    }];
+    let binding = CodexTurnBinding {
+        intent: CodexOperationIntent {
+            operation_id: StableId::new(format!(
+                "native:{}",
+                Digest32::of_bytes(REQUEST.as_bytes())
+            ))?,
+            thread_id: StableId::new(dispatch.thread_id.clone())?,
+            method_id: StableId::new(TURN_START_METHOD_ID)?,
+            payload_digest: payload,
+            lease_payload_digest: payload,
+            deadline_ms: dispatch
+                .codex_deadline_ms
+                .ok_or("missing original deadline")?,
+            app_server_binding: Some(AppServerRequestBinding {
+                source_admission_digest: dispatch
+                    .codex_source_admission_digest
+                    .as_deref()
+                    .ok_or("missing original source admission")?
+                    .parse()?,
+                agent_generation: Generation::new(original_record.request.worker_generation)?,
+                session_id: StableId::new(
+                    dispatch
+                        .codex_session_id
+                        .as_deref()
+                        .ok_or("missing original session")?,
+                )?,
+                client_user_message_id: StableId::new(REQUEST)?,
+                user_input_digest: Digest32::of_bytes(&serde_json::to_vec(&input)?),
+                protocol_id: StableId::new(
+                    dispatch
+                        .protocol_id
+                        .as_deref()
+                        .ok_or("missing original protocol")?,
+                )?,
+                app_server_version: dispatch
+                    .app_server_version
+                    .clone()
+                    .ok_or("missing original server version")?,
+                codex_home_digest: dispatch
+                    .codex_home_digest
+                    .as_deref()
+                    .ok_or("missing original home")?
+                    .parse()?,
+                connection_id: dispatch
+                    .codex_connection_id
+                    .ok_or("missing original connection")?,
+            }),
+        },
+        turn_id: StableId::new(accepted.turn_id.clone())?,
+    };
+    assert_eq!(
+        Some(codex_request_digest(&binding.intent).to_string()).as_deref(),
+        dispatch.codex_request_digest.as_deref(),
+    );
+    let owner = AgentdClient::new(
+        host.control_socket().to_path_buf(),
+        host.agent_id().clone(),
+        1,
+    )?;
+    let ingress = owner.session_ingress().await?;
+    let mut client = timeout(
+        RPC_TIMEOUT,
+        RemoteAppServerClient::connect_with_bounded_events(
+            RemoteAppServerConnectArgs {
+                endpoint: RemoteAppServerEndpoint::UnixSocket {
+                    socket_path: AbsolutePathBuf::from_absolute_path(ingress.socket_path)?,
+                },
+                client_name: "native-terminal-recovery-test".to_string(),
+                client_version: env!("CARGO_PKG_VERSION").to_string(),
+                experimental_api: true,
+                mcp_server_openai_form_elicitation: false,
+                opt_out_notification_methods: Vec::new(),
+                channel_capacity: 32,
+            },
+            64,
+        ),
+    )
+    .await??;
+    let mut missing = accepted.clone();
+    missing.output.clear();
+    let recovered =
+        reconcile_missing_terminal_message(&mut client, &missing, &binding, REQUEST, &input)
+            .await?;
+    let mut restored = missing.clone();
+    restored.output = recovered;
+    assert_eq!(restored, accepted);
+    assert!(missing.output.is_empty());
+    let wrong_request = reconcile_missing_terminal_message(
+        &mut client,
+        &missing,
+        &binding,
+        "different-request",
+        &input,
+    )
+    .await
+    .unwrap_err();
+    assert!(wrong_request.contains("reconciliation client user message id"));
+    let mut wrong_turn = missing.clone();
+    wrong_turn.turn_id = "different-turn".to_string();
+    assert_eq!(
+        reconcile_missing_terminal_message(&mut client, &wrong_turn, &binding, REQUEST, &input,)
+            .await
+            .unwrap_err(),
+        "reconciliation does not prove the exact successful turn",
+    );
+    let mut wrong_provider = missing.clone();
+    wrong_provider.model_provider = "different-provider".to_string();
+    assert_eq!(
+        reconcile_missing_terminal_message(
+            &mut client, &wrong_provider, &binding, REQUEST, &input,
+        ).await.unwrap_err(),
+        "reconciliation model provider drifted",
+    );
+    assert_eq!(response_mock.requests().len(), 1);
+    assert_eq!(durable.native_record(REQUEST), Some(&original_record));
+    timeout(RPC_TIMEOUT, client.shutdown()).await??;
+    drop(durable);
+    issuer.await??;
+    host.shutdown().await;
+    host_completion.complete()?;
+    Ok(())
 }

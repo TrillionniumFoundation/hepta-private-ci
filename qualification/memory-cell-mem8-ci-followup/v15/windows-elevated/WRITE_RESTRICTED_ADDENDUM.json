@@ -1,0 +1,42 @@
+{
+  "schema": "mem8.windows.write_restricted_scope_addendum.v1",
+  "source": {
+    "commit": "189711e3563ea13a5328d52e99a286f082045b98",
+    "tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba"
+  },
+  "prior_review": {
+    "archive_blob": "8f83ef014873388d99d2e6adfb2018410efc8d2c",
+    "archive_sha256": "0d1649c76b76fa3899cfdd3dda4c91862b1be9949a2878fd13a35c6abe09973a",
+    "review_blob": "3e1b57ac549a3606ca9cf3c8d59935158f94badb"
+  },
+  "clarification": {
+    "retaining_write_restricted": "Removing broad restricting SIDs while retaining WRITE_RESTRICTED does not, by itself, introduce a new generic read-capability requirement. The read-capability closure discussed for a token without WRITE_RESTRICTED is a different design.",
+    "static_required_changes": [
+      "The current dedicated-account token helper adds User and the Include branch adds Logon plus Everyone. Removing only Everyone leaves broad identity alternatives; the existing helper cannot produce the proposed capability-only set unchanged.",
+      "desktop.rs explicitly refuses private=false when a nonempty restricting list lacks the token Logon SID. This refusal must remain."
+    ],
+    "independent_parent_delete_boundary": "legacy_admission.rs records an earlier native FILE_DELETE_CHILD counterexample for WRITE_RESTRICTED. Removing broad restricting SIDs does not by itself establish that the separate parent-directory delete route is blocked.",
+    "native_unproven": [
+      "Exact child TokenRestrictedSids, TokenGroups and TokenPrivileges for the original elevated execution were not observed.",
+      "Capability-only launch through WinSta0 and the owned private desktop, shared route-SID interactions, WFP identity compatibility and newly created object ACLs require actual qualification; this review does not claim each is a proven unconditional startup failure.",
+      "All four original outside-delete cells must still be checked under the actual child token. The parent Backup/Restore observations in the later Bazel ordinary-host failure are a separate observation and do not identify the dedicated elevated child token."
+    ]
+  },
+  "primary_docs": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+      "observed": "WRITE_RESTRICTED applies restricting SIDs only when evaluating write access; the page does not separately prove the FILE_DELETE_CHILD parent fallback behavior."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens",
+      "observed": "The general restricting-SID access-check model does not replace the exact native four-cell qualification."
+    }
+  ],
+  "execution": {
+    "new_host_processes": 0,
+    "new_native_tests": 0,
+    "new_model_calls": 0,
+    "production_patch": false,
+    "source_ref_changed": false
+  }
+}

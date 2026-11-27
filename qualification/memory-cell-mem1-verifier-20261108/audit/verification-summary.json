@@ -1,0 +1,165 @@
+{
+  "attacks": {
+    "final_review_path": "/workspace/scratch/c2de2179a824/evidence/mem1-independent-review/final-review.json",
+    "final_review_sha256": "ef46abdf5b4c0583672ca718288d659430f131fd383d8e41119b79b1053abfa8",
+    "followup_delta_reviewed": true,
+    "independent_checks": 11,
+    "independent_checks_passed": true,
+    "independent_checks_rerun_after_followup": false,
+    "path": "attack-receipts.json",
+    "sha256": "e1e634654b411ad51ed31cdfd53562b154b4017ab8ed36c48f3381ffeffd93e9"
+  },
+  "base_commit": "cb2d4b47976634f287d5a5369fbd4305064138d3",
+  "base_pr": 5355,
+  "base_tree": "63b3a1922b456b0bfe99889b38a737251d8392da",
+  "binary": {
+    "actual_bytes_hashed": true,
+    "bytes": 1101832,
+    "executed_for_this_repair": false,
+    "path": "/workspace/scratch/eb987333a9b4/memory-cell/native-evidence/extracted/bin/mem1_fast_memory-59ea51c0c495a473",
+    "sha256": "59ea51c0c495a473a6cefc8c2a3649fc3d2263fa9d5c395e3d59982e5c1b0474"
+  },
+  "format": {
+    "ast_unchanged_from_tests": true,
+    "format_exit": 0,
+    "lint_exit": 0,
+    "repository_just_fmt": "deferred to native publishing checkout",
+    "tests_rerun_after_format": false,
+    "tool": "Ruff 0.15.13"
+  },
+  "historical": {
+    "dynamic": {
+      "directory": "/workspace/scratch/eb987333a9b4/memory-cell/native-evidence/extracted/evidence/campaign-dynamic-v1",
+      "manifest_inputs_results_unchanged": true,
+      "original_sha256": {
+        "inputs.json": "073e2abc0e8d57c9b69d3e77f50904a150678e2826530b41e267841af3213e5a",
+        "manifest.json": "777f35c561ffc275ce6f21207adf2f0744a292a15b574131597ea008636a404f",
+        "results.json": "905e1be20c7251a9cb87700de08c11e726e2104eeb2e9e0eea692e277f532909"
+      },
+      "raw_events": {
+        "owner_change": 35,
+        "prequential": 8400,
+        "probe": 2100,
+        "recovery": 105,
+        "sleep_candidate": 40,
+        "update": 10000
+      },
+      "verified_runs": 35
+    },
+    "stationary": {
+      "directory": "/workspace/scratch/eb987333a9b4/memory-cell/native-evidence/extracted/evidence/campaign-stationary-v1",
+      "manifest_inputs_results_unchanged": true,
+      "original_sha256": {
+        "inputs.json": "073e2abc0e8d57c9b69d3e77f50904a150678e2826530b41e267841af3213e5a",
+        "manifest.json": "ae9556bd170fe75ea62145b05e628168bbdaba327137fd75e78dc54405af7a0c",
+        "results.json": "47157f49cd851d484b5249d45fb0c8666d30246bfb6a2da50d4a5350bc384740"
+      },
+      "raw_events": {
+        "owner_stationary": 35,
+        "prequential": 8400,
+        "probe": 2100,
+        "recovery": 105,
+        "sleep_candidate": 40,
+        "update": 9760
+      },
+      "verified_runs": 35
+    }
+  },
+  "original_native_archive": {
+    "bytes": 2031228,
+    "compiled_elf_included": true,
+    "remote_path": "/home/qian-qi/work/memory-cell-mem1-20261108-r1/evidence-package-v1.tar.xz",
+    "sha256": "2ff160bce4f9ec4a248fad6ee6aea10eecc679be30e581070233170d2156a359"
+  },
+  "original_raw_package": {
+    "bytes": 1765660,
+    "compiled_elf_included": false,
+    "file_entries": 994,
+    "manifest": "archive-index.json",
+    "path": "raw-evidence-v1.tar.xz",
+    "repository_path": "qualification/memory-cell-mem1/raw-evidence-v1.tar.xz",
+    "sha256": "df21f41c562a695cf76419521a6c73a99539571ee40b1b7b4315323ce38c6d15"
+  },
+  "qualification": {
+    "complete_cost_verified": false,
+    "cost_audit": "PARTIAL",
+    "new_experiment_runs": 0,
+    "production": "NoUpdate",
+    "scientific": "HOLD"
+  },
+  "remaining_limits": [
+    "kernel counts are reconstructed under the frozen v1 harness; this is not execution attestation",
+    "native binding establishes supplied binary bytes, not proof that the binary executed each historical operation",
+    "owner-call counts are reported and retained pool snapshots provide a lower bound on peak payload",
+    "hashing/IPC and full physical costs are not reconstructed",
+    "native worker recovery is not full owner-process crash recovery",
+    "cost audit remains PARTIAL, scientific qualification HOLD, and production adoption NoUpdate"
+  ],
+  "schema": "hepta.mem1.verifier-repair-summary.v1",
+  "scope": "verification repair for existing synthetic reference; historical outcomes and scientific HOLD retained",
+  "source": {
+    "scripts/memory_cell_mem1/audit_evidence.py": {
+      "ast_sha256": "1399923e46552dfc6b6cdb5d37c725b6106b9b5e9ec46cace7bf9443ba365757",
+      "final_sha256": "f4ada0efeb82d3ef045e1936a40e8bd797674b574e5cc5b68763bb1a78eb68f3",
+      "format_ast_equal": true,
+      "tested_sha256": "ff18c500e6c4b28d69023e6c1a7c13531b49267e606ac86394e4bd56187cf5b2"
+    },
+    "scripts/memory_cell_mem1/test_verify_results.py": {
+      "ast_sha256": "db051a7cc8b2c5874d2069e1864d3fdf3fd81c73d747fd8d0552707f5ad95b61",
+      "final_sha256": "0a0b5e918cb1d902ed2ceb51e03139c5496f9591bdf10432bb15704409f289c6",
+      "format_ast_equal": true,
+      "tested_sha256": "3d57f16d41cfc3ff5eddeca72c366cf20fe8e153c53cafb96caa7410002ff62f"
+    },
+    "scripts/memory_cell_mem1/verify_results.py": {
+      "ast_sha256": "8c801ee16577a0a8241ea38ba20157666db4158028a67502a79a4088a1f0cfff",
+      "final_sha256": "515f47a57dfb07fcac0d5260f3eed1e53c4cd2e51660782ee2e6088a07446448",
+      "format_ast_equal": true,
+      "tested_sha256": "515f47a57dfb07fcac0d5260f3eed1e53c4cd2e51660782ee2e6088a07446448"
+    }
+  },
+  "tests": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/memory_cell_mem1",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "tests-normal.log",
+      "log_sha256": "fdddd1857d30a1c15feafa3207fe030f596a6202ff4c4118b19a8e250d4921e9",
+      "mode": "normal",
+      "passed": 27
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-O",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/memory_cell_mem1",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "tests-optimized.log",
+      "log_sha256": "c9aadfd97f9acc1cf8c02f8d71b364e0d87a6e945c2a76495a87328ba45f05ca",
+      "mode": "optimized",
+      "passed": 27
+    }
+  ],
+  "validation_environment": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14"
+  }
+}

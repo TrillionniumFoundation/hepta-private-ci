@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "status": "five_reviewed_history_merges_prepared_with_QA_child; repository_consolidation_incomplete",
+  "recorded_at_utc": "2026-11-21T15:10:42.830509+00:00",
+  "source_commit": "77aae54a30eb37ef7930d01224e5ef312a5014a1",
+  "source_tree": "ebf0778517def0426a43e7ae24c46927c82a870d",
+  "original_pr_head": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+  "native_execution_commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+  "native_execution_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+  "native_formatted_worktree_tree": "f80cd064b5237c75b0703df376344edd17e3a745",
+  "native_after_format_tests_executed": false,
+  "source_changes_from_original_head": [
+    "M\t.github/workflows/hepta-architecture-convergence.yml",
+    "M\tcodex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+    "M\tcodex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+    "M\tcodex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+    "M\tcodex-rs/hepta-agentd/src/neuron_generation_learning_readback_test_support.rs",
+    "M\tcodex-rs/hepta-authbus/src/owner_tests.rs",
+    "M\tscripts/format.py",
+    "M\tscripts/memory_cell/procedural_bundle_trial.py",
+    "M\tscripts/memory_cell/procedural_observations.py",
+    "M\tscripts/memory_cell/test_procedural_bundle_trial.py",
+    "M\tscripts/memory_cell/test_procedural_observations.py",
+    "M\tscripts/test_hepta_format_scope.py"
+  ],
+  "source_path_count": 12,
+  "genuine_history_merges": [
+    {
+      "merge": "0847396844638608708608072ec94961bb20458b",
+      "incoming": "4a120a0bba8b493407930924822eb6cf38279976"
+    },
+    {
+      "merge": "132b3227ae1978b5ae2eba5b64efef53158a92f6",
+      "incoming": "dbed60c6372a148a934e48e9a08ba88aa2a536e2"
+    },
+    {
+      "merge": "d3417632ceffd0f9c8d8cfc95f6ebaae780e467e",
+      "incoming": "1bc77df729081280a17284be3ff52f612f0bbd94"
+    },
+    {
+      "merge": "0b87cfc0c10bbfe921d9525e95a9be5838d77fe4",
+      "incoming": "047468e6edd6d7166ed639123d701a26a2568cfd"
+    },
+    {
+      "merge": "8f630f1630906da2f333f6795974e75c1965404e",
+      "incoming": "438a2de93f5fd3bc06f61a0575422dbc4915019d"
+    },
+    {
+      "merge": "f8bf6bb7b12a6dc84079d11ece8dd5f3634d9e45",
+      "incoming": "a5a5958c3797d281a96fc613827c28404bd404a5"
+    },
+    {
+      "merge": "4fe76f0a3dd3dd4bbff68bbf8d11584573c1feb9",
+      "incoming": "c6e58e1cf5cbd26f660b2f852884ba2b76dffc7a"
+    }
+  ],
+  "native_scoped_results": {
+    "strict_clippy_exit": 0,
+    "agentd_passed": 1605,
+    "agentd_failed": 0,
+    "agentd_original_profile_skips": 181,
+    "authbus_passed": 51,
+    "authbus_failed": 0,
+    "authbus_skipped": 0,
+    "original_fmt_exit": 0,
+    "original_fmt_check_exit": 0,
+    "preserved_first_attempt_exit": 1,
+    "preserved_test_recovery_wrapper_exit": 1
+  },
+  "other_scoped_results": {
+    "b4_passed": 1350,
+    "github_original_command_executions": 314,
+    "github_unique_test_ids": 304,
+    "github_original_command_exit": 0,
+    "github_audit_wrapper_error_preserved": true,
+    "architecture_scope_passed": 25,
+    "formatter_scope_passed": 41,
+    "full_ruff_formatted_files": 1145
+  },
+  "test_counts_must_not_be_added_as_disjoint": true,
+  "full_formatter_original_4247_path_scope_executed": false,
+  "full_formatter_original_4247_path_scope_planned": true,
+  "snapshot": {
+    "captured_at_utc": "2026-11-21T15:00:21.698291+00:00",
+    "capture_started_at_utc": "2026-11-21T15:00:15.250983+00:00",
+    "refs": 7831,
+    "sha256": "34d61eb9be49880aa0bd3220005b0fa764454b87557184e6ab1d4b7aa953f22f",
+    "remote_reachable_commits": 79118,
+    "known_protected_refs": 540,
+    "known_protected_nodes": 1472,
+    "protected_names_without_hia": 414,
+    "ordinary_non_main_refs": 7290,
+    "ordinary_covered_by_candidate": 2866,
+    "ordinary_pending_after_candidate": 4424,
+    "distinct_pending_tips": 4207,
+    "ordinary_already_contained_by_main": 0,
+    "newly_covered_refs": {
+      "automation/2963-adapterstatus-1bc77df-20261020": "1bc77df729081280a17284be3ff52f612f0bbd94",
+      "automation/2963-cell-batch-rustfmt-f0b853d-20261020": "1bc77df729081280a17284be3ff52f612f0bbd94",
+      "codex/architecture-sustainable-main-20260930": "c6e58e1cf5cbd26f660b2f852884ba2b76dffc7a",
+      "codex/control-engineering-production-convergence-20260925": "438a2de93f5fd3bc06f61a0575422dbc4915019d",
+      "codex/critical-ci-feedback-20261001": "a5a5958c3797d281a96fc613827c28404bd404a5",
+      "codex/learn-recovery-ai395-20261112-ff41": "047468e6edd6d7166ed639123d701a26a2568cfd",
+      "fix/2963-adapter-status-test-scope-20261020-2023": "1bc77df729081280a17284be3ff52f612f0bbd94",
+      "fix/2963-fleet-clippy-host-fixture-20261020-1911": "1bc77df729081280a17284be3ff52f612f0bbd94"
+    },
+    "new_protected_pin": {
+      "codex/hia-model-cache-version-refresh-20261121-auto11": "c03eb6e20a8a2554306244d91b780c083cfd81e1"
+    },
+    "historical_551st_pin_identity_unrecovered": true,
+    "snapshot_does_not_freeze_future_remote_changes": true
+  },
+  "required_main_contexts": [
+    "CI required",
+    "Architecture required"
+  ],
+  "final_source_full_ci_qualified": false,
+  "main_merged": false,
+  "ordinary_branches_deleted": 0,
+  "hia_branches_mutated": false,
+  "remaining_observed_blockers": [
+    "Windows AuthBus non-Unix parent validation and Windows elevated sandbox admission",
+    "Unqualified AppContainer mechanism on the current source",
+    "Original 85 percent Bellman operator line coverage floor and skipped subsequent qualification steps",
+    "Complete architecture and native maintenance qualification",
+    "4424 ordinary refs absent from the candidate on the fixed7831 snapshot and corresponding source review",
+    "Unresolved historical protection pin identity"
+  ],
+  "stop_commit": "d783273c25b3164f5f632482cb7b017fdcb9d756",
+  "stop_patch_read_applied_or_reimplemented": false,
+  "prior_user_authorization_for_normal_consolidation_remains_in_effect": true,
+  "concurrent_unknown_jobs_or_private_checkouts_modified": false,
+  "evidence_commit_policy": "Five actual default history merges preserve the reviewed full tree. A QA-only child follows their last remote object. Final branch publication requires an unchanged fresh expected SHA and force=false.",
+  "initial_published_head": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+  "publication_packaging_followup": {
+    "original_ci_head": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+    "blob_size_failed_job": 136862721519,
+    "codespell_failed_job": 136862721594,
+    "existing_blob_limit_bytes": 512000,
+    "maximum_part_bytes": 491520,
+    "original_archive_bytes_and_hashes_preserved": true,
+    "narrative_revision": "One Rust terminology expansion to mutable static items; original source preserved in the earlier commit.",
+    "rust_or_production_source_changed": false,
+    "ci_rules_allowlists_ignore_words_or_thresholds_changed": false,
+    "archive_parts_manifest": "ARCHIVE-PARTS.json",
+    "archive_usage": "ARCHIVE-PARTS-README.md",
+    "local_gate_results": "Recorded separately after final combination; not inherited from prior CI."
+  },
+  "publication_whitespace_followup": {
+    "original_ci_head": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+    "original_ci_failed_job": 136870143637,
+    "original_ci_run": 44911977664,
+    "failed_command": "git diff --cached --check",
+    "deterministic_merge_completed": true,
+    "rust_tests_or_clippy_reached": false,
+    "full_pr_base": "69ec34ac53176ff1e46a1689048817c91adb5be2",
+    "local_reproduction_exit": 2,
+    "original_files": 3,
+    "original_diagnostics": 13,
+    "storage": "Three lossless gzip files with decompressed byte lengths, SHA-256 and Git blob identities in EVIDENCE-MANIFEST.json.",
+    "original_bytes_preserved": true,
+    "rust_or_production_source_changed": false,
+    "git_whitespace_rules_attributes_ci_rules_or_ignore_lists_changed": false,
+    "preceding_head_codespell_job": {
+      "job_id": 136869516076,
+      "conclusion": "success"
+    },
+    "preceding_head_blob_size_job": {
+      "job_id": 136869516120,
+      "conclusion": "success"
+    },
+    "final_combined_tree_validation": "Recorded after the final combination; prior-head success is not inherited.",
+    "published_followup_head": "87b141833f2a43e0e87fdb3d4a168e1dacde7a0f",
+    "exact_followup_head_original_codespell_and_blob_policy": "success",
+    "exact_followup_head_deterministic_merge_job": {
+      "job_id": 136875657200,
+      "conclusion": "success"
+    }
+  },
+  "previous_snapshot": {
+    "captured_at_utc": "2026-11-21T13:10:02.517565+00:00",
+    "refs": 7812,
+    "protected_refs": 538,
+    "protected_names_without_hia": 414,
+    "known_protection_nodes": 1470,
+    "ordinary_non_main_refs": 7273,
+    "ordinary_refs_covered_by_candidate": 2858,
+    "ordinary_refs_not_covered": 4415,
+    "distinct_pending_tips": 4195,
+    "ordinary_refs_already_contained_by_main": 0,
+    "historical_551st_protection_pin_unresolved": true
+  },
+  "history_batch": {
+    "schema": 1,
+    "recorded_at_utc": "2026-11-21T15:10:42.830509+00:00",
+    "phase": "Five reviewed history merge objects plus a prepared QA child; actual ref publication must be read back separately.",
+    "prior_published_head": "87b141833f2a43e0e87fdb3d4a168e1dacde7a0f",
+    "reviewed_source_commit": "77aae54a30eb37ef7930d01224e5ef312a5014a1",
+    "merge_tree": "477005584144e1f9cd9c4e9e280e0a7f7706a487",
+    "full_tree_leaf_count_before_QA_child": 59426,
+    "final_remote_merge_parent_for_QA": "4fe76f0a3dd3dd4bbff68bbf8d11584573c1feb9",
+    "groups": [
+      {
+        "label": "1bc",
+        "incoming": "1bc77df729081280a17284be3ff52f612f0bbd94",
+        "local_merge": "427bade75d77b9ccf8eef88afa87d1e49cd9f85c",
+        "remote_merge": "d3417632ceffd0f9c8d8cfc95f6ebaae780e467e",
+        "remote_ordered_parents": [
+          "87b141833f2a43e0e87fdb3d4a168e1dacde7a0f",
+          "1bc77df729081280a17284be3ff52f612f0bbd94"
+        ],
+        "tree": "477005584144e1f9cd9c4e9e280e0a7f7706a487",
+        "original_ancestors": 1,
+        "ref_names": 4,
+        "net_paths": 1,
+        "conflict_files": 0,
+        "conflict_blocks": 0,
+        "automatic_corrections": 0
+      },
+      {
+        "label": "047",
+        "incoming": "047468e6edd6d7166ed639123d701a26a2568cfd",
+        "local_merge": "bb9cfe2e9866ff60c1c4a09d55fdd7e5a62b68e9",
+        "remote_merge": "0b87cfc0c10bbfe921d9525e95a9be5838d77fe4",
+        "remote_ordered_parents": [
+          "d3417632ceffd0f9c8d8cfc95f6ebaae780e467e",
+          "047468e6edd6d7166ed639123d701a26a2568cfd"
+        ],
+        "tree": "477005584144e1f9cd9c4e9e280e0a7f7706a487",
+        "original_ancestors": 7,
+        "ref_names": 1,
+        "net_paths": 29,
+        "conflict_files": 13,
+        "conflict_blocks": 36,
+        "automatic_corrections": 0
+      },
+      {
+        "label": "438",
+        "incoming": "438a2de93f5fd3bc06f61a0575422dbc4915019d",
+        "local_merge": "086ee7a138615dbbfc16ff86c1d227ef68409a0c",
+        "remote_merge": "8f630f1630906da2f333f6795974e75c1965404e",
+        "remote_ordered_parents": [
+          "0b87cfc0c10bbfe921d9525e95a9be5838d77fe4",
+          "438a2de93f5fd3bc06f61a0575422dbc4915019d"
+        ],
+        "tree": "477005584144e1f9cd9c4e9e280e0a7f7706a487",
+        "original_ancestors": 24,
+        "ref_names": 1,
+        "net_paths": 55,
+        "conflict_files": 16,
+        "conflict_blocks": 49,
+        "automatic_corrections": 3
+      },
+      {
+        "label": "a5a",
+        "incoming": "a5a5958c3797d281a96fc613827c28404bd404a5",
+        "local_merge": "01a035904fa1116863589842e5ed7da59fcadd3c",
+        "remote_merge": "f8bf6bb7b12a6dc84079d11ece8dd5f3634d9e45",
+        "remote_ordered_parents": [
+          "8f630f1630906da2f333f6795974e75c1965404e",
+          "a5a5958c3797d281a96fc613827c28404bd404a5"
+        ],
+        "tree": "477005584144e1f9cd9c4e9e280e0a7f7706a487",
+        "original_ancestors": 41,
+        "ref_names": 1,
+        "net_paths": 192,
+        "conflict_files": 38,
+        "conflict_blocks": 74,
+        "automatic_corrections": 3
+      },
+      {
+        "label": "c6e",
+        "incoming": "c6e58e1cf5cbd26f660b2f852884ba2b76dffc7a",
+        "local_merge": "d4f2802e5454df68bd0db4045d6f8ece7eb1b77f",
+        "remote_merge": "4fe76f0a3dd3dd4bbff68bbf8d11584573c1feb9",
+        "remote_ordered_parents": [
+          "f8bf6bb7b12a6dc84079d11ece8dd5f3634d9e45",
+          "c6e58e1cf5cbd26f660b2f852884ba2b76dffc7a"
+        ],
+        "tree": "477005584144e1f9cd9c4e9e280e0a7f7706a487",
+        "original_ancestors": 46,
+        "ref_names": 1,
+        "net_paths": 184,
+        "conflict_files": 48,
+        "conflict_blocks": 106,
+        "automatic_corrections": 2
+      }
+    ],
+    "imported_original_ancestors": 119,
+    "new_sequential_merge_commits": 5,
+    "merge_parent_ancestor_count": 45038,
+    "source_or_gate_policy_changed_by_history_merges": false,
+    "actual_default_merge_and_reviewed_resolution_proofs": "sequence-proof.tar.gz",
+    "strategy_override_used": false,
+    "review_limits": [
+      "Every net path, mode and endpoint object identity was enumerated. Every actual default-merge conflict and retained automatic difference was reviewed.",
+      "The complete original patches for 047 were reviewed. The 24, 41 and 46 intermediate patch payloads in the other large groups were not each reviewed line by line.",
+      "This history review does not claim a complete repository source audit or new runtime qualification."
+    ],
+    "fixed_snapshot": {
+      "captured_at_utc": "2026-11-21T15:00:21.698291+00:00",
+      "capture_started_at_utc": "2026-11-21T15:00:15.250983+00:00",
+      "refs": 7831,
+      "sha256": "34d61eb9be49880aa0bd3220005b0fa764454b87557184e6ab1d4b7aa953f22f",
+      "remote_reachable_commits": 79118,
+      "known_protected_refs": 540,
+      "known_protected_nodes": 1472,
+      "protected_names_without_hia": 414,
+      "ordinary_non_main_refs": 7290,
+      "ordinary_covered_by_candidate": 2866,
+      "ordinary_pending_after_candidate": 4424,
+      "distinct_pending_tips": 4207,
+      "ordinary_already_contained_by_main": 0,
+      "newly_covered_refs": {
+        "automation/2963-adapterstatus-1bc77df-20261020": "1bc77df729081280a17284be3ff52f612f0bbd94",
+        "automation/2963-cell-batch-rustfmt-f0b853d-20261020": "1bc77df729081280a17284be3ff52f612f0bbd94",
+        "codex/architecture-sustainable-main-20260930": "c6e58e1cf5cbd26f660b2f852884ba2b76dffc7a",
+        "codex/control-engineering-production-convergence-20260925": "438a2de93f5fd3bc06f61a0575422dbc4915019d",
+        "codex/critical-ci-feedback-20261001": "a5a5958c3797d281a96fc613827c28404bd404a5",
+        "codex/learn-recovery-ai395-20261112-ff41": "047468e6edd6d7166ed639123d701a26a2568cfd",
+        "fix/2963-adapter-status-test-scope-20261020-2023": "1bc77df729081280a17284be3ff52f612f0bbd94",
+        "fix/2963-fleet-clippy-host-fixture-20261020-1911": "1bc77df729081280a17284be3ff52f612f0bbd94"
+      },
+      "new_protected_pin": {
+        "codex/hia-model-cache-version-refresh-20261121-auto11": "c03eb6e20a8a2554306244d91b780c083cfd81e1"
+      },
+      "historical_551st_pin_identity_unrecovered": true,
+      "snapshot_does_not_freeze_future_remote_changes": true
+    },
+    "preceding_87_CI_observation": {
+      "head": "87b141833f2a43e0e87fdb3d4a168e1dacde7a0f",
+      "captured_at_utc": "2026-11-21 14:59:52 UTC",
+      "checks": 103,
+      "counts": {
+        "failure": 7,
+        "success": 68,
+        "in_progress": 10,
+        "skipped": 17,
+        "cancelled": 1
+      },
+      "exact_source_failed_step": "Independent operator coverage floor",
+      "exact_source_compile_tests_strict_clippy_and_format_step": "success",
+      "exact_source_coverage_report_percent": null,
+      "exact_source_coverage_floor_percent": 85,
+      "exact_source_coverage_command_exit": 1,
+      "exact_source_coverage_percentage_is_inferred_or_invented": false,
+      "deterministic_merge_job": 136875657200,
+      "deterministic_merge_conclusion": "success",
+      "all_final_head_required_checks_qualified": false,
+      "original_500_ms_musl_failure_kept_as_historical_evidence": true,
+      "current_87_musl_Bazel_job": 136875657490,
+      "current_87_musl_Bazel_conclusion": "success",
+      "results_transferred_to_new_head": false
+    },
+    "main_merged": false,
+    "branches_deleted": 0,
+    "hia_refs_modified": false
+  }
+}

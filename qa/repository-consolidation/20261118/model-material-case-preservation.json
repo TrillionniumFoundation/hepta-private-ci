@@ -1,0 +1,100 @@
+{
+  "status": "PASS_STATIC_CASE_PRESERVATION",
+  "native_pass_claimed": false,
+  "source_refs_with_identical_base": [
+    "5ec371387c47fe1af3cb511c076867ff2678f940",
+    "d2422433dccc232e10256973df68823331928a28"
+  ],
+  "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+  "base_git_blob": "d1a24c7351d25c9c0728541b011a6608b451b9dc",
+  "proposal_git_blob": "527f1f8896a82c31931092c7f9a3f534cef658cd",
+  "base_sha256": "838b853057e098a2af38c4f814254408ecb1a15e804e7954070613021dff6f73",
+  "proposal_sha256": "a0a6ab5ae07e0f20148e7b6e36a8df94cd7289a90ee2a7710894b802deedf7ec",
+  "patch_sha256": "7eaa7ac54f79dfc0ada47c7a48aa4ef9ad2a6361e9b0ceb18055d8ff5a828507",
+  "existing_test_entries_retained": [
+    "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+    "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+    "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute"
+  ],
+  "old_test_count": 3,
+  "new_test_count": 10,
+  "independent_fixtures_before": 8,
+  "independent_fixtures_after": 8,
+  "checks": {
+    "wire_body_identical_except_indentation": true,
+    "live_cold_regression_body_identical_except_indentation": true,
+    "renewal_expiry_body_byte_identical": true,
+    "unrelated_existing_tests_byte_identical": true,
+    "all_seven_explicit_fault_wrappers_present_once": true,
+    "no_test_entries_removed_or_ignored": true,
+    "no_timeout_or_frame_limit_file_changes": true,
+    "caller_manifest_update_needed": false,
+    "git_apply_check": "pass"
+  },
+  "cases": [
+    {
+      "test": "original_evaluation_model_material_rejects_wrong_page_order",
+      "original_faults": [
+        "wrong-order"
+      ],
+      "actual_fixtures": 1
+    },
+    {
+      "test": "original_evaluation_model_material_rejects_wrong_page_total",
+      "original_faults": [
+        "wrong-total"
+      ],
+      "actual_fixtures": 1
+    },
+    {
+      "test": "original_evaluation_model_material_rejects_wrong_page_offset",
+      "original_faults": [
+        "wrong-offset"
+      ],
+      "actual_fixtures": 1
+    },
+    {
+      "test": "original_evaluation_model_material_rejects_wrong_last_page",
+      "original_faults": [
+        "wrong-last"
+      ],
+      "actual_fixtures": 1
+    },
+    {
+      "test": "original_evaluation_model_material_rejects_lost_finish",
+      "original_faults": [
+        "lose-finish"
+      ],
+      "actual_fixtures": 1
+    },
+    {
+      "test": "original_evaluation_model_material_rejects_completed_to_missing_regression",
+      "original_faults": [
+        "after-missing",
+        "cold-missing"
+      ],
+      "actual_fixtures": 1
+    },
+    {
+      "test": "original_evaluation_model_material_rejects_completed_to_pending_regression",
+      "original_faults": [
+        "after-pending",
+        "cold-pending"
+      ],
+      "actual_fixtures": 1
+    },
+    {
+      "test": "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "original_faults": [
+        "renewed evaluation",
+        "original signature expires_at"
+      ],
+      "actual_fixtures": 1
+    }
+  ],
+  "validation_pending": [
+    "just fmt in complete checkout with pinned Rust toolchain",
+    "native Agentd model-material module with all ten test entries and retries=0",
+    "full authorized daemon-learning-native suite on final reviewed source"
+  ]
+}

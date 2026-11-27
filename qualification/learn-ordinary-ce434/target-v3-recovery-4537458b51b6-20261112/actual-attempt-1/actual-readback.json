@@ -1,0 +1,104 @@
+{
+  "job_id": "1a1d0ae00c6-2564-1bb3",
+  "status": {
+    "at_unix_ms": 1794502429488,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1d0ae00c6-2564-1bb3",
+    "launch_nonce": "2d6b75d69eb593f1dd618088471bfb42",
+    "log_bytes": {
+      "stderr": {
+        "seen": 624,
+        "stored": 624
+      },
+      "stdout": {
+        "seen": 655,
+        "stored": 655
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "script": "67c8ae900edfdecef3816a4cc40849be9043f7c4",
+  "streams": {
+    "stdout": {
+      "bytes": 655,
+      "sha256": "38002ba8b3d6704d1e656bf4519675c11796d6f0b7b78bdfcda5733708acb3f5"
+    },
+    "stderr": {
+      "bytes": 624,
+      "sha256": "cdd37fa97dc99c9233512355f8b746c2442494889e919c5ffe0a71b5520cad38"
+    }
+  },
+  "preflight": {
+    "schema": "learn.original-build-root-recovery-preflight.v1",
+    "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "data_parent": {
+      "device": 2067,
+      "inode": 2,
+      "mode": "0o40755",
+      "uid": 1000,
+      "nlink": 714
+    },
+    "data_free_bytes_before": 194867552256,
+    "prior_target_observations": [
+      {
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/target",
+        "observation": "lstat FileNotFoundError; no statement about parent existence"
+      },
+      {
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v2/target",
+        "observation": "lstat FileNotFoundError; no statement about parent existence"
+      }
+    ],
+    "native_tests_executed": 0
+  },
+  "failed_at_line": 72,
+  "missing_asset": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+  "new_v3_directory_created_by_this_job": false,
+  "binding_rs_current_existence_not_established": true,
+  "reason_for_asset_absence": "unknown",
+  "native_tests_executed": 0,
+  "prepared_document_commit": "740f53ebc9bf2677c816fa6595aa6064df1e26ea",
+  "request_blob": "15d6e1c17bf2bbb72f855cbe45ff334fa45040e9",
+  "read_operations": [
+    {
+      "key": "v3RecoveryStatus1",
+      "operation_id": "1c82efc6f198829f03669780833a3875a9407a86330b1cee467bba4573e0135d",
+      "bytes": 909,
+      "sha256": "2440ae83320a5117343618516c0249d14fd6943459125f00409650bad11e3593"
+    },
+    {
+      "key": "v3RecoveryLogs",
+      "operation_id": "dd1148bce2c65e179a9873036982639dce1712a4c6e6ee04fd6f6ffdc20bbefa",
+      "bytes": 4492,
+      "sha256": "a1d5f07f64e90b81351798975dc0e583ccef49bef1282a5f41e192087af74dbb"
+    },
+    {
+      "key": "v3RecoveryResult",
+      "operation_id": "1c8512b40d365cfc9a84ad39308f320aea3be22edae3637b10128671fe497974",
+      "bytes": 234,
+      "sha256": "1bd84b2547500ad05e03ad1c2b6da4cd9cd669a7ac9819a3d33e4b39aff3274d"
+    }
+  ]
+}

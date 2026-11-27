@@ -1,0 +1,21 @@
+{
+  "schema": "rrsnn-v4-resource-archive-coverage-extension-1",
+  "core_archive_remains_unchanged": true,
+  "core_archive_sha256": "239e3ba9f786929135a505d001148df5cb82116d0422e8e483f9da37ca272792",
+  "source_before_sha256": "b4c95e1509eb52b6801e0df90dffe4ce4d095ad8334671b7d25d32bffb88d2d9",
+  "source_after_sha256": "5c2e9f5176750a98efa8dd4a385f780830ddc488aa9c50d53dc1ecac47f45f20",
+  "coverage_review_sha256": "a5f3f960e7ce2babe344ed88c60ac56922e87272e6478b36dc581cbefdaac9b2",
+  "additional_candidate_patterns": [
+    "*.json",
+    "results/*.json",
+    "hepta/source_publication_verified.json",
+    "hepta/reclaimable_cache_inventory.json"
+  ],
+  "unchanged_rules": [
+    "Git-backed exclusion requires identical immutable blob",
+    "source files are published in Git",
+    "write-once archives and receipts",
+    "all metadata and raw members reread and verified"
+  ],
+  "remaining": "Actual final resource ZIP and final Git/map coverage closure after all80 conditions."
+}

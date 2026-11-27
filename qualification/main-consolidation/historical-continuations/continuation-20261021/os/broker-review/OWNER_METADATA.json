@@ -1,0 +1,62 @@
+{
+  "scope": "Focused current owner reads; not full semantic review of all OS PRs",
+  "owners": [
+    {
+      "number": 210,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/pull/210",
+      "title": "feat: add default-deny Organ control broker seam",
+      "state": "open",
+      "draft": true,
+      "author": "ProfHepta",
+      "head": {
+        "ref": "agents/p0-organ-broker-20261019",
+        "sha": "987d0d992ad5faa522676759a508d2bbdccdf3fa"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "0c1de23a3754bc3a6976fed53c7dfa0ec3778e57"
+      },
+      "body_sha256": "9967b625132abd4f1d5e1074c8e196fa1c510bba265a812acd1144174b79db65",
+      "body_characters": 4104,
+      "body_omitted": true
+    },
+    {
+      "number": 218,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/pull/218",
+      "title": "ci(desktop): qualify broker and opt-in G1-d owner together",
+      "state": "open",
+      "draft": true,
+      "author": "Franksudoman",
+      "head": {
+        "ref": "agents/20261020/desktop-broker-g1d-combination",
+        "sha": "37ad0cb43621ce3f47e92052972e086c24eca159"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "0c1de23a3754bc3a6976fed53c7dfa0ec3778e57"
+      },
+      "body_sha256": "186931c1f572c604a869259fa207d4b3b5fd13bc9fe0c556412100e9a6aaaa57",
+      "body_characters": 6002,
+      "body_omitted": true
+    },
+    {
+      "number": 225,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/pull/225",
+      "title": "Converge inode permission/SMP and ExFAT with the merged control profile",
+      "state": "open",
+      "draft": true,
+      "author": "ProfHepta",
+      "head": {
+        "ref": "codex/inode-storage-convergence-20261021",
+        "sha": "84e2c9fb45ff88f4352853f5ed4462dd56c6a01d"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "e524064d985ad2e1ade2099bc3d701c29484b3eb"
+      },
+      "body_sha256": "ba7de44b409b1982dc29f12069867d4f1782b1b01ce6b7405df88da68ffda1cc",
+      "body_characters": 3679,
+      "body_omitted": true
+    }
+  ]
+}

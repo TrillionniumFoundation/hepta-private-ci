@@ -1,0 +1,493 @@
+{
+  "bank": {
+    "calibration_macros": 54,
+    "calibration_source_groups": 6,
+    "canonical_sha256": "5cbc7ca35d1f3b00763bdc066a197260d3c1dc0d6905f81dfb2d20a034bd4329",
+    "cold_load_verified": true,
+    "conditional_coverage_established": false
+  },
+  "clipping_and_support": {
+    "conditional_coverage_established": false,
+    "fraction": 0.30324074074074076,
+    "future_deadline_guarantee": false,
+    "macros_with_nonconstant_terminal_values": 54,
+    "observed_macro_particles": 432,
+    "observed_macro_utility_clipped_particles": 131,
+    "observed_macros_with_clipping": 46,
+    "particles_are_stratified_not_iid": true,
+    "tail_coverage_established": false
+  },
+  "collection": {
+    "dispatched": 60,
+    "elapsed_wall_seconds": 24.801615204894915,
+    "plan_sha256": "7be396821d6a16352b5e71b66f0a374962153c269063134ced06b4ce924d9ee6",
+    "planned": 60,
+    "statuses": {
+      "Completed": 60
+    },
+    "training_rows": 120,
+    "wall_limit_observed": true
+  },
+  "costs": {
+    "child_cpu_seconds": 2.6555,
+    "controller_cpu_seconds": 0.08654099999999999,
+    "driver_limit_seconds": 420,
+    "driver_process_cpu_seconds": 2.215535763,
+    "driver_wall_seconds": 2.4121493080165237,
+    "native_attempts_wall_sum": 5.5758052909513935,
+    "native_v1_failed_wall_seconds": 2.603633609949611,
+    "native_v2_outer_limit_seconds": 470,
+    "native_v2_outer_wall_seconds": 2.9721716810017824,
+    "overlapping_macro_costs_are_not_additive": true,
+    "prior_collection_cost_is_separate": true,
+    "stages": [
+      {
+        "name": "admission",
+        "process_cpu_seconds": 0.055555023,
+        "status": "completed",
+        "wall_seconds": 0.055559803964570165
+      },
+      {
+        "name": "extract_actual_terminal_macros",
+        "process_cpu_seconds": 0.383096471,
+        "status": "completed",
+        "wall_seconds": 0.38309659191872925
+      },
+      {
+        "name": "load_frozen_behavior_checkpoint",
+        "process_cpu_seconds": 0.8425616499999999,
+        "status": "completed",
+        "wall_seconds": 1.0232967289630324
+      },
+      {
+        "name": "replay_original_behavior_states",
+        "process_cpu_seconds": 0.033328233999999846,
+        "status": "completed",
+        "wall_seconds": 0.04725646402221173
+      },
+      {
+        "name": "fit_source_disjoint_residual_bank",
+        "process_cpu_seconds": 0.05347360900000009,
+        "status": "completed",
+        "wall_seconds": 0.055291221011430025
+      },
+      {
+        "name": "diagnose_held_out_source_predictions",
+        "process_cpu_seconds": 0.8461798810000001,
+        "status": "completed",
+        "wall_seconds": 0.8462931249523535
+      }
+    ],
+    "transport_control_plane_money_energy_are_not_complete": true
+  },
+  "execution": {
+    "actual_model_device": "cpu",
+    "backend": "heptaruntime-operator-native",
+    "cloud_run": false,
+    "cuda_api_available": true,
+    "gpu_used": false,
+    "host_alias": "rog",
+    "input_files_unchanged": true,
+    "python_version": "3.14.4",
+    "requested_device": "cpu",
+    "source_files_checked": 81,
+    "source_unchanged": true,
+    "torch": "2.13.0+rocm10.0.0",
+    "visible_device_count": 1
+  },
+  "hold": true,
+  "launch": {
+    "argv_shape": [
+      "<same-torch-python>",
+      "-m",
+      "ndu_real_runtime.stopped_calibration_run",
+      "--records",
+      "<inputs>/records.jsonl",
+      "--weights",
+      "<inputs>/weights.pt",
+      "--registration",
+      "<inputs>/registration.json",
+      "--behavior-metadata",
+      "<inputs>/behavior-receipt.json",
+      "--output",
+      "<new-output>/diagnostic",
+      "--device",
+      "cpu",
+      "--max-wall-seconds",
+      "420",
+      "--expected-source-sha256",
+      "<model-source-pin>",
+      "--expected-records-sha256",
+      "<records-pin>",
+      "--expected-weights-sha256",
+      "<weights-pin>",
+      "--expected-registration-sha256",
+      "<registration-pin>",
+      "--expected-behavior-metadata-sha256",
+      "<receipt-pin>"
+    ],
+    "cwd": "not explicitly set and not captured; absolute PYTHONPATH removes cwd dependence",
+    "v1_failure": "ModuleNotFoundError: experiments; repository root absent from PYTHONPATH",
+    "v1_launcher_sha256": "d22668087ea78889a22ec1149b3e9b8614cc1742447f2a0f84ba71cab8067624",
+    "v2_launcher_sha256": "3d8f87b26dc3270b00b820b613b49d807d322d304a6d79d8b1fe7d37a4e7fda1",
+    "v2_only_launcher_fix": "PYTHONPATH=<source-root>/scripts:<source-root>"
+  },
+  "limitations": {
+    "benefit_under_full_cost_established": false,
+    "conditional_coverage_established": false,
+    "counterfactual_outcomes_created": false,
+    "formal_confirmation_accessed": false,
+    "generator_parameters_updated": false,
+    "independent_training_repeats": 0,
+    "native_stage_owner_authentication": "separate_required",
+    "policy_evaluation_performed": false,
+    "source_disjointness": "declared original-fit40/calibration6/diagnostic6; global prior exposure not authenticated",
+    "crps_improvement_is_not_content_quality_improvement": true,
+    "action_family_binding_in_fixed_collection": {
+      "PREPARE_ROI_STOP": "selective_refinement",
+      "READ_ROI_STOP": "preparation_required; suffix after PREPARE_ROI",
+      "RENDER_IMAGE_STOP": "text_image_complementary",
+      "WRITE_TEXT_STOP": "text_sufficient",
+      "STOP": "terminal observations across the five fixed families"
+    },
+    "action_family_binding_risk": "Action/task-family binding and unestablished overlap for alternative actions may affect prediction sensitivity; no causal explanation is established.",
+    "strong_calibrated_critic_or_unconditional_residual_baseline_comparison_performed": false
+  },
+  "net_benefit_established": false,
+  "pins": {
+    "artifact_manifest_sha256": "8e5513081e172687ded49b646a1c892ff60426dc9ac6f82e22b34ba28c7d006b",
+    "diagnostics_sha256": "a93a267afb30d5bb1d3c9bbd8fef6e4a0d9d834575f14a5b9fe5863b4c9d544a",
+    "driver_receipt_sha256": "9902c265a0094db27ccb70bb79ed1eff1fbbafa9887b606a316359773b8d5780",
+    "model_source_sha256": "4c361d044d6c9ee675ef2a148f27542755cad27efa78dc107e3a8af1314ac955",
+    "original_behavior_receipt_sha256": "53d1494186db9e43b1e9c8d2f004f5dfadd86d44c4614ba10841179da5bde74f",
+    "outer_receipt_sha256": "88952a9a14a09f41b5a49b8078d6d0fdda8b8a34ceb1cb2c681952265f07ca4a",
+    "records_sha256": "5db098eef1d5bd935d5d58919cd5295e06c317cee3cebfd5363367825da0fd13",
+    "registration_sha256": "561f29a64c47995e45d5934202fad7be10645354df40ca2f6330d768c4257836",
+    "source_bundle_sha256": "73bd281f8728191aab9865f700455f3f65bc324a03c3e1cedf5ff1aeec986ae4",
+    "weights_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54"
+  },
+  "prediction_metrics": {
+    "equal_source_group_means_by_action": [
+      {
+        "action": "PREPARE_ROI",
+        "metrics": {
+          "duration_crps": {
+            "center": 1.3274916886972885,
+            "center_minus_joint": 1.2978119769622376,
+            "joint": 0.029679711735050834
+          },
+          "net_crps": {
+            "center": 0.02373888206512975,
+            "center_minus_joint": 0.01995862259405398,
+            "joint": 0.003780259471075773
+          },
+          "quality_crps": {
+            "center": 0.03701379895210266,
+            "center_minus_joint": 0.03321427934699588,
+            "joint": 0.003799519605106778
+          }
+        },
+        "source_groups": 6
+      },
+      {
+        "action": "READ_ROI",
+        "metrics": {
+          "duration_crps": {
+            "center": 1.2080874417054777,
+            "center_minus_joint": 1.0721204504930182,
+            "joint": 0.13596699121245956
+          },
+          "net_crps": {
+            "center": 0.5241590376954991,
+            "center_minus_joint": 0.5227539758541655,
+            "joint": 0.0014050618413336275
+          },
+          "quality_crps": {
+            "center": 0.536239912112554,
+            "center_minus_joint": 0.5351032418785272,
+            "joint": 0.0011366702340267322
+          }
+        },
+        "source_groups": 6
+      },
+      {
+        "action": "RENDER_IMAGE",
+        "metrics": {
+          "duration_crps": {
+            "center": 1.1990296788668882,
+            "center_minus_joint": 1.1518124089110957,
+            "joint": 0.0472172699557925
+          },
+          "net_crps": {
+            "center": 0.5116603026983115,
+            "center_minus_joint": 0.5038976901897954,
+            "joint": 0.007762612508516173
+          },
+          "quality_crps": {
+            "center": 0.5236505994869805,
+            "center_minus_joint": 0.5159409591018519,
+            "joint": 0.0077096403851286
+          }
+        },
+        "source_groups": 6
+      },
+      {
+        "action": "STOP",
+        "metrics": {
+          "duration_crps": {
+            "center": 0.6813330926777175,
+            "center_minus_joint": 0.6326660148244351,
+            "joint": 0.048667077853282364
+          },
+          "net_crps": {
+            "center": 0.40307358712302715,
+            "center_minus_joint": 0.2583433873636679,
+            "joint": 0.14473019975935922
+          },
+          "quality_crps": {
+            "center": 0.4044766203497556,
+            "center_minus_joint": 0.25988448248988594,
+            "joint": 0.1445921378598697
+          }
+        },
+        "source_groups": 6
+      },
+      {
+        "action": "WRITE_TEXT",
+        "metrics": {
+          "duration_crps": {
+            "center": 0.8485315076541156,
+            "center_minus_joint": 0.7453604408112574,
+            "joint": 0.10317106684285819
+          },
+          "net_crps": {
+            "center": 0.522984367775886,
+            "center_minus_joint": 0.2661814465920685,
+            "joint": 0.2568029211838175
+          },
+          "quality_crps": {
+            "center": 0.5314696828524271,
+            "center_minus_joint": 0.27404980361461634,
+            "joint": 0.2574198792378108
+          }
+        },
+        "source_groups": 6
+      }
+    ],
+    "independent_training_repeats": 0,
+    "overall_source_balanced": {
+      "duration_crps": {
+        "center": 0.8877561978124842,
+        "center_minus_joint": 0.8256039279221983,
+        "joint": 0.06215226989028588
+      },
+      "net_crps": {
+        "center": 0.3997678362055514,
+        "center_minus_joint": 0.2893898524498248,
+        "joint": 0.11037798375572659
+      },
+      "quality_crps": {
+        "center": 0.40563967723920463,
+        "center_minus_joint": 0.2953034107101578,
+        "joint": 0.11033626652904682
+      }
+    },
+    "paired_support_only": true,
+    "weighting": "equal source-group mass; macro mean within each source group"
+  },
+  "prediction_sensitivity": {
+    "actual_outcome_for_new_choices": null,
+    "actual_policy_outcomes_observed": false,
+    "by_risk": [
+      {
+        "changed_from_risk_zero": 0,
+        "forecast_calls": 198,
+        "over_budget_sampled_actions": {},
+        "paired_with_risk_zero": 54,
+        "planning_seconds_inside_driver": 0.1847446640022099,
+        "predicted_action_counts": {
+          "PREPARE_ROI": 32,
+          "STOP": 19,
+          "WRITE_TEXT": 3
+        },
+        "risk": 0,
+        "unsupported_candidate_actions": {}
+      },
+      {
+        "changed_from_risk_zero": 8,
+        "forecast_calls": 198,
+        "over_budget_sampled_actions": {},
+        "paired_with_risk_zero": 54,
+        "planning_seconds_inside_driver": 0.18453740898985416,
+        "predicted_action_counts": {
+          "PREPARE_ROI": 40,
+          "STOP": 14
+        },
+        "risk": 0.25,
+        "unsupported_candidate_actions": {}
+      },
+      {
+        "changed_from_risk_zero": 10,
+        "forecast_calls": 198,
+        "over_budget_sampled_actions": {},
+        "paired_with_risk_zero": 54,
+        "planning_seconds_inside_driver": 0.1845912941498682,
+        "predicted_action_counts": {
+          "PREPARE_ROI": 42,
+          "STOP": 12
+        },
+        "risk": 1,
+        "unsupported_candidate_actions": {}
+      },
+      {
+        "changed_from_risk_zero": 22,
+        "forecast_calls": 198,
+        "over_budget_sampled_actions": {},
+        "paired_with_risk_zero": 54,
+        "planning_seconds_inside_driver": 0.18432054040022194,
+        "predicted_action_counts": {
+          "PREPARE_ROI": 54
+        },
+        "risk": 4,
+        "unsupported_candidate_actions": {}
+      }
+    ],
+    "patterns": [
+      {
+        "actions": [
+          "PREPARE_ROI",
+          "PREPARE_ROI",
+          "PREPARE_ROI",
+          "PREPARE_ROI"
+        ],
+        "rows": 32
+      },
+      {
+        "actions": [
+          "STOP",
+          "PREPARE_ROI",
+          "PREPARE_ROI",
+          "PREPARE_ROI"
+        ],
+        "rows": 5
+      },
+      {
+        "actions": [
+          "STOP",
+          "STOP",
+          "PREPARE_ROI",
+          "PREPARE_ROI"
+        ],
+        "rows": 2
+      },
+      {
+        "actions": [
+          "STOP",
+          "STOP",
+          "STOP",
+          "PREPARE_ROI"
+        ],
+        "rows": 12
+      },
+      {
+        "actions": [
+          "WRITE_TEXT",
+          "PREPARE_ROI",
+          "PREPARE_ROI",
+          "PREPARE_ROI"
+        ],
+        "rows": 3
+      }
+    ],
+    "risk_order": [
+      0,
+      0.25,
+      1,
+      4
+    ],
+    "rows_with_any_changed_predicted_action": 22
+  },
+  "record_parts": [
+    {
+      "bytes": 3437244,
+      "offset": 0,
+      "path": "calibration-training-rows.jsonl",
+      "rows": 60,
+      "sha256": "c34f579e6993aa857b70b5fbd993417c808e9a942b218429cb176872f5e8ca57"
+    },
+    {
+      "bytes": 2895782,
+      "offset": 3437244,
+      "path": "diagnostic-training-rows.jsonl",
+      "rows": 60,
+      "sha256": "28411d648b645d3683e3bbcdee7ac6ee9dbef69ad793acc8288d8696bff9c062"
+    }
+  ],
+  "schema": "ndu.stopped.public-native-diagnostic-summary.v1",
+  "selection": {
+    "calibration_macros": 54,
+    "calibration_source_groups": 6,
+    "diagnostic_macros": 54,
+    "diagnostic_source_groups": 6,
+    "fit_source_groups": 40,
+    "input_episodes": 60,
+    "input_records": 120,
+    "macro_profile": "actual STOP or adjacent action-then-STOP only",
+    "observed_diagnostic_macro_actions": {
+      "PREPARE_ROI": 6,
+      "READ_ROI": 6,
+      "RENDER_IMAGE": 6,
+      "STOP": 30,
+      "WRITE_TEXT": 6
+    },
+    "selected_macros": 108,
+    "status_counts": {
+      "supported": 54
+    },
+    "three_step_preparation_prefixes_are_not_observed_action_stop_macros": true
+  },
+  "status": "completed",
+  "actual_terminal_quality_by_observed_action": {
+    "PREPARE_ROI": {
+      "observed_macros": 6,
+      "mean": 0.5,
+      "median": 0.5,
+      "minimum": 0.5,
+      "maximum": 0.5,
+      "zero_count": 0
+    },
+    "READ_ROI": {
+      "observed_macros": 6,
+      "mean": 0,
+      "median": 0,
+      "minimum": 0,
+      "maximum": 0,
+      "zero_count": 6
+    },
+    "RENDER_IMAGE": {
+      "observed_macros": 6,
+      "mean": 0.006027695569044772,
+      "median": 0.0004009482073394624,
+      "minimum": 0,
+      "maximum": 0.020483324618637326,
+      "zero_count": 3
+    },
+    "STOP": {
+      "observed_macros": 30,
+      "mean": 0.301205539113809,
+      "median": 0.0004009482073394624,
+      "minimum": 0,
+      "maximum": 1,
+      "zero_count": 15
+    },
+    "WRITE_TEXT": {
+      "observed_macros": 6,
+      "mean": 0,
+      "median": 0,
+      "minimum": 0,
+      "maximum": 0,
+      "zero_count": 6
+    }
+  },
+  "actual_terminal_quality_scope": "Observed terminal utility of fixed behavior macros under the frozen profile; these are not realized outcomes for sensitivity-selected alternative actions."
+}

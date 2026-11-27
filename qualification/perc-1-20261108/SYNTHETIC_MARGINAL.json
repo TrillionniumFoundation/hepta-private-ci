@@ -1,0 +1,76 @@
+{
+  "status": "HOLD",
+  "scientific_qualified": false,
+  "diagnostics": {
+    "useful_capture": {
+      "schema": "perc1.marginal-report.v1",
+      "status": "HOLD",
+      "structural_validation": "PASS",
+      "scientific_qualified": false,
+      "pair_sha256": "50de89beeda876a1c0ba68827df266cf97c1a82faefae827458bd7e154b0c025",
+      "manifest_sha256": "4207c9418ca5127f316dbf14941f1ee8b6045b7a468e6f5ec8ea94b336c17ac2",
+      "prefix_sha256": "fe8e2f3995d7f149f4c7f2d88660212d2e741c893a10ba5e0679d37b230370a5",
+      "world_snapshot_sha256": "e3fa1c06197e22b7fb57c5d03d10bda61ebeebbd1cbb99d104e4b62b2df68c94",
+      "episode_id": "confirmation.missing_document",
+      "arm": "dense_active",
+      "training_seed": 11,
+      "inference_seed": 19,
+      "new_source_id": "confirmation.missing_document.2",
+      "without": {
+        "task_success": 0,
+        "critical_fidelity": 0
+      },
+      "with": {
+        "task_success": 1,
+        "critical_fidelity": 1
+      },
+      "task_success_change": 1,
+      "critical_fidelity_change": 1,
+      "incremental_cost": 960,
+      "cost_unit": "microcredits_v1",
+      "net_utility": null,
+      "scope": "one additional captured observation and terminal answer on immutable source replay",
+      "limits": [
+        "Continuation identity and inference seed are caller receipts; execution is not independently attested.",
+        "This comparison does not estimate counterfactual effects in a changing live environment.",
+        "No equal-cost sham or randomized online intervention is supplied.",
+        "A declared value-of-cost rule is required before converting correctness and cost into net utility."
+      ]
+    },
+    "distractor_capture": {
+      "schema": "perc1.marginal-report.v1",
+      "status": "HOLD",
+      "structural_validation": "PASS",
+      "scientific_qualified": false,
+      "pair_sha256": "862ed0b1da7fda2190075e0d029b5a42e1f8d3ae5db17ffb9ac578c2deb9df03",
+      "manifest_sha256": "4207c9418ca5127f316dbf14941f1ee8b6045b7a468e6f5ec8ea94b336c17ac2",
+      "prefix_sha256": "fe8e2f3995d7f149f4c7f2d88660212d2e741c893a10ba5e0679d37b230370a5",
+      "world_snapshot_sha256": "e3fa1c06197e22b7fb57c5d03d10bda61ebeebbd1cbb99d104e4b62b2df68c94",
+      "episode_id": "confirmation.missing_document",
+      "arm": "dense_active",
+      "training_seed": 11,
+      "inference_seed": 19,
+      "new_source_id": "confirmation.missing_document.1",
+      "without": {
+        "task_success": 0,
+        "critical_fidelity": 0
+      },
+      "with": {
+        "task_success": 0,
+        "critical_fidelity": 0
+      },
+      "task_success_change": 0,
+      "critical_fidelity_change": 0,
+      "incremental_cost": 940,
+      "cost_unit": "microcredits_v1",
+      "net_utility": null,
+      "scope": "one additional captured observation and terminal answer on immutable source replay",
+      "limits": [
+        "Continuation identity and inference seed are caller receipts; execution is not independently attested.",
+        "This comparison does not estimate counterfactual effects in a changing live environment.",
+        "No equal-cost sham or randomized online intervention is supplied.",
+        "A declared value-of-cost rule is required before converting correctness and cost into net utility."
+      ]
+    }
+  }
+}

@@ -1,0 +1,1966 @@
+{
+  "schema": "hepta.source-guard-format-map.v1",
+  "formatter_patch_sha256": "8439c00f227db9db36f09f2455a6aa4d1eb31ed2cae9e2afd5c7a92e3bfa4ad3",
+  "description": "Exact reviewed marker spellings before and after repository rustfmt. Every ordinary code token is retained; only formatting, optional commas and formatter-inserted expression blocks differ. Historical evidence contracts remain byte-identical.",
+  "paths": {
+    "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs": {
+      ".in_lane(|owners, _source| owners.require_original_initial_receipts(&OriginalQ24OwnerReadV1))": [
+        ".in_lane(|owners, _source| {\n                owners.require_original_initial_receipts(&OriginalQ24OwnerReadV1)\n            })"
+      ],
+      "let operation_started_at = super::now()": [
+        "let operation_started_at =\n            super::now()"
+      ],
+      "let fresh_now = super::now()": [
+        "let fresh_now =\n                    super::now()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs": {
+      "self.attest_with_training(source, TrainingRead::Independent).await": [
+        "self.attest_with_training(source, TrainingRead::Independent)\n            .await"
+      ],
+      "self.readback_with_training(source, TrainingRead::Independent).await": [
+        "self.readback_with_training(source, TrainingRead::Independent)\n            .await"
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_runner.rs": {
+      "&self.product_plan, self.paired_input_digest,": [
+        "&self.product_plan,\n            self.paired_input_digest,"
+      ],
+      "&self.candidate, &self.baseline, &self.metrics,": [
+        "&self.candidate,\n            &self.baseline,\n            &self.metrics,"
+      ],
+      "if matches!(product_plan.comparison_mode(), ProductComparisonModeV1::PairedOnPolicy(_))": [
+        "if matches!(\n            product_plan.comparison_mode(),\n            ProductComparisonModeV1::PairedOnPolicy(_)\n        )"
+      ],
+      "product_plan, candidate_plan, baseline_plan, provider,": [
+        "product_plan,\n                candidate_plan,\n                baseline_plan,\n                provider,"
+      ],
+      "mut plan: CrossFoldPlanV1,\n    mut metric_roles: Vec<MetricRoleContractV2>,\n    mut metric_sources: Vec<ProductMetricSourceContractV1>,\n    candidate_temporal: &TemporalEvaluationPlan,\n    baseline_temporal: &TemporalEvaluationPlan,\n) -> Result<ProductFrozenEvaluationPlanV1, ProductEvaluationError> {\n    let metric_contracts = normalize_product_plan_inputs(\n        plan.objective_digest, plan.family_alpha_ppm, plan.simultaneous_comparisons,\n        plan.estimand_digest, &plan.metric_contracts, &mut metric_roles,\n        &mut metric_sources, candidate_temporal, baseline_temporal,\n    )?;\n\n    let base_estimand_digest = plan.estimand_digest;\n    plan.estimand_digest = bound_estimand_digest(\n        base_estimand_digest,\n        candidate_temporal.plan_digest,\n        baseline_temporal.plan_digest,\n        &metric_sources,\n    )?;\n    let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;\n    let mut receipt = ProductFrozenEvaluationPlanV1 {\n        frozen_plan,\n        metric_roles,\n        metric_contracts,\n        metric_sources,\n        base_estimand_digest,\n        candidate_temporal_plan_digest: candidate_temporal.plan_digest,\n        baseline_temporal_plan_digest: baseline_temporal.plan_digest,\n        comparison: ProductComparisonModeV1::SharedBehavior,\n        receipt_seal: Digest32::ZERO,\n    };\n    receipt.receipt_seal = product_plan_seal(&receipt)?;\n    Ok(receipt)\n}": [
+        "mut plan: CrossFoldPlanV1,\n    mut metric_roles: Vec<MetricRoleContractV2>,\n    mut metric_sources: Vec<ProductMetricSourceContractV1>,\n    candidate_temporal: &TemporalEvaluationPlan,\n    baseline_temporal: &TemporalEvaluationPlan,\n) -> Result<ProductFrozenEvaluationPlanV1, ProductEvaluationError> {\n    let metric_contracts = normalize_product_plan_inputs(\n        plan.objective_digest,\n        plan.family_alpha_ppm,\n        plan.simultaneous_comparisons,\n        plan.estimand_digest,\n        &plan.metric_contracts,\n        &mut metric_roles,\n        &mut metric_sources,\n        candidate_temporal,\n        baseline_temporal,\n    )?;\n\n    let base_estimand_digest = plan.estimand_digest;\n    plan.estimand_digest = bound_estimand_digest(\n        base_estimand_digest,\n        candidate_temporal.plan_digest,\n        baseline_temporal.plan_digest,\n        &metric_sources,\n    )?;\n    let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;\n    let mut receipt = ProductFrozenEvaluationPlanV1 {\n        frozen_plan,\n        metric_roles,\n        metric_contracts,\n        metric_sources,\n        base_estimand_digest,\n        candidate_temporal_plan_digest: candidate_temporal.plan_digest,\n        baseline_temporal_plan_digest: baseline_temporal.plan_digest,\n        comparison: ProductComparisonModeV1::SharedBehavior,\n        receipt_seal: Digest32::ZERO,\n    };\n    receipt.receipt_seal = product_plan_seal(&receipt)?;\n    Ok(receipt)\n}"
+      ],
+      "ProductComparisonModeV1::SharedBehavior => b                                              .to_vec(),": [
+        "ProductComparisonModeV1::SharedBehavior => {\n            b                                              .to_vec()"
+      ],
+      "ProductComparisonModeV1::PairedOnPolicy(_) => b                                                               .to_vec(),": [
+        "ProductComparisonModeV1::PairedOnPolicy(_) => {\n            b                                                               .to_vec()"
+      ],
+      "ProductComparisonModeV1::SharedBehavior => b                                                       .to_vec(),": [
+        "ProductComparisonModeV1::SharedBehavior => {\n            b                                                       .to_vec()"
+      ],
+      "let mut bytes = b                                                                        .to_vec();": [
+        "let mut bytes =\n                b                                                                        .to_vec();"
+      ],
+      "receipt.paired_input_digest.ok_or(ProductEvaluationError::Integrity(": [
+        "receipt\n                    .paired_input_digest\n                    .ok_or(ProductEvaluationError::Integrity("
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_stage_construction.rs": {
+      "let mut owners = Owners { training, receipts, source_fenced: false }": [
+        "let mut owners = Owners {\n            training,\n            receipts,\n            source_fenced: false,\n        }"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs": {
+      "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(panel, &config.initial)": [
+        "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(\n            panel,\n            &config.initial,\n        )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_binding.rs": {
+      "sign_original_until(config, key, payload, identity, issued_at, signature_expiry(config, issued_at)?)": [
+        "sign_original_until(\n        config,\n        key,\n        payload,\n        identity,\n        issued_at,\n        signature_expiry(config, issued_at)?,\n    )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs": {
+      "checkpoint_before }": [
+        "checkpoint_before,\n    }"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs": {
+      "self.readiness_initial.take().ok_or(Error::CommitUncertain)?": [
+        "self\n            .readiness_initial\n            .take()\n            .ok_or(Error::CommitUncertain)?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_model_command.rs": {
+      "let expected = wire::decode_completed(": [
+        "let expected =\n            wire::decode_completed("
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs": {
+      "Completed { record: String }": [
+        "Completed {\n        record: String,\n    }"
+      ],
+      "OriginalReadStarted { transfer: u64, record: String, total: usize, digest: String }": [
+        "OriginalReadStarted {\n        transfer: u64,\n        record: String,\n        total: usize,\n        digest: String,\n    }"
+      ],
+      "OriginalReadPage { transfer: u64, index: u32, offset: usize, total: usize, digest: String, bytes: String }": [
+        "OriginalReadPage {\n        transfer: u64,\n        index: u32,\n        offset: usize,\n        total: usize,\n        digest: String,\n        bytes: String,\n    }"
+      ],
+      "OriginalReadFinished { transfer: u64, record: String, total: usize, digest: String }": [
+        "OriginalReadFinished {\n        transfer: u64,\n        record: String,\n        total: usize,\n        digest: String,\n    }"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/artifact_original_head_owner.rs": {
+      "OriginalArtifactRegistrySourceClientV1::read_current_in_lane(&queued_source, &cancelled)?": [
+        "OriginalArtifactRegistrySourceClientV1::read_current_in_lane(\n                &queued_source,\n                &cancelled,\n            )?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs": {
+      "OriginalArtifactRegistryDurableV1::encode_for_original_head_source(&observed, &self.config)?": [
+        "OriginalArtifactRegistryDurableV1::encode_for_original_head_source(\n            &observed,\n            &self.config,\n        )?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs": {
+      "self.peer.request(&encoded)": [
+        "self\n                .peer\n                .request(&encoded)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs": {
+      "self.peer.request(&encoded)": [
+        "self\n                .peer\n                .request(&encoded)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs": {
+      "ResidentOriginalStageOwnersV3::execute_original_stage(\n            stages.as_ref(), &predecessor, stage,\n        )": [
+        "ResidentOriginalStageOwnersV3::execute_original_stage(\n            stages.as_ref(),\n            &predecessor,\n            stage,\n        )"
+      ],
+      "profile.scope.validate_observation(&completed.receipt.observation)?": [
+        "profile\n            .scope\n            .validate_observation(&completed.receipt.observation)?"
+      ],
+      "Some(original) => authentication::candidate_continuation_attestations(": [
+        "Some(original) => {\n                authentication::candidate_continuation_attestations("
+      ],
+      "let committed_at = gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?": [
+        "let committed_at = gate\n            .checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs": {
+      "OriginalCellQ24CandidateStageOwnersV1::read_original_evidence(stages, snapshot).await": [
+        "OriginalCellQ24CandidateStageOwnersV1::read_original_evidence(stages, snapshot)\n                    .await"
+      ],
+      "Ok(ResidentStageCompletion { receipt, candidate: None })": [
+        "Ok(ResidentStageCompletion {\n            receipt,\n            candidate: None,\n        })"
+      ],
+      "OriginalCandidateOperationEvidence::into_original_parts(original, stages, snapshot, observed)": [
+        "OriginalCandidateOperationEvidence::into_original_parts(\n                original, stages, snapshot, observed,\n            )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs": {
+      "Ok(ResidentOriginalEvidenceV3 { signatures, model: None })": [
+        "Ok(ResidentOriginalEvidenceV3 {\n        signatures,\n        model: None,\n    })"
+      ],
+      "stages, original, snapshot, fresh / 1_000": [
+        "stages,\n            original,\n            snapshot,\n            fresh / 1_000"
+      ],
+      "model.as_ref(), fresh / 1_000": [
+        "model.as_ref(),\n        fresh / 1_000"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs": {
+      "OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)": [
+        "OriginalCellEvaluationPanelMemberOwnersV1::read_original(\n                    owner, task, clock, training,\n                )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs": {
+      "let cohort_before =\n            OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?": [
+        "let cohort_before = OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?"
+      ],
+      "let cohort_after =\n            OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?": [
+        "let cohort_after = OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs": {
+      "original, self, snapshot, super::auth::now()?": [
+        "original,\n                        self,\n                        snapshot,\n                        super::auth::now()?"
+      ],
+      "snapshot.receipts.len() == 3 && coordinator.candidate().is_some()": [
+        "snapshot.receipts.len() == 3\n                    && coordinator.candidate().is_some()"
+      ],
+      "LearningIterationStageOwnerPortsV1::validate_recovery(&self.common, snapshot).await": [
+        "LearningIterationStageOwnerPortsV1::validate_recovery(&self.common, snapshot)\n                        .await"
+      ],
+      "4 => self.original_evaluation(snapshot, evaluation::Action::Readback).await": [
+        "4 => {\n                    self.original_evaluation(snapshot, evaluation::Action::Readback)\n                        .await"
+      ],
+      "6 => self.original_selection(snapshot, adoption::Action::Readback).await": [
+        "6 => {\n                    self.original_selection(snapshot, adoption::Action::Readback)\n                        .await"
+      ],
+      "7 => self.original_next_use(snapshot, adoption::Action::Readback).await": [
+        "7 => {\n                    self.original_next_use(snapshot, adoption::Action::Readback)\n                        .await"
+      ],
+      ".await.map_err(|_| Error::CommitUncertain)?": [
+        ".await\n        .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "Stage::Evaluation => self.original_evaluation(snapshot, evaluation::Action::Execute).await": [
+        "Stage::Evaluation => {\n                    self.original_evaluation(snapshot, evaluation::Action::Execute)\n                        .await"
+      ],
+      "Stage::Selection => self.original_selection(snapshot, adoption::Action::Execute).await": [
+        "Stage::Selection => {\n                    self.original_selection(snapshot, adoption::Action::Execute)\n                        .await"
+      ],
+      "Stage::NextUse => self.original_next_use(snapshot, adoption::Action::Execute).await": [
+        "Stage::NextUse => {\n                    self.original_next_use(snapshot, adoption::Action::Execute)\n                        .await"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs": {
+      "OriginalCellQ24CandidateStageOwnersV1::read_candidate_in_operation(self, &operation).await?": [
+        "OriginalCellQ24CandidateStageOwnersV1::read_candidate_in_operation(self, &operation)\n                .await?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs": {
+      "self.original_evaluation(snapshot, Action::Execute).await?": [
+        "self\n            .original_evaluation(snapshot, Action::Execute)\n            .await?"
+      ],
+      "self.original_evaluation(snapshot, Action::Readback).await": [
+        "self.original_evaluation(snapshot, Action::Readback)\n            .await"
+      ],
+      "OriginalCellQ24CandidateStageOwnersV1::read_candidate_in_operation(self, &operation).await?": [
+        "OriginalCellQ24CandidateStageOwnersV1::read_candidate_in_operation(self, &operation)\n                .await?"
+      ],
+      "OriginalCellQ24CandidateStageOwnersV1::read_evaluation_in_operation(self, &operation, action).await?": [
+        "OriginalCellQ24CandidateStageOwnersV1::read_evaluation_in_operation(\n            self, &operation, action,\n        )\n        .await?"
+      ],
+      "Action::Execute => OriginalCellEvaluationCommandClientV1::execute_evaluation(client).await": [
+        "Action::Execute => {\n                OriginalCellEvaluationCommandClientV1::execute_evaluation(client).await"
+      ],
+      "&operation.supplied, &operation.training_cut, &operation.training, &original, fresh": [
+        "&operation.supplied,\n            &operation.training_cut,\n            &operation.training,\n            &original,\n            fresh"
+      ],
+      "lane.retained.as_ref().is_some_and(|saved| saved != &original)": [
+        "lane\n            .retained\n            .as_ref()\n            .is_some_and(|saved| saved != &original)"
+      ],
+      "if lane.retained": [
+        "if lane\n            .retained"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs": {
+      "self.original_model(snapshot, Action::Readback).await?.into_model()": [
+        "self.original_model(snapshot, Action::Readback)\n            .await?\n            .into_model()"
+      ],
+      "self, &operation, super::evaluation::Action::Readback": [
+        "self,\n            &operation,\n            super::evaluation::Action::Readback"
+      ],
+      "Action::Readback => OriginalCellQ24ModelCommandClientV1::begin_original_model_read(": [
+        "Action::Readback => {\n                OriginalCellQ24ModelCommandClientV1::begin_original_model_read("
+      ],
+      ".await.map_err(|_| Error::CommitUncertain)?": [
+        ".await\n            .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "original.finish().await.map_err(|_| Error::CommitUncertain)?": [
+        "original\n            .finish()\n            .await\n            .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "self.common.material.scope.validate_snapshot(current.snapshot())?": [
+        "self.common\n            .material\n            .scope\n            .validate_snapshot(current.snapshot())?"
+      ],
+      "lane\n            .retained\n            .as_ref()\n            .is_some_and(|saved| saved != current)": [
+        "lane.retained.as_ref().is_some_and(|saved| saved != current)"
+      ],
+      "self.common.material.scope.validate_snapshot(": [
+        "self.common\n            .material\n            .scope\n            .validate_snapshot("
+      ],
+      "if lane\n            .retained": [
+        "if lane.retained"
+      ],
+      "self, operation, super::evaluation::Action::Readback": [
+        "self,\n                operation,\n                super::evaluation::Action::Readback"
+      ],
+      ").await?": [
+        ")\n            .await?"
+      ],
+      "initial, operation.dataset.clone(), operation.training.clone(), evaluation": [
+        "initial,\n                    operation.dataset.clone(),\n                    operation.training.clone(),\n                    evaluation"
+      ],
+      ").await.map_err(|_| Error::CommitUncertain)?": [
+        ")\n                .await\n                .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "context.authenticate_material(": [
+        "context\n            .authenticate_material("
+      ],
+      "lane.retained.as_ref().is_some_and(|saved| saved != completed.model())": [
+        "lane\n            .retained\n            .as_ref()\n            .is_some_and(|saved| saved != completed.model())"
+      ],
+      "let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;\n        if lane.retained": [
+        "let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;\n        if lane\n            .retained"
+      ],
+      "if lane.retained": [
+        "if lane\n            .retained"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs": {
+      "original, trainer,": [
+        "original,\n                trainer,"
+      ],
+      "bytes, evaluation, panel: after, started_at": [
+        "bytes,\n            evaluation,\n            panel: after,\n            started_at"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs": {
+      "owners.common.continuation.try_lock()": [
+        "owners\n            .common\n            .continuation\n            .try_lock()"
+      ],
+      "common.original_dataset.as_ref().ok_or(Error::CommitUncertain)?.clone()": [
+        "common\n            .original_dataset\n            .as_ref()\n            .ok_or(Error::CommitUncertain)?\n            .clone()"
+      ],
+      "common.original_training.as_ref().ok_or(Error::CommitUncertain)?.clone()": [
+        "common\n            .original_training\n            .as_ref()\n            .ok_or(Error::CommitUncertain)?\n            .clone()"
+      ],
+      "Ok(Self { owners, lane, supplied: supplied.clone(), training_cut, dataset, training, records, started })": [
+        "Ok(Self {\n            owners,\n            lane,\n            supplied: supplied.clone(),\n            training_cut,\n            dataset,\n            training,\n            records,\n            started,\n        })"
+      ],
+      "self.owners.common.continuation.try_lock()": [
+        "self\n            .owners\n            .common\n            .continuation\n            .try_lock()"
+      ],
+      "common.read_prefix(&self.owners.common, &self.training_cut).await?": [
+        "common\n            .read_prefix(&self.owners.common, &self.training_cut)\n            .await?"
+      ],
+      "auth::require_material(&self.owners.common.material, self.owners.common.initial_binding)?": [
+        "auth::require_material(\n            &self.owners.common.material,\n            self.owners.common.initial_binding,\n        )?"
+      ],
+      "auth::verify_prefix(&self.owners.common.material, &self.training_cut, &common, fresh)?": [
+        "auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            &common,\n            fresh,\n        )?"
+      ],
+      "common.read_prefix(": [
+        "common\n            .read_prefix("
+      ],
+      "auth::verify_receipt(&self.0.owners.common.material, material.receipt(), material.attestation(), fresh)?": [
+        "auth::verify_receipt(\n            &self.0.owners.common.material,\n            material.receipt(),\n            material.attestation(),\n            fresh,\n        )?"
+      ],
+      "model: None, model_completion: None": [
+        "model: None,\n            model_completion: None"
+      ],
+      "snapshot: model.snapshot().clone(), operation: self, evaluation": [
+        "snapshot: model.snapshot().clone(),\n            operation: self,\n            evaluation"
+      ],
+      "model: Some(model), model_completion: Some(completed)": [
+        "model: Some(model),\n            model_completion: Some(completed)"
+      ],
+      "&operation.supplied, &operation.training_cut, &operation.training, &self.evaluation, fresh": [
+        "&operation.supplied,\n            &operation.training_cut,\n            &operation.training,\n            &self.evaluation,\n            fresh"
+      ],
+      "operation.records.iter().map(|(_, signature)| signature.clone()).collect()": [
+        "operation\n            .records\n            .iter()\n            .map(|(_, signature)| signature.clone())\n            .collect()"
+      ],
+      "self.model_completion.as_ref().ok_or(Error::CommitUncertain)?": [
+        "self\n                .model_completion\n                .as_ref()\n                .ok_or(Error::CommitUncertain)?"
+      ],
+      "completed.material().authenticate_current(fresh)": [
+        "completed\n                .material()\n                .authenticate_current(fresh)"
+      ],
+      "completed.material().require_original_model_input(": [
+        "completed\n                .material()\n                .require_original_model_input("
+      ],
+      "&operation.training_cut, operation.training.attestation(), fresh": [
+        "&operation.training_cut,\n                    operation.training.attestation(),\n                    fresh"
+      ],
+      "!model.snapshot().receipts.starts_with(&self.evaluation.snapshot().receipts)": [
+        "!model\n                    .snapshot()\n                    .receipts\n                    .starts_with(&self.evaluation.snapshot().receipts)"
+      ],
+      "operation.supplied.receipts.get(4).is_some_and(|expected| expected != model.receipt())": [
+        "operation\n                    .supplied\n                    .receipts\n                    .get(4)\n                    .is_some_and(|expected| expected != model.receipt())"
+      ],
+      "operation.owners.common.material.scope.validate_snapshot(model.snapshot())?": [
+        "operation\n                .owners\n                .common\n                .material\n                .scope\n                .validate_snapshot(model.snapshot())?"
+      ],
+      "self.model_completion.is_some() || self.selection.is_some() || self.next_use.is_some()\n            || self.publication.is_some() || self.completion_read.is_some()\n            || self.evaluation.snapshot() != snapshot": [
+        "self.model_completion.is_some()\n            || self.selection.is_some()\n            || self.next_use.is_some()\n            || self.publication.is_some()\n            || self.completion_read.is_some()\n            || self.evaluation.snapshot() != snapshot"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs": {
+      "Ok(OriginalModelInputs { original, dataset, training, material, started })": [
+        "Ok(OriginalModelInputs {\n            original,\n            dataset,\n            training,\n            material,\n            started,\n        })"
+      ],
+      "self.original_context(&mut state, &inputs, OriginalCellEvaluationModelReadV1::material(&operation))?": [
+        "self.original_context(\n            &mut state,\n            &inputs,\n            OriginalCellEvaluationModelReadV1::material(&operation),\n        )?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs": {
+      "!matches!(request.action, wire::Action::Execute | wire::Action::Readback)": [
+        "!matches!(\n            request.action,\n            wire::Action::Execute | wire::Action::Readback\n        )"
+      ],
+      "OriginalCellEvaluationModelMaterialClientV1::begin_model_read(inputs.material.as_ref())": [
+        "OriginalCellEvaluationModelMaterialClientV1::begin_model_read(\n                    inputs.material.as_ref(),\n                )"
+      ],
+      "self.original_context(&mut state, &inputs, OriginalCellEvaluationModelReadV1::material(&operation))?": [
+        "self.original_context(\n                &mut state,\n                &inputs,\n                OriginalCellEvaluationModelReadV1::material(&operation),\n            )?"
+      ],
+      "if !matches!(request.action, wire::Action::Execute | wire::Action::Readback)": [
+        "if !matches!(\n            request.action,\n            wire::Action::Execute | wire::Action::Readback\n        )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs": {
+      "self.channel.try_lock()": [
+        "self\n            .channel\n            .try_lock()"
+      ],
+      "transfer.checked_add(pages as u64).is_none_or(|last| last > 128)": [
+        "transfer\n                    .checked_add(pages as u64)\n                    .is_none_or(|last| last > 128)"
+      ],
+      "channel.next_request_id, page": [
+        "channel.next_request_id,\n                    page"
+      ],
+      "offset as usize != offset_expected || total as usize != length": [
+        "offset as usize != offset_expected\n                    || total as usize != length"
+      ],
+      "heads.len() != offset_expected || digest != heads_digest.to_string()": [
+        "heads.len() != offset_expected\n                    || digest != heads_digest.to_string()"
+      ],
+      "STANDARD_NO_PAD.decode(&encoded_heads)": [
+        "STANDARD_NO_PAD\n                    .decode(&encoded_heads)"
+      ],
+      "last_at = verify_original_context(": [
+        "last_at =\n                    verify_original_context("
+      ],
+      "channel.next_request_id, transfer": [
+        "channel.next_request_id,\n                transfer"
+      ],
+      "MaterialResult::Finished { total, heads_digest: digest }": [
+        "MaterialResult::Finished {\n                    total,\n                    heads_digest: digest,\n                }"
+      ],
+      "&baseline, &context.dataset, heads": [
+        "&baseline,\n                &context.dataset,\n                heads"
+      ],
+      "expected.receipt().clone(), expected.attestation().clone()": [
+        "expected.receipt().clone(),\n                expected.attestation().clone()"
+      ],
+      "let last_at = verify_original_context(": [
+        "let last_at =\n                verify_original_context("
+      ],
+      ".await.map_err(|_| Error::Unavailable)??": [
+        ".await\n        .map_err(|_| Error::Unavailable)??"
+      ],
+      "channel.peer.check_peer_lifetime()": [
+        "channel\n            .peer\n            .check_peer_lifetime()",
+        "channel\n        .peer\n        .check_peer_lifetime()"
+      ],
+      "&self.context, &self.material, &self.dataset, &self.expected, last_at": [
+        "&self.context,\n            &self.material,\n            &self.dataset,\n            &self.expected,\n            last_at"
+      ],
+      "verify_original_context(\n            &self.context, &self.material, &self.dataset, &self.expected, last_at,": [
+        "verify_original_context(\n            &self.context,\n            &self.material,\n            &self.dataset,\n            &self.expected,\n            last_at,"
+      ],
+      "channel.peer.request(&encoded)": [
+        "channel\n        .peer\n        .request(&encoded)"
+      ],
+      "channel.peer.check_peer_lifetime()\n        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;\n    if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    let encoded": [
+        "channel\n        .peer\n        .check_peer_lifetime()\n        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;\n    if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    let encoded"
+      ],
+      "channel.peer.check_peer_lifetime()\n        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;\n    if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    channel.next_request_id += 1": [
+        "channel\n        .peer\n        .check_peer_lifetime()\n        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;\n    if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    channel.next_request_id += 1"
+      ],
+      "R::Uncertain | R::Finished { .. } => OriginalCellQ24TrainingCommandErrorV1::CommitUncertain.into()": [
+        "R::Uncertain | R::Finished { .. } => {\n            OriginalCellQ24TrainingCommandErrorV1::CommitUncertain.into()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs": {
+      "self.transfer == 0 || self.transfer > request_id": [
+        "self.transfer == 0\n            || self.transfer > request_id"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs": {
+      "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime": [
+        "stream,\n            consumer,\n            consumer_uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime"
+      ],
+      "self.stage.as_ref(), &self.context.dataset": [
+        "self.stage.as_ref(),\n                    &self.context.dataset"
+      ],
+      "material.attestation().clone(), fresh_now": [
+        "material.attestation().clone(),\n                            fresh_now"
+      ],
+      "Phase::Begin => session.begin(&request, material, fresh_now)?": [
+        "Phase::Begin => {\n                                session.begin(&request, material, fresh_now)?"
+      ],
+      "if matches!(result, candidate_wire::MaterialResult::Page { .. }": [
+        "if matches!(\n                result,\n                candidate_wire::MaterialResult::Page { .. }"
+      ],
+      "if result.is_err() { session.fail(); }": [
+        "if result.is_err() {\n            session.fail();\n        }"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs": {
+      "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime": [
+        "stream,\n            consumer,\n            consumer_uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime"
+      ],
+      "channel.check_peer_lifetime()": [
+        "channel\n                .check_peer_lifetime()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_wire.rs": {
+      "context.prefix.receipts.starts_with(&model.snapshot().receipts)": [
+        "context\n            .prefix\n            .receipts\n            .starts_with(&model.snapshot().receipts)"
+      ],
+      "decision.candidate()": [
+        "decision\n            .candidate()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs": {
+      "decision.candidate()": [
+        "decision\n            .candidate()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs": {
+      "published.selection_attestation()": [
+        "published\n                .selection_attestation()"
+      ],
+      "OriginalCircuitCandidateLearningReadContextV1::authenticate(&self.published, current)?": [
+        "OriginalCircuitCandidateLearningReadContextV1::authenticate(\n            &self.published,\n            current,\n        )?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_wire.rs": {
+      "decision.candidate()": [
+        "decision\n        .candidate()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_candidate_transfer.rs": {
+      "self.failed || self.completion.as_ref().is_some_and(|prior| prior != &request.completion)": [
+        "self.failed\n            || self\n                .completion\n                .as_ref()\n                .is_some_and(|prior| prior != &request.completion)"
+      ],
+      "Phase::Begin if self.original.is_none()": [
+        "Phase::Begin\n                if self.original.is_none()"
+      ],
+      "request.page == 0 && request.transfer == request.request_id": [
+        "request.page == 0\n                    && request.transfer == request.request_id"
+      ],
+      "request.completion != completion_digest(": [
+        "request.completion\n                        != completion_digest(",
+        "request.completion\n                != completion_digest("
+      ],
+      "original.material.receipt(), original.material.attestation()": [
+        "original.material.receipt(),\n                            original.material.attestation()"
+      ],
+      "Phase::Page if request.page == original.next_page": [
+        "Phase::Page\n                        if request.page == original.next_page"
+      ],
+      "request.page > 0 && usize::from(request.page) < pages": [
+        "request.page > 0\n                            && usize::from(request.page) < pages"
+      ],
+      "request.request_id == original.transfer + u64::from(request.page)": [
+        "request.request_id\n                                == original.transfer + u64::from(request.page)"
+      ],
+      "Phase::Finish if request.page == 0": [
+        "Phase::Finish\n                        if request.page == 0"
+      ],
+      "request.transfer.checked_add(pages as u64).is_none_or(|last| last > 128)": [
+        "request\n            .transfer\n            .checked_add(pages as u64)\n            .is_none_or(|last| last > 128)"
+      ],
+      "material, transfer: request.transfer, next_page: 0, last_at: at": [
+        "material,\n            transfer: request.transfer,\n            next_page: 0,\n            last_at: at"
+      ],
+      "original_page(request, &self.original.as_ref().ok_or(Error::ReadbackRequired)?.material)": [
+        "original_page(\n            request,\n            &self\n                .original\n                .as_ref()\n                .ok_or(Error::ReadbackRequired)?\n                .material,\n        )"
+      ],
+      "self.original.as_ref().ok_or(Error::ReadbackRequired)?.material": [
+        "self\n            .original\n            .as_ref()\n            .ok_or(Error::ReadbackRequired)?\n            .material"
+      ],
+      "original.next_page == 0 && original.transfer == request.transfer": [
+        "original.next_page == 0\n                    && original.transfer == request.transfer"
+      ],
+      "request.request_id == original.transfer && request.page == 0": [
+        "request.request_id == original.transfer\n                    && request.page == 0"
+      ],
+      "if !first { self.require_request(&request)?; }": [
+        "if !first {\n            self.require_request(&request)?;\n        }"
+      ],
+      "MaterialResult::Page { offset, total, heads, heads_digest }": [
+        "MaterialResult::Page {\n                offset,\n                total,\n                heads,\n                heads_digest,\n            }"
+      ],
+      "STANDARD_NO_PAD.decode(heads)": [
+        "STANDARD_NO_PAD\n                    .decode(heads)"
+      ],
+      "bytes.as_slice() != &material.heads()[": [
+        "bytes.as_slice()\n                        != &material.heads()["
+      ],
+      "MaterialResult::Finished { total, heads_digest }": [
+        "MaterialResult::Finished {\n                total,\n                heads_digest,\n            }"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs": {
+      "request_id.checked_add(pages as u64)": [
+        "request_id\n                        .checked_add(pages as u64)"
+      ],
+      "session.active.as_mut()": [
+        "session\n                    .active\n                    .as_mut()"
+      ],
+      "session.active.take()": [
+        "session\n                    .active\n                    .take()"
+      ],
+      "&self.context, training, expected": [
+        "&self.context,\n            training,\n            expected"
+      ],
+      "index.checked_mul(PAGE_BYTES)": [
+        "index\n        .checked_mul(PAGE_BYTES)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs": {
+      "body.members.first()": [
+        "body\n            .members\n            .first()"
+      ],
+      "self.context.training_evidence.expires_at": [
+        "self\n            .context\n            .training_evidence\n            .expires_at"
+      ],
+      "self.context.verifier.verify(role, &signed, &payload, current)?": [
+        "self\n                    .context\n                    .verifier\n                    .verify(role, &signed, &payload, current)?"
+      ],
+      "expiry.min(signed.expires_at).min(verified.principal().expires_at)": [
+        "expiry\n                    .min(signed.expires_at)\n                    .min(verified.principal().expires_at)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_model_read_operation.rs": {
+      "pub(crate) fn model(&self) -> &OriginalCellQ24ModelCommandReceiptV1 { &self.model }": [
+        "pub(crate) fn model(&self) -> &OriginalCellQ24ModelCommandReceiptV1 {\n        &self.model\n    }"
+      ],
+      "pub(crate) fn material(&self) -> &OriginalCellEvaluationModelMaterialV1 { &self.material }": [
+        "pub(crate) fn material(&self) -> &OriginalCellEvaluationModelMaterialV1 {\n        &self.material\n    }"
+      ],
+      "self.begin_original_operation(wire::Action::BeginOriginalRead, None).await": [
+        "self.begin_original_operation(wire::Action::BeginOriginalRead, None)\n            .await"
+      ],
+      "now()? >= self.context.material.initial.request.envelope.expiry_unix_seconds": [
+        "now()?\n            >= self\n                .context\n                .material\n                .initial\n                .request\n                .envelope\n                .expiry_unix_seconds"
+      ],
+      "slot.as_ref().is_some_and(|channel| channel.execution_requested)": [
+        "slot\n                    .as_ref()\n                    .is_some_and(|channel| channel.execution_requested)"
+      ],
+      "self, channel, action": [
+        "self,\n            channel,\n            action"
+      ],
+      "Arc::clone(&cancellation.0), effect_cancellation.clone(), started": [
+        "Arc::clone(&cancellation.0),\n            effect_cancellation.clone(),\n            started",
+        "Arc::clone(&cancellation.0),\n                effect_cancellation.clone(),\n                started"
+      ],
+      "self.retained.try_lock()": [
+        "self\n                    .retained\n                    .try_lock()",
+        "self\n            .retained\n            .try_lock()"
+      ],
+      "channel.next.checked_add(pages as u64).is_none_or(|finish| finish > 128)": [
+        "channel\n            .next\n            .checked_add(pages as u64)\n            .is_none_or(|finish| finish > 128)"
+      ],
+      ".as_ref().is_some_and(|previous| previous != &model)": [
+        ".as_ref()\n            .is_some_and(|previous| previous != &model)"
+      ],
+      "Action::ReadOriginalPage { transfer, index: index as u32 }": [
+        "Action::ReadOriginalPage {\n                    transfer,\n                    index: index as u32,\n                }"
+      ],
+      "actual != transfer || page != index as u32 || offset != body.len()": [
+        "actual != transfer\n                || page != index as u32\n                || offset != body.len()"
+      ],
+      "size != total || canonical_digest(&hash)? != digest": [
+        "size != total\n                || canonical_digest(&hash)? != digest"
+      ],
+      "STANDARD_NO_PAD.decode(&bytes)": [
+        "STANDARD_NO_PAD\n                .decode(&bytes)"
+      ],
+      "&self.context.material, &self.context.registration, &self.context.dataset": [
+        "&self.context.material,\n            &self.context.registration,\n            &self.context.dataset"
+      ],
+      "&self.context.training, &self.context.evaluation, body, fresh": [
+        "&self.context.training,\n            &self.context.evaluation,\n            body,\n            fresh"
+      ],
+      "client: self, channel: Some(channel), model, material, transfer, total": [
+        "client: self,\n            channel: Some(channel),\n            model,\n            material,\n            transfer,\n            total"
+      ],
+      "digest, started, cancellation, effect_cancellation": [
+        "digest,\n            started,\n            cancellation,\n            effect_cancellation"
+      ],
+      "if channel.next.checked_add": [
+        "if channel\n            .next\n            .checked_add"
+      ],
+      "self.channel.as_ref().ok_or(Error::Unavailable)?.peer.check_peer_lifetime()?": [
+        "self.channel\n            .as_ref()\n            .ok_or(Error::Unavailable)?\n            .peer\n            .check_peer_lifetime()?"
+      ],
+      "self.effect_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))": [
+        "self\n            .effect_cancellation\n            .as_ref()\n            .is_some_and(|flag| flag.load(Ordering::Acquire))"
+      ],
+      "if self.effect_cancellation": [
+        "if self\n            .effect_cancellation"
+      ],
+      "self.client, channel": [
+        "self.client,\n            channel"
+      ],
+      "Action::FinishOriginalRead { transfer: self.transfer }": [
+        "Action::FinishOriginalRead {\n                transfer: self.transfer,\n            }"
+      ],
+      "Arc::clone(&self.cancellation.0), self.effect_cancellation.clone(), lower": [
+        "Arc::clone(&self.cancellation.0),\n            self.effect_cancellation.clone(),\n            lower"
+      ],
+      "transfer != self.transfer || total != self.total": [
+        "transfer != self.transfer\n            || total != self.total"
+      ],
+      "&self.client.context, &record, self.client.context.authenticate(lower)?": [
+        "&self.client.context,\n            &record,\n            self.client.context.authenticate(lower)?"
+      ],
+      "self.client.retained.try_lock()": [
+        "self\n                .client\n                .retained\n                .try_lock()"
+      ],
+      "retained.as_ref().is_some_and(|previous| previous != &current)": [
+        "retained\n                .as_ref()\n                .is_some_and(|previous| previous != &current)"
+      ],
+      "self.client.channel.try_lock()": [
+        "self\n            .client\n            .channel\n            .try_lock()"
+      ],
+      "Ok(OriginalCellQ24ModelReadCompletionV1 { model: self.model, material: self.material })": [
+        "Ok(OriginalCellQ24ModelReadCompletionV1 {\n            model: self.model,\n            material: self.material,\n        })"
+      ],
+      "let mut slot = self.client.channel.try_lock()": [
+        "let mut slot = self\n            .client\n            .channel\n            .try_lock()"
+      ],
+      "effect_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))": [
+        "effect_cancellation\n                .as_ref()\n                .is_some_and(|flag| flag.load(Ordering::Acquire))"
+      ],
+      "channel.peer.request(&encoded).map_err(|_| Error::CommitUncertain)?": [
+        "channel\n            .peer\n            .request(&encoded)\n            .map_err(|_| Error::CommitUncertain)?"
+      ],
+      ".await.map_err(|_| Error::CommitUncertain)??": [
+        ".await\n    .map_err(|_| Error::CommitUncertain)??"
+      ],
+      "encoded.parse()": [
+        "encoded\n        .parse()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs": {
+      "Arc::clone(&inputs.material)": [
+        "Arc::clone(\n                &inputs.material,\n            )"
+      ],
+      "body.is_empty() || body.len() > wire::MATERIAL_MAX_BYTES": [
+        "body.is_empty()\n            || body.len() > wire::MATERIAL_MAX_BYTES"
+      ],
+      "request.nonce.checked_add(pages as u64 + 1).is_none_or(|last| last > 128)": [
+        "request\n                .nonce\n                .checked_add(pages as u64 + 1)\n                .is_none_or(|last| last > 128)"
+      ],
+      "fresh >= context.material.initial.request.envelope.expiry_unix_seconds": [
+        "fresh\n                >= context\n                    .material\n                    .initial\n                    .request\n                    .envelope\n                    .expiry_unix_seconds"
+      ],
+      "&context.training_cut, context.training.attestation(), fresh": [
+        "&context.training_cut,\n                context.training.attestation(),\n                fresh"
+      ],
+      "inputs.original.as_ref(), file, witness, &context, before": [
+        "inputs.original.as_ref(),\n                    file,\n                    witness,\n                    &context,\n                    before"
+      ],
+      "&context, before": [
+        "&context,\n                    before",
+        "&context,\n                before"
+      ],
+      "OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?": [
+        "OriginalCellEvaluationModelReadV1::require_original_operation_current(\n                &evaluation,\n                inputs.started,\n            )?"
+      ],
+      "state.retained.as_ref().is_some_and(|previous| previous != &model)": [
+        "state\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &model)"
+      ],
+      "host: self, state, original: inputs.original, context": [
+        "host: self,\n            state,\n            original: inputs.original,\n            context"
+      ],
+      "evaluation: Some(evaluation), observed, model, record, body, digest": [
+        "evaluation: Some(evaluation),\n            observed,\n            model,\n            record,\n            body,\n            digest"
+      ],
+      "transfer: request.nonce, next_page: 0, started: inputs.started": [
+        "transfer: request.nonce,\n            next_page: 0,\n            started: inputs.started"
+      ],
+      "let fresh = Context::authenticate(&context,\n            OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?,\n        )?": [
+        "let fresh = Context::authenticate(\n            &context,\n            OriginalCellEvaluationModelReadV1::require_original_operation_current(\n                &evaluation,\n                inputs.started,\n            )?,\n        )?"
+      ],
+      "if state.retained": [
+        "if state\n            .retained"
+      ],
+      "OriginalCellEvaluationModelReadV1::require_original_operation_current(evaluation, self.started)?": [
+        "OriginalCellEvaluationModelReadV1::require_original_operation_current(\n            evaluation,\n            self.started,\n        )?"
+      ],
+      "transfer != self.transfer || index != self.next_page || index as usize >= pages": [
+        "transfer != self.transfer\n            || index != self.next_page\n            || index as usize >= pages"
+      ],
+      "transfer, index, offset, total: self.body.len()": [
+        "transfer,\n            index,\n            offset,\n            total: self.body.len()"
+      ],
+      "digest: self.digest.to_string(), bytes": [
+        "digest: self.digest.to_string(),\n            bytes"
+      ],
+      "transfer != self.transfer || self.next_page as usize != pages": [
+        "transfer != self.transfer\n            || self.next_page as usize != pages"
+      ],
+      "OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after) != self.body.as_slice()": [
+        "OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after)\n            != self.body.as_slice()"
+      ],
+      "native != self.observed || current != self.model": [
+        "native != self.observed\n            || current != self.model"
+      ],
+      "self.state.retained.as_ref().is_some_and(|previous| previous != &current)": [
+        "self\n                .state\n                .retained\n                .as_ref()\n                .is_some_and(|previous| previous != &current)"
+      ],
+      "transfer, record, total: self.body.len(), digest: self.digest.to_string()": [
+        "transfer,\n            record,\n            total: self.body.len(),\n            digest: self.digest.to_string()"
+      ],
+      "if !self.completed { self.state.fenced = true; }": [
+        "if !self.completed {\n            self.state.fenced = true;\n        }"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs": {
+      "OriginalModelReadHostOperation::page(\n                        operation.as_mut().ok_or(Error::ReadbackRequired)?, &request,\n                    )": [
+        "OriginalModelReadHostOperation::page(\n                operation.as_mut().ok_or(Error::ReadbackRequired)?,\n                &request,\n            )"
+      ],
+      "OriginalModelReadHostOperation::finish(\n                        operation.take().ok_or(Error::ReadbackRequired)?, &request,\n                    )": [
+        "OriginalModelReadHostOperation::finish(\n                operation.take().ok_or(Error::ReadbackRequired)?,\n                &request,\n            )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs": {
+      "self.material, self.registration, self.dataset, self.training, self.evaluation, model": [
+        "self.material,\n            self.registration,\n            self.dataset,\n            self.training,\n            self.evaluation,\n            model"
+      ],
+      "cut.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?": [
+        "cut.record(\n            training.receipt().clone(),\n            training.receipt().observed_unix_seconds,\n        )?"
+      ],
+      "coordinator.candidate()": [
+        "coordinator\n            .candidate()"
+      ],
+      "decision.receipts.iter().take(4).zip(self.signatures())": [
+        "decision\n            .receipts\n            .iter()\n            .take(4)\n            .zip(self.signatures())"
+      ],
+      "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)": [
+        "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &self.material,\n            )"
+      ],
+      "&snapshot, &signatures": [
+        "&snapshot,\n                &signatures"
+      ],
+      "record, original_context.as_array(), self.model.material_digest().as_array()": [
+        "record,\n                original_context.as_array(),\n                self.model.material_digest().as_array()"
+      ],
+      "input.candidate() != coordinator.candidate()": [
+        "input.candidate()\n                != coordinator\n                    .candidate()"
+      ],
+      "self.decision().receipts.iter().take(4).zip(self.signatures())": [
+        "self\n            .decision()\n            .receipts\n            .iter()\n            .take(4)\n            .zip(self.signatures())"
+      ],
+      "expiry.min(signed.expires_at).min(verified.principal().expires_at)": [
+        "expiry\n                .min(signed.expires_at)\n                .min(verified.principal().expires_at)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_learning_model_binding.rs": {
+      "OriginalCircuitModelPublicationContextV1::authenticate(\n        context, now()?,              true,\n    )?": [
+        "OriginalCircuitModelPublicationContextV1::authenticate(\n        context,\n        now()?,\n                     true,\n    )?"
+      ],
+      "source.scope.principal_digest.to_string() != context.decision().request.principal_id.as_str()": [
+        "source.scope.principal_digest.to_string()\n            != context.decision().request.principal_id.as_str()"
+      ],
+      "next.task_digest != crate::circuit_feature_task_digest_v1(definition, source)?.into_array()": [
+        "next.task_digest\n            != crate::circuit_feature_task_digest_v1(definition, source)?.into_array()"
+      ],
+      "previous.source.bundle_digest() != request.selected_bundle.digest()": [
+        "previous.source.bundle_digest()\n            != request\n                .selected_bundle\n                .digest()"
+      ],
+      "coordinator.candidate()": [
+        "coordinator\n        .candidate()"
+      ],
+      "task.0.original.lock()": [
+        "task\n        .0\n        .original\n        .lock()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs": {
+      "pub struct PreparedOriginalCircuitModelPublicationV1<'a,": [
+        "pub struct PreparedOriginalCircuitModelPublicationV1<\n    'a,"
+      ],
+      "AgentdGenerationUpdateRequestV1 { operation_id: operation.to_string() }": [
+        "AgentdGenerationUpdateRequestV1 {\n                    operation_id: operation.to_string(),\n                }"
+      ],
+      "context.authenticate(started,              true).map_err(uncertain)?": [
+        "context\n                .authenticate(started,              true)\n                .map_err(uncertain)?"
+      ],
+      "context.authenticate_material(observation.material(), started,              true).map_err(uncertain)?": [
+        "context\n        .authenticate_material(observation.material(), started,              true)\n        .map_err(uncertain)?"
+      ],
+      "context, observation, prepared, definition, source, completed, started_at: started": [
+        "context,\n        observation,\n        prepared,\n        definition,\n        source,\n        completed,\n        started_at: started"
+      ],
+      "observation.material(), started_at,              true": [
+        "observation.material(),\n            started_at,\n                         true"
+      ],
+      "ready.into_circuit_feature_task(definition, source, completed)": [
+        "ready\n                .into_circuit_feature_task(definition, source, completed)"
+      ],
+      "context.authenticate_material(completed.material(), started_at,              true).map_err(uncertain)?": [
+        "context\n            .authenticate_material(completed.material(), started_at,              true)\n            .map_err(uncertain)?"
+      ],
+      "authorities.artifacts.lock()": [
+        "authorities\n        .artifacts\n        .lock()"
+      ],
+      "let artifacts = authorities.artifacts.lock()": [
+        "let artifacts = authorities\n        .artifacts\n        .lock()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/root_model_version_issuer.rs": {
+      "prepared: &PreparedOriginalCircuitModelPublicationV1<'_, FileAnchorWitnessStore, FileAnchorWitnessStore>": [
+        "prepared: &PreparedOriginalCircuitModelPublicationV1<\n            '_,\n            FileAnchorWitnessStore,\n            FileAnchorWitnessStore,\n        >"
+      ],
+      "self.protected_root.as_ref()": [
+        "self\n            .protected_root\n            .as_ref()"
+      ],
+      "self.stream.try_lock()": [
+        "self\n                .stream\n                .try_lock()"
+      ],
+      "Ok(OriginalRootModelVersionIssuerV1 { provider: self, requested: false })": [
+        "Ok(OriginalRootModelVersionIssuerV1 {\n            provider: self,\n            requested: false,\n        })"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_version_wire.rs": {
+      "pub(super) enum Action { Publish, Readback }": [
+        "pub(super) enum Action {\n    Publish,\n    Readback,\n}"
+      ],
+      "Busy, ReadbackRequired, Uncertain, Unavailable, FinalUseDenied,": [
+        "Busy,\n    ReadbackRequired,\n    Uncertain,\n    Unavailable,\n    FinalUseDenied,"
+      ],
+      "schema: 1, purpose: PURPOSE.into(), request_id": [
+        "schema: 1,\n            purpose: PURPOSE.into(),\n            request_id"
+      ],
+      "initial_binding: initial.to_string(), binding: binding.to_string()": [
+        "initial_binding: initial.to_string(),\n            binding: binding.to_string()"
+      ],
+      "self.schema != 1 || self.purpose != PURPOSE": [
+        "self.schema != 1\n            || self.purpose != PURPOSE"
+      ],
+      "self.request_id != request_id || !(1..=128).contains(&request_id)": [
+        "self.request_id != request_id\n            || !(1..=128).contains(&request_id)"
+      ],
+      "coordinator.candidate()": [
+        "coordinator\n                    .candidate()"
+      ],
+      "bundle: expected, run": [
+        "bundle: expected,\n                        run"
+      ],
+      "value.parse()": [
+        "value\n        .parse()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_version_client.rs": {
+      "PublicationContext::authenticate(context.model_publication_context(), started,              false)?": [
+        "PublicationContext::authenticate(\n            context.model_publication_context(),\n            started,\n                         false,\n        )?"
+      ],
+      "PublicationContext::original_version_binding(context.model_publication_context(), started)?": [
+        "PublicationContext::original_version_binding(\n            context.model_publication_context(),\n            started,\n        )?"
+      ],
+      "PublicationContext::original_version_binding(context.model_publication_context(), fresh)? != expected": [
+        "PublicationContext::original_version_binding(context.model_publication_context(), fresh)?\n            != expected"
+      ],
+      "Channel { peer, next: 1, requested: origin == Origin::Recovered }": [
+        "Channel {\n                peer,\n                next: 1,\n                requested: origin == Origin::Recovered,\n            }"
+      ],
+      "original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))": [
+        "original_cancellation\n            .as_ref()\n            .is_some_and(|flag| flag.load(Ordering::Acquire))",
+        "original_cancellation\n                    .as_ref()\n                    .is_some_and(|flag| flag.load(Ordering::Acquire))"
+      ],
+      "channel.peer.request(&bytes).map_err(|_| Error::CommitUncertain)?": [
+        "channel\n                .peer\n                .request(&bytes)\n                .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "PublicationContext::authenticate(self.context.model_publication_context(), fresh,              false)": [
+        "PublicationContext::authenticate(\n            self.context.model_publication_context(),\n            fresh,\n                         false,\n        )"
+      ],
+      "response.result.decode(self.context.model_publication_context())": [
+        "response\n            .result\n            .decode(self.context.model_publication_context())"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_version_host.rs": {
+      "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&predecessors.material)?": [
+        "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &predecessors.material,\n            )?"
+      ],
+      "inputs.selection.signed.clone(), inputs.selection.verifier.clone()": [
+        "inputs.selection.signed.clone(),\n            inputs.selection.verifier.clone()"
+      ],
+      "context: None, intent: None, installed: None, config: None": [
+        "context: None,\n                intent: None,\n                installed: None,\n                config: None"
+      ],
+      "let (initial_binding, _) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&predecessors.material)?": [
+        "let (initial_binding, _) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &predecessors.material,\n            )?"
+      ],
+      "original.artifacts, original.artifact_checkpoint": [
+        "original.artifacts,\n            original.artifact_checkpoint"
+      ],
+      "original.artifact_selection, original.artifact_verifier": [
+        "original.artifact_selection,\n            original.artifact_verifier"
+      ],
+      "cell: original.cell, source: original.source, identity: original.identity": [
+        "cell: original.cell,\n            source: original.source,\n            identity: original.identity"
+      ],
+      "intent: Some(original.intent_digest), installed: Some(installed), config: None": [
+        "intent: Some(original.intent_digest),\n                installed: Some(installed),\n                config: None"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_version.rs": {
+      "enum Origin { Fresh, Recovered }": [
+        "enum Origin {\n    Fresh,\n    Recovered,\n}"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs": {
+      "struct EffectFence<'a> { host: &'a Host, completed: bool }": [
+        "struct EffectFence<'a> {\n    host: &'a Host,\n    completed: bool,\n}"
+      ],
+      "EffectFence { host: self, completed: false }": [
+        "EffectFence {\n            host: self,\n            completed: false,\n        }"
+      ],
+      "self.original_predecessors().with_original_model(OriginalCellQ24ModelReadV1::model(&operation).clone())?": [
+        "self\n            .original_predecessors()\n            .with_original_model(OriginalCellQ24ModelReadV1::model(&operation).clone())?"
+      ],
+      "OriginalModelPublicationContext::authenticate_material(&context, OriginalCellQ24ModelReadV1::material(&operation), started,              true)?": [
+        "OriginalModelPublicationContext::authenticate_material(\n            &context,\n            OriginalCellQ24ModelReadV1::material(&operation),\n            started,\n                         true,\n        )?"
+      ],
+      "awaiting.task.require_completed_a(&awaiting.inputs.completed)?": [
+        "awaiting\n            .task\n            .require_completed_a(&awaiting.inputs.completed)?"
+      ],
+      "context, operation, *awaiting.inputs, started": [
+        "context,\n            operation,\n            *awaiting.inputs,\n            started"
+      ],
+      ".await.map_err(|_| Error::CommitUncertain)?": [
+        ".await\n        .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "OriginalModelPublicationContext::authenticate_material(&prepared.context, OriginalCellQ24ModelReadV1::material(&prepared.observation), started,              true)?": [
+        "OriginalModelPublicationContext::authenticate_material(\n            &prepared.context,\n            OriginalCellQ24ModelReadV1::material(&prepared.observation),\n            started,\n                         true,\n        )?"
+      ],
+      "&mut issuer, &prepared": [
+        "&mut issuer,\n            &prepared"
+      ],
+      "let PreparedOriginalCircuitModelPublicationV1 { context, observation, .. } = prepared": [
+        "let PreparedOriginalCircuitModelPublicationV1 {\n                    context,\n                    observation,\n                    ..\n                } = prepared"
+      ],
+      "OriginalCellQ24ModelReadV1::finish(observation).await.map_err(|_| Error::CommitUncertain)?": [
+        "OriginalCellQ24ModelReadV1::finish(observation)\n                    .await\n                    .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "OriginalModelPublicationContext::authenticate_material(&context, OriginalCellQ24ModelReadCompletionV1::material(&completed), started,              false)?": [
+        "OriginalModelPublicationContext::authenticate_material(\n                    &context,\n                    OriginalCellQ24ModelReadCompletionV1::material(&completed),\n                    started,\n                                 false,\n                )?"
+      ],
+      "OriginalCellQ24ModelReadV1::require_current(&prepared.observation, started).map_err(|_| Error::CommitUncertain)?": [
+        "OriginalCellQ24ModelReadV1::require_current(&prepared.observation, started)\n            .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "OriginalModelPublicationContext::authenticate_material(&prepared.context, OriginalCellQ24ModelReadV1::material(&prepared.observation), started,              true)": [
+        "OriginalModelPublicationContext::authenticate_material(\n            &prepared.context,\n            OriginalCellQ24ModelReadV1::material(&prepared.observation),\n            started,\n                         true,\n        )"
+      ],
+      "self.require_lifetime().map_err(|_| Error::CommitUncertain)?": [
+        "self.require_lifetime()\n            .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "ready.into_circuit_feature_task(definition, source, completed)": [
+        "ready\n            .into_circuit_feature_task(definition, source, completed)"
+      ],
+      "binding::require_published(&context, &published,              true)": [
+        "binding::require_published(\n            &context, &published,              true,\n        )"
+      ],
+      "awaiting.task.install_original(published, &context, intent)": [
+        "awaiting\n            .task\n            .install_original(published, &context, intent)"
+      ],
+      "let before = installed.observe(&context)": [
+        "let before = installed\n            .observe(&context)"
+      ],
+      "let closed = OriginalCellQ24ModelReadV1::finish(observation).await": [
+        "let closed = OriginalCellQ24ModelReadV1::finish(observation)\n            .await"
+      ],
+      "let current = installed.observe(&context)": [
+        "let current = installed\n            .observe(&context)"
+      ],
+      "OriginalModelPublicationContext::authenticate_material(&context, OriginalCellQ24ModelReadCompletionV1::material(&closed), started_at,              true)": [
+        "OriginalModelPublicationContext::authenticate_material(\n            &context,\n            OriginalCellQ24ModelReadCompletionV1::material(&closed),\n            started_at,\n                         true,\n        )"
+      ],
+      "state.installed.is_some() || state.config.is_some()": [
+        "state.installed.is_some()\n                || state.config.is_some()"
+      ],
+      "let operation = OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model).await?": [
+        "let operation =\n            OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model).await?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_version_state.rs": {
+      "state.intent.ok_or(Error::CommitUncertain)?, state.installed.clone())\n        };\n        let expected: Arc<OriginalModelPublicationContext> = expected;\n        let started": [
+        "state.intent.ok_or(Error::CommitUncertain)?,\n                state.installed.clone(),\n            )\n        };\n        let expected: Arc<OriginalModelPublicationContext> = expected;\n        let started"
+      ],
+      "&self.control, operation.as_str(), intent": [
+        "&self.control,\n            operation.as_str(),\n            intent"
+      ],
+      "self.original_predecessors().with_original_model(operation.model().clone())?": [
+        "self\n            .original_predecessors()\n            .with_original_model(operation.model().clone())?"
+      ],
+      "OriginalModelPublicationContext::original_version_binding(&actual, started)? != OriginalModelPublicationContext::original_version_binding(expected.as_ref(), started)?": [
+        "OriginalModelPublicationContext::original_version_binding(&actual, started)?\n                != OriginalModelPublicationContext::original_version_binding(\n                    expected.as_ref(),\n                    started,\n                )?"
+      ],
+      "let operation: OriginalCellQ24ModelReadV1<'_> = OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model).await?": [
+        "let operation: OriginalCellQ24ModelReadV1<'_> =\n            OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model).await?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_version_task.rs": {
+      "&self.original_a_identity, run,\n        )?": [
+        "&self.original_a_identity,\n            run,\n        )?"
+      ],
+      "CircuitTaskSourceReadbackV1::read_run_publication(&self.original_a, a, run)? != before": [
+        "CircuitTaskSourceReadbackV1::read_run_publication(&self.original_a, a, run)?\n                != before"
+      ],
+      "coordinator.candidate()": [
+        "coordinator\n            .candidate()"
+      ],
+      "candidate.digest()": [
+        "candidate\n            .digest()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_version_service.rs": {
+      "Arc::clone(&self.connections).try_acquire_owned()": [
+        "Arc::clone(&self.connections)\n            .try_acquire_owned()"
+      ],
+      "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime": [
+        "stream,\n            consumer,\n            consumer_uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime"
+      ],
+      "channel.exchange(|bytes| self.command_response(bytes, request_id, &cancelled)": [
+        "channel.exchange(|bytes| {\n                    self.command_response(bytes, request_id, &cancelled)"
+      ],
+      "request.require_initial(self.initial_binding": [
+        "request.require_initial(\n            self.initial_binding"
+      ],
+      "&self.predecessors.material.initial.request.operation_id, request_id": [
+        "&self.predecessors.material.initial.request.operation_id,\n            request_id"
+      ],
+      "wire::Action::Publish => self.runtime.block_on(self.publish_original(&request, cancelled))": [
+        "wire::Action::Publish => self\n                .runtime\n                .block_on(self.publish_original(&request, cancelled))"
+      ],
+      "self.origin != Origin::Fresh || self.runtime_started.swap(        true, Ordering::AcqRel)": [
+        "self.origin != Origin::Fresh\n            || self.runtime_started.swap(        true, Ordering::AcqRel)"
+      ],
+      "PublicationContext::authenticate(context.as_ref(), super::super::now()?,              true)?": [
+        "PublicationContext::authenticate(\n                context.as_ref(),\n                super::super::now()?,\n                             true,\n            )?"
+      ],
+      "ReadOwner::from_original_owners(installed.cell": [
+        "ReadOwner::from_original_owners(\n                installed.cell"
+      ],
+      "installed.source.as_ref().clone(), installed.identity, context": [
+        "installed.source.as_ref().clone(),\n                installed.identity,\n                context"
+      ],
+      "PublicationContext::original_version_binding(context.model_publication_context(), current)?": [
+        "PublicationContext::original_version_binding(\n                context.model_publication_context(),\n                current,\n            )?"
+      ],
+      "ReadOwner::from_original_owners(installed.cell, installed.source.as_ref().clone()": [
+        "ReadOwner::from_original_owners(\n            installed.cell,\n            installed.source.as_ref().clone()"
+      ],
+      "installed.identity, context)": [
+        "installed.identity,\n            context,\n        )"
+      ],
+      "requested.min(self.end.checked_duration_since(Instant::now()).ok_or(Error::Unavailable)?)": [
+        "requested.min(\n            self.end\n                .checked_duration_since(Instant::now())\n                .ok_or(Error::Unavailable)?,\n        )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs": {
+      "return Err(OwnerError::Binding(": [
+        "return Err(\n                OwnerError::Binding("
+      ],
+      "if execute => None": [
+        "if execute => {\n                None"
+      ],
+      "OriginalCircuitCandidateLearningReadContextV1::authenticate(source.context, started).map_err(unavailable)?": [
+        "OriginalCircuitCandidateLearningReadContextV1::authenticate(source.context, started)\n            .map_err(unavailable)?"
+      ],
+      "OriginalCircuitCandidateLearningReadClientV1::require_original_context(source.live, source.context).map_err(unavailable)?": [
+        "OriginalCircuitCandidateLearningReadClientV1::require_original_context(\n            source.live,\n            source.context,\n        )\n        .map_err(unavailable)?"
+      ],
+      "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(source.model).await.map_err(unavailable)?": [
+        "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(source.model)\n                .await\n                .map_err(unavailable)?"
+      ],
+      "context.authenticate_material(operation.material(), started, execute).map_err(unavailable)?": [
+        "context\n            .authenticate_material(operation.material(), started, execute)\n            .map_err(unavailable)?"
+      ],
+      "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n            operation.material(), &self.config, binding::now()?,\n        )": [
+        "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n            operation.material(),\n            &self.config,\n            binding::now()?,\n        )"
+      ],
+      "let before = OriginalCircuitCandidateLearningReadClientV1::read_current(source.live).await.map_err(unavailable)?": [
+        "let before = OriginalCircuitCandidateLearningReadClientV1::read_current(source.live)\n            .await\n            .map_err(unavailable)?"
+      ],
+      "context.authenticate_material(operation.material(), issued_at,              true)": [
+        "context\n                    .authenticate_material(operation.material(), issued_at,              true)"
+      ],
+      "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n                    operation.material(), config, issued_at,\n                )": [
+        "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n                    operation.material(),\n                    config,\n                    issued_at,\n                )"
+      ],
+      "binding::sign_original_until(config, key, &payload, identity, issued_at, expiry)?": [
+        "binding::sign_original_until(\n                    config, key, &payload, identity, issued_at, expiry,\n                )?"
+      ],
+      "let after = OriginalCircuitCandidateLearningReadClientV1::read_current(source.live).await.map_err(unavailable)?": [
+        "let after = OriginalCircuitCandidateLearningReadClientV1::read_current(source.live)\n            .await\n            .map_err(unavailable)?"
+      ],
+      "let completed: OriginalCellQ24ModelReadCompletionV1 = operation.finish().await.map_err(unavailable)?": [
+        "let completed: OriginalCellQ24ModelReadCompletionV1 =\n            operation.finish().await.map_err(unavailable)?"
+      ],
+      "context.authenticate_material(completed.material(), current, execute)": [
+        "context\n            .authenticate_material(completed.material(), current, execute)"
+      ],
+      "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n            completed.material(), config, current,\n        ).map_err(unavailable)?": [
+        "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n            completed.material(),\n            config,\n            current,\n        )\n        .map_err(unavailable)?"
+      ],
+      "config.verifier.verify(": [
+        "config\n                .verifier\n                .verify("
+      ],
+      "let operation: OriginalCellQ24ModelReadV1<'_> =\n            OriginalCellQ24ModelCommandClientV1::begin_original_model_read(source.model).await.map_err(unavailable)?": [
+        "let operation: OriginalCellQ24ModelReadV1<'_> =\n            OriginalCellQ24ModelCommandClientV1::begin_original_model_read(source.model)\n                .await\n                .map_err(unavailable)?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_selection_command_wire.rs": {
+      "coordinator.candidate()": [
+        "coordinator\n        .candidate()"
+      ],
+      "context.model_publication_context().signatures().iter()": [
+        "context\n        .model_publication_context()\n        .signatures()\n        .iter()"
+      ],
+      ".fold(context.decision().request.envelope.expiry_unix_seconds, u64::min)": [
+        ".fold(\n            context.decision().request.envelope.expiry_unix_seconds,\n            u64::min,\n        )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs": {
+      "stream, peer, original_owner_pidfd, context, timeout, lifetime,                         true, expected": [
+        "stream,\n            peer,\n            original_owner_pidfd,\n            context,\n            timeout,\n            lifetime,\n                                    true,\n            expected"
+      ],
+      "wire::authenticate_completed(&context, original.snapshot.clone(), original.attestation.clone(), fresh)? != *original": [
+        "wire::authenticate_completed(\n                &context,\n                original.snapshot.clone(),\n                original.attestation.clone(),\n                fresh,\n            )? != *original"
+      ],
+      "peer, next_request_id: 1, execution_requested: readback_only": [
+        "peer,\n                next_request_id: 1,\n                execution_requested: readback_only"
+      ],
+      "context, binding, retained: Mutex::new(expected)": [
+        "context,\n            binding,\n            retained: Mutex::new(expected)"
+      ],
+      "self.retained.try_lock().map_err(|_| Error::Unavailable)?.is_some()": [
+        "self\n                    .retained\n                    .try_lock()\n                    .map_err(|_| Error::Unavailable)?\n                    .is_some()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs": {
+      "context.decision().request.clone(), context.decision().owners.clone()": [
+        "context.decision().request.clone(),\n            context.decision().owners.clone()"
+      ],
+      "self.execution_requested.swap(        true, Ordering::AcqRel)": [
+        "self\n                    .execution_requested\n                    .swap(        true, Ordering::AcqRel)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs": {
+      "let mut cut = LearningIterationCoordinatorV1::from_snapshot(": [
+        "let mut cut =\n        LearningIterationCoordinatorV1::from_snapshot("
+      ],
+      "owners.common.material.initial.clone(),": [
+        "owners.common.material.initial.clone()"
+      ],
+      "owners.common.material.scope.validate_snapshot(cut.snapshot())?;": [
+        "owners\n        .common\n        .material\n        .scope\n        .validate_snapshot(cut.snapshot())?;"
+      ],
+      ").map_err(|_| Error::WrongScope)": [
+        ")\n    .map_err(|_| Error::WrongScope)"
+      ],
+      "|| action == Action::Execute && (": [
+        "|| action == Action::Execute\n                && ("
+      ],
+      "|| LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()": [
+        "|| LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?\n                        .next_stage()"
+      ],
+      "if lane.failed { return Err(Error::CommitUncertain); }": [
+        "if lane.failed {\n            return Err(Error::CommitUncertain);\n        }"
+      ],
+      ") -> Result<(Arc<OriginalCircuitModelSelectionCommandClientV1>,": [
+        ") -> Result<\n        (\n            Arc<OriginalCircuitModelSelectionCommandClientV1>,"
+      ],
+      "Arc<OriginalCircuitModelVersionClientV1>), Error> {": [
+        "Arc<OriginalCircuitModelVersionClientV1>,\n        ),\n        Error,\n    > {"
+      ],
+      "let context = OriginalCircuitCandidateLearningReadContextV1::from_original_model(": [
+        "let context =\n            OriginalCircuitCandidateLearningReadContextV1::from_original_model("
+      ],
+      "publication,": [
+        "publication"
+      ],
+      ").map_err(|_| Error::WrongScope)?;": [
+        ")\n                .map_err(|_| Error::WrongScope)?;"
+      ],
+      "if lane.model.as_ref().is_some_and(|saved| saved != completed.model()) {": [
+        "if lane\n            .model\n            .as_ref()\n            .is_some_and(|saved| saved != completed.model())\n        {"
+      ],
+      "let mut common: tokio::sync::MutexGuard<'_, Continuation> = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;": [
+        "let mut common: tokio::sync::MutexGuard<'_, Continuation> = self\n                .common\n                .continuation\n                .try_lock()\n                .map_err(|_| Error::QueueFull)?;"
+      ],
+      "let (selector, version) = common.take_candidate_selection_channels(": [
+        "let (selector, version) = common\n                .take_candidate_selection_channels("
+      ],
+      "&operation.dataset, &operation.training,": [
+        "&operation.dataset, &operation.training"
+      ],
+      "let selector = OriginalCircuitModelSelectionCommandClientV1::bind_original_stage_channel(": [
+        "let selector =\n                OriginalCircuitModelSelectionCommandClientV1::bind_original_stage_channel("
+      ],
+      "selector, context.clone(), readback_only, None,": [
+        "selector,\n                    context.clone(),\n                    readback_only,\n                    None,"
+      ],
+      ").map_err(|_| Error::CommitUncertain)?;": [
+        ")\n                .map_err(|_| Error::CommitUncertain)?;"
+      ],
+      "OriginalCircuitModelVersionClientV1::recover_original_stage_channel(version, context)": [
+        "OriginalCircuitModelVersionClientV1::recover_original_stage_channel(\n                    version, context,\n                )"
+      ],
+      "}.map_err(|_| Error::CommitUncertain)?;": [
+        "}\n            .map_err(|_| Error::CommitUncertain)?;"
+      ],
+      "gate, snapshot, &self.common.material.scope,": [
+        "gate,\n            snapshot,\n            &self.common.material.scope,"
+      ],
+      ").await": [
+        ")\n        .await"
+      ],
+      "&operation, &completed,": [
+        "&operation,\n            &completed,"
+      ],
+      "context.authenticate_material(completed.material(), auth::now()?, false)": [
+        "context\n            .authenticate_material(completed.material(), auth::now()?, false)"
+      ],
+      "version.as_ref(), cancellation,": [
+        "version.as_ref(),\n                    cancellation,"
+      ],
+      ").await;": [
+        ")\n                .await;"
+      ],
+      "self.require_adoption_effect(snapshot).await": [
+        "self.require_adoption_effect(snapshot)\n                    .await"
+      ],
+      ".await.map_err(|_| Error::CommitUncertain)?,": [
+        ".await\n                .map_err(|_| Error::CommitUncertain)?,"
+      ],
+      "if lane.publication.as_ref().is_some_and(|saved| saved != publication) {": [
+        "if lane\n                .publication\n                .as_ref()\n                .is_some_and(|saved| saved != publication)\n            {"
+      ],
+      "context.authenticate_material(completed.material(), auth::now()?, action == Action::Execute)": [
+        "context\n            .authenticate_material(\n                completed.material(),\n                auth::now()?,\n                action == Action::Execute,\n            )"
+      ],
+      "Action::Readback => OriginalCircuitModelSelectionCommandClientV1::readback(": [
+        "Action::Readback => {\n                OriginalCircuitModelSelectionCommandClientV1::readback("
+      ],
+      "selector.as_ref(),": [
+        "selector.as_ref()"
+      ],
+      ").await.map_err(|_| Error::CommitUncertain)?,": [
+        ")\n                    .await\n                    .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "let closed: ClosedCandidateOriginalOperation<'_> = CandidateOriginalOperation::close(operation).await": [
+        "let closed: ClosedCandidateOriginalOperation<'_> =\n            CandidateOriginalOperation::close(operation)\n                .await"
+      ],
+      "let evidence = closed.selection(completed, original.clone(), publication.clone())": [
+        "let evidence = closed\n            .selection(completed, original.clone(), publication.clone())"
+      ],
+      "self.require_live_deadline().map_err(|_| Error::CommitUncertain)?;": [
+        "self.require_live_deadline()\n            .map_err(|_| Error::CommitUncertain)?;"
+      ],
+      "let mut lane = self.adoption.try_lock().map_err(|_| Error::CommitUncertain)?;": [
+        "let mut lane = self\n            .adoption\n            .try_lock()\n            .map_err(|_| Error::CommitUncertain)?;"
+      ],
+      "if lane.selection.as_ref().is_some_and(|saved| saved != &original) {": [
+        "if lane\n            .selection\n            .as_ref()\n            .is_some_and(|saved| saved != &original)\n        {"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs": {
+      ") -> Result<(": [
+        ") -> Result<\n        ("
+      ],
+      "), Error> {": [
+        "),\n        Error,\n    > {"
+      ],
+      "if lane.model.as_ref().is_some_and(|saved| saved != completed.model()) {": [
+        "if lane\n                .model\n                .as_ref()\n                .is_some_and(|saved| saved != completed.model())\n            {"
+      ],
+      "match (&lane.observer, &lane.readiness, &lane.selection, &lane.publication) {": [
+        "match (\n                &lane.observer,\n                &lane.readiness,\n                &lane.selection,\n                &lane.publication,\n            ) {"
+      ],
+      "Arc::clone(observer), Arc::clone(readiness), selection.clone(), publication.clone(),": [
+        "Arc::clone(observer),\n                    Arc::clone(readiness),\n                    selection.clone(),\n                    publication.clone(),"
+      ],
+      ".await.map_err(|_| Error::CommitUncertain)?;": [
+        ".await\n                    .map_err(|_| Error::CommitUncertain)?;",
+        ".await\n            .map_err(|_| Error::CommitUncertain)?;"
+      ],
+      "let mut expected = LearningIterationCoordinatorV1::from_snapshot(": [
+        "let mut expected =\n            LearningIterationCoordinatorV1::from_snapshot("
+      ],
+      "completed.model().snapshot().clone(),": [
+        "completed.model().snapshot().clone()"
+      ],
+      "expected.record(selection.receipt().clone(), selection.receipt().observed_unix_seconds)?;": [
+        "expected.record(\n            selection.receipt().clone(),\n            selection.receipt().observed_unix_seconds,\n        )?;"
+      ],
+      "|| operation.supplied.receipts.get(..6) != Some(selection.snapshot().receipts.as_slice())": [
+        "|| operation.supplied.receipts.get(..6)\n                != Some(selection.snapshot().receipts.as_slice())"
+      ],
+      "let mut common: tokio::sync::MutexGuard<'_, Continuation> = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;": [
+        "let mut common: tokio::sync::MutexGuard<'_, Continuation> = self\n                .common\n                .continuation\n                .try_lock()\n                .map_err(|_| Error::QueueFull)?;"
+      ],
+      "let origin = if action == Action::Readback { Origin::Recovered } else { self.common.origin };": [
+        "let origin = if action == Action::Readback {\n            Origin::Recovered\n        } else {\n            self.common.origin\n        };"
+      ],
+      "observer, &self.common.material, &operation.dataset, &selection, origin,": [
+        "observer,\n            &self.common.material,\n            &operation.dataset,\n            &selection,\n            origin,"
+      ],
+      ").map_err(|_| Error::CommitUncertain)?;": [
+        ")\n        .map_err(|_| Error::CommitUncertain)?;",
+        ")\n            .map_err(|_| Error::CommitUncertain)?;"
+      ],
+      "let readiness = OriginalCircuitCandidateCompletionReadinessClientV1::bind_original_stage_channel(": [
+        "let readiness =\n            OriginalCircuitCandidateCompletionReadinessClientV1::bind_original_stage_channel("
+      ],
+      "readiness, &self.common.material, &operation.dataset, &selection,": [
+        "readiness,\n                &self.common.material,\n                &operation.dataset,\n                &selection,"
+      ],
+      "if lane.observer.is_some() || lane.readiness.is_some()": [
+        "if lane.observer.is_some()\n            || lane.readiness.is_some()"
+      ],
+      "|| lane.selection.as_ref().is_some_and(|saved| saved != &selection)": [
+        "|| lane\n                .selection\n                .as_ref()\n                .is_some_and(|saved| saved != &selection)"
+      ],
+      "if lane.publication.as_ref().is_some_and(|saved| saved != &publication) {": [
+        "if lane\n            .publication\n            .as_ref()\n            .is_some_and(|saved| saved != &publication)\n        {"
+      ],
+      "let actual = OriginalCircuitCandidateCompletionReadinessClientV1::read_current(readiness)": [
+        "let actual =\n                OriginalCircuitCandidateCompletionReadinessClientV1::read_current(readiness)"
+      ],
+      "context.authenticate_material(completed.material(), auth::now()?, true)": [
+        "context\n                .authenticate_material(completed.material(), auth::now()?, true)"
+      ],
+      "Err(Error::OwnerUnavailable(                                            ))": [
+        "Err(Error::OwnerUnavailable(\n                                                        ,\n        ))"
+      ],
+      "let (observer, readiness, selection, publication) = self.bind_adoption_next_use(": [
+        "let (observer, readiness, selection, publication) = self\n            .bind_adoption_next_use("
+      ],
+      "&operation, &completed, action,": [
+        "&operation, &completed, action"
+      ],
+      ").await?;": [
+        ")\n            .await?;"
+      ],
+      "context.authenticate_material(completed.material(), auth::now()?, false)": [
+        "context\n            .authenticate_material(completed.material(), auth::now()?, false)"
+      ],
+      "Action::Execute => self.await_original_candidate_c(": [
+        "Action::Execute => {\n                self.await_original_candidate_c("
+      ],
+      "snapshot, readiness.as_ref(), &context, &completed,": [
+        "snapshot, readiness.as_ref(), &context, &completed"
+      ],
+      ").await?,": [
+        ")\n                    .await?"
+      ],
+      ").await.map_err(|_| Error::CommitUncertain)?.ok_or(Error::CommitUncertain)?,": [
+        ")\n            .await\n            .map_err(|_| Error::CommitUncertain)?\n            .ok_or(Error::CommitUncertain)?,"
+      ],
+      ").await;": [
+        ")\n                .await;"
+      ],
+      "self.require_adoption_effect(snapshot).await": [
+        "self.require_adoption_effect(snapshot)\n                    .await"
+      ],
+      "Action::Readback => OriginalCircuitCandidateNextUseCommandClientV1::readback(": [
+        "Action::Readback => {\n                OriginalCircuitCandidateNextUseCommandClientV1::readback("
+      ],
+      "observer.as_ref(),": [
+        "observer.as_ref()"
+      ],
+      ").await.map_err(|_| Error::CommitUncertain)?,": [
+        ")\n                    .await\n                    .map_err(|_| Error::CommitUncertain)?"
+      ],
+      "let closed: ClosedCandidateOriginalOperation<'_> = CandidateOriginalOperation::close(operation).await": [
+        "let closed: ClosedCandidateOriginalOperation<'_> =\n            CandidateOriginalOperation::close(operation)\n                .await"
+      ],
+      "let evidence = closed.next_use(completed, selection, original.clone(), publication, ready)": [
+        "let evidence = closed\n            .next_use(completed, selection, original.clone(), publication, ready)"
+      ],
+      "self.require_live_deadline().map_err(|_| Error::CommitUncertain)?;": [
+        "self.require_live_deadline()\n            .map_err(|_| Error::CommitUncertain)?;"
+      ],
+      "let mut lane = self.adoption.try_lock().map_err(|_| Error::CommitUncertain)?;": [
+        "let mut lane = self\n            .adoption\n            .try_lock()\n            .map_err(|_| Error::CommitUncertain)?;"
+      ],
+      "if lane.next_use.as_ref().is_some_and(|saved| saved != &original) {": [
+        "if lane\n            .next_use\n            .as_ref()\n            .is_some_and(|saved| saved != &original)\n        {"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs": {
+      "if self.next_use.is_some() || self.publication.is_some() || self.completion_read.is_some()": [
+        "if self.next_use.is_some()\n                || self.publication.is_some()\n                || self.completion_read.is_some()"
+      ],
+      "|| &self.snapshot != model.snapshot() {": [
+        "|| &self.snapshot != model.snapshot()\n            {"
+      ],
+      "selected.record(selection.receipt().clone(), selection.receipt().observed_unix_seconds)?;": [
+        "selected.record(\n            selection.receipt().clone(),\n            selection.receipt().observed_unix_seconds,\n        )?;"
+      ],
+      "|| operation.supplied.receipts.get(5).is_some_and(|saved| saved != selection.receipt())": [
+        "|| operation\n                .supplied\n                .receipts\n                .get(5)\n                .is_some_and(|saved| saved != selection.receipt())"
+      ],
+      "if predecessors.len() != 2 { return Err(Error::WrongScope); }": [
+        "if predecessors.len() != 2 {\n            return Err(Error::WrongScope);\n        }"
+      ],
+      "material, selection.receipt(), selection.attestation(),": [
+        "material,\n            selection.receipt(),\n            selection.attestation(),"
+      ],
+      "LearningEvidenceRoleV1::Selector, now,": [
+        "LearningEvidenceRoleV1::Selector,\n            now,"
+      ],
+      "selected.record(next_use.receipt().clone(), next_use.receipt().observed_unix_seconds)?;": [
+        "selected.record(\n            next_use.receipt().clone(),\n            next_use.receipt().observed_unix_seconds,\n        )?;"
+      ],
+      "|| operation.supplied.receipts.get(6).is_some_and(|saved| saved != next_use.receipt())": [
+        "|| operation\n                .supplied\n                .receipts\n                .get(6)\n                .is_some_and(|saved| saved != next_use.receipt())"
+      ],
+      "material, next_use.receipt(), next_use.attestation(),": [
+        "material,\n            next_use.receipt(),\n            next_use.attestation(),"
+      ],
+      "LearningEvidenceRoleV1::Observer, now,": [
+        "LearningEvidenceRoleV1::Observer,\n            now,"
+      ],
+      "let evidence = material.verifier.verify(": [
+        "let evidence = material\n        .verifier\n        .verify("
+      ],
+      "role, signature, &learning_iteration_receipt_signing_bytes_v1(receipt)?, now,": [
+        "role,\n            signature,\n            &learning_iteration_receipt_signing_bytes_v1(receipt)?,\n            now,"
+      ],
+      ").map_err(Error::Evidence)?;": [
+        ")\n        .map_err(Error::Evidence)?;"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs": {
+      "self,\n    )": [
+        "self)"
+      ],
+      "self.policy.as_ref()": [
+        "self\n            .policy\n            .as_ref()"
+      ],
+      "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(&self.original, &self.plan)": [
+        "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(\n            &self.original,\n            &self.plan,\n        )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_read.rs": {
+      "pairing.digest()": [
+        "pairing\n                .digest()"
+      ],
+      "&original.source, &original.identity, &input, definition": [
+        "&original.source,\n                &original.identity,\n                &input,\n                definition"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs": {
+      "material.pairing.digest()": [
+        "material\n                .pairing\n                .digest()"
+      ],
+      "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(&self.original, &self.plan)?": [
+        "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(\n                &self.original,\n                &self.plan,\n            )?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs": {
+      "config.candidate.receipt() != config.training.receipts.get(2)": [
+        "config.candidate.receipt()\n            != config\n                .training\n                .receipts\n                .get(2)"
+      ],
+      "CellCompatibilityBundleV1::digest(config.candidate.bundle())": [
+        "CellCompatibilityBundleV1::digest(\n            config.candidate.bundle(),\n        )"
+      ],
+      "owners.iter().find(|owner| owner.run_id == episode.behavior_run_id)": [
+        "owners\n                .iter()\n                .find(|owner| owner.run_id == episode.behavior_run_id)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_contract.rs": {
+      "input.scope.principal_digest, input.source_frontier": [
+        "input.scope.principal_digest,\n        input.source_frontier"
+      ],
+      "input.objective_digest, input.ndu_snapshot_digest": [
+        "input.objective_digest,\n        input.ndu_snapshot_digest"
+      ],
+      "input.monotonic_micros, input.deadline_micros, input.lease_duration_ms": [
+        "input.monotonic_micros,\n        input.deadline_micros,\n        input.lease_duration_ms"
+      ],
+      "self.history.iter().find": [
+        "self\n            .history\n            .iter()\n            .find"
+      ],
+      "self.pairs.iter().find": [
+        "self\n            .pairs\n            .iter()\n            .find"
+      ],
+      "input.candidates.iter()": [
+        "input\n                .candidates\n                .iter()"
+      ],
+      "self.protocol.binding.cell.candidates.iter()": [
+        "self\n                    .protocol\n                    .binding\n                    .cell\n                    .candidates\n                    .iter()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_protocol.rs": {
+      "self.binding.cell.semantic_digest()": [
+        "self.binding\n                .cell\n                .semantic_digest()"
+      ],
+      "baseline.digest()": [
+        "baseline\n        .digest()"
+      ],
+      "actual.original_record().objective_function_v1_bytes != self.objective_function_v1_bytes": [
+        "actual.original_record().objective_function_v1_bytes\n                != self.objective_function_v1_bytes"
+      ],
+      "self.profile_digest, self.hard_constraint_digest, self.preference_state_digest": [
+        "self.profile_digest,\n            self.hard_constraint_digest,\n            self.preference_state_digest"
+      ],
+      "self.model_tuple_digest, self.prompt_registry_digest, self.artifact_set_digest": [
+        "self.model_tuple_digest,\n            self.prompt_registry_digest,\n            self.artifact_set_digest"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs": {
+      "rule.history.iter().map(|row| row.episode.episode_id.clone())": [
+        "rule\n        .history\n        .iter()\n        .map(|row| row.episode.episode_id.clone())"
+      ],
+      "row.candidate.episode_id.clone(), row.baseline.episode_id.clone()": [
+        "row.candidate.episode_id.clone(),\n                row.baseline.episode_id.clone()"
+      ],
+      "pairing.pairs.iter().find(|pair| pair.pair_id == requested.pair_id)": [
+        "pairing\n            .pairs\n            .iter()\n            .find(|pair| pair.pair_id == requested.pair_id)"
+      ],
+      "append_arm(&mut candidate, &left, pair": [
+        "append_arm(\n            &mut candidate,\n            &left,\n            pair"
+      ],
+      "append_arm(&mut baseline, &right, pair": [
+        "append_arm(\n            &mut baseline,\n            &right,\n            pair"
+      ],
+      "row.outcome.finalized_at.is_none_or(|at| at > evaluation_end)": [
+        "row\n            .outcome\n            .finalized_at\n            .is_none_or(|at| at > evaluation_end)"
+      ],
+      "value.as_str().parse::<Digest32>()": [
+        "value\n        .as_str()\n        .parse::<Digest32>()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs": {
+      "_ => return Err(Error::Binding(": [
+        "_ => {\n                return Err(Error::Binding("
+      ],
+      "owner, registration, task, training, scope, plan, training_evidence, verifier": [
+        "owner,\n                    registration,\n                    task,\n                    training,\n                    scope,\n                    plan,\n                    training_evidence,\n                    verifier"
+      ],
+      "OriginalCircuitEvaluationCohortReadbackV1::authenticate_current(owner, value, current)": [
+        "OriginalCircuitEvaluationCohortReadbackV1::authenticate_current(\n                    owner, value, current,\n                )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs": {
+      "candidate_temporal, baseline_temporal, pairing": [
+        "candidate_temporal,\n        baseline_temporal,\n        pairing"
+      ],
+      "policy.comparison(": [
+        "policy\n        .comparison("
+      ],
+      "policy.pairing(training)": [
+        "policy\n        .pairing(training)"
+      ],
+      "cohort.observed_pairing_contract()": [
+        "cohort\n        .observed_pairing_contract()"
+      ],
+      "dataset_digest: cohort.observed_dataset()": [
+        "dataset_digest: cohort\n                .observed_dataset()"
+      ],
+      "final_holdout_digest: cohort.observed_manifest_digest()": [
+        "final_holdout_digest: cohort\n                .observed_manifest_digest()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs": {
+      "pairing.canonical_commitment_bytes()": [
+        "pairing\n        .canonical_commitment_bytes()"
+      ],
+      "pairing.digest()": [
+        "pairing\n            .digest()",
+        "pairing\n        .digest()"
+      ],
+      "original.candidate()": [
+        "original\n        .candidate()"
+      ],
+      "context.training.request.selected_bundle.digest()": [
+        "context\n        .training\n        .request\n        .selected_bundle\n        .digest()"
+      ],
+      "for _ in 0..5 { plan.digest()?; }": [
+        "for _ in 0..5 {\n        plan.digest()?;\n    }"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs": {
+      "let paired_v2 = member.cohort.starts_with(": [
+        "let paired_v2 = member\n        .cohort\n        .starts_with("
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_paired.rs": {
+      "self, product_plan, candidate_plan, baseline_plan, provider,": [
+        "self, product_plan, candidate_plan, baseline_plan, provider"
+      ],
+      "pairing.pairs.sort_by(|left, right| left.pair_id.cmp(&right.pair_id));": [
+        "pairing\n        .pairs\n        .sort_by(|left, right| left.pair_id.cmp(&right.pair_id));"
+      ],
+      "plan.clone(), metric_roles, metric_sources,": [
+        "plan.clone(),\n        metric_roles,\n        metric_sources,"
+      ],
+      "candidate_temporal, baseline_temporal,": [
+        "candidate_temporal,\n        baseline_temporal,"
+      ],
+      "candidate.confidence.simultaneous_comparisons != baseline.confidence.simultaneous_comparisons": [
+        "candidate.confidence.simultaneous_comparisons\n            != baseline.confidence.simultaneous_comparisons"
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs": {
+      "arm.targets.get(&binding.decision_id)": [
+        "arm\n        .targets\n        .get(&binding.decision_id)"
+      ],
+      "arm.observations.get(&binding.decision_id)": [
+        "arm\n        .observations\n        .get(&binding.decision_id)"
+      ],
+      "arm.assignments.get(&binding.decision_id)": [
+        "arm\n        .assignments\n        .get(&binding.decision_id)"
+      ],
+      "arm.provenance.get(&binding.decision_id)": [
+        "arm\n        .provenance\n        .get(&binding.decision_id)"
+      ],
+      "!evidence.sources.insert(*provenance.source_evidence_digest.as_array())": [
+        "!evidence\n            .sources\n            .insert(*provenance.source_evidence_digest.as_array())"
+      ],
+      "!evidence.executions.insert(*provenance.execution_evidence_digest.as_array())": [
+        "!evidence\n            .executions\n            .insert(*provenance.execution_evidence_digest.as_array())"
+      ],
+      "let first = pairing.pairs.first().ok_or_else(|| invalid(": [
+        "let first = pairing\n        .pairs\n        .first()\n        .ok_or_else(|| invalid("
+      ],
+      "targets: arm.targets.iter().map(|row| (&row.decision_id, row)).collect(),": [
+        "targets: arm\n                .targets\n                .iter()\n                .map(|row| (&row.decision_id, row))\n                .collect(),"
+      ],
+      "observations: arm.observations.iter().map(|row| (&row.decision_id, row)).collect(),": [
+        "observations: arm\n                .observations\n                .iter()\n                .map(|row| (&row.decision_id, row))\n                .collect(),"
+      ],
+      "assignments: arm.assignments.iter().map(|row| (&row.decision_id, row)).collect(),": [
+        "assignments: arm\n                .assignments\n                .iter()\n                .map(|row| (&row.decision_id, row))\n                .collect(),"
+      ],
+      "provenance: arm.provenance.iter().map(|row| (&row.decision_id, row)).collect(),": [
+        "provenance: arm\n                .provenance\n                .iter()\n                .map(|row| (&row.decision_id, row))\n                .collect(),"
+      ],
+      "action_cells.checked_add(left.actions.len())": [
+        "action_cells\n            .checked_add(left.actions.len())"
+      ],
+      "for id in sorted { push_id(bytes, id); }": [
+        "for id in sorted {\n        push_id(bytes, id);\n    }"
+      ],
+      "&sample.decision_id, &sample.principal_lineage, &sample.episode_lineage,": [
+        "&sample.decision_id,\n            &sample.principal_lineage,\n            &sample.episode_lineage,"
+      ],
+      "&sample.window_id, &sample.action_id": [
+        "&sample.window_id,\n            &sample.action_id"
+      ],
+      "&target.decision_id, &target.principal_lineage,": [
+        "&target.decision_id,\n            &target.principal_lineage,"
+      ],
+      "&target.episode_lineage, &target.window_id": [
+        "&target.episode_lineage,\n            &target.window_id"
+      ],
+      "observation.finalized_outcome": [
+        "observation\n            .finalized_outcome"
+      ],
+      "&original.decision_id, &original.episode_lineage,": [
+        "&original.decision_id,\n            &original.episode_lineage,"
+      ],
+      "original.model_digest, original.input_digest,": [
+        "original.model_digest,\n            original.input_digest,"
+      ],
+      "original.protocol_digest, original.checkpoint_before,": [
+        "original.protocol_digest,\n            original.checkpoint_before,"
+      ],
+      "original.source_evidence_digest, original.execution_evidence_digest": [
+        "original.source_evidence_digest,\n            original.execution_evidence_digest"
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs": {
+      "for value in [&original.decision_id, &original.principal_lineage,": [
+        "for value in [\n        &original.decision_id,\n        &original.principal_lineage,"
+      ],
+      "&original.episode_lineage, &original.behavior_run_id]": [
+        "&original.episode_lineage,\n        &original.behavior_run_id,\n    ]"
+      ],
+      "plan: &ProductFrozenEvaluationPlanV1,\n    pairing: &OnPolicyPairingContractV1,\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    plan_fields(\n        plan.frozen_plan.plan_digest, plan.frozen_plan.metric_contract_digest,\n        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,\n        plan.baseline_temporal_plan_digest, pairing, &plan.metric_contracts,\n        &plan.metric_roles, &plan.metric_sources,\n    )\n}": [
+        "plan: &ProductFrozenEvaluationPlanV1,\n    pairing: &OnPolicyPairingContractV1,\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    plan_fields(\n        plan.frozen_plan.plan_digest,\n        plan.frozen_plan.metric_contract_digest,\n        plan.base_estimand_digest,\n        plan.candidate_temporal_plan_digest,\n        plan.baseline_temporal_plan_digest,\n        pairing,\n        &plan.metric_contracts,\n        &plan.metric_roles,\n        &plan.metric_sources,\n    )\n}"
+      ],
+      "plan_digest: Digest32,\n    metric_contract_digest: Digest32,\n    base_estimand_digest: Digest32,\n    candidate_temporal_plan_digest: Digest32,\n    baseline_temporal_plan_digest: Digest32,\n    pairing: &OnPolicyPairingContractV1,\n    metric_contracts: &[crate::MetricContractV1],\n    metric_roles: &[crate::MetricRoleContractV2],\n    metric_sources: &[super::super::ProductMetricSourceContractV1],\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    let paired = pairing.canonical_commitment_bytes()?;\n    let mut bytes = b                                                            .to_vec();\n    for digest in [plan_digest, metric_contract_digest,\n        base_estimand_digest, candidate_temporal_plan_digest,\n        baseline_temporal_plan_digest] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    count(&mut bytes, paired.len())?;\n    bytes.extend_from_slice(&paired);\n    count(&mut bytes, metric_contracts.len())?;\n    for contract in metric_contracts {\n        id(&mut bytes, &contract.metric_id);\n        bytes.push(match contract.direction {\n            EvaluationDirectionV1::Maximize => 0,\n            EvaluationDirectionV1::Minimize => 1,\n        });\n        match contract.safety_floor {\n            Some(value) => {\n                bytes.push(1);\n                bytes.extend_from_slice(&value.raw().to_be_bytes());\n            }\n            None => bytes.push(0),\n        }\n    }\n    count(&mut bytes, metric_roles.len())?;\n    for role in metric_roles {\n        id(&mut bytes, &role.metric_id);\n        match role.role {\n            MetricRoleV2::PrimarySuperiority { minimum_improvement } => {\n                bytes.push(0);\n                bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());\n            }\n            MetricRoleV2::NonInferiority { maximum_regression } => {\n                bytes.push(1);\n                bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());\n            }\n            MetricRoleV2::AbsoluteConstraint => bytes.push(2),\n        }\n    }\n    count(&mut bytes, metric_sources.len())?;\n    for source in metric_sources {\n        id(&mut bytes, &source.metric_id);\n        bytes.push(source.source.tag());\n    }\n    Ok(bytes)\n}": [
+        "plan_digest: Digest32,\n    metric_contract_digest: Digest32,\n    base_estimand_digest: Digest32,\n    candidate_temporal_plan_digest: Digest32,\n    baseline_temporal_plan_digest: Digest32,\n    pairing: &OnPolicyPairingContractV1,\n    metric_contracts: &[crate::MetricContractV1],\n    metric_roles: &[crate::MetricRoleContractV2],\n    metric_sources: &[super::super::ProductMetricSourceContractV1],\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    let paired = pairing.canonical_commitment_bytes()?;\n    let mut bytes = b                                                            .to_vec();\n    for digest in [\n        plan_digest,\n        metric_contract_digest,\n        base_estimand_digest,\n        candidate_temporal_plan_digest,\n        baseline_temporal_plan_digest,\n    ] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    count(&mut bytes, paired.len())?;\n    bytes.extend_from_slice(&paired);\n    count(&mut bytes, metric_contracts.len())?;\n    for contract in metric_contracts {\n        id(&mut bytes, &contract.metric_id);\n        bytes.push(match contract.direction {\n            EvaluationDirectionV1::Maximize => 0,\n            EvaluationDirectionV1::Minimize => 1,\n        });\n        match contract.safety_floor {\n            Some(value) => {\n                bytes.push(1);\n                bytes.extend_from_slice(&value.raw().to_be_bytes());\n            }\n            None => bytes.push(0),\n        }\n    }\n    count(&mut bytes, metric_roles.len())?;\n    for role in metric_roles {\n        id(&mut bytes, &role.metric_id);\n        match role.role {\n            MetricRoleV2::PrimarySuperiority {\n                minimum_improvement,\n            } => {\n                bytes.push(0);\n                bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());\n            }\n            MetricRoleV2::NonInferiority { maximum_regression } => {\n                bytes.push(1);\n                bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());\n            }\n            MetricRoleV2::AbsoluteConstraint => bytes.push(2),\n        }\n    }\n    count(&mut bytes, metric_sources.len())?;\n    for source in metric_sources {\n        id(&mut bytes, &source.metric_id);\n        bytes.push(source.source.tag());\n    }\n    Ok(bytes)\n}"
+      ],
+      "plan: &ProductFrozenEvaluationPlanV1,\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {\n        return Err(ProductEvaluationError::Binding(                      ));\n    };\n    estimand_fields(\n        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,\n        plan.baseline_temporal_plan_digest, pairing, &plan.metric_sources,\n    )\n}": [
+        "plan: &ProductFrozenEvaluationPlanV1,\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {\n        return Err(ProductEvaluationError::Binding(                      ));\n    };\n    estimand_fields(\n        plan.base_estimand_digest,\n        plan.candidate_temporal_plan_digest,\n        plan.baseline_temporal_plan_digest,\n        pairing,\n        &plan.metric_sources,\n    )\n}"
+      ],
+      "base_estimand_digest: Digest32,\n    candidate_temporal_plan_digest: Digest32,\n    baseline_temporal_plan_digest: Digest32,\n    pairing: &OnPolicyPairingContractV1,\n    metric_sources: &[super::super::ProductMetricSourceContractV1],\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    if base_estimand_digest.is_zero()\n        || candidate_temporal_plan_digest.is_zero()\n        || baseline_temporal_plan_digest.is_zero()\n    {\n        return Err(ProductEvaluationError::Binding(                        ));\n    }\n    let mut bytes = b                                                              .to_vec();\n    for digest in [base_estimand_digest, candidate_temporal_plan_digest,\n        baseline_temporal_plan_digest, pairing.digest()?] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    count(&mut bytes, metric_sources.len())?;\n    for source in metric_sources {\n        id(&mut bytes, &source.metric_id);\n        bytes.push(source.source.tag());\n    }\n    Ok(bytes)\n}": [
+        "base_estimand_digest: Digest32,\n    candidate_temporal_plan_digest: Digest32,\n    baseline_temporal_plan_digest: Digest32,\n    pairing: &OnPolicyPairingContractV1,\n    metric_sources: &[super::super::ProductMetricSourceContractV1],\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    if base_estimand_digest.is_zero()\n        || candidate_temporal_plan_digest.is_zero()\n        || baseline_temporal_plan_digest.is_zero()\n    {\n        return Err(ProductEvaluationError::Binding(                        ));\n    }\n    let mut bytes = b                                                              .to_vec();\n    for digest in [\n        base_estimand_digest,\n        candidate_temporal_plan_digest,\n        baseline_temporal_plan_digest,\n        pairing.digest()?,\n    ] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    count(&mut bytes, metric_sources.len())?;\n    for source in metric_sources {\n        id(&mut bytes, &source.metric_id);\n        bytes.push(source.source.tag());\n    }\n    Ok(bytes)\n}"
+      ],
+      "bind(b                                                      , legacy.0),": [
+        "bind(\n                    b                                                      ,\n                    legacy.0,\n                ),"
+      ],
+      "bind(b                                                     , legacy.1),": [
+        "bind(\n                    b                                                     ,\n                    legacy.1,\n                ),"
+      ],
+      "bind(b                                                        , legacy.2),": [
+        "bind(\n                    b                                                        ,\n                    legacy.2,\n                ),"
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_paired_evaluation.rs": {
+      "let paired_input = inputs::validate_released_inputs(": [
+        "let paired_input =\n        inputs::validate_released_inputs("
+      ],
+      "&product_plan.frozen_plan, pairing, &released,": [
+        "&product_plan.frozen_plan, pairing, &released"
+      ],
+      "candidate_plan, &released.training,": [
+        "candidate_plan,\n        &released.training,"
+      ],
+      "&released.candidate.targets, &released.candidate.observations,": [
+        "&released.candidate.targets,\n        &released.candidate.observations,"
+      ],
+      "baseline_plan, &released.training,": [
+        "baseline_plan,\n        &released.training,"
+      ],
+      "&released.baseline.targets, &released.baseline.observations,": [
+        "&released.baseline.targets,\n        &released.baseline.observations,"
+      ],
+      "let metrics = super::super::derive_metric_gates(": [
+        "let metrics =\n        super::super::derive_metric_gates("
+      ],
+      "product_plan, &candidate.estimate, &baseline.estimate,": [
+        "product_plan, &candidate.estimate, &baseline.estimate"
+      ],
+      "product_plan, Some(paired_input), &candidate, &baseline, &metrics,": [
+        "product_plan,\n            Some(paired_input),\n            &candidate,\n            &baseline,\n            &metrics,"
+      ],
+      "&holdout, product_plan, &candidate, &baseline, &metrics,": [
+        "&holdout,\n        product_plan,\n        &candidate,\n        &baseline,\n        &metrics,"
+      ],
+      "&released.snapshot_ids, &released.future_window_ids,": [
+        "&released.snapshot_ids,\n        &released.future_window_ids,"
+      ],
+      "estimate_receipt_digest, support_audit_digest, confidence_receipt_digest,": [
+        "estimate_receipt_digest,\n        support_audit_digest,\n        confidence_receipt_digest,"
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs": {
+      "if !matches!(receipt.product_plan.comparison_mode(), ProductComparisonModeV1::PairedOnPolicy(_))": [
+        "if !matches!(\n        receipt.product_plan.comparison_mode(),\n        ProductComparisonModeV1::PairedOnPolicy(_)\n    )"
+      ],
+      "if !matches!(plan.comparison_mode(), ProductComparisonModeV1::PairedOnPolicy(_))": [
+        "if !matches!(\n        plan.comparison_mode(),\n        ProductComparisonModeV1::PairedOnPolicy(_)\n    )"
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs": {
+      "if matches!(receipt.product_plan.comparison_mode(), ProductComparisonModeV1::PairedOnPolicy(_))": [
+        "if matches!(\n        receipt.product_plan.comparison_mode(),\n        ProductComparisonModeV1::PairedOnPolicy(_)\n    )"
+      ],
+      "if !matches!(plan.comparison_mode(), ProductComparisonModeV1::SharedBehavior)": [
+        "if !matches!(\n        plan.comparison_mode(),\n        ProductComparisonModeV1::SharedBehavior\n    )"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs": {
+      "OriginalCircuitOnPolicyEvaluationPolicyV2::freeze(rule, ledger,": [
+        "OriginalCircuitOnPolicyEvaluationPolicyV2::freeze(\n            rule,\n            ledger,"
+      ],
+      "CellCompatibilityBundleV1::digest(&training.request.selected_bundle)": [
+        "CellCompatibilityBundleV1::digest(\n                &training.request.selected_bundle,\n            )"
+      ],
+      "original.candidate()": [
+        "original\n                .candidate()"
+      ],
+      "self.comparison.observed(training, candidate_structure, baseline_structure)": [
+        "self.comparison\n            .observed(training, candidate_structure, baseline_structure)"
+      ],
+      "pair.input.is_zero() || pair.protocol.is_zero()": [
+        "pair.input.is_zero()\n                || pair.protocol.is_zero()"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_comparison.rs": {
+      "training.optimizer_steps": [
+        "training\n            .optimizer_steps"
+      ],
+      "original.candidate()": [
+        "original\n            .candidate()"
+      ],
+      "training.receipts.get(2)": [
+        "training\n            .receipts\n            .get(2)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs": {
+      "self.offset.checked_add(count)": [
+        "self\n            .offset\n            .checked_add(count)"
+      ],
+      "self.bytes.get(self.offset..end)": [
+        "self\n            .bytes\n            .get(self.offset..end)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs": {
+      "policy.legacy_rule, policy.task, policy.ledger, policy.baseline": [
+        "policy.legacy_rule,\n        policy.task,\n        policy.ledger,\n        policy.baseline"
+      ],
+      "ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy.product)": [
+        "ProductEvaluationPolicyV2::canonical_commitment_bytes(\n            &policy.product,\n        )"
+      ],
+      "decision: read.id()?, principal: read.id()?, episode: read.id()?, run: read.id()?": [
+        "decision: read.id()?,\n                principal: read.id()?,\n                episode: read.id()?,\n                run: read.id()?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs": {
+      "policy.product.context().objective_digest != self.primary.product.context().objective_digest": [
+        "policy.product.context().objective_digest\n                    != self.primary.product.context().objective_digest"
+      ],
+      "OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(&bytes)? != *policy": [
+        "OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(&bytes)?\n                != *policy"
+      ],
+      "contribution.checked_add(8)": [
+        "contribution\n                .checked_add(8)"
+      ],
+      "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_policy_training(policy, training)?": [
+        "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_policy_training(\n                policy, training,\n            )?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs": {
+      "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(&policy, &original.training)?": [
+        "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(\n            &policy,\n            &original.training,\n        )?"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs": {
+      "context.training.receipts.get(2)": [
+        "context\n        .training\n        .receipts\n        .get(2)"
+      ],
+      "policy.cohort_rule_digest()": [
+        "policy\n        .cohort_rule_digest()"
+      ],
+      "policy.pairing(&context.training)": [
+        "policy\n        .pairing(&context.training)"
+      ],
+      "policy.comparison(&context.training, candidate_structure, baseline_structure)": [
+        "policy\n        .comparison(&context.training, candidate_structure, baseline_structure)"
+      ],
+      "original.candidate()": [
+        "original\n        .candidate()"
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/closure.rs": {
+      "metric_contracts: &mut [MetricContractV1],\n    folds: &mut [CrossFoldPartitionV1],\n    final_holdout_window_id: &StableId,\n) -> Result<Digest32, EvaluationClosureError> {\n    if !(2..=MAX_FOLDS).contains(&folds.len()) {\n        return Err(EvaluationClosureError::FoldLimit);\n    }\n    let metric_contract_digest = digest_metric_contracts(metric_contracts)?;\n    folds.sort_by_key(|fold| fold.fold_id.clone());\n    if let Some(adjacent) = folds\n        .windows(2)\n        .find(|adjacent| adjacent[0].fold_id == adjacent[1].fold_id)\n    {\n        return Err(EvaluationClosureError::DuplicateFold(\n            adjacent[0].fold_id.to_string(),\n        ));\n    }\n\n    let mut held_out_principals = BTreeSet::new();\n    let mut held_out_episodes = BTreeSet::new();\n    let mut held_out_windows = BTreeSet::new();\n    let mut final_holdout_count = 0_usize;\n    for fold in folds.iter_mut() {\n        require_digest(fold.model_digest,             )?;\n        require_digest(fold.predictions_digest,                   )?;\n        for values in [\n            &mut fold.training_principals,\n            &mut fold.training_episodes,\n            &mut fold.training_windows,\n            &mut fold.holdout_principals,\n            &mut fold.holdout_episodes,\n            &mut fold.holdout_windows,\n        ] {\n            if values.is_empty() || values.len() > MAX_LINEAGE_IDS {\n                return Err(EvaluationClosureError::FoldLineageLimit);\n            }\n            normalize_unique_ids(values)?;\n        }\n        if sorted_sets_overlap(&fold.training_principals, &fold.holdout_principals)\n            || sorted_sets_overlap(&fold.training_episodes, &fold.holdout_episodes)\n            || sorted_sets_overlap(&fold.training_windows, &fold.holdout_windows)\n        {\n            return Err(EvaluationClosureError::CrossFoldLeakage(\n                fold.fold_id.to_string(),\n            ));\n        }\n        if fold\n            .training_windows\n            .contains(final_holdout_window_id)\n        {\n            return Err(EvaluationClosureError::FinalHoldoutLeakage);\n        }\n        final_holdout_count +=\n            usize::from(fold.holdout_windows.contains(final_holdout_window_id));\n        insert_unique_holdouts(&mut held_out_principals, &fold.holdout_principals)?;\n        insert_unique_holdouts(&mut held_out_episodes, &fold.holdout_episodes)?;\n        insert_unique_holdouts(&mut held_out_windows, &fold.holdout_windows)?;\n    }\n    if final_holdout_count != 1 {\n        return Err(EvaluationClosureError::FinalHoldoutCoverage);\n    }\n\n    Ok(metric_contract_digest)\n}": [
+        "metric_contracts: &mut [MetricContractV1],\n    folds: &mut [CrossFoldPartitionV1],\n    final_holdout_window_id: &StableId,\n) -> Result<Digest32, EvaluationClosureError> {\n    if !(2..=MAX_FOLDS).contains(&folds.len()) {\n        return Err(EvaluationClosureError::FoldLimit);\n    }\n    let metric_contract_digest = digest_metric_contracts(metric_contracts)?;\n    folds.sort_by_key(|fold| fold.fold_id.clone());\n    if let Some(adjacent) = folds\n        .windows(2)\n        .find(|adjacent| adjacent[0].fold_id == adjacent[1].fold_id)\n    {\n        return Err(EvaluationClosureError::DuplicateFold(\n            adjacent[0].fold_id.to_string(),\n        ));\n    }\n\n    let mut held_out_principals = BTreeSet::new();\n    let mut held_out_episodes = BTreeSet::new();\n    let mut held_out_windows = BTreeSet::new();\n    let mut final_holdout_count = 0_usize;\n    for fold in folds.iter_mut() {\n        require_digest(fold.model_digest,             )?;\n        require_digest(fold.predictions_digest,                   )?;\n        for values in [\n            &mut fold.training_principals,\n            &mut fold.training_episodes,\n            &mut fold.training_windows,\n            &mut fold.holdout_principals,\n            &mut fold.holdout_episodes,\n            &mut fold.holdout_windows,\n        ] {\n            if values.is_empty() || values.len() > MAX_LINEAGE_IDS {\n                return Err(EvaluationClosureError::FoldLineageLimit);\n            }\n            normalize_unique_ids(values)?;\n        }\n        if sorted_sets_overlap(&fold.training_principals, &fold.holdout_principals)\n            || sorted_sets_overlap(&fold.training_episodes, &fold.holdout_episodes)\n            || sorted_sets_overlap(&fold.training_windows, &fold.holdout_windows)\n        {\n            return Err(EvaluationClosureError::CrossFoldLeakage(\n                fold.fold_id.to_string(),\n            ));\n        }\n        if fold.training_windows.contains(final_holdout_window_id) {\n            return Err(EvaluationClosureError::FinalHoldoutLeakage);\n        }\n        final_holdout_count += usize::from(fold.holdout_windows.contains(final_holdout_window_id));\n        insert_unique_holdouts(&mut held_out_principals, &fold.holdout_principals)?;\n        insert_unique_holdouts(&mut held_out_episodes, &fold.holdout_episodes)?;\n        insert_unique_holdouts(&mut held_out_windows, &fold.holdout_windows)?;\n    }\n    if final_holdout_count != 1 {\n        return Err(EvaluationClosureError::FinalHoldoutCoverage);\n    }\n\n    Ok(metric_contract_digest)\n}"
+      ],
+      "plan: &mut CrossFoldPlanV1,\n) -> Result<CrossFoldPlanCommitmentsV2, EvaluationClosureError> {\n    if !(2..=MAX_FOLDS).contains(&plan.folds.len()) {\n        return Err(EvaluationClosureError::FoldLimit);\n    }\n    for (label, digest) in [\n        (                      , plan.objective_digest),\n        (                    , plan.dataset_digest),\n        (                     , plan.estimand_digest),\n        (               , plan.final_holdout_digest),\n    ] {\n        require_digest(digest, label)?;\n    }\n    if !(1..=100_000).contains(&plan.family_alpha_ppm)\n        || !(1..=1_024).contains(&plan.simultaneous_comparisons)\n    {\n        return Err(EvaluationClosureError::MultiplicityProfile);\n    }\n    let metric_contract_digest = normalize_cross_fold_metadata(\n        &mut plan.metric_contracts, &mut plan.folds, &plan.final_holdout_window_id,\n    )?;\n\n    let mut bytes = b                                            .to_vec();\n    push_id(&mut bytes, &plan.plan_id);\n    push_id(&mut bytes, &plan.candidate_id);\n    push_id(&mut bytes, &plan.baseline_id);\n    push_id(&mut bytes, &plan.final_holdout_window_id);\n    bytes.push(plan.claim_scope.tag());\n    for digest in [\n        plan.objective_digest,\n        plan.dataset_digest,\n        plan.estimand_digest,\n        metric_contract_digest,\n        plan.final_holdout_digest,\n    ] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    bytes.extend_from_slice(&plan.family_alpha_ppm.to_be_bytes());\n    bytes.extend_from_slice(&plan.simultaneous_comparisons.to_be_bytes());\n    bytes.extend_from_slice(\n        &u32::try_from(plan.folds.len())\n            .map_err(|_| EvaluationClosureError::Arithmetic)?\n            .to_be_bytes(),\n    );\n    for fold in &plan.folds {\n        push_id(&mut bytes, &fold.fold_id);\n        push_id_vec(&mut bytes, &fold.training_principals)?;\n        push_id_vec(&mut bytes, &fold.training_episodes)?;\n        push_id_vec(&mut bytes, &fold.training_windows)?;\n        push_id_vec(&mut bytes, &fold.holdout_principals)?;\n        push_id_vec(&mut bytes, &fold.holdout_episodes)?;\n        push_id_vec(&mut bytes, &fold.holdout_windows)?;\n        bytes.extend_from_slice(fold.model_digest.as_array());\n        bytes.extend_from_slice(fold.predictions_digest.as_array());\n    }\n    let plan_digest = Digest32::of_bytes(&bytes);\n    Ok(CrossFoldPlanCommitmentsV2 {\n        metric_contract_digest,\n        plan_digest,\n    })\n}": [
+        "plan: &mut CrossFoldPlanV1,\n) -> Result<CrossFoldPlanCommitmentsV2, EvaluationClosureError> {\n    if !(2..=MAX_FOLDS).contains(&plan.folds.len()) {\n        return Err(EvaluationClosureError::FoldLimit);\n    }\n    for (label, digest) in [\n        (                      , plan.objective_digest),\n        (                    , plan.dataset_digest),\n        (                     , plan.estimand_digest),\n        (               , plan.final_holdout_digest),\n    ] {\n        require_digest(digest, label)?;\n    }\n    if !(1..=100_000).contains(&plan.family_alpha_ppm)\n        || !(1..=1_024).contains(&plan.simultaneous_comparisons)\n    {\n        return Err(EvaluationClosureError::MultiplicityProfile);\n    }\n    let metric_contract_digest = normalize_cross_fold_metadata(\n        &mut plan.metric_contracts,\n        &mut plan.folds,\n        &plan.final_holdout_window_id,\n    )?;\n\n    let mut bytes = b                                            .to_vec();\n    push_id(&mut bytes, &plan.plan_id);\n    push_id(&mut bytes, &plan.candidate_id);\n    push_id(&mut bytes, &plan.baseline_id);\n    push_id(&mut bytes, &plan.final_holdout_window_id);\n    bytes.push(plan.claim_scope.tag());\n    for digest in [\n        plan.objective_digest,\n        plan.dataset_digest,\n        plan.estimand_digest,\n        metric_contract_digest,\n        plan.final_holdout_digest,\n    ] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    bytes.extend_from_slice(&plan.family_alpha_ppm.to_be_bytes());\n    bytes.extend_from_slice(&plan.simultaneous_comparisons.to_be_bytes());\n    bytes.extend_from_slice(\n        &u32::try_from(plan.folds.len())\n            .map_err(|_| EvaluationClosureError::Arithmetic)?\n            .to_be_bytes(),\n    );\n    for fold in &plan.folds {\n        push_id(&mut bytes, &fold.fold_id);\n        push_id_vec(&mut bytes, &fold.training_principals)?;\n        push_id_vec(&mut bytes, &fold.training_episodes)?;\n        push_id_vec(&mut bytes, &fold.training_windows)?;\n        push_id_vec(&mut bytes, &fold.holdout_principals)?;\n        push_id_vec(&mut bytes, &fold.holdout_episodes)?;\n        push_id_vec(&mut bytes, &fold.holdout_windows)?;\n        bytes.extend_from_slice(fold.model_digest.as_array());\n        bytes.extend_from_slice(fold.predictions_digest.as_array());\n    }\n    let plan_digest = Digest32::of_bytes(&bytes);\n    Ok(CrossFoldPlanCommitmentsV2 {\n        metric_contract_digest,\n        plan_digest,\n    })\n}"
+      ],
+      "plan: CrossFoldPlanV1,\n    commitments: CrossFoldPlanCommitmentsV2,\n) -> Result<CrossFoldPlanReceiptV1, EvaluationClosureError> {\n    let CrossFoldPlanCommitmentsV2 { metric_contract_digest, plan_digest } = commitments;\n    let mut receipt = CrossFoldPlanReceiptV1 {\n        plan_id: plan.plan_id,\n        claim_scope: plan.claim_scope,\n        candidate_id: plan.candidate_id,\n        baseline_id: plan.baseline_id,\n        objective_digest: plan.objective_digest,\n        dataset_digest: plan.dataset_digest,\n        estimand_digest: plan.estimand_digest,\n        metric_contract_digest,\n        family_alpha_ppm: plan.family_alpha_ppm,\n        simultaneous_comparisons: plan.simultaneous_comparisons,\n        final_holdout_window_id: plan.final_holdout_window_id,\n        final_holdout_digest: plan.final_holdout_digest,\n        fold_count: u32::try_from(plan.folds.len())\n            .map_err(|_| EvaluationClosureError::Arithmetic)?,\n        plan_digest,\n        authority: AuthorityPosture::DENY_ALL,\n        receipt_seal: Digest32::ZERO,\n    };\n    receipt.receipt_seal = frozen_plan_receipt_seal(&receipt);\n    Ok(receipt)\n}": [
+        "plan: CrossFoldPlanV1,\n    commitments: CrossFoldPlanCommitmentsV2,\n) -> Result<CrossFoldPlanReceiptV1, EvaluationClosureError> {\n    let CrossFoldPlanCommitmentsV2 {\n        metric_contract_digest,\n        plan_digest,\n    } = commitments;\n    let mut receipt = CrossFoldPlanReceiptV1 {\n        plan_id: plan.plan_id,\n        claim_scope: plan.claim_scope,\n        candidate_id: plan.candidate_id,\n        baseline_id: plan.baseline_id,\n        objective_digest: plan.objective_digest,\n        dataset_digest: plan.dataset_digest,\n        estimand_digest: plan.estimand_digest,\n        metric_contract_digest,\n        family_alpha_ppm: plan.family_alpha_ppm,\n        simultaneous_comparisons: plan.simultaneous_comparisons,\n        final_holdout_window_id: plan.final_holdout_window_id,\n        final_holdout_digest: plan.final_holdout_digest,\n        fold_count: u32::try_from(plan.folds.len())\n            .map_err(|_| EvaluationClosureError::Arithmetic)?,\n        plan_digest,\n        authority: AuthorityPosture::DENY_ALL,\n        receipt_seal: Digest32::ZERO,\n    };\n    receipt.receipt_seal = frozen_plan_receipt_seal(&receipt);\n    Ok(receipt)\n}"
+      ],
+      "let CrossFoldPlanCommitmentsV2 { metric_contract_digest, plan_digest } = commitments;": [
+        "let CrossFoldPlanCommitmentsV2 {\n        metric_contract_digest,\n        plan_digest,\n    } = commitments;"
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_policy.rs": {
+      "context: ProductEvaluationPolicyContextV2,\n        mut input: ProductEvaluationPolicyInputV2,\n    ) -> Result<Self, ProductEvaluationError> {\n                                                                              \n        codec::encode(&context, &input)?;\n        if context.objective_digest.is_zero() || input.base_estimand_digest.is_zero() {\n            return Err(ProductEvaluationError::Binding(                              ));\n        }\n        if !(1..=100_000).contains(&context.family_alpha_ppm)\n            || !(1..=1_024).contains(&context.simultaneous_comparisons)\n        {\n            return Err(EvaluationClosureError::MultiplicityProfile.into());\n        }\n        paired::require_comparable_plans(\n            &context.candidate_temporal, &context.baseline_temporal,\n        )?;\n        input.metric_contracts = normalize_product_plan_inputs(\n            context.objective_digest, context.family_alpha_ppm,\n            context.simultaneous_comparisons, input.base_estimand_digest,\n            &input.metric_contracts, &mut input.metric_roles, &mut input.metric_sources,\n            &context.candidate_temporal, &context.baseline_temporal,\n        )?;\n        normalize_cross_fold_metadata(\n            &mut input.metric_contracts, &mut input.folds,\n            &context.final_holdout_window_id,\n        )?;\n        role_contract_commitment_bytes(\n            &mut input.metric_contracts, &mut input.metric_roles,\n        )?;\n        let policy = Self { context, input };\n        ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)?;\n        Ok(policy)\n    }": [
+        "context: ProductEvaluationPolicyContextV2,\n        mut input: ProductEvaluationPolicyInputV2,\n    ) -> Result<Self, ProductEvaluationError> {\n                                                                              \n        codec::encode(&context, &input)?;\n        if context.objective_digest.is_zero() || input.base_estimand_digest.is_zero() {\n            return Err(ProductEvaluationError::Binding(\n                                              ,\n            ));\n        }\n        if !(1..=100_000).contains(&context.family_alpha_ppm)\n            || !(1..=1_024).contains(&context.simultaneous_comparisons)\n        {\n            return Err(EvaluationClosureError::MultiplicityProfile.into());\n        }\n        paired::require_comparable_plans(&context.candidate_temporal, &context.baseline_temporal)?;\n        input.metric_contracts = normalize_product_plan_inputs(\n            context.objective_digest,\n            context.family_alpha_ppm,\n            context.simultaneous_comparisons,\n            input.base_estimand_digest,\n            &input.metric_contracts,\n            &mut input.metric_roles,\n            &mut input.metric_sources,\n            &context.candidate_temporal,\n            &context.baseline_temporal,\n        )?;\n        normalize_cross_fold_metadata(\n            &mut input.metric_contracts,\n            &mut input.folds,\n            &context.final_holdout_window_id,\n        )?;\n        role_contract_commitment_bytes(&mut input.metric_contracts, &mut input.metric_roles)?;\n        let policy = Self { context, input };\n        ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)?;\n        Ok(policy)\n    }"
+      ],
+      "bytes: &[u8],\n    ) -> Result<Self, ProductEvaluationError> {\n        let (context, input) = codec::decode(bytes)?;\n        let policy = ProductEvaluationPolicyV2::freeze(context, input)?;\n        if ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes {\n            return Err(ProductEvaluationError::Binding(                        ));\n        }\n        Ok(policy)\n    }": [
+        "bytes: &[u8]) -> Result<Self, ProductEvaluationError> {\n        let (context, input) = codec::decode(bytes)?;\n        let policy = ProductEvaluationPolicyV2::freeze(context, input)?;\n        if ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes {\n            return Err(ProductEvaluationError::Binding(                        ));\n        }\n        Ok(policy)\n    }"
+      ],
+      "&self) -> Result<Digest32, ProductEvaluationError> {\n        Ok(Digest32::of_bytes(&ProductEvaluationPolicyV2::canonical_commitment_bytes(self)?))\n    }": [
+        "&self) -> Result<Digest32, ProductEvaluationError> {\n        Ok(Digest32::of_bytes(\n            &ProductEvaluationPolicyV2::canonical_commitment_bytes(self)?,\n        ))\n    }"
+      ],
+      "Ok(Digest32::of_bytes(&ProductEvaluationPolicyV2::canonical_commitment_bytes(self)?))": [
+        "Ok(Digest32::of_bytes(\n            &ProductEvaluationPolicyV2::canonical_commitment_bytes(self)?,\n        ))"
+      ],
+      "&self,\n        bindings: &ProductEvaluationPolicyBindingsV2,\n        pairing: &OnPolicyPairingContractV1,\n    ) -> Result<ProductFrozenEvaluationPlanV1, ProductEvaluationError> {\n        freeze_paired_on_policy_product_evaluation_plan_v1(\n            self.bound_plan(bindings), self.input.metric_roles.clone(),\n            self.input.metric_sources.clone(), &self.context.candidate_temporal,\n            &self.context.baseline_temporal, pairing.clone(),\n        )\n    }": [
+        "&self,\n        bindings: &ProductEvaluationPolicyBindingsV2,\n        pairing: &OnPolicyPairingContractV1,\n    ) -> Result<ProductFrozenEvaluationPlanV1, ProductEvaluationError> {\n        freeze_paired_on_policy_product_evaluation_plan_v1(\n            self.bound_plan(bindings),\n            self.input.metric_roles.clone(),\n            self.input.metric_sources.clone(),\n            &self.context.candidate_temporal,\n            &self.context.baseline_temporal,\n            pairing.clone(),\n        )\n    }"
+      ],
+      "&self,\n        bindings: &ProductEvaluationPolicyBindingsV2,\n        pairing: &OnPolicyPairingContractV1,\n    ) -> Result<ProductEvaluationPolicyCommitmentsV2, ProductEvaluationError> {\n        let estimand = paired::commitments::estimand_fields(\n            bindings.cell_estimand_digest, self.context.candidate_temporal.plan_digest,\n            self.context.baseline_temporal.plan_digest, pairing, &self.input.metric_sources,\n        )?;\n        let mut bound = self.bound_plan(bindings);\n        bound.estimand_digest = Digest32::of_bytes(&estimand);\n        let mut metric_roles = self.input.metric_roles.clone();\n        let commitments = cross_fold_plan_v2_commitments(&mut bound, &mut metric_roles)?;\n        let plan = paired::commitments::plan_fields(\n            commitments.plan_digest, commitments.metric_contract_digest,\n            bindings.cell_estimand_digest, self.context.candidate_temporal.plan_digest,\n            self.context.baseline_temporal.plan_digest, pairing, &bound.metric_contracts,\n            &metric_roles, &self.input.metric_sources,\n        )?;\n        let roles = role_contract_commitment_bytes(\n            &mut bound.metric_contracts, &mut metric_roles,\n        )?;\n        Ok(ProductEvaluationPolicyCommitmentsV2 { plan, estimand, roles })\n    }": [
+        "&self,\n        bindings: &ProductEvaluationPolicyBindingsV2,\n        pairing: &OnPolicyPairingContractV1,\n    ) -> Result<ProductEvaluationPolicyCommitmentsV2, ProductEvaluationError> {\n        let estimand = paired::commitments::estimand_fields(\n            bindings.cell_estimand_digest,\n            self.context.candidate_temporal.plan_digest,\n            self.context.baseline_temporal.plan_digest,\n            pairing,\n            &self.input.metric_sources,\n        )?;\n        let mut bound = self.bound_plan(bindings);\n        bound.estimand_digest = Digest32::of_bytes(&estimand);\n        let mut metric_roles = self.input.metric_roles.clone();\n        let commitments = cross_fold_plan_v2_commitments(&mut bound, &mut metric_roles)?;\n        let plan = paired::commitments::plan_fields(\n            commitments.plan_digest,\n            commitments.metric_contract_digest,\n            bindings.cell_estimand_digest,\n            self.context.candidate_temporal.plan_digest,\n            self.context.baseline_temporal.plan_digest,\n            pairing,\n            &bound.metric_contracts,\n            &metric_roles,\n            &self.input.metric_sources,\n        )?;\n        let roles = role_contract_commitment_bytes(&mut bound.metric_contracts, &mut metric_roles)?;\n        Ok(ProductEvaluationPolicyCommitmentsV2 {\n            plan,\n            estimand,\n            roles,\n        })\n    }"
+      ],
+      "Ok(ProductEvaluationPolicyCommitmentsV2 { plan, estimand, roles })": [
+        "Ok(ProductEvaluationPolicyCommitmentsV2 {\n            plan,\n            estimand,\n            roles,\n        })"
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_policy_codec.rs": {
+      "fn push(&mut self, value: &[u8]) -> Result<(), ProductEvaluationError> {\n        let length = self.bytes.len().checked_add(value.len()).ok_or_else(invalid)?;\n        if length > MAX_BYTES {\n            return Err(invalid());\n        }\n        self.bytes.extend_from_slice(value);\n        Ok(())\n    }\n\n    fn byte(&mut self, value: u8) -> Result<(), ProductEvaluationError> {\n        self.push(&[value])\n    }\n\n    fn u32(&mut self, value: u32) -> Result<(), ProductEvaluationError> {\n        self.push(&value.to_be_bytes())\n    }\n\n    fn u64(&mut self, value: u64) -> Result<(), ProductEvaluationError> {\n        self.push(&value.to_be_bytes())\n    }\n\n    fn usize(&mut self, value: usize) -> Result<(), ProductEvaluationError> {\n        self.u64(u64::try_from(value).map_err(|_| invalid())?)\n    }\n\n    fn digest(&mut self, value: Digest32) -> Result<(), ProductEvaluationError> {\n        self.push(value.as_array())\n    }\n\n    fn fixed(&mut self, value: FixedQ32) -> Result<(), ProductEvaluationError> {\n        self.push(&value.raw().to_be_bytes())\n    }\n\n    fn id(&mut self, value: &StableId) -> Result<(), ProductEvaluationError> {\n        let raw = value.as_str().as_bytes();\n        if !(1..=128).contains(&raw.len()) {\n            return Err(invalid());\n        }\n        self.push(&u16::try_from(raw.len()).map_err(|_| invalid())?.to_be_bytes())?;\n        self.push(raw)\n    }\n\n    fn count(&mut self, value: usize, limit: usize) -> Result<(), ProductEvaluationError> {\n        if value > limit {\n            return Err(invalid());\n        }\n        self.u32(u32::try_from(value).map_err(|_| invalid())?)\n    }\n\n    fn ids(&mut self, values: &[StableId]) -> Result<(), ProductEvaluationError> {\n        self.count(values.len(), MAX_LINEAGE)?;\n        for value in values {\n            self.id(value)?;\n        }\n        Ok(())\n    }\n\n    fn temporal(&mut self, plan: &TemporalEvaluationPlan) -> Result<(), ProductEvaluationError> {\n        self.digest(plan.plan_digest)?;\n        self.id(&plan.evaluation_id)?;\n        self.digest(plan.objective_digest)?;\n        self.digest(plan.fold.plan_digest)?;\n        self.id(&plan.fold.fold_id)?;\n        self.u64(plan.fold.training_watermark)?;\n        self.u64(plan.fold.evaluation_start)?;\n        self.usize(plan.fold.minimum_per_action)?;\n        self.digest(plan.ope.plan_digest)?;\n        self.u64(plan.ope.outcome_watermark)?;\n        self.usize(plan.ope.minimum_rows)?;\n        self.fixed(plan.ope.minimum_ess)?;\n        self.fixed(plan.ope.maximum_weight)?;\n        self.digest(plan.confidence.plan_digest)?;\n        self.digest(plan.confidence.assumptions_digest)?;\n        self.u32(plan.confidence.family_alpha_ppm)?;\n        self.u32(plan.confidence.simultaneous_comparisons)?;\n        self.usize(plan.confidence.minimum_clusters)\n    }\n}": [
+        "fn push(&mut self, value: &[u8]) -> Result<(), ProductEvaluationError> {\n        let length = self\n            .bytes\n            .len()\n            .checked_add(value.len())\n            .ok_or_else(invalid)?;\n        if length > MAX_BYTES {\n            return Err(invalid());\n        }\n        self.bytes.extend_from_slice(value);\n        Ok(())\n    }\n\n    fn byte(&mut self, value: u8) -> Result<(), ProductEvaluationError> {\n        self.push(&[value])\n    }\n\n    fn u32(&mut self, value: u32) -> Result<(), ProductEvaluationError> {\n        self.push(&value.to_be_bytes())\n    }\n\n    fn u64(&mut self, value: u64) -> Result<(), ProductEvaluationError> {\n        self.push(&value.to_be_bytes())\n    }\n\n    fn usize(&mut self, value: usize) -> Result<(), ProductEvaluationError> {\n        self.u64(u64::try_from(value).map_err(|_| invalid())?)\n    }\n\n    fn digest(&mut self, value: Digest32) -> Result<(), ProductEvaluationError> {\n        self.push(value.as_array())\n    }\n\n    fn fixed(&mut self, value: FixedQ32) -> Result<(), ProductEvaluationError> {\n        self.push(&value.raw().to_be_bytes())\n    }\n\n    fn id(&mut self, value: &StableId) -> Result<(), ProductEvaluationError> {\n        let raw = value.as_str().as_bytes();\n        if !(1..=128).contains(&raw.len()) {\n            return Err(invalid());\n        }\n        self.push(\n            &u16::try_from(raw.len())\n                .map_err(|_| invalid())?\n                .to_be_bytes(),\n        )?;\n        self.push(raw)\n    }\n\n    fn count(&mut self, value: usize, limit: usize) -> Result<(), ProductEvaluationError> {\n        if value > limit {\n            return Err(invalid());\n        }\n        self.u32(u32::try_from(value).map_err(|_| invalid())?)\n    }\n\n    fn ids(&mut self, values: &[StableId]) -> Result<(), ProductEvaluationError> {\n        self.count(values.len(), MAX_LINEAGE)?;\n        for value in values {\n            self.id(value)?;\n        }\n        Ok(())\n    }\n\n    fn temporal(&mut self, plan: &TemporalEvaluationPlan) -> Result<(), ProductEvaluationError> {\n        self.digest(plan.plan_digest)?;\n        self.id(&plan.evaluation_id)?;\n        self.digest(plan.objective_digest)?;\n        self.digest(plan.fold.plan_digest)?;\n        self.id(&plan.fold.fold_id)?;\n        self.u64(plan.fold.training_watermark)?;\n        self.u64(plan.fold.evaluation_start)?;\n        self.usize(plan.fold.minimum_per_action)?;\n        self.digest(plan.ope.plan_digest)?;\n        self.u64(plan.ope.outcome_watermark)?;\n        self.usize(plan.ope.minimum_rows)?;\n        self.fixed(plan.ope.minimum_ess)?;\n        self.fixed(plan.ope.maximum_weight)?;\n        self.digest(plan.confidence.plan_digest)?;\n        self.digest(plan.confidence.assumptions_digest)?;\n        self.u32(plan.confidence.family_alpha_ppm)?;\n        self.u32(plan.confidence.simultaneous_comparisons)?;\n        self.usize(plan.confidence.minimum_clusters)\n    }\n}"
+      ],
+      "fn take(&mut self, size: usize) -> Result<&'a [u8], ProductEvaluationError> {\n        let (value, rest) = self.bytes.split_at_checked(size).ok_or_else(invalid)?;\n        self.bytes = rest;\n        Ok(value)\n    }\n\n    fn byte(&mut self) -> Result<u8, ProductEvaluationError> {\n        Ok(self.take(1)?[0])\n    }\n\n    fn u32(&mut self) -> Result<u32, ProductEvaluationError> {\n        Ok(u32::from_be_bytes(self.take(4)?.try_into().map_err(|_| invalid())?))\n    }\n\n    fn u64(&mut self) -> Result<u64, ProductEvaluationError> {\n        Ok(u64::from_be_bytes(self.take(8)?.try_into().map_err(|_| invalid())?))\n    }\n\n    fn usize(&mut self) -> Result<usize, ProductEvaluationError> {\n        usize::try_from(self.u64()?).map_err(|_| invalid())\n    }\n\n    fn digest(&mut self) -> Result<Digest32, ProductEvaluationError> {\n        Ok(Digest32::from_array(self.take(32)?.try_into().map_err(|_| invalid())?))\n    }\n\n    fn fixed(&mut self) -> Result<FixedQ32, ProductEvaluationError> {\n        Ok(FixedQ32::from_raw(i64::from_be_bytes(\n            self.take(8)?.try_into().map_err(|_| invalid())?,\n        )))\n    }\n\n    fn id(&mut self) -> Result<StableId, ProductEvaluationError> {\n        let length = usize::from(u16::from_be_bytes(\n            self.take(2)?.try_into().map_err(|_| invalid())?,\n        ));\n        if !(1..=128).contains(&length) {\n            return Err(invalid());\n        }\n        let value = std::str::from_utf8(self.take(length)?).map_err(|_| invalid())?;\n        StableId::new(value).map_err(|_| invalid())\n    }\n\n    fn count(&mut self, limit: usize, minimum_bytes: usize) -> Result<usize, ProductEvaluationError> {\n        let count = usize::try_from(self.u32()?).map_err(|_| invalid())?;\n        let lower = count.checked_mul(minimum_bytes).ok_or_else(invalid)?;\n        if count > limit || lower > self.bytes.len() {\n            return Err(invalid());\n        }\n        Ok(count)\n    }\n\n    fn ids(&mut self) -> Result<Vec<StableId>, ProductEvaluationError> {\n        let count = self.count(MAX_LINEAGE, 3)?;\n        let mut values = Vec::with_capacity(count);\n        for _ in 0..count {\n            values.push(self.id()?);\n        }\n        Ok(values)\n    }\n\n    fn temporal(&mut self) -> Result<TemporalEvaluationPlan, ProductEvaluationError> {\n        Ok(TemporalEvaluationPlan {\n            plan_digest: self.digest()?,\n            evaluation_id: self.id()?,\n            objective_digest: self.digest()?,\n            fold: TemporalFoldPlan {\n                plan_digest: self.digest()?,\n                fold_id: self.id()?,\n                training_watermark: self.u64()?,\n                evaluation_start: self.u64()?,\n                minimum_per_action: self.usize()?,\n            },\n            ope: OpePlan {\n                plan_digest: self.digest()?,\n                outcome_watermark: self.u64()?,\n                minimum_rows: self.usize()?,\n                minimum_ess: self.fixed()?,\n                maximum_weight: self.fixed()?,\n            },\n            confidence: ClusterConfidencePlan {\n                plan_digest: self.digest()?,\n                assumptions_digest: self.digest()?,\n                family_alpha_ppm: self.u32()?,\n                simultaneous_comparisons: self.u32()?,\n                minimum_clusters: self.usize()?,\n            },\n        })\n    }\n}": [
+        "fn take(&mut self, size: usize) -> Result<&'a [u8], ProductEvaluationError> {\n        let (value, rest) = self.bytes.split_at_checked(size).ok_or_else(invalid)?;\n        self.bytes = rest;\n        Ok(value)\n    }\n\n    fn byte(&mut self) -> Result<u8, ProductEvaluationError> {\n        Ok(self.take(1)?[0])\n    }\n\n    fn u32(&mut self) -> Result<u32, ProductEvaluationError> {\n        Ok(u32::from_be_bytes(\n            self.take(4)?.try_into().map_err(|_| invalid())?,\n        ))\n    }\n\n    fn u64(&mut self) -> Result<u64, ProductEvaluationError> {\n        Ok(u64::from_be_bytes(\n            self.take(8)?.try_into().map_err(|_| invalid())?,\n        ))\n    }\n\n    fn usize(&mut self) -> Result<usize, ProductEvaluationError> {\n        usize::try_from(self.u64()?).map_err(|_| invalid())\n    }\n\n    fn digest(&mut self) -> Result<Digest32, ProductEvaluationError> {\n        Ok(Digest32::from_array(\n            self.take(32)?.try_into().map_err(|_| invalid())?,\n        ))\n    }\n\n    fn fixed(&mut self) -> Result<FixedQ32, ProductEvaluationError> {\n        Ok(FixedQ32::from_raw(i64::from_be_bytes(\n            self.take(8)?.try_into().map_err(|_| invalid())?,\n        )))\n    }\n\n    fn id(&mut self) -> Result<StableId, ProductEvaluationError> {\n        let length = usize::from(u16::from_be_bytes(\n            self.take(2)?.try_into().map_err(|_| invalid())?,\n        ));\n        if !(1..=128).contains(&length) {\n            return Err(invalid());\n        }\n        let value = std::str::from_utf8(self.take(length)?).map_err(|_| invalid())?;\n        StableId::new(value).map_err(|_| invalid())\n    }\n\n    fn count(\n        &mut self,\n        limit: usize,\n        minimum_bytes: usize,\n    ) -> Result<usize, ProductEvaluationError> {\n        let count = usize::try_from(self.u32()?).map_err(|_| invalid())?;\n        let lower = count.checked_mul(minimum_bytes).ok_or_else(invalid)?;\n        if count > limit || lower > self.bytes.len() {\n            return Err(invalid());\n        }\n        Ok(count)\n    }\n\n    fn ids(&mut self) -> Result<Vec<StableId>, ProductEvaluationError> {\n        let count = self.count(MAX_LINEAGE, 3)?;\n        let mut values = Vec::with_capacity(count);\n        for _ in 0..count {\n            values.push(self.id()?);\n        }\n        Ok(values)\n    }\n\n    fn temporal(&mut self) -> Result<TemporalEvaluationPlan, ProductEvaluationError> {\n        Ok(TemporalEvaluationPlan {\n            plan_digest: self.digest()?,\n            evaluation_id: self.id()?,\n            objective_digest: self.digest()?,\n            fold: TemporalFoldPlan {\n                plan_digest: self.digest()?,\n                fold_id: self.id()?,\n                training_watermark: self.u64()?,\n                evaluation_start: self.u64()?,\n                minimum_per_action: self.usize()?,\n            },\n            ope: OpePlan {\n                plan_digest: self.digest()?,\n                outcome_watermark: self.u64()?,\n                minimum_rows: self.usize()?,\n                minimum_ess: self.fixed()?,\n                maximum_weight: self.fixed()?,\n            },\n            confidence: ClusterConfidencePlan {\n                plan_digest: self.digest()?,\n                assumptions_digest: self.digest()?,\n                family_alpha_ppm: self.u32()?,\n                simultaneous_comparisons: self.u32()?,\n                minimum_clusters: self.usize()?,\n            },\n        })\n    }\n}"
+      ],
+      "context: &PolicyMetadataContextV2, input: &PolicyMetadataInputV2) -> Result<Vec<u8>, ProductEvaluationError> {\n    let mut out = Writer { bytes: Vec::new() };\n    out.push(PREFIX)?;\n    out.id(&context.plan_id)?;\n    out.digest(context.objective_digest)?;\n    out.u32(context.family_alpha_ppm)?;\n    out.u32(context.simultaneous_comparisons)?;\n    out.id(&context.final_holdout_window_id)?;\n    out.temporal(&context.candidate_temporal)?;\n    out.temporal(&context.baseline_temporal)?;\n    out.byte(match input.claim_scope {\n        EvaluationClaimScopeV1::Qualification => 0,\n        EvaluationClaimScopeV1::SystemLongitudinal => 1,\n    })?;\n    out.digest(input.base_estimand_digest)?;\n    out.id(&input.baseline_id)?;\n    out.count(input.metric_contracts.len(), MAX_METRICS)?;\n    for metric in &input.metric_contracts {\n        out.id(&metric.metric_id)?;\n        out.byte(match metric.direction {\n            EvaluationDirectionV1::Maximize => 0,\n            EvaluationDirectionV1::Minimize => 1,\n        })?;\n        match metric.safety_floor {\n            None => out.byte(0)?,\n            Some(value) => {\n                out.byte(1)?;\n                out.fixed(value)?;\n            }\n        }\n    }\n    out.count(input.metric_roles.len(), MAX_METRICS)?;\n    for role in &input.metric_roles {\n        out.id(&role.metric_id)?;\n        match role.role {\n            MetricRoleV2::PrimarySuperiority { minimum_improvement } => {\n                out.byte(0)?;\n                out.fixed(minimum_improvement)?;\n            }\n            MetricRoleV2::NonInferiority { maximum_regression } => {\n                out.byte(1)?;\n                out.fixed(maximum_regression)?;\n            }\n            MetricRoleV2::AbsoluteConstraint => out.byte(2)?,\n        }\n    }\n    out.count(input.metric_sources.len(), MAX_METRICS)?;\n    for source in &input.metric_sources {\n        out.id(&source.metric_id)?;\n        out.byte(match source.source {\n            ProductMetricSourceV1::Ips => 0,\n            ProductMetricSourceV1::Snips => 1,\n            ProductMetricSourceV1::DoublyRobust => 2,\n        })?;\n    }\n    out.count(input.folds.len(), MAX_FOLDS)?;\n    for fold in &input.folds {\n        out.id(&fold.fold_id)?;\n        for values in [\n            &fold.training_principals, &fold.training_episodes, &fold.training_windows,\n            &fold.holdout_principals, &fold.holdout_episodes, &fold.holdout_windows,\n        ] {\n            out.ids(values)?;\n        }\n        out.digest(fold.model_digest)?;\n        out.digest(fold.predictions_digest)?;\n    }\n    Ok(out.bytes)\n}": [
+        "context: &PolicyMetadataContextV2,\n    input: &PolicyMetadataInputV2,\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    let mut out = Writer { bytes: Vec::new() };\n    out.push(PREFIX)?;\n    out.id(&context.plan_id)?;\n    out.digest(context.objective_digest)?;\n    out.u32(context.family_alpha_ppm)?;\n    out.u32(context.simultaneous_comparisons)?;\n    out.id(&context.final_holdout_window_id)?;\n    out.temporal(&context.candidate_temporal)?;\n    out.temporal(&context.baseline_temporal)?;\n    out.byte(match input.claim_scope {\n        EvaluationClaimScopeV1::Qualification => 0,\n        EvaluationClaimScopeV1::SystemLongitudinal => 1,\n    })?;\n    out.digest(input.base_estimand_digest)?;\n    out.id(&input.baseline_id)?;\n    out.count(input.metric_contracts.len(), MAX_METRICS)?;\n    for metric in &input.metric_contracts {\n        out.id(&metric.metric_id)?;\n        out.byte(match metric.direction {\n            EvaluationDirectionV1::Maximize => 0,\n            EvaluationDirectionV1::Minimize => 1,\n        })?;\n        match metric.safety_floor {\n            None => out.byte(0)?,\n            Some(value) => {\n                out.byte(1)?;\n                out.fixed(value)?;\n            }\n        }\n    }\n    out.count(input.metric_roles.len(), MAX_METRICS)?;\n    for role in &input.metric_roles {\n        out.id(&role.metric_id)?;\n        match role.role {\n            MetricRoleV2::PrimarySuperiority {\n                minimum_improvement,\n            } => {\n                out.byte(0)?;\n                out.fixed(minimum_improvement)?;\n            }\n            MetricRoleV2::NonInferiority { maximum_regression } => {\n                out.byte(1)?;\n                out.fixed(maximum_regression)?;\n            }\n            MetricRoleV2::AbsoluteConstraint => out.byte(2)?,\n        }\n    }\n    out.count(input.metric_sources.len(), MAX_METRICS)?;\n    for source in &input.metric_sources {\n        out.id(&source.metric_id)?;\n        out.byte(match source.source {\n            ProductMetricSourceV1::Ips => 0,\n            ProductMetricSourceV1::Snips => 1,\n            ProductMetricSourceV1::DoublyRobust => 2,\n        })?;\n    }\n    out.count(input.folds.len(), MAX_FOLDS)?;\n    for fold in &input.folds {\n        out.id(&fold.fold_id)?;\n        for values in [\n            &fold.training_principals,\n            &fold.training_episodes,\n            &fold.training_windows,\n            &fold.holdout_principals,\n            &fold.holdout_episodes,\n            &fold.holdout_windows,\n        ] {\n            out.ids(values)?;\n        }\n        out.digest(fold.model_digest)?;\n        out.digest(fold.predictions_digest)?;\n    }\n    Ok(out.bytes)\n}"
+      ],
+      "bytes: &[u8]) -> Result<(PolicyMetadataContextV2, PolicyMetadataInputV2), ProductEvaluationError> {\n    if bytes.len() > MAX_BYTES {\n        return Err(invalid());\n    }\n    let mut source = Reader { bytes };\n    if source.take(PREFIX.len())? != PREFIX {\n        return Err(invalid());\n    }\n    let context = PolicyMetadataContextV2 {\n        plan_id: source.id()?,\n        objective_digest: source.digest()?,\n        family_alpha_ppm: source.u32()?,\n        simultaneous_comparisons: source.u32()?,\n        final_holdout_window_id: source.id()?,\n        candidate_temporal: source.temporal()?,\n        baseline_temporal: source.temporal()?,\n    };\n    let claim_scope = match source.byte()? {\n        0 => EvaluationClaimScopeV1::Qualification,\n        1 => EvaluationClaimScopeV1::SystemLongitudinal,\n        _ => return Err(invalid()),\n    };\n    let base_estimand_digest = source.digest()?;\n    let baseline_id = source.id()?;\n    let count = source.count(MAX_METRICS, 5)?;\n    let mut metric_contracts = Vec::with_capacity(count);\n    for _ in 0..count {\n        let metric_id = source.id()?;\n        let direction = match source.byte()? {\n            0 => EvaluationDirectionV1::Maximize,\n            1 => EvaluationDirectionV1::Minimize,\n            _ => return Err(invalid()),\n        };\n        let safety_floor = match source.byte()? {\n            0 => None,\n            1 => Some(source.fixed()?),\n            _ => return Err(invalid()),\n        };\n        metric_contracts.push(MetricContractV1 { metric_id, direction, safety_floor });\n    }\n    let count = source.count(MAX_METRICS, 4)?;\n    let mut metric_roles = Vec::with_capacity(count);\n    for _ in 0..count {\n        let metric_id = source.id()?;\n        let role = match source.byte()? {\n            0 => MetricRoleV2::PrimarySuperiority { minimum_improvement: source.fixed()? },\n            1 => MetricRoleV2::NonInferiority { maximum_regression: source.fixed()? },\n            2 => MetricRoleV2::AbsoluteConstraint,\n            _ => return Err(invalid()),\n        };\n        metric_roles.push(MetricRoleContractV2 { metric_id, role });\n    }\n    let count = source.count(MAX_METRICS, 4)?;\n    let mut metric_sources = Vec::with_capacity(count);\n    for _ in 0..count {\n        let metric_id = source.id()?;\n        let value = match source.byte()? {\n            0 => ProductMetricSourceV1::Ips,\n            1 => ProductMetricSourceV1::Snips,\n            2 => ProductMetricSourceV1::DoublyRobust,\n            _ => return Err(invalid()),\n        };\n        metric_sources.push(ProductMetricSourceContractV1 { metric_id, source: value });\n    }\n    let count = source.count(MAX_FOLDS, 91)?;\n    let mut folds = Vec::with_capacity(count);\n    for _ in 0..count {\n        folds.push(CrossFoldPartitionV1 {\n            fold_id: source.id()?,\n            training_principals: source.ids()?,\n            training_episodes: source.ids()?,\n            training_windows: source.ids()?,\n            holdout_principals: source.ids()?,\n            holdout_episodes: source.ids()?,\n            holdout_windows: source.ids()?,\n            model_digest: source.digest()?,\n            predictions_digest: source.digest()?,\n        });\n    }\n    if !source.bytes.is_empty() {\n        return Err(invalid());\n    }\n    Ok((context, PolicyMetadataInputV2 {\n        claim_scope, base_estimand_digest, baseline_id,\n        metric_contracts, metric_roles, metric_sources, folds,\n    }))\n}": [
+        "bytes: &[u8],\n) -> Result<(PolicyMetadataContextV2, PolicyMetadataInputV2), ProductEvaluationError> {\n    if bytes.len() > MAX_BYTES {\n        return Err(invalid());\n    }\n    let mut source = Reader { bytes };\n    if source.take(PREFIX.len())? != PREFIX {\n        return Err(invalid());\n    }\n    let context = PolicyMetadataContextV2 {\n        plan_id: source.id()?,\n        objective_digest: source.digest()?,\n        family_alpha_ppm: source.u32()?,\n        simultaneous_comparisons: source.u32()?,\n        final_holdout_window_id: source.id()?,\n        candidate_temporal: source.temporal()?,\n        baseline_temporal: source.temporal()?,\n    };\n    let claim_scope = match source.byte()? {\n        0 => EvaluationClaimScopeV1::Qualification,\n        1 => EvaluationClaimScopeV1::SystemLongitudinal,\n        _ => return Err(invalid()),\n    };\n    let base_estimand_digest = source.digest()?;\n    let baseline_id = source.id()?;\n    let count = source.count(MAX_METRICS, 5)?;\n    let mut metric_contracts = Vec::with_capacity(count);\n    for _ in 0..count {\n        let metric_id = source.id()?;\n        let direction = match source.byte()? {\n            0 => EvaluationDirectionV1::Maximize,\n            1 => EvaluationDirectionV1::Minimize,\n            _ => return Err(invalid()),\n        };\n        let safety_floor = match source.byte()? {\n            0 => None,\n            1 => Some(source.fixed()?),\n            _ => return Err(invalid()),\n        };\n        metric_contracts.push(MetricContractV1 {\n            metric_id,\n            direction,\n            safety_floor,\n        });\n    }\n    let count = source.count(MAX_METRICS, 4)?;\n    let mut metric_roles = Vec::with_capacity(count);\n    for _ in 0..count {\n        let metric_id = source.id()?;\n        let role = match source.byte()? {\n            0 => MetricRoleV2::PrimarySuperiority {\n                minimum_improvement: source.fixed()?,\n            },\n            1 => MetricRoleV2::NonInferiority {\n                maximum_regression: source.fixed()?,\n            },\n            2 => MetricRoleV2::AbsoluteConstraint,\n            _ => return Err(invalid()),\n        };\n        metric_roles.push(MetricRoleContractV2 { metric_id, role });\n    }\n    let count = source.count(MAX_METRICS, 4)?;\n    let mut metric_sources = Vec::with_capacity(count);\n    for _ in 0..count {\n        let metric_id = source.id()?;\n        let value = match source.byte()? {\n            0 => ProductMetricSourceV1::Ips,\n            1 => ProductMetricSourceV1::Snips,\n            2 => ProductMetricSourceV1::DoublyRobust,\n            _ => return Err(invalid()),\n        };\n        metric_sources.push(ProductMetricSourceContractV1 {\n            metric_id,\n            source: value,\n        });\n    }\n    let count = source.count(MAX_FOLDS, 91)?;\n    let mut folds = Vec::with_capacity(count);\n    for _ in 0..count {\n        folds.push(CrossFoldPartitionV1 {\n            fold_id: source.id()?,\n            training_principals: source.ids()?,\n            training_episodes: source.ids()?,\n            training_windows: source.ids()?,\n            holdout_principals: source.ids()?,\n            holdout_episodes: source.ids()?,\n            holdout_windows: source.ids()?,\n            model_digest: source.digest()?,\n            predictions_digest: source.digest()?,\n        });\n    }\n    if !source.bytes.is_empty() {\n        return Err(invalid());\n    }\n    Ok((\n        context,\n        PolicyMetadataInputV2 {\n            claim_scope,\n            base_estimand_digest,\n            baseline_id,\n            metric_contracts,\n            metric_roles,\n            metric_sources,\n            folds,\n        },\n    ))\n}"
+      ]
+    }
+  }
+}

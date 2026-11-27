@@ -1,0 +1,60 @@
+{
+  "schema": "hepta-ci-exact-head-repair-v1",
+  "created_at": "2026-11-19T17:28:14.126244+00:00",
+  "base": "52831c43ea3ce352c38419482f8adf06152a191d",
+  "base_server_sha": "ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+  "base_tree": "323f8caa556634b70c0ee9385c4c7247681f1217",
+  "commit": "1ce56728eb6b3a2a427ed1924c4fc0c330059544",
+  "tree": "b918fa4da39819f21ea44f5930c17135bb947a0d",
+  "parents": [
+    "52831c43ea3ce352c38419482f8adf06152a191d"
+  ],
+  "changed_files": [
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "mode": "100644",
+      "old_blob": "5030246c36af4ff1da58461f1cc00c948491127f",
+      "blob": "ce1e3243b0f84de6caddd4cbab54f5679b613b1b",
+      "sha256": "bd68466e8ca733d01279e2e8883f01f17a286465669ba00f0c3a9dd89d540dfe",
+      "bytes": 34224
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "mode": "100644",
+      "old_blob": "206b4d6a016c10f7ecfa62b9528199f987626dd9",
+      "blob": "fa76e846c514cc12e23bbd382246b122fccecf7d",
+      "sha256": "dd48476f6ab78c14b804bfd7a9332effc6219d3b22cb7227737e0844835217f1",
+      "bytes": 24547
+    },
+    {
+      "path": "scripts/tests/test_hepta_ci_scope.py",
+      "mode": "100644",
+      "old_blob": "96ad3ff32d91d1f00a658ab9efa8481ac31c244c",
+      "blob": "9fd85cf50aba1bdd49fa09b21c5ebd114b97c8cc",
+      "sha256": "98fe550b81ada7c478e34695b1ba4d96adef2ca520358b2701ebda6597bf8356",
+      "bytes": 15095
+    }
+  ],
+  "refs_unchanged_during_creation": true,
+  "validation": {
+    "result_file": "scope-68-result.json",
+    "tests": 68,
+    "passed": 68,
+    "skipped": 0,
+    "original_test_method_names_preserved": true,
+    "formatter_file": "format-result.json",
+    "formatter_changed_tested_bytes": false,
+    "source_binding": "all 19 isolated validation inputs exact base blobs except listed three tested postimages",
+    "full_github_ci_pass_claimed": false
+  },
+  "review": {
+    "blocking-ci.yml": "Repository, PR/ref, and exact source SHA prevent unrelated heads or forks sharing one cancellation group. main push fallback remains main and cancel-in-progress stays true. No job, dependency, matrix, selector, or gate change.",
+    "hepta-architecture-convergence.yml": "Same repository/PR/exact-source separation; manual fallback stays branch + manual. cancel-in-progress remains true. Both source-head and prospective-merge lanes, identity checks, receipt upload, and required aggregation unchanged.",
+    "test_hepta_ci_scope.py": "Assert the actual explicit Cargo root src/codex.rs instead of unused legacy src/main.rs. Retain autobins=false, distinct hepta root, and exclusion of shared main_impl.rs from binaries. Strengthen recursion_limit to crate-start and direct include to an anchored statement; inspect real shared implementation to reject misplaced crate-level recursion_limit. All prior test methods remain."
+  },
+  "limits": [
+    "Full required GitHub CI must rerun on published child SHA. This local result covers the exact original 68-test selection entrypoint.",
+    "No Rust source, Cargo dependency, advisory policy, or Unix app-server credential predicate changed.",
+    "just is absent in local environment; ran the exact owning frozen Ruff formatter command with --offline using existing cache. No YAML formatter is configured for changed YAML paths."
+  ]
+}

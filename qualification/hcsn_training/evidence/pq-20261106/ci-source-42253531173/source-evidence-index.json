@@ -1,0 +1,142 @@
+{
+  "schema": "hcsn.final-source-evidence-index.v2",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb",
+  "run_id": 42253531173,
+  "job_id": 128014547080,
+  "job_conclusion": "success",
+  "artifact_id": 13526821341,
+  "source_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42253531173/job/128014547080",
+  "publish_files": [
+    {
+      "path": "artifact-identity.json",
+      "bytes": 339,
+      "sha256": "40a009e0980762de3dcd803c851e0b3436f9acbd4405e0b64f6d86fb73653738"
+    },
+    {
+      "path": "artifact-metadata.json",
+      "bytes": 887,
+      "sha256": "1dc70314e978417031a06776714f3ee891c80b9da4b1994a9ec013765647956c"
+    },
+    {
+      "path": "artifact-review.json",
+      "bytes": 26638,
+      "sha256": "59b67fe44357ff5137b83d3c2a1ffb1388d106f14ea72a9bf4276717cc9b283c"
+    },
+    {
+      "path": "artifacts-source-completed.json",
+      "bytes": 1012,
+      "sha256": "bd650c971e13e1d975ad42f351b9a3977c4b55555cdf9d3af763ac75af85a847"
+    },
+    {
+      "path": "job-128014547080.log",
+      "bytes": 236310,
+      "sha256": "89ce2e2195a189fd603e0b6888cf3069d771c190c9d4ed1d0fa9158978d540a7"
+    },
+    {
+      "path": "jobs-initial.json",
+      "bytes": 418,
+      "sha256": "10c086fd9c050d788be2950300228f551f280a5cc98afc1a788c5d39840b1764"
+    },
+    {
+      "path": "jobs-source-completed.json",
+      "bytes": 7009,
+      "sha256": "83b6404b296b5de3eb0fcd61799ba4befd2f6d908307eaed872152fbc0370254"
+    },
+    {
+      "path": "jobs-source-started.json",
+      "bytes": 4076,
+      "sha256": "e0b8b0a6364ba0060b14b7faa3b9a83ae7e0e03c2065cfd1a4117fbf0d2eb178"
+    },
+    {
+      "path": "offline-audit-tools-manifest.json",
+      "bytes": 1319,
+      "sha256": "16680974dad7df156160468c54d08e732ee280f3b8083a78757f02ffab820fc4"
+    },
+    {
+      "path": "offline-audit-tools.tgz",
+      "bytes": 6469,
+      "sha256": "3a66d8a4d5ded27ba0327c8345cab38c7ef382c4090521aad1f2a876b2789674"
+    },
+    {
+      "path": "original-artifact-files.json",
+      "bytes": 215016,
+      "sha256": "8f4af9a45086ab564f6d7b58322f4e494301ee2882927d9990c40c9bb81bbd67"
+    },
+    {
+      "path": "queued-at-173142.json",
+      "bytes": 699,
+      "sha256": "78326faf6ee704d4431d002de608ce50ab81232f172a59422007e408c95f0e16"
+    },
+    {
+      "path": "run-initial.json",
+      "bytes": 16935,
+      "sha256": "e6f5c501b21de614631225c89d66c8e59d8585834ddee04bc1ef10401b3bae5c"
+    },
+    {
+      "path": "source-raw-filtered.zip",
+      "bytes": 969056,
+      "sha256": "cd2595435359490555779f832eaf203c18dd0e71bbdd8d933050fac2de0e2ba7"
+    },
+    {
+      "path": "source-raw-provenance.json",
+      "bytes": 4353,
+      "sha256": "d8d72d0864a1bdd4ff5add01dbebe021e2955b951cdf01a8e8ba412845ea557c"
+    }
+  ],
+  "publish_regular_files_excluding_this_index": 15,
+  "publish_bytes_excluding_this_index": 1490536,
+  "retained_complete_original_zip": {
+    "path": "source-artifact-13526821341.zip",
+    "bytes": 7284324,
+    "sha256": "9fa1a9212ca2a2a5d395b2b020d8f48445bfbe13d950ce12fc6fe953da6e5d51"
+  },
+  "complete_extraction_retained": "/workspace/scratch/7b4b0c316c52/ci-source-42253531173/original-extracted",
+  "published_artifact_representation": "source-raw-filtered.zip; 669 of 672 original regular files, with all 3 excluded files independently confirmed ELF native executables. It is not the complete original artifact.",
+  "original_file_inventory": "original-artifact-files.json",
+  "exclusion_provenance": "source-raw-provenance.json",
+  "published_raw_members_byte_verified": true,
+  "tests": {
+    "python_passed": 69,
+    "python_skipped": 0,
+    "python_seconds": 40.203,
+    "python_modules_passed": {
+      "qualification.hcsn_training.test_joint_graph": 8,
+      "qualification.hcsn_training.test_population_graph": 8,
+      "qualification.hcsn_training.test_training_state": 8,
+      "qualification.hcsn_training.test_native_build": 5,
+      "qualification.hcsn_training.test_supervisor": 11,
+      "qualification.hcsn_training.test_supervisor_imports": 8,
+      "qualification.hcsn_training.test_population_age_graph": 8,
+      "qualification.hcsn_training.test_population_generator": 5,
+      "qualification.hcsn_training.test_population_spatial": 5,
+      "qualification.hcsn_training.test_resumed_derivatives": 3
+    },
+    "numerical_artifact_contracts_passed": 392,
+    "numerical_artifact_contracts_skipped": 1,
+    "automation_passed": 120,
+    "automation_skipped": 2
+  },
+  "three_bridges_status": "passed",
+  "three_classical_cancellations_status": "passed",
+  "source_hash_files_verified": 139,
+  "separate_agentd_job": "in_progress at last shared observation 2026-11-06 17:49:25 UTC; its artifact and review belong in the separate Agentd evidence directory",
+  "immutable_history": "Does not overwrite or replace the first bbe995c CI run, earlier local cancellation failures, local 64-test result, or the local five-spatial-test attempts that exited137.",
+  "scope_limits": [
+    "Numerical exactness and native signature/recovery assertions are results of the recorded CI executions; this audit checks their retained evidence and identity, not an independent numerical recomputation.",
+    "Persistence restores complete numerical state; next-block autograd begins from detached state.",
+    "Cancellation proves real worker identity and exit; optimizer entry in that cancelled process is explicitly not proven.",
+    "These three cancellations use synthetic Ed25519 fixture trust, not the separate Agentd production-profile composition fixture.",
+    "No production deployment, model adoption, scientific gain or physical energy claim."
+  ],
+  "previous_index_retained_in_scratch": {
+    "path": "source-evidence-index.json",
+    "sha256": "3229a83a8bc56bdf30a89f98c17f23e72a1e1f5fc43d63090c76668c2f2644ac",
+    "published_by_v2": false
+  },
+  "offline_audit_tools_archive": "offline-audit-tools.tgz",
+  "offline_audit_tools_manifest": "offline-audit-tools-manifest.json",
+  "bare_python_helpers_published": false,
+  "revision_scope": "Only packaging of the two offline audit helper scripts changed. Original CI ZIP, filtered raw ZIP, all original member inventories, artifact review, log bytes, source HEAD/tree, and source scanner rules are unchanged."
+}

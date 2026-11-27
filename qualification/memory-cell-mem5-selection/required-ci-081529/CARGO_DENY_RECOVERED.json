@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.mem5.source-pinned-cargo-deny-diagnosis.v1",
+  "source_commit": "5fa0d0e462cd1393f4f9e95565ff5993e9bad29a",
+  "run_id": 42775149122,
+  "job_id": 129705041583,
+  "step": "Run cargo-deny",
+  "conclusion": "failure",
+  "original_log_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42775149122/job/129705041583",
+  "retrieval": "Full original decoded log was fetched successfully after earlier Transport closed observations; complete log stays in GitHub Actions, no new asset/hash is claimed.",
+  "policy_guard_tests": "RustSec suppression guard tests passed; no new suppressions or exceptions added",
+  "cargo_deny": "advisories FAILED, bans ok, licenses ok, sources ok",
+  "advisories": [
+    {
+      "id": "RUSTSEC-2026-0459",
+      "crate": "libsqlite3-sys",
+      "observed_version": "0.37.0",
+      "issue": "bundled SQLite exposure to crafted database/WAL page-size mismatch revealing uninitialized page-cache data",
+      "source_disposition": "OPEN",
+      "upstream_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0459",
+      "upgrade_consideration": "Check compatibility with libsqlite3-sys >=0.39.0, rusqlite >=0.41 and Rust MSRV; do not blindly reuse unrelated owner-fork lock"
+    },
+    {
+      "id": "RUSTSEC-2026-0457",
+      "crate": "rmcp",
+      "observed_version": "3.1.3",
+      "issue": "OAuth client metadata discovery host-only validation can SSRF toward resolved private addresses",
+      "source_disposition": "OPEN",
+      "upstream_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0457"
+    },
+    {
+      "id": "RUSTSEC-2026-0461",
+      "crate": "rmcp",
+      "observed_version": "3.1.3",
+      "issue": "Unbounded Streamable HTTP server tools schema cache permits memory exhaustion",
+      "source_disposition": "OPEN",
+      "upstream_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0461"
+    },
+    {
+      "id": "RUSTSEC-2026-0462",
+      "crate": "rmcp",
+      "observed_version": "3.1.3",
+      "issue": "Unbounded Streamable HTTP client non-streaming response buffering",
+      "source_disposition": "OPEN",
+      "upstream_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0462",
+      "upgrade_consideration": "Evaluate supported rmcp >=3.9.0 with compatibility/security tests"
+    }
+  ],
+  "other_observations": {
+    "architecture": {
+      "source_head": "success",
+      "base_merge": "success",
+      "required": "queued_at_latest_bounded_read"
+    },
+    "bazel_additional_terminal_failures": [
+      {
+        "job": 129705042019,
+        "scope": "Windows shard 2; legacy filesystem permission refusals, poisoned test lock cascading; not a MEM selector failure proof"
+      },
+      {
+        "job": 129705042055,
+        "scope": "macOS Intel; hepta-agentd fixture Invalid and hepta-automation owner/store Invalid; root not uniquely established"
+      },
+      {
+        "job": 129705042141,
+        "scope": "Windows shard 4 failed; cause not yet classified"
+      },
+      {
+        "job": 129705042231,
+        "scope": "Windows shard 3 failed; cause not yet classified"
+      }
+    ]
+  },
+  "decisions": [
+    "No policy assertion/sandbox changes",
+    "Do not add cargo-deny ignores",
+    "No claim of full CI pass",
+    "Do not merge owner-fork lock without compat verification",
+    "Preserve frozen MEM5 actor results and HOLD/NoUpdate"
+  ],
+  "source_manifest_constraints": {
+    "file": "codex-rs/Cargo.toml",
+    "source_git_blob_sha1": "d9f1bb1db407de3c2f1650edc4da5009ba3adaf1",
+    "rmcp_workspace_exact_pin": {
+      "line": 481,
+      "declaration": "rmcp = { version = \"=3.1.3\", default-features = false }"
+    },
+    "sqlite_workspace_pin": {
+      "line": 443,
+      "declaration": "libsqlite3-sys = { version = \"0.37\", default-features = false }"
+    },
+    "matrix_sqlite_patch": {
+      "lines": [
+        693,
+        695
+      ],
+      "summary": "The source documents a local matrix-sdk-sqlite 0.19.1 compatibility patch preserving rusqlite 0.39 / libsqlite3-sys 0.37 to align with SQLx 0.9. Updating libsqlite3-sys independently is not validated."
+    },
+    "upgrade_boundary": "A verified, source-compatible workspace, lock and patch migration is required; simply bypassing deny or transplanting an unrelated owner-fork lock is not a remediation."
+  }
+}

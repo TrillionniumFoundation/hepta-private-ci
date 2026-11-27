@@ -1,0 +1,306 @@
+{
+  "schema": "hepta.mem8.ci189.terminal-root-snapshot.v13",
+  "observed_at": "2026-11-11 11:04:14 UTC",
+  "run_id": 43002359918,
+  "source_head": "189711e3563ea13a5328d52e99a286f082045b98",
+  "complete_page": true,
+  "total_count": 37,
+  "jobs": [
+    {
+      "id": 130461334820,
+      "name": "Select blocking CI scope",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:29Z",
+      "completed_at": "2026-11-11T10:17:49Z"
+    },
+    {
+      "id": 130461335371,
+      "name": "Codespell / Check for spelling errors",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:29Z",
+      "completed_at": "2026-11-11T10:17:59Z"
+    },
+    {
+      "id": 130461335389,
+      "name": "Blob size policy / Blob size policy",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T10:17:29Z",
+      "completed_at": "2026-11-11T10:17:38Z"
+    },
+    {
+      "id": 130461513772,
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:51Z",
+      "completed_at": "2026-11-11T10:19:39Z"
+    },
+    {
+      "id": 130461513778,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:18:43Z"
+    },
+    {
+      "id": 130461513852,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:25:11Z",
+      "completed_at": "2026-11-11T10:26:29Z"
+    },
+    {
+      "id": 130461513869,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:19:19Z"
+    },
+    {
+      "id": 130461513951,
+      "name": "rust-ci / Detect changed areas",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:51Z",
+      "completed_at": "2026-11-11T10:18:05Z"
+    },
+    {
+      "id": 130461514025,
+      "name": "sdk / sdks",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:25:04Z"
+    },
+    {
+      "id": 130461514146,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:24:13Z"
+    },
+    {
+      "id": 130461514167,
+      "name": "sdk / python-sdk",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:19:18Z"
+    },
+    {
+      "id": 130461514207,
+      "name": "repo-checks / build-test",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:26:53Z"
+    },
+    {
+      "id": 130461514647,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:26:26Z",
+      "completed_at": "2026-11-11T10:34:39Z"
+    },
+    {
+      "id": 130461514658,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:53Z",
+      "completed_at": "2026-11-11T10:49:50Z"
+    },
+    {
+      "id": 130461514703,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:23:41Z"
+    },
+    {
+      "id": 130461514712,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:25:36Z"
+    },
+    {
+      "id": 130461514714,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:44:09Z"
+    },
+    {
+      "id": 130461514718,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T10:17:53Z",
+      "completed_at": "2026-11-11T10:47:19Z"
+    },
+    {
+      "id": 130461514723,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T10:17:54Z",
+      "completed_at": "2026-11-11T10:59:59Z"
+    },
+    {
+      "id": 130461514744,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:41:54Z"
+    },
+    {
+      "id": 130461514759,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:42:14Z"
+    },
+    {
+      "id": 130461514761,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T10:26:26Z",
+      "completed_at": "2026-11-11T10:56:56Z"
+    },
+    {
+      "id": 130461514784,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:17:52Z",
+      "completed_at": "2026-11-11T10:23:58Z"
+    },
+    {
+      "id": 130461514922,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T10:17:53Z",
+      "completed_at": "2026-11-11T10:25:40Z"
+    },
+    {
+      "id": 130461514980,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T10:17:53Z",
+      "completed_at": "2026-11-11T10:37:39Z"
+    },
+    {
+      "id": 130461515504,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:26:26Z",
+      "completed_at": "2026-11-11T10:34:45Z"
+    },
+    {
+      "id": 130461515686,
+      "name": "Lightweight prose and derived checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-11T10:17:49Z",
+      "completed_at": "2026-11-11T10:17:49Z"
+    },
+    {
+      "id": 130461515707,
+      "name": "Hepta scoped native checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-11T10:17:49Z",
+      "completed_at": "2026-11-11T10:17:49Z"
+    },
+    {
+      "id": 130461518303,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-11T10:17:49Z",
+      "completed_at": "2026-11-11T10:17:49Z"
+    },
+    {
+      "id": 130461637291,
+      "name": "rust-ci / Rust format",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:18:08Z",
+      "completed_at": "2026-11-11T10:18:51Z"
+    },
+    {
+      "id": 130461637300,
+      "name": "rust-ci / Cargo manifest preflight",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:18:07Z",
+      "completed_at": "2026-11-11T10:18:26Z"
+    },
+    {
+      "id": 130461637320,
+      "name": "rust-ci / cargo shear",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:18:08Z",
+      "completed_at": "2026-11-11T10:18:43Z"
+    },
+    {
+      "id": 130461639883,
+      "name": "rust-ci / Argument comment lint package",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-11T10:18:06Z",
+      "completed_at": "2026-11-11T10:18:05Z"
+    },
+    {
+      "id": 130461797151,
+      "name": "rust-ci / Rust benchmark smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:18:28Z",
+      "completed_at": "2026-11-11T10:19:41Z"
+    },
+    {
+      "id": 130462384849,
+      "name": "rust-ci / CI results (required)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T10:19:44Z",
+      "completed_at": "2026-11-11T10:19:48Z"
+    },
+    {
+      "id": 130475270575,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T10:47:22Z",
+      "completed_at": "2026-11-11T10:47:26Z"
+    },
+    {
+      "id": 130481082654,
+      "name": "CI required",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T11:00:02Z",
+      "completed_at": "2026-11-11T11:00:13Z"
+    }
+  ]
+}

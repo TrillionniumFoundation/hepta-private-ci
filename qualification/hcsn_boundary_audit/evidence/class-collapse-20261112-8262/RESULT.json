@@ -1,0 +1,962 @@
+{
+  "checked_utc": "2026-11-12T01:08:45.009645+00:00",
+  "command_sha256": "9eb70aff200f0994d9e5573054a1724c639ca1168718e6cc1dcaf0ad41ffbeac",
+  "descriptive_seed_means": {
+    "HCSN c1_b1": {
+      "accuracy": 0.125,
+      "cross_entropy_nats": 2.092303424003432
+    },
+    "PyTorch GRU7 + projection9": {
+      "accuracy": 0.11805555555555554,
+      "cross_entropy_nats": 2.0899974342230694
+    }
+  },
+  "development_episodes": 24,
+  "development_label_counts": [
+    22,
+    22,
+    24,
+    31,
+    20,
+    28,
+    28,
+    17
+  ],
+  "development_query_count": 192,
+  "inputs": {
+    "gru_data": {
+      "bytes": 910670,
+      "path": "/workspace/scratch/8262eeaa059c/hcsn-local-full-001/DATA.json",
+      "sha256": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427"
+    },
+    "gru_seed11_development": {
+      "bytes": 46436,
+      "path": "/dev/shm/hepta-hcsn-gru-001/seed11/development.json",
+      "sha256": "46612455a2e54087cfb4eda98a4d46bffbc485caa562c58cc27ef9c47a8cdd76"
+    },
+    "gru_seed23_development": {
+      "bytes": 46753,
+      "path": "/dev/shm/hepta-hcsn-gru-001/seed23/development.json",
+      "sha256": "0d5df41f6bc6481a6960bc6d0552bd678d3e1cba839903da1569800af17f4fcb"
+    },
+    "gru_seed37_development": {
+      "bytes": 47247,
+      "path": "/dev/shm/hepta-hcsn-gru-001/seed37/development.json",
+      "sha256": "7c337a4563c7a34785657384cf0bceef5c87b91934e7d17947b00818ca352e90"
+    },
+    "gru_summary": {
+      "bytes": 20118,
+      "path": "/dev/shm/hepta-hcsn-gru-001/SUMMARY.json",
+      "sha256": "9c6bf865315e720c01b730a90043baa14ba2cd03b84e65aa19889b4c377e2cfa"
+    },
+    "hcsn_data": {
+      "bytes": 910670,
+      "path": "/dev/shm/hepta-hcsn-full-002/DATA.json",
+      "sha256": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427"
+    },
+    "hcsn_seed11_development": {
+      "bytes": 47045,
+      "path": "/dev/shm/hepta-hcsn-full-002/seed11-c1_b1/development.json",
+      "sha256": "e41f1af9e1c0ff72d349541f9de9bb17d7078811209e1852ec49fb70960990df"
+    },
+    "hcsn_seed23_development": {
+      "bytes": 46775,
+      "path": "/dev/shm/hepta-hcsn-full-002/seed23-c1_b1/development.json",
+      "sha256": "d64e8ecedf241d57e15fdb350b1bb6f3584dd9e1f529bb0c5889c067a093b5b3"
+    },
+    "hcsn_seed37_development": {
+      "bytes": 46753,
+      "path": "/dev/shm/hepta-hcsn-full-002/seed37-c1_b1/development.json",
+      "sha256": "50e744e194bcb9297dce87df9bebe7509b1558f865c01b6b8667316d0e7f218c"
+    },
+    "hcsn_summary": {
+      "bytes": 62221,
+      "path": "/dev/shm/hepta-hcsn-full-002/SUMMARY.json",
+      "sha256": "3ea5dc8f1f9e7d0f9e9a8d684f25efd6563b3cc4e88fdc750e9b13e13db91881"
+    }
+  },
+  "inputs_unchanged": true,
+  "label_source": "Pinned original development DATA; the same labels appear in all six raw prediction files.",
+  "limitations": [
+    "Hard argmax concentration does not assert that all logits or probabilities are identical.",
+    "The three initializations reuse one fixed synthetic development set; no new independent source.",
+    "The observed accuracy differences track fixed class frequencies and do not establish learned sequence memory.",
+    "Uniform-probability and random-class references are arithmetic references, not newly trained baselines.",
+    "This audit binds saved bytes and checks producer metrics; it does not rerun checkpoint inference."
+  ],
+  "model_forward_calls": 0,
+  "model_imported": false,
+  "optimizer_steps": 0,
+  "passed": true,
+  "reference_predictors": {
+    "classes": 8,
+    "constant_predicted_class_accuracies": [
+      0.11458333333333333,
+      0.11458333333333333,
+      0.125,
+      0.16145833333333334,
+      0.10416666666666667,
+      0.14583333333333334,
+      0.14583333333333334,
+      0.08854166666666667
+    ],
+    "equal_logits_deterministic_argmax_actual_development_accuracy": 0.11458333333333333,
+    "equal_logits_deterministic_argmax_class": 0,
+    "interpretation": "Uniform probabilities have CE ln(8) for every label; random uniform class selection has expected accuracy 1/8; deterministic argmax accuracy depends on this fixed dataset class frequency.",
+    "random_uniform_label_expected_accuracy": 0.125,
+    "uniform_probability_brier_mean_classes": 0.109375,
+    "uniform_probability_cross_entropy_nats": 2.0794415416798357,
+    "uniform_probability_vector": [
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.125
+    ]
+  },
+  "rows": [
+    {
+      "development_role": "hcsn_seed11_development",
+      "maximum_summary_metric_error": 0.0,
+      "metrics": {
+        "accuracy": 0.16145833333333334,
+        "all_queries_one_argmax": true,
+        "argmax_tie_breaking": "lowest class index",
+        "argmax_tie_rows": 0,
+        "class_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "confusion_true_rows_predicted_columns": [
+          [
+            0,
+            0,
+            0,
+            22,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            22,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            24,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            31,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            20,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            28,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            28,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            17,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "correct_counts_by_predicted_class": [
+          0,
+          0,
+          0,
+          31,
+          0,
+          0,
+          0,
+          0
+        ],
+        "cross_entropy_nats": 2.0765901444297628,
+        "distinct_logit_vectors": 192,
+        "label_counts": [
+          22,
+          22,
+          24,
+          31,
+          20,
+          28,
+          28,
+          17
+        ],
+        "prediction_counts": [
+          0,
+          0,
+          0,
+          192,
+          0,
+          0,
+          0,
+          0
+        ],
+        "query_count": 192,
+        "total_correct": 31,
+        "unique_predicted_classes": 1
+      },
+      "model": "HCSN c1_b1",
+      "seed": 11
+    },
+    {
+      "development_role": "hcsn_seed23_development",
+      "maximum_summary_metric_error": 4.440892098500626e-16,
+      "metrics": {
+        "accuracy": 0.125,
+        "all_queries_one_argmax": true,
+        "argmax_tie_breaking": "lowest class index",
+        "argmax_tie_rows": 0,
+        "class_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "confusion_true_rows_predicted_columns": [
+          [
+            0,
+            0,
+            22,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            22,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            24,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            31,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            20,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            28,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            28,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            17,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "correct_counts_by_predicted_class": [
+          0,
+          0,
+          24,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "cross_entropy_nats": 2.101300046777737,
+        "distinct_logit_vectors": 192,
+        "label_counts": [
+          22,
+          22,
+          24,
+          31,
+          20,
+          28,
+          28,
+          17
+        ],
+        "prediction_counts": [
+          0,
+          0,
+          192,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "query_count": 192,
+        "total_correct": 24,
+        "unique_predicted_classes": 1
+      },
+      "model": "HCSN c1_b1",
+      "seed": 23
+    },
+    {
+      "development_role": "hcsn_seed37_development",
+      "maximum_summary_metric_error": 0.0,
+      "metrics": {
+        "accuracy": 0.08854166666666667,
+        "all_queries_one_argmax": true,
+        "argmax_tie_breaking": "lowest class index",
+        "argmax_tie_rows": 0,
+        "class_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "confusion_true_rows_predicted_columns": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            22
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            22
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            24
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            31
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            20
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            28
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            28
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            17
+          ]
+        ],
+        "correct_counts_by_predicted_class": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          17
+        ],
+        "cross_entropy_nats": 2.0990200808027972,
+        "distinct_logit_vectors": 192,
+        "label_counts": [
+          22,
+          22,
+          24,
+          31,
+          20,
+          28,
+          28,
+          17
+        ],
+        "prediction_counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          192
+        ],
+        "query_count": 192,
+        "total_correct": 17,
+        "unique_predicted_classes": 1
+      },
+      "model": "HCSN c1_b1",
+      "seed": 37
+    },
+    {
+      "development_role": "gru_seed11_development",
+      "maximum_summary_metric_error": 4.440892098500626e-16,
+      "metrics": {
+        "accuracy": 0.11458333333333333,
+        "all_queries_one_argmax": true,
+        "argmax_tie_breaking": "lowest class index",
+        "argmax_tie_rows": 0,
+        "class_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "confusion_true_rows_predicted_columns": [
+          [
+            0,
+            22,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            22,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            24,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            31,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            20,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            28,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            28,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            17,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "correct_counts_by_predicted_class": [
+          0,
+          22,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "cross_entropy_nats": 2.079586759977558,
+        "distinct_logit_vectors": 192,
+        "label_counts": [
+          22,
+          22,
+          24,
+          31,
+          20,
+          28,
+          28,
+          17
+        ],
+        "prediction_counts": [
+          0,
+          192,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "query_count": 192,
+        "total_correct": 22,
+        "unique_predicted_classes": 1
+      },
+      "model": "PyTorch GRU7 + projection9",
+      "seed": 11
+    },
+    {
+      "development_role": "gru_seed23_development",
+      "maximum_summary_metric_error": 4.440892098500626e-16,
+      "metrics": {
+        "accuracy": 0.125,
+        "all_queries_one_argmax": false,
+        "argmax_tie_breaking": "lowest class index",
+        "argmax_tie_rows": 0,
+        "class_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "confusion_true_rows_predicted_columns": [
+          [
+            0,
+            0,
+            22,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            22,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            24,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            30,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            20,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            28,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            28,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            17,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "correct_counts_by_predicted_class": [
+          0,
+          0,
+          24,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "cross_entropy_nats": 2.0886086578273826,
+        "distinct_logit_vectors": 192,
+        "label_counts": [
+          22,
+          22,
+          24,
+          31,
+          20,
+          28,
+          28,
+          17
+        ],
+        "prediction_counts": [
+          0,
+          0,
+          191,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "query_count": 192,
+        "total_correct": 24,
+        "unique_predicted_classes": 2
+      },
+      "model": "PyTorch GRU7 + projection9",
+      "seed": 23
+    },
+    {
+      "development_role": "gru_seed37_development",
+      "maximum_summary_metric_error": 0.0,
+      "metrics": {
+        "accuracy": 0.11458333333333333,
+        "all_queries_one_argmax": true,
+        "argmax_tie_breaking": "lowest class index",
+        "argmax_tie_rows": 0,
+        "class_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "confusion_true_rows_predicted_columns": [
+          [
+            0,
+            22,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            22,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            24,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            31,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            20,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            28,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            28,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            17,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "correct_counts_by_predicted_class": [
+          0,
+          22,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "cross_entropy_nats": 2.1017968848642674,
+        "distinct_logit_vectors": 192,
+        "label_counts": [
+          22,
+          22,
+          24,
+          31,
+          20,
+          28,
+          28,
+          17
+        ],
+        "prediction_counts": [
+          0,
+          192,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "query_count": 192,
+        "total_correct": 22,
+        "unique_predicted_classes": 1
+      },
+      "model": "PyTorch GRU7 + projection9",
+      "seed": 37
+    }
+  ],
+  "schema": "hcsn-gru-hard-prediction-concentration-audit-v1",
+  "script_sha256_after": "2a15ba2cb0fe64d9454b920c2cc6501adcff312b94f551364f267751222fef9e",
+  "script_sha256_before": "2a15ba2cb0fe64d9454b920c2cc6501adcff312b94f551364f267751222fef9e",
+  "source_unchanged": true,
+  "status": "completed",
+  "wall_seconds": 0.029855695000151172
+}

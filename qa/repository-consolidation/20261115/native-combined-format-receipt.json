@@ -1,0 +1,127 @@
+{
+  "source_head": "f201405a428de6197a633862a30a1fd373886034",
+  "source_tree": "10e16a9ba7187ccb22be90139e970e3c7d4e1781",
+  "native_head_before_format": "c63bb15088d3e798230f4aa2453149e0ded1dd37",
+  "native_tree_before_format": "5f61012f0de8cdcc70333184899428e6f29c136c",
+  "scope_entries_verified": 13359,
+  "scope": [
+    "codex-rs",
+    "scripts",
+    ".github",
+    ".cargo",
+    ".config",
+    "justfile",
+    "Cargo.toml",
+    "Cargo.lock",
+    "rust-toolchain.toml",
+    "rust-toolchain",
+    "MODULE.bazel",
+    "MODULE.bazel.lock",
+    "BUILD.bazel",
+    ".bazelversion",
+    ".bazelrc",
+    ".bazelignore",
+    ".bazeliskrc",
+    "defs.bzl",
+    "tools",
+    "third_party",
+    "patches",
+    "docs/modules/MODULES.json",
+    "package.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    ".prettierignore",
+    ".prettierrc",
+    ".prettierrc.json",
+    ".codespellrc",
+    ".codespellignore",
+    ".gitattributes",
+    ".gitignore",
+    ".markdownlint-cli2.yaml",
+    ".npmrc",
+    ".prettierrc.toml",
+    ".worktreeinclude",
+    "AGENTS.md",
+    "ARCHIVE_URL.txt",
+    "CALLERS.toml",
+    "CHANGELOG.md",
+    "LICENSE",
+    "NOTICE",
+    "README.md",
+    "SECURITY.md",
+    "announcement_tip.toml",
+    "flake.lock",
+    "flake.nix",
+    "rbe.bzl",
+    "runtime_codex_compile_failure.txt",
+    "workspace_root_test_launcher.bat.tpl",
+    "workspace_root_test_launcher.sh.tpl",
+    "bazel",
+    "qualification/neuron-v13-generation/proposal_worker.py"
+  ],
+  "excluded_scope": "Historical QA/research archives and unrelated documentation; complete Cargo workspace, all top-level blob inputs, Bazel sources, and resolved tracked literal includes are included.",
+  "working_tree_clean_before_format": true,
+  "format": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "9b8de495b169486910a6a1da30690ac42306ae98"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 9.795
+  },
+  "format_patch": {
+    "bytes": 36830,
+    "sha256": "bcb3b2538f37f23984d39e73cce7d5731cca883f313904c6764fd2d3e06d6712",
+    "gzip_bytes": 8082,
+    "gzip_sha256": "27c9b7bce652c5aa3a766aef1cfc44e0ff9f0db0d4c164e4da9fc458db7b5a6a"
+  },
+  "format_changes": [
+    {
+      "path": "codex-rs/core-plugins/src/command_migration.rs",
+      "before_sha256": "f3add2a904024dbb9f1fecae05f16b117adbf03ebf24b007f6606cd3032b5003",
+      "after_sha256": "6b16fca68f2c7fe710e38efe4d4a675bba956fb53d7ad1780ea2668d4319d330"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "before_sha256": "b9c26b5e12988b5626cf4edcc81648dbce246b63e7a5b8a19b43a3f08f3d03a6",
+      "after_sha256": "4e0cdba23ab36c58da61b34939f90ac412f83995e66925b49999d5837d69c80b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "before_sha256": "ef89bb9477541151cdfae10938cb8cc131c53d7d6138716a010da2bcb5daf928",
+      "after_sha256": "b16575ac81d0a8f355b50e74f0c051fd7fa3713938b21b253fb187c72d73a7bc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "before_sha256": "3bef3b4a3d41a2c7c2d695994f8fdb180832cbef7f969351f825d89f90943ed7",
+      "after_sha256": "98cfe984123cca99ecf61990ae1eba6a71d813d33cb0330460fe269a23240b5a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_process.rs",
+      "before_sha256": "c8201af6e8115cf5ec1fae2b06e39ae47ef2bfc2eba26120896f0890f7172419",
+      "after_sha256": "b68726a47c8177f901db3a44a06bfc78f20a460f948a246652df7fc23f916b25"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_process_tests.rs",
+      "before_sha256": "87016b96d47b60ff2f4d2520af08d55e55023a967f630e353a678c78bf6e11ab",
+      "after_sha256": "bacef296a762b0d72a89e208393a5567f2e420862eb733df5feb53c6361be68d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "before_sha256": "f7e276ed07b2ef1e166d1a9ba2a59ded9794c543778f5f4ed78b25835fbed9ba",
+      "after_sha256": "f1c38c4400fcd9c7156c8785438bbb29b630517713c2fd36b1dadefe15d7c256"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "before_sha256": "ce4d91e82a6733ef4250b120a64d4fd5d29e01564976602bab294fecae41d01f",
+      "after_sha256": "09d5701fec3cd1edd8f92520da22848891f5ab0298e41cf61cf75f4112c4cea3"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_shadow_tests.rs",
+      "before_sha256": "d5730ae6e28ee61aa5f707303f9f2e96e9fd39a95a5c018bc5545dfe798bab50",
+      "after_sha256": "195f2c37987fe74711e9ab7c5a572053a6f4b46e39b003f9193a3251dceb5fc9"
+    }
+  ]
+}

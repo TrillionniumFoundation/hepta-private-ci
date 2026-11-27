@@ -1,0 +1,112 @@
+{
+  "class_counts": {
+    "ExecutionTests": 11,
+    "ProtocolTests": 8,
+    "ReportingTests": 4,
+    "TraceCoverageTests": 5
+  },
+  "errors": [],
+  "failures": [],
+  "fixture_adaptation": "ReportingTests references the same extended terminal fixture; all original methods execute unchanged",
+  "passed": true,
+  "schema": "hcsn-successor-inherited-tests-v1",
+  "scope": "synthetic software fixtures only; no original C2 terminal reconstruction, training adequacy or scientific benefit",
+  "skipped": [],
+  "source_after": {
+    "c2_boundary.py": {
+      "bytes": 16215,
+      "sha256": "177a23a3d0502a79912efdd2a14a365bc716961698a6949bb45d380ba147e6dd"
+    },
+    "c2_controller.py": {
+      "bytes": 25823,
+      "sha256": "b7fa5c04244795d64fa47ae2ae77205e35655439ae9eae53cbfef73b4fc7eb4b"
+    },
+    "c2_io.py": {
+      "bytes": 11247,
+      "sha256": "3088331380caae73de150bd4ebb2cd50b6df0a3b9fbd14c2ac64b16956ac9d47"
+    },
+    "c2_recording.py": {
+      "bytes": 22228,
+      "sha256": "467e25570d0d7adf4f42b025d9a5a93334371e7416237336ceaa116cf1b4bbe0"
+    },
+    "c2_runner.py": {
+      "bytes": 27789,
+      "sha256": "e6a74e9479b45c2ff1d0c5d565209a2ead3e5de0f134aefad510ad1c73323ea6"
+    },
+    "hcsn_persistence_v1/atomic_io.py": {
+      "bytes": 3105,
+      "sha256": "cacd538c154a4565d932c31286412be11319f4b65077eb7a263b45c27e45f1d0"
+    },
+    "hcsn_persistence_v1/journal.py": {
+      "bytes": 11667,
+      "sha256": "25726913420ddb4f40f77c03bf3c585c2b982dca0de1b044590c693cf9548756"
+    },
+    "test_c2_execution.py": {
+      "bytes": 23345,
+      "sha256": "dbabc1640a54137b2156d78e0432ff0ee48fa753439b642cd436afebcda2919f"
+    },
+    "test_c2_reporting.py": {
+      "bytes": 3432,
+      "sha256": "48cb69c4dba22b6412d3c8a283a9b033d0937abf7740de5c6c01811d52da0582"
+    },
+    "test_c2_terminal_result.py": {
+      "bytes": 7909,
+      "sha256": "b6504b36a5c90b481a1f48a5c9d7352ccaa6d031376448498ba3163045793a2f"
+    },
+    "test_c2_trace_coverage.py": {
+      "bytes": 4155,
+      "sha256": "94b8ac14557c10a3e6734da249427dc26a11dac3118f4c0884992ae228844ffd"
+    }
+  },
+  "source_before": {
+    "c2_boundary.py": {
+      "bytes": 16215,
+      "sha256": "177a23a3d0502a79912efdd2a14a365bc716961698a6949bb45d380ba147e6dd"
+    },
+    "c2_controller.py": {
+      "bytes": 25823,
+      "sha256": "b7fa5c04244795d64fa47ae2ae77205e35655439ae9eae53cbfef73b4fc7eb4b"
+    },
+    "c2_io.py": {
+      "bytes": 11247,
+      "sha256": "3088331380caae73de150bd4ebb2cd50b6df0a3b9fbd14c2ac64b16956ac9d47"
+    },
+    "c2_recording.py": {
+      "bytes": 22228,
+      "sha256": "467e25570d0d7adf4f42b025d9a5a93334371e7416237336ceaa116cf1b4bbe0"
+    },
+    "c2_runner.py": {
+      "bytes": 27789,
+      "sha256": "e6a74e9479b45c2ff1d0c5d565209a2ead3e5de0f134aefad510ad1c73323ea6"
+    },
+    "hcsn_persistence_v1/atomic_io.py": {
+      "bytes": 3105,
+      "sha256": "cacd538c154a4565d932c31286412be11319f4b65077eb7a263b45c27e45f1d0"
+    },
+    "hcsn_persistence_v1/journal.py": {
+      "bytes": 11667,
+      "sha256": "25726913420ddb4f40f77c03bf3c585c2b982dca0de1b044590c693cf9548756"
+    },
+    "test_c2_execution.py": {
+      "bytes": 23345,
+      "sha256": "dbabc1640a54137b2156d78e0432ff0ee48fa753439b642cd436afebcda2919f"
+    },
+    "test_c2_reporting.py": {
+      "bytes": 3432,
+      "sha256": "48cb69c4dba22b6412d3c8a283a9b033d0937abf7740de5c6c01811d52da0582"
+    },
+    "test_c2_terminal_result.py": {
+      "bytes": 7909,
+      "sha256": "b6504b36a5c90b481a1f48a5c9d7352ccaa6d031376448498ba3163045793a2f"
+    },
+    "test_c2_trace_coverage.py": {
+      "bytes": 4155,
+      "sha256": "94b8ac14557c10a3e6734da249427dc26a11dac3118f4c0884992ae228844ffd"
+    }
+  },
+  "source_unchanged": true,
+  "successor": "/tmp/hcsn-3b20-final-validation-v1/successor",
+  "terminal_suite_run_here": false,
+  "tests_run": 28,
+  "wrapper_elapsed_seconds": 2.6335421819239855
+}

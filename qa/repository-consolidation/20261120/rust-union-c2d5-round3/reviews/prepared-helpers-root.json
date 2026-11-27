@@ -1,0 +1,81 @@
+{
+  "status": "PASS_STATIC_COMPLETE_HELPER_CALL_CLOSURE_NATIVE_PENDING",
+  "reviewed_at": "2026-11-20T05:09:15.309795+00:00",
+  "base_source_tree": "31884ddd8455912d22bcdc98e65667fe601a7f8b",
+  "also_bound_to_source3_tree": "9cdeda5fba5b4cb02036c62f75781878497931ea",
+  "frozen_sha256": "58bb9281407468ce152695c1d1f08f1e63c1d216c2df0d5aa61e8e888bf2551d",
+  "frozen_files_verified": 17,
+  "patch_sha256": "33fe1ec54f641dd8de8991a70d80b125c1bf10ae89f5a5331b55bea2cb2e5440",
+  "files": [
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+      "before_blob": "f3709ec60401cb7937b58114eb19ea4134120ff5",
+      "after_blob": "b872fa11846809f280b850e86d5e945c1fd37a30",
+      "before_sha256": "174227f79a359acd082f96bfa8d0d3a1ee3897b5550b767bbe0597862ec11d45",
+      "after_sha256": "9cf3022f04d7be3c65962d10cc43a0ac78ac4e747efa2589ac0ed3d27373e90b",
+      "before_bytes": 11736,
+      "after_bytes": 12025,
+      "full_inverse_reconstructs_before": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_compaction_v3_tests.rs",
+      "before_blob": "daff7df091238caf0d06312c521df30cdf98bafe",
+      "after_blob": "813e9b5dc05222e12cb231243893d5eb6460d886",
+      "before_sha256": "03bdb1a9284ec42f5ffe00c2e87894a72f02d456540b9e8e301f6cabd27489c3",
+      "after_sha256": "1fc96294cc21349ae268f9cc5d147d0843b4c84e14bf10fd0502250be3c3487c",
+      "before_bytes": 5069,
+      "after_bytes": 5166,
+      "full_inverse_reconstructs_before": true
+    }
+  ],
+  "error_types_exact_sources": [
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2.rs",
+      "git_blob": "8a1deefc50ba1f058aaf1f868f8db88193ada682",
+      "sha256": "4efaf9806a26da4816ba88c1f3590c12053515b9297a521833f34d593b6126a4",
+      "local_path": "/workspace/scratch/c2d514464ab5/branch-audit/windows-runtime-review2b/source/codex-rs/hepta-infer-core/src/native_prepared_input_v2.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+      "git_blob": "66058b1353ddc5f38299f0d59017c120ea29fb30",
+      "sha256": "9ebcdab49960c0ab7a05c6dbe5bad2c1c4faf7f73cd0d07f4b9be66f65a6c5e4",
+      "local_path": "/workspace/scratch/c2d514464ab5/branch-audit/windows-runtime-review2b/source/codex-rs/hepta-infer-core/src/durable_control.rs"
+    }
+  ],
+  "inverse_apply_exit": 0,
+  "both_original_files_reconstructed": true,
+  "original_tests": [
+    "v2_input_survives_reopen_exact_retry_and_all_later_events",
+    "v2_payload_mutations_fail_before_reservation_or_io",
+    "v2_malformed_input_and_missing_snapshot_fields_are_rejected",
+    "v2_replay_rejects_replaced_input_without_repairing_bytes",
+    "v2_never_upgrades_digest_only_history_from_ambient_input",
+    "v1_run_id_only_input_cannot_be_reinterpreted_as_v3",
+    "v2_prepared_input_crash_child",
+    "v2_process_loss_retains_original_input_and_uncertain_slot",
+    "checkpoint_retains_complete_v3_input_authority_loss_and_uncertain_dispatch",
+    "checkpoint_v3_rejects_changed_snapshot_and_wrong_version_without_repair",
+    "legacy_checkpoint_without_prepared_input_remains_digest_only"
+  ],
+  "input_calls": 21,
+  "prepared_request_calls": 13,
+  "assertions": {
+    "total": 45,
+    "literal_identical": 34,
+    "fixture_question_mark_only": 11,
+    "each_literal_verified_at_source_line": true
+  },
+  "semantic_findings": [
+    "input() propagates std::path::absolute failure; prepared_request() propagates fixture and payload-digest errors. Both source error types implement std::error::Error.",
+    "All eight parent tests and three real compaction child tests return Result; all actual helper calls propagate failure.",
+    "Original no-child-environment success remains return Ok(()); real child success still uses the original process::exit(0) only after successful fixture setup and dispatch.",
+    "Exact child selector, environment name, relative-path rejection and conflicting socket filename remain intact.",
+    "Compaction original owned-handle read helper is byte-identical; original corruption, replay, physical-byte and uncertainty assertions remain."
+  ],
+  "scope_correction": "Earlier source2 review did not execute Clippy and missed that its new expect was in an ordinary helper outside the original allow-expect-in-tests scope. This additive follow-on addresses the static risk plus the existing prepared_request helper unwrap, without rewriting prior frozen evidence or uploaded objects. No new-head observed Clippy failure is claimed.",
+  "limitations": [
+    "Actual Rust compiler, Clippy, Rustfmt and native/Windows tests NOT_RUN."
+  ],
+  "remote_writes": 0,
+  "new_dependencies_or_lint_policy_changes": 0
+}

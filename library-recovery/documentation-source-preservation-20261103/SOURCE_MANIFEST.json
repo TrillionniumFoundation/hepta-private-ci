@@ -1,0 +1,319 @@
+{
+  "schema": "documentation-source-preservation-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private_at_publication": false,
+  "parent_commit": "628111953952d31504d7f2edb5b06c781da6fbd9",
+  "branch": "archive/library-small-source-20261103-gpt6",
+  "candidate_count": 6,
+  "candidate_bytes": 85770,
+  "frozen_candidate_union_size": 6116,
+  "original_candidate_sets_unchanged": true,
+  "preserved_source_executed": false,
+  "patches_applied": false,
+  "scientific_or_runtime_acceptance": false,
+  "original_archive_and_history_completeness_proven": false,
+  "all_library_source_synced": false,
+  "eligible_to_clear_library": false,
+  "library_deletion_performed": false,
+  "boundaries": [
+    "DRAFT",
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "HOLD_NO_GO"
+  ],
+  "candidates": [
+    {
+      "git_blob_sha": "57621d5910d946e23e0a1c46b6793371c2724015",
+      "sha256": "ecc6d2522443294ab0064be9ee797ccf53641d5cdd883a3c92a7d947ca252dde",
+      "bytes": 24697,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HEPTA-Rust-UI-文档审查与未发布补丁-2026-10-06.zip",
+          "member": "rust-ui-documentation.patch",
+          "archive_chain": []
+        }
+      ],
+      "role": "unapplied historical documentation patch; not a runtime implementation fix",
+      "patch_targets": [
+        "b/apps/hepta-control-ui/README.md",
+        "b/apps/hepta-control-ui/RUST_ARCHITECTURE.md",
+        "b/apps/hepta-control-ui/rust/robrix-ui/README.md",
+        "b/docs/modules/ui.control/TECHNICAL.md",
+        "b/docs/modules/ui.native/TECHNICAL.md"
+      ],
+      "attribution_basis": "Inspected patch targets and Hepta owner/module interfaces belong to the existing hepta-private-ci source tree. Original archive provenance and previously preserved source peers are retained where available; no patch was applied and no current acceptance claim follows.",
+      "remote_blob_payload_verified_before_publication": false,
+      "reuse_existing_blob": false,
+      "immutable_project_path_context": {
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "path": "apps/hepta-control-ui/README.md",
+        "git_blob_sha": "4e77ea3d44edc6cffd1474b9ae7ee6c34cd5f99c",
+        "sha256": "c91c553ff7389f3038af3200385b3e3e6f306e6aa03267898cdff8611a809ba4",
+        "bytes": 1086
+      },
+      "historical_source_reference_in_patch": {
+        "commit": "7cfd974786905ef1f4c5d0beae9c502d83e29c8b",
+        "tree": "d346231a4a06c45aa43e6dae138de61e0ace017f",
+        "independently_requalified": false
+      },
+      "original_retained_package": {
+        "name": "HEPTA-Rust-UI-文档审查与未发布补丁-2026-10-06.zip",
+        "bytes": 11282,
+        "sha256": "6fb3c81e8556818d80f3e01554ece56a7b9aee1080b008a407ba02b83dbd2c75",
+        "member": "rust-ui-documentation.patch",
+        "archive_chain": []
+      },
+      "relative_path": "objects/57621d5910d946e23e0a1c46b6793371c2724015.patch",
+      "historical_claims_independently_requalified": false,
+      "patch_applied": false,
+      "preserved_source_executed": false,
+      "original_archive_and_history_completeness_proven": false
+    },
+    {
+      "git_blob_sha": "5c892bb9b006f5d99ea21b9a50e228f90662b875",
+      "sha256": "e1e7455a8439f23c5e371b9efbe2a10b4568bf268b22e8a0df3339e12f98f705",
+      "bytes": 4510,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_occurrences": [
+        {
+          "file": "main-stabilization-checkpoint-review.zip",
+          "member": "frozen-convergence/memory-recovery-platform-doc/candidate.patch",
+          "archive_chain": []
+        }
+      ],
+      "role": "unapplied historical documentation patch; not a runtime implementation fix",
+      "patch_targets": [
+        "b/codex-rs/hepta-memory/LANE_C_SQLITE.md"
+      ],
+      "attribution_basis": "Inspected patch targets and Hepta owner/module interfaces belong to the existing hepta-private-ci source tree. Original archive provenance and previously preserved source peers are retained where available; no patch was applied and no current acceptance claim follows.",
+      "remote_blob_payload_verified_before_publication": false,
+      "reuse_existing_blob": false,
+      "source_recovery": {
+        "original_occurrence": {
+          "file": "main-stabilization-checkpoint-review.zip",
+          "member": "frozen-convergence/memory-recovery-platform-doc/candidate.patch",
+          "archive_chain": []
+        },
+        "original_package_sha256": "02dd97e443a8d86d5b940c710b1c76c3475f399a74e8acd51603c236b9765e8f",
+        "original_package_bytes": 29093121
+      },
+      "original_retained_package": {
+        "name": "main-stabilization-checkpoint-review.zip",
+        "bytes": 29093121,
+        "sha256": "02dd97e443a8d86d5b940c710b1c76c3475f399a74e8acd51603c236b9765e8f",
+        "member": "frozen-convergence/memory-recovery-platform-doc/candidate.patch",
+        "archive_chain": []
+      },
+      "relative_path": "objects/5c892bb9b006f5d99ea21b9a50e228f90662b875.patch",
+      "historical_claims_independently_requalified": false,
+      "patch_applied": false,
+      "preserved_source_executed": false,
+      "original_archive_and_history_completeness_proven": false
+    },
+    {
+      "git_blob_sha": "722c417f479685f79d0d1f6d139b100d257e18a1",
+      "sha256": "4927ebc16b62feed52f7d0c8ddce7fee8dfdc3f473703beb959a54b64c06dc5a",
+      "bytes": 2880,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_occurrences": [
+        {
+          "file": "authbus-bao-native-repairs-20261005-v6.zip",
+          "member": "time-docs/time-authority-status.patch",
+          "archive_chain": []
+        }
+      ],
+      "role": "unapplied historical documentation patch; not a runtime implementation fix",
+      "patch_targets": [
+        "b/docs/modules/auth.authbus/TIME_AUTHORITY.md"
+      ],
+      "attribution_basis": "Inspected patch targets and Hepta owner/module interfaces belong to the existing hepta-private-ci source tree. Original archive provenance and previously preserved source peers are retained where available; no patch was applied and no current acceptance claim follows.",
+      "remote_blob_payload_verified_before_publication": false,
+      "reuse_existing_blob": false,
+      "source_recovery": {
+        "original_occurrence": {
+          "file": "authbus-bao-native-repairs-20261005-v6.zip",
+          "member": "time-docs/time-authority-status.patch",
+          "archive_chain": []
+        },
+        "original_package_sha256": "bd2ef53b9b3f515a435c0db033ad8c59317d1fc39e97ccfbef92cb1b777645dd",
+        "original_package_bytes": 310644
+      },
+      "original_retained_package": {
+        "name": "authbus-bao-native-repairs-20261005-v6.zip",
+        "bytes": 310644,
+        "sha256": "bd2ef53b9b3f515a435c0db033ad8c59317d1fc39e97ccfbef92cb1b777645dd",
+        "member": "time-docs/time-authority-status.patch",
+        "archive_chain": []
+      },
+      "relative_path": "objects/722c417f479685f79d0d1f6d139b100d257e18a1.patch",
+      "historical_claims_independently_requalified": false,
+      "patch_applied": false,
+      "preserved_source_executed": false,
+      "original_archive_and_history_completeness_proven": false
+    },
+    {
+      "git_blob_sha": "805588fd945368e5cc3a11bb4265251f3afcce1f",
+      "sha256": "c73f1e3abb2befdf5a4a3b32db4b3b66fd95ff351e27c34b6fa8ffae747ffabc",
+      "bytes": 37638,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta-inference-control-digest-fix.patch",
+          "member": "hepta-inference-control-digest-fix.patch",
+          "archive_chain": []
+        },
+        {
+          "file": "hepta-local-evidence-20261023.zip",
+          "member": "hepta-inference-control-digest-fix.patch",
+          "archive_chain": []
+        }
+      ],
+      "role": "unapplied historical documentation patch; not a runtime implementation fix",
+      "patch_targets": [
+        "b/qualification/module-execution-dossiers/DETAILS.json"
+      ],
+      "attribution_basis": "Inspected patch targets and Hepta owner/module interfaces belong to the existing hepta-private-ci source tree. Original archive provenance and previously preserved source peers are retained where available; no patch was applied and no current acceptance claim follows.",
+      "remote_blob_payload_verified_before_publication": false,
+      "reuse_existing_blob": false,
+      "immutable_exact_preimage": {
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "path": "qualification/module-execution-dossiers/DETAILS.json",
+        "git_blob_sha": "972c39f0ed2cde8d5c78c391b33f4867496e1d06",
+        "sha256": "c5825f3095f6944207f3ec8bc2656a5aab81800bf327e4358a38994491746db3",
+        "bytes": 18491
+      },
+      "patch_scope": {
+        "changed_module": "inference.control",
+        "changed_field": "sha256",
+        "preimage": {
+          "git_blob_sha": "972c39f0ed2cde8d5c78c391b33f4867496e1d06",
+          "sha256": "c5825f3095f6944207f3ec8bc2656a5aab81800bf327e4358a38994491746db3",
+          "bytes": 18491
+        },
+        "postimage": {
+          "git_blob_sha": "8e934452a42aac7420455414a4eccc5634826554",
+          "sha256": "965ace4370eabdefaf26df709c7ddae503c49e912c1a4dce136fc21987eb4b7a",
+          "bytes": 18491
+        },
+        "patch_applied": false
+      },
+      "original_retained_package": {
+        "name": "hepta-local-evidence-20261023.zip",
+        "bytes": 19128,
+        "sha256": "1844d49da3134e34cd106d416f26c41c00643ce676198c3f4326602eb233a658",
+        "member": "hepta-inference-control-digest-fix.patch",
+        "archive_chain": []
+      },
+      "relative_path": "objects/805588fd945368e5cc3a11bb4265251f3afcce1f.patch",
+      "historical_claims_independently_requalified": false,
+      "patch_applied": false,
+      "preserved_source_executed": false,
+      "original_archive_and_history_completeness_proven": false
+    },
+    {
+      "git_blob_sha": "842696ae2eba3e26edc56b603a9d03ba177cedc7",
+      "sha256": "adf8a7fdaa859fa451f5aba8b17ed00674ceb1054db6ee5459d6e41e2cabe620",
+      "bytes": 3399,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_occurrences": [
+        {
+          "file": "authbus-bao-native-repairs-20261005-v6.zip",
+          "member": "time-docs/0008-time-authority-status.patch",
+          "archive_chain": []
+        }
+      ],
+      "role": "unapplied historical documentation patch; not a runtime implementation fix",
+      "patch_targets": [
+        "b/docs/modules/auth.authbus/TIME_AUTHORITY.md"
+      ],
+      "attribution_basis": "Inspected patch targets and Hepta owner/module interfaces belong to the existing hepta-private-ci source tree. Original archive provenance and previously preserved source peers are retained where available; no patch was applied and no current acceptance claim follows.",
+      "remote_blob_payload_verified_before_publication": false,
+      "reuse_existing_blob": false,
+      "source_recovery": {
+        "original_occurrence": {
+          "file": "authbus-bao-native-repairs-20261005-v6.zip",
+          "member": "time-docs/0008-time-authority-status.patch",
+          "archive_chain": []
+        },
+        "original_package_sha256": "bd2ef53b9b3f515a435c0db033ad8c59317d1fc39e97ccfbef92cb1b777645dd",
+        "original_package_bytes": 310644
+      },
+      "original_retained_package": {
+        "name": "authbus-bao-native-repairs-20261005-v6.zip",
+        "bytes": 310644,
+        "sha256": "bd2ef53b9b3f515a435c0db033ad8c59317d1fc39e97ccfbef92cb1b777645dd",
+        "member": "time-docs/0008-time-authority-status.patch",
+        "archive_chain": []
+      },
+      "relative_path": "objects/842696ae2eba3e26edc56b603a9d03ba177cedc7.patch",
+      "historical_claims_independently_requalified": false,
+      "patch_applied": false,
+      "preserved_source_executed": false,
+      "original_archive_and_history_completeness_proven": false
+    },
+    {
+      "git_blob_sha": "c4363e25e8a5e0fc6d718699d946f7ebf7d93c8f",
+      "sha256": "59624eb9481912606655f3778eec45e8a2da7519c77d07c81cf9b15f9bde954d",
+      "bytes": 12646,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_occurrences": [
+        {
+          "file": "TaskFlow-reconstructed-repairs-dfac7171-20261005.zip",
+          "member": "taskflow-docs-reconstructed.patch",
+          "archive_chain": []
+        }
+      ],
+      "role": "unapplied historical documentation patch; not a runtime implementation fix",
+      "patch_targets": [
+        "b/qualification/module-execution-dossiers/detail/automation.taskflow.md",
+        "b/docs/modules/automation.taskflow/TECHNICAL.md"
+      ],
+      "attribution_basis": "Inspected patch targets and Hepta owner/module interfaces belong to the existing hepta-private-ci source tree. Original archive provenance and previously preserved source peers are retained where available; no patch was applied and no current acceptance claim follows.",
+      "remote_blob_payload_verified_before_publication": false,
+      "reuse_existing_blob": false,
+      "source_recovery": {
+        "original_occurrence": {
+          "file": "TaskFlow-reconstructed-repairs-dfac7171-20261005.zip",
+          "member": "taskflow-docs-reconstructed.patch",
+          "archive_chain": []
+        },
+        "original_package_sha256": "eb41892e83a7c0875009a438cbfc82655ca93d361781fce55c1f6a804b163a8d",
+        "original_package_bytes": 193661
+      },
+      "original_retained_package": {
+        "name": "TaskFlow-reconstructed-repairs-dfac7171-20261005.zip",
+        "bytes": 193661,
+        "sha256": "eb41892e83a7c0875009a438cbfc82655ca93d361781fce55c1f6a804b163a8d",
+        "member": "taskflow-docs-reconstructed.patch",
+        "archive_chain": []
+      },
+      "relative_path": "objects/c4363e25e8a5e0fc6d718699d946f7ebf7d93c8f.patch",
+      "historical_claims_independently_requalified": false,
+      "patch_applied": false,
+      "preserved_source_executed": false,
+      "original_archive_and_history_completeness_proven": false
+    }
+  ],
+  "notices": []
+}

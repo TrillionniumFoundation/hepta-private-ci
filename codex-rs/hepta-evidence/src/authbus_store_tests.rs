@@ -15,7 +15,7 @@ fn fixture(sequence: u64) -> (IssuerRegistration, SignedMessage) {
     let issuer = IssuerRegistration {
         issuer_id: StableId::new("issuer:durable").unwrap(),
         key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
         revoked: false,
     };
     let claims = SignedMessageClaims {
@@ -29,7 +29,13 @@ fn fixture(sequence: u64) -> (IssuerRegistration, SignedMessage) {
         expires_at_ms: u64::MAX,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    (issuer, SignedMessage { claims, signature })
+    (
+        issuer,
+        SignedMessage {
+            claims,
+            signature: signature.into(),
+        },
+    )
 }
 
 fn config(temp: &TempDir) -> SqliteConfig {

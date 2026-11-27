@@ -1,0 +1,12 @@
+{
+  "exit_code": 1,
+  "action": "Saved-array CSV publication, no model/measurement call",
+  "error": "row/source 2D NumPy axis reduction differed by 2.886579864025407e-15; artificial 2e-15 serialization cross-check was too strict",
+  "outputs_retained": [
+    "paired-row.csv.partial-v1",
+    "paired-source.csv.partial-v1"
+  ],
+  "tool_wall_seconds": 0.650301427,
+  "process_cpu": "not directly metered before exception",
+  "repair": "Use math.fsum for publication aggregate cross-check; same saved arrays, CSV values and scientific results, no change to frozen experiment/analyzer/budget."
+}

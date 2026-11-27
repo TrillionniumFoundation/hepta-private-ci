@@ -1,0 +1,79 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "/workspace/scratch/ff772bc098e2/remaining_history_audit/checkout/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/objective_decomposition.py",
+        "--input-directory",
+        "/workspace/scratch/ff772bc098e2/remaining_history_audit/v3-inputs",
+        "--manifest",
+        "/workspace/scratch/ff772bc098e2/remaining_history_audit/checkout/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/source_manifest.json",
+        "--output",
+        "/workspace/scratch/ff772bc098e2/remaining_history_audit/v3-reproduction/objective-decomposition.json",
+        "--markdown",
+        "/workspace/scratch/ff772bc098e2/remaining_history_audit/v3-reproduction/objective-decomposition.md"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "/workspace/scratch/ff772bc098e2/remaining_history_audit/checkout/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/independent_cost_audit.py",
+        "--inputs",
+        "/workspace/scratch/ff772bc098e2/remaining_history_audit/v3-inputs",
+        "--binding",
+        "/workspace/scratch/ff772bc098e2/remaining_history_audit/checkout/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/independent-source-binding.json",
+        "--analysis",
+        "/workspace/scratch/ff772bc098e2/remaining_history_audit/v3-reproduction/objective-decomposition.json",
+        "--output",
+        "/workspace/scratch/ff772bc098e2/remaining_history_audit/v3-reproduction/independent-cost-audit.json"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "objective-decomposition.json",
+      "bytes": 144457,
+      "sha256": "cc1d2365a3ae627620cacbbd93c46afe9580ea42ca8f5d72ee73e0214d55b5b6",
+      "byte_identical_to_original": true
+    },
+    {
+      "path": "objective-decomposition.md",
+      "bytes": 2473,
+      "sha256": "9dba31914151735bde6e3555b0ebfdcac415e2e25aef6ca72c6ab19a3c4e2118",
+      "byte_identical_to_original": true
+    },
+    {
+      "path": "independent-cost-audit.json",
+      "bytes": 52552,
+      "sha256": "c5e2f0376f286c066601f4da49a47770f2c10b21e92b8427ad71f37e804c58b6",
+      "byte_identical_to_original": true
+    }
+  ],
+  "analysis_checks": {
+    "actual_score_sets": 342,
+    "anchors": 18,
+    "direct_h1_full_loss2_equal": 18,
+    "maximum_absolute_errors": {
+      "actual_direct_sum": 0.0,
+      "actual_tracking_sum": 0.0,
+      "contrast_sum": 0.0,
+      "effort_from_physical_norm_squared": 3.3881317890172014e-21,
+      "predicted_direct_sum": 0.0,
+      "predicted_tracking_sum": 0.0
+    },
+    "predicted_score_sets": 684,
+    "registered_conditions_checked": 342
+  },
+  "independent_checks": {
+    "candidate_score_records_checked": 342,
+    "scalar_equalities_checked": 1926,
+    "maximum_absolute_arithmetic_discrepancy": 2.220446049250313e-16
+  },
+  "input_blob_identities_verified": 20,
+  "historical_supporting_file_identities_verified": 8,
+  "native_rust_or_scientific_qualification_claimed": false
+}

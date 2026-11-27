@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.ordered-artifact-parts.v1",
+  "archive_name": "full.json",
+  "archive_bytes": 830338,
+  "archive_sha256": "65e999fa43c100b43a0b92b481c3d39ef5575ab1640c7b4cdd09dc1d72ade9a6",
+  "original_repository_path": "qualification/hcsn/evidence/cloud-20261105/attempt-safe/full.json",
+  "original_git_commit": "3a75a9675cf9a078a67d87036627ce9b002bd518",
+  "original_git_blob": "0164135b1150a09cd0ad5aaf5caef42335d24b41",
+  "max_part_bytes": 500000,
+  "ordered_parts": [
+    {
+      "path": "full.json.part000",
+      "offset": 0,
+      "bytes": 499992,
+      "sha256": "50e498a259b7483e593268ced632929df4752537d83289715170251b24334f47"
+    },
+    {
+      "path": "full.json.part001",
+      "offset": 499992,
+      "bytes": 330346,
+      "sha256": "b505935de8fb9f98de49bf725dd0399811b797e582cee2403f4d93539edbc67f"
+    }
+  ],
+  "restoration": {
+    "working_directory": "qualification/hcsn/evidence/cloud-20261105/attempt-safe",
+    "command": "( set -C; cat full.json.part000 full.json.part001 > full.json )",
+    "verification_command": "printf '%s  %s\\n' '65e999fa43c100b43a0b92b481c3d39ef5575ab1640c7b4cdd09dc1d72ade9a6' 'full.json' | sha256sum -c -",
+    "no_overwrite": true,
+    "instructions": "FULL-RECEIPT-STORAGE.md"
+  },
+  "storage_only": true,
+  "original_bytes_unchanged": true,
+  "format": "uncompressed original JSON; byte parts are not individually JSON documents",
+  "scientific_or_runtime_qualification": false
+}

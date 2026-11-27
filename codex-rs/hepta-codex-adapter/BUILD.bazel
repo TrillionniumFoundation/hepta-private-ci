@@ -1,4 +1,5 @@
 load("//:defs.bzl", "codex_rust_crate")
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
 
 codex_rust_crate(
     name = "hepta-codex-adapter",
@@ -6,4 +7,11 @@ codex_rust_crate(
     unit_test_dependency_replacements = {
         "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
     },
+    # The HMI socket regressions have bounded connect/request/cleanup deadlines.
+    unit_test_timeout = "short",
+)
+
+qualification_lease_clock_library(
+    name = "hepta-codex-adapter",
+    crate_name = "codex_hepta_codex_adapter",
 )

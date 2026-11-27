@@ -1,0 +1,44 @@
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
+@@ -22,9 +22,8 @@
+     BFixture,
+     crate::OriginalCellEvaluationPanelRegistrationV1,
+ )> {
+-    let preview = support::admission("original-B-profile-preview").await?;
++    let preview = support::admission("positive-source-envelope-request").await?;
+     let objective = support::source(&preview, [Q, Q / 4])?.objective_digest;
+-    drop(preview);
+     let at = now()?;
+     let primary = BFixture::new("original-B", objective, at)?;
+     let retention = BFixture::new("original-retention", objective, at)?;
+@@ -33,7 +32,7 @@
+         vec![retention.task()?],
+     )?;
+     let original =
+-        PositiveFixture::ready_with_profile(registration.evaluation_profile(), at).await?;
++        PositiveFixture::ready_with_admission(registration.evaluation_profile(), at, preview).await?;
+     assert_eq!(
+         original.config.decision.request.envelope.objective_digest,
+         objective
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
+@@ -143,10 +143,18 @@
+         evaluation_profile: Digest32,
+         trust_time: u64,
+     ) -> anyhow::Result<Self> {
++        let admission = support::admission("positive-source-envelope-request").await?;
++        Self::ready_with_admission(evaluation_profile, trust_time, admission).await
++    }
++
++    async fn ready_with_admission(
++        evaluation_profile: Digest32,
++        trust_time: u64,
++        mut a: support::Admission,
++    ) -> anyhow::Result<Self> {
+         let directory = tempfile::tempdir()?;
+         let root = directory.path().canonicalize()?;
+         let (baseline, bundle, definition_a) = support::model(&root)?;
+-        let mut a = support::admission("positive-source-envelope-request").await?;
+         let preview = support::source(&a, [Q, Q / 4])?;
+         let (mut writer, credentials) = material::ledger_at(
+             &root,

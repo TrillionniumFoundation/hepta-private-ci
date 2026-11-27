@@ -1,0 +1,97 @@
+{
+  "status": "PASS_SCOPE_AND_EVIDENCE_BINDING",
+  "parent": "342b284c1514da3d3d8b6451b6bd3fb6edfc783a",
+  "native_base": "a91102d3639a5a1f02394bfc0331611e9ab101a1",
+  "reviewed_source_files": [
+    {
+      "path": "codex-rs/core/tests/suite/code_mode.rs",
+      "base_blob": "3c1cb751a1700bbe1a1d9b63ccfcc1a479d55817",
+      "final_blob": "e6e7e893352ebb2a51bb37a58ed8c455185af255",
+      "final_sha256": "cbe0e322b9a6b3a3a804d1f1810adb9e5baa5c3afe1ebb14b4cc650b8e09cd84",
+      "bytes": 220754
+    },
+    {
+      "path": "codex-rs/core/tests/suite/network_approval.rs",
+      "base_blob": "6abf7adb41876d4895b20c00892192ff4307bb20",
+      "final_blob": "d192f004b068b7c89a3f9393d2b6e0dba1685e4c",
+      "final_sha256": "cfd9384fc9119d72db531bc6a4e487ecf6439772294266c04cc1ff16c35ed4ab",
+      "bytes": 109722
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "base_blob": "46a9d65b3e5e5f30c0ce93057993cf56860a45ce",
+      "final_blob": "6c4cea8b9aa222cedb38b1f49ac9a8e920baa575",
+      "final_sha256": "12d1ac4a43b9c36a4c9dceb97473de7dd82bedb429ac4151353f54439c69482f",
+      "bytes": 4570
+    }
+  ],
+  "source_files_match_native_archive_postimages": true,
+  "native_base_original_blobs_equal_parent": true,
+  "tracked_changes_exactly_three_reviewed_files": true,
+  "archive_verification": [
+    {
+      "archive": "core-originals.tar.gz",
+      "sha256": "a5259bb3a3139a42de2480ddc33e4d0b7b5b4f13484a71b81614b9e996938265",
+      "bytes": 318868,
+      "files": 63,
+      "all_member_sizes_and_hashes_pass": true
+    },
+    {
+      "archive": "pty-originals.tar.gz",
+      "sha256": "ceb7abf5d3abf50a7fc67cc21e0b989a67d7cd2c378e205c044fb2c67280bdeb",
+      "bytes": 29117,
+      "files": 37,
+      "all_member_sizes_and_hashes_pass": true
+    }
+  ],
+  "core_multimodal": {
+    "same_16_case_names": true,
+    "before_each_registered": 2,
+    "after_each_registered": 1,
+    "function_body_and_following_code_byte_identical": true,
+    "only_attribute_order_changed": true,
+    "original_10_second_budget_and_bad_image_assertions_retained": true,
+    "qualified_cases": 16,
+    "retries": 0
+  },
+  "core_network": {
+    "production_changes": 0,
+    "request_routes_use_existing_identity_matchers": true,
+    "original_call_id_command_and_trigger_equality_retained": true,
+    "three_requests_required": true,
+    "two_timing_cases": "Immediate and controlled release after original parent sees initial yield",
+    "completion_released_only_after_original_ExecCommandEnd": true,
+    "unexpected_approval_or_TurnComplete_fails": true,
+    "total_budget_seconds": 10,
+    "red_expected_exit": 100,
+    "green_qualified_cases": 2,
+    "retries": 0,
+    "final_formatter_only_differences_reviewed": true
+  },
+  "pty": {
+    "source_lines_added": 5,
+    "source_lines_removed": 0,
+    "continue_draining_until_existing_eof_or_error": true,
+    "existing_tests_unchanged": true,
+    "native_baseline_passed": 30,
+    "native_modified_passed": 30,
+    "platform": "Darwin ARM64/macOS 26.6.2",
+    "intel_qualification": "NOT_ESTABLISHED"
+  },
+  "maintenance": {
+    "core_fix_and_fmt_success": true,
+    "pty_fmt_success": true,
+    "tests_not_repeated_by_independent_review": true
+  },
+  "ancestry_scope": {
+    "reviewed_patch_attaches_no_268_commit_pty_branch_parent": true,
+    "no_core_production_or_caller_allowlist_changes": true,
+    "no_remote_writes_by_review": true
+  },
+  "remaining_limit": "Component qualifications only; combined candidate still requires exact-head hosted CI. Original Mac Intel structured-input is retry-recovered FLAKY, with root cause not yet established.",
+  "core_inner_manifest": {
+    "indexed_members": 62,
+    "regular_files_including_manifest": 63,
+    "complete_member_set_and_all_hashes_verified": true
+  }
+}

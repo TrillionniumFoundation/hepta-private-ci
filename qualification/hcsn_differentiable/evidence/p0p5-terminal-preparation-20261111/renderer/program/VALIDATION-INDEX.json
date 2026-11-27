@@ -1,0 +1,51 @@
+{
+  "schema": "renderer-v3-preparation-validation-index",
+  "owner_validation": [
+    {
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-renderer-v3-validation-attempt-01",
+      "RESULT": {
+        "bytes": 3677,
+        "sha256": "2090f7605d7ae5a1c4b69e2b021e6e5ae6c7c6135146a27076cf379a09a4d3cc"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 920,
+        "sha256": "d1241fbae8cfd3ff744edcba522ff7ddf9336d28e1cff9abf5bf321cc699ec82"
+      },
+      "complete_child_wall_seconds": 0.17727379000007204,
+      "complete_wait4_child_CPU_seconds": 0.16031199999999998,
+      "complete_wait4_peak_RSS_bytes": 15507456,
+      "scope": "Six native-only synthetic JSON tests with nine rejection variants and two positive cases; full renderer/archive pipeline not exercised.",
+      "source_unchanged": true,
+      "returncode": 0
+    },
+    {
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-renderer-v3-validation-attempt-02",
+      "RESULT": {
+        "bytes": 3670,
+        "sha256": "d4b4f9f5b621babd58979ebefba1d7fd649dcc74cbfdd5d9228487fe9226ee80"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 1198,
+        "sha256": "67ed1612725448425329b54907c4578f05450068ec0839f48236c49079edb58c"
+      },
+      "complete_child_wall_seconds": 0.48457767099989724,
+      "complete_wait4_child_CPU_seconds": 0.414062,
+      "complete_wait4_peak_RSS_bytes": 15507456,
+      "scope": "Eight native-only synthetic JSON tests with twelve rejection variants and two positive cases; full renderer/archive pipeline not exercised.",
+      "source_unchanged": true,
+      "returncode": 0
+    }
+  ],
+  "all_execution_is_synthetic_metadata": true,
+  "actual_render": false,
+  "owner_test_suite_whole_renderer_positive": false,
+  "cost_scope": "Two disjoint test children. Preparation/compile/packaging and independent review are separate accounts; no whole-project cost completeness claim."
+}

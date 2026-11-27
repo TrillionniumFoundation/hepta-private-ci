@@ -1,0 +1,119 @@
+{
+  "schema": "hepta-bootstrap-red-green-qualified-evidence-v1",
+  "archive": {
+    "file": "bootstrap-red-green-and-scoped-qualification.tar.xz",
+    "bytes": 655332,
+    "sha256": "ae60f6a71dda4a7334e5b92a13f1391f8cac30c8e0fc0f9dec52c79c7652c98a",
+    "payload_files": 225,
+    "payload_directories": 103,
+    "payload_file_bytes": 32593163,
+    "member_inventory_sha256": "59e22b8e4b2dc1d3030fab9e6532b67b5ea640c90988c153d7914f3a17b90e9f"
+  },
+  "source": {
+    "local_test_base": "3c21b62762ee7fb52baa772d2863f25147a0b4ea",
+    "published_head": "a47190bb84714cb1262fcd85ebb723081fdb0581",
+    "published_tree": "b4150dc0e76e216792a36b8478580dfed3270af2",
+    "pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3833",
+    "source_added_lines": 360,
+    "source_removed_lines": 0
+  },
+  "local_results": [
+    {
+      "stage": "baseline",
+      "exit": 100,
+      "unique_tests": 2,
+      "passed": 1,
+      "failed": 1,
+      "skipped": 285,
+      "retries_retained": 1
+    },
+    {
+      "stage": "green",
+      "exit": 0,
+      "unique_tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 285
+    },
+    {
+      "stage": "affected-crate",
+      "exit": 0,
+      "unique_tests": 280,
+      "passed": 280,
+      "failed": 0,
+      "skipped": 7
+    },
+    {
+      "stage": "final-fix",
+      "exit": 0,
+      "warnings": 19,
+      "source_changes": 0
+    },
+    {
+      "stage": "final-format",
+      "exit": 0,
+      "source_changes": 1,
+      "separate_explicit_discard_edit_recorded": true
+    }
+  ],
+  "raw_evidence": {
+    "new_regression_attempts": 7,
+    "new_regression_child_process_receipts": 14,
+    "raw_case_files": 137,
+    "raw_case_bytes": 10912534,
+    "all_five_original_directories_unchanged": true,
+    "original_atime_excluded": true,
+    "includes_failed_original_wal_and_shm": true
+  },
+  "qualification_boundaries": {
+    "pretrained_models_or_training": 0,
+    "local_tests_after_final_tools": 0,
+    "eight_research_full_closure": false,
+    "physical_power_loss_qualified": false,
+    "wal_only_necessity_proven": false,
+    "production_authority_qualified": false,
+    "warning_free_claim": false
+  },
+  "independent_ci_identity_only": {
+    "source_head": "a47190bb84714cb1262fcd85ebb723081fdb0581",
+    "source_tree": "b4150dc0e76e216792a36b8478580dfed3270af2",
+    "pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3833",
+    "ci_run_id": 40152367005,
+    "ci_job_id": 121046374239,
+    "ci_initial_snapshot_status": "in_progress",
+    "ci_initial_snapshot_conclusion": null,
+    "ci_execution_result_in_this_package": false
+  },
+  "verification_script": {
+    "file": "verify_bootstrap_evidence.py",
+    "sha256": "febc876b21c3b53d78f246081d2412410e1dfede650a7a7b81bff55556c56b80",
+    "command": "python verify_bootstrap_evidence.py manifest.json",
+    "opens_sqlite_or_executes_tests": false
+  },
+  "audits": [
+    {
+      "file": "baseline-byte-audit-001.json",
+      "sha256": "78ec22e4600dce4f739e67f464c602c4be39ba6e266aa8ba0a74ddde09837321"
+    },
+    {
+      "file": "final-mechanical-review-001.json",
+      "sha256": "d2b0722d4d49b7fa85ac93bd0a7a9b21631251d100148f147270cbe9df86a88d"
+    },
+    {
+      "file": "green-byte-audit-001.json",
+      "sha256": "c2b9dd4abb7144ac79ebcb7b8fddab09ad728a5a1ff42e39127cb63601f1bb8b"
+    },
+    {
+      "file": "scoped-byte-audit-001.json",
+      "sha256": "d8d258895964cccf59df90e7efffab9c022a6d2b7e98f27104ab07050a5a4e08"
+    },
+    {
+      "file": "source-transition-audit-001.json",
+      "sha256": "fb0a7aa852f499831350aa94678580060eeddf56e3f8706de74e3e86510845d8"
+    },
+    {
+      "file": "publication-identity-audit-001.json",
+      "sha256": "2d93d76f71f758ba08f0cd2a71eceae83eacbf8c12203f7deb1b5d68a7bee76d"
+    }
+  ]
+}

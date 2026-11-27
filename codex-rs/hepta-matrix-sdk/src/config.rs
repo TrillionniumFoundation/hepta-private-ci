@@ -1,9 +1,10 @@
-use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
 
 use codex_hepta_matrix_protocol::MatrixBindingV1;
+use codex_hepta_matrix_store::prepare_matrix_storage_directory;
+use codex_hepta_matrix_store::validate_matrix_database_paths;
 use codex_hepta_paths::HeptaAgentLayout;
 
 pub const MIN_SYNC_TIMELINE_LIMIT: u16 = 1;
@@ -57,13 +58,28 @@ impl MatrixSdkPaths {
         config: &MatrixSidecarConfig,
     ) -> Result<Self, MatrixSidecarConfigError> {
         config.validate(layout)?;
+        // This label is the existing durable store identity. Upgrades reopen it
+        // to retain encrypted keys and sessions instead of creating fresh stores.
         let root = layout.matrix_root().join("matrix-sdk-0.18");
         let state = root.join("state");
         let cache = root.join("cache");
         let session = root.join("session.json");
-        create_private_directory(&root)?;
-        create_private_directory(&state)?;
-        create_private_directory(&cache)?;
+        prepare_matrix_storage_directory(&root)
+            .map_err(|_| MatrixSidecarConfigError::Unavailable)?;
+        prepare_matrix_storage_directory(&state)
+            .map_err(|_| MatrixSidecarConfigError::Unavailable)?;
+        prepare_matrix_storage_directory(&cache)
+            .map_err(|_| MatrixSidecarConfigError::Unavailable)?;
+        // Match the databases opened by the pinned SDK's SQLite client.
+        for (directory, name) in [
+            (&state, "matrix-sdk-state.sqlite3"),
+            (&state, "matrix-sdk-crypto.sqlite3"),
+            (&cache, "matrix-sdk-event-cache.sqlite3"),
+            (&cache, "matrix-sdk-media.sqlite3"),
+        ] {
+            validate_matrix_database_paths(&directory.join(name))
+                .map_err(|_| MatrixSidecarConfigError::Unavailable)?;
+        }
         Ok(Self {
             root,
             state,
@@ -99,16 +115,4 @@ pub enum MatrixSidecarConfigError {
     WrongAgent,
     #[error("Matrix sidecar path is unavailable")]
     Unavailable,
-}
-
-fn create_private_directory(path: &Path) -> Result<(), MatrixSidecarConfigError> {
-    fs::create_dir_all(path).map_err(|_| MatrixSidecarConfigError::Unavailable)?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-
-        fs::set_permissions(path, fs::Permissions::from_mode(0o700))
-            .map_err(|_| MatrixSidecarConfigError::Unavailable)?;
-    }
-    Ok(())
 }

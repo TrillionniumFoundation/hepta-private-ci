@@ -1,0 +1,1334 @@
+{
+  "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+  "base": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "status": "ahead",
+  "ahead_by": 21,
+  "behind_by": 0,
+  "total_commits": 21,
+  "too_large": null,
+  "base_commit": {
+    "sha": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/a4a1b5eb6cb45fc1182564e6b81026a2a2acf609"
+  },
+  "merge_base_commit": {
+    "sha": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/a4a1b5eb6cb45fc1182564e6b81026a2a2acf609"
+  },
+  "files": [
+    {
+      "filename": ".gitattributes",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": ".github/blob-size-allowlist.txt",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 16,
+      "changes": 19,
+      "previous_filename": null
+    },
+    {
+      "filename": ".github/workflows/blob-size-policy.yml",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 1,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "CALLERS.toml",
+      "status": "modified",
+      "additions": 53,
+      "deletions": 33,
+      "changes": 86,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/BUILD.bazel",
+      "status": "modified",
+      "additions": 11,
+      "deletions": 4,
+      "changes": 15,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/Cargo.toml",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "status": "modified",
+      "additions": 7,
+      "deletions": 12,
+      "changes": 19,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "status": "modified",
+      "additions": 5,
+      "deletions": 6,
+      "changes": 11,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "status": "modified",
+      "additions": 13,
+      "deletions": 15,
+      "changes": 28,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "status": "modified",
+      "additions": 9,
+      "deletions": 9,
+      "changes": 18,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "status": "modified",
+      "additions": 7,
+      "deletions": 9,
+      "changes": 16,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 6,
+      "changes": 9,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_attestations.rs",
+      "status": "modified",
+      "additions": 9,
+      "deletions": 13,
+      "changes": 22,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_binding.rs",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 6,
+      "changes": 9,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 3,
+      "changes": 7,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 3,
+      "changes": 7,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+      "status": "modified",
+      "additions": 22,
+      "deletions": 4,
+      "changes": 26,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "status": "modified",
+      "additions": 6,
+      "deletions": 5,
+      "changes": 11,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "status": "modified",
+      "additions": 9,
+      "deletions": 5,
+      "changes": 14,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 2,
+      "changes": 5,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_resident_lane.rs",
+      "status": "added",
+      "additions": 87,
+      "deletions": 0,
+      "changes": 87,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_resident_lane_tests.rs",
+      "status": "added",
+      "additions": 109,
+      "deletions": 0,
+      "changes": 109,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "status": "modified",
+      "additions": 44,
+      "deletions": 4,
+      "changes": 48,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_current_positive_tests.rs",
+      "status": "added",
+      "additions": 135,
+      "deletions": 0,
+      "changes": 135,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_current_read_tests.rs",
+      "status": "added",
+      "additions": 102,
+      "deletions": 0,
+      "changes": 102,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 0,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "status": "modified",
+      "additions": 145,
+      "deletions": 119,
+      "changes": 264,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+      "status": "modified",
+      "additions": 28,
+      "deletions": 0,
+      "changes": 28,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 1,
+      "changes": 5,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "status": "modified",
+      "additions": 31,
+      "deletions": 5,
+      "changes": 36,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "status": "modified",
+      "additions": 42,
+      "deletions": 1,
+      "changes": 43,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_feature_current_read.rs",
+      "status": "modified",
+      "additions": 9,
+      "deletions": 8,
+      "changes": 17,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_feature_current_read_support_tests.rs",
+      "status": "modified",
+      "additions": 14,
+      "deletions": 11,
+      "changes": 25,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 0,
+      "changes": 3,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "status": "modified",
+      "additions": 59,
+      "deletions": 0,
+      "changes": 59,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "status": "modified",
+      "additions": 79,
+      "deletions": 31,
+      "changes": 110,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "status": "modified",
+      "additions": 8,
+      "deletions": 0,
+      "changes": 8,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "status": "modified",
+      "additions": 15,
+      "deletions": 0,
+      "changes": 15,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "status": "modified",
+      "additions": 155,
+      "deletions": 15,
+      "changes": 170,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "status": "modified",
+      "additions": 17,
+      "deletions": 15,
+      "changes": 32,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "status": "modified",
+      "additions": 5,
+      "deletions": 3,
+      "changes": 8,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "status": "modified",
+      "additions": 16,
+      "deletions": 11,
+      "changes": 27,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "status": "modified",
+      "additions": 19,
+      "deletions": 0,
+      "changes": 19,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 2,
+      "changes": 5,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs",
+      "status": "added",
+      "additions": 135,
+      "deletions": 0,
+      "changes": 135,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/learning_iteration_evidence_tests.rs",
+      "status": "modified",
+      "additions": 14,
+      "deletions": 2,
+      "changes": 16,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "status": "modified",
+      "additions": 42,
+      "deletions": 43,
+      "changes": 85,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_diagnostics_tests.rs",
+      "status": "added",
+      "additions": 128,
+      "deletions": 0,
+      "changes": 128,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+      "status": "modified",
+      "additions": 16,
+      "deletions": 1,
+      "changes": 17,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs",
+      "status": "modified",
+      "additions": 24,
+      "deletions": 0,
+      "changes": 24,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "status": "modified",
+      "additions": 99,
+      "deletions": 0,
+      "changes": 99,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+      "status": "modified",
+      "additions": 13,
+      "deletions": 0,
+      "changes": 13,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs",
+      "status": "modified",
+      "additions": 20,
+      "deletions": 14,
+      "changes": 34,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_episode_credit_tests.rs",
+      "status": "modified",
+      "additions": 13,
+      "deletions": 12,
+      "changes": 25,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_episode_test_support.rs",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 6,
+      "changes": 9,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_episode_tests.rs",
+      "status": "modified",
+      "additions": 14,
+      "deletions": 12,
+      "changes": 26,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs",
+      "status": "modified",
+      "additions": 41,
+      "deletions": 18,
+      "changes": 59,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "status": "modified",
+      "additions": 38,
+      "deletions": 0,
+      "changes": 38,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "status": "modified",
+      "additions": 8,
+      "deletions": 0,
+      "changes": 8,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_tests.rs",
+      "status": "modified",
+      "additions": 26,
+      "deletions": 4,
+      "changes": 30,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_update_test_artifacts.rs",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "status": "modified",
+      "additions": 23,
+      "deletions": 2,
+      "changes": 25,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-intelligence/BUILD.bazel",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-intelligence/Cargo.toml",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "status": "modified",
+      "additions": 15,
+      "deletions": 1,
+      "changes": 16,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/BUILD.bazel",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/Cargo.toml",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 0,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/cell_feature_current_journal_tests.rs",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 2,
+      "changes": 5,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 0,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/cell_generation_qualification.rs",
+      "status": "added",
+      "additions": 39,
+      "deletions": 0,
+      "changes": 39,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs",
+      "status": "added",
+      "additions": 129,
+      "deletions": 0,
+      "changes": 129,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 0,
+      "changes": 3,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+      "status": "modified",
+      "additions": 7,
+      "deletions": 0,
+      "changes": 7,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 0,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/lib.rs",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/qualification_file.rs",
+      "status": "added",
+      "additions": 55,
+      "deletions": 0,
+      "changes": 55,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/runtime_types.rs",
+      "status": "modified",
+      "additions": 10,
+      "deletions": 0,
+      "changes": 10,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/witness.rs",
+      "status": "modified",
+      "additions": 12,
+      "deletions": 0,
+      "changes": 12,
+      "previous_filename": null
+    },
+    {
+      "filename": "codex-rs/hepta-neuron/src/witness_qualification.rs",
+      "status": "added",
+      "additions": 31,
+      "deletions": 0,
+      "changes": 31,
+      "previous_filename": null
+    },
+    {
+      "filename": "defs.bzl",
+      "status": "modified",
+      "additions": 10,
+      "deletions": 1,
+      "changes": 11,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_evaluated_candidate_continuation_source_closure.py",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 3,
+      "changes": 6,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "status": "modified",
+      "additions": 5,
+      "deletions": 4,
+      "changes": 9,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_evaluated_retention_command_source_closure.py",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_evaluated_version_source_closure.py",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 3,
+      "changes": 7,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 4,
+      "changes": 5,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 3,
+      "changes": 6,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "status": "modified",
+      "additions": 5,
+      "deletions": 1,
+      "changes": 6,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "status": "modified",
+      "additions": 5,
+      "deletions": 5,
+      "changes": 10,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 3,
+      "changes": 6,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "status": "modified",
+      "additions": 5,
+      "deletions": 5,
+      "changes": 10,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_published_current_transaction_source_closure.py",
+      "status": "modified",
+      "additions": 44,
+      "deletions": 26,
+      "changes": 70,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "status": "modified",
+      "additions": 105,
+      "deletions": 10,
+      "changes": 115,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "status": "modified",
+      "additions": 6,
+      "deletions": 6,
+      "changes": 12,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 3,
+      "changes": 6,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/caller-closure-639f894/DIAGNOSTIC.original.json",
+      "status": "added",
+      "additions": 5398,
+      "deletions": 0,
+      "changes": 5398,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/caller-closure-639f894/PARTIAL_EVALUATOR_THREE.original.json",
+      "status": "added",
+      "additions": 95,
+      "deletions": 0,
+      "changes": 95,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/caller-closure-639f894/PARTIAL_FIRST_NINE.original.json",
+      "status": "added",
+      "additions": 342,
+      "deletions": 0,
+      "changes": 342,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/caller-closure-639f894/QA_EXPECTED_CHANGE_MANIFEST.json",
+      "status": "added",
+      "additions": 1134,
+      "deletions": 0,
+      "changes": 1134,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/caller-closure-639f894/REVIEW.md",
+      "status": "added",
+      "additions": 11,
+      "deletions": 0,
+      "changes": 11,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/caller-closure-639f894/ROOT_REVIEW.json",
+      "status": "added",
+      "additions": 533,
+      "deletions": 0,
+      "changes": 533,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/caller-closure-639f894/source-contract-620.original.log",
+      "status": "added",
+      "additions": 403,
+      "deletions": 0,
+      "changes": 403,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-094958b/CALLERS_094958b.patch",
+      "status": "added",
+      "additions": 108,
+      "deletions": 0,
+      "changes": 108,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-094958b/CALLERS_MANIFEST.json",
+      "status": "added",
+      "additions": 114,
+      "deletions": 0,
+      "changes": 114,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-094958b/REVIEW.json",
+      "status": "added",
+      "additions": 59,
+      "deletions": 0,
+      "changes": 59,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-094958b/RUST_QA_MANIFEST.json",
+      "status": "added",
+      "additions": 353,
+      "deletions": 0,
+      "changes": 353,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-a96-review/MANIFEST.json",
+      "status": "added",
+      "additions": 1028,
+      "deletions": 0,
+      "changes": 1028,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-a96-review/MERGE_DELTAS.json",
+      "status": "added",
+      "additions": 1028,
+      "deletions": 0,
+      "changes": 1028,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-a96-review/OVERLAY_LEAVES.json",
+      "status": "added",
+      "additions": 131,
+      "deletions": 0,
+      "changes": 131,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-a96-review/REVIEW.md",
+      "status": "added",
+      "additions": 40,
+      "deletions": 0,
+      "changes": 40,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-a96-review/STATIC_MARKER_CHECKS.json",
+      "status": "added",
+      "additions": 170,
+      "deletions": 0,
+      "changes": 170,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-b29869e/CALLERS.patch",
+      "status": "added",
+      "additions": 118,
+      "deletions": 0,
+      "changes": 118,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-b29869e/CALLERS_MANIFEST.json",
+      "status": "added",
+      "additions": 91,
+      "deletions": 0,
+      "changes": 91,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-b29869e/MERGE_REVIEW.json",
+      "status": "added",
+      "additions": 1010,
+      "deletions": 0,
+      "changes": 1010,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-b29869e/QA_SEMANTIC_FIX.patch",
+      "status": "added",
+      "additions": 34,
+      "deletions": 0,
+      "changes": 34,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-b29869e/README.md",
+      "status": "added",
+      "additions": 54,
+      "deletions": 0,
+      "changes": 54,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-b29869e/ROOT_REVIEW.json",
+      "status": "added",
+      "additions": 24,
+      "deletions": 0,
+      "changes": 24,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-cc22a69/ARCHIVE_PATH_MAPPING.json",
+      "status": "added",
+      "additions": 20,
+      "deletions": 0,
+      "changes": 20,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-cc22a69/REVIEW.md",
+      "status": "added",
+      "additions": 28,
+      "deletions": 0,
+      "changes": 28,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-cc22a69/ROOT_FAILURE_ARTIFACT_VERIFICATION.json",
+      "status": "added",
+      "additions": 192,
+      "deletions": 0,
+      "changes": 192,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/merge-cc22a69/ROOT_MERGE_REVIEW.json",
+      "status": "added",
+      "additions": 151,
+      "deletions": 0,
+      "changes": 151,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/RESULT.json",
+      "status": "added",
+      "additions": 20,
+      "deletions": 0,
+      "changes": 20,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-process-status.json",
+      "status": "added",
+      "additions": 37,
+      "deletions": 0,
+      "changes": 37,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-stderr.log",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-stdout.log",
+      "status": "added",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/request.json",
+      "status": "added",
+      "additions": 17,
+      "deletions": 0,
+      "changes": 17,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/runner-source.py.txt",
+      "status": "added",
+      "additions": 120,
+      "deletions": 0,
+      "changes": 120,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/MANIFEST.json",
+      "status": "added",
+      "additions": 269,
+      "deletions": 0,
+      "changes": 269,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/QA_CALLER_TUPLE_PATCH.json",
+      "status": "added",
+      "additions": 97,
+      "deletions": 0,
+      "changes": 97,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/RESULT.json",
+      "status": "added",
+      "additions": 234,
+      "deletions": 0,
+      "changes": 234,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/checkout.log",
+      "status": "added",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/clone.log",
+      "status": "added",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/fetch.log",
+      "status": "added",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-process-status.json",
+      "status": "added",
+      "additions": 37,
+      "deletions": 0,
+      "changes": 37,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-stderr.log",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-stdout.log",
+      "status": "added",
+      "additions": 3,
+      "deletions": 0,
+      "changes": 3,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.json",
+      "status": "added",
+      "additions": 56,
+      "deletions": 0,
+      "changes": 56,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.json.17980b1ecead46888a444bdefe7461de.log",
+      "status": "added",
+      "additions": 21,
+      "deletions": 0,
+      "changes": 21,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.runner.log",
+      "status": "added",
+      "additions": 22,
+      "deletions": 0,
+      "changes": 22,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/request.json",
+      "status": "added",
+      "additions": 17,
+      "deletions": 0,
+      "changes": 17,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/runner-source.py.txt",
+      "status": "added",
+      "additions": 74,
+      "deletions": 0,
+      "changes": 74,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-after.json",
+      "status": "added",
+      "additions": 9,
+      "deletions": 0,
+      "changes": 9,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-before.json",
+      "status": "added",
+      "additions": 9,
+      "deletions": 0,
+      "changes": 9,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-closure.json",
+      "status": "added",
+      "additions": 57,
+      "deletions": 0,
+      "changes": 57,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-closure.json.56308c689d864f00bdf925b09746249b.log",
+      "status": "added",
+      "additions": 719,
+      "deletions": 0,
+      "changes": 719,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-7efec4f/failure-and-fix.json",
+      "status": "added",
+      "additions": 45,
+      "deletions": 0,
+      "changes": 45,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/source-closure-7efec4f/source-closure.log",
+      "status": "added",
+      "additions": 406,
+      "deletions": 0,
+      "changes": 406,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.json",
+      "status": "added",
+      "additions": 355,
+      "deletions": 0,
+      "changes": 355,
+      "previous_filename": null
+    },
+    {
+      "filename": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.log",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "previous_filename": null
+    },
+    {
+      "filename": "scripts/hepta_c_observer_coverage.py",
+      "status": "modified",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "previous_filename": null
+    }
+  ]
+}

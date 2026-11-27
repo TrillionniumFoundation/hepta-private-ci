@@ -1,0 +1,67 @@
+{
+  "parent": "342b284c1514da3d3d8b6451b6bd3fb6edfc783a",
+  "native_component_base": "a91102d3639a5a1f02394bfc0331611e9ab101a1",
+  "native_inputs_equal_parent": true,
+  "source_files": [
+    {
+      "path": "codex-rs/core/tests/suite/code_mode.rs",
+      "base_blob": "3c1cb751a1700bbe1a1d9b63ccfcc1a479d55817",
+      "final_blob": "e6e7e893352ebb2a51bb37a58ed8c455185af255",
+      "final_sha256": "cbe0e322b9a6b3a3a804d1f1810adb9e5baa5c3afe1ebb14b4cc650b8e09cd84",
+      "bytes": 220754
+    },
+    {
+      "path": "codex-rs/core/tests/suite/network_approval.rs",
+      "base_blob": "6abf7adb41876d4895b20c00892192ff4307bb20",
+      "final_blob": "d192f004b068b7c89a3f9393d2b6e0dba1685e4c",
+      "final_sha256": "cfd9384fc9119d72db531bc6a4e487ecf6439772294266c04cc1ff16c35ed4ab",
+      "bytes": 109722
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "base_blob": "46a9d65b3e5e5f30c0ce93057993cf56860a45ce",
+      "final_blob": "6c4cea8b9aa222cedb38b1f49ac9a8e920baa575",
+      "final_sha256": "12d1ac4a43b9c36a4c9dceb97473de7dd82bedb429ac4151353f54439c69482f",
+      "bytes": 4570
+    }
+  ],
+  "core_production_files_changed": 0,
+  "core_network": {
+    "red_expected_failure": true,
+    "green_cases": 2,
+    "retries": 0
+  },
+  "core_multimodal": {
+    "original_unique_cases": 16,
+    "original_registrations": 32,
+    "final_unique_cases": 16,
+    "final_registrations": 16,
+    "passed": 16,
+    "retries": 0,
+    "parameters_and_function_body_unchanged": true
+  },
+  "pty": {
+    "platform": "macOS 26.6.2 ARM64",
+    "baseline_passed": 30,
+    "patched_passed": 30,
+    "skipped": 0,
+    "retries": 0,
+    "original_intel_failure_reproduced": false,
+    "intel_qualification": "pending exact-head hosted CI",
+    "source_lines_added": 5,
+    "source_lines_deleted": 0
+  },
+  "maintenance": {
+    "core_scoped_fix": 0,
+    "core_fmt": 0,
+    "pty_fmt": 0,
+    "tests_after_maintenance": false
+  },
+  "ancestry": {
+    "new_branch_parents_attached": [],
+    "hia_ref_writes": 0,
+    "main_merged": false,
+    "branches_deleted": 0
+  },
+  "whole_candidate_qualification": "Required hosted checks remain mandatory; native component passes are bound to their original recorded sources."
+}

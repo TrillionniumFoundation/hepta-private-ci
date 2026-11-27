@@ -1,0 +1,1288 @@
+{
+  "schema": "hepta.mem8.final-formatted-review-stack.v1",
+  "status": "reviewable_reconstruction_no_remote_ref_mutation",
+  "base": {
+    "commit": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+    "tree": "e601d41a97fadbee17947805f4ec507453522800",
+    "source_A_pr": 5888
+  },
+  "core_target": {
+    "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+    "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+    "pr": 5892
+  },
+  "final_target": {
+    "commit": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+    "pr": 5917
+  },
+  "historical_target_not_rewritten": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+  "method": "Preserve previous coherent stage boundaries; replace only four final-source corrections with exact native-run input bytes; append exact published F1/F2 bytes; verify every preimage and replay every full patch sequentially.",
+  "validation_boundary": [
+    "The reconstructed B/C/D1/D2/D3/E boundaries are not independently compiled or formatted; their existing intermediate-source boundaries remain subject to exact-head normal CI.",
+    "Native qualification belongs to published 66f570 and 0c32926 only. Rewriting commit history does not transfer a PASS to a new commit.",
+    "F1 behavior ran on F2 combined head; no independent F1 native result is inferred.",
+    "This artifact makes no claim of actual original-owner recovery, provider task success, or causal memory benefit."
+  ],
+  "base_evidence_files": [
+    {
+      "path": ".github/workflows/hepta-mem-python.yml",
+      "bytes": 17129,
+      "sha256": "cc28835a1238cc09c82bc72f9d4da0c3bd8434fa7ed64e361981f5cabd8a3afb",
+      "git_blob": "3a625db5357f1438cc82a818f3c91014a0c95b89"
+    },
+    {
+      "path": "codex-rs/app-server/src/config_manager.rs",
+      "bytes": 14389,
+      "sha256": "16ffb0d7d8918245fe372e5b8f2d307386ce7d5255da16ca35b5ac7dcd417eb8",
+      "git_blob": "6d08fadd3f511d7203427c801602c0264ed28e12"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "bytes": 36929,
+      "sha256": "5e9b7b3a4f78cc008d04f7fff60557673ed35bfce0eb4652ffff9d1c5efd939f",
+      "git_blob": "9114a6184e7793e907cc316fa4327348e107d143"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "bytes": 47501,
+      "sha256": "593e3aecadf254fb93e33c161e84c934a85fd728b591a03aaae478ff64ad013c",
+      "git_blob": "b1b72029b494073da34a762fef7e8a698b6699c7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7929,
+      "sha256": "cc16bb498028a806f49be839060fb6f092ab0997aec5c0e634b47cb8f4d00f67",
+      "git_blob": "679f0f86e3c01a1ca3638199ff2e8286519823f9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "bytes": 18923,
+      "sha256": "fd6b0dcabf2796c333366bf2ec365c9b939e51c8ad0f9be3afae872ac3f6bed3",
+      "git_blob": "a634d8844ecbcf87774286d3333bc7d560092d6d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "bytes": 28685,
+      "sha256": "40b19090a621ed832d1a28d3439df8928dfe5153261d597a454edc0d833495b8",
+      "git_blob": "b5ecac14a4118c69c07d2e7e7afbdbb52755f7b0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 38467,
+      "sha256": "1494413fb51fe50df37b7daa4b4db066286f532f6f557600e863090965ceed2a",
+      "git_blob": "ad42091cd893c1108eb21a766104eee994cf02e5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "bytes": 3355,
+      "sha256": "17c3912111872ed84c66a969f674efe786d75b43a052c0624ec602902edf9bff",
+      "git_blob": "585796c337eda12b490fc72a69337d8c4ca40db4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 42659,
+      "sha256": "8c43f205633f6ef0e7d8427590a0c15d7efb8eeaeb8c31252c0b3b5db7629bbc",
+      "git_blob": "32faabe06eaceadd0332018cce837b0b29118d4a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+      "bytes": 10928,
+      "sha256": "fc161d91badfada855db8f9ff16d6adcad24b98775325e5626e476105638eee4",
+      "git_blob": "517d4f7cffb109d401a9002e3ef08d4abf8c7495"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "bytes": 27044,
+      "sha256": "ce7c64920815d9735c4025ee11af122496f6376d10da3609212da6d366c67034",
+      "git_blob": "39d127250b8e825292c25f8c34ec360d5d94ff60"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "bytes": 30367,
+      "sha256": "bd629e715506890f01f33b2cacd8b29e6ae8743b82cfca200d3e907d2218a731",
+      "git_blob": "13f164a6199f75505368fa9829e26983f098e432"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "bytes": 37314,
+      "sha256": "581ff7c03a143a4818345a2ca0f6beecab6830a58134cf9a087079b3fc01857c",
+      "git_blob": "c9b08d1bab388b135325f519220220e3efa2c549"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "bytes": 59419,
+      "sha256": "f75869d195143344c052a639877efbd7d477895c8d6ec58787fb7c499be3155b",
+      "git_blob": "7b9ca2d17d05822cc27fc651cacd9a173bd36acf"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_source.rs",
+      "bytes": 6625,
+      "sha256": "a99583eb01137257e244c4f3adf36f2193cb9060ca15f2ef2122a7814ddbe322",
+      "git_blob": "4589b4d5607d118f822a1d384f1cdd5a599721fc"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_source_tests.rs",
+      "bytes": 4194,
+      "sha256": "5b66a0e817bf1a72f4708fb4de5556e039b908b168d809352200e750fd74ca0c",
+      "git_blob": "d94e1b72c5d04998680147100390fc70e2820e2a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+      "bytes": 5638,
+      "sha256": "7a0d202e7dcadcad6e060b548e66007d37e6877a41bce060f415758cb330233e",
+      "git_blob": "a7e503dbefe093750812b0f16471fa519f467906"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "bytes": 29335,
+      "sha256": "2196fc17797454a079ec9e95cf60b39f4052573b688346c4cb8cffb6aa4c0388",
+      "git_blob": "0cc27055eb23d1cd78c1b3e18cfde3a372b6351d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_snapshot.rs",
+      "bytes": 5228,
+      "sha256": "5e63c2aca7cc6cf0a99221c7a3cfbca42d4f456a0208d2a1be3d938dc031b1c1",
+      "git_blob": "08d90381cff19a79eaa35f318175940b12445f11"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "bytes": 172904,
+      "sha256": "5899048c5b316dcf7acf4f5eca7ac2edf9cbf38f6832131f862bac04d361c9cb",
+      "git_blob": "6ca435e1219b4258b0da1a3a05f3dad7dcbf12bd"
+    }
+  ],
+  "stages": [
+    {
+      "id": "B",
+      "behavior": "Atomic canonical import and durable source/revision bindings; original-writer shared import lock, explicit commit/rollback acknowledgement, native pool fence on uncertainty, and lost-ACK recovery",
+      "case_ids": [
+        "production_writer::episodic::tests::committed_import_reopens_and_reconciles_lost_response_without_rewriting"
+      ],
+      "commands": [
+        "just test --locked -p codex-hepta-memory --lib episodic"
+      ],
+      "expected_cumulative_memory_episodic_tests": 5,
+      "expected_cumulative_agentd_episodic_tests": null,
+      "corrections_from_historical_81889_stack": [
+        "Use exact c6aa/66f postimage: remove drop(store) after consuming close().await; +0/-1 compared with historical test."
+      ],
+      "order": 1,
+      "requires_stage": "published_A",
+      "files": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "2a10b4536954fdd4970776d424e3fc2325ae4d01",
+          "preimage_sha256": null,
+          "postimage_sha256": "9f86bbe355780aee3ee1a27f735ee7216d62e9f13f0ca7239e6fc11a64a225a2",
+          "postimage_bytes": 11848,
+          "additions": 219,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "1c032b45ac066ce4ed2cf4bd204a9834d59626a9",
+          "preimage_sha256": null,
+          "postimage_sha256": "67eeb411f49a51532b0aa09ccc8b95e538e5e24d4a7c5142a9c73adac54d604e",
+          "postimage_bytes": 6083,
+          "additions": 156,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "484b0aa8bb3db29a5cb64a54d8493d2d5dab5d5e",
+          "preimage_sha256": null,
+          "postimage_sha256": "b72085b50d2567b351290c65cb7be9f6f66b54e70d42b44ddda307000d7612ae",
+          "postimage_bytes": 2558,
+          "additions": 76,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "245dc875742fb5e645859bd1cfe8c370e4189f12",
+          "preimage_sha256": null,
+          "postimage_sha256": "5a9b67563874477f5ceae27b5a28c53ebcea7236c8df209e99fb1aeefda81efc",
+          "postimage_bytes": 2794,
+          "additions": 85,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer.rs",
+          "preimage_git_blob": "6ca435e1219b4258b0da1a3a05f3dad7dcbf12bd",
+          "postimage_git_blob": "15487c549abfe1cf1251f6a65a4be699b6b381fc",
+          "preimage_sha256": "5899048c5b316dcf7acf4f5eca7ac2edf9cbf38f6832131f862bac04d361c9cb",
+          "postimage_sha256": "363ee295992d80f0ff35358401a02ae6b460b0bc43fc4bef726c3b26cc8115e0",
+          "postimage_bytes": 173514,
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+          "preimage_git_blob": "9114a6184e7793e907cc316fa4327348e107d143",
+          "postimage_git_blob": "fd1fd483385211eac76afc3c41571541c1de6f0f",
+          "preimage_sha256": "5e9b7b3a4f78cc008d04f7fff60557673ed35bfce0eb4652ffff9d1c5efd939f",
+          "postimage_sha256": "7fd600aa026621d9950614536a172f27aa6e3c6e438d50bba3dd71afe85fb4bf",
+          "postimage_bytes": 37044,
+          "additions": 4,
+          "deletions": 1
+        }
+      ],
+      "additions": 554,
+      "deletions": 1,
+      "patch": "stages/B/SOURCE.patch",
+      "patch_bytes": 28197,
+      "patch_sha256": "e00d9a9ba9421e8dab5645cca6b41d86613dd7019f759ffd83b1ec8c5963674f",
+      "verified_preimages": 6,
+      "sequential_git_apply": "PASS",
+      "sparse_fixture_tree": "eea50e581ac2e9b129cae89c2247d37384eedac8",
+      "sparse_fixture_tree_is_full_repository_tree": false
+    },
+    {
+      "id": "C",
+      "behavior": "Six additional original-owner regressions: update/dependency withdrawal, final source and writer revocation rollback, external head changes, Unicode, source metadata identity, Provisional retrieval exclusion",
+      "case_ids": [
+        "production_writer::episodic::regression_tests::update_withdraws_dependent_memory_and_preserves_unrelated_source",
+        "production_writer::episodic::regression_tests::source_and_writer_revocation_roll_back_all_native_changes",
+        "production_writer::episodic::regression_tests::historical_or_incoherent_source_states_cannot_overwrite_native_heads",
+        "production_writer::episodic::regression_tests::actual_python_unicode_export_preserves_exact_observed_fact_bytes",
+        "production_writer::episodic::regression_tests::changed_source_admission_cannot_reuse_an_old_canonical_binding",
+        "production_writer::episodic::regression_tests::custody_preserves_provisional_state_and_cannot_upgrade_it_on_replay"
+      ],
+      "commands": [
+        "just test --locked -p codex-hepta-memory --lib episodic"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": null,
+      "order": 2,
+      "requires_stage": "B",
+      "files": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+          "preimage_git_blob": "2a10b4536954fdd4970776d424e3fc2325ae4d01",
+          "postimage_git_blob": "14c9d0685cc8b64a85cb9b1b9a01b8d99d702333",
+          "preimage_sha256": "9f86bbe355780aee3ee1a27f735ee7216d62e9f13f0ca7239e6fc11a64a225a2",
+          "postimage_sha256": "521bb9151d78151b8127575db130a8bfd49f0f7adc03f7e8de91ed3d0ceb03ea",
+          "postimage_bytes": 11936,
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+          "preimage_git_blob": "484b0aa8bb3db29a5cb64a54d8493d2d5dab5d5e",
+          "postimage_git_blob": "6cb08af29309991e19510cfecd30aaaafa55f6a3",
+          "preimage_sha256": "b72085b50d2567b351290c65cb7be9f6f66b54e70d42b44ddda307000d7612ae",
+          "postimage_sha256": "35268abb56896174d6cc093a64e411f5017d6e9fdcbc3cbb8976dab3aab61e0c",
+          "postimage_bytes": 2610,
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+          "preimage_git_blob": "a7e503dbefe093750812b0f16471fa519f467906",
+          "postimage_git_blob": "35061a80421612bfbe92d38a20171935db59990d",
+          "preimage_sha256": "7a0d202e7dcadcad6e060b548e66007d37e6877a41bce060f415758cb330233e",
+          "postimage_sha256": "7febade5edcbe3538f23bb858ff80e21a927db57493cf0b09c296e43654d8489",
+          "postimage_bytes": 10963,
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "d657588ccc28bf1639155fb3fa7f889b27df30dd",
+          "preimage_sha256": null,
+          "postimage_sha256": "680b27a797d578c0a1cc9fe337d7fdfc6625249332865792db3a30b1b15f9172",
+          "postimage_bytes": 14050,
+          "additions": 450,
+          "deletions": 0
+        }
+      ],
+      "additions": 462,
+      "deletions": 0,
+      "patch": "stages/C/SOURCE.patch",
+      "patch_bytes": 25157,
+      "patch_sha256": "7b4e1d2adc1b533878860418fd9859ddaff0c6d7e29bded7643b59aa4c1a6ea9",
+      "verified_preimages": 4,
+      "sequential_git_apply": "PASS",
+      "sparse_fixture_tree": "c782848647c349c84fe4aef56b4c32c6b35940b1",
+      "sparse_fixture_tree_is_full_repository_tree": false
+    },
+    {
+      "id": "D1",
+      "behavior": "Typed protocol/client and retained-host wrapper; ordinary control remains unavailable until the embedding configures the source owner. Real UDS refusal verifies no canonical or target effects.",
+      "case_ids": [
+        "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+      ],
+      "commands": [
+        "just test --locked -p codex-hepta-agent-protocol",
+        "just test --locked -p codex-hepta-agentd --lib episodic"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": 1,
+      "order": 3,
+      "requires_stage": "C",
+      "files": [
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+          "preimage_git_blob": "b1b72029b494073da34a762fef7e8a698b6699c7",
+          "postimage_git_blob": "826903cc048dfa6b8f502601aed7780fa6ac3a05",
+          "preimage_sha256": "593e3aecadf254fb93e33c161e84c934a85fd728b591a03aaae478ff64ad013c",
+          "postimage_sha256": "eaaf49fa285a196759194d167ef63e78a504aae9d898f55bb524d53d8a99caef",
+          "postimage_bytes": 47799,
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "efcce3892dac9751927696654f5d6a19d12b1d68",
+          "preimage_sha256": null,
+          "postimage_sha256": "2059517a8efc9452d9c6a500cf290e519f950630943d7fcacf23f2b622bc2153",
+          "postimage_bytes": 926,
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "preimage_git_blob": "32faabe06eaceadd0332018cce837b0b29118d4a",
+          "postimage_git_blob": "b25075a018bc4ee57b77c828eb074cd70c2de85a",
+          "preimage_sha256": "8c43f205633f6ef0e7d8427590a0c15d7efb8eeaeb8c31252c0b3b5db7629bbc",
+          "postimage_sha256": "7f4bf3f1dfe67f557e67ecfc3f6930e95d1a6c5063be04210d32a6ebfa6737b5",
+          "postimage_bytes": 42725,
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/client.rs",
+          "preimage_git_blob": "b5ecac14a4118c69c07d2e7e7afbdbb52755f7b0",
+          "postimage_git_blob": "7e3eecfe91f4534f4fb4b2242ddcfda7760923e8",
+          "preimage_sha256": "40b19090a621ed832d1a28d3439df8928dfe5153261d597a454edc0d833495b8",
+          "postimage_sha256": "bf7cff479842870e910c3225f2a486a56f7eb9bafb1cf64dce5119261d4c36a7",
+          "postimage_bytes": 29749,
+          "additions": 26,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "preimage_git_blob": "39d127250b8e825292c25f8c34ec360d5d94ff60",
+          "postimage_git_blob": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676",
+          "preimage_sha256": "ce7c64920815d9735c4025ee11af122496f6376d10da3609212da6d366c67034",
+          "postimage_sha256": "eeec8bb76bb13fba92a85668bc2ee47957eba7e89292197c18dea1b44e23c121",
+          "postimage_bytes": 27869,
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "preimage_git_blob": "7b9ca2d17d05822cc27fc651cacd9a173bd36acf",
+          "postimage_git_blob": "3ca6f19c84d99d4a37fe508f751c6e3d2cb427d4",
+          "preimage_sha256": "f75869d195143344c052a639877efbd7d477895c8d6ec58787fb7c499be3155b",
+          "postimage_sha256": "ed3a753fed558b9b2526652c7d53770f5411a4e1153bb12fa663d629755e4e8c",
+          "postimage_bytes": 59576,
+          "additions": 3,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+          "preimage_git_blob": "517d4f7cffb109d401a9002e3ef08d4abf8c7495",
+          "postimage_git_blob": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657",
+          "preimage_sha256": "fc161d91badfada855db8f9ff16d6adcad24b98775325e5626e476105638eee4",
+          "postimage_sha256": "2967ed7ada1cda679f35a85aaec08bf6b04482a9b05ae99c0dcf27eb9c7549fa",
+          "postimage_bytes": 11000,
+          "additions": 3,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "f6503a13683892f29ba41ddfdc34e714695d46c8",
+          "preimage_sha256": null,
+          "postimage_sha256": "82801419dde410c599351bf00faffc64c5f4f1f835c30312d674c118472d9996",
+          "postimage_bytes": 3108,
+          "additions": 70,
+          "deletions": 0
+        }
+      ],
+      "additions": 152,
+      "deletions": 0,
+      "patch": "stages/D1/SOURCE.patch",
+      "patch_bytes": 10979,
+      "patch_sha256": "edaeca04707ccd57a1fecd8b7baaa7b4c74fd6e8efffa55bc32ec3420141eba4",
+      "verified_preimages": 8,
+      "sequential_git_apply": "PASS",
+      "sparse_fixture_tree": "41978f966e76ca81f256738d4c50ca4d80a5f06f",
+      "sparse_fixture_tree_is_full_repository_tree": false
+    },
+    {
+      "id": "D2",
+      "behavior": "Ordinary configured source/writer ingress with fixed private scope/namespace; bounded retained imports, unresolved Drop accounting, source callback refusal and ordinary readiness/reads fenced even after the response future is gone",
+      "case_ids": [
+        "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context"
+      ],
+      "commands": [
+        "just test --locked -p codex-hepta-agentd --lib episodic"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": 3,
+      "order": 4,
+      "requires_stage": "D1",
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "preimage_git_blob": "ad42091cd893c1108eb21a766104eee994cf02e5",
+          "postimage_git_blob": "f9f69632f1859aedb23743635a3aad315cd52d65",
+          "preimage_sha256": "1494413fb51fe50df37b7daa4b4db066286f532f6f557600e863090965ceed2a",
+          "postimage_sha256": "763fb7764bddc8083604c8ab3f1ed7cb32c1d0950aac3cfeec10c5d1cf7ca5ac",
+          "postimage_bytes": 38713,
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+          "preimage_git_blob": "585796c337eda12b490fc72a69337d8c4ca40db4",
+          "postimage_git_blob": "d6d13a226a7fd9778904893368767c4a38c23e01",
+          "preimage_sha256": "17c3912111872ed84c66a969f674efe786d75b43a052c0624ec602902edf9bff",
+          "postimage_sha256": "25c7ec1a8d0679a476d8f2ab45e179c2a2fbe54b68701508992de5aa0305702a",
+          "postimage_bytes": 3410,
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "9372ca25a4cd3071b702be7bdff30f1e9d83792d",
+          "preimage_sha256": null,
+          "postimage_sha256": "3a167bc5719fdcef599b2570780cc506dc6653e941466196e6e75d851eac60e6",
+          "postimage_bytes": 1924,
+          "additions": 51,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "14d55512ba40d50872730ccf7ae48ee2b153994a",
+          "preimage_sha256": null,
+          "postimage_sha256": "56886fe8a6248c799b4f9f43ac04bfc2006bc62c553671dbd4858044888bf524",
+          "postimage_bytes": 3995,
+          "additions": 106,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state.rs",
+          "preimage_git_blob": "c9b08d1bab388b135325f519220220e3efa2c549",
+          "postimage_git_blob": "c587df24011d5768295a7cf431948a7d4321c5da",
+          "preimage_sha256": "581ff7c03a143a4818345a2ca0f6beecab6830a58134cf9a087079b3fc01857c",
+          "postimage_sha256": "56874b927c3bc17b33a2c07f1e52ed0659ee0c9055a3fa679e7895ca264d5998",
+          "postimage_bytes": 38289,
+          "additions": 20,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "6585d7ee856310327d1823ca829ae996dda3c2b8",
+          "preimage_sha256": null,
+          "postimage_sha256": "6da2ac65ace12c0e8cf4e0a0dc83b09461a469538bf0b0fe939afad80a0155bf",
+          "postimage_bytes": 5341,
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "preimage_git_blob": "3ca6f19c84d99d4a37fe508f751c6e3d2cb427d4",
+          "postimage_git_blob": "953dbc83ac893475b0574267f5cbdf78b0571452",
+          "preimage_sha256": "ed3a753fed558b9b2526652c7d53770f5411a4e1153bb12fa663d629755e4e8c",
+          "postimage_sha256": "dda67d7369e89eb8a7c76ceb0afbb11b6425a57c4ab6fd1deebfcfdaf4c63d55",
+          "postimage_bytes": 60052,
+          "additions": 13,
+          "deletions": 3
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "preimage_git_blob": "b25075a018bc4ee57b77c828eb074cd70c2de85a",
+          "postimage_git_blob": "5481bc5bc81558e1246bd3df5e2f081b334266b4",
+          "preimage_sha256": "7f4bf3f1dfe67f557e67ecfc3f6930e95d1a6c5063be04210d32a6ebfa6737b5",
+          "postimage_sha256": "5e6935c2a2ef460651f6428628e7c45f53486402dcf53c88d917da77066ef068",
+          "postimage_bytes": 42746,
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "preimage_git_blob": "13f164a6199f75505368fa9829e26983f098e432",
+          "postimage_git_blob": "d38e4802caf10a4ecaede41c3108ead6ed4c993f",
+          "preimage_sha256": "bd629e715506890f01f33b2cacd8b29e6ae8743b82cfca200d3e907d2218a731",
+          "postimage_sha256": "6ac32bcf5308ffd76d799995250b7af7c790948b5af2b2cf045b60591251fd3b",
+          "postimage_bytes": 30971,
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "preimage_git_blob": "f6503a13683892f29ba41ddfdc34e714695d46c8",
+          "postimage_git_blob": "f414ff7b03e87199da97c597c53056628ed5bbc6",
+          "preimage_sha256": "82801419dde410c599351bf00faffc64c5f4f1f835c30312d674c118472d9996",
+          "postimage_sha256": "f585f55b0cfd9d128584dca765fb64a634d13bfdcb9f8c722ebef4e41bbea32d",
+          "postimage_bytes": 10071,
+          "additions": 184,
+          "deletions": 1
+        }
+      ],
+      "additions": 539,
+      "deletions": 4,
+      "patch": "stages/D2/SOURCE.patch",
+      "patch_bytes": 31214,
+      "patch_sha256": "e2bbce6a18187dc298b60599372b4bd7d7aa0e534a905fa2c9a84d793a54b4c3",
+      "verified_preimages": 10,
+      "sequential_git_apply": "PASS",
+      "sparse_fixture_tree": "369cae90f55f361e56ae2aa1f54ff1412d6aff02",
+      "sparse_fixture_tree_is_full_repository_tree": false
+    },
+    {
+      "id": "D3",
+      "behavior": "Real App Server/AutomationStore drain and original SQLite owner. Commit and source-revoke cases retain admitted work through cancellation. Running panic case cancels two reply futures, proves queued import did not commit, original pool fences, and real UDS Health/ordinary reads refuse before drain.",
+      "case_ids": [
+        "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement"
+      ],
+      "commands": [
+        "cargo build --locked -p codex-cli --bin codex",
+        "Bind CARGO_BIN_EXE_codex to this exact-head binary after recording its bytes/SHA256 and executable mode; recheck unchanged binary at completion.",
+        "just test --locked -p codex-hepta-agentd --lib episodic --no-capture --retries 0"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": 4,
+      "corrections_from_historical_81889_stack": [
+        "Use actual 66f formatted drain postimage, including original readiness diagnostic, real cargo-bin Codex CLI, and verified child stdout marker forwarding.",
+        "Include unchanged-security-scope Bazel real CLI prerequisite and exact-source CI build/binary binding; no longer use current_exe as Codex CLI."
+      ],
+      "required_drain_markers": [
+        "commit",
+        "revoke",
+        "panic"
+      ],
+      "order": 5,
+      "requires_stage": "D2",
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "preimage_git_blob": "f414ff7b03e87199da97c597c53056628ed5bbc6",
+          "postimage_git_blob": "0cca4e02b3a349e5ee3f7b437637b45a58a9f8c2",
+          "preimage_sha256": "f585f55b0cfd9d128584dca765fb64a634d13bfdcb9f8c722ebef4e41bbea32d",
+          "postimage_sha256": "1f9186cfcf59a1c00a872ed7a0e655e6ea2710554208a0ce7b0f6c60477dcabc",
+          "postimage_bytes": 10130,
+          "additions": 3,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "8e0ca0b1e1860e916d4017b01bacc593597c9102",
+          "preimage_sha256": null,
+          "postimage_sha256": "e9fd027aef6b149a37e594457b6e2bfe24f2bb577d7fb2ec33f3fdbd166c6c75",
+          "postimage_bytes": 11956,
+          "additions": 312,
+          "deletions": 0
+        },
+        {
+          "path": ".github/workflows/hepta-mem-python.yml",
+          "preimage_git_blob": "3a625db5357f1438cc82a818f3c91014a0c95b89",
+          "postimage_git_blob": "a1ecf3968b8d9bbc27099d792c12f1c5833b4e38",
+          "preimage_sha256": "cc28835a1238cc09c82bc72f9d4da0c3bd8434fa7ed64e361981f5cabd8a3afb",
+          "postimage_sha256": "07ddeae1884d285cb0f819e60342ecf39557feb221e4669eabe815bf02ee99c0",
+          "postimage_bytes": 20501,
+          "additions": 70,
+          "deletions": 3
+        },
+        {
+          "path": "codex-rs/hepta-agentd/BUILD.bazel",
+          "preimage_git_blob": "679f0f86e3c01a1ca3638199ff2e8286519823f9",
+          "postimage_git_blob": "0f25ce6f62ce3e2fd963dda8208913adc17edbbf",
+          "preimage_sha256": "cc16bb498028a806f49be839060fb6f092ab0997aec5c0e634b47cb8f4d00f67",
+          "postimage_sha256": "e393be0b48ee4bf1dd7d3c9a60d2c9fc4087fd8fb9ad5f198c1245c2db3acdec",
+          "postimage_bytes": 7976,
+          "additions": 4,
+          "deletions": 1
+        }
+      ],
+      "additions": 389,
+      "deletions": 4,
+      "patch": "stages/D3/SOURCE.patch",
+      "patch_bytes": 20383,
+      "patch_sha256": "3a66e94c159c580d1da155991c51ea4359c3b4a350f115863e28077f35a30269",
+      "verified_preimages": 4,
+      "sequential_git_apply": "PASS",
+      "sparse_fixture_tree": "b3eb742f23cb9035fd3b169bc9e0a847837d329f",
+      "sparse_fixture_tree_is_full_repository_tree": false
+    },
+    {
+      "id": "E",
+      "behavior": "Retain the acknowledged original source observation and require complete typed source freshness before and after ordinary explicit context reads and final revalidation.",
+      "case_ids": [
+        "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context"
+      ],
+      "commands": [
+        "cargo build --locked -p codex-cli --bin codex",
+        "Bind CARGO_BIN_EXE_codex to this exact-head binary after recording its bytes/SHA256 and executable mode; recheck unchanged binary at completion.",
+        "just test --locked -p codex-hepta-agentd --lib episodic --no-capture --retries 0"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": 5,
+      "required_drain_markers": [
+        "commit",
+        "revoke",
+        "panic"
+      ],
+      "order": 6,
+      "requires_stage": "D3",
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+          "preimage_git_blob": "9372ca25a4cd3071b702be7bdff30f1e9d83792d",
+          "postimage_git_blob": "483633043e80459023422b0361cfd762136d8fa3",
+          "preimage_sha256": "3a167bc5719fdcef599b2570780cc506dc6653e941466196e6e75d851eac60e6",
+          "postimage_sha256": "0b0d81d1b8efcced51db88bf139ba47bcef4eb8e488c79b2a5876413caaf2fcd",
+          "postimage_bytes": 2206,
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+          "preimage_git_blob": "14d55512ba40d50872730ccf7ae48ee2b153994a",
+          "postimage_git_blob": "eac6a0a296176332eb0a89e2eadb13f657236062",
+          "preimage_sha256": "56886fe8a6248c799b4f9f43ac04bfc2006bc62c553671dbd4858044888bf524",
+          "postimage_sha256": "a453ca69b4dce2a661f4cfd1101ae7ebd19a65883e723291a0ae4dd4132574d2",
+          "postimage_bytes": 4813,
+          "additions": 20,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "595a9aec06808963b580b83f7cb856221d2a7bd5",
+          "preimage_sha256": null,
+          "postimage_sha256": "be21fd5afc24c45e822e9c90eecb5a1a6e169f836a173e02c1799bc653c20d8e",
+          "postimage_bytes": 4791,
+          "additions": 146,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/episodic_source_read_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101",
+          "preimage_sha256": null,
+          "postimage_sha256": "4f941d1e4c8f0ff85e88954863eaf2e2def3dbe5d2bf99b36bcde7e34525d603",
+          "postimage_bytes": 2647,
+          "additions": 79,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "preimage_git_blob": "0cca4e02b3a349e5ee3f7b437637b45a58a9f8c2",
+          "postimage_git_blob": "9145d2e46aa9d0f5022f09fde38c3ea97ac56838",
+          "preimage_sha256": "1f9186cfcf59a1c00a872ed7a0e655e6ea2710554208a0ce7b0f6c60477dcabc",
+          "postimage_sha256": "4af3dab861a0d64a70eff732f6279c877ef4fdf989c196fa826928c431f1d6ad",
+          "postimage_bytes": 13050,
+          "additions": 94,
+          "deletions": 21
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "preimage_git_blob": "953dbc83ac893475b0574267f5cbdf78b0571452",
+          "postimage_git_blob": "e53d6ada7c222ad0084b44803bdfbed4789160fa",
+          "preimage_sha256": "dda67d7369e89eb8a7c76ceb0afbb11b6425a57c4ab6fd1deebfcfdaf4c63d55",
+          "postimage_sha256": "3bdfa3151dc0a77e6e926c81a1407b0309d841f859612fa54383b72f7760765e",
+          "postimage_bytes": 60831,
+          "additions": 21,
+          "deletions": 0
+        }
+      ],
+      "additions": 364,
+      "deletions": 21,
+      "patch": "stages/E/SOURCE.patch",
+      "patch_bytes": 22572,
+      "patch_sha256": "8c3e6667321c9590ccd7dc9bef046bd3fe958e07c7f8ce296ed93a5111bb6d38",
+      "verified_preimages": 6,
+      "sequential_git_apply": "PASS",
+      "sparse_fixture_tree": "da273da555086c735940960cad7748aa3f73cd62",
+      "sparse_fixture_tree_is_full_repository_tree": false,
+      "exact_core_checkpoint": {
+        "published_commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "changed_paths": 28,
+        "all_changed_file_bytes_match_native_input": true
+      }
+    },
+    {
+      "id": "F1",
+      "behavior": "Persist required feature constraints after client request overrides and configuration reload.",
+      "case_ids": [
+        "config_manager::feature_constraints_tests::required_explicit_context_features_remove_memory_prompt_after_request_override"
+      ],
+      "commands": [
+        "just test --locked -p codex-app-server --lib config_manager::feature_constraints_tests"
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": 5,
+      "expected_cumulative_config_manager_feature_tests": 1,
+      "published_commit": "911d62a9d4574abd6d175ea080ba7c239d02f935",
+      "published_tree": "613069bac3f5c66d14b9eca452eaec517569a32a",
+      "published_parent": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+      "published_pr": 5916,
+      "order": 7,
+      "requires_stage": "E",
+      "files": [
+        {
+          "path": "codex-rs/app-server/src/config_manager.rs",
+          "preimage_git_blob": "6d08fadd3f511d7203427c801602c0264ed28e12",
+          "postimage_git_blob": "c4a8bf615541c48a405d08e59c643e96bdf7437a",
+          "preimage_sha256": "16ffb0d7d8918245fe372e5b8f2d307386ce7d5255da16ca35b5ac7dcd417eb8",
+          "postimage_sha256": "0117c08db273f908b0ac90c29d55d1074485b7ecf5cd7a81c9eed6b219679aa6",
+          "postimage_bytes": 14775,
+          "additions": 9,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/app-server/src/config_manager_feature_constraints_tests.rs",
+          "preimage_git_blob": null,
+          "postimage_git_blob": "fbc0d3c5314751bd75dbb2ef86322fdcc7fdd1cf",
+          "preimage_sha256": null,
+          "postimage_sha256": "7285e2ad4402be879219461375039133888c94c04802884055ec95b990584902",
+          "postimage_bytes": 3484,
+          "additions": 104,
+          "deletions": 0
+        }
+      ],
+      "additions": 113,
+      "deletions": 0,
+      "patch": "stages/F1/SOURCE.patch",
+      "patch_bytes": 4879,
+      "patch_sha256": "5705f7512933be550c2a677bab4f85179e5d9b049c7b11e894af208ec7cef9a9",
+      "verified_preimages": 2,
+      "sequential_git_apply": "PASS",
+      "sparse_fixture_tree": "ea796e5ac3bfbf3206e38e3c8aefe23b44ffc2e8",
+      "sparse_fixture_tree_is_full_repository_tree": false
+    },
+    {
+      "id": "F2",
+      "behavior": "Configure retained episodic ingress with explicit-context-only memory paths while preserving the store; enforce source namespace and profile requirements.",
+      "case_ids": [
+        "config_manager::feature_constraints_tests::required_token_budget_off_removes_resolved_history_notes_after_request_and_reload",
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context"
+      ],
+      "commands": [
+        "just test --locked -p codex-app-server --lib config_manager::feature_constraints_tests",
+        "cargo build --locked -p codex-cli --bin codex",
+        "Bind fresh exact-head CARGO_BIN_EXE_codex and verify unchanged binary at completion.",
+        "just test --locked -p codex-hepta-agentd --lib episodic --no-capture --retries 0",
+        "Run the exact qualified profile, memory-extension disabled-state, and empty native-router controls listed in native-evidence/F2_QUALIFIED.json."
+      ],
+      "expected_cumulative_memory_episodic_tests": 11,
+      "expected_cumulative_agentd_episodic_tests": 6,
+      "expected_cumulative_config_manager_feature_tests": 2,
+      "published_commit": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+      "published_tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+      "published_parent": "911d62a9d4574abd6d175ea080ba7c239d02f935",
+      "published_pr": 5917,
+      "order": 8,
+      "requires_stage": "F1",
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+          "preimage_git_blob": "a634d8844ecbcf87774286d3333bc7d560092d6d",
+          "postimage_git_blob": "1576de268c6da2b4b9a803d46a1244a0010b4949",
+          "preimage_sha256": "fd6b0dcabf2796c333366bf2ec365c9b939e51c8ad0f9be3afae872ac3f6bed3",
+          "postimage_sha256": "74641c88ffa29c31e9b5d79b2f6841c5ec6c5c0c8a8899f346b0a6caed003423",
+          "postimage_bytes": 20693,
+          "additions": 49,
+          "deletions": 8
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "preimage_git_blob": "d38e4802caf10a4ecaede41c3108ead6ed4c993f",
+          "postimage_git_blob": "127d953ec345cc7cf2cfda0d6aef8b7550eb4991",
+          "preimage_sha256": "6ac32bcf5308ffd76d799995250b7af7c790948b5af2b2cf045b60591251fd3b",
+          "postimage_sha256": "e93732405ec088634cf61aad59512360ca480e71549f6e18538215aff09bc55f",
+          "postimage_bytes": 31170,
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+          "preimage_git_blob": "483633043e80459023422b0361cfd762136d8fa3",
+          "postimage_git_blob": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef",
+          "preimage_sha256": "0b0d81d1b8efcced51db88bf139ba47bcef4eb8e488c79b2a5876413caaf2fcd",
+          "postimage_sha256": "5ccf716806e7eff3358efe7b5aa9be6c655eb69e8c7457c871dc06c24789ac29",
+          "postimage_bytes": 2434,
+          "additions": 4,
+          "deletions": 1
+        },
+        {
+          "path": "codex-rs/app-server/src/config_manager_feature_constraints_tests.rs",
+          "preimage_git_blob": "fbc0d3c5314751bd75dbb2ef86322fdcc7fdd1cf",
+          "postimage_git_blob": "6c289f8f4b9ee0f1d76a18958387c5d4f3665824",
+          "preimage_sha256": "7285e2ad4402be879219461375039133888c94c04802884055ec95b990584902",
+          "postimage_sha256": "16e6b1a1c477b81543e333b92d0674830feb76526d309919918ed842395d0eb1",
+          "postimage_bytes": 7549,
+          "additions": 120,
+          "deletions": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "preimage_git_blob": "9145d2e46aa9d0f5022f09fde38c3ea97ac56838",
+          "postimage_git_blob": "54026297a309ef228053ce697855f5181c3b9f2c",
+          "preimage_sha256": "4af3dab861a0d64a70eff732f6279c877ef4fdf989c196fa826928c431f1d6ad",
+          "postimage_sha256": "d499936633069ffb10a3284dc36b492d34ce70b8dd7d8af4aff176cdf81d1734",
+          "postimage_bytes": 14103,
+          "additions": 24,
+          "deletions": 0
+        }
+      ],
+      "additions": 202,
+      "deletions": 9,
+      "patch": "stages/F2/SOURCE.patch",
+      "patch_bytes": 14421,
+      "patch_sha256": "211f9c9ed1c084f8d7dfe21d4c265e6e109e104a2d103673b9f4fc99b2975e8c",
+      "verified_preimages": 5,
+      "sequential_git_apply": "PASS",
+      "sparse_fixture_tree": "9b16204785fa53b7c6f79b3223fb98f9e8cc57c2",
+      "sparse_fixture_tree_is_full_repository_tree": false
+    }
+  ],
+  "all_final_changed_paths": [
+    {
+      "path": ".github/workflows/hepta-mem-python.yml",
+      "bytes": 20501,
+      "sha256": "07ddeae1884d285cb0f819e60342ecf39557feb221e4669eabe815bf02ee99c0",
+      "git_blob": "a1ecf3968b8d9bbc27099d792c12f1c5833b4e38"
+    },
+    {
+      "path": "codex-rs/app-server/src/config_manager.rs",
+      "bytes": 14775,
+      "sha256": "0117c08db273f908b0ac90c29d55d1074485b7ecf5cd7a81c9eed6b219679aa6",
+      "git_blob": "c4a8bf615541c48a405d08e59c643e96bdf7437a"
+    },
+    {
+      "path": "codex-rs/app-server/src/config_manager_feature_constraints_tests.rs",
+      "bytes": 7549,
+      "sha256": "16e6b1a1c477b81543e333b92d0674830feb76526d309919918ed842395d0eb1",
+      "git_blob": "6c289f8f4b9ee0f1d76a18958387c5d4f3665824"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "bytes": 37044,
+      "sha256": "7fd600aa026621d9950614536a172f27aa6e3c6e438d50bba3dd71afe85fb4bf",
+      "git_blob": "fd1fd483385211eac76afc3c41571541c1de6f0f"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
+      "bytes": 926,
+      "sha256": "2059517a8efc9452d9c6a500cf290e519f950630943d7fcacf23f2b622bc2153",
+      "git_blob": "efcce3892dac9751927696654f5d6a19d12b1d68"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "bytes": 47799,
+      "sha256": "eaaf49fa285a196759194d167ef63e78a504aae9d898f55bb524d53d8a99caef",
+      "git_blob": "826903cc048dfa6b8f502601aed7780fa6ac3a05"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7976,
+      "sha256": "e393be0b48ee4bf1dd7d3c9a60d2c9fc4087fd8fb9ad5f198c1245c2db3acdec",
+      "git_blob": "0f25ce6f62ce3e2fd963dda8208913adc17edbbf"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "bytes": 20693,
+      "sha256": "74641c88ffa29c31e9b5d79b2f6841c5ec6c5c0c8a8899f346b0a6caed003423",
+      "git_blob": "1576de268c6da2b4b9a803d46a1244a0010b4949"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "bytes": 29749,
+      "sha256": "bf7cff479842870e910c3225f2a486a56f7eb9bafb1cf64dce5119261d4c36a7",
+      "git_blob": "7e3eecfe91f4534f4fb4b2242ddcfda7760923e8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 38713,
+      "sha256": "763fb7764bddc8083604c8ab3f1ed7cb32c1d0950aac3cfeec10c5d1cf7ca5ac",
+      "git_blob": "f9f69632f1859aedb23743635a3aad315cd52d65"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "bytes": 3410,
+      "sha256": "25c7ec1a8d0679a476d8f2ab45e179c2a2fbe54b68701508992de5aa0305702a",
+      "git_blob": "d6d13a226a7fd9778904893368767c4a38c23e01"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+      "bytes": 2434,
+      "sha256": "5ccf716806e7eff3358efe7b5aa9be6c655eb69e8c7457c871dc06c24789ac29",
+      "git_blob": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+      "bytes": 4813,
+      "sha256": "a453ca69b4dce2a661f4cfd1101ae7ebd19a65883e723291a0ae4dd4132574d2",
+      "git_blob": "eac6a0a296176332eb0a89e2eadb13f657236062"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs",
+      "bytes": 4791,
+      "sha256": "be21fd5afc24c45e822e9c90eecb5a1a6e169f836a173e02c1799bc653c20d8e",
+      "git_blob": "595a9aec06808963b580b83f7cb856221d2a7bd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read_tests.rs",
+      "bytes": 2647,
+      "sha256": "4f941d1e4c8f0ff85e88954863eaf2e2def3dbe5d2bf99b36bcde7e34525d603",
+      "git_blob": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 42746,
+      "sha256": "5e6935c2a2ef460651f6428628e7c45f53486402dcf53c88d917da77066ef068",
+      "git_blob": "5481bc5bc81558e1246bd3df5e2f081b334266b4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+      "bytes": 11000,
+      "sha256": "2967ed7ada1cda679f35a85aaec08bf6b04482a9b05ae99c0dcf27eb9c7549fa",
+      "git_blob": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "bytes": 14103,
+      "sha256": "d499936633069ffb10a3284dc36b492d34ce70b8dd7d8af4aff176cdf81d1734",
+      "git_blob": "54026297a309ef228053ce697855f5181c3b9f2c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
+      "bytes": 11956,
+      "sha256": "e9fd027aef6b149a37e594457b6e2bfe24f2bb577d7fb2ec33f3fdbd166c6c75",
+      "git_blob": "8e0ca0b1e1860e916d4017b01bacc593597c9102"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "bytes": 27869,
+      "sha256": "eeec8bb76bb13fba92a85668bc2ee47957eba7e89292197c18dea1b44e23c121",
+      "git_blob": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "bytes": 31170,
+      "sha256": "e93732405ec088634cf61aad59512360ca480e71549f6e18538215aff09bc55f",
+      "git_blob": "127d953ec345cc7cf2cfda0d6aef8b7550eb4991"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "bytes": 38289,
+      "sha256": "56874b927c3bc17b33a2c07f1e52ed0659ee0c9055a3fa679e7895ca264d5998",
+      "git_blob": "c587df24011d5768295a7cf431948a7d4321c5da"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "bytes": 60831,
+      "sha256": "3bdfa3151dc0a77e6e926c81a1407b0309d841f859612fa54383b72f7760765e",
+      "git_blob": "e53d6ada7c222ad0084b44803bdfbed4789160fa"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
+      "bytes": 5341,
+      "sha256": "6da2ac65ace12c0e8cf4e0a0dc83b09461a469538bf0b0fe939afad80a0155bf",
+      "git_blob": "6585d7ee856310327d1823ca829ae996dda3c2b8"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+      "bytes": 10963,
+      "sha256": "7febade5edcbe3538f23bb858ff80e21a927db57493cf0b09c296e43654d8489",
+      "git_blob": "35061a80421612bfbe92d38a20171935db59990d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+      "bytes": 11936,
+      "sha256": "521bb9151d78151b8127575db130a8bfd49f0f7adc03f7e8de91ed3d0ceb03ea",
+      "git_blob": "14c9d0685cc8b64a85cb9b1b9a01b8d99d702333"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
+      "bytes": 14050,
+      "sha256": "680b27a797d578c0a1cc9fe337d7fdfc6625249332865792db3a30b1b15f9172",
+      "git_blob": "d657588ccc28bf1639155fb3fa7f889b27df30dd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+      "bytes": 2610,
+      "sha256": "35268abb56896174d6cc093a64e411f5017d6e9fdcbc3cbb8976dab3aab61e0c",
+      "git_blob": "6cb08af29309991e19510cfecd30aaaafa55f6a3"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+      "bytes": 2794,
+      "sha256": "5a9b67563874477f5ceae27b5a28c53ebcea7236c8df209e99fb1aeefda81efc",
+      "git_blob": "245dc875742fb5e645859bd1cfe8c370e4189f12"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
+      "bytes": 6083,
+      "sha256": "67eeb411f49a51532b0aa09ccc8b95e538e5e24d4a7c5142a9c73adac54d604e",
+      "git_blob": "1c032b45ac066ce4ed2cf4bd204a9834d59626a9"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "bytes": 173514,
+      "sha256": "363ee295992d80f0ff35358401a02ae6b460b0bc43fc4bef726c3b26cc8115e0",
+      "git_blob": "15487c549abfe1cf1251f6a65a4be699b6b381fc"
+    }
+  ],
+  "final_evidence_paths": [
+    {
+      "path": ".github/workflows/hepta-mem-python.yml",
+      "bytes": 20501,
+      "sha256": "07ddeae1884d285cb0f819e60342ecf39557feb221e4669eabe815bf02ee99c0",
+      "git_blob": "a1ecf3968b8d9bbc27099d792c12f1c5833b4e38"
+    },
+    {
+      "path": "codex-rs/app-server/src/config_manager.rs",
+      "bytes": 14775,
+      "sha256": "0117c08db273f908b0ac90c29d55d1074485b7ecf5cd7a81c9eed6b219679aa6",
+      "git_blob": "c4a8bf615541c48a405d08e59c643e96bdf7437a"
+    },
+    {
+      "path": "codex-rs/app-server/src/config_manager_feature_constraints_tests.rs",
+      "bytes": 7549,
+      "sha256": "16e6b1a1c477b81543e333b92d0674830feb76526d309919918ed842395d0eb1",
+      "git_blob": "6c289f8f4b9ee0f1d76a18958387c5d4f3665824"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "bytes": 37044,
+      "sha256": "7fd600aa026621d9950614536a172f27aa6e3c6e438d50bba3dd71afe85fb4bf",
+      "git_blob": "fd1fd483385211eac76afc3c41571541c1de6f0f"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
+      "bytes": 926,
+      "sha256": "2059517a8efc9452d9c6a500cf290e519f950630943d7fcacf23f2b622bc2153",
+      "git_blob": "efcce3892dac9751927696654f5d6a19d12b1d68"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "bytes": 47799,
+      "sha256": "eaaf49fa285a196759194d167ef63e78a504aae9d898f55bb524d53d8a99caef",
+      "git_blob": "826903cc048dfa6b8f502601aed7780fa6ac3a05"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7976,
+      "sha256": "e393be0b48ee4bf1dd7d3c9a60d2c9fc4087fd8fb9ad5f198c1245c2db3acdec",
+      "git_blob": "0f25ce6f62ce3e2fd963dda8208913adc17edbbf"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "bytes": 20693,
+      "sha256": "74641c88ffa29c31e9b5d79b2f6841c5ec6c5c0c8a8899f346b0a6caed003423",
+      "git_blob": "1576de268c6da2b4b9a803d46a1244a0010b4949"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "bytes": 29749,
+      "sha256": "bf7cff479842870e910c3225f2a486a56f7eb9bafb1cf64dce5119261d4c36a7",
+      "git_blob": "7e3eecfe91f4534f4fb4b2242ddcfda7760923e8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 38713,
+      "sha256": "763fb7764bddc8083604c8ab3f1ed7cb32c1d0950aac3cfeec10c5d1cf7ca5ac",
+      "git_blob": "f9f69632f1859aedb23743635a3aad315cd52d65"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "bytes": 3410,
+      "sha256": "25c7ec1a8d0679a476d8f2ab45e179c2a2fbe54b68701508992de5aa0305702a",
+      "git_blob": "d6d13a226a7fd9778904893368767c4a38c23e01"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+      "bytes": 2434,
+      "sha256": "5ccf716806e7eff3358efe7b5aa9be6c655eb69e8c7457c871dc06c24789ac29",
+      "git_blob": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+      "bytes": 4813,
+      "sha256": "a453ca69b4dce2a661f4cfd1101ae7ebd19a65883e723291a0ae4dd4132574d2",
+      "git_blob": "eac6a0a296176332eb0a89e2eadb13f657236062"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs",
+      "bytes": 4791,
+      "sha256": "be21fd5afc24c45e822e9c90eecb5a1a6e169f836a173e02c1799bc653c20d8e",
+      "git_blob": "595a9aec06808963b580b83f7cb856221d2a7bd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read_tests.rs",
+      "bytes": 2647,
+      "sha256": "4f941d1e4c8f0ff85e88954863eaf2e2def3dbe5d2bf99b36bcde7e34525d603",
+      "git_blob": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 42746,
+      "sha256": "5e6935c2a2ef460651f6428628e7c45f53486402dcf53c88d917da77066ef068",
+      "git_blob": "5481bc5bc81558e1246bd3df5e2f081b334266b4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+      "bytes": 11000,
+      "sha256": "2967ed7ada1cda679f35a85aaec08bf6b04482a9b05ae99c0dcf27eb9c7549fa",
+      "git_blob": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "bytes": 14103,
+      "sha256": "d499936633069ffb10a3284dc36b492d34ce70b8dd7d8af4aff176cdf81d1734",
+      "git_blob": "54026297a309ef228053ce697855f5181c3b9f2c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
+      "bytes": 11956,
+      "sha256": "e9fd027aef6b149a37e594457b6e2bfe24f2bb577d7fb2ec33f3fdbd166c6c75",
+      "git_blob": "8e0ca0b1e1860e916d4017b01bacc593597c9102"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "bytes": 27869,
+      "sha256": "eeec8bb76bb13fba92a85668bc2ee47957eba7e89292197c18dea1b44e23c121",
+      "git_blob": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "bytes": 31170,
+      "sha256": "e93732405ec088634cf61aad59512360ca480e71549f6e18538215aff09bc55f",
+      "git_blob": "127d953ec345cc7cf2cfda0d6aef8b7550eb4991"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "bytes": 38289,
+      "sha256": "56874b927c3bc17b33a2c07f1e52ed0659ee0c9055a3fa679e7895ca264d5998",
+      "git_blob": "c587df24011d5768295a7cf431948a7d4321c5da"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "bytes": 60831,
+      "sha256": "3bdfa3151dc0a77e6e926c81a1407b0309d841f859612fa54383b72f7760765e",
+      "git_blob": "e53d6ada7c222ad0084b44803bdfbed4789160fa"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
+      "bytes": 5341,
+      "sha256": "6da2ac65ace12c0e8cf4e0a0dc83b09461a469538bf0b0fe939afad80a0155bf",
+      "git_blob": "6585d7ee856310327d1823ca829ae996dda3c2b8"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_source.rs",
+      "bytes": 6625,
+      "sha256": "a99583eb01137257e244c4f3adf36f2193cb9060ca15f2ef2122a7814ddbe322",
+      "git_blob": "4589b4d5607d118f822a1d384f1cdd5a599721fc"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_source_tests.rs",
+      "bytes": 4194,
+      "sha256": "5b66a0e817bf1a72f4708fb4de5556e039b908b168d809352200e750fd74ca0c",
+      "git_blob": "d94e1b72c5d04998680147100390fc70e2820e2a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+      "bytes": 10963,
+      "sha256": "7febade5edcbe3538f23bb858ff80e21a927db57493cf0b09c296e43654d8489",
+      "git_blob": "35061a80421612bfbe92d38a20171935db59990d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "bytes": 29335,
+      "sha256": "2196fc17797454a079ec9e95cf60b39f4052573b688346c4cb8cffb6aa4c0388",
+      "git_blob": "0cc27055eb23d1cd78c1b3e18cfde3a372b6351d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+      "bytes": 11936,
+      "sha256": "521bb9151d78151b8127575db130a8bfd49f0f7adc03f7e8de91ed3d0ceb03ea",
+      "git_blob": "14c9d0685cc8b64a85cb9b1b9a01b8d99d702333"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
+      "bytes": 14050,
+      "sha256": "680b27a797d578c0a1cc9fe337d7fdfc6625249332865792db3a30b1b15f9172",
+      "git_blob": "d657588ccc28bf1639155fb3fa7f889b27df30dd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_snapshot.rs",
+      "bytes": 5228,
+      "sha256": "5e63c2aca7cc6cf0a99221c7a3cfbca42d4f456a0208d2a1be3d938dc031b1c1",
+      "git_blob": "08d90381cff19a79eaa35f318175940b12445f11"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+      "bytes": 2610,
+      "sha256": "35268abb56896174d6cc093a64e411f5017d6e9fdcbc3cbb8976dab3aab61e0c",
+      "git_blob": "6cb08af29309991e19510cfecd30aaaafa55f6a3"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+      "bytes": 2794,
+      "sha256": "5a9b67563874477f5ceae27b5a28c53ebcea7236c8df209e99fb1aeefda81efc",
+      "git_blob": "245dc875742fb5e645859bd1cfe8c370e4189f12"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
+      "bytes": 6083,
+      "sha256": "67eeb411f49a51532b0aa09ccc8b95e538e5e24d4a7c5142a9c73adac54d604e",
+      "git_blob": "1c032b45ac066ce4ed2cf4bd204a9834d59626a9"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "bytes": 173514,
+      "sha256": "363ee295992d80f0ff35358401a02ae6b460b0bc43fc4bef726c3b26cc8115e0",
+      "git_blob": "15487c549abfe1cf1251f6a65a4be699b6b381fc"
+    }
+  ],
+  "source_A_four_paths_unchanged": true,
+  "core_checkpoint_matches_native_input_28_paths": true,
+  "final_31_changed_paths_match_published_66f_plus_F1_F2": true,
+  "full_repository_tree_reconstruction_executed": false,
+  "native_evidence": {
+    "core_run_id": "mem8-native-66f570-tools-ai395-20261111-ed353-v7",
+    "core_archive_blob": "c08c54c653f9602e1f40953a16689e3a6e7994e2",
+    "core_archive_sha256": "7a2f8bc2a4b3ebd8530f1cee179d6b815b5329a5f1c3076f244439042873eab6",
+    "core_counts": {
+      "memory": 11,
+      "agentd": 5,
+      "protocol": 16,
+      "drain_child_markers": [
+        "commit",
+        "revoke",
+        "panic"
+      ]
+    },
+    "core_audit": {
+      "bytes": 8327,
+      "sha256": "998c9628f63c28ef2474ce96aac052f0d59362c6d208fe3184a62ed520361aa0",
+      "git_blob": "7ab98d3fee3f804ae14b0f6d4c148a70194c7354"
+    },
+    "f2_run_id": "mem8-native-f2-0c32926-ai395-20261111-ed353-v1",
+    "f2_archive_blob": "4985c0223c650faf9b0c5ab8732314c1ceb3b834",
+    "f2_archive_sha256": "9bc850cac9f4777281f4898a7e89c7bee0f96d611043522eeca546002a2ddfca",
+    "f2_audit_blob": "8d00638ff300a9d485af92e0034ce126bb79b4a2",
+    "f2_native_qualified_manifest_blob": "5dcd1784d6664428ac485862c5afb9bcf54979f1",
+    "f2_executions": 11,
+    "f2_distinct_cases": 10
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "schema": "hepta.fitting-diagnostic.review.v1",
+  "outcome": "Incomplete first-token fitting is reproduced before serialization at the fixed development budget.",
+  "execution": "one local fresh synthetic-authority/fresh-base attempt; no retry",
+  "data_status": "Same exposed seed-24029 terminal facts and forty training wordings; not a new held-out or future test.",
+  "model": "fixed SmolLM2-135M-Instruct; rank-8 q/v LoRA",
+  "protocol_sha256": "2fb9c95164e69d6418d5581ccda5432c9c01d17ec53b7886cc1320fe251297a4",
+  "source_identity_sha256": "ca29e8cac677b926ca548b7ba6b073a9d5da33f09166d57dc96357c20e3c37e0",
+  "source_files": 59,
+  "source_and_base_unchanged": true,
+  "configuration": {
+    "seed": 24029,
+    "objective": "completion_ce",
+    "learning_rate": 0.001,
+    "optimizer_updates": 256,
+    "initialization": "frozen_base",
+    "learned_parent": null,
+    "new_cell_id": "retention-fitting-diagnostic-v1",
+    "new_source_id_prefix": "fitting-",
+    "new_roots_disjoint_from_old_current_and_withdrawn": true,
+    "old_checkpoint_loaded_as_memory": false
+  },
+  "findings": {
+    "classification": "first_token_fitting_incomplete",
+    "first_token_correct": 9,
+    "examples": 40,
+    "exact_save_reload_supervised_logit_hashes": 40,
+    "save_reload_argmax_differences": 0,
+    "teacher_prefill_argmax_differences": 0,
+    "maximum_teacher_prefill_logit_abs_difference": 4.76837158203125e-05,
+    "original_adapter_bytes_reproduced": true,
+    "original_generation_first_tokens_reproduced": 40,
+    "mean_final_teacher_ce": 0.9536003604531288,
+    "mean_first_target_negative_log_probability": 2.1490064054727553,
+    "first_token_argmax_counts": {
+      "11575": 1,
+      "24140": 39
+    }
+  },
+  "teacher_forcing_detail": {
+    "first_target_positions": 40,
+    "later_target_positions": 56,
+    "later_positions_correct": 56,
+    "later_positions_mean_nll": 0.0035769924350980936,
+    "eos_positions": 40,
+    "eos_positions_correct": 40,
+    "mean_first_gold_probability": 0.1382138540524765,
+    "first_token_label_mapping": {
+      "24140": "first token of silver (sil)",
+      "11575": "white"
+    },
+    "interpretation": "All supervised labels/masks and shifts match registration. Easy later/EOS targets lower averaged completion CE while the source-specific first token remains poorly fitted. Later positions are conditioned on gold targets, so this is not full-answer generation quality."
+  },
+  "per_entity": [
+    {
+      "entity": "long_00",
+      "examples": 4,
+      "first_token_correct": 0,
+      "mean_completion_ce": 1.1632578074932098,
+      "value": "orange"
+    },
+    {
+      "entity": "long_01",
+      "examples": 4,
+      "first_token_correct": 0,
+      "mean_completion_ce": 1.0740323960781097,
+      "value": "amber"
+    },
+    {
+      "entity": "long_02",
+      "examples": 4,
+      "first_token_correct": 4,
+      "mean_completion_ce": 0.3954300507903099,
+      "value": "silver"
+    },
+    {
+      "entity": "long_04",
+      "examples": 4,
+      "first_token_correct": 0,
+      "mean_completion_ce": 0.7560478448867798,
+      "value": "ivory"
+    },
+    {
+      "entity": "long_06",
+      "examples": 4,
+      "first_token_correct": 0,
+      "mean_completion_ce": 0.8920785933732986,
+      "value": "cyan"
+    },
+    {
+      "entity": "long_07",
+      "examples": 4,
+      "first_token_correct": 0,
+      "mean_completion_ce": 1.4144957661628723,
+      "value": "green"
+    },
+    {
+      "entity": "long_08",
+      "examples": 4,
+      "first_token_correct": 4,
+      "mean_completion_ce": 0.4245782718062401,
+      "value": "silver"
+    },
+    {
+      "entity": "long_09",
+      "examples": 4,
+      "first_token_correct": 0,
+      "mean_completion_ce": 1.3521763980388641,
+      "value": "yellow"
+    },
+    {
+      "entity": "long_10",
+      "examples": 4,
+      "first_token_correct": 1,
+      "mean_completion_ce": 0.8863074332475662,
+      "value": "white"
+    },
+    {
+      "entity": "long_11",
+      "examples": 4,
+      "first_token_correct": 0,
+      "mean_completion_ce": 1.1775990426540375,
+      "value": "black"
+    }
+  ],
+  "cost": {
+    "top_level_model_forward_counts": {
+      "memory_teacher": 40,
+      "reload_prefill": 40,
+      "reload_teacher": 40,
+      "training": 256
+    },
+    "input_tokens": {
+      "memory_teacher": 2966,
+      "reload_prefill": 2870,
+      "reload_teacher": 2966,
+      "training": 18983
+    },
+    "supervised_positions": {
+      "memory_teacher": 96,
+      "reload_prefill": 0,
+      "reload_teacher": 96,
+      "training": 616
+    },
+    "optimizer_updates": 256,
+    "autoregressive_generations": 0,
+    "parameter_count": 460800,
+    "parameter_bytes": 1843200,
+    "gradient_bytes": 1843200,
+    "optimizer_tensor_bytes": 3686880,
+    "model_child_pids": [
+      10,
+      22
+    ],
+    "model_children": 2,
+    "child_cpu_seconds": 383.65871200000004,
+    "max_child_rss_kib": 1160944,
+    "whole_cli_wall_seconds": 206.99024970800383,
+    "runner_wall_seconds": 206.6931877620009,
+    "final_artifact_files": 35,
+    "final_artifact_bytes": 2594382,
+    "checkpoints": 1,
+    "checkpoint_bytes": 1898734
+  },
+  "total_input_tokens": 27785,
+  "total_supervised_positions": 808,
+  "timing": {
+    "started_utc": "2026-10-25T14:04:30.034445+00:00",
+    "all_children_exited_before_utc": "2026-10-25T14:07:57.024693+00:00",
+    "post_completion_source_base_verified_utc": "2026-10-25T14:08:36.458684+00:00"
+  },
+  "withdrawal": {
+    "fresh_source_revocations": 1,
+    "denied_parameter_calls": 2,
+    "statuses": [
+      "revoked",
+      "unavailable"
+    ],
+    "decoder_callbacks": 0,
+    "active_binding_after_revoke": null
+  },
+  "verification": {
+    "raw_checks": 2269,
+    "all_raw_checks_passed": true,
+    "pure_checks_final": 11,
+    "pure_checks_initial": "One test-only receipt-field AttributeError, fixed before freeze; no model loaded.",
+    "actual_forward_events_complete": 376,
+    "actual_forward_events_entered": 376,
+    "budget_refund": 0
+  },
+  "limits_and_scope": [
+    "376 means observed top-level public model forward calls; backward and decoder-layer arithmetic are not additional model-forward units.",
+    "Two CPUs means process affinity at most two cores and Torch two threads; it is not a CPU-second quota or dedicated cgroup/RSS limit.",
+    "An external supervisor bounded the complete CLI to 600 seconds; actual complete CLI wall time was 206.990 seconds. The inner timer excludes initial preflight and final sealing.",
+    "Five MB is an admission/final-success artifact gate, not a continuously enforced filesystem quota. Actual run artifacts were 2,594,382 bytes. Failure evidence is retained.",
+    "The fresh owner is a local synthetic research authority; original textual scope is retained solely to reproduce exact prompt tokens.",
+    "Zero autoregressive generations were run. This does not measure new full-answer, held-out, longitudinal, natural-domain, or downstream task quality.",
+    "The result rules out an observed save/load or teacher/prefill first-token discrepancy in this exact diagnostic, not all possible read-path bugs.",
+    "No convergence or intrinsic LoRA rank/capacity limit has been established.",
+    "The previous nine-trial quality activation gate still fails. The eight-round extension was not launched.",
+    "External production authority and the full future-task qualification gate remain open."
+  ],
+  "next_decision": "Any new optimization intervention requires a separate fixed development protocol. Do not launch the longer stream on the basis of this fitting diagnosis.",
+  "future_gate_satisfied": false,
+  "production_accepted": false,
+  "evidence": {
+    "raw_audit": {
+      "relative_control_path": "fitting-development-001/raw-audit.json",
+      "sha256": "00a39c275c03ee941dae658ad5f01a1d43a4de5cf32861090f050bca2d8b8b7f"
+    },
+    "raw_summary": {
+      "relative_control_path": "fitting-development-001/raw-summary.json",
+      "sha256": "379d5f9d793c8644088f286a5dbcf9993c2036bf3a99203a67f6e7dcde26f8fc"
+    },
+    "supervisor_receipt": {
+      "relative_control_path": "fitting-development-001/execution-result.json",
+      "sha256": "ad6ec07e5742a0ae739ffb060da72b8971e3ab57165c28ed2925df6f6008dc46"
+    },
+    "source_after": {
+      "relative_control_path": "fitting-development-001/source-after.json",
+      "sha256": "e0866596b32c9bf25933f013a17513fa1bbc5f205383ed08a0e3427efa175e9a"
+    },
+    "pure_checks": {
+      "relative_control_path": "fitting-development-001/pure-checks-002.json",
+      "sha256": "b1d32d7485fd12cd94f705c964bbc043ea8607073c6608cfe5145ce94fa799c2"
+    },
+    "release": {
+      "relative_control_path": "fitting-development-001/completion-release.json",
+      "sha256": "74e7d340f8c6bda0cc7494197d909e8d5e20782cfbc27e0c37b36cf7c022eff2"
+    },
+    "source_patch": {
+      "relative_control_path": "fitting-development-001/implementation-before-format.patch",
+      "sha256": "935cdf70cc97fa90048e912769b09b3b333c2908fd856cdc339ed92449639350"
+    },
+    "auditor": {
+      "relative_control_path": "fitting-development-001/audit_fitting.py",
+      "sha256": "6757ede53148359c4ca47fa72841449bbb8aeb3893838be2861f6427a4c90283"
+    }
+  },
+  "run_result_sha256": "81ad4b3030c5ebec2627c257f7104e041e7b9a9c574af78cfdd97eb97ef101af",
+  "prior_diagnosis_sha256": "4c63909e872482fe6883e53a1b92c216672486a17c2e943eb91244e3f313f893"
+}

@@ -1,0 +1,134 @@
+[
+  {
+    "base_tag": "first",
+    "path_kind": "prod",
+    "base_blob_computed": "a78c972e273fdd57b4819ecc6bddcf77e8008e85",
+    "base_bytes": 67818,
+    "current_blob": "4aecf51b3ad04e16eeeea0d79adb60df02a10e08",
+    "incoming_blob": "072e7dfd8f222f65765f0570001eec2b18f9c465",
+    "command": [
+      "git",
+      "merge-file",
+      "-p",
+      "--diff3",
+      "next-frontier/blobs/4aecf51b3ad04e16eeeea0d79adb60df02a10e08.blob",
+      "next-frontier/terminal-summary-draft/base-first-prod.raw",
+      "next-frontier/blobs/072e7dfd8f222f65765f0570001eec2b18f9c465.blob"
+    ],
+    "exit_code": 1,
+    "conflict_regions": 1,
+    "result_sha256": "3955cf481e5b120dff3ceab7c9343d3654a07e0be84bbd2e80e3f36dcf6d362a",
+    "stdout_file": "/workspace/scratch/c2d514464ab5/merge-recovery/next-frontier/terminal-summary-draft/threeway-first-prod.txt",
+    "stderr": ""
+  },
+  {
+    "base_tag": "first",
+    "path_kind": "tests",
+    "base_blob_computed": "569110165cc625ac4bfba3285e5a937c800afad8",
+    "base_bytes": 27564,
+    "current_blob": "0cbd98a969ce6b3293278415b38314db726ddf13",
+    "incoming_blob": "bff3b270e4a39e2695ee907a5212e69dea93a21e",
+    "command": [
+      "git",
+      "merge-file",
+      "-p",
+      "--diff3",
+      "next-frontier/blobs/0cbd98a969ce6b3293278415b38314db726ddf13.blob",
+      "next-frontier/terminal-summary-draft/base-first-tests.raw",
+      "next-frontier/blobs/bff3b270e4a39e2695ee907a5212e69dea93a21e.blob"
+    ],
+    "exit_code": 1,
+    "conflict_regions": 1,
+    "result_sha256": "f6e6ded52968bf8234010c23b3a0a0bf3e6d46d552fdd66ad732af7abe3636e8",
+    "stdout_file": "/workspace/scratch/c2d514464ab5/merge-recovery/next-frontier/terminal-summary-draft/threeway-first-tests.txt",
+    "stderr": ""
+  },
+  {
+    "base_tag": "second",
+    "path_kind": "prod",
+    "base_blob_computed": "a78c972e273fdd57b4819ecc6bddcf77e8008e85",
+    "base_bytes": 67818,
+    "current_blob": "4aecf51b3ad04e16eeeea0d79adb60df02a10e08",
+    "incoming_blob": "072e7dfd8f222f65765f0570001eec2b18f9c465",
+    "command": [
+      "git",
+      "merge-file",
+      "-p",
+      "--diff3",
+      "next-frontier/blobs/4aecf51b3ad04e16eeeea0d79adb60df02a10e08.blob",
+      "next-frontier/terminal-summary-draft/base-second-prod.raw",
+      "next-frontier/blobs/072e7dfd8f222f65765f0570001eec2b18f9c465.blob"
+    ],
+    "exit_code": 1,
+    "conflict_regions": 1,
+    "result_sha256": "746834e317d8138767479554be41be394306eaab121f5459c8d0f7d243674aad",
+    "stdout_file": "/workspace/scratch/c2d514464ab5/merge-recovery/next-frontier/terminal-summary-draft/threeway-second-prod.txt",
+    "stderr": ""
+  },
+  {
+    "base_tag": "second",
+    "path_kind": "tests",
+    "base_blob_computed": "569110165cc625ac4bfba3285e5a937c800afad8",
+    "base_bytes": 27564,
+    "current_blob": "0cbd98a969ce6b3293278415b38314db726ddf13",
+    "incoming_blob": "bff3b270e4a39e2695ee907a5212e69dea93a21e",
+    "command": [
+      "git",
+      "merge-file",
+      "-p",
+      "--diff3",
+      "next-frontier/blobs/0cbd98a969ce6b3293278415b38314db726ddf13.blob",
+      "next-frontier/terminal-summary-draft/base-second-tests.raw",
+      "next-frontier/blobs/bff3b270e4a39e2695ee907a5212e69dea93a21e.blob"
+    ],
+    "exit_code": 1,
+    "conflict_regions": 1,
+    "result_sha256": "e1daedc366c6baebce0c7ceec9c8d8544569fdad208268e62825300a6c6fd166",
+    "stdout_file": "/workspace/scratch/c2d514464ab5/merge-recovery/next-frontier/terminal-summary-draft/threeway-second-tests.txt",
+    "stderr": ""
+  },
+  {
+    "base_tag": "third",
+    "path_kind": "prod",
+    "base_blob_computed": "a78c972e273fdd57b4819ecc6bddcf77e8008e85",
+    "base_bytes": 67818,
+    "current_blob": "4aecf51b3ad04e16eeeea0d79adb60df02a10e08",
+    "incoming_blob": "072e7dfd8f222f65765f0570001eec2b18f9c465",
+    "command": [
+      "git",
+      "merge-file",
+      "-p",
+      "--diff3",
+      "next-frontier/blobs/4aecf51b3ad04e16eeeea0d79adb60df02a10e08.blob",
+      "next-frontier/terminal-summary-draft/base-third-prod.raw",
+      "next-frontier/blobs/072e7dfd8f222f65765f0570001eec2b18f9c465.blob"
+    ],
+    "exit_code": 1,
+    "conflict_regions": 1,
+    "result_sha256": "efade2746b57319f5369ac62983f15a2d2739a0ee4ac3179215ec54eda63856a",
+    "stdout_file": "/workspace/scratch/c2d514464ab5/merge-recovery/next-frontier/terminal-summary-draft/threeway-third-prod.txt",
+    "stderr": ""
+  },
+  {
+    "base_tag": "third",
+    "path_kind": "tests",
+    "base_blob_computed": "569110165cc625ac4bfba3285e5a937c800afad8",
+    "base_bytes": 27564,
+    "current_blob": "0cbd98a969ce6b3293278415b38314db726ddf13",
+    "incoming_blob": "bff3b270e4a39e2695ee907a5212e69dea93a21e",
+    "command": [
+      "git",
+      "merge-file",
+      "-p",
+      "--diff3",
+      "next-frontier/blobs/0cbd98a969ce6b3293278415b38314db726ddf13.blob",
+      "next-frontier/terminal-summary-draft/base-third-tests.raw",
+      "next-frontier/blobs/bff3b270e4a39e2695ee907a5212e69dea93a21e.blob"
+    ],
+    "exit_code": 1,
+    "conflict_regions": 1,
+    "result_sha256": "3268714adc54bdcd2336bf85f39e6ff99d9210fca0687f91e8b1666949128a7d",
+    "stdout_file": "/workspace/scratch/c2d514464ab5/merge-recovery/next-frontier/terminal-summary-draft/threeway-third-tests.txt",
+    "stderr": ""
+  }
+]

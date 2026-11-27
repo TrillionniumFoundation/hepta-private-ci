@@ -1,0 +1,49 @@
+{
+  "source_sha": "0cb777545966333a96be265a69d03c9982231bc7",
+  "tree_sha": "fcfdfca3b516ee929615ce7b811b6a27dd62d2d6",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-memory",
+    "--lib",
+    "--locked",
+    "-E",
+    "test(v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection)"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs",
+  "started_at": "2026-10-21T01:21:32.768027+00:00",
+  "cargo_lock_sha256_before": "8b458776ce179b326a6f5aef718b302f80fa0af40143bef1d512f0980dd3e0b1",
+  "environment_overrides": {
+    "CARGO_HOME": "/workspace/scratch/337c309bc660/hepta-native-cache",
+    "CARGO_TARGET_DIR": "/workspace/scratch/337c309bc660/hepta-native-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "RUSTFLAGS": "--sysroot /tmp/hepta-wave2-tools/unpack/rust-std.tar.xz/rust-std-1.95.0-x86_64-unknown-linux-gnu/rust-std-x86_64-unknown-linux-gnu"
+  },
+  "free_disk_bytes_before": 1390686208,
+  "status": "FAIL",
+  "runner_pid": 688075,
+  "runner_parent_pid": 240,
+  "source_identity_before": {
+    "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "modified_files": {}
+  },
+  "log_path": "/workspace/scratch/337c309bc660/hepta-audit/research/native/0cb77754-baseline-focus.log",
+  "command_pid": 688118,
+  "finished_at": "2026-10-21T01:21:35.234194+00:00",
+  "duration_seconds": 2.4505986329895677,
+  "exit_code": 100,
+  "cargo_lock_sha256_after": "8b458776ce179b326a6f5aef718b302f80fa0af40143bef1d512f0980dd3e0b1",
+  "cargo_lock_unchanged": true,
+  "free_disk_bytes_after": 1389649920,
+  "source_identity_after": {
+    "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "modified_files": {}
+  },
+  "log_sha256": "35756337b7e1d14b50f31376a8efb27fbe02f1f35a8225434bb4213b50a8e555",
+  "source_unchanged_during_command": true
+}

@@ -3,4 +3,5 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-infer-core",
     crate_name = "codex_hepta_infer_core",
+    unit_test_features = ["qualification-owned-file-read"],
 )

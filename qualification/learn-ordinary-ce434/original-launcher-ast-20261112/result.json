@@ -1,0 +1,296 @@
+{
+  "assessment": "unknown_from_static_ast",
+  "ast": {
+    "ast_nodes_visited": 233,
+    "calls": [
+      {
+        "callee_ast_node": "Attribute",
+        "column": 5,
+        "end_column": 119,
+        "end_line": 2,
+        "line": 2,
+        "name": "pathlib.Path",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 5,
+        "end_column": 15,
+        "end_line": 6,
+        "line": 6,
+        "name": "p.exists",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 16,
+        "end_column": 51,
+        "end_line": 6,
+        "line": 6,
+        "name": "p.rename",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 7,
+        "end_column": 124,
+        "end_line": 7,
+        "line": 7,
+        "name": "pathlib.Path",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Name",
+        "column": 198,
+        "end_column": 209,
+        "end_line": 8,
+        "line": 8,
+        "name": "str",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 2,
+        "end_column": 18,
+        "end_line": 9,
+        "line": 9,
+        "name": "time.monotonic",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 5,
+        "end_column": 59,
+        "end_line": 10,
+        "line": 10,
+        "name": null,
+        "statically_named": false
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 67,
+        "end_column": 129,
+        "end_line": 10,
+        "line": 10,
+        "name": "subprocess.run",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Name",
+        "column": 7,
+        "end_column": 157,
+        "end_line": 11,
+        "line": 11,
+        "name": "dict",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 38,
+        "end_column": 73,
+        "end_line": 11,
+        "line": 11,
+        "name": "hashlib.sha256",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 38,
+        "end_column": 85,
+        "end_line": 11,
+        "line": 11,
+        "name": null,
+        "statically_named": false
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 53,
+        "end_column": 72,
+        "end_line": 11,
+        "line": 11,
+        "name": "binary.read_bytes",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 112,
+        "end_column": 128,
+        "end_line": 11,
+        "line": 11,
+        "name": "time.monotonic",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 0,
+        "end_column": 90,
+        "end_line": 12,
+        "line": 12,
+        "name": null,
+        "statically_named": false
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 57,
+        "end_column": 84,
+        "end_line": 12,
+        "line": 12,
+        "name": "json.dumps",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Name",
+        "column": 91,
+        "end_column": 125,
+        "end_line": 12,
+        "line": 12,
+        "name": "print",
+        "statically_named": true
+      },
+      {
+        "callee_ast_node": "Attribute",
+        "column": 97,
+        "end_column": 124,
+        "end_line": 12,
+        "line": 12,
+        "name": "json.dumps",
+        "statically_named": true
+      }
+    ],
+    "definitions": [],
+    "identifier_names_omitted": 0,
+    "imports": [
+      {
+        "alias": null,
+        "column": 7,
+        "end_column": 14,
+        "end_line": 1,
+        "kind": "import",
+        "line": 1,
+        "module": "pathlib"
+      },
+      {
+        "alias": null,
+        "column": 15,
+        "end_column": 19,
+        "end_line": 1,
+        "kind": "import",
+        "line": 1,
+        "module": "json"
+      },
+      {
+        "alias": null,
+        "column": 20,
+        "end_column": 30,
+        "end_line": 1,
+        "kind": "import",
+        "line": 1,
+        "module": "subprocess"
+      },
+      {
+        "alias": null,
+        "column": 31,
+        "end_column": 33,
+        "end_line": 1,
+        "kind": "import",
+        "line": 1,
+        "module": "os"
+      },
+      {
+        "alias": null,
+        "column": 34,
+        "end_column": 38,
+        "end_line": 1,
+        "kind": "import",
+        "line": 1,
+        "module": "time"
+      },
+      {
+        "alias": null,
+        "column": 39,
+        "end_column": 46,
+        "end_line": 1,
+        "kind": "import",
+        "line": 1,
+        "module": "hashlib"
+      }
+    ],
+    "interface_markers": [
+      {
+        "ast_node": "Name",
+        "category": "root",
+        "column": 0,
+        "end_column": 4,
+        "end_line": 2,
+        "identifier_field": "identifier",
+        "line": 2,
+        "marker": "root"
+      },
+      {
+        "ast_node": "Name",
+        "category": "root",
+        "column": 125,
+        "end_column": 129,
+        "end_line": 2,
+        "identifier_field": "identifier",
+        "line": 2,
+        "marker": "root"
+      },
+      {
+        "ast_node": "Name",
+        "category": "root",
+        "column": 172,
+        "end_column": 176,
+        "end_line": 2,
+        "identifier_field": "identifier",
+        "line": 2,
+        "marker": "root"
+      }
+    ],
+    "node_limit_reached": false,
+    "observed_record_counts": {
+      "calls": 17,
+      "definitions": 0,
+      "imports": 6,
+      "interface_markers": 3
+    },
+    "omitted_record_counts": {
+      "calls": 0,
+      "definitions": 0,
+      "imports": 0,
+      "interface_markers": 0
+    },
+    "position_units": "line: 1-based; column: CPython UTF-8 byte offset, 0-based",
+    "summary_complete": true
+  },
+  "limitations": [
+    "Identifier mentions and call syntax do not prove execution, imports, grants or deployment.",
+    "Dynamic callees and runtime argument values are not resolved.",
+    "All source literal values, docstrings, comments and source-line text are omitted.",
+    "Only the fixed target is read; referenced files and modules are not opened or imported.",
+    "Metadata stability is checked at the sampled points; no filesystem lock is claimed."
+  ],
+  "limits": {
+    "accepted_source_encoding": "UTF-8 with optional BOM",
+    "max_ast_nodes": 50000,
+    "max_file_bytes": 65536,
+    "max_identifier_chars": 256,
+    "max_records_per_kind": 512
+  },
+  "ordinary_execution_authority_proven": false,
+  "runtime_owner_custody_observed": false,
+  "schema": "hepta.service-root01.safe-static-ast.v1",
+  "source": {
+    "ctime_ns": 1792775306676468050,
+    "device": 2067,
+    "inode": 83,
+    "mode": "0o664",
+    "mtime_ns": 1792775306676468050,
+    "nlink": 1,
+    "read_before_after_identity_equal": true,
+    "sha256": "9919f15ae0ba3c58fa1630345b51adb566fc1ba18914c0d0051e50075246ef77",
+    "size_bytes": 1379
+  },
+  "status": "ok",
+  "target": "/data/hepta-service-root-01.py"
+}

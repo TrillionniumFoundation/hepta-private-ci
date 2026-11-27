@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+mod canonical_adapter;
 mod durable;
 mod v2;
 
@@ -19,6 +20,11 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
+pub use canonical_adapter::CanonicalCognitiveStoreV1Ext;
+pub use canonical_adapter::CanonicalMemoryWriteRejectionV1;
+pub use canonical_adapter::CanonicalMemoryWriteV1;
+pub use canonical_adapter::CanonicalStoreAdapterErrorV1;
+pub use canonical_adapter::canonical_rejection_v1;
 pub use durable::CognitiveAccess;
 pub use durable::CognitiveRecoveryAnchor;
 pub use durable::CognitiveRecoveryError;

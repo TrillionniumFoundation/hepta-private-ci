@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn-n256-hosted-runtime-snapshot-request-v2",
+  "identity": "hcsn-n256-hosted-runtime-snapshot-20261118-c06d-002",
+  "base_commit": "6257d15ce0e260f56c7ff4c6afed1de986b95bb8",
+  "repair_parent_head": "481a42e729e866a923a8f74b0d7fc25dfbf85f0d",
+  "parent_draft": 6623,
+  "current_draft": 6627,
+  "runner": "ubuntu-latest",
+  "python_version": "3.12.3",
+  "numpy_version": "2.3.5",
+  "scipy_version": "1.17.0",
+  "binary_wheels_only": true,
+  "launch_form": "python -m qualification.hcsn_currentstate_n256_hosted_runtime_snapshot.capture",
+  "repair_scope": "Replace direct file execution with module execution; do not change capture logic or admission.",
+  "prior_desktop_failures_preserved": [
+    "1a1ece4d9ea-392-4590",
+    "1a1ecea79d3-392-45a1",
+    "1a1ecf46cc4-392-45bb"
+  ],
+  "prior_hosted_failures_preserved": [44252369558],
+  "future_envelope": {
+    "coordinate_denominator": 69728,
+    "dynamic_steps": 1,
+    "dense_expm_actions": 2,
+    "expm_orders": [258, 259]
+  },
+  "capture_sha256": "b789812e6d2e2089723f3f2107a534c63c0dc59e626307b9fea9cf47451cff57",
+  "snapshot_source_sha256": "22d3a8e6bf751c6f5e00fcdd72ab8771d4270024f3d66cd6ba4c3eb2f4e4c5e2",
+  "n256_numerical_execution_allowed": false,
+  "n256_input_reads": 0,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "runtime_admitted": false,
+  "resource_admitted": false,
+  "historical_negative_and_unknown_preserved": true,
+  "all_closed": false
+}

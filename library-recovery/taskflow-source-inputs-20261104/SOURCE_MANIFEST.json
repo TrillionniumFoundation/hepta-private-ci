@@ -1,0 +1,104 @@
+{
+  "schema": "taskflow-original-source-input-projection-v1",
+  "generated_utc": "2026-11-04 00:53:19 UTC",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private_at_publication": false,
+  "parent_commit": "e9a62beecd03444b0e9e200ed97eccf2ba84be72",
+  "prefix": "library-recovery/taskflow-source-inputs-20261104",
+  "source_object_count": 2,
+  "source_bytes": 88823,
+  "frozen_candidate_union": 6116,
+  "formal_verified_count_unchanged": 5888,
+  "formal_remaining_unchanged": 228,
+  "additional_ledger_prior_count": 43,
+  "additional_new_object_count": 2,
+  "source_candidate_sets_unchanged": true,
+  "source_executed": false,
+  "original_container_uploaded": false,
+  "original_parent_sync_inferred": false,
+  "original_archive_dot_history_completeness_proven": false,
+  "scientific_or_native_acceptance_inferred": false,
+  "all_library_source_synced": false,
+  "eligible_to_clear_library": false,
+  "library_deletion_performed": false,
+  "boundaries": [
+    "DRAFT",
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "HOLD_NO_GO"
+  ],
+  "objects": [
+    {
+      "git_blob_sha": "c315b346fed3ae73328821dc2efb67838916fe3f",
+      "sha256": "185d72c479c60b6429fa552a1c928152c01a5d28a4fd648e9584a0745a9d874e",
+      "bytes": 54737,
+      "relative_path": "objects/c315b346fed3ae73328821dc2efb67838916fe3f.rs",
+      "original_path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "role": "original Rust source version embedded in a source-publication input JSON",
+      "original_mode": "100644",
+      "original_type": "blob",
+      "candidate_group": "additional-publication-input-source",
+      "candidate_types": [
+        "JSON source string"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "original_occurrences": [
+        {
+          "original_file": "TaskFlow-new-fairness-transport-candidate-dfac7171-20261005.zip",
+          "member": "native-evidence/infer-exclusive-client/publication-manifest.json",
+          "parent_identity": {
+            "git_blob_sha": "ddc59a20916b6db5b0f64a661286d8f70fa95892",
+            "sha256": "de123fa6aee0d198eea17e3489c1c87171c103a6d406b5c5c288d2f07afe85b8",
+            "bytes": 825213
+          },
+          "json_pointer": "/commits/1/entries/0/content",
+          "declared_local_commit": "55114323c9baf583cc7d195f6029a4ac60475f58",
+          "source_text_encoding": "utf-8",
+          "extraction_provenance": "Reconstructed from the earlier exact extraction audit recorded before execution-environment loss; original parent bytes could not be reread in this environment. Fresh Git source bytes match all three previously recorded fingerprints."
+        }
+      ],
+      "reuse_existing_git_blob": true,
+      "attribution_basis": "Original codex-rs/ext/hepta-memory paths and concrete codex_extension_api interfaces; identical Git object freshly fetched from this same repository. This supports current inactive archival placement, not unique historical ownership.",
+      "original_parent_sync_inferred": false,
+      "preserved_source_executed": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "91c3baa7792a9a00258ff55fb10c3bf8738b5538",
+      "sha256": "ee1d6bf6f4d6b3b05f9470fa963796174b5b437dfb42e08ab79dca6e4f700565",
+      "bytes": 34086,
+      "relative_path": "objects/91c3baa7792a9a00258ff55fb10c3bf8738b5538.rs",
+      "original_path": "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+      "role": "original Rust source version embedded in a source-publication input JSON",
+      "original_mode": "100644",
+      "original_type": "blob",
+      "candidate_group": "additional-publication-input-source",
+      "candidate_types": [
+        "JSON source string"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "original_occurrences": [
+        {
+          "original_file": "TaskFlow-new-fairness-transport-candidate-dfac7171-20261005.zip",
+          "member": "native-evidence/infer-exclusive-client/publication-manifest.json",
+          "parent_identity": {
+            "git_blob_sha": "ddc59a20916b6db5b0f64a661286d8f70fa95892",
+            "sha256": "de123fa6aee0d198eea17e3489c1c87171c103a6d406b5c5c288d2f07afe85b8",
+            "bytes": 825213
+          },
+          "json_pointer": "/commits/1/entries/1/content",
+          "declared_local_commit": "55114323c9baf583cc7d195f6029a4ac60475f58",
+          "source_text_encoding": "utf-8",
+          "extraction_provenance": "Reconstructed from the earlier exact extraction audit recorded before execution-environment loss; original parent bytes could not be reread in this environment. Fresh Git source bytes match all three previously recorded fingerprints."
+        }
+      ],
+      "reuse_existing_git_blob": true,
+      "attribution_basis": "Original codex-rs/ext/hepta-memory paths and concrete codex_extension_api interfaces; identical Git object freshly fetched from this same repository. This supports current inactive archival placement, not unique historical ownership.",
+      "original_parent_sync_inferred": false,
+      "preserved_source_executed": false,
+      "scientific_or_native_acceptance_inferred": false
+    }
+  ]
+}

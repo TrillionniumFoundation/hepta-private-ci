@@ -1,0 +1,34 @@
+{
+  "NPZ_wire_state_coordinates_exact": 36400,
+  "event_reset_snapshots_checked": 185,
+  "exponential_actions": 0,
+  "frozen_source_files_checked": 17,
+  "model_calls": 0,
+  "observed_minimum_probability_coordinate": 0.0,
+  "optimizer_steps": 0,
+  "raw_BDF_meshes": {
+    "coarse": {
+      "mesh_state_coordinates_checked": 2543380,
+      "nfev": 3928,
+      "njev": 16,
+      "nlu": 401,
+      "segments": 16
+    },
+    "fine": {
+      "mesh_state_coordinates_checked": 4819990,
+      "nfev": 7450,
+      "njev": 16,
+      "nlu": 696,
+      "segments": 16
+    }
+  },
+  "reader_body_cost": {
+    "cpu_seconds": 1.9801637530000002,
+    "scope": "body excludes imports; RSS is whole process",
+    "wall_seconds": 1.9928674809998483,
+    "whole_process_peak_RSS_KiB": 191464
+  },
+  "scope": "post-run custody verification; unchanged precommitted numerical gates",
+  "source_sha256": "51af8fa3893ca9a31000177fa18168a9369d88f1acf655f7db58a6c52716555e",
+  "status": "PASS"
+}

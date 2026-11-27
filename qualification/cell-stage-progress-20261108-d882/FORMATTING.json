@@ -1,0 +1,247 @@
+{
+  "scope": "final format source readback; no behavioral tests rerun after final formatting",
+  "python_asts_unchanged": true,
+  "native_tests_before_scoped_fix_and_format": true,
+  "scoped_fix_exit_code": 0,
+  "scoped_fix_patch_bytes": 0,
+  "commands": [
+    {
+      "command": [
+        "/workspace/scratch/d882890e1711/hepta-stage/scripts/.venv/bin/ruff",
+        "format",
+        "proposals/localization-v2/gradient_diagnostics.py",
+        "proposals/localization-v2/models.py",
+        "proposals/localization-v2/structural_state.py",
+        "proposals/localization-v2/test_structural_state.py",
+        "proposals/localization-v2/test_training_diagnostics.py",
+        "proposals/localization-v2/train_development.py",
+        "scripts/hepta_pred1/preparation.py",
+        "scripts/hepta_pred1/test_preparation.py",
+        "scripts/memory_cell_mem1/environment.py",
+        "scripts/memory_cell_mem1/native.py",
+        "scripts/memory_cell_mem1/run.py",
+        "scripts/memory_cell_mem1/test_environment.py",
+        "scripts/ndu_real_runtime/candidate_diagnostic.py",
+        "scripts/ndu_real_runtime/candidate_memory.py",
+        "scripts/ndu_real_runtime/evolve1.py",
+        "scripts/ndu_real_runtime/test_candidate_diagnostic.py",
+        "scripts/ndu_real_runtime/test_candidate_memory.py",
+        "scripts/ndu_real_runtime/test_evolve1.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.02579652900021756,
+      "log": "format-0.log"
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "81da60b349e32d89d0e4c4674a517a66af7e5eee"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.23998009199931403,
+      "log": "format-1.log"
+    }
+  ],
+  "files": {
+    ".github/workflows/hepta-evolve1.yml": {
+      "before_sha256": "fbcd3ffed38e0c71a82e64175288126a5c86a152cd6fa39fb6003a9d89cc79e2",
+      "after_sha256": "fbcd3ffed38e0c71a82e64175288126a5c86a152cd6fa39fb6003a9d89cc79e2",
+      "before_bytes": 6067,
+      "after_bytes": 6067
+    },
+    ".github/workflows/hepta-training-state-development.yml": {
+      "before_sha256": "b4ad56ddc66f17bdadbb8848abd1acd1d5991de55d3844f2ff612c8308f77a52",
+      "after_sha256": "b4ad56ddc66f17bdadbb8848abd1acd1d5991de55d3844f2ff612c8308f77a52",
+      "before_bytes": 4896,
+      "after_bytes": 4896
+    },
+    "codex-rs/hepta-agentd/src/learning_iteration.rs": {
+      "before_sha256": "8c59217b0471a3c25436ecd1ccdbbf1c7c3fab96fe18996ef3da9e1eaeb9016f",
+      "after_sha256": "8c59217b0471a3c25436ecd1ccdbbf1c7c3fab96fe18996ef3da9e1eaeb9016f",
+      "before_bytes": 11845,
+      "after_bytes": 11845
+    },
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs": {
+      "before_sha256": "9114b524ed47010c6e474ec39a48cbbf519fab34b98a96a9c74efd0dc18b8e4e",
+      "after_sha256": "9114b524ed47010c6e474ec39a48cbbf519fab34b98a96a9c74efd0dc18b8e4e",
+      "before_bytes": 9405,
+      "after_bytes": 9405
+    },
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs": {
+      "before_sha256": "bfd7763229ea1c714699164f48ba5a3737e7ce42d5bdb4c1b8ded6814dc86a69",
+      "after_sha256": "bfd7763229ea1c714699164f48ba5a3737e7ce42d5bdb4c1b8ded6814dc86a69",
+      "before_bytes": 4868,
+      "after_bytes": 4868
+    },
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs": {
+      "before_sha256": "4864164c45600723de070ec62d8037eb118e62de0b045478324b473cbcf55510",
+      "after_sha256": "c58e3f4eaa45da7032b199c8bacea4a110282a997c38df2dbc3ff2d5b2368328",
+      "before_bytes": 10511,
+      "after_bytes": 11103
+    },
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_tests.rs": {
+      "before_sha256": "9d3ceb6ee0fd9bf6394ea08b1ed4ada6231ca5d28e014c7e3289f059452f93a1",
+      "after_sha256": "9d3ceb6ee0fd9bf6394ea08b1ed4ada6231ca5d28e014c7e3289f059452f93a1",
+      "before_bytes": 11656,
+      "after_bytes": 11656
+    },
+    "codex-rs/hepta-agentd/src/learning_iteration_ports.rs": {
+      "before_sha256": "2e7eee137dcfa057e463b482014c2a47a2c9ae12a97cf654e4631a8a1d2ad0f5",
+      "after_sha256": "2e7eee137dcfa057e463b482014c2a47a2c9ae12a97cf654e4631a8a1d2ad0f5",
+      "before_bytes": 5730,
+      "after_bytes": 5730
+    },
+    "codex-rs/hepta-agentd/src/lib.rs": {
+      "before_sha256": "9c873bff1eb7ef96b024d6690e0ce9c7fc2fff4e9c738a55f2e45da49dd9a80c",
+      "after_sha256": "9c873bff1eb7ef96b024d6690e0ce9c7fc2fff4e9c738a55f2e45da49dd9a80c",
+      "before_bytes": 42568,
+      "after_bytes": 42568
+    },
+    "proposals/localization-v2/gradient_diagnostics.py": {
+      "before_sha256": "8c4a43b8ab4aaa10023deb9306fbd8089ed654fc1d6e0637fc9de7cba9b4aede",
+      "after_sha256": "8c4a43b8ab4aaa10023deb9306fbd8089ed654fc1d6e0637fc9de7cba9b4aede",
+      "before_bytes": 1819,
+      "after_bytes": 1819,
+      "python_ast_sha256": "363b54b45c5c4a24696d8cf7baa3096ee34c470c4121fd5bc09bab638ff02939",
+      "ast_unchanged": true
+    },
+    "proposals/localization-v2/models.py": {
+      "before_sha256": "039aa1575bb236da5b7be98e1410fa6ef93430b243f716f160db67db92d34d53",
+      "after_sha256": "039aa1575bb236da5b7be98e1410fa6ef93430b243f716f160db67db92d34d53",
+      "before_bytes": 12130,
+      "after_bytes": 12130,
+      "python_ast_sha256": "dd1f7eea67a1c7b020ca34f06c78661fa98aa3a7c34656e47d55c89d9a93e47c",
+      "ast_unchanged": true
+    },
+    "proposals/localization-v2/structural_state.py": {
+      "before_sha256": "7fd9e065472a66f8fd309106058b3254ef8153e4a5459c923d4433261e20195f",
+      "after_sha256": "72c709d06c52ad0528e657051f0a83e8ecb616521509a402321cb7b8d5a7993d",
+      "before_bytes": 13117,
+      "after_bytes": 14160,
+      "python_ast_sha256": "32c2df8b37efb26e6f7c41d037cac830e55a54dc16e98daf0f924347e5920500",
+      "ast_unchanged": true
+    },
+    "proposals/localization-v2/test_structural_state.py": {
+      "before_sha256": "bf0f6892bc4addd49d4ffe43c663f623d59971deb42931ed898b7f770e28b5c3",
+      "after_sha256": "37e91f1cac17a6ecb9fb23637651711d9087a33866e39280e37c5e71b9ca03d5",
+      "before_bytes": 9794,
+      "after_bytes": 11109,
+      "python_ast_sha256": "2aaf6e2eae7b6828df4de597a760d5114c9e76dfb936c4e1e39f79520a3c1afe",
+      "ast_unchanged": true
+    },
+    "proposals/localization-v2/test_training_diagnostics.py": {
+      "before_sha256": "957def977f55f655921d5bc031cbb705d512b98516129592c77ac13e487d9b4e",
+      "after_sha256": "58063fddfef832e86451f09f3a2cf5073d33a2f88b761818c2823ee13499878c",
+      "before_bytes": 9655,
+      "after_bytes": 11084,
+      "python_ast_sha256": "4340abf20bb72a9f80e54b0325949f594d1fb01ab3772b432723100b798c3285",
+      "ast_unchanged": true
+    },
+    "proposals/localization-v2/train_development.py": {
+      "before_sha256": "00d94fcb6eda76d2892fd84e4fe973f7eaf6b61b83a36a562b4a35510450f0d7",
+      "after_sha256": "00d94fcb6eda76d2892fd84e4fe973f7eaf6b61b83a36a562b4a35510450f0d7",
+      "before_bytes": 17568,
+      "after_bytes": 17568,
+      "python_ast_sha256": "6f297a7da5e2578c9f8bebe10df92f21c5f02035aa5ee3e905a4a738fe58f73e",
+      "ast_unchanged": true
+    },
+    "scripts/hepta_pred1/preparation.py": {
+      "before_sha256": "1b4bad913e1bd00df9f24dfed10259bad6d40ebae39f54e591ea3dfcb39e7e59",
+      "after_sha256": "eb97b92889869b953363e64cb17206958f39c1f4a0e91ae6417ad28b88cbbf80",
+      "before_bytes": 12163,
+      "after_bytes": 12312,
+      "python_ast_sha256": "6ea0d4bd73aab0cba923ed01ea95818e80a41a399a703d6d3bd171100fea1aab",
+      "ast_unchanged": true
+    },
+    "scripts/hepta_pred1/test_preparation.py": {
+      "before_sha256": "16265df224332fc9315d7fc9af8fdf6b07fa83a3acc3e74f1e79a195d11de0ca",
+      "after_sha256": "b3bd84df7867e798b0c125897a860488071ff3ba8ba0568bfc921a712fba1f53",
+      "before_bytes": 10508,
+      "after_bytes": 10836,
+      "python_ast_sha256": "06ece5675a557ffb8457839b3b2641fbc148551bcf2b6f8722347f4a68406660",
+      "ast_unchanged": true
+    },
+    "scripts/memory_cell_mem1/environment.py": {
+      "before_sha256": "fddc89c1d3536ed5712d034d8551819658800aff655b0683a4af2301e5136039",
+      "after_sha256": "6d0460e0c7ea83a49d5ab260b12d2125675f5b441273b928a4b3ece14474f394",
+      "before_bytes": 4658,
+      "after_bytes": 5054,
+      "python_ast_sha256": "5381e8efa3cef571634f1e43b1dc2d8d3ea14f46742dff596aa113fb25e2d9d1",
+      "ast_unchanged": true
+    },
+    "scripts/memory_cell_mem1/native.py": {
+      "before_sha256": "6b40597a7852c0a77863cc4d99d1eff332c78feb9f60cfd26ee44dc7072b1eee",
+      "after_sha256": "0a07d51e5b1fbb25e8f5c9acec3c8e7bc6b1818de1b07ada7f93f902b78164c3",
+      "before_bytes": 5116,
+      "after_bytes": 5391,
+      "python_ast_sha256": "8977bd9468d7a1a94648b48630cc27be862f19143045f79e098b4ed628ee94b2",
+      "ast_unchanged": true
+    },
+    "scripts/memory_cell_mem1/run.py": {
+      "before_sha256": "a262813350583507bb01fe8210423d0076e9f0ea5b105058077440cf23a05e13",
+      "after_sha256": "56fe3f7cfb195acf688079222d31f282f65df390020e05efa969774fd16c8445",
+      "before_bytes": 20436,
+      "after_bytes": 22748,
+      "python_ast_sha256": "4bffc7acc639697c4b94898e0caad15da41c4a230c5b031eef89749a66e54d86",
+      "ast_unchanged": true
+    },
+    "scripts/memory_cell_mem1/test_environment.py": {
+      "before_sha256": "a03b14babce1b5c281e30e50329f4d6ff40c8619a2ba30fb0f0be6e537f31cd9",
+      "after_sha256": "ae4ce9ed746e28175d15a2679c89a19599f10d5dc38278e95381dc62262c7070",
+      "before_bytes": 3409,
+      "after_bytes": 3480,
+      "python_ast_sha256": "dae6d879aaa82dbe59e834ce7e0f75f28fd35080cbacf34382b9076e25973fbf",
+      "ast_unchanged": true
+    },
+    "scripts/ndu_real_runtime/candidate_diagnostic.py": {
+      "before_sha256": "c1263f2af0ee3c61bfe69c81aa7559819159811c142d0d4af79c435069fa8b25",
+      "after_sha256": "0c3a9b23809537a7d39cb6ce775ef39267d9fedbcaedba14a0f98de795c59f74",
+      "before_bytes": 20696,
+      "after_bytes": 23953,
+      "python_ast_sha256": "b3f80fcbfd4ef46bf27e9bac4d9db1be9dec9f5530d7e814459815fcfd56d54d",
+      "ast_unchanged": true
+    },
+    "scripts/ndu_real_runtime/candidate_memory.py": {
+      "before_sha256": "1ba32ccaafbed59c4ead845baa21874a5232e3267b6084f2c49f8b16b1bfa31c",
+      "after_sha256": "32bf7ca6157ac611b1b0616e291ec6c9c8d1424392f41bdf994e69547535d27e",
+      "before_bytes": 8985,
+      "after_bytes": 9439,
+      "python_ast_sha256": "1d180429dd103ea6fa474605a911452f77de8e057c6ffa6bad5752461d9a9358",
+      "ast_unchanged": true
+    },
+    "scripts/ndu_real_runtime/evolve1.py": {
+      "before_sha256": "707b5b379782441f0503b9ce9e14caac2250160553317c97ba426a6aa30e9adc",
+      "after_sha256": "707b5b379782441f0503b9ce9e14caac2250160553317c97ba426a6aa30e9adc",
+      "before_bytes": 20364,
+      "after_bytes": 20364,
+      "python_ast_sha256": "84423a0d2c0c839d1ac38fac3fc162c58da6b349192bc9afb9ba7e3d629cf2f0",
+      "ast_unchanged": true
+    },
+    "scripts/ndu_real_runtime/test_candidate_diagnostic.py": {
+      "before_sha256": "242174579c43c0d7a55be9afb4da9473a093e006ee4b92fa50deca50a7e39e55",
+      "after_sha256": "c28c80304f5a07d8bf840e8b4fbb2e5538c79b2daabaa67e4ac12f9ddad94ede",
+      "before_bytes": 15062,
+      "after_bytes": 18798,
+      "python_ast_sha256": "473eb832aedb182697175fd522208fe6745f243088f42c6dd3ca4b7da5ae4a26",
+      "ast_unchanged": true
+    },
+    "scripts/ndu_real_runtime/test_candidate_memory.py": {
+      "before_sha256": "dbeec237accf43e7639caadd406f661613dd6319a9e2410b8d129841f2e6ec9e",
+      "after_sha256": "a190eb94ce447b2a57a5d2cba2551697d1b4e39674582d857cee68e80b5bfbb3",
+      "before_bytes": 7653,
+      "after_bytes": 7888,
+      "python_ast_sha256": "9e3b44129b264055aa6fa496d1de52aa19e9fbc4f02011c05f53d2d2d1e5ec2a",
+      "ast_unchanged": true
+    },
+    "scripts/ndu_real_runtime/test_evolve1.py": {
+      "before_sha256": "2938a3722ecd5e8d950b5f5c19ae2f5612fe245d303ec3222d901f1b7e30818c",
+      "after_sha256": "a71d125cc99e368ab1cde1dec54daafd2249a9f41410a0cf2f8b3c1440ad3112",
+      "before_bytes": 17396,
+      "after_bytes": 17450,
+      "python_ast_sha256": "a7ec71df294a5390d51565b56cd2a765ef03b546a44917e3031b38d7ad4df5e4",
+      "ast_unchanged": true
+    }
+  }
+}

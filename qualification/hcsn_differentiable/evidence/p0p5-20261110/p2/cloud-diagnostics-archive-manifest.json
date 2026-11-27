@@ -1,0 +1,635 @@
+{
+  "cost_scope": "Packaging time separate; each run retains its own diagnostic/fitting/process costs. No sum across overlapping scopes.",
+  "data_recovery": "Official archive SHA6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da; exact prepared manifest reproduced in receipt; source preparation is in source capsule.",
+  "energy_joules": null,
+  "files": {
+    "cloud-adapter-pilot-v6/campaign.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-adapter-pilot-v6/campaign.stdout": {
+      "bytes": 878,
+      "sha256": "136a072f7a09e903d657e76998a0f34fd2ccebcf2a19a141585c95960cfbc8a8"
+    },
+    "cloud-adapter-pilot-v6/campaign/RESULT.json": {
+      "bytes": 29690,
+      "sha256": "ba3d6cf513e66bca7ad7424bbad3d0341f8a7c0714dc9077a0c9ac0323dcc378"
+    },
+    "cloud-adapter-pilot-v6/campaign/attention-s101-lr0.003.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-adapter-pilot-v6/campaign/attention-s101-lr0.003.stdout": {
+      "bytes": 164,
+      "sha256": "a019d90ec6c342c06e4aea54daf8e9732a996fddd3441c924bb4e62c50ba7c2b"
+    },
+    "cloud-adapter-pilot-v6/campaign/attention-s101-lr0.003/best.pt": {
+      "bytes": 116844,
+      "sha256": "744cca75638652aae1703fa5a0e5971012f8c18466458ee5bd74cc8baee1d2ec"
+    },
+    "cloud-adapter-pilot-v6/campaign/attention-s101-lr0.003/development_logits.pt": {
+      "bytes": 3071293,
+      "sha256": "810bed1868913870abf116c9f478ecdb1bb234996feaeb35386b366c3180040f"
+    },
+    "cloud-adapter-pilot-v6/campaign/attention-s101-lr0.003/events.jsonl": {
+      "bytes": 151577,
+      "sha256": "3dc42c49c0fed6f78a74d19ae00057ad6dd0fea6d11b87408ed85c3907d698fb"
+    },
+    "cloud-adapter-pilot-v6/campaign/attention-s101-lr0.003/initial.pt": {
+      "bytes": 38893,
+      "sha256": "f939d3a33b7c7e9354cbff1c02d3f3e3b70198c23d57ae14cc2df421140523f0"
+    },
+    "cloud-adapter-pilot-v6/campaign/attention-s101-lr0.003/last.pt": {
+      "bytes": 116844,
+      "sha256": "b75800b0072b6e08e0ea337462a3bcc5a441b47100173c91aff4b76b4ab50e93"
+    },
+    "cloud-adapter-pilot-v6/campaign/attention-s101-lr0.003/plan.json": {
+      "bytes": 844,
+      "sha256": "4461ae78f46d437234baeda69ecf6c93ca1b64782e0e1b3e8f06e37334cc346f"
+    },
+    "cloud-adapter-pilot-v6/campaign/attention-s101-lr0.003/result.json": {
+      "bytes": 37071,
+      "sha256": "e064a47d5c92cdd0ccc765d6a92f104b6821e7d40b272f1d78c7dcaafff712c9"
+    },
+    "cloud-adapter-pilot-v6/campaign/cfc-s101-lr0.003.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-adapter-pilot-v6/campaign/cfc-s101-lr0.003.stdout": {
+      "bytes": 159,
+      "sha256": "70aa481a63b910794818ab76825ce90a34b8ca9bd555527fedd84059d359fbd7"
+    },
+    "cloud-adapter-pilot-v6/campaign/cfc-s101-lr0.003/best.pt": {
+      "bytes": 186500,
+      "sha256": "6c293450026da69929ce506c2d7d284575cd944bd2a81104a577155282f97a75"
+    },
+    "cloud-adapter-pilot-v6/campaign/cfc-s101-lr0.003/development_logits.pt": {
+      "bytes": 3071293,
+      "sha256": "710002339c5e0ffb2851ad8c82c3bced0acb8490ebf22263a292143caab54af6"
+    },
+    "cloud-adapter-pilot-v6/campaign/cfc-s101-lr0.003/events.jsonl": {
+      "bytes": 150588,
+      "sha256": "2762b3f6ceaa2bdca90c5c738f4fffabe4b8763b3002456cfd4d80f68f5dfbe9"
+    },
+    "cloud-adapter-pilot-v6/campaign/cfc-s101-lr0.003/initial.pt": {
+      "bytes": 62259,
+      "sha256": "bf38a65cdc90697d34e1be280b52ac571d5dc814bc69cc4813ac5780d88953e3"
+    },
+    "cloud-adapter-pilot-v6/campaign/cfc-s101-lr0.003/last.pt": {
+      "bytes": 186500,
+      "sha256": "6b054ae79bdcfa0156312f043f03e406abe7ff25f9d9f2ee7f5d9199c3836b67"
+    },
+    "cloud-adapter-pilot-v6/campaign/cfc-s101-lr0.003/plan.json": {
+      "bytes": 832,
+      "sha256": "2f57a64d732451b4030617eb597d4a452214c5143622c3eeebbef0bb70815e8e"
+    },
+    "cloud-adapter-pilot-v6/campaign/cfc-s101-lr0.003/result.json": {
+      "bytes": 35418,
+      "sha256": "76a0fa7ad5ac8d352ed4432d6dbc40cfe1dc6b95aa252723cc2608d247e6946a"
+    },
+    "cloud-adapter-pilot-v6/campaign/commands.jsonl": {
+      "bytes": 22824,
+      "sha256": "8bed12b30de44947f63525b6302b2be4b1ae9f27944a28348aab3c197885b082"
+    },
+    "cloud-adapter-pilot-v6/campaign/event_time_lif-s101-lr0.003.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-adapter-pilot-v6/campaign/event_time_lif-s101-lr0.003.stdout": {
+      "bytes": 168,
+      "sha256": "de1a36e20920805898b35af2133095132cd3922dfb95a3d907b66c6e1f6c690f"
+    },
+    "cloud-adapter-pilot-v6/campaign/event_time_lif-s101-lr0.003/best.pt": {
+      "bytes": 36364,
+      "sha256": "49e4b72df8485537274c14e73e00a23c43c8b2c2b1f716cc355a05db60923ee5"
+    },
+    "cloud-adapter-pilot-v6/campaign/event_time_lif-s101-lr0.003/development_logits.pt": {
+      "bytes": 3071293,
+      "sha256": "c74b38e7ca76364db147f68416735e4a58aa64ccd187ec9b4b2a1c1e3ba87f68"
+    },
+    "cloud-adapter-pilot-v6/campaign/event_time_lif-s101-lr0.003/events.jsonl": {
+      "bytes": 210260,
+      "sha256": "e2e98e0a3515874d3f1a45efa376c2f61563849d60423d6e8b28e2af4d04489e"
+    },
+    "cloud-adapter-pilot-v6/campaign/event_time_lif-s101-lr0.003/initial.pt": {
+      "bytes": 12869,
+      "sha256": "db833a25df4b88a247a0bd2f893ee5d9b9796341801b5ab54d797dba53cc9dc1"
+    },
+    "cloud-adapter-pilot-v6/campaign/event_time_lif-s101-lr0.003/last.pt": {
+      "bytes": 36364,
+      "sha256": "5d32f548bf22c54f92f84e695d7698ea2323e3b3aedab2f07299b4a8024a820c"
+    },
+    "cloud-adapter-pilot-v6/campaign/event_time_lif-s101-lr0.003/plan.json": {
+      "bytes": 854,
+      "sha256": "e90f8ac7be8b241c9808a1bd1b7edeebcacd6aca3c8cdd0945c837c4dea9666d"
+    },
+    "cloud-adapter-pilot-v6/campaign/event_time_lif-s101-lr0.003/result.json": {
+      "bytes": 32666,
+      "sha256": "143f776c96a1a2631eb636c18a2d57f3ec5db7552de9ede0f731c510c60dbdab"
+    },
+    "cloud-adapter-pilot-v6/campaign/gru-s101-lr0.003.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-adapter-pilot-v6/campaign/gru-s101-lr0.003.stdout": {
+      "bytes": 159,
+      "sha256": "773857934750a8558797068117fa617d5df47fce9f2b885b3b6cbaefbf3976da"
+    },
+    "cloud-adapter-pilot-v6/campaign/gru-s101-lr0.003/best.pt": {
+      "bytes": 68172,
+      "sha256": "e1089776adbaeebb6f886e7c8360de143947f407efaceecc7b12a34c7b929946"
+    },
+    "cloud-adapter-pilot-v6/campaign/gru-s101-lr0.003/development_logits.pt": {
+      "bytes": 3071293,
+      "sha256": "61b2ca5dd430316e9119db8be44ff7ea1005a3e08dc6613ae4c094d28fb62825"
+    },
+    "cloud-adapter-pilot-v6/campaign/gru-s101-lr0.003/events.jsonl": {
+      "bytes": 150940,
+      "sha256": "328291ef9836aa524d5b841faf5b2d1709a128bab8ee4eb1c7bac00c6dea08b8"
+    },
+    "cloud-adapter-pilot-v6/campaign/gru-s101-lr0.003/initial.pt": {
+      "bytes": 23493,
+      "sha256": "4499d0f8133bd44e0fce52bb41558f8ddcdf6ed6933dfc5e32640095b55871f3"
+    },
+    "cloud-adapter-pilot-v6/campaign/gru-s101-lr0.003/last.pt": {
+      "bytes": 68172,
+      "sha256": "a5095c6dd7d16acf4bb00f393ee29605ca1fb5740ef388a8bf99c18ebf215d20"
+    },
+    "cloud-adapter-pilot-v6/campaign/gru-s101-lr0.003/plan.json": {
+      "bytes": 832,
+      "sha256": "538de7072526cbcbed5abc9c997efdaf93f84d0627f922cf99988d362a4a612d"
+    },
+    "cloud-adapter-pilot-v6/campaign/gru-s101-lr0.003/result.json": {
+      "bytes": 33072,
+      "sha256": "6cd1e3a58e9702b278f028ea8e51b0936f4fb9879a92fea801b74860161a0718"
+    },
+    "cloud-adapter-pilot-v6/campaign/locked-plan.json": {
+      "bytes": 1219,
+      "sha256": "d4ea81f69c369397e2611647c6c3a29a6a83f1d1095c101b796243eed71e235f"
+    },
+    "cloud-adapter-pilot-v6/campaign/snn_plif-s101-lr0.003.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-adapter-pilot-v6/campaign/snn_plif-s101-lr0.003.stdout": {
+      "bytes": 163,
+      "sha256": "195dbc854a6892fd1e4b07e157709e69cc802f7a4d9a769a6225a454c64e91f9"
+    },
+    "cloud-adapter-pilot-v6/campaign/snn_plif-s101-lr0.003/best.pt": {
+      "bytes": 41868,
+      "sha256": "f7ecd0214df6e43a6a9515bd56f6062283476fe88b6aee7344ef0827e12b5a13"
+    },
+    "cloud-adapter-pilot-v6/campaign/snn_plif-s101-lr0.003/development_logits.pt": {
+      "bytes": 3071293,
+      "sha256": "5644857f2d9aaaafbb8515b7e2165a2b7395919ec7e67464c8177505dd18d0ef"
+    },
+    "cloud-adapter-pilot-v6/campaign/snn_plif-s101-lr0.003/events.jsonl": {
+      "bytes": 192343,
+      "sha256": "f441003a8da93dba68e22982e7d5a7dc9dbf50ade5d7c7ee2f06860f442a7592"
+    },
+    "cloud-adapter-pilot-v6/campaign/snn_plif-s101-lr0.003/initial.pt": {
+      "bytes": 14725,
+      "sha256": "df824b3b90f7486fa4d976d398193d9eeac920b3eac1cb19d0364a546571587b"
+    },
+    "cloud-adapter-pilot-v6/campaign/snn_plif-s101-lr0.003/last.pt": {
+      "bytes": 41868,
+      "sha256": "13302da7173085e424c7b12e0e699a230bca6516b9e750986243b039b2abdd9d"
+    },
+    "cloud-adapter-pilot-v6/campaign/snn_plif-s101-lr0.003/plan.json": {
+      "bytes": 842,
+      "sha256": "57a180e75b711e2b8c2f8e00784ef8acba598f2525c463da58e91866d0f571d8"
+    },
+    "cloud-adapter-pilot-v6/campaign/snn_plif-s101-lr0.003/result.json": {
+      "bytes": 33366,
+      "sha256": "b9b3af9785ac0953f291950e9531f3ac2e2ab879e123dcb3900e16bd8e36adfb"
+    },
+    "cloud-adapter-pilot-v6/campaign/source-manifest.json": {
+      "bytes": 4245,
+      "sha256": "e644d8c62f1921cb003d7b63e37ca62392526d09dd7dbc98412bfb7ae82d65bc"
+    },
+    "cloud-adapter-pilot-v6/campaign/ssm_s4d-s101-lr0.003.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-adapter-pilot-v6/campaign/ssm_s4d-s101-lr0.003.stdout": {
+      "bytes": 162,
+      "sha256": "8d5541613b8995a0f784cbeb9e755006ab3524004c1ec60045c0b5fcf6254718"
+    },
+    "cloud-adapter-pilot-v6/campaign/ssm_s4d-s101-lr0.003/best.pt": {
+      "bytes": 58664,
+      "sha256": "772ba3e8dbc49d7316fa987de70dc07d82c069f01da15c45472332d01828ea2b"
+    },
+    "cloud-adapter-pilot-v6/campaign/ssm_s4d-s101-lr0.003/development_logits.pt": {
+      "bytes": 3071293,
+      "sha256": "ccea75344f4cc6f5d89489fa4f12fb8fa7756e299800a336af6adf064f1ccecd"
+    },
+    "cloud-adapter-pilot-v6/campaign/ssm_s4d-s101-lr0.003/events.jsonl": {
+      "bytes": 151322,
+      "sha256": "6a604e03bd6904cfda98281eae437ee8ebd95e462890a8793ffbe33fc55ab2b7"
+    },
+    "cloud-adapter-pilot-v6/campaign/ssm_s4d-s101-lr0.003/initial.pt": {
+      "bytes": 19964,
+      "sha256": "19eac591a66fc5fa9890a94d632d826a8e61121d397762e62a9b4d417f074f17"
+    },
+    "cloud-adapter-pilot-v6/campaign/ssm_s4d-s101-lr0.003/last.pt": {
+      "bytes": 58664,
+      "sha256": "4beab321a5592692dda0df460ee288b6a6b61c645422e756ea1e32af366eb16a"
+    },
+    "cloud-adapter-pilot-v6/campaign/ssm_s4d-s101-lr0.003/plan.json": {
+      "bytes": 840,
+      "sha256": "5d11f9c01b66707cda43543123fc1dd33f669147e11a65c888c10a9b24e52180"
+    },
+    "cloud-adapter-pilot-v6/campaign/ssm_s4d-s101-lr0.003/result.json": {
+      "bytes": 36140,
+      "sha256": "5ba451abf7f2e415aebbc444813b2867a0b54bf5b4080d246d84d7e6958b28f4"
+    },
+    "cloud-adapter-pilot-v6/driver-result.json": {
+      "bytes": 749,
+      "sha256": "caa9b801ceb9ba05fb3d48093435749e4b2ee9f1be9ac0faa925bde51899933e"
+    },
+    "cloud-adapter-pilot-v6/plan.json": {
+      "bytes": 1219,
+      "sha256": "d4ea81f69c369397e2611647c6c3a29a6a83f1d1095c101b796243eed71e235f"
+    },
+    "cloud-adapter-pilot-v6/tests.json": {
+      "bytes": 539,
+      "sha256": "6780fec4965ec95d2c48f33b938965bed7f2f5b8921e493b8afa05487191ef44"
+    },
+    "cloud-adapter-pilot-v6/tests.stderr": {
+      "bytes": 109,
+      "sha256": "18af5ac269e162a1ca309bf92d61c880f142783f771b7f721bc52e12a5c9259c"
+    },
+    "cloud-adapter-pilot-v6/tests.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-hcsn-micro1-cost-v6/launch.json": {
+      "bytes": 1370,
+      "sha256": "edcf7efd1e14dbb7401e40dff3aa2d8a65de4662ef32df7f1732897295c4bcdc"
+    },
+    "cloud-hcsn-micro1-cost-v6/probe/RESULT.json": {
+      "bytes": 21270,
+      "sha256": "35ad863e2ea1bc290bcfb86122e703a0da6c7702ac1a4929736e672ac8738e54"
+    },
+    "cloud-hcsn-micro1-cost-v6/probe/after.pt": {
+      "bytes": 439167,
+      "sha256": "587ca235eb1b961b9484e6ac9a3ff7e29fe5ad5e8deea41f6549426f3390cc76"
+    },
+    "cloud-hcsn-micro1-cost-v6/probe/events.jsonl": {
+      "bytes": 1604,
+      "sha256": "eb6ce96f3b65a8106dd37f41a4e0d99283fcf41d766430163484b07c4c7e8350"
+    },
+    "cloud-hcsn-micro1-cost-v6/probe/initial.pt": {
+      "bytes": 154142,
+      "sha256": "db57e4c71d712c9a7cb89a782da8cc2dd4f635f4851dedd5d63c702a8ca0a9d8"
+    },
+    "cloud-hcsn-micro1-cost-v6/probe/plan.json": {
+      "bytes": 580,
+      "sha256": "aa00a92ae123bf77568205f8f55b588d26d6a00020fb838fa6dc2af4125fb412"
+    },
+    "cloud-hcsn-micro1-cost-v6/probe/training-domain.jsonl": {
+      "bytes": 6911422,
+      "sha256": "97c94251b63da7ede09cda7208c40d87acaa1c46556b587ae9b29747a3af9857"
+    },
+    "cloud-hcsn-micro1-cost-v6/process-result.json": {
+      "bytes": 1640,
+      "sha256": "979ee0054df1efeaebf082d939cf0e8142e12dbdd82367e05e337d4e60b482da"
+    },
+    "cloud-hcsn-micro1-cost-v6/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-hcsn-micro1-cost-v6/stdout.txt": {
+      "bytes": 126,
+      "sha256": "b9af3c76d75d10384d2bd99d66d3c685711efa7117414e067ab045c3693defa6"
+    },
+    "cloud-plif-diagnostic-1024-v1/RESULT.json": {
+      "bytes": 40717,
+      "sha256": "53d91e7cad56dfe411c6ad9c7776ed1fbb33b16be2376b681e7ef0377bb7200e"
+    },
+    "cloud-plif-diagnostic-1024-v1/initial.pt": {
+      "bytes": 15045,
+      "sha256": "8f5dc3917a480943265348a7085b85028c9401109bbefee51b6000d8df005bfe"
+    },
+    "cloud-plif-diagnostic-1024-v1/plan.json": {
+      "bytes": 1504,
+      "sha256": "f16034becb6b5584da13e6eea7cee580f4faebd9da8ac4c26e62eb5722731643"
+    },
+    "cloud-plif-diagnostic-1024-v1/update-1024.pt": {
+      "bytes": 33175,
+      "sha256": "2ecf655ab547a340b9c4982cdfd4589b3a2eedfec21f61680005e6dc55dceb43"
+    },
+    "cloud-plif-diagnostic-1024-v1/update-256.pt": {
+      "bytes": 33141,
+      "sha256": "47e673492888dda344aa2006696ee85f70c31fc32a2910824d2f9db2d1d69288"
+    },
+    "cloud-plif-diagnostic-1024-v1/update-512.pt": {
+      "bytes": 33141,
+      "sha256": "a9a332b3fb1eb74e4f09605f18beb123f3e090e97b851024219d8cdb0248b1bb"
+    },
+    "cloud-plif-diagnostic-1024-v1/updates.jsonl": {
+      "bytes": 439795,
+      "sha256": "d65584ee9b2d0b1a3b42af7dc6647d6aa690dc423bcdf8c6d0f1258f77b71d16"
+    },
+    "cloud-plif-grid-v1/PLAN.json": {
+      "bytes": 1002,
+      "sha256": "28e8f722b624a0d654db305531bf57ba21cae16703ce21897ec3bf2987853ffd"
+    },
+    "cloud-plif-grid-v1/RESULT.json": {
+      "bytes": 5007,
+      "sha256": "0b3d371561e5842f1ba3994b38c947cf4bcc953af710a026124d40994a9a5cc7"
+    },
+    "cloud-plif-grid-v1/SUMMARY.json": {
+      "bytes": 26866,
+      "sha256": "1c30be8005692ba92c52d0493f5381e981f4f79d56fd8e942ba09c5059cf0d11"
+    },
+    "cloud-plif-grid-v1/trial-01-process.json": {
+      "bytes": 513,
+      "sha256": "88dcfb23cbd96ecc9bda0865432246cccfdb8680bf91cdce9c56a37d1dc59dc9"
+    },
+    "cloud-plif-grid-v1/trial-01.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-plif-grid-v1/trial-01.stdout": {
+      "bytes": 106,
+      "sha256": "9ab78fa079fd784813e36fdb59f90957f98c806fc93a9bfe68bf4e82bdb739a4"
+    },
+    "cloud-plif-grid-v1/trial-01/RESULT.json": {
+      "bytes": 31308,
+      "sha256": "e35c0496e2a2c2c764653701c2c594228cf1b924b1b0b8a6857038404fe2168e"
+    },
+    "cloud-plif-grid-v1/trial-01/initial.pt": {
+      "bytes": 15365,
+      "sha256": "58f090274c3cd705988f032442c718b9c4da42efe1532de962cb56277a36da1a"
+    },
+    "cloud-plif-grid-v1/trial-01/plan.json": {
+      "bytes": 1271,
+      "sha256": "999243cad8481279c7f470c0b0863e96d92dce073a5d672572c14f5a7ef45bfc"
+    },
+    "cloud-plif-grid-v1/trial-01/trained.pt": {
+      "bytes": 32911,
+      "sha256": "48a21c2d1d89aa7df8bcc729db24ca3adbcaf8fb6af92cb46141df14ec708744"
+    },
+    "cloud-plif-grid-v1/trial-01/updates.jsonl": {
+      "bytes": 101139,
+      "sha256": "a8560a7f549f24e95741a92160a9498761cf3c1ad3a8d3b84497b7b5c0e07db6"
+    },
+    "cloud-plif-grid-v1/trial-02-process.json": {
+      "bytes": 513,
+      "sha256": "317676bd2a6b216cb7ef24a530381c51bd611cea99393438631f89d653674bb4"
+    },
+    "cloud-plif-grid-v1/trial-02.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-plif-grid-v1/trial-02.stdout": {
+      "bytes": 106,
+      "sha256": "7a0d55e4443aa85864d1c588c76fb665e2508aecf854224cf94bc4bcacba84f3"
+    },
+    "cloud-plif-grid-v1/trial-02/RESULT.json": {
+      "bytes": 31311,
+      "sha256": "78f500c5af9758e1a2edac6191c306dee5c5fcadd1361ca1de62bbadd90b8e59"
+    },
+    "cloud-plif-grid-v1/trial-02/initial.pt": {
+      "bytes": 15365,
+      "sha256": "0f01419fd2bd7979b99e9a5f71ae7a8439c329864c4f0efee686f630cd9bd63a"
+    },
+    "cloud-plif-grid-v1/trial-02/plan.json": {
+      "bytes": 1271,
+      "sha256": "4bc651f1e834ed720b212c2be314900aded2a47993d0c3ced57f84d756e59ef6"
+    },
+    "cloud-plif-grid-v1/trial-02/trained.pt": {
+      "bytes": 32911,
+      "sha256": "ec09116324c175d669486c26e2de26d5490b20bf6b1ab45a0dcaaebf5f4f1fc9"
+    },
+    "cloud-plif-grid-v1/trial-02/updates.jsonl": {
+      "bytes": 101091,
+      "sha256": "51b242fadf03b14b39c9104986a927524952798b453c2d1b1fd9ca0f4d42edfd"
+    },
+    "cloud-plif-grid-v1/trial-03-process.json": {
+      "bytes": 515,
+      "sha256": "cc3a154349099a729c6b8e9dd4ac5be5ce8e36104cb9ef4061d9dd279385b6a2"
+    },
+    "cloud-plif-grid-v1/trial-03.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-plif-grid-v1/trial-03.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-plif-grid-v1/trial-03/initial.pt": {
+      "bytes": 15365,
+      "sha256": "3e877206f68332608dfeb41e9bdd2cd56bc2beeda5d36a4211ff474e9bf011da"
+    },
+    "cloud-plif-grid-v1/trial-03/plan.json": {
+      "bytes": 1271,
+      "sha256": "3c4d51c05d409d1a11626290f2dcabb0d062f54d9a3d0aa333c9ca9ad12daeb9"
+    },
+    "cloud-plif-grid-v1/trial-03/updates.jsonl": {
+      "bytes": 100447,
+      "sha256": "3238ae0d3d2de202d70bb569acd44c2d94519abfd006c8151dc70d4bfddcb12a"
+    },
+    "cloud-plif-grid-v1/trial-04-process.json": {
+      "bytes": 512,
+      "sha256": "8ede0281c0ee65c28ef5d7f58609f858d38a8899ee8c7c37d168e9ea3b28a850"
+    },
+    "cloud-plif-grid-v1/trial-04.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-plif-grid-v1/trial-04.stdout": {
+      "bytes": 105,
+      "sha256": "5e3dfd30d85b2e85e48ac09fb49347307808754a65a3c30882e31590f6466afc"
+    },
+    "cloud-plif-grid-v1/trial-04/RESULT.json": {
+      "bytes": 31309,
+      "sha256": "4db0cf92ce15a0bf88b4efb572600d0ee03b232427f6dc5f80cbaac2ab0ce11e"
+    },
+    "cloud-plif-grid-v1/trial-04/initial.pt": {
+      "bytes": 15365,
+      "sha256": "afb346972702fb3aa0d64da379ef1b5890690ff3ec34bf595eadc1706c5d1616"
+    },
+    "cloud-plif-grid-v1/trial-04/plan.json": {
+      "bytes": 1271,
+      "sha256": "17e4ac8acb6a29b1a924061fbecd8e6e505562f9a3253d6ef23558679f288ff8"
+    },
+    "cloud-plif-grid-v1/trial-04/trained.pt": {
+      "bytes": 32911,
+      "sha256": "efece87f96ac1d7c27f25746090c904b6fe3888fc3b95e725138f01544b9804b"
+    },
+    "cloud-plif-grid-v1/trial-04/updates.jsonl": {
+      "bytes": 100983,
+      "sha256": "2ac5b464a52a31df9cbab22d9525b25c6243b7d869678c657ac3bbeb5afc8c46"
+    },
+    "cloud-plif-grid-v1/trial-05-process.json": {
+      "bytes": 512,
+      "sha256": "c05b260fa32d9836bb16a66092b2723cf4b9f7676c4d61f702d61bd2e8e930f7"
+    },
+    "cloud-plif-grid-v1/trial-05.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-plif-grid-v1/trial-05.stdout": {
+      "bytes": 106,
+      "sha256": "43aed1f931f285adcaa7143067d529920c787e038cb465287bbdf8eb1964ae68"
+    },
+    "cloud-plif-grid-v1/trial-05/RESULT.json": {
+      "bytes": 31305,
+      "sha256": "3d3b0ae547ae0cd7c2c58557608c2ba106b36cca632b83f6c4551e8fbcec29b6"
+    },
+    "cloud-plif-grid-v1/trial-05/initial.pt": {
+      "bytes": 15365,
+      "sha256": "173c17d705c494ba6394e53a2059eb5acd556958cef9491428437c47adcff050"
+    },
+    "cloud-plif-grid-v1/trial-05/plan.json": {
+      "bytes": 1271,
+      "sha256": "a66745aefa3b5804b84feeeecd4c14ebdd23e907d1d1b077c054f58c3b63acb9"
+    },
+    "cloud-plif-grid-v1/trial-05/trained.pt": {
+      "bytes": 32911,
+      "sha256": "e85e5093b6b0169eb9795d0fc4df580e2f8cb8f4c61c27ca253829286566fcee"
+    },
+    "cloud-plif-grid-v1/trial-05/updates.jsonl": {
+      "bytes": 100547,
+      "sha256": "65864c61c9898ade0759a0bc3b55f6221440f65cc91ba96934328e12f2dca0c4"
+    },
+    "cloud-plif-grid-v1/trial-06-process.json": {
+      "bytes": 513,
+      "sha256": "b9b9629253e59810aaacb22482403403b80db62df4e4f0bc58612c56cd368282"
+    },
+    "cloud-plif-grid-v1/trial-06.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-plif-grid-v1/trial-06.stdout": {
+      "bytes": 106,
+      "sha256": "692696e148fd678764fce688de1d78b1999953aa19e0b67a2496a3aaba87317a"
+    },
+    "cloud-plif-grid-v1/trial-06/RESULT.json": {
+      "bytes": 31284,
+      "sha256": "80ca7dfff6448c47d69aa1f18a831fff139e6ea910414614c2525a04937475cc"
+    },
+    "cloud-plif-grid-v1/trial-06/initial.pt": {
+      "bytes": 15365,
+      "sha256": "36f188de0031c79c8f81593b1d148d0e7dde9b9189e232e7621b2ebb19ced54b"
+    },
+    "cloud-plif-grid-v1/trial-06/plan.json": {
+      "bytes": 1271,
+      "sha256": "ee43fc0da99083879da70057496ac7f8e3ee6da3db8eb83f39c36eb2f65bca41"
+    },
+    "cloud-plif-grid-v1/trial-06/trained.pt": {
+      "bytes": 32911,
+      "sha256": "a460c868e51e774a5ce44b53d7ab12034e2db8b79d1a7bbace9b3f293b0f5543"
+    },
+    "cloud-plif-grid-v1/trial-06/updates.jsonl": {
+      "bytes": 100582,
+      "sha256": "1e1ee3cf5d3b950a836b173750472fe8d28fc756dd8b306de6bc1929d5891c97"
+    },
+    "cloud-plif-grid-v1/trial-07-process.json": {
+      "bytes": 512,
+      "sha256": "a2e262e0b51b2a9788433d8d45708edb9497bed2e94f437735a66a9470da3aed"
+    },
+    "cloud-plif-grid-v1/trial-07.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-plif-grid-v1/trial-07.stdout": {
+      "bytes": 106,
+      "sha256": "5e1f60a0cf81b7613b39832030c62aa733b1b370cc2b6fac9cc751af06c3d763"
+    },
+    "cloud-plif-grid-v1/trial-07/RESULT.json": {
+      "bytes": 31310,
+      "sha256": "7759e06dec9b66792cd3b4289601bbf22cfb75396d4a89e074b5d7b4121a7284"
+    },
+    "cloud-plif-grid-v1/trial-07/initial.pt": {
+      "bytes": 15365,
+      "sha256": "84e6bb7bc18cc3e735380cfbcad3b233c175f589bad7f65290a3bf48e6606204"
+    },
+    "cloud-plif-grid-v1/trial-07/plan.json": {
+      "bytes": 1271,
+      "sha256": "95cb84610563c910797a63d44217498815ddd7d6c963da69e0b197569db5a2f9"
+    },
+    "cloud-plif-grid-v1/trial-07/trained.pt": {
+      "bytes": 32911,
+      "sha256": "4ac124f992b3bf0196e282f7213d7eac525502968af8693ab539dc983422d3e0"
+    },
+    "cloud-plif-grid-v1/trial-07/updates.jsonl": {
+      "bytes": 100812,
+      "sha256": "2a94007d6075daf6a6f76b05b9f93e8b4f6a7aa14c48f21969ea5e57e305e2ab"
+    },
+    "cloud-plif-grid-v1/trial-08-process.json": {
+      "bytes": 513,
+      "sha256": "a8c9e33049c17a75402c2200b127ab84a126d780e5988b2ac8efe64e3fc2db1a"
+    },
+    "cloud-plif-grid-v1/trial-08.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cloud-plif-grid-v1/trial-08.stdout": {
+      "bytes": 106,
+      "sha256": "888d7f620b3f774747e5968fb0603a77a8bc70d7257de8b2effda84dc87fa0cc"
+    },
+    "cloud-plif-grid-v1/trial-08/RESULT.json": {
+      "bytes": 31303,
+      "sha256": "6a0f36d835b23037286c41ecc131cf232db16d4531324e4f82d069314970eb8b"
+    },
+    "cloud-plif-grid-v1/trial-08/initial.pt": {
+      "bytes": 15365,
+      "sha256": "a42489ffa827480d35e86baf9f1fbed57740ff48053fa9fa24e45c96ccd707fd"
+    },
+    "cloud-plif-grid-v1/trial-08/plan.json": {
+      "bytes": 1271,
+      "sha256": "4c417fa175665041db87e90d20e7b9774c971b014c44ccee7f017540bc596afc"
+    },
+    "cloud-plif-grid-v1/trial-08/trained.pt": {
+      "bytes": 32911,
+      "sha256": "abb634378b6db87266eb91f110a7eafc11439f56a0700188bbdb0e7051a3fb1b"
+    },
+    "cloud-plif-grid-v1/trial-08/updates.jsonl": {
+      "bytes": 100876,
+      "sha256": "036e391acd4a2b5315cd45383833c07e556bf9b1828d31ef16ebb9f185c9cade"
+    },
+    "cloud_adapter_pilot_v6_driver.py": {
+      "bytes": 4161,
+      "sha256": "fb087d679f2f527504358b25a89ad3304c46c14b9dff0784c401cad7a9b00082"
+    },
+    "cloud_plif_diagnostic_1024.py": {
+      "bytes": 6208,
+      "sha256": "bd3d3ebb7cf0b30e03405c238a80dde2d5aa3dea3194e1901c9878b5cac5e295"
+    },
+    "plif_grid_trial.py": {
+      "bytes": 7391,
+      "sha256": "0caa0feea59e37f4b0788907db466560b13e5fbc1fd8ec1ca396bdda78ff159b"
+    },
+    "training-source-v6.zip": {
+      "bytes": 117216,
+      "sha256": "3c9562e560208f6a291846d79431f5d4e0718d1c695dd98c88c4cbf5dedc9fb5"
+    },
+    "uci-cloud-download-receipt.json": {
+      "bytes": 716,
+      "sha256": "5be85acc41681a23f51880c03ed6cbcfd89119afd49bede74a35c8e674035825"
+    },
+    "uci-cloud-prepare-receipt.json": {
+      "bytes": 743,
+      "sha256": "d7fcb4e037007016cf2428516359cfbb2070ec987f098abbd0427e1a86829606"
+    },
+    "uci-cloud-prepared-v1/data-manifest.json": {
+      "bytes": 101622,
+      "sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb"
+    },
+    "uci-cloud-prepared-v1/frontend.json": {
+      "bytes": 1674,
+      "sha256": "68df3a2f51b027cbb7fc1f74722711a5c254a0de70a64bd33854c4bb14abac70"
+    },
+    "uci-cloud-prepared-v1/selection.json": {
+      "bytes": 3354797,
+      "sha256": "3ae529af6203086a718805ceb9e8e549692c67be2f8bafc41f01a55f870d5037"
+    }
+  },
+  "runtime_archive_sha256": "b2fa90124835a0c8a1d5275284b6d4a4dff9e3894aa91f97d98d621e15f55625",
+  "schema": "hcsn-cloud-diagnostics-archive-v1",
+  "scope": "Completed v6 adapter pilot, 1024-step PLIF diagnostic, eight-config PLIF tuning including timeout, and two-update HCSN micro1 cost probe. No sufficient-training or scientific-benefit claim.",
+  "source_capsule": "training-source-v6.zip"
+}

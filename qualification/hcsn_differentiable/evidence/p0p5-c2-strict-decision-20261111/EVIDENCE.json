@@ -1,0 +1,73 @@
+{
+  "covered": "synthetic digest-matched duplicate/NaN/extra/schema/symlink/oversize decision rejection; not a real decision, run or science approval",
+  "date_utc": "2026-11-11T19:08:17.063377+00:00",
+  "exact_parent_head": "93b8b9175a9c40e2e50e438de35c099a3ea6d7b8",
+  "green_combined": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "job_id": "1a1cc0181f8-2564-da9",
+    "skipped": 0,
+    "tests": 32
+  },
+  "green_target": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "job_id": "1a1cc0181f8-2564-da9",
+    "skipped": 0,
+    "tests": 8
+  },
+  "logs": {
+    "GREEN-COMBINED.stderr.log": {
+      "bytes": 5159,
+      "sha256": "07d5db5964b0676da245c8cdda3db27439c6275e8c7ec4c266e10501ecec0042"
+    },
+    "GREEN-COMBINED.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "GREEN-TARGET.stderr.log": {
+      "bytes": 1326,
+      "sha256": "6893b77cca2098bdfb33d4270e92c4dedd0d581cb3e4d952147c360a5e04b267"
+    },
+    "GREEN-TARGET.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "RED.exit": {
+      "bytes": 11,
+      "sha256": "25bfe25a4b09ceeb534eb9d5aa687cbb169a669c4e8ea055fbe69a82596c4646"
+    },
+    "RED.stderr.log": {
+      "bytes": 6011,
+      "sha256": "679e68ef04dd5590847065d1c90bd24ad5e6b7473ebe4abe14869363592be666"
+    },
+    "RED.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "native_host": "desktop",
+  "native_python": "3.12.3",
+  "native_torch": "2.8.0+cu128",
+  "original_c2": {
+    "independent_full_training_replay_confirmed": 0,
+    "job_id": "1a1c74f3308-be2a-75",
+    "not_restarted": true,
+    "planned": 6,
+    "producer_reports_previously_observed": 4,
+    "status": "finalizing/outcome_unknown/terminal_publication_confirmed_false",
+    "zero_byte_interrupted_pt_previously_observed": 2
+  },
+  "red": {
+    "errors": 0,
+    "exit_code": 1,
+    "failing_assertions": 7,
+    "job_id": "1a1cc0085b4-2564-da6",
+    "tests": 8
+  },
+  "safety": "HOLD_NO_GO",
+  "schema": "hcsn-c2-execution-decision-strict-admission-v1",
+  "upstream_pr": 6005
+}

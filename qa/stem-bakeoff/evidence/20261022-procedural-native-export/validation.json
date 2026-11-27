@@ -1,0 +1,37 @@
+{
+  "artifact_owner_admission_performed": false,
+  "development_initial_setup_failure": {
+    "log": "tests_initial.log.gz",
+    "reason": "Exporter initially hashed labels as JSON; corrected to the frozen trainer int64 little-endian byte digest. No experiment evidence changed."
+  },
+  "export_exit": 0,
+  "logs": [
+    {
+      "compressed_sha256": "59d442151a07c3c99fb159d360853a3a477f000b7874360eb80054a1b9ab10e8",
+      "original_bytes": 1183,
+      "original_sha256": "f8e25fdcf59a4d5cd0fff98d40fb6852357bd0219691bc0f07c575e20ebca113",
+      "path": "tests_initial.log.gz"
+    },
+    {
+      "compressed_sha256": "b50bdd17060dccd45fe89e0f65e50d0ce5eb2aac85d6b7fa74decd6a9fde1314",
+      "original_bytes": 1961,
+      "original_sha256": "518724ba11be2d854be41e32cf2a69b37784214fe3ad00a225717fab8473ee29",
+      "path": "tests_passed.log.gz"
+    },
+    {
+      "compressed_sha256": "d0b22668fcf9c2db81c26956a6f668929ec79111ab3b5e9c7057d93eefe7d7d7",
+      "original_bytes": 2353,
+      "original_sha256": "3a088fd64be3b5da489c2a00a2d245e11b27fa40cb4751030ff905ed95d5acea",
+      "path": "export.log.gz"
+    }
+  ],
+  "native_execution_performed": false,
+  "original_scientific_experiment_bytes_changed": false,
+  "schema": "hepta.procedural-native-export-validation.v1",
+  "unit_tests": {
+    "failed": 0,
+    "log": "tests_passed.log.gz",
+    "passed": 10,
+    "skipped": 0
+  }
+}

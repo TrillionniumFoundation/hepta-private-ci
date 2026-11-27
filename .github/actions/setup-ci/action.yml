@@ -24,13 +24,16 @@ runs:
       shell: bash
       run: echo "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"
 
-    - name: Enable unprivileged user namespaces (Linux)
+    - name: Preserve Linux user namespace confinement
       if: runner.os == 'Linux'
       shell: bash
       run: |
-        sudo sysctl -w kernel.unprivileged_userns_clone=1
-        if sudo sysctl -a 2>/dev/null | grep -q '^kernel.apparmor_restrict_unprivileged_userns'; then
-          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+        set -euo pipefail
+        # CI must not disable host-wide AppArmor user namespace restrictions.
+        # If unprivileged namespaces are unavailable, fail closed.
+        test "$(sysctl -n kernel.unprivileged_userns_clone)" = 1
+        if sysctl -n kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = 1
         fi
 
     - name: Configure CI build paths
@@ -76,7 +79,35 @@ runs:
       shell: bash
       run: echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
 
-    - name: Install DotSlash
+    # Do not downgrade TLS verification: fetch the immutable v0.5.9 release
+    # through GitHub CLI and verify the official published SHA-256 before use.
+    - name: Install SHA256-pinned DotSlash (Windows)
+      if: runner.os == 'Windows'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+        version="v0.5.9"
+        asset="dotslash-windows.${version}.tar.gz"
+        expected_sha256="c925840a9bf9105a187cd120278cb023c51dac0cecb3234855152422751b7b41"
+        binary_dir="${RUNNER_TEMP}/verified-dotslash/bin"
+        mkdir -p "$binary_dir"
+        gh release download "$version" --repo facebook/dotslash \
+          --pattern "$asset" --dir "$binary_dir"
+        # NUL mode avoids Git Bash's backslash pathname escaping on D:\\ paths.
+        actual_sha256="$(sha256sum --zero "$binary_dir/$asset" | head -c 64)"
+        if [[ "$actual_sha256" != "$expected_sha256" ]]; then
+          echo "::error::DotSlash release digest mismatch; aborting."
+          exit 60
+        fi
+        tar --force-local -xOzf "$binary_dir/$asset" > "$binary_dir/dotslash.exe"
+        chmod +x "$binary_dir/dotslash.exe"
+        "$binary_dir/dotslash.exe" --version
+        echo "$binary_dir" >> "$GITHUB_PATH"
+
+    - name: Install DotSlash (Linux/macOS)
+      if: runner.os != 'Windows'
       uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a # v2
 
     - name: Install just

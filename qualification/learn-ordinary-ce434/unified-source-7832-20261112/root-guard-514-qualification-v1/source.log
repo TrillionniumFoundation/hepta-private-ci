@@ -1,0 +1,41 @@
+test_attestation_and_readback_use_live_original_owners_without_running_c (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_attestation_and_readback_use_live_original_owners_without_running_c) ... ok
+test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io) ... ok
+test_fresh_context_pins_actual_selection_and_both_original_signatures (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_fresh_context_pins_actual_selection_and_both_original_signatures) ... ok
+test_no_key_writer_callback_or_readback_effect_factory_can_be_added (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_no_key_writer_callback_or_readback_effect_factory_can_be_added) ... ok
+test_only_concrete_original_owner_edges_open_and_factories_stay_closed (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed) ... ok
+test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag) ... ok
+test_response_requires_actual_retained_c_with_new_run_and_original_roles (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_response_requires_actual_retained_c_with_new_run_and_original_roles) ... ok
+test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io) ... ok
+test_command_and_readback_keep_actual_owner_and_original_transport_bounds (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_command_and_readback_keep_actual_owner_and_original_transport_bounds) ... ok
+test_fresh_context_uses_opaque_actual_training_and_full_original_binding (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_fresh_context_uses_opaque_actual_training_and_full_original_binding) ... ok
+test_no_key_writer_callback_or_readback_effect_factory_can_be_added (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_no_key_writer_callback_or_readback_effect_factory_can_be_added) ... ok
+test_only_concrete_original_owner_edges_open_and_factories_stay_closed (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed) ... ok
+test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag) ... ok
+test_response_verifies_exact_extension_baseline_and_independent_original_roles (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_response_verifies_exact_extension_baseline_and_independent_original_roles) ... ok
+test_no_update_keeps_frozen_rule_and_generator_selector_separation (test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_no_update_keeps_frozen_rule_and_generator_selector_separation) ... ok
+test_readback_boundary_only_admits_original_receipt_and_material_owners (test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_readback_boundary_only_admits_original_receipt_and_material_owners) ... ok
+test_readback_requires_original_completed_bytes_scope_and_current_witness (test_training_no_update_source_closure.TrainingNoUpdateSourceClosureTests.test_readback_requires_original_completed_bytes_scope_and_current_witness) ... ok
+test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added) ... ok
+test_initial_fixed_context_and_original_deadlines_precede_all_late_binding (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_initial_fixed_context_and_original_deadlines_precede_all_late_binding) ... ok
+test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors) ... ok
+test_only_concrete_original_edges_and_resident_installation_are_registered (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) ... ok
+test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity) ... ERROR
+test_readiness_only_original_unresolved_publication_remains_pending (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_readiness_only_original_unresolved_publication_remains_pending) ... ok
+test_recovery_and_attestation_use_real_owner_reads_and_final_clock (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_recovery_and_attestation_use_real_owner_reads_and_final_clock) ... ok
+test_resident_gate_and_same_cancellation_remain_at_actual_effect_edges (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_resident_gate_and_same_cancellation_remain_at_actual_effect_edges) ... ok
+
+======================================================================
+ERROR: test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/learn-current-v2/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py", line 259, in test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity
+    self.rejects(READINESS, "fn read_current(", marker)
+  File "/workspace/scratch/ce434f960ee9/learn-current-v2/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py", line 93, in rejects
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+----------------------------------------------------------------------
+Ran 25 tests in 11.082s
+
+FAILED (errors=1)

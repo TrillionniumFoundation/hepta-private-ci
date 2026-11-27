@@ -1,0 +1,114 @@
+{
+  "all_pass": true,
+  "base": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+  "candidate_diff_proof_sha256": "059e75ed0850ea9026dbde866add4c497efb06c7a421a2613adee67a04abae09",
+  "candidate_source_unchanged_after_tests": true,
+  "results": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_original_material_owner_source_closure.py",
+        "-v"
+      ],
+      "elapsed_seconds": 0.916,
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-protection-20261120-0cee/b4-counts/evidence/candidate-test_original_material_owner_source_closure.log",
+      "log_sha256": "fd6ff238459599f4e3fc1248a1eb61605e4a0fe91e5da0f34e721ff1b7dbced1",
+      "module": "test_original_material_owner_source_closure.py",
+      "summary": "OK",
+      "tests_run": 6
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_original_material_evidence_source_closure.py",
+        "-v"
+      ],
+      "elapsed_seconds": 1.016,
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-protection-20261120-0cee/b4-counts/evidence/candidate-test_original_material_evidence_source_closure.log",
+      "log_sha256": "a9c6a4cd516aa2f83d27697e2b4734912b1ffe8b6ac74e728fa6cf339fc28d6d",
+      "module": "test_original_material_evidence_source_closure.py",
+      "summary": "OK",
+      "tests_run": 9
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_original_material_command_source_closure.py",
+        "-v"
+      ],
+      "elapsed_seconds": 1.066,
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-protection-20261120-0cee/b4-counts/evidence/candidate-test_original_material_command_source_closure.log",
+      "log_sha256": "e589996eaa19f1082b05ade08e1c5c585939da212cc5bc003471069493164f91",
+      "module": "test_original_material_command_source_closure.py",
+      "summary": "OK",
+      "tests_run": 8
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_original_execution_owner_source_closure.py",
+        "-v"
+      ],
+      "elapsed_seconds": 1.316,
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-protection-20261120-0cee/b4-counts/evidence/candidate-test_original_execution_owner_source_closure.log",
+      "log_sha256": "dbf16ae4d56a495f90efed14036139a12e30da5a00a0bb75f4fb07f0e3a3655f",
+      "module": "test_original_execution_owner_source_closure.py",
+      "summary": "OK",
+      "tests_run": 9
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_positive_circuit_next_use_source_closure.py",
+        "-v"
+      ],
+      "elapsed_seconds": 1.467,
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-protection-20261120-0cee/b4-counts/evidence/candidate-test_positive_circuit_next_use_source_closure.log",
+      "log_sha256": "7a2c59b4272239ecd7ef49a29c19aa7431f4c028345311dce6700522372e6ce9",
+      "module": "test_positive_circuit_next_use_source_closure.py",
+      "summary": "OK",
+      "tests_run": 7
+    }
+  ],
+  "tests_run": 39
+}

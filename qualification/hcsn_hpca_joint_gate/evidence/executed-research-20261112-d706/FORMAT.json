@@ -1,0 +1,63 @@
+{
+  "schema": "ledger-document-format-receipt-v2",
+  "scope": "This receipt checks added ledger documents; no scientific source qualification is inferred from the local formatter scaffold.",
+  "target_parent": "672184fa5f51c5d658167a01b1c9be9668e383bb",
+  "formatter_blobs_verified_equal_target_parent": {
+    "justfile": {
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/format.py": {
+      "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    }
+  },
+  "local_scaffold_baseline": "a873017d258672c3ab4f5eacc4366a0871f23cdd",
+  "requested_command": [
+    "just",
+    "fmt",
+    "--base",
+    "a873017d258672c3ab4f5eacc4366a0871f23cdd"
+  ],
+  "requested_command_outcome": "FileNotFoundError: just missing after environment recovery",
+  "fallback_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "../scripts/format.py",
+    "--base",
+    "a873017d258672c3ab4f5eacc4366a0871f23cdd"
+  ],
+  "fallback_basis": "Read justfile fmt recipe: @{{ python }} ../scripts/format.py {args}; invoke that same formatter directly",
+  "cwd": "codex-rs",
+  "returncode": 0,
+  "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+  "stderr": "",
+  "document_hashes_before": {
+    "HPCA_COLD_READBACK.json": "7dde8a7bb716268ffe9dda2b4d155e2c416a905c60ad9505e2d0dea01f7f6a5e",
+    "HPCA_MAIN_READBACK.json": "dfdda2e6585a351e69cf3925a7b9f239f7c477e67a83cd0e760e41b0a14110ff",
+    "LEDGER.json": "571763ee06215954218012722338d66bd914187897a0e5c5de4184fe6ebe7f79",
+    "NDU_INTERFACE_REVIEW.json": "740d0fed39d846ce15a52032ae3ab39cf575e4cec76d7694922f34a3950eab22",
+    "NDU_SOURCE_READBACK.json": "1dab0a49182af7f246a0ceed9e872508b9cbc414e6e79b4847c8b1555c6ffe09",
+    "README.md": "813559c2bbb0ca2b0835dc3cad43e66d34833334ad2396efd8237ebb402a9ba0",
+    "hosted-state-43171816183/JOB.log": "80e38fb79ce7634204fd674d2640ae145672ae0b7933aa3307d13eca9a10bfd6",
+    "hosted-state-43171816183/ORIGINAL.zip": "7c4e23cbd2586dacc34e40265e2ef32f592555d0ed1c92794c932df8c5e7d040",
+    "hosted-state-43171816183/RESULT.json": "f0918e379c7293976ef878a0e3bc07763cfe56c9fb31f2452fc18e0dbb8a5e8d",
+    "hosted-state-43171816183/RUN.json": "e8ee97df6e853948f77ad29a348db9ac67c965c03bd0051f60198718f50daf1c"
+  },
+  "document_hashes_after": {
+    "HPCA_COLD_READBACK.json": "7dde8a7bb716268ffe9dda2b4d155e2c416a905c60ad9505e2d0dea01f7f6a5e",
+    "HPCA_MAIN_READBACK.json": "dfdda2e6585a351e69cf3925a7b9f239f7c477e67a83cd0e760e41b0a14110ff",
+    "LEDGER.json": "571763ee06215954218012722338d66bd914187897a0e5c5de4184fe6ebe7f79",
+    "NDU_INTERFACE_REVIEW.json": "740d0fed39d846ce15a52032ae3ab39cf575e4cec76d7694922f34a3950eab22",
+    "NDU_SOURCE_READBACK.json": "1dab0a49182af7f246a0ceed9e872508b9cbc414e6e79b4847c8b1555c6ffe09",
+    "README.md": "813559c2bbb0ca2b0835dc3cad43e66d34833334ad2396efd8237ebb402a9ba0",
+    "hosted-state-43171816183/JOB.log": "80e38fb79ce7634204fd674d2640ae145672ae0b7933aa3307d13eca9a10bfd6",
+    "hosted-state-43171816183/ORIGINAL.zip": "7c4e23cbd2586dacc34e40265e2ef32f592555d0ed1c92794c932df8c5e7d040",
+    "hosted-state-43171816183/RESULT.json": "f0918e379c7293976ef878a0e3bc07763cfe56c9fb31f2452fc18e0dbb8a5e8d",
+    "hosted-state-43171816183/RUN.json": "e8ee97df6e853948f77ad29a348db9ac67c965c03bd0051f60198718f50daf1c"
+  },
+  "documents_unchanged": true,
+  "tests_rerun_after_formatting": false,
+  "changes_experiment_source": false,
+  "source_change_basis": "Git tree mutations are confined to the 12 new evidence/index paths under the declared directory.",
+  "prior_receipt": "7bf1e72fa594056fb1a96b6b71fd10f93fd43b2b FORMAT.json guarded a separate local Torch scaffold; it is not a hash assertion about the common parent source."
+}

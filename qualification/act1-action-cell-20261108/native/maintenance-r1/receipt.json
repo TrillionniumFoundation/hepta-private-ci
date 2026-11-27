@@ -1,0 +1,57 @@
+{
+  "base": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+  "ended_utc": "2026-11-08T10:42:16.653151+00:00",
+  "learned_hierarchy_benefit_proved": false,
+  "maintenance_patch_sha256": "e83cf9516adfa8fd7ad9e48e84fd5953c2fa2c3173a64dbbc3b8456db255a5ff",
+  "nextest_version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu",
+  "phase": "maintenance",
+  "production_qualified": false,
+  "rust_version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "schema": "hepta.act1.native-gate.v1",
+  "source_after": {
+    "head": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "status": "M  codex-rs/hepta-automation/BUILD.bazel\nA  codex-rs/hepta-automation/src/action_skill.rs\nAM codex-rs/hepta-automation/src/action_skill_driver.rs\nAM codex-rs/hepta-automation/src/action_skill_tests.rs\nMM codex-rs/hepta-automation/src/authorized_effect.rs\nM  codex-rs/hepta-automation/src/lib.rs\nAM codex-rs/hepta-automation/tests/action_skill_act1.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/README.md\nAM codex-rs/hepta-automation/tests/action_skill_support/baselines.rs\nAM codex-rs/hepta-automation/tests/action_skill_support/destination.rs\nAM codex-rs/hepta-automation/tests/action_skill_support/harness.rs\nAM codex-rs/hepta-automation/tests/action_skill_support/mod.rs\nAM codex-rs/hepta-automation/tests/action_skill_support/observer.rs\nM  codex-rs/hepta-automation/tests/authorized_effect.rs\nA  qualification/act1-action-cell-20261108/README.md",
+    "tree": "334ccb7bb726033e898a3d698dfe616ae627e75c",
+    "unstaged": "codex-rs/hepta-automation/src/action_skill_driver.rs\ncodex-rs/hepta-automation/src/action_skill_tests.rs\ncodex-rs/hepta-automation/src/authorized_effect.rs\ncodex-rs/hepta-automation/tests/action_skill_act1.rs\ncodex-rs/hepta-automation/tests/action_skill_support/baselines.rs\ncodex-rs/hepta-automation/tests/action_skill_support/destination.rs\ncodex-rs/hepta-automation/tests/action_skill_support/harness.rs\ncodex-rs/hepta-automation/tests/action_skill_support/mod.rs\ncodex-rs/hepta-automation/tests/action_skill_support/observer.rs"
+  },
+  "source_before": {
+    "head": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "status": "M  codex-rs/hepta-automation/BUILD.bazel\nA  codex-rs/hepta-automation/src/action_skill.rs\nA  codex-rs/hepta-automation/src/action_skill_driver.rs\nA  codex-rs/hepta-automation/src/action_skill_tests.rs\nM  codex-rs/hepta-automation/src/authorized_effect.rs\nM  codex-rs/hepta-automation/src/lib.rs\nA  codex-rs/hepta-automation/tests/action_skill_act1.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/README.md\nA  codex-rs/hepta-automation/tests/action_skill_support/baselines.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/destination.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/harness.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/mod.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/observer.rs\nM  codex-rs/hepta-automation/tests/authorized_effect.rs\nA  qualification/act1-action-cell-20261108/README.md",
+    "tree": "334ccb7bb726033e898a3d698dfe616ae627e75c",
+    "unstaged": ""
+  },
+  "started_utc": "2026-11-08T10:41:31.245141+00:00",
+  "steps": [
+    {
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-automation",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log_bytes": 8740,
+      "log_sha256": "e6dbb0a0fca3d79e7a9b93a340b490c44a614a9cd377ab88c880facb5a040ba2",
+      "name": "clippy",
+      "wall_seconds": 45.168460289
+    },
+    {
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5"
+      ],
+      "exit_code": 1,
+      "log_bytes": 314,
+      "log_sha256": "dd3f7de34936a56bab56b805c5691e05ff706c714df83069460a1bad25066539",
+      "name": "fmt",
+      "wall_seconds": 0.179164635
+    }
+  ],
+  "success": false
+}

@@ -1,0 +1,134 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.evidence-checkpoint.v1",
+  "current_product_status": "unqualified-source-assembly",
+  "source_parent": "caa34b7e77f5aa134dc1335f5f143af948874157",
+  "exact_source_evidence": [
+    {
+      "source": "9bfdef05995409a2257e3c8bd16b967fe6d013e4",
+      "ordinary": {
+        "passed": 1221,
+        "failed": 3,
+        "skipped": 78
+      },
+      "root": {
+        "actual_uid": 0,
+        "parents_passed": 12,
+        "attempt": "corrected-toolchain-v3"
+      },
+      "full_callers": "passed",
+      "combined": "failed",
+      "qualification_inheritance": false
+    },
+    {
+      "source": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+      "ordinary": {
+        "passed": 1231,
+        "failed": 0,
+        "skipped": 78,
+        "retries": 0
+      },
+      "root": {
+        "actual_uid": 0,
+        "parents_passed": 12
+      },
+      "full_callers": "failed-exact-function-marker",
+      "qa": "failed-exact-function-marker",
+      "combined": "failed",
+      "qualification_inheritance": false
+    },
+    {
+      "source": "15666ae38820770b44411bc6f4d369bd0087350a",
+      "maintenance_passed_packages": [
+        "codex-hepta-agentd",
+        "codex-hepta-learning-artifacts",
+        "codex-hepta-intelligence-eval"
+      ],
+      "maintenance_failure": "contracts libtest E0277 missing Debug for equality assertion",
+      "native_behavior_executed": false
+    },
+    {
+      "source": "caa34b7e77f5aa134dc1335f5f143af948874157",
+      "attempt": "v6",
+      "status": "failed-harness-preflight",
+      "reason": "Predecessor path selected v5 but retained v4 digest; no source checkout or Cargo executed.",
+      "native_behavior_executed": false
+    },
+    {
+      "source": "caa34b7e77f5aa134dc1335f5f143af948874157",
+      "attempt": "v7",
+      "status": "failed-maintenance",
+      "reason": "E0308 redundant Arc around original RootAuthorityDirectory::open return",
+      "native_postimage_delta": {
+        "git_blob": "a8d5634e98e69250bf262aa7bd5c7479dddb151f",
+        "sha256": "e0a5a5102cdbc3aee420461e6bc8e2887bb3a199ce9614bd07a7d52e2befcf89",
+        "bytes": 346808,
+        "files": 62
+      },
+      "native_behavior_executed": false
+    }
+  ],
+  "prior_261d_reconciliation": {
+    "original_request_key": "af52-full-261d54-maintenance-v2",
+    "original_request_blob": "839023c779858aaa5d7bb903b43a07aba2a1e842",
+    "original_observation": "No matching job or progress file at that earlier read-only observation",
+    "later_observation": "Original terminal progress subsequently found; four test compilation errors, no behavior executed",
+    "progress_sha256": "f704693b98d2c2b26b2f74216e84041bd85eb773180919ebe527b54e59810ce5",
+    "source": "261d54cfba2d639ff3622924dfce583da6012486",
+    "new_key_replay_performed": false
+  },
+  "assembly_changes": {
+    "native_format_postimages": 62,
+    "cli_followup_manifest": "d40704595464688c323a997a3872fe0ccb229eca",
+    "strict_marker_alignment": "ec9966008cfbcb4381067b5dcd7ca0f317907348",
+    "checker_modified": false,
+    "callers": 425,
+    "protected_rows": 316
+  },
+  "archives": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/b655-prepublication-original-records.tar.xz",
+      "git_blob": "abf852a4f30b013f6fc08d419c1c2c3e4ba98406",
+      "bytes": 117332,
+      "sha256": "6fa06669c9928d709de05d9fa49f1cf6773197107f1565fd6bac882259675d4d",
+      "members": 64,
+      "scope": "Original failed prepublication and format-only attempts; source identities are retained inside the original archive manifest.",
+      "status": "failed-prepublication-attempts"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/9bfdef-original-records.tar.xz",
+      "git_blob": "e6e59ebae5b32c5ce15ee40aa699c1bb54640515",
+      "bytes": 645820,
+      "sha256": "bf86fbe86e20c835b0f3243497a5311b2903863cbd6d088a34c6412f5e5d9233",
+      "members": 78,
+      "source": "9bfdef05995409a2257e3c8bd16b967fe6d013e4",
+      "source_tree": "7d4e4bb91a762e455362a131cacaf8b827145e69",
+      "scope": "Original native ordinary failures, wrong-toolchain Root attempt, corrected-toolchain actual Root components, original full caller proof and separately identified QA reconciliation.",
+      "status": "failed-combined-source-qualification"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/3c8dabe-and-early-maintenance-original-records.tar.xz",
+      "git_blob": "3f9a98d97c54d632faff4351eefd862c8fcc19ce",
+      "bytes": 666748,
+      "sha256": "938af64804abc935ab8db125dd6054d64f6e6f73626f07fcca4d661daaac6618",
+      "members": 114,
+      "source": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+      "source_tree": "6fe2c2426f22383416697016445cf444aafdd2ff",
+      "scope": "Original 3c8 QA rejection, 1231/0/78 ordinary and actual 12 Root components, failed full caller proof, 285 formatting and 11a failed maintenance; requests and the original at-the-time unknown-admission observation are preserved.",
+      "status": "failed-combined-source-qualification"
+    }
+  ],
+  "business_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "daemon_and_root_os_restart_accepted": false
+  },
+  "limitations": [
+    "Component fixtures and static audits are not ordinary task acceptance.",
+    "Original B matched-budget contract still refuses missing cumulative budgets and stage costs; failure is not converted to NoUpdate.",
+    "Retained A capabilities are in-memory original capabilities and do not establish cold process recovery.",
+    "New Root and initial-purpose code requires its own fixed-source native qualification."
+  ],
+  "scope": "Historical source results remain attached to their exact original source; current source does not inherit them."
+}

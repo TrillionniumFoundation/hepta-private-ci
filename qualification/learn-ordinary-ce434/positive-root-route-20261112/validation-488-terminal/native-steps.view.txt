@@ -1,0 +1,66 @@
+1:ba|{
+2:a9|  "source_sha": "48844493c046fdd79734ddd2c1866314023a15cb",
+3:75|  "source_tree": "360375952ff4fa51e817f2c773e5a5bc2a842a27",
+4:78|  "canonical_tmpdir": "/tmp/hlca-vy54lj63",
+5:d8|  "v8_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+6:47|  "private_v8_inputs": {
+7:5c|    "original_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+8:ee|    "original_manifest_unchanged": true,
+9:56|    "private_artifacts": [
+10:1d|      {
+11:0a|        "key": "RUSTY_V8_ARCHIVE",
+12:87|        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-3270e8e8d310-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+13:ee|        "bytes": 29366352,
+14:e7|        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+15:47|        "acquisition": "read-only reuse of exact original 3270 verified private input"
+16:31|      },
+17:1d|      {
+18:b1|        "key": "RUSTY_V8_SRC_BINDING_PATH",
+19:df|        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-3270e8e8d310-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+20:1f|        "bytes": 39884,
+21:c4|        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+22:47|        "acquisition": "read-only reuse of exact original 3270 verified private input"
+23:53|      }
+24:41|    ],
+25:d9|    "copied_or_downloaded": false
+26:d3|  },
+27:5b|  "state": "failed",
+28:e7|  "steps": [
+29:f5|    {
+30:71|      "name": "helper-build",
+31:1f|      "exit_code": 0,
+32:9f|      "seconds": 69.30942702898756,
+33:db|      "log_sha256": "6a3a98e3c0b7a44e5cd2f8ee24f5cbf2bf4f66ef830434313e82af6c03bba59d",
+34:ab|      "log_bytes": 215
+35:d9|    },
+36:f5|    {
+37:e8|      "name": "helper-verify",
+38:1f|      "exit_code": 0,
+39:eb|      "seconds": 0.19908326189033687,
+40:72|      "log_sha256": "8ee4f294dd4b29780cda28a5fc3708ca3ceb7a9720109177dba08cebb637ddc5",
+41:5e|      "log_bytes": 1189
+42:d9|    },
+43:f5|    {
+44:9a|      "name": "focused-native",
+45:a9|      "exit_code": 101,
+46:4c|      "seconds": 196.31907670898363,
+47:bd|      "log_sha256": "778364ab935e563c8f149f048d83ff9bb49ec6d69c1f42071a6f369ca9492281",
+48:d2|      "log_bytes": 65868
+49:d9|    },
+50:f5|    {
+51:45|      "name": "focused-junit",
+52:74|      "exit_code": 1,
+53:a2|      "seconds": 0.6746095311827958,
+54:1e|      "log_sha256": "ad7c1a23c64871ddd0d228270266b1b85d5d026483f039d2dbf6fd81acddded2",
+55:cb|      "log_bytes": 36654
+56:6b|    }
+57:3c|  ],
+58:c1|  "full_chain_acceptance": {
+59:39|    "positive": 0,
+60:67|    "no_update": 0,
+61:2c|    "daemon_root_cold_restart": 0
+62:d3|  },
+63:48|  "purpose": "actual original 180-case owner suite on this fixed source; no ordinary-task acceptance",
+64:61|  "expected_owner_cases": [
+65:87|    [
+[... 734 more lines, 799 total]

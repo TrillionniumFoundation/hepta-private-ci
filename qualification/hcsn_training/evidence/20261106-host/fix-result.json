@@ -1,0 +1,14 @@
+{
+  "command": "just fix -p codex-hepta-automation",
+  "exit_code": 0,
+  "source_bytes_changed": false,
+  "scope": "full original workspace, original lock, all automation tests checked",
+  "baseline_warnings": [
+    "large enum variant in authorized_effect.rs",
+    "too many arguments in authorized_effect.rs and neural_circuit.rs",
+    "disallowed direct SQLite pool connection in pre-existing migration_convergence_tests.rs",
+    "unused NegativeObservation variant in pre-existing retirement_recovery.rs"
+  ],
+  "log_sha256": "ad9cd863f8a5f5d864a4264ea6d09c542dc89536456e3c259a733f36ac439ba7",
+  "tests_after_fix": "none; final formatted candidate will be qualified by hosted CI"
+}

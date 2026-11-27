@@ -1,0 +1,90 @@
+{
+  "added_independent_complete_training_replays": 0,
+  "cases": [
+    {
+      "archive_bytes": 39833,
+      "archive_sha256": "52cc14a45dc19c9525f46004d98260a16f98b13d17b148a5c5a5a0e2354a2564",
+      "archiver_torch_deserialization": false,
+      "artifact_id": 13926529635,
+      "geometry": "uniform",
+      "job_id": 131064470735,
+      "log_bytes_utf8": 31286,
+      "log_sha256": "539c97026283740f59093d0e29c710426f90f91f9ce6d0f277502699cb6c8014",
+      "member_checkpoint_hashes_verified": true,
+      "new_model_executions": 0,
+      "new_optimizer_calls": 0,
+      "producer_actual_adam_update_calls": 4,
+      "producer_cpu_children_seconds": 11.669616,
+      "producer_cpu_self_seconds": 0.8689017679999997,
+      "producer_full_state_claim_retained": true,
+      "producer_true_flags": [
+        "gradcheck",
+        "parameter_version_guard",
+        "unsafe_data_mutation_guard",
+        "trainable_initial_state_refused",
+        "source_mismatch_refused",
+        "runtime_mismatch_refused",
+        "sources_unchanged",
+        "continuous_vs_fresh_process_full_state_exact"
+      ],
+      "producer_wall_seconds": 13.209626450000002,
+      "records_and_source_hashes_verified": true,
+      "run_id": 43183355160,
+      "runtime": {
+        "numpy": "2.3.5",
+        "python": "3.12.16 (main, Oct 26 2026, 02:50:49) [GCC 13.3.0]",
+        "scipy": "1.17.0",
+        "torch": "2.8.0+cpu"
+      }
+    },
+    {
+      "archive_bytes": 39865,
+      "archive_sha256": "e3ba8b9b0f4313468d22730ae205e43f5349a1a4c1c6f2c4222e67d2e18aebdb",
+      "archiver_torch_deserialization": false,
+      "artifact_id": 13927392878,
+      "geometry": "graded",
+      "job_id": 131064470498,
+      "log_bytes_utf8": 244397,
+      "log_sha256": "2289e5ed12e26bf34982f6f4ab476e45c3ab50d4ba2e06bbef50f6fe91b84ebe",
+      "member_checkpoint_hashes_verified": true,
+      "new_model_executions": 0,
+      "new_optimizer_calls": 0,
+      "producer_actual_adam_update_calls": 4,
+      "producer_cpu_children_seconds": 10.132904,
+      "producer_cpu_self_seconds": 1.0737367579999997,
+      "producer_full_state_claim_retained": true,
+      "producer_true_flags": [
+        "gradcheck",
+        "parameter_version_guard",
+        "unsafe_data_mutation_guard",
+        "trainable_initial_state_refused",
+        "source_mismatch_refused",
+        "runtime_mismatch_refused",
+        "sources_unchanged",
+        "continuous_vs_fresh_process_full_state_exact"
+      ],
+      "producer_wall_seconds": 11.363237609999999,
+      "records_and_source_hashes_verified": true,
+      "run_id": 43183355248,
+      "runtime": {
+        "numpy": "2.3.5",
+        "python": "3.12.16 (main, Oct 26 2026, 02:50:49) [GCC 13.3.0]",
+        "scipy": "1.17.0",
+        "torch": "2.8.0+cpu"
+      }
+    }
+  ],
+  "limits": [
+    "No Torch tensor deserialization or fresh gradient computation by this archival readback.",
+    "Full-state exactness and gradient guard flags are retained producer claims; ZIP bytes, member CRC/hashes, checkpoint hash receipts, records, nine source commitments and exact checkout were independently checked.",
+    "Probe wall/CPU numbers exclude environment setup, dependency installation and complete hosted job cost.",
+    "These inherited small-mesh Torch probes do not qualify n128/n512 Torch or full network/prior training."
+  ],
+  "new_model_executions": 0,
+  "new_optimizer_calls": 0,
+  "pull_request": 6234,
+  "read_only_archive_operation": true,
+  "schema": "hcsn-hosted-physical-ci-originals-readback-v1",
+  "scientific_admission": "HOLD_NO_GO",
+  "source_commit": "a385c0fe6fafc513da8539799338182176a1a9f8"
+}

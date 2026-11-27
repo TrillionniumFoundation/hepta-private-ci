@@ -1,0 +1,80 @@
+schema=hcsn-n256-resource-snapshot-v1
+sample_utc=2026-11-13T09:58:58Z
+boot_id=14f92beb-43c6-4786-839e-b57307ae8048
+kernel=Linux 7.0.0-38-generic x86_64 GNU/Linux
+self_cgroup=/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d4587885-392-376.service
+meminfo_MemTotal:=131760804 kB
+meminfo_MemAvailable:=77842376 kB
+meminfo_SwapTotal:=8388604 kB
+meminfo_SwapFree:=232 kB
+memory_pressure=some avg10=0.00 avg60=0.00 avg300=0.02 total=1997194116;full avg10=0.00 avg60=0.00 avg300=0.02 total=1926044478;
+cgroup_level=0 path=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d4587885-392-376.service
+cgroup_field=memory.current value=13615104;
+cgroup_field=memory.peak value=14307328;
+cgroup_field=memory.min value=0;
+cgroup_field=memory.low value=0;
+cgroup_field=memory.high value=max;
+cgroup_field=memory.max value=max;
+cgroup_field=memory.swap.current value=0;
+cgroup_field=memory.swap.max value=max;
+cgroup_field=memory.events value=low 0;high 0;max 0;oom 0;oom_kill 0;oom_group_kill 0;sock_throttled 0;
+cgroup_field=pids.current value=6;
+cgroup_field=pids.max value=142893;
+cgroup_field=cpu.max value=max 100000;
+cgroup_level=1 path=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice
+cgroup_field=memory.current value=66475864064;
+cgroup_field=memory.peak value=127182213120;
+cgroup_field=memory.min value=0;
+cgroup_field=memory.low value=0;
+cgroup_field=memory.high value=max;
+cgroup_field=memory.max value=max;
+cgroup_field=memory.swap.current value=7977263104;
+cgroup_field=memory.swap.max value=max;
+cgroup_field=memory.events value=low 0;high 0;max 6631149;oom 315;oom_kill 15;oom_group_kill 0;sock_throttled 50895;
+cgroup_field=pids.current value=2256;
+cgroup_field=pids.max value=max;
+cgroup_field=cpu.max value=max 100000;
+cgroup_level=2 path=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service
+cgroup_field=memory.current value=68414910464;
+cgroup_field=memory.peak value=128618070016;
+cgroup_field=memory.min value=0;
+cgroup_field=memory.low value=0;
+cgroup_field=memory.high value=max;
+cgroup_field=memory.max value=max;
+cgroup_field=memory.swap.current value=8104501248;
+cgroup_field=memory.swap.max value=max;
+cgroup_field=memory.events value=low 0;high 0;max 6631149;oom 315;oom_kill 15;oom_group_kill 0;sock_throttled 50903;
+cgroup_field=pids.current value=2689;
+cgroup_field=pids.max value=max;
+cgroup_field=cpu.max value=max 100000;
+cgroup_level=3 path=/sys/fs/cgroup/user.slice/user-1000.slice
+cgroup_field=memory.current value=78292119552;
+cgroup_field=memory.peak value=128688685056;
+cgroup_field=memory.min value=0;
+cgroup_field=memory.low value=0;
+cgroup_field=memory.high value=max;
+cgroup_field=memory.max value=max;
+cgroup_field=memory.swap.current value=8224157696;
+cgroup_field=memory.swap.max value=max;
+cgroup_field=memory.events value=low 0;high 0;max 6631149;oom 315;oom_kill 15;oom_group_kill 0;sock_throttled 50956;
+cgroup_field=pids.current value=2713;
+cgroup_field=pids.max value=314366;
+cgroup_field=cpu.max value=max 100000;
+cgroup_level=4 path=/sys/fs/cgroup/user.slice
+cgroup_field=memory.current value=78299095040;
+cgroup_field=memory.peak value=128815005696;
+cgroup_field=memory.min value=0;
+cgroup_field=memory.low value=0;
+cgroup_field=memory.high value=max;
+cgroup_field=memory.max value=max;
+cgroup_field=memory.swap.current value=8224157696;
+cgroup_field=memory.swap.max value=max;
+cgroup_field=memory.events value=low 0;high 0;max 6631149;oom 315;oom_kill 15;oom_group_kill 0;sock_throttled 50956;
+cgroup_field=pids.current value=2713;
+cgroup_field=pids.max value=max;
+cgroup_field=cpu.max value=max 100000;
+cgroup_field=cpuset.cpus.effective value=0-47;
+cgroup_level=5 path=/sys/fs/cgroup
+cgroup_field=cpuset.cpus.effective value=0-47;
+nproc=48
+page_size=4096

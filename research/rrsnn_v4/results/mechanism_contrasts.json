@@ -1,0 +1,1831 @@
+{
+  "all_predeclared_ablations_reported": [
+    "fp_no_rollover",
+    "rr_mean_maturity",
+    "rr_shuffle_maturity",
+    "rr_fixed_boundary",
+    "rr_frozen_resource"
+  ],
+  "datasets": {
+    "paired": {
+      "full_minus_ablation": {
+        "fp_no_rollover": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.0251953125
+            ],
+            "mean": 0.008203125,
+            "training_seed_means": [
+              0.0400390625,
+              0.0,
+              0.0,
+              0.0009765625,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0283203125,
+          "expected_pathwise_tie_fraction": 0.9634765625,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.0005408603863992589,
+              0.027345584703413396
+            ],
+            "mean": 0.008607928824140052,
+            "training_seed_means": [
+              0.04371571960369934,
+              0.0,
+              0.0,
+              -0.0006760754829990737,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -0.038423557853784145,
+              1.5544204659279632
+            ],
+            "mean": 0.48730552935391297,
+            "training_seed_means": [
+              2.484557094086795,
+              0.0,
+              0.0,
+              -0.04802944731723018,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -0.03790826824504578,
+              1.3677745205771228
+            ],
+            "mean": 0.43408165654893943,
+            "training_seed_means": [
+              2.2177936180510045,
+              0.0,
+              0.0,
+              -0.04738533530630722,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.019240722656249962
+            ],
+            "mean": 0.006298828125,
+            "training_seed_means": [
+              0.030517578125,
+              0.0,
+              0.0,
+              0.0009765625,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.000466898947291948,
+              0.02951254679932496
+            ],
+            "mean": 0.009390442545798112,
+            "training_seed_means": [
+              0.0475358364131055,
+              0.0,
+              0.0,
+              -0.000583623684114935,
+              0.0
+            ]
+          }
+        },
+        "rr_fixed_boundary": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.025
+            ],
+            "mean": 0.0078125,
+            "training_seed_means": [
+              0.0390625,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0328125,
+          "expected_pathwise_tie_fraction": 0.959375,
+          "expected_utility_gain": {
+            "ci95": [
+              0.0,
+              0.03199455487124038
+            ],
+            "mean": 0.01023804691299476,
+            "training_seed_means": [
+              0.051190234564973805,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              0.0,
+              1.8217552803127202
+            ],
+            "mean": 0.5746531446956678,
+            "training_seed_means": [
+              2.873265723478339,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              0.0,
+              1.5905931105920705
+            ],
+            "mean": 0.5162853933593412,
+            "training_seed_means": [
+              2.5814269667967062,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.019482421875
+            ],
+            "mean": 0.006103515625,
+            "training_seed_means": [
+              0.030517578125,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              0.0,
+              0.035466490716553715
+            ],
+            "mean": 0.011381325940715569,
+            "training_seed_means": [
+              0.05690662970357785,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "rr_frozen_resource": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.0919921875
+            ],
+            "mean": 0.031640625,
+            "training_seed_means": [
+              0.1474609375,
+              0.0,
+              0.0,
+              0.0107421875,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0162109375,
+          "expected_pathwise_tie_fraction": 0.9521484375,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.017895284663252124,
+              0.0
+            ],
+            "mean": -0.006518307209194616,
+            "training_seed_means": [
+              -0.02510674841811357,
+              0.0,
+              0.0,
+              -0.007484787627859511,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -1.121818636413957,
+              0.0
+            ],
+            "mean": -0.37422473633843273,
+            "training_seed_means": [
+              -1.4960550967524715,
+              0.0,
+              0.0,
+              -0.37506858493969225,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -1.0090811661454737,
+              0.0
+            ],
+            "mean": -0.3696422583752727,
+            "training_seed_means": [
+              -1.422691999786596,
+              0.0,
+              0.0,
+              -0.4255192920897674,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.07163208007812498
+            ],
+            "mean": 0.02490234375,
+            "training_seed_means": [
+              0.1142578125,
+              0.0,
+              0.0,
+              0.01025390625,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.017259724573198954,
+              0.0
+            ],
+            "mean": -0.0061445311318914465,
+            "training_seed_means": [
+              -0.023258301398585483,
+              0.0,
+              0.0,
+              -0.007464354260871749,
+              0.0
+            ]
+          }
+        },
+        "rr_mean_maturity": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.0515625
+            ],
+            "mean": 0.0166015625,
+            "training_seed_means": [
+              0.0830078125,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0265625,
+          "expected_pathwise_tie_fraction": 0.9568359375,
+          "expected_utility_gain": {
+            "ci95": [
+              0.0,
+              0.017256095848453203
+            ],
+            "mean": 0.005157817940878928,
+            "training_seed_means": [
+              0.02578908970439464,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              0.0,
+              1.1267488369665415
+            ],
+            "mean": 0.31887188744603445,
+            "training_seed_means": [
+              1.5943594372301724,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              0.0,
+              0.8197917177581832
+            ],
+            "mean": 0.24096398995970492,
+            "training_seed_means": [
+              1.2048199497985246,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.040869140625
+            ],
+            "mean": 0.013134765625,
+            "training_seed_means": [
+              0.065673828125,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              0.0,
+              0.01967492968024314
+            ],
+            "mean": 0.0058955286989392465,
+            "training_seed_means": [
+              0.029477643494696233,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "rr_shuffle_maturity": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.127734375
+            ],
+            "mean": 0.0416015625,
+            "training_seed_means": [
+              0.2080078125,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0193359375,
+          "expected_pathwise_tie_fraction": 0.9390625,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.03151326778311509,
+              0.0
+            ],
+            "mean": -0.009817551481253161,
+            "training_seed_means": [
+              -0.04908775740626581,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -1.6998587897481119,
+              0.0
+            ],
+            "mean": -0.5117178268971593,
+            "training_seed_means": [
+              -2.5585891344857963,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -1.7031711404897136,
+              0.0
+            ],
+            "mean": -0.53535629664727,
+            "training_seed_means": [
+              -2.67678148323635,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.10107421875
+            ],
+            "mean": 0.0328125,
+            "training_seed_means": [
+              0.1640625,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.03094152264662318,
+              0.0
+            ],
+            "mean": -0.009579985498722795,
+            "training_seed_means": [
+              -0.04789992749361398,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "shock_interaction_full_minus_ablation": {
+        "fp_no_rollover": {
+          "ci95": [
+            -0.014622043463408032,
+            0.009132428520465762
+          ],
+          "mean": -0.0008110045730634251,
+          "training_seed_means": [
+            -0.00675932479731342,
+            0.0,
+            0.0,
+            0.002704301931996295,
+            0.0
+          ]
+        },
+        "rr_fixed_boundary": {
+          "ci95": [
+            -0.00779333182407674,
+            0.009059093072697937
+          ],
+          "mean": 0.00030792603021846925,
+          "training_seed_means": [
+            0.0015396301510923463,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "rr_frozen_resource": {
+          "ci95": [
+            -0.007875184563403217,
+            0.01843221872387056
+          ],
+          "mean": 0.0024710068517589875,
+          "training_seed_means": [
+            0.014112666844363967,
+            0.0,
+            0.0,
+            -0.0017576325855690289,
+            0.0
+          ]
+        },
+        "rr_mean_maturity": {
+          "ci95": [
+            -0.00022612671928094714,
+            0.02303519068226461
+          ],
+          "mean": 0.005793253571134112,
+          "training_seed_means": [
+            0.02896626785567056,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "rr_shuffle_maturity": {
+          "ci95": [
+            0.0,
+            0.07963082622323553
+          ],
+          "mean": 0.024905451669415355,
+          "training_seed_means": [
+            0.12452725834707677,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "shift": {
+      "full_minus_ablation": {
+        "fp_no_rollover": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0005859375,
+              0.056059570312499925
+            ],
+            "mean": 0.02109375,
+            "training_seed_means": [
+              0.087890625,
+              0.0,
+              0.00390625,
+              0.013671875,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0314453125,
+          "expected_pathwise_tie_fraction": 0.9474609375,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.0030618329616254264,
+              0.041087346392624575
+            ],
+            "mean": 0.012491610346582364,
+            "training_seed_means": [
+              0.05596393053235746,
+              0.0,
+              -0.004705915316194819,
+              0.01120003651674918,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -0.20436525389203636,
+              1.841721835909589
+            ],
+            "mean": 0.5059630468596873,
+            "training_seed_means": [
+              2.401558361962726,
+              0.0,
+              -0.24286564794298815,
+              0.37112252027869863,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -0.12750249627949398,
+              1.6382420330278449
+            ],
+            "mean": 0.48652977086897653,
+            "training_seed_means": [
+              2.100850877620885,
+              0.0,
+              -0.20497929703168047,
+              0.5367772737556785,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0005859375,
+              0.053759765625
+            ],
+            "mean": 0.020263671875,
+            "training_seed_means": [
+              0.083984375,
+              0.0,
+              0.00390625,
+              0.013427734375,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.0035957520834100387,
+              0.04045465883567332
+            ],
+            "mean": 0.011991835111994162,
+            "training_seed_means": [
+              0.0550306513978486,
+              0.0,
+              -0.005174641341093838,
+              0.010103165503216055,
+              0.0
+            ]
+          }
+        },
+        "rr_fixed_boundary": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.0359375
+            ],
+            "mean": 0.0138671875,
+            "training_seed_means": [
+              0.0546875,
+              0.0,
+              0.0009765625,
+              0.013671875,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0353515625,
+          "expected_pathwise_tie_fraction": 0.95078125,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.0006604640058234273,
+              0.08552451702353793
+            ],
+            "mean": 0.028798499038883135,
+            "training_seed_means": [
+              0.1346821117823987,
+              0.0,
+              0.0,
+              0.009310383412016988,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -0.052464714106534825,
+              4.632472819105221
+            ],
+            "mean": 1.5468025686906892,
+            "training_seed_means": [
+              7.309598588510054,
+              0.0,
+              0.0,
+              0.4244142549433915,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -0.011045171396296172,
+              3.932543326992296
+            ],
+            "mean": 1.3339942207922895,
+            "training_seed_means": [
+              6.21449922960587,
+              0.0,
+              0.0,
+              0.4554718743555769,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.032862548828124984
+            ],
+            "mean": 0.012841796875,
+            "training_seed_means": [
+              0.0498046875,
+              0.0,
+              0.0009765625,
+              0.013427734375,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -8.53317284210665e-05,
+              0.08823995355369314
+            ],
+            "mean": 0.029887512577684683,
+            "training_seed_means": [
+              0.13818036808795023,
+              0.0,
+              0.0,
+              0.011257194800473205,
+              0.0
+            ]
+          }
+        },
+        "rr_frozen_resource": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0001953125,
+              0.07305175781249992
+            ],
+            "mean": 0.0267578125,
+            "training_seed_means": [
+              0.1142578125,
+              0.0,
+              0.001953125,
+              0.017578125,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.025390625,
+          "expected_pathwise_tie_fraction": 0.9478515625,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.006543385561354064,
+              0.03183399396179184
+            ],
+            "mean": 0.007485632790579897,
+            "training_seed_means": [
+              0.043342037166952126,
+              0.0,
+              -0.0015905970095522006,
+              -0.00432327620450044,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -0.2735955542309718,
+              1.806102090000984
+            ],
+            "mean": 0.45625274614176903,
+            "training_seed_means": [
+              2.4921976067226552,
+              0.0,
+              -0.04580154131352701,
+              -0.1651323347002834,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -0.25678568836605653,
+              1.3475242965096315
+            ],
+            "mean": 0.3017175416921576,
+            "training_seed_means": [
+              1.7111370720061363,
+              0.0,
+              -0.051831327862028834,
+              -0.15071803568331932,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0001953125,
+              0.065185546875
+            ],
+            "mean": 0.02412109375,
+            "training_seed_means": [
+              0.1015625,
+              0.0,
+              0.001953125,
+              0.01708984375,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.007495167773463083,
+              0.030621211038633786
+            ],
+            "mean": 0.006414851737692474,
+            "training_seed_means": [
+              0.041023073400025964,
+              0.0,
+              -0.0019135248514623097,
+              -0.007035289860101273,
+              0.0
+            ]
+          }
+        },
+        "rr_mean_maturity": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.043359375
+            ],
+            "mean": 0.0177734375,
+            "training_seed_means": [
+              0.064453125,
+              0.0,
+              0.0009765625,
+              0.0234375,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0326171875,
+          "expected_pathwise_tie_fraction": 0.949609375,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.007716360685058672,
+              0.07866397278402854
+            ],
+            "mean": 0.023569341596492367,
+            "training_seed_means": [
+              0.12699104389604268,
+              0.0,
+              -7.214470370828956e-05,
+              -0.00907219120987255,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -0.30558769826330257,
+              4.156426694161929
+            ],
+            "mean": 1.2754031045144056,
+            "training_seed_means": [
+              6.637114088818095,
+              0.0,
+              0.004555249166056909,
+              -0.2646538154121231,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -0.25358795787752925,
+              3.549219686951595
+            ],
+            "mean": 1.0986093439131202,
+            "training_seed_means": [
+              5.678692663983043,
+              0.0,
+              0.009978646224537355,
+              -0.19562459064198023,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.038818359375
+            ],
+            "mean": 0.01611328125,
+            "training_seed_means": [
+              0.056884765625,
+              0.0,
+              0.0009765625,
+              0.022705078125,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.007437508817095107,
+              0.08283635887152628
+            ],
+            "mean": 0.024905739703885106,
+            "training_seed_means": [
+              0.13313430808939408,
+              0.0,
+              0.00023725324427751107,
+              -0.008842862814246054,
+              0.0
+            ]
+          }
+        },
+        "rr_shuffle_maturity": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.069140625
+            ],
+            "mean": 0.025,
+            "training_seed_means": [
+              0.109375,
+              0.0,
+              0.0,
+              0.015625,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.03046875,
+          "expected_pathwise_tie_fraction": 0.94453125,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.0011929438197253363,
+              0.045687005941276546
+            ],
+            "mean": 0.015113570506069124,
+            "training_seed_means": [
+              0.06715187628196653,
+              0.0,
+              0.0009503090773766003,
+              0.00746566717100249,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -0.05475390775236217,
+              2.6508635963708196
+            ],
+            "mean": 0.8806574949012986,
+            "training_seed_means": [
+              3.961737576726941,
+              0.0,
+              0.05649004108824381,
+              0.3850598566913086,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -0.013785447772710197,
+              2.094106368977795
+            ],
+            "mean": 0.7097932411567003,
+            "training_seed_means": [
+              3.0331084616765995,
+              0.0,
+              0.0477665392110712,
+              0.4680912048958311,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0,
+              0.05947265625
+            ],
+            "mean": 0.021826171875,
+            "training_seed_means": [
+              0.093994140625,
+              0.0,
+              0.0,
+              0.01513671875,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.0008581622509946683,
+              0.04903461999065162
+            ],
+            "mean": 0.01640733523423346,
+            "training_seed_means": [
+              0.07203670811509133,
+              0.0,
+              0.0009503090773766004,
+              0.009049658978699388,
+              0.0
+            ]
+          }
+        }
+      }
+    },
+    "test": {
+      "full_minus_ablation": {
+        "fp_no_rollover": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0005859375,
+              0.063671875
+            ],
+            "mean": 0.0244140625,
+            "training_seed_means": [
+              0.0986328125,
+              0.0,
+              0.00390625,
+              0.01953125,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0423828125,
+          "expected_pathwise_tie_fraction": 0.933203125,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.004543502784935579,
+              0.0548540445352716
+            ],
+            "mean": 0.017584776420823046,
+            "training_seed_means": [
+              0.07998274540371156,
+              0.0,
+              0.015655892329618518,
+              -0.007714755629214835,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -0.28064044883806977,
+              3.2869693456667854
+            ],
+            "mean": 1.046886169142266,
+            "training_seed_means": [
+              4.769433421942875,
+              0.0,
+              0.9472021357095571,
+              -0.4822047119411019,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -0.19880527771130488,
+              3.0222131177808627
+            ],
+            "mean": 1.0039831525800216,
+            "training_seed_means": [
+              4.456540762440154,
+              0.0,
+              0.8980868607284888,
+              -0.3347118602685352,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0005859375,
+              0.058984375
+            ],
+            "mean": 0.0228515625,
+            "training_seed_means": [
+              0.091552734375,
+              0.0,
+              0.00390625,
+              0.018798828125,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.004429893349122657,
+              0.055916654688562335
+            ],
+            "mean": 0.018188721989139962,
+            "training_seed_means": [
+              0.0817966734066663,
+              0.0,
+              0.017210166467476005,
+              -0.008063229928442491,
+              0.0
+            ]
+          }
+        },
+        "rr_fixed_boundary": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0005859375,
+              0.050390625
+            ],
+            "mean": 0.0189453125,
+            "training_seed_means": [
+              0.078125,
+              0.0,
+              0.00390625,
+              0.0126953125,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.04453125,
+          "expected_pathwise_tie_fraction": 0.9365234375,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.0005449108681974137,
+              0.08550577282255298
+            ],
+            "mean": 0.029646335009581803,
+            "training_seed_means": [
+              0.12898233496314693,
+              0.0,
+              0.017422317603025973,
+              0.0018270224817361351,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -0.03693074516097513,
+              5.176999678983676
+            ],
+            "mean": 1.7804471368529176,
+            "training_seed_means": [
+              7.924130853843502,
+              0.0,
+              0.8088263441036379,
+              0.16927848631744824,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -0.002413474344954324,
+              4.395800001285715
+            ],
+            "mean": 1.5641181760953695,
+            "training_seed_means": [
+              6.741550969032154,
+              0.0,
+              0.9206784765333047,
+              0.15836143491138874,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.0005859375,
+              0.046875
+            ],
+            "mean": 0.017724609375,
+            "training_seed_means": [
+              0.072021484375,
+              0.0,
+              0.00390625,
+              0.0126953125,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.0009068864587703749,
+              0.08617792245563177
+            ],
+            "mean": 0.029974143404598343,
+            "training_seed_means": [
+              0.13031154064178638,
+              0.0,
+              0.018635898835470545,
+              0.0009232775457347618,
+              0.0
+            ]
+          }
+        },
+        "rr_frozen_resource": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0029296875,
+              0.1248046875
+            ],
+            "mean": 0.0466796875,
+            "training_seed_means": [
+              0.1943359375,
+              0.0,
+              0.013671875,
+              0.0244140625,
+              0.0009765625
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0357421875,
+          "expected_pathwise_tie_fraction": 0.917578125,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.0316277733457183,
+              0.004410769730196588
+            ],
+            "mean": -0.009383019151722299,
+            "training_seed_means": [
+              -0.03429920446206784,
+              0.0,
+              0.004833919221979963,
+              -0.0168122507064425,
+              -0.0006375598120811088
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -1.693721190138458,
+              0.3182460886967805
+            ],
+            "mean": -0.46549560234272747,
+            "training_seed_means": [
+              -1.6044234894482954,
+              0.0,
+              0.13448539064054915,
+              -0.8575399129058912,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -1.4251504870530574,
+              0.3010585611247243
+            ],
+            "mean": -0.3860530942151879,
+            "training_seed_means": [
+              -1.4400860105800426,
+              0.0,
+              0.3554044042076563,
+              -0.8132300777507497,
+              -0.032353786952803165
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.002734375,
+              0.11279785156249993
+            ],
+            "mean": 0.04267578125,
+            "training_seed_means": [
+              0.17529296875,
+              0.0,
+              0.012939453125,
+              0.024169921875,
+              0.0009765625
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.030812780770812478,
+              0.0053349773875448064
+            ],
+            "mean": -0.008927847107844838,
+            "training_seed_means": [
+              -0.03185073801923802,
+              0.0,
+              0.0059010610477544115,
+              -0.01805199875565948,
+              -0.0006375598120811087
+            ]
+          }
+        },
+        "rr_mean_maturity": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.0017578125,
+              0.052734375
+            ],
+            "mean": 0.0234375,
+            "training_seed_means": [
+              0.0771484375,
+              0.0,
+              0.009765625,
+              0.0302734375,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.0421875,
+          "expected_pathwise_tie_fraction": 0.934375,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.01377077560196449,
+              0.0906040210080299
+            ],
+            "mean": 0.02626133307491526,
+            "training_seed_means": [
+              0.14481233767802645,
+              0.0,
+              0.012084177844242778,
+              -0.02558985014769291,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -0.7085869445202964,
+              5.700549856212625
+            ],
+            "mean": 1.6597640014576929,
+            "training_seed_means": [
+              9.095919788562586,
+              0.0,
+              0.4810840461037065,
+              -1.278183827377827,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -0.6561648124996968,
+              4.688835606404297
+            ],
+            "mean": 1.3798006354259627,
+            "training_seed_means": [
+              7.484936090384055,
+              0.0,
+              0.6336987392030374,
+              -1.2196316524572783,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.00166015625,
+              0.04619140625
+            ],
+            "mean": 0.02099609375,
+            "training_seed_means": [
+              0.065673828125,
+              0.0,
+              0.00927734375,
+              0.030029296875,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.014005234742736508,
+              0.09456603788672874
+            ],
+            "mean": 0.027532686109137672,
+            "training_seed_means": [
+              0.15074913676473167,
+              0.0,
+              0.013005870824408737,
+              -0.02609157704345203,
+              0.0
+            ]
+          }
+        },
+        "rr_shuffle_maturity": {
+          "expected_pathwise_negative_transfer_fraction": {
+            "ci95": [
+              0.001953125,
+              0.1236328125
+            ],
+            "mean": 0.046875,
+            "training_seed_means": [
+              0.193359375,
+              0.0,
+              0.0107421875,
+              0.0302734375,
+              0.0
+            ]
+          },
+          "expected_pathwise_positive_transfer_fraction": 0.03671875,
+          "expected_pathwise_tie_fraction": 0.91640625,
+          "expected_utility_gain": {
+            "ci95": [
+              -0.016900218833050894,
+              0.025780543254872067
+            ],
+            "mean": 0.00211374128118891,
+            "training_seed_means": [
+              0.026252673326109786,
+              0.0,
+              0.010035909451113849,
+              -0.025719876371279086,
+              0.0
+            ]
+          },
+          "high_value_delivery_gain_percentage_points": {
+            "ci95": [
+              -0.8658299343657702,
+              2.0111766764493555
+            ],
+            "mean": 0.3254588883755578,
+            "training_seed_means": [
+              2.4736974849542106,
+              0.0,
+              0.5279652027098662,
+              -1.3743682457862878,
+              0.0
+            ]
+          },
+          "negative_transfer_definition": "Compare each matched training-seed/scenario/latent-replay pair before averaging. Realized negatives additionally match the query draw. These are finite-path outcomes, not a claim that latent or query repeats are independent test scenarios.",
+          "normalized_expected_gain_percentage_points": {
+            "ci95": [
+              -0.776049068824224,
+              1.3436186335488909
+            ],
+            "mean": 0.1559661697888021,
+            "training_seed_means": [
+              1.4274778940050625,
+              0.0,
+              0.5524249660599522,
+              -1.2000720111210044,
+              0.0
+            ]
+          },
+          "realized_path_query_negative_transfer_fraction": {
+            "ci95": [
+              0.00185546875,
+              0.10117309570312498
+            ],
+            "mean": 0.03935546875,
+            "training_seed_means": [
+              0.156982421875,
+              0.0,
+              0.009765625,
+              0.030029296875,
+              0.0
+            ]
+          },
+          "realized_query_utility_gain": {
+            "ci95": [
+              -0.01672685538603634,
+              0.03136448333398271
+            ],
+            "mean": 0.004358952617586212,
+            "training_seed_means": [
+              0.037240948204450494,
+              0.0,
+              0.011879936716396578,
+              -0.02732612183291601,
+              0.0
+            ]
+          }
+        }
+      }
+    }
+  },
+  "main_aggregate_sha256": "1ac919f5a07aebac96b3b7a49be9905a4f026ce5927d61464ba5aba3d12b8773",
+  "pre_data_protocol_sha256": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+  "primary_acceptance_changed": false,
+  "reporter_sha256": "3bc1efccad84f9c4dc14ad4cd547779b2ba1eed50ee91951df43cfc217fc45bd",
+  "reporting_design_sha256": "a04af1418c480748f52ba9d563f52d8d75ff6efb71391535ac5b9992db331a09",
+  "schema": "rrsnn.v4-descriptive-mechanism-contrasts.1",
+  "scope": "Post-freeze descriptive reporting supplement for all predeclared ablation families; uses frozen paired comparison/bootstrap code and its original seeds/draws. No comparator, checkpoint, task or primary gate is changed. No additional confirmatory or family-wise significance claim.",
+  "selection_sha256": "dbad2690403992f75c46105722670026e7e13acb523f4973f4726a91d6e5d6bd",
+  "sign": "Every contrast is rr_full minus the named ablation.",
+  "sources_sha256": {
+    "results/fp_no_rollover/seed_101/evaluation_paired_rep0.json.gz": "03412bb0344291064db352d3d7cd8c289c2ba8fd3bc8f66ed32b28bd6627adb1",
+    "results/fp_no_rollover/seed_101/evaluation_paired_rep1.json.gz": "c815481ff6d99d7cf769a4d9be11bfc93f70c257b9fb3931126751ccbecf4290",
+    "results/fp_no_rollover/seed_101/evaluation_paired_rep2.json.gz": "02bca3b127275e34b71f901400a43e27b1505368937cfd3abd49a240a4e0eb07",
+    "results/fp_no_rollover/seed_101/evaluation_paired_rep3.json.gz": "69128fd4dcb7a1d211541e050a1d10783b7bbbe1e3e9a7aa5d1021cdfc48edd4",
+    "results/fp_no_rollover/seed_101/evaluation_shift_rep0.json.gz": "b7aef8e669db4aaf5a007b715a6ca461f4e95da219e74f29594b2cdaac6b144b",
+    "results/fp_no_rollover/seed_101/evaluation_shift_rep1.json.gz": "565ff8aff3895c5c5eeb1f8902063ce34750c1a3a00971e729bd596b6d054cea",
+    "results/fp_no_rollover/seed_101/evaluation_shift_rep2.json.gz": "7ed9754df9077551f52067bf985640bd589e40cc0d9914715eab71d2e31b91a4",
+    "results/fp_no_rollover/seed_101/evaluation_shift_rep3.json.gz": "92e9241c0de40a47b43f6f25253d44d2e7bb95ab266c0df766f7b416fd452c66",
+    "results/fp_no_rollover/seed_101/evaluation_test_rep0.json.gz": "856906c86dece1bb8c0db2642611eb71ee912c933bc3d31fc7ad7c80ba6a6bed",
+    "results/fp_no_rollover/seed_101/evaluation_test_rep1.json.gz": "321e94c03fda64681915e6f24d4b9063a5ede5ee0b1e34531b4adf2757cf7ee5",
+    "results/fp_no_rollover/seed_101/evaluation_test_rep2.json.gz": "e584b4d7425ab2ff880d3ad2e89ec211fc8d1f3404bd6ff2ebf589d0b7e616c5",
+    "results/fp_no_rollover/seed_101/evaluation_test_rep3.json.gz": "f09aeaf4a849df81fba7652df93bb8387c80f8d39982c4b01f6591a1ee035da1",
+    "results/fp_no_rollover/seed_101/training.json": "88035ff3ac41ec7c25e67d4c62f3606c9a90304b24d7bc573033bfb6f6bd87d1",
+    "results/fp_no_rollover/seed_211/evaluation_paired_rep0.json.gz": "79742a5bf514621875ad431f770a0ae8e2c39229a5baa7165f2c011e92b49a84",
+    "results/fp_no_rollover/seed_211/evaluation_paired_rep1.json.gz": "af47bab144c3bf3bb2efb8aad1c9fe68a71004e118dc5acda0dfd6ec21b149ba",
+    "results/fp_no_rollover/seed_211/evaluation_paired_rep2.json.gz": "3885c06e4e548a2469d39a35306b9f74749f14ceaf6670d81250287da6a45b4c",
+    "results/fp_no_rollover/seed_211/evaluation_paired_rep3.json.gz": "da047e9033cc05cea89e55ab6483181273ccab6b56a97171cd20bac53bc28abb",
+    "results/fp_no_rollover/seed_211/evaluation_shift_rep0.json.gz": "6d6a5e731ac9211e49c61c2e80b2f4432b9892067a0e116d4c2bbc55b51df188",
+    "results/fp_no_rollover/seed_211/evaluation_shift_rep1.json.gz": "7c9b47f99b133ce0d4d536ed6c60bed8464fd05398086497a1473a24ae091f10",
+    "results/fp_no_rollover/seed_211/evaluation_shift_rep2.json.gz": "490b7ca4f30c7e4fcf05922aada2586bab6b265ada36d5b613a8b2965bb420a2",
+    "results/fp_no_rollover/seed_211/evaluation_shift_rep3.json.gz": "5b0416fbc896d6adfee5fcf4fe67dce48d1f4f5c3ae5798819ed0c2b289330e1",
+    "results/fp_no_rollover/seed_211/evaluation_test_rep0.json.gz": "190ea3c2d1e551ceb616cc1735a7c6129d37d7e2468edce45382fc98c4ba92e7",
+    "results/fp_no_rollover/seed_211/evaluation_test_rep1.json.gz": "6a82b9aee63a17fd67248d2c564ad06ba0bef359df96e89be3312a61bd72ce2a",
+    "results/fp_no_rollover/seed_211/evaluation_test_rep2.json.gz": "0c97e2e83fec2dfdb64d8615d8a49b74032ffc8918bedc35e8c83b554db3d4cf",
+    "results/fp_no_rollover/seed_211/evaluation_test_rep3.json.gz": "8f07bf2d5b7cc6f26d586933e967529ecb284107f80eb1eef43c478973fd82bb",
+    "results/fp_no_rollover/seed_211/training.json": "ce6bf181525167e4f76cfe4cec9b93e6abf21d17bd236dd9b291da6828365e53",
+    "results/fp_no_rollover/seed_307/evaluation_paired_rep0.json.gz": "abd9b086ba3b8d1c070f18aa5fce4c38090088faab51451d4ca6e7f1de6e8e14",
+    "results/fp_no_rollover/seed_307/evaluation_paired_rep1.json.gz": "058260a777ecaba347d8ad0ede9498b4441aaa6f9a8a834e8a2ba2b5fe105f58",
+    "results/fp_no_rollover/seed_307/evaluation_paired_rep2.json.gz": "4db2ea2317db6db5f77f4699f4b0dbef8c91bfe1e29436357d61fa325608ec56",
+    "results/fp_no_rollover/seed_307/evaluation_paired_rep3.json.gz": "0eca6a14a6289600534e701fb526cdedabc4a07081083235a03919c3734fea28",
+    "results/fp_no_rollover/seed_307/evaluation_shift_rep0.json.gz": "05ae362a608472b41c9c3c1e37a69e143278e573b9b57936d9c4f1780ea4438b",
+    "results/fp_no_rollover/seed_307/evaluation_shift_rep1.json.gz": "bbbc6649a09ac1bb1e4b866a870e13ee5f6c8691f454c9e22b5a34d0891c1eb4",
+    "results/fp_no_rollover/seed_307/evaluation_shift_rep2.json.gz": "8f3540aca974416107d434c41376ce0b0dee153012e57ab4eeb4077a33d31d07",
+    "results/fp_no_rollover/seed_307/evaluation_shift_rep3.json.gz": "8f98d2ee7b9d353e3cf129ae49ed0e8861a040a84db0a16348182898aadde16b",
+    "results/fp_no_rollover/seed_307/evaluation_test_rep0.json.gz": "87f077f13df12f7b4a7e831b25a9e93c292b0ee7eee2ed5dd02a80ff668bc0a6",
+    "results/fp_no_rollover/seed_307/evaluation_test_rep1.json.gz": "fa44aec5834cd051cdcdffef4140b4c5bd80d905af95c33e4208f73ac4a74ff0",
+    "results/fp_no_rollover/seed_307/evaluation_test_rep2.json.gz": "80cac5de83dadcf83f36c86d5d8cee8a335d29c50983f9f5dc56eadfd01bb887",
+    "results/fp_no_rollover/seed_307/evaluation_test_rep3.json.gz": "2eb781f243bdc930a56b438afe0f737558ef5ddbc1994d03d9788c538e63fdf8",
+    "results/fp_no_rollover/seed_307/training.json": "c7fa81ae756b9d6e80f5c0b4785c2099fa651744fb044a32b39c68bdaa3e75c2",
+    "results/fp_no_rollover/seed_401/evaluation_paired_rep0.json.gz": "822c53036a789c4b84efd5672154827cba81f963fd31634c4581595572715663",
+    "results/fp_no_rollover/seed_401/evaluation_paired_rep1.json.gz": "9f3cbba31c1952b00260ba0a0179a49dbaed52aeefda9472ca71275fb813c7c6",
+    "results/fp_no_rollover/seed_401/evaluation_paired_rep2.json.gz": "db431fa46c529cb86310b3f667e4d79a0a98a41e14bd433f52b130c747705d9d",
+    "results/fp_no_rollover/seed_401/evaluation_paired_rep3.json.gz": "25743fbc39251de61d52182d65fac1d20a731a2590c204cb6ab04b1cc4f81efe",
+    "results/fp_no_rollover/seed_401/evaluation_shift_rep0.json.gz": "18913706f9922da0826b2fc87d7984799fdeeb2c62c186e2d7b6fdea5210c832",
+    "results/fp_no_rollover/seed_401/evaluation_shift_rep1.json.gz": "9ee4b7bc35394662b3e0752d9cfb26eb33580a53e2e8d8e9b3f72253b1dfcdd9",
+    "results/fp_no_rollover/seed_401/evaluation_shift_rep2.json.gz": "cd3534b4c9cbc74a9887919f440c3e5b658ad6a6fc3de8da34bbb7cc23a156ec",
+    "results/fp_no_rollover/seed_401/evaluation_shift_rep3.json.gz": "2a5180c16127b48f0123f022115b1c4be3facc2d450faeb19222a92f1fdaa4c0",
+    "results/fp_no_rollover/seed_401/evaluation_test_rep0.json.gz": "c3a68814a22495df613cdcedcc918bf22b9fb5a2910827f240260368eded1b5d",
+    "results/fp_no_rollover/seed_401/evaluation_test_rep1.json.gz": "411d172f2a93f566877fac7fba5c5581f4b75d98881631635d7063e41e1b0191",
+    "results/fp_no_rollover/seed_401/evaluation_test_rep2.json.gz": "aabba3bf933a2cdeb7f6962cf6848e5a605edd88ad9ba34467f2c2e1b40fb043",
+    "results/fp_no_rollover/seed_401/evaluation_test_rep3.json.gz": "22a8ac173a2b582d5ffc8dc9e3e405bc034003bdf2121dcfdd56c9b820305332",
+    "results/fp_no_rollover/seed_401/training.json": "713e613f9f8e8503ea0a3b7e666d391851a47c918d98c57ce5a59f80d3501157",
+    "results/fp_no_rollover/seed_503/evaluation_paired_rep0.json.gz": "1f4514f0209fffdaa0db37d2b80e07ce3c5b476f13ad70fab2825a493e54604b",
+    "results/fp_no_rollover/seed_503/evaluation_paired_rep1.json.gz": "7db02b98d598cacc2d0e2b09765445451067ccbd8077b7827fb670ba5aaa7b8b",
+    "results/fp_no_rollover/seed_503/evaluation_paired_rep2.json.gz": "22ccce850da8350bd2d4d28ae0de8186644b14eda4dd034c39b7702993d66016",
+    "results/fp_no_rollover/seed_503/evaluation_paired_rep3.json.gz": "a35b57c531383c6daaebb836eb35016a893b29096cf6cf4d28ac2d7fa709e254",
+    "results/fp_no_rollover/seed_503/evaluation_shift_rep0.json.gz": "770f131b134b18291b670649ad5a4766166bed4216fc0b8f2c2bd88035bbaddf",
+    "results/fp_no_rollover/seed_503/evaluation_shift_rep1.json.gz": "f84436f0c770369e5626f44c9801bdc952d58ce632fc70bcc7017711de130b24",
+    "results/fp_no_rollover/seed_503/evaluation_shift_rep2.json.gz": "fad04237150ac3b70e4f1705f93e8c2eeb182b9affb9f341e1daca516683b49f",
+    "results/fp_no_rollover/seed_503/evaluation_shift_rep3.json.gz": "45978127533d2b41f7d77d6c7fc996573a75e428500f0c760eb9c87fe0783d87",
+    "results/fp_no_rollover/seed_503/evaluation_test_rep0.json.gz": "c965c96639a235d23ac1747b8b80bac0f763aca6624d72443ced5dbf6c934513",
+    "results/fp_no_rollover/seed_503/evaluation_test_rep1.json.gz": "bea08e86d1c06d76d11aa5e4f197021762ea3601324d9800a5ddc153039526b3",
+    "results/fp_no_rollover/seed_503/evaluation_test_rep2.json.gz": "30c32fb1168dab6ed483ad4189c75af4ad602937832a5e8acdc799d10679bb67",
+    "results/fp_no_rollover/seed_503/evaluation_test_rep3.json.gz": "672921b0d35ddc8421c2fc5359a3e2ac2e10ecd839a6378d4df8b3aa05e3dfe9",
+    "results/fp_no_rollover/seed_503/training.json": "abdf8f0b1f14c82d63c38535fb57661b65e7ac58b18fd72dfade7f6f986b737b",
+    "results/rr_fixed_boundary/seed_101/evaluation_paired_rep0.json.gz": "6ac9181b7619e23bb3303eea8320cc8553c51fec81f346059e0d7dfb94535507",
+    "results/rr_fixed_boundary/seed_101/evaluation_paired_rep1.json.gz": "0980072bf9c666e668a7d9b7e88d98b10f03154ee42c79826d562fadde719df9",
+    "results/rr_fixed_boundary/seed_101/evaluation_paired_rep2.json.gz": "d128b3a891d4a1c3a1e52297d3993e7eb5c9e5c144e8e5306402e0fb4f33a88c",
+    "results/rr_fixed_boundary/seed_101/evaluation_paired_rep3.json.gz": "ddc0cf1e88cd03694659fcf247fe1f54bbf603bfa0dd18efac85a25b5e5e3f94",
+    "results/rr_fixed_boundary/seed_101/evaluation_shift_rep0.json.gz": "cc5db9875d6dad68b0e3a0548385bd5586f284436fef7ca81efc7c45bc6c8ceb",
+    "results/rr_fixed_boundary/seed_101/evaluation_shift_rep1.json.gz": "42b861c6bc9d2ab789c2ec288328b81bb2f263694ea01ec5e9018c2baa570042",
+    "results/rr_fixed_boundary/seed_101/evaluation_shift_rep2.json.gz": "4b22bdfbcf6b4b28bad0b3bfc20753a4ece0b3cc4842e5acd6dc6abad7f97520",
+    "results/rr_fixed_boundary/seed_101/evaluation_shift_rep3.json.gz": "d1ff189b1731d449f8b5b50d9cdd434f130ff552b4b6c4fc83609e1f2fdcfc6e",
+    "results/rr_fixed_boundary/seed_101/evaluation_test_rep0.json.gz": "762855829332537f48643113a16cafe208007601a9a0214b373914854609aec3",
+    "results/rr_fixed_boundary/seed_101/evaluation_test_rep1.json.gz": "70f464e3d5ef4c2c924ce5bcfc13afb1ed64d4804cf3441466040e349d79ca58",
+    "results/rr_fixed_boundary/seed_101/evaluation_test_rep2.json.gz": "711056471223e05613f1712a67c3bffc2ac79c173512924e99eb8110035bdbdd",
+    "results/rr_fixed_boundary/seed_101/evaluation_test_rep3.json.gz": "c8ce3545ddc29e97ee0559a920321a627e67bd7e4bf73cd1785396dbf03136c4",
+    "results/rr_fixed_boundary/seed_101/training.json": "64be46ac712062c9779d4edbf44d7b473d535a4f3b9aa2b587c7eefa28d9a927",
+    "results/rr_fixed_boundary/seed_211/evaluation_paired_rep0.json.gz": "e8c1da9ae65618804d2b9ddcc341e1552b88b098d1a11e4d28190a0878391413",
+    "results/rr_fixed_boundary/seed_211/evaluation_paired_rep1.json.gz": "25ed495aae0590dfd51139d0f8b38938570f82b7effdee15096c6d999c8c894b",
+    "results/rr_fixed_boundary/seed_211/evaluation_paired_rep2.json.gz": "4b41feeabeeca7428e9c22e2d2449330c386bd05d7bbd445e6c222987b17822e",
+    "results/rr_fixed_boundary/seed_211/evaluation_paired_rep3.json.gz": "802047a3bad05bbeab76399c22864b1d7361a3006f54d34fb5c93f14caa810a3",
+    "results/rr_fixed_boundary/seed_211/evaluation_shift_rep0.json.gz": "444cd96f84c4e04d2b0d3fa5494e6afce415339730d6b65d6f5112a535ae4a65",
+    "results/rr_fixed_boundary/seed_211/evaluation_shift_rep1.json.gz": "e0b5953d5a00094e027078f9a1e59eeb4e926b3f1d8fcdf418271e7b1928e4ff",
+    "results/rr_fixed_boundary/seed_211/evaluation_shift_rep2.json.gz": "8ebb3b3289d23a8db4dfb08747c5242ed7fb3c6e6538b02d6e8a9c3b195ae2ee",
+    "results/rr_fixed_boundary/seed_211/evaluation_shift_rep3.json.gz": "a838ad9a2a7992605cab2a1ceab01fab81cbf7b48a6109b7981c31120948d357",
+    "results/rr_fixed_boundary/seed_211/evaluation_test_rep0.json.gz": "5b845aa4029aa87af35eebdad2fc1ad95fbee026e612b923bb303cdf179819ee",
+    "results/rr_fixed_boundary/seed_211/evaluation_test_rep1.json.gz": "4b19d7e44626775063d6529c1fa806a89341bef8cb8f4402435c0f6e5f100c71",
+    "results/rr_fixed_boundary/seed_211/evaluation_test_rep2.json.gz": "2bd1d726f844d91ca1c2b9847d2206dd373b9637944f4447bb3c9d444a9e6c78",
+    "results/rr_fixed_boundary/seed_211/evaluation_test_rep3.json.gz": "313d74bf3e1b685e5fc56fbe54c15b41a42f748f6c840c6b354c18e230672e3f",
+    "results/rr_fixed_boundary/seed_211/training.json": "bef025fb75b1c64ce3b3bc413c55ae307b47c3feab41d3d17d9a6c8d9b502ae7",
+    "results/rr_fixed_boundary/seed_307/evaluation_paired_rep0.json.gz": "9fce6ec49186fd0a98d1335a15a8376d27b3a3dc694ee38b7db8caa72183c58f",
+    "results/rr_fixed_boundary/seed_307/evaluation_paired_rep1.json.gz": "eded1f241946003c586b56a6593b7dcf423b8b710085b897a33ba31aaae035e7",
+    "results/rr_fixed_boundary/seed_307/evaluation_paired_rep2.json.gz": "a7c17a75f32a5ceb39d20f377530ad1956cc8853a85cdb79c3b2d7458966a198",
+    "results/rr_fixed_boundary/seed_307/evaluation_paired_rep3.json.gz": "a48adb6f18ea9f7bfa73c5ae0da62c6630402c7598d3ce1d84f181ead2d0b3cd",
+    "results/rr_fixed_boundary/seed_307/evaluation_shift_rep0.json.gz": "ef3bf36ca6a05a9194b1752b868201228855f738430230f491030876db004f6e",
+    "results/rr_fixed_boundary/seed_307/evaluation_shift_rep1.json.gz": "4b99e772e316b629be6b245ff677923a91800a3cbc56373cd9abc7ed42726706",
+    "results/rr_fixed_boundary/seed_307/evaluation_shift_rep2.json.gz": "172639301af806bd878d871b6842bb4a11c8e3de1b696399de55485a1657ae8d",
+    "results/rr_fixed_boundary/seed_307/evaluation_shift_rep3.json.gz": "8cc590b8d9504ab022af9231b5f79a3709ed1b117c5fae830056473dc52ddcda",
+    "results/rr_fixed_boundary/seed_307/evaluation_test_rep0.json.gz": "05cea6df4ea425606c8c0a3ef998eb970c5ba38004a9ae56e5b9735b952b8bf1",
+    "results/rr_fixed_boundary/seed_307/evaluation_test_rep1.json.gz": "8b5c7f25d322a5674c9046b868503fc64f9e82d94719383861353fa9d17bc4d4",
+    "results/rr_fixed_boundary/seed_307/evaluation_test_rep2.json.gz": "d74a40bd1b947a109d1f8a7a68e3d1c46a3c00ebda69e147f95a21ef4516e426",
+    "results/rr_fixed_boundary/seed_307/evaluation_test_rep3.json.gz": "e412668575c496c8b8fff85e821c96c232b72465459d3fa85e6e921d6def5bc9",
+    "results/rr_fixed_boundary/seed_307/training.json": "ad569c9ee9d78d6d855033a98569cfb49116d1eaadacaf4380c0c993e55675cf",
+    "results/rr_fixed_boundary/seed_401/evaluation_paired_rep0.json.gz": "487936d53aca478700ae74eb362b3fa143b9e917a3a01d48dacb22ddcdb8a8d5",
+    "results/rr_fixed_boundary/seed_401/evaluation_paired_rep1.json.gz": "c0ea7945594f6bdf6fefb8cf00b92292a17e2e491becacf48277ed649da17fa5",
+    "results/rr_fixed_boundary/seed_401/evaluation_paired_rep2.json.gz": "2796465f722fd222abed4f59aa449a5f3fd61bba16ee9e6900359526c9db2938",
+    "results/rr_fixed_boundary/seed_401/evaluation_paired_rep3.json.gz": "d08a0bead6ca8af3a2caa7fbc1b7e7f03843b40f59eeb98dd7bd4e0153703577",
+    "results/rr_fixed_boundary/seed_401/evaluation_shift_rep0.json.gz": "01969c4801481c1b816324dea1aaffe475d61d615462952c5d79826637bf26d1",
+    "results/rr_fixed_boundary/seed_401/evaluation_shift_rep1.json.gz": "1be8e395159890543833cae9955f8e53a4bc74ac06b9f5b58033d2e763cd775c",
+    "results/rr_fixed_boundary/seed_401/evaluation_shift_rep2.json.gz": "9ba19b3edcfab5539f287b8b293707a4bf42de3f9d44fe51878845d898e5df31",
+    "results/rr_fixed_boundary/seed_401/evaluation_shift_rep3.json.gz": "f5f3f879c2ce4b1d5de8e4311c227f83464978accbc92fc53af416f9fedb932f",
+    "results/rr_fixed_boundary/seed_401/evaluation_test_rep0.json.gz": "9771c0681f52a749e3417be4cc970f49d134c5b26b1565fc29633653fa2b0067",
+    "results/rr_fixed_boundary/seed_401/evaluation_test_rep1.json.gz": "63a53d642b6500591ccfaab1c044cdf810e5bf1010d60365fe75ea046382bde0",
+    "results/rr_fixed_boundary/seed_401/evaluation_test_rep2.json.gz": "a3be81b1b7842baab5801f2a59279ea806de740d5e702afbb9e2b737f8cf6f18",
+    "results/rr_fixed_boundary/seed_401/evaluation_test_rep3.json.gz": "bd923513df21d0ca7d87b1c49966af0558860a80da04f48be34b664a6d927298",
+    "results/rr_fixed_boundary/seed_401/training.json": "53671cb570fd875322f94d1b2ff901f052f856963d6133aa88073d5674b4835f",
+    "results/rr_fixed_boundary/seed_503/evaluation_paired_rep0.json.gz": "2c3256d114d248c5dc7a2596d3b884dbc7a0ee478a6bdcde887d289780a53143",
+    "results/rr_fixed_boundary/seed_503/evaluation_paired_rep1.json.gz": "230b816029c9aee0628b2a95b2bd9cd445f384886558edaf8c6850d4fbf88bec",
+    "results/rr_fixed_boundary/seed_503/evaluation_paired_rep2.json.gz": "5f4c46466139c9121465b48e0a3a336a478d195a76cf3c46865b55f3116332b2",
+    "results/rr_fixed_boundary/seed_503/evaluation_paired_rep3.json.gz": "ed19ef92c04f2ced58e8c4174961a8259e03b2e044a7b98f0fa3a4b99dfed557",
+    "results/rr_fixed_boundary/seed_503/evaluation_shift_rep0.json.gz": "f5b9d360df1f8186b45af98ab9dfc0bd48d3d18e1d115defc72d1aeb659b6e18",
+    "results/rr_fixed_boundary/seed_503/evaluation_shift_rep1.json.gz": "8c29c1b12af45592829b28b234c11b998d9e7d9bb4b02558187aaeb105fbc802",
+    "results/rr_fixed_boundary/seed_503/evaluation_shift_rep2.json.gz": "9dcd994891784fec8e6ab562fda3baf824a6683e68c4751c7b28be7bbe60fea2",
+    "results/rr_fixed_boundary/seed_503/evaluation_shift_rep3.json.gz": "6f6f4e8b83290cb02263209fade2f6d824d619b87094df9a78f8804d75f1e772",
+    "results/rr_fixed_boundary/seed_503/evaluation_test_rep0.json.gz": "ed83bd5638d8848164b0b01372d5cf7daf90466de3dc0b134a7dbaef0d7a9aac",
+    "results/rr_fixed_boundary/seed_503/evaluation_test_rep1.json.gz": "402db5d76fdb890af22ae2133a266827bd0e9b4eb3126afb7f24f3b743164c2e",
+    "results/rr_fixed_boundary/seed_503/evaluation_test_rep2.json.gz": "a4ad68cf4d14227b5e275f078d53e1b58ea07e0fc530f5b692ef71ff9f5c6287",
+    "results/rr_fixed_boundary/seed_503/evaluation_test_rep3.json.gz": "9df499051a2746e827482091482f4ec0486d6156ae7a962f26fc0e8194bc9793",
+    "results/rr_fixed_boundary/seed_503/training.json": "106095877a22101392734e3a2da683157351afab2fd1e85a6a1f598222456c54",
+    "results/rr_frozen_resource/seed_101/evaluation_paired_rep0.json.gz": "7e3735d5fc0e3d6c0441d7011ccfe6e9556ef6ae0ede42687fe88bebdbe0a521",
+    "results/rr_frozen_resource/seed_101/evaluation_paired_rep1.json.gz": "f230cefc90ebdadf5c7ceee9fadb9d4d6c5d90bbfb560f9abbe72596e99b8571",
+    "results/rr_frozen_resource/seed_101/evaluation_paired_rep2.json.gz": "880982e3aec67180f73b95e5704eaa223321491157274229f5ee750786cf79a2",
+    "results/rr_frozen_resource/seed_101/evaluation_paired_rep3.json.gz": "37d041468e9d6f311b573b983f8b67cca9c7d95dc7c364c7581137f954a7df6e",
+    "results/rr_frozen_resource/seed_101/evaluation_shift_rep0.json.gz": "ac0bf2de6220acdac5b79c8baf6886efba793f05e37a2df898d4fe55394680df",
+    "results/rr_frozen_resource/seed_101/evaluation_shift_rep1.json.gz": "e87c1c813c10856ff36cbe144032dc41524d2956b52d3d9e13e28646b5a3e701",
+    "results/rr_frozen_resource/seed_101/evaluation_shift_rep2.json.gz": "09564f12bdc95c145c7a8ab84aaeb62d23b4862aa7660ffed3d8a9890650f940",
+    "results/rr_frozen_resource/seed_101/evaluation_shift_rep3.json.gz": "90392951b0d9ba16edbfa0bc22a29cd68740b3293fae09a5f56ffa21386a1445",
+    "results/rr_frozen_resource/seed_101/evaluation_test_rep0.json.gz": "7881a0c83a5e8c5c19aa0e04e42e2865e3b0e95ca658c0185e1eb2683cf39d3a",
+    "results/rr_frozen_resource/seed_101/evaluation_test_rep1.json.gz": "622dd543f3721801659f80cb5f03f94d72043c74cd4117754eae374d1194f12c",
+    "results/rr_frozen_resource/seed_101/evaluation_test_rep2.json.gz": "a4f16d39c07a8aa07d2092d553b5c1c8b9cf00c1f415b20b3bcf79d5ea69f4d9",
+    "results/rr_frozen_resource/seed_101/evaluation_test_rep3.json.gz": "339c5066370e0ad11cc46eddc913bda876be0e8b056a55964bb8ed5f9e7388d7",
+    "results/rr_frozen_resource/seed_101/training.json": "c03e043e41e23b80b7f4bdce86945f1589e667e7e456b5168fc453fd120c833b",
+    "results/rr_frozen_resource/seed_211/evaluation_paired_rep0.json.gz": "473635038418bd9eab0c13adf28ca709eac1852b5972936fd4659b2262dca485",
+    "results/rr_frozen_resource/seed_211/evaluation_paired_rep1.json.gz": "bf6fa32e229751ec2b2c1c5ac3dbfb47dcd5fc2a7512a67411fc75a1c75f9e40",
+    "results/rr_frozen_resource/seed_211/evaluation_paired_rep2.json.gz": "eceecca3dffa72424f105a3d542c6a44978d28d0fc2eb09692eade9998e35640",
+    "results/rr_frozen_resource/seed_211/evaluation_paired_rep3.json.gz": "ff53c2eb13ce7d6946f802c0d9202596eb7a966beab9bea551390bf4298fa7ed",
+    "results/rr_frozen_resource/seed_211/evaluation_shift_rep0.json.gz": "3a97405225d4097bfba29718b093b9e02d1b3fc77668aab4197b925b011ad282",
+    "results/rr_frozen_resource/seed_211/evaluation_shift_rep1.json.gz": "3005a8c302ef506dbc0605faf5102e6a0746283a1d41e543ffee8566d2c4934c",
+    "results/rr_frozen_resource/seed_211/evaluation_shift_rep2.json.gz": "a1a47bd0bc815bdcfd963d782bac448d6d84a74104872628920e93133f1699b5",
+    "results/rr_frozen_resource/seed_211/evaluation_shift_rep3.json.gz": "2f66e6fc6fe2a66856e2d2369cdf4c285135b9fcf1ec0b138b1e286c1a10e7c7",
+    "results/rr_frozen_resource/seed_211/evaluation_test_rep0.json.gz": "2c5728f68428629b8b01a2db4274e93aa6f097cfb728cee0e7f5b48199ce1574",
+    "results/rr_frozen_resource/seed_211/evaluation_test_rep1.json.gz": "b8b57b42409c1c1a6ec5b42a652078d0fb4c852c74899c9c0311cbac301a0a3b",
+    "results/rr_frozen_resource/seed_211/evaluation_test_rep2.json.gz": "8ca341b8d21d3b9468734e014537e1ab98a51a7fe196ba38e89fadfb1bdeebca",
+    "results/rr_frozen_resource/seed_211/evaluation_test_rep3.json.gz": "d648edcd620844617571c9904f3338804c177cf0398d4fc9f2de5b0e71dfd640",
+    "results/rr_frozen_resource/seed_211/training.json": "4f05048662de341870e31a57f0bc65fad282c209a215e82a59deffca92b90fef",
+    "results/rr_frozen_resource/seed_307/evaluation_paired_rep0.json.gz": "dad790479105a1b7fd7f343bb66477772afee91551a202c4f0019fb14393325e",
+    "results/rr_frozen_resource/seed_307/evaluation_paired_rep1.json.gz": "c7c923113f8ae302101fb28bf76e312aed89001dab0f5bb850ea5eb332ddd13f",
+    "results/rr_frozen_resource/seed_307/evaluation_paired_rep2.json.gz": "bc1b10d8a22532f87aff4f879a5a73cdce3123ee38decbc2f994bc98c195e786",
+    "results/rr_frozen_resource/seed_307/evaluation_paired_rep3.json.gz": "de6a559292f6d6ce2d73004b6d1fbc2e3212d7a20d9035ab8a83a063d07238ba",
+    "results/rr_frozen_resource/seed_307/evaluation_shift_rep0.json.gz": "de53b4d2313820ba3a5fc0a7cb4ed3ccaff964130edf195b25f9b219db767179",
+    "results/rr_frozen_resource/seed_307/evaluation_shift_rep1.json.gz": "222716c491aefe346854d8dc3a024f112753fdc3b0a81078e9b6e1f31385fe65",
+    "results/rr_frozen_resource/seed_307/evaluation_shift_rep2.json.gz": "0b638d1d44c3825b2bf300721d80554474df68d2e68c39f2bc87cd114b1adcb4",
+    "results/rr_frozen_resource/seed_307/evaluation_shift_rep3.json.gz": "262ece4990eafeefcc4adefd03500a588a74828faf6b5ff5d7b08aae61575114",
+    "results/rr_frozen_resource/seed_307/evaluation_test_rep0.json.gz": "fe58dc7c85c3a91e92c57225f032cb34d5bddbb4b82aa8963da70fe9781c3f2d",
+    "results/rr_frozen_resource/seed_307/evaluation_test_rep1.json.gz": "c3a0ad3594aa8cdfcfe6bf3de114a5ec05a896409e8c4484f8716a3752e99e72",
+    "results/rr_frozen_resource/seed_307/evaluation_test_rep2.json.gz": "d0c782d3d2bda467018ca3f3f45d06e0171015659d5145debd8f6b2eab3ef968",
+    "results/rr_frozen_resource/seed_307/evaluation_test_rep3.json.gz": "083746b0800c239b1747c37f001696a7154797490a19e8e7c2311bc04721e729",
+    "results/rr_frozen_resource/seed_307/training.json": "b631b21c0b83affc03179d23c2e6eab0659dbd3e9202458cf76b08930a6bcdf4",
+    "results/rr_frozen_resource/seed_401/evaluation_paired_rep0.json.gz": "231b570579083a49593a4a487d10e8f6ca2b76012f180e50d22f6a9ece519553",
+    "results/rr_frozen_resource/seed_401/evaluation_paired_rep1.json.gz": "d9345cdb129d8e2712ad5880ae73bd75e7ffcb0ed17a7e5ebeefe56815c4a178",
+    "results/rr_frozen_resource/seed_401/evaluation_paired_rep2.json.gz": "0a530c1bfe637e61e5278a71382a408cdb4795ff22363db7bf21b5f7bf50b02d",
+    "results/rr_frozen_resource/seed_401/evaluation_paired_rep3.json.gz": "88d580f576fcedd79006b6713a1d27108cd51b7fe5bafde4c8ee976522bf8c4e",
+    "results/rr_frozen_resource/seed_401/evaluation_shift_rep0.json.gz": "e1f3b8d735ec3347e5b5a3b87cc31d237ce4ce43552959795778d1cea7e77d80",
+    "results/rr_frozen_resource/seed_401/evaluation_shift_rep1.json.gz": "5559a29740695aa2be241342c07904d70519708ff956df198b789c7a57c6d5b4",
+    "results/rr_frozen_resource/seed_401/evaluation_shift_rep2.json.gz": "e1d05d33952b5eae93ca4756316b4f2295164e98c770daf446f234fb32fe2c8c",
+    "results/rr_frozen_resource/seed_401/evaluation_shift_rep3.json.gz": "505aa6e29f8d78ba498344fbd4d3b20dc651f061fe27bd6cefa9a97e60af25a4",
+    "results/rr_frozen_resource/seed_401/evaluation_test_rep0.json.gz": "ea7114723f05a958a9263941e409fb1be7ab87ce9a8a6f9c95cc540f7185203e",
+    "results/rr_frozen_resource/seed_401/evaluation_test_rep1.json.gz": "63dd377a9ca09cdbb15f94bd7c11e0ddb1b9eab6e66ff119dea7ee4782120677",
+    "results/rr_frozen_resource/seed_401/evaluation_test_rep2.json.gz": "4fa614a1153ff88e6e767cd545ce1b8061ad37e9a79391ef44a1b9eaa038af01",
+    "results/rr_frozen_resource/seed_401/evaluation_test_rep3.json.gz": "f13275d0d9ed6cbe6c3133db9eccf38bc8f4538ae2d8cbd3a5bb0294501b9f6f",
+    "results/rr_frozen_resource/seed_401/training.json": "3effddcfedc1c9db7888072df6f0b85223f817ffafca334174299a4e46eb0cc9",
+    "results/rr_frozen_resource/seed_503/evaluation_paired_rep0.json.gz": "481b201755854a10a69e8952a3dc9bbc5621c0284848d08d565a85864e5b63d3",
+    "results/rr_frozen_resource/seed_503/evaluation_paired_rep1.json.gz": "f591bd6dc00a5f5df2b35f67d135966c56679b99e78bc6c46a6084de606a174d",
+    "results/rr_frozen_resource/seed_503/evaluation_paired_rep2.json.gz": "2bfe38cb089932ec072c5d3b566f94129f8990717864f837e1196403ff730f86",
+    "results/rr_frozen_resource/seed_503/evaluation_paired_rep3.json.gz": "de83a907d59d507a6e17de4aa93aaedc029b466e5ee96c1e18c6116a79c84161",
+    "results/rr_frozen_resource/seed_503/evaluation_shift_rep0.json.gz": "fc77cc30884ad409b22d50ac6a9fff421a1ab7067dde127bdbb7f27343c4244a",
+    "results/rr_frozen_resource/seed_503/evaluation_shift_rep1.json.gz": "3461b7e2ea5a43bc0939faf3dc5831bbcda8670002b3134f27f10ccce7317546",
+    "results/rr_frozen_resource/seed_503/evaluation_shift_rep2.json.gz": "83caa06a3d9a2a21a37b3addd4e8c6c55592e6b259fb377d476a1448a35ba3d0",
+    "results/rr_frozen_resource/seed_503/evaluation_shift_rep3.json.gz": "0483e493598d27634f05e58bfcbcf2f04de437214d4781a3e6d96a6641bbad7e",
+    "results/rr_frozen_resource/seed_503/evaluation_test_rep0.json.gz": "50798009f569d566cf3903848d1b9d0b225e381952dea2a76bdc37930c2f389f",
+    "results/rr_frozen_resource/seed_503/evaluation_test_rep1.json.gz": "2174dddc84125f0be35825b32877721b95e3aa3e21ef9a73e111cf85678954bc",
+    "results/rr_frozen_resource/seed_503/evaluation_test_rep2.json.gz": "43667eb0519a3cfdc08d50c2ca6048368c68ac77f273d09b4e626c261fec0f5a",
+    "results/rr_frozen_resource/seed_503/evaluation_test_rep3.json.gz": "55c240684c098bff9746f6cfe85191296d4ea47a5800f590006274d5bc43c7e1",
+    "results/rr_frozen_resource/seed_503/training.json": "7c7a02bfa1c5d71ea9e1bd492bda5ca33de7301c0094dc1002b3c5a98c6211d8",
+    "results/rr_full/seed_101/evaluation_paired_rep0.json.gz": "061ae021c19c2c5af32b9b9e0bec3474703ca8312809cc10e0fe9c36db2dedea",
+    "results/rr_full/seed_101/evaluation_paired_rep1.json.gz": "fb145dcbc0078d62483e94f5d0c570ef4fff8ab2ad59d98246f33fb11724ae6b",
+    "results/rr_full/seed_101/evaluation_paired_rep2.json.gz": "f602244fa5b4b0f9a5d5375da57af2ea26e6c5d0be2acaae63b370e555fe054c",
+    "results/rr_full/seed_101/evaluation_paired_rep3.json.gz": "9eb908520084b6d843bc4e33f2786ec05a582d522e659c089173d1747d0d8546",
+    "results/rr_full/seed_101/evaluation_shift_rep0.json.gz": "9f6edd62e0cd761e209783bba9439f5b551c14a6cdf2beca4cb2e6b14c4afce7",
+    "results/rr_full/seed_101/evaluation_shift_rep1.json.gz": "c352f05843fee20329bf480f2ccf94ad985b0d6624e207e66e69a5052e28192d",
+    "results/rr_full/seed_101/evaluation_shift_rep2.json.gz": "da50cee452bab84eb420ec9c6d3a76766f916ee38f5916724c2e5637100179c2",
+    "results/rr_full/seed_101/evaluation_shift_rep3.json.gz": "c6350ebde5c270bcfee74ab18e7045888735a0a1304077673861a88470d48f55",
+    "results/rr_full/seed_101/evaluation_test_rep0.json.gz": "62223cc82b2ea4f0afcee3d204df1ccb9a83d7928f49feaf0f1ebc1dc08df325",
+    "results/rr_full/seed_101/evaluation_test_rep1.json.gz": "8f34a6b46bdffc340014d200e5dc179303d9b5a32ae327fdfef33c4a45cefac8",
+    "results/rr_full/seed_101/evaluation_test_rep2.json.gz": "6034a819b2b57086ea8b72a3685d404d536ffa8e8baa0419094a1547c0816e5c",
+    "results/rr_full/seed_101/evaluation_test_rep3.json.gz": "c16457c6da675fe47768bd7aca4000dc85e02c200d1afbbc4b418487f2b37fc9",
+    "results/rr_full/seed_101/training.json": "d06b5dbe957092369d0b324c6702c5fb815cedcf77c080564d310c5e886cfeac",
+    "results/rr_full/seed_211/evaluation_paired_rep0.json.gz": "9f5a155020d93a50d7491e4e24e896e60238349a64b6a30e9aedd581f0717336",
+    "results/rr_full/seed_211/evaluation_paired_rep1.json.gz": "884f222d7ead8d7d76ef7d60e62334ac0ed93bb28625c63638b48c0faf10553d",
+    "results/rr_full/seed_211/evaluation_paired_rep2.json.gz": "57fe8873deebe1e8e9d0d7b8673c68219ae92c6852a5106c4f3c9f89ada93142",
+    "results/rr_full/seed_211/evaluation_paired_rep3.json.gz": "4d9180af5267431e19c1e5a4d9a02d7f331c99b77ec4cd5dabea8db92c00bb5a",
+    "results/rr_full/seed_211/evaluation_shift_rep0.json.gz": "63f9e24f9a1ebfdac0bbd912bacbf931e01ae6acdbd8f0eb307fbcc1d6526d19",
+    "results/rr_full/seed_211/evaluation_shift_rep1.json.gz": "12ef97fd3e2980613d2b97d857e32c2969c5c04274e3b5acbadecff9cc64bb45",
+    "results/rr_full/seed_211/evaluation_shift_rep2.json.gz": "5bfdb9977f335a2d7824fe159c0f9b8563fa545e8bcbf03dd41c6793f01903ba",
+    "results/rr_full/seed_211/evaluation_shift_rep3.json.gz": "50dc3960400961928bb17cc1e7bc9729aedab5f2abc50748ff3704078d740fc3",
+    "results/rr_full/seed_211/evaluation_test_rep0.json.gz": "bb6033939af4746957fd17e53d230093e9a2b493cfcdf6ab821c94c148683549",
+    "results/rr_full/seed_211/evaluation_test_rep1.json.gz": "12d618cd763630f0682c6bea66dbfd5d7a14f5b90a38f4d7a4cea6753b48007b",
+    "results/rr_full/seed_211/evaluation_test_rep2.json.gz": "7fb858b81f4bfd50355afb4115d089394588453227b72c8d4187e73419b7c107",
+    "results/rr_full/seed_211/evaluation_test_rep3.json.gz": "b2cdc58ee882b2b48fe174e632b34489ca989131bd2b29c504d5a49d94716543",
+    "results/rr_full/seed_211/training.json": "d5e09f2f93d79c7913d44b17b32830276357128dc5356a2963acd7725e962ee9",
+    "results/rr_full/seed_307/evaluation_paired_rep0.json.gz": "4a09646cc199de4fec4d13369753a0c0ed812b5ca2ec24f88bc5f00cdc784768",
+    "results/rr_full/seed_307/evaluation_paired_rep1.json.gz": "f2e94001c99228747767198f503260ac4a4b07f854c41001de5e725c450e6d51",
+    "results/rr_full/seed_307/evaluation_paired_rep2.json.gz": "56431e57f8a9043e4723a4ee2830d596bad04ce1e05c38a067bbd0f5556a798c",
+    "results/rr_full/seed_307/evaluation_paired_rep3.json.gz": "e4b974d99467543d6f430022f209c6687c3573f2be68ddfe38d599b024181320",
+    "results/rr_full/seed_307/evaluation_shift_rep0.json.gz": "d8e795f824f4dc902df921173eb647503d3e9a8a0dbfbc2aa5a0f216e8916690",
+    "results/rr_full/seed_307/evaluation_shift_rep1.json.gz": "a90a405d2b25d8cfd249f432393eb1e70fc0f9362a6101b8adf4a12274ccce51",
+    "results/rr_full/seed_307/evaluation_shift_rep2.json.gz": "e1d934d3dbd4c8d2f613ad98f8be1a1070e545ef826e5d67db7ed6f2d78d458d",
+    "results/rr_full/seed_307/evaluation_shift_rep3.json.gz": "3a822aead111e250dea27739fe6231225e6d7622e426511efbe9cd1386414cca",
+    "results/rr_full/seed_307/evaluation_test_rep0.json.gz": "d8ec5ce8d5bef9d7d9ec2f6ef5d4e1f3a8a5cbdb78722afc793dd9c461320516",
+    "results/rr_full/seed_307/evaluation_test_rep1.json.gz": "69c0f7b73f828d99cc311b6c92459ab06bc76cce28dbfa1b9d31e0712edc6be1",
+    "results/rr_full/seed_307/evaluation_test_rep2.json.gz": "35b3dc7f2db52b8e04f5e8d8498b71266ace558c1e3b24556b933bd1ea34b397",
+    "results/rr_full/seed_307/evaluation_test_rep3.json.gz": "acf83cb184901c39619902bfdaa6272d45d7781d31faad3f573806f6e83c665e",
+    "results/rr_full/seed_307/training.json": "11aa16e45fa7900f91fe3d06595fc25b1f3d54a08e0ad85fdbe4998d64f70868",
+    "results/rr_full/seed_401/evaluation_paired_rep0.json.gz": "9443c1ae409303640d279562d1b7b400ca02d677e95493e6ea7fd8af4af01451",
+    "results/rr_full/seed_401/evaluation_paired_rep1.json.gz": "7c5bc00f3e0e3a66ae155e14202174530a6e7ea891e55156976dc29da4b3653c",
+    "results/rr_full/seed_401/evaluation_paired_rep2.json.gz": "910fc2788702297e737c9502954111eba31a7dca0fc26790b3e7775a08c0ee32",
+    "results/rr_full/seed_401/evaluation_paired_rep3.json.gz": "b1617da3b82ea42a7c4bf6f8647d7906f57e4c6997d360ed967e4da1e52af4bb",
+    "results/rr_full/seed_401/evaluation_shift_rep0.json.gz": "589cd008df90d4c5e270a6331dfac91e7620f3324d45862d469a36fc3666f760",
+    "results/rr_full/seed_401/evaluation_shift_rep1.json.gz": "b114cbfb3cea9713682802d487ef36d0a336b588acd6dbb53d9a522124681b37",
+    "results/rr_full/seed_401/evaluation_shift_rep2.json.gz": "63b0131b2780c6ef0001f2b91d098dd51aa0a66c9f1241edc45d1b8b19ae0f28",
+    "results/rr_full/seed_401/evaluation_shift_rep3.json.gz": "966d8234b5bfaedde594a6486c5f7b0f696bc2f50d2910f20e0909d821862ad0",
+    "results/rr_full/seed_401/evaluation_test_rep0.json.gz": "0d67cf7cb71b6b330433ca9acefa30740f59c486a42f13d6a0af5338183e4c99",
+    "results/rr_full/seed_401/evaluation_test_rep1.json.gz": "ac4a918620fd1cd524a73677146075c70bb3fcaa1e55c1037229ae86b22de730",
+    "results/rr_full/seed_401/evaluation_test_rep2.json.gz": "63a0225a6ac53a4c7ccbc2e88eadc3657774986d1557e7d668e9e0a0197584b4",
+    "results/rr_full/seed_401/evaluation_test_rep3.json.gz": "87ebfb97a4fd4a3881d837985b75f8d3e7f96d93f1780a403fd5b8ef34aae6d1",
+    "results/rr_full/seed_401/training.json": "b242357cb4bfba620eaf6b37ee81e9dc5934587fc5d7ea58cdfcfd6b641dc5fd",
+    "results/rr_full/seed_503/evaluation_paired_rep0.json.gz": "89740cc7eb9435e1af31e9929d53f0c73c3afa1b7aa89b14c19df9591d09e9b6",
+    "results/rr_full/seed_503/evaluation_paired_rep1.json.gz": "e455e1030ebff0979dc83a4289b01f488d45142c3395a0f393d6da1cdc9054dc",
+    "results/rr_full/seed_503/evaluation_paired_rep2.json.gz": "bfe7f64f8a8f24be7a4e33ce69f97c3e9c9948eefa0ec7a201408fd6e307f36a",
+    "results/rr_full/seed_503/evaluation_paired_rep3.json.gz": "4892004635ae0913c4d18edf7e691c7a2ebeafd588b84a177e3f6bc3b1e594c5",
+    "results/rr_full/seed_503/evaluation_shift_rep0.json.gz": "a70091cb482ebe31f451a54e4b74772df0fe9af6e025e3a13790bdf20e39e45f",
+    "results/rr_full/seed_503/evaluation_shift_rep1.json.gz": "872dd0077d89e17074c92c891cd2b895bb084ce01f1a53f96aa1ef23f3aa54af",
+    "results/rr_full/seed_503/evaluation_shift_rep2.json.gz": "003f14a8b1abefd20b7563dcf00d2a04782cb26e8579c6fb0570df090190e042",
+    "results/rr_full/seed_503/evaluation_shift_rep3.json.gz": "b25fa26bec4271eb79e0fa8bcf0c98d17c411842db4dd459f44d079d31bc75c9",
+    "results/rr_full/seed_503/evaluation_test_rep0.json.gz": "b9a47e9ea922acabf46292b7e6915a53909298b4b5fa6d561c049fd83786ad60",
+    "results/rr_full/seed_503/evaluation_test_rep1.json.gz": "6cbdadbf352d60bc04b16d5f32ec7c527c68ff00b5a23a92941e24544e9a134a",
+    "results/rr_full/seed_503/evaluation_test_rep2.json.gz": "3a0861e40bb93f1f0ee713edcdfe17f1b742ea9dc1e2b1fbfb7ad7311b66c01f",
+    "results/rr_full/seed_503/evaluation_test_rep3.json.gz": "233b772884a92a8e64216c8538db5915565a186ae17cfc773c5fa7af96a39404",
+    "results/rr_full/seed_503/training.json": "6c5f9012cc1f188e756cb0dab0801b308c0f4c806b7605e3182ab482554f27de",
+    "results/rr_mean_maturity/seed_101/evaluation_paired_rep0.json.gz": "9ae6499752cdf014929a97b31d85bdc786765722493affb79358a0734f4bb6a2",
+    "results/rr_mean_maturity/seed_101/evaluation_paired_rep1.json.gz": "98e46d500a53937de811d1b5f8d676821c41666e109b112608d6e5981dee27e8",
+    "results/rr_mean_maturity/seed_101/evaluation_paired_rep2.json.gz": "1e06231106e1ce812d77937490d8e00bae8ef939d51aae92be95e8287879991c",
+    "results/rr_mean_maturity/seed_101/evaluation_paired_rep3.json.gz": "6069702fa68b90eaeab25f6b2d44634752f051cbed2bc6420476c96670fe96f3",
+    "results/rr_mean_maturity/seed_101/evaluation_shift_rep0.json.gz": "3519e0c7393957e46e8bec4082b172c72012c223c2308f327abfd96df6097eb6",
+    "results/rr_mean_maturity/seed_101/evaluation_shift_rep1.json.gz": "27234a73def63a2dfee08d3721a982b73a363afe3482aefd0aa3568f431815ed",
+    "results/rr_mean_maturity/seed_101/evaluation_shift_rep2.json.gz": "dba1e7cac2449ee2844354da5c36a342a5e841b1ea9cea4d8e904ae782d35b93",
+    "results/rr_mean_maturity/seed_101/evaluation_shift_rep3.json.gz": "3e33ea685bf9173968595916e38b3ab78866b9d4de0e57ad1e887fb24d943c4a",
+    "results/rr_mean_maturity/seed_101/evaluation_test_rep0.json.gz": "9c6a3b3c0db88ebe314c7f1ec35b9003f9365a98b63421cfdfe869f9878459f0",
+    "results/rr_mean_maturity/seed_101/evaluation_test_rep1.json.gz": "9cc60dfa3db0bffa98150e3201bcafce03d2a4d6d0e25104ace33e743b55c45a",
+    "results/rr_mean_maturity/seed_101/evaluation_test_rep2.json.gz": "ed2070a93edeb9e2b594ad2a577bd3be8d1b18a07b2a32446ebe18a8866717e0",
+    "results/rr_mean_maturity/seed_101/evaluation_test_rep3.json.gz": "59b77a89f6aac064641e69109ff967c359729bf21a915b7d27c93594e2a8ebdc",
+    "results/rr_mean_maturity/seed_101/training.json": "d93f34fa679c7d8f209ba1e4c489a73477919c057e0261c93c3d98415f4980f0",
+    "results/rr_mean_maturity/seed_211/evaluation_paired_rep0.json.gz": "938fa97927deae5d8e74677e1730c19c45eddda9cd2bfeae6ff08ffb47ed41ec",
+    "results/rr_mean_maturity/seed_211/evaluation_paired_rep1.json.gz": "406cd6d820eaab192dcd570cb1db829a58a134c13f52a8bdd4b7fa32217ab0d7",
+    "results/rr_mean_maturity/seed_211/evaluation_paired_rep2.json.gz": "fe811f45b87462ce361cb5e1003adca9b45b967b4e3bc331fed1a546d3041491",
+    "results/rr_mean_maturity/seed_211/evaluation_paired_rep3.json.gz": "8d77023859552ba964cd65fd99a519eae4d33980823622a27d5646e4b59881f4",
+    "results/rr_mean_maturity/seed_211/evaluation_shift_rep0.json.gz": "c39805a6e5bca9642471ee2c48559289ca352b988afb16ecc7b80eb8c9a06d5c",
+    "results/rr_mean_maturity/seed_211/evaluation_shift_rep1.json.gz": "c53a3b4784e1ca8bb9ebe9e62a7ae583f91dd178ab7a4598ff848ecec2bf17ff",
+    "results/rr_mean_maturity/seed_211/evaluation_shift_rep2.json.gz": "c53d83179cb672701c9a158b877ace31741c46557b3399032d8c4e691a2d822a",
+    "results/rr_mean_maturity/seed_211/evaluation_shift_rep3.json.gz": "7eb63e3480fa5cb10069d57ba2da3c33e5dd0a79c924c7e61707154c8be59f16",
+    "results/rr_mean_maturity/seed_211/evaluation_test_rep0.json.gz": "93e351e547fccc889819016d0be93a53bf9b65d60c2e80d3418974bd3f5c730d",
+    "results/rr_mean_maturity/seed_211/evaluation_test_rep1.json.gz": "f2ce71bedf9cfa9db9e52b12fa3801fcd6856337ff21ac457349e873268392b6",
+    "results/rr_mean_maturity/seed_211/evaluation_test_rep2.json.gz": "ed0cfc7ad9b7ce91eb5412a95a78b5ec379f0c550a6489cb715b4c0aa09a89d6",
+    "results/rr_mean_maturity/seed_211/evaluation_test_rep3.json.gz": "613d3d99816787a45ec84931076b71ecd1aa8e493bfcd0a5a01e28800ec62280",
+    "results/rr_mean_maturity/seed_211/training.json": "5cd86711c399a6de80f5022b3723777fea3005805abc35bcc28cead7d0da01af",
+    "results/rr_mean_maturity/seed_307/evaluation_paired_rep0.json.gz": "3268f2bf3e1eb90f122ebbf8a21ff232e874b636c8ed530c9ac9a4e16abd330f",
+    "results/rr_mean_maturity/seed_307/evaluation_paired_rep1.json.gz": "3310a8c1d49a5e36cc513bb5fd706515c9f0eb18f8cec648a5e240ae3bdf9491",
+    "results/rr_mean_maturity/seed_307/evaluation_paired_rep2.json.gz": "8840609fe901f7575efdc2c4412169ac83d38bce3202ce4cbbf1a4c6b2a9ae7b",
+    "results/rr_mean_maturity/seed_307/evaluation_paired_rep3.json.gz": "d50489c051173ce8556d058d2d6631580fc8ec3e8f4a021059781191a0dddebc",
+    "results/rr_mean_maturity/seed_307/evaluation_shift_rep0.json.gz": "54220097ec607b034c6a0d468f126439a5b98e563a2792141fd458601f30ef33",
+    "results/rr_mean_maturity/seed_307/evaluation_shift_rep1.json.gz": "ed28c489b0999c8cd917edadbe716d57a55d49de8a37656531cf05aadcdd7bc6",
+    "results/rr_mean_maturity/seed_307/evaluation_shift_rep2.json.gz": "7013d3d5c0a6410f9e81b8d2f0797317936e0df007e2fa1b70245dbe762b8cc9",
+    "results/rr_mean_maturity/seed_307/evaluation_shift_rep3.json.gz": "a798df273872da93860d4bbc41609030ff2bf6876706bad6b4b1bde4a3e7f6d1",
+    "results/rr_mean_maturity/seed_307/evaluation_test_rep0.json.gz": "e1183cd534129b3e97254ec136e350b0b50829357361f6932788653a427414c9",
+    "results/rr_mean_maturity/seed_307/evaluation_test_rep1.json.gz": "9b88f814b2a0bc0413f0d81efaea4f6feb8c45f1cc18ee1c2588468335e666da",
+    "results/rr_mean_maturity/seed_307/evaluation_test_rep2.json.gz": "6c816581c4189e81cbab47615bb7bc03a8cc58a2bd4503cb4e5e757167361bd0",
+    "results/rr_mean_maturity/seed_307/evaluation_test_rep3.json.gz": "67a8e162d01a69923dbeedd45a4286b9f611110dfa7c9ed5059510f95b45721e",
+    "results/rr_mean_maturity/seed_307/training.json": "45093bf07adf4fa6586c674088a21b82f019334a0b9b2fdbcab20a77c25bf1b8",
+    "results/rr_mean_maturity/seed_401/evaluation_paired_rep0.json.gz": "e659dbd449122f861b5a52ca42b9ffb45cd75601253582df8bae03b2c3c35252",
+    "results/rr_mean_maturity/seed_401/evaluation_paired_rep1.json.gz": "16506fa89afba98f7322b3a7c97f56afc51b1af6a36d2e30253372da7f0f681c",
+    "results/rr_mean_maturity/seed_401/evaluation_paired_rep2.json.gz": "452a35d003ec2579c5e2a7d60af1f2c4032a22dba7d076a2bd7b26b762fa9b5d",
+    "results/rr_mean_maturity/seed_401/evaluation_paired_rep3.json.gz": "07712eaa868bbd1c04fdd148e29f9cbdd08435cbaf55c51d0af8302f6038d38e",
+    "results/rr_mean_maturity/seed_401/evaluation_shift_rep0.json.gz": "2a3c28f7896450e0a7e85882771cf9e97b93aa89f44f6902d527b4ddc6cfab0d",
+    "results/rr_mean_maturity/seed_401/evaluation_shift_rep1.json.gz": "8a72f622760a43550dde2473239f8394f62381ae19c7286ef94e3fe893700dd3",
+    "results/rr_mean_maturity/seed_401/evaluation_shift_rep2.json.gz": "66e83ec790e2ea35c1784b29c170b43fd49fb86f528a642735bac74358dd5487",
+    "results/rr_mean_maturity/seed_401/evaluation_shift_rep3.json.gz": "11a1533a566ffdc2aa4a835fc6ed5725e2a9189ee792471c7fcbc83e0de2bd19",
+    "results/rr_mean_maturity/seed_401/evaluation_test_rep0.json.gz": "591ee24ea82721488bd7cbf636865905868acc051d1259eae5f3f1416bda0602",
+    "results/rr_mean_maturity/seed_401/evaluation_test_rep1.json.gz": "16daf0dee0385504897b3b26261159a7516c43d64fc91827fe5589b075071aca",
+    "results/rr_mean_maturity/seed_401/evaluation_test_rep2.json.gz": "c9377be8c8264441be1ed79d8a3492e587a279db59375b685c101e7326928a57",
+    "results/rr_mean_maturity/seed_401/evaluation_test_rep3.json.gz": "a27d16e777e655781f3e41f711a10ca037722d8404e17c3cf42d1a112422a979",
+    "results/rr_mean_maturity/seed_401/training.json": "672809250234e7ef77169b5dac61ee02d8ec8de4c9f4a83b2a584bde405ddf9b",
+    "results/rr_mean_maturity/seed_503/evaluation_paired_rep0.json.gz": "6ea5901ad9da160a4f610608ae18c15fb24d831efac24d5c635f733ad508012f",
+    "results/rr_mean_maturity/seed_503/evaluation_paired_rep1.json.gz": "41a43ea9a441430500afaa65a1e7d46935b2984c91d66a15ac45224600209d30",
+    "results/rr_mean_maturity/seed_503/evaluation_paired_rep2.json.gz": "83e88785c9d4f17f1d90771ba196690fd2ccadfc4f5d262c788f07319512e005",
+    "results/rr_mean_maturity/seed_503/evaluation_paired_rep3.json.gz": "c6c714eb804e24e1a8f07dba34c9b9764775bf1653af0a601349afea4f8d83fc",
+    "results/rr_mean_maturity/seed_503/evaluation_shift_rep0.json.gz": "b822f51cb52134fc27483651d9f82c09947a9e06bea36530dd448573fcf5551d",
+    "results/rr_mean_maturity/seed_503/evaluation_shift_rep1.json.gz": "eac79bf56952b57728a51bc0266e57ad9e491508df5ce2ace17d3bf5854b3ba0",
+    "results/rr_mean_maturity/seed_503/evaluation_shift_rep2.json.gz": "de90659208064ac55c130d18ceb51741a0f53326cabca0155575f10b8c23ecc7",
+    "results/rr_mean_maturity/seed_503/evaluation_shift_rep3.json.gz": "5be75669d6137d3ab26126a896dd33545225e1d3bc556044f0cb317a26a26133",
+    "results/rr_mean_maturity/seed_503/evaluation_test_rep0.json.gz": "d13b8db5ba17be871ed28a4346b1df764bcae93a8a626ab210b1483aa7745bf6",
+    "results/rr_mean_maturity/seed_503/evaluation_test_rep1.json.gz": "3dadb01b319fea2a9749484ee5264665966be1a4b761cab10573459635c410e6",
+    "results/rr_mean_maturity/seed_503/evaluation_test_rep2.json.gz": "1b19a071162c2b14b03da4c4c23dbe5b5c37c0ee5cc8dbb4757a4acd74af1226",
+    "results/rr_mean_maturity/seed_503/evaluation_test_rep3.json.gz": "07fdff94cffb8bc29d6bf6f188335bde370fc8c2be239dac9f0cb8a1c18e0357",
+    "results/rr_mean_maturity/seed_503/training.json": "e67ff0b786ae534b90ec1dbfc8e34a28f71065de556d18b676f35e44d92fac52",
+    "results/rr_shuffle_maturity/seed_101/evaluation_paired_rep0.json.gz": "ef24853bad43940bbe8558a4fc9342d43d34e497d68accc9ca5ff09d8e2c5097",
+    "results/rr_shuffle_maturity/seed_101/evaluation_paired_rep1.json.gz": "f31424ea069fd6499c61e4862cf1a91aef65d4dfa0000d32ab0dfcf57e89ea4b",
+    "results/rr_shuffle_maturity/seed_101/evaluation_paired_rep2.json.gz": "644a57ded145c2b7af02317333a8af4063534302732c518dd0a8335c6b055f95",
+    "results/rr_shuffle_maturity/seed_101/evaluation_paired_rep3.json.gz": "2438bdba6c6d8c61b35720f7f23e6b6d709910957a9301b19e840710ad76026d",
+    "results/rr_shuffle_maturity/seed_101/evaluation_shift_rep0.json.gz": "12642a2cfa54f7aca99c9e4820046ddd652a672bbeed6832c5c8a3426c628c86",
+    "results/rr_shuffle_maturity/seed_101/evaluation_shift_rep1.json.gz": "2d02b24b8b24490629ea28214d6cca8c5e54e0b9c2f696778d9f458256f4dcd8",
+    "results/rr_shuffle_maturity/seed_101/evaluation_shift_rep2.json.gz": "7ab50b18556dbdca9b702be1ccf35268ac13daf3500d3198ab4e0be91285f33f",
+    "results/rr_shuffle_maturity/seed_101/evaluation_shift_rep3.json.gz": "24efa8f4cd3a14111126be4ea54233448d76d9733a486d24f41b9d7ccb481fd1",
+    "results/rr_shuffle_maturity/seed_101/evaluation_test_rep0.json.gz": "3f99e2cb4f41462d9842c6290f1b354d6e218763b1dc22d50c1a46c357a81d3c",
+    "results/rr_shuffle_maturity/seed_101/evaluation_test_rep1.json.gz": "7ce6a3ef7e6b75417f58d8e4606bd2087d8b1e9c99cba3829a89db68fc07fa03",
+    "results/rr_shuffle_maturity/seed_101/evaluation_test_rep2.json.gz": "86eee7348def6bde37928eceb603533e56e8e15f3a49c54c81e863fc34b2a38d",
+    "results/rr_shuffle_maturity/seed_101/evaluation_test_rep3.json.gz": "681a1922382cee889bc788fa7b747a4ec05180aa90ba962163d3ce563cb2967b",
+    "results/rr_shuffle_maturity/seed_101/training.json": "3db1eafe099272bc23f64cdf5f4212318f17cb457793d3f5b90cb38cb49e7ca3",
+    "results/rr_shuffle_maturity/seed_211/evaluation_paired_rep0.json.gz": "e02a563a09cc9d1da1e0a0f6ca9c58b2c652a74ace479e6bfadfd4669cc154ba",
+    "results/rr_shuffle_maturity/seed_211/evaluation_paired_rep1.json.gz": "30250fe59cd209ca980e69bfef5a86ff6111d647af431196a2f5fc5b90aba49c",
+    "results/rr_shuffle_maturity/seed_211/evaluation_paired_rep2.json.gz": "123f00a50bc98cb64cc078ec72d01de27205dbbcdadbb064ae1ac98af2be1cc3",
+    "results/rr_shuffle_maturity/seed_211/evaluation_paired_rep3.json.gz": "e235d67efaa03e235a1ba09e449a60834655853a731bc41c28da95b40b8dce2b",
+    "results/rr_shuffle_maturity/seed_211/evaluation_shift_rep0.json.gz": "7129c362c1c6930285d804e2d4f4973cfd49b3d2b044ebb8fdb6845cf01b63df",
+    "results/rr_shuffle_maturity/seed_211/evaluation_shift_rep1.json.gz": "e102d7e78eaa0974e895809177dc093c07f792a29ad740d10407579d057755f2",
+    "results/rr_shuffle_maturity/seed_211/evaluation_shift_rep2.json.gz": "342922eb77a2bb03dbf43b299fb6ce4db6381c7beb0a5b40120e1fff70e4f765",
+    "results/rr_shuffle_maturity/seed_211/evaluation_shift_rep3.json.gz": "1d71ec1f800c93a39861be77ccad2b3a06a6739fc550540ea5682859134b706d",
+    "results/rr_shuffle_maturity/seed_211/evaluation_test_rep0.json.gz": "4d51c6c03ae7ab8b1ce7c3fb6d5137318edfb5e1b7b5f0d704120b9e73b7cb03",
+    "results/rr_shuffle_maturity/seed_211/evaluation_test_rep1.json.gz": "ae3e49cac30c15ab21527a40577502c806c0db96a41177fc0cce9dd3966b3a02",
+    "results/rr_shuffle_maturity/seed_211/evaluation_test_rep2.json.gz": "2e7d65821c1c162404702e6d72daa9f9fb6c349468d2c529b89db6da93ff0089",
+    "results/rr_shuffle_maturity/seed_211/evaluation_test_rep3.json.gz": "4563c67efd5829a69afded14b39ebc9cf6ef343b7bf52631415d62eb2ad9ad17",
+    "results/rr_shuffle_maturity/seed_211/training.json": "f2dcda0378287362493ffa169d678d91ba59325c5b40a48c0137216322a84e78",
+    "results/rr_shuffle_maturity/seed_307/evaluation_paired_rep0.json.gz": "8c145707eb8bec46bc4dfa526991363c7bb9fab1ee47ed630ee7487635fd059c",
+    "results/rr_shuffle_maturity/seed_307/evaluation_paired_rep1.json.gz": "831e6c27ddb7e531b9cc73cf8de3f4c045457cf45a00050789d1c16e27ee2baf",
+    "results/rr_shuffle_maturity/seed_307/evaluation_paired_rep2.json.gz": "aa25357365eef1ac148e5e5bbd926803d643f64d1516c0a0b85af415efb2e190",
+    "results/rr_shuffle_maturity/seed_307/evaluation_paired_rep3.json.gz": "34868fb387f0362f7ce1eb70d73c051b08effece73be12d89b0f89223f69adf5",
+    "results/rr_shuffle_maturity/seed_307/evaluation_shift_rep0.json.gz": "a86adc65ea2d59b64d77083d6ccd71e1f3651427d0698a6bd26f956538e9853d",
+    "results/rr_shuffle_maturity/seed_307/evaluation_shift_rep1.json.gz": "77b2183692a8dbf6f437a03130003e98ee5736ef89688e5506e107b6c2b6160f",
+    "results/rr_shuffle_maturity/seed_307/evaluation_shift_rep2.json.gz": "5a1b68ca900e5801767d9b6f6c64d7e8f73febd752ad7772a030173290633d9c",
+    "results/rr_shuffle_maturity/seed_307/evaluation_shift_rep3.json.gz": "8ee1c3c5c13ef90170207cb23312b24717007e0b6ac04041a84c8ffd902adbcd",
+    "results/rr_shuffle_maturity/seed_307/evaluation_test_rep0.json.gz": "b738c148a71c848ce9d68dac8e7c3249ef31d3f88e38282d1a9c3db6bfc0fcb1",
+    "results/rr_shuffle_maturity/seed_307/evaluation_test_rep1.json.gz": "442532132241a5fb4922bc0ef2e0e4e1d4d67ac625e4ba1d469114adaa14f5d1",
+    "results/rr_shuffle_maturity/seed_307/evaluation_test_rep2.json.gz": "c268371b73e1f9c6b7806b424f328eed9cf9f2ec166bcee5f13888756b1cfef2",
+    "results/rr_shuffle_maturity/seed_307/evaluation_test_rep3.json.gz": "3fdb107e29bffc9c7064813bf2072be993d681b7884ff3d3296e19e6414e9a27",
+    "results/rr_shuffle_maturity/seed_307/training.json": "a7fafcf49edc5ea1b36b06a483a30d6c9364166c38e323a6e24b635bb4f22c57",
+    "results/rr_shuffle_maturity/seed_401/evaluation_paired_rep0.json.gz": "5f2cc4e37f6e4f3911d30100cb405880fbd56abcba0593dfefa713169c3c9a65",
+    "results/rr_shuffle_maturity/seed_401/evaluation_paired_rep1.json.gz": "7f44ee052b55634fe7ada419136841f70a4d4f88942e1d748f86d8fff369cafa",
+    "results/rr_shuffle_maturity/seed_401/evaluation_paired_rep2.json.gz": "1d5467224c92dd941138a8fd76e55336ec1b544055a2b76c52200f9c7ad9e662",
+    "results/rr_shuffle_maturity/seed_401/evaluation_paired_rep3.json.gz": "a3178df56beeb88bf6d6a15f21bd12538ed436b624f73f72da2737c1ea89f725",
+    "results/rr_shuffle_maturity/seed_401/evaluation_shift_rep0.json.gz": "223792f8a76cdf71fc296d19f9e4150b5baad4b80ee117b1e0a3eddf29062361",
+    "results/rr_shuffle_maturity/seed_401/evaluation_shift_rep1.json.gz": "3e34d9d9098eefa5fd440772bca756656fadab6388b2d031f34c52d6ccf8038a",
+    "results/rr_shuffle_maturity/seed_401/evaluation_shift_rep2.json.gz": "bdb27bbec0b408fd9aaef64fe89ba95e2e5b09fb8a5fa87eb0b8e8174e8ff37b",
+    "results/rr_shuffle_maturity/seed_401/evaluation_shift_rep3.json.gz": "21d952e50b338b341f0dbe9578f6b7c2a9c5bc0a58466862199eea8c6c1c2c37",
+    "results/rr_shuffle_maturity/seed_401/evaluation_test_rep0.json.gz": "4b9ec6ce72856188e0fc6f0a49a25fedd9a86833a5215f4941f72f1d1721b893",
+    "results/rr_shuffle_maturity/seed_401/evaluation_test_rep1.json.gz": "a3039ce706e841b76136fc5897e29871eef07b7e841e655338538f258b078525",
+    "results/rr_shuffle_maturity/seed_401/evaluation_test_rep2.json.gz": "ef8754ef5d20bdb2f5870b070b424ab84f9d7644cdee3e72957ac369b7f5bff5",
+    "results/rr_shuffle_maturity/seed_401/evaluation_test_rep3.json.gz": "0023bbf744cd1c332e817b22a90e7e6e2a7131bdb362bb11cb3172c68025529a",
+    "results/rr_shuffle_maturity/seed_401/training.json": "81ff87b9b67d29c4b8207020f548409000b8868aa299d885fd51fb8e8d3d241e",
+    "results/rr_shuffle_maturity/seed_503/evaluation_paired_rep0.json.gz": "7427ebbf7b4b41b254ff0048e9de2030e2a91d97bea2749b6c41ece6b2b6e824",
+    "results/rr_shuffle_maturity/seed_503/evaluation_paired_rep1.json.gz": "91e512a2686e7f9b1447be5f1e3ae28e1bed37b2dcfd454d68d54f1756afbb0c",
+    "results/rr_shuffle_maturity/seed_503/evaluation_paired_rep2.json.gz": "2df4d773c9053af309d29c54730ab6acccb1c54b09545ee68457caaf7bb29b95",
+    "results/rr_shuffle_maturity/seed_503/evaluation_paired_rep3.json.gz": "e664ef1989de643a78d702f5cc33bb2b58f56326611fa9d562dbf06e401035d6",
+    "results/rr_shuffle_maturity/seed_503/evaluation_shift_rep0.json.gz": "408a9dd06ecff73c0e9d1bc16e7e09cca0fb4ccacbf40e12c7ed9fb8a8002702",
+    "results/rr_shuffle_maturity/seed_503/evaluation_shift_rep1.json.gz": "efe93b007ddd6a7062e280085ce0e614f05955e7320d8ebf2a9c9acc37903aae",
+    "results/rr_shuffle_maturity/seed_503/evaluation_shift_rep2.json.gz": "8357c552edd379cee87daea20ca52c555d6fafc6f19983ff14df289ab04d0d8e",
+    "results/rr_shuffle_maturity/seed_503/evaluation_shift_rep3.json.gz": "9267f7be7fe1d4dc202c855a4721c3d19fe2f02732d303e22dd7fcb228d4a8c7",
+    "results/rr_shuffle_maturity/seed_503/evaluation_test_rep0.json.gz": "09a51848c817539390e23c125bdd84e4fbb3b749e9962ea3b458fe5f3759d40e",
+    "results/rr_shuffle_maturity/seed_503/evaluation_test_rep1.json.gz": "6dc1731fc5e338265fc079f5c59a8a9a2f1e415bf1464befcea0e07ff39a20fd",
+    "results/rr_shuffle_maturity/seed_503/evaluation_test_rep2.json.gz": "6163d96f141ac60e6cf5a43d2e6b1edaa66c6432cc12b154a136b47586c0984d",
+    "results/rr_shuffle_maturity/seed_503/evaluation_test_rep3.json.gz": "ce25458d26ff81e3d023f13032c400efa90735e2c20b25adc8b2a19a58f048cf",
+    "results/rr_shuffle_maturity/seed_503/training.json": "779673464322122488bd7d1c87b300bc6a7913add9f3054f80bb14cd925d0865"
+  }
+}

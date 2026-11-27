@@ -1,0 +1,82 @@
+{
+  "schema": "mem-v7-actual-formatter-independent-peer-v1",
+  "reviewed_at": "2026-11-11T15:00:56.240251+00:00",
+  "status": "NO_STATIC_MUST_FIX_FOR_ACTUAL_FORMAT_DELTA",
+  "reviewer": "mem_experiment_review",
+  "patch": {
+    "bytes": 22868,
+    "sha256": "d977eb20d47cd46c2ab0939c461a9d26c2cf0d1e401516acdde89f612301d4f7",
+    "git_blob": "df20cfaa8318c13e1b7f2bba106a84b6b0640229"
+  },
+  "files": [
+    {
+      "path": "codex-rs/core/tests/common/responses_matcher_tests.rs",
+      "before": {
+        "bytes": 3837,
+        "sha256": "8e720ed7f816288968637f75c760d310c020ee59cb6e1f527be8597f8878a819",
+        "git_blob": "06478ad82022669240018435d6c1f432cf0331b0"
+      },
+      "after": {
+        "bytes": 3840,
+        "sha256": "b9e72803f56cce4fb2c4635092d77e7b4d716094e2553a7ec7b73e83d8d585f8",
+        "git_blob": "12a495fa0da4f076e8092cb96ed95d895a0960e1"
+      },
+      "before_matches_frozen_candidate": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "before": {
+        "bytes": 83556,
+        "sha256": "3466ccbeef5b22c833641b5c074c0201c3397990eed6bba3cc618d34e7c9e8b9",
+        "git_blob": "3083576944936cafd820750e5724117b95839224"
+      },
+      "after": {
+        "bytes": 83555,
+        "sha256": "60478c6a71edaceb0e79b60bf348ade1de9417d1c36cb944b275f271874587b0",
+        "git_blob": "58685b28175bf75fc78f94c13b744781199c55d4"
+      },
+      "before_matches_frozen_candidate": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup_process.rs",
+      "before": {
+        "bytes": 12042,
+        "sha256": "7bbbcf577d7e11c438d24356b03a18cad06e9dd58f66f7cb91d0ff8706683eaf",
+        "git_blob": "f6375ad4d0c95eb1461064af1f9a2c0555588a97"
+      },
+      "after": {
+        "bytes": 12409,
+        "sha256": "602c989a1b3a7e32ebd78c327e1e1a2b260601626ee2fc9447b7cebc8c35d1ae",
+        "git_blob": "1e112219d0844dfda16263b14404dc14ed27b6e6"
+      },
+      "before_matches_frozen_candidate": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup_process_tests.rs",
+      "before": {
+        "bytes": 12707,
+        "sha256": "ee3635adc6da743f96dd5b3b014171cfa8eb64b427b96a438ad7ddadcd683fa9",
+        "git_blob": "13b8aa4c69951a4b573eab636403179530f84ded"
+      },
+      "after": {
+        "bytes": 14212,
+        "sha256": "4a4e74e38b1689236fabb7f739d7cf709fc476084f8f36e7f0877825c339b7ca",
+        "git_blob": "5941d0337ddb2f1d86140a881fb9de5a51db41a0"
+      },
+      "before_matches_frozen_candidate": true
+    }
+  ],
+  "actual_patch_replay": "PASS",
+  "manual_review": [
+    "Complete four-path patch read; layout, wrapping, trailing commas and equivalent block form only.",
+    "Loopback original 2-second timeout, method/path/custom matcher checks and exactly-one recorder assertions unchanged.",
+    "Three-handle allowlist, native token/environment, foreground wait/exit, path conversion/search order and UAC exclusion unchanged.",
+    "Private child containment/event ordering, actual ambient/isolated pipe controls, original outer 5-second budget and cleanup ownership unchanged.",
+    "No sourceA or old callback logic was substituted; before bytes equal the two frozen candidate inputs."
+  ],
+  "not_claimed": [
+    "This is not a compiler/native result.",
+    "Original LEAK holder and original hook timeout causes remain non-unique.",
+    "Full 114-path tree verification is retained in root/remote audits and was not re-executed by this peer."
+  ]
+}

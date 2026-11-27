@@ -1,0 +1,145 @@
+{
+  "actual_new_commit": {
+    "bytes": 323,
+    "git_blob_sha1": "ab525c48167b3bcdc8e7b24ddee16a05f7e17703",
+    "git_commit_sha1": "5653790ac0f64783c28926dcfca2fa7a48a40e77",
+    "parents": [
+      "c32019b1e1ef566419a7b6d28a34d24270cf3d27"
+    ],
+    "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/refresh-565/new-commit.raw",
+    "sha256": "d7f34cc7aab3cf1615858727f1826c6d39f8b0991a2c16162fc5a529d42f851e"
+  },
+  "all_recorded_original_inputs_unchanged": true,
+  "base_audit_result_sha256": "1a94c299150ebad0feb080d7aa666c8624d16fcd1325c0f9c5b6cb2f3c7fd8ca",
+  "base_export_manifest_sha256": "35408e04e4516d5e976632d3a6f4da15efd3f442389604f7af7cdfbf02e1cfd2",
+  "captured_delta_from_base": {
+    "added": {},
+    "changed": {
+      "codex/hia-chrono-time-network-proxy-20261119-a11": {
+        "after": "5653790ac0f64783c28926dcfca2fa7a48a40e77",
+        "before": "c32019b1e1ef566419a7b6d28a34d24270cf3d27"
+      }
+    },
+    "removed": {}
+  },
+  "captured_ref_count": 7654,
+  "captured_refs": {
+    "bytes": 732935,
+    "git_blob_sha1": "ea4bed6e1942f3ea9313777be4f2397f8fde5a90",
+    "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/refresh-565/captured-refs.json",
+    "sha256": "d9234a42dee449aa3112fb601899a36e2024d23d7c24b1602ac86e5bdc963e64"
+  },
+  "captured_to_fresh_delta": {
+    "added": {},
+    "changed": {},
+    "removed": {}
+  },
+  "classification_no_lazy_fetch": "1",
+  "classification_packet_bytes": 0,
+  "completed": true,
+  "coverage": {
+    "integration_0cee": {
+      "all_original_coverage_map_hashes_unchanged": true,
+      "ancestor_commits": 44786,
+      "current_protected_tip_intersection": [],
+      "ordinary_names_covered": 2826,
+      "ordinary_names_pending": 4344,
+      "pending_distinct_tips": 4124,
+      "pending_frontier_names": 1791,
+      "pending_maximal_tips": 1720,
+      "protected_pin_intersection": [],
+      "sha": "0cee57ca617e0324e2df8e9447a2c075a6c76952"
+    },
+    "live_integration": {
+      "all_original_coverage_map_hashes_unchanged": true,
+      "ancestor_commits": 44786,
+      "current_protected_tip_intersection": [],
+      "ordinary_names_covered": 2826,
+      "ordinary_names_pending": 4344,
+      "pending_distinct_tips": 4124,
+      "pending_frontier_names": 1791,
+      "pending_maximal_tips": 1720,
+      "protected_pin_intersection": [],
+      "sha": "0cee57ca617e0324e2df8e9447a2c075a6c76952"
+    },
+    "main": {
+      "all_original_coverage_map_hashes_unchanged": true,
+      "ancestor_commits": 33794,
+      "current_protected_tip_intersection": [],
+      "ordinary_names_covered": 0,
+      "ordinary_names_pending": 7170,
+      "pending_distinct_tips": 6784,
+      "pending_frontier_names": 1791,
+      "pending_maximal_tips": 1720,
+      "protected_pin_intersection": [],
+      "sha": "732e934ba496d90fbe042b8d41d479ef901643e5"
+    },
+    "repair_4a5de714": {
+      "all_original_coverage_map_hashes_unchanged": true,
+      "ancestor_commits": 44787,
+      "current_protected_tip_intersection": [],
+      "ordinary_names_covered": 2827,
+      "ordinary_names_pending": 4343,
+      "pending_distinct_tips": 4123,
+      "pending_frontier_names": 1790,
+      "pending_maximal_tips": 1719,
+      "protected_pin_intersection": [],
+      "sha": "4a5de714ce95889fca83abd3da33cbd74aaac748"
+    }
+  },
+  "elapsed_seconds": 11.59036866101087,
+  "fetch_head_sha256": "4802b73c58931fd7adc3e6926511511502598b1519e8b1651343b67b5b13c9b8",
+  "fetch_head_unchanged": true,
+  "finished_at_utc": "2026-11-20T02:36:57.535026+00:00",
+  "fresh_matches_captured": true,
+  "fresh_ref_count": 7654,
+  "fresh_refs": {
+    "bytes": 732935,
+    "git_blob_sha1": "ea4bed6e1942f3ea9313777be4f2397f8fde5a90",
+    "sha256": "d9234a42dee449aa3112fb601899a36e2024d23d7c24b1602ac86e5bdc963e64"
+  },
+  "graph_delta": {
+    "base_nodes": 78730,
+    "bytes": 1181,
+    "current_nodes": 78731,
+    "git_blob_sha1": "f40bcaab5d0ab162278bcdaa058cf41616e401c7",
+    "missing_parents": 0,
+    "sha256": "9729cd7eeeff6622e71a0148c5b2f22a6f3eeca14b5999c7ca8a86d9dfe0bf13"
+  },
+  "local_object_types": {
+    "commit": 78731
+  },
+  "local_refs_sha256": "d003096fdeb63ad0f814c5578de744da8a5619946e558833629ed67eeffa9c81",
+  "local_refs_unchanged": true,
+  "new_tip_protection_reasons": [
+    "hia_branch_name",
+    "explicit_protected_branch"
+  ],
+  "observed_pin_count": 505,
+  "observed_protection": {
+    "bytes": 71346,
+    "git_blob_sha1": "3d36a693b75d665f65cdb2292f8ebb7832824867",
+    "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/refresh-565/observed-protection-505.json",
+    "sha256": "a1abd37137e98fbd7636d281cbbb31e9869d013330d8a1b1deed505416264076"
+  },
+  "ordinary_heads_unchanged": true,
+  "ordinary_name_count": 7170,
+  "outcome": "PASS_SINGLE_HIA_TIP_REFRESH",
+  "prior_evidence_modified": false,
+  "process_key": "hepta-rust-protection-0cee-hia565-refresh-20261120-v1",
+  "production_inputs_modified": false,
+  "production_manifest_sha256": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f",
+  "production_pin_count": 504,
+  "production_source_sha256": "d5d4047be9282be9760af63a9a0aa1e3e33e4cd85775025fbdf18b91e0aad5f7",
+  "protected_classification_alias_sha256": "94b60690b7f97eeb7d52d9b4837639bcb73b06d25c2fe46a4b2a8fb9ab0c14f2",
+  "protected_name_count": 483,
+  "remote_mutations": false,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.single-protected-tip-refresh.v1",
+  "started_at_utc": "2026-11-20T02:36:45.944674+00:00",
+  "tip_change": {
+    "after": "5653790ac0f64783c28926dcfca2fa7a48a40e77",
+    "before": "c32019b1e1ef566419a7b6d28a34d24270cf3d27",
+    "name": "codex/hia-chrono-time-network-proxy-20261119-a11"
+  }
+}

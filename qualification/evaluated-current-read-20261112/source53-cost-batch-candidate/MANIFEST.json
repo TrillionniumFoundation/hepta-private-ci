@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.immutable-candidate-manifest.v1",
+  "base_source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "runtime_paths": 2,
+  "test_paths": 2,
+  "new_test_methods": 4,
+  "ref_updated": false,
+  "status": "STATIC_CANDIDATE_NOT_COMPILED_NOT_FMT_NOT_RUN",
+  "code": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "base": {
+        "git_blob_sha": "085bcfd745c7a06426d90e5ee881d04694238ff7",
+        "bytes": 14129,
+        "sha256": "64c39bb7fd9d7e6acd3c03332f86f8c8749e4a367a6e629c4cd8b7b2e70d8e20"
+      },
+      "post": {
+        "git_blob_sha": "67141c6af0edbe68eeaf93ac943f083c1449e3c6",
+        "bytes": 14057,
+        "sha256": "f59afb7650d5f8ca2fa800fcc55fda008f0fd2c89fca875cef4db9d280105509"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "base": {
+        "git_blob_sha": "dac17a5a338563fe3466637a3c8b405b1fc10753",
+        "bytes": 26175,
+        "sha256": "2af7ed8d0524e7cf90df1d3501c8943800450e3a2dab830836184fdefcc2e88c"
+      },
+      "post": {
+        "git_blob_sha": "da881df9e0305ef18e3ae1380eef11d3ac42f0d3",
+        "bytes": 28492,
+        "sha256": "bd9402a4f4c5f6fdb425bd21439e7266e78e3d9b06041359031a92c48a4575da"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "base": {
+        "git_blob_sha": "c73cb763cbf2bd753ae44ce74e33da0a3f951772",
+        "bytes": 14180,
+        "sha256": "770e1236a973b3f7b13563736619305c38a084a211b8a55b33f630b4e7bebedb"
+      },
+      "post": {
+        "git_blob_sha": "6cbc878cc2d85691dba75c9e21a4699506368164",
+        "bytes": 15642,
+        "sha256": "f25ef2dc77eb9e5d9a6e7f6ae271e9dcfd748a3ea5250d507badc50b4d3d7e95"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost_tests.rs",
+      "base": {
+        "git_blob_sha": "37f607609a62e4e35ead10faccce366a2714b3cd",
+        "bytes": 11113,
+        "sha256": "29318a75be218475ff47af44b3e4ed92a8970f7734b299d25cc14517629e7273"
+      },
+      "post": {
+        "git_blob_sha": "0e11345a3456c0140be1d609a16be0175b375fc6",
+        "bytes": 15808,
+        "sha256": "eb8eb48b0ac98e7e6e0b8fc309eddb6a328e5de1ee5b0713410bc7447aa8c55a"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate/PATCH.diff",
+      "git_blob_sha": "ca0871352dd2398467eddc3f1511b28d5759b301",
+      "bytes": 10145,
+      "sha256": "3c0dd398443a43c5dba2b47ec10db86c2ff1866f0a45a0db13adbdc7e18172c7"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate/STATIC_CHECKS.json",
+      "git_blob_sha": "252d89a80a3019b5b60a5da59c94bfbba786fe08",
+      "bytes": 1600,
+      "sha256": "69a6d823bb75e06bc0cbac9a8f212564849b734ba2e2da73ed2f99fead918b94"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate/REVIEW.json",
+      "git_blob_sha": "754dc9ece32a0948f40dead3eb5ca2d7c7b3bb0b",
+      "bytes": 8602,
+      "sha256": "07ad25583ce908a5a8319971074659e074e30576891385ce024d7c13bfdc7a08"
+    }
+  ]
+}

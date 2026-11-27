@@ -1,0 +1,47 @@
+[
+  {
+    "command": [
+      "cargo",
+      "update",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "-p",
+      "rustls-webpki@0.103.15",
+      "--precise",
+      "0.103.16"
+    ],
+    "started_utc": "2026-10-21T01:14:19.982360+00:00",
+    "finished_utc": "2026-10-21T01:14:24.668269+00:00",
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "cargo",
+      "update",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "-p",
+      "webpki-root-certs@1.0.9",
+      "--precise",
+      "1.0.10"
+    ],
+    "started_utc": "2026-10-21T01:14:24.668550+00:00",
+    "finished_utc": "2026-10-21T01:14:28.451669+00:00",
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "cargo",
+      "update",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "-p",
+      "webpki-roots@1.0.9",
+      "--precise",
+      "1.0.10"
+    ],
+    "started_utc": "2026-10-21T01:14:28.452019+00:00",
+    "finished_utc": "2026-10-21T01:14:31.658549+00:00",
+    "exit_code": 0
+  }
+]

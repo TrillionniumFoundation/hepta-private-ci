@@ -1,0 +1,273 @@
+{
+  "B_context_refusal_and_frame_causality": {
+    "B_manifest": "Valid independent B request/run identity under the same root/artifact/source/interval/epoch. Its command exactly matches the independently reconstructed B Clock command. No B namespace was created.",
+    "actual_unconsumed_proof": "The explicit later FrameReader read recovers the complete exact original B frame. No rejected public method reads it; after proof the reader is again empty. No state-changing B command, cancellation or fault effect occurs.",
+    "causal_evidence": "Frozen supervisor finishes send before atomically publishing B_SEND_EVENT. Frozen producer validates that completion event before creating/capturing B and invoking the three methods. Saved send/proof references and timestamps agree; complete send precedes explicit proof read. This before-call claim combines frozen control flow and saved event validation, not separately timestamped entries for each rejected API call.",
+    "complete_frame": {
+      "bytes": 448,
+      "description": "Four-byte big-endian canonical payload length plus444 canonical command bytes. Send event and recovered proof independently agree on exact command/hash/length.",
+      "sha256": "f3aeeffcdbc6e89bdd7edac8dcad30cd99fdab85ea20d1adb7dc4d16119ea48a"
+    },
+    "immutability": "B_PUBLISH, B_AWAIT and B_REPLAY have byte-identical before/after full capture files. All include exact ack2 Attempt snapshot and eight-file prefix-stage namespace inventory, original one-call backend counters, zero B writer work, Clock.last equal to original origin, and pristine empty/unfailed reader state.",
+    "result": "VERIFIED_FIXED_PUBLIC_CONTEXT_REFUSALS_WITH_ORIGINAL_FRAME_PRESERVED",
+    "scope": "This is cooperative local control-context isolation for the frozen calls, not owner authentication or malicious heap/process attestation. No claim that complete send precedes initial kernel readability."
+  },
+  "arrays_and_preservation": {
+    "Actor_NPY_members": 20,
+    "Content_NPY_members": 78,
+    "result": "Every uncompressed NPY member is byte-identical to its original input member, with exact member sets and no duplicates. Independently parsed dtype/order/shape and raw-array SHA256 match the complete paired-artifact inventories, including optimizer state and metadata.",
+    "scope": "Preservation and exact fixed-reference behavior only; not a new independent numerical inference, learned-quality result or general multimodal capability evaluation.",
+    "total_NPY_members": 98
+  },
+  "audit_script_sha256": "3fefb5ac0c595e97ab55db8e57be0975db14320966537b1dd0dfa381bc6d4755",
+  "blocking_findings": [],
+  "boundaries": [
+    "Only the fixed seven-negative/one-real-serve same-root context matrix and same-manifest positive handoff. Other inherited branches and prior qualifications retain their own independent scopes; no aggregate PASS.",
+    "No hostile Python/filesystem isolation, production owner authentication, remote-client ACK, distributed exactly-once, arbitrary crash/ACK-loss recovery or new clock authority is established.",
+    "Original Attempt deadline/output budget remain enforced; this result does not claim the predecessor could extend deadline, nor prove deadline extension prevention in general.",
+    "All original raw model arrays and evidence are retained locally for this review. A later publication subset must explicitly disclose omitted raw evidence and cannot be called the full RUN_ONCE archive or a self-contained rerun closure without those inputs.",
+    "This saved-only review authorizes neither another run nor remote publication."
+  ],
+  "capacity_and_retained_inventory": {
+    "RUN_ONCE_bytes": 4119419,
+    "RUN_ONCE_files": 56,
+    "boundary": "Saved terminal measurement and conditional success allowance, not a live aggregate filesystem quota or complete failure-storage guarantee.",
+    "chain_files": 51,
+    "conditional_success_bound_bytes": 5355366,
+    "design_correction": "These actual sizes exceed original98304 allowance and fit revised131072, independently confirming why the preserved design block needed correction. No terminal or process budget increase occurred.",
+    "empty_files": "All four stdout/stderr logs and the per-root writer lease file are empty.",
+    "outer_receipt_byte_cap": 65536,
+    "post_ack3_actual_bytes": {
+      "cancel-intent.json": 105093,
+      "cancelled.json": 105092,
+      "piece-02-ack.json": 105093
+    },
+    "result": "All55 pre-receipt files match outer inventory bytes/hash; adding the outer receipt independently totals56 files/4119419 bytes. Exact successful path set, every per-file allowance and total5355366-byte bound hold; no unexpected temporary/orphan/error files.",
+    "terminal_byte_cap": 8388608,
+    "terminal_file_cap": 100
+  },
+  "evidence": {
+    "CAPACITY.json": {
+      "bytes": 2505,
+      "sha256": "2c79917e964bb3fa61ad34e2678809fb42f0a12156affd34686b9e2413221726"
+    },
+    "COST.json": {
+      "bytes": 653,
+      "sha256": "da1b0b94c127acb1f325956e2bd0953d4d7fb6903788de92b132c6d7aa668162"
+    },
+    "FREEZE.json": {
+      "bytes": 2613,
+      "sha256": "f8435425ec040af167f2d92036431f32ab6980538ce67a14d241249dbd628529"
+    },
+    "INDEPENDENT_DESIGN_REVIEW.json": {
+      "bytes": 10920,
+      "sha256": "a5d2f3f89f0ec3aa87ba6daaf4d0800d8a19309bb63f8b83c9985b6725cb797f"
+    },
+    "INDEPENDENT_SOURCE_REVIEW.json": {
+      "bytes": 15329,
+      "sha256": "ee37aef7566395da843fac7499a5f192dfc0b304935e72a845f5fd7cff673a2f"
+    },
+    "INPUTS.json": {
+      "bytes": 5072,
+      "sha256": "32115b82494991dd3903a3f6492c0513c8d4473848b858f2f364929728d0378e"
+    },
+    "RUN_ONCE/OUTER_WAIT4_RECEIPT.json": {
+      "bytes": 10634,
+      "sha256": "9803b603332483cc5c178d37ae28fdec1746abac0829cba271a7164527f05f19"
+    },
+    "RUN_ONCE/RESULT.json": {
+      "bytes": 2742,
+      "sha256": "1ebcce2e24aad2f00e6f5b1a524bf5657faf4ce3ad08a15dd02219255e4d841a"
+    },
+    "RUN_ONCE/ROLE_RECEIPTS.json": {
+      "bytes": 502,
+      "sha256": "e554d3732c8987f99e25120d499a084154a6c43c698552216636c394cf3aa598"
+    },
+    "RUN_ONCE/chain/ACK_PACKET.json": {
+      "bytes": 1373,
+      "sha256": "98c2af2e83e70c38248c721afc265a4f9d59666601756b0a3cb0fd28c34fdbf4"
+    },
+    "RUN_ONCE/chain/ACK_VERIFIED.json": {
+      "bytes": 1517,
+      "sha256": "945c046f5314fe288bfc0f321c33b5ec21a72d56ee67e494b5cd33cb6be371cf"
+    },
+    "RUN_ONCE/chain/ACTOR_AFTER.npz": {
+      "bytes": 12303,
+      "sha256": "37a504cbd5da31fdc5476d3a30ee9314248554ce0d04797e823d273ebec53035"
+    },
+    "RUN_ONCE/chain/A_SEND_EVENT.json": {
+      "bytes": 639,
+      "sha256": "2007e954f9a8ad7af01555e785ac7e428421d9bc8e096043c9f8b109c5439328"
+    },
+    "RUN_ONCE/chain/B_FRAME_PROOF.json": {
+      "bytes": 831,
+      "sha256": "6b6a002f3ebc6b8111382714d5e5a7f36f9e4f94f29bdf3042373c0fb3bdb6d6"
+    },
+    "RUN_ONCE/chain/B_MANIFEST.json": {
+      "bytes": 498,
+      "sha256": "ab0435ca9aeecf14ab0aee0ba3dde46ff6a4cdef9e9c1ef33fcb0789f223c449"
+    },
+    "RUN_ONCE/chain/B_SEND_EVENT.json": {
+      "bytes": 639,
+      "sha256": "8461c505a644bff4847460d63e94cd4f11ad283667763e0bcb485dd3a5539af5"
+    },
+    "RUN_ONCE/chain/CONTENT_AFTER.npz": {
+      "bytes": 1560407,
+      "sha256": "64806d1b67b3b071e8b35246a77412e3da76ccf1cd283306f49290296a634150"
+    },
+    "RUN_ONCE/chain/CONTINUED_READY.json": {
+      "bytes": 597,
+      "sha256": "5040d16ab11b1fa5103991f0cd5701931ae8a494b0c9519236bee07dfe0f69df"
+    },
+    "RUN_ONCE/chain/CONTINUED_VERIFIED.json": {
+      "bytes": 1077,
+      "sha256": "2cc3ba469fbbbe37633a557e16713e1cda025839111304b858672598e4443869"
+    },
+    "RUN_ONCE/chain/CONTROL_MANIFEST.json": {
+      "bytes": 498,
+      "sha256": "e8cbe8b9ae9a1713e3113cf44afe16b96996e38b74e5d0ae0b34f294ac5c4fc9"
+    },
+    "RUN_ONCE/chain/DUPLICATE_AFTER.json": {
+      "bytes": 108060,
+      "sha256": "d3c52733c45e94d417223c912b0b1466982d6e741001203e62cd10be4a17580a"
+    },
+    "RUN_ONCE/chain/DUPLICATE_BEFORE.json": {
+      "bytes": 108060,
+      "sha256": "bc8b96b38bc43744245bf105e06b65b890c337ffae55454f4db9e64b46bbf337"
+    },
+    "RUN_ONCE/chain/FINAL_SNAPSHOT.json": {
+      "bytes": 105004,
+      "sha256": "1294ee73d1739ef5679561fd8849f004e0c8b513a7284e80859046c102f7f10f"
+    },
+    "RUN_ONCE/chain/PRODUCER_RESULT.json": {
+      "bytes": 3258,
+      "sha256": "7ecac08183ef3512eb6cba9f2db5963b938e341fa701f94e4be040cbd4cacb09"
+    },
+    "RUN_ONCE/chain/READY.json": {
+      "bytes": 596,
+      "sha256": "6862f6949021b468e0ff4e521c955e0edab13e7881278b8384460eb4cd9ada41"
+    },
+    "SAVED_FINDINGS.md": {
+      "bytes": 1327,
+      "sha256": "b088f60ea6fb079cdf5b94a87e28fb8ea11e728f3d1ae6fcdc3bd752b9dcadf2"
+    }
+  },
+  "method": "Independent saved-only stdlib strict/canonical JSON, complete file hashes, full request/identity/spec/route/journal/session/prefix reconstruction, RGB float32-to-float64 pixel-byte hashing, ZIP-NPY header and raw-member comparison, event/reference/inventory/resource arithmetic and frozen control-flow review. No candidate, verifier, protocol, model, RNG or optimizer import/execution; no experiment/old-bug rerun, restricted owner/V3 reads or remote action. Only this review artifact is written.",
+  "resources_and_cost": {
+    "accounting": "Worker plus supervisor partitions subtree once; outer measured prefix is extra, final tail unknown and nonzero. All six construction/hash/capture/verification costs are included in process CPU, not separately added. Earlier preparation/review/history and this audit are additional costs. Float supervisor representation is ordinary rounding, not missing work.",
+    "automatic_next_run_authorized": false,
+    "boundary": "Per-process caps and posthoc terminal tests do not prove strict global CPU/RSS/disk bounds. Hard ancestor death, kernel stalls, failed cleanup/storage or power loss can prevent receipts.",
+    "complete_wait": true,
+    "graph": "One outer-owned supervisor and one supervisor-owned producer; complete launch/reap receipts and event order verified. Producer reaped before final ACK verification. No recovery/helper process.",
+    "hard_limits": {
+      "AS": [
+        268435456,
+        268435456
+      ],
+      "CPU": [
+        2,
+        2
+      ],
+      "FSIZE": [
+        2097152,
+        2097152
+      ]
+    },
+    "known_CPU_lower_bound_seconds": "0.576230327",
+    "largest_reaped_RSS_kib": 34228,
+    "notes_and_cost": "COST.json and SAVED_FINDINGS.md match independently reconstructed scope/counts/costs. Independent review pending is their historical pre-review label.",
+    "outer_exit": 0,
+    "outer_prefix_CPU_seconds": "0.047506327",
+    "outer_tail": "unknown_not_zero",
+    "producer_exit": 0,
+    "retry": false,
+    "supervisor_CPU_seconds": "0.19752799999999998",
+    "supervisor_exit": 0,
+    "terminal_budget_pass": true,
+    "whole_reaped_subtree_CPU_seconds": "0.528724",
+    "worker_CPU_seconds": "0.331196"
+  },
+  "reviewed_at_utc": "2026-11-04T02:08:19.774841+00:00",
+  "same_A_handoff_and_cancellation": {
+    "A_send_order": "Ack3 recorded time precedes supervisor A send. Frozen supervisor independently verifies fixed ack3 before sending; producer validates completed A event before await_cancel. B explicit proof read finishes before ack3 publication and A send.",
+    "duplicate": "Successful receipt duplicate preserves final Attempt snapshot, entire14-file delivery inventory, work and reader; only allowed monotonic Clock.last observation advances. Return equals exact final reference, with detachment checked by frozen executed assertion.",
+    "exact_transition": "All ten attempt journals independently passed canonical/envelope/session checksums, complete identity/spec/ticket/wire/route/prefix reconstruction and time order. Ack2 cursor2/prefix8227 advances by exactly the original third8192-byte piece to ack3 cursor3/prefix16419, with text35/image16384 and unchanged two tickets.",
+    "four_ACK_refs": "Independently verified actual bytes/hash/fixed namespace/slot for control-observed, cancel-intent, cancelled and control-ack. Persisted ACK equals packet; observed prior_record equals exact ack3; current A command/pin/identity and causal times agree. Full intent/final states differ only by phase/observation/cancel flag and its checksum.",
+    "handoff": "Frozen source closes initial A writer and retains original live A+ack2, then reopens a fresh writer/Clock using the identical original A manifest and epoch. Saved READY/CONTINUED_READY pin same producer/root/lease and exact ack2/ack3 records. This is not a restored readonly object being promoted.",
+    "readonly": "READONLY_AWAIT records precise readonly error with identical complete before/after capture. Its restored generated ack3 snapshot, final namespace inventory, backend/writer work, Clock.last and reader state are unchanged.",
+    "result": "VERIFIED_ORIGINAL_CONTEXT_CONTINUATION_WITHOUT_REGENERATION",
+    "scope": "Positive handoff is same original manifest/epoch. It does not prove all-epoch replay prevention, object-creator ownership, disk-only recovery authority or an ability to extend the original Attempt deadline.",
+    "terminal_state": "Final cancelled snapshot exactly matches saved final; no piece-03 intent or control-fault exists. Final reference is identical across ACK packet, producer result, duplicate return and overall result."
+  },
+  "saved_counts_and_work": {
+    "Actor_predictions": 1,
+    "Adam_updates": 0,
+    "actual_serves": 1,
+    "constructor_cost": "Six constructor full-checkpoint identity hash/budget checks plus start/post-generation rechecks and all comparison/capture/import/hash/verifier/cleanup work are included in actual complete process/subtree CPU. Inference counters are not used as a complete cost measure.",
+    "encoded_rows": 1,
+    "exact_refusals": [
+      {
+        "error": "live control context mismatch",
+        "name": "B_PUBLISH"
+      },
+      {
+        "error": "live control context mismatch",
+        "name": "B_AWAIT"
+      },
+      {
+        "error": "live control context mismatch",
+        "name": "B_REPLAY"
+      },
+      {
+        "error": "live control context mismatch",
+        "name": "WRONG_DEADLINE"
+      },
+      {
+        "error": "live control context mismatch",
+        "name": "WRONG_SOURCE"
+      },
+      {
+        "error": "live control context mismatch",
+        "name": "WRONG_ROOT"
+      },
+      {
+        "error": "live-control recovered view is read-only",
+        "name": "READONLY_AWAIT"
+      }
+    ],
+    "expected_channel_failures": 0,
+    "fresh_models": 0,
+    "mock_serves": 0,
+    "model_restores": 2,
+    "named_checks": 24,
+    "producer_checks": 19,
+    "reference_calls": 0,
+    "refusals": 7,
+    "supervisor_checks": 5,
+    "writer_constructions": 6,
+    "writer_work": "Exact saved sequence: initial A one start/one generator/34884 generated bytes/8227 published; B and three variant writers all zero; reopened A zero start/generator/generated bytes and8192 published. Total generated34884, published16419. Source and terminal work agree; no second inference or model restore-to-live path."
+  },
+  "schema": "independent-saved-review-v1",
+  "single_field_negatives": {
+    "boundary": "These are not malformed-schema, expired-request or root-replacement tests; they do not separately test every structural/artifact mismatch branch.",
+    "cases": [
+      "deadline_ns = original +1",
+      "source_freeze = different valid64hex digest",
+      "root_instance = same device, original inode +1"
+    ],
+    "result": "VERIFIED_SOURCE_DEFINED_VARIANTS_AND_IDENTICAL_SAVED_STATE",
+    "saved_binding": "Each case records the exact live control context mismatch and byte-identical before/after complete capture. All retain original ack2 snapshot, same eight-file inventory, backend work, zero variant-writer work, original Clock.last and empty reader. Actual root/lease remains unchanged.",
+    "source_binding": "Exact frozen worker constructs each from original A manifest, changes only that field and recomputes its pin; schemas are valid and original A remains live before each call. Individual variant manifests are defined in the frozen source rather than separate saved manifest files."
+  },
+  "source_freeze_sha256": "f8435425ec040af167f2d92036431f32ab6980538ce67a14d241249dbd628529",
+  "source_inputs_and_history": {
+    "freeze_entries_unchanged": 29,
+    "history": "Original data and all pinned prior reviews/freezes/source references remain unchanged. No earlier candidate was run or modified. Original capacity miss and its exact priors remain preserved.",
+    "input_pins_exact": 23,
+    "numeric_reference": "Original wire byte identity and complete numeric route verified, with current artifact/request identity rebinding only. Independently reconstructed qualified raw-request identity, RunSpec and namespace, exact gray replicated RGB-to-float64 pixel hash, JI selected route and six fragment boundaries. No inference was performed by this audit.",
+    "reference_pins_exact": 11,
+    "request_artifact": "Independently derived current artifact by replacing original paired artifact source_freeze only; derived A request from original request with admitted source/artifact/run/deadline. B request differs only by documented run_id; B manifest differs from A only in corresponding request hash and namespace. Actual common root/lease device/inode and original source/interval/epoch/artifact agree.",
+    "source_review_bound": true
+  },
+  "status": "PASS_INDEPENDENT_SAVED_LIVE_CONTROL_CONTEXT_REVIEW"
+}

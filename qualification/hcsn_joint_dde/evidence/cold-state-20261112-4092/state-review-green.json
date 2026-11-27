@@ -1,0 +1,53 @@
+{
+  "source_binding": {
+    "physics": {
+      "active_reward": 0.4,
+      "delay": 0.2,
+      "discount": 0.15,
+      "hit_reward": 1.0,
+      "reset": 0.5,
+      "spatial": {
+        "endpoint": 2.0,
+        "intervals": 32,
+        "mu": -0.12,
+        "sigma": 0.35
+      }
+    },
+    "sources": {
+      "hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+      "hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+      "hcsn_joint_dde/model.py": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+      "hcsn_joint_dde/state_io.py": "9c09b22679eb63f89ebacbb24ceea6b2c94f0b973e621bf62f4122767a455c7c"
+    },
+    "types": [
+      "qualification.hcsn_joint_dde.model.JointModel",
+      "qualification.hcsn_boundary_audit.spatial_generator.KilledSpatialGenerator"
+    ]
+  },
+  "attempts": {
+    "remove_atom": {
+      "rejected": true,
+      "error": "ValueError: pending phase mass/moment do not match retained release law",
+      "wall_seconds": 0.0018205810001745704
+    },
+    "remove_atom_knot": {
+      "rejected": true,
+      "error": "ValueError: pending source deadline absent from discontinuity schedule",
+      "wall_seconds": 0.0008038510004553245
+    },
+    "duplicate_atom": {
+      "rejected": true,
+      "error": "ValueError: atom deadlines must be strictly increasing",
+      "wall_seconds": 0.0008125790000121924
+    },
+    "excess_breakpoints": {
+      "rejected": true,
+      "error": "ValueError: restored source breakpoint budget exceeded",
+      "wall_seconds": 0.004045532999953139
+    }
+  },
+  "correct": {
+    "active": 0.9999999575599436,
+    "refractory": 4.2443400810820165e-08
+  }
+}

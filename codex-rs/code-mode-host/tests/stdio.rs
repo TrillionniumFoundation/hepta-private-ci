@@ -712,15 +712,22 @@ async fn child_process_loss_cleans_up_and_rebuilds_the_shared_host() {
     let proxy_dir = tempfile::tempdir().expect("create host proxy directory");
     let proxy_program = proxy_dir.path().join("host-proxy.sh");
     let pid_path = proxy_dir.path().join("host.pid");
-    std::fs::write(
-        &proxy_program,
-        format!(
+    // Keep the writable executable descriptor out of this parallel test process.
+    // Otherwise another test's fork can inherit it (rust-lang/rust#114554).
+    let write_status = std::process::Command::new("/bin/sh")
+        .args(["-c", "printf '%s' \"$1\" > \"$2\"", "write-host-proxy"])
+        .arg(format!(
             "#!/bin/sh\nprintf '%s\\n' \"$$\" > '{}'\nexec '{}'\n",
             pid_path.display(),
             host_program.display()
-        ),
-    )
-    .expect("write host proxy");
+        ))
+        .arg(&proxy_program)
+        .status()
+        .expect("write host proxy");
+    assert!(
+        write_status.success(),
+        "host proxy writer failed: {write_status}"
+    );
     let mut permissions = std::fs::metadata(&proxy_program)
         .expect("host proxy metadata")
         .permissions();

@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.production-context.static-review-package.v1",
+  "source_commit": "a47190bb84714cb1262fcd85ebb723081fdb0581",
+  "source_tree": "b4150dc0e76e216792a36b8478580dfed3270af2",
+  "archive": {
+    "file": "production-context-a471.tar.xz",
+    "bytes": 99256,
+    "sha256": "17d5bd63dd22f67469547e9bf567186f1b3d6e1895ce24701ee587b129744261"
+  },
+  "scope": "27 exact Rust source blobs; four source searches; original static reviews and identity; method; six draft corrections; no execution qualification",
+  "member_files": 42,
+  "member_bytes": 656335,
+  "source_files": 27,
+  "source_bytes": 569295,
+  "original_review_json": {
+    "sha256": "be2f115995d6dab2421f0e2d7532ebb93f3feef2013aecc694f2c6526c577ddc",
+    "bytes": 32577
+  },
+  "original_review_markdown": {
+    "sha256": "efb3980f7bd899a82636af9de57628e5e01c13c4b84898997171b896358327fa",
+    "bytes": 6260
+  },
+  "source_inventory_sha256": "0a2fe1478039d2a185512a35d331f0be241064942ca24c0c5797aeabc25f2dae",
+  "archive_inventory_sha256": "51a80c4ade749e1b96ac5b746712dbb38f7baad42a422880de2b285fa10cb18f",
+  "method_sha256": "0a0b9f5822a7f00e6027920e6c62eee22b5a8a06a04941f254ffebaba7d6914f",
+  "draft_scope_receipt_sha256": "cf3cd0f493d8c49bc00956d32a17ca7af176d8cb61b71ff6401aba6c9c8e83f0",
+  "draft_resolution_sha256": "df4b19ea8c1c6ffaa187d1a8c9eb9cd7ea2c31bcd772f70db8769b1b45625c4d",
+  "verification": {
+    "all_source_pins_equal": true,
+    "four_search_match_multisets_equal": true,
+    "all_tar_members_read_back_equal": true,
+    "review_inputs_unchanged": true,
+    "primary_clean_before_after": true
+  },
+  "limits": [
+    "source review only",
+    "not a full repository snapshot",
+    "no new provider implementation or activation",
+    "no latest-CI result fetched or inferred",
+    "eight full blocker gates remain false"
+  ]
+}

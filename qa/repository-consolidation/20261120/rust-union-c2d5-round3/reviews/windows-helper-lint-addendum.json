@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.static-review-followup.v1",
+  "original_review": {
+    "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/windows-six-review/REVIEW.json",
+    "sha256": "a4bbd154e0159dd66e2cacd31b4b4d763f45923497f1db237d95e744619b7fc9",
+    "bytes": 9479
+  },
+  "original_source_step_unchanged": true,
+  "finding": "The new std::path::absolute(...).expect inside the ordinary input() fixture helper is prohibited by the unchanged strict Clippy expect_used policy. The earlier review established byte/control semantics but missed this static lint issue; it never claimed an actual Clippy execution.",
+  "follow_on": "Root separately approved branch-audit/prepared-input-helper-stage01, covering both the original input fixture and its compaction child module call closure. This follow-on must be independently reviewed and appended; original step2 and its frozen evidence stay unchanged.",
+  "validation": "Native/Rustfmt/Clippy remain NOT_RUN."
+}

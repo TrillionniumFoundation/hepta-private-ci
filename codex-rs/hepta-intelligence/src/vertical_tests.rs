@@ -14,8 +14,11 @@ use codex_hepta_context_compiler::ContextRole;
 use codex_hepta_ndu::AxisDirection;
 use codex_hepta_ndu::AxisValue;
 use codex_hepta_ndu::FeasibilityPosture;
+use codex_hepta_ndu::NduError;
 use codex_hepta_ndu::RequiredOrganSet;
+use codex_hepta_ndu::ScalarizationProfile;
 use codex_hepta_ndu::UtilityProfile;
+use codex_hepta_ndu::canonical_scalarization_digest;
 use codex_hepta_objective::ConstraintClass;
 use codex_hepta_objective::ObjectiveAbstentionRuleProfileV1;
 use codex_hepta_objective::ObjectiveActionProfileV1;
@@ -52,6 +55,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
+use pretty_assertions::assert_eq;
 
 use crate::PlanDecision;
 use crate::ReadOnlyUtilityContribution;
@@ -145,7 +149,7 @@ fn objective_profile() -> ObjectiveAdmissionProfileV1 {
             expected_unit: "ratio".to_string(),
             expected_direction: ObjectiveSoftDirectionV1::Maximize,
             dimension: id("quality.ratio"),
-            baseline_weight: FixedQ32::from_raw(1_i64 << 31),
+            baseline_weight: FixedQ32::ONE,
         }],
         evidence_requirements: vec![ObjectiveEvidenceProfileV1 {
             source_requirement_id: "evidence.quality".to_string(),
@@ -316,7 +320,10 @@ fn utility_contribution(candidate: &str, value: FixedQ32) -> ReadOnlyUtilityCont
 }
 
 fn vertical_request() -> ReadOnlyVerticalRequest {
-    let profile = objective_profile();
+    vertical_request_with_profile(objective_profile())
+}
+
+fn vertical_request_with_profile(profile: ObjectiveAdmissionProfileV1) -> ReadOnlyVerticalRequest {
     let envelope = objective_envelope();
     let objective_context = objective_context(&profile, &envelope);
     let objective_outcome = must(admit_and_compile_objective_v1(
@@ -387,6 +394,234 @@ fn vertical_request() -> ReadOnlyVerticalRequest {
             utility_contribution("abstain", FixedQ32::ZERO),
             utility_contribution("action.read", FixedQ32::ONE),
         ],
+    }
+}
+
+fn rebind_objective(request: &mut ReadOnlyVerticalRequest) {
+    request.objective_envelope.intent_digest = must(canonical_objective_intent_digest_v1(
+        &request.objective_envelope,
+    ));
+    request.objective_context =
+        objective_context(&request.objective_profile, &request.objective_envelope);
+    let outcome = must(admit_and_compile_objective_v1(
+        &request.objective_envelope,
+        &request.objective_profile,
+        &request.objective_context,
+    ));
+    request.context.objective_digest = must(outcome.compile_result).objective.semantic_digest;
+}
+
+fn vertical_request_with_weights(weights: &[(&str, i64)]) -> ReadOnlyVerticalRequest {
+    let mut request = vertical_request();
+    request.objective_profile.soft_dimensions = weights
+        .iter()
+        .map(|(axis, raw)| ObjectiveSoftDimensionProfileV1 {
+            source_dimension_id: axis.to_string(),
+            expected_unit: "ratio".to_string(),
+            expected_direction: ObjectiveSoftDirectionV1::Maximize,
+            dimension: id(axis),
+            baseline_weight: FixedQ32::from_raw(*raw),
+        })
+        .collect();
+    request.objective_envelope.structured_intent.soft_dimensions = weights
+        .iter()
+        .map(|(axis, _)| ObjectiveSoftDimensionV1 {
+            dimension_id: axis.to_string(),
+            unit: "ratio".to_string(),
+            direction: ObjectiveSoftDirectionV1::Maximize,
+            minimum_weight_q32: 0,
+            maximum_weight_q32: FixedQ32::ONE.raw(),
+        })
+        .collect();
+    request.ndu_profile.dimensions = weights
+        .iter()
+        .map(|(axis, _)| (id(axis), AxisDirection::Maximize))
+        .collect();
+    for contribution in &mut request.ndu_contributions {
+        let value = if contribution.candidate_id == id("abstain") {
+            FixedQ32::ZERO
+        } else {
+            FixedQ32::ONE
+        };
+        contribution.utility = weights
+            .iter()
+            .map(|(axis, _)| AxisValue {
+                axis: id(axis),
+                value,
+            })
+            .collect();
+        contribution.uncertainty = weights
+            .iter()
+            .map(|(axis, _)| AxisValue {
+                axis: id(axis),
+                value: FixedQ32::ZERO,
+            })
+            .collect();
+    }
+    rebind_objective(&mut request);
+    request
+}
+
+fn expected_scalarization_digest(weights: &[(&str, i64)]) -> Digest32 {
+    must(canonical_scalarization_digest(&ScalarizationProfile {
+        profile_id: id("scalarization.objective-derived.v1"),
+        weights: weights
+            .iter()
+            .map(|(axis, raw)| AxisValue {
+                axis: id(axis),
+                value: FixedQ32::from_raw(*raw),
+            })
+            .collect(),
+    }))
+}
+
+#[test]
+fn vertical_normalizes_half_weight_without_rewriting_the_admitted_objective() {
+    let mut profile = objective_profile();
+    profile.soft_dimensions[0].baseline_weight = FixedQ32::from_raw(1_i64 << 31);
+    let request = vertical_request_with_profile(profile);
+    let expected = must(admit_and_compile_objective_v1(
+        &request.objective_envelope,
+        &request.objective_profile,
+        &request.objective_context,
+    ));
+    let mut unit_request = request.clone();
+    unit_request.objective_profile.soft_dimensions[0].baseline_weight = FixedQ32::ONE;
+    rebind_objective(&mut unit_request);
+
+    let receipt = must(run_read_only_vertical(request));
+    let unit_receipt = must(run_read_only_vertical(unit_request));
+    assert_eq!(receipt.objective, must(expected.compile_result));
+    assert_eq!(receipt.objective_admission, expected.receipt);
+    assert_eq!(
+        receipt.ndu.base.scalarization_profile_digest,
+        Some(expected_scalarization_digest(&[(
+            "quality.ratio",
+            FixedQ32::ONE.raw(),
+        )]))
+    );
+    assert_eq!(
+        receipt.ndu.base.scalarization_profile_digest,
+        unit_receipt.ndu.base.scalarization_profile_digest
+    );
+    assert_ne!(
+        receipt.objective.objective.semantic_digest,
+        unit_receipt.objective.objective.semantic_digest
+    );
+    assert_ne!(receipt.vertical_digest, unit_receipt.vertical_digest);
+    assert!(!receipt.authority.grants_any());
+    assert!(!receipt.plan.effect_authority);
+}
+
+#[test]
+fn vertical_normalizes_rational_weights_and_preserves_zero_weight_axes() {
+    let cases = [
+        (
+            [("zeta", 1), ("alpha", 2), ("middle", 3)],
+            [
+                ("alpha", 1_431_655_765),
+                ("middle", 2_147_483_648),
+                ("zeta", 715_827_883),
+            ],
+        ),
+        (
+            [("zeta", 1), ("alpha", 0), ("middle", 1)],
+            [
+                ("alpha", 0),
+                ("middle", 2_147_483_648),
+                ("zeta", 2_147_483_648),
+            ],
+        ),
+    ];
+    for (source, expected) in cases {
+        let receipt = must(run_read_only_vertical(vertical_request_with_weights(
+            &source,
+        )));
+        assert_eq!(
+            receipt.ndu.base.scalarization_profile_digest,
+            Some(expected_scalarization_digest(&expected))
+        );
+        assert!(!receipt.authority.grants_any());
+    }
+}
+
+#[test]
+fn vertical_scalarization_rounding_is_canonical_on_a_real_frontier() {
+    let half = FixedQ32::ONE.raw() / 2;
+    let mut first =
+        vertical_request_with_weights(&[("zeta", half), ("alpha", half), ("middle", half)]);
+    for value in &mut first.ndu_contributions[1].utility {
+        value.value = if value.axis == id("alpha") {
+            FixedQ32::ONE
+        } else {
+            FixedQ32::ZERO
+        };
+    }
+    let mut inspect = first.ndu_contributions[1].clone();
+    inspect.candidate_id = id("action.inspect");
+    for value in &mut inspect.utility {
+        value.value = if value.axis == id("zeta") {
+            FixedQ32::ONE
+        } else {
+            FixedQ32::ZERO
+        };
+    }
+    first.ndu_contributions.push(inspect);
+    let mut second = first.clone();
+    second.objective_profile.soft_dimensions.reverse();
+    second
+        .objective_envelope
+        .structured_intent
+        .soft_dimensions
+        .reverse();
+    second.ndu_profile.dimensions.reverse();
+    second.ndu_contributions.reverse();
+    for contribution in &mut second.ndu_contributions {
+        contribution.utility.reverse();
+        contribution.uncertainty.reverse();
+    }
+    second.context.items.reverse();
+    rebind_objective(&mut second);
+
+    let first = must(run_read_only_vertical(first));
+    let second = must(run_read_only_vertical(second));
+    assert_eq!(first, second);
+    assert_eq!(
+        first.plan.decision,
+        PlanDecision::Selected(id("action.read"))
+    );
+    assert_eq!(
+        first.ndu.base.scalarization_profile_digest,
+        Some(expected_scalarization_digest(&[
+            ("alpha", 1_431_655_766),
+            ("middle", 1_431_655_765),
+            ("zeta", 1_431_655_765),
+        ]))
+    );
+}
+
+#[test]
+fn vertical_rejects_an_admitted_zero_weight_total() {
+    let request = vertical_request_with_weights(&[("alpha", 0), ("zeta", 0)]);
+    assert!(matches!(
+        run_read_only_vertical(request),
+        Err(ReadOnlyVerticalError::Ndu(
+            NduError::IncompleteScalarization
+        ))
+    ));
+}
+
+#[test]
+fn vertical_rejects_out_of_range_baselines_before_scalarization() {
+    for raw in [-1, FixedQ32::ONE.raw() + 1] {
+        let mut request = vertical_request();
+        request.objective_profile.soft_dimensions[0].baseline_weight = FixedQ32::from_raw(raw);
+        assert!(matches!(
+            run_read_only_vertical(request),
+            Err(ReadOnlyVerticalError::ObjectiveAdmission(
+                ObjectiveAdmissionError::InvalidProfile("soft weight")
+            ))
+        ));
     }
 }
 
@@ -498,4 +733,69 @@ fn omitted_cognitive_read_evidence_fails_closed() {
         ReadOnlyVerticalError::ReadEvidenceOmitted(item)
             if item == "context.memory.read"
     ));
+}
+
+#[test]
+fn objective_weights_normalize_or_reject_for_unique_and_abstain_only_recommendations() {
+    let half = FixedQ32::from_raw(FixedQ32::ONE.raw() / 2);
+    for (weight, missing_axis) in [(FixedQ32::ZERO, false), (half, false), (half, true)] {
+        let mut profile = objective_profile();
+        profile.soft_dimensions[0].baseline_weight = weight;
+        for abstain_only in [false, true] {
+            let mut request = vertical_request_with_profile(profile.clone());
+            if missing_axis {
+                request
+                    .ndu_profile
+                    .dimensions
+                    .push((id("quality.unweighted"), AxisDirection::Maximize));
+            }
+            if abstain_only {
+                request
+                    .ndu_contributions
+                    .retain(|contribution| contribution.candidate_id == id("abstain"));
+            }
+
+            let expected = must(admit_and_compile_objective_v1(
+                &request.objective_envelope,
+                &request.objective_profile,
+                &request.objective_context,
+            ));
+            let result = run_read_only_vertical(request);
+            if missing_axis {
+                assert!(matches!(
+                    result,
+                    Err(ReadOnlyVerticalError::SoftDimensionMismatch)
+                ));
+                continue;
+            }
+            if weight == FixedQ32::ZERO {
+                let error = result.expect_err("zero total weight must reject");
+                assert!(matches!(
+                    error,
+                    ReadOnlyVerticalError::Ndu(codex_hepta_ndu::NduError::IncompleteScalarization)
+                ));
+                continue;
+            }
+
+            let receipt = must(result);
+            assert_eq!(receipt.objective, must(expected.compile_result));
+            assert_eq!(receipt.objective_admission, expected.receipt);
+            assert_eq!(
+                receipt.ndu.base.scalarization_profile_digest,
+                Some(expected_scalarization_digest(&[(
+                    "quality.ratio",
+                    FixedQ32::ONE.raw(),
+                )]))
+            );
+            let expected_decision = if abstain_only {
+                PlanDecision::Abstained(crate::AbstentionReason::NoEligibleCandidate)
+            } else {
+                PlanDecision::Selected(id("action.read"))
+            };
+            assert_eq!(receipt.plan.decision, expected_decision);
+            assert!(!receipt.authority.grants_any());
+            assert!(!receipt.plan.authority.grants_any());
+            assert!(!receipt.plan.effect_authority);
+        }
+    }
 }

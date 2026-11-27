@@ -1,0 +1,62 @@
+{
+  "schema": "mem8.two-native.original.independent-peer.v1",
+  "scope": "Read-only peer of the completed original two-native evidence; no archived program, native command, model, host operation or ref action was run.",
+  "result": "NO_STATIC_MUST_FIX_AND_DIRECT_ORIGINAL_BYTES_CONSISTENT",
+  "run_id": 43061843610,
+  "job_id": 130666210831,
+  "attempt": 1,
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "harness_head": "ca9ab8c0d07d1a236ef3c4b76a22f0a131d409ae",
+  "harness_tree": "91f56937da9267b97db249bf141d532efd6d83f1",
+  "archive": {
+    "bytes": 136916,
+    "sha256": "b18c066e7603be3f60ea2ba78fadb8b62be7e818bdbd2bf95b11d6dec811388e",
+    "git_blob": "9a07921c19fbc63f9bc3b7a0f184fdb2f997b0f3",
+    "members": 52
+  },
+  "original_zip": {
+    "bytes": 140237,
+    "sha256": "fc23b01fde7061c301d94f283bb3ac7fb0eeb6f2a6bf3469e5c0794298c6283b",
+    "members": 217,
+    "declared_non_manifest_members": 216
+  },
+  "readers_wholly_reviewed": [
+    {
+      "path": "audit_original.py",
+      "bytes": 19914,
+      "sha256": "9b1dc69557a841f0d47e7da5b497d636180b0748cbbcab11de7561b46f4191dc"
+    },
+    {
+      "path": "audit_snapshot_proofs_v2.py",
+      "bytes": 8499,
+      "sha256": "ded591966e4e5d23cb825b6fa2fdf70a2517d79c9de46156ff9d07e792363554"
+    }
+  ],
+  "direct_original_checks": [
+    "All 52 outer members match the frozen member manifest including full Git blob identities; all original ZIP members pass CRC, unique/safe names and the complete 216-row FILE_MANIFEST.",
+    "Original RESULT, COLLECTION, anchor and terminal API job agree on the single original run/source/harness; complete four harness file hashes match the frozen rendered preparation.",
+    "Exactly three phases are present: original two-helper cargo build, one exact two-case core nextest invocation with --retries 0, and just fix --locked -p codex-core. All three original exits are zero and all are passed_clean.",
+    "Original raw contains exactly the two expected PASS identities under codex-core::all. The single original JUnit UUID 07dcdede-3eb9-4b48-9f6e-f7f87644ca11 matches the raw Nextest run ID, unique suite and all classnames, with two case identities and no failure/skipped elements.",
+    "All 12 raw source snapshots were directly rechecked. Only the native immediate snapshot has the current JUnit untracked; its exact bytes match the retained JUnit. All four tracked patches are empty in every snapshot. All other snapshots are fully clean, and both original lock identities remain unchanged.",
+    "Observed first-step anchor to driver finish is 2836.282970 seconds, below the original 3900-second job budget; retained phase remaining budgets decrease and no new allowance or retry appears.",
+    "The supplementary reader's earlier shallow-parent expectation failure is retained as an offline-reader error and corrected separately. Empty shallow parents do not imply the immutable source commit had no parent."
+  ],
+  "observed_result": {
+    "native_pass": 2,
+    "native_fail": 0,
+    "native_leak": 0,
+    "clean_scoped_fix_packages": [
+      "codex-core"
+    ],
+    "api_conclusion": "success"
+  },
+  "boundaries": [
+    "No new native/model execution was started by this peer; the full original reader was not rerun. Independent checks streamed the retained tar/ZIP and parsed original records without disk extraction.",
+    "The two PE helper hashes are original runner observations with compiler-artifact bindings; executable bytes are not archived and were not independently rehashed by this peer.",
+    "Replaying audit_original.py also needs the separately retained 802788-byte complete preparation package described in OFFLINE_REPLAY_INPUTS.json. The 52-member original-result archive is not claimed to contain those preparation source files.",
+    "This original d0f two-case/core-lint result does not replace the failed d0f Windows-sandbox lint, close elevated delete authorization, or establish memory benefit/original owner recovery."
+  ],
+  "original_files_changed": false,
+  "root_source_refs_changed": false
+}

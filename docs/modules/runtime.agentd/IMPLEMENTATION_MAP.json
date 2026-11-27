@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+    "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -38,7 +38,8 @@
       "operation": "compose_runtime",
       "nativeSymbol": "pub fn compose_runtime(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "7507c41d6781367ef1c24ffa1c6dff3f80ebe7de"
     },
     {
       "designOperation": "start_run",
@@ -61,7 +62,8 @@
       "operation": "start_run",
       "nativeSymbol": "pub fn start_run(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "7507c41d6781367ef1c24ffa1c6dff3f80ebe7de"
     },
     {
       "designOperation": "admit_revalidated_run_start",
@@ -92,7 +94,8 @@
       "operation": "admit_revalidated_run_start",
       "nativeSymbol": "pub(crate) fn start_revalidated_run_start(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "7507c41d6781367ef1c24ffa1c6dff3f80ebe7de"
     },
     {
       "designOperation": "cancel_run",
@@ -115,7 +118,8 @@
       "operation": "cancel_run",
       "nativeSymbol": "pub fn cancel_run(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "7507c41d6781367ef1c24ffa1c6dff3f80ebe7de"
     },
     {
       "designOperation": "attach_context",
@@ -138,7 +142,8 @@
       "operation": "attach_context",
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "7507c41d6781367ef1c24ffa1c6dff3f80ebe7de"
     },
     {
       "designOperation": "daemon_run_lifecycle_control",
@@ -174,7 +179,8 @@
       "operation": "daemon_run_lifecycle_control",
       "nativeSymbol": "crate::AgentdMethod::RunStart",
       "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "a71adc3e0dd1e5a29372399987e1b483f412b1f4"
     },
     {
       "designOperation": "agentd_neuron_owner",
@@ -212,7 +218,8 @@
       "operation": "agentd_neuron_owner",
       "nativeSymbol": "pub struct AgentdNeuronOwner",
       "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "6784e4171ec93a157688b746456e7798999af947"
     },
     {
       "operation": "shared_terminal_cell_train",
@@ -232,7 +239,8 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+      "sourceBlob": "df8d26df3672cb25cf48827223778538caecc7b7"
     },
     {
       "operation": "shared_terminal_cell_load",
@@ -252,7 +260,8 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+      "sourceBlob": "df8d26df3672cb25cf48827223778538caecc7b7"
     },
     {
       "operation": "shared_terminal_cell_predict",
@@ -272,7 +281,8 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+      "sourceBlob": "df8d26df3672cb25cf48827223778538caecc7b7"
     }
   ],
   "repositoryControlledGaps": [
@@ -344,23 +354,23 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "f97f84f82b4dff3face3060633631e9573552537"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "object": "dfba6f9599d2736f977a84ad36482f8a0319935b"
+      "object": "7507c41d6781367ef1c24ffa1c6dff3f80ebe7de"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
-      "object": "aed29fe2689084b405dba3864dfcc3375bbf6708"
+      "object": "5c2601957ba753230b149b9291bd14b463a48957"
     },
     {
       "path": "codex-rs/hepta-agentd/src/main.rs",
-      "object": "60595420f4bf42089b5745830ac611df1c7ec2c2"
+      "object": "4f67a2cec91165ff28b8540aa296baab6b646fd3"
     },
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "object": "3e880ef975af2b7210a7466b9fb4e12f62937d9c"
+      "object": "6784e4171ec93a157688b746456e7798999af947"
     },
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
@@ -368,43 +378,53 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
-      "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+      "object": "e7104b88e2a4127963dbebc5bc789257d324c6d6"
     },
     {
       "path": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
-      "object": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
+      "object": "df8d26df3672cb25cf48827223778538caecc7b7"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+      "object": "e612ae7b1d013e89a37ee6ac1152fb04f6895b26"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "a71adc3e0dd1e5a29372399987e1b483f412b1f4"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "dc01aa683dee6c1c0f9adc5e1903d8a22c502d1e"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "d9017832152a2cf56ca0f92d16d6a1b39587b27c"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
-      "object": "adf96585c3efb947e35ae73cc096ca1d18d40a78"
+      "object": "95ffd6773693d1108c14a932aaecc19238fbd683"
     },
     {
       "path": "codex-rs/hepta-neuron/src/inference_control.rs",
-      "object": "8a85a1e433f29b1354b4ee3c73f27b85a1842b31"
+      "object": "671a21e7c2c0e99f3302d0c7e8fc8cbc1397546d"
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime.rs",
-      "object": "d483e00a69756339254124a633eb4fdcd05664d7"
+      "object": "dfab86c9d70e41f2d75603af767ef3cfa7914f79"
     },
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
+      "object": "d5e6054b0996d79324fb5c2fb40901b5193ea0aa"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd"
   ]
 }

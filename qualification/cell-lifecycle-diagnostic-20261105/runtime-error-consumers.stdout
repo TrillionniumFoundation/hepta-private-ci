@@ -1,0 +1,41 @@
+codex-rs/hepta-runtime/src/organs.rs:50:use crate::topology_execution::RuntimeTopologyExecutionError;
+codex-rs/hepta-runtime/src/organs.rs:89:    ) -> Result<RuntimeTopologySnapshotV1, RuntimeTopologyExecutionError> {
+codex-rs/hepta-runtime/src/organs.rs:93:            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+codex-rs/hepta-runtime/src/organs.rs:96:            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+codex-rs/hepta-runtime/src/organs.rs:107:    ) -> Result<RuntimeTopologyApplyReceiptV1, RuntimeTopologyExecutionError> {
+codex-rs/hepta-runtime/src/organs.rs:111:            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+codex-rs/hepta-runtime/src/organs.rs:114:            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+codex-rs/hepta-runtime/src/organs.rs:154:    ) -> Result<RuntimeTopologyApplyReceiptV1, RuntimeTopologyExecutionError> {
+codex-rs/hepta-runtime/src/organs.rs:158:            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+codex-rs/hepta-runtime/src/organs.rs:161:            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+codex-rs/hepta-runtime/src/organs_tests.rs:502:            denied.downcast_ref::<crate::RuntimeTopologyExecutionError>(),
+codex-rs/hepta-runtime/src/organs_tests.rs:503:            Some(crate::RuntimeTopologyExecutionError::CellLifecycleAdmissionUnavailable)
+codex-rs/hepta-runtime/src/organs_tests.rs:627:        Err(crate::RuntimeTopologyExecutionError::Binding)
+codex-rs/hepta-runtime/src/organs_tests.rs:678:        Err(crate::RuntimeTopologyExecutionError::FinalUse(
+codex-rs/hepta-runtime/src/topology_execution.rs:61:    ) -> Result<Self, RuntimeTopologyExecutionError> {
+codex-rs/hepta-runtime/src/topology_execution.rs:63:            return Err(RuntimeTopologyExecutionError::Binding);
+codex-rs/hepta-runtime/src/topology_execution.rs:67:            .map_err(RuntimeTopologyExecutionError::Runtime)?;
+codex-rs/hepta-runtime/src/topology_execution.rs:69:            return Err(RuntimeTopologyExecutionError::Binding);
+codex-rs/hepta-runtime/src/topology_execution.rs:116:pub enum RuntimeTopologyExecutionError {
+codex-rs/hepta-runtime/src/topology_execution.rs:128:impl fmt::Display for RuntimeTopologyExecutionError {
+codex-rs/hepta-runtime/src/topology_execution.rs:134:impl StdError for RuntimeTopologyExecutionError {}
+codex-rs/hepta-runtime/src/topology_execution.rs:136:impl From<TopologyGovernanceErrorV1> for RuntimeTopologyExecutionError {
+codex-rs/hepta-runtime/src/topology_execution.rs:142:impl From<FinalUseError> for RuntimeTopologyExecutionError {
+codex-rs/hepta-runtime/src/topology_execution.rs:148:impl From<CnsHierarchyError> for RuntimeTopologyExecutionError {
+codex-rs/hepta-runtime/src/topology_execution.rs:164:pub(crate) fn require_control_lifecycle_admission_v1() -> Result<(), RuntimeTopologyExecutionError>
+codex-rs/hepta-runtime/src/topology_execution.rs:166:    Err(RuntimeTopologyExecutionError::CellLifecycleAdmissionUnavailable)
+codex-rs/hepta-runtime/src/topology_execution.rs:186:) -> Result<ValidatedRuntimeTopologyTransitionV1, RuntimeTopologyExecutionError> {
+codex-rs/hepta-runtime/src/topology_execution.rs:199:) -> Result<ValidatedRuntimeTopologyTransitionV1, RuntimeTopologyExecutionError> {
+codex-rs/hepta-runtime/src/topology_execution.rs:213:) -> Result<ValidatedRuntimeTopologyTransitionV1, RuntimeTopologyExecutionError> {
+codex-rs/hepta-runtime/src/topology_execution.rs:221:        return Err(RuntimeTopologyExecutionError::Binding);
+codex-rs/hepta-runtime/src/topology_execution.rs:230:            .map_err(|_| RuntimeTopologyExecutionError::Generation)?
+codex-rs/hepta-runtime/src/topology_execution.rs:235:        return Err(RuntimeTopologyExecutionError::Generation);
+codex-rs/hepta-runtime/src/topology_execution.rs:242:        .ok_or(RuntimeTopologyExecutionError::Binding)?;
+codex-rs/hepta-runtime/src/topology_execution.rs:244:        return Err(RuntimeTopologyExecutionError::Binding);
+codex-rs/hepta-runtime/src/topology_execution.rs:254:        return Err(RuntimeTopologyExecutionError::Binding);
+codex-rs/hepta-runtime/src/topology_execution.rs:262:        .ok_or(RuntimeTopologyExecutionError::Binding)?
+codex-rs/hepta-runtime/src/topology_execution.rs:266:        return Err(RuntimeTopologyExecutionError::Binding);
+codex-rs/hepta-runtime/src/topology_execution.rs:274:        return Err(RuntimeTopologyExecutionError::Binding);
+codex-rs/hepta-runtime/src/topology_execution.rs:319:) -> Result<FinalUseBinding, RuntimeTopologyExecutionError> {
+codex-rs/hepta-runtime/src/topology_execution.rs:329:) -> Result<FinalUseBinding, RuntimeTopologyExecutionError> {
+codex-rs/hepta-runtime/src/lib.rs:53:pub use topology_execution::RuntimeTopologyExecutionError;

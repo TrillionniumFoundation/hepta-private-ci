@@ -1,0 +1,54 @@
+{
+  "accounting_complete": false,
+  "complete_all_attempt_cost": null,
+  "complete_external_command_CPU_seconds": null,
+  "complete_external_command_wall_seconds": null,
+  "external_whole_timeout_seconds": 120,
+  "nested_case_timers": "Original cases.jsonl retains all 48 local timers; they overlap worker timing and zero timer values are below clock resolution.",
+  "old_GNU_wording": "Original launcher receipts remain unchanged. Their anticipated external GNU record was unavailable; the root-authorized second infrastructure wrapper uses wait4 instead.",
+  "rows": [
+    {
+      "CPU_seconds": null,
+      "id": "infrastructure-attempt1",
+      "receipt": "originals/infrastructure-attempt1/RESULT.json",
+      "scalar_cases_started": 0,
+      "scope": "Exact complete OS cost unknown. Missing /usr/bin/time; preserved tool timing is not full OS cost.",
+      "status": "exit127_before_python",
+      "wall_seconds": null
+    },
+    {
+      "CPU_seconds": 0.141118,
+      "id": "infrastructure-attempt2-complete-launcher",
+      "receipt": "originals/infrastructure-attempt2/RESULT.json",
+      "scope": "Complete Python launcher plus waited worker CPU; includes source checks, worker, archive and launcher exit.",
+      "status": "exit0",
+      "wait4_peak_RSS_bytes": 15073280,
+      "wall_seconds": 0.1582600719993934
+    },
+    {
+      "CPU_seconds": 0.066413,
+      "id": "nested-complete-worker",
+      "overlaps": "infrastructure-attempt2-complete-launcher",
+      "receipt": "originals/execution/EXECUTION.json",
+      "scope": "Includes worker import, scalar cases, serialization and exit. Do not add to launcher.",
+      "status": "exit0",
+      "wait4_peak_RSS_bytes": 15073280,
+      "wall_seconds": 0.08517028500500601
+    },
+    {
+      "conservative_sum_process_peak_RSS_bytes": 39845888,
+      "id": "external-wrapper-prefix",
+      "own_CPU_seconds": 0.061094741,
+      "receipt": "originals/infrastructure-attempt2/RESULT.json",
+      "sampled_combined_RSS_bytes": 24965120,
+      "scope": "Wall overlaps the launcher; own CPU excludes launcher CPU but ends before wrapper final receipt and exit.",
+      "wall_seconds": 0.18648180899617728
+    }
+  ],
+  "schema": "fixed48-cost-scopes-v1",
+  "unmeasured": [
+    "First infrastructure attempt full OS cost",
+    "External wrapper final serialization/exit tail",
+    "Interactive preparation and read-only packaging are outside the scalar execution; packaging has its own external receipt."
+  ]
+}

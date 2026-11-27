@@ -1,0 +1,14 @@
+{
+  "confidence_bins": 4,
+  "confidence_quantum": 0.0001,
+  "empty_prefix_bins": 0,
+  "fit_split": "train",
+  "images": 64,
+  "model_scope": "Coarsened, time-inhomogeneous Markov approximation to fixed neural traces; not an exact belief process",
+  "model_sha256": "7c472db5372693e5b1e835db5e620f2f9026cc9bebc1a91612b17229b31180f9",
+  "no_test_or_validation_fitting": true,
+  "reward": "Observed training classification correctness, smoothed toward prefix-specific training mean",
+  "shrinkage_pseudocount": 5.0,
+  "trace_sha256": "417da1a35f886af331838d030df7eb480a2c1bc9607a835bf47555a7ffe558dd",
+  "transition": "Training next-confidence-bin frequencies, smoothed toward prefix-specific next-bin distribution"
+}

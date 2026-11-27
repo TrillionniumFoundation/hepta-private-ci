@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "status": "dedicated_exact_source_engineering_qualification_passed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "source_tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+  "run_id": 42222767973,
+  "run_attempt": 1,
+  "workflow_conclusion": "success",
+  "workflow_updated_at": "2026-11-06T13:22:53Z",
+  "jobs": [
+    {
+      "id": 127908599129,
+      "name": "source-and-owner",
+      "conclusion": "success"
+    },
+    {
+      "id": 127908599809,
+      "name": "agentd-registration",
+      "conclusion": "success"
+    }
+  ],
+  "archive": {
+    "path": "evidence.tar.xz",
+    "bytes": 297184,
+    "sha256": "95ab7c184dc8817854c97c8f9e37c135cfecea94d216e2bbc0f9b248db2118d4",
+    "git_blob_sha1": "c7541a07b7d90af36e44a6392eff471718e1dcd4",
+    "outer_regular_members": 18,
+    "nested_bridge_archive": {
+      "schema": "hcsn_exact_head_main_ci_recovered_archive_v1",
+      "archive": "/workspace/scratch/d216bf53a09d/ci-5001-main-v2/retained-evidence.tar.xz",
+      "bytes": 189420,
+      "sha256": "4d76e0250b5e63917153a4534c9dfc47f54a5c2747ef746268513f738b065d57",
+      "git_blob_sha1": "dec593c1b6a512dc006ea34d19d3405ff18973d9",
+      "members": 537,
+      "manifest_sha256": "43900c2f45f6c822ec62337b6f5bc85f839623176e4258b94450c7700cd11572",
+      "review_sha256": "da3133d367ec0ea45c2d972758ecba69c4ff3b1dce805b37783c238d31ff39a5",
+      "original_actions_zip_sha256": "a27f8aeaed93c0afe97addbeb84df83d125e43493fb0200e938f6fefcbd27614",
+      "original_derived_archive_recreated_byte_for_byte": false,
+      "git_ref_modified": false
+    }
+  },
+  "original_actions_artifacts": [
+    {
+      "id": 13505170495,
+      "name": "hcsn-training-bridge-44e539313e0c54badb4b9b687425dd87ecba6e67-1",
+      "bytes": 7052020,
+      "sha256": "a27f8aeaed93c0afe97addbeb84df83d125e43493fb0200e938f6fefcbd27614",
+      "downloaded_bytes_digest_verified": true
+    },
+    {
+      "id": 13504634465,
+      "name": "hcsn-agentd-44e539313e0c54badb4b9b687425dd87ecba6e67-1",
+      "bytes": 30445,
+      "sha256": "a34f9ec9fdf7781fff3ec4f5e55fc6df93b63214a7e43527bde1299ed0f6c776",
+      "downloaded_bytes_digest_verified": true
+    }
+  ],
+  "counts": {
+    "python": {
+      "passed": 56,
+      "failed": 0,
+      "skipped": 0,
+      "modules": {
+        "test_joint_graph": 8,
+        "test_population_graph": 8,
+        "test_training_state": 8,
+        "test_native_build": 5,
+        "test_supervisor": 11,
+        "test_population_age_graph": 8,
+        "test_population_generator": 5,
+        "test_resumed_derivatives": 3
+      }
+    },
+    "native": {
+      "passed": 195,
+      "failed": 0,
+      "skipped": 1
+    },
+    "automation": {
+      "passed": 119,
+      "failed": 0,
+      "skipped": 1
+    },
+    "signed_worker_explicit_runs": {
+      "value_kernel": {
+        "passed": 1,
+        "ignored": 0
+      },
+      "population_grid": {
+        "passed": 1,
+        "ignored": 0
+      },
+      "population_age": {
+        "passed": 1,
+        "ignored": 0
+      }
+    },
+    "agentd_selected": {
+      "passed": 7,
+      "failed": 0,
+      "filtered_not_executed": 168
+    }
+  },
+  "skip_accounting": {
+    "native": "One helper process entry is excluded from standalone discovery and exercised by its parent fault-matrix test.",
+    "automation": "The ignored signed worker fixture is explicitly executed once for each of three backends.",
+    "agentd": "168 filtered tests are not claimed passed."
+  },
+  "bridges": [
+    {
+      "backend": "value_kernel",
+      "status": "passed",
+      "logical_cells": 2,
+      "gradient_parameters": 172,
+      "second_optimizer_steps": 2,
+      "complete_state_exact": true,
+      "weights_exact": true,
+      "prediction_exact": true,
+      "reset_prediction_max_difference": 0.2575933629256573,
+      "second_block_is_second_signed_dispatch": false
+    },
+    {
+      "backend": "population_grid",
+      "status": "passed",
+      "logical_cells": 2,
+      "gradient_parameters": 8,
+      "second_optimizer_steps": 2,
+      "complete_state_exact": true,
+      "weights_exact": true,
+      "prediction_exact": true,
+      "reset_prediction_max_difference": 0.30416179121450104,
+      "second_block_is_second_signed_dispatch": false
+    },
+    {
+      "backend": "population_age",
+      "status": "passed",
+      "logical_cells": 2,
+      "gradient_parameters": 8,
+      "second_optimizer_steps": 2,
+      "complete_state_exact": true,
+      "weights_exact": true,
+      "prediction_exact": true,
+      "reset_prediction_max_difference": 0.33190370003923253,
+      "second_block_is_second_signed_dispatch": false
+    }
+  ],
+  "agentd": {
+    "original_artifact_git_blob": "7eb49be310d79390e847398f22b5ab7e6301c40a",
+    "verified_summary_git_blob": "9c0a794ea993dc1ac0a69e22917872284c837a6c",
+    "callers_git_blob": "dae28386f6d241d0487aceb76a922d3c7e9bbe01",
+    "caller_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "rust_files_scanned": 4421,
+    "boundaries": 45,
+    "authority_granted": false,
+    "clippy": "success",
+    "tracked_source_unchanged": true
+  },
+  "general_repository": {
+    "schema_version": 1,
+    "current_head": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+    "current_blocking_run": 42222768205,
+    "overall_green": false,
+    "source_scope": "broader repository checks are independent of the dedicated HCSN workflow",
+    "introduced_failure": {
+      "old_head": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
+      "old_run": 42220007012,
+      "job": 127900543062,
+      "boundary": "final_use_open_state",
+      "unexpected_caller": "codex-rs/hepta-agentd/src/automation_hcsn_host.rs",
+      "correction_commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+      "allowlist_modified": false,
+      "checker_modified": false,
+      "current_dedicated_closed_set_step": "success",
+      "current_general_closed_set_step": "success"
+    },
+    "baseline_checks": [
+      {
+        "case": "Windows checkout long path",
+        "path": "qualification/hcsn_training/evidence/20261106/bridge/attempt-01/artifact-store/registries/0ee8a0c2d3cdae803d5bde4f8f77a2519e5bef0bebb3110d0b32a723367855d5-cfe4d103cb895eb1a454c70a48c86b7ba3e690fdf90b0f33eec6f962ea4d5f9d.snapshot",
+        "same_blob_in_base_and_candidate": "3772767dc4cbb95e5e395f8a7cf5c826f83c6d12",
+        "old_job": 127900543077
+      },
+      {
+        "case": "Bazel old plasticity test references absent append_qualification",
+        "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+        "same_blob_in_base_and_candidate": "8b7a329216db2cd56d3c104214414dc0ffc61c47",
+        "old_job": 127900543581
+      },
+      {
+        "case": "Bazel pre-existing expect_used assertions",
+        "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        "same_blob_in_base_and_candidate": "a3e546830527f214c08b6a367c0f708b26a3e9d2",
+        "old_job": 127900543538
+      },
+      {
+        "case": "Readiness discovery link absent from empty README",
+        "path": "README.md",
+        "same_blob_in_base_and_candidate": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "old_job": 127900543108
+      }
+    ],
+    "scope_limit": "This is targeted attribution, not an exhaustive diagnosis or resolution of the whole-repository blocking workflow.",
+    "current_general_job": {
+      "id": 127911561653,
+      "name": "repo-checks / build-test",
+      "status": "completed",
+      "conclusion": "success",
+      "canonical_merge": "c103778518b2f8bb1dbee6db78021150b633e35e",
+      "canonical_merge_tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+      "source_tree_identical": true
+    },
+    "current_failures": [
+      {
+        "id": 127911561221,
+        "name": "Hepta contract gate / Validate canonical branch and contract metadata"
+      },
+      {
+        "id": 127911561270,
+        "name": "cargo-deny / cargo-deny"
+      },
+      {
+        "id": 127911561539,
+        "name": "repo-checks / Native Hepta paths on windows-latest"
+      },
+      {
+        "id": 127911562093,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu"
+      },
+      {
+        "id": 127911562167,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc"
+      },
+      {
+        "id": 127911562229,
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu"
+      },
+      {
+        "id": 127911562245,
+        "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc"
+      },
+      {
+        "id": 127911562247,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4"
+      },
+      {
+        "id": 127911562265,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4"
+      },
+      {
+        "id": 127911562367,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4"
+      },
+      {
+        "id": 127911562492,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4"
+      }
+    ],
+    "cargo_deny_cause": "not independently diagnosed; failure is not claimed resolved"
+  },
+  "source_and_retention": {
+    "root_reviewed_workflow_and_full_job_logs": true,
+    "root_independently_verified_agentd_zip_contents": true,
+    "all_main_527_non_elf_members_retained": true,
+    "main_artifact_binary_exclusions": [
+      {
+        "path": "_temp/hcsn-training-bridge/bridge-a/native-fixture",
+        "bytes": 7410000,
+        "sha256": "99d9ff21c49f9088af32297032d4b6082fb3cd33d9056bb18aa230679e2a61ec",
+        "original_mode": "0o755",
+        "extracted": false,
+        "omission_reason": "ELF executable retained only in original Actions ZIP"
+      },
+      {
+        "path": "_temp/hcsn-training-bridge/bridge-b/native-fixture",
+        "bytes": 7410000,
+        "sha256": "99d9ff21c49f9088af32297032d4b6082fb3cd33d9056bb18aa230679e2a61ec",
+        "original_mode": "0o755",
+        "extracted": false,
+        "omission_reason": "ELF executable retained only in original Actions ZIP"
+      },
+      {
+        "path": "_temp/hcsn-training-bridge/bridge-b-age/native-fixture",
+        "bytes": 7410000,
+        "sha256": "99d9ff21c49f9088af32297032d4b6082fb3cd33d9056bb18aa230679e2a61ec",
+        "original_mode": "0o755",
+        "extracted": false,
+        "omission_reason": "ELF executable retained only in original Actions ZIP"
+      }
+    ],
+    "signed_worker_executable": {
+      "path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/debug/deps/hcsn_signed_worker-2c5becb2d48504c6",
+      "sha256": "2acb6862e6511d6dd683924dd5ddf899ac18c25524b7bede3c94f53e91c4c739",
+      "bytes": null,
+      "bytes_note": "path/SHA only in original artifact; size and bytes absent"
+    },
+    "upload_omission": {
+      "warning": "ENTRYNOTSUPPORTED",
+      "uploader_reported_entries": 531,
+      "zip_regular_entries": 530,
+      "attributed_path": "supervisor-cases/hcsn-supervisor-v3x0e6cg/untrusted-fifo",
+      "attributed_type": "negative-test FIFO",
+      "attribution": "Prior source mkfifo inspection plus retained passing per-test directory log, missing expected FIFO and one-entry count difference. Uploader did not identify the skipped pathname; no remote lstat. Source not re-fetched in this recovery.",
+      "all_original_tree_entries_claimed": false,
+      "required_bridge_proof_members_present": true
+    },
+    "historical_source_audit": {
+      "source_commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+      "source_tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+      "original_review_sha256": "3786ab97881975d763879181da3c35a606777641078028ec563f692ada506a37",
+      "original_retained_archive_sha256": "3a3be6252ea22f7f8285285ed3fede6cdac6e43883de7de260cd38abf18d5dbe",
+      "original_retained_manifest_sha256": "3ec9e68e60d4a6c05e641ca591da05d5bad17a0117294a6d16c37965017cbe01",
+      "historically_completed_python_source_comparisons_per_backend": 41,
+      "historically_completed_native_source_comparisons_per_backend": 91,
+      "original_review_and_archive_bytes_lost_after_executor_replacement": true,
+      "source_comparison_repeated_here": false,
+      "basis": "Independent reviewer completed exact Git-object source comparison before executor replacement; preserved conversation/tool observations retain the prior hashes and result. The recovered original Actions ZIP is byte-identical to that reviewed artifact."
+    },
+    "final_source_manifest_reconstructed": true
+  },
+  "boundaries": {
+    "all_prs_draft": true,
+    "merged": false,
+    "production_pq_authority": false,
+    "production_deployment": false,
+    "production_adoption": false,
+    "scientific_gain_claimed": false,
+    "existing_cuda_campaign_contacted": false,
+    "physical_helper_agentd_registration_exercised": false,
+    "training_block_boundary": "complete numerical state restored, detached initial autograd state",
+    "physical_time": "positive integer microseconds and explicit finite grid/event/resource budgets; frozen coefficients and right-boundary deposition approximations"
+  },
+  "previous_candidate": {
+    "head": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
+    "run_id": 42220007503,
+    "dedicated_result": "success",
+    "evidence_path": "../ci-e62f132/",
+    "general_caller_failure_corrected_in_current_candidate": true
+  }
+}

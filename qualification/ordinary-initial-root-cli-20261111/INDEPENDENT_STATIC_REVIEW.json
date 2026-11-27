@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.root-initial-cli-independent-review.v1",
+  "status": "static review; no new blocking defect identified in the reviewed paths after the listed fixes",
+  "reviewed_at_utc": "2026-11-11",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline": {
+    "commit": "89b3b44747bedbc80732f73eda2405b7a397b926",
+    "tree": "1eba30f512a0fcd0463417c5f14537493cd8b104",
+    "native_status": "Parent reported original production compilation failed at three material-backed constructors missing initial_publication; this report does not change that execution result."
+  },
+  "reviewed_source_pins": {
+    "initial_manager": "55f280ba8c25e2cb89e9cf6b93a5f645cf73ebd5",
+    "initial_descriptor_data": "9a684c8d5657dd58f235ec8855de30cbfc733471",
+    "initial_original_inputs": "d2cdc1e29fc7c3a3b3e8eae2dbf8f1d1db8f4c09",
+    "root_cli": "d47b37681814154e5f11dce21c0dbe49cec62ea3",
+    "original_initial_session": "fe22a8557e8f9cfe47956b3c268686ecdb4c4693",
+    "shared_original_files": "33a20f299d3ee03621bc691a843e2e31a6da739e",
+    "shared_data": "3d7c4d004a06dc60830985e1d4d0c0c7e12fc483",
+    "component_loader_helper": "ca5cd35e2081f43fa0d1aaf06b1678fa580f6e27",
+    "actual_root_parent_fixture": "615dbd0c79316bce165b3143bcafa02247284ce5",
+    "component_artifact_trust_export": "57582d81e56e244eda0bfb10b3a34a02c2dfc4f6"
+  },
+  "previous_root_and_late_cli_review": "aa998cbb6912fd4e8b134bb84461f0e423294bcc",
+  "required_source_fixes": {
+    "empty_material_constructor_slots": {
+      "manifest": "3504cf4dbf56191b21d0183fccf69cf5c4a98211",
+      "preimage": "4b4ba487ade47b4d27166da9a4ae39bc00a03a14",
+      "postimage": "c7e4a7366c60352a095bcd44f19314a6790dd455",
+      "effect": "Exactly the three original fresh/recover/open material-backed constructors initialize initial_publication to None. Only original enable installs Some."
+    },
+    "refuse_borrowed_initial_serve": {
+      "manifest": "487cae222ac51f2105fcd0a5f48162d69265e091",
+      "preimage": "c7e4a7366c60352a095bcd44f19314a6790dd455",
+      "postimage": "69c23bafd6c3a5515bbf4250864c7dee58866127",
+      "callers_delta": "db803da1374a49044e9b258a91bef60fd10bdb3e",
+      "effect": "Keep existing learning refusal and add an explicit Initial-enabled refusal before any borrowed serve. No worker or capability is created by this path."
+    }
+  },
+  "findings": [
+    {
+      "area": "Original custody and input sources",
+      "conclusion": "The Root-only loader opens the explicitly supplied original CURRENT directory, target journal/witness and withdrawal snapshot descriptors. It never initializes the target or consumer nonce owner. Complete Artifact trust, retained CURRENT, withdrawal floor, independent signed Selection and consumer keyring remain descriptor data revalidated by original enrollment."
+    },
+    {
+      "area": "File and directory replacement",
+      "conclusion": "The existing metadata loader retains an actual readonly nofollow FD and parent directory FD, requires bounded single-link exact Root0600 metadata, and compares path/descriptor/parent before and after reading. Original mutable material may advance but its pinned file and parent identity may not change. The Initial loader revalidates descriptor, directories and original material around registration."
+    },
+    {
+      "area": "Shared visibility change",
+      "conclusion": "Relative to fixed 89b3 files blob497a956d209f48e73e77c7146df0a6606d09e23f and data blobde0d9afd3faef89dcb04a356991eaa529ce8d3a0, replacing the newly widened pub(in crate::authority_host_runtime::session) with original pub(super) reproduces each entire baseline byte-for-byte. Late-only DeploymentData, LateMaterial and Mode retain their original visibility."
+    },
+    {
+      "area": "Purpose and replay",
+      "conclusion": "Initial and late publication options are mutually exclusive, and Initial deployment/FD pairing is checked before inherited descriptor ownership is claimed. Initial trigger must equal the exact session containing its independent purpose, original Root PID, boot ID, start ticks, monotonic in-process attempt and complete descriptor digest. The capability is consumed once and cannot be reconstructed by session JSON."
+    },
+    {
+      "area": "Startup order",
+      "conclusion": "The loader waits for the original serving phase to become ACTIVE. The trusted host must trigger after actual five-lane consumer activation; listener-ready output alone is insufficient. Original missing schema3 remains a refusal. Root Initial reserve still does not prepare CURRENT before the original consumer's Feature preflight."
+    },
+    {
+      "area": "Actual Artifact loading",
+      "conclusion": "The loader locates selected Artifact files at the authenticated original cut, opens readonly retained descriptors and locates again. It then passes the real files and original trust to the original enrollment, which rechecks actual selected content, target, complete binding and consumer custody. A locator or descriptor DTO is not an authority substitute."
+    },
+    {
+      "area": "Service lifecycle and acknowledgement",
+      "conclusion": "The CLI scopes the same-PID registration worker around the consuming original service. A successful worker flushes the original registration binding immediately after all real register/postchecks, while the service is running. The RAII stop guard executes before joins even on service errors; the main path propagates served? after joining. It does not print a successful registration before completion or create a second Root writer."
+    },
+    {
+      "area": "Borrowed serve refusal",
+      "conclusion": "The new independent Initial route exposed an existing borrowed-serve omission, since that method only refused learning. The narrow followup refuses Initial-enabled borrowed serving. The final actual Root fixture checks this rejection after enable and asserts protected CURRENT files remain equal."
+    }
+  ],
+  "component_evidence_scope": {
+    "exact_existing_root_parent": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+    "actual_loader_path": "The existing UID0/60001 fixture writes a Root0600 deployment from its original synthetic component inputs. After the original child reports ORIGINAL_INPUTS_READY, it writes the exact trigger and invokes the production wait_and_register_initial, which calls the same original capability. Original CURRENT, nonce, read-only recovery, retired-session and sticky-fence assertions remain.",
+    "guard_level_negatives": "The component helper checks wrong purpose, old attempt, changed process start ticks, stop and deadline by invoking the original private guards; protected CURRENT and actual claims bytes are checked before and after. These are guard-level negatives, not an executed CLI subprocess.",
+    "no_new_test_parent": true,
+    "latest_fixture_sha256": "dfd00b4e5d39f4c84f5c01c9f7c24a5503a6196a565594007cff2b3b2e74b9a1",
+    "assertions_not_execution_results": true
+  },
+  "limitations": [
+    "This is a static review of the named immutable source blobs, not proof that they compile or pass the official caller checker.",
+    "No Cargo, Rust tests, Root service, CLI subprocess or additional remote process was launched by this review.",
+    "The actual Root component fixture uses synthetic model/role/Selection inputs and is not an ordinary business-task learning loop.",
+    "Same-PID service reopening does not establish real Root/daemon process restart recovery.",
+    "A consumed nonce or CURRENT publication is not independent consumer task FinalUse evidence.",
+    "Native and hosted results must be attributed to the next exact integrated and published source; old source failures remain recorded."
+  ],
+  "qualification": {
+    "native_executed": false,
+    "official_checker_executed": false,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_noupdate_rollback_chains": 0,
+    "independent_deployed_consumers": 0,
+    "cold_process_restarts": 0,
+    "shared_or_measured_source_modified": false
+  }
+}

@@ -1,0 +1,223 @@
+{
+  "protected_file": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs",
+      "required": [],
+      "forbidden": [
+        "self.poisoned = false",
+        "File::open",
+        ".try_clone(",
+        ".write_all(",
+        ".set_len(",
+        ".unlock(",
+        ".sync_all(",
+        "self.anchor =",
+        "self.records ="
+      ],
+      "required_function_order": [
+        {
+          "function": "fn read_current_anchor(",
+          "sequence": [
+            "fn read_current_anchor(",
+            "&mut self) -> Result<ProductEvaluationExecutionAnchorV1, FileError> {\n        if self.poisoned {\n            return Err(FileError::Indeterminate);\n        }\n        let cursor = match self.file.stream_position() {\n            Ok(cursor) => cursor,\n            Err(error) => {\n                self.poisoned = true;\n                return Err(io_error(error));\n            }\n        };\n        let current = (|| {\n            let length = self.file.metadata().map_err(io_error)?.len();\n            if length > MAX_FILE_BYTES {\n                return Err(FileError::Capacity);\n            }\n            if length != self.length {\n                return Err(FileError::Corrupt);\n            }\n            let bytes = physical::read_stable_image(&mut self.file)?;\n            let replayed = self.replay_current_image(&bytes)?;\n            if bytes.len() as u64 != self.length\n                || replayed.anchor != self.anchor\n                || replayed.records != self.records\n                || Digest32::of_bytes(&bytes) != self.image_digest\n            {\n                return Err(FileError::Rollback);\n            }\n            let stable = physical::read_stable_image(&mut self.file)?;\n            if stable != bytes || Digest32::of_bytes(&stable) != self.image_digest {\n                return Err(FileError::Rollback);\n            }\n            Ok((replayed.anchor, bytes, replayed))\n        })();\n        let restored = self.file.seek(SeekFrom::Start(cursor)).map_err(io_error);\n        let result = match (current, restored) {\n            (Err(error), _) | (_, Err(error)) => Err(error),\n            (Ok((current, bytes, replayed)), Ok(position)) if position == cursor => {\n                                                                                  \n                self.remember_verified_replay(&bytes, replayed);\n                Ok(current)\n            }\n            (Ok(_), Ok(_)) => Err(FileError::Indeterminate),\n        };\n        if result.is_err() {\n            self.poisoned = true;\n        }\n        result\n    }"
+          ]
+        }
+      ],
+      "required_order": [],
+      "source_sha256": "9371c924c603e0cc239c53cf50cd8ede3f2a79174334d54469e903f7de7ea0f8"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs",
+      "required": [
+        "file: HeldFile,",
+        "binding: Digest32,",
+        "image_digest: Digest32,",
+        "poisoned: bool,",
+        "let _ = self.0.unlock()"
+      ],
+      "forbidden": [
+        ".set_len(",
+        "pub file:",
+        "pub records:",
+        "pub image_digest:",
+        "SigningKey",
+        "OpenOptions",
+        "File::open"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn ensure_ready(",
+          "sequence": [
+            "fn ensure_ready(",
+            "&mut self) -> Result<Vec<u8>, StoreError> {\n        if self.poisoned {\n            return Err(StoreError::Indeterminate);\n        }\n        self.poisoned = true;\n        let bytes =\n            physical::read_stable_image(&mut self.file).map_err(|_| StoreError::Indeterminate)?;\n        let replayed = self\n            .replay_current_image(&bytes)\n            .map_err(|_| StoreError::Indeterminate)?;\n        if bytes.len() as u64 != self.length\n            || Digest32::of_bytes(&bytes) != self.image_digest\n            || replayed.anchor != self.anchor\n            || replayed.records != self.records\n        {\n            return Err(StoreError::Indeterminate);\n        }\n        self.remember_verified_replay(&bytes, replayed);\n        self.poisoned = false;\n        Ok(bytes)\n    }"
+          ]
+        },
+        {
+          "function": "fn append(",
+          "sequence": [
+            "fn append(",
+            "&mut self, payload: &[u8]) -> Result<(), StoreError> {\n        let next_length = self\n            .length\n            .checked_add(payload.len() as u64 + 36)\n            .filter(|length| *length <= MAX_FILE_BYTES)\n            .ok_or(StoreError::Rejected)?;\n        let next = next_anchor(self.anchor, payload).map_err(|_| StoreError::Rejected)?;\n        let mut expected = self.ensure_ready()?;\n        let mut frame = (payload.len() as u32).to_be_bytes().to_vec();\n        frame.extend_from_slice(payload);\n        frame.extend_from_slice(next.history_digest.as_array());\n        expected.extend_from_slice(&frame);\n                                                                                   \n        self.verified_replay = None;\n        self.poisoned = true;\n        if self\n            .file\n            .seek(SeekFrom::Start(self.length))\n            .and_then(|_| self.file.write_all(&frame))\n            .and_then(|()| self.file.sync_all())\n            .is_err()\n        {\n            self.poisoned = true;\n            return Err(StoreError::Indeterminate);\n        }\n        let observed =\n            physical::read_stable_image(&mut self.file).map_err(|_| StoreError::Indeterminate)?;\n        let replayed = physical::replay_image(&observed, self.binding, next)\n            .map_err(|_| StoreError::Indeterminate)?;\n        if observed != expected || replayed.anchor != next {\n            return Err(StoreError::Indeterminate);\n        }\n        self.length = next_length;\n        self.anchor = next;\n        self.image_digest = Digest32::of_bytes(&observed);\n        self.poisoned = false;\n        Ok(())\n    }"
+          ]
+        },
+        {
+          "function": "fn claim(",
+          "sequence": [
+            "self.ensure_ready()?",
+            "if key.binding_digest.is_zero()",
+            "self.records.get(&key.plan_id)",
+            "if *binding != key.binding_digest",
+            "ProductEvaluationExecutionClaimV1::Existing(state.clone())",
+            "self.records.len() >= MAX_PLANS",
+            "self.append(&payload)?",
+            "State::Pending",
+            "Ok(ProductEvaluationExecutionClaimV1::Claimed)"
+          ],
+          "top_level": [
+            "self.ensure_ready()?",
+            "self.append(&payload)?"
+          ]
+        },
+        {
+          "function": "fn complete(",
+          "sequence": [
+            "self.ensure_ready()?",
+            "payload.is_empty() || payload.len() > MAX_PRODUCT_EVALUATION_EXECUTION_BYTES_V1",
+            "self.records.get(&key.plan_id).ok_or(StoreError::Missing)?",
+            "if *binding != key.binding_digest",
+            "match current",
+            "State::Completed(existing) if existing == payload => return Ok(())",
+            "State::Completed(_) => return Err(StoreError::Conflict)",
+            "State::Pending => {}",
+            "self.append(&event)?",
+            "State::Completed(payload.to_vec())",
+            "Ok(())"
+          ],
+          "top_level": [
+            "self.ensure_ready()?",
+            "match current",
+            "self.append(&event)?"
+          ]
+        },
+        {
+          "function": "fn readback(",
+          "sequence": [
+            "self.ensure_ready()?",
+            "self.records.get(&key.plan_id).ok_or(StoreError::Missing)?",
+            "if *binding != key.binding_digest",
+            "return Err(StoreError::Conflict)",
+            "Ok(state.clone())"
+          ],
+          "top_level": [
+            "self.ensure_ready()?",
+            "Ok(state.clone())"
+          ]
+        },
+        {
+          "function": "fn recover(",
+          "sequence": [
+            "acquire(file, binding)?",
+            "physical::read_stable_image(&mut file)?",
+            "physical::replay_image(&bytes, binding, minimum)?",
+            "file.sync_all()",
+            "if physical::read_stable_image(&mut file)? != bytes",
+            "return Err(FileError::Indeterminate)",
+            "Ok(Self {",
+            "image_digest: Digest32::of_bytes(&bytes)",
+            "records: replayed.records",
+            "anchor: replayed.anchor",
+            "poisoned: false"
+          ],
+          "top_level": [
+            "let bytes = physical::read_stable_image(&mut file)?",
+            "let replayed = physical::replay_image(&bytes, binding, minimum)?",
+            "if physical::read_stable_image(&mut file)? != bytes",
+            "Ok(Self {"
+          ]
+        },
+        {
+          "function": "fn create(",
+          "sequence": [
+            "acquire(file, binding)?",
+            "file.metadata().map_err(io_error)?.len() != 0",
+            "return Err(FileError::AlreadyInitialized)",
+            "file.write_all(&header)",
+            ".and_then(|()| file.sync_all())",
+            "let mut store = Self {",
+            "image_digest: Digest32::of_bytes(&header)",
+            "poisoned: false",
+            "store.ensure_ready()",
+            "Ok(store)"
+          ],
+          "top_level": [
+            "let mut store = Self {",
+            "store.ensure_ready()",
+            "Ok(store)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache.rs",
+      "required": [
+        "pub(super) const MAX_VERIFIED_REPLAY_IMAGE_BYTES: usize = 256 * 1024;",
+        "binding: Digest32,",
+        "minimum: ProductEvaluationExecutionAnchorV1,",
+        "bytes: Box<[u8]>,",
+        "pub(super) replayed: Arc<physical::Replay>,"
+      ],
+      "forbidden": [
+        "unsafe",
+        "File::open",
+        "OpenOptions",
+        "try_clone",
+        "set_len",
+        "FinalUseAuthority"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn replay_current_image(",
+          "sequence": [
+            "fn replay_current_image(",
+            "\n        &self,\n        bytes: &[u8],\n    ) -> Result<Arc<physical::Replay>, FileError> {\n        if let Some(verified) = &self.verified_replay\n            && verified.binding == self.binding\n            && verified.minimum == self.anchor\n            && verified.bytes.as_ref() == bytes\n        {\n            return Ok(Arc::clone(&verified.replayed));\n        }\n        physical::replay_image(bytes, self.binding, self.anchor).map(Arc::new)\n    }"
+          ]
+        },
+        {
+          "function": "fn remember_verified_replay(",
+          "sequence": [
+            "fn remember_verified_replay(",
+            "\n        &mut self,\n        bytes: &[u8],\n        replayed: Arc<physical::Replay>,\n    ) {\n        if bytes.len() > MAX_VERIFIED_REPLAY_IMAGE_BYTES {\n            self.verified_replay = None;\n            return;\n        }\n        if self\n            .verified_replay\n            .as_ref()\n            .is_some_and(|verified| Arc::ptr_eq(&verified.replayed, &replayed))\n        {\n            return;\n        }\n        self.verified_replay = Some(VerifiedReplayImage {\n            binding: self.binding,\n            minimum: self.anchor,\n            bytes: bytes.to_vec().into_boxed_slice(),\n            replayed,\n        });\n    }"
+          ]
+        }
+      ]
+    }
+  ],
+  "definition_marker_updates": [
+    {
+      "id": "learning_original_owner_physical_current",
+      "old": [
+        "pub fn read_current_anchor(",
+        "replay(&mut records, payload)?",
+        "current != self.anchor || records != self.records"
+      ],
+      "new": [
+        "pub fn read_current_anchor(",
+        "if self.poisoned {",
+        "physical::read_stable_image(&mut self.file)?",
+        "let replayed = self.replay_current_image(&bytes)?;",
+        "bytes.len() as u64 != self.length",
+        "replayed.anchor != self.anchor",
+        "replayed.records != self.records",
+        "Digest32::of_bytes(&bytes) != self.image_digest",
+        "let stable = physical::read_stable_image(&mut self.file)?;",
+        "if stable != bytes || Digest32::of_bytes(&stable) != self.image_digest",
+        "let restored = self.file.seek(SeekFrom::Start(cursor)).map_err(io_error);",
+        "if position == cursor",
+        "self.remember_verified_replay(&bytes, replayed);",
+        "if result.is_err() {\n            self.poisoned = true;"
+      ],
+      "reason": "Replay moved into the shared physical parser through a bounded exact-image memo; retain physical reads, all image/state checks, exact cursor restoration and sticky poison markers at the real definition."
+    }
+  ],
+  "all_caller_allowlists_unchanged": true,
+  "other_817_protected_rows_unchanged": true
+}

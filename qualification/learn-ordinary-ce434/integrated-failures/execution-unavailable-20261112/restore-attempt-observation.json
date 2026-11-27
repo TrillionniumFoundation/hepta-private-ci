@@ -1,0 +1,28 @@
+{
+  "observation_kind": "connector_transport_result_not_native_job_result",
+  "idempotency_key": "learn-ce434-restore-exact-v8-pair-150-4-0-v1-20261112",
+  "request_arguments_sha256": "ed1be5e9a1f8d752e9156459383ae7ddefa6dc4492c3dae37252fa2734252a66",
+  "request_script_sha256": "577aedfbdb4e925562e723542186a028d215ea647e5bd8df77e001410ea4b84b",
+  "frozen_request": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/restore-exact-v8-pair.json",
+  "connector_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Transport closed"
+      }
+    ],
+    "isError": true
+  },
+  "job_id_observed": false,
+  "request_digest_observed": false,
+  "remote_execution_state": "unknown",
+  "dependency_restoration_state": "unknown",
+  "native_qualification_replayed": false,
+  "automatic_retry": false,
+  "expected_original_result_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-restoration-ce434-20261112-v1/result.json",
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  }
+}

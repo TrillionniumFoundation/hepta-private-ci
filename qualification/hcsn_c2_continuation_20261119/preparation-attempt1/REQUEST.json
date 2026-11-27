@@ -1,0 +1,85 @@
+{
+  "budget": {
+    "address_space_bytes_per_fit": 8589934592,
+    "cleanup_grace_seconds": 30,
+    "concurrency": 2,
+    "finalization_reserve_seconds": 300,
+    "minimum_available_memory_bytes": 17179869184,
+    "minimum_output_disk_free_bytes": 2147483648,
+    "peak_rss_stop_bytes_per_fit": 6442450944,
+    "scientific_wall_seconds_per_fit": 6000,
+    "threads_per_fit": 1
+  },
+  "cold_probe_archive_sha256": "04b96233a5421433b8ef9fe1d8e019ba28721fc1543d187591a742ee4bc55261",
+  "cold_probe_root": "/home/qian-qi/hepta-c2-cold-resume-20261119-d741",
+  "cold_probe_source_sha256": "0d0d6bea8d3589a7b89a5737cbc8e1fc929cfbde38818a057d147775078abec8",
+  "confirmation_access": false,
+  "fits": [
+    {
+      "best_checkpoint_sha256": "a83e259366c76f1f3856c4be1291d2e842d32b283c661f656ae44fd156b37b3c",
+      "best_epoch": 124,
+      "checkpoint_sha256": "e98973d5d41621727444a2c117b89a7f33925b96066f092136c2f945b1453da3",
+      "commit_sha256": "da5be5be2fd72c75c0702b8f1801a99a8d0c7d1b1c9183ad83d716f2ca8ac41f",
+      "epoch": 126,
+      "name": "hcsn-s211-lr0.001",
+      "new_identity": "hcsn-c2-independent-continuation-20261119-d741-001-hcsn-s211-lr0.001",
+      "old_surviving_completed_updates_replayed": 10,
+      "stopping": {
+        "best": 0.37790299262340454,
+        "best_epoch": 124,
+        "plateau_anchor": 0.37790299262340454,
+        "stale_epochs": 2
+      }
+    },
+    {
+      "best_checkpoint_sha256": "14a9c527bf87ad6524c771ab7da5a1ccf32723cd1f2fc6c7d8f6d8797d1b2ed9",
+      "best_epoch": 126,
+      "checkpoint_sha256": "032d43dc0e6f20a6d4113102ae32faa57809c714875beec4ab2ab76358e93441",
+      "commit_sha256": "7ec4ea85f37922cc199c01ec5fe7543200677059c097eafe05b488821b324baf",
+      "epoch": 127,
+      "name": "hcsn-s307-lr0.001",
+      "new_identity": "hcsn-c2-independent-continuation-20261119-d741-001-hcsn-s307-lr0.001",
+      "old_surviving_completed_updates_replayed": 11,
+      "stopping": {
+        "best": 0.33231907785802234,
+        "best_epoch": 126,
+        "plateau_anchor": 0.33231907785802234,
+        "stale_epochs": 1
+      }
+    }
+  ],
+  "full_six_fit_replay": false,
+  "identity": "hcsn-c2-independent-continuation-20261119-d741-001",
+  "manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "maximum_cumulative_epochs": 200,
+  "new_continuous_training_fits": 2,
+  "old_posterior_recording_contract_completed": false,
+  "original_artifacts_modified": false,
+  "original_boundary_sha256": "177a23a3d0502a79912efdd2a14a365bc716961698a6949bb45d380ba147e6dd",
+  "original_c2_program": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385",
+  "original_c2_runner_sha256": "161d803d878b2aa368f60f1f481de773d6577a91068a4c8dbff0b839074cde11",
+  "original_contract_sha256": "bc814b8913f5d5777f771030623bcd1f862a526f35144a8da0164e1da60f8e51",
+  "original_partial_work": "Surviving original post-checkpoint completed updates: s211=10, s307=11; hidden/truncated tail work UNKNOWN. No work refunds or synthetic original terminal receipt.",
+  "original_root": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+  "recording_scope": "Actual batch/gradient/optimizer events, exact per-update and complete-epoch checkpoints, original full-D metrics; no claim to complete the old posterior/optimization-window contract.",
+  "runtime": {
+    "numpy": "2.3.5",
+    "original_runtime_exact_replay": false,
+    "original_torch": "2.8.0+cu128",
+    "python": "3.12.3",
+    "torch": "2.8.0+cpu"
+  },
+  "schema": "hcsn-c2-independent-bounded-continuation-v1",
+  "scientific_admission": "HOLD",
+  "scope": "Two new bounded CPU continuations from original last complete epochs126/127. Original incomplete tails and four cold-probe calls remain separate work and costs. No original-key retry or complete six-fit replay.",
+  "source_expectations_sha256": "6f61096ab8205a8987609400731b7fe522607233084425fc384d784355873c39",
+  "source_relative": "run-source-v8",
+  "stopping": {
+    "effective_epoch_cap_source": "Original C2 CONTRACT maximum_epochs=200; unchanged for this independent continuation",
+    "minimum_cumulative_epochs": 30,
+    "original_parent_plan_epoch_cap": 100,
+    "patience": 10,
+    "plateau_delta": 0.002,
+    "strict_best": "score > best, independent of plateau anchor"
+  }
+}

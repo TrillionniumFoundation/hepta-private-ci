@@ -1,0 +1,2033 @@
+{
+  "absolute_error_rule": "2e-6 + 2e-3 * abs(AD)",
+  "cases": [
+    {
+      "absolute_error_limit": 7.26202393578271e-06,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": 0.002631011967891355,
+      "arm": "c0_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "ee737b769bee751ea97378cf089d11007eff20186965e96f6aaa0b858744dec9",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 5.015150039,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "overwrite_retrieval/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        3.224500484229803e-05,
+        0.034931876046828784
+      ],
+      "fd": [
+        {
+          "absolute_error": 1.7479801655596872e-09,
+          "derivative": 0.0026310102199111896,
+          "losses": [
+            2.0740672947842267,
+            2.0740725568046665
+          ],
+          "physical_log_boundaries": [
+            -0.008295378062785453,
+            -0.0080564922421166
+          ],
+          "relative_error": 6.643756040990644e-07,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 1.57252615443082e-10,
+          "derivative": 0.0026310118106387397,
+          "losses": [
+            2.074069135327819,
+            2.0740707139349053
+          ],
+          "physical_log_boundaries": [
+            -0.00821177544183471,
+            -0.008140109674198186
+          ],
+          "relative_error": 5.976887120324021e-08,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 1.9584960823243458e-11,
+          "derivative": 0.0026310119483063943,
+          "losses": [
+            2.074069661427918,
+            2.0740701876303076
+          ],
+          "physical_log_boundaries": [
+            -0.00818788750397576,
+            -0.008163998914135426
+          ],
+          "relative_error": 7.443888915085391e-09,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 1.7283952047364437e-09,
+      "fd_step_spread_limit": 1.452404787156542e-05,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.0740699245163317,
+      "maximum_posterior_mass_error": 2.220446049250313e-16,
+      "model_sha256": "e0c528ebab990a573140789b9d2a7e22eb05dba8cd2714e87f1ba95bd51e7b8a",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.008175943290435491,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.32817594329043553,
+      "posterior_first_cell_range": [
+        0.016753062975843107,
+        0.0940341620660295
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6347613417108153
+      ],
+      "posterior_refractory_range": [
+        3.3744529157066696e-05,
+        0.05019454077903186
+      ],
+      "posterior_tail_range": [
+        0.0,
+        4.634577361754474e-06
+      ],
+      "raw_log_boundary": -0.06823858158528723,
+      "scored_positions": 8,
+      "seed": 11,
+      "signed_content_mass_range": [
+        -0.09641282998772517,
+        0.15350591321520807
+      ],
+      "status": "passed",
+      "task": "overwrite_retrieval",
+      "wall_seconds": 5.045469102999959
+    },
+    {
+      "absolute_error_limit": 2.242258269491056e-06,
+      "absolute_tolerance_floor_dominates": true,
+      "ad": 0.00012112913474552809,
+      "arm": "c0_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "ee737b769bee751ea97378cf089d11007eff20186965e96f6aaa0b858744dec9",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.804493766,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "delayed_copy/development/00000",
+      "event_positions": 48,
+      "expected_interval_events_range": [
+        1.8522410573302644e-05,
+        0.050834425826730235
+      ],
+      "fd": [
+        {
+          "absolute_error": 9.459330365443192e-10,
+          "derivative": 0.00012112818881249154,
+          "losses": [
+            2.082470950917881,
+            2.0824711931742588
+          ],
+          "physical_log_boundaries": [
+            -0.008295378062785453,
+            -0.0080564922421166
+          ],
+          "relative_error": 7.809294093708876e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 8.499208837262941e-11,
+          "derivative": 0.00012112904975343972,
+          "losses": [
+            2.0824710360544474,
+            2.0824711087318772
+          ],
+          "physical_log_boundaries": [
+            -0.00821177544183471,
+            -0.008140109674198186
+          ],
+          "relative_error": 7.016651159209836e-07,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 1.0237071390237218e-11,
+          "derivative": 0.0001211291245084567,
+          "losses": [
+            2.0824710603107635,
+            2.0824710845365884
+          ],
+          "physical_log_boundaries": [
+            -0.00818788750397576,
+            -0.008163998914135426
+          ],
+          "relative_error": 8.451370028972452e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 9.35695965154082e-10,
+      "fd_step_spread_limit": 4.484516538982112e-06,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.0824710724274893,
+      "maximum_posterior_mass_error": 3.3306690738754696e-16,
+      "model_sha256": "e0c528ebab990a573140789b9d2a7e22eb05dba8cd2714e87f1ba95bd51e7b8a",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.008175943290435491,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.32817594329043553,
+      "posterior_first_cell_range": [
+        0.009677278378613414,
+        0.12980954094282415
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6517919081776071
+      ],
+      "posterior_refractory_range": [
+        1.9610893661428838e-05,
+        0.06884376447506038
+      ],
+      "posterior_tail_range": [
+        0.0,
+        2.8705961983061775e-06
+      ],
+      "raw_log_boundary": -0.06823858158528723,
+      "scored_positions": 8,
+      "seed": 11,
+      "signed_content_mass_range": [
+        -0.07456094930856513,
+        0.13881242517023681
+      ],
+      "status": "passed",
+      "task": "delayed_copy",
+      "wall_seconds": 5.157376844000282
+    },
+    {
+      "absolute_error_limit": 3.4583535731275477e-06,
+      "absolute_tolerance_floor_dominates": true,
+      "ad": 0.0007291767865637737,
+      "arm": "c0_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "ee737b769bee751ea97378cf089d11007eff20186965e96f6aaa0b858744dec9",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 5.310730394999998,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "pair_composition/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        1.8522410573302644e-05,
+        0.04222723283414465
+      ],
+      "fd": [
+        {
+          "absolute_error": 1.674939259987615e-09,
+          "derivative": 0.0007291751116245138,
+          "losses": [
+            2.078619974219444,
+            2.0786214325696672
+          ],
+          "physical_log_boundaries": [
+            -0.008295378062785453,
+            -0.0080564922421166
+          ],
+          "relative_error": 2.2970276767595986e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 1.504550173683783e-10,
+          "derivative": 0.0007291766361087564,
+          "losses": [
+            2.0786204849833387,
+            2.0786209224893204
+          ],
+          "physical_log_boundaries": [
+            -0.00821177544183471,
+            -0.008140109674198186
+          ],
+          "relative_error": 2.0633544586271537e-07,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 1.8708551851806532e-11,
+          "derivative": 0.0007291767678552219,
+          "losses": [
+            2.078620630848699,
+            2.0786207766840525
+          ],
+          "physical_log_boundaries": [
+            -0.00818788750397576,
+            -0.008163998914135426
+          ],
+          "relative_error": 2.5657086452203293e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 1.6562307081358085e-09,
+      "fd_step_spread_limit": 6.9167071462550955e-06,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.0786207037701314,
+      "maximum_posterior_mass_error": 2.220446049250313e-16,
+      "model_sha256": "e0c528ebab990a573140789b9d2a7e22eb05dba8cd2714e87f1ba95bd51e7b8a",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.008175943290435491,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.32817594329043553,
+      "posterior_first_cell_range": [
+        0.009681660898458252,
+        0.12050261737236652
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6517433975404948
+      ],
+      "posterior_refractory_range": [
+        1.9505719912207698e-05,
+        0.07037664779685607
+      ],
+      "posterior_tail_range": [
+        0.0,
+        1.0319123915436433e-05
+      ],
+      "raw_log_boundary": -0.06823858158528723,
+      "scored_positions": 8,
+      "seed": 11,
+      "signed_content_mass_range": [
+        -0.08718377171837807,
+        0.16124010924856896
+      ],
+      "status": "passed",
+      "task": "pair_composition",
+      "wall_seconds": 5.472661415999937
+    },
+    {
+      "absolute_error_limit": 7.014846290139403e-06,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": 0.0025074231450697014,
+      "arm": "c1_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "8fc61816199e86358479d40cb94dd751cb67f95c1dc72f888a42ebd8461e66de",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.748969600999999,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "overwrite_retrieval/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        3.2685700490703965e-05,
+        0.0349623930262746
+      ],
+      "fd": [
+        {
+          "absolute_error": 1.6939330081851278e-09,
+          "derivative": 0.0025074214511366932,
+          "losses": [
+            2.0325985882445887,
+            2.032603603087491
+          ],
+          "physical_log_boundaries": [
+            -0.007984542810081992,
+            -0.007745573876477242
+          ],
+          "relative_error": 6.755672697350171e-07,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 1.528694349925419e-10,
+          "derivative": 0.0025074229922002664,
+          "losses": [
+            2.032600342344602,
+            2.0326018467983973
+          ],
+          "physical_log_boundaries": [
+            -0.007900910820512546,
+            -0.007829220118965202
+          ],
+          "relative_error": 6.096674799111038e-08,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 1.3721482717415912e-11,
+          "derivative": 0.0025074231313482187,
+          "losses": [
+            2.032600843732963,
+            2.0326013452175893
+          ],
+          "physical_log_boundaries": [
+            -0.007877014546813606,
+            -0.007853117645668786
+          ],
+          "relative_error": 5.472344284767492e-09,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 1.680211525467712e-09,
+      "fd_step_spread_limit": 1.4029692580278806e-05,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.032601094463248,
+      "maximum_posterior_mass_error": 3.3306690738754696e-16,
+      "model_sha256": "bdd7046af2debe6c32eb5952980338da26408e1eed8100f517ff30b14a82786b",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.007865066174553993,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3278650661745541,
+      "posterior_first_cell_range": [
+        0.016795187526699114,
+        0.09410525623567197
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6360861923137918
+      ],
+      "posterior_refractory_range": [
+        3.421549550562124e-05,
+        0.05027282772419912
+      ],
+      "posterior_tail_range": [
+        0.0,
+        4.6319553410724065e-06
+      ],
+      "raw_log_boundary": -0.06563631246730973,
+      "scored_positions": 8,
+      "seed": 11,
+      "signed_content_mass_range": [
+        -0.13051069973846188,
+        0.1887678190751692
+      ],
+      "status": "passed",
+      "task": "overwrite_retrieval",
+      "wall_seconds": 4.915284857000188
+    },
+    {
+      "absolute_error_limit": 2.154872905897332e-06,
+      "absolute_tolerance_floor_dominates": true,
+      "ad": -7.743645294866616e-05,
+      "arm": "c1_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "8fc61816199e86358479d40cb94dd751cb67f95c1dc72f888a42ebd8461e66de",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 5.397772274999998,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "delayed_copy/development/00000",
+      "event_positions": 48,
+      "expected_interval_events_range": [
+        1.8775558177949142e-05,
+        0.05094004206892154
+      ],
+      "fd": [
+        {
+          "absolute_error": 6.460066912829243e-10,
+          "derivative": -7.743709895535744e-05,
+          "losses": [
+            2.0889693258436517,
+            2.088969170969454
+          ],
+          "physical_log_boundaries": [
+            -0.007984542810081992,
+            -0.007745573876477242
+          ],
+          "relative_error": 8.342410669444949e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 5.83286369237098e-11,
+          "derivative": -7.743651127730308e-05,
+          "losses": [
+            2.088969271960003,
+            2.0889692254980963
+          ],
+          "physical_log_boundaries": [
+            -0.007900910820512546,
+            -0.007829220118965202
+          ],
+          "relative_error": 7.532452056188159e-07,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 6.5182290988341496e-12,
+          "derivative": -7.743645946689526e-05,
+          "losses": [
+            2.088969256501047,
+            2.0889692410137553
+          ],
+          "physical_log_boundaries": [
+            -0.007877014546813606,
+            -0.007853117645668786
+          ],
+          "relative_error": 8.41752023837557e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 6.394884621840902e-10,
+      "fd_step_spread_limit": 4.309745811794664e-06,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.088969248760945,
+      "maximum_posterior_mass_error": 4.440892098500626e-16,
+      "model_sha256": "bdd7046af2debe6c32eb5952980338da26408e1eed8100f517ff30b14a82786b",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.007865066174553993,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3278650661745541,
+      "posterior_first_cell_range": [
+        0.009704002300873963,
+        0.13005930602960863
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6531543008957748
+      ],
+      "posterior_refractory_range": [
+        1.9884016668058563e-05,
+        0.06899497669671344
+      ],
+      "posterior_tail_range": [
+        0.0,
+        2.868087895803826e-06
+      ],
+      "raw_log_boundary": -0.06563631246730973,
+      "scored_positions": 8,
+      "seed": 11,
+      "signed_content_mass_range": [
+        -0.11708017220469702,
+        0.18039736218926414
+      ],
+      "status": "passed",
+      "task": "delayed_copy",
+      "wall_seconds": 5.402722181999707
+    },
+    {
+      "absolute_error_limit": 3.0675822513650426e-06,
+      "absolute_tolerance_floor_dominates": true,
+      "ad": 0.0005337911256825214,
+      "arm": "c1_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "8fc61816199e86358479d40cb94dd751cb67f95c1dc72f888a42ebd8461e66de",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.235720604000001,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "pair_composition/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        1.8775558177949142e-05,
+        0.042319721803682375
+      ],
+      "fd": [
+        {
+          "absolute_error": 1.2744733004404e-09,
+          "derivative": 0.000533789851209221,
+          "losses": [
+            2.0901043497751868,
+            2.090105417354889
+          ],
+          "physical_log_boundaries": [
+            -0.007984542810081992,
+            -0.007745573876477242
+          ],
+          "relative_error": 2.3875880267039286e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 1.1503038831791462e-10,
+          "derivative": 0.0005337910106521331,
+          "losses": [
+            2.0901047236900254,
+            2.090105043964632
+          ],
+          "physical_log_boundaries": [
+            -0.007900910820512546,
+            -0.007829220118965202
+          ],
+          "relative_error": 2.154970039466904e-07,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 1.2149721441596928e-11,
+          "derivative": 0.0005337911135328,
+          "losses": [
+            2.0901048304712755,
+            2.090104937229498
+          ],
+          "physical_log_boundaries": [
+            -0.007877014546813606,
+            -0.007853117645668786
+          ],
+          "relative_error": 2.2761190392706377e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 1.262323578998803e-09,
+      "fd_step_spread_limit": 6.135164502730085e-06,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.0901048838532694,
+      "maximum_posterior_mass_error": 4.440892098500626e-16,
+      "model_sha256": "bdd7046af2debe6c32eb5952980338da26408e1eed8100f517ff30b14a82786b",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.007865066174553993,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3278650661745541,
+      "posterior_first_cell_range": [
+        0.009708400339883027,
+        0.1207914474371172
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6531059019027141
+      ],
+      "posterior_refractory_range": [
+        1.9777386444604483e-05,
+        0.07055012259685721
+      ],
+      "posterior_tail_range": [
+        0.0,
+        1.0311982497150926e-05
+      ],
+      "raw_log_boundary": -0.06563631246730973,
+      "scored_positions": 8,
+      "seed": 11,
+      "signed_content_mass_range": [
+        -0.12565032208929058,
+        0.184967207849322
+      ],
+      "status": "passed",
+      "task": "pair_composition",
+      "wall_seconds": 4.250848345000122
+    },
+    {
+      "absolute_error_limit": 9.161951565884319e-06,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": 0.003580975782942159,
+      "arm": "c0_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "2afceb769a8fd7cc7fc1a8888bc4622e7fe7b862fe5db80d8392f93bc0c1e613",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.4632416809999995,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "overwrite_retrieval/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        3.9858602123111404e-05,
+        0.05370202859500058
+      ],
+      "fd": [
+        {
+          "absolute_error": 1.295923129224219e-09,
+          "derivative": 0.0035809770788652884,
+          "losses": [
+            1.855921492334387,
+            1.8559286542885447
+          ],
+          "physical_log_boundaries": [
+            -0.003403795012869043,
+            -0.0031639748246580254
+          ],
+          "relative_error": 3.6189106203881614e-07,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 1.1657021788819e-10,
+          "derivative": 0.003580975899512377,
+          "losses": [
+            1.8559239968631052,
+            1.8559261454486449
+          ],
+          "physical_log_boundaries": [
+            -0.003319860943980667,
+            -0.0032479148657427567
+          ],
+          "relative_error": 3.25526406638849e-08,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 1.2949401967388141e-11,
+          "derivative": 0.003580975795891561,
+          "losses": [
+            1.8559247128687932,
+            1.8559254290639524
+          ],
+          "physical_log_boundaries": [
+            -0.0032958791807347044,
+            -0.003271897154017317
+          ],
+          "relative_error": 3.6161657470771294e-09,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 1.282973727256831e-09,
+      "fd_step_spread_limit": 1.8323903131768637e-05,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 1.8559250709426853,
+      "maximum_posterior_mass_error": 4.440892098500626e-16,
+      "model_sha256": "9df6b13d84daaaea51ef796233932a6dcf1619dff76019c9b23edb95c5a054ef",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.0032838882001903,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3232838882001904,
+      "posterior_first_cell_range": [
+        0.018568077121040055,
+        0.14192882714721666
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.657104479469402
+      ],
+      "posterior_refractory_range": [
+        3.48835684469177e-05,
+        0.09220888533067129
+      ],
+      "posterior_tail_range": [
+        0.0,
+        7.669292738827345e-07
+      ],
+      "raw_log_boundary": -0.027372569321413957,
+      "scored_positions": 8,
+      "seed": 23,
+      "signed_content_mass_range": [
+        -0.06394187298837681,
+        0.1683203334683165
+      ],
+      "status": "passed",
+      "task": "overwrite_retrieval",
+      "wall_seconds": 4.482381528999213
+    },
+    {
+      "absolute_error_limit": 9.835530037751813e-06,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": -0.003917765018875906,
+      "arm": "c0_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "2afceb769a8fd7cc7fc1a8888bc4622e7fe7b862fe5db80d8392f93bc0c1e613",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.236966257999995,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "delayed_copy/development/00000",
+      "event_positions": 48,
+      "expected_interval_events_range": [
+        2.2895868585317495e-05,
+        0.06707018624903167
+      ],
+      "fd": [
+        {
+          "absolute_error": 5.160017534783234e-10,
+          "derivative": -0.00391776553487766,
+          "losses": [
+            2.1609591258128686,
+            2.160951290281799
+          ],
+          "physical_log_boundaries": [
+            -0.003403795012869043,
+            -0.0031639748246580254
+          ],
+          "relative_error": 1.3170819357266502e-07,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 4.608135487776943e-11,
+          "derivative": -0.003917765064957261,
+          "losses": [
+            2.1609563850453744,
+            2.1609540343863354
+          ],
+          "physical_log_boundaries": [
+            -0.003319860943980667,
+            -0.0032479148657427567
+          ],
+          "relative_error": 1.1762153844283186e-08,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 2.4125822867260283e-12,
+          "derivative": -0.0039177650212884885,
+          "losses": [
+            2.16095560163904,
+            2.1609548180860356
+          ],
+          "physical_log_boundaries": [
+            -0.0032958791807347044,
+            -0.003271897154017317
+          ],
+          "relative_error": 6.158057655582038e-10,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 5.135891711915974e-10,
+      "fd_step_spread_limit": 1.9671060075503625e-05,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.160955209880873,
+      "maximum_posterior_mass_error": 2.220446049250313e-16,
+      "model_sha256": "9df6b13d84daaaea51ef796233932a6dcf1619dff76019c9b23edb95c5a054ef",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.0032838882001903,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3232838882001904,
+      "posterior_first_cell_range": [
+        0.010321257281659928,
+        0.1697666913927487
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6950249255106336
+      ],
+      "posterior_refractory_range": [
+        1.971239965191983e-05,
+        0.1078324710646232
+      ],
+      "posterior_tail_range": [
+        0.0,
+        6.800082446902497e-07
+      ],
+      "raw_log_boundary": -0.027372569321413957,
+      "scored_positions": 8,
+      "seed": 23,
+      "signed_content_mass_range": [
+        -0.04350970024464841,
+        0.1481280818761339
+      ],
+      "status": "passed",
+      "task": "delayed_copy",
+      "wall_seconds": 4.262613605999832
+    },
+    {
+      "absolute_error_limit": 3.987936811159319e-06,
+      "absolute_tolerance_floor_dominates": true,
+      "ad": 0.0009939684055796593,
+      "arm": "c0_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "2afceb769a8fd7cc7fc1a8888bc4622e7fe7b862fe5db80d8392f93bc0c1e613",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.195917846,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "pair_composition/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        2.2895868585317495e-05,
+        0.06487902143977495
+      ],
+      "fd": [
+        {
+          "absolute_error": 1.0325103883858378e-09,
+          "derivative": 0.0009939694380900477,
+          "losses": [
+            2.0654233470834997,
+            2.065425335022376
+          ],
+          "physical_log_boundaries": [
+            -0.003403795012869043,
+            -0.0031639748246580254
+          ],
+          "relative_error": 1.0387758630856095e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 9.377981377567401e-11,
+          "derivative": 0.000993968499359473,
+          "losses": [
+            2.0654240418771987,
+            2.0654246382582984
+          ],
+          "physical_log_boundaries": [
+            -0.003319860943980667,
+            -0.0032479148657427567
+          ],
+          "relative_error": 9.434888800211291e-08,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 1.0883161125768703e-11,
+          "derivative": 0.0009939684164628204,
+          "losses": [
+            2.0654242405842966,
+            2.06542443937798
+          ],
+          "physical_log_boundaries": [
+            -0.0032958791807347044,
+            -0.003271897154017317
+          ],
+          "relative_error": 1.0949202273106354e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 1.021627227260069e-09,
+      "fd_step_spread_limit": 7.975873622318637e-06,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.0654243399703125,
+      "maximum_posterior_mass_error": 2.220446049250313e-16,
+      "model_sha256": "9df6b13d84daaaea51ef796233932a6dcf1619dff76019c9b23edb95c5a054ef",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.0032838882001903,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3232838882001904,
+      "posterior_first_cell_range": [
+        0.010448972794378146,
+        0.16085950021015682
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6916403445650039
+      ],
+      "posterior_refractory_range": [
+        1.8663491074600178e-05,
+        0.10566355137931471
+      ],
+      "posterior_tail_range": [
+        0.0,
+        1.609514693050369e-06
+      ],
+      "raw_log_boundary": -0.027372569321413957,
+      "scored_positions": 8,
+      "seed": 23,
+      "signed_content_mass_range": [
+        -0.059853632389357356,
+        0.16564736304549213
+      ],
+      "status": "passed",
+      "task": "pair_composition",
+      "wall_seconds": 4.19738651499938
+    },
+    {
+      "absolute_error_limit": 9.148381194553834e-06,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": 0.003574190597276917,
+      "arm": "c1_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "dd63c2a63ca3d313eed72cd880014aea195aa3ea1bb025ee2451c630746830ac",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.924060424000004,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "overwrite_retrieval/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        3.9774138871638055e-05,
+        0.05368889157935265
+      ],
+      "fd": [
+        {
+          "absolute_error": 1.1293083239383161e-09,
+          "derivative": 0.0035741917265852408,
+          "losses": [
+            1.8634649587857566,
+            1.8634721071692097
+          ],
+          "physical_log_boundaries": [
+            -0.003453151978520585,
+            -0.0032133372339706113
+          ],
+          "relative_error": 3.159619760621347e-07,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 1.0131581814828983e-10,
+          "derivative": 0.003574190698592735,
+          "losses": [
+            1.863467458656678,
+            1.863469603171097
+          ],
+          "physical_log_boundaries": [
+            -0.003369219859727475,
+            -0.0032972754145898565
+          ],
+          "relative_error": 2.8346506821846525e-08,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 1.064760432600842e-11,
+          "derivative": 0.003574190607924521,
+          "losses": [
+            1.863468173313412,
+            1.8634688881515336
+          ],
+          "physical_log_boundaries": [
+            -0.0033452386447880202,
+            -0.0033212571624374547
+          ],
+          "relative_error": 2.9790253306918087e-09,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 1.1186607196123077e-09,
+      "fd_step_spread_limit": 1.8296762389107668e-05,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 1.863468530709796,
+      "maximum_posterior_mass_error": 2.220446049250313e-16,
+      "model_sha256": "9bc6affc3406bf660a3ba3a3a77f7f876323d29e48eb247601b0259450f0ff56",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.0033332479369194983,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3233332479369196,
+      "posterior_first_cell_range": [
+        0.01856090136804449,
+        0.14189128714087354
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6569010928635531
+      ],
+      "posterior_refractory_range": [
+        3.4808696974466886e-05,
+        0.09218688191924479
+      ],
+      "posterior_tail_range": [
+        0.0,
+        7.670912785923423e-07
+      ],
+      "raw_log_boundary": -0.02778421339111104,
+      "scored_positions": 8,
+      "seed": 23,
+      "signed_content_mass_range": [
+        -0.08000998354118508,
+        0.19227908544641864
+      ],
+      "status": "passed",
+      "task": "overwrite_retrieval",
+      "wall_seconds": 4.928308872999878
+    },
+    {
+      "absolute_error_limit": 9.740090485512048e-06,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": -0.003870045242756024,
+      "arm": "c1_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "dd63c2a63ca3d313eed72cd880014aea195aa3ea1bb025ee2451c630746830ac",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 5.525667650000003,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "delayed_copy/development/00000",
+      "event_positions": 48,
+      "expected_interval_events_range": [
+        2.2847350589125622e-05,
+        0.06705203481580334
+      ],
+      "fd": [
+        {
+          "absolute_error": 4.220661619681876e-10,
+          "derivative": -0.003870045664822186,
+          "losses": [
+            2.1570372023614524,
+            2.1570294622701227
+          ],
+          "physical_log_boundaries": [
+            -0.003453151978520585,
+            -0.0032133372339706113
+          ],
+          "relative_error": 1.0905974878671349e-07,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 3.704081746186416e-11,
+          "derivative": -0.0038700452797968414,
+          "losses": [
+            2.157034494922354,
+            2.1570321728951862
+          ],
+          "physical_log_boundaries": [
+            -0.003369219859727475,
+            -0.0032972754145898565
+          ],
+          "relative_error": 9.571158769060233e-09,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 3.7341262894285965e-12,
+          "derivative": -0.0038700452464901502,
+          "losses": [
+            2.157033721053337,
+            2.1570329470442875
+          ],
+          "physical_log_boundaries": [
+            -0.0033452386447880202,
+            -0.0033212571624374547
+          ],
+          "relative_error": 9.648792340136484e-10,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 4.18332035678759e-10,
+      "fd_step_spread_limit": 1.9480180971024096e-05,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.1570333340663175,
+      "maximum_posterior_mass_error": 3.3306690738754696e-16,
+      "model_sha256": "9bc6affc3406bf660a3ba3a3a77f7f876323d29e48eb247601b0259450f0ff56",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.0033332479369194983,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3233332479369196,
+      "posterior_first_cell_range": [
+        0.01031699041996655,
+        0.16972401620373245
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6948231130633532
+      ],
+      "posterior_refractory_range": [
+        1.9670560615172215e-05,
+        0.10780519302974323
+      ],
+      "posterior_tail_range": [
+        0.0,
+        6.801724098201905e-07
+      ],
+      "raw_log_boundary": -0.02778421339111104,
+      "scored_positions": 8,
+      "seed": 23,
+      "signed_content_mass_range": [
+        -0.05589298830140856,
+        0.17052627963780628
+      ],
+      "status": "passed",
+      "task": "delayed_copy",
+      "wall_seconds": 5.5302892079998855
+    },
+    {
+      "absolute_error_limit": 4.006173673506615e-06,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": 0.0010030868367533073,
+      "arm": "c1_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "dd63c2a63ca3d313eed72cd880014aea195aa3ea1bb025ee2451c630746830ac",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 6.007650202000001,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "pair_composition/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        2.2847350589125622e-05,
+        0.06486629597691151
+      ],
+      "fd": [
+        {
+          "absolute_error": 1.0484452318913068e-09,
+          "derivative": 0.0010030878851985392,
+          "losses": [
+            2.063150227779996,
+            2.0631522339557664
+          ],
+          "physical_log_boundaries": [
+            -0.003453151978520585,
+            -0.0032133372339706113
+          ],
+          "relative_error": 1.0452188120470317e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 9.454160913337228e-11,
+          "derivative": 0.0010030869312949164,
+          "losses": [
+            2.063150928944599,
+            2.0631515307967576
+          ],
+          "physical_log_boundaries": [
+            -0.003369219859727475,
+            -0.0032972754145898565
+          ],
+          "relative_error": 9.425067269287997e-08,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 7.944213212610074e-12,
+          "derivative": 0.0010030868446975205,
+          "losses": [
+            2.0631511294743277,
+            2.0631513300916966
+          ],
+          "physical_log_boundaries": [
+            -0.0033452386447880202,
+            -0.0033212571624374547
+          ],
+          "relative_error": 7.919766187265621e-09,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 1.0405010186786967e-09,
+      "fd_step_spread_limit": 8.01234734701323e-06,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.0631512297720542,
+      "maximum_posterior_mass_error": 3.3306690738754696e-16,
+      "model_sha256": "9bc6affc3406bf660a3ba3a3a77f7f876323d29e48eb247601b0259450f0ff56",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": -0.0033332479369194983,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3233332479369196,
+      "posterior_first_cell_range": [
+        0.010444619416526102,
+        0.16082756621581448
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6914372943549187
+      ],
+      "posterior_refractory_range": [
+        1.86238157572988e-05,
+        0.10564139401985187
+      ],
+      "posterior_tail_range": [
+        0.0,
+        1.6098070741071298e-06
+      ],
+      "raw_log_boundary": -0.02778421339111104,
+      "scored_positions": 8,
+      "seed": 23,
+      "signed_content_mass_range": [
+        -0.07338709591316862,
+        0.18767085170777964
+      ],
+      "status": "passed",
+      "task": "pair_composition",
+      "wall_seconds": 6.01441341500049
+    },
+    {
+      "absolute_error_limit": 9.737705783765897e-06,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": -0.003868852891882949,
+      "arm": "c1_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "eaefdb8741c384819d5ae39db6b4aa1853af8204f2ebff495d5af3e01ce3e4fd",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 5.205235623999997,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "overwrite_retrieval/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        6.637884380945256e-05,
+        0.037302905887921754
+      ],
+      "fd": [
+        {
+          "absolute_error": 5.073000838417413e-09,
+          "derivative": -0.0038688579648837873,
+          "losses": [
+            2.122650762627088,
+            2.122643024911158
+          ],
+          "physical_log_boundaries": [
+            0.008714625539976798,
+            0.008953324807160656
+          ],
+          "relative_error": 1.3112415954250492e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 4.56915547064618e-10,
+          "derivative": -0.003868853348798496,
+          "losses": [
+            2.1226480592455435,
+            2.122645737933534
+          ],
+          "physical_log_boundaries": [
+            0.008798178268160447,
+            0.00886978806968408
+          ],
+          "relative_error": 1.1810103920550977e-07,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 5.279436566738016e-11,
+          "derivative": -0.0038688529446773146,
+          "losses": [
+            2.1226472858986063,
+            2.1226465121280174
+          ],
+          "physical_log_boundaries": [
+            0.00882204890457725,
+            0.008845918839044646
+          ],
+          "relative_error": 1.3645999768599483e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 5.020206472750033e-09,
+      "fd_step_spread_limit": 1.9475411567531794e-05,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.1226468990662832,
+      "maximum_posterior_mass_error": 2.220446049250313e-16,
+      "model_sha256": "fb4066b51b6b199da0c0dabe42deb8faf2d26077c6605850febbbe61b65aa264",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": 0.008833983959672038,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.311166016040328,
+      "posterior_first_cell_range": [
+        0.0217223166734625,
+        0.10620788163453282
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6759554094322513
+      ],
+      "posterior_refractory_range": [
+        7.534404535719156e-05,
+        0.05432896199916466
+      ],
+      "posterior_tail_range": [
+        0.0,
+        2.833388275778206e-09
+      ],
+      "raw_log_boundary": 0.0737499527633118,
+      "scored_positions": 8,
+      "seed": 37,
+      "signed_content_mass_range": [
+        -0.18916232518469817,
+        0.16231781897616573
+      ],
+      "status": "passed",
+      "task": "overwrite_retrieval",
+      "wall_seconds": 5.20745097300005
+    },
+    {
+      "absolute_error_limit": 2.896805557981094e-06,
+      "absolute_tolerance_floor_dominates": true,
+      "ad": -0.0004484027789905469,
+      "arm": "c1_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "eaefdb8741c384819d5ae39db6b4aa1853af8204f2ebff495d5af3e01ce3e4fd",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 3.8611815069999977,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "delayed_copy/development/00000",
+      "event_positions": 48,
+      "expected_interval_events_range": [
+        3.812981900399632e-05,
+        0.05729042090877156
+      ],
+      "fd": [
+        {
+          "absolute_error": 5.612457783135509e-10,
+          "derivative": -0.0004484033402363252,
+          "losses": [
+            2.05382914589814,
+            2.0538282490914597
+          ],
+          "physical_log_boundaries": [
+            0.008714625539976798,
+            0.008953324807160656
+          ],
+          "relative_error": 1.2516554415140743e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 4.995106807565222e-11,
+          "derivative": -0.000448402828941615,
+          "losses": [
+            2.053828832569363,
+            2.0538285635276656
+          ],
+          "physical_log_boundaries": [
+            0.008798178268160447,
+            0.00886978806968408
+          ],
+          "relative_error": 1.1139776650827865e-07,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 4.80199837142245e-12,
+          "derivative": -0.0004484027837925453,
+          "losses": [
+            2.053828742937471,
+            2.053828653256914
+          ],
+          "physical_log_boundaries": [
+            0.00882204890457725,
+            0.008845918839044646
+          ],
+          "relative_error": 1.070911822231076e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 5.564437799421285e-10,
+      "fd_step_spread_limit": 5.793611115962188e-06,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.053828698103277,
+      "maximum_posterior_mass_error": 2.220446049250313e-16,
+      "model_sha256": "fb4066b51b6b199da0c0dabe42deb8faf2d26077c6605850febbbe61b65aa264",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": 0.008833983959672038,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.311166016040328,
+      "posterior_first_cell_range": [
+        0.013457852375141114,
+        0.14122977876466686
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6844372929854289
+      ],
+      "posterior_refractory_range": [
+        4.464107430576449e-05,
+        0.07083002323084565
+      ],
+      "posterior_tail_range": [
+        0.0,
+        5.08622382598099e-09
+      ],
+      "raw_log_boundary": 0.0737499527633118,
+      "scored_positions": 8,
+      "seed": 37,
+      "signed_content_mass_range": [
+        -0.17238968208429692,
+        0.16289906007828753
+      ],
+      "status": "passed",
+      "task": "delayed_copy",
+      "wall_seconds": 3.8854131300004155
+    },
+    {
+      "absolute_error_limit": 6.378848595499983e-06,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": -0.002189424297749992,
+      "arm": "c1_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "eaefdb8741c384819d5ae39db6b4aa1853af8204f2ebff495d5af3e01ce3e4fd",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.972129831000004,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "pair_composition/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        3.812981900399632e-05,
+        0.05403572556481936
+      ],
+      "fd": [
+        {
+          "absolute_error": 3.3751884013361044e-09,
+          "derivative": -0.0021894276729383932,
+          "losses": [
+            2.0595579351752753,
+            2.0595535563199294
+          ],
+          "physical_log_boundaries": [
+            0.008714625539976798,
+            0.008953324807160656
+          ],
+          "relative_error": 1.5415871673684667e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 3.046075748407151e-10,
+          "derivative": -0.0021894246023575667,
+          "losses": [
+            2.059556405322359,
+            2.0595550916675975
+          ],
+          "physical_log_boundaries": [
+            0.008798178268160447,
+            0.00886978806968408
+          ],
+          "relative_error": 1.3912679015837703e-07,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 3.297300800453318e-11,
+          "derivative": -0.002189424330723,
+          "losses": [
+            2.059555967678939,
+            2.0595555297940726
+          ],
+          "physical_log_boundaries": [
+            0.00882204890457725,
+            0.008845918839044646
+          ],
+          "relative_error": 1.5060127010748254e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 3.3422153933315712e-09,
+      "fd_step_spread_limit": 1.2757697190999966e-05,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.0595557487666962,
+      "maximum_posterior_mass_error": 4.440892098500626e-16,
+      "model_sha256": "fb4066b51b6b199da0c0dabe42deb8faf2d26077c6605850febbbe61b65aa264",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": 0.008833983959672038,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.311166016040328,
+      "posterior_first_cell_range": [
+        0.01346753785960945,
+        0.13921589171410434
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6788529668886019
+      ],
+      "posterior_refractory_range": [
+        4.516101807399752e-05,
+        0.07801158964270508
+      ],
+      "posterior_tail_range": [
+        0.0,
+        4.581355845429625e-09
+      ],
+      "raw_log_boundary": 0.0737499527633118,
+      "scored_positions": 8,
+      "seed": 37,
+      "signed_content_mass_range": [
+        -0.18750787615664474,
+        0.1745914472741544
+      ],
+      "status": "passed",
+      "task": "pair_composition",
+      "wall_seconds": 5.016991821999909
+    },
+    {
+      "absolute_error_limit": 1.0008390519073337e-05,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": -0.0040041952595366685,
+      "arm": "c0_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "a472b24bb140fa2825a6ad7b42035923d4422da3aa2b6a54543b1742506452b0",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.452305823000003,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "overwrite_retrieval/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        6.676001948208727e-05,
+        0.03732402399831482
+      ],
+      "fd": [
+        {
+          "absolute_error": 5.227647637690014e-09,
+          "derivative": -0.004004200487184306,
+          "losses": [
+            2.1600214602401007,
+            2.1600134518391263
+          ],
+          "physical_log_boundaries": [
+            0.008853633369388119,
+            0.009092291387603622
+          ],
+          "relative_error": 1.3055426368730361e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 4.710081109859932e-10,
+          "derivative": -0.0040041957305447795,
+          "losses": [
+            2.1600186622826563,
+            2.160016259765218
+          ],
+          "physical_log_boundaries": [
+            0.008937171784829851,
+            0.009008769211648086
+          ],
+          "relative_error": 1.17628657060169e-07,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 5.578469977618461e-11,
+          "derivative": -0.004004195315321368,
+          "losses": [
+            2.160017861881651,
+            2.1600170610425877
+          ],
+          "physical_log_boundaries": [
+            0.008961038307280424,
+            0.008984904116845585
+          ],
+          "relative_error": 1.3931563313083673e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 5.171862937913829e-09,
+      "fd_step_spread_limit": 2.0016781038146673e-05,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.160017461516892,
+      "maximum_posterior_mass_error": 3.3306690738754696e-16,
+      "model_sha256": "3395cfae7bea70244b238b88896ab3f1254c111ab74110662afbe9116bf0243a",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": 0.008972971301291014,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3110270286987091,
+      "posterior_first_cell_range": [
+        0.02174606406542508,
+        0.10625575962678363
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6765071901939287
+      ],
+      "posterior_refractory_range": [
+        7.578944432195023e-05,
+        0.05435831174584329
+      ],
+      "posterior_tail_range": [
+        0.0,
+        2.83287055589934e-09
+      ],
+      "raw_log_boundary": 0.07491459207566785,
+      "scored_positions": 8,
+      "seed": 37,
+      "signed_content_mass_range": [
+        -0.1670459316731344,
+        0.08047463267675323
+      ],
+      "status": "passed",
+      "task": "overwrite_retrieval",
+      "wall_seconds": 4.492426127000726
+    },
+    {
+      "absolute_error_limit": 3.0489136467910757e-06,
+      "absolute_tolerance_floor_dominates": true,
+      "ad": -0.0005244568233955379,
+      "arm": "c0_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "a472b24bb140fa2825a6ad7b42035923d4422da3aa2b6a54543b1742506452b0",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.234094542999998,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "delayed_copy/development/00000",
+      "event_positions": 48,
+      "expected_interval_events_range": [
+        3.834877671058142e-05,
+        0.05735053699621496
+      ],
+      "fd": [
+        {
+          "absolute_error": 7.204423594156517e-10,
+          "derivative": -0.0005244575438378973,
+          "losses": [
+            2.048521365313658,
+            2.0485203163985704
+          ],
+          "physical_log_boundaries": [
+            0.008853633369388119,
+            0.009092291387603622
+          ],
+          "relative_error": 1.373692413326281e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 6.489267088093109e-11,
+          "derivative": -0.0005244568882882088,
+          "losses": [
+            2.0485209988603836,
+            2.0485206841862507
+          ],
+          "physical_log_boundaries": [
+            0.008937171784829851,
+            0.009008769211648086
+          ],
+          "relative_error": 1.237331043970229e-07,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 1.0121668260476557e-11,
+          "derivative": -0.0005244568335172062,
+          "losses": [
+            2.048520894027656,
+            2.048520789136289
+          ],
+          "physical_log_boundaries": [
+            0.008961038307280424,
+            0.008984904116845585
+          ],
+          "relative_error": 1.9299335634428267e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 7.103206911551752e-10,
+      "fd_step_spread_limit": 6.0978272935821514e-06,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.048520841589304,
+      "maximum_posterior_mass_error": 2.220446049250313e-16,
+      "model_sha256": "3395cfae7bea70244b238b88896ab3f1254c111ab74110662afbe9116bf0243a",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": 0.008972971301291014,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3110270286987091,
+      "posterior_first_cell_range": [
+        0.013475638187892283,
+        0.1413708796563046
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.6850172229780611
+      ],
+      "posterior_refractory_range": [
+        4.4905888296617176e-05,
+        0.07090747842640542
+      ],
+      "posterior_tail_range": [
+        0.0,
+        5.084154269002379e-09
+      ],
+      "raw_log_boundary": 0.07491459207566785,
+      "scored_positions": 8,
+      "seed": 37,
+      "signed_content_mass_range": [
+        -0.16253500272545027,
+        0.06622101105100586
+      ],
+      "status": "passed",
+      "task": "delayed_copy",
+      "wall_seconds": 4.345841334999932
+    },
+    {
+      "absolute_error_limit": 6.618188713621153e-06,
+      "absolute_tolerance_floor_dominates": false,
+      "ad": -0.0023090943568105766,
+      "arm": "c0_b1",
+      "backward_attempts": 1,
+      "backward_completed": 1,
+      "checkpoint_sha256": "a472b24bb140fa2825a6ad7b42035923d4422da3aa2b6a54543b1742506452b0",
+      "completed_optimizer_updates": 32,
+      "cpu_seconds": 4.7985568,
+      "dt_range": [
+        0.001,
+        0.16
+      ],
+      "episode_id": "pair_composition/development/00000",
+      "event_positions": 56,
+      "expected_interval_events_range": [
+        3.834877671058142e-05,
+        0.0540916700108689
+      ],
+      "fd": [
+        {
+          "absolute_error": 3.561618682704909e-09,
+          "derivative": -0.0023090979184292593,
+          "losses": [
+            2.0712213008651545,
+            2.0712166826693177
+          ],
+          "physical_log_boundaries": [
+            0.008853633369388119,
+            0.009092291387603622
+          ],
+          "relative_error": 1.5424309847711786e-06,
+          "step": 0.001
+        },
+        {
+          "absolute_error": 3.2087767382407706e-10,
+          "derivative": -0.0023090946776882504,
+          "losses": [
+            2.071219687394698,
+            2.0712183019378916
+          ],
+          "physical_log_boundaries": [
+            0.008937171784829851,
+            0.009008769211648086
+          ],
+          "relative_error": 1.3896256464256727e-07,
+          "step": 0.0003
+        },
+        {
+          "absolute_error": 3.6660579520036984e-11,
+          "derivative": -0.002309094393471156,
+          "losses": [
+            2.071219225830596,
+            2.0712187640117175
+          ],
+          "physical_log_boundaries": [
+            0.008961038307280424,
+            0.008984904116845585
+          ],
+          "relative_error": 1.587660522053079e-08,
+          "step": 0.0001
+        }
+      ],
+      "fd_step_spread": 3.524958103184872e-09,
+      "fd_step_spread_limit": 1.3236377427242305e-05,
+      "forward_attempts": 7,
+      "forward_completed": 7,
+      "loss": 2.0712189949530146,
+      "maximum_posterior_mass_error": 2.220446049250313e-16,
+      "model_sha256": "3395cfae7bea70244b238b88896ab3f1254c111ab74110662afbe9116bf0243a",
+      "model_unchanged": true,
+      "no_gradient_clipping": true,
+      "physical_parameters": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": 0.008972971301291014,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "physical_reset_margin": 0.3110270286987091,
+      "posterior_first_cell_range": [
+        0.013485549092106038,
+        0.1393637111765004
+      ],
+      "posterior_probability_range": [
+        0.0,
+        0.679438829459443
+      ],
+      "posterior_refractory_range": [
+        4.542962786404908e-05,
+        0.0780994398942623
+      ],
+      "posterior_tail_range": [
+        0.0,
+        4.5802188781959275e-09
+      ],
+      "raw_log_boundary": 0.07491459207566785,
+      "scored_positions": 8,
+      "seed": 37,
+      "signed_content_mass_range": [
+        -0.16925604652716036,
+        0.08643110764687328
+      ],
+      "status": "passed",
+      "task": "pair_composition",
+      "wall_seconds": 4.858202297999924
+    }
+  ],
+  "complete_boundary_arm_roster": true,
+  "completed_boundary_arms": 6,
+  "continuum_domain_qualified": false,
+  "cost": {
+    "backward_attempts": 18,
+    "backward_completed": 18,
+    "forward_attempts": 126,
+    "forward_completed": 126,
+    "process_cpu_seconds": 88.94552996200001,
+    "process_wall_seconds": 90.05863870100075,
+    "scope": "process import, input verification, model loads and all audit calls; excludes final JSON write"
+  },
+  "data_sha256": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427",
+  "device": "cpu",
+  "dtype": "float64",
+  "expected_boundary_arms": 6,
+  "expected_cases": 18,
+  "formal_confirmation_accessed": false,
+  "host": "05afa1b52275",
+  "input_pilot_status": "completed_pilot",
+  "inputs_sha256": {
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_boundary_audit/audit_trained_gradients.py": "2431ffa0d31d010134889b8b7e7ff3f8e70d4234f1e6b9ee637d4f18465adc9d",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_boundary_factorial/__init__.py": "f1e11f73d06c23dad7cfc3de70695360fbbe6ea1c14b2416c49aa125946f951c",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_boundary_factorial/run.py": "346be64443e31097ab5b8d4d262bd1606a523c1504628b16d08c2ae1aca06c79",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_boundary_factorial/test_run.py": "5c48bfe0718dca3d4e56fe1578de039e79e3e29ef67aa4a71a9e048f4b32038a",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/evidence_chain.py": "a20735bfe660028797a1ac466a6e91c2d9c8362d6308f854183440c06b4d9dbb",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/semantics.py": "b90883ecfc4170227864a7dd0c9def70a37d100096b248435f87fae785534119",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/test_training_domain_strict_trace.py": "def1e8b91f6f1edd839d6b67f184d800b08951c9f5b549c897ebe0ed2c7c9e78",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/training_domain.py": "424074b02a9f04fc2cf0eecc491318ce846ca696c68dcdeebfa88f5242e05881",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/training_domain_finite.py": "56c75ba1f0253b24591fd574cc767151ef581986c5718e3910bc21ae2c227c02",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101",
+    "/dev/shm/hcsn-gradient-hosted-source-001/qualification/hcsn_memory_controls/generate.py": "0b274c1483670ddc51dc5704406fd9b58888cc829e0746dc5719b0035bc2745d",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/DATA.json": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/PLAN.json": "7c4835da67c0e6730edb78e028703ad6e6053eadf1e03573cefec02a93f2ab55",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/SUMMARY.json": "c60378ffc2a51f580a9b7cfd11a09cec5f53d9a9cc37c03b81605bedc54b8715",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c0_b1/checkpoint.pt": "ee737b769bee751ea97378cf089d11007eff20186965e96f6aaa0b858744dec9",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c0_b1/result.json": "5a4c471fc321d3f2cfd227f07d09e4375cce16fe7ae1114b4d46fb28df35949b",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c1_b1/checkpoint.pt": "8fc61816199e86358479d40cb94dd751cb67f95c1dc72f888a42ebd8461e66de",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c1_b1/result.json": "2a224efa7220e54bd54f7fdacadaefe2709b66514fce2d8541b73d05078a205c",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c0_b1/checkpoint.pt": "2afceb769a8fd7cc7fc1a8888bc4622e7fe7b862fe5db80d8392f93bc0c1e613",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c0_b1/result.json": "3d17351a1745487b66cbece16eda973b9b4fa66c8c434133d6fd62e4b5049823",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c1_b1/checkpoint.pt": "dd63c2a63ca3d313eed72cd880014aea195aa3ea1bb025ee2451c630746830ac",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c1_b1/result.json": "02c4a7a7673e9b598b9a5e88c6db9496fc4dcf1f673c21bb37eb196ed62f87e3",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c0_b1/checkpoint.pt": "a472b24bb140fa2825a6ad7b42035923d4422da3aa2b6a54543b1742506452b0",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c0_b1/result.json": "d95171b0010ac64a435fe7dda58b6be30cb7c2b97bde61d77a006eaed72beeba",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c1_b1/checkpoint.pt": "eaefdb8741c384819d5ae39db6b4aa1853af8204f2ebff495d5af3e01ce3e4fd",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c1_b1/result.json": "cedad54ea4afa450385bb7e3cf0d5e5b4a39db7f40503ac49883cef3d49865e2"
+  },
+  "inputs_unchanged": true,
+  "machine": "x86_64",
+  "numerical_qualification": false,
+  "physical_energy_joules": null,
+  "product_adoption": false,
+  "python": "3.12.14",
+  "schema": "hcsn-trained-boundary-gradient-audit-v1",
+  "scope": "Final trained checkpoints, first development episode per task; implemented projected-network loss only.",
+  "selected_episode_ids": [
+    "overwrite_retrieval/development/00000",
+    "delayed_copy/development/00000",
+    "pair_composition/development/00000"
+  ],
+  "status": "passed_selected_cases",
+  "step_stability_rule": "spread < 4e-6 + 4e-3 * abs(AD)",
+  "steps": [
+    0.001,
+    0.0003,
+    0.0001
+  ],
+  "summary_sha256": "c60378ffc2a51f580a9b7cfd11a09cec5f53d9a9cc37c03b81605bedc54b8715",
+  "torch": "2.8.0+cpu",
+  "whole_training_trajectory_qualified": false
+}

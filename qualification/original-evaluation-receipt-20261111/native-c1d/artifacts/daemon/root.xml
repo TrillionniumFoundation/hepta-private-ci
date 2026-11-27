@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="7" failures="0" errors="0" uuid="653f969a-4bf3-456d-a29f-5ab0d31f1ec0" timestamp="2026-11-11T03:25:28.542+00:00" time="0.298">
+    <testsuite name="codex-hepta-agentd" tests="7" disabled="0" errors="0" failures="0">
+        <testcase name="authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history" classname="codex-hepta-agentd" timestamp="2026-11-11T03:25:28.545+00:00" time="0.187">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history" classname="codex-hepta-agentd" timestamp="2026-11-11T03:25:28.733+00:00" time="0.011">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen" classname="codex-hepta-agentd" timestamp="2026-11-11T03:25:28.744+00:00" time="0.018">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint" classname="codex-hepta-agentd" timestamp="2026-11-11T03:25:28.762+00:00" time="0.012">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client" classname="codex-hepta-agentd" timestamp="2026-11-11T03:25:28.774+00:00" time="0.014">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd" classname="codex-hepta-agentd" timestamp="2026-11-11T03:25:28.788+00:00" time="0.036">
+        </testcase>
+        <testcase name="root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin" classname="codex-hepta-agentd" timestamp="2026-11-11T03:25:28.825+00:00" time="0.015">
+        </testcase>
+    </testsuite>
+</testsuites>

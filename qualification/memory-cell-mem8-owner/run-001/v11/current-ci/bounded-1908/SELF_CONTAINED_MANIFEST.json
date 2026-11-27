@@ -1,0 +1,482 @@
+{
+  "schema": "hepta.mem8.cead.current-ci-bounded-observation.self-contained.v1",
+  "scope": "Only the already captured 2026-11-11 19:08 UTC cead original CI observation; excludes all old d0f log files and all later snapshots.",
+  "source_head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "original_api_observation_window_utc": {
+    "start": "2026-11-11 19:08:08 UTC",
+    "end": "2026-11-11 19:08:10 UTC"
+  },
+  "single_original_GNU_log_read_completed_utc": "2026-11-11 19:08:27 UTC",
+  "original_collection": {
+    "run_jobs_API_reads": 10,
+    "run_jobs_read_rounds": 1,
+    "original_completed_failure_log_reads": 1,
+    "no_poll_loop": true,
+    "no_additional_failure_log_read": true
+  },
+  "payload_object_count": 19,
+  "payload_total_bytes": 1528311,
+  "logical_original_inputs": {
+    "exact_API_response_bodies": 10,
+    "existing_stored_observation_index_explanation_objects": 4,
+    "complete_original_GNU_log_files": 1,
+    "GNU_log_parts": 5
+  },
+  "all_payloads_actual_created_and_full_UTF8_remote_readback_equal": true,
+  "files": [
+    {
+      "path": "api/mem/run.json",
+      "source_store_key": "cead-bounded-final-001-MEM-run",
+      "bytes": 14967,
+      "sha256": "f16bf96ef73140c6ae3fc644d755cc633ef78213777f0e908cd6e805765b82a4",
+      "git_blob": "42ffa199bc9a7a361917d6a02c06275e43433a81",
+      "kind": "exact_original_API_response_body",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-01"
+    },
+    {
+      "path": "api/mem/jobs.json",
+      "source_store_key": "cead-bounded-final-001-MEM-jobs",
+      "bytes": 12174,
+      "sha256": "47ac039d1216a240afc1399525b49eea4d7db7a071ba780c438c30f702e699be",
+      "git_blob": "c9d189018d8b4ed662328b54b06d42e85b03ed0a",
+      "kind": "exact_original_API_response_body",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-02"
+    },
+    {
+      "path": "api/architecture/run.json",
+      "source_store_key": "cead-bounded-final-001-Architecture-run",
+      "bytes": 14975,
+      "sha256": "31800ac0d0601acd7fd536226b8ef50ee11f916fe171a72117bddf65e4c132a9",
+      "git_blob": "8ad34bfd8ee6221af514c8a55d3de4fed4535d65",
+      "kind": "exact_original_API_response_body",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-03"
+    },
+    {
+      "path": "api/architecture/jobs.json",
+      "source_store_key": "cead-bounded-final-001-Architecture-jobs",
+      "bytes": 12587,
+      "sha256": "ab148551dcfef20e1161a8c7c7ef88513403f72c32b09ea2b43f657bac3d918e",
+      "git_blob": "a8f111e77fc0032942f15373b44cc6892298c571",
+      "kind": "exact_original_API_response_body",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-04"
+    },
+    {
+      "path": "api/private/run.json",
+      "source_store_key": "cead-bounded-final-001-Private-run",
+      "bytes": 15011,
+      "sha256": "b3c352f1ebb91d460542a95f5c4c8230a8a7251e83931c0a1668b31e725d1593",
+      "git_blob": "81a50507a3fe1a7df14ecde131f27b86603e943d",
+      "kind": "exact_original_API_response_body",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-05"
+    },
+    {
+      "path": "api/private/jobs.json",
+      "source_store_key": "cead-bounded-final-001-Private-jobs",
+      "bytes": 3726,
+      "sha256": "e18da4d752092183b45346605d46a6c74979ece2f4ff0f807f40b8b9e2c33f72",
+      "git_blob": "5879188c3d47ebfa303e0e273cdfa25bb0fe5614",
+      "kind": "exact_original_API_response_body",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-06"
+    },
+    {
+      "path": "api/windows-current/run.json",
+      "source_store_key": "cead-bounded-final-001-Windows-current-run",
+      "bytes": 14990,
+      "sha256": "38d8293fe0066a3d5937ac569d14eae9fa1b0d89754aedb43b48f09c99afe60f",
+      "git_blob": "1b4335c7e8e4da86b23ed8e8a2d902e73f54a701",
+      "kind": "exact_original_API_response_body",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-07"
+    },
+    {
+      "path": "api/windows-current/jobs.json",
+      "source_store_key": "cead-bounded-final-001-Windows-current-jobs",
+      "bytes": 2374,
+      "sha256": "7299d4e8d864ab3b24511fe09889908a72e191c3533df251da4589c515013593",
+      "git_blob": "0261baf31f789a148bab7f2e3386d3e86bcb8e36",
+      "kind": "exact_original_API_response_body",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-08"
+    },
+    {
+      "path": "api/blocking/run.json",
+      "source_store_key": "cead-bounded-final-001-Blocking-run",
+      "bytes": 16555,
+      "sha256": "9d4fca5d276eed7dd82d3e38e7fe9f8b3bbf634ced707da45f13eafbc83ac912",
+      "git_blob": "e0ae7f488f86de6c33872c59469bc2714848b436",
+      "kind": "exact_original_API_response_body",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-09"
+    },
+    {
+      "path": "api/blocking/jobs.json",
+      "source_store_key": "cead-bounded-final-001-Blocking-jobs",
+      "bytes": 82319,
+      "sha256": "3226729886cc49c6e56e6c27e1c32f77576bc4022e5c789110831f0fba2d4c96",
+      "git_blob": "27569215766dfb3cc02cdc3353f71ac1412b8579",
+      "kind": "exact_original_API_response_body",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-10"
+    },
+    {
+      "path": "OBSERVATION.json",
+      "source_store_key": "cead-bounded-final-001-observation",
+      "bytes": 18789,
+      "sha256": "c72af369288732f376e869aa85e05389777a1d93e5483044f8cfea197212a343",
+      "git_blob": "f577481e3fa5570e5cda5e5787131728b3b8dc2f",
+      "kind": "lossless_JSON_serialization_of_existing_stored_observation_or_index",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-11"
+    },
+    {
+      "path": "GNU_FAILURE_INDEX.json",
+      "source_store_key": "cead-bounded-final-001-gnu-failure-index",
+      "bytes": 1984,
+      "sha256": "85d4e4b9bfc65817ad112fdb23e67a8942f9cda56191acd44c89657c830b6c2b",
+      "git_blob": "8f99043ea3f1a5858bc8a22e603edb121500c809",
+      "kind": "lossless_JSON_serialization_of_existing_stored_observation_or_index",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-12"
+    },
+    {
+      "path": "GNU_EXPLANATION.json",
+      "source_store_key": "cead-bounded-final-001-gnu-explanation",
+      "bytes": 14140,
+      "sha256": "2ff7ff59a93d7860d11ca07651706597d2338e77af2af77ff8014387f3084df8",
+      "git_blob": "0fe67ac4ae68fe99423170b604bbe741aaecee4c",
+      "kind": "lossless_JSON_serialization_of_existing_stored_observation_or_index",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-13"
+    },
+    {
+      "path": "COLLECTION_SUMMARY.json",
+      "source_store_key": "cead-bounded-final-001-completion-summary",
+      "bytes": 664,
+      "sha256": "ccc724a741e7395e8202c91d102add7f3e58e34fa6baf30be73ca7de9a445d60",
+      "git_blob": "15aafa1dcdc70de7758d1f916eb6e00cb8091b18",
+      "kind": "lossless_JSON_serialization_of_existing_stored_observation_or_index",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-14"
+    },
+    {
+      "path": "raw/job-130737440544.log.utf8.part-001",
+      "bytes": 300002,
+      "sha256": "92b5367dd50dd618aa1ea8dcc385b4ebbb069bb9e33dcf86066f227dfb803623",
+      "git_blob": "cda377772a8724ca18e142d34c1632066b4c9580",
+      "kind": "exact_original_GNU_log_UTF8_part",
+      "sequence": 1,
+      "char_start": 0,
+      "char_end": 300000,
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-15"
+    },
+    {
+      "path": "raw/job-130737440544.log.utf8.part-002",
+      "bytes": 300000,
+      "sha256": "fea50fccff32b608dd8929e38676b9bc424e8489c9abf059b9a79102e05db3b0",
+      "git_blob": "5a4bb6d0307bf8f5b574237144a974abeb0ed7bc",
+      "kind": "exact_original_GNU_log_UTF8_part",
+      "sequence": 2,
+      "char_start": 300000,
+      "char_end": 600000,
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-16"
+    },
+    {
+      "path": "raw/job-130737440544.log.utf8.part-003",
+      "bytes": 300000,
+      "sha256": "1fa3a2f90d3ba76572745e3b8cd0a3da7a7b039bc35561743996f5a7955a0de6",
+      "git_blob": "52e01c7ae6cb83fa038f4ac621b6f5ac8145cc3c",
+      "kind": "exact_original_GNU_log_UTF8_part",
+      "sequence": 3,
+      "char_start": 600000,
+      "char_end": 900000,
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-17"
+    },
+    {
+      "path": "raw/job-130737440544.log.utf8.part-004",
+      "bytes": 300096,
+      "sha256": "b999ad6906cf73ebcb8154f67151afb6472fd39e0de13695daf109d9117e92bb",
+      "git_blob": "46fe773bec27c1a86ab9d4bf1aebb3d4ddaff3c2",
+      "kind": "exact_original_GNU_log_UTF8_part",
+      "sequence": 4,
+      "char_start": 900000,
+      "char_end": 1200000,
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-18"
+    },
+    {
+      "path": "raw/job-130737440544.log.utf8.part-005",
+      "bytes": 102958,
+      "sha256": "897c276aab82234fa7639fb6940b6405b368fa6419cdaee5dea4ddf07e5d81e7",
+      "git_blob": "1f0b8ff6a12189f4b7b88446626c6b58ce82f9bd",
+      "kind": "exact_original_GNU_log_UTF8_part",
+      "sequence": 5,
+      "char_start": 1200000,
+      "char_end": 1302926,
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "publication_store_key": "cead-current-appendix-001-file-19"
+    }
+  ],
+  "GNU_full_log": {
+    "path": "raw/job-130737440544.log",
+    "job_id": 130737440544,
+    "bytes": 1303056,
+    "sha256": "1d383ab292cd42706afd9c6752810b3d7fe0bf8b5b14a70aa824fdb2a5a4a251",
+    "git_blob": "471328718e457c84356fbbeac2778a5cc5a4542e",
+    "full_git_blob_integrity_pin_only_not_created_as_one_large_blob": true,
+    "reassemble": "Concatenate the five part UTF-8 byte sequences in sequence order without adding separators or normalizing BOM/newlines; verify exact bytes, SHA-256 and Git blob SHA-1.",
+    "parts": [
+      {
+        "path": "raw/job-130737440544.log.utf8.part-001",
+        "bytes": 300002,
+        "sha256": "92b5367dd50dd618aa1ea8dcc385b4ebbb069bb9e33dcf86066f227dfb803623",
+        "git_blob": "cda377772a8724ca18e142d34c1632066b4c9580",
+        "sequence": 1,
+        "char_start": 0,
+        "char_end": 300000,
+        "actual_created": true,
+        "full_utf8_readback_equal": true
+      },
+      {
+        "path": "raw/job-130737440544.log.utf8.part-002",
+        "bytes": 300000,
+        "sha256": "fea50fccff32b608dd8929e38676b9bc424e8489c9abf059b9a79102e05db3b0",
+        "git_blob": "5a4bb6d0307bf8f5b574237144a974abeb0ed7bc",
+        "sequence": 2,
+        "char_start": 300000,
+        "char_end": 600000,
+        "actual_created": true,
+        "full_utf8_readback_equal": true
+      },
+      {
+        "path": "raw/job-130737440544.log.utf8.part-003",
+        "bytes": 300000,
+        "sha256": "1fa3a2f90d3ba76572745e3b8cd0a3da7a7b039bc35561743996f5a7955a0de6",
+        "git_blob": "52e01c7ae6cb83fa038f4ac621b6f5ac8145cc3c",
+        "sequence": 3,
+        "char_start": 600000,
+        "char_end": 900000,
+        "actual_created": true,
+        "full_utf8_readback_equal": true
+      },
+      {
+        "path": "raw/job-130737440544.log.utf8.part-004",
+        "bytes": 300096,
+        "sha256": "b999ad6906cf73ebcb8154f67151afb6472fd39e0de13695daf109d9117e92bb",
+        "git_blob": "46fe773bec27c1a86ab9d4bf1aebb3d4ddaff3c2",
+        "sequence": 4,
+        "char_start": 900000,
+        "char_end": 1200000,
+        "actual_created": true,
+        "full_utf8_readback_equal": true
+      },
+      {
+        "path": "raw/job-130737440544.log.utf8.part-005",
+        "bytes": 102958,
+        "sha256": "897c276aab82234fa7639fb6940b6405b368fa6419cdaee5dea4ddf07e5d81e7",
+        "git_blob": "1f0b8ff6a12189f4b7b88446626c6b58ce82f9bd",
+        "sequence": 5,
+        "char_start": 1200000,
+        "char_end": 1302926,
+        "actual_created": true,
+        "full_utf8_readback_equal": true
+      }
+    ],
+    "split_boundary_surrogate_pair_safe": true,
+    "complete_original_log_retained": true
+  },
+  "five_original_scope_observations": [
+    {
+      "scope": "MEM",
+      "run_id": 43082162285,
+      "attempt": 1,
+      "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "run_api_status": "in_progress",
+      "run_api_conclusion": null,
+      "returned_job_count": 3,
+      "total_job_count": 3,
+      "job_status_counts": {
+        "success": 2,
+        "in_progress": 1
+      },
+      "source_and_attempt_all_match": true
+    },
+    {
+      "scope": "Architecture",
+      "run_id": 43082162230,
+      "attempt": 1,
+      "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "run_api_status": "in_progress",
+      "run_api_conclusion": null,
+      "returned_job_count": 2,
+      "total_job_count": 2,
+      "job_status_counts": {
+        "in_progress": 1,
+        "success": 1
+      },
+      "source_and_attempt_all_match": true
+    },
+    {
+      "scope": "Private",
+      "run_id": 43082162225,
+      "attempt": 1,
+      "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "run_api_status": "in_progress",
+      "run_api_conclusion": null,
+      "returned_job_count": 1,
+      "total_job_count": 1,
+      "job_status_counts": {
+        "in_progress": 1
+      },
+      "source_and_attempt_all_match": true
+    },
+    {
+      "scope": "Windows-current",
+      "run_id": 43082162284,
+      "attempt": 1,
+      "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "run_api_status": "in_progress",
+      "run_api_conclusion": null,
+      "returned_job_count": 1,
+      "total_job_count": 1,
+      "job_status_counts": {
+        "in_progress": 1
+      },
+      "source_and_attempt_all_match": true
+    },
+    {
+      "scope": "Blocking",
+      "run_id": 43082162592,
+      "attempt": 1,
+      "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "run_api_status": "queued",
+      "run_api_conclusion": null,
+      "returned_job_count": 35,
+      "total_job_count": 35,
+      "job_status_counts": {
+        "success": 18,
+        "queued": 4,
+        "in_progress": 7,
+        "failure": 2,
+        "skipped": 4
+      },
+      "source_and_attempt_all_match": true
+    }
+  ],
+  "original_run_jobs_state_discrepancy": {
+    "scope": "Blocking",
+    "run_api_status": "queued",
+    "jobs_api_already_active_and_terminal": true,
+    "not_normalized_or_explained_by_inference": true
+  },
+  "definite_terminal_failures_at_snapshot": [
+    {
+      "job_id": 130737440461,
+      "label": "Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "conclusion": "failure",
+      "failed_step": "bazel test //...",
+      "job_completed_at": "2026-11-11T19:02:30Z",
+      "OpenSSH_install_step": "success",
+      "bazel_test_step": "failure",
+      "operator_acceptance_step": "success",
+      "clean_worktree_step": "success",
+      "evidence_scope": "Original job/step API only; its full log and concrete case identities were not read in this bounded check.",
+      "native_case_count": "NOT_INFERRED"
+    },
+    {
+      "job_id": 130737440544,
+      "label": "Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "conclusion": "failure",
+      "failed_step": "bazel test //...",
+      "full_log_included": true,
+      "failed_target": "//codex-rs/core:core-all-wine-exec-test",
+      "original_target_summary": "FAILED in 3 out of 18 in 27.3s",
+      "displayed_Rust_result_block": {
+        "passed": 77,
+        "failed": 3,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 1346,
+        "elapsed_seconds": 15.48
+      },
+      "displayed_failure_names": [
+        "suite::approvals::approval_matrix_covers_group::test_case_3_workspace_write",
+        "suite::extension_sandbox::extension_tool_uses_granted_turn_permissions_without_host_local_persistence",
+        "suite::pending_input::any_new_input_interrupts_sleep"
+      ],
+      "concrete_observations": [
+        "extension_sandbox.rs:313 expected an input_image object but observed Null.",
+        "pending_input failed with timeout waiting for event: Elapsed(()) at core/tests/common/lib.rs:356.",
+        "The approval case is present in the final failure-name list; its specific assertion cause is not established by the displayed tail."
+      ],
+      "flaky_target": {
+        "label": "//codex-rs/app-server:app-server-all-wine-exec-test",
+        "original_summary": "FLAKY, failed in 1 out of 17 in 29.4s",
+        "displayed_failure_case": "suite::v2::plugin_list::plugin_list_fetches_workspace_directory_kind_when_remote_plugin_disabled",
+        "displayed_terminal_error": "No such file or directory (os error 2)",
+        "counted_as_strict_pass": false
+      },
+      "aggregate_attempt_and_Rust_case_totals_not_inferred": true
+    }
+  ],
+  "contrast_with_old_d0f_musl": {
+    "outside_packet_reference_only": "e75e0fdbd7fb6078959156ea03973ff2916b6e0d",
+    "old_source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "old_job_id": 130668671390,
+    "old_bazel_and_operator_steps": "skipped; zero executed test commands",
+    "current_cead_test_stage_reached": true,
+    "current_failure_not_described_as_old_dependency_stage_cancellation": true,
+    "old_logs_not_included_in_payload_count": true
+  },
+  "preservation_notes": [
+    "The ten API files are the exact original stored response bodies.",
+    "The four JSON observation/index/explanation files are lossless serializations of previously stored objects, not new CI observations.",
+    "GNU_EXPLANATION contains clearly labelled display truncation on some long contextual lines; the complete source log is preserved in the five exact parts.",
+    "Later root 19:10 observations are separate and do not replace this 19:08 snapshot."
+  ],
+  "boundaries": {
+    "current_CI_not_accepted": true,
+    "no_transfer_of_old_passes": true,
+    "flaky_not_strict_pass": true,
+    "no_all_Rust_testcase_total_claim": true,
+    "no_claim_Clippy_change_caused_failure": true,
+    "all_five_runs_not_terminal_in_this_snapshot": true,
+    "no_source_PR_or_ref_mutation": true,
+    "no_CI_admission_rerun_cancel": true,
+    "no_new_model_or_H_call": true,
+    "no_local_execution": true
+  },
+  "publication_action": "Only actual Git blob creation and full UTF-8 readback of already captured data; no reference was updated."
+}

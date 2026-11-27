@@ -1,0 +1,221 @@
+{
+  "head": "b5b31f82d9ef7f3717df4a88d486a434b18cc9d6",
+  "run": 36252485730,
+  "job": 108436525730,
+  "summary": {
+    "run": 361,
+    "pass": 338,
+    "fail": 23,
+    "skip": 0
+  },
+  "cases": [
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "summary_line": 8919,
+      "first_panic_line": 5046,
+      "panic_location": "hepta-agentd/src/authbus_dispatch_tests.rs:114:18:",
+      "detail": "2026-09-26T17:15:18.6069129Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:18.6069675Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "summary_line": 8920,
+      "first_panic_line": 5211,
+      "panic_location": "hepta-agentd/src/authbus_dispatch_tests.rs:114:18:",
+      "detail": "2026-09-26T17:15:19.9480011Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:19.9480382Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "summary_line": 8921,
+      "first_panic_line": 5376,
+      "panic_location": "hepta-agentd/src/authbus_dispatch_tests.rs:114:18:",
+      "detail": "2026-09-26T17:15:21.2809395Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:21.2809780Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+      "summary_line": 8922,
+      "first_panic_line": 5541,
+      "panic_location": "hepta-agentd/src/authbus_dispatch_tests.rs:114:18:",
+      "detail": "2026-09-26T17:15:22.6015381Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:22.6015743Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+      "summary_line": 8923,
+      "first_panic_line": 5706,
+      "panic_location": "hepta-agentd/src/authbus_dispatch_tests.rs:114:18:",
+      "detail": "2026-09-26T17:15:23.9514618Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:23.9514988Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+      "summary_line": 8924,
+      "first_panic_line": 5871,
+      "panic_location": "hepta-agentd/src/automation_service_tests.rs:306:14:",
+      "detail": "2026-09-26T17:15:25.2791485Z     real cognitive owner: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:25.2791826Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_context::tests::budget::byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention",
+      "summary_line": 8925,
+      "first_panic_line": 6045,
+      "panic_location": "hepta-agentd/src/cognitive_context_budget_tests.rs:188:53:",
+      "detail": "2026-09-26T17:15:33.1407914Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:33.1408273Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_context::tests::budget::learned_ranker_can_select_a_candidate_outside_legacy_top_four",
+      "summary_line": 8926,
+      "first_panic_line": 6210,
+      "panic_location": "hepta-agentd/src/cognitive_context_budget_tests.rs:188:53:",
+      "detail": "2026-09-26T17:15:34.3828206Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:34.3828565Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_context::tests::budget::learned_winner_survives_legacy_byte_cut_and_response_stays_bounded",
+      "summary_line": 8927,
+      "first_panic_line": 6375,
+      "panic_location": "hepta-agentd/src/cognitive_context_budget_tests.rs:188:53:",
+      "detail": "2026-09-26T17:15:35.6466268Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:35.6466653Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_context::tests::budget::oversized_learned_winner_does_not_consume_the_only_result_slot",
+      "summary_line": 8928,
+      "first_panic_line": 6540,
+      "panic_location": "hepta-agentd/src/cognitive_context_budget_tests.rs:188:53:",
+      "detail": "2026-09-26T17:15:36.9234486Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:36.9234866Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_context::tests::context_reads_real_owner_content_and_removes_committed_tombstones",
+      "summary_line": 8929,
+      "first_panic_line": 6705,
+      "panic_location": "hepta-agentd/src/cognitive_context_tests.rs:44:53:",
+      "detail": "2026-09-26T17:15:38.1837280Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:38.1837646Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_context::tests::final_use_binds_complete_owner_cut_not_only_memory_snapshot",
+      "summary_line": 8930,
+      "first_panic_line": 6867,
+      "panic_location": "hepta-agentd/src/cognitive_context_tests.rs:178:53:",
+      "detail": "2026-09-26T17:15:39.4351492Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:39.4351851Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed",
+      "summary_line": 8931,
+      "first_panic_line": 7028,
+      "panic_location": "hepta-agentd/src/cognitive_context_hnmf_tests.rs:80:53:",
+      "detail": "2026-09-26T17:15:40.6951468Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:40.6951826Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_context::tests::hnmf::current_hnmf_context_filters_owner_candidates_before_delivery",
+      "summary_line": 8932,
+      "first_panic_line": 7193,
+      "panic_location": "hepta-agentd/src/cognitive_context_hnmf_tests.rs:80:53:",
+      "detail": "2026-09-26T17:15:41.9645655Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:41.9646024Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_context::tests::hnmf::final_use_revalidation_rejects_changed_hnmf_context",
+      "summary_line": 8933,
+      "first_panic_line": 7358,
+      "panic_location": "hepta-agentd/src/cognitive_context_hnmf_tests.rs:80:53:",
+      "detail": "2026-09-26T17:15:43.2273374Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:43.2273745Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+      "summary_line": 8934,
+      "first_panic_line": 7526,
+      "panic_location": "hepta-agentd/src/cognitive_ranker_tests.rs:453:69:",
+      "detail": "2026-09-26T17:15:44.5968007Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:44.5968391Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "cognitive_ranker::tests::sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deletion",
+      "summary_line": 8935,
+      "first_panic_line": 7687,
+      "panic_location": "hepta-agentd/src/cognitive_ranker_tests.rs:326:53:",
+      "detail": "2026-09-26T17:15:45.8590361Z     called `Result::unwrap()` on an `Err` value: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:45.8590725Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+      "summary_line": 8936,
+      "first_panic_line": 7917,
+      "panic_location": "hepta-agentd/src/runtime_tests.rs:126:10:",
+      "detail": "2026-09-26T17:15:48.9839602Z     real cognitive owner: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:48.9839934Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+      "summary_line": 8937,
+      "first_panic_line": 8082,
+      "panic_location": "hepta-agentd/src/runtime_tests.rs:126:10:",
+      "detail": "2026-09-26T17:15:50.2566537Z     real cognitive owner: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:50.2566869Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+      "summary_line": 8938,
+      "first_panic_line": 8251,
+      "panic_location": "hepta-agentd/src/runtime_tests.rs:126:10:",
+      "detail": "2026-09-26T17:15:51.6094752Z     real cognitive owner: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:15:51.6095083Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-agentd",
+      "test": "state::isolation_tests::current_durable_run_start_requires_live_owner_trust",
+      "summary_line": 8939,
+      "first_panic_line": 8464,
+      "panic_location": "hepta-agentd/src/state_isolation_tests.rs:429:14:",
+      "detail": "2026-09-26T17:16:03.6147904Z     cognitive owner: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")\n2026-09-26T17:16:03.6148255Z     stack backtrace:",
+      "classification": "production_schema_oracle_mismatch"
+    },
+    {
+      "crate": "codex-hepta-infer-worker-host",
+      "test": "native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start",
+      "summary_line": 8940,
+      "first_panic_line": 8709,
+      "panic_location": "hepta-infer-worker-host/src/native_app_server_tests.rs:411:10:",
+      "detail": "2026-09-26T17:16:08.0834386Z     physical turn start\n2026-09-26T17:16:08.0834506Z     stack backtrace:",
+      "classification": "physical_turn_not_observed_cause_not_yet_proven"
+    },
+    {
+      "crate": "codex-hepta-infer-worker-host",
+      "test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+      "summary_line": 8941,
+      "error_line": 8794,
+      "detail": "2026-09-26T17:16:08.6112002Z     Error: Corrupt(\"required cognitive schema definition oracle mismatch: 2d85becf3c319bd9816dabf00219ee2a5c61892cb2d1a20cb176ff201f416ca5\")",
+      "classification": "production_schema_oracle_mismatch"
+    }
+  ],
+  "native_rerun_this_session": false,
+  "candidate_coverage": "P0 migration, memory fixture and cargo-bin fixes do not alter the production schema fingerprint; no coverage transferred"
+}

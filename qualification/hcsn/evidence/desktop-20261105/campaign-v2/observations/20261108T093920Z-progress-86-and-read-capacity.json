@@ -1,0 +1,108 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-progress-observation-v3",
+  "observation": {
+    "progress_updated_utc": "2026-11-08T09:39:20.157666+00:00",
+    "progress_sha256": "d2839fa91fd686a2e11275c16d058096cfae5e20d4987711c23f2d69d3c452cf",
+    "progress_bytes": 14152,
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "process_state": "running",
+    "systemd": {
+      "active_state": "active",
+      "sub_state": "running",
+      "result": "success",
+      "exec_main_status": 0
+    },
+    "active_stage": "full",
+    "active_stage_started_utc": "2026-11-06T08:08:57.361720+00:00",
+    "registered_run_indexes": {
+      "completed": 86,
+      "failed": 0,
+      "unavailable": 0,
+      "requested": 170
+    },
+    "completed_cuda_runs_progress_count": 86,
+    "global_qualification": "open",
+    "no_automatic_training_retries": true,
+    "budget_change_permitted": false,
+    "physical_energy_missing_is_not_zero": true,
+    "progress_counts_are_campaign_registered_terminal_status_records": true,
+    "storage_bytes_reported_by_progress": {
+      "task_data_free": 142010425344,
+      "runtime_control_filesystem_free": 75789688832
+    },
+    "runtime_ready_receipts": {
+      "TORCH_READY_json_sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+      "MAMBA_READY_json_sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76"
+    }
+  },
+  "identity_level_audit": {
+    "previous_observation": {
+      "registered_run_indexes_independently_audited": 85,
+      "previous_checkpoint_file_hashes_verified": 48,
+      "previous_checkpoint_file_hashes_pending": 37,
+      "attempt_json_files_seen": 171,
+      "attempt_json_contents_read": false
+    },
+    "new_86th_identity": "not independently read in this observation",
+    "checkpoint_hash_for_new_identity": "not verified",
+    "attempt_costs_for_new_identity": "not verified",
+    "directory_inventory": "not completed",
+    "blocker": "direct SSH admitted capacity exhausted; no child submitted; no automatic retry",
+    "no_identity_or_checkpoint_claim_beyond_progress_count": true
+  },
+  "output_availability_observation": {
+    "full_json": "FileNotFoundError at read time; full stage remained running",
+    "terminal_json": "FileNotFoundError at read time; no terminal claim",
+    "full_runtime_manifest_json": "FileNotFoundError at read time; runtime manifest remains open",
+    "full_b_audit_json": "FileNotFoundError at read time; full B audit remains open"
+  },
+  "frozen_pins": {
+    "original_baseline_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+    "execution_candidate_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "candidate_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "candidate_benchmark_source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "expected_campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "expected_campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "local_runtime_manifest_reverified": false
+  },
+  "github": {
+    "exact_source_ci": {
+      "run_id": 42078258351,
+      "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+      "status": "completed",
+      "conclusion": "success",
+      "job_id": 127424159520,
+      "job_name": "kernel-and-mechanisms",
+      "job_status": "completed",
+      "job_conclusion": "success",
+      "steps_passed": 10,
+      "steps_total": 10,
+      "updated_at": "2026-11-05T23:14:10Z"
+    },
+    "trusted_main_gpu_probe": {
+      "run_id": 39526325715,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "run_attempt": 5,
+      "updated_at": "2026-11-06T14:15:29Z"
+    },
+    "pr_4873_read": "404 Not Found; no PR mutation performed"
+  },
+  "qualification": {
+    "strict_baseline_cpu": "previously verified 95/95 PASS; not rerun",
+    "strict_candidate_cpu": "previously verified 109/109 PASS; not rerun",
+    "fixed_cpu_cuda_parity": "previously verified 16/16 each; not a full-matrix parity claim",
+    "b_full_audit": "open; 20 identities remain the denominator",
+    "mamba2_full_matrix": "open; prior observation 5/10 completed",
+    "physical_gpu_energy": "null unless an actual supported counter receipt appears; no imputation"
+  },
+  "publication": {
+    "evidence_branch": "research/hcsn-desktop-evidence-20261105",
+    "source_branch_modified": false,
+    "campaign_outputs_modified": false,
+    "training_budget_started_or_retried": false,
+    "credentials_or_home_paths_published": false,
+    "observation_only": true
+  }
+}

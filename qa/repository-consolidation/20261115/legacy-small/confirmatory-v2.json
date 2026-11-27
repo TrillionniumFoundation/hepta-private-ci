@@ -1,0 +1,33 @@
+{
+  "observed_at": "2026-11-15T15:37:28.702612+00:00",
+  "base": "a6b77d82aba0d0f85c99e72910e4184ecec09262",
+  "incoming": "f5a605255bca5a300a6c524e8206e8f0cc13d6c3",
+  "preview_tree": "cb56605bcec1cb6a4dc2dd899bbc17bdef279221",
+  "normal_merge": true,
+  "conflicts": [],
+  "delta": [
+    "A\tqa/ndu-grounded-generation/CONFIRMATORY_V2.md",
+    "A\tqa/ndu-grounded-generation/confirmatory_v2.py",
+    "A\tqa/ndu-grounded-generation/test_confirmatory_v2.py"
+  ],
+  "review": "Reviewed complete production module and tests. Requires fixed 12-method roster, at least three seeds, full source/seed/method denominator, score/cost completeness, pinned registration and cohort firewall. Uses fractional CVaR and 15 paired source-cluster bootstrap contrasts with Bonferroni intervals. Missing/over-budget observations retain zero quality and severe loss; all paths keep model_promotion_authorized false. CLI defaults retain 128 sources and 2000 bootstrap draws; synthetic unit overrides are not production results.",
+  "source_corrections": null,
+  "all_incoming_paths_byte_identical": true,
+  "path_sha256": {
+    "qa/ndu-grounded-generation/CONFIRMATORY_V2.md": "934fdcafb69e7b555cb6674e6845ddf7105fe92670ff4373bba75dc912578018",
+    "qa/ndu-grounded-generation/confirmatory_v2.py": "ef8da95baaf2b75e8d6939dfeeffd507ec96c5527bf24b5a6e63951ecd7caf7e",
+    "qa/ndu-grounded-generation/test_confirmatory_v2.py": "5ad68096489f29d58bc834a41dd62bb451dfca5001a2be501c5991b73cdc9635"
+  },
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "-v",
+    "test_confirmatory_v2"
+  ],
+  "cwd": "qa/ndu-grounded-generation",
+  "test_exit": 0,
+  "reported_tests": 10,
+  "source_unchanged": true,
+  "qualification": false
+}

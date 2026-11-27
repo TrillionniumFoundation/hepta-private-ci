@@ -1,0 +1,26 @@
+Command: python -m unittest discover -s scripts/hepta_pred1 -p test_*.py -t scripts -q
+----------------------------------------------------------------------
+Ran 100 tests in 3.587s
+
+OK
+Exit: 0
+Outer wall seconds: 3.756104
+
+Initial validation source (before Python 3.10 compatibility fix):
+00b37e3cd355054cc08e5c58f530e55c25062d3ef37578601897b746511aab8f  scripts/hepta_pred1/native_ledger.py
+623deba037fc40839bb5aadde31a232f04864ec6c3aef77d2769afc82a365b6c  scripts/hepta_pred1/test_native_ledger.py
+
+Final behavioral validation after Python 3.10 API-compatibility correction:
+42f9ef2c03a37c1473cec143b7177d525e183c3d585e43033e2ee4a2285c0537  scripts/hepta_pred1/native_ledger.py
+8f512ee383c3d7bf9b30078a42de76e3df14ab06ec9751e9a9bad2c42cd21e0f  scripts/hepta_pred1/test_native_ledger.py
+----------------------------------------------------------------------
+Ran 101 tests in 3.577s
+
+OK
+Exit: 0
+Outer wall seconds: 3.793604
+
+Maintenance: just fmt exit 0 (offline uv, repository formatter).
+Formatted Python ASTs identical to final tested source.
+Original nine-file training source closure unchanged.
+Ruff 0.15.13 check exit 0: All checks passed!

@@ -1,0 +1,825 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "observation_started_utc": "2026-11-16T13:42:02.026933+00:00",
+  "observed_utc": "2026-11-16T13:42:18.436001+00:00",
+  "verification_completed_utc": "2026-11-16T13:42:21.032450+00:00",
+  "snapshot_type": "Fresh remote refs observed before publication; independent of the earlier fixed graph audit package.",
+  "expected_publish_refs": {
+    "main": {
+      "expected": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "observed": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "matches": true
+    },
+    "integration/hepta-single-main-20261113-ab5b": {
+      "expected": "285e971b3af3a93a79169b56a42263069e473057",
+      "observed": "285e971b3af3a93a79169b56a42263069e473057",
+      "matches": true
+    }
+  },
+  "complete_refs": {
+    "count": 7294,
+    "original_count": 7294,
+    "original_snapshot_file_sha256": "9fcf9424d9408a37acccd5ec50f52b82c23474bea024a78972712ccd7592a381",
+    "raw_ls_remote_bytes": 720576,
+    "raw_ls_remote_sha256": "b725d780c685e1e82f7b6826a431b2e571ee2d193195c05b8a07739194c00d04",
+    "raw_ls_remote_git_blob": "7537cc33d1146c963abfc34b329149182388f381",
+    "gzip_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/prepublication-refs.tsv.gz",
+    "gzip_bytes": 268146,
+    "gzip_sha256": "77a58f3c82240d1d2d718f9a420efba9bc8ae1639936d3d8ce1a1bb10a7b7b00",
+    "gzip_git_blob": "5185994384edf0ff381e0f05769697006f1d2842",
+    "gzip_restores_original_bytes": true,
+    "added_names": [],
+    "removed_names": [],
+    "changed_refs": [
+      {
+        "name": "codex/hia-example-validation-oracle-20261116-9f0b",
+        "original": "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8",
+        "observed": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+        "protected_hia": true
+      },
+      {
+        "name": "codex/hia-union29-20261116-a90d",
+        "original": "827ec2d5b00e9da12d4014314f1e24b08a42f825",
+        "observed": "74966363fd422d2c621a6aa29ac51864726364a8",
+        "protected_hia": true
+      }
+    ],
+    "all_changes_are_protected_hia_advances": true
+  },
+  "candidate": {
+    "commit": "23a7b1bceda59d792762833920e0e16ed2b8ea5f",
+    "tree": "751e50a0172e467176be68a1331519c8ea171307",
+    "ancestor_count": 40100,
+    "rev_list_output_sha256": "deaf0070b5fa8b1d52fee2e31b7d8aae5c72d780e9332e8291173cb523f3cddb",
+    "protected_original_or_current_head_collisions": [],
+    "protected_marker_collisions": []
+  },
+  "protected_hia": {
+    "count": 63,
+    "markers": [
+      "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+      "3aa1f85ba90c79d220a5cadf2261def176892867"
+    ],
+    "current_heads": [
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-evidence-v1",
+        "original": "37486a3e2f94b6ab66052c3c0734ac3cd10946e8",
+        "current": "37486a3e2f94b6ab66052c3c0734ac3cd10946e8",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s01",
+        "original": "365a195b82c9cc9be66ec1fc9e937df3475b8e81",
+        "current": "365a195b82c9cc9be66ec1fc9e937df3475b8e81",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s02",
+        "original": "6d2cbf19bce1c3901c515f4b794c3e90630d86f5",
+        "current": "6d2cbf19bce1c3901c515f4b794c3e90630d86f5",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s03",
+        "original": "f5f9e7f64e23173c3c99448c82202629e822add3",
+        "current": "f5f9e7f64e23173c3c99448c82202629e822add3",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s04",
+        "original": "9bcc42c7120f449cf256439b1699874219eaa57b",
+        "current": "9bcc42c7120f449cf256439b1699874219eaa57b",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s05",
+        "original": "3e4aaebf5f0ca990c730e5d9670f63ece098408e",
+        "current": "3e4aaebf5f0ca990c730e5d9670f63ece098408e",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s06",
+        "original": "72da6cfaf091ab55ea0ea4dda4227d409fd926e1",
+        "current": "72da6cfaf091ab55ea0ea4dda4227d409fd926e1",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s07",
+        "original": "e5486f99fa1f3b801ff12da99c1580885711a1c5",
+        "current": "e5486f99fa1f3b801ff12da99c1580885711a1c5",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s08",
+        "original": "2a9e2a91713e30103b3dd99a07f0f23fa50bedf1",
+        "current": "2a9e2a91713e30103b3dd99a07f0f23fa50bedf1",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s09",
+        "original": "173de531bb5bf2cc8ab8c9605225d1876a265992",
+        "current": "173de531bb5bf2cc8ab8c9605225d1876a265992",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s10",
+        "original": "6c5b7a788f877077d17c98138a800e3ef465bc60",
+        "current": "6c5b7a788f877077d17c98138a800e3ef465bc60",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s11",
+        "original": "e780af7581d6cf00f7cf6a91435412a0eba6effe",
+        "current": "e780af7581d6cf00f7cf6a91435412a0eba6effe",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s12",
+        "original": "c333ea22eb8f739aeceed429b53c08a556e7ee82",
+        "current": "c333ea22eb8f739aeceed429b53c08a556e7ee82",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-hia-ci-evidence-20261116-724f",
+        "original": "2a89089230be1c8b850beeeeda4d5f47943bcad2",
+        "current": "2a89089230be1c8b850beeeeda4d5f47943bcad2",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/cell-hia-joint-20261115-724f",
+        "original": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+        "current": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "3aa1f85ba90c79d220a5cadf2261def176892867"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hepta-doc-map-real-source-20261115-r11",
+        "original": "97fc55515538d0f661a330da6399c5785eb8eecb",
+        "current": "97fc55515538d0f661a330da6399c5785eb8eecb",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-allowed-prefixes-20261115-9f0b",
+        "original": "ae39735ac801c33c2166f043ea1471c3c445460a",
+        "current": "ae39735ac801c33c2166f043ea1471c3c445460a",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-ci-core-test-binaries-20261115-a90d",
+        "original": "4895cd93113b662d590f140d38736a30392081fc",
+        "current": "4895cd93113b662d590f140d38736a30392081fc",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-command-dispatch-20261115-9f0b",
+        "original": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "current": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-cross-owner-premerge-guard-20261116-v1",
+        "original": "5aa8417222b537dea2bf57515383ff95401b1983",
+        "current": "5aa8417222b537dea2bf57515383ff95401b1983",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-example-validation-oracle-20261116-9f0b",
+        "original": "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8",
+        "current": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+        "advanced": true,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-execpolicy-prefix-20261115-9f0b",
+        "original": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+        "current": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-file-update-20261115-9f38",
+        "original": "8b138f979a77baeb78b28b8273febcef960dcb88",
+        "current": "8b138f979a77baeb78b28b8273febcef960dcb88",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-foundation-contract-20261114-9f38",
+        "original": "d6690efc44f7ca1d2075f1b6fec81b91100cf61a",
+        "current": "d6690efc44f7ca1d2075f1b6fec81b91100cf61a",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-list-agents-completion-20261115-run11",
+        "original": "355118ec887d22affe13b33ce3907c697e4360f4",
+        "current": "355118ec887d22affe13b33ce3907c697e4360f4",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-macos-code-mode-startup-20261115-a90d",
+        "original": "bb321262064982217002ae608f484a235c160e85",
+        "current": "bb321262064982217002ae608f484a235c160e85",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-macos-matrix-cipher-20261115-a90d",
+        "original": "842a49e96d7e6960267913825e01d53d96aab971",
+        "current": "842a49e96d7e6960267913825e01d53d96aab971",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-macos-matrix-phase-20261115-a90d",
+        "original": "a88f75d39308e6f3eddd046277a6e434f16d2b0f",
+        "current": "a88f75d39308e6f3eddd046277a6e434f16d2b0f",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-macos-owner-20261114-a90d",
+        "original": "57e489472a03515438df8ed7a0fabec882404f02",
+        "current": "57e489472a03515438df8ed7a0fabec882404f02",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-native-apparmor-profile-20261114",
+        "original": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4",
+        "current": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-native-bwrap-ci-20261114-p9",
+        "original": "862d66c02f42a7cc56e121691a72e715e40a2ecc",
+        "current": "862d66c02f42a7cc56e121691a72e715e40a2ecc",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-native-codex-20261114-a90d",
+        "original": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+        "current": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-native-ubuntu2204-sandbox-20261114",
+        "original": "d5f0e8e7ac6f57a5902b5e07e9fda274cec7a96b",
+        "current": "d5f0e8e7ac6f57a5902b5e07e9fda274cec7a96b",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-network-domains-20261115-9f0b",
+        "original": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+        "current": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-network-host-20261115-9f0b",
+        "original": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "current": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-patch-application-20261115-9f38",
+        "original": "cae5db67213f2621910bf39ff048ee60c887317b",
+        "current": "cae5db67213f2621910bf39ff048ee60c887317b",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-patch-effects-20261115-9f38",
+        "original": "aeb88f596b83186456caac577080bcb2f253ad32",
+        "current": "aeb88f596b83186456caac577080bcb2f253ad32",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-patch-integration-20261115-9f38",
+        "original": "2ff44b608a202c25e7551edca67a7a5362f34d36",
+        "current": "2ff44b608a202c25e7551edca67a7a5362f34d36",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-patch-output-20261115-9f38",
+        "original": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+        "current": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-patch-output-agentd-bridge-20261115-gpt6",
+        "original": "627de3c55ba106b0533b2281a08090aefd50e5d9",
+        "current": "627de3c55ba106b0533b2281a08090aefd50e5d9",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-patch-parser-20261115-9f38",
+        "original": "168080b72c4be242d14eadd47168f2a9326590f2",
+        "current": "168080b72c4be242d14eadd47168f2a9326590f2",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-patch-standalone-20261115-9f38",
+        "original": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231",
+        "current": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-patch-standalone-abi-producer-20261115-a11",
+        "original": "d40247b313fefa03a292fd6cbbc3fb8c2a985d9a",
+        "current": "d40247b313fefa03a292fd6cbbc3fb8c2a985d9a",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-plasticity-status-sync-20261115-r11x",
+        "original": "b34a4670c130111c06e24e070635391fa8694a60",
+        "current": "b34a4670c130111c06e24e070635391fa8694a60",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-policy-summary-20261115-9f0b",
+        "original": "7b51d6614e494ab62aa20f049c862ffef1808ce1",
+        "current": "7b51d6614e494ab62aa20f049c862ffef1808ce1",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-render19-rama-sdk-bridge-20261116-a11",
+        "original": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5",
+        "current": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-retirement-consistency-20261115-turn11",
+        "original": "086cdfd96c1312ef5cbc31b1cbe9a3a9614a30a3",
+        "current": "086cdfd96c1312ef5cbc31b1cbe9a3a9614a30a3",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-retirement-precheck-20261115-automation11",
+        "original": "48b58e8ac6237d44585d27260c6f4bd42f445ce5",
+        "current": "48b58e8ac6237d44585d27260c6f4bd42f445ce5",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-source-file-20261114-9f38",
+        "original": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
+        "current": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-source-file-fastpath-20261115-9f38",
+        "original": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+        "current": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-string-truncate-20261114-9f38",
+        "original": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+        "current": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-template-parse-20261115-9f38",
+        "original": "605832630c0c31742f26eee6c38f10cfa2490d90",
+        "current": "605832630c0c31742f26eee6c38f10cfa2490d90",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-template-render-20261115-9f38",
+        "original": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "current": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-token-budget-abi-20261114-9f38",
+        "original": "7fe65ae990187e6ff1130c791f902728b4e50197",
+        "current": "7fe65ae990187e6ff1130c791f902728b4e50197",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-twelve-integration-20261115-a90d",
+        "original": "91a1864a9b3aeb53b6ac653adb725a957564e56a",
+        "current": "91a1864a9b3aeb53b6ac653adb725a957564e56a",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-union29-20261116-a90d",
+        "original": "827ec2d5b00e9da12d4014314f1e24b08a42f825",
+        "current": "74966363fd422d2c621a6aa29ac51864726364a8",
+        "advanced": true,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-union29-rama-sdk-20261116-gpt6",
+        "original": "2536943576e90550bf2d69a8baff37a0cd397eaa",
+        "current": "2536943576e90550bf2d69a8baff37a0cd397eaa",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-uuid-20261115-9f38",
+        "original": "c468f632201c39957d3fecb92f05b37aa650b45e",
+        "current": "c468f632201c39957d3fecb92f05b37aa650b45e",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-windowed-native-20261114",
+        "original": "7e920e23b11e8f57891325a2e7805e8969c63551",
+        "current": "7e920e23b11e8f57891325a2e7805e8969c63551",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/hia-windows-owner-20261114-a90d",
+        "original": "bba5c1f6f4bef0c8faf58ef402beabea76543f1f",
+        "current": "bba5c1f6f4bef0c8faf58ef402beabea76543f1f",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/sdk-resolver-abi-20261115-9f0b",
+        "original": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+        "current": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/v8-canary-feature-parity-20261114-p9",
+        "original": "8ca15b214b56eb800c78849ecae298e7f47eaa1d",
+        "current": "8ca15b214b56eb800c78849ecae298e7f47eaa1d",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      },
+      {
+        "name": "codex/windows-private-fs-diagnostics-20261115-9f0b",
+        "original": "3d80582cf7d425df2aec4e3fffec23c7a0c14816",
+        "current": "3d80582cf7d425df2aec4e3fffec23c7a0c14816",
+        "advanced": false,
+        "current_descends_original": true,
+        "protected_marker_ancestors": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "original_in_candidate_ancestry": false,
+        "current_in_candidate_ancestry": false
+      }
+    ]
+  },
+  "publication_rule": "Compare the expected main and integration refs again at the actual publication step. Preserve all current HIA refs and any subsequent advances; do not reset them to an earlier observation.",
+  "remote_ref_mutations_by_this_audit": 0
+}

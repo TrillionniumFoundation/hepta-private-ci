@@ -1,0 +1,70 @@
+{
+  "decision": "ACCEPT_SECOND_FROZEN_MODEL_CONDITIONAL_CERTIFICATE",
+  "model": {
+    "rate": "1/20",
+    "payout": "2/25",
+    "volatility": "1/4",
+    "maturity": "3",
+    "principal": "60",
+    "coupon": "4",
+    "tax_shield": "1/4",
+    "recovery": "3/20",
+    "shock_intensity": "1",
+    "sale_fraction": "2/25"
+  },
+  "selection_independently_checked": "Lexicographic maximum payout/maturity/sale_fraction of12 historical samples; source sample used binary64 and was not an interval proof",
+  "replicated_stages": [
+    "verify_root",
+    "precompute",
+    "generate",
+    "freeze_assets",
+    "research_tests",
+    "validate"
+  ],
+  "all_stage_exit_zero": true,
+  "test_methods": 7,
+  "skips": 0,
+  "distinct_positive_points": 7,
+  "generator_negative_cases": 4,
+  "generator_negative_exit_codes": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "generator_negative_artifacts_emitted": false,
+  "nontiming_root_coefficient_asset_receipts_identical": true,
+  "point_ball_results_identical": true,
+  "generated_runtime_byte_identical": true,
+  "root_bracket": [
+    "99",
+    "100"
+  ],
+  "root_approximation": "99.149715704370704889130090845",
+  "full_uniform_relative_bound_upper_less_than": "1.008407668735893e-15",
+  "acceptance_budget": "2^-40",
+  "emission_bound": "2^-49",
+  "unchanged_domain": "0<log(V/B*)<=2^-19 inward-rounded binary64 endpoints",
+  "source_sha256": {
+    "PLAN.json": "f40f14ec07c10e167124f37d7f7f24021df26c4d6f2fd020d3e8fe8837fe60a5",
+    "PROOF.md": "88e3b38a43fe594f8e6a3ff1536041eb02c898ab8c982600679bf06ad60a22ba",
+    "REPORT.md": "9894f9fc56f821563f744e395fbe737abc93aa60ead1b7bf4e9d0d9ada7a12e8",
+    "oracle.py": "98740116b46a09d622bd14eddfe3ad80d826f57f9769c395f270fc1c8256a8b5",
+    "verify_root.py": "46918e14016706cf05d4477f4ab3cff70c5972cb1976c7c3b0358f4446036256",
+    "precompute.py": "7a738fba3808d12e1bcb3e7ba90464087f8fe5a22ad51760b1ced5832fa581ac",
+    "generate.py": "664961c3f6564eb6e87fc44656fbffe061c03ce17c5c5d41dc89795c6e16edf0",
+    "fastpath.py": "dc7b75f911739533eec7a56c15929c822997df3397f80944b15c3e2dd6a70905",
+    "research_tests.py": "2a4c29913ca8dfdb7f452e9e78fc31482e3d4c1879ab0b29514fb2159135f470"
+  },
+  "scope_notes": [
+    "Original A7/Green/derivative formula untouched apart from four exact rational parameters; precompute byte identical to reviewed original package.",
+    "General full-payoff tail M replaces default-specific96; positive affine root derivative, strict bracket signs and upper-bracket recovery guard hold for this exact tuple.",
+    "Exact root used via reviewed Eq12 identity; Green signs prove existence/uniqueness in bracket, not independent256bit integral validation of every closed-form digit.",
+    "Whole interval Taylor/argument/root split/coefficient/gamma6 error proof and RN intermediate-normal induction re-evaluated; seven points corroborate rather than certify alone.",
+    "Generator original false-default label failure retained. New identity checks address tested accidental model mixing, not cryptographic binding or hostile forged-receipt validation.",
+    "Zero-hazard and high-recovery negatives are specific inherited assertion rejections, not a general input validator.",
+    "Copied PROOF initially retained wrong default bracket/tail prose; fixed after independent review with original text preserved. No numerical source/result changed for correction.",
+    "Conditional on trusted FLINT and CPython IEEE RN, unchanged rounding mode/non-reassociated operations/untampered constants; no universal model/platform guarantee.",
+    "No production/default/remote/CI changes, no new parameter search or timing advantage claim."
+  ]
+}

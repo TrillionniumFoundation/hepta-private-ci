@@ -1,0 +1,166 @@
+name: Hepta Neuron Gated V3 shadow
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/**"
+      - "qualification/neuron-gated-sparse-v3/**"
+      - ".github/workflows/hepta-neuron-gated-v3-shadow.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-gated-v3-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  a0-signed-evidence-protocol:
+    name: A0 signed deployed-evidence negative tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.11"
+      - name: Install signature verifier
+        run: python -m pip install 'cryptography==46.0.4'
+      - name: Test signed registry and fail-closed evidence admission
+        run: python -m unittest discover -s qualification/neuron-gated-sparse-v3 -p 'test_*.py' -v
+      - name: No production baseline can be inferred from absent evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python qualification/neuron-gated-sparse-v3/a0_deployment_evidence.py             --evidence-root qualification/neuron-gated-sparse-v3             --trusted-public-key qualification/neuron-gated-sparse-v3/unavailable.pem --expected-host-id missing-ci-host --max-age-seconds 300; then
+            echo "A0 unexpectedly accepted missing deployment evidence" >&2
+            exit 1
+          fi
+
+  gated-q24:
+    name: Isolated V3 Q24 Rust mechanism and replay
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # pinned action
+        with:
+          toolchain: 1.96.0
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just,cargo-nextest
+      - name: Install native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+      - name: Verify source format and print diff if needed
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-neuron -- --config imports_granularity=Item
+          if ! git diff --exit-code -- hepta-neuron/src; then
+            echo "::error::The new V3 files require rustfmt; see diff above."
+            exit 1
+          fi
+      - name: Prepare exact-source joint-generation test helper
+        id: neuron_helpers
+        run: |
+          set -euo pipefail
+          python3 -B scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/neuron-gated-helpers" \
+            --github-env "$GITHUB_ENV"
+          python3 -B scripts/hepta_cell_test_helpers.py --verify-only \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/neuron-gated-helpers" \
+            > "$RUNNER_TEMP/neuron-gated-helpers-before.json"
+      - name: Test V1/V2/V3/SSM/minGRU without modifying legacy semantics
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-neuron --all-targets --retries 0
+      - name: Verify joint-generation helper remains bound to tested source
+        if: always() && steps.neuron_helpers.outcome == 'success'
+        run: |
+          python3 -B scripts/hepta_cell_test_helpers.py --verify-only \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/neuron-gated-helpers" \
+            > "$RUNNER_TEMP/neuron-gated-helpers-after.json"
+      - name: Run selected strict Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
+      - name: Build exact-source five-arm native mechanism probe
+        working-directory: codex-rs
+        run: cargo build --locked -p codex-hepta-neuron --bin neuron_shadow_mechanism_probe
+      - name: Execute five-arm and four-size same-Q24-input fixture matrix
+        working-directory: codex-rs
+        env:
+          PROBE_RESULT: ${{ runner.temp }}/neuron-q24-fixture-matrix.json
+        run: >-
+          python3 ../qualification/neuron-gated-sparse-v3/run_shadow_probe_matrix.py
+          --binary target/debug/neuron_shadow_mechanism_probe
+          --trace ../qualification/neuron-gated-sparse-v3/fixture_q24_trace.json
+          --report "$PROBE_RESULT"
+      - name: Validate all 20 native records and publish relative cost ratios
+        env:
+          PROBE_RESULT: ${{ runner.temp }}/neuron-q24-fixture-matrix.json
+          COST_REPORT: ${{ runner.temp }}/neuron-q24-cost-analysis.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/neuron-gated-sparse-v3/analyze_mechanism_costs.py \
+            --matrix "$PROBE_RESULT" --output "$COST_REPORT"
+      - name: Compile exact-source native mechanism fixture with Cargo release profile
+        working-directory: codex-rs
+        run: cargo build --locked --release -p codex-hepta-neuron --bin neuron_shadow_mechanism_probe
+      - name: Execute 20 isolated release-profile fixture processes
+        working-directory: codex-rs
+        env:
+          RELEASE_PROBE_RESULT: ${{ runner.temp }}/neuron-q24-release-fixture-matrix.json
+        run: >-
+          python3 ../qualification/neuron-gated-sparse-v3/run_shadow_probe_matrix.py
+          --binary target/release/neuron_shadow_mechanism_probe
+          --trace ../qualification/neuron-gated-sparse-v3/fixture_q24_trace.json
+          --report "$RELEASE_PROBE_RESULT"
+      - name: Fail closed on build mode or bitwise checkpoint frontier drift
+        env:
+          PROBE_RESULT: ${{ runner.temp }}/neuron-q24-fixture-matrix.json
+          RELEASE_PROBE_RESULT: ${{ runner.temp }}/neuron-q24-release-fixture-matrix.json
+          PROFILE_PAIR_RESULT: ${{ runner.temp }}/neuron-q24-profile-pair-parity.json
+        run: >-
+          python3 qualification/neuron-gated-sparse-v3/verify_build_profile_parity.py
+          --debug-matrix "$PROBE_RESULT"
+          --release-matrix "$RELEASE_PROBE_RESULT"
+          --output "$PROFILE_PAIR_RESULT"
+      - name: Validate release native cost ratios without NDU claims
+        env:
+          RELEASE_PROBE_RESULT: ${{ runner.temp }}/neuron-q24-release-fixture-matrix.json
+          RELEASE_COST_RESULT: ${{ runner.temp }}/neuron-q24-release-cost-analysis.json
+        run: >-
+          python3 qualification/neuron-gated-sparse-v3/analyze_mechanism_costs.py
+          --matrix "$RELEASE_PROBE_RESULT"
+          --output "$RELEASE_COST_RESULT"
+      - name: Retain explicitly non-production native fixture measurements
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-q24-fixture-matrix-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/neuron-q24-fixture-matrix.json
+            ${{ runner.temp }}/neuron-q24-cost-analysis.json
+            ${{ runner.temp }}/neuron-q24-release-fixture-matrix.json
+            ${{ runner.temp }}/neuron-q24-release-cost-analysis.json
+            ${{ runner.temp }}/neuron-q24-profile-pair-parity.json
+            ${{ runner.temp }}/neuron-gated-helpers
+            ${{ runner.temp }}/neuron-gated-helpers-before.json
+            ${{ runner.temp }}/neuron-gated-helpers-after.json
+            !${{ runner.temp }}/neuron-gated-helpers/bin/**
+          if-no-files-found: warn
+          retention-days: 14

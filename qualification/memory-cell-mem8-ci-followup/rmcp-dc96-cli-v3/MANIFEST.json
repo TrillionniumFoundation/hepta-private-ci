@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.mem8.rmcp-dc96-package.v1",
+  "archive_name": "mem8-rmcp-dc96-same-source-cli-v3.tar.xz",
+  "bytes": 382660,
+  "sha256": "45c9d0cb7b627ead0852e1db66ad0c839ecd96fedbad641290ea1bd02ea41192",
+  "git_blob": "64610662ba7dbeac2bf6a9e664d18cb23a391ac4",
+  "source_commit": "dc96a441312e239c165c1642880084dfeccc2c71",
+  "source_tree": "7796279284170f0f2c92449c1185eecac1f4f1b6",
+  "original_tests": {
+    "passed": 265,
+    "failed": 3,
+    "unique_selected": 268,
+    "filtered_or_ignored": 7
+  },
+  "same_source_cli_rerun": {
+    "passed": 3,
+    "failed": 0,
+    "selected_skipped": 0,
+    "retries": 0
+  },
+  "local_verifier": {
+    "validation": "passed",
+    "source_commit": "dc96a441312e239c165c1642880084dfeccc2c71",
+    "source_tree": "7796279284170f0f2c92449c1185eecac1f4f1b6",
+    "original": {
+      "run_id": "c6520272-0490-4d9f-bee4-5d08be7198bd",
+      "unique_selected_tests": 268,
+      "passed": 265,
+      "failed": 3,
+      "selected_skipped": 0,
+      "filtered_or_ignored": 7
+    },
+    "same_source_cli_rerun": {
+      "run_id": "a1810c8c-3ac2-4b4a-ad7c-f9a3d394437e",
+      "unique_selected_tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "selected_skipped": 0,
+      "filtered_or_ignored": 0
+    },
+    "rerun_ids_equal_original_failed_ids": true,
+    "source_capsule_verified_files": 64,
+    "fresh_f1fd_consumer_validation_claimed": false,
+    "single_268_pass_run_claimed": false,
+    "whole_ci_pass_claimed": false
+  },
+  "all_tar_member_bytes_read_back": true,
+  "whole_ci_pass_claimed": false,
+  "fresh_f1fd_consumer_validation_claimed": false
+}

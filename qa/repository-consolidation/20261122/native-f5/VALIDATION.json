@@ -1,0 +1,638 @@
+{
+  "native_tested_head": "f5eabeecd1e7a77493c933bb8cdabc8d7a81ea37",
+  "native_tested_tree": "a8c8b4d0ec95180fe571348cd22fab5ba790c603",
+  "prepared_v8_checkout_source": "278c76e8e34912e99f964b2099a49bf70a3dabc9",
+  "prepared_source_tree": "f8ab841517db29fbe02299a1bc5b2b8b73b13e3b",
+  "v8_native_result_on_prepared_source": "PENDING",
+  "private_artifacts": {
+    "run": 45044041266,
+    "job": 137274600302,
+    "artifact": 14763132226,
+    "artifact_sha256": "f770299d9fe8926c5993f39e0cc341ab71c1e69517459aee1265bad13fbfd5a5",
+    "head": "f5eabeecd1e7a77493c933bb8cdabc8d7a81ea37",
+    "tree": "a8c8b4d0ec95180fe571348cd22fab5ba790c603",
+    "status": "PASS_NEW_PRIVATE_ARTIFACT_CONTROLS",
+    "tests_run": 9,
+    "passed": 9,
+    "failed": 0,
+    "retries": 0,
+    "cases_outside_filter": 29,
+    "strict_terminal_set_matches": true,
+    "source_and_tools_unchanged": true,
+    "source_file_sha256": "b3e2c55d0663a2160466faa357db815f77ab8ba9418b5418fea7ec05560c5fbf",
+    "production_authority_granted": false,
+    "final_product_qualification": false,
+    "scope": "Nine retained-artifact controls only; never combined with the original 19 groups / 175 cases or legacy refusal results",
+    "receipt_sha256": "3a72afec4e1f68d40f0abcbd2d8333e2caeb8279c462434d71a2c18ab605d507"
+  },
+  "bazel_lock": {
+    "run": 45044046139,
+    "job": 137274614926,
+    "head": "f5eabeecd1e7a77493c933bb8cdabc8d7a81ea37",
+    "tree": "a8c8b4d0ec95180fe571348cd22fab5ba790c603",
+    "accepted_candidate": true,
+    "update_exit": 0,
+    "check_exit": 0,
+    "changed_tracked_paths": [],
+    "untracked_paths": [],
+    "inputs_unchanged": true,
+    "input_sha256": {
+      "MODULE.bazel": "19f06ff06d328e3505bb600dc653b83959b5c40b845b02258731cae37bbc2c85",
+      "MODULE.bazel.lock": "5eb7bf13444fc67ae9bef48bfcd6127bf18a7d6d84cd7a23b6eaf922541e1a06",
+      "codex-rs/Cargo.lock": "20c06630567bbea553645509121d5056c18bcfdb85e80bc7cd1b4e742ed161c8",
+      ".bazelversion": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef"
+    },
+    "artifact": 14762928565,
+    "artifact_sha256": "91ca4968d358920ddf914c2021c3edff9c04e31d3178206a650b3cc6cf8be925",
+    "raw_job_log_sha256": "2fb850b735bbaf838a8a771ca808eef3e32d5e568b42e531844d82caf55d0694",
+    "scope": "Lock update/check only; no native Rust runtime or main qualification claim"
+  },
+  "command_location": {
+    "run": 45044047752,
+    "job": 137275431881,
+    "artifact": 14762977015,
+    "artifact_sha256": "fa221609e1b567d2d2786add5a0c7f12398a76cf0c8cddce1a92cd282e90a776",
+    "cases": 12,
+    "locations": 2,
+    "long_short_path_queries": 160,
+    "winerror_5_queries": 160,
+    "expected_results_observed": false,
+    "source_and_cmd_image_unchanged": true,
+    "all_fresh_fixtures_within_owned_root": true,
+    "production_qualification": false,
+    "internal_cmd_root_cause": "UNCONFIRMED"
+  },
+  "v8_checkout_fix": {
+    "base": "f5eabeecd1e7a77493c933bb8cdabc8d7a81ea37",
+    "tree": "f8ab841517db29fbe02299a1bc5b2b8b73b13e3b",
+    "path": ".github/workflows/hepta-v8-windows-sandbox.yml",
+    "blob": "92a78b7575e301aed4ae61443bc34785c4b2066f",
+    "sha256": "532c8887a6635ac54f2ea46730b3c286641bb4c9af2e567f7c3e03f00523f682",
+    "bytes": 2356,
+    "checks": [
+      {
+        "label": "just-fmt",
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "f5eabeecd1e7a77493c933bb8cdabc8d7a81ea37"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 1.424,
+        "log_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+      },
+      {
+        "label": "prettier",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+          "/workspace/scratch/6d7ee0821539/rust-integration/node_modules/prettier/bin/prettier.cjs",
+          "--check",
+          ".github/workflows/hepta-v8-windows-sandbox.yml"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.313,
+        "log_sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+      },
+      {
+        "label": "codespell",
+        "command": [
+          "python3",
+          "-m",
+          "codespell_lib",
+          "--ignore-words",
+          ".codespellignore",
+          ".github/workflows/hepta-v8-windows-sandbox.yml"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.264,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "diff-check",
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.055,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "source_bytes_unchanged_after_fmt": true,
+    "new_tests_added": false,
+    "native_result": "PENDING_NEXT_HEAD"
+  },
+  "checks_snapshot": {
+    "saved_at_utc": "2026-11-22T16:51:01.366553+00:00",
+    "runs": [
+      {
+        "run_id": 45044046689,
+        "head": "f5eabeecd1e7a77493c933bb8cdabc8d7a81ea37",
+        "jobs": [
+          {
+            "id": 137274616429,
+            "name": "Select blocking CI scope",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:29:51Z",
+            "completed_at": "2026-11-22T16:31:01Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137274616609,
+            "name": "Current TaskFlow v1 migration source-head replay",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:32:52Z",
+            "completed_at": "2026-11-22T16:38:38Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137274616655,
+            "name": "Blob size policy / Blob size policy",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:31:57Z",
+            "completed_at": "2026-11-22T16:36:02Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137274616662,
+            "name": "Codespell / Check for spelling errors",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:29:49Z",
+            "completed_at": "2026-11-22T16:32:22Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137274616778,
+            "name": "Current TaskFlow v1 migration prospective-merge replay",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:32:53Z",
+            "completed_at": "2026-11-22T16:37:42Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137274618028,
+            "name": "LedgerWriter Bazel ${{ matrix.lane }} replay",
+            "status": "completed",
+            "conclusion": "skipped",
+            "started_at": "2026-11-22T16:28:42Z",
+            "completed_at": "2026-11-22T16:28:42Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137274618119,
+            "name": "Historical TaskFlow v1 migration ${{ matrix.lane }} replay",
+            "status": "completed",
+            "conclusion": "skipped",
+            "started_at": "2026-11-22T16:28:42Z",
+            "completed_at": "2026-11-22T16:28:42Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275301673,
+            "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:31:59Z",
+            "completed_at": "2026-11-22T16:35:10Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275301676,
+            "name": "rust-ci / Detect changed areas",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:31:34Z",
+            "completed_at": "2026-11-22T16:32:48Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275301748,
+            "name": "cargo-deny / cargo-deny",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:31:22Z",
+            "completed_at": "2026-11-22T16:35:00Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275301749,
+            "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:33:08Z",
+            "completed_at": "2026-11-22T16:34:44Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275301759,
+            "name": "repo-checks / Native Hepta paths on windows-latest",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:31:08Z",
+            "completed_at": "2026-11-22T16:34:59Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275301760,
+            "name": "repo-checks / build-test",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-22T16:31:52Z",
+            "completed_at": null,
+            "failed_steps": [],
+            "active_steps": [
+              "Verify Hepta privileged caller closed set"
+            ]
+          },
+          {
+            "id": 137275301766,
+            "name": "repo-checks / Native Hepta paths on macos-15",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:31:11Z",
+            "completed_at": "2026-11-22T16:34:34Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275301786,
+            "name": "sdk / sdks",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:32:18Z",
+            "completed_at": "2026-11-22T16:40:05Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275301818,
+            "name": "sdk / python-sdk",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:32:19Z",
+            "completed_at": "2026-11-22T16:34:22Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275301991,
+            "name": "learning.operator qualification / learning.operator exact source",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-22T16:32:24Z",
+            "completed_at": null,
+            "failed_steps": [],
+            "active_steps": [
+              "Exact-source compile, final-use, shadow, revocation and rollback tests"
+            ]
+          },
+          {
+            "id": 137275302010,
+            "name": "learning.operator qualification / learning.operator deterministic merge",
+            "status": "completed",
+            "conclusion": "failure",
+            "started_at": "2026-11-22T16:32:24Z",
+            "completed_at": "2026-11-22T16:36:09Z",
+            "failed_steps": [
+              "Materialize deterministic ordered-parent merge"
+            ],
+            "active_steps": []
+          },
+          {
+            "id": 137275302082,
+            "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-22T16:32:44Z",
+            "completed_at": null,
+            "failed_steps": [],
+            "active_steps": [
+              "Compile the opt-in calibration and plasticity-prerequisite integrations"
+            ]
+          },
+          {
+            "id": 137275302411,
+            "name": "NDU v6 neural rollout smoke / Unified profile and executed-policy regressions / Objective, continuation, and selected-policy invariants",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:33:01Z",
+            "completed_at": "2026-11-22T16:34:37Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275302745,
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-22T16:33:00Z",
+            "completed_at": null,
+            "failed_steps": [],
+            "active_steps": [
+              "bazel test shard"
+            ]
+          },
+          {
+            "id": 137275302954,
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-22T16:31:27Z",
+            "completed_at": null,
+            "failed_steps": [],
+            "active_steps": [
+              "bazel test shard"
+            ]
+          },
+          {
+            "id": 137275302990,
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+            "status": "completed",
+            "conclusion": "failure",
+            "started_at": "2026-11-22T16:31:53Z",
+            "completed_at": "2026-11-22T16:41:50Z",
+            "failed_steps": [
+              "bazel test shard"
+            ],
+            "active_steps": []
+          },
+          {
+            "id": 137275303011,
+            "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-22T16:31:44Z",
+            "completed_at": null,
+            "failed_steps": [],
+            "active_steps": [
+              "bazel test //..."
+            ]
+          },
+          {
+            "id": 137275303016,
+            "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-22T16:31:35Z",
+            "completed_at": null,
+            "failed_steps": [],
+            "active_steps": [
+              "bazel test //..."
+            ]
+          },
+          {
+            "id": 137275303024,
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:32:51Z",
+            "completed_at": "2026-11-22T16:48:39Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275303037,
+            "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-22T16:33:15Z",
+            "completed_at": null,
+            "failed_steps": [],
+            "active_steps": [
+              "Run native Core and app-server integration with host namespace support"
+            ]
+          },
+          {
+            "id": 137275303047,
+            "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:33:06Z",
+            "completed_at": "2026-11-22T16:39:35Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275303084,
+            "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+            "status": "completed",
+            "conclusion": "failure",
+            "started_at": "2026-11-22T16:33:13Z",
+            "completed_at": "2026-11-22T16:47:42Z",
+            "failed_steps": [
+              "bazel test //..."
+            ],
+            "active_steps": []
+          },
+          {
+            "id": 137275303154,
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+            "status": "completed",
+            "conclusion": "skipped",
+            "started_at": "2026-11-22T16:31:01Z",
+            "completed_at": "2026-11-22T16:31:23Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275304030,
+            "name": "Hepta scoped native checks / shard ${{ matrix.shard }}",
+            "status": "completed",
+            "conclusion": "skipped",
+            "started_at": "2026-11-22T16:31:01Z",
+            "completed_at": "2026-11-22T16:31:01Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275304038,
+            "name": "Lightweight prose and derived checks",
+            "status": "completed",
+            "conclusion": "skipped",
+            "started_at": "2026-11-22T16:31:01Z",
+            "completed_at": "2026-11-22T16:31:01Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275304894,
+            "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:31:39Z",
+            "completed_at": "2026-11-22T16:48:40Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275305112,
+            "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:31:51Z",
+            "completed_at": "2026-11-22T16:38:56Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275305187,
+            "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:31:51Z",
+            "completed_at": "2026-11-22T16:40:01Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275305318,
+            "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:33:07Z",
+            "completed_at": "2026-11-22T16:39:39Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275305320,
+            "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:31:29Z",
+            "completed_at": "2026-11-22T16:38:32Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275833619,
+            "name": "rust-ci / Rust format",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:33:09Z",
+            "completed_at": "2026-11-22T16:34:55Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275833625,
+            "name": "rust-ci / Argument comment lint package",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:33:10Z",
+            "completed_at": "2026-11-22T16:39:17Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275833656,
+            "name": "rust-ci / Cargo manifest preflight",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:33:10Z",
+            "completed_at": "2026-11-22T16:34:29Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137275833663,
+            "name": "rust-ci / cargo shear",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:33:11Z",
+            "completed_at": "2026-11-22T16:34:32Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137276321723,
+            "name": "rust-ci / Rust benchmark smoke",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:34:33Z",
+            "completed_at": "2026-11-22T16:36:39Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137277690256,
+            "name": "rust-ci / CI results (required)",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:39:20Z",
+            "completed_at": "2026-11-22T16:39:24Z",
+            "failed_steps": [],
+            "active_steps": []
+          }
+        ]
+      },
+      {
+        "run_id": 45044041266,
+        "head": "f5eabeecd1e7a77493c933bb8cdabc8d7a81ea37",
+        "jobs": [
+          {
+            "id": 137274600302,
+            "name": "Private artifact controls (9 exact cases)",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-22T16:28:41Z",
+            "completed_at": "2026-11-22T16:30:54Z",
+            "failed_steps": [],
+            "active_steps": []
+          },
+          {
+            "id": 137274600568,
+            "name": "Original regressions (process)",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-22T16:28:42Z",
+            "completed_at": null,
+            "failed_steps": [],
+            "active_steps": [
+              "Run the original process, transport and backend regressions"
+            ]
+          },
+          {
+            "id": 137274600681,
+            "name": "Original regressions (owners)",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-22T16:28:43Z",
+            "completed_at": null,
+            "failed_steps": [],
+            "active_steps": [
+              "Run the original process, transport and backend regressions"
+            ]
+          }
+        ]
+      }
+    ],
+    "all_required_gates_passed": false,
+    "main_updated": false
+  },
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "main_updated": false,
+  "deleted_branches": 0,
+  "all_required_gates_passed": false,
+  "existing_hia_and_exact_stop_boundary_unchanged": true,
+  "evidence_member_count": 52
+}

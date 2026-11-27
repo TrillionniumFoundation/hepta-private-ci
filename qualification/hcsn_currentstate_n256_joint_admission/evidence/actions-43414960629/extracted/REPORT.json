@@ -1,0 +1,27 @@
+{
+  "admission_source_sha256": "eec0dde1dd23f103d1a1942c81be84b1dea8a5697ebaf94bb2f482ab7872218a",
+  "all_closed": false,
+  "bound_lane_requests": {
+    "candidate": "hcsn_currentstate_n256_sparse_dynamic_intent/REQUEST.json",
+    "oracle": "hcsn_currentstate_n256_independent_oracle_intent/REQUEST.json",
+    "serializer": "hcsn_currentstate_n256_canonical_serializer_intent/REQUEST.json"
+  },
+  "bound_sources": {
+    "candidate_source_sha256": "hcsn_currentstate_n256_sparse_dynamic_intent/sparse_dynamic.py",
+    "oracle_source_sha256": "hcsn_currentstate_n256_independent_oracle_intent/independent_oracle.py",
+    "resource_snapshot_source_freeze_sha256": "hcsn_currentstate_n256_resource_snapshot/SOURCE_FREEZE.json",
+    "serializer_source_sha256": "hcsn_currentstate_n256_canonical_serializer_intent/canonical_serializer.py"
+  },
+  "candidate_oracle_calls": 0,
+  "current_joint_admission_files": 0,
+  "largegrid_qualification": false,
+  "matrix_exponential_actions": 0,
+  "n256_dynamic_runs": 0,
+  "n256_serializer_calls": 0,
+  "new_idempotency_keys": 0,
+  "optimizer_steps": 0,
+  "request_sha256": "5136f694d3ae6813c041eea40967be595243bff5ae2635d2402308eba403e899",
+  "schema": "hcsn-n256-joint-admission-static-audit-v1",
+  "status": "RED_JOINT_ADMISSION_HOLD",
+  "torch_calls": 0
+}

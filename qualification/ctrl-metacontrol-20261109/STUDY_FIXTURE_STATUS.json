@@ -1,0 +1,135 @@
+{
+  "archive": {
+    "bytes": 46372,
+    "files": 18,
+    "path": "STUDY_FIXTURE_EVIDENCE.tar.gz",
+    "sha256": "29d4b365e7856d2bf661db01b449f837e5ea270dcea12c32b4ac66ec806d6175"
+  },
+  "archive_metadata": "Tar ownership and timestamps normalized; all archived file bytes unchanged.",
+  "checkpoint_sha256": "ff879b3ff2795e39a6e12ed962485e8f9b290c281e164d94fde1457742397ae6",
+  "current_source_qualified_by_smoke": false,
+  "decision": "HOLD_NO_GO",
+  "evidence_kind": "fixture",
+  "external_evidence_independently_authenticated": false,
+  "files": [
+    {
+      "bytes": 52220,
+      "path": "study-fixture/calibration.jsonl",
+      "sha256": "ac5914fa5f78f00c80367c52d944a43870c0fc05474f1270ac02c9f321c3c6e2"
+    },
+    {
+      "bytes": 954,
+      "path": "study-fixture/command.json",
+      "sha256": "6eec62490163177942b50054b92a0f5d03872e6d1c4df0bea52a44233627af3f"
+    },
+    {
+      "bytes": 51820,
+      "path": "study-fixture/future.jsonl",
+      "sha256": "92316239fc6686269b2085fa8d5c80119bfbfc78a955f2b2853fdd67e317dad3"
+    },
+    {
+      "bytes": 1986,
+      "path": "study-fixture/result/controller.json",
+      "sha256": "ff879b3ff2795e39a6e12ed962485e8f9b290c281e164d94fde1457742397ae6"
+    },
+    {
+      "bytes": 46750,
+      "path": "study-fixture/result/freeze.json",
+      "sha256": "8a0f4493fd5e2177206750119eae29bf5eef0030462987a64e80f02d9c486304"
+    },
+    {
+      "bytes": 52220,
+      "path": "study-fixture/result/input-calibration.jsonl",
+      "sha256": "ac5914fa5f78f00c80367c52d944a43870c0fc05474f1270ac02c9f321c3c6e2"
+    },
+    {
+      "bytes": 51820,
+      "path": "study-fixture/result/input-future.jsonl",
+      "sha256": "92316239fc6686269b2085fa8d5c80119bfbfc78a955f2b2853fdd67e317dad3"
+    },
+    {
+      "bytes": 51740,
+      "path": "study-fixture/result/input-train.jsonl",
+      "sha256": "d98af5eb57f995a76fe956a974f025fe7bafa553016c7ea6322967a12767e1de"
+    },
+    {
+      "bytes": 1374,
+      "path": "study-fixture/result/registration.json",
+      "sha256": "02875bae7dda9cd9fe6b83a80e92f0b10624070789065dd347b556531b302e5c"
+    },
+    {
+      "bytes": 54341,
+      "path": "study-fixture/result/report.json",
+      "sha256": "5133b65d108e82ceab71e0aa934fb0b1c0fc19dfa4ba11cfbd70ec8c72e38c5a"
+    },
+    {
+      "bytes": 15234,
+      "path": "study-fixture/source/controllers.py",
+      "sha256": "0cd9c8da5122d6b7940e322382e9118607d54b14246ee3449feb05904728824b"
+    },
+    {
+      "bytes": 23625,
+      "path": "study-fixture/source/metacontrol.py",
+      "sha256": "174f45bbfc98dd72205f997292aed1f56769547db7dcc32bb4aecdd9c7fdd4f8"
+    },
+    {
+      "bytes": 8431,
+      "path": "study-fixture/source/metacontrol_checkpoint.py",
+      "sha256": "603c10cf48f56d41c119b06397d4ccdd7db1a0ebdee9d587d77bd746663e02c2"
+    },
+    {
+      "bytes": 20197,
+      "path": "study-fixture/source/metacontrol_study.py",
+      "sha256": "e37bb1010c78984ac49a227b82c74e971902b8b6e06338e6c828ca3485bfcf5e"
+    },
+    {
+      "bytes": 3377,
+      "path": "study-fixture/source/objective.py",
+      "sha256": "cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd"
+    },
+    {
+      "bytes": 0,
+      "path": "study-fixture/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 156,
+      "path": "study-fixture/stdout.log",
+      "sha256": "12c2aa22c910030ba676588102c19b4d8fa5794650a0e17469f23c8c64a1f426"
+    },
+    {
+      "bytes": 51740,
+      "path": "study-fixture/train.jsonl",
+      "sha256": "d98af5eb57f995a76fe956a974f025fe7bafa553016c7ea6322967a12767e1de"
+    }
+  ],
+  "freeze_sha256": "8a0f4493fd5e2177206750119eae29bf5eef0030462987a64e80f02d9c486304",
+  "full_cost_observed": false,
+  "future_group_scope": "Ten fixture source IDs only; not ten independently observed real tasks.",
+  "future_source_groups": 10,
+  "input_sha256": {
+    "calibration": "ac5914fa5f78f00c80367c52d944a43870c0fc05474f1270ac02c9f321c3c6e2",
+    "future": "92316239fc6686269b2085fa8d5c80119bfbfc78a955f2b2853fdd67e317dad3",
+    "train": "d98af5eb57f995a76fe956a974f025fe7bafa553016c7ea6322967a12767e1de"
+  },
+  "native_prospective_execution": false,
+  "policy_evaluation_performed": false,
+  "production_update": "no-update",
+  "raw_command_scope": "Archived command.json retains original execution paths as raw evidence; relocate paths for reproduction.",
+  "registration_sha256": "02875bae7dda9cd9fe6b83a80e92f0b10624070789065dd347b556531b302e5c",
+  "report": {
+    "path": "study-fixture/result/report.json",
+    "sha256": "5133b65d108e82ceab71e0aa934fb0b1c0fc19dfa4ba11cfbd70ec8c72e38c5a"
+  },
+  "schema": "ndu.real.metacontrol-fixture-evidence-status.v1",
+  "source_file_sha256": {
+    "controllers.py": "0cd9c8da5122d6b7940e322382e9118607d54b14246ee3449feb05904728824b",
+    "metacontrol.py": "174f45bbfc98dd72205f997292aed1f56769547db7dcc32bb4aecdd9c7fdd4f8",
+    "metacontrol_checkpoint.py": "603c10cf48f56d41c119b06397d4ccdd7db1a0ebdee9d587d77bd746663e02c2",
+    "metacontrol_study.py": "e37bb1010c78984ac49a227b82c74e971902b8b6e06338e6c828ca3485bfcf5e",
+    "objective.py": "cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd"
+  },
+  "source_manifest_sha256": "d5623827bafa3c91d7e862cb83e1590ccf8fd8d938b88541c13d5bc87fe139b0",
+  "source_phase": "preformat; before final mixed-cost-scope guard and head-hardening changes",
+  "work_performed_now": "Archive, byte-preserving verification and SHA256 only; no experiment or test rerun."
+}

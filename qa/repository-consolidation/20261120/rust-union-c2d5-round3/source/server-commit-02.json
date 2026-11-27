@@ -1,0 +1,47 @@
+{
+  "step": 2,
+  "local_commit": "31b453485b85fb9ed39a709d49857b17882a64b7",
+  "server_commit": "45c9cda60bc21cafa3fe991950e09fc60cbfc542",
+  "tree": "31884ddd8455912d22bcdc98e65667fe601a7f8b",
+  "ordered_parents": [
+    "752aeac9343e6c8e365188fd8240aecbc320d088"
+  ],
+  "created": {
+    "sha": "45c9cda60bc21cafa3fe991950e09fc60cbfc542"
+  },
+  "official_get": {
+    "sha": "45c9cda60bc21cafa3fe991950e09fc60cbfc542",
+    "node_id": "C_kwDOTrgxoNoAKDQ1YzljZGE2MGJjMjFjYWZhM2ZlOTkxOTUwZTA5ZmM2MGNiZmM1NDI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/45c9cda60bc21cafa3fe991950e09fc60cbfc542",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/45c9cda60bc21cafa3fe991950e09fc60cbfc542",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T04:57:45Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T04:57:45Z"
+    },
+    "tree": {
+      "sha": "31884ddd8455912d22bcdc98e65667fe601a7f8b",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/31884ddd8455912d22bcdc98e65667fe601a7f8b"
+    },
+    "message": "test: preserve held journal locks during physical byte observations\n\nRead complete journal bytes through the original locked file handle and\nrestore its actual cursor after successful or failed reads. Retain both\nreal read-only append-failure injections and observe their original held\nlock handles. Use a platform-absolute socket fixture and retain an absolute\nsibling for the payload-conflict case. Production locks, path validation,\nplatform refusals, dependencies and qualification features are unchanged.\n\nPreserve all41 original test entries, including the existing ignored\nwriter subprocess entry, and all177 original assertions. Add one real File\nregression with9 assertions for physical mutation, cursor restoration,\nread failure and exclusive ownership. Both independent source reviews\nand exact source-preservation checks passed. Native Rust, Windows and\njust fmt qualification remain NOT_RUN locally and pending required CI.",
+    "parents": [
+      {
+        "sha": "752aeac9343e6c8e365188fd8240aecbc320d088",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/752aeac9343e6c8e365188fd8240aecbc320d088",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/752aeac9343e6c8e365188fd8240aecbc320d088"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  }
+}

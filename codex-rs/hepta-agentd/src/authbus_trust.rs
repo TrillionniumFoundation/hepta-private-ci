@@ -32,7 +32,19 @@ impl TextTrust {
     /// Updating the public key does not synthesize a signature or a grant.
     pub fn load(path: &Path, identity: &AgentdIdentity) -> Result<Self, AgentdError> {
         let bytes = read_private_owner_file(path, identity, 16_384)?;
-        let trust: Self = serde_json::from_slice(&bytes)?;
+        Self::from_original_bytes(&bytes, identity)
+    }
+
+    /// Decode data already read from the actual original descriptor. The
+    /// caller remains responsible for its custody and current-file checks.
+    pub(crate) fn from_original_bytes(
+        bytes: &[u8],
+        identity: &AgentdIdentity,
+    ) -> Result<Self, AgentdError> {
+        if bytes.len() > 16_384 {
+            return Err(invalid("original trust bytes exceed bound"));
+        }
+        let trust: Self = serde_json::from_slice(bytes)?;
         if trust.schema_version != 1
             || trust.agent_id != identity.agent_id.as_str()
             || trust.thread_ids.len() > 16
@@ -55,8 +67,10 @@ impl TextTrust {
                 .map_err(|error| invalid(&error.to_string()))?,
             key_epoch: Generation::new(self.key_epoch)
                 .map_err(|error| invalid(&error.to_string()))?,
-            verifying_key: VerifyingKey::from_bytes(&hex_bytes(&self.public_key_hex)?)
-                .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
+            verifying_key: codex_hepta_authbus::AuthBusVerifyingKey::Ed25519(
+                VerifyingKey::from_bytes(&hex_bytes(&self.public_key_hex)?)
+                    .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
+            ),
             revoked: self.revoked,
         })
     }

@@ -1,0 +1,66 @@
+{
+  "independent_full_training_replays": 0,
+  "rows": [
+    {
+      "final_state_sha256": "81a338850f4dc9715217a97fdbe961d3f3bb59e3f7f6416252e5ff3ff5bded75",
+      "fit": "hcsn-s101-lr0.001",
+      "loss_gradient_batch_receipts_equal": true,
+      "origin_epoch": 116,
+      "physical_optimizer_calls": 4,
+      "reference_resume_torch_file_bytes_equal": true,
+      "resumed_main_update": 1394
+    },
+    {
+      "final_state_sha256": "25f57f0fce9f9dc479d8ac182077e76de5b0878df5e92503f9baa4afc15794ea",
+      "fit": "hcsn-s101-lr0.003",
+      "loss_gradient_batch_receipts_equal": true,
+      "origin_epoch": 76,
+      "physical_optimizer_calls": 4,
+      "reference_resume_torch_file_bytes_equal": true,
+      "resumed_main_update": 914
+    },
+    {
+      "final_state_sha256": "27d957c0ae410bb796f82a569bd38e789054d0bda893cd55144ea4497032d6e4",
+      "fit": "hcsn-s211-lr0.001",
+      "loss_gradient_batch_receipts_equal": true,
+      "origin_epoch": 126,
+      "physical_optimizer_calls": 4,
+      "reference_resume_torch_file_bytes_equal": true,
+      "resumed_main_update": 1514
+    },
+    {
+      "final_state_sha256": "16458a361a7c3a2ddbfc1dff6485dfd3e4aa2eec78a508c035cbba18f0501814",
+      "fit": "hcsn-s211-lr0.003",
+      "loss_gradient_batch_receipts_equal": true,
+      "origin_epoch": 50,
+      "physical_optimizer_calls": 4,
+      "reference_resume_torch_file_bytes_equal": true,
+      "resumed_main_update": 602
+    },
+    {
+      "final_state_sha256": "edb7699b4b84290282bfb27afd7ac7bb0bae80eb5f6b0c1ea2cbc6f141fc765a",
+      "fit": "hcsn-s307-lr0.001",
+      "loss_gradient_batch_receipts_equal": true,
+      "origin_epoch": 127,
+      "physical_optimizer_calls": 4,
+      "reference_resume_torch_file_bytes_equal": true,
+      "resumed_main_update": 1526
+    },
+    {
+      "final_state_sha256": "87d11ac57685d1d574e3188b3307b2609f49f45ee5666560056268f66123b773",
+      "fit": "hcsn-s307-lr0.003",
+      "loss_gradient_batch_receipts_equal": true,
+      "origin_epoch": 72,
+      "physical_optimizer_calls": 4,
+      "reference_resume_torch_file_bytes_equal": true,
+      "resumed_main_update": 866
+    }
+  ],
+  "schema": "hcsn-c2-source-bound-summary-reparse-v1",
+  "scope": "independent arithmetic reparse of producer records only; native tensor re-read is separate",
+  "six_fit_optimizer_calls_in_worker_reports": 24,
+  "source": "SUMMARY.json",
+  "source_sha256": "889ab64b0b864d1b5d3080bd107339d3e8001ccf5817da5869912299746cb901",
+  "summary_total_calls": 26,
+  "summary_two_control_calls": 2
+}

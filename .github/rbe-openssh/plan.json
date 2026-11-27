@@ -1,0 +1,187 @@
+{
+  "schema": "hepta.rbe-openssh-source-plan.v5",
+  "status": "tool-only-successor-source-only-not-launched",
+  "launchable": false,
+  "publish_enabled": false,
+  "source_commit": "9925b7b06c737e76928ab0cee6e6a7c9ceef7bfd",
+  "old_platforms": {
+    "amd64": {
+      "base": "docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70",
+      "native_runner_candidate": "ubuntu-24.04"
+    },
+    "arm64": {
+      "base": "docker.io/mbolin491/codex-bazel@sha256:136487cc4b7cf6f1021816ca18ed00896daed98404ea91dc4d6dd9e9d1cf9564",
+      "native_runner_candidate": "ubuntu-24.04-arm"
+    }
+  },
+  "old_evidence": [
+    {
+      "run": "41948353639",
+      "job": "126986508649",
+      "profile": "GNU",
+      "unique_missing_signer_tests": 11,
+      "raw_bytes": 10390646,
+      "raw_sha256": "56e85a12733665425e567462abc8305ef217cedaa2dba3eb26bd9a06fd2c7d5a"
+    },
+    {
+      "run": "41948353639",
+      "job": "126986508418",
+      "profile": "musl",
+      "unique_missing_signer_tests": 11,
+      "raw_bytes": 9923026,
+      "raw_sha256": "92c94581169d58c2af8750fedfa13b4604327761e906d873a532f01d58f51f29"
+    }
+  ],
+  "production_fixed_tools": [
+    "codex-rs/hepta-operator-acceptance/src/trust.rs:/usr/bin/ssh-keygen",
+    "codex-rs/hepta-operator-acceptance/src/g5_trust.rs:/usr/bin/ssh-keygen"
+  ],
+  "unchanged": [
+    "original ci-linux remote TestRunner",
+    "Bazel toolchains and target triples",
+    "all original test commands and target selection",
+    "all original test timeouts, retries and assertions",
+    "strict Rust SSHSIG plus fixed system OpenSSH verification",
+    "original RBE CPU/OS/libc constraints",
+    "image USER ubuntu / UID1000 / GID1000",
+    "original workdir and image entrypoint, command and environment"
+  ],
+  "installer": {
+    "file": "image_prepare.py",
+    "modes": [
+      "install",
+      "qualify"
+    ],
+    "installation_deadline_seconds": 900,
+    "tool_smoke_deadline_seconds": 120,
+    "existing_packages": "exact before/after installed package-map equality; no added installed packages; original downloaded-existing-version guard retained",
+    "existing_tools": "logical/resolved paths, SHA256, bytes, owner/group/mode and ldd-derived dependency closure must remain identical",
+    "apt_authentication": "inherit original signed sources/keyrings/proxy/trust; insecure/unauthenticated/downgrade-to-insecure disabled; no TLS override",
+    "retention": "Original signed APT metadata and actual .debs; explicit v2 tool-only receipt, selected package/member, complete binary data stream, actual ELF and dependency before/after snapshots. Never claim openssh-client is dpkg-installed.",
+    "tool_smoke": "actual UID1000; real ed25519 key, 8213-byte message; sha256+sha512 sign/verify; wrong namespace and trailing-byte rejection; not the original operator test suite",
+    "helper": "tool_supply.py",
+    "distribution_archive": "openssh-client; original signed APT simulation/download-only acquisition retained; no package installation/configuration/maintainer script execution",
+    "deployment_mode": "single-distribution-tool",
+    "deployed_paths": [
+      "/usr/bin/ssh-keygen"
+    ],
+    "extraction": "Only a unique regular, nonsparse, root:root 0755 tool with the native ELF class/endian/machine is selected; reject path traversal, duplicate names including concatenated tar, links, special files, writable or setid modes, wrong architecture and bounds.",
+    "bounds": {
+      "archive_bytes": 8388608,
+      "payload_tar_bytes": 16777216,
+      "tool_bytes": 2097152,
+      "archive_member_count": 4096,
+      "downloaded_archive_count": 32
+    },
+    "decompression": "Original dpkg-deb --fsys-tarfile only, bounded by a child-only RLIMIT_FSIZE that never raises an existing limit; all binary stdout and stderr retained as base64 under the shared original 900-second deadline.",
+    "dependencies": "Actual per-architecture ldd closure before exclusive deployment and after deployment must be complete, root-protected and byte/owner/mode/resolved-path identical. Missing dependencies reject; no new libraries are installed.",
+    "exclusive_create": "Canonical owned non-writable parent; held directory descriptor plus O_EXCL/O_NOFOLLOW; no overwrite, unlink, repair or privileged permission mutation of pre-existing paths.",
+    "directory_metadata": "Preserve actual /workspace, /usr/bin, /usr/local/share and helper-directory ownership/mode; same final image User/Workdir/config."
+  },
+  "build_and_registry": {
+    "existing_declared_route": "Only Dockerfile.bazel comment advertises manual Docker Hub push to mbolin491; no existing GHCR/login/packages:write workflow found in exact .github/rbe sources",
+    "dockerhub_write_authority": "not established; no credential access or push attempted",
+    "proposed_route": "Same exact-repository/exact-branch guarded workflow and original build/publication budgets; no new run or registry write authorized by this source preparation.",
+    "proposed_destination": "ghcr.io/trillionniumfoundation/hepta-rbe-openssh",
+    "destination_status": "proposed; not created and no write or pull permission assumed",
+    "native_build_runners": "native amd64 and arm64; no host binfmt/QEMU/security-policy change",
+    "image_preparation_budget_proposal": {
+      "per_architecture_wall_seconds": 1200,
+      "max_parallel": 1,
+      "deadline": "Build fixes an absolute UTC deadline at its start. Publication uses only the remaining portion of the SAME deadline; queue/artifact transfer consumes it. Normal execution reserves the final 30 seconds within this cap for scoped builder cleanup. Monotonic timers and SIGALRM bound each active process. Publication also caps active remaining time by 1200 minus the actual build terminal elapsed time; its constructor recomputes UTC remaining immediately.",
+      "gha_job_timeout_minutes": 21,
+      "gha_timeout_boundary": "GitHub's outer cleanup/artifact upload ceiling does not grant extra installation, publication or smoke execution time.",
+      "dedicated_builder_cpu_quota_percent": 200,
+      "dedicated_builder_memory_bytes": 2147483648,
+      "cargo_or_bazel_workloads": false,
+      "original_component_budget_untouched": true
+    },
+    "publish_preconditions": [
+      "Root review of concrete workflow and source manifest",
+      "actual same-repository packages write accepted",
+      "both actual image configs preserve baseline rootfs diff-id prefix and run identity/environment/entrypoint/command/workdir",
+      "all installer invariants and same-image UID1000 tool smoke pass",
+      "preserve complete failures and actual OCI/registry metadata"
+    ],
+    "consumer_preconditions": [
+      "independent anonymous pull of both exact platform manifests succeeds, or an already-authorized explicit RBE image pull mapping is independently verified",
+      "record actual manifest digests; distinguish them from image config IDs and multi-platform index digests",
+      "new rbe.bzl patch changes only actual image reference/digests and explanatory comment",
+      "Root review then original GNU/musl remote TestRunner and original operator scope execute without changing profiles"
+    ],
+    "unknown_result_policy": "reconcile existing build/tag/request identity; never guess a digest, overwrite unknown publication or fall back to suspended Git credentials",
+    "workflow": {
+      "file": ".github/workflows/hepta-rbe-openssh-image.yml",
+      "branch": "refs/heads/codex/rbe-openssh-image-r2-20261105",
+      "activation": "Existing independent PR4849 branch has earlier runs. This successor is source-only; no push until Root reviews the actual patch and records treatment of its stale pending run. Original concurrency remains unchanged.",
+      "source_binding": "checkout github.sha, clean exact HEAD/tree, GITHUB_WORKFLOW_REF/repo/ref/event/run/attempt, SHA256 of every executed source file",
+      "tag": "source-<full source SHA>-run-<run_id>-attempt-<run_attempt>-<architecture>",
+      "tag_boundary": "Repository-wide workflow concurrency; authenticated absent-or-byte-identical read before write and immediately before manifest PUT; If-None-Match is only best effort. No claim of registry-wide atomic create-only behavior against other authorized writers.",
+      "artifact_handoff": "Exact OCI archive, whole archive SHA256, platform manifest and config digests; same-run architecture-specific artifact; no rebuild in publication Artifact names bind exact source SHA, run ID and attempt for both writer and reader.",
+      "publication": "Fixed GHCR repository using ephemeral GITHUB_TOKEN; exact content-addressed blob uploads then exact precomputed platform manifest bytes. No DockerHub credentials/writes.",
+      "anonymous_pull": "Separate empty Docker credential directory and token-free child environment; actual pull of exact platform digest and image config ID. A successful private push with failed anonymous pull remains unqualified and retains the published digest.",
+      "unknown": "No automatic mutation retry. Unknown response preserves intended exact manifest digest and logs; later same-tag byte-identical read can reconcile, conflicting or unreadable tag rejects.",
+      "log_retention": "Raw per-command stdout/stderr files and all original exit states uploaded even on failure; image installer emits full completed command bytes/base64 and exception on failure, timeout bytes explicitly partial.",
+      "http_paths": "Exact HTTPS GHCR endpoint and repository; no redirects, encoded path segments, parent components, or double slash paths; no token/authorization header persistence.",
+      "terminal_unknown": "Interrupted child cleanup waits only within the original hard deadline; unconfirmed terminal state fences qualification even if builder removal later succeeds.",
+      "oci_retained_paths": "Relevant complete overlay: lower-only whiteout processing, root opacity, directory ancestor state and nondirectory shadowing; final effective regular evidence required.",
+      "upload_location": "Validate the raw Location's literal path before urljoin, then retain exact original HTTPS host/repository checks."
+    },
+    "dedicated_builder": {
+      "driver": "docker-container",
+      "global_daemon_configuration_changed": false,
+      "driver_log_limits": {
+        "BUILDKIT_STEP_LOG_MAX_SIZE": -1,
+        "BUILDKIT_STEP_LOG_MAX_SPEED": -1
+      },
+      "privilege_boundary": "Docker-container buildx uses its standard dedicated BuildKit daemon on a disposable GitHub-hosted runner, which can be privileged. Its actual complete HostConfig is retained. This is NOT an unprivileged workload claim or any permission change to user hosts/RBE tests.",
+      "identity": "Record actual buildx/Docker versions and complete builder container + image configuration and image ID/RepoDigests; do not invent a new builder digest.",
+      "clipping": "Any observed output-clipped marker rejects qualification; unknown/timeout evidence is never labeled complete."
+    },
+    "baseline_verification": [
+      "Pull each original platform image by its existing exact digest and inspect actual architecture and RepoDigests.",
+      "Derived config preserves original User/Env/Entrypoint/Cmd/WorkingDir plus ancillary execution fields; labels are exactly baseline plus source/run provenance.",
+      "Actual uncompressed SHA256 of every OCI layer equals its diff-id, and original baseline rootfs diff-id list is an exact prefix.",
+      "Actual image v2 tool-only receipt has exact installed-package-map/critical-file/directory equality; selected ELF source and complete unchanged original dependency closure; actual UID1000 SSHSIG smoke receipts.",
+      "Publication repeats OCI archive/blob/config/layer checks and exact build source identity before any write."
+    ]
+  },
+  "pending": [
+    "image build/architecture execution",
+    "registry write and remote anonymous pull",
+    "actual package/dependency/tool hashes",
+    "actual platform manifest digests",
+    "original remote GNU+musl tests",
+    "separate Windows OpenSSH failures"
+  ],
+  "references": [
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3419b6ac8adf5b47b140e553f5fff9e74c98d352/rbe.bzl",
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3419b6ac8adf5b47b140e553f5fff9e74c98d352/.github/workflows/Dockerfile.bazel",
+    "https://manpages.ubuntu.com/manpages/noble/man8/apt-get.8.html",
+    "https://docs.docker.com/reference/cli/docker/buildx/imagetools/inspect/",
+    "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+    "https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry",
+    "https://github.com/moby/buildkit/blob/v0.25.1/util/progress/logs/logs.go",
+    "https://docs.docker.com/build/builders/drivers/docker-container/",
+    "https://specs.opencontainers.org/distribution-spec/"
+  ],
+  "offline_helper_regressions": {
+    "file": "helper_regressions.py",
+    "scope": "Actual helper functions only, with synthetic tar layers, fake registry responses and fake child wait results; no Docker/registry/original test execution",
+    "old_v3_result": "record separately",
+    "v4_result": "record separately",
+    "qualification": false,
+    "additional_file": "tool_supply_tests.py",
+    "additional_scope": "Actual selection/create/dependency functions; synthetic native ELF headers are never executed; no image or original test qualification."
+  },
+  "old_installation_failure": {
+    "source": "9925b7b06c737e76928ab0cee6e6a7c9ceef7bfd",
+    "scope": "Local isolated amd64 diagnosis only; original 1200-second logical attempt, no image qualification",
+    "result": "FAIL; 45 of 46 original critical snapshots equal; /etc/group changed by openssh-client postinst's ssh-agent _ssh group creation. Original before/after equality remains mandatory.",
+    "receipt_sha256": "568aab8cee313250b2b3a304567ac5efc418c6f791bf2d3c0fb9741afa32487c",
+    "maintainer_evidence_sha256": "7c1e8c14488534036a038c99a2995e04f2ba4744d119176326510c11c7c2b1be",
+    "scope_dependency_receipt_sha256": "2530c4a1a86a599c23abcf06a41b653f33c5818c08be67a1b66e58aa7794d8b2",
+    "amd64_evidence": "Only SSH key generation/fingerprint/SSHSIG sign+verify are called in the original Operator scope. All direct/transitive DT_NEEDED libraries exist in the original OCI rootfs; actual candidate ldd/smoke remain required.",
+    "arm64_evidence": "Original base remains pinned. No amd64 closure or tool hash is transferred to arm64 qualification."
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-ci-artifact-observation-v1",
+  "observed_utc": "2026-11-08T14:39:16Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "expected_campaign_pins": {
+    "research_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "candidate_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "local_campaign_manifest_or_archive_reverified_this_observation": false
+  },
+  "exact_source_ci": {
+    "workflow_run_id": 42078258351,
+    "run_attempt": 1,
+    "event": "push",
+    "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "status": "completed",
+    "conclusion": "success",
+    "job_id": 127424159520,
+    "job_name": "kernel-and-mechanisms",
+    "job_status": "completed",
+    "job_conclusion": "success",
+    "steps_completed_successfully": 10,
+    "steps_total": 10
+  },
+  "ci_artifact": {
+    "artifact_id": 13461093202,
+    "name": "hcsn-research-f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "size_bytes": 576824,
+    "created_at_utc": "2026-11-05T23:14:05Z",
+    "github_digest_sha256": "346701d50b0f09927b59a62116ab85937168243dd68e991f3f04b25726b9b431",
+    "downloaded_archive_sha256": "346701d50b0f09927b59a62116ab85937168243dd68e991f3f04b25726b9b431",
+    "digest_match": true,
+    "selected_receipts": {
+      "hcsn-tests.json": {
+        "sha256": "38f9694ef704dc3c3d60ec398e0284ea9d477eb0cd111c279ac2c848161056a3",
+        "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+        "discovered": 109,
+        "run": 109,
+        "passed": 109,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "status": "passed",
+        "torch": "2.8.0+cpu",
+        "mamba_ssm": null
+      },
+      "hcsn-training-smoke.json": {
+        "sha256": "433815caf373d9eded9aa19a1faca6cc24fc56cc24dc2706289994626d0e297e",
+        "purpose": "synthetic research qualification",
+        "profile": "smoke",
+        "device": "cpu",
+        "task_count": 1,
+        "task": "delayed_recall",
+        "model_count": 16,
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "train_steps": 8,
+        "batch_size": 16,
+        "length": 8,
+        "hidden_size": 8,
+        "requested": 48,
+        "unique_records": 48,
+        "completed": 45,
+        "failed": 0,
+        "unavailable": 3,
+        "mamba2_completed": 0,
+        "mamba2_failed": 0,
+        "mamba2_unavailable": 3,
+        "cuda_available": false,
+        "cuda_energy_measured_attempts": 0,
+        "energy_missing_attempts": 48,
+        "status": "partial",
+        "interpretation": "CPU smoke only; not the pinned 170-run CUDA campaign and not evidence of full-budget Mamba-2 qualification."
+      }
+    }
+  },
+  "trusted_main_gpu_probe": {
+    "workflow_run_id": 39526325715,
+    "run_attempt": 5,
+    "job_id": 127299267982,
+    "job_name": "Desktop runner probe",
+    "status": "completed",
+    "conclusion": "cancelled"
+  },
+  "campaign_read_boundary": {
+    "latest_prior_observation_commit": "9c6663a9aa2e20873e82557971dc3d59aea60726",
+    "latest_prior_observation_utc": "2026-11-08T13:55:39.614411Z",
+    "latest_prior_progress_sha256": "0214a828e7a31c652b2b9b10df2841f391d81ff39ecc6017fcc2fe951ef98109",
+    "latest_prior_process_state": "running",
+    "latest_prior_stage": "full",
+    "latest_prior_reported_terminal_registrations": 88,
+    "requested_cuda_runs": 170,
+    "latest_prior_registered_failures": 0,
+    "latest_prior_registered_unavailable": 0,
+    "latest_prior_count_is_not_checkpoint_weight_attempt_budget_audit": true,
+    "current_process_status_read": "controller tool returned internal error",
+    "current_progress_file_read": "controller tool returned internal error",
+    "current_process_list_read": "controller tool returned internal error",
+    "current_run_count_reasserted": false,
+    "no_new_observer_or_monitor_started": true
+  },
+  "previously_recorded_qualification_open_items": [
+    "checkpoint/weight/attempt/budget audit not independently closed",
+    "20-run B audit not closed",
+    "full Mamba-2 matrix not closed; only one-step preflight recorded",
+    "complete full-shape parity not closed; existing parity receipts are one-update fixtures",
+    "full.json not published in the prior observation",
+    "terminal.json not present in the prior observation",
+    "full.runtime-manifest.json not present in the prior observation",
+    "physical GPU energy remains null; no TDP or power-limit imputation"
+  ],
+  "policy_and_mutation_boundary": {
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "model_training_started_or_retried": false,
+    "model_budget_changed": false,
+    "campaign_outputs_modified": false,
+    "research_source_branch_modified": false,
+    "unrelated_processes_stopped": false,
+    "files_deleted": false,
+    "driver_or_system_service_changed": false,
+    "credentials_or_signed_urls_published": false
+  },
+  "publication": {
+    "branch": "research/hcsn-desktop-evidence-20261105",
+    "parent_sha": "9c6663a9aa2e20873e82557971dc3d59aea60726",
+    "expected_sha_lease_required": true,
+    "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/observations/20261108T143916Z-exact-source-ci-artifact-verification.json"
+  }
+}

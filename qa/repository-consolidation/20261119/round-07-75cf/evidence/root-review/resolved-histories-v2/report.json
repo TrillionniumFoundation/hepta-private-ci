@@ -1,0 +1,85 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+  "final": "638f6774391441f7ea9294f21905adeb6caf4693",
+  "normal_merge_with_explicit_resolutions": [
+    {
+      "tip": "ce4589f8cc05cce09bb2c812f85a19cb9beab5eb",
+      "paths": [
+        "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+        "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py"
+      ],
+      "reason": "The first incoming edit only adapts the restore validation marker to rustfmt; that exact literal is already present. The second adapts a removed HostAuthorityLearningScopeV2 constructor marker. Current production new_scoped_v2 directly freezes request/owners/scope/update_rule using FrozenLearningScopeV2::freeze and the current guard tests that actual call. Preserve the current mutation guards and their later caller coverage.",
+      "prior_head": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+      "merge_bases": [
+        "5368711ec43469bb9f1a5a6735f4d6eed6e80577"
+      ],
+      "automatic_tree": "6248d5075b4262b906c6cc7f460d94f2af14e462",
+      "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "tree_unchanged": true,
+      "protected_ancestor_count": 0,
+      "commit": "39402433026e154f87f7965b4eda4c1c4b63a985",
+      "incoming_diff_sha256": "7901e121c18cf3725e5f24214b07a8c13064a7a26332ed5e49238dd75e810dfe"
+    },
+    {
+      "tip": "7f3024890b0656fd27d9245f8d3c24c9923b170e",
+      "paths": [
+        "scripts/ndu_real_runtime/episodic_retrieval.py",
+        "scripts/ndu_real_runtime/test_episodic_retrieval.py"
+      ],
+      "expected_conflicts": [
+        "scripts/ndu_real_runtime/episodic_retrieval.py"
+      ],
+      "reason": "The complete authorized_source_closure function and original cross-source/transitive-summary test are AST-identical to the incoming implementation. Current read_memory invokes that function, records its rejection count, and additionally rechecks authorization during delivery. Preserve these later receipt validation and revocation protections. The automatic test-file merge duplicates the already present identical test method; explicitly retain the current single definition and all later tests.",
+      "prior_head": "39402433026e154f87f7965b4eda4c1c4b63a985",
+      "merge_bases": [
+        "8cf848babdd897e9f38642d5faf3ba0f72a1303c"
+      ],
+      "automatic_tree": "221d00615ae18dd66ed8db45bed80328aca1fcd3",
+      "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "tree_unchanged": true,
+      "protected_ancestor_count": 0,
+      "commit": "9170b0e2ee6e2ca42c47304873e21a9de736a392",
+      "incoming_diff_sha256": "da4b72dc2650d6ad2ab84239becfb8097dd78ae6ba5cc83c28b9118266dddd71"
+    },
+    {
+      "tip": "a6edb28a1654a072ed2e498a960fc9ebe1451503",
+      "paths": [
+        "defs.bzl",
+        "codex-rs/hepta-agentd/BUILD.bazel"
+      ],
+      "reason": "The incoming two-file change routes the Agentd integration targets through the same _UNIT_TEST_DEPENDENCIES map. Current Agentd already opts into integration_test_use_unit_test_dependencies; defs.bzl computes the same replacement dependencies for all three integration targets and additionally substitutes the qualification library for the product library. Preserve this complete current variant closure, the explicit missing-map refusal, and newer native profile settings. The earlier separate replacement argument has no other incoming callers.",
+      "prior_head": "9170b0e2ee6e2ca42c47304873e21a9de736a392",
+      "merge_bases": [
+        "9428ffb2c7d5a1a2a3ddb869098aade35fea8b4d"
+      ],
+      "automatic_tree": "2a2d5891eaac185c71b67e602020fa1bc4d56579",
+      "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "tree_unchanged": true,
+      "protected_ancestor_count": 0,
+      "commit": "44e2aa3dad5bc31f55415d188286f902ebd57cc6",
+      "incoming_diff_sha256": "d103893351531e3a371ede8e60cc632a3bd9d93ee4b34d469b6fb55882b886d5"
+    },
+    {
+      "tip": "37d108ccb5251d2851911c081c58c652fc384683",
+      "paths": [
+        "codex-rs/cli/src/hepta.rs"
+      ],
+      "reason": "Both branches directly include main_impl.rs under the crate recursion limit. Current adds explanatory text and the existing entrypoint root regressions. Preserve those additions. The three other CLI paths are standard-merged and remain identical to the current tree; see the independent cli-frontier-resolution review.",
+      "prior_head": "44e2aa3dad5bc31f55415d188286f902ebd57cc6",
+      "merge_bases": [
+        "52591dba2de2b5bd48bb48cab03f9bef195b141a"
+      ],
+      "automatic_tree": "4d5d258fa883950a463b30d4edc40720be64512c",
+      "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "tree_unchanged": true,
+      "protected_ancestor_count": 0,
+      "commit": "638f6774391441f7ea9294f21905adeb6caf4693",
+      "incoming_diff_sha256": "2842793017731100e89f3225af54bdc6a8824f87a40b55e7e9fa0dea11808358"
+    }
+  ],
+  "rust_source_changes": 0,
+  "tests_rerun": false,
+  "reason_no_retest": "All complete result trees equal the reviewed base tree; this stage only retains the proven covered historical parents.",
+  "remote_refs_written": []
+}

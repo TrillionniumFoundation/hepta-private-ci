@@ -1,0 +1,109 @@
+{
+  "schema": "mem4-source-ci-and-native-job-readback-v1",
+  "software_validation": {
+    "source": "4674b4e556666c413514a31731f7b4c16ad659da",
+    "tree": "28fbd81354fb6aeb3490b6b4155c1370d7202933",
+    "run_id": 42742311910,
+    "job_id": 129586101229,
+    "groups": [
+      {
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "ndu_real_runtime.test_candidate_memory",
+          "ndu_real_runtime.test_candidate_runtime",
+          "ndu_real_runtime.test_candidate_retention_report"
+        ],
+        "passed": 17,
+        "failed": 0,
+        "clean_before": true,
+        "clean_after": true
+      },
+      {
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts/memory_cell_mem1",
+          "-p",
+          "test_coverage_control.py",
+          "-v"
+        ],
+        "passed": 6,
+        "failed": 0,
+        "clean_before": true,
+        "clean_after": true
+      },
+      {
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts/memory_cell_mem1",
+          "-p",
+          "test_trajectory_coverage.py",
+          "-v"
+        ],
+        "passed": 5,
+        "failed": 0,
+        "clean_before": true,
+        "clean_after": true
+      },
+      {
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "ndu_real_runtime.test_run_candidate_retention"
+        ],
+        "passed": 7,
+        "failed": 0,
+        "clean_before": true,
+        "clean_after": true
+      },
+      {
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts/memory_cell_mem3",
+          "-p",
+          "test_mechanism.py",
+          "-v"
+        ],
+        "passed": 7,
+        "failed": 0,
+        "clean_before": true,
+        "clean_after": true
+      }
+    ],
+    "total_passed": 42,
+    "total_failed": 0
+  },
+  "native_campaign": {
+    "source": "ae04c09921a600b5ccb82fe72a631e32146856bc",
+    "tree": "233bdc60b6483f19e2e826488973c521875b178a",
+    "run_id": 42742934161,
+    "job_id": 129588167161,
+    "conclusion": "success",
+    "artifact_id": 13729549400,
+    "artifact_sha256": "2bbe72b935a2c23cf76d4064d659f9085c9369e79ec5c538c230d47664aad076"
+  },
+  "whole_repository_ci_passed": false,
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false
+}

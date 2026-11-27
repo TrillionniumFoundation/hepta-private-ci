@@ -24,6 +24,11 @@ pub(crate) async fn write_file(path: &Path, contents: Vec<u8>) -> io::Result<()>
     imp::write_file(path.to_path_buf(), contents).await
 }
 
+#[cfg(windows)]
+pub(crate) fn open_file_for_write(path: &Path) -> io::Result<std::fs::File> {
+    windows::open_file_for_write(path)
+}
+
 #[cfg(unix)]
 pub(crate) async fn metadata(path: &Path) -> io::Result<FileMetadata> {
     imp::metadata(path.to_path_buf()).await

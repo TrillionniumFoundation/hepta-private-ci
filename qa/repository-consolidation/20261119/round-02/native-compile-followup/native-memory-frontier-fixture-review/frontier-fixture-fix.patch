@@ -1,0 +1,11 @@
+--- a/codex-rs/hepta-agentd/src/native_memory_current_test_support.rs
++++ b/codex-rs/hepta-agentd/src/native_memory_current_test_support.rs
+@@ -160,7 +160,7 @@
+                 .ok_or_else(|| anyhow::anyhow!("fixture host generation overflow"))?,
+             principal_scope_digest: digest("current-principal-scope"),
+             fence_digest: digest("current-ndu-fence"),
+-            revocation_frontier_digest: digest("current-revocation-frontier"),
++            revocation_frontier_digest: Digest32::from_array(authority.revocation_head_sha256()?),
+         },
+         policy,
+     )?

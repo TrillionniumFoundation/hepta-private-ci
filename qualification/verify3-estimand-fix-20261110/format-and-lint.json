@@ -1,0 +1,41 @@
+{
+  "ruff_version": "0.15.13",
+  "all_50_executed_python_asts_unchanged": true,
+  "tests_rerun_after_formatting": false,
+  "records": [
+    {
+      "command": [
+        "/workspace/scratch/40a1a085876c/verify-tools/bin/ruff",
+        "check",
+        "--select",
+        "F,E9",
+        "experiments/verification_cell_verify1/matched_qualification.py",
+        "experiments/verification_cell_verify1/test_matched_qualification.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/40a1a085876c/verify-tools/bin/ruff",
+        "format",
+        "--check",
+        "experiments/verification_cell_verify1/matched_qualification.py",
+        "experiments/verification_cell_verify1/test_matched_qualification.py"
+      ],
+      "exit_code": 0,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/40a1a085876c/verify-tools/bin/just",
+        "fmt"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "error: No justfile found\n"
+    }
+  ]
+}

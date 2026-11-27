@@ -1,0 +1,28 @@
+{
+  "schema_version": "hx-fixed-model-bundle-v1",
+  "proof_version": "hx-local-taylor4-ieee-rn-v1",
+  "log_distance_upper": "2^-19",
+  "precompute_acceptance": "2^-40",
+  "runtime_relative_bound": "2^-49",
+  "python_flint": "0.9.0",
+  "root_precision_bits": 160,
+  "coefficient_precision_bits": 256,
+  "global_status": "NOT_CERTIFIED",
+  "model_digest": "2cc8f255028d24d8f1c40f824a58bb5ed02b2999e482e46e259cdd3d0c27cfa2",
+  "exact_params": {
+    "rate": "1/20",
+    "payout": "2/25",
+    "volatility": "1/4",
+    "maturity": "3",
+    "principal": "60",
+    "coupon": "4",
+    "tax_shield": "1/4",
+    "recovery": "3/20",
+    "shock_intensity": "1",
+    "sale_fraction": "2/25"
+  },
+  "root_receipt_sha256": "3db310f732e35b2befd32fa6810d3ed148e81554a8b14320fda633b0e32dbcb6",
+  "coefficient_receipt_sha256": "5c6bc5bce9e2d9ea77ea609c3d859e393fa727e01c37c98e3c5ac60c69ef1b42",
+  "asset_lower_hex": "0x1.8c994f12d7e11p+6",
+  "asset_upper_hex": "0x1.8c9980a604dc9p+6"
+}

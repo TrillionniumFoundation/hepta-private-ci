@@ -1,0 +1,272 @@
+{
+  "schema": "hcsn002-audit-archive-transport-check-v1",
+  "passed": true,
+  "manifest": "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/audit_archives/MANIFEST_001.json",
+  "manifest_sha256": "04d7e1e7097b8906c9fb5929134ff257faf52f4a0ea53566aa0c9b911da41660",
+  "utility_sha256": "0927a727139aa250545655c81e28ba423d1e9b95e0a096f8a0edb8b0f7286e35",
+  "scratch": "/dev/shm/hcsn002-audit-archive-checks-20261028",
+  "checks": [
+    {
+      "name": "actual_all_originals_roundtrip_and_idempotence",
+      "passed": true,
+      "original_paths": 16,
+      "exact_restored_bytes": 11585344,
+      "verify_only_created_files": 0,
+      "identical_existing_mtimes_unchanged": true
+    },
+    {
+      "name": "parent_escape",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "unsafe relative evidence path",
+      "no_files_changed": true
+    },
+    {
+      "name": "absolute_path",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "unsafe relative evidence path",
+      "no_files_changed": true
+    },
+    {
+      "name": "windows_drive",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "invalid relative evidence path",
+      "no_files_changed": true
+    },
+    {
+      "name": "backslash_path",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "invalid relative evidence path",
+      "no_files_changed": true
+    },
+    {
+      "name": "dot_path",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "unsafe relative evidence path",
+      "no_files_changed": true
+    },
+    {
+      "name": "existing_mismatch_preflight_before_any_creation",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "evidence size or SHA256 mismatch",
+      "no_files_changed": true
+    },
+    {
+      "name": "symlink_ancestor",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "symlink or non-directory evidence ancestor",
+      "no_files_changed": true
+    },
+    {
+      "name": "symlink_target",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "symlink or non-directory evidence ancestor",
+      "no_files_changed": true
+    },
+    {
+      "name": "symlink_archive_part",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "symlink or non-directory evidence ancestor",
+      "no_files_changed": true
+    },
+    {
+      "name": "archive_part_path_escape",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "unsafe relative evidence path",
+      "no_files_changed": true
+    },
+    {
+      "name": "missing_archive_part",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "archive or original is not an ordinary file",
+      "no_files_changed": true
+    },
+    {
+      "name": "tampered_archive_part",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "evidence size or SHA256 mismatch",
+      "no_files_changed": true
+    },
+    {
+      "name": "reordered_archive_parts",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "complete archive identity mismatch",
+      "no_files_changed": true
+    },
+    {
+      "name": "decompressed_hash_mismatch",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "decompressed identity, length or stream boundary mismatch",
+      "no_files_changed": true
+    },
+    {
+      "name": "bounded_decompression_rejects_excess_output",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "decompressed identity, length or stream boundary mismatch",
+      "no_files_changed": true
+    },
+    {
+      "name": "concatenated_gzip_member",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "decompressed identity, length or stream boundary mismatch",
+      "no_files_changed": true
+    },
+    {
+      "name": "trailing_compressed_junk",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "decompressed identity, length or stream boundary mismatch",
+      "no_files_changed": true
+    },
+    {
+      "name": "nonzero_gzip_mtime",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "archive must be gzip with mtime=0",
+      "no_files_changed": true
+    },
+    {
+      "name": "duplicate_original_path",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "duplicate, colliding or unbound original path",
+      "no_files_changed": true
+    },
+    {
+      "name": "original_archive_path_collision",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "duplicate, colliding or unbound original path",
+      "no_files_changed": true
+    },
+    {
+      "name": "file_ancestor_collision",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "file path is an ancestor of another file",
+      "no_files_changed": true
+    },
+    {
+      "name": "alias_expansion_total_byte_bound",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "total mapped original size exceeds the limit",
+      "no_files_changed": true
+    },
+    {
+      "name": "manifest_hash_mismatch",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "manifest identity or schema mismatch",
+      "no_files_changed": true
+    },
+    {
+      "name": "duplicate_json_key",
+      "passed": true,
+      "rejection": "ValueError",
+      "reason": "duplicate manifest key",
+      "no_files_changed": true
+    }
+  ],
+  "checks_passed": 25,
+  "roundtrip_originals": [
+    {
+      "path": "TRAINING_AUDIT.json",
+      "bytes": 951177,
+      "sha256": "ef5d971948cd708721b668713993e0d3129db32beba66607b4091803c05ee9ad"
+    },
+    {
+      "path": "TRAINING_AUDIT_V1_FAILED.json",
+      "bytes": 663645,
+      "sha256": "876e25918138c077786960fef5fd206583b16d4f8941127bebbd4cbce525cf76"
+    },
+    {
+      "path": "TRAINING_AUDIT_V2.json",
+      "bytes": 951177,
+      "sha256": "ef5d971948cd708721b668713993e0d3129db32beba66607b4091803c05ee9ad"
+    },
+    {
+      "path": "analysis/COMPARISON_SUMMARY.json",
+      "bytes": 1668028,
+      "sha256": "f89e5c2c160544d8e50f3f068e43816c556a328a311ac6c4e57d6e9d2ca35346"
+    },
+    {
+      "path": "analysis/ONLINE_AUDIT.json",
+      "bytes": 335894,
+      "sha256": "28b5288ee617fb62c090af145d780e4edf4271711b9e5f6e4ece13886370f017"
+    },
+    {
+      "path": "analysis/ONLINE_SUMMARY.json",
+      "bytes": 421272,
+      "sha256": "fbf12a9e681bf505636d2fbc6c1cb5f68199fe6e9846fbf5ed7b2752a71565cb"
+    },
+    {
+      "path": "analysis/execution/training_audit_01/OUTPUT.json",
+      "bytes": 663645,
+      "sha256": "876e25918138c077786960fef5fd206583b16d4f8941127bebbd4cbce525cf76"
+    },
+    {
+      "path": "analysis/execution/training_audit_v2_01/OUTPUT.json",
+      "bytes": 951177,
+      "sha256": "ef5d971948cd708721b668713993e0d3129db32beba66607b4091803c05ee9ad"
+    },
+    {
+      "path": "analysis/execution/training_summary_01/COMPARISON_SUMMARY.json",
+      "bytes": 1668028,
+      "sha256": "f89e5c2c160544d8e50f3f068e43816c556a328a311ac6c4e57d6e9d2ca35346"
+    },
+    {
+      "path": "analysis/figures/representation_all_candidates.png",
+      "bytes": 538769,
+      "sha256": "59f68b5db97c5eb2b7f3fb56189d08c2074335c653db338acd92ad216436441a"
+    },
+    {
+      "path": "analysis/figures/scaling_all_candidates.png",
+      "bytes": 718356,
+      "sha256": "2533691381637b993f75d556252d417c11462118b388e65d2177f4e5606e3261"
+    },
+    {
+      "path": "analysis/figures/scaling_all_candidates.svg",
+      "bytes": 342848,
+      "sha256": "0b36bbc2bf1a8aea79a9008c05bd4797c834e17c5673ccee99dabb59999a4aa6"
+    },
+    {
+      "path": "analysis/figures/scaling_search_trajectories.svg",
+      "bytes": 325062,
+      "sha256": "fbdac48f6528f74ea337b3bab4dbdac885818414061bd33f54cfaa7c89774e6d"
+    },
+    {
+      "path": "analysis/figures_v2/scaling_all_candidates.png",
+      "bytes": 718356,
+      "sha256": "2533691381637b993f75d556252d417c11462118b388e65d2177f4e5606e3261"
+    },
+    {
+      "path": "analysis/figures_v2/scaling_all_candidates.svg",
+      "bytes": 342848,
+      "sha256": "7dcf80d4b2f28ea56bb647836075ecc1e8580b9254b37ff6c115ef4e12d6990d"
+    },
+    {
+      "path": "analysis/figures_v2/scaling_search_trajectories.svg",
+      "bytes": 325062,
+      "sha256": "642c06af26ae05796562098f6095b411357d7c0962e8f667d3117db9a13f821a"
+    }
+  ],
+  "source_originals_reverified_unchanged": true,
+  "wall_seconds": 0.2801873680000426,
+  "scope": "exact evidence roundtrip, actual multipart archives, idempotence, bounded decompression and explicit rejection cases; no model execution"
+}

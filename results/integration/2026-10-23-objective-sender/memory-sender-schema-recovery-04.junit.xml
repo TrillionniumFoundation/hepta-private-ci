@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="42" skipped="0" failures="0" errors="0" uuid="96a82c40-eb20-4203-b051-4e0e9da77bac" timestamp="2026-10-23T16:29:41.333+09:00" time="19.783">
+    <testsuite name="codex-hepta-memory" tests="42" skipped="0" errors="0" failures="0">
+        <testcase name="cognitive_store::recovery::tests::byte_identical_rename_replacement_can_recover_only_with_current_witness" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:41.335+09:00" time="0.486"/>
+        <testcase name="cognitive_store::recovery::tests::cold_read_only::cold_recovery_rejects_revision_change_and_forgetting_rollback" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:41.821+09:00" time="0.403"/>
+        <testcase name="cognitive_store::recovery::tests::cold_read_only::cold_reopen_reads_canonical_snapshot_without_mutating_source" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:42.224+09:00" time="0.408"/>
+        <testcase name="cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:42.632+09:00" time="0.279"/>
+        <testcase name="cognitive_store::recovery::tests::cold_read_only::stable_inspection_metadata_cannot_authenticate_changed_content" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:42.911+09:00" time="0.241"/>
+        <testcase name="cognitive_store::recovery::tests::corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:43.152+09:00" time="0.239"/>
+        <testcase name="cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:43.392+09:00" time="0.535"/>
+        <testcase name="cognitive_store::recovery::tests::graceful_close_retains_store_fence_until_sqlite_connections_finish" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:43.927+09:00" time="0.435"/>
+        <testcase name="cognitive_store::recovery::tests::hostile_file_identities_fail_closed_without_additional_mutation" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:44.362+09:00" time="0.883"/>
+        <testcase name="cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:45.246+09:00" time="0.175"/>
+        <testcase name="cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:45.420+09:00" time="0.602"/>
+        <testcase name="cognitive_store::recovery::tests::recovery_bounds_large_rows_before_loading_payloads_and_rejects_unknown_tables" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:46.022+09:00" time="0.257"/>
+        <testcase name="cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:46.280+09:00" time="0.277"/>
+        <testcase name="cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:46.557+09:00" time="0.180"/>
+        <testcase name="cognitive_store::schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:46.737+09:00" time="0.147"/>
+        <testcase name="cognitive_store_tests::h7_trajectory_schema_is_bound_and_append_only" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:46.885+09:00" time="0.095"/>
+        <testcase name="h7_trajectory_store_tests::recovery_read_observes_expired_terminal_without_appending_h7_rows" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:46.980+09:00" time="6.127"/>
+        <testcase name="intuition_shadow::tests::snapshot_policy_and_schema_bindings_reject_tampering" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:53.108+09:00" time="0.008"/>
+        <testcase name="local_lease_outbox_tests::terminal_recovery_rejects_missing_event_outbox_pair_without_appending_lease" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:53.115+09:00" time="0.194"/>
+        <testcase name="local_memory_saga::tests::queued_target_success_recovery_does_not_append_a_second_revision" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:53.309+09:00" time="0.108"/>
+        <testcase name="local_memory_saga::tests::tombstone_target_commit_recovery_after_reopen_is_idempotent" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:53.418+09:00" time="0.189"/>
+        <testcase name="production_notes::tests::exact_recovery_golden_binds_original_payload_and_full_terminal_receipt" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:53.608+09:00" time="0.007"/>
+        <testcase name="production_writer::hos2_tests::conflict_tests::known_request_rejection_disables_original_intent_at_dispatch_and_recovery" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:53.615+09:00" time="0.367"/>
+        <testcase name="production_writer::objective_sender::crash_tests::a_second_real_process_and_different_lease_still_cannot_send_retained_run" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:53.982+09:00" time="0.271"/>
+        <testcase name="production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:54.254+09:00" time="2.414"/>
+        <testcase name="production_writer::objective_sender::model::tests::duplicate_unknown_truncated_or_out_of_profile_originals_are_rejected" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:56.668+09:00" time="0.007"/>
+        <testcase name="production_writer::objective_sender::model::tests::every_signed_body_field_changes_the_retained_binding" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:56.675+09:00" time="0.010"/>
+        <testcase name="production_writer::objective_sender::model::tests::exact_original_utf8_and_whitespace_survive_structural_projection" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:56.685+09:00" time="0.007"/>
+        <testcase name="production_writer::objective_sender::model::tests::observations_are_bounded_exact_data_without_an_inferred_anchor" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:56.692+09:00" time="0.008"/>
+        <testcase name="production_writer::objective_sender::tests::an_unused_ticket_cannot_move_to_a_reopened_original_writer_instance" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:56.700+09:00" time="0.167"/>
+        <testcase name="production_writer::objective_sender::tests::bounded_pages_recover_exact_owner_bytes_without_caller_memory_or_send_rights" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:56.867+09:00" time="1.150"/>
+        <testcase name="production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:58.017+09:00" time="0.314"/>
+        <testcase name="production_writer::objective_sender::tests::checkpoint_holds_original_sqlite_write_serialization_until_acknowledgement" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:58.332+09:00" time="0.168"/>
+        <testcase name="production_writer::objective_sender::tests::failed_mismatched_or_revoked_final_checkpoint_leaves_unknown_not_a_new_permit" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:58.500+09:00" time="0.499"/>
+        <testcase name="production_writer::objective_sender::tests::observations_and_local_cancellation_are_durable_and_never_rearm" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:58.999+09:00" time="0.773"/>
+        <testcase name="production_writer::objective_sender::tests::retain_binds_exact_raw_to_one_permit_without_effect_outbox_rows" classname="codex-hepta-memory" timestamp="2026-10-23T16:29:59.772+09:00" time="0.287"/>
+        <testcase name="production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored" classname="codex-hepta-memory" timestamp="2026-10-23T16:30:00.059+09:00" time="0.278"/>
+        <testcase name="production_writer::objective_sender::tests::stale_schema_anchor_is_refused_before_any_recovery_path_access" classname="codex-hepta-memory" timestamp="2026-10-23T16:30:00.338+09:00" time="0.155"/>
+        <testcase name="production_writer::objective_sender::tests::timeout_and_cancelled_checkpoint_future_release_lock_but_keep_durable_fence" classname="codex-hepta-memory" timestamp="2026-10-23T16:30:00.494+09:00" time="0.310"/>
+        <testcase name="production_writer::tests::recovery_does_not_release_production_lease_with_peer_pending" classname="codex-hepta-memory" timestamp="2026-10-23T16:30:00.804+09:00" time="0.117"/>
+        <testcase name="shadow_model_runtime::tests::schema_gaps_remain_explicit_and_unknown_fields_reject" classname="codex-hepta-memory" timestamp="2026-10-23T16:30:00.921+09:00" time="0.012"/>
+        <testcase name="shared_experience::tests::migration_rebuilds_exact_schema_and_source_withdrawal_never_reopens_use" classname="codex-hepta-memory" timestamp="2026-10-23T16:30:00.933+09:00" time="0.182"/>
+    </testsuite>
+</testsuites>

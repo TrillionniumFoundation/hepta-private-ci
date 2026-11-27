@@ -52,3 +52,7 @@ pub(crate) async fn verify_schema(
 #[cfg(test)]
 #[path = "authority_schema_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "authority_migration_tests.rs"]
+mod migration_tests;

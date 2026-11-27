@@ -1,0 +1,53 @@
+test_actual_assembler_keeps42_and_requires_all6_for_choice (test_integration_v2.IntegrationTests.test_actual_assembler_keeps42_and_requires_all6_for_choice) ... ERROR
+test_bad_external_audit_and_missing_candidate_keep_all_charged (test_integration_v2.IntegrationTests.test_bad_external_audit_and_missing_candidate_keep_all_charged) ... ERROR
+test_execution_authorization_false_scope_and_limits_are_fail_closed (test_integration_v2.IntegrationTests.test_execution_authorization_false_scope_and_limits_are_fail_closed) ... ok
+test_exit0_archive_still_requires_source_roster_and_actual_budget (test_integration_v2.IntegrationTests.test_exit0_archive_still_requires_source_roster_and_actual_budget) ... ok
+test_final_source_failure_withholds_selections_but_preserves_numbers (test_integration_v2.IntegrationTests.test_final_source_failure_withholds_selections_but_preserves_numbers) ... ERROR
+test_old_budget_copies_exact_bytes_and_historical_identity_required (test_integration_v2.IntegrationTests.test_old_budget_copies_exact_bytes_and_historical_identity_required) ... ok
+
+======================================================================
+ERROR: test_actual_assembler_keeps42_and_requires_all6_for_choice (test_integration_v2.IntegrationTests.test_actual_assembler_keeps42_and_requires_all6_for_choice)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-f-attempt-01/source/test_integration_v2.py", line 101, in test_actual_assembler_keeps42_and_requires_all6_for_choice
+    result=self.assembled()
+           ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-f-attempt-01/source/test_integration_v2.py", line 97, in assembled
+    build_report.build(binding,{},Inputs(),output,result)
+  File "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-f-attempt-01/source/build_report.py", line 193, in build
+    'target': .3, 'old_points_copied_unchanged': copies['POINTS.json'],
+                                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'POINTS.json'
+
+======================================================================
+ERROR: test_bad_external_audit_and_missing_candidate_keep_all_charged (test_integration_v2.IntegrationTests.test_bad_external_audit_and_missing_candidate_keep_all_charged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-f-attempt-01/source/test_integration_v2.py", line 110, in test_bad_external_audit_and_missing_candidate_keep_all_charged
+    result=self.assembled(**options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-f-attempt-01/source/test_integration_v2.py", line 97, in assembled
+    build_report.build(binding,{},Inputs(),output,result)
+  File "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-f-attempt-01/source/build_report.py", line 193, in build
+    'target': .3, 'old_points_copied_unchanged': copies['POINTS.json'],
+                                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'POINTS.json'
+
+======================================================================
+ERROR: test_final_source_failure_withholds_selections_but_preserves_numbers (test_integration_v2.IntegrationTests.test_final_source_failure_withholds_selections_but_preserves_numbers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-f-attempt-01/source/test_integration_v2.py", line 118, in test_final_source_failure_withholds_selections_but_preserves_numbers
+    result=self.assembled()
+           ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-f-attempt-01/source/test_integration_v2.py", line 97, in assembled
+    build_report.build(binding,{},Inputs(),output,result)
+  File "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-f-attempt-01/source/build_report.py", line 193, in build
+    'target': .3, 'old_points_copied_unchanged': copies['POINTS.json'],
+                                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'POINTS.json'
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.188s
+
+FAILED (errors=3)

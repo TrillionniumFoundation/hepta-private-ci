@@ -2378,9 +2378,9 @@ fn mcp_elicitation_schema_matches_mcp_2025_11_25_primitives() {
                         type_: McpElicitationNumberType::Integer,
                         title: Some("Count".to_string()),
                         description: Some("How many items to create".to_string()),
-                        minimum: Some(1.0),
-                        maximum: Some(5.0),
-                        default: Some(3.0),
+                        minimum: Some(1.into()),
+                        maximum: Some(5.into()),
+                        default: Some(3.into()),
                     }),
                 ),
                 (
@@ -2436,9 +2436,9 @@ fn mcp_elicitation_preserves_integer_and_number_schema_wire_values() {
             type_: number_type,
             title: None,
             description: None,
-            minimum: Some(1.0),
-            maximum: Some(99.0),
-            default: Some(30.0),
+            minimum: serde_json::Number::from_f64(1.0),
+            maximum: serde_json::Number::from_f64(99.0),
+            default: serde_json::Number::from_f64(30.0),
         });
 
         assert_eq!(

@@ -1,0 +1,1011 @@
+{
+  "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+  "canonical_tmpdir": "/tmp/hlca-faobz7eb",
+  "v8_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+  "private_v8_inputs": {
+    "original_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+    "original_manifest_unchanged": true,
+    "private_artifacts": [
+      {
+        "key": "RUSTY_V8_ARCHIVE",
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "bytes": 29366352,
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+        "acquisition": "read-only reuse of the exact original V8 pair recovered and full-hash-verified in dependency-recovery-441de918-v1"
+      },
+      {
+        "key": "RUSTY_V8_SRC_BINDING_PATH",
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "bytes": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+        "acquisition": "read-only reuse of the exact original V8 pair recovered and full-hash-verified in dependency-recovery-441de918-v1"
+      }
+    ],
+    "copied_or_downloaded_during_this_native_invocation": false,
+    "recovery_record_sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc"
+  },
+  "state": "failed",
+  "steps": [
+    {
+      "name": "helper-build",
+      "exit_code": 0,
+      "seconds": 70.5727739140857,
+      "log_sha256": "f70dcbf88da5c28156a72317a169c099997aad767f42dfca8b7b635ccf574611",
+      "log_bytes": 215
+    },
+    {
+      "name": "helper-verify",
+      "exit_code": 0,
+      "seconds": 0.19074791693128645,
+      "log_sha256": "407b1062e09c24aca388bea1fe29e4c2df63b61d4bf393e7ac369fd4be3a7989",
+      "log_bytes": 1201
+    },
+    {
+      "name": "focused-native",
+      "exit_code": 100,
+      "seconds": 637.1568419279065,
+      "log_sha256": "51c1fbcadd888ff5f6c690f7bcfe342c6baba8c88798aae3f7520883bbca6253",
+      "log_bytes": 228694
+    },
+    {
+      "name": "focused-junit",
+      "exit_code": 1,
+      "seconds": 0.07568120490759611,
+      "log_sha256": "cff7cc9c2e4c1e64e66ee9e962128b167e4c25ba1c0f4100b194fabd3b080265",
+      "log_bytes": 40163
+    }
+  ],
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "purpose": "actual original 190-case owner suite plus 11 existing V2 metadata cases on this fixed source; no ordinary-task acceptance",
+  "expected_owner_cases": [
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::policy::tests::policy_v2_roundtrip_normalizes_only_order_and_preserves_every_value"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::policy::tests::policy_v2_all_pre_b_fields_change_the_commitment_or_are_rejected"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::policy::tests::policy_v2_strict_decode_refuses_noncanonical_malformed_and_unbounded_metadata"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::policy::tests::policy_v2_remote_metadata_matches_original_local_freeze_without_releasing_data"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::policy::tests::policy_v2_late_bindings_cannot_change_policy_or_reuse_old_plan_bytes"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::policy::tests::policy_v2_keeps_original_role_fold_and_temporal_rejections"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::policy::tests::policy_v2_shared_and_paired_original_commitment_bytes_remain_exact"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_on_policy_evaluation::policy::tests::v2_full_comparison_and_pair_policy_roundtrip_is_canonical"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_on_policy_evaluation::policy::tests::v2_panel_profile_commits_every_comparison_and_real_pair_identity"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_on_policy_evaluation::policy::tests::v2_decoder_rejects_legacy_truncation_tail_and_duplicate_real_identity"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_on_policy_evaluation::policy::tests::v2_declaration_rejects_known_impossible_complete_policy_contribution"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::paired_tests::paired_default_provider_refuses_after_one_original_consumption"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::paired_tests::paired_original_estimators_and_qualification_keep_the_frozen_thresholds"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::paired_tests::paired_equal_outcomes_do_not_pass_original_primary_superiority"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::paired_tests::paired_identity_source_state_and_probability_changes_stay_pending"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::paired_tests::paired_contract_and_temporal_protocol_are_fixed_before_consumption"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::paired_tests::paired_one_actual_principal_is_not_split_into_independent_clusters"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::paired_tests::paired_signed_completion_lost_ack_cold_reads_without_release_or_resign"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::paired_tests::paired_changed_execution_body_cannot_replace_original_signature"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::paired_tests::paired_mode_cannot_decode_or_reuse_a_shared_behavior_execution"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::paired_tests::paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineligible"
+    ],
+    [
+      "codex-hepta-agentd",
+      "artifact_original_head::source::tests::original_artifact_head_signs_once_and_cold_reads_saved_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "artifact_original_head::source::tests::original_artifact_head_lost_reply_reads_original_without_recreating_writer"
+    ],
+    [
+      "codex-hepta-agentd",
+      "artifact_original_head::source::tests::original_artifact_head_restored_source_cannot_revive_consumed_connection"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::preparation::tests::original_registry_preparation_stops_before_head_and_finishes_same_writer_once"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::preparation::tests::original_registry_lost_return_and_cold_readback_cannot_recreate_continuation"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::preparation::tests::original_registry_partial_prepare_is_pending_and_readback_never_completes_it"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::preparation::tests::original_registry_physical_corruption_fences_even_after_original_bytes_return"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::preparation::tests::original_registry_wrong_context_is_refused_before_consuming_the_writer"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::preparation::tests::original_registry_finish_requires_original_signature_withdrawal_and_fresh_time"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_host::tests::owner_host_resumes_legacy_payload_under_renewed_writer_lease"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_reads_two_trainers_per_call_and_whole_export"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_rejects_equal_evidence_on_another_connection"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_uses_original_selection_and_real_distinct_task_c"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_changed_full_training_signature_before_prepare"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_rejects_same_content_even_with_a_new_run_and_task_digest"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_never_converts_candidate_training_into_no_update"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_another_final_use_purpose_and_only_reads_pending"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_actual_artifact_withdrawal_before_final_use"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_lost_ack_recovers_original_files_without_another_grant"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_cancelled_operation_cannot_reuse_original_prefix"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_commits_full_nonempty_membership_before_any_result"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks"
+    ],
+    [
+      "codex-hepta-neuron",
+      "cell_generation_journal::tests::physical_current::physical_current_preserves_complete_bytes_cursor_state_and_append_owner"
+    ],
+    [
+      "codex-hepta-neuron",
+      "cell_generation_journal::tests::physical_current::physical_current_rejects_short_tail_extra_tail_and_truncation_without_repair"
+    ],
+    [
+      "codex-hepta-neuron",
+      "cell_generation_journal::tests::physical_current::physical_current_rejects_valid_same_length_rehashed_history_and_cannot_rearm"
+    ],
+    [
+      "codex-hepta-neuron",
+      "cell_generation_journal::tests::physical_current::physical_current_rejects_header_change_and_preserves_cursor_after_restore"
+    ],
+    [
+      "codex-hepta-neuron",
+      "cell_generation_journal::tests::physical_current::physical_current_fences_witness_change_between_original_descriptor_reads"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_next_use_receipt_owner::tests::original_observer_configuration_rejects_substituted_custody_before_journal_creation"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_next_use_receipt_owner::tests::original_observer_predecessors_require_bound_signed_roles_and_independent_custody"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_next_use_receipt_owner::tests::original_observer_deadline_and_saved_signature_window_never_renew"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_next_use_receipt_owner::tests::original_observer_pending_claim_reopens_without_signing_or_rewriting"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::original_material_pair_signs_recovers_and_feeds_actual_no_update_training"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_resigning"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::original_material_pair_pending_claim_reopens_without_signing_or_replacing_bytes"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::original_material_pair_expired_work_only_reads_original_completed_windows"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::original_material_pair_partial_creation_never_finishes_missing_dataset_during_recovery"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_withdrawn_publication_before_claim"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_valid_training_renewal_live_and_cold"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_preserves_pending_and_recovers_completed_lost_ack"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_substituted_custody_before_store_creation"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_attests_and_recovers_exact_adoption"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_training_source"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_version_publication"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_valid_predecessor_resigning"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_pending_claim_survives_recovery"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_fences_changed_execution_bytes"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_missing_and_pending_never_publish_during_recovery"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_lost_completion_ack_preserves_uncertainty_and_exact_recovery"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_rejects_context_and_valid_signature_renewal"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_current_corruption_stays_fenced_after_restore"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_requires_physical_execution_and_holdout_before_claim"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_cell_evaluation_execution_store::tests::original_execution_owner_preserves_missing_pending_and_completed_after_recovery"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_cell_evaluation_execution_store::tests::original_execution_owner_creation_and_recovery_never_repair_partial_anchors"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_cell_evaluation_execution_store::tests::original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack"
+    ],
+    [
+      "codex-hepta-agentd",
+      "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_preserves_frozen_rule_and_recovers_exact_no_update"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_rejects_identical_legacy_batch_before_admission"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_before_claim_fences_without_no_update"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_after_claim_preserves_pending_without_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::source_bound_capture_rejects_valid_freeze_resigning_with_identical_training_bytes"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_cold_identity_rejects_valid_material_signature_renewal"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_candidate_and_model_keep_two_reads_per_lane"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_after_read_withdrawal_fences_completed_native_result"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_cancelled_waiter_keeps_lane_then_fences"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_rejects_equal_capture_from_different_arc"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_abandoned_finish_preserves_real_native_effect_and_fences"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_executes_and_produces_actual_evidence_readback"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_recovers_same_job_and_full_signature_read_only"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_lost_ack_reads_existing_completion_without_reexecution"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_withdrawal_after_claim_preserves_pending_without_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_wrong_context_cannot_claim_or_consume_admission"
+    ],
+    [
+      "codex-hepta-agentd",
+      "cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_public_bootstrap_refuses_same_process_custody"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_attenuation_and_prebound_transport_preserve_original_custody"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_unready_and_wrong_purpose_never_initialize"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_rejects_experience_and_valid_other_freeze_context"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::tests::material_readback_service_returns_original_signatures_and_cold_rereads"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::tests::material_readback_service_refuses_request_rebinding_and_replay_without_writes"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::tests::material_readback_service_refuses_withdrawn_source_and_busy_ledger"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::tests::material_readback_service_never_finishes_missing_dataset"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::tests::material_readback_service_rejects_same_uid_peer_and_widened_transport"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::tests::material_readback_service_failed_frame_permanently_consumes_channel"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::source::tests::material_source_peer_reconstructs_exact_sealed_material_and_cold_rereads"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::source::tests::material_source_peer_rejects_raw_batch_provenance_and_frozen_optimizer_rebinding"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::source::tests::material_source_peer_pins_complete_material_and_freeze_signatures"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_withdrawn_missing_or_busy_originals"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_request_payload_rebinding_and_public_custody_bypass"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::source::tests::material_source_peer_consumes_wrong_purpose_or_failed_frames"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::command::serving::tests::material_command_executes_original_experience_then_dataset_without_uploads"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::command::serving::tests::material_command_lost_ack_recovers_original_signatures_and_shared_admission"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::command::serving::tests::material_command_missing_predecessor_and_cold_missing_never_execute"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::command::serving::tests::material_command_pending_claim_and_withdrawal_never_complete_or_rearm"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::command::serving::tests::material_command_wrong_context_role_or_custody_never_claims"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::command::serving::tests::material_command_pins_original_signatures_and_consumes_invalid_replies"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::original_evidence::original_execution_evidence_survives_recovery_without_work_or_renewal"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::original_evidence::original_execution_evidence_rechecks_expiry_after_owner_reads"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::original_evidence::equal_execution_with_validly_renewed_signature_has_different_original_evidence"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::original_evidence::original_execution_evidence_missing_and_pending_never_claim"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "fenced_holdout_file::tests::physical_current::holdout_current_same_length_mutation_fences_after_restore"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "fenced_holdout_file::tests::physical_current::holdout_current_rehashed_history_cannot_preserve_cached_frontier"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "fenced_holdout_file::tests::physical_current::holdout_current_preserves_cursor_lock_and_fences_read_errors"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "fenced_holdout_file::tests::physical_current::holdout_current_cold_recovery_and_non_target_calls_preserve_original_bytes"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::holdout_current::holdout_current_lost_cas_ack_preserves_pending_without_provider_replay"
+    ],
+    [
+      "codex-hepta-intelligence-eval",
+      "product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_task::source::tests::physical_current::original_source_current_fences_same_length_mutation_after_restore"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_task::source::tests::physical_current::original_source_current_fences_truncation_and_extra_tail_without_repair"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_task::source::tests::physical_current::original_source_input_read_is_readonly_and_requires_live_original_configuration"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_reconstructs_actual_pages_and_cold_original_signature"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::command::serving::tests::ordinary_stage::ordinary_stage_without_resident_gate_never_dispatches_original_material"
+    ],
+    [
+      "codex-hepta-agentd",
+      "learning_iteration_evidence_client::material::command::serving::tests::ordinary_stage::ordinary_stage_recovery_keeps_original_missing_uncertain_without_claim"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_requires_original_selection_and_consumes_wrong_purpose"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::publication_readback_tests::original_publication_readback_bounds_the_actual_transaction_scan"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::publication_readback_tests::original_publication_readback_observes_lost_reply_without_republishing"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::publication_readback_tests::original_publication_readback_cold_reopens_exact_pending_without_completion"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::publication_readback_tests::original_publication_readback_refuses_missing_or_changed_expected_operation"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::publication_readback_tests::original_publication_readback_refuses_actual_checkpoint_or_current_damage"
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_service::publication_readback_tests::original_publication_readback_uses_live_clock_not_an_old_request_timestamp"
+    ]
+  ],
+  "expected_owner_groups": 43,
+  "native_tests_executed": 201,
+  "owner_coverage": {
+    "total_cases": 201,
+    "exact_selected_cases": true,
+    "raw_junit_bytes": 75336,
+    "raw_junit_sha256": "cb1057591464fed92d0a050c2a31e7aad39d8c356b7354958396a1016a464fcd",
+    "failed_or_skipped": [
+      {
+        "package": "codex-hepta-agentd",
+        "name": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+        "diagnostics": [
+          "thread 'learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel' (1472579) panicked at hepta-agentd/src/cell_q24_training_candidate_tests.rs:477:5:\nassertion failed: wire::authenticate_receipt(&context, run.training.receipt().clone(),\n        run.training.attestation().clone(),\n        run.training.attestation().expires_at).is_err()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+        "diagnostics": [
+          "Error: agentd protocol error: original Circuit source: Circuit task does not match its original admitted task"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+        "diagnostics": [
+          "Error: agentd protocol error: original Circuit source: Circuit task does not match its original admitted task"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+        "diagnostics": [
+          "Error: agentd protocol error: original Circuit source: Circuit task does not match its original admitted task"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_reads_two_trainers_per_call_and_whole_export",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_rejects_equal_evidence_on_another_connection",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+        "diagnostics": [
+          "process aborted with signal 6 (SIGABRT)"
+        ]
+      }
+    ]
+  },
+  "native_exit_code": 100,
+  "collection_exit_code": 1,
+  "source_after": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_status_after": "",
+  "execution_log_file": "focused-native.json.5f39b8cb54fd4970b60fcc4728e25a79.log",
+  "execution_log_bytes": 187839,
+  "execution_log_sha256": "7b87ec048219bacd146d9f7f4de5df7a73f2eceb2d635a4808f34f13a74a4664",
+  "original_observer_coverage": {
+    "state": "not-qualified-because-original-execution-failed",
+    "exact_pass_coverage": false
+  }
+}

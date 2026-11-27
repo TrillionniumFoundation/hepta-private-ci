@@ -1,0 +1,121 @@
+[
+  {
+    "method": "acl::tests::complete_denies_compare_mapped_masks_and_require_every_right",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "f57c490a989de0733155bcf492ac80af83fe17c1297c436af614fb809936f9fa",
+    "current_body_sha256": "f57c490a989de0733155bcf492ac80af83fe17c1297c436af614fb809936f9fa"
+  },
+  {
+    "method": "acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "7442b32af986e3203c07fbbcefcf376e4a7b6193d06212a36825581aac58d4cf",
+    "current_body_sha256": "7442b32af986e3203c07fbbcefcf376e4a7b6193d06212a36825581aac58d4cf"
+  },
+  {
+    "method": "acl::tests::complete_file_denies_require_direct_scope",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "e9a47b95334e1bd23c2d0ebb7bf46a9737c04261eec66db16ad7c4f9ce2756af",
+    "current_body_sha256": "e9a47b95334e1bd23c2d0ebb7bf46a9737c04261eec66db16ad7c4f9ce2756af"
+  },
+  {
+    "method": "acl::tests::native_file_and_directory_denies_retain_full_masks_and_are_idempotent",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "344750af2a7bb620ec2903b86eadac4bbfa12f766064fb561cb70ae40d8f8858",
+    "current_body_sha256": "344750af2a7bb620ec2903b86eadac4bbfa12f766064fb561cb70ae40d8f8858"
+  },
+  {
+    "method": "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "e9c44337458a2baaa42ae1d7ab4c6d7dfecdfc0db117ac7e48a8076892b11648",
+    "current_body_sha256": "e9c44337458a2baaa42ae1d7ab4c6d7dfecdfc0db117ac7e48a8076892b11648"
+  },
+  {
+    "method": "acl::tests::deny_ace_update_failure_is_an_error",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "1eaa6ef393995f046ea966f03f12780379d4646f57b4a9532d219c6e161c121a",
+    "current_body_sha256": "1eaa6ef393995f046ea966f03f12780379d4646f57b4a9532d219c6e161c121a"
+  },
+  {
+    "method": "acl::tests::normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "0b598ae4d4eb9ccf3d555ff8b69123efb6d4f06a29c62981e54143941e236d56",
+    "current_body_sha256": "0b598ae4d4eb9ccf3d555ff8b69123efb6d4f06a29c62981e54143941e236d56"
+  },
+  {
+    "method": "acl::tests::fresh_write_deny_preserves_generic_read_and_denies_data_mutation",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "896b2d0aaa114595e60618d8330d4928f86adce8aa76fbd23519f0d7e784d1fc",
+    "current_body_sha256": "896b2d0aaa114595e60618d8330d4928f86adce8aa76fbd23519f0d7e784d1fc"
+  },
+  {
+    "method": "acl::tests::normalized_deny_pair_cannot_combine_wrong_identity_or_nonrecursive_scope",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "4d77dcd7e5d0814bc15aa60aad0ec637923efc31f2c149069840beab6560ed0b",
+    "current_body_sha256": "4d77dcd7e5d0814bc15aa60aad0ec637923efc31f2c149069840beab6560ed0b"
+  },
+  {
+    "method": "acl::tests::native_normalized_directory_and_file_denies_repeat_without_any_acl_change",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "0f7b352e71b09a39bae19560d2a1aa05e7182680bc9a0c7a010c6a823e2ececd",
+    "current_body_sha256": "0f7b352e71b09a39bae19560d2a1aa05e7182680bc9a0c7a010c6a823e2ececd"
+  },
+  {
+    "method": "acl::tests::acl_repair_rejects_replaced_path_with_different_object_type",
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "aff4d078e4bdfd0ae7ead47d4bf14a192d7604093bd895677b0f263abde61168",
+    "current_body_sha256": "aff4d078e4bdfd0ae7ead47d4bf14a192d7604093bd895677b0f263abde61168"
+  },
+  {
+    "method": "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+    "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "da654d23679a931e5ecd23eea0c14d6d4442693fd3ec29126535aa18404d58aa",
+    "current_body_sha256": "da654d23679a931e5ecd23eea0c14d6d4442693fd3ec29126535aa18404d58aa"
+  },
+  {
+    "method": "token::tests::workspace_token_refusal_leaves_existing_files_unchanged",
+    "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "2f31d15e12781a323b67ee1182109aedceff5d4f91162f49ff99b78de13f5816",
+    "current_body_sha256": "2f31d15e12781a323b67ee1182109aedceff5d4f91162f49ff99b78de13f5816"
+  },
+  {
+    "method": "token::tests::workspace_token_refuses_multiple_capabilities_before_native_access",
+    "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "3d2703a49e3d51cc2a427c56adab521c600be84bb855a24c0df5d3e4670b9476",
+    "current_body_sha256": "3d2703a49e3d51cc2a427c56adab521c600be84bb855a24c0df5d3e4670b9476"
+  },
+  {
+    "method": "token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets",
+    "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "1c544d0d966f39d824251b59823afe84e740c4ee07929d958867215bfc6c443a",
+    "current_body_sha256": "1c544d0d966f39d824251b59823afe84e740c4ee07929d958867215bfc6c443a"
+  },
+  {
+    "method": "token::tests::read_authority_probe::full_restriction_preserves_prepared_read_and_mutation_boundaries",
+    "path": "codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "88ac9ebc0ba55d2ea025c07ce80499ba15702158fc36f69e8569154b0e12dbcf",
+    "current_body_sha256": "88ac9ebc0ba55d2ea025c07ce80499ba15702158fc36f69e8569154b0e12dbcf"
+  },
+  {
+    "method": "token::tests::mic_probe::mic_counterexamples_require_public_admission_refusal",
+    "path": "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs",
+    "body_identical": true,
+    "candidate_body_sha256": "8be0817d5ff262ed26f1d5d630bbedd323ca06deac7d3421f8459b3ea2a86ea6",
+    "current_body_sha256": "8be0817d5ff262ed26f1d5d630bbedd323ca06deac7d3421f8459b3ea2a86ea6"
+  }
+]

@@ -1,0 +1,110 @@
+{
+  "api_boundary": "The supplied fix-run-raw.json is the original jobs API payload, not a separate run endpoint response. Run/job identities are also present in original phase/result/anchor records.",
+  "artifact": {
+    "bytes": 73486,
+    "git_blob": "62e10a2229c8c4301dc4fcb9fc1f6b4608c63785",
+    "id": 13865786917,
+    "sha256": "fcc5aa8768b96b87c42bc7aa7d7d7d3c597539fda086e4e1c691b58f95578b6d"
+  },
+  "dirty_postimage_paths": [
+    "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+    "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs"
+  ],
+  "harness_head": "c97586834214c8a0a610f860cc7ae261ce8cccde",
+  "job_id": 130583219316,
+  "locks_equal_across_all_before_after": true,
+  "model_commands": 0,
+  "native_test_commands": 0,
+  "offline_only": true,
+  "original_collection": "partial_or_failed",
+  "original_file_manifest_entries": 143,
+  "original_full_job": {
+    "bytes": 80304,
+    "git_blob": "19038f7e68da6896f3fa4bac426e27059433d2c6",
+    "sha256": "a57648a1669d46e7e69d9d226dc666f3ba166967ffed1e15a2d574353960a34a"
+  },
+  "original_job_conclusion": "failure",
+  "original_result": "failed_or_interrupted",
+  "phases": [
+    {
+      "after_dirty": false,
+      "before_dirty": false,
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "--features",
+        "qualification-owned-file-read"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 46.60899999999998,
+      "finished_at": "2026-11-11T14:31:11.490235+00:00",
+      "phase": "phase-1",
+      "raw": {
+        "bytes": 2274,
+        "git_blob": "f4b45444048983e9c5102dacfbf45786c8703cb7",
+        "sha256": "9ad814f6e7b34477f1ddb6f89ef149262b41daab18a110c485bbe0294ca820b3"
+      },
+      "started_at": "2026-11-11T14:30:24.880841+00:00",
+      "status": "passed_clean",
+      "timeout_observed": false
+    },
+    {
+      "after_dirty": false,
+      "before_dirty": false,
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-core"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 1038.0310000000002,
+      "finished_at": "2026-11-11T14:48:30.418499+00:00",
+      "phase": "phase-2",
+      "raw": {
+        "bytes": 84146,
+        "git_blob": "887749c44984de5c15e2a597df6c7efb0d2417b9",
+        "sha256": "428b0658477de7d2fa84dab7dda15b8d5ef16b78b8d013a0262b4c229d1b15bc"
+      },
+      "started_at": "2026-11-11T14:31:12.441901+00:00",
+      "status": "passed_clean",
+      "timeout_observed": false
+    },
+    {
+      "after_dirty": true,
+      "before_dirty": false,
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-windows-sandbox"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 284.23400000000015,
+      "finished_at": "2026-11-11T14:53:15.611167+00:00",
+      "phase": "phase-3",
+      "raw": {
+        "bytes": 13501,
+        "git_blob": "acc023b3603c757916743a49a0179c1bd738b89b",
+        "sha256": "66bc08d973b437d006b3317569d369dbe9c732cd3ebae15fc9805e43d356d0a0"
+      },
+      "started_at": "2026-11-11T14:48:31.390418+00:00",
+      "status": "failed_or_interrupted",
+      "timeout_observed": null
+    }
+  ],
+  "run_attempt": 1,
+  "run_id": 43038376307,
+  "schema": "mem8.windows-scoped-fix-original-offline-audit.v1",
+  "separate_run_level_api_object_supplied": false,
+  "source_head": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+  "source_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+  "status": "EVIDENCE_REPLAY_PASS_ORIGINAL_QUALIFICATION_FAIL",
+  "tools_equal_across_all_before_after": true,
+  "zip_members": 144
+}

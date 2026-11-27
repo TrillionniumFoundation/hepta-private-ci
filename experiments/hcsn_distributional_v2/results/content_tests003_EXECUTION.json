@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "experiments.hcsn_distributional_v2.model_tests",
+    "experiments.hcsn_distributional_v2.content_tests"
+  ],
+  "complete_child_cpu_seconds": 4.530425,
+  "peak_rss_bytes": 345530368,
+  "returncode": 0,
+  "source_sha256_after": {
+    "content_analysis.py": "338a2bc71d1d2174efcbea39bf73e535b6e49674f1dcf90a5778a8379c2d344a",
+    "content_study.py": "10a8ced56ad5e834ed90e66509e18a9bbcded7f284938a5ef01354c0dfc24723",
+    "content_tests.py": "5580ac40fb4d4f4daa8ff8444e157dbf5ff321d26d77a640fc832784d82f02c3",
+    "content_training.py": "dcf2a195092469e8258374c7a78217930f9f2d56e6b584178162d1de3025ed0e",
+    "distribution_kernel.py": "f272aa0808c2d497d4647dfb46fdc261ee481522affe0963b957d13b94f7f752",
+    "model.py": "118e3381a114c1a63daed60f32ceee0d445e6e4e41fcc0a4c4a79424b1962412",
+    "model_tests.py": "7a97ed6a33e6d5cfb759c10e57718d7db92fb7ca9fa678dbf453cc37085fb21d"
+  },
+  "source_sha256_before": {
+    "content_analysis.py": "338a2bc71d1d2174efcbea39bf73e535b6e49674f1dcf90a5778a8379c2d344a",
+    "content_study.py": "10a8ced56ad5e834ed90e66509e18a9bbcded7f284938a5ef01354c0dfc24723",
+    "content_tests.py": "5580ac40fb4d4f4daa8ff8444e157dbf5ff321d26d77a640fc832784d82f02c3",
+    "content_training.py": "dcf2a195092469e8258374c7a78217930f9f2d56e6b584178162d1de3025ed0e",
+    "distribution_kernel.py": "f272aa0808c2d497d4647dfb46fdc261ee481522affe0963b957d13b94f7f752",
+    "model.py": "118e3381a114c1a63daed60f32ceee0d445e6e4e41fcc0a4c4a79424b1962412",
+    "model_tests.py": "7a97ed6a33e6d5cfb759c10e57718d7db92fb7ca9fa678dbf453cc37085fb21d"
+  },
+  "sources_unchanged": true,
+  "wall_seconds": 4.589538618000006
+}

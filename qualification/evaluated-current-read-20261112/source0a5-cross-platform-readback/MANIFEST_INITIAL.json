@@ -1,0 +1,224 @@
+{
+  "schema": "hepta.source0a5-cross-platform-log-progress.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "head_tree": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+  "run_id": 43310500072,
+  "run_attempt": 1,
+  "representation": "Original decoded GitHub tool content as UTF-8; BOM and ANSI bytes retained in original parts. Derived lines remove ANSI only for reading.",
+  "logs_retrieved": [
+    {
+      "job_id": 131505675917,
+      "log": {
+        "bytes": 815904,
+        "sha256": "b8ecf2e6cc7f2fc28c14ac2fe4f23e88893f725e1164f6c6db1905e1b0352f68",
+        "git_blob": "7c1bb9cfeb9663eba703d9cf23047c65fc3bf0a2"
+      },
+      "characters": 815902,
+      "lines": 8652,
+      "parts": [
+        {
+          "path": "JOB_131505675917_PART_000.log",
+          "start_character": 0,
+          "characters": 180000,
+          "bytes": 180002,
+          "sha256": "2b53d096787db65167b5338839faa2776ff10d1fcd55b078e9c8e918f41b15b7",
+          "git_blob": "b0ab5aa1ebe4821795fe00391adc0149a557a38d"
+        },
+        {
+          "path": "JOB_131505675917_PART_001.log",
+          "start_character": 180000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "2055e8ff846faf1028de3a35ea68a4ce3147654ebe0de692fd2cba8764c840ac",
+          "git_blob": "cea0e32ad4db08512c6ac695148d1a500bf680bf"
+        },
+        {
+          "path": "JOB_131505675917_PART_002.log",
+          "start_character": 360000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "b786e29c8936258d682ced2e1c61f53b0d82a1036ee5ed6bf92774cfeefd3bbb",
+          "git_blob": "2c7ae02a277584ba69e939fd57549ef060d12414"
+        },
+        {
+          "path": "JOB_131505675917_PART_003.log",
+          "start_character": 540000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "990cee61864c0cd46caab3f39625080a3f036d381f974ce1df033d057376faaf",
+          "git_blob": "870e9e4b09eafce7a7c5bf18f86b09ac4da0c80b"
+        },
+        {
+          "path": "JOB_131505675917_PART_004.log",
+          "start_character": 720000,
+          "characters": 95902,
+          "bytes": 95902,
+          "sha256": "787adb5fc237ada538cbcea56b07d939334d2018a19fb3958be5400b206e9bae",
+          "git_blob": "e03e2b70048487c70693d47b28352c81533d711f"
+        }
+      ],
+      "checkout_commits_observed": [
+        "1749a97b4c7d5cc76245025b1721e831365c8296"
+      ],
+      "derived_relevant_lines": [
+        {
+          "original_line_1_based": 8485,
+          "line": "2026-11-12T21:35:25.9636407Z INFO: Build completed successfully, 37480 total actions"
+        },
+        {
+          "original_line_1_based": 8545,
+          "line": "2026-11-12T21:36:01.5659723Z INFO: Build completed successfully, 11 total actions"
+        }
+      ],
+      "original_raw_json": {
+        "bytes": 826579,
+        "sha256": "6c306d8d748a572acc95c0a8dd288fd7712c37a451ecf1df5367aca8ba3458ea",
+        "git_blob": "08333c14d489b9471a5532c49daab3bbc661068c"
+      },
+      "parts_reassemble_exactly": true,
+      "original_api_status": {
+        "id": 131505675917,
+        "run_id": 43310500072,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T21:29:09Z",
+        "completed_at": "2026-11-12T21:36:18Z",
+        "runner_name": "GitHub Actions 1000135462"
+      }
+    },
+    {
+      "job_id": 131505676145,
+      "log": {
+        "bytes": 1290109,
+        "sha256": "f7778b3cb8846ac67b5b78a3930085a6470527d56b8917ba4743c722b46971af",
+        "git_blob": "b5fd2e9c260a9130e463597e39eb1e4e93045ebe"
+      },
+      "characters": 1290107,
+      "lines": 15052,
+      "parts": [
+        {
+          "path": "JOB_131505676145_PART_000.log",
+          "start_character": 0,
+          "characters": 180000,
+          "bytes": 180002,
+          "sha256": "955874e398fc18c4723aa52e5eca41dfd87741317941042d9aab039d684a3ee1",
+          "git_blob": "24e10b97b15fb8aa2771b5a09a69e77115220b89"
+        },
+        {
+          "path": "JOB_131505676145_PART_001.log",
+          "start_character": 180000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "e6e7310eeb2ee7a603bed7b8823408c5bdb83517659e9aa09b2fee6377434438",
+          "git_blob": "89dceaf3158a10a88d32b163fb93d7de80e76c42"
+        },
+        {
+          "path": "JOB_131505676145_PART_002.log",
+          "start_character": 360000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "2784d6c83822014bc06ced800d52825087828ffeda07cf8077e0641c388c470f",
+          "git_blob": "e607de2b59934b88f014480d14fb0c9f8bbc1c83"
+        },
+        {
+          "path": "JOB_131505676145_PART_003.log",
+          "start_character": 540000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "4b2025295337af9131b6039a9ee101778823cee8f4334cecc432e52cb03592cb",
+          "git_blob": "1c8d05158f91167504ccc8fa970e182101e6cf31"
+        },
+        {
+          "path": "JOB_131505676145_PART_004.log",
+          "start_character": 720000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "a5f02011d573dc61599a2ffbcedb35d9fd58c35673995dc8f3e85ab660e09b2e",
+          "git_blob": "74600b21f7cc439eaea9d162e92e6d5db6c25367"
+        },
+        {
+          "path": "JOB_131505676145_PART_005.log",
+          "start_character": 900000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "b1bc3fc3bbf4101debd02bd97fa90ccb27e36ba06f5bcd5675a8d181582dbb0a",
+          "git_blob": "206ad58ba7636ff3928b4b02c85ec6f92c4e606e"
+        },
+        {
+          "path": "JOB_131505676145_PART_006.log",
+          "start_character": 1080000,
+          "characters": 180000,
+          "bytes": 180000,
+          "sha256": "679d98ad3e13376b927b03e7f6fbd1db9665720064776ae43af787a8d7d86fe6",
+          "git_blob": "1ac5d21dd83cbd0179ac678f300c1e87e1016f7a"
+        },
+        {
+          "path": "JOB_131505676145_PART_007.log",
+          "start_character": 1260000,
+          "characters": 30107,
+          "bytes": 30107,
+          "sha256": "4bcb297e77f36c8fceeb89bb9a94968408e3b7d757718c828b10b7421bd558a2",
+          "git_blob": "8f34fade312c1cda74111ac443024c090d6b586b"
+        }
+      ],
+      "checkout_commits_observed": [
+        "1749a97b4c7d5cc76245025b1721e831365c8296"
+      ],
+      "derived_relevant_lines": [
+        {
+          "original_line_1_based": 14948,
+          "line": "2026-11-12T21:36:20.3459929Z INFO: Build completed successfully, 38908 total actions"
+        }
+      ],
+      "original_raw_json": {
+        "bytes": 1306863,
+        "sha256": "841229d6fb522e8e0603b1192f0ff87f802b26b44803ec86dbb865e80e76c417",
+        "git_blob": "b6d4e66498adac777592366e99539e6b51f4206b"
+      },
+      "parts_reassemble_exactly": true,
+      "original_api_status": {
+        "id": 131505676145,
+        "run_id": 43310500072,
+        "head_sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T21:29:10Z",
+        "completed_at": "2026-11-12T21:36:36Z",
+        "runner_name": "GitHub Actions 1000135464"
+      }
+    }
+  ],
+  "method_denominator": null,
+  "whole_matrix_complete": false,
+  "manual_dispatches": 0,
+  "manual_cancels": 0,
+  "manual_reruns": 0,
+  "owner_decision": null,
+  "research_outcome": "HOLD",
+  "last_status_snapshot_utc": "2026-11-12 21:39:19 UTC",
+  "observed_job_count_at_snapshot": 35,
+  "metadata_originals": [
+    {
+      "path": "JOBS_SNAPSHOT_0007_ORIGINAL_API.json",
+      "bytes": 80328,
+      "sha256": "64e09cabb583d6ab3fe86e7b5953bf4160f922638012e813fb1f359968d9f185",
+      "git_blob": "892676742d3bafa997f343b25467e2fb4fa57b9e"
+    },
+    {
+      "path": "COMMIT_1749a97b4c7d5cc76245025b1721e831365c8296_ORIGINAL_API.json",
+      "bytes": 2799,
+      "sha256": "094bd00c9a562bbc21df8c04e2471f4cc96561b71cf46a8d43a8e58e3af1dc38",
+      "git_blob": "098b4775a72991ade32594c6b0686f5a4e214a15"
+    },
+    {
+      "path": "COMMIT_0a5c31b73667b3922d89643cf18f0482fa9a1b87_ORIGINAL_API.json",
+      "bytes": 2073,
+      "sha256": "67d4be0d7aff13298e0f592a2fda0a7c7dbc2e69d8a84da5bc54e433a168b565",
+      "git_blob": "f67ce255e14a0c8088220eba5e11c6a774a52b2e"
+    }
+  ]
+}

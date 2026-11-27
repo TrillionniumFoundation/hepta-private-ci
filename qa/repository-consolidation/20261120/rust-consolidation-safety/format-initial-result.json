@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.scoped-native-format.v1",
+  "base": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+  "scope": "Exact changed files with original formatter, justfile and seven required verbatim fixtures in an isolated format-only Git fixture. Original Bazel baseline is read-only.",
+  "commands": [
+    {
+      "name": "init",
+      "args": [
+        "git",
+        "init",
+        "--initial-branch=format-fixture"
+      ],
+      "exit": 0,
+      "seconds": 0.002105712890625,
+      "stdout_sha256": "c57e84da39fa7c709049a0cfb29c0534e39d96365b2947e270c4b7b76af81fea",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output": "Initialized empty Git repository in /home/qian-qi/hepta-rust-protection-20261120-0cee/format-only/.git/\n"
+    },
+    {
+      "name": "add-baseline",
+      "args": [
+        "git",
+        "add",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 0.007109642028808594,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output": ""
+    },
+    {
+      "name": "commit-baseline",
+      "args": [
+        "git",
+        "-c",
+        "user.name=Qualification Fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "Exact selected formatter baseline"
+      ],
+      "exit": 0,
+      "seconds": 0.00558161735534668,
+      "stdout_sha256": "d45aec0f0b24b8a5bd587efaa0d0b9a64c128f33c3c2662d87342a1eb620bacb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output": "[format-fixture (root-commit) 1e9e647] Exact selected formatter baseline\n 19 files changed, 11031 insertions(+)\n create mode 100644 codex-rs/ext/extension-api/BUILD.bazel\n create mode 100644 codex-rs/ext/hepta-prompt/BUILD.bazel\n create mode 100644 codex-rs/hepta-context-compiler/BUILD.bazel\n create mode 100644 codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/Packages/Rust/syntax_test_rust.rs\n create mode 100644 codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/issue28.rs\n create mode 100644 codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/issue33.rs\n create mode 100644 codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/parser.rs\n create mode 100644 codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/spacegray/fileicons-test/rust.rs\n create mode 100644 defs.bzl\n create mode 100644 justfile\n create mode 100644 qualification/memory-cell-mem8-ci-followup/pending-model-wire-cache/model_list.rs\n create mode 100644 qualification/memory-cell-mem8-ci-followup/v17/memory-coverage-diagnostic-preparation/cognitive_runtime_tests.rs\n create mode 100644 scripts/format.py\n create mode 100644 scripts/just-shell.py\n create mode 100644 tools/branch-consolidation/README.md\n create mode 100644 tools/branch-consolidation/hepta_branch_consolidation.py\n create mode 100644 tools/branch-consolidation/protected-branches.json\n create mode 100644 tools/branch-consolidation/test_hepta_branch_consolidation.py\n create mode 100644 tools/buildifier\n"
+    },
+    {
+      "name": "just-fmt",
+      "args": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit": 1,
+      "seconds": 0.0966644287109375,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "28fb26cd5f9e138b6542e83b5ad15463ccc66f348c142b579972293193f4f8f7",
+      "output": "==> Bazel/Starlark formatter failed\n$ dotslash /home/qian-qi/hepta-rust-protection-20261120-0cee/format-only/tools/buildifier -mode=fix -lint=off codex-rs/ext/extension-api/BUILD.bazel codex-rs/ext/hepta-prompt/BUILD.bazel codex-rs/hepta-context-compiler/BUILD.bazel defs.bzl\n[Errno 2] No such file or directory: 'dotslash'\nFormatting failed: Bazel/Starlark\nerror: recipe `fmt` failed on line 51 with exit code 1\n"
+    }
+  ],
+  "started_unix": 1795139758.8812084,
+  "source_before": {
+    "tools/branch-consolidation/hepta_branch_consolidation.py": "d5d4047be9282be9760af63a9a0aa1e3e33e4cd85775025fbdf18b91e0aad5f7",
+    "tools/branch-consolidation/test_hepta_branch_consolidation.py": "07c86918e63b69a89923cda871a1f5daa16f5cfc6c944cbedfffb5abf300f25c",
+    "tools/branch-consolidation/protected-branches.json": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f",
+    "tools/branch-consolidation/README.md": "da95f06b1e53169c2f85761e9b1a29c91b08949f6f7ad799d1b7ba6b47300af0",
+    "defs.bzl": "4721b4acc935c55f5c34c7c38f2648b9f00687cb27df3083df3af5e0562cd576",
+    "codex-rs/ext/extension-api/BUILD.bazel": "24321aabce706f28f8c498be10b50dca5105eafa3fbe7d9699c3024ff1ae0e26",
+    "codex-rs/hepta-context-compiler/BUILD.bazel": "0e1fa46c178925ab7c160f82f8708048ad4dfe9e72f5733de136f88456bdd7e2",
+    "codex-rs/ext/hepta-prompt/BUILD.bazel": "661e6abbc064de658fc31ba6842bb95ac49e89e24fd455498e35053399d99249",
+    "qa/repository-consolidation/20261120/rust-consolidation-safety/verification.json": "10acf13e8d9563d5abe2bc70c7afa37d60a67dcfdbb8699ab4e67894766437e9",
+    "qa/repository-consolidation/20261120/rust-consolidation-safety/safety-red-controls.stderr": "233afe76460f1cdbeecb85125a1e3e0ea515016e17cf776676c5a11b7f7de049",
+    "qa/repository-consolidation/20261120/rust-consolidation-safety/safety-tests.stderr": "8f459b10f70a5b8dc751023bcab0c57c36506ec806cffc707a58a16949ce080c",
+    "qa/repository-consolidation/20261120/rust-consolidation-safety/safety-tests-optimized.stderr": "263107252b4e13c58c258664b2d22991e2c5db1664b78aa8de3df191064224df",
+    "qa/repository-consolidation/20261120/rust-consolidation-safety/README.md": "db25ab1be9078681bbf986c677a7d54880e621d5ffda726227e184a89a049b43"
+  },
+  "tools": {
+    "just": "/home/qian-qi/.cargo/bin/just",
+    "python3": "/usr/bin/python3",
+    "dotslash": null
+  },
+  "source_after": {
+    "tools/branch-consolidation/hepta_branch_consolidation.py": "d5d4047be9282be9760af63a9a0aa1e3e33e4cd85775025fbdf18b91e0aad5f7",
+    "tools/branch-consolidation/test_hepta_branch_consolidation.py": "07c86918e63b69a89923cda871a1f5daa16f5cfc6c944cbedfffb5abf300f25c",
+    "tools/branch-consolidation/protected-branches.json": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f",
+    "tools/branch-consolidation/README.md": "da95f06b1e53169c2f85761e9b1a29c91b08949f6f7ad799d1b7ba6b47300af0",
+    "defs.bzl": "4721b4acc935c55f5c34c7c38f2648b9f00687cb27df3083df3af5e0562cd576",
+    "codex-rs/ext/extension-api/BUILD.bazel": "24321aabce706f28f8c498be10b50dca5105eafa3fbe7d9699c3024ff1ae0e26",
+    "codex-rs/hepta-context-compiler/BUILD.bazel": "0e1fa46c178925ab7c160f82f8708048ad4dfe9e72f5733de136f88456bdd7e2",
+    "codex-rs/ext/hepta-prompt/BUILD.bazel": "661e6abbc064de658fc31ba6842bb95ac49e89e24fd455498e35053399d99249",
+    "qa/repository-consolidation/20261120/rust-consolidation-safety/verification.json": "10acf13e8d9563d5abe2bc70c7afa37d60a67dcfdbb8699ab4e67894766437e9",
+    "qa/repository-consolidation/20261120/rust-consolidation-safety/safety-red-controls.stderr": "233afe76460f1cdbeecb85125a1e3e0ea515016e17cf776676c5a11b7f7de049",
+    "qa/repository-consolidation/20261120/rust-consolidation-safety/safety-tests.stderr": "8f459b10f70a5b8dc751023bcab0c57c36506ec806cffc707a58a16949ce080c",
+    "qa/repository-consolidation/20261120/rust-consolidation-safety/safety-tests-optimized.stderr": "263107252b4e13c58c258664b2d22991e2c5db1664b78aa8de3df191064224df",
+    "qa/repository-consolidation/20261120/rust-consolidation-safety/README.md": "db25ab1be9078681bbf986c677a7d54880e621d5ffda726227e184a89a049b43"
+  },
+  "source_unchanged": true,
+  "complete": false
+}

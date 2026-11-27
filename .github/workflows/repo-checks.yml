@@ -9,7 +9,8 @@ permissions:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # A measured full caller proof took 25.1 minutes before the remaining checks.
+    timeout-minutes: 40
     env:
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
@@ -20,11 +21,36 @@ jobs:
 
       - uses: ./.github/actions/setup-ci
 
+      - name: Test formatter source selection with buildifier
+        run: python3 -B -m unittest discover -s scripts/tests -p test_format_starlark.py -v
+
       - name: Verify codex-rs Cargo manifests inherit workspace settings
         run: python3 .github/scripts/verify_cargo_workspace_manifests.py
 
       - name: Test Cargo manifest migration boundaries
         run: python3 -m unittest discover -s .github/scripts -p 'test_verify_cargo_workspace_manifests.py'
+
+      - name: Verify preserved source archive custody
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 --version
+          python3 -B -m unittest discover -s scripts/tests -p test_verify_source_custody_container.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_mixed_patch_custody.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_verify_source_custody_volumes.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_verify_frozen_gzip.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_source53_log_custody.py -v
+          python3 -B scripts/verify_source53_log_custody.py
+          python3 -B -m unittest discover -s scripts/tests -p test_evaluated_read_logs.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_source0a5_log_custody.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_mem8_log_custody.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_source84_log_custody.py -v
+          python3 -B scripts/verify_source_custody_volumes.py --all
+          python3 -B library-recovery/followup-source-20261103/verify_projection.py
+          python3 -B library-recovery/20261107/verify_custody.py
+          python3 -B library-recovery/mixed-patch-new-files-20261103/verify_sources.py
+          python3 -B library-recovery/source-companion-documents-20261103/verify_projection.py
+          python3 -B library-recovery/documentation-source-preservation-20261103/verify_projection.py
 
       - name: Verify Hepta privileged caller closed set
         run: |
@@ -98,6 +124,11 @@ jobs:
       matrix:
         os: [ubuntu-24.04, windows-latest, macos-15]
     steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -109,7 +140,7 @@ jobs:
 
       - uses: ./.github/actions/setup-ci
 
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
 
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:

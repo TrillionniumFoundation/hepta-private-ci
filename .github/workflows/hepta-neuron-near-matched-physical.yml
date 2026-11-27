@@ -1,0 +1,532 @@
+name: Hepta Neuron near-matched physical Adapter shadow
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/src/bin/neuron_near_matched_q24_shadow.rs"
+      - "qualification/neuron-gated-sparse-v3/near_matched_*"
+      - "qualification/neuron-gated-sparse-v3/test_near_matched_*"
+      - "qualification/neuron-gated-sparse-v3/public_q24_independent_cases.py"
+      - "qualification/neuron-gated-sparse-v3/test_public_q24_independent_cases.py"
+      - ".github/workflows/hepta-neuron-near-matched-physical.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-near-matched-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-near-matched-research:
+    name: Eight physical CPU-train + native Q24 + independent integer oracle
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: qualification/neuron-gated-sparse-v3
+      HEPTA_NEURON_PHYSICAL_TESTS: "1"
+    steps:
+      - name: Bind original host temp directory at step runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "NM_INPUT=$RUNNER_TEMP/hepta-near-matched-input" >> "$GITHUB_ENV"
+          echo "NM_STUDY=$RUNNER_TEMP/hepta-near-matched-trained" >> "$GITHUB_ENV"
+          echo "NM_RECEIPT=$RUNNER_TEMP/hepta-near-matched-audit.json" >> "$GITHUB_ENV"
+          echo "NM_STUDY_BYTES=$RUNNER_TEMP/hepta-byte-matched-trained" >> "$GITHUB_ENV"
+          echo "NM_BYTES_RECEIPT=$RUNNER_TEMP/hepta-byte-matched-native-audit.json" >> "$GITHUB_ENV"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.11"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # pinned action
+        with:
+          toolchain: 1.96.0
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just,cargo-nextest
+      - name: Install pinned CPU tensor dependencies and native prerequisites
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          # CPU wheel mirror omits optional NumPy and safetensors' packaging dependency.
+          # Bind both on PyPI rather than relying on ambient runner packages.
+          python -m pip install "safetensors==0.7.0" "packaging==25.0" "numpy==2.2.6"
+          python - <<'PY'
+          import numpy, packaging, safetensors, torch
+          assert numpy.__version__ == "2.2.6"
+          assert packaging.__version__ == "25.0"
+          assert torch.__version__.startswith("2.10.0")
+          assert safetensors.__version__ == "0.7.0"
+          print("PINNED_PHYSICAL_TENSOR_DEPENDENCIES_READY")
+          PY
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+      - name: Prepare exact-source joint-generation test helper
+        id: neuron_helpers
+        run: |
+          set -euo pipefail
+          python3 -B scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/neuron-near-matched-helpers" \
+            --github-env "$GITHUB_ENV"
+          python3 -B scripts/hepta_cell_test_helpers.py --verify-only \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/neuron-near-matched-helpers" \
+            > "$RUNNER_TEMP/neuron-near-matched-helpers-before.json"
+      - name: Native source format, all tests, strict Clippy and executable
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-neuron -- --check
+          just test --locked -p codex-hepta-neuron --all-targets --retries 0
+          cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
+          cargo build --locked -p codex-hepta-neuron --bin neuron_near_matched_q24_shadow
+      - name: Verify joint-generation helper remains bound to tested source
+        if: always() && steps.neuron_helpers.outcome == 'success'
+        run: |
+          python3 -B scripts/hepta_cell_test_helpers.py --verify-only \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/neuron-near-matched-helpers" \
+            > "$RUNNER_TEMP/neuron-near-matched-helpers-after.json"
+      - name: Retain exact-source helper preparation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-near-matched-helpers-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/neuron-near-matched-helpers
+            ${{ runner.temp }}/neuron-near-matched-helpers-before.json
+            ${{ runner.temp }}/neuron-near-matched-helpers-after.json
+            !${{ runner.temp }}/neuron-near-matched-helpers/bin/**
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Physical CPU SGD and safetensors negative tests (synthetic data)
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_physical_train.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_physical_train.py' -v
+      - name: Verify physical safetensors byte budget geometry and negative controls
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_byte_budget.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_byte_budget.py' -v
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_byte_physical.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_byte_physical.py' -v
+          python qualification/neuron-gated-sparse-v3/near_matched_byte_budget.py \
+            --output "$RUNNER_TEMP/hepta-physical-byte-plan.json"
+      - name: Strict public Q24 source admission negative controls (no actual pretrained claim)
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_public_q24_independent_cases.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_public_q24_independent_cases.py' -v
+      - name: Freeze create-only distinct synthetic training and native trace
+        run: |
+          set -euo pipefail
+          python qualification/neuron-gated-sparse-v3/near_matched_physical_fixture.py \
+            --output-dir "$NM_INPUT" --receipt "${{ runner.temp }}/hepta-near-matched-fixture.json"
+      - name: Physically train and reload all eight private Adapter/Head models
+        run: |
+          set -euo pipefail
+          DATA_SHA="$(sha256sum "$NM_INPUT/train.json" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/near_matched_physical_train.py \
+            --train-data "$NM_INPUT/train.json" --train-sha256 "$DATA_SHA" \
+            --output "$NM_STUDY" --synthetic-canary --steps 8
+      - name: Run 16 fresh Rust processes and verify independent integer Adapter/Head parity
+        run: |
+          set -euo pipefail
+          BIN="codex-rs/target/debug/neuron_near_matched_q24_shadow"
+          BIN_SHA="$(sha256sum "$BIN" | awk '{print $1}')"
+          TRACE_SHA="$(sha256sum "$NM_INPUT/trace.json" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/near_matched_physical_native_oracle.py \
+            --binary "$BIN" --binary-sha256 "$BIN_SHA" \
+            --trained-root "$NM_STUDY" \
+            --trace "$NM_INPUT/trace.json" --trace-sha256 "$TRACE_SHA" \
+            --output "$NM_RECEIPT"
+          python - "$NM_RECEIPT" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['actual_native_os_processes'] == 16
+          assert r['physically_loaded_models'] == 8
+          assert r['independent_integer_adapter_head_parity'] is True
+          assert r['production_qualification'] is False
+          assert r['ndu_eligible'] is False
+          assert r['independent_temporal_model_parity'] is False
+          PY
+      - name: Train eight near-identical serialized-byte-size models on same synthetic input
+        run: |
+          set -euo pipefail
+          TRAIN_SHA="$(sha256sum "$NM_INPUT/train.json" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/near_matched_physical_train.py \
+            --train-data "$NM_INPUT/train.json" --train-sha256 "$TRAIN_SHA" \
+            --output "$NM_STUDY_BYTES" --synthetic-canary \
+            --physical-byte-budget --steps 8
+      - name: Verify sixteen independent Rust processes for the byte-budgeted models
+        run: |
+          set -euo pipefail
+          BIN="codex-rs/target/debug/neuron_near_matched_q24_shadow"
+          BIN_SHA="$(sha256sum "$BIN" | awk '{print $1}')"
+          TRACE_SHA="$(sha256sum "$NM_INPUT/trace.json" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/near_matched_physical_native_oracle.py \
+            --binary "$BIN" --binary-sha256 "$BIN_SHA" \
+            --trained-root "$NM_STUDY_BYTES" \
+            --trace "$NM_INPUT/trace.json" --trace-sha256 "$TRACE_SHA" \
+            --output "$NM_BYTES_RECEIPT"
+          python - "$NM_BYTES_RECEIPT" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['schema']=='hepta.neuron.physical-byte-native-oracle.v1'
+          assert r['study_kind']=='SERIALIZED_SAFETENSORS_BYTES'
+          assert r['actual_native_os_processes']==16
+          assert r['physically_loaded_models']==8
+          assert r['independent_integer_adapter_head_parity'] is True
+          assert r['independent_temporal_model_parity'] is False
+          assert r['equal_runtime_residency_or_compute_verified'] is False
+          assert r['production_qualification'] is False
+          assert r['ndu_eligible'] is False
+          PY
+      - name: Independently cross-bind six physical research receipts before archival
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          import pathlib
+          import zipfile
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          sources = {
+              'hepta-near-matched-fixture.json': root / 'hepta-near-matched-fixture.json',
+              'hepta-physical-byte-plan.json': root / 'hepta-physical-byte-plan.json',
+              'hepta-near-matched-trained/training-receipt.json':
+                  pathlib.Path(os.environ['NM_STUDY']) / 'training-receipt.json',
+              'hepta-near-matched-audit.json': pathlib.Path(os.environ['NM_RECEIPT']),
+              'hepta-byte-matched-trained/training-receipt.json':
+                  pathlib.Path(os.environ['NM_STUDY_BYTES']) / 'training-receipt.json',
+              'hepta-byte-matched-native-audit.json':
+                  pathlib.Path(os.environ['NM_BYTES_RECEIPT']),
+          }
+          dst = root / 'hepta-cross-bound-sanitized-source.zip'
+          with zipfile.ZipFile(dst, 'x', zipfile.ZIP_DEFLATED) as archive:
+              for name, source in sorted(sources.items()):
+                  archive.write(source, arcname=name)
+          PY
+          python qualification/neuron-gated-sparse-v3/audit_archived_byte_parity.py \
+            --zip "$RUNNER_TEMP/hepta-cross-bound-sanitized-source.zip" \
+            --output "$RUNNER_TEMP/hepta-cross-bound-evidence-verdict.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          verdict = json.loads((Path(os.environ['RUNNER_TEMP']) /
+              'hepta-cross-bound-evidence-verdict.json').read_text())
+          assert verdict['total_native_process_count'] == 32
+          assert verdict['independent_weight_sha_count'] == 16
+          assert verdict['production_qualification'] is False
+          assert verdict['ndu_eligible'] is False
+          assert verdict['raw_weight_bytes_reopened'] is False
+          PY
+      - name: Archive sanitized research receipts only, never raw weights/features
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-near-matched-deny-all-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-near-matched-audit.json
+            ${{ runner.temp }}/hepta-near-matched-fixture.json
+            ${{ runner.temp }}/hepta-near-matched-trained/training-receipt.json
+            ${{ runner.temp }}/hepta-physical-byte-plan.json
+            ${{ runner.temp }}/hepta-byte-matched-native-audit.json
+            ${{ runner.temp }}/hepta-byte-matched-trained/training-receipt.json
+            ${{ runner.temp }}/hepta-cross-bound-evidence-verdict.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  public-encoder-to-real-q24-snapshot:
+    name: Physically execute frozen ModernBERT 96 texts and train-only 32D Q24 projection
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+      PYTHONPATH: qualification/neuron-gated-sparse-v3
+      HEPTA_NEURON_PHYSICAL_TESTS: "1"
+    steps:
+      - name: Check out exact current research branch with no persistent credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin separately verified original real ModernBERT public-study source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 758205d3de23ccbf76649b1446c271101dc917b0
+          path: original-public-source
+          persist-credentials: false
+      - name: Install original frozen pretrained CPU dependency profile
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.13"
+      - name: Install pinned ModernBERT/Torch CPU packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install "numpy==2.3.5" "safetensors==0.7.0" "packaging==25.0" \
+            "transformers==4.57.1" "huggingface-hub==0.36.0" "tokenizers==0.22.1"
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python - <<'PY'
+          import torch,transformers,safetensors
+          assert torch.__version__.startswith('2.10.0')
+          assert transformers.__version__ == '4.57.1'
+          assert safetensors.__version__ == '0.7.0'
+          PY
+      - name: Run actual producer physical-Torch negative/positive regression suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_modernbert_q24_snapshot.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_modernbert_q24_snapshot.py' -v
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_encoder_q24_snapshot_gate.py' -v
+      - name: Reproduce immutable original ModernBERT checkpoint download and full load
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C original-public-source rev-parse HEAD)" = \
+            758205d3de23ccbf76649b1446c271101dc917b0
+          python original-public-source/qualification/stem-cell-v1/public_encoder_probe.py \
+            --acquire-public --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
+            --compare-arithmetic --output "$RUNNER_TEMP/hepta-public-encoder"
+      - name: Physically encode frozen 64 train and 32 heldout BANKING77 texts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/neuron-gated-sparse-v3/real_modernbert_q24_snapshot.py \
+            --original-source original-public-source \
+            --encoder-probe "$RUNNER_TEMP/hepta-public-encoder" \
+            --public-data "$RUNNER_TEMP/hepta-public-data" \
+            --output-dir "$RUNNER_TEMP/hepta-actual-public-q24"
+      - name: Independently reopen exact snapshot registry and physically trained PCA SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import os,json,hashlib
+          root=Path(os.environ['RUNNER_TEMP'])/'hepta-actual-public-q24'
+          receipt=json.loads((root/'producer-receipt.json').read_text())
+          assert hashlib.sha256((root/'projection.safetensors').read_bytes()).hexdigest() == receipt['projection_safetensors_sha256']
+          assert hashlib.sha256((root/'registry.json').read_bytes()).hexdigest() == receipt['registry_sha256']
+          assert hashlib.sha256((root/'snapshot.json').read_bytes()).hexdigest() == receipt['snapshot_sha256']
+          assert receipt['physical_encoder_invocations'] == 96
+          assert receipt['train_only_projection_fit_count'] == 64
+          assert receipt['heldout_projection_fit_count'] == 0
+          assert receipt['original_selected_v1_no_change_verified'] is False
+          assert receipt['production_qualification'] is False
+          assert receipt['ndu_eligible'] is False
+          PY
+      - name: Rebind original real public Q24 cases to fit-only task labels and unlabeled heldout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_public_iid_q24_inputs.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_public_iid_q24_inputs.py' -v
+          python qualification/neuron-gated-sparse-v3/real_public_iid_q24_inputs.py \
+            --original-source original-public-source \
+            --public-data "$RUNNER_TEMP/hepta-public-data" \
+            --public-q24-dir "$RUNNER_TEMP/hepta-actual-public-q24" \
+            --output "$RUNNER_TEMP/hepta-public-iid-q24"
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          path=Path(os.environ["RUNNER_TEMP"])/"hepta-public-iid-q24"
+          fit=json.loads((path/"fit-only-q24.json").read_bytes())
+          held=json.loads((path/"heldout-unlabeled-q24.json").read_bytes())
+          plan=json.loads((path/"predeclared-iid-plan.json").read_bytes())
+          assert len(fit["rows"]) == 64
+          assert len(held["rows"]) == 32
+          assert len(plan["binary_tasks"]) == 4
+          assert fit["input_feature_snapshot_sha256"] == held["input_feature_snapshot_sha256"]
+          assert all("train_label" not in row and "label" not in row for row in held["rows"])
+          assert all("event_time_utc" not in row for row in fit["rows"]+held["rows"])
+          assert plan["longitudinal_or_future_task_efficacy_claim_permitted"] is False
+          assert plan["selected_original_v1_no_change_a0_verified"] is False
+          assert plan["training_execution_performed"] is False
+          assert plan["decision"] == "NO_MODEL_PROMOTION"
+          PY
+      - name: Prove IID one-tick Torch public Q24 training mechanism on synthetic security fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_public_iid_q24_physical_train.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_public_iid_q24_physical_train.py' -v
+      - name: Physically train 32 real BANKING77 Q24 private Cells, IID one-tick only
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/hepta-public-iid-q24"
+          TRAIN_SHA="$(sha256sum "$ROOT/fit-only-q24.json" | awk '{print $1}')"
+          PLAN_SHA="$(sha256sum "$ROOT/predeclared-iid-plan.json" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/real_public_iid_q24_physical_train.py \
+            --fit "$ROOT/fit-only-q24.json" --fit-sha256 "$TRAIN_SHA" \
+            --plan "$ROOT/predeclared-iid-plan.json" --plan-sha256 "$PLAN_SHA" \
+            --output "$RUNNER_TEMP/hepta-public-iid-trained" \
+            --epochs 8 --seed 20261016 --research-only
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          receipt=json.loads((Path(os.environ['RUNNER_TEMP'])/
+              'hepta-public-iid-trained/training-receipt.json').read_text())
+          assert receipt['physical_models_count'] == 32
+          assert receipt['task_count'] == 4
+          assert receipt['examples_exposed_per_model'] == 64*8
+          assert receipt['optimizer_steps_each'] == 32
+          assert receipt['iid_state_reset_per_case'] is True
+          assert receipt['heldout_labels_exposed_to_trainer'] is False
+          assert receipt['original_selected_v1_a0_verified'] is False
+          assert receipt['heldout_or_future_accuracy_evaluated'] is False
+          assert receipt['production_qualification'] is False
+          assert receipt['ndu_eligible'] is False
+          PY
+      - name: Validate no-authority public heldout scoring and abstention protocol
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_public_iid_q24_native_score.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_public_iid_q24_native_score.py' -v
+      - name: Install frozen Rust toolchain for independent true IID Q24 heldout evaluator
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # pinned action
+        with:
+          toolchain: 1.96.0
+          components: rustfmt,clippy
+      - name: Build original exact-source bounded Q24 private Cell on real public case input
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+          (
+            cd codex-rs
+            cargo fmt -p codex-hepta-neuron -- --check
+            cargo build --locked -p codex-hepta-neuron --bin neuron_near_matched_q24_shadow
+          )
+      - name: Evaluate all 32 sealed models on 32 original public heldout IDs with 2048 native processes
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/hepta-public-iid-q24"
+          BIN="codex-rs/target/debug/neuron_near_matched_q24_shadow"
+          BINARY_SHA="$(sha256sum "$BIN" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/real_public_iid_q24_native_score.py \
+            --models-root "$RUNNER_TEMP/hepta-public-iid-trained" \
+            --fit "$ROOT/fit-only-q24.json" \
+            --heldout "$ROOT/heldout-unlabeled-q24.json" \
+            --plan "$ROOT/predeclared-iid-plan.json" \
+            --original-source original-public-source \
+            --public-data "$RUNNER_TEMP/hepta-public-data" \
+            --public-q24-dir "$RUNNER_TEMP/hepta-actual-public-q24" \
+            --binary "$BIN" --binary-sha256 "$BINARY_SHA" \
+            --output "$RUNNER_TEMP/hepta-public-iid-heldout-score.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          report=json.loads((Path(os.environ["RUNNER_TEMP"])/
+              "hepta-public-iid-heldout-score.json").read_text())
+          assert report["trained_private_models"] == 32
+          assert report["fresh_rust_os_process_invocations"] == 2048
+          assert report["original_public_fit_label_source_census"]["real_public_train_sample_count"] == 64
+          assert report["original_public_fit_label_source_census"]["actual_fit_label_identities_bound_to_original_dataset"] is True
+          assert report["original_public_fit_label_source_census"]["signed_independent_source_owner_verified"] is False
+          assert report["physical_public_feature_source_census"]["all_96_fit_and_heldout_vectors_reopened_and_equal"] is True
+          assert report["physical_public_feature_source_census"]["independently_signed_encoder_or_projection_verified"] is False
+          assert report["original_heldout_cases"] == 32
+          assert report["four_binary_tasks"] == 4
+          assert report["all_independent_q24_adapter_head_integer_checks"] is True
+          assert len(report["observations"]) == 32
+          assert all(x["original_heldout_opportunities"] == 32
+                     for x in report["observations"])
+          assert report["real_future_window_and_negative_transfer_verified"] is False
+          assert report["independent_signed_evaluator_custody"] is False
+          assert report["original_selected_deployed_v1_no_change_a0_verified"] is False
+          assert report["decision"] == "NO_MODEL_SELECTION"
+          assert report["production_qualification"] is False
+          assert report["ndu_eligible"] is False
+          PY
+      - name: Independent post-seal 1024 unlabeled Q24 prediction and label-replay audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_recheck_real_public_iid_native_scores.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_recheck_real_public_iid_native_scores.py' -v
+          python qualification/neuron-gated-sparse-v3/recheck_real_public_iid_native_scores.py \
+            --score "$RUNNER_TEMP/hepta-public-iid-heldout-score.json" \
+            --heldout "$RUNNER_TEMP/hepta-public-iid-q24/heldout-unlabeled-q24.json" \
+            --training-receipt "$RUNNER_TEMP/hepta-public-iid-trained/training-receipt.json" \
+            --original-source original-public-source \
+            --public-data "$RUNNER_TEMP/hepta-public-data" \
+            --output "$RUNNER_TEMP/hepta-public-iid-independent-score-audit.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'hepta-public-iid-independent-score-audit.json'
+          report=json.loads(p.read_text())
+          assert report['distinct_physical_model_count']==32
+          assert report['physical_training_receipt_reopened_and_bound'] is True
+          assert report['training_cpu_seconds_are_descriptive_not_whole_system_cost'] is True
+          assert report['independently_recomputed_label_free_native_records']==1024
+          assert report['reported_native_processes']==2048
+          assert len(report['descriptive_recomputed_scores'])==32
+          assert report['zero_parameter_75pct_control_not_a_v1_model'] is True
+          assert report['baseline_original_v1_verified'] is False
+          assert report['real_future_window_or_negative_transfer_verified'] is False
+          assert report['independent_evaluator_signature_verified'] is False
+          assert report['decision']=='NO_MODEL_SELECTION'
+          assert report['production_qualification'] is False
+          assert report['ndu_eligible'] is False
+          PY
+      - name: Keep public-only projected snapshot and work receipt, never base weights or labels
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-real-modernbert-q24-deny-all-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-actual-public-q24/projection.safetensors
+            ${{ runner.temp }}/hepta-actual-public-q24/registry.json
+            ${{ runner.temp }}/hepta-actual-public-q24/snapshot.json
+            ${{ runner.temp }}/hepta-actual-public-q24/producer-receipt.json
+            ${{ runner.temp }}/hepta-public-iid-q24/predeclared-iid-plan.json
+            ${{ runner.temp }}/hepta-public-iid-trained/training-receipt.json
+            ${{ runner.temp }}/hepta-public-iid-heldout-score.json
+            ${{ runner.temp }}/hepta-public-iid-independent-score-audit.json
+            ${{ runner.temp }}/hepta-public-iid-q24/heldout-unlabeled-q24.json
+            ${{ runner.temp }}/hepta-public-encoder/source-lock.json
+            ${{ runner.temp }}/hepta-public-encoder/downloaded-material.json
+          if-no-files-found: warn
+          retention-days: 14

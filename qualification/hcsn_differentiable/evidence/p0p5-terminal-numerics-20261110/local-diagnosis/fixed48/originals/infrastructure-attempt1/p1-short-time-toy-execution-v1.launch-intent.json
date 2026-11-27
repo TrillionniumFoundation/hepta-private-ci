@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/usr/bin/timeout",
+    "--signal=KILL",
+    "120s",
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-execution-v1.gnu-time.txt",
+    "/workspace/scratch/c385a7439f8e/hcsn-env/bin/python",
+    "-B",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-program-v1/launch_once.py",
+    "--program",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-program-v1",
+    "--output",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-execution-v1",
+    "--manifest-sha256",
+    "8b7015a93d3da6f158b11e330b3dc7e5af5d01a4521585e5f7578a7e1842e966"
+  ],
+  "automatic_retry": false,
+  "key": "hcsn-p1-short-time-scalar-c385-v1",
+  "maximum_runs": 1,
+  "output": "/workspace/scratch/c385a7439f8e/p1-short-time-toy-execution-v1",
+  "program_manifest_sha256": "8b7015a93d3da6f158b11e330b3dc7e5af5d01a4521585e5f7578a7e1842e966",
+  "schema": "hcsn-scalar-local-process-launch-intent-v1"
+}

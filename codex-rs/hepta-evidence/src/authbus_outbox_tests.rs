@@ -22,7 +22,7 @@ fn fixture(sequence: u64, expiry: u64) -> (IssuerRegistration, SignedMessage) {
     let issuer = IssuerRegistration {
         issuer_id: StableId::new("issuer:queue").unwrap(),
         key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
         revoked: false,
     };
     let claims = SignedMessageClaims {
@@ -36,7 +36,13 @@ fn fixture(sequence: u64, expiry: u64) -> (IssuerRegistration, SignedMessage) {
         expires_at_ms: expiry,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    (issuer, SignedMessage { claims, signature })
+    (
+        issuer,
+        SignedMessage {
+            claims,
+            signature: signature.into(),
+        },
+    )
 }
 
 fn config(path: &std::path::Path) -> SqliteConfig {
@@ -103,6 +109,26 @@ async fn enqueue_commit_response_loss_is_idempotent_across_reopen() {
         .ack_authbus_delivery(&issuer, &delivery.lease, ack)
         .await
         .unwrap();
+    let before = second
+        .authbus_delivery_status(status.delivery_id)
+        .await
+        .unwrap();
+    let observed = second
+        .retained_authbus_delivery(status.delivery_id)
+        .await
+        .unwrap();
+    assert_eq!(observed.message.claims, message.claims);
+    assert_eq!(observed.message.signature, message.signature);
+    assert_eq!(observed.payload, b"payload");
+    assert_eq!(observed.status, before);
+    assert_eq!(
+        second
+            .authbus_delivery_status(status.delivery_id)
+            .await
+            .unwrap(),
+        before,
+        "retained observation must not claim, renew, acknowledge or requeue delivery"
+    );
     assert!(matches!(
         second
             .ack_authbus_delivery(&issuer, &delivery.lease, ack)
@@ -222,7 +248,8 @@ async fn payload_route_and_retained_message_identity_cannot_be_substituted() {
     replacement.claims.message_id = message.claims.message_id;
     replacement.signature = SigningKey::from_bytes(&[37; 32])
         .sign(&replacement.claims.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     assert!(matches!(
         store
             .enqueue_authbus_message(
@@ -407,14 +434,52 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .await
         .unwrap();
     let id = enqueue(&store, 1).await.delivery_id;
-    // Fill active capacity using copies with independent fixture identities;
-    // admission hashing/signatures are exercised separately, not 4096 times.
-    sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
-        INSERT INTO authbus_outbox SELECT randomblob(32), issuer_id, key_epoch, 'fixture:' || x,
-        subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
-        state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
-        updated_at_ms, terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
-        .bind(id.as_array().as_slice()).execute(&store.pool).await.unwrap();
+    // Keep the real issuer below its independent active limit so the rejection
+    // below exercises global capacity. These SQL-only synthetic rows cannot be
+    // delivered; signed enqueue/claim paths below cover admission and replay.
+    let synthetic_issuer_count =
+        (AUTHBUS_OUTBOX_MAX_ROWS - 2) / AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER + 1;
+    assert_eq!(synthetic_issuer_count, 8);
+    sqlx::query(
+        "WITH RECURSIVE n(x) AS (
+            SELECT 1 UNION ALL SELECT x + 1 FROM n WHERE x < ?
+         )
+         INSERT INTO authbus_outbox
+         SELECT randomblob(32), 'issuer:synthetic:' || ((x - 1) / ?),
+                key_epoch, 'fixture:' || x, subject_id, scope_digest,
+                payload_digest, sequence, expires_at_ms, auth_version, signature, payload,
+                state, fence, attempts, worker_id, lease_until_ms, available_at_ms,
+                created_at_ms, updated_at_ms, terminal_at_ms, acknowledgement
+         FROM authbus_outbox, n WHERE delivery_id = ?",
+    )
+    .bind(AUTHBUS_OUTBOX_MAX_ROWS - 1)
+    .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER)
+    .bind(id.as_array().as_slice())
+    .execute(&store.pool)
+    .await
+    .unwrap();
+    let global_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_outbox")
+        .fetch_one(&store.pool)
+        .await
+        .unwrap();
+    assert_eq!(global_count, AUTHBUS_OUTBOX_MAX_ROWS);
+    let saturated: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM authbus_outbox WHERE state IN ('queued', 'leased')",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(saturated, AUTHBUS_OUTBOX_MAX_ROWS);
+    let max_issuer_active: i64 = sqlx::query_scalar(
+        "SELECT MAX(active) FROM (
+            SELECT COUNT(*) AS active FROM authbus_outbox
+            WHERE state IN ('queued', 'leased') GROUP BY issuer_id
+        )",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(max_issuer_active, AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER);
     let (issuer, message) = fixture(2, u64::MAX);
     assert!(matches!(
         store
@@ -467,6 +532,17 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         ..issuer
     };
     store.quarantine_authbus_issuer(&revoked).await.unwrap();
+    // Retire synthetic issuers through the same original owner API, rather
+    // than deleting active rows or weakening the per-issuer capacity guard.
+    for index in 0..synthetic_issuer_count {
+        let (registered, _) = fixture(1, u64::MAX);
+        let synthetic = IssuerRegistration {
+            issuer_id: StableId::new(format!("issuer:synthetic:{index}")).unwrap(),
+            revoked: true,
+            ..registered
+        };
+        assert!(store.quarantine_authbus_issuer(&synthetic).await.unwrap() > 0);
+    }
     let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
     maintain(&mut tx, now_millis().unwrap() + 86_400_001)
         .await
@@ -573,7 +649,7 @@ async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
          SELECT randomblob(32), issuer_id,
                 randomblob(8),
                 'issuer-cap:' || x, subject_id, scope_digest, payload_digest,
-                sequence, expires_at_ms, signature, payload, state, fence, attempts,
+                sequence, expires_at_ms, auth_version, signature, payload, state, fence, attempts,
                 worker_id, lease_until_ms, available_at_ms, created_at_ms,
                 updated_at_ms, terminal_at_ms, acknowledgement
          FROM authbus_outbox, n

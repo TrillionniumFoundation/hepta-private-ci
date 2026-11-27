@@ -1,0 +1,233 @@
+{
+  "schema": "pred-owner-ci-readback-v1",
+  "observed_at_utc": "2026-11-10 13:36:46 UTC",
+  "source_commit": "74d3fddbc6e6cf28184848558422a81711460dc8",
+  "workflow_run_id": 42823757799,
+  "workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757799",
+  "jobs": [
+    {
+      "id": 129855562460,
+      "name": "PRED-1 (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "started_at": "2026-11-10T13:22:06Z",
+      "completed_at": "2026-11-10T13:23:11Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757799/job/129855562460",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check out exact source",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Set up uv",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Read back numerical runtime versions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test PRED-1 contracts and numerical kernels",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Set up uv",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Check out exact source",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 129855562733,
+      "name": "PRED-1 (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "started_at": "2026-11-10T13:22:06Z",
+      "completed_at": "2026-11-10T13:22:29Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757799/job/129855562733",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check out exact source",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Set up uv",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Read back numerical runtime versions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test PRED-1 contracts and numerical kernels",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Set up uv",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Check out exact source",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 129855562740,
+      "name": "PRED-1 (macos-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "started_at": "2026-11-10T13:21:33Z",
+      "completed_at": "2026-11-10T13:22:00Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757799/job/129855562740",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check out exact source",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Set up uv",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Read back numerical runtime versions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test PRED-1 contracts and numerical kernels",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Set up uv",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Check out exact source",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "test_summaries": [
+    {
+      "job_id": 129855562460,
+      "job_name": "PRED-1 (windows-latest)",
+      "test_summary": [
+        "Ran 159 tests in 23.054s"
+      ],
+      "success": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757799/job/129855562460"
+    },
+    {
+      "job_id": 129855562733,
+      "job_name": "PRED-1 (ubuntu-latest)",
+      "test_summary": [
+        "Ran 159 tests in 7.988s"
+      ],
+      "success": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757799/job/129855562733"
+    },
+    {
+      "job_id": 129855562740,
+      "job_name": "PRED-1 (macos-latest)",
+      "test_summary": [
+        "Ran 159 tests in 3.823s"
+      ],
+      "success": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757799/job/129855562740"
+    }
+  ],
+  "source_head_other_runs": [
+    {
+      "id": 42823758001,
+      "name": "blocking-ci",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "event": "pull_request",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823758001"
+    },
+    {
+      "id": 42823757781,
+      "name": "Hepta architecture convergence",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "event": "pull_request",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757781"
+    },
+    {
+      "id": 42823757799,
+      "name": "Hepta PRED-1 CPU checks",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "event": "pull_request",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757799"
+    },
+    {
+      "id": 42823757755,
+      "name": "v8-canary",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "event": "pull_request",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757755"
+    }
+  ],
+  "scope": "All three PRED-specific CPU jobs passed at this exact source commit; queued other runs are not counted as a complete overall CI pass"
+}

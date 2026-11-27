@@ -1,0 +1,64 @@
+{
+  "schema": "hcsn-n256-firststep-oracle-gap-source-review-v1",
+  "identity": "hcsn-n256-firststep-oracle-gap-20261117-c06d-001",
+  "base_commit": "b31d43b34fb224821326a1003ce9f1262a5f806c",
+  "parent_draft": 6611,
+  "status": "ORACLE_IMPLEMENTATION_REQUIRED",
+  "source_bindings": {
+    "candidate_sha256": "49616d4fcff9685a6cfcbee00ff45a2fd9ab4eb9c6ce04e62c02f927752d50db",
+    "input_adapter_sha256": "311eeeb69ba5002171d3aa765610bc9caea1cb2942309ba6e67543297cb74084",
+    "legacy_oracle_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+    "serializer_v2_sha256": "dfa63cbfe7688e9c07cfff627cffd3d1e0352191e09f2be20ad53d1e310c1ab9"
+  },
+  "observed_gap": {
+    "candidate_packet_output": true,
+    "candidate_pending_packet_continuation": true,
+    "input_adapter_numerical_propagation": false,
+    "legacy_oracle_packet_output": false,
+    "legacy_oracle_pending_packet_continuation": false,
+    "legacy_oracle_packet_coordinate_stream": false,
+    "legacy_oracle_current_state_compatible": false
+  },
+  "required_future_oracle": {
+    "independent_dense_assembly": true,
+    "candidate_sparse_assembly_reuse": false,
+    "authentic_input_adapter_bound": true,
+    "pending_packet_continuation": true,
+    "packet_fragment_and_emission": true,
+    "packet_output_tensor": true,
+    "deterministic_delay": true,
+    "reset": true,
+    "permanent_upper_escape": true,
+    "signed_content": true,
+    "state_coordinates": 2600,
+    "packet_coordinates": 67128,
+    "coordinate_denominator": 69728,
+    "warm_first_step_dynamic_steps": 1,
+    "warm_first_step_dense_expm_actions": 2
+  },
+  "future_sources": {
+    "oracle_source_sha256": null,
+    "oracle_review_sha256": null,
+    "comparator_sha256": null,
+    "runner_sha256": null
+  },
+  "required_future_admission": {
+    "admission_sha256": null,
+    "unique_execution_key": null,
+    "runtime_sha256": null,
+    "host_snapshot_sha256": null,
+    "ancestor_cgroup_snapshot_sha256": null,
+    "allocation_sha256": null,
+    "calendar_sha256": null
+  },
+  "n256_numerical_execution_allowed": false,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "historical_negative_and_unknown_preserved": true,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false
+}

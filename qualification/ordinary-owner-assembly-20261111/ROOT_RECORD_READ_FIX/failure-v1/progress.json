@@ -1,0 +1,572 @@
+{
+  "before_tests": {
+    "head": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "status": "",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd"
+  },
+  "classification": "ROOT_COMPONENT_DIAGNOSTIC_NOT_FULL_QUALIFICATION",
+  "cleanup": [
+    {
+      "name": "record-ownership",
+      "status": "passed"
+    },
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "current_stage": "finished-or-awaiting-original",
+  "errors": [],
+  "execution_records": [
+    {
+      "name": "operator-toolchain",
+      "passed": true,
+      "record": {
+        "bytes": 1445,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/operator-toolchain.execution.json",
+        "sha256": "92de5c70786735b3d44fdb5db3bb031c4545db4cfc889c36d13ac8f6a793ad89"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "same-source-helper-build",
+      "passed": true,
+      "record": {
+        "bytes": 1637,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/same-source-helper-build.execution.json",
+        "sha256": "e0daee9394900e7da1b2c453e2646aad700e8f4291fbd0273cf04ac91ef7ffc3"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "same-source-helper-preverify",
+      "passed": true,
+      "record": {
+        "bytes": 1664,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/same-source-helper-preverify.execution.json",
+        "sha256": "9266afd750cac28d6fd3d67caba7200cd2004a26ad359b204e4bf80643cd80e9"
+      },
+      "required_uid": 1000
+    }
+  ],
+  "expected_root_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+    "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+    "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+    "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+    "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+    "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+    "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+    "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+    "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+  ],
+  "external_tools_after": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "external_tools_before": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "failure": "PermissionError: [Errno 13] Permission denied: '/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/root-toolchain.execution.json'",
+  "format_base": "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+  "full_qualification_accepted": false,
+  "helper_manifest_before": {
+    "bytes": 2024,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/helpers/manifest.json",
+    "sha256": "475a2c4b0f001d4e33105546b84dec8ca582e44bc7fb2d678a6adc639efa64f4"
+  },
+  "independent_consumer_accepted": false,
+  "known_failure_exemptions": false,
+  "maintenance_patch": {
+    "bytes": 0,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/maintenance.patch",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "not_run": [
+    "maintenance",
+    "product-bins-check",
+    "qa-four-folders",
+    "caller-self-test",
+    "caller-full-verify",
+    "ordinary-six-crate-tests"
+  ],
+  "operator_euid": 1000,
+  "operator_gid": 1000,
+  "operator_uid": 1000,
+  "ordinary_complete_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "physical_daemon_root_restart_accepted": false,
+  "positive_adoption_chains": 0,
+  "predecessor_results_used": false,
+  "reference_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+  "replaces_final_harness": false,
+  "root_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-contracts"
+  ],
+  "root_uid_proofs": [
+    {
+      "bytes": 46,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/root-toolchain.uid.json",
+      "sha256": "80217c6608262327d95c4054a0c7df31bb71f5cffe134f8e017cfe5fee66f727"
+    }
+  ],
+  "scheduled_test_suites": [
+    "root"
+  ],
+  "schema": "hepta.root17-component-diagnostic.v1",
+  "source_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source",
+  "source_sha": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "source_tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+  "source_workflow_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-contracts",
+    "codex-hepta-neuron",
+    "codex-hepta-learning-ledger"
+  ],
+  "status": "failed",
+  "steps": [
+    {
+      "command": [
+        "sudo",
+        "-n",
+        "python3",
+        "-c",
+        "\nimport json,os,sys\nfrom pathlib import Path\nassert os.getuid()==os.geteuid()==0\nnames={'cargo','rustc','rustdoc','rustfmt','clippy-driver','cargo-clippy','cargo-nextest'}\nactive=[]\nfor p in Path('/proc').iterdir():\n    if not p.name.isdigit():\n        continue\n    try:\n        comm=(p/'comm').read_text().strip()\n        if comm in names:\n            try:\n                cwd=os.readlink(p/'cwd')\n            except OSError:\n                cwd=None\n            active.append({'pid':int(p.name),'comm':comm,'cwd':cwd})\n    except FileNotFoundError:\n        continue\nprint(json.dumps({'actual_preflight_uid':os.getuid(),'active_rust':active}),flush=True)\nraise SystemExit(1 if active else 0)\n"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.032873846823349595,
+      "exit_code": 0,
+      "launcher_pid": 864049,
+      "log": {
+        "bytes": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+      },
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "--no-hardlinks",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.9205560721457005,
+      "exit_code": 0,
+      "launcher_pid": 864075,
+      "log": {
+        "bytes": 110,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/isolated-clone.launch.log",
+        "sha256": "03a91e4a955233a3690a18dbf82a38cda79e4c767825e2d9531d98c58ebb7ce4"
+      },
+      "name": "isolated-clone",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "715a5726f5031e50ad963812d2a1270e8d0cf769"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 14.342391739832237,
+      "exit_code": 0,
+      "launcher_pid": 864129,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/fetch-exact-source.launch.log",
+        "sha256": "9dc86dced98df21a021eab11d41dea3d2d9d296ece2e708d230aa15438190939"
+      },
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source",
+        "checkout",
+        "--detach",
+        "715a5726f5031e50ad963812d2a1270e8d0cf769"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.5742201211396605,
+      "exit_code": 0,
+      "launcher_pid": 864265,
+      "log": {
+        "bytes": 212,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/checkout-exact-source.launch.log",
+        "sha256": "5e39f0bd54f62a1bc6fc4df9806637ebdb3cdcd04ae8409e42e36f2890e40f9a"
+      },
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source",
+        "merge-base",
+        "--is-ancestor",
+        "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+        "715a5726f5031e50ad963812d2a1270e8d0cf769"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.004261269001290202,
+      "exit_code": 0,
+      "launcher_pid": 864266,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/format-base-ancestry.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "60",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/operator-toolchain.execution.json",
+        "--",
+        "/home/qq/.cargo/bin/rustc",
+        "-Vv"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source/codex-rs",
+      "elapsed_seconds": 0.2661871339660138,
+      "exit_code": 0,
+      "launcher_pid": 864317,
+      "log": {
+        "bytes": 1509,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/operator-toolchain.launch.log",
+        "sha256": "4359c58c30713c625466e650496e864b817a9543604920c8472bf693961304dd"
+      },
+      "name": "operator-toolchain",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "3600",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/same-source-helper-build.execution.json",
+        "--",
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/helpers"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source",
+      "elapsed_seconds": 160.86359683121555,
+      "exit_code": 0,
+      "launcher_pid": 864423,
+      "log": {
+        "bytes": 1707,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/same-source-helper-build.launch.log",
+        "sha256": "f8ecb407e7df93f5feec9ae49b21a0c775a00c4c2b0a2db98b4257aff57767a4"
+      },
+      "name": "same-source-helper-build",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "120",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/same-source-helper-preverify.execution.json",
+        "--",
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/helpers",
+        "--verify-only"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source",
+      "elapsed_seconds": 0.16432921821251512,
+      "exit_code": 0,
+      "launcher_pid": 870253,
+      "log": {
+        "bytes": 2710,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/same-source-helper-preverify.launch.log",
+        "sha256": "d26f45491a9235ddf6337eb064201d5b86f58d937f6895b460c86b17fdbb96fb"
+      },
+      "name": "same-source-helper-preverify",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "sudo",
+        "-n",
+        "python3",
+        "-c",
+        "\nimport json,os,stat,sys\nfrom pathlib import Path\nassert os.getuid()==os.geteuid()==0\np=Path(sys.argv[1])\nassert p.parent==Path('/var/tmp') and p.name.startswith('hepta-af52-root-')\np.mkdir(mode=0o755,exist_ok=True)\ns=p.lstat()\nassert stat.S_ISDIR(s.st_mode) and s.st_uid==0 and stat.S_IMODE(s.st_mode)==0o755\nprint(json.dumps({'root_cache_uid':os.getuid(),'target':str(p)}),flush=True)\n",
+        "/var/tmp/hepta-af52-root-component-target-20261111"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.032473762053996325,
+      "exit_code": 0,
+      "launcher_pid": 870397,
+      "log": {
+        "bytes": 86,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/root-cache.launch.log",
+        "sha256": "fb32d551b99487414e7a3fd2a20cc2b47cde487517dad02dff1e42b7097d06a2"
+      },
+      "name": "root-cache",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "sudo",
+        "-n",
+        "env",
+        "-i",
+        "BINDGEN_EXTRA_CLANG_ARGS=-isystem/usr/lib/gcc/x86_64-linux-gnu/15/include",
+        "CARGO_BIN_EXE_hepta-joint-propose=/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/helpers/bin/hepta-joint-propose",
+        "CARGO_BIN_EXE_hepta_joint_propose=/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/helpers/bin/hepta-joint-propose",
+        "CARGO_BUILD_JOBS=2",
+        "CARGO_HOME=/home/qq/.cargo",
+        "CARGO_INCREMENTAL=0",
+        "CARGO_NET_OFFLINE=true",
+        "CARGO_PROFILE_DEV_DEBUG=0",
+        "CARGO_PROFILE_TEST_DEBUG=0",
+        "CARGO_TARGET_DIR=/var/tmp/hepta-af52-root-component-target-20261111",
+        "GIT_CONFIG_COUNT=1",
+        "GIT_CONFIG_KEY_0=safe.directory",
+        "GIT_CONFIG_VALUE_0=/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source",
+        "HEPTA_CHECKPOINT_TEST_ROOT=/run/hepta-af52-final-715a5726f503-ordinary-715a572-root17-diagnostic-v1/checkpoints",
+        "HEPTA_CI_LANE=source-head",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=/run/hepta-af52-final-715a5726f503-ordinary-715a572-root17-diagnostic-v1/source",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/run/hepta-af52-final-715a5726f503-ordinary-715a572-root17-diagnostic-v1/bind",
+        "HEPTA_Q24_FACTORY_WITNESS_BIND=/run/hepta-af52-final-715a5726f503-ordinary-715a572-root17-diagnostic-v1/witness-bind",
+        "HEPTA_Q24_FACTORY_WITNESS_SOURCE=/run/hepta-af52-final-715a5726f503-ordinary-715a572-root17-diagnostic-v1/witness-source",
+        "NEXTEST_PROFILE=local",
+        "PATH=/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "RUSTUP_HOME=/home/qq/.rustup",
+        "RUSTUP_TOOLCHAIN=1.96.0",
+        "SOURCE_SHA=715a5726f5031e50ad963812d2a1270e8d0cf769",
+        "TESTED_SHA=715a5726f5031e50ad963812d2a1270e8d0cf769",
+        "python3",
+        "-c",
+        "\nimport json,os,runpy,sys\nassert os.getuid()==os.geteuid()==0, 'actual UID0 required'\nos.umask(0o022)\nproof,entry=sys.argv.pop(1),sys.argv.pop(1)\nwith open(proof,'x') as stream:\n    json.dump({'uid':os.getuid(),'euid':os.geteuid(),'gid':os.getgid(),'pid':os.getpid()},stream)\n    stream.flush()\n    os.fsync(stream.fileno())\nprint('Root test uid=0',flush=True)\nsys.argv[0]=entry\nrunpy.run_path(entry,run_name='__main__')\n",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/root-toolchain.uid.json",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "60",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/root-toolchain.execution.json",
+        "--",
+        "/home/qq/.cargo/bin/rustc",
+        "-Vv"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/source/codex-rs",
+      "elapsed_seconds": 0.16438516601920128,
+      "exit_code": 0,
+      "launcher_pid": 870423,
+      "log": {
+        "bytes": 1521,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/root-toolchain.launch.log",
+        "sha256": "583215dc4675d87cc012501db4299809228b27ab52dd478f239b5a5c99c08c25"
+      },
+      "name": "root-toolchain",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "sudo",
+        "-n",
+        "chown",
+        "-R",
+        "-P",
+        "--no-dereference",
+        "1000:1000",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.016098656924441457,
+      "exit_code": 0,
+      "launcher_pid": 870485,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/cleanup-record-ownership.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "cleanup-record-ownership",
+      "state": "completed",
+      "timed_out": false
+    }
+  ],
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 675, in <module>\n    _, _, rust_log = recorded(\"root-toolchain\", [CONFIG[\"rustc_path\"],\"-Vv\"],\n                     ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                             timeout=60,root=True,root_env=root_env,cwd=SOURCE/\"codex-rs\")\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 381, in recorded\n    original_terminal = json.loads(output.read_text())\n                                   ~~~~~~~~~~~~~~~~^^\n  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 788, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 772, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nPermissionError: [Errno 13] Permission denied: '/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records/root-toolchain.execution.json'\n"
+}

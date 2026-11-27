@@ -1,0 +1,22 @@
+{
+  "base_ref": "300ebaaedd9ec578ffcd2bc341c2394ead6a92c8",
+  "caller_unit_tests": {
+    "run": 57,
+    "passed": 57,
+    "failed": 0,
+    "seconds": 3.125,
+    "log": "caller-suite.log"
+  },
+  "validator_self_test": "PASS_HEPTA_CALLER_PROOF_SELF_TEST",
+  "selected_protected_file_scan": "PASS",
+  "full_repository_scan": "NOT_RUN_MINIMAL_RECOVERY_SNAPSHOT",
+  "native_tests": "NOT_RUN",
+  "source_files": {
+    "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs": "b61698aa124da557b536ec4ecaea0e33f10b596ea7eca180a309323f0748bd18",
+    "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs": "5836805606970608267c6834cc1dfa93475ecfffce5fe286a2a930d8bf616d2a",
+    "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs": "f850394b59f42968c2eda1a7548facec96f693210c205f20f69758a599c1b097",
+    "codex-rs/hepta-agentd/src/circuit_learning_retirement_recovery_tests.rs": "0a82ff787d8dc96d349474738e25fa89848fdaf370505b8e8a69ec748504a794",
+    "CALLERS.toml": "3f5ad9cc06f52cf87474ce2367236419d8b1a1f9f84bbf3c4321c3380c893436",
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": "258d78f67dd5b1d3fa4a7dc75bc49a9d514bdd9de58409d47c33bf82c0b20acc"
+  }
+}

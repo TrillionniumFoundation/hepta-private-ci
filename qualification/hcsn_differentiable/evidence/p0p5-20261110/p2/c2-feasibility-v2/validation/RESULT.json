@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/workspace/scratch/c385a7439f8e/hcsn-study-env/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "c2-feasibility-v2",
+    "-p",
+    "test_c2_boundary.py",
+    "-v"
+  ],
+  "child_cpu_seconds": 4.165834,
+  "independent_counterexamples_sha256": "1e20f69ed02476eca3b9812c81f2c770d9bd641f0f090b00d32407ed73dafd85",
+  "native_snapshot_started": false,
+  "native_training_started": false,
+  "own_cpu_seconds": 0.0019128220000000015,
+  "prior_v1_capsule_sha256": "23fbe126fb13dc2aee5731919f174b0974abbb237d4e15c201cbf14c6cf05dbe",
+  "returncode": 0,
+  "schema": "c2-boundary-validator-unit-tests-v2",
+  "scientific_training_credit": false,
+  "scope": "21 tests; actual v8 tiny HCSN writer and partial optimizer replay, plus synthetic metadata/negative-state guard fixtures; no production fit or native snapshot",
+  "source_after": {
+    "c2-feasibility-v2/c2_boundary.py": "177a23a3d0502a79912efdd2a14a365bc716961698a6949bb45d380ba147e6dd",
+    "c2-feasibility-v2/test_c2_boundary.py": "e7e960a1717eb2d2dfeeb8643fead83446f52abfe658fd556e051041d8e2f5b6"
+  },
+  "source_before": {
+    "c2-feasibility-v2/c2_boundary.py": "177a23a3d0502a79912efdd2a14a365bc716961698a6949bb45d380ba147e6dd",
+    "c2-feasibility-v2/test_c2_boundary.py": "e7e960a1717eb2d2dfeeb8643fead83446f52abfe658fd556e051041d8e2f5b6"
+  },
+  "whole_process_wall_seconds": 3.3880163450012333
+}

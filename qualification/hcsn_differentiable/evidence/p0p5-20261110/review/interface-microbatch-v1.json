@@ -1,0 +1,70 @@
+{
+  "schema": "hcsn-independent-interface-microbatch-review-v1",
+  "created_utc": "2026-11-10T14:30:43.918696+00:00",
+  "reviewer": "/root/math_contract",
+  "scope": "Read-only source/mathematical review; not a new training result or numerical-domain qualification.",
+  "sources": {
+    "ncps_1.0.1_default_cfc_cell": {
+      "path": "/workspace/scratch/c385a7439f8e/hcsn-study-env/lib/python3.12/site-packages/ncps/torch/cfc_cell.py",
+      "bytes": 5726,
+      "sha256": "79dcc1cbb3b6898dc2310e9086a2e031e31cbaeb129d69adcbf45eaa16d6b74d"
+    },
+    "v6_cores": {
+      "path": "/workspace/scratch/c385a7439f8e/v6-local-validation/source/proposals/localization-v3/cores.py",
+      "bytes": 12006,
+      "sha256": "44a17c4d6f34442289095d0d27cf1337f9f88523ab6ba2bb996fd34b7c19140f"
+    },
+    "v6_effective_batch": {
+      "path": "/workspace/scratch/c385a7439f8e/v6-local-validation/source/proposals/localization-v3/hcsn_study_support.py",
+      "bytes": 3745,
+      "sha256": "5b778a9eeb01dbf8fcff897966ddebe0e2511d14284a5909ac4e4ecfd61b121f"
+    },
+    "v6_frozen_tables": {
+      "path": "/workspace/scratch/c385a7439f8e/v6-local-validation/source/proposals/localization-v3/frozen_tables.py",
+      "bytes": 5147,
+      "sha256": "bd3d938014deefaab2b79b6317145573539d3be9a3210b07632de7619b6955e6"
+    },
+    "v6_train": {
+      "path": "/workspace/scratch/c385a7439f8e/v6-local-validation/source/proposals/localization-v3/train.py",
+      "bytes": 17487,
+      "sha256": "56994214e579a4c0a3827c9d9d261c7d913c157045b5204ca70ca43ce453f329"
+    }
+  },
+  "prior_frozen_head_analysis_sha256": "83e34deaeb221d31a4ce7e1b292a2fd3fd26ec6b430c4ba90af7c4697f98aab2",
+  "scientific_admission": "HOLD",
+  "findings": [
+    {
+      "id": "CFC-BOUND",
+      "status": "correction_to_any_unbounded_CfC_narrative",
+      "statement": "The actual wrapper selects ncps 1.0.1 mode=default. Its tanh(ff1)*(1-sigmoid)+sigmoid*tanh(ff2) output is coordinatewise in [-1,1]. Existing GRU-box frozen-head confidence certificates therefore also upper-bound raw CfC output confidence for the same head. This does not prove dynamic attainability of the box optimum.",
+      "raw_adequacy_interpretation": "Two raw CfC fits satisfying the operational adequacy criterion do not conflict with a confidence bound: classification accuracy and softmax confidence differ."
+    },
+    {
+      "id": "HEAD-FEASIBILITY",
+      "status": "scope_clarification",
+      "statement": "Every class has a strict argmax witness in the declared output-domain relaxation. The witnesses exclude an algebraic obstruction by the head alone; they do not establish recurrent dynamic reachability or the cause of failed memorization."
+    },
+    {
+      "id": "COMMON-ADAPTER",
+      "status": "fairness_repair_with_capacity_change",
+      "statement": "The same identity-initialized learnable Linear(16,16) plus bias adds 272 real trainable parameters to every arm. With full-row-rank fixed head W, W(Ah+c)+b can realize any affine 16-to-11 readout. The stored head stays frozen but the effective classifier is trainable. This is a fresh comparison, not a retroactive correction of raw36."
+    },
+    {
+      "id": "MICROBATCH-GRADIENT",
+      "status": "mathematical_review_passed",
+      "statement": "Each complete-window microbatch contributes weighted CE numerator divided by the sum of target class weights for the entire effective batch. Summing these gradients, then clipping/stepping once, matches the declared effective-batch objective for these independent, deterministic per-sample cores. Padding time length is preserved. This does not generalize automatically to stochastic dropout, BatchNorm or batch-coupled models."
+    },
+    {
+      "id": "EPOCH-LOSS-LABEL",
+      "status": "limitation_acknowledged_by_training_owner",
+      "statement": "The v6 and historical runner reports sum(batch-normalized weighted loss * event_count)/sum(event_count). This is an event-weighted average of batch-normalized objectives, not global epoch weighted CE unless class-weight sums per event agree across batches. Optimization and separately computed development metrics are not changed by this reporting issue. Future full-training source should sum weighted numerators and denominators; historical results remain unchanged."
+    },
+    {
+      "id": "FROZEN-CACHE",
+      "status": "source_review_passed_with_declared_scope",
+      "statement": "Keys include exact scalar dt hexadecimal value, physical dtype/device/shape/bytes, operator configuration and buffer identities. Learnable physical inputs or dt are rejected. Cache is per instance, clears on checkpoint loading, and does no interpolation or time rounding. Construction time stays inside measured training. Tensor-storage bytes exclude Python keys and allocator overhead; this is computational memoization, not expanded numerical qualification."
+    }
+  ],
+  "new_behavior_tests_run_by_this_review": false,
+  "historical_results_modified": false
+}

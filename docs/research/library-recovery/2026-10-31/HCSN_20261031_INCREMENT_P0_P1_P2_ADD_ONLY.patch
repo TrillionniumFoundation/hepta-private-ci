@@ -1,0 +1,714 @@
+diff --git a/docs/research/HCSN_P0_P2_BP_DUALFLOW_INCREMENT_20261031.md b/docs/research/HCSN_P0_P2_BP_DUALFLOW_INCREMENT_20261031.md
+new file mode 100644
+index 0000000..96193ad
+--- /dev/null
++++ b/docs/research/HCSN_P0_P2_BP_DUALFLOW_INCREMENT_20261031.md
+@@ -0,0 +1,46 @@
++# HCSN P0–P2 数学梯度、通道斜率与不规则时间再生：本地增量
++
++日期：2026-10-31。目标仓库：`TrillionniumFoundation/hepta-private-ci`。
++
++**状态：** `LOCAL_RESEARCH_ONLY` / `DENY_ALL`。GitHub 连接器返回 HTTP 403（账户被暂停），未核验当前远端 HEAD，未提交、合并或部署。本文件是原 133 项离线测试包的**独立新增**研究说明，不是对原始 He–Xiong 2012 耦合均衡的完成声明。
++
++## 可复验的新增代码
++
++1. `experiments/hcsn_hx_unified_v3/torch_implicit_regenerative.py`：实装 CPU/f64 的 PyTorch `torch.autograd.Function`，前向通过独立 SciPy/Brent 计算标量再生 QVI 的根，反向通过隐函数定理传递六个参数的局部梯度。继续价值、立即 FIRE 价值与有符号安全裕度进入可微张量头。精确在边界或近边界的分支拒绝；不是 GPU/BF16/F32 或全网络的性能证明。
++2. `experiments/hcsn_hx_unified_v3/local_slope_calibration.py`：从**简化 GBM Put** 构造 Call-like 特征、固定边界 Brownian 首达 Risk 特征和对数安全裕度 Margin，解析计算物理状态 `V` 的带符号导数。在训练锚点用仿射变换匹配普通门控的数值与一阶导数。拒绝临界值、导数退化、巨大增益和非法输入。**并未**通过同信息/同参数/同训练预算的真实成对数据实验。
++3. `experiments/hcsn_distributional_v2/time_varying_refractory_reference.py`：实现分段固定、非负强度 λ(t) 下的确定不应期重复发放**正质量离散化**；事件按单元中点入队、`k` 个步长后再生，半区间指数存活严格保持活动/不应期概率守恒。`P(N_T>=1)=1-exp(-ΣλΔt)` 与 `E[N_T]` 分别计算。该时间网格中点近似**不是**对连续时间重置系统的精确解；还需要独立收敛与误差证书。
++
++## 本轮新证据
++
++- 基线本地包：133/133 Python unittest passed，0 skipped。
++- 以上三个新模块的测试：**7（P2）+8（P1）+5（P0/BP）=20**。
++- 同一离线工作树执行：**153/153 Python unittest passed，0 skipped、0 failed**。这是研究**单元测试数量**，不能等同于 153 项独立产品验收。
++- P2 常数强度校验：`λ=1.1,T=6,τ=0.4`，独立 Gamma 解析期望数 `4.630015432098766`。300/600/1200 格中点队列近似的绝对误差依次为 `5.265761e-5 / 1.316445e-5 / 3.291114e-6`；这是所测三格的数值收敛，不是全参数误差定理。
++- P2 非齐次率：`[.2×80, 2.4×90, 0×60, .8×120, 3.1×50]`，单元 `dt=.02`，不应期 `τ=.2`；本地预测首次事件概率 `0.9999362154780684`，期望发放数 `6.899095086273601`。与独立事件路径 Monte Carlo 的误差在本测试声明容差内；不能推断模型在 Selective Copy/MQAR 已具备长时记忆能力。
++- P0 PyTorch 梯度：6 个 raw 参数全部具有有限非零 task-loss 梯度且执行 SGD 后改变；对 2 组物理输入的 6×2 条隐式边界梯度与独立中央差分匹配。
++- P1 三个特征在 3 个训练锚点与中央差分对比，并在 3 个通道完成数值和带符号斜率的局部对齐。
++
++## 已知局限与未关闭门禁
++
++| 阶段 | 状态及剩余核心缺口 |
++|---|---|
++| P0 | 未证实**原始 HX Eq.(8)/(12)/(A7)** 耦合自洽固定点、全域 obstacle、严格浮点包含区间、原生 FP32/BF16。简化 GBM Put 和标量再生 QVI 不可替代原始 HX 均衡。 |
++| P1 | 只建立数学锚点校准器；尚无新鲜预登记数据、同信息同成本的 Call/Risk/Margin 1/2/3 通道全消融。历史 0/4 正向机制门失败有效。 |
++| P2 | 已有固定强度 Gamma/不规则速率再生数值参考及因果检查；没有真正可训练的 Copy/MQAR 覆盖写、长时召回或完整模型的端到端恢复证明。 |
++| P3 | 保留原四模态媒体完整性 gate；真实独立文本/图像/音频/视频 Encoder、跨模态检索与 OOD 仍未测。 |
++| P4 | 未运行 Rust/Cargo、GPU 原生神经核或焦耳测量，未进行 64/256/1024/4096 Cell 的性能/恢复全矩阵。 |
++| P5 | P1–P4 未闭合，无同质量同完整成本 Transformer/SSM 模型优势；不能扩容生产。 |
++
++所有门禁保持 `INCOMPLETE`，生产准入 `DENY_ALL`。`torch.autograd` 的局部连续值不是离散 FIRE 的处处真导数；真实事件跨边界需单独建模。
++
++## 复现命令
++
++```bash
++python -m unittest -v experiments.hcsn_hx_unified_v3.test_torch_implicit_regenerative
++python -m unittest -v experiments.hcsn_hx_unified_v3.test_local_slope_calibration
++python -m unittest -v experiments.hcsn_distributional_v2.test_time_varying_refractory_reference
++python -m unittest discover -v -s .
++python -m p0_p5_gatebook
++```
++
++研究运行环境：Python 3.13.5，NumPy 2.3.5，SciPy 1.17.0，mpmath 1.3.0，PyTorch 2.10.0+cpu。要集成到真实仓库，先恢复 GitHub 权限、冻结最新 HEAD/已存在同名文件、检验 add-only 补丁无冲突，再做目标源精确测试；不建议在未读源码情况下直接合并。
+diff --git a/experiments/hcsn_distributional_v2/test_time_varying_refractory_reference.py b/experiments/hcsn_distributional_v2/test_time_varying_refractory_reference.py
+new file mode 100644
+index 0000000..29c8776
+--- /dev/null
++++ b/experiments/hcsn_distributional_v2/test_time_varying_refractory_reference.py
+@@ -0,0 +1,98 @@
++"""Independent limits, pathwise Monte Carlo and split/causal renewals."""
++import math
++import random
++import unittest
++
++from .time_varying_refractory_reference import (
++    InhomogeneousRenewalError, expected_renewals,
++)
++from .deterministic_refractory_reference import constant_rate_stats, PathState, advance_path
++
++
++class InhomogeneousRenewalTests(unittest.TestCase):
++    def test_zero_refractory_exact_inhomogeneous_poisson(self):
++        rates=[.3,0,3,1.5,.01,0,1.1]
++        got=expected_renewals(rates,.1,0)
++        exposure=.1*sum(rates)
++        self.assertAlmostEqual(got.expected_event_count,exposure,places=14)
++        self.assertAlmostEqual(got.first_event_probability,-math.expm1(-exposure),places=14)
++        self.assertEqual(got.active_at_end,1.)
++
++    def test_constant_rate_matches_independent_gamma_sum(self):
++        lam,T,tau=1.1,6.,.4
++        expected=constant_rate_stats(lam,tau,T)
++        results=[]
++        for n in (300,600,1200):
++            got=expected_renewals([lam]*n,T/n,int(tau/(T/n)))
++            results.append(abs(got.expected_event_count-expected.expected_event_count))
++            self.assertAlmostEqual(got.first_event_probability,expected.first_fire_probability,places=12)
++            self.assertTrue(0<=got.active_at_end<=1)
++            self.assertGreaterEqual(got.expected_event_count,got.first_event_probability)
++        self.assertLess(results[-1],.0001)
++        self.assertGreater(results[0],results[1])
++        self.assertGreater(results[1],results[2])
++
++    def test_irregular_rate_change_monte_carlo_independent_event_paths(self):
++        # Frozen step intensities correspond to a deliberately time-varying,
++        # including silent, physical signal. No data-derived hyperparameters.
++        h=.02; k=10
++        rates=([.2]*80+[2.4]*90+[0]*60+[.8]*120+[3.1]*50)
++        got=expected_renewals(rates,h,k)
++        rng=random.Random(202610310701)
++        n=16000
++        totals=0
++        seen=0
++        # Independent path generator from exact integrated hazards per segment,
++        # not the time-grid renewal approximation being tested.
++        for i in range(n):
++            state=PathState.initial(rng.randrange(2**63),k*h)
++            for rate,length in ((.2,80),(2.4,90),(0.,60),(.8,120),(3.1,50)):
++                duration=length*h
++                if rate==0.:
++                    # Exact no-fire continuation. In this silent segment,
++                    # refractory mass ages but integrated hazard does not.
++                    from dataclasses import replace
++                    state=replace(state,physical_time=state.physical_time+duration,
++                        refractory_remaining=max(0.,state.refractory_remaining-duration))
++                else:
++                    state=advance_path(state,rate,duration)
++            totals+=state.fired_count
++            seen+=(state.fired_count>0)
++        self.assertLess(abs(totals/n-got.expected_event_count),.060)
++        self.assertLess(abs(seen/n-got.first_event_probability),.02)
++        self.assertGreater(got.expected_event_count,got.first_event_probability+1.5)
++
++    def test_refractory_suppresses_total_not_first_event(self):
++        rates=([.25]*200+[1.5]*250+[3.]*200)
++        before=expected_renewals(rates,.01,0)
++        one=expected_renewals(rates,.01,10)
++        long=expected_renewals(rates,.01,90)
++        for r in (one,long):
++            self.assertAlmostEqual(r.first_event_probability,before.first_event_probability,places=12)
++            self.assertLess(r.expected_event_count,before.expected_event_count)
++        self.assertLess(long.expected_event_count,one.expected_event_count)
++
++    def test_no_future_suffix_leakage_in_prefix(self):
++        first=[.9]*50+[1.7]*50
++        a=expected_renewals(first+[.1]*50,.01,15)
++        b=expected_renewals(first+[3.1]*50,.01,15)
++        self.assertEqual(a.step_expected_counts[:100],b.step_expected_counts[:100])
++        self.assertEqual(a.step_end_active[:100],b.step_end_active[:100])
++        self.assertNotEqual(a.expected_event_count,b.expected_event_count)
++
++    def test_all_silent_intervals_and_zero_horizon_refusal(self):
++        z=expected_renewals([0.]*20,.01,3)
++        self.assertEqual((z.first_event_probability,z.expected_event_count,z.active_at_end), (0.,0.,1.))
++        with self.assertRaises(InhomogeneousRenewalError):
++            expected_renewals([],.01,2)
++
++    def test_nonconforming_grid_and_nonfinite_fail_closed(self):
++        for rates,dt,k in (([1.],0,1),([math.inf],.1,1),
++                           ([.1,-2.],.1,1),([6.],.1,1),([True],.1,1),
++                           ([1.],.1,-1),([1.],.1,1.0)):
++            with self.subTest(rates=rates,dt=dt,k=k),self.assertRaises(InhomogeneousRenewalError):
++                expected_renewals(rates,dt,k)
++
++
++if __name__=='__main__':
++    unittest.main()
+diff --git a/experiments/hcsn_distributional_v2/time_varying_refractory_reference.py b/experiments/hcsn_distributional_v2/time_varying_refractory_reference.py
+new file mode 100644
+index 0000000..6a0ba7a
+--- /dev/null
++++ b/experiments/hcsn_distributional_v2/time_varying_refractory_reference.py
+@@ -0,0 +1,123 @@
++"""P2: finite-grid renewal reference for time-varying event intensity.
++
++A neuron starts ACTIVE and fires with a piecewise-constant intensity lam(t).
++After each event it is inactive for an *exact deterministic* refractory period
++L=k*dt (k>=1); it then re-enters the same time-inhomogeneous active hazard.
++
++For the active probability a(t) and event density m(t)=lam(t)*a(t):
++
++    a'(t)=-m(t)+1_{t>=L} m(t-L), a(0)=1,
++    E N_T = int_0^T m(s) ds, P(N_T>=1)=1-exp(-int_0^T lam(s) ds).
++
++The renewal delay differential equation is exact for this restricted physical
++model. The implementation below is a *positive-mass time-grid approximation*:
++events are assigned to the midpoint of their hazard cell and become active
++again at the midpoint k cells later. Each rate cell is integrated by two
++exact exponential half-hazard steps surrounding the release. This differs
++from physical random event times by up to half a cell, but conserves active
++and refractory probability mass. It recomputes positive cohort mass per cell
++for f64 safety (O(n*k), explicitly budgeted) and can be compared
++to independent continuous-time Gamma/Monte Carlo references. No universal
++numerical error bound or convergence rate is certified.
++
++The fixed-grid interface requires a deterministic refractory length exactly
++an integer multiple of dt; inputs outside this contract must be rejected.
++The local counterfactual is important: endpoint spike probability is NOT an
++expected number of repeated events. No rounding-to-[0,1] is performed.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass
++import math
++from typing import Sequence
++
++
++class InhomogeneousRenewalError(ValueError):
++    """Explicitly refused numeric, grid or physical contract."""
++
++
++@dataclass(frozen=True)
++class RenewalFlow:
++    dt: float
++    refractory_steps: int
++    first_event_probability: float
++    expected_event_count: float
++    active_at_end: float
++    step_expected_counts: tuple[float, ...]
++    step_end_active: tuple[float, ...]
++    approximation: str = 'positive midpoint-cohort time-grid approximation; not certified'
++
++
++
++def expected_renewals(rates: Sequence[float], dt: float, refractory_steps: int,
++                      *, max_steps: int = 20000) -> RenewalFlow:
++    """Causal expected counts for a piecewise-constant time-varying rate.
++
++    rates[j] applies on [j*dt,(j+1)*dt), and the first state is ACTIVE.
++    Requires max(lambda*dt)<=0.5 for reference resolution; this is a
++    conservative admission rule rather than a formal approximation bound.
++    For zero refractory (k=0), the exact time-inhomogeneous Poisson solution
++    is returned instead of running a delay approximation.
++    """
++    if (type(dt) not in (float,int) or not math.isfinite(dt) or dt<=0 or
++            type(refractory_steps) is not int or refractory_steps<0 or
++            type(max_steps) is not int or max_steps<1 or
++            not isinstance(rates,(tuple,list)) or not 1<=len(rates)<=max_steps):
++        raise InhomogeneousRenewalError('invalid finite uniform-grid contract')
++    h=float(dt)
++    lam=[]
++    weights=[]
++    for value in rates:
++        if type(value) not in (int,float) or not math.isfinite(value) or value<0:
++            raise InhomogeneousRenewalError('intensities must be finite nonnegative reals')
++        product=float(value)*h
++        if not math.isfinite(product) or product>.5:
++            raise InhomogeneousRenewalError('lambda*dt exceeds bounded reference resolution')
++        lam.append(float(value))
++        weights.append(product)
++    exposure=math.fsum(weights)
++    if not math.isfinite(exposure):
++        raise InhomogeneousRenewalError('total exposure outside reference domain')
++    first=-math.expm1(-exposure)
++    if refractory_steps==0:
++        return RenewalFlow(h,0,first,exposure,1.,tuple(weights),
++                           tuple(1. for _ in lam))
++
++    k=refractory_steps
++    if len(lam)*min(k,len(lam)) > 2_000_000:
++        raise InhomogeneousRenewalError('reference cohort-sum work budget exceeded')
++    active=1.
++    counts=[]
++    end_active=[]
++    for j,x in enumerate(weights):
++        # The current k cohorts are refractory before this cell. The oldest
++        # cohort (if any) becomes active at the midpoint. Recompute mass from
++        # nonnegative cohorts rather than accumulating cancellation in a
++        # probability repeatedly released toward exactly one.
++        active=1-math.fsum(counts[max(0,j-k):j])
++        if not 0<=active<=1 or not math.isfinite(active):
++            raise ArithmeticError('renewal pre-step probability unresolved')
++        half_loss=-math.expm1(-x/2)
++        early=active*half_loss
++        active_mid=1-math.fsum(counts[max(0,j-k+1):j])-early
++        if not 0<=active_mid<=1 or not math.isfinite(active_mid):
++            raise ArithmeticError('renewal release violates probability envelope')
++        late=active_mid*half_loss
++        event=math.fsum((early,late))
++        active=1-math.fsum((*counts[max(0,j-k+1):j],event))
++        if (not math.isfinite(active) or not math.isfinite(event) or
++                not 0<=active<=1 or event<0 or
++                (event==0 and x>0 and active>0)):
++            raise ArithmeticError('nonphysical or underresolved renewal step')
++        counts.append(event)
++        end_active.append(active)
++    total=math.fsum(counts)
++    # Events in the current last k cells remain in deterministic refractory.
++    # This direct cohort identity independently audits the recurrence.
++    inactive=math.fsum(counts[-k:])
++    if (not math.isfinite(total) or total+2e-8*max(1.,total)<first or
++            total>len(lam)+1e-9 or
++            abs(math.fsum((active,inactive))-1)>1e-10):
++        raise ArithmeticError('renewal count/mass/first-event envelope unresolved')
++
++    return RenewalFlow(h,k,first,total,active,tuple(counts),tuple(end_active))
+diff --git a/experiments/hcsn_hx_unified_v3/local_slope_calibration.py b/experiments/hcsn_hx_unified_v3/local_slope_calibration.py
+new file mode 100644
+index 0000000..5e97f4f
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/local_slope_calibration.py
+@@ -0,0 +1,139 @@
++"""P1 controlled comparison: genuine Call/Risk/Margin value and slope matching.
++
++This local audit removes a first-order confound in the HCSN vs ordinary-gate
++comparison: gates can have entirely different input derivatives at an anchor.
++It uses the standard perpetual GBM Put (not the full HX equilibrium) for the
++illustrative Call-like feature, drifted Brownian first hit for Risk, and
++log(V/b) for Margin. All values and derivatives are defined in physical V.
++
++Given *training-only* anchor V0, target ordinary-gate value y0 and signed
++slope dy/dV, produce an affine calibration y=alpha+beta*feature(V) such that
++both value and signed derivative coincide at V0. This is an algebraic
++reference, NOT a demonstration of feature benefit, matched information,
++matched compute, completed ablation, or foundation-scale capability.
++
++Zero-slope, nonsmooth/absorbed, unstable-scale, and outside-domain anchors are
++explicit refusals. Near-boundary f32 aliasing and low-precision kernels are
++separately gated; no automatic clipping or subgradient is silently supplied.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass
++import math
++
++from scipy.special import ndtr
++
++from .perpetual_put_qvi_reference import GBMPut
++
++
++class UnresolvedCalibration(ValueError):
++    pass
++
++
++@dataclass(frozen=True)
++class FeatureDerivative:
++    channel: str
++    value: float
++    signed_dv: float
++    state: float
++    boundary: float
++
++
++@dataclass(frozen=True)
++class AffineGate:
++    channel: str
++    intercept: float
++    gain: float
++    train_anchor: float
++    target_value: float
++    target_signed_dv: float
++
++    def forward(self, feature_value: float) -> float:
++        if type(feature_value) not in (float,int) or not math.isfinite(feature_value):
++            raise UnresolvedCalibration('nonfinite feature')
++        out=math.fsum((self.intercept,self.gain*feature_value))
++        if not math.isfinite(out):
++            raise UnresolvedCalibration('affine projection nonfinite')
++        return out
++
++
++def channel_at(p: GBMPut, v: float, channel: str, *, horizon: float=.5,
++               drift: float=.02, diffusion: float=.25) -> FeatureDerivative:
++    if (type(v) not in (float,int) or not math.isfinite(v) or v<=0 or
++            channel not in ('call','risk','margin')):
++        raise UnresolvedCalibration('positive finite physical state and known channel required')
++    b=p.boundary
++    if not math.isfinite(b) or b<=0:
++        raise UnresolvedCalibration('reference boundary unresolved')
++    if channel=='call':
++        # Call-like residual: V-K+perpetual_put(V), not literal HX equity.
++        if v<=b:
++            value=slope=0.
++        else:
++            put=p.value(v)
++            value=math.fsum((v,-p.strike,put))
++            slope=1+p.beta_minus*put/v
++    elif channel=='margin':
++        value=math.log(v/b)
++        slope=1/v
++    else:
++        if not all(type(t) in (float,int) and math.isfinite(t)
++                   for t in (horizon,drift,diffusion)) or horizon<=0 or diffusion<=0:
++            raise UnresolvedCalibration('finite T>0, sigma>0 and drift required')
++        x=math.log(v/b)
++        if x<=0:
++            value=1.
++            slope=0.
++        else:
++            s=diffusion*math.sqrt(horizon)
++            z1=(-x-drift*horizon)/s
++            z2=(-x+drift*horizon)/s
++            exponent=-2*drift*x/(diffusion*diffusion)
++            if not math.isfinite(exponent) or exponent>700 or x>100:
++                raise UnresolvedCalibration('first-hit derivative scale unresolved')
++            e=math.exp(exponent)
++            phi1=math.exp(-z1*z1/2)/math.sqrt(2*math.pi)
++            phi2=math.exp(-z2*z2/2)/math.sqrt(2*math.pi)
++            value=float(ndtr(z1)+e*ndtr(z2))
++            slope=(-phi1/s+e*((-2*drift/(diffusion*diffusion))*ndtr(z2)
++                                  -phi2/s))/v
++            if not 0<value<1:
++                raise UnresolvedCalibration('first-hit output rounded to degenerate probability')
++    if not math.isfinite(value) or not math.isfinite(slope):
++        raise UnresolvedCalibration('feature value or slope unresolved')
++    return FeatureDerivative(channel,float(value),float(slope),float(v),float(b))
++
++
++def affine_match(feature: FeatureDerivative, *, target_value: float,
++                 target_signed_dv: float, min_abs_derivative: float=1e-8,
++                 max_gain: float=1e4) -> AffineGate:
++    """Local value AND signed physical-state derivative match.
++
++    This should be performed only using frozen training anchors. Signed
++    derivative is matched exactly, not its magnitude. Beta may be negative;
++    to test the financial mechanism rather than input slope alone, controls
++    must also get the same information/parameter/cost budget elsewhere.
++    """
++    if not isinstance(feature,FeatureDerivative):
++        raise UnresolvedCalibration('complete analytic feature required')
++    vals=(feature.value,feature.signed_dv,feature.state,feature.boundary,
++          target_value,target_signed_dv,min_abs_derivative,max_gain)
++    if not all(type(t) in (int,float) and math.isfinite(t) for t in vals):
++        raise UnresolvedCalibration('nonfinite calibration input')
++    if (feature.state<=0 or feature.boundary<=0 or
++            min_abs_derivative<=0 or max_gain<=0 or
++            abs(feature.signed_dv)<min_abs_derivative or
++            abs(target_signed_dv)<min_abs_derivative or
++            abs(feature.state-feature.boundary)
++              <=1e-8*max(1.,feature.boundary)):
++        raise UnresolvedCalibration('near boundary, flat or unresolvable local derivative')
++    gain=target_signed_dv/feature.signed_dv
++    intercept=math.fsum((target_value,-gain*feature.value))
++    if (not math.isfinite(gain) or not math.isfinite(intercept)
++            or abs(gain)>max_gain):
++        raise UnresolvedCalibration('calibration gain beyond admissible budget')
++    if abs(math.fsum((intercept,gain*feature.value))-target_value)>1e-10*max(1.,abs(target_value)):
++        raise UnresolvedCalibration('calibrated local value unresolved in f64')
++    if abs(gain*feature.signed_dv-target_signed_dv)>1e-10*max(1.,abs(target_signed_dv)):
++        raise UnresolvedCalibration('calibrated signed gradient unresolved in f64')
++    return AffineGate(feature.channel,intercept,gain,feature.state,target_value,target_signed_dv)
+diff --git a/experiments/hcsn_hx_unified_v3/test_local_slope_calibration.py b/experiments/hcsn_hx_unified_v3/test_local_slope_calibration.py
+new file mode 100644
+index 0000000..d9d0f7e
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/test_local_slope_calibration.py
+@@ -0,0 +1,82 @@
++"""P1: independently check signed derivatives and reject fake equality."""
++from dataclasses import replace
++import math
++import random
++import unittest
++
++from .perpetual_put_qvi_reference import GBMPut
++from .local_slope_calibration import (
++    UnresolvedCalibration,channel_at,affine_match,
++)
++
++
++class LocalSlopeCalibrationTests(unittest.TestCase):
++    def setUp(self):
++        self.p=GBMPut(.08,.02,.23,1.)
++        self.anchor=1.15*self.p.boundary
++
++    def test_call_risk_margin_derivatives_against_independent_finite_differences(self):
++        for channel in ('call','risk','margin'):
++            for anchor in (1.05,1.2,1.8):
++                v=anchor*self.p.boundary
++                h=1e-5*v
++                lhs=channel_at(self.p,v-h,channel)
++                rhs=channel_at(self.p,v+h,channel)
++                got=channel_at(self.p,v,channel)
++                fd=(rhs.value-lhs.value)/(2*h)
++                with self.subTest(channel=channel,anchor=anchor):
++                    self.assertAlmostEqual(got.signed_dv,fd,
++                        delta=2e-5*max(1.,abs(got.signed_dv)))
++
++    def test_signed_anchor_alignment_for_all_three_channels(self):
++        for channel in ('call','risk','margin'):
++            f=channel_at(self.p,self.anchor,channel)
++            match=affine_match(f,target_value=.25,target_signed_dv=-.35)
++            self.assertAlmostEqual(match.forward(f.value),.25,places=12)
++            self.assertAlmostEqual(match.gain*f.signed_dv,-.35,places=12)
++            h=1e-5*self.anchor
++            yminus=match.forward(channel_at(self.p,self.anchor-h,channel).value)
++            yplus=match.forward(channel_at(self.p,self.anchor+h,channel).value)
++            self.assertAlmostEqual((yplus-yminus)/(2*h),-.35,delta=1e-5)
++
++    def test_slope_sign_is_matched_not_magnitude_only(self):
++        f=channel_at(self.p,self.anchor,'risk')
++        self.assertLess(f.signed_dv,0)
++        gate=affine_match(f,target_value=.8,target_signed_dv=.1)
++        self.assertLess(gate.gain,0)
++        self.assertAlmostEqual(gate.gain*f.signed_dv,.1,delta=1e-12)
++
++    def test_boundary_flat_call_refused(self):
++        for v in (.95*self.p.boundary,self.p.boundary):
++            f=channel_at(self.p,v,'call')
++            self.assertEqual(f.signed_dv,0)
++            with self.assertRaises(UnresolvedCalibration):
++                affine_match(f,target_value=.2,target_signed_dv=.5)
++
++    def test_near_threshold_margin_refused_even_with_nonzero_slope(self):
++        f=channel_at(self.p,self.p.boundary,'margin')
++        with self.assertRaises(UnresolvedCalibration):
++            affine_match(f,target_value=.2,target_signed_dv=.5)
++
++    def test_unstable_gain_rejected(self):
++        f=channel_at(self.p,self.anchor,'risk')
++        with self.assertRaises(UnresolvedCalibration):
++            affine_match(f,target_value=0.,target_signed_dv=1e7,max_gain=100)
++
++    def test_invalid_and_degenerate_risk_rejected(self):
++        for v,T,sigma in ((0.,1.,.2),(1.,0.,.2),(1.,1.,0.),(math.inf,1.,.2)):
++            with self.subTest(v=v,T=T,sigma=sigma),self.assertRaises(UnresolvedCalibration):
++                channel_at(self.p,v,'risk',horizon=T,diffusion=sigma)
++
++    def test_training_only_random_anchor_derivatives(self):
++        rng=random.Random(20261031)
++        for _ in range(120):
++            v=self.p.boundary*rng.uniform(1.07,1.8)
++            f=channel_at(self.p,v,'margin')
++            g=affine_match(f,target_value=rng.uniform(-.5,.5),
++                           target_signed_dv=rng.uniform(-1.5,-.1))
++            self.assertAlmostEqual(g.gain*f.signed_dv,g.target_signed_dv,places=12)
++
++
++if __name__=='__main__':
++    unittest.main()
+diff --git a/experiments/hcsn_hx_unified_v3/test_torch_implicit_regenerative.py b/experiments/hcsn_hx_unified_v3/test_torch_implicit_regenerative.py
+new file mode 100644
+index 0000000..ae967bf
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/test_torch_implicit_regenerative.py
+@@ -0,0 +1,82 @@
++"""Derivative, boundary, QVI and trainability probes for f64 CPU bridge."""
++from dataclasses import replace
++import math
++import unittest
++
++import torch
++
++from .regenerative_qvi_oracle_v2 import RegenerativeNeuron
++from .torch_implicit_regenerative import (
++    ScalarBoundary,scalar_value_features,TrainableRegenerativeFeature,TorchQVIDomainError,
++)
++
++
++class TorchImplicitRegenerativeTests(unittest.TestCase):
++    def setUp(self):
++        self.params=(.1,.6,.25,1.,.1,.3)
++
++    def tensors(self,vals=None):
++        return [torch.tensor(v,dtype=torch.float64,requires_grad=True)
++                for v in (self.params if vals is None else vals)]
++
++    def test_forward_matches_independent_scipy_qvi(self):
++        p=RegenerativeNeuron(*self.params)
++        b=p.solution.boundary
++        args=self.tensors()
++        self.assertAlmostEqual(ScalarBoundary.apply(*args).item(),b,places=12)
++        x=torch.tensor([b-1.5,b-.5,b+.2,b+1],dtype=torch.float64)
++        val,adv,margin=scalar_value_features(x,*args)
++        for i,z in enumerate(x.tolist()):
++            self.assertAlmostEqual(val[i].item(),p.value(z),delta=2e-12)
++            self.assertAlmostEqual(adv[i].item(),-p.qvi(z).obstacle_residual,delta=1e-11)
++            self.assertAlmostEqual(margin[i].item(),z-b,delta=1e-12)
++
++    def test_implicit_gradient_matches_six_independent_fd(self):
++        for vals in (self.params,(-.3,.7,.55,.6,-.9,.25)):
++            args=self.tensors(vals)
++            b=ScalarBoundary.apply(*args)
++            gradients=torch.autograd.grad(b,args)
++            for i,g in enumerate(gradients):
++                v=vals[i]
++                h=1e-5*max(1.,abs(v))
++                lhs=list(vals); rhs=list(vals)
++                lhs[i]-=h;rhs[i]+=h
++                numerical=(RegenerativeNeuron(*rhs).solution.boundary-
++                           RegenerativeNeuron(*lhs).solution.boundary)/(2*h)
++                self.assertAlmostEqual(g.item(),numerical,
++                    delta=1e-5*max(1.,abs(numerical)))
++
++    def test_all_trainable_parameter_groups_receive_task_gradient(self):
++        model=TrainableRegenerativeFeature()
++        x=torch.tensor([-.5,.05,.2,.75,1.6,2.5],dtype=torch.float64)
++        out=model(x)
++        weights=torch.tensor([[.3,.15,-.04],[-.8,.13,.5],[.45,.9,-.8],
++                              [.6,.03,.7],[-.2,.6,1.],[-.1,.4,.9]],dtype=torch.float64)
++        loss=(out*weights).sum()
++        loss.backward()
++        for name,param in model.named_parameters():
++            with self.subTest(name=name):
++                self.assertTrue(bool(torch.isfinite(param.grad).all()))
++                self.assertGreater(abs(param.grad.item()),1e-9)
++        before={n:p.detach().clone() for n,p in model.named_parameters()}
++        opt=torch.optim.SGD(model.parameters(),lr=.0003)
++        opt.step()
++        self.assertTrue(all(not torch.equal(p.detach(),before[n]) for n,p in model.named_parameters()))
++
++    def test_branch_equality_rejected_not_fake_smooth(self):
++        args=self.tensors()
++        b=ScalarBoundary.apply(*args).item()
++        with self.assertRaises(TorchQVIDomainError):
++            scalar_value_features(torch.tensor([b],dtype=torch.float64),*args)
++
++    def test_reject_f32_cpu_and_gpu_like_claims(self):
++        bad=self.tensors()
++        bad[0]=bad[0].float()
++        with self.assertRaises(TorchQVIDomainError):
++            ScalarBoundary.apply(*bad)
++        with self.assertRaises(TorchQVIDomainError):
++            scalar_value_features(torch.tensor([1.],dtype=torch.float32),*self.tensors())
++
++
++if __name__=='__main__':
++    unittest.main()
+diff --git a/experiments/hcsn_hx_unified_v3/torch_implicit_regenerative.py b/experiments/hcsn_hx_unified_v3/torch_implicit_regenerative.py
+new file mode 100644
+index 0000000..c751552
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/torch_implicit_regenerative.py
+@@ -0,0 +1,102 @@
++"""CPU/f64 PyTorch research bridge for a scalar regenerative QVI boundary.
++
++This module uses the independent scalar Brownian regeneration oracle, NOT the
++full coupled He--Xiong original equity/bond equilibrium. A custom autograd
++Function supplies the *local implicit boundary gradient* from the analytic
++smooth-fit equation while its forward value is calculated by the standalone
++SciPy/Brent reference. This bridges the proven scalar math to a differentiable
++PyTorch feature head without pretending a discrete FIRE action is smooth.
++
++Only scalar CPU float64 physical parameters are admitted; Tensor.item() in
++forward is deliberate and makes this unsuitable as a GPU production kernel.
++Inputs exactly on a free boundary are rejected rather than choosing a fake
++generalized derivative. Float32, BF16, and moving boundaries remain unqualified.
++"""
++from __future__ import annotations
++
++import math
++import torch
++from torch import nn
++
++from .regenerative_qvi_oracle_v2 import RegenerativeNeuron, UnresolvedQVI
++
++
++class TorchQVIDomainError(ValueError):
++    pass
++
++
++class ScalarBoundary(torch.autograd.Function):
++    """Inputs (mu,sigma,rho,K,reset,tau), outputs scalar Brownian QVI b."""
++
++    @staticmethod
++    def forward(ctx, mu, sigma, rho, cost, reset, refractory):
++        params=(mu,sigma,rho,cost,reset,refractory)
++        if any(not isinstance(t,torch.Tensor) or t.numel()!=1 or
++               t.dtype!=torch.float64 or t.device.type!='cpu' for t in params):
++            raise TorchQVIDomainError('scalar CPU float64 tensor parameters required')
++        if not all(torch.isfinite(t).item() for t in params):
++            raise TorchQVIDomainError('finite physical QVI parameters required')
++        p=RegenerativeNeuron(*(float(t.detach().item()) for t in params))
++        s=p.solution
++        grads=p.boundary_sensitivities()
++        ctx.derivatives=tuple(grads[key] for key in
++            ('drift','sigma','discount','cost','reset','refractory'))
++        return mu.new_tensor(s.boundary)
++
++    @staticmethod
++    def backward(ctx, grad_output):
++        return tuple(grad_output*d for d in ctx.derivatives)
++
++
++def scalar_value_features(x: torch.Tensor, mu: torch.Tensor, sigma: torch.Tensor,
++                          rho: torch.Tensor, cost: torch.Tensor, reset: torch.Tensor,
++                          refractory: torch.Tensor) -> tuple[torch.Tensor,torch.Tensor,torch.Tensor]:
++    """Return (optimal J, continuation-over-immediate-FIRE, signed margin).
++
++    Only x!=b with a prescribed f64 separation is supported; the function
++    backpropagates through b via implicit derivatives and through kappa and
++    post-FIRE continuation using ordinary PyTorch autograd.
++    """
++    if not isinstance(x,torch.Tensor) or x.dtype!=torch.float64 or x.device.type!='cpu':
++        raise TorchQVIDomainError('state batch must be CPU float64')
++    if x.ndim!=1 or x.numel()==0 or not bool(torch.isfinite(x).all()):
++        raise TorchQVIDomainError('nonempty finite vector of states required')
++    b=ScalarBoundary.apply(mu,sigma,rho,cost,reset,refractory)
++    if bool((torch.abs(x-b)<=1e-10*(1+torch.abs(b))).any()):
++        raise TorchQVIDomainError('free-boundary equality or unresolved nearby branch')
++    d=torch.sqrt(mu*mu+2*rho*sigma*sigma)
++    k=torch.where(mu>=0,2*rho/(d+mu),(d-mu)/(sigma*sigma))
++    q=torch.exp(-rho*refractory-k*(b-reset))
++    continue_value=torch.exp(k*(x-b))/k
++    stop_value=x-cost+q/k
++    value=torch.where(x<b,continue_value,stop_value)
++    fire_value=x-cost+torch.exp(-rho*refractory)*torch.exp(k*(reset-b))/k
++    # The two values must agree throughout the immediate-FIRE region.
++    adv=value-fire_value
++    if not bool(torch.isfinite(value).all() and torch.isfinite(adv).all()):
++        raise TorchQVIDomainError('nonfinite differentiable QVI feature')
++    if bool((adv<-1e-8*torch.maximum(value.abs(),torch.ones_like(value))).any()):
++        raise TorchQVIDomainError('QVI obstacle sign violated by numerical evaluation')
++    return value,adv,x-b
++
++
++class TrainableRegenerativeFeature(nn.Module):
++    """Small learnable scalar-QVI feature module, not a complete HCSN encoder."""
++
++    def __init__(self):
++        super().__init__()
++        self.drift=nn.Parameter(torch.tensor(.1,dtype=torch.float64))
++        self.log_sigma=nn.Parameter(torch.tensor(math.log(.6),dtype=torch.float64))
++        self.log_discount=nn.Parameter(torch.tensor(math.log(.25),dtype=torch.float64))
++        self.cost=nn.Parameter(torch.tensor(1.,dtype=torch.float64))
++        self.log_reset_gap=nn.Parameter(torch.tensor(math.log(.9),dtype=torch.float64))
++        self.log_refractory=nn.Parameter(torch.tensor(math.log(.3),dtype=torch.float64))
++
++    def forward(self,x:torch.Tensor) -> torch.Tensor:
++        sigma=torch.exp(self.log_sigma)
++        rho=torch.exp(self.log_discount)
++        gap=torch.exp(self.log_reset_gap)
++        tau=torch.exp(self.log_refractory)
++        j,adv,margin=scalar_value_features(
++            x,self.drift,sigma,rho,self.cost,self.cost-gap,tau)
++        return torch.stack((j,adv,margin),dim=-1)

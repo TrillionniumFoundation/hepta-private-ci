@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "mechanism": "task_mse_bp_v1",
+  "operation_id": "hcsn:bridge-fixture",
+  "binding": {
+    "scope_digest": "2e543a502d97d3080df6611378d8c52c36b93c71e7bf0d78b19a12451f142601",
+    "generation": 1,
+    "writer_epoch": 1,
+    "clock_epoch": "49f3c56ed1545326eb00bc3db6a1338baba9977b9b1b5783d80ed76ad45b2851",
+    "model_digest": "123bb675e1629322609e6c31062e645a8544dfd21d42ae9befe7828c8550a56f",
+    "profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28"
+  },
+  "intervals": [
+    {
+      "checkpoint_before": "8aea63cbc98e497812df0815ecdce7949dbd4a742ca0c0cb0240d94a7598f917",
+      "elapsed_micros": 100000,
+      "end_micros": 100017,
+      "forecast_horizon_micros": 500000,
+      "profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+      "schema_version": 1,
+      "start_micros": 17,
+      "substep_micros": 100000,
+      "substeps": 1
+    },
+    {
+      "checkpoint_before": "8aea63cbc98e497812df0815ecdce7949dbd4a742ca0c0cb0240d94a7598f917",
+      "elapsed_micros": 200000,
+      "end_micros": 300017,
+      "forecast_horizon_micros": 500000,
+      "profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+      "schema_version": 1,
+      "start_micros": 100017,
+      "substep_micros": 200000,
+      "substeps": 1
+    },
+    {
+      "checkpoint_before": "8aea63cbc98e497812df0815ecdce7949dbd4a742ca0c0cb0240d94a7598f917",
+      "elapsed_micros": 150000,
+      "end_micros": 450017,
+      "forecast_horizon_micros": 500000,
+      "profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+      "schema_version": 1,
+      "start_micros": 300017,
+      "substep_micros": 150000,
+      "substeps": 1
+    },
+    {
+      "checkpoint_before": "8aea63cbc98e497812df0815ecdce7949dbd4a742ca0c0cb0240d94a7598f917",
+      "elapsed_micros": 300000,
+      "end_micros": 750017,
+      "forecast_horizon_micros": 500000,
+      "profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+      "schema_version": 1,
+      "start_micros": 450017,
+      "substep_micros": 300000,
+      "substeps": 1
+    }
+  ],
+  "time_profile": {
+    "maximum_gap_micros": 1000000,
+    "forecast_horizon_micros": 500000,
+    "integration": {
+      "kind": "value_kernel"
+    }
+  },
+  "inputs": [
+    [
+      [
+        0.25,
+        -0.35
+      ],
+      [
+        0.45,
+        0.15
+      ],
+      [
+        -0.3,
+        0.5
+      ],
+      [
+        0.6,
+        -0.2
+      ]
+    ],
+    [
+      [
+        -0.15,
+        0.3
+      ],
+      [
+        0.2,
+        -0.4
+      ],
+      [
+        0.35,
+        -0.1
+      ],
+      [
+        0.25,
+        0.7
+      ]
+    ]
+  ],
+  "targets": [
+    [
+      0.4
+    ],
+    [
+      -0.2
+    ]
+  ],
+  "target_time_micros": 1250017,
+  "learning_rate": 0.02,
+  "optimizer_steps": 1,
+  "limits": {
+    "max_optimizer_steps": 1,
+    "max_batch": 2,
+    "max_intervals": 4,
+    "max_elements": 1000
+  },
+  "base_checkpoint": {
+    "path": "/workspace/scratch/c084ba2352cd/hcsn-bridge-evidence/attempt-01/base.pt",
+    "sha256": "123bb675e1629322609e6c31062e645a8544dfd21d42ae9befe7828c8550a56f"
+  }
+}

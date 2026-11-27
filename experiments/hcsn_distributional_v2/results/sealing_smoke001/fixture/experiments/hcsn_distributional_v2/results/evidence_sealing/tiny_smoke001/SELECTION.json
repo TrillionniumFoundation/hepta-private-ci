@@ -1,0 +1,22 @@
+{
+  "bundle_name": "tiny_smoke001",
+  "members": [
+    {
+      "bytes": 47,
+      "path": "payload/nested/updates.jsonl",
+      "sha256": "3a06d58160aed84d43e83bc2ce3343cf1d3499c4c1a5ed1a104b55b0cea69a68"
+    },
+    {
+      "bytes": 8192,
+      "path": "payload/weights.bin",
+      "sha256": "dc404a613fedaeb54034514bc6505f56b933caa5250299ba7d094377a51caa46"
+    }
+  ],
+  "schema": "hcsn-v2-staged-bundle-selection.v1",
+  "selection_rule": "Explicit complete evidence paths; no score filtering",
+  "source_sha256": {
+    "evidence_bundle.py": "5cb943759e5ffdc91cd4bf2f98f813bfe89ceb90b37cd5799183bab12700a085",
+    "seal_bundle.py": "432ec83121406b9c0e1012d76cf85777c66335f9b5a45ad731fa46436953a8fa",
+    "v1/archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab"
+  }
+}

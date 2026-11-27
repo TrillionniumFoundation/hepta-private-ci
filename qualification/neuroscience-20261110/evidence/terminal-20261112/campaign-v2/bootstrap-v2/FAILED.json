@@ -1,0 +1,37 @@
+{
+  "error": "[Errno 2] No such file or directory: '/home/qq/ctrl-real-study-20261112-1333/run-v1/COMPLETED.json'",
+  "error_type": "FileNotFoundError",
+  "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "stages": [
+    {
+      "elapsed_seconds": 3.640027699060738,
+      "exit_code": 0,
+      "log_sha256": "be911c27744ce0eb90ca4f66fd86553331a732adf6b20f7389b8f9ebc70f1c0f",
+      "stage": "source-fetch",
+      "time_ns": 1794470559460513131
+    },
+    {
+      "elapsed_seconds": 4.652526006102562,
+      "exit_code": 0,
+      "log_sha256": "392c356ee9781f65c5875aaf68e53b9654aa512833c36c417c9ea26a765165e9",
+      "stage": "source-checkout",
+      "time_ns": 1794470564113401773
+    },
+    {
+      "elapsed_seconds": 5.5536840099375695,
+      "exit_code": 0,
+      "log_sha256": "c3f411bcc03305052728f85b245271e121f330433e1b7a958e9c7095e778b114",
+      "stage": "native-acceptance",
+      "time_ns": 1794470569744617054
+    },
+    {
+      "elapsed_seconds": 2038.5219799471088,
+      "exit_code": 0,
+      "log_sha256": "29d996c5cb082375d0eb970c30626ef01a6379b2a3ec81c1ccadb57cfa071901",
+      "stage": "campaign",
+      "time_ns": 1794472608267105513
+    }
+  ],
+  "status": "FAILED",
+  "time_ns": 1794472608267403602
+}

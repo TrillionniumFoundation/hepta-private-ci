@@ -1,0 +1,26 @@
+{
+  "schema": "perc1.retained-preflight.v1",
+  "initial_default_test_run": {
+    "run": 49,
+    "passed": 44,
+    "skipped": 5,
+    "reason": "official checkpoint env binding omitted; fixed by explicit binding in full run"
+  },
+  "initial_dataset_sha256": "cf0c6c40debc1d64bac452548f9773c229623656f84b164c150773d70ad8d5a6",
+  "initial_dataset_status": "rejected by preflight: exact distractor capture bytes crossed split boundaries",
+  "repaired_dataset_sha256": "ad7e07138cefdb16e33a819f8aebef4402572acc22c51cefce0df19a9c54502b",
+  "repaired_cross_split_exact_duplicates": 0,
+  "code_head": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+  "native_probe_dataset": "initial dataset, one train capture only; no test-source efficacy inference",
+  "scientific_qualified": false,
+  "temporary_development_failure": {
+    "evidence_kind": "session command result",
+    "result": "Invalid: measured cost exceeded reservation; full failure retained",
+    "numeric_actual_cost": null,
+    "local_receipt_available": false,
+    "scope": "TemporaryDirectory development smoke cleaned on exit; failure exception preserved in session, not a durable receipt artifact"
+  },
+  "final_pilot_attempts": 1,
+  "final_pilot_failures": 0,
+  "final_pilot_source_commit": "5ab776748e5c31dc2dd59189fab6183a88fc418a"
+}

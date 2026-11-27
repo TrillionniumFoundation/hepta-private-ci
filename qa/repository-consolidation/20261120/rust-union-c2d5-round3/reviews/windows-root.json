@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.root-windows-test-repair-review.v1",
+  "observed_at": "2026-11-20T04:51:08.046663+00:00",
+  "base_head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "base_tree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+  "frozen_sha256": "6f377fbf547578f69220323d1412f4c4f5eb49befaf8c5cbe3e2c84cbbf20ac5",
+  "manifest_sha256": "0c65ac43cda81725223c311a92564768d4590d08840fca4bac5b9783d947b48f",
+  "patch_sha256": "467f3621fc257c814d828c5f512d6e36666a00de51d3d356459440a38289c65f",
+  "changed_paths": [
+    "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+    "codex-rs/hepta-infer-core/src/durable_incremental_tests.rs",
+    "codex-rs/hepta-infer-core/src/native_incremental_tests.rs",
+    "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+    "codex-rs/hepta-infer-core/src/native_usage_tests.rs",
+    "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs"
+  ],
+  "before_binding": "All six before Git blobs independently match exact published2b tree; every frozen artifact and afterimage hash verified.",
+  "full_source_inverse": "Independent git apply --reverse in a fresh copy reconstructs all six complete original byte streams. No frozen input was changed.",
+  "semantic_review": {
+    "real_bytes": "All21 live-owner observations now read the same held OS File; no unlock, second open, length-only assertion, cached record substitute or public qualification API.",
+    "cursor_and_errors": "Save actual nonzero stream cursor, perform rewind/read in inner Result, always attempt restoration afterward; restoration errors propagate. A failing initial position query returns without moving the cursor.",
+    "failure_injections": "Both original read-only descriptor replacements retained exactly; post-error observations use retained original locked/writable handles, so append failure and poisoned-owner assertions stay real.",
+    "path_fixture": "std::path::absolute resolves the same synthetic original path without requiring filesystem existence. set_file_name preserves its valid absolute prefix while making a different payload; relative.sock malformed case remains unchanged.",
+    "new_test": "One actual-file regression observes same-length bytes, success and real write-only read-error cursor restoration, independent contender refusal before/after and successful acquire only after owner drop.",
+    "visibility": "pub(super) helper is in durable_control cfg(test) module; all callers are durable_control descendants. Read/Seek/Write/File are imported by original parent and made visible through existing use super::*."
+  },
+  "preservation": {
+    "old_tests": 40,
+    "old_assertions": 177,
+    "old_verbatim_assertions": 167,
+    "old_observation_expression_only_changes": 10,
+    "new_test": 1,
+    "new_assertions": 9,
+    "production_files_or_dependencies_changed": 0
+  },
+  "decision": "ACCEPT_SIX_TEST_FILES_FOR_NEXT_DRAFT_REPAIR_SOURCE_COMPOSITION",
+  "limits": "This is an independent source review plus exact-byte checks, not a Rust AST/compiler/native proof. Native Windows/Linux/macOS tests and actual just fmt remain NOT_RUN; no required-CI success is implied.",
+  "remote_refs_changed": 0
+}

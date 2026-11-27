@@ -1,0 +1,22 @@
+{
+  "command": [
+    "just",
+    "fix",
+    "--offline",
+    "--locked",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-fleet",
+    "-p",
+    "codex-hepta-control-plane",
+    "-p",
+    "codex-utils-cargo-bin"
+  ],
+  "exit_code": 101,
+  "elapsed_seconds": 59.18025442399812,
+  "log_sha256": "0c1f573a66ef4e2d6340983185e91831aa4a4ea5ddda28ed7bf4068648aa7c4f",
+  "tail": "  cargo:warning=Allowed header: hmac.h\n  cargo:warning=Allowed header: is_awslc.h\n  cargo:warning=Allowed header: kdf.h\n  cargo:warning=Allowed header: mem.h\n  cargo:warning=Allowed header: nid.h\n  cargo:warning=Allowed header: poly1305.h\n  cargo:warning=Allowed header: rand.h\n  cargo:warning=Allowed header: rsa.h\n  cargo:warning=Allowed header: sha.h\n  cargo:warning=Blocked function: BIO_vsnprintf\n  cargo:warning=Blocked function: BN_print_fp\n  cargo:warning=Blocked function: CBS_parse_generalized_time\n  cargo:warning=Blocked function: CBS_parse_utc_time\n  cargo:warning=Blocked function: ERR_print_errors_fp\n  cargo:warning=Blocked function: OPENSSL_vasprintf\n  cargo:warning=Blocked function: RSA_print_fp\n  cargo:warning=Blocked function: armv8_disable_dit\n  cargo:warning=Blocked function: armv8_enable_dit\n  cargo:warning=Blocked type: FILE\n  cargo:warning=Blocked type: fpos_t\n  cargo:warning=Blocked type: tm\n  cargo:warning=Blocked type: va_list\n  cargo:warning=Blocked type: __builtin_va_list\n  cargo:warning=Blocked type: __gnuc_va_list\n  cargo:warning=Blocked type: __darwin_va_list\n  cargo:warning=Blocked type: __va_list_tag\n  cargo:warning=Blocked type: __off_t\n  cargo:warning=Blocked type: __off64_t\n  cargo:warning=Blocked type: __int64_t\n  cargo:warning=Blocked type: __darwin_off_t\n  cargo:warning=Blocked type: _IO_FILE\n  cargo:warning=Blocked type: _IO_marker\n  cargo:warning=Blocked type: _IO_codecvt\n  cargo:warning=Blocked type: _IO_wide_data\n  cargo:warning=Blocked type: _IO_lock_t\n  cargo:warning=Blocked type: __sFILE\n  cargo:warning=Blocked type: __sbuf\n  cargo:warning=Blocked type: __sFILEX\n  cargo:warning=Blocked constant: BN_DEC_FMT1\n  cargo:warning=Blocked constant: BN_HEX_FMT1\n  cargo:warning=Blocked constant: BN_HEX_FMT2\n\n  --- stderr\n  /home/agent/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.46.0/aws-lc/include/openssl/base.h:13:10: fatal error: 'stddef.h' file not found\n\n  thread 'main' (3343) panicked at /home/agent/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.46.0/builder/sys_bindgen.rs:191:10:\n  Unable to generate bindings.: ClangDiagnostic(\"/home/agent/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.46.0/aws-lc/include/openssl/base.h:13:10: fatal error: 'stddef.h' file not found\\n\")\n  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nwarning: build failed, waiting for other jobs to finish...\nerror: recipe `fix` failed on line 58 with exit code 101\n"
+}

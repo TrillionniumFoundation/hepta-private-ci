@@ -1,0 +1,24 @@
+{"completed_origins": 1, "slot": "config00/v5-agnews-seed17-gated/loss2_h8", "horizon": 8, "statuses": {"single_ray_v7": "certified", "joint_actual_old_v8": "rejected"}}
+{"completed_origins": 2, "slot": "config00/v5-agnews-seed29-gated/loss2_h8", "horizon": 8, "statuses": {"single_ray_v7": "certified", "joint_actual_old_v8": "rejected"}}
+{"completed_origins": 3, "slot": "config00/v5-agnews-seed7-gated/loss2_h8", "horizon": 8, "statuses": {"single_ray_v7": "certified", "joint_actual_old_v8": "certified"}}
+{"completed_origins": 4, "slot": "config00/v5-dbpedia-seed17-gated/loss2_h8", "horizon": 8, "statuses": {"single_ray_v7": "rejected", "joint_actual_old_v8": "certified"}}
+{"completed_origins": 5, "slot": "config00/v5-dbpedia-seed17-gated/myopic_h1", "horizon": 1, "statuses": {"single_ray_v7": "rejected", "joint_actual_old_v8": "certified"}}
+{"completed_origins": 6, "slot": "config00/v5-dbpedia-seed29-gated/future_field_h8", "horizon": 8, "statuses": {"single_ray_v7": "rejected", "joint_actual_old_v8": "certified"}}
+{"completed_origins": 7, "slot": "config00/v5-dbpedia-seed29-gated/loss2_h8", "horizon": 8, "statuses": {"single_ray_v7": "rejected", "joint_actual_old_v8": "certified"}}
+{"completed_origins": 8, "slot": "config00/v5-dbpedia-seed29-gated/myopic_h1", "horizon": 1, "statuses": {"single_ray_v7": "rejected", "joint_actual_old_v8": "certified"}}
+{"completed_origins": 9, "slot": "config00/v5-dbpedia-seed7-gated/future_field_h8", "horizon": 8, "statuses": {"single_ray_v7": "rejected", "joint_actual_old_v8": "certified"}}
+Traceback (most recent call last):
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_stop_run_v8.py", line 246, in <module>
+    result = run(**vars(parser.parse_args()))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_stop_run_v8.py", line 219, in run
+    result = run_origin(row, origins, planning_packages, cache, output, ordinal, make_proposal, functions)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_stop_run_v8.py", line 156, in run_origin
+    write_json(target/"case.json", case)
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_stop_run_v8.py", line 46, in write_json
+    Path(path).write_bytes(gzip.compress(raw, mtime=0) if compressed else raw)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1036, in write_bytes
+    with self.open(mode='wb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device

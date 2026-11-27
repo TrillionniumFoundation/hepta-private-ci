@@ -1,0 +1,100 @@
+{
+  "schema": "retained-firstcycle-independent-math-v1",
+  "status": "HOLD_NO_GO",
+  "all_closed": false,
+  "prospective_gate": false,
+  "retained_source_head": "49db2c4ae2b10077d261896979f8df9e53f69822",
+  "persisted_source_commit": "14cefc8404a057f897c371619c50d780fa185942",
+  "retained_runs": 4,
+  "retained_query_rows": 24,
+  "unique_continuum_reference_cases": 12,
+  "oracle_precisions": [
+    80,
+    120
+  ],
+  "fixture_descriptors": {
+    "new-near800-atol14-001": {
+      "profile": "near800",
+      "reset": 0.32,
+      "rtol": 1e-12,
+      "atol": 1e-14,
+      "retained_wall_seconds": 9.753974707999987
+    },
+    "new-near800-atol16-001": {
+      "profile": "near800",
+      "reset": 0.32,
+      "rtol": 1e-12,
+      "atol": 1e-16,
+      "retained_wall_seconds": 10.215767466999978
+    },
+    "new-near800-atol18-001": {
+      "profile": "near800",
+      "reset": 0.32,
+      "rtol": 1e-12,
+      "atol": 1e-18,
+      "retained_wall_seconds": 14.129027621999967
+    },
+    "new-near960-atol18-001": {
+      "profile": "near960",
+      "reset": 0.32725,
+      "rtol": 1e-12,
+      "atol": 1e-18,
+      "retained_wall_seconds": 11.550189326000009
+    }
+  },
+  "new_model_calls": 0,
+  "new_dde_runs": 0,
+  "new_spatial_rollouts": 0,
+  "new_training_calls": 0,
+  "mesh_changes": 0,
+  "source_sha256_before": {
+    "/workspace/scratch/c06d659c1e72/retained-firstcycle/qualification/hcsn_firstcycle_review/audit.py": "a53be799bb3081379650d2a2042d3717a218810b98e72a8093a7845d4b7d4b90",
+    "/workspace/scratch/c06d659c1e72/retained-firstcycle/qualification/hcsn_firstcycle_review/analytic_reference.py": "8bfe5478b29a651b0b3ba300f2e143ff6650dc5fdfdc75d40a780b7dfafeb8f2"
+  },
+  "source_sha256_after": {
+    "/workspace/scratch/c06d659c1e72/retained-firstcycle/qualification/hcsn_firstcycle_review/audit.py": "a53be799bb3081379650d2a2042d3717a218810b98e72a8093a7845d4b7d4b90",
+    "/workspace/scratch/c06d659c1e72/retained-firstcycle/qualification/hcsn_firstcycle_review/analytic_reference.py": "8bfe5478b29a651b0b3ba300f2e143ff6650dc5fdfdc75d40a780b7dfafeb8f2"
+  },
+  "retained_execution_sources": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/controlled_core.py": "07c360508a8f5a30f5329856e6c19a36db6222854490eb401cfad12f15c79ec5",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/positive_phase.py": "771f1c310297f49d14880cd6b220699228fc78c545d7e71b3c06324fa32c384a",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/profile.py": "dd0b77c7535e1ff4ac4ff7e14a13e036285679c96446407defe6fbfecf0a4abb",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/run.py": "6d361487b8ea2ec857f79ecc12668573549a9bf4246fd781ae5e61d46c4d3432",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "retained_input_sha256": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/evidence/new-near800-atol14-001/RAW.npz": "8770697d4f0a533319b03286f59cf27a964332e1982c5074891d991e26f6f722",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/evidence/new-near800-atol14-001/SUMMARY.json": "b7b0071486853758465ccb9811897a7445ec4ae339c4969ff83385f8a527e550",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/evidence/new-near800-atol16-001/RAW.npz": "fea8c54eae15065d7e959e64a90fef7d64be510fd9b905b0fd4b867dfb4e3fa2",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/evidence/new-near800-atol16-001/SUMMARY.json": "0e0ee275c5f547e2d0717cd2bff09b00c5d42107cde16a78c4304e6ce7674811",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/evidence/new-near800-atol18-001/RAW.npz": "8c9daf9d14eef1eff60906a252ca0aa9632b267665f2f4edce10b27c4a5ffaba",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/evidence/new-near800-atol18-001/SUMMARY.json": "e8360140a37c73203b2e343fa7f9de75d3539069aeeb2bc77c91039049864065",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/evidence/new-near960-atol18-001/RAW.npz": "6afdbbcaf7ae4a76676e6abc3b2d19ba170b4075f685a3e2f8dc0ebbca954705",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/evidence/new-near960-atol18-001/SUMMARY.json": "1d9db5e8592a8cb192fcd9297eb9475e425c84426873a6a4d4858565a6103625"
+  },
+  "retained_inputs_unchanged": true,
+  "output_sha256": {
+    "REFERENCE.json": "735ef72df174eb211a28349460ee6a9938fd01a1be4bc0303649e84d866462ac",
+    "ROWS.json": "6ac584ce1f689dd972ac222d17fd7f9d046d62bf0ad5e407d895189aa78917e9"
+  },
+  "wall_seconds": 60.04726238699914,
+  "cpu_seconds": 59.748318994,
+  "peak_rss_kib_linux": 57264,
+  "versions": {
+    "python": "3.12.14",
+    "mpmath": "1.3.0",
+    "numpy": "2.3.5"
+  },
+  "scope": "Independent constant-physics continuum first-cycle M/H/R/A and remaining-phase moment, compared to already-retained synthetic fixture states. No new trajectory.",
+  "limits": [
+    "post-failure exposed development diagnostic; no new pass gate",
+    "fixed phase U[0,.025], two resets, T<=.16<delay, fixed physics only",
+    "no relative qualification below unchanged1e-12 reference floor",
+    "total R/Z/A precision cannot establish rare-component precision",
+    "80/120-digit numerical agreement is not an interval proof",
+    "no long-horizon delayed renewal, whole old-state filtering or gradients"
+  ]
+}

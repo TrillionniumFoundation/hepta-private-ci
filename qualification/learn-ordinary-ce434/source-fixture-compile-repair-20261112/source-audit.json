@@ -1,0 +1,721 @@
+{
+  "schema": "hepta.learn.c7.source-fixture-compile-repair.v1",
+  "source_parent": "c7f5d1950713e592a120807a06b700cd229c35b0",
+  "parent_tree": "2f6faa8fc5a3bf2a8e923748a45ec8d56a4a3d1b",
+  "commit": "8f15799bf0d38752567bd56bbd8a751dad051229",
+  "tree": "c97bc56bf48ecf161a7fad2566161ee391f91ba4",
+  "branch": "codex/learn-source-fixture-compile-repair-ce434-20261112-v1",
+  "scope": "Fix only the assigned original Source mechanism-test compiler errors; preserve production privacy, complete object comparisons, original tests, caller sets and protected records.",
+  "actual_evidence": {
+    "initial_driver_log_blob": "1aa4a41e0e0fb71589382982039fff091111b46f",
+    "terminal_execution_log_blob": "f387d6c2f9a5b525b7a542e11145543c83dd6abc",
+    "terminal_execution_log_full_readback": {
+      "sha": "f387d6c2f9a5b525b7a542e11145543c83dd6abc",
+      "bytes": 69516
+    },
+    "assigned_diagnostics": [
+      {
+        "code": "E0659",
+        "message": "`assert_ne` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 41
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 42
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 43
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 44
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 46
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 47
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 48
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 53
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 146
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 148
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 165
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 177
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 179
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 188
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 205
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 206
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 233
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_ne` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 235
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_ne` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 236
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 237
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 247
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_eq` is ambiguous",
+        "path": "hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "line": 248
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_ne` is ambiguous",
+        "path": "hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+        "line": 308
+      },
+      {
+        "code": "E0659",
+        "message": "`assert_ne` is ambiguous",
+        "path": "hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+        "line": 309
+      },
+      {
+        "code": "E0603",
+        "message": "module `material` is private",
+        "path": "hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+        "line": 31
+      },
+      {
+        "code": "E0277",
+        "message": "can't compare `codex_hepta_learning_artifacts::CellCompatibilityBundleV1` with `Box<codex_hepta_learning_artifacts::CellCompatibilityBundleV1>`",
+        "path": "hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+        "line": 65
+      }
+    ],
+    "scope_note": "The 26 listed compiler diagnostics are this child’s assigned subset. This is not a claim that the complete C7 native run had only 26 errors.",
+    "parent_reported_run": {
+      "native_exit": 101,
+      "native_seconds": 358.274,
+      "compiler_errors": 36,
+      "tests": 0,
+      "source_methods": 423,
+      "source_passed": true,
+      "source_clean": true
+    },
+    "post_change_execution": "not run"
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+      "before_blob": "fd7bab02cd7243f6c9b6b97beba5ad19087cbfcc",
+      "after_blob": "824d1e8396a6e5b8a240fb415a4083bd2d31796b",
+      "after_bytes": 10578,
+      "exact_edits": [
+        {
+          "before": "use std::time::Duration;\n",
+          "after": "use std::time::Duration;\n\nuse pretty_assertions::assert_eq;\nuse pretty_assertions::assert_ne;\n"
+        }
+      ],
+      "full_api_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "before_blob": "5c601c7d327453dd8ad7f4be7a60dc29e75b73e4",
+      "after_blob": "f1d8a67715bdc4a7208e1f84564a2edfbf1b242f",
+      "after_bytes": 21845,
+      "exact_edits": [
+        {
+          "before": "use crate::learning_iteration_evidence_client::material::bootstrap_ports as material_ports;",
+          "after": "use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;"
+        },
+        {
+          "before": "use pretty_assertions::assert_eq;\n",
+          "after": "use pretty_assertions::assert_eq;\nuse pretty_assertions::assert_ne;\n"
+        }
+      ],
+      "full_api_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "before_blob": "d18b055b41b57a8a3b93924b1209f3d7ebf0239e",
+      "after_blob": "7bec702b0bb67808cacc33f186fdeb673f4742ba",
+      "after_bytes": 22986,
+      "exact_edits": [
+        {
+          "before": "assert_eq!(material.bundle(), candidate);",
+          "after": "assert_eq!(material.bundle(), candidate.as_ref());"
+        }
+      ],
+      "full_api_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "before_blob": "2d056831d85260c201a638e57ca1ed63731d3fb5",
+      "after_blob": "a951a3ffee5928c3ccee848033b0d071603d5798",
+      "after_bytes": 14936,
+      "exact_edits": [
+        {
+          "before": "#[cfg(test)]\npub(crate) use material::retained_version_dataset_fixture;",
+          "after": "#[cfg(test)]\npub(crate) use material::bootstrap_ports as original_material_bootstrap_test_ports;\n#[cfg(test)]\npub(crate) use material::retained_version_dataset_fixture;"
+        }
+      ],
+      "full_api_readback_equal": true
+    }
+  ],
+  "complete_git_diff": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "sha": "7bec702b0bb67808cacc33f186fdeb673f4742ba",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "patch": "@@ -62,7 +62,7 @@ async fn original_candidate_material_reconstructs_actual_pages_and_cold_original\n         training.clone(),\n     )?;\n     let material = client.readback().await?;\n-    assert_eq!(material.bundle(), candidate);\n+    assert_eq!(material.bundle(), candidate.as_ref());\n     assert_eq!(material.model().components(), &candidate.components);\n     assert_eq!(\n         Digest32::of_bytes(material.heads()),"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+      "sha": "824d1e8396a6e5b8a240fb415a4083bd2d31796b",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 0,
+      "patch": "@@ -6,6 +6,9 @@ use std::sync::atomic::AtomicUsize;\n use std::sync::atomic::Ordering;\n use std::time::Duration;\n \n+use pretty_assertions::assert_eq;\n+use pretty_assertions::assert_ne;\n+\n use crate::OriginalCellQ24TrainingStageErrorV1 as StageError;\n \n use super::*;"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "sha": "f1d8a67715bdc4a7208e1f84564a2edfbf1b242f",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 1,
+      "patch": "@@ -28,12 +28,13 @@ use crate::OriginalCircuitSelectionReadbackConnectionV1;\n use crate::OriginalCircuitSelectionReceiptConfigV1;\n use crate::OriginalCircuitSelectionReceiptOwnerV1;\n use crate::circuit_feature_current::original_learning_read_fixture as publication;\n-use crate::learning_iteration_evidence_client::material::bootstrap_ports as material_ports;\n+use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;\n use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as trainer_ports;\n use crate::learning_iteration_evidence_client::original_readback_test_ports as selector_ports;\n use codex_hepta_contracts::HostAuthorityPeerChannel;\n use codex_hepta_types::FixedQ32;\n use pretty_assertions::assert_eq;\n+use pretty_assertions::assert_ne;\n \n pub(super) type Trainer =\n     OriginalCellQ24TrainingBootstrapOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "sha": "a951a3ffee5928c3ccee848033b0d071603d5798",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 0,
+      "patch": "@@ -312,6 +312,8 @@ mod tests;\n #[cfg(test)]\n pub(crate) use tests::fixture_original_receipt_client;\n \n+#[cfg(test)]\n+pub(crate) use material::bootstrap_ports as original_material_bootstrap_test_ports;\n #[cfg(test)]\n pub(crate) use material::retained_version_dataset_fixture;\n #[cfg(test)]"
+    }
+  ],
+  "reasoning": {
+    "macros": "Explicit pretty_assertions macro imports resolve the original glob/prelude ambiguity without changing any assertion expression in these two files.",
+    "candidate": "candidate is the borrowed Box<CellCompatibilityBundleV1> from the original Training observation. candidate.as_ref() supplies the complete borrowed CellCompatibilityBundleV1 to the existing full-object comparison; no digest or subset comparison replaces it.",
+    "material": "Reuse the existing cfg(test), pub(crate) material::bootstrap_ports export. A second cfg(test), pub(crate) alias in its parent module makes that existing test adapter reachable by DeepFixture without opening the production material module.",
+    "production_visibility": "The original `mod material;` declaration is byte-for-byte unchanged. Removing exactly the new two-line cfg(test) alias restores the complete original evidence-client file byte-for-byte.",
+    "authority": "No production owner, transport, signer, grant, key, policy, threshold, timeout, request limit or positive-stage gate is changed."
+  },
+  "guard_review": {
+    "manifest_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+    "manifest_full_byte_readback": {
+      "sha": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+      "bytes": 1537190
+    },
+    "manifest_unchanged": true,
+    "boundary_records": 710,
+    "protected_records": 489,
+    "protected_path_multiplicity_preserved": true,
+    "relevant_complete_protected_records": [
+      {
+        "ordinal_within_path": 0,
+        "raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\"\nrequired = [\"Mutex<Option<Channel>>\", \"same_uid\", \"peer.pid == std::process::id()\", \"initial.owners.evidence_trust_digest != verifier.trust_digest()\", \"initial.request.envelope.objective_digest != verifier.objective_digest()\", \"LearningIterationStageV1::Proposal =>\", \"SystemTime::now()\", \"mod command_evidence;\", \"command: Option<Mutex<Option<command_evidence::OriginalCommandEvidenceV1>>>\"]\nforbidden = [\"SigningKey\", \"UnixStream::connect\", \"File::open\", \"initialize_host_authority\", \"create_protected\", \"AllowVerifier\", \"permit_all\"]\nrequired_function_order = [\n  { function = \"fn from_owner_stream(\", sequence = [\"LearningIterationCoordinatorV1::new(\", \"let same_uid\", \"expected.snapshot() != &initial\", \"initial.owners.evidence_trust_digest != verifier.trust_digest()\", \"RootObservationStream::from_stream_for_uid(\", \"channel: Mutex::new(Some(Channel\"] },\n  { function = \"fn readback(\", sequence = [\"let stage = receipt.observation.stage()\", \"snapshot.request != self.initial.request\", \"receipt.actor_id != self.actor_id\", \"LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?\", \"learning_iteration_receipt_signing_bytes_v1(receipt)?\", \"if let Some(command) = &self.command\", \".read_original_command(command, receipt, &payload, role)\", \".await;\", \"let mut channel = self\", \".take()\", \"request_id.checked_add(1)\", \"wire::Request {\", \".read(&request)\", \"response.schema != 1\", \"response.operation != request.operation\", \"response.request_id != request_id\", \"response.binding != request.binding\", \"response.snapshot_head != request.snapshot_head\", \"response.receipt_digest != request.receipt_digest\", \"response.evidence.decode()?\", \"SystemTime::now()\", \".verify(role, &signature, &payload, now)\", \"verified.principal().principal_id != self.actor_id\", \"check_lifetime(\", \"= Some(channel)\", \"Ok(signature)\"] },\n]\n\n",
+        "raw_git_blob": "645f8c7a5205825ea4b3b97dd06782a8e320165e"
+      },
+      {
+        "ordinal_within_path": 1,
+        "raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\"\nrequired = [\"pub(crate) use training_command::OriginalCellQ24ModelReadV1;\", \"pub(crate) use training_command::OriginalCellQ24ModelReadCompletionV1;\"]\nforbidden = [\"pub use read_operation::OriginalCellQ24ModelRead\", \"pub mod read_operation\", \"pub use training_command::OriginalCellQ24ModelRead\", \"pub use learning_iteration_evidence_client::OriginalCellQ24ModelRead\", \"pub use model_command::OriginalCellQ24ModelRead\"]\nrequired_function_order = []\nrequired_order = []\n\n",
+        "raw_git_blob": "abe2e093de218083fb1e46267b7160cb9dd926e6"
+      }
+    ],
+    "relevant_complete_boundary_records": [
+      {
+        "raw": "[[boundary]]\nid = \"learning_evidence_original_owner_constructor\"\nsymbol = \"LearningIterationEvidenceClientV1::from_owner_stream\"\ndefinition_path = \"codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\"\ndefinition_markers = [\"pub fn from_owner_stream(\", \"let same_uid\", \"expected.snapshot() != &initial\", \"RootObservationStream::from_stream_for_uid(\"]\nproduct_callers = []\ncaller_markers = []\n\n",
+        "raw_git_blob": "820b54046ff76a61e8908d4726670e4778218c91"
+      },
+      {
+        "raw": "[[boundary]]\nid = \"original_pinned_stream_explicit_uid\"\nsymbol = \"RootObservationStream::from_stream_for_uid\"\nreceiver_type = \"RootObservationStream\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_observation_stream.rs\"\ndefinition_markers = [\"pub(super) fn from_stream_for_uid(\", \"actual.uid() != uid\", \"check_lifetime(root.get_ref())?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\",\"codex-rs/hepta-agentd/src/cell_q24_material_source.rs\",\"codex-rs/hepta-agentd/src/cell_q24_material_source_connection.rs\"]\ncaller_markers = []\n\n",
+        "raw_git_blob": "94d4478fc5882bf601ed8e5fc9c33ed72fa3749e"
+      },
+      {
+        "raw": "[[boundary]]\nid = \"learning_evidence_original_owner_readback\"\nsymbol = \"LearningIterationEvidenceClientV1::readback\"\nreceiver_type = \"LearningIterationEvidenceClientV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\"\ndefinition_markers = [\"pub async fn readback(\", \"learning_iteration_receipt_signing_bytes_v1(receipt)?\", \".verify(role, &signature, &payload, now)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs\", \"codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_operation.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_source.rs\", \"codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs\"]\ncaller_markers = []\n\n",
+        "raw_git_blob": "a5db823bd01c41a482119a273244b9cfb3d79c9e"
+      }
+    ],
+    "marker_checks": [
+      {
+        "record_index": 0,
+        "required_count": 9,
+        "missing_required": [],
+        "forbidden_count": 7,
+        "new_forbidden_hits": []
+      },
+      {
+        "record_index": 1,
+        "required_count": 2,
+        "missing_required": [],
+        "forbidden_count": 5,
+        "new_forbidden_hits": []
+      }
+    ],
+    "function_order_preservation": "The only evidence-client change is an additional cfg(test) use item after all production functions. Entire production function bytes, order guards and existing protected required/forbidden strings are unchanged.",
+    "fixture_records": "None of the three changed fixture paths occurs anywhere in the complete original C7 CALLERS.toml; this child does not add them as production callers.",
+    "caller_inventory": "No production call is added. The added test-only use item has the exact cfg(test) shape handled by the original verifier’s _strip_cfg_test_items / semicolon-terminated _rust_item_end.",
+    "verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "required_manifest_or_qa_edits": []
+  },
+  "qa_review": {
+    "scope": "All 63 .py blobs under the fixed C7 qa/b4-no-bypass tree were read completely and checked against their Git blob hashes.",
+    "tree": "fc282e5038b51f24ec1e1f5ef677b4b174083a41",
+    "source_pins": [
+      {
+        "path": "qa/b4-no-bypass/rust_source_marker_support.py",
+        "sha": "4234ebafeb7c0d7a4fc6c671cff339f853411f4c"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+        "sha": "3a0ebd3b5359ed95c8ab4a70e913919b8b77b891"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_cell_generation_physical_current_source_closure.py",
+        "sha": "0e49d7bb154f4bf740870437f18e11ff554d33b3"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+        "sha": "5e700c20d3744562bcbf224605bbc6a2743fec69"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+        "sha": "904bb3b8bce261590fc86c26bab5ffd54cbd84db"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+        "sha": "2572859b4f67298235d6573851d0ca6c6ffc5632"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+        "sha": "ab123571779b1e78e3b02f85a3b2f3608c9b5e39"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+        "sha": "b94fb21327b38015cd3bc7a973a100916397ba3d"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+        "sha": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+        "sha": "8d607e733cf950165475cd80b9e3a080b13ed949"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_artifact_head_source_closure.py",
+        "sha": "eeaf7a43ec7d5e90560ca5489bc281cce7eaf881"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+        "sha": "1bc8feef36a00badf2606f22f804001f6c4f11c6"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_candidate_operation_source_closure.py",
+        "sha": "cfd8f724d44bc762c6e47ffe4380ab51485a2374"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "sha": "f3430124c1aca3cbcfb6521daf9d87543cac6675"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+        "sha": "58b6a0774f868c9cb5f19db4bf5cb4d5b0001a40"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "sha": "74a8fb799883b344a9f2fc9d271b696e6d2210ab"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_operation_source_closure.py",
+        "sha": "d35214f712441dda4caeacef3cfe0decbe231582"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+        "sha": "83ebe8fdc7b8646c7e98301e8d89100552181bd6"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+        "sha": "3b446cfc03d872049c492a2ec6fdb11cdebaf5e3"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+        "sha": "c1b35606604c81a4edf59ec41d04ae2839a02957"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_transfer_source_closure.py",
+        "sha": "608d857f599f5905a9f660fcdaae333175a66cb0"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_execution_evidence_source_closure.py",
+        "sha": "8570acac6e5e05410d1f9bec844e8125d900ea44"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_execution_owner_source_closure.py",
+        "sha": "25c6a315594e997b82cdf36e033f637f1513ebb2"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_holdout_current_source_closure.py",
+        "sha": "ad51db7191f85503e3a4328e55b34fe42f79fcf7"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+        "sha": "ba65f8cebf39277681b28812ea0a34c42c37ea8e"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+        "sha": "64c3b5db2071a83ba03cb3664eda595c73ce3e2c"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
+        "sha": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_owner_source_closure.py",
+        "sha": "1f1a92602ab82b3b21786f1af8e6da8c11749d5e"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_source_peer_source_closure.py",
+        "sha": "34a01df7324eb8b6d51d2b4a18cb00a36ae297c9"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_continuation_source_closure.py",
+        "sha": "0fc0bb7f9c0443920cbbce8cad2e9566699e9054"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+        "sha": "352e30aa82a15ac0d88c9f5aee399638224f83de"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+        "sha": "fee138b3322c52d4df9639a116eb67b0f210dc36"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "sha": "15d633eae74b889609d07844732bdda7f50b7c6d"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "sha": "08a785b5c94374e3d2f5f6fb45d5535095481633"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+        "sha": "2e3e99ad03d1d5e630694faca0906446e0d110c0"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+        "sha": "548d0bfbdc17f498f515c258903b721fd2f525e4"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+        "sha": "8474d6d18a5b374bcd2810aa0b8ebc9e3264e05c"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+        "sha": "a80bca9a11c81a4d9057086acbb4689ebde45520"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+        "sha": "c5a25db4eea151de3d158d123db0d15d583ad597"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_readonly_ready_source_closure.py",
+        "sha": "d11dab3c405e88d0c34e5351003802ed5efa8796"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_retention_admission_source_closure.py",
+        "sha": "ac2e33ebf4eed11a899c1dce96dbbfb0079722f2"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "sha": "fa7bdda7fad139ce72137f2e32c7b74782dbf4c9"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_source_operation_source_closure.py",
+        "sha": "648601003eb46a404940fbf498d799263040a3b6"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+        "sha": "c50d3afdcf55df291298cf18775a5278843ff94e"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "sha": "1a712f18b636154edce08fb07e30148dbfe8b6be"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+        "sha": "09f83ec2a0fa55b07918f11309f2ec14c6cee747"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+        "sha": "c37513f5fe5298ecc4618b3a819234e7d7f57c42"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+        "sha": "424a41420f1ac9b3c8a4d827862daaba5eb33866"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+        "sha": "835953d9e8b670d6713a6f2728e716182acc542d"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_positive_circuit_next_use_source_closure.py",
+        "sha": "d3a91ad569289d7d33371e44f8d5fc54953ecd8b"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_positive_model_version_source_closure.py",
+        "sha": "407b721f88d864fb80fd39810469710a57a5ec4d"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_dataset_source_closure.py",
+        "sha": "75f50ba377a9e67154ee5043cd20c6fdeca0ce67"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+        "sha": "1de53089884500596231d0b92fd46e56ba4469b8"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+        "sha": "ad0586ddadce2566d705ae0f57011dc672ec2d6b"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+        "sha": "a22b0644aaf5ed7594b44dac03770d49d8ac6eb2"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+        "sha": "577398a11b3568d52fecee3f9453e31acd40fa51"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+        "sha": "fc8207a8cb6d4bd04fb6587c881560437800f966"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+        "sha": "946afd64457e848e2674519f61b35fef6ce5af31"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+        "sha": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+        "sha": "2d0f4bd705fb0159549d9bb1f13d42d3db74afc4"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+        "sha": "050bd227cc6ef7c9cf9abdbb04557c330aca82c4"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+        "sha": "0cbecba3be2293586637938a5bd3ddd825023c68"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+        "sha": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593"
+      }
+    ],
+    "path_reference_hits": [
+      {
+        "path": "b4-no-bypass/test_original_material_source_peer_source_closure.py",
+        "line": 96,
+        "text": "        expected = (AGENT + \"learning_iteration_evidence_client.rs\", CLIENT, AGENT + \"cell_q24_material_source_connection.rs\")"
+      },
+      {
+        "path": "b4-no-bypass/test_original_readonly_ready_source_closure.py",
+        "line": 208,
+        "text": "        path = AGENT + \"learning_iteration_evidence_client.rs\""
+      },
+      {
+        "path": "b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+        "line": 57,
+        "text": "        AGENT + \"learning_iteration_evidence_client.rs\","
+      },
+      {
+        "path": "b4-no-bypass/test_root_learning_scope_source_closure.py",
+        "line": 121,
+        "text": "        self.assertEqual(row.product_callers, (AGENT + \"learning_iteration_evidence_client.rs\", AGENT + \"cell_q24_material_source.rs\", AGENT + \"cell_q24_material_source_connection.rs\"))"
+      }
+    ],
+    "new_alias_or_changed_assertion_literal_mentions": [],
+    "limitations": "This is narrow source/marker review, not execution of Python tests or the complete typed caller scan. Existing protected rows and QA files are unchanged."
+  },
+  "test_preservation": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+      "tests_before": [
+        "source_operation_candidate_and_model_keep_two_reads_per_lane",
+        "source_operation_after_read_withdrawal_fences_completed_native_result",
+        "source_operation_cancelled_waiter_keeps_lane_then_fences",
+        "source_operation_rejects_equal_capture_from_different_arc",
+        "source_operation_abandoned_finish_preserves_real_native_effect_and_fences"
+      ],
+      "tests_after": [
+        "source_operation_candidate_and_model_keep_two_reads_per_lane",
+        "source_operation_after_read_withdrawal_fences_completed_native_result",
+        "source_operation_cancelled_waiter_keeps_lane_then_fences",
+        "source_operation_rejects_equal_capture_from_different_arc",
+        "source_operation_abandoned_finish_preserves_real_native_effect_and_fences"
+      ],
+      "assert_eq_count": [
+        19,
+        19
+      ],
+      "assert_ne_count": [
+        3,
+        3
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "tests_before": [],
+      "tests_after": [],
+      "assert_eq_count": [
+        9,
+        9
+      ],
+      "assert_ne_count": [
+        2,
+        2
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "tests_before": [
+        "original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+        "original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+        "original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel"
+      ],
+      "tests_after": [
+        "original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+        "original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+        "original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel"
+      ],
+      "assert_eq_count": [
+        46,
+        46
+      ],
+      "assert_ne_count": [
+        2,
+        2
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "tests_before": [],
+      "tests_after": [],
+      "assert_eq_count": [
+        0,
+        0
+      ],
+      "assert_ne_count": [
+        0,
+        0
+      ]
+    }
+  ],
+  "publication_validation": {
+    "four_postimage_blobs_full_api_readback": true,
+    "unique_exact_edits": true,
+    "source_file_count": 4,
+    "independent_bottom_up_git_tree_hashes": {
+      "src": "0932f6fdeae776a49d6cf497a4cde9ed46f9bdcd",
+      "agentd": "c7d914e9873b278e3debdaf6eb33172e4ccc777b",
+      "codex": "3eebaa7e2e43c7d035b2670c7407b33e28e450a9",
+      "root": "c97bc56bf48ecf161a7fad2566161ee391f91ba4"
+    },
+    "canonical_parent_and_tree_verified": true,
+    "canonical_compare_exact_four_paths": true
+  },
+  "not_run": {
+    "h": true,
+    "python_source_tests": true,
+    "rust_build": true,
+    "rust_tests": true,
+    "rustfmt": true,
+    "full_caller": true
+  },
+  "ordinary_acceptance": 0
+}

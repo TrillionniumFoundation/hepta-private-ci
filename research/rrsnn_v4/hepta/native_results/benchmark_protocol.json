@@ -1,0 +1,24 @@
+{
+  "schema": "rrsnn.native-owner-component-protocol.v1",
+  "counts": [
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "warmup_rounds": 4,
+  "measured_rounds": 32,
+  "affinity": [
+    8
+  ],
+  "unit": "one real upstream NeuronRuntime, SparseJournal and FileAnchorWitnessStore",
+  "queue": "one bounded FIFO with capacity equal to owner count; no worker concurrency",
+  "model": "fixed executed signed-Q24 8x22 matrix projection; not a trained RR candidate",
+  "output": "no external effect destination; DENY_ALL authority",
+  "primary_latency": "wall time for entire owner tick including witness fsync",
+  "secondary_latency": "full batch including FIFO construction; queue age separately",
+  "p99_scope": "descriptive quantile of this run; 32 full-batch samples only",
+  "resource_state": "cgroup before and after each fresh process; unexplained/OOM/limit events retain invalid flag",
+  "production_cells": false,
+  "dot_attested": false
+}

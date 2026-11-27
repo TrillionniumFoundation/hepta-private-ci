@@ -56,13 +56,16 @@ impl AnchorWitnessStore for Witness {
     }
 }
 
-struct Model;
+struct Model {
+    calls: usize,
+}
 
 impl NeuronModelPort for Model {
     fn execute(
         &mut self,
         request: &NeuronModelRequestV1,
     ) -> Result<NeuronModelOutputV1, NeuronModelError> {
+        self.calls += 1;
         let drive_q24 = vec![Q, Q / 2, 0, 0, 0];
         let prediction_q24 = vec![0; 5];
         let runtime_receipt = LocalModelRuntimeReceiptV1 {
@@ -197,7 +200,7 @@ fn tick() -> NeuronTickInputV1 {
 }
 
 #[test]
-fn named_product_caller_runs_through_runtime_without_extra_authority() {
+fn named_product_caller_cannot_authorize_legacy_tick() {
     let root = tempfile::tempdir().expect("tempdir");
     let file = checked(
         OpenOptions::new()
@@ -215,9 +218,12 @@ fn named_product_caller_runs_through_runtime_without_extra_authority() {
         config(&native),
         Witness::default(),
     ));
-    let output = checked(run_neuron_tick_v1(&mut runtime, &mut Model, tick()));
-    assert_eq!(output.tick.sparsity_ppm, 200_000);
-    assert!(!output.tick.abstain);
-    assert!(!output.signal.authority.grants_any());
-    assert!(checked(runtime.current_anchor()).is_some());
+    let mut model = Model { calls: 0 };
+    let rejected = run_neuron_tick_v1(&mut runtime, &mut model, tick());
+    assert_eq!(
+        rejected.err(),
+        Some(NeuronRuntimeError::MissingFinalUseAuthorization)
+    );
+    assert_eq!(model.calls, 0);
+    assert!(checked(runtime.current_anchor()).is_none());
 }

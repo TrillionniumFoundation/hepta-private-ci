@@ -1,0 +1,182 @@
+{
+  "actual_dispatch_and_training": {
+    "asset_part_count": 10,
+    "asset_part_put_attempts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "asset_read_observation": "parent_read_failed / FileNotFoundError",
+    "asset_upload_original_status": "UNKNOWN",
+    "authoritative_engine_registration_rows_for_exact_request": 0,
+    "dispatch_requested": false,
+    "ever_claimed_fits": 0,
+    "finalizer_armed": false,
+    "finalizer_bound": false,
+    "fit_counts": {
+      "RESERVED": 20,
+      "UNSTARTED": 140
+    },
+    "formal_completed_fits": 0,
+    "formal_fits_started": 0,
+    "formal_task_optimizer_updates": 0,
+    "native_admission_passed": true,
+    "native_owner_cancelled": false,
+    "native_owner_exit_code": 1,
+    "native_owner_terminal_state": "failed",
+    "native_owner_timed_out": false,
+    "native_terminal_complete_durable_and_witnessed": true,
+    "registered_fits": 160,
+    "registered_optimizer_updates": 64000,
+    "updates_per_fit": 400,
+    "zero_scope": "This exact formal request only. Earlier capability, numerical qualification and non-task fixture execution and their costs are excluded from this zero statement."
+  },
+  "append_only": true,
+  "cost": {
+    "additional_retained_scopes": "Earlier qualifications and failures, allocation or idle, source transfers and post-halt read-only diagnostics remain separate scopes; this is not a complete campaign cost aggregate.",
+    "formal_execution_seconds_for_this_request": 0,
+    "formal_training_seconds_for_this_request": 0,
+    "full_physical_energy_joules": null,
+    "interval_scope": "Stage-assets lies inside the supervised owner interval, itself inside created-to-exit. These are not separate additive costs.",
+    "lease_idle_duration_and_termination_time": null,
+    "monetary_cost": null,
+    "native_created_to_exit_interval_seconds": 4.313,
+    "native_supervised_interval_seconds": 3.364,
+    "nested_intervals_are_not_additive": true,
+    "stage_assets_native_call_wall_seconds": 3.0523173620458692,
+    "total_campaign_cost_established": false
+  },
+  "event_times": {
+    "native_owner_terminal_utc": "2026-11-07T20:49:15.999000+00:00",
+    "original_manager_reconcile_terminal_utc": "2026-11-07T20:54:13.042000+00:00",
+    "plan_frozen_utc": "2026-11-07T20:23:17.650009+00:00",
+    "runtime_disappearance_time": null
+  },
+  "evidence_commitments": {
+    "actual_authoritative_sqlite_probe_result_sha256": "36b6b1d3d5c47ff84c921b2f3d9550141678c548c1f5c1658a18941e07f2c1e5",
+    "actual_original_manager_reconcile_raw_sha256": "a8c5166171b54044a1a129d638b7fa79f51292cc0c3e1c0fabef7aa79d440e01",
+    "actual_upload_journal_sha256": "f6b8c93c511e8770bcbb2a5aa5db2fab3fd1eacfbde2f7726f4b4201b2a12a49",
+    "independent_read_only_review": {
+      "bytes": 5502,
+      "sha256": "3df19c701aab4eabdae9f846e44631b128df5137d896dfa6500b9ba9171dc242"
+    },
+    "original_private_failure_archive": {
+      "bytes": 94026,
+      "sha256": "20f489a089abdc04a57ebb740a13050210ee6cdb60ac0346aefe54d24797ac19"
+    },
+    "original_private_summary": {
+      "bytes": 11239,
+      "sha256": "a65fc3213a2d59ab65c589018cd604cf3bb490dc930d0a4566438665b440ca51"
+    }
+  },
+  "exact_formal_request": "hcsn-s81-colab-8d06c97c1bd1-g00-fit-b000",
+  "frozen_plan_sha256": "8d06c97c1bd13fce531ca7e913ab2b099edfce9388523716e7565b1295221085",
+  "history_preservation": {
+    "automatic_replay": false,
+    "generic_pending_field_rewritten": false,
+    "generic_pending_provider_may_still_run_original_value": true,
+    "new_allocation_or_provider_dispatch_by_this_document": false,
+    "no_effect_evidence_automatically_releases_reservations": false,
+    "original_halted_ledger_retained": true,
+    "original_twenty_reserved_retained": true,
+    "original_upload_unknown_retained": true,
+    "prior_plan_source_or_budget_modified": false
+  },
+  "interpretation_correction": {
+    "corrected_claim": "Unique resolution failed; physical presence, matching-assignment count, loss time and cause are not established.",
+    "corrected_public_value": null,
+    "original_files_and_failure_archive_unchanged": true,
+    "prior_private_field": "interpretation.runtime_currently_absent",
+    "prior_private_summary_sha256": "a65fc3213a2d59ab65c589018cd604cf3bb490dc930d0a4566438665b440ca51",
+    "prior_private_value": true,
+    "prior_public_field": "owned_runtime_currently_present",
+    "prior_public_status_sha256": "6ecfc1c592e47141084a59b82203f594197f85c1ca8cdd0b4dbb7b3bacc6f480",
+    "prior_public_value": false,
+    "this_appendix_supersedes_only_the_overstrong_presence_interpretation": true
+  },
+  "no_dispatch_basis": [
+    "The unchanged pinned reserve flow requires a VERIFIED upload receipt before Engine.submit or execution.",
+    "The only recorded adapter operation is stage-assets; its actual returned UNKNOWN is the durable original upload journal.",
+    "All ten parts retain PUT0, and the existing actual read-only authoritative SQLite probe finds zero Engine rows for the exact request.",
+    "The original hash-linked owner events are RESERVED_BEFORE_ASSET_OR_JOB_EFFECT followed by HALTED, with zero ever-claimed fits.",
+    "The actual native owner is stopped with a complete durable failed terminal and matching exit witness. The audit probe actual launched source and actual stdout were independently matched."
+  ],
+  "original_plan_source_identities": 60,
+  "original_scientific_source_files": 42,
+  "prospective_continuation_constraints": {
+    "claim_key_admission_condition": "First prove the exact invariant scientific contract, original42 source bytes, bundle, data/split, tasks, arms, seeds, LR pairs, state/parameter counts and statistics unchanged. A changed scientific contract is a separate study and cannot silently reuse or merge this claim domain.",
+    "confirmation_or_deployment_admission": false,
+    "execution_authorized_by_this_document": false,
+    "inferential_unit": "training_seed; both episode seeds are aggregated within the selected fit",
+    "logical_fit_claim_key_fields": [
+      "scientific_lineage_anchor_plan_sha256",
+      "registered_roster_sha256",
+      "fit_id"
+    ],
+    "minimum_useful_absolute_mse_reduction": 0.01,
+    "missing_ineligible_contrast_policy": "Keep the fixed family denominator with p=1; do not fabricate a complete selection or test output.",
+    "registered_roster_sha256": "fcce78273b9eaab029840546bf41da3a568580b7a777c06b978986b42884da5b",
+    "rules": [
+      "Keep original170 and Hepta x NDU identities, datasets, owners, budgets and results separate; this S81 route supplies zero completion credit to either.",
+      "Retain all V1/V2/V3 resource attempts, failures and costs. A new lease, route plan or request key must not reset the scientific160-fit claim denominator.",
+      "Exactly one authorized dispatcher may hold the current scientific-lineage custody. A resource transfer requires a new reviewed append-only authority record bound to the real prior stop and real next owner.",
+      "Preserve RESERVED, CLAIMED_PENDING, UNKNOWN and terminal states. No ever-claimed fit may disappear, be relabelled UNSTARTED, receive an automatic retry, or be counted twice under a new resource identity.",
+      "The present V3 run method rejects HALTED and only releases RESERVED via verified terminal capsule; it has no pre-dispatch no-effect recovery entry point. Do not clear halt, edit its ledger or merely substitute config.",
+      "Any proposed no-effect closure must bind this exact stopped owner, upload intents/results, authoritative registration query, pinned source order and logical claim set. UNKNOWN history remains unchanged even when a separate scoped no-dispatch conclusion is admitted.",
+      "Frozen profile, endpoint/kernel/client-session, bound ownership and qualification anchor/code/payload commitments remain effective. The GPU UUID policy does not override those bindings.",
+      "A different-resource route must prospectively register its rule and actual required current-resource evidence before task fitting; historical qualification cannot be relabelled as fresh resource evidence.",
+      "Preserve160fits x400updates,480seconds perfit,8groups of20 with validation selection committed before tests, complete capsules including losing checkpoints, all failed attempts, and the global160 claim union.",
+      "Final analysis requires the actual owner launch/config/source bridge, stopped provider/worker evidence and complete registered group outputs. This failed owner must not be used to arm a completion finalizer."
+    ],
+    "scientific_lineage_anchor_plan_sha256": "cc2fe01594bd77721eda1f2a3130257ba5dbfa61c498a9f469f91195598c2550",
+    "statistical_family_size": 20,
+    "status": "CONSTRAINT_PROPOSAL_ONLY_NOT_IMPLEMENTED_BY_THIS_ADDENDUM",
+    "test_episode_seeds": [
+      4703,
+      5801
+    ],
+    "training_seeds": [
+      1103,
+      2207,
+      3301,
+      4409
+    ]
+  },
+  "public_disclosure_scope": "Aggregate facts, UTC observations, fixed experiment identities and evidence hashes only. Raw machine/account/runtime inventories remain private.",
+  "published_scientific_and_control_commit": "7e9520e9978e43580bd680d967a789c10c15ea73",
+  "qualification_native_evidence_sha256": "05bdb252212feeeb4d1b9744ab31b56ca859f081daa9de8882ba8da17cbea619",
+  "qualification_status": "ACTUAL_NUMERICAL_QUALIFICATION_PASS_RETAINED; no formal or task-benefit credit follows from qualification alone",
+  "resource_resolution": {
+    "error_code": "FIXED_RUNTIME_NOT_FOUND",
+    "exit_code": 2,
+    "fixed_runtime_resolves_uniquely": false,
+    "idle_expiration_proven": false,
+    "matching_assignment_count": null,
+    "observation": "One read-only original-manager reconcile using the same owned-resource key",
+    "owned_resource_journal_before_and_after_unchanged": true,
+    "owned_runtime_currently_present": null,
+    "physical_resource_destruction_proven": false,
+    "precise_interpretation": "The original manager did not uniquely resolve the fixed assigned runtime.",
+    "result": "blocked",
+    "source_semantics": "The pinned _assignment implementation emits this code when len(found) != 1. The captured response does not separately disclose that count.",
+    "time_and_cause_of_loss": null
+  },
+  "schema": "hcsn-colab-v3-first-formal-halt-public-addendum-v2",
+  "scientific_disposition": {
+    "expansion_admission": "HOLD",
+    "external_retention": "unmeasured",
+    "formal_task_benefit_established": false,
+    "hepta_ndu_completion_credit": 0,
+    "original170_completion_credit": 0,
+    "scientific_failure_inferred": false
+  },
+  "status": "FORMAL_OWNER_HALTED_BEFORE_ASSET_PUT_OR_ENGINE_REGISTRATION",
+  "study_id": "hcsn-regenerative-mechanisms-fv-pilot-20261107-1631115f163f-v3"
+}

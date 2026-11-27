@@ -1,0 +1,260 @@
+{
+  "adoption_action": "NoUpdate",
+  "archive": {
+    "cas_archive_bytes": 61412948,
+    "cas_archive_sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+    "checkpoint": "ARCHIVE_INDEX.json",
+    "downloaded_verified_bytes": 24313856,
+    "downloaded_verified_chunks": 371,
+    "external_runtime_inputs_included": false,
+    "full_owner_cold_recovery": false,
+    "local_restore_status": "PENDING_SERVICE_UNAVAILABLE",
+    "local_whole_archive_sha256_verified": false,
+    "manifest_sha256": "3c7799846836a18b6a5470e03cda92919ede2fcf76c8ee9ede20ae0e945ce336",
+    "next_required_offset": 24117248,
+    "origin_host_all_members_verified": true,
+    "planned_transfer_chunks": 938,
+    "raw_bytes": 243281645,
+    "raw_file_count": 10365,
+    "transfer_error": "h service -32603 Internal error",
+    "unique_bytes": 149046627,
+    "unique_objects": 7122
+  },
+  "blockers": [
+    {
+      "closure": "A separately frozen confirmatory experiment with justified source independence and a strictly positive prespecified source-level lower bound; do not retune this run or pool historical episodes as independent confirmation.",
+      "finding": "Fixed-public bounded retention is 30/84 versus 28/84, with 2 wins, 82 ties and 0 losses. Both wins occur in retention-validation sources; all 80 development pairs tie. The prespecified source-equal-weight mean is 0.10 but one-sided 95% bootstrap lower bound is 0.0.",
+      "id": "MEM6-WORKING-STATE-BENEFIT-GATE",
+      "status": "GATE_NOT_MET"
+    },
+    {
+      "closure_required": "预先冻结真实前序经验到未见后继任务协议；新会话进入实际 agent/tool 入口；保持模型、授权历史与预算一致；采用内容删除、替换及交付关闭对照证明因果使用。",
+      "evidence": [
+        "run_episodic_qualification.worker 固定 model_calls=0",
+        "mechanism-REPORT.json#/unseen_task_benefit_evaluated=false",
+        "mechanism-REPORT.json#/actual_effect=local fixture delivery file only"
+      ],
+      "finding": "18 场景均为合成机制 fixture；consumer 的 model_calls=0，确定性读取后写 delivery.json，没有真实 agent 在未见后继任务上的配对 memory on/off 收益。任务内 retention 与 selector 两组 actor 实验不能填补跨会话 episodic 收益缺口。",
+      "id": "MEM6-EPISODIC-SUCCESSOR-BENEFIT",
+      "status": "HOLD"
+    },
+    {
+      "closure_required": "在同授权历史、上下文预算和真实后继任务上保留四种基线，加入相关及干扰记录，报告预注册来源级主对比；不得将存储采样称为优化器回放。",
+      "evidence": [
+        "rows.exact_on.eligible_count=1",
+        "rows.bm25.eligible_count=1",
+        "rows.uniform_replay.eligible_count=1",
+        "rows.icl_context.eligible_count=1",
+        "CONTRACT.md Baselines and intervention semantics"
+      ],
+      "finding": "本次 exact KV、BM25、uniform replay、ICL 场景的 eligible_count 都是 1，输出同一事实，没有检索竞争或任务效益比较。ICL 为活动记录的有界时序拼接，uniform replay 为读取采样，BM25 到文件的交付并非完整 RAG 任务评测。",
+      "id": "MEM6-BASELINE-COMPARISON",
+      "status": "HOLD"
+    },
+    {
+      "closure_required": "冻结真实关联组件并验证实际调用和旁路；设置必须联合多文档才能完成的后继任务，做关联关闭与来源替换对照。",
+      "evidence": [
+        "all rows.receipt.association_called=false",
+        "mechanism-REPORT.json#/neural_association_evaluated=false",
+        "producer learn 显式给出派生文本及 depends_on"
+      ],
+      "finding": "所有实际行 association_called=false；unavailable 与 disabled 仅区分状态，不能构成真实关联 head 消融。route 文本及依赖由 producer 直接写定，consumer 未自行形成多文档关联或联合推理。",
+      "id": "MEM6-ASSOCIATION-AND-CROSS-DOCUMENT",
+      "status": "HOLD"
+    },
+    {
+      "closure_required": "让相似、冲突、无关流程同时可见，任务不提供答案式 source 选择；验证正确路由、错误来源拒绝和扰动后行为。",
+      "evidence": [
+        "rows.similar_other_flow.source_ids=[source-flow], eligible_count=1",
+        "rows.irrelevant_source.eligible_count=0",
+        "rows.other_namespace.eligible_count=0"
+      ],
+      "finding": "similar_other_flow 由 harness 明确选择 source-flow 且只有一个候选，证明同 key 的来源范围读取，未证明相似问题的流程判别。irrelevant_source 为不存在的来源，other_namespace 为空 namespace，尚未形成有竞争内容的抗干扰测试。",
+      "id": "MEM6-SIMILAR-WORKFLOW-AND-INTERFERENCE",
+      "status": "HOLD"
+    },
+    {
+      "closure_required": "后续独立预冻结实例在 update 后、revoke 前导出快照，并建立仍活动的依赖链；同一快照和依赖分别在 revoke 前后以新进程读取。保持现有冻结结果原样。",
+      "evidence": [
+        "stale_snapshot 与 revoked_snapshot 的 snapshot_sha256 均为 057dcec3b1caf4b3232cf10609b9388e23bdc32473d9583bc164e7f9945b4531",
+        "两行 snapshot_rejections 均为 2，authority_generation 从 4 到 5",
+        "dependent_fact_invalidated 在 revoke 前已返回空",
+        "revoked_fact 在 generation=5 返回空",
+        "independent-mechanism-audit.json#/deletion_unit_test_qualification"
+      ],
+      "finding": "stale_snapshot 与 revoked_snapshot 使用同一 before-update 快照且均拒绝 2 条记录；快照在 revoke 之前已因 update 失效，因此 revoked_snapshot 不能独立归因于撤销更新后的事实。route 也先因 update 失效，本次 campaign 未单独展示撤销仍活动的派生链。直接读取的 revoked_fact 已验证当前地址撤销生效；相关单测源码已有直接 revoke 及新 CLI 进程快照撤销覆盖，不能表述为实现不支持或完全未测。",
+      "id": "MEM6-REVOCATION-CAMPAIGN-ATTRIBUTION",
+      "status": "PARTIAL"
+    },
+    {
+      "closure_required": "通过实际 agent 的无答案任务验证行为级 abstention，审计是否存在旁路、先验或标签泄漏。",
+      "evidence": [
+        "consumer 仅写 fixture delivery，不调用模型或执行真实任务",
+        "ACCEPTANCE.episodic_mechanism_gate.required_interventions 包含 unanswerable_abstention"
+      ],
+      "finding": "空 records/context 仅表明读取路径无可交付内容，没有验证真实 agent 在无答案、撤销或来源不匹配时会正确拒答、澄清或停止动作。",
+      "id": "MEM6-ANSWER-LEVEL-ABSTENTION",
+      "status": "HOLD"
+    },
+    {
+      "closure_required": "独立绑定原始来源字节、当前来源权威和可校验时间线；针对真实后继实验保留并审计来源 exposure 与排除证据。",
+      "evidence": [
+        "CONTRACT.md Ownership and state layers",
+        "实际 provenance 使用 fixture://mem6/learn-* 和 fixture://mem6/update-1"
+      ],
+      "finding": "来源 URI、source_sha256、source_version 和 episode_id 由调用方提供；本次为 fixture URI 与 supplied text 摘要。内容摘要和版本不认证来源所有权、独立来源时间线或全局 exposure；store 不验证 URI 实际内容。",
+      "id": "MEM6-SOURCE-PROVENANCE-AUTHENTICATION",
+      "status": "HOLD"
+    },
+    {
+      "closure_required": "独立认证当前 authority，冻结并核实实际隔离和调用权限；另行验证 authority 回滚与独立信任域读取。",
+      "evidence": [
+        "mechanism-REPORT.json#/independent_trust_domain=false",
+        "所有非空 view_receipt.malicious_owner_rollback_protected=false",
+        "run_episodic_qualification 模块说明明确不是 OS trust-domain boundary",
+        "CONTRACT.md verify_read_receipt 不认证执行诚实性"
+      ],
+      "finding": "authority、快照、namespace 和 allowlist 均处于同 owner/权限域；尚未证明恶意 owner 回滚 authority 数据库的抵抗能力。worker request 不传 expected_texts，但没有 OS 边界保证 worker 无法读取 fixture 源码或 evaluator 材料。摘要及 receipt 验证为一致性检查，不是可信执行认证。",
+      "id": "MEM6-AUTHORITY-AND-TRUST-DOMAIN",
+      "status": "HOLD"
+    },
+    {
+      "closure_required": "明确删除适用范围，验证真实消费方缓存及下游依赖传播；需要撤销屏障的动作在 commit 边界重检并做并发撤销对照。不承诺物理擦除时持续标为未建立。",
+      "evidence": [
+        "mechanism-REPORT.json#/deletion_scope=logical read exclusion, not physical snapshot erasure",
+        "CONTRACT.md Authority, snapshots, updates, and deletion"
+      ],
+      "finding": "删除覆盖 live logical payload 和后续受控读取；旧快照仍保留旧文本，备份、日志、先前交付上下文及模型参数未被擦除。读取只对其 authority generation 一致，未验证外部动作 commit 边界的撤销重检。",
+      "id": "MEM6-DELETION-SCOPE-AND-COMMIT-BARRIER",
+      "status": "HOLD"
+    },
+    {
+      "closure_required": "在完整 owner/effect 状态不可直接沿用的条件下执行冷恢复，以独立后继任务和真实效果状态验证。",
+      "evidence": [
+        "mechanism-REPORT.json#/full_owner_cold_recovery=false",
+        "mechanism-REPORT.json#/actual_effect=local fixture delivery file only",
+        "三个 producer 在正常返回后才启动后继 consumer"
+      ],
+      "finding": "writer 正常退出后重新打开同一个可用数据库，不覆盖完整 owner 状态、权限、凭据、真实 effects、幂等、fencing、异常中断或独立目录/信任域行为恢复。",
+      "id": "MEM6-FULL-OWNER-COLD-RECOVERY",
+      "status": "HOLD"
+    },
+    {
+      "closure_required": "保存全部适用成本来源和缺失项，区分重叠计时范围；未测成本保持 unknown，按真实任务收益计算完整增量成本。",
+      "evidence": [
+        "mechanism-REPORT.json#/parent_cpu_seconds=0.016179963000000002",
+        "mechanism-REPORT.json#/wall_seconds=0.6632341858930886",
+        "各 receipt.decision_cpu_seconds 是局部读取范围",
+        "CONTRACT.md Bounded storage and context"
+      ],
+      "finding": "parent_cpu_seconds 仅为父进程 CPU；局部读取 CPU 与 consumer wall 不能代替完整 producer/consumer、模型、上下文 token、物理存储/I/O、失败恢复、能源和服务费成本。逻辑容量上限不等于物理资源测量。",
+      "id": "MEM6-END-TO-END-COST",
+      "status": "HOLD"
+    },
+    {
+      "closure_required": "若需该能力，将其作为独立候选实现、冻结并验证；不可由 episodic store 或机制 PASS 自动晋级。",
+      "evidence": [
+        "CONTRACT.md Ownership and state layers 标明 future separately evaluated candidate",
+        "ACCEPTANCE.episodic_mechanism_gate.unimplemented_expiry_or_consolidation_may_pass=false"
+      ],
+      "finding": "慢速语义/技能整合有分层契约，但没有自动训练、单独版本化候选与独立采用证据。未实现的 expiry 或 consolidation 不得以机制套件通过代替其验证。",
+      "id": "MEM6-SEMANTIC-SKILL-CONSOLIDATION",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "closure": "Authenticated source ownership and exposure lineage plus a genuinely independent successor-task confirmation.",
+      "finding": "The new cohorts are released development/retention-validation roles, disjoint from each other and from the pinned prior plans/exposure exclusions. Full source independence, provider authenticity and complete exposure-history authenticity have not been independently established.",
+      "id": "MEM6-SOURCE-INDEPENDENCE-AND-EXPOSURE",
+      "status": "HOLD"
+    },
+    {
+      "closure": "A frozen complete runtime/material/owner dependency capsule and a separately observed behavioral recovery, with credential and effect continuity evaluated under the relevant permissions.",
+      "finding": "The complete run outputs and source capsule are archived. External interpreter/OCR dependencies, the complete original material collection, and full owner/effect state are not bundled. File-byte restoration cannot imply a complete offline system rerun.",
+      "id": "MEM6-ARCHIVE-EXTERNAL-RUNTIME-CLOSURE",
+      "status": "PARTIAL"
+    },
+    {
+      "closure": "Required checks on the exact frozen source complete successfully, with complete logs and no inference from queue state.",
+      "finding": "The final 35 new local targeted tests pass. Required GitHub jobs on execution source 8cf848babdd897e9f38642d5faf3ba0f72a1303c are not all complete; see the timestamped validation/ci checkpoint.",
+      "id": "MEM6-EXACT-SOURCE-CI",
+      "status": "PENDING"
+    },
+    {
+      "closure": "Resume only the two missing byte ranges under the pinned version, verify full archive size/SHA256 and all manifest members, then perform an exclusive fresh-directory restore. Preserve the partial record and distinguish this file recovery from full owner/effect recovery.",
+      "finding": "The origin host verified the complete 61,412,948-byte CAS archive. The h service then returned -32603 Internal error, including a non-host effective_config probe. A same-version transfer checkpoint preserves 371 of 938 verified chunks (24,313,856 bytes). Local whole-archive verification and full raw restoration remain pending.",
+      "id": "MEM6-RAW-ARCHIVE-TRANSFER",
+      "status": "BLOCKED_SERVICE_UNAVAILABLE"
+    }
+  ],
+  "created_at_utc": "2026-11-10T13:40:58.590569+00:00",
+  "document_kind": "post_execution_results_not_protocol_changes",
+  "mechanism": {
+    "distinct_observed_consumer_pids": 18,
+    "episodic_mechanism_gate": "PARTIAL",
+    "exited_writer_processes": 3,
+    "fresh_process_invocations": 18,
+    "full_owner_cold_recovery": false,
+    "independent_trust_domain": false,
+    "model_calls": 0,
+    "neural_association_gate": "NOT_EVALUATED",
+    "passed": 18,
+    "planned": 18,
+    "real_successor_task_gate": "NOT_EVALUATED",
+    "scope": "same_host_same_authority_fixture_delivery",
+    "suite_status": "PASS"
+  },
+  "production_adoption": false,
+  "schema": "hepta.mem6.result-blockers.v1",
+  "scientific_acceptance": "HOLD",
+  "selector_replication": {
+    "actor_episodes": 108,
+    "bypass_successes": [
+      1,
+      0
+    ],
+    "candidate_mediated_successes": [
+      10,
+      3
+    ],
+    "frozen_neural_successes": 13,
+    "losses": 1,
+    "no_op_successes_per_arm": 10,
+    "paired_cases": 54,
+    "public_rule_successes": 21,
+    "sampling_uncertainty_estimated": false,
+    "scientific_acceptance": "HOLD",
+    "source_groups": 14,
+    "ties": 44,
+    "unknown_pairs": 0,
+    "wins": 9
+  },
+  "source_commit": "8cf848babdd897e9f38642d5faf3ba0f72a1303c",
+  "validation": {
+    "ci_checkpoint_at_utc": "2026-11-10T13:56:30Z",
+    "new_targeted_tests_passed": 35,
+    "required_exact_source_ci": "PENDING",
+    "whole_repository_suite_claimed": false
+  },
+  "working_state": {
+    "actor_episodes": 168,
+    "bounded_successes": 30,
+    "cross_session_memory_evaluated": false,
+    "current_only_successes": 28,
+    "initial_incorrect_denominator_per_arm": 68,
+    "initial_incorrect_successes": [
+      14,
+      12
+    ],
+    "losses": 0,
+    "no_op_successes_per_arm": 16,
+    "numeric_benefit_gate_met": false,
+    "one_sided_95pct_source_lower_bound": 0.0,
+    "pair_weighted_difference": 0.023809523809523808,
+    "paired_cases": 84,
+    "source_equal_weight_difference": 0.1,
+    "source_groups": 20,
+    "ties": 82,
+    "unknown_pairs": 0,
+    "wins": 2
+  }
+}

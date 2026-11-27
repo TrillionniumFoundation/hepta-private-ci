@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn-authentic-n128-roster-development-red-v1",
+  "status": "RED",
+  "scope": "pre-freeze local compiler development",
+  "reason": "the first local compiler revision incorrectly compared all 46 event records, including the explicit cold_restore record, with the frozen upper bound of 45 transition segments",
+  "observed": {
+    "events_including_cold_restore": 46,
+    "transition_segments": 45,
+    "cold_restore_events": 1,
+    "capsules": 14,
+    "fp64_coordinate_denominator": 4623492
+  },
+  "resolution": "the frozen source reports the explicit restore record separately and leaves the 45-transition upper bound unchanged",
+  "threshold_changed": false,
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "oracle_calls": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "execution_key": null,
+  "admission": "HOLD_NO_NUMERICAL_EXECUTION",
+  "all_closed": false
+}

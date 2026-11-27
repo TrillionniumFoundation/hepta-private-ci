@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.root-v4-first-failure-diagnostics-manifest.v1",
+  "source": {
+    "commit": "903b6fbae86acff2db2ab0422b9852421d938032",
+    "tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f"
+  },
+  "classification": "test-only failure diagnostics; no behavioral repair or new acceptance",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "mode": "100644",
+      "before": {
+        "git_blob": "c1af9340a0044b1159d65f5e631d2e918a14f544",
+        "bytes": 16197,
+        "sha256": "4ddfe5b8a630433726fd530060608c52f6906cf25b6479a646449a1b1bac495e"
+      },
+      "after": {
+        "git_blob": "c10e077d4dc36f1d6cebf829f24b68164def548a",
+        "bytes": 19872,
+        "sha256": "539c7677c4bfeb2e97d7257692d3565ff0b7c2a00ace34e6461b0f7b43ae8cf0"
+      },
+      "exactops": {
+        "git_blob": "da663f7968c300bbbde8095bace496a7e7f73b33",
+        "bytes": 9679,
+        "sha256": "0292a296a3c2cb320f60e36f9bf7b1c50f2524db78ed3af19acd745901e54980"
+      },
+      "operation_count": 11
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "mode": "100644",
+      "before": {
+        "git_blob": "76cfd19e13470a6ced412ef5e7b7a7fa228c53b4",
+        "bytes": 9825,
+        "sha256": "d52c214a953085d8402766620aaf044351f371717f868e4b0f9513bb5eea401e"
+      },
+      "after": {
+        "git_blob": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+        "bytes": 16628,
+        "sha256": "6f5cf48ad4379cc79f132fa5793c0c2ce91c05bc226b21b6c1e642ee2dd1798e"
+      },
+      "exactops": {
+        "git_blob": "093a8077b031ea0bf8547f8bf0a527fe7bd3a5ca",
+        "bytes": 12485,
+        "sha256": "5f43d2fac169c2b4633bb9ed98af5594ce9327ad42edf7643fb99828de6cd4a6"
+      },
+      "operation_count": 16
+    }
+  ],
+  "evidence": {
+    "static_shared_review": {
+      "git_blob": "db7c9381dbd3626bfbf46000b44f33a57ffe445b",
+      "bytes": 9119,
+      "sha256": "56e5635b01ee140819ee462b931b6a24a705f08fc42b1e94b859d56e4d471aad"
+    },
+    "independent_cache_review": {
+      "git_blob": "b849bb0a4f6a53ab5a46fa0d612f60ff8092e72e",
+      "bytes": 2331,
+      "sha256": "f1d1f8f9bb425b7365152cf81afee6c698ef5381f37557ccf80a71e0c6df757a"
+    },
+    "independent_session_review_blob": "1b21ba619e0c654084b4a2114c1713eb7d9cd68b",
+    "cache_author_review_blob": "b19ff38ff09002e6a162fd097691a7ad0c459d1a",
+    "original_v4_junit": {
+      "git_blob": "4641d85d6d54c41c3b31621d545937b2985226f0",
+      "bytes": 9203,
+      "sha256": "9cfad38d30ffcc18759c9cc3c5ace21361c727312d178133f6aa4d68950f2274"
+    },
+    "original_v4_execution_blob": "b5e89ca3bf9889569a9b4e34539234131b219152"
+  },
+  "original_v4_result": {
+    "parents_executed": 17,
+    "passed": 15,
+    "failed": 2,
+    "ordinary_business_acceptance": 0
+  },
+  "invariants": {
+    "guards_and_short_circuit_order": "unchanged",
+    "original_err_variants": "unchanged",
+    "original_fence_and_drop_order": "unchanged",
+    "actual_owner_and_IO_calls": "unchanged",
+    "timestamp_sample_and_lock_sites": "unchanged",
+    "refresh_requests": "unchanged",
+    "fresh_or_warmup_reads_added": false,
+    "ttl_or_timeout_changes": false,
+    "permission_identity_or_signature_changes": false,
+    "test_assertions_or_root_roster_changes": false,
+    "callbacks_added": "only inspect/inspect_err with cfg(test) logging, no authority or owner calls",
+    "diagnostics_inputs": "existing captured scalars, original Error values, immutable proof fields; no secret or identity values",
+    "session_projection": {
+      "removed_inspect": 16,
+      "removed_test_logs": 3,
+      "original_tokens_ignoring_whitespace_equal": true,
+      "no_original_control_call_removed": true,
+      "not_rust_compile": true
+    }
+  },
+  "callers": {
+    "delta": [],
+    "new_public_boundaries": [],
+    "new_product_callers": [],
+    "session_protected_rows_checked": 2,
+    "existing_required_tokens_present": true,
+    "full_original_checker_executed": false
+  },
+  "execution": {
+    "cargo": false,
+    "native": false,
+    "fmt": false,
+    "refs_mutated": false,
+    "shared_source_mutated": false,
+    "h_requests": false
+  },
+  "superseded_draft": {
+    "cache_v1_source": "2877959738873d222ce5353cb19770e78ab0d6c3",
+    "cache_v1_exactops": "47ff39620e030233ba89bc68032bf2077f3b3652",
+    "reason": "Final V2 adds original absent-cache/boottime/arithmetic-error tags without new reads; use ea2c4b75 only."
+  },
+  "next_step": "Root may integrate the two exact postimages, run original maintenance, freeze a new source identity and perform a fresh Root17 diagnostic. No V4 pass is inherited and no first cause is predeclared."
+}

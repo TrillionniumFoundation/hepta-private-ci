@@ -1,0 +1,95 @@
+{
+  "schema": "hepta-post-pruning-recovery-v1",
+  "recorded_at": "2026-10-29T07:48:39.370343-04:00",
+  "status": "partial_recovery_raw_evidence_missing",
+  "authorization": "User explicitly authorized public disclosure of Hepta source code, model checkpoints, raw data and complete evidence to TrillionniumFoundation/hepta-private-ci branch research/hcsn-callput-rebuild-20261028.",
+  "target_repository": "TrillionniumFoundation/hepta-private-ci",
+  "target_visibility": "public",
+  "target_branch": "research/hcsn-callput-rebuild-20261028",
+  "available_baseline_commit": "68eb16caa9c14c7b5729585c86d9c293018a987c",
+  "previous_local_commit_not_recovered": "b1806a2e2c811e7ef5b15848ba262664aa34363f",
+  "recovered_files": [
+    {
+      "path": "Hepta_Complete_Research_Report.html",
+      "bytes": 2113111,
+      "sha256": "f497509da8f6242def88a013ab888de13f62a84337ae218df7d07b43d4f5bc04"
+    },
+    {
+      "path": "Hepta_Next_Step_Blocker_Report.html",
+      "bytes": 2557763,
+      "sha256": "cd51c1d85cc55f6dfd9addb6f92b56c5b063f7b3e39496c079edd5f1354257d7"
+    },
+    {
+      "path": "PREPACK_VERIFICATION.json",
+      "bytes": 4563,
+      "sha256": "82a085634ece5decf82d4660afe5826564453c3a055c30bcae9496e3c0a2ee30"
+    },
+    {
+      "path": "RECOVERY_VERIFICATION.json",
+      "bytes": 355,
+      "sha256": "e641788c3096ce0bda0473e902edec9d889821f9a7882af5235d716f545952f6"
+    },
+    {
+      "path": "RELOCATED_VERIFICATION.json",
+      "bytes": 6315,
+      "sha256": "24ba8757e87a7481bf4b5210c2290587a2284348784bc52f4dd4e70514cceb46"
+    },
+    {
+      "path": "RELOCATED_VERIFY.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "RELOCATED_VERIFY.stdout.json",
+      "bytes": 2233,
+      "sha256": "e39d50f74f8f079cb0c9646dd600aad1adb4a42ebbd2bd035dd3a360347c069e"
+    },
+    {
+      "path": "hepta-followup-audio001.log",
+      "bytes": 2198,
+      "sha256": "93e18767e1b3b6c3622ca459847145ecce6055e4080decaa4dc53f585214a974"
+    },
+    {
+      "path": "hepta-followup-normalized001.log",
+      "bytes": 2049,
+      "sha256": "0a9f9d00777990763eb3c64f56e53a567aac526afdcfa1cc84e0d1de247f0ffd"
+    },
+    {
+      "path": "hepta-selected-solver001.log",
+      "bytes": 2157,
+      "sha256": "d097e90749e1f99eefbc86947dc8899f1ae11ba016ca6f922818830fe33eeca7"
+    },
+    {
+      "path": "original_package_followup.py",
+      "bytes": 30219,
+      "sha256": "136b3c4058b246ed769e615f2c3cb2908048a41e09ea17263fa2e3666a361f40"
+    }
+  ],
+  "missing": [
+    {
+      "name": "Hepta_CallPut_Followup.bundle",
+      "bytes": 317440549,
+      "sha256": "3fa00a3ea2cfc9dd1fbf92347c1d0e8ad5befd9c766b89c6da9ac78b4ae38df5"
+    },
+    {
+      "name": "Hepta_Complete_Research_Evidence.zip",
+      "bytes": 303082301,
+      "sha256": "3b90004d54068f06df1251b5d407410bb9ab170cc4ea4016ecaf88ad877bc99f"
+    },
+    {
+      "name": "followup_evidence.tar.gz",
+      "bytes": 93231319,
+      "sha256": "3f180654b82bb161a7fd786e3bd7e1d74114fdb5cbf665bc0c139e043029dabf"
+    },
+    {
+      "name": "rebuild001_complete_evidence.tar.gz",
+      "bytes": 207264800,
+      "sha256": "d3be953325ff8e4fc2ffaf94c6a3dd9084892501598cbda92efe747cca594cf7"
+    }
+  ],
+  "limits": [
+    "Recovered report and historical audit receipts do not contain the missing model weights, full predictions or original data arrays.",
+    "The retained packager came from a pytest source copy with a hash independently bound in the historical audit. Adjacent fixture data were excluded.",
+    "New research will have new source/run identities and will not be relabeled as a replay or byte-for-byte recovery of the missing run."
+  ]
+}

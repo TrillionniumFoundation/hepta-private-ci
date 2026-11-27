@@ -56,9 +56,11 @@ use codex_hepta_plasticity::ParameterPlasticitySignalV3;
 use codex_hepta_plasticity::ProposalWindowV2;
 use codex_hepta_plasticity::TopologyChangeV2;
 use codex_hepta_plasticity::TopologyOperationV2;
+use codex_hepta_plasticity::build_generator_coverage_receipt_v1;
 use codex_hepta_plasticity::build_parameter_mutation_policy_v1;
 use codex_hepta_plasticity::build_writer_handoff_plan_v1;
 use codex_hepta_plasticity::generate_parameter_candidates_v3;
+use codex_hepta_plasticity::generator_coverage_signing_payload_v1;
 use codex_hepta_plasticity::parameter_generator_signing_payload_v3;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -72,6 +74,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::AgentdIdentity;
 use crate::AgentdPlasticityAnchorStoreV1;
+use crate::AgentdPlasticityEvidenceSourcesV1;
 use crate::AgentdState;
 use crate::ConcretePlasticityOwnerEvidenceResolverV1;
 use crate::PlasticityArtifactOwnerBindingV1;
@@ -89,7 +92,13 @@ use crate::plasticity_parameter_signal_digest_v1;
 use crate::reopen_agentd_plasticity_writer_v1;
 use crate::reopen_agentd_topology_writer_v1;
 use crate::resolve_agentd_plasticity_admission_v1;
+use crate::resolve_agentd_plasticity_owner_evidence_set_v1;
 use crate::resolve_agentd_topology_admission_v1;
+
+#[path = "learning_iteration_runtime_tests.rs"]
+mod learning_iteration_tests;
+#[path = "terminal_learning_tests.rs"]
+mod terminal_learning_tests;
 
 const Q24: i64 = 1_i64 << 24;
 
@@ -190,7 +199,8 @@ fn ledger_decision(objective_digest: Digest32) -> LedgerEvent {
         policy_id: id("policy:learning"),
         candidate_ids: vec![id("candidate:update"), id("abstain")],
         selected_candidate_id: id("candidate:update"),
-        selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31).expect("propensity"),
+        selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31)
+            .unwrap_or_else(|error| panic!("propensity: {error:?}")),
         completeness: CandidateSetCompleteness::Complete,
         support_digest: digest("decision-support"),
     })
@@ -204,27 +214,36 @@ struct AgentdFixture {
 
 impl AgentdFixture {
     fn new() -> Self {
-        let temp = tempfile::tempdir().expect("temp root");
-        let root = temp.path().canonicalize().expect("canonical temp");
+        let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("temp root: {error:?}"));
+        let root = temp
+            .path()
+            .canonicalize()
+            .unwrap_or_else(|error| panic!("canonical temp: {error:?}"));
         let fleet_path = root.join("fleet");
-        let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet root");
-        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+        let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())
+            .unwrap_or_else(|error| panic!("fleet root: {error:?}"));
+        let registry = FleetRegistry::initialize(fleet_root.clone())
+            .unwrap_or_else(|error| panic!("fleet registry: {error:?}"));
         let workspace = root.join("workspace");
-        fs::create_dir(&workspace).expect("workspace");
-        let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id");
+        fs::create_dir(&workspace).unwrap_or_else(|error| panic!("workspace: {error:?}"));
+        let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")
+            .unwrap_or_else(|error| panic!("agent id: {error:?}"));
         let manifest = AgentManifest::new(
             agent_id.clone(),
-            WorkspaceBinding::new(&workspace, &fleet_root).expect("workspace binding"),
+            WorkspaceBinding::new(&workspace, &fleet_root)
+                .unwrap_or_else(|error| panic!("workspace binding: {error:?}")),
             ResourceBudget::local_default(),
         )
-        .expect("manifest");
-        let record = registry.register(manifest).expect("register");
+        .unwrap_or_else(|error| panic!("manifest: {error:?}"));
+        let record = registry
+            .register(manifest)
+            .unwrap_or_else(|error| panic!("register: {error:?}"));
         registry
             .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)
-            .expect("starting");
+            .unwrap_or_else(|error| panic!("starting: {error:?}"));
         registry
             .compare_and_transition(&agent_id, 1, AgentLifecycle::Running)
-            .expect("running");
+            .unwrap_or_else(|error| panic!("running: {error:?}"));
         let identity = AgentdIdentity {
             agent_id,
             layout: record.layout.clone(),
@@ -245,10 +264,14 @@ impl AgentdFixture {
     }
 
     fn state(&self) -> Arc<AgentdState> {
-        let state =
-            AgentdState::new(self.identity.clone(), self.registry.clone(), 16).expect("state");
-        state.refresh_generation().expect("refresh running");
-        state.mark_app_server_ready().expect("app ready");
+        let state = AgentdState::new(self.identity.clone(), self.registry.clone(), 16)
+            .unwrap_or_else(|error| panic!("state: {error:?}"));
+        state
+            .refresh_generation()
+            .unwrap_or_else(|error| panic!("refresh running: {error:?}"));
+        state
+            .mark_app_server_ready()
+            .unwrap_or_else(|error| panic!("app ready: {error:?}"));
         Arc::new(state)
     }
 }
@@ -304,7 +327,7 @@ impl SigningFixture {
                 })
                 .collect(),
         })
-        .expect("verifier")
+        .unwrap_or_else(|error| panic!("verifier: {error:?}"))
     }
 
     fn sign(
@@ -369,7 +392,7 @@ fn build_owner_sources(
     let ndu_subject_digest = digest("agent:plasticity-subject");
     let modulator_digest =
         plasticity_modulator_digest_v1(objective_digest, ndu_subject_digest, &modulator_values)
-            .expect("modulator digest");
+            .unwrap_or_else(|error| panic!("modulator digest: {error:?}"));
     let mut ndu_journal = NduProjectionJournalV1::new();
     ndu_journal
         .append_projection(
@@ -379,7 +402,7 @@ fn build_owner_sources(
             ndu_subject_digest,
             modulator_digest,
         )
-        .expect("append NDU projection");
+        .unwrap_or_else(|error| panic!("append NDU projection: {error:?}"));
     ndu_journal
         .select_projection(
             digest("ndu:modulator-selection"),
@@ -387,7 +410,7 @@ fn build_owner_sources(
             ndu_subject_digest,
             modulator_digest,
         )
-        .expect("select NDU projection");
+        .unwrap_or_else(|error| panic!("select NDU projection: {error:?}"));
     let ndu = Arc::new(RwLock::new(ndu_journal));
 
     let neuron_path = root.join("neuron.journal");
@@ -397,23 +420,23 @@ fn build_owner_sources(
         sparse_scope(objective_digest),
         16,
     )
-    .expect("neuron journal");
+    .unwrap_or_else(|error| panic!("neuron journal: {error:?}"));
     neuron_journal
         .commit(Digest32::ZERO, &sparse_tick(objective_digest))
-        .expect("neuron commit");
+        .unwrap_or_else(|error| panic!("neuron commit: {error:?}"));
     let neuron_anchor = neuron_journal
         .current_anchor()
-        .expect("neuron anchor")
-        .expect("neuron checkpoint");
+        .unwrap_or_else(|error| panic!("neuron anchor: {error:?}"))
+        .unwrap_or_else(|| panic!("neuron checkpoint"));
     let checkpoint = neuron_journal
         .current()
-        .expect("current neuron")
-        .expect("checkpoint");
-    let eligibility_digest =
-        plasticity_eligibility_digest_v1(checkpoint).expect("eligibility digest");
+        .unwrap_or_else(|error| panic!("current neuron: {error:?}"))
+        .unwrap_or_else(|| panic!("checkpoint"));
+    let eligibility_digest = plasticity_eligibility_digest_v1(checkpoint)
+        .unwrap_or_else(|error| panic!("eligibility digest: {error:?}"));
     let eligibility_raw = checkpoint.eligibility_q24()[0]
         .checked_mul(1_i64 << 8)
-        .expect("Q24 to Q32");
+        .unwrap_or_else(|| panic!("Q24 to Q32"));
     let eligibility = FixedQ32::from_raw(eligibility_raw);
     let neuron = Arc::new(Mutex::new(neuron_journal));
 
@@ -424,7 +447,7 @@ fn build_owner_sources(
         modulator_weights: vec![FixedQ32::ONE],
     };
     let broadcast_digest = plasticity_modulator_broadcast_digest_v1(std::iter::once(&binding))
-        .expect("broadcast digest");
+        .unwrap_or_else(|error| panic!("broadcast digest: {error:?}"));
     let modulator = modulator_values[0];
     let learning_rate = FixedQ32::ONE;
     let lower_bound = FixedQ32::from_raw(-FixedQ32::ONE.raw());
@@ -441,7 +464,7 @@ fn build_owner_sources(
         modulator_digest,
         broadcast_digest,
     )
-    .expect("signal digest");
+    .unwrap_or_else(|error| panic!("signal digest: {error:?}"));
 
     let mutation_policy = build_parameter_mutation_policy_v1(
         id("policy:mutation:lifetime"),
@@ -456,7 +479,7 @@ fn build_owner_sources(
             maximum_delta: upper_bound,
         }],
     )
-    .expect("mutation policy");
+    .unwrap_or_else(|error| panic!("mutation policy: {error:?}"));
 
     let mut artifacts = ArtifactRegistry::new();
     for (event_id, manifest) in [
@@ -508,10 +531,12 @@ fn build_owner_sources(
                 event_id: id(event_id),
                 manifest,
             })
-            .expect("artifact append");
+            .unwrap_or_else(|error| panic!("artifact append: {error:?}"));
     }
 
-    let ledger_snapshot = ledger.snapshot().expect("ledger snapshot");
+    let ledger_snapshot = ledger
+        .snapshot()
+        .unwrap_or_else(|error| panic!("ledger snapshot: {error:?}"));
     let dataset = freeze_dataset_receipt_v3(
         DatasetFreezeRequestV1 {
             snapshot_id: id("dataset:lifetime"),
@@ -537,7 +562,7 @@ fn build_owner_sources(
         },
         50,
     )
-    .expect("dataset freeze");
+    .unwrap_or_else(|error| panic!("dataset freeze: {error:?}"));
     let dataset_digest = dataset.snapshot.dataset_digest;
 
     let profile = ParameterGeneratorProfileV3 {
@@ -560,7 +585,8 @@ fn build_owner_sources(
             evidence_digest: signal_digest,
         }],
     };
-    let generated = generate_parameter_candidates_v3(profile.clone()).expect("generate");
+    let generated = generate_parameter_candidates_v3(profile.clone())
+        .unwrap_or_else(|error| panic!("generate: {error:?}"));
     assert_eq!(
         generated
             .candidates
@@ -600,7 +626,7 @@ fn build_owner_sources(
             id("owner:neuron.runtime"),
         ),
     ])
-    .expect("owner policy");
+    .unwrap_or_else(|error| panic!("owner policy: {error:?}"));
 
     OwnerSources {
         artifacts,
@@ -638,7 +664,7 @@ fn resolver(sources: &OwnerSources) -> ConcretePlasticityOwnerEvidenceResolverV1
         40,
         60,
     )
-    .expect("dynamic resolver");
+    .unwrap_or_else(|error| panic!("dynamic resolver: {error:?}"));
     ConcretePlasticityOwnerEvidenceResolverV1::new(
         sources.dataset.clone(),
         sources.artifacts.clone(),
@@ -656,7 +682,7 @@ fn resolver(sources: &OwnerSources) -> ConcretePlasticityOwnerEvidenceResolverV1
         ],
         Box::new(dynamic),
     )
-    .expect("composed owner resolver")
+    .unwrap_or_else(|error| panic!("composed owner resolver: {error:?}"))
 }
 
 fn signed_request(
@@ -665,27 +691,60 @@ fn signed_request(
     signing: &SigningFixture,
     verifier: &LearningEvidenceVerifierV1,
 ) -> ParameterPlasticityProductRequestV1 {
-    let admission = resolve_agentd_plasticity_admission_v1(
-        &crate::AgentdPlasticityAdmissionInputV1 {
-            baseline_id: id("artifact:baseline"),
-            objective_digest: sources.objective_digest,
-            generator_profile: sources.profile.clone(),
-            generated: sources.generated.clone(),
-            baseline_generation: generation(1),
-            candidate_generation: generation(2),
-            dataset_digest: sources.dataset_digest,
-            update_rule_digest: sources.update_rule_digest,
-            modulator_digest: sources.modulator_digest,
-            modulator_broadcast_digest: sources.broadcast_digest,
-            eligibility_digest: sources.eligibility_digest,
-        },
-        &sources.artifacts,
-        ledger,
-        &resolver(sources),
+    let input = crate::AgentdPlasticityAdmissionInputV1 {
+        baseline_id: id("artifact:baseline"),
+        objective_digest: sources.objective_digest,
+        generator_profile: sources.profile.clone(),
+        generated: sources.generated.clone(),
+        baseline_generation: generation(1),
+        candidate_generation: generation(2),
+        dataset_digest: sources.dataset_digest,
+        update_rule_digest: sources.update_rule_digest,
+        modulator_digest: sources.modulator_digest,
+        modulator_broadcast_digest: sources.broadcast_digest,
+        eligibility_digest: sources.eligibility_digest,
+    };
+    let owner_evidence_resolver = resolver(sources);
+    let artifact_head = sources.artifacts.snapshot().head_digest;
+    let ledger_head = ledger
+        .snapshot()
+        .unwrap_or_else(|error| panic!("ledger snapshot: {error:?}"))
+        .head_digest;
+    let owner_frontier = resolve_agentd_plasticity_owner_evidence_set_v1(
+        &input,
+        &owner_evidence_resolver,
         &sources.owner_policy,
+        artifact_head,
+        ledger_head,
         50,
     )
-    .expect("resolve admission");
+    .unwrap_or_else(|error| panic!("owner frontier: {error:?}"));
+    let coverage = build_generator_coverage_receipt_v1(
+        &sources.profile,
+        &sources.generated,
+        sources
+            .profile
+            .mutation_policy
+            .rules
+            .iter()
+            .map(|rule| rule.parameter_id.clone())
+            .collect(),
+        Vec::new(),
+        owner_frontier,
+    )
+    .unwrap_or_else(|error| panic!("coverage: {error:?}"));
+    let admission = resolve_agentd_plasticity_admission_v1(
+        &input,
+        &coverage,
+        AgentdPlasticityEvidenceSourcesV1 {
+            artifacts: &sources.artifacts,
+            ledger,
+            resolver: &owner_evidence_resolver,
+            policy: &sources.owner_policy,
+        },
+        50,
+    )
+    .unwrap_or_else(|error| panic!("resolve admission: {error:?}"));
 
     let generator_attestation = signing.sign(
         verifier,
@@ -701,9 +760,19 @@ fn signed_request(
         LearningEvidenceRoleV1::Observer,
         &plasticity_admission_signing_payload_v1(&admission),
     );
-    let no_change_payload =
-        no_change_disposition_signing_payload_v1(&sources.generated, &admission)
-            .expect("no-change payload");
+    let coverage_attestation = signing.sign(
+        verifier,
+        sources.objective_digest,
+        1,
+        LearningEvidenceRoleV1::Observer,
+        &generator_coverage_signing_payload_v1(&coverage),
+    );
+    let no_change_payload = no_change_disposition_signing_payload_v1(
+        &sources.generated,
+        &admission,
+        ParameterPlasticityDispositionV1::NoAdmissibleUpdate,
+    )
+    .unwrap_or_else(|error| panic!("no-change payload: {error:?}"));
     let no_change_attestation = signing.sign(
         verifier,
         sources.objective_digest,
@@ -716,9 +785,11 @@ fn signed_request(
         proposal_id: id("proposal:agentd-lifetime"),
         generator_profile: sources.profile.clone(),
         generated: sources.generated.clone(),
+        coverage,
         generator_attestation,
         admission,
         admission_attestation,
+        coverage_attestation,
         no_change_attestation: Some(no_change_attestation),
         evaluations: Vec::new(),
         expected_registry_predecessor: Digest32::ZERO,
@@ -747,7 +818,7 @@ fn signed_topology_request(
         digest("topology:rollback:lifetime"),
         digest("topology:ack:lifetime"),
     )
-    .expect("topology handoff");
+    .unwrap_or_else(|error| panic!("topology handoff: {error:?}"));
     let change = TopologyChangeV2 {
         module_id: id("module:topology:lifetime"),
         operation: TopologyOperationV2::Replace,
@@ -809,8 +880,8 @@ fn signed_topology_request(
         expected_registry_predecessor: Digest32::ZERO,
     };
 
-    let generation_payload =
-        topology_generation_signing_payload_v1(&request).expect("topology generation payload");
+    let generation_payload = topology_generation_signing_payload_v1(&request)
+        .unwrap_or_else(|error| panic!("topology generation payload: {error:?}"));
     let generation_digest = Digest32::of_bytes(&generation_payload);
     request.admission = resolve_agentd_topology_admission_v1(
         &crate::AgentdTopologyAdmissionInputV1 {
@@ -826,7 +897,7 @@ fn signed_topology_request(
         &sources.artifacts,
         ledger,
     )
-    .expect("resolve topology admission");
+    .unwrap_or_else(|error| panic!("resolve topology admission: {error:?}"));
     request.generator_attestation = signing.sign(
         verifier,
         sources.objective_digest,

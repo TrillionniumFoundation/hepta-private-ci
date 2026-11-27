@@ -1,0 +1,132 @@
+{
+  "schema": "hcsn-c2-live-run-parent-inventory-v1",
+  "status": "HOLD_NO_GO",
+  "all_closed": false,
+  "base_commit": "8628764e03539857420b3eaea77716c07a99e62a",
+  "execution": {
+    "model": 0,
+    "torch": 0,
+    "optimizer": 0,
+    "native_training": 0,
+    "workflow_rerun": 0,
+    "job_restart": 0
+  },
+  "source_context": {
+    "parent_evidence_pr": 6305,
+    "parent_evidence_head": "06c47752d20fac047114cf8fc53244f9b808a9a4",
+    "original_start_parent_sha256": [
+      "e0c8c946aa8010bfcf4df5b9e155235d2fb6b12a9832e4eaa5db3d9afb154d78",
+      "bea446e64571e7cd424411036eff207bb6839af4495a7b60cf0f9df81181ba05",
+      "cdbca6e633c6aba5f72f08f259ab08b1c5c2c5745d1dbd2f323a78df876e1e79",
+      "b7d162101f18628fcfcabb21e9609499d62c8a26ad6d53b9c375ed2e0439d2f4",
+      "17d6ad363d82ba31b006d0a4f55ca9c63453fa2c9c34f7370f022e2ff66a4f5c",
+      "736ee7d7afe911a3cf5bb7f7ad97babff4dfb74e28a46ec9c148579160a5075c"
+    ],
+    "last_observed_late_checkpoint_sha256": [
+      "eb017f86a0e3f7a1268591b10ef4f2727c36daf2edeed3aa9e5316d6eaa6c30b",
+      "bdd2342af17e2e04bd4403af6c4f0aef5875bb192faa254396ad3b5d56c810e5",
+      "e98973d5d41621727444a2c117b89a7f33925b96066f092136c2f945b1453da3",
+      "1fd9f82188a7e376cc5f81b190144f72e477f3043d87d3c0612618fa7a2e1a0f",
+      "032d43dc0e6f20a6d4113102ae32faa57809c714875beec4ab2ab76358e93441",
+      "31241e7158ef0b921fe80bd8f1ebc32614e3b6a8bc270ead1997ed49df93b2ee"
+    ]
+  },
+  "bounded_searches": [
+    {
+      "search_id": "261fd7ed8554579c090f309b88bde35dc071e7efb034ac6ac6210b1b18639686",
+      "root": "/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1",
+      "query": "*.pt",
+      "state": "completed",
+      "traversal_complete": true,
+      "coverage_complete": true,
+      "entries": 16,
+      "results": 6
+    },
+    {
+      "search_id": "9797467021d3666d0ed7570efad8e746fee583de17820add4a7bb00cbafb0e6c",
+      "root": "/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v2",
+      "query": "*.pt",
+      "state": "completed",
+      "traversal_complete": true,
+      "coverage_complete": true,
+      "entries": 16,
+      "results": 6
+    }
+  ],
+  "files": [
+    {
+      "fit": "s101-lr0.001",
+      "path": "inputs/hcsn-s101-lr0.001.pt",
+      "sha256": "eb017f86a0e3f7a1268591b10ef4f2727c36daf2edeed3aa9e5316d6eaa6c30b",
+      "bytes": 450552,
+      "late_epoch": 116
+    },
+    {
+      "fit": "s101-lr0.003",
+      "path": "inputs/hcsn-s101-lr0.003.pt",
+      "sha256": "bdd2342af17e2e04bd4403af6c4f0aef5875bb192faa254396ad3b5d56c810e5",
+      "bytes": 450552,
+      "late_epoch": 76
+    },
+    {
+      "fit": "s211-lr0.001",
+      "path": "inputs/hcsn-s211-lr0.001.pt",
+      "sha256": "e98973d5d41621727444a2c117b89a7f33925b96066f092136c2f945b1453da3",
+      "bytes": 450552,
+      "late_epoch": 126
+    },
+    {
+      "fit": "s211-lr0.003",
+      "path": "inputs/hcsn-s211-lr0.003.pt",
+      "sha256": "1fd9f82188a7e376cc5f81b190144f72e477f3043d87d3c0612618fa7a2e1a0f",
+      "bytes": 450552,
+      "late_epoch": 50
+    },
+    {
+      "fit": "s307-lr0.001",
+      "path": "inputs/hcsn-s307-lr0.001.pt",
+      "sha256": "032d43dc0e6f20a6d4113102ae32faa57809c714875beec4ab2ab76358e93441",
+      "bytes": 450552,
+      "late_epoch": 127
+    },
+    {
+      "fit": "s307-lr0.003",
+      "path": "inputs/hcsn-s307-lr0.003.pt",
+      "sha256": "31241e7158ef0b921fe80bd8f1ebc32614e3b6a8bc270ead1997ed49df93b2ee",
+      "bytes": 450616,
+      "late_epoch": 72
+    }
+  ],
+  "duplicate_sets_byte_identical": true,
+  "directory_scope_result": {
+    "v1_pt_files": 6,
+    "v2_pt_files": 6,
+    "unique_pt_hashes": 6,
+    "original_start_parent_hash_matches": 0,
+    "late_checkpoint_hash_matches": 12
+  },
+  "broader_host_search": {
+    "search_id": "b1a3631b133bd5a111b29832b092c266218a7fe47241862ff75d6733eade2322",
+    "root": "/home/qian-qi",
+    "query": "six start-parent SHA256 prefixes",
+    "state": "limited",
+    "reason": "entry_limit",
+    "entries_examined": 10000,
+    "files_examined": 3462,
+    "results": 0,
+    "coverage_complete": false,
+    "claim": "No global host-absence conclusion is permitted."
+  },
+  "preserved_unknowns": [
+    "the six original start-parent PT bytes remain missing",
+    "authoritative original controller terminal state remains UNKNOWN",
+    "per-fit remaining-wall seconds remain UNKNOWN",
+    "lifetime optimizer-call total remains UNKNOWN"
+  ],
+  "non_transfer": [
+    "the duplicated later checkpoints are not substitutes for original start parents",
+    "bounded run-directory inventory is not a whole-host custody search",
+    "this evidence does not admit or start a full replay"
+  ],
+  "global_status": "HOLD / NoUpdate / all_closed=false"
+}

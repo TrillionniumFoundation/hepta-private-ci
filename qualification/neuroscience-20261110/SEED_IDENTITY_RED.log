@@ -1,0 +1,58 @@
+test_distinct_eval_seed_per_episode_for_same_training_seed_allowed (test_seed_identity.DeclaredSeedIdentityTests.test_distinct_eval_seed_per_episode_for_same_training_seed_allowed) ... ok
+test_one_seed_label_cannot_swap_training_digest_by_density (test_seed_identity.DeclaredSeedIdentityTests.test_one_seed_label_cannot_swap_training_digest_by_density) ... FAIL
+test_one_seed_label_cannot_swap_training_digest_by_episode (test_seed_identity.DeclaredSeedIdentityTests.test_one_seed_label_cannot_swap_training_digest_by_episode) ... FAIL
+test_one_seeds_evaluation_digest_cannot_alias_other_training_seed (test_seed_identity.DeclaredSeedIdentityTests.test_one_seeds_evaluation_digest_cannot_alias_other_training_seed) ... FAIL
+test_two_seed_labels_cannot_reuse_future_eval_seed_digest (test_seed_identity.DeclaredSeedIdentityTests.test_two_seed_labels_cannot_reuse_future_eval_seed_digest) ... FAIL
+test_two_seed_labels_cannot_reuse_training_seed_digest (test_seed_identity.DeclaredSeedIdentityTests.test_two_seed_labels_cannot_reuse_training_seed_digest) ... FAIL
+
+======================================================================
+FAIL: test_one_seed_label_cannot_swap_training_digest_by_density (test_seed_identity.DeclaredSeedIdentityTests.test_one_seed_label_cannot_swap_training_digest_by_density)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-seed-isolation-20261111-r6/qualification/neuroscience-20261110/test_seed_identity.py", line 25, in test_one_seed_label_cannot_swap_training_digest_by_density
+    with self.assertRaisesRegex(ContractError, "training seed"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+======================================================================
+FAIL: test_one_seed_label_cannot_swap_training_digest_by_episode (test_seed_identity.DeclaredSeedIdentityTests.test_one_seed_label_cannot_swap_training_digest_by_episode)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-seed-isolation-20261111-r6/qualification/neuroscience-20261110/test_seed_identity.py", line 18, in test_one_seed_label_cannot_swap_training_digest_by_episode
+    with self.assertRaisesRegex(ContractError, "training seed"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+======================================================================
+FAIL: test_one_seeds_evaluation_digest_cannot_alias_other_training_seed (test_seed_identity.DeclaredSeedIdentityTests.test_one_seeds_evaluation_digest_cannot_alias_other_training_seed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-seed-isolation-20261111-r6/qualification/neuroscience-20261110/test_seed_identity.py", line 37, in test_one_seeds_evaluation_digest_cannot_alias_other_training_seed
+    with self.assertRaisesRegex(ContractError, "training/evaluation seed"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+======================================================================
+FAIL: test_two_seed_labels_cannot_reuse_future_eval_seed_digest (test_seed_identity.DeclaredSeedIdentityTests.test_two_seed_labels_cannot_reuse_future_eval_seed_digest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-seed-isolation-20261111-r6/qualification/neuroscience-20261110/test_seed_identity.py", line 31, in test_two_seed_labels_cannot_reuse_future_eval_seed_digest
+    with self.assertRaisesRegex(ContractError, "evaluation seed"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+======================================================================
+FAIL: test_two_seed_labels_cannot_reuse_training_seed_digest (test_seed_identity.DeclaredSeedIdentityTests.test_two_seed_labels_cannot_reuse_training_seed_digest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-seed-isolation-20261111-r6/qualification/neuroscience-20261110/test_seed_identity.py", line 11, in test_two_seed_labels_cannot_reuse_training_seed_digest
+    with self.assertRaisesRegex(ContractError, "training seed"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.005s
+
+FAILED (failures=5)
+Command exited with non-zero status 1
+RED cost wall=0.04 user=0.04 system=0.00 peak_kb=23692

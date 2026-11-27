@@ -1,0 +1,43 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "ruff",
+    "format",
+    "qualification/hcsn_joint_dde/model.py",
+    "qualification/hcsn_joint_dde/basis.py",
+    "qualification/hcsn_joint_dde/reference.py",
+    "qualification/hcsn_joint_dde/test_model.py",
+    "qualification/hcsn_joint_dde/audit_visits.py"
+  ],
+  "exit": 0,
+  "files": {
+    "qualification/hcsn_joint_dde/audit_visits.py": {
+      "ast_equal": true,
+      "formatted_sha256": "31ea898d43302673a6f5267e3d40ddba8a0ccee37c7b1cb757b46901fa78b5e9",
+      "tested_sha256": "f1aeea3e4243b8b8ab07151c34aaa3a362960fe147eaa89134debf89b6bd73a6"
+    },
+    "qualification/hcsn_joint_dde/basis.py": {
+      "ast_equal": true,
+      "formatted_sha256": "74895bd9ebe55f8bedcf00f2842184150f5e5e1b79e43a44a7087679a810cad7",
+      "tested_sha256": "18a2e9a309a243e36f74d97a8e39b208a2207dba4d9c01a735c3d687751bab51"
+    },
+    "qualification/hcsn_joint_dde/model.py": {
+      "ast_equal": true,
+      "formatted_sha256": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+      "tested_sha256": "e4195fb7f98c28c2f1c8246778b107c2f1a3607a399a8e361aa702574ae1d9bd"
+    },
+    "qualification/hcsn_joint_dde/reference.py": {
+      "ast_equal": true,
+      "formatted_sha256": "9e8ea431118229c8eb1bec0fe809faffc158b3decd2157a52331551d675d18de",
+      "tested_sha256": "4e0b84506205e19bc750f48d2679a7de37d1f09688c587059c6ade4744e4e716"
+    },
+    "qualification/hcsn_joint_dde/test_model.py": {
+      "ast_equal": true,
+      "formatted_sha256": "195e4e43d619dbb5434154bf406a256e51ef45ec448c1f73323e03c762e675dc",
+      "tested_sha256": "9ed63e86b894318cad1502751e856074f43388812658a3be26a6d6e33d516479"
+    }
+  },
+  "stderr": "",
+  "stdout": "5 files reformatted\n"
+}

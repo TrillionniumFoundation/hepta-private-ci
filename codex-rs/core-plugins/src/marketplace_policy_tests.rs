@@ -447,8 +447,11 @@ fn symlinked_marketplaces_cannot_borrow_managed_provenance() {
 #[test]
 fn managed_bundled_source_is_bound_to_its_expected_name() {
     let codex_home = TempDir::new().expect("create Codex home");
-    let bundled_root = codex_home
+    let codex_home_path = codex_home
         .path()
+        .canonicalize()
+        .expect("canonical Codex home");
+    let bundled_root = codex_home_path
         .join(".tmp/bundled-marketplaces")
         .join(crate::OPENAI_BUNDLED_MARKETPLACE_NAME);
     fs::create_dir_all(&bundled_root).expect("create bundled marketplace root");
@@ -464,7 +467,7 @@ restrict_to_allowed_sources = true
     );
 
     let expected_name =
-        validate_marketplace_source_for_add(codex_home.path(), stack.requirements(), &source)
+        validate_marketplace_source_for_add(&codex_home_path, stack.requirements(), &source)
             .expect("managed marketplace source should bypass restrictions");
     assert_eq!(
         validate_marketplace_name_for_add(expected_name, crate::OPENAI_BUNDLED_MARKETPLACE_NAME,),

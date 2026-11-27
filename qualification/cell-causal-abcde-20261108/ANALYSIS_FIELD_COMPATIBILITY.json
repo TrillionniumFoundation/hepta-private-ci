@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.causal-b.analysis-field-compatibility.v1",
+  "observed_utc": "2026-11-08T09:51:49.380232+00:00",
+  "scope": "Read-only review of actual pinned matrix/study/EpisodeHost/evaluator fields before deployment outcomes are available; no empirical effect is claimed.",
+  "original_evaluation_plan": {
+    "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/study/PILOT_PLAN.json",
+    "sha256": "0c8622ac6cac3d3b0257bdae84f363c215fc8511a02b74677133584f4ef8eff7",
+    "size": 20647
+  },
+  "source_bindings": [
+    {
+      "path": "scripts/ndu_real_materials/evaluator.py",
+      "local_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_materials/evaluator.py",
+      "plan_path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/evaluator.py",
+      "bytes": 9284,
+      "sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_analysis.py",
+      "local_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/causal_analysis.py",
+      "plan_path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_analysis.py",
+      "bytes": 9284,
+      "sha256": "2c29852eefe11d3e5294e43bb27974037455754650402ca2ed931fb195c09f3e"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/episode.py",
+      "local_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/episode.py",
+      "plan_path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/episode.py",
+      "bytes": 29599,
+      "sha256": "77876e8b3321276d9e1efca13fad7dada14f338aec93412d4f421d19871af468"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/matrix.py",
+      "local_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/matrix.py",
+      "plan_path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/matrix.py",
+      "bytes": 25671,
+      "sha256": "c3f1792e73a0c92f953568a924f686e1865f97f728210982eee51b5dbfbe4d10"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/score_worker.py",
+      "local_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/score_worker.py",
+      "plan_path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/score_worker.py",
+      "bytes": 1106,
+      "sha256": "e40818170025960efd7a45fbc3dd8beba45cdaa872de0bd37038dcaeb626f887"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/study.py",
+      "local_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/study.py",
+      "plan_path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/study.py",
+      "bytes": 17478,
+      "sha256": "3c475c7c36927819b646df001399c68fd30dc03541c355f1f20e55c8c2cbfdd0"
+    }
+  ],
+  "findings": [
+    {
+      "interface": "matrix.make_requests -> map_rows",
+      "status": "COMPATIBLE",
+      "evidence": "pilot- plus canonical_sha([execution_run_id, profile_id, case_id])[:32] matches the original operation check; fit/regime/arm/model/policy/memory/observation pins are carried through the paired rows."
+    },
+    {
+      "interface": "EpisodeHost.run -> score_worker/evaluator -> matrix.compact",
+      "status": "COMPATIBLE_WITH_PROSPECTIVE_ADAPTER",
+      "evidence": "BudgetStop can still have a real evaluator/rubric-bound gross_score and deployment_meter wall_seconds. The helper retains its original terminal status and only maps a scored, measured observation to statistical Completed under the pre-outcome design policy."
+    },
+    {
+      "interface": "study.execute_one failure envelope -> matrix.retained_rows",
+      "status": "COMPATIBLE",
+      "evidence": "Failure may lack evaluator output. Gross score remains unknown; frozen failure-adjusted score is -1. Utility uses deployment wall or the explicitly reported original outer-wall fallback."
+    },
+    {
+      "interface": "matrix missing selected/profile/episode -> causal_analysis.paired_contrast",
+      "status": "COMPATIBLE",
+      "evidence": "NotStarted, Unresolved, absent rows and missing metrics retain the planned fit/condition/case denominator and block that contrast; they are not removed."
+    },
+    {
+      "interface": "source pins and statistical output",
+      "status": "LIMITED",
+      "evidence": "All reviewed local file bytes match the original evaluation-plan pins. Byte agreement does not authenticate provider/owner/evaluator; two seeds and development/retention-validation cases do not establish power, confirmation or adoption."
+    }
+  ],
+  "candidate_modified": false,
+  "new_experiment_executed": false,
+  "scientific_acceptance": "HOLD",
+  "adoption_authorized": false
+}

@@ -1,0 +1,532 @@
+diff --git a/docs/research/HCSN_P0_QVI_SUBSET_CERTIFICATE_20261031.md b/docs/research/HCSN_P0_QVI_SUBSET_CERTIFICATE_20261031.md
+new file mode 100644
+index 0000000..0ee8f69
+--- /dev/null
++++ b/docs/research/HCSN_P0_QVI_SUBSET_CERTIFICATE_20261031.md
+@@ -0,0 +1,49 @@
++# HCSN P0 — Global-QVI Subset and He–Xiong Curvature Rejection
++
++**Status:** OFFLINE_RESEARCH_ONLY; not a production admission and not the full He–Xiong equilibrium. Date: 2026-10-31.
++
++Mathematical reference: Zhiguo He and Wei Xiong (2012), *Rollover Risk and Credit Risk*, The Journal of Finance 67(2):391–430. This package does not redistribute the paper. https://doi.org/10.1111/j.1540-6261.2012.01721.x
++
++## A. Precisely defined certified mathematical subset
++
++We consider **a separate, simpler perpetual American put**, not the author's time-to-maturity debt-rollover fixed point:
++
++- `dV=(r-delta)Vdt+sigma*VdW`, with `r>0`, `delta>=0`, `sigma>0`, `K>0`.
++- `g(V)=max(K-V,0)`.
++- `L f=(r-delta)V*f' + (sigma²/2)V²*f''`.
++- `max{L U-rU, g-U}=0`.
++- Negative characteristic root `beta<0` solves `(sigma²/2)beta(beta-1)+(r-delta)beta-r=0`.
++- Boundary `b=beta K/(beta-1)`; value `U=K-V` for `V<=b`, `U=(K-b)(V/b)^beta` otherwise.
++
++**Global-QVI proof over exact real arithmetic:** At `b` the value and first derivative match the payoff. For `V>b`, `(L-r)U=0` and `U''=beta(beta-1)U/V²>0`. By boundary tangency this implies `U>=K-V` until `K`, and beyond `K` the payoff is zero while `U>0`. For `V<=b`, `U=g` and `(L-r)g=delta V-rK<=delta b-rK = (sigma²/2)beta K<0`. The solution decays at infinity. This proves the QVI inequalities for this **stated simplified model**, not for the original HX coupled equilibrium.
++
++Implemented independent checks include finite-domain monotone-log-grid Howard policy iteration, QVI complementarity, implicit boundary sensitivities against finite differences, positive-state/finite precision refusal, and float32-rounded event-side alias rejection.
++
++The Python implementation and floating-point grids are **numerical diagnostics**, not formally verified programs or directed-rounding interval arithmetic. Grid boundary indices are quantized and need not converge strictly monotonically.
++
++## B. Actual He–Xiong local reject-only gate
++
++At candidate smooth-pasting boundary `E(b)=E'(b)=0` the original stock-value equation implies
++
++`E''(b+)=-2 f(b;b)/(sigma²*b²)`, where
++
++`f(b;b)=delta*b - (1-pi)C + alpha*b/m - P/m`.
++
++`f>0` implies negative value immediately above `b` for a `C²` continuation, violating the global equity obstacle. Such candidates are rejected. `f<0` satisfies only one local necessary condition and returns `LOCAL_NECESSARY_ONLY_GLOBAL_UNCERTIFIED`. Exact zero returns unresolved. All cases still require the complete coupon/debt valuation, fixed-point consistency, global obstacle, gradient stability and independent low-precision checks before any HX qualification.
++
++The decimal-literal sign numerator is computed independently of binary64 comparisons; the derivative magnitude remains decimal-rounded. No numeric tolerance is used to turn ambiguity into success.
++
++## C. Independent execution
++
++```bash
++python -m unittest -v experiments.hcsn_hx_unified_v3.test_perpetual_put_qvi_reference
++python -m unittest -v experiments.hcsn_hx_unified_v3.test_hx_curvature_necessary
++python -m unittest discover -v -s .
++python -m p0_p5_gatebook
++```
++
++The negative `curvature>0` test is **not** proof of a globally admissible candidate. It is intentionally marked local only.
++
++## D. Unclosed evidence
++
++Full HX coupled bond and equity fixed point; full-range obstacle inequalities; rigorous directed-rounding probability and derivative enclosures; fp16/bf16/GPU; real all-modal training, six-stage efficiency, and production gate remain **unclosed**. Always keep `DENY_ALL`.
+diff --git a/experiments/hcsn_hx_unified_v3/hx_curvature_necessary.py b/experiments/hcsn_hx_unified_v3/hx_curvature_necessary.py
+new file mode 100644
+index 0000000..c0fdf5c
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/hx_curvature_necessary.py
+@@ -0,0 +1,66 @@
++"""HX default-boundary local curvature *necessary* gate (NOT global proof).
++
++HX equity ODE at the candidate smooth-fit boundary E(b)=E'(b)=0:
++    .5*sigma²*b²*E''(b+) + f(b;b) = 0
++    f(b;b)=dividend_yield*b - (1-pi)*coupon + alpha*b/m - principal/m
++
++If f(b;b)>0, E''(b+)<0, and with C² continuation the value is
++strictly NEGATIVE immediately above b. Reject. If f(b;b)<=0, global
++obstacle and bond/equity fixed-point proof are STILL REQUIRED.
++
++All inputs are finite decimal literals (strings), or integral values with
++at most 30 significant decimal digits and bounded magnitude. Floats are
++refused. The sign is taken from an exact finite-decimal numerator; the
++reported derivative is rounded in the 120-digit arithmetic context.
++This is only a *necessary sign test*, not an HX equilibrium certificate.
++"""
++from dataclasses import dataclass
++from decimal import Decimal, InvalidOperation, localcontext
++
++
++@dataclass(frozen=True)
++class CurvatureVerdict:
++    status: str
++    boundary_cashflow: str
++    boundary_second_derivative: str
++    global_obstacle_certified: bool = False
++
++
++def _decimal(value, name):
++    if type(value) is bool or (type(value) is not str and type(value) is not int):
++        raise ValueError(f'{name} must be finite decimal literal or int')
++    try:
++        q=Decimal(value)
++    except (ValueError,InvalidOperation) as exc:
++        raise ValueError(f'{name} invalid decimal') from exc
++    if not q.is_finite():
++        raise ValueError(f'{name} must be finite')
++    if len(q.as_tuple().digits)>30 or abs(q.adjusted())>100:
++        raise ValueError(f'{name} exceeds exact-sign decimal budget')
++    return q
++
++
++def hx_local_curvature_gate(*, boundary, dividend_yield, rollover_fraction,
++                            coupon, recovery_fraction, maturity,
++                            principal, sigma) -> CurvatureVerdict:
++    """Return reject / ambiguous / local-necessary-only, never global PASS."""
++    with localcontext() as ctx:
++        ctx.prec=120
++        p={k:_decimal(v,k) for k,v in locals().items() if k!='ctx'}
++        b=p['boundary']; div=p['dividend_yield']; pi=p['rollover_fraction']
++        c=p['coupon']; alpha=p['recovery_fraction']; m=p['maturity']
++        debt=p['principal']; sig=p['sigma']
++        if not (b>0 and div>=0 and 0<=pi<=1 and c>=0 and
++                0<=alpha<=1 and m>0 and debt>=0 and sig>0):
++            raise ValueError('invalid HX local physical parameter domain')
++        # Compute sign of m*f as a finite sum of terminating decimals.
++        numerator=m*div*b-m*(1-pi)*c+alpha*b-debt
++        f=numerator/m
++        curvature=-2*f/(sig*sig*b*b)
++        if numerator>0:
++            status='REJECT_NEGATIVE_LOCAL_CONTINUATION'
++        elif numerator==0:
++            status='UNRESOLVED_ZERO_CURVATURE'
++        else:
++            status='LOCAL_NECESSARY_ONLY_GLOBAL_UNCERTIFIED'
++        return CurvatureVerdict(status,str(+f),str(+curvature))
+diff --git a/experiments/hcsn_hx_unified_v3/perpetual_put_qvi_reference.py b/experiments/hcsn_hx_unified_v3/perpetual_put_qvi_reference.py
+new file mode 100644
+index 0000000..0a3dcc2
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/perpetual_put_qvi_reference.py
+@@ -0,0 +1,213 @@
++"""Independent *simplified* perpetual-GBM optimal-stopping/QVI oracle.
++
++IMPORTANT SCOPE: this is the standard perpetual American put with risk-neutral
++GBM, NOT the full He--Xiong (2012) rollover equilibrium, bond pricing,
++self-consistent default boundary, or a regenerative-neuron optimality claim.
++
++Mathematical global QVI certificate under r>0, sigma>0, dividend>=0, K>0:
++
++    L f=(r-dividend)*v*f_v + (sigma**2/2)*v*v*f_vv,
++    g(v)=(K-v)+,    max{L U-r U, g-U}=0.
++
++The negative root beta of
++    (sigma**2/2)*beta*(beta-1)+(r-dividend)*beta-r=0
++sets b=K*beta/(beta-1) in (0,K). Set U=K-v for v<=b and
++U=(K-b)*(v/b)**beta otherwise.
++
++Proof (exact real arithmetic): value and smooth fit hold at b; for v>b,
++U''=beta*(beta-1)*U/v**2>0, hence U-(K-v)>=0 by tangency and
++strict convexity until K, and U>0 beyond K. For v<=b,
++(L-r)(K-v)=dividend*v-r*K <= dividend*b-r*K
++= (sigma**2/2)*beta*K <0. In continuation (L-r)U=0 by the
++characteristic equation. Together with U(v)->0 at infinity this is
++a global QVI verification for this exact simplified problem.
++
++This is a human-checkable analytic proof, not a machine-checked formal proof,
++full-HX certificate, full finite-precision interval certificate, or GPU result.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass
++import math
++
++import numpy as np
++from scipy.linalg import solve_banded
++
++
++class ReferenceDomainError(ValueError):
++    pass
++
++
++@dataclass(frozen=True)
++class GBMPut:
++    rate: float
++    dividend: float
++    sigma: float
++    strike: float
++
++    def __post_init__(self):
++        if any(type(z) not in (int, float) or not math.isfinite(z)
++               for z in (self.rate, self.dividend, self.sigma, self.strike)):
++            raise ReferenceDomainError('parameters must be finite real numbers')
++        if not (self.rate > 0 and self.dividend >= 0 and
++                self.sigma > 0 and self.strike > 0):
++            raise ReferenceDomainError('require r>0, div>=0, sigma>0, K>0')
++
++    @property
++    def beta_minus(self) -> float:
++        a = .5 * self.sigma**2
++        b = self.rate - self.dividend - a
++        discr = math.hypot(b, 2 * math.sqrt(a * self.rate))
++        beta = (-2*self.rate/(discr-b)) if b < 0 else -(b+discr)/(2*a)
++        if not math.isfinite(beta) or beta >= 0 or beta == 0 or beta == -1e308:
++            raise ArithmeticError('negative exponent unresolved')
++        residual = a*beta*(beta-1)+(self.rate-self.dividend)*beta-self.rate
++        if not math.isfinite(residual) or abs(residual)>1e-9*max(self.rate,1e-12):
++            raise ArithmeticError('characteristic equation unresolved')
++        return beta
++
++    @property
++    def boundary(self) -> float:
++        beta=self.beta_minus
++        b=self.strike * beta/(beta-1)
++        if not (math.isfinite(b) and 0 < b < self.strike and
++                self.dividend*b-self.rate*self.strike < 0):
++            raise ArithmeticError('boundary not resolvable in double precision')
++        return b
++
++    def value(self, v: float) -> float:
++        if type(v) not in (int,float) or not math.isfinite(v) or v<=0:
++            raise ReferenceDomainError('v must be finite and positive')
++        b=self.boundary
++        if v<=b:
++            return self.strike-v
++        return (self.strike-b)*math.exp(self.beta_minus*math.log(v/b))
++
++    def qvi(self, v: float) -> tuple[float,float]:
++        """Return (generator-minus-discount, obstacle-minus-value).
++
++        Analytic branch identities avoid cancellation; they do not certify
++        binary64 rounding near the zero-gradient or boundary itself.
++        """
++        u=self.value(v)
++        g=max(self.strike-v,0.)
++        if v<=self.boundary:
++            generator=self.dividend*v-self.rate*self.strike
++        else:
++            generator=0.
++        return generator,g-u
++
++    def sensitivities(self) -> dict[str,float]:
++        """Implicit derivatives of b w.r.t. r, dividend, sigma and strike."""
++        beta=self.beta_minus
++        f_beta=self.sigma**2*(beta-.5)+(self.rate-self.dividend)
++        if not math.isfinite(f_beta) or f_beta>=0 or f_beta==0:
++            raise ArithmeticError('boundary implicit derivative singular')
++        db_d_beta=-self.strike/(beta-1)**2
++        values={
++            'rate':db_d_beta * (-(beta-1)/f_beta),
++            'dividend':db_d_beta * (beta/f_beta),
++            'sigma':db_d_beta * (-self.sigma*beta*(beta-1)/f_beta),
++            'strike':beta/(beta-1),
++        }
++        if not all(map(math.isfinite,values.values())):
++            raise ArithmeticError('unresolved boundary derivative')
++        return values
++
++
++def quantized_side_f32(v: float, b: float) -> str:
++    """Refuse f32-aliased event sides; *not* an FP32 interval proof.
++
++    Strict classification after ordinary float32 rounding is monotonic when
++    the codes differ. A shared rounded code cannot establish which side of
++    a real-valued boundary was intended, so returns AMBIGUOUS.
++    """
++    if any(type(t) not in (int,float) or not math.isfinite(t) or t<=0 for t in (v,b)):
++        raise ReferenceDomainError('positive finite state and boundary required')
++    vf,bf=np.float32(v),np.float32(b)
++    if not (np.isfinite(vf) and np.isfinite(bf)) or vf==0 or bf==0:
++        return 'AMBIGUOUS'
++    if vf==bf:
++        return 'AMBIGUOUS'
++    return 'ABOVE' if vf>bf else 'BELOW'
++
++
++@dataclass(frozen=True)
++class DiscreteQVI:
++    spots: np.ndarray
++    values: np.ndarray
++    stop: np.ndarray
++    active_boundary: float
++    max_complementarity_residual: float
++    policy_iterations: int
++
++
++def independent_grid_qvi(p: GBMPut, *, n: int=257,
++                         x_min: float=-4.0, x_max: float=5.0) -> DiscreteQVI:
++    """Independent obstacle-policy iteration on a log-price generator grid.
++
++    Uniform log GBM grid, M-matrix tridiagonal generator with automatic upwind
++    fallback, absorbing known lower payoff and zero large-value upper payoff.
++    Thus finite-domain truncation errors persist: this solver is independent
++    numerical evidence, NOT a mathematically certified full-domain solution.
++    """
++    if type(n) is not int or n<25 or n>8193 or n%2==0:
++        raise ReferenceDomainError('odd n in [25,8193] required')
++    if not all(math.isfinite(x) for x in (x_min,x_max)) or not x_min<x_max:
++        raise ReferenceDomainError('invalid grid domain')
++    h=(x_max-x_min)/(n-1)
++    x=np.linspace(x_min,x_max,n)
++    v=p.strike*np.exp(x)
++    if not np.isfinite(v).all():
++        raise ReferenceDomainError('grid overflows')
++    payoff=np.maximum(p.strike-v,0.)
++    log_drift=p.rate-p.dividend-.5*p.sigma**2
++    a=.5*p.sigma**2/h**2
++    lc=a-log_drift/(2*h)
++    rc=a+log_drift/(2*h)
++    if min(lc,rc)<0:
++        lc=a+max(-log_drift,0)/h
++        rc=a+max(log_drift,0)/h
++    denom=p.rate+lc+rc
++    stop=(payoff>0).copy()
++    stop[0]=True; stop[-1]=True
++    values=payoff.copy()
++    for iteration in range(1,201):
++        diag=np.full(n,denom,dtype=float)
++        lo=np.full(n-1,-lc,dtype=float)
++        up=np.full(n-1,-rc,dtype=float)
++        rhs=np.zeros(n,dtype=float)
++        idx=np.flatnonzero(stop)
++        diag[idx]=1.
++        rhs[idx]=payoff[idx]
++        # Strip off-diagonal coefficients if the row belongs to a STOP state.
++        lo[idx[idx>0]-1]=0.
++        up[idx[idx<n-1]]=0.
++        band=np.zeros((3,n),dtype=float)
++        band[0,1:]=up
++        band[1,:]=diag
++        band[2,:-1]=lo
++        values=solve_banded((1,1),band,rhs,overwrite_ab=False,overwrite_b=False,
++                            check_finite=True)
++        continuation=(lc*values[:-2]+rc*values[2:])/denom
++        improve=np.zeros(n,dtype=bool)
++        improve[1:-1]=payoff[1:-1]>=continuation
++        improve[0]=improve[-1]=True
++        if np.array_equal(improve,stop):
++            break
++        stop=improve
++    else:
++        raise ArithmeticError('policy iteration did not converge')
++    action_res=(lc*values[:-2]+rc*values[2:]-denom*values[1:-1])
++    # Bellman complementarity: max(g-u,L u-r u)=0.
++    resid=np.maximum(payoff[1:-1]-values[1:-1],action_res)
++    maxres=float(np.max(np.abs(resid)))
++    if maxres>1e-6*max(1.,p.strike) or not np.isfinite(values).all():
++        raise ArithmeticError('independent QVI complementarity violation')
++    stop_indices=np.flatnonzero(stop[1:-1])+1
++    # Last active stopping grid point below strike; upper boundary is a
++    # separate truncation condition, not a stopping event.
++    positive_stop=stop_indices[payoff[stop_indices]>0]
++    if not len(positive_stop):
++        raise ArithmeticError('no stopping region on grid')
++    return DiscreteQVI(v,values,stop,v[max(positive_stop)],maxres,iteration)
+diff --git a/experiments/hcsn_hx_unified_v3/test_hx_curvature_necessary.py b/experiments/hcsn_hx_unified_v3/test_hx_curvature_necessary.py
+new file mode 100644
+index 0000000..0cd1f75
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/test_hx_curvature_necessary.py
+@@ -0,0 +1,58 @@
++import unittest
++from decimal import Decimal
++from .hx_curvature_necessary import hx_local_curvature_gate
++
++
++class HXCurvatureTests(unittest.TestCase):
++    @staticmethod
++    def sample(dividend='0.2'):
++        return dict(boundary='100',dividend_yield=dividend,
++                    rollover_fraction='0.5',coupon='2',
++                    recovery_fraction='0.5',maturity='5',
++                    principal='100',sigma='0.2')
++
++    def test_positive_boundary_cashflow_rejects(self):
++        r=hx_local_curvature_gate(**self.sample())
++        self.assertEqual(r.status,'REJECT_NEGATIVE_LOCAL_CONTINUATION')
++        self.assertEqual(Decimal(r.boundary_cashflow),Decimal('9'))
++        self.assertLess(Decimal(r.boundary_second_derivative),0)
++        self.assertFalse(r.global_obstacle_certified)
++
++    def test_negative_boundary_cashflow_only_necessary(self):
++        r=hx_local_curvature_gate(**self.sample('0.02'))
++        self.assertEqual(r.status,'LOCAL_NECESSARY_ONLY_GLOBAL_UNCERTIFIED')
++        self.assertGreater(Decimal(r.boundary_second_derivative),0)
++        self.assertFalse(r.global_obstacle_certified)
++
++    def test_exact_zero_does_not_pass(self):
++        r=hx_local_curvature_gate(**self.sample('0.11'))
++        self.assertEqual(r.status,'UNRESOLVED_ZERO_CURVATURE')
++
++    def test_below_binary64_decimal_sign_retained(self):
++        r=hx_local_curvature_gate(**self.sample('0.110000000000000000000000001'))
++        self.assertEqual(r.status,'REJECT_NEGATIVE_LOCAL_CONTINUATION')
++        self.assertGreater(Decimal(r.boundary_cashflow),0)
++
++    def test_invalid_and_float_inputs_fail_closed(self):
++        for key,value in (('sigma','0'),('rollover_fraction','1.01'),
++                          ('dividend_yield','-0.1'),('maturity','0'),
++                          ('boundary','Infinity'),('recovery_fraction',0.3),
++                          ('coupon',True),('principal','NaN')):
++            args=self.sample();args[key]=value
++            with self.subTest(key=key),self.assertRaises(ValueError):
++                hx_local_curvature_gate(**args)
++
++    def test_scale_homogeneity_curvature(self):
++        r=hx_local_curvature_gate(**self.sample('0.02'))
++        new=self.sample('0.02')
++        for f in ('boundary','coupon','principal'):
++            new[f]=str(Decimal(new[f])*Decimal('1000'))
++        rr=hx_local_curvature_gate(**new)
++        self.assertEqual(Decimal(rr.boundary_cashflow),
++                         Decimal(r.boundary_cashflow)*Decimal('1000'))
++        self.assertEqual(Decimal(rr.boundary_second_derivative),
++                         Decimal(r.boundary_second_derivative)/Decimal('1000'))
++
++
++if __name__=='__main__':
++    unittest.main()
+diff --git a/experiments/hcsn_hx_unified_v3/test_perpetual_put_qvi_reference.py b/experiments/hcsn_hx_unified_v3/test_perpetual_put_qvi_reference.py
+new file mode 100644
+index 0000000..b4e97ed
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/test_perpetual_put_qvi_reference.py
+@@ -0,0 +1,116 @@
++"""Reproducible simplified GBM optimal-stopping reference tests."""
++import dataclasses
++import math
++import unittest
++
++import numpy as np
++
++from .perpetual_put_qvi_reference import (
++    GBMPut, ReferenceDomainError, independent_grid_qvi, quantized_side_f32,
++)
++
++
++class TestPerpetualPutQVI(unittest.TestCase):
++    def setUp(self):
++        self.p=GBMPut(.08,.02,.23,1.)
++
++    def test_domain_fail_closed(self):
++        for args in ((0.,.02,.23,1.),(.08,-.01,.23,1.),(.08,.02,0.,1.),
++                     (.08,.02,.23,0.),(math.inf,.02,.23,1.),
++                     (True,.02,.23,1.),(.08,.02,float('nan'),1.)):
++            with self.subTest(args=args),self.assertRaises(ReferenceDomainError):
++                GBMPut(*args)
++
++    def test_negative_characteristic_root(self):
++        p=self.p
++        b=p.beta_minus
++        lhs=.5*p.sigma**2*b*(b-1)+(p.rate-p.dividend)*b-p.rate
++        self.assertLess(b,0)
++        self.assertAlmostEqual(lhs,0,places=12)
++
++    def test_value_and_smooth_pasting(self):
++        p=self.p
++        b=p.boundary
++        self.assertTrue(0<b<p.strike)
++        self.assertAlmostEqual(p.value(b),p.strike-b,places=13)
++        h=2e-5*b
++        approx_derivative=(p.value(b+h)-p.value(b-h))/(2*h)
++        self.assertAlmostEqual(approx_derivative,-1.,delta=2e-5)
++
++    def test_global_obstacle_and_generator_on_log_grid(self):
++        for p in (self.p,GBMPut(.04,0,.6,1),GBMPut(.03,.25,.13,2),
++                  GBMPut(.2,.01,.7,3)):
++            for state in np.geomspace(p.boundary/1e3,p.strike*1e3,1501):
++                gen,obstacle=p.qvi(float(state))
++                tol=1e-12*max(p.strike,1.)
++                self.assertLessEqual(gen,tol)
++                self.assertLessEqual(obstacle,tol)
++                self.assertAlmostEqual(max(gen,obstacle),0.,delta=tol)
++
++    def test_global_stopping_generator_analytic_identity(self):
++        p=self.p
++        beta=p.beta_minus
++        self.assertAlmostEqual(p.dividend*p.boundary-p.rate*p.strike,
++                               .5*p.sigma**2*beta*p.strike,delta=1e-12)
++        self.assertLess(p.dividend*p.boundary-p.rate*p.strike,0)
++
++    def test_implicit_boundary_gradients(self):
++        p=self.p
++        for name,analytic in p.sensitivities().items():
++            old=getattr(p,name)
++            h=old*1e-5 if old else 1e-6
++            plus=dataclasses.replace(p,**{name:old+h}).boundary
++            minus=dataclasses.replace(p,**{name:old-h}).boundary
++            finite_diff=(plus-minus)/(2*h)
++            self.assertAlmostEqual(analytic,finite_diff,
++                                   delta=3e-6*max(1.,abs(analytic)))
++
++    def test_continuation_convexity(self):
++        p=self.p
++        b=p.boundary
++        for v in np.geomspace(b*1.0001,p.strike*100,100):
++            val=p.value(float(v))
++            second=p.beta_minus*(p.beta_minus-1)*val/(v*v)
++            self.assertGreater(second,0)
++            self.assertGreater(val,max(p.strike-v,0.))
++
++    def test_grid_policy_independent_value_convergence(self):
++        p=self.p
++        reports=[]
++        for n in (129,257,513):
++            solution=independent_grid_qvi(p,n=n)
++            self.assertLess(solution.max_complementarity_residual,5e-8)
++            err=abs(solution.active_boundary-p.boundary)
++            value_err=max(abs(np.interp(v,solution.spots,solution.values)-p.value(v))
++                          for v in (.45,.75,1.,1.5,2.))
++            reports.append((err,value_err))
++        self.assertLess(reports[-1][0],.035)
++        self.assertLess(reports[-1][1],.002)
++        # Value errors converge on this fixed five-spot benchmark.
++        # The exercise does not prove a boundary convergence rate; finite
++        # grid stop indices can stay constant across successive meshes.
++        self.assertGreater(reports[0][1],reports[1][1])
++        self.assertGreater(reports[1][1],reports[2][1])
++
++    def test_fp32_alias_is_ambiguous(self):
++        b=np.float32(.7)
++        # Opposite true f64 sides that map to the same f32 representable value.
++        b64=float(b)
++        self.assertEqual(quantized_side_f32(math.nextafter(b64,0.),b64),'AMBIGUOUS')
++        self.assertEqual(quantized_side_f32(math.nextafter(b64,math.inf),b64),'AMBIGUOUS')
++        self.assertEqual(quantized_side_f32(b64*1.1,b64),'ABOVE')
++        self.assertEqual(quantized_side_f32(b64*.9,b64),'BELOW')
++
++    def test_quantized_invalid_inputs(self):
++        for pair in ((0.,1.),(1.,0.),(float('nan'),1.),(float('inf'),1.),
++                     (-1.,1.),(True,1.)):
++            with self.assertRaises(ReferenceDomainError):
++                quantized_side_f32(*pair)
++
++    def test_refuse_underresolved_boundary(self):
++        with self.assertRaises((ArithmeticError,OverflowError)):
++            GBMPut(1e-300,0.,1e-300,1e-300).boundary
++
++
++if __name__=='__main__':
++    unittest.main()

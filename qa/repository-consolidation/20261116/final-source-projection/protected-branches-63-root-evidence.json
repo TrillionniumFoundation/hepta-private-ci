@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.new-hia-root-reduction.v1",
+  "candidate_roots": [
+    "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+    "2a89089230be1c8b850beeeeda4d5f47943bcad2",
+    "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+    "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8",
+    "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5",
+    "2ab2266db6ae013f39f44e36cb062fbebb46b7c7"
+  ],
+  "relations": [
+    {
+      "ancestor": "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+      "descendant": "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8"
+    },
+    {
+      "ancestor": "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+      "descendant": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5"
+    },
+    {
+      "ancestor": "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+      "descendant": "2ab2266db6ae013f39f44e36cb062fbebb46b7c7"
+    },
+    {
+      "ancestor": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+      "descendant": "2a89089230be1c8b850beeeeda4d5f47943bcad2"
+    }
+  ],
+  "retained_roots": [
+    "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+    "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+  ],
+  "protected_base_not_used_as_ancestry_seed": {
+    "codex/cell-owner-lifecycle-20261115-724f": "b9fe680df175112e0d73d5bfa2e2e2b697ba969a"
+  },
+  "new_refs_parent_evidence": "new-hia-descendants-api-evidence.json",
+  "ordinary_old_hia_names_not_added": true,
+  "remote_mutations_performed": false
+}

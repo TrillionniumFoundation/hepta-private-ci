@@ -1,0 +1,174 @@
+{
+  "schema": "hpca-v2-operator-ood-plan-1",
+  "base_pr": 5921,
+  "base_head": "6acce13e2052c9c44c39ec78f29c511a5fc59790",
+  "source_v2_pr": 5905,
+  "source_v2_head": "0ed4fce8bd07d361bf7eba40c40fe73d1f349c66",
+  "execution_fence": "PLAN_MUST_BE_PUBLISHED_TO_GITHUB_BEFORE_MODEL_FORWARD",
+  "selection": "DENY_ALL",
+  "claimed_independent_evaluator": false,
+  "interpretation": "Operator-authored new text prompts, exploratory and non-confirmatory. No owner attestation, independently held future B, or product C.",
+  "target_conditions": [
+    "frozen base",
+    "seed11 interleaved",
+    "seed11 bursty",
+    "seed17 interleaved",
+    "seed17 bursty",
+    "seed23 interleaved",
+    "seed23 bursty",
+    "seed29 interleaved",
+    "seed29 bursty"
+  ],
+  "primary_outcomes": [
+    "per-seed per-family task accuracy",
+    "per-seed per-family binary log loss",
+    "total CPU/wall/IO and checkpoint identity"
+  ],
+  "multiple_comparisons": "Exploratory descriptive, do not use significance claims or choose a winner after inspection.",
+  "tasks": [
+    {
+      "id": "arithmetic-01",
+      "family": "arithmetic",
+      "question": "Is 12 greater than 9?",
+      "truth": "yes"
+    },
+    {
+      "id": "arithmetic-02",
+      "family": "arithmetic",
+      "question": "Is 3 times 4 equal to 15?",
+      "truth": "no"
+    },
+    {
+      "id": "arithmetic-03",
+      "family": "arithmetic",
+      "question": "Is 100 divisible by 25?",
+      "truth": "yes"
+    },
+    {
+      "id": "arithmetic-04",
+      "family": "arithmetic",
+      "question": "Is 21 an even integer?",
+      "truth": "no"
+    },
+    {
+      "id": "arithmetic-05",
+      "family": "arithmetic",
+      "question": "Is 2 plus 2 equal to 4?",
+      "truth": "yes"
+    },
+    {
+      "id": "arithmetic-06",
+      "family": "arithmetic",
+      "question": "Is 8 a prime number?",
+      "truth": "no"
+    },
+    {
+      "id": "taxonomy-01",
+      "family": "taxonomy",
+      "question": "Is a tulip a flower?",
+      "truth": "yes"
+    },
+    {
+      "id": "taxonomy-02",
+      "family": "taxonomy",
+      "question": "Is a sofa a type of ocean?",
+      "truth": "no"
+    },
+    {
+      "id": "taxonomy-03",
+      "family": "taxonomy",
+      "question": "Does a triangle have three sides?",
+      "truth": "yes"
+    },
+    {
+      "id": "taxonomy-04",
+      "family": "taxonomy",
+      "question": "Is a penguin a reptile?",
+      "truth": "no"
+    },
+    {
+      "id": "taxonomy-05",
+      "family": "taxonomy",
+      "question": "Is copper a metal?",
+      "truth": "yes"
+    },
+    {
+      "id": "taxonomy-06",
+      "family": "taxonomy",
+      "question": "Is granite a liquid at room temperature?",
+      "truth": "no"
+    },
+    {
+      "id": "negation-01",
+      "family": "negation",
+      "question": "Is it false that every square has four equal sides?",
+      "truth": "no"
+    },
+    {
+      "id": "negation-02",
+      "family": "negation",
+      "question": "Is it false that 11 is a composite number?",
+      "truth": "yes"
+    },
+    {
+      "id": "negation-03",
+      "family": "negation",
+      "question": "Is it false that 15 is divisible by 3?",
+      "truth": "no"
+    },
+    {
+      "id": "negation-04",
+      "family": "negation",
+      "question": "Is it false that 9 is an even number?",
+      "truth": "yes"
+    },
+    {
+      "id": "negation-05",
+      "family": "negation",
+      "question": "Is it false that a week has seven days?",
+      "truth": "no"
+    },
+    {
+      "id": "negation-06",
+      "family": "negation",
+      "question": "Is it false that a dozen contains thirteen items?",
+      "truth": "yes"
+    },
+    {
+      "id": "conditional-01",
+      "family": "conditional",
+      "question": "If no zogs are red and all blips are zogs, can a blip be red?",
+      "truth": "no"
+    },
+    {
+      "id": "conditional-02",
+      "family": "conditional",
+      "question": "If a switch is OFF and then turned ON, is it ON?",
+      "truth": "yes"
+    },
+    {
+      "id": "conditional-03",
+      "family": "conditional",
+      "question": "If 5 is greater than 2 and 2 is greater than 1, is 1 greater than 5?",
+      "truth": "no"
+    },
+    {
+      "id": "conditional-04",
+      "family": "conditional",
+      "question": "If a box holds 3 apples and 2 more are added, does it hold 5?",
+      "truth": "yes"
+    },
+    {
+      "id": "conditional-05",
+      "family": "conditional",
+      "question": "If a clock advances from 11:59 to 12:00, is the minute value still 59?",
+      "truth": "no"
+    },
+    {
+      "id": "conditional-06",
+      "family": "conditional",
+      "question": "If two equal sets each contain four objects, does either set contain four objects?",
+      "truth": "yes"
+    }
+  ]
+}

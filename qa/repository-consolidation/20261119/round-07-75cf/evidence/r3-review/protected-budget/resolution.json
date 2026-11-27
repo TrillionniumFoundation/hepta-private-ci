@@ -1,0 +1,61 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "227a89333cdb9f8cb330e1a01df9cc5d6b52adf3",
+  "merge_base": "96777483395f33a581081dfe9d3c16956e73d182",
+  "genuine_merge_tree_preview": "d827f2669a07456d728dacb43aa4778f68e55b8e",
+  "genuine_merge_exit": 1,
+  "resolved_tree": "0f8bfecf07ee957a17327fa6472938e1d7f62c5b",
+  "changed_paths": [
+    "A\texperiments/ndu_mgp_gates/PROTECTED_COST_GATES.md"
+  ],
+  "new_document_blob": "ca9a7082b8f312dbdc4a132a8c40a442e6d2d31a",
+  "protected_ancestor_pins": [],
+  "protection_evidence": "small-merge-review/missing-retry-02/previews/227a89333cdb9f8cb330e1a01df9cc5d6b52adf3/preview.json",
+  "conflict_resolutions": [
+    {
+      "path": "experiments/ndu_mgp_gates/paired_superiority.py",
+      "regions": 5,
+      "decision": "Retain current frozen Boolean membership representation, per-seed >=8 original-source floor, absolute service floors, direct no-epsilon hard cap, failed-draw retention, all-arm absolute budget gate, and bootstrap cost margin. Incoming old aliases, weaker >=2-world cohort, additive epsilon and pairwise-only overbudget check are superseded by these current invariants; do not introduce duplicate schema fields or arrays."
+    },
+    {
+      "path": "experiments/ndu_mgp_gates/test_paired_superiority.py",
+      "regions": 3,
+      "decision": "Retain current fixtures and regression suite for current schema rather than adding the old field aliases. All seven incoming test intents map to existing current regressions; retain the additional anti-tampering, independent-source and no-epsilon tests."
+    },
+    {
+      "path": "experiments/ndu_mgp_gates/PROTECTED_COST_GATES.md",
+      "decision": "Retain original historical branch record byte-for-byte as a suffix, preceded by an explicit current-schema mapping and historical-evidence label so old field names and 48-test claims are not presented as current validation."
+    }
+  ],
+  "test_intent_mapping": {
+    "test_protected_label_cannot_be_reassigned_after_lock": [
+      "test_posthoc_reclassification_cannot_flip_protected_service_decision"
+    ],
+    "test_protected_cohort_must_be_preregistered": [
+      "test_frozen_protected_manifest_required"
+    ],
+    "test_protected_manifest_cannot_name_other_seed_or_duplicates": [
+      "test_frozen_protected_manifest_requires_boolean_exact_population",
+      "test_posthoc_reclassification_cannot_flip_protected_service_decision"
+    ],
+    "test_completed_overbudget_episode_denied_despite_low_average_cost": [
+      "test_relative_equal_cost_cannot_override_absolute_hard_budget",
+      "test_small_absolute_budget_has_no_dangerous_epsilon_floor"
+    ],
+    "test_overbudget_failure_kept_in_full_denominator": [
+      "test_valid_overrun_is_penalized_retained_and_never_qualified"
+    ],
+    "test_overbudget_failed_episode_cannot_buy_provisional_cost_pass": [
+      "test_valid_overrun_is_penalized_retained_and_never_qualified",
+      "test_cost_uncertainty_fails_even_when_mean_ratio_looks_safe"
+    ],
+    "test_nonpositive_common_episode_cost_limit_denied": [
+      "test_nonpositive_absolute_cap_is_rejected"
+    ]
+  },
+  "same_current_executable_blobs": {
+    "experiments/ndu_mgp_gates/paired_superiority.py": "e43b91744f619bd1096f5836647a30a627d678cc",
+    "experiments/ndu_mgp_gates/test_paired_superiority.py": "9318345e16ad8745839e00384a47f636f389c8e5"
+  },
+  "verification": "No runtime code or test byte changes versus the base. Original historical source/test blob IDs verified against incoming. diff --check passed. No recompilation or test duplication needed for a documentation-only result; full candidate CI remains parent-owned. No refs moved."
+}

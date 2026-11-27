@@ -1,0 +1,34 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "-c",
+      "from pathlib import Path\nimport datetime,hashlib,json,os,time\nb=Path(\"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training\");tick=time.monotonic()\ndef sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()\nraw=(b/'campaign-v2-monitor/LATEST.json').read_bytes();latest=json.loads(raw)\nouter={}\nfor line in (b/'campaign-v2/commands.jsonl').read_bytes().splitlines():\n try:r=json.loads(line)\n except json.JSONDecodeError:continue\n if r.get('arm')=='hcsn':outer[r['name']]=r\nfits=[]\nfor r in latest['fits']:\n if not r['name'].startswith('hcsn-'):continue\n ep=r.get('last_epoch',{})\n row={k:r.get(k) for k in ('name','status','complete_epochs','main_updates','diagnostic_updates','last_event')}\n row.update(memorization_passed=r.get('last_memorization',{}).get('passed'),latest_D_macro_f1=ep.get('development',{}).get('macro_f1_11_classes'))\n o=outer.get(r['name'],{})\n row['outer']={k:o.get(k) for k in ('status','returncode','fit_status','hard_wall_seconds','whole_process_wall_seconds','result_sha256','adequate')}\n if o.get('status') not in (None,'started'):\n  d=b/'campaign-v2'/r['name'];p=d/'result.json'\n  if p.is_file():\n   raw_result=p.read_bytes();f=json.loads(raw_result)\n   row['terminal']={k:f.get(k) for k in ('status','stop_reason','source_unchanged','common_weights_unchanged','training_adequacy_established','main_updates','diagnostic_updates','best_epoch','best_checkpoint_sha256','last_checkpoint_sha256','interrupted_checkpoint_sha256','plan_sha256','events_sha256','process_wall_seconds','wall_seconds','cpu_seconds','peak_rss_bytes','error')}\n   row['terminal'].update(epochs=len(f.get('epochs',[])),last_D_macro_f1=f['epochs'][-1]['development']['macro_f1_11_classes'] if f.get('epochs') else None,selected_D_macro_f1=f.get('selected_development',{}).get('macro_f1_11_classes'),result_sha256=hashlib.sha256(raw_result).hexdigest())\n   row['artifact_identities']={n:{'bytes':(d/n).stat().st_size,'sha256':sha(d/n)} for n in ('result.json','plan.json','initial.pt','best.pt','last.pt','interrupted.pt','events.jsonl') if (d/n).is_file()}\n fits.append(row)\nprocesses=[]\nfor r in latest.get('processes',[]):\n p=Path('/proc')/str(r['pid'])\n try:\n  stats=(p/'stat').read_text().rsplit(')',1)[1].split();st={}\n  for line in (p/'status').read_text().splitlines():\n   k,_,v=line.partition(':')\n   if k in ('State','VmRSS','VmHWM'):st[k]=v.strip()\n  processes.append({'pid':r['pid'],'cpu_seconds_proc':(int(stats[11])+int(stats[12]))/os.sysconf('SC_CLK_TCK'),'status':st})\n except FileNotFoundError:processes.append({'pid':r['pid'],'exists':False})\nresult={'schema':'hcsn-terminal-or-progress-observation-v1','observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'monitor_utc':latest['utc'],'monitor_sha256':hashlib.sha256(raw).hexdigest(),'fits':fits,'processes':processes,'original_controller_exists':Path('/proc/1487187').exists(),'whole_campaign_final_exists':(b/'campaign-v2/RESULT.json').exists(),'scientific_admission':'HOLD','confirmation_access':False,'own_wall_seconds':time.monotonic()-tick,'own_process_cpu_seconds':time.process_time()}\nif result['whole_campaign_final_exists']:\n p=b/'campaign-v2/RESULT.json';final=json.loads(p.read_bytes());result['whole_campaign_final']={k:final.get(k) for k in ('status','whole_wall_seconds','sum_attempt_wall_seconds','children_cpu_seconds','controller_cpu_seconds','source_unchanged','training_adequacy_passed_fits')};result['whole_campaign_final'].update(sha256=sha(p),bytes=p.stat().st_size)\nprint(json.dumps(result,sort_keys=True))\n"
+    ],
+    "created_unix_ms": 1794336683237,
+    "cwd": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "env_keys": [],
+    "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1c6ccf4e5-5074-248",
+    "idempotency_key": "native-hcsn-terminal-check-20261110-1851-c385-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1c6ccf4e5-5074-248",
+    "request_digest": "45f04d7014d78646a2da4ece3faaf0101540d8f1c2ca9db5afd73e24ff47e37e",
+    "request_fingerprint": 5039613126808929862,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1c6ccf4e5-5074-248"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1c6ccf4e5-5074-248"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

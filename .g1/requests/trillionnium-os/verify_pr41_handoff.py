@@ -208,15 +208,54 @@ def verify_root_binding(root: Path) -> None:
     )
 
 
-def verify_changed_paths(root: Path, base: str, head: str) -> None:
+def verify_changed_path_scope(changed: list[str], scope: str) -> None:
+    changed_set = set(changed)
+    require(len(changed) == len(changed_set), "changed paths contain duplicates")
+    if scope == "exact-handoff":
+        require(changed_set == ALLOWED_CHANGED_PATHS,
+                f"changed paths drifted: {sorted(changed)}")
+        return
+
+    require(scope == "retained-handoff", "unknown changed-path scope")
+    boundary = REQUEST_RELATIVE_ROOT.as_posix()
+    bundle_paths = {f"{boundary}/{name}" for name in ALL_BUNDLE_NAMES}
+    require(not changed_set.intersection(bundle_paths),
+            "retained handoff bundle changed")
+    ancestors = {
+        parent.as_posix()
+        for parent in REQUEST_RELATIVE_ROOT.parents
+        if parent != Path(".")
+    }
+    request_changes = {
+        path for path in changed_set
+        if path == boundary or path in ancestors or path.startswith(f"{boundary}/")
+    }
+    require(request_changes <= {VERIFIER_RELATIVE_PATH.as_posix()},
+            f"retained handoff paths drifted: {sorted(request_changes)}")
+
+
+def verify_changed_paths(
+    root: Path, base: str, head: str, *, scope: str = "exact-handoff",
+) -> None:
     require(re.fullmatch(r"[0-9a-f]{40}", base) is not None, "invalid base SHA")
     require(re.fullmatch(r"[0-9a-f]{40}", head) is not None, "invalid head SHA")
     require(git(root, "rev-parse", "HEAD").strip() == head, "checkout is not exact head")
-    changed = git(
-        root, "diff", "--name-only", "--diff-filter=ACDMRTUXB", f"{base}...{head}"
-    ).splitlines()
-    require(set(changed) == ALLOWED_CHANGED_PATHS, f"changed paths drifted: {sorted(changed)}")
-    require(len(changed) == len(set(changed)), "changed paths contain duplicates")
+    changed = [
+        path for path in git(
+            root, "diff", "--name-only", "--diff-filter=ACDMRTUXB",
+            "--no-renames", "-z", f"{base}...{head}",
+        ).split("\0") if path
+    ]
+    verify_changed_path_scope(changed, scope)
+    if scope == "retained-handoff":
+        # A diverged base can change bundle bytes outside the PR merge-base diff.
+        # Compare the five retained artifacts against the exact requested base too.
+        retained_changes = git(
+            root, "diff", "--name-only", "--no-renames", "-z", base, head, "--",
+            *(str(REQUEST_RELATIVE_ROOT / name) for name in ALL_BUNDLE_NAMES),
+        )
+        require(retained_changes == "",
+                "retained handoff bundle differs from exact base")
     require(git(root, "status", "--porcelain=v1", "--untracked-files=all") == "",
             "checkout is not clean")
 
@@ -575,8 +614,38 @@ def run_self_tests(root: Path) -> None:
             lambda: verify_root_binding(other_root), "two-root verifier mismatch"
         )
 
+    exact_paths = sorted(ALLOWED_CHANGED_PATHS)
+    verify_changed_path_scope(exact_paths, "exact-handoff")
+    verify_changed_path_scope([
+        str(VERIFIER_RELATIVE_PATH),
+        ".github/workflows/self-hosted-desktop-availability.yml",
+        "codex-rs/hepta-agentd/src/lib.rs",
+    ], "retained-handoff")
+    boundary = REQUEST_RELATIVE_ROOT.as_posix()
+    scope_cases = [
+        ("strict_missing_path", exact_paths[:-1], "exact-handoff"),
+        ("strict_extra_path", [*exact_paths, "unrelated.txt"], "exact-handoff"),
+        ("strict_duplicate_path", [*exact_paths, exact_paths[0]], "exact-handoff"),
+        ("retained_request_change", [f"{boundary}/{REQUEST_NAME}"], "retained-handoff"),
+        ("retained_manifest_change", [f"{boundary}/{MANIFEST_NAME}"], "retained-handoff"),
+        ("retained_unknown_path", [f"{boundary}/extra.json"], "retained-handoff"),
+        ("retained_newline_path", [f"{boundary}/notes\ndrift.txt"], "retained-handoff"),
+        ("retained_g1_replacement", [".g1"], "retained-handoff"),
+        ("retained_requests_replacement", [".g1/requests"], "retained-handoff"),
+        ("retained_directory_replacement", [boundary], "retained-handoff"),
+        ("retained_duplicate_path", [str(VERIFIER_RELATIVE_PATH)] * 2, "retained-handoff"),
+        ("unknown_path_scope", [], "unknown"),
+    ]
+    for name, paths, scope in scope_cases:
+        expect_verification_failure(
+            lambda paths=paths, scope=scope: verify_changed_path_scope(paths, scope),
+            name,
+        )
+
     print(json.dumps({
         "status": "PASS_HANDOFF_VERIFIER_SELF_TESTS",
+        "changed_path_positive_cases": 2,
+        "hostile_changed_path_cases": len(scope_cases),
         "hostile_request_cases": len(mutations),
         "two_root_mismatch_rejected": True,
         "authority_granted": False,
@@ -589,6 +658,12 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--base")
     parser.add_argument("--head")
     parser.add_argument("--self-test-only", action="store_true")
+    parser.add_argument(
+        "--changed-path-scope",
+        choices=("exact-handoff", "retained-handoff"),
+        default="exact-handoff",
+        help="Use retained-handoff only when the original bundle stays unchanged.",
+    )
     args = parser.parse_args(argv)
     try:
         root = args.root.resolve()
@@ -598,11 +673,12 @@ def main(argv: list[str]) -> int:
             return 0
         require(args.base is not None, "--base is required")
         require(args.head is not None, "--head is required")
-        verify_changed_paths(root, args.base, args.head)
+        verify_changed_paths(root, args.base, args.head, scope=args.changed_path_scope)
         verify_workflows(root)
         verify_bundle(root)
         print(json.dumps({
             "result": "PASS_UNSIGNED_HANDOFF_AND_PROBE_BOUNDARIES",
+            "changed_path_scope": args.changed_path_scope,
             "package_id": EXPECTED_PACKAGE_ID,
             "availability_probe_dispatch_count": 2,
             "target_evidence_capture_dispatch_count": 0,

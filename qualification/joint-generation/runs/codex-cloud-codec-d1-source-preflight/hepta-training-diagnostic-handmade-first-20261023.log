@@ -1,0 +1,50 @@
+test_diagnostic_formal_capability_denied_before_data_preflight_and_marker_checks (independent.test_training_diagnostic.TrainingDiagnosticTests.test_diagnostic_formal_capability_denied_before_data_preflight_and_marker_checks) ... ok
+test_live_prefix_checkpoints_include_all_prior_draws_state_and_real_step_count (independent.test_training_diagnostic.TrainingDiagnosticTests.test_live_prefix_checkpoints_include_all_prior_draws_state_and_real_step_count) ... ERROR
+test_missing_32_stays_visible_and_an_earlier_draw_or_model_changes_identity (independent.test_training_diagnostic.TrainingDiagnosticTests.test_missing_32_stays_visible_and_an_earlier_draw_or_model_changes_identity) ... ERROR
+test_output_archive_retains_actual_png_json_rng_and_deterministic_member_bytes (independent.test_training_diagnostic.TrainingDiagnosticTests.test_output_archive_retains_actual_png_json_rng_and_deterministic_member_bytes) ... ok
+test_parent_identity_or_source_geometry_fault_is_not_silently_resampled (independent.test_training_diagnostic.TrainingDiagnosticTests.test_parent_identity_or_source_geometry_fault_is_not_silently_resampled) ... ERROR
+test_provider_preserves_whole_sources_order_bytes_and_train_only_provenance (independent.test_training_diagnostic.TrainingDiagnosticTests.test_provider_preserves_whole_sources_order_bytes_and_train_only_provenance) ... ok
+test_provider_rejects_official_heldout_before_constructor_or_files (independent.test_training_diagnostic.TrainingDiagnosticTests.test_provider_rejects_official_heldout_before_constructor_or_files) ... ok
+
+======================================================================
+ERROR: test_live_prefix_checkpoints_include_all_prior_draws_state_and_real_step_count (independent.test_training_diagnostic.TrainingDiagnosticTests.test_live_prefix_checkpoints_include_all_prior_draws_state_and_real_step_count)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/test_training_diagnostic.py", line 181, in test_live_prefix_checkpoints_include_all_prior_draws_state_and_real_step_count
+    recorder.update(step, idx, full, model, step / 100, rng, ledger)
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/training_diagnostic.py", line 158, in update
+    hashed += len(json.dumps(model.dimensions).encode()) + sum(
+                             ^^^^^^^^^^^^^^^^
+AttributeError: 'HandModel' object has no attribute 'dimensions'
+
+======================================================================
+ERROR: test_missing_32_stays_visible_and_an_earlier_draw_or_model_changes_identity (independent.test_training_diagnostic.TrainingDiagnosticTests.test_missing_32_stays_visible_and_an_earlier_draw_or_model_changes_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/test_training_diagnostic.py", line 205, in test_missing_32_stays_visible_and_an_earlier_draw_or_model_changes_identity
+    recorder.update(step, idx, full, model, .5, rng, WorkLedger("prefix"))
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/training_diagnostic.py", line 158, in update
+    hashed += len(json.dumps(model.dimensions).encode()) + sum(
+                             ^^^^^^^^^^^^^^^^
+AttributeError: 'HandModel' object has no attribute 'dimensions'
+
+======================================================================
+ERROR: test_parent_identity_or_source_geometry_fault_is_not_silently_resampled (independent.test_training_diagnostic.TrainingDiagnosticTests.test_parent_identity_or_source_geometry_fault_is_not_silently_resampled)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/test_training_diagnostic.py", line 135, in test_parent_identity_or_source_geometry_fault_is_not_silently_resampled
+    provider("train")
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/training_diagnostic.py", line 39, in __call__
+    self._prepare()
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/training_diagnostic.py", line 47, in _prepare
+    parent = self.manifest_fn(pool)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/data_v2.py", line 144, in manifest
+    "sources_sha256": _json_hash({key: data["sources"][key] for key in unique}),
+                                       ~~~~~~~~~~~~~~~^^^^^
+KeyError: 'different-handmade-source'
+
+----------------------------------------------------------------------
+Ran 7 tests in 5.149s
+
+FAILED (errors=3)

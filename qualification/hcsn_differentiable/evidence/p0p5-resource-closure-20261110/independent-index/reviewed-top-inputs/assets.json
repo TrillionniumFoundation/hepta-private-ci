@@ -1,0 +1,53 @@
+{
+  "count_scope": "Prior 28 independently retained full readbacks plus the one new payload; not a fresh count of all release API entries.",
+  "hosted_science_artifact": {
+    "archive": {
+      "CRC_and_all_bytes_verified": true,
+      "bytes": 77859,
+      "members": 14,
+      "sha256": "cab12a2f8f73660e3436e68c2dc84f072f1be857dc5513e8f956c995f2e7d743"
+    },
+    "artifact_id": 13797877354,
+    "attempt": 1,
+    "common_tree": "4bb4995c3c1058d268c032a0d15cdfe9297a6ff8",
+    "local_path": "publication-and-science/science-run-42890048946-attempt1-artifact-13797877354.zip",
+    "run_id": 42890048946,
+    "source_head": "cd3b7ac49294174a98e02636247615534c19bd89",
+    "tested_merge": "f63b067ac577a6eea363c37d1358f65dc7b4f4ba"
+  },
+  "known_full_authenticated_payloads_after_this_addition": 29,
+  "new_payloads": [
+    {
+      "all_members_and_CRC_verified": true,
+      "anonymous_asset_API": {
+        "HTTP_status": "404",
+        "authorization_header_sent": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/732788592"
+      },
+      "anonymous_asset_browser": {
+        "HTTP_status": "404",
+        "authorization_header_sent": false,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hcsn-best-full-D-independent-replay-20261110-v1.zip"
+      },
+      "asset_id": 732788592,
+      "authenticated_full_readback_verified": true,
+      "authenticated_readback_sha256": "ff41e5ef909708a5c2472f6786d0e82b6d69a80d968047de2746bcaf84daaac5",
+      "bytes": 19144412,
+      "disposition": "uploaded_once",
+      "name": "hcsn-best-full-D-independent-replay-20261110-v1.zip",
+      "sha256": "ff41e5ef909708a5c2472f6786d0e82b6d69a80d968047de2746bcaf84daaac5"
+    }
+  ],
+  "original_model_asset_id": 732598130,
+  "previous_index": "../p0p5-followup-20261110/assets.json",
+  "publication_failed_attempt": "full-d-replay/publication/attempt-v1/RESULT.json",
+  "publication_receipt": {
+    "bytes": 12180,
+    "path": "full-d-replay/publication/attempt-v2/RESULT.json",
+    "sha256": "cde8f4c7aafd00178ec0c103af3c4c865c287add27dc3db1498e1fd6c7a8ee22"
+  },
+  "release_id": 440410488,
+  "release_published": false,
+  "repository_visibility": "public",
+  "schema": "resource-replay-assets-v1"
+}

@@ -1,0 +1,2998 @@
+{
+  "scope": "one-update parity fixture; not full-budget qualification",
+  "shape": [
+    2,
+    9,
+    2
+  ],
+  "hidden_size": 3,
+  "bins": 32,
+  "device": "cpu",
+  "records": [
+    {
+      "dtype": "float32",
+      "recovery": true,
+      "segment_steps": 1,
+      "input_requires_grad": false,
+      "task": "delayed_recall",
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": null,
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 1.558758397004567
+    },
+    {
+      "dtype": "float32",
+      "recovery": true,
+      "segment_steps": 1,
+      "input_requires_grad": true,
+      "task": "delayed_recall",
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.33506986196152866
+    },
+    {
+      "dtype": "float32",
+      "recovery": true,
+      "segment_steps": 4,
+      "input_requires_grad": false,
+      "task": "delayed_recall",
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": null,
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.3638178289402276
+    },
+    {
+      "dtype": "float32",
+      "recovery": true,
+      "segment_steps": 4,
+      "input_requires_grad": true,
+      "task": "delayed_recall",
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.33706045104190707
+    },
+    {
+      "dtype": "float32",
+      "recovery": false,
+      "segment_steps": 1,
+      "input_requires_grad": false,
+      "task": "adding",
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": null,
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.3388821840053424
+    },
+    {
+      "dtype": "float32",
+      "recovery": false,
+      "segment_steps": 1,
+      "input_requires_grad": true,
+      "task": "adding",
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.33198947098571807
+    },
+    {
+      "dtype": "float32",
+      "recovery": false,
+      "segment_steps": 4,
+      "input_requires_grad": false,
+      "task": "adding",
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": null,
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.3312442440073937
+    },
+    {
+      "dtype": "float32",
+      "recovery": false,
+      "segment_steps": 4,
+      "input_requires_grad": true,
+      "task": "adding",
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.3326138990232721
+    },
+    {
+      "dtype": "float64",
+      "recovery": true,
+      "segment_steps": 1,
+      "input_requires_grad": false,
+      "task": "delayed_recall",
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": null,
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.37546715000644326
+    },
+    {
+      "dtype": "float64",
+      "recovery": true,
+      "segment_steps": 1,
+      "input_requires_grad": true,
+      "task": "delayed_recall",
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.3621172870043665
+    },
+    {
+      "dtype": "float64",
+      "recovery": true,
+      "segment_steps": 4,
+      "input_requires_grad": false,
+      "task": "delayed_recall",
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": null,
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.36785799905192107
+    },
+    {
+      "dtype": "float64",
+      "recovery": true,
+      "segment_steps": 4,
+      "input_requires_grad": true,
+      "task": "delayed_recall",
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.3689869400113821
+    },
+    {
+      "dtype": "float64",
+      "recovery": false,
+      "segment_steps": 1,
+      "input_requires_grad": false,
+      "task": "adding",
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": null,
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.3660504799336195
+    },
+    {
+      "dtype": "float64",
+      "recovery": false,
+      "segment_steps": 1,
+      "input_requires_grad": true,
+      "task": "adding",
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.36855914804618806
+    },
+    {
+      "dtype": "float64",
+      "recovery": false,
+      "segment_steps": 4,
+      "input_requires_grad": false,
+      "task": "adding",
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": null,
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.3668659890536219
+    },
+    {
+      "dtype": "float64",
+      "recovery": false,
+      "segment_steps": 4,
+      "input_requires_grad": true,
+      "task": "adding",
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "trace": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "prediction": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "loss": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameter_gradients": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "input_gradients": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "gradient_norm_before_clip": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "parameters_after_adam": {
+        "encoder.input.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.input.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "encoder.recurrent.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.weight": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        },
+        "readout.bias": {
+          "exact": true,
+          "maximum_absolute_error": 0.0,
+          "rms_error": 0.0
+        }
+      },
+      "optimizer_state_after_adam": {
+        "encoder.input.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.input.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "encoder.recurrent.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.weight": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        },
+        "readout.bias": {
+          "step": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          },
+          "exp_avg_sq": {
+            "exact": true,
+            "maximum_absolute_error": 0.0,
+            "rms_error": 0.0
+          }
+        }
+      },
+      "no_grad_trace_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "no_grad_prediction_after_adam": {
+        "exact": true,
+        "maximum_absolute_error": 0.0,
+        "rms_error": 0.0
+      },
+      "status": "passed",
+      "elapsed_seconds": 0.3697467320598662
+    }
+  ],
+  "manifest_sha256": "d864fdb4819a7f21c7e1a8178686b6bf9ec82df92cf88609240faa918876f51b",
+  "candidate_module_sha256": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+  "checker_sha256": "664a508d7e1c70ee81efe077225b5f4f751bb790efc83cecfc6f1494a09bb509",
+  "baseline_source_sha256": {
+    "qualification/hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "qualification/hcsn/attempts.py": "9c43646b29a2f5fbecd7f8adf0f5da2ee25d0e23768ec3b420d5c79bacc4d470",
+    "qualification/hcsn/audit_population.py": "97e6d7cae07ddf35448e8e6f67c42bf3c75dc9216b4a52df320a1dbdbe0dcee8",
+    "qualification/hcsn/baselines.py": "914a244abe4014a919b35539c4db04a9d334f627981d07fda20935af90026408",
+    "qualification/hcsn/benchmark.py": "fc55f0f71cf35af742a423a407e42defb828c84285b9a6602b91d9b314ac2830",
+    "qualification/hcsn/cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+    "qualification/hcsn/checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "qualification/hcsn/mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "qualification/hcsn/population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "qualification/hcsn/tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "qualification/hcsn/validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045",
+    "qualification/hcsn/configs/full.json": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a"
+  },
+  "software": {
+    "python": "3.12.3",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8"
+  },
+  "status": "passed"
+}

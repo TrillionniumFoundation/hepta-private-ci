@@ -1,0 +1,54 @@
+{
+  "schema": "c2-resource-render-authorization-v1",
+  "execution_authorized": false,
+  "scope": "render_only_after_complete_resource_analysis",
+  "confirmation_E_access": false,
+  "automatic_retry": false,
+  "analysis_supervisor_source_sha256": null,
+  "renderer_sources": {
+    "input_contract.py": {
+      "bytes": 13363,
+      "sha256": "52e643f07852073b4ce5dc2afe70f902182cde952dfab52236341e164d06c729"
+    },
+    "render_c2_resources.py": {
+      "bytes": 14032,
+      "sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef"
+    },
+    "ANALYSIS-PLAN.json": {
+      "bytes": 8456,
+      "sha256": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b"
+    }
+  },
+  "inputs": {
+    "os_receipt": {
+      "path": null,
+      "identity": {
+        "bytes": null,
+        "sha256": null
+      }
+    },
+    "core_receipt": {
+      "path": null,
+      "identity": {
+        "bytes": null,
+        "sha256": null
+      }
+    },
+    "RESULT": {
+      "path": null,
+      "identity": {
+        "bytes": null,
+        "sha256": null
+      }
+    },
+    "ZIP": {
+      "path": null,
+      "identity": {
+        "bytes": null,
+        "sha256": null
+      }
+    }
+  },
+  "output_directory": null,
+  "version_note": "Renderer v2 preparation. Future root authorization must pin actual supervisor v2 source and all completed input identities. No production version adoption is claimed."
+}

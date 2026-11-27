@@ -1,0 +1,44 @@
+{
+  "final_file_sha256": {
+    "independent/FASHION_MNIST_TRAIN_CANDIDATE.md": "74cb72e4b9ceac6b5a859de1d8a7b4858d2f43ea0db54410059b2008ac87927e",
+    "research/fashion-mnist-candidate-20261023/model-inventory.json": "806ec69b4292a09a8b83153879d92dbb20a6762796e74910e3503e61b599f0af",
+    "research/fashion-mnist-candidate-20261023/model_inventory.py": "7c49632877635105d2e8e3756936cf4c71bc6cdb3aa3e455bb3063d71a3b4b7b",
+    "research/fashion-mnist-candidate-20261023/plan.json": "3b022e38985a89cf4855b0717053724f4a6cdc08932903a145bd9945c0907ea1"
+  },
+  "final_reviewer_findings_closed": [
+    "Both real float service and auxiliary terminal risk have separate laws and scores",
+    "D per-seed MSE must beat noisy/black/predicted-class-mean/permuted controls",
+    "Compiled AND distilled candidates required; full teacher and downstream costs charged",
+    "All static pixel heads receive residual input skip",
+    "Initial/final checkpoint and final-content-before-policy chronology explicit",
+    "Distillation is unit KL plus unit MSE added to common loss",
+    "Input sigma.20 and auxiliary terminal sigma.05 distinguished",
+    "CNN has explicit1x1 pixel head:63075params/323008MAC",
+    "D900CPU content subcap implies unmeasured.527GMAC/s reference requirement"
+  ],
+  "remaining_pre_run_gaps": [
+    "Actual forward/backward, clipping derivatives and risk parity",
+    "Backend adapter/export and no-label-channel checks",
+    "Exact next-step reservations and primitive ledger, all costs and RSS",
+    "Source freeze plus prospective review before data fitting",
+    "Future data-file access, data hashes and exact group membership unverified"
+  ],
+  "reviewers": {
+    "model_dimensions_and_CNN_kernel_clarification": "/root/efficient_learning",
+    "official_source_license_and_identity": "/root/independent_data",
+    "operation_budget_and_chronology": "/root/audit_runtime_costs",
+    "scoring_leakage_and_control_conditions": "/root/audit_acceptance"
+  },
+  "schema": "hepta.fashion-candidate.independent-review.v1",
+  "scientific_gain_proved": false,
+  "scope": "Read-only source/proposal/integer review; not dataset, model, performance or scientific validation.",
+  "verified_math": {
+    "JJ_forward_backward_MAC": 1260224,
+    "content_parameters": 65562,
+    "policy_forward_backward_MAC": 584,
+    "policy_parameters": 291,
+    "shared_J_prefix_label_forward_MAC": 450912,
+    "shared_all_nine_forward_MAC": 695840,
+    "total_phase_CPU_seconds": 1800
+  }
+}

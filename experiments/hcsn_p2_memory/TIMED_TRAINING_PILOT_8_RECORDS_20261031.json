@@ -1,0 +1,616 @@
+{
+  "schema": "hcsn-p2-timed-training-pilot-eight-arm-evidence-v1",
+  "preregistration_commit": "b324665f38260aef34b8aaeb726e8ad1d29de1f1",
+  "parent_commit": "0c12e663f3e71d2ddca45f6de6cc2d15d66be39b",
+  "claim": "Equal 2000 optimizer updates, NOT equal CPU time. The 25-second CPU budget was never exhausted because all eight arms hit preregistered max_steps=2000. CPU fairness gate FAILED; do not infer timed mechanism superiority.",
+  "reconstruction": "All eight original local JSON outputs were retained; this Git JSON is a semantically lossless re-encoding of their numeric results, full training traces, model/data digests, output flags and original file SHA-256 hashes. Key insertion/formatting differs from original local files.",
+  "paired_seeds": [
+    0,
+    1
+  ],
+  "tasks": [
+    "copy",
+    "mqar4"
+  ],
+  "arms": [
+    "aggregate_count",
+    "physical_event_timestamp"
+  ],
+  "local_targeted_tests_passed": 62,
+  "records": [
+    {
+      "schema": "hcsn-p2-timed-equal-cpu-training-pilot-v1",
+      "task": "copy",
+      "seed": 0,
+      "arm": "aggregate_count",
+      "training_budget_cpu_seconds": 25,
+      "training_cpu_seconds": 12.280219296,
+      "data_preparation_cpu_seconds": 0.324590344,
+      "optimization_cpu_seconds": 11.955628952,
+      "optimizer_updates": 2000,
+      "reached_step_cap": true,
+      "params": 5186,
+      "initial_model_sha256": "f719602199e421b9a8e274170a1979f88b6faa76a6fd8ae6663a881c11b8f3db",
+      "trained_model_sha256": "32f258bd9bac61d0fa70855423075392455eea8569f5f00e9b697a7a4dad6d7f",
+      "learning_trace": [
+        [
+          1,
+          0.7088632583618164
+        ],
+        [
+          10,
+          0.7399069666862488
+        ],
+        [
+          100,
+          0.3775838315486908
+        ],
+        [
+          400,
+          0.0004138113872613758
+        ],
+        [
+          1000,
+          0.00004388178058434278
+        ],
+        [
+          2000,
+          0.000030350629458553158
+        ]
+      ],
+      "train_data_sha256": "e5f39f658b318575226d2b75e82c9d4d58269c8727bbb2bf565b182e3151ff9d",
+      "id": {
+        "accuracy": 0.9921875,
+        "bce": 0.02389519102871418,
+        "correct": 127,
+        "cpu_seconds": 0.0024277650000001927,
+        "data_sha256": "6dab49802ae474937535111cc5e75cdb4df9f020a0c37e603b53adbc9db03fbf",
+        "multi_fire_streams": 128,
+        "queries": 128,
+        "total_events": 1542,
+        "wall_seconds": 0.002430599000035727
+      },
+      "ood": {
+        "accuracy": 0.7265625,
+        "bce": 3.0017471313476562,
+        "correct": 93,
+        "cpu_seconds": 0.004129185000000035,
+        "data_sha256": "63b70eafa41ba72c06b484cfe193afd3a8cddc2991152130edc94159e761f45b",
+        "multi_fire_streams": 128,
+        "queries": 128,
+        "total_events": 2821,
+        "wall_seconds": 0.004130547999920964
+      },
+      "complete_cpu_seconds": 12.286776246,
+      "cpu_device": "PyTorch CPU float32 single-thread",
+      "causal_event_times": true,
+      "gradients_through_event_operator": true,
+      "no_gradients_through_sampled_Brownian_clock": true,
+      "exploratory_pilot": true,
+      "not_blind_confirmation": true,
+      "production_activation": false,
+      "all_scientific_blockers_closed": false,
+      "original_artifact_sha256": "550a4fa0c98cc25640c0d1558b9033fa93b8a2b9b096b8c316fc17d8580fd30d"
+    },
+    {
+      "schema": "hcsn-p2-timed-equal-cpu-training-pilot-v1",
+      "task": "copy",
+      "seed": 0,
+      "arm": "physical_event_timestamp",
+      "training_budget_cpu_seconds": 25,
+      "training_cpu_seconds": 19.700156753999998,
+      "data_preparation_cpu_seconds": 0.3051372480000001,
+      "optimization_cpu_seconds": 19.395019505999997,
+      "optimizer_updates": 2000,
+      "reached_step_cap": true,
+      "params": 5186,
+      "initial_model_sha256": "f719602199e421b9a8e274170a1979f88b6faa76a6fd8ae6663a881c11b8f3db",
+      "trained_model_sha256": "36dee0ca8968dd168063084156915e61c246eb3d9740631d5d4a7f798ccf1426",
+      "learning_trace": [
+        [
+          1,
+          0.7152495980262756
+        ],
+        [
+          10,
+          0.7305732369422913
+        ],
+        [
+          100,
+          0.41118311882019043
+        ],
+        [
+          400,
+          0.0010995365446433425
+        ],
+        [
+          1000,
+          0.00014775093586649746
+        ],
+        [
+          2000,
+          0.00003707452560774982
+        ]
+      ],
+      "train_data_sha256": "e5f39f658b318575226d2b75e82c9d4d58269c8727bbb2bf565b182e3151ff9d",
+      "id": {
+        "accuracy": 0.875,
+        "bce": 0.610639214515686,
+        "correct": 112,
+        "cpu_seconds": 0.004417841000002198,
+        "data_sha256": "6dab49802ae474937535111cc5e75cdb4df9f020a0c37e603b53adbc9db03fbf",
+        "multi_fire_streams": 128,
+        "queries": 128,
+        "total_events": 1542,
+        "wall_seconds": 0.004418022000209021
+      },
+      "ood": {
+        "accuracy": 0.421875,
+        "bce": 5.840042591094971,
+        "correct": 54,
+        "cpu_seconds": 0.007378806000001958,
+        "data_sha256": "63b70eafa41ba72c06b484cfe193afd3a8cddc2991152130edc94159e761f45b",
+        "multi_fire_streams": 128,
+        "queries": 128,
+        "total_events": 2821,
+        "wall_seconds": 0.007380170000033104
+      },
+      "complete_cpu_seconds": 19.711953401000002,
+      "cpu_device": "PyTorch CPU float32 single-thread",
+      "causal_event_times": true,
+      "gradients_through_event_operator": true,
+      "no_gradients_through_sampled_Brownian_clock": true,
+      "exploratory_pilot": true,
+      "not_blind_confirmation": true,
+      "production_activation": false,
+      "all_scientific_blockers_closed": false,
+      "original_artifact_sha256": "61b4252dd3aed933a27fe8ee379c3b9371a99ff3fbacdc8f409d56319e2c69b3"
+    },
+    {
+      "schema": "hcsn-p2-timed-equal-cpu-training-pilot-v1",
+      "task": "copy",
+      "seed": 1,
+      "arm": "aggregate_count",
+      "training_budget_cpu_seconds": 25,
+      "training_cpu_seconds": 12.303906983000001,
+      "data_preparation_cpu_seconds": 0.3335245040000001,
+      "optimization_cpu_seconds": 11.970382479000001,
+      "optimizer_updates": 2000,
+      "reached_step_cap": true,
+      "params": 5186,
+      "initial_model_sha256": "57d5319cc37c185291dd75048e519f66398d82551ec48e212b347e8cf41220eb",
+      "trained_model_sha256": "023e44fda7a6ed7c1277dc09bbd5d27afc0f786ee2241ce03067e66208086b07",
+      "learning_trace": [
+        [
+          1,
+          0.6855400204658508
+        ],
+        [
+          10,
+          0.6996791958808899
+        ],
+        [
+          100,
+          0.5898576378822327
+        ],
+        [
+          400,
+          0.001390127814374864
+        ],
+        [
+          1000,
+          0.00006712397589581087
+        ],
+        [
+          2000,
+          0.0001205001026391983
+        ]
+      ],
+      "train_data_sha256": "53887bcad9925ff2afa4711fa3b3beed63d8fb62c148f008da68dfc78f724107",
+      "id": {
+        "accuracy": 0.96875,
+        "bce": 0.13542459905147552,
+        "correct": 124,
+        "cpu_seconds": 0.002991839999999968,
+        "data_sha256": "fb7eee6891a9e690b2a61cfba453bac477c1fa8978748762676173644f85550c",
+        "multi_fire_streams": 128,
+        "queries": 128,
+        "total_events": 1506,
+        "wall_seconds": 0.0030267880001701997
+      },
+      "ood": {
+        "accuracy": 0.3046875,
+        "bce": 7.834741592407227,
+        "correct": 39,
+        "cpu_seconds": 0.005891103999999814,
+        "data_sha256": "c008a3722ed9149d2df7380cbe26b2daf71c818a6139cf81f5d75ee247d99ef5",
+        "multi_fire_streams": 128,
+        "queries": 128,
+        "total_events": 2990,
+        "wall_seconds": 0.005892743000003975
+      },
+      "complete_cpu_seconds": 12.312789927,
+      "cpu_device": "PyTorch CPU float32 single-thread",
+      "causal_event_times": true,
+      "gradients_through_event_operator": true,
+      "no_gradients_through_sampled_Brownian_clock": true,
+      "exploratory_pilot": true,
+      "not_blind_confirmation": true,
+      "production_activation": false,
+      "all_scientific_blockers_closed": false,
+      "original_artifact_sha256": "19db98d6e243b4de36abd3640b34a575ab27d00deaa177012585a9353bf86c3a"
+    },
+    {
+      "schema": "hcsn-p2-timed-equal-cpu-training-pilot-v1",
+      "task": "copy",
+      "seed": 1,
+      "arm": "physical_event_timestamp",
+      "training_budget_cpu_seconds": 25,
+      "training_cpu_seconds": 20.425875627,
+      "data_preparation_cpu_seconds": 0.35704991799999974,
+      "optimization_cpu_seconds": 20.068825709,
+      "optimizer_updates": 2000,
+      "reached_step_cap": true,
+      "params": 5186,
+      "initial_model_sha256": "57d5319cc37c185291dd75048e519f66398d82551ec48e212b347e8cf41220eb",
+      "trained_model_sha256": "c8be62c11083aa27be3eb881968e0ec7c8952bb46d25b19312ebc6337b5e186d",
+      "learning_trace": [
+        [
+          1,
+          0.6822840571403503
+        ],
+        [
+          10,
+          0.6996933817863464
+        ],
+        [
+          100,
+          0.545664370059967
+        ],
+        [
+          400,
+          0.024414554238319397
+        ],
+        [
+          1000,
+          0.0005400020163506269
+        ],
+        [
+          2000,
+          0.000305827270494774
+        ]
+      ],
+      "train_data_sha256": "53887bcad9925ff2afa4711fa3b3beed63d8fb62c148f008da68dfc78f724107",
+      "id": {
+        "accuracy": 0.703125,
+        "bce": 2.4269466400146484,
+        "correct": 90,
+        "cpu_seconds": 0.0038405969999999456,
+        "data_sha256": "fb7eee6891a9e690b2a61cfba453bac477c1fa8978748762676173644f85550c",
+        "multi_fire_streams": 128,
+        "queries": 128,
+        "total_events": 1506,
+        "wall_seconds": 0.0038417389996538986
+      },
+      "ood": {
+        "accuracy": 0.4765625,
+        "bce": 5.747819423675537,
+        "correct": 61,
+        "cpu_seconds": 0.007445885999999291,
+        "data_sha256": "c008a3722ed9149d2df7380cbe26b2daf71c818a6139cf81f5d75ee247d99ef5",
+        "multi_fire_streams": 128,
+        "queries": 128,
+        "total_events": 2990,
+        "wall_seconds": 0.007448004000252695
+      },
+      "complete_cpu_seconds": 20.43716211,
+      "cpu_device": "PyTorch CPU float32 single-thread",
+      "causal_event_times": true,
+      "gradients_through_event_operator": true,
+      "no_gradients_through_sampled_Brownian_clock": true,
+      "exploratory_pilot": true,
+      "not_blind_confirmation": true,
+      "production_activation": false,
+      "all_scientific_blockers_closed": false,
+      "original_artifact_sha256": "6a3c54e83603926b6da19247ecb4005cb5c30b07f9c46a3629cee06f8ccc829b"
+    },
+    {
+      "schema": "hcsn-p2-timed-equal-cpu-training-pilot-v1",
+      "task": "mqar4",
+      "seed": 0,
+      "arm": "aggregate_count",
+      "training_budget_cpu_seconds": 25,
+      "training_cpu_seconds": 11.55361194,
+      "data_preparation_cpu_seconds": 0.33476235600000015,
+      "optimization_cpu_seconds": 11.218849583999999,
+      "optimizer_updates": 2000,
+      "reached_step_cap": true,
+      "params": 5186,
+      "initial_model_sha256": "f719602199e421b9a8e274170a1979f88b6faa76a6fd8ae6663a881c11b8f3db",
+      "trained_model_sha256": "792745f2d6b0869f3b2bf6b15af855c7ffec77f27ded540c39b237617c8dfeba",
+      "learning_trace": [
+        [
+          1,
+          0.6922584176063538
+        ],
+        [
+          10,
+          0.6525082588195801
+        ],
+        [
+          100,
+          0.6361914277076721
+        ],
+        [
+          400,
+          0.0860821008682251
+        ],
+        [
+          1000,
+          0.0008750443230383098
+        ],
+        [
+          2000,
+          0.0002929549664258957
+        ]
+      ],
+      "train_data_sha256": "9e8a406a565ad3ffcd3c99464295033738f4285f468c1cc0cda5bf5d6c56176c",
+      "id": {
+        "accuracy": 0.611328125,
+        "bce": 3.282503128051758,
+        "correct": 313,
+        "cpu_seconds": 0.0025723590000001906,
+        "data_sha256": "189b4f1b4e802897b936bc0e03904e3a141849a358d09777b9eb6cbccc0e82ab",
+        "multi_fire_streams": 128,
+        "queries": 512,
+        "total_events": 1453,
+        "wall_seconds": 0.0025730950001161546
+      },
+      "ood": {
+        "accuracy": 0.583984375,
+        "bce": 3.504246950149536,
+        "correct": 299,
+        "cpu_seconds": 0.003980764999999664,
+        "data_sha256": "5a34a9b42f461c9c7040a1dd1807bf2af133a416c8029fa13c6acdff9cf2b381",
+        "multi_fire_streams": 128,
+        "queries": 512,
+        "total_events": 2960,
+        "wall_seconds": 0.003982566000559018
+      },
+      "complete_cpu_seconds": 11.560165064,
+      "cpu_device": "PyTorch CPU float32 single-thread",
+      "causal_event_times": true,
+      "gradients_through_event_operator": true,
+      "no_gradients_through_sampled_Brownian_clock": true,
+      "exploratory_pilot": true,
+      "not_blind_confirmation": true,
+      "production_activation": false,
+      "all_scientific_blockers_closed": false,
+      "original_artifact_sha256": "3b1b43b79727e27c5d6be5f1e11aaab942a471d95dd1ef2cf99a0960e36dc43d"
+    },
+    {
+      "schema": "hcsn-p2-timed-equal-cpu-training-pilot-v1",
+      "task": "mqar4",
+      "seed": 0,
+      "arm": "physical_event_timestamp",
+      "training_budget_cpu_seconds": 25,
+      "training_cpu_seconds": 19.671107510000002,
+      "data_preparation_cpu_seconds": 0.35935895799999984,
+      "optimization_cpu_seconds": 19.311748552,
+      "optimizer_updates": 2000,
+      "reached_step_cap": true,
+      "params": 5186,
+      "initial_model_sha256": "f719602199e421b9a8e274170a1979f88b6faa76a6fd8ae6663a881c11b8f3db",
+      "trained_model_sha256": "701cc6207b5ea55c179c25b5767a7fa3804e516c9e1c31c8f07e7f689be687e1",
+      "learning_trace": [
+        [
+          1,
+          0.6913192868232727
+        ],
+        [
+          10,
+          0.6648097038269043
+        ],
+        [
+          100,
+          0.5968250632286072
+        ],
+        [
+          400,
+          0.10455304384231567
+        ],
+        [
+          1000,
+          0.0007887915708124638
+        ],
+        [
+          2000,
+          0.00019558733038138598
+        ]
+      ],
+      "train_data_sha256": "9e8a406a565ad3ffcd3c99464295033738f4285f468c1cc0cda5bf5d6c56176c",
+      "id": {
+        "accuracy": 0.541015625,
+        "bce": 3.8495755195617676,
+        "correct": 277,
+        "cpu_seconds": 0.004967746000001938,
+        "data_sha256": "189b4f1b4e802897b936bc0e03904e3a141849a358d09777b9eb6cbccc0e82ab",
+        "multi_fire_streams": 128,
+        "queries": 512,
+        "total_events": 1453,
+        "wall_seconds": 0.004969132000042009
+      },
+      "ood": {
+        "accuracy": 0.572265625,
+        "bce": 3.581078290939331,
+        "correct": 293,
+        "cpu_seconds": 0.007706080999998477,
+        "data_sha256": "5a34a9b42f461c9c7040a1dd1807bf2af133a416c8029fa13c6acdff9cf2b381",
+        "multi_fire_streams": 128,
+        "queries": 512,
+        "total_events": 2960,
+        "wall_seconds": 0.0077077460000509745
+      },
+      "complete_cpu_seconds": 19.683781337000003,
+      "cpu_device": "PyTorch CPU float32 single-thread",
+      "causal_event_times": true,
+      "gradients_through_event_operator": true,
+      "no_gradients_through_sampled_Brownian_clock": true,
+      "exploratory_pilot": true,
+      "not_blind_confirmation": true,
+      "production_activation": false,
+      "all_scientific_blockers_closed": false,
+      "original_artifact_sha256": "29221ff599db741fe967e1faf4d7c8f0a9cee557c9365acb896b2dd25ece76a0"
+    },
+    {
+      "schema": "hcsn-p2-timed-equal-cpu-training-pilot-v1",
+      "task": "mqar4",
+      "seed": 1,
+      "arm": "aggregate_count",
+      "training_budget_cpu_seconds": 25,
+      "training_cpu_seconds": 12.894217672,
+      "data_preparation_cpu_seconds": 0.3694370920000001,
+      "optimization_cpu_seconds": 12.52478058,
+      "optimizer_updates": 2000,
+      "reached_step_cap": true,
+      "params": 5186,
+      "initial_model_sha256": "57d5319cc37c185291dd75048e519f66398d82551ec48e212b347e8cf41220eb",
+      "trained_model_sha256": "9a9a36a2bb82075ab62a6547ad0971e5641775831740055bb3cad62bf153eeab",
+      "learning_trace": [
+        [
+          1,
+          0.6984501481056213
+        ],
+        [
+          10,
+          0.6704118251800537
+        ],
+        [
+          100,
+          0.5846437811851501
+        ],
+        [
+          400,
+          0.03998056799173355
+        ],
+        [
+          1000,
+          0.0007479889900423586
+        ],
+        [
+          2000,
+          0.00008255851571448147
+        ]
+      ],
+      "train_data_sha256": "ce76a29143407a3545b33d2f45ccb80cf0b30d56590046ac9259ce34a15676a0",
+      "id": {
+        "accuracy": 0.5625,
+        "bce": 3.89143705368042,
+        "correct": 288,
+        "cpu_seconds": 0.0025948519999996478,
+        "data_sha256": "dcc077d7fd5f11526b3821fd4efc59f2c893f067debe6385e5c663c3e576017a",
+        "multi_fire_streams": 128,
+        "queries": 512,
+        "total_events": 1520,
+        "wall_seconds": 0.0025957289999496425
+      },
+      "ood": {
+        "accuracy": 0.537109375,
+        "bce": 3.955777645111084,
+        "correct": 275,
+        "cpu_seconds": 0.004759076999999223,
+        "data_sha256": "23e2b654a1b554c11d8571874c8656b51d5de12722dae0d46bf2bad81d0eed54",
+        "multi_fire_streams": 128,
+        "queries": 512,
+        "total_events": 2927,
+        "wall_seconds": 0.004761379999763449
+      },
+      "complete_cpu_seconds": 12.901571600999999,
+      "cpu_device": "PyTorch CPU float32 single-thread",
+      "causal_event_times": true,
+      "gradients_through_event_operator": true,
+      "no_gradients_through_sampled_Brownian_clock": true,
+      "exploratory_pilot": true,
+      "not_blind_confirmation": true,
+      "production_activation": false,
+      "all_scientific_blockers_closed": false,
+      "original_artifact_sha256": "e4ed405f58c2e67771baf2425f6378bcb0052f52e7ccac1a44e6bc5e147735c8"
+    },
+    {
+      "schema": "hcsn-p2-timed-equal-cpu-training-pilot-v1",
+      "task": "mqar4",
+      "seed": 1,
+      "arm": "physical_event_timestamp",
+      "training_budget_cpu_seconds": 25,
+      "training_cpu_seconds": 20.979723963999998,
+      "data_preparation_cpu_seconds": 0.371078381,
+      "optimization_cpu_seconds": 20.608645582999998,
+      "optimizer_updates": 2000,
+      "reached_step_cap": true,
+      "params": 5186,
+      "initial_model_sha256": "57d5319cc37c185291dd75048e519f66398d82551ec48e212b347e8cf41220eb",
+      "trained_model_sha256": "82cbaf9c90edc8a63d65b0cedf7f733a8352c8d9ea65da14aa58884f0877f2d4",
+      "learning_trace": [
+        [
+          1,
+          0.7001722455024719
+        ],
+        [
+          10,
+          0.7004486918449402
+        ],
+        [
+          100,
+          0.6056190729141235
+        ],
+        [
+          400,
+          0.015555170364677906
+        ],
+        [
+          1000,
+          0.0005540741258300841
+        ],
+        [
+          2000,
+          0.0000979471587925218
+        ]
+      ],
+      "train_data_sha256": "ce76a29143407a3545b33d2f45ccb80cf0b30d56590046ac9259ce34a15676a0",
+      "id": {
+        "accuracy": 0.572265625,
+        "bce": 3.743138313293457,
+        "correct": 293,
+        "cpu_seconds": 0.005127843000000354,
+        "data_sha256": "dcc077d7fd5f11526b3821fd4efc59f2c893f067debe6385e5c663c3e576017a",
+        "multi_fire_streams": 128,
+        "queries": 512,
+        "total_events": 1520,
+        "wall_seconds": 0.005129770999701577
+      },
+      "ood": {
+        "accuracy": 0.5546875,
+        "bce": 3.9858779907226562,
+        "correct": 284,
+        "cpu_seconds": 0.009060206000000903,
+        "data_sha256": "23e2b654a1b554c11d8571874c8656b51d5de12722dae0d46bf2bad81d0eed54",
+        "multi_fire_streams": 128,
+        "queries": 512,
+        "total_events": 2927,
+        "wall_seconds": 0.00906329999997979
+      },
+      "complete_cpu_seconds": 20.993912013,
+      "cpu_device": "PyTorch CPU float32 single-thread",
+      "causal_event_times": true,
+      "gradients_through_event_operator": true,
+      "no_gradients_through_sampled_Brownian_clock": true,
+      "exploratory_pilot": true,
+      "not_blind_confirmation": true,
+      "production_activation": false,
+      "all_scientific_blockers_closed": false,
+      "original_artifact_sha256": "9c2afb822b0c24ec92ef952411c9eea29c7bff9eae7e569eb12db7bda3c32065"
+    }
+  ],
+  "production_activation": false,
+  "all_scientific_blockers_closed": false
+}

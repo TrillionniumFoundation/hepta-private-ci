@@ -1,0 +1,714 @@
+{
+  "schema_version": 1,
+  "purpose": "read-only fixed-source acceptance delta; no Rust edits or tests",
+  "recorded_utc": "2026-11-11T03:03:58.391125+00:00",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+    "tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+    "checkout": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build",
+    "clean": true
+  },
+  "callers_inventory": {
+    "path": "CALLERS.toml",
+    "sha256": "d17051d0108930e7499a1d1aab4b7273226de3e992916eda1a09002f6ee263b2",
+    "boundaries": 225,
+    "protected_files": 219,
+    "meaning": "225 is the closed-set boundary inventory count, not 225 exercised production calls or accepted learning chains. Empty product_callers means no permitted in-repository production caller at this fixed source. This audit only parses the inventory; it does not rerun the scanner.",
+    "selected_boundaries": [
+      {
+        "id": "cell_learning_evaluation_original_readback",
+        "symbol": "read_cell_learning_evaluation_v1",
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+        "product_callers": []
+      },
+      {
+        "id": "cell_learning_evaluation_profile_freeze",
+        "symbol": "freeze_cell_learning_evaluation_plan_v1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+        "product_callers": []
+      },
+      {
+        "id": "cell_q24_model_material_owner_commit",
+        "symbol": "CellQ24ModelProposalOwnerV1::commit_or_readback",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "product_callers": []
+      },
+      {
+        "id": "cell_q24_model_material_owner_create",
+        "symbol": "CellQ24ModelProposalOwnerV1::create",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "product_callers": []
+      },
+      {
+        "id": "cell_q24_model_material_owner_readback",
+        "symbol": "CellQ24ModelProposalOwnerV1::readback",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "product_callers": []
+      },
+      {
+        "id": "cell_q24_model_material_owner_recover",
+        "symbol": "CellQ24ModelProposalOwnerV1::recover",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "product_callers": []
+      },
+      {
+        "id": "cell_q24_native_training_fit",
+        "symbol": "CellQ24SingleHeadTrainingPlanV1::fit",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_original_training_observation",
+        "symbol": "CellQ24TrainingOwnerV1::read_learning_observation",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_observation.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs"
+        ]
+      },
+      {
+        "id": "circuit_feature_acknowledged_readonly_history",
+        "symbol": "CellOwnerJournalReadbackV1::open_guarded",
+        "definition_path": "codex-rs/hepta-neuron/src/cell_journal_readback.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs"
+        ]
+      },
+      {
+        "id": "circuit_feature_original_initial_publication",
+        "symbol": "PublishedCircuitFeatureTaskV1::from_initial",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_generation_initial_bootstrap.rs"
+        ]
+      },
+      {
+        "id": "circuit_feature_original_predecessor_recovery",
+        "symbol": "recover_predecessor",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs"
+        ]
+      },
+      {
+        "id": "circuit_feature_original_task_control",
+        "symbol": "PublishedCircuitFeatureTaskV1::control",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
+        ]
+      },
+      {
+        "id": "circuit_feature_original_update_publication",
+        "symbol": "PublishedCircuitFeatureTaskV1::from_update",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs"
+        ]
+      },
+      {
+        "id": "circuit_feature_private_cell_writer",
+        "symbol": "PublishedCircuitCellOwnerV1::writer",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
+        ]
+      },
+      {
+        "id": "circuit_q24_ordinary_profile_assembly",
+        "symbol": "circuit_q24_task_channel_v1",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs"
+        ]
+      },
+      {
+        "id": "final_use_claim",
+        "symbol": "claim_final_use",
+        "definition_path": "codex-rs/hepta-contracts/src/final_use.rs",
+        "product_callers": [
+          "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "codex-rs/hepta-agentd/src/browser_servo.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs"
+        ]
+      },
+      {
+        "id": "final_use_dispatch_witness",
+        "symbol": "dispatch_final_use_with_witness",
+        "definition_path": "codex-rs/hepta-contracts/src/final_use.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs"
+        ]
+      },
+      {
+        "id": "generation_learning_original_stage_readback",
+        "symbol": "read_generation_learning_stage_v1",
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_evidence_original_owner_constructor",
+        "symbol": "LearningIterationEvidenceClientV1::from_owner_stream",
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluation_receipt_attest",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluation_receipt_create",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::create",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluation_receipt_readback",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::readback",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluation_receipt_recover",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::recover",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_training_receipt_attest",
+        "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::attest_original_completion",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_training_receipt_create",
+        "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::create",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_training_receipt_readback",
+        "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::readback",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_training_receipt_recover",
+        "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::recover",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+        "product_callers": []
+      },
+      {
+        "id": "root_learning_completed_circuit_source",
+        "symbol": "AgentdState::require_circuit_learning_source",
+        "definition_path": "codex-rs/hepta-agentd/src/objective_learning_source.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs"
+        ]
+      },
+      {
+        "id": "root_learning_original_handoff_consume",
+        "symbol": "RootLearningHandoffV1::connect",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs"
+        ]
+      },
+      {
+        "id": "root_learning_original_scope_capture",
+        "symbol": "HostAuthorityService::seal_learning_checkpoint",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+        ]
+      },
+      {
+        "id": "root_learning_original_stage_assembly",
+        "symbol": "AgentdConfig::with_root_learning_stage_owners",
+        "definition_path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+        "product_callers": []
+      },
+      {
+        "id": "root_learning_original_store_reopen",
+        "symbol": "HostAuthorityService::open_registered_learning_checkpoint",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+        ]
+      },
+      {
+        "id": "root_learning_scoped_profile_constructor",
+        "symbol": "HostAuthorityLearningProfileV1::new_scoped_v2",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+        "product_callers": []
+      }
+    ]
+  },
+  "global_assembly_finding": "The ordinary Root handoff/checkpoint and Q24 task factory exist. Root stage assembly has product_callers=[]; in this read-only codex-rs inventory the only concrete LearningIterationStageOwnerPortsV1 impl is test StageOwners. A new callback decorator, new key or test principal cannot supply original role custody.",
+  "six_segments": [
+    {
+      "id": "ordinary_task_to_experience_dataset",
+      "segment": "普通任务 → 真实经验 / Dataset",
+      "classification": "仍缺具体生产代码/装配",
+      "remaining_kind": "source-to-ledger and Dataset materialization assembly",
+      "already_exists": "普通 Q24 Circuit 工厂已消费已发布 task、真实模型、source/Cell 文件和独立 witness；DurableCircuitTaskSource 保留真实输入与结果。原生产 LedgerWriter 已提供签名 decision/outcome admission、Dataset freeze、原记录读回和当前撤回重验。",
+      "remaining": "缺把该普通 A 的 sealed source/decision/outcome 接入原 LedgerWriter，并按事前冻结规则生成 Q24 input/target 与 Dataset cut 的具体生产 producer/materializer；原 host 还须提供真实监督目标、签名 freeze plan、已激活 trust、ledger/witness 和任务 profile。CellQ24TrainingBatchV1 的规范字节/范围校验不产生数据来源或标签真实性。",
+      "evidence_still_needed": "同一普通 A 的真实输入、结果、因果经验、签名 Dataset、精确 batch 与当前撤回 cut 的连续 owner 证据；不能以 fixture target 或新建 principal 补齐。",
+      "source_refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+          "sha256": "3ecab5d15d3ea0509f24800c9368ae657173b26e789c45b64eeb80e3a85cfd78",
+          "symbols": [
+            {
+              "name": "CircuitQ24TaskProfileV1",
+              "first_line": 51
+            },
+            {
+              "name": "circuit_q24_task_channel_v1",
+              "first_line": 102
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-learning-ledger/src/production.rs",
+          "sha256": "56dfad6ae6354ac185d2c6448a5b4a2ed0e74425bb64fd709546271bffd150c9",
+          "symbols": [
+            {
+              "name": "pub struct LedgerWriter",
+              "first_line": 162
+            },
+            {
+              "name": "pub fn freeze_dataset(",
+              "first_line": 666
+            },
+            {
+              "name": "pub fn read_dataset_records(",
+              "first_line": 637
+            },
+            {
+              "name": "pub fn revalidate_dataset_snapshot(",
+              "first_line": 616
+            }
+          ]
+        }
+      ],
+      "caller_ids": [
+        "circuit_q24_ordinary_profile_assembly",
+        "root_learning_completed_circuit_source",
+        "root_learning_original_stage_assembly"
+      ]
+    },
+    {
+      "id": "persistent_trainer",
+      "segment": "Experience / Dataset → 持久 Trainer",
+      "classification": "仍缺具体生产代码/装配",
+      "remaining_kind": "original Dataset and Generator custody plus production stage composition; durable trainer implementation exists",
+      "already_exists": "CellQ24TrainingOwnerV1 已有真实冻结 Q24 SGD、计算前 durable claim、heads/TrainingNoUpdateV2 保存、独立 witness、Pending 禁重跑和冷读；OriginalCellQ24TrainingReceiptOwnerV1 已从原训练观察生成并持久保存 Generator 原收据/签名，恢复不续签。不能再写为缺持久 Trainer 或缺 Training 原收据实现。",
+      "remaining": "尚未由生产 StageOwner 持有原 Dataset cut、batch/rule、父模型、原 Generator key/trust 与 journal/witness 并调用上述 owner；原 evidence RPC 连接也未有登记 constructor caller。缺的是实际 custody 与具体 stage/启动接线，不是再造训练算法，也不是仅把一个布尔开关打开。",
+      "evidence_still_needed": "由第1段真实 Dataset 驱动的原训练 job、真实 changed-head 或合法 QuantizedWeightsUnchanged、原签名及重启后同 job 读回；本次静态核对不增加普通链计数。",
+      "source_refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+          "sha256": "6e7cb76c5b37d01cbaa1ed4e078225cd89a958dd567138edb23b134b7a54b8c9",
+          "symbols": [
+            {
+              "name": "pub struct CellQ24TrainingOwnerV1",
+              "first_line": 57
+            },
+            {
+              "name": "pub fn recover(",
+              "first_line": 98
+            },
+            {
+              "name": "pub fn fit_or_readback(",
+              "first_line": 142
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+          "sha256": "80544b1360f4fd419b89109381fb58ce614e877b2a4904041f8f1d07dd7ae55c",
+          "symbols": [
+            {
+              "name": "pub struct OriginalCellQ24TrainingReceiptOwnerV1",
+              "first_line": 61
+            },
+            {
+              "name": "pub fn attest_original_completion(",
+              "first_line": 106
+            },
+            {
+              "name": "pub fn readback(",
+              "first_line": 128
+            }
+          ]
+        }
+      ],
+      "caller_ids": [
+        "cell_q24_native_training_fit",
+        "cell_q24_original_training_observation",
+        "learning_original_training_receipt_create",
+        "learning_original_training_receipt_recover",
+        "learning_original_training_receipt_attest",
+        "learning_original_training_receipt_readback",
+        "learning_evidence_original_owner_constructor",
+        "root_learning_original_stage_assembly"
+      ]
+    },
+    {
+      "id": "independent_evaluation",
+      "segment": "独立 B / holdout / 原 Evaluation 收据",
+      "classification": "仍缺具体生产代码/装配",
+      "remaining_kind": "real provider, original custody and stage composition; signed execution and receipt owners exist",
+      "already_exists": "CellEvaluationRunnerV1 已有冻结 comparison、原两臂 journal 校验、evaluate_or_readback、无需 provider/signer 的 completed readback 与 qualify_and_persist；已有原 execution attestor。当前新增 OriginalCellEvaluationReceiptOwnerV1 从原 runner/store 与 Trainer RPC 重读后持久签发 learning Evaluation，校验完整主体/控制者分离和当前签名。",
+      "remaining": "仍需真实 B 与旧能力 retention 数据/执行 provider、原 holdout CAS、两臂完整 journals/costs、原 Evaluator key/trust、资格签名及原 durable sink custody，并写入普通 stage/启动装配。本次仓库 inventory 中 FinalHoldoutProviderV1 的具体 impl 只见测试/qualification fixtures；新 receipt owner 不提供 holdout，不证明 sink custody。",
+      "evidence_still_needed": "原独立职责/权限下冻结并实际执行的 B/retention 评价与成本、holdout 消耗和原证据落点；原签名检查或训练损失下降不能替代这些材料。",
+      "source_refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+          "sha256": "ee0f9bce8e55160f785924a20b3cbad3b243c454227faf00699968e120e1aa1b",
+          "symbols": [
+            {
+              "name": "pub fn freeze_cell_learning_evaluation_plan_v1",
+              "first_line": 135
+            },
+            {
+              "name": "pub fn evaluate_or_readback<",
+              "first_line": 314
+            },
+            {
+              "name": "pub fn readback_completed(",
+              "first_line": 349
+            },
+            {
+              "name": "pub fn qualify_and_persist(",
+              "first_line": 385
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+          "sha256": "44e1c771ae778f2637178eb0a19a540349969485a20f2e86f45896cb381a7dd7",
+          "symbols": [
+            {
+              "name": "pub struct OriginalCellEvaluationReceiptOwnerV1",
+              "first_line": 108
+            },
+            {
+              "name": "pub async fn attest_original_completion<",
+              "first_line": 156
+            },
+            {
+              "name": "pub async fn readback<",
+              "first_line": 219
+            }
+          ]
+        }
+      ],
+      "caller_ids": [
+        "cell_learning_evaluation_profile_freeze",
+        "cell_learning_evaluation_original_readback",
+        "learning_original_evaluation_receipt_create",
+        "learning_original_evaluation_receipt_recover",
+        "learning_original_evaluation_receipt_attest",
+        "learning_original_evaluation_receipt_readback",
+        "root_learning_original_stage_assembly"
+      ]
+    },
+    {
+      "id": "model_proposal_selector_publication",
+      "segment": "Model Proposal → Selector / 发布 / 撤回",
+      "classification": "仍缺具体生产代码/装配",
+      "remaining_kind": "versioned production protocol and Proposal-role owner assembly, plus original Selector inputs",
+      "already_exists": "CellQ24ModelProposalOwnerV1 已实际校验原 Trainer/完整 manifests/签名资格并 durable commit、anchor、readback，返回 DENY_ALL 的 material receipt。既有 LearningArtifactOwnerService、AgentdSelectedGenerationV1 和 NeuronGenerationCurrentOwnerV1 已有 Model artifact 选择、CURRENT 发布、撤回重验与 FinalUse 控制。",
+      "remaining": "普通 LearningIterationProposalPayloadV1 生产分支仍只有 Parameter/Topology；ResearchExternalTrainedArtifact 仅 cfg(test, unix)。仍缺 Q24 Model 专用版本化生产 admission/payload/dispatch 与 Root profile/schema 注册，以及由原 Root 绑定 Proposal 职责和独立 anchor 的生产 owner 接线，按 live Dataset/withdrawal/artifact frontiers 重验后才能提交普通 Proposal。材料 owner 已存在，不等于原 Proposal 角色授权已存在。随后还需原 Selector 决策、artifact publish/revoke/rollback 输入及其 learning receipt 装配。",
+      "evidence_still_needed": "真实原 Proposal durable receipt → 独立 Selector → 原 artifact/CURRENT/FinalUse publish，及无收益保留、撤回/回滚链。不能把已完成 SGD 候选事后伪装为既有 governed Parameter V3，不能以 fixture selector 代替实际采用。",
+      "source_refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+          "sha256": "79de88acf165d9439004c9ce003061dd15950879d3cb44b27bf02e9ce258d639",
+          "symbols": [
+            {
+              "name": "pub enum LearningIterationProposalPayloadV1",
+              "first_line": 21
+            },
+            {
+              "name": "pub trait LearningIterationStageOwnerPortsV1",
+              "first_line": 45
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+          "sha256": "1949c90a37d8ecbc01fa9e34bd80a20b57b995875903c7cae139de4ac2a5bbde",
+          "symbols": [
+            {
+              "name": "pub struct CellQ24ModelProposalReceiptV1",
+              "first_line": 85
+            },
+            {
+              "name": "pub struct CellQ24ModelProposalOwnerV1",
+              "first_line": 101
+            },
+            {
+              "name": "pub fn commit_or_readback<",
+              "first_line": 180
+            }
+          ]
+        }
+      ],
+      "caller_ids": [
+        "cell_q24_model_material_owner_create",
+        "cell_q24_model_material_owner_recover",
+        "cell_q24_model_material_owner_commit",
+        "cell_q24_model_material_owner_readback",
+        "root_learning_scoped_profile_constructor",
+        "root_learning_original_stage_assembly"
+      ]
+    },
+    {
+      "id": "ordinary_c_final_use",
+      "segment": "普通 C 从已发布 owner 消费 / FinalUse",
+      "classification": "代码入口/组件已存在但普通证据缺失",
+      "remaining_kind": "ordinary independent-consumer evidence and original Selector/Observer assembly, not missing Q24 consumer mechanics",
+      "already_exists": "PublishedCircuitFeatureTaskV1 已把 original initial/update CURRENT publication 连接普通 Q24 driver；PublishedCircuitCellOwnerV1 从实际 source publication、private Cell commit 与仍有效 CURRENT 读出 Selection/NextUse 或 RetainedModelNextUse，重验 withdrawal。实际 FinalUse claim/dispatch 在原 CURRENT owner 的发布边界执行。不能再写为缺“已发布 Q24 进入普通 C”的组件路径。",
+      "remaining": "需要真实 successor task/run、原 owner 提供的发布 profile/FinalUse grant 和普通输入，并以原 Selector/Observer 收据接回完整 stage（共享装配缺口见前4段）。同 original actor 的不同 run 只证明不同任务，不能自行升级成独立消费者/节点采用。",
+      "evidence_still_needed": "普通独立消费者 C 在原已发布 owner 下实际执行、原 source/Cell commit、CURRENT 与 FinalUse 持续有效的联合证据。仅 ACK、公开 JSON 导出或 driver 再读不算；没有据此新增普通链验收。",
+      "source_refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+          "sha256": "5439087f898fb6c7a09ccc54e9b2a1df175766abff4e5994658508975116745d",
+          "symbols": [
+            {
+              "name": "pub fn read_learning_selection(",
+              "first_line": 11
+            },
+            {
+              "name": "pub fn read_learning_next_use<",
+              "first_line": 32
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+          "sha256": "44f703fdf843db13108f1922c6cf6d42bb256898c894943bff033f5c45b799d1",
+          "symbols": [
+            {
+              "name": "pub struct NeuronGenerationCurrentOwnerV1",
+              "first_line": 53
+            },
+            {
+              "name": "pub fn publish<",
+              "first_line": 146
+            },
+            {
+              "name": "claim_final_use(publication.authority",
+              "first_line": 177
+            }
+          ]
+        }
+      ],
+      "caller_ids": [
+        "circuit_feature_original_initial_publication",
+        "circuit_feature_original_update_publication",
+        "circuit_feature_private_cell_writer",
+        "circuit_feature_original_task_control",
+        "circuit_q24_ordinary_profile_assembly",
+        "final_use_claim",
+        "final_use_dispatch_witness",
+        "generation_learning_original_stage_readback"
+      ]
+    },
+    {
+      "id": "daemon_root_cold_restart",
+      "segment": "daemon + Root 真实退出 / 重启恢复",
+      "classification": "代码入口/组件已存在但普通证据缺失",
+      "remaining_kind": "two original OS-process restart evidence, subject to missing production stage assembly",
+      "already_exists": "原 Root learning checkpoint 已有显式注册、open-only reopen、sealed handoff、PID/start-ticks 与原 writer 绑定；Feature 冷恢复已能用真实 successor CURRENT 和原 ACK 文件重建 predecessor completion，不需保留内存 token。Training/Evaluation/Model owner 的文件级 recover 也已存在。",
+      "remaining": "需要原 host 的进程启动与原目录/descriptor/独立 witness custody，在两原 OS 进程真正退出后以新 PID/start ticks 重新鉴权并重接全部原 stages。当前 Root registration 仍 production_ready=false，原 launcher 会拒绝已收 learning handoff 却未装 stages；这个共享装配边界不会因 recover API 存在而消失。",
+      "evidence_still_needed": "记录真实 daemon 与 Root 退出、重启、重新 handoff、CURRENT/private state/任务和 uncertain effect 的准确恢复。文件 reopen、线程重建和组件测试均不等于此联合进程验收；此审计不能从源码证明现场缺失，只确认尚无新的完整验收证据可采纳。",
+      "source_refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "sha256": "104ea8575161a59a15f81229f409e25322301b710400500624365a3f0e268396",
+          "symbols": [
+            {
+              "name": "pub(crate) fn open_registered_learning_checkpoint(",
+              "first_line": 79
+            },
+            {
+              "name": "pub(crate) fn seal_learning_checkpoint(",
+              "first_line": 120
+            },
+            {
+              "name": "production_ready: false",
+              "first_line": 73
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs",
+          "sha256": "ab2b7413f4bfea9066dd5c4589060a020f1555ababb1fbc3cec873d42b558a39",
+          "symbols": [
+            {
+              "name": "pub(crate) fn recover_predecessor<",
+              "first_line": 46
+            },
+            {
+              "name": "CellOwnerJournalReadbackV1::open_guarded(",
+              "first_line": 93
+            }
+          ]
+        }
+      ],
+      "caller_ids": [
+        "root_learning_original_store_reopen",
+        "root_learning_original_scope_capture",
+        "root_learning_original_handoff_consume",
+        "root_learning_original_stage_assembly",
+        "circuit_feature_original_predecessor_recovery",
+        "circuit_feature_acknowledged_readonly_history"
+      ]
+    }
+  ],
+  "shared_context_refs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "sha256": "09356c0edad6cd17a37b61a12233948e976fbd5a4900bbfca7aa69564071c2a8",
+      "symbols": [
+        {
+          "name": "pub fn with_root_learning_stage_owners(",
+          "first_line": 31
+        },
+        {
+          "name": "pub(crate) fn require_root_learning_assembled(",
+          "first_line": 45
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "sha256": "9977181546655beea0044f2ea8be59cfea71994bb29f541844a3ac63a2a056a0",
+      "symbols": [
+        {
+          "name": "pub struct HostAuthorityLearningProfileV1",
+          "first_line": 54
+        },
+        {
+          "name": "pub fn new_scoped_v2(",
+          "first_line": 88
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_proposal.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/learning_iteration_proposal.rs",
+      "sha256": "6128bacd9c849553b4440d2e3e21ba11976bef34a8d2b83de4fae8a4a2cab4f0",
+      "symbols": [
+        {
+          "name": "pub(super) async fn submit_iteration_proposal_v1(",
+          "first_line": 16
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+      "sha256": "7819a40f8384772d2e17fbfb90144ddfe140ea5bfd649ed6011ccf85aea82c5b",
+      "symbols": [
+        {
+          "name": "LearningIterationStageV1::Proposal =>",
+          "first_line": 91
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+      "sha256": "3987c195204a4bf1884e81bb62976febd75972e85d6919fe80c76921944b5b6c",
+      "symbols": [
+        {
+          "name": "pub struct CellQ24TrainingBatchV1",
+          "first_line": 50
+        },
+        {
+          "name": "pub fn new(",
+          "first_line": 58
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "sha256": "f993d1e56f25da24b90400ca590248faa7c165dfcd188717ab4cec4d640de888",
+      "symbols": [
+        {
+          "name": "pub struct LearningArtifactOwnerService",
+          "first_line": 33
+        },
+        {
+          "name": "pub fn publish(",
+          "first_line": 166
+        },
+        {
+          "name": "pub fn install_withdrawal_frontier(",
+          "first_line": 143
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c1d6537f7d979e1ad792eee796c6709d23a86697/codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+      "sha256": "cc5fd43cdf1b410f98338966a599ecc25e416f6b12cf0d0c85dbcaa9b177cc00",
+      "symbols": [
+        {
+          "name": "pub struct AgentdSelectedGenerationV1",
+          "first_line": 81
+        },
+        {
+          "name": "pub fn load(",
+          "first_line": 91
+        },
+        {
+          "name": "pub(crate) fn revalidate(",
+          "first_line": 175
+        }
+      ]
+    }
+  ],
+  "model_protocol_distinctions": {
+    "material_owner": "implemented: actual admission/commit/anchor/current readback; returned receipt authority DENY_ALL",
+    "production_payload": "absent: only Parameter/Topology in production; research variant test-only",
+    "root_model_profile_schema": "absent: generic V1/V2 checkpoint/scope registration exists, but no Q24 Model proposal admission/dispatch registration",
+    "proposal_role_owner": "registered production role assembly remains absent; material journal ownership alone is not the original Proposal-role authority. Existing Proposal stage deliberately has no learning-signature role; do not invent a Proposal signing key to bridge this.",
+    "selector_and_publication": "generic artifact/selection/CURRENT/FinalUse owners exist; original model proposal binding, authentic selection inputs and ordinary stage wiring/evidence remain required"
+  },
+  "validation_limits": [
+    "No Rust source was written and no test/scanner/native command was run for this delta audit.",
+    "This is fixed-source capability/assembly inventory, not production acceptance or a new result count.",
+    "Current host native status is outside this static report; parent/audit tracks exact-head CI independently.",
+    "Ordinary full-chain, positive-adoption, NoUpdate and rollback acceptance counts are not increased by this report.",
+    "No claim that all possible external host implementations are absent; the missing production implementation findings are scoped to this repository and fixed source."
+  ]
+}

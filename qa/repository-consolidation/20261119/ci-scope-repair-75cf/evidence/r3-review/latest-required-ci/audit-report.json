@@ -1,0 +1,304 @@
+{
+  "schema": "hepta-required-ci-audit-v2",
+  "observed_at": "2026-11-19T17:28:44Z",
+  "repository": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6293,
+  "new_head": "ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+  "new_head_tree": "323f8caa556634b70c0ee9385c4c7247681f1217",
+  "local_tree_equivalent_commit": "52831c43ea3ce352c38419482f8adf06152a191d",
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "prospective_merge": "fe084293adf01432616d0f0bdd8a62d99dc8288f",
+  "required_checks": {
+    "CI required": {
+      "workflow_run": 44576266816,
+      "run_status": "in_progress",
+      "run_conclusion": null,
+      "aggregate_job_yet_observed": false,
+      "scope_job": 135744474906,
+      "scope_result": "failure",
+      "cargo_deny_job": 135745785114,
+      "cargo_deny_result": "skipped",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44576266816"
+    },
+    "Architecture required": {
+      "workflow_run": 44576251410,
+      "run_status": "completed",
+      "run_conclusion": "failure",
+      "aggregate_job": 135746996563,
+      "aggregate_result": "failure",
+      "source_head_job": 135744419226,
+      "base_merge_job": 135744418550,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44576251410"
+    }
+  },
+  "new_head_failures": {
+    "entrypoint": "python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.tests.test_hepta_ci_trees",
+    "tests": 68,
+    "failures": 3,
+    "details": [
+      "CLI regression expected unused src/main.rs; Cargo explicit codex root is src/codex.rs.",
+      "blocking-ci concurrency group did not bind PR/ref plus exact head SHA required by preserved regression contract.",
+      "Architecture concurrency group had same missing PR/ref plus exact SHA."
+    ],
+    "raw_logs": [
+      "new-head-ceb13-scope_log.log",
+      "new-head-ceb13-architecture-basemerge.log"
+    ]
+  },
+  "reviewed_repair": {
+    "schema": "hepta-ci-exact-head-repair-v1",
+    "created_at": "2026-11-19T17:28:14.126244+00:00",
+    "base": "52831c43ea3ce352c38419482f8adf06152a191d",
+    "base_server_sha": "ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+    "base_tree": "323f8caa556634b70c0ee9385c4c7247681f1217",
+    "commit": "1ce56728eb6b3a2a427ed1924c4fc0c330059544",
+    "tree": "b918fa4da39819f21ea44f5930c17135bb947a0d",
+    "parents": [
+      "52831c43ea3ce352c38419482f8adf06152a191d"
+    ],
+    "changed_files": [
+      {
+        "path": ".github/workflows/blocking-ci.yml",
+        "mode": "100644",
+        "old_blob": "5030246c36af4ff1da58461f1cc00c948491127f",
+        "blob": "ce1e3243b0f84de6caddd4cbab54f5679b613b1b",
+        "sha256": "bd68466e8ca733d01279e2e8883f01f17a286465669ba00f0c3a9dd89d540dfe",
+        "bytes": 34224
+      },
+      {
+        "path": ".github/workflows/hepta-architecture-convergence.yml",
+        "mode": "100644",
+        "old_blob": "206b4d6a016c10f7ecfa62b9528199f987626dd9",
+        "blob": "fa76e846c514cc12e23bbd382246b122fccecf7d",
+        "sha256": "dd48476f6ab78c14b804bfd7a9332effc6219d3b22cb7227737e0844835217f1",
+        "bytes": 24547
+      },
+      {
+        "path": "scripts/tests/test_hepta_ci_scope.py",
+        "mode": "100644",
+        "old_blob": "96ad3ff32d91d1f00a658ab9efa8481ac31c244c",
+        "blob": "9fd85cf50aba1bdd49fa09b21c5ebd114b97c8cc",
+        "sha256": "98fe550b81ada7c478e34695b1ba4d96adef2ca520358b2701ebda6597bf8356",
+        "bytes": 15095
+      }
+    ],
+    "refs_unchanged_during_creation": true,
+    "validation": {
+      "result_file": "scope-68-result.json",
+      "tests": 68,
+      "passed": 68,
+      "skipped": 0,
+      "original_test_method_names_preserved": true,
+      "formatter_file": "format-result.json",
+      "formatter_changed_tested_bytes": false,
+      "source_binding": "all 19 isolated validation inputs exact base blobs except listed three tested postimages",
+      "full_github_ci_pass_claimed": false
+    },
+    "review": {
+      "blocking-ci.yml": "Repository, PR/ref, and exact source SHA prevent unrelated heads or forks sharing one cancellation group. main push fallback remains main and cancel-in-progress stays true. No job, dependency, matrix, selector, or gate change.",
+      "hepta-architecture-convergence.yml": "Same repository/PR/exact-source separation; manual fallback stays branch + manual. cancel-in-progress remains true. Both source-head and prospective-merge lanes, identity checks, receipt upload, and required aggregation unchanged.",
+      "test_hepta_ci_scope.py": "Assert the actual explicit Cargo root src/codex.rs instead of unused legacy src/main.rs. Retain autobins=false, distinct hepta root, and exclusion of shared main_impl.rs from binaries. Strengthen recursion_limit to crate-start and direct include to an anchored statement; inspect real shared implementation to reject misplaced crate-level recursion_limit. All prior test methods remain."
+    },
+    "limits": [
+      "Full required GitHub CI must rerun on published child SHA. This local result covers the exact original 68-test selection entrypoint.",
+      "No Rust source, Cargo dependency, advisory policy, or Unix app-server credential predicate changed.",
+      "just is absent in local environment; ran the exact owning frozen Ruff formatter command with --offline using existing cache. No YAML formatter is configured for changed YAML paths."
+    ]
+  },
+  "chrono": {
+    "new_head_cargo_deny_executed": false,
+    "active_feature_graph_verified": false,
+    "actual_advisory_or_error_identified": false,
+    "reason": "New cargo-deny skipped after failing scope gate. Historical 10fb large log retrieval remained incomplete; its prefix contains no verified chrono diagnostic.",
+    "source_metadata_binding": [
+      {
+        "path": "codex-rs/Cargo.toml",
+        "blob": "520b0ba00e7e1e11f24773e42c21b5324578895b",
+        "same_as_audited_final_source": true
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "blob": "0c19e75a9c773c0eb6c9d82cd6e6c062574aa7e6",
+        "same_as_audited_final_source": true
+      },
+      {
+        "path": "codex-rs/deny.toml",
+        "blob": "f23c418ec8cb3e8eaabf78f95d21cb6cb44fb533",
+        "same_as_audited_final_source": true
+      },
+      {
+        "path": ".github/workflows/cargo-deny.yml",
+        "blob": "db7cad815476abfe22502ee9aa71617606d76a10",
+        "same_as_audited_final_source": true
+      }
+    ],
+    "audited_source_observations": [
+      "No workspace chrono dependency and no first-party lock dependency on chrono remain.",
+      "194 workspace member manifests read; no chrono serde_with feature declaration found.",
+      "serde_with workspace defaults disabled; enabled std/macros, with protocol consumer macros/base64.",
+      "Cargo.lock retains chrono 0.4.45 and serde_with -> chrono dependency; lock text alone cannot establish the active all-features graph.",
+      "No chrono ban appears in deny.toml. Pinned cargo-deny action defaults --all-features; retain full coverage and the no-suppression guard."
+    ],
+    "protected_chrono_candidates": {
+      "pin_count": 498,
+      "protected_name_count": 478,
+      "pins_sha256": "5ca70d69d8018f4e65f743250efcc72c086a547650a3ac5395f490b914d96ea9",
+      "map_sha256": "08e3cb4d932ded33a4cb3a11051cbe052081fbd57ec64e33302bf08bcda6e460",
+      "branches": [
+        {
+          "name": "codex/chrono-agent-identity-joint-20261118-2e9b",
+          "sha": "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+          "protected_by_name_map": true,
+          "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+          "protected_map_value": {
+            "sha": "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+            "reasons": [
+              "explicit_protected_name",
+              "previous_protected_name",
+              "protected_tip_or_alias",
+              "hia_ancestor:f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+            ],
+            "previous_frozen_sha": "7e28e13e82045f936cb66f9fea4a27ad4368f896"
+          }
+        },
+        {
+          "name": "codex/chrono-cloud-cache-joint-20261118-2e9b",
+          "sha": "902a8ccdff0326877515683717fe6e5db4356df7",
+          "protected_by_name_map": true,
+          "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+          "protected_map_value": {
+            "sha": "902a8ccdff0326877515683717fe6e5db4356df7",
+            "reasons": [
+              "explicit_protected_name",
+              "previous_protected_name",
+              "protected_tip_or_alias",
+              "hia_ancestor:f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+            ],
+            "previous_frozen_sha": "902a8ccdff0326877515683717fe6e5db4356df7"
+          }
+        },
+        {
+          "name": "codex/chrono-git-utils-joint-20261118-2e9b",
+          "sha": "03d782a7af68da6f0572be029693aba22548b415",
+          "protected_by_name_map": true,
+          "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+          "protected_map_value": {
+            "sha": "03d782a7af68da6f0572be029693aba22548b415",
+            "reasons": [
+              "explicit_protected_name",
+              "previous_protected_name",
+              "protected_tip_or_alias",
+              "hia_ancestor:f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+            ],
+            "previous_frozen_sha": "03d782a7af68da6f0572be029693aba22548b415"
+          }
+        },
+        {
+          "name": "dot/qualify-git-unix-seconds-without-chrono",
+          "sha": "a63fc3da30495f2d594f3cfab392024d7b66cd10",
+          "protected_by_name_map": true,
+          "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+          "protected_map_value": {
+            "sha": "a63fc3da30495f2d594f3cfab392024d7b66cd10",
+            "reasons": [
+              "explicit_protected_name",
+              "previous_protected_name",
+              "protected_tip_or_alias",
+              "hia_ancestor:ca80ff9feef37fc6d03afdc593ddd7da243f4be7",
+              "hia_ancestor:f02bb9f3344cdff4e361cca4353540ca0193bd21"
+            ],
+            "previous_frozen_sha": "a63fc3da30495f2d594f3cfab392024d7b66cd10"
+          }
+        },
+        {
+          "name": "codex/chrono-otel-joint-20261118-2e9b",
+          "sha": "a4d52eadab774ad651825fb2bcc07ab2ec89893a",
+          "sha_observation_source": "root latest protected-name map",
+          "protected_by_name_map": true,
+          "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+          "protected_map_value": {
+            "sha": "a4d52eadab774ad651825fb2bcc07ab2ec89893a",
+            "reasons": [
+              "explicit_protected_name",
+              "previous_protected_name",
+              "protected_tip_or_alias",
+              "hia_ancestor:f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+            ],
+            "previous_frozen_sha": "a4d52eadab774ad651825fb2bcc07ab2ec89893a"
+          }
+        },
+        {
+          "name": "codex/hia-chrono-retirement-audit-20261118",
+          "sha": "fe2a15fcc538e88249ee3a27875b9a656edeb042",
+          "sha_observation_source": "root latest protected-name map",
+          "protected_by_name_map": true,
+          "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+          "protected_map_value": {
+            "sha": "fe2a15fcc538e88249ee3a27875b9a656edeb042",
+            "reasons": [
+              "hia_branch_name",
+              "explicit_protected_name",
+              "previous_protected_name",
+              "protected_tip_or_alias",
+              "hia_ancestor:ca80ff9feef37fc6d03afdc593ddd7da243f4be7",
+              "hia_ancestor:f02bb9f3344cdff4e361cca4353540ca0193bd21"
+            ],
+            "previous_frozen_sha": "fe2a15fcc538e88249ee3a27875b9a656edeb042"
+          }
+        }
+      ],
+      "explicitly_excluded_without_source_read": [
+        "codex/chrono-otel-joint-20261118-2e9b",
+        "codex/hia-chrono-retirement-audit-20261118"
+      ],
+      "pins_path": "root-review/final-scope-audit/protection-pins-498.json",
+      "map_path": "root-review/final-scope-audit/protected-478-latest.json"
+    },
+    "ordinary_leaf_candidates": [
+      {
+        "sha": "eb6aebab12ed687366bd5bbc19da1294dbac9902",
+        "parent": "227bd2c796b88f5102ca0063f2b9bb2615cb17cc",
+        "protected_ancestor_pins": [],
+        "ancestor_count": 34534,
+        "raw_commit": "tree ee65eaffd26a100e125071a993d82cffa5df9efb\nparent 227bd2c796b88f5102ca0063f2b9bb2615cb17cc\nauthor Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com> 1794049651 -0500\ncommitter Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com> 1794049651 -0500\n\nfix(deps): update vulnerable and yanked Rust lockfile packages",
+        "leaf_changes": "M\tcodex-rs/Cargo.lock\n",
+        "protection_pin_count": 498,
+        "protection_pins_sha256": "5ca70d69d8018f4e65f743250efcc72c086a547650a3ac5395f490b914d96ea9"
+      },
+      {
+        "sha": "a9c9556ac7b39b2068afd9e935975d2d32827a1a",
+        "parent": "fce80ac284e928670772943e4ca5946bb06cdf04",
+        "protected_ancestor_pins": [],
+        "ancestor_count": 34528,
+        "raw_commit": "tree 13e75808b04c7b094b43a1b9313216bd06f2f7f5\nparent fce80ac284e928670772943e4ca5946bb06cdf04\nauthor Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com> 1794044393 -0500\ncommitter Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com> 1794044393 -0500\n\nci: align cargo-deny with repository Rust toolchain",
+        "leaf_changes": "M\t.github/workflows/cargo-deny.yml\n",
+        "protection_pin_count": 498,
+        "protection_pins_sha256": "5ca70d69d8018f4e65f743250efcc72c086a547650a3ac5395f490b914d96ea9"
+      }
+    ],
+    "ordinary_scope_findings": {
+      "eb6aebab12ed687366bd5bbc19da1294dbac9902": "Leaf updates chacha20, clipboard-win, spin, vodozemac only. Current already has 3 exact updates; clipboard-win remains 5.4.1. No chrono migration in leaf; do not merge giant history or claim this fixes observed chrono failure.",
+      "a9c9556ac7b39b2068afd9e935975d2d32827a1a": "Leaf aligns Rust toolchain to 1.96, already current. Old full workflow lacks current tracked-RustSec guard; do not overwrite it."
+    },
+    "historical_log_status_file": "native-log-recovery/final-status.json"
+  },
+  "next_actions": [
+    "Publish reviewed 3-path repair as child of exact ceb13 source tree; read back new head and corresponding required runs.",
+    "Let full required workflows run; collect new-head cargo-deny log and exact merge/source identities before claiming active graph or advisory resolution.",
+    "If chrono remains active, inspect actual feature-enabling path from the new run and make a minimal ordinary-source dependency/feature correction; regenerate Cargo and Bazel locks under the repository policy.",
+    "Do not copy protected chrono joint branch source, weaken Unix peer credentials, disable --all-features, suppress advisories, or skip failed required checks."
+  ],
+  "historical_status_is_not_new_head_status": {
+    "old_head": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+    "old_blocking_run": 44566606095,
+    "old_cargo_deny_job": 135711856766,
+    "old_required_aggregate": 135728685040,
+    "old_required_aggregate_error": "CI gate rejected: invalid or absent CI result: bazel",
+    "old_cargo_deny_conclusion": "failure",
+    "old_chrono_error_unknown": true
+  },
+  "api_limitations": [
+    "Workflow filename runs endpoint was rejected by connector allowlist; used supported actions/runs collection and exact run IDs.",
+    "Paginated head check inventory was observed while new checks were being created; counts varied and pages are not claimed as a coherent complete snapshot. Required workflow runs were identified by exact path and SHA."
+  ]
+}

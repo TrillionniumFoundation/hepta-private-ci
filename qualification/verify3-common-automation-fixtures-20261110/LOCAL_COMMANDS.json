@@ -1,0 +1,30 @@
+[
+  {
+    "stage": "automation-tests",
+    "argv": [
+      "/workspace/scratch/40a1a085876c/verify-tools/bin/just",
+      "test",
+      "-p",
+      "codex-hepta-automation"
+    ],
+    "cwd": "/workspace/scratch/40a1a085876c/mac-fixture-reconciliation",
+    "exit_code": 1,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 1272,
+    "stderr_sha256": "c58719c24f0673fed01587310439c0f2b9dcfd4fffd40ad310a12cd782bb0d55"
+  },
+  {
+    "stage": "automation-fmt",
+    "argv": [
+      "/workspace/scratch/40a1a085876c/verify-tools/bin/just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/40a1a085876c/mac-fixture-reconciliation",
+    "exit_code": 1,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 340,
+    "stderr_sha256": "ca3b6973bed1a870aee71e17a7a8f75412d1d5171b245e932f039830e70320ae"
+  }
+]

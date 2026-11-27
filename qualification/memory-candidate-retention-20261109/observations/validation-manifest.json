@@ -1,0 +1,516 @@
+{
+  "actors_run": false,
+  "all_archive_members_reread_and_verified": true,
+  "all_original_members_preserved_exactly": true,
+  "archive": {
+    "bytes": 320912,
+    "path": "validation-evidence.tar.xz",
+    "sha256": "b3e9f8c9ef16337a71e8b6d32e090c64347a3618d66b2f63f1be4fdb3b45db46"
+  },
+  "categories": {
+    "current_source_snapshot_not_a_new_test": 10,
+    "original_ci_observation_outcome_pending": 1,
+    "original_correction_test_material": 5,
+    "original_frozen_launch_build_artifact": 12,
+    "original_launch_or_collection_helper": 9,
+    "original_runner_test_material": 4,
+    "original_runtime_readiness_observation": 1,
+    "original_shared_format_receipt": 2,
+    "original_tested_source_snapshot": 10,
+    "original_unit_log_or_receipt": 3,
+    "packaging_scope_and_limits": 1
+  },
+  "created_utc": "2026-11-09T13:00:55.395186+00:00",
+  "exclusions": [
+    "model weights",
+    "images",
+    "external data and private references/annotations",
+    "credentials",
+    "runtime dependency packages",
+    "real actor episode output trees"
+  ],
+  "formatters_rerun": false,
+  "generated_member_count": 1,
+  "implementation_files_changed": false,
+  "known_limits": [
+    "Early candidate_runtime 5-test and candidate_memory/action_effects 9-test stdout existed only in tool output; no separate original logs were saved or reconstructed.",
+    "Launcher gate validation used inline tool scripts; no separate original test script or command transcript is invented.",
+    "Shared initial formatting receipt is retained intact, including its MEM2 entries; archived format-source snapshots cover candidate files only.",
+    "Current-source snapshots are preserved bytes, not new test or AST-validation claims.",
+    "CI correction outcome was pending in the preserved observation; no later CI result is inferred."
+  ],
+  "member_count": 58,
+  "members": [
+    {
+      "bytes": 2746,
+      "category": "packaging_scope_and_limits",
+      "origin": "new_packaging_note",
+      "original_path": null,
+      "path": "README.md",
+      "sha256": "ad05794c6ccbf903e5389b628e1122423c6b03f9708e25dd76e784dceebc4cfd"
+    },
+    {
+      "bytes": 1115,
+      "category": "original_ci_observation_outcome_pending",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/qualification/memory-candidate-retention-20261109/observations/ci-invocation-correction.json",
+      "path": "ci/ci-invocation-correction.json",
+      "sha256": "0287e361e6573d5f523f050386e301f43650da874f590e4febd03520d9a0cea4"
+    },
+    {
+      "bytes": 24716,
+      "category": "current_source_snapshot_not_a_new_test",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/scripts/ndu_real_runtime/actor.py",
+      "path": "formatting/current-source/scripts/ndu_real_runtime/actor.py",
+      "sha256": "f91dc57bc808f1986db8cc86673feb10dad0a538b5c05ab96c631b60a1468444"
+    },
+    {
+      "bytes": 9439,
+      "category": "current_source_snapshot_not_a_new_test",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/scripts/ndu_real_runtime/candidate_memory.py",
+      "path": "formatting/current-source/scripts/ndu_real_runtime/candidate_memory.py",
+      "sha256": "32bf7ca6157ac611b1b0616e291ec6c9c8d1424392f41bdf994e69547535d27e"
+    },
+    {
+      "bytes": 31538,
+      "category": "current_source_snapshot_not_a_new_test",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/scripts/ndu_real_runtime/candidate_retention_report.py",
+      "path": "formatting/current-source/scripts/ndu_real_runtime/candidate_retention_report.py",
+      "sha256": "fc05736495909ffde054e3a320aae4f5b7b8219050ba4d2de1121fd210f26e57"
+    },
+    {
+      "bytes": 8263,
+      "category": "current_source_snapshot_not_a_new_test",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/scripts/ndu_real_runtime/candidate_runtime.py",
+      "path": "formatting/current-source/scripts/ndu_real_runtime/candidate_runtime.py",
+      "sha256": "863b4467b7fdae21a170ab13ce3bade9e4319570a5dada811f793af3fbc871f4"
+    },
+    {
+      "bytes": 32634,
+      "category": "current_source_snapshot_not_a_new_test",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/scripts/ndu_real_runtime/episode.py",
+      "path": "formatting/current-source/scripts/ndu_real_runtime/episode.py",
+      "sha256": "2845bbbb9ff4e25d1b7fcf1d766d0d17268af06085fc62b3c4384e7097412243"
+    },
+    {
+      "bytes": 30353,
+      "category": "current_source_snapshot_not_a_new_test",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/scripts/ndu_real_runtime/run_candidate_retention.py",
+      "path": "formatting/current-source/scripts/ndu_real_runtime/run_candidate_retention.py",
+      "sha256": "df1c96861f8ae0c28be0ec28339ca21d8ffcfade411753ae50c58aae14a5e6ef"
+    },
+    {
+      "bytes": 7888,
+      "category": "current_source_snapshot_not_a_new_test",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/scripts/ndu_real_runtime/test_candidate_memory.py",
+      "path": "formatting/current-source/scripts/ndu_real_runtime/test_candidate_memory.py",
+      "sha256": "a190eb94ce447b2a57a5d2cba2551697d1b4e39674582d857cee68e80b5bfbb3"
+    },
+    {
+      "bytes": 15913,
+      "category": "current_source_snapshot_not_a_new_test",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/scripts/ndu_real_runtime/test_candidate_retention_report.py",
+      "path": "formatting/current-source/scripts/ndu_real_runtime/test_candidate_retention_report.py",
+      "sha256": "11feecef4cac50911d77a7435543334f2b5b622f4bf14fbec3416105fca1e730"
+    },
+    {
+      "bytes": 15134,
+      "category": "current_source_snapshot_not_a_new_test",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/scripts/ndu_real_runtime/test_candidate_runtime.py",
+      "path": "formatting/current-source/scripts/ndu_real_runtime/test_candidate_runtime.py",
+      "sha256": "b3d94dce8d7d757d27c5dd77a13e76ffbd06772e4842fc41accf3362589cc557"
+    },
+    {
+      "bytes": 20037,
+      "category": "current_source_snapshot_not_a_new_test",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/hepta-private-ci/scripts/ndu_real_runtime/test_run_candidate_retention.py",
+      "path": "formatting/current-source/scripts/ndu_real_runtime/test_run_candidate_retention.py",
+      "sha256": "74489f8759128aa63a0a2c1df94a5cd70d4b6d8fa18493aafb095ceadedb9f46"
+    },
+    {
+      "bytes": 4835,
+      "category": "original_shared_format_receipt",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/format-receipt.json",
+      "path": "formatting/format-receipt.json",
+      "sha256": "208f1a076bc701b33b1497f4e84bcdd2db0198ae13c65adb3d6ba54ddc5e4681"
+    },
+    {
+      "bytes": 2392,
+      "category": "original_shared_format_receipt",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-manifest.json",
+      "path": "formatting/preformat-manifest.json",
+      "sha256": "3611594699c6b5357ffdfee8651c5056bc196ee4b0c971b0aa89ce93082350e0"
+    },
+    {
+      "bytes": 24327,
+      "category": "original_tested_source_snapshot",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-source/scripts/ndu_real_runtime/actor.py",
+      "path": "formatting/tested-source/scripts/ndu_real_runtime/actor.py",
+      "sha256": "51f74e83f150749bbe2a7deef2fed228ce497584ce3b72720e13312cab9926c0"
+    },
+    {
+      "bytes": 9440,
+      "category": "original_tested_source_snapshot",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-source/scripts/ndu_real_runtime/candidate_memory.py",
+      "path": "formatting/tested-source/scripts/ndu_real_runtime/candidate_memory.py",
+      "sha256": "6a5d90abfd794b74869b4205b9a388c7dd498cd0838bc9f158bb20d5cb5d4044"
+    },
+    {
+      "bytes": 27936,
+      "category": "original_tested_source_snapshot",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-source/scripts/ndu_real_runtime/candidate_retention_report.py",
+      "path": "formatting/tested-source/scripts/ndu_real_runtime/candidate_retention_report.py",
+      "sha256": "3f5166ff16991018068c1ffe23be0fdd949662defbd920b4e5c63ff820e28e19"
+    },
+    {
+      "bytes": 7989,
+      "category": "original_tested_source_snapshot",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-source/scripts/ndu_real_runtime/candidate_runtime.py",
+      "path": "formatting/tested-source/scripts/ndu_real_runtime/candidate_runtime.py",
+      "sha256": "5d1e2f94ad496e1ac1d4592873487725d3538abba4d2a6c67ae616254df7027e"
+    },
+    {
+      "bytes": 32306,
+      "category": "original_tested_source_snapshot",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-source/scripts/ndu_real_runtime/episode.py",
+      "path": "formatting/tested-source/scripts/ndu_real_runtime/episode.py",
+      "sha256": "ba5737e2169655dfdb0c85632dc80e6e8e518061981509e6eaedce0be8127af7"
+    },
+    {
+      "bytes": 25054,
+      "category": "original_tested_source_snapshot",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-source/scripts/ndu_real_runtime/run_candidate_retention.py",
+      "path": "formatting/tested-source/scripts/ndu_real_runtime/run_candidate_retention.py",
+      "sha256": "e2d55eca734ec4a76c76dbb90d44a9327446964677becc9df312b5c0e169df59"
+    },
+    {
+      "bytes": 7889,
+      "category": "original_tested_source_snapshot",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-source/scripts/ndu_real_runtime/test_candidate_memory.py",
+      "path": "formatting/tested-source/scripts/ndu_real_runtime/test_candidate_memory.py",
+      "sha256": "50d14f0ca1228abc17af91f95e0aa14845a09b0bc4acf0b5bfd535df8f3cc0dd"
+    },
+    {
+      "bytes": 13325,
+      "category": "original_tested_source_snapshot",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-source/scripts/ndu_real_runtime/test_candidate_retention_report.py",
+      "path": "formatting/tested-source/scripts/ndu_real_runtime/test_candidate_retention_report.py",
+      "sha256": "1418de67fba6a62688427ee1bc47465897f1c7ebfad3694ce93c94794dfadcc2"
+    },
+    {
+      "bytes": 12524,
+      "category": "original_tested_source_snapshot",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-source/scripts/ndu_real_runtime/test_candidate_runtime.py",
+      "path": "formatting/tested-source/scripts/ndu_real_runtime/test_candidate_runtime.py",
+      "sha256": "f6385c349aacb00d0fd166be9bf838ec1efa9322c98a4a1876b04494ffe3408b"
+    },
+    {
+      "bytes": 15228,
+      "category": "original_tested_source_snapshot",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/preformat-source/scripts/ndu_real_runtime/test_run_candidate_retention.py",
+      "path": "formatting/tested-source/scripts/ndu_real_runtime/test_run_candidate_retention.py",
+      "sha256": "cd1f328a037d092d214ca287417dba9d4aaf4812f24a4a40ce47e3c58a449fea"
+    },
+    {
+      "bytes": 12722,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/correction-a4068996/BUILD_MANIFEST-v2.json",
+      "path": "launch/correction-a4068996/BUILD_MANIFEST-v2.json",
+      "sha256": "82c2993c52089dbf8c3a6af0ecbf0c37a4a52ac0d687825d66c6f27e90491d00"
+    },
+    {
+      "bytes": 1065,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/correction-a4068996/BUILD_VALIDATION-v2.json",
+      "path": "launch/correction-a4068996/BUILD_VALIDATION-v2.json",
+      "sha256": "181777e0f374fe9040fa831041fa65a4c59c44058f9198f50fc3810d7674d9e5"
+    },
+    {
+      "bytes": 23854,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/correction-a4068996/bootstrap-v2.py",
+      "path": "launch/correction-a4068996/bootstrap-v2.py",
+      "sha256": "6e355ec9aa61f42c14095a2702697bb08642e5a23f1322340fe943ad72f8aed5"
+    },
+    {
+      "bytes": 14948,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/correction-a4068996/request-v2.json",
+      "path": "launch/correction-a4068996/request-v2.json",
+      "sha256": "2ad28975785858d77780e8b7c333154282916ff330c09b2f3d4aa211a8812f98"
+    },
+    {
+      "bytes": 193015,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/correction-a4068996/source-v2.tar.gz",
+      "path": "launch/correction-a4068996/source-v2.tar.gz",
+      "sha256": "c5a58881c0177f99aeccf28cf18b0580ac9ccf4d42db4181cd841b8a784a6314"
+    },
+    {
+      "bytes": 23934,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/correction-a4068996/submission-command-v2.txt",
+      "path": "launch/correction-a4068996/submission-command-v2.txt",
+      "sha256": "ab5249c93d210e9aa0ac104c6e30f381311222693a5b9c623766f860b20aa898"
+    },
+    {
+      "bytes": 2190,
+      "category": "original_launch_or_collection_helper",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/CORRECTION.txt",
+      "path": "launch/helpers/CORRECTION.txt",
+      "sha256": "071e4678dfdb526cec258549ac1cc26afaeccad9de590d670d346ebd3e397106"
+    },
+    {
+      "bytes": 2939,
+      "category": "original_launch_or_collection_helper",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/README.txt",
+      "path": "launch/helpers/README.txt",
+      "sha256": "d19d2fb114772ab9a4250c61d1ac2f971d4211aa13f7661d16de51c956a9e6e7"
+    },
+    {
+      "bytes": 6939,
+      "category": "original_launch_or_collection_helper",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/bootstrap_template.py",
+      "path": "launch/helpers/bootstrap_template.py",
+      "sha256": "81d0906bc019438ee0ef08feb9e989d78308e827962ed68afd8bbbd49f7b3080"
+    },
+    {
+      "bytes": 7588,
+      "category": "original_launch_or_collection_helper",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/build.py",
+      "path": "launch/helpers/build.py",
+      "sha256": "d2e75f35f31353dbf373b9ea905bc42c68ff40edd66d418a68280bc9384c8fd9"
+    },
+    {
+      "bytes": 6239,
+      "category": "original_launch_or_collection_helper",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/build_correction.py",
+      "path": "launch/helpers/build_correction.py",
+      "sha256": "ac366fad1e8fdaffc3ee43ec602b2f9899a8b6a9a976e6b25ba25f8dee2c102f"
+    },
+    {
+      "bytes": 10799,
+      "category": "original_launch_or_collection_helper",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/collect-evidence-command.txt",
+      "path": "launch/helpers/collect-evidence-command.txt",
+      "sha256": "be83861dd933fb342e7777099ac619916c83800efaddcc02d5c3583e15d389ef"
+    },
+    {
+      "bytes": 725,
+      "category": "original_launch_or_collection_helper",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/collect-evidence-preparation.json",
+      "path": "launch/helpers/collect-evidence-preparation.json",
+      "sha256": "63177f754f3097c306ab5544ffdaa7c966f776becba51b3fae955f10a1084bf2"
+    },
+    {
+      "bytes": 10719,
+      "category": "original_launch_or_collection_helper",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/collect_evidence.py",
+      "path": "launch/helpers/collect_evidence.py",
+      "sha256": "3751d1bb4f0bfc1b737d161344a016d380300f780a2df30aa1394d0767a90f49"
+    },
+    {
+      "bytes": 7339,
+      "category": "original_launch_or_collection_helper",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/correction_main_template.py",
+      "path": "launch/helpers/correction_main_template.py",
+      "sha256": "6a65c6f68452b2bd0d8bcab1c7deec022e1d0c344e65cd961dd8e9056eaa44cd"
+    },
+    {
+      "bytes": 11963,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/release-cce6a7d3/BUILD_MANIFEST.json",
+      "path": "launch/release-cce6a7d3/BUILD_MANIFEST.json",
+      "sha256": "c5f7d8c201f40ebe7fabc08c1c771b7f3c687f20192579e713253b1529f8d194"
+    },
+    {
+      "bytes": 774,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/release-cce6a7d3/BUILD_VALIDATION.json",
+      "path": "launch/release-cce6a7d3/BUILD_VALIDATION.json",
+      "sha256": "78f022729a489d2448da7f1e52f5bf215c4429d30843ab4cbbda979ac17a4b4c"
+    },
+    {
+      "bytes": 19859,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/release-cce6a7d3/bootstrap.py",
+      "path": "launch/release-cce6a7d3/bootstrap.py",
+      "sha256": "f977700ebb568348222b8c3d8598a0f51d45959135f45bd4695ebb0f0adab96d"
+    },
+    {
+      "bytes": 14939,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/release-cce6a7d3/request.json",
+      "path": "launch/release-cce6a7d3/request.json",
+      "sha256": "052e8b30473bb1517376f6e8c0a27e67ed27644e9e0ba9fa69ae84462a0d062c"
+    },
+    {
+      "bytes": 192832,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/release-cce6a7d3/source.tar.gz",
+      "path": "launch/release-cce6a7d3/source.tar.gz",
+      "sha256": "05522d1f79ffb5e4c2857b4d01e89fe4d237a9350d205f17c6079831246699ef"
+    },
+    {
+      "bytes": 19939,
+      "category": "original_frozen_launch_build_artifact",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-launch/release-cce6a7d3/submission_command.txt",
+      "path": "launch/release-cce6a7d3/submission_command.txt",
+      "sha256": "b290cc0278ac4fa0ef4c665f74f7dc4cfa7106b75f57dd0847be6ecc9df47554"
+    },
+    {
+      "bytes": 3265,
+      "category": "original_runtime_readiness_observation",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-host-preflight.json",
+      "path": "launch/runtime-readiness.json",
+      "sha256": "8fa65321e531eb645899246eff6ec854c8832f643d3a6c3a8d9a3760066557a0"
+    },
+    {
+      "bytes": 1610,
+      "category": "original_unit_log_or_receipt",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/mem-evaluator-validation-v3/stderr.txt",
+      "path": "unit/evaluator-v3/stderr.txt",
+      "sha256": "dcb980761777be8946417ac15989581a4018ea064fe4d736121c5014169b88cc"
+    },
+    {
+      "bytes": 0,
+      "category": "original_unit_log_or_receipt",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/mem-evaluator-validation-v3/stdout.txt",
+      "path": "unit/evaluator-v3/stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1088,
+      "category": "original_unit_log_or_receipt",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/mem-evaluator-validation-v3/validation.json",
+      "path": "unit/evaluator-v3/validation.json",
+      "sha256": "a8748a39f1903a606bf3d6d0539fd5a2fd15a8e33ceafd228975fc0c0973277d"
+    },
+    {
+      "bytes": 25054,
+      "category": "original_runner_test_material",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-runner-validation/run_candidate_retention.py",
+      "path": "unit/runner-initial/run_candidate_retention.py",
+      "sha256": "e2d55eca734ec4a76c76dbb90d44a9327446964677becc9df312b5c0e169df59"
+    },
+    {
+      "bytes": 728,
+      "category": "original_runner_test_material",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-runner-validation/runner-tests-01.json",
+      "path": "unit/runner-initial/runner-tests-01.json",
+      "sha256": "85c8f331549889bab69c25916b7a3089f753b6f4a4e877eac588a195625da32d"
+    },
+    {
+      "bytes": 1553,
+      "category": "original_runner_test_material",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-runner-validation/runner-tests-01.log",
+      "path": "unit/runner-initial/runner-tests-01.log",
+      "sha256": "434b433a7c97cb8d1ade6bf6de633ee877fe204e72946060da2f637304416f22"
+    },
+    {
+      "bytes": 15228,
+      "category": "original_runner_test_material",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-runner-validation/test_run_candidate_retention.py",
+      "path": "unit/runner-initial/test_run_candidate_retention.py",
+      "sha256": "cd1f328a037d092d214ca287417dba9d4aaf4812f24a4a40ce47e3c58a449fea"
+    },
+    {
+      "bytes": 694,
+      "category": "original_correction_test_material",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-runner-preflight-fix-validation/format-receipt.json",
+      "path": "unit/runner-preflight-correction/format-receipt.json",
+      "sha256": "431327ba60e3912b92321aac6a47ad0e44b4cf89f25aafd9a6f3496f5ca5b852"
+    },
+    {
+      "bytes": 989,
+      "category": "original_correction_test_material",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-runner-preflight-fix-validation/quarantine-regression.json",
+      "path": "unit/runner-preflight-correction/quarantine-regression.json",
+      "sha256": "05ed06c2c35661e386c32e8a295c314ec2aee47a98052189c7a26e9dca2ea94a"
+    },
+    {
+      "bytes": 318,
+      "category": "original_correction_test_material",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-runner-preflight-fix-validation/quarantine-regression.log",
+      "path": "unit/runner-preflight-correction/quarantine-regression.log",
+      "sha256": "cf13564b765609a717c2d56786a37aff3d33f1cf4b480c86776e207debaee614"
+    },
+    {
+      "bytes": 30353,
+      "category": "original_correction_test_material",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-runner-preflight-fix-validation/run_candidate_retention.py",
+      "path": "unit/runner-preflight-correction/run_candidate_retention.py",
+      "sha256": "df1c96861f8ae0c28be0ec28339ca21d8ffcfade411753ae50c58aae14a5e6ef"
+    },
+    {
+      "bytes": 20037,
+      "category": "original_correction_test_material",
+      "origin": "original_existing_file",
+      "original_path": "/workspace/scratch/a6b21bc72124/candidate-runner-preflight-fix-validation/test_run_candidate_retention.py",
+      "path": "unit/runner-preflight-correction/test_run_candidate_retention.py",
+      "sha256": "74489f8759128aa63a0a2c1df94a5cd70d4b6d8fa18493aafb095ceadedb9f46"
+    }
+  ],
+  "native_workers_run": false,
+  "original_member_count": 57,
+  "preservation_only": true,
+  "schema": "hepta.mem.candidate-validation-archive.v1",
+  "scientific_acceptance": "HOLD",
+  "tests_rerun": false,
+  "uncompressed_member_bytes": 1069259
+}

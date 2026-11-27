@@ -458,9 +458,21 @@ async fn token_burst_is_one_bounded_final_and_later_updates_replace_the_root() -
 
 #[tokio::test]
 async fn ten_thousand_deltas_are_bounded_and_final_is_exact() -> TestResult {
+    let diagnostic_started = std::time::Instant::now();
+    let diagnostic = |phase: &str, completed: u64| {
+        use std::io::Write as _;
+
+        let _ = writeln!(
+            std::io::stderr(),
+            "matrix_10k phase={phase} completed_deltas={completed} elapsed_ms={}",
+            diagnostic_started.elapsed().as_millis()
+        );
+    };
+    diagnostic("start", 0);
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
     let layout = layout(&temp, &agent_id)?;
+    diagnostic("open_before", 0);
     let store = MatrixDurableStore::open(
         &layout,
         MatrixDurableConfig {
@@ -470,8 +482,11 @@ async fn ten_thousand_deltas_are_bounded_and_final_is_exact() -> TestResult {
         },
     )
     .await?;
+    diagnostic("open_after", 0);
     let room_id = room("!bounded:example.test")?;
+    diagnostic("bind_before", 0);
     bind_room(&store, &room_id, &user("@agent:example.test")?, 10).await?;
+    diagnostic("bind_after", 0);
 
     let logical_delta = protocol_outbox_id(
         &agent_id,
@@ -481,6 +496,7 @@ async fn ten_thousand_deltas_are_bounded_and_final_is_exact() -> TestResult {
         "delta-stream",
         "text_delta",
     );
+    diagnostic("loop_before", 0);
     for index in 0..10_000_u64 {
         let revision = index + 1;
         let draft = OutboxDraft {
@@ -495,7 +511,11 @@ async fn ten_thousand_deltas_are_bounded_and_final_is_exact() -> TestResult {
             created_at_ms: 20,
         };
         store.enqueue_outbox(&draft).await?;
+        if revision.is_multiple_of(1_000) {
+            diagnostic("deltas_completed", revision);
+        }
     }
+    diagnostic("loop_after", 10_000);
     let final_draft = outbox_draft(
         &agent_id,
         &room_id,
@@ -504,9 +524,13 @@ async fn ten_thousand_deltas_are_bounded_and_final_is_exact() -> TestResult {
         b"EXACT-FINAL",
         21,
     )?;
+    diagnostic("final_before", 10_000);
     store.enqueue_outbox(&final_draft).await?;
+    diagnostic("final_after", 10_000);
 
+    diagnostic("pending_before", 10_000);
     let records = store.pending_outbox(100).await?;
+    diagnostic("pending_after", 10_000);
     let deltas: Vec<_> = records
         .iter()
         .filter(|record| record.kind == OutboxKind::TextDelta)
@@ -531,6 +555,7 @@ async fn ten_thousand_deltas_are_bounded_and_final_is_exact() -> TestResult {
     assert_eq!(finals.len(), 1);
     assert_eq!(finals[0].payload, b"EXACT-FINAL");
     assert!(OutboxKind::Final.is_critical());
+    diagnostic("done", 10_000);
     Ok(())
 }
 

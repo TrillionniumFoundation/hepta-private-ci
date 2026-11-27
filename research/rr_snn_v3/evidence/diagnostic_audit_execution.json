@@ -1,0 +1,37 @@
+{
+  "schema": "rr-snn-addendum-execution-evidence-1",
+  "sourceCommit": "cdafba54311c42202bb0e9c957dc8c2145031778",
+  "run": {
+    "id": 40872331647,
+    "jobId": 123442290338,
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40872331647"
+  },
+  "artifact": {
+    "id": 12896750654,
+    "size": 8128,
+    "sha256": "ad182d6ee743e9b24f0f7c5fe8ab1cc1e1f8acfd8534fd132638d89374a461b4",
+    "expiresAt": "2026-11-12T12:19:47Z"
+  },
+  "baseSourceChanges": [],
+  "numericComparison": {
+    "optimization": {
+      "bitIdentical": false,
+      "gradientArchiveMaxDiff": [
+        9.992007221626409e-15,
+        4.884981308350689e-15
+      ],
+      "maxObservedAbsoluteNumericDifference": 9.116405547127115e-13
+    },
+    "utilityAudit": {
+      "bitIdentical": true
+    }
+  },
+  "scope": {
+    "newHoldout": false,
+    "newFit": false,
+    "r4Completed": false,
+    "heptaQualified": false,
+    "activationAllowed": false
+  }
+}

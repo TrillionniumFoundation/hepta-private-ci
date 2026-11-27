@@ -1,0 +1,121 @@
+{
+  "schema": "rrsnn.v4.independent-feature-bridge-review.v1",
+  "created_at_utc": "2026-10-29T15:18:31.957954+00:00",
+  "reviewer": "/root/r4_query_environment",
+  "status": "passed_with_explicit_research_scope_limits",
+  "remaining_source_correctness_blockers_within_stated_contract": [],
+  "source_sha256": {
+    "rr_bridge_backend.py": "910513b7d8b92ebaddda5b8a3cb54889438969755192aa39ef89198b0fcaec39",
+    "rr_bridge_worker.py": "db8bf2b7817d1ffdd1f54b77802720234b1774facffb46ef9ca5248664329440",
+    "rr_bridge_artifact.py": "5d20b461da1de422bccf5aff647148059bbb47c4b813373e838f1274331ab98b",
+    "validate_rr_bridge.py": "d0431a84fc06c00f70fdd8cac22b2a9799f66d005b8192a7c2f029eab8b91639",
+    "rr_bridge_native/src/main.rs": "33202d53e9a7301c7ee038b9723e781aac29e448cfd7a2cc653d72428e952715"
+  },
+  "development_proof": {
+    "path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/rr_bridge_results/development-1793286641443455623/proof.json",
+    "sha256": "f8a3fe3c91dfe637a11a483f531913323998868182bdd452fac9d3e16cdbc9af",
+    "manifest_path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/rr_bridge_results/development-1793286641443455623/manifest.json",
+    "manifest_sha256": "f93af5071b4160c36ab14d47a6556c1bcf205127b1a4cfabb4eaaa9e3f1a5210",
+    "native_binary_sha256": "f7ea42df3b9e55aa0d3d01a67bd363dee25641a05db54e7907a30fac5092cc87",
+    "source_snapshots_match_manifest": true,
+    "actual_sigkill_cuts": [
+      "unconfirmed_prepared",
+      "prepared",
+      "before_witness",
+      "after_witness",
+      "joint_file_written",
+      "joint_published"
+    ],
+    "negative_cases": 19,
+    "proof_content_independently_cross_checked": true
+  },
+  "checks": [
+    {
+      "name": "full_state_and_rng_codec",
+      "status": "independently_executed_pass",
+      "detail": "All ten CoupledState fields retain kind, dtype, shape and exact bytes. PCG64 state/inc use decimal strings; has_uint32/uinteger cache retained. Next actual neural path and 64 uint32 draws match after restore."
+    },
+    {
+      "name": "no_lossy_rng_transit_through_rust",
+      "status": "source_review_pass",
+      "detail": "Prepared transport carries state paths and SHA256 references; full PCG64 state remains Python-persisted. The 128-bit integers are decimal strings even in persisted JSON."
+    },
+    {
+      "name": "actual_source_artifact_executable_bindings",
+      "status": "source_and_development_negative_proof_pass",
+      "detail": "Worker checks actual native/backend/Python bytes before invocation. Backend checks current source/artifact/native bytes before fresh or cached prepare."
+    },
+    {
+      "name": "complete_official_request_and_elapsed_binding",
+      "status": "source_and_development_negative_proof_pass",
+      "detail": "Backend requires exact canonical equality with pinned native journal-free describe before mutation. New inference validates neural time + dt and positive native-time offset."
+    },
+    {
+      "name": "confirmed_prepare_reconcile_idempotence",
+      "status": "source_and_five_sigkill_cuts_pass",
+      "detail": "Cache reuse requires path+SHA passed only after an independently pinned pending proposal. Current frontier must be prior or next before native recovery; trusted-next plus rolled-back-current is rejected."
+    },
+    {
+      "name": "unconfirmed_orphan_preparation",
+      "status": "source_and_sigkill_cut_pass",
+      "detail": "Directory discovery is not trusted. Unconfirmed orphan is retained; retry recomputes from pinned prior CoupledState/PCG64. The confirmed next state and RNG match uninterrupted execution and advance once, while physical model recomputation is counted honestly."
+    },
+    {
+      "name": "selected_trained_candidate_identity",
+      "status": "implemented_and_source_reviewed_trained_execution_pending",
+      "detail": "Artifact construction calls frozen validate_selection/load_policy for selection membership, receipt SHA, both protocol links and checkpoint run identity. Reviewed code fixes seed101; this independent development review did not open a trained checkpoint."
+    },
+    {
+      "name": "authority_and_scope",
+      "status": "source_and_development_proof_pass",
+      "detail": "Official sparse owner remains DENY_ALL. Width8/top_k1 cannot meet the 100%-active fixture threshold, so every tested tick abstains. Eight exported trace features are distinct from the 81-action task policy and from production Cells."
+    }
+  ],
+  "independent_serialization_fixture": {
+    "model_seed": 901980,
+    "pcg64_seed": 901981,
+    "model": "untrained development RRPolicy",
+    "elapsed_before_snapshot": [
+      0,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "actual_spikes_before_snapshot": 2,
+    "all_fields": [
+      "boundary",
+      "context",
+      "drift",
+      "indices",
+      "initial_resource",
+      "observed",
+      "pending_initial_score",
+      "time",
+      "total_counts",
+      "trace"
+    ],
+    "initial_and_post_spike_roundtrip_byte_exact": true,
+    "has_uint32_set_deliberately": true,
+    "next_elapsed": 0.375,
+    "next_actual_spike_times_counts_and_full_state_identical": true,
+    "following_uint32_draws_identical": 64,
+    "source_sha256": "910513b7d8b92ebaddda5b8a3cb54889438969755192aa39ef89198b0fcaec39",
+    "production_checkpoint_or_data_opened": false
+  },
+  "limits": [
+    "Independent trusted controller frontier and pending pins are prerequisites; this is not autonomous recovery after loss of that evidence.",
+    "A pending file persisted before its independent pin is durably retained is rejected; the six tested named cuts do not exhaust every byte-level interleaving.",
+    "The first joint checkpoint must have succeeded; native first-bootstrap gaps are covered separately, not repaired by this bridge.",
+    "Full CoupledState/PCG64 remains an external sidecar and is not encoded into the unchanged native V1 sparse checkpoint.",
+    "Raw native checkpoint/frontier bytes across separately generated runs can differ because admissions bind full host provenance; exact RR state/RNG continuation and each run own pure-kernel predicted anchors are the asserted invariants.",
+    "Trained seed101 execution follows published selection separately; this review verifies development evidence and the trained identity gate source, not completed trained bridge evidence.",
+    "No full81 action routing, production Cell workload, verified dot, independent real future utility window or production qualification is established."
+  ],
+  "frozen_r4_sources_unchanged": true,
+  "review_changed_owner_sources": false,
+  "model_training_performed_by_review": false,
+  "production_or_holdout_data_opened_by_review": false,
+  "activation_allowed": false,
+  "all_project_blockers_closed": false
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.controlled-generation.cloud-status.v2",
+  "observed_utc": "2026-10-23 04:23:11 UTC",
+  "run_id": 39899251197,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39899251197",
+  "request_commit": "55aab1459c9079e397683acdeb382cd1b53d03c8",
+  "implementation_commit": "c5c6b9df0a83a9a2f95d5583b95909829a982b06",
+  "jobs": [
+    {
+      "id": 120236739119,
+      "name": "hosted-verification",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": [],
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39899251197/job/120236739119"
+    },
+    {
+      "id": 120236739358,
+      "name": "dedicated-full",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "self-hosted",
+        "linux",
+        "x64"
+      ],
+      "steps": [],
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39899251197/job/120236739358"
+    }
+  ],
+  "hosted_execution_verified": false,
+  "dedicated_execution_verified": false,
+  "remaining_condition": "An assigned runner and executed successful steps must appear; local or queued receipts do not satisfy this condition.",
+  "administration_access": "The available GitHub connector has no runner-management operation; its public fetch route rejects runner/runner-group inventory endpoints. Cause of nonassignment has not been established.",
+  "previous_run": {
+    "id": 39589317563,
+    "status": "completed",
+    "conclusion": "cancelled",
+    "job_id": 119186004831,
+    "runner_id": 0,
+    "executed_steps": 0
+  }
+}

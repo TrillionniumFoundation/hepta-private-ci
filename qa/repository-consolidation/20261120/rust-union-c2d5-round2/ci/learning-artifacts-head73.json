@@ -1,0 +1,282 @@
+{
+  "schema": "hepta-learning-artifacts-actual73-review",
+  "head": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "workflow_run_id": 44667479352,
+  "actual_qualification": false,
+  "lanes": [
+    {
+      "lane": "source",
+      "artifact_id": 14598194862,
+      "zip_sha256": "e61c92f864c910adaf2aad36cc9ffff66ce7c83a53a74df44f85be7889cabbd0",
+      "zip_bytes": 42300,
+      "digest_matches_github_api": true,
+      "identity": {
+        "base": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+        "candidate": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+        "candidateTree": "75127f7175708277f28974daff78cc6e7d92ab0c",
+        "lane": "source",
+        "parents": [
+          "ba7ce7fa46074ad159ee8c201e3ffbd00b159ad4"
+        ],
+        "source": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+        "sourceTree": "75127f7175708277f28974daff78cc6e7d92ab0c"
+      },
+      "qualified": false,
+      "tracked_source_unchanged_reported": true,
+      "steps": [
+        {
+          "name": "build",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-source/build.log",
+          "log_sha256": "f1f899758eda5393485422dc936034d3ae3439eddfbc5ef67afb67e380e9cbf5"
+        },
+        {
+          "name": "strict-clippy",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-source/strict-clippy.log",
+          "log_sha256": "806c057527b1b7b6d142a6fd825f0f0bd4d4051dd6f9e1815c49260c307c6d82"
+        },
+        {
+          "name": "owner-regression",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 160,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-source/owner-regression.log",
+          "log_sha256": "ac6ae500aab6e3f2fd9c9d960d36b05e566ed156a27e0bc1de9bcb3ce20de131"
+        },
+        {
+          "name": "cross-crate",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 1,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-source/cross-crate.log",
+          "log_sha256": "0634530db7f3107fabe1b51dc20291d0edef2bf74de2209d4b86c4ebc33f1ae9"
+        },
+        {
+          "name": "selected-reload",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 1,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-source/selected-reload.log",
+          "log_sha256": "83c72a402e98bb02bc4f16716b273d75021bbbbcbabb9080f67e860274f54f81"
+        },
+        {
+          "name": "cognitive-read",
+          "status": "failed",
+          "exit_code": 101,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-source/cognitive-read.log",
+          "log_sha256": "76d2bb3d27f521d84eb7455090c8d694dcc9d535c8b7df43b415720149ea205a"
+        },
+        {
+          "name": "format",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-source/format.log",
+          "log_sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+        },
+        {
+          "name": "lane-e-self-test",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-source/lane-e-self-test.log",
+          "log_sha256": "e96adfe3e20ce2c8474c19d5dfd7cf10cd5413e084e7e809fa769158fa18e3b5"
+        },
+        {
+          "name": "lane-e-preflight",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-source/lane-e-preflight.log",
+          "log_sha256": "ba5e5b0c5d7352215144aa04580a0c12b676e7279f7a408912f9ac84e32ea0f2"
+        }
+      ],
+      "cognitive_compile_errors": [
+        {
+          "error": "error[E0425]: cannot find type `UnixStream` in this scope",
+          "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:23:28"
+        },
+        {
+          "error": "error[E0433]: cannot find type `Duration` in this scope",
+          "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:39:22"
+        },
+        {
+          "error": "error[E0433]: cannot find type `Duration` in this scope",
+          "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:40:23"
+        },
+        {
+          "error": "error[E0433]: cannot find type `UnixStream` in this scope",
+          "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:60:32"
+        },
+        {
+          "error": "error[E0308]: mismatched types",
+          "location": "--> hepta-agentd/src/cell_q24_task_ledger_history_tests.rs:119:24"
+        },
+        {
+          "error": "error[E0308]: mismatched types",
+          "location": "--> hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs:67:38"
+        },
+        {
+          "error": "error[E0308]: mismatched types",
+          "location": "--> hepta-agentd/src/cell_q24_training_candidate_tests.rs:258:31"
+        }
+      ],
+      "cognitive_runtime_tests_executed": false
+    },
+    {
+      "lane": "merge",
+      "artifact_id": 14599815635,
+      "zip_sha256": "148138b22b1e1dfc7f558d53e119d8bc1e649d39e4c7013ea48cf754fa07c3b6",
+      "zip_bytes": 42200,
+      "digest_matches_github_api": true,
+      "identity": {
+        "base": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+        "candidate": "75da0fc202df308ee0cd7ec80dc9c4039e9e57a3",
+        "candidateTree": "75127f7175708277f28974daff78cc6e7d92ab0c",
+        "lane": "merge",
+        "parents": [
+          "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+          "73a96f64bfcf13380a62f6271b65d18ebf290799"
+        ],
+        "source": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+        "sourceTree": "75127f7175708277f28974daff78cc6e7d92ab0c"
+      },
+      "qualified": false,
+      "tracked_source_unchanged_reported": true,
+      "steps": [
+        {
+          "name": "build",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-merge/build.log",
+          "log_sha256": "17eabf7b8248fef126400c9900ef131bf331d0d23fa4247a60b2fa71369865a0"
+        },
+        {
+          "name": "strict-clippy",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-merge/strict-clippy.log",
+          "log_sha256": "3fe454a08558bc4bcafc627bdcb16ecf455cc397c10fcc38e51a0ef6b70fbb2f"
+        },
+        {
+          "name": "owner-regression",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 160,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-merge/owner-regression.log",
+          "log_sha256": "3544134fa9352d52763ac62545d3289d17c1bbe70ab2d49a427e7116a5904d15"
+        },
+        {
+          "name": "cross-crate",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 1,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-merge/cross-crate.log",
+          "log_sha256": "3a499a0fed847d97d43f290128798e9c63a066d50cf0500b09dd6d33b4fe5a3a"
+        },
+        {
+          "name": "selected-reload",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 1,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-merge/selected-reload.log",
+          "log_sha256": "12530df59c01346f7269ffcd3af11798b54301bdad77ba9c0b0cc66995451cef"
+        },
+        {
+          "name": "cognitive-read",
+          "status": "failed",
+          "exit_code": 101,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-merge/cognitive-read.log",
+          "log_sha256": "f9c6f867cb2e5398296cb975dee00f375588fa365388687cda071f089c38b050"
+        },
+        {
+          "name": "format",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-merge/format.log",
+          "log_sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+        },
+        {
+          "name": "lane-e-self-test",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-merge/lane-e-self-test.log",
+          "log_sha256": "e96adfe3e20ce2c8474c19d5dfd7cf10cd5413e084e7e809fa769158fa18e3b5"
+        },
+        {
+          "name": "lane-e-preflight",
+          "status": "passed",
+          "exit_code": 0,
+          "log_truncated": false,
+          "passed_test_names_recorded": 0,
+          "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/learning-artifact-merge/lane-e-preflight.log",
+          "log_sha256": "ba5e5b0c5d7352215144aa04580a0c12b676e7279f7a408912f9ac84e32ea0f2"
+        }
+      ],
+      "cognitive_compile_errors": [
+        {
+          "error": "error[E0425]: cannot find type `UnixStream` in this scope",
+          "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:23:28"
+        },
+        {
+          "error": "error[E0433]: cannot find type `Duration` in this scope",
+          "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:39:22"
+        },
+        {
+          "error": "error[E0433]: cannot find type `Duration` in this scope",
+          "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:40:23"
+        },
+        {
+          "error": "error[E0433]: cannot find type `UnixStream` in this scope",
+          "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:60:32"
+        },
+        {
+          "error": "error[E0308]: mismatched types",
+          "location": "--> hepta-agentd/src/cell_q24_task_ledger_history_tests.rs:119:24"
+        },
+        {
+          "error": "error[E0308]: mismatched types",
+          "location": "--> hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs:67:38"
+        },
+        {
+          "error": "error[E0308]: mismatched types",
+          "location": "--> hepta-agentd/src/cell_q24_training_candidate_tests.rs:258:31"
+        }
+      ],
+      "cognitive_runtime_tests_executed": false
+    }
+  ],
+  "source_and_merge_same_seven_compile_errors": true,
+  "cause": "Both cognitive-read invocations fail in cargo test --no-run as invoked by just test, before native tests execute. Errors are the same missing UnixStream/Duration and three Box fixture boundaries already represented in the frozen15 source candidate.",
+  "coverage": "Prepared stage01 source correction; native after-CI NOT_RUN. Other steps passing does not qualify either lane.",
+  "candidate_manifest_sha256": "9f2de460fadc3a8e790bb0ebe942895ffc0840a18786a922134909dc2a2bb8b1",
+  "no_retries_or_mutations": true
+}

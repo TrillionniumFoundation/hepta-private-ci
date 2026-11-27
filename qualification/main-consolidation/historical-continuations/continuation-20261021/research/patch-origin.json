@@ -1,0 +1,141 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_branch": "research/real-reader-intake-p4-20261017",
+  "source_sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+  "tree_sha": "42865df641069d9a11285038e7d75b3df9111248",
+  "base_branch": "research/checkpoint-resource-binding-p3-20261017",
+  "base_sha": "e08323af4805ed9a8d14afabf2212923195f2156",
+  "fetched_at": "2026-10-21T00:44:31.925Z",
+  "files": [
+    {
+      "path": "qualification/neuron-shared-encoder/README_FUTURE_OOD_HARNESS_GATE.md",
+      "blob_sha": "b6264feb4d7d1870138b8cb790513e3f17d1aaad",
+      "size": 1639
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/README_STEM_BRIDGE.md",
+      "blob_sha": "20743fca37b0ced1f2d139f6c7b9ffdb90c7da32",
+      "size": 10069
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/__init__.py",
+      "blob_sha": "461b01e0a58f95175a5ed0c466160c558be84777",
+      "size": 57
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/checkpoint_receipt.py",
+      "blob_sha": "bb4ab881d64b9d0e7f577a99223a81e831587244",
+      "size": 8146
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/component_resource_receipts.py",
+      "blob_sha": "ac6edf8ca8bfb415b2b9585f6ad35157e991e4fb",
+      "size": 16596
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/future_ood_matrix.py",
+      "blob_sha": "397f0bbfd2753c97f7bd252fb58bc5b68c722d93",
+      "size": 7725
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/harness_receipt_adapter.py",
+      "blob_sha": "96032e01374df2a46eb6ddcdb943162b2a8357d9",
+      "size": 5646
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/modality_registry.py",
+      "blob_sha": "1517a1655d667c487adab41174c6af73f81c742e",
+      "size": 17189
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/prospective_plan.py",
+      "blob_sha": "0638c6138dd7869ed3275ed7025f6110e3f41bd1",
+      "size": 29887
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/reader_fixture_bridge.py",
+      "blob_sha": "d8545ad368354ac3a31ba83a72714d3e2f394da4",
+      "size": 10093
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/reader_runtime_receipt.py",
+      "blob_sha": "7c12845f186c67d11238721c769b839b11f1e367",
+      "size": 17124
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/resource_checkpoint_binding.py",
+      "blob_sha": "d61ff6e019bb0c4ebf9abe8a9ccf416c569f800b",
+      "size": 4880
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/stem_bridge.py",
+      "blob_sha": "1b6c8effa3bd12e25f36a8afa30162268716bae1",
+      "size": 16520
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_calibration_evidence_class.py",
+      "blob_sha": "f3fd95a267871c8398cf46f7084cc58691464589",
+      "size": 4159
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_checkpoint_receipt.py",
+      "blob_sha": "7191115ad062e98755c5eda23fab6764c178116c",
+      "size": 5007
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_component_resource_receipts.py",
+      "blob_sha": "fcb9d799f405a6d54cb63d91494e12ed26d1a651",
+      "size": 9258
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_future_ood_matrix.py",
+      "blob_sha": "ea6ec06db08095beb4db1166979344e2764a42b8",
+      "size": 2152
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_harness_receipt_adapter.py",
+      "blob_sha": "f5c8d16fce7cf2077bdb7c46845b16a70229e4b7",
+      "size": 6226
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_modality_registry.py",
+      "blob_sha": "4cf5d1b0a01b84a8aeb0f15d1fa73373c4d6bd83",
+      "size": 9050
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_prospective_plan.py",
+      "blob_sha": "73e5b28c44712f8890ea50ef6c14e366fb66144f",
+      "size": 12423
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_reader_fixture_bridge.py",
+      "blob_sha": "4a704b18825975e5c5380f41e88454878f2b783f",
+      "size": 7222
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_reader_runtime_declarations.py",
+      "blob_sha": "4c967209d9ff72056769b1a4d00058adbb7475d9",
+      "size": 7845
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_reader_runtime_receipt.py",
+      "blob_sha": "2f1d9675c99e73de79634664d2ff7d5834022948",
+      "size": 4263
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_resource_checkpoint_binding.py",
+      "blob_sha": "cea49ed36390476b34686560f15a9780d6070b91",
+      "size": 2636
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_stem_bridge.py",
+      "blob_sha": "faedc97cad25758662bef8a801d39f109ffeb834",
+      "size": 7673
+    },
+    {
+      "path": "qualification/neuron-shared-encoder/tests/test_stem_evidence_declarations.py",
+      "blob_sha": "2a533ffa849bb3f74b04ab01b26032cd86522d9b",
+      "size": 2908
+    }
+  ]
+}

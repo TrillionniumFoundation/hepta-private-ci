@@ -16,7 +16,6 @@ use app_test_support::rollout_path;
 use app_test_support::test_absolute_path;
 use app_test_support::to_response;
 use app_test_support::write_chatgpt_auth;
-use chrono::Utc;
 use codex_app_server_protocol::ActivePermissionProfile;
 use codex_app_server_protocol::ApprovalsReviewer;
 use codex_app_server_protocol::AskForApproval;
@@ -405,7 +404,19 @@ async fn wait_for_responses_request_count(
 }
 
 #[tokio::test]
-async fn thread_resume_rejects_unmaterialized_thread() -> Result<()> {
+async fn thread_resume_materializes_the_same_live_thread_without_starting_a_turn() -> Result<()> {
+    assert_resume_materializes_the_same_live_thread(ThreadHistoryMode::Legacy).await
+}
+
+#[tokio::test]
+async fn thread_resume_materializes_the_same_paginated_live_thread_without_starting_a_turn()
+-> Result<()> {
+    assert_resume_materializes_the_same_live_thread(ThreadHistoryMode::Paginated).await
+}
+
+async fn assert_resume_materializes_the_same_live_thread(
+    history_mode: ThreadHistoryMode,
+) -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
     mock_responses_config(&server.uri()).write(codex_home.path())?;
@@ -419,13 +430,121 @@ async fn thread_resume_rejects_unmaterialized_thread() -> Result<()> {
     let start_id = mcp
         .send_thread_start_request_with_auto_env(ThreadStartParams {
             model: Some("gpt-5.4".to_string()),
+            history_mode: Some(history_mode),
             ..Default::default()
         })
         .await?;
     let ThreadStartResponse { thread, .. } =
         timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(start_id)).await??;
 
-    // Resume should fail before the first user message materializes rollout storage.
+    let thread_path = thread
+        .path
+        .as_ref()
+        .expect("live thread has a rollout path");
+    assert!(!thread_path.exists());
+
+    // Repeated attaches must materialize through the live writer and retain the
+    // original Core session; they must not cold-resume or synthesize a user turn.
+    for exclude_turns in [true, false, true] {
+        let resume_id = mcp
+            .send_thread_resume_request(ThreadResumeParams {
+                thread_id: thread.id.clone(),
+                exclude_turns,
+                ..Default::default()
+            })
+            .await?;
+        let ThreadResumeResponse {
+            thread: resumed, ..
+        } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
+        // Materialization may expose the Windows verbatim spelling of the same
+        // rollout path. Compare native spellings without changing path identity.
+        assert_eq!(
+            (
+                &resumed.id,
+                &resumed.session_id,
+                resumed
+                    .path
+                    .as_ref()
+                    .map(codex_utils_path::normalize_for_native_workdir),
+                &resumed.turns
+            ),
+            (
+                &thread.id,
+                &thread.session_id,
+                thread
+                    .path
+                    .as_ref()
+                    .map(codex_utils_path::normalize_for_native_workdir),
+                &thread.turns
+            ),
+        );
+        assert!(resumed.turns.is_empty());
+        assert_eq!(resumed.history_mode, history_mode);
+        let page: ThreadTurnsListResponse = mcp
+            .request(|request_id| ClientRequest::ThreadTurnsList {
+                request_id,
+                params: ThreadTurnsListParams {
+                    thread_id: thread.id.clone(),
+                    cursor: None,
+                    limit: Some(5),
+                    sort_direction: Some(SortDirection::Desc),
+                    items_view: Some(TurnItemsView::NotLoaded),
+                },
+            })
+            .await?;
+        assert_eq!(
+            page,
+            ThreadTurnsListResponse {
+                data: Vec::new(),
+                next_cursor: None,
+                backwards_cursor: None,
+            }
+        );
+    }
+    assert!(thread_path.exists());
+    let loaded: ThreadLoadedListResponse = mcp
+        .request(|request_id| ClientRequest::ThreadLoadedList {
+            request_id,
+            params: ThreadLoadedListParams::default(),
+        })
+        .await?;
+    assert_eq!(loaded.data, vec![thread.id]);
+    wait_for_responses_request_count(&server, /*expected_count*/ 0).await?;
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn thread_resume_rejects_unmaterialized_thread_without_a_live_owner() -> Result<()> {
+    let server = create_mock_responses_server_repeating_assistant("Done").await;
+    let codex_home = TempDir::new()?;
+    mock_responses_config(&server.uri()).write(codex_home.path())?;
+
+    let mut mcp = TestAppServer::builder()
+        .with_codex_home(codex_home.path())
+        .build_initialized()
+        .await?;
+    let start_id = mcp
+        .send_thread_start_request_with_auto_env(ThreadStartParams {
+            model: Some("gpt-5.4".to_string()),
+            ..Default::default()
+        })
+        .await?;
+    let ThreadStartResponse { thread, .. } =
+        timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(start_id)).await??;
+    let thread_path = thread
+        .path
+        .as_ref()
+        .expect("live thread has a rollout path");
+    assert!(!thread_path.exists());
+    timeout(DEFAULT_READ_TIMEOUT, mcp.kill_ungracefully()).await??;
+    assert!(!thread_path.exists());
+
+    // A remembered id is not sufficient to recreate an unpersisted Core owner.
+    let mut mcp = TestAppServer::builder()
+        .with_codex_home(codex_home.path())
+        .build_initialized()
+        .await?;
     let resume_id = mcp
         .send_thread_resume_request(ThreadResumeParams {
             thread_id: thread.id.clone(),
@@ -445,6 +564,14 @@ async fn thread_resume_rejects_unmaterialized_thread() -> Result<()> {
         "unexpected resume error: {}",
         resume_err.error.message
     );
+    let loaded: ThreadLoadedListResponse = mcp
+        .request(|request_id| ClientRequest::ThreadLoadedList {
+            request_id,
+            params: ThreadLoadedListParams::default(),
+        })
+        .await?;
+    assert_eq!(loaded.data, Vec::<String>::new());
+    wait_for_responses_request_count(&server, /*expected_count*/ 0).await?;
 
     Ok(())
 }
@@ -1192,7 +1319,12 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
             ..
         } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
 
-        assert!(matches!(sandbox, AppSandboxPolicy::ReadOnly { .. }));
+        assert_eq!(
+            sandbox,
+            AppSandboxPolicy::ReadOnly {
+                network_access: false,
+            },
+        );
         assert_eq!(
             active_permission_profile,
             Some(ActivePermissionProfile {
@@ -1200,10 +1332,14 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
                 extends: Some(BUILT_IN_PERMISSION_PROFILE_READ_ONLY.to_string()),
             })
         );
-        assert!(
-            !runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(
-                previous_workspace_root.path(),
-            )?)
+        // Runtime roots belong to the persisted execution environment. Reload
+        // the current profile's permissions without erasing that environment
+        // or carrying its old workspace-write grant into the resumed session.
+        assert_eq!(
+            runtime_workspace_roots,
+            vec![AbsolutePathBuf::from_absolute_path(
+                previous_workspace_root.path()
+            )?],
         );
     }
     Ok(())
@@ -4199,22 +4335,30 @@ async fn thread_resume_rejects_history_when_thread_is_running() -> Result<()> {
 
 #[tokio::test]
 async fn thread_resume_rejects_mismatched_path_for_running_thread_id() -> Result<()> {
-    let server = responses::start_mock_server().await;
-    let first_body = responses::sse(vec![
-        responses::ev_response_created("resp-1"),
-        responses::ev_assistant_message("msg-1", "Done"),
-        responses::ev_completed("resp-1"),
-    ]);
-    let second_response = responses::sse_response(responses::sse(vec![
-        responses::ev_response_created("resp-2"),
-        responses::ev_assistant_message("msg-2", "Done"),
-        responses::ev_completed("resp-2"),
-    ]))
-    .set_delay(std::time::Duration::from_millis(500));
-    let _first_response_mock = responses::mount_sse_once(&server, first_body).await;
-    let _second_response_mock = responses::mount_response_once(&server, second_response).await;
+    let (release_running_turn, running_turn_gate) = oneshot::channel();
+    let (server, _response_completions) = start_streaming_sse_server(vec![
+        vec![StreamingSseChunk {
+            gate: None,
+            body: responses::sse(vec![
+                responses::ev_response_created("resp-1"),
+                responses::ev_assistant_message("msg-1", "Done"),
+                responses::ev_completed("resp-1"),
+            ]),
+        }],
+        // Keep the second turn active until the stale-path check and interrupt
+        // finish, regardless of how slowly the Windows runner processes them.
+        vec![StreamingSseChunk {
+            gate: Some(running_turn_gate),
+            body: responses::sse(vec![
+                responses::ev_response_created("resp-2"),
+                responses::ev_assistant_message("msg-2", "Done"),
+                responses::ev_completed("resp-2"),
+            ]),
+        }],
+    ])
+    .await;
     let codex_home = TempDir::new()?;
-    mock_responses_config(&server.uri()).write(codex_home.path())?;
+    mock_responses_config(server.uri()).write(codex_home.path())?;
 
     let mut primary = TestAppServer::builder()
         .with_codex_home(codex_home.path())
@@ -4360,6 +4504,7 @@ async fn thread_resume_rejects_mismatched_path_for_running_thread_id() -> Result
     primary
         .interrupt_turn_and_wait_for_aborted(thread_id, running_turn.id, DEFAULT_READ_TIMEOUT)
         .await?;
+    drop(release_running_turn);
 
     Ok(())
 }
@@ -5462,8 +5607,11 @@ fn mock_responses_config(server_uri: &str) -> MockResponsesConfig {
 
 #[allow(dead_code)]
 fn set_rollout_mtime(path: &Path, updated_at_rfc3339: &str) -> Result<()> {
-    let parsed = chrono::DateTime::parse_from_rfc3339(updated_at_rfc3339)?.with_timezone(&Utc);
-    let times = FileTimes::new().set_modified(parsed.into());
+    let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(updated_at_rfc3339)?;
+    let modified = parsed.to_system_time().ok_or_else(|| {
+        anyhow::anyhow!("rollout timestamp is outside the platform file-time range")
+    })?;
+    let times = FileTimes::new().set_modified(modified);
     std::fs::OpenOptions::new()
         .append(true)
         .open(path)?

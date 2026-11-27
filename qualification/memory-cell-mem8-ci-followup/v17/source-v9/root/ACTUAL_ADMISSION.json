@@ -1,0 +1,59 @@
+{
+  "schema": "mem8.v9.source-gates.actual-admission.v1",
+  "observed_utc": "2026-11-11 16:05:30 UTC",
+  "branch": "codex/mem8-source-gates-v9-20261111-ed353817",
+  "source_head": "408226fc670bfa8c1736e2b264750b549237b7c4",
+  "source_tree": "112fe78dedd76b258b17976cff14693c52897c8d",
+  "harness_head": "43d28191901d7d08c4543884d2f81c0b44eb8678",
+  "harness_tree": "1cf82d28ee65a30b38ddeb0ff6e7737c1ca4d849",
+  "harness_parent": "408226fc670bfa8c1736e2b264750b549237b7c4",
+  "actual_branch_absence_observed": true,
+  "actual_anchor_creation_observed": true,
+  "actual_expected_head_update": {
+    "success": true
+  },
+  "actual_after_head": "43d28191901d7d08c4543884d2f81c0b44eb8678",
+  "complete_harness_entries": 14057,
+  "full_harness_file_readbacks": [
+    {
+      "path": ".github/scripts/mem8_source_gates_v9.py",
+      "sha": "210febab5369cbd99bd38c1b39cf8523b8f9399e",
+      "bytes": 33587,
+      "encoding": "utf-8",
+      "full_content_obtained": true
+    },
+    {
+      "path": ".github/workflows/hepta-mem8-source-gates-v9.yml",
+      "sha": "e7cb0bc778c7d5f68e3f61a3f257656b1770f975",
+      "bytes": 9721,
+      "encoding": "utf-8",
+      "full_content_obtained": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-source-gates-v9/INPUT_SOURCE_GATES.json.xz",
+      "sha": "0249b5dae6103c5dc03c8beb869eb820b6ba4cf5",
+      "bytes": 388060,
+      "encoding": "base64",
+      "full_content_obtained": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-source-gates-v9/GOLDEN_CALLER_RECEIPT.json",
+      "sha": "d783a943bb7278256bc86dc04dfe99d168c7e013",
+      "bytes": 75046,
+      "encoding": "utf-8",
+      "full_content_obtained": true
+    }
+  ],
+  "full_binary_input_readback_equal": true,
+  "original_source_gate_seconds": 600,
+  "original_job_envelope_minutes": 20,
+  "python_regression_case_count": 18,
+  "cumulative_paths": 117,
+  "complete_source_entries": 14053,
+  "rust_inventory": 6204,
+  "source_PR_ref_unchanged": true,
+  "current_c895_original_native_runs_untouched": true,
+  "new_real_model_requests": 0,
+  "native_tests_selected": 0,
+  "qualification_result": "AWAIT_ORIGINAL_RUN_RESULTS"
+}

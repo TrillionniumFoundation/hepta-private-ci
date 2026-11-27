@@ -1,0 +1,169 @@
+{
+  "schema": "hepta-original-ci-evidence-v1",
+  "source_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "source_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "executed_merge": "0b2238e70dfcbdb47635e454aea0f39ab25d7c0d",
+  "executed_tree_equals_source": true,
+  "source_commit_proof_blob": "ba63eb5553fd39936b899b3870091592721024a5",
+  "executed_commit_proof_blob": "6cefc73d4adf812d44e538985ebf739394814e07",
+  "run_id": 43267839274,
+  "original_logs": [
+    {
+      "key": "gnu",
+      "job_id": 131356685942,
+      "bytes": 1184612,
+      "sha256": "10a606ed93848e1d8bc53fc8a4817683c8e3d8c189e42a408dd9142b47f86c22",
+      "concatenate_without_separators": [
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part00.txt",
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part01.txt",
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part02.txt",
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part03.txt"
+      ]
+    },
+    {
+      "key": "musl",
+      "job_id": 131356685850,
+      "bytes": 1171116,
+      "sha256": "8f860863db4b646feaaea741ae62529d468cc73702ec4704476e9a29b2ed1363",
+      "concatenate_without_separators": [
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part00.txt",
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part01.txt",
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part02.txt",
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part03.txt"
+      ]
+    },
+    {
+      "key": "windows_shard4",
+      "job_id": 131356685648,
+      "bytes": 1002876,
+      "sha256": "c70cf5729ca5dac09f117223fbc1f32a2be62c94ba20d71a982b1eac94d9fc5e",
+      "concatenate_without_separators": [
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part00.txt",
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part01.txt",
+        "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part02.txt"
+      ]
+    }
+  ],
+  "count_scope": {
+    "gnu_and_musl_each": {
+      "announced": 1190,
+      "explicit_ok": 915,
+      "explicit_failed": 15,
+      "explicit_ignored": 87,
+      "explicit_terminal_methods": 1017,
+      "remaining_without_observed_terminal": 173,
+      "libtest_terminal_summary": false,
+      "target_result": "TIMEOUT in 300.1s"
+    },
+    "windows_shard4": {
+      "distinct_failed_methods": 20,
+      "exec_server_filesystem": {
+        "passed": 40,
+        "failed": 17,
+        "ignored": 2
+      },
+      "core_distinct_failed_methods": 3,
+      "original_target_summary": "FAILED in 12 out of 24 in 93.2s",
+      "retries_and_tail_reprints_preserved": true
+    }
+  },
+  "preservation": "All log parts concatenate in listed order without separators to the exact decoded original bytes, including BOM and CRLF. Original jobs JSON is retained verbatim. Partial-method JSONL and summary are explicitly derived indexes, not replacements for logs or a complete Bazel roster.",
+  "not_claimed": [
+    "No native ordinary/Root result is inferred from these Bazel jobs.",
+    "No per-method panic or causal diagnosis is invented for Linux because the target timed out before final stderr summaries.",
+    "No current-source pass is imported from 9fac or 286c.",
+    "No new execution, workflow rerun, policy weakening, or test-budget change occurred."
+  ],
+  "files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part00.txt",
+      "sha": "d676a3b17ebeb08cbf4927942c7e510f8c101527",
+      "bytes": 340000,
+      "sha256": "70689f0bd91ada0b2581c58631d07967aa5e7fc8a742e80ce7eac8f10138b1d5"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part01.txt",
+      "sha": "3af9efed8f82433a505860c3fd4c752da2e28364",
+      "bytes": 340000,
+      "sha256": "94289ab1c89eb759ce713b00d625a5ba1899c8533808b2849c1e9d27ba109977"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part02.txt",
+      "sha": "e3b041140ffaf78202a0c4539738e48d75b55dbb",
+      "bytes": 340000,
+      "sha256": "a31827848819d42407ce35d9b0579ac7ffe5026f795f9d5ffac7db09a7558430"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part03.txt",
+      "sha": "c9260e40485dd80e9e20124114b2051576c98bfc",
+      "bytes": 164612,
+      "sha256": "9c5138fe554464fbbe16766fd6752a2ba068ff057c12baea1dfd1b34fd92feab"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part00.txt",
+      "sha": "755301f9d11267b2ec7a5a0ce1ba7d82d870fe81",
+      "bytes": 340000,
+      "sha256": "f5bf8464a826b9557b299d98956a0bc6895675b6ac3efc6276dfe32ecb4a6d58"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part01.txt",
+      "sha": "79422c845208048cd0f525bdfa6190052b4a8f77",
+      "bytes": 340000,
+      "sha256": "df23c46d0a2ef36ad430e0e03604ae23110c623b6365bf999f844cd2a85b36a6"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part02.txt",
+      "sha": "1908bc1eea061761e32df71f71d329338afea014",
+      "bytes": 340000,
+      "sha256": "5266dc72d762655c548071399db9cac56a9a231b69f32074896a6f9de7a1894a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part03.txt",
+      "sha": "ceb177856aa46661673aff57c5fc2a5007099e97",
+      "bytes": 151116,
+      "sha256": "e875a10e49319ee477d0139c634be23b44c480c3aaa5fd4754284e176b52aa64"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part00.txt",
+      "sha": "9e6203ca7ac4e3fc6536d09cc5d8abead05436d0",
+      "bytes": 340000,
+      "sha256": "c9055d4b4d24f8e62cc333f3acc1b3dd9a8311dfa467532fe05aa4fd87fbc367"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part01.txt",
+      "sha": "30a1d579d220bb1eb9e629425c8e8c8fe91902d8",
+      "bytes": 340000,
+      "sha256": "5fa1049b613a89ef8874da03d06b265ade9e2c18f8d031773a53012a5b8db381"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part02.txt",
+      "sha": "cf9d3491cd67e27969c1b4b1ce4f73fa6ae94f26",
+      "bytes": 322876,
+      "sha256": "fab227aa9247f79c901bce07fd8370a864a969d939fcf0ac49c0017b058ec2b1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.partial-methods.jsonl",
+      "sha": "93693ecd097e395977dd84a79cc98b747aad6020",
+      "bytes": 186766,
+      "sha256": "1b059f431aa2469684923c96bb5d147270a3ef470404c959ddb3b3b2adbbd199"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.partial-methods.jsonl",
+      "sha": "7751fb2b301f9757787a7d07711e9c5c22a1f739",
+      "bytes": 186766,
+      "sha256": "e3bc8c84c252801bc32f6e46e31fa1e22875b5db105d4b94cd590c56c66b95ad"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/PARTIAL_METHOD_OBSERVATIONS.json",
+      "sha": "e66b89eea14618c312678710513e1351fa39acc6",
+      "bytes": 16576,
+      "sha256": "542e237c5284f606c4fc8c8b791126dd51b6ff7e2fb9c9651115f9f5366c5781"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/blocking-jobs.original.json",
+      "sha": "16a08833a4c214c253085d680a1e299289546057",
+      "bytes": 82261,
+      "sha256": "3b43257a0273165d58c7a43f2ee29246fbcec50c62660ed3374017b3dd1dd0bf"
+    }
+  ]
+}

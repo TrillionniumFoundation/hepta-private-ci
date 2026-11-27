@@ -1,0 +1,40 @@
+{
+  "argv": [
+    "/workspace/scratch/c385a7439f8e/hcsn-study-env/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "c2-feasibility-v1",
+    "-p",
+    "test_c2_boundary.py",
+    "-v"
+  ],
+  "child_cpu_seconds": 3.7798979999999998,
+  "native_snapshot_started": false,
+  "native_training_started": false,
+  "own_cpu_seconds": 0.0017548520000000012,
+  "prior_attempt": {
+    "cpu_seconds": null,
+    "error": "test fixture reused optimizer moment tensors; anchor copy was mutated by the actual partial optimizer step; fixed by deep copying restoration input",
+    "errors": 1,
+    "full_process_wall_seconds": null,
+    "path": "validation-attempt1/unittest.log",
+    "tests": 18,
+    "unittest_seconds": 1.99
+  },
+  "returncode": 0,
+  "schema": "c2-boundary-validator-unit-tests-v1",
+  "scientific_training_credit": false,
+  "scope": "explicit synthetic tiny HCSN fixture; actual frozen v8 writer and real optimizer replay; metadata guard fixtures are not native terminal outcomes",
+  "source_after": {
+    "c2-feasibility-v1/c2_boundary.py": "9b6bd43ebde5317d62c55fbc37b5fb2309f89178d195c529598529caf1e99f4f",
+    "c2-feasibility-v1/test_c2_boundary.py": "bdbd02fc0eb7903c2b94017b2f906de98773e5a50f1576431d313943fcff873d"
+  },
+  "source_before": {
+    "c2-feasibility-v1/c2_boundary.py": "9b6bd43ebde5317d62c55fbc37b5fb2309f89178d195c529598529caf1e99f4f",
+    "c2-feasibility-v1/test_c2_boundary.py": "bdbd02fc0eb7903c2b94017b2f906de98773e5a50f1576431d313943fcff873d"
+  },
+  "whole_process_wall_seconds": 3.2342030470026657
+}

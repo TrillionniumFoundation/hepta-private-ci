@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.ctrl.gap-recovery-observation.v1",
+  "observed_date_utc": "2026-11-11",
+  "operation": "original frozen read-only candidate gap diagnostic",
+  "source_commit": "602cd5695092a82f876fd122243b971b5b88eee8",
+  "source_sha256": "1da02aea4aabb7e21486110fc0ec545fe9d683e5e0383311df568e33f649753e",
+  "source_git_blob": "f64c2b034cf9fdec025f897addaf3e914fed8785",
+  "request_canonical_sha256": "048565be1033e4c32aef005d774728a012bd3edac13cdb4c6b66a56cf2404a67",
+  "same_request_payload_confirmed": true,
+  "owner_and_current_policy_continuity_verified_by_retained_result_access": true,
+  "original_start_requests": 1,
+  "exact_key_reconcile_requests": 1,
+  "new_keys": 0,
+  "mutated_inputs": 0,
+  "v4_business_relaunches": 0,
+  "reconcile_observed_wall_ms": 120072,
+  "reconcile_failure": "MCP -32603 request timed out",
+  "durable_job_id": null,
+  "final_read_only_probes": {
+    "exact_key_registry": "MCP -32603 request timed out",
+    "known_original_output_directory": "MCP -32603 request timed out"
+  },
+  "outcome": "UNKNOWN",
+  "nonexecution_or_business_failure_inferred": false,
+  "diagnosis_result_available": false,
+  "new_independent_confirmation_tasks": 0,
+  "candidate_adoption": "NoUpdate",
+  "cpu_seconds": null,
+  "peak_rss_bytes": null,
+  "energy_joules": null,
+  "further_recovery_requires": "observe original identity; do not invent a new key or change inputs",
+  "private_record": "retained separately; not included in MEM7 capacity PR"
+}

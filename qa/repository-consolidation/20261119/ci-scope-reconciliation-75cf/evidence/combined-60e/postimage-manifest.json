@@ -1,0 +1,47 @@
+{
+  "schema": "combined-ci-60e-tested-postimages-v1",
+  "local_parent": "1ce56728eb6b3a2a427ed1924c4fc0c330059544",
+  "remote_parent": "60e508e44f3419985e275e1131c87a812981c711",
+  "preserve_remote_checkpoint_path": "qa/repository-consolidation/20261119/round-08-architecture-regression/CHECKPOINT.json",
+  "entries": [
+    {
+      "path": "scripts/tests/test_hepta_ci_scope.py",
+      "mode": "100644",
+      "blob": "b25c587f9da9125e65475fda835161d547961384",
+      "sha256": "09ed2ecf682cd71f1e5f58eaf6f4e2a41d5a85b7c7d3df9b222cd645b16d0485",
+      "bytes": 15077
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "mode": "100644",
+      "blob": "ce1e3243b0f84de6caddd4cbab54f5679b613b1b",
+      "sha256": "bd68466e8ca733d01279e2e8883f01f17a286465669ba00f0c3a9dd89d540dfe",
+      "bytes": 34224
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "mode": "100644",
+      "blob": "fa76e846c514cc12e23bbd382246b122fccecf7d",
+      "sha256": "dd48476f6ab78c14b804bfd7a9332effc6219d3b22cb7227737e0844835217f1",
+      "bytes": 24547
+    },
+    {
+      "path": "codex-rs/cli/Cargo.toml",
+      "mode": "100644",
+      "blob": "9cb428e03dfac3cfb84eea9d960ce87070284236",
+      "sha256": "1816bcd8b45bd0a90ac6ece402d0ef40b1cab52eea0790e1b5e3119d439806e3",
+      "bytes": 4384
+    }
+  ],
+  "tests": {
+    "tests": 68,
+    "failures": 0,
+    "skipped": 0,
+    "seconds": 6.065,
+    "source_bytes_unchanged_by_test_or_formatter": true,
+    "result": "scope-68-result.json"
+  },
+  "semantics": "cli-root-semantics.json",
+  "refs_modified": false,
+  "full_merged_tree_not_created_here": true
+}

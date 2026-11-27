@@ -1,0 +1,166 @@
+{
+  "schema": "hepta.raw-job-log-archive.v1",
+  "source_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "source_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "run_id": 43267839274,
+  "logs": [
+    {
+      "kind": "windows_shard1",
+      "job_id": 131356685730,
+      "original": {
+        "bytes": 447188,
+        "sha256": "72c0c4539a28a2b5b56a3c66dc872dfd6223c8ff455a5eb4b69be4586930d341",
+        "git_sha1": "afa351d1b4232df2390bc291cffb2d921b2261a2"
+      },
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard1.job.original.part00.log",
+          "blob_sha": "13eb90cceb9b881bd112194c6dba09686f239e94",
+          "bytes": 340000,
+          "sha256": "08f5ce3e4f616588ca3847b37131c65d5ec474ff925cc35645ccbe6a130318aa",
+          "byte_start": 0,
+          "byte_end": 340000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard1.job.original.part01.log",
+          "blob_sha": "d88426c7089f027ceec40bf069db9cc309cdbc06",
+          "bytes": 107188,
+          "sha256": "8abaf423f048223abceada54ea916a9f76c148a59703a64c00164a658c849094",
+          "byte_start": 340000,
+          "byte_end": 447188
+        }
+      ],
+      "concat_rule": "Concatenate raw part bytes in the listed order, with no separator or normalization."
+    },
+    {
+      "kind": "windows_shard2",
+      "job_id": 131356685786,
+      "original": {
+        "bytes": 801721,
+        "sha256": "7b81723cc9f88c4a71f61219b7dfd0ae65e22198dbd54b2bd077cfd66ada81f6",
+        "git_sha1": "ae801ac8f2fe3cc54bac48c1b5336340af7c7da1"
+      },
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard2.job.original.part00.log",
+          "blob_sha": "7d300dcde51de3edc0dc90ff4f8e616dfa0cabfd",
+          "bytes": 340000,
+          "sha256": "c99b631aaad38e6aba552d3eabb519ae12cb78b8d3e52fdd79e475dd495c30f8",
+          "byte_start": 0,
+          "byte_end": 340000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard2.job.original.part01.log",
+          "blob_sha": "2589a1242bbabc7a726663ff4cee8a7feb4d8f50",
+          "bytes": 340000,
+          "sha256": "b056198d3a8686a59ed38d5d26c1fd4fc95379c658eb8cf672ab1618b88228e8",
+          "byte_start": 340000,
+          "byte_end": 680000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard2.job.original.part02.log",
+          "blob_sha": "241149db6ce81f332584581c7b3e432ec2c1269f",
+          "bytes": 121721,
+          "sha256": "95c53f690a99d38d7837f2a71f5ed52fbe4b51dd240ece0844d5ab4e997aabde",
+          "byte_start": 680000,
+          "byte_end": 801721
+        }
+      ],
+      "concat_rule": "Concatenate raw part bytes in the listed order, with no separator or normalization."
+    },
+    {
+      "kind": "windows_shard3",
+      "job_id": 131356686486,
+      "original": {
+        "bytes": 788801,
+        "sha256": "0a635c34ca6a9f78a10fcc22ddcb3af9d827e60297e2b3c5fa4792945c874301",
+        "git_sha1": "36985b5ba225121c19f91650bbc8e09165ddee93"
+      },
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard3.job.original.part00.log",
+          "blob_sha": "44487db3410f409f4a6bd96800566ce290449510",
+          "bytes": 340000,
+          "sha256": "3331b39bef52b7c0bd06b4bf4fc6409b9589d39a637de8532a881df9d4a8fe56",
+          "byte_start": 0,
+          "byte_end": 340000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard3.job.original.part01.log",
+          "blob_sha": "5967652ec109ed16282b9d48dc9a28bb769d3d28",
+          "bytes": 340000,
+          "sha256": "4957be8f370c75e1045b2c7201fbcd2cea1011cb6e8d2cb7a47d92947b3073cd",
+          "byte_start": 340000,
+          "byte_end": 680000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard3.job.original.part02.log",
+          "blob_sha": "28c74be514438025a99c3db249c2a07057c86625",
+          "bytes": 108801,
+          "sha256": "fb01c89c1c97a331903ed0ebaa0b20a9d2285f5cf74a5f1bda3ed21a2fa466eb",
+          "byte_start": 680000,
+          "byte_end": 788801
+        }
+      ],
+      "concat_rule": "Concatenate raw part bytes in the listed order, with no separator or normalization."
+    },
+    {
+      "kind": "mac_intel",
+      "job_id": 131356685650,
+      "original": {
+        "bytes": 1273163,
+        "sha256": "22d16281d9dc9c5bcd75f0ecc0dcc4b8eff0659fc4bf35e40d3eb922fd8866c9",
+        "git_sha1": "f65d2a0f371a304a454ab2f999da423f9a61ca9a"
+      },
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/mac_intel.job.original.part00.log",
+          "blob_sha": "8c386a959f79cd31d308b474de6795e8c393d0e3",
+          "bytes": 340000,
+          "sha256": "8fcdbb1a484fd89924fc098fd901ed5e1ed0762b2a9ee807d0b0e15b21e177b4",
+          "byte_start": 0,
+          "byte_end": 340000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/mac_intel.job.original.part01.log",
+          "blob_sha": "80b395f649df6d38ba3cb9972ba8a4e0dac530dd",
+          "bytes": 340000,
+          "sha256": "fd1594b652371d7d41c6d5b6c1729bdfa8b54e1d095b066ea7248c46affdb388",
+          "byte_start": 340000,
+          "byte_end": 680000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/mac_intel.job.original.part02.log",
+          "blob_sha": "e66744f4d3406031d8e4d0e70827bf23d8efda54",
+          "bytes": 340000,
+          "sha256": "76eabad6d12af796d7576c1261691413eb051e4a0fe8f6df9dcdc80373aeff69",
+          "byte_start": 680000,
+          "byte_end": 1020000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/mac_intel.job.original.part03.log",
+          "blob_sha": "061d10c62c14f1abb594bc7a932c3e4889d07b26",
+          "bytes": 253163,
+          "sha256": "e9af17e2ba6e6772f8e95568bb41b13ff3d681af981eb25e2f4d85fc5d9c247e",
+          "byte_start": 1020000,
+          "byte_end": 1273163
+        }
+      ],
+      "concat_rule": "Concatenate raw part bytes in the listed order, with no separator or normalization."
+    }
+  ],
+  "evidence": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/blocking-jobs.original.json",
+      "blob_sha": "8d7f9d5bef24474659f81608c3a392e8e20beb05",
+      "bytes": 88288,
+      "sha256": "c579710de8727c1552061e9831f216ecae5c95fa25ae595b8db450e18a62d376"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/FAILURE_INDEX.derived.json",
+      "blob_sha": "c99d0f040c110d984d95e10a82e5c4a9dc93e518",
+      "bytes": 78083,
+      "sha256": "72d542996274b8cc370018bf943120b02776514e1bc0ac7d3a6b6677b40c0944"
+    }
+  ]
+}

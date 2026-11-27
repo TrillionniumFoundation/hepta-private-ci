@@ -1,0 +1,257 @@
+{
+  "source_candidate": "b5019ee98bc7b7b99eb689378f41e66691c2d257",
+  "tested_commit": "a9a898bb091efd57b9aea27521c963874d8cba96",
+  "tested_tree": "5164d68c23ffa071a80d4aa9a7f033f068a82dfd",
+  "candidate_tree_identical": true,
+  "run_id": 42940299149,
+  "job_id": 130289659118,
+  "job_status": "failure",
+  "command_exit_code": 3,
+  "raw_log": "core-b501-job-130289659118.log.gz",
+  "raw_log_sha256": "e034fa4a836cd4c18754bd0a67f398121770effd60a4b9fbfafc2c75cc21b10f",
+  "raw_log_bytes": 839469,
+  "distinct_failed_cases_observed": 46,
+  "diagnostic_classes": {
+    "Windows byte-range file lock (code 33)": 31,
+    "Cross-language fixture exact-byte mismatch": 1,
+    "Invalid automation fixture/request": 10,
+    "Durable fixture PermissionDenied": 1,
+    "Unclassified observed diagnostic": 2,
+    "Windows canonical path spelling mismatch": 1
+  },
+  "root_cause_limit": "Classes summarize original diagnostics only; no source repair or native rerun performed. This result is not transferred to successor50c382e3.",
+  "failures": [
+    {
+      "name": "cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes' (1444) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work' (5260) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "feature_control::tests::feature_control_exact_readback_reopens_without_work_clock_or_write",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'feature_control::tests::feature_control_exact_readback_reopens_without_work_clock_or_write' (8856) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "feature_control::tests::feature_control_unknown_dispatch_remains_fenced_after_reopen",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'feature_control::tests::feature_control_unknown_dispatch_remains_fenced_after_reopen' (8528) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "feature_control::tests::feature_control_original_cell_path_binds_admission_and_pending_recovery",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'feature_control::tests::feature_control_original_cell_path_binds_admission_and_pending_recovery' (8788) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "feature_control::tests::feature_control_same_operation_changed_source_or_state_never_rebinds",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'feature_control::tests::feature_control_same_operation_changed_source_or_state_never_rebinds' (5940) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:\nfixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "perception::tests::perception_cross_language_fixture_round_trips_and_binds_raw_evidence",
+      "diagnostic_class": "Cross-language fixture exact-byte mismatch",
+      "first_diagnostic_lines": "thread 'perception::tests::perception_cross_language_fixture_round_trips_and_binds_raw_evidence' (6004) panicked at hepta-neuron/src\\perception_tests.rs:12:5:\nassertion failed: `(left == right)`\nDiff < left / right > :\n [\n     123,"
+    },
+    {
+      "name": "circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact",
+      "diagnostic_class": "Invalid automation fixture/request",
+      "first_diagnostic_lines": "thread 'circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact' (10144) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:\nfixture failed: Invalid\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+      "diagnostic_class": "Durable fixture PermissionDenied",
+      "first_diagnostic_lines": "thread 'circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append' (3088) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:\nfixture failed: Durable(Io(PermissionDenied))"
+    },
+    {
+      "name": "circuit_task::driver::tests::circuit_deadline_wakes_before_a_later_feedback_activation",
+      "diagnostic_class": "Invalid automation fixture/request",
+      "first_diagnostic_lines": "thread 'circuit_task::driver::tests::circuit_deadline_wakes_before_a_later_feedback_activation' (3672) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:\nfixture failed: Invalid"
+    },
+    {
+      "name": "circuit_task::driver::tests::delayed_feedback_waits_without_appending_empty_scheduling_events",
+      "diagnostic_class": "Invalid automation fixture/request",
+      "first_diagnostic_lines": "thread 'circuit_task::driver::tests::delayed_feedback_waits_without_appending_empty_scheduling_events' (7036) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:\nfixture failed: Invalid"
+    },
+    {
+      "name": "circuit_task::driver::tests::elapsed_task_deadline_never_creates_a_run_or_contacts_a_cell",
+      "diagnostic_class": "Invalid automation fixture/request",
+      "first_diagnostic_lines": "thread 'circuit_task::driver::tests::elapsed_task_deadline_never_creates_a_run_or_contacts_a_cell' (6944) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:\nfixture failed: Invalid"
+    },
+    {
+      "name": "circuit_task::driver::tests::lost_circuit_completion_ack_reads_the_original_committed_cell_result",
+      "diagnostic_class": "Invalid automation fixture/request",
+      "first_diagnostic_lines": "thread 'circuit_task::driver::tests::lost_circuit_completion_ack_reads_the_original_committed_cell_result' (7872) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:\nfixture failed: Invalid"
+    },
+    {
+      "name": "circuit_task::driver::tests::lost_claim_ack_cannot_become_a_fresh_cell_dispatch",
+      "diagnostic_class": "Invalid automation fixture/request",
+      "first_diagnostic_lines": "thread 'circuit_task::driver::tests::lost_claim_ack_cannot_become_a_fresh_cell_dispatch' (7304) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:\nfixture failed: Invalid"
+    },
+    {
+      "name": "circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference",
+      "diagnostic_class": "Invalid automation fixture/request",
+      "first_diagnostic_lines": "Error: invalid automation request"
+    },
+    {
+      "name": "circuit_task::driver::tests::task_reaches_durable_terminal_and_replays_the_exact_result",
+      "diagnostic_class": "Invalid automation fixture/request",
+      "first_diagnostic_lines": "thread 'circuit_task::driver::tests::task_reaches_durable_terminal_and_replays_the_exact_result' (8140) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:\nfixture failed: Invalid"
+    },
+    {
+      "name": "circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs",
+      "diagnostic_class": "Invalid automation fixture/request",
+      "first_diagnostic_lines": "Error: invalid automation request"
+    },
+    {
+      "name": "circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only",
+      "diagnostic_class": "Unclassified observed diagnostic",
+      "first_diagnostic_lines": "Error: The process cannot access the file because another process has locked a portion of the file. (os error 33)"
+    },
+    {
+      "name": "circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history",
+      "diagnostic_class": "Invalid automation fixture/request",
+      "first_diagnostic_lines": "Error: invalid automation request"
+    },
+    {
+      "name": "circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen",
+      "diagnostic_class": "Unclassified observed diagnostic",
+      "first_diagnostic_lines": "Error: The process cannot access the file because another process has locked a portion of the file. (os error 33)"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison' (3120) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison' (3564) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed' (6692) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown' (5708) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes' (6324) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original' (6632) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution' (4776) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact' (10100) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator' (3588) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases' (556) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work' (8304) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider' (9212) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout' (1612) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model' (8856) panicked at hepta-agentd/src\\neuron_generation_tests.rs:21:23:\nfixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::control::stale_generation_changed_content_and_oversized_input_do_not_mutate_owner",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again' (3344) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation' (7476) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends' (5584) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending' (3592) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome' (4520) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen' (3672) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+      "diagnostic_class": "Windows byte-range file lock (code 33)",
+      "first_diagnostic_lines": "thread 'neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost' (7596) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\ngeneration service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    },
+    {
+      "name": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+      "diagnostic_class": "Windows canonical path spelling mismatch",
+      "first_diagnostic_lines": "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (9408) panicked at tui/src/lib.rs:3265:9:\nassertion failed: `(left == right)`\nDiff < left / right > :\n<\"D:\\\\tmp\\\\.tmpxcxqJH\\\\sqlite-home\\\\logs_2.sqlite\"\n>\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpxcxqJH\\\\sqlite-home\\\\logs_2.sqlite\""
+    }
+  ],
+  "raw_log_encoding": "gzip",
+  "raw_log_hashes_describe": "uncompressed original UTF-8 LF bytes"
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.rustsec-0385-nosuppression-qualification.v1",
+  "date_utc": "2026-10-24",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "upstream_pr": 3620,
+  "upstream_head": "bba56eb0982bf234d02fac2047caa1e8dd36b585",
+  "upstream_source_blobs": {
+    "scripts/check_hepta_rustsec_advisories.py": "aa06560a2495225d5c017d7e02c6b432c02e9819",
+    "scripts/tests/test_hepta_rustsec_guard.py": "09de4c68c6cc90b7ad7e658990084807709897d8"
+  },
+  "observed_blocker": {
+    "source_pr": 3425,
+    "workflow_run": 39918683108,
+    "job": 120369068155,
+    "advisory": "RUSTSEC-2026-0385",
+    "affected_package": "ctutils 0.4.2",
+    "fixed_minimum": "ctutils >=0.4.4",
+    "composed_pr": 3621,
+    "composed_head": "e25f6453364f0d526dfdda561fa5a797e9d861c1",
+    "composed_cargo_lock_blob": "e4299e4b70dfbcc9929e56e48a603ef20d17632b"
+  },
+  "scope": "Guard against newly observed advisory suppression in deny.toml and .cargo/audit.toml. No dependency changes or waivers.",
+  "checks": {
+    "before": "13 tracked advisories; RUSTSEC-2026-0385 absent",
+    "after": "14 tracked advisories, including RUSTSEC-2026-0385; original tests preserved and explicit TOML string/object regression added",
+    "python_unit_result": {
+      "status": "PASS_LOCAL_EXACT_BLOBS",
+      "command": "python -m unittest -v scripts.tests.test_hepta_rustsec_guard",
+      "python_tests_passed": 5,
+      "python_tests_failed": 0,
+      "python_tests_skipped": 0,
+      "source_git_blobs": {
+        "scripts/check_hepta_rustsec_advisories.py": "17d6c69560bed461aa44bda8f15ddd78e4dc0d84",
+        "scripts/tests/test_hepta_rustsec_guard.py": "d73f978b520acf4592118eaf858f40f9d2ac68a5"
+      },
+      "environment": "Local isolated Python 3 with TOML fixtures; not source-HEAD GitHub Actions, Rust cargo-deny or Bazel."
+    },
+    "cargo_deny_result": "NOT_EXECUTED",
+    "bazel_lock_update_result": "NOT_EXECUTED",
+    "native_ci_result": "PENDING"
+  },
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "production_activation_allowed": false,
+  "blockers_closed": false
+}

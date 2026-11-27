@@ -1,0 +1,335 @@
+{
+  "schema": "original-a671-full-source-native-validation-observation-v1",
+  "expected_source_methods": 443,
+  "expected_native_cases": 201,
+  "expected_native_groups": 43,
+  "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+  "observed_unix_ms": 1794495570564,
+  "label": "terminal",
+  "original_outer_terminal": true,
+  "outer_state": "failed",
+  "native_state": "failed",
+  "files": [
+    {
+      "name": "outer-as-observed.json",
+      "original_bytes": 2396,
+      "original_sha256": "3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/outer-as-observed.json",
+          "bytes": 2396,
+          "sha256": "3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60",
+          "git_blob": "6839a4c985cc39825965808aeead3196b48ae5ee"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "native-as-observed.json",
+      "original_bytes": 51057,
+      "original_sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/native-as-observed.json",
+          "bytes": 51057,
+          "sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71",
+          "git_blob": "efe2855cc997b1af10824cd5499dd0ee7a76f807"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "outer-native.log",
+      "original_bytes": 205146,
+      "original_sha256": "8e1bcf02b9018a3d39eeef46b33f45f3fae1ddf08510eabfd2b050a0a4f39e47",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/outer-native.log",
+          "bytes": 205146,
+          "sha256": "8e1bcf02b9018a3d39eeef46b33f45f3fae1ddf08510eabfd2b050a0a4f39e47",
+          "git_blob": "20629ef800ec0f7a2b4e4fae22f618fe74d2cf3e"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "v8-private-input-readback.json",
+      "original_bytes": 1202,
+      "original_sha256": "6cf5a13c722ac97a0ec9335eb66c4ba785dba7c08c8f1cf340009dce426ff048",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/v8-private-input-readback.json",
+          "bytes": 1202,
+          "sha256": "6cf5a13c722ac97a0ec9335eb66c4ba785dba7c08c8f1cf340009dce426ff048",
+          "git_blob": "78114add8ba41f304ce6880169bc7b8a00f4babf"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "target-initialization-readback.json",
+      "original_bytes": 2506,
+      "original_sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/target-initialization-readback.json",
+          "bytes": 2506,
+          "sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb",
+          "git_blob": "344a692e8ccf9cdb3262b1b8404a995d525c6ba2"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "helper-build.driver.log",
+      "original_bytes": 215,
+      "original_sha256": "f70dcbf88da5c28156a72317a169c099997aad767f42dfca8b7b635ccf574611",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/helper-build.driver.log",
+          "bytes": 215,
+          "sha256": "f70dcbf88da5c28156a72317a169c099997aad767f42dfca8b7b635ccf574611",
+          "git_blob": "1be902d1ef179e6e1d05fc53454614b8adb0154c"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "helper-verify.driver.log",
+      "original_bytes": 1201,
+      "original_sha256": "407b1062e09c24aca388bea1fe29e4c2df63b61d4bf393e7ac369fd4be3a7989",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/helper-verify.driver.log",
+          "bytes": 1201,
+          "sha256": "407b1062e09c24aca388bea1fe29e4c2df63b61d4bf393e7ac369fd4be3a7989",
+          "git_blob": "fdd3243a074eb9847eb39e8252acfd36d1dbee86"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "focused-native.driver.log",
+      "original_bytes": 228694,
+      "original_sha256": "51c1fbcadd888ff5f6c690f7bcfe342c6baba8c88798aae3f7520883bbca6253",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/focused-native.driver.log",
+          "bytes": 228694,
+          "sha256": "51c1fbcadd888ff5f6c690f7bcfe342c6baba8c88798aae3f7520883bbca6253",
+          "git_blob": "f00427266e2751ca2516a5edfee986b1e7726c9a"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "focused-junit.driver.log",
+      "original_bytes": 40163,
+      "original_sha256": "cff7cc9c2e4c1e64e66ee9e962128b167e4c25ba1c0f4100b194fabd3b080265",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/focused-junit.driver.log",
+          "bytes": 40163,
+          "sha256": "cff7cc9c2e4c1e64e66ee9e962128b167e4c25ba1c0f4100b194fabd3b080265",
+          "git_blob": "2da3b5ea0180589517a3ae363f2d5dbe1b92480a"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "focused-native.json",
+      "original_bytes": 41101,
+      "original_sha256": "a7fe131594ff4c31966674c2d67ca053c7bf54b43f8ee9e551fb789caa2f3f17",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/focused-native.json",
+          "bytes": 41101,
+          "sha256": "a7fe131594ff4c31966674c2d67ca053c7bf54b43f8ee9e551fb789caa2f3f17",
+          "git_blob": "925063e65f83666cc38a13e7f64a90167e68ca78"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "focused-native.junit.xml",
+      "original_bytes": 75336,
+      "original_sha256": "cb1057591464fed92d0a050c2a31e7aad39d8c356b7354958396a1016a464fcd",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/focused-native.junit.xml",
+          "bytes": 75336,
+          "sha256": "cb1057591464fed92d0a050c2a31e7aad39d8c356b7354958396a1016a464fcd",
+          "git_blob": "1737fc3d0bfd6a605c0bcfee2804c398a117cdcd"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "focused-native.junit.summary.json",
+      "original_bytes": 40315,
+      "original_sha256": "5f880c611193bf1829d61ed0cfdac01615e0ecc87719b8b17f41df04a30f8863",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/focused-native.junit.summary.json",
+          "bytes": 40315,
+          "sha256": "5f880c611193bf1829d61ed0cfdac01615e0ecc87719b8b17f41df04a30f8863",
+          "git_blob": "0fff1cb1882692be0a114ef4420f605534433d26"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "helpers-manifest.json",
+      "original_bytes": 1959,
+      "original_sha256": "0c3ca12b8243a771986163fe5e20d1f7162f0eea2cfbadebc91b752b81154136",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/helpers-manifest.json",
+          "bytes": 1959,
+          "sha256": "0c3ca12b8243a771986163fe5e20d1f7162f0eea2cfbadebc91b752b81154136",
+          "git_blob": "468e6f418e43f0a3a273f0b166bf6da632fe7d01"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "helpers-env.json",
+      "original_bytes": 331,
+      "original_sha256": "7624f5c5438df050c4c8855664a36888d2004b172e42daa344a8954a15fc1124",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/helpers-env.json",
+          "bytes": 331,
+          "sha256": "7624f5c5438df050c4c8855664a36888d2004b172e42daa344a8954a15fc1124",
+          "git_blob": "920c702fb6e7fe2f3bff2caf7a0e4df81b59ee03"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "helpers-codex-hepta-infer-worker-host.jsonl",
+      "original_bytes": 1048769,
+      "original_sha256": "aac7fd8c3cbc2ef05d7870943c82a88b75e03c3972c5225b8ea9779be0cd43bb",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64",
+          "bytes": 524289,
+          "sha256": "4e36326383cd5048261b003c93134d53fafd0c3f064113c91161a7757ff178e2",
+          "git_blob": "273118cfb5f3ac46cb08e7bcc9ebb3942157bdcf"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64",
+          "bytes": 524289,
+          "sha256": "ad333f0b90701f311e8b3d418468e7a59c568df843ed18586c53c3cd9490eef4",
+          "git_blob": "e49fdb7c73360e1860afabd4363f4db24a3d3a54"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/helpers-codex-hepta-infer-worker-host.jsonl.part-0002.base64",
+          "bytes": 349785,
+          "sha256": "a21c727f1912664f9348df893c25034f39571aa6aba6fe8394a6900c12eb6e50",
+          "git_blob": "2c739ab6c81a944039be99a774dcefa33f82bbcb"
+        }
+      ],
+      "encoding": "base64-parts"
+    },
+    {
+      "name": "helpers-codex-hepta-infer-worker-host.stderr.log",
+      "original_bytes": 20174,
+      "original_sha256": "9a6fd8e17c2096b2991b88151362ce74fa14eb0f66ff2e971145965a684758a1",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/helpers-codex-hepta-infer-worker-host.stderr.log",
+          "bytes": 20174,
+          "sha256": "9a6fd8e17c2096b2991b88151362ce74fa14eb0f66ff2e971145965a684758a1",
+          "git_blob": "fded502208c6bd80a63ca50b94c3f33231955f9c"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "source-suite.json",
+      "original_bytes": 89664,
+      "original_sha256": "10ad0500ea8854cb96c145ba4f043a6486f9ca11f02280428aeb589e16f110d8",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/source-suite.json",
+          "bytes": 89664,
+          "sha256": "10ad0500ea8854cb96c145ba4f043a6486f9ca11f02280428aeb589e16f110d8",
+          "git_blob": "9d1c9dc6e79c86fcc3aa10fe483c9d7a1f16ae12"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "source-suite.log",
+      "original_bytes": 129213,
+      "original_sha256": "95a9f8b5f26286230c6a30a4fc8320cb97c1813577fa037d693296b228ad10a0",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/source-suite.log",
+          "bytes": 129213,
+          "sha256": "95a9f8b5f26286230c6a30a4fc8320cb97c1813577fa037d693296b228ad10a0",
+          "git_blob": "0bb75f1aa8c1e4a4bf8283e30adfe5d52460e69a"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "caller-scanner-self-test.log",
+      "original_bytes": 48,
+      "original_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/caller-scanner-self-test.log",
+          "bytes": 48,
+          "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+          "git_blob": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2"
+        }
+      ],
+      "encoding": "utf-8"
+    },
+    {
+      "name": "focused-native.execution.log",
+      "original_bytes": 187839,
+      "original_sha256": "7b87ec048219bacd146d9f7f4de5df7a73f2eceb2d635a4808f34f13a74a4664",
+      "complete_file": true,
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/focused-native.execution.log",
+          "bytes": 187839,
+          "sha256": "7b87ec048219bacd146d9f7f4de5df7a73f2eceb2d635a4808f34f13a74a4664",
+          "git_blob": "45b189dbcefff875ac1d69cf2868b5258b923de8"
+        }
+      ],
+      "encoding": "utf-8"
+    }
+  ],
+  "omitted_unstable_inflight_files": [],
+  "scope": "Observes original 443-source-method and 201-native-case validation evidence; expected inventory is not a pass claim. Original result bytes and actual exits remain authoritative. Initial snapshot is not terminal. Reads only original owned qualification files. No tests rerun, source edit, process signal or production authority. A bounded observer timeout cannot imply native failure or no effect.",
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  }
+}

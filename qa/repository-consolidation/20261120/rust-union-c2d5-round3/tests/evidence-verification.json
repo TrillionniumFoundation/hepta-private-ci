@@ -1,0 +1,42 @@
+{
+  "status": "PASS_LOSSLESS_EVIDENCE_CONTENT_VERIFICATION",
+  "source_head": "7f616cb22d3b2b567e0fc25d5799ef4b3f0cc2d7",
+  "groups": [
+    {
+      "group": "source-candidates",
+      "parts": 8,
+      "archive_sha256": "fd75c38905a95624714a5def15cbe911b43522d7859fbe609b70d8fedf1208de",
+      "members_verified": 521,
+      "uncompressed_member_bytes": 8960335
+    },
+    {
+      "group": "held-work",
+      "parts": 18,
+      "archive_sha256": "ba14f78eacf9d9d541f7607e1a70e6fa6a92da308205d9bb16d2be081d254ffb",
+      "members_verified": 184,
+      "uncompressed_member_bytes": 15823738
+    },
+    {
+      "group": "ci-observations",
+      "parts": 88,
+      "archive_sha256": "670efb048c55b8484dd6f3a3f5460621356bee1414deb4d470037693130c8223",
+      "members_verified": 199,
+      "uncompressed_member_bytes": 53074772
+    }
+  ],
+  "members_verified": 904,
+  "uncompressed_member_bytes": 77858845,
+  "native_tests_executed": false,
+  "members_extracted_or_executed": false,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/scratch/c2d514464ab5/publication-round3/audit-source/verify_evidence.py",
+    "--root",
+    "/workspace/scratch/c2d514464ab5/publication-round3/audit-source"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "verifier_sha256": "3ba6018f487110e198b3d1843f62a7001bb77c2a98e42da181355e6749ce68b9",
+  "executed_at": "2026-11-20T05:27:57.080778+00:00",
+  "ci_publication_derivative": "11 artifact download receipts have only33 sig values replaced. Other188 CI members and all ZIP/log/source bytes remain exact."
+}

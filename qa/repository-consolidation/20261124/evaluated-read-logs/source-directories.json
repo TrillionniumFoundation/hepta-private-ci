@@ -1,0 +1,889 @@
+{
+  "source_commit": "70025b8f7d0ab8a9c40876c688732d66c8091868",
+  "directories": {
+    "qualification/evaluated-current-read-20261112/0869-clippy-release-pass": {
+      "tree": "480d38250fd7a6117ded006fab0c0879ef4415f4",
+      "files": [
+        "FULL_LOG_MAPPING.json",
+        "blocking.jobs.original.json",
+        "clippy.job.original.part-00.log",
+        "clippy.job.original.part-01.log",
+        "clippy.job.original.part-02.log",
+        "clippy.job.original.part-03.log",
+        "release.job.original.part-00.log",
+        "release.job.original.part-01.log",
+        "release.job.original.part-02.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/0869-native-repair-review": {
+      "tree": "39801b42e1904122a276cba6b9d3cd038791d878",
+      "files": [
+        "CALLER_STATIC_PROOF.json",
+        "FORMAT_FOLLOWUP.json",
+        "ROOT_REVIEW.json",
+        "blocking.jobs.original.json",
+        "execution-commit.original.json",
+        "fence.job.original.log",
+        "git-compare.original.json",
+        "native-caller.jobs.original.json",
+        "rustfmt.job.original.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/0869-source-closure-failure": {
+      "tree": "06ca1885532aa141acb33643f702b7a28e67c72f",
+      "files": [
+        "native-caller.jobs.original.json",
+        "native.job.original.part-00.log",
+        "native.job.original.part-01.log",
+        "native.job.original.part-02.log",
+        "native.job.original.part-03.log",
+        "native.job.original.part-04.log",
+        "native.job.original.part-05.log",
+        "source-closure.record-from-original-log.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/1631-caller-pass": {
+      "tree": "12376ecdccb4a0fdb6d8394af89bf6872d41f08b",
+      "files": [
+        "MANIFEST.json",
+        "job-131269839839.log.part-00.txt",
+        "job-131269839839.log.part-01.txt",
+        "job-131269839839.log.part-02.txt",
+        "job-131269839839.log.part-03.txt",
+        "job-131269839839.log.part-04.txt",
+        "job-131269839839.log.part-05.txt",
+        "job-131269839839.log.part-06.txt"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/1631-native-failure": {
+      "tree": "e7e277bbfd17acfbb2311844105c8ba920ea6dd5",
+      "files": [
+        "FAILURES.json",
+        "MANIFEST.json",
+        "job.original.part-00.log",
+        "job.original.part-01.log",
+        "job.original.part-02.log",
+        "job.original.part-03.log",
+        "job.original.part-04.log",
+        "job.original.part-05.log",
+        "job.original.part-06.log",
+        "job.original.part-07.log",
+        "job.original.part-08.log",
+        "job.original.part-09.log",
+        "job.original.part-10.log",
+        "record-lines.original.txt"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/1631e01-clippy-and-fence": {
+      "tree": "11a697a07933fdb3bb1e8c966a362883dc962d62",
+      "files": [
+        "ROOT_REVIEW.json",
+        "blocking.jobs.original.json",
+        "clippy.job.original.log.part-000.bin",
+        "clippy.job.original.log.part-001.bin",
+        "clippy.job.original.log.part-002.bin",
+        "clippy.job.original.log.part-003.bin",
+        "execution-commit.original.json",
+        "fence.job.original.log",
+        "native-caller.jobs.original.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure": {
+      "tree": "b330a71f0727d3f8b0a3a4396d25dd348954b8bb",
+      "files": [
+        "ROOT_FAILURE_REVIEW.json",
+        "gnu.job.original.log.part-000.bin",
+        "gnu.job.original.log.part-001.bin",
+        "gnu.job.original.log.part-002.bin",
+        "gnu.job.original.log.part-003.bin",
+        "musl.job.original.log.part-000.bin",
+        "musl.job.original.log.part-001.bin",
+        "musl.job.original.log.part-002.bin",
+        "musl.job.original.log.part-003.bin"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/286c-caller-success": {
+      "tree": "9f865caee7e2f34a4cddfea806f31299ad74730e",
+      "files": [
+        "MANIFEST.json",
+        "job.original.part00.log",
+        "job.original.part01.log",
+        "job.original.part02.log",
+        "job.original.part03.log",
+        "job.original.part04.log",
+        "job.original.part05.log",
+        "job.original.part06.log",
+        "jobs.original.json",
+        "receipt.original.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/286c-early-ci": {
+      "tree": "d8ac59b8c8e2c68a9632a08473c18b4be94e9634",
+      "files": [
+        "MANIFEST.json",
+        "blocking-jobs.original.json",
+        "check-runs.initial.original.json",
+        "daemon-jobs.initial.original.json",
+        "fence.job.log",
+        "rustfmt.job.log",
+        "source-commit.original.json",
+        "synthetic-merge.original.json",
+        "workflow-runs.initial.original.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/286c-native-failure": {
+      "tree": "08b9c8fe4316ad13271e8d7ce34666320db42ede",
+      "files": [
+        "MANIFEST.json",
+        "failure-tail.original.log",
+        "jobs.original.json",
+        "native.job.log.part00",
+        "native.job.log.part01",
+        "native.job.log.part02",
+        "native.job.log.part03",
+        "native.job.log.part04",
+        "native.job.log.part05",
+        "native.job.log.part06",
+        "native.job.log.part07",
+        "native.job.log.part08",
+        "native.job.log.part09",
+        "native.job.log.part10",
+        "native.job.log.part11",
+        "ordinary-records.original.jsonl"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/320533-source-closure-failure": {
+      "tree": "bbe2e62c180d660f6405cbff438cb53ace32c045",
+      "files": [
+        "FULL_LOG_MAPPING.json",
+        "native.job.original.part-00.log",
+        "native.job.original.part-01.log",
+        "native.job.original.part-02.log",
+        "native.job.original.part-03.log",
+        "native.job.original.part-04.log",
+        "native.job.original.part-05.log",
+        "source-closure.record-from-original-log.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/374-b-source-qa-migration": {
+      "tree": "567ad98b2ff77ba2fed160eb79064a55d1dad5f4",
+      "files": [
+        "B_QA.diff",
+        "MANIFEST.json",
+        "ORIGINAL_B_FAILURES.log",
+        "STATIC_REVIEW.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/841fb9-rustfmt-pass": {
+      "tree": "9c8f469202b26b5656aecba4a3b02e11eb015ac5",
+      "files": [
+        "MANIFEST.json",
+        "execution-commit.original.json",
+        "job.original.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/9fac-bazel-timeout": {
+      "tree": "b68e75e0a114ad66c47098fa3ae57b91f880bef9",
+      "files": [
+        "MANIFEST.json",
+        "PARTIAL_METHOD_OBSERVATIONS.json",
+        "ROOT_READBACK.json",
+        "check-runs.original.json",
+        "gnu.job.log.part00",
+        "gnu.job.log.part01",
+        "gnu.job.log.part02",
+        "gnu.job.log.part03",
+        "musl.job.log.part00",
+        "musl.job.log.part01",
+        "musl.job.log.part02",
+        "musl.job.log.part03"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/9fac-caller-pass": {
+      "tree": "d8af03913ae8d44ea31bb8251cad3b71f70bed75",
+      "files": [
+        "MANIFEST.json",
+        "caller.job.log.part00",
+        "caller.job.log.part01",
+        "caller.job.log.part02",
+        "caller.job.log.part03",
+        "caller.job.log.part04",
+        "caller.job.log.part05",
+        "caller.job.log.part06",
+        "jobs.original.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/9fac-fence-clippy-pass": {
+      "tree": "fc34bf231eb68cbae388997528e3b7b84962b6e4",
+      "files": [
+        "MANIFEST.json",
+        "ROOT_READBACK.json",
+        "blocking-jobs-1614.original.json",
+        "blocking-jobs.original.json",
+        "clippy.job.log.part00",
+        "clippy.job.log.part01",
+        "clippy.job.log.part02",
+        "clippy.job.log.part03",
+        "daemon-jobs-1614.original.json",
+        "daemon-jobs-1621.original.json",
+        "daemon-jobs-1636.original.json",
+        "execution-commit.original.json",
+        "execution-commit.root.original.json",
+        "fence.job.log.part00",
+        "fence.job.log.part01",
+        "fence.job.log.part02",
+        "fence.job.log.part03",
+        "fence.job.log.part04"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/9fac-native-failure": {
+      "tree": "dd9f46b53295fa89660f819cf03713a750520f3d",
+      "files": [
+        "FAILURE_INDEX.json",
+        "MANIFEST.json",
+        "ROOT_FULL_LOG_VERIFICATION.json",
+        "jobs.original.json",
+        "native.job.log.part00",
+        "native.job.log.part01",
+        "native.job.log.part02",
+        "native.job.log.part03",
+        "native.job.log.part04",
+        "native.job.log.part05",
+        "native.job.log.part06",
+        "native.job.log.part07",
+        "native.job.log.part08",
+        "native.job.log.part09",
+        "native.job.log.part10",
+        "ordinary.execution.original.json",
+        "ordinary.junit-collection.original.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/9fac-windows-original-failures": {
+      "tree": "f5c9667150220edc52cf1fd55189a867d55526dc",
+      "files": [
+        "131310622783.PANIC_EXCERPTS.json",
+        "131310622783.job.log.part00",
+        "131310622783.job.log.part01",
+        "131310622783.job.log.part02",
+        "131310622818.PANIC_EXCERPTS.json",
+        "131310622818.job.log.part00",
+        "131310622818.job.log.part01",
+        "MANIFEST.json",
+        "ROOT_REPAIR_REVIEW.json",
+        "blocking-jobs-1624.original.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/9fac-windows-private-pass": {
+      "tree": "16823a7553abc4bd2b50bf11d39ea96985e7156d",
+      "files": [
+        "MANIFEST.json",
+        "jobs.original.json",
+        "original.job.log.part00",
+        "original.job.log.part01",
+        "record0.original.json",
+        "record1.original.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/ebe6723-caller-native-failures": {
+      "tree": "9a0c99ce875dfddb7d1e2de15a311714fce746d2",
+      "files": [
+        "MANIFEST.json",
+        "ROOT_FULL_LOG_VERIFICATION.json",
+        "caller.job.original.log.part-000",
+        "caller.job.original.log.part-001",
+        "caller.job.original.log.part-002",
+        "caller.job.original.log.part-003",
+        "caller.job.original.log.part-004",
+        "jobs.original.json",
+        "native.job.original.log.part-000.evidence.gz",
+        "native.job.original.log.part-001",
+        "native.job.original.log.part-002",
+        "native.job.original.log.part-003",
+        "native.job.original.log.part-004",
+        "native.job.original.log.part-005"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/ebe6723-format-policy-failures": {
+      "tree": "0977cf4317b02939701ca3adfc7ad091be22b10b",
+      "files": [
+        "ROOT_REVIEW.json",
+        "blobpolicy.job.original.log.part-000.bin",
+        "blobpolicy.job.original.log.part-001.bin",
+        "blobpolicy.job.original.log.part-002.bin",
+        "blobpolicy.job.original.log.part-003.bin",
+        "blobpolicy.job.original.log.part-004.bin",
+        "rustfmt.job.original.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/ebe6723-windows-cancelled": {
+      "tree": "b05873aace657667e7039601a30c68f9673b35fe",
+      "files": [
+        "MANIFEST.json",
+        "job.original.log",
+        "jobs.original.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/edaf-bazel-failure": {
+      "tree": "3c9bef5f00af9b93fa51494cb477812a11d2dcab",
+      "files": [
+        "MANIFEST.json",
+        "PARTIAL_METHOD_OBSERVATIONS.json",
+        "ROOT_ORIGINAL_LOG_VERIFICATION.json",
+        "blocking-jobs.original.json",
+        "gnu.job.log.part00.txt",
+        "gnu.job.log.part01.txt",
+        "gnu.job.log.part02.txt",
+        "gnu.job.log.part03.txt",
+        "gnu.partial-methods.jsonl",
+        "musl.job.log.part00.txt",
+        "musl.job.log.part01.txt",
+        "musl.job.log.part02.txt",
+        "musl.job.log.part03.txt",
+        "musl.partial-methods.jsonl",
+        "windows_shard4.job.log.part00.txt",
+        "windows_shard4.job.log.part01.txt",
+        "windows_shard4.job.log.part02.txt"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures": {
+      "tree": "f31c3565eff3c2eac11233b1bb8a4d298fb3cf91",
+      "files": [
+        "FAILURE_INDEX.derived.json",
+        "MANIFEST.json",
+        "blocking-jobs.original.json",
+        "mac_intel.job.original.part00.log",
+        "mac_intel.job.original.part01.log",
+        "mac_intel.job.original.part02.log",
+        "mac_intel.job.original.part03.log",
+        "windows_shard1.job.original.part00.log",
+        "windows_shard1.job.original.part01.log",
+        "windows_shard2.job.original.part00.log",
+        "windows_shard2.job.original.part01.log",
+        "windows_shard2.job.original.part02.log.evidence.gz",
+        "windows_shard3.job.original.part00.log",
+        "windows_shard3.job.original.part01.log",
+        "windows_shard3.job.original.part02.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/edaf-caller-success": {
+      "tree": "31525fc1b9b9507f5a242206483bf6ce26cac616",
+      "files": [
+        "MANIFEST.json",
+        "ROOT_FULL_LOG_VERIFICATION.json",
+        "job.original.part00.log",
+        "job.original.part01.log",
+        "job.original.part02.log",
+        "job.original.part03.log",
+        "job.original.part04.log",
+        "job.original.part05.log",
+        "job.original.part06.log",
+        "jobs.original.json",
+        "receipt.original.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/edaf-early-ci": {
+      "tree": "c4c4a568c3dee54ce8ab5a3f697e460c62e1ffd7",
+      "files": [
+        "286c_daemon_1726.original.json",
+        "286c_latest_daemon.original.json",
+        "ROOT_ORIGINAL_LOG_VERIFICATION.json",
+        "clippy.job.log.part00",
+        "clippy.job.log.part01",
+        "clippy.job.log.part02",
+        "clippy.job.log.part03",
+        "edaf_actual_merge.original.json",
+        "edaf_blocking_1726.original.json",
+        "edaf_daemon_1726.original.json",
+        "edaf_latest_blocking.original.json",
+        "edaf_latest_daemon.original.json",
+        "fence.job.log",
+        "fmt.job.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review": {
+      "tree": "e9c30ff58c4afcd541e2cfbeab656b46d60af7fe",
+      "files": [
+        "AUDIT.md",
+        "MANIFEST.json",
+        "RELEASE_FEATURES.json",
+        "UNCHANGED_VERIFIER.rs.txt",
+        "WORKFLOW.diff",
+        "logs/official-129393561886.job.log",
+        "logs/official-131183598570.job.log",
+        "logs/official-131183598903.job.log",
+        "logs/original-edaf-fence.job.log",
+        "official/canary43218455499-jobs.json",
+        "official/issue223-comments.json",
+        "official/issue223.json",
+        "official/release42684760545-jobs.json",
+        "official/v0.13.0-distribution-commit.json.evidence.gz",
+        "official/v0.13.0-release.json",
+        "official/v0.13.0-source-commit.json",
+        "source/action.yml.txt",
+        "source/v0.10.0-local_control.rs.txt",
+        "source/v0.11.1-local_control.rs.txt",
+        "source/v0.12.4-local_control.rs.txt",
+        "source/v0.12.6-local_control.rs.txt",
+        "source/v0.13.0-bundle-manifest.json.evidence.gz",
+        "source/v0.13.0-local_control.rs.txt",
+        "source/v0.13.0-main.cts.txt"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/edaf-macos-retained-helper-cfg-review": {
+      "tree": "efb9debcfccd47b2a9a9f47f2e6b44969eba5208",
+      "files": [
+        "MANIFEST.json",
+        "QA_LITERAL_SCAN.json",
+        "STATIC_REVIEW.json",
+        "compiler-errors.original.log",
+        "minimal.patch"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/edaf-native-failure": {
+      "tree": "1963f0af2c139af7f7fcc7dd776fa382bce8c335",
+      "files": [
+        "MANIFEST.json",
+        "execution-records.original.jsonl",
+        "failure-tail.original.log",
+        "jobs.original.json",
+        "native.job.log.part00",
+        "native.job.log.part01",
+        "native.job.log.part02",
+        "native.job.log.part03",
+        "native.job.log.part04",
+        "native.job.log.part05",
+        "native.job.log.part06",
+        "native.job.log.part07",
+        "native.job.log.part08",
+        "native.job.log.part09",
+        "native.job.log.part10",
+        "native.job.log.part11"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/edaf-windows-private-pass": {
+      "tree": "d061003e7bca3e15e7811ce1842114ba12947b50",
+      "files": [
+        "MANIFEST.json",
+        "jobs.original.json",
+        "windows.job.log.part00",
+        "windows.job.log.part01",
+        "windows36-records.original.jsonl"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/hosted-1026-caller-success": {
+      "tree": "21b0f345001aeff243c254c01e0670a00084b27c",
+      "files": [
+        "JOBS_ORIGINAL.json",
+        "MANIFEST.json",
+        "job131167901712.decoded.log.part-000.bin",
+        "job131167901712.decoded.log.part-001.bin",
+        "job131167901712.decoded.log.part-002.bin",
+        "job131167901712.decoded.log.part-003.bin",
+        "job131167901712.decoded.log.part-004.bin",
+        "job131167901712.decoded.log.part-005.bin",
+        "job131167901712.decoded.log.part-006.bin"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/hosted-1026-native-failure": {
+      "tree": "5dddc5f20fc9cb3f2e6bcbc779167a0a447d9a23",
+      "files": [
+        "JOB_STATUS_OBSERVATIONS.json",
+        "MANIFEST.json",
+        "ROOT_LOG_VERIFICATION.json",
+        "SOURCE_FIX.patch",
+        "job131167901028.decoded.log.part-000.bin",
+        "job131167901028.decoded.log.part-001.bin",
+        "job131167901028.decoded.log.part-002.bin",
+        "job131167901028.decoded.log.part-003.bin",
+        "job131167901028.decoded.log.part-004.bin",
+        "job131167901028.decoded.log.part-005.bin",
+        "job131167903537.decoded.log",
+        "source-postimage.rs.txt",
+        "source-preimage.rs.txt"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/legacy-c-same-read-candidate": {
+      "tree": "4761fb96871d6ead40c8974da61b12927cb1f7c1",
+      "files": [
+        "CHANGE.diff",
+        "MANIFEST.json",
+        "REVIEW.md",
+        "SOURCE_BINDINGS.json",
+        "STATIC_COUNTS.json",
+        "edaf-original-native-failures.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source-closure-0e4617b": {
+      "tree": "36a3e69cf0fbd970294cac5a2053b8f4f60841dd",
+      "files": [
+        "MANIFEST.json",
+        "QA_CALLER_TUPLE_PATCH.json",
+        "RESULT.json",
+        "checkout.log",
+        "clone.log",
+        "fetch.log",
+        "h-process-status.json",
+        "h-stderr.log",
+        "h-stdout.log",
+        "owner-evidence-parser.json",
+        "owner-evidence-parser.json.17980b1ecead46888a444bdefe7461de.log",
+        "owner-evidence-parser.runner.log",
+        "request.json",
+        "runner-source.py.txt",
+        "source-after.json",
+        "source-before.json",
+        "source-closure.json",
+        "source-closure.json.56308c689d864f00bdf925b09746249b.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source-dff5-cross-platform-readback": {
+      "tree": "f5dabde91820ecc25f9dcf6b16573af14755f26b",
+      "files": [
+        "COMMIT_e095f0aafe92e9248c9283faffcbc4cb84b4d54e_ORIGINAL_API.json",
+        "COMPLETE_SHARD6_FAILURE_DETAILS.json",
+        "DERIVED_AGENTD_FAILURES_0004.json",
+        "GIT_READBACK.json",
+        "GIT_READBACK_INITIAL.json",
+        "JOB_131515141066_PART_000.log",
+        "JOB_131515141066_PART_001.log",
+        "JOB_131515141066_PART_002.log",
+        "JOB_131515141066_PART_003.log",
+        "JOB_131515141066_PART_004.log",
+        "JOB_131515141069_PART_000.log",
+        "JOB_131515141069_PART_001.log",
+        "JOB_131515141069_PART_002.log",
+        "JOB_131515141069_PART_003.log",
+        "JOB_131515141069_PART_004.log",
+        "JOB_131515141069_PART_005.log",
+        "JOB_131515141069_PART_006.log",
+        "JOB_131515141069_PART_007.log",
+        "JOB_131515141142_PART_000.log",
+        "JOB_131515141142_PART_001.log",
+        "JOB_131515141142_PART_002.log",
+        "JOB_131515141142_PART_003.log",
+        "JOB_131515141142_PART_004.log",
+        "JOB_131515141142_PART_005.log",
+        "JOB_131515141142_PART_006.log",
+        "JOB_131515141372_PART_000.log",
+        "JOB_131515141372_PART_001.log",
+        "JOB_131515141372_PART_002.log",
+        "JOB_131515141372_PART_003.log",
+        "JOB_131515141372_PART_004.log",
+        "JOB_131515141372_PART_005.log",
+        "JOB_131515141372_PART_006.log",
+        "MANIFEST_INITIAL.json",
+        "MANIFEST_PROGRESS.json",
+        "SNAPSHOT_0001.json",
+        "SNAPSHOT_0004.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure": {
+      "tree": "fea63aac3f9b3cdf673521605a3b30ac1c63e626",
+      "files": [
+        "CHECKOUT_COMMIT_API.json",
+        "JOB.log",
+        "JOBS_API.json",
+        "MANIFEST.json",
+        "REPORTED_HUNKS.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source0a-windows-private-cancelled": {
+      "tree": "52b86843c4424412f5535a830e0eb80e26995ccc",
+      "files": [
+        "JOB.log",
+        "JOBS_API.json",
+        "MANIFEST.json",
+        "PARTIAL_OBSERVATION.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source2f-historical-clippy-readback": {
+      "tree": "ded75ad6a8678db3f3683c6c22f20e25dcb5d306",
+      "files": [
+        "COMMIT_149c8ca2fccaf963a6a8a3f4a5ab6e9ff9ea78bb_ORIGINAL_API.json",
+        "COMMIT_2f12492547c382156eb0dd15a4d3cf1018e37523_ORIGINAL_API.json",
+        "JOB_131498857606_PART_000.log",
+        "JOB_131498857606_PART_001.log",
+        "JOB_131498857606_PART_002.log",
+        "JOB_131498857606_PART_003.log",
+        "JOB_131498857606_PART_004.log",
+        "JOB_131498857606_PART_005.log",
+        "JOB_131498857606_PART_006.log",
+        "JOB_131498857606_PART_007.log",
+        "MANIFEST.json",
+        "RUN_43308682510_JOBS_ORIGINAL_API.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source2f-rustfmt-failure-and-minimal-fix": {
+      "tree": "43c91df4533c7f7315975bf0698287579cd569a6",
+      "files": [
+        "CHECKOUT_COMMIT_API.json",
+        "JOB.log",
+        "JOBS_API.json",
+        "MANIFEST.json",
+        "PATCH.diff"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source2f-shared-owner-failure": {
+      "tree": "9ccdcf85c713d9134b026706b9c24923b4de30ba",
+      "files": [
+        "EXECUTION_RECORD.json",
+        "FAILURE_INDEX.json",
+        "JOB.part01.log",
+        "JOB.part02.log",
+        "JOBS_API.json",
+        "JUNIT_COLLECTION.json",
+        "MANIFEST.json",
+        "ORIGINAL_FAILURE_SECTION.log",
+        "ROOT_METHOD_RESULTS.jsonl",
+        "SELECTED_ORIGINAL_PASS_LINES.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source53-caller-proof-pass": {
+      "tree": "ee1389eb44c31771202c111739e2213e120eb818",
+      "files": [
+        "CALLER_RECEIPT_FROM_JOBLOG.json",
+        "JOB.log.part01",
+        "JOB.log.part02",
+        "JOB.log.part03",
+        "JOB.log.part04",
+        "JOB.log.part05",
+        "JOB.log.part06",
+        "JOB.log.part07",
+        "JOB.log.part08",
+        "JOBS_API.json",
+        "MANIFEST.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source53-command-fixture-stack-candidate": {
+      "tree": "2f459b1a212e599f5c196eab1391246ff8454aca",
+      "files": [
+        "CODE.diff",
+        "MANIFEST.json",
+        "OBSERVED.json",
+        "ORIGINAL_STACK_FAILURES.log",
+        "REVIEW.md",
+        "SOURCE_PINS.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass": {
+      "tree": "ab59445e357da083e43467a28aaf619b7e81d00c",
+      "files": [
+        "ACTUAL_CHECKOUT.json",
+        "BLOCKING_JOBS.json",
+        "JOB.log.part-001.txt",
+        "JOB.log.part-002.txt",
+        "JOB.log.part-003.txt",
+        "JOB.log.part-004.txt",
+        "JOB.log.part-005.txt",
+        "JOB.log.part-006.txt",
+        "MANIFEST.json",
+        "RECEIPT.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures": {
+      "tree": "54fe7b251ad07edf6a653e4cbc08356e352e627d",
+      "files": [
+        "JOB_STATUS.json",
+        "MANIFEST.json",
+        "RESULTS.json",
+        "job-131460489376.part-001.log.txt",
+        "job-131460489376.part-002.log.txt",
+        "job-131460489376.part-003.log.txt",
+        "job-131460489376.part-004.log.txt",
+        "job-131460489376.part-005.log.txt",
+        "job-131460489376.part-006.log.txt",
+        "job-131460489453.part-001.log.txt",
+        "job-131460489453.part-002.log.txt",
+        "job-131460489453.part-003.log.txt",
+        "job-131460489453.part-004.log.txt",
+        "job-131460489453.part-005.log.txt",
+        "job-131460489453.part-006.log.txt"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source53-native-failure": {
+      "tree": "ced82f1796b4f9a89070f304803fec8acabb9696",
+      "files": [
+        "FAILURES_ORIGINAL_EXCERPT.log.txt",
+        "FAILURE_INDEX.json",
+        "HELPER_BUILD_FROM_JOBLOG.json",
+        "JOB.part001.log.txt",
+        "JOB.part002.log.txt",
+        "JOB.part003.log.txt",
+        "JOB.part004.log.txt",
+        "JOB.part005.log.txt",
+        "JOB.part006.log.txt",
+        "JOB.part007.log.txt.evidence.gz",
+        "JOB.part008.log.txt",
+        "JOB.part009.log.txt",
+        "JOB.part010.log.txt",
+        "JOB.part011.log.txt",
+        "JOB.part012.log.txt",
+        "JOB.part013.log.txt",
+        "JOB.part014.log.txt",
+        "JOBS.json",
+        "MANIFEST.json",
+        "METHOD_RESULTS.jsonl.part000.evidence.gz",
+        "METHOD_RESULTS.jsonl.part001",
+        "METHOD_RESULTS.jsonl.parts.json",
+        "ORDINARY_EXECUTION_FROM_JOBLOG.json",
+        "ORDINARY_JUNIT_FROM_JOBLOG.json",
+        "SOURCE_BEFORE_TESTS_FROM_JOBLOG.json",
+        "SOURCE_CHECKOUT_FROM_JOBLOG.json",
+        "SOURCE_EXECUTION_FROM_JOBLOG.json",
+        "SOURCE_FINAL_FROM_JOBLOG.json",
+        "STORAGE.md"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source53-rustfmt-pass": {
+      "tree": "e625e91ccb5d024e2b09816775b78111d24f6ee9",
+      "files": [
+        "ACTUAL_CHECKOUT.json",
+        "BLOCKING_JOBS.json",
+        "JOB.log.txt",
+        "MANIFEST.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source53-shared-owner-failure": {
+      "tree": "faae771834531957d841cd7389856d1425d75b09",
+      "files": [
+        "EXECUTION_FROM_JOBLOG.json",
+        "EXECUTION_GATE_FROM_JOBLOG.json",
+        "FAILURE_INDEX.json",
+        "HELPER_BUILD_FROM_JOBLOG.json",
+        "JOB.part001.log.txt",
+        "JOB.part002.log.txt",
+        "JOBS.json",
+        "JUNIT_FROM_JOBLOG.json",
+        "MANIFEST.json",
+        "METHOD_RESULTS.jsonl"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source53-windows-legacy-admission-audit": {
+      "tree": "7d2ce6a69dc55e4343b8792c317372c9c2781389",
+      "files": [
+        "AUDIT.md",
+        "FIRST_FAILURE_ORIGINAL.log",
+        "MANIFEST.json",
+        "SOURCE_PINS.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source53-windows-private-pass": {
+      "tree": "822dbb25b96d533123e4b6f64c324416aebd4249",
+      "files": [
+        "JOB.part001.log.txt",
+        "JOB.part002.log.txt",
+        "JOBS.json",
+        "JUNIT_RECORD_FROM_JOBLOG.json",
+        "MANIFEST.json",
+        "REGRESSION_RECORD_FROM_JOBLOG.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source84-caller-proof-pass": {
+      "tree": "118b88a02eee6caf8805ccb36e88d6b867f0102a",
+      "files": [
+        "CALLER_RECEIPT_FROM_JOBLOG.json",
+        "JOB.log.part01",
+        "JOB.log.part02",
+        "JOB.log.part03",
+        "JOB.log.part04",
+        "JOB.log.part05",
+        "JOB.log.part06",
+        "JOB.log.part07",
+        "JOB.log.part08",
+        "JOBS_API.json",
+        "MANIFEST.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source84-e0616-ci": {
+      "tree": "0f0d8bcded3bba19abe64d86291c0432d18eeac4",
+      "files": [
+        "ACTUAL_CHECKOUT_COMMIT.json",
+        "MANIFEST.json",
+        "RECEIPT.json",
+        "SELECTED_ORIGINAL_JOBS.json",
+        "gnu-clippy.part-001.log",
+        "gnu-clippy.part-002.log",
+        "gnu-clippy.part-003.log",
+        "gnu-clippy.part-004.log",
+        "gnu-clippy.part-005.log",
+        "gnu-test.part-001.log",
+        "gnu-test.part-002.log",
+        "gnu-test.part-003.log",
+        "gnu-test.part-004.log",
+        "gnu-test.part-005.log",
+        "musl-test.part-001.log",
+        "musl-test.part-002.log",
+        "musl-test.part-003.log",
+        "musl-test.part-004.log",
+        "musl-test.part-005.log"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source84-initial-failures": {
+      "tree": "2f1905811cf3529c64b2728f954bc622937c006d",
+      "files": [
+        "BLOCKING_JOBS_OBSERVED.json",
+        "MANIFEST.json",
+        "NATIVE_JOBS.json",
+        "NATIVE_SOURCE_JOB.part001.log.txt",
+        "NATIVE_SOURCE_JOB.part002.log.txt",
+        "NATIVE_SOURCE_JOB.part003.log.txt",
+        "NATIVE_SOURCE_JOB.part004.log.txt",
+        "NATIVE_SOURCE_JOB.part005.log.txt",
+        "NATIVE_SOURCE_JOB.part006.log.txt",
+        "NATIVE_SOURCE_JOB.part007.log.txt",
+        "RUSTFMT_JOB.log.txt",
+        "SHARED_JOBS.json",
+        "SHARED_OWNER_JOB.log.txt",
+        "SHARED_RECORD_FROM_JOBLOG.json",
+        "SOURCE_RECORD_FROM_JOBLOG.json",
+        "WINDOWS_JOBS_OBSERVED.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/source84-windows-private-result": {
+      "tree": "d0666645b52e1a43b8f317ddfc28127fde8fc4bf",
+      "files": [
+        "JOB.part001.log.txt",
+        "JOB.part002.log.txt",
+        "JOBS.json",
+        "JUNIT_RECORD_FROM_JOBLOG.json",
+        "MANIFEST.json",
+        "REGRESSION_RECORD_FROM_JOBLOG.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/sourcedff5-rustfmt-pass": {
+      "tree": "3e27b39468db9bf9710c743d4f1a1a94cc1ee933",
+      "files": [
+        "CHECKOUT_COMMIT_API.json",
+        "JOB.log",
+        "JOBS_API.json",
+        "MANIFEST.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/upstream-374-shared-compile-failure": {
+      "tree": "156645c8377f76e84f4b947e38de9e8bad9c0333",
+      "files": [
+        "JOBS.json",
+        "JOB_131426787479.log",
+        "MANIFEST.json",
+        "RECEIPT.json"
+      ]
+    },
+    "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure": {
+      "tree": "244550e3985035b383e7cbe4751f70b9f3019778",
+      "files": [
+        "JOBS.json",
+        "MANIFEST.json",
+        "METHOD_ROSTER.json",
+        "RECEIPT.json",
+        "job.part-001.log",
+        "job.part-002.log",
+        "job.part-003.log",
+        "job.part-004.log",
+        "job.part-005.log",
+        "job.part-006.log",
+        "job.part-007.log",
+        "job.part-008.log"
+      ]
+    }
+  }
+}

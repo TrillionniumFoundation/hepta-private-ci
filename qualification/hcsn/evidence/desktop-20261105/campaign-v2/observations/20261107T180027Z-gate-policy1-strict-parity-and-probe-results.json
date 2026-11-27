@@ -1,0 +1,315 @@
+{
+  "schema": "hcsn-desktop-campaign-v2-gate-receipts-observation-v1",
+  "observation": {
+    "progress_updated_utc": "2026-11-07T18:00:27.550972+00:00",
+    "progress_sha256": "d4a32ea9c74ff9f36b129cd52d213d6a21f6da37f1833c936bd26251e84b02c3",
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "campaign_state": "running",
+    "active_stage": "full",
+    "progress_run_index_counts": {
+      "completed": 35,
+      "failed": 0,
+      "unavailable": 0
+    },
+    "requested_runs": 170,
+    "run_index_semantics": "The controller progress() counts result.status values from full.runs/*.json. This is not the final summarize_matrix validation of all checkpoint hashes, budgets and terminal identities.",
+    "identity_level_full_runs_reopened": false,
+    "identity_read_blocker": "Desktop direct-SSH capacity was exhausted for the full.runs directory listing. No child was submitted and no automatic retry occurred.",
+    "global_qualification": "open"
+  },
+  "frozen_pins": {
+    "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "selected_execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "runtime_profile_sha256": "21a9ca457133123d674a41721c3ecb904477efc42953ab51bf03ae66eacbb3e8",
+    "source_and_campaign_pins_scope": "The source/config/manifest/archive are preserved from the previously published launch and staging chain. The task-root manifest/archive were not re-read in this observation."
+  },
+  "fixed_experiment": {
+    "model_count": 17,
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "requested_runs": 170,
+    "train_steps_per_run": 400,
+    "batch_size": 64,
+    "sequence_length": 64,
+    "hidden_size": 64,
+    "policy_selection": "frozen admission receipt only",
+    "selected_population_checkpoint_steps": 1,
+    "selected_policy_applies_to_all_B_identities": 20,
+    "selection_uses_heldout_quality": false,
+    "budget_changed": false
+  },
+  "strict_tests": {
+    "baseline": {
+      "status": "passed",
+      "passed": 95,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "tests_run": 95,
+      "sha256": "02a5d1263744cbae6e2f60b64452b13dc5c1b9bd0353968b62b2d423a68144b8"
+    },
+    "candidate": {
+      "status": "passed",
+      "passed": 109,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "tests_run": 109,
+      "sha256": "cf42cc90b6dbaf9755c554a118ad1eca38b8fca476515fa44075e43ee66093b0"
+    }
+  },
+  "gate_selection": {
+    "admission_file_sha256": "97e0cbc2eba58e72a898152e648c319113b8eb4c2f6610fad5095e5f582e8751",
+    "status": "admitted",
+    "selected_policy": 1,
+    "admitted_utc": "2026-11-06T07:59:11.384247+00:00",
+    "selected_execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "original_b_outcome": "original_b_oom",
+    "applies_to_all_b_runs": 20,
+    "selection_uses_heldout": false,
+    "gate_receipts": {
+      "baseline-strict-tests": "02a5d1263744cbae6e2f60b64452b13dc5c1b9bd0353968b62b2d423a68144b8",
+      "candidate-strict-tests": "cf42cc90b6dbaf9755c554a118ad1eca38b8fca476515fa44075e43ee66093b0",
+      "original-a-fullshape": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98",
+      "original-b-fullshape": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1",
+      "parity-cpu": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6",
+      "parity-cuda": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2",
+      "candidate-fullshape-population_flux": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0",
+      "candidate-fullshape-population_flux_no_recovery": "8a023efca7a6329ec08e25277f4a5e5c46e33edd32559c6b14792a62a4d3effd",
+      "original-mamba2-fullshape": "80e4c5619488bae114595ddacba6867ff4b66f9938e1f8f095dc841f6f712a00"
+    }
+  },
+  "fullshape_probes": {
+    "original_a": {
+      "status": "completed",
+      "model": "hx_dual",
+      "task": "delayed_recall",
+      "seed": 0,
+      "optimizer_steps_completed": 1,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "input_shape": [
+        64,
+        64,
+        2
+      ],
+      "finite_prediction_loss_gradients_updated_parameters": true,
+      "peak_allocated_bytes": 778152960,
+      "peak_reserved_bytes": 799014912,
+      "device_free_before_step_bytes": 6399328256,
+      "device_free_after_step_bytes": 5567676416,
+      "sha256": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98"
+    },
+    "original_b": {
+      "status": "failed",
+      "model": "population_flux",
+      "task": "delayed_recall",
+      "seed": 0,
+      "failure_stage": "forward",
+      "oom": true,
+      "reason": "CUDA OutOfMemoryError while allocating 16 MiB; 2.14 GiB free at failure, approximately 3.95 GiB process use, 3.81 GiB allocator allowance.",
+      "optimizer_steps_completed": 0,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "counts_toward_170_runs": false,
+      "terminal_cuda_synchronized": true,
+      "peak_allocated_bytes": 4068922368,
+      "peak_reserved_bytes": 4091543552,
+      "device_free_before_step_bytes": 6405881856,
+      "device_free_after_step_bytes": 2300903424,
+      "sha256": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1"
+    },
+    "candidate_population_flux": {
+      "status": "completed",
+      "optimizer_steps_completed": 1,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "input_shape": [
+        64,
+        64,
+        2
+      ],
+      "finite_prediction_loss_gradients_updated_parameters": true,
+      "peak_allocated_bytes": 833757184,
+      "peak_reserved_bytes": 857735168,
+      "sha256": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0"
+    },
+    "candidate_population_flux_no_recovery": {
+      "status": "completed",
+      "optimizer_steps_completed": 1,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "input_shape": [
+        64,
+        64,
+        2
+      ],
+      "finite_prediction_loss_gradients_updated_parameters": true,
+      "peak_allocated_bytes": 833757184,
+      "peak_reserved_bytes": 857735168,
+      "sha256": "8a023efca7a6329ec08e25277f4a5e5c46e33edd32559c6b14792a62a4d3effd"
+    },
+    "original_mamba2": {
+      "status": "completed",
+      "optimizer_steps_completed": 1,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "input_shape": [
+        64,
+        64,
+        2
+      ],
+      "finite_prediction_loss_gradients_updated_parameters": true,
+      "peak_allocated_bytes": 150528512,
+      "peak_reserved_bytes": 165675008,
+      "sha256": "80e4c5619488bae114595ddacba6867ff4b66f9938e1f8f095dc841f6f712a00",
+      "qualification_scope": "One-step full-shape CUDA probe only; not the Mamba-2 170-matrix training result."
+    },
+    "all_probe_energy": {
+      "joules_by_physical_counter": null,
+      "missing_reasons": [
+        "NVML NVMLError_NotSupported",
+        "RAPL permission denied"
+      ],
+      "no_TDP_or_power_limit_estimate": true
+    }
+  },
+  "parity": {
+    "cpu": {
+      "status": "passed",
+      "records": 16,
+      "passed": 16,
+      "failed": 0,
+      "shape": [
+        2,
+        9,
+        2
+      ],
+      "hidden_size": 3,
+      "bins": 32,
+      "device": "cpu",
+      "sha256": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6"
+    },
+    "cuda": {
+      "status": "passed",
+      "records": 16,
+      "passed": 16,
+      "failed": 0,
+      "shape": [
+        2,
+        9,
+        2
+      ],
+      "hidden_size": 3,
+      "bins": 32,
+      "device": "cuda:0",
+      "sha256": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2"
+    },
+    "scope_note": "Fixed 16-case parity suite passed on CPU and CUDA at the small parity fixture shape; it is not a full 64x64 training matrix or full-shape parity claim."
+  },
+  "runtime_profile": {
+    "schema": "hcsn-runtime-profile-v2",
+    "device": "cuda:0",
+    "gpu_name": "NVIDIA GeForce RTX 4060",
+    "gpu_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+    "gpu_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+    "driver_version": "580.178.04",
+    "cuda_runtime": "12.8",
+    "torch": "2.8.0+cu128",
+    "python": "3.12.3",
+    "allocator_fraction": 0.5,
+    "flags": {
+      "deterministic_algorithms": true,
+      "float32_matmul_precision": "highest",
+      "cuda_matmul_allow_tf32": false,
+      "cudnn_allow_tf32": false,
+      "cudnn_benchmark": false,
+      "cudnn_deterministic": true,
+      "default_dtype": "torch.float32",
+      "cpu_threads": 2,
+      "cublas_workspace_config": ":4096:8"
+    },
+    "sha256": "21a9ca457133123d674a41721c3ecb904477efc42953ab51bf03ae66eacbb3e8"
+  },
+  "dependency_recovery": {
+    "torch": {
+      "job_id": "1a1afd5eec2-fc05-6c0f",
+      "state": "succeeded",
+      "exit_code": 0,
+      "torch": "2.8.0+cu128",
+      "torch_cuda": "12.8",
+      "cuda_available": true,
+      "cuda_count": 1,
+      "ready_sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+      "evidence_path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/recovery-20261106/torch-recovery-v5-complete-20261106.json",
+      "evidence_blob_sha": "247805024d170ce4641e5fc2c3dcdce5177454f8"
+    },
+    "mamba": {
+      "job_id": "1a1afd9a386-fc05-6c2c",
+      "state": "succeeded",
+      "exit_code": 0,
+      "mamba_ssm": "2.3.1",
+      "causal_conv1d": "1.5.4",
+      "imports_ready": true,
+      "model_instantiated": false,
+      "ready_sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76",
+      "evidence_path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/recovery-20261106/mamba-offline-complete-20261106.json",
+      "evidence_blob_sha": "1021c643e3823bb7665d7ab75cbc3159cb3d9945"
+    },
+    "preserved_prior_failures": {
+      "old_torch_job": "1a1aca78192-fc05-562f",
+      "exit_code": 1,
+      "old_mamba_waiter": "1a1acadd69c-fc05-5654",
+      "note": "Historical failed attempts remain preserved; later explicit recovery jobs succeeded without automatic retry or new training campaign."
+    },
+    "model_computation_performed_by_installers": false
+  },
+  "ci": {
+    "run_id": 42078258351,
+    "job_id": 127424159520,
+    "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "run_status": "completed",
+    "run_conclusion": "success",
+    "job_conclusion": "success",
+    "reported_steps_success": 10,
+    "scope": "Exact-source CPU research CI; not CUDA campaign qualification.",
+    "trusted_main_gpu_probe_run_id": 39526325715,
+    "trusted_main_gpu_probe_job_id": 127299267982,
+    "trusted_main_gpu_probe_conclusion": "cancelled"
+  },
+  "remaining": {
+    "full_matrix": "running; progress reports 35 run-index JSONs completed, but identity-level checkpoint/attempt rows and final matrix summary were not reopened.",
+    "full_b_audit": "not yet evidenced as completed",
+    "gpu_peak_memory_for_full_training": "not available; probe peaks above are one-step only",
+    "physical_gpu_energy_joules": null,
+    "full_json_terminal_and_runtime_manifest": "not re-read in this observation; full stage remains running",
+    "historical_adverse_b_smoke": "preserved and not superseded by these gate probes"
+  },
+  "safety": {
+    "no_new_training_campaign": true,
+    "no_automatic_model_budget_retry": true,
+    "no_budget_or_seed_or_split_or_precision_change": true,
+    "research_source_branch_modified": false,
+    "unrelated_processes_stopped": false,
+    "files_deleted": false,
+    "driver_or_system_service_changed": false
+  },
+  "publication": {
+    "evidence_branch": "research/hcsn-desktop-evidence-20261105",
+    "expected_sha_lease_required": true,
+    "pr_4873_lookup": "404; no PR body update"
+  }
+}

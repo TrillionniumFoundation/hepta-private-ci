@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.mem15.continuation02-admission-checkpoint.v1",
+  "historical_observation": true,
+  "source_commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+  "source_tree": "fe00b2618f39e942ec6b1a8af2d63ec585e5f892",
+  "prior_original_job": "1a1cf155b58-2564-197e",
+  "prior_terminal": "failed; exit 1; no timeout; complete/durable/confirmed",
+  "prior_capture_arms_started": 0,
+  "prior_new_control_tests_executed": 0,
+  "prior_original_physical_counts": null,
+  "continuation_key": "mem15-native-unexecuted-continuation02-bbbcc630-20261112-ef0c-v1",
+  "launch_acknowledgement": "UNKNOWN: original MCP timeout",
+  "reconciliation_policy": "same key and byte-identical original typed arguments only; no substitute operation",
+  "new_source_or_budget_change": false,
+  "prior_successful_binary_build_repeated": false,
+  "model_generation_authorized": false,
+  "continuation_actual_execution_outcome": null,
+  "scientific_acceptance": "HOLD",
+  "archive_pins": [
+    {
+      "file": "initial-run-original.tar.xz",
+      "bytes": 68348,
+      "sha256": "7ccd0c04afabd3faa37a21f8431b3791235e3a1f963bb658cc4e29e729276b8d"
+    },
+    {
+      "file": "initial-recovery-complete.tar.xz",
+      "bytes": 302732,
+      "sha256": "4cb32730561c0f7876dbca3c015048507492ec8cf574195be3aaf3824bd2bbad"
+    },
+    {
+      "file": "formatter-originals-complete.tar.xz",
+      "bytes": 26956,
+      "sha256": "8fdb746ca344281d0373d028e8227aa5d87f5900410a4392577f3102617d5e79"
+    }
+  ]
+}

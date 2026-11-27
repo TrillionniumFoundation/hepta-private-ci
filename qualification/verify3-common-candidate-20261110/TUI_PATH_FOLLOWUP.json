@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.verify.tui-path-followup.v1",
+  "base": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+  "base_tree": "35decac9eb973c81b303911b2696433729ee1fd5",
+  "original_source_blob": "3d2c7385057818e11f15b32d8be8499aa51db493",
+  "proposed_source_blob": "dafc526f7bf4e3ba8dbeb1e7712c29f922c21738",
+  "failure": {
+    "run": 42773881466,
+    "job": 129692220025,
+    "actual_checkout": "534459a988e278a506338649977eb7f4a8b81fff",
+    "actual_checkout_tree": "35decac9eb973c81b303911b2696433729ee1fd5",
+    "test": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+    "line": 3265,
+    "actual_path_profile": "normal drive path to preserved logs_2.sqlite",
+    "expected_path_profile": "std canonicalize adds Windows verbatim prefix",
+    "attempts_observed": 3
+  },
+  "change": "Use already-declared dunce::canonicalize for only the expected existing database path. On Windows it removes unnecessary verbatim prefixes; on Unix it retains filesystem canonicalization.",
+  "preserved": [
+    "typed LocalStateDbStartupError downcast",
+    "exact expected database path equality",
+    "real corrupt SQLite fixture",
+    "SQLite corruption-detail assertion",
+    "production code, permission and recovery behavior",
+    "dependency manifests and both locks",
+    "all 50 VERIFY Python source bodies"
+  ],
+  "qualification": {
+    "native_test": "PENDING_ON_NEW_HEAD",
+    "native_format": "PENDING_ON_NEW_HEAD",
+    "local_rust_toolchain": "UNAVAILABLE",
+    "full_ci": "OPEN",
+    "scientific_admission": "HOLD",
+    "production_authority": "NONE"
+  }
+}

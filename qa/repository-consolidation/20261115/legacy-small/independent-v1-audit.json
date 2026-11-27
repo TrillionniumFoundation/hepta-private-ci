@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-11-15T15:36:12.783558+00:00",
+  "base": "85ed9eae70dee0d7e63f3975a04cce4a31e75188",
+  "incoming": "0f8091d6f27b1f81eac08f1a1f3383a952a4ab80",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Read complete auditor and tests; model-free DP IoU matching and full frozen roster/ledger reconciliation. No model inference/network/service changes. Historical receipt retained as history.",
+  "correction": "Reproduced cached 20x20 PNG accepted against later 21x20 reference. Cache now contains only PNG digest/format/dimensions; each reference is compared independently. Decode uses the same already-hashed payload. Two regressions check wrong-reference rejection and no cache poisoning.",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/ndu-grounded-generation",
+    "-p",
+    "test_independent_v1_audit.py",
+    "-v"
+  ],
+  "exit": 0,
+  "tests_passed": 13,
+  "tests_skipped": 0,
+  "source_sha256": {
+    "qa/ndu-grounded-generation/independent_v1_audit.py": "f0eb4c70578e2f81e005c47c1918c7d85d6c5ad4e93aaa355dfc6fcfac46d61b",
+    "qa/ndu-grounded-generation/test_independent_v1_audit.py": "a200369da989e1a0c2e12d7bc3283cd89a69562411df1a12ad77a8c79dd29e9b"
+  },
+  "historical_evidence": "Original zip not supplied by delta; no reexecution or relabeling of source-pinned 2026-10-23 receipt.",
+  "qualification": false
+}

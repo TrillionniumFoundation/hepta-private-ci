@@ -121,6 +121,15 @@ class GitGraphTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
+        # Finish Git maintenance before the fixture removes its repository.
+        self.git("config", "maintenance.autoDetach", "false")
+        # These tests create many short-lived repositories; Git's opportunistic
+        # background maintenance can race TemporaryDirectory.cleanup() after
+        # a successful synchronous command and leave files inside .git.
+        # Disable only that asynchronous housekeeping in each test fixture,
+        # never the test's assertions, cleanup, or exact-revision checks.
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
         self.write(
@@ -151,6 +160,12 @@ renamed = { package = "leaf", path = "leaf" }
         self.git("add", ".")
         self.git("commit", "-qm", "fixture")
         return self.git("rev-parse", "HEAD")
+
+    def test_git_fixture_disables_unowned_background_maintenance(self):
+        self.assertEqual(self.git("config", "--get", "maintenance.auto"), "false")
+        self.assertEqual(self.git("config", "--get", "gc.auto"), "0")
+        # The command itself is still real Git against a durable history.
+        self.assertEqual(self.git("rev-parse", "HEAD"), self.base)
 
     def test_workspace_alias_optional_target_and_build_dependencies(self):
         with (self.root / "codex-rs/owner/Cargo.toml").open("a") as stream:
@@ -217,6 +232,15 @@ class DocumentInputTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
+        # Finish Git maintenance before the fixture removes its repository.
+        self.git("config", "maintenance.autoDetach", "false")
+        # These tests create many short-lived repositories; Git's opportunistic
+        # background maintenance can race TemporaryDirectory.cleanup() after
+        # a successful synchronous command and leave files inside .git.
+        # Disable only that asynchronous housekeeping in each test fixture,
+        # never the test's assertions, cleanup, or exact-revision checks.
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.git("config", "user.name", "Regression")
         self.git("config", "user.email", "regression@example.invalid")
         self.write(
@@ -392,6 +416,133 @@ class DocumentInputTests(unittest.TestCase):
             check=True,
         )
         self.assertTrue(json.loads(result.stdout)["scope"]["native"])
+
+    def test_native_build_script_routes_to_original_whole_repository_lane(self):
+        self.write(
+            "codex-rs/Cargo.toml",
+            '[workspace]\nmembers=["hepta-neuron"]\n',
+        )
+        self.write(
+            "codex-rs/hepta-neuron/Cargo.toml",
+            '[package]\nname="codex-hepta-neuron"\nversion="0.1.0"\n',
+        )
+        self.write("codex-rs/hepta-neuron/src/lib.rs", "pub fn value() -> u32 { 1 }\n")
+        base = self.commit()
+        self.write("codex-rs/hepta-neuron/src/lib.rs", "pub fn value() -> u32 { 2 }\n")
+        bounded_head = self.commit()
+        bounded = ci.plan(self.root, base, bounded_head)
+        self.assertFalse(bounded["full_workspace"])
+        self.assertEqual(bounded["packages"], ["codex-hepta-neuron"])
+
+        def outer_scope(head):
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT.with_name("hepta_ci_scope.py")),
+                    "--base",
+                    base,
+                    "--head",
+                    head,
+                ],
+                cwd=self.root,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            return json.loads(result.stdout)["scope"]
+
+        bounded_scope = outer_scope(bounded_head)
+        self.assertTrue(bounded_scope["native"])
+        self.assertFalse(bounded_scope["full_repo"])
+        self.assertEqual(
+            [
+                package
+                for index in range(4)
+                for package in ci.deterministic_shard(bounded, index, 4)["packages"]
+            ],
+            ["codex-hepta-neuron"],
+        )
+        self.write("codex-rs/hepta-neuron/build.rs", "fn main() {}\n")
+        full_head = self.commit()
+        full = ci.plan(self.root, base, full_head)
+        self.assertTrue(full["full_workspace"])
+        self.assertIn("build script: codex-rs/hepta-neuron/build.rs", full["reasons"])
+        full_scope = outer_scope(full_head)
+        self.assertTrue(full_scope["native"])
+        self.assertTrue(full_scope["full_repo"])
+        self.assertTrue(all(full_scope.values()))
+        with self.assertRaisesRegex(ValueError, "cannot be silently sharded"):
+            ci.deterministic_shard(full, 0, 4)
+        self.assertEqual(
+            ci.execution_command(full, "test"),
+            ["just", "test", "--locked", "--workspace"],
+        )
+
+
+class ImpactShardTests(unittest.TestCase):
+    def test_complete_impact_inventory_is_covered_once(self):
+        packages = [f"pkg-{i:03d}" for i in range(135)]
+        selected = {"packages": packages, "full_workspace": False}
+        parts = [ci.deterministic_shard(selected, i, 4) for i in range(4)]
+        flat = [p for part in parts for p in part["packages"]]
+        self.assertEqual(sorted(flat), packages)
+        self.assertEqual(len(set(flat)), 135)
+        self.assertLessEqual(max(len(p["packages"]) for p in parts), 34)
+        self.assertEqual(len({p["coverage_digest"] for p in parts}), 1)
+        self.assertTrue(all(p["full_selected_packages"] == 135 for p in parts))
+
+    def test_sharded_native_commands_execute_every_selected_package(self):
+        packages = [f"pkg-{i:03d}" for i in range(134)]
+        selected = {"packages": packages, "full_workspace": False}
+        covered = []
+        for index in range(4):
+            part = ci.deterministic_shard(selected, index, 4)
+            argv = ci.execution_command(selected, "test", shard=part)
+            self.assertEqual(argv[:3], ["just", "test", "--locked"])
+            self.assertEqual(argv[3::2], ["-p"] * len(part["packages"]))
+            self.assertEqual(argv[4::2], part["packages"])
+            covered.extend(part["packages"])
+        self.assertEqual(sorted(covered), packages)
+
+    def test_invalid_and_noncanonical_shards_fail_closed(self):
+        chosen = {"packages": ["a", "b"], "full_workspace": False}
+        for index, count in ((-1, 4), (4, 4), (0, 0), (0, 5), (1, 1)):
+            with self.subTest(index=index, count=count):
+                with self.assertRaisesRegex(ValueError, "invalid bounded"):
+                    ci.deterministic_shard(chosen, index, count)
+        for packages in (["b", "a"], ["a", "a"]):
+            with self.assertRaisesRegex(ValueError, "noncanonical"):
+                ci.deterministic_shard(
+                    {"packages": packages, "full_workspace": False}, 0, 2
+                )
+
+    def test_full_workspace_fallback_not_silently_marked_partial_success(self):
+        chosen = {"packages": ["a", "b"], "full_workspace": True}
+        with self.assertRaisesRegex(ValueError, "cannot be silently sharded"):
+            ci.deterministic_shard(chosen, 0, 4)
+        part = ci.deterministic_shard(chosen, 0, 1)
+        self.assertEqual(
+            ci.execution_command(chosen, "test", shard=part),
+            ["just", "test", "--locked", "--workspace"],
+        )
+
+    def test_empty_extra_shards_do_not_lose_the_selected_package(self):
+        chosen = {"packages": ["only"], "full_workspace": False}
+        parts = [ci.deterministic_shard(chosen, i, 4) for i in range(4)]
+        self.assertEqual([p["packages"] for p in parts], [["only"], [], [], []])
+        self.assertIsNone(ci.execution_command(chosen, "test", shard=parts[1]))
+
+    def test_workflow_executes_all_four_shards_and_retains_unique_artifacts(self):
+        yaml = (
+            Path(__file__).resolve().parents[2] / ".github/workflows/blocking-ci.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("shard: [0, 1, 2, 3]", yaml)
+        self.assertIn("fail-fast: false", yaml)
+        self.assertIn('--shard-count 4 --shard-index "$SHARD_INDEX"', yaml)
+        self.assertIn("-shard-" + chr(36) + "{{ matrix.shard }}", yaml)
+        self.assertIn('CARGO_PROFILE_TEST_DEBUG: "0"', yaml)
+        self.assertIn('CARGO_INCREMENTAL: "0"', yaml)
+        self.assertIn('CARGO_BUILD_JOBS: "2"', yaml)
 
 
 if __name__ == "__main__":

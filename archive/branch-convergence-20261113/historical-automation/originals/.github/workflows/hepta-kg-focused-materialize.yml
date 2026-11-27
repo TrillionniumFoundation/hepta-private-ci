@@ -1,0 +1,170 @@
+name: Materialize focused knowledge.graph candidate
+
+on:
+  push:
+    branches: [work/knowledge-graph-production-convergence-20260927]
+    paths:
+      - ".github/workflows/hepta-kg-focused-materialize.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-kg-focused-materialize
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Select and cherry-pick knowledge.graph commits
+        id: pick
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          LOG="$RUNNER_TEMP/kg-focused-materialize.log"
+          SELECTED="$RUNNER_TEMP/kg-selected-commits.tsv"
+          : > "$LOG"
+          : > "$SELECTED"
+          exec > >(tee -a "$LOG") 2>&1
+
+          git config user.name "Hepta KG Convergence Bot"
+          git config user.email "hepta-kg-convergence@users.noreply.github.com"
+          git fetch --no-tags origin main work/product-convergence-20260923
+          SOURCE="origin/work/product-convergence-20260923"
+          BASE="origin/main"
+          MERGE_BASE="$(git merge-base "$BASE" "$SOURCE")"
+          printf 'base=%s\nsource=%s\nmerge_base=%s\n' \
+            "$(git rev-parse "$BASE")" "$(git rev-parse "$SOURCE")" "$MERGE_BASE"
+
+          while IFS=$'\t' read -r sha subject; do
+            include=0
+            case "$subject" in
+              knowledge.graph:*|ci\(knowledge.graph\):*|docs\(knowledge.graph\):*|test\(knowledge.graph\):*|fix\(knowledge.graph\):*|feat\(knowledge.graph\):*) include=1 ;;
+            esac
+            case "$sha" in
+              d8552d1*) include=1 ;;
+            esac
+            case "$subject" in
+              "ci(knowledge.graph): rebind exact implementation map"|"docs(knowledge.graph): rebind exact qualified source") include=0 ;;
+            esac
+            if [ "$include" = 1 ]; then
+              printf '%s\t%s\n' "$sha" "$subject" >> "$SELECTED"
+            fi
+          done < <(git log --reverse --format='%H%x09%s' "$MERGE_BASE..$SOURCE")
+
+          if [ ! -s "$SELECTED" ]; then
+            echo 'no knowledge.graph commits selected'
+            status=1
+          else
+            cat "$SELECTED"
+            status=0
+            while IFS=$'\t' read -r sha subject; do
+              echo "--- cherry-pick $sha $subject"
+              git show --format= --name-only "$sha" | sed '/^$/d' | sed 's/^/  /'
+              git cherry-pick -x "$sha"
+              rc=$?
+              if [ "$rc" != 0 ]; then
+                echo "cherry-pick failed: $sha"
+                git status --short
+                git diff --name-only --diff-filter=U
+                git cherry-pick --abort || true
+                status=$rc
+                break
+              fi
+            done < "$SELECTED"
+          fi
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Retain selection and materialization diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-focused-materialize-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/kg-focused-materialize.log
+            ${{ runner.temp }}/kg-selected-commits.tsv
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce materialization
+        shell: bash
+        env:
+          PICK_STATUS: ${{ steps.pick.outputs.status }}
+        run: |
+          set -euo pipefail
+          test "$PICK_STATUS" = 0
+
+      - name: Enforce focused path inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="origin/main"
+          git diff --name-only "$BASE...HEAD" | tee "$RUNNER_TEMP/kg-focused-paths.txt"
+          bad=0
+          while IFS= read -r path; do
+            case "$path" in
+              .github/workflows/hepta-knowledge-graph-qualification.yml|\
+              .github/workflows/hepta-kg-*.yml|\
+              codex-rs/Cargo.toml|codex-rs/Cargo.lock|\
+              codex-rs/hepta-kg/*|\
+              codex-rs/hepta-memory/*|\
+              codex-rs/hepta-agentd/*|\
+              codex-rs/hepta-prompt-optimizer/*|\
+              codex-rs/hepta-prompt-registry/*|\
+              codex-rs/hepta-contracts/*|\
+              codex-rs/ext/hepta-memory/*|\
+              docs/modules/knowledge.graph/*|\
+              docs/architecture/*|\
+              docs/technical-closure/*|\
+              scripts/hepta-knowledge-graph*|\
+              scripts/test_hepta_knowledge_graph*|\
+              scripts/hepta-implementation-maps.py|\
+              scripts/hepta-technical-closure.py)
+                ;;
+              *) echo "out-of-scope path: $path"; bad=1 ;;
+            esac
+          done < "$RUNNER_TEMP/kg-focused-paths.txt"
+          test "$bad" = 0
+
+      - name: Rebind focused implementation map
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/hepta-kg-focused-materialize.yml
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          git diff --check
+          git add -A
+          git commit -s -m "docs(knowledge.graph): bind focused exact source"
+          SHA="$(git rev-parse HEAD)"
+          TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module knowledge.graph \
+            --expected-sha "$SHA" \
+            --expected-tree "$TREE"
+          test -z "$(git status --porcelain)"
+
+      - name: Validate focused kernel
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-kg -- --check
+          cargo test --locked -p codex-hepta-kg
+          cargo clippy --locked -p codex-hepta-kg --all-targets --no-deps -- -D warnings
+
+      - name: Push focused candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin HEAD:work/knowledge-graph-production-convergence-20260927

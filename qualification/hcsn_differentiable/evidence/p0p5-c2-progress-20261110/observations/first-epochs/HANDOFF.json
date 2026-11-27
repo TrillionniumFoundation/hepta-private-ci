@@ -1,0 +1,106 @@
+{
+  "schema": "c2-complete-epoch-node-handoff-v1",
+  "observation_utc": "2026-11-10T21:34:12.946208+00:00",
+  "archive": {
+    "path": "/workspace/scratch/c385a7439f8e/c2-epoch-observation-recovered-v1/hcsn-c2-epoch-observation-20261110-v1.zip",
+    "bytes": 111899,
+    "sha256": "965b0d35b2c4e5e5b4074d0d5b69cd3e2eeff36ec9d844918467022504ce0437"
+  },
+  "summary": {
+    "path": "/workspace/scratch/c385a7439f8e/c2-epoch-observation-recovered-v1/payload/SUMMARY.json",
+    "bytes": 128250,
+    "sha256": "8f0730a795d5983d2fc551dd0e0abcfeee357324d43489e824c7a6596cbb3fdb"
+  },
+  "control_archive": {
+    "path": "/workspace/scratch/c385a7439f8e/c2-epoch-observation-recovered-v1/control-plane-originals-v1.zip",
+    "bytes": 129737,
+    "sha256": "9020038760380edd89666221b45d090c60f83d52d81fd5520e8e84f53758a58b"
+  },
+  "control_members": 11,
+  "all_original_bytes_sha_crc_verified": true,
+  "observer_original_gnu_wall_seconds_rounded": 0.22,
+  "observer_original_gnu_user_system_seconds_rounded": [
+    0.16,
+    0.03
+  ],
+  "observer_peak_rss_bytes": 19169280,
+  "cost_scope": "GNU whole observer includes deploy/import/read/archive. Do not add overlapping script CPU/wall prefixes. No fit cost is finalized by this observation.",
+  "model_or_probability_arrays_read": false,
+  "scope": "Raw small JSON epoch commits/events/status snapshot; latest epoch quality differs from strict-best quality; no terminal audit or qualification credit.",
+  "scientific_admission": "HOLD",
+  "numerical_admission": "HOLD",
+  "fits": [
+    {
+      "name": "hcsn-s101-lr0.001",
+      "complete_C2_epochs_observed": 3,
+      "latest_absolute_epoch": 49,
+      "stopping": {
+        "best": 0.23569208642011452,
+        "best_epoch": 49,
+        "plateau_anchor": 0.23569208642011452,
+        "stale_epochs": 0
+      },
+      "terminal_report_observed": false
+    },
+    {
+      "name": "hcsn-s101-lr0.003",
+      "complete_C2_epochs_observed": 3,
+      "latest_absolute_epoch": 50,
+      "stopping": {
+        "best": 0.3539041627024074,
+        "best_epoch": 47,
+        "plateau_anchor": 0.3539041627024074,
+        "stale_epochs": 3
+      },
+      "terminal_report_observed": false
+    },
+    {
+      "name": "hcsn-s211-lr0.001",
+      "complete_C2_epochs_observed": 3,
+      "latest_absolute_epoch": 49,
+      "stopping": {
+        "best": 0.2596136962436175,
+        "best_epoch": 47,
+        "plateau_anchor": 0.2596136962436175,
+        "stale_epochs": 2
+      },
+      "terminal_report_observed": false
+    },
+    {
+      "name": "hcsn-s211-lr0.003",
+      "complete_C2_epochs_observed": 3,
+      "latest_absolute_epoch": 50,
+      "stopping": {
+        "best": 0.3910932361454862,
+        "best_epoch": 40,
+        "plateau_anchor": 0.3910932361454862,
+        "stale_epochs": 10
+      },
+      "terminal_report_observed": false
+    },
+    {
+      "name": "hcsn-s307-lr0.001",
+      "complete_C2_epochs_observed": 3,
+      "latest_absolute_epoch": 49,
+      "stopping": {
+        "best": 0.17514371918661936,
+        "best_epoch": 49,
+        "plateau_anchor": 0.17514371918661936,
+        "stale_epochs": 0
+      },
+      "terminal_report_observed": false
+    },
+    {
+      "name": "hcsn-s307-lr0.003",
+      "complete_C2_epochs_observed": 3,
+      "latest_absolute_epoch": 49,
+      "stopping": {
+        "best": 0.32902095705554407,
+        "best_epoch": 48,
+        "plateau_anchor": 0.32775629467796197,
+        "stale_epochs": 6
+      },
+      "terminal_report_observed": false
+    }
+  ]
+}

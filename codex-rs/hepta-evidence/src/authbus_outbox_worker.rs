@@ -1,5 +1,7 @@
+use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use sqlx::Sqlite;
 use sqlx::Transaction;
 
@@ -23,7 +25,13 @@ impl HeptaEvidenceStore {
         request: AuthBusClaimRequest<'_>,
     ) -> Result<AuthBusDelivery, AuthBusOutboxError> {
         validate_duration(request.lease_ms)?;
-        let (mut tx, record, now) = current(self, request.delivery_id, issuer, true).await?;
+        let (mut tx, record, now) = current(
+            self,
+            request.delivery_id,
+            issuer,
+            /*require_checkpoint_clear*/ true,
+        )
+        .await?;
         if &record.message.claims.subject_id != request.subject_id
             || record.message.claims.scope_digest != request.scope_digest
         {
@@ -68,14 +76,52 @@ impl HeptaEvidenceStore {
 
     /// Renew with a new fence. Even the previous token of this worker becomes
     /// stale. A failed/ambiguous response is recovered by waiting for expiry.
+    /// A domain with an owner-policy floor requires the policy-bound method.
     pub async fn renew_authbus_delivery(
         &self,
         issuer: &IssuerRegistration,
         lease: &AuthBusLease,
         lease_ms: i64,
     ) -> Result<AuthBusLease, AuthBusOutboxError> {
+        self.renew_authbus_delivery_at_policy(issuer, lease, lease_ms, /*policy*/ None)
+            .await
+    }
+
+    /// Renew only while the exact trusted owner-policy snapshot remains current.
+    /// The caller must also enforce that snapshot's operation permissions. This
+    /// transaction binds that decision to the lease after any SQLite wait; it
+    /// does not infer permissions from the opaque policy commitment.
+    pub async fn renew_authbus_delivery_with_owner_policy(
+        &self,
+        issuer: &IssuerRegistration,
+        lease: &AuthBusLease,
+        policy_revision: Generation,
+        policy_digest: Digest32,
+        lease_ms: i64,
+    ) -> Result<AuthBusLease, AuthBusOutboxError> {
+        if issuer.verifying_key.algorithm() != AuthBusAlgorithm::MlDsa65V2 {
+            return Err(AuthBusAdmissionError::CryptoProfileMismatch.into());
+        }
+        self.renew_authbus_delivery_at_policy(
+            issuer,
+            lease,
+            lease_ms,
+            Some((policy_revision, policy_digest)),
+        )
+        .await
+    }
+
+    async fn renew_authbus_delivery_at_policy(
+        &self,
+        issuer: &IssuerRegistration,
+        lease: &AuthBusLease,
+        lease_ms: i64,
+        policy: Option<(Generation, Digest32)>,
+    ) -> Result<AuthBusLease, AuthBusOutboxError> {
         validate_duration(lease_ms)?;
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, false).await?;
+        let (mut tx, record, now) =
+            current(self, lease.delivery_id, issuer, policy.is_some()).await?;
+        crate::authbus_owner_policy::require_current(&mut tx, policy).await?;
         require_lease(&record, lease, now)?;
         let until = lease_end(&record, now, lease_ms)?;
         sqlx::query(
@@ -110,7 +156,13 @@ impl HeptaEvidenceStore {
                 "retry delay must be 0..=60000 ms",
             ));
         }
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, false).await?;
+        let (mut tx, record, now) = current(
+            self,
+            lease.delivery_id,
+            issuer,
+            /*require_checkpoint_clear*/ false,
+        )
+        .await?;
         require_lease(&record, lease, now)?;
         let available = now
             .checked_add(delay_ms)
@@ -144,7 +196,13 @@ impl HeptaEvidenceStore {
         issuer: &IssuerRegistration,
         lease: &AuthBusLease,
     ) -> Result<(), AuthBusOutboxError> {
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, false).await?;
+        let (mut tx, record, now) = current(
+            self,
+            lease.delivery_id,
+            issuer,
+            /*require_checkpoint_clear*/ false,
+        )
+        .await?;
         require_lease(&record, lease, now)?;
         terminalize(&mut tx, lease.delivery_id, "quarantined", now).await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
@@ -165,7 +223,13 @@ impl HeptaEvidenceStore {
                 "empty acknowledgement digest",
             ));
         }
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, false).await?;
+        let (mut tx, record, now) = current(
+            self,
+            lease.delivery_id,
+            issuer,
+            /*require_checkpoint_clear*/ false,
+        )
+        .await?;
         require_lease(&record, lease, now)?;
         sqlx::query(
             "UPDATE authbus_outbox SET state = 'acked', fence = fence + 1,
@@ -231,6 +295,7 @@ async fn current(
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(classify_sqlx_error)?;
+    crate::authbus_issuer_floor::require_current_issuer(&mut tx, issuer).await?;
     if require_checkpoint_clear && replay_checkpoint_pending(&mut tx).await? {
         return Err(AuthBusOutboxError::Unavailable);
     }

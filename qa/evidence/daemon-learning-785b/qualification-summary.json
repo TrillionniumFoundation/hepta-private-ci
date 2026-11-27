@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "kind": "daemon-learning-native-qualification-summary",
+  "source_base": {
+    "commit": "b8e8c6e82abc1479c573f61a5e17d28d581e6cad",
+    "tree": "deca4dc9e355ba313c68528d9c88bd5104a71f36",
+    "pr": 5550
+  },
+  "behavior_tested_source": {
+    "commit": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+    "dirty": false,
+    "parents": [
+      "8fda6017ec84d59a2e43d16692f37cc112aa2054"
+    ],
+    "tree": "36122b5f44085290133a27e1bba6803b71baa060"
+  },
+  "operator": {
+    "ordinary": {
+      "status": "passed",
+      "passed": 896,
+      "failed": 0,
+      "skipped_in_stdout": 69,
+      "junit_testcases": 896,
+      "junit_failures": 0,
+      "junit_errors": 0,
+      "execution": "native-ordinary-baab.json",
+      "junit": "native-ordinary-baab-junit.json",
+      "elapsed_seconds": 140.04254781990312
+    },
+    "root": {
+      "status": "passed",
+      "passed": 6,
+      "failed": 0,
+      "junit_testcases": 6,
+      "execution": "root-baab-execution.json",
+      "junit": "root-baab-junit-recovered.json",
+      "coverage": "root-baab-parent-coverage.json",
+      "elapsed_seconds": 186.01026774197817,
+      "collector_recovery_without_test_rerun": true,
+      "original_report_sha256": "23757b7834334ede425b39fb8822542a69c37c8e44e13f40541521d41afeed15"
+    }
+  },
+  "github": {
+    "run_id": 42640618817,
+    "job_id": 129240424942,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42640618817/job/129240424942",
+    "status": "completed",
+    "conclusion": "success",
+    "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+    "source_tree": "36122b5f44085290133a27e1bba6803b71baa060",
+    "ordinary_passed": 896,
+    "ordinary_failed": 0,
+    "root_passed": 6,
+    "root_failed": 0,
+    "independent_maintained_rust_postimages_match": true,
+    "evidence": "github-native-baab-42640618817.json"
+  },
+  "source_contracts": {
+    "source_closure_passed": 30,
+    "new_rust_parent_tests": 15,
+    "source_closure_record": "source-closure-stage5-checkpoint.json",
+    "full_callers_on_source_head": "full-callers-baab.json",
+    "full_callers_after_maintenance": "maintenance/full-callers-post-maintenance.json",
+    "full_callers_status": "passed",
+    "full_callers_log_sha256": "20fdb6baee2386a6bb6378b533768ec1519b3447d12919af2d57e0e25131f92a"
+  },
+  "maintenance": {
+    "order": [
+      "helper-verification",
+      "just fix",
+      "just fmt",
+      "cargo check --bins",
+      "full static caller verification"
+    ],
+    "fix_changed_bytes": false,
+    "fmt_changed_rust_files": 11,
+    "bins_check_passed": true,
+    "maintained_head_commit": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+    "maintained_working_tree_dirty": true,
+    "maintained_inventory_sha256": "e1497fd6c7d5a33b7d93c8e1b5e513abf0bb5c22823a0f832b99dbef89f1c0e9",
+    "inventory_paths": 13706,
+    "behavior_tests_after_maintenance": false,
+    "postimage_manifest": "maintenance/maintenance-summary.json"
+  },
+  "source_only_followup": {
+    "commit": "77435b29651a95f13fc318e2b73020da7c35f5b8",
+    "tree": "32f67d8a956b4b306e934ba7da3d08c332f299b5",
+    "parent": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+    "rust_postimages": [
+      {
+        "blob": "b6a8e0d022c0424c3076ea46c43142795b653300",
+        "bytes": 7566,
+        "chunks": 3,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_profile_tests.rs",
+        "sha256": "175f753b9b041e467c59487563e7d2110fcc0af452dcb33c2dae1ae36805e594",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      },
+      {
+        "blob": "6daf968c25d90cd6cd240081b3b3c0e498e75ac4",
+        "bytes": 6645,
+        "chunks": 3,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+        "sha256": "6c3f63e8c77bc887f9ed1b59492c04363097171ede2d95f44da6dd52a210bd96",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      },
+      {
+        "blob": "2c4e0f6be2a7e66f11b532b1debcabdc6ef1ea50",
+        "bytes": 8223,
+        "chunks": 3,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+        "sha256": "b3b1f767c9d4e64f30c1e340ffdfaa3070abc298d554f81687196e8e1670415e",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      },
+      {
+        "blob": "6247081b4907f56a43974edbda343b4698722f7e",
+        "bytes": 4339,
+        "chunks": 2,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_profile_tests.rs",
+        "sha256": "58818bb22a3ed739aac88ce9d1d956be9761be73152a048f190da8ebd0e5c651",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      },
+      {
+        "blob": "9fd0cb8ddf67e13ca8789e06359e6ef4ab813aa2",
+        "bytes": 45767,
+        "chunks": 15,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "sha256": "d0a6ef019940b06d9b25dd4a4b5d324ed2ddcb35e642b126ea8ac9ff2bf9c0ce",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      },
+      {
+        "blob": "4d86a1cf5d5dc208cb765d4ea1111094818df7da",
+        "bytes": 12351,
+        "chunks": 5,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+        "sha256": "36352e6ba5eecf992a5c172ea2390b83ac9997ccacd4e1f5bda6a1cde5c0863d",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      },
+      {
+        "blob": "95cc2c732e067249f255e2d39b7daf6cec7cbc35",
+        "bytes": 9863,
+        "chunks": 4,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_observations.rs",
+        "sha256": "ed227bb024c0af69229de24de915052a933257e5cae2716481638efe5b678e7f",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      },
+      {
+        "blob": "dcf7bbf81a039d33ca059225823e5926a7284461",
+        "bytes": 11492,
+        "chunks": 4,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+        "sha256": "db9b4f0e409390c090f449af4f382cea9693a66efbc386d313dba7aaa37eba70",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      },
+      {
+        "blob": "abd58c7ca23b2c8ba18fe888bbc8205d4609ebab",
+        "bytes": 7345,
+        "chunks": 3,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs",
+        "sha256": "18ef6bcd09d96932ba7facc91d0c4688bfbef1ff745ac3591def7e4b40b83b72",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      },
+      {
+        "blob": "6137b53716073da94be1e17702a0d6e614c97843",
+        "bytes": 23932,
+        "chunks": 8,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs",
+        "sha256": "b8e1eaf951d5713de03977a5848c8617b21239d5d3588ea5583a0ff8e074cf2e",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      },
+      {
+        "blob": "971fdc77ed824bb7da6cf8f5c6e77672d8521807",
+        "bytes": 5890,
+        "chunks": 2,
+        "complete": true,
+        "mode": "100644",
+        "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_profile_tests.rs",
+        "sha256": "e5812710227303a80fb6ad5cc42ccdfed5daabae1ade7e799416ff5475c7d739",
+        "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f"
+      }
+    ],
+    "workflow": {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "bytes": 18246,
+      "sha256": "f3d3f89f9df84db3e60d5a28e2b3a6ec57c0fabe87b0862dfc0a50102369436b",
+      "git_blob": "77812ac7946635439c4db537cfdce5f790d2b3c3",
+      "changes": [
+        "preserve existing Root toolchain and bindgen environment",
+        "collect actual workspace-relative nextest report",
+        "restore ownership only for existing job-generated directories"
+      ]
+    },
+    "whole_tree_equals_recorded_maintained_inventory": false,
+    "behavior_tested_as_this_commit": false,
+    "local_index_tree_equal": true
+  },
+  "compatibility": {
+    "internal_checkpoint_before": "HEPLCP01",
+    "internal_checkpoint_after": "HEPLCP02",
+    "old_internal_format_rejected": true,
+    "historical_profile_inferred": false,
+    "initial_checkpoint_digest_domain": "hepta.learning.iteration-checkpoint.v2\u0000",
+    "terminal_snapshot_bytes": {
+      "EvaluatedNoUpdate": {
+        "before": 6420,
+        "after": 6452
+      },
+      "Update": {
+        "before": 6945,
+        "after": 6977
+      },
+      "ProposedNoUpdate": {
+        "before": 6945,
+        "after": 6977
+      }
+    },
+    "outer_schemas_separate_from_internal_version": [
+      1,
+      2
+    ],
+    "frozen_scope_type": "FrozenLearningScopeV2"
+  },
+  "boundaries": {
+    "ordinary_learning_bootstrap_complete": false,
+    "ordinary_generation_published": false,
+    "all_repository_ci_qualified": false,
+    "all_ignored_root_tests_qualified": false,
+    "scientific_learning_quality_qualified": false,
+    "general_llm_abi_qualified": false,
+    "production_authority_granted": false,
+    "description": "Production stage execution, durable original owners, measured evidence, trusted host/Circuit composition and legitimate publication capabilities remain required."
+  }
+}

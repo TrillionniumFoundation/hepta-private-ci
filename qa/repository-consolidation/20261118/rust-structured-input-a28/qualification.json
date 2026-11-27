@@ -1,0 +1,87 @@
+{
+  "status": "CONTROLLED_LOCAL_PREWARM_RISK_PROVED_AND_LOCAL_FIXTURE_QUALIFIED",
+  "base": "a91102d3639a5a1f02394bfc0331611e9ab101a1",
+  "platform": "Linux native x86_64 ROG; not original Mac Intel hosted runner",
+  "original_ci_root_cause_claim": "Not established by original CI logging; controlled risk separately proved",
+  "original_test_budget_seconds": 5,
+  "production_files_changed": 0,
+  "controlled_red_test_exit": 100,
+  "green_control_test_exit": 0,
+  "final_test_exit": 0,
+  "same_control_mock_delay_seconds": 6,
+  "control_green_observed_no_websocket_request": true,
+  "original_typed_items_and_assertions_unchanged": true,
+  "final_helper_byte_identical_to_a911": true,
+  "final_source_sha256": "21b7592e5ac039b380423a467ff74211631c31fa7df3be31d9b0b02f0290900b",
+  "final_patch_sha256": "a2c71d8bf1b484bfab65958c81d45caf2e110485ab04904f848f48140dc22b73",
+  "maintenance": {
+    "command": ["/home/qian-qi/.cargo/bin/just", "fmt"],
+    "exit_code": 0,
+    "elapsed_seconds": 2.0326064719993155,
+    "before_sha256": "21b7592e5ac039b380423a467ff74211631c31fa7df3be31d9b0b02f0290900b",
+    "after_sha256": "21b7592e5ac039b380423a467ff74211631c31fa7df3be31d9b0b02f0290900b",
+    "bytes_unchanged": true,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "log_bytes": 0,
+    "changed_files": ["codex-rs/core/src/tools/handlers/multi_agents_tests.rs"],
+    "diff_check_exit_code": 0,
+    "diff_check_output": "",
+    "final_patch_sha256": "a2c71d8bf1b484bfab65958c81d45caf2e110485ab04904f848f48140dc22b73",
+    "final_patch_bytes": 1226,
+    "no_tests_after_fmt": true
+  },
+  "original_ci_final_classification": "Mac Intel core-unit-tests FLAKY, retry recovered; PTY was the terminal failed target",
+  "controlled_results": {
+    "red": {
+      "test_seconds": 5.083,
+      "passed": 0,
+      "failed": 1,
+      "retries": 0,
+      "expected_failure": true
+    },
+    "same_trap_green": {
+      "test_seconds": 0.066,
+      "passed": 1,
+      "failed": 0,
+      "retries": 0,
+      "original_user_message_completed_ms": 12,
+      "websocket_requests_observed": 0
+    },
+    "clean_final_green": {
+      "test_seconds": 0.057,
+      "passed": 1,
+      "failed": 0,
+      "retries": 0
+    },
+    "unselected_library_tests_each_run": 2466,
+    "unselected_tests_not_claimed_as_passed": true
+  },
+  "native_archive": {
+    "path": "native-structured-input-originals.tar.gz",
+    "bytes": 130403,
+    "sha256": "23498ab73b5e6f1ecd384e15b72fd6e6c885f0deb8024a87f0cbd06a63098d2a",
+    "regular_members": 25,
+    "indexed_original_members": 24,
+    "full_membership_all_sizes_all_hashes_verified_after_transfer": true
+  },
+  "source_review": {
+    "final_git_blob": "d0743c8d967cd22584de4e9221424b51dbd211b6",
+    "final_bytes": 161041,
+    "original_git_blob": "b9c77045746f18ea1bcdf7537bbc9e67446d3267",
+    "original_blob_unchanged_in_published_parent": "770179d123b879355b53db1d75f8f9f301280d3e",
+    "control_only_delta": "assert default websocket capability -> set local fixture websocket capability false",
+    "final_helpers_before_case_and_all_following_code_byte_identical": true,
+    "original_submit_items_equality_shutdown_body_byte_identical": true,
+    "final_native_bytes_equal_independently_reviewed_expected_source": true,
+    "production_changes": 0,
+    "caller_allowlist_changes": 0,
+    "new_branch_history_attached": false
+  },
+  "native_tool_versions": {
+    "rustc": "1.96.0",
+    "host": "x86_64-unknown-linux-gnu",
+    "cargo_nextest": "0.9.103",
+    "just": "1.58.0"
+  },
+  "raw_reports_are_in": "native-originals/; original native report bytes are also retained in the native archive"
+}

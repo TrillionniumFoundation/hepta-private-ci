@@ -1,0 +1,50 @@
+{
+  "base": "9fc0f4577a5838b5e083e767342b62169f6290f4",
+  "incoming": "720f7ff5042a66490e2433bf4652c2eef93e4b7d",
+  "preview_tree": "a899be276c019aaa067aeb86342feefaa21b6e9b",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Complete V11 source/workflow read, followed by all exact V5-to-V11 deltas. V5 lacks V6+ full golden JSON and named regression checks; each remains a separate immutable historical source-only operation. No old source operation is substituted for current qualification.",
+  "version": 5,
+  "historical_source": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+  "historical_source_tree": "e9ba2746237562d68b1c732bee0f86df9e352cde",
+  "frozen_old_branch_only": "codex/mem8-source-gates-v5-20261111-ed353817",
+  "contents_permission": "read",
+  "native_or_model_execution": false,
+  "historical_driver_executed": false,
+  "qualification": false,
+  "source_mutation_scope_if_historically_triggered": "isolated exact source checkout: just fmt, git add and write-tree; no source commit, ref update or remote push",
+  "capsule": {
+    "bytes": 333228,
+    "sha256": "948e8c9ff924317f55feaa45a0c9bac92c29196f6bf652a888ddf7c8795bb0d0",
+    "git_blob": "e2a4d99be9181e60b4ebcfbfc7dc7ea7bc531ef8",
+    "decoded_bytes": 2562064,
+    "verified_content_rows": 103,
+    "golden": null
+  },
+  "python_ast": true,
+  "embedded_python_ast_blocks": 3,
+  "bash_n_blocks": [
+    "Retain this source-only invocation identity",
+    "Install the previously qualified DotSlash binary",
+    "Bind both checkouts and actual formatting binaries",
+    "Run the fixed 600-second independent source-only gate"
+  ],
+  "exact_incoming_files": {
+    ".github/scripts/mem8_source_gates_v5.py": {
+      "bytes": 23280,
+      "sha256": "f32ca75f21c2097a30bda5892606aef80c62e4072837de7e99e42b56b17cfcf9",
+      "git_blob": "0a10994d70bf483477992a607bce5806f394937d"
+    },
+    ".github/workflows/mem8-source-gates-v5.yml": {
+      "bytes": 9499,
+      "sha256": "0190e2b3dfe210e2be5c7531c0a560e0e2716c98ce6057840fcffef958925990",
+      "git_blob": "c9848e288c48110dd65d8600b92fb2279d814151"
+    },
+    "qualification/memory-cell-mem8-source-gates-v5/INPUT_SOURCE_GATES.json.xz": {
+      "bytes": 333228,
+      "sha256": "948e8c9ff924317f55feaa45a0c9bac92c29196f6bf652a888ddf7c8795bb0d0",
+      "git_blob": "e2a4d99be9181e60b4ebcfbfc7dc7ea7bc531ef8"
+    }
+  }
+}

@@ -1,0 +1,252 @@
+{
+  "schema": "hepta.rust-consolidation-repair-review.v2",
+  "baseCommit": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+  "baseTree": "71f75be2e2edf2d46504c2193710a97d5f5314d4",
+  "mainAtReview": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "census": {
+    "branches": 7653,
+    "protectedNames": 483,
+    "protectedCommitPins": 504,
+    "ordinaryNamesExcludingMain": 7169,
+    "completePagedAndSingleResponseMapsEqual": true
+  },
+  "historicalProtectionEvidence": {
+    "names": "qa/repository-consolidation/20261119/round-07-75cf/evidence/root-review/final-scope-audit/protected-478-latest.json",
+    "pins": "qa/repository-consolidation/20261119/round-07-75cf/evidence/root-review/final-scope-audit/protection-pins-498.json",
+    "missingNamesInPreviousDefaultPolicy": 80,
+    "counterexample": {
+      "branch": "audit/toolchain-recovery-20261103",
+      "head": "0d3a9fb6d1b5f87cb42cd0c52283ca6caf997059",
+      "historicalPin": "c4a1bbed3a39beba43a6abf1a18b6f75c5725c21",
+      "aheadBy": 45,
+      "behindBy": 0,
+      "divergesFromAllThreePreviousRoots": true
+    }
+  },
+  "nativeProtectionRegression": {
+    "schema": "hepta.protection-regression.v1",
+    "base": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+    "source": {
+      "hepta_branch_consolidation.py": "d5d4047be9282be9760af63a9a0aa1e3e33e4cd85775025fbdf18b91e0aad5f7",
+      "test_hepta_branch_consolidation.py": "07c86918e63b69a89923cda871a1f5daa16f5cfc6c944cbedfffb5abf300f25c",
+      "protected-branches.json": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f"
+    },
+    "started_unix": 1795139023.8041399,
+    "results": [
+      {
+        "name": "safety-red-controls",
+        "args": [
+          "/usr/bin/python3",
+          "-B",
+          "-c"
+        ],
+        "exit": 1,
+        "seconds": 0.37395405769348145,
+        "stdout_sha256": "b551b6ab35ff96547cd6e761179b8ee1619b14d959cf3b33ec151971caa9811e",
+        "stderr_sha256": "233afe76460f1cdbeecb85125a1e3e0ea515016e17cf776676c5a11b7f7de049",
+        "stdout_bytes": 55,
+        "stderr_bytes": 3753,
+        "counts": {
+          "tests": 4,
+          "failures": 4,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      {
+        "name": "safety-tests",
+        "args": [
+          "/usr/bin/python3",
+          "-B",
+          "-m"
+        ],
+        "exit": 0,
+        "seconds": 2.364961862564087,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "8f459b10f70a5b8dc751023bcab0c57c36506ec806cffc707a58a16949ce080c",
+        "stdout_bytes": 0,
+        "stderr_bytes": 4968,
+        "tests": 31
+      },
+      {
+        "name": "safety-tests-optimized",
+        "args": [
+          "/usr/bin/python3",
+          "-B",
+          "-O"
+        ],
+        "exit": 0,
+        "seconds": 2.5188422203063965,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "263107252b4e13c58c258664b2d22991e2c5db1664b78aa8de3df191064224df",
+        "stdout_bytes": 0,
+        "stderr_bytes": 4968,
+        "tests": 31
+      }
+    ],
+    "real_remote_mutations": [],
+    "source_unchanged": true,
+    "complete": true
+  },
+  "originalBaseline": {
+    "tests": 18,
+    "exitCode": 0,
+    "stderrSha256": "5672095d071814c61a551424ccb0a0132238924a7a4d8f84629fedbb6ffce13a"
+  },
+  "independentReview": {
+    "sourceSha256": "d5d4047be9282be9760af63a9a0aa1e3e33e4cd85775025fbdf18b91e0aad5f7",
+    "testSha256": "07c86918e63b69a89923cda871a1f5daa16f5cfc6c944cbedfffb5abf300f25c",
+    "manifestSha256": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f",
+    "readmeSha256": "da95f06b1e53169c2f85761e9b1a29c91b08949f6f7ad799d1b7ba6b47300af0",
+    "result": "PASS_STATIC_REVIEW"
+  },
+  "bazelRootRepair": {
+    "files": [
+      "defs.bzl",
+      "codex-rs/ext/extension-api/BUILD.bazel",
+      "codex-rs/hepta-context-compiler/BUILD.bazel",
+      "codex-rs/ext/hepta-prompt/BUILD.bazel"
+    ],
+    "manifestCensus": 200,
+    "nonDefaultLibraryPaths": 8,
+    "incorrectSrcRootSelections": 3,
+    "rustSourceChanges": 0,
+    "dependencyChanges": 0,
+    "nativeValidation": "Configured query PASS before/after on exact four-file projection; actual scoped Linux tests PASS on the complete published source tree. Local cold compilation attempts are not counted as successful builds.",
+    "explicitWorkspaceEntries": 194,
+    "implicitWorkspaceMembers": 6,
+    "sourceRecord": "bazel/four-file-source-record.json",
+    "queryProof": "bazel/root-query-and-census-proof.json",
+    "ciProof": "bazel/ci-source-qualification.json",
+    "configuredPackages": 1120,
+    "configuredTargets": 102950,
+    "ci": {
+      "jobId": 136026289154,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44656939483/job/136026289154",
+      "checkoutCommit": "3ac734f11379d38ca497435d6c9f43ab4e225a1e",
+      "matchingPublishedCommit": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+      "identicalTree": "f289a1e9c1112d6afae4d9423e7f18c0c7be128a",
+      "passedTestTargets": 8,
+      "windowsCrossTargetsSkipped": 5,
+      "wholeJobPassed": false
+    },
+    "finalQualification": "bazel/final-qualification.json",
+    "completeLogs": "bazel/publication-logs/index.json"
+  },
+  "finalFormatting": {
+    "status": "PASS",
+    "command": "just fmt",
+    "sourceFileCount": 13,
+    "sourceUnchanged": true,
+    "evidence": "format-final-result.json",
+    "evidenceSha256": "27eecb18831bcaeb3992bea88b3be381c6f87b475576dfb57c1245397e89df4c",
+    "scope": "All changed production/configuration/test/readme files: eight original repair files and five exact B4 postimages. Original repository justfile, formatter and verbatim fixtures are retained. Generated audit artifacts are outside formatter selections.",
+    "earlierAttempts": [
+      "format-initial-result.json",
+      "format-initial-success-result.json"
+    ]
+  },
+  "fullLiveAncestorRecomputation": {
+    "status": "PASS_FULL_DAG_AND_SINGLE_HIA_REFRESH",
+    "baseEvidence": "history/full-history-result.json",
+    "baseExport": "history/export-manifest.json",
+    "refreshEvidence": "history/refresh-565/refresh-result.json",
+    "refreshManifest": "history/refresh-565/refresh-manifest.json",
+    "observedPolicy": "history/refresh-565/observed-protection-505.json.gz",
+    "baseGraphNodes": 78730,
+    "refreshedGraphNodes": 78731,
+    "missingParents": 0,
+    "protectedPinAndTipIntersectionAcrossMainIntegrationAndRepair": 0,
+    "ordinaryCoverageMapsUnchangedByHiaAdvance": true,
+    "remoteBranchWritesByAudit": 0,
+    "productionManifestPins": 504,
+    "observedPins": 505,
+    "scope": "Snapshots bind exact recorded heads. The single HIA tip advance is preserved as a delta; source integration and required CI remain separate requirements."
+  },
+  "remoteBranchDeletionPerformed": false,
+  "mainMergePerformed": false,
+  "hiaRefWritesPerformed": false,
+  "scope": "Repair candidate for the ordinary integration branch. Existing required checks still govern main integration.",
+  "initialRepairCommit": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+  "sourceChanges": {
+    "initialRepairFiles": 8,
+    "b4TestFiles": 5,
+    "rustSourceFiles": 0,
+    "cargoDependencyOrLockChanges": 0,
+    "ciWorkflowChanges": 0
+  },
+  "nativeFullCensus": {
+    "branches": 7654,
+    "ordinaryNamesExcludingMain": 7170,
+    "protectedNames": 483,
+    "protectedNamesWithoutHia": 391,
+    "initialCommitGraphNodes": 78730,
+    "refreshedCommitGraphNodes": 78731,
+    "missingParents": 0,
+    "initialPins": 504,
+    "refreshedObservedPins": 505,
+    "mainCoveredOrdinary": 0,
+    "integrationCoveredOrdinary": 2826,
+    "integrationPendingOrdinary": 4344,
+    "repair4aCoveredOrdinary": 2827,
+    "repair4aPendingOrdinary": 4343
+  },
+  "b4CardinalityRepair": {
+    "changedTestFiles": 5,
+    "changes": "Four expected-row-count literal replacements and two deleted count overrides; every other source byte unchanged.",
+    "baselineTestsRun": 32,
+    "baselineFailedSubtests": 74,
+    "baselineSetupErrors": 1,
+    "candidateTestsRun": 39,
+    "candidateFailures": 0,
+    "candidateErrors": 0,
+    "existingGuardRecordsRetained": 856,
+    "existingGuardRecordsLost": 0,
+    "additionalFunctionOrderRules": 22,
+    "additionalEmptyRequiredOrderFields": 3,
+    "manifestVerifierOrRustChanges": 0,
+    "evidence": "b4/qualification-summary.json",
+    "guardProof": "b4/b4-guard-proof.json",
+    "remainingDiagnostics": "b4/remaining-b4-diagnostics.json",
+    "wholeB4SuitePassed": false,
+    "archiveRepresentations": "b4/representation-index.json"
+  },
+  "protectionSchemaConsumers": {
+    "evidence": "protection-schema-consumers-0cee.json",
+    "scope": ".github, tools and scripts complete bounded text scans; six binary assets excluded",
+    "externalTextConsumersFound": 0
+  },
+  "integrationBoundary": {
+    "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "integration": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+    "integrationPr": 6293,
+    "repairPr": 6773,
+    "requiredChecks": [
+      "CI required",
+      "Architecture required"
+    ],
+    "completeSourceUnionQualified": false,
+    "requiredCiPassed": false,
+    "ordinaryRefRetirementEligibleAtSnapshot": 0,
+    "initialRepairRequiredChecks": [
+      {
+        "head": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+        "id": 136040737571,
+        "name": "CI required",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44656939483/job/136040737571",
+        "completedAt": "2026-11-20T02:34:06Z"
+      },
+      {
+        "head": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+        "id": 136027922992,
+        "name": "Architecture required",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44656939517/job/136027922992",
+        "completedAt": "2026-11-20T02:00:46Z"
+      }
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "boundary_id": "root_original_writer_successor_shape",
+  "canonical_sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+      "sha256": "2e782008e9036f06ae8c77bba11fbf8dff67c277ae8527fce46fdae5e99ec4fd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs",
+      "sha256": "ae716f2be969f6409311cda4f4600e7e275d34d947c7ab8203af8bfed3c855d2"
+    }
+  ],
+  "full_repository_caller_proof": false,
+  "manifest_modified": false,
+  "manifest_sha256": "381410f977c77ce20f68e49a02bd456e66ec0e904af94b7df6b2709c58c71bcf",
+  "outcomes": {
+    "after": {
+      "boundary": {
+        "callPattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)validate_successor\\s*\\(",
+        "id": "root_original_writer_successor_shape",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "HostAuthorityWriterRegistration::validate_successor"
+      },
+      "status": "PASS"
+    },
+    "before": {
+      "error": "root_original_writer_successor_shape: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs']",
+      "status": "FAIL"
+    }
+  },
+  "privileged_caller_added": false,
+  "schema": "hepta.delivery-successor-rename.focused-caller-proof.v1",
+  "scope": "exact unchanged boundary, two exact HEAD canonical files, three edited files",
+  "status": "PASS",
+  "verifier_modified": false,
+  "verifier_sha256": "43f048d1b33ec7e00dcf7cadd953dca2b0893a5cc8df0123a2321e1eb9b39368"
+}

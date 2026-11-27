@@ -1,0 +1,11 @@
+{
+  "command": "timeout -s KILL 15s /usr/bin/prlimit --cpu=5:6 --as=268435456:268435456 -- python -m qualification.hcsn_currentstate_scale_spec.static_profile --freeze FREEZE.json --output evidence/static-intent-attempt001",
+  "observed_tool_result": {
+    "chunk_id": "89ba96",
+    "wall_time_seconds": 0.000024087,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "scope": "One stdlib byte/header/integer invocation; no dynamic candidate or numerical library import"
+}

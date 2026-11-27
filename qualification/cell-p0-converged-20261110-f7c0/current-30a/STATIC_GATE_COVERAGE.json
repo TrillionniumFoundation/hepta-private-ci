@@ -1,0 +1,142 @@
+{
+  "schema": "hepta.p0.static-ci-coverage-readback.v1",
+  "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "recorded_at_utc": "2026-11-11T03:17:29.700028+00:00",
+  "files_read_from_exact_git_objects": {
+    ".github/workflows/blocking-ci.yml": {
+      "bytes": 10714,
+      "sha256": "8f8a6f2d91436e03121adc0bf65ded4c45ea03e92d267632ab84b46da81f63c9"
+    },
+    ".github/workflows/rust-ci.yml": {
+      "bytes": 12575,
+      "sha256": "fff175d957a2de7c7a4976d066ac95098c7bc5ef30d3196131375e10a06b17d3"
+    },
+    ".github/workflows/bazel.yml": {
+      "bytes": 21878,
+      "sha256": "11d5ced3d41620e82e3aa57e842d219dfbd7cc6ddb4027266472987aff99ad89"
+    },
+    ".github/workflows/hepta-architecture-convergence.yml": {
+      "bytes": 21212,
+      "sha256": "f716b0941f6e47aa72b94d97f80d157e24273c38652d45eb9c1eb3ff1e39b6ac"
+    },
+    ".github/workflows/hepta-shared-framework.yml": {
+      "bytes": 4625,
+      "sha256": "7d3013696084d55222eacdaacbea5ead11520afeee53b7d104b398e8531e48a5"
+    },
+    "scripts/hepta_ci_scope.py": {
+      "bytes": 10734,
+      "sha256": "0624e919517198d5275c33af957ea2e9f141d45bc8b59c9133946cd0aadcc80b"
+    },
+    "scripts/hepta_ci_dependencies.py": {
+      "bytes": 27417,
+      "sha256": "368ee16f9d7f11873574e19bf98d79ad8a26a589813e5bfdc8a6a148bcdd0527"
+    },
+    "defs.bzl": {
+      "bytes": 35087,
+      "sha256": "4e66b41eba180daab2b4e249501420c9c4bc33371d64746faf558b5a7276db09"
+    },
+    "codex-rs/hepta-matrix-sdk/BUILD.bazel": {
+      "bytes": 1172,
+      "sha256": "c5869095c67b34621a19a461b3554262677712d5b71fa87a24c49fe338f805eb"
+    },
+    "codex-rs/rmcp-client/BUILD.bazel": {
+      "bytes": 187,
+      "sha256": "4107d4970eb5175d64652057d17613869a30379575d212adfb55ceb738493d80"
+    },
+    "codex-rs/core/BUILD.bazel": {
+      "bytes": 2828,
+      "sha256": "a4899fd63b037be198daf0d4ca59e58ade98b6382c63f351d4dedbfb8bd8e823"
+    },
+    "codex-rs/hepta-matrixd/src/runner.rs": {
+      "bytes": 39877,
+      "sha256": "e620235a83a92a5946a09192c01db3e5aedf0d006d29beb4214b30e70cd417ee"
+    },
+    "codex-rs/hepta-matrixd/src/runner_startup_tests.rs": {
+      "bytes": 10611,
+      "sha256": "3761b9e7634eabccb2f2d072b4b50c4d2a1a0cd183b6283d41584dc8a17d41fb"
+    }
+  },
+  "findings": [
+    {
+      "claim": "Changes to MODULE.bazel, core sources and workflows statically require full_repo in the scope selector; await the actual scope output.",
+      "evidence": "scripts/hepta_ci_scope.py:138-180; .github/workflows/blocking-ci.yml:88-136",
+      "execution_claim": false
+    },
+    {
+      "claim": "full_repo selects Bazel and suppresses the alternate hepta-scoped Cargo reverse-consumer lane.",
+      "evidence": ".github/workflows/blocking-ci.yml:88-136",
+      "execution_claim": false
+    },
+    {
+      "claim": "The normal rust-ci PR bundle is metadata, formatting, benchmark smoke, cargo-shear and conditional lint tooling tests, not full workspace native tests.",
+      "evidence": ".github/workflows/rust-ci.yml:79-226",
+      "execution_claim": false
+    },
+    {
+      "claim": "Architecture commands select named architecture functions/packages; they do not directly request Matrix SDK, RMCP-client, or core test targets.",
+      "evidence": ".github/workflows/hepta-architecture-convergence.yml:206-259",
+      "execution_claim": false
+    },
+    {
+      "claim": "Shared directly requests automation, neuron and agentd lib tests; transitive library compilation does not establish dependency test execution.",
+      "evidence": ".github/workflows/hepta-shared-framework.yml:81-97",
+      "execution_claim": false
+    },
+    {
+      "claim": "Ordinary Bazel CI selects //... except standalone V8 and certain separately invoked targets, with test caching permitted; only operator acceptance explicitly disables test-result caching.",
+      "evidence": ".github/workflows/bazel.yml:91-144",
+      "execution_claim": false
+    },
+    {
+      "claim": "The codex_rust_crate macro creates public unit-test wrappers and integration test targets from tests/*.rs; the private rust_test binary manual tag is not a skip of the public wrapper.",
+      "evidence": "defs.bzl:362-424,563-667",
+      "execution_claim": false
+    },
+    {
+      "claim": "Core has separately sharded unit and all-test targets; the bounded transcript regression is in unit tests.",
+      "evidence": "codex-rs/core/BUILD.bazel:51-56; codex-rs/core/src/unified_exec/async_watcher_tests.rs:87",
+      "execution_claim": false
+    },
+    {
+      "claim": "MatrixSdkError named references are restricted to the recorded six source files. Matrixd transparent wrapper derives Debug/Error and its startup classification assertion uses matches; this does not prove compilation of all inferred uses or external consumers.",
+      "evidence": "immutable git grep, matrixd/src/runner.rs:928-961, runner_startup_tests.rs:210-215",
+      "execution_claim": false
+    }
+  ],
+  "named_matrix_error_reference_files": [
+    "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-matrix-sdk/src/lib.rs",
+    "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-matrix-sdk/src/sdk.rs",
+    "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-matrix-sdk/src/sync.rs",
+    "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-matrix-sdk/src/sync_tests.rs",
+    "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-matrixd/src/runner.rs",
+    "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-matrixd/src/runner_startup_tests.rs"
+  ],
+  "targets_to_observe": [
+    "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+    "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+    "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests",
+    "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+    "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+    "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+    "//codex-rs/core:core-unit-tests",
+    "//codex-rs/core:core-all-test"
+  ],
+  "exact_cases_to_observe": [
+    "encrypted_state_identity_session_and_queues_survive_restart",
+    "legacy_oauth_discovery_rejects_authorization_metadata_redirect_cycles",
+    "legacy_oauth_discovery_rejects_cross_origin_authorization_metadata_redirects",
+    "legacy_oauth_discovery_rejects_cross_origin_resource_metadata_redirects",
+    "output_transcript_survives_lagged_deltas_polling_and_late_output"
+  ],
+  "identity_boundaries": [
+    "Source-head and synthetic/base-merge tested commits must be recorded separately, even when trees match.",
+    "Six training-stage case definitions are not evidence of execution; require actual exact-source JUnit/output.",
+    "Cached Bazel target PASS is not a fresh case execution count.",
+    "A skipped/pending/queued target is not a pass.",
+    "Static coverage does not establish typechecking, runtime behavior or scientific adoption."
+  ],
+  "new_native_jobs": 0,
+  "new_ci_runs_started": 0,
+  "source_changes": 0
+}

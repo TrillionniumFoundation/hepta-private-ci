@@ -1,0 +1,11 @@
+# Fixed process and retained-output budget
+
+One stdlib parent and one reexecuted stdlib child, no descendants or native/model libraries. Child hard CPU4s, alarm30s including exec, AS128MiB and FSIZE2MiB. Parent polls owned wait4 and kills/reaps its one child at observed32s from supervisor start. Caught supervisor exceptions also kill/reap; outputs suppressed in child and top-level parent exceptions emit only exit2. Existing shared lock opened rb, not created or replaced. No separate fault/kill experiment is authorized in this candidate.
+
+Unchanged parser caps compressed128KiB, decoded2MiB,1797real rows,65tokens/row,32bytes/token,2144bytes/line. Unknown real lexical compatibility remains an honest risk. Worker retains blob/decoded structures/group/serialization simultaneously;128MiB runtime fit is not proven from synthetic results. No retry if memory or other budget fails.
+
+Published private payloads plus COMPLETE must total <=4MiB-65536 BEFORE publish. Child RESULT<=16384bytes; parent WAIT4_RECEIPT<=49152bytes. Thus total retained attempted run files<=4MiB by source construction, including partial outputs. Individual publish/RESULT/receipt files<=2MiB. Source/docs/freeze and independent reviews outside RUN_ONCE are not counted as runtime retained outputs; disclose their separate cost. All writes exclusive, never overwrite. Failure does not clean up data.
+
+Child wait4 user+system CPU is whole child lifetime including startup and teardown; do not add nested build costs again. Parent time.process_time captures observed process CPU prefix including interpreter startup, but final receipt serialization/write/teardown is unknown and nonzero. Wall prefix excludes that tail. No strict whole-process-tree CPU/wall cap or all-in timing claim. Source/review/tool work and saved reconstruction additional.
+
+Normal exception cleanup is source-reviewed, not experimentally kill-qualified. External unhandled SIGTERM/SIGKILL of supervisor can release lock before child ends and prevent reap; child alarm and hard resource limits remain but no parent-death guarantee. Trust system interpreter/stdlib and cooperative filesystem. These limitations must be accepted explicitly at admission; they are not corrected by a normal success.

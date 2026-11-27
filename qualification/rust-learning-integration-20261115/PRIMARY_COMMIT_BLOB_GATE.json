@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python",
+    "scripts/check_blob_size.py",
+    "--base",
+    "b6a5e15aa4b05ddfe63c88cb870de85c19a87214",
+    "--head",
+    "1c20347f3d01c32201c6e2f8469437f55817b6c9",
+    "--max-bytes",
+    "512000",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "head": "1c20347f3d01c32201c6e2f8469437f55817b6c9",
+  "started_at": "2026-11-15T16:18:20.684350+00:00",
+  "completed_at": "2026-11-15T16:18:28.362232+00:00",
+  "elapsed_s": 7.677901130000464,
+  "exit_code": 0,
+  "log_file": "PRIMARY_COMMIT_BLOB_GATE.log.gz",
+  "log_uncompressed_sha256": "a63babcbcfcaf6b1798d1bfd200148f175324e65a10d8aaf44e3c402d35df0c2"
+}

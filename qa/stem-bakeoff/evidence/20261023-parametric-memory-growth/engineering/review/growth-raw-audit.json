@@ -1,0 +1,799 @@
+{
+  "audit_passed": true,
+  "audit_python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "audit_script_sha256": "de8430fc1e3bba41702dcd9d2d7dc272f0d7b233d9d3658ed91e4fe1df70af99",
+  "audited_at_utc": "2026-10-23T08:03:01.443558+00:00",
+  "check_count": 75,
+  "checks": [
+    {
+      "name": "protocol equals independently registered fixed recipe",
+      "passed": true
+    },
+    {
+      "name": "protocol and source identity match pre-output witness",
+      "passed": true
+    },
+    {
+      "name": "independent witness preceded selection and final workers",
+      "passed": true
+    },
+    {
+      "name": "source identity before equals after with frozen HEAD",
+      "passed": true
+    },
+    {
+      "name": "source inventory is complete for registered source directories",
+      "passed": true
+    },
+    {
+      "name": "every recorded source byte matches frozen commit and current file",
+      "passed": true
+    },
+    {
+      "name": "independent source/provenance fixture pins",
+      "passed": true
+    },
+    {
+      "name": "run provenance matches pinned fixture",
+      "passed": true
+    },
+    {
+      "name": "all published frontiers match pinned withdrawal view",
+      "passed": true
+    },
+    {
+      "name": "actual facts equal pinned old cohort plus fixed incoming shuffle",
+      "passed": true
+    },
+    {
+      "name": "actual parent matches independently witnessed parent directory",
+      "passed": true
+    },
+    {
+      "name": "parent: manifest/config/tensor pins",
+      "passed": true
+    },
+    {
+      "name": "parent: actual tensor layout and private bytes",
+      "passed": true
+    },
+    {
+      "name": "parent: actual adapter state digest",
+      "passed": true
+    },
+    {
+      "name": "full parent inventory unchanged from independent witness",
+      "passed": true
+    },
+    {
+      "name": "clean parent lineage excludes retired and revoked ancestors",
+      "passed": true
+    },
+    {
+      "name": "nochange: exact candidate count",
+      "passed": true
+    },
+    {
+      "name": "nochange-0: lineage and version roots disjoint from revocation",
+      "passed": true
+    },
+    {
+      "name": "single: exact candidate count",
+      "passed": true
+    },
+    {
+      "name": "single-0: fixed checkpoint path",
+      "passed": true
+    },
+    {
+      "name": "single-0: manifest/config/tensor pins",
+      "passed": true
+    },
+    {
+      "name": "single-0: actual tensor layout and private bytes",
+      "passed": true
+    },
+    {
+      "name": "single-0: actual adapter state digest",
+      "passed": true
+    },
+    {
+      "name": "single-0: actual schedule and exact exposure",
+      "passed": true
+    },
+    {
+      "name": "single-0: source-only measured warm-parent write",
+      "passed": true
+    },
+    {
+      "name": "single-0: lineage and version roots disjoint from revocation",
+      "passed": true
+    },
+    {
+      "name": "split: exact candidate count",
+      "passed": true
+    },
+    {
+      "name": "split-0: fixed checkpoint path",
+      "passed": true
+    },
+    {
+      "name": "split-0: manifest/config/tensor pins",
+      "passed": true
+    },
+    {
+      "name": "split-0: actual tensor layout and private bytes",
+      "passed": true
+    },
+    {
+      "name": "split-0: actual adapter state digest",
+      "passed": true
+    },
+    {
+      "name": "split-0: actual schedule and exact exposure",
+      "passed": true
+    },
+    {
+      "name": "split-0: source-only measured warm-parent write",
+      "passed": true
+    },
+    {
+      "name": "split-0: lineage and version roots disjoint from revocation",
+      "passed": true
+    },
+    {
+      "name": "split-1: fixed checkpoint path",
+      "passed": true
+    },
+    {
+      "name": "split-1: manifest/config/tensor pins",
+      "passed": true
+    },
+    {
+      "name": "split-1: actual tensor layout and private bytes",
+      "passed": true
+    },
+    {
+      "name": "split-1: actual adapter state digest",
+      "passed": true
+    },
+    {
+      "name": "split-1: actual schedule and exact exposure",
+      "passed": true
+    },
+    {
+      "name": "split-1: source-only measured warm-parent write",
+      "passed": true
+    },
+    {
+      "name": "split-1: lineage and version roots disjoint from revocation",
+      "passed": true
+    },
+    {
+      "name": "all private parameter/checkpoint/update cost vectors exact",
+      "passed": true
+    },
+    {
+      "name": "matched work with explicitly doubled split parameters",
+      "passed": true
+    },
+    {
+      "name": "nochange: source selection wording and complete rows",
+      "passed": true
+    },
+    {
+      "name": "single: source selection wording and complete rows",
+      "passed": true
+    },
+    {
+      "name": "split: source selection wording and complete rows",
+      "passed": true
+    },
+    {
+      "name": "source choice independently recomputed without final scores",
+      "passed": true
+    },
+    {
+      "name": "exact four fresh worker requests and journals",
+      "passed": true
+    },
+    {
+      "name": "exact four routed calls",
+      "passed": true
+    },
+    {
+      "name": "nochange-0: closed worker input contains only keys/weights/questions",
+      "passed": true
+    },
+    {
+      "name": "nochange-0: journal bound to actual request and tensor bytes",
+      "passed": true
+    },
+    {
+      "name": "nochange-0: ordered unmodified raw generations",
+      "passed": true
+    },
+    {
+      "name": "nochange-0: admitted routing and unwritten diagnostic scope",
+      "passed": true
+    },
+    {
+      "name": "single-0: closed worker input contains only keys/weights/questions",
+      "passed": true
+    },
+    {
+      "name": "single-0: journal bound to actual request and tensor bytes",
+      "passed": true
+    },
+    {
+      "name": "single-0: ordered unmodified raw generations",
+      "passed": true
+    },
+    {
+      "name": "single-0: admitted routing and unwritten diagnostic scope",
+      "passed": true
+    },
+    {
+      "name": "split-0: closed worker input contains only keys/weights/questions",
+      "passed": true
+    },
+    {
+      "name": "split-0: journal bound to actual request and tensor bytes",
+      "passed": true
+    },
+    {
+      "name": "split-0: ordered unmodified raw generations",
+      "passed": true
+    },
+    {
+      "name": "split-0: admitted routing and unwritten diagnostic scope",
+      "passed": true
+    },
+    {
+      "name": "split-1: closed worker input contains only keys/weights/questions",
+      "passed": true
+    },
+    {
+      "name": "split-1: journal bound to actual request and tensor bytes",
+      "passed": true
+    },
+    {
+      "name": "split-1: ordered unmodified raw generations",
+      "passed": true
+    },
+    {
+      "name": "split-1: admitted routing and unwritten diagnostic scope",
+      "passed": true
+    },
+    {
+      "name": "selection file predates every final worker request",
+      "passed": true
+    },
+    {
+      "name": "all final old/new/all recalls recomputed exactly",
+      "passed": true
+    },
+    {
+      "name": "durable owner frontier and four activated versions",
+      "passed": true
+    },
+    {
+      "name": "owner active metadata binds every actual worker checkpoint",
+      "passed": true
+    },
+    {
+      "name": "reported gate values equal raw-evidence recomputation",
+      "passed": true
+    },
+    {
+      "name": "negative or positive outcome retained with corresponding exit status",
+      "passed": true
+    },
+    {
+      "name": "reported storage and optimizer costs match physical artifacts",
+      "passed": true
+    },
+    {
+      "name": "inherited parent costs agree with exact retained write receipt",
+      "passed": true
+    },
+    {
+      "name": "all broader claims remain explicitly unaccepted",
+      "passed": true
+    },
+    {
+      "changed_paths": [],
+      "name": "all consumed evidence bytes unchanged during audit",
+      "passed": true
+    }
+  ],
+  "expected_git_head": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+  "input_file_inventory": {
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/citation_audit.py": {
+      "bytes": 9045,
+      "mtime_ns": 1792735415085461759,
+      "sha256": "3438ed19b0dc6a5005511066e400234aea6a269da7c1eb8e0e6a0bae2a67a9d9"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/event_projection.py": {
+      "bytes": 5843,
+      "mtime_ns": 1792735257965000088,
+      "sha256": "acded45612e6e5b39673fef62580cf3168ae59f4322bad19d169ded768fcd696"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/experience_inference.py": {
+      "bytes": 2141,
+      "mtime_ns": 1792735258185006347,
+      "sha256": "278d9e485544d31037482a6ecc49e4985dc5ec8a5f141293665bcd352bdcceaf"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/grounded_protocol.py": {
+      "bytes": 7383,
+      "mtime_ns": 1792735258345010899,
+      "sha256": "b1292d6974ba5644a9ea9bd39297d16c7c17be6a0546ae023b73c593fabb76de"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/native.py": {
+      "bytes": 13285,
+      "mtime_ns": 1792735411837368741,
+      "sha256": "523389c9df28280b8fffe070f02af38bbcf1a1507130c914ced4163295c4cbd1"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/parametric_cohort.py": {
+      "bytes": 2084,
+      "mtime_ns": 1792736851733780123,
+      "sha256": "fad36043c7273cbd33b34d8d6b2b4ec504016cc547907bd3eee0d573fca0624b"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/parametric_evolution.py": {
+      "bytes": 15093,
+      "mtime_ns": 1792740778580641535,
+      "sha256": "b3ccbf6725c63b87e424a2958f03d689f1e6448fdadf0381c4cbb91301760cbc"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/parametric_lifecycle_trial.py": {
+      "bytes": 7053,
+      "mtime_ns": 1792736851729780011,
+      "sha256": "ae9a642bb8e10f4b4ac73628958a9c2822c51275ddaef11c96ac0471ad16fedc"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/parametric_metrics.py": {
+      "bytes": 9872,
+      "mtime_ns": 1792736851729780011,
+      "sha256": "e593dd4f2f765d3a38ab4cb34193ff7387f1fda58d66e2e144194fdc12c281de"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/parametric_model.py": {
+      "bytes": 20784,
+      "mtime_ns": 1792736851733780123,
+      "sha256": "d3af2483ddcf66f830d1ea440405da8b03cca1f850069ffb5c5272c3d6c89760"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/parametric_network_trial.py": {
+      "bytes": 3537,
+      "mtime_ns": 1792736851729780011,
+      "sha256": "ec2199b74bdf624e5697bca114a1f2572ef9fcce4a93b38c962b5fe67cb2d424"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/parametric_owner.py": {
+      "bytes": 11800,
+      "mtime_ns": 1792741586147272977,
+      "sha256": "8525d074ee5cb817f8eb5f94d40039a2598c293c9f362653a04606b07e3ac672"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/parametric_trial.py": {
+      "bytes": 13628,
+      "mtime_ns": 1792736851729780011,
+      "sha256": "60d7a8e25ac35921b12ba8ff3b14765b989e93ab73d5115d2aa973ab19fba942"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/parametric_worker.py": {
+      "bytes": 3780,
+      "mtime_ns": 1792736851729780011,
+      "sha256": "8c06a1b6b18e98c92b4c09ddad80de2f5f3db9f140085618a8c1931a64e39366"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/prepare_parametric.py": {
+      "bytes": 3510,
+      "mtime_ns": 1792735769743372130,
+      "sha256": "ff0b1aa9b2eea7f6f1c3c64782a2b4118ef92bcbd6b8531651f15d723ced4ab2"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/pretrained.py": {
+      "bytes": 17065,
+      "mtime_ns": 1792735410605332973,
+      "sha256": "bd01b8596f5158ae587c9535ef34fcf66d6ce1c76b679cfb78c329b3448ac03a"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/sessions.py": {
+      "bytes": 5592,
+      "mtime_ns": 1792735412909399864,
+      "sha256": "82ad3363cda9ed9d155487a96e0dc409ad66253cf0694498c807c4d1b10baec4"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/source_binding_margin.py": {
+      "bytes": 9687,
+      "mtime_ns": 1792735259189034909,
+      "sha256": "8fb1452baf2b17a501bd53fda6647546bde2607946a7ec4f2beb38798c902da8"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/source_completion_loss.py": {
+      "bytes": 3931,
+      "mtime_ns": 1792735259353039575,
+      "sha256": "c01b67f32fd5fa309dad15e055176fc17b4acae09c1e8315b45d9e991eb3430b"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/tensor_contract.py": {
+      "bytes": 7856,
+      "mtime_ns": 1792741586143272865,
+      "sha256": "9060f62579de6ed0feea7b8ec9cbd066552308c6371ecbd2fb00309d9ddd244a"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/test_parametric_evolution.py": {
+      "bytes": 7908,
+      "mtime_ns": 1792740762368205380,
+      "sha256": "f7110f10ee8cbd60d454a1c26bd28be77f343c40187a01950fb2258aae1bda6a"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/test_parametric_model.py": {
+      "bytes": 14898,
+      "mtime_ns": 1792736851733780123,
+      "sha256": "96c40b58a86db45e0ab86891a22d3266c7a3ccea364f817d414ee55549ba6ea2"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/test_parametric_owner.py": {
+      "bytes": 11023,
+      "mtime_ns": 1792736851733780123,
+      "sha256": "ed98463dd703ea143ec98b46a1bfe5e184a8aca821328e31d749f22ebaae4369"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/test_parametric_transport.py": {
+      "bytes": 6865,
+      "mtime_ns": 1792736851733780123,
+      "sha256": "c1b19652d307771fc7577988e12ff437d7da9c791be4f26a49803bff471f460a"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_catalog/metadata_catalog.py": {
+      "bytes": 5603,
+      "mtime_ns": 1792739321123466723,
+      "sha256": "dd0056057a91b084b349eecb975cafe5a0f62e3d95f0ca82b557aa549339538f"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_catalog/test_metadata_catalog.py": {
+      "bytes": 8433,
+      "mtime_ns": 1792739321123466723,
+      "sha256": "d01f3a1116699eec2158218daa686cb413c577becf14269f6cbfd4b9f293dcf2"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_growth/fixtures/clean-replay-facts.json": {
+      "bytes": 3093,
+      "mtime_ns": 1792741017580554429,
+      "sha256": "1e2ee44982654500732596e6d41e4f7222702ce3b187f2eb1fced0c24afd70ce"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_growth/fixtures/parent-provenance.json": {
+      "bytes": 1396,
+      "mtime_ns": 1792741017584045167,
+      "sha256": "ac920436b96e5dd9e2646add53db932d63b8d0f890a9675c9eca1beb587f430d"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_growth/growth_policy.py": {
+      "bytes": 4180,
+      "mtime_ns": 1792741586143272865,
+      "sha256": "0144c72537f2ea9612e826d5d55a32339a830701c9191cf637c353402250ed2b"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_growth/growth_protocol.py": {
+      "bytes": 5451,
+      "mtime_ns": 1792741586143272865,
+      "sha256": "8ecd68ac2ea8cacf9da29d7cf09adfcc186be39667ec6c7b8bff161d72152a84"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_growth/growth_reads.py": {
+      "bytes": 5520,
+      "mtime_ns": 1792741586147272977,
+      "sha256": "465aa4c4e548a8b5fa08e04f9af771f67a859fe73e515b041be0f0a97b8c1401"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_growth/growth_runtime.py": {
+      "bytes": 10488,
+      "mtime_ns": 1792741586143272865,
+      "sha256": "e9aa7bddf365cafffafdccb351d7a01cd5b31cf97c0da5a21b6d5a3a3e7634ac"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_growth/growth_trial.py": {
+      "bytes": 11343,
+      "mtime_ns": 1792741586143272865,
+      "sha256": "4eb1ae6d4ae5fbe4e00d9da98a4515fef3a7b38872e43f502714064c32d89d57"
+    },
+    "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell_growth/test_growth.py": {
+      "bytes": 12442,
+      "mtime_ns": 1792741586147272977,
+      "sha256": "7b1365043e57a4ddf71d03cfaf3ab04a2399cc905cab6792833f5c3ddf0a6bee"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-next-20261023/review/growth-parent-precompletion-witness.json": {
+      "bytes": 1008,
+      "mtime_ns": 1792742039504605624,
+      "sha256": "aa6e3b56b054d154bbf061ed6912bb3c7387a1a0a4680f41b04a1a0e6dfb5ac6"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-next-20261023/review/growth-precompletion-witness.json": {
+      "bytes": 7734,
+      "mtime_ns": 1792742010930868828,
+      "sha256": "1a13849263fa63ac88e8e7c084f0ee3079b1f8d79f1d53876a30baac21e68935"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/confirmation-001/lifecycle/rebuilt-cell/README.md": {
+      "bytes": 5214,
+      "mtime_ns": 1792738632138690663,
+      "sha256": "4c18d43e410c6b66f6692a19d4b40303500ba91bffaed7335b1f9a60dc802b47"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/confirmation-001/lifecycle/rebuilt-cell/adapter_config.json": {
+      "bytes": 863,
+      "mtime_ns": 1792738632150954685,
+      "sha256": "5d8a08fbf6fd033b60c54ba1e3e4cbad0b12ce58d3d4c50d125546788c706fe8"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/confirmation-001/lifecycle/rebuilt-cell/adapter_model.safetensors": {
+      "bytes": 1858776,
+      "mtime_ns": 1792738632148085872,
+      "sha256": "bac9fe588949207b6770604adfc86809e80b5aeb1e1ff0ad5b3a2ffe15c8edfb"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/confirmation-001/lifecycle/rebuilt-cell/lineage.json": {
+      "bytes": 45743,
+      "mtime_ns": 1792738632154638552,
+      "sha256": "c273d4555cc0dbb105fc38a674ac6963a43cf48c58d9fced6a38e373759c2e05"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/precommitted-selection.json": {
+      "bytes": 13544,
+      "mtime_ns": 1792742490742090557,
+      "sha256": "bf253f7915e80344dfddc933649a18d241e7698beadf22b4e240445c6bd259fc"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/single-0.write.json": {
+      "bytes": 26955,
+      "mtime_ns": 1792742207563955773,
+      "sha256": "32be89f6ca92e9443a80aa8562876ebe3fcd7e8147ee0a15913cba5b89f97e91"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/single-0/README.md": {
+      "bytes": 5214,
+      "mtime_ns": 1792742207543479299,
+      "sha256": "4c18d43e410c6b66f6692a19d4b40303500ba91bffaed7335b1f9a60dc802b47"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/single-0/adapter_config.json": {
+      "bytes": 863,
+      "mtime_ns": 1792742207556066553,
+      "sha256": "c7cee38ae95192c31c55871069b5c2a05243a0f46385893e52a72c9b53e32ddb"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/single-0/adapter_model.safetensors": {
+      "bytes": 1858776,
+      "mtime_ns": 1792742207552445234,
+      "sha256": "816e744d624d577dd3c604427dfe4bc1016b6b92429b113f9e50e0a6828c4d60"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/single-0/lineage.json": {
+      "bytes": 51334,
+      "mtime_ns": 1792742207559780188,
+      "sha256": "b5e89f50473cfac7c65f33a1a82095fb5f569c40a30bbf8cacad7efa5301d125"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/source-selection-generations.json": {
+      "bytes": 112589,
+      "mtime_ns": 1792742490208460470,
+      "sha256": "9962683bec2ccb258e55489369989bf0a39ab5b7166311d26f7ce723ff64c275"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-0.write.json": {
+      "bytes": 14989,
+      "mtime_ns": 1792742334220712653,
+      "sha256": "1e4c3a769d1e133572a4adcf293183cfb1a0c5a140e954147274dade7445a9ca"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-0/README.md": {
+      "bytes": 5214,
+      "mtime_ns": 1792742334205130458,
+      "sha256": "4c18d43e410c6b66f6692a19d4b40303500ba91bffaed7335b1f9a60dc802b47"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-0/adapter_config.json": {
+      "bytes": 863,
+      "mtime_ns": 1792742334214309239,
+      "sha256": "c7cee38ae95192c31c55871069b5c2a05243a0f46385893e52a72c9b53e32ddb"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-0/adapter_model.safetensors": {
+      "bytes": 1858776,
+      "mtime_ns": 1792742334212038536,
+      "sha256": "d1d5d632f2f34b69004e8097e94a35e1d42b40cc845c076cae020838d9a794de"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-0/lineage.json": {
+      "bytes": 37058,
+      "mtime_ns": 1792742334217354504,
+      "sha256": "e748fb6f090057ef6c88670bb1a135c379eb202865ec30b60ca66a27b39d3ed8"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-1.write.json": {
+      "bytes": 15707,
+      "mtime_ns": 1792742460185481932,
+      "sha256": "9c866be682eec8e571ed1fbdeb52c67cd97d947284f796374fb488ebfaeec9f9"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-1/README.md": {
+      "bytes": 5214,
+      "mtime_ns": 1792742460170725988,
+      "sha256": "4c18d43e410c6b66f6692a19d4b40303500ba91bffaed7335b1f9a60dc802b47"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-1/adapter_config.json": {
+      "bytes": 863,
+      "mtime_ns": 1792742460179710364,
+      "sha256": "c7cee38ae95192c31c55871069b5c2a05243a0f46385893e52a72c9b53e32ddb"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-1/adapter_model.safetensors": {
+      "bytes": 1858776,
+      "mtime_ns": 1792742460175609200,
+      "sha256": "79f8580e4ab96d2b86feff95048ad37bf0577d3134ee0db2557410be50aaa862"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-1/lineage.json": {
+      "bytes": 38886,
+      "mtime_ns": 1792742460182423948,
+      "sha256": "ff61674d9344761b2ed988dbe52daa071a4dbaa74a02b4c85575ef2a605d2a58"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/final/nochange-0.journal.json": {
+      "bytes": 39346,
+      "mtime_ns": 1792742507392268912,
+      "sha256": "75729acb589107435213d809695d8bd88d67c67fedae234131b31f9c946a5e72"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/final/nochange-0.request.json": {
+      "bytes": 2719,
+      "mtime_ns": 1792742490766985304,
+      "sha256": "8de861d023c5c5077db7ba03d34340f8102b59bdf8c4c2916f0f14d44955ce74"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/final/owner-frontier.json": {
+      "bytes": 218,
+      "mtime_ns": 1792742490743500649,
+      "sha256": "5ccd00ac506aa2c82cb578103ba065061406f72026bc44ed54e3d993d9230585"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/final/result.json": {
+      "bytes": 13410,
+      "mtime_ns": 1792742551032566041,
+      "sha256": "990cc1e4f33c88644ee750ab28c183795193c3482ab2fcced84fe1e0145ae7b0"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/final/single-0.journal.json": {
+      "bytes": 39379,
+      "mtime_ns": 1792742525434683168,
+      "sha256": "7c19b1a9fdab666f2628598a1d04ea74ef3720f5e3e0717d672b752ef345cdbb"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/final/single-0.request.json": {
+      "bytes": 3803,
+      "mtime_ns": 1792742507434042048,
+      "sha256": "5aadc36815d73ff83041f49bdf68505fbe10670991704bb5e9299ab4d195fb14"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/final/split-0.journal.json": {
+      "bytes": 20053,
+      "mtime_ns": 1792742538780496900,
+      "sha256": "f6222bc8c6f8136c44d8588a4f29d676243d076b5481014ea8b03e13bf3f8e74"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/final/split-0.request.json": {
+      "bytes": 2092,
+      "mtime_ns": 1792742525469479845,
+      "sha256": "127c6fc53665e0f51a8f44a72e8d76d0750203f1884b45c9b027fc39c65fba04"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/final/split-1.journal.json": {
+      "bytes": 20086,
+      "mtime_ns": 1792742551021404733,
+      "sha256": "6a0c8ea7d62f6249502d3eaaa3a040569e7c7fb10d01f6392fd6323e83195a11"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/final/split-1.request.json": {
+      "bytes": 3172,
+      "mtime_ns": 1792742538817560840,
+      "sha256": "dae1accf824e0741655b9c5dd80b9981873ac43f07b8e1c1616171916546f726"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/model-acquisition.json": {
+      "bytes": 1246,
+      "mtime_ns": 1792741946532084827,
+      "sha256": "7dd34f8401f7d4fb81cbfb8f580a728c46259ef3ebf04d93cecb2d893f345c53"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/parent-provenance.json": {
+      "bytes": 1396,
+      "mtime_ns": 1792741946145526942,
+      "sha256": "ac920436b96e5dd9e2646add53db932d63b8d0f890a9675c9eca1beb587f430d"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/protocol.json": {
+      "bytes": 1786,
+      "mtime_ns": 1792741946136465325,
+      "sha256": "8322b945a6d89215552a0ca4a0ab7088fd6d157850c6e40190ea49d3efd696cc"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/result.json": {
+      "bytes": 6768,
+      "mtime_ns": 1792742551046320962,
+      "sha256": "1cad1bbfcdd790dd20bee3b0d61bb5e48475d707729f06cfe1a917ed7c07b457"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/source-facts.json": {
+      "bytes": 6186,
+      "mtime_ns": 1792741946147354763,
+      "sha256": "1bfcb11a187e1be976d24f2d64db368b4669f22cdd52b7c8a4b95b45d0f54406"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/source-frontier.json": {
+      "bytes": 218,
+      "mtime_ns": 1792741946146516968,
+      "sha256": "5ccd00ac506aa2c82cb578103ba065061406f72026bc44ed54e3d993d9230585"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/source-identity-after.json": {
+      "bytes": 3971,
+      "mtime_ns": 1792742551043132441,
+      "sha256": "def360f09148a966855830e165db2c12ac29644be073da03344c616e36a1f743"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/source-identity.json": {
+      "bytes": 3971,
+      "mtime_ns": 1792741946143360490,
+      "sha256": "def360f09148a966855830e165db2c12ac29644be073da03344c616e36a1f743"
+    },
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/sqlite-baseline.json": {
+      "bytes": 6863,
+      "mtime_ns": 1792742551037379691,
+      "sha256": "d1e1d0f1b786c2f63f5a4027c2be90e7f98b608a80f421f26fdc5e04f61315a4"
+    }
+  },
+  "limits": [
+    "No model, optimizer, test suite, or production source was executed or modified by this audit.",
+    "The source write is checked from retained measured receipts and tensor bytes, not independently replayed.",
+    "Selection-byte preservation during final inference uses the reviewed frozen implementation's recorded check plus final file chronology; no external transaction trace exists.",
+    "File timestamps and local witness are local observations, not an authenticated external clock.",
+    "The frontier remains a pinned local snapshot; routing remains declared metadata; the result does not establish general memory or compression."
+  ],
+  "outcome": {
+    "actual_run_exit_code": 0,
+    "chosen_arm": "single",
+    "experiment_gate_passed": true,
+    "failed_experiment_gates": [],
+    "measured_candidate_costs": {
+      "nochange": {
+        "optimizer_steps": 0,
+        "private_parameter_bytes": 1843200,
+        "retained_checkpoint_bytes": 1910596
+      },
+      "single": {
+        "optimizer_steps": 480,
+        "private_parameter_bytes": 1843200,
+        "retained_checkpoint_bytes": 1916187
+      },
+      "split": {
+        "optimizer_steps": 480,
+        "private_parameter_bytes": 3686400,
+        "retained_checkpoint_bytes": 3805650
+      }
+    },
+    "raw_final_metrics": {
+      "nochange": {
+        "all": {
+          "correct": 15,
+          "exact_match": 0.5,
+          "total": 30
+        },
+        "new": {
+          "correct": 0,
+          "exact_match": 0.0,
+          "total": 15
+        },
+        "old": {
+          "correct": 15,
+          "exact_match": 1.0,
+          "total": 15
+        }
+      },
+      "single": {
+        "all": {
+          "correct": 30,
+          "exact_match": 1.0,
+          "total": 30
+        },
+        "new": {
+          "correct": 15,
+          "exact_match": 1.0,
+          "total": 15
+        },
+        "old": {
+          "correct": 15,
+          "exact_match": 1.0,
+          "total": 15
+        }
+      },
+      "split": {
+        "all": {
+          "correct": 30,
+          "exact_match": 1.0,
+          "total": 30
+        },
+        "new": {
+          "correct": 15,
+          "exact_match": 1.0,
+          "total": 15
+        },
+        "old": {
+          "correct": 15,
+          "exact_match": 1.0,
+          "total": 15
+        }
+      }
+    },
+    "raw_gate_values": {
+      "final_owner_admission": true,
+      "matched_training_steps": true,
+      "parent_unchanged": true,
+      "revoked_ancestry_disjoint": true,
+      "selected_new_recall": true,
+      "selected_old_recall": true,
+      "selected_preserves_parent_correct_old": true,
+      "selection_bytes_unchanged": true,
+      "selection_preceded_final_reads": true,
+      "source_identity_unchanged": true,
+      "sqlite_exact_recall": true
+    },
+    "selection_artifact_sha256": "bf253f7915e80344dfddc933649a18d241e7698beadf22b4e240445c6bd259fc",
+    "source_correct_counts": {
+      "nochange": 15,
+      "single": 30,
+      "split": 30
+    },
+    "source_manifest_sha256": "e27a70e290273ac321827e76c51143d59a4a869f655159c7fb2efa7a2041e3e9"
+  },
+  "production_accepted": false,
+  "run_directory": "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001",
+  "schema": "hepta.parametric-memory.independent-raw-growth-audit.v1"
+}

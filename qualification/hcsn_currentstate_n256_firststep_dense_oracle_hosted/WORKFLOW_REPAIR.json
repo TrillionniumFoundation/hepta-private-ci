@@ -1,0 +1,42 @@
+{
+  "schema": "hcsn-n256-workflow-registration-repair-v1",
+  "parent_commit": "3ddb45d203b4573d186bffbc7d1697c6e99e65e6",
+  "failed_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44257658151",
+  "failed_run_id": 44257658151,
+  "failed_run_jobs": 0,
+  "annotation": {
+    "path": ".github/workflows/hcsn-currentstate-n256-firststep-dense-oracle-hosted.yml",
+    "line": 36,
+    "message": "You have an error in your yaml syntax on line 36"
+  },
+  "cause": "The unquoted --only-binary=:all: command contains colon followed by space, which terminates a YAML plain scalar.",
+  "repair": "Folded block scalar preserves the intended pip command. The setup-python revision now matches the successful frozen runtime observation. Automatic admission is limited to PR opened and run_attempt == 1.",
+  "preserved": {
+    "request_sha256": "ab5141e3bfaefb3168f8f3ec858c8214c49bdf9f8764b0db5c41f37f3f26ab8a",
+    "runtime_sha256": "0625973f64197245273674586e60ce187571ef1f9d01bc52ea83a30beaa0ad06",
+    "oracle_source_sha256": "a3aa6a95cd55d254d9fa911d10768d1ec827e2374265a5b0474e0d6243929bfa",
+    "unique_execution_key": "hcsn-n256-firststep-dense-oracle-hosted-20261118-c06d-001",
+    "resource_policy_unchanged": true,
+    "input_and_numerical_source_unchanged": true
+  },
+  "verification": {
+    "yaml_parser": "PyYAML 6.0.3",
+    "original_yaml_rejected_at_line": 36,
+    "repaired_yaml_parsed": true,
+    "frozen_source_verifier_passed": true,
+    "normal_tests_passed": 4,
+    "optimized_tests_passed": 4,
+    "numeric_execution_during_repair": 0
+  },
+  "runner_setup_failure": {
+    "run_id": 44462321348,
+    "job_id": 135351817800,
+    "head_sha": "78789871bc28799614179a58ce5bb8a21cf6b4d6",
+    "observed_os": "Ubuntu 26.04.1",
+    "error": "The version '3.12.3' with architecture 'x64' was not found for Ubuntu 26.04.",
+    "launcher_step": "skipped",
+    "numerical_execution": 0,
+    "log_sha256": "0391e5333f4ffdfba06c71301598cc42bf99fee2aa36cee82b2d41799cd1d112",
+    "repair": "Pin ubuntu-24.04, matching the glibc2.39 frozen runtime observation; preserve runtime identity before fail-closed comparison."
+  }
+}

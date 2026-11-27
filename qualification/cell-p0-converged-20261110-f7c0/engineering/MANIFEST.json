@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.p0.component-engineering-evidence.v1",
+  "ordinary_merge_source_sha": "bad9b6490469106b8c98162878fa62feb616c20f",
+  "ordinary_merge_source_tree": "7d3c38bace915f27ab334d1a1f08647a30c97e90",
+  "training_owner_protected_source_sha": "18aaf83508c6b82d48aeabf0cd592a66af57de03",
+  "source_tests_timing": "138 tests before final owner formatting; final protected inventory verified separately; not a source-head native pass",
+  "legacy_probe_scope": "Original unmodified combine_output_receivers source; standalone probe with its own retained Cargo.lock, not the whole-repository native suite",
+  "files": {
+    "ordinary-merge-callers.json": {
+      "bytes": 99231,
+      "sha256": "333881c162a4ea90273497199a8dc8b054068529f42e8c4c57f405acaa767c10"
+    },
+    "training-owner-protected.json": {
+      "bytes": 344,
+      "sha256": "11b850adc0603691382cb24d0ecef2c677b459bd4490ab599824c31f149b2578"
+    },
+    "training-owner-source-tests.log": {
+      "bytes": 27120,
+      "sha256": "0b7f8557fa22d11c1b4c20ec5c612960ebfb655697bf4353bdfb9c8301d86f1b"
+    },
+    "legacy-output-probe.tar.gz": {
+      "bytes": 3874,
+      "sha256": "826e26b1e9fa555d777fdb6dc1bce630aa77a629032031d637d5d87a19ce2b25",
+      "members": {
+        "legacy-output-probe/Cargo.toml": {
+          "bytes": 278,
+          "sha256": "d4f1269a9d4ba2ca213a7c5b9596e86c7eb227c66e4d8756edb733a1d8ea8e9e"
+        },
+        "legacy-output-probe/Cargo.lock": {
+          "bytes": 8862,
+          "sha256": "7d66653dfcfac1c2ca59faeafa346b67c22c568f1556b9ec4560f63c5b5f7efa"
+        },
+        "legacy-output-probe/src/main.rs": {
+          "bytes": 1464,
+          "sha256": "a1d932d62eee304f844419cda23352eae86d873e21f3fdc7cb300cdab3ee82b4"
+        },
+        "legacy-output-probe.log": {
+          "bytes": 1448,
+          "sha256": "38aed026ccec1144aab1c344a31992b289943c2f5e6dc2c714e47c3892f47010"
+        }
+      }
+    }
+  }
+}

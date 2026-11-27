@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.strict-isolation-ci-provisioning.v1",
+  "failure": {
+    "published_head": "8576cdb382d6d49cfccb45d0b07e651fc7aa474e",
+    "job_id": 132877231792,
+    "observation": "The original strict bubblewrap invocation failed while configuring loopback: Failed RTM_NEWADDR: Operation not permitted.",
+    "host_observer_status": "SETUP_FAILED",
+    "prior_apparmor_attribution": "UNKNOWN; no kernel audit denial was available in the retained job output."
+  },
+  "change": {
+    "workflow": ".github/workflows/hepta-mem-python.yml",
+    "job": "causal-isolation",
+    "scope": "Ephemeral Ubuntu 24.04 CI namespace-tool provisioning only.",
+    "package": "apparmor-profiles",
+    "profile": "/usr/share/apparmor/extra-profiles/bwrap-userns-restrict",
+    "activation": "sudo apparmor_parser --replace",
+    "package_source": "Ubuntu's signed apt repositories, after apt-get update; profile bytes are not rewritten.",
+    "required_readbacks": [
+      "Installed package versions and profile package ownership",
+      "Exact profile bytes and SHA256",
+      "Unchanged kernel.apparmor_restrict_unprivileged_userns value before and after activation",
+      "Both bwrap and unpriv_bwrap loaded in enforce mode",
+      "Original read-only host observer and original eight required strict-isolation tests"
+    ],
+    "production_launcher_changed": false,
+    "strict_tests_changed": false,
+    "global_user_namespace_restriction_changed": false,
+    "CODEX_SANDBOX_environment_handling_changed": false
+  },
+  "reviewed_package": {
+    "version": "4.0.1really4.0.1-0ubuntu0.24.04.9",
+    "url": "https://archive.ubuntu.com/ubuntu/pool/main/a/apparmor/apparmor-profiles_4.0.1really4.0.1-0ubuntu0.24.04.9_all.deb",
+    "bytes": 39592,
+    "sha256": "90b02aa006eea7702cd4e851343e469e41365dda42145a3cb035de1d6c773b8c",
+    "profile_bytes": 1936,
+    "profile_sha256": "11d39094f044f0cda0febb3ad517b830301da6b2ce929664af09ee9e4dd264f9",
+    "abi": "4.0",
+    "review": "The official profile permits namespace construction by /usr/bin/bwrap and stacks unpriv_bwrap on the executed child. The child profile denies capabilities. This review used the Noble package, not the upstream ABI 5 profile.",
+    "inspection_host": "rog",
+    "inspection_job_id": "1a1e0522406-392-2a4a",
+    "inspection_exit_code": 0,
+    "installed_or_activated_on_operator_host": false
+  },
+  "primary_references": [
+    "https://packages.ubuntu.com/noble-updates/apparmor-profiles",
+    "https://packages.ubuntu.com/noble-updates/all/apparmor-profiles/filelist",
+    "https://packages.ubuntu.com/noble-updates/all/apparmor-profiles/download",
+    "https://documentation.ubuntu.com/release-notes/24.04/"
+  ],
+  "validation_status": "Pending actual CI execution. Successful package inspection is not a passing strict-isolation result."
+}

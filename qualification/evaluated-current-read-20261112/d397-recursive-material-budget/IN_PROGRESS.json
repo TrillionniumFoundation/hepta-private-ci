@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.recursive-material-budget.progress.v1",
+  "source_commit": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "source_tree": "57558558841da4a3209164d0033b903a553205d6",
+  "source_directory_tree": "b7ce37912f3c7348f6dc9f43955f3ebe2f9c776e",
+  "directory_entries": 930,
+  "truncated": false,
+  "status": "PAUSED_FOR_ACTUAL_THREE_WAY_FIXTURE_MERGE_STATIC_NOT_RUN",
+  "pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs",
+      "sha": "c0b38e367ca375bfe4382b275130b3781c5ff48b",
+      "bytes": 4209,
+      "sha256": "0d6c3602f4096e42fb3171b577c36efcc11e1826a9488c3e88f0cba293c4f8da"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner_read.rs",
+      "sha": "5d36c0856b08864b129434f3c15a67bd54fbc7cf",
+      "bytes": 2475,
+      "sha256": "c4e9d6d0c4d73816eed06b2a62ad442495518c666c56bd8d4572312dd7e1abc4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs",
+      "sha": "68b40418df15eada032a272d9732b38daa83e4a9",
+      "bytes": 7220,
+      "sha256": "c562908d496d29c893cd552e2e3cbe36e6785b0041254144b1a3742af73959bc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_current.rs",
+      "sha": "ff5ec108298daaf943dbd3365e2323f19994165a",
+      "bytes": 5643,
+      "sha256": "5ef5cd5b76a9c41b9421604f77c7f5a0caacc9c9f7f2211d8c260efe6cdeb44d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "sha": "2cdf18c555acf11301570d8a555b9f6a37e604bb",
+      "bytes": 14702,
+      "sha256": "b8aa1030f9106c3cea02e4d40d4053104032d65fe64e536815c150a123f6c3bc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "sha": "31010e80d331c7f32b84afb7c2b4f2edc63affb2",
+      "bytes": 11405,
+      "sha256": "d4bfc8c6e850ffc037deab60a3f0f5b004c75c48a0567e70cccda34d38733970"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "sha": "48a35b8c6aeac859c3fa9085bbaa0231a84008d3",
+      "bytes": 17192,
+      "sha256": "5093a9718644ccd84029c5c6d64b24cdf1536698ffda3824a74bdc5499b44b50"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "sha": "dc0b23e15625bdd6d5442555d259b3cacb12f9b6",
+      "bytes": 5695,
+      "sha256": "17ff6575d665e148c6e4f510a4a4c35dc326a7e0a163742d19acafb2d11d2c47"
+    }
+  ],
+  "verified_local_d397_facts": [
+    "Linux OriginalCellQ24TrainingStageV1::readback now invokes read_original_source_completion; effects retain old lanes.",
+    "begin_readonly_in_lane reads each retained E/D endpoint once and reads retained Material once; finish_readonly_in_lane repeats each once.",
+    "The source identity is a private Arc allocation. Before/tail values borrow the actually held OwnedSemaphorePermit; completion rechecks identity, clock and original signature windows after native/Generator tail I/O.",
+    "Successful captured Training readback therefore costs 2 frames per retained E/D/remote Material endpoint, versus old4.",
+    "Successful captured Candidate callback uses the same read_source_transaction and costs2, versus old6.",
+    "Candidate Current proof validates same completion/head digest/length on the actual material produced by the original SourceBound owner. It is not a fresh capability produced from stored bytes."
+  ],
+  "pending": [
+    "Read entire new Candidate client/service to account first full pages vs later Current calls and cancellation/remaining128.",
+    "Read actual new Root retained Selection/Version/C/attestation path and derive all N on this exact source.",
+    "Classify actual fixture independent Trainer clients versus consuming shared Trainer host builder.",
+    "Expand each endpoint once; old106/32 conditional top-level subtotal must not be added again if already expanded.",
+    "Count setup and effects, preserve500ms/300s and actual128 caps; no all-chain pass claimed."
+  ],
+  "history": {
+    "paused_draft_tree": "f5ebe4098d48f44077dfe4a344114bffa23d0777",
+    "paused_draft_manifest": "c4519f5b8854a3c76bcb0c13c278efc3579a91f4",
+    "old_recursive_audit": "db7d6352543f6075fbfbe5c5d89b2571dc5ceade",
+    "draft_disposition": "Superseded by actual upstream transaction design for implementation purposes; preserved as history, never integrated.",
+    "old_shared_evaluator_formula": "For the old exact consuming into_host_from_original_training_readback topology only: each Evaluator Readback issues8m+1 Training evidence reads, Execute8m+2, m=primary+retention. Not a universal fixture topology and not an extra term to blindly add to106.",
+    "fixture_report": "Peer timing independently identified old PublicationFixture panel uses distinct fixture Trainer clients; no claim that its internal B calls reach the external SourceBound Stage."
+  },
+  "owner_decision": null,
+  "scientific_outcome": "HOLD",
+  "no_actor_or_build_or_tests": true
+}

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+    "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -35,7 +35,8 @@
       "sourcePathExists": true,
       "designOperation": "consume_kv_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "c7c92cc3bca89e1cb4c070d21fe1fd79d217d688"
     },
     {
       "operation": "binding",
@@ -49,7 +50,8 @@
       "sourcePathExists": true,
       "designOperation": "binding",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "c7c92cc3bca89e1cb4c070d21fe1fd79d217d688"
     },
     {
       "operation": "lease_lifecycle_prepare",
@@ -63,7 +65,8 @@
       "sourcePathExists": true,
       "designOperation": "request_secret_lease/renew/revoke local durable intent",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "df1c9c2c5ec857d7d551cf834baaef0903a0939a"
     },
     {
       "operation": "lease_lifecycle_reconcile",
@@ -77,7 +80,8 @@
       "sourcePathExists": true,
       "designOperation": "ambiguous outcome reconciliation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "df1c9c2c5ec857d7d551cf834baaef0903a0939a"
     }
   ],
   "repositoryControlledGaps": [
@@ -103,5 +107,16 @@
   "sourceRoot": [
     "external/HeptaBao",
     "codex-rs/hepta-bao-adapter"
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-bao-adapter",
+    "external/HeptaBao"
   ]
 }

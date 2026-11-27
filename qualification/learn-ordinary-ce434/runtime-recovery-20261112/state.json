@@ -1,0 +1,64 @@
+{
+  "schema": "learn-runtime-recovery-evidence-v1",
+  "date": "2026-11-12",
+  "scope": "source and infrastructure recovery checkpoint; not an integrated-source qualification or ordinary-task acceptance",
+  "pr_head": "dd4b6c17344986a3a9379e372bf19d282f812a30",
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update_or_fallback": 0,
+    "fresh_session_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "primary_environment": {
+    "state": "unavailable",
+    "local_exec": "exec-server transport disconnected; platform environment marked unavailable",
+    "unknown_local_commit": "readonly agent git commit after staging the 32+57 merge did not return; no combined canonical source was published"
+  },
+  "fixed_source_lines": {
+    "artifact_head": "32c0160e60d377eb79983abc394832efce12c988",
+    "readonly_ready": "57ffff832355d75937045f240fed2c2d48783029",
+    "model_evaluator_merge": "97a40c2965e908988318a0a4fcf42c1239dcb52f",
+    "recovery_inputs_16_files": "e9d298232d937cd47c70948c6878d100c09e18bd",
+    "original_17_file_target_tree": "c53f8a1509ead5c5d42f5545c729636fd6c67689",
+    "original_17_file_target_tree_recovered": false,
+    "missing_original_manifest_blob": "833ba79180674f6d5a40ba97786787e627d11a48",
+    "new_manifest_generator_blob": "248aaee737fa3c5b9a697814271d2101050728fc",
+    "merge_resolver_commit": "7809c14bda29dc851c27fe801830a83579c068c4"
+  },
+  "earlier_original_observations": {
+    "source_4ce_full_caller": {
+      "source": "4ceb2fa080c52e5d23ee3a7428c65515418745fd",
+      "state": "passed",
+      "readback_before_environment_loss": true,
+      "result_bytes": 237762,
+      "result_sha256": "f1103ffbced480bc18561b2ea210b87069acb8869804ad4d4cac7282798adb02",
+      "raw_log_bytes": 225266,
+      "raw_log_sha256": "9ce8b1279154c827537dfcd47463930be9c9eb3a87db6be9dc66ea7e5f7b739d",
+      "elapsed_seconds": 4041.9778107011225,
+      "rust_files": 6638,
+      "boundaries": 483,
+      "protected_records": 373,
+      "source_clean_after": true,
+      "applies_to_current_head": false
+    },
+    "source_c6_native": {
+      "source": "c6a61dfb57cbf8535805fd8fdf59aa6ccd57cd76",
+      "state": "failed",
+      "readback_before_environment_loss": true,
+      "result_bytes": 33740,
+      "result_sha256": "1f67a4471ef5dd480928a3fda4901c14dc520541d4ff835e98c970e96e88d563",
+      "helper_build_exit": 0,
+      "helper_verify_exit": 0,
+      "native_exit": 2,
+      "native_tests_executed": 0,
+      "raw_execution_log_bytes": 320,
+      "raw_execution_log_sha256": "94a13165531f92b7446617855d826f81a1ff10b66d20dc1bb23864376425480c",
+      "cause": "duplicate --no-fail-fast argument; repository run-nextest wrapper already supplies it",
+      "driver_correction": "remove the disposable driver's duplicate argument; preserve project wrapper",
+      "applies_to_current_head": false
+    }
+  },
+  "remaining_source_gap": "The positive Candidate route still explicitly rejects Selection/NextUse at fixed 988/97. Existing S/C commands are NoUpdate-only. Separate positive typed adapters and Root prefix continuation are in development; removing denial guards alone is not a valid fix.",
+  "authority_boundary": "No new production grant, signing key, UID or all-role signer is introduced. Resident admission and OS root rights do not substitute for version FinalUse or Task C execution authorization.",
+  "original_host_recovery": "First setup failed during GitHub HTTPS connection before worktree creation. Second request failed its own incorrectly escaped validation before filesystem mutation. Corrected exact-key request remains unknown; no absence-of-effect inference."
+}

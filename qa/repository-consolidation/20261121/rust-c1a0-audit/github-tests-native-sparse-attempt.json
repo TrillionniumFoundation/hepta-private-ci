@@ -1,0 +1,75 @@
+{
+  "started_at": "2026-11-21T12:29:32.175086+00:00",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    ".github/scripts",
+    "-p",
+    "test_*.py"
+  ],
+  "working_directory": "/home/qian-qi/hepta-c1a0-native-20261121-01/repo",
+  "source_sha": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+  "tested_sha": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+  "timeout_seconds": 600,
+  "status": "failed",
+  "tests_started": true,
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "PATH": "/home/qian-qi/.cargo/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin"
+  },
+  "before": {
+    "commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+    "parents": [
+      "394e28812368f5174b890cea51ff13e882231756"
+    ],
+    "dirty": false
+  },
+  "test_identities_count": 314,
+  "test_identities_sha256": "dc0e38103e8e18d0cc8ebd9d275273267fac994e5a18cbccbf40a0bf2994f881",
+  "tools": {
+    "python3": {
+      "path": "/usr/bin/python3",
+      "resolved_path": "/usr/bin/python3.14",
+      "bytes": 7477160,
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "cargo": {
+      "path": "/home/qian-qi/.cargo/bin/cargo",
+      "resolved_path": "/home/qian-qi/.cargo/bin/rustup",
+      "bytes": 21347088,
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    }
+  },
+  "command_exit_code": 1,
+  "summaries": [
+    [
+      "314",
+      "3.421"
+    ]
+  ],
+  "log": {
+    "path": "/home/qian-qi/hepta-c1a0-native-20261121-01/github-script-tests-01/original-command.log",
+    "bytes": 6692,
+    "sha256": "5c7a71e6f0dba51e8aa74ee4f386e8ac094391dadc79960dcd2ccc5c3652a18b"
+  },
+  "error": "AssertionError('Original unittest command failed')",
+  "after": {
+    "commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+    "parents": [
+      "394e28812368f5174b890cea51ff13e882231756"
+    ],
+    "dirty": false
+  },
+  "source_unchanged": true,
+  "finished_at": "2026-11-21T12:29:36.091354+00:00",
+  "elapsed_seconds": 3.91629840596579,
+  "remote_refs_changed": false,
+  "source_edits": false,
+  "fixture_skips_added": false
+}

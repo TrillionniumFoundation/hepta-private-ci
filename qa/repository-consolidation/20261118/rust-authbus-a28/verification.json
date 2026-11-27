@@ -1,0 +1,111 @@
+{
+  "incoming_branch": "codex/authbus-global-capacity-fixture-20261018",
+  "preflight": {
+    "left": "770179d123b879355b53db1d75f8f9f301280d3e",
+    "right": "60eb1a36e4e59291698a9652e9d5276d957f6678",
+    "merge_base": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+    "new_commits": ["60eb1a36e4e59291698a9652e9d5276d957f6678"],
+    "incoming_paths": ["codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"],
+    "merge_exit": 1,
+    "auto_tree": "3abc365b2be9567bdc9e8c5ec25ae110e4e3a562",
+    "auto_changed_paths": [
+      "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    ],
+    "protected_names_checked": 356,
+    "protected_ids_checked": 358,
+    "forbidden_ancestor_intersection": [],
+    "right_commit_record": "tree 380309325eeeaf8aeb7109cbaaa26de117cda498\nparent cc594bbb1494f3dc3f5adff360a58eee958f2054\nauthor Qian QI <102159240+ProfHepta@users.noreply.github.com> 1792332887 -0400\ncommitter Qian QI <102159240+ProfHepta@users.noreply.github.com> 1792332887 -0400\n\ntest(evidence): isolate global outbox saturation from per-issuer quota\n\nUse eight fixture-only issuer identities for the 4095 synthetic capacity rows,\nthen retire them through host-confirmed quarantine. Preserve all active limits,\nreplay guards and terminal retention semantics.",
+    "conflict_marker_count": 3,
+    "original_merge_stdout_sha256": "5b95d922703a3eea743f0dc4b255d1d17c6c734158ec28a7ba5a2cd32bb65574"
+  },
+  "resolution": {
+    "local_merge_commit": "09483d18b1188d7d6c4f6843b64f9da2533a9f6c",
+    "tree": "6911d7b83a7d2ae573efb4fbe08446f748a7a3a4",
+    "parents": [
+      "770179d123b879355b53db1d75f8f9f301280d3e",
+      "60eb1a36e4e59291698a9652e9d5276d957f6678"
+    ],
+    "resolved_blob": "a7f28016e98c0b29f5312fcbd4f9b6e5cfba9b46",
+    "source_tree_identical_to_parent": true,
+    "all_three_conflict_decisions_reviewed": true,
+    "review_sha256": "1db16ea9abfa1dcc100c217191e5962f6846906d410e4beb0cf8240d438afbe8",
+    "native_tests_repeated": false
+  },
+  "source_file": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+  "current_and_resolved_sha256": "8f94279775daa74f416eaae9a5a55a8e055d10f787a0db4b0799688affc6f56c",
+  "source_bytes_changed": false,
+  "native_tests_repeated": false,
+  "archive": {
+    "path": "evidence.tar.gz",
+    "bytes": 13963,
+    "sha256": "38fb98378da55cef03adb365609434b5c8bee1064c81746ac99e40c1386cac07",
+    "regular_files": 13,
+    "members": [
+      {
+        "path": "base.rs",
+        "bytes": 20698,
+        "sha256": "9345d0c6316fec630a5a1580d315b3ea845c3938db476c212035baec999d8fe9"
+      },
+      {
+        "path": "incoming.rs",
+        "bytes": 21786,
+        "sha256": "04605b8e5b0ce76c849bedd370c32c9da6dbe0fab5e06969a3f105c0b71b193f"
+      },
+      {
+        "path": "ours.rs",
+        "bytes": 23166,
+        "sha256": "8f94279775daa74f416eaae9a5a55a8e055d10f787a0db4b0799688affc6f56c"
+      },
+      {
+        "path": "resolved.rs",
+        "bytes": 23166,
+        "sha256": "8f94279775daa74f416eaae9a5a55a8e055d10f787a0db4b0799688affc6f56c"
+      },
+      {
+        "path": "auto-merged.rs",
+        "bytes": 25218,
+        "sha256": "4f0f1c9cd234ab606492dc0ba6fb15a19281df9f6a1ca3d8dd393e0951c679d2"
+      },
+      {
+        "path": "authbus_outbox.original.rs",
+        "bytes": 13173,
+        "sha256": "99a55cb14e0cc5fc8093b0872a5bda6162b577a807b39131a73123a85172576c"
+      },
+      {
+        "path": "authbus_outbox_record.original.rs",
+        "bytes": 7476,
+        "sha256": "83a7e2da60ec8eb690954c37426a30b5fc8cd571d5c83db1d693142a66174fdf"
+      },
+      {
+        "path": "true-merge-preflight.json",
+        "bytes": 1306,
+        "sha256": "8f1a6bf65fb9a9b776d87f075fdea54aaf130167574e32b72e952d6cdbee31eb"
+      },
+      {
+        "path": "merge-tree.stdout",
+        "bytes": 503,
+        "sha256": "5b95d922703a3eea743f0dc4b255d1d17c6c734158ec28a7ba5a2cd32bb65574"
+      },
+      {
+        "path": "merge-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "conflict-blocks.json",
+        "bytes": 4541,
+        "sha256": "522bcff044c6506c01c0a345fff74f962d48ef70c01e4f5cd4c646fc98780e85"
+      },
+      {
+        "path": "independent-review.json",
+        "bytes": 2622,
+        "sha256": "1db16ea9abfa1dcc100c217191e5962f6846906d410e4beb0cf8240d438afbe8"
+      },
+      {
+        "path": "resolved-merge.json",
+        "bytes": 516,
+        "sha256": "d9c14f5a1d5f7a7ff553a3212a1de06126fe9f3ea20618e7f63207d95db63cb0"
+      }
+    ]
+  }
+}

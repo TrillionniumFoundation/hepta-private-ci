@@ -1,0 +1,11 @@
+exports_files(
+    [
+        "corpus.json",
+        "native_probe.rs",
+    ],
+    visibility = [
+        "//codex-rs/exec-server-protocol:__pkg__",
+        "//codex-rs/hepta-contracts:__pkg__",
+        "//codex-rs/hepta-evidence:__pkg__",
+    ],
+)

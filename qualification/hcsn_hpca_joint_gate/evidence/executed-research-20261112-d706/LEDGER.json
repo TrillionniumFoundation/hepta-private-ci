@@ -1,0 +1,312 @@
+{
+  "schema": "hcsn-hpca-executed-research-scope-ledger-v1",
+  "status": "HOLD_NO_GO",
+  "is_new_model_execution": false,
+  "is_cross_lane_source_qualification": false,
+  "new_experiment_calls_started_by_ledger": 0,
+  "lanes": {
+    "hcsn_common": {
+      "pr": 6174,
+      "source": "9f6c7c4dc24510472ca012647ebd1d96c1405c69",
+      "evidence": "672184fa5f51c5d658167a01b1c9be9668e383bb",
+      "source_published_before_execution": true,
+      "original_positions_per_mesh": 14336,
+      "mesh_intervals": [
+        256,
+        512
+      ],
+      "original_scaled_threshold": 0.01,
+      "metric": "abs(candidate - original_continuum) / max(1, abs(original_continuum))",
+      "failure_counts": [
+        0,
+        0
+      ],
+      "maximum_scaled_errors": [
+        1.5874878671907167e-05,
+        4.009563388424706e-06
+      ],
+      "maximum_noncancelling_scaled_errors": [
+        1.5874908044083096e-05,
+        4.009592859123869e-06
+      ],
+      "all_laws_use_linear_first_excursion_kernel": true,
+      "all_laws_are_individual_DDE_trajectories": false,
+      "tests": 28,
+      "skipped": 0,
+      "direct_DDE_runs": 30,
+      "direct_DDE_query_records": 210,
+      "maximum_spectral_DDE_difference": 2.091088413536113e-11,
+      "source_guard_count": 18,
+      "cold_resume_clock": 0.417,
+      "cold_error": 7.671177582047051e-11,
+      "recovery_sweeps_all_positions": false,
+      "network_training_calls": 0,
+      "hosted_state_run": 43171816183,
+      "hosted_all_domain_reexecution": false,
+      "limits": [
+        "exposed development domain",
+        "no recursive observation filtering",
+        "no full-network AD",
+        "no new-kernel training",
+        "no complete C2 replay",
+        "no rare-tail relative claim below floor"
+      ]
+    },
+    "hcsn_uniform_torch": {
+      "pr": 6150,
+      "source": "19b7a99f6d63596dd77c34a1ed8e529e1c744750",
+      "evidence": "28196265803a81d69041ad6a106e581456f3e360",
+      "native_tests": 6,
+      "native_skipped": 0,
+      "hosted_tests": 6,
+      "hosted_skipped": 0,
+      "hosted_run": 43169226255,
+      "hosted_tested_head": "f8bf0070a96975bd8c636f4ef72926b131bce372",
+      "guarded_source_equal_native_and_hosted": true,
+      "maximum_DDE_difference": 1.6504300530406635e-11,
+      "physical_full_output_gradcheck_parameters": 6,
+      "physical_gradcheck_fixtures": 1,
+      "initial_law_phase_check": "random output projection",
+      "scope": "bounded finite uniform mesh CPU FP64 oracle",
+      "graded_source_qualified": false,
+      "network_optimizer_calls": 0
+    },
+    "c2_checkpoint_diagnostic": {
+      "pr": 6199,
+      "source": "5cb83d9c76beedf4c1c917e4bf561f5f26261ce7",
+      "evidence": "afa7415d5a740a59bb436cdb90bb157be6f450bf",
+      "completed_diagnostics": 6,
+      "actual_optimizer_calls_this_attempt": 26,
+      "call_formula": "6*(2+1+1)+1+1",
+      "all_six_full_declared_states_bitwise_equal": true,
+      "omit_adam_detected": true,
+      "real_unpublished_crash_state_equal": true,
+      "decoded_state_files": 26,
+      "includes_six_origin_files": true,
+      "checked_bound_external_inputs": 554,
+      "external_inputs_all_embedded_in_archive": false,
+      "new_complete_independent_C2_replays": 0,
+      "new_DDE_kernel_training": false,
+      "global_cumulative_optimizer_calls": null,
+      "global_cumulative_scope": "UNKNOWN because earlier c06d v1/v2 cancelled attempts retain unknown actual calls",
+      "prior_unknown_evidence": "a832b028abdf1a1c9ab66534332457c6d76a91ca",
+      "archive_bytes": 10976581,
+      "archive_members": 128,
+      "archive_sha256": "d17e71b766631f3789dcb43bdd312dacfbc4ea0ce7e4fc14074587584900a2fe",
+      "archive_git_blob": "deededd79d8a72d55059e7b7c439f66434a679f0",
+      "root_remote_blob_and_size_verified": true,
+      "root_full_binary_archive_downloaded": false,
+      "root_binary_download_limitation": "GitHub fetch_blob attempts UTF-8 decode; immutable Git object identity and exact-head path/size verified instead"
+    },
+    "hpca_routed_content": {
+      "pr": 6172,
+      "source": "b0ea141de2d5218869823b2d9e075db6d7b215dd",
+      "evidence": "65d688af66f3797a4d6a61a8f4adf6a5a06b7689",
+      "runtime_scope": "frozen SmolLM2-135M with two trainable first-token output heads; unrestricted vocabulary greedy generation",
+      "body_weight_updates": 0,
+      "training_prefills": 64,
+      "manual_sgd_slots": 4096,
+      "nonzero_update_calls": 3072,
+      "torch_optimizer_calls": 0,
+      "main": {
+        "completed_generations": 1632,
+        "cost_excludes": [
+          "source preparation",
+          "queue",
+          "prior model training",
+          "energy",
+          "Owner lifecycle"
+        ],
+        "cpu_seconds": 1015.173846611,
+        "emitted_tokens_including_eos": 5749,
+        "failed_generations": 0,
+        "generation_attempts": 1632,
+        "generation_body_forward_calls": 5749,
+        "job_id": "1a1ce85599c-2564-16db",
+        "peak_rss_kib": 1138232,
+        "process_exit": 0,
+        "result_sha256": "0bd8a380cd565fc76b42bc184357c14d25f030b69286769d0863af68819e7e2b",
+        "wall_seconds": 279.6556043238379
+      },
+      "cold": {
+        "completed_generations": 204,
+        "cost_excludes": [
+          "source preparation",
+          "queue",
+          "prior model training",
+          "energy",
+          "Owner lifecycle"
+        ],
+        "cpu_seconds": 90.378343927,
+        "emitted_tokens_including_eos": 408,
+        "failed_generations": 0,
+        "fixed_attempt_denominator": 204,
+        "generation_attempts": 204,
+        "generation_body_forward_calls": 408,
+        "independently_recomputed_exact_rows": 204,
+        "is_fresh_process_checkpoint_inference": true,
+        "is_training_reexecution": false,
+        "job_id": "1a1ce8f4634-2564-16ee",
+        "peak_rss_kib": 1136512,
+        "process_exit": 0,
+        "reported_all_exact": true,
+        "result_sha256": "9b42ff62fc3c1fb1b1daf56b523ee86c2d67362c7e1ac94b681321569183be56",
+        "wall_seconds": 27.28165430901572
+      },
+      "seed_order": [
+        11,
+        17,
+        23,
+        29
+      ],
+      "content_by_arm": {
+        "no_eligibility": {
+          "correct_by_seed": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "descriptive_repeated_observation_correct": 128,
+          "descriptive_repeated_observation_n": 256,
+          "descriptive_repeated_observation_valid": 256,
+          "mean_accuracy": 0.5,
+          "not_256_independent_tasks": true,
+          "unique_tasks": 64,
+          "valid_by_seed": [
+            64,
+            64,
+            64,
+            64
+          ]
+        },
+        "routed": {
+          "correct_by_seed": [
+            27,
+            32,
+            24,
+            37
+          ],
+          "descriptive_repeated_observation_correct": 120,
+          "descriptive_repeated_observation_n": 256,
+          "descriptive_repeated_observation_valid": 233,
+          "mean_accuracy": 0.46875,
+          "not_256_independent_tasks": true,
+          "unique_tasks": 64,
+          "valid_by_seed": [
+            56,
+            64,
+            50,
+            63
+          ]
+        },
+        "scalar": {
+          "correct_by_seed": [
+            24,
+            32,
+            24,
+            32
+          ],
+          "descriptive_repeated_observation_correct": 112,
+          "descriptive_repeated_observation_n": 256,
+          "descriptive_repeated_observation_valid": 228,
+          "mean_accuracy": 0.4375,
+          "not_256_independent_tasks": true,
+          "unique_tasks": 64,
+          "valid_by_seed": [
+            50,
+            64,
+            50,
+            64
+          ]
+        },
+        "shuffled": {
+          "correct_by_seed": [
+            29,
+            32,
+            24,
+            33
+          ],
+          "descriptive_repeated_observation_correct": 118,
+          "descriptive_repeated_observation_n": 256,
+          "descriptive_repeated_observation_valid": 236,
+          "mean_accuracy": 0.4609375,
+          "not_256_independent_tasks": true,
+          "unique_tasks": 64,
+          "valid_by_seed": [
+            58,
+            64,
+            50,
+            64
+          ]
+        }
+      },
+      "base": {
+        "content": {
+          "accuracy_including_invalid": 0.5,
+          "correct": 32,
+          "n": 64,
+          "valid": 64
+        },
+        "retention": {
+          "accuracy_including_invalid": 0.25,
+          "correct": 8,
+          "n": 32,
+          "valid": 14
+        }
+      },
+      "paired_correct_difference": [
+        -2,
+        0,
+        0,
+        4
+      ],
+      "observation_unit": {
+        "content_paired_blocks": 32,
+        "content_source_cluster_strings": 64,
+        "content_unique_tasks": 64,
+        "repeated_training_seeds": 4,
+        "retention_source_clusters": 16,
+        "retention_unique_tasks": 32,
+        "seeds_do_not_create_new_tasks": true
+      },
+      "retention_gate": false,
+      "same_full_feedback_for_routing_contrast": true,
+      "scalar_is_information_change": true,
+      "independent_future_B": false,
+      "native_HPCA_integration_established": false,
+      "content_NDU_factorial_completed": false,
+      "old_624_protocol_completed_by_this_run": false,
+      "conclusion": "Actual content-head updates and unrestricted generated text are recorded and replayable; correct routing does not establish a consistent content improvement. Four-seed routed mean is below unchanged base. Baseline retention competence gate fails."
+    }
+  },
+  "source_review": {
+    "NDU": "NDU_INTERFACE_REVIEW.json",
+    "source_objects": "NDU_SOURCE_READBACK.json",
+    "actual_content_NDU_2x2_cells_executed": 0,
+    "reason": "No current SmolLM2 state/candidate/action bridge to a true NDU treatment; existing native dynamic falls back to static quota or strict rejection"
+  },
+  "admission": {
+    "production": false,
+    "default_cell": false,
+    "Owner_qualified": false,
+    "energy_benefit": false,
+    "independent_future_tasks": 0
+  },
+  "root_readbacks": [
+    "HPCA_MAIN_READBACK.json",
+    "HPCA_COLD_READBACK.json",
+    "hosted-state-43171816183/RUN.json"
+  ],
+  "recorded_utc": "2026-11-12T07:33:57.393127+00:00",
+  "artifact_scope": "Documentation and zero-model readbacks; no changed scientific execution source",
+  "root_readback_notes": {
+    "HPCA_main_recomputed_rows": 1632,
+    "HPCA_cold_recomputed_exact_rows": 204,
+    "C2_remote_summary_and_audit_read": true,
+    "C2_remote_archive_blob_and_size_checked": true,
+    "common_remote_RESULT_and_OVERVIEW_read": true,
+    "Torch_hosted_full_artifact_downloaded_and_sha256_verified": true,
+    "state_hosted_full_artifact_downloaded_and_sha256_verified": true
+  }
+}

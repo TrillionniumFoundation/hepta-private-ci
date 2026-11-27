@@ -1,0 +1,27 @@
+{
+  "adoption_action": "NoUpdate",
+  "archive_bytes_expected": 61412948,
+  "archive_sha256_expected": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+  "complete_archive_sha256_verified": false,
+  "complete_file_restore_performed": false,
+  "duplicate_identical_chunks": 0,
+  "full_owner_cold_recovery": false,
+  "missing_byte_ranges": [
+    {
+      "end_exclusive": 51642368,
+      "start": 51576832
+    },
+    {
+      "end_exclusive": 61412948,
+      "start": 52756480
+    }
+  ],
+  "missing_bytes": 8722004,
+  "orphan_metadata_files": [],
+  "schema": "hepta.mem6.retained-chunk-readback.v1",
+  "scientific_acceptance": "HOLD",
+  "scope": "read-only hash verification of predecessor local chunks; no native transfer this audit",
+  "valid_bytes": 52690944,
+  "valid_chunks": 804,
+  "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657"
+}

@@ -1,0 +1,44 @@
+test_prefix_prevalidation (unittest.loader._FailedTest.test_prefix_prevalidation) ... ERROR
+
+======================================================================
+ERROR: test_prefix_prevalidation (unittest.loader._FailedTest.test_prefix_prevalidation)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_prefix_prevalidation
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+  File "/home/qq/work/neuro4-turn7-prefix-prevalidation-20261111/test_prefix_prevalidation.py", line 6, in <module>
+    from study import (
+    ...<2 lines>...
+    )
+ImportError: cannot import name 'frozen_credit_from_prefix' from 'study' (/home/qq/work/neuro4-turn7-prefix-prevalidation-20261111/study.py)
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+Command exited with non-zero status 1
+	Command being timed: "python3 -m unittest -v test_prefix_prevalidation"
+	User time (seconds): 0.02
+	System time (seconds): 0.00
+	Percent of CPU this job got: 96%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.03
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 22520
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 3124
+	Voluntary context switches: 2
+	Involuntary context switches: 1
+	Swaps: 0
+	File system inputs: 48
+	File system outputs: 24
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

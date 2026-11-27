@@ -1,3 +1,7 @@
+use super::MAX_BACKUP_BYTES;
+use crate::NduProjectionJournalV1;
+use crate::projection_journal::MAX_RECORDS;
+use std::fmt::Debug;
 use std::fs;
 use std::fs::File;
 use std::io;
@@ -30,6 +34,7 @@ enum FaultStage {
     Write,
     FileSync,
     Rename,
+    RenameAfterCommit,
     DirectorySync,
 }
 
@@ -57,7 +62,11 @@ impl ProjectionPersistenceV1 for FaultPersistence {
         if self.stage == FaultStage::Rename {
             return Err(io::Error::other("injected NDU rename failure"));
         }
-        self.real.rename(from, to)
+        self.real.rename(from, to)?;
+        if self.stage == FaultStage::RenameAfterCommit {
+            return Err(io::Error::other("injected lost rename acknowledgement"));
+        }
+        Ok(())
     }
 
     fn sync_parent(&self, root: &Path) -> io::Result<()> {
@@ -67,6 +76,13 @@ impl ProjectionPersistenceV1 for FaultPersistence {
             ));
         }
         self.real.sync_parent(root)
+    }
+}
+
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected error: {error:?}"),
     }
 }
 
@@ -255,12 +271,14 @@ fn persistence_failpoints_reconcile_at_real_durability_boundaries()
         FaultStage::Write,
         FaultStage::FileSync,
         FaultStage::Rename,
+        FaultStage::RenameAfterCommit,
         FaultStage::DirectorySync,
     ] {
         let root = TempRoot::new(match stage {
             FaultStage::Write => "fail-write",
             FaultStage::FileSync => "fail-file-sync",
             FaultStage::Rename => "fail-rename",
+            FaultStage::RenameAfterCommit => "fail-rename-after-commit",
             FaultStage::DirectorySync => "fail-directory-sync",
         })?;
         {
@@ -287,7 +305,10 @@ fn persistence_failpoints_reconcile_at_real_durability_boundaries()
             )
             .expect_err("injected persistence failure must surface");
 
-        if stage == FaultStage::DirectorySync {
+        if matches!(
+            stage,
+            FaultStage::Rename | FaultStage::RenameAfterCommit | FaultStage::DirectorySync
+        ) {
             assert_eq!(error, NduProjectionStoreError::Indeterminate);
             assert!(store.is_indeterminate());
             assert_eq!(
@@ -305,7 +326,10 @@ fn persistence_failpoints_reconcile_at_real_durability_boundaries()
         drop(store);
         let reopened = (NduProjectionStoreV1::open(&root.0))?;
         assert!(!reopened.is_indeterminate());
-        if stage == FaultStage::DirectorySync {
+        if matches!(
+            stage,
+            FaultStage::RenameAfterCommit | FaultStage::DirectorySync
+        ) {
             assert_eq!((reopened.entries())?.len(), 1);
         } else {
             assert!((reopened.entries())?.is_empty());
@@ -358,4 +382,436 @@ fn symlinked_root_lock_and_journal_paths_fail_closed() -> Result<(), Box<dyn std
         NduProjectionStoreError::Symlink
     );
     Ok(())
+}
+
+#[test]
+fn oversized_sparse_image_is_rejected_before_unbounded_read() {
+    let root = must(TempRoot::new("oversized-image"));
+    let file = File::create(root.0.join(JOURNAL_FILE)).expect("create oversized fixture");
+    let oversized = u64::try_from(MAX_BACKUP_BYTES)
+        .expect("backup bound fits u64")
+        .saturating_add(1);
+    file.set_len(oversized).expect("extend sparse fixture");
+    drop(file);
+
+    assert_eq!(
+        NduProjectionStoreV1::open(&root.0)
+            .err()
+            .expect("oversized image must reject"),
+        NduProjectionStoreError::BackupTooLarge
+    );
+}
+
+#[test]
+fn full_capacity_envelope_preserves_revocation_and_restart_recovery() {
+    let root = must(TempRoot::new("revocation-capacity"));
+    let objective = digest("capacity-objective");
+    let subject = digest("capacity-subject");
+    let mut journal = NduProjectionJournalV1::new();
+
+    for index in 0..(MAX_RECORDS / 2) {
+        must(journal.append_projection(
+            NduProjectionKindV1::Preference,
+            digest(&format!("capacity-identity-{index}")),
+            objective,
+            subject,
+            digest(&format!("capacity-projection-{index}")),
+        ));
+    }
+    let mut file = File::create(root.0.join(JOURNAL_FILE)).expect("create capacity fixture");
+    file.write_all(&journal.export_bytes())
+        .expect("write capacity fixture");
+    file.sync_all().expect("sync capacity fixture");
+    drop(file);
+
+    let first_projection = digest("capacity-projection-0");
+    {
+        let mut store = must(NduProjectionStoreV1::open(&root.0));
+        assert_eq!(must(store.entries()).len(), MAX_RECORDS / 2);
+        assert_eq!(
+            store
+                .select_projection_if_current(
+                    digest("capacity-selection"),
+                    objective,
+                    subject,
+                    None,
+                    first_projection,
+                )
+                .expect_err("ordinary selection cannot consume reserved revocation capacity"),
+            NduProjectionStoreError::Journal(
+                NduProjectionJournalError::RevocationCapacityExhausted
+            )
+        );
+        must(store.revoke_projection(
+            digest("capacity-revocation"),
+            objective,
+            subject,
+            first_projection,
+        ));
+    }
+
+    let mut reopened = must(NduProjectionStoreV1::open(&root.0));
+    assert_eq!(must(reopened.entries()).len(), MAX_RECORDS / 2 + 1);
+    must(journal.revoke_projection(
+        digest("capacity-revocation"),
+        objective,
+        subject,
+        first_projection,
+    ));
+    for index in 1..(MAX_RECORDS / 2 - 2) {
+        must(journal.revoke_projection(
+            digest(&format!("capacity-revocation-{index}")),
+            objective,
+            subject,
+            digest(&format!("capacity-projection-{index}")),
+        ));
+    }
+    // The prefix fixture is semantic history, not a claim of 2048 disk writes.
+    must(reopened.restore_backup(&journal.export_bytes()));
+    drop(reopened);
+    for index in (MAX_RECORDS / 2 - 2)..(MAX_RECORDS / 2) {
+        let mut store = must(NduProjectionStoreV1::open(&root.0));
+        let identity = digest(&format!("capacity-revocation-{index}"));
+        let projection = digest(&format!("capacity-projection-{index}"));
+        let expected = must(journal.revoke_projection(identity, objective, subject, projection));
+        assert_eq!(
+            must(store.revoke_projection(identity, objective, subject, projection)),
+            expected
+        );
+        // Exact retry is idempotent even after the last available slot is used.
+        assert_eq!(
+            must(store.revoke_projection(identity, objective, subject, projection)),
+            expected
+        );
+    }
+    let reopened = must(NduProjectionStoreV1::open(&root.0));
+    assert_eq!(must(reopened.entries()).len(), MAX_RECORDS);
+    assert_eq!(must(reopened.entries()), journal.entries());
+    assert_eq!(
+        must(reopened.selected_projection_digest(objective, subject)),
+        None
+    );
+}
+
+#[test]
+#[cfg(unix)]
+fn real_store_records_busy_restore_reopen_and_indeterminate_failures() {
+    let before = crate::operational_metrics_snapshot_v1();
+    let root = must(TempRoot::new("observed"));
+    let mut store = must(NduProjectionStoreV1::open(&root.0));
+    assert!(matches!(
+        NduProjectionStoreV1::open(&root.0),
+        Err(NduProjectionStoreError::Busy)
+    ));
+    assert!(store.restore_backup(b"truncated").is_err());
+    drop(store);
+    let missing = root.0.join("missing");
+    assert!(NduProjectionStoreV1::open(missing).is_err());
+    let mut store = must(NduProjectionStoreV1::open_with_persistence(
+        &root.0,
+        Arc::new(FaultPersistence {
+            stage: FaultStage::DirectorySync,
+            real: FsProjectionPersistenceV1,
+        }),
+    ));
+    assert_eq!(
+        store.append_projection(
+            NduProjectionKindV1::Preference,
+            digest("observed-id"),
+            digest("objective"),
+            digest("subject"),
+            digest("projection")
+        ),
+        Err(NduProjectionStoreError::Indeterminate)
+    );
+    let after = crate::operational_metrics_snapshot_v1();
+    assert!(after.store_busy > before.store_busy);
+    assert!(after.restore_failures > before.restore_failures);
+    assert!(after.reopen_failures > before.reopen_failures);
+    assert!(after.store_indeterminate > before.store_indeterminate);
+}
+
+#[cfg(unix)]
+#[test]
+fn durable_constructor_rejects_unsafe_mode_and_hardlinked_lock() {
+    use std::os::unix::fs::PermissionsExt;
+    let root = must(TempRoot::new("unsafe-mode"));
+    must(fs::set_permissions(
+        &root.0,
+        fs::Permissions::from_mode(0o777),
+    ));
+    assert!(matches!(
+        NduProjectionStoreV1::open_durable(&root.0),
+        Err(NduProjectionStoreError::UnsafeOwnerPath)
+    ));
+    must(fs::set_permissions(
+        &root.0,
+        fs::Permissions::from_mode(0o700),
+    ));
+    must(File::create(root.0.join(LOCK_FILE)));
+    must(fs::hard_link(root.0.join(LOCK_FILE), root.0.join("alias")));
+    assert!(NduProjectionStoreV1::open_durable(&root.0).is_err());
+}
+
+#[cfg(unix)]
+#[test]
+fn replaced_directory_or_lock_fences_authoritative_state() {
+    let parent = must(TempRoot::new("identity"));
+    let root = parent.0.join("owner");
+    must(fs::create_dir(&root));
+    let store = must(NduProjectionStoreV1::open_durable(&root));
+    assert!(store.storage_ready());
+    must(fs::rename(&root, parent.0.join("old")));
+    must(fs::create_dir(&root));
+    must(File::create(root.join(LOCK_FILE)));
+    assert!(!store.storage_ready());
+    assert_eq!(
+        store.backup_bytes(),
+        Err(NduProjectionStoreError::OwnershipChanged)
+    );
+    drop(store);
+    let store = must(NduProjectionStoreV1::open_durable(&root));
+    must(fs::rename(root.join(LOCK_FILE), root.join("old-lock")));
+    must(File::create(root.join(LOCK_FILE)));
+    assert_eq!(
+        store.entries(),
+        Err(NduProjectionStoreError::OwnershipChanged)
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn permission_change_after_open_blocks_before_write() {
+    use std::os::unix::fs::PermissionsExt;
+    let root = must(TempRoot::new("permission-change"));
+    let mut store = must(NduProjectionStoreV1::open_durable(&root.0));
+    let before = must(store.backup_bytes());
+    must(fs::set_permissions(
+        &root.0,
+        fs::Permissions::from_mode(0o777),
+    ));
+    assert!(
+        store
+            .append_projection(
+                NduProjectionKindV1::Utility,
+                digest("id"),
+                digest("objective"),
+                digest("subject"),
+                digest("payload")
+            )
+            .is_err()
+    );
+    assert!(!store.storage_ready());
+    must(fs::set_permissions(
+        &root.0,
+        fs::Permissions::from_mode(0o700),
+    ));
+    assert_eq!(must(store.backup_bytes()), before);
+}
+
+#[test]
+fn exact_replay_and_identical_restore_do_not_rewrite_snapshot() {
+    let root = must(TempRoot::new("replay-no-write"));
+    let mut store = must(NduProjectionStoreV1::open_durable(&root.0));
+    let entry = must(store.append_projection(
+        NduProjectionKindV1::Utility,
+        digest("id"),
+        digest("objective"),
+        digest("subject"),
+        digest("payload"),
+    ));
+    let before = must(store.backup_bytes());
+    store.persistence = Arc::new(FaultPersistence {
+        stage: FaultStage::Write,
+        real: FsProjectionPersistenceV1,
+    });
+    assert_eq!(
+        must(store.append_projection(
+            NduProjectionKindV1::Utility,
+            digest("id"),
+            digest("objective"),
+            digest("subject"),
+            digest("payload")
+        )),
+        entry
+    );
+    must(store.restore_backup(&before));
+    assert_eq!(must(store.backup_bytes()), before);
+    assert!(store.storage_ready());
+}
+
+#[test]
+fn bounded_mutational_fuzz_rejects_every_single_bit_record_corruption() {
+    let root = must(TempRoot::new("fuzz-image"));
+    let mut store = must(NduProjectionStoreV1::open_durable(&root.0));
+    must(store.append_projection(
+        NduProjectionKindV1::Utility,
+        digest("identity"),
+        digest("objective"),
+        digest("subject"),
+        digest("payload"),
+    ));
+    let bytes = must(store.backup_bytes());
+    for index in 0..bytes.len() {
+        for bit in 0..8 {
+            let mut changed = bytes.clone();
+            changed[index] ^= 1 << bit;
+            assert!(
+                NduProjectionJournalV1::reopen(&changed).is_err(),
+                "corruption accepted at {index}:{bit}"
+            );
+        }
+    }
+    assert_eq!(must(store.backup_bytes()), bytes);
+}
+
+#[test]
+fn live_image_loss_rejects_cached_reads_retries_and_new_writes() {
+    for damage in 0..4 {
+        for boundary in 0..6 {
+            let root = must(TempRoot::new("live-image-loss"));
+            let mut store = must(NduProjectionStoreV1::open(&root.0));
+            must(store.append_projection(
+                NduProjectionKindV1::Preference,
+                digest("id"),
+                digest("objective"),
+                digest("subject"),
+                digest("payload"),
+            ));
+            let original = must(store.backup_bytes());
+            let mut damaged = original.clone();
+            match damage {
+                0 => {
+                    damaged.truncate(damaged.len() - 1);
+                }
+                1 => {
+                    damaged[20] ^= 1;
+                }
+                2 => {
+                    damaged.push(0);
+                }
+                _ => {
+                    let mut replacement = NduProjectionJournalV1::new();
+                    must(replacement.append_projection(
+                        NduProjectionKindV1::Preference,
+                        digest("other-id"),
+                        digest("objective"),
+                        digest("subject"),
+                        digest("payload"),
+                    ));
+                    damaged = replacement.export_bytes();
+                }
+            }
+            fs::write(root.0.join(JOURNAL_FILE), &damaged).expect("inject storage damage");
+            let rejected = match boundary {
+                0 => store.entries().is_err(),
+                1 => store
+                    .selected_projection_digest(digest("objective"), digest("subject"))
+                    .is_err(),
+                2 => store.backup_bytes().is_err(),
+                3 => store
+                    .append_projection(
+                        NduProjectionKindV1::Preference,
+                        digest("id"),
+                        digest("objective"),
+                        digest("subject"),
+                        digest("payload"),
+                    )
+                    .is_err(),
+                4 => store
+                    .append_projection(
+                        NduProjectionKindV1::Preference,
+                        digest("new-id"),
+                        digest("objective"),
+                        digest("subject"),
+                        digest("new-payload"),
+                    )
+                    .is_err(),
+                _ => store.restore_backup(&original).is_err(),
+            };
+            assert!(rejected, "damage={damage}, boundary={boundary}");
+            assert_eq!(
+                fs::read(root.0.join(JOURNAL_FILE)).expect("read damaged image"),
+                damaged
+            );
+            fs::write(root.0.join(JOURNAL_FILE), original).expect("restore bytes externally");
+            assert!(!store.storage_ready(), "corruption must latch until reopen");
+            assert!(store.is_indeterminate());
+        }
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn missing_symlink_and_fifo_live_images_poison_without_blocking() {
+    use std::os::unix::fs::FileTypeExt;
+
+    for damage in 0..3 {
+        let root = must(TempRoot::new("live-image-kind"));
+        let store = must(NduProjectionStoreV1::open(&root.0));
+        let original = must(store.backup_bytes());
+        let path = root.0.join(JOURNAL_FILE);
+        fs::remove_file(&path).expect("remove image");
+        match damage {
+            0 => {}
+            1 => symlink(root.0.join("missing-target"), &path).expect("symlink image"),
+            _ => {
+                use nix::sys::stat::Mode;
+
+                nix::unistd::mkfifo(&path, Mode::S_IRUSR | Mode::S_IWUSR)
+                    .expect("create fifo image");
+                assert!(
+                    fs::symlink_metadata(&path)
+                        .expect("stat fifo image")
+                        .file_type()
+                        .is_fifo(),
+                    "replacement must be a FIFO"
+                );
+            }
+        }
+        assert!(store.entries().is_err());
+        assert!(store.is_indeterminate());
+        if damage != 0 {
+            fs::remove_file(&path).expect("remove replacement");
+        }
+        fs::write(&path, original).expect("restore image");
+        assert!(!store.storage_ready());
+    }
+}
+
+#[test]
+fn full_image_verification_observation_at_capacity() {
+    let root = must(TempRoot::new("live-image-cost"));
+    let mut journal = NduProjectionJournalV1::new();
+    for index in 0..(MAX_RECORDS / 2) {
+        let identity = digest(&format!("projection-{index}"));
+        let subject = digest(&format!("subject-{index}"));
+        let projection = digest(&format!("payload-{index}"));
+        must(journal.append_projection(
+            NduProjectionKindV1::Preference,
+            identity,
+            digest("objective"),
+            subject,
+            projection,
+        ));
+        must(journal.revoke_projection(
+            digest(&format!("revoke-{index}")),
+            digest("objective"),
+            subject,
+            projection,
+        ));
+    }
+    let bytes = journal.export_bytes();
+    fs::write(root.0.join(JOURNAL_FILE), &bytes).expect("write full image");
+    let store = must(NduProjectionStoreV1::open(&root.0));
+    let start = std::time::Instant::now();
+    for _ in 0..20 {
+        assert_eq!(must(store.entries()).len(), MAX_RECORDS);
+    }
+    eprintln!(
+        "NDU full-image check: bytes={}, records={}, 20_reads_micros={}",
+        bytes.len(),
+        MAX_RECORDS,
+        start.elapsed().as_micros()
+    );
 }

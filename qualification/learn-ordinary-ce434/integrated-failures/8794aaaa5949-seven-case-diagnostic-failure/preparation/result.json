@@ -1,0 +1,59 @@
+{
+  "state": "diagnostic-completed",
+  "purpose": "seven original failures only; source/caller proof and complete acceptance are not claimed",
+  "fixed_input_sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+  "fixed_input_tree": "5529e9391304dbbdaf98df3fb978b689362c85d5",
+  "expected_native_cases": 7,
+  "steps": [
+    {
+      "name": "fetch-fixed",
+      "exit_code": 0,
+      "seconds": 1.9778285550419241,
+      "log_bytes": 144,
+      "log_sha256": "8bc6b7af1f9fc61b0da6692f83ff412e3f1eeda37ae1f67b7e45fc4fcfbb657e"
+    },
+    {
+      "name": "create-worktree",
+      "exit_code": 0,
+      "seconds": 2.010822423035279,
+      "log_bytes": 2514,
+      "log_sha256": "ade8a6dacf89603eb23b1e46dc417a16ea6e04c4b26099762e63de814c4623d8"
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 0.7099673240445554,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diffcheck",
+      "exit_code": 0,
+      "seconds": 0.29432491888292134,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "push-fixed",
+      "exit_code": 0,
+      "seconds": 4.645932629937306,
+      "log_bytes": 690,
+      "log_sha256": "b2ee48fe543b85e932790a365ed2dd6df16c45aae7d32089edab64b423b29a0e"
+    }
+  ],
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "source_sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+  "source_tree": "5529e9391304dbbdaf98df3fb978b689362c85d5",
+  "native_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-8794aaaa5949-v9-diagnostic",
+  "native_result_bytes": 7698,
+  "native_result_sha256": "320f140ed933f9a5b09c0adf8e4704e7d64f326237c3b77219c0e1c3ad5e910a",
+  "native_tests_executed": 7,
+  "native_command_exit_code": 100,
+  "native_exit_code": 1,
+  "source_after": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+  "source_status_after": ""
+}

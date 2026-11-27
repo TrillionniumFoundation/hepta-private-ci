@@ -1,0 +1,40 @@
+{
+  "source_head": "c54e11013209260fd0adeca2ca50e6071185f309",
+  "reason": "Default original just fmt on frozen clean HEAD selected no files; explicitly cover the committed semantic leaf.",
+  "base": "1a505bad0",
+  "commands": [
+    {
+      "stage": "format-committed-range",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "1a505bad0"
+      ],
+      "exit_code": 0,
+      "seconds": 1.118
+    },
+    {
+      "stage": "check-committed-range",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "1a505bad0",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.416
+    }
+  ],
+  "tests_repeated": false,
+  "passed": true,
+  "diff_bytes": 35920,
+  "diff_sha256": "ff0049bd34ae930bdcfe3671c69b6ce1d9c59d738ac30e826bf9a26b0ed29496",
+  "changed_files": [
+    "codex-rs/hepta-agentd/src/authority_host_checkpoint.rs",
+    "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs",
+    "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+    "codex-rs/hepta-agentd/src/authority_host_checkpoint_publisher.rs"
+  ]
+}

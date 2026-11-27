@@ -1,0 +1,53 @@
+{
+  "schema": "rrsnn.v4.native-reproduction-dependencies.v1",
+  "upstream_repository": "TrillionniumFoundation/hepta-private-ci",
+  "upstream_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "upstream_files_manifest": "publication_evidence/upstream_source_manifest.json",
+  "upstream_file_count": 62,
+  "baseline_snapshot_local_path": "/workspace/scratch/38ad1e295a60/rrsnn_v2/hepta/upstream_snapshot/codex-rs",
+  "vendor_local_path": "/workspace/scratch/38ad1e295a60/rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor",
+  "rust_1_95_0_local_path": "/tmp/chain-pon-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin",
+  "just_local_path": "/tmp/hepta-finish3-rescue/tools/just",
+  "torch_python_local_path": "/tmp/rrsnn-venv/bin/python",
+  "torch_version": "2.7.1+cpu",
+  "workspace_roots_are_generated_reduced_research_context_not_original_upstream_workspace": true,
+  "workspace_root_manifests": [
+    "publication_evidence/baseline-reduced-workspace-Cargo.toml",
+    "publication_evidence/patched-reduced-workspace-Cargo.toml"
+  ],
+  "fixed_cpu_affinity": [
+    8
+  ],
+  "native_tests_use_unchanged_62_sources_except_explicit_bootstrap_method_in_isolated_copy": true,
+  "cross_host_reproduction_requires_explicit_equal_dependency_materialization_and_new_execution_manifest": true,
+  "vendored_crates_toolchains_executables_are_not_in_publication": true,
+  "original_upstream_validation_recipes": [
+    {
+      "local_path": "upstream-root-justfile.txt",
+      "sha256": "9fe8c410c12c3caacb6b6a531a8c124ae257c7041b2ce78388d49c1562843e1c",
+      "bytes": 7839
+    },
+    {
+      "local_path": "upstream_recipes/format.py",
+      "sha256": "3791cbd6b695c49ce2d4e84f250fe07761ec87e60ce1530880a0c7b1ba16e2dd",
+      "bytes": 16600
+    },
+    {
+      "local_path": "upstream_recipes/just-shell.py",
+      "sha256": "8c4e5b73a4d5b62553bdfd0f3dfc5ec39919bf3089cd950426a43879b73cff84",
+      "bytes": 2031
+    },
+    {
+      "local_path": "upstream_recipes/nextest.toml",
+      "sha256": "1ec25c048d59621ed75ba2db1c073b38091005d6da97b71d3b77774b3ecbc869",
+      "bytes": 5045
+    },
+    {
+      "local_path": "upstream_recipes/run-nextest.py",
+      "sha256": "b3080673ca1eef47d9bead823110f13e9c7ccd8310b2827719d5d1111041fa5c",
+      "bytes": 10207
+    }
+  ],
+  "default_upstream_nextest_was_not_weakened": true,
+  "full_repo_default_ci_gate_passed": false
+}

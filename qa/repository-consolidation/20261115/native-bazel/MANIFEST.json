@@ -1,0 +1,406 @@
+{
+  "schema": "hepta.native-bazel-lock.evidence.v1",
+  "source_commit": "4c7d6453a0afbc9982ba733382d12d03a6a26347",
+  "source_tree": "4cbcfadd9275928410cd2d78a07421883cbf3595",
+  "repository_source_binding": "ee793e80723fe27bc7024e853f7e1e2173fea275",
+  "local_input_comparison_commit": "f201405a428de6197a633862a30a1fd373886034",
+  "bazel_version": "9.3.0",
+  "bazel_binary_sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+  "generation_job_id": "1a1e04d4102-392-2a33",
+  "generation_exit_code": 0,
+  "check_job_id": "1a1e051306f-392-2a44",
+  "check_exit_code": 0,
+  "dependency_inputs": 240,
+  "current_nonoutput_dependency_mismatches": 0,
+  "cargo_lock_sha256": "907aef79c029c035694df1b1242e6284f5f8244a1d8b88cbe25c918251fb49ed",
+  "generated_lock_sha256": "54b7e89cd40e0f6e524e7ba495fdde5a0c346bec94cb8c26afdd54fcc4402d77",
+  "scope": "Original Bazel dependency lock generation and error-mode lock check. This receipt carries no compilation or test claim.",
+  "files": [
+    {
+      "original_name": "combined-bazel-update-v1-request.json",
+      "original_bytes": 3883,
+      "original_sha256": "b963bfb53e46b01d36587dac94dbe3c5b7ebd1dc75f74bf5e8f414d0e70387fb",
+      "stored_name": "combined-bazel-update-v1-request.json.gz",
+      "stored_bytes": 1595,
+      "stored_sha256": "10b148aca99e7f7a486f3415c8cfff4b67292e2c182d221e8f9a14b09df207af"
+    },
+    {
+      "original_name": "combined-bazel-update-v1-start.json",
+      "original_bytes": 4145,
+      "original_sha256": "e290172ea5d5a3a12f50b463ee8a7a89fce965aadb78cf5fab1999d7d71d6cec",
+      "stored_name": "combined-bazel-update-v1-start.json.gz",
+      "stored_bytes": 1765,
+      "stored_sha256": "587afca1140f24b09e0c6916bda6830409ca364756dc6dcec8272813b2297942"
+    },
+    {
+      "original_name": "combined-bazel-update-v1-status.json",
+      "original_bytes": 731,
+      "original_sha256": "0b6bf6cc973308790d89c147a77d8f5f55c449506fa19327eee55f708298fe36",
+      "stored_name": "combined-bazel-update-v1-status.json.gz",
+      "stored_bytes": 338,
+      "stored_sha256": "ced1e5e98754bda5611cd25661dfc745ac99fb9c31b3dacca6bd97a0ad456e3a"
+    },
+    {
+      "original_name": "combined-bazel-update-v1-stdout.log",
+      "original_bytes": 908,
+      "original_sha256": "395684f7090594a5f694e756c0a83b11a18137d7714dc3d177f77765c1a986ae",
+      "stored_name": "combined-bazel-update-v1-stdout.log.gz",
+      "stored_bytes": 489,
+      "stored_sha256": "a363a713cc434e0b48aae6213cb35223e9e2b68b88f5f82193771efce85c24be"
+    },
+    {
+      "original_name": "combined-bazel-update-v1-stderr.log",
+      "original_bytes": 604,
+      "original_sha256": "3696d1bf702bd946bf7103198f7423da72cf309d700a9448dd15ced23fb45d3c",
+      "stored_name": "combined-bazel-update-v1-stderr.log.gz",
+      "stored_bytes": 427,
+      "stored_sha256": "25b740866a8b053053733902dfcf57bbc2fc539c34f9ccb365b94710fafb23ed"
+    },
+    {
+      "original_name": "combined-bazel-update-v2-request.json",
+      "original_bytes": 3427,
+      "original_sha256": "918811ddebdeb873f19a5573c57fe85a5d2bfa689295d1977070b9f1f17a1236",
+      "stored_name": "combined-bazel-update-v2-request.json.gz",
+      "stored_bytes": 1409,
+      "stored_sha256": "ec538a65eddd53d6e4742dd817f459be084561f643ed069af0dac02711d87dd0"
+    },
+    {
+      "original_name": "combined-bazel-update-v2-start.json",
+      "original_bytes": 3688,
+      "original_sha256": "c91fd9169b7625999f3373ee1d099cf4538be8b9ac00aab88f64d9fdc1053524",
+      "stored_name": "combined-bazel-update-v2-start.json.gz",
+      "stored_bytes": 1573,
+      "stored_sha256": "9987f146685b5dac0968c371bcf96dfc6e525c4d2b5239114bba3cdc09655557"
+    },
+    {
+      "original_name": "combined-bazel-update-v2-status.json",
+      "original_bytes": 728,
+      "original_sha256": "6697809697e1449ac8a1b088a9d119c99a851c7a26e4e0608e0fcbb1227de2a6",
+      "stored_name": "combined-bazel-update-v2-status.json.gz",
+      "stored_bytes": 334,
+      "stored_sha256": "0970be4b1a124c591195ad20417f57051cf7ceb6351026c081a7b226b41a9a06"
+    },
+    {
+      "original_name": "combined-bazel-update-v2-stdout.log",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_name": "combined-bazel-update-v2-stdout.log.gz",
+      "stored_bytes": 20,
+      "stored_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    {
+      "original_name": "combined-bazel-update-v2-stderr.log",
+      "original_bytes": 1046,
+      "original_sha256": "483e555a1031d85c71d5ab16c491f985428f6a134dfbac84b43899b99160568b",
+      "stored_name": "combined-bazel-update-v2-stderr.log.gz",
+      "stored_bytes": 534,
+      "stored_sha256": "6bc08e9088bdb50ece820e7f185069675c9a6ce2fa320f6a34831837ca4cbb98"
+    },
+    {
+      "original_name": "combined-bazel-update-v3-request.json",
+      "original_bytes": 3531,
+      "original_sha256": "e6980f9763a62be2f9f7fd9894e73f681a10a7f1f600f8eeb179680e354c98f6",
+      "stored_name": "combined-bazel-update-v3-request.json.gz",
+      "stored_bytes": 1440,
+      "stored_sha256": "182c03be6545c3126ad7e15b24eedd34856480ef64fbef4a0bf7593c5620ee24"
+    },
+    {
+      "original_name": "combined-bazel-update-v3-start.json",
+      "original_bytes": 3793,
+      "original_sha256": "e4332656ed3f097c249b3034b8e3c54ec8e9c4f040868ceae04d2ba4b678d303",
+      "stored_name": "combined-bazel-update-v3-start.json.gz",
+      "stored_bytes": 1606,
+      "stored_sha256": "6e272a01da157c3c267ef82647b78bbb27f047967c473075528f0dfebb9efe4a"
+    },
+    {
+      "original_name": "combined-bazel-update-v3-status.json",
+      "original_bytes": 737,
+      "original_sha256": "bc3c29a561d81dcc869b6c9b7fce124990d5318d58f5a57943536d83f29b0d6f",
+      "stored_name": "combined-bazel-update-v3-status.json.gz",
+      "stored_bytes": 339,
+      "stored_sha256": "7ba4f7e2b23777e68b03996b7518d1fb9bbeaa23a317b4b5f342b1a540d33dfa"
+    },
+    {
+      "original_name": "combined-bazel-update-v3-stdout.log",
+      "original_bytes": 1067,
+      "original_sha256": "ea850f891c80ea7648e2fe635ed35ec407e9e1eb67dfd5f579f14c4a168b5d3f",
+      "stored_name": "combined-bazel-update-v3-stdout.log.gz",
+      "stored_bytes": 442,
+      "stored_sha256": "301487191f5fd5b0cdf8dc50fbc622e2af12ac9522f281b71a59daae7f646c16"
+    },
+    {
+      "original_name": "combined-bazel-update-v3-stderr.log",
+      "original_bytes": 4772,
+      "original_sha256": "3754dc28d7663270ca10bff1cad97c24eae48ddb226892fbbcad4bf584ff70f6",
+      "stored_name": "combined-bazel-update-v3-stderr.log.gz",
+      "stored_bytes": 727,
+      "stored_sha256": "4b177765295c2895436c986922acb42ef3f94e1c3807555aebb32f1912a8acdc"
+    },
+    {
+      "original_name": "combined-bazel-check-request.json",
+      "original_bytes": 2963,
+      "original_sha256": "86b82db5b388e6c224a46615dd8f11240fd1cf57781f31aaee8d67d535615bc2",
+      "stored_name": "combined-bazel-check-request.json.gz",
+      "stored_bytes": 1265,
+      "stored_sha256": "d914507a60524cc266c427be535df101cac17ad5a44d634d014c7108cc8ec740"
+    },
+    {
+      "original_name": "combined-bazel-check-start.json",
+      "original_bytes": 3224,
+      "original_sha256": "bcbc08664067bad00cbe180ac4c58ef4e7d0ec2d89ecdea7d6fc2300b8536ee3",
+      "stored_name": "combined-bazel-check-start.json.gz",
+      "stored_bytes": 1423,
+      "stored_sha256": "913c0a059df044fbdc5c0fb645bcf0aa647b6491817eee8e3bf6c9f26a9faa9b"
+    },
+    {
+      "original_name": "combined-bazel-check-status.json",
+      "original_bytes": 735,
+      "original_sha256": "7afda3c24166c77eac0a756c519e2691394470e59231bcb4fc1fab8d17da5cd3",
+      "stored_name": "combined-bazel-check-status.json.gz",
+      "stored_bytes": 338,
+      "stored_sha256": "583b1083d29336dd282f6bcd1e72cd115bc55995a3ce9f3f8e6b5717fb3c67f7"
+    },
+    {
+      "original_name": "combined-bazel-check-stdout.log",
+      "original_bytes": 785,
+      "original_sha256": "b016f6a95d15eee7684e70c8bdfdf232e15546ef2621930fc39620a3c4347306",
+      "stored_name": "combined-bazel-check-stdout.log.gz",
+      "stored_bytes": 511,
+      "stored_sha256": "e4a789f62ef49827465bcf513d1ec7aeda3d7e0647be1e66ad4b054996e9069d"
+    },
+    {
+      "original_name": "combined-bazel-check-stderr.log",
+      "original_bytes": 1026,
+      "original_sha256": "b592f6576550c6a49c3be53a798a288147056c317df08eb47ad31a25666b5c1e",
+      "stored_name": "combined-bazel-check-stderr.log.gz",
+      "stored_bytes": 443,
+      "stored_sha256": "8df975dca1b88e84ec75a574fe72dd49fc1a0c6c1c734bb017dbaa9d18241597"
+    },
+    {
+      "original_name": "combined-bazel-lock-generation-receipt.json",
+      "original_bytes": 54386,
+      "original_sha256": "aaf1d4b833171156b19a2c585b2d6c8f892a4c0fc82e79581f150a04e5000e7d",
+      "stored_name": "combined-bazel-lock-generation-receipt.json.gz",
+      "stored_bytes": 12606,
+      "stored_sha256": "5e29f904abd6738a9992f9825ad8e88406a9e62ecd8246f707900843cc131a00"
+    },
+    {
+      "original_name": "combined-generated-bazel-lock-check-receipt.json",
+      "original_bytes": 27708,
+      "original_sha256": "0bbf8dcd220974c72a89561e51019cce3d2256ca350caf40ee7d9753934afaef",
+      "stored_name": "combined-generated-bazel-lock-check-receipt.json.gz",
+      "stored_bytes": 12243,
+      "stored_sha256": "0c6a358f3e33dd5b518ff3b9351a1383004e9430c81caf2f3b8ad30b8a3011ae"
+    },
+    {
+      "original_name": "combined-bazel-lock-structural-diff.json",
+      "original_bytes": 850,
+      "original_sha256": "01914e7dcc354291a85895063007ff5b5b2d4ec9de35b7c89694f912108b0904",
+      "stored_name": "combined-bazel-lock-structural-diff.json.gz",
+      "stored_bytes": 349,
+      "stored_sha256": "88256c5b0304f3202d0f5bae78a89f18cd3849c47f96e425fba15f475ad4dde3"
+    },
+    {
+      "original_name": "combined-bazel-current-root-input-comparison.json",
+      "original_bytes": 101,
+      "original_sha256": "47b4daae67b11e702c31c810b0763ad96dcc9c367f806b255fbd875e59470f45",
+      "stored_name": "combined-bazel-current-root-input-comparison.json.gz",
+      "stored_bytes": 111,
+      "stored_sha256": "0d2def14cd78bb56f990f96284cba0b1e50de2b16362cf4aaa3052976de2ddd5"
+    },
+    {
+      "original_name": "hcsn-install-bazel-stdout.log",
+      "original_bytes": 652,
+      "original_sha256": "50c14b4d23de55ae33a3babb625d97413b2c2579ffb757cc8af9a3f2c418ee0a",
+      "stored_name": "hcsn-install-bazel-stdout.log.gz",
+      "stored_bytes": 295,
+      "stored_sha256": "85188bfcea0ad57717a9b68ef278d681028311d6f10849efe9be1b103efdcca0"
+    },
+    {
+      "original_name": "hcsn-install-bazel-stderr.log",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_name": "hcsn-install-bazel-stderr.log.gz",
+      "stored_bytes": 20,
+      "stored_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    {
+      "original_name": "hcsn-install-bazel-result.json",
+      "original_bytes": 2910,
+      "original_sha256": "ffda8ec1db80f1c192d90d50b09d9c94f6c201eee7e9fe11437d37211dbf926c",
+      "stored_name": "hcsn-install-bazel-result.json.gz",
+      "stored_bytes": 1300,
+      "stored_sha256": "83aaf931b5800da224d995cd6d9fde7e233ca1d96b8d88ecc6199b16339d5d2f"
+    },
+    {
+      "original_name": "hcsn-install-bazel-request.json",
+      "original_bytes": 1782,
+      "original_sha256": "b90b2107f66bea21609602eaffc7576dda6be5047792a671f6c71719fb9318b9",
+      "stored_name": "hcsn-install-bazel-request.json.gz",
+      "stored_bytes": 896,
+      "stored_sha256": "3d0727bc032083d8e9b39b270140a44c3dae0ba6cfb7a01aa1a2a591522225ec"
+    },
+    {
+      "original_name": "hcsn-install-bazel-status.json",
+      "original_bytes": 729,
+      "original_sha256": "15a21a7c19f8e3c6ad302e06e64c1968f92e1412d911fd1676dfd7528ffc4a17",
+      "stored_name": "hcsn-install-bazel-status.json.gz",
+      "stored_bytes": 333,
+      "stored_sha256": "b8d39d5754c406b9da20e57dbc5ee8dc0a78c05dc6ffa2d70d75c34b859e1416"
+    },
+    {
+      "original_name": "combined-generated-MODULE.bazel.lock",
+      "original_bytes": 1791651,
+      "original_sha256": "54b7e89cd40e0f6e524e7ba495fdde5a0c346bec94cb8c26afdd54fcc4402d77",
+      "stored_name": "combined-generated-MODULE.bazel.lock.gz",
+      "stored_bytes": 228671,
+      "stored_sha256": "9d6be9309219c908469119abbfd6fc9186b9209432fd3cb329d607c3e691141f"
+    },
+    {
+      "original_name": "combined-generated-MODULE.bazel.lock.patch",
+      "original_bytes": 44764,
+      "original_sha256": "a2b86899aa032667361048597431729306b2b4242cbf6d3453411a1ab94ceb9a",
+      "stored_name": "combined-generated-MODULE.bazel.lock.patch.gz",
+      "stored_bytes": 6510,
+      "stored_sha256": "b0ec383f32395d1660e37aa2ba9bdef3e995d3a9244e739b28b7506a2482d638"
+    },
+    {
+      "original_name": "combined-memory-edge-request.json",
+      "original_bytes": 5109,
+      "original_sha256": "b410dff754d19d58c4db1976390efb4d2177a13a7331c8b82605b93ecf935ad0",
+      "stored_name": "combined-memory-edge-request.json.gz",
+      "stored_bytes": 1949,
+      "stored_sha256": "19d68d52ff5d6d99458193e7d4c0000ea08f011a8761c4a7430c47e8f4a66727"
+    },
+    {
+      "original_name": "combined-memory-edge-start.json",
+      "original_bytes": 5371,
+      "original_sha256": "50e48fc2a0cbdf7f677a15795ae2396de31a26306ec12f8a415c51a88479e57d",
+      "stored_name": "combined-memory-edge-start.json.gz",
+      "stored_bytes": 2143,
+      "stored_sha256": "6d46fff7bd9f049f8a4cb867ca1d09365523c5e80372bb5303473b2999a5947a"
+    },
+    {
+      "original_name": "combined-memory-edge-status.json",
+      "original_bytes": 739,
+      "original_sha256": "75867fed52d08723f29b8001cc158f16707ad7b7e3f1cb868ffd21f67184545e",
+      "stored_name": "combined-memory-edge-status.json.gz",
+      "stored_bytes": 340,
+      "stored_sha256": "926086ec8838605899437cab51c55e57fa2b951b1b06d346babf143acb7b6898"
+    },
+    {
+      "original_name": "combined-memory-edge-stdout.log",
+      "original_bytes": 3134,
+      "original_sha256": "d4c164d197870cf153598c9b9b4feb4c701abbffcc2a74960f79da82123893f0",
+      "stored_name": "combined-memory-edge-stdout.log.gz",
+      "stored_bytes": 952,
+      "stored_sha256": "1c18aedd7734b6c774a07541bf960ff9a7cf930bf1141115ec165e3c98f15948"
+    },
+    {
+      "original_name": "combined-memory-edge-stderr.log",
+      "original_bytes": 15269,
+      "original_sha256": "9f47e98c076f4ebbeefab707a6a485b3f3552ecc693bf90d7bae678f8ee062b7",
+      "stored_name": "combined-memory-edge-stderr.log.gz",
+      "stored_bytes": 4058,
+      "stored_sha256": "b7aecf7c820fbf792fa8d135d6cc7277b608edb35c8c9195c403e0719173519a"
+    },
+    {
+      "original_name": "combined-memory-edge-lock-receipt.json",
+      "original_bytes": 163591,
+      "original_sha256": "2e1214f707686d284e2cf414c6330294612a6dcbf5b98fdc8df8d52f23d26801",
+      "stored_name": "combined-memory-edge-lock-receipt.json.gz",
+      "stored_bytes": 14229,
+      "stored_sha256": "86b2a297cbc350abb7b71e5b52c0234f1f902bc1a6233665a8fbabe717fe539f"
+    },
+    {
+      "original_name": "combined-memory-edge-cargo-diff.json",
+      "original_bytes": 877,
+      "original_sha256": "27b39eff5ee52fe88f5f162f13045342554a2d7955c798197685ac241e49622c",
+      "stored_name": "combined-memory-edge-cargo-diff.json.gz",
+      "stored_bytes": 321,
+      "stored_sha256": "ba7522935e67cf9f84d2f496f1fba08f28c5707232eb09b86b4663f9f2808e95"
+    },
+    {
+      "original_name": "combined-memory-edge-current-root-inputs.json",
+      "original_bytes": 110,
+      "original_sha256": "71cfc2383b5e8a0c80492eed242a65e13588b132b235033c1f1ecf3316e9b75c",
+      "stored_name": "combined-memory-edge-current-root-inputs.json.gz",
+      "stored_bytes": 116,
+      "stored_sha256": "8f4344fb7c5aeb191efb1acb5785a59af08dce4b99a643010f19aef5206a4917"
+    },
+    {
+      "original_name": "combined-generated-memory-edge-Cargo.lock",
+      "original_bytes": 422511,
+      "original_sha256": "907aef79c029c035694df1b1242e6284f5f8244a1d8b88cbe25c918251fb49ed",
+      "stored_name": "combined-generated-memory-edge-Cargo.lock.gz",
+      "stored_bytes": 94151,
+      "stored_sha256": "e8138486b1f92b4f9d0ad5397ca70dbcf837e3096d641fef4c839260ed87e146"
+    },
+    {
+      "original_name": "combined-memory-edge-locks.patch",
+      "original_bytes": 45107,
+      "original_sha256": "1f17c39714f11716e63e6680dede2b43c78c469a9d2f4a133d6c740fa8ea03b7",
+      "stored_name": "combined-memory-edge-locks.patch.gz",
+      "stored_bytes": 6680,
+      "stored_sha256": "48353b39b31cc6512b82da023506a94fa9e0384e170d8b34c5fc63d4ea200e8d"
+    }
+  ],
+  "initial_cargo_lock_sha256": "3b6f931b2e16d4f366195b5394741d0d56f700f1ab6d6a3643e438b9321a47a0",
+  "full_workspace_followup": {
+    "job_id": "1a1e0593df2-392-2a6b",
+    "rust_toolchain": "1.96.0",
+    "workspace_members": 193,
+    "packages": 1527,
+    "commands": [
+      {
+        "name": "cargo_resolution",
+        "command": [
+          "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+          "metadata",
+          "--format-version=1"
+        ],
+        "exit_code": 0,
+        "seconds": 15.262
+      },
+      {
+        "name": "cargo_locked_metadata",
+        "command": [
+          "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+          "metadata",
+          "--locked",
+          "--offline",
+          "--format-version=1"
+        ],
+        "exit_code": 0,
+        "seconds": 1.283
+      },
+      {
+        "name": "bazel_update",
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "seconds": 4.338
+      },
+      {
+        "name": "bazel_check",
+        "command": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 0.459
+      }
+    ],
+    "dependency_input_count": 240,
+    "unexpected_source_changes": {},
+    "cargo_lock_sha256": "907aef79c029c035694df1b1242e6284f5f8244a1d8b88cbe25c918251fb49ed",
+    "bazel_lock_sha256": "54b7e89cd40e0f6e524e7ba495fdde5a0c346bec94cb8c26afdd54fcc4402d77",
+    "current_root_comparison": {
+      "root_head": "394073576ddf4bbbdaec8fdd32eb9b1e2f1716a0",
+      "dependency_inputs": 240,
+      "mismatches": {}
+    }
+  }
+}

@@ -1,0 +1,1089 @@
+{
+  "api_forward_calls": 39,
+  "arrays_sha256": "2d16eb397bdf99b595f039ee8076c07275bbf9e1bf5070d0cc789c85c73ad920",
+  "basis_ode_forward_calls": 39,
+  "calls": [
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2387699619999999,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.2387707629999909
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_vjp",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.24047050500000466
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23775930499999975,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23777268299998866
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.2383751410000059
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2358349930000001,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23585921599999438
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23649061399999027
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23501314900000025,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23501703600000212
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23563299999999288
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2357870949999996,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23579368900000475
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23651993899999013
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23552127800000022,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23551899899999285
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.2361504410000066
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23904981399999992,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23906078000000264
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.239649294000003
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23657961400000005,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23658812499999726
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.2371850749999993
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2358449920000001,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23586214699999175
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23649886999999126
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2354419299999999,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23543937099999823
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.2361038949999994
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23953338499999965,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23953962299999887
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.24026126700000816
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2368740840000001,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23689847199999292
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_normalized_client_graph",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.2376183869999977
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23876893999999993,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.2387683580000015
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_normalized_client_graph",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23947970700000099
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23821415399999957,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23826545699999713
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_normalized_client_graph",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.2389257820000097
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23524423000000017,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23525005200001203
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_normalized_client_graph",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23588678200000857
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2357337149999994,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23573380599999894
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_normalized_client_graph",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23640328700000168
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2371531840000003,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.2371532389999942
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_normalized_client_graph",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23786604200000738
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23485629699999944,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23491013699999996
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_normalized_client_graph",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23553961300000026
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23531721699999952,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.2353320960000076
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_normalized_client_graph",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23591640700000482
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2355102269999998,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.2355212589999951
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "uniform_normalized_client_graph",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23610335700000462
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23538107600000036,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23538131799999462
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "mutation_input0_unsafeFalse",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23601614400000415
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2354916720000002,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23554224800000156
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "mutation_input0_unsafeTrue",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23628032800000653
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2348649639999998,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23487124400000425
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "mutation_input1_unsafeFalse",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23544766099999492
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.2360737989999997,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23608961099999703
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "mutation_input1_unsafeTrue",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23671540999998797
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23469071799999952,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.234691006999995
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "mutation_input2_unsafeFalse",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23526234500000953
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.235709077000001,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23572697300001266
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "mutation_input2_unsafeTrue",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.236317487000008
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23524561300000002,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23528902500000015
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "mutation_input3_unsafeFalse",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23586439000000325
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.23664988300000012,
+          "directions": [
+            0,
+            9
+          ],
+          "internal_steps": 575,
+          "signed_channels": 9,
+          "wall_seconds": 0.23666263199999094
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 9,
+      "first_order_only": true,
+      "label": "mutation_input3_unsafeTrue",
+      "large_grid_qualified": false,
+      "map_scalars": 432,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.23730612500000348
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.5327031069999997,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.532734056999999
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_vjp",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5334527099999917
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.5295674940000001,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.5296207979999963
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5303885729999962
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.5290385359999998,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.5291201020000074
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5298747730000031
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.5287694849999998,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.528789420999999
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5295954080000058
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.5293500589999987,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.5294109129999924
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5302239319999984
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.5308142710000006,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.5308267690000008
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5315937520000062
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.526365868000001,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.5264302229999913
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5271870480000018
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.5312766849999999,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.5312915969999921
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5320694010000011
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.5252157110000013,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.5252832900000044
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5260223110000055
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.5305143109999992,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.5305138039999946
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5312895040000001
+    },
+    {
+      "all_four_inputs_guarded": true,
+      "basis_costs": [
+        {
+          "cpu_seconds": 0.5254556400000006,
+          "directions": [
+            0,
+            14
+          ],
+          "internal_steps": 1410,
+          "signed_channels": 14,
+          "wall_seconds": 0.5255309830000101
+        }
+      ],
+      "basis_forward_calls": 1,
+      "directions": 14,
+      "first_order_only": true,
+      "label": "graded_raw_gradcheck",
+      "large_grid_qualified": false,
+      "map_scalars": 952,
+      "migration_gradients": false,
+      "optimizer_updates": 0,
+      "physics_gradients": false,
+      "support_gradients": false,
+      "wall_seconds": 0.5262161130000038
+    }
+  ],
+  "cpu_seconds": 12.851068008,
+  "expected_arrays_sha256": "2dcfe03f2911cb0b6c55b2c24f095d7688d150eb84177d1bb7e4970daa8fa305",
+  "fixed_physics_support_only": true,
+  "full_network_ad": false,
+  "maximum_rss_kib": 422920,
+  "native_uniform_oracle_forward_calls": 2,
+  "optimizer_updates": 0,
+  "results": [
+    {
+      "full_vjp_maximum_error": 2.220446049250313e-15,
+      "geometry": "uniform",
+      "normal_and_unsafe_guards_all_four_inputs": true,
+      "normalized_client_graph_gradcheck": true,
+      "normalized_native_graph_vjp_maximum_error": 4.197442393660822e-11,
+      "old_physical_only_rejects_trainable_prior": true,
+      "primal_maximum_error": 7.268012580663452e-12,
+      "raw_gradcheck": true,
+      "uniform_native_graph_vjp_maximum_error": 1.3119838548902862e-10
+    },
+    {
+      "full_vjp_maximum_error": 3.8413716652030416e-13,
+      "geometry": "graded",
+      "primal_maximum_error": 6.536535852516567e-11,
+      "raw_gradcheck": true
+    }
+  ],
+  "runtime": {
+    "device": "cpu",
+    "numpy": "2.3.5",
+    "python": "3.12.16",
+    "scipy": "1.17.0",
+    "threads": 1,
+    "torch": "2.8.0+cpu",
+    "torch_build": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7"
+  },
+  "source_commit": "8945243ae3f0832c01e317498be71483413b8b7b",
+  "source_sha256_after": {
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_initial_vjp/check_linear_map.py": "57a138bd12e3332a9836d6e847bc562240b670df04c197cd094a4f51155c30ad",
+    "qualification/hcsn_initial_vjp/linear_map.py": "df18f00b50490944e3db9c07987be9e7d9383374e10fe1bf18413845c4464e99",
+    "qualification/hcsn_initial_vjp/native_probe.py": "66f96add734125fd62ee2cbd10b51ad489110dcbe2d1c14394a9997c808074c5",
+    "qualification/hcsn_initial_vjp/reference_uniform_cascade.py": "0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773",
+    "qualification/hcsn_initial_vjp/torch_flow.py": "93342358ca74ee25e1988352f0e5f12a0db1bab46308dab1e432d98b805413f2",
+    "qualification/hcsn_joint_dde/graded_sensitivities.py": "b5b2fa8fdfd185cfb7dfef045536a06d9f55e17df7abd2c6de13620e6eda6548",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "qualification/hcsn_joint_dde/sensitivities.py": "d2c6c754b04a1e4ed21f317146a70de2aeb3020b01bd48a18e5301fb22c09f1a",
+    "qualification/hcsn_joint_dde/torch_physical.py": "c203a7015d538f83e2f9eb4c5452ce0883ff060fa470680a4a516dba7f19d731"
+  },
+  "source_sha256_before": {
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_initial_vjp/check_linear_map.py": "57a138bd12e3332a9836d6e847bc562240b670df04c197cd094a4f51155c30ad",
+    "qualification/hcsn_initial_vjp/linear_map.py": "df18f00b50490944e3db9c07987be9e7d9383374e10fe1bf18413845c4464e99",
+    "qualification/hcsn_initial_vjp/native_probe.py": "66f96add734125fd62ee2cbd10b51ad489110dcbe2d1c14394a9997c808074c5",
+    "qualification/hcsn_initial_vjp/reference_uniform_cascade.py": "0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773",
+    "qualification/hcsn_initial_vjp/torch_flow.py": "93342358ca74ee25e1988352f0e5f12a0db1bab46308dab1e432d98b805413f2",
+    "qualification/hcsn_joint_dde/graded_sensitivities.py": "b5b2fa8fdfd185cfb7dfef045536a06d9f55e17df7abd2c6de13620e6eda6548",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "qualification/hcsn_joint_dde/sensitivities.py": "d2c6c754b04a1e4ed21f317146a70de2aeb3020b01bd48a18e5301fb22c09f1a",
+    "qualification/hcsn_joint_dde/torch_physical.py": "c203a7015d538f83e2f9eb4c5452ce0883ff060fa470680a4a516dba7f19d731"
+  },
+  "status": "PASS",
+  "wall_seconds": 12.909670168000005
+}

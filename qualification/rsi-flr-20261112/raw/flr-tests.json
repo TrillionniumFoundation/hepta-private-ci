@@ -1,0 +1,53 @@
+{
+  "after": {
+    "commit": "326a7df9073945c3dc682a96733b92c5c04096ab",
+    "dirty": false,
+    "parents": [
+      "4d5ffd79302da50ca2de87ec203905f7b4683de6"
+    ],
+    "tree": "c757193f2339bca634b8a038a0ac526621c7456e"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "326a7df9073945c3dc682a96733b92c5c04096ab",
+    "dirty": false,
+    "parents": [
+      "4d5ffd79302da50ca2de87ec203905f7b4683de6"
+    ],
+    "tree": "c757193f2339bca634b8a038a0ac526621c7456e"
+  },
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "-v",
+    "scripts.ndu_real_runtime.test_causal_ace",
+    "scripts.ndu_real_runtime.test_evolve1",
+    "scripts.ndu_real_runtime.test_evolve1_pilot",
+    "scripts.ndu_real_runtime.test_flr_contract",
+    "scripts.ndu_real_runtime.test_flr_reference"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 2.901408165000248,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T06:31:26.397868+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 14545,
+  "log_file": "flr-tests.json.e09241f1cb53452f8901caac551e75ca.log",
+  "log_sha256": "b11a0ea2ab4e7c703b3e07f04560417ef2823a7c2fedfa34da647f760e64d08b",
+  "minimum_tests": 74,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 74,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "326a7df9073945c3dc682a96733b92c5c04096ab",
+  "started_at": "2026-11-12T06:31:23.495281+00:00",
+  "status": "passed",
+  "tested_sha": "326a7df9073945c3dc682a96733b92c5c04096ab",
+  "timed_out": false,
+  "working_directory": "/workspace/scratch/97e9e0e36433/hepta-rsi"
+}

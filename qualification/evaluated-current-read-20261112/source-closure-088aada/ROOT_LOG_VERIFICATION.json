@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.owner088.root-log-verification.v1",
+  "source_commit": "088aadac3c88a5be6299ece1561d1ed54dd7d494",
+  "tree": "e338a817d39a7269ea815bf4b1a594d9985779d9",
+  "job_id": "1a1cf3462ea-2564-19c4",
+  "original_source_log": {
+    "bytes": 85110,
+    "sha256": "2cbbebf1c1dfb55cec47339f1bcf42bd5800376d4f01cf95014acb6b460bc1ed",
+    "git_blob": "df2e06f650647e5d59ac5060c47fb4a7b1b12b7f",
+    "actual_unittest_tests": 376,
+    "status": "OK"
+  },
+  "owner_evidence_parser": {
+    "bytes": 3123,
+    "sha256": "d71f03d1d594190e776f3acf143e24afc022515dc45cd60147dcdf5e8ce49ccf",
+    "git_blob": "7fbacd68a2b0d8544b164ea313c4738f5779a88d",
+    "actual_unittest_tests": 16,
+    "status": "OK"
+  },
+  "original_result_files_verified": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.json",
+      "bytes": 1553,
+      "sha256": "2e4ca2ea53a9f559ee9554ef4143cb6c6653a017a5000a9c5c7efacb91e7b024",
+      "git_blob": "b5c1197574536b2f5e2ff49642b3623851c8ffa1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.json.a2d7c7a8ab36401d8310cc6dfa2eb73b.log",
+      "bytes": 3123,
+      "sha256": "d71f03d1d594190e776f3acf143e24afc022515dc45cd60147dcdf5e8ce49ccf",
+      "git_blob": "7fbacd68a2b0d8544b164ea313c4738f5779a88d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.json",
+      "bytes": 1539,
+      "sha256": "58c2f193f294d805993e85e2a7a4f1b676c85ba659bb4039e6fff3803a238765",
+      "git_blob": "045da97d146a87cd6d045ed4529bda330a34bf46"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.json",
+      "bytes": 376,
+      "sha256": "2b795bee68fe913f00a6bc970a38014a24e956b68c3da6b9f832b6016a8d67a0",
+      "git_blob": "4c335b49b3c3c50adf028108b4db41d0209f0147"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/RESULT.json",
+      "bytes": 7614,
+      "sha256": "ab3ca26880f1e47a8c8f2bdbbab58b6fea252188ebcdf7705ffea871a79c0586",
+      "git_blob": "1f289227e9896a3c6efd470b91933f1901478313"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-status.json",
+      "bytes": 732,
+      "sha256": "5d2bec5a6798a9a6a04900838443091834ca8773855fc8c9d7c6e529587c11dc",
+      "git_blob": "924fc6eeea8d6d9baa579892cd6b780e51a7f6e3"
+    }
+  ],
+  "source_inventory_manifest": {
+    "files": 14753,
+    "head": "088aadac3c88a5be6299ece1561d1ed54dd7d494",
+    "inventory_compressed_bytes": 762747,
+    "inventory_compressed_sha256": "ce499f30331e13626ae232034e0b18c0df4fc15e9c9201d96ca49e0b2a182d55",
+    "inventory_sha256": "4e37e391b868311ffd4a60c9d67167780de77821c2517c8c59270002e26a6d29",
+    "status": "",
+    "tree": "e338a817d39a7269ea815bf4b1a594d9985779d9"
+  },
+  "inventory_full_compressed_payload": "pending transfer; digest manifest is not a substitute for the raw inventory",
+  "native_qualification": false,
+  "owner_decision": null
+}

@@ -1,0 +1,71 @@
+name: MemoryCell latest two strict native answer repeatability
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_latest_native_pair_audit.py"
+      - "scripts/memory_cell/test_stem_latest_native_pair_audit.py"
+      - ".github/workflows/hepta-memory-stem-latest-pair-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: stem-latest-pair-audit-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  pinned-read-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Exact source and synthetic fail-closed regression tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/latest-strict-audit
+          git rev-parse HEAD > /tmp/latest-strict-audit/auditing-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/latest-strict-audit/auditing-tree.txt
+          python3 -m unittest -v test_stem_latest_native_pair_audit \
+            2>&1 | tee /tmp/latest-strict-audit/tests.log
+          python3 -m compileall -q scripts/memory_cell/stem_latest_native_pair_audit.py scripts/memory_cell/test_stem_latest_native_pair_audit.py
+      - name: Fetch both complete immutable strict-as-of native matrices
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11698640219/zip > /tmp/stem-native-af08.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11698365596/zip > /tmp/stem-native-a896.zip
+          printf '%s  %s\n' \
+            29ecf0a7e4a5c08075aea1b0e70540116eb04aa2b51c6c79509c773744037ace /tmp/stem-native-af08.zip \
+            4c57054d93b8ffc35b973299d3f583e783bb8c4bcef670c2fe8c01b243ceed4d /tmp/stem-native-a896.zip | sha256sum -c -
+      - name: Independently reconcile 576 sources, Reader answers and all frozen tensors
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_latest_native_pair_audit.py \
+            --earlier /tmp/stem-native-af08.zip \
+            --later /tmp/stem-native-a896.zip \
+            --output /tmp/latest-strict-audit/verified-two-run-native-contrast.json \
+            2>&1 | tee /tmp/latest-strict-audit/accounting.log
+      - name: Retain exact audit source, failures and manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/latest-strict-audit/source
+          cp scripts/memory_cell/stem_latest_native_pair_audit.py /tmp/latest-strict-audit/source/
+          cp scripts/memory_cell/test_stem_latest_native_pair_audit.py /tmp/latest-strict-audit/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/latest-strict-audit/source/
+          cp scripts/memory_cell/stem_strict_repeatability.py /tmp/latest-strict-audit/source/
+          cp .github/workflows/hepta-memory-stem-latest-pair-audit.yml /tmp/latest-strict-audit/source/
+          (cd /tmp/latest-strict-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-latest-two-run-native-audit
+          path: /tmp/latest-strict-audit
+          if-no-files-found: error

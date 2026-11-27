@@ -1,7 +1,7 @@
 use std::any::Any;
 use std::collections::HashMap;
-use std::future::Future;
 use std::fs;
+use std::future::Future;
 use std::panic::AssertUnwindSafe;
 use std::path::Path;
 use std::path::PathBuf;
@@ -20,9 +20,9 @@ use tokio::io::BufReader;
 use tokio::process::Command as TokioCommand;
 use tokio::time::timeout;
 
+use super::WineRuntimePaths;
 use super::WineTestCommand;
 use super::WineTestProcess;
-use super::WineRuntimePaths;
 use super::install_powershell_runtime;
 
 async fn waiting_smoke_process() -> Result<WineTestProcess> {
@@ -35,6 +35,33 @@ async fn waiting_smoke_process() -> Result<WineTestProcess> {
         .context("Windows smoke process exited before becoming ready")?;
     assert_eq!(ready_line, "WINE_TEST_READY");
     Ok(process)
+}
+
+#[tokio::test]
+async fn prefix_setup_is_visible_to_the_windows_process_at_startup() -> Result<()> {
+    let executable = codex_utils_cargo_bin::cargo_bin("wine-smoke")?;
+    let mut process = WineTestCommand::new(executable)
+        .env("WINE_SMOKE_HOME", r"C:\codex-home")
+        .spawn_with_prefix_setup(|prefix| {
+            let home = prefix.join("drive_c").join("codex-home");
+            fs::create_dir(&home)?;
+            fs::write(home.join("marker.txt"), b"created before launch")?;
+            Ok(())
+        })?;
+    let prefix = prefix_path(&process);
+    let mut lines = BufReader::new(process.take_stdout()).lines();
+    process
+        .scope(async {
+            let ready = lines
+                .next_line()
+                .await?
+                .context("Windows smoke process exited before becoming ready")?;
+            assert_eq!(ready, "WINE_TEST_READY");
+            Ok(())
+        })
+        .await?;
+    assert_prefix_removed(&prefix);
+    Ok(())
 }
 
 fn prefix_path(process: &WineTestProcess) -> PathBuf {
@@ -314,7 +341,10 @@ async fn pinned_powershell_runs_under_wine_with_a_pty() -> Result<()> {
     let mut env = std::env::vars().collect::<HashMap<_, _>>();
     env.remove("DISPLAY");
     env.extend([
-        ("HOME".to_string(), prefix.path().to_string_lossy().into_owned()),
+        (
+            "HOME".to_string(),
+            prefix.path().to_string_lossy().into_owned(),
+        ),
         (
             "XDG_RUNTIME_DIR".to_string(),
             prefix.path().to_string_lossy().into_owned(),
@@ -431,7 +461,11 @@ async fn pinned_powershell_runs_under_wine_with_a_pty() -> Result<()> {
         .context("PowerShell smoke marker line was incomplete")?
         .trim_end_matches('\r');
     let fields = smoke.split('|').collect::<Vec<_>>();
-    assert_eq!(fields.len(), 5, "unexpected PowerShell smoke output: {smoke}");
+    assert_eq!(
+        fields.len(),
+        5,
+        "unexpected PowerShell smoke output: {smoke}"
+    );
     assert_eq!(fields[0], POWERSHELL_SMOKE_MARKER);
     assert_eq!(
         fields[1].split('.').next(),

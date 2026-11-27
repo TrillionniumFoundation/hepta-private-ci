@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.mem8.bazel-ci.v5.original-attempts.v1",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "initial": {
+    "run": 43020198388,
+    "job": 130521184483,
+    "attempt": 1,
+    "harness_head": "8ead9735ecd78721f306f03e49dbd57894a474d0",
+    "conclusion": "failure",
+    "actual_lock_command_phases": 0,
+    "native_tests": 0,
+    "model_calls": 0,
+    "source_before_clean": true,
+    "source_after": "absent: no clean-after claim",
+    "cause": "The driver compared combined stdout/stderr to the exact version string. The successful first Bazel download emitted a 103-byte informational download line before the 12-byte version line; combined 115-byte equality rejected.",
+    "probe_exit_code": 0,
+    "probe_timed_out": false,
+    "erratum": "Initial static review did not detect cold-download informational output on stderr. This was an evidence-parser failure before any lock command, not a Bazel lock or source failure."
+  },
+  "revision2": {
+    "run": 43020939762,
+    "job": 130523679401,
+    "attempt": 1,
+    "harness_head": "d03aa4c87d4f9fe9c1f99fbe319f829d9eef6158",
+    "conclusion": "success",
+    "actual_lock_command_phases": 1,
+    "native_tests": 0,
+    "model_calls": 0,
+    "change": "Only the Bazel version preflight separates stdout and stderr; strict stdout version equality, original exit/30-second probe budget and 1200-second lock budget are unchanged. Both streams are retained and hashed.",
+    "source_before_after_clean": true,
+    "lock_files_byte_equal_before_after": true,
+    "tool_bytes_equal_before_after": true,
+    "original_lock_elapsed_seconds": 26.462319020000002,
+    "raw_lock_sha256": "dbb76ccdc397772c18d75bb2d744ebf51d1787d386be4f71127248c5a3d50504"
+  },
+  "scope": "This is only exact-source module-lock freshness. It does not compile project-native code, execute tests or establish Windows security, provider, retention benefit or complete hosted-CI status.",
+  "original_warnings": "Direct module version and known crate annotation warnings are preserved in the 3211-byte command log. No warning policy or Bazel flags were relaxed.",
+  "source_ref_mutations": false,
+  "original_run_reruns": false
+}

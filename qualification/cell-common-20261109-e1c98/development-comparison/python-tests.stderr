@@ -1,0 +1,25 @@
+test_actual_checker_failure_remains_in_comparison (cell_repo_mdv.test_compare.ComparisonControls.test_actual_checker_failure_remains_in_comparison) ... ok
+test_duplicate_arms_or_reused_training_task_rejected_before_output (cell_repo_mdv.test_compare.ComparisonControls.test_duplicate_arms_or_reused_training_task_rejected_before_output) ... ok
+test_exposed_tasks_cannot_become_confirmation_by_declaration (cell_repo_mdv.test_compare.ComparisonControls.test_exposed_tasks_cannot_become_confirmation_by_declaration) ... ok
+test_four_arms_execute_terminal_recipes_on_isolated_sources (cell_repo_mdv.test_compare.ComparisonControls.test_four_arms_execute_terminal_recipes_on_isolated_sources) ... ok
+test_invalid_lineage_or_initial_state_rejected_before_output (cell_repo_mdv.test_compare.ComparisonControls.test_invalid_lineage_or_initial_state_rejected_before_output) ... ok
+test_original_workspace_reference_is_rejected_before_execution (cell_repo_mdv.test_compare.ComparisonControls.test_original_workspace_reference_is_rejected_before_execution) ... ok
+test_unresolved_source_pins_do_not_count_as_terminal_results (cell_repo_mdv.test_compare.ComparisonControls.test_unresolved_source_pins_do_not_count_as_terminal_results) ... ok
+test_failed_actual_checker_does_not_update (cell_repo_mdv.test_runner.RunnerControls.test_failed_actual_checker_does_not_update) ... ok
+test_failed_parent_cannot_release_state_to_successor (cell_repo_mdv.test_runner.RunnerControls.test_failed_parent_cannot_release_state_to_successor) ... ok
+test_holdout_rejected_before_output_or_processes (cell_repo_mdv.test_runner.RunnerControls.test_holdout_rejected_before_output_or_processes) ... ok
+test_verified_update_and_new_task_consume_real_checkpoint (cell_repo_mdv.test_runner.RunnerControls.test_verified_update_and_new_task_consume_real_checkpoint) ... ok
+test_wrong_source_pin_blocks_recipe (cell_repo_mdv.test_runner.RunnerControls.test_wrong_source_pin_blocks_recipe) ... ok
+test_actual_update_is_consumed_after_serialization (cell_repo_mdv.test_memory.MemoryControls.test_actual_update_is_consumed_after_serialization) ... ok
+test_changed_bank_or_nonfinite_state_rejected (cell_repo_mdv.test_memory.MemoryControls.test_changed_bank_or_nonfinite_state_rejected) ... ok
+test_confirmation_cannot_be_enabled_by_caller_claim (cell_repo_mdv.test_memory.MemoryControls.test_confirmation_cannot_be_enabled_by_caller_claim) ... ok
+test_duplicate_keys_and_symlinks_rejected (cell_repo_mdv.test_memory.MemoryControls.test_duplicate_keys_and_symlinks_rejected) ... ok
+test_fifo_rejected_without_waiting_for_writer (cell_repo_mdv.test_memory.MemoryControls.test_fifo_rejected_without_waiting_for_writer) ... ok
+test_oversize_input_rejected_before_read (cell_repo_mdv.test_memory.MemoryControls.test_oversize_input_rejected_before_read) ... ok
+test_same_material_available_to_baseline (cell_repo_mdv.test_memory.MemoryControls.test_same_material_available_to_baseline) ... ok
+test_unverified_success_cannot_train (cell_repo_mdv.test_memory.MemoryControls.test_unverified_success_cannot_train) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 1.531s
+
+OK

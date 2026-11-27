@@ -1,0 +1,262 @@
+{
+  "schema": "hepta.mem.delivery-subcriterion-readback.v1",
+  "source_execution_commit": "a4068996433f87f756455e97fe06ca1992aa63fb",
+  "top_level_identities": {
+    "REPORT.json": {
+      "bytes": 187390,
+      "sha256": "465334e5483e263af09e68d232d08047507841c49a84e7154466b3527f12f8e3"
+    },
+    "PLAN.json": {
+      "bytes": 172323,
+      "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5"
+    },
+    "EVIDENCE.json": {
+      "bytes": 306684,
+      "sha256": "eb2c4b21fd2c91005af23c61e9a8e2ffd992817815763b25ad693587eb3de009"
+    }
+  },
+  "reference_index_sha256": "d8086b7cd34b1d8c30463d8fc4cc8ada59d9973e2d8b5248090d4ab1be2b3cb2",
+  "evaluator_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+  "rubric_sha256": "fee667c32ec08286bbaf4e9f70b6489aff55bc7d790dca37fc657e5350084300",
+  "source_paths": {
+    "run_root": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002",
+    "material_root": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2",
+    "evaluator": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/source-v2/scripts/ndu_real_materials/evaluator.py"
+  },
+  "failures": [
+    {
+      "operation_id": "mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2-current_only",
+      "case_id": "case-be9c0795b86c2efb04a61093",
+      "mode": "current_only",
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2",
+      "result_binding": {
+        "bytes": 44359,
+        "path": "episodes/mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2-current_only/result.json",
+        "sha256": "a1cd45def1b60fac868c06ad9380dd680072a7cb33325127446786263733644a"
+      },
+      "trajectory_binding": {
+        "bytes": 27565,
+        "path": "episodes/mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2-current_only/trajectory.json",
+        "sha256": "8d4f9552646b67f33dc672af22f8e6c28679ceb4d445669e911ff7b4528e1c50"
+      },
+      "delivery_binding": {
+        "bytes": 320,
+        "path": "episodes/mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2-current_only/delivery-05/delivery.json",
+        "sha256": "0e2bd6c80811e13f768377e373ccddfa0f9dcaa7a9b9342f80391730e6dc590f"
+      },
+      "reference_binding": {
+        "bytes": 790,
+        "path": "private/references/case-be9c0795b86c2efb04a61093.json",
+        "sha256": "e66a8238c7aa875b17d40f420510f3b34448d1a2595c3270634fa30fb9035a47"
+      },
+      "public_case_binding": {
+        "bytes": 778,
+        "path": "episodes/mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2-current_only/public/case.json",
+        "sha256": "224c4453b26b5feccf91f594dd4d23bfd0b21609e403dba030f188f30c7459c4"
+      },
+      "reference_target_boxes": [
+        [
+          67,
+          843,
+          792,
+          881
+        ]
+      ],
+      "delivered_bbox": [
+        84,
+        842,
+        783,
+        878
+      ],
+      "source_image_sha256": "46e1321df76c6efa0baf716e27cfe07501da37fab450c594865d0f7d505bb41b",
+      "delivered_image_sha256": "f253d9bc8b1cbdc6fadba261a714e07597565c82362a93565c675d42867ffb0f",
+      "actions": [
+        "PREPARE_ROI",
+        "READ_ROI",
+        "WRITE_TEXT",
+        "RENDER_IMAGE",
+        "STOP"
+      ],
+      "original_score_components": {
+        "case_id": "case-be9c0795b86c2efb04a61093",
+        "committed_output_preserved": true,
+        "confirmation_evaluated": false,
+        "cost": {
+          "cpu_seconds": 0.016935301000000003,
+          "max_rss_kib": 225496,
+          "wall_seconds": 0.016959180822595954
+        },
+        "delivery_sha256": "0e2bd6c80811e13f768377e373ccddfa0f9dcaa7a9b9342f80391730e6dc590f",
+        "episode_group": "X51006620161",
+        "evaluator_source_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+        "image_pass": false,
+        "image_pixels_verified": true,
+        "image_quality": 0.8660483556940068,
+        "image_target_coverage": 0.888021778584392,
+        "native_owner_authentication": "SEPARATE_REQUIRED",
+        "quality": 0.9330241778470034,
+        "reference_sha256": "e66a8238c7aa875b17d40f420510f3b34448d1a2595c3270634fa30fb9035a47",
+        "role": "development",
+        "rubric_sha256": "fee667c32ec08286bbaf4e9f70b6489aff55bc7d790dca37fc657e5350084300",
+        "schema": "ndu.real.independent-evaluation.v1",
+        "scoring": "fixed external annotations and pixel comparison; no actor score consumed",
+        "source_group": "merchant-b3a647071736013313212585",
+        "text_quality": 1.0,
+        "utility_upper_bound": 1.0
+      },
+      "independent_geometry": {
+        "image_quality": 0.8660483556940068,
+        "target_coverage": 0.888021778584392
+      },
+      "failure_subcriterion": "image_target_coverage_below_0.95"
+    },
+    {
+      "operation_id": "mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2-bounded",
+      "case_id": "case-be9c0795b86c2efb04a61093",
+      "mode": "bounded",
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2",
+      "result_binding": {
+        "bytes": 43964,
+        "path": "episodes/mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2-bounded/result.json",
+        "sha256": "3ce99473a1a98a892ceba7b55464f4180a4c6bd98191f032133ea7af16eca566"
+      },
+      "trajectory_binding": {
+        "bytes": 27527,
+        "path": "episodes/mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2-bounded/trajectory.json",
+        "sha256": "d5a4804a7bfbd334af58687cac1f78fc2ec469d0bc62cd10dbf1133b58eb0ea0"
+      },
+      "delivery_binding": {
+        "bytes": 320,
+        "path": "episodes/mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2-bounded/delivery-05/delivery.json",
+        "sha256": "0e2bd6c80811e13f768377e373ccddfa0f9dcaa7a9b9342f80391730e6dc590f"
+      },
+      "reference_binding": {
+        "bytes": 790,
+        "path": "private/references/case-be9c0795b86c2efb04a61093.json",
+        "sha256": "e66a8238c7aa875b17d40f420510f3b34448d1a2595c3270634fa30fb9035a47"
+      },
+      "public_case_binding": {
+        "bytes": 778,
+        "path": "episodes/mem-candidate-retention-20261109-a6b21bc7-700b9bed9f2d0c1820a2-bounded/public/case.json",
+        "sha256": "224c4453b26b5feccf91f594dd4d23bfd0b21609e403dba030f188f30c7459c4"
+      },
+      "reference_target_boxes": [
+        [
+          67,
+          843,
+          792,
+          881
+        ]
+      ],
+      "delivered_bbox": [
+        84,
+        842,
+        783,
+        878
+      ],
+      "source_image_sha256": "46e1321df76c6efa0baf716e27cfe07501da37fab450c594865d0f7d505bb41b",
+      "delivered_image_sha256": "f253d9bc8b1cbdc6fadba261a714e07597565c82362a93565c675d42867ffb0f",
+      "actions": [
+        "PREPARE_ROI",
+        "READ_ROI",
+        "WRITE_TEXT",
+        "RENDER_IMAGE",
+        "STOP"
+      ],
+      "original_score_components": {
+        "case_id": "case-be9c0795b86c2efb04a61093",
+        "committed_output_preserved": true,
+        "confirmation_evaluated": false,
+        "cost": {
+          "cpu_seconds": 0.017966402,
+          "max_rss_kib": 225496,
+          "wall_seconds": 0.017983902944251895
+        },
+        "delivery_sha256": "0e2bd6c80811e13f768377e373ccddfa0f9dcaa7a9b9342f80391730e6dc590f",
+        "episode_group": "X51006620161",
+        "evaluator_source_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+        "image_pass": false,
+        "image_pixels_verified": true,
+        "image_quality": 0.8660483556940068,
+        "image_target_coverage": 0.888021778584392,
+        "native_owner_authentication": "SEPARATE_REQUIRED",
+        "quality": 0.9330241778470034,
+        "reference_sha256": "e66a8238c7aa875b17d40f420510f3b34448d1a2595c3270634fa30fb9035a47",
+        "role": "development",
+        "rubric_sha256": "fee667c32ec08286bbaf4e9f70b6489aff55bc7d790dca37fc657e5350084300",
+        "schema": "ndu.real.independent-evaluation.v1",
+        "scoring": "fixed external annotations and pixel comparison; no actor score consumed",
+        "source_group": "merchant-b3a647071736013313212585",
+        "text_quality": 1.0,
+        "utility_upper_bound": 1.0
+      },
+      "independent_geometry": {
+        "image_quality": 0.8660483556940068,
+        "target_coverage": 0.888021778584392
+      },
+      "failure_subcriterion": "image_target_coverage_below_0.95"
+    }
+  ],
+  "newly_available_pairs": [
+    {
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-c86c84aaa40b6ac0d579",
+      "left_selected": false,
+      "right_selected": false
+    },
+    {
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-44267cc27ac85487600a",
+      "left_selected": false,
+      "right_selected": false
+    },
+    {
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-f929ae351e01dae26691",
+      "left_selected": false,
+      "right_selected": false
+    },
+    {
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-1b41b95a5eda9145aed1",
+      "left_selected": false,
+      "right_selected": false
+    },
+    {
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-eecb7d610d0552256a23",
+      "left_selected": false,
+      "right_selected": false
+    },
+    {
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-7f9a7b9dd5ffbf9f9513",
+      "left_selected": false,
+      "right_selected": false
+    },
+    {
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-60facd67c2cb8c8bfe48",
+      "left_selected": false,
+      "right_selected": false
+    },
+    {
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-a93465336d27918eccc0",
+      "left_selected": false,
+      "right_selected": false
+    },
+    {
+      "pair_id": "mem-candidate-retention-20261109-a6b21bc7-26ab77fe57a80152d33b",
+      "left_selected": false,
+      "right_selected": false
+    }
+  ],
+  "common_availability_pair_count": 14,
+  "common_availability_selected_transitions": {
+    "True->True": 2,
+    "False->False": 12
+  },
+  "limits": [
+    "post-hoc readback of exposed development evidence; not independent confirmation",
+    "geometry and bound image bytes rechecked; pixel decoding and scorer not rerun",
+    "original image_pixels_verified receipt retained; execution authenticity not established",
+    "common availability does not mean identical offered candidate rosters"
+  ],
+  "actor_rerun": false,
+  "learning_performed": false,
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false
+}

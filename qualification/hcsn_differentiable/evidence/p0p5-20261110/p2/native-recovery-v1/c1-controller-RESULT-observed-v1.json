@@ -1,0 +1,808 @@
+{
+  "actual_budget_rule": "each parent outer.hard_wall_seconds minus parent whole_process_wall_seconds; no restoration to nominal14400",
+  "actual_continuations_started": 3,
+  "actual_continuations_started_is_lower_bound": false,
+  "attempt_cost_accounting_complete": true,
+  "attempt_wall_sum_is_lower_bound": false,
+  "attempts": [
+    {
+      "adequate": true,
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-c",
+        "import resource,runpy,sys;resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592));script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__('pathlib').Path(script).parent));runpy.run_path(script,run_name='__main__')",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/continuation.py",
+        "--parent-dir",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s211-lr0.001",
+        "--parent-outer-record",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/parent-records/attention-s211-lr0.001.json",
+        "--output",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/attention-s211-lr0.001",
+        "--max-epochs",
+        "400",
+        "--total-wall-seconds",
+        "13642.32502846513"
+      ],
+      "attempt_wrapper_wall_seconds": 10.297473967075348,
+      "common_weights_unchanged": true,
+      "cumulative_epochs": 101,
+      "cumulative_outer_wall_seconds": 255.41099309525453,
+      "dispatch_monotonic": 1407254.600875886,
+      "dispatch_offset_seconds": 9.452573988819495,
+      "dispatch_utc": "2026-11-10T16:53:08.608574+00:00",
+      "epochs_added": 1,
+      "evidence_processing_wall_seconds": 0.0022429588716477156,
+      "fit_status": "completed_development",
+      "hard_remaining_wall_seconds": 13397.209268420003,
+      "launch_offset_seconds": 0.004338718019425869,
+      "name": "attention-s211-lr0.001",
+      "nominal_total_wall_seconds": 14400,
+      "original_total_wall_seconds": 13642.32502846513,
+      "parent_outer_record_sha256": "380f5c72c845cf64334de62b6b0ff0d8403613498947657fc609149cc4f97dc1",
+      "parent_outer_wall_seconds": 245.11576004512608,
+      "parent_result_sha256": "1eba6c4a06e914e548955f0b9c2d78efae579232ec1a1a2da8bc8df7795cbf6c",
+      "peak_rss_bytes": 871469056,
+      "phase_full_process_cpu_seconds": 9.188849432,
+      "pid": 1733870,
+      "process_started": true,
+      "result_sha256": "3764eb08c75b281fa363db9d702c283d719a72d2659ebd5367e0d6fd6047f8d7",
+      "returncode": 0,
+      "selected_development": {
+        "accuracy": 0.635327991987982,
+        "balanced_accuracy_present_classes": 0.398810711272464,
+        "brier_half_sum": 0.258532188253787,
+        "brier_mean_classes": 0.047005852409779454,
+        "confusion_matrix": [
+          [
+            5878,
+            112,
+            112,
+            31,
+            8,
+            321,
+            76,
+            19,
+            6,
+            6,
+            40
+          ],
+          [
+            168,
+            102,
+            0,
+            60,
+            1,
+            114,
+            38,
+            0,
+            54,
+            9,
+            85
+          ],
+          [
+            501,
+            22,
+            188,
+            186,
+            19,
+            37,
+            133,
+            1,
+            4,
+            25,
+            24
+          ],
+          [
+            93,
+            41,
+            187,
+            7496,
+            0,
+            59,
+            1946,
+            292,
+            602,
+            1,
+            783
+          ],
+          [
+            263,
+            6,
+            1,
+            0,
+            7,
+            15,
+            0,
+            0,
+            0,
+            5,
+            0
+          ],
+          [
+            213,
+            108,
+            13,
+            4,
+            2,
+            4547,
+            0,
+            20,
+            34,
+            39,
+            11
+          ],
+          [
+            353,
+            19,
+            120,
+            1244,
+            4,
+            35,
+            841,
+            84,
+            44,
+            1,
+            509
+          ],
+          [
+            60,
+            1,
+            66,
+            184,
+            10,
+            8,
+            300,
+            370,
+            0,
+            4,
+            23
+          ],
+          [
+            95,
+            166,
+            0,
+            53,
+            0,
+            258,
+            210,
+            0,
+            684,
+            0,
+            479
+          ],
+          [
+            28,
+            3,
+            0,
+            0,
+            1,
+            115,
+            1,
+            0,
+            2,
+            42,
+            6
+          ],
+          [
+            67,
+            14,
+            5,
+            8,
+            3,
+            15,
+            73,
+            0,
+            31,
+            0,
+            145
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.06349272777294492,
+        "events": 31952,
+        "macro_f1_11_classes": 0.3859802507952638,
+        "macro_f1_present_classes": 0.3859802507952638,
+        "nll": 1.2023557277459935
+      },
+      "source_unchanged": true,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cc926f64ba8c38bb0a28a76c173f5076c5cceffd94ee7c47f84a735a1ad87287",
+      "whole_process_wall_seconds": 10.295233050128445
+    },
+    {
+      "adequate": true,
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-c",
+        "import resource,runpy,sys;resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592));script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__('pathlib').Path(script).parent));runpy.run_path(script,run_name='__main__')",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/continuation.py",
+        "--parent-dir",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s211-lr0.001",
+        "--parent-outer-record",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/parent-records/gru-s211-lr0.001.json",
+        "--output",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/gru-s211-lr0.001",
+        "--max-epochs",
+        "400",
+        "--total-wall-seconds",
+        "14169.325585023034"
+      ],
+      "attempt_wrapper_wall_seconds": 8.547530598938465,
+      "common_weights_unchanged": true,
+      "cumulative_epochs": 101,
+      "cumulative_outer_wall_seconds": 228.8419448158238,
+      "dispatch_monotonic": 1407264.898740655,
+      "dispatch_offset_seconds": 19.750438757939264,
+      "dispatch_utc": "2026-11-10T16:53:18.906434+00:00",
+      "epochs_added": 1,
+      "evidence_processing_wall_seconds": 0.0032287579961121082,
+      "fit_status": "completed_development",
+      "hard_remaining_wall_seconds": 13949.02794384514,
+      "launch_offset_seconds": 0.00371504295617342,
+      "name": "gru-s211-lr0.001",
+      "nominal_total_wall_seconds": 14400,
+      "original_total_wall_seconds": 14169.325585023034,
+      "parent_outer_record_sha256": "b4a7131da8c611b6c4b4dc766a0b2ef2537d8a1afc3582f0e58aec9b9b4515d8",
+      "parent_outer_wall_seconds": 220.29764117789455,
+      "parent_result_sha256": "817bd7be38b6672e6f52a7d6084603013c88f7f8226ddb7b217f090a2d77f8af",
+      "peak_rss_bytes": 813780992,
+      "phase_full_process_cpu_seconds": 7.528533346,
+      "pid": 1734230,
+      "process_started": true,
+      "result_sha256": "8118e4256922cb9ad1d395f7a122ba1b27efe4637801b54499199fe1660393b5",
+      "returncode": 0,
+      "selected_development": {
+        "accuracy": 0.7335378067100651,
+        "balanced_accuracy_present_classes": 0.4122162975466886,
+        "brier_half_sum": 0.21562677002488195,
+        "brier_mean_classes": 0.03920486727725127,
+        "confusion_matrix": [
+          [
+            5706,
+            2,
+            52,
+            1,
+            0,
+            672,
+            128,
+            3,
+            1,
+            44,
+            0
+          ],
+          [
+            199,
+            18,
+            41,
+            36,
+            0,
+            219,
+            32,
+            0,
+            37,
+            49,
+            0
+          ],
+          [
+            335,
+            0,
+            659,
+            84,
+            0,
+            40,
+            11,
+            1,
+            2,
+            8,
+            0
+          ],
+          [
+            10,
+            1,
+            229,
+            9870,
+            0,
+            3,
+            1303,
+            4,
+            80,
+            0,
+            0
+          ],
+          [
+            214,
+            0,
+            14,
+            1,
+            0,
+            27,
+            2,
+            1,
+            0,
+            38,
+            0
+          ],
+          [
+            342,
+            0,
+            12,
+            2,
+            0,
+            4454,
+            60,
+            1,
+            0,
+            120,
+            0
+          ],
+          [
+            361,
+            0,
+            49,
+            1175,
+            0,
+            51,
+            1299,
+            1,
+            318,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            85,
+            323,
+            0,
+            0,
+            563,
+            3,
+            52,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            225,
+            0,
+            19,
+            311,
+            0,
+            1390,
+            0,
+            0
+          ],
+          [
+            51,
+            0,
+            0,
+            2,
+            0,
+            97,
+            9,
+            0,
+            0,
+            39,
+            0
+          ],
+          [
+            34,
+            0,
+            0,
+            14,
+            0,
+            23,
+            80,
+            0,
+            210,
+            0,
+            0
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.18739039019003287,
+        "events": 31952,
+        "macro_f1_11_classes": 0.39700924766948104,
+        "macro_f1_present_classes": 0.39700924766948104,
+        "nll": 0.9472314952106758
+      },
+      "source_unchanged": true,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "914de0b83d87eb842019f8509f2aa80a20a3cc685f61382adc5e9356a9cae650",
+      "whole_process_wall_seconds": 8.54430363792926
+    },
+    {
+      "adequate": true,
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-c",
+        "import resource,runpy,sys;resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592));script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__('pathlib').Path(script).parent));runpy.run_path(script,run_name='__main__')",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/continuation.py",
+        "--parent-dir",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s101-lr0.001",
+        "--parent-outer-record",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/parent-records/attention-s101-lr0.001.json",
+        "--output",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/attention-s101-lr0.001",
+        "--max-epochs",
+        "400",
+        "--total-wall-seconds",
+        "14400"
+      ],
+      "attempt_wrapper_wall_seconds": 62.709294703789055,
+      "common_weights_unchanged": true,
+      "cumulative_epochs": 123,
+      "cumulative_outer_wall_seconds": 308.8437841658015,
+      "dispatch_monotonic": 1407254.60013831,
+      "dispatch_offset_seconds": 9.451836413005367,
+      "dispatch_utc": "2026-11-10T16:53:08.607834+00:00",
+      "epochs_added": 23,
+      "evidence_processing_wall_seconds": 0.006629903102293611,
+      "fit_status": "completed_development",
+      "hard_remaining_wall_seconds": 14153.858882446075,
+      "launch_offset_seconds": 0.004611888900399208,
+      "name": "attention-s101-lr0.001",
+      "nominal_total_wall_seconds": 14400,
+      "original_total_wall_seconds": 14400,
+      "parent_outer_record_sha256": "e2cb33067f5e16114ddfd80f08187f7800efbf046e645515c202d6f7eccf9aac",
+      "parent_outer_wall_seconds": 246.14111755392514,
+      "parent_result_sha256": "d69a005870c3c5701c1ef9282c6ce1f9846699f529566b9b757a9a5fa76a8cb8",
+      "peak_rss_bytes": 877916160,
+      "phase_full_process_cpu_seconds": 61.53383469,
+      "pid": 1733869,
+      "process_started": true,
+      "result_sha256": "d4708f5347836b5f39ac3b15fbe8bf07526c32c4778aff37181c7a20d6d9c429",
+      "returncode": 0,
+      "selected_development": {
+        "accuracy": 0.6873435152729094,
+        "balanced_accuracy_present_classes": 0.3978108564155947,
+        "brier_half_sum": 0.2368684011680851,
+        "brier_mean_classes": 0.04306698203056093,
+        "confusion_matrix": [
+          [
+            5880,
+            63,
+            148,
+            29,
+            52,
+            198,
+            151,
+            46,
+            11,
+            23,
+            8
+          ],
+          [
+            204,
+            133,
+            8,
+            53,
+            6,
+            140,
+            25,
+            41,
+            2,
+            13,
+            6
+          ],
+          [
+            436,
+            21,
+            469,
+            21,
+            4,
+            8,
+            114,
+            22,
+            19,
+            10,
+            16
+          ],
+          [
+            9,
+            8,
+            162,
+            9394,
+            1,
+            206,
+            1153,
+            530,
+            4,
+            13,
+            20
+          ],
+          [
+            195,
+            7,
+            13,
+            1,
+            33,
+            48,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            290,
+            64,
+            118,
+            5,
+            89,
+            4154,
+            11,
+            29,
+            82,
+            149,
+            0
+          ],
+          [
+            366,
+            8,
+            278,
+            1255,
+            0,
+            89,
+            1012,
+            185,
+            6,
+            13,
+            42
+          ],
+          [
+            9,
+            0,
+            40,
+            138,
+            1,
+            85,
+            239,
+            447,
+            6,
+            27,
+            34
+          ],
+          [
+            39,
+            3,
+            0,
+            947,
+            0,
+            19,
+            448,
+            44,
+            383,
+            1,
+            61
+          ],
+          [
+            76,
+            3,
+            3,
+            1,
+            9,
+            99,
+            5,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            51,
+            0,
+            0,
+            92,
+            1,
+            2,
+            134,
+            18,
+            7,
+            0,
+            56
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.1024772471685042,
+        "events": 31952,
+        "macro_f1_11_classes": 0.404946496408478,
+        "macro_f1_present_classes": 0.404946496408478,
+        "nll": 1.1309260844127729
+      },
+      "source_unchanged": true,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "19fd9610ce49d1608e210c5788e998b365ed9851b9770d2032a95cb02fa7e345",
+      "whole_process_wall_seconds": 62.70266661187634
+    }
+  ],
+  "calendar_scope": "C1 is an additional phase and can extend beyond the original15000s campaign endpoint; perfit active process wall envelopes remain unchanged; no equal end-to-end calendar claim",
+  "confirmation_access": false,
+  "controller_source_sha256": "c24f1cdbc0a828393c5b9b3963880beae32f85bfacec6f9cb981e66d96cf89d4",
+  "declared_continuation_names": [
+    "attention-s101-lr0.001",
+    "attention-s211-lr0.001",
+    "attention-s307-lr0.001",
+    "gru-s211-lr0.001",
+    "ssm_s4d-s211-lr0.001",
+    "ssm_s4d-s211-lr0.003",
+    "ssm_s4d-s307-lr0.001"
+  ],
+  "dispatch_utc": "2026-11-10T16:52:59.156110+00:00",
+  "energy_joules": null,
+  "excluded": [
+    {
+      "name": "attention-s101-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "attention-s211-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "attention-s307-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "cfc-s101-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "cfc-s101-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "cfc-s211-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "cfc-s211-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "cfc-s307-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "cfc-s307-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "event_time_lif-s101-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "event_time_lif-s101-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "event_time_lif-s211-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "event_time_lif-s211-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "event_time_lif-s307-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "event_time_lif-s307-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "gru-s101-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "gru-s101-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "gru-s211-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "gru-s307-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "gru-s307-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "snn_plif-s101-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "snn_plif-s101-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "snn_plif-s211-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "snn_plif-s211-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "snn_plif-s307-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "snn_plif-s307-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "ssm_s4d-s101-lr0.001",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "ssm_s4d-s101-lr0.003",
+      "reason": "development_plateau"
+    },
+    {
+      "name": "ssm_s4d-s307-lr0.003",
+      "reason": "development_plateau"
+    }
+  ],
+  "fit_restarts": false,
+  "formal_fits_started": 0,
+  "formal_scope": "larger confirmatory protocol remains unstarted",
+  "host_load_before_continuations": [
+    11.80322265625,
+    11.54833984375,
+    11.26806640625
+  ],
+  "incomplete_attempt_accounting_names": [],
+  "launch_status_unknown_names": [],
+  "maximum_new_workers": 3,
+  "maximum_original_hcsn_plus_c1_workers": 9,
+  "meminfo_before_continuations": "MemTotal:       131760804 kB\nMemFree:        16694332 kB\nMemAvailable:   70090932 kB\nBuffers:         2656780 kB\nCached:         41729028 kB\nSwapCached:        54852 kB\nActive:         21386716 kB\nInactive:       56725768 kB\nActive(anon):   19928080 kB\nInactive(anon): 33464504 kB\nActive(file):    1458636 kB\nInactive(file): 23261264 kB\nUnevictable:         112 kB\nMlocked:             112 kB\nSwapTotal:       8388604 kB\nSwapFree:            352 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:             45860 kB\nWriteback:             0 kB\nAnonPages:      33673084 kB\nMapped:          1324520 kB\nShmem:          19665756 kB\nKReclaimable:   29889984 kB\nSlab:           35266752 kB\nSReclaimable:   29889984 kB\nSUnreclaim:      5376768 kB\nKernelStack:       67520 kB\nPageTables:       222324 kB\nSecPageTables:     23388 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    74269004 kB\nCommitted_AS:   111180392 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:      286948 kB\nVmallocChunk:          0 kB\nPercpu:           160704 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:         0 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:    995328 kB\nFilePmdMapped:     24576 kB\nCmaTotal:              0 kB\nCmaFree:          111476 kB\nUnaccepted:            0 kB\nBalloon:               0 kB\nGPUActive:             0 kB\nGPUReclaim:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:    84545044 kB\nDirectMap2M:    41158656 kB\nDirectMap1G:    10485760 kB\n",
+  "missing_terminal_attempt_names": [],
+  "new_diagnostics": false,
+  "new_learning_rates": false,
+  "nominal_per_fit_wall_seconds": 14400,
+  "original_baselines_terminal": 36,
+  "original_global_dispatch_window_seconds": 15000,
+  "parent_campaign": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2",
+  "parent_plan_sha256": "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114",
+  "policy_amendment": "separate C1 extends the cumulative epoch ceiling to400; each fit retains its actual original outer hard wall ceiling, min30, plateau delta/patience, LR and diagnostic",
+  "preflight": [
+    {
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3",
+        "-p",
+        "test_continuation.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "045a090d6b6b780ca575c069a71292c711afd2655316c68b46ceb139465bb406",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "whole_process_wall_seconds": 9.242842894047499
+    }
+  ],
+  "schema": "hcsn-epoch-cap-continuation-controller-v3",
+  "scientific_admission": "HOLD",
+  "scope": "completed baseline epoch caps only; original HCSN and original files unchanged",
+  "source_archive_sha256": "f4b473aa4f373c1622bbdac90d61e33c64f0e9642b6c0506e7fec5b8885a3946",
+  "source_copy_and_hash_seconds": 0.023529785918071866,
+  "status": "continuations_running",
+  "sum_attempt_outer_wall_seconds": 81.54220329993404,
+  "sum_attempt_wrapper_wall_seconds": 81.55429926980287,
+  "wait_for_original_baselines_seconds": 0.00978568010032177
+}

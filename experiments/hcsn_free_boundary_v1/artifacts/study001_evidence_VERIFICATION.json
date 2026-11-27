@@ -1,0 +1,131 @@
+{
+  "archive_sha256": "7af65ff5c812bd0ab545c881608b4e4415be04a586ed3bda866bcc9669727d14",
+  "archive_tool_sha256": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+  "compressed_bytes": 146869744,
+  "driver_sha256": "35b8d15fd70a3bbbd6c91b6b84c255e3dc6cb4ba2fc81ef4415d497d2addc1e2",
+  "errata": [
+    {
+      "archived_report_sha256": "fa213f83487703926fb73313ab7ca9ac021f5f8f9f07bac06daa70d31553a40c",
+      "authorization": "Root explicitly authorized this one Markdown header correction before pack; no numeric result, JSON audit or frozen source change.",
+      "binding_search_method": "Literal old SHA-256 search across the entire sealed study001 tree with rg; includes all original audits/receipts in that tree.",
+      "existing_old_hash_binding_files": [],
+      "new_text": "Minimum across runs of observed max absolute gradient",
+      "old_hash_reconstruction": "Reverse the unique authorized header substitution in memory, without modifying the report.",
+      "old_report_sha256": "97157186771a96e93eccdc6ea671723327824df5c43fbf4b63623e514ab6a40f",
+      "old_text": "Minimum across runs of observed max |gradient|",
+      "original_numeric_audits_or_receipts_rewritten": false,
+      "path": "results/study001/analysis001/REPORT.md"
+    }
+  ],
+  "excluded_other_studies": [
+    "conditional001",
+    "equal_updates_core002"
+  ],
+  "groups": {
+    "results/study001/COMPLETE.json": {
+      "bytes": 124913,
+      "members": 1
+    },
+    "results/study001/IDENTITY.json": {
+      "bytes": 27435,
+      "members": 1
+    },
+    "results/study001/PROGRESS.json": {
+      "bytes": 124684,
+      "members": 1
+    },
+    "results/study001/analysis001": {
+      "bytes": 2035290,
+      "members": 9
+    },
+    "results/study001/analysis001.process.log": {
+      "bytes": 116,
+      "members": 1
+    },
+    "results/study001/analysis001_EXECUTION.json": {
+      "bytes": 507,
+      "members": 1
+    },
+    "results/study001/analysis_report.process.log": {
+      "bytes": 266,
+      "members": 1
+    },
+    "results/study001/analysis_report_EXECUTION.json": {
+      "bytes": 515,
+      "members": 1
+    },
+    "results/study001/process_logs": {
+      "bytes": 185273,
+      "members": 244
+    },
+    "results/study001/runs": {
+      "bytes": 352703715,
+      "members": 5429
+    },
+    "results/study001/secondary128": {
+      "bytes": 13810716,
+      "members": 752
+    },
+    "results/study001/secondary128.process.log": {
+      "bytes": 70,
+      "members": 1
+    },
+    "results/study001/secondary128_EXECUTION.json": {
+      "bytes": 545,
+      "members": 1
+    }
+  },
+  "initial_member_count": 6443,
+  "initial_uncompressed_file_bytes": 369014045,
+  "last_part_bytes": 69104,
+  "manifest": "study001_evidence.json",
+  "manifest_sha256": "7ec65c21984c53cc755821d4f44ab8240a41bc17b7d1fffaf3d45bc677b107f7",
+  "member_count": 6443,
+  "original_evidence_deleted": false,
+  "original_frozen_files_unchanged": 38,
+  "part_bytes": 4194304,
+  "part_count": 36,
+  "phases": {
+    "PACK": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-c",
+        "import json\nfrom experiments.hcsn_free_boundary_v1.archive import pack\nm = pack('/workspace/scratch/58af017d4789/study001-evidence-work-dt82sjnc/stage', '/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts', 'study001_evidence', part_bytes=4194304)\nprint(json.dumps({k:m[k] for k in (\"name\",\"archive_sha256\",\"compressed_bytes\",\"uncompressed_file_bytes\")}))"
+      ],
+      "complete_child_cpu_seconds": 218.826745,
+      "log": "/workspace/scratch/58af017d4789/study001-evidence-work-dt82sjnc/PACK.log",
+      "log_sha256": "90fb9ef323f21ba6f199aadc52e498e6f2a5dd7fe68c631511f426d0b6a2b794",
+      "returncode": 0,
+      "wall_seconds": 219.0083874500051,
+      "whole_child_peak_rss_kib": 134000
+    },
+    "RESTORE": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-c",
+        "import json\nfrom unittest.mock import patch\nfrom experiments.hcsn_free_boundary_v1 import archive\nwith patch.object(archive.tempfile, \"TemporaryFile\", side_effect=AssertionError(\"All sealed source members must already exist identically\")):\n    result = archive.restore('/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.json', '/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1')\nprint(json.dumps(result))"
+      ],
+      "complete_child_cpu_seconds": 7.848286,
+      "log": "/workspace/scratch/58af017d4789/study001-evidence-work-dt82sjnc/RESTORE.log",
+      "log_sha256": "c9e192b21820a8408d4983cc4fcea9cceea7db64b26120bf42c3d23c3aae0c38",
+      "returncode": 0,
+      "wall_seconds": 7.866614102997119,
+      "whole_child_peak_rss_kib": 39424
+    }
+  },
+  "restore_TemporaryFile_forbidden": true,
+  "restore_destination": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1",
+  "restore_result": {
+    "archive_sha256": "7af65ff5c812bd0ab545c881608b4e4415be04a586ed3bda866bcc9669727d14",
+    "restored_or_already_identical": 6443
+  },
+  "schema": "hcsn-study001-evidence-verification.v1",
+  "scientific_runs_repeated": false,
+  "seal_confirmation": "he_xiong_math explicitly confirmed study001 sealed: analysis001/REPORT.md, secondary128/REPORT.md, SUPPLEMENTARY_AUDIT.json, all predictions and three analysis EXECUTION receipts final; no subsequent study001 writes planned.",
+  "source_member_inode_mtime_size_unchanged": 6443,
+  "source_members_independently_size_and_sha256_verified": 6443,
+  "staging_directory_removed_after_verification": true,
+  "status": "passed",
+  "uncompressed_file_bytes": 369014045,
+  "work_directory": "/workspace/scratch/58af017d4789/study001-evidence-work-dt82sjnc"
+}

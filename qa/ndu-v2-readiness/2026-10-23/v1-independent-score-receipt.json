@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.ndu-v1-independent-observable-audit-receipt.v1",
+  "post_hoc": true,
+  "independent_model_inference": false,
+  "original_experiment_untouched": true,
+  "source_archive": {
+    "name": "hepta-ndu-evidence-v1-20261022.zip",
+    "bytes": 103482273,
+    "sha256": "2ac7d46df01fb3e24cd1004cef75ad0efd4076b5f1c9556b560e97546ffaceb5",
+    "manifest_verified_files": 831
+  },
+  "local_audit": {
+    "full_score_fields_reconciled": true,
+    "episodes": 768,
+    "sources": 64,
+    "methods": 12,
+    "unique_png_sha256": 273,
+    "individual_mismatches": 0,
+    "method_aggregate_mismatches": 0,
+    "positive_negative_unit_tests_passed": 11,
+    "matching_algorithm": "reference-subset DP; independent of original augmenting paths"
+  },
+  "implementation_identity": {
+    "source_sha256": "9e5f6604f06095d89c316dec8c12755e6c698d63057da6f0023f62031ae807d9",
+    "test_sha256": "1ec07ebf1ccc21b1e8285f48a47c8ff006864a5ae7861ea7ecdbcd9df15a722b",
+    "full_local_report_sha256": "3e01ea5a197e443672a5948fbce42bd5ef9b1a9b983b3ce65c60ac44da4f0563"
+  },
+  "structural_credit": {
+    "exact_template_text_episodes": 768,
+    "output_category_copied_from_requested_target": 768,
+    "denominator": 768,
+    "maximum_original_quality_credit": 0.2
+  },
+  "exploratory_grounding_only": {
+    "best_of_n": 0.836263,
+    "mean_only": 0.823893,
+    "ndu": 0.799805,
+    "ablate_missing_modality": 0.319661,
+    "ablate_shuffled_pair": 0.258464
+  },
+  "registered_quality_unchanged": {
+    "best_of_n": 0.86901,
+    "mean_only": 0.859115,
+    "ndu": 0.833594
+  },
+  "scientific_gates_closed": false,
+  "decision": "HOLD_NO_GO",
+  "limits": "Model-free reanalysis only. Alternative metric is post-hoc, original JPEGs and model weights were not rerun; no claims of learned text or new pixels, causal terminal covariance, matched actual compute, 8-16 actual checkpoints, or multi-seed confirmation."
+}

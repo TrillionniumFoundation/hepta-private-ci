@@ -1,0 +1,177 @@
+{
+  "reviewed_parser_sha256": "a73573376fb040eac7d69fbbcab739304b3d3bfefeb5e008cd39f8e30ceff26e",
+  "initial_independent_review": {
+    "schema": "independent-static-parser-review-v1",
+    "source_path": "/workspace/scratch/1f1d02319616/hepta-source-recovery-current/inspect_mixed_patch_sources.py",
+    "source_sha256": "ec687295a5c5446e8ad9c44fed1f36a09d0039870e37fd77fa180c5905356032",
+    "source_bytes": 11077,
+    "source_executed": false,
+    "reviewed_scope": [
+      "lf_lines",
+      "parse_new_file",
+      "read/save budgets in main"
+    ],
+    "findings": [
+      {
+        "id": "unterminated-plus-line",
+        "status": "confirmed-by-source-path",
+        "counterexample": "New regular f.py with index 0000000..c1b0730 and one declared line, final patch bytes +x without LF or explicit no-newline marker. The parser reconstructs x and reports no_final_newline=false.",
+        "recommendation": "Require LF-terminated added lines; remove LF only on the explicit subsequent no-newline marker."
+      },
+      {
+        "id": "unbounded-read-after-stat",
+        "status": "confirmed-by-source-path",
+        "counterexample": "A parent can grow between stat and read_bytes; fingerprint failure occurs only after the unbounded read.",
+        "recommendation": "Use a bounded read and explicit overflow handling/charging; state whether a sentinel byte is additional to the accepted byte budget."
+      },
+      {
+        "id": "mode-ambiguity",
+        "status": "confirmed-by-source-path",
+        "counterexample": "Multiple new file mode lines or a conflicting optional index mode are not compared.",
+        "recommendation": "Require exactly one regular new-file declaration; if index mode is supplied, require equality."
+      }
+    ],
+    "positive_scope": [
+      "LF splitting preserves CR and other non-LF bytes",
+      "Objects are named by hashes; original paths are metadata, not extraction paths",
+      "No patch apply or recovered code execution",
+      "Exact source blob prefix checked and full output Git/SHA256 identities recorded"
+    ],
+    "native_or_archive_qualification": false
+  },
+  "red": {
+    "schema": "mixed-patch-parser-independent-review-red-v1",
+    "parser_sha256": "ec687295a5c5446e8ad9c44fed1f36a09d0039870e37fd77fa180c5905356032",
+    "cases": [
+      {
+        "case": "truncated_add_line_missing_marker",
+        "rejected": false,
+        "returned_no_final_newline": false,
+        "returned_fingerprint": {
+          "git_blob_sha": "c1b0730e0133447badcfd47fd144e254807b06e1",
+          "sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+          "bytes": 1
+        }
+      },
+      {
+        "case": "duplicate_new_file_mode",
+        "rejected": false,
+        "returned_no_final_newline": true,
+        "returned_fingerprint": {
+          "git_blob_sha": "c1b0730e0133447badcfd47fd144e254807b06e1",
+          "sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+          "bytes": 1
+        }
+      },
+      {
+        "case": "inconsistent_optional_index_mode",
+        "rejected": false,
+        "returned_no_final_newline": true,
+        "returned_fingerprint": {
+          "git_blob_sha": "c1b0730e0133447badcfd47fd144e254807b06e1",
+          "sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+          "bytes": 1
+        }
+      }
+    ],
+    "all_adverse_rejected": false,
+    "only_synthetic_parser_inputs_executed": true,
+    "original_source_executed": false
+  },
+  "green": {
+    "schema": "mixed-patch-parser-synthetic-regression-v1",
+    "parser_sha256": "a73573376fb040eac7d69fbbcab739304b3d3bfefeb5e008cd39f8e30ceff26e",
+    "synthetic_cases": [
+      {
+        "case": "lf",
+        "expected": "exact bytes",
+        "passed": true
+      },
+      {
+        "case": "without_final_lf",
+        "expected": "exact bytes",
+        "passed": true
+      },
+      {
+        "case": "crlf",
+        "expected": "exact bytes",
+        "passed": true
+      },
+      {
+        "case": "utf8_and_blank_line",
+        "expected": "exact bytes",
+        "passed": true
+      },
+      {
+        "case": "embedded_carriage_return",
+        "expected": "exact bytes",
+        "passed": true
+      },
+      {
+        "case": "truncated_add_line_missing_marker",
+        "expected": "reject",
+        "passed": true
+      },
+      {
+        "case": "duplicate_new_file_mode",
+        "expected": "reject",
+        "passed": true
+      },
+      {
+        "case": "inconsistent_optional_index_mode",
+        "expected": "reject",
+        "passed": true
+      },
+      {
+        "case": "incorrect_git_index",
+        "expected": "reject",
+        "passed": true
+      },
+      {
+        "case": "declared_line_count_too_large",
+        "expected": "reject",
+        "passed": true
+      },
+      {
+        "case": "unexplained_additional_hunk",
+        "expected": "reject",
+        "passed": true
+      },
+      {
+        "case": "context_in_new_file",
+        "expected": "reject",
+        "passed": true
+      },
+      {
+        "case": "content_after_no_newline",
+        "expected": "reject",
+        "passed": true
+      },
+      {
+        "case": "different_new_path_label",
+        "expected": "reject",
+        "passed": true
+      }
+    ],
+    "passed": 14,
+    "total": 14,
+    "only_synthetic_parser_inputs_executed": true,
+    "original_source_executed": false,
+    "read_budget_scope": "Original patch reads use remaining+1 bounded reads; one overflow probe byte may be returned before immediate refusal. No process RSS or codec-buffer bound is claimed."
+  },
+  "recovery_recheck": {
+    "schema": "mixed-patch-strict-parser-recovery-recheck-v1",
+    "prior_inspection_sha256": "0a21e0b3a9cc343f7d5c7289401e0b64903d82b55a5a20248fdb9b6ef1e80d3d",
+    "new_inspection_sha256": "0a21e0b3a9cc343f7d5c7289401e0b64903d82b55a5a20248fdb9b6ef1e80d3d",
+    "strict_parser_sha256": "a73573376fb040eac7d69fbbcab739304b3d3bfefeb5e008cd39f8e30ceff26e",
+    "complete_unique_objects": 212,
+    "prior_object_fingerprints_and_occurrences_all_unchanged": true,
+    "complete_text_occurrences": 658,
+    "original_source_executed": false,
+    "patch_applied": false,
+    "frozen_source_count_unchanged": 6116,
+    "formal_verified_unchanged": 5887
+  },
+  "executed_only_new_parser_and_synthetic_inputs": true,
+  "preserved_source_executed": false
+}

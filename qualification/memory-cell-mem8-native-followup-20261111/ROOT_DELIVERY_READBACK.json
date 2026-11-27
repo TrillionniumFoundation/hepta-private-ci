@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.mem.native-followup.root-delivery-six-audit.v1",
+  "status": "PASS_DECLARED_NATIVE_SCOPE_ONLY",
+  "archive": {
+    "path": "delivery-native.tar.xz",
+    "git_blob": "a43b413f68ef67ee0d9d2d0ceb26976f2b3aa47c",
+    "bytes": 32796,
+    "sha256": "536eaef2efa46aa808ba05254e47ff3ffca3309037fbb14ba8227a44fec71c8e",
+    "regular_members": 42,
+    "member_manifest_verified": 41
+  },
+  "full_github_readback_commit": "eec53c1fdc2673c6ad7c63c54611e8dabc2b0c72",
+  "base": {
+    "commit": "189711e3563ea13a5328d52e99a286f082045b98",
+    "tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba"
+  },
+  "tested": {
+    "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+    "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+    "status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+  },
+  "final": {
+    "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+    "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+    "status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+  },
+  "published_commit": "b03214c5c2e2bf4499c211227e43cc22f8663d95",
+  "github_reconstructed_tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+  "published_tree_equals_tested_tree": true,
+  "all_six_source_postimages_match_before_after_fix": true,
+  "test_executions": 6,
+  "unique_case_ids": 6,
+  "failed": 0,
+  "retries": 0,
+  "phases": [
+    {
+      "phase": "delivery-native-context",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--lib",
+        "-E",
+        "test(native_app_server::context::tests::) or test(native_app_server::control::tests::)",
+        "--no-capture",
+        "--retries",
+        "0"
+      ],
+      "exit": 0,
+      "seconds": 10.308683200972155,
+      "source_unchanged": true,
+      "log_bytes": 33972,
+      "log_sha256": "b4d199734098ae5f27f036f499fac5734bccdd44119380c636f24ed5400bc4a0",
+      "passed": 6,
+      "failed": 0,
+      "unselected": 46,
+      "nextest_uuid": "4b827bc0-efee-4e66-b629-d3e1399bea8d",
+      "case_ids": [
+        "codex-hepta-infer-worker-host::native_app_server::context::tests::delivery_off_withholds_physical_context_but_keeps_revalidation_and_replay",
+        "codex-hepta-infer-worker-host::native_app_server::control::tests::context_delivery_is_bound_before_connection_and_preserves_legacy_admission",
+        "codex-hepta-infer-worker-host::native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity",
+        "codex-hepta-infer-worker-host::native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+        "codex-hepta-infer-worker-host::native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+        "codex-hepta-infer-worker-host::native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown"
+      ]
+    },
+    {
+      "phase": "scoped-fix",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit": 0,
+      "seconds": 164.1752342330292,
+      "source_unchanged": true,
+      "log_bytes": 17650,
+      "log_sha256": "30df56ed75fe7dcf8e954464f4e6e3e8b730ecfa2a6cd3260552430994a3b5a5",
+      "test_executions": 0
+    }
+  ],
+  "runtime_terminal": {
+    "at_unix_ms": 1794403623250,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1cac77be5-2564-862",
+    "launch_nonce": "a6ee340c9db5a4ccedb42459dd412314",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1614,
+        "stored": 1614
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "first_zero_execution_attempt_preserved": "ROOT_DELIVERY_FILTER_READBACK.json",
+  "legacy_case": "See ROOT_DELIVERY_LEGACY_READBACK.json: separate first execution passed 1/0 on unchanged source.",
+  "scientific_adoption": "HOLD",
+  "new_scored_actor_episodes": 0
+}

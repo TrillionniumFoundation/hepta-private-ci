@@ -23,7 +23,10 @@ impl WineExecServer {
         let executable = codex_utils_cargo_bin::cargo_bin("wine-windows-exec-server")?;
         let mut exec_server = WineTestCommand::new(executable)
             .env("CODEX_HOME", r"C:\codex-home")
-            .spawn()?;
+            .spawn_with_prefix_setup(|prefix| {
+                std::fs::create_dir(prefix.join("drive_c").join("codex-home"))
+                    .context("create Windows exec-server test home")
+            })?;
         let wine_prefix = exec_server.prefix_path().to_path_buf();
         let stdout = exec_server.take_stdout();
 

@@ -1,0 +1,55 @@
+name: hcsn-currentstate-n256-canonical-serializer-intent
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_canonical_serializer_intent/**"
+      - ".github/workflows/hcsn-currentstate-n256-canonical-serializer-intent.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  small-stdlib-serializer-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify canonical bytes and fail-closed N256 admission
+        run: |
+          set -euo pipefail
+          package=qualification/hcsn_currentstate_n256_canonical_serializer_intent
+          mkdir -p "$package/ci-artifact"
+          /usr/bin/time -v python -m unittest \
+            qualification.hcsn_currentstate_n256_canonical_serializer_intent.test_serializer -v \
+            > "$package/ci-artifact/TEST_STDOUT.txt" \
+            2> "$package/ci-artifact/TEST_STDERR.txt"
+          python "$package/static_inspector.py" \
+            --source "$package/canonical_serializer.py" \
+            --admission "$package/admission.py" \
+            --request "$package/REQUEST.json" \
+            > "$package/ci-artifact/REPORT.json"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          package = Path("qualification/hcsn_currentstate_n256_canonical_serializer_intent")
+          report = json.loads((package / "ci-artifact/REPORT.json").read_text())
+          if report["status"] != "PASS_SMALL_STDLIB_SOURCE_HOLD_N256":
+              raise SystemExit("unexpected status")
+          (package / "ci-artifact/COUNTS.json").write_text(
+              json.dumps({"small_fixture_serializations": 4, "n256_dynamic_runs": 0, "matrix_exponential_actions": 0, "n256_serializer_calls": 0, "candidate_oracle_calls": 0, "torch_calls": 0, "optimizer_steps": 0}, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hcsn-n256-canonical-serializer-source-${{ github.sha }}
+          path: qualification/hcsn_currentstate_n256_canonical_serializer_intent/ci-artifact
+          if-no-files-found: error
+          retention-days: 30

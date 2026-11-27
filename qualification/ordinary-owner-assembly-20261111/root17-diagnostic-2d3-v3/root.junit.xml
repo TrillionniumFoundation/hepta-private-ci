@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="17" failures="2" errors="0" uuid="e98582ca-84f2-418d-a73d-142bf4a833e5" timestamp="2026-11-12T08:37:21.722+08:00" time="26.950">
+    <testsuite name="codex-hepta-agentd" tests="15" disabled="0" errors="0" failures="2">
+        <testcase name="authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:21.726+08:00" time="0.156">
+        </testcase>
+        <testcase name="authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:21.882+08:00" time="0.323">
+        </testcase>
+        <testcase name="authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:22.205+08:00" time="0.007">
+        </testcase>
+        <testcase name="authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:22.212+08:00" time="0.007">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:22.219+08:00" time="0.007">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:22.227+08:00" time="0.014">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:22.241+08:00" time="0.010">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:22.251+08:00" time="0.008">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:22.259+08:00" time="0.025">
+        </testcase>
+        <testcase name="neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:22.284+08:00" time="15.424">
+            <failure message="Error: Permission denied (os error 13)" type="test failure with exit code 101">Error: Permission denied (os error 13)
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: initial parent Publish, controlled_ack_loss=false: original Root serve result: Err(Custom { kind: Other, error: &quot;owner process exited&quot; })
+
+Caused by:
+    0: initial parent Publish: awaiting ORIGINAL_INPUTS_READY
+    1: Resource temporarily unavailable (os error 11)</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 15.42s
+
+</system-out>
+            <system-err>ROOT_COMPONENT_CHILD_CLEANUP pid=1498834 status=Ok(ExitStatus(unix_wait_status(25856)))
+ROOT_COMPONENT_CHILD_STDOUT bytes=343
+
+running 1 test
+test neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 0.06s
+
+
+ROOT_COMPONENT_CHILD_STDERR bytes=105
+ROOT_INITIAL_CHILD phase=Publish stage=awaiting_original_handoffs
+Error: Permission denied (os error 13)
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: initial parent Publish, controlled_ack_loss=false: original Root serve result: Err(Custom { kind: Other, error: &quot;owner process exited&quot; })
+
+Caused by:
+    0: initial parent Publish: awaiting ORIGINAL_INPUTS_READY
+    1: Resource temporarily unavailable (os error 11)
+</system-err>
+        </testcase>
+        <testcase name="neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:37.708+08:00" time="10.753">
+            <failure message="Error: Permission denied (os error 13)" type="test failure with exit code 101">Error: Permission denied (os error 13)
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: publication component Publish phase
+
+Caused by:
+    0: publication Publish: control worker failed; service=Err(Custom { kind: Other, error: &quot;owner process exited&quot; })
+    1: publication component control awaiting LEARNING_AND_ORIGINAL_INPUTS_READY
+    2: Resource temporarily unavailable (os error 11)</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 10.75s
+
+</system-out>
+            <system-err>ROOT_PUBLICATION_COMPONENT phase=Publish service=Err(Custom { kind: Other, error: &quot;owner process exited&quot; })
+ROOT_COMPONENT_CHILD_CLEANUP pid=1499525 status=Ok(ExitStatus(unix_wait_status(25856)))
+ROOT_COMPONENT_CHILD_STDOUT bytes=359
+
+running 1 test
+test neuron_generation_current::publication_root_tests::child::original_publication_dedicated_uid_child ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::publication_root_tests::child::original_publication_dedicated_uid_child
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 0.13s
+
+
+ROOT_COMPONENT_CHILD_STDERR bytes=105
+ROOT_PUBLICATION_CHILD phase=Publish step=receive-original-offers
+Error: Permission denied (os error 13)
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: publication component Publish phase
+
+Caused by:
+    0: publication Publish: control worker failed; service=Err(Custom { kind: Other, error: &quot;owner process exited&quot; })
+    1: publication component control awaiting LEARNING_AND_ORIGINAL_INPUTS_READY
+    2: Resource temporarily unavailable (os error 11)
+</system-err>
+        </testcase>
+        <testcase name="root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:48.461+08:00" time="0.025">
+        </testcase>
+        <testcase name="root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:48.486+08:00" time="0.012">
+        </testcase>
+        <testcase name="root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:48.498+08:00" time="0.005">
+        </testcase>
+        <testcase name="root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights" classname="codex-hepta-agentd" timestamp="2026-11-12T08:37:48.503+08:00" time="0.005">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-contracts" tests="2" disabled="0" errors="0" failures="0">
+        <testcase name="final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files" classname="codex-hepta-contracts" timestamp="2026-11-12T08:37:48.508+08:00" time="0.104">
+        </testcase>
+        <testcase name="final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming" classname="codex-hepta-contracts" timestamp="2026-11-12T08:37:48.612+08:00" time="0.060">
+        </testcase>
+    </testsuite>
+</testsuites>

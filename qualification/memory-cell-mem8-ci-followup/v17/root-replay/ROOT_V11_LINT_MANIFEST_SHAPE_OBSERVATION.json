@@ -1,0 +1,8 @@
+{
+  "failed_execution_chunk": "7d5d41",
+  "exit_code": 1,
+  "stage": "manifest schema read before extracting any member",
+  "cause": "Root reader initially addressed members rather than original files array; original manifest contains66 rows and is itself the67th archive member",
+  "correction": "Bind all66 rows plus exact manifest bytes as closed67 set; preserve original manifest and archive unchanged",
+  "partial_extraction_members": 0
+}

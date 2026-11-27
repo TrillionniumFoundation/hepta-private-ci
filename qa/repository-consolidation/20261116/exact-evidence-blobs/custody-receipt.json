@@ -1,0 +1,1094 @@
+{
+  "blocking_job": 133149163164,
+  "blocking_run": 43822682848,
+  "boundaries": [
+    "Retention-only exact-byte exceptions; all original status and failure records remain unchanged.",
+    "NPZ contents were CRC checked and their safe NPY headers/byte counts inspected; no pickle deserialization.",
+    "Archive members were read and hashed in memory, without extraction or execution.",
+    "No model, candidate, integral, expm, optimizer or scientific qualification was executed or adopted.",
+    "Changed bytes and other paths retain the existing size limit; no threshold or generic path exemption changes."
+  ],
+  "files": [
+    {
+      "bytes": 1389552,
+      "git_blob": "adf445673f809c8b043dc8c54c08383ce9e3325e",
+      "historical_status": "SOURCE_GATES_PASS_NATIVE_PENDING_ADOPTION_HOLD",
+      "historical_status_source": "qualification/cell-p0-common-validation-20261111-c2fc/SUMMARY.json",
+      "path": "qualification/cell-p0-common-validation-20261111-c2fc/raw-evidence.tar.xz",
+      "sha256": "1f908b1e8c63ea97eb3175853e3f362fb9550f44214820c45738788d80903305",
+      "structure": {
+        "all_member_hashes_match": true,
+        "kind": "tar.xz",
+        "manifest": {
+          "bytes": 19747,
+          "git_blob": "76e7eb4d951180f2ff004a98ce9a548fd0215e32",
+          "path": "qualification/cell-p0-common-validation-20261111-c2fc/RAW_MANIFEST.json",
+          "sha256": "9443b4f970ea40cf91da810e3518f9da569f3cfb4e5ed1570bdad51f97cecdd4"
+        },
+        "regular_members": 112,
+        "uncompressed_bytes": 19607272
+      }
+    },
+    {
+      "bytes": 819324,
+      "git_blob": "b2cfe20930d5219791f9876681d7a5687d0339ab",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/SUMMARY.json",
+      "path": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/ALL_POSTERIORS_near8001024_part000.npz",
+      "sha256": "ee8d4a2a490993f527a65c46a6cee452c9c36fbc1ab0736c190914f506d09792",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1376384,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [7168, 24]
+          },
+          {
+            "bytes": 3392,
+            "dtype": "<U34",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [24]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 814180,
+      "git_blob": "366be8d86b755bcc657aba398ed058e65cd53166",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/SUMMARY.json",
+      "path": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/ALL_POSTERIORS_near8001024_part001.npz",
+      "sha256": "e8cdbaed8df0ea79b5da201ede63606ec6f1f02684e5912cacc94239b376c390",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1376384,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [7168, 24]
+          },
+          {
+            "bytes": 3392,
+            "dtype": "<U34",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [24]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 829115,
+      "git_blob": "f771dfc7db5de3de3914905d02fb484874c72040",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/SUMMARY.json",
+      "path": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/ALL_POSTERIORS_near9601024_part000.npz",
+      "sha256": "e6ddbd25fc028c7fe9fe05204f2366b56f3e872488aaa3d0b9914648f22482e9",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1376384,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [7168, 24]
+          },
+          {
+            "bytes": 3392,
+            "dtype": "<U34",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [24]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 823460,
+      "git_blob": "9b90f28b1293c260458f0b5dd378ae1d5fa54e47",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/SUMMARY.json",
+      "path": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/ALL_POSTERIORS_near9601024_part001.npz",
+      "sha256": "cabc11e0b221064431f56b0e6f716041c304d150ef44e42be770c893748f8fb3",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1376384,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [7168, 24]
+          },
+          {
+            "bytes": 3392,
+            "dtype": "<U34",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [24]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 747681,
+      "git_blob": "dccb23da9e0f7a2cf36ad52cae68dd93779cd67e",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/SUMMARY.json",
+      "path": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/ALL_POSTERIORS_v2exp512_part000.npz",
+      "sha256": "0103973ed67c949d0a474f9173223d7384ae548d698892b9c95f59989e60e028",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1376384,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [7168, 24]
+          },
+          {
+            "bytes": 3392,
+            "dtype": "<U34",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [24]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 744330,
+      "git_blob": "ccf1ee724fce7e80c8d55d1eff6eb704bae981e4",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/SUMMARY.json",
+      "path": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/ALL_POSTERIORS_v2exp512_part001.npz",
+      "sha256": "bbb4c63dbabd6766cb384b1f57c16fe8c7781ee106ed625d34efa40f06f40426",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1376384,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [7168, 24]
+          },
+          {
+            "bytes": 3392,
+            "dtype": "<U34",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [24]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 859602,
+      "git_blob": "e93d194c06587a2fa5b44662baf021e687d5aeef",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/SUMMARY.json",
+      "path": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/BASIS_REFERENCE_MP80_near8001024.json",
+      "sha256": "509e9307730130ba0b6a4f3120abc069424c73b71d3b950beebc20aae994a840",
+      "structure": {
+        "entries": 184,
+        "kind": "json",
+        "root_type": "list"
+      }
+    },
+    {
+      "bytes": 859602,
+      "git_blob": "7f80a39dc13139c99eb1ba0a2447943bceb83f88",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/SUMMARY.json",
+      "path": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/BASIS_REFERENCE_MP80_near9601024.json",
+      "sha256": "64685a8adf1a24becd789a09ac53f9d7d6308c626d4ef8238febc6491d6c13d7",
+      "structure": {
+        "entries": 184,
+        "kind": "json",
+        "root_type": "list"
+      }
+    },
+    {
+      "bytes": 859050,
+      "git_blob": "9b3c666c47ed437ceb0e9956e4301539dafd59fd",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/SUMMARY.json",
+      "path": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/BASIS_REFERENCE_MP80_v2exp512.json",
+      "sha256": "c0fe5970d93aae8447152321c9202e8a3f9e5b73d03adb09d4d86f5d582be0c4",
+      "structure": {
+        "entries": 184,
+        "kind": "json",
+        "root_type": "list"
+      }
+    },
+    {
+      "bytes": 749119,
+      "git_blob": "7fcccdd604969f5f8e8c19683b696454f79a1d21",
+      "historical_status": "EXPOSED_POST_FAILURE_DIAGNOSTIC_COMPLETE_HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002/SUMMARY.json",
+      "path": "qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002/ALL_VISITS_n256_posterior.npz",
+      "sha256": "bfab8bbf7b3a660c2b5d6382a9a504d2960e8d953938c92f9f894bafab9787d1",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 458880,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "candidate_M_H_R_A.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 4]
+          },
+          {
+            "bytes": 458880,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "continuum_M_H_R_A.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 4]
+          },
+          {
+            "bytes": 229504,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "discounted_refractory_occupation_candidate_reference.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 2]
+          },
+          {
+            "bytes": 608,
+            "dtype": "<U30",
+            "fortran_order": false,
+            "name": "metrics.npy",
+            "npy_version": [1, 0],
+            "shape": [4]
+          },
+          {
+            "bytes": 704,
+            "dtype": "<U12",
+            "fortran_order": false,
+            "name": "arm_names.npy",
+            "npy_version": [1, 0],
+            "shape": [12]
+          },
+          {
+            "bytes": 14464,
+            "dtype": "|u1",
+            "fortran_order": false,
+            "name": "arm_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "visit_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "update_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "position.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "origin_line.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 1777792,
+            "dtype": "<U31",
+            "fortran_order": false,
+            "name": "episode_id.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 917632,
+            "dtype": "|S64",
+            "fortran_order": false,
+            "name": "model_sha256.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 917632,
+            "dtype": "|S64",
+            "fortran_order": false,
+            "name": "origin_line_sha256.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 114816,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "dt.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 114816,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "reset.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 744453,
+      "git_blob": "7f064d77b41cc660022e9f12800fd1baab577f0a",
+      "historical_status": "EXPOSED_POST_FAILURE_DIAGNOSTIC_COMPLETE_HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002/SUMMARY.json",
+      "path": "qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002/ALL_VISITS_n256_prior.npz",
+      "sha256": "1e63bcc7b9d906e1e6b834d44d8993455a3240c752f8f1852acb2c2294bd9037",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 458880,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "candidate_M_H_R_A.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 4]
+          },
+          {
+            "bytes": 458880,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "continuum_M_H_R_A.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 4]
+          },
+          {
+            "bytes": 229504,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "discounted_refractory_occupation_candidate_reference.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 2]
+          },
+          {
+            "bytes": 608,
+            "dtype": "<U30",
+            "fortran_order": false,
+            "name": "metrics.npy",
+            "npy_version": [1, 0],
+            "shape": [4]
+          },
+          {
+            "bytes": 704,
+            "dtype": "<U12",
+            "fortran_order": false,
+            "name": "arm_names.npy",
+            "npy_version": [1, 0],
+            "shape": [12]
+          },
+          {
+            "bytes": 14464,
+            "dtype": "|u1",
+            "fortran_order": false,
+            "name": "arm_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "visit_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "update_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "position.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "origin_line.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 1777792,
+            "dtype": "<U31",
+            "fortran_order": false,
+            "name": "episode_id.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 917632,
+            "dtype": "|S64",
+            "fortran_order": false,
+            "name": "model_sha256.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 917632,
+            "dtype": "|S64",
+            "fortran_order": false,
+            "name": "origin_line_sha256.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 114816,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "dt.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 114816,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "reset.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 746990,
+      "git_blob": "4a6063694e5aed5e2c49a6be0bfc71399bfd6ef2",
+      "historical_status": "EXPOSED_POST_FAILURE_DIAGNOSTIC_COMPLETE_HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002/SUMMARY.json",
+      "path": "qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002/ALL_VISITS_n512_posterior.npz",
+      "sha256": "90c6db500c63dfbfa2ecdab833abd2209950699186f02a75680f6662003cf0e3",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 458880,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "candidate_M_H_R_A.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 4]
+          },
+          {
+            "bytes": 458880,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "continuum_M_H_R_A.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 4]
+          },
+          {
+            "bytes": 229504,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "discounted_refractory_occupation_candidate_reference.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 2]
+          },
+          {
+            "bytes": 608,
+            "dtype": "<U30",
+            "fortran_order": false,
+            "name": "metrics.npy",
+            "npy_version": [1, 0],
+            "shape": [4]
+          },
+          {
+            "bytes": 704,
+            "dtype": "<U12",
+            "fortran_order": false,
+            "name": "arm_names.npy",
+            "npy_version": [1, 0],
+            "shape": [12]
+          },
+          {
+            "bytes": 14464,
+            "dtype": "|u1",
+            "fortran_order": false,
+            "name": "arm_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "visit_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "update_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "position.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "origin_line.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 1777792,
+            "dtype": "<U31",
+            "fortran_order": false,
+            "name": "episode_id.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 917632,
+            "dtype": "|S64",
+            "fortran_order": false,
+            "name": "model_sha256.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 917632,
+            "dtype": "|S64",
+            "fortran_order": false,
+            "name": "origin_line_sha256.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 114816,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "dt.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 114816,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "reset.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 742445,
+      "git_blob": "0066c7861bc30e3127c1a2d7e50f7563c70ca07a",
+      "historical_status": "EXPOSED_POST_FAILURE_DIAGNOSTIC_COMPLETE_HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002/SUMMARY.json",
+      "path": "qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002/ALL_VISITS_n512_prior.npz",
+      "sha256": "3bb5761a69549ba855588bdf635f0c89aee43cb0aaa4a68ff56de632cfc54b69",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 458880,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "candidate_M_H_R_A.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 4]
+          },
+          {
+            "bytes": 458880,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "continuum_M_H_R_A.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 4]
+          },
+          {
+            "bytes": 229504,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "discounted_refractory_occupation_candidate_reference.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 2]
+          },
+          {
+            "bytes": 608,
+            "dtype": "<U30",
+            "fortran_order": false,
+            "name": "metrics.npy",
+            "npy_version": [1, 0],
+            "shape": [4]
+          },
+          {
+            "bytes": 704,
+            "dtype": "<U12",
+            "fortran_order": false,
+            "name": "arm_names.npy",
+            "npy_version": [1, 0],
+            "shape": [12]
+          },
+          {
+            "bytes": 14464,
+            "dtype": "|u1",
+            "fortran_order": false,
+            "name": "arm_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "visit_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "update_index.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "position.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 28800,
+            "dtype": "<u2",
+            "fortran_order": false,
+            "name": "origin_line.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 1777792,
+            "dtype": "<U31",
+            "fortran_order": false,
+            "name": "episode_id.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 917632,
+            "dtype": "|S64",
+            "fortran_order": false,
+            "name": "model_sha256.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 917632,
+            "dtype": "|S64",
+            "fortran_order": false,
+            "name": "origin_line_sha256.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 114816,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "dt.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          },
+          {
+            "bytes": 114816,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "reset.npy",
+            "npy_version": [1, 0],
+            "shape": [14336]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 813559,
+      "git_blob": "ba728245b83f11026342959cd38730b73e2217b2",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_graded/evidence/actual-migrated-continuation-attempt002/SUMMARY.json",
+      "path": "qualification/hcsn_graded/evidence/actual-migrated-continuation-attempt002/ALL_VISITS_n256.npz",
+      "sha256": "e09b8dc976cabfe253ecd35cf2015c02e5cfe3fe2b8ce67afe509b40b911e75f",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1261696,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 11]
+          },
+          {
+            "bytes": 2372,
+            "dtype": "<U51",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [11]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 798952,
+      "git_blob": "b56052e7186dce6425479bf469c1f899f3225662",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_graded/evidence/actual-migrated-continuation-attempt002/SUMMARY.json",
+      "path": "qualification/hcsn_graded/evidence/actual-migrated-continuation-attempt002/ALL_VISITS_n512.npz",
+      "sha256": "af6bb4f42bc4a89f1e9fa4a42f824544b230e8342b5585f88d9459ead4292af9",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1261696,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 11]
+          },
+          {
+            "bytes": 2372,
+            "dtype": "<U51",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [11]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 672882,
+      "git_blob": "62e7b4fb391b7b484e2fbf665dec15d428326e54",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_joint_dde/evidence/all-visits-attempt002/SUMMARY.json",
+      "path": "qualification/hcsn_joint_dde/evidence/all-visits-attempt002/ALL_VISITS_128.npz",
+      "sha256": "a0984f1a06fd47a803259e570f47aed07a48f0d44e44598a25a77a85782016c3",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1376384,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 12]
+          },
+          {
+            "bytes": 1616,
+            "dtype": "<U31",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [12]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 668257,
+      "git_blob": "0c499ee544ddffcadc2c35f95a5a9d60408c992b",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_joint_dde/evidence/all-visits-attempt002/SUMMARY.json",
+      "path": "qualification/hcsn_joint_dde/evidence/all-visits-attempt002/ALL_VISITS_256.npz",
+      "sha256": "bc18bd698a655aa447901de3c414bff9e83bc7ccd1a3badf4d63bc9a40f2408b",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1376384,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 12]
+          },
+          {
+            "bytes": 1616,
+            "dtype": "<U31",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [12]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 661172,
+      "git_blob": "4fd6ce138c8b50581631011517afec16a0b76bea",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_joint_dde/evidence/all-visits-attempt002/SUMMARY.json",
+      "path": "qualification/hcsn_joint_dde/evidence/all-visits-attempt002/ALL_VISITS_512.npz",
+      "sha256": "0ce47194c570857ae5da8cab86b65ca58b99d368a58a6ca3d453105cc6ddf5df",
+      "structure": {
+        "arrays": [
+          {
+            "bytes": 1376384,
+            "dtype": "<f8",
+            "fortran_order": false,
+            "name": "rows.npy",
+            "npy_version": [1, 0],
+            "shape": [14336, 12]
+          },
+          {
+            "bytes": 1616,
+            "dtype": "<U31",
+            "fortran_order": false,
+            "name": "columns.npy",
+            "npy_version": [1, 0],
+            "shape": [12]
+          }
+        ],
+        "crc_checked": true,
+        "kind": "npz",
+        "pickle_loaded": false
+      }
+    },
+    {
+      "bytes": 524288,
+      "git_blob": "0d13389b4531487c372b9843ad645600ea314b0d",
+      "historical_all_closed": false,
+      "historical_scientific_status": "HOLD_NO_GO",
+      "historical_status": "READ_ONLY_VERIFICATION_COMPLETED_WITH_COST_UNIT_CLARIFICATION",
+      "historical_status_archive_member": {
+        "bytes": 32094,
+        "path": "REVIEW.json",
+        "sha256": "8b6cde84a0f7826e44da0afbac4bf7fd215e0851ad79aabeceffb14fd95c69ef"
+      },
+      "historical_status_source": "qualification/hcsn_secondcycle/evidence/independent-git-review/MANIFEST.json",
+      "path": "qualification/hcsn_secondcycle/evidence/independent-git-review/review6247-originals.tar.gz.part000",
+      "sha256": "4d36b0f7ee4c1417fa82d1a202252ad3fe50ab3f03c82439afcdd6aae12537f2",
+      "structure": {
+        "aggregate_bytes": 1211050,
+        "aggregate_sha256": "769ce507561480314dfb97edf04ce53ab8dc8e918d4e06672456e8b08174d09c",
+        "all_member_hashes_match": true,
+        "all_three_parts_verified": true,
+        "kind": "split-tar.gz",
+        "manifest": {
+          "bytes": 3069,
+          "git_blob": "f0138cd089a2c0ceadcb1e06b00ea4aece9ae45e",
+          "path": "qualification/hcsn_secondcycle/evidence/independent-git-review/MANIFEST.json",
+          "sha256": "e66422e813c2f8f5b5c25de5f6512fec5ee7f735f61227516c280cffc9e739c5"
+        },
+        "original_review_flags": {
+          "all_closed": false,
+          "scientific_status": "HOLD_NO_GO",
+          "status": "READ_ONLY_VERIFICATION_COMPLETED_WITH_COST_UNIT_CLARIFICATION"
+        },
+        "regular_members": 10
+      }
+    },
+    {
+      "bytes": 524288,
+      "git_blob": "816fe75003d8d8cb1bda02593fd78c0d8e7983ea",
+      "historical_all_closed": false,
+      "historical_scientific_status": "HOLD_NO_GO",
+      "historical_status": "READ_ONLY_VERIFICATION_COMPLETED_WITH_COST_UNIT_CLARIFICATION",
+      "historical_status_archive_member": {
+        "bytes": 32094,
+        "path": "REVIEW.json",
+        "sha256": "8b6cde84a0f7826e44da0afbac4bf7fd215e0851ad79aabeceffb14fd95c69ef"
+      },
+      "historical_status_source": "qualification/hcsn_secondcycle/evidence/independent-git-review/MANIFEST.json",
+      "path": "qualification/hcsn_secondcycle/evidence/independent-git-review/review6247-originals.tar.gz.part001",
+      "sha256": "dfd9a564e63e6ab7119271788380345a531819f48fe00e795df9f7880b08d92a",
+      "structure": {
+        "aggregate_bytes": 1211050,
+        "aggregate_sha256": "769ce507561480314dfb97edf04ce53ab8dc8e918d4e06672456e8b08174d09c",
+        "all_member_hashes_match": true,
+        "all_three_parts_verified": true,
+        "kind": "split-tar.gz",
+        "manifest": {
+          "bytes": 3069,
+          "git_blob": "f0138cd089a2c0ceadcb1e06b00ea4aece9ae45e",
+          "path": "qualification/hcsn_secondcycle/evidence/independent-git-review/MANIFEST.json",
+          "sha256": "e66422e813c2f8f5b5c25de5f6512fec5ee7f735f61227516c280cffc9e739c5"
+        },
+        "original_review_flags": {
+          "all_closed": false,
+          "scientific_status": "HOLD_NO_GO",
+          "status": "READ_ONLY_VERIFICATION_COMPLETED_WITH_COST_UNIT_CLARIFICATION"
+        },
+        "regular_members": 10
+      }
+    },
+    {
+      "bytes": 517709,
+      "git_blob": "6fbd1264afefd4babfa50fb141ffffb6181aef6a",
+      "historical_status": "HOLD_NO_GO",
+      "historical_status_source": "qualification/hcsn_secondcycle/evidence/references-attempt001/SUMMARY.json",
+      "path": "qualification/hcsn_secondcycle/evidence/references-attempt001/ROWS.json",
+      "sha256": "edb33d6d468e60db6a42cdfaf86e03157518b19cb8aee095bad2302184f43f70",
+      "structure": {
+        "entries": 24,
+        "kind": "json",
+        "root_type": "list"
+      }
+    }
+  ],
+  "observed_source_commit": "ca1ae598efb77b552df3897b8debc0441bc7bd90",
+  "schema": "hepta.exact-historical-evidence-blob-custody.v1",
+  "status_sources": {
+    "cell-p0-common-validation-20261111-c2fc": {
+      "bytes": 4529,
+      "git_blob": "8ecfc15c9241d91fac1692d311769587fdb4d1fa",
+      "path": "qualification/cell-p0-common-validation-20261111-c2fc/SUMMARY.json",
+      "qualification_flags": {},
+      "sha256": "4c8f8a1164a586b9c8437e7b445a8d4a5963c7a7ac713eaee31e1a143dd757c5",
+      "status": "SOURCE_GATES_PASS_NATIVE_PENDING_ADOPTION_HOLD"
+    },
+    "hcsn_dense_sweep": {
+      "bytes": 14458,
+      "git_blob": "0ec3594353bdbff4261787a220db0a74081d1c32",
+      "path": "qualification/hcsn_dense_sweep/evidence/cost-attempt002-audit/outputs/SUMMARY.json",
+      "qualification_flags": {},
+      "sha256": "a0f4ebc742f5c97e6a101c915df1c3c4e8765832abf6064c4e6f99a822f4918b",
+      "status": "HOLD_NO_GO"
+    },
+    "hcsn_finite_review": {
+      "bytes": 105550,
+      "git_blob": "42358cdf41044d1e4d4d1b86072c5fa2f1236b23",
+      "path": "qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002/SUMMARY.json",
+      "qualification_flags": {
+        "finite_domain_qualified": false,
+        "rare_phase_relative_precision_qualified": false
+      },
+      "sha256": "cbb1b8b9a118e289f267b7539012a8510404a2f572aadea6e4aabdf2842c208c",
+      "status": "EXPOSED_POST_FAILURE_DIAGNOSTIC_COMPLETE_HOLD_NO_GO"
+    },
+    "hcsn_graded": {
+      "bytes": 5888,
+      "git_blob": "abf9f769b4d66ed82c3c1551eb228e3fd276cff5",
+      "path": "qualification/hcsn_graded/evidence/actual-migrated-continuation-attempt002/SUMMARY.json",
+      "qualification_flags": {},
+      "sha256": "a444733b16dfa696a4e06a75ab504d080fb018f95a8b75a9c7e4b8085862db5b",
+      "status": "HOLD_NO_GO"
+    },
+    "hcsn_joint_dde": {
+      "bytes": 18017,
+      "git_blob": "7c267e0e9d44c6cc4af53132db48487af0097aae",
+      "path": "qualification/hcsn_joint_dde/evidence/all-visits-attempt002/SUMMARY.json",
+      "qualification_flags": {},
+      "sha256": "13aef250652ab4dbaa85f2e8cfc045e34524240f547bf669977b931bfd15c05b",
+      "status": "HOLD_NO_GO"
+    },
+    "hcsn_secondcycle": {
+      "bytes": 4304,
+      "git_blob": "960f0dda1ba08c87bbc90d392e52ca2b57173807",
+      "path": "qualification/hcsn_secondcycle/evidence/references-attempt001/SUMMARY.json",
+      "qualification_flags": {
+        "all_closed": false
+      },
+      "sha256": "8f92ef02e4b0e882c56961451f150a28a81f23ac78abde91d6a13cd387cfbef1",
+      "status": "HOLD_NO_GO"
+    }
+  },
+  "unchanged_size_limit_bytes": 512000,
+  "verified_blobs": 22,
+  "verified_original_bytes": 16910010
+}

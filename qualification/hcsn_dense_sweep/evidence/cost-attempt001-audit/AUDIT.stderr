@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/cost_audit.py", line 298, in <module>
+    main()
+  File "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/cost_audit.py", line 127, in main
+    raise ValueError("original roster/source/grid identity changed")
+ValueError: original roster/source/grid identity changed

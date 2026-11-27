@@ -1,0 +1,172 @@
+{
+  "accounts": [
+    {
+      "account": "colab_account_1",
+      "authorization": "authorized",
+      "consumption_rate_hourly": 0,
+      "current_assignments": 0,
+      "eligible_resources": [
+        {
+          "accelerator": "NONE",
+          "shape": "STANDARD",
+          "variant": "DEFAULT"
+        },
+        {
+          "accelerator": "T4",
+          "shape": "STANDARD",
+          "variant": "GPU"
+        },
+        {
+          "accelerator": "V5E1",
+          "shape": "STANDARD",
+          "variant": "TPU"
+        }
+      ],
+      "healthy_bound_lease_verified": false,
+      "identity_verified": true,
+      "observed_utc": "2026-11-08T05:04:35.289151+00:00",
+      "paid_compute_units_balance": 0,
+      "provider": "colab",
+      "remaining_free_gpu_time_hours": null,
+      "subscription": "FREE"
+    },
+    {
+      "account": "colab_account_2",
+      "authorization": "authorized",
+      "consumption_rate_hourly": 0,
+      "current_assignments": 0,
+      "eligible_resources": [
+        {
+          "accelerator": "NONE",
+          "shape": "STANDARD",
+          "variant": "DEFAULT"
+        },
+        {
+          "accelerator": "T4",
+          "shape": "STANDARD",
+          "variant": "GPU"
+        },
+        {
+          "accelerator": "V5E1",
+          "shape": "STANDARD",
+          "variant": "TPU"
+        }
+      ],
+      "healthy_bound_lease_verified": false,
+      "identity_verified": true,
+      "observed_utc": "2026-11-08T05:04:55.115005+00:00",
+      "paid_compute_units_balance": 0,
+      "provider": "colab",
+      "remaining_free_gpu_time_hours": null,
+      "subscription": "FREE"
+    },
+    {
+      "account": "colab_account_3",
+      "authorization": "authorized",
+      "consumption_rate_hourly": 0,
+      "current_assignments": 0,
+      "eligible_resources": [
+        {
+          "accelerator": "NONE",
+          "shape": "STANDARD",
+          "variant": "DEFAULT"
+        },
+        {
+          "accelerator": "T4",
+          "shape": "STANDARD",
+          "variant": "GPU"
+        },
+        {
+          "accelerator": "V5E1",
+          "shape": "STANDARD",
+          "variant": "TPU"
+        }
+      ],
+      "healthy_bound_lease_verified": false,
+      "identity_verified": true,
+      "observed_utc": "2026-11-08T05:07:08.921681+00:00",
+      "paid_compute_units_balance": 0,
+      "provider": "colab",
+      "remaining_free_gpu_time_hours": null,
+      "subscription": "FREE"
+    },
+    {
+      "account": "kaggle_account_1",
+      "authorization": "authenticated; resources.admin:*",
+      "cpu_resource_availability": null,
+      "current_sessions": null,
+      "gpu_quota_remaining_hours": 29.923373333333334,
+      "gpu_quota_remaining_seconds": 107724.144,
+      "gpu_reserved_seconds": 0,
+      "identity_verified": true,
+      "notebook_list_status": "UNKNOWN: initial CLI list 400; corrected-filter attempt failed local SDK contract; no further provider probes",
+      "observed_utc": "2026-11-08T05:05:37.598457+00:00",
+      "provider": "kaggle",
+      "quota_refresh_utc": "2026-11-14T00:00:00Z",
+      "tpu_quota_remaining_hours": 20,
+      "tpu_reserved_seconds": 0
+    },
+    {
+      "account": "kaggle_account_2",
+      "authorization": "authenticated; resources.admin:*",
+      "cpu_resource_availability": null,
+      "current_sessions": null,
+      "gpu_quota_remaining_hours": 30,
+      "gpu_quota_remaining_seconds": 108000,
+      "gpu_reserved_seconds": 0,
+      "identity_verified": true,
+      "notebook_list_status": "UNKNOWN: initial CLI list 400; corrected-filter attempt failed local SDK contract; no further provider probes",
+      "observed_utc": "2026-11-08T05:05:51.112756+00:00",
+      "provider": "kaggle",
+      "quota_refresh_utc": "2026-11-14T00:00:00Z",
+      "tpu_quota_remaining_hours": 20,
+      "tpu_reserved_seconds": 0
+    },
+    {
+      "account": "kaggle_account_3",
+      "authorization": "authenticated; resources.admin:*",
+      "cpu_resource_availability": null,
+      "current_sessions": null,
+      "gpu_quota_remaining_hours": 30,
+      "gpu_quota_remaining_seconds": 108000,
+      "gpu_reserved_seconds": 0,
+      "identity_verified": true,
+      "notebook_list_status": "UNKNOWN: initial CLI list 400; corrected-filter attempt failed local SDK contract; no further provider probes",
+      "observed_utc": "2026-11-08T05:06:35.704374+00:00",
+      "provider": "kaggle",
+      "quota_refresh_utc": "2026-11-14T00:00:00Z",
+      "tpu_quota_remaining_hours": 20,
+      "tpu_reserved_seconds": 0
+    }
+  ],
+  "configured_accounts": 6,
+  "inventory_original_public_summary_sha256": "a2e7ac7e986c7831131530161688896d416fb76ca21e762bbfd4f72f5d5864a9",
+  "limitations": [
+    "Colab eligibility does not mean a lease is already allocated; no current assignments were returned.",
+    "Zero paid Colab compute units does not negate verified free-tier CPU/T4 eligibility; free-tier remaining hours were not returned.",
+    "Kaggle GPU/TPU quota is not a live-session or CPU-availability proof.",
+    "Kaggle notebook listing remains unverified; both failed read attempts are retained.",
+    "Original S81 remote submission remains UNKNOWN; no status retry, replacement ledger, cross-account resolution or completion credit."
+  ],
+  "review_effects": {
+    "account_rotation_changes": 0,
+    "kernel_creations": 0,
+    "original_s81_status_retries": 0,
+    "provider_lease_creations": 0,
+    "training_submissions": 0
+  },
+  "schema": "hcsn.six-account-public-summary.v1",
+  "selected_next_candidate_qualification": {
+    "account": "colab_account_3",
+    "compute_created_by_this_review": false,
+    "provider": "colab",
+    "resource": "standard CPU only",
+    "same_source_as_final_native_baseline_required": true,
+    "same_source_as_final_native_baseline_verified": true,
+    "status": "COMPLETED_VERIFIED_RELEASED",
+    "subsequent_root_execution": "cloud-execution.json"
+  },
+  "selection_updated_utc": "2026-11-08T05:38:37.856552+00:00",
+  "updated_utc": "2026-11-08T05:18:22.681Z",
+  "verified_account_identities": 6
+}

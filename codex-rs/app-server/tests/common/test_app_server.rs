@@ -128,6 +128,9 @@ use codex_exec_server::CODEX_EXEC_SERVER_NOISE_CHATGPT_ACCOUNT_ID_ENV_VAR;
 use codex_exec_server::CODEX_EXEC_SERVER_NOISE_ENVIRONMENT_ID_ENV_VAR;
 use codex_exec_server::CODEX_EXEC_SERVER_NOISE_REGISTRY_URL_ENV_VAR;
 use codex_exec_server::CODEX_EXEC_SERVER_URL_ENV_VAR;
+use codex_login::CODEX_ACCESS_TOKEN_ENV_VAR;
+use codex_login::CODEX_API_KEY_ENV_VAR;
+use codex_login::OPENAI_API_KEY_ENV_VAR;
 use codex_login::default_client::CODEX_INTERNAL_ORIGINATOR_OVERRIDE_ENV_VAR;
 use core_test_support::is_remote_test_environment;
 use core_test_support::test_codex::TestEnv;
@@ -157,6 +160,7 @@ pub struct TestAppServer {
     pending_messages: VecDeque<JSONRPCMessage>,
     auto_env: Option<TestEnv>,
     json_logs: JsonLogCapture,
+    initialization_phase: &'static str,
     // Fields drop in declaration order. Tear down the delayed child before
     // removing an owned CODEX_HOME that may still be its cwd on Windows.
     _delayed_exec_server: Option<(LocalWebsocketExecServer, WebsocketDelayInterposer)>,
@@ -181,6 +185,8 @@ impl TestAppServer {
             codex_home: None,
             environment: TestAppServerEnvironment::Auto,
             program: None,
+            #[cfg(windows)]
+            elevated_windows_sandbox: false,
             env_overrides: Vec::new(),
             args: vec![DISABLE_PLUGIN_STARTUP_TASKS_ARG.to_string()],
             exec_server_delay: None,
@@ -256,6 +262,15 @@ impl TestAppServer {
             codex_home.join("managed_config.toml"),
         );
         cmd.env_remove(CODEX_INTERNAL_ORIGINATOR_OVERRIDE_ENV_VAR);
+        // Only test-supplied credentials may reach this child. A fresh CODEX_HOME
+        // does not prevent the login manager from reading host credentials.
+        for key in [
+            CODEX_ACCESS_TOKEN_ENV_VAR,
+            CODEX_API_KEY_ENV_VAR,
+            OPENAI_API_KEY_ENV_VAR,
+        ] {
+            cmd.env_remove(key);
+        }
         cmd.args(args);
 
         for (k, v) in env_overrides {
@@ -314,11 +329,22 @@ impl TestAppServer {
             pending_messages: VecDeque::new(),
             auto_env: None,
             json_logs,
+            initialization_phase: "not_started",
             _delayed_exec_server: None,
             _attribution_settings_server: None,
             _owned_install_dir: None,
             _owned_codex_home: None,
         })
+    }
+
+    /// Snapshots startup state after a caller's existing initialization timeout.
+    pub fn initialization_timeout_context(&mut self) -> String {
+        let pid = self.process.id();
+        let child_status = self.process.try_wait();
+        format!(
+            "timed out waiting for app-server initialization; phase={}; pid={pid:?}; child_status={child_status:?}",
+            self.initialization_phase
+        )
     }
 
     /// Performs the initialization handshake with the MCP server.
@@ -344,6 +370,7 @@ impl TestAppServer {
         self.initialize_with_capabilities(
             client_info,
             Some(InitializeCapabilities {
+                process_indeterminate: true,
                 experimental_api: true,
                 ..Default::default()
             }),
@@ -368,7 +395,9 @@ impl TestAppServer {
         params: InitializeParams,
     ) -> anyhow::Result<JSONRPCMessage> {
         let params = Some(serde_json::to_value(params)?);
+        self.initialization_phase = "write_initialize";
         let request_id = self.send_request("initialize", params).await?;
+        self.initialization_phase = "read_initialize_response";
         let message = self.read_jsonrpc_message().await?;
         match message {
             JSONRPCMessage::Response(response) => {
@@ -381,8 +410,10 @@ impl TestAppServer {
                 }
 
                 // Send notifications/initialized to ack the response.
+                self.initialization_phase = "write_initialized";
                 self.send_notification(ClientNotification::Initialized)
                     .await?;
+                self.initialization_phase = "initialized";
 
                 Ok(JSONRPCMessage::Response(response))
             }
@@ -1840,6 +1871,8 @@ pub struct TestAppServerBuilder {
     codex_home: Option<PathBuf>,
     environment: TestAppServerEnvironment,
     program: Option<PathBuf>,
+    #[cfg(windows)]
+    elevated_windows_sandbox: bool,
     env_overrides: Vec<(String, Option<String>)>,
     args: Vec<String>,
     exec_server_delay: Option<Duration>,
@@ -1866,6 +1899,16 @@ impl TestAppServerBuilder {
     /// Uses this app-server binary instead of the standard test binary.
     pub fn with_program(mut self, program: &Path) -> Self {
         self.program = Some(program.to_path_buf());
+        self
+    }
+
+    /// Selects the dedicated-account backend for this Windows test and stages
+    /// its real helpers beside the actual app-server executable.
+    #[cfg(windows)]
+    pub fn with_elevated_windows_sandbox(mut self) -> Self {
+        self.elevated_windows_sandbox = true;
+        self.args
+            .extend(["-c".to_owned(), "windows.sandbox=\"elevated\"".to_owned()]);
         self
     }
 
@@ -1931,7 +1974,9 @@ impl TestAppServerBuilder {
         timeout: Duration,
     ) -> anyhow::Result<TestAppServer> {
         let mut server = self.build().await?;
-        tokio::time::timeout(timeout, server.initialize()).await??;
+        tokio::time::timeout(timeout, server.initialize())
+            .await
+            .with_context(|| server.initialization_timeout_context())??;
         Ok(server)
     }
 
@@ -1942,6 +1987,8 @@ impl TestAppServerBuilder {
             codex_home,
             environment,
             program,
+            #[cfg(windows)]
+            elevated_windows_sandbox,
             mut env_overrides,
             args,
             exec_server_delay,
@@ -2094,6 +2141,37 @@ impl TestAppServerBuilder {
                 std::fs::hard_link(source, destination)
                     .or_else(|_| std::fs::copy(source, destination).map(|_| ()))
                     .with_context(|| format!("stage executable {}", source.display()))?;
+            }
+            program = staged_program;
+            owned_install_dir = Some(install_dir);
+        }
+        #[cfg(windows)]
+        if elevated_windows_sandbox {
+            // The sandbox resolves helpers from current_exe(), not a stored
+            // runtime path. Launch the staged program itself and retain its
+            // directory until this same server is shut down.
+            let install_dir = match owned_install_dir.take() {
+                Some(directory) => directory,
+                None => match std::env::var_os("TEST_TMPDIR") {
+                    Some(test_tmpdir) => TempDir::new_in(test_tmpdir)?,
+                    None => TempDir::new()?,
+                },
+            };
+            let staged_program = install_dir.path().join(
+                program
+                    .file_name()
+                    .context("app-server executable should have a filename")?,
+            );
+            if program != staged_program {
+                std::fs::hard_link(&program, &staged_program)
+                    .or_else(|_| std::fs::copy(&program, &staged_program).map(|_| ()))?;
+            }
+            for helper in ["codex-command-runner", "codex-windows-sandbox-setup"] {
+                let source = codex_utils_cargo_bin::cargo_bin(helper)?;
+                let destination = install_dir.path().join(format!("{helper}.exe"));
+                std::fs::hard_link(&source, &destination)
+                    .or_else(|_| std::fs::copy(&source, &destination).map(|_| ()))
+                    .with_context(|| format!("stage Windows sandbox helper {helper}"))?;
             }
             program = staged_program;
             owned_install_dir = Some(install_dir);

@@ -1,0 +1,204 @@
+{
+  "schema": "hepta.mem.delivery-legacy-native-terminal.v1",
+  "status": "PASS_DECLARED_NATIVE_SCOPE_ONLY",
+  "native_job_id": "1a1cacd57f0-2564-878",
+  "native_runtime_terminal": {
+    "at_unix_ms": 1794403860368,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1cacd57f0-2564-878",
+    "launch_nonce": "4940af9271bed0710a09e3eb5b8c4667",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 544,
+        "stored": 544
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "driver_blob": "9f53174243a3e04a48466f0732b48c486f0afb5f",
+  "archive_blob": "f6db1fec837d5abb3f9f77c0a78693a70f14e9a6",
+  "archive_sha256": "3857e409a3d2f6b55036448af93be50f36822b08cd6bc2207d57a98af9cb6ed8",
+  "archive_bytes": 12236,
+  "local_audit": {
+    "archive_blob": "f6db1fec837d5abb3f9f77c0a78693a70f14e9a6",
+    "archive_sha256": "3857e409a3d2f6b55036448af93be50f36822b08cd6bc2207d57a98af9cb6ed8",
+    "bytes": 12236,
+    "regular_members": 18,
+    "manifest_members": 17,
+    "source": {
+      "source": {
+        "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+        "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+        "status": "",
+        "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+        "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+      },
+      "postimages": [
+        {
+          "path": "codex-rs/hepta-agentd/src/test_support.rs",
+          "blob": "de3b00d16837deaa0afe47a2a365beb412a4a639",
+          "sha256": "a5feb32eb4a102c97742dede6893d0a0ba6596268cc8ac97bebf6973b1eb1bf3",
+          "bytes": 13571,
+          "mode": "100644"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "blob": "aaaa9a4bf7f6c89248df20e49afe5b2a85234603",
+          "sha256": "61022a9229241e6c7002a8d3f069c2731c5e78b8e220d119752deb819a1820e1",
+          "bytes": 55338,
+          "mode": "100644"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_context.rs",
+          "blob": "9b9745ce2a0aabe96a8ad0104c0e2283dc194606",
+          "sha256": "a263cdf8ae3642b172edc854bb8d80fef1cee47d3b011ee9c926921f2a2ceddc",
+          "bytes": 2684,
+          "mode": "100644"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_context_tests.rs",
+          "blob": "6b8a8c20664f9884baf975ffc1a512b88b4af0ac",
+          "sha256": "7d1f8ce13d366b10aa79fcb09278886a6258081a90dc6ada56c5b04b3152543b",
+          "bytes": 10663,
+          "mode": "100644"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+          "blob": "79d3396ad53406a5bd17926d4c9ba73bb6be4e7f",
+          "sha256": "a448a5f968f83503693d8f98d09036169d5a9e2483a1faeef78439c0d64c661c",
+          "bytes": 10409,
+          "mode": "100644"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "blob": "79d9d223e44de4f38c2824a3cf1459f8c5c96002",
+          "sha256": "d94b40e32f5d90806119376a2c8f9d4d101ac7e7032e0c71bb596a3bcc9f7b17",
+          "bytes": 13431,
+          "mode": "100644"
+        }
+      ],
+      "fixture": {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "blob": "d4febb0e80cd39554370de03af686fa1839aa6ed",
+        "sha256": "3e256948d7ec0f3f949c35d4ec1a87e52f2999ef60932ae0356fc8a136932919",
+        "bytes": 29083
+      }
+    },
+    "case": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+    "executed": 1,
+    "passed": 1,
+    "failed": 0,
+    "nextest_run_id": "6dc5d5c9-4f10-472a-9d28-520654d27e89",
+    "receipt": {
+      "after": {
+        "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+        "dirty": false,
+        "parents": [
+          "189711e3563ea13a5328d52e99a286f082045b98"
+        ],
+        "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98"
+      },
+      "base_sha": "189711e3563ea13a5328d52e99a286f082045b98",
+      "before": {
+        "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+        "dirty": false,
+        "parents": [
+          "189711e3563ea13a5328d52e99a286f082045b98"
+        ],
+        "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98"
+      },
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--lib",
+        "-E",
+        "test(=native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone)",
+        "--no-capture",
+        "--retries",
+        "0"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 22.666905282996595,
+      "exit_code": 0,
+      "finished_at": "2026-11-11T13:30:48.454389+00:00",
+      "job": null,
+      "lane": "source-head",
+      "log_bytes": 31116,
+      "log_file": "legacy-attach.receipt.json.fda636525fc5476186486039228370f0.log",
+      "log_sha256": "a319e7ee8976c9c739ef15af5f7c22f7accc88c73d184adc23f1251a3d337611",
+      "minimum_tests": 1,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 1,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "source_sha": "542443191af06facb891f58fecb8bfe7a925c893",
+      "started_at": "2026-11-11T13:30:25.744992+00:00",
+      "status": "passed",
+      "tested_sha": "542443191af06facb891f58fecb8bfe7a925c893",
+      "timed_out": false,
+      "working_directory": "/home/qian-qi/mem-native-5af6-20261111/source/codex-rs"
+    },
+    "junit_sha256": "d99f8f55c93e466a7a2d183bf2a04ff41360eb7cb0d12c7bb82a00c72db25595",
+    "binary_inventory": {
+      "source": {
+        "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+        "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+        "status": "",
+        "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+        "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+      },
+      "binaries": [
+        {
+          "path": "/home/qian-qi/mem-native-5af6-20261111/target/debug/deps/codex_hepta_infer_worker_host-3457df8d495c8bbe",
+          "bytes": 1310027552,
+          "sha256": "4f00cf4712416dd197bf058e362e628bcb62d3637bb9365c1f03410280e0929c",
+          "mtime_ns": 1794402895911654100
+        }
+      ],
+      "actual_self_executable_contract": "std::env::current_exe() of the native test; core_test_support registers arg0 helpers",
+      "scope": "Post-run matching test artifacts. Inventory alone does not identify one consumed executable; the original Nextest receipt and JUnit bind the case and source.",
+      "separate_cli_required": false,
+      "separate_cli_consumption_claimed": false
+    },
+    "same_binary_as_delivery_v2": true
+  },
+  "prior_six_case_metadata_blob": "48a53d02a2d332a49a072e466629fc4a715790f4",
+  "source_manifest_blob": "2bb9922d4231e81589552b0d88e9a3bd7cb854d3",
+  "first_execution_of_this_case_in_this_task": true,
+  "native_retries": 0,
+  "source_changed": false,
+  "provider_scope": "Loopback HTTP mock Responses in a native fixture; not a production provider or real-model episode.",
+  "production_provider_requests": 0,
+  "real_model_episodes": 0,
+  "scientific_adoption": "HOLD"
+}

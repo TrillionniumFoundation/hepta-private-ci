@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "name: check-clean-worktree\ndescription: Fail when a CI job leaves tracked changes or untracked files in the repository worktree.\n\nruns:\n  using: composite\n  steps:\n    - name: Check for a clean worktree\n      shell: bash\n      run: |\n        set -euo pipefail\n\n        status=\"$(git -C \"${GITHUB_WORKSPACE}\" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)\"\n        if [[ -z \"${status}\" ]]; then\n          exit 0\n        fi\n\n        echo \"::error::CI job left tracked changes or untracked files in the repository worktree\"\n        printf '%s\\n' \"${status}\"\n        exit 1\n",
+    "title": "action.yml",
+    "modified_date": "2026-06-24T18:06:35Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c89540598693697577cda8cba31cb07f6ce65317/.github/actions/check-clean-worktree/action.yml",
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c89540598693697577cda8cba31cb07f6ce65317/.github/actions/check-clean-worktree/action.yml",
+    "display_title": "action.yml",
+    "structuredContent": {
+      "title": "action.yml",
+      "content": "name: check-clean-worktree\ndescription: Fail when a CI job leaves tracked changes or untracked files in the repository worktree.\n\nruns:\n  using: composite\n  steps:\n    - name: Check for a clean worktree\n      shell: bash\n      run: |\n        set -euo pipefail\n\n        status=\"$(git -C \"${GITHUB_WORKSPACE}\" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)\"\n        if [[ -z \"${status}\" ]]; then\n          exit 0\n        fi\n\n        echo \"::error::CI job left tracked changes or untracked files in the repository worktree\"\n        printf '%s\\n' \"${status}\"\n        exit 1\n",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c89540598693697577cda8cba31cb07f6ce65317/.github/actions/check-clean-worktree/action.yml"
+    }
+  },
+  "isError": false
+}

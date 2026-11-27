@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "tests": 19,
+  "wall_seconds_unittest_body": 6.517,
+  "command": "python -m unittest qualification.hcsn_network.test_network qualification.hcsn_network.test_task_physics qualification.hcsn_network.test_benchmark_models qualification.hcsn_network.test_phase_state qualification.hcsn_network.test_campaign -v",
+  "meaning": "same-source numerical, gradient, fresh continuation, model interfaces, zero-model controller fault controls; no real-task fitting yet",
+  "new_optimizer_calls": 0,
+  "historical_core_study_optimizer_calls": 60,
+  "final_test_log_sha256": "e3f29146aaaa25b508f628e535c404d09f46d5c991053754cca3bfeb1053239d",
+  "formatter_log": "No changed files need formatting. Use --all for a full repository check.\n",
+  "base_aligned_tests": 19,
+  "base_aligned_unittest_body_seconds": 6.43,
+  "base_aligned_log_sha256": "117ecaa3fb4a13ed85984f4800673de37154415132313ff00bf9a98cbbf46902",
+  "base_alignment": "The remote base already appends unused FirstHitRegime diagnostics to regenerative.py. Local execution source now has exact remote bytes; used function prefix is unchanged. Both original and base-aligned test runs are retained."
+}

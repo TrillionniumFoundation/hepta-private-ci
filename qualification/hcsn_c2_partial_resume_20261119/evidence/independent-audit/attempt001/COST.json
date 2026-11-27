@@ -1,0 +1,43 @@
+{
+  "cost_scope": "Whole reader child including Python, NumPy and Torch startup/imports, archive decoding and checks; separate from scientific training budget.",
+  "cpu_system_seconds": 1.203204,
+  "cpu_total_seconds": 4.234424,
+  "cpu_user_seconds": 3.03122,
+  "full_fresh_process_wall_seconds": 4.242280241996923,
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "affinity": [
+      0
+    ],
+    "cpu_hard_seconds": 310,
+    "cpu_soft_seconds": 300,
+    "threads": 1,
+    "wall_seconds": 360
+  },
+  "parse_error": null,
+  "peak_rss_kib": 275216,
+  "pid": 5,
+  "raw_wait_status": 0,
+  "reader_identity_after": {
+    "bytes": 41106,
+    "sha256": "24e7690d1d3e9906febdfed61ea9366240376db550461d019135eca4094db3a0"
+  },
+  "reader_identity_before": {
+    "bytes": 41106,
+    "sha256": "24e7690d1d3e9906febdfed61ea9366240376db550461d019135eca4094db3a0"
+  },
+  "requested_model_forward_calls": 0,
+  "requested_optimizer_calls": 0,
+  "returncode": 0,
+  "schema": "hcsn-c2-archive-reader-fresh-process-cost-v1",
+  "status": "PASSED",
+  "stderr_identity": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout_identity": {
+    "bytes": 11388,
+    "sha256": "1d66bc7adbef4199e331417639a743ce5041f80f420430b3052d7161a7beb564"
+  },
+  "timed_out": false
+}

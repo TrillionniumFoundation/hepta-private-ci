@@ -74,9 +74,18 @@ impl WineTestCommand {
 
     /// Starts the Windows executable with a fresh `WINEPREFIX`.
     pub fn spawn(self) -> Result<WineTestProcess> {
+        self.spawn_with_prefix_setup(|_| Ok(()))
+    }
+
+    /// Sets up caller-specific files inside the new prefix before starting Wine.
+    pub fn spawn_with_prefix_setup(
+        self,
+        setup: impl FnOnce(&Path) -> Result<()>,
+    ) -> Result<WineTestProcess> {
         let runtime = WineRuntimePaths::from_runfiles()?;
         let prefix = TempDir::new().context("create isolated Wine prefix")?;
         install_powershell_runtime(prefix.path(), &runtime.powershell_runtime)?;
+        setup(prefix.path()).context("prepare isolated Wine prefix")?;
         let mut command = StdCommand::new(&runtime.wine);
         configure_wine_environment(&mut command, &runtime, prefix.path());
         command

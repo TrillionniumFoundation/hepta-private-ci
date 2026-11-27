@@ -1,0 +1,2817 @@
+{
+  "schema": "hepta.memory-consolidation.source-checkpoint.v1",
+  "base": "f41db48d00ebcfc1b6217313197d2c4b99bc666a",
+  "incoming": "1657238edcc0793bc353c931f9ca445ef992315c",
+  "merge_base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "note": "Fixed reviewed source checkpoint; native compilation, caller proof, and oversized historical asset storage are pending. This is not a release qualification.",
+  "files": [
+    {
+      "path": ".github/workflows/hepta-lockfile-regenerate.yml",
+      "bytes": 2010,
+      "sha256": "c4f135896f49e5b67c9aa5d5ab6f4190f6f89dca8b751a7a102890ff7004697c",
+      "git_blob_oid": "8eae3dc33836a44e16ba0f31af08e6c46d643662"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-budget-shadow.yml",
+      "bytes": 2491,
+      "sha256": "2a6a53bf991754502e5bd62d9c53af90e58b08e1a634677e2442f7f7b5825763",
+      "git_blob_oid": "0db4797f5449ec11ee1c9bec9332d3723a532561"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-current-relay.yml",
+      "bytes": 9206,
+      "sha256": "51519d342531fc756ba6aa6ba9c02834bd6bef98ce0e54ff220ea5bda8f487b9",
+      "git_blob_oid": "1aae9e6432ca408d32e1b4c025a160927d2a9586"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-multihost-relay.yml",
+      "bytes": 7202,
+      "sha256": "188e9aca884550d23afaedbe3a8f1e4c03748d49d0e90a1d6f5a06973d74491c",
+      "git_blob_oid": "ba83cdf2a82b4d1f384db794305b4ad5e4e6817a"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-native-process.yml",
+      "bytes": 10305,
+      "sha256": "f81a92201af740e68bd5243c50fa9ff612cac223fad80d7bc365c80ec9212cd5",
+      "git_blob_oid": "d074269a7d4805054c9235b300e9cde136cff36d"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-population-shadow.yml",
+      "bytes": 2766,
+      "sha256": "78bea288b030de97d67d14e1eae57e4c0723a63db3c8c19643a7fbbe8b00de45",
+      "git_blob_oid": "f863e80ef887f0c095d6e4985cfd2fe67065855b"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-repair-solver.yml",
+      "bytes": 6354,
+      "sha256": "d3bc36d3c3963a1a6da5e5385dd12d7e6a8e750f79811606986fc44497bb0696",
+      "git_blob_oid": "ebb84e3bde8bd19db0984202f97a4cdba6db54ea"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-system-shadow.yml",
+      "bytes": 2578,
+      "sha256": "b7eef0ec558d698e6cb03b18c69116199d353bd4e243981eac4de60b4709ad5e",
+      "git_blob_oid": "7d924d6a36d559208c8c4f7e77623e118d0e4e22"
+    },
+    {
+      "path": ".github/workflows/hepta-native-memory.yml",
+      "bytes": 9614,
+      "sha256": "8d1740e307f005b0c7f47d415cae8312904ec6887cdcde2e91709c2722e1fd61",
+      "git_blob_oid": "a8462b9bd857342652c2750c75186b09df5ea0ea"
+    },
+    {
+      "path": ".github/workflows/hepta-parametric-catalog-shadow.yml",
+      "bytes": 3608,
+      "sha256": "6acda45e4c3c92290a1c192692192a36a714931855aad994c3dcb282dc6cd5bf",
+      "git_blob_oid": "43e92913ed012f1cdac3e571278f180eb9b87f1b"
+    },
+    {
+      "path": ".github/workflows/hepta-parametric-memory-shadow.yml",
+      "bytes": 4819,
+      "sha256": "fdb128c0b0a831452a5443908bf70053252320af99b3206e8601ff6374b6e0fa",
+      "git_blob_oid": "9eedac84a22fc385ad196abe9ef2622530aa6a68"
+    },
+    {
+      "path": ".github/workflows/hepta-parametric-next-shadow.yml",
+      "bytes": 5639,
+      "sha256": "c6637eb3f651d31054d3499324b2b66e87fc807d0aa585d028c8abf449a9754b",
+      "git_blob_oid": "800dd59207f2a62f88e7c5b89b560fc6f45b6db5"
+    },
+    {
+      "path": ".github/workflows/hepta-shared-stem-bakeoff-shadow.yml",
+      "bytes": 11770,
+      "sha256": "04b64108940bf1178f71bf01ffa7a953b20a7862949964cf1f1066c67881e5ec",
+      "git_blob_oid": "e4dd26349a89bbadf9ba21a0945f2669f290680d"
+    },
+    {
+      "path": "codex-rs/arg0/src/lib.rs",
+      "bytes": 30366,
+      "sha256": "1e6e62bb405f4532406bba9f6c02dca8f261851e2a4c11d406de9f2b343dd056",
+      "git_blob_oid": "18249586e2df18376fa4a74be804c473e7cde5cf"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/command_migration.rs",
+      "bytes": 12549,
+      "sha256": "f3add2a904024dbb9f1fecae05f16b117adbf03ebf24b007f6606cd3032b5003",
+      "git_blob_oid": "df6f6a40dcb69a8ec5f0a33fa08d7dabc684f3d3"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync.rs",
+      "bytes": 39452,
+      "sha256": "761c2de4441b411d770e12a06fadc0d8ce784a71dc6a80c869f4c62e30d47fb0",
+      "git_blob_oid": "b904b137686460837ad6f28054f7c17948a6015a"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync_tests.rs",
+      "bytes": 50619,
+      "sha256": "4c4834d2ee33a105b49685d39b105d5c7ca5990a5750c2771c9c0c4d51d5c674",
+      "git_blob_oid": "22f5f6d9ade818084161a44d508a56e1b126298f"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "bytes": 49837,
+      "sha256": "b9c26b5e12988b5626cf4edcc81648dbce246b63e7a5b8a19b43a3f08f3d03a6",
+      "git_blob_oid": "5b52598c1fe01a82d807c60283a22bfbc757bf39"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/memory_cell.rs",
+      "bytes": 1370,
+      "sha256": "f485bf83bcbd3d52426f5b32d88452686f7d15e5577f706987a84324266a0e23",
+      "git_blob_oid": "749c8e38a909d70d13839df619b5ca4ae78f1fc9"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/memory_cell_tests.rs",
+      "bytes": 836,
+      "sha256": "036d7c4138d53477be9a69e2b97862da86846ac305babfb6ba6bd215615f8e12",
+      "git_blob_oid": "ba6c2c770d974b9587afcdb1ea061a8933b87b1d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 10587,
+      "sha256": "2dbb495edc71b82ed9843c71ac62fbbb1b6358cee8c0000d65e57123643535a7",
+      "git_blob_oid": "d9429a615c6d41df6aacb8663b32eac51a2af472"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "bytes": 5636,
+      "sha256": "30f994f8ac86f4257f662bd79208320ef07ffb9d36637ff1ab5aba1503a480a5",
+      "git_blob_oid": "a8d710eb1b18b9f2f67952e20f3bd8f54e9f2cad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/examples/native_memory_daemon.rs",
+      "bytes": 12143,
+      "sha256": "1677cfbe822ade7ad97b198c5305ceeb2a12c577fbad00bd41f6d2a3768d5c99",
+      "git_blob_oid": "d6151af61653328aa170e700c8a17046e0140e18"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/examples/native_memory_shadow.rs",
+      "bytes": 10938,
+      "sha256": "ac4242fde0b9f7435f2b0086716308769b19746ffde37f032484966696a70f42",
+      "git_blob_oid": "77c482063b921323635814463015ab66ec671b80"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/examples/native_memory_shadow_support/evidence.rs",
+      "bytes": 9905,
+      "sha256": "758af0b913c3d6c66e521a818f51fb567829e9772e06a91bd714d2174bc81181",
+      "git_blob_oid": "c41b44bbcff9ab13289a86ea6be8ca5e7e05e8fe"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/examples/native_memory_shadow_support/mod.rs",
+      "bytes": 8174,
+      "sha256": "51b39e4e9b0ca046e8f4374d33d23d28e30cc3c23cc1e01d3843266b05db3bfe",
+      "git_blob_oid": "b828cf103598fe154fea4aa738df51c65b19353f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/examples/native_memory_support/mod.rs",
+      "bytes": 7639,
+      "sha256": "d91e2cbd144ed10d20d809348d1eeb7c10e5302e2078999bff81c7b582254d57",
+      "git_blob_oid": "30c50135038db4d35986eec13503c0b0c15a070c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "bytes": 28430,
+      "sha256": "93928cfcdc2c99dc36ae6b0f90a7e81a1a4a0537b3bfb0d6b0e798b8034c1d3f",
+      "git_blob_oid": "75cd38e6490ff98adcd541f51babbe6b2d5f6d42"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 44693,
+      "sha256": "fb90ef7adffb7e1b69fb34459a7182b9e720fa2a0e9c6f40e13903d2d881c4a7",
+      "git_blob_oid": "741854248833a8dc26632eb6fc14d66893a2b663"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "bytes": 28482,
+      "sha256": "f54ea5cd61449570c7324aaafc5a3a1270664c5987d2dfc3d6cc001471f9359a",
+      "git_blob_oid": "44024d04021d5531fd8ab130bb7ee0f2fa685b3d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "bytes": 38411,
+      "sha256": "fa6b3296f6f3ae9d7bdade9619b73489c461b406e43cdbd0fc86d16755ab78b0",
+      "git_blob_oid": "06837461d5bb489fc53b0e25f1cdbfd23d9bf84a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "bytes": 27394,
+      "sha256": "39e867d9ffd9cc320e40072323e22b5c0034aeb3ff6ceb7715d20baecc71ffe1",
+      "git_blob_oid": "2360bd56be10cc25edf788a5f1a6ff4f699cec2b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 95661,
+      "sha256": "ef89bb9477541151cdfae10938cb8cc131c53d7d6138716a010da2bcb5daf928",
+      "git_blob_oid": "da8edfa7e58b4d0ed6853e933cbcfb65e487890e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "bytes": 15448,
+      "sha256": "3bef3b4a3d41a2c7c2d695994f8fdb180832cbef7f969351f825d89f90943ed7",
+      "git_blob_oid": "fc1860a6b3a0582ad3b06f2860f8bc97ad0c330c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory.rs",
+      "bytes": 14283,
+      "sha256": "a45d40b8aabe5231b0b72f200d313e3abf4c267a91b1667268f3d53a28511f83",
+      "git_blob_oid": "d977752540729e3ca233856b6f5f7e865771c098"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_context_binding.rs",
+      "bytes": 1472,
+      "sha256": "277c6653cd0f4374db89d8b641aada38ef881fae82923fb81be0dead67abf1ac",
+      "git_blob_oid": "6f68a5a8061baaee7b00f534669d2e21644efe94"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_context_binding_tests.rs",
+      "bytes": 5582,
+      "sha256": "956e43d0d06841e9fa4a68c94520b038a58472ee790873f92076d9a4aea5b6e6",
+      "git_blob_oid": "6972f2783fb4d06ffda4535623049a394377c694"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_control.rs",
+      "bytes": 1828,
+      "sha256": "56f279e26ccfc3a96c14cec109d69a3139d92b170fe20923bb8b4e0ec15786e9",
+      "git_blob_oid": "15018c9fe25cdecd1b3d18e6168ea87983d05f8d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_control_tests.rs",
+      "bytes": 3352,
+      "sha256": "0d36f27e6833d111020c66a3c80568c58e2e7bf2d77bf4e2b0dd6dcf85533216",
+      "git_blob_oid": "4f88161aed645c552dfcb3f5a4ca9c17d38affc7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current.rs",
+      "bytes": 11738,
+      "sha256": "28664fb29af9b838fe2999d1a7b053215d17c5f7e6df5d0ccc5687e3284fe4b5",
+      "git_blob_oid": "76c7bcfc52494aaa284792cfb8f1c13531f3a3cc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_model.rs",
+      "bytes": 1542,
+      "sha256": "f8ff22c9c1a93171b194ecc7203fa3f805fe6c3185decad99ac5c548d27ec842",
+      "git_blob_oid": "05af7c0f32ac2e5165c2474124c0d563e4126c15"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+      "bytes": 9911,
+      "sha256": "0c8326b79af5507eff2eef65634824e193e26766873d1c08511d73d8f4e66e24",
+      "git_blob_oid": "bd30c76c296f4a04547d98df80ad467fc0cd2d30"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+      "bytes": 10417,
+      "sha256": "97f124c2398520742066561d4fc2b5eb96647ced4e445b8a7c254e4907604e7e",
+      "git_blob_oid": "381e8540af87d061310556c6035a72b39fce703c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_tests.rs",
+      "bytes": 5583,
+      "sha256": "c49fbfb25e372e1330df82544a641b33132760addb7d2f24585b207a83b887a5",
+      "git_blob_oid": "80dc2084ecfaa12789f7a6d13eed6873946a1ef5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs",
+      "bytes": 11774,
+      "sha256": "2eabaccc3af9a077fae37085f0ff12f0f5e5faf5aea3d4695763f2c8f834469c",
+      "git_blob_oid": "1f6853f81780c821c603e469c983bb56e5edaf3f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_host_control.rs",
+      "bytes": 11542,
+      "sha256": "9dcb325af559e5529bd297af210893d9c861094c3db0cad9c7cad097f1593d33",
+      "git_blob_oid": "120d4ffe023d7f9986b6950a37589466c134a742"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_host_session.rs",
+      "bytes": 3337,
+      "sha256": "a09d07701fca5a07894fd8b9944856907df302cdac55099850bf07998c479d25",
+      "git_blob_oid": "f2ce0783f0eb65ca14ffc3754f593e1aee651ce2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_host_session_tests.rs",
+      "bytes": 5798,
+      "sha256": "5f58191637801ff9b4516b127d5a87e219cbbf2eadc43a98eb6133046c731c13",
+      "git_blob_oid": "33f764e716c68d347ae143166ee9c338756ed2b5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_model.rs",
+      "bytes": 13167,
+      "sha256": "5e2c145516e6258f66b80eb854802c84f7702c73a606d7cd8cfcf3cda0b2b7fb",
+      "git_blob_oid": "13104d1fb01f148b11cb467f3cda78656ffa654c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_model_tests.rs",
+      "bytes": 3592,
+      "sha256": "467d1bb8a57d21680731f748713e5356d5bd1f65b5dedeb8d6d9e9d876de60fb",
+      "git_blob_oid": "ef45b695b738a2f194ca19a9e0129afdcd6c146e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_process.rs",
+      "bytes": 9775,
+      "sha256": "2723ff6eeb49c77b80f65ec462cf3ad85cd596e25ec38a6b713967a27408382b",
+      "git_blob_oid": "91a6f2d39d2bb67ffdb9053c425e392602d40f20"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_process_schema.rs",
+      "bytes": 10215,
+      "sha256": "e9ceac85b348d1414abd7bbb4bebe420f49d8a3b9d01b9a970b126bc8d499c80",
+      "git_blob_oid": "bafed688c25e3c01aae7508b835f45af4012297e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_process_tests.rs",
+      "bytes": 10348,
+      "sha256": "e929aac94de768de7341c35713e4097cf1aed4cb42cf8fcfc5a2fba9f71ed13d",
+      "git_blob_oid": "25216ad33bb986731e565d6c9dda169d3a35cd3e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_process_trust.rs",
+      "bytes": 9359,
+      "sha256": "5eb181c31b7775b36570b6b4db42f19c538b133f7f708c9ea22a1fa232cd9591",
+      "git_blob_oid": "72884ff49208671fb063a66c159a65f3b2989104"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_process_trust_tests.rs",
+      "bytes": 5462,
+      "sha256": "69ae7283ddd823616c1e658af6e22d953de7b7f013c6df8a02a21d917a018a49",
+      "git_blob_oid": "6e74641f80b594b741ee50ceaaec55e2924e8e73"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration.rs",
+      "bytes": 6284,
+      "sha256": "66758e7f573c5a85548a793daae06f52c12c1f5b7991b0c4f27bc393f70acfd6",
+      "git_blob_oid": "80cdf341e89560860dea17a62f36b05f84fe9f9c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_current_tests.rs",
+      "bytes": 11824,
+      "sha256": "109f7a63a390f961dc1b61e094852f3abeb2ca3b688da8fab5d1c9871a66793c",
+      "git_blob_oid": "f2dcd46cc9a488fefa6aa6dd8fd216620218f46d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_pretrained_tests.rs",
+      "bytes": 8457,
+      "sha256": "e2ca8cab07fe6c24477889eb0d7e406a5bdccb1edaeb8defed978e15474a20a6",
+      "git_blob_oid": "4742058af4d85831f81be15a44de796f0af466e9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_startup_tests.rs",
+      "bytes": 2937,
+      "sha256": "57fe4bef68b4be1ee3eeb79c9197af8a0f9207261da3aed2516a234c5bbe92c0",
+      "git_blob_oid": "7675bb38b065ac5e07d5a9b1b5fec745d016fb4a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_tests.rs",
+      "bytes": 3289,
+      "sha256": "d1dc9a246e93e2232c8e7a43bda1e4f652285d964ab5e66ca2594a7a3c1db4de",
+      "git_blob_oid": "2b5c77603f2d8c4e37f9646bdd6ba87606ed5a2d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_shadow_namespace.rs",
+      "bytes": 6728,
+      "sha256": "fd903078a84c20c48e0b5c8b7ccfbc70697421ce13e75b505f69103310e9be10",
+      "git_blob_oid": "85953b655799656dd875990c2033e91e0223e998"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_shadow_namespace_tests.rs",
+      "bytes": 8384,
+      "sha256": "45be8d711bda48c4168701beec513b93c6972f1a37a5d4fa53c9e18bac6e8f70",
+      "git_blob_oid": "4651a746c28590c286c7fe87551e0f35b6b81df3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_test_support.rs",
+      "bytes": 9254,
+      "sha256": "664e3b4c6cb975a65a87289a6be1855a2c8691fe637d2a1c700333501a265ad3",
+      "git_blob_oid": "125f49fae191f536a0cffe559193ed3a5e3ab94e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_tick_binding.rs",
+      "bytes": 2293,
+      "sha256": "654cc2e5bdfb177d1e5f7630a6ca4d2163f21b27be0dcf220365fb78f573e893",
+      "git_blob_oid": "3520012c382064d623d7c856bdf4b7b345918de4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_tick_binding_tests.rs",
+      "bytes": 5216,
+      "sha256": "740380a380dc19c23cce1474dddaf4579a7d88ec15e0be1f07793b1fe76f8473",
+      "git_blob_oid": "004bed9f108108f3c81d6790c16264f9e3610047"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs",
+      "bytes": 18127,
+      "sha256": "e3feaeb054c1517a9a25b9cfd2ce13e51b2bee447fab97cb5dd54670d92bdbc4",
+      "git_blob_oid": "770a07d181dc07a9ee1d09bd673ee7618339f172"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_tick_owner_tests.rs",
+      "bytes": 7641,
+      "sha256": "6d02cd3414e7622aec3e494219043feafe686716dcd8cddeadc53d1dfa27409d",
+      "git_blob_oid": "521f96e6af2f9b9dfeb1e1f121ac629aec496e0d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_types.rs",
+      "bytes": 7106,
+      "sha256": "658a4cf8283f33ad70ef0516a55eb9eca8513cd2b7f85e2a33d302c9e45a3746",
+      "git_blob_oid": "e98b9e22c9aae8a60b512a94b3a2f10e9fe07751"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "bytes": 18173,
+      "sha256": "21d5a63804172237928b4d7af5f7172434e27ac98b6a0969c189ba8d36db5192",
+      "git_blob_oid": "0989a9eacb6b3fc729ec2113e23d10f0196be158"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs",
+      "bytes": 10487,
+      "sha256": "f69d0ba9b5589cc167d5aa83f772fccf7ceb7e2cea2137f73de40e2f85209938",
+      "git_blob_oid": "a2a307420f0cd0c0d792331878c7da6320e3d955"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "bytes": 12637,
+      "sha256": "f29771062bb64425f88fa64b5b7d4b7e859919f6d943b370b381217e2066b970",
+      "git_blob_oid": "235a3bcdf807bd1eb47d2ac8140408201233a394"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "bytes": 29544,
+      "sha256": "e2e14dfd3e21a761e821f4584987cce50ba13df9256041360eafbfc0e7097740",
+      "git_blob_oid": "c25f0907bed6f626a32531f3868aeaf5fe6a9646"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "bytes": 37434,
+      "sha256": "108cac79b0eff5f6e4d778ebf9e2633219942526781243b5bcab2f7d06d1f0af",
+      "git_blob_oid": "9a69d58120ce00c846b9b0d8a8e8b413cfc7d0c9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "bytes": 40007,
+      "sha256": "19ec02618f84fc111f7b8d3db1968c3c495f90f914674ded2bd76fd8ad80ae7a",
+      "git_blob_oid": "f70f5f89cc757d6f382f80ba65373dba51bae59d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "bytes": 66462,
+      "sha256": "0f6c99441248ba30e273c0931d791fe956dcb443648c7e90113cb3b6e10b0bc6",
+      "git_blob_oid": "acba1b6f524edbb0b00a3490d74c000cff1dec3f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_current_objective.rs",
+      "bytes": 8432,
+      "sha256": "20810ecb61e5e3b6ea4ce2ca11a00a3cc9ae7654bad8414aa7a0d8d515d87554",
+      "git_blob_oid": "7f570fe467cdaee0334047c6bc8104ed8d03d7b5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "bytes": 24396,
+      "sha256": "cf62b6bdecfb873fc4ab87c4acb206da7919a5bfb06c27320e02c4a4ce21109e",
+      "git_blob_oid": "dd5396f0fbdbd43bd230dc70b1090ba79a669bbb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "bytes": 104178,
+      "sha256": "7ec171e09b26dff99df9a497af8434e3018ae9c37a5073add164825cc62501a7",
+      "git_blob_oid": "c82c7efb3a9ec26f8a5aca3bc0cc406eda2dab77"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+      "bytes": 18664,
+      "sha256": "0b6dad825547d45df76621a239c565f1c2352d567cd055f007ace4c313023b3b",
+      "git_blob_oid": "17640845b55e8e13a9f288f7dff70d2e8bccf777"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/native_memory_process.rs",
+      "bytes": 18680,
+      "sha256": "57d32db3d41cfe78cee21d4baca39c0bd0716e95c33f9bc5a367784e909599da",
+      "git_blob_oid": "b64800dc103b2935a1b5561b6dc6ea5305fef3d6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/native_memory_process_fixture.rs",
+      "bytes": 10344,
+      "sha256": "a22b26921e4215ddb9eb1246e47d65316532106b0384014e471b5013c100356c",
+      "git_blob_oid": "e2abcb499b218f035d12c32110368355ede93c84"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/native_memory_process_ndu.rs",
+      "bytes": 9040,
+      "sha256": "ad23d3a1c64a00e0f05a29f3c29508808ce4b955fef15a4bf614baace006a18b",
+      "git_blob_oid": "6066d06af1f377475a3f656d7a82b807e60a568f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/native_memory_process_objective.rs",
+      "bytes": 8941,
+      "sha256": "2fca78da1ae1fc8cbfb6d39798d0d4ec94b6afc71f625d2b6a12b50823e1c8e7",
+      "git_blob_oid": "d8f9e6adab1816b07f95487f28ad894b09e720af"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "bytes": 8565,
+      "sha256": "212fb87b278df64179996ea2c7b8f41f4f34d1d1a7fe74ac972ef79c4bf83997",
+      "git_blob_oid": "aa4264e184cee5c5136d442718db239056a1351f"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "bytes": 13003,
+      "sha256": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9",
+      "git_blob_oid": "12f18283d6c30c7c7e04ce04b44d0d350c2492b3"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "bytes": 77506,
+      "sha256": "27b850741e36b09020ab2b543cac5a33b9b1a81ca722d2b7ab3b47a0175359c2",
+      "git_blob_oid": "69e8eb92c413d399daa384383baa7fe5b1dae5a6"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_bootstrap_crash_tests.rs",
+      "bytes": 13319,
+      "sha256": "4e428fb4876ad2f833713558cad601a9ac73a9e871824528d27b3b8158f8b88e",
+      "git_blob_oid": "0d5a1e68eae7241cf0187a1f6bb29bc0a36b0bb1"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "bytes": 21595,
+      "sha256": "f7e276ed07b2ef1e166d1a9ba2a59ded9794c543778f5f4ed78b25835fbed9ba",
+      "git_blob_oid": "a3fe63930197e195bd78cfddea5ea621a5989d7a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "bytes": 29955,
+      "sha256": "310981eee598384f70da399b7f651d66057b6e17b67f7bcc629f49442c259aac",
+      "git_blob_oid": "271621a172f5a87f1ccd4a107cd0d27686adf8d5"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/memory_cell_invocation.rs",
+      "bytes": 8835,
+      "sha256": "cc6d868e0082985ad7ede18cc3fc51a3f0588ea908b3bfa9be4b8c33e8b28b72",
+      "git_blob_oid": "f1f2771cca7f7c8058c59100d2ea5082ae8a7e23"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/memory_cell_retained.rs",
+      "bytes": 7986,
+      "sha256": "d5123f30d52928c2a133a6f1735df4050de4aa8c392d5542a78cba170fb96d39",
+      "git_blob_oid": "36767ebf50cae9b1ecc62c07bdf0282afc910c6b"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/memory_cell_retained_tests.rs",
+      "bytes": 2679,
+      "sha256": "d6c7cc53b016191f15a9d9940962ced5e060e0cc633bbf0797502cdc4d673091",
+      "git_blob_oid": "41d6d1d315a2abad657beb33cefff8610377eed3"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/memory_cell_source.rs",
+      "bytes": 11600,
+      "sha256": "700e72b2bb58ad312ef8adcb6a061ac78ac780da0334085d7c0a9bb57b188752",
+      "git_blob_oid": "d59e75d4ea90d8a80ca2cdf7103296fceb38cc33"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/memory_cell_test_support.rs",
+      "bytes": 6356,
+      "sha256": "7ecf45b0dcdd54f9353a9f9fd87b96fdf776ab5c3908572d4502b9221172ca9d",
+      "git_blob_oid": "66c255b4dbd59ce3364ac86284d10af488634665"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/memory_cell_tests.rs",
+      "bytes": 6751,
+      "sha256": "e6265b6b7ee4f46962274ea312cddf2be83b47718bdc8e43ffab01f2ba63672b",
+      "git_blob_oid": "5018d3c5a3e090d40f43c049597668913d98016c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/memory_cell_types.rs",
+      "bytes": 5922,
+      "sha256": "3b9987a98b6ea5de38e68f467986930c49757a6809ca673d0fd3bdcbbd432ea9",
+      "git_blob_oid": "0a444604f94e770fa2b4e042a15ce21eecf685b9"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "bytes": 174460,
+      "sha256": "3db5bebe4f32225e7268e32ced88697593a8fb6b9b15f1903042ec2c8f2ab8b3",
+      "git_blob_oid": "5a1d1c5a6eaec42ac9bcdcd33bd322627956ba04"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/Cargo.toml",
+      "bytes": 520,
+      "sha256": "39cb860267b8fdd44d8e175ebd1ef660294ae387f2ac64077ac6d4fa141dc305",
+      "git_blob_oid": "7a5740c65e0eafe56d9207e4ba9da07f1787c983"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/group.rs",
+      "bytes": 13547,
+      "sha256": "5c680358e812b46e5c78b4b2f94f52d020dfedd87f7da5011f14f1696006790b",
+      "git_blob_oid": "6554ae80d91e8e46a2178afed999591695a09aff"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/group_tests.rs",
+      "bytes": 5464,
+      "sha256": "7b6afe01d16fd6543ae07715f51406a522f87f2367cbc235da9c03573e3cfe53",
+      "git_blob_oid": "767941349ee6f66d0b6de26dd64e90de0a1e8b49"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/lib.rs",
+      "bytes": 5750,
+      "sha256": "f8714a58fa20ba09e090d323319876e065d27ec8dd16e3283d2ae3c35ee496d6",
+      "git_blob_oid": "fefe16a131c73947af742dc0073fdd90bec3a6c8"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/observation_adapter.rs",
+      "bytes": 1980,
+      "sha256": "d29f21609976b5a573b90b9d5ef2e0a4901680e9f6a285fc62377adc7b2c5096",
+      "git_blob_oid": "80a72cabbc13ebfa39013596d80ffe3c203b988e"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/observation_adapter_tests.rs",
+      "bytes": 2331,
+      "sha256": "07825849ef75576b0b43fcc87542b3ca6bc9569a8fa57735b48d9b71b2e40c0b",
+      "git_blob_oid": "b282505a72919e655f3d19963590eecbf104853e"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner.rs",
+      "bytes": 13166,
+      "sha256": "d9b1b80c6500bc7c1f79c272af4dbd40fb5f1cc9986216ab93e6de09b9246c36",
+      "git_blob_oid": "368d4fe32f1f63f79dc54200441307c399593a00"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_current.rs",
+      "bytes": 10639,
+      "sha256": "56acf2d420a363c59cac342b2772da8f1bd5b7f283ad100b8d5cfdde0f06ae9c",
+      "git_blob_oid": "9ebbd8b26c7711516247c0dfcd97be17c5a413d2"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_current_tests.rs",
+      "bytes": 9079,
+      "sha256": "ff8d5eee0a85667d8bc76738f42e10de839e9ab7eae69006c506b9f85717f3b3",
+      "git_blob_oid": "f7b5453b824276f280bd0a46de07962c034f7f91"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+      "bytes": 9987,
+      "sha256": "2d914d64b75a0ee7ba6c20e9062d4c673ef061f77966fc99f506ca15eb6df698",
+      "git_blob_oid": "0031b2e69954ead9fa866ed60be126675eab7163"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/shadow_system2.rs",
+      "bytes": 13845,
+      "sha256": "8c795ae8f3aeac7aac03f2964a814eb2cd349005a751fd52cdf39035918f339f",
+      "git_blob_oid": "963ddeeb8115df60a4a66d621367fac6bd773d69"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/shadow_system2_tests.rs",
+      "bytes": 5503,
+      "sha256": "94a6f60b0de5d06a55909e4c20b3de6bfbdc67c84ce068e3bd4e87888f58d716",
+      "git_blob_oid": "9472ae24fcc1a6d22fdd8b2ea73e5e33988754b0"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_evidence.rs",
+      "bytes": 6876,
+      "sha256": "64d176b4d1ad0d56620be5a2beaa5c87c4a80bddf5a6f80587057ebdc153f995",
+      "git_blob_oid": "6617cf82e1c890623e6c2de96086799a2a981160"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_evidence_tests.rs",
+      "bytes": 5689,
+      "sha256": "1f77d8cfbf46870201ea945a7b197d5c46fb765ff18be64a56b6237baba8c985",
+      "git_blob_oid": "1b8c9a0ff0fb8cabca48ff7f750de78328ba423f"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_head.rs",
+      "bytes": 11391,
+      "sha256": "1c1f81c3dcf8e9839b1f45223272304816dc4e3625e46e68ba491f01f959a4e7",
+      "git_blob_oid": "43e2259fd71a000c953cad69b85f024e506de1e3"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_head_tests.rs",
+      "bytes": 6825,
+      "sha256": "4cc8a2de448ff912936380c214c6e9ee068dbcb3026c6ead7713595183998bf1",
+      "git_blob_oid": "87bff28b825fcc01139fccacedefda430bbd0948"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/inference_control_tests.rs",
+      "bytes": 4490,
+      "sha256": "8691e9fe01760a535f82f2748d25324d566e0b4fcbb4f82452f1ceb910196a55",
+      "git_blob_oid": "df8a52eb5de309edaaa5d81350a7f5bfcf3964c2"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "bytes": 20738,
+      "sha256": "ce4d91e82a6733ef4250b120a64d4fd5d29e01564976602bab294fecae41d01f",
+      "git_blob_oid": "01fd02c7de6afa6c6531312ed94cb46fea495bea"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/multimodal_stem.rs",
+      "bytes": 21603,
+      "sha256": "94806c0e0cc3321089d3b4fb874dab95ac7f8eaa2432646f77d937d84c83c176",
+      "git_blob_oid": "624e4fcbd86d3d0b6604015db547d0a416b3afa9"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/multimodal_stem_tests.rs",
+      "bytes": 6348,
+      "sha256": "9b01e105a5723b9049c88c7e33c5bfc61b8ba9fa82c1b210c67b8635687b438e",
+      "git_blob_oid": "eaaaa1673c12a7498a75dedccb9421209254d674"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime.rs",
+      "bytes": 12070,
+      "sha256": "0fddd9576b21c365335697c60f01350a7bfce8be815f3e9dc2ca1379e8ecd86f",
+      "git_blob_oid": "dfab86c9d70e41f2d75603af767ef3cfa7914f79"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_shadow.rs",
+      "bytes": 3672,
+      "sha256": "ed25515f116133fa642fdb000ff4f80a4303d7119d52f7f27574167bca09ab47",
+      "git_blob_oid": "e36444bcf79673274106c57de06186d8be5b6a2f"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_shadow_tests.rs",
+      "bytes": 8017,
+      "sha256": "d5730ae6e28ee61aa5f707303f9f2e96e9fd39a95a5c018bc5545dfe798bab50",
+      "git_blob_oid": "8b6f39410bb35671f3407dae2e7a8204006fad5e"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_shadow_types.rs",
+      "bytes": 6915,
+      "sha256": "35043ffa3e1e174249c93e64ce245ae2c0ea24d927faad4e4e2c3fccc8e54683",
+      "git_blob_oid": "980a52bb6226b903624cfec1c31eccccf0a36a1e"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_tests.rs",
+      "bytes": 22107,
+      "sha256": "7adf98971ce403da22b92f080d42988ddf5ce3e2f213c044fe05bbcbcfc4d59d",
+      "git_blob_oid": "b6f22ef67a95f7a2b1f20279d2e2b72306815d36"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_tick.rs",
+      "bytes": 9844,
+      "sha256": "232018274eb9bba124c07ed70c297f0a5d3fc0d9c7a3b37f37423c48bae881c7",
+      "git_blob_oid": "c58d5a37ade1ac95c2bf51f5bb4da246d2e609dc"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+      "bytes": 19930,
+      "sha256": "c70a8108c8071b272c9d60ac2787b153d582a077ada540e66c2bf1fc75cf6b87",
+      "git_blob_oid": "de33c2eb94f9891e705868c40dec3adacaac9a60"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/shared_encoder.rs",
+      "bytes": 9841,
+      "sha256": "2dadd92092aa35fb58c589609c812bcdc72ea513ff0d24bb79a5cadf78216727",
+      "git_blob_oid": "7c9e290bae15069d5ac131b656b15f895bf1e071"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/shared_encoder_tests.rs",
+      "bytes": 4161,
+      "sha256": "e6ddf5f43b5ad0fdf43d70b45d4feb705e3567d558a9d01f19075af08c98bafb",
+      "git_blob_oid": "8cec0cbc5835d1d40779ec606cfe5c9cc70138f4"
+    },
+    {
+      "path": "qa/stem-bakeoff/audit_memory_retrieval.py",
+      "bytes": 8720,
+      "sha256": "2250f37de2e9449a66349a7abae8edadcfd3216e54442e2cac75cda870ffa0be",
+      "git_blob_oid": "e0c776a975c73d62becc5dcf9b9d50b7a4202681"
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_evolution_snapshot.py",
+      "bytes": 22146,
+      "sha256": "a40ebe5a9b95486e69788917bffed1537dc165b7378e5e3e568925d9694b417b",
+      "git_blob_oid": "138feea156bf3de60802db3583067b20ad26a385"
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_evolution_training.py",
+      "bytes": 23965,
+      "sha256": "b7720888b1218b3b37a3d9efec0a99f826df43c886a1c9a3202486ad96e1692e",
+      "git_blob_oid": "4f190142daf4614dbd4af12d94e987cb0b01caa0"
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_head_training.py",
+      "bytes": 21079,
+      "sha256": "db484ab265ace08c5f7d67360e9a478ce3f69c112d20b1c666c6e96fcb1ee08d",
+      "git_blob_oid": "2a3b343920e101ae8e446efd7b354c6a03bf9e41"
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_process_owner.py",
+      "bytes": 18414,
+      "sha256": "61a1686eb44fc83e445c008e64d424912ffbf5e225944174cffa76f29549126d",
+      "git_blob_oid": "bd070c326ac2de3467a32c7a97925244c7362747"
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_process_protocol.py",
+      "bytes": 8825,
+      "sha256": "e5714145b55692f97f49fc5b0098458ed3e025abf52057696832895db90dd987",
+      "git_blob_oid": "72291212eebd6410a7539d088835a4c797dc95a0"
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_process_worker.py",
+      "bytes": 5249,
+      "sha256": "ea18e60c7857870433904902da2e45826cc71087a79099494dcd400f86048c92",
+      "git_blob_oid": "33ac4e27bb5e8af73c41eb7b56f02a4781513b39"
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_router_artifact.py",
+      "bytes": 6166,
+      "sha256": "82309d29bb082052d3ee62fde24369099398c0cda852e0161470449c8cfa9766",
+      "git_blob_oid": "a4a9a87b36e67e0e6429cdd072c745f7691275a5"
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_router_training.py",
+      "bytes": 23653,
+      "sha256": "78ff833ecddffcd0bc7cd294fbb49c3a4f42ac19be4b6989aff0ff452e6a7021",
+      "git_blob_oid": "1b7cc402acd374bff7833f19356a5eda8bb19bb4"
+    },
+    {
+      "path": "qa/stem-bakeoff/convert_mmbert.py",
+      "bytes": 5124,
+      "sha256": "b1917669e60e8942bcf6fee0eab2a8e79a72fa4f6bdfdf86d3edd977516b4458",
+      "git_blob_oid": "f586a1a15011fa3186654b1ca5d3f1938c860d79"
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261024-memory-hosted-relay/reassemble.py",
+      "bytes": 1290,
+      "sha256": "b33713699bc14c6d506080bb8ca6973a58e4dd4907bfc7d75e539d09ffc53fb1",
+      "git_blob_oid": "5cc10d2e2f00c08f159a7265c8060b24084a3006"
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/reassemble.py",
+      "bytes": 1803,
+      "sha256": "94d78dd6e2b4fa3c1681b7a73918fed579750a03b0431a70e2c2a3e1c2a3f29e",
+      "git_blob_oid": "c4087f8d343e62089a2fa1fa7f8f29e46592c281"
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-recovery/verify_bootstrap_evidence.py",
+      "bytes": 2316,
+      "sha256": "febc876b21c3b53d78f246081d2412410e1dfede650a7a7b81bff55556c56b80",
+      "git_blob_oid": "03de9e676bf834fd0aaea22f494d7c9730969045"
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/verify_and_reassemble.py",
+      "bytes": 3678,
+      "sha256": "87411ce056c7a7daa3da1ea3a5c66f9b41955e3b1026670352cfad8d3bfefa2d",
+      "git_blob_oid": "a9071cc815ea5541381f7675cc85788242747262"
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence_gate.py",
+      "bytes": 8610,
+      "sha256": "ee8386d84db3581c03d1b47d6e3241825f7772e527739f3366ffe17691344244",
+      "git_blob_oid": "3ab32548d1b36be4d89bcc37b2afadf07c887c29"
+    },
+    {
+      "path": "qa/stem-bakeoff/feature_bundle.py",
+      "bytes": 12217,
+      "sha256": "0a40f17c0383d8289a9f66da871c81347ac2896f60d8bdacedcfbba503899fea",
+      "git_blob_oid": "7fecc5df60fd662793e5e8c98b532074f566504c"
+    },
+    {
+      "path": "qa/stem-bakeoff/feature_shard.py",
+      "bytes": 8919,
+      "sha256": "a4a2043fb6bc05fac69d485c16574b2260e68e9dc36768aef6c9b88de37b8d2e",
+      "git_blob_oid": "f52d62d3caac74575062ca80c389dc1eb6e6e0aa"
+    },
+    {
+      "path": "qa/stem-bakeoff/fetch_real_checkpoint.py",
+      "bytes": 8876,
+      "sha256": "c9461f296a0b92ec6f549492859dcdf15e5ad2a7fc8efc41573ab2178931795b",
+      "git_blob_oid": "c27b2b20adeecce42b56da9faea3c9a7fcbdadd1"
+    },
+    {
+      "path": "qa/stem-bakeoff/memory_retrieval_data.py",
+      "bytes": 6300,
+      "sha256": "dda5f3eaac008071641ee81afe436ce18e978e61a3af2af483636ba46f38a8a3",
+      "git_blob_oid": "64718a22faa3830714ec68fece1dae749c018ecd"
+    },
+    {
+      "path": "qa/stem-bakeoff/memory_retrieval_probe.py",
+      "bytes": 16268,
+      "sha256": "1b1df065b26a601564fdbd0ea5ab917bda43146e446f8b3a57b11325adbce03a",
+      "git_blob_oid": "d1a6adfb977ad55ae22ef3a788e1bb8737cb6c46"
+    },
+    {
+      "path": "qa/stem-bakeoff/memory_retrieval_scoring.py",
+      "bytes": 5607,
+      "sha256": "f491d2fee3b4439b578e962c4ab380fefb84f4b2e1175ce3f7f6fc0d50c8b1d1",
+      "git_blob_oid": "d7af73af51c4d5bcc449f7ddd2a2b9a237086ddb"
+    },
+    {
+      "path": "qa/stem-bakeoff/multimodal_bridge.py",
+      "bytes": 30538,
+      "sha256": "10f83d200bd77aca8fa5f9aa4b3a5ba7c2c387b08b65847bc800227b91b82651",
+      "git_blob_oid": "a45ff13ab5e07e73f32a1b7a0cad641e96cf0d47"
+    },
+    {
+      "path": "qa/stem-bakeoff/native_latent.py",
+      "bytes": 13796,
+      "sha256": "6d8db8a5911d4104d93b7e2084d8c2653fadb3191685b9cad8f34db2ab5fbc29",
+      "git_blob_oid": "fdfc5b33b45fbfe31558c27a22b87a37a3f464d3"
+    },
+    {
+      "path": "qa/stem-bakeoff/offline_shard_distill.py",
+      "bytes": 14954,
+      "sha256": "71f1891f47a594f18f91f1a75fc1db1fadaa4ec2a92b721ecd6dc68ecfc02623",
+      "git_blob_oid": "8be961899a67ee92f4e196e7b444a502ae883aee"
+    },
+    {
+      "path": "qa/stem-bakeoff/prepare_news_cohorts.py",
+      "bytes": 14283,
+      "sha256": "33fa46322d4e9ee341b1f5ea80f37b79713a7f9420f14df9204766f38b6b45b1",
+      "git_blob_oid": "24bb5a090d4ca0c812405dbd3de590592a4f2611"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_native_export.py",
+      "bytes": 9623,
+      "sha256": "e8e915212b23504894dfce8e1df153044c157b4e8c4a2c337e73db2d38041079",
+      "git_blob_oid": "b744f0bf92ed1eb546216372356e8c202c7ac888"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_native_format.py",
+      "bytes": 6680,
+      "sha256": "b6615524d9007d01083eb1575ea5ba3f6a7c3ee1ddde418f75c81268893da31c",
+      "git_blob_oid": "303456564514e1af7b75f3ae8604bf7321d9a545"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_native_validation.py",
+      "bytes": 11622,
+      "sha256": "880c5ca09dc3f436815ff20e0929585cfd60a5a5374c22cccc1e641f63f13bee",
+      "git_blob_oid": "fdc355d5f1d43adab211906d67ceb49dce5729fa"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_replay_contracts.py",
+      "bytes": 5044,
+      "sha256": "63a27d20f94475cd9a21f74f2e932c3e01e2fa793a3b63fa825e0b6b1a4d8fdf",
+      "git_blob_oid": "3cf952ae681405f35f49f37d8f8bdfbc94bb2eed"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_replay_data.py",
+      "bytes": 8139,
+      "sha256": "005e9cde75a71705ab5ddfd38258bc3645f655895f151410f02657bbd24654d3",
+      "git_blob_oid": "750ffb43c0b846785f9de7e3e041a6e2f1147cc8"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_replay_evaluation.py",
+      "bytes": 3659,
+      "sha256": "b664ed2470e62bf9043b31faa0438ea5930379da9e0943b2fb914317fc7737df",
+      "git_blob_oid": "f6600e7e25557506e6c26ee9afba850f902b4295"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_replay_learning.py",
+      "bytes": 19875,
+      "sha256": "a8006966f5309c9ec5b53104f122777c41c92111d9eb14b16fe2507fe1e5b832",
+      "git_blob_oid": "0e56e857eb84ce5d10b5f4f42d1e2f90ffa100b0"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_replay_observer.py",
+      "bytes": 2961,
+      "sha256": "05f759d14053376af555e45ff83aaa53cc7b3fe0d34bc60b21865ea8e9d0a0b7",
+      "git_blob_oid": "5f26e76527c584491d7fdf3f8e9a3bae13c086dd"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_replay_owner.py",
+      "bytes": 3197,
+      "sha256": "6c7e16eeb50f91e79c5c07c194e553c6c94c3866b5aca338ecc440cc16e46521",
+      "git_blob_oid": "5322b28d98b82e296f188ad98b96363540e4c465"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_replay_probe.py",
+      "bytes": 14956,
+      "sha256": "d75c44cf941e9455a0064e11946b74e18fa31a62854297b2113e7bc348128c67",
+      "git_blob_oid": "d6397f3f0ea3bad72b7cf4f4dd6111c6ffdd15b1"
+    },
+    {
+      "path": "qa/stem-bakeoff/procedure_replay_verify.py",
+      "bytes": 8483,
+      "sha256": "f82aa0f336b9c5235933753d023db5f17e64ec01e38a4d2568276e10584256e5",
+      "git_blob_oid": "825bff59ffffeaf9912b4f5fc6478efc46670449"
+    },
+    {
+      "path": "qa/stem-bakeoff/real_encoder.py",
+      "bytes": 20983,
+      "sha256": "6728cb9b9ecc4a3280bb8186d920ce174138ac63f7a5b9a362c2b17040f7f638",
+      "git_blob_oid": "8e0f344bac01c8783bb7ba55a4dbde7841038628"
+    },
+    {
+      "path": "qa/stem-bakeoff/real_evolution_probe.py",
+      "bytes": 28387,
+      "sha256": "b458dc3f4ba9d7640a11f3676787435d51d64808d08de0402190c80759c60deb",
+      "git_blob_oid": "1bb2ac58d3353216afaae045c645ce1462d3787d"
+    },
+    {
+      "path": "qa/stem-bakeoff/real_head_fanout.py",
+      "bytes": 5460,
+      "sha256": "ceac14a698b944f3cfb931f9d0d19d6b3bc7b915140c33c3798906d3c88390df",
+      "git_blob_oid": "9fda8e7b5fdd4430ec66870b2e6adfee5923f5fe"
+    },
+    {
+      "path": "qa/stem-bakeoff/real_media_probe.py",
+      "bytes": 13134,
+      "sha256": "bd9dad46d1ee23bbe1b3672e0ea99f41510c1315366ebe05ac582c80e105f625",
+      "git_blob_oid": "86666f31117a5b5305449912f801e86971e5434d"
+    },
+    {
+      "path": "qa/stem-bakeoff/real_model_bakeoff.py",
+      "bytes": 12955,
+      "sha256": "44aac7c0429e9ab7740648d5baebf6ee6134f18d2ef79420dfef0771d4064e3a",
+      "git_blob_oid": "c50091eee3f1b719722f0336432e0be66235c65f"
+    },
+    {
+      "path": "qa/stem-bakeoff/real_process_probe.py",
+      "bytes": 16200,
+      "sha256": "e85ee59f9abc35e732db82c7d92bf3ec03dfdb51ee800935bf01577a2f5c1242",
+      "git_blob_oid": "b56bfac8ad9ceeba2170d7b1ff53a2675d6c2e0d"
+    },
+    {
+      "path": "qa/stem-bakeoff/real_router_probe.py",
+      "bytes": 16895,
+      "sha256": "944ac19d5e6fc16dd3bd770b87d5d1025beb800b1e80787883f17f4c775078f3",
+      "git_blob_oid": "f6c2c367e000d7da85573b34f11f1cd9f80f2149"
+    },
+    {
+      "path": "qa/stem-bakeoff/real_shared_student_probe.py",
+      "bytes": 14068,
+      "sha256": "1d3bb289df5657f87858d2932a687deb85c160bb8ee0abc7d0147015818a2406",
+      "git_blob_oid": "18f91f1d8693916b978987b84f31cbebfa12fc1d"
+    },
+    {
+      "path": "qa/stem-bakeoff/scale_probe.py",
+      "bytes": 7045,
+      "sha256": "638dbd0daff9b7cfd03ca67b871ef580ba59033f7c32c0aad556e29a35f61d9d",
+      "git_blob_oid": "5705baeffc5a6c0aec27ca9c340f12f5a288f1fd"
+    },
+    {
+      "path": "qa/stem-bakeoff/shared_coco_inputs.py",
+      "bytes": 13096,
+      "sha256": "f45745255175ef87285471c85dd2c4cc302e5593ee1e6aae6e44d8d58197cdbc",
+      "git_blob_oid": "1f5db832a543e49feb248c25c96938b7ecdf65a0"
+    },
+    {
+      "path": "qa/stem-bakeoff/shared_student_training.py",
+      "bytes": 16562,
+      "sha256": "4e28384f1666c72a0bee1ffb517a7e6bb3c24ac8d5a30d0d8e2058bdeb783513",
+      "git_blob_oid": "83e4dc1901d6a5bef65cdf887fa77bd3aa0f26d3"
+    },
+    {
+      "path": "qa/stem-bakeoff/stem_bakeoff.py",
+      "bytes": 7226,
+      "sha256": "5679f72fd7b5f8fd0feeb5f54f14e428ff88a025ed60aff4aa08cac3d8bb26c5",
+      "git_blob_oid": "27994351a9a576df7c18f0b93bc114634c9c32ae"
+    },
+    {
+      "path": "qa/stem-bakeoff/teacher_forward.py",
+      "bytes": 21641,
+      "sha256": "ca9f1f5a1b91188905522cc87ef073b5a23cebb56eda867fc40a7d55f235a0c6",
+      "git_blob_oid": "6d382baad354b5b8920c5c969fa8ccf09f6d9bf6"
+    },
+    {
+      "path": "qa/stem-bakeoff/teacher_media_seal.py",
+      "bytes": 6538,
+      "sha256": "6ac9b19527df6722a1061a37a8672b1e39e4b78e4e463309021d75ac4feed8cc",
+      "git_blob_oid": "4e05626c3dd7e6ef5fb72853c01444c50cab5612"
+    },
+    {
+      "path": "qa/stem-bakeoff/teacher_snapshot.py",
+      "bytes": 7784,
+      "sha256": "51fe50c86b107bf5deb85145d22d49be0a622bc0204c219c3bd45bcae86977a1",
+      "git_blob_oid": "c19217169f7ac216a4bfd2df0cabf8a6e0d2a2ae"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_evolution.py",
+      "bytes": 25130,
+      "sha256": "a93fe142e0ba66fab5bf6dfa008a33ee137ce8c3107f3fc1cc9c7bcea72a2348",
+      "git_blob_oid": "ba19e1ff7ff09f76ae38c8096adcb17bcc14abfd"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_head_training.py",
+      "bytes": 10722,
+      "sha256": "3c7d33e1a57e48b7718f5ced51c21b0816e64dfeff242cbc2e1cba40e48c537f",
+      "git_blob_oid": "b425bc4dd03730b8851bb776aa0ecdb4c387cc4b"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_process_inference.py",
+      "bytes": 15944,
+      "sha256": "c074e23d8615d0e33517ded8f6eaa838758880adb539fdced82115ad66188633",
+      "git_blob_oid": "13d5e560386dedab25a61577209a844787bd9b97"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_router_training.py",
+      "bytes": 13945,
+      "sha256": "354b31f945dcdd842ad59f583c7abc1c7939deb13595f74abee281c54e81a751",
+      "git_blob_oid": "da6e7e2a68e56f41d4b4bee9b15d19de830b84cb"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_evidence_gate.py",
+      "bytes": 6049,
+      "sha256": "f90e5874e4ece7530bb11f8c73ca8e98da0a40f5a029bae2158d5952804159d8",
+      "git_blob_oid": "aa21f7d6223578e435881825e3de4d242d1f59ad"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_feature_bundle.py",
+      "bytes": 10324,
+      "sha256": "fc0950696e7e4432357754241b75f1b21a723b1896475893f240b7370d4e0938",
+      "git_blob_oid": "6b7f8f958c5a96279e965af054d60b0d3c337d9b"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_feature_shard.py",
+      "bytes": 3603,
+      "sha256": "133f26faf99ea9068da21a4d16f63aac2546b6088b3e0c6478680f3a06d498be",
+      "git_blob_oid": "14cf039a11682afae5ca71ff81ce8ae36b862edf"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_memory_retrieval_probe.py",
+      "bytes": 10056,
+      "sha256": "afe33257f25e257a1af5c107eb172cec1d61bfafb88d26a139067e63987c2bd1",
+      "git_blob_oid": "6cbafe31f0e89524b0306d965b21694b4eed9f5b"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_multimodal_bridge.py",
+      "bytes": 47628,
+      "sha256": "c8f18657154b8d34d06a5a52b37b4e65130ccd3eb01f326fd98d7ccff3e43bbd",
+      "git_blob_oid": "f482d0742a03c3f01f204410079f7a59a1ccc1e9"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_native_latent.py",
+      "bytes": 6637,
+      "sha256": "5674fa1cab423c8ac84286a6f4c5ea7c2bc2da3146b72b4190bfc57254f9abd2",
+      "git_blob_oid": "385b547c9f3482743f61e7256cc51e082663e584"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_offline_shard_distill.py",
+      "bytes": 17874,
+      "sha256": "41a1450cb62949f81e52b229e5ca4ea6b62f2b5293a85af8a3a44510744b0e03",
+      "git_blob_oid": "6cde2525f6dad75671e8b3f036b862ba36c31c4b"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_procedure_native_export.py",
+      "bytes": 9041,
+      "sha256": "7f6b5aa3227f023ca3519fe20b5c3e571047c9b600f2cf8cc1675b57f0b9ab43",
+      "git_blob_oid": "eba1b68d3a84d9257695a7b4632dd6aec4a6fd6e"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_procedure_replay.py",
+      "bytes": 10722,
+      "sha256": "18d205c0036f315ab9fa4a8415d42392e9cf079ac98ff93a2a00e445e5689fa4",
+      "git_blob_oid": "fe9f8ad6d4dc5399c09a7147706a903508233a17"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_procedure_replay_verify.py",
+      "bytes": 3013,
+      "sha256": "58cb54af934587e9c981c57491d20ef1a57db5d3a7532cdd8a2b0c86ceeb035a",
+      "git_blob_oid": "48d48e94d387519748b6cbca4125712886cc5c4d"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_real_data.py",
+      "bytes": 10583,
+      "sha256": "1850fe6be3abd16873bb8dbf53948de67aa51a6cea543e25546aaa88b27e9a12",
+      "git_blob_oid": "f73eca3f6a1ba35040abfb81c043fca801d7c892"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_real_encoder.py",
+      "bytes": 8237,
+      "sha256": "63939ef53e043dd33511172f28b2ccc4da59b1fbaa713be99a164fa2bd5a873a",
+      "git_blob_oid": "02a8be50e4c73c43cbdf9f6ca07ee4583a48d71e"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_real_evolution_probe.py",
+      "bytes": 3248,
+      "sha256": "658a918cf13b98d9791b3167ab391fb2d4422d15228fc54fda84c0e14b4fd47b",
+      "git_blob_oid": "2fb69a9193decb8f3eaf0669487bbcf0fda5bce9"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_real_media_probe.py",
+      "bytes": 7849,
+      "sha256": "72ff979926b668c550f1c2fbc46dc0b300762b6dc98a7a411f7e3751942db1e2",
+      "git_blob_oid": "b736ed6f4623e83a2445708d58d993ef7b0017b5"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_real_model_bakeoff.py",
+      "bytes": 12670,
+      "sha256": "fd09cd97fa54e9a50fba9bc8a64b4e8837cbdc6a6411339dc6774238a31bcb44",
+      "git_blob_oid": "687b35813edcde57f8c0c248f1034430644dc1b1"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_scale_probe.py",
+      "bytes": 2468,
+      "sha256": "7132d2e32aa12a8c7ece49d6327f0ebafc8248f63104b8b6c4c804cfbd4d65ca",
+      "git_blob_oid": "3a9c9360e4e04a4dad2547c8593f42c04f804839"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_shared_student_training.py",
+      "bytes": 12745,
+      "sha256": "bf3b68f34207c42b65abd7ba434d0166a1b1c9ffea9ecf8cd5ae2a67df72d22f",
+      "git_blob_oid": "42a98c3709c60af48a949249ead040e0b12d81cc"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_stem_bakeoff.py",
+      "bytes": 4689,
+      "sha256": "6e0434d2069b47ef99b52adc620f7452d7aa82c3a6322c2d44c9a2f366923602",
+      "git_blob_oid": "ff7c0580d94bdc7984919488b5d11ec8b6d3dbf6"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_teacher_feature_export.py",
+      "bytes": 4089,
+      "sha256": "beef951926be2f4dda5fad33a631c6531558068b7271b1c4fab6b5c7c6228b07",
+      "git_blob_oid": "a3407d88c68dd8709e529d657d969440b3ef5f6c"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_teacher_forward.py",
+      "bytes": 10180,
+      "sha256": "65594c1147c90e6a9e685738f882c75a1ca876ab7f6807153c1f89720fdc0574",
+      "git_blob_oid": "bfe4d84ecdae9f74daa1204df054357f2b62c2fd"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_teacher_media_seal.py",
+      "bytes": 22771,
+      "sha256": "83c31a8f3afa600339182a7aaebdd2feb4a6eb8ef7faa6e7a0d6dd1de8cbcc6b",
+      "git_blob_oid": "31a5602619586dabc5794a2467fec9b20b169b91"
+    },
+    {
+      "path": "qa/stem-bakeoff/test_teacher_snapshot.py",
+      "bytes": 6475,
+      "sha256": "f9a9bdd1880a35c9b198a570fed2a83f5f7ff43f3aabaa9c098ca3c813a19878",
+      "git_blob_oid": "c37ca778b45f2ec5f3d4cb7344801df15e970b72"
+    },
+    {
+      "path": "scripts/memory_cell/citation_audit.py",
+      "bytes": 9045,
+      "sha256": "3438ed19b0dc6a5005511066e400234aea6a269da7c1eb8e0e6a0bae2a67a9d9",
+      "git_blob_oid": "49d7c955e184e5dcfb55543eecefbe13a00f5499"
+    },
+    {
+      "path": "scripts/memory_cell/event_projection.py",
+      "bytes": 5843,
+      "sha256": "acded45612e6e5b39673fef62580cf3168ae59f4322bad19d169ded768fcd696",
+      "git_blob_oid": "60270222678eccb94d521a277f2d8cb56ca7cad7"
+    },
+    {
+      "path": "scripts/memory_cell/experience_inference.py",
+      "bytes": 2141,
+      "sha256": "278d9e485544d31037482a6ecc49e4985dc5ec8a5f141293665bcd352bdcceaf",
+      "git_blob_oid": "f65a92e7d5ac14839a8ebb1298f763bce1ae9b49"
+    },
+    {
+      "path": "scripts/memory_cell/grounded_protocol.py",
+      "bytes": 7383,
+      "sha256": "b1292d6974ba5644a9ea9bd39297d16c7c17be6a0546ae023b73c593fabb76de",
+      "git_blob_oid": "a33ee172d8104fb887b05dace59d67726151e62f"
+    },
+    {
+      "path": "scripts/memory_cell/native.py",
+      "bytes": 13285,
+      "sha256": "523389c9df28280b8fffe070f02af38bbcf1a1507130c914ced4163295c4cbd1",
+      "git_blob_oid": "882a7ed4783fe98527536b0b9d0de0f81946f003"
+    },
+    {
+      "path": "scripts/memory_cell/parametric_cohort.py",
+      "bytes": 2084,
+      "sha256": "fad36043c7273cbd33b34d8d6b2b4ec504016cc547907bd3eee0d573fca0624b",
+      "git_blob_oid": "ddc70f266643d1045aded15a48f20fc0d89e32ef"
+    },
+    {
+      "path": "scripts/memory_cell/parametric_evolution.py",
+      "bytes": 15093,
+      "sha256": "b3ccbf6725c63b87e424a2958f03d689f1e6448fdadf0381c4cbb91301760cbc",
+      "git_blob_oid": "3e1d74d0292cc8e49a3071f1495b105b007a624a"
+    },
+    {
+      "path": "scripts/memory_cell/parametric_lifecycle_trial.py",
+      "bytes": 7053,
+      "sha256": "ae9a642bb8e10f4b4ac73628958a9c2822c51275ddaef11c96ac0471ad16fedc",
+      "git_blob_oid": "2565c57c76225fa19a402487264033e8252904c6"
+    },
+    {
+      "path": "scripts/memory_cell/parametric_metrics.py",
+      "bytes": 9872,
+      "sha256": "e593dd4f2f765d3a38ab4cb34193ff7387f1fda58d66e2e144194fdc12c281de",
+      "git_blob_oid": "fb9c2a86a15aeb38869227091117b580f143b620"
+    },
+    {
+      "path": "scripts/memory_cell/parametric_model.py",
+      "bytes": 22794,
+      "sha256": "803303b575a2e3b8b5b105b1b5b6dff5b53aa5547735cee7ec47b54091f2077b",
+      "git_blob_oid": "09f3b5cd8011a87a63e2e07a242a0526bada0a3d"
+    },
+    {
+      "path": "scripts/memory_cell/parametric_network_trial.py",
+      "bytes": 3537,
+      "sha256": "ec2199b74bdf624e5697bca114a1f2572ef9fcce4a93b38c962b5fe67cb2d424",
+      "git_blob_oid": "1cedb924c37745bfc70c22a318cf54459e5bc3b5"
+    },
+    {
+      "path": "scripts/memory_cell/parametric_owner.py",
+      "bytes": 11800,
+      "sha256": "8525d074ee5cb817f8eb5f94d40039a2598c293c9f362653a04606b07e3ac672",
+      "git_blob_oid": "d70a0dbbee8c128b37311fc0c2a9a866f6e60cf9"
+    },
+    {
+      "path": "scripts/memory_cell/parametric_trial.py",
+      "bytes": 13628,
+      "sha256": "60d7a8e25ac35921b12ba8ff3b14765b989e93ab73d5115d2aa973ab19fba942",
+      "git_blob_oid": "2fc4f98fe065aba396db98942201c1a58cc49737"
+    },
+    {
+      "path": "scripts/memory_cell/parametric_worker.py",
+      "bytes": 3780,
+      "sha256": "8c06a1b6b18e98c92b4c09ddad80de2f5f3db9f140085618a8c1931a64e39366",
+      "git_blob_oid": "158666d22a0637694a19afd3756480ffecd1ae10"
+    },
+    {
+      "path": "scripts/memory_cell/prepare_parametric.py",
+      "bytes": 3510,
+      "sha256": "ff0b1aa9b2eea7f6f1c3c64782a2b4118ef92bcbd6b8531651f15d723ced4ab2",
+      "git_blob_oid": "c98c39cbd722cc36c02b7e3c9618a2fb04b3bb18"
+    },
+    {
+      "path": "scripts/memory_cell/pretrained.py",
+      "bytes": 17065,
+      "sha256": "bd01b8596f5158ae587c9535ef34fcf66d6ce1c76b679cfb78c329b3448ac03a",
+      "git_blob_oid": "a9c92026015e53ddf6fb8b3e5ab7bbe3d4cb07a2"
+    },
+    {
+      "path": "scripts/memory_cell/sessions.py",
+      "bytes": 5592,
+      "sha256": "82ad3363cda9ed9d155487a96e0dc409ad66253cf0694498c807c4d1b10baec4",
+      "git_blob_oid": "34a5eb8afdfed29b15abe7bd22df5431c7360b1e"
+    },
+    {
+      "path": "scripts/memory_cell/source_binding_margin.py",
+      "bytes": 9687,
+      "sha256": "8fb1452baf2b17a501bd53fda6647546bde2607946a7ec4f2beb38798c902da8",
+      "git_blob_oid": "55ce7697532ed34b31be7408c77fbf0ea6053bc8"
+    },
+    {
+      "path": "scripts/memory_cell/source_completion_loss.py",
+      "bytes": 3931,
+      "sha256": "c01b67f32fd5fa309dad15e055176fc17b4acae09c1e8315b45d9e991eb3430b",
+      "git_blob_oid": "7eb9e0ceb542ee8138085aa2c344fd05108a928f"
+    },
+    {
+      "path": "scripts/memory_cell/source_value_margin_v2.py",
+      "bytes": 6934,
+      "sha256": "051aed5de847988518d2820cfc606b0c771570e1b692482200ab9f489b4efe25",
+      "git_blob_oid": "d9b5c783e3396e2165658b2def5dd11f7fef50c8"
+    },
+    {
+      "path": "scripts/memory_cell/tensor_contract.py",
+      "bytes": 7856,
+      "sha256": "9060f62579de6ed0feea7b8ec9cbd066552308c6371ecbd2fb00309d9ddd244a",
+      "git_blob_oid": "882841c08da63668b8e116c1c671e7cd41566f19"
+    },
+    {
+      "path": "scripts/memory_cell/test_parametric_evolution.py",
+      "bytes": 7908,
+      "sha256": "f7110f10ee8cbd60d454a1c26bd28be77f343c40187a01950fb2258aae1bda6a",
+      "git_blob_oid": "2bbb9e3fe17260662e2ce8e5e1059bae3ba196c6"
+    },
+    {
+      "path": "scripts/memory_cell/test_parametric_model.py",
+      "bytes": 14898,
+      "sha256": "96c40b58a86db45e0ab86891a22d3266c7a3ccea364f817d414ee55549ba6ea2",
+      "git_blob_oid": "db705376cbaffb8881495e14f1986332f844850b"
+    },
+    {
+      "path": "scripts/memory_cell/test_parametric_owner.py",
+      "bytes": 11023,
+      "sha256": "ed98463dd703ea143ec98b46a1bfe5e184a8aca821328e31d749f22ebaae4369",
+      "git_blob_oid": "a64842ab433874498ad2aa6f7cb1bdc7c83076c7"
+    },
+    {
+      "path": "scripts/memory_cell/test_parametric_transport.py",
+      "bytes": 6865,
+      "sha256": "c1b19652d307771fc7577988e12ff437d7da9c791be4f26a49803bff471f460a",
+      "git_blob_oid": "b54e4345666f52c616b7afe8b64b132343694050"
+    },
+    {
+      "path": "scripts/memory_cell_budget/artifact_inventory.py",
+      "bytes": 5122,
+      "sha256": "e92d929e53471c3b9a23ddb499a5fd23885ba277b2990d447d960c50473f922a",
+      "git_blob_oid": "3c623c690ee2a7b1e4ef7811826c613070564ced"
+    },
+    {
+      "path": "scripts/memory_cell_budget/baseline_study.py",
+      "bytes": 9372,
+      "sha256": "2197f2d20b38e57731ca1111ac3f18dd773985eef867127c3f495b4da1c552ba",
+      "git_blob_oid": "4944a000b092cd1da72a8257cc690fb0ca016c40"
+    },
+    {
+      "path": "scripts/memory_cell_budget/budget_child.py",
+      "bytes": 1424,
+      "sha256": "202e9a5587682085e5764b879f353d4504db257d3d6ce7b7d7ed2df8f0ebb2ef",
+      "git_blob_oid": "def0f2eb917b22dbfa81084c8d2d598cc9cd91e4"
+    },
+    {
+      "path": "scripts/memory_cell_budget/budget_ledger.py",
+      "bytes": 12828,
+      "sha256": "829aee2dd2c04c96fb4df34934f67164f5e4c3fc3b277a6c72dff9ef55364c42",
+      "git_blob_oid": "0bf0e918b9b3648024c7925583f873dba25c3c48"
+    },
+    {
+      "path": "scripts/memory_cell_budget/budget_model_worker.py",
+      "bytes": 9425,
+      "sha256": "c7dde006e3bcdb0efa916a68f69c5b72e734b4af4fcbab07b3944d7d0c71fa89",
+      "git_blob_oid": "894df769c589f9a1f105db0eb8bfa0bc35cbe86e"
+    },
+    {
+      "path": "scripts/memory_cell_budget/budget_process.py",
+      "bytes": 7423,
+      "sha256": "2af87077ef2afffbf60dfbfbeb33dbb38dfaab279c33209dceaee3a859f2807f",
+      "git_blob_oid": "c1fa857d91db18fc228f6556eb6d7553f5a5a8c1"
+    },
+    {
+      "path": "scripts/memory_cell_budget/cohort_contract.py",
+      "bytes": 7928,
+      "sha256": "6d7654025ab2ffe72828c90b1b6427ac7cc9cd4dc91d481a73fc58131377824e",
+      "git_blob_oid": "6985f8b5e8130c8c53af6e7951130fbef6dfb3fc"
+    },
+    {
+      "path": "scripts/memory_cell_budget/model_budget.py",
+      "bytes": 7937,
+      "sha256": "538a60fb862b596844f60bdd770fc59f90b74a1005116e7c500e529f924f4f10",
+      "git_blob_oid": "b5352df0e7a66d06742ae3ced0e5fe9ab6606004"
+    },
+    {
+      "path": "scripts/memory_cell_budget/model_load.py",
+      "bytes": 2996,
+      "sha256": "8baa46f6608efee273a45869fa28025d0c087a88223206e33684ca2ac7f9a266",
+      "git_blob_oid": "2c512805404b46e3f650f407b05419a46ebbdc40"
+    },
+    {
+      "path": "scripts/memory_cell_budget/prepare_budget_study.py",
+      "bytes": 11290,
+      "sha256": "7c489569facce46a6ace729e6a657726b5e02d6a6ffcb772b515174426616f79",
+      "git_blob_oid": "67e95e0e674770eefe650c8ec63e2aad7af4d51f"
+    },
+    {
+      "path": "scripts/memory_cell_budget/retrieval_index.py",
+      "bytes": 6948,
+      "sha256": "20e734d8f5406f446736bccc5b19cb542e501593f5d86026f089da868fa231ad",
+      "git_blob_oid": "d50bb0eead6936ac33eb0fd731df28296fcbcb2c"
+    },
+    {
+      "path": "scripts/memory_cell_budget/retrieval_scale.py",
+      "bytes": 1967,
+      "sha256": "4503852d41ea3b0a699e2c12f7695c034f12167552ba5fd3e145e105ae1b22e3",
+      "git_blob_oid": "bf7d34c94e65128406287e9766f418d7f0ecd82d"
+    },
+    {
+      "path": "scripts/memory_cell_budget/run_budget_models.py",
+      "bytes": 17569,
+      "sha256": "eae208484b0bf5d33f9e97a8bc81dc3f5da403f2830af38a2acc3011f80e2a77",
+      "git_blob_oid": "b0511de4599de425f994f90cbca1bb5befa3bae3"
+    },
+    {
+      "path": "scripts/memory_cell_budget/task_execution.py",
+      "bytes": 7849,
+      "sha256": "e91b672bf720de0394bab030aeda05c8da328f5b7347f8dfd2d6e5b7984d4346",
+      "git_blob_oid": "3ce77ab82cd6698827cb8a6196aae5e4bec72db6"
+    },
+    {
+      "path": "scripts/memory_cell_budget/test_budget_ledger.py",
+      "bytes": 5466,
+      "sha256": "68a066ad30229235c3d54412cf3443c78b964d32e42483c3286c16b1f9a6f117",
+      "git_blob_oid": "3998a22585685f28452c2be39fe1ac023a137270"
+    },
+    {
+      "path": "scripts/memory_cell_budget/test_budget_process.py",
+      "bytes": 2776,
+      "sha256": "e6fa89bb097a19be011cdb77fc91b67d3017b489e7356b4e67adc64c4054486b",
+      "git_blob_oid": "1df0f6e8766f8fa4a5c3c2ba8573aa3be3e41914"
+    },
+    {
+      "path": "scripts/memory_cell_budget/test_cohort_contract.py",
+      "bytes": 4434,
+      "sha256": "778a90ac7aaeb490b54d4b4c70adfdb15994171ce5b1d43dbee3099297d9f844",
+      "git_blob_oid": "b615bab454221aeb726514d94270e37ffef9b0ee"
+    },
+    {
+      "path": "scripts/memory_cell_budget/test_model_budget.py",
+      "bytes": 4178,
+      "sha256": "1d6a48c8ef068544c65a60a6e7fd58d8635359438c28256aea3649f9ffc2360d",
+      "git_blob_oid": "0fbf7bc2f8a818aae432ad199be756c80495e1ff"
+    },
+    {
+      "path": "scripts/memory_cell_budget/test_model_routes.py",
+      "bytes": 1904,
+      "sha256": "b450290e2203bff0479e12adbd99a14f0f71d96bd8a4d27a1f4cd8168b36491c",
+      "git_blob_oid": "5378b00aa7a87fc9457392f090b159390c9f4fd3"
+    },
+    {
+      "path": "scripts/memory_cell_budget/test_outer_failure.py",
+      "bytes": 5363,
+      "sha256": "8df07427593b066c952537d018f403fd508e192835ea7857f4d5910f3ea1b773",
+      "git_blob_oid": "94e4410586e8f8d98fb07a36c1c59e61c425cae0"
+    },
+    {
+      "path": "scripts/memory_cell_budget/test_retrieval_inventory.py",
+      "bytes": 3450,
+      "sha256": "6b46ded25aae7efbd2626670889a29e4bce12ddf0543d015a6fab7dca21ad344",
+      "git_blob_oid": "8a65b23dba06761a90a2384859a6f4a9f759dc14"
+    },
+    {
+      "path": "scripts/memory_cell_budget/test_task_execution.py",
+      "bytes": 1353,
+      "sha256": "f645da317e3dcc3afe20f0a117b18cabb65abab680e5e905e2b4085b8489f0c9",
+      "git_blob_oid": "e14e93c3dd27724384f245f64a770d9e26d32f4c"
+    },
+    {
+      "path": "scripts/memory_cell_budget/test_workflow_records.py",
+      "bytes": 2227,
+      "sha256": "350e02de6bdcc76a2aeaa6c01d6c7db9b4a67e2a305c80f88d01fc0364452751",
+      "git_blob_oid": "fd9a6d6f21ab68d2d682dc478a8d74cda019055e"
+    },
+    {
+      "path": "scripts/memory_cell_budget/workflow_records.py",
+      "bytes": 7976,
+      "sha256": "47fc1f4bf6a3eece2fc7b2ee2f4254831576c2fd14961d969be2b465dcd4f8aa",
+      "git_blob_oid": "61b7398d951aae74cbbf04c36dc50b5bf9c7ecc4"
+    },
+    {
+      "path": "scripts/memory_cell_budget_v2/arm_controller.py",
+      "bytes": 8615,
+      "sha256": "431586030c64c11c8d3fb941c2f967b7c346aae856adaf53c1a07f8232ca40d8",
+      "git_blob_oid": "d4645f073b5f6e8f9560c8b198d31912e3e279b7"
+    },
+    {
+      "path": "scripts/memory_cell_budget_v2/common.py",
+      "bytes": 1959,
+      "sha256": "00930611f88dfdda0d2ede60da20c5e67a2dec640b3143913c6270d7f058ab2b",
+      "git_blob_oid": "f4bc755aaa48a36d4376009a5e784e9eb7ed68ab"
+    },
+    {
+      "path": "scripts/memory_cell_budget_v2/qualify.py",
+      "bytes": 6420,
+      "sha256": "15e51b1373aebed496ea8bbb8fe19e20aec63be2d3e43aaf52fd39faaf893867",
+      "git_blob_oid": "eae453099d311346047454e6750d24b6a0959b7d"
+    },
+    {
+      "path": "scripts/memory_cell_budget_v2/receipt_bridge.py",
+      "bytes": 7384,
+      "sha256": "251eb9457733a5208142f9f0724528f8d3287e18c15bccae45e9838ba874d093",
+      "git_blob_oid": "adb6259080d91a423272734bc00ff8fcda18a156"
+    },
+    {
+      "path": "scripts/memory_cell_budget_v2/tensor_capacity.py",
+      "bytes": 8664,
+      "sha256": "f87d1956a3812d4a00392c4d86dd30981777d84a317b98d3307432852c882e57",
+      "git_blob_oid": "be5bf3ce6bd73916db218b761992732ccda2415e"
+    },
+    {
+      "path": "scripts/memory_cell_budget_v2/test_arm_controller.py",
+      "bytes": 9250,
+      "sha256": "b2d0b0919417255524233f4bad18712495955c10cb8370b5c2c4f04b313f9cd8",
+      "git_blob_oid": "233460944d9f674232e5fd65669d2675a1068a2a"
+    },
+    {
+      "path": "scripts/memory_cell_budget_v2/test_receipt_bridge.py",
+      "bytes": 5107,
+      "sha256": "2e673d20e0e87f6191efb4e2df7ae5e13d1023e83be9a2fe91e807570b73418a",
+      "git_blob_oid": "0400e6e3bfbb9bb425af93568097e92badbffa8a"
+    },
+    {
+      "path": "scripts/memory_cell_budget_v2/test_support.py",
+      "bytes": 3250,
+      "sha256": "1f409d7aa74e7c69496a0228dc5812be177758c8e867392da60d73939d5b8c3f",
+      "git_blob_oid": "de1e0abeea95778786345d5664ff671baf33ae4c"
+    },
+    {
+      "path": "scripts/memory_cell_budget_v2/test_tensor_capacity.py",
+      "bytes": 5033,
+      "sha256": "dd6c23a77a1f1051b772e90a23a9b0651b05482d8bd32c168e06b5652b9d6cf6",
+      "git_blob_oid": "b36e5eaff8d0b9c8188f2fa6f5bcae32a6c2af0f"
+    },
+    {
+      "path": "scripts/memory_cell_catalog/metadata_catalog.py",
+      "bytes": 5603,
+      "sha256": "dd0056057a91b084b349eecb975cafe5a0f62e3d95f0ca82b557aa549339538f",
+      "git_blob_oid": "3f22647a69fedc33616db122d4ba907183f9809c"
+    },
+    {
+      "path": "scripts/memory_cell_catalog/test_metadata_catalog.py",
+      "bytes": 8433,
+      "sha256": "d01f3a1116699eec2158218daa686cb413c577becf14269f6cbfd4b9f293dcf2",
+      "git_blob_oid": "80b7cf0fc8c0f40da3f462aa0216d56f65bac98f"
+    },
+    {
+      "path": "scripts/memory_cell_codec/checkpoint_codec.py",
+      "bytes": 11281,
+      "sha256": "a2a0732dbbf18c3d3d3086e4bc997a085458107dbd96d13b110441edd101066b",
+      "git_blob_oid": "a06af430b8d731d561e5cd44690ccfd9c0458955"
+    },
+    {
+      "path": "scripts/memory_cell_codec/exact_baselines.py",
+      "bytes": 3465,
+      "sha256": "2dd608061fd36c7f345262c903554e6dc23f0a2171fcb9d8224b2fb49b791b4f",
+      "git_blob_oid": "9e98ffb445df9ec9ebfefefe2a7f24afe39f083d"
+    },
+    {
+      "path": "scripts/memory_cell_codec/quantized_adapter.py",
+      "bytes": 8138,
+      "sha256": "5fb7550c0de86e691cd7766db1a01ca7b0432b450b9e9ba0bf0d1af47c396743",
+      "git_blob_oid": "c4f52aaeeb5af0b054bb7e79803ecd093af8adeb"
+    },
+    {
+      "path": "scripts/memory_cell_codec/test_checkpoint_codec.py",
+      "bytes": 12994,
+      "sha256": "2909d0679b16ef44e0b51c2dc5526a1b98632cd6679b73224fa59a0522b05c54",
+      "git_blob_oid": "c15047bb60a1e46cf0e6fa5a21188bc8d4c0d03d"
+    },
+    {
+      "path": "scripts/memory_cell_cost_v2/historical_inventory.py",
+      "bytes": 9716,
+      "sha256": "23f892500d9f22cfeaec23601d45f37359a908c75bccf4f5115bc716eed988ec",
+      "git_blob_oid": "f6ed55cb0d282201f295e9a01efb4209e5e3853b"
+    },
+    {
+      "path": "scripts/memory_cell_cost_v2/receipt_reader.py",
+      "bytes": 6225,
+      "sha256": "a95381af29092f218b131d5d3d5f09b166f3dbb7c04539b86e425b7d6f11acbf",
+      "git_blob_oid": "95d6399c3411874abe849c91200bfebf01285241"
+    },
+    {
+      "path": "scripts/memory_cell_cost_v2/storage_ledger.py",
+      "bytes": 10090,
+      "sha256": "0496466ca9f483a79bddc0a39c96cc7b98adcc07f15ef68799d5b320d81529e9",
+      "git_blob_oid": "f88cd953a333ef72c00db45acbda7ff4172e0a88"
+    },
+    {
+      "path": "scripts/memory_cell_cost_v2/test_controller_meter.py",
+      "bytes": 2234,
+      "sha256": "dbb26f1090ab4821a45d790d16fc9b81e583adf1cc2e9f1ec8841381a64943eb",
+      "git_blob_oid": "5d42ca6510e3bc884016bc60e7772309050b4bac"
+    },
+    {
+      "path": "scripts/memory_cell_cost_v2/test_receipt_reader.py",
+      "bytes": 4200,
+      "sha256": "549121523c58f3617d51beb3a001c76be609265fa3565253ddbe5397c4bd3f78",
+      "git_blob_oid": "e64bbee3127b37cbe98d2dace670cab0046550e6"
+    },
+    {
+      "path": "scripts/memory_cell_cost_v2/test_storage_ledger.py",
+      "bytes": 5160,
+      "sha256": "18918b9edc361a51f2337b504faf50e8f4a82746f93d041854b5632903625c5e",
+      "git_blob_oid": "1f30141c352da932239037cfb33b9d21bc185a75"
+    },
+    {
+      "path": "scripts/memory_cell_cost_v2/test_warm_worker.py",
+      "bytes": 5938,
+      "sha256": "293867cc77fad51946378f485f7139353acf631930f01aec85d28da433630294",
+      "git_blob_oid": "05d3fd836f9991d12c7b0b7252313441b20be0f7"
+    },
+    {
+      "path": "scripts/memory_cell_cost_v2/warm_trial.py",
+      "bytes": 14779,
+      "sha256": "533619bcb9ee8dc2af020b2509e9fb64ce2d2f668b383e1ee9bb48ae4d202219",
+      "git_blob_oid": "066abc3cd01e8d9f782b67ad20e4f74f80024718"
+    },
+    {
+      "path": "scripts/memory_cell_cost_v2/warm_worker.py",
+      "bytes": 8351,
+      "sha256": "8dece5110a602ae9b1d3f861e72ffec6395a0b43dc5c4cc0d31e9859f39c361c",
+      "git_blob_oid": "ec0e8dbf4f3da232266a90090918d5347c415598"
+    },
+    {
+      "path": "scripts/memory_cell_development/procedural_support.py",
+      "bytes": 6233,
+      "sha256": "77bcd46afe7614754e5e244a34c0d45a8581c626f1a4659df37b3bcbd6d97557",
+      "git_blob_oid": "1ec1081796f0a0d4d71da96363587b0615d95a89"
+    },
+    {
+      "path": "scripts/memory_cell_development/procedural_trial.py",
+      "bytes": 11716,
+      "sha256": "033ba5393eae08f414eaf4429555bb581a4289d858c8475a12e2aa94d5217c99",
+      "git_blob_oid": "aecd24fed196aaa666132d65adcb2928a7744063"
+    },
+    {
+      "path": "scripts/memory_cell_development/procedural_worker.py",
+      "bytes": 1381,
+      "sha256": "f2993cfa2abe3890445955339876c0188d701fab15cf33573be9e716fe83433c",
+      "git_blob_oid": "9bf13aa32b5212d33d04a2f2f4de6a3fd88dd441"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/artifact_relay.py",
+      "bytes": 5165,
+      "sha256": "0710190c1f697826e4923bc54e74233c8bc0b4a9abe9836bf0ef1cacb29d4311",
+      "git_blob_oid": "46a31b22356ef58e8d229d882ac6ee8a32ac1963"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/authority_client.py",
+      "bytes": 8645,
+      "sha256": "a2758a353096bcf9efa8207cf8bc2c47b3d8b22fe6e5b8a70760a61096f94e18",
+      "git_blob_oid": "04da21b296064e0df19c85f6e448c6e6928c44ef"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/authority_contract.py",
+      "bytes": 9760,
+      "sha256": "674d9521ebd2d4cbf803184011c376228886031b1713bb8ee4e1fbf8e199893a",
+      "git_blob_oid": "bbb4c0b59a6a7eed9a4b172b5665641c0cc9eb8a"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/authority_replica.py",
+      "bytes": 10299,
+      "sha256": "f3db209a07f95e898a11ee5570209339528171d83c0ed874a415091be6b19cf4",
+      "git_blob_oid": "7bd13ca9ac224147aa235ebf20387fb525318fe7"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/distributed_serve.py",
+      "bytes": 4585,
+      "sha256": "3650a1ecfc54d6e829a94c2fdc9fa16bdc4efb03038b35a875438f485cbe8ae1",
+      "git_blob_oid": "8658142c5f1dad755c411cb2377c058925ee11c2"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/distributed_test_support.py",
+      "bytes": 4797,
+      "sha256": "726e2a012232527d717a91f374862abd8648f47046f800fa33ab3f1c3f6d0e9d",
+      "git_blob_oid": "44b4faded60091e53c5f0488eaba91d84753b815"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/relay_current.py",
+      "bytes": 12866,
+      "sha256": "77d44021bba1ecd7ea4a7b4dbf64e43d8187ed2d5649c78c269b4e32eabb73f2",
+      "git_blob_oid": "67a72e21d4a9fd55a180324fef0971d88cd8d474"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/relay_current_contract.py",
+      "bytes": 5071,
+      "sha256": "b6e555e3f92696539bb00d3b7f0d6f88f6c013ff2654d9b7bcae73c5bdee0711",
+      "git_blob_oid": "0642e8cef772112375b72b5df050389d11a5bb75"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/relay_current_tests.py",
+      "bytes": 12281,
+      "sha256": "bdac7309fde54440b5ea09a5d04286d2940b8423b7fc7c25495a50db6aa32826",
+      "git_blob_oid": "84549c5ae68e280fdb863a5b01abb396090e99f4"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/relay_evaluate.py",
+      "bytes": 5560,
+      "sha256": "f695606d64bb83dbb739ee694c40655a163157adccb8a6a21f6a004b004490d2",
+      "git_blob_oid": "215e180ff83b1e6b921536d4efaf2b14a0485920"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/relay_protocol.py",
+      "bytes": 4322,
+      "sha256": "4c2e4bf0743ad730e212d9d848d55bb44522c15427ac368dd366aae21d0b32e4",
+      "git_blob_oid": "851bf4c37d218c60588de191434bf7199bdafe52"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/relay_trial.py",
+      "bytes": 14343,
+      "sha256": "e970b2d441d84fa13f4eefee5eb7fbb976d7dfe6505ae7127a31c11ea36c2663",
+      "git_blob_oid": "77b1f39824641cb33f3ad9662e20e304686edb15"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/replica_fences.py",
+      "bytes": 3278,
+      "sha256": "4c8fc5c634bcbef3210c49dff2e5053324f9b387cee8dc4cc646c1e3dc8b763a",
+      "git_blob_oid": "94ae50ff866e84c02c5c9b884ec3e279e54b9c3d"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/rpc_costs.py",
+      "bytes": 2723,
+      "sha256": "01e50df7795d2822ecb5387047184a0526ef395a407d6d11465dc961adc7894c",
+      "git_blob_oid": "32b01b20d1b697358713600a3c1b33cb6bcb4753"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/source_bound_authority.py",
+      "bytes": 3609,
+      "sha256": "2673f608420da73b3da686c8b42e19bd469d9c9af31e62bc613b5f2785453071",
+      "git_blob_oid": "11be039ab8ae5bec2943d9f095e9e22c0078ee89"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/source_evidence.py",
+      "bytes": 3399,
+      "sha256": "02d1fdd7b83326922278448b0847cc9cb78b3e0167efb62b0254bdc7ff770801",
+      "git_blob_oid": "4922e4eb3124ba330b7882784102ec2b2c22b93b"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/test_authority_quorum.py",
+      "bytes": 6722,
+      "sha256": "7c3a3bd95155018e06bee582c3a9fd8c0913d13342fae8ea5d0a2d00b78a595a",
+      "git_blob_oid": "b9243e4f9af0cb6cb1737f83ed12604aeca4c531"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/test_process_recovery.py",
+      "bytes": 6546,
+      "sha256": "5178b5bf692e089a1a822a175c8664446c4e29e9d2c2f17127e1d991c626551a",
+      "git_blob_oid": "fa1e9799d44ecc5bb45567b6fbe133b9955e6786"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/test_relay_composition.py",
+      "bytes": 3373,
+      "sha256": "b6a3e146b4ce4c844a39181b36b1c44870d50609c4f6d131ba57d169870f53c5",
+      "git_blob_oid": "f0e4c7e2ac0354914f9037bfe8d1a240e538a8b9"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/test_relay_contract.py",
+      "bytes": 3590,
+      "sha256": "b944ef720c16e7ee45d0a68da2c3e3ce47aa98b06cf25ee67795ab856c4c2032",
+      "git_blob_oid": "20f44611c6ac0fecab64cab0fa1d05bee06eb71e"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/test_source_boundary.py",
+      "bytes": 7455,
+      "sha256": "23199b1c548265353dc47b7fbd68e097397e628bcd77c084a73cef54c1bdbbd8",
+      "git_blob_oid": "6a7e78d806c0e12926ae46aa97f7132b92fe0657"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/test_tls_scope.py",
+      "bytes": 5875,
+      "sha256": "51bcb7af73d9c103208221fb10f0ff0e339e51867c378a3bff8f382905c8d194",
+      "git_blob_oid": "9b9bfbbf5239c046d2c8ff9f4b390a73a69608e0"
+    },
+    {
+      "path": "scripts/memory_cell_distributed/tls_wire.py",
+      "bytes": 7853,
+      "sha256": "caf5a0fdfefc6a78bf6f190cb9985344afe742fcd13b903f92447b937c86a4b2",
+      "git_blob_oid": "3b61731aaf9d91d365d99e0c6f4848c49ac4b6d3"
+    },
+    {
+      "path": "scripts/memory_cell_domain/domain_baselines.py",
+      "bytes": 3661,
+      "sha256": "528f2cb35f9a7e80dc2e73207550df26c4078ae4bf368ae59da6d0c82ae93a41",
+      "git_blob_oid": "f00272121e4bca83492bb7e622ba3ce031723955"
+    },
+    {
+      "path": "scripts/memory_cell_domain/domain_data.py",
+      "bytes": 10746,
+      "sha256": "92f8bf631dacabf23cdb4c3174bd06a52da933f598083672d8c6a040345d0bc5",
+      "git_blob_oid": "1f4d8c0797bc59749b32db4435fbde128fb36362"
+    },
+    {
+      "path": "scripts/memory_cell_domain/domain_training.py",
+      "bytes": 9134,
+      "sha256": "18d5a9d59375ce69aa20d84b34f4ba213cb2c48980122924056cb1553f0845cf",
+      "git_blob_oid": "bd214978249da1b59e89c96c5f4dbce8310e83fa"
+    },
+    {
+      "path": "scripts/memory_cell_domain/domain_trial.py",
+      "bytes": 18840,
+      "sha256": "fb0974c5864786de90a41a14ee1349b3024e37bb524d7f09cc6b4a7db8d62b84",
+      "git_blob_oid": "303e9f6c5571091746ad42e2a8c33cbada1d85f9"
+    },
+    {
+      "path": "scripts/memory_cell_domain/test_domain_controls.py",
+      "bytes": 4443,
+      "sha256": "bfa7d26558a5e08c9c6ae56c1b0dd2e18aea52e5eb97573b38b2eb92704c0394",
+      "git_blob_oid": "ad3a99c1df91a9bd1dae1116ce9483ce542fd7ad"
+    },
+    {
+      "path": "scripts/memory_cell_domain/test_domain_data.py",
+      "bytes": 7167,
+      "sha256": "92d8817a80a7cee8a3dc7299c9fd39e83a1baa5b754b3259adde97f0d77900d5",
+      "git_blob_oid": "001bcd741b0f6d393cbb7ae4fb9885f1bf8f0e26"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/attempt_ledger.py",
+      "bytes": 4108,
+      "sha256": "48ad0dc4a4ef014ce0a64a9cf73988fa5eef9eb80635ad9d4b6f476ee39656b1",
+      "git_blob_oid": "4608e5a1739f925bb732bca514d62b5fbd2ee465"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/bounded_process.py",
+      "bytes": 3597,
+      "sha256": "462a4088e1d5f28cd6d4aac45b9463862b531d58885c0bbc119258718caf1b88",
+      "git_blob_oid": "d188c0c35ab010d53c6b564a721274ddbde7bc3e"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/candidate_observer_v2.py",
+      "bytes": 5146,
+      "sha256": "b39af123079169bc4d278d9a0d9f113aa0cd627586590b2fcc690b360a8a95be",
+      "git_blob_oid": "fb20d2f550cd21ab2e5a556437ad7b7c2b190068"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/codec_executor_v2.py",
+      "bytes": 10575,
+      "sha256": "43c99782f5588baa421499b44a53f98d03782e5972e24ccc32e7b4225624c6c7",
+      "git_blob_oid": "116faa236881eeef809be3903dc926f46df2fb21"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/process_meter_v2.py",
+      "bytes": 3416,
+      "sha256": "b4dad060ff04b74a2d017e8c99a699f4213634d71c73d6f5cda926bce29f39a1",
+      "git_blob_oid": "fddaf8923a0a4e1328f0cd6ae93044094932e981"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/ruff_executor.py",
+      "bytes": 11702,
+      "sha256": "34644e124586f08d7f4864be688761fa2b0f6348e53526d63a055fa089da4969",
+      "git_blob_oid": "6996edf98f2f33feeb03c5d8d69d721a9e84301e"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/ruff_judge.py",
+      "bytes": 2596,
+      "sha256": "259380ca4b1f60a5b4729dd3d5c0efaa7b35fac60a688ee8604e00368520fc1b",
+      "git_blob_oid": "49184c85417759c2aa0f484915df2938727441fd"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/runtime_profile.py",
+      "bytes": 1988,
+      "sha256": "ee73b1836812b16719687fbacebdd8118098b6e6df15a821110a60b7d715115c",
+      "git_blob_oid": "5374ae2bd46513afc3cf0bc2b3708614b15d6587"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/task_contract_v2.py",
+      "bytes": 3402,
+      "sha256": "f1a2998b2ea01cdbf379f50b448a52c01de3d6540dee54c119c8b717a8f6de62",
+      "git_blob_oid": "47893960e7d24c1d9376886b895aaada7740ace8"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/test_codec_executor_v2.py",
+      "bytes": 8218,
+      "sha256": "2e53860b6fef45f6320f2ec33aa64789f09851b36a244fc4106b0d23260bba40",
+      "git_blob_oid": "a1087758d8e65fb475417034ae97353257ac6d41"
+    },
+    {
+      "path": "scripts/memory_cell_evaluation/test_ruff_executor.py",
+      "bytes": 9339,
+      "sha256": "0e8dd524236e514679ece593e358e0a588c67236d673b260c85149d492020edd",
+      "git_blob_oid": "d043308fae2a3c7605fd0d07ab0be68194857425"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_budget.py",
+      "bytes": 7080,
+      "sha256": "e320920d46f8899ffdd7b2ee66f02354b84f89181c429041e404bee8dc235ff0",
+      "git_blob_oid": "c6d943369c155e98e3b6046cbcf0584d35716dd4"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_execution.py",
+      "bytes": 8884,
+      "sha256": "49a84b49035a34848aeb1f9f6a365e71e928b86206044cff7f2aed71a9133a67",
+      "git_blob_oid": "fd1d781e112353f57b12055eb47d202bb1b88206"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_model_worker.py",
+      "bytes": 4422,
+      "sha256": "f9c9c8b9c3ba8c346b8df38e539ff6257990ac4489bdd576faa61f7f0f9816fc",
+      "git_blob_oid": "0101393c2db023206a93e85fb56277c3ca32d2ff"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_observations.py",
+      "bytes": 2575,
+      "sha256": "8835ee1ecc0882c416860c80f80606b512c5ff0b725a7f34c4a9ccec10d979f2",
+      "git_blob_oid": "4b6140e947e484198988861ce35c374661370e77"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_policy.py",
+      "bytes": 7993,
+      "sha256": "500320eebe25f3998121db5b45a1add2f229ec4bac799f4dc819ad225d2e88de",
+      "git_blob_oid": "e9906df240d4ff981356ec0d0bc1502fe3a1113e"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_protocol.py",
+      "bytes": 3732,
+      "sha256": "5f01dd58a3623b8ea55110f8999f4ce4de40e041dbb0661c77602648d853a9ec",
+      "git_blob_oid": "faac0f7c7682211867b9a82837a673af372e32a1"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_runner.py",
+      "bytes": 4468,
+      "sha256": "0d4c6302ce47e0e05f18ba08077b54ba8d2063c15d371e64cc91087ec9587a4d",
+      "git_blob_oid": "123291af00d1b185389ba28506a4d47b2671645b"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_runtime.py",
+      "bytes": 8065,
+      "sha256": "192f6bfef8537ddad197d2cd442dc99f54d95ec8cfb780fc11165ad4da3e4225",
+      "git_blob_oid": "ac149bcbd5717b36050a4d5faad3cfd91af89f6f"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_setup.py",
+      "bytes": 7055,
+      "sha256": "b340fc51e30bfc834580b470844a32a6e34c11194421ed6f9d53412d88a62aaa",
+      "git_blob_oid": "83fe1f5b852c69cf7ee32bd12a11e841ac483a1f"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_sources.py",
+      "bytes": 2170,
+      "sha256": "fc78ee1c1e27e528e8a5b731311f96964f25b217ac8be4f9f3f205e1be8da05f",
+      "git_blob_oid": "cf89ce87a0b115ec4ea4ee31042ed2d556a965fa"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/edge_trial.py",
+      "bytes": 14629,
+      "sha256": "091c3f0427ee2f9c3ee24202796bf5f1cb80a9798b19032096f72173628023a4",
+      "git_blob_oid": "264e5e93fb43c25ce8175987fc0015834fa2ef9c"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/evolution_common.py",
+      "bytes": 3236,
+      "sha256": "806b816dda2f21c31c096476d2ca82475708b90ac7dcdc297cf1f72ed26ee08f",
+      "git_blob_oid": "2053323d90200f7314fd034f4b05ad3c08d8d81e"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/longitudinal_campaign.py",
+      "bytes": 2129,
+      "sha256": "fbfd821061c1db5e96127e7e73c58c60e13a592c988224ea5a004dc0d6a38b24",
+      "git_blob_oid": "b0e13a6af8b4e9bc015f07012df0835cbae74225"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/longitudinal_protocol.py",
+      "bytes": 6200,
+      "sha256": "27cb1cf0866c4534c9f2555ec25de04890a59d5fb2497229d0cec92df9fc4f7a",
+      "git_blob_oid": "03a33b4962bfc89e398fbb75a5b8aa4ef0879f57"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/longitudinal_runner.py",
+      "bytes": 4338,
+      "sha256": "237eced6673aa4467e0b51fff6bd0d75c81b07ff0996477990b0f785e23816b2",
+      "git_blob_oid": "4b270bc2320efd0de1775eaf1eb56eda7a66645f"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/longitudinal_runtime.py",
+      "bytes": 9893,
+      "sha256": "a85f844d603f7f6e173001eeb8c35e33a5bcbf4ef0313e55096382e3973e40f9",
+      "git_blob_oid": "f424407b938824815b886c93a914307eda14a8c4"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/longitudinal_scoring.py",
+      "bytes": 3482,
+      "sha256": "8f1b072123bc5ec39a80c2d95485783e7bab130eabd2a0fb35c1fd2c90ac39de",
+      "git_blob_oid": "38d018ac2f14885a3c7845c1bbbd572316f4b2c0"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/longitudinal_trial.py",
+      "bytes": 12225,
+      "sha256": "2c2e8e05b774155e9161065b065a5a6697dc2ee63bac00ee9629ded0e734a79e",
+      "git_blob_oid": "23c5e0465ba642cbcd6beb6e927274d380136f9a"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/test_edge_boundaries.py",
+      "bytes": 3999,
+      "sha256": "848561cb4a81262d934417566885df7ff1aac43a59ad97d9476f74a437bdc401",
+      "git_blob_oid": "4c762e3c9077b279926daf625992ebde94cf2db2"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/test_edges.py",
+      "bytes": 9170,
+      "sha256": "fd0b0db3be03a34715ef8e4a826eca24da9a636eb10911d9ce7440de52b412d0",
+      "git_blob_oid": "c7335506a9eb526d438ee704e5b0e9a50914d114"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/test_longitudinal.py",
+      "bytes": 5915,
+      "sha256": "30898d6974c5d9475aef08e589f8703768e842c3e1c3f4d87e169d026fc965cd",
+      "git_blob_oid": "e4a12e8859146f314d830ff2455b19eb27ca10f6"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/test_topology.py",
+      "bytes": 9245,
+      "sha256": "e0a1517573c43e0cc67d3f3d9e4faf9d8bd4ad6fa3d318717cb5c6ee54eee4e6",
+      "git_blob_oid": "9a696dfa2cc558a547b06017f90de35bbd0dd91f"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/topology_contract.py",
+      "bytes": 7472,
+      "sha256": "df3a212031664d7ade85f9f5eef7928374db129d5b7695a9c4f79b9ec1251e08",
+      "git_blob_oid": "dc7f557fbc513ea6968553c33a133f256d0ff1cb"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/topology_owner.py",
+      "bytes": 8818,
+      "sha256": "b194938c1530b1730d03d812080a98c4a9d5b0b26989f2f7d58fe75b98f44003",
+      "git_blob_oid": "d18ce26eac598ce9a32f4b8c7a207a704224c4f5"
+    },
+    {
+      "path": "scripts/memory_cell_evolution/topology_store.py",
+      "bytes": 15185,
+      "sha256": "75446edd41324fb7c5b08d471feb41cfbd7b2f7e60eb337a316746a5799781c3",
+      "git_blob_oid": "4dca06a106c00cd98f411e19bcb5af12601a8dcd"
+    },
+    {
+      "path": "scripts/memory_cell_fitting_diagnostic/fitting_common.py",
+      "bytes": 3326,
+      "sha256": "1089f421002ff35c670238ee6f61bf2f0c67304e91d76542210422417d35954d",
+      "git_blob_oid": "f5cc13371c0337919c625f9184cde4e6cfa85ab0"
+    },
+    {
+      "path": "scripts/memory_cell_fitting_diagnostic/fitting_observation.py",
+      "bytes": 7289,
+      "sha256": "99c8995453967abf94d4ef69a24602cdc6b0938b8913e0320296121158c32dee",
+      "git_blob_oid": "5b1cdd3fefa9bf30bd4502240f1cc8178567b7f5"
+    },
+    {
+      "path": "scripts/memory_cell_fitting_diagnostic/fitting_probe.py",
+      "bytes": 4557,
+      "sha256": "31700a0c9b061fe571586b93692e5c66d8c32ae992f65eeddf36a93dacaab4eb",
+      "git_blob_oid": "95ffd1d0024f837dd1bd39fe022a19416dc480eb"
+    },
+    {
+      "path": "scripts/memory_cell_fitting_diagnostic/fitting_protocol.py",
+      "bytes": 7689,
+      "sha256": "8d7a8ddc7240b67059407873811fa403ce1904601123db5a12fd7e7bf4bde00f",
+      "git_blob_oid": "98a3520aec171bcde2c990fe1263c082e60dc999"
+    },
+    {
+      "path": "scripts/memory_cell_fitting_diagnostic/fitting_runner.py",
+      "bytes": 7310,
+      "sha256": "8c7e937a3e6ad7f7197a08999f1c752bcf9014a0350d47653c10e6a389b3b847",
+      "git_blob_oid": "708336708358ce4a21d9eaa85330379a74130265"
+    },
+    {
+      "path": "scripts/memory_cell_fitting_diagnostic/fitting_worker.py",
+      "bytes": 12039,
+      "sha256": "d56957d4231701e357824742038c4f0bb9797546840582a66b0e1015002dfe0e",
+      "git_blob_oid": "d779a04654907a9bccd60a32ea9b7505ed140ecb"
+    },
+    {
+      "path": "scripts/memory_cell_fitting_diagnostic/test_fitting.py",
+      "bytes": 12056,
+      "sha256": "11ee66f0d536788f954cd9c15fbbd20065e62a5a01b0cb5472fdcf164babe23a",
+      "git_blob_oid": "0f7d58257e7e4f6850c5638085c6e939b658cc83"
+    },
+    {
+      "path": "scripts/memory_cell_growth/growth_policy.py",
+      "bytes": 4180,
+      "sha256": "0144c72537f2ea9612e826d5d55a32339a830701c9191cf637c353402250ed2b",
+      "git_blob_oid": "a0341ce74dce2c786d1d4552fd4364ac2806da37"
+    },
+    {
+      "path": "scripts/memory_cell_growth/growth_protocol.py",
+      "bytes": 5451,
+      "sha256": "8ecd68ac2ea8cacf9da29d7cf09adfcc186be39667ec6c7b8bff161d72152a84",
+      "git_blob_oid": "a95fcc643fc0781f1102baf4c8117d2a812a0c68"
+    },
+    {
+      "path": "scripts/memory_cell_growth/growth_reads.py",
+      "bytes": 5520,
+      "sha256": "465aa4c4e548a8b5fa08e04f9af771f67a859fe73e515b041be0f0a97b8c1401",
+      "git_blob_oid": "0f42bc0528fa689f8fffed063adfdc6850614e87"
+    },
+    {
+      "path": "scripts/memory_cell_growth/growth_runtime.py",
+      "bytes": 10488,
+      "sha256": "e9aa7bddf365cafffafdccb351d7a01cd5b31cf97c0da5a21b6d5a3a3e7634ac",
+      "git_blob_oid": "65337669c8be4e221050fdefc8db87ba85050894"
+    },
+    {
+      "path": "scripts/memory_cell_growth/growth_trial.py",
+      "bytes": 11343,
+      "sha256": "4eb1ae6d4ae5fbe4e00d9da98a4515fef3a7b38872e43f502714064c32d89d57",
+      "git_blob_oid": "ce2539211901691e3ac1c3180543b3029e2a08f8"
+    },
+    {
+      "path": "scripts/memory_cell_growth/test_growth.py",
+      "bytes": 12442,
+      "sha256": "7b1365043e57a4ddf71d03cfaf3ab04a2399cc905cab6792833f5c3ddf0a6bee",
+      "git_blob_oid": "a50fd6fc5b0c2c2cc51ac649dc9062bc2831c234"
+    },
+    {
+      "path": "scripts/memory_cell_hardening/test_owner_admission.py",
+      "bytes": 7444,
+      "sha256": "06a093d9f4e6e24197fcb913233e8f78299f31ce094facb8850738d1106f2695",
+      "git_blob_oid": "3b9581034f5405e64ad685440a780383cf5b758e"
+    },
+    {
+      "path": "scripts/memory_cell_native/BUILD.bazel",
+      "bytes": 153,
+      "sha256": "77635635d646b1340c5036408036e839c6db984f77a98aa7469738a691d02c90",
+      "git_blob_oid": "125cdc7efb09ce53edb4b8c7e43f359d234239d0"
+    },
+    {
+      "path": "scripts/memory_cell_native/current/native_current_ci.py",
+      "bytes": 9775,
+      "sha256": "96781d6704595e326f6262c79f0f378908ea2839c80e01ae1f6c74444c614f1a",
+      "git_blob_oid": "2b023b174073534a85de79f34010fb21e837df23"
+    },
+    {
+      "path": "scripts/memory_cell_native/current/native_process_ci.py",
+      "bytes": 14550,
+      "sha256": "08eaaffbd955b54a8542bad35fd81f772c79f70e3cd37586738e42c1ac5dcda6",
+      "git_blob_oid": "20a815b0496a01a144075d3de1d881a7ac209f1e"
+    },
+    {
+      "path": "scripts/memory_cell_native/current/native_process_command.py",
+      "bytes": 2763,
+      "sha256": "2cdbcefa856d8b10bb4dc913a1bbf8577d630a50e0b0bd5dc2d20b68e2899ba0",
+      "git_blob_oid": "a995d7314b663afb00d17c64bfffb2aa24d7542f"
+    },
+    {
+      "path": "scripts/memory_cell_native/current/native_process_restore.py",
+      "bytes": 10095,
+      "sha256": "4dc799f3be7fc53b7dd9e1cb0baf08981a71303303573bcf2d0260a5292b097e",
+      "git_blob_oid": "2c46f2afd71daba7924edbeae944db6f63c03856"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_backend.py",
+      "bytes": 4723,
+      "sha256": "a474a218a0b9f78ef27e19b42e84d21c439453e39458efe6255712b07b3a8c1a",
+      "git_blob_oid": "e51d6d273dc69ccb7027251d05354cd0dc335ece"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_ci.py",
+      "bytes": 10530,
+      "sha256": "85d235a8e96c012b3eaf68be4994c5650cd10f9073a9f1356f9a77f24ca3524d",
+      "git_blob_oid": "c8f25017c6e18491b9c3e6db8cdfb61c98c0aa21"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_ci_support.py",
+      "bytes": 6935,
+      "sha256": "17597972e7b2f035bc3b5a7b97c48f602eb9339bb5a489a09901b04e6d9a138e",
+      "git_blob_oid": "ec59d92bac18f3ab0062f09cb204c757db23c0cd"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_ci_tests.py",
+      "bytes": 2808,
+      "sha256": "79130afb465bfd0929a8c85349c2359e88c09ad06326b486c8ed9c77d4648d33",
+      "git_blob_oid": "085ed3369bb1dd8cea250c69f27eb9c2abee1d60"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_controls.py",
+      "bytes": 1075,
+      "sha256": "a1d17708db0702f5f3e401f5aaa8b985522349c5f2e3f411e9554faa925c337d",
+      "git_blob_oid": "b8e07aca7ebe7ffb264e67f082a1c8fe5bad2c5e"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_resume_ci.py",
+      "bytes": 13194,
+      "sha256": "f735febd19c1dc2c47300a1a740591dc2e14f2d0096e33dc1bc973516ba173f8",
+      "git_blob_oid": "9730e55bdd63e47819bc3b593f14059eba23ecac"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_resume_support.py",
+      "bytes": 10161,
+      "sha256": "3d90980830242d59680190ed174da4af595a7e3165bae1ad49a16cbe4eeec2be",
+      "git_blob_oid": "5f596adda108ae2cc90b375213962a46e9c8d567"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_tick_contract.py",
+      "bytes": 4017,
+      "sha256": "ad71c5cd055c69af5a2874283fe020c4eca17f72e059d8f47aea5a50a772daff",
+      "git_blob_oid": "e6889b6916d576c212f16fa7b5395329af47d65d"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_tick_contract_tests.py",
+      "bytes": 6179,
+      "sha256": "1f1a4b32278219b898c2c4d0e7069cb2415c9df69d74efb6a735c97da56f5d79",
+      "git_blob_oid": "866dc0221930831ca0a95dea41cdb0c1bad99221"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_tick_interop.py",
+      "bytes": 472,
+      "sha256": "6301ee360bf29a8ce3ffe5f331823d0034b7624ef07a800d5c4b2ecc46f2177b",
+      "git_blob_oid": "70f852be7557d99119bfad0977fc2ea8cb790a9d"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_trial.py",
+      "bytes": 8975,
+      "sha256": "a9b537f129a801b27587cf8583e0d6cde58b148630589f3262557092515724bd",
+      "git_blob_oid": "d6460ef4b294575ff98ec15df05c7a207598ad90"
+    },
+    {
+      "path": "scripts/memory_cell_native/native_worker.py",
+      "bytes": 7356,
+      "sha256": "509ef6811cbd30ad618c24b2a7c9f20275a817685fc617488d1056b91ba4e286",
+      "git_blob_oid": "79ee26973208ce82a7708eef73bcb7462f742722"
+    },
+    {
+      "path": "scripts/memory_cell_native/shadow/native_shadow_ci.py",
+      "bytes": 9825,
+      "sha256": "bd33e65874820797fe26f7b642d329cb46fff6e229bfc9bad74e874c7fd5be6f",
+      "git_blob_oid": "3a117bdf7399c493ce550b23bc6b609742d25ced"
+    },
+    {
+      "path": "scripts/memory_cell_network/model_child.py",
+      "bytes": 2028,
+      "sha256": "6b677006ae1c5b35260c6d439d43f6aca7d3cad3d1cbd7cc625c67965fc0c4d5",
+      "git_blob_oid": "d8b437d95d6afac085863c97a61f1dbc6800ec6d"
+    },
+    {
+      "path": "scripts/memory_cell_network/model_process.py",
+      "bytes": 6734,
+      "sha256": "e25e1cd3f09e0fbadfb187d5739134410811d33c04eb8fe4c6ceabee9c9d1687",
+      "git_blob_oid": "b6c8d2f412427d41756ab2a244fdbafafb9d39c7"
+    },
+    {
+      "path": "scripts/memory_cell_network/network_authority.py",
+      "bytes": 6823,
+      "sha256": "506ff5d84f6c8cce8b37b7fee40170b7ee10723ce847d99287f23c58cbcab3c2",
+      "git_blob_oid": "e3bde8397e52b14cf07a62406ecadc25a3a05ec7"
+    },
+    {
+      "path": "scripts/memory_cell_network/network_checkpoints.py",
+      "bytes": 2969,
+      "sha256": "c5ea09a21efaaaac0ba158774a4a5e257a99d437ad44b235e0bb40eeb551bec3",
+      "git_blob_oid": "1e6ddc227001bfcfbdbe047d0022af79a4cd3d8b"
+    },
+    {
+      "path": "scripts/memory_cell_network/network_client.py",
+      "bytes": 4693,
+      "sha256": "bcd5107a362a852c65d79f02124f8ad03e3f52e37ab2edc6986a6fc710086237",
+      "git_blob_oid": "42776e356177092c4cec0c4dccef43ce5baf8999"
+    },
+    {
+      "path": "scripts/memory_cell_network/network_fences.py",
+      "bytes": 3632,
+      "sha256": "a1e370c0f9425cd1e90ccbfdb6127823603cf2ca5e93c50b55011ec99acea4be",
+      "git_blob_oid": "61ef5fd253a41c73e3d665d4c43088f881ef6108"
+    },
+    {
+      "path": "scripts/memory_cell_network/network_serve.py",
+      "bytes": 2768,
+      "sha256": "2ea2209106b173660570ba63a23655c4e4744295768a820f9e5eb7f042d2a781",
+      "git_blob_oid": "070769cb4e1187399b86f69a0d759280fa1b6f8b"
+    },
+    {
+      "path": "scripts/memory_cell_network/network_test_support.py",
+      "bytes": 3359,
+      "sha256": "8b926859a6bce2ae8b422712c3fa896517a9b50404011b961fe47d69019232d4",
+      "git_blob_oid": "862afc93f6ed931c0e1d90f88fa5e7ba52ed57ba"
+    },
+    {
+      "path": "scripts/memory_cell_network/network_wire.py",
+      "bytes": 5244,
+      "sha256": "1170103e2271149ca5b694d6a269eef7d3ff70760fde7ed6b7efdc4b8edf726a",
+      "git_blob_oid": "9601d62addd4c9c3f336770b93b1168c8a4111bc"
+    },
+    {
+      "path": "scripts/memory_cell_network/network_worker.py",
+      "bytes": 6539,
+      "sha256": "7569f0a3798786af4c800163767b5e0edeb253bd1dd7b982f7c9f096c2877c80",
+      "git_blob_oid": "ac72d3e18754bb09bea3a8a013e3b9ae8e912956"
+    },
+    {
+      "path": "scripts/memory_cell_network/test_model_process.py",
+      "bytes": 12499,
+      "sha256": "5f8205734afc47e33ff2048d05fa00b8657ce9e22fc190cc7ad4b8dc5b975ca6",
+      "git_blob_oid": "b73b24b3b4c40b7e1efc9102143adda9a352ed6f"
+    },
+    {
+      "path": "scripts/memory_cell_network/test_network.py",
+      "bytes": 19221,
+      "sha256": "01b3ad7f02a9e886c76e2ba927b8ec1820edf54126be07e3ff36c5ba7f1bb253",
+      "git_blob_oid": "5cc16793affe80d65008eabac2caf7c106a5032c"
+    },
+    {
+      "path": "scripts/memory_cell_network/test_source_network.py",
+      "bytes": 5749,
+      "sha256": "018b32cae05e31babceded60831fb0eb8be6eef52230aa0dcacceae8b22763d2",
+      "git_blob_oid": "ff70ff2b06b83ba6765e9e10b8c2266ebe899ad4"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_aggregate.py",
+      "bytes": 9001,
+      "sha256": "995169bc28f7a1308b0add9c633de41e3f0290248626f0916b764b6007243ef8",
+      "git_blob_oid": "27190b6d3a7ef70a781ee4905b808440831d25da"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit.py",
+      "bytes": 6557,
+      "sha256": "91612c0f751d7ea7c6f7f049d6245b739f238352d9262add8c23327fc244586b",
+      "git_blob_oid": "fdd116142c4ea5171601c558b017585ae34dc5c3"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_artifacts.py",
+      "bytes": 4374,
+      "sha256": "d9482b5d529c3722438150fcfce1211d8bf8c4405020df981d78db21621ca294",
+      "git_blob_oid": "040a404ef46816ad638ac6a0bc8892b0755446e0"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_claims.py",
+      "bytes": 4276,
+      "sha256": "2537a0a78e804d412e5a499d8206eda2146103ea2400a9c489ed73c95f3ead14",
+      "git_blob_oid": "9d0cdb9565b6b97c0dfe78744c2852fc824cb660"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_codecs.py",
+      "bytes": 7092,
+      "sha256": "f13d8540471ba3e885f12099cd093074039e6f127a2fa6022a8cbec43e6b700d",
+      "git_blob_oid": "d287e8201fd4af13aa870148297a34da267d0561"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_core.py",
+      "bytes": 567,
+      "sha256": "90a14540baa753df073783bbc9246edf04f19d59d479cb8e99d0087ac74d763c",
+      "git_blob_oid": "e02a945507b1a60d08ec9c864788cc0dbca53a46"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_costs.py",
+      "bytes": 5577,
+      "sha256": "74a31e460966f8e538af8ca41b80a2bd99950fcb7edaa30f930c180436e62855",
+      "git_blob_oid": "31f1078290ee4909e52d7976d5c03097cf46fc80"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_final.py",
+      "bytes": 8976,
+      "sha256": "57371cb8d79ab604979137c17a4ffeffd58b489e5ff5c8075ad4564b229cc5c6",
+      "git_blob_oid": "ebbcadf156da4087581659caf19ca45b890a987b"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_generation.py",
+      "bytes": 7041,
+      "sha256": "e94746854dcbc5c84796b03b9c94f9811bcf93c039181494ab22cca31fa3453e",
+      "git_blob_oid": "7b353b1f5e01c4d8180a475b28ef89c3c4d76fe5"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_reads.py",
+      "bytes": 451,
+      "sha256": "c52bce6b4afdf6479563c28440a7b833d4f231268d8b159a203c66f28034e489",
+      "git_blob_oid": "19dd89780de41425becafe450935f040973f6082"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_router.py",
+      "bytes": 9851,
+      "sha256": "f5db22460a1003237dc3a24bb2dd59e20fa5ee1201cb1e5409f6932277af1ecf",
+      "git_blob_oid": "c7f51f2a098c8c749b5a2ecb783b443b6523b296"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_sources.py",
+      "bytes": 8888,
+      "sha256": "1a1d23743be7c6180e4e41fa128a84e8ce44aff3c64bb148a5ee553f009bd056",
+      "git_blob_oid": "52129b76cb9fce3d42c2fca1d6b6aa4a1f099e82"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_audit_training.py",
+      "bytes": 9338,
+      "sha256": "3a87f214f7f4adf7bd39866773ab2346e502af20b2d343fcbfb522edf4f8bc90",
+      "git_blob_oid": "ae92b888944529ccba9ffdc542fabaaf0741c20d"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_baselines.py",
+      "bytes": 3097,
+      "sha256": "796b04f80355757c9e29d2ccc96cc5ddf1f5c9d5c8e7286b6825850c9aaef2df",
+      "git_blob_oid": "784c048bde3fcf90ab6cf16e87cf43441deacc94"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_codec_trial.py",
+      "bytes": 5822,
+      "sha256": "5a67675c2708b0bfa9e1ea6d9c07b449091a5040f470b309d9d9c860db202885",
+      "git_blob_oid": "214a0acff8a93b309e1535ab3197e846384c9b95"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_fixtures.py",
+      "bytes": 15657,
+      "sha256": "c27e7f9aa1195968d343ac261f88107bf506296897e94c82bf783fb19adb9e00",
+      "git_blob_oid": "618227a50c989ae39b9b6a69b02a6f9da51cc012"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_partition.py",
+      "bytes": 6626,
+      "sha256": "575b711eba166e86d0ababcdb0d89ee31e60fce60be52a7854e93ec5ae116f8c",
+      "git_blob_oid": "4b4a02fedec60d8cc082231222f94b2f8a50358d"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_protocol.py",
+      "bytes": 5507,
+      "sha256": "f5c071e011f8576b4cee77092d18865bee19f34d854957293035b71b507ae574",
+      "git_blob_oid": "c762714521d2506bde03f3bd777fa5eb26df583e"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_reads.py",
+      "bytes": 12877,
+      "sha256": "759e9e24ad7112b922330fb631071b5fd147a280efb279400e1e6d73e3cce5b1",
+      "git_blob_oid": "5b5633073997bd7f0248714e47b51d7c03954fbf"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_scoring.py",
+      "bytes": 6194,
+      "sha256": "3643a1a8d70b68ce36f3f1aadc6106cee7ebbd385acc94aa03fadc82302daa17",
+      "git_blob_oid": "8b1edf509eb08818c5f396e2d048650457b886a0"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_selection.py",
+      "bytes": 13363,
+      "sha256": "3965178b9d783064d7e1e7de8acc5a057ae3c824ee0fbdcdc84cd9580c31ce83",
+      "git_blob_oid": "1d8ef75d6e178bfd630625f76abde3ad9c61f502"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_training.py",
+      "bytes": 8990,
+      "sha256": "12f3562a6a2f4338c7f189009416d94e4fcf7c10314b6d2deae712b713347ce8",
+      "git_blob_oid": "04ba4764c5de8b797f6b4f8b92f63537f49f2685"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_transfer.py",
+      "bytes": 4287,
+      "sha256": "8b3d75ab68a70c16d5acd2d84456acf00b75035080b270a54af607fb10f1aaa6",
+      "git_blob_oid": "e8721bd2a3cb9d359d0aa8cb21b53721a2fa596a"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_trial.py",
+      "bytes": 8355,
+      "sha256": "c05c4d6bb7f494092f9e853a6d4a8c341e4280d7cb02b972071e2bd0a7e1273f",
+      "git_blob_oid": "c03f97cbdb76fa68e4a64be0363785d580546bfd"
+    },
+    {
+      "path": "scripts/memory_cell_population/population_worker.py",
+      "bytes": 5783,
+      "sha256": "095795240fc6696d946d6935d1170930b28c02b76f9976e0501c9f349b1ab209",
+      "git_blob_oid": "1015d228893aac5dd7b847425a067d6ddfa6b3f8"
+    },
+    {
+      "path": "scripts/memory_cell_population/test_population_audit.py",
+      "bytes": 14230,
+      "sha256": "e99b9b056d2191fca849351b8d1c33a6b2975a612ab7fbaa020e7ecbd81d5ec9",
+      "git_blob_oid": "ad80ca8f35b99eda96812b01a2d2e6064d89f878"
+    },
+    {
+      "path": "scripts/memory_cell_population/test_population_fixtures.py",
+      "bytes": 6291,
+      "sha256": "c75adc4a4e8cf227127e8e22407f24d982b42b409c802deff2a863d12ff5c082",
+      "git_blob_oid": "70ccdb467ef89dff3739260cefc76b9580ba87c2"
+    },
+    {
+      "path": "scripts/memory_cell_population/test_population_gate_regressions.py",
+      "bytes": 5520,
+      "sha256": "6958796c06b81d95d89f2c3e0f0eb545af43b1f4ecbd5bbad1eef6b983d5b24b",
+      "git_blob_oid": "c14eac8c8aced20da22dc5bac97068a745eb6362"
+    },
+    {
+      "path": "scripts/memory_cell_population/test_population_mechanics.py",
+      "bytes": 17191,
+      "sha256": "5e0693fdc9a2b849e4a67cff18e9b2528b3f762201045d69228110e5abf5639f",
+      "git_blob_oid": "1e581925acf173d5036c53f76f7a0a618faae1eb"
+    },
+    {
+      "path": "scripts/memory_cell_population/test_population_reads.py",
+      "bytes": 12539,
+      "sha256": "2415816d7c09ba099d9a6f5b196b83d2c04842660b4ab2e67ed859dad36d68fb",
+      "git_blob_oid": "31bf76e4ea3303f2dd71bfdb9a7c52227b7ccf25"
+    },
+    {
+      "path": "scripts/memory_cell_population/test_population_reporting.py",
+      "bytes": 14037,
+      "sha256": "52cdd84e32472abf17440a38c5757f022a41d475cfa4b076abb28cae378957fa",
+      "git_blob_oid": "c55c1fcbaebe36fa806bf1ab97bbdade783a95ba"
+    },
+    {
+      "path": "scripts/memory_cell_population/test_population_selection.py",
+      "bytes": 4248,
+      "sha256": "6e347dd014b9443c82f365482260a5377e552009a9f5fe9ee163ecc031b572bc",
+      "git_blob_oid": "32c5757396ef5c47a273374c8153b2a4f25a963b"
+    },
+    {
+      "path": "scripts/memory_cell_procedure_replay/replay_bundle.py",
+      "bytes": 9349,
+      "sha256": "fd50f49973b481a9d6dbf0be74405aa44b9cd306f3c27116b43f89afe3ea81ad",
+      "git_blob_oid": "ee34e5be2be913dcdeba200a2d469c883d696136"
+    },
+    {
+      "path": "scripts/memory_cell_procedure_replay/replay_run.py",
+      "bytes": 16515,
+      "sha256": "260fe67f4a0caf4aaa746023109af6bd8383b83dc0a0414df88167e2d8bfb59a",
+      "git_blob_oid": "823e8376c8626b1848f5be34adb68340e6399cf8"
+    },
+    {
+      "path": "scripts/memory_cell_retention_v2/retention_common.py",
+      "bytes": 2818,
+      "sha256": "cffc161a1ab7623d191fd162935003b3edc866e5aa5ed59468a807a784120e32",
+      "git_blob_oid": "e0e9a21d829ec648fbea8f3e87eb4f3383c773c3"
+    },
+    {
+      "path": "scripts/memory_cell_retention_v2/retention_protocol.py",
+      "bytes": 7361,
+      "sha256": "cb793b95c5537e69ed276f4a3254ccc1106c39e36905d0ffb939ec5e041dbdf7",
+      "git_blob_oid": "5a1187966700388071e7e4bd210e80fd577bff3a"
+    },
+    {
+      "path": "scripts/memory_cell_retention_v2/retention_read.py",
+      "bytes": 7646,
+      "sha256": "ee475376a08e8500059be7dfe58a2b8e25f3f81086883fa1094eba6857c67d75",
+      "git_blob_oid": "033daa401e8901bd30594c56f6ea1bd458e8a7c0"
+    },
+    {
+      "path": "scripts/memory_cell_retention_v2/retention_runner.py",
+      "bytes": 10736,
+      "sha256": "1a8e51fea8f14362b925e2461c910b5b1f41255d8b00149d935c7d71c41cf561",
+      "git_blob_oid": "b3aa03c9c38fb6d5150e9e27db8e5ad6052247fc"
+    },
+    {
+      "path": "scripts/memory_cell_retention_v2/test_retention.py",
+      "bytes": 9345,
+      "sha256": "b3aee6fe21f58a8a0b238d206547b6a855eba0941c978487010d39a92ddfa1e6",
+      "git_blob_oid": "43a4e620c79206d523af55457df215794d2cd82a"
+    },
+    {
+      "path": "scripts/memory_cell_retention_v2/test_value_margin.py",
+      "bytes": 11741,
+      "sha256": "486551bd502c1e0fb4290b085ed460c875ea32e65b6e930820acc6293dd70093",
+      "git_blob_oid": "01724ee933e83ff6fdd0da6c8b6daa50620dac52"
+    },
+    {
+      "path": "scripts/memory_cell_retention_v2/train_worker.py",
+      "bytes": 9019,
+      "sha256": "06e62bb9a56c22f81904ebcadd435901456820e4890cb497850417b4367c01a6",
+      "git_blob_oid": "1a5294003cbb70d275f607781c37216eccaffc3c"
+    },
+    {
+      "path": "scripts/memory_cell_router/learned_router.py",
+      "bytes": 13126,
+      "sha256": "1f76c0a540c07eff49df925b749d69dfdde9feeda10d50228d12e5fee08aae3d",
+      "git_blob_oid": "715eed6dbf6c387aff33a99dfeb60cb560864b96"
+    },
+    {
+      "path": "scripts/memory_cell_router/router_features.py",
+      "bytes": 3947,
+      "sha256": "292b0dc812fb588dddce87390bde81deaf5b79d130620d2ae51158f2b2559e38",
+      "git_blob_oid": "74779614b5b91e38c53b13b876e2bc3d0a8a24be"
+    },
+    {
+      "path": "scripts/memory_cell_router/test_learned_router.py",
+      "bytes": 12038,
+      "sha256": "de096338190908555410aa0e191be6cd6e709e71d86f64209ae91cbd372c1bbd",
+      "git_blob_oid": "2512ce718c354b08b688fe32b03abe9e039759f6"
+    },
+    {
+      "path": "scripts/memory_cell_routing_diagnosis/diagnosis_common.py",
+      "bytes": 13103,
+      "sha256": "d14f7cf29aa16c4cacf563dab659874b124b376546a144dec10162a0634a13a0",
+      "git_blob_oid": "9b5ee2743c5d99e8272d9649653d199786fc1125"
+    },
+    {
+      "path": "scripts/memory_cell_routing_diagnosis/diagnosis_execution.py",
+      "bytes": 13392,
+      "sha256": "61f952c56ad68c94bee807099a4dcde4af460dba1286d9d26b064bab9788b756",
+      "git_blob_oid": "90d111628bb92a4aef7391cfbcbb862c28cba624"
+    },
+    {
+      "path": "scripts/memory_cell_routing_diagnosis/diagnosis_routing.py",
+      "bytes": 11625,
+      "sha256": "5205e1df0a8c0dda60b8ef9846f9b001bd89df4fd10ba66de3ba7c78fbd95b27",
+      "git_blob_oid": "c8a844d394a45dc44ceff17ce981da1bc0c10bf1"
+    },
+    {
+      "path": "scripts/memory_cell_routing_diagnosis/diagnosis_scoring.py",
+      "bytes": 11060,
+      "sha256": "99d26844992ceb7cf5eac3d97938b5f30b66e19959427202da94a81d41cbb51a",
+      "git_blob_oid": "0e9af3b739aeacd0bb1572e7e2b6122cd78c48a7"
+    },
+    {
+      "path": "scripts/memory_cell_routing_diagnosis/diagnosis_trial.py",
+      "bytes": 18283,
+      "sha256": "0257456bd069e09b707989dffedf0f5256208a04127aa24abdc9b3982fc6af28",
+      "git_blob_oid": "f8f4a0af10592c0d1601c0d0fcaf44852795878f"
+    },
+    {
+      "path": "scripts/memory_cell_service/durability.py",
+      "bytes": 1535,
+      "sha256": "62573bc47a80e5f5d11e86021a867c8a0af8864987a18a6b74d4bd742ea0c7f3",
+      "git_blob_oid": "df2fc4e2d04bd9c8cdee4218e12af4489fbf37d9"
+    },
+    {
+      "path": "scripts/memory_cell_service/memory_service.py",
+      "bytes": 9366,
+      "sha256": "3004af174e41e71b2fff6b7e5d0ddc5a5e3c7577a638ed225e0ff650f722f05e",
+      "git_blob_oid": "893a9ec1079fe2ba76d0968c2e0ea5d0b21b7a58"
+    },
+    {
+      "path": "scripts/memory_cell_service/parameter_publication.py",
+      "bytes": 3986,
+      "sha256": "d7e65992bcb271049e14d0841bc4889db3461182807343fd9e78f9618e87c029",
+      "git_blob_oid": "67c06bb79ac4f7a05cdf7886a6d058c9f721fbd7"
+    },
+    {
+      "path": "scripts/memory_cell_service/service_types.py",
+      "bytes": 2298,
+      "sha256": "4eb96534557d332a3cefe9256d29695bfd6cf2b1916ea1e59d8243072ad9ecf7",
+      "git_blob_oid": "b1aacb77830c5ec37b7d6cde58786b602ca0f2cf"
+    },
+    {
+      "path": "scripts/memory_cell_service/source_store.py",
+      "bytes": 13053,
+      "sha256": "2760de86e6b14a0efb990d6ab5b6ec07e7a559f314e40f299b2e0ec2c44a4bb3",
+      "git_blob_oid": "1c07f8cf7408f4af454667574b43bb3e4c38fbd9"
+    },
+    {
+      "path": "scripts/memory_cell_service/test_durability.py",
+      "bytes": 2862,
+      "sha256": "70990194e0ca94d27d061356d567e3ab4d4c94fa872ed10a815ae13e10ada756",
+      "git_blob_oid": "89198a2755a59f6439b723585447250f0db44aa7"
+    },
+    {
+      "path": "scripts/memory_cell_service/test_memory_service.py",
+      "bytes": 13531,
+      "sha256": "e0fbf967d4b95761c34cacd09d10758b4f98cfd64b0a1f9b48052496cf99d493",
+      "git_blob_oid": "99826bb92af79b53023df6061e6b230a777397bf"
+    },
+    {
+      "path": "scripts/memory_cell_service/test_source_store.py",
+      "bytes": 5015,
+      "sha256": "5f05d66955320e4b4485e4cd84c5b8ca9f2243c483dd1e8019aed93d94ba2ec1",
+      "git_blob_oid": "64b4424bb7817491f68e68348590f6c8acd6c647"
+    },
+    {
+      "path": "scripts/memory_cell_service/test_training_queue.py",
+      "bytes": 4440,
+      "sha256": "72f36db08c398144416fc0f34ae86be766765a61c192bace5fd95af2bb18ba26",
+      "git_blob_oid": "3ab391d5b18fcf56e81e46c41011797490b410d7"
+    },
+    {
+      "path": "scripts/memory_cell_service/training_backend.py",
+      "bytes": 6196,
+      "sha256": "a81c4b2e91e2a98f53b66222c19a0f90434c01561fb74f1d7cd5844709901394",
+      "git_blob_oid": "49c149316c1a1e4f353cec7053a89cf656829779"
+    },
+    {
+      "path": "scripts/memory_cell_service/training_queue.py",
+      "bytes": 5815,
+      "sha256": "31be0ab6b074c86dc07ad22f823cd01aaceb28c47067160ed550070b76029e7e",
+      "git_blob_oid": "ae3bc2a1db43473ea4390ae878a56efb79712bbd"
+    },
+    {
+      "path": "scripts/memory_cell_service/training_worker.py",
+      "bytes": 1859,
+      "sha256": "afe4497bc1ea70c57ba1de955cba31414ab644cb334a5adbae7ec8bd003e02a0",
+      "git_blob_oid": "5b8dd6dab8953f6e84b99fe680a7b28dce097529"
+    },
+    {
+      "path": "scripts/memory_cell_solver/edit_protocol.py",
+      "bytes": 3426,
+      "sha256": "cd025ae06b246ae8a4ebbe82c34ee4d5dd66b14a614a098d8fad2da2d8e20579",
+      "git_blob_oid": "1671c707d13b15b8d44b652804a058bd85a5f96f"
+    },
+    {
+      "path": "scripts/memory_cell_solver/fixture_inputs.py",
+      "bytes": 5070,
+      "sha256": "6b819bf2b96d1fc4b2f82470061a2792f8baaee8f6f9c1724ce2779009e3ab80",
+      "git_blob_oid": "01a13df0df18683ab66bc46f91296f778fab9603"
+    },
+    {
+      "path": "scripts/memory_cell_solver/repair_loop.py",
+      "bytes": 6563,
+      "sha256": "adbfdb5eb96bdd7c4cc9e1d8624954e0a7e944503bcc3f62b65f3d236a2a5fc9",
+      "git_blob_oid": "72b6ad7aec5bb85a64bdd7ce396d7375f7af85e3"
+    },
+    {
+      "path": "scripts/memory_cell_solver/solver_accounting.py",
+      "bytes": 1440,
+      "sha256": "a24b506da3bccd6df78a698e3053c0927f2efa76449bb5842e4da37ea44ab6a7",
+      "git_blob_oid": "6a8f0dd9e626f2b23d855418ff97a054cd1e3e89"
+    },
+    {
+      "path": "scripts/memory_cell_solver/solver_admission.py",
+      "bytes": 6840,
+      "sha256": "5d2aad7aa299df4e1561794395ed702046224b00b868f9636b44451587384ba5",
+      "git_blob_oid": "091939dcc2b53c35cd19a1738dc04c0c93c2a84f"
+    },
+    {
+      "path": "scripts/memory_cell_solver/solver_common.py",
+      "bytes": 3007,
+      "sha256": "8a19cf2998d8d1aa310cb0182f12c89d58a9271ea7960828258984efc0f230b7",
+      "git_blob_oid": "70539cb01b3c9981dc4e0b5e650b8240b2cee837"
+    },
+    {
+      "path": "scripts/memory_cell_solver/solver_execute.py",
+      "bytes": 8333,
+      "sha256": "c58c392c09a166987e9df581a1422cc008545797eba1f0f7e826374fcea0f205",
+      "git_blob_oid": "ac2d8383b34d4073b183a2fed1ae6de2dd0c88e0"
+    },
+    {
+      "path": "scripts/memory_cell_solver/solver_model.py",
+      "bytes": 5685,
+      "sha256": "ba7b57ddc440e79483a0a9303d07cdf8ca55333f8b4ceedcfc4dfe6e0cedf774",
+      "git_blob_oid": "e06f71f8dec1b68e52231b78d489b063faf72c5c"
+    },
+    {
+      "path": "scripts/memory_cell_solver/solver_prepare.py",
+      "bytes": 9498,
+      "sha256": "0e9650722e995dfb3f1e0bc735596423368ffb9e2801f246bc340a3522936388",
+      "git_blob_oid": "db33bfac0a35a28c70d86d8d68b89bcb83c892b2"
+    },
+    {
+      "path": "scripts/memory_cell_solver/solver_tasks.py",
+      "bytes": 10476,
+      "sha256": "e826961c92bb25bb9fd6411f88b328742f300e9306e9618422f9a93c0fff51a8",
+      "git_blob_oid": "a4c42e863afbeb32ee8a83a30a7084b056421440"
+    },
+    {
+      "path": "scripts/memory_cell_solver/test_solver_admission.py",
+      "bytes": 10116,
+      "sha256": "ab3b802fd6ea4058a92692659bc69dc5773ad196b5316b66b356e727de651fbb",
+      "git_blob_oid": "09217bc859148608a970d3221475140b68e98c98"
+    },
+    {
+      "path": "scripts/memory_cell_solver/test_solver_execution.py",
+      "bytes": 6506,
+      "sha256": "7f7a83bf4746192276ee393b541a093844ca4c36a11d041fc4c3c1e1413c9827",
+      "git_blob_oid": "c5bf987a33bf7c68fd8df8017a1ab80af26999ea"
+    },
+    {
+      "path": "scripts/memory_cell_solver/test_solver_protocol.py",
+      "bytes": 3764,
+      "sha256": "ed9cde30c4cb73be57c2549f20d1b067d08d83fe3318cd3352f8d4b0fea898ce",
+      "git_blob_oid": "99df385baf03a9d66a0953656cf3ec7158e1464c"
+    },
+    {
+      "path": "scripts/memory_cell_solver_audit/audit.py",
+      "bytes": 17137,
+      "sha256": "4cc83ba1a4eff5f8e99c090c9d2e8fae69b14739f9e6dc0d089dca9a127ec174",
+      "git_blob_oid": "93d6725a98a660b217eae85dacaa0c5a926cdc28"
+    },
+    {
+      "path": "scripts/memory_cell_system/system_common.py",
+      "bytes": 2512,
+      "sha256": "5b4e0f4975fca72f2058b4112a33af16c866d7af13d02114048646aa7699edd6",
+      "git_blob_oid": "5322a981caa2aed53b4087ccfdd403249d4c65ea"
+    },
+    {
+      "path": "scripts/memory_cell_system/system_network.py",
+      "bytes": 6126,
+      "sha256": "dac098777ad9d23cea104b4c82853550e9cb2ed05eb4a4cfedf098b19e2b1301",
+      "git_blob_oid": "942afca8ccccbfb4a17c5f80d81bb358e3857a55"
+    },
+    {
+      "path": "scripts/memory_cell_system/system_runtime.py",
+      "bytes": 2026,
+      "sha256": "c0056781601433f22e0ef23e5967055f1fdb1336be53125c81457ec56cda7b80",
+      "git_blob_oid": "bcf05569db8157c2a6f41fa66001a0ac23286ffe"
+    },
+    {
+      "path": "scripts/memory_cell_system/system_trial.py",
+      "bytes": 14801,
+      "sha256": "fe9e994939bc3f74151747a7294e5761ec666e79050ddf41baaed3d3bede6ae4",
+      "git_blob_oid": "ab298e3a0d4546924785833744bf53dba492ec9e"
+    }
+  ]
+}

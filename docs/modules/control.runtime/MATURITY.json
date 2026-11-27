@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.module-maturity.v1",
+  "schemaVersion": 1,
+  "module": "control.runtime",
+  "owner": "runtime-control",
+  "deputy": "security-authority",
+  "authorityDelta": "none",
+  "sourceBaseline": {
+    "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "candidateBranch": "codex/control-runtime-production-hardening-20260927",
+    "evidenceRule": "A state may advance only from a receipt bound to the exact candidate commit."
+  },
+  "components": {
+    "plannerKernel": {
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "state": "source_implemented_candidate",
+      "productCaller": "not_composed",
+      "productionWriter": "not_composed",
+      "qualification": "pending_exact_head",
+      "authority": "deny_all"
+    },
+    "agentdReadOnlyContextCaller": {
+      "sourcePaths": [
+        "codex-rs/hepta-control-plane/src/planner_context.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context.rs",
+        "codex-rs/hepta-agentd/src/state_control.rs"
+      ],
+      "state": "source_composed_candidate",
+      "productionWriter": "not_applicable_read_only",
+      "qualification": "pending_exact_head",
+      "authority": "deny_all",
+      "nonClaims": [
+        "not a global planner product caller",
+        "not a production effect writer",
+        "not independently accepted",
+        "not activated"
+      ]
+    },
+    "organHost": {
+      "sourcePath": "codex-rs/hepta-control-plane/src/organ_runtime.rs",
+      "state": "source_implemented_reference",
+      "productCaller": "not_established",
+      "qualification": "pending_exact_head",
+      "authority": "deny_all",
+      "sandbox": false
+    },
+    "embodimentReference": {
+      "sourcePath": "codex-rs/hepta-control-plane/src/embodiment",
+      "state": "source_implemented_reference",
+      "productCaller": "not_established",
+      "qualification": "pending_exact_head",
+      "authority": "deny_all"
+    },
+    "plannerDurability": {
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "state": "planned_on_candidate_branch",
+      "productionWriter": "not_composed",
+      "qualification": "not_established"
+    },
+    "executionClosure": {
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+      "state": "planned_on_candidate_branch",
+      "globalPlannerCaller": "not_composed",
+      "authorityConsumer": "not_composed",
+      "effectExecutor": "not_composed",
+      "terminalReconciler": "not_composed"
+    }
+  },
+  "moduleStates": {
+    "documentation": "detailed_requires_as_built_sync",
+    "source": "candidate_in_progress",
+    "readOnlyProductComposition": "source_composed_candidate",
+    "globalPlannerProductComposition": "not_established",
+    "productionWriter": "not_established",
+    "exactHeadQualification": "pending",
+    "independentSemanticAcceptance": "not_established",
+    "targetHostAcceptance": "not_established",
+    "canary": "not_established",
+    "activation": "not_established",
+    "promotion": "not_established",
+    "release": "not_established"
+  },
+  "requiredExactHeadGates": [
+    "source-head regression",
+    "synthetic-merge regression",
+    "control NDU caller regression",
+    "strict Clippy",
+    "formatting",
+    "package tests",
+    "named-host qualification",
+    "clean tracked worktree"
+  ],
+  "externalGates": [
+    "independent semantic review",
+    "operator acceptance",
+    "production canary",
+    "rollback rehearsal",
+    "activation and promotion decision",
+    "release decision"
+  ],
+  "invariants": [
+    "The planner never mints a capability.",
+    "A grant request remains deny-all and is not an execution acknowledgement.",
+    "Qualification evidence does not grant activation or release authority.",
+    "The read-only Agentd caller does not establish a global planner caller or production writer."
+  ]
+}

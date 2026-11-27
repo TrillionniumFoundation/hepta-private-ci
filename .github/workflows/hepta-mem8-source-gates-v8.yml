@@ -1,0 +1,214 @@
+name: MEM8 V8 source-only gates
+
+"on":
+  push:
+    branches:
+      - codex/mem8-source-gates-v8-20261111-ed353817
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mem8-source-gates-v8-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-only:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/mem8-source-gates-v8-20261111-ed353817'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      MEM_SOURCE_COMMIT: 1c063ba9e934f060181d4fc17d724361ba2a37fd
+      MEM_SOURCE_TREE: 4e702e173439f422a7d00917d3c94064e42d45aa
+      MEM_SOURCE_BASE: 2ae5215beaf8d7b7df111a090b82134beae2683d
+      CODEX_REPO_ROOT: ${{ github.workspace }}/source
+    steps:
+      - name: Retain this source-only invocation identity
+        shell: bash
+        env:
+          MEM_GATE_OUTPUT: ${{ runner.temp }}/mem8-source-gates-v8
+          MEM_LAUNCH_OUTPUT: ${{ runner.temp }}/mem8-source-gates-v8-launcher
+          CARGO_TARGET_DIR: ${{ runner.temp }}/mem8-source-gates-v8-cargo-target
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            "MEM_GATE_OUTPUT=$MEM_GATE_OUTPUT" \
+            "MEM_LAUNCH_OUTPUT=$MEM_LAUNCH_OUTPUT" \
+            "CARGO_TARGET_DIR=$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
+          mkdir -p "$MEM_LAUNCH_OUTPUT"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          record = {key: os.environ[key] for key in (
+              "GITHUB_SHA", "GITHUB_REF", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT",
+              "MEM_SOURCE_COMMIT", "MEM_SOURCE_TREE", "MEM_SOURCE_BASE",
+          )}
+          record.update(state="before_checkout", source_gate_started=False,
+                        native_tests=0, model_requests=0, deadline_seconds=600)
+          (Path(os.environ["MEM_LAUNCH_OUTPUT"]) / "WORKFLOW_INVOCATION.json").write_text(
+              json.dumps(record, indent=2) + "\n"
+          )
+          PY
+
+      - name: Checkout this workflow and its separate gate harness
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: harness
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout the exact pure source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 1c063ba9e934f060181d4fc17d724361ba2a37fd
+          path: source
+          fetch-depth: 10
+          persist-credentials: false
+
+      - name: Install the pinned formatting toolchain
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: "1.96.0"
+          components: rustfmt
+
+      - name: Install the previously qualified DotSlash binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=5s 120s python3 - <<'PY'
+          import hashlib
+          import io
+          import json
+          import os
+          from pathlib import Path, PurePosixPath
+          import tarfile
+          import urllib.request
+          url = "https://github.com/meta/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz"
+          with urllib.request.urlopen(url, timeout=30) as response:
+              archive = response.read(777658)
+          assert len(archive) == 777657
+          assert hashlib.sha256(archive).hexdigest() == "ba6b6908c69db8264efdb8ee32f4906284ea3b77247c611339b5f60160cc5691"
+          with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as bundle:
+              members = bundle.getmembers()
+              for member in members:
+                  path = PurePosixPath(member.name)
+                  assert not path.is_absolute() and ".." not in path.parts
+                  assert member.isfile() or member.isdir()
+              binaries = [m for m in members if m.isfile() and PurePosixPath(m.name).name == "dotslash"]
+              assert len(binaries) == 1
+              binary = bundle.extractfile(binaries[0]).read()
+          assert len(binary) == 1642752
+          binary_sha = hashlib.sha256(binary).hexdigest()
+          assert binary_sha == "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936"
+          install = Path(os.environ["RUNNER_TEMP"]) / "mem8-source-gates-v8-tools"
+          install.mkdir(mode=0o700)
+          executable = install / "dotslash"
+          with executable.open("xb") as stream:
+              stream.write(binary)
+          executable.chmod(0o755)
+          with open(os.environ["GITHUB_PATH"], "a", encoding="utf-8") as stream:
+              stream.write(str(install) + "\n")
+          record = {"release": "v0.5.9", "release_id": 307315086, "asset_id": 392789328,
+                    "url": url, "archive_bytes": len(archive),
+                    "archive_sha256": hashlib.sha256(archive).hexdigest(),
+                    "binary_bytes": len(binary), "binary_sha256": binary_sha,
+                    "path": str(executable), "download_attempts": 1}
+          (Path(os.environ["MEM_LAUNCH_OUTPUT"]) / "DOTSLASH_INSTALL.json").write_text(
+              json.dumps(record, indent=2) + "\n"
+          )
+          PY
+
+      - name: Install pinned just
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Install the pinned Python formatter runner
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+          enable-cache: false
+
+      - name: Bind both checkouts and actual formatting binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C harness rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C source rev-parse HEAD)" = "$MEM_SOURCE_COMMIT"
+          test "$(git -C source rev-parse HEAD^{tree})" = "$MEM_SOURCE_TREE"
+          git -C harness status --porcelain=v1 --untracked-files=all > "$MEM_LAUNCH_OUTPUT/harness-before.txt"
+          test ! -s "$MEM_LAUNCH_OUTPUT/harness-before.txt"
+          sha256sum harness/.github/scripts/mem8_source_gates_v8.py \
+            harness/qualification/memory-cell-mem8-source-gates-v8/INPUT_SOURCE_GATES.json.xz \
+            harness/qualification/memory-cell-mem8-source-gates-v8/GOLDEN_CALLER_RECEIPT.json \
+            > "$MEM_LAUNCH_OUTPUT/harness-input-sha256.txt"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import shutil
+          import subprocess
+          from pathlib import Path
+          tools = {}
+          for name in ("rustc", "cargo", "rustfmt", "just", "uv", "dotslash", "python3"):
+              invoked = shutil.which(name)
+              if invoked is None:
+                  raise RuntimeError("required tool absent: " + name)
+              if name in ("rustc", "cargo", "rustfmt"):
+                  actual = subprocess.check_output(
+                      ["rustup", "which", "--toolchain", "1.96.0", name], text=True, timeout=30
+                  ).strip()
+              else:
+                  actual = str(Path(invoked).resolve())
+              data = Path(actual).read_bytes()
+              tools[name] = {"invoked_path": invoked, "actual_path": actual,
+                             "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+                             "version": subprocess.check_output([actual, "--version"], text=True, timeout=30).strip()}
+          tools["dotslash"]["matches_prior_qualified_linux_binary"] = (
+              tools["dotslash"]["sha256"] == "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936"
+          )
+          (Path(os.environ["MEM_LAUNCH_OUTPUT"]) / "WORKFLOW_TOOLS.json").write_text(
+              json.dumps(tools, indent=2) + "\n"
+          )
+          assert tools["just"]["version"] == "just 1.51.0"
+          assert tools["rustc"]["version"].startswith("rustc 1.96.0 ")
+          assert tools["cargo"]["version"].startswith("cargo 1.96.0 ")
+          assert tools["uv"]["version"].startswith("uv 0.11.3")
+          assert tools["dotslash"]["version"] == "DotSlash 0.5.9"
+          assert tools["dotslash"]["bytes"] == 1642752
+          assert tools["dotslash"]["matches_prior_qualified_linux_binary"]
+          PY
+
+      - name: Run the fixed 600-second independent source-only gate
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          python3 "$GITHUB_WORKSPACE/harness/.github/scripts/mem8_source_gates_v8.py" \
+            --source "$GITHUB_WORKSPACE/source" \
+            --output "$MEM_GATE_OUTPUT" \
+            --input "$GITHUB_WORKSPACE/harness/qualification/memory-cell-mem8-source-gates-v8/INPUT_SOURCE_GATES.json.xz" \
+            --golden "$GITHUB_WORKSPACE/harness/qualification/memory-cell-mem8-source-gates-v8/GOLDEN_CALLER_RECEIPT.json" \
+            --expected-head "$MEM_SOURCE_COMMIT" \
+            --expected-tree "$MEM_SOURCE_TREE" \
+            --base "$MEM_SOURCE_BASE" \
+            --timeout-seconds 600 \
+            2>&1 | tee "$MEM_LAUNCH_OUTPUT/driver-console.log"
+
+      - name: Retain every available source-gate record
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem8-source-gates-v8-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/mem8-source-gates-v8/
+            ${{ runner.temp }}/mem8-source-gates-v8-launcher/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
+          overwrite: false
+          include-hidden-files: false

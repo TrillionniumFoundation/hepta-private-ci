@@ -1,0 +1,33 @@
+{
+  "archive_sha256": "67444773c017fd73cfef87888e8c9ec27b66fa84eafdbbd859683e5274d62c74",
+  "compressed_bytes": 960,
+  "format": "deterministic POSIX tar, xz, concatenated parts in declared order",
+  "members": [
+    {
+      "bytes": 47,
+      "path": "payload/nested/updates.jsonl",
+      "sha256": "3a06d58160aed84d43e83bc2ce3343cf1d3499c4c1a5ed1a104b55b0cea69a68"
+    },
+    {
+      "bytes": 8192,
+      "path": "payload/weights.bin",
+      "sha256": "dc404a613fedaeb54034514bc6505f56b933caa5250299ba7d094377a51caa46"
+    },
+    {
+      "bytes": 795,
+      "path": "results/evidence_sealing/tiny_smoke001/SELECTION.json",
+      "sha256": "ccc2a1583aebe123ef5c832567a1be4fe1ba38a5d624927b5cf3cb5321850d8b"
+    }
+  ],
+  "name": "tiny_smoke001",
+  "parts": [
+    {
+      "bytes": 960,
+      "git_blob_sha1": "82b470d23dfb43edad25ba6dc96bcc4658b512df",
+      "path": "tiny_smoke001.tar.xz.part0000",
+      "sha256": "67444773c017fd73cfef87888e8c9ec27b66fa84eafdbbd859683e5274d62c74"
+    }
+  ],
+  "schema": "hcsn-evidence-bundle.v1",
+  "uncompressed_file_bytes": 9034
+}

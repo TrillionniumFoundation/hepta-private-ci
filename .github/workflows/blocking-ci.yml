@@ -6,7 +6,8 @@ on:
     branches: [main]
 
 concurrency:
-  group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}
+  # Preserve each exact PR candidate while deduplicating runs of that candidate.
+  group: blocking-ci::${{ github.event.pull_request.head.repo.full_name || github.repository }}::${{ github.event.pull_request.number || github.ref_name }}::${{ github.event.pull_request.head.sha || 'main' }}
   cancel-in-progress: true
 
 permissions:
@@ -15,8 +16,10 @@ permissions:
 jobs:
   scope:
     name: Select blocking CI scope
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    # Stdlib Python/Git selection is portable; use the separate ARM runner pool.
+    runs-on: ubuntu-24.04-arm
+    # Include exact-candidate checkout and exact-base fetch in the selection budget.
+    timeout-minutes: 15
     outputs:
       inference: ${{ steps.scope.outputs.inference }}
       effects: ${{ steps.scope.outputs.effects }}
@@ -26,13 +29,24 @@ jobs:
       native: ${{ steps.scope.outputs.native }}
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
+      ndu_v6: ${{ steps.ndu_v6.outputs.selected }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
+
+      - name: Prepare exact comparison trees
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_trees.py --base "$BASE_SHA" --head "$HEAD_SHA"
 
       - name: Select dependency impact
         id: scope
@@ -43,7 +57,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.tests.test_hepta_ci_trees
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
           if [ "$EVENT_NAME" = "pull_request" ]; then
@@ -52,6 +66,46 @@ jobs:
             args+=(--full)
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}"
+
+      - name: Test NEU-1 model-bakeoff evidence gates (no weights)
+        shell: bash
+        run: python3 -m unittest discover -v -s qualification/neuron-model-bakeoff -p 'test_*.py'
+
+      - name: Select v6 rollout and native dependency changes
+        id: ndu_v6
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          NATIVE_SCOPE: ${{ steps.scope.outputs.native }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from scripts.hepta_ci_scope import changed_paths
+          native_scope = os.environ["NATIVE_SCOPE"]
+          if native_scope not in {"true", "false"}:
+              raise ValueError("native scope must be a validated boolean output")
+          prefixes = (
+              "experiments/multimodal_output_portfolio/", "codex-rs/hepta-ndu/",
+              "codex-rs/hepta-types/", "codex-rs/hepta-contracts/", "codex-rs/.cargo/",
+              "codex-rs/hepta-infer-core/", "codex-rs/hepta-infer-worker-host/",
+              "codex-rs/hepta-agentd/", "codex-rs/hepta-bellman-operator/",
+              "codex-rs/hepta-intelligence-eval/",
+          )
+          shared = {
+              "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/rust-toolchain.toml",
+              "justfile", "scripts/run-nextest.py", "scripts/just-shell.py",
+              "scripts/hepta_ci_exec.py", "scripts/hepta_ci_scope.py",
+              "scripts/verify_cargo_lock.py", ".github/workflows/ndu-v6.yml",
+              ".github/workflows/blocking-ci.yml",
+          }
+          selected = os.environ["EVENT_NAME"] != "pull_request" or native_scope == "true" or any(
+              path.startswith(prefixes) or path in shared
+              for path in changed_paths(os.environ["BASE_SHA"], os.environ["HEAD_SHA"])
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"selected={str(selected).lower()}\n")
+          PY
 
       - name: Regression-test scoped fan-in policy
         shell: bash
@@ -99,6 +153,12 @@ jobs:
     uses: ./.github/workflows/codespell.yml
     secrets: inherit
 
+  ndu-v6:
+    name: NDU v6 neural rollout smoke
+    needs: scope
+    if: needs.scope.outputs.ndu_v6 == 'true'
+    uses: ./.github/workflows/ndu-v6.yml
+
   repo-checks:
     name: repo-checks
     needs: scope
@@ -120,12 +180,33 @@ jobs:
     uses: ./.github/workflows/sdk.yml
     secrets: inherit
 
+  learning-operator-qualification:
+    name: learning.operator qualification
+    needs: scope
+    if: needs.scope.outputs.learning == 'true' || needs.scope.outputs.full_repo == 'true'
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/learning-operator-required.yml
+    secrets: inherit
+
   hepta-scoped:
-    name: Hepta scoped native checks
+    name: Hepta scoped native checks / shard ${{ matrix.shard }}
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 75
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      NEXTEST_TEST_THREADS: "2"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -134,14 +215,108 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Reclaim unused hosted-runner disk for exhaustive Rust reverse-consumer tests
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${GITHUB_WORKSPACE:?checkout root required}"
+          checkout_sha="$(git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD)"
+          if [[ ! "${SOURCE_SHA:-}" =~ ^[0-9a-f]{40}$ || "$checkout_sha" != "$SOURCE_SHA" ]]; then
+            echo '::error::Disk admission checkout differs from the bound exact source SHA'
+            exit 1
+          fi
+          # Reclaim only fixed SDK paths on the ephemeral hosted Linux runner.
+          # Preserve the checkout, Cargo/V8 artifacts, and exhaustive test selection.
+          printf '%s\n' 'Runner disk before native prerequisites:'
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-before.txt"
+          workspace_before_kib="$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR==2 {print $4}')"
+          minimum_free_kib=$((10 * 1024 * 1024))
+          if [[ "${RUNNER_ENVIRONMENT:-}" != "github-hosted" || "${RUNNER_OS:-}" != "Linux" ]]; then
+            echo "Not a GitHub-hosted Linux runner: no SDK directories removed"
+          else
+            for unused in \
+              /usr/local/lib/android \
+              /usr/share/dotnet \
+              /opt/ghc \
+              /usr/local/.ghcup \
+              /opt/hostedtoolcache/CodeQL \
+              /usr/local/share/powershell
+            do
+              if [[ ! -e "$unused" && ! -L "$unused" ]]; then
+                continue
+              fi
+              if [[ ! -d "$unused" || "$(realpath -e -- "$unused")" != "$unused" ]]; then
+                echo "::error::Refusing noncanonical hosted SDK path: $unused"
+                exit 1
+              fi
+              if mountpoint -q -- "$unused"; then
+                echo "::error::Refusing mounted hosted SDK root: $unused"
+                exit 1
+              else
+                mount_status=$?
+                if (( mount_status != 32 )); then
+                  echo "::error::Cannot determine mount status for hosted SDK root: $unused"
+                  exit 1
+                fi
+              fi
+              echo "Removing unused preinstalled non-Rust toolchain: $unused"
+              sudo du -xsh -- "$unused"
+              sudo rm -rf --one-file-system -- "$unused"
+              if [[ -e "$unused" || -L "$unused" ]]; then
+                echo "::error::Hosted SDK root remains after cleanup: $unused"
+                exit 1
+              fi
+            done
+            sudo apt-get clean
+          fi
+          printf '%s\n' 'Runner disk after reclaiming unused tools:'
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-after-reclaim.txt"
+          workspace_free_kib="$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR==2 {print $4}')"
+          free_kib="$(df -Pk "$RUNNER_TEMP" | awk 'NR==2 {print $4}')"
+          if ! [[ "$workspace_before_kib" =~ ^[0-9]+$ && "$workspace_free_kib" =~ ^[0-9]+$ && "$free_kib" =~ ^[0-9]+$ ]]; then
+            echo '::error::Cannot determine free disk space for exact-SHA native reverse-consumer tests'
+            exit 1
+          fi
+          printf 'source=%s\nfree_before_bytes=%s\nfree_after_bytes=%s\ntemp_free_after_bytes=%s\nminimum_required_bytes=%s\n' \
+            "$checkout_sha" "$((workspace_before_kib * 1024))" \
+            "$((workspace_free_kib * 1024))" "$((free_kib * 1024))" \
+            "$((minimum_free_kib * 1024))" > "$RUNNER_TEMP/hepta-scoped-disk.txt"
+          if (( workspace_free_kib < minimum_free_kib || free_kib < minimum_free_kib )); then
+            echo '::error::Less than 10 GiB free on the checkout or temporary filesystem for exact-SHA native reverse-consumer tests'
+            exit 1
+          fi
+          # Retain the original scoped-lane toolchain survival diagnostics.
+          rustc --version --verbose
+          cargo --version
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config libdbus-1-dev
+      # Keep the host AppArmor restriction enabled; use only the distro Bubblewrap profile.
+      - name: Qualify distro AppArmor Bubblewrap userns profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RUNNER_OS" = Linux
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          mkdir -p "$RUNNER_TEMP/hepta-owner-evidence"
+          before="$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)"
+          test "$before" = 1
+          sudo apt-get install -y apparmor-profiles apparmor-utils
+          distro_profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -r "$distro_profile"
+          sudo install -m 0644 "$distro_profile" /etc/apparmor.d/bwrap-userns-restrict
+          sudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = "$before"
+          # Real user and network namespace operations, no mock or elevation
+          # of the E2E process. Fail closed before any expensive compilation.
+          bwrap --unshare-user --unshare-net --uid 0 --gid 0 \
+            --ro-bind / / --dev-bind /dev /dev --proc /proc \
+            /bin/true
+          printf 'AppArmor userns restriction remains %s; confined bwrap smoke passed\n' "$before" \
+            | tee "$RUNNER_TEMP/hepta-owner-evidence/bwrap-apparmor.log"
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
@@ -153,25 +328,72 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Test affected owners and reverse consumers, not a hand-written package list
+      - name: Build exact-source subprocess helpers required by native reverse-consumer tests
         env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_CI_LANE: source-head
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/impact-helper-build.json" -- \
+            python3 scripts/hepta_cell_test_helpers.py \
+              --package codex-cli \
+              --package codex-code-mode-host \
+              --package codex-rmcp-client \
+              --package codex-hepta-infer-worker-host \
+              --output-dir "$RUNNER_TEMP/impact-test-helpers" \
+              --github-env "$GITHUB_ENV"
+
+      - name: Reverify source and immutable helper bytes before consumer tests
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-cli \
+            --package codex-code-mode-host \
+            --package codex-rmcp-client \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/impact-test-helpers" --verify-only
+
+      - name: Test exact affected-owner and reverse-consumer shard
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEPTA_CI_LANE: source-head
+          SHARD_INDEX: ${{ matrix.shard }}
         run: >-
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 3600 --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
+          --shard-count 4 --shard-index "$SHARD_INDEX"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
+
+      - name: Record scoped native disk usage after consumer tests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-after-tests.txt"
+          if [[ -d codex-rs/target ]]; then
+            du -sh codex-rs/target | tee "$RUNNER_TEMP/scoped-disk-target.txt" || true
+          fi
 
       - name: Retain dependency plan and real command output
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}
+          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}-shard-${{ matrix.shard }}
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/scoped-disk-*.txt
+            ${{ runner.temp }}/hepta-scoped-disk.txt
+            ${{ runner.temp }}/impact-helper-build.json*
+            ${{ runner.temp }}/impact-test-helpers
+            !${{ runner.temp }}/impact-test-helpers/bin/**
           if-no-files-found: error
           retention-days: 14
 
@@ -179,11 +401,349 @@ jobs:
         if: needs.scope.outputs.derived == 'true'
         run: python3 scripts/hepta-module-docs.py refresh-derived --check
 
+  ledgerwriter-owner-replay:
+    name: LedgerWriter Bazel ${{ matrix.lane }} replay
+    # Retain the exact historical workflow-only replay and its original assertions.
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == 'ac9ecb91f92e7a1928bf055c48ed0d36b68d23d5' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, prospective-merge]
+    steps:
+      - name: Checkout exact ${{ matrix.lane }} commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact tested commit and frozen LedgerWriter parent
+        env:
+          LANE: ${{ matrix.lane }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PARENT_SHA: d5eb0147c015dcc4ee5146a2d62208031a710d70
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git merge-base --is-ancestor "$PARENT_SHA" "$TESTED_SHA"
+          if [[ "$LANE" == "prospective-merge" ]]; then
+            git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
+          fi
+          test "$(git diff --name-only "$PARENT_SHA" "$SOURCE_SHA")" = ".github/workflows/blocking-ci.yml"
+          printf 'LedgerWriter %s SHA: %s\n' "$LANE" "$TESTED_SHA"
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-ledgerwriter-${{ matrix.lane }}
+
+      - name: Check rusty_v8 MODULE.bazel checksums
+        shell: bash
+        run: |
+          python3 .github/scripts/rusty_v8_bazel.py check-module-bazel
+          just test-github-scripts
+
+      - name: Check MODULE.bazel.lock is up to date
+        shell: bash
+        run: ./scripts/check-module-bazel-lock.sh
+
+      - name: Run uncached signed LedgerWriter process fixture
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: ${{ runner.temp }}/bazel-execution-logs/${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          mkdir -p "$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-test-logs \
+            --print-failed-action-summary \
+            -- \
+            test \
+            --nocache_test_results \
+            --test_output=all \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA="$TESTED_SHA" \
+            -- \
+            //codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test
+
+      - name: Upload Bazel execution logs
+        if: always() && !cancelled()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-execution-logs-ledgerwriter-${{ matrix.lane }}
+          path: ${{ runner.temp }}/bazel-execution-logs/${{ matrix.lane }}
+          if-no-files-found: ignore
+
+      - name: Save Bazel repository cache
+        if: always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.prepare_bazel.outputs.repository-cache-path }}
+          key: ${{ steps.prepare_bazel.outputs.repository-cache-key }}
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
+  taskflow-owner-replay:
+    name: Historical TaskFlow v1 migration ${{ matrix.lane }} replay
+    # Keep the original frozen parent and workflow-only difference assertions.
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == '8ac3e707f4522d951a159c54eaa356903cddf2f1' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, prospective-merge]
+    steps:
+      - name: Checkout exact ${{ matrix.lane }} commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact tested commit and frozen TaskFlow parent
+        env:
+          LANE: ${{ matrix.lane }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PRODUCT_PARENT_SHA: f915ee92fdce3d2c4fd8e39be92dd0db04555938
+          DIFF_PARENT_SHA: 806d17a16624b90f8bd8955978296e128fa01432
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git merge-base --is-ancestor "$PRODUCT_PARENT_SHA" "$TESTED_SHA"
+          git merge-base --is-ancestor "$DIFF_PARENT_SHA" "$SOURCE_SHA"
+          if [[ "$LANE" == "prospective-merge" ]]; then
+            git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
+          fi
+          expected_files="$(printf '%s\n' ".github/workflows/blocking-ci.yml")"
+          actual_files="$(git diff --name-only "$DIFF_PARENT_SHA" "$SOURCE_SHA")"
+          test "$actual_files" = "$expected_files"
+          printf 'TaskFlow %s SHA: %s\n' "$LANE" "$TESTED_SHA"
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-taskflow-${{ matrix.lane }}
+
+      - name: Check rusty_v8 MODULE.bazel checksums
+        shell: bash
+        run: |
+          python3 .github/scripts/rusty_v8_bazel.py check-module-bazel
+          just test-github-scripts
+
+      - name: Check MODULE.bazel.lock is up to date
+        shell: bash
+        run: ./scripts/check-module-bazel-lock.sh
+
+      - name: Run uncached complete TaskFlow automation test target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: ${{ runner.temp }}/bazel-execution-logs/taskflow-${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          mkdir -p "$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-test-logs \
+            --print-failed-action-summary \
+            -- \
+            test \
+            --nocache_test_results \
+            --test_output=all \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA="$TESTED_SHA" \
+            -- \
+            //codex-rs/hepta-automation:hepta-automation-automation-test
+
+      - name: Upload TaskFlow Bazel execution logs
+        if: always() && !cancelled()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-execution-logs-taskflow-${{ matrix.lane }}
+          path: ${{ runner.temp }}/bazel-execution-logs/taskflow-${{ matrix.lane }}
+          if-no-files-found: ignore
+
+      - name: Save Bazel repository cache
+        if: always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.prepare_bazel.outputs.repository-cache-path }}
+          key: ${{ steps.prepare_bazel.outputs.repository-cache-key }}
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
+  taskflow-owner-current:
+    name: Current TaskFlow v1 migration ${{ matrix.lane }} replay
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, prospective-merge]
+    steps:
+      - name: Checkout exact ${{ matrix.lane }} commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind current TaskFlow source and prospective merge identities
+        env:
+          LANE: ${{ matrix.lane }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PRODUCT_PARENT_SHA: f915ee92fdce3d2c4fd8e39be92dd0db04555938
+          DIFF_PARENT_SHA: 806d17a16624b90f8bd8955978296e128fa01432
+        shell: bash
+        run: |
+          set -euo pipefail
+          for identity in "$TESTED_SHA" "$SOURCE_SHA" "$BASE_SHA" "$PRODUCT_PARENT_SHA" "$DIFF_PARENT_SHA"; do
+            [[ "$identity" =~ ^[0-9a-f]{40}$ ]]
+            git --no-replace-objects cat-file -e "$identity^{commit}"
+          done
+          case "$LANE" in
+            source-head|prospective-merge) ;;
+            *) echo "Unknown TaskFlow qualification lane" >&2; exit 1 ;;
+          esac
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$TESTED_SHA"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=normal)"
+          git --no-replace-objects diff --check
+          git --no-replace-objects merge-base --is-ancestor "$PRODUCT_PARENT_SHA" "$TESTED_SHA"
+          git --no-replace-objects merge-base --is-ancestor "$DIFF_PARENT_SHA" "$SOURCE_SHA"
+          identity_dir="$RUNNER_TEMP/taskflow-current-identity/$LANE"
+          mkdir -p "$identity_dir"
+          if [[ "$LANE" == "source-head" ]]; then
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+            expected_tree="$(git --no-replace-objects rev-parse "$SOURCE_SHA^{tree}")"
+          else
+            read -r -a parents <<< "$(git --no-replace-objects rev-list --parents --max-count=1 "$TESTED_SHA")"
+            test "${#parents[@]}" -eq 3
+            test "${parents[0]}" = "$TESTED_SHA"
+            test "${parents[1]}" = "$BASE_SHA"
+            test "${parents[2]}" = "$SOURCE_SHA"
+            merge_status=0
+            git --no-replace-objects merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" \
+              > "$identity_dir/merge-tree.stdout" 2> "$identity_dir/merge-tree.stderr" || merge_status=$?
+            test "$merge_status" -eq 0
+            expected_tree="$(cat "$identity_dir/merge-tree.stdout")"
+          fi
+          [[ "$expected_tree" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git --no-replace-objects rev-parse "$TESTED_SHA^{tree}")" = "$expected_tree"
+          git --no-replace-objects diff --no-ext-diff --no-textconv --no-renames --name-only \
+            "$BASE_SHA" "$SOURCE_SHA" -- > "$identity_dir/changed-paths.txt"
+          git --no-replace-objects cat-file commit "$TESTED_SHA" > "$identity_dir/tested.commit"
+          printf 'lane=%s\nsource=%s\nbase=%s\ntested=%s\ntree=%s\nhistorical_workflow_only_replay=false\n' \
+            "$LANE" "$SOURCE_SHA" "$BASE_SHA" "$TESTED_SHA" "$expected_tree" > "$identity_dir/identity.txt"
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-taskflow-current-${{ matrix.lane }}
+
+      - name: Check rusty_v8 MODULE.bazel checksums
+        shell: bash
+        run: |
+          python3 .github/scripts/rusty_v8_bazel.py check-module-bazel
+          just test-github-scripts
+
+      - name: Check MODULE.bazel.lock is up to date
+        shell: bash
+        run: ./scripts/check-module-bazel-lock.sh
+
+      - name: Run uncached complete TaskFlow automation test target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: ${{ runner.temp }}/bazel-execution-logs/taskflow-current-${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          mkdir -p "$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-test-logs \
+            --print-failed-action-summary \
+            -- \
+            test \
+            --nocache_test_results \
+            --test_output=all \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA="$TESTED_SHA" \
+            -- \
+            //codex-rs/hepta-automation:hepta-automation-automation-test
+
+      - name: Upload TaskFlow Bazel execution logs
+        if: always() && !cancelled()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-execution-logs-taskflow-current-${{ matrix.lane }}
+          path: ${{ runner.temp }}/bazel-execution-logs/taskflow-current-${{ matrix.lane }}
+          if-no-files-found: ignore
+
+      - name: Retain current TaskFlow candidate identity
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: taskflow-current-identity-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/taskflow-current-identity/${{ matrix.lane }}
+          if-no-files-found: error
+
+      - name: Save Bazel repository cache
+        if: always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.prepare_bazel.outputs.repository-cache-path }}
+          key: ${{ steps.prepare_bazel.outputs.repository-cache-key }}
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
   lightweight:
     name: Lightweight prose and derived checks
     needs: scope
     if: needs.scope.outputs.native != 'true' && needs.scope.outputs.full_repo != 'true'
-    runs-on: ubuntu-24.04
+    # Prose/metadata checks are architecture-neutral; avoid saturated x64 pool.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - name: Checkout exact candidate
@@ -207,7 +767,8 @@ jobs:
   required:
     timeout-minutes: 30
     name: CI required
-    if: ${{ always() }}
+    # Aggregate failed dependencies, but release the PR lease on cancellation.
+    if: ${{ !cancelled() }}
     needs:
       - scope
       - hepta-contract-gate
@@ -215,12 +776,18 @@ jobs:
       - blob-size-policy
       - cargo-deny
       - codespell
+      - ndu-v6
       - repo-checks
       - rust-ci
       - sdk
+      - learning-operator-qualification
       - hepta-scoped
+      - ledgerwriter-owner-replay
+      - taskflow-owner-replay
+      - taskflow-owner-current
       - lightweight
-    runs-on: ubuntu-24.04
+    # Needs/result fan-in uses Python only; leave native work on its target architecture.
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -229,22 +796,57 @@ jobs:
       - name: Require successful applicable dependencies
         env:
           NEEDS: ${{ toJSON(needs) }}
+          EXPECTED_NEEDS: >-
+            ["scope", "hepta-contract-gate", "bazel", "blob-size-policy",
+             "cargo-deny", "codespell", "ndu-v6", "repo-checks", "rust-ci",
+             "sdk", "learning-operator-qualification", "hepta-scoped",
+             "ledgerwriter-owner-replay", "taskflow-owner-replay",
+             "taskflow-owner-current", "lightweight"]
+          LEARNING: ${{ needs.scope.outputs.learning }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+          NDU_V6: ${{ needs.scope.outputs.ndu_v6 }}
+          LEDGERWRITER_REPLAY_REQUESTED: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == 'ac9ecb91f92e7a1928bf055c48ed0d36b68d23d5' }}
+          EVENT_NAME: ${{ github.event_name }}
+          TASKFLOW_REPLAY_REQUESTED: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == '8ac3e707f4522d951a159c54eaa356903cddf2f1' }}
         shell: bash
         run: |
           set -euo pipefail
-          export ALLOWED_SKIPPED="$(
+          # Assign before exporting so a selector rejection stops this step.
+          ALLOWED_SKIPPED="$(
             python3 - <<'PY'
           import json
           import os
-          native = os.environ["NATIVE"] == "true"
-          full = os.environ["FULL_REPO"] == "true"
+
+          def scope_flag(name):
+              value = os.environ.get(name)
+              if value not in {"true", "false"}:
+                  raise SystemExit(f"Blocking CI scope {name} must be true or false")
+              return value == "true"
+
+          learning = scope_flag("LEARNING")
+          native = scope_flag("NATIVE")
+          full = scope_flag("FULL_REPO")
+          ndu_v6 = scope_flag("NDU_V6")
+          if full and not native:
+              raise SystemExit("Blocking CI full repository scope requires native scope")
+
+          replay_requested = os.environ["LEDGERWRITER_REPLAY_REQUESTED"] == "true"
           allowed = []
+          if not ndu_v6:
+              allowed.append("ndu-v6")
+          if not replay_requested:
+              allowed.append("ledgerwriter-owner-replay")
+          if os.environ["EVENT_NAME"] != "pull_request":
+              allowed.append("taskflow-owner-current")
+          if os.environ["TASKFLOW_REPLAY_REQUESTED"] != "true":
+              allowed.append("taskflow-owner-replay")
           if not (native or full):
               allowed.append("hepta-contract-gate")
           if not full:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
+          if not (learning or full):
+              allowed.append("learning-operator-qualification")
           if not (native and not full):
               allowed.append("hepta-scoped")
           if not (not native and not full):
@@ -252,4 +854,5 @@ jobs:
           print(json.dumps(allowed))
           PY
           )"
+          export ALLOWED_SKIPPED
           python3 .github/scripts/check_ci_results.py

@@ -1,0 +1,47 @@
+{
+  "schema": "hcsn-source-tree-successor-static-request-v1",
+  "identity": "hcsn-original-visit897-source-tree-successor-static-20261112-c06d",
+  "idempotency_key": "hcsn-original-visit897-source-tree-successor-static-clear-20261112-c06d-001",
+  "parent_pr": 6259,
+  "parent_head": "000e667ad7a92eae0ad314929cb4293d6bb994d6",
+  "frozen_candidate_source": "c06232839ce00b128bdeeff4b3cdcb0e5e13bdcd",
+  "parent_inventory_commit": "75743e7ff99950a57e90308331d2fd5c26e2de06",
+  "purpose": "Complete and independently bind the remote runtime source tree, then perform a zero-execution static admission review.",
+  "format_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "000e667ad7a92eae0ad314929cb4293d6bb994d6"
+  ],
+  "static_only": true,
+  "numerical_identity": null,
+  "numerical_execution_authorized": false,
+  "maximum_candidate_imports": 0,
+  "maximum_model_forwards": 0,
+  "maximum_adjoints": 0,
+  "maximum_optimizer_updates": 0,
+  "stop_conditions": [
+    "any source byte or dependency closure mismatch",
+    "any missing manifest-bound runtime dependency",
+    "format mutation or incorrect format invocation",
+    "any candidate import or numerical operation",
+    "any historical RED or UNKNOWN reclassification"
+  ],
+  "historical_red_retained": [
+    {
+      "kind": "desktop_static",
+      "job_id": "1a1d086d1a2-2564-1b95",
+      "exit_code": 2,
+      "status": "RED_STOP_NO_READMISSION"
+    },
+    {
+      "kind": "hosted_missing_source",
+      "run_id": 43263814418,
+      "job_id": 131341874598,
+      "missing_path": "qualification/hcsn_initial_law/migration.py",
+      "status": "RED_SOURCE_BIND_MISSING_FILE"
+    }
+  ],
+  "global_status": "HOLD",
+  "all_closed": false
+}

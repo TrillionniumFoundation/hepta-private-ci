@@ -664,7 +664,7 @@ async fn durable_hard_delete_tombstone_rejects_read_and_manual_resume_in_fresh_m
     config.codex_home = temp_dir.path().join("codex-home").abs();
     config.cwd = config.codex_home.abs();
     std::fs::create_dir_all(&config.codex_home).expect("create codex home");
-    let state_db = init_state_db(&config).await.expect("state db");
+    let state_db = init_state_db(&mut config).await.expect("state db");
     let source_manager = hard_delete_test_manager(&config, Some(state_db.clone()));
     let source = source_manager
         .start_thread(StartThreadOptions::new(config.clone()))
@@ -2010,7 +2010,7 @@ async fn explicit_installation_id_skips_codex_home_file() {
     let auth_manager =
         AuthManager::from_auth_for_testing(CodexAuth::create_dummy_chatgpt_auth_for_testing());
     let installation_id = uuid::Uuid::new_v4().to_string();
-    let state_db = init_state_db(&config).await;
+    let state_db = init_state_db(&mut config).await;
     let thread_store = thread_store_from_config(&config, state_db.clone());
     let manager = ThreadManager::new(
         &config,
@@ -2184,7 +2184,7 @@ async fn resume_stopped_thread_from_rollout_preserves_thread_source() {
 
     let auth_manager =
         AuthManager::from_auth_for_testing(CodexAuth::create_dummy_chatgpt_auth_for_testing());
-    let state_db = init_state_db(&config).await;
+    let state_db = init_state_db(&mut config).await;
     let thread_store = thread_store_from_config(&config, state_db.clone());
     let manager = ThreadManager::new(
         &config,
@@ -2312,7 +2312,7 @@ async fn rollout_path_resume_and_fork_read_history_through_thread_store() {
 
     let auth_manager =
         AuthManager::from_auth_for_testing(CodexAuth::create_dummy_chatgpt_auth_for_testing());
-    let state_db = init_state_db(&config).await;
+    let state_db = init_state_db(&mut config).await;
     let thread_store = thread_store_from_config(&config, state_db.clone());
     let in_memory_store = thread_store
         .as_any()
@@ -2859,7 +2859,7 @@ async fn interrupted_fork_snapshot_does_not_synthesize_turn_id_for_legacy_histor
 
     let auth_manager =
         AuthManager::from_auth_for_testing(CodexAuth::create_dummy_chatgpt_auth_for_testing());
-    let state_db = init_state_db(&config).await;
+    let state_db = init_state_db(&mut config).await;
     let manager = ThreadManager::new(
         &config,
         auth_manager.clone(),
@@ -2972,7 +2972,7 @@ async fn interrupted_fork_snapshot_preserves_explicit_turn_id() {
 
     let auth_manager =
         AuthManager::from_auth_for_testing(CodexAuth::create_dummy_chatgpt_auth_for_testing());
-    let state_db = init_state_db(&config).await;
+    let state_db = init_state_db(&mut config).await;
     let manager = ThreadManager::new(
         &config,
         auth_manager.clone(),
@@ -3075,7 +3075,7 @@ async fn interrupted_fork_snapshot_uses_persisted_mid_turn_history_without_live_
 
     let auth_manager =
         AuthManager::from_auth_for_testing(CodexAuth::create_dummy_chatgpt_auth_for_testing());
-    let state_db = init_state_db(&config).await;
+    let state_db = init_state_db(&mut config).await;
     let manager = ThreadManager::new(
         &config,
         auth_manager.clone(),

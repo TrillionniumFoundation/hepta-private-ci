@@ -1,0 +1,25 @@
+{
+  "schema": "read-only-sparse-control-observation-result-v1",
+  "status": "control_plane_errors_no_new_native_state",
+  "both_calls": "MCP -32603 Internal error",
+  "observed_utc": "2026-11-11T00:55:34.200Z",
+  "last_authoritative_original_job_state": {
+    "observed_utc": "2026-11-11T00:25:25Z",
+    "state": "running",
+    "current_state": "unknown"
+  },
+  "last_complete_commands_snapshot": {
+    "observed_utc": "2026-11-11T00:33:29.153Z",
+    "terminal_rows": 3,
+    "total_original_fits": 6,
+    "remaining_dispatch_rows_are_not_current_liveness": true
+  },
+  "v9_launch_ack": "unknown",
+  "new_process_starts": 0,
+  "training_mutations": 0,
+  "control_wall_seconds_per_call": [
+    0.87,
+    1.469
+  ],
+  "overlap": "calls ran concurrently; per-call controls are not additive elapsed wall or model CPU"
+}

@@ -1,0 +1,158 @@
+{
+  "active_reward": 0.0,
+  "advance_explicit_exponentials": 191,
+  "advance_forward_cpu_seconds": 0.135087827,
+  "advance_forward_seconds": 0.13278608399923542,
+  "advance_largest_matrix": 130,
+  "all_forward_largest_matrix": 130,
+  "all_values_and_gradients_finite": true,
+  "backward_cpu_seconds": 2.306057385,
+  "backward_internal_exponentials": "not instrumented",
+  "backward_scalar_calls": 6,
+  "backward_seconds": 2.3327743070003635,
+  "child_measured_cpu_seconds": 3.865924275,
+  "child_measured_wall_seconds": 3.8999474060001376,
+  "delay": "1/5",
+  "discount": 0.15,
+  "dtype": "float64",
+  "escape_reward": 0.0,
+  "gradient_absolute_errors": [
+    [
+      9.059419880941277e-14,
+      2.2343238370581275e-15,
+      4.579669976578771e-16
+    ],
+    [
+      3.9968028886505635e-15,
+      1.3877787807814457e-16,
+      3.0531133177191805e-16
+    ]
+  ],
+  "gradients": [
+    [
+      7.156797877398574,
+      -0.11138338159946759,
+      0.11138338159946581
+    ],
+    [
+      -2.147039363219541,
+      0.033415014479839744,
+      -0.0334150144798393
+    ]
+  ],
+  "initial_channels": [
+    1.0,
+    -0.3
+  ],
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "case_wall_seconds": 45,
+    "max_dimension": 256,
+    "max_exponentials": 2048,
+    "max_packets": 256,
+    "threads": 1,
+    "total_cpu_seconds": 120,
+    "total_wall_seconds": 180
+  },
+  "maximum_gradient_absolute_error": 9.059419880941277e-14,
+  "maximum_signed_mass_balance_error": 1.0658141036401503e-14,
+  "maximum_value_absolute_error": 6.039613253960852e-14,
+  "mpmath": "1.3.0",
+  "peak_rss_after_forward_kib": 253920,
+  "peak_rss_native_kib": 264792,
+  "pending_generator_orders": [
+    [
+      128,
+      128
+    ]
+  ],
+  "pending_packets": 1,
+  "phase": "complete",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "quantity_order": [
+    "hit_count",
+    "active",
+    "refractory"
+  ],
+  "rate_fp64_hex": "0x1.b333333333333p+0",
+  "reference_50_vs_80_max_absolute_error": "2.8452054494674677629487308251799847000993345150303064587960984049440273007924667e-49",
+  "reference_80_digits": {
+    "gradients_content": [
+      "-2.147039363219544906165500912266630229166128810014513043401797242910588815293255",
+      "0.033415014479839607136855430041565419293990324271134369701377560767068997151808497",
+      "-0.033415014479839607136855430041565419293990324271134369701377560767068997151808497"
+    ],
+    "gradients_probability": [
+      "7.1567978773984832854063959100969130199861017398044922023985913451098155122073141",
+      "-0.11138338159946536124486459388309938584439883829358247706224475339094581973197749",
+      "0.11138338159946536124486459388309938584439883829358247706224475339094581973197749"
+    ],
+    "values_content": [
+      "-4.8812987302294494901028558623986242267313947677184079109056084648816432963908527",
+      "-0.22388059701492536633300664353045108843478700191354348385919746826209275686254917",
+      "-0.076119402985074622564763110217983507328896317178253391140802531737907243137450831"
+    ],
+    "values_probability": [
+      "16.270995767431498902490657360692709008800928095283284520544946746776294873082518",
+      "0.74626865671641791539417698652330829932015490769924110264785638671847799499750026",
+      "0.25373134328358208460582301347669170067984509230075889735214361328152200500249974"
+    ]
+  },
+  "refractory_explicit_exponentials": 2,
+  "refractory_forward_cpu_seconds": 0.0,
+  "refractory_forward_seconds": 0.0015884150016063359,
+  "rlimit_as": [
+    4294967296,
+    4294967296
+  ],
+  "rlimit_cpu": [
+    43,
+    44
+  ],
+  "source_sha256_after": {
+    "differentiable.py": "fccee9781c86af243c5f691f876d0dec34296edfedc327d6f4a100bcd2def949",
+    "study_longtime.py": "62daf4850b6e0079b5b75d50b57ba74a61ef76e75de9276f9caf3dd2172f502f"
+  },
+  "source_sha256_before": {
+    "differentiable.py": "fccee9781c86af243c5f691f876d0dec34296edfedc327d6f4a100bcd2def949",
+    "study_longtime.py": "62daf4850b6e0079b5b75d50b57ba74a61ef76e75de9276f9caf3dd2172f502f"
+  },
+  "spike_reward": 1.0,
+  "state_tensor_bytes": 134256,
+  "status": "completed",
+  "target": "64/5",
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "torch": "2.8.0+cpu",
+  "torch_interop_threads": 1,
+  "torch_threads": 1,
+  "value_absolute_errors": [
+    [
+      6.039613253960852e-14,
+      7.993605777301127e-15,
+      2.6645352591003757e-15
+    ],
+    [
+      1.2434497875801753e-14,
+      3.608224830031759e-16,
+      1.249000902703301e-16
+    ]
+  ],
+  "values": [
+    [
+      16.27099576743156,
+      0.746268656716426,
+      0.25373134328358476
+    ],
+    [
+      -4.881298730229462,
+      -0.22388059701492571,
+      -0.07611940298507475
+    ]
+  ]
+}

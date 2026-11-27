@@ -1,0 +1,62 @@
+{
+  "findings": [
+    "Every core requires all six seed/LR opportunities. Missing or failed opportunities retain original cost and any known continuation lower bound; cost_sum does not replace absent full cost with zero.",
+    "Original full process wall is charged without refund for discarded partial work. Final opportunity cost uses the complete continuation wrapper, while quality uses the recorded process prefix. Controller and audit ledgers stay separate from overlapping fit sums.",
+    "Historical C1 preserves its two sampling times as early <= late <= outer, rather than rewriting the original microsecond discrepancy. C2 cumulative epoch wall is checked against original full wall plus the single phase sample.",
+    "Strict best is the first strict maximum over all complete epochs. The .002 plateau anchor is tracked independently, and an earlier recorded plateau cannot be erased by a later improvement.",
+    "Original 300/900/1800 views and points are copied as exact bytes. C2 contributes only to the separate longer-resource view.",
+    "HCSN common LR requires all three verified seeds at both LRs, chooses the highest three-seed mean with lower-LR tie break, and never filters LRs by adequacy first. Baseline common LRs remain the frozen historical choices.",
+    "A selected trained comparison requires all three selected seeds to have independently supported adequacy and verified quality. A better-mean but inadequate LR remains selected with HOLD; there is no fallback that hides a failed seed.",
+    "First target crossings use recorded complete-epoch evaluations only. Missing crossings remain censored rather than assigned zero or interpolated. Initial-evaluation eligibility is separately disclosed.",
+    "Original exact exit CPU remains unknown; observed prefix/fit-entry values and C2 wait4 are lower bounds on the full chain. Per-attempt maximum RSS is not memory at crossing, tree memory or GPU VRAM; energy remains null.",
+    "A C2 selected best may still be an original-phase checkpoint. Its old epoch identity is retained while all additional training cost is charged, so continuation adequacy is not automatically a quality gain."
+  ],
+  "native_calls": 0,
+  "reviewed_files": [
+    {
+      "bytes": 8406,
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-analysis-program-v2/resource_arithmetic.py",
+      "sha256": "8a1befdf5803ecaf5f260057259ba0e482438b202ac9a7cd845fe81286833dbd",
+      "snapshot": "source/c2-resource-analysis-program-v2/resource_arithmetic.py"
+    },
+    {
+      "bytes": 11544,
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-analysis-program-v2/old_metadata.py",
+      "sha256": "d92aae6a419e0a32c0e67756fed09fd158d764ae1079687fa492c1f62366ba3c",
+      "snapshot": "source/c2-resource-analysis-program-v2/old_metadata.py"
+    },
+    {
+      "bytes": 14103,
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-analysis-program-v2/candidate_accounting.py",
+      "sha256": "081f983b59083f5b706802e1b92694716d5b206abbb7669ba78f935549e2d526",
+      "snapshot": "source/c2-resource-analysis-program-v2/candidate_accounting.py"
+    },
+    {
+      "bytes": 4213,
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-analysis-program-v2/historical_review.py",
+      "sha256": "3df4c6857c651e58c11a1c1a26bdf5cd827d231a8536aa2c15fc2d692be393ed",
+      "snapshot": "source/c2-resource-analysis-program-v2/historical_review.py"
+    },
+    {
+      "bytes": 13330,
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-analysis-program-v2/build_report.py",
+      "sha256": "124e8db6f29a045a9599b1f8ad8c7cf68e32637c5be52e9b833c9e39f451a75b",
+      "snapshot": "source/c2-resource-analysis-program-v2/build_report.py"
+    }
+  ],
+  "reviewer": "/root/training",
+  "schema": "independent-resource-arithmetic-static-review-v1",
+  "scientific_admission": "HOLD",
+  "scope_limits": [
+    "Static review only; no tests, model imports, forward/backward, optimizer steps, numerical oracle, live C2 input, E access, native calls or new process launch.",
+    "The remaining metadata I/O, archive, terminal roster and native resource-envelope files were not reviewed in this narrow pass.",
+    "Actual six-chain terminal provenance, independent audit results and runtime resource enforcement remain separate pending gates.",
+    "Right censoring is for first recorded evaluations. It does not locate a latent first threshold crossing between observations.",
+    "Per-fit controller wrapper CPU and unsupplied upstream tuning/publication costs remain explicitly outside the summed complete-fit CPU account."
+  ],
+  "source_capture_utc": "2026-11-11T01:04:57Z",
+  "status": "no_static_arithmetic_blocker_found_in_reviewed_five_files",
+  "tests_run_by_reviewer": 0,
+  "training_steps": 0,
+  "whole_training_numerical_admission": "HOLD"
+}

@@ -1,0 +1,953 @@
+{
+  "all_observed_raw_proofs_consistent": true,
+  "checks": [
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-observed-source:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-observed-source:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-observed-source:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-observed-source:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-source-after:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-source-after:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-source-after:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-source-after:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-source-before:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-source-before:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-source-before:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers-source-before:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-observed-source:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-observed-source:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-observed-source:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-observed-source:postimage:codex-rs/target/nextest/local/junit.xml",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-source-after:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-source-after:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-source-after:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-source-after:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-source-before:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-source-before:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-source-before:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing-source-before:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-observed-source:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-observed-source:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-observed-source:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-observed-source:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-source-after:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-source-after:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-source-after:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-source-after:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-source-before:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-source-before:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-source-before:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core-source-before:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-after:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-after:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-after:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-after:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-at-collection:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-at-collection:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-at-collection:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-at-collection:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-before:raw_dirty_agrees",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-before:exact_source_locks",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-before:postimage_unique_paths",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source-before:clean_has_no_raw_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "baseline_exists_clean",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:bound_raw_snapshot:before",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:bound_raw_snapshot:after",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:bound_raw_snapshot:source_immediately_after_command",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:passed_known_zero_exit",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:passed_before_after_clean",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:no_intermediate_source_drift",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:bound_raw_snapshot:before",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:bound_raw_snapshot:after",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:bound_raw_snapshot:source_immediately_after_command",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:passed_known_zero_exit",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:passed_before_after_clean",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:only_current_junit_untracked",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:native_no_tracked_source_rewrite",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:native_single_junit_postimage",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:exact_retained_junit_bytes",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:native_immediate_identity_only_dirty",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:bound_raw_snapshot:before",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:bound_raw_snapshot:after",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:bound_raw_snapshot:source_immediately_after_command",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:passed_known_zero_exit",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:passed_before_after_clean",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:no_intermediate_source_drift",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "result:after",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "collection_raw_snapshot_bound",
+      "passed": true
+    }
+  ],
+  "native_or_model_executions_started": 0,
+  "original_collection_status": "qualified_results_retained",
+  "original_driver_status": "passed_two_named_cases_and_one_clean_scoped_fix",
+  "parent_view_boundary": {
+    "actual_full_commit_parent_from_source_binding": "408226fc670bfa8c1736e2b264750b549237b7c4",
+    "frozen_source_checkout_fetch_depth": 1,
+    "meaning": "The shallow Git walk view is empty; it is not a claim that the underlying immutable commit has no parent.",
+    "observed_git_show_parent_view": []
+  },
+  "phases": [
+    {
+      "kind": "helpers",
+      "original_exit": 0,
+      "phase": "phase-1-build-sandbox-helpers",
+      "status": "passed_clean"
+    },
+    {
+      "kind": "native",
+      "original_exit": 0,
+      "phase": "phase-2-v2-subagent-request-routing",
+      "status": "passed_clean"
+    },
+    {
+      "kind": "fix",
+      "original_exit": 0,
+      "phase": "phase-3-fix-codex-core",
+      "status": "passed_clean"
+    }
+  ],
+  "schema_version": 1,
+  "scope": "Supplementary independent raw-snapshot proof only; does not convert incomplete native/lint qualification into success",
+  "snapshots": {
+    "phase-1-build-sandbox-helpers-observed-source": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "phase-1-build-sandbox-helpers-source-after": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "phase-1-build-sandbox-helpers-source-before": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "phase-2-v2-subagent-request-routing-observed-source": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": true,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [
+        {
+          "bytes": 766,
+          "mode": 438,
+          "path": "codex-rs/target/nextest/local/junit.xml",
+          "sha256": "0b015ca8b1278a10337e858621fa45227a97b0aba4a28f5422b37d0481b55e7a",
+          "state": "file"
+        }
+      ],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 40,
+        "sha256": "ba5e4924f2a1292f2f47951d78ac4575112a430c3950fd989e53fb93bd6bfaa9"
+      }
+    },
+    "phase-2-v2-subagent-request-routing-source-after": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "phase-2-v2-subagent-request-routing-source-before": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "phase-3-fix-codex-core-observed-source": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "phase-3-fix-codex-core-source-after": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "phase-3-fix-codex-core-source-before": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "source-after": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "source-at-collection": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "source-before": {
+      "identity": {
+        "commit": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+      },
+      "patches": {
+        "combined.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualified-source.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "working-tree.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "postimages": [],
+      "status": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "untracked": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+}

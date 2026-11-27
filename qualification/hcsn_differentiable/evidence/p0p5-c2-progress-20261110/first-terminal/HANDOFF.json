@@ -1,0 +1,48 @@
+{
+  "schema": "c2-first-real-terminal-metadata-handoff-v1",
+  "candidate": "hcsn-s211-lr0.003",
+  "original_result": {
+    "path": "/workspace/scratch/c385a7439f8e/c2-first-terminal-receipts-v1/payload/fit/result.json",
+    "bytes": 360283,
+    "sha256": "c5c3f1f75a305fff6d97fdfd263ca8aac0c765698ba94c1debc17b01978b889d"
+  },
+  "original_outer": {
+    "path": "/workspace/scratch/c385a7439f8e/c2-first-terminal-receipts-v1/payload/outer/RESULT.json",
+    "bytes": 3281,
+    "sha256": "189da59739ac6337152cbc6c58e455087a30decaf50171c19a2c8b74e9629edc"
+  },
+  "metadata_archive": {
+    "path": "/workspace/scratch/c385a7439f8e/c2-first-terminal-receipts-v1/hcsn-c2-first-terminal-metadata-20261110-v1.zip",
+    "bytes": 181719,
+    "sha256": "27c4ab90aa4d3ff44a81c6a154a8a8572706caa9f314f00b5684913132c24828"
+  },
+  "control_archive": {
+    "path": "/workspace/scratch/c385a7439f8e/c2-first-terminal-receipts-v1/control-plane-originals-v1.zip",
+    "bytes": 198729,
+    "sha256": "cb0ea382eb8d61e9c77d4b4fffa350c923997aad7561c6e40d8efb3b2e9f2d8b"
+  },
+  "all_members_sha_crc_verified": true,
+  "observed_producer_status": "completed_development",
+  "observed_producer_stop_reason": "development_plateau",
+  "observed_producer_adequacy": true,
+  "training_returncode": 0,
+  "cumulative_epochs": 50,
+  "new_main_updates": 36,
+  "new_unretained_updates": 0,
+  "selected_best_epoch": 40,
+  "same_selected_best_bytes_as_original": true,
+  "same_selected_metrics_as_original_strict_best": true,
+  "no_observed_selected_quality_improvement": true,
+  "independent_C2_terminal_audit": "pending all original candidates terminal",
+  "model_or_probability_arrays_read_for_this_metadata_archive": false,
+  "remaining_original_candidates": "unchanged; no early LR/seed selection or E access",
+  "numerical_admission": "HOLD",
+  "scientific_admission": "HOLD",
+  "metadata_archive_GNU_full_wall_seconds_rounded": 0.28,
+  "metadata_archive_GNU_user_system_seconds_rounded": [
+    0.23,
+    0.03
+  ],
+  "metadata_archive_peak_rss_bytes": 19148800,
+  "metadata_archive_cost_scope": "Separate real read-only archiver; GNU includes setup/archive. Do not add overlapping script prefixes. Original h binary-read timeouts retained in control ZIP."
+}

@@ -1,0 +1,30 @@
+{
+  "parent": "6fa36569564e93bef7e3040bae15df1790e8d22a",
+  "incoming": "da1edb7f1fb5e64a6bce6509979b85aa605edaca",
+  "genuine_preview": "fea479f4a1f61080ead8befae6003159ab376585",
+  "resolved_tree": "b61f6022a03e79f950d77645204857f4525280aa",
+  "expected_overlay_tree": "b61f6022a03e79f950d77645204857f4525280aa",
+  "commit": "6c2577f6b5499a6774ec93d84698bbdb077ab3ec",
+  "parents": [
+    "6fa36569564e93bef7e3040bae15df1790e8d22a",
+    "da1edb7f1fb5e64a6bce6509979b85aa605edaca"
+  ],
+  "selected_blobs": {
+    "experiments/ndu_mgp_gates/paired_superiority.py": "f293bdde77961e35de85c20894a50c4a05412b37",
+    "experiments/ndu_mgp_gates/test_paired_superiority.py": "267753f679530f31884d5d12150e8c86c2c889de"
+  },
+  "date": "2026-11-19T16:40:36+00:00",
+  "refs_changed": false,
+  "genuine_exit": 1,
+  "conflict_decisions": {
+    "experiments/ndu_mgp_gates/paired_superiority.py": [
+      "Combine incoming measured physical cost-unit allowlist with current per-seed original-source floor >=8 and preregistered absolute quality/completion minima.",
+      "Keep current independent-source coverage and source-equal absolute service metrics; these imply incoming at least-one protected observation in every seed.",
+      "Keep current bootstrapped cost-noninferiority margin and incoming direction-specific protected loss, quality, ambiguity and inconsistency no-regression checks."
+    ],
+    "experiments/ndu_mgp_gates/test_paired_superiority.py": [
+      "Keep all current cohort and service-floor regressions; add the exact incoming protected-loss and protected-inconsistency bodies. Existing relocked missing-seed cohort test covers the incoming empty-seed intent.",
+      "Keep current missing-seed, repeated-source and absolute-service assertions; add exact incoming proxy-cost-unit and nonhex digest bodies. No current assertion or scenario removed."
+    ]
+  }
+}

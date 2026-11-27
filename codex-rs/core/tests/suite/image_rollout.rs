@@ -21,6 +21,7 @@ use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::user_input::UserInput;
 use codex_utils_image::data_url_from_bytes;
 use core_test_support::TempDirExt;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
@@ -290,8 +291,8 @@ async fn drag_drop_image_persists_rollout_request_shape() -> anyhow::Result<()> 
 async fn resumed_history_only_emits_resize_notices_for_new_images() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
-    let initial = test_codex().build_with_auto_env(&server).await?;
+    let server = FirstPartyMockServer::start().await?;
+    let initial = server.test_codex().build_with_auto_env(&server).await?;
     responses::mount_sse_once(
         &server,
         sse(vec![
@@ -353,7 +354,7 @@ async fn resumed_history_only_emits_resize_notices_for_new_images() -> anyhow::R
         .join("\n");
     fs::write(&rollout_path, format!("{rollout}\n"))?;
 
-    let mut resume_builder = test_codex().with_config(|config| {
+    let mut resume_builder = server.test_codex().with_config(|config| {
         let _ = config.features.enable(Feature::ImageResizeNotice);
         let _ = config
             .features
@@ -465,7 +466,8 @@ async fn resumed_history_only_emits_resize_notices_for_new_images() -> anyhow::R
         .collect::<Vec<_>>();
     assert_eq!(replayed_notices, vec![expected_notice.to_string()]);
 
-    let replayed = test_codex()
+    let replayed = server
+        .test_codex()
         .with_config(|config| {
             let _ = config.features.enable(Feature::ImageResizeNotice);
             let _ = config

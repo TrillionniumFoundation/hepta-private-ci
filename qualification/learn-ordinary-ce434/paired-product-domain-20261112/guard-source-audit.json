@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.paired-product-source-guard-child.v1",
+  "parent": "e4a253087fe32a768455fee31fbb100ae8fcf362",
+  "parent_tree": "afb388f7888c97e05248d0fc1bbe82f8ea6fb589",
+  "production_source_changed": false,
+  "test_source_changes": [
+    "Explicit pretty_assertions::assert_eq imports in the two new paired test modules avoid macro ambiguity through inherited glob imports; the ten cases and their logic are unchanged."
+  ],
+  "guard_installed": false,
+  "guard_installation": "The complete-record contract is reviewable data. Root installs it into the actually combined candidate, preserving all original records and the separately specified E caller extension.",
+  "validation": {
+    "required": 98,
+    "order": 198,
+    "functions": 42,
+    "sequence": 799,
+    "top": 172,
+    "errors": [],
+    "schema": {
+      "global_sequence_minimum": 2,
+      "function_sequence_minimum": 2,
+      "all_valid": true,
+      "original_verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+      "literal_marker_helper_blob": "4234ebafeb7c0d7a4fc6c671cff339f853411f4c"
+    },
+    "negative": {
+      "deletion_mutations": 91,
+      "rejected": 91,
+      "unrejected": [],
+      "literal_original_code": 25,
+      "literal_changed_rejected": 25,
+      "literal_comment_decoys_rejected": 25,
+      "forbidden_injections_rejected": 55,
+      "python_executed": false
+    },
+    "forbidden_projection": {
+      "escaped_punctuation_corrected": true,
+      "original_python_unchanged": true,
+      "forbidden_injections": 55,
+      "rejected": 55
+    },
+    "method": "V8 transcription of the fixed original Python masking/order/top-level uniqueness rules plus explicit schema minimums and actual-code literal checks; not original Python, Rust, native or full typed-caller execution."
+  },
+  "source_qa_methods": 9,
+  "source_qa_executed": 0,
+  "native_case_count": 10,
+  "native_executed": 0,
+  "ordinary_acceptance": 0,
+  "retention_aggregation": "The expanded power audit separately records per-member mathematical eligibility and the old 488 primary-only aggregate acceptance; a different original-policy closure is required and is not silently attributed to this statistics patch.",
+  "wire_schema_repair": "Exact one-record before/after repair preserved; no verifier change and no production Model wire change."
+}

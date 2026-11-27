@@ -1,0 +1,45 @@
+{
+  "A29_failure": {
+    "bytes": 3786,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_durable_raw/stage_A/seed-29/FAILED.json",
+    "sha256": "eedb52e2cc05c5fdcc8ed295f27954952730038cdc2851ca4d7e110562f7e0ec"
+  },
+  "A29_known_gradient_microsteps": 14784,
+  "accepted_durable_stages": 1,
+  "additional_work_or_cpu_unknown": true,
+  "all_blockers_closed": false,
+  "all_four_owned_pids_absent": true,
+  "at_utc": "2026-10-30T05:54:08.369522+00:00",
+  "automatic_scientific_retry": false,
+  "capacity_before": {
+    "disk_available": 5901631488,
+    "effective_available": 1640796160
+  },
+  "completed_jobs": [
+    "A-17"
+  ],
+  "episode": "execution04_durable_20261030",
+  "forensic_report": {
+    "bytes": 17120,
+    "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/independent_stage_audit_0533/TERMINATION_FORENSICS_A29_20261030T0547.json",
+    "sha256": "3aa1b9038061c26a7a39a7a4a83bb5b88cea28a9b9be4c4d6bb27a6350c718c5"
+  },
+  "is_primary_completion": false,
+  "known_gradient_microsteps": 53952,
+  "known_scientific_and_supervisor_cpu_lower_bound": 4560.3191719120005,
+  "no_original_stage_resurrected": true,
+  "outer_wait4": {
+    "bytes": 1488,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/wait4_launcher/WAIT4_COMPLETE.json",
+    "sha256": "1938e9d28ab7403a567f6359186afe25f9bd71024af71307cc293bacf89cea3d"
+  },
+  "schema": "hepta.execution04.terminal-failure-summary.1",
+  "scientific_values_interpreted": false,
+  "scope_of_cpu_lower_bound": "outer waited supervisor subtree plus non-waited A29 failed-stage CPU; excludes root IO, launcher own CPU and unknown A29 entry/cleanup",
+  "stale_active_worker_registry_preserved": true,
+  "supervisor_failure": {
+    "bytes": 2763,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/FAILED.json",
+    "sha256": "cf453c8e1a8e55d17b78834835f235a30f35875e665dca1b72d504372e924a24"
+  }
+}

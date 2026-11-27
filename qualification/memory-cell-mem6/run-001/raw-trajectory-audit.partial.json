@@ -1,0 +1,683 @@
+{
+  "schema": "hepta.mem6.partial-raw-trajectory-audit.v1",
+  "archive_complete": false,
+  "full_archive_restore_completed": false,
+  "evidence_boundary": "Complete CAS objects obtained from a truncated but version-pinned prefix; every reviewed file matched the independently supplied manifest SHA256 and byte count. The complete archive SHA256 has not been verified.",
+  "requested_pair_coverage": [
+    {
+      "pair_id": "mem6-retention-484c-v1-bd1daa4059274fa7d85d",
+      "campaign": "retention",
+      "manifest_files": 68,
+      "verified_prefix_files": 8,
+      "verified_prefix_paths": [
+        "retention-run-001/attempts/mem6-retention-484c-v1-bd1daa4059274fa7d85d-bounded.json",
+        "retention-run-001/attempts/mem6-retention-484c-v1-bd1daa4059274fa7d85d-current_only.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-bounded/actor-output/ocr-00.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-bounded/actor-output/ocr-02.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-bounded/delivery-04/evaluation.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-current_only/actor-output/ocr-00.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-current_only/actor-output/ocr-02.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-current_only/delivery-04/evaluation.stderr"
+      ],
+      "both_trajectories_available": false,
+      "raw_causal_review_completed": false
+    },
+    {
+      "pair_id": "mem6-retention-484c-v1-686fc2e67e7000826e40",
+      "campaign": "retention",
+      "manifest_files": 68,
+      "verified_prefix_files": 68,
+      "verified_prefix_paths": [
+        "retention-run-001/attempts/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded.json",
+        "retention-run-001/attempts/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-00.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-01.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-02.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-03.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/decision-00.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/decision-01.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/decision-02.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/decision-03.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/ocr-00.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/ocr-00.tsv",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/ocr-02.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/ocr-02.tsv",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-00.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-01.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-02.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-03.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-00/delivery.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-01/delivery.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-02/delivery.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-03/delivery.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/delivery.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/evaluation.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/evaluation.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/evaluation.stdout",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/deployment.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/evaluation-meter.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/evaluation.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/launch.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/public/case.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/public/observed-01.png",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/public/overview.png",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/result.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/trajectory.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-00.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-01.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-02.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-03.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/decision-00.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/decision-01.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/decision-02.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/decision-03.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/ocr-00.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/ocr-00.tsv",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/ocr-02.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/ocr-02.tsv",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-00.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-01.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-02.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-03.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-00/delivery.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-01/delivery.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-02/delivery.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-03/delivery.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/delivery.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/evaluation.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/evaluation.stderr",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/evaluation.stdout",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/deployment.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/evaluation-meter.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/evaluation.meter.jsonl",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/launch.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/public/case.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/public/observed-01.png",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/public/overview.png",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/result.json",
+        "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/trajectory.json"
+      ],
+      "both_trajectories_available": true,
+      "raw_causal_review_completed": true
+    },
+    {
+      "pair_id": "mem6-selector-484c-v1-f63a25fb9bbcebb0c93c",
+      "campaign": "selector",
+      "manifest_files": 82,
+      "verified_prefix_files": 6,
+      "verified_prefix_paths": [
+        "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-frozen_neural/actor-output/ocr-00.stderr",
+        "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-frozen_neural/actor-output/ocr-02.stderr",
+        "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-frozen_neural/delivery-05/evaluation.stderr",
+        "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-public_rule/actor-output/ocr-00.stderr",
+        "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-public_rule/actor-output/ocr-02.stderr",
+        "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-public_rule/delivery-05/evaluation.stderr"
+      ],
+      "both_trajectories_available": false,
+      "raw_causal_review_completed": false
+    },
+    {
+      "pair_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5",
+      "campaign": "selector",
+      "manifest_files": 74,
+      "verified_prefix_files": 6,
+      "verified_prefix_paths": [
+        "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-frozen_neural/actor-output/ocr-00.stderr",
+        "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-frozen_neural/actor-output/ocr-02.stderr",
+        "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-frozen_neural/delivery-04/evaluation.stderr",
+        "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-public_rule/actor-output/ocr-00.stderr",
+        "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-public_rule/actor-output/ocr-02.stderr",
+        "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-public_rule/delivery-04/evaluation.stderr"
+      ],
+      "both_trajectories_available": false,
+      "raw_causal_review_completed": false
+    }
+  ],
+  "completed_pair_reviews": [
+    {
+      "pair_id": "mem6-retention-484c-v1-686fc2e67e7000826e40",
+      "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+      "source_group_id": "merchant-58a28471023079b3c7ced730",
+      "input_and_control_checks": {
+        "public_case_exact_match": true,
+        "first_two_executed_actions_exact_match": true,
+        "all_processed_raw_candidate_sets_exact_match": true,
+        "processed_observation_metadata_exact_match": true,
+        "ocr_stdout_hashes_exact_match": true,
+        "control_selector_and_weights_pins_match": true,
+        "trajectory_candidate_and_selector_file_references_match_manifest": true,
+        "audited_actions_match_executed_trajectory": true
+      },
+      "arms": {
+        "bounded": {
+          "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+          "requirements": {
+            "image": false,
+            "text": true
+          },
+          "initial_delivery": {
+            "image": null,
+            "text": null
+          },
+          "candidate_memory": {
+            "max_entries": 128,
+            "max_serialized_bytes": 524288,
+            "mode": "bounded",
+            "schema": "ndu.real.candidate-memory-profile.v1"
+          },
+          "candidate_selector": {
+            "mode": "public_rule",
+            "profile_sha256": "c9b56f198abd1737a9883326fd0c66f411e46218b126aec1e4b6f4f48e66870e",
+            "schema": "ndu.real.candidate-selector-profile.v1"
+          },
+          "actions": [
+            {
+              "step": 0,
+              "action": {
+                "action": "PREPARE_ROI",
+                "arguments": {
+                  "bbox": [
+                    4,
+                    445,
+                    526,
+                    470
+                  ]
+                },
+                "schema": "ndu.real.actor-action.v1"
+              },
+              "action_effect_changed": [
+                "preparation"
+              ],
+              "ocr_stdout_sha256": "7102d5b683052b6b42a576adb0646e61389f9f2d9fc73aa721a3bd3a65a83ab8",
+              "observation_processed": true,
+              "observation": {
+                "bbox": [
+                  0,
+                  0,
+                  588,
+                  1728
+                ],
+                "kind": "overview",
+                "path": "overview.png",
+                "sha256": "ed5e049508ae32c17d4b17a1a32c1a9272992bc21b7fe35385846b579384319f"
+              },
+              "raw_count": 41,
+              "offered_count": 41,
+              "selected_index": 9,
+              "selected_candidate": {
+                "bbox": [
+                  0,
+                  451,
+                  524,
+                  478
+                ],
+                "origin": "pixel_ocr",
+                "text": "11/08/2017"
+              },
+              "selected_candidate_observed_step": 0,
+              "resident_entries": 41,
+              "scope_reset": true
+            },
+            {
+              "step": 1,
+              "action": {
+                "action": "READ_ROI",
+                "arguments": {},
+                "schema": "ndu.real.actor-action.v1"
+              },
+              "action_effect_changed": [
+                "observation"
+              ],
+              "ocr_stdout_sha256": "7102d5b683052b6b42a576adb0646e61389f9f2d9fc73aa721a3bd3a65a83ab8",
+              "observation_processed": true,
+              "observation": {
+                "bbox": [
+                  0,
+                  0,
+                  588,
+                  1728
+                ],
+                "kind": "overview",
+                "path": "overview.png",
+                "sha256": "ed5e049508ae32c17d4b17a1a32c1a9272992bc21b7fe35385846b579384319f"
+              },
+              "raw_count": 41,
+              "offered_count": 41,
+              "selected_index": 9,
+              "selected_candidate": {
+                "bbox": [
+                  0,
+                  451,
+                  524,
+                  478
+                ],
+                "origin": "pixel_ocr",
+                "text": "11/08/2017"
+              },
+              "selected_candidate_observed_step": 1,
+              "resident_entries": 41,
+              "scope_reset": false
+            },
+            {
+              "step": 2,
+              "action": {
+                "action": "WRITE_TEXT",
+                "arguments": {
+                  "text": "11/08/2017"
+                },
+                "schema": "ndu.real.actor-action.v1"
+              },
+              "action_effect_changed": [
+                "text"
+              ],
+              "ocr_stdout_sha256": "e9458299e5f6c448e6270b454fae902f627d6d1fd540d1a1998f6991acc2072c",
+              "observation_processed": true,
+              "observation": {
+                "bbox": [
+                  4,
+                  445,
+                  526,
+                  470
+                ],
+                "kind": "roi",
+                "path": "observed-01.png",
+                "sha256": "37f3ed181672beff58b35a1d8ec10e81c0926f49d81bf7dd00eef72171679407"
+              },
+              "raw_count": 1,
+              "offered_count": 42,
+              "selected_index": 10,
+              "selected_candidate": {
+                "bbox": [
+                  0,
+                  451,
+                  524,
+                  478
+                ],
+                "origin": "pixel_ocr",
+                "text": "11/08/2017"
+              },
+              "selected_candidate_observed_step": 1,
+              "resident_entries": 42,
+              "scope_reset": false,
+              "raw_candidates": [
+                {
+                  "bbox": [
+                    51,
+                    457,
+                    524,
+                    470
+                  ],
+                  "origin": "pixel_ocr",
+                  "text": "OPPCIOT BO. CCNAGAATIA NATO. 14/790/59N09"
+                }
+              ]
+            },
+            {
+              "step": 3,
+              "action": {
+                "action": "STOP",
+                "arguments": {},
+                "schema": "ndu.real.actor-action.v1"
+              },
+              "action_effect_changed": [],
+              "ocr_stdout_sha256": null,
+              "observation_processed": false
+            }
+          ],
+          "final_delivery": {
+            "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+            "image": null,
+            "schema": "ndu.real.delivery.v1",
+            "text": "11/08/2017"
+          },
+          "evaluation": {
+            "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+            "source_group": "merchant-58a28471023079b3c7ced730",
+            "episode_group": "X51006555570",
+            "role": "retention_validation",
+            "text_quality": 1.0,
+            "image_pass": false,
+            "committed_output_preserved": true,
+            "quality": 1.0,
+            "reference_sha256": "eef25a46b232fb3de64e8accb5ae047e81ce71f8f6b4198574ad9cde643e80aa",
+            "evaluator_source_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45"
+          }
+        },
+        "current_only": {
+          "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+          "requirements": {
+            "image": false,
+            "text": true
+          },
+          "initial_delivery": {
+            "image": null,
+            "text": null
+          },
+          "candidate_memory": {
+            "max_entries": 128,
+            "max_serialized_bytes": 524288,
+            "mode": "current_only",
+            "schema": "ndu.real.candidate-memory-profile.v1"
+          },
+          "candidate_selector": {
+            "mode": "public_rule",
+            "profile_sha256": "c9b56f198abd1737a9883326fd0c66f411e46218b126aec1e4b6f4f48e66870e",
+            "schema": "ndu.real.candidate-selector-profile.v1"
+          },
+          "actions": [
+            {
+              "step": 0,
+              "action": {
+                "action": "PREPARE_ROI",
+                "arguments": {
+                  "bbox": [
+                    4,
+                    445,
+                    526,
+                    470
+                  ]
+                },
+                "schema": "ndu.real.actor-action.v1"
+              },
+              "action_effect_changed": [
+                "preparation"
+              ],
+              "ocr_stdout_sha256": "7102d5b683052b6b42a576adb0646e61389f9f2d9fc73aa721a3bd3a65a83ab8",
+              "observation_processed": true,
+              "observation": {
+                "bbox": [
+                  0,
+                  0,
+                  588,
+                  1728
+                ],
+                "kind": "overview",
+                "path": "overview.png",
+                "sha256": "ed5e049508ae32c17d4b17a1a32c1a9272992bc21b7fe35385846b579384319f"
+              },
+              "raw_count": 41,
+              "offered_count": 41,
+              "selected_index": 9,
+              "selected_candidate": {
+                "bbox": [
+                  0,
+                  451,
+                  524,
+                  478
+                ],
+                "origin": "pixel_ocr",
+                "text": "11/08/2017"
+              },
+              "selected_candidate_observed_step": 0,
+              "resident_entries": 41,
+              "scope_reset": true
+            },
+            {
+              "step": 1,
+              "action": {
+                "action": "READ_ROI",
+                "arguments": {},
+                "schema": "ndu.real.actor-action.v1"
+              },
+              "action_effect_changed": [
+                "observation"
+              ],
+              "ocr_stdout_sha256": "7102d5b683052b6b42a576adb0646e61389f9f2d9fc73aa721a3bd3a65a83ab8",
+              "observation_processed": true,
+              "observation": {
+                "bbox": [
+                  0,
+                  0,
+                  588,
+                  1728
+                ],
+                "kind": "overview",
+                "path": "overview.png",
+                "sha256": "ed5e049508ae32c17d4b17a1a32c1a9272992bc21b7fe35385846b579384319f"
+              },
+              "raw_count": 41,
+              "offered_count": 41,
+              "selected_index": 9,
+              "selected_candidate": {
+                "bbox": [
+                  0,
+                  451,
+                  524,
+                  478
+                ],
+                "origin": "pixel_ocr",
+                "text": "11/08/2017"
+              },
+              "selected_candidate_observed_step": 1,
+              "resident_entries": 41,
+              "scope_reset": true
+            },
+            {
+              "step": 2,
+              "action": {
+                "action": "WRITE_TEXT",
+                "arguments": {
+                  "text": "OPPCIOT BO. CCNAGAATIA NATO. 14/790/59N09"
+                },
+                "schema": "ndu.real.actor-action.v1"
+              },
+              "action_effect_changed": [
+                "text"
+              ],
+              "ocr_stdout_sha256": "e9458299e5f6c448e6270b454fae902f627d6d1fd540d1a1998f6991acc2072c",
+              "observation_processed": true,
+              "observation": {
+                "bbox": [
+                  4,
+                  445,
+                  526,
+                  470
+                ],
+                "kind": "roi",
+                "path": "observed-01.png",
+                "sha256": "37f3ed181672beff58b35a1d8ec10e81c0926f49d81bf7dd00eef72171679407"
+              },
+              "raw_count": 1,
+              "offered_count": 1,
+              "selected_index": 0,
+              "selected_candidate": {
+                "bbox": [
+                  51,
+                  457,
+                  524,
+                  470
+                ],
+                "origin": "pixel_ocr",
+                "text": "OPPCIOT BO. CCNAGAATIA NATO. 14/790/59N09"
+              },
+              "selected_candidate_observed_step": 2,
+              "resident_entries": 1,
+              "scope_reset": true,
+              "raw_candidates": [
+                {
+                  "bbox": [
+                    51,
+                    457,
+                    524,
+                    470
+                  ],
+                  "origin": "pixel_ocr",
+                  "text": "OPPCIOT BO. CCNAGAATIA NATO. 14/790/59N09"
+                }
+              ]
+            },
+            {
+              "step": 3,
+              "action": {
+                "action": "STOP",
+                "arguments": {},
+                "schema": "ndu.real.actor-action.v1"
+              },
+              "action_effect_changed": [],
+              "ocr_stdout_sha256": null,
+              "observation_processed": false
+            }
+          ],
+          "final_delivery": {
+            "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+            "image": null,
+            "schema": "ndu.real.delivery.v1",
+            "text": "OPPCIOT BO. CCNAGAATIA NATO. 14/790/59N09"
+          },
+          "evaluation": {
+            "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+            "source_group": "merchant-58a28471023079b3c7ced730",
+            "episode_group": "X51006555570",
+            "role": "retention_validation",
+            "text_quality": 0.0,
+            "image_pass": false,
+            "committed_output_preserved": true,
+            "quality": 0.0,
+            "reference_sha256": "eef25a46b232fb3de64e8accb5ae047e81ce71f8f6b4198574ad9cde643e80aa",
+            "evaluator_source_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45"
+          }
+        }
+      },
+      "interpretation": "In this date-only task, both arms begin with empty output and execute the same preparation and ROI read. The ROI OCR loses the correct date present in the overview. At step 2 bounded offers 42 candidates and selects the date 11/08/2017 retained from step 1; current_only offers only the one incorrect current OCR string. Each writes its selected text; the frozen evaluator scores the bounded text correct and the current-only text incorrect. This is within-episode candidate retention and is neither an initial no-op nor a text-delivery bypass. It is not evidence of cross-session episodic/source-memory benefit.",
+      "reviewed_source_files": [
+        {
+          "bytes": 700,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/public/case.json",
+          "sha256": "fc2f43a5635549eaff7ddc2531d407e875233bbba1c64d8effc9965f8416cb10"
+        },
+        {
+          "bytes": 22573,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/trajectory.json",
+          "sha256": "be75acc30448af5b123da896725853eefe24686874f85b2bcf17b1219b7a9132"
+        },
+        {
+          "bytes": 37666,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/result.json",
+          "sha256": "2862b093293b4a7e7a66ba2baa0eff5eaced7bb2108bbecd55a540a07cf619cb"
+        },
+        {
+          "bytes": 126,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/delivery.json",
+          "sha256": "0a4871b046b57991521514fe5541d25c227f9e41e5b2a26adaac105e45b73bce"
+        },
+        {
+          "bytes": 1103,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/evaluation.json",
+          "sha256": "fa7453708d0c421673119cb13c66de73140f3a97a08fe7ef51dbde1ae4d0532c"
+        },
+        {
+          "bytes": 8316,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-00.json",
+          "sha256": "e44af5e7cb8b1b804ba217de9a73f4258b768675cc8c140462d702a691776f73"
+        },
+        {
+          "bytes": 59608,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-00.json",
+          "sha256": "9c3afdeb3fd7f440da7283d067909eec3ec00d436fd1230336a508934ce18f31"
+        },
+        {
+          "bytes": 8355,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-01.json",
+          "sha256": "69997511d79ac53489f20bcc24f9289f450ad8c49147ab07d2c63129ced36fe5"
+        },
+        {
+          "bytes": 59645,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-01.json",
+          "sha256": "90516ea9fe4b5776bbdc46eb07c97afb5a98fcb04e0f0a36d497476f62f599e5"
+        },
+        {
+          "bytes": 5406,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-02.json",
+          "sha256": "936631c26186bae385b824015c9b60cdbd4dce3c29ed36e576c050a5d9827e57"
+        },
+        {
+          "bytes": 61215,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-02.json",
+          "sha256": "f70cda6769911a06432b296b582d6e359397bb8787afeba9170642441633add9"
+        },
+        {
+          "bytes": 1425,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-03.json",
+          "sha256": "9b5671c004a8e7c5357eb99bf97fa955db973bc0fc091c553136f2e234d6d149"
+        },
+        {
+          "bytes": 1469,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-03.json",
+          "sha256": "8a85c9c501d230a522cc3ad516be3cd464f233a38794261403e7f593f4a55c4a"
+        },
+        {
+          "bytes": 700,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/public/case.json",
+          "sha256": "fc2f43a5635549eaff7ddc2531d407e875233bbba1c64d8effc9965f8416cb10"
+        },
+        {
+          "bytes": 22603,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/trajectory.json",
+          "sha256": "6bed68a8993799bf7b4bb87e3555916b659a24000a2d676f75fc476c25c78141"
+        },
+        {
+          "bytes": 37997,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/result.json",
+          "sha256": "f73454f048ba12a3d27af15b4194a532b4230043315494437be8ccf0960de600"
+        },
+        {
+          "bytes": 157,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/delivery.json",
+          "sha256": "6ddb77a4de35271049585fc0b82da6a78291277ed6843b3009c4eec013e23e55"
+        },
+        {
+          "bytes": 1112,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/evaluation.json",
+          "sha256": "9efd65baf099bddfc4780ff462d708c1a35b8cd2b5688a64ceb1d14e29733f9a"
+        },
+        {
+          "bytes": 8326,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-00.json",
+          "sha256": "045807e4364559008aba28d9b3289ce1daa370530207677daf5ed912de23a8bb"
+        },
+        {
+          "bytes": 59616,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-00.json",
+          "sha256": "f57e39dab149f77f31fed9bf443c496106b3399b2e706c6a3a9e1a3889f4c632"
+        },
+        {
+          "bytes": 8363,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-01.json",
+          "sha256": "490bf96ff60c64647710958c88555d7cb24f98d7c1e62ef2b13b6e697ee52dd0"
+        },
+        {
+          "bytes": 59656,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-01.json",
+          "sha256": "ac882ece17960062371419b389b3754605660c3e23d2d641a6704749c1f832a8"
+        },
+        {
+          "bytes": 2178,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-02.json",
+          "sha256": "08b81127347f11e763eb5062485249f3064149ff8e5c6f338a1de9d18ba2a695"
+        },
+        {
+          "bytes": 4639,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-02.json",
+          "sha256": "f6e5a03f39181301749dfcf547fa88af64d5a3223b7ef4fe5fadb6601ca762cf"
+        },
+        {
+          "bytes": 1435,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-03.json",
+          "sha256": "8b205c93f6e4c6ad28e070723ccbe3bc81e119f4a4cec9ed34ca1a004c851cdf"
+        },
+        {
+          "bytes": 1474,
+          "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-03.json",
+          "sha256": "e1518bd01ea676b225bbdfb217a3f1a9bbc67476becc01aa40c4575364429366"
+        }
+      ]
+    }
+  ],
+  "unreviewed_pairs": [
+    "mem6-retention-484c-v1-bd1daa4059274fa7d85d",
+    "mem6-selector-484c-v1-f63a25fb9bbcebb0c93c",
+    "mem6-selector-484c-v1-716b97bac5758ef3f2a5"
+  ],
+  "selector_loss_and_bypass_action_cause": "UNRESOLVED: their raw trajectories are unavailable in the verified prefix. Aggregate reports still support delivery_failure for the loss and non-text-write success for the bypass; do not infer a crop, OCR, rendering, or write cause.",
+  "scientific_acceptance": "HOLD"
+}

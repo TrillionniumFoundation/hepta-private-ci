@@ -1,0 +1,86 @@
+{
+  "fixture_manifest_sha256": "0d684eea4e18c6472f497ebbedde0696ac7760919b590f0fa6cd573c39d392f0",
+  "fixture_members": 3,
+  "fixture_parts": 1,
+  "formal_artifacts_directory_modified": false,
+  "nested_receipts": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.seal_bundle",
+        "--name",
+        "tiny_smoke001",
+        "--include",
+        "payload"
+      ],
+      "cpu_seconds_including_children": 0.193677,
+      "log_sha256": "7a17b63c152d13214c836db302df2e779fcce2ec72b5bb99d66b5f8dca0b4650",
+      "name": "successful_wrapper",
+      "peak_rss_kib_linux": 29184,
+      "returncode": 0,
+      "scope": "Nested complete fixture child tree; included in smoke outer wait4 receipt",
+      "wall_seconds": 0.2383015109999178
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-O",
+        "-m",
+        "experiments.hcsn_distributional_v2.seal_bundle",
+        "--name",
+        "optimized_rejected",
+        "--include",
+        "payload"
+      ],
+      "cpu_seconds_including_children": 0.212785,
+      "log_sha256": "85ff7602afaf9f4018fc5631d423babfdd255ab56ce00fbe18c661151485d049",
+      "name": "optimized_rejected",
+      "peak_rss_kib_linux": 15604,
+      "returncode": 1,
+      "scope": "Nested complete fixture child tree; included in smoke outer wait4 receipt",
+      "wall_seconds": 0.25003945299977204
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.seal_bundle",
+        "--name",
+        "work_tree_rejected",
+        "--include",
+        "payload"
+      ],
+      "cpu_seconds_including_children": 0.07467399999999999,
+      "log_sha256": "af4221e7b77494a8bcfee98c159831d4779daee792a333eaa1146e9d1c208141",
+      "name": "work_tree_rejected",
+      "peak_rss_kib_linux": 12928,
+      "returncode": 1,
+      "scope": "Nested complete fixture child tree; included in smoke outer wait4 receipt",
+      "wall_seconds": 0.07573962799961009
+    }
+  ],
+  "original_payload_sha256": {
+    "payload/nested/updates.jsonl": "3a06d58160aed84d43e83bc2ce3343cf1d3499c4c1a5ed1a104b55b0cea69a68",
+    "payload/weights.bin": "dc404a613fedaeb54034514bc6505f56b933caa5250299ba7d094377a51caa46"
+  },
+  "scenarios": [
+    "real generic wrapper pack and restore",
+    "second independent restore",
+    "optimized mode rejected",
+    "nested work input rejected"
+  ],
+  "schema": "hcsn-sealing-smoke.v1",
+  "source_sha256": {
+    "experiments/hcsn_distributional_v2/evidence_bundle.py": "5cb943759e5ffdc91cd4bf2f98f813bfe89ceb90b37cd5799183bab12700a085",
+    "experiments/hcsn_distributional_v2/seal_bundle.py": "432ec83121406b9c0e1012d76cf85777c66335f9b5a45ad731fa46436953a8fa",
+    "experiments/hcsn_free_boundary_v1/archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "sealing_smoke.py": "7c8df83e0671d54868f33c82dbb8edab6032ad61dcdd4ef5ef5a154dcb018340"
+  },
+  "static_review": "All integrity asserts run only with optimize=0; per-file work/artifacts exclusion, enumerated child input, unchanged member inventory and source hashes, successful restore and manifest-last publication checked",
+  "status": "passed",
+  "verified_restore": {
+    "archive_sha256": "67444773c017fd73cfef87888e8c9ec27b66fa84eafdbbd859683e5274d62c74",
+    "restored_or_already_identical": 3
+  }
+}

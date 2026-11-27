@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "kind": "independent_static_model_material_codec_review",
+  "source_commit": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "candidate_tree": "9d77309549da9637e9ab3f9489ed2655278d4048",
+  "producer": {
+    "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+    "bytes": 39047,
+    "sha256": "19d794ead41cbf3d230255a2bfdd96c5e793f1f86600d4404d8c6ca8b97350af",
+    "git_blob_sha": "3c8f28b3121936b6cf54dff190a055d72ada0a9e"
+  },
+  "review": [
+    "Independently read the exact original v4 producer: its failed_metrics and snapshot_ids use push_ids, which writes a u64 big-endian list length; each ID itself retains a u32 byte length.",
+    "The candidate adds only Reader::ids_u64 and changes those two Qualification call sites. Request/decision u32 list parsing and all existing fields/signature/domain/authority checks remain unchanged.",
+    "ids_u64 checks conversion to usize, <=1024 and the minimum four-byte length-prefix space before allocation/iteration, then calls the existing strict ID parser. There is no fallback to u32.",
+    "The regression operates on actual original member bytes and independently locates u64 lists using primitive reads; it checks full decoding and rejects a seven-byte header, altered counts, and a u32-width representation without replacing original seals.",
+    "The test transport now announces withdrawal readiness only for the actual original Page(index=0,offset=0); it preserves the original response and pause.",
+    "No static type/ownership/blocking issue was identified. This is not a compiler, formatter or test result."
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs",
+      "base": {
+        "bytes": 8235,
+        "sha256": "d35ae398da651c7d1a75acac6de5a5fde116d5b4085987dc804c1694d40185c9",
+        "git_blob_sha": "8b083bb62da5506b29a9eaadd7b1b059d799a128"
+      },
+      "post": {
+        "bytes": 8815,
+        "sha256": "923b9c75463b3f548b50411fa71334ff23d01af298dc8dbab5f10d091cab3e8b",
+        "git_blob_sha": "2faee4cacb7f58b63efc46e821ee36a744a59751"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "base": {
+        "bytes": 20112,
+        "sha256": "090a5a485aa4b6c01be9cdf516292c1bef5099c88f0d63e71a0b0a546d6daee1",
+        "git_blob_sha": "d1dedb4b386ac822833e265ecd3192e000848730"
+      },
+      "post": {
+        "bytes": 23392,
+        "sha256": "c5474be07f9d3f08a5b5731f991b1a14c4f0d5cb49810b113ff20d31e8ce1a45",
+        "git_blob_sha": "447de9525d154c5a8d1bc9bef472b5ff1b7e9ed4"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+      "base": {
+        "bytes": 11022,
+        "sha256": "b6928800b4a9192745c4f1942b5de17c08ce8b2550b3ffa890defba5b1332b46",
+        "git_blob_sha": "adc26468ecd874b9aaf5d32beac21dfa4ecc30a9"
+      },
+      "post": {
+        "bytes": 11030,
+        "sha256": "b26d35c97617a284d90646d9df638b406f053de61e48e65f72d5cf19b6184c54",
+        "git_blob_sha": "40d2c6d4ae804cdf0a582bfde4d32b9412e4e32c"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+      "base": {
+        "bytes": 6034,
+        "sha256": "7dab4ab4b46422a14042761a1f9769c61bdf0d8f3711dd3f80a2ff0492c5c4cb",
+        "git_blob_sha": "4c3063ecd9da813de7ef4b5b57bac4d16c27deee"
+      },
+      "post": {
+        "bytes": 6497,
+        "sha256": "a297111c1e321835d832239fee6066efcae57a1681ca944510fcf42462894871",
+        "git_blob_sha": "6c02579cfc05f35c2252d501c1b7cfd096b4c4d1"
+      }
+    }
+  ],
+  "qa_scan": {
+    "blob": "f526151458d8e32f8e8481e5cc204778c535f4c8",
+    "files": 56,
+    "failed_reads": 0,
+    "targeted_matches": 0,
+    "scope": "Only qa/b4-no-bypass .py content search, not source execution or a repository-wide guarantee."
+  },
+  "validation": "NOT_RUN; NOT_COMPILED; NOT_FMT"
+}

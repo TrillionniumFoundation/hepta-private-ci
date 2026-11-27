@@ -1,0 +1,324 @@
+{
+  "accounting_complete": false,
+  "peak_vram_bytes": null,
+  "previous_ledgers": [
+    "../p0p5-20261110/COSTS.json",
+    "../p0p5-followup-20261110/COSTS.json"
+  ],
+  "rows": [
+    {
+      "artifact": "curves-originals/native.stdout",
+      "artifact_identity": {
+        "bytes": 1613,
+        "sha256": "8fa0f47551862f19a61d6c32db05ff87bce74cd4f6ee244ca8a15a952d0900aa"
+      },
+      "id": "curves-export-and-package",
+      "measurements": {
+        "full_process_cpu_seconds": 0.773637007,
+        "package_cpu_seconds": 0.26657485699999994,
+        "package_wall_seconds": 0.26663165097124875,
+        "whole_main_wall_seconds": 0.7319243280217052
+      },
+      "scope": "Main-entry interval including export and ZIP work; export/package subsets overlap; process CPU is a pre-exit sample, not independent waited CPU."
+    },
+    {
+      "artifact": "curves-originals/RECOVERY-RECEIPT.json",
+      "artifact_identity": {
+        "bytes": 16201,
+        "sha256": "5678368911fc03fc6803978b59cab3e584dd3d266185d3b026dfb0eef9ffcc05"
+      },
+      "id": "curves-transfer",
+      "measurements": {
+        "sum_rpc_round_trip_wall_seconds_overlapping": 421.724
+      },
+      "scope": "Sum of overlapping RPC round trips; not model wall, CPU, calendar duration or additive process cost."
+    },
+    {
+      "artifact": "resource-analysis-v1/tests-EXECUTION.json",
+      "artifact_identity": {
+        "bytes": 1894,
+        "sha256": "8ddc51bb5897dbc80a4094ed60fd96effa95fb440ee9a25e599ff51e74e07fd3"
+      },
+      "id": "resource-tests",
+      "measurements": {
+        "returncode": 0,
+        "waited_child_CPU_seconds": 0.106025,
+        "whole_child_wall_seconds": 0.10764032299994142
+      },
+      "scope": "Complete isolated subprocess; no model, optimizer or numerical oracle."
+    },
+    {
+      "artifact": "resource-analysis-v1/analysis-EXECUTION.json",
+      "artifact_identity": {
+        "bytes": 1806,
+        "sha256": "71c77e599efb36ab45a1649593b8b5810a89c57b95fc0fa1a28fe7fa431d7e09"
+      },
+      "id": "resource-analysis",
+      "measurements": {
+        "returncode": 0,
+        "waited_child_CPU_seconds": 0.5361769999999999,
+        "whole_child_wall_seconds": 0.5369948970001133
+      },
+      "scope": "Complete isolated subprocess; no model, optimizer or numerical oracle."
+    },
+    {
+      "artifact": "independent-resource-review-v1/OUTER-OBSERVATION.json",
+      "artifact_identity": {
+        "bytes": 837,
+        "sha256": "d4f1080079ae4d805d57cc0adb0cf44aa2c38b1e1c21877ee20db9d541cc98f5"
+      },
+      "id": "independent-resource-review",
+      "measurements": {
+        "absolute_process_CPU_sample_seconds": 0.395616986,
+        "complete_spawn_to_exit_wall_seconds": null,
+        "complete_waited_child_CPU_seconds": null,
+        "main_entry_computation_CPU_seconds": 0.35148064900000003,
+        "main_entry_verification_wall_seconds": 0.35147484200206236
+      },
+      "scope": "Only main-entry computation and absolute CPU sample retained; complete spawn-to-exit wall/waited CPU unknown."
+    },
+    {
+      "artifact": "resource-analysis-v1/render-attempt-v1/RENDER-RECEIPT.json",
+      "artifact_identity": {
+        "bytes": 872,
+        "sha256": "c583a73efa370a32bb631d999efbc5dcdb6ff498ae3d8e38b6ba01c454bad868"
+      },
+      "id": "first-render",
+      "measurements": {
+        "main_entry_wall_seconds": 0.5757339829979173,
+        "process_CPU_sample_seconds": 0.5690888320000003
+      },
+      "scope": "Main entry through output, excluding imports and receipt write/exit. First draft source/receipt retained; old draft PNG/SVG not retained."
+    },
+    {
+      "artifact": "resource-analysis-v1/output-v1/RENDER-RECEIPT.json",
+      "artifact_identity": {
+        "bytes": 872,
+        "sha256": "68e54ff3ed62af6b41f7f88053f1dd69ab38239409885c3dabeeb612a9dfb453"
+      },
+      "id": "final-render",
+      "measurements": {
+        "main_entry_wall_seconds": 0.5222205809986917,
+        "process_CPU_sample_seconds": 0.5149273860000001
+      },
+      "scope": "Main entry through output, excluding imports and receipt write/exit. First draft source/receipt retained; old draft PNG/SVG not retained."
+    },
+    {
+      "artifact": "trace-coverage/recovery-v1/RESULT.json",
+      "artifact_identity": {
+        "bytes": 14423,
+        "sha256": "b1a3b00e4108fa444b35a837cf2f16b5d12dbef9ec83a8b3a61043cf9799fa8e"
+      },
+      "id": "original-trace-JSON-scan",
+      "measurements": {
+        "CPU_sample_seconds": 6.795673823,
+        "peak_RSS_sample_bytes": 96407552,
+        "wall_sample_seconds": 6.744620158104226
+      },
+      "scope": "Standalone JSON scan pre-serialization samples; no model/oracle. Not a complete post-exit measurement."
+    },
+    {
+      "artifact": "trace-coverage/recovery-v1/COLLECTION.json",
+      "artifact_identity": {
+        "bytes": 705,
+        "sha256": "c50ff5faa28cb284b89c850450e28c5a3f8607298f38412e8dafca5d9f4e5d91"
+      },
+      "id": "trace-archive-collection",
+      "measurements": {
+        "CPU_sample_seconds": 0.106034238,
+        "peak_RSS_sample_bytes": 18534400,
+        "wall_sample_seconds": 0.05146222189068794
+      },
+      "scope": "Separate archive process samples before receipt serialization; cumulative CPU sample is not interval CPU."
+    },
+    {
+      "artifact": "trace-coverage/recovery-v1/DOWNLOAD.json",
+      "artifact_identity": {
+        "bytes": 687,
+        "sha256": "ec7d492bbfebbf824ecad4f0d8f8302d38f745281c8de8493d96ea0b8b4cfde5"
+      },
+      "id": "trace-local-recovery",
+      "measurements": {
+        "local_recovery_CPU_sample_seconds": 0.060019459,
+        "local_recovery_wall_sample_seconds": 0.01569723200009321
+      },
+      "scope": "Local decode/CRC/hash samples before receipt; transport CPU and full process wall unknown."
+    },
+    {
+      "artifact": "trace-coverage/independent-review-v1/OUTER.json",
+      "artifact_identity": {
+        "bytes": 245,
+        "sha256": "e38a1ff1b04633cef07a13464b1070c90b79d8dc88edd3338c5ecf9b1b19bb84"
+      },
+      "id": "trace-independent-review",
+      "measurements": {
+        "complete_child_wall_seconds": 0.16206473300189828,
+        "returncode": 0,
+        "waited_child_CPU_seconds": 0.15611399999999998
+      },
+      "scope": "Complete independent JSON/order reconstruction child; no probability-array replay, model or oracle."
+    },
+    {
+      "artifact": "publication/committed-evidence-recovery-checks-v1/EXECUTION.json",
+      "artifact_identity": {
+        "bytes": 2441,
+        "sha256": "6e22e73271fdf18a37a6d59ea0daa2c013d7b35f8500fd82276e3daad7837121"
+      },
+      "id": "committed-evidence-red-green",
+      "measurements": {
+        "receipts": [
+          {
+            "errors": 15,
+            "returncode": 2,
+            "verified_files": 770,
+            "waited_child_cpu_seconds": 1.7036790000000002,
+            "whole_process_wall_seconds": 1.644446207999863
+          },
+          {
+            "errors": 0,
+            "returncode": 0,
+            "verified_files": 785,
+            "waited_child_cpu_seconds": 1.5381200000000002,
+            "whole_process_wall_seconds": 1.47274397900037
+          }
+        ]
+      },
+      "scope": "Two distinct historical invocations. Wall includes result-read/setup; original source_unchanged was not independently prehashed. See source-scope addendum."
+    },
+    {
+      "artifact": "publication/committed-current-evidence-closure-v2/EXECUTION.json",
+      "artifact_identity": {
+        "bytes": 104935,
+        "sha256": "dcbc91a1bf17ededc5da933697906984cbf15997847e10c09f0f1317ac863d2a"
+      },
+      "id": "CURRENT-committed-closure",
+      "measurements": {
+        "returncode": 0,
+        "waited_child_CPU_seconds": 1.661906,
+        "whole_child_wall_seconds": 1.6706168810014788
+      },
+      "scope": "Complete child interval, explicit source/input pre/post hashes; earlier v1 absent-worktree preflight preserved separately."
+    },
+    {
+      "artifact": "publication/resource-analysis-just-fmt-preflight-failure-v1.json",
+      "artifact_identity": {
+        "bytes": 397,
+        "sha256": "ef07c2a50a4549a05582aac7c5646f51edaa8b3453606f4e34971a422930b879"
+      },
+      "id": "formatter-preflight-failure",
+      "measurements": {
+        "CPU_seconds": null,
+        "process_started": false,
+        "returncode": null,
+        "wall_seconds": null
+      },
+      "scope": "Missing excluded working directory before formatter launch; cost unknown, not zero."
+    },
+    {
+      "artifact": "publication/resource-analysis-just-fmt-v2.json",
+      "artifact_identity": {
+        "bytes": 1114,
+        "sha256": "b9ed40ff855389f8ab0b6fe0686f617d6cdd846c49c44924e7b055f4372ff2b9"
+      },
+      "id": "formatter-success",
+      "measurements": {
+        "returncode": 0,
+        "waited_child_CPU_seconds": 0.20960099999999998,
+        "whole_child_wall_seconds": 0.2280788530006248
+      },
+      "scope": "Distinct complete cached formatter subprocess after restoring directory; source unchanged."
+    },
+    {
+      "artifact": "full-d-replay/COSTS.json",
+      "artifact_identity": {
+        "bytes": 23736,
+        "sha256": "198ada5b96da4b8578a9898da40dd8c8915b0f7bfcebaf11e7bb7f58059c91e1"
+      },
+      "id": "full-D-validation-replay-archive-publication",
+      "measurements": {
+        "complete_experiment_total": null,
+        "nested_ledger": "full-d-replay/COSTS.json"
+      },
+      "scope": "Refer to nested exact ledger. Bootstrap includes native validation and controller; controller includes six fits. Failed v1 and successful v2 publication are distinct; do not add nested terms."
+    },
+    {
+      "artifact": "publication-and-science/SUMMARY.json",
+      "artifact_identity": {
+        "bytes": 6757,
+        "sha256": "733f70c025595fa4d6611c3a965c8c409476a841fbce305b1bfe93f5ebb09df5"
+      },
+      "id": "publication-originals-and-science-artifact",
+      "measurements": {
+        "native_collection_waited_child_and_descendant_CPU_seconds": 0.327397,
+        "native_collection_whole_child_wall_seconds": 4.2782243269030005,
+        "own_wrapper_CPU_seconds": 0.060658237,
+        "tool_transport_CPU_seconds": null,
+        "tool_transport_complete_wall_seconds": null
+      },
+      "scope": "Complete collection child includes one artifact GET and local ZIP work. Nested stages and text encoding are separate named scopes; previous upload/replay not executed again."
+    },
+    {
+      "artifact": "BASE-COPY-RECEIPT.json",
+      "artifact_identity": {
+        "bytes": 24556,
+        "sha256": "e9022b3a7f2d63a97f8130fcb81835a9b1e6af1d2f849d0538387aa6b7201396"
+      },
+      "id": "BASE-COPY-RECEIPT.json",
+      "measurements": {
+        "main_entry_CPU_seconds": 0.14007393299999998,
+        "main_entry_wall_seconds": 0.16013404300247203
+      },
+      "scope": "Local main-entry copy/hash/ZIP verification samples; imports/receipt/exit and manual curation are excluded."
+    },
+    {
+      "artifact": "FULL-D-COPY-RECEIPT.json",
+      "artifact_identity": {
+        "bytes": 32401,
+        "sha256": "54b9543414dbc3a1216e59519b5344f8408b428e177fc4dccdc96c755c111cfe"
+      },
+      "id": "FULL-D-COPY-RECEIPT.json",
+      "measurements": {
+        "main_entry_CPU_seconds": 0.035006902,
+        "main_entry_wall_seconds": 0.03546525799902156
+      },
+      "scope": "Local main-entry copy/hash/ZIP verification samples; imports/receipt/exit and manual curation are excluded."
+    },
+    {
+      "artifact": "PUBLICATION-SCIENCE-COPY-RECEIPT.json",
+      "artifact_identity": {
+        "bytes": 7545,
+        "sha256": "fbaadf58092037bc4fec7ccd1c9ac2ffa98b98bb39b99a6e5a3beb586a9004e6"
+      },
+      "id": "PUBLICATION-SCIENCE-COPY-RECEIPT.json",
+      "measurements": {
+        "main_entry_CPU_seconds": 0.008669070000000001,
+        "main_entry_wall_seconds": 0.00874210600159131
+      },
+      "scope": "Local main-entry copy/hash/ZIP verification samples; imports/receipt/exit and manual curation are excluded."
+    },
+    {
+      "artifact": "CURVES-REASSEMBLY.json",
+      "artifact_identity": {
+        "bytes": 1562,
+        "sha256": "d5474b288f938f4e13a4b7cdfbb860d75c34c70fafb9fde60bc32bd4ecd61570"
+      },
+      "id": "CURVES-REASSEMBLY.json",
+      "measurements": {
+        "main_entry_CPU_seconds": 0.065445212,
+        "main_entry_wall_seconds": 0.06544446100087953
+      },
+      "scope": "Local main-entry copy/hash/ZIP verification samples; imports/receipt/exit and manual curation are excluded."
+    }
+  ],
+  "rules": [
+    "Never sum enclosing and nested costs.",
+    "Failed attempts remain charged; unknown is not zero.",
+    "Per-fit process-wall sums are not campaign calendar time, physical energy, or full research cost.",
+    "Index closure sampling is in INDEX-CLOSURE-RECEIPT.json; freezing/verification/publication after this snapshot needs later receipts."
+  ],
+  "schema": "hcsn-resource-replay-costs-v1",
+  "scientific_benefit_established": false,
+  "total_currency_cost": null,
+  "total_elapsed_seconds": null,
+  "total_energy_joules": null
+}

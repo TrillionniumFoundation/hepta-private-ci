@@ -1,0 +1,25 @@
+{
+  "status": "PINNED_FORMATTER_COMPLETED_AST_IDENTICAL",
+  "formatter": "ruff 0.15.13",
+  "command": [
+    "uv",
+    "tool",
+    "run",
+    "--offline",
+    "--from",
+    "ruff==0.15.13",
+    "ruff",
+    "format",
+    "/workspace/scratch/c2d514464ab5/branch-audit/round2-server-source09/history-proof/reconstruct-history.py"
+  ],
+  "stdout": "1 file left unchanged\n",
+  "stderr": "",
+  "exit_code": 0,
+  "before_sha256": "8259974366a527c5b54a8ad289fd8a15a6d65e00ec04b34fd0133d4594721e58",
+  "after_sha256": "8259974366a527c5b54a8ad289fd8a15a6d65e00ec04b34fd0133d4594721e58",
+  "before_ast_sha256": "3a39c8675ce84c9adb9bfcc6a69faad30e4ffba4a796c97ad94f105621dd6a3a",
+  "after_ast_sha256": "3a39c8675ce84c9adb9bfcc6a69faad30e4ffba4a796c97ad94f105621dd6a3a",
+  "ast_identical": true,
+  "documentation_change_from_source08": "Generalized fixed node/commit counts; reconstruction algorithm unchanged.",
+  "reconstruction_execution": "Recorded separately in VERIFICATION.json; formatting itself did not run reconstruction."
+}

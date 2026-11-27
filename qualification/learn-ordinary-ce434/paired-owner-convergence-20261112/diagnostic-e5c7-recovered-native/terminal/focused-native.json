@@ -1,0 +1,68 @@
+{
+  "after": {
+    "commit": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+    "dirty": false,
+    "parents": [
+      "96c25e173d319151766897ed1675842c9bab9d93",
+      "993d8e2d34cc306eb8a373b8fb300d485bfa9660"
+    ],
+    "tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76"
+  },
+  "base_sha": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+  "before": {
+    "commit": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+    "dirty": false,
+    "parents": [
+      "96c25e173d319151766897ed1675842c9bab9d93",
+      "993d8e2d34cc306eb8a373b8fb300d485bfa9660"
+    ],
+    "tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "(package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_fixture_future_layout_diagnostic)) | (package(=codex-hepta-agentd) & test(=learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic))",
+    "--test-threads",
+    "1",
+    "--retries",
+    "0",
+    "--no-tests",
+    "fail",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 528.6753582579549,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-12T13:50:02.334183+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 61032,
+  "log_file": "focused-native.json.b9d0815e0f6c494289cdeaeaf6246ef1.log",
+  "log_sha256": "3f3344f5fd7918d7be34cfca0a806c9d911cf72eebf572c9ac19ae719fb9a276",
+  "minimum_tests": 3,
+  "observed_failed_tests": 2,
+  "observed_passed_tests": 1,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+  "started_at": "2026-11-12T13:41:13.654173+00:00",
+  "status": "failed",
+  "tested_sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.ctrl1.campaign-invocation.v1",
+  "status": "COMPLETED",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "ndu_ctrl1.run",
+    "--output",
+    "/workspace/scratch/839e1cbe28dd/hepta-private-ci/qualification/ctrl1-decision-cell-20261108/primary_repeat_2"
+  ],
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "started_utc": "2026-11-08T11:50:33.572630+00:00",
+  "sources_sha256": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+  "core_code_commit": "472c825a87220574acc5338afe59558e1ad2038f",
+  "reason": "First run retained860/864 exact originals; full rerun preserves identical frozen plan/seeds/source, with no parameter changes or source edits. Original run remains untouched. Repeated run is not extra independent training seeds.",
+  "returncode": 0,
+  "finished_utc": "2026-11-08T11:52:16.548478+00:00",
+  "elapsed_wall_seconds": 102.97437747400545,
+  "log_sha256": "6c79fc8ce1e73ca776c4b9cfe87aba487025514e23bb0961e79617d0034cae7f",
+  "source_unchanged": true,
+  "same_plan_as_first_attempt": true
+}

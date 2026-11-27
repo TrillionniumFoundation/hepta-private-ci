@@ -1,0 +1,90 @@
+{
+  "status": "PREPARED_FOR_ROOT_REVIEW_ONLY_NO_EXECUTION_AUTHORIZATION_INFERRED",
+  "baseline_commit": "73e307cae6537bff831ae6abcc7e8ababedfa8c6",
+  "candidate_commit": null,
+  "candidate_manifest_sha256": "a57eae1edd124888d0d91f70dbd0c1bcfbf7682b33bdb37844ac369f031e1aa0",
+  "entrypoint": {
+    "workflow": ".github/workflows/ndu-windows-storage-probe.yml",
+    "event": "pull_request",
+    "manual_dispatch_available": false,
+    "inputs": {},
+    "changed_path_filter_match": [
+      ".github/scripts/windows-appcontainer-probe/cmd_entry_probe.py",
+      ".github/scripts/windows-appcontainer-probe/win32_api.py",
+      ".github/workflows/ndu-windows-storage-probe.yml"
+    ],
+    "job": "appcontainer-mechanism",
+    "runner": "windows-latest",
+    "timeout_minutes": 10,
+    "checkout": "exact github.event.pull_request.head.sha; persist-credentials false",
+    "python": "3.12.10",
+    "old_run_rerun_cannot_execute_new_source": true
+  },
+  "command": "python -B .github/scripts/windows-appcontainer-probe/cmd_entry_probe.py --repo \"$env:GITHUB_WORKSPACE\" --source-head \"$env:EXPECTED_HEAD\" --output (Join-Path $out 'observation.json')",
+  "cases_in_order": [
+    {
+      "mode": "LPAC",
+      "fixed_payload": "exit /b 71",
+      "expected_exit": 71,
+      "expected_stdout_hex": "",
+      "expected_stderr_hex": ""
+    },
+    {
+      "mode": "LPAC",
+      "fixed_payload": "echo HEPTA_LPAC_INLINE_STDOUT",
+      "expected_exit": 0,
+      "expected_stdout_hex": "48455054415f4c5041435f494e4c494e455f5354444f55540d0a",
+      "expected_stderr_hex": "",
+      "transport": "original explicit inherited stdout handle"
+    },
+    {
+      "mode": "LPAC",
+      "fixed_payload": "unchanged child-probe.cmd",
+      "function": "unmodified probe.run_case",
+      "required_status": "passed_bounded_hypotheses"
+    }
+  ],
+  "metadata_whitelist": [
+    "System32 cmd.exe path, byte size, SHA256, file/product version, four file-version components",
+    "Environment OS version; CurrentBuildNumber and UBR from the OS CurrentVersion registry key",
+    "exact source head and three source hashes; owned-child token/access/fixture/output receipts"
+  ],
+  "preserved_contract": [
+    "Original AC/LPAC workflow step, full original batch predicates and failure status remain active.",
+    "All ACL/MIC masks, original CHILD_SCRIPT bytes, fixture implementation, child environment and process attributes are unchanged.",
+    "Each case uses a separate owned fixture/profile; each child retains the original five-second wait budget.",
+    "Actual LPAC identity is checked with the original token facts, LPAC query rules and native AccessCheck.",
+    "No added package parent DELETE_CHILD permission, guard weakening, driver installation, process enumeration or new host/login.",
+    "A failed original batch still makes this diagnostic exit nonzero; raw failures are uploaded with always()."
+  ],
+  "interpretation": [
+    {
+      "observation": "both inline cases fail before their expected results",
+      "next_boundary": "cmd entry/initialization or common setup remains unresolved; no internal API failure is inferred"
+    },
+    {
+      "observation": "exit71 passes, inherited-stdout echo fails",
+      "next_boundary": "cmd output/handle or builtin path is narrower than generic process startup"
+    },
+    {
+      "observation": "both inline cases pass, original batch fails",
+      "next_boundary": "batch loading/redirection or batch filesystem actions; inspect the unchanged batch's earliest observed effect"
+    }
+  ],
+  "preconditions_for_future_execution": [
+    "Root reviews the three-path patch and supplies the exact new committed PR head.",
+    "The ordinary existing PR workflow runs that exact head after publication, with its existing permissions and runner.",
+    "Source pins match before execution and recorded source/cmd identity remains unchanged afterward."
+  ],
+  "required_artifact": "ndu-lpac-cmd-entry-${{ github.event.pull_request.head.sha }}",
+  "required_files": [
+    "source-before.json",
+    "native-identity-before.json",
+    "native-identity-after.json",
+    "invocation-result.json",
+    "observation.json",
+    "probe.stdout",
+    "probe.stderr"
+  ],
+  "qualification_limit": "No native Windows or PowerShell execution has occurred for this candidate; existing C52 remains failed/unqualified."
+}

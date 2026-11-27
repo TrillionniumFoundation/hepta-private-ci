@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "source": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+  "actual_clippy_execution_commit": "9c122c9b32eedfb7a8d177534035d705cad0e0dc",
+  "clippy": {
+    "job": 131270677503,
+    "status": "failure",
+    "bytes": 1291294,
+    "sha256": "a07787696b4682b0390fff172bd872b568d47bcaebeceb122a22815b5ef2c5f2",
+    "parts": [
+      {
+        "path": "qualification/evaluated-current-read-20261112/1631e01-clippy-and-fence/clippy.job.original.log.part-000.bin",
+        "offset": 0,
+        "bytes": 350000,
+        "sha256": "0315f26fc1ab8ec07c02b1a02f8e82a3716a19106b0413ef089d8b9b45e62a15",
+        "git_blob": "29cf14e4c6000a9f10229de656aab73412983d5b"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/1631e01-clippy-and-fence/clippy.job.original.log.part-001.bin",
+        "offset": 350000,
+        "bytes": 350000,
+        "sha256": "5b1750d828641e8e9cbc0a3c84f6f708a3782ef1cc8b8400335408876bd4ddc7",
+        "git_blob": "d84da567c5e93c19aae900c868c841d8a2b2efc1"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/1631e01-clippy-and-fence/clippy.job.original.log.part-002.bin",
+        "offset": 700000,
+        "bytes": 350000,
+        "sha256": "263f8a17a82b5cb9acc5e4611e84bc76e31dd35bcb8496717117c15b5e92c545",
+        "git_blob": "74e34e98229a917089d44803fa42f16fcde96b7d"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/1631e01-clippy-and-fence/clippy.job.original.log.part-003.bin",
+        "offset": 1050000,
+        "bytes": 241294,
+        "sha256": "ffd80a31be7e322750acebd4bc688a55964f67387ae2531723e9e6eb418e5a59",
+        "git_blob": "688534b9456fe88c2d3f6c42fc271bf9f9bc57bb"
+      }
+    ],
+    "distinct_diagnostics": [
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs:49:13",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs:93:13",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs:98:13",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:128:13",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:147:17",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:228:13",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:134:17",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:169:17",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:247:13",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs:124:21",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs:172:21",
+        "message": "error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:26:18",
+        "message": "error: used `expect()` on a `Result` value"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:77:13",
+        "message": "error: used `expect()` on a `Result` value"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:78:13",
+        "message": "error: used `expect()` on a `Result` value"
+      },
+      {
+        "location": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:78:26",
+        "message": "error: used `expect()` on a `Result` value"
+      }
+    ],
+    "holding_disallowed_guard": 11,
+    "expect_used": 4,
+    "diagnostic_scope": "Canonicalize only codex-rs prefix differences between repeated Bazel/Cargo messages; full original log unchanged."
+  },
+  "blob_size": {
+    "job": 131270335481,
+    "status": "failed_before_checkout_and_checker",
+    "stage": "Fence v0.10.0",
+    "error": "local_control_inventory_unavailable",
+    "bytes": 3861,
+    "sha256": "da8f71a851a06815195968b14d83e0b1fd1d211ebf82c831108fa75967bfce32",
+    "checker_result": null
+  },
+  "new_source_fix_status": "Private owning-slot lease and original error propagation under review. No lint suppression or checker relaxation.",
+  "gate_results_transferred": false,
+  "owner_decision": null
+}

@@ -1,0 +1,219 @@
+{
+  "schema": "mem8.qualification-clock.candidate.v1",
+  "base_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "files": [
+    {
+      "path": "bazel/rules/testing/qualification_lease_clock.bzl",
+      "preimage_git_blob": null,
+      "postimage_git_blob": "a05f1a4ebff9e7c1473b9aafc562e271826625c8",
+      "bytes": 2772,
+      "sha256": "c7a4fc24a27eefe4114244cf71e12a1ce4b59e6a9df2f1b5f19e01d0fcc606b0",
+      "added": 51,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/app-server/BUILD.bazel",
+      "preimage_git_blob": "3cdd5bf3191d82a018c41ac8dd24689e30fb7d0b",
+      "postimage_git_blob": "5677ccd63951a988b4ac69dbe93f728539b146be",
+      "bytes": 1906,
+      "sha256": "7f8e63431d367bc8256cafc0abbc674048939237b870837d02a2228d90d8fa83",
+      "added": 6,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/app-server-client/BUILD.bazel",
+      "preimage_git_blob": "e0e0419fbbc1df57a0ef18dea8eea0829625c471",
+      "postimage_git_blob": "48bc630e73b6250c79209af8005b4b8b8f0e907f",
+      "bytes": 430,
+      "sha256": "fb6e3ce05a35d29238cefb2df8a1e79946f1c922412c33d946c3f81dbef889ea",
+      "added": 7,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/BUILD.bazel",
+      "preimage_git_blob": "948b95ad42967ea78449ba6e3738118cf95cf151",
+      "postimage_git_blob": "c952c51ca6852783ff9707069807a5f1a4639a37",
+      "bytes": 452,
+      "sha256": "c6a4af5549693275456e3a5af3b72b65f86facbe82ad5da3d5ea92a01f0863bd",
+      "added": 7,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/Cargo.toml",
+      "preimage_git_blob": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73",
+      "postimage_git_blob": "c6101ee67996f9bad42d4ca1c6eb56ccae1e7036",
+      "bytes": 1268,
+      "sha256": "992bacf27ea86143981bf167f6a78fa05022b3ea37528742d9076beba9d6a1ef",
+      "added": 1,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+      "preimage_git_blob": "41b52d8093610e50932795a18e28d4dc1fc5b813",
+      "postimage_git_blob": "6395b3457a07f201a009500d7af96a53fdf5c9b5",
+      "bytes": 12278,
+      "sha256": "0f39a48989284d2b8597c000d6205167f45e36776ce23fd0027e1a0590972621",
+      "added": 11,
+      "deleted": 23
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "preimage_git_blob": "7f003176d4df5538a97e8b3e6399958081c93ec7",
+      "postimage_git_blob": "152af12c28d87e91f569bd10dc5be5fae8a2a1c3",
+      "bytes": 9216,
+      "sha256": "4503e2bf812402d672de49666a74e47f5e3c23c395982ee588ad3a88ceabb0c6",
+      "added": 25,
+      "deleted": 6
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "preimage_git_blob": "70eadd9deabcf1c06f01d37c7db10579cd8bd691",
+      "postimage_git_blob": "9027f25b5cf0f084437c1aae29fde19502175ccd",
+      "bytes": 5249,
+      "sha256": "f68f5e5ac2bde7fa3dbc5e0d707391a42ebfc80c1d093be92f4cf0f3d48d9d88",
+      "added": 1,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "preimage_git_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+      "postimage_git_blob": "a7e3824262498afb8af405474382998746224b7b",
+      "bytes": 38934,
+      "sha256": "b4c5683bbc694e4e8ff5810616feb3bbea50fc3f2e70d79839c8e18be04c255c",
+      "added": 18,
+      "deleted": 8
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/BUILD.bazel",
+      "preimage_git_blob": "330409158ffa50be5b05a9121ba8e7ab10e269aa",
+      "postimage_git_blob": "a5a90b0d0fc4b1b38a0cb8f8e88e410ccbeba488",
+      "bytes": 504,
+      "sha256": "3ae84c9462360716c84b169e08dd8609f006b27a3af8e5c6815a6b4b669d686a",
+      "added": 6,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-store/BUILD.bazel",
+      "preimage_git_blob": "1d0fac676e59f51d60afb1db468fdc336fe642ee",
+      "postimage_git_blob": "2d7bc67175c6edd67def9f53e012aea220d337a1",
+      "bytes": 364,
+      "sha256": "73035266d023625c27563d771b014db5733a992240c06d60340a6147e1bde784",
+      "added": 6,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "preimage_git_blob": "394201a32c320638255b2fcc4fa7a1358331adb0",
+      "postimage_git_blob": "d2b86921a989eef2c98a1532cc36ea66d9a5f11e",
+      "bytes": 934,
+      "sha256": "464e43e4eff0b0024bc97df13e4b478d828426ddf42738962d5a7b0e3bf00eea",
+      "added": 9,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-memory/BUILD.bazel",
+      "preimage_git_blob": "8ddc45270843fd981ed3c83bfafcf36b54d4f7d0",
+      "postimage_git_blob": "a4ae7831230294dbcc423cb5955cf5f0dd615b5d",
+      "bytes": 1293,
+      "sha256": "a7503db404df0d3edbc353fc2ad7d16dac7be7151168ac073e474546657cb89f",
+      "added": 15,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "preimage_git_blob": "d7c49d539977550a28c9d20f5ac5aa718a9ed0ae",
+      "postimage_git_blob": "97f2559dd12fc33b98f1f0d69b7b406932860362",
+      "bytes": 1630,
+      "sha256": "ed216fd46ecfb432415dc206d8c35717178b39d4623e7aa69f0cab49a4a7843b",
+      "added": 3,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_lease_clock.rs",
+      "preimage_git_blob": null,
+      "postimage_git_blob": "f7f6375d98277fb6e26031f9a6a9b7c656896027",
+      "bytes": 4681,
+      "sha256": "e9aff141ffff7cf157755ca69c5e39a1db33244aa6266e5d56e2ac8d6fefaa51",
+      "added": 119,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_lease_clock_tests.rs",
+      "preimage_git_blob": null,
+      "postimage_git_blob": "eb0e60cea4aef182ee34a9c2d7144b40d67a02de",
+      "bytes": 3665,
+      "sha256": "829119a322f52203211849fe2b5ea942f296fa43236ab2288a7bbaef8e9e765b",
+      "added": 91,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "preimage_git_blob": "968199c77d8d08dd66e0569694c51d6c06f5466e",
+      "postimage_git_blob": "92a6a20d25bc12e1c6149d13ca35fdbb95a2408f",
+      "bytes": 76581,
+      "sha256": "fc640258507e2973e288b65266545f4eff41a82375112f55bb6b61aa0fa7a257",
+      "added": 16,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "preimage_git_blob": "31ff28513c61f22f752e8118814521cc8017b0e5",
+      "postimage_git_blob": "75eb1468958c3108ec0c7c214a95b64a0d33cc4e",
+      "bytes": 29454,
+      "sha256": "27a99b0853883d7ebd01a441519bd1f7274023f77bacf33150241e1fa73f49f6",
+      "added": 1,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/h7_trajectory_store.rs",
+      "preimage_git_blob": "acfced21c7482389348c8865095f6b1e440bc595",
+      "postimage_git_blob": "0fb4061d741658a8a8d94dd0ea1f18197ecc8908",
+      "bytes": 61393,
+      "sha256": "5a52a65ad22d4b6bbd503057e218cd23a30c73ca1b6a3fdee71e34038513ff07",
+      "added": 18,
+      "deleted": 7
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "preimage_git_blob": "0cc27055eb23d1cd78c1b3e18cfde3a372b6351d",
+      "postimage_git_blob": "35cbbde43b03569013b151b1056136a59fa7c91a",
+      "bytes": 29442,
+      "sha256": "11a108c5233b097c088efce0dce88ac258a5403720dd3859e20c1646cf3f5051",
+      "added": 2,
+      "deleted": 0
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "preimage_git_blob": "5818de2c1c9ead0fa5dbf85a1c152702ef7768ca",
+      "postimage_git_blob": "f45edad4844702285f9ab81390ba0e2bde9ee894",
+      "bytes": 221520,
+      "sha256": "4a283fc24aef69785b717b5670a8117767a41b402891075cdff8dbfd6ceaa83e",
+      "added": 17,
+      "deleted": 5
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/logical_turn_registry.rs",
+      "preimage_git_blob": "ef7a143951442496b67724ed837348a44e1d06fd",
+      "postimage_git_blob": "5e908894aba0a0c288f02195f0afea24d5817445",
+      "bytes": 75022,
+      "sha256": "3a8df25511903e312799b2368b9fa765cd27791a85104407d8babc37add95911",
+      "added": 15,
+      "deleted": 4
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+      "preimage_git_blob": "ac1f6d1d79429f3b60817df07f125786d9f8c15e",
+      "postimage_git_blob": "cd91c51a7ac0753fc95c558f6face20a1a79ab0c",
+      "bytes": 736,
+      "sha256": "c720d06e068f71a0cc80be1b7b8450f111d89eb8098558ab42865229436c8fe5",
+      "added": 6,
+      "deleted": 0
+    }
+  ],
+  "added": 451,
+  "deleted": 53,
+  "format_status": "not_executed",
+  "native_status": "not_executed",
+  "bazel_lock_status": "not_regenerated",
+  "source_refs_modified": false
+}

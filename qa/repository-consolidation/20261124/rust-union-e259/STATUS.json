@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.rust-union.audit-status.v1",
+  "publication_state": "prepared_not_published",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6799,
+  "target_branch": "fix/rust-linux-fixtures-20261120-c755",
+  "expected_old_head": "24abd04c825cb0d5d0ce27b52ac5008eda13dde4",
+  "source_checkpoint": {
+    "commit": "8e398a88a750150943c4de3dd878a4aefb9e6fa8",
+    "tree": "385083cdee1f82d92cd3bdbc1c68f09baf9e17b5",
+    "phase": "reviewed draft source; native tests and Rust fix/fmt pending"
+  },
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "scope": {
+    "full_ref_inventory_complete": true,
+    "all_source_semantics_reviewed": false,
+    "repository_consolidation_complete": false,
+    "qualified_for_main": false,
+    "branches_deleted": 0,
+    "ref_updates_by_this_batch": 0
+  },
+  "protection": {
+    "refs": 8101,
+    "ordinary_refs": 7493,
+    "protected_refs": 607,
+    "protected_nodes": 1626,
+    "named_hia_refs": 170,
+    "protected_aliases_without_hia": 437,
+    "ordinary_covered_by_source_checkpoint": 2904,
+    "ordinary_pending": 4589,
+    "main_retirement_eligible": 0,
+    "historical_551st_pin_identity_unrecovered": true,
+    "known_protected_ancestor_intersection": [],
+    "stop_commit": "d783273c25b3164f5f632482cb7b017fdcb9d756",
+    "stop_commit_reachable": false,
+    "final_fresh_ref_check_still_required": true,
+    "inventory_sha256": "73c459d43ffc138f1eadf85529ddc3d1120f6aed7c3854c73d90f8ca400cb060",
+    "protection_report": "history-audit/publish-wip-8e398a88/PROTECTION-REPORT.json"
+  },
+  "validation": {
+    "learning_artifacts": {
+      "command": "just test -p codex-hepta-learning-artifacts",
+      "status": "passed",
+      "passed": 165,
+      "skipped": 1,
+      "new_hcsn_tests_passed": 5,
+      "source_tree": "771b67cdbb1cc2e1503eaafdc6ce515b67d77cbf"
+    },
+    "supervisor_cloud_v1": {
+      "status": "failed_environment",
+      "passed": 154,
+      "failed": 18,
+      "timed_out": 1,
+      "skipped": 1,
+      "reason": "AF_UNIX socket creation denied with EPERM. This was the earlier synchronous v1 diagnostic proposal."
+    },
+    "neuron_cloud": {
+      "status": "build_failed_environment",
+      "exit_code": 101,
+      "tests_started": false,
+      "reason": "Workspace exhausted while compiling transitive dependencies; no test result."
+    },
+    "native_revision": {
+      "status": "pending_base_download_then_final_v2_input",
+      "baseline": "3ec9b52be61596d2616fd5dcc424f176dbd0e716",
+      "baseline_tree": "771b67cdbb1cc2e1503eaafdc6ce515b67d77cbf",
+      "source_checkout_is_shallow": true,
+      "ancestry_proofs_use_separate_complete_graph": true,
+      "controller": "Mac HeptaRuntime",
+      "host": "rog",
+      "base_recovery_job": "1a20b709f28-ffbe-3493",
+      "native_tests_started": false,
+      "expected_candidate_tree": "e991306d7da590d6b59f2790c55974d614def12b",
+      "patch_sha256": "b84bc506de4b9e990444a844bc41d1f0f221752f380e5f85676b68e1b0637bbe"
+    },
+    "storage": {
+      "documentation_controls_passed": 11,
+      "source53_controls_passed": 8,
+      "restored_logical_paths": 110,
+      "original_source53_parts": 34,
+      "original_source53_complete_logs": 9,
+      "original_manifests_unchanged": true
+    },
+    "full_main_whitespace": {
+      "status": "failed",
+      "exit_code": 2,
+      "original_paths": 1057,
+      "original_diagnostics": 294828,
+      "remaining_paths_after_storage_scopes": 1027,
+      "remaining_diagnostics_after_storage_scopes": 261724,
+      "gate_relaxed": false,
+      "gitattributes_changed": false
+    },
+    "final_scoped_fix_and_format": "pending_native_tests",
+    "storage_final_format": {
+      "status": "passed",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "24abd04c825cb0d5d0ce27b52ac5008eda13dde4"
+      ],
+      "head": "f8fb72ec1e9dcc75bedb4e39855cc4ef0a4745a3",
+      "exit_code": 0,
+      "verified_unchanged_files": 123,
+      "unchanged_custody_pins": 44,
+      "scope_paths": 94,
+      "unit_tests_rerun": false
+    }
+  },
+  "pending": [
+    "Native supervisor and neuron original scope on final reviewed diagnostic v2 input",
+    "Scoped fix and final fmt after all local/native tests",
+    "Remaining full-main whitespace diagnostics",
+    "Original Windows functional isolation qualification",
+    "Original Intel macOS health failure cause",
+    "4,589 ordinary refs not yet integrated",
+    "One unrecovered historical protection pin identity"
+  ],
+  "note": "Immutable prepublication WIP checkpoint. GitHub required CI and the retained native job continue independently. Rust source tests and final scoped fix/fmt are still pending; this is not a main merge or branch-retirement authorization."
+}

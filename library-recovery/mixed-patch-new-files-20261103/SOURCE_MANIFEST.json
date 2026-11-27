@@ -1,0 +1,2604 @@
+{
+  "schema": "isolated-frozen-patch-new-file-projection-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private_at_publication": false,
+  "parent_commit": "9b7431d0b0c63b2aedd3358f03f744d60371481f",
+  "frozen_candidate_count": 6116,
+  "formal_verified_count_unchanged": 5887,
+  "additional_source_object_count": 30,
+  "additional_source_bytes": 166708,
+  "auxiliary_notice_count": 3,
+  "new_frozen_candidates_counted": 0,
+  "source_candidate_sets_unchanged": true,
+  "preserved_source_executed": false,
+  "patch_applied": false,
+  "original_patches_uploaded": false,
+  "binary_blocks_preserved_by_this_projection": false,
+  "existing_file_modifications_reconstructed": false,
+  "original_parent_sync_inferred_from_children": false,
+  "original_archive_dot_history_completeness_proven": false,
+  "all_library_source_synced": false,
+  "eligible_to_clear_library": false,
+  "library_deletion_performed": false,
+  "boundaries": [
+    "DRAFT",
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "HOLD_NO_GO"
+  ],
+  "objects": [
+    {
+      "git_blob_sha": "009cd64acdfb86cf214ef0772a95690fe3e6da2e",
+      "sha256": "adc273068a89983a8a49d042b1020e9eade2db75fe60d58ac7029372471ffc51",
+      "bytes": 10680,
+      "relative_path": "objects/009cd64acdfb86cf214ef0772a95690fe3e6da2e.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 44,
+          "diff_first_line": 4599,
+          "diff_last_line": 4894,
+          "original_path": "codex-rs/hepta-supervisor/src/unix_lifetime_tests.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "009cd64acd",
+          "index_prefix_length": 10,
+          "declared_new_lines": 290,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "04a4043cf7137ddc9a9b24a27a4496ad0c5960e6",
+      "sha256": "7d8952059a0ee5c8e1fc96cf9cb5700d22ccda8e061614446649123c75508124",
+      "bytes": 874,
+      "relative_path": "objects/04a4043cf7137ddc9a9b24a27a4496ad0c5960e6.json",
+      "role": "additional consumed build-patch manifest",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 66,
+          "diff_first_line": 16440,
+          "diff_last_line": 16462,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-instance-layout.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "04a4043cf",
+          "index_prefix_length": 9,
+          "declared_new_lines": 17,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 66,
+          "diff_first_line": 16459,
+          "diff_last_line": 16481,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-instance-layout.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "04a4043cf",
+          "index_prefix_length": 9,
+          "declared_new_lines": 17,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 60,
+          "diff_first_line": 15628,
+          "diff_last_line": 15650,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-instance-layout.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "04a4043cf7",
+          "index_prefix_length": 10,
+          "declared_new_lines": 17,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 60,
+          "diff_first_line": 15674,
+          "diff_last_line": 15696,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-instance-layout.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "04a4043cf7",
+          "index_prefix_length": 10,
+          "declared_new_lines": 17,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [
+        {
+          "git_blob_sha": "1586fd5dcab3c42c1356706ad8000fda058f4843",
+          "original_paths": [
+            "apps/hepta-control-ui/test/makepad-instance-layout.test.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "1586fd5dcab3c42c1356706ad8000fda058f4843",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "abe69c5c405c6686b0f4e2378353607406e2ed116b6f3113f3f7b4c3cdd59b2c",
+            "bytes": 7641,
+            "method": "GitHub exact blob API readback"
+          },
+          "source_contains_manifest_filename": true
+        },
+        {
+          "git_blob_sha": "1eac9739a87af11124eb0051d7f1f792a95a4734",
+          "original_paths": [
+            "apps/hepta-control-ui/tools/prepare-makepad-platform.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "1eac9739a87af11124eb0051d7f1f792a95a4734",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "0c48f90cf7773be938d941f2342720d24784fb436ba24276f5bef798d824cd93",
+            "bytes": 5898,
+            "method": "Git object readback"
+          },
+          "source_contains_manifest_filename": true
+        }
+      ],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "04aeafb9a36f911642648a26316ecce89c674bb5",
+      "sha256": "c89a0976a99b543b39864b7963aa152e5b83a6b2ca9207e8bfc2559dc02c0b16",
+      "bytes": 10646,
+      "relative_path": "objects/04aeafb9a36f911642648a26316ecce89c674bb5.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 31,
+          "diff_first_line": 2718,
+          "diff_last_line": 3011,
+          "original_path": "codex-rs/hepta-control-plane/src/module_runtime_checkpoint_wire_tests.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "04aeafb9a3",
+          "index_prefix_length": 10,
+          "declared_new_lines": 288,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "09e98f24f8a03a628a97dc18646c61c5f7e0f79c",
+      "sha256": "808fff17475401090dbc38eb881da00ffc08504f67972f59fd0d5bae231eb737",
+      "bytes": 1306,
+      "relative_path": "objects/09e98f24f8a03a628a97dc18646c61c5f7e0f79c.json",
+      "role": "additional consumed build-patch manifest",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 64,
+          "diff_first_line": 15725,
+          "diff_last_line": 15757,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-ime.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "09e98f24f",
+          "index_prefix_length": 9,
+          "declared_new_lines": 27,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 64,
+          "diff_first_line": 15744,
+          "diff_last_line": 15776,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-ime.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "09e98f24f",
+          "index_prefix_length": 9,
+          "declared_new_lines": 27,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 58,
+          "diff_first_line": 14913,
+          "diff_last_line": 14945,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-ime.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "09e98f24f8",
+          "index_prefix_length": 10,
+          "declared_new_lines": 27,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 58,
+          "diff_first_line": 14959,
+          "diff_last_line": 14991,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-ime.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "09e98f24f8",
+          "index_prefix_length": 10,
+          "declared_new_lines": 27,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [
+        {
+          "git_blob_sha": "1eac9739a87af11124eb0051d7f1f792a95a4734",
+          "original_paths": [
+            "apps/hepta-control-ui/tools/prepare-makepad-platform.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "1eac9739a87af11124eb0051d7f1f792a95a4734",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "0c48f90cf7773be938d941f2342720d24784fb436ba24276f5bef798d824cd93",
+            "bytes": 5898,
+            "method": "Git object readback"
+          },
+          "source_contains_manifest_filename": true
+        },
+        {
+          "git_blob_sha": "3c365d785003487261f8f3ba2bfdfe77fc159d09",
+          "original_paths": [
+            "apps/hepta-control-ui/test/makepad-ime-bridge.test.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "3c365d785003487261f8f3ba2bfdfe77fc159d09",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "2610e9dee50e6a0fb269beecdfa68e2d86d5156fbf95f09dc3ca8a7db0d3ad1a",
+            "bytes": 16462,
+            "method": "GitHub exact blob API readback"
+          },
+          "source_contains_manifest_filename": true
+        }
+      ],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "09f23ed7fe1ab5a7705432b0aa042a93a4eec113",
+      "sha256": "f43bc3bacbcb61df355bd380e433bb6af42b06582e6e0aa0b92fdc68337ea525",
+      "bytes": 2986,
+      "relative_path": "objects/09f23ed7fe1ab5a7705432b0aa042a93a4eec113.py",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 3,
+          "diff_first_line": 127,
+          "diff_last_line": 210,
+          "original_path": ".github/scripts/test_rust_ci_archive_profile.py",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "09f23ed7fe",
+          "index_prefix_length": 10,
+          "declared_new_lines": 78,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "1ba7369862ca189ffe0bb78fdc1726b6c0bb2755",
+      "sha256": "c1620db249a9ca8aae44dccddec3beb93a6714f45db7d1232a6b9fd0aa098574",
+      "bytes": 5732,
+      "relative_path": "objects/1ba7369862ca189ffe0bb78fdc1726b6c0bb2755.py",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 188,
+          "diff_first_line": 65155,
+          "diff_last_line": 65315,
+          "original_path": "scripts/test_ui_product_foundation_ci.py",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "1ba736986",
+          "index_prefix_length": 9,
+          "declared_new_lines": 155,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "383f197e1488ddb5f4065bc31a9647dd51dc2981",
+      "sha256": "5fb9d05f6d1e0b5894ebfeca0bbc368a0f0b6bd68bc27ddbd6a3f7e6b1a1cc70",
+      "bytes": 15301,
+      "relative_path": "objects/383f197e1488ddb5f4065bc31a9647dd51dc2981.yml",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 0,
+          "diff_first_line": 1,
+          "diff_last_line": 299,
+          "original_path": ".github/workflows/ui-product-foundation.yml",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "383f197e1",
+          "index_prefix_length": 9,
+          "declared_new_lines": 293,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "3cb24d290502f298d8fb590524a676ed53b3243c",
+      "sha256": "b9e7ba62466d8ff5e8b37dfae342ba990256db73eef6912467c5e905110449a1",
+      "bytes": 3730,
+      "relative_path": "objects/3cb24d290502f298d8fb590524a676ed53b3243c.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 47,
+          "diff_first_line": 5142,
+          "diff_last_line": 5246,
+          "original_path": "codex-rs/hepta-supervisor/src/unix_pidfd.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "3cb24d2905",
+          "index_prefix_length": 10,
+          "declared_new_lines": 99,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "477402370bceefb336663ef8b0382b6341453284",
+      "sha256": "2f18749aae682ea0c82e8a822c9f3806e1a7313400b9fe9baaf5c077ad8d67d3",
+      "bytes": 7088,
+      "relative_path": "objects/477402370bceefb336663ef8b0382b6341453284.py",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 188,
+          "diff_first_line": 65174,
+          "diff_last_line": 65364,
+          "original_path": "scripts/test_ui_product_foundation_ci.py",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "477402370",
+          "index_prefix_length": 9,
+          "declared_new_lines": 185,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "48b25fff449ed6e9b33858b6532a349afb276ba3",
+      "sha256": "7b16163df6da8c2e100ca5d0118a6e1fe97178d05d7193754049cc21eb5ea915",
+      "bytes": 2694,
+      "relative_path": "objects/48b25fff449ed6e9b33858b6532a349afb276ba3.json",
+      "role": "additional consumed build-patch manifest",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 68,
+          "diff_first_line": 16505,
+          "diff_last_line": 16568,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/web-asset-paths.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "48b25fff4",
+          "index_prefix_length": 9,
+          "declared_new_lines": 58,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 68,
+          "diff_first_line": 16524,
+          "diff_last_line": 16587,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/web-asset-paths.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "48b25fff4",
+          "index_prefix_length": 9,
+          "declared_new_lines": 58,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 62,
+          "diff_first_line": 15739,
+          "diff_last_line": 15802,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/web-asset-paths.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "48b25fff44",
+          "index_prefix_length": 10,
+          "declared_new_lines": 58,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [
+        {
+          "git_blob_sha": "4c05f4dd139d1116c7e09ac7f878ba29c2625c3d",
+          "original_paths": [
+            "apps/hepta-control-ui/tools/build-robrix.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "4c05f4dd139d1116c7e09ac7f878ba29c2625c3d",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "4f70877c65af55fc797c50f9f8327ca83a64d9f97082e3987b85ffedfe417020",
+            "bytes": 13997,
+            "method": "Git object readback"
+          },
+          "source_contains_manifest_filename": true
+        },
+        {
+          "git_blob_sha": "d6074766970ddb161dc3cd001a276650984b43de",
+          "original_paths": [
+            "apps/hepta-control-ui/test/packaged-resource-set.test.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "d6074766970ddb161dc3cd001a276650984b43de",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "999a30c866291366cb25d524c7dacfcf415986f3c86b9e1d4278f291b7614c01",
+            "bytes": 2181,
+            "method": "GitHub exact blob API readback"
+          },
+          "source_contains_manifest_filename": true
+        }
+      ],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "5b270076264a77d0f80a097842cee3f8ca9bba8b",
+      "sha256": "fca5203c80a9e7681c1d263d99f680a34201f4c07c17c1de287e3a20e4e9551f",
+      "bytes": 123,
+      "relative_path": "objects/5b270076264a77d0f80a097842cee3f8ca9bba8b.txt",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 1,
+          "diff_first_line": 250,
+          "diff_last_line": 264,
+          "original_path": "apps/hepta-control-ui/.gitignore",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "5b27007626",
+          "index_prefix_length": 10,
+          "declared_new_lines": 9,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "69aebb4483d219a980bb9f6cebd9801fdf4ab81a",
+      "sha256": "55f5268748c763354b0051d225e3fa9f8a12104805bd38478a8576163b13bf37",
+      "bytes": 5190,
+      "relative_path": "objects/69aebb4483d219a980bb9f6cebd9801fdf4ab81a.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 32,
+          "diff_first_line": 3012,
+          "diff_last_line": 3166,
+          "original_path": "codex-rs/hepta-control-plane/src/module_runtime_predecessor_tests.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "69aebb4483",
+          "index_prefix_length": 10,
+          "declared_new_lines": 149,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "6ff6b39050e07fabaeec7ae7df515a2a9d3139d8",
+      "sha256": "03032271b29ac8544704a43912923870cee17c5d8a5d817947bc4863322877f2",
+      "bytes": 6211,
+      "relative_path": "objects/6ff6b39050e07fabaeec7ae7df515a2a9d3139d8.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 13,
+          "diff_first_line": 804,
+          "diff_last_line": 979,
+          "original_path": "codex-rs/hepta-agentd/tests/production_reconcile_host.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "6ff6b39050",
+          "index_prefix_length": 10,
+          "declared_new_lines": 170,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "7846a05213bbe2ebd9b3ecd309134040ef5412b7",
+      "sha256": "a5fe66aaecf2efa6fa6c5eab03690717ddcfac273f5717532c88dca7472cf751",
+      "bytes": 2477,
+      "relative_path": "objects/7846a05213bbe2ebd9b3ecd309134040ef5412b7.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 40,
+          "diff_first_line": 4143,
+          "diff_last_line": 4220,
+          "original_path": "codex-rs/hepta-supervisor/src/unix_agent_peer_tests.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "7846a05213",
+          "index_prefix_length": 10,
+          "declared_new_lines": 72,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "8a83818d98c078a566e8c5db9c281c3b5e190a70",
+      "sha256": "41eea18da514bf607983befcc33fd39586745a4bffca9275375e5232e7d7acb5",
+      "bytes": 655,
+      "relative_path": "objects/8a83818d98c078a566e8c5db9c281c3b5e190a70.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 43,
+          "diff_first_line": 4576,
+          "diff_last_line": 4598,
+          "original_path": "codex-rs/hepta-supervisor/src/unix_drain_transport.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "8a83818d98",
+          "index_prefix_length": 10,
+          "declared_new_lines": 17,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "8aa4a8b9baa43af1bcd87ccb723666b86ecc087c",
+      "sha256": "bb03aa41e96905afc773d4134e6799bcc4c41bea556633ee42b613a08b1f87f7",
+      "bytes": 10027,
+      "relative_path": "objects/8aa4a8b9baa43af1bcd87ccb723666b86ecc087c.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 41,
+          "diff_first_line": 4221,
+          "diff_last_line": 4521,
+          "original_path": "codex-rs/hepta-supervisor/src/unix_deadline_tests.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "8aa4a8b9ba",
+          "index_prefix_length": 10,
+          "declared_new_lines": 295,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "8cbcc3f64dcfe280a287c501c4726a8a9ee730b9",
+      "sha256": "7368dbca00436820cee7c0bd2f83d23885ac51e9e0ea4b0a61fb1b6c8e2a80ed",
+      "bytes": 5198,
+      "relative_path": "objects/8cbcc3f64dcfe280a287c501c4726a8a9ee730b9.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 45,
+          "diff_first_line": 4895,
+          "diff_last_line": 5036,
+          "original_path": "codex-rs/hepta-supervisor/src/unix_matrix_peer_tests.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "8cbcc3f64d",
+          "index_prefix_length": 10,
+          "declared_new_lines": 136,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "91a976027fcb3beb1e6104e1dfcaa9ac4ce00765",
+      "sha256": "c6de7b004d75f23d5a5145d5353a33da204d94896350886e01a8cb8e5c9a02d5",
+      "bytes": 3367,
+      "relative_path": "objects/91a976027fcb3beb1e6104e1dfcaa9ac4ce00765.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 46,
+          "diff_first_line": 5037,
+          "diff_last_line": 5141,
+          "original_path": "codex-rs/hepta-supervisor/src/unix_peer.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "91a976027f",
+          "index_prefix_length": 10,
+          "declared_new_lines": 99,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "9ec570fbadf88e9f681674c9f669f9cf9995de7e",
+      "sha256": "5e3c639ba098d055851f27e76528d79f1f1c451ab8551446702a58d417022a02",
+      "bytes": 6036,
+      "relative_path": "objects/9ec570fbadf88e9f681674c9f669f9cf9995de7e.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 29,
+          "diff_first_line": 2237,
+          "diff_last_line": 2411,
+          "original_path": "codex-rs/hepta-control-plane/src/module_runtime_checkpoint_handoff_tests.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "9ec570fbad",
+          "index_prefix_length": 10,
+          "declared_new_lines": 169,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "a1f89208b0e01c59376616852a438eb3b6a412d8",
+      "sha256": "dc6aba9f24d339ea8117bb972365cbd9f9d9ecea0bd6a45f8edfbd794267a616",
+      "bytes": 6880,
+      "relative_path": "objects/a1f89208b0e01c59376616852a438eb3b6a412d8.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 49,
+          "diff_first_line": 5369,
+          "diff_last_line": 5555,
+          "original_path": "codex-rs/hepta-supervisor/src/unix_transport.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "a1f89208b0",
+          "index_prefix_length": 10,
+          "declared_new_lines": 181,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "bc8194a514042e5d9965ab85c925d5e774ae4e2c",
+      "sha256": "716a8be89200c7f916a1db41fdc5a4c8e1badc5a72c230a6aabee2215baa2d19",
+      "bytes": 2625,
+      "relative_path": "objects/bc8194a514042e5d9965ab85c925d5e774ae4e2c.json",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 9,
+          "diff_first_line": 2358,
+          "diff_last_line": 2450,
+          "original_path": "apps/hepta-control-ui/package-lock.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "bc8194a51",
+          "index_prefix_length": 9,
+          "declared_new_lines": 87,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 9,
+          "diff_first_line": 2377,
+          "diff_last_line": 2469,
+          "original_path": "apps/hepta-control-ui/package-lock.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "bc8194a51",
+          "index_prefix_length": 9,
+          "declared_new_lines": 87,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 8,
+          "diff_first_line": 2125,
+          "diff_last_line": 2217,
+          "original_path": "apps/hepta-control-ui/package-lock.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "bc8194a514",
+          "index_prefix_length": 10,
+          "declared_new_lines": 87,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 8,
+          "diff_first_line": 2170,
+          "diff_last_line": 2262,
+          "original_path": "apps/hepta-control-ui/package-lock.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "bc8194a514",
+          "index_prefix_length": 10,
+          "declared_new_lines": 87,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "bf1ff46ffc5a4d395ed1bdbf93f5c1526d264183",
+      "sha256": "43b90de698061ebed79f1f69d8772bb26a9bb00d112e75785af33eb236749a2b",
+      "bytes": 10886,
+      "relative_path": "objects/bf1ff46ffc5a4d395ed1bdbf93f5c1526d264183.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 30,
+          "diff_first_line": 2412,
+          "diff_last_line": 2717,
+          "original_path": "codex-rs/hepta-control-plane/src/module_runtime_checkpoint_tests.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "bf1ff46ffc",
+          "index_prefix_length": 10,
+          "declared_new_lines": 300,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "bf7414d65e44e3d7ee3977cac3eef55476d6bab7",
+      "sha256": "9f6cfef08da074acfe3e907d70e8b3c52e8d1af188f70b10af836f91a340e209",
+      "bytes": 7256,
+      "relative_path": "objects/bf7414d65e44e3d7ee3977cac3eef55476d6bab7.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 38,
+          "diff_first_line": 3649,
+          "diff_last_line": 3858,
+          "original_path": "codex-rs/hepta-supervisor/src/module_runtime_predecessor_tests.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "bf7414d65e",
+          "index_prefix_length": 10,
+          "declared_new_lines": 204,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "bff959246a1bbb6e3d7a0823a8189107222cd286",
+      "sha256": "87ea919cc9d29ce02dbe64087a836c4f9aa56d9e28e8e3f0bcfe4ea5155c6854",
+      "bytes": 228,
+      "relative_path": "objects/bff959246a1bbb6e3d7a0823a8189107222cd286.txt",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 1,
+          "diff_first_line": 281,
+          "diff_last_line": 301,
+          "original_path": "apps/hepta-control-ui/.gitignore",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "bff959246",
+          "index_prefix_length": 9,
+          "declared_new_lines": 15,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 1,
+          "diff_first_line": 300,
+          "diff_last_line": 320,
+          "original_path": "apps/hepta-control-ui/.gitignore",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "bff959246",
+          "index_prefix_length": 9,
+          "declared_new_lines": 15,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 1,
+          "diff_first_line": 256,
+          "diff_last_line": 276,
+          "original_path": "apps/hepta-control-ui/.gitignore",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "bff959246a",
+          "index_prefix_length": 10,
+          "declared_new_lines": 15,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "d2be0015337a460ea5af592e8e85993d3e2fb6fc",
+      "sha256": "888113fdcdf158edcf8a9c0c310e854b37dc4bd40b34bf23e4402f1534a95daa",
+      "bytes": 583,
+      "relative_path": "objects/d2be0015337a460ea5af592e8e85993d3e2fb6fc.json",
+      "role": "additional consumed build-patch manifest",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 58,
+          "diff_first_line": 12304,
+          "diff_last_line": 12320,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/cargo-makepad-toolchain.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d2be00153",
+          "index_prefix_length": 9,
+          "declared_new_lines": 11,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 58,
+          "diff_first_line": 12323,
+          "diff_last_line": 12339,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/cargo-makepad-toolchain.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d2be00153",
+          "index_prefix_length": 9,
+          "declared_new_lines": 11,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 52,
+          "diff_first_line": 11492,
+          "diff_last_line": 11508,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/cargo-makepad-toolchain.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d2be001533",
+          "index_prefix_length": 10,
+          "declared_new_lines": 11,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 52,
+          "diff_first_line": 11538,
+          "diff_last_line": 11554,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/cargo-makepad-toolchain.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d2be001533",
+          "index_prefix_length": 10,
+          "declared_new_lines": 11,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [
+        {
+          "git_blob_sha": "4c05f4dd139d1116c7e09ac7f878ba29c2625c3d",
+          "original_paths": [
+            "apps/hepta-control-ui/tools/build-robrix.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "4c05f4dd139d1116c7e09ac7f878ba29c2625c3d",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "4f70877c65af55fc797c50f9f8327ca83a64d9f97082e3987b85ffedfe417020",
+            "bytes": 13997,
+            "method": "Git object readback"
+          },
+          "source_contains_manifest_filename": true
+        },
+        {
+          "git_blob_sha": "84ecb28f61d95ce748d5a8f2eaa654c56f4316fa",
+          "original_paths": [
+            "apps/hepta-control-ui/tools/build-robrix.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "84ecb28f61d95ce748d5a8f2eaa654c56f4316fa",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "f952cc961a049fa31618ce7c15bd532bcbf97fe542c32ef6f22d5754590c678b",
+            "bytes": 13582,
+            "method": "Git object readback"
+          },
+          "source_contains_manifest_filename": true
+        }
+      ],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "d79cf7b699cd62e10a6de617bb01333bb12d0de1",
+      "sha256": "dcf76c7b38430ac1f18b65cb6f91ad62d6d1dd3a2b4af89f485dcaf9428d81f5",
+      "bytes": 14603,
+      "relative_path": "objects/d79cf7b699cd62e10a6de617bb01333bb12d0de1.yml",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 0,
+          "diff_first_line": 1,
+          "diff_last_line": 280,
+          "original_path": ".github/workflows/ui-product-foundation.yml",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d79cf7b69",
+          "index_prefix_length": 9,
+          "declared_new_lines": 274,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "e83bfd85e13ec976b65fd257f7d3f069fd2b7252",
+      "sha256": "a6041e237398a2286aa9317e25cc6ba59bc14d4ce73c3c2e044a47d800f7c7f4",
+      "bytes": 10226,
+      "relative_path": "objects/e83bfd85e13ec976b65fd257f7d3f069fd2b7252.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 28,
+          "diff_first_line": 1962,
+          "diff_last_line": 2236,
+          "original_path": "codex-rs/hepta-control-plane/src/module_runtime_checkpoint_codec.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "e83bfd85e1",
+          "index_prefix_length": 10,
+          "declared_new_lines": 269,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "ea34613928ff83d95788274d6a32d5a3c4246b87",
+      "sha256": "f03c5742535898ebdbd943c08bdaa1082d2fb85dca3edf6bc022fc5d5a511fbe",
+      "bytes": 1241,
+      "relative_path": "objects/ea34613928ff83d95788274d6a32d5a3c4246b87.json",
+      "role": "additional consumed build-patch manifest",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 62,
+          "diff_first_line": 15580,
+          "diff_last_line": 15607,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-fonts.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "ea3461392",
+          "index_prefix_length": 9,
+          "declared_new_lines": 22,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 62,
+          "diff_first_line": 15599,
+          "diff_last_line": 15626,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-fonts.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "ea3461392",
+          "index_prefix_length": 9,
+          "declared_new_lines": 22,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 56,
+          "diff_first_line": 14768,
+          "diff_last_line": 14795,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-fonts.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "ea34613928",
+          "index_prefix_length": 10,
+          "declared_new_lines": 22,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 56,
+          "diff_first_line": 14814,
+          "diff_last_line": 14841,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-fonts.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "ea34613928",
+          "index_prefix_length": 10,
+          "declared_new_lines": 22,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [
+        {
+          "git_blob_sha": "1eac9739a87af11124eb0051d7f1f792a95a4734",
+          "original_paths": [
+            "apps/hepta-control-ui/tools/prepare-makepad-platform.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "1eac9739a87af11124eb0051d7f1f792a95a4734",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "0c48f90cf7773be938d941f2342720d24784fb436ba24276f5bef798d824cd93",
+            "bytes": 5898,
+            "method": "Git object readback"
+          },
+          "source_contains_manifest_filename": true
+        },
+        {
+          "git_blob_sha": "7f16bb2875b8c3f0dd42f0bad982d54573a8694b",
+          "original_paths": [
+            "apps/hepta-control-ui/tools/prepare-makepad-platform.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "7f16bb2875b8c3f0dd42f0bad982d54573a8694b",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "5daf997800f987f03724119454a0fd00f3218ae5a885f25873e380664addafd8",
+            "bytes": 5919,
+            "method": "Git object readback"
+          },
+          "source_contains_manifest_filename": true
+        }
+      ],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "ea3fd115c457a6a8ec059b7f532f0b72718d2c39",
+      "sha256": "a5ccbc518e6f992a39a617383117b8d369093c256aef0048617418b1c16b4537",
+      "bytes": 500,
+      "relative_path": "objects/ea3fd115c457a6a8ec059b7f532f0b72718d2c39.json",
+      "role": "additional consumed build-patch manifest",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 60,
+          "diff_first_line": 15545,
+          "diff_last_line": 15558,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-clock.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "ea3fd115c",
+          "index_prefix_length": 9,
+          "declared_new_lines": 8,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 60,
+          "diff_first_line": 15564,
+          "diff_last_line": 15577,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-clock.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "ea3fd115c",
+          "index_prefix_length": 9,
+          "declared_new_lines": 8,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 54,
+          "diff_first_line": 14733,
+          "diff_last_line": 14746,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-clock.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "ea3fd115c4",
+          "index_prefix_length": 10,
+          "declared_new_lines": 8,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 54,
+          "diff_first_line": 14779,
+          "diff_last_line": 14792,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-clock.json",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "ea3fd115c4",
+          "index_prefix_length": 10,
+          "declared_new_lines": 8,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [
+        {
+          "git_blob_sha": "1eac9739a87af11124eb0051d7f1f792a95a4734",
+          "original_paths": [
+            "apps/hepta-control-ui/tools/prepare-makepad-platform.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "1eac9739a87af11124eb0051d7f1f792a95a4734",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "0c48f90cf7773be938d941f2342720d24784fb436ba24276f5bef798d824cd93",
+            "bytes": 5898,
+            "method": "Git object readback"
+          },
+          "source_contains_manifest_filename": true
+        },
+        {
+          "git_blob_sha": "7f16bb2875b8c3f0dd42f0bad982d54573a8694b",
+          "original_paths": [
+            "apps/hepta-control-ui/tools/prepare-makepad-platform.mjs"
+          ],
+          "verified_reference": {
+            "git_blob_sha": "7f16bb2875b8c3f0dd42f0bad982d54573a8694b",
+            "repository": "TrillionniumFoundation/hepta-private-ci",
+            "sha256": "5daf997800f987f03724119454a0fd00f3218ae5a885f25873e380664addafd8",
+            "bytes": 5919,
+            "method": "Git object readback"
+          },
+          "source_contains_manifest_filename": true
+        }
+      ],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "f38eef48773b41ce7b77fa447f84c261ecb67a5f",
+      "sha256": "5061b81400ce7763cd934cc8bc6e0c0fb8a14ce3b2f1ad75c54d737e67fc1774",
+      "bytes": 11359,
+      "relative_path": "objects/f38eef48773b41ce7b77fa447f84c261ecb67a5f.rs",
+      "role": "additional source or build input",
+      "candidate_group": "additional-mixed-patch-postimage",
+      "candidate_types": [
+        "exact new-file patch postimage"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "07c62fedfe43a44cadeafc2024c3365837992c42",
+            "sha256": "d07d1d6a03534ff7c540d59ea9f7f2e6343122ab4eed4b8e784e840e35f964fb",
+            "bytes": 229692
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "main-stabilization-checkpoint-review.zip",
+              "member": "frozen-convergence/candidate-vs-product.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 27,
+          "diff_first_line": 1681,
+          "diff_last_line": 1961,
+          "original_path": "codex-rs/hepta-control-plane/src/module_runtime_checkpoint.rs",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "f38eef4877",
+          "index_prefix_length": 10,
+          "declared_new_lines": 275,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    }
+  ],
+  "notices": [
+    {
+      "git_blob_sha": "7f77de13d6a3a5b2a7b35bfb249b7902317c2045",
+      "sha256": "7c370204a7507a3c33398d6377aa69691991b0582a3d92ace8d27d8819b223f7",
+      "bytes": 1097,
+      "relative_path": "notices/7f77de13d6a3a5b2a7b35bfb249b7902317c2045.txt",
+      "role": "auxiliary original third-party notice",
+      "candidate_group": "auxiliary-notice",
+      "candidate_types": [
+        "original license or notice"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 56,
+          "diff_first_line": 12214,
+          "diff_last_line": 12228,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/licenses/ROBRIX-MIT.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "7f77de13d",
+          "index_prefix_length": 9,
+          "declared_new_lines": 9,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 56,
+          "diff_first_line": 12233,
+          "diff_last_line": 12247,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/licenses/ROBRIX-MIT.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "7f77de13d",
+          "index_prefix_length": 9,
+          "declared_new_lines": 9,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 50,
+          "diff_first_line": 11402,
+          "diff_last_line": 11416,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/licenses/ROBRIX-MIT.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "7f77de13d6",
+          "index_prefix_length": 10,
+          "declared_new_lines": 9,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 50,
+          "diff_first_line": 11448,
+          "diff_last_line": 11462,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/licenses/ROBRIX-MIT.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "7f77de13d6",
+          "index_prefix_length": 10,
+          "declared_new_lines": 9,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "d952d62c065f3f35fb83a173496e90b21525aef3",
+      "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
+      "bytes": 4301,
+      "relative_path": "notices/d952d62c065f3f35fb83a173496e90b21525aef3.txt",
+      "role": "auxiliary original third-party notice",
+      "candidate_group": "auxiliary-notice",
+      "candidate_types": [
+        "original license or notice"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 72,
+          "diff_first_line": 16694,
+          "diff_last_line": 16791,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d952d62c0",
+          "index_prefix_length": 9,
+          "declared_new_lines": 92,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 174,
+          "diff_first_line": 63242,
+          "diff_last_line": 63339,
+          "original_path": "apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d952d62c0",
+          "index_prefix_length": 9,
+          "declared_new_lines": 92,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 72,
+          "diff_first_line": 16713,
+          "diff_last_line": 16810,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d952d62c0",
+          "index_prefix_length": 9,
+          "declared_new_lines": 92,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 174,
+          "diff_first_line": 63261,
+          "diff_last_line": 63358,
+          "original_path": "apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d952d62c0",
+          "index_prefix_length": 9,
+          "declared_new_lines": 92,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 65,
+          "diff_first_line": 15811,
+          "diff_last_line": 15908,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d952d62c06",
+          "index_prefix_length": 10,
+          "declared_new_lines": 92,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 159,
+          "diff_first_line": 82881,
+          "diff_last_line": 82978,
+          "original_path": "apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d952d62c06",
+          "index_prefix_length": 10,
+          "declared_new_lines": 92,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 66,
+          "diff_first_line": 15928,
+          "diff_last_line": 16025,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d952d62c06",
+          "index_prefix_length": 10,
+          "declared_new_lines": 92,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 163,
+          "diff_first_line": 61748,
+          "diff_last_line": 61845,
+          "original_path": "apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "d952d62c06",
+          "index_prefix_length": 10,
+          "declared_new_lines": 92,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    },
+    {
+      "git_blob_sha": "f9afe0989588d7f672fa35a4ebec946189bf4eee",
+      "sha256": "53eac13efa92294d76c9866527f46ceef1bb06804ea943ccbfe4963a4ff1111c",
+      "bytes": 559,
+      "relative_path": "notices/f9afe0989588d7f672fa35a4ebec946189bf4eee.txt",
+      "role": "auxiliary original third-party notice",
+      "candidate_group": "auxiliary-notice",
+      "candidate_types": [
+        "original license or notice"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "reuse_existing_git_blob": true,
+      "occurrences": [
+        {
+          "parent_patch": {
+            "git_blob_sha": "84e66e6dc09d2d97e7f165ac01f52f5a3078e07c",
+            "sha256": "d126b52be909d6894ba39ad3bfd3a9732e842327aec23cb17a88b7c5e45891a7",
+            "bytes": 3423446
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "composed-candidate.patch",
+              "archive_chain": [
+                "history/version5.zip"
+              ]
+            }
+          ],
+          "diff_index": 71,
+          "diff_first_line": 16683,
+          "diff_last_line": 16693,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NOTICE.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "f9afe0989",
+          "index_prefix_length": 9,
+          "declared_new_lines": 5,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "76b90a7985776799b92f38229803e6381dc76053",
+            "sha256": "66499a9ec6d0e541e323e8a2549e276213b1d08bf811ab402d47bdfc33981842",
+            "bytes": 3425549
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "gateway-readonly-candidate.zip",
+              "member": "current-composed.patch",
+              "archive_chain": []
+            }
+          ],
+          "diff_index": 71,
+          "diff_first_line": 16702,
+          "diff_last_line": 16712,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NOTICE.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "f9afe0989",
+          "index_prefix_length": 9,
+          "declared_new_lines": 5,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ee05221a288629ccba61f5963b02163a3b632abd",
+            "sha256": "7c3110c2ab2f9d25ba5ef44fe0ba339c0c3d128ee9965e627cadf2c3e8950d96",
+            "bytes": 4703647
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "historical/f964/foundation.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 64,
+          "diff_first_line": 15800,
+          "diff_last_line": 15810,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NOTICE.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "f9afe09895",
+          "index_prefix_length": 10,
+          "declared_new_lines": 5,
+          "no_final_newline": false
+        },
+        {
+          "parent_patch": {
+            "git_blob_sha": "ccc2b809e2f1319a0208248a2f07faa675bc7e4c",
+            "sha256": "0e7b984267752e6b650986779b57821d5505c6ca1e67b977adf1323dcbad03d9",
+            "bytes": 3293540
+          },
+          "original_parent_occurrences": [
+            {
+              "file": "product-foundation-candidate.zip",
+              "member": "current.patch",
+              "archive_chain": [
+                "history/version1.zip"
+              ]
+            }
+          ],
+          "diff_index": 65,
+          "diff_first_line": 15917,
+          "diff_last_line": 15927,
+          "original_path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NOTICE.txt",
+          "original_mode": "100644",
+          "index_new_blob_prefix": "f9afe09895",
+          "index_prefix_length": 10,
+          "declared_new_lines": 5,
+          "no_final_newline": false
+        }
+      ],
+      "attribution_basis": "The exact reconstructed object was freshly byte-verified in hepta-private-ci Git object storage. Original paths are its codex-rs/app/build interfaces, and 161 sibling postimages are already verified in the frozen source ledger. This creates an inactive explicit archival path; it does not prove unique historical ownership or apply the patch.",
+      "build_manifest_source_consumers": [],
+      "pattern_findings": [],
+      "source_executed": false,
+      "patch_applied": false,
+      "original_parent_sync_inferred": false,
+      "scientific_or_native_acceptance_inferred": false
+    }
+  ]
+}

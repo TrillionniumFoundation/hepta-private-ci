@@ -1,0 +1,104 @@
+{
+  "archive_large_read_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "archive_smaller_read_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "utf8_snapshot1_metadata": {
+    "atomic_snapshot": false,
+    "encoding": "utf-8",
+    "files": [
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002/WRAPPER-RESULT.json",
+        "sha256": "7743812b92002c18d4464f9d148371c901fe53eaee047e871fad10950b42c260",
+        "size": 257,
+        "version": "2050:52497826:257:1794474089136985442:1794474089136985442"
+      },
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002/native-result/RESULT.json",
+        "sha256": "89c6153788578bc2b642829166ad6af9e0af26995bad68e0565030315565ccf9",
+        "size": 31900,
+        "version": "2050:52759955:31900:1794474087093076389:1794474087093076389"
+      },
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002/FILES.json",
+        "sha256": "40dde8646e097df3f685822c8ff17f1cfecfd11822819ed552cefd953e41fa37",
+        "size": 1171,
+        "version": "2050:52497830:1171:1794474089141519172:1794474089141519172"
+      },
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002/native.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0,
+        "version": "2050:52497829:0:1794474062347181422:1794474062347181422"
+      }
+    ],
+    "snapshot_scope": "independent_file",
+    "truncated": false
+  },
+  "utf8_snapshot2_metadata": {
+    "atomic_snapshot": false,
+    "encoding": "utf-8",
+    "files": [
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002/PREEXECUTION.json",
+        "sha256": "e4f30e7c363ef61bc42e312a1df5b1fa216ca67451c45b42092ee0ec446cf6df",
+        "size": 1934,
+        "version": "2050:52497827:1934:1794474062347181422:1794474062347181422"
+      },
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002/SOURCE.json",
+        "sha256": "71a4ce10e66d635fb8d66e1a77b11ca252b2fb77ee69e1a67f474f0a61a57142",
+        "size": 1945,
+        "version": "2050:52497825:1945:1794474062342245678:1794474062342245678"
+      },
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002/native-result/CALLS.json",
+        "sha256": "9c912a40fd980c411580a392b58ecb3674f335b1e733e5cdcaea2d893560f385",
+        "size": 25146,
+        "version": "2050:52759956:25146:1794474087086843401:1794474087086843401"
+      },
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002/native.stdout",
+        "sha256": "75cff352931b54e278c46380cb4a4bdac63d619f35cd62c515eb71c30d6a2c7a",
+        "size": 23812,
+        "version": "2050:52497828:23812:1794474087093076389:1794474087093076389"
+      }
+    ],
+    "snapshot_scope": "independent_file",
+    "truncated": false
+  },
+  "native_array_binary_metadata": {
+    "chunk_sha256": "43c3fb9ea9838cf21772a13f50acb7dbe713bdb4028817ae25d06fa2d71a7307",
+    "eof": true,
+    "next_offset": 7693,
+    "offset": 0,
+    "path": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002/native-result/ARRAYS.npz",
+    "size": 7693,
+    "version": "2050:52759954:7693:1794474087090424584:1794474087090424584"
+  },
+  "recovery": "Original payloads are retained as individual files and the byte-identical reconstructed original gzip. All FILES size/SHA commitments match. Independent file snapshots of an authoritative terminal job; no model replay.",
+  "model_calls": 0,
+  "optimizer_calls": 0
+}

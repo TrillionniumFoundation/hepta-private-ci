@@ -1,0 +1,51 @@
+{
+  "arrays": {
+    "batch_indices": {
+      "dtype": "<i8",
+      "nbytes": 33280,
+      "offset": 0,
+      "sha256": "6fa8c2e028ca5ce188e6a749166ad5fa105d84dfc5eaa402d8928e583c9c79b5",
+      "shape": [
+        130,
+        32
+      ]
+    },
+    "update_records": {
+      "dtype": "<f8",
+      "nbytes": 4160,
+      "offset": 33280,
+      "sha256": "935a4b0c21d161b4330e19308cc797084d3834e61858f1b9a5770992220a8335",
+      "shape": [
+        130,
+        4
+      ]
+    },
+    "validation_anchor_logits": {
+      "dtype": "<f4",
+      "nbytes": 1024,
+      "offset": 37440,
+      "sha256": "e76a6c0f6a367aae94a4cb66f0823a7139ea2e2d8111cf04ab9d2f4f59f7f8ae",
+      "shape": [
+        64,
+        4
+      ]
+    },
+    "validation_anchor_sample_ids": {
+      "dtype": "<U22",
+      "nbytes": 5632,
+      "offset": 38464,
+      "sha256": "efb4be29dae68ccddae25353788d44193d4cf79ef3d0de940764f779a54a4803",
+      "shape": [
+        64
+      ]
+    }
+  },
+  "format": "hcsn_followup_arrays_v1",
+  "nbytes": 44096,
+  "parts": [
+    {
+      "file": "arrays_000.npz",
+      "sha256": "454d5e2af2c953f99db60a3020b8c39bd064eadbd86d778994b4e136bc078173"
+    }
+  ]
+}

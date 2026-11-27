@@ -1,0 +1,9 @@
+# Published scope and evidence consumption
+
+The frozen README/PLAN describe the source-preparation state. After that freeze, one independently admitted stdlib packaging qualification passed. Its result is 7 positive materializations and 46 negative fixtures, not six new model runs or an integrated runtime. See SOURCE_REVIEW.json, SAVED_REVIEW.json, SAVED_FINDINGS.md and COST_COVERAGE.json.
+
+This namespace preserves the fixed package and selected small qualification evidence. RUN_ONCE/TEST_REPORT.json and RUN_ONCE/OUTER_WAIT4_RECEIPT.json describe the original local qualification. The expanded workspaces and fixture tree are deliberately not copied here: the outer receipt binds their 652-file original inventory, but a remote checkout is not that complete raw result archive. Do not run the package run_once.py in this published directory, whose selected historical RUN_ONCE evidence is already present. Use materialize.py for a selected original capsule; it creates a new independent workspace and does not run a model.
+
+To consume from a repository checkout, change to qualification/joint-generation and follow the frozen README materialize.py command using this directory basename. Source/data reconstruction remains byte exact and original versions remain separate. The historical runtime-data evidence indexes explicitly distinguish copied artifacts from hash-only omitted raw records.
+
+New Git objects are at most 511999 bytes. The original content.npz is reconstructed locally from 79 structural raw ZIP records; the large reconstructed archive is not a Git blob. This publication changes no allowlist, CI workflow, old commit, production permission or model budget. Incremental size-policy validation is not full branch PR CI: 67 unrelated historical oversize paths against the pinned main remain. No merge or deployment is authorized by this package.

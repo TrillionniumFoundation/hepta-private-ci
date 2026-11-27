@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.source53-cost-batch-independent-review.v1",
+  "base_source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "candidate_tree": "e73fcef2591e97ef21f7aa58d610878d0e028090",
+  "candidate_manifest": "cc505d4e24b13cb84d23a271d634ead08c29aeae",
+  "reviewer": "repository_research_audit",
+  "code": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "base": {
+        "git_blob_sha": "085bcfd745c7a06426d90e5ee881d04694238ff7",
+        "bytes": 14129,
+        "sha256": "64c39bb7fd9d7e6acd3c03332f86f8c8749e4a367a6e629c4cd8b7b2e70d8e20"
+      },
+      "post": {
+        "git_blob_sha": "67141c6af0edbe68eeaf93ac943f083c1449e3c6",
+        "bytes": 14057,
+        "sha256": "f59afb7650d5f8ca2fa800fcc55fda008f0fd2c89fca875cef4db9d280105509"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "base": {
+        "git_blob_sha": "dac17a5a338563fe3466637a3c8b405b1fc10753",
+        "bytes": 26175,
+        "sha256": "2af7ed8d0524e7cf90df1d3501c8943800450e3a2dab830836184fdefcc2e88c"
+      },
+      "post": {
+        "git_blob_sha": "2621dfc2c5c25bf66cac95d206d3b4e5d9cc9790",
+        "bytes": 28714,
+        "sha256": "60b2cd77a6d7581f26c8a8af06c045fabb46f616f9ed053cfb80c680e982bed7"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "base": {
+        "git_blob_sha": "c73cb763cbf2bd753ae44ce74e33da0a3f951772",
+        "bytes": 14180,
+        "sha256": "770e1236a973b3f7b13563736619305c38a084a211b8a55b33f630b4e7bebedb"
+      },
+      "post": {
+        "git_blob_sha": "6cbc878cc2d85691dba75c9e21a4699506368164",
+        "bytes": 15642,
+        "sha256": "f25ef2dc77eb9e5d9a6e7f6ae271e9dcfd748a3ea5250d507badc50b4d3d7e95"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost_tests.rs",
+      "base": {
+        "git_blob_sha": "37f607609a62e4e35ead10faccce366a2714b3cd",
+        "bytes": 11113,
+        "sha256": "29318a75be218475ff47af44b3e4ed92a8970f7734b299d25cc14517629e7273"
+      },
+      "post": {
+        "git_blob_sha": "0e11345a3456c0140be1d609a16be0175b375fc6",
+        "bytes": 15808,
+        "sha256": "eb8eb48b0ac98e7e6e0b8fc309eddb6a328e5de1ee5b0713410bc7447aa8c55a"
+      }
+    }
+  ],
+  "full_source_postimages_git_verified": true,
+  "checks": {
+    "inverse_state": true,
+    "public_record_and_all_old_cost_text_unchanged": true,
+    "old_cost_tests_complete_prefix": true,
+    "old_generation_tests_complete_restoration": true,
+    "old_test_count": 27,
+    "new_test_count": 31,
+    "new_tests": [
+      "batch_merge_matches_ordered_record_for_replays_and_envelopes",
+      "batch_merge_preserves_first_error_and_the_successful_prefix",
+      "empty_batch_preserves_legacy_nonvalidation",
+      "failed_cost_batch_keeps_live_owner_journal_and_witness_unchanged"
+    ],
+    "journal_original_blob": "94ac6624d9fbd5d6c7856aa78380bacaed70ef49",
+    "v2_only_two_insertions_seven_lines": true,
+    "v2_cold_witness_reads_after_drop": true,
+    "new_qualification_methods": 4,
+    "old_test_methods_retained": 27
+  },
+  "dependencies": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "git_blob_sha": "94ac6624d9fbd5d6c7856aa78380bacaed70ef49",
+      "bytes": 22379,
+      "sha256": "0ad1bcd9e489a7fcfd4a4c142cca4520f6da438afcbe476fcf7ef9d810a660df",
+      "reason": "persist clones state and applies the reducer before serialization, any journal write, sync or witness CAS; tests are a child of this owning module."
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "git_blob_sha": "0db16e687c9c04862fecd15b21321ea94dd929e5",
+      "bytes": 8346,
+      "sha256": "a2bf94c1e26ce96e61fb33dc359a95e6ddfb6237299666955791dfb6bcae4e6f",
+      "reason": "Fixture witness uses the actual witness file and FileAnchorWitnessStore; open owns it and each added full-byte read follows drop(owner)."
+    }
+  ],
+  "reasoning": [
+    "Empty input returns before validating target, preserving the original zero-iteration reducer behavior.",
+    "For nonempty input, one validated_totals call establishes the same original history invariant as the first record call. Each accepted entry is still validated with the original validate_entry and checked add_metrics before the exact same push; therefore later prefix validity follows without revalidating unchanged history.",
+    "Replay/conflict is checked before capacity. Invalid identity/source, envelope validation and overflow retain the original ordering. At capacity, exact replay remains free and conflicting reuse still reports EventConflict before CapacityExceeded.",
+    "The earlier map borrows only an owned immutable history clone and the immutable input slice. It does not borrow the output vector, so immediate accepted-prefix mutation is compatible with the lifetimes; no client, owner or authority object is cloned.",
+    "Every accepted entry is appended immediately in original input order; a later error retains exactly the successful prefix of repeated record. Existing public record and all other original cost implementation bytes remain unchanged.",
+    "The owner journal's original persist boundary discards the failed cloned state before persistence. The new journal regression checks original live state, complete journal bytes and original witness anchor, then closes before comparing full witness bytes and reopens before a valid corrected commit.",
+    "The original 127-step capacity fixture and 4096 cap remain unchanged. Four meaningful regressions are added; none of the 27 prior test bodies in the two modified test files is removed or modified."
+  ],
+  "guard_scan_reference": "9000da8b60a4abb54ffdd4a830e4e7ec186ecb24",
+  "guard_scan_scope": "61 original source-closure files plus complete CALLERS; no references to the two cost implementation paths or merge helper markers. This is a static reference scan, not a gate execution.",
+  "conclusion": "No concrete semantic, ownership, visibility or type blocker found in this static review.",
+  "limitations": [
+    "No Rust compilation, formatter, test, profiler, Bazel or actor was executed for this candidate.",
+    "This review does not establish that the Mac timeout was caused only by CPU or that the unchanged timeout now passes.",
+    "A bounded temporary clone of old value entries is introduced per nonempty batch; durable writes, witness CAS and their original checks remain unchanged."
+  ],
+  "ref_updated": false
+}

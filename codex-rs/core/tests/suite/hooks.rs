@@ -347,6 +347,9 @@ fn write_async_user_prompt_submit_hook(home: &Path, gated: bool) -> Result<()> {
     let started_path = home.join("async_user_prompt_submit_started");
     let finished_path = home.join("async_user_prompt_submit_finished");
     let release_path = home.join("async_user_prompt_submit_release");
+    // The gated fixture controls one old-turn result. Atomically claim that
+    // invocation so a later turn cannot produce another context from the same
+    // release file; ordinary production hooks still run for every matching turn.
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -354,7 +357,14 @@ import sys
 import time
 
 prompt = json.load(sys.stdin).get("prompt")
-Path(r"{started_path}").write_text(prompt, encoding="utf-8")
+if {gated}:
+    try:
+        with Path(r"{started_path}").open("x", encoding="utf-8") as started:
+            started.write(prompt)
+    except FileExistsError:
+        sys.exit(0)
+else:
+    Path(r"{started_path}").write_text(prompt, encoding="utf-8")
 while {gated} and not Path(r"{release_path}").exists():
     time.sleep(0.01)
 print(json.dumps({{

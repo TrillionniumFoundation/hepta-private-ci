@@ -822,3 +822,9 @@ fn canonical_event_shadow_receipt_tamper_fails_closed() {
         Err(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch)
     );
 }
+
+#[path = "canonical_adapter_preflight_tests.rs"]
+mod canonical_adapter_preflight_tests;
+
+#[path = "canonical_shadow_binding_tests.rs"]
+mod canonical_shadow_binding_tests;

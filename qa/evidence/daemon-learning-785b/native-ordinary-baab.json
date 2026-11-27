@@ -1,0 +1,61 @@
+{
+  "after": {
+    "commit": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+    "dirty": false,
+    "parents": [
+      "8fda6017ec84d59a2e43d16692f37cc112aa2054"
+    ],
+    "tree": "36122b5f44085290133a27e1bba6803b71baa060"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+    "dirty": false,
+    "parents": [
+      "8fda6017ec84d59a2e43d16692f37cc112aa2054"
+    ],
+    "tree": "36122b5f44085290133a27e1bba6803b71baa060"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "--lib",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 140.04254781990312,
+  "exit_code": 0,
+  "finished_at": "2026-11-09T15:10:23.451139+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 648787,
+  "log_file": "ordinary.json.3100c0e177c241a98f0f655256a2bb2b.log",
+  "log_sha256": "246c39cee4746e152bb3377be29a58ebb4d46edd0102a451dd76893e833098d2",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 896,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+  "started_at": "2026-11-09T15:08:03.406973+00:00",
+  "status": "passed",
+  "tested_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+  "timed_out": false,
+  "working_directory": "/home/qq/hepta-daemon-learning-785b-20261109/source-published"
+}

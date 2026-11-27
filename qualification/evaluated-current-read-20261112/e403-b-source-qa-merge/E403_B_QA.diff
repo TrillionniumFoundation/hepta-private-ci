@@ -1,0 +1,10 @@
+--- e403/qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py
++++ final/qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py
+@@ -145,6 +145,7 @@
+         for marker in (
+             "let before = self.read_cells()?",
+             "self.qualification.completed_bytes()?",
++            "OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(",
+             "OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(\n"
+             "            &mut sources,\n"
+             "            &self.qualification.config,\n"

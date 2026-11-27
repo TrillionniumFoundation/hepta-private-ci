@@ -1,0 +1,84 @@
+{
+  "schema": "pred-owner-service-source-attempt-v1",
+  "parent_published_evidence_commit": "71f4f4c66c0ce8a39d28ff8fe8249b673d57def2",
+  "recorded_at_utc": "2026-11-10T13:54:50.315094+00:00",
+  "call_time": {
+    "exact_dispatch_timestamp_available": false,
+    "call_started_at_utc": null,
+    "observation_window_lower_utc": "2026-11-10T13:53:29.169109+00:00",
+    "observation_window_upper_utc": "2026-11-10T13:54:50.315094+00:00",
+    "lower_bound_basis": "Local source file's final modification preceded source read and h_pty_start invocation in the same sequential tool cell; not a server dispatch timestamp",
+    "upper_bound_basis": "Local post-call audit capture time",
+    "tool_cell_wall_seconds": 1.4
+  },
+  "host": "pocket4",
+  "tool": "h_pty_start",
+  "idempotency_key": "pred-owner-audit-9e3156-service-source-pocket4-01",
+  "requested_process": {
+    "executable": "/usr/bin/python3",
+    "argument_mode": "-c exact local probe source",
+    "source_path": "/workspace/scratch/9e3156a460df/pred_owner_service_probe.py",
+    "source_sha256": "b7d55a1998a5126a203c193ffc0c40b6def280c8f7d1cb0275e7c1eea8593022",
+    "source_bytes": 9098,
+    "alarm_seconds": 25
+  },
+  "exact_read_scope": {
+    "previously_observed_processes": [
+      {
+        "pid": 3733355,
+        "expected_comm": "hepta-tool-gate"
+      },
+      {
+        "pid": 3735415,
+        "expected_comm": "hepta-ib-execut"
+      }
+    ],
+    "identity_requirements": "Same UID as operator process and exact expected comm name; retain start ticks and recheck identity",
+    "process_reads": [
+      "/proc/<selected pid>/comm",
+      "/proc/<selected pid>/stat",
+      "/proc/<selected pid>/environ: extract HEPTA_FLEET_ROOT only, never emit complete environment",
+      "/proc/<selected pid>/cgroup: matching Hepta service names only",
+      "At most 256 /proc/<selected pid>/fd links: retain only automation_1.sqlite3 or its WAL/SHM paths"
+    ],
+    "service_reads": "Only matching Hepta unit names from those selected processes; systemctl --user show selected fields; at most 8 units and 16 explicit config paths per unit; extract HEPTA_FLEET_ROOT and explicit automation_1.sqlite3 paths only",
+    "database_reads_if_explicit_source_found": "At most 16 explicit roots, bounded agents/*/automation/automation_1.sqlite3 enumeration; SQLite mode=ro/query_only for exact identified paths, reporting only target table presence, columns and row counts",
+    "excluded": [
+      "No whole process inventory",
+      "No home or disk scan",
+      "No complete environment or command-line output",
+      "No credential output",
+      "No privilege escalation",
+      "No business action",
+      "No owner DB mutation",
+      "No change to published source or evidence"
+    ]
+  },
+  "returned_error": {
+    "code": -32603,
+    "message": "Internal error",
+    "raw_tool_result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.pty_start`\n\nCaused by:\n    Mcp error: -32603: Internal error"
+        }
+      ],
+      "isError": true
+    }
+  },
+  "session_id": null,
+  "session_id_returned": false,
+  "underlying_terminal_state": "UNKNOWN",
+  "output_readback_obtained": false,
+  "scope_probe_completed": false,
+  "default_root_check_completed_by_this_attempt": false,
+  "source_roots_discovered_this_attempt": 0,
+  "owner_databases_located_this_attempt": 0,
+  "owner_records_collected_this_attempt": 0,
+  "effect_labels_created_this_attempt": 0,
+  "no_inference_of_source_absence": true,
+  "followup": "Stopped after this error as instructed; no replay, retry, additional lookup or further source scan was performed",
+  "published_audit_files_modified": false,
+  "retained_source_relative_path": "SERVICE_SOURCE_PROBE.py.txt"
+}

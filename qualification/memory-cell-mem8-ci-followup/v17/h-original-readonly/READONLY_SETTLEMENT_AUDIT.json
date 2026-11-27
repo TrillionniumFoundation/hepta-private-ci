@@ -1,0 +1,97 @@
+{
+  "schema": "mem8.h-original-identity.readonly-settlement-audit.v1",
+  "generated_at_utc": "2026-11-11T18:16:43.474902+00:00",
+  "scope": "One read of the exact original V4 destination plus one continuation of the exact original 7647-entry registry snapshot; no operation re-admitted or replayed.",
+  "status": "READONLY_FOLLOWUP_COMPLETED_ORIGINAL_REQUEST_SETTLEMENT_NOT_CONFIRMED",
+  "original_v3": {
+    "key": "mem8-integrated-repair-source-ai395-ed353817-v3",
+    "host": "ai395",
+    "admission": "UNKNOWN",
+    "terminal": "UNKNOWN",
+    "known_job_id": null,
+    "why_status_or_stdout_not_requested": "No original job_id was found in the inspected identity-bound evidence. The retained page exposes no request key or command, and the original continuation was refused. No unrelated jobs were probed."
+  },
+  "original_v4": {
+    "destination": {
+      "host": "ai395",
+      "path": "/home/qq/mem8-integrated-repair-source-input-ed353817-v4.json.xz"
+    },
+    "upload_id": "58d82c85-983c-4f9e-8ad2-33aa0464c3da",
+    "latest_destination_observation": "FileNotFoundError",
+    "latest_observation_clock_after_response_utc": "2026-11-11 18:11:10 UTC",
+    "upload_effects": "UNKNOWN",
+    "late_write_excluded": false,
+    "staged_chunk_absence_proven": false,
+    "async_file_info_operation_id": null,
+    "why_operation_status_not_requested": "The original initial and same-key operation_start calls timed out without returning an operation_id. The read-only status interface requires that immutable ID.",
+    "why_upload_not_queried": "The exposed binary_upload actions are chunk, commit and abort; no read-only upload-status action is available. Commit or abort would mutate/replay the original upload and was not invoked."
+  },
+  "registry": {
+    "schema": "mem8.h-original-identity.original-registry-coverage.v1",
+    "original_observed_at": {
+      "current_time": "2026-11-11 15:18:54 UTC"
+    },
+    "snapshot_sha256": "6b8603cef841ffd2c87d0f7b7b5aa64f5d80453875f6ce2b2a1480a00813cc92",
+    "next_cursor_used": "43cbadc63d4652a18c271f974ce111d06cca8d154609f41b703f808588376a01:1a1a44ae122-fc05-eae",
+    "total_reported": 7647,
+    "original_rows_inspected": 128,
+    "additional_rows_from_current_continuation": 0,
+    "total_rows_covered": 128,
+    "rows_not_covered": 7519,
+    "inventory_complete": false,
+    "source_first_page_pin": {
+      "path": "mem8-ci-followup-v16/original-h-readonly/OBSERVATION.json",
+      "bytes": 26670,
+      "sha256": "66942587ff7c9ebb969525b6021923e8a3f28da95050ec24126c725b8c6db387",
+      "git_blob_computed": "4f6dd03b091dffccf47ecddf76603a96c12dc23d"
+    },
+    "jobs_canonical_json_sha256": "e6a46bc4b83697dd54185a8dc16892881731045a8f57be1eb34bc2f7867505e5",
+    "observed_metadata_fields": [
+      "created_unix_ms",
+      "execution_mode",
+      "host",
+      "id",
+      "launch_state"
+    ],
+    "request_key_or_command_field_present": false,
+    "original_target_matches": [],
+    "target_match_interpretation": "No identity-bound match is available from the inspected fields. This is not a whole-inventory absence result.",
+    "other_job_identifiers_or_commands_published": false,
+    "continuation_result": "SNAPSHOT_UNAVAILABLE_EXPIRED_OR_INVALIDATED",
+    "fresh_first_page_requested_in_this_followup": false
+  },
+  "new_calls": {
+    "h_file_info": 1,
+    "h_process_list_page_continuation": 1,
+    "h_process_list_page_new_snapshot": 0,
+    "h_process_status": 0,
+    "h_process_read": 0,
+    "h_operation_status": 0,
+    "host_mutations": 0,
+    "starts": 0,
+    "cancels_or_signals": 0,
+    "uploads_chunks_commits_aborts": 0,
+    "model_requests": 0,
+    "CI_or_native_runs": 0
+  },
+  "next_readonly_evidence_needed": [
+    "An authenticated original V3 job_id or immutable operation binding, allowing exact-host status/read without probing unrelated jobs.",
+    "An authenticated original V4 upload receipt/status binding or immutable operation_id. The current upload interface has no read-only query by upload_id.",
+    "A new registry snapshot, if separately authorized, would be a new observation and must not be represented as completion of the expired snapshot; the current metadata fields alone still do not expose request keys."
+  ],
+  "unchanged_boundaries": [
+    "The original V3 admission and terminal remain UNKNOWN; an incomplete/expired metadata snapshot is not proof of nonexecution.",
+    "Destination absence at a read is not settlement of an earlier timed-out upload and does not exclude a late write.",
+    "V4 historical source process_start requests remain zero; file upload effects remain separately UNKNOWN.",
+    "No change to any owner, service, permission, key, CI run, source ref, provider turn or adoption gate."
+  ],
+  "evidence_files": [
+    "ORIGINAL_IDENTITIES.json",
+    "REGISTRY_COVERAGE.json",
+    "SOURCE_PINS.json",
+    "PRIOR_SAFE_OBSERVATION.json",
+    "V4_FILE_INFO_OBSERVATION.json",
+    "PROCESS_REGISTRY_CONTINUATION_OBSERVATION.json",
+    "EXPOSED_TOOL_CONTRACTS.json"
+  ]
+}

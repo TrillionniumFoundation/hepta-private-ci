@@ -1,0 +1,20 @@
+{
+  "schema": "root-hpca-original-cold-readback-v1",
+  "original_main_sha256": "0bd8a380cd565fc76b42bc184357c14d25f030b69286769d0863af68819e7e2b",
+  "original_cold_sha256": "9b42ff62fc3c1fb1b1daf56b523ee86c2d67362c7e1ac94b681321569183be56",
+  "completed": 204,
+  "failed": 0,
+  "independently_equal_rows": 204,
+  "compared": [
+    "tokens",
+    "text",
+    "feature_sha256",
+    "first_token_head_delta"
+  ],
+  "source": "b0ea141de2d5218869823b2d9e075db6d7b215dd",
+  "all_exact_field_checked": true,
+  "unique_condition_task_pairs": 204,
+  "model_forwards_started_by_this_readback": 0,
+  "scope": "Fresh checkpoint inference on 12 fixed tasks x 17 conditions; not training replay or new task efficacy",
+  "decision": "HOLD_NO_GO"
+}

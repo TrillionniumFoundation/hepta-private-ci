@@ -67,12 +67,18 @@
 //! `ChatWidget` merges the draft with any existing initial prompt and attachments, rebasing cursor
 //! and placeholder positions while preserving both composers' contents. The draft remains deferred
 //! until protected views close, input is enabled, and required sandbox setup completes.
+//! Text-element rebasing uses checked signed offsets and discards ranges that underflow, overflow,
+//! or are empty.
 //!
 //! # Submission and Prompt Expansion
 //!
 //! `Enter` submits immediately. `Tab` requests queuing while a task is running; if no task is
 //! running, `Tab` submits just like Enter so input is never dropped.
 //! `Tab` does not submit when entering a `!` shell command.
+//!
+//! Shell mode keeps the leading `!` in prompt state, outside the editable textarea. Imports subtract
+//! one byte from element ranges; exports add it back. Empty, reversed, or unrepresentable ranges are
+//! discarded.
 //!
 //! On submit/queue paths, the composer:
 //!
@@ -4957,6 +4963,10 @@ impl ChatComposer {
 #[cfg(test)]
 #[path = "chat_composer_effort_tests.rs"]
 mod effort_tests;
+
+#[cfg(test)]
+#[path = "chat_composer_shift_tests.rs"]
+mod shift_tests;
 
 #[cfg(test)]
 mod tests {

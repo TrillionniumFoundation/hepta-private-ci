@@ -1,0 +1,23 @@
+function readTarStrict(bytes,decode){
+ const raw=Uint8Array.from(bytes),files=Object.create(null),headers=[];let p=0,pax=null;
+ const ztext=(b,s,n)=>{const a=b.subarray(s,s+n),z=a.indexOf(0);return decode(z<0?a:a.subarray(0,z));};
+ const oct=(b,s,n)=>{const t=ztext(b,s,n).trim();if(!/^[0-7]+$/.test(t))throw Error("octal");const v=parseInt(t,8);if(!Number.isSafeInteger(v)||v<0)throw Error("number bound");return v;};
+ const fields=d=>{let q=0;const o=Object.create(null);while(q<d.length){let k=q;while(k<d.length&&d[k]!==32)k++;const n=decode(d.subarray(q,k));if(!/^[1-9]\d*$/.test(n))throw Error("pax size");const len=Number(n);if(!Number.isSafeInteger(len)||len<k-q+4||q+len>d.length||d[q+len-1]!==10)throw Error("pax length");const s=decode(d.subarray(k+1,q+len-1)),i=s.indexOf("=");if(i<1||Object.hasOwn(o,s.slice(0,i)))throw Error("pax field");o[s.slice(0,i)]=s.slice(i+1);q+=len;}return o;};
+ while(p+512<=raw.length){
+  const h=raw.subarray(p,p+512);if(h.every(b=>b===0)){if(pax||p+1024>raw.length||!raw.subarray(p).every(b=>b===0))throw Error("EOF or padding");return {files,headers,padding_bytes:raw.length-p};}
+  let sum=0;for(let i=0;i<512;i++)sum+=i>=148&&i<156?32:h[i];if(sum!==oct(h,148,8))throw Error("checksum");
+  const type=String.fromCharCode(h[156]);let size=oct(h,124,12);
+  if(type!=="x"&&pax?.size!==undefined){if(!/^\d+$/.test(pax.size))throw Error("PAX size");size=Number(pax.size);}
+  if(!Number.isSafeInteger(size)||size<0||size>16777216||p+512+Math.ceil(size/512)*512>raw.length)throw Error("payload bound");
+  const data=raw.subarray(p+512,p+512+size),padding=raw.subarray(p+512+size,p+512+Math.ceil(size/512)*512);
+  if(!padding.every(b=>b===0))throw Error("nonzero file padding");
+  p+=512+Math.ceil(size/512)*512;
+  if(type==="x"){if(pax)throw Error("double local PAX");pax=fields(data);continue;}
+  const prefix=ztext(h,345,155),base=ztext(h,0,100),name=pax?.path??(prefix?prefix+"/"+base:base);pax=null;
+  if(!name||name[0]==="/"||name.includes("\\")||name.includes("\0")||name.split("/").some(s=>s==="."||s===".."))throw Error("unsafe path");
+  if(type==="5"){if(size)throw Error("dir data");headers.push({name,type,size});continue;}
+  if(type!=="0"&&type!=="\0")throw Error("unsupported type "+type);
+  if(!name.startsWith("evidence/")||Object.hasOwn(files,name))throw Error("name or duplicate");
+  files[name]=Array.from(data);headers.push({name,type,size});
+ }throw Error("missing EOF");
+}

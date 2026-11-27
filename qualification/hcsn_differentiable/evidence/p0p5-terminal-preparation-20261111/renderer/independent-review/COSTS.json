@@ -1,0 +1,57 @@
+{
+  "actual_renderer_or_analysis_executed": false,
+  "attempts": [
+    {
+      "attempt": "original_partial_contract_counterexamples",
+      "receipt": {
+        "bytes": 3051,
+        "path": "/workspace/scratch/c385a7439f8e/renderer-native155-independent-review-v1/EXECUTION.json",
+        "sha256": "65b8a93b48aa39f26d33d35069805c710758acb447808d27f0efc889246c01b1"
+      },
+      "returncode": 0,
+      "scope": "One stdlib pure synthetic metadata process. No Matplotlib, render, model, actual C2, E or native audit. Parent receipt/save/exit excluded from child cost.",
+      "timed_out": false,
+      "wait4_child_CPU_seconds": 0.07310499999999999,
+      "wait4_peak_RSS_bytes": 12582912,
+      "whole_child_wall_seconds": 0.07759632199940825
+    },
+    {
+      "attempt": "fixed_contract_and_raw_native_closure",
+      "receipt": {
+        "bytes": 3333,
+        "path": "/workspace/scratch/c385a7439f8e/renderer-native155-independent-closure-v1/EXECUTION.json",
+        "sha256": "3a76ce227b0e86b5247027a7dc180dd4839b61cb13e3b4f200617e52d5ee3e9f"
+      },
+      "returncode": 0,
+      "scope": "One stdlib pure synthetic metadata process. No Matplotlib, render, model, actual C2, E or native audit. Parent receipt/save/exit excluded from child cost.",
+      "timed_out": false,
+      "wait4_child_CPU_seconds": 0.114596,
+      "wait4_peak_RSS_bytes": 16384000,
+      "whole_child_wall_seconds": 0.12404531800075347
+    },
+    {
+      "attempt": "posthoc_source_roster_only",
+      "receipt": {
+        "bytes": 1162,
+        "path": "/workspace/scratch/c385a7439f8e/renderer-native155-independent-closure-v1/coverage-rebind-v1/EXECUTION.json",
+        "sha256": "cbb458ce8d92d435b916aefd24e21a1fdf9cd61066eb782883ea0c09a0373523"
+      },
+      "returncode": 0,
+      "scope": "One read-only source/hash child, no probe rerun; parent receipt serialization/exit excluded from this exact child cost.",
+      "timed_out": false,
+      "wait4_child_CPU_seconds": 0.055958999999999995,
+      "wait4_peak_RSS_bytes": 10092544,
+      "whole_child_wall_seconds": 0.09608313199987606
+    }
+  ],
+  "deduplication": "Raw receipts, case files and ZIP copies are the same three attempts; do not add copies again.",
+  "excludes": [
+    "source reading and reasoning",
+    "tool transport",
+    "parent receipt/ZIP preparation and parent exit"
+  ],
+  "overall_review_wall_and_CPU": null,
+  "schema": "renderer155-independent-review-costs-v1",
+  "sum_disjoint_child_wall_seconds": 0.2977247720000378,
+  "sum_disjoint_wait4_CPU_seconds": 0.24366
+}

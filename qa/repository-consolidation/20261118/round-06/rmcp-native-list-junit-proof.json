@@ -1,0 +1,31 @@
+{
+  "run_id": "301e91ce-0d7f-43a9-aefa-7d571feaaa95",
+  "listed_tests": 1605,
+  "executed_tests": 1601,
+  "passed": 1601,
+  "failed": 0,
+  "ignored_tests": [
+    {
+      "binary_id": "rmcp::test_live_oauth_refresh",
+      "name": "live_concurrent_refreshes_survive_refresh_token_rotation"
+    },
+    {
+      "binary_id": "rmcp::test_live_oauth_refresh",
+      "name": "live_refresh_rejects_credentials_for_another_client"
+    },
+    {
+      "binary_id": "rmcp::test_live_oauth_refresh",
+      "name": "live_refresh_rotates_the_stored_token"
+    },
+    {
+      "binary_id": "rmcp::test_live_oauth_refresh",
+      "name": "live_reusing_a_rotated_refresh_token_is_rejected"
+    }
+  ],
+  "full_name_set_equal": true,
+  "junit_sha256": "50ac5c04e48e430003d13be3b969014df670045350cfe6e1b57ebf285fb251eb",
+  "test_list_sha256": "6a14263c3fda4f167d9aae6d62ffbfc678121aa177444f87eee20c42b1b7c430",
+  "binaries_metadata_sha256": "ec471018e50bef8a54cd84de78bb32742284e2c17ae3dbfba8a93e5a592797f1",
+  "network_isolation_sha256": "95c1d76648496fb3fdbda72a8c74f2b415e3a6bd5c518b99f8145a55d1f5c94b",
+  "retries": 0
+}

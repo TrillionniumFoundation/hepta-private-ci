@@ -1,0 +1,36 @@
+{
+  "actual_model_execution_accepted": false,
+  "before": {
+    "head": "34eacaec1c94032f4980807e4a6f7c3516a7dafc",
+    "tracked_entries_verified": 11190,
+    "tree": "fdfed48155d664ef3f56c84a6972f2d746e46587"
+  },
+  "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1bc339416-138b0-d6.service\n",
+  "command": [
+    "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin/just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--locked",
+    "--offline",
+    "--no-capture",
+    "-E",
+    "test(ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution) | test(updated_candidate_uses_original_actor_and_recovers_without_another_reset) | test(running_actor_refuses_current_withdrawal_and_revocation) | test(updated_actor_rechecks_current_withdrawal_and_revocation) | test(unpublished_actor_refuses_learning_readback_and_keeps_transport_errors)"
+  ],
+  "engineering_controls_only": true,
+  "new_empty_target": true,
+  "process_id": 195870,
+  "production_activation": false,
+  "qualification": "HOLD_NO_GO",
+  "schema": "hepta-completed-learning-native-controls-v1",
+  "selectors": [
+    "ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution",
+    "updated_candidate_uses_original_actor_and_recovers_without_another_reset",
+    "running_actor_refuses_current_withdrawal_and_revocation",
+    "updated_actor_rechecks_current_withdrawal_and_revocation",
+    "unpublished_actor_refuses_learning_readback_and_keeps_transport_errors"
+  ],
+  "source": "34eacaec1c94032f4980807e4a6f7c3516a7dafc",
+  "start_unix_ns": 1794158872631888034
+}

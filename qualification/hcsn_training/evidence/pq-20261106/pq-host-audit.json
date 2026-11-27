@@ -1,0 +1,277 @@
+{
+  "backends": [
+    {
+      "backend": "value_kernel",
+      "cancellation_workload": {
+        "backend": "value_kernel",
+        "batch": 2,
+        "coarse_intervals": 32,
+        "event_steps_per_sample": 32,
+        "graph_digest": "a3d7d66e6a55795c5231eb60fb9fea6bffae9f2b628c8f07018c45973a0ee208",
+        "logical_cells": 2,
+        "maximum_elements": 1048576,
+        "maximum_host_wire_bytes": 24576,
+        "maximum_optimizer_steps": 64,
+        "request_bytes": 17915,
+        "schema_version": 1,
+        "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+        "spatial_bins": null,
+        "temporal_profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+        "working_elements": 1666
+      },
+      "clock_requests": 38,
+      "cold_native_pid": 24588,
+      "consumed_nonces_verified_from_raw_claim_frames": 2,
+      "external_frontier_recomputed": true,
+      "final_outcomes": [
+        "failed",
+        "succeeded"
+      ],
+      "frontier_requests": 22,
+      "initial_observations": [
+        "indeterminate",
+        "indeterminate"
+      ],
+      "missing_expired_feed_terminal_readback_recorded": true,
+      "parent_pid": 24576,
+      "raw_terminal_bound_to_cold_receipts": true,
+      "result_sha256": "ba94ec7f6dc135d101bd48447e2005fc1822fc0267592fa9ba65f6c2190cc368",
+      "retained_files_verified": 53,
+      "retained_manifest_sha256": "d6a16ab013b021657b1ef812c3febf13cdc39f80efe02bee67331ccf0da06c0f",
+      "scope": "retained native CI evidence audited offline; no new worker or signature execution",
+      "source_files_verified_against_exact_git": 54,
+      "sqlite_receipts_match_exactly": true,
+      "sqlite_sha256": "28c4b21ee63f799989d5a69501a693826905a4702c8d5425195386ae343a552d",
+      "status": "passed",
+      "terminal_reason": "cancelled_worker_stopped",
+      "terminal_sha256": "eaaa1182fc4438087b412b2f16b09514d18f9ededb34e632ff10cc4065514dcb",
+      "test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+      "worker": {
+        "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+        "incarnation": "734cb743e8b9218fb5ea7d645ba710501f179c69ff6f0cd0d8582aa40a7e56c9",
+        "process_id": 24585
+      }
+    },
+    {
+      "backend": "population_grid",
+      "cancellation_workload": {
+        "backend": "population_grid",
+        "batch": 1,
+        "coarse_intervals": 12,
+        "event_steps_per_sample": 96,
+        "graph_digest": "c24d60c0685549705a6e3bcc5013156e092b26fc77797977fa34224d4b84587c",
+        "logical_cells": 2,
+        "maximum_elements": 1048576,
+        "maximum_host_wire_bytes": 24576,
+        "maximum_optimizer_steps": 64,
+        "request_bytes": 7286,
+        "schema_version": 1,
+        "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+        "spatial_bins": 8,
+        "temporal_profile_digest": "3b973334d6ae99c9a8e0dda38ccb95d390561809bcd1430042854fd6641329c3",
+        "working_elements": 800077
+      },
+      "clock_requests": 38,
+      "cold_native_pid": 24616,
+      "consumed_nonces_verified_from_raw_claim_frames": 2,
+      "external_frontier_recomputed": true,
+      "final_outcomes": [
+        "failed",
+        "succeeded"
+      ],
+      "frontier_requests": 22,
+      "initial_observations": [
+        "indeterminate",
+        "indeterminate"
+      ],
+      "missing_expired_feed_terminal_readback_recorded": true,
+      "parent_pid": 24603,
+      "raw_terminal_bound_to_cold_receipts": true,
+      "result_sha256": "c79794bacf460ac0e31cd4defa6f6294391bdcf1b9624df86948d4d114a92b9d",
+      "retained_files_verified": 53,
+      "retained_manifest_sha256": "308fb2fb76c4d374e3a5067196314bccbc2db2a66209d0113f85566cc4f5ed4b",
+      "scope": "retained native CI evidence audited offline; no new worker or signature execution",
+      "source_files_verified_against_exact_git": 54,
+      "sqlite_receipts_match_exactly": true,
+      "sqlite_sha256": "f83a1eaafedb35836e0c42de07550a953298d1a3d9a19437d7fa6396190b7f56",
+      "status": "passed",
+      "terminal_reason": "cancelled_worker_stopped",
+      "terminal_sha256": "ec84a27e784bf02b72848b0970a80d4345fd1440fcdc9c087cc05dccf23d4917",
+      "test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+      "worker": {
+        "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+        "incarnation": "34d6eb87713feae10f42a71844282f9092865c00bb1268d2f900202fde8b3899",
+        "process_id": 24613
+      }
+    },
+    {
+      "backend": "population_age",
+      "cancellation_workload": {
+        "backend": "population_age",
+        "batch": 1,
+        "coarse_intervals": 14,
+        "event_steps_per_sample": 79,
+        "graph_digest": "106dff09f07c289300945b470736c0c8403d131b9cb7773008ecb8e009f76d86",
+        "logical_cells": 2,
+        "maximum_elements": 1048576,
+        "maximum_host_wire_bytes": 24576,
+        "maximum_optimizer_steps": 64,
+        "request_bytes": 8185,
+        "schema_version": 1,
+        "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+        "spatial_bins": 8,
+        "temporal_profile_digest": "596ea8fad7844062b311960f5cac775ceb16d2ae816ebbe67c6bc181ba44f79b",
+        "working_elements": 1046923
+      },
+      "clock_requests": 38,
+      "cold_native_pid": 24641,
+      "consumed_nonces_verified_from_raw_claim_frames": 2,
+      "external_frontier_recomputed": true,
+      "final_outcomes": [
+        "failed",
+        "succeeded"
+      ],
+      "frontier_requests": 22,
+      "initial_observations": [
+        "indeterminate",
+        "indeterminate"
+      ],
+      "missing_expired_feed_terminal_readback_recorded": true,
+      "parent_pid": 24629,
+      "raw_terminal_bound_to_cold_receipts": true,
+      "result_sha256": "22957f81656cdca33c1dea55d0f12a1acaae959c78226e14871a51f4db669891",
+      "retained_files_verified": 53,
+      "retained_manifest_sha256": "e19c268447609f546f46d64e9077bcf0d0238375cf115d6484d6f7b6986643e6",
+      "scope": "retained native CI evidence audited offline; no new worker or signature execution",
+      "source_files_verified_against_exact_git": 54,
+      "sqlite_receipts_match_exactly": true,
+      "sqlite_sha256": "38349307a386a4742956cd3a429a9a382841523a8c3d4568533393de9d61dc33",
+      "status": "passed",
+      "terminal_reason": "cancelled_worker_stopped",
+      "terminal_sha256": "a87ed5f6a95783aa33622377393b99b272879a4dba0d91d479f7135d85439328",
+      "test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+      "worker": {
+        "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+        "incarnation": "ba4929e3065c579226d43e033ebe50793e3bcd813e6f2c7d59796f4b5af070d7",
+        "process_id": 24638
+      }
+    }
+  ],
+  "excluded_compiled_binary_count": 0,
+  "filtered_raw_archive": {
+    "path": "pq-host-raw-filtered.zip",
+    "sha256": "715cd26b57c46bf91a97c4b972854233bfacf6399043f822f676cb49145bfe36",
+    "size": 434639
+  },
+  "filtered_raw_inventory": "pq-host-raw-inventory.json",
+  "host_tests": {
+    "failed": 0,
+    "passed": 23,
+    "skipped_by_filter_or_ignore": 169,
+    "test_names": [
+      "automation_effect_host::hcsn::tests::private_directory_validation_rejects_permission_changes_and_symlink_redirection",
+      "automation_effect_host::hcsn::tests::production_profile_is_refused_before_any_classical_authority_or_worker_state",
+      "automation_effect_host::hcsn::tests::profile_cannot_be_omitted_or_inferred_from_classical_key_fields",
+      "automation_effect_host::hcsn::tests::retained_request_read_rejects_linked_or_exposed_bytes",
+      "automation_effect_host::hcsn::tests::unregistered_operation_is_rejected_before_supervisor_pin_io",
+      "automation_effect_host::hcsn_pq::tests::authenticated_old_head_cannot_bind_a_newer_final_use_claim",
+      "automation_effect_host::hcsn_pq::tests::explicit_pq_host_binds_deployment_and_rejects_downgrade_before_trust_contact",
+      "automation_effect_host::hcsn_pq::tests::pq_hcsn_rechecks_clock_frontier_and_signed_feed_after_token_entry_before_spawn",
+      "automation_effect_host::hcsn_pq::tests::pq_host_contacts_pinned_peer_and_reads_settled_terminal_without_feed",
+      "automation_effect_host::hcsn_pq::tests::pq_host_rejects_expired_feed_and_changed_supervisor_pins_before_dispatch",
+      "automation_effect_host::hcsn_pq::tests::pq_host_rejects_tampered_feed_and_grant_before_provider_and_nonce_use",
+      "automation_effect_host::hcsn_pq::tests::source_tests::source_drift_after_claim_blocks_native_dispatch_and_status_contact",
+      "automation_effect_host::hcsn_pq::tests::source_tests::source_drift_refuses_host_open_before_external_trust_or_nonce_state",
+      "automation_effect_host::hcsn_source::tests::exact_source_inventory_rejects_helper_drift_and_root_package_injection",
+      "automation_effect_host::hcsn_source::tests::manifest_decode_and_source_reads_enforce_bounds",
+      "automation_effect_host::hcsn_source::tests::source_aliases_are_rejected_even_when_their_bytes_match",
+      "automation_effect_host::recovery_tests::local_terminal_recovery_preserves_uncertain_history_without_provider_lookup",
+      "automation_effect_host::tests::host_dispatches_exact_wire_payload_once",
+      "pq_final_use::tests::final_contact_rechecks_external_nonce_progress_after_active_effect_entry",
+      "pq_final_use::tests::final_contact_refuses_unavailable_frontier_without_replacing_local_state",
+      "pq_final_use::tests::recovery_contact_refuses_feed_that_expires_during_frontier_observation",
+      "protected_file::tests::private_fifo_without_a_writer_is_rejected_before_any_blocking_read",
+      "protected_file::tests::private_regular_file_is_bounded_and_rejects_unsafe_identity"
+    ]
+  },
+  "ordinary_library_build": "passed; ordinary-build-check.log has finished dev profile",
+  "python_source_file_count": 54,
+  "schema_version": 1,
+  "scope": {
+    "agentd_daemon_booted": false,
+    "authbus_ingress_exercised": false,
+    "independent_production_custody_proven": false,
+    "live_proc_observation_repeated": false,
+    "native_ci_process_evidence_and_retained_bytes_cross_checked": true,
+    "new_tests_executed_in_this_audit": false,
+    "optimizer_entry_proven": false,
+    "production_deployment": false,
+    "runtime_and_source_atomic_custody_proven": false,
+    "signatures_reverified_offline": false
+  },
+  "scoped_clippy": "passed; clippy.log has finished dev profile; warnings retained",
+  "source_artifact": {
+    "artifact_id": 13519856345,
+    "created_at": "2026-11-06T16:14:51Z",
+    "expires_at": "2027-02-04T15:07:47Z",
+    "head_sha": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+    "job_id": 127967938963,
+    "name": "hcsn-agentd-bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca-1",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_attempt": 1,
+    "run_id": 42240138316,
+    "sha256": "e173d74a2f6815917f1385542349a42e76a42ef77f3d4e2ae2c4c153d030dd69",
+    "size_in_bytes": 432095,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13519856345"
+  },
+  "source_pins_verified": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "sha256": "70bc8625b6624bc20fe0a768c281c6f66fb9421e1dec07f43691f958e676e0c0"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "sha256": "4bc589b9295c128f2eb677b9cba879a75436783a97e1f94ebddaf1d70d9ba3c2"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_authentication.rs",
+      "sha256": "487fc561a16d61426d7c3011e5c873c551ff3cff58447a5924bd3550af940e44"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/pq_auth.rs",
+      "sha256": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq.rs",
+      "sha256": "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "sha256": "38d782089568165e8c3f6830fea9288fedc234ebdd305b321f68ece11a8e37bc"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+      "sha256": "2aafe9a918c8ecc2d5c99fba3befbcf8b3b78db980f30f37d5a7780a57343b9c"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "sha256": "1ce76b4189d1a1fb41998072e4a71d9a6080db5e252d69321ac6447ec43d9ff6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/pq_final_use.rs",
+      "sha256": "8e3a4411ae86afbf56c51cd7fab679c1810dbd95fa82525845e7732ff5695ae4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_hcsn_pq.rs",
+      "sha256": "a10e908c37b551e506759acfe2b9dd57e3b335c8c75edf8fef0ddfcd7631c392"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_hcsn_source.rs",
+      "sha256": "a3de028824146432600daa04b58f4fcfd43ada45abae4cc00ab7a0ef524b2274"
+    }
+  ],
+  "source_sha": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+  "source_tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0",
+  "status": "passed",
+  "tracked_source_unchanged_log_empty": true
+}

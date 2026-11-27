@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.joint-generation.experiment.v1",
+  "base_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "scope": "qualification-only finite-scene text and learned RGB generation",
+  "profile": "fixed-rho recursive entropic certainty equivalent; not general FBSDE",
+  "model_seeds": [11, 23, 47],
+  "dataset_seeds": {"train": 101, "validation": 202, "test": 303},
+  "variants": 6,
+  "hidden": 32,
+  "batch_size": 64,
+  "pretrain_steps": 500,
+  "decoder_steps": 300,
+  "adapt_steps": 300,
+  "learning_rates": [0.001, 0.003, 0.01],
+  "rho": 1.5,
+  "ce_anchor": 0.2,
+  "compute_price": 0.02,
+  "arms": ["supervised", "additive", "ndu"],
+  "selection": "maximum validation decoded expected task utility; no test rows",
+  "benefit_gate": {
+    "paired_decoded_utility_ci95_lower_gt": 0.0,
+    "paired_joint_success_ci95_lower_gt": 0.0,
+    "maximum_greedy_accuracy_drop": 0.02,
+    "all_seeds_reported": true,
+    "strict_budget_violations": 0,
+    "decoder_corruption_must_reduce_score": true
+  },
+  "dynamic_gate": {
+    "paired_decoded_utility_ci95_lower_gt": 0.0,
+    "paired_joint_success_ci95_lower_gt": 0.0,
+    "comparison": "NDU adaptive route versus identical-content random route at identical forward count"
+  },
+  "audio_video": "declared unsupported by this profile; no synchronous AV or long-horizon claim",
+  "test_policy": "one final evaluation after validation selection; retain failures"
+}

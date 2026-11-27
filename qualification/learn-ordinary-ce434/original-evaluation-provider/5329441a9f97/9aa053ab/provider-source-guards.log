@@ -1,0 +1,24 @@
+test_actual_independent_outcomes_join_original_execution_without_completion_labels (test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_actual_independent_outcomes_join_original_execution_without_completion_labels) ... FAIL
+test_all_physical_reads_precede_fresh_original_windows_and_sticky_fence (test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_all_physical_reads_precede_fresh_original_windows_and_sticky_fence) ... ok
+test_complete_preregistered_rule_binds_units_time_and_all_original_runs (test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_complete_preregistered_rule_binds_units_time_and_all_original_runs) ... ok
+test_exact_cohort_capture_provider_and_original_policy_edges (test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_exact_cohort_capture_provider_and_original_policy_edges) ... ok
+test_only_the_original_consumed_holdout_releases_rows_once_without_authority (test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_only_the_original_consumed_holdout_releases_rows_once_without_authority) ... ok
+test_original_candidate_training_and_full_signature_are_revalidated (test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_original_candidate_training_and_full_signature_are_revalidated) ... ok
+test_original_policy_projection_is_bounded_exact_and_never_smooths_zero_support (test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_original_policy_projection_is_bounded_exact_and_never_smooths_zero_support) ... ok
+test_two_actual_arms_preserve_inputs_lineage_and_unsupported_actions (test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_two_actual_arms_preserve_inputs_lineage_and_unsupported_actions) ... ok
+
+======================================================================
+FAIL: test_actual_independent_outcomes_join_original_execution_without_completion_labels (test_original_evaluation_provider_source_closure.OriginalEvaluationProviderClosureTests.test_actual_independent_outcomes_join_original_execution_without_completion_labels)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/provider-review-v3/qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py", line 170, in test_actual_independent_outcomes_join_original_execution_without_completion_labels
+    self.rejects(RECORDS, "fn read_episode(", marker)
+  File "/workspace/scratch/ce434f960ee9/provider-review-v3/qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py", line 66, in rejects
+    with self.assertRaises(PROOF.VerificationFailure):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: VerificationFailure not raised
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.478s
+
+FAILED (failures=1)

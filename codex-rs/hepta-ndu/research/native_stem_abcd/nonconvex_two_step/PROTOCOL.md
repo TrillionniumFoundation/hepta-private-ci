@@ -1,0 +1,4 @@
+# R15 nonconvex two-step forward Stem — scoped protocol
+Parent R14 SHA 7f6d69934ee042f0a2d20b6d224ea8a08e0e037b.
+Forward layers H1=aX, H2=bH1+epsilon/10, X∈{-1,+1} and epsilon independently equiprobable ±1. Target X. Cost E[(H2-X)^2]+(a²+b²)/4; parameters a,b both alter forward evolution and composition is **nonlinear in parameters**. Risk is zero here: this does not extend R14's nonzero entropic case. It isolates the lost-convexity problem.
+Global candidate and gap must be proven by exact rational sum-of-squares, not optimizer convergence. Save unfavorable stationary points and compare 8 fixed initial pairs x BFGS/trust-exact/L-BFGS-B. Test against exact global optimum; do not call zero gradient an optimum. Source-only Python/Scipy experiment, not native/LLM training, production or full repository qualification.

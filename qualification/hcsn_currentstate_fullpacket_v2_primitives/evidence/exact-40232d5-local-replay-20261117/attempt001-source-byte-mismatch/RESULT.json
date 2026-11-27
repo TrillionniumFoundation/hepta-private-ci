@@ -1,0 +1,35 @@
+{
+  "schema": "hcsn-fullpacket-v2-smallfixture-receipt-result-v1",
+  "identity": "hcsn-fullpacket-v2-smallfixture-receipt-20261117-c06d-local001-attempt001",
+  "status": "RED_SOURCE_BYTES_MISMATCH",
+  "reason": "the local recovery added one trailing LF to each of the seven immutable source files before the test command ran",
+  "unittest_exit_code": 0,
+  "unittest_tests_run": 5,
+  "unittest_result_admissible": false,
+  "remote_source_commit": "40232d51886f21520377effcd25deee31bd593e6",
+  "remote_blobs": {
+    "README.md": "dcb188d1c34649ec96c90999cb9de3cc0ff727c8",
+    "__init__.py": "6832cfbfb148c9a1333d56cc65b31804862783d5",
+    "candidate.py": "1a74673b9c8494028788eb674a83b947c6fd0ef1",
+    "compare.py": "2c7454391a530cbc182410f0717e5401682ebb5b",
+    "fixture.json": "cead209c40807a6c155298bbf752fc6d714e7a17",
+    "oracle.py": "3dc3ad39c47911b7dff797d076552e717db443a9",
+    "test_primitives.py": "d9bee3dde757414d7c1123adaab2a58d22224f8b"
+  },
+  "local_blobs": {
+    "README.md": "0a9fb3b9d6006d5eb9f6770de05646cf050e00c4",
+    "__init__.py": "505643d1eb1ba9c68aed2374d42c6e43188c8c92",
+    "candidate.py": "f4f674122e42c8d7d851551524cee7ea135edcd0",
+    "compare.py": "fee273e8ebd514f6d37f674afa588030cf041f03",
+    "fixture.json": "3a44c81b9f9bd8f1d63fa432c26b8baa098cac42",
+    "oracle.py": "452caabd274158bfca03ab5b4ac9f50731324cff",
+    "test_primitives.py": "8cf30be8b375c46c176602c2ea565ba278ced676"
+  },
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "numerical_execution_key": null,
+  "admission": "HOLD_SMALL_FIXTURE_ONLY",
+  "all_closed": false
+}

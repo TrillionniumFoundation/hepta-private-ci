@@ -1,0 +1,141 @@
+{
+  "base_commit": "ca1ae598efb77b552df3897b8debc0441bc7bd90",
+  "base_tree": "719b00c26df134153495f77c5001f57541f6f4ba",
+  "original_negative_logs": [
+    {
+      "job_id": 133149440992,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43822682848/job/133149440992",
+      "representation": "exact UTF-8 decoded Actions log returned by GitHub connector",
+      "original_bytes": 978313,
+      "original_sha256": "6a005c093270c72c5b8d321e2727d0db6e337c1bbe3e366855349cb77dfae88e",
+      "compression": "gzip",
+      "stored_file": "original-ca-job-133149440992.log.gz",
+      "stored_bytes": 88613,
+      "stored_sha256": "0318bac0ae19746a478979f8d2d1d65e827ee32fab567d60d482d8c9568d90d1"
+    },
+    {
+      "job_id": 133149441462,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43822682848/job/133149441462",
+      "representation": "exact UTF-8 decoded Actions log returned by GitHub connector",
+      "original_bytes": 2376161,
+      "original_sha256": "23df3a486d88e14ee02695a258f7daf64df691a1774de6801a384b4351494cf9",
+      "compression": "gzip",
+      "stored_file": "original-ca-job-133149441462.log.gz",
+      "stored_bytes": 220733,
+      "stored_sha256": "85e30720571da66dc56653059dc5f50e4ee8bd5f4dbfd9432419fa94d431dec6"
+    },
+    {
+      "job_id": 133149441516,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43822682848/job/133149441516",
+      "representation": "exact UTF-8 decoded Actions log returned by GitHub connector",
+      "original_bytes": 3202721,
+      "original_sha256": "e740c021da4e29ddd9d19eb9a9a3d4b56425ef78c935023b8a083b8b807a7933",
+      "compression": "xz",
+      "stored_file": "original-ca-job-133149441516.log.xz",
+      "stored_bytes": 138472,
+      "stored_sha256": "f9ffd908eddde7e4d0a5cb6bb278d6dbd00cc4b901f212632e0dd68f7fcf52f7"
+    }
+  ],
+  "local_validation": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "bazel_wrapper_tests": {
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "final_command": "python3 .github/scripts/test_run_bazel_ci.py"
+    },
+    "exact_history_tests": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "command": "python3 -m unittest scripts.test_hepta_ci_history -v"
+    },
+    "mic_observation_tests": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "command": "python3 .github/scripts/test_windows_mic_observation.py"
+    },
+    "n256_normal": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    "n256_optimized": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    "n256_source_verifiers": {
+      "normal_exit": 0,
+      "optimized_exit": 0
+    },
+    "workflow_format": {
+      "version": "prettier 3.5.3",
+      "exit": 0,
+      "scope": "42 changed available JSON/YML/MD files, including SDK artifact retention and final native/source-proof audit records. New audit JSON normalization preserves parsed data."
+    },
+    "shell_syntax": {
+      "command": "bash -n .github/scripts/run-bazel-ci.sh",
+      "exit": 0
+    },
+    "python_script_format": {
+      "version": "ruff 0.15.13",
+      "files": 3,
+      "exit": 0
+    }
+  },
+  "repairs": [
+    {
+      "area": "Windows checkout",
+      "change": "Enable core.longpaths before checkout in 26 Windows-capable jobs across 19 workflows. Run in runner.temp so an inherited source working-directory cannot precede checkout. Preserve historical paths and bytes."
+    },
+    {
+      "area": "HCSN formatting baseline",
+      "change": "Fetch the original exact baseline a83b2ecda37b0e18b05e7fedcaee0a63037c464f through the existing exact-history helper; include the history step in the terminal required condition."
+    },
+    {
+      "area": "Linux Core Bazel routing",
+      "change": "Run both existing no-sandbox Core variants as required native TestRunner=local targets. Preserve strict linux-sandbox for kernel and CLI targets, ABI selection, test roster, assertions and deadlines."
+    },
+    {
+      "area": "macOS Bazel scheduling",
+      "change": "Keep jobs=30 and serialize native test actions with local_test_jobs=1. Preserve Rust test internal parallelism, sandbox strategy, complete roster, original deadlines and failure status. Hosted verification pending."
+    },
+    {
+      "area": "MCP SDK evidence",
+      "change": "Retain the two existing JSON report types as CI artifacts. No conformance baseline, version, scenario, timing threshold or assertion changed."
+    },
+    {
+      "area": "macOS memory fixture",
+      "change": "Canonicalize the newly-created TempDir before HeptaFleetRoot::parse; production symlink rejection remains unchanged. Native v4 validation owns the Rust source qualification."
+    },
+    {
+      "area": "Holdout original read and execution reconciliation",
+      "change": "Restore original descriptor cursor on both read outcomes; retain uncertainty on original owner before any further store IO or CAS; separate the private execution error mapping without widening caller authority. Preserve all original tests, add a recovering-store counterexample."
+    }
+  ],
+  "remaining_at_record_creation": {
+    "CI_required": "original ca run failed; successor is not yet published",
+    "Architecture_required": "Final concrete-caller, holdout latch and mechanical-lint source migrations applied; targeted 90 plus 6 checks passed, full final source/caller gates pending.",
+    "SDK_new_failures": [
+      "2025-11-25 sse-retry/client-sse-last-event-id",
+      "2025-11-25 sse-retry/client-sse-retry-timing"
+    ],
+    "SDK_known_baseline_failures": 28,
+    "Windows_MIC_native_execution": "pending successor hosted CI",
+    "Rust_v4_native_qualification": "Original v4 outstanding gates passed for their exact source. Intelligence original 4 failures fixed: 203/203 passed on b616061a; final 42 Rust source images await hosted CI after reviewed scoped fix/fmt."
+  },
+  "permissions": {
+    "main_merged": false,
+    "branches_deleted": 0,
+    "hia_refs_mutated": false
+  },
+  "protected_ref_boundary": {
+    "explicit_protected_refs": 63,
+    "snapshot_heads": 7293,
+    "new_named_or_unnamed_hia_descendants_excluded": true,
+    "main_unchanged_at_snapshot": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "hia_refs_written": false
+  }
+}

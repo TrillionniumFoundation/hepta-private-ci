@@ -1,0 +1,165 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "5739a9ce5dfcfb8708eff0b3f4690de65a784d02",
+  "tree": "e4020d30bb749f489593360bb7285ed98f602533",
+  "status": "SCOPED_NATIVE_TESTS_PASSED_OLD_GRAPH_MAINTENANCE_COMPLETE_WITH_LIMITS",
+  "changed_paths": [
+    "M\tcodex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "A\tcodex-rs/hepta-automation/migrations/0023_effect_dispatch_recovery_material.sql",
+    "M\tcodex-rs/hepta-automation/src/action_skill_tests.rs",
+    "M\tcodex-rs/hepta-automation/src/authorized_effect.rs",
+    "M\tcodex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "M\tcodex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+    "A\tcodex-rs/hepta-automation/src/provider_recovery_migration_tests.rs",
+    "M\tcodex-rs/hepta-automation/src/store.rs"
+  ],
+  "stat": " .../hepta-agentd/src/automation_effect_host.rs     |  49 ++++-\n .../0023_effect_dispatch_recovery_material.sql     |  36 ++++\n .../hepta-automation/src/action_skill_tests.rs     |   4 +\n codex-rs/hepta-automation/src/authorized_effect.rs |  27 +++\n .../hepta-automation/src/effect_dispatch_ledger.rs |  87 ++++++++-\n .../hepta-automation/src/hcsn_taskflow_tests.rs    |   6 +\n .../src/provider_recovery_migration_tests.rs       | 198 +++++++++++++++++++++\n codex-rs/hepta-automation/src/store.rs             |  10 +-\n 8 files changed, 398 insertions(+), 19 deletions(-)\n",
+  "diff_check_exit": 0,
+  "migration_original_blob": "c5240481c83f294470dc9b6045fbc8b7bdc1165d",
+  "migration_original_sha384": "5c66583577702593208b7345b41aa6750a7b4ff7c9a367c7526e9857075f84021dc2e2bd37e2116620af08ade3188f61",
+  "schema_version": 20,
+  "source_records": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "blob": "062d2b097000ff4ce836e914f70016fc8c7c8f25",
+      "sha256": "0100d3c61f44d945beb9a93cb9a6494bfec04f743850c5eaf89f0061d1173dbf",
+      "bytes": 65988
+    },
+    {
+      "path": "codex-rs/hepta-automation/migrations/0023_effect_dispatch_recovery_material.sql",
+      "blob": "c5240481c83f294470dc9b6045fbc8b7bdc1165d",
+      "sha256": "299c71a605c00df1ca4243b15a60b704b7f1572b84ee56ad50149ec17b398aa2",
+      "bytes": 1499
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/action_skill_tests.rs",
+      "blob": "8fb1926a6ddc6a6926a4977e73883b172b12a88e",
+      "sha256": "92bd39aa95cf8989ab6b1b4528aa97d8e32f0d2567a5a7c0707bf18e002a5ebd",
+      "bytes": 16009
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "blob": "fc5ee139159cb1b66e40b9def9cbd2e12a664f5b",
+      "sha256": "43f5d4a46e78dfa0d4b58e014acd00dd4e370cef76372a4879497e23542c11d6",
+      "bytes": 66353
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "blob": "d3e64f1ee9e52dfe67fac41d72b68990822334d6",
+      "sha256": "9623f84924cca18b29ba211ccbe75cdb0a55b32c3b09d9b432ce58858ed98ed4",
+      "bytes": 28127
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+      "blob": "8cf1880e03efb519ab83b9434acaddafba11cd5c",
+      "sha256": "04f4d2627d3ee11bdd09207dc58ab0e050896db38dc09b62366a3d646b254c72",
+      "bytes": 9757
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/lib.rs",
+      "blob": "f3c13c82480f9621ce872ff90a554be665fd7163",
+      "sha256": "911e4a16ce23b21f36749d126c6a82579cbfcb17b394e37e87e5e884b733d896",
+      "bytes": 11444
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/provider_recovery_migration_tests.rs",
+      "blob": "b697247afde31137ecc8c8547fe93dfab40e2860",
+      "sha256": "2cdeb61e19702adc3422785f5813d9d864a2194ffa9aa3b664bf0c5a7f8b9616",
+      "bytes": 7075
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/store.rs",
+      "blob": "23e84cfe488263db515e84e5ad6a5d8f067d32b6",
+      "sha256": "896f8a899fb9a31192f0c8cb1af4cb4365e403ea6c39d76b6e591c79bf63132c",
+      "bytes": 59092
+    }
+  ],
+  "required_tests": [
+    "provider_recovery_migration_tests (5 tests including 3 corruption cases)",
+    "existing migration_convergence_tests",
+    "effect_dispatch_ledger and authorized_effect integration suites",
+    "hcsn_taskflow_tests and action_skill_tests",
+    "Agentd automation effect and HCSN authority boundary tests"
+  ],
+  "native_tests_executed": true,
+  "rustfmt_exit": 0,
+  "build_data": "existing migrations/** and src/**/*.rs globs cover the new migration and regression module",
+  "refs_changed": false,
+  "native_validation": {
+    "qualification": "OLD_GRAPH_SCOPED_NATIVE_ONLY",
+    "source_commit": "1e681e550a5c5d4584b5882529e531599459dc31",
+    "source_directory": "/home/qian-qi/ci-h3-recovery-20261119-75cf",
+    "candidate_8_paths_before_match_base": true,
+    "candidate_9_records_after_match_tree": true,
+    "all_12_caller_files_old_base_equal": true,
+    "sqlx_lock_entries_old_base_equal": true,
+    "automation_lib": {
+      "job_id": "1a1f487db46-ffbe-1055",
+      "exit": 0,
+      "passed": 113,
+      "skipped": 0,
+      "nextest_run_id": "44cd1fab-a0aa-4de3-8820-f6c363073846",
+      "log": "native-automation-lib-v2.log"
+    },
+    "boundary_job": "1a1f489ffe9-ffbe-105f",
+    "agentd_v2": {
+      "job_id": "1a1f48f9080-ffbe-1071",
+      "exit": 100,
+      "passed": 19,
+      "failed": 1,
+      "scoped_skips": 1703,
+      "failed_test": "automation_effect_host::tests::host_preserves_ordinary_opaque_and_non_skill_json_payloads",
+      "log": "native-agentd-v2.log"
+    },
+    "agentd_v3": {
+      "job_id": "1a1f49579fc-ffbe-1089",
+      "exit": 0,
+      "passed": 20,
+      "failed": 0,
+      "scoped_skips": 1703,
+      "log": "native-agentd-v3.log",
+      "nextest_run_id": "676df8bc-57b7-404e-a163-972f1545789b"
+    },
+    "automation_package": {
+      "job_id": "1a1f489ffe9-ffbe-105f",
+      "stage": 0,
+      "exit": 0,
+      "passed": 205,
+      "ignored": 4,
+      "log": "native-boundary-v1.log",
+      "automation_subtree_unchanged_since_test": true,
+      "nextest_run_id": "9bcff31a-1598-4562-a149-84c8172108fa"
+    }
+  },
+  "superseded_tree": "da7576365ab1da6b4208d4e83fd046660549996d",
+  "native_discovered_fix": {
+    "file": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "old": "Some(WIRE)",
+    "new": "Some(wire)",
+    "reason": "Keep durable-byte equality tied to each original shared-helper input, including existing opaque and non-skill JSON regression cases; no original assertions removed."
+  },
+  "maintenance": {
+    "job_id": "1a1f49cac52-ffbe-10a8",
+    "wrapper_exit": 0,
+    "just_fix_exit": 0,
+    "just_fix_clean_lint_claim": false,
+    "just_fix_diagnostic": "Automatic fixes in unrelated checkpoint codec test modules produced four E0432 unresolved import errors; fix rechecked and did not retain those rejected edits. Final command still returned 0.",
+    "just_fmt_exit": 1,
+    "just_fmt_failures": [
+      "Python SDK formatter requires uv, absent from this native environment.",
+      "Maintenance backup directory inside this isolated source was included in global Rust scan, and a backup example containing let chains was inferred as edition 2021."
+    ],
+    "candidate_rustfmt_check_exit": 0,
+    "candidate_rustfmt_edition": 2024,
+    "candidate_rustfmt_note": "Stable rustfmt accepted formatting, but warned imports_granularity is nightly-only.",
+    "candidate_changed_paths": [],
+    "outside_candidate_changed_paths": [
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+    ],
+    "outside_candidate_propagated": false,
+    "tests_rerun_after_maintenance": false,
+    "receipt_directory": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-final-receipts",
+    "log": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-maintenance.log"
+  },
+  "required_second_parent": "5739a9ce5dfcfb8708eff0b3f4690de65a784d02"
+}

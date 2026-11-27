@@ -1,0 +1,33 @@
+{
+  "files": [
+    {
+      "bytes": 3129,
+      "file": "REPORT.md",
+      "sha256": "17c02151359a85b102751f57e10e8fbe14bb4b4b3d984da3a3ec33866ef47ae3"
+    },
+    {
+      "bytes": 805,
+      "file": "START.json",
+      "sha256": "4bd25ebd1569630a273acc059baea093e737a9926a00d1ddd348359be4cc04dc"
+    },
+    {
+      "bytes": 2555,
+      "file": "diagnostic.json",
+      "sha256": "eaaed14c1a77f4d2d5af801d6579539c82ab8cad4ef3a306ee5bcf864ae366fa"
+    },
+    {
+      "bytes": 270,
+      "file": "manifest.json",
+      "sha256": "03ffbb74f17d99783afaea3a562ed6ad607d598de8745c109e3332c9c8a55251"
+    },
+    {
+      "bytes": 7785,
+      "file": "postrun-audit.json",
+      "sha256": "5949a143f75e3c4a9c803ee9359e927e314deaeec0fde42917d9be134a349ef9"
+    }
+  ],
+  "outer_receipt": "../codex-cloud-dynamic-h2-source-preflight/actual-worker-execution.json",
+  "payload_bytes": 14544,
+  "schema": "hepta.postrun-retained.sha256.v1",
+  "scope": "Extends the original worker manifest without overwriting its three retained files; original failure preserved."
+}

@@ -144,6 +144,7 @@ impl TracingHarness {
                             version: "0.1.0".to_string(),
                         },
                         capabilities: Some(InitializeCapabilities {
+                            process_indeterminate: false,
                             experimental_api: true,
                             ..Default::default()
                         }),

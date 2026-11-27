@@ -14,6 +14,8 @@ use crate::MatrixDurableError;
 use crate::MatrixEventId;
 use crate::MatrixRoomId;
 
+use super::store_diagnostic::SqlxSite;
+
 const MUTATION_JOURNAL_CAPACITY: i64 = 65_536;
 const DECISION_JOURNAL_CAPACITY: i64 = 65_536;
 const OUTCOME_JOURNAL_CAPACITY: i64 = 33_554_432;
@@ -70,7 +72,7 @@ pub(crate) async fn is_room_tombstoned_tx(
     .bind(to_i64(generation)?)
     .fetch_one(&mut **transaction)
     .await
-    .map_err(unavailable)?;
+    .map_err(SqlxSite::RoomTombstone.unavailable())?;
     Ok(blocked == 1)
 }
 

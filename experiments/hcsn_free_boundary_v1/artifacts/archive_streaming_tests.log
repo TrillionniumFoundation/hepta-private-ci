@@ -1,0 +1,19 @@
+test_bundle_overwrite_and_pack_symlinks_rejected (__main__.ArchiveTests.test_bundle_overwrite_and_pack_symlinks_rejected) ... ok
+test_different_existing_file_rejected_and_not_modified (__main__.ArchiveTests.test_different_existing_file_rejected_and_not_modified) ... ok
+test_duplicate_tar_members_rejected (__main__.ArchiveTests.test_duplicate_tar_members_rejected) ... ok
+test_existing_parent_symlink_cannot_escape_destination (__main__.ArchiveTests.test_existing_parent_symlink_cannot_escape_destination) ... ok
+test_member_checksum_checked_before_final_path_write (__main__.ArchiveTests.test_member_checksum_checked_before_final_path_write) ... ok
+test_member_size_mismatch_rejected (__main__.ArchiveTests.test_member_size_mismatch_rejected) ... ok
+test_new_restore_and_identical_existing_need_no_archive_or_member_spool (__main__.ArchiveTests.test_new_restore_and_identical_existing_need_no_archive_or_member_spool) ... ok
+test_nonregular_tar_member_rejected (__main__.ArchiveTests.test_nonregular_tar_member_rejected) ... ok
+test_old_pack_exact_bytes_and_manifest_at_small_and_default_part_sizes (__main__.ArchiveTests.test_old_pack_exact_bytes_and_manifest_at_small_and_default_part_sizes) ... ok
+test_parts_are_rechecked_if_changed_after_preflight (__main__.ArchiveTests.test_parts_are_rechecked_if_changed_after_preflight) ... ok
+test_tampered_last_part_rejected_before_any_extraction (__main__.ArchiveTests.test_tampered_last_part_rejected_before_any_extraction) ... ok
+test_unexpected_tar_member_rejected (__main__.ArchiveTests.test_unexpected_tar_member_rejected) ... ok
+test_unsafe_declared_member_and_part_paths_rejected (__main__.ArchiveTests.test_unsafe_declared_member_and_part_paths_rejected) ... ok
+test_whole_archive_hash_rejected_before_any_extraction (__main__.ArchiveTests.test_whole_archive_hash_rejected_before_any_extraction) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 1.539s
+
+OK

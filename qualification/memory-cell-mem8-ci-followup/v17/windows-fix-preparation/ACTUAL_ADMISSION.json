@@ -1,0 +1,88 @@
+{
+  "schema": "mem8.v10.windows-only-fix.actual-admission.v1",
+  "at": "2026-11-11 16:49:51 UTC",
+  "branch": "codex/mem8-windows-sandbox-fix-v10-20261111-ed353817",
+  "source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "harness": "23d9f41532e5e6310ca791a5b849ab1cff7466eb",
+  "harness_tree": "4bddc28958d0bde7d2735d0a626c2052d33ccb24",
+  "complete_harness_entries": 14057,
+  "full_remote_file_bytes_equal": [
+    {
+      "bytes": 15877,
+      "git_blob": "a6e1f9d76de87cb7f86bfe7b7db76b2675034cc4",
+      "path": ".github/scripts/mem_windows_sandbox_fix.py",
+      "sha256": "3b6f63c55d18463ef12b5c35c456f52d720cff406615c616aa59e5514905b75f"
+    },
+    {
+      "bytes": 6574,
+      "git_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+      "path": ".github/scripts/mem_windows_sandbox_fix_support.py",
+      "sha256": "b5c8c1728724e01e90422f80003c1a644418478c62ea3a2228d40255a7f3f136"
+    },
+    {
+      "bytes": 4517,
+      "git_blob": "bd94e2dc6f712c3c48da30597c0c45001dd5e81e",
+      "path": ".github/workflows/hepta-mem-windows-sandbox-fix.yml",
+      "sha256": "9ea2def1193798e7c9bb6fc20f3e8998e3a8a1271bb2661b01c06456caa26a1f"
+    },
+    {
+      "bytes": 7099,
+      "git_blob": "3dbbcb516d0aa5386d2e2bbf550824422017d724",
+      "path": ".github/fixtures/mem-windows-sandbox-fix-plan.json",
+      "sha256": "db4dd341980625241262c989b816442c52b1a0ed4af95bc036e3478fe2edfaec"
+    }
+  ],
+  "branch_absent_before_create": true,
+  "create_at_pure_source": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "branch": "codex/mem8-windows-sandbox-fix-v10-20261111-ed353817"
+    },
+    "isError": false
+  },
+  "before": {
+    "ref": "refs/heads/codex/mem8-windows-sandbox-fix-v10-20261111-ed353817",
+    "node_id": "REF_kwDOTrgxoNoAP3JlZnMvaGVhZHMvY29kZXgvbWVtOC13aW5kb3dzLXNhbmRib3gtZml4LXYxMC0yMDI2MTExMS1lZDM1MzgxNw",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-windows-sandbox-fix-v10-20261111-ed353817",
+    "object": {
+      "sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/d0f6507e08f7f5c5855f5164d07c049a34d1a6d9"
+    }
+  },
+  "single_expected_head_update": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "success": true
+    },
+    "isError": false
+  },
+  "after": {
+    "ref": "refs/heads/codex/mem8-windows-sandbox-fix-v10-20261111-ed353817",
+    "node_id": "REF_kwDOTrgxoNoAP3JlZnMvaGVhZHMvY29kZXgvbWVtOC13aW5kb3dzLXNhbmRib3gtZml4LXYxMC0yMDI2MTExMS1lZDM1MzgxNw",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-windows-sandbox-fix-v10-20261111-ed353817",
+    "object": {
+      "sha": "23d9f41532e5e6310ca791a5b849ab1cff7466eb",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/23d9f41532e5e6310ca791a5b849ab1cff7466eb"
+    }
+  },
+  "job_timeout_minutes": 65,
+  "scope": "real two helper build then exactly just fix --locked -p codex-windows-sandbox",
+  "native_tests": 0,
+  "model_commands": 0,
+  "no_previous_native_success_dependency": true,
+  "unknown_original_core_fix_not_replayed": true,
+  "source_PR_unchanged": true
+}

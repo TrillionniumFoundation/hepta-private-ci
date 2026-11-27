@@ -1,0 +1,193 @@
+{
+  "schema": "hepta.learn.original-product-encoding-extraction-equivalence.v1",
+  "source_parent": "68e14a510bd4f89c5a8ae4816c9085bfe9d3d80c",
+  "original_source": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+  "original_files": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "sha": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+      "sha": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha": "5159395be8360fc3b6946c130f6b3696902198ed"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "sha": "fdd76d44138b0369a04005dcd11c33309bbe9bb0"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "sha": "f78e1b87e063c901989b6de6f8154867db250427"
+    }
+  ],
+  "current_source_pins": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_policy_tests.rs",
+      "sha": "cd29c732d217ad8cc10bc81d11350a2f9dae7934",
+      "bytes": 20971,
+      "sha256": "ab4beca719677fb0aa2567211094eff6b179cdb6db8a52d99999ac63607fd890",
+      "before": "b2c0d0d3a47bd70cea5d06910f3631e08b864bb3"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "sha": "906a27dc43fe783b0432177dca63919ffee2ac44",
+      "bytes": 42111,
+      "sha256": "87fd42d541758953acdafdf1907aa72328554d2c88a8c28429a2c1710448222f"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+      "sha": "2c9bccd2d452a03ba7a223fcb4c11e885b447c6d",
+      "bytes": 7797,
+      "sha256": "7d391ab31d9f6fa9a0e9fa43ce4fb20d0860263da6908125f1445933b09d78ae"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha": "6fe617c550df20434100dd17f0bbaa07e41fd4f2",
+      "bytes": 43087,
+      "sha256": "814c03fb8abdc70ccf8929966797d84a069486d7166f9a4d1ce7683eeb6640f3"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "sha": "0eed3b3553707b6e4fe00d83bfb27137c5d34542",
+      "bytes": 8332,
+      "sha256": "bf21f015311ebf69d3e35283ca68bc1014dc6251b4aed913282de4110d97a090"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "sha": "46d1eb4ded2eae1ce47ee0325604b84a65c5793c",
+      "bytes": 16628,
+      "sha256": "a08ae1fe78dffa3fae87e4bbaf2132de1a51a6aff94117666f3a2e742919bfc7"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+      "sha": "5f7d7c4164bde16a7d84645e631e4215c8c146a7",
+      "bytes": 8791,
+      "sha256": "f69cd6c1b0beb0b9a7203e177e862f08144a58e576697c94c691e46ca1f5e8e7",
+      "before": "fa12569244ad8fee9c707065e81d0760dfb677b3"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_policy_codec.rs",
+      "sha": "7974b0498ccbb088a7f10751320628400cffa178",
+      "bytes": 13371,
+      "sha256": "6627ef11645a6c0a985892002ef736caf52979fa560f3715a94428ae2b6462db",
+      "before": "7e54d4f249236d2daba4ddd19ead75ba18e3e2d6"
+    }
+  ],
+  "comparison": {
+    "checks": [
+      {
+        "name": "cross_fold_original_canonical_encoder",
+        "bytes": 1467,
+        "equal": true
+      },
+      {
+        "name": "cross_fold_original_receipt_fields_and_seal",
+        "bytes": 908,
+        "equal": true
+      },
+      {
+        "name": "product_original_frozen_receipt_and_seal_tail",
+        "bytes": 822,
+        "equal": true
+      },
+      {
+        "name": "complete_original_Product_normalization_after_explicit_field_borrow_mapping",
+        "bytes": 1750,
+        "sha256": "bb4e0f7f62e4988d7b99ebde3aaa428e2cc70090f56a74b8905416131caa3aa2",
+        "equal": true,
+        "mapping": [
+          "plan.objective_digest -> objective_digest",
+          "plan.family_alpha_ppm -> family_alpha_ppm",
+          "plan.simultaneous_comparisons -> simultaneous_comparisons",
+          "plan.estimand_digest -> estimand_digest",
+          "plan.metric_contracts.clone() -> original_metric_contracts.to_vec() (same borrowed slice values)",
+          "plan.metric_contracts.is_empty() -> original_metric_contracts.is_empty()",
+          "roles/sources receive the same mutable local vectors; all sort/coverage checks and error literals are retained"
+        ]
+      },
+      {
+        "name": "complete_original_CrossFold_normalization_after_exact_borrow_mapping",
+        "bytes": 2260,
+        "sha256": "8e91cc53a7f00fe8b6e6bc8cedaf3188aa436dd26666c34aadf34b9e3af23344",
+        "equal": true,
+        "mapping": [
+          "plan.metric_contracts -> same &mut slice",
+          "plan.folds -> same &mut slice",
+          "&mut plan.folds iteration -> folds.iter_mut()",
+          "&plan.final_holdout_window_id -> same borrowed StableId",
+          "The helper additionally repeats the same 2..MAX_FOLDS check; the original V1 early check remains before digest/profile validation."
+        ]
+      },
+      {
+        "name": "complete_original_paired_plan_encoder_after_exact_field_projection",
+        "bytes": 1764,
+        "sha256": "b2a38cdde71a7b5f17c5498072775f2f83d8725584a9d73b12f0de967e8a9f40",
+        "equal": true,
+        "mapping": [
+          "All original plan fields are passed directly by the unchanged old wrapper; order, tags, counts, domains and error literals are byte-identical.",
+          "Mode check remains in the old estimand wrapper before the shared raw helper."
+        ]
+      },
+      {
+        "name": "complete_original_paired_estimand_encoder_after_exact_field_projection",
+        "bytes": 699,
+        "sha256": "595f26c83b87a01d419696d4fad4159ef2b17c6ed43f78a178b11b83fb461ca6",
+        "equal": true,
+        "mapping": [
+          "All original plan fields are passed directly by the unchanged old wrapper; order, tags, counts, domains and error literals are byte-identical.",
+          "Mode check remains in the old estimand wrapper before the shared raw helper."
+        ]
+      },
+      {
+        "name": "original_final_CrossFold_receipt_seal_function",
+        "bytes": 985,
+        "sha256": "1ce27d12d6803ca0a55b8b807063bfddef3d014b84164d13748d94635479bf39",
+        "equal": true,
+        "mapping": [
+          "The original final receipt fields and AuthorityPosture::DENY_ALL are unchanged."
+        ]
+      },
+      {
+        "name": "original_V2_role_bound_hash_encoder_after_raw_receipt_projection",
+        "bytes": 195,
+        "sha256": "d9c6466f5d2c56245687c81e95bbb253e777938c050225144d020a2e5ef82071",
+        "equal": true,
+        "mapping": [
+          "receipt.plan_digest -> original.plan_digest from the same original V1 canonical raw digest",
+          "contract_digest comes from the unchanged digest_role_contracts with the same sorted contracts and roles",
+          "final fields retain metric_contract_digest=contract_digest and plan_digest=Digest32::of_bytes(&bytes) before original final receipt seal"
+        ]
+      }
+    ],
+    "v2_seal_note": "Old V2 first called V1 freeze, which computed an unexposed intermediate seal, then replaced plan/metric digests and sealed again. New V2 shares the same original raw hash and role hash construction, then calls the same final receipt seal constructor once with the final fields. No intermediate value was observed and the original seal function is pure bytes plus Digest32. Original invalid profiles remain rejected before construction.",
+    "legacyVectors": {
+      "candidate": "e3c8c5833c14a0f8d8d56e794e531cee336239ceea7a61b8600ac951b43a4557",
+      "baseline": "d9ce467bb260cc5f636793977b7c7807fa626148e98ce4b872225dcfac0a22ed",
+      "legacyMetric": "499d47595cb6f42a75737fa20c954faf99a98bb5a622feb326d9e8afe65e224b",
+      "roles": "db4fa9a488704f5bef436b3d2cd096796534e95a891d8c30398bb6ed49276503",
+      "shared": {
+        "plan": "d4ca86dc405b8f07ae4bc1547372784e42d4044339e659d8f42b495d47a27735",
+        "estimand": "fce0ff3a02a654ebbd219a309b1e27afdd51632eed008ef41944f18f6b619782",
+        "raw": "cbdd9ce98a87d04c7e4f6213ef06261c43d57e54c7d89b6a9bee47ef13574431",
+        "rolePlan": "f27f101e19c7f4302d4edaf0d9d4b79a30019e1bfc0a25b28ec15c6929db5f84",
+        "bytes": 376
+      },
+      "paired": {
+        "plan": "9ddb817ecb5f44e88e075effe27d1f76b69939e2548035ccb57bb22648beb31a",
+        "estimand": "3d099f76023824e58b354ba4cb6a9c0f57f90da191d8c516f50f3b94f89a87df",
+        "raw": "ab9d8dc9ccab4140031e17e0153b82c66715a4b82819ccd7c933a2345d03bcdb",
+        "rolePlan": "836cf09bc96ba96122798efc5535fef36ca61dfe47a84c9d640de3c64a95f119",
+        "bytes": 1073
+      },
+      "pair": "81f76108b7a0b39e22ed8139aa3be2126f04bec16510d921acb1b9e5c9a70672"
+    },
+    "rust_or_python_executed": false
+  },
+  "restriction": "These are explicit original-source projections and byte comparisons, not Rust/native or original Python execution. Fold model/prediction declarations remain metadata, not evidence of actual future fit.",
+  "native_case": "product_runner::policy::tests::policy_v2_shared_and_paired_original_commitment_bytes_remain_exact",
+  "native_executed": 0
+}

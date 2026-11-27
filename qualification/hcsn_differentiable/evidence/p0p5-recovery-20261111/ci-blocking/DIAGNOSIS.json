@@ -1,0 +1,56 @@
+{
+  "schema": "hcsn-ci-scope-recovery-v1",
+  "observed_utc": "2026-11-11T00:17:34.724025+00:00",
+  "source_heads": [
+    "7351e1a2c60e318686d3c01372acbde149af4432",
+    "b908827abcf60b7ce22fe1b8b299206a31484550"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "base_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "current_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "base_blob": "55e117dafe84709451a638bb8f6bafa41c38bd5a",
+      "current_blob": "55e117dafe84709451a638bb8f6bafa41c38bd5a",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "base_blob": "a3e546830527f214c08b6a367c0f708b26a3e9d2",
+      "current_blob": "a3e546830527f214c08b6a367c0f708b26a3e9d2",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+      "base_blob": "8b7a329216db2cd56d3c104214414dc0ffc61c47",
+      "current_blob": "8b7a329216db2cd56d3c104214414dc0ffc61c47",
+      "unchanged": true
+    },
+    {
+      "path": "qualification/hcsn_training/evidence/20261106/bridge/attempt-01/artifact-store/registries/0ee8a0c2d3cdae803d5bde4f8f77a2519e5bef0bebb3110d0b32a723367855d5-cfe4d103cb895eb1a454c70a48c86b7ba3e690fdf90b0f33eec6f962ea4d5f9d.snapshot",
+      "base_blob": "3772767dc4cbb95e5e395f8a7cf5c826f83c6d12",
+      "current_blob": "3772767dc4cbb95e5e395f8a7cf5c826f83c6d12",
+      "unchanged": true
+    },
+    {
+      "path": "qualification/hcsn_training/evidence/20261106/bridge/attempt-02-formatted/artifact-store/registries/64fd6a75cacc9ad85262b342bc06efb3b8c433a5d666cdb85ab876d35338d9d4-d9d0d1125e1177f98381b369ac2566e3dae7adf7b8efe91a465544e11e9854a7.snapshot",
+      "base_blob": "cf7f48fc5878828be027f5f436a7497a12b8de0d",
+      "current_blob": "cf7f48fc5878828be027f5f436a7497a12b8de0d",
+      "unchanged": true
+    }
+  ],
+  "all_six_unchanged": true,
+  "repository_run": 42922677728,
+  "observed_run_status": "in_progress",
+  "known_failed_jobs": true,
+  "readiness_error": "FAIL_HEPTA_DEVELOPMENT_DOCS_V8: readiness verifier FAIL_HEPTA_IMPLEMENTATION_READINESS: README.md readiness discovery link",
+  "root_readme_bytes": 0,
+  "cargo_deny_log": "Fresh recovery retrieval again returned Transport closed; cause remains unknown. No further retry.",
+  "previous_uncommitted_diagnosis_zip": "Original 311856-byte SHA256 5210d1aaa2b49becd633a26afcb331ba4a75c57fb8b9e1d7a1e7c0a28088d47b was lost; this is a new readback, not those original bytes.",
+  "prior_local_sha_fetch": "Fetch of local-only a143bfda5036a54ed87afe21d184b5a9749fa0ee returned not our ref. Current comparison uses its already-published source counterpart 7351e1a2c60e318686d3c01372acbde149af4432.",
+  "scope": "The six exact blobs were unchanged by the three published progress stages. This does not establish the root cause of every failed job or all historical branch changes. No workflow/model/oracle rerun."
+}

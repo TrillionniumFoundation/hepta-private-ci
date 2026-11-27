@@ -70,15 +70,9 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_ID, "runtime-codex-workspace")?;
 
-    let provider = responses::start_mock_server().await;
-    MockResponsesConfig::new(&provider.uri()).write(agent.layout.home_root())?;
-    mount_terminal_response(&provider).await;
-
-    fleet.start(&agent)?;
-    let (_, health) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
-    ensure!(health.ready && !health.fenced);
-
-    let authority_root = tempfile::tempdir()?;
+    // Keep the authority socket short just like the Fleet's Darwin fixture.
+    // Prepare local resources before arming the provider's mock expectation.
+    let authority_root = tempfile::tempdir_in(std::path::Path::new("/tmp").canonicalize()?)?;
     std::fs::set_permissions(
         authority_root.path(),
         std::fs::Permissions::from_mode(0o700),
@@ -99,8 +93,19 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
         revocation_revision: 1,
         revoked_grant_ids: BTreeSet::new(),
         issuer_timeout_ms: 2_000,
+        // Test-only constructor: production `open` requires Linux process
+        // identity in addition to socket ownership and peer UID.
+        issuer_process_identity: None,
     })
     .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+
+    let provider = responses::start_mock_server().await;
+    MockResponsesConfig::new(&provider.uri()).write(agent.layout.home_root())?;
+    mount_terminal_response(&provider).await;
+
+    fleet.start(&agent)?;
+    let (_, health) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
+    ensure!(health.ready && !health.fenced);
 
     let issuer = tokio::spawn(async move { serve_one_grant(listener, signer).await });
 

@@ -1,0 +1,47 @@
+{
+  "archive": {
+    "bytes": 61412948,
+    "path": "/home/qian-qi/mem6-cold-custody-20261110-ed353-v1/mem6-cas-001.tar.xz",
+    "sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e"
+  },
+  "archived_runtime_executed": false,
+  "checks": {
+    "each_restored_file_bytes_sha256": true,
+    "exact_object_set_and_each_object_bytes_sha256": true,
+    "exclusive_new_destination": true,
+    "logical_path_collisions": true,
+    "manifest_sha256": true,
+    "strict_member_paths_types_and_duplicates": true,
+    "whole_archive_sha256": true
+  },
+  "created_at": "2026-11-10T17:00:17.379823+00:00",
+  "destination": "/home/qian-qi/mem6-cold-custody-20261110-ed353-v1/payload-recovery-8cf848ba-v1",
+  "excluded_top_level": [
+    "archive-v1",
+    "source-8cf848ba",
+    "tmp"
+  ],
+  "external_runtime_inputs_included": false,
+  "full_owner_cold_recovery": false,
+  "independent_trust_domain": false,
+  "limitations": [
+    "Archive byte restoration is not full owner or system capability cold recovery.",
+    "External runtime inputs, live owners, authority state, and real effect state are not recovered here.",
+    "The local filesystem owner and output parents are trusted; malicious owner races and later modification are outside this check.",
+    "Hashes establish consistency with the supplied descriptor, not independent authorship or an independent trust domain."
+  ],
+  "logical_bytes_verified": 243281645,
+  "logical_files_verified": 10365,
+  "manifest": {
+    "bytes": 2508400,
+    "schema": "hepta.mem6.raw-archive.v1",
+    "sha256": "3c7799846836a18b6a5470e03cda92919ede2fcf76c8ee9ede20ae0e945ce336",
+    "source_commit": "8cf848babdd897e9f38642d5faf3ba0f72a1303c"
+  },
+  "schema": "hepta.mem6.archive-restore-receipt.v1",
+  "scientific_benefit_inferred": false,
+  "source_capsule_included": "mem6-source-8cf848ba.zip",
+  "status": "verified",
+  "unique_object_bytes_verified": 149046627,
+  "unique_objects_verified": 7122
+}

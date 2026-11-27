@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.memory-cell.code-solver-development.v1",
+  "task_order": [
+    "ruff",
+    "codec"
+  ],
+  "arms": [
+    "no_history",
+    "retrieval"
+  ],
+  "generation": {
+    "context_tokens": 8192,
+    "max_new_tokens": 768,
+    "maximum_calls": 3,
+    "prefill_batch": 256,
+    "threads": 2,
+    "seed": 24111
+  },
+  "runtime": {
+    "llama_cpp_python": "0.3.16",
+    "numpy": "1.26.4",
+    "python": "3.12.14"
+  },
+  "trajectory_limits": {
+    "wall_seconds": 900,
+    "self_cpu_seconds": 1500,
+    "per_file_bytes": 67108864,
+    "retained_stop_threshold_bytes": 134217728,
+    "retained_threshold_scope": "checked before each proposal and after each gate; one operation can overshoot; not an aggregate hard filesystem quota",
+    "wall_scope": "direct trajectory supervised at 930s; nested gate children have their own limits and can outlive a killed parent; not a whole-process-tree envelope"
+  },
+  "retrieval": {
+    "kind": "bm25_code_path",
+    "maximum_documents": 5,
+    "maximum_utf8_bytes": 12000,
+    "corpus": "source-only-stdlib-and-recorded-teaching-observations"
+  },
+  "selection": "all registered tasks and arms; stop each trajectory on first actual success or call/time budget; retain every failed proposal",
+  "development_only": true,
+  "prospective_cases": 0,
+  "no_evaluation_driven_retuning_in_this_run": true,
+  "strong_rag_qualified": false,
+  "full_five_arm_comparison": false,
+  "model_manifest_sha256": "389c76b88706a63e7b5e4dac35db11370e7f85d96dfc010172e67bb5cbb9a9cd",
+  "llama_cpp_python_source_sha256": "34ed0f9bd9431af045bb63d9324ae620ad0536653740e9bb163a2e1fcb973be6"
+}

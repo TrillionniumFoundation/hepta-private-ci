@@ -1,0 +1,40 @@
+{
+  "bound_files": {
+    ".github/workflows/hcsn-currentstate-n256-stdlib-loader.yml": "fc741f2fb37bd7ed5c65acf37cc94db5bfff2df6fcbbe5d10c486bb0e748bb60",
+    "qualification/hcsn_currentstate_n256_stdlib_loader/README.md": "047b74df4071994798458fcca933ce4b52d2a6d416529441c93f5458adf10309",
+    "qualification/hcsn_currentstate_n256_stdlib_loader/REQUEST.json": "156b68d147d570075b66fb8f68f3ea452c27a4e15c873d16c9386a988eaa6305",
+    "qualification/hcsn_currentstate_n256_stdlib_loader/__init__.py": "3479629f17374a9ce7a591ca318bb657c56a2f129923428da62471dccdf84fd5",
+    "qualification/hcsn_currentstate_n256_stdlib_loader/loader.py": "f61b3b4e52f3f44de3e095f9f96ba440cef4c74e2d9e71a53b4e9d509d3c1188",
+    "qualification/hcsn_currentstate_n256_stdlib_loader/test_loader.py": "eab8d6706ed767d29ea7253d21b3e56229e6ca2f479834b8aed40fe287e68286"
+  },
+  "input_originals": {
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_PHASE.json": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.json": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c",
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.npz.b64": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb"
+  },
+  "request": {
+    "all_closed": false,
+    "authentic_input_load_planned": true,
+    "base_commit": "aa1ba094fa9419340349567c178b06d5c455469c",
+    "base_pull_request": 6333,
+    "branch": "research/hcsn-n256-stdlib-loader-20261114-c06d-v1",
+    "dynamic_calls": 0,
+    "historical_n256_recovered": false,
+    "historical_negative_and_unknown_preserved": true,
+    "idempotency_key": null,
+    "identity": "hcsn-currentstate-n256-stdlib-loader-source-only-20261114-c06d-v1",
+    "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "largegrid_qualification": false,
+    "local_development_attempts": 2,
+    "local_initial_red_preserved": true,
+    "local_initial_red_runtime_calls": 0,
+    "model_calls": 0,
+    "numerical_reference_records": 0,
+    "optimizer_calls": 0,
+    "production_adoption": false,
+    "scope": "authentic_new_export_n256_stdlib_decode_and_exact_input_binding",
+    "status": "HOLD",
+    "training_calls": 0
+  },
+  "verifier_sha256": "012dd7cd3e16bff26b976c7e83d4ed6e9ed60420709e97fa0389598d6a6f6f23"
+}

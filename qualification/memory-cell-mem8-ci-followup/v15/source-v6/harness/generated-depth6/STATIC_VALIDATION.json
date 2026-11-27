@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.mem8.source-v6.harness-static-validation.v1",
+  "pure_source_head": "421d15080b3cb942be8ac51bbe443e268d124a9e",
+  "pure_source_tree": "df293c7709860ecfc3889e4cabb1f970fb649d8e",
+  "cumulative_paths": 109,
+  "complete_entries": 14050,
+  "assembly": {
+    "bytes": 4966,
+    "sha256": "6c5ef367a15ad276a7d674f7ca89e7faedd290f61719f543cb1e010e7539c102",
+    "git_blob": "cab507b427273e3e93fd42b35de05eb6a6635e82"
+  },
+  "input": {
+    "bytes": 348524,
+    "sha256": "265cb24707274661cf7777a7988f7b67a97a8a842f2ff02c20d4dbe2e08860ec",
+    "git_blob": "7d1603b9dd24bec70c9a5345e195c71192f85dd4"
+  },
+  "golden": {
+    "bytes": 75046,
+    "sha256": "17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96",
+    "git_blob": "d783a943bb7278256bc86dc04dfe99d168c7e013"
+  },
+  "golden_source_count": 6200,
+  "full_frozen_tree_rust_count": 6201,
+  "explicit_rust_count_delta": 1,
+  "caller_source_roots": [
+    "codex-rs"
+  ],
+  "caller_manifest": {
+    "bytes": 214323,
+    "sha256": "1f9a5858f4c8256a67baee9a7e588133752882c1a9e1d3a7e4f87a4f160376e1",
+    "git_blob": "c1a1b945171cdb20723e398cabe6a7888fa0abdb"
+  },
+  "python_regression_case_ids": {
+    "scripts/test_hepta_typed_callers.py": [
+      "TypedAuthorityCallTests.test_absent_method_does_not_parse_unbalanced_owner",
+      "TypedAuthorityCallTests.test_arbitrary_parameter_and_borrowed_clone_alias",
+      "TypedAuthorityCallTests.test_arbitrary_typed_variable_field_without_authority_import",
+      "TypedAuthorityCallTests.test_arc_clone_preserves_the_original_authority_receiver",
+      "TypedAuthorityCallTests.test_constructor_binding_never_depends_on_receiver_name",
+      "TypedAuthorityCallTests.test_explicit_unrelated_type_does_not_manufacture_authority",
+      "TypedAuthorityCallTests.test_field_owner_is_visible_across_split_impl_module",
+      "TypedAuthorityCallTests.test_local_type_import_alias_and_type_alias_remain_target",
+      "TypedAuthorityCallTests.test_malformed_matching_owner_still_refuses",
+      "TypedAuthorityCallTests.test_opaque_possible_authority_receiver_refuses_closed",
+      "TypedAuthorityCallTests.test_qualified_use_does_not_hide_an_opaque_receiver",
+      "TypedAuthorityCallTests.test_same_variable_name_in_other_function_does_not_hide_call",
+      "TypedAuthorityCallTests.test_shared_clone_of_explicit_other_type_is_not_authority",
+      "TypedAuthorityCallTests.test_trait_impl_keeps_typed_authority_field",
+      "TypedAuthorityCallTests.test_type_alias_declared_in_another_module_remains_authority",
+      "TypedAuthorityCallTests.test_unknown_shared_clone_cannot_hide_possible_authority"
+    ],
+    "scripts/test_hepta_caller_cache.py": [
+      "InvocationFieldIndexTests.test_no_method_call_does_not_suppress_global_field_index_failure",
+      "InvocationFieldIndexTests.test_two_boundary_proof_rejects_changed_source_on_next_invocation"
+    ]
+  },
+  "python_regression_expected_total": 18,
+  "gate_budget_seconds": 600,
+  "workflow_job_minutes": 20,
+  "bash_syntax_checked_steps": [
+    "Retain this source-only invocation identity",
+    "Install the previously qualified DotSlash binary",
+    "Bind both checkouts and actual formatting binaries",
+    "Run the fixed 600-second independent source-only gate"
+  ],
+  "inline_python_ast_checked_steps": [
+    "Retain this source-only invocation identity",
+    "Install the previously qualified DotSlash binary",
+    "Bind both checkouts and actual formatting binaries"
+  ],
+  "driver_ast": "PASS",
+  "workflow_yaml": "PASS",
+  "job_env_runner_contexts": 0,
+  "checkout_depths_harness_source": [
+    1,
+    6
+  ],
+  "pure_source_and_harness_isolated": true,
+  "source_gate_executed": false,
+  "native_tests_executed": 0,
+  "model_requests_executed": 0,
+  "ref_changes": 0,
+  "baseline_driver": {
+    "bytes": 23280,
+    "sha256": "f32ca75f21c2097a30bda5892606aef80c62e4072837de7e99e42b56b17cfcf9",
+    "git_blob": "0a10994d70bf483477992a607bce5806f394937d"
+  },
+  "baseline_workflow": {
+    "bytes": 9499,
+    "sha256": "0190e2b3dfe210e2be5c7531c0a560e0e2716c98ce6057840fcffef958925990",
+    "git_blob": "c9848e288c48110dd65d8600b92fb2279d814151"
+  },
+  "outputs": [
+    {
+      "path": ".github/scripts/mem8_source_gates_v6.py",
+      "bytes": 33587,
+      "sha256": "a6e3dd20cea50943d15c8ce83d7733497377857f8044f2c459ef63dc963c6e7e",
+      "git_blob": "4b350bf463b959bc52e4000c35c59532c454a1e2"
+    },
+    {
+      "path": ".github/workflows/hepta-mem8-source-gates-v6.yml",
+      "bytes": 9720,
+      "sha256": "7c71ebf6360d997258c2ce198b49241372af9d3b7059faa684314059eba6109e",
+      "git_blob": "5fc60d07e614fd1e41030040f076883297bc9385"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-source-gates-v6/INPUT_SOURCE_GATES.json.xz",
+      "bytes": 348524,
+      "sha256": "265cb24707274661cf7777a7988f7b67a97a8a842f2ff02c20d4dbe2e08860ec",
+      "git_blob": "7d1603b9dd24bec70c9a5345e195c71192f85dd4"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-source-gates-v6/GOLDEN_CALLER_RECEIPT.json",
+      "bytes": 75046,
+      "sha256": "17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96",
+      "git_blob": "d783a943bb7278256bc86dc04dfe99d168c7e013"
+    }
+  ]
+}

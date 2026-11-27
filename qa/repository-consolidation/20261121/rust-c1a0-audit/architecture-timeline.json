@@ -1,0 +1,40 @@
+{
+  "job": 136829413505,
+  "run": 44898577503,
+  "source": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+  "runner_labels": [
+    "ubuntu-24.04-arm"
+  ],
+  "started_at": "2026-11-21T11:19:55Z",
+  "completed_at": "2026-11-21T12:20:12Z",
+  "conclusion": "cancelled",
+  "job_total_seconds": 3617.0,
+  "runtime_tasks_step_started_at": "2026-11-21T12:13:11Z",
+  "runtime_tasks_step_cancelled_at": "2026-11-21T12:20:08Z",
+  "runtime_tasks_step_seconds_observed": 417.0,
+  "pre_runtime_seconds": 3196.0,
+  "cancellation_log_timestamp": "2026-11-21T12:20:08.0970855Z",
+  "completed_record_count": 33,
+  "all_completed_records_exit_zero": true,
+  "all_completed_records_before_after_source_identical": true,
+  "completed_record_elapsed_sum_seconds": 2791.751699319002,
+  "compiler_active_at_cancel": true,
+  "runtime_tasks_execution_record_present": false,
+  "actual_workflow_job_budget_minutes": 60,
+  "per_command_budget_seconds": 3600,
+  "cancellation_cause": "unknown; consistent with the configured job-level budget, not confirmed by a cause-bearing annotation",
+  "check_run_annotation_read": "unsupported endpoint in available github_fetch connector; no annotation obtained",
+  "log_sha256": "08806348c91fa997b56062ec976273c7b9df72d8d8c879e5faaecd567ac49592",
+  "platform_references": [
+    {
+      "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes",
+      "ref": "turn195698372search0",
+      "finding": "job-level timeout cancels jobs; default 360 minutes"
+    },
+    {
+      "url": "https://docs.github.com/en/actions/reference/limits",
+      "ref": "turn195698372search1",
+      "finding": "standard GitHub-hosted job execution time limit is 6 hours"
+    }
+  ]
+}

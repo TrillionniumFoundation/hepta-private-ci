@@ -1,0 +1,19 @@
+{
+  "files": {
+    ".github/workflows/hcsn-currentstate-n256-fp64-mul-div.yml": "cf2f8ec66b4f9914105c86d738e9fc4e1f9e3c830773ea7429a1bde794b4b29f",
+    "qualification/hcsn_currentstate_n256_fp64_mul_div/README.md": "c6d0c61a8e4677a8d33b79d092a27f63d16e51d14183c31a0cdc53ffe4bee549",
+    "qualification/hcsn_currentstate_n256_fp64_mul_div/REQUEST.json": "d4822d70c6e5bda902e9d712fa259020ae1cbc97482afb46754c53d55ed12ba0",
+    "qualification/hcsn_currentstate_n256_fp64_mul_div/__init__.py": "f2b14d34a757b36d923612438be535ff388ca2571b4aa1a1347bc7f96262ca9a",
+    "qualification/hcsn_currentstate_n256_fp64_mul_div/fp64_mul_div.py": "1b22b733e3a7b4fa12ea907ebfd4c7459ac30556aee13c936d6fa4567b09abcf",
+    "qualification/hcsn_currentstate_n256_fp64_mul_div/test_fp64_mul_div.py": "54b0f755477a51477928c2c06bbaa60a78f895263bc9affdb8f58a44ba47ea45",
+    "qualification/hcsn_currentstate_n256_fp64_mul_div/verify_source.py": "3db4265582ed2cc4408c6100ebee8be24d80f8cea8fc6c0b1ddef78aa5ae9a8d",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py": "4179ddeb850b62e4a239a7fbbcaf3de249b2f052d21a0db28374923795ae0917"
+  },
+  "forbidden_source_tokens": [
+    "hcsn_currentstate_n256_sparse_dynamic_intent",
+    "hcsn_currentstate_n256_independent_oracle_intent",
+    "expm_multiply"
+  ],
+  "identity": "hcsn-n256-exact-binary64-mul-div-source-20261114-c06d-v1",
+  "scope": "source-only finite binary64 single multiply/divide roundTiesToEven"
+}

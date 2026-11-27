@@ -1,0 +1,122 @@
+{
+  "mechanism_literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 4
+  },
+  "public_boundary": "Literal grid not private inputs; no runtime paths, model payloads, raw model policies, per-request outcomes or row IDs",
+  "rust_checks": "Not run: Python-only portable change",
+  "science_literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 16
+  },
+  "science_primary_gate": false,
+  "scientific_contrasts": [
+    {
+      "claim": "repair_beats_stronger_original_independentN",
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "passed": false,
+      "seed": 11
+    },
+    {
+      "claim": "repair_increment_over_original_coupledN",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "passed": false,
+      "seed": 11
+    },
+    {
+      "claim": "repair_ndu_increment",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 11
+    },
+    {
+      "claim": "repeated_original_alignment_negative_control",
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "passed": false,
+      "seed": 11
+    },
+    {
+      "claim": "repair_beats_stronger_original_independentN",
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "passed": false,
+      "seed": 23
+    },
+    {
+      "claim": "repair_increment_over_original_coupledN",
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": false,
+      "seed": 23
+    },
+    {
+      "claim": "repair_ndu_increment",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 23
+    },
+    {
+      "claim": "repeated_original_alignment_negative_control",
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "passed": false,
+      "seed": 23
+    }
+  ],
+  "scope": "Independent proof/static/saved-record reviews; no replay or changed scientific gates",
+  "source_sha256": {
+    "PLAN.md": "2002c38e837925b2213f604784fe366cb5556122c835a8fa0d9bd60445b77225",
+    "PROOF.md": "2e7cf5e4dde8372b7f1f26f5724ea667bb79305298b8035693fdc741f1d7ffc3",
+    "RUN_PLAN.md": "f40ced6955662f66c6e54c263a23e5d9f25e4ff0f171065a3100d65365412948",
+    "reward_consistency.py": "fcd394272d4a9c3b1dd00aa5abdc9d749aea37e32e8eb7060910b390074e745a",
+    "test_incentive.py": "705c3dba897ef8d611d32ade6bf0c054a7546fb483797da0f6e7f00ef4936df3"
+  },
+  "status": "MECHANISM_VERIFIED_SCIENCE_PRIMARY_FAILED"
+}

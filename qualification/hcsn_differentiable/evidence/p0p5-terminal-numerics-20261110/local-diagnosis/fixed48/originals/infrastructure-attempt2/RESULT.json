@@ -1,0 +1,65 @@
+{
+  "GNU_time_available": false,
+  "archive": {
+    "bytes": 54066,
+    "path": "/workspace/scratch/c385a7439f8e/p1-short-time-toy-execution-v2.zip",
+    "sha256": "38480a2c1dc0858c06f74ddeaa496ea925c40a865d2041268e03d003886a4f1f"
+  },
+  "archive_receipt": {
+    "bytes": 637,
+    "sha256": "6596511989f7e206f11f2de8a5f1d23d578820a474d5592f6937c7c74d7bfde6"
+  },
+  "command": [
+    "/workspace/scratch/c385a7439f8e/hcsn-env/bin/python",
+    "-B",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-program-v1/launch_once.py",
+    "--program",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-program-v1",
+    "--output",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-execution-v2",
+    "--manifest-sha256",
+    "8b7015a93d3da6f158b11e330b3dc7e5af5d01a4521585e5f7578a7e1842e966"
+  ],
+  "complete_launcher_wall_seconds": 0.1582600719993934,
+  "conservative_all_three_process_peak_RSS_upper_bound_bytes": 39845888,
+  "cost_scope": "The complete launcher wait4 interval includes its own source checks, worker, archive and exit. It overlaps inner worker costs; do not sum. Wrapper own CPU prefix is additional, with final receipt-write/exit tail not included. First missing-time attempt has separately retained unknown complete CPU/wall.",
+  "error": null,
+  "execution_receipt": {
+    "bytes": 7152,
+    "sha256": "ba49801d9579e03a4a0c6cd0cf73657f068f91d241917dd5d20a01a8c149e1bf"
+  },
+  "first_infrastructure_exit": 127,
+  "first_infrastructure_scalar_cases": 0,
+  "infrastructure_attempt": 2,
+  "inner_complete_worker_CPU_seconds": 0.066413,
+  "inner_complete_worker_wall_seconds": 0.08517028500500601,
+  "intended_mathematical_execution_number": 1,
+  "launcher_exit_code": 0,
+  "launcher_pid": 7,
+  "launcher_process_started": true,
+  "launcher_system_CPU_seconds": 0.031925999999999996,
+  "launcher_user_CPU_seconds": 0.109192,
+  "launcher_wait4_CPU_seconds": 0.141118,
+  "launcher_wait4_peak_RSS_bytes": 15073280,
+  "mathematical_program_manifest_sha256": "8b7015a93d3da6f158b11e330b3dc7e5af5d01a4521585e5f7578a7e1842e966",
+  "numeric_retry": false,
+  "outer_timeout": "External/usr/bin/timeout --signal=KILL120s over this wrapper and inherited process group",
+  "own_CPU_prefix_seconds": 0.061094741,
+  "own_peak_RSS_bytes": 11272192,
+  "possible_unreaped_descendant_CPU_not_measured": false,
+  "replacement": "raw wait4 full-launcher process interval and rusage",
+  "resource_stop": null,
+  "sampled_combined_RSS_bytes": 24965120,
+  "schema": "hcsn-fixed48-external-wait4-infrastructure-v2",
+  "scientific_admission": "HOLD",
+  "source_before": {
+    "bytes": 8627,
+    "sha256": "54049e6509c52f0daee23115ab5926dd0c08003a276d6e4f61584385e26b5cad"
+  },
+  "spawn_attempted": true,
+  "status": "admitted_first_scalar_execution_after_preserved_infrastructure_failure",
+  "training_domain_admission": "HOLD",
+  "whole_RSS_limit_bytes": 268435456,
+  "whole_wall_limit_seconds": 120.0,
+  "whole_wall_prefix_seconds": 0.18648180899617728
+}

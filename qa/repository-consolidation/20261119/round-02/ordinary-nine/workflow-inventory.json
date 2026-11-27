@@ -1,0 +1,941 @@
+[
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-corrected-t0-contract.yml",
+    "blob": "70f59f5c19bc591bc251ef1bae8a704da92c2451",
+    "events": {
+      "pull_request": {
+        "paths": [
+          "qualification/hcsn_currentstate_n256_corrected_t0_contract/**",
+          ".github/workflows/hcsn-currentstate-n256-corrected-t0-contract.yml"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "static-corrected-t0-contract",
+        "runs_on": "ubuntu-latest",
+        "timeout": "10",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@v4",
+            "run": null,
+            "with": {
+              "persist-credentials": "false"
+            }
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@v5",
+            "run": null,
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "Verify source-only corrected t0 contract",
+            "uses": null,
+            "run": "set -euo pipefail\npackage=qualification/hcsn_currentstate_n256_corrected_t0_contract\nmkdir -p \"$package/ci-artifact\"\n/usr/bin/time -v python -m unittest \"$package/test_contract.py\" -v \\\n  > \"$package/ci-artifact/TEST_STDOUT.txt\" \\\n  2> \"$package/ci-artifact/TEST_STDERR.txt\"\n/usr/bin/time -v python -O -m unittest \"$package/test_contract.py\" -v \\\n  > \"$package/ci-artifact/TEST_OPT_STDOUT.txt\" \\\n  2> \"$package/ci-artifact/TEST_OPT_STDERR.txt\"\npython \"$package/static_inspector.py\" \\\n  --source \"$package/contract.py\" \\\n  --request \"$package/REQUEST.json\" \\\n  > \"$package/ci-artifact/REPORT.json\"\npython \"$package/verify_source.py\" > \"$package/ci-artifact/VERIFY.txt\"\npython -m compileall -q \"$package\"\npython - <<'PY'\nimport json\nfrom pathlib import Path\n\npackage = Path(\"qualification/hcsn_currentstate_n256_corrected_t0_contract\")\nreport = json.loads((package / \"ci-artifact/REPORT.json\").read_text())\nif report[\"status\"] != \"PASS_CORRECTED_T0_CONTRACT_SOURCE_ONLY_HOLD\":\n    raise SystemExit(\"unexpected source-only status\")\ncounts = {\n    \"authentic_capsules\": 0,\n    \"authentic_coordinates\": 0,\n    \"authentic_serializer_calls\": 0,\n    \"dynamic_runs\": 0,\n    \"matrix_exponential_actions\": 0,\n    \"provider_calls\": 0,\n    \"torch_calls\": 0,\n    \"optimizer_steps\": 0,\n    \"largegrid_qualification\": False,\n    \"all_closed\": False,\n}\n(package / \"ci-artifact/COUNTS.json\").write_text(\n    json.dumps(counts, indent=2, sort_keys=True) + \"\\n\"\n)\nPY\n",
+            "with": null
+          },
+          {
+            "name": null,
+            "uses": "actions/upload-artifact@v4",
+            "run": null,
+            "with": {
+              "name": "hcsn-n256-corrected-t0-contract-${{ github.sha }}",
+              "path": "qualification/hcsn_currentstate_n256_corrected_t0_contract/ci-artifact",
+              "if-no-files-found": "error",
+              "retention-days": "30"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-firststep-contract.yml",
+    "blob": "36a644c9451b3534ef28cf254fa5365066fa94ca",
+    "events": {
+      "pull_request": {
+        "paths": [
+          ".github/workflows/hcsn-currentstate-n256-firststep-contract.yml",
+          "qualification/hcsn_currentstate_n256_firststep_contract/**",
+          "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/sparse_dynamic.py",
+          "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/adapter.py",
+          "qualification/hcsn_currentstate_n256_canonical_serializer_intent/canonical_serializer.py",
+          "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001/CAPSULES.json",
+          "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001/COORDINATE_SPANS.jsonl",
+          "qualification/hcsn_currentstate_n256_corrected_t0_capsule_v1/evidence/attempt002_hosted/**"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "static-contract",
+        "runs_on": "ubuntu-latest",
+        "timeout": "5",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@v4",
+            "run": null,
+            "with": null
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@v5",
+            "run": null,
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "Verify source-only contract",
+            "uses": null,
+            "run": "python -O qualification/hcsn_currentstate_n256_firststep_contract/verify_source.py",
+            "with": null
+          },
+          {
+            "name": "Run synthetic controls",
+            "uses": null,
+            "run": "python -O -m unittest qualification.hcsn_currentstate_n256_firststep_contract.test_contract -v",
+            "with": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-firststep-dense-oracle-hosted.yml",
+    "blob": "bb2c3bc9f3b1d7c1091e7c3b52984b38a53d56c1",
+    "events": {
+      "pull_request": {
+        "types": [
+          "opened"
+        ],
+        "paths": [
+          ".github/workflows/hcsn-currentstate-n256-firststep-dense-oracle-hosted.yml",
+          "qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/**"
+        ]
+      }
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "one-shot-n256",
+        "runs_on": "ubuntu-24.04",
+        "timeout": "20",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "run": null,
+            "with": {
+              "ref": "${{ github.event.pull_request.head.sha || github.sha }}",
+              "persist-credentials": "false"
+            }
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+            "run": null,
+            "with": {
+              "python-version": "3.12.3"
+            }
+          },
+          {
+            "name": "Install exact binary numerical runtime",
+            "uses": null,
+            "run": "python -m pip install --only-binary=:all: -r qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/requirements.txt",
+            "with": null
+          },
+          {
+            "name": "Verify frozen one-shot source",
+            "uses": null,
+            "run": "python -m qualification.hcsn_currentstate_n256_firststep_dense_oracle_hosted.verify_source",
+            "with": null
+          },
+          {
+            "name": "Run normal source controls",
+            "uses": null,
+            "run": "python -m unittest qualification.hcsn_currentstate_n256_firststep_dense_oracle_hosted.test_launcher",
+            "with": null
+          },
+          {
+            "name": "Run optimized source controls",
+            "uses": null,
+            "run": "python -O -m unittest qualification.hcsn_currentstate_n256_firststep_dense_oracle_hosted.test_launcher",
+            "with": null
+          },
+          {
+            "name": "Execute the unique admitted attempt once",
+            "uses": null,
+            "run": "python -m qualification.hcsn_currentstate_n256_firststep_dense_oracle_hosted.launcher",
+            "with": null
+          },
+          {
+            "name": "Preserve success or RED originals",
+            "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "run": null,
+            "with": {
+              "name": "hcsn-n256-firststep-dense-oracle-hosted-001",
+              "path": "qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/RUN_OUTPUT",
+              "if-no-files-found": "error",
+              "retention-days": "30"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-firststep-dense-oracle-source.yml",
+    "blob": "bb6a1ab16cc3347d24c8d33e800442a4920ac3db",
+    "events": {
+      "pull_request": {
+        "paths": [
+          "qualification/hcsn_currentstate_n256_firststep_dense_oracle_source/**",
+          ".github/workflows/hcsn-currentstate-n256-firststep-dense-oracle-source.yml"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "source-only",
+        "runs_on": "ubuntu-latest",
+        "timeout": null,
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@v4",
+            "run": null,
+            "with": null
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@v5",
+            "run": null,
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "Verify frozen dense-oracle source",
+            "uses": null,
+            "run": "python -O -m qualification.hcsn_currentstate_n256_firststep_dense_oracle_source.verify_source",
+            "with": null
+          },
+          {
+            "name": "Run six small stdlib controls",
+            "uses": null,
+            "run": "python -O -m unittest qualification.hcsn_currentstate_n256_firststep_dense_oracle_source.test_source -v",
+            "with": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-firststep-hosted-admission-intent.yml",
+    "blob": "8f41c78d602fd63c79335125d15961b681e1b82c",
+    "events": {
+      "pull_request": {
+        "paths": [
+          ".github/workflows/hcsn-currentstate-n256-firststep-hosted-admission-intent.yml",
+          "qualification/hcsn_currentstate_n256_firststep_hosted_admission_intent/**"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "static-zero-model",
+        "runs_on": "ubuntu-latest",
+        "timeout": "5",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@v4",
+            "run": null,
+            "with": {
+              "ref": "${{ github.event.pull_request.head.sha || github.sha }}"
+            }
+          },
+          {
+            "name": "Verify frozen zero-model intent",
+            "uses": null,
+            "run": "python -m qualification.hcsn_currentstate_n256_firststep_hosted_admission_intent.verify_source",
+            "with": null
+          },
+          {
+            "name": "Run normal controls",
+            "uses": null,
+            "run": "python -m unittest qualification.hcsn_currentstate_n256_firststep_hosted_admission_intent.test_policy",
+            "with": null
+          },
+          {
+            "name": "Run optimized controls",
+            "uses": null,
+            "run": "python -O -m unittest qualification.hcsn_currentstate_n256_firststep_hosted_admission_intent.test_policy",
+            "with": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-firststep-oracle-gap.yml",
+    "blob": "5dcd1155bf7f34162f4227d78f1d09b5abf89266",
+    "events": {
+      "pull_request": {
+        "paths": [
+          "qualification/hcsn_currentstate_n256_firststep_oracle_gap/**",
+          ".github/workflows/hcsn-currentstate-n256-firststep-oracle-gap.yml"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "source-only",
+        "runs_on": "ubuntu-latest",
+        "timeout": null,
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@v4",
+            "run": null,
+            "with": null
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@v5",
+            "run": null,
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "Verify source-only oracle gap",
+            "uses": null,
+            "run": "python -O -m qualification.hcsn_currentstate_n256_firststep_oracle_gap.verify_source",
+            "with": null
+          },
+          {
+            "name": "Run small AST controls",
+            "uses": null,
+            "run": "python -O -m unittest qualification.hcsn_currentstate_n256_firststep_oracle_gap.test_static_review -v",
+            "with": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-firststep-resource-snapshot.yml",
+    "blob": "5cdfebfeba3a862e1a71c2cb4a039454e6ce0ec5",
+    "events": {
+      "pull_request": {
+        "paths": [
+          "qualification/hcsn_currentstate_n256_firststep_resource_snapshot/**",
+          ".github/workflows/hcsn-currentstate-n256-firststep-resource-snapshot.yml"
+        ]
+      }
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "source-only",
+        "runs_on": "ubuntu-latest",
+        "timeout": "5",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@v4",
+            "run": null,
+            "with": null
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@v5",
+            "run": null,
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "Verify frozen observation source",
+            "uses": null,
+            "run": "python3 qualification/hcsn_currentstate_n256_firststep_resource_snapshot/verify_source.py",
+            "with": null
+          },
+          {
+            "name": "Verify retry request and preserved RED",
+            "uses": null,
+            "run": "python3 qualification/hcsn_currentstate_n256_firststep_resource_snapshot/verify_retry_v2.py",
+            "with": null
+          },
+          {
+            "name": "Run five small stdlib controls",
+            "uses": null,
+            "run": "python3 -m unittest qualification.hcsn_currentstate_n256_firststep_resource_snapshot.test_source -v",
+            "with": null
+          },
+          {
+            "name": "Run optimized controls",
+            "uses": null,
+            "run": "python3 -O -m unittest qualification.hcsn_currentstate_n256_firststep_resource_snapshot.test_source -v",
+            "with": null
+          },
+          {
+            "name": "Compile source without executing observation",
+            "uses": null,
+            "run": "python3 -m py_compile qualification/hcsn_currentstate_n256_firststep_resource_snapshot/*.py",
+            "with": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-firststep-serializer-v2.yml",
+    "blob": "0a0d4ce5d0569eacbf7ba9fee106b3f11ba876ad",
+    "events": {
+      "pull_request": {
+        "paths": [
+          "qualification/hcsn_currentstate_n256_firststep_serializer_v2/**",
+          ".github/workflows/hcsn-currentstate-n256-firststep-serializer-v2.yml"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "source-only",
+        "runs_on": "ubuntu-latest",
+        "timeout": null,
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@v4",
+            "run": null,
+            "with": null
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@v5",
+            "run": null,
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "Verify source-only bindings",
+            "uses": null,
+            "run": "python -O qualification/hcsn_currentstate_n256_firststep_serializer_v2/verify_source.py",
+            "with": null
+          },
+          {
+            "name": "Run small stdlib controls",
+            "uses": null,
+            "run": "python -O -m unittest qualification.hcsn_currentstate_n256_firststep_serializer_v2.test_serializer -v",
+            "with": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-hosted-runtime-snapshot.yml",
+    "blob": "e453fab8231e24518f9fa6dfebd5a376b8049005",
+    "events": {
+      "pull_request": {
+        "paths": [
+          "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/REQUEST.json",
+          "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/SOURCE_FREEZE.json",
+          "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/REQUEST_V2.json",
+          "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/SOURCE_FREEZE_V2.json",
+          "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/capture.py",
+          "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/requirements.txt",
+          "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/test_source.py",
+          "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/verify_source.py",
+          "qualification/hcsn_currentstate_n256_firststep_resource_snapshot/snapshot_source.py",
+          ".github/workflows/hcsn-currentstate-n256-hosted-runtime-snapshot.yml"
+        ]
+      }
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "observe-once",
+        "runs_on": "ubuntu-latest",
+        "timeout": "10",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "run": null,
+            "with": {
+              "persist-credentials": "false"
+            }
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+            "run": null,
+            "with": {
+              "python-version": "3.12.3"
+            }
+          },
+          {
+            "name": "Install exact binary runtime",
+            "uses": null,
+            "run": "python -m pip install --disable-pip-version-check --only-binary=:all: -r qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/requirements.txt",
+            "with": null
+          },
+          {
+            "name": "Verify frozen zero-model source",
+            "uses": null,
+            "run": "python qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/verify_source.py",
+            "with": null
+          },
+          {
+            "name": "Run five stdlib controls",
+            "uses": null,
+            "run": "python -m unittest qualification.hcsn_currentstate_n256_hosted_runtime_snapshot.test_source -v",
+            "with": null
+          },
+          {
+            "name": "Run optimized controls",
+            "uses": null,
+            "run": "python -O -m unittest qualification.hcsn_currentstate_n256_hosted_runtime_snapshot.test_source -v",
+            "with": null
+          },
+          {
+            "name": "Capture one observation",
+            "uses": null,
+            "run": "python -m qualification.hcsn_currentstate_n256_hosted_runtime_snapshot.capture > qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/HOSTED_OBSERVATION.json",
+            "with": null
+          },
+          {
+            "name": "Upload raw observation",
+            "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "run": null,
+            "with": {
+              "name": "hcsn-n256-hosted-runtime-snapshot",
+              "path": "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/HOSTED_OBSERVATION.json",
+              "if-no-files-found": "error",
+              "retention-days": "30"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-runtime-discovery-systempy.yml",
+    "blob": "04494d0f389275437f45c2d049402637d0781cad",
+    "events": {
+      "pull_request": {
+        "paths": [
+          "qualification/hcsn_currentstate_n256_runtime_discovery_systempy/**",
+          ".github/workflows/hcsn-currentstate-n256-runtime-discovery-systempy.yml"
+        ]
+      }
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "source-only",
+        "runs_on": "ubuntu-latest",
+        "timeout": "5",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@v4",
+            "run": null,
+            "with": null
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@v5",
+            "run": null,
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "Verify frozen discovery source",
+            "uses": null,
+            "run": "python3 qualification/hcsn_currentstate_n256_runtime_discovery_systempy/verify_source.py",
+            "with": null
+          },
+          {
+            "name": "Verify preserved real failure evidence",
+            "uses": null,
+            "run": "python3 qualification/hcsn_currentstate_n256_runtime_discovery_systempy/verify_evidence.py",
+            "with": null
+          },
+          {
+            "name": "Run five stdlib controls",
+            "uses": null,
+            "run": "python3 -m unittest qualification.hcsn_currentstate_n256_runtime_discovery_systempy.test_source -v",
+            "with": null
+          },
+          {
+            "name": "Run optimized controls",
+            "uses": null,
+            "run": "python3 -O -m unittest qualification.hcsn_currentstate_n256_runtime_discovery_systempy.test_source -v",
+            "with": null
+          },
+          {
+            "name": "Compile without executing discovery",
+            "uses": null,
+            "run": "python3 -m py_compile qualification/hcsn_currentstate_n256_runtime_discovery_systempy/*.py",
+            "with": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-n256-corrected-authentic-t0-capsule.yml",
+    "blob": "c3a88a8be9ab2b2d985e220d60696c1092d994ec",
+    "events": {
+      "workflow_dispatch": ""
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "consumed-execution-key",
+        "runs_on": "ubuntu-latest",
+        "timeout": null,
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": null,
+            "run": "echo \"attempt002 completed at source commit 4b6fcf153375fb58e5a77c87c21d27569b3689c0\"\necho \"execution key is consumed; no rerun\"\n",
+            "with": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-n256-warm1-sparse.yml",
+    "blob": "c4edae0080bf724e69cb4d02cf4544f5f1de0eda",
+    "events": {
+      "pull_request": {
+        "types": [
+          "opened"
+        ],
+        "paths": [
+          ".github/workflows/hcsn-currentstate-n256-warm1-sparse.yml",
+          "qualification/hcsn_currentstate_n256_warm1_sparse/**"
+        ]
+      }
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "one-shot-warm1-sparse",
+        "runs_on": "ubuntu-24.04",
+        "timeout": "20",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "run": null,
+            "with": {
+              "ref": "${{ github.event.pull_request.head.sha || github.sha }}",
+              "persist-credentials": "false"
+            }
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+            "run": null,
+            "with": {
+              "python-version": "3.12.3"
+            }
+          },
+          {
+            "name": "Install identical binary numerical runtime",
+            "uses": null,
+            "run": "python -m pip install --only-binary=:all: -r qualification/hcsn_currentstate_n256_warm1_sparse/requirements.txt",
+            "with": null
+          },
+          {
+            "name": "Run tiny independent controls",
+            "uses": null,
+            "run": "python -m unittest qualification.hcsn_currentstate_n256_warm1_sparse.test_candidate qualification.hcsn_currentstate_n256_warm1_sparse.test_runner",
+            "with": null
+          },
+          {
+            "name": "Verify optimized fail-closed controls",
+            "uses": null,
+            "run": "python -O -m unittest qualification.hcsn_currentstate_n256_warm1_sparse.test_runner",
+            "with": null
+          },
+          {
+            "name": "Execute new admitted warm1 attempt once",
+            "uses": null,
+            "run": "python -m qualification.hcsn_currentstate_n256_warm1_sparse.runner",
+            "with": null
+          },
+          {
+            "name": "Preserve comparison and negative originals",
+            "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "run": null,
+            "with": {
+              "name": "hcsn-n256-independent-warm1-sparse-001",
+              "path": "qualification/hcsn_currentstate_n256_warm1_sparse/RUN_OUTPUT",
+              "if-no-files-found": "error",
+              "retention-days": "30"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-currentstate-retained.yml",
+    "blob": "24a195765b45fb1a3bdf8f0afee7c8efb7ae6bfb",
+    "events": {
+      "pull_request": {
+        "paths": [
+          "qualification/hcsn_currentstate/**",
+          "scripts/verify_hcsn_currentstate_retained.py",
+          ".github/workflows/hcsn-currentstate-retained.yml"
+        ]
+      }
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "retained-currentstate-arithmetic",
+        "runs_on": "ubuntu-latest",
+        "timeout": "5",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@v4",
+            "run": null,
+            "with": {
+              "ref": "${{ github.event.pull_request.head.sha }}"
+            }
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@v5",
+            "run": null,
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "Verify retained current-state evidence only",
+            "uses": null,
+            "run": "python scripts/verify_hcsn_currentstate_retained.py",
+            "with": null
+          },
+          {
+            "name": "Check clean executing source",
+            "uses": null,
+            "run": "git diff --exit-code",
+            "with": null
+          }
+        ]
+      },
+      {
+        "id": "differentiable-currentstate",
+        "runs_on": "ubuntu-24.04",
+        "timeout": "10",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@v4",
+            "run": null,
+            "with": {
+              "ref": "${{ github.event.pull_request.head.sha }}"
+            }
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@v5",
+            "run": null,
+            "with": {
+              "python-version": "3.12.3"
+            }
+          },
+          {
+            "name": "Install the bounded CPU study dependencies",
+            "uses": null,
+            "run": "python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu\npython -m pip install numpy==2.3.5 scipy==1.17.0\n",
+            "with": null
+          },
+          {
+            "name": "Record the tested source and runtime",
+            "uses": null,
+            "run": "mkdir -p \"$RUNNER_TEMP/currentstate\"\ngit rev-parse HEAD > \"$RUNNER_TEMP/currentstate/SOURCE_HEAD.txt\"\npython -m pip freeze > \"$RUNNER_TEMP/currentstate/RUNTIME.txt\"\n",
+            "with": null
+          },
+          {
+            "name": "Verify event-time reset snapshots and gradients",
+            "uses": null,
+            "run": "python - > \"$RUNNER_TEMP/currentstate/RESET_SNAPSHOT_STDOUT.txt\" \\\n  2> \"$RUNNER_TEMP/currentstate/RESET_SNAPSHOT_STDERR.txt\" <<'PY'\nimport hashlib\nimport json\nfrom pathlib import Path\nimport unittest\nimport torch\n\ntorch.set_num_threads(1)\ntorch.set_num_interop_threads(1)\nsuite = unittest.defaultTestLoader.loadTestsFromName(\n    \"qualification.hcsn_currentstate.test_reset_snapshot\"\n)\nresult = unittest.TextTestRunner(verbosity=2).run(suite)\npaths = (\"differentiable.py\", \"test_reset_snapshot.py\")\nsource = Path(\"qualification/hcsn_currentstate\")\nprint(json.dumps({\"tests_run\": result.testsRun, \"passed\": result.wasSuccessful(),\n                  \"source_sha256\": {name: hashlib.sha256((source / name).read_bytes()).hexdigest()\n                                    for name in paths}}, sort_keys=True))\nraise SystemExit(0 if result.wasSuccessful() and result.testsRun == 2 else 1)\nPY\n",
+            "with": null
+          },
+          {
+            "name": "Verify complete state, gradients and independent-target learning",
+            "uses": null,
+            "run": "python -m qualification.hcsn_currentstate.study_differentiable \\\n  --output \"$RUNNER_TEMP/currentstate/STUDY.json\" \\\n  > \"$RUNNER_TEMP/currentstate/STDOUT.txt\" \\\n  2> \"$RUNNER_TEMP/currentstate/STDERR.txt\"\n",
+            "with": null
+          },
+          {
+            "name": "Check clean executing source",
+            "uses": null,
+            "run": "git diff --exit-code",
+            "with": null
+          },
+          {
+            "name": null,
+            "uses": "actions/upload-artifact@v4",
+            "run": null,
+            "with": {
+              "name": "differentiable-currentstate-${{ github.run_id }}-${{ github.run_attempt }}",
+              "path": "${{ runner.temp }}/currentstate",
+              "if-no-files-found": "error"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/hcsn-cell-qualification.yml",
+    "blob": "bfd6630695c44769855b6a414932a87949fc3ec7",
+    "events": {
+      "pull_request": {
+        "paths": [
+          "qualification/hcsn/**",
+          ".github/workflows/hcsn-cell-qualification.yml"
+        ]
+      }
+    },
+    "permissions": {
+      "contents": "read"
+    },
+    "jobs": [
+      {
+        "id": "cell-values-gradients-and-budget-accounting",
+        "runs_on": "ubuntu-24.04",
+        "timeout": "15",
+        "permissions": null,
+        "steps": [
+          {
+            "name": null,
+            "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "run": null,
+            "with": {
+              "ref": "${{ github.event.pull_request.head.sha }}",
+              "persist-credentials": "false"
+            }
+          },
+          {
+            "name": null,
+            "uses": "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+            "run": null,
+            "with": {
+              "python-version": "3.12.3"
+            }
+          },
+          {
+            "name": "Install the pinned CPU research runtime",
+            "uses": null,
+            "run": "python -m pip install -r qualification/hcsn/requirements.txt mpmath==1.3.0\npython -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu\n",
+            "with": null
+          },
+          {
+            "name": "Record source and runtime",
+            "uses": null,
+            "run": "mkdir -p \"$RUNNER_TEMP/hx-cell\"\ngit rev-parse HEAD > \"$RUNNER_TEMP/hx-cell/SOURCE_HEAD.txt\"\npython -m pip freeze > \"$RUNNER_TEMP/hx-cell/RUNTIME.txt\"\n",
+            "with": null
+          },
+          {
+            "name": "Run every kernel, Cell and budget-accounting test",
+            "uses": null,
+            "run": "python -m unittest discover -s qualification/hcsn/tests -t qualification -v \\\n  > \"$RUNNER_TEMP/hx-cell/STDOUT.txt\" \\\n  2> \"$RUNNER_TEMP/hx-cell/STDERR.txt\"\n",
+            "with": null
+          },
+          {
+            "name": "Verify source stayed unchanged",
+            "uses": null,
+            "run": "git diff --exit-code",
+            "with": null
+          },
+          {
+            "name": null,
+            "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "run": null,
+            "with": {
+              "name": "hx-cell-tests-${{ github.run_id }}-${{ github.run_attempt }}",
+              "path": "${{ runner.temp }}/hx-cell",
+              "if-no-files-found": "error"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

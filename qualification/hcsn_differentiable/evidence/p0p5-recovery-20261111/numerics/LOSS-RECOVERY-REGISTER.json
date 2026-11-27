@@ -1,0 +1,228 @@
+{
+  "schema": "numerics-workspace-loss-recovery-register-v1",
+  "purpose": "New recovery record, not a replacement for any original receipt or manifest.",
+  "observed_failure": {
+    "original_workspace": "/workspace/scratch/c385a7439f8e",
+    "first_error": "OSError errno28 while mkdir of c2-resource-os-supervisor-preparation-v2; no v2 archive or manifest written",
+    "subsequent_observation": "Original cwd absent; exec with workdir=/ succeeded. Root subsequently restored published repository b908.",
+    "cause": "not independently diagnosed beyond observed disappearance"
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "writes_to_repository": "content-addressed Git blobs only; no refs moved or PR created by this recovery",
+  "recovered_exact_bytes": [
+    {
+      "name": "supervisor-v2/complete_os_envelope.py",
+      "bytes": 16554,
+      "sha256": "7f2762c444031bc3d84131ec4cb6dd74790cbebd4b6a9229c6027886885ec0f9",
+      "git_blob": "53d6380ba8b7d31d65be5f6d959cc7d24337e68f",
+      "method": "exact reconstruction from captured source writes; SHA matched original tested source"
+    },
+    {
+      "name": "supervisor-v2/os_processes.py",
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6",
+      "git_blob": "90d7be349d9dd059237b7f2752d54b7d0c1ab4b8",
+      "method": "exact reconstruction from captured source writes; SHA matched original tested source"
+    },
+    {
+      "name": "resource-core-v1-partial/MANIFEST.json",
+      "bytes": 2502,
+      "sha256": "3ac51d32012f274f8a5a6afc4967569d0b9707b993cab0f5f9550c4e6495dbc1",
+      "git_blob": "0addc307691f032d2fa34beff6deef2644c294e0",
+      "method": "exact complete tool-output recovery"
+    },
+    {
+      "name": "resource-core-v1-partial/metadata_io.py",
+      "bytes": 7189,
+      "sha256": "88b809b3638113eb4a9633d2881effa802508e46b9fc6a05f5217a62392d15b3",
+      "git_blob": "adb5335f41dab8134b4830eb6eb2e10b9782511e",
+      "method": "exact complete tool-output recovery"
+    },
+    {
+      "name": "resource-core-v1-partial/launch_analysis.py",
+      "bytes": 9059,
+      "sha256": "6cba2ec1e93527fee9dd31c22e1ddedb4a7ee4a4a3cf5dda7afc57f2f926872a",
+      "git_blob": "41b9ad7722bedfadd646f95a611d5607dbbf8318",
+      "method": "exact complete tool-output recovery"
+    },
+    {
+      "name": "resource-core-v1-partial/analysis_worker.py",
+      "bytes": 3005,
+      "sha256": "e0e4c5effc5227ce3f3947c1c93e6c73f53719195f881b52dc658a3c2d59c992",
+      "git_blob": "e1d9fb6a5d4e4efa6282c49999f771191cf8ddea",
+      "method": "exact complete tool-output recovery"
+    },
+    {
+      "name": "resource-core-v1-partial/PLAN.json",
+      "bytes": 8456,
+      "sha256": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b",
+      "git_blob": "49787e5d965c34efb149f7ab3a370d56de5ec0ba",
+      "method": "exact readback from restored published b908 tree"
+    },
+    {
+      "name": "supervisor-validation-01/RESULT.json",
+      "bytes": 2388,
+      "sha256": "c8b47a0580a380317172905d081659bd9c0afc1c8367d26e569c3992ac4d0329",
+      "git_blob": "807f4e2b47e88ceb0b9e46d4caa546ee7510bfee",
+      "method": "exact reconstruction from complete captured cat output; full original SHA matched; no test rerun"
+    }
+  ],
+  "missing_original_core_files_at_this_recovery_revision": [
+    {
+      "name": "AUTHORIZATION-TEMPLATE.json",
+      "bytes": 486,
+      "sha256": "cc2fa8c718ddc73c7be9b286f5f8991b77c97a97f6d19b112b31b584f5d5e8c0",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "BINDING-TEMPLATE.json",
+      "bytes": 2486,
+      "sha256": "05810c193b67d4045e04dd8412146a81e12cdc3c2e61b0ab81d40ee3e7f68e77",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "README.md",
+      "bytes": 4000,
+      "sha256": "cc5277d3881ede6cbaa79a2b1624f689b0ae5fe2cdd4ec7de0568d05e4421ead",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "STAGES.md",
+      "bytes": 1706,
+      "sha256": "705d2a63a517a2732c3009c1c85b898bd059e067efad5fef37bdce89bf360689",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "audit_evidence.py",
+      "bytes": 8704,
+      "sha256": "6605ea87a4deca0d2fb63447f146f92acbfb0920761054909730422a2edcb650",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "build_report.py",
+      "bytes": 12923,
+      "sha256": "927150306eeb547c430a22ba1409d93cf3b1dfad294a7abbc61cb5d169fa76df",
+      "status": "independent_agent_recovery_pending"
+    },
+    {
+      "name": "candidate_accounting.py",
+      "bytes": 14488,
+      "sha256": "73cd2a580aaea9dee3dafffca734c4f330c7c9b0a2d683e4d09cb2fccfc02f29",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "old_metadata.py",
+      "bytes": 9712,
+      "sha256": "65c3b61c9b9e3599adb7c3792206bb9791f4903d722aaffa5801fdd43becdc3b",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "resource_arithmetic.py",
+      "bytes": 10699,
+      "sha256": "fd8a57bbe71685820d4f9bd3787af53d74da2688cba758e34bc5f227763e5e40",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "synthetic_fixtures.py",
+      "bytes": 6690,
+      "sha256": "a391ce0f3f837582147d3bb6912b226ef9243b2f68bb9146ea94871d484f3164",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "test_arithmetic.py",
+      "bytes": 4268,
+      "sha256": "424f8d0c365cb7e8c66b0e6ae30d12e3606aad036299f4839a26bc1a9e35ab24",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "test_envelope.py",
+      "bytes": 10296,
+      "sha256": "3bcfda3ac3c6d70913e661d51fa3e0d6502c4a03421a9218b8a8f9fc54ead124",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "test_history.py",
+      "bytes": 4623,
+      "sha256": "27974995932e678a73c4c281b86703ca30db93012af84458e2c3f628d1fe3b76",
+      "status": "full_original_bytes_missing_in_this_agent"
+    },
+    {
+      "name": "test_report.py",
+      "bytes": 6920,
+      "sha256": "b183b5199ce0d061c2fb165fae9bb06bfc53f7a5a599404890f68f1b5831df07",
+      "status": "full_original_bytes_missing_in_this_agent"
+    }
+  ],
+  "missing_original_archives": [
+    {
+      "name": "c2-resource-analysis-program-v1.zip",
+      "bytes": 44854,
+      "sha256": "09212fa455f2f37afcb4d069e31e8bb5dec8087c7e24aa650ad591a985d4ba6d"
+    },
+    {
+      "name": "c2-resource-analysis-preparation-v1.zip",
+      "bytes": 199029,
+      "sha256": "a8831f716bb66db46fb7da3885a1af8743589dbf664094957adbf94f9f2f5dc8"
+    },
+    {
+      "name": "c2-resource-complete-os-supervisor-v1.zip",
+      "bytes": 19607,
+      "sha256": "cfd6cdfe5c892407607347fb2df3bfe8df3e7a66495ea1fc0864b35368d45f51"
+    },
+    {
+      "name": "c2-resource-os-supervisor-preparation-v1.zip",
+      "bytes": 82824,
+      "sha256": "7a98781912b7f6cf48c70f74669bdc5efe307731778684a963e5a2ce0afd1f4b"
+    }
+  ],
+  "captured_tool_summaries_not_original_receipts": {
+    "supervisor_validation_02": {
+      "tests_passed": 12,
+      "returncode": 0,
+      "source_unchanged": true,
+      "whole_test_child_wall_seconds": 0.7607359679968795,
+      "exact_wait4_test_child_CPU_seconds": 0.331541,
+      "original_RESULT_sha256": "5e23881d9d55a9db98147d8dba8d737f758ab56a4135c4fc41b8b2f3462a878b",
+      "original_RESULT_bytes_recovered": false,
+      "test_log_capture_available": true
+    },
+    "resource_core_validation_01": {
+      "tests_passed": 23,
+      "original_receipt_sha256": "c2a7fe091011adf8643f40c3df81b047e12f955f6526c88c3ffbe72265244bab",
+      "driver_wall_prefix_seconds": 0.22200558600161457,
+      "exact_wait4_test_child_CPU_seconds": 0.204878,
+      "original_receipt_bytes_recovered": false
+    },
+    "resource_core_validation_02": {
+      "tests_passed": 24,
+      "original_receipt_sha256": "5f22497a594a84c81513e42130f29b7ee298939e7b42b31d7dcda755be57556e",
+      "driver_wall_prefix_seconds": 0.19981584999914048,
+      "exact_wait4_test_child_CPU_seconds": 0.18509299999999998,
+      "original_receipt_bytes_recovered": false
+    },
+    "resource_core_validation_03": {
+      "tests_passed": 24,
+      "original_receipt_sha256": "89107441322787b6b04e39173c3d7c525faca5e846f252522df01137c9ff296f",
+      "driver_wall_prefix_seconds": 0.16677408100076718,
+      "exact_wait4_test_child_CPU_seconds": 0.157206,
+      "original_receipt_bytes_recovered": false
+    }
+  },
+  "independent_reviews": {
+    "OS01_OS02_closure_original_sha256": "d50bb36fa4f970526386db2e4d507f665e844e0d799dfce3df6afff10f767580",
+    "OS03_counterexample_original_sha256": "dddb51b39a85bb5ec276da1f9eff8d1c6cff239afb7d46923d67a3a53eb96b7e",
+    "OS03_v2_closure_original_sha256": "a0d87dc08c9f5fc13f9d23dd65407fe26814244b24d599c640b4d638f508d0af",
+    "status": "captured agent reports only here; original files not yet recovered by this agent"
+  },
+  "v1_supervisor_disposition": "Known late-adoption completion-gate defect; never deployed; do not deploy",
+  "v2_supervisor_archive_created": false,
+  "actual_resource_analysis_executed": false,
+  "recovery_execution": {
+    "tests_rerun": 0,
+    "model_calls": 0,
+    "numerical_oracle_calls": 0,
+    "actual_C2_metadata_analysis": 0,
+    "E_access": false
+  },
+  "next_step_authorized": "Explicit new resource analysis program v2 under unchanged PLAN and120s/512MiB; missing modules newly implemented and new meaningful tests, old lost24-test summaries do not establish new qualification; rebind supervisor/renderer only after new complete source/validation freeze."
+}

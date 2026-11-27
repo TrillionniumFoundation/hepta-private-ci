@@ -1,0 +1,347 @@
+{
+  "review_scope": "Independent read-only review of six Windows Rust files and integration surface; no rerun of tests and no remote mutation",
+  "component_commit": "7b39d8dac919c517f7defe5443de3ff4c2d52669",
+  "component_tree": "7ec0f0046931fdce1335a4db6caacee7dd79ee53",
+  "component_parents": [
+    "0ac61de676f7076bead25f86078a6c4839f1a132"
+  ],
+  "upstream_candidate": "ec6ffaa743f8ef088805a5acee7693969adefe3a",
+  "complete_candidate_branch_merge": false,
+  "result": "No confirmed blocker found in reviewed Rust component for publication to existing PR and native qualification. This is not approval to merge unqualified Windows behavior to main.",
+  "files_verified": [
+    {
+      "path": "codex-rs/utils/path-utils/src/private_artifact_directory_windows.rs",
+      "git_blob": "38124a9c1213f032ce7a123d3d757f28fa7e1400",
+      "sha256": "e9e6407e477618514585462d3cb1c6f0a4943e6f67fbb14ff09e9d1727900d2a",
+      "bytes": 10243,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_artifacts_windows.rs",
+      "git_blob": "23dd291abc197201ee8854a5dc0161b43b60a3e7",
+      "sha256": "66973b46ad32625299c71c15430939364f67e489434ff1da2ef8ec139adaf098",
+      "bytes": 16650,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_artifacts_windows_tests.rs",
+      "git_blob": "e6bb4637fa95f453ec0b5ef0c1951fa1943bd106",
+      "sha256": "72e455dd8dfa85b8b618c4717dd33bbbd7276e263df37db98c4506f1e80a4371",
+      "bytes": 10881,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_child_name_windows.rs",
+      "git_blob": "bf0ee365aeafb4df9ba42ade5d0855065b1d5e0b",
+      "sha256": "ad6454971d740f5322ea8553d38d0fed1e34563b2aef1970a18b29659d434e4f",
+      "bytes": 1426,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_file_identity_windows.rs",
+      "git_blob": "6a0696980bdec00e8309eb71bebe6ae8840cd7bb",
+      "sha256": "daecbebf6603dd7f70a43f7acc0f6e111d58f58e256d7d6e35eb2cedcfb5a4b8",
+      "bytes": 6482,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_file_security_windows.rs",
+      "git_blob": "f3069ff7d518c115a7c20e9711fe94eba358607c",
+      "sha256": "6828988b41a29fafa4c14d87b9a2d5ccdc2b446c3bc92a288caa72754504d1ae",
+      "bytes": 8078,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/Cargo.toml",
+      "git_blob": "c01f0b1ca3739eb11138bf489fd7050380f7db38",
+      "sha256": "25c55c60149bab3770fc2640b9454b02a45cece8d461326bce0628f16a3a8f9d",
+      "bytes": 815,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/lib.rs",
+      "git_blob": "d4883d207b7d35b2a3b2ffbba261152ae186ba17",
+      "sha256": "b7be645801c396eff163ffbcbbc528e725bad35f87480aaad8c31160fa33a2c4",
+      "bytes": 9318,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "git_blob": "263426a02ee7e3feb48581543505967320dd8e37",
+      "sha256": "277137823b32e1cbd349777970b4966373c53a3a0a2969a49139134e8564b8f8",
+      "bytes": 27829,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+      "git_blob": "929a69e696ccc369b0901c0375f8d171f70f753c",
+      "sha256": "c9f3b9185f8531f09ee08cbce0baf30f04ba1b3d315e1132b2d60136183f34e4",
+      "bytes": 3333,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": ".github/scripts/windows_private_artifacts.py",
+      "git_blob": "19e352e67943b54be308d1885fe7cc9ca04f2dce",
+      "sha256": "844becb2396ee5667375352ca9866b98d9abdcef3f06ec5ba3b2f35b3dd2084f",
+      "bytes": 10748,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": ".github/scripts/test_windows_private_artifacts.py",
+      "git_blob": "3496c31106600f00f0c8aa1a281f306e98f5bea6",
+      "sha256": "bff666859a2fbb3be3696418fff93f83fb28422141019a8cb863453d6c29952c",
+      "bytes": 2202,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-windows-current-ci.yml",
+      "git_blob": "eeaadd34fcaae0d790ef1ee1d9725a60785f51cd",
+      "sha256": "5d28e05abcd6e58d1fdf1e0a3b9ecf21940f35f7d24b23961b2616a1bf2f608c",
+      "bytes": 7659,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/PRIVATE_ARTIFACTS_WINDOWS.md",
+      "git_blob": "15b06e64d4475975000a3c9fd088de48688c1cc2",
+      "sha256": "f0f26d3363c22930ecb21a1a89dfa8b341f54eef5037083b8602168b0f132af8",
+      "bytes": 4144,
+      "checks": {
+        "bytes": true,
+        "sha256": true,
+        "git_blob": true
+      }
+    }
+  ],
+  "protected_current_inputs_verified": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "5655c098344104c602ce1f080d012bb84dad9ce954e1d82cc10f728df869d6b6",
+      "base_and_component_identical": true
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "sha256": "5336311a0fa5c53fd5b3f5ef966d661afed27453a69d84ff3dd55dbc431ff501",
+      "base_and_component_identical": true
+    },
+    {
+      "path": ".github/fixtures/windows-current-ci-scope.json",
+      "sha256": "8ff5919abc98db193c83027005e794b523553df8d5c8eb622851788ee6508336",
+      "base_and_component_identical": true
+    },
+    {
+      "path": ".github/scripts/windows_current_ci.py",
+      "sha256": "1b885ce7862faeebe9e215f22300fd47d562bd13778408199c94e47be22d0506",
+      "base_and_component_identical": true
+    },
+    {
+      "path": ".github/scripts/aggregate_windows_current_ci.py",
+      "sha256": "286c45c0079e2e4e71d21aedd407752cf908e08db461fc0492f10b7de7cf65b5",
+      "base_and_component_identical": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/BUILD.bazel",
+      "sha256": "077c5bd595e45a9180c4df4e5f8ab249ee15a1708f819ce0664f41b430c235d8",
+      "base_and_component_identical": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+      "base_and_component_identical": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/durable_publish.rs",
+      "sha256": "6a855aef91aebff1bd1d1f374a87a0dfb85c130e6e421a8302e8870379213dc1",
+      "base_and_component_identical": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/file_identity_windows.rs",
+      "sha256": "3535a4e23efce1413b58d9537f2a918814a23ad58eb66bc51e04482bae0af003",
+      "base_and_component_identical": true
+    }
+  ],
+  "candidate_equalities": [
+    {
+      "path": "codex-rs/utils/path-utils/src/private_artifact_directory_windows.rs",
+      "candidate_source_equal": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_artifacts_windows.rs",
+      "candidate_source_equal": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_child_name_windows.rs",
+      "candidate_source_equal": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_file_identity_windows.rs",
+      "candidate_source_equal": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_file_security_windows.rs",
+      "candidate_source_equal": true
+    },
+    {
+      "path": ".github/scripts/test_windows_private_artifacts.py",
+      "candidate_source_equal": true
+    }
+  ],
+  "integration": {
+    "changed_paths_exactly_manifest_14": true,
+    "existing_helper_bodies_byte_identical_after_visibility_only_replacement": true,
+    "lib_change": "cfg(windows) module declarations and public exports only; existing exports unchanged",
+    "consumer_rewiring": "No State / Operator / Shadow / AuthBus consumer source changed in the 14-path component",
+    "bazel": "Unchanged codex-rs/utils/path-utils/BUILD.bazel invokes codex_rust_crate; the original rule uses native.glob([src/**/*.rs]) for library source, including #[path] helpers and test module. All six new files are inside that glob."
+  },
+  "reviewed_boundaries": [
+    {
+      "paths": [
+        "private_artifact_directory_windows.rs",
+        "private_child_name_windows.rs"
+      ],
+      "finding": "All relative operations use one checked UTF-16 component and the retained parent RootDirectory; no separators/ADS/dot/reserved-device/trailing-alias escape. FILE_OPEN_REPARSE_POINT and full-ID validation are required. Canonical fixed-disk ancestry is reopened and checked; UNC/device/root-only paths rejected."
+    },
+    {
+      "paths": [
+        "private_file_identity_windows.rs"
+      ],
+      "finding": "Disk type, non-reparse tag, nonzero volume plus full 128-bit ID, object kind, not-delete-pending, positive timestamps/nonnegative lengths, and one-link regular files are checked. File snapshots compare full metadata plus security; directory comparison deliberately permits child-driven timestamps while retaining ID/security."
+    },
+    {
+      "paths": [
+        "private_file_security_windows.rs"
+      ],
+      "finding": "Effective thread token is preferred with process fallback only on ERROR_NO_TOKEN. Owner and bounded valid DACL are checked; unknown ACE kinds and foreign nonzero grants are rejected. No ACL repair is performed. Creation reuses the current protected-DACL helper without body change."
+    },
+    {
+      "paths": [
+        "private_artifacts_windows.rs"
+      ],
+      "finding": "New child creation is exclusive; locks deny writer/delete sharing and do not retry conflicting ownership. File writes/rename and directory barriers propagate errors, with post-operation checks. PrivateFile exposes neither raw handle nor writable File/Write capability; readonly construction cannot cast to writable directory."
+    },
+    {
+      "paths": [
+        "private_artifacts_windows_tests.rs"
+      ],
+      "finding": "Nine native cases retain hard assertions/expect failures, including identity/ACL/reparse/hardlink/name-alias/locking/atomic replacement boundaries. No ignore/skip-on-unsupported/soft-success substitution observed. Junction fixture correction invokes fixed cmd.exe arguments and validates actual reparse flag plus target before testing refusal."
+    }
+  ],
+  "native_qualification": {
+    "nine_new_backend_cases": "Not yet executed natively on this component or the combined source",
+    "linux_nine_tests": "Existing package tests executed on Linux; not evidence for the Windows backend nine cases",
+    "windows_cross_check": "Compiles tests for x86_64-pc-windows-gnu; does not execute Windows semantics",
+    "clippy": "Original just fix returned zero; not a strict -D warnings claim",
+    "bazel": "Original lock update/check returned zero; known platform/apple_support/rules_cc resolution warnings remain. Not a Bazel test pass claim"
+  },
+  "limits": [
+    "No AuthBus, SQLite, sandbox/LPAC or full consumer contract qualified by this component review.",
+    "Read-only code inspection is not proof of immutable bytes against pre-existing writable memory mappings. Current tests do not cover that interval; future consumers requiring payload authenticity still need their own pinned payload validation and native qualification.",
+    "No complete ec6 parent edge is introduced; the integration intentionally retains 42 excluded candidate paths for separate review."
+  ],
+  "reviewed_api_question": {
+    "question": "Does require_local_ntfs alone admit SMB merely reporting NTFS?",
+    "conclusion": "No supported-SMB bypass established. Microsoft documents GetVolumeInformationByHandleW as unsupported for SMB volume management; the actual retained-directory constructor separately requires DRIVE_FIXED. Do not report an unproved remote bypass.",
+    "source": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getvolumeinformationbyhandlew"
+  },
+  "memory_mapping_limit_source": "https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-flushviewoffile",
+  "evidence_files": [
+    {
+      "path": "/workspace/scratch/6d7ee0821539/ci-audit/ec6-windows-cross-check.log",
+      "bytes": 2286,
+      "sha256": "61b4ddf997adfada8b8edafdf296c4c03da3a4461ef02461eeecbd0b2c5faee1"
+    },
+    {
+      "path": "/workspace/scratch/6d7ee0821539/ci-audit/ec6-linux-tests.log",
+      "bytes": 4267,
+      "sha256": "f4c5f63b46c6dc6af6df12fa04dad819763b5eaf9a82d41118933673513ec9fd"
+    },
+    {
+      "path": "/workspace/scratch/6d7ee0821539/ci-audit/ec6-windows-clippy-fix.log",
+      "bytes": 358,
+      "sha256": "11137a366ac9e4fa699d6f7e3a9d44f2a262e05a896aaf650d98c4b1d69216cd"
+    },
+    {
+      "path": "/workspace/scratch/6d7ee0821539/ci-audit/ec6-component-fmt-retry.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/workspace/scratch/6d7ee0821539/ci-audit/ec6-bazel-lock-update-final.log",
+      "bytes": 919,
+      "sha256": "d5cd5982ed85f2e0695db044c70ca39652fd7969d67a6a1a38364dc7555f6951"
+    },
+    {
+      "path": "/workspace/scratch/6d7ee0821539/ci-audit/ec6-bazel-lock-check-final.log",
+      "bytes": 945,
+      "sha256": "c26d3a4aec21e0ca7620c8872ceb8804d9be571c0bab5d348b8bab064cbae21a"
+    },
+    {
+      "path": "/workspace/scratch/6d7ee0821539/ci-audit/ec6-bazel-final-receipt.json",
+      "bytes": 416,
+      "sha256": "1304e3b315b4f32860565de9f3e521c5cc9a3212bddc514bf5e0344bb9cd2f33"
+    },
+    {
+      "path": "/workspace/scratch/6d7ee0821539/ci-audit/ec6-backend-fixture-receipt.json",
+      "bytes": 1875,
+      "sha256": "3765af98eedc54f887a4ff5bb9e96e916e104e3e087dd9678cca2e27644b47c4"
+    },
+    {
+      "path": "/workspace/scratch/6d7ee0821539/ci-audit/ec6-component-validation.json",
+      "bytes": 31125,
+      "sha256": "4bbac124a582f5262299b65a3939048c22c78d7df7da386950abaf2bad23bffa"
+    }
+  ],
+  "remote_mutations": false,
+  "root_workspace_modified": false
+}

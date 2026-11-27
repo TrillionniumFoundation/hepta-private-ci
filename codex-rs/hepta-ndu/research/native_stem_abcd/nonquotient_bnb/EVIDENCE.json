@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.ndu.r19.delivery.verified",
+  "parent_r18_sha": "02c2bd45592dbe4c4156cd08fb52f58811336f1a",
+  "protocol_before_efficacy_sha": "dfc8a50c329c75266ab3251f6040326f4e68ba62",
+  "archive": {
+    "filename": "hepta_native_ndu_nonquotient_round19_20261015.zip",
+    "bytes": 489818,
+    "sha256": "0a91c22215977a8dcd4602356f672bb1abeeec0a3533bf04028d29cc1be188ab",
+    "verified_content_files": 616,
+    "manifest_members": 617,
+    "manifest_sha256": "ea6a1f698926e7c3cc740e75d64f83e4a7331e72180b92df4ab19cc0563a450a",
+    "raw_binary_data": "conversation ZIP, NOT Git upload"
+  },
+  "exact_primary_cost_regret_upper": 0.0006989876714087812,
+  "primary_exact_box_splits": 16,
+  "primary_threshold": 0.001,
+  "posthoc_tightened_regret_upper": 0.00009794342912292434,
+  "posthoc_box_splits": 53,
+  "fit": {
+    "completed": 64,
+    "execution_failures": 0,
+    "changed_weights": 60,
+    "checkpoint_snapshots": 4298,
+    "subprocess_cpu_s": 75.659803,
+    "sweep_wall_s": 77.19076534899978,
+    "fit_cpu_s": 15.634256675,
+    "audit_cpu_s": 7.0467753900000005
+  },
+  "tests": {
+    "r19_math": 18,
+    "unchanged_r18": 25,
+    "actual_tamper": 8,
+    "distinct": 51,
+    "skipped": 0
+  },
+  "qualification": {
+    "nonquotient/adam": "3/8",
+    "nonquotient/bfgs": "3/8",
+    "nonquotient/lbfgs": "4/8",
+    "nonquotient/trust-exact": "4/8",
+    "control/adam": "0/8",
+    "control/bfgs": "0/8",
+    "control/lbfgs": "0/8",
+    "control/trust-exact": "7/8"
+  },
+  "independent_audit": {
+    "replay_max_error": 0,
+    "leaf_cost_max_error": 4.440892098500626e-16
+  },
+  "preserved_preflight_failure": "PRE_SWEEP_IMPORT_FAILURE.log; no fit started",
+  "scope": {
+    "global_cost_certificate": true,
+    "unique_global_optimizer_certificate": false,
+    "full_deep_fbsde": false,
+    "production_authorized": false,
+    "hardware_attested": false,
+    "hosted_ci_pass_unverified": true
+  },
+  "source_blobs": {
+    "model.py": "932dce71514fd56281eb610576393a0d2a9ec921",
+    "fitters.py": "311a23de2faae6bc157fb068d39527602a60d63f",
+    "run.py": "f813963fc1e8de39d4f8c7cb6916e6c147f77045",
+    "global_bound.py": "738cf3e6b2d533e537ceb083aebc1deb2e2e27f0",
+    "test_math.py": "23f395ed77260b65e69cfdeae5454d7802397063",
+    "audit/test_tamper.py": "ca61cb7f2911439c91ff798bd619462bce44497c",
+    "R18/problem.py": "132c00aa07d46c4d01ac56b0c63d9913e26548b5",
+    "R18/certificate.py": "1dd4a517c3bfee3b942eb55fdf97fa6634be6061"
+  }
+}

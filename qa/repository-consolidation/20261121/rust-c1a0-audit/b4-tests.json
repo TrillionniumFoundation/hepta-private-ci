@@ -1,0 +1,21 @@
+{
+  "suite": "original B4 no-bypass suite",
+  "source": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+  "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_*.py"
+  ],
+  "exit_code": 0,
+  "seconds": 477.4760706424713,
+  "log": "b4-original-current.log",
+  "log_bytes": 1453,
+  "log_sha256": "9c00c6e16fbd0671b088c93a386ba55ce807bb246220952b527a150b40883465",
+  "source_after": ""
+}

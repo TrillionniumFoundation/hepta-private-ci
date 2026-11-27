@@ -1,0 +1,1137 @@
+{
+  "schema": "hepta.publication-windows-failures.v1",
+  "collection_started_utc": "2026-10-21T01:56:50Z",
+  "collection_finished_utc": "2026-10-21T01:57:24Z",
+  "bounded_inspection_completed_utc": "2026-10-21T01:58:28Z",
+  "authored_utc": "2026-10-21T02:04:00.023Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 2969,
+  "run_id": 39524743211,
+  "source_head": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+  "base_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+  "actual_checkout_merge": "1aeb57e168bd3c5465a386f99fd541e31c3555b3",
+  "run_status_at_retrieval": "in_progress",
+  "run_conclusion_at_retrieval": null,
+  "source_identity_scope": "Run API head_sha independently matched source; all three job logs identify the actual prospective-merge checkout and source/base identities.",
+  "no_additional_network_after_original_retrieval": true,
+  "raw_logs_persisted": false,
+  "raw_transfer_omission": "Parent explicitly prioritized this compact standalone checkpoint file over transferring full cached raw logs; byte counts and SHA256 were computed in memory from the complete returned strings, not from printed excerpts.",
+  "excerpt_normalization": "ANSI SGR color escapes removed from excerpts only; timestamps and text retained. Hashes cover the unmodified full returned strings.",
+  "classification": "NOT_READER_ATTRIBUTION",
+  "findings": [
+    "Confirmed recurrence of known native failure signatures: Git wrapper child readiness, Windows sandbox setup helper path, authorized-read RPC error-code mismatch, and matrixd non-stale socket rejection.",
+    "Other observed failures include platform PermissionDenied/UnsafeStateDirectory and several independent semantic assertions. This bounded review did not determine each underlying implementation cause.",
+    "No actual CARGO_BIN_EXE_codex-code-mode-host missing-binary panic was observed in these logs. Matching words inside serialized test request bodies were not treated as failure evidence.",
+    "The evidence does not attribute Windows failures to the Reader Python receipt/context binding changes; it also does not qualify Reader's complete CI as passed.",
+    "These are Windows Bazel jobs, not Cargo nextest jobs. Counts are Bazel target aggregates and must not be added to Rust unit-case totals."
+  ],
+  "actions": {
+    "job_log_retrievals": 3,
+    "manual_reruns": 0,
+    "cancellations": 0,
+    "source_changes": 0,
+    "sealed_capsule_changes": 0
+  },
+  "logs": [
+    {
+      "job_id": 118977201830,
+      "shard": "1/4",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39524743211/job/118977201830",
+      "recovery_log_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/118977201830/logs",
+      "log_retrieval": "SUCCESS",
+      "full_connector_decoded_log_utf8_bytes": 870045,
+      "full_connector_decoded_log_sha256": "30506d40cedfd1d3a1a9dbeb5d4a5fb325958ff4ef35324f85b3a58b8fc32eca",
+      "hash_scope": "UTF-8 serialization of the entire cached connector structuredContent.content string, preserving initial BOM and line endings; not compressed/HTTP transport bytes.",
+      "line_count": 5348,
+      "completeness": {
+        "classification": "FULL_CONNECTOR_DECODED_LOG_NO_TRUNCATION_INDICATED",
+        "tool_isError": false,
+        "tool_structured_keys": [
+          "content"
+        ],
+        "explicit_truncation_markers": [],
+        "starts_with_runner_initialization": true,
+        "ends_with_newline": true,
+        "terminal_markers": [
+          {
+            "line": 5195,
+            "text": "2026-10-21T01:47:22.3373330Z ##[error]Process completed with exit code 3."
+          },
+          {
+            "line": 5317,
+            "text": "2026-10-21T01:47:28.5178776Z Post job cleanup."
+          },
+          {
+            "line": 5319,
+            "text": "2026-10-21T01:47:28.5315268Z Post job cleanup."
+          },
+          {
+            "line": 5321,
+            "text": "2026-10-21T01:47:28.8687209Z Post job cleanup."
+          },
+          {
+            "line": 5346,
+            "text": "2026-10-21T01:47:32.4438175Z Cleaning up orphan processes"
+          }
+        ],
+        "last_lines": [
+          "2026-10-21T01:47:31.9674212Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" submodule foreach --recursive \"git config --local --show-origin --name-only --get-regexp remote.origin.url\"",
+          "2026-10-21T01:47:32.4130400Z Removing credentials config 'D:\\a\\_temp\\git-credentials-7fad787c-0c7c-484d-87b1-d08332112874.config'",
+          "2026-10-21T01:47:32.4438175Z Cleaning up orphan processes",
+          "2026-10-21T01:47:32.6255000Z Terminate orphan process: pid (4120) (java)",
+          ""
+        ],
+        "upstream_transport_length_or_hash_independently_available": false,
+        "intermediate_console_excerpt_display_was_truncated": true,
+        "display_truncation_affects_cached_structured_content": false
+      },
+      "raw_disk_status": "NOT_PERSISTED: parent prioritized compact seal and explicitly permitted omitting raw transfer; full decoded contents remain in this agent's tool cache at authoring time. Recover via the authenticated log API URL.",
+      "actual_checkout_evidence": {
+        "signature": "actual merge checkout",
+        "line_start": 164,
+        "line_end": 169,
+        "lines": [
+          {
+            "line": 164,
+            "text": "2026-10-21T01:04:40.4107201Z "
+          },
+          {
+            "line": 165,
+            "text": "2026-10-21T01:04:40.4107468Z HEAD is now at 1aeb57e Merge ca2768978429a2c9a98641fa2d58a8f587b88874 into f191cd081ba16fed8827a18093b5a5b39e9a36cd"
+          },
+          {
+            "line": 166,
+            "text": "2026-10-21T01:04:40.4224070Z ##[endgroup]"
+          },
+          {
+            "line": 167,
+            "text": "2026-10-21T01:04:40.4672810Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H"
+          },
+          {
+            "line": 168,
+            "text": "2026-10-21T01:04:40.4951221Z 1aeb57e168bd3c5465a386f99fd541e31c3555b3"
+          },
+          {
+            "line": 169,
+            "text": "2026-10-21T01:04:40.4989569Z ##[group]Removing auth"
+          }
+        ]
+      },
+      "job_name_evidence": {
+        "signature": "shard identification",
+        "line_start": 33,
+        "line_end": 35,
+        "lines": [
+          {
+            "line": 33,
+            "text": "2026-10-21T01:04:23.9799531Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/2969/merge (1aeb57e168bd3c5465a386f99fd541e31c3555b3)"
+          },
+          {
+            "line": 34,
+            "text": "2026-10-21T01:04:23.9803872Z Complete job name: Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4"
+          },
+          {
+            "line": 35,
+            "text": "2026-10-21T01:04:24.2423465Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          }
+        ]
+      },
+      "target_summary": {
+        "selected_targets": 137,
+        "executed": 90,
+        "passed": 84,
+        "failed": 6,
+        "skipped": 47
+      },
+      "target_summary_evidence": {
+        "signature": "exact Bazel target aggregate",
+        "line_start": 4618,
+        "line_end": 4621,
+        "lines": [
+          {
+            "line": 4618,
+            "text": "2026-10-21T01:47:05.1775469Z "
+          },
+          {
+            "line": 4619,
+            "text": "2026-10-21T01:47:05.1775684Z Executed 90 out of 137 tests: 84 tests pass, 6 fail locally, and 47 were skipped."
+          },
+          {
+            "line": 4620,
+            "text": "2026-10-21T01:47:08.8077588Z No Bazel action failures were found in the captured console output."
+          },
+          {
+            "line": 4621,
+            "text": "2026-10-21T01:47:20.3438287Z ##[group]Bazel test log tail for //codex-rs/app-server-protocol:app-server-protocol-unit-tests"
+          }
+        ]
+      },
+      "failed_targets": [
+        {
+          "line": 4596,
+          "text": "//codex-rs/app-server-protocol:app-server-protocol-unit-tests            FAILED in 97.9s"
+        },
+        {
+          "line": 4598,
+          "text": "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests                      FAILED in 10.9s"
+        },
+        {
+          "line": 4600,
+          "text": "//codex-rs/git-utils:git-utils-unit-tests                                FAILED in 100.1s"
+        },
+        {
+          "line": 4602,
+          "text": "//codex-rs/hepta-automation:hepta-automation-unit-tests                  FAILED in 1.7s"
+        },
+        {
+          "line": 4604,
+          "text": "//codex-rs/hepta-fleet:hepta-fleet-unit-tests                            FAILED in 72.9s"
+        },
+        {
+          "line": 4606,
+          "text": "//codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test FAILED in 0.3s"
+        }
+      ],
+      "signatures": [
+        {
+          "signature": "workspace canonical/symlink rejection",
+          "line_start": 3441,
+          "line_end": 3444,
+          "lines": [
+            {
+              "line": 3441,
+              "text": "2026-10-21T01:30:16.8682217Z ---- registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths stdout ----"
+            },
+            {
+              "line": 3442,
+              "text": "2026-10-21T01:30:16.8823141Z Error: Invalid(\"workspace root must be canonical and must not traverse a symlink: D:\\\\tmp\\\\.tmppL1E8A\\\\sweep\\\\a\")"
+            },
+            {
+              "line": 3443,
+              "text": "2026-10-21T01:30:16.9184838Z "
+            },
+            {
+              "line": 3444,
+              "text": "2026-10-21T01:30:16.9581140Z "
+            }
+          ]
+        },
+        {
+          "signature": "Git wrapper child readiness timeout",
+          "line_start": 3657,
+          "line_end": 3661,
+          "lines": [
+            {
+              "line": 3657,
+              "text": "2026-10-21T01:35:37.7078832Z "
+            },
+            {
+              "line": 3658,
+              "text": "2026-10-21T01:35:37.7079548Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (6176) panicked at git-utils/src\\git_process_tests.rs:75:6:"
+            },
+            {
+              "line": 3659,
+              "text": "2026-10-21T01:35:37.7080481Z wait for Git wrapper child readiness: Elapsed(())"
+            },
+            {
+              "line": 3660,
+              "text": "2026-10-21T01:35:37.7212963Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 3661,
+              "text": "2026-10-21T01:35:37.7352615Z "
+            }
+          ]
+        },
+        {
+          "signature": "automation migration reopen Invalid",
+          "line_start": 3839,
+          "line_end": 3843,
+          "lines": [
+            {
+              "line": 3839,
+              "text": "2026-10-21T01:37:36.2406337Z "
+            },
+            {
+              "line": 3840,
+              "text": "2026-10-21T01:37:36.2587848Z thread 'store::migration_convergence_tests::canonical_cut_before_rebind_reopens' (5800) panicked at hepta-automation/src\\migration_convergence_tests.rs:154:10:"
+            },
+            {
+              "line": 3841,
+              "text": "2026-10-21T01:37:36.2675103Z real open: Invalid"
+            },
+            {
+              "line": 3842,
+              "text": "2026-10-21T01:37:36.2725977Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 3843,
+              "text": "2026-10-21T01:37:36.2836967Z "
+            }
+          ]
+        },
+        {
+          "signature": "supervisor restart budget assertion",
+          "line_start": 3964,
+          "line_end": 3970,
+          "lines": [
+            {
+              "line": 3964,
+              "text": "2026-10-21T01:39:28.8419662Z "
+            },
+            {
+              "line": 3965,
+              "text": "2026-10-21T01:39:28.8527713Z thread 'restart_budget_survives_repeated_supervisord_recovery' (7672) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:251:5:"
+            },
+            {
+              "line": 3966,
+              "text": "2026-10-21T01:39:28.8539284Z assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|"
+            },
+            {
+              "line": 3967,
+              "text": "2026-10-21T01:39:28.8545184Z         matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued"
+            },
+            {
+              "line": 3968,
+              "text": "2026-10-21T01:39:28.8551967Z             { attempt: 2 }))"
+            },
+            {
+              "line": 3969,
+              "text": "2026-10-21T01:39:28.8562443Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 3970,
+              "text": "2026-10-21T01:39:28.8580695Z "
+            }
+          ]
+        },
+        {
+          "signature": "federation active-contributor assertion",
+          "line_start": 4118,
+          "line_end": 4124,
+          "lines": [
+            {
+              "line": 4118,
+              "text": "2026-10-21T01:40:15.0387855Z "
+            },
+            {
+              "line": 4119,
+              "text": "2026-10-21T01:40:15.0388742Z thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (9156) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:"
+            },
+            {
+              "line": 4120,
+              "text": "2026-10-21T01:40:15.0390079Z assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,"
+            },
+            {
+              "line": 4121,
+              "text": "2026-10-21T01:40:15.0390757Z     &turn_store)"
+            },
+            {
+              "line": 4122,
+              "text": "2026-10-21T01:40:15.0391254Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 4123,
+              "text": "2026-10-21T01:40:15.0391839Z "
+            },
+            {
+              "line": 4124,
+              "text": "2026-10-21T01:40:15.0391844Z "
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 118977201936,
+      "shard": "2/4",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39524743211/job/118977201936",
+      "recovery_log_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/118977201936/logs",
+      "log_retrieval": "SUCCESS",
+      "full_connector_decoded_log_utf8_bytes": 4038346,
+      "full_connector_decoded_log_sha256": "baf5333ad2ae68bf7e48e30db2f1f1f3af740cf50e74efea0473af397c9ec1dd",
+      "hash_scope": "UTF-8 serialization of the entire cached connector structuredContent.content string, preserving initial BOM and line endings; not compressed/HTTP transport bytes.",
+      "line_count": 16359,
+      "completeness": {
+        "classification": "FULL_CONNECTOR_DECODED_LOG_NO_TRUNCATION_INDICATED",
+        "tool_isError": false,
+        "tool_structured_keys": [
+          "content"
+        ],
+        "explicit_truncation_markers": [],
+        "starts_with_runner_initialization": true,
+        "ends_with_newline": true,
+        "terminal_markers": [
+          {
+            "line": 16206,
+            "text": "2026-10-21T01:39:45.8994666Z ##[error]Process completed with exit code 3."
+          },
+          {
+            "line": 16328,
+            "text": "2026-10-21T01:39:48.6778343Z Post job cleanup."
+          },
+          {
+            "line": 16330,
+            "text": "2026-10-21T01:39:48.6881616Z Post job cleanup."
+          },
+          {
+            "line": 16332,
+            "text": "2026-10-21T01:39:48.8329027Z Post job cleanup."
+          },
+          {
+            "line": 16357,
+            "text": "2026-10-21T01:39:50.2099679Z Cleaning up orphan processes"
+          }
+        ],
+        "last_lines": [
+          "2026-10-21T01:39:49.8583066Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" submodule foreach --recursive \"git config --local --show-origin --name-only --get-regexp remote.origin.url\"",
+          "2026-10-21T01:39:50.1876314Z Removing credentials config 'D:\\a\\_temp\\git-credentials-705d3f43-ff16-4ec4-a238-ffb2603aaf3d.config'",
+          "2026-10-21T01:39:50.2099679Z Cleaning up orphan processes",
+          "2026-10-21T01:39:50.3149007Z Terminate orphan process: pid (3820) (java)",
+          ""
+        ],
+        "upstream_transport_length_or_hash_independently_available": false,
+        "intermediate_console_excerpt_display_was_truncated": true,
+        "display_truncation_affects_cached_structured_content": false
+      },
+      "raw_disk_status": "NOT_PERSISTED: parent prioritized compact seal and explicitly permitted omitting raw transfer; full decoded contents remain in this agent's tool cache at authoring time. Recover via the authenticated log API URL.",
+      "actual_checkout_evidence": {
+        "signature": "actual merge checkout",
+        "line_start": 138,
+        "line_end": 143,
+        "lines": [
+          {
+            "line": 138,
+            "text": "2026-10-21T01:04:32.3083764Z "
+          },
+          {
+            "line": 139,
+            "text": "2026-10-21T01:04:32.3084097Z HEAD is now at 1aeb57e Merge ca2768978429a2c9a98641fa2d58a8f587b88874 into f191cd081ba16fed8827a18093b5a5b39e9a36cd"
+          },
+          {
+            "line": 140,
+            "text": "2026-10-21T01:04:32.3210355Z ##[endgroup]"
+          },
+          {
+            "line": 141,
+            "text": "2026-10-21T01:04:32.3882039Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H"
+          },
+          {
+            "line": 142,
+            "text": "2026-10-21T01:04:32.4138924Z 1aeb57e168bd3c5465a386f99fd541e31c3555b3"
+          },
+          {
+            "line": 143,
+            "text": "2026-10-21T01:04:32.4171866Z ##[group]Removing auth"
+          }
+        ]
+      },
+      "job_name_evidence": {
+        "signature": "shard identification",
+        "line_start": 33,
+        "line_end": 35,
+        "lines": [
+          {
+            "line": 33,
+            "text": "2026-10-21T01:04:22.9038938Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/2969/merge (1aeb57e168bd3c5465a386f99fd541e31c3555b3)"
+          },
+          {
+            "line": 34,
+            "text": "2026-10-21T01:04:22.9042311Z Complete job name: Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4"
+          },
+          {
+            "line": 35,
+            "text": "2026-10-21T01:04:23.0127965Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          }
+        ]
+      },
+      "target_summary": {
+        "selected_targets": 142,
+        "executed": 104,
+        "passed": 89,
+        "failed": 15,
+        "skipped": 38
+      },
+      "target_summary_evidence": {
+        "signature": "exact Bazel target aggregate",
+        "line_start": 14927,
+        "line_end": 14930,
+        "lines": [
+          {
+            "line": 14927,
+            "text": "2026-10-21T01:39:37.9839334Z "
+          },
+          {
+            "line": 14928,
+            "text": "2026-10-21T01:39:37.9839462Z Executed 104 out of 142 tests: 89 tests pass, 15 fail locally, and 38 were skipped."
+          },
+          {
+            "line": 14929,
+            "text": "2026-10-21T01:39:39.1511374Z ##[error]FAILED: //codex-rs/app-server:app-server-unit-tests (Summary)"
+          },
+          {
+            "line": 14930,
+            "text": "FAILED: //codex-rs/exec:exec-all-test (Summary)"
+          }
+        ]
+      },
+      "failed_targets": [
+        {
+          "line": 14832,
+          "text": "//codex-rs/cli:cli-sandbox_cloud_config-test                             FAILED in 0.6s"
+        },
+        {
+          "line": 14834,
+          "text": "//codex-rs/core:core-responses_headers-test                              FAILED in 13.8s"
+        },
+        {
+          "line": 14836,
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test  FAILED in 0.4s"
+        },
+        {
+          "line": 14838,
+          "text": "//codex-rs/hepta-authbus:hepta-authbus-unit-tests                        FAILED in 5.9s"
+        },
+        {
+          "line": 14840,
+          "text": "//codex-rs/hepta-automation:hepta-automation-automation-test             FAILED in 6.1s"
+        },
+        {
+          "line": 14842,
+          "text": "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests                FAILED in 0.9s"
+        },
+        {
+          "line": 14844,
+          "text": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests            FAILED in 0.9s"
+        },
+        {
+          "line": 14846,
+          "text": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests    FAILED in 1.7s"
+        },
+        {
+          "line": 14848,
+          "text": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests              FAILED in 2.0s"
+        },
+        {
+          "line": 14850,
+          "text": "//codex-rs/hepta-memory:hepta-memory-unit-tests                          FAILED in 55.9s"
+        },
+        {
+          "line": 14852,
+          "text": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test    FAILED in 0.1s"
+        },
+        {
+          "line": 14854,
+          "text": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 6.8s"
+        },
+        {
+          "line": 14856,
+          "text": "//codex-rs/app-server:app-server-unit-tests                              FAILED in 3 out of 10 in 4.9s"
+        },
+        {
+          "line": 14868,
+          "text": "//codex-rs/exec:exec-all-test                                            FAILED in 3 out of 10 in 55.6s"
+        },
+        {
+          "line": 14879,
+          "text": "//codex-rs/app-server:app-server-all-test                                FAILED in 45 out of 46 in 68.8s"
+        }
+      ],
+      "signatures": [
+        {
+          "signature": "sandbox setup helper path unavailable",
+          "line_start": 3753,
+          "line_end": 3760,
+          "lines": [
+            {
+              "line": 3753,
+              "text": "2026-10-21T01:24:26.5368365Z "
+            },
+            {
+              "line": 3754,
+              "text": "2026-10-21T01:24:26.5368496Z ---- setup_helper_embeds_as_invoker_manifest stdout ----"
+            },
+            {
+              "line": 3755,
+              "text": "2026-10-21T01:24:26.5368904Z Error: find setup helper _main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe"
+            },
+            {
+              "line": 3756,
+              "text": "2026-10-21T01:24:26.5369206Z "
+            },
+            {
+              "line": 3757,
+              "text": "2026-10-21T01:24:26.5369271Z Caused by:"
+            },
+            {
+              "line": 3758,
+              "text": "2026-10-21T01:24:26.5369488Z     The system cannot find the path specified. (os error 3)"
+            },
+            {
+              "line": 3759,
+              "text": "2026-10-21T01:24:26.5369694Z "
+            },
+            {
+              "line": 3760,
+              "text": "2026-10-21T01:24:26.5369697Z "
+            }
+          ]
+        },
+        {
+          "signature": "fixture PermissionDenied",
+          "line_start": 3206,
+          "line_end": 3210,
+          "lines": [
+            {
+              "line": 3206,
+              "text": "2026-10-21T01:21:59.2505970Z "
+            },
+            {
+              "line": 3207,
+              "text": "2026-10-21T01:21:59.2506712Z thread 'evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes' (3208) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:"
+            },
+            {
+              "line": 3208,
+              "text": "2026-10-21T01:21:59.2507881Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }"
+            },
+            {
+              "line": 3209,
+              "text": "2026-10-21T01:21:59.2508650Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 3210,
+              "text": "2026-10-21T01:21:59.2509069Z "
+            }
+          ]
+        },
+        {
+          "signature": "durable registry UnsafeStateDirectory",
+          "line_start": 3267,
+          "line_end": 3271,
+          "lines": [
+            {
+              "line": 3267,
+              "text": "2026-10-21T01:21:59.2565435Z "
+            },
+            {
+              "line": 3268,
+              "text": "2026-10-21T01:21:59.2566018Z thread 'prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift' (9516) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:"
+            },
+            {
+              "line": 3269,
+              "text": "2026-10-21T01:21:59.2567132Z open durable registry: UnsafeStateDirectory"
+            },
+            {
+              "line": 3270,
+              "text": "2026-10-21T01:21:59.2567411Z "
+            },
+            {
+              "line": 3271,
+              "text": "2026-10-21T01:21:59.2567828Z ---- prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input stdout ----"
+            }
+          ]
+        },
+        {
+          "signature": "sandbox ACL token assertion",
+          "line_start": 3672,
+          "line_end": 3685,
+          "lines": [
+            {
+              "line": 3672,
+              "text": "2026-10-21T01:24:26.5346848Z "
+            },
+            {
+              "line": 3673,
+              "text": "2026-10-21T01:24:26.5347282Z thread 'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes' (1880) panicked at windows-sandbox-rs/src\\token_tests.rs:213:5:"
+            },
+            {
+              "line": 3674,
+              "text": "2026-10-21T01:24:26.5347850Z assertion failed: `(left == right)`"
+            },
+            {
+              "line": 3675,
+              "text": "2026-10-21T01:24:26.5348006Z "
+            },
+            {
+              "line": 3676,
+              "text": "2026-10-21T01:24:26.5348085Z Diff < left / right > :"
+            },
+            {
+              "line": 3677,
+              "text": "2026-10-21T01:24:26.5350805Z  ("
+            },
+            {
+              "line": 3678,
+              "text": "2026-10-21T01:24:26.5350965Z >    false,"
+            },
+            {
+              "line": 3679,
+              "text": "2026-10-21T01:24:26.5351111Z      true,"
+            },
+            {
+              "line": 3680,
+              "text": "2026-10-21T01:24:26.5351251Z <    true,"
+            },
+            {
+              "line": 3681,
+              "text": "2026-10-21T01:24:26.5351391Z <    true,"
+            },
+            {
+              "line": 3682,
+              "text": "2026-10-21T01:24:26.5351536Z >    false,"
+            },
+            {
+              "line": 3683,
+              "text": "2026-10-21T01:24:26.5351675Z  )"
+            },
+            {
+              "line": 3684,
+              "text": "2026-10-21T01:24:26.5351754Z "
+            },
+            {
+              "line": 3685,
+              "text": "2026-10-21T01:24:26.5351758Z "
+            }
+          ]
+        },
+        {
+          "signature": "guardian test failure; deeper cause not established",
+          "line_start": 6953,
+          "line_end": 6955,
+          "lines": [
+            {
+              "line": 6953,
+              "text": "2026-10-21T01:38:04.3750352Z test suite::v2::mcp_server_elicitation::mcp_server_openai_form_elicitation_round_trip ... ok"
+            },
+            {
+              "line": 6954,
+              "text": "2026-10-21T01:38:04.3750602Z test suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::guardian_disabled ... FAILED"
+            },
+            {
+              "line": 6955,
+              "text": "2026-10-21T01:38:04.3751067Z test suite::v2::mcp_server_status::oauth_login_rejects_servers_disabled_by_managed_requirements::plain_http ... ok"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 118977201768,
+      "shard": "3/4",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39524743211/job/118977201768",
+      "recovery_log_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/118977201768/logs",
+      "log_retrieval": "SUCCESS",
+      "full_connector_decoded_log_utf8_bytes": 2294241,
+      "full_connector_decoded_log_sha256": "abe6dbf96842a61b7db98d5d6e8eb083b6f79a2948e60e1e07e02ac383cd8d3c",
+      "hash_scope": "UTF-8 serialization of the entire cached connector structuredContent.content string, preserving initial BOM and line endings; not compressed/HTTP transport bytes.",
+      "line_count": 17905,
+      "completeness": {
+        "classification": "FULL_CONNECTOR_DECODED_LOG_NO_TRUNCATION_INDICATED",
+        "tool_isError": false,
+        "tool_structured_keys": [
+          "content"
+        ],
+        "explicit_truncation_markers": [],
+        "starts_with_runner_initialization": true,
+        "ends_with_newline": true,
+        "terminal_markers": [
+          {
+            "line": 17752,
+            "text": "2026-10-21T01:51:17.0273141Z ##[error]Process completed with exit code 3."
+          },
+          {
+            "line": 17874,
+            "text": "2026-10-21T01:51:20.9746445Z Post job cleanup."
+          },
+          {
+            "line": 17876,
+            "text": "2026-10-21T01:51:20.9933458Z Post job cleanup."
+          },
+          {
+            "line": 17878,
+            "text": "2026-10-21T01:51:21.2748227Z Post job cleanup."
+          },
+          {
+            "line": 17903,
+            "text": "2026-10-21T01:51:23.5478227Z Cleaning up orphan processes"
+          }
+        ],
+        "last_lines": [
+          "2026-10-21T01:51:22.9899347Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" submodule foreach --recursive \"git config --local --show-origin --name-only --get-regexp remote.origin.url\"",
+          "2026-10-21T01:51:23.5181092Z Removing credentials config 'D:\\a\\_temp\\git-credentials-cc75972d-91c4-4b5f-9392-a83fe6c7836d.config'",
+          "2026-10-21T01:51:23.5478227Z Cleaning up orphan processes",
+          "2026-10-21T01:51:23.7505782Z Terminate orphan process: pid (3116) (java)",
+          ""
+        ],
+        "upstream_transport_length_or_hash_independently_available": false,
+        "intermediate_console_excerpt_display_was_truncated": true,
+        "display_truncation_affects_cached_structured_content": false
+      },
+      "raw_disk_status": "NOT_PERSISTED: parent prioritized compact seal and explicitly permitted omitting raw transfer; full decoded contents remain in this agent's tool cache at authoring time. Recover via the authenticated log API URL.",
+      "actual_checkout_evidence": {
+        "signature": "actual merge checkout",
+        "line_start": 163,
+        "line_end": 168,
+        "lines": [
+          {
+            "line": 163,
+            "text": "2026-10-21T01:03:36.2395526Z "
+          },
+          {
+            "line": 164,
+            "text": "2026-10-21T01:03:36.2395901Z HEAD is now at 1aeb57e Merge ca2768978429a2c9a98641fa2d58a8f587b88874 into f191cd081ba16fed8827a18093b5a5b39e9a36cd"
+          },
+          {
+            "line": 165,
+            "text": "2026-10-21T01:03:36.2545932Z ##[endgroup]"
+          },
+          {
+            "line": 166,
+            "text": "2026-10-21T01:03:36.3702817Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H"
+          },
+          {
+            "line": 167,
+            "text": "2026-10-21T01:03:36.4170407Z 1aeb57e168bd3c5465a386f99fd541e31c3555b3"
+          },
+          {
+            "line": 168,
+            "text": "2026-10-21T01:03:36.4257237Z ##[group]Removing auth"
+          }
+        ]
+      },
+      "job_name_evidence": {
+        "signature": "shard identification",
+        "line_start": 33,
+        "line_end": 35,
+        "lines": [
+          {
+            "line": 33,
+            "text": "2026-10-21T01:03:24.7527464Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/2969/merge (1aeb57e168bd3c5465a386f99fd541e31c3555b3)"
+          },
+          {
+            "line": 34,
+            "text": "2026-10-21T01:03:24.7532646Z Complete job name: Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4"
+          },
+          {
+            "line": 35,
+            "text": "2026-10-21T01:03:24.8922931Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          }
+        ]
+      },
+      "target_summary": {
+        "selected_targets": 145,
+        "executed": 100,
+        "passed": 90,
+        "failed": 10,
+        "skipped": 45
+      },
+      "target_summary_evidence": {
+        "signature": "exact Bazel target aggregate",
+        "line_start": 16838,
+        "line_end": 16841,
+        "lines": [
+          {
+            "line": 16838,
+            "text": "2026-10-21T01:51:02.2115209Z "
+          },
+          {
+            "line": 16839,
+            "text": "2026-10-21T01:51:02.2115739Z Executed 100 out of 145 tests: 90 tests pass, 10 fail locally, and 45 were skipped."
+          },
+          {
+            "line": 16840,
+            "text": "2026-10-21T01:51:04.2557642Z ##[error]FAILED: //codex-rs/tui:tui-unit-tests (Summary)"
+          },
+          {
+            "line": 16841,
+            "text": "2026-10-21T01:51:04.2641101Z "
+          }
+        ]
+      },
+      "failed_targets": [
+        {
+          "line": 16795,
+          "text": "//codex-rs/code-mode-host:code-mode-host-unit-tests                      FAILED in 1.8s"
+        },
+        {
+          "line": 16797,
+          "text": "//codex-rs/code-mode-runtime:code-mode-runtime-unit-tests                FAILED in 85.0s"
+        },
+        {
+          "line": 16799,
+          "text": "//codex-rs/exec-server:exec-server-authorized_read_rpc-test              FAILED in 0.2s"
+        },
+        {
+          "line": 16801,
+          "text": "//codex-rs/ext/queue:queue-queue_service-test                            FAILED in 57.4s"
+        },
+        {
+          "line": 16803,
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 52.2s"
+        },
+        {
+          "line": 16805,
+          "text": "//codex-rs/hepta-evidence:hepta-evidence-unit-tests                      FAILED in 104.2s"
+        },
+        {
+          "line": 16807,
+          "text": "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests                        FAILED in 2.7s"
+        },
+        {
+          "line": 16809,
+          "text": "//codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test FAILED in 0.1s"
+        },
+        {
+          "line": 16811,
+          "text": "//codex-rs/v8-poc:v8-poc-unit-tests                                      FAILED in 83.1s"
+        },
+        {
+          "line": 16815,
+          "text": "//codex-rs/tui:tui-unit-tests                                            FAILED in 21 out of 22 in 43.8s"
+        }
+      ],
+      "signatures": [
+        {
+          "signature": "authorized-read RPC error-code mismatch",
+          "line_start": 4322,
+          "line_end": 4329,
+          "lines": [
+            {
+              "line": 4322,
+              "text": "2026-10-21T01:40:07.0863346Z "
+            },
+            {
+              "line": 4323,
+              "text": "2026-10-21T01:40:07.1149286Z thread 'authorized_read_rpc_is_capability_gated_and_denies_outside_root' (9988) panicked at exec-server/tests/authorized_read_rpc.rs:84:13:"
+            },
+            {
+              "line": 4324,
+              "text": "2026-10-21T01:40:07.1385069Z assertion `left == right` failed"
+            },
+            {
+              "line": 4325,
+              "text": "2026-10-21T01:40:07.1561950Z   left: -32600"
+            },
+            {
+              "line": 4326,
+              "text": "2026-10-21T01:40:07.1854755Z  right: -32603"
+            },
+            {
+              "line": 4327,
+              "text": "2026-10-21T01:40:07.2115493Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 4328,
+              "text": "2026-10-21T01:40:07.2316786Z "
+            },
+            {
+              "line": 4329,
+              "text": "2026-10-21T01:40:07.2513545Z "
+            }
+          ]
+        },
+        {
+          "signature": "queue hook timeout",
+          "line_start": 4493,
+          "line_end": 4499,
+          "lines": [
+            {
+              "line": 4493,
+              "text": "2026-10-21T01:44:42.1806004Z ---- core_error_after_started_never_releases_ambiguous_dispatch stdout ----"
+            },
+            {
+              "line": 4494,
+              "text": "2026-10-21T01:44:42.1806963Z Error: timed out waiting for `D:\\tmp\\.tmpRJ2mvw\\queue_blocking_prompt_hook.entered`"
+            },
+            {
+              "line": 4495,
+              "text": "2026-10-21T01:44:42.1807506Z "
+            },
+            {
+              "line": 4496,
+              "text": "2026-10-21T01:44:42.1807650Z Caused by:"
+            },
+            {
+              "line": 4497,
+              "text": "2026-10-21T01:44:42.1808163Z     deadline has elapsed"
+            },
+            {
+              "line": 4498,
+              "text": "2026-10-21T01:44:42.1808430Z "
+            },
+            {
+              "line": 4499,
+              "text": "2026-10-21T01:44:42.1808936Z ---- caller_abort_after_core_started_keeps_exact_authority_until_persistence stdout ----"
+            }
+          ]
+        },
+        {
+          "signature": "matrixd socket path not stale",
+          "line_start": 4801,
+          "line_end": 4805,
+          "lines": [
+            {
+              "line": 4801,
+              "text": "2026-10-21T01:46:57.5752983Z ---- control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity stdout ----"
+            },
+            {
+              "line": 4802,
+              "text": "2026-10-21T01:46:57.5956350Z Error: Io(Custom { kind: AlreadyExists, error: \"matrixd control socket path is not stale: \\\\\\\\?\\\\D:\\\\tmp\\\\hmx-control-szSwKp\\\\fleet\\\\run\\\\aaghu64s7r56mdd2v36p3hkrmci.mx\" })"
+            },
+            {
+              "line": 4803,
+              "text": "2026-10-21T01:46:57.6092037Z "
+            },
+            {
+              "line": 4804,
+              "text": "2026-10-21T01:46:57.6186833Z "
+            },
+            {
+              "line": 4805,
+              "text": "2026-10-21T01:46:57.6359666Z failures:"
+            }
+          ]
+        },
+        {
+          "signature": "durable owner UnsafeStateDirectory",
+          "line_start": 4909,
+          "line_end": 4913,
+          "lines": [
+            {
+              "line": 4909,
+              "text": "2026-10-21T01:47:52.4753311Z "
+            },
+            {
+              "line": 4910,
+              "text": "2026-10-21T01:47:52.4756658Z thread 'automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit' (5012) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+            },
+            {
+              "line": 4911,
+              "text": "2026-10-21T01:47:52.4758363Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")"
+            },
+            {
+              "line": 4912,
+              "text": "2026-10-21T01:47:52.4762010Z "
+            },
+            {
+              "line": 4913,
+              "text": "2026-10-21T01:47:52.4762477Z ---- automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement stdout ----"
+            }
+          ]
+        },
+        {
+          "signature": "ledger fixture PermissionDenied",
+          "line_start": 4960,
+          "line_end": 4964,
+          "lines": [
+            {
+              "line": 4960,
+              "text": "2026-10-21T01:47:52.4845152Z "
+            },
+            {
+              "line": 4961,
+              "text": "2026-10-21T01:47:52.4849218Z thread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (9228) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+            },
+            {
+              "line": 4962,
+              "text": "2026-10-21T01:47:52.4850704Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }"
+            },
+            {
+              "line": 4963,
+              "text": "2026-10-21T01:47:52.4851458Z "
+            },
+            {
+              "line": 4964,
+              "text": "2026-10-21T01:47:52.4852075Z ---- cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends stdout ----"
+            }
+          ]
+        },
+        {
+          "signature": "evidence outbox Capacity error",
+          "line_start": 4227,
+          "line_end": 4232,
+          "lines": [
+            {
+              "line": 4227,
+              "text": "2026-10-21T01:40:02.0651569Z "
+            },
+            {
+              "line": 4228,
+              "text": "2026-10-21T01:40:02.0652656Z thread 'authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed' (7656) panicked at hepta-evidence/src\\authbus_outbox_tests.rs:57:10:"
+            },
+            {
+              "line": 4229,
+              "text": "2026-10-21T01:40:02.0653969Z called `Result::unwrap()` on an `Err` value: Capacity"
+            },
+            {
+              "line": 4230,
+              "text": "2026-10-21T01:40:02.0655187Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 4231,
+              "text": "2026-10-21T01:40:02.0657109Z "
+            },
+            {
+              "line": 4232,
+              "text": "2026-10-21T01:40:02.0657236Z "
+            }
+          ]
+        },
+        {
+          "signature": "signed-intent recovery assertion",
+          "line_start": 4298,
+          "line_end": 4304,
+          "lines": [
+            {
+              "line": 4298,
+              "text": "2026-10-21T01:40:06.1465372Z "
+            },
+            {
+              "line": 4299,
+              "text": "2026-10-21T01:40:06.1786423Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (1676) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:"
+            },
+            {
+              "line": 4300,
+              "text": "2026-10-21T01:40:06.2132977Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))"
+            },
+            {
+              "line": 4301,
+              "text": "2026-10-21T01:40:06.2678241Z     if agent_id == fleet.agent_id)"
+            },
+            {
+              "line": 4302,
+              "text": "2026-10-21T01:40:06.3093608Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 4303,
+              "text": "2026-10-21T01:40:06.3464542Z "
+            },
+            {
+              "line": 4304,
+              "text": "2026-10-21T01:40:06.4063941Z "
+            }
+          ]
+        },
+        {
+          "signature": "V8 sandbox feature test failure; deeper cause not established",
+          "line_start": 3676,
+          "line_end": 3678,
+          "lines": [
+            {
+              "line": 3676,
+              "text": "2026-10-21T01:32:35.7244370Z test tests::parses_crdtp_dispatchable_messages ... ok"
+            },
+            {
+              "line": 3677,
+              "text": "2026-10-21T01:32:35.7245152Z test tests::sandbox_feature_matches_linked_v8 ... FAILED"
+            },
+            {
+              "line": 3678,
+              "text": "2026-10-21T01:32:35.7246093Z ================================================================================"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

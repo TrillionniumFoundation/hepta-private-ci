@@ -1,0 +1,110 @@
+{
+  "schema": "hepta.framework-joint-resident-review-status.v1",
+  "observed_at_utc": "2026-11-12 01:02:29 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6060,
+  "baseline_source": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+  "parent_source": "21d2699b7ac7831f355f5acb9570a90da077dbe3",
+  "source": "4ae6bbe94ef5be31401ac31b4a6fdeb5128d548f",
+  "tree": "049b6be2b572e61adeca0764f78e0ab312975fc0",
+  "source_commits": [
+    {
+      "source": "340f43b0265fb61cecc8ecfea792b545556427b8",
+      "tree": "c063f1125ac39ef315a95afbee74d66c8546eb6f",
+      "native_run": 43129811933,
+      "native_conclusion": "cancelled_before_any_steps",
+      "change": "initial current-owner resident integration"
+    },
+    {
+      "source": "28c95394b4bc893b9565129b6d4c1d5ee8c4e3af",
+      "tree": "3fa948b389e7371093ea594525b06f24f682e861",
+      "native_run": 43130283602,
+      "native_conclusion": "cancelled",
+      "change": "preserve typed Unavailable for zero observed clock in both transports"
+    },
+    {
+      "source": "4ae6bbe94ef5be31401ac31b4a6fdeb5128d548f",
+      "tree": "049b6be2b572e61adeca0764f78e0ab312975fc0",
+      "native_run": 43130589962,
+      "native_conclusion": null,
+      "change": "exact argument comments and explicit RSS/global-memory-budget limitations"
+    }
+  ],
+  "native_workflow": {
+    "run": 43130589962,
+    "status": "queued",
+    "conclusion": null,
+    "jobs": [
+      {
+        "id": 130893450314,
+        "name": "Cell framework (mechanisms)",
+        "status": "queued",
+        "steps": 0
+      },
+      {
+        "id": 130893450579,
+        "name": "Cell configuration and actor recovery",
+        "status": "queued",
+        "steps": 0
+      },
+      {
+        "id": 130893450814,
+        "name": "Cell framework (agentd-composition)",
+        "status": "queued",
+        "steps": 0
+      }
+    ]
+  },
+  "independent_source_review": {
+    "zero_observed_clock_fix": "28c95394b4bc893b9565129b6d4c1d5ee8c4e3af",
+    "v1_clock_samples_added": false,
+    "argument_comments": "4ae6bbe94ef5be31401ac31b4a6fdeb5128d548f"
+  },
+  "source_readback": "Every initial file and subsequent changed blob was read back byte-for-byte after publication.",
+  "local_execution": "Unavailable; no local compile, lint, format or test pass claimed.",
+  "common_candidate": {
+    "pull_request": 6057,
+    "source": "0cef9fe240ba3d341732fe9e537e275fcd358b2d",
+    "tree": "68a3eafbe275f973e3aedf05304b915bfd66635e",
+    "qualification": "Independent qualification required; no source-branch result is transferred."
+  },
+  "limits": [
+    "No resident RSS lifetime reservation or global fair memory pool",
+    "No automatic cross-Agent shared pool",
+    "No Joint tensor microbatch",
+    "No trained-model/adoption/performance/energy qualification",
+    "Per-event journal durability and full cold-history replay retained"
+  ],
+  "original_imports": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_joint_resident.rs",
+      "original_blob": "98c28cc59494fd2c1e4b483299ea8754db5b1399",
+      "additions": 32,
+      "deletions": 13
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_joint_resident_io.rs",
+      "original_blob": "6b71780f9e783950d95256da3bf9cc6d480c6758",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_joint_resident_tests.rs",
+      "original_blob": "9167b8959de084cb4382d4ae2504a07c2d455c3e",
+      "additions": 53,
+      "deletions": 4
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/resident.rs",
+      "original_blob": "3db0953694350e0801ceead6de3433e4b4c95e29",
+      "additions": 8,
+      "deletions": 6
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/resident_tests.rs",
+      "original_blob": "1301e58a594f73a5ebe6ca496275f445f6d914cf",
+      "additions": 80,
+      "deletions": 6
+    }
+  ]
+}

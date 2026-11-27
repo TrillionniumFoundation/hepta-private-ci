@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.learn.isolated-453-secondary-gates-peer-review.v1",
+  "status": "STATIC PEER REVIEW ONLY; no blocking finding in the exact rebinding reviewed",
+  "reviewer": "/root/learn_evaluator_budget",
+  "source": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "ordinary_acceptance": 0
+  },
+  "previous_complete_non_isolated_peer": "1bbb800fff0f6aa905d20d7eac2ca1c9387b2d1b",
+  "reviewed_inputs": [
+    {
+      "role": "root29",
+      "git_blob": "07a7b440e3b6d8cd23a80ac43b84efbfdc3db392",
+      "bytes": 35123,
+      "sha256": "e2ea4e03052e5028c8e618f55c6625890ca163b5222c7b32e5035027f6a00970"
+    },
+    {
+      "role": "root29_patch",
+      "git_blob": "07d91e9272064398172041ed8c22cb49f619d1c5",
+      "bytes": 902,
+      "sha256": "1305d30e15b52930a7c3745a12abb6575e4d8d28f3176357a2bba65216b1a0aa"
+    },
+    {
+      "role": "wrapper",
+      "git_blob": "0bf2afcec7aab958a9f7d8f0244c7a58d701b05a",
+      "bytes": 30466,
+      "sha256": "04e43d69932573017a417f808c77fd72323a918e5b3cf64d9d79a2220f652fac"
+    },
+    {
+      "role": "wrapper_patch",
+      "git_blob": "1c02056bf1a2e4ed116d05bdfd5e8547277b4d26",
+      "bytes": 653,
+      "sha256": "7723fbad5e0846f50b7aa9bb5f73d067bb599afd08d37e75252f8d9395b14738"
+    },
+    {
+      "role": "request",
+      "git_blob": "d1ca12201454d42b628ddcbf2a13c9b094b52c93",
+      "bytes": 32962,
+      "sha256": "d5adac44222ba4daa07fdc2249ec6917bc35c02a4d34becdfb5be3f10e89fc6d"
+    },
+    {
+      "role": "maintenance",
+      "git_blob": "7bfb863311ccac5ae2d8253fd868d00973c419db",
+      "bytes": 6538,
+      "sha256": "ea4cc7f5271bf7d4350defb2aa9ecd9a4bd1b917a45b3fbe168754ce6a478030"
+    },
+    {
+      "role": "native",
+      "git_blob": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+      "bytes": 13265,
+      "sha256": "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb"
+    },
+    {
+      "role": "source_contract",
+      "git_blob": "a050213c146f34f828e47fdcac86e75001664ca4",
+      "bytes": 14528,
+      "sha256": "af365d875b29431c9f43e41445905ebcd1f091b49189abe8fa86718b7be7e198"
+    },
+    {
+      "role": "source_readme",
+      "git_blob": "ac6bb130b7eb8c5cfcd48473737dd7a512d146fe",
+      "bytes": 3716,
+      "sha256": "bfaffeaf2bfae8634677d41994cf683cabf07caea8516b5156bd079d2e2285b9"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Root29 five-line rebinding",
+      "result": "Forward and inverse exact replacements reproduce the whole 82ed/07a7 files. Actual same-source201 admission, exact29 list, original environment/sudo scope, targetV2 and historicalV1 dependency checks, original terminal-before-cleanup, mount identity and cleanup branches remain byte-identical."
+    },
+    {
+      "check": "Namespace and original source provenance",
+      "result": "No namespace change. /run/hepta-learn-root29-4537458b51b6- plus explicit vN remains the original scheme; intended v1 is 39 ASCII bytes. The exact old57-record audit including four duplicate paths and original29 definitions remains the same referenced artifact; this supplement does not recount or rewrite it."
+    },
+    {
+      "check": "Native dependency",
+      "result": "Full21cb readback has the stated13265 bytes and SHA256. The sole old/new absolute repository literal preserves resolve(strict=True) plus exact equality. Reverse entire native content equals dd7; all201 cases, original budgets, helpers, target and history pins are unchanged."
+    },
+    {
+      "check": "Fullcaller four-line rebinding",
+      "result": "Forward and inverse exact replacements reproduce whole28d/0bf wrappers. Only repo, exclusive launcher directory, exclusive recorder directory and key change. Full embedded recorder bytes equal unchanged1e3; no new phase, limit, process lookup, signal or automatic retry."
+    },
+    {
+      "check": "Typed fullcaller request",
+      "result": "Only args[4] and idempotency_key differ from4843. args[4] equals whole0bf. Hostdesktop, /usr/bin/python3, [-I,-S,-B,-c], cwd /home/qian-qi and PYTHONDONTWRITEBYTECODE=1 remain unchanged."
+    },
+    {
+      "check": "Maintenance",
+      "result": "Exactly three isolated repo values reverse to the complete413 binding. Five-package just fix then just fmt --base be8adcbb5e9925f72e05330b8fb30509cba4544b, all required validation first, no test after either command and complete dirty postimage evidence remain unchanged."
+    },
+    {
+      "check": "Contract and README",
+      "result": "Read all a050/ac6 contents. Pins, exact deltas, counts, paths and stated limits agree with actual artifacts. Actual creation, main201, Root29, fullcaller, maintenance and post-maintenance source receipts remain null/unobserved; no ordinary acceptance is asserted."
+    }
+  ],
+  "limitations": [
+    "This review does not approve or assert actual worktree creation or completion of any execution.",
+    "The new main isolated outer and its worktree-creation logic require separate actual-source review; they are not certified by these dependent path bindings.",
+    "The previous frame-exporter job's unknown terminal state remains unknown; nothing here converts connectivity, published files or prepared requests into a terminal receipt.",
+    "An unchanged fullcaller recorder can finish active observation while its verifier child remains unobserved; wrapper completion proves only the original recorder handle's return.",
+    "Root29 and maintenance remain gated on their original actual prerequisites. This metadata is not a cleanup permission or an authority capability.",
+    "No H, Python, Rust, native tests, verifier, source mutation or PR operation was performed by this peer."
+  ],
+  "execution": {
+    "H": false,
+    "Python": false,
+    "Rust": false,
+    "source_changes": false,
+    "main201_pass": false,
+    "Root29_pass": false,
+    "fullcaller_pass": false,
+    "maintenance_complete": false,
+    "ordinary_acceptance": 0
+  }
+}

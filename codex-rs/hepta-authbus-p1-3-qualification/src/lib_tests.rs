@@ -1,52 +1,50 @@
 use super::*;
-
-fn id(value: &str) -> StableId {
-    let Ok(value) = StableId::new(value) else {
-        panic!("test identifier must be valid");
-    };
-    value
-}
-
-fn cases() -> Vec<CaseEvidence> {
-    [
-        NegativeCase::Expired,
-        NegativeCase::Revoked,
-        NegativeCase::Replay,
-        NegativeCase::PayloadDrift,
-    ]
-    .into_iter()
-    .enumerate()
-    .map(|(index, case)| CaseEvidence {
-        case,
-        case_id: id(&format!("case:{index}")),
-        rejected: true,
-        evidence_digest: Digest32::of_bytes(format!("evidence:{index}").as_bytes()),
-    })
-    .collect()
-}
+use std::collections::BTreeSet;
 
 #[test]
-fn complete_negative_matrix_qualifies_without_authority() {
-    let Ok(receipt) = qualify(cases()) else {
-        panic!("complete matrix must qualify");
-    };
-    assert_eq!(receipt.case_count, 4);
-    assert!(!receipt.authority.grants_any());
-}
-
-#[test]
-fn missing_case_is_rejected() {
-    let mut value = cases();
-    value.pop();
-    assert_eq!(qualify(value), Err(Error::MissingRequiredCase));
-}
-
-#[test]
-fn unexpected_success_fails_qualification() {
-    let mut value = cases();
-    value[0].rejected = false;
+fn executable_negative_matrix_qualifies_without_authority() {
+    let receipt = qualify().expect("real AuthBus negative matrix must qualify");
+    assert_eq!(receipt.cases.len(), 4);
     assert_eq!(
-        qualify(value),
-        Err(Error::CaseDidNotReject("case:0".to_string()))
+        receipt
+            .cases
+            .iter()
+            .map(|case| case.case)
+            .collect::<Vec<_>>(),
+        vec![
+            NegativeCase::Expired,
+            NegativeCase::Revoked,
+            NegativeCase::Replay,
+            NegativeCase::PayloadDrift,
+        ]
     );
+    assert!(!receipt.authority.grants_any());
+    assert!(!receipt.positive_envelope_digest.is_zero());
+    assert!(!receipt.qualification_digest.is_zero());
+}
+
+#[test]
+fn executable_receipt_is_deterministic() {
+    let first = qualify().expect("first qualification");
+    let second = qualify().expect("second qualification");
+    assert_eq!(first, second);
+}
+
+#[test]
+fn case_evidence_binds_the_observed_typed_error() {
+    let receipt = qualify().expect("qualification");
+    assert_eq!(
+        receipt
+            .cases
+            .iter()
+            .map(|case| case.observed_error)
+            .collect::<Vec<_>>(),
+        vec!["expired", "revoked", "replay", "payload_mismatch"]
+    );
+    let unique = receipt
+        .cases
+        .iter()
+        .map(|case| case.evidence_digest)
+        .collect::<BTreeSet<_>>();
+    assert_eq!(unique.len(), 4);
 }

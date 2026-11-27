@@ -11,6 +11,7 @@ path = "src/lib.rs"
 doctest = false
 
 [features]
+composition-model-driver-qualification = ["codex-hepta-infer-worker-host/composition-model-driver-qualification"]
 # Agentd is the named Hepta product host for scoped cognitive mutations. This
 # default is local to the Agentd crate; ordinary Codex/App Server binaries do
 # not enable HeptaCognitiveWrite by default.
@@ -30,22 +31,51 @@ test = false
 name = "hepta-agentd-browser"
 path = "src/bin/hepta-agentd-browser.rs"
 test = false
+[[bin]]
+name = "hepta-authority-host"
+path = "src/bin/hepta-authority-host.rs"
+test = false
+
+[[bin]]
+name = "hepta-notes-thread-seed"
+path = "src/bin/hepta-notes-thread-seed.rs"
+test = false
+
 [[example]]
 name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
 required-features = ["qualification-cognitive-write"]
 
+[[example]]
+name = "native_memory_daemon"
+path = "examples/native_memory_daemon.rs"
+required-features = ["qualification-cognitive-write"]
+
+[[example]]
+name = "native_memory_shadow"
+path = "examples/native_memory_shadow.rs"
+required-features = ["qualification-cognitive-write"]
+
 [lints]
 workspace = true
 
+[[bin]]
+name = "hepta-g2-native-owner"
+path = "src/bin/hepta-g2-native-owner.rs"
+test = false
+
 [dependencies]
 anyhow = { workspace = true }
+arc-swap = { workspace = true }
+base64 = { workspace = true }
+codex-execution-core = { workspace = true }
 codex-app-server = { workspace = true }
 codex-app-server-client = { workspace = true }
 codex-app-server-protocol = { workspace = true }
 codex-arg0 = { workspace = true }
 codex-config = { workspace = true }
 codex-features = { workspace = true }
+codex-history = { workspace = true }
 codex-hepta-agent-protocol = { workspace = true }
 codex-hepta-automation = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
@@ -64,6 +94,8 @@ codex-hepta-cognitive-store = { path = "../hepta-cognitive-store" }
 codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
+codex-hepta-supervisor = { workspace = true }
+codex-mcp = { workspace = true }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-neuron = { path = "../hepta-neuron" }
@@ -72,10 +104,12 @@ codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
 codex-hepta-memory = { workspace = true }
 codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
 codex-hepta-memory-extension = { workspace = true }
+codex-hepta-operations = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-model-provider = { workspace = true }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-protocol = { workspace = true }
+codex-rmcp-client = { workspace = true }
 codex-uds = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 codex-utils-cli = { workspace = true }
@@ -91,6 +125,7 @@ tokio = { workspace = true, features = [
     "fs",
     "io-util",
     "macros",
+    "process",
     "rt-multi-thread",
     "signal",
     "sync",
@@ -98,17 +133,36 @@ tokio = { workspace = true, features = [
 ] }
 tokio-util = { workspace = true }
 
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }
+rustix = { workspace = true, features = ["fs", "process"] }
+
 [dev-dependencies]
+codex-hepta-memory = { workspace = true, features = ["qualification-lease-clock"] }
+codex-hepta-neuron = { path = "../hepta-neuron", features = ["qualification-owned-file-read"] }
+codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval", features = ["qualification-owned-file-read", "qualification-file-observation"] }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
-codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
-codex-hepta-infer-core = { path = "../hepta-infer-core" }
+codex-hepta-infer-core = { path = "../hepta-infer-core", features = ["qualification-owned-file-read"] }
 app_test_support = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
-codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
+pretty_assertions = { workspace = true }
 sqlx = { workspace = true }
 tempfile = { workspace = true }
 wiremock = { workspace = true }
+
+[[test]]
+name = "generation_neuron_calibration"
+path = "tests/generation_neuron_calibration.rs"
+required-features = ["composition-model-driver-qualification"]
+
+[[test]]
+name = "generation_plasticity_rejection"
+path = "tests/generation_plasticity_rejection.rs"
+required-features = ["composition-model-driver-qualification"]

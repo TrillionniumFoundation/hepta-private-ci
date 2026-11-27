@@ -1,0 +1,40 @@
+{
+  "absolute_process_cpu_sample_before_result_serialization_seconds": 2.376524977,
+  "backward_calls": 0,
+  "findings": [
+    {
+      "execution_authorized": false,
+      "expected_first_plateau_epoch": 30,
+      "final_stopping_state": {
+        "best": 0.6,
+        "best_epoch": 40,
+        "plateau_anchor": 0.6,
+        "stale_epochs": 0
+      },
+      "fixture_scope": "terminal guard only; boundary truth manufactured, not an actual validated native checkpoint",
+      "id": "C2-01",
+      "terminal_guard_accepted": true
+    },
+    {
+      "accepted_first_cpu_seconds": -0.5,
+      "accepted_first_wall_seconds": -0.5,
+      "id": "C2-02",
+      "journal_guard_accepted": true
+    },
+    {
+      "checkpoint_guard_accepted": true,
+      "fixture_model": "synthetic Linear(1,1), no forward or step",
+      "id": "C2-03",
+      "manufactured_second_moment_all_values": -1.0
+    }
+  ],
+  "forward_calls": 0,
+  "native_admission_performed": false,
+  "optimizer_steps_executed": 0,
+  "schema": "independent-c2-structural-counterexamples-v1",
+  "scientific_admission": "HOLD",
+  "scope": "Manufactured metadata/tensors only; no production checkpoint read and no training execution.",
+  "source_sha256": "9b6bd43ebde5317d62c55fbc37b5fb2309f89178d195c529598529caf1e99f4f",
+  "source_unchanged": true,
+  "wall_sample_before_result_serialization_seconds": 2.735190624000097
+}

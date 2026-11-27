@@ -1,6 +1,7 @@
 use super::*;
 
 use std::fs::OpenOptions;
+use std::fs::TryLockError;
 
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -137,4 +138,56 @@ fn writer_handoff_minimum_is_bound_to_operation_and_exact_chain() {
         DurableWriterHandoffJournalV1::recover_at_least(file(&root), &wrong),
         Err(WriterHandoffErrorV1::AcknowledgedCheckpointMissing)
     ));
+}
+
+#[test]
+fn writer_handoff_owner_drop_releases_lock_with_passive_duplicate() {
+    let root = TempDir::new().expect("temp");
+    let journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    let checkpoint = journal.checkpoint().clone();
+    // Model an incidental duplicated descriptor without granting it writer authority.
+    let retained = journal.file.try_clone().expect("retain passive descriptor");
+    for _ in 0..2 {
+        assert!(matches!(
+            DurableWriterHandoffJournalV1::recover_at_least(file(&root), &checkpoint),
+            Err(WriterHandoffErrorV1::Busy)
+        ));
+    }
+    drop(journal);
+    let recovered = DurableWriterHandoffJournalV1::recover_at_least(file(&root), &checkpoint)
+        .expect("logical journal owner released its acquired lock");
+    assert_eq!(recovered.checkpoint(), &checkpoint);
+    drop(retained);
+    assert!(matches!(
+        DurableWriterHandoffJournalV1::recover_at_least(file(&root), &checkpoint),
+        Err(WriterHandoffErrorV1::Busy)
+    ));
+    drop(recovered);
+    assert!(DurableWriterHandoffJournalV1::recover_at_least(file(&root), &checkpoint).is_ok());
+}
+
+#[test]
+fn writer_handoff_failed_recovery_releases_acquired_lock_with_passive_duplicate() {
+    let root = TempDir::new().expect("temp");
+    let mut invalid = file(&root);
+    invalid
+        .write_all(b"invalid journal header")
+        .expect("write invalid header");
+    let retained = invalid.try_clone().expect("retain passive descriptor");
+    assert!(matches!(
+        DurableWriterHandoffJournalV1::recover(invalid),
+        Err(WriterHandoffErrorV1::MissingHeader)
+    ));
+    let successor = file(&root);
+    successor
+        .try_lock()
+        .expect("failed recovery released its acquired lock");
+    drop(retained);
+    assert!(matches!(
+        file(&root).try_lock(),
+        Err(TryLockError::WouldBlock)
+    ));
+    successor
+        .unlock()
+        .expect("release test-owned successor lock");
 }

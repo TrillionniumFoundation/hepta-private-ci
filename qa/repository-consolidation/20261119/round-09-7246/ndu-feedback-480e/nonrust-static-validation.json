@@ -1,0 +1,869 @@
+{
+  "source": "480e83532df57ec691ce70ff7ecb572717887a7e",
+  "files": [
+    {
+      "path": ".github/workflows/ndu-controlled-generation-v2.yml",
+      "bytes": 6821,
+      "sha256": "81ae4de88e9758ec4969c3ba0017a8c76865da2f66a3ffafb80ac7b0e05acd93",
+      "validation": "yaml_parse_and_full_SHA_action_pins",
+      "actions": [
+        "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+        "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+        "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+        "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+      ],
+      "permissions": {
+        "contents": "read"
+      }
+    },
+    {
+      "path": ".github/workflows/ndu-modality-portfolio-shadow.yml",
+      "bytes": 1351,
+      "sha256": "7e194578e151d49d8a661bf24cf166abbd51da302a8fa853e1240c2a854ed7e4",
+      "validation": "yaml_parse_and_full_SHA_action_pins",
+      "actions": [
+        "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+      ],
+      "permissions": {
+        "contents": "read"
+      }
+    },
+    {
+      "path": ".github/workflows/ndu-output-portfolio-pilot.yml",
+      "bytes": 4591,
+      "sha256": "ffea7b27beb2025e580d90b16c7b86f22ca15c2085c3c23d14987aa10de38d33",
+      "validation": "yaml_parse_and_full_SHA_action_pins",
+      "actions": [
+        "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+      ],
+      "permissions": {
+        "contents": "read"
+      }
+    },
+    {
+      "path": ".github/workflows/ndu-v2-hosted-recovery.yml",
+      "bytes": 3559,
+      "sha256": "03b14fffa754642bcc9fc24018f26110790f84eeb54b03141b584d3be8803b0a",
+      "validation": "yaml_parse_and_full_SHA_action_pins",
+      "actions": [
+        "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+      ],
+      "permissions": {
+        "contents": "read"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-feedback-generation.rs",
+      "bytes": 218,
+      "sha256": "206117e7ab1f6c721aae9d14950f0036d6ca3e30e86844bd5b5feb430a3df1e1",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feedback_generation.rs",
+      "bytes": 8175,
+      "sha256": "520f53dcbf8abf015602f0eaeb2835b5a300787b815716e33ba340e8c4fa5e47",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feedback_generation_protocol.rs",
+      "bytes": 6028,
+      "sha256": "40ef09bcc845c94b5be0112d8af0fbdbf1049aa7392603c9cc6c521f94b025b0",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feedback_generation_tests.rs",
+      "bytes": 7936,
+      "sha256": "3ae374998d29f2ec876b1506ea764f5a66f28eaccfdeb656cce62bc75938f376",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/lib.rs",
+      "bytes": 4838,
+      "sha256": "a67506831637fb663639f2b5a286969a338990cf8877ba0ff5c93c4f857199e7",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/CLOUD_RUN_REQUEST.json",
+      "bytes": 906,
+      "sha256": "90c0c61fd4bb17c15780011db8a32d9a435980ac6d6a9c1526e71508b231301a",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/README.md",
+      "bytes": 8733,
+      "sha256": "6e946509e8d92dfb6f0d0325686f1c6e6f2443beb74ceb0673b605d43d2b0fae",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/analysis/plot_results.py",
+      "bytes": 14010,
+      "sha256": "44b189ae9195f0831a8aa203cf07629b29bfd7007dae4ec4c4f83f451b3aeb54",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/audit.py",
+      "bytes": 11100,
+      "sha256": "c068b1dcd73d115e9dddf5df53d932ad1b0101c17913dbdf26ced504078d05a3",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/control.py",
+      "bytes": 8467,
+      "sha256": "dab085eb23a504a9ff30d8a40805ddb505b30f6af7dc19d80511199d20a2db46",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/controlled_model.py",
+      "bytes": 14702,
+      "sha256": "e9f6877eacc593b5287b6b6f08e99e5114766c64b13638f69b9728c21a388c6a",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evaluate.py",
+      "bytes": 8907,
+      "sha256": "112eac9d29c088018a246867521e4b35786bc59135c550ac02cc6e2a5449e922",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/RESULTS.md",
+      "bytes": 9704,
+      "sha256": "e7f1967e706322408b5e2e257eec47f93bfab570927c065f20960aeef04cd990",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/RESULTS_V1_1.md",
+      "bytes": 13727,
+      "sha256": "77d27875ab124de0a4cc59febdbb3e8c0b5d21c0bdee7cda4138abf1c646d743",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/bundle_manifest.json",
+      "bytes": 355,
+      "sha256": "02d08117e4c98830cf73016f1d87aef15a9231a3cabb060b171b4ed2f5a0cb7e",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/bundle_manifest_v1_1.json",
+      "bytes": 511,
+      "sha256": "f9de3489e869c2560cb56edf481d015f4e6e74d27a10c8add7f2d190acb7987a",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/cloud_execution_status.json",
+      "bytes": 1730,
+      "sha256": "ccdfd49cb7cc08eabedd5ea60b1f09338205a8f3042c0a6a1db29019870d05cb",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/cloud_execution_status_v1_1.json",
+      "bytes": 8017,
+      "sha256": "4716b2ad852205070b7517e53df783e6bcc617c0e97cf67a0a8392c01a395759",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/development_model_smoke.json",
+      "bytes": 11060,
+      "sha256": "5cdeeabccb5bf8bc1ee78186430a6c0edb2556775f17371d5065ab8e2b8ba790",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/independent_review.json",
+      "bytes": 91286,
+      "sha256": "d7b39622ccb9c11883ddcb3a5fe9b42dbe74314892a3f1fea1d6b3c5f42040ac",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/independent_review_v1_1.json",
+      "bytes": 100922,
+      "sha256": "07963a0c411bd0a243d98955c0f7f9cd4870abc071fd2c83f5de2513964a18d9",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1.png",
+      "bytes": 692744,
+      "sha256": "a96422565784a401bc415cd19fad4c23838ffa96f6837e0df407bc58d43aad53",
+      "image": {
+        "format": "PNG",
+        "size": [
+          4510,
+          1760
+        ],
+        "mode": "RGBA"
+      },
+      "validation": "png_verified_and_visually_reviewed"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1.svg",
+      "bytes": 71394,
+      "sha256": "92bcc1f29ec422d8fd0116b11a4fadfb5668fbf557159ca1a38fe5f0e7f14378",
+      "embedded_pngs": [
+        {
+          "bytes": 4787,
+          "sha256": "92501a975791fdfbd9645f1a7e411babc01db2874ee30bb6937469a468b17bb6"
+        },
+        {
+          "bytes": 1426,
+          "sha256": "0386b3bd3c33e766bd54c07ffd93320e434cbba02d805aed745f183f37a0bb83"
+        }
+      ],
+      "validation": "svg_with_internal_references_and_verified_embedded_png_only"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1_1.png",
+      "bytes": 701542,
+      "sha256": "c5308e3adc06f88fac84e9c5d9a935649a832449b3089ba953aab27a5ae20259",
+      "image": {
+        "format": "PNG",
+        "size": [
+          4510,
+          1760
+        ],
+        "mode": "RGBA"
+      },
+      "validation": "png_verified_and_visually_reviewed"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1_1.svg",
+      "bytes": 71167,
+      "sha256": "d98aa2827ab6d9c64f8baf793ddf65f5a77b39bcdd961f0ad9ed8a552f0dd5ef",
+      "embedded_pngs": [
+        {
+          "bytes": 4793,
+          "sha256": "3cdcd11de2c37fadeb1d03377d6ff75ee2e534e081eba74bcfba9194b417d6b1"
+        },
+        {
+          "bytes": 1426,
+          "sha256": "0386b3bd3c33e766bd54c07ffd93320e434cbba02d805aed745f183f37a0bb83"
+        }
+      ],
+      "validation": "svg_with_internal_references_and_verified_embedded_png_only"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1_1_summary.json",
+      "bytes": 250299,
+      "sha256": "00525e7176e5f661723b6e6769f0132a12a414c4de024ff95cb1fa283e3cc4d4",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1_summary.json",
+      "bytes": 250820,
+      "sha256": "fee3053c8907bde8ae3598efa5a35e025eaf83641d87042d63b7833ca15ad687",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/generation_control.py",
+      "bytes": 18818,
+      "sha256": "4e83dff514651025a33723d94763c0841475bb536352f56ed963f2caae2ac52f",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/metrics.py",
+      "bytes": 11528,
+      "sha256": "bf7661391fe133b1b97bfcac515cafe893dbc8fb4ff2ce00b37457c6611f87bd",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/model.py",
+      "bytes": 14299,
+      "sha256": "345c17f472758db755dad0c262bd40bc6fdcf5652f7e94ac34f1d84c06c6b748",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/README.md",
+      "bytes": 17097,
+      "sha256": "50b027c8b76a4b31fceb8c877f9fa049536b5cc5a1ff47aedcf5dfb0dbc5c2f1",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/audio_codec_smoke.py",
+      "bytes": 19645,
+      "sha256": "85ead4026bf7121d657fdb51e04bc963668b29acbd51694d341562d2d17279a7",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/codec_smoke.py",
+      "bytes": 15105,
+      "sha256": "0558110a88c41f045fc8d12e49a86635b894512355148ce4e218edb7f42c6eef",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-001-source.py",
+      "bytes": 16836,
+      "sha256": "50d18d043a337fdef0d9cd2c327568c6d63c31ad82c664d4494ba61c6b2dff7c",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-001.json",
+      "bytes": 9867,
+      "sha256": "20676a100dc2b55ec702b40002958fff4925a9892a50bda7ba05886b83c21d68",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-002-source.py",
+      "bytes": 17348,
+      "sha256": "43710a2aa2268d90fd6a31d8df04457d4d11d4cd391963c3903b7b75b9cc0b50",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-002.json",
+      "bytes": 13049,
+      "sha256": "b33d410e841105aa312eacff67fc99939bdd6410a24cf6ac13972d370926704a",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-003-source.py",
+      "bytes": 19645,
+      "sha256": "85ead4026bf7121d657fdb51e04bc963668b29acbd51694d341562d2d17279a7",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-003.json",
+      "bytes": 12876,
+      "sha256": "5c2364efd05149ff5609919584fc2df593419a1e3a84d0b0aa08d07a758fe62d",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-independent-verification.json",
+      "bytes": 4430,
+      "sha256": "f97ca56c555a9bdfa5d127f96cf468f5c35ba395f3e5fd22c997c8d02ffc86cc",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/codec-001.json",
+      "bytes": 16063,
+      "sha256": "984d5fcefd9c18dc86bccc5ed22379340cc27993428446a68b5130d61d8e7a1a",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/ingestion-001.json",
+      "bytes": 9746,
+      "sha256": "5fa4c522455436a660307fb050aa9cfbf594a8dfe4b04a62409f5ded00acb32c",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/review-text-interface-001.json",
+      "bytes": 10230,
+      "sha256": "b45d7e2beb2b86210ce3e56de3aa3c2932c7e84cef56e3c02c326eb4585aac90",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/text-interface-001.json",
+      "bytes": 6974,
+      "sha256": "067d2fd82c132308e5b3812157447d4fad0fdf021988524f46c93686a139ca96",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/verify_audio_codec.py",
+      "bytes": 7462,
+      "sha256": "bafb3623bc87dc1730a2d3ef909fd0c936fba180a1c8f3d5c9c1285c0ca7e541",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/ingest.py",
+      "bytes": 11270,
+      "sha256": "495f1236942d26bc4ad3575d171da4d27f6d1c911e6a97e7ea239f9faad5b86d",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/text_model_smoke.py",
+      "bytes": 10267,
+      "sha256": "73da9ab4639e05e6023f26b6c1a11beb79836137440ec5f8978416fb2215adac",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/protocol.json",
+      "bytes": 4708,
+      "sha256": "1e952ed793c2da0ca65ad702156ba0d2d9c4af69a7de94f9cf436cb59de97f58",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/requirements.txt",
+      "bytes": 27,
+      "sha256": "f80de3b874280b6b951be57a19aff2e1219f226c05695e6d4c81bbe30e9a4bba",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/run_cloud.sh",
+      "bytes": 11524,
+      "sha256": "cd738a3836b862cbd76d9073a690ab14ac8438142cedc5785696f4794730838a",
+      "validation": "bash_syntax"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/run_experiment.py",
+      "bytes": 18418,
+      "sha256": "2ee9b0046d0525931d0a9599bfbd08e4644dcfe9050b4c06ae16a8ee27de9ba9",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/test_controlled_model.py",
+      "bytes": 8449,
+      "sha256": "b7b3619794661af4c8323887f94300847c403d4ee0786871f19773bfa245d4bf",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/test_generation_control.py",
+      "bytes": 8887,
+      "sha256": "cc983cf8e3e16aef0eac02544a77951855acad61860e9528bf8af10589b80f03",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/BLOCKER_LEDGER.json",
+      "bytes": 5126,
+      "sha256": "948986567dfd97aebdf3dbc093eed0d6fc9b5876885539168e4bba2e3a3556a0",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/CLOUD_RUN_REQUEST.json",
+      "bytes": 402,
+      "sha256": "d97aa5801606dec8318acc1466239329593850164a3dbd7704a2ebb13be7b0ec",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/README.md",
+      "bytes": 6242,
+      "sha256": "dd3d0f431dcc4054427a50ca8b52a82049062c3ebddf1814a1dabb2e463c1083",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/RESULTS.md",
+      "bytes": 9738,
+      "sha256": "197131332132cd1f1f1591ea3e6dccc8d9c0bb78f44cb88d59126b52457df2b1",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/evaluation.py",
+      "bytes": 7718,
+      "sha256": "8b9bb64992b661737c0745017bba840e35c33a09b394a680ed5b314ad47e3f16",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/evidence/audit_confirmation.py",
+      "bytes": 29032,
+      "sha256": "c0641c6ac1531f5791bbbe69a44b30c2debac16b55bfba8ce0ac00624d8fd45c",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/evidence/cloud-status.json",
+      "bytes": 1878,
+      "sha256": "2cf2f72c4279bdea355cee815f17c7f9f926f9131f51c229d804f8b8782be4a4",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/evidence/confirmation-001-summary.json",
+      "bytes": 33667,
+      "sha256": "2aaf13d1b550bbefde74f6455b1102a1a89396fe160d4cbea24f59060c07bbde",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/protocol.json",
+      "bytes": 7354,
+      "sha256": "2a5a206024c3837223e1db83a4515a4d2ba0a0416d48c482989cc5130bdf97cf",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/reporting.py",
+      "bytes": 10137,
+      "sha256": "d378470c41828f91a28d91bebd2a3a500fa9facea1752e936623dcd006ab217e",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/review_confirmation.json",
+      "bytes": 103873,
+      "sha256": "3c16610b031d8b8a6bdccde0ebb39be4d0fcda13ea9b8c61fd0c22b30012e45e",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/review_development.json",
+      "bytes": 19469,
+      "sha256": "6ad8a364fa046c73b65bce7e4f0f3e191197993111a45e423a2ec3950b2247fa",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/run.py",
+      "bytes": 16633,
+      "sha256": "8507c8d15f2f3a504a58d362fb3dd147ca1ab6cbdabe55d8086ac4ca386d9800",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/run_cloud.sh",
+      "bytes": 6839,
+      "sha256": "85dbbf72a127dcd27b8e0b17937486606abb240cd2509463542d2914bce3e13a",
+      "validation": "bash_syntax"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/test_evaluation.py",
+      "bytes": 4699,
+      "sha256": "d169bfd6c5f6d0c25e2c23e0c6134830c21ed410a6b9e513e57903b451c773cc",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/test_training.py",
+      "bytes": 8981,
+      "sha256": "261d31cba8d656ef0eec71d15783ffb25b43379c907700fc2c62c93388a4f3c7",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/training.py",
+      "bytes": 14757,
+      "sha256": "2d8d9ff5a28292f4a0b244511d88d7d0350d28820dfa299ea56ec9866027bbcc",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/BLOCKER_LEDGER.json",
+      "bytes": 13596,
+      "sha256": "a31cfc83300dde443713684f9fada738da689eea62f16a4a7cb1b3b0950aa934",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/HOSTED_RECOVERY_REQUEST.json",
+      "bytes": 1049,
+      "sha256": "836a36dbb3027919c48e97385974cd04cec5f1cb67855fc03657f5cd02cddcbf",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/NATURAL_DATA_PLAN.md",
+      "bytes": 32164,
+      "sha256": "d7aba7f3cc847f0f34095b0196727a2f1cc466a9111508e64af3f782bc1cc393",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/PRODUCTION_INTEGRATION.md",
+      "bytes": 12308,
+      "sha256": "ecdcc527210ae3646bfb30df76789fe0c8fabf3c1103420b41956d31d607d77c",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/README.md",
+      "bytes": 10475,
+      "sha256": "448c2c843f4ee52368e7a9aec79dfce4cea92760242ed9258df06aa7ab1396e0",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/RESULTS.md",
+      "bytes": 13136,
+      "sha256": "c533463032df32cd263fa0eef3fe41a563c315bb51761d906ceea86abfaabb58",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/THEORY.md",
+      "bytes": 11854,
+      "sha256": "d55172dbc86de9c5b39c80900fcf272245d278795db204f1885b7628d653630d",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/audit_confirmation.py",
+      "bytes": 44734,
+      "sha256": "e72b7bb21f096af148e14af4993bdee697f2d8e03b57da99426a491b94d88fa6",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/audit_source_control.py",
+      "bytes": 15700,
+      "sha256": "26ca0feeea7dc891b6ca16c77c943e1b2d881865af75d3daf1e25b972771b73b",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/cloud-diagnosis.json",
+      "bytes": 27091,
+      "sha256": "ad2660a840c2963b57929631cd4da790c1cd53d5c4ede46ff1227484b6b32d9c",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/cloud-recovery-observation.json",
+      "bytes": 21058,
+      "sha256": "33642e2da5cc606260c86a06c6ac2b8b369e6ead19b62c54243e98d5adbf93ac",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/native_build_final.json",
+      "bytes": 5405,
+      "sha256": "b1d6ec7004e6c68ca2d8769fbe9a5d2ca5f246bc7023809be9aadc023ba54e53",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/native_parity_development.json",
+      "bytes": 2484,
+      "sha256": "54a3cb9bea026ee9546dbccf3e75f8f24e46f70519ca3742099cccd9bfc76999",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/native_verification.json",
+      "bytes": 7167,
+      "sha256": "838e335bf6a30e5387a5d91b9d415e9af829a7c551263b2bd5de323c0bbd313f",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/review_confirmation.json",
+      "bytes": 13910,
+      "sha256": "cc99165ddd9ddcae670f55449bd6503c048b23f989a517eb3d82348318e53c16",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/review_development.json",
+      "bytes": 5991,
+      "sha256": "a3cfadfd61f2cca00a6a379e9d6bb9779ddb6d01eb844b960281951098344ae8",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/review_source_control.json",
+      "bytes": 9688,
+      "sha256": "022da7ecb76d83a754f53e9b9b33c1b6fe9eacbdc61d29491218555d9ad50189",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/feedback_control.py",
+      "bytes": 10091,
+      "sha256": "f53d850d9abbf8b747fee8cb2eff629704824470fb838b5fd141e207fc108c1a",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/feedback_evaluation.py",
+      "bytes": 6406,
+      "sha256": "2fda40eb50fdfe9cfe05716451bd89fbd1e5564301453fb710d1f36afdfd7a8c",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/feedback_model.py",
+      "bytes": 18927,
+      "sha256": "3d3c5f8d53577bfbcdf5c1cbfdbabc169aea0294c9bbdaacd9ed061e9f4c86e1",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/feedback_training.py",
+      "bytes": 3734,
+      "sha256": "d6bd0fa17994b1c468485729769d4056cbf74038b11dd110b811ebe45f2ad0de",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/native_bridge.py",
+      "bytes": 4924,
+      "sha256": "d14e337ec0dc7eb0ec6fb6f72f8d389c0f7c16236e310990102fa5b407245759",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/native_parity.py",
+      "bytes": 9130,
+      "sha256": "1ec4e6b0332f01e009fc8148c3ff5fc1d90e887baa9ddfc84a91cb3f4174a231",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/preference.py",
+      "bytes": 8006,
+      "sha256": "c798a8435b15d06230f9548e9b4974ae35391446df94653c392b52ac482ec24b",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/protocol.json",
+      "bytes": 9399,
+      "sha256": "5751624d7c55f0c50756979985682cbff652faea8534dc6422427043027c3afc",
+      "validation": "strict_json"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/recover_v2_hosted.sh",
+      "bytes": 8596,
+      "sha256": "208f95d9392a7c808647b728cbbd1bc54d3dec5e3c78a63346c979752d2a3bda",
+      "validation": "bash_syntax"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/reporting.py",
+      "bytes": 5112,
+      "sha256": "2259512bc813fafe2fdf384bea85abaab4bfc145dcfcb24611aa1033daa875cb",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/risk.py",
+      "bytes": 11564,
+      "sha256": "33d18323da011ec211009425eade73cc054cd836cc3794560147cbecf275f0ab",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/run.py",
+      "bytes": 14859,
+      "sha256": "3990612d91857e17ecdb1f938fb8cdfda3da0834fcf09eb5a948b8fbe90e4d74",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/source_control.py",
+      "bytes": 10125,
+      "sha256": "a1b6ebad5a9e51e20f59ce9795fb73efcda6059cabe92f2cdc975857a2f7709c",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/test_feedback_control.py",
+      "bytes": 13779,
+      "sha256": "e3e7f6e5590fb2bc9ead1cb07994e61122d4c5e2a0ff121b716a762c64c84ce7",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/test_feedback_model.py",
+      "bytes": 10554,
+      "sha256": "bacf1c08682f9d39ba4e507ef5182932414d71df18721a0016c2a24f7f9ef9d0",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/test_preference.py",
+      "bytes": 3850,
+      "sha256": "d152cadeb8c7d104fb3f483176cb11c472035d662fd55fbd066079562b87ab8b",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/test_risk.py",
+      "bytes": 8705,
+      "sha256": "eccd91201afa672476105ad0fe623c626a47c86f75a23ae973ca06c9348cbcda",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/test_source_control.py",
+      "bytes": 11700,
+      "sha256": "014486dd249eb41ef4133258da41bc9fc454e7bb881553206755f8941e03cd4a",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/README.md",
+      "bytes": 20009,
+      "sha256": "4672c704cc01df0b951f2588b785666f7ca0cec0dcf3dfb23bbc7802cc0d6513",
+      "validation": "original_byte_custody"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/counterfactual_audit.py",
+      "bytes": 13920,
+      "sha256": "f9d582d44ec65cab570df8214ad159c5583059110d17466d6b1bfc1b9c37220b",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/information_acquisition.py",
+      "bytes": 8289,
+      "sha256": "8abca5bd5c598683630067c606f42fdfd47dc206a9c79204ad5f678c4267a310",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/joint_evidence_generation.py",
+      "bytes": 14995,
+      "sha256": "3e973fbd2fb3aaaaca12bb6c8f2b9bd5324d88ad734fea7b4ac9a99640bd4375",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/portfolio.py",
+      "bytes": 15159,
+      "sha256": "2a22abe17fc53abe41927edee661141a6d9848abb9b0d7e405d926f49fa83a9c",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_counterfactual_audit.py",
+      "bytes": 4838,
+      "sha256": "fea4ba25e741a9fb77821fdc7111f162ee5bac348b7c955e7eb805a217b8ef50",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_counterfactual_path_mass.py",
+      "bytes": 3814,
+      "sha256": "fa52a641e046970dc2665d9ea3985d7694710c4e1fe741ee3df7e3562251a0da",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_counterfactual_public_state_replay.py",
+      "bytes": 2133,
+      "sha256": "55c251fae3c9fc5621c67249a3694585fe0be4748bc665b358d6c1c8176ef2b9",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_exact_fraction_support.py",
+      "bytes": 2085,
+      "sha256": "c3c60140e3e72d3adcb8adbdc250e09183020f9296dd11755323599f40c6aa01",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_execute_boundary.py",
+      "bytes": 2826,
+      "sha256": "ff934c905bde2795013d990d7b9689c77995fa0b4c5ba21793bddf4c757e37cd",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_extreme_risk.py",
+      "bytes": 5936,
+      "sha256": "1a27be71acd2d20b938c358153f0c6aedd7b2f9f1e926f3e663e5139a819ef46",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_fresh_audit_admission.py",
+      "bytes": 2592,
+      "sha256": "b595413fe648c0d241b99d7855fbfdbe1e0b79f5356b053796f3abd41d74ee1e",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_fresh_root_custody.py",
+      "bytes": 2338,
+      "sha256": "6d66616e3872aa3acbe1ac2d03ceb35e4476c3b1d3fd16baa6784d0da0b35e59",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_immutable_portfolio_admission.py",
+      "bytes": 2278,
+      "sha256": "2affb07c26c067be358838abceb1c2ad09fa0dfd450a8629ee096209b40e43ee",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_information_acquisition.py",
+      "bytes": 4404,
+      "sha256": "51b7755b0be40bc777a0d8095bca77288b8f632e5abe345f8398d4a9fe1f6944",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_joint_evidence_generation.py",
+      "bytes": 11425,
+      "sha256": "b2a08fdf77d12d1cffe51e5b7c3011d44dc8df2afa719aa0d1d98e76fa2e06c5",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_joint_generation_admission.py",
+      "bytes": 3460,
+      "sha256": "7fe66f3d2a56cd77c59fe39fee1c733c6f9b452ed6ce1c10c252e28134ab99c8",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_near_neutral_risk.py",
+      "bytes": 3497,
+      "sha256": "3b25a0325dc8f720cb3703a00ac6e59a57709bb68d01c802b3d8bccdf9c028ab",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_numeric_admission.py",
+      "bytes": 3543,
+      "sha256": "0e4d18602053be11b42c9db4bb7288aa6398b89e076f08da5b345545e81127ef",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_policy_replay_admission.py",
+      "bytes": 2486,
+      "sha256": "9ff12c18eafbf802752f7454522b19d3d52e3b8cfe272e7773a0a36b5531bcb7",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_portfolio.py",
+      "bytes": 6826,
+      "sha256": "e3366e95976c8929d82dada62f50d3473c7a6b8c18f65dcce1d311bf521bccaa",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_reallocation.py",
+      "bytes": 1057,
+      "sha256": "b7d066f60d6e4c1c0689ca9214d4aaf3d30d1214d63c4e6ebd12dae9770b321a",
+      "validation": "compile_without_execution"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/world.py",
+      "bytes": 10059,
+      "sha256": "8231e81ff2eda916f46503ad1f97824ffef5237c2114e76c257c5dde8dda9c9c",
+      "validation": "compile_without_execution"
+    }
+  ],
+  "errors": [],
+  "scope": "Static parser/custody checks. Does not execute historical model or external artifact runs."
+}

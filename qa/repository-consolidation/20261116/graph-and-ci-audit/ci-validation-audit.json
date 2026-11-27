@@ -1,0 +1,255 @@
+{
+  "schema": "hepta.repository-consolidation.ci-audit/v1",
+  "observed_utc": "2026-11-16T13:19:57.669826+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "publication_scope": "CI and source evidence for a reviewed checkpoint. This is not whole-repository qualification or authorization to merge main or delete branches.",
+  "source_identity": {
+    "hosted_baseline_commit": "285e971b3af3a93a79169b56a42263069e473057",
+    "validated_source_commit": "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+    "validated_source_tree": "751e50a0172e467176be68a1331519c8ea171307",
+    "source_parent_commit": "2a883b3a31be7e612a463d94b40450087e69ed1f",
+    "source_overlay_paths": 55,
+    "source_overlay_manifest": "ci-evidence/checkpoint-source-manifest-v6.json.gz",
+    "source_overlay_manifest_sha256": "b30ac03e8717c59d8a04598bbb302dd25b2970461d414d232e91f02767dd5b65",
+    "hia_refs_touched": false,
+    "publication_commit": null,
+    "publication_commit_note": "The parent agent controls publication. A later ancestry-only merge requires content equality before reusing this source proof."
+  },
+  "hosted_baseline": {
+    "check_run_count": 211,
+    "counts": {
+      "failure": 29,
+      "success": 160,
+      "skipped": 13,
+      "cancelled": 9
+    },
+    "snapshot": "ci-evidence/baseline-285e971-check-runs.json.gz",
+    "check_gate_status": "CI required failed at the original head. The observed failure count does not imply that all failures are branch-protection requirements.",
+    "codeql_check_run": 133210231982,
+    "codeql_check_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/runs/133210231982",
+    "audited_bazel_run": 43840066250,
+    "audited_bazel_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43840066250"
+  },
+  "exact_source_gates": [
+    {
+      "name": "original B4 unittest CLI",
+      "status": "PASS",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass"
+      ],
+      "commit": "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+      "tree": "751e50a0172e467176be68a1331519c8ea171307",
+      "test_count": 1315,
+      "unittest_elapsed_seconds": 720.4,
+      "wrapper_elapsed_seconds": 726.7476649310265,
+      "exit_code": 0,
+      "inputs_unchanged": true,
+      "worktree_clean": true,
+      "receipt": "ci-evidence/final55-full-b4-receipt.json.gz",
+      "log": "ci-evidence/final55-full-b4.log.gz",
+      "log_sha256": "a6a5c0245f93b86741dcbca92bcf0de5d5edf297c56ae7acded75c0e91f264e2"
+    },
+    {
+      "name": "complete caller proof using unchanged verifier functions",
+      "status": "PASS",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/final55/run_parallel_full_caller_proof.py"
+      ],
+      "commit": "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+      "tree": "751e50a0172e467176be68a1331519c8ea171307",
+      "schedule": "six workers; unchanged verifier functions; each receiver group on one worker",
+      "boundaries_checked": 1645,
+      "rust_files": 7504,
+      "protected_files": 819,
+      "privileged_inventory_entries": 1645,
+      "no_skipped_or_duplicate_boundaries": true,
+      "inputs_unchanged": true,
+      "worktree_clean": true,
+      "verifier_sha256": "1c2dadc1d631b4004a50c857cd41acd2e6827f775f2efdbd3cbb0d4a47781896",
+      "wrapper_elapsed_seconds": 348.119365097984,
+      "receipt": "ci-evidence/final55-parallel-callers-receipt.json.gz",
+      "proof": "ci-evidence/final55-parallel-full-caller-proof.json.gz",
+      "schedule_receipt": "ci-evidence/final55-runner-adaptation-receipt.json.gz",
+      "scope": "Same full verifier functions and assertions; the proven parallel schedule changes execution order. The original CLI was not rerun serially at this head."
+    }
+  ],
+  "scoped_native_validation": {
+    "feature_clippy": {
+      "status": "PASS_WITH_RECORDED_SOURCE_SCOPE",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--features",
+        "qualification-cognitive-write"
+      ],
+      "host": "desktop",
+      "platform": "Linux",
+      "exit_code": 0,
+      "elapsed_seconds": 857.816,
+      "source_inputs_unchanged": true,
+      "receipt": "ci-evidence/feature-clippy-v2-result.json.gz",
+      "log": "ci-evidence/feature-clippy-v2-tests.log.gz",
+      "log_sha256": "51fd72562a8078754e47d6e080e4a0d485fc13410ce2effc77d3145b6642784d",
+      "source_bridge": "ci-evidence/native-v6-candidate-source-bridge.json.gz",
+      "matching_recorded_inputs": 7742,
+      "recorded_inputs": 7748,
+      "six_different_paths": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_bootstrap_crash_tests.rs",
+        "codex-rs/hepta-neuron/src/gated_journal_v3_tests.rs",
+        "codex-rs/utils/pty/src/tests.rs",
+        "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs",
+        "codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs"
+      ],
+      "scope": "All recorded Agentd source inputs match the candidate. Six other test files differ; four have separately recorded Linux runs and two are Windows test import changes. This does not qualify the entire candidate tree."
+    },
+    "linux_lock_fixtures": {
+      "status": "PASS",
+      "host": "rog",
+      "platform": "Linux",
+      "test_count": 19,
+      "filtered_count": 480,
+      "retries": 0,
+      "receipt": "ci-evidence/rog-windows-fixtures-linux-result.json.gz",
+      "invocation": "ci-evidence/rog-windows-fixtures-linux-invocation.json.gz",
+      "log": "ci-evidence/rog-windows-fixtures-linux-tests.log.gz",
+      "scope": "Post-reboot execution. The two changed fixture blobs match d374. This is not native Windows lock qualification."
+    },
+    "linux_bootstrap_crash_fixtures": {
+      "status": "PASS",
+      "host": "rog",
+      "platform": "Linux",
+      "test_count": 2,
+      "filtered_count": 441,
+      "retries": 0,
+      "receipt": "ci-evidence/rog-lock-memory-fix-result.json.gz",
+      "invocation": "ci-evidence/rog-lock-memory-fix-invocation.json.gz",
+      "log": "ci-evidence/rog-lock-memory-fix-3.log.gz",
+      "scope": "Post-reboot execution of both original bootstrap_crash tests. The recorded canonical-path fixture matches d374. This is not a full macOS Rust run."
+    },
+    "linux_pty": {
+      "status": "PASS",
+      "host": "rog",
+      "platform": "Linux",
+      "test_count": 28,
+      "skipped_count": 0,
+      "retries": 0,
+      "receipt": "ci-evidence/rog-pty-repaired-result.json.gz",
+      "invocation": "ci-evidence/rog-pty-repaired-invocation.json.gz",
+      "log": "ci-evidence/rog-pty-repaired-3.log.gz",
+      "scope": "Post-reboot execution. The repaired fixture blob matches d374. Both originally failing PTY test names passed on Linux."
+    },
+    "rog_source_bridge": "ci-evidence/rog-validation-candidate-source-bindings.json.gz",
+    "historical_native_v4": {
+      "status": "FAIL",
+      "tests": 108,
+      "passed": 102,
+      "failed": 6,
+      "failures": "Three provider binding errors and three model material stack overflows.",
+      "receipt": "ci-evidence/combined-native-v4-result.json.gz",
+      "log": "ci-evidence/combined-native-v4-tests.log.gz"
+    },
+    "historical_native_v5": {
+      "status": "FAIL",
+      "tests": 79,
+      "passed": 62,
+      "failed": 16,
+      "timeout": 1,
+      "receipt": "ci-evidence/combined-native-v5-result.json.gz",
+      "log": "ci-evidence/combined-native-v5-tests.log.gz",
+      "scope": "Stack overflow no longer appeared in this run; provider binding failures and the deep-readonly timeout remained. Later source changes do not turn this historical failure into a pass."
+    },
+    "native_v6": {
+      "status": "RUNNING_AT_REPORT_FREEZE",
+      "result": null,
+      "invocation": "ci-evidence/native-v6-invocation.json.gz",
+      "source_inventory": "ci-evidence/native-v6-input-sources.json.gz",
+      "stack_bytes": 8388608,
+      "nextest_timeout_seconds": 60,
+      "retries": 0,
+      "scope": "The command result is pending and must be appended separately. No filtered test or zero-match selection is counted as a pass."
+    }
+  },
+  "macos_reproductions": {
+    "qualification_status": "STDLIB_EXPERIMENTS_ONLY",
+    "pty": {
+      "receipt": "ci-evidence/mac-pty-probe-reproduction-v1.json.gz",
+      "script": "ci-evidence/mac-pty-probe-reproduction-v1.py.gz",
+      "observed": "The original literal marker can be satisfied by terminal echo without an interpreter. Splitting the literal prevents that false readiness signal.",
+      "limits": "The original CI PID timeout was not reproduced, and this experiment does not establish the sole cause of that failure. Original 5s readiness, 2s PID, and 5s exit budgets remain unchanged."
+    },
+    "control_close": {
+      "mac_receipt": "ci-evidence/mac-control-close-order-v1.json.gz",
+      "linux_receipt": "ci-evidence/linux-control-close-order-v1.json.gz",
+      "script": "ci-evidence/native-control-close-order-v1.py.gz",
+      "observed": "After successful bytes are read and the client closes, macOS shutdown(Write) returned ENOTCONN in 5/5 trials, while Linux succeeded in 5/5. A write after client close failed with EPIPE on both systems.",
+      "limits": "Ordered kernel experiment, not a full Rust qualification and not proof of the original five-agent CI failure. The candidate accepts only NotConnected after successful write_all; read, frame, JSON, write, reset, and BrokenPipe errors retain their original failure behavior."
+    }
+  },
+  "windows_blockers": {
+    "status": "BLOCKED_FUNCTIONAL_QUALIFICATION",
+    "native_windows_host_available": false,
+    "test_names": [
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads",
+      "restricted_tokens_select_stable_routes_and_cleanup"
+    ],
+    "review": "ci-evidence/windows-four-admission-contract-review.json.gz",
+    "reason": "The current elevated admission deliberately refuses because the original native deletion oracle found an ambient parent FILE_DELETE_CHILD escape. The four original functional tests still require successful restricted execution and isolation properties.",
+    "required_next_evidence": "A concrete native Windows isolation mechanism must pass the unchanged four-cell deletion oracle, positive controls, and original functional tests. Typed refusal regressions do not substitute for these tests.",
+    "no_assertion_weakening": true
+  },
+  "codeql": {
+    "status": "ORIGINAL_CHECK_FAILED",
+    "original_findings": 23,
+    "high_logging_findings": 13,
+    "critical_cryptographic_value_findings": 10,
+    "analysis_id": 2176372976,
+    "analyzed_commit": "285e971b3af3a93a79169b56a42263069e473057",
+    "analysis_ref": "refs/pull/6293/head",
+    "analysis_total_results": 195,
+    "queue": "ci-evidence/codeql-285e971-triage-queue-v1.json.gz",
+    "annotations": "ci-evidence/codeql-285e971-annotations.json.gz",
+    "sarif": "ci-evidence/codeql-285e971-analysis2176372976.sarif.json.gz",
+    "fixture_reviews": "ci-evidence/codeql-285e971-fixture-triage-v1.json.gz",
+    "fixture_reviews_count": 10,
+    "root_reviews": "ci-evidence/codeql-root-four-source-review.json.gz",
+    "root_reviews_count": 4,
+    "client_reviews": "ci-evidence/codeql-login-nine-review-v1.json.gz",
+    "client_reviews_count": 9,
+    "individually_reviewed": 23,
+    "source_identity": "Every reported source blob is unchanged from 285 to d374.",
+    "review_summary": "Ten reported flows have specific test-fixture source and build-reachability evidence. Three production cryptographic-value reports have counter, complete overwrite, or read_exact evidence. Five executable-client typed paths lack authentication-secret flow; two browser/device instructions are required interaction. Remaining remediation concerns CLI partial-key output, duplicate login material, and unbounded upstream error text.",
+    "no_alert_dismissals": true,
+    "confirmed_vulnerability_count": null,
+    "scope": "23 original warnings are not 23 confirmed vulnerabilities. Source-level triage does not make the original failed check pass or qualify the whole authentication protocol. The login logging proposal is separate from this 55-path source checkpoint."
+  },
+  "remaining_validation": [
+    "Hosted GNU, musl, macOS, and Windows matrices must run on the published checkpoint; this report does not replace those results.",
+    "Windows functional isolation remains blocked independently of fixture import and lock-read repairs.",
+    "Native v6 original provider, control, and deep-readonly outcomes are pending.",
+    "CLI partial-key output, duplicate login material, and unbounded upstream error text need separate remediation and validation.",
+    "The original 211-check snapshot preserves other failed checks not revalidated by this scoped work."
+  ],
+  "artifact_integrity": {
+    "manifest": "ci-artifact-manifest.json",
+    "gzip_mtime": 0,
+    "gzip_filename": "",
+    "gzip_level": 9,
+    "maximum_blob_bytes": 500000,
+    "all_archived_bytes_round_trip_verified": true,
+    "no_new_spelling_exclusions": true
+  }
+}

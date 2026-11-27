@@ -1,0 +1,288 @@
+{
+  "candidate": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "heads": [
+    {
+      "sha": "d536ecd8623e6d72f0b8f7b6f689fb52deaa16b8",
+      "parents": [
+        "3f23b5e4c84003dd7b5c894a35156ffe5bf8ba03"
+      ],
+      "names": [
+        "diagnostics/security-2864-exact-cargo-lock-resolver-20261018",
+        "diagnostics/security-2864-exact-cargo-lock-resolver-20261019",
+        "fix/security-2829-noyalib-yaml-alias-20261018",
+        "fix/security-2864-rustfmt-import-20261018"
+      ],
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "classification": "semantically_covered_by_explicit_bazel_cargo_alias",
+      "decisions": [
+        "All 11 historical changes only rename the Cargo dependency key and Rust extern identifier from serde_yaml to noyalib_serde_yaml; package noyalib-serde-yaml and version =0.0.58 do not change. Current Cargo manifests keep serde_yaml = { package = \"noyalib-serde-yaml\", version = \"=0.0.58\" }.",
+        "defs.bzl imports aliases from @crates and the codex_rust_crate library path explicitly passes only aliases whose name is serde_yaml. This resolves the original Bazel missing-extern failure without consumer churn.",
+        "All four consumer BUILD.bazel files call codex_rust_crate without unit_test_features, unit_test_extra_srcs, or replacements, so both production library and unit tests use the alias-bearing library. Every historical added Rust or Cargo line is present after the exact alias substitution. Keep current consumers, Cargo.lock and MODULE.bazel.lock."
+      ],
+      "coverage_sources": [
+        "defs.bzl",
+        "codex-rs/core-plugins/BUILD.bazel",
+        "codex-rs/ext/skills/BUILD.bazel",
+        "codex-rs/external-agent-migration/BUILD.bazel",
+        "codex-rs/skills/BUILD.bazel"
+      ],
+      "validation": [
+        "all 11 files checked for exact dependency-rename equivalent added lines",
+        "native Bazel compile not executed by this subagent"
+      ],
+      "files": [
+        {
+          "path": "codex-rs/Cargo.toml",
+          "historical_final_blob": "5428872d370de9df7298a3e0f9af353a70359857",
+          "candidate_blob": "e6747d71be508707a49034f37c414bc87ffc91f9",
+          "resolved_blob": "e6747d71be508707a49034f37c414bc87ffc91f9",
+          "changed_from_candidate": false,
+          "resolved_sha256": "f3a728c53b49a9758c7940562f8f64834d4b52a5c9d4b0596a7b4a5e855f05fd"
+        },
+        {
+          "path": "codex-rs/core-plugins/Cargo.toml",
+          "historical_final_blob": "30d99cef87969cc605b4f81f1d3f36ff4f27cd19",
+          "candidate_blob": "0899163accb0edc3e98b27b9b9fdfd86adab46ae",
+          "resolved_blob": "0899163accb0edc3e98b27b9b9fdfd86adab46ae",
+          "changed_from_candidate": false,
+          "resolved_sha256": "d691c34a799cd2751e7b03a2eb9aef3c6f2abb085e8cd91ef5bb61e07146ca11"
+        },
+        {
+          "path": "codex-rs/core-plugins/src/command_migration.rs",
+          "historical_final_blob": "f4c4a18a7d4d8d820f2d2eccf3106d2203065a29",
+          "candidate_blob": "a9190a206428597318deb8da46d07038273f0184",
+          "resolved_blob": "a9190a206428597318deb8da46d07038273f0184",
+          "changed_from_candidate": false,
+          "resolved_sha256": "6b16fca68f2c7fe710e38efe4d4a675bba956fb53d7ad1780ea2668d4319d330"
+        },
+        {
+          "path": "codex-rs/core-plugins/src/plugin_metrics.rs",
+          "historical_final_blob": "a564bc426ee290d70486b5c8ed0b0a0a81e54fe0",
+          "candidate_blob": "62520d83a796e8b7a6d20a4a77a8b475cc5e67a4",
+          "resolved_blob": "62520d83a796e8b7a6d20a4a77a8b475cc5e67a4",
+          "changed_from_candidate": false,
+          "resolved_sha256": "3b78551eb511b25621122febc765e3e779a314c48af6237d53755609ba7660af"
+        },
+        {
+          "path": "codex-rs/ext/skills/Cargo.toml",
+          "historical_final_blob": "726de9747d180ebef34123090afaad2c93306077",
+          "candidate_blob": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e",
+          "resolved_blob": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e",
+          "changed_from_candidate": false,
+          "resolved_sha256": "6dc94276d1316b6c3d911e957f1c80f849c4b92ad679edd64864d7128ce350e0"
+        },
+        {
+          "path": "codex-rs/ext/skills/src/loader/environment.rs",
+          "historical_final_blob": "6ddc32051b2fbefd6003f3527821fb734e468ece",
+          "candidate_blob": "3b7ca9ed2b49e9da76061d5911b1dff3c04af5e9",
+          "resolved_blob": "3b7ca9ed2b49e9da76061d5911b1dff3c04af5e9",
+          "changed_from_candidate": false,
+          "resolved_sha256": "592d4c30ef204c13936f1762a75876407264e60a9deed38a9607f870d2bb8438"
+        },
+        {
+          "path": "codex-rs/ext/skills/src/loader/metadata.rs",
+          "historical_final_blob": "3e0baf1956f06481c1d3c9459fd31efc4157d00d",
+          "candidate_blob": "0527b3c8819675654149f5af1dd2a8588433274b",
+          "resolved_blob": "0527b3c8819675654149f5af1dd2a8588433274b",
+          "changed_from_candidate": false,
+          "resolved_sha256": "0b203b4696b17ccf695bbcf8eb3a4e471e9c8b47477081126a06f98f35f600eb"
+        },
+        {
+          "path": "codex-rs/external-agent-migration/Cargo.toml",
+          "historical_final_blob": "19316eefa69731dead43505d160d0ac44468b88f",
+          "candidate_blob": "3db739977ce9e94f66a3c4c9f22ce869610fa910",
+          "resolved_blob": "3db739977ce9e94f66a3c4c9f22ce869610fa910",
+          "changed_from_candidate": false,
+          "resolved_sha256": "9d8bac37beeef7e70f85b273285b2b0bfc3d80fea758eafc69a51511b5f24997"
+        },
+        {
+          "path": "codex-rs/external-agent-migration/src/subagents.rs",
+          "historical_final_blob": "bc4823dcd45a04c71740c0e862dc5dcc3d99046a",
+          "candidate_blob": "34fd59b27f4caf238c9f58ccf73e5675f3be9e48",
+          "resolved_blob": "34fd59b27f4caf238c9f58ccf73e5675f3be9e48",
+          "changed_from_candidate": false,
+          "resolved_sha256": "7126601a29edbfd2b4470710683965f9efa30990be669428fd5305e5daf64e47"
+        },
+        {
+          "path": "codex-rs/skills/Cargo.toml",
+          "historical_final_blob": "a561da322bc4a3f82e60738d26afdf750e61bb38",
+          "candidate_blob": "7342975aaea0e3ecc61da41f145674cd154a12c9",
+          "resolved_blob": "7342975aaea0e3ecc61da41f145674cd154a12c9",
+          "changed_from_candidate": false,
+          "resolved_sha256": "099f2da853fa6853df18b7923ccd55b6bd1374af7741fd6156ec84b7765ae086"
+        },
+        {
+          "path": "codex-rs/skills/src/parser.rs",
+          "historical_final_blob": "447b5addac83ef277f0dde522e030a3bb095cf60",
+          "candidate_blob": "aef295cd03cc37ca712f1c62c1dbda07127a8277",
+          "resolved_blob": "aef295cd03cc37ca712f1c62c1dbda07127a8277",
+          "changed_from_candidate": false,
+          "resolved_sha256": "f3532df1cc16f4da423b8e5c813269940c90317bcd211b6659cad449fd877e89"
+        }
+      ]
+    },
+    {
+      "sha": "0f8e7d9c4ee17092f46f45acb5bdfcb901a1e12d",
+      "parents": [
+        "4db6ca551a6464bcffd12936404d13c4cc471225"
+      ],
+      "names": [
+        "automation/2944-rustix-v1-lock-unification-20261020-1048"
+      ],
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "classification": "port_missing_regression_preserve_resolved_lock",
+      "decisions": [
+        "Current Cargo.lock already contains exactly rustix 0.38.44 and rustix 1.1.5. Every rustix 1.x edge is rustix 1.1.5; historical removal of 1.1.4 and all six edge substitutions are therefore covered. Do not overwrite the modern lock or alter dependencies.",
+        "The historical Python regression was absent. Port its complete assertions into current ScopeTests and add tomllib. Reword only the comment: compatible duplicate Rust crate versions are not universally invalid; this repository requires a unified 1.x resolution. The test still checks one 1.x package and every versioned 1.x edge."
+      ],
+      "patch": "0f8e7d9c.patch",
+      "validation": [
+        "python -m unittest scripts.tests.test_hepta_ci_scope: 25 tests passed",
+        "just fmt: pass",
+        "no Cargo.toml, Cargo.lock, MODULE.bazel.lock edits"
+      ],
+      "files": [
+        {
+          "path": "codex-rs/Cargo.lock",
+          "historical_final_blob": "95c5ee1150c2986867820572d7d6d35f5769c01c",
+          "candidate_blob": "525f6bde0c7e6c5e3de052b910d2f0570ae44879",
+          "resolved_blob": "525f6bde0c7e6c5e3de052b910d2f0570ae44879",
+          "changed_from_candidate": false,
+          "resolved_sha256": "3735942b85e35ab36efcdf8c1238ed10ae960f687955311d38bffdd372bec1a6"
+        },
+        {
+          "path": "scripts/tests/test_hepta_ci_scope.py",
+          "historical_final_blob": "856ce6e49477f259e50f80ba0f89e55d6d321511",
+          "candidate_blob": "66cb9bb14b7e36f3e761192387b5bf34a6ed4b4f",
+          "resolved_blob": "68c63fa84cb99b8f670d1cac958c441479c6b20b",
+          "changed_from_candidate": true,
+          "resolved_sha256": "176480dabb8f701ccb273f729572163c9c48318602164224cfe424bb64afe825"
+        }
+      ]
+    },
+    {
+      "sha": "72ea1527b8bf0af5d3d79fffc7bbfc24ac7fa788",
+      "parents": [
+        "fa4100a640a7b8b630932faff501dc99f1c03ced"
+      ],
+      "names": [
+        "integration/hepta-cell-ci-clippy-p0-20261018"
+      ],
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "classification": "semantically_covered_by_stronger_current_fixtures",
+      "decisions": [
+        "Cargo profile ci-test keeps exact debug = \"limited\", strip = \"debuginfo\", inherits = \"test\", opt-level = 0 configuration.",
+        "kernel_evidence_product base_evidence now returns Result and maps EvidenceId parse failures with ?; independent_decision propagates serialization failure with ?. This preserves failing invalid fixtures without expect or panic wrappers.",
+        "plasticity_process_e2e uses unwrap_or_else(panic!) at StableId, Generation, file creation and neuron-anchor sites; only diagnostic formatting uses Debug rather than Display.",
+        "migration_convergence_tests already creates an isolated on-disk database through SqliteConfig; current implementation additionally canonicalizes the root, uses open_durable_evidence_pool, and returns/retains TempDir with the pool. Reverting to the historical helper would delete the fixture directory before use.",
+        "authority_port test fixtures propagate detailed panic diagnostics or assert complete Ok values and preserve all authority/revocation assertions, removing unwrap/expect use beyond the original change. Retain current implementations."
+      ],
+      "validation": [
+        "all five historical file patches and current changed functions/source sites manually reviewed",
+        "no new native validation claimed for these unchanged paths"
+      ],
+      "files": [
+        {
+          "path": "codex-rs/Cargo.toml",
+          "historical_final_blob": "4593a4cd6319e34cd57ccae742b47d598500893c",
+          "candidate_blob": "e6747d71be508707a49034f37c414bc87ffc91f9",
+          "resolved_blob": "e6747d71be508707a49034f37c414bc87ffc91f9",
+          "changed_from_candidate": false,
+          "resolved_sha256": "f3a728c53b49a9758c7940562f8f64834d4b52a5c9d4b0596a7b4a5e855f05fd"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+          "historical_final_blob": "1c13cf82b0d2a431fcd0dba02a319d375a45182d",
+          "candidate_blob": "6034cf88d41a582446d83fd4ec566ccfd8820a3e",
+          "resolved_blob": "6034cf88d41a582446d83fd4ec566ccfd8820a3e",
+          "changed_from_candidate": false,
+          "resolved_sha256": "43b8eca825e80f4fcebf60fc857089c9233fc2e40f6f59a8cdbca95f9a1a5233"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+          "historical_final_blob": "7e5e74cce6eb25fa603bd7613c1bb5c204fde299",
+          "candidate_blob": "2fe9a73ea1022a12636ffb5be341c2a53ed2c918",
+          "resolved_blob": "2fe9a73ea1022a12636ffb5be341c2a53ed2c918",
+          "changed_from_candidate": false,
+          "resolved_sha256": "bfba7a937a0c59db5a87de2b0cd8c0e77c36c0a6324a7607c63071708aa19a3b"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+          "historical_final_blob": "9b2867af74a6a20e18876e6ae586b1798710e342",
+          "candidate_blob": "a06d3658ec531ae46ce6135ec5f5f20d26799298",
+          "resolved_blob": "a06d3658ec531ae46ce6135ec5f5f20d26799298",
+          "changed_from_candidate": false,
+          "resolved_sha256": "c0c31e6aa2438ca86fe5f41f52f3e13cd3c36cedaea854e82110592b02b5c051"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "historical_final_blob": "6d41c7357fec091aac37c218d6909c6b0fdddbc4",
+          "candidate_blob": "bec81e610a120727ac749c4e4d75e625f3a0df1f",
+          "resolved_blob": "bec81e610a120727ac749c4e4d75e625f3a0df1f",
+          "changed_from_candidate": false,
+          "resolved_sha256": "2b0aa6d60487cec2a8df683612c7df42af37a0bddae37fe8be6b72d7a64ec9a8"
+        }
+      ]
+    },
+    {
+      "sha": "864bbabdabb39ac7381ed684e14950c9741c0a29",
+      "parents": [
+        "a70a79dff8ef019834dd0bbaa46887638cb7f81b"
+      ],
+      "names": [
+        "fix/windows-wal-truncate-rights-newest-encoder-20261018"
+      ],
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "classification": "semantically_covered_with_preserved_unix_hardening",
+      "decisions": [
+        "ScopeLaneFileWalV1::open already requests write(true) on Windows and append(true) on other systems, read/create/truncate(false), holds LockedFile ownership, and explicitly seeks to end for append. Current additional Unix O_NOFOLLOW, mode 0600 and inode checks must remain.",
+        "The complete torn-tail recovery regression is present: commit first frame, fsync partial tail, recover/truncate exactly to prior length, append sequence 2, reopen and verify both envelopes. Current checked Option access avoids expect/index panic without reducing the assertions.",
+        "Historical Windows WAL workflow remains with all original crash-recovery execution and checkout identity checks. Current workflow additionally watches crate manifests/lib/toolchain, enables long checkout paths and uses a newer pinned toolchain action. Retain those improvements."
+      ],
+      "validation": [
+        "all three historical file patches and current source/test/workflow reviewed",
+        "Windows native execution not run by this Linux subagent"
+      ],
+      "files": [
+        {
+          "path": ".github/workflows/hepta-windows-scope-lane-wal.yml",
+          "historical_final_blob": "c0c54fc52ccd3cb819357169dbab2b950d217b39",
+          "candidate_blob": "2e60dc6c412257fae761cc08a52d2d9137c9df3c",
+          "resolved_blob": "2e60dc6c412257fae761cc08a52d2d9137c9df3c",
+          "changed_from_candidate": false,
+          "resolved_sha256": "29969ac5b3734354c1c3fe12fe3525091d60f4b22f5f927c98ac77e63df92905"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/scope_lane_wal.rs",
+          "historical_final_blob": "e8606bfdd770616a6a0e029a6fedcdad4116c301",
+          "candidate_blob": "0ed62b18e0870689e019ca1b54eb73cb4f56adea",
+          "resolved_blob": "0ed62b18e0870689e019ca1b54eb73cb4f56adea",
+          "changed_from_candidate": false,
+          "resolved_sha256": "0dc4fdcf545a126c48fc8e5fb750d157d1336a689a3300a0934c7b781bee27d5"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs",
+          "historical_final_blob": "8c22ed5b67aed55192a47df82c45aa66db28bafb",
+          "candidate_blob": "603ec3caf6c8fc7bed9419d2b6bae46d2bcef855",
+          "resolved_blob": "603ec3caf6c8fc7bed9419d2b6bae46d2bcef855",
+          "changed_from_candidate": false,
+          "resolved_sha256": "08845485ff9ee27d8a2ad4a564389fddfcde6abc6177156619bccc08ec10dbbe"
+        }
+      ]
+    }
+  ],
+  "remote_writes": false,
+  "shared_checkout_edits": false
+}

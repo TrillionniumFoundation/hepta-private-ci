@@ -1,0 +1,176 @@
+{
+  "schema": "source0a-exact-rustfmt-fix-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "base_tree": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+  "source_code_overlay_tree": "f86aaf8cd22bd489905439605b3c242e639d5d43",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "base_blob": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+      "base_sha256": "84a45871a6f94603e3b3887a35774ce6858d0f22fc22fe4957e9b0462270b7fa",
+      "post_blob": "838618b3aca1d7ecf4cfa3bde43eb78fe649de68",
+      "bytes": 3836,
+      "sha256": "23647fb2779c7e7fe70d1f733b4f8cdc8cf29ddecd79ac732f3a0a50c8ef45e5",
+      "non_whitespace_equal": true,
+      "string_literals_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "base_blob": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+      "base_sha256": "dc4554f89a30c3853835934389283013b8e19294295d3bd8b2535acd8ee5d125",
+      "post_blob": "3aba24ba741737488e7143d69847689bcc49820b",
+      "bytes": 6680,
+      "sha256": "e9b2061b04a27b903893164ac7525848dd57c04d1c5ab15068812cfac1dc7c59",
+      "non_whitespace_equal": true,
+      "string_literals_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "base_blob": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+      "base_sha256": "35cc00872d03cc10057a113df16c4a866cec53eed24742a6a7c4647ea49c1295",
+      "post_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "bytes": 13919,
+      "sha256": "7654e28ed6b9cb3e37308312fb45f0e65223cffcd1a3caacb4282688685cbcd5",
+      "non_whitespace_equal": false,
+      "string_literals_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "base_blob": "f7f23187de3b243ae3331231722dce9b9a4e219b",
+      "base_sha256": "1cc8d5a4efd71caab28a28147e25f5c8f46adacf43ea87c704605fe475a5268a",
+      "post_blob": "896af04e8934f124d124d21b4bea8f69cb0136af",
+      "bytes": 1898958,
+      "sha256": "10c176e1a4b12a08e58c7019b1805abf39cd6b81a84aca52b274605367573703"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "base_blob": "b4f6f957d9f523941d59d9e52d00c7dd0e7662cf",
+      "base_sha256": "7c5ebdb53998acbc944fb96e3b692c878b870ed6d2cad87b51bee84957b1bc6f",
+      "post_blob": "72dbd585cd4283c1d8339799fa7262f63ab0bb00",
+      "bytes": 11847,
+      "sha256": "d184ff3881aef16910804afd735e05065d5104d567950b61cf69861619f3af46"
+    }
+  ],
+  "original_failure_archive": {
+    "tree": "b72c5c8cb63c1802536ae5782db54feafaea968d",
+    "manifest": "e5f65efd18437a6595f1108bd03626ff69e11ceb",
+    "prefix": "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure",
+    "files": [
+      {
+        "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure/JOB.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1eddc53b7d69b9829f9587ad3b5a1711ec621c70"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure/JOBS_API.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9a546e098c857c75c61839acc201661e7ce54a91"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure/CHECKOUT_COMMIT_API.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0fdc689e80f38c986e287f84cb40007b946fc8c3"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure/REPORTED_HUNKS.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "aaccd4d19d74fe88917660ed2d721d8b617508f3"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-failure/MANIFEST.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e5f65efd18437a6595f1108bd03626ff69e11ceb"
+      }
+    ]
+  },
+  "changes": {
+    "rust_files": 3,
+    "formatter_hunks": 11,
+    "guard_marker_replacements": 1,
+    "sole_hash_pin_replacements": 1,
+    "other_source_paths_changed": 0
+  },
+  "validation": {
+    "source_postimages_full_readback_exact": true,
+    "forward_inverse_exact": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+        "exact_replacements": 2,
+        "base_blob": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+        "post_blob": "838618b3aca1d7ecf4cfa3bde43eb78fe649de68",
+        "forward_equal": true,
+        "inverse_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+        "exact_replacements": 7,
+        "base_blob": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+        "post_blob": "3aba24ba741737488e7143d69847689bcc49820b",
+        "forward_equal": true,
+        "inverse_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "exact_replacements": 2,
+        "base_blob": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+        "post_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+        "forward_equal": true,
+        "inverse_equal": true
+      },
+      {
+        "path": "CALLERS.toml",
+        "exact_replacements": 1,
+        "base_blob": "f7f23187de3b243ae3331231722dce9b9a4e219b",
+        "post_blob": "896af04e8934f124d124d21b4bea8f69cb0136af",
+        "forward_equal": true,
+        "inverse_equal": true
+      },
+      {
+        "path": ".github/blob-size-allowlist.txt",
+        "exact_replacements": 1,
+        "base_blob": "b4f6f957d9f523941d59d9e52d00c7dd0e7662cf",
+        "post_blob": "72dbd585cd4283c1d8339799fa7262f63ab0bb00",
+        "forward_equal": true,
+        "inverse_equal": true
+      }
+    ],
+    "local_protected_marker_inspection": "18/18; not repository checker execution",
+    "formatter": "NOT_RUN",
+    "source_suite": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "native": "NOT_RUN",
+    "reference_mutation": false
+  },
+  "evidence": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-exact-fix/EXACT_EDITS.json",
+      "blob": "b83f04d2bf53d069ae2c110464641223ced4ceab",
+      "bytes": 14631,
+      "sha256": "54ba0054203ccd2d357a63268eefc675af9fd62057400556b7d941e1664ff7de"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-exact-fix/STATIC_GUARDS.json",
+      "blob": "c7408740542b6f3d8ce57e274f90b2f3dd3923e9",
+      "bytes": 31413,
+      "sha256": "ef0521d60dfcf26a4fca050eb808b4811f6df23308e0ab43ac833b0d32facd03"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-exact-fix/QA_BOUNDED_SCAN.json",
+      "blob": "0d886da1462cbb3943ad74c47ad2f4ed6aeca5dc",
+      "bytes": 595,
+      "sha256": "6f9cf32a1c2f809128be05eaa16b98694227e73e38c52d506c7f05b38a2cab4f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-rustfmt-exact-fix/REVIEW.md",
+      "blob": "330b5d200bf9f99c2038fa771b0ca9b3e6eab79f",
+      "bytes": 2158,
+      "sha256": "54834542f7375f79c1420c92defc4eab2bc978c57f087927cb6d2a2e936adf85"
+    }
+  ]
+}

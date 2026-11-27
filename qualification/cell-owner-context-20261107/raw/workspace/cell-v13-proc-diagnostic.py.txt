@@ -1,0 +1,40 @@
+import os,sys,pathlib,json,subprocess,resource,time,hashlib
+root=pathlib.Path('/workspace/scratch/93ddee66e1b3/hepta-cell-validation')
+exe=pathlib.Path('/usr/bin/python3').resolve(strict=True)
+env={'LC_ALL':'C','OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1','TOKENIZERS_PARALLELISM':'false'}
+script='import sys; data=sys.stdin.buffer.read(); sys.stdout.buffer.write(data[::-1]); sys.stdout.buffer.flush()'
+payload=b'actual bounded caller input\n'*2048
+result={'diagnostic_only':True,'repository_source_changed':False,'rust_compilation_run':False,'pid':os.getpid(),'ppid':os.getppid(),'proc_self_link':os.readlink('/proc/self'),'interpreter':str(exe),'interpreter_sha256':hashlib.sha256(exe.read_bytes()).hexdigest(),'child_argv0':str(exe),'child_flags':['-I','-B','-c'],'child_environment':env,'limits':{name:list(resource.getrlimit(getattr(resource,name))) for name in ('RLIMIT_AS','RLIMIT_CORE','RLIMIT_CPU','RLIMIT_DATA','RLIMIT_FSIZE','RLIMIT_NOFILE','RLIMIT_NPROC','RLIMIT_STACK')},'observations':[]}
+with exe.open('rb') as handle:
+    proc_path=f'/proc/{os.getpid()}/fd/{handle.fileno()}'
+    for path in [f'/proc/{os.getpid()}',f'/proc/{os.getpid()}/fd',proc_path,'/proc/self/fd']:
+        try:
+            st=os.stat(path)
+            observation={'path':path,'exists':True,'mode':oct(st.st_mode)}
+        except OSError as exc:
+            observation={'path':path,'exists':False,'errno':exc.errno,'error':str(exc)}
+        result['observations'].append(observation)
+    for label,path in [('source_parent_proc_fd',proc_path),('same_interpreter_direct_control',str(exe))]:
+        started=time.monotonic()
+        try:
+            child=subprocess.Popen([str(exe),'-I','-B','-c',script],executable=path,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            out,err=child.communicate(payload,timeout=5)
+            observation={'case':label,'spawned':True,'returncode':child.returncode,'stdout_bytes':len(out),'stderr_bytes':len(err),'stderr':err.decode('utf-8','replace'),'reverse_exact':out==payload[::-1],'communication_bytes':len(payload)+len(out)+len(err)}
+        except OSError as exc:
+            observation={'case':label,'spawned':False,'errno':exc.errno,'error':str(exc),'communication_bytes':0}
+        except subprocess.TimeoutExpired:
+            child.kill();out,err=child.communicate()
+            observation={'case':label,'spawned':True,'timeout':True,'returncode':child.returncode,'stdout_bytes':len(out),'stderr_bytes':len(err)}
+        observation['elapsed_seconds']=round(time.monotonic()-started,6)
+        result['observations'].append(observation)
+text=json.dumps(result,indent=2,sort_keys=True)+'\n'
+print(text,end='')
+outpath=root/'cell-v13-proc-diagnostic.json'
+try:
+    with outpath.open('x') as out:
+        out.write(text)
+        out.flush()
+        os.fsync(out.fileno())
+    print('SAVED',str(outpath))
+except OSError as exc:
+    print('SAVE_FAILED',type(exc).__name__,str(exc))

@@ -1,8 +1,33 @@
+use std::path::Component;
 use std::path::Path;
+use std::path::PathBuf;
 
 use codex_hepta_contracts::Sha256Digest;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use sha2::Digest;
 use sha2::Sha256;
+
+/// Recover the registered physical spelling after a transport URI roundtrip.
+/// Windows URI paths omit the verbatim prefix used by canonical registry paths.
+/// Namespace spelling may differ; symlink traversal, parent components, missing
+/// roots and non-directory workspaces must still fail closed.
+pub(crate) fn registered_workspace_path(path: &Path) -> Option<PathBuf> {
+    if !path.is_absolute()
+        || path
+            .components()
+            .any(|component| matches!(component, Component::CurDir | Component::ParentDir))
+    {
+        return None;
+    }
+    let canonical = path.canonicalize().ok()?;
+    if !canonical.is_dir()
+        || AbsolutePathBuf::from_absolute_path_checked(path).ok()?
+            != AbsolutePathBuf::from_absolute_path_checked(&canonical).ok()?
+    {
+        return None;
+    }
+    Some(canonical)
+}
 
 pub(crate) fn workspace_digest(path: &Path) -> Sha256Digest {
     codex_hepta_memory::workspace_binding_digest(path)
@@ -47,3 +72,7 @@ pub(crate) fn hash_part(hasher: &mut Sha256, part: &[u8]) {
     hasher.update((part.len() as u64).to_be_bytes());
     hasher.update(part);
 }
+
+#[cfg(test)]
+#[path = "framing_tests.rs"]
+mod tests;

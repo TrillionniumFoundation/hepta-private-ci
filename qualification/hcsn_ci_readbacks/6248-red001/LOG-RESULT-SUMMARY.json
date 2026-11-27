@@ -1,0 +1,19 @@
+{
+  "arrays_sha256": "123704eabaa765f47f92b0f5c68a8f835ad0859c2b15a808b26bac3ffc3c5fac",
+  "calls": {
+    "adjoint_calls": 0,
+    "backward_attempts": 0,
+    "forward_basis_calls": 0,
+    "guard_rejections": 0,
+    "metadata_checks": 2,
+    "model_forward_calls": 1,
+    "optimizer_updates": 0
+  },
+  "error": {
+    "message": "attribute 'metadata' of 'torch._C._FunctionBase' objects is not writable",
+    "traceback": "Traceback (most recent call last):\n  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/hcsn_adjoint_torch/native_probe.py\", line 140, in main\n    output, _ = amplitude_flow(\n                ^^^^^^^^^^^^^^^\n  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/hcsn_adjoint_torch/torch_flow.py\", line 333, in amplitude_flow\n    output = _Amplitude.apply(\n             ^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/torch/autograd/function.py\", line 576, in apply\n    return super().apply(*args, **kwargs)  # type: ignore[misc]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/hcsn_adjoint_torch/torch_flow.py\", line 212, in forward\n    ctx.problem, ctx.metadata, ctx.options, ctx.budget = (\n                 ^^^^^^^^^^^^\nAttributeError: attribute 'metadata' of 'torch._C._FunctionBase' objects is not writable\n",
+    "type": "AttributeError"
+  },
+  "status": "HOLD",
+  "validation_wall_seconds": 0.20823229299999468
+}

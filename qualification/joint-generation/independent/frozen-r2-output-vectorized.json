@@ -1,0 +1,203 @@
+{
+  "created_unix_ns": 1792755165386110889,
+  "plan": {
+    "batch_size": 64,
+    "benefit_gate": {
+      "all_seeds_reported": true,
+      "content_ci95_lower_gt": 0.0,
+      "content_comparisons": [
+        "additive-anchor",
+        "ndu-additive"
+      ],
+      "content_metrics": [
+        "task_utility",
+        "joint_success"
+      ],
+      "content_modes": "always_full",
+      "cpu_net_includes_amortized_build": true,
+      "decoder_corruption_must_reduce_score": true,
+      "effective_ci95_lower_gt": 0.0,
+      "effective_comparison": "ndu_control versus validation-selected efficient static system/mode",
+      "effective_metric": "cpu_net_utility",
+      "single_view_ci95_lower_gt": 0.0,
+      "single_view_comparison": "same ndu_control weights: continuation versus cheaper no-critic one-pass random view; not an isolated routing-mechanism effect or matched continuation opportunities",
+      "single_view_metrics": [
+        "task_utility",
+        "joint_success"
+      ],
+      "strict_build_and_inference_budget_violations": 0
+    },
+    "bootstrap_replicates": 2000,
+    "bootstrap_seed": 77431,
+    "build_cpu_attribution": "entire system build CPU including shared preparation, all three seeds and LR search, divided by three selected seeds; each selected seed serves H requests",
+    "calibration": "fixed training-only stratified matching: six distinct physical sources per each of twelve source classes and six rows per each of twelve target classes, interleaved across classes, three repeats; reference full-service CPU median from first shared base; request CPU includes processing, controller, real generation, sampled caption/PNG and JSON serialization",
+    "calibration_per_class": 6,
+    "calibration_repeats": 3,
+    "calibration_rows": 72,
+    "calibration_salt": "hepta-efficient-r2-calibration-v1",
+    "candidate_execution_order": "seed/LR rounds; systems rotated by round index; only active per-system CPU is attributed",
+    "candidate_validation_reserve_cpu_seconds": 0.06,
+    "candidate_validation_reserve_units": 120000000,
+    "ce_anchor": 0.2,
+    "claims_excluded": [
+      "general NDU/FBSDE",
+      "natural images",
+      "greedy accuracy improvement without evidence",
+      "synchronous AV generation",
+      "long interactions",
+      "production or device qualification",
+      "hardware FLOP or energy equality"
+    ],
+    "compute_price": 0.02,
+    "control_reserve_cpu_seconds": 1.0,
+    "control_reserve_units": 400000000,
+    "controller": {
+      "cost_calibration": "same fitted critic and model on the 72 frozen TRAIN calibration inputs; forced stop bounds [0,0] and continue bounds [1,1] at decision price 0.5; complete low+critic, optional full, PNG/caption/JSON and ledger CPU; three paired repeats, AB/BA order by (repeat + model seed index) modulo 2, common sample seed model_seed+1009*repeat; per-request paired delta median is clamped below at zero then divided by frozen full-service reference CPU; no minimum timing or validation-driven threshold selection; all probe costs charged only to ndu_control",
+      "decision": "predicted full-minus-low raw decoded task utility exceeds decision_price = compute_price * cost_ratio; compute_price remains 0.02 for total net utility",
+      "gain_target": "raw-decoded-task-utility",
+      "input": "first cheap thumbnail content distributions only",
+      "input_router": "implemented optional candidate, not searched or qualified in r2",
+      "kind": "continuation",
+      "ridge_regularization": 0.001
+    },
+    "cpu_bootstrap_clusters": "fixed 64-request runtime batch cohorts crossed with model seed; raw content metrics retain physical-source clusters; CPU claims are conditional on this frozen batching profile",
+    "cpu_failure_policy": "after each phase, preserve partial ledger and stop further work immediately if actual complete per-system CPU exceeds the unchanged cap",
+    "cpu_guard_seconds": 0.03,
+    "cpu_seconds_per_system": 10.0,
+    "data_profile": {
+      "background_range": [
+        0.0,
+        0.04
+      ],
+      "foreground_range": [
+        0.75,
+        1.0
+      ],
+      "instructions_per_source": 8,
+      "noise_range": [
+        0.03,
+        0.12
+      ],
+      "schema": "hepta.joint-generation.independent-data.v1",
+      "seeds": {
+        "test": 130303,
+        "train": 130101,
+        "validation": 130202
+      },
+      "sources_per_class": {
+        "test": 6,
+        "train": 16,
+        "validation": 6
+      },
+      "variants": 2,
+      "vertical_shifts": [
+        -1,
+        0,
+        1
+      ]
+    },
+    "decoder_steps": 300,
+    "diagnostic_telemetry": "phase CPU/wall/main-thread CPU, rusage, process threads, bounded GC pauses and read-only container counter deltas; container counters alone do not establish a process-level cause",
+    "experiment_id": "efficient-r2",
+    "formal_measurement_order": "seed rounds; systems rotated by seed index; within each bundle full, selected, then frozen random where applicable",
+    "hidden": 32,
+    "inference_cap_full_equivalents": 2.0,
+    "learning_rates": [
+      0.001,
+      0.003,
+      0.01
+    ],
+    "maximum_greedy_drop": 0.02,
+    "model_seeds": [
+      11,
+      23,
+      47
+    ],
+    "no_padding": "only applied objective kernels execute; cached fixed decoder objective and one encoder forward per update; cheaper systems spend savings on extra updates up to the same build caps; static baselines do not fit or run an unused critic",
+    "operator_units_per_system": 12000000000,
+    "output_sampling_profile": "batched inverse-CDF with preserved (n,2) draw ordering, exact left-edge/clamp behavior and batch pixel quantization; actual per-request PNG, hash, base64 and JSON unchanged; declared sampling arithmetic and all-CDF comparisons charged",
+    "pretrain_steps": 500,
+    "r1_policy": "sealed forever; no retraining, tuning or re-evaluation against r1 held-out",
+    "refinement": "after one fixed LR/mode selection, all arms may continue their selected three-seed models using original Adam and RNG state in rotated complete seed rounds; no validation-based stopping or reselection; reserve exact future operators and training-only CPU forecasts for critic, paired calibration, selected service, changed-model revalidation and exports; actual caps remain authoritative",
+    "refinement_cpu_unit_safety": 2.0,
+    "refinement_policy": "selected-residual-v1",
+    "refinement_service_cpu_multiplier": 1.0,
+    "retained_artifact_bound_bytes": 33554432,
+    "rho": 1.5,
+    "runtime_backend": "native",
+    "runtime_batch_size": 64,
+    "runtime_profile": "fixed batches up to 64 requests; complete batch CPU and latency retained; not a single-request latency qualification",
+    "schema": "hepta.joint-generation.efficient-budget.v2",
+    "scope": "independent physical-source synthetic text/image qualification; fixed-rho entropic utility",
+    "selected_validation_order": "seed rounds; systems rotated by seed index; optional critic fitting fully charged to its system",
+    "selection": "global LR and static mode maximize mean validation decoded utility minus measured training-calibrated CPU price; control LR selected by this same content rule before train-only critic fit; selected residual training never reselects LR or mode",
+    "service_horizon": 100000,
+    "static_modes": [
+      "full",
+      "low",
+      "ensemble"
+    ],
+    "systems": [
+      "supervised",
+      "anchor",
+      "additive",
+      "ndu",
+      "ndu_control"
+    ],
+    "tail_reserve_cpu_seconds": 0.3,
+    "tail_reserve_units": 100000000,
+    "test_policy": "one experiment-wide exclusive marker before first test construction; no new-directory repeat or threshold change",
+    "validation_readiness": "do not open test if required validation mean contrasts are nonpositive, greedy retention fails, or a build budget is violated; retain nonzero readiness receipts"
+  },
+  "plan_sha256": "70a09916440b22a315a21ab31d301178d20ef428b008cf7b08e55e04e0761ca7",
+  "schema": "hepta.joint-generation.efficient-freeze.v2",
+  "source_commit": "10f1b8045ce8b864f21bcd7e49db59234d4f2bdf",
+  "sources": {
+    "cloud_run.py": "e5dbcb587ac47745be9350441cc4e2a6211572395519d48ccb19dcd3b847b20e",
+    "contracts.py": "544cdbebc6e79abf5e55fc4e4d1a0fc30e169c805199ad72b9b420891fd8a61d",
+    "control.py": "1b79169db91317cf80f8cd29793ea8ac4a08dd2088e05095543c139181209c4b",
+    "data.py": "a3ac8701a57c2656a8508949e1bdaf09f8902a91cdbf08dc370e4f676cfb8bcb",
+    "evaluate.py": "879741e81852ab973ad0c69bad65c3398f4126604b71e7c4349a68db5fd5b3e3",
+    "independent/accounting.py": "29d2fa22915b2e6a08e1d44282460bf95e8eb1a545bae45ef78bc35fc1f6582d",
+    "independent/calibration.py": "87e0bc2d4e070f31ae77b7c5919af0f0a01f8dec74e9921075a42e6bb68c423d",
+    "independent/controller_cost.py": "98266471ba934e52727569fee337a1ef61bb8a2196105ba2aa9789daf5ee0faf",
+    "independent/data_v2.py": "8f25960bf6ab43e461f7866a41c0f33742d04ba70cb62cd656b3bad478db2764",
+    "independent/evaluation.py": "76092ba761d1e39aa2c2a81ab484979d0805d9cc7a7ee32b901071c2fcd0e27b",
+    "independent/inference.py": "a58694aedd1618da6064b1316502db93c02f10e6148294b34b14260dc5e4f645",
+    "independent/learning.py": "ca3f16c8c75cc2fbf55ce7e17906d567e739eb5839d1c11af599cb8761cc2175",
+    "independent/native.c": "2534877101c22c912c18a27e26c2f70287c7bebb26a0e0cccb63d9ebd8ba9e24",
+    "independent/native.py": "77df85bda0e3bdee1dcfa8a911f9f9fe0bb1f893b92830acbb6ea5fc462cd66c",
+    "independent/refinement.py": "5050285374c63443f6db058ab018674317ea61a3fa92c22537ed1618a14be229",
+    "independent/router.py": "92b8e223d2893263a4a141b81749a112b6818da55b62b7af477d021102ed895d",
+    "independent/run.py": "2eb7a0c57bcb7ab3d56ed29b30b8138a84079440d9ac43d351711544b91299a3",
+    "independent/serve.py": "287a3c5b4d6def24be1f4b80b360cbbdc5939b57a80e65775c646c0f4ee69108",
+    "independent/telemetry.py": "4d07b5c768465e8d706b9466ac11ef11d4f737d3a82dca7d7b1a533b3db5f9cd",
+    "independent/test_accounting.py": "20e6a6c55ce2a5795c0c38dd9e3f6a7adb89583722cdde3d53197d6d03f5dcec",
+    "independent/test_calibration.py": "97213ae6dd1efa0ad552f025fa8513b6a9e63f7d80d09bcf7025b20f203665a0",
+    "independent/test_controller_cost.py": "6c4dc4b76f49bce27f415e19a32ace7bb662eebdf1ecb91fb14f8c37005ac71e",
+    "independent/test_data_v2.py": "cbee87589848dcfcf4a2f54faeae93edb787c4f8aa5081b65a5a11685596e7d7",
+    "independent/test_evaluation.py": "838bb445730c5c792c183265f17bf80851675b1566d38e6ca4c0fb33a81a4002",
+    "independent/test_inference.py": "4daa9642cdd799334fbe0187efe9636593292b5344f2616bb1a82c4d0c9e5cf6",
+    "independent/test_learning.py": "015419fe6fdd6038a1e607e369966126b3a721b7e35b13571224d932f797c922",
+    "independent/test_native.py": "fa7447f426a9316a55656b955e0814a721f6dfb0dbcb3efd45c6d2d625c73a6a",
+    "independent/test_outputs.py": "a373aa36f24071b3bc7b87280c1085564d2a0ed17115f69716e08e45a7c5f075",
+    "independent/test_refinement.py": "f0c27c8becf6ef2bfe9267cc2e7dc63784d62103b336429af85a4c8381deafd6",
+    "independent/test_router.py": "e645d7c38b760ecdcc2ea7eec508462fd95ca787566447abc93e06ea3c219ebe",
+    "independent/test_run.py": "06c6d0dd4c6ccb92da62fefe8ba5dbe04f7c5430721b1fca1b614abc2f72054a",
+    "independent/test_serve.py": "2c2e27aa3238ad8c90956992ba685e509ab48155e2f432e0b817cee5babd6ebb",
+    "independent/test_telemetry.py": "7cecef7f580f48ee18af1824049871a6418613fba97dc0ca67c3a0235177e178",
+    "model.py": "36b99a28ea690a5e1c7c82db8debbbf58067d57796502f89cacb146554da4dc8",
+    "multimodal_contract.py": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+    "serve.py": "e75cb3d003109599f18a95cb5ad8e6c3024e98aef76cb0c0831963b97abedd93",
+    "test_contracts.py": "93a9608a979666d2d8c791ab86074a5d95b3d050271c8e88ab56173df3408261",
+    "test_control.py": "3f50c88f5b7afcede31e6886ce4f90e3c5dbf8b911cd10045ef812964eaeeb24",
+    "test_data.py": "d21db8fdc010eae4d3c45f75a4d84e94df021782b21e1aea952f4955ac0ea744",
+    "test_model.py": "e895ebdd360ef89f0b7a0320363ccbf1ce61a7564772491e5ab8fbf74e22dce3",
+    "test_multimodal_contract.py": "579680aa5389272b6fc4d98ba1eba3d688b585d00f289f3b3aa4f288f4e27c46",
+    "test_serve.py": "b12983dfb64bbea562aac9b717de24b8e5061128f7e4a27c8af37e31a0534aaa",
+    "test_utility.py": "dc019e559169c80be650b6f28ddc458004dda4b47ae56e75a76fd6ae2ccf8d01",
+    "train.py": "b61de784b5ea74093f9fddc6356d6ade9b3625c8b680a2154651645fdb09a737",
+    "utility.py": "bbfcbad5557107e3d9be587f55cd91889e2c1b0d6c3d87d07ec329ff54251037"
+  },
+  "test_opened": false
+}

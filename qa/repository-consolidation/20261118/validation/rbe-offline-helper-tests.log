@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/ff772bc098e2/hepta-private-ci/.github/rbe-openssh/helper_regressions.py", line 18, in <module>
+    SOURCE = Path(sys.argv.pop(1)).resolve(strict=True)
+                  ^^^^^^^^^^^^^^^
+IndexError: pop index out of range
+Traceback (most recent call last):
+  File "/workspace/scratch/ff772bc098e2/hepta-private-ci/.github/rbe-openssh/tool_supply_tests.py", line 16, in <module>
+    SOURCE = Path(sys.argv.pop(1)).resolve(strict=True)
+                  ^^^^^^^^^^^^^^^
+IndexError: pop index out of range
+test_image_substitution_refuses_even_when_build_is_successful (test_qualify_rbe_openssh.BuildBindingTests.test_image_substitution_refuses_even_when_build_is_successful) ... ok
+test_missing_or_wrong_platform_material_cannot_establish_base (test_qualify_rbe_openssh.BuildBindingTests.test_missing_or_wrong_platform_material_cannot_establish_base) ... ok
+test_observed_base_and_tested_local_image_stay_distinct_from_registry_digest (test_qualify_rbe_openssh.BuildBindingTests.test_observed_base_and_tested_local_image_stay_distinct_from_registry_digest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK

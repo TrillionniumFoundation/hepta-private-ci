@@ -1,0 +1,138 @@
+{
+  "schema": "hepta.initial-daemon-fd.line-ops.v1",
+  "base": "caa34b7e77f5aa134dc1335f5f143af948874157",
+  "all_reconstructions_exact": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "before": {
+        "git_blob": "6711d29654c262d43d9aea98a09bafa4662f4d9d",
+        "sha256": "48b0870e28a5a1a0d356b097591be41947b67db28dbce28f026e734d61025cea",
+        "bytes": 17355
+      },
+      "after": {
+        "git_blob": "904b97a3a6664750da4157ad04dc9e72486ccb19",
+        "sha256": "1eee536e8c27043baec2f65aeb439571bad10a7e02ded2f82f329fab025ab5b4",
+        "bytes": 17959
+      },
+      "additions": 16,
+      "deletions": 1,
+      "operations": [
+        {
+          "old_start_line": 15,
+          "old": "use crate::AgentdError;\nuse crate::calculator_deadline::Deadline;\n\nconst FLAGS: [&str; 21] = [\n    \"--root-production-profile\",\n    \"--root-production-handoff-fd\",\n    \"--root-learning-handoff-fd\",\n    \"--root-q24-model-handoff-fd\",\n    \"--root-generation-publication-handoff-fd\",\n    \"--root-production-uid\",\n    \"--root-production-gid\",\n    \"--root-production-control-fd\",\n",
+          "new": "use crate::AgentdError;\nuse crate::calculator_deadline::Deadline;\n\nconst FLAGS: [&str; 22] = [\n    \"--root-production-profile\",\n    \"--root-production-handoff-fd\",\n    \"--root-learning-handoff-fd\",\n    \"--root-q24-model-handoff-fd\",\n    \"--root-generation-publication-handoff-fd\",\n    \"--root-generation-initial-handoff-fd\",\n    \"--root-production-uid\",\n    \"--root-production-gid\",\n    \"--root-production-control-fd\",\n"
+        },
+        {
+          "old_start_line": 51,
+          "old": "    pub(super) learning_handoff: Option<UnixDatagram>,\n    pub(super) q24_model_handoff: Option<UnixDatagram>,\n    pub(super) publication_handoff: Option<UnixDatagram>,\n    pub(super) uid: u32,\n    pub(super) gid: u32,\n    pub(super) control: OwnedFd,\n",
+          "new": "    pub(super) learning_handoff: Option<UnixDatagram>,\n    pub(super) q24_model_handoff: Option<UnixDatagram>,\n    pub(super) publication_handoff: Option<UnixDatagram>,\n    pub(super) initial_handoff: Option<UnixDatagram>,\n    pub(super) uid: u32,\n    pub(super) gid: u32,\n    pub(super) control: OwnedFd,\n"
+        },
+        {
+          "old_start_line": 168,
+          "old": "    if publication_handoff.is_some() && learning_handoff.is_none() {\n        return Err(invalid(\"original publication requires its learning handoff\"));\n    }\n    let notes = selected\n        .remove(\"--notes-production-handoff-fd\")\n        .map(descriptor_number)\n",
+          "new": "    if publication_handoff.is_some() && learning_handoff.is_none() {\n        return Err(invalid(\"original publication requires its learning handoff\"));\n    }\n    let initial_handoff = selected\n        .remove(\"--root-generation-initial-handoff-fd\")\n        .map(descriptor_number)\n        .transpose()?;\n    if initial_handoff.is_some() && publication_handoff.is_some() {\n        return Err(invalid(\"initial and learned publication require separate original Root sessions\"));\n    }\n    let notes = selected\n        .remove(\"--notes-production-handoff-fd\")\n        .map(descriptor_number)\n"
+        },
+        {
+          "old_start_line": 247,
+          "old": "        learning_handoff,\n        q24_model_handoff,\n        publication_handoff,\n        Some(control),\n        Some(app_server),\n        payload,\n",
+          "new": "        learning_handoff,\n        q24_model_handoff,\n        publication_handoff,\n        initial_handoff,\n        Some(control),\n        Some(app_server),\n        payload,\n"
+        },
+        {
+          "old_start_line": 292,
+          "old": "        .map(take_descriptor)\n        .transpose()?\n        .map(UnixDatagram::from);\n    let control = take_descriptor(control)?;\n    let app_server = take_descriptor(app_server)?;\n    let primary = match profile {\n",
+          "new": "        .map(take_descriptor)\n        .transpose()?\n        .map(UnixDatagram::from);\n    let initial_handoff = initial_handoff\n        .map(take_descriptor)\n        .transpose()?\n        .map(UnixDatagram::from);\n    let control = take_descriptor(control)?;\n    let app_server = take_descriptor(app_server)?;\n    let primary = match profile {\n"
+        },
+        {
+          "old_start_line": 337,
+          "old": "            learning_handoff,\n            q24_model_handoff,\n            publication_handoff,\n            uid,\n            gid,\n            control,\n",
+          "new": "            learning_handoff,\n            q24_model_handoff,\n            publication_handoff,\n            initial_handoff,\n            uid,\n            gid,\n            control,\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "before": {
+        "git_blob": "3442c85323f3ec7314890edaebc9fdd4d1594365",
+        "sha256": "7979bcb62006e70cac4ceed43a9b0fbcb6fa12ac6ae686b202bea767721f801a",
+        "bytes": 24573
+      },
+      "after": {
+        "git_blob": "b402a8fdfbb8de34c02e2ea0480ccda39218dd10",
+        "sha256": "8eab2899cd9f20d7211e33a321d6557b49e19c1c9bfd405a87216217a65fdfc8",
+        "bytes": 25984
+      },
+      "additions": 32,
+      "deletions": 2,
+      "operations": [
+        {
+          "old_start_line": 47,
+          "old": "    learning: Option<crate::RootLearningHandoffV1>,\n    q24_model: Option<crate::RootQ24ModelFactoryHandoffV1>,\n    publication: Option<crate::RootGenerationPublicationHandoffV1>,\n    control: OwnedFd,\n    app_server: OwnedFd,\n    lifetime: Duration,\n",
+          "new": "    learning: Option<crate::RootLearningHandoffV1>,\n    q24_model: Option<crate::RootQ24ModelFactoryHandoffV1>,\n    publication: Option<crate::RootGenerationPublicationHandoffV1>,\n    initial_publication: Option<crate::RootGenerationInitialHandoffV1>,\n    control: OwnedFd,\n    app_server: OwnedFd,\n    lifetime: Duration,\n"
+        },
+        {
+          "old_start_line": 65,
+          "old": "    inputs: RuntimeInputs,\n    q24_model: Option<crate::AgentdRootQ24ModelFactoryV1>,\n    publication: Option<crate::RootGenerationPublicationHandoffV1>,\n}\n\nstruct RuntimeInputs {\n",
+          "new": "    inputs: RuntimeInputs,\n    q24_model: Option<crate::AgentdRootQ24ModelFactoryV1>,\n    publication: Option<crate::RootGenerationPublicationHandoffV1>,\n    initial_publication: Option<crate::RootGenerationInitialHandoffV1>,\n}\n\nstruct RuntimeInputs {\n"
+        },
+        {
+          "old_start_line": 90,
+          "old": "                    learning_handoff,\n                    q24_model_handoff,\n                    publication_handoff,\n                    uid,\n                    gid,\n                    control,\n",
+          "new": "                    learning_handoff,\n                    q24_model_handoff,\n                    publication_handoff,\n                    initial_handoff,\n                    uid,\n                    gid,\n                    control,\n"
+        },
+        {
+          "old_start_line": 133,
+          "old": "                        )\n                    })\n                    .transpose()?;\n                let inputs = RuntimeInputs {\n                    primary,\n                    notes,\n",
+          "new": "                        )\n                    })\n                    .transpose()?;\n                let initial_publication = initial_handoff\n                    .map(|handoff| {\n                        crate::receive_root_generation_initial_handoff(\n                            handoff,\n                            remaining(bootstrap_deadline)?,\n                        )\n                    })\n                    .transpose()?;\n                let inputs = RuntimeInputs {\n                    primary,\n                    notes,\n"
+        },
+        {
+          "old_start_line": 144,
+          "old": "                    root_pidfd,\n                    learning,\n                    q24_model,\n                    publication,\n                    control,\n                    app_server,\n                    lifetime,\n                    deadline: bootstrap_deadline,\n",
+          "new": "                    root_pidfd,\n                    learning,\n                    q24_model,\n                    publication,\n                    initial_publication,\n                    control,\n                    app_server,\n                    lifetime,\n                    deadline: bootstrap_deadline,\n"
+        },
+        {
+          "old_start_line": 202,
+          "old": "                    root_pidfd,\n                    learning,\n                    q24_model,\n                    publication,\n                    control,\n                    app_server,\n                    lifetime,\n                    deadline,\n",
+          "new": "                    root_pidfd,\n                    learning,\n                    q24_model,\n                    publication,\n                    initial_publication,\n                    control,\n                    app_server,\n                    lifetime,\n                    deadline,\n"
+        },
+        {
+          "old_start_line": 268,
+          "old": "                        inputs,\n                        q24_model: model_factory,\n                        publication,\n                    }),\n                ))\n            }\n",
+          "new": "                        inputs,\n                        q24_model: model_factory,\n                        publication,\n                        initial_publication,\n                    }),\n                ))\n            }\n"
+        },
+        {
+          "old_start_line": 288,
+          "old": "        })\n    }\n\n    /// Retain this single original connection capability before `run` consumes\n    /// the launch. A later actual B/Selection can then connect its separate\n    /// purpose handoff while the original runtime still owns the Root session.\n    pub fn take_generation_publication_connection(\n        &mut self,\n    ) -> Result<crate::RootGenerationPublicationConnectionV1, AgentdError> {\n",
+          "new": "        })\n    }\n\n    /// Take the independently received initial purpose once. The caller must\n    /// use the original live connection and original selected target before\n    /// configuring the returned Config; taking an offer changes no CURRENT.\n    pub fn take_generation_initial_handoff(\n        &mut self,\n    ) -> Result<crate::RootGenerationInitialHandoffV1, AgentdError> {\n        self.initial_publication.take().ok_or_else(|| {\n            AgentdError::Invalid(\"original initial handoff was absent or already taken\".into())\n        })\n    }\n\n    /// Retain this single original connection capability before `run` consumes\n    /// the launch. Exactly one initial or learned publication purpose can use\n    /// it while the original runtime still owns the live Root session.\n    pub fn take_generation_publication_connection(\n        &mut self,\n    ) -> Result<crate::RootGenerationPublicationConnectionV1, AgentdError> {\n"
+        },
+        {
+          "old_start_line": 333,
+          "old": "        arg0_paths: Arg0DispatchPaths,\n    ) -> Result<(), AgentdError> {\n        config.require_root_learning_assembled()?;\n        if self.publication.is_some() {\n            return Err(AgentdError::Invalid(\n                \"original publication handoff must be taken for the later actual selection before run\".into(),\n",
+          "new": "        arg0_paths: Arg0DispatchPaths,\n    ) -> Result<(), AgentdError> {\n        config.require_root_learning_assembled()?;\n        if self.initial_publication.is_some() {\n            return Err(AgentdError::Invalid(\n                \"original initial handoff must be taken for actual initial publication before run\".into(),\n            ));\n        }\n        if self.publication.is_some() {\n            return Err(AgentdError::Invalid(\n                \"original publication handoff must be taken for the later actual selection before run\".into(),\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "before": {
+        "git_blob": "bd260f8027970d17e07862d3eb2c40761e3a1ba2",
+        "sha256": "a8583f8244f53f59d62ff991885ab69e79c60fd3dcc988a36ee6fe378c5bb054",
+        "bytes": 12231
+      },
+      "after": {
+        "git_blob": "2225995eff924716089f653fc191e28390f8d784",
+        "sha256": "c5474b5e3faeeff51585f3d2fb9cb136efdc9d22c0f7840a8989f29ab7b7dfc7",
+        "bytes": 12301
+      },
+      "additions": 3,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_start_line": 336,
+          "old": "\n#[path = \"production_launcher_publication_inputs_tests.rs\"]\nmod publication;\n",
+          "new": "\n#[path = \"production_launcher_publication_inputs_tests.rs\"]\nmod publication;\n\n#[path = \"production_launcher_initial_inputs_tests.rs\"]\nmod initial;\n"
+        }
+      ]
+    }
+  ]
+}

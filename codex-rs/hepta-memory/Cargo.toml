@@ -12,6 +12,9 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+qualification-lease-clock = []
+
 [dependencies]
 base64 = { workspace = true }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
@@ -35,6 +38,12 @@ sqlx = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = ["time"] }
 unicode-segmentation = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs", "process"] }
+
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }

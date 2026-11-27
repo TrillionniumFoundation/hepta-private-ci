@@ -1,0 +1,95 @@
+{
+  "schema": "hcsn-explicit-extra-costs.v1",
+  "scopes": [
+    {
+      "scope_id": "cost_audit_tests001_child",
+      "group": "cost_audit",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests001/EXECUTION.json",
+      "receipt_sha256": "19c97bc9d2d0157d8256e94ff784213fcaa2e36ba1b251bb24d8ea060fbcb688",
+      "field": "/complete_child_cpu_seconds",
+      "measurement_kind": "complete_process_tree_wait4",
+      "disjoint_scope_explanation": "Independent new seven-test tiny-fixture verification child; no main model/data inference."
+    },
+    {
+      "scope_id": "cost_audit_tests001_parent",
+      "group": "cost_audit",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests001/EXECUTION.json",
+      "receipt_sha256": "19c97bc9d2d0157d8256e94ff784213fcaa2e36ba1b251bb24d8ea060fbcb688",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "disjoint_scope_explanation": "Separate outer test supervisor self CPU; child test tree is charged separately."
+    },
+    {
+      "scope_id": "campaign_costs_tests002_child",
+      "group": "cost_audit",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests002/EXECUTION.json",
+      "receipt_sha256": "3544f362d48102cef50675b98870f501d0bab8996c472602e1c0341f0e0f10d5",
+      "field": "/complete_child_cpu_seconds",
+      "measurement_kind": "complete_process_tree_wait4",
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added."
+    },
+    {
+      "scope_id": "campaign_costs_tests002_parent",
+      "group": "cost_audit",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests002/EXECUTION.json",
+      "receipt_sha256": "3544f362d48102cef50675b98870f501d0bab8996c472602e1c0341f0e0f10d5",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added."
+    },
+    {
+      "scope_id": "campaign_costs_probe001_child",
+      "group": "cost_audit",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe001/WRAPPER_EXECUTION.json",
+      "receipt_sha256": "f5d36402faef72de690d8969341b0b6e6e2689f91487953fdf8516713fdd769f",
+      "field": "/complete_child_cpu_seconds",
+      "measurement_kind": "complete_process_tree_wait4",
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added."
+    },
+    {
+      "scope_id": "campaign_costs_probe001_parent",
+      "group": "cost_audit",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe001/WRAPPER_EXECUTION.json",
+      "receipt_sha256": "f5d36402faef72de690d8969341b0b6e6e2689f91487953fdf8516713fdd769f",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added."
+    },
+    {
+      "scope_id": "campaign_costs_tests003_child",
+      "group": "cost_audit",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests003/EXECUTION.json",
+      "receipt_sha256": "27b2db3146e03785320e08d9224c28cbb85effa0cb79c4d8c2fbc7a2afe51edc",
+      "field": "/complete_child_cpu_seconds",
+      "measurement_kind": "complete_process_tree_wait4",
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or previous preview invocation; complete child tree and separate supervisor self CPU. Inner generator self/body clocks are nested."
+    },
+    {
+      "scope_id": "campaign_costs_tests003_parent",
+      "group": "cost_audit",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests003/EXECUTION.json",
+      "receipt_sha256": "27b2db3146e03785320e08d9224c28cbb85effa0cb79c4d8c2fbc7a2afe51edc",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or previous preview invocation; complete child tree and separate supervisor self CPU. Inner generator self/body clocks are nested."
+    },
+    {
+      "scope_id": "campaign_costs_probe002_child",
+      "group": "cost_audit",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe002/WRAPPER_EXECUTION.json",
+      "receipt_sha256": "69e48f9d98abc4db067f449d69ea980b094f95425757ac7f644f11b506b19c6f",
+      "field": "/complete_child_cpu_seconds",
+      "measurement_kind": "complete_process_tree_wait4",
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or previous preview invocation; complete child tree and separate supervisor self CPU. Inner generator self/body clocks are nested."
+    },
+    {
+      "scope_id": "campaign_costs_probe002_parent",
+      "group": "cost_audit",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe002/WRAPPER_EXECUTION.json",
+      "receipt_sha256": "69e48f9d98abc4db067f449d69ea980b094f95425757ac7f644f11b506b19c6f",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or previous preview invocation; complete child tree and separate supervisor self CPU. Inner generator self/body clocks are nested."
+    }
+  ]
+}

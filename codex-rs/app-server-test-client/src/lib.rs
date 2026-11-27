@@ -1,3 +1,8 @@
+mod auth_diagnostics;
+
+use auth_diagnostics::jsonrpc_message_for_logging;
+use auth_diagnostics::login_completion_status;
+
 use std::collections::VecDeque;
 use std::ffi::OsString;
 use std::fs;
@@ -1191,7 +1196,7 @@ async fn test_login(
 
                 let completion =
                     client.wait_for_account_login_completion(/*expected_login_id*/ None)?;
-                println!("< account/login/completed notification: {completion:?}");
+                println!("{}", login_completion_status(&completion));
 
                 loop {
                     let notification = client.next_notification()?;
@@ -1205,7 +1210,6 @@ async fn test_login(
                 return Ok(());
             }
         };
-        println!("< account/login/start response: {login_response:?}");
         let login_id = match login_response {
             LoginAccountResponse::Chatgpt { login_id, auth_url } => {
                 println!("Open the following URL in your browser to continue:\n{auth_url}");
@@ -1225,19 +1229,13 @@ async fn test_login(
         };
 
         let completion = client.wait_for_account_login_completion(Some(&login_id))?;
-        println!("< account/login/completed notification: {completion:?}");
+        println!("{}", login_completion_status(&completion));
 
         if completion.success {
             println!("Login succeeded.");
             Ok(())
         } else {
-            bail!(
-                "login failed: {}",
-                completion
-                    .error
-                    .as_deref()
-                    .unwrap_or("unknown error from account/login/completed")
-            );
+            bail!("login failed");
         }
     })
     .await
@@ -1751,6 +1749,7 @@ impl CodexClient {
                     version: env!("CARGO_PKG_VERSION").to_string(),
                 },
                 capabilities: Some(InitializeCapabilities {
+                    process_indeterminate: true,
                     experimental_api,
                     request_attestation: false,
                     opt_out_notification_methods: Some(
@@ -2012,6 +2011,9 @@ impl CodexClient {
                 ServerNotification::McpToolCallProgress(payload) => {
                     println!("< MCP tool progress: {}", payload.message);
                 }
+                ServerNotification::AccountLoginCompleted(completion) => {
+                    println!("{}", login_completion_status(&completion));
+                }
                 _ => {
                     println!("[UNKNOWN SERVER NOTIFICATION] {server_notification:?}");
                 }
@@ -2056,12 +2058,10 @@ impl CodexClient {
             .context("client request was not a valid JSON-RPC request")?;
         request.trace = current_span_w3c_trace_context();
         let request_json = serde_json::to_string(&request)?;
-        let mut request_for_logging = serde_json::to_value(&request)?;
-        if request.method == "account/login/start"
-            && let Some(api_key) = request_for_logging.pointer_mut("/params/apiKey")
-        {
-            *api_key = Value::String("<redacted>".to_string());
-        }
+        let request_for_logging = jsonrpc_message_for_logging(
+            &serde_json::to_value(&request)?,
+            /*pending_login_response_id*/ None,
+        )?;
         let request_pretty = serde_json::to_string_pretty(&request_for_logging)?;
         print_multiline_with_prefix("> ", &request_pretty);
         self.write_payload(&request_json)
@@ -2072,7 +2072,8 @@ impl CodexClient {
         T: DeserializeOwned,
     {
         loop {
-            let message = self.read_jsonrpc_message()?;
+            let login_response_id = (method == "account/login/start").then_some(&request_id);
+            let message = self.read_jsonrpc_message(login_response_id)?;
 
             match message {
                 JSONRPCMessage::Response(JSONRPCResponse { id, result }) => {
@@ -2083,6 +2084,9 @@ impl CodexClient {
                 }
                 JSONRPCMessage::Error(err) => {
                     if err.id == request_id {
+                        if method == "account/login/start" {
+                            bail!("{method} failed (JSON-RPC error code {})", err.error.code);
+                        }
                         bail!("{method} failed: {err:?}");
                     }
                 }
@@ -2102,7 +2106,7 @@ impl CodexClient {
         }
 
         loop {
-            let message = self.read_jsonrpc_message()?;
+            let message = self.read_jsonrpc_message(/*pending_login_response_id*/ None)?;
 
             match message {
                 JSONRPCMessage::Notification(notification) => return Ok(notification),
@@ -2117,7 +2121,10 @@ impl CodexClient {
         }
     }
 
-    fn read_jsonrpc_message(&mut self) -> Result<JSONRPCMessage> {
+    fn read_jsonrpc_message(
+        &mut self,
+        pending_login_response_id: Option<&RequestId>,
+    ) -> Result<JSONRPCMessage> {
         loop {
             let raw = self.read_payload()?;
             let trimmed = raw.trim();
@@ -2127,7 +2134,8 @@ impl CodexClient {
 
             let parsed: Value =
                 serde_json::from_str(trimmed).context("response was not valid JSON-RPC")?;
-            let pretty = serde_json::to_string_pretty(&parsed)?;
+            let logged = jsonrpc_message_for_logging(&parsed, pending_login_response_id)?;
+            let pretty = serde_json::to_string_pretty(&logged)?;
             print_multiline_with_prefix("< ", &pretty);
             let message: JSONRPCMessage = serde_json::from_value(parsed)
                 .context("response was not a valid JSON-RPC message")?;

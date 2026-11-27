@@ -1,0 +1,267 @@
+{
+  "accounting_complete": false,
+  "archive_builder_costs": [
+    {
+      "absolute_cpu_sample_seconds": 0.325010396,
+      "evidence": "control-ledger.json: archives.desktop.terminal",
+      "host": "desktop",
+      "original_pretty_receipt_readback_succeeded": false,
+      "scope": "Archive builder timer and absolute CPU sample; separate from upload/readback jobs, no exit rusage claimed.",
+      "wall_seconds_after_imports": 0.2954509148839861
+    },
+    {
+      "absolute_cpu_sample_seconds": 0.041579,
+      "evidence": "control-ledger.json: archives.main.terminal",
+      "host": "main",
+      "original_pretty_receipt_readback_succeeded": true,
+      "scope": "Archive builder timer and absolute CPU sample; separate from upload/readback jobs, no exit rusage claimed.",
+      "wall_seconds_after_imports": 0.02702283300459385
+    }
+  ],
+  "capsule_payload_scope": "140 archive members total, including both capsule manifests. Raw successful/partial/empty payloads remain at native paths under SHA references; source, metadata, small original receipts and logs are embedded.",
+  "created_utc": "2026-11-10T17:43:58.125913+00:00",
+  "currency_cost": null,
+  "energy_joules": null,
+  "historical_costs_retained": [
+    {
+      "evidence": {
+        "archive": "main-receipts.zip",
+        "bytes": 2431,
+        "member": "runs/cloud-p2-draft-upload-v1/receipt.json",
+        "sha256": "bd85577c07f6e7ba94889dc7908be57431cd651fb2f27f657ab8d254c07b6444"
+      },
+      "id": "original_main_cloud_uploader",
+      "reported_wall_seconds": 1258.5981671250001,
+      "scope": "Historical uploader body timer after imports; includes the official download and failed 600s readback. No additional whole-exit CPU was recovered."
+    },
+    {
+      "evidence": {
+        "archive": "desktop-receipts.zip",
+        "bytes": 1178,
+        "member": "runs/draft-three-assets-reconcile-v1/prior-width16-receipt.json",
+        "sha256": "f337813ab9262631b5790089aba8d19b103f1c21cde4df055b81ff221a17866a"
+      },
+      "id": "original_width16_uploader",
+      "reported_wall_seconds": 92.55429813591763,
+      "scope": "Original receipt timer; do not claim an independently captured complete process or exit CPU."
+    }
+  ],
+  "input_archives_and_control": {
+    "control-ledger.json": {
+      "bytes": 28580,
+      "sha256": "d46ff35b5594bab8754e4cd8133a335931ac2acbb4f081b7be986b795213b8f7"
+    },
+    "desktop-receipts.zip": {
+      "bytes": 113558,
+      "sha256": "c15c0a753e289197cb517ef1d5a116a98a5ff5b69a8b25cef93c167998975152"
+    },
+    "main-receipts.zip": {
+      "bytes": 45741,
+      "sha256": "447f2d53719005ba1ff82009a0ec7d2197ceec351da5d44ce7cab3e1ef442b02"
+    }
+  },
+  "list_semantics_observed": {
+    "complete_asset_list_count": 18,
+    "embedded_release_asset_count": 17,
+    "interpretation": "The main v5 still-absent error means absent from the embedded release list, not absent from all asset records. Its embedded-list uploader must not be reused as a general absence test.",
+    "starter_visible_in_complete_assets_endpoint": true,
+    "starter_visible_in_embedded_release": false
+  },
+  "nested_costs_not_additive": [
+    {
+      "id": "original_official_download",
+      "included_in": "original_main_cloud_uploader",
+      "wall_seconds": 639.887319916
+    },
+    {
+      "id": "failed_official_upload_command",
+      "included_in": "main_official_upload_v5",
+      "wall_seconds": 537.9483445831574
+    }
+  ],
+  "new_phase_costs": [
+    {
+      "driver_absolute_process_cpu_sample_seconds": 0.592835367,
+      "driver_wall_seconds_after_imports": 111.99561342597008,
+      "evidence": {
+        "archive": "desktop-receipts.zip",
+        "bytes": 22801,
+        "member": "runs/draft-three-assets-reconcile-v1/receipt.json",
+        "sha256": "ca219a8cc0fb92beccc5bc29db3da7ccb9de7754106de25d65884e17f7089c0c"
+      },
+      "id": "desktop_reconciliation_v1",
+      "scope": "Driver elapsed excludes imports; absolute self CPU sample includes imports but precedes final receipt/manifest serialization and exit. Child CPU covers waited subprocesses. Command walls are nested inside driver wall.",
+      "status": "completed_with_failed_or_unknown_assets",
+      "waited_children_cpu_seconds": 2.1134239999999997,
+      "whole_exit_process_cpu_seconds": null
+    },
+    {
+      "driver_absolute_process_cpu_sample_seconds": 0.095766957,
+      "driver_wall_seconds_after_imports": 36.59206961886957,
+      "evidence": {
+        "archive": "desktop-receipts.zip",
+        "bytes": 10146,
+        "member": "runs/official-data-draft-v2/receipt.json",
+        "sha256": "b66a43d9fb3aff563172056fea3267c260cc3c9c6c4cceb98d6812376382a261"
+      },
+      "id": "desktop_official_download_v2",
+      "scope": "Driver elapsed excludes imports; absolute self CPU sample includes imports but precedes final receipt/manifest serialization and exit. Child CPU covers waited subprocesses. Command walls are nested inside driver wall.",
+      "status": "completed_with_failed_or_unknown_assets",
+      "waited_children_cpu_seconds": 0.940016,
+      "whole_exit_process_cpu_seconds": null
+    },
+    {
+      "driver_absolute_process_cpu_sample_seconds": 0.06082,
+      "driver_wall_seconds_after_imports": 35.38408033316955,
+      "evidence": {
+        "archive": "main-receipts.zip",
+        "bytes": 4127,
+        "member": "runs/official-data-draft-v3-main/receipt.json",
+        "sha256": "137853dd932d67328c9007febd1b3f106096352feb3c1eb02f7f810bc2df2d11"
+      },
+      "id": "main_source_upload_v3",
+      "scope": "Driver elapsed excludes imports; absolute self CPU sample includes imports but precedes final receipt/manifest serialization and exit. Child CPU covers waited subprocesses. Command walls are nested inside driver wall.",
+      "status": "failed_or_unknown_no_retry",
+      "waited_children_cpu_seconds": 0.10115199999999999,
+      "whole_exit_process_cpu_seconds": null
+    },
+    {
+      "driver_absolute_process_cpu_sample_seconds": 0.065455,
+      "driver_wall_seconds_after_imports": 546.3742907498963,
+      "evidence": {
+        "archive": "main-receipts.zip",
+        "bytes": 5589,
+        "member": "runs/official-data-draft-v5-main/receipt.json",
+        "sha256": "4447b1dfdddc6e64c93f57f1ae4d37c0bc55fb278321c3252d7d200f35f9656f"
+      },
+      "id": "main_official_upload_v5",
+      "scope": "Driver elapsed excludes imports; absolute self CPU sample includes imports but precedes final receipt/manifest serialization and exit. Child CPU covers waited subprocesses. Command walls are nested inside driver wall.",
+      "status": "failed_or_unknown_no_retry",
+      "waited_children_cpu_seconds": 0.255088,
+      "whole_exit_process_cpu_seconds": null
+    },
+    {
+      "driver_absolute_process_cpu_sample_seconds": 0.093011667,
+      "driver_wall_seconds_after_imports": 12.239633029792458,
+      "evidence": {
+        "archive": "desktop-receipts.zip",
+        "bytes": 9780,
+        "member": "runs/official-data-draft-v4-desktop/receipt.json",
+        "sha256": "3d6fb9b7287b9c11d0ee6f3c101d1bc038d13ec5f52f1b92bc2cba06ca600183"
+      },
+      "id": "desktop_official_readback_v4",
+      "scope": "Driver elapsed excludes imports; absolute self CPU sample includes imports but precedes final receipt/manifest serialization and exit. Child CPU covers waited subprocesses. Command walls are nested inside driver wall.",
+      "status": "completed_with_failed_or_unknown_assets",
+      "waited_children_cpu_seconds": 0.919475,
+      "whole_exit_process_cpu_seconds": null
+    }
+  ],
+  "new_phase_driver_wall_sum": 742.585687157698,
+  "official_data_asset": {
+    "anonymous_asset_check_performed": false,
+    "asset_id": 732265694,
+    "authenticated_full_readback_verified": false,
+    "authenticated_readback_http_status": 404,
+    "declared_server_size": 6290730,
+    "declared_size_is_not_verified_uploaded_bytes": true,
+    "expected_payload_sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+    "full_asset_list_evidence": {
+      "archive": "desktop-receipts.zip",
+      "bytes": 28011,
+      "member": "runs/official-data-draft-v4-desktop/asset-0-fresh-assets.stdout",
+      "sha256": "26d7b2613bcb6527142ed72971dde983eb88f2ab5a43211d91306ef591b05be8"
+    },
+    "name": "official-localization-cloud.zip",
+    "no_delete_replace_or_further_upload_performed": true,
+    "observation_completed_utc": "2026-11-10T17:21:52.427710+00:00",
+    "observed_state": "starter",
+    "readback_error_evidence": {
+      "archive": "desktop-receipts.zip",
+      "bytes": 25,
+      "member": "runs/official-data-draft-v4-desktop/asset-0-authenticated-readback.stderr.redacted",
+      "sha256": "d2c8985c89b29a842ac4946d13bdbc297709f44f20bb968faf9682664b211db6"
+    },
+    "server_digest": null,
+    "upload_error_evidence": {
+      "archive": "main-receipts.zip",
+      "bytes": 167,
+      "member": "runs/official-data-draft-v5-main/upload-once.stderr.redacted",
+      "sha256": "ce65cb90422073fcbd0c3acb790804d2077bcf6a2a6b28c3c4bcd28ff7034058"
+    },
+    "upload_http_status": 408,
+    "upload_invocations_in_this_work": 1,
+    "upload_returncode": 1
+  },
+  "original_official_file": {
+    "bytes": 6290730,
+    "cloud_path": "/workspace/scratch/c385a7439f8e/official-localization-cloud.zip",
+    "main_path": "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/official-localization-cloud.zip",
+    "original_http_status": 200,
+    "original_source_evidence": {
+      "archive": "main-receipts.zip",
+      "bytes": 314,
+      "member": "runs/cloud-p2-draft-upload-v1/official-data-download.json",
+      "sha256": "15b5a38996f40432642bfc1d714a05c003804c3de67821203d606d4101cf29b8"
+    },
+    "sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+    "source_url": "https://archive.ics.uci.edu/static/public/196/localization%2Bdata%2Bfor%2Bperson%2Bactivity.zip"
+  },
+  "release_id": 440410488,
+  "release_published": false,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hcsn-draft-three-assets-final-reconciliation-v1",
+  "scientific_credit": false,
+  "status": "two_verified_one_failed_starter",
+  "tag": "hcsn-research-20261110-c385",
+  "total_calendar_wall_seconds": null,
+  "total_whole_exit_cpu_seconds": null,
+  "uncommitted_file_transport": {
+    "commit_called": false,
+    "destination_published": false,
+    "evidence": "control-ledger.json: source_file_transfer",
+    "host": "desktop",
+    "last_acknowledged_offset": 196608,
+    "next_524288_byte_chunk_and_exact_replay": "Both MCP timed out; staged progress beyond the ACK is unknown.",
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/official-localization-cloud-transfer-v3.zip",
+    "scope": "Client await durations for transfer RPC calls; not native process CPU or successful-byte accounting. No more chunks or commit sent.",
+    "tool_call_elapsed_seconds": [
+      21.827,
+      120.509,
+      120.421
+    ],
+    "upload_id": "hcsn-official-localization-transfer-c385-v3"
+  },
+  "verified_existing_assets": [
+    {
+      "asset_id": 731802015,
+      "bytes": 17670639,
+      "evidence": {
+        "archive": "desktop-receipts.zip",
+        "bytes": 22801,
+        "member": "runs/draft-three-assets-reconcile-v1/receipt.json",
+        "sha256": "ca219a8cc0fb92beccc5bc29db3da7ccb9de7754106de25d65884e17f7089c0c"
+      },
+      "name": "cloud-p2-diagnostics-20261110-v1.zip",
+      "sha256": "f54585285973bd29c80cbb6fc258bb48513f79e7629296bac3ca2c384a4e76a2",
+      "status": "authenticated_full_bytes_crc_and_anonymous_isolation_verified",
+      "uploaded_in_this_work": false,
+      "zip_members": 157
+    },
+    {
+      "asset_id": 731824485,
+      "bytes": 4460517,
+      "evidence": {
+        "archive": "desktop-receipts.zip",
+        "bytes": 22801,
+        "member": "runs/draft-three-assets-reconcile-v1/receipt.json",
+        "sha256": "ca219a8cc0fb92beccc5bc29db3da7ccb9de7754106de25d65884e17f7089c0c"
+      },
+      "name": "hcsn-width16-v6-audit-20261110.zip",
+      "sha256": "b7beeba44a945baf32c4d27efaa214fe35fc1a704a94927b77f583e9e02b5be0",
+      "status": "authenticated_full_bytes_crc_and_anonymous_isolation_verified",
+      "uploaded_in_this_work": false,
+      "zip_members": 109
+    }
+  ],
+  "wall_sum_scope": "Only a sum of five separately recorded after-import driver intervals; not end-to-end calendar time, not all historical work, and not a full-process total."
+}

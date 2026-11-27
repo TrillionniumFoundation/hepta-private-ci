@@ -1,0 +1,24 @@
+name: hcsn-currentstate-n256-firststep-oracle-gap
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_firststep_oracle_gap/**"
+      - ".github/workflows/hcsn-currentstate-n256-firststep-oracle-gap.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify source-only oracle gap
+        run: python -O -m qualification.hcsn_currentstate_n256_firststep_oracle_gap.verify_source
+      - name: Run small AST controls
+        run: python -O -m unittest qualification.hcsn_currentstate_n256_firststep_oracle_gap.test_static_review -v

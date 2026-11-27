@@ -1,0 +1,337 @@
+{
+  "buffer_bytes": 0,
+  "checkpoint_manifest_sha256": "bbdf3d3c3eb72303d4f2e5358f252f687e1113dce0bdc39cdb00f7bbd20120e3",
+  "config": {
+    "architecture": "two_gates",
+    "classes": 10,
+    "depth": 1,
+    "input_dim": 64,
+    "match_cell_budget": false,
+    "seed": 2201,
+    "width": 32
+  },
+  "data_manifest_sha256": "56a59e6693c3b364a9f5f45cec66f0560835b5a22c102c6b177116828b0e5b24",
+  "data_work": {
+    "cpu_seconds": 0.4578460910000004,
+    "wall_seconds": 0.4578357490026974
+  },
+  "environment": {
+    "cuda": false,
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "threads": 1,
+    "timing": "process CPU and elapsed wall; CPU is not hardware energy",
+    "torch": "2.8.0+cpu"
+  },
+  "execution_policy": "CPU; invoke serially after training completes; no concurrency/isolation guarantee inferred from clocks",
+  "fixed_batch": {
+    "batch_size": 16,
+    "feature_width": 64,
+    "requested_batch_size": 16,
+    "sample_ids": [
+      "fsdd:7123:test:0",
+      "fsdd:7123:test:1",
+      "fsdd:7123:test:2",
+      "fsdd:7123:test:3",
+      "fsdd:7123:test:4",
+      "fsdd:7123:test:5",
+      "fsdd:7123:test:6",
+      "fsdd:7123:test:7",
+      "fsdd:7123:test:8",
+      "fsdd:7123:test:9",
+      "fsdd:7123:test:10",
+      "fsdd:7123:test:11",
+      "fsdd:7123:test:12",
+      "fsdd:7123:test:13",
+      "fsdd:7123:test:14",
+      "fsdd:7123:test:15"
+    ],
+    "selection": "first held-out test examples in saved dataset order",
+    "sequence_length": 32,
+    "sha256": "2326aa229a867f39cce09e3cc5249635c382cf9b8f5b12deb3d61a95287d91b3"
+  },
+  "logits_sha256": "40826f6f37f2117858ca81bffe2d56799c07ce63f2ccc4f2fd257a45f8d4be09",
+  "measurement": {
+    "examples": 112,
+    "examples_per_second": {
+      "max": 8698.077242729023,
+      "median": 7396.658291562893,
+      "min": 5505.948488603328,
+      "p05": 5721.076418210073,
+      "p95": 8509.318065389853,
+      "sum": 50327.04680980652
+    },
+    "forward_calls": 7,
+    "process_cpu_seconds": [
+      0.003020267000000132,
+      0.0021590129999999874,
+      0.002573221999998765,
+      0.002284540999998086,
+      0.0019862029999977437,
+      0.002166354999999953,
+      0.0018414980000009962
+    ],
+    "process_cpu_seconds_stats": {
+      "max": 0.003020267000000132,
+      "median": 0.002166354999999953,
+      "min": 0.0018414980000009962,
+      "p05": 0.0018849095000000205,
+      "p95": 0.0028861534999997216,
+      "sum": 0.016031098999995663
+    },
+    "quantile_scope": "descriptive repeat quantiles, not confidence intervals; throughput p05 is the slow tail",
+    "sequence_positions": 3584,
+    "sequence_positions_per_second": {
+      "max": 278338.47176732874,
+      "median": 236693.06533001259,
+      "min": 176190.3516353065,
+      "p05": 183074.44538272233,
+      "p95": 272298.1780924753,
+      "sum": 1610465.4979138086
+    },
+    "timing_scope": "full no-grad model forward including auxiliary tensor creation; excludes output release/validation, reload, data, warmup and profiler",
+    "wall_latency_seconds": {
+      "max": 0.00290594800026156,
+      "median": 0.0021631389972753823,
+      "min": 0.0018394869985058904,
+      "p05": 0.0018825189996277913,
+      "p95": 0.0028054906004399524,
+      "sum": 0.01589997900009621
+    },
+    "wall_seconds": [
+      0.00290594800026156,
+      0.0021559550004894845,
+      0.002571090000856202,
+      0.0022814330004621297,
+      0.0019829270022455603,
+      0.0021631389972753823,
+      0.0018394869985058904
+    ]
+  },
+  "operator_audit": {
+    "attention_operators": [],
+    "cpu_seconds": 0.9276020570000014,
+    "flop_scope": "Profiler shape-based formulas for supported operators only; not total model FLOPs",
+    "forward_calls": 1,
+    "memory": {
+      "activation_labelled_created_bytes": 1333254,
+      "classification_limit": "No-grad intermediates may be UNKNOWN; activation-labelled bytes are not all activations",
+      "created_bytes_by_category": {
+        "ACTIVATION": 1333254,
+        "AUTOGRAD_DETAIL": 0,
+        "GRADIENT": 0,
+        "INPUT": 144400,
+        "OPTIMIZER_STATE": 0,
+        "PARAMETER": 0,
+        "TEMPORARY": 7584,
+        "UNKNOWN": 0
+      },
+      "events": 1220,
+      "forward_created_bytes": 1485238,
+      "peak_increment_over_preexisting_bytes": 333828,
+      "peak_managed_bytes": 502060,
+      "preexisting_managed_bytes": 168232,
+      "released_bytes": 1464754,
+      "scope": "PyTorch CPU tensor allocation timeline; not RSS or allocator-reserved memory",
+      "status": "available",
+      "unclassified_created_bytes": 0
+    },
+    "observed_formula_flops": 8848384,
+    "status": "available",
+    "supported_operator_formulas": [
+      {
+        "calls": 1,
+        "formula_flops": 2162688,
+        "input_shapes": [
+          [
+            32
+          ],
+          [
+            512,
+            66
+          ],
+          [
+            66,
+            32
+          ],
+          [],
+          []
+        ],
+        "operator": "aten::addmm"
+      },
+      {
+        "calls": 97,
+        "formula_flops": 49664,
+        "input_shapes": [
+          [
+            16,
+            32
+          ],
+          [
+            16,
+            32
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 96,
+        "formula_flops": 6291456,
+        "input_shapes": [
+          [
+            32
+          ],
+          [
+            16,
+            64
+          ],
+          [
+            64,
+            32
+          ],
+          [],
+          []
+        ],
+        "operator": "aten::addmm"
+      },
+      {
+        "calls": 32,
+        "formula_flops": 512,
+        "input_shapes": [
+          [
+            16,
+            1
+          ],
+          [
+            16,
+            32
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 32,
+        "formula_flops": 16384,
+        "input_shapes": [
+          [
+            16,
+            32
+          ],
+          [
+            16,
+            32
+          ],
+          []
+        ],
+        "operator": "aten::add"
+      },
+      {
+        "calls": 1,
+        "formula_flops": 327680,
+        "input_shapes": [
+          [
+            10
+          ],
+          [
+            512,
+            32
+          ],
+          [
+            32,
+            10
+          ],
+          [],
+          []
+        ],
+        "operator": "aten::addmm"
+      }
+    ],
+    "unsupported_ops": [
+      "aten::_local_scalar_dense",
+      "aten::_to_copy",
+      "aten::abs",
+      "aten::all",
+      "aten::any",
+      "aten::as_strided",
+      "aten::cat",
+      "aten::copy_",
+      "aten::cumsum",
+      "aten::div",
+      "aten::empty",
+      "aten::empty_strided",
+      "aten::eq",
+      "aten::exp",
+      "aten::expand",
+      "aten::fill_",
+      "aten::is_nonzero",
+      "aten::isfinite",
+      "aten::item",
+      "aten::layer_norm",
+      "aten::linear",
+      "aten::lt",
+      "aten::narrow",
+      "aten::native_layer_norm",
+      "aten::ne",
+      "aten::neg",
+      "aten::new_empty",
+      "aten::new_zeros",
+      "aten::reshape",
+      "aten::resolve_conj",
+      "aten::rsub",
+      "aten::select",
+      "aten::sigmoid",
+      "aten::slice",
+      "aten::softplus",
+      "aten::stack",
+      "aten::sub",
+      "aten::t",
+      "aten::tanh",
+      "aten::to",
+      "aten::transpose",
+      "aten::unsqueeze",
+      "aten::view",
+      "aten::zero_"
+    ],
+    "unsupported_scope": "Operators without assigned FLOPs, including special/fused functions and bookkeeping",
+    "wall_seconds": 0.9277981120030745
+  },
+  "parameter_bytes": 35112,
+  "parameter_counts": {
+    "backbone": 6240,
+    "frontend": 2208,
+    "matching": null,
+    "readout": 330,
+    "total": 8778
+  },
+  "reload_work": {
+    "cpu_seconds": 0.003323479000002294,
+    "wall_seconds": 0.00333057799434755
+  },
+  "repeat_output_max_abs_difference": 0.0,
+  "schema": "hcsn-performance-v1",
+  "source_audit": {
+    "record": "RESULT.json",
+    "source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "status": "verified"
+  },
+  "strict_reload": true,
+  "task": "fsdd",
+  "total_cpu_seconds": 1.6027502860000027,
+  "total_wall_seconds": 1.6029397849997622,
+  "trainable_parameter_bytes": 35112,
+  "warmup": {
+    "examples": 32,
+    "forward_calls": 2,
+    "included_in_latency_samples": false,
+    "process_cpu_seconds": [
+      0.003421230999997249,
+      0.0024504650000025663
+    ],
+    "sequence_positions": 1024,
+    "wall_seconds": [
+      0.0033442729982198216,
+      0.0024476469989167526
+    ]
+  }
+}

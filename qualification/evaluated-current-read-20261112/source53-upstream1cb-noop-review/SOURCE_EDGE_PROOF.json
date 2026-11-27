@@ -1,0 +1,157 @@
+{
+  "source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "rows": [
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "git_blob_sha": "c050c38ab16e5efb93171a206664cfdcb05cc317",
+      "bytes": 7210,
+      "sha256": "10ecb5252d75d1d31af71f424d4fc7c57ce4e58486062b23953ac9555010c676",
+      "calls": [
+        {
+          "line": 99,
+          "context": "        timeout: Duration,\n        lifetime: Duration,\n        origin: Origin,\n    ) -> Result<Self, Error> {\n        let started = now()?;\n        require_peer(&peer, &config.signer_id)?;\n        config.authenticate_current(started)?;\n        let binding = config.binding()?;\n        let channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: peer.pid,\n                boot_id: peer.boot_id,\n                process_start_ticks: peer.process_start_ticks,\n            },\n            peer.uid,\n            original_head_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        channel.check_peer_lifetime()?;\n        let initial_at = fresh(started)?;\n        config.authenticate_current(initial_at)?;\n        Ok(Self {\n            channel,\n            config,"
+        }
+      ],
+      "tree_blob_verified": true,
+      "tree_entry": {
+        "path": "artifact_original_head_client.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c050c38ab16e5efb93171a206664cfdcb05cc317",
+        "size": 7210,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/c050c38ab16e5efb93171a206664cfdcb05cc317"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+      "git_blob_sha": "d639eeeed7160cfe4771a0917be4a6e821c6bb6a",
+      "bytes": 4445,
+      "sha256": "439c9edad9175b82fb4298cc3b68feda8298ee16680736a3190f07ebaee6c449",
+      "calls": [
+        {
+          "line": 39,
+          "context": "        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<u64, Error> {\n        require_peer(&consumer, &self.source.config.writer_lease.producer_id)?;\n        let permit = Arc::clone(&self.connections)\n            .try_acquire_owned()\n            .map_err(|_| Error::Busy)?;\n        // Construct the original channel and its absolute end before enqueue.\n        let mut channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: consumer.pid,\n                boot_id: consumer.boot_id,\n                process_start_ticks: consumer.process_start_ticks,\n            },\n            consumer.uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        let binding = self.source.config.binding()?;\n        let original = Arc::clone(self);\n        let cancelled = Arc::new(AtomicBool::new(false));\n        let waiting = QueueFence(Arc::clone(&cancelled));\n        let result = tokio::task::spawn_blocking(move || {\n            let _permit = permit;"
+        }
+      ],
+      "tree_blob_verified": true,
+      "tree_entry": {
+        "path": "artifact_original_head_service.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d639eeeed7160cfe4771a0917be4a6e821c6bb6a",
+        "size": 4445,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d639eeeed7160cfe4771a0917be4a6e821c6bb6a"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+      "git_blob_sha": "b19c282177d0624a8974a2f7177261d6fc14e53c",
+      "bytes": 9325,
+      "sha256": "d0b3994f8186631ea6e88c256e819644072244948922bf219889bf2f2db466ea",
+      "calls": [
+        {
+          "line": 65,
+          "context": "        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<u64, Error> {\n        // The original Head identity was selected natively, not by a request.\n        require_peer(&consumer, &self.config.signer_id)?;\n        let permit = Arc::clone(&self.connections)\n            .try_acquire_owned()\n            .map_err(|_| Error::Busy)?;\n        let mut channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: consumer.pid,\n                boot_id: consumer.boot_id,\n                process_start_ticks: consumer.process_start_ticks,\n            },\n            consumer.uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        let original = Arc::clone(self);\n        let cancelled = Arc::new(AtomicBool::new(false));\n        let waiting = QueueFence(Arc::clone(&cancelled));\n        let result = tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            for nonce in 1..=128 {"
+        },
+        {
+          "line": 165,
+          "context": "        config: ArtifactHeadSigningConfigV1,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<Self, Error> {\n        let started = now()?;\n        require_peer(&peer, &config.writer_lease.producer_id)?;\n        config.authenticate_current(started)?;\n        let binding = config.binding()?;\n        let channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: peer.pid,\n                boot_id: peer.boot_id,\n                process_start_ticks: peer.process_start_ticks,\n            },\n            peer.uid,\n            original_writer_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        channel.check_peer_lifetime()?;\n        let observed = fresh(started)?;\n        config.authenticate_current(observed)?;\n        Ok(Self {\n            config,\n            binding,"
+        }
+      ],
+      "tree_blob_verified": true,
+      "tree_entry": {
+        "path": "artifact_original_registry_source.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b19c282177d0624a8974a2f7177261d6fc14e53c",
+        "size": 9325,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b19c282177d0624a8974a2f7177261d6fc14e53c"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+      "git_blob_sha": "7aa99759a05a3de496ab969bdd5f42c6d2fcd737",
+      "bytes": 4792,
+      "sha256": "bfaae4a0db7decdf2cce5f59406b72ac206ca00a0c6ac0cc63776f5529e10ad8",
+      "calls": [
+        {
+          "line": 40,
+          "context": "        consumer_uid: u32,\n        original_consumer_pidfd: OwnedFd,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<u64, Error> {\n        let permit = Arc::clone(&self.connections)\n            .try_acquire_owned()\n            .map_err(|_| Error::Busy)?;\n        let mut channel = original_owner_command_channel_v1(\n            stream,\n            consumer,\n            consumer_uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime,\n        )\n        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;\n        tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            self.serve_original_training_readback_channel(&mut channel)\n        })\n        .await\n        .map_err(|_| Error::Uncertain)?\n    }\n\n    pub(in crate::learning_iteration_evidence_client::training_command) fn serve_original_training_readback_channel("
+        }
+      ],
+      "tree_blob_verified": true,
+      "tree_entry": {
+        "path": "cell_q24_training_bootstrap_readback.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7aa99759a05a3de496ab969bdd5f42c6d2fcd737",
+        "size": 4792,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/7aa99759a05a3de496ab969bdd5f42c6d2fcd737"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "git_blob_sha": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+      "bytes": 10825,
+      "sha256": "bac94e48e19d052833f1c5ca359988f9ab8b91f015846605e7d798c7e859d6cb",
+      "calls": [
+        {
+          "line": 54,
+          "context": "        lifetime: Duration,\n    ) -> Result<Self, Error> {\n        let (initial_binding, started_at) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)\n                .map_err(|_| Error::Binding(\"original Training readback initial context\"))?;\n        if peer.actor_id != material.initial.owners.trainer {\n            return Err(Error::Binding(\"original Training readback actor\"));\n        }\n        let channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: peer.pid,\n                boot_id: peer.boot_id,\n                process_start_ticks: peer.process_start_ticks,\n            },\n            peer.uid,\n            original_owner_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        channel.check_peer_lifetime()?;\n        let (after, current) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)\n                .map_err(|_| Error::Binding(\"current Training readback initial context\"))?;\n        if current < started_at || after != initial_binding {\n            return Err(Error::Binding("
+        }
+      ],
+      "tree_blob_verified": true,
+      "tree_entry": {
+        "path": "cell_q24_training_command_readback.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+        "size": 10825,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/028a4ceba0738db604bcaf3bc1bf548f8c5dd832"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "git_blob_sha": "5a69cc5f3bbfbb58b4050cc1e51c552cacb7e75f",
+      "bytes": 10679,
+      "sha256": "3351b2bde358bbf965a683d67e25b19b68fee773dd07bad0be87cfc5c49ee2cc",
+      "calls": [
+        {
+          "line": 56,
+          "context": "        lifetime: Duration,\n    ) -> Result<Self, Error> {\n        let (initial_binding, started_at) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)\n                .map_err(|_| Error::Binding(\"original Selector readback initial context\"))?;\n        if peer.actor_id != material.initial.owners.selector {\n            return Err(Error::Binding(\"original Selector readback actor\"));\n        }\n        let channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: peer.pid,\n                boot_id: peer.boot_id,\n                process_start_ticks: peer.process_start_ticks,\n            },\n            peer.uid,\n            original_owner_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        channel.check_peer_lifetime()?;\n        let (after, current) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)\n                .map_err(|_| Error::Binding(\"current Selector readback initial context\"))?;\n        if current < started_at || after != initial_binding {\n            return Err(Error::Binding("
+        }
+      ],
+      "tree_blob_verified": true,
+      "tree_entry": {
+        "path": "circuit_selection_command_readback.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5a69cc5f3bbfbb58b4050cc1e51c552cacb7e75f",
+        "size": 10679,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5a69cc5f3bbfbb58b4050cc1e51c552cacb7e75f"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "git_blob_sha": "6e849c4d06337f809bab785a8b934aca8f85e019",
+      "bytes": 3773,
+      "sha256": "b5f47358eedae703714b8abf8cdbef073ac9e4f4427683900da3a37395d972a4",
+      "calls": [
+        {
+          "line": 37,
+          "context": "        consumer_uid: u32,\n        original_consumer_pidfd: OwnedFd,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<u64, Error> {\n        let permit = Arc::clone(&self.connections)\n            .try_acquire_owned()\n            .map_err(|_| Error::Busy)?;\n        let mut channel = original_owner_command_channel_v1(\n            stream,\n            consumer,\n            consumer_uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            self.serve_original_selection_readback_channel(&mut channel)\n        })\n        .await\n        .map_err(|_| Error::CommitUncertain)?\n    }\n\n    pub(in crate::learning_iteration_evidence_client::selection_command) fn serve_original_selection_readback_channel(\n        &self,"
+        }
+      ],
+      "tree_blob_verified": true,
+      "tree_entry": {
+        "path": "circuit_selection_command_readback_service.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6e849c4d06337f809bab785a8b934aca8f85e019",
+        "size": 3773,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/6e849c4d06337f809bab785a8b934aca8f85e019"
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+name: Hepta Pure-Rust YAML Dependency Qualification
+
+on:
+  push:
+    branches:
+      - security/remove-unsafe-libyaml-20261012
+  pull_request:
+    paths:
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/utils/yaml/**
+      - codex-rs/skills/**
+      - codex-rs/core-plugins/**
+      - codex-rs/external-agent-migration/**
+      - codex-rs/ext/skills/**
+      - codex-rs/third_party/serde-saphyr-2.0.0/**
+      - .github/workflows/hepta-safe-yaml-dependency-qualification.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  locked-yaml-qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust 1.96
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt
+      - name: Verify the shared maintained parser and exclude archived packages
+        run: |
+          if grep -Eq '^name = "(serde_yaml|unsafe-libyaml)"$' Cargo.lock; then
+            echo "::error::An archived YAML parser remains in Cargo.lock"
+            exit 1
+          fi
+          grep -q '^name = "serde-saphyr"$' Cargo.lock
+      - name: Compile typed YAML frontend, plugin and migration callers
+        run: |
+          cargo +1.96.0 check --locked -p codex-skills -p codex-core-plugins -p codex-external-agent-migration -p codex-skills-extension
+      - name: Test shared YAML compatibility and typed Skill frontmatter
+        run: |
+          cargo +1.96.0 test --locked -p codex-utils-yaml
+          cargo +1.96.0 test --locked -p codex-skills --lib parser::tests
+      - name: Check Rust formatting
+        run: cargo +1.96.0 fmt --all -- --check

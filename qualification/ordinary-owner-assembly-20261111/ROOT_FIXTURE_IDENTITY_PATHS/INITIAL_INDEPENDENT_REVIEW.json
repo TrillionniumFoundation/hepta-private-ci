@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.initial-fixture.path-access-independent-review.v1",
+  "status": "static-review-no-blocker-found; not-native-tested",
+  "manifest": "0b801823fb8fce9a5db3d131d17c7945b48866c7",
+  "baseline": {
+    "commit": "2d3a240d48aaa733775b134877c43981db50b702",
+    "tree": "ad39b87c16dd6799ba16015ec70b7021ac9c1e16"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "preimage": "88374031ceb8467684db2d987054b7394de41f8b",
+      "postimage": "adb691cc4a90f5039e7960c1e39b39e2cb79d337",
+      "bytes": 23511,
+      "sha256": "005c8f5355c1917d065a5c5b929a7f7961448613d9c1405b11392ba7bef136ef",
+      "exact_operations": 3,
+      "forward_byte_equal": true,
+      "reverse_byte_equal": true,
+      "guard_and_timeout_tokens_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": "d15885d6b7ba946d0ff248f543a133d2e928408d",
+      "postimage": "c6ffe2f2404ce7f5ef66fe8212ade93f0ac7399b",
+      "bytes": 10567,
+      "sha256": "be4b4f1d765e7c6659978a82f0f1b20ce8a1297caf09249d6661d0ec97eeb33e",
+      "exact_operations": 1,
+      "forward_byte_equal": true,
+      "reverse_byte_equal": true,
+      "guard_and_timeout_tokens_equal": true
+    }
+  ],
+  "scope": "Two test-only files, four exact edits. No production, checker, role or timing changes.",
+  "review": [
+    "The existing /run runtime directory block retains UID0/GID60001/mode02710 and is moved before creation of the ordinary registered identity paths.",
+    "workspace and fleet root are siblings beneath that existing runtime directory, set to UID0/GID60001/mode0710 immediately after original Registry initialization. These two directory roots grant only search to the dedicated group, not listing or writes.",
+    "HostAuthorityRegisteredIdentity.fleet_root is taken directly from the same original HeptaFleetRoot value used for Registry initialization; WorkspaceBinding and registered.workspace refer to the same actual new workspace.",
+    "The actual Registry register/Starting transition and FreshHostCognitiveState::prepare remain in original order. Fresh custody checks are not bypassed or replaced.",
+    "Child still calls the original sealed identity.identity() and propagates its error; only a phase-specific Context is added.",
+    "Root authority, current, physical witness, journal, consumer claims, artifact and model setup outside the declared edits remain byte-for-byte unchanged. The protected-directory denial assertion and every original stage, assertion and deadline are retained."
+  ],
+  "permission_source_pins": {
+    "identity": {
+      "source": "codex-rs/hepta-agentd/src/authority_host_config.rs",
+      "blob": "24c49866fdd994f8bc2c1b9fdc40342149525bca",
+      "facts": "identity() rejects zero spawn generation and non-canonical fleet/workspace paths, then derives the same agent layout. It does not require UID60001 ownership or read/list access to these two directory roots."
+    },
+    "registry": {
+      "source": "codex-rs/hepta-fleet/src/registry.rs",
+      "blob": "cadd646638f8393652b03d70be57b89c55e7da29",
+      "facts": "initialize() creates and validates upper fleet directories. register() creates mode0700 staging and mode0700 home/run/logs/releases/cognitive/matrix/automation directories, then renames staging to the actual agent_root. Agent metadata/lifecycle/release files are beneath this private agent_root; ordinary OpenOptions defaults on those files do not make them accessible through the private ancestor."
+    },
+    "layout": {
+      "source": "codex-rs/hepta-paths/src/fleet.rs",
+      "blob": "30d3a88e199578ace3e2fb0387e86d0c467e3806",
+      "facts": "Agent layout places writer.lock and generation cursor beneath agent_root/run and the cognitive store beneath agent_root/cognitive."
+    },
+    "fresh": {
+      "source": "codex-rs/hepta-agentd/src/authority_host_fresh.rs",
+      "blob": "b1046a8df09092a9d9aeea38f9ead6d1a2b3eaf4",
+      "facts": "validate_fresh_custody opens the actual agent_root and cognitive_root through RootAuthorityDirectory and matches the exact Registry Starting record, workspace, resources and layout. prepare() also opens run_root as Root-private and requires the actual writer lock to be Root-owned regular single-link mode0600."
+    },
+    "root_directory": {
+      "source": "codex-rs/hepta-contracts/src/authority_host_store.rs",
+      "blob": "d087d646e0162a64caabe83a4120db820346a0a9",
+      "facts": "RootAuthorityDirectory checks every ancestor is a physical UID0 directory without group/other write; the target private directory must have mode bits0700. UID0/GID60001/mode0710 ordinary ancestors satisfy this unchanged check, while the original agent/run/cognitive private targets remain required."
+    },
+    "scope": "No recursive chown/chmod occurs. The fixture's default-mode private record files remain behind the original mode0700 agent subtree, and separate Root authority/keys/current/witness protection is unchanged. This is a five-lane component path repair, not a complete non-Root Agentd filesystem deployment or grant."
+  },
+  "limitations": [
+    "Permission analysis is for the actual five-lane component fixture and its original Root storage setup. It does not supply a full Agentd filesystem handoff or make a new ordinary production deployment valid.",
+    "Original failed Root17 attempts remain failed. This patch needs a new fixed-source native run and establishes no test PASS by itself.",
+    "No ordinary complete chain, adoption, independent C, NoUpdate/rollback loop or physical restart acceptance is claimed."
+  ],
+  "validation": {
+    "git_reads_only": true,
+    "exact_pre_and_post_bytes": true,
+    "exact_forward_reverse_replay": true,
+    "assertion_and_timeout_token_sequence_equal": true,
+    "h_tools_called": false,
+    "cargo_or_native_run": false,
+    "shared_source_or_ref_changed": false
+  }
+}

@@ -1,0 +1,633 @@
+{
+  "schema": "hcsn.mean-closure-audit.v1",
+  "status": "passed_with_measured_approximation_bias",
+  "samples_per_scenario": 60000,
+  "monte_carlo_seed_base": 20261029,
+  "monte_carlo_time_discretization": "none: exact inverse-Gaussian first hits and killed endpoint sampling",
+  "monte_carlo_intervals": "pointwise 95% normal approximations; z<5 is a diagnostic gate, not a superiority test",
+  "scenarios": [
+    {
+      "name": "positive_drift_distribution_collapse",
+      "parameters": {
+        "mu": 0.25,
+        "sigma": 0.7,
+        "rho": 0.4,
+        "K": 0.8,
+        "r": -0.2,
+        "tau": 0.3
+      },
+      "initial": -0.2,
+      "boundary": 1.7688406740717135,
+      "horizon": 4.0,
+      "exact_renewal_moments": {
+        "voltage": -9.262832263834397e-05,
+        "refractory": 0.00615286407185324,
+        "events": 0.39221787417685683,
+        "active_time": 3.8884875018187963,
+        "quadrature_error_estimate": 1.2380374301424335e-15
+      },
+      "exact_event_monte_carlo": {
+        "voltage": {
+          "mean": 0.00249837602404289,
+          "standard_error": 0.003572266331563906,
+          "pointwise_normal_95_ci": [
+            -0.004503265985822365,
+            0.009500018033908146
+          ],
+          "reference_z_score": 0.7253110787926375
+        },
+        "refractory": {
+          "mean": 0.006121409093090646,
+          "standard_error": 0.00014123322692513962,
+          "pointwise_normal_95_ci": [
+            0.005844591968317372,
+            0.0063982262178639195
+          ],
+          "reference_z_score": -0.22271656215336916
+        },
+        "events": {
+          "mean": 0.39265,
+          "standard_error": 0.0021626141115677912,
+          "pointwise_normal_95_ci": [
+            0.3884112763413271,
+            0.3968887236586729
+          ],
+          "reference_z_score": 0.1998164262554912
+        },
+        "active_time": {
+          "mean": 3.8883264090930907,
+          "standard_error": 0.0006265974285152997,
+          "pointwise_normal_95_ci": [
+            3.887098278133201,
+            3.8895545400529805
+          ],
+          "reference_z_score": -0.25709126525996046
+        }
+      },
+      "mean_closure": [
+        {
+          "dt": 1,
+          "voltage": 0.4337277121297616,
+          "refractory": 0.02441242576165045,
+          "events": 0.1773243963076361,
+          "cost_proxy": 0.14185951704610889,
+          "signed_bias_vs_exact": {
+            "voltage": 0.4338203404523999,
+            "refractory": 0.01825956168979721,
+            "events": -0.21489347786922072
+          },
+          "event_cost_bias": -0.1719147822953766
+        },
+        {
+          "dt": 0.5,
+          "voltage": 0.6558170945877535,
+          "refractory": 0.00893128745887728,
+          "events": 0.07084069878335877,
+          "cost_proxy": 0.056672559026687025,
+          "signed_bias_vs_exact": {
+            "voltage": 0.6559097229103918,
+            "refractory": 0.00277842338702404,
+            "events": -0.3213771753934981
+          },
+          "event_cost_bias": -0.2571017403147985
+        },
+        {
+          "dt": 0.25,
+          "voltage": 0.7777544480543312,
+          "refractory": 0.001415539473344979,
+          "events": 0.011010523635126515,
+          "cost_proxy": 0.008808418908101212,
+          "signed_bias_vs_exact": {
+            "voltage": 0.7778470763769696,
+            "refractory": -0.0047373245985082605,
+            "events": -0.3812073505417303
+          },
+          "event_cost_bias": -0.3049658804333843
+        },
+        {
+          "dt": 0.125,
+          "voltage": 0.799582016006593,
+          "refractory": 2.6273751301977456e-05,
+          "events": 0.00020743618544968759,
+          "cost_proxy": 0.00016594894835975007,
+          "signed_bias_vs_exact": {
+            "voltage": 0.7996746443292313,
+            "refractory": -0.006126590320551262,
+            "events": -0.39201043799140717
+          },
+          "event_cost_bias": -0.31360835039312573
+        },
+        {
+          "dt": 0.0625,
+          "voltage": 0.7999998496602342,
+          "refractory": 9.134383856353396e-09,
+          "events": 7.464453086838493e-08,
+          "cost_proxy": 5.971562469470794e-08,
+          "signed_bias_vs_exact": {
+            "voltage": 0.8000924779828725,
+            "refractory": -0.0061528549374693835,
+            "events": -0.39221779953232594
+          },
+          "event_cost_bias": -0.31377423962586076
+        },
+        {
+          "dt": 0.03125,
+          "voltage": 0.7999999999999758,
+          "refractory": 1.4566411603514335e-15,
+          "events": 1.2148209586100352e-14,
+          "cost_proxy": 9.718567668880282e-15,
+          "signed_bias_vs_exact": {
+            "voltage": 0.8000926283226142,
+            "refractory": -0.006152864071851783,
+            "events": -0.39221787417684467
+          },
+          "event_cost_bias": -0.31377429934147577
+        }
+      ]
+    },
+    {
+      "name": "negative_drift_near_boundary",
+      "parameters": {
+        "mu": -0.35,
+        "sigma": 0.7,
+        "rho": 0.4,
+        "K": 0.8,
+        "r": -0.2,
+        "tau": 0.3
+      },
+      "initial": 1.0414791341960383,
+      "boundary": 1.2414791341960383,
+      "horizon": 2.0,
+      "exact_renewal_moments": {
+        "voltage": -0.6239923707407322,
+        "refractory": 0.0022612789373478714,
+        "events": 0.7218070470580179,
+        "active_time": 1.7857191648199424,
+        "quadrature_error_estimate": 2.378995169528081e-15
+      },
+      "exact_event_monte_carlo": {
+        "voltage": {
+          "mean": -0.626795628346487,
+          "standard_error": 0.0032557691602325125,
+          "pointwise_normal_95_ci": [
+            -0.6331769359005428,
+            -0.6204143207924313
+          ],
+          "reference_z_score": -0.8610123960860426
+        },
+        "refractory": {
+          "mean": 0.0023599853664246343,
+          "standard_error": 8.790660968288403e-05,
+          "pointwise_normal_95_ci": [
+            0.0021876884114461815,
+            0.002532282321403087
+          ],
+          "reference_z_score": 1.1228556013346247
+        },
+        "events": {
+          "mean": 0.7230666666666666,
+          "standard_error": 0.002001438099536966,
+          "pointwise_normal_95_ci": [
+            0.7191438479915742,
+            0.7269894853417591
+          ],
+          "reference_z_score": 0.6293572651285824
+        },
+        "active_time": {
+          "mean": 1.7854399853664242,
+          "standard_error": 0.0005926615572278412,
+          "pointwise_normal_95_ci": [
+            1.7842783687142576,
+            1.7866016020185909
+          ],
+          "reference_z_score": -0.47106050681613343
+        }
+      },
+      "mean_closure": [
+        {
+          "dt": 1,
+          "voltage": -0.3682173486066101,
+          "refractory": 0.004010895757893073,
+          "events": 0.6688794788451384,
+          "cost_proxy": 0.5351035830761107,
+          "signed_bias_vs_exact": {
+            "voltage": 0.2557750221341221,
+            "refractory": 0.001749616820545202,
+            "events": -0.05292756821287947
+          },
+          "event_cost_bias": -0.04234205457030358
+        },
+        {
+          "dt": 0.5,
+          "voltage": -0.37473206512276236,
+          "refractory": 0.00036454857250455594,
+          "events": 0.5921548195926486,
+          "cost_proxy": 0.4737238556741189,
+          "signed_bias_vs_exact": {
+            "voltage": 0.24926030561796986,
+            "refractory": -0.0018967303648433154,
+            "events": -0.1296522274653693
+          },
+          "event_cost_bias": -0.10372178197229545
+        },
+        {
+          "dt": 0.25,
+          "voltage": -0.28598981958578695,
+          "refractory": 4.049877066759324e-06,
+          "events": 0.490122285567819,
+          "cost_proxy": 0.3920978284542552,
+          "signed_bias_vs_exact": {
+            "voltage": 0.33800255115494526,
+            "refractory": -0.002257229060281112,
+            "events": -0.2316847614901989
+          },
+          "event_cost_bias": -0.18534780919215912
+        },
+        {
+          "dt": 0.125,
+          "voltage": -0.13517286303019324,
+          "refractory": 8.231583862425285e-09,
+          "events": 0.3630796461205801,
+          "cost_proxy": 0.29046371689646405,
+          "signed_bias_vs_exact": {
+            "voltage": 0.48881950771053895,
+            "refractory": -0.002261270705764009,
+            "events": -0.3587274009374378
+          },
+          "event_cost_bias": -0.28698192074995027
+        },
+        {
+          "dt": 0.0625,
+          "voltage": 0.046800482044807926,
+          "refractory": 2.6535750818592907e-12,
+          "events": 0.22203893870034055,
+          "cost_proxy": 0.17763115096027246,
+          "signed_bias_vs_exact": {
+            "voltage": 0.6707928527855401,
+            "refractory": -0.002261278934694296,
+            "events": -0.4997681083576774
+          },
+          "event_cost_bias": -0.39981448668614195
+        },
+        {
+          "dt": 0.03125,
+          "voltage": 0.20296612434146788,
+          "refractory": 7.291024210430244e-18,
+          "events": 0.1038937538774837,
+          "cost_proxy": 0.08311500310198697,
+          "signed_bias_vs_exact": {
+            "voltage": 0.8269584950822001,
+            "refractory": -0.002261278937347864,
+            "events": -0.6179132931805342
+          },
+          "event_cost_bias": -0.4943306345444274
+        }
+      ]
+    },
+    {
+      "name": "large_interval_multiple_firings",
+      "parameters": {
+        "mu": 0.65,
+        "sigma": 0.6,
+        "rho": 0.4,
+        "K": 0.6,
+        "r": 0.0,
+        "tau": 0.2
+      },
+      "initial": 0.0,
+      "boundary": 1.814692738980313,
+      "horizon": 12.0,
+      "exact_renewal_moments": {
+        "voltage": 0.5882818625839175,
+        "refractory": 0.006684871328705211,
+        "events": 3.7106444422492357,
+        "active_time": 11.264555982878859,
+        "quadrature_error_estimate": 8.165068811307096e-15
+      },
+      "exact_event_monte_carlo": {
+        "voltage": {
+          "mean": 0.5850800196140318,
+          "standard_error": 0.0024195912609430454,
+          "pointwise_normal_95_ci": [
+            0.5803376207425834,
+            0.5898224184854801
+          ],
+          "reference_z_score": -1.3232991131889569
+        },
+        "refractory": {
+          "mean": 0.006814163051433517,
+          "standard_error": 0.00011968538341129375,
+          "pointwise_normal_95_ci": [
+            0.006579579699947382,
+            0.007048746402919652
+          ],
+          "reference_z_score": 1.0802632622565165
+        },
+        "events": {
+          "mean": 3.714933333333333,
+          "standard_error": 0.004277568026234406,
+          "pointwise_normal_95_ci": [
+            3.706549300001914,
+            3.7233173666647525
+          ],
+          "reference_z_score": 1.0026470783851051
+        },
+        "active_time": {
+          "mean": 11.263827496384767,
+          "standard_error": 0.0008476022520893745,
+          "pointwise_normal_95_ci": [
+            11.262166195970671,
+            11.265488796798863
+          ],
+          "reference_z_score": -0.8594673885020845
+        }
+      },
+      "mean_closure": [
+        {
+          "dt": 4,
+          "voltage": 0.14634317638721717,
+          "refractory": 0.1679689178131763,
+          "events": 2.5083934840542,
+          "cost_proxy": 1.50503609043252,
+          "signed_bias_vs_exact": {
+            "voltage": -0.4419386861967003,
+            "refractory": 0.1612840464844711,
+            "events": -1.2022509581950356
+          },
+          "event_cost_bias": -0.7213505749170214
+        },
+        {
+          "dt": 2,
+          "voltage": 0.44151387920967644,
+          "refractory": 0.1099133741637409,
+          "events": 3.1278931431421837,
+          "cost_proxy": 1.87673588588531,
+          "signed_bias_vs_exact": {
+            "voltage": -0.14676798337424102,
+            "refractory": 0.1032285028350357,
+            "events": -0.582751299107052
+          },
+          "event_cost_bias": -0.34965077946423123
+        },
+        {
+          "dt": 1,
+          "voltage": 0.7440697921952695,
+          "refractory": 0.061123539243173,
+          "events": 3.3399626467096803,
+          "cost_proxy": 2.003977588025808,
+          "signed_bias_vs_exact": {
+            "voltage": 0.15578792961135202,
+            "refractory": 0.05443866791446779,
+            "events": -0.3706817955395554
+          },
+          "event_cost_bias": -0.22240907732373322
+        },
+        {
+          "dt": 0.5,
+          "voltage": 0.9896762397848766,
+          "refractory": 0.03211689104135998,
+          "events": 3.3759785834050566,
+          "cost_proxy": 2.025587150043034,
+          "signed_bias_vs_exact": {
+            "voltage": 0.40139437720095916,
+            "refractory": 0.02543201971265477,
+            "events": -0.3346658588441791
+          },
+          "event_cost_bias": -0.20079951530650744
+        },
+        {
+          "dt": 0.25,
+          "voltage": 1.1818757857157083,
+          "refractory": 0.016414187176514147,
+          "events": 3.3480721538141553,
+          "cost_proxy": 2.008843292288493,
+          "signed_bias_vs_exact": {
+            "voltage": 0.5935939231317908,
+            "refractory": 0.009729315847808936,
+            "events": -0.3625722884350804
+          },
+          "event_cost_bias": -0.21754337306104823
+        },
+        {
+          "dt": 0.125,
+          "voltage": 1.3309011569170994,
+          "refractory": 0.008288359865196096,
+          "events": 3.3023844713073287,
+          "cost_proxy": 1.981430682784397,
+          "signed_bias_vs_exact": {
+            "voltage": 0.742619294333182,
+            "refractory": 0.0016034885364908848,
+            "events": -0.408259970941907
+          },
+          "event_cost_bias": -0.2449559825651442
+        }
+      ]
+    },
+    {
+      "name": "initial_state_above_boundary",
+      "parameters": {
+        "mu": 0.25,
+        "sigma": 0.7,
+        "rho": 0.4,
+        "K": 0.8,
+        "r": -0.2,
+        "tau": 0.3
+      },
+      "initial": 1.8688406740717136,
+      "boundary": 1.7688406740717135,
+      "horizon": 1.0,
+      "exact_renewal_moments": {
+        "voltage": -0.029050407113127508,
+        "refractory": 0.00042857437025862533,
+        "events": 1.0020341853249302,
+        "active_time": 0.6998183187727796,
+        "quadrature_error_estimate": 2.0170668160228505e-18
+      },
+      "exact_event_monte_carlo": {
+        "voltage": {
+          "mean": -0.026502361305363716,
+          "standard_error": 0.002367751626066796,
+          "pointwise_normal_95_ci": [
+            -0.031143154492454635,
+            -0.021861568118272796
+          ],
+          "reference_z_score": 1.0761457323952905
+        },
+        "refractory": {
+          "mean": 0.00037412244804313016,
+          "standard_error": 3.8303936202553993e-05,
+          "pointwise_normal_95_ci": [
+            0.0002990467330861243,
+            0.000449198163000136
+          ],
+          "reference_z_score": -1.4215751072565872
+        },
+        "events": {
+          "mean": 1.0017833333333332,
+          "standard_error": 0.00017224898283529588,
+          "pointwise_normal_95_ci": [
+            1.0014457253269762,
+            1.0021209413396903
+          ],
+          "reference_z_score": -1.4563336599599908
+        },
+        "active_time": {
+          "mean": 0.699839122448043,
+          "standard_error": 2.0071142040793232e-05,
+          "pointwise_normal_95_ci": [
+            0.6997997830096431,
+            0.699878461886443
+          ],
+          "reference_z_score": 1.0364968381563877
+        }
+      },
+      "mean_closure": [
+        {
+          "dt": 1,
+          "voltage": -0.2,
+          "refractory": 0.3,
+          "events": 1.0,
+          "cost_proxy": 0.8,
+          "signed_bias_vs_exact": {
+            "voltage": -0.1709495928868725,
+            "refractory": 0.2995714256297414,
+            "events": -0.00203418532493016
+          },
+          "event_cost_bias": -0.001627348259944128
+        },
+        {
+          "dt": 0.5,
+          "voltage": -0.15000000169637304,
+          "refractory": 2.5818690310381116e-10,
+          "events": 1.000000000860623,
+          "cost_proxy": 0.8000000006884984,
+          "signed_bias_vs_exact": {
+            "voltage": -0.12094959458324553,
+            "refractory": -0.0004285741120717222,
+            "events": -0.0020341844643072537
+          },
+          "event_cost_bias": -0.0016273475714458031
+        },
+        {
+          "dt": 0.25,
+          "voltage": -0.0875002187698557,
+          "refractory": 3.300614645784126e-08,
+          "events": 1.0000001108811112,
+          "cost_proxy": 0.800000088704889,
+          "signed_bias_vs_exact": {
+            "voltage": -0.05844981165672819,
+            "refractory": -0.0004285413641121675,
+            "events": -0.0020340744438189784
+          },
+          "event_cost_bias": -0.0016272595550551828
+        },
+        {
+          "dt": 0.125,
+          "voltage": -0.056250000000513965,
+          "refractory": 4.870201427785609e-14,
+          "events": 1.0000000000002571,
+          "cost_proxy": 0.8000000000002058,
+          "signed_bias_vs_exact": {
+            "voltage": -0.027199592887386458,
+            "refractory": -0.0004285743702099233,
+            "events": -0.0020341853246730324
+          },
+          "event_cost_bias": -0.001627348259738426
+        },
+        {
+          "dt": 0.0625,
+          "voltage": -0.04062500000000002,
+          "refractory": 6.865868389632742e-26,
+          "events": 1.0,
+          "cost_proxy": 0.8,
+          "signed_bias_vs_exact": {
+            "voltage": -0.011574592886872515,
+            "refractory": -0.00042857437025862533,
+            "events": -0.00203418532493016
+          },
+          "event_cost_bias": -0.001627348259944128
+        },
+        {
+          "dt": 0.03125,
+          "voltage": -0.03281250000000002,
+          "refractory": 7.553050043943091e-49,
+          "events": 1.0,
+          "cost_proxy": 0.8,
+          "signed_bias_vs_exact": {
+            "voltage": -0.0037620928868725145,
+            "refractory": -0.00042857437025862533,
+            "events": -0.00203418532493016
+          },
+          "event_cost_bias": -0.001627348259944128
+        }
+      ]
+    }
+  ],
+  "one_interval_cooldown_bias": [
+    {
+      "dt": 0.05,
+      "cooldown_bias": 0.004388482880586353,
+      "integral_first_hit_cdf": 0.0043884828805863555,
+      "cooldown_bias_upper_bound": 0.011126779343319258,
+      "quadrature_error_estimate": 2.3271497117187962e-12
+    },
+    {
+      "dt": 0.1,
+      "cooldown_bias": 0.020542381908636678,
+      "integral_first_hit_cdf": 0.020542381908569492,
+      "cooldown_bias_upper_bound": 0.04043318025121291,
+      "quadrature_error_estimate": 1.2967938164153583e-10
+    },
+    {
+      "dt": 0.2,
+      "cooldown_bias": 0.07077029450538373,
+      "integral_first_hit_cdf": 0.07077029450531662,
+      "cooldown_bias_upper_bound": 0.11524632140691549,
+      "quadrature_error_estimate": 1.2967993927212413e-10
+    },
+    {
+      "dt": 0.3,
+      "cooldown_bias": 0.13309212135195517,
+      "integral_first_hit_cdf": 0.1330921213519538,
+      "cooldown_bias_upper_bound": 0.19871352894323693,
+      "quadrature_error_estimate": 2.721637658581053e-10
+    }
+  ],
+  "deterministic_refractory_mixture_counterexample": {
+    "dt": 0.1,
+    "refractory_probability": 0.5,
+    "refractory_duration": 1.0,
+    "exact_expected_active_time": 0.05,
+    "closure_active_time": 0.0
+  },
+  "numerical": {
+    "cases": 270,
+    "maximum_cdf_float32_vs_float64_error": 8.951660857015042e-08,
+    "maximum_survival_float32_vs_float64_error": 8.951660857015042e-08,
+    "maximum_float32_mass_defect": 1.1920928955078125e-07,
+    "maximum_scaled_gradient_difference": 3.245977313159651e-05,
+    "finite_outputs_and_first_gradients": true,
+    "scope": "moderate model-relevant grid, not all finite float inputs"
+  },
+  "hard_event_simulator_edge": {
+    "initial": 1.01,
+    "boundary": 1.0,
+    "drift": -1.0,
+    "sigma": 0.0,
+    "dt": 0.1,
+    "substeps": 1,
+    "simulator_events": 1.0,
+    "continuous_contract_initial_events": 1,
+    "initial_atom_regression_passed": true,
+    "interpretation": "initial atom handled before substeps; later crossings remain a grid approximation"
+  },
+  "neural_closure_exact_regenerative_claim": false,
+  "timestep_refinement_guarantees_convergence": false,
+  "source_sha256": {
+    "closure_audit.py": "199d78f7e099eac32af184118d310e87368d97c03c9edef721ece86454fa8178",
+    "model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "oracle.py": "72f8171bb3c6121481235288033518516d25eb0644f68c9c9f7d775069eda248",
+    "oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a"
+  },
+  "wall_seconds": 0.5176647160042194
+}

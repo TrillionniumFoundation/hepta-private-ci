@@ -1,0 +1,305 @@
+{
+  "scope": "25 explicitly reviewed Memory caller boundaries and 9 guard rows",
+  "manifest_sha256": "d922e5114a8043d8885bfc3a0be66a1d1834ad79e66d429044349664518287e1",
+  "status": "PASS",
+  "passed_boundaries": [
+    {
+      "id": "agentd_production_writer_host",
+      "symbol": "AgentdProductionWriterHost::open",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs"
+      ]
+    },
+    {
+      "id": "final_use_open_state",
+      "symbol": "FinalUseAuthority::open_state_dir",
+      "callPattern": null,
+      "receiverType": "FinalUseAuthority",
+      "receiverMethods": [
+        "open_state_dir",
+        "open_state_dir_with_clock",
+        "open_state_dir_with_trust",
+        "open_state_dir_with_issuer_keys"
+      ],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs",
+        "codex-rs/hepta-agentd/src/production_authority.rs",
+        "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+      ]
+    },
+    {
+      "id": "final_use_claim_raw",
+      "symbol": "FinalUseAuthority::claim",
+      "callPattern": null,
+      "receiverType": "FinalUseAuthority",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-ndu/src/owner.rs",
+        "codex-rs/hepta-ndu/src/owner_current.rs",
+        "codex-rs/hepta-operations/src/durable_store.rs",
+        "codex-rs/hepta-prompt-registry/src/admission.rs",
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ]
+    },
+    {
+      "id": "final_use_delivery_raw",
+      "symbol": "FinalUseAuthority::with_verified_use",
+      "callPattern": null,
+      "receiverType": "FinalUseAuthority",
+      "receiverMethods": [
+        "with_verified_use",
+        "enter_verified_use"
+      ],
+      "productCallers": [
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-ndu/src/owner.rs",
+        "codex-rs/hepta-ndu/src/owner_current.rs",
+        "codex-rs/hepta-prompt-registry/src/admission.rs",
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ]
+    },
+    {
+      "id": "final_use_revocation_feed_trust",
+      "symbol": "FinalUseRevocationFeedVerifier::new",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs"
+      ]
+    },
+    {
+      "id": "memory_native_authorize_memory_cell",
+      "symbol": "ProductionDurableWriter::authorize_memory_cell",
+      "callPattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)authorize_memory_cell\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory.rs",
+        "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs"
+      ]
+    },
+    {
+      "id": "memory_native_admit_memory_cell",
+      "symbol": "ProductionDurableWriter::admit_memory_cell",
+      "callPattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)admit_memory_cell\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory.rs",
+        "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs"
+      ]
+    },
+    {
+      "id": "memory_native_revalidate_memory_cell",
+      "symbol": "ProductionDurableWriter::revalidate_memory_cell",
+      "callPattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)revalidate_memory_cell\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_model.rs",
+        "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs"
+      ]
+    },
+    {
+      "id": "memory_native_revalidate_memory_cell_source",
+      "symbol": "ProductionDurableWriter::revalidate_memory_cell_source",
+      "callPattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)revalidate_memory_cell_source\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs"
+      ]
+    },
+    {
+      "id": "memory_native_finish_memory_cell",
+      "symbol": "ProductionDurableWriter::finish_memory_cell",
+      "callPattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)finish_memory_cell\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory.rs",
+        "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs"
+      ]
+    },
+    {
+      "id": "memory_native_source_transaction",
+      "symbol": "ProductionDurableWriter::memory_cell_source_tx",
+      "callPattern": "(?:\\bProductionDurableWriter\\s*::\\s*|\\.\\s*)memory_cell_source_tx\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-memory/src/memory_cell_invocation.rs"
+      ]
+    },
+    {
+      "id": "ndu_native_with_current_reads",
+      "symbol": "NduAuthenticatedOwnerV1::with_current_reads",
+      "callPattern": "(?:\\bNduAuthenticatedOwnerV1\\s*::\\s*|\\.\\s*)with_current_reads\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs"
+      ]
+    },
+    {
+      "id": "ndu_native_apply_read_revocation_update",
+      "symbol": "NduAuthenticatedOwnerV1::apply_read_revocation_update",
+      "callPattern": "(?:\\bNduAuthenticatedOwnerV1\\s*::\\s*|\\.\\s*)apply_read_revocation_update\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs",
+        "codex-rs/hepta-agentd/src/native_memory_host_control.rs"
+      ]
+    },
+    {
+      "id": "ndu_native_current_projection_binding",
+      "symbol": "NduAuthenticatedOwnerV1::current_projection_binding",
+      "callPattern": "(?:\\bNduAuthenticatedOwnerV1\\s*::\\s*|\\.\\s*)current_projection_binding\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_current.rs"
+      ]
+    },
+    {
+      "id": "ndu_native_read_current_projection",
+      "symbol": "NduAuthenticatedOwnerV1::read_current_projection",
+      "callPattern": "(?:\\bNduAuthenticatedOwnerV1\\s*::\\s*|\\.\\s*)read_current_projection\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_current.rs"
+      ]
+    },
+    {
+      "id": "ndu_native_revalidate_current_projection",
+      "symbol": "NduAuthenticatedOwnerV1::revalidate_current_projection",
+      "callPattern": "(?:\\bNduAuthenticatedOwnerV1\\s*::\\s*|\\.\\s*)revalidate_current_projection\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_current.rs"
+      ]
+    },
+    {
+      "id": "memory_native_checked_current_objective",
+      "symbol": "AgentdState::checked_current_objective",
+      "callPattern": "(?:\\bAgentdState\\s*::\\s*|\\.\\s*)checked_current_objective\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_current.rs"
+      ]
+    },
+    {
+      "id": "memory_native_revalidate_current_objective",
+      "symbol": "AgentdState::revalidate_current_objective",
+      "callPattern": "(?:\\bAgentdState\\s*::\\s*|\\.\\s*)revalidate_current_objective\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_current.rs"
+      ]
+    },
+    {
+      "id": "memory_native_process_configuration",
+      "symbol": "configure_native_memory_process_v1",
+      "callPattern": "\\bconfigure_native_memory_process_v1\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/main.rs"
+      ]
+    },
+    {
+      "id": "memory_native_registration_new",
+      "symbol": "AgentdNativeMemoryRegistrationV1::new",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs"
+      ]
+    },
+    {
+      "id": "memory_native_registered_source",
+      "symbol": "AgentdNativeMemoryCell::from_registered_source",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_registration.rs"
+      ]
+    },
+    {
+      "id": "memory_native_context_install",
+      "symbol": "AgentdNativeMemoryContextHostV1::attach_with_cancellation",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_registration.rs"
+      ]
+    },
+    {
+      "id": "memory_native_control_entry",
+      "symbol": "AgentdState::native_memory_control",
+      "callPattern": "(?:\\bAgentdState\\s*::\\s*|\\.\\s*)native_memory_control\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/state_control.rs"
+      ]
+    },
+    {
+      "id": "memory_native_worker_execute",
+      "symbol": "native_memory_process::execute",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_model.rs"
+      ]
+    },
+    {
+      "id": "memory_native_current_model_guard",
+      "symbol": "NativeMemoryModelPort::execute_with_current_guard",
+      "callPattern": "(?:\\bNativeMemoryModelPort\\s*::\\s*|\\.\\s*)execute_with_current_guard\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/native_memory_current_model.rs"
+      ]
+    }
+  ],
+  "protected_files": [
+    "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs",
+    "codex-rs/hepta-ndu/src/owner_current.rs",
+    "codex-rs/hepta-memory/src/memory_cell_invocation.rs",
+    "codex-rs/hepta-agentd/src/native_memory_registration.rs",
+    "codex-rs/hepta-agentd/src/native_memory_current.rs",
+    "codex-rs/hepta-agentd/src/native_memory_model.rs",
+    "codex-rs/hepta-agentd/src/native_memory_process.rs",
+    "codex-rs/hepta-neuron/src/runtime_tick.rs",
+    "codex-rs/hepta-agentd/src/native_memory_host_control.rs"
+  ],
+  "rust_file_count": 7476,
+  "source_index_sha256": "d5ea999de15b61d4940bf3ab81dca1eb08f7282655bebf2983882fad0b9e7bf2",
+  "failures": [],
+  "seconds": 36.12,
+  "authority_granted": false,
+  "native_execution_qualified": false
+}

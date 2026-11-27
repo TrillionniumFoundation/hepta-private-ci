@@ -1,0 +1,72 @@
+{
+  "utc": "2026-11-17T01:19:43.386549+00:00",
+  "sourceHead": "4a5630661b1fee17582b452520c32fb5805831aa",
+  "actualRestoredOriginals": 382,
+  "allOriginalBytesAndModesExact": true,
+  "restoreSourceSha256": "fb40b1816bbd53a99c07a944c78dedd3ef07f1f4973b6b910bc31a4cafe50591",
+  "formatterAstUnchanged": true,
+  "originalRuffGates": [
+    {
+      "label": "ruff-format",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-proof-checkpoint-20261117T0105-v1/publication/restore.py"
+      ],
+      "cwd": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/hosted-60658ec5/holdout-v2-guard-repair-v1/validation-source",
+      "returncode": 0,
+      "stdoutSha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "ruff-format-check",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-proof-checkpoint-20261117T0105-v1/publication/restore.py"
+      ],
+      "cwd": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/hosted-60658ec5/holdout-v2-guard-repair-v1/validation-source",
+      "returncode": 0,
+      "stdoutSha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "ruff-check",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "check",
+        "--diff",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-proof-checkpoint-20261117T0105-v1/publication/restore.py"
+      ],
+      "cwd": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/hosted-60658ec5/holdout-v2-guard-repair-v1/validation-source",
+      "returncode": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "previousCurrentBytes": 17890,
+  "previousCurrentGitBlob": "6feee46e9dd2226b4bc741fb513e795c0da716da",
+  "previousCurrentSha256": "151e46885f3f4f595980e2bf40f4580f39b1da2d1938dfd0e2ea925b2195154c",
+  "restoreResult": {
+    "members": 382,
+    "objects": 299,
+    "archiveSha256": "837babed62f917422204e5d20551f7f3a63a3f377b0f7b5ade05ef5d0bcfc309",
+    "allBytesAndModesVerified": true
+  }
+}

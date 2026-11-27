@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.learn.provider-admission-peer-review.v1",
+  "source": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+  "mode": "static-only peer review; no source changes or H/Python/Rust execution",
+  "reviewed_after": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "before": "3f136713030d875865cc2bfb68e7f56a49eff471",
+      "after": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "before": "d67633cdef0fb00b2119b3f2839219eabf2b84fe",
+      "after": "35fbdac0b826f2de1b780ece31b64d34d29c379e"
+    }
+  ],
+  "related_actual_sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "sha": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+      "functions": [
+        "Admission",
+        "admission",
+        "source",
+        "start"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "sha": "468f8f6839da381cd7e94791c09b8d3c4dbea1ca",
+      "functions": [
+        "unstarted_material_with_profile",
+        "material_with_profile"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "sha": "c46beab25b849632a6b5dd37abd05c7ee2fd6181",
+      "functions": [
+        "BFixture::new",
+        "task",
+        "populate"
+      ]
+    }
+  ],
+  "full_git_blob_readback_independently_hashed": true,
+  "exact_diff_checks": {
+    "owner_exact_reverse": true,
+    "provider_remaining_all_tests_exact": true
+  },
+  "ordering": [
+    "preregistered obtains one existing explicit fixture Admission; source preflight compiles the exact existing source_envelope and admission profile.",
+    "Primary and retention cohort rules are constructed for that same semantic objective before registration.evaluation_profile is fixed.",
+    "That owned Admission is moved into ready_with_admission; no second admission, cloned credentials, substituted objective, or authority DTO is created.",
+    "ready_with_admission preserves original run-id derivation and the equality assertion after changing only run_id.",
+    "The original support::start consumes that same Admission and signs the actual complete runtime/model/artifact fields with the original fixture issuer before ingress; source preflight itself grants no execution authority.",
+    "The actual A runs before Material construction; Material request carries the preregistered evaluation_profile, then Dataset inclusion policy, original freeze, FrozenLearningScope, Source capture, native Training, and original Generator receipt retain their original order."
+  ],
+  "privacy_and_async": [
+    "ready_with_profile retains its original signature and private visibility.",
+    "ready_with_admission is private, accepts existing support::Admission by value and does not add Clone/Deserialize or public constructors.",
+    "evaluation_provider remains the existing child module of owner_support and can access its private ancestor method.",
+    "support::Admission retains its existing pub(super) visibility in the q24 fixture module hierarchy.",
+    "The same owned admission/runtime/config already crossed the original start await; no new Send/Sync/future bound or boxed future is introduced. This is a static type-surface observation, not a compiler result."
+  ],
+  "assertions_retained": [
+    "objective equality",
+    "profile equality",
+    "nonempty retention",
+    "all native provider test bodies and their assertions are byte-identical",
+    "no changed label/outcome/metric threshold"
+  ],
+  "findings": [],
+  "limits": [
+    "Does not establish deployed ordinary owner custody or evaluator-only pre-adoption execution permission.",
+    "Does not validate scientific positive adoption or make the old shared OPE profile eligible.",
+    "No compilation or native run was performed by the reviewer."
+  ]
+}

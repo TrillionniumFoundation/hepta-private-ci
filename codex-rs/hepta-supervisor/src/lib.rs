@@ -3,6 +3,7 @@
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
 mod authority_signer;
+mod cell_split;
 mod control;
 mod daemon;
 mod daemon_client;
@@ -14,7 +15,9 @@ mod lease;
 mod matrix;
 mod model;
 mod module_runtime;
+mod observation;
 mod process_deadline;
+mod production_caller;
 mod recovery;
 mod release;
 mod release_transaction;
@@ -45,6 +48,22 @@ pub use authority_signer::load_signing_key_from_fd;
 pub use authority_signer::load_signing_key_from_path;
 pub use authority_signer::read_request;
 pub use authority_signer::sign_request;
+pub use cell_split::CellSplitArtifactCasReceiptV1;
+pub use cell_split::CellSplitCnsRouteOwnerV1;
+pub use cell_split::CellSplitExecutionErrorV1;
+pub use cell_split::CellSplitExecutionOwnerV1;
+pub use cell_split::CellSplitGenerationFenceOwnerV1;
+pub use cell_split::CellSplitGenerationFenceReceiptV1;
+pub use cell_split::CellSplitLedgerReceiptV1;
+pub use cell_split::CellSplitLedgerV1;
+pub use cell_split::CellSplitMigrationReceiptV1;
+pub use cell_split::CellSplitPhaseV1;
+pub use cell_split::CellSplitPlanV1;
+pub use cell_split::CellSplitRollbackReceiptV1;
+pub use cell_split::CellSplitRouteCutoverReceiptV1;
+pub use cell_split::CellSplitSnapshotReceiptV1;
+pub use cell_split::CellSplitStateMigrationOwnerV1;
+pub use cell_split::FileCellSplitArtifactCasV1;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
 pub use daemon::run_supervisord_with_grant_verifier;
@@ -96,12 +115,15 @@ pub use module_runtime::RuntimeModuleInitializationWitnessV1;
 pub use module_runtime::RuntimeModuleRetirementWitnessV1;
 pub use module_runtime::RuntimeModuleSupervisorErrorV1;
 pub use module_runtime::RuntimeModuleSupervisorV1;
+pub use observation::SupervisordObservationV1;
 pub use process_deadline::ProcessDeadlineOutcomeV1;
 pub use process_deadline::ProcessDeadlinePolicyErrorV1;
 pub use process_deadline::ProcessDeadlinePolicyV1;
 pub use process_deadline::ProcessTerminationOutcomeV1;
 pub use process_deadline::enforce_process_deadline_v1;
 pub use process_deadline::enforce_process_termination_deadline_v1;
+pub use production_caller::ProductionCallerRequest;
+pub use production_caller::execute_production_caller;
 pub use release_transaction::DurableReleaseTransaction;
 pub use release_transaction::ReleaseTransactionKind;
 pub use release_transaction::ReleaseTransactionPhase;
@@ -180,3 +202,12 @@ pub use writer_handoff::WriterHandoffPlanV1;
 pub use unix::UnixManagedProcess;
 #[cfg(unix)]
 pub use unix::UnixProcessDriver;
+
+#[cfg(target_os = "linux")]
+pub use unix::PrecreatedChild;
+#[cfg(target_os = "linux")]
+pub use unix::PrecreatedProcessDriver;
+#[cfg(target_os = "linux")]
+pub use unix::receive_precreated_spawn;
+#[cfg(target_os = "linux")]
+pub use unix::receive_precreated_spawn_with_descriptor;

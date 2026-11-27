@@ -1,0 +1,154 @@
+{
+  "schema": "hepta.cellsplit.incoming-source-review.v1",
+  "status": "HOLD_FOR_INDEPENDENT_REVIEW_AND_NATIVE_REGRESSIONS",
+  "review_kind": "Full six-file incoming source review; no source repair, merge, native execution, or publication performed",
+  "incoming": {
+    "branch": "codex/cell-split-migration-owner-v2",
+    "tip": "bed2b48ffd37ca75b7d8052cc588859e09e79228",
+    "parent_and_sole_merge_base": "78fdb0cf8537e3a84fc6e0a849707559c80881e8",
+    "tree": "192fe782f265ebe810d1fdf0cecb7272f7542b9a",
+    "runtime_subtree": "835ef6ae95eda4206384375da211d8230defdb31",
+    "unique_commits": 1,
+    "additional_ordinary_branch_names": 1,
+    "protected_pin_intersection": [],
+    "protected_head_intersection": []
+  },
+  "current": {
+    "server_commit": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+    "tree": "75127f7175708277f28974daff78cc6e7d92ab0c",
+    "protected_names": 484,
+    "protected_pins": 506
+  },
+  "files": [
+    {"path": "codex-rs/hepta-runtime/src/cell_split.rs", "status": "added", "mode": "100644", "blob": "94068af9002253da676dd9212ef7d5643f65cfd1", "lines": 756},
+    {"path": "codex-rs/hepta-runtime/src/cell_split_persistence.rs", "status": "added", "mode": "100644", "blob": "6004ce359e3c744ce8ca1bd424ee7cddfe94cd14", "lines": 244},
+    {"path": "codex-rs/hepta-runtime/src/cell_split_tests.rs", "status": "added", "mode": "100644", "blob": "f6dd9362e27d23dae16ba8c51f08d61d27acc4fa", "lines": 353},
+    {"path": "codex-rs/hepta-runtime/src/lib.rs", "status": "modified", "mode": "100644", "incoming_blob": "0aed92de2962cb525017633f99dccba5cc1fef99", "base_blob": "145498ec9981af5ab490e45e1f2b647c406bf530", "current_blob": "5ad39ceb9d842052329ba9ba1ff83a858ea798b1", "incoming_added_lines": 14},
+    {"path": "codex-rs/hepta-runtime/CELL_SPLIT_MIGRATION.md", "status": "added", "mode": "100644", "blob": "53561097c30b7d966e1c62329cbef45af087493a", "lines": 25},
+    {"path": "codex-rs/hepta-runtime/ORGAN_COMPOSITION.md", "status": "modified", "mode": "100644", "incoming_blob": "8510d50154883640f3c659ca8e37fa96f16169dc", "current_and_base_blob": "7a303670d415c6fd612bad864d1ba3b45a98e714", "incoming_added_lines": 7}
+  ],
+  "scope_separation": {
+    "rust_code_delta": true,
+    "all_changes_confined_to": "codex-rs/hepta-runtime/",
+    "c2d_learning_repair_overlap": false,
+    "learning_production_files_changed": [],
+    "caller_inventory_changes": [],
+    "manifest_or_lock_changes": [],
+    "protected_refs_changed": [],
+    "frozen_publication_plan_changed": false,
+    "explanation": "This is a newly added candidate CellSplit state owner. It does not edit or retry the held learning production lease/stale-history patch. Only source observations and future test requirements are recorded here."
+  },
+  "integration_wiring": {
+    "module_addition": "mod cell_split; in current hepta-runtime/src/lib.rs",
+    "public_exports_added": 13,
+    "existing_modules_to_preserve": ["cell_lifecycle", "cell_lifecycle_journal", "cell_lifecycle_recovery", "cell_lifecycle_transition", "execution_port", "organs", "topology_execution"],
+    "filewise_lib_conflict_regions": 2,
+    "filewise_doc_conflict_regions": 0,
+    "conflict_resolution_scope": "The two lib.rs conflicts are independent module/export insertion groups. Retain every existing lifecycle/execution export and add the 13 incoming CellSplit exports. No resolution has been applied.",
+    "trait_compatibility": "Incoming snapshot/migrate/rollback signatures match the current OrganStateMigrationV1 trait. Incoming handoff_plan_digest matches RuntimeTopologyMigrationOwnerV1, whose bound is OrganStateMigrationV1 + Debug + Send.",
+    "current_trait_blobs": ["a9bf1ac7657f7231bb68b8ad175a1e81f7f6dbc0", "768b0dd2a5c29a2eb0ac640228ccab5a6d5d8a35"],
+    "cargo": "Current codex-hepta-runtime already declares codex-hepta-control-plane, codex-hepta-types, serde derive, serde_json, and tempfile. Incoming imports do not require a dependency or lock change.",
+    "cargo_manifest_blob": "9815e3d45025ca98071a320311e52f67659b293a",
+    "bazel": "Current BUILD.bazel calls codex_rust_crate(name=hepta-runtime). The current macro includes src/**/*.rs and generates the existing hepta-runtime-unit-tests target; the new test module is reached through cell_split.rs cfg(test).",
+    "bazel_build_blob": "005066fcd4776f703518827008e9177b007fea82",
+    "bazel_unit_target": "//codex-rs/hepta-runtime:hepta-runtime-unit-tests",
+    "live_activation": "The incoming diff exposes a candidate owner and trait implementations. It adds no production constructor call or automatic topology activation.",
+    "upstream_authority_boundary": "Current topology_execution validates the governed handoff digest, migration/rollback digests, predecessor/successor fences and final-use request binding. The new persistent owner must independently keep its own executable plan bound across reopen; the upstream checks do not serialize independent file owners."
+  },
+  "retained_positive_properties": [
+    "Parent state includes checkpoint, recurrent, eligibility, optimizer, cache and in-flight messages.",
+    "Snapshot rejects nonempty in-flight inventory, wrong generation/fence and changed selected-weight digest.",
+    "Snapshot encodes plan identity and refuses serialized snapshots above64KiB.",
+    "Plans have1–32 children, reject repeated plan IDs and repeated callback IDs, and require a callback for each planned child.",
+    "All child transforms are prepared before the committed child vector is assigned; each returned child is checked against candidate weights, unchanged selected weights, candidate cache generation and predecessor message fence.",
+    "The callback does not select weights or expose a child activation bit.",
+    "Prepared/migrating/quarantined envelopes reopen as quarantined; successful rollback restores the complete predecessor state.",
+    "Ten original unit tests exercise state transfer, in-flight rejection, complete rollback, failed rollback quarantine, restart phases, a sequential stale writer, invalid fence/selected weights, and a missing callback."
+  ],
+  "findings": [
+    {
+      "id": "CS1",
+      "severity": "high",
+      "title": "The head comparison and replacement are not one atomic transaction",
+      "locations": ["cell_split.rs:350–390 persist", "cell_split_persistence.rs:137–153 write_atomic"],
+      "observation": "persist reads and validates the current head, compares it to self.journal.head, then calls write_atomic without a mutex, file lock, conditional rename or database transaction spanning those operations.",
+      "concrete_interleaving": ["Owners A and B reopen the same committed envelope H.", "A reads H and passes its head check.", "B reads H and passes its head check before A replaces the file.", "A writes/syncs its private PID temporary and renames envelope A onto the journal, returning success.", "B writes/syncs its distinct PID temporary and renames envelope B onto the same journal, also returning success.", "Both owners report advancement from H although only B's envelope survives. The comparison did not provide exclusive ownership."],
+      "existing_test_gap": "stale_reopened_writer_loses_the_journal_cas completes A.snapshot before invoking B.snapshot; it does not overlap the read/check/write window.",
+      "real_behavior_test_needed": "Two independent processes opened on the same H, with deterministic synchronization at the ownership/commit boundary, must produce at most one successful successor and preserve its exact durable bytes. Repeat with two independently opened owners in one process. No sleep-based assumption or self-reported result is sufficient."
+    },
+    {
+      "id": "CS2",
+      "severity": "high",
+      "title": "Deleting a journal disables the expected-head check for an existing owner",
+      "locations": ["cell_split.rs:376–386 persist"],
+      "observation": "The compare is guarded only by path.exists(). An established owner with a nonzero remembered head continues directly to write_atomic when the journal is absent.",
+      "concrete_behavior": "Create/reopen an owner, remove its journal, then request its next snapshot or transition. The missing predecessor is not rejected by persist; the owner can recreate the journal from its remembered state. This is a source-derived execution, not an executed native test.",
+      "real_behavior_test_needed": "Remove or rename the actual journal after create/reopen, invoke the original owner, and assert typed refusal with no replacement journal and no child callback. Restore the bytes and verify the original failed owner is not silently revived under an undocumented policy."
+    },
+    {
+      "id": "CS3",
+      "severity": "high",
+      "title": "Persistent reopen does not bind the saved state to the supplied plan or governed handoff",
+      "locations": ["cell_split.rs:264–307 reopen_persistent", "cell_split.rs:350–375 persist", "cell_split.rs:584–587 handoff_plan_digest", "cell_split_persistence.rs:28–36 PersistedEnvelope"],
+      "observation": "The envelope stores phase, writer fence, state and hashes, but neither the CellSplit plan digest nor handoff_plan_digest. Reopen validates the supplied plan against the parent and supplied callback IDs, then accepts decoded children without validating them against that plan.",
+      "concrete_behavior": "A committed envelope can be reopened with the same parent generation/selected weights but changed child IDs, candidate weights, transforms, migration digest, rollback digest or handoff digest. Matching new callbacks satisfy validate_plan, while the returned committed state still contains children from the prior plan. The caller-supplied handoff digest is subsequently returned as if it identified this persistent owner.",
+      "real_behavior_test_needed": "Create and commit one plan; reopen its exact file while changing each plan/handoff field separately. Every drift must refuse before exposing a usable committed owner. Independently assert decoded committed children match the persisted admitted plan."
+    },
+    {
+      "id": "CS4",
+      "severity": "medium",
+      "title": "Saturating generation arithmetic accepts a non-advancing maximum generation",
+      "locations": ["cell_split.rs:595–600 validate_plan"],
+      "observation": "candidate_generation is compared to parent_generation.saturating_add(1). At u64::MAX, equal parent and candidate values pass, with equal predecessor/successor fences.",
+      "impact": "The public candidate owner can represent a committed migration without advancing generation. Current topology_execution has a separate checked generation boundary, but the new owner's own public contract remains inconsistent.",
+      "real_behavior_test_needed": "Pass a validly shaped parent/plan at u64::MAX and assert constructor refusal before snapshot, persistence or callbacks. Retain normal predecessor+1 success cases."
+    },
+    {
+      "id": "CS5",
+      "severity": "medium",
+      "title": "Temporary-file naming and path handling do not establish an owned durable write target",
+      "locations": ["cell_split_persistence.rs:137–153 write_atomic"],
+      "observation": "The temporary name is only path.with_extension(tmp-PID), opened by File::create. Same-process owners share it, an existing temporary is truncated, and symlinks are followed. The final directory entry is renamed without a parent-directory sync.",
+      "qualification_limit": "The docs already disclaim target-host durability. File sync plus rename alone must not be presented as crash-durable ownership across hosts. Atomic replacement and parent-directory behavior require platform-specific qualification.",
+      "real_behavior_test_needed": "Use real same-process owners and pre-existing temporary files/symlinks to prove one owner cannot truncate another file. Exercise replacement of an existing journal on supported native platforms. Crash/restart evidence must distinguish file-content sync from durable directory publication."
+    },
+    {
+      "id": "CS6",
+      "severity": "medium",
+      "title": "Reopen reads an unbounded file before validating state bounds",
+      "locations": ["cell_split.rs:271–276 reopen_persistent", "cell_split_persistence.rs:199–244 decode_state"],
+      "observation": "fs::read and serde_json decode precede bounds checks. Reopen validates parent component lengths, but does not validate decoded child count, child component lengths or child/plan consistency.",
+      "real_behavior_test_needed": "Exercise an oversized actual journal, excessive decoded children and oversized child components; assert bounded refusal before accepting the owner. Keep the normal maximum-sized valid state case."
+    }
+  ],
+  "existing_tests_to_preserve": [
+    "split_migrates_all_state_domains_without_selecting_weights",
+    "in_flight_messages_are_a_deterministic_fence",
+    "child_failure_rolls_back_the_complete_split",
+    "committed_candidate_can_roll_back_when_predecessor_stop_fails",
+    "rollback_failure_quarantines_after_partial_child",
+    "crash_after_prepare_reopens_quarantined",
+    "committed_journal_reopens_with_children_and_witness",
+    "stale_reopened_writer_loses_the_journal_cas",
+    "stale_writer_and_immutable_weight_bindings_are_rejected",
+    "missing_child_is_rejected_before_any_snapshot"
+  ],
+  "repair_design_scope_for_independent_review": {
+    "implementation_not_prepared": true,
+    "initial_file_scope": ["new cell_split.rs", "new cell_split_persistence.rs", "new cell_split_tests.rs", "additive current lib.rs wiring", "the two incoming docs"],
+    "ownership_requirement": "Choose and document one actual exclusive ownership protocol covering read/compare/write. A lock must have stable identity across journal renames, apply between independently opened objects/processes, and define failure/reopen behavior.",
+    "plan_binding_requirement": "Persistent format must bind the exact executable CellSplit plan and governed handoff and validate them on every reopen. Existing upstream final-use checks must remain unchanged.",
+    "existing_pattern_to_consider": "The current runtime's separate cell_lifecycle_journal already demonstrates a SQLite writer transaction followed by an independent anchor recheck. It is contextual evidence, not permission to alter that existing owner or claim its guarantees for this new JSON store.",
+    "dependency_rule": "Incoming code itself needs no lockfile changes. Any proposed new storage dependency or public constructor/API change must be explicit and reviewed; none is assumed in this report.",
+    "authority_rule": "No child selection/activation, production admission, guarded learning repair or caller-inventory weakening is part of this candidate."
+  },
+  "validation_required": {
+    "native_status": "NOT_RUN",
+    "independent_review": "PENDING",
+    "future_tests": "All10 original CellSplit tests plus the actual filesystem/concurrency/reopen tests above on an exact source-bound candidate; then the complete hepta-runtime crate tests and affected existing topology/lifecycle consumers.",
+    "build_wiring": "Qualify Cargo and the existing //codex-rs/hepta-runtime:hepta-runtime-unit-tests Bazel target. Do not replace full required repository checks with this subset.",
+    "format_order": "Follow repository AGENTS: tests first, scoped fix/Clippy and final just fmt, retaining exact source identities and any original failures.",
+    "scope": "Static review and exact source/ancestry/conflict evidence only. No runtime PASS or merge readiness is claimed."
+  },
+  "evidence": ["SOURCES.json", "ANCESTRY.json", "FILEWISE-CONFLICTS.json", "incoming/", "../commit-diff-bed2b48ffd37ca75b7d8052cc588859e09e79228.json", "../bed2-trees/"]
+}

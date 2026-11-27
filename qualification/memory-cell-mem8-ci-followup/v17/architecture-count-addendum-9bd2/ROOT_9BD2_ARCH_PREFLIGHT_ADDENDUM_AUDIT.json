@@ -1,0 +1,33 @@
+{
+  "schema": "mem8.v17.9bd2.architecture.root-addendum-audit.v1",
+  "status": "PASS_ORIGINAL_LINES_AND_UNCHANGED_OFFLINE_REPLAY",
+  "addendum": {
+    "bytes": 29703,
+    "sha256": "ecb889b45c8a5e130c5c554720437661a11323b773696aa852e0b4ffb5e0226a",
+    "git_blob": "c7cb0665819cfad8b77e1036d1a93710ae611856"
+  },
+  "source": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_head_python": {
+    "qualification_receipted": 138,
+    "additional_raw_only": 8,
+    "total": 146
+  },
+  "base_merge_python": {
+    "qualification_receipted": 136,
+    "additional_raw_only": 8,
+    "total": 144
+  },
+  "combined_python": {
+    "qualification_receipted_executions": 274,
+    "additional_raw_only_executions": 16,
+    "all_python_executions": 290,
+    "distinct_python_case_ids": 146
+  },
+  "existing_rust_receipt_execution_observations_unchanged": 526,
+  "all_language_execution_observations_including_raw_only": 816,
+  "all_language_unique_count_claimed": false,
+  "full_original_raw_and_exact_lines_verified": true,
+  "full_replayed_report_bytes_equal": true,
+  "historical_audit_and_raw_modified": false,
+  "new_tests_CI_or_model_requests": 0
+}

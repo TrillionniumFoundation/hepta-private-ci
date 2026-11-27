@@ -1,0 +1,563 @@
+{
+  "authority": "DENY_ALL",
+  "bindings": {
+    "evaluation_sha256": "3764528e546afde510c834e6f1391002d7abba45ca211b9274f8c6a6a9172498",
+    "executed_source_commit": "89033444ac55096ed4909e1ee38349543f82367e",
+    "executed_source_sha256": "55bc994d5c2bcdd1d6aae7b2ed116458c394ba0e182159119a8be2f365c027fb",
+    "full_replay_sha256": "0583a25d3a4be583db868d1711d4b9aa99ebfa32ca135f4aafaeaae03f5d92be",
+    "independent_retention_sha256": "7a488b54ba3fe65669219dc8a19138850ae470dd9dc3fdfa8b33d4c107dbfe88",
+    "old_test_component_commitment_encoding": "SHA256 of compact UTF-8 JSON containing lexically sorted source-component IDs",
+    "pre_evaluation_seal_sha256": "437b68f35b7cb6721ec6beda29e87dbaaf26cf70387e0bc98f8b7e7feecc27bc",
+    "protocol_sha256": "cdd777f64265acfd6b8e44960a4f3c3bfbd5d856f76bc7c9d9c696bf4e11f41f",
+    "source_feature_audit_sha256": "f7e1e8eb822af5a3b35b9ca5979d2724ac4fcde1771f56c0571c22c60f1dac65",
+    "statistics_audit_sha256": "af4dc90a48f6ea3a1c4bea5f2d3b5164d67f9c93659e832d78794e0a25bdaf54",
+    "tasks": {
+      "agnews": {
+        "data_receipt_sha256": "72967fffff545339281451a10067057b5fb6eb7c85baa9887ff31d4da8d65758",
+        "feature_report_sha256": "6fc6926c2d19e68a88e3ced2f1dbbbcccf93eeca17230a07560a930c80ca1f19",
+        "old_test_components": 512,
+        "ordered_old_test_component_commitment": "cfaedfc0a3dbd31857df8c8a76d0a5c7dd323adc114ecfd3a860305edee538ce",
+        "source_archive_sha256": "4e2fc37d369e6e317a8b62d0d2f11d379f8c3dde60c07c35a46b069a246498ad",
+        "sources_sha256": "dbc88aaa9838b6de28e7c5a2c586cccc08de522dcf62871645a40f2c5742b289"
+      },
+      "dbpedia": {
+        "data_receipt_sha256": "023ea4fa6d034e44f3919e9de653c887bdfecc42ba53acf7f9b0aaf887d6daef",
+        "feature_report_sha256": "9688fd4afcc2ea0432cd8337ad8db545e35998cc731c610963acd1a320d2fa54",
+        "old_test_components": 512,
+        "ordered_old_test_component_commitment": "eaf2be9d2e1aa877ac7ccf7ce6a2871f9164c75154627df028bae92e9d0fd754",
+        "source_archive_sha256": "cad5773f85d7501bb2783833768bc624641cdddf7056000a06f12bcd0239a310",
+        "sources_sha256": "38cdd45106b6af4f41452444d9b3d2246bd4ee14b28dc755864c9a42511962f3"
+      }
+    }
+  },
+  "both_certified_pairs": {
+    "paths": 39,
+    "repair_minus_guard_maximum_future_old_test_excess": {
+      "max": 0.0,
+      "mean": 0.0,
+      "min": 0.0
+    },
+    "repair_minus_guard_terminal_old_test_excess": {
+      "max": 0.0,
+      "mean": 0.0,
+      "min": 0.0
+    }
+  },
+  "checkpoints": [
+    {
+      "certified_repair": {
+        "all_eight_future_steps_above_warmup": 13,
+        "future_old_test_violating": 13,
+        "initial_excess": {
+          "max": 0.033135352635695635,
+          "mean": 0.033135352635695635,
+          "min": 0.033135352635695635
+        },
+        "initial_old_test_violating": 13,
+        "maximum_future_excess": {
+          "max": 0.03580571228635849,
+          "mean": 0.034714981646733915,
+          "min": 0.03270225753462639
+        },
+        "maximum_future_minus_initial": {
+          "max": 0.002670359650662854,
+          "mean": 0.0015796290110382783,
+          "min": -0.00043309510106924465
+        },
+        "new_old_test_crossings_from_safe_initial": 0,
+        "paths": 13,
+        "restored_terminal_to_warmup": 0,
+        "returned_steps": {
+          "8": 13
+        },
+        "terminal_excess": {
+          "max": 0.03580571228635849,
+          "mean": 0.034714981646733915,
+          "min": 0.03270225753462639
+        },
+        "terminal_minus_initial": {
+          "max": 0.002670359650662854,
+          "mean": 0.0015796290110382783,
+          "min": -0.00043309510106924465
+        }
+      },
+      "checkpoint": "prevention",
+      "head": "gated",
+      "initial_old_test_excess": 0.033135352635695635,
+      "probe_certified_guard": 11,
+      "probe_certified_repair": 13,
+      "repair_only_probe_certified": 2,
+      "seed": 7,
+      "slots": 13,
+      "task": "agnews"
+    },
+    {
+      "certified_repair": {
+        "all_eight_future_steps_above_warmup": 9,
+        "future_old_test_violating": 9,
+        "initial_excess": {
+          "max": 0.035985893475213436,
+          "mean": 0.035985893475213436,
+          "min": 0.035985893475213436
+        },
+        "initial_old_test_violating": 9,
+        "maximum_future_excess": {
+          "max": 0.03701231322369091,
+          "mean": 0.03639462529952073,
+          "min": 0.03547992713281396
+        },
+        "maximum_future_minus_initial": {
+          "max": 0.001026419748477475,
+          "mean": 0.0004087318243072939,
+          "min": -0.0005059663423994734
+        },
+        "new_old_test_crossings_from_safe_initial": 0,
+        "paths": 9,
+        "restored_terminal_to_warmup": 0,
+        "returned_steps": {
+          "8": 9
+        },
+        "terminal_excess": {
+          "max": 0.03701231322369091,
+          "mean": 0.03637905112134354,
+          "min": 0.03540984333101663
+        },
+        "terminal_minus_initial": {
+          "max": 0.001026419748477475,
+          "mean": 0.00039315764613010823,
+          "min": -0.0005760501441968088
+        }
+      },
+      "checkpoint": "recovery",
+      "head": "gated",
+      "initial_old_test_excess": 0.035985893475213436,
+      "probe_certified_guard": 2,
+      "probe_certified_repair": 9,
+      "repair_only_probe_certified": 7,
+      "seed": 7,
+      "slots": 13,
+      "task": "agnews"
+    },
+    {
+      "certified_repair": {
+        "all_eight_future_steps_above_warmup": 13,
+        "future_old_test_violating": 13,
+        "initial_excess": {
+          "max": 0.03508334233498185,
+          "mean": 0.03508334233498185,
+          "min": 0.03508334233498185
+        },
+        "initial_old_test_violating": 13,
+        "maximum_future_excess": {
+          "max": 0.03764839505655373,
+          "mean": 0.03656546760108583,
+          "min": 0.034539742913902605
+        },
+        "maximum_future_minus_initial": {
+          "max": 0.002565052721571877,
+          "mean": 0.0014821252661039804,
+          "min": -0.0005435994210792466
+        },
+        "new_old_test_crossings_from_safe_initial": 0,
+        "paths": 13,
+        "restored_terminal_to_warmup": 0,
+        "returned_steps": {
+          "8": 13
+        },
+        "terminal_excess": {
+          "max": 0.03764839505655373,
+          "mean": 0.03653789803892617,
+          "min": 0.034360540759864805
+        },
+        "terminal_minus_initial": {
+          "max": 0.002565052721571877,
+          "mean": 0.001454555703944319,
+          "min": -0.0007228015751170463
+        }
+      },
+      "checkpoint": "prevention",
+      "head": "gated",
+      "initial_old_test_excess": 0.03508334233498185,
+      "probe_certified_guard": 10,
+      "probe_certified_repair": 13,
+      "repair_only_probe_certified": 3,
+      "seed": 17,
+      "slots": 13,
+      "task": "agnews"
+    },
+    {
+      "certified_repair": {
+        "all_eight_future_steps_above_warmup": 9,
+        "future_old_test_violating": 9,
+        "initial_excess": {
+          "max": 0.037866707973102806,
+          "mean": 0.037866707973102806,
+          "min": 0.037866707973102806
+        },
+        "initial_old_test_violating": 9,
+        "maximum_future_excess": {
+          "max": 0.0388071482163203,
+          "mean": 0.03818148831205883,
+          "min": 0.03727414130563275
+        },
+        "maximum_future_minus_initial": {
+          "max": 0.0009404402432174955,
+          "mean": 0.0003147803389560205,
+          "min": -0.0005925666674700542
+        },
+        "new_old_test_crossings_from_safe_initial": 0,
+        "paths": 9,
+        "restored_terminal_to_warmup": 0,
+        "returned_steps": {
+          "8": 9
+        },
+        "terminal_excess": {
+          "max": 0.0388071482163203,
+          "mean": 0.038094733047079166,
+          "min": 0.03697361160171657
+        },
+        "terminal_minus_initial": {
+          "max": 0.0009404402432174955,
+          "mean": 0.0002280250739763572,
+          "min": -0.0008930963713862372
+        }
+      },
+      "checkpoint": "recovery",
+      "head": "gated",
+      "initial_old_test_excess": 0.037866707973102806,
+      "probe_certified_guard": 2,
+      "probe_certified_repair": 9,
+      "repair_only_probe_certified": 7,
+      "seed": 17,
+      "slots": 13,
+      "task": "agnews"
+    },
+    {
+      "certified_repair": {
+        "all_eight_future_steps_above_warmup": 13,
+        "future_old_test_violating": 13,
+        "initial_excess": {
+          "max": 0.03388904836843802,
+          "mean": 0.03388904836843802,
+          "min": 0.03388904836843802
+        },
+        "initial_old_test_violating": 13,
+        "maximum_future_excess": {
+          "max": 0.0366338241099426,
+          "mean": 0.035440128375789595,
+          "min": 0.03341319091673693
+        },
+        "maximum_future_minus_initial": {
+          "max": 0.002744775741504578,
+          "mean": 0.0015510800073515714,
+          "min": -0.0004758574517010894
+        },
+        "new_old_test_crossings_from_safe_initial": 0,
+        "paths": 13,
+        "restored_terminal_to_warmup": 0,
+        "returned_steps": {
+          "8": 13
+        },
+        "terminal_excess": {
+          "max": 0.0366338241099426,
+          "mean": 0.03543054087100268,
+          "min": 0.033350872135622045
+        },
+        "terminal_minus_initial": {
+          "max": 0.002744775741504578,
+          "mean": 0.0015414925025646657,
+          "min": -0.0005381762328159762
+        }
+      },
+      "checkpoint": "prevention",
+      "head": "gated",
+      "initial_old_test_excess": 0.03388904836843802,
+      "probe_certified_guard": 12,
+      "probe_certified_repair": 13,
+      "repair_only_probe_certified": 1,
+      "seed": 29,
+      "slots": 13,
+      "task": "agnews"
+    },
+    {
+      "certified_repair": {
+        "all_eight_future_steps_above_warmup": 9,
+        "future_old_test_violating": 9,
+        "initial_excess": {
+          "max": 0.036724170436324234,
+          "mean": 0.036724170436324234,
+          "min": 0.036724170436324234
+        },
+        "initial_old_test_violating": 9,
+        "maximum_future_excess": {
+          "max": 0.03778649882148244,
+          "mean": 0.03714767030630234,
+          "min": 0.03619243958557131
+        },
+        "maximum_future_minus_initial": {
+          "max": 0.0010623283851582052,
+          "mean": 0.0004234998699781027,
+          "min": -0.0005317308507529275
+        },
+        "new_old_test_crossings_from_safe_initial": 0,
+        "paths": 9,
+        "restored_terminal_to_warmup": 0,
+        "returned_steps": {
+          "8": 9
+        },
+        "terminal_excess": {
+          "max": 0.03778649882148244,
+          "mean": 0.037084765889790774,
+          "min": 0.03599494253145799
+        },
+        "terminal_minus_initial": {
+          "max": 0.0010623283851582052,
+          "mean": 0.00036059545346653885,
+          "min": -0.0007292279048662434
+        }
+      },
+      "checkpoint": "recovery",
+      "head": "gated",
+      "initial_old_test_excess": 0.036724170436324234,
+      "probe_certified_guard": 2,
+      "probe_certified_repair": 9,
+      "repair_only_probe_certified": 7,
+      "seed": 29,
+      "slots": 13,
+      "task": "agnews"
+    }
+  ],
+  "crossing": 3,
+  "distinct_checkpoints": 6,
+  "distinct_fitted_seeds": 3,
+  "distinct_pressure_task_heads": [
+    [
+      "agnews",
+      "gated"
+    ]
+  ],
+  "guarded_certified": {
+    "all_eight_future_steps_above_warmup": 39,
+    "future_old_test_violating": 39,
+    "initial_excess": {
+      "max": 0.037866707973102806,
+      "mean": 0.03443960068033353,
+      "min": 0.033135352635695635
+    },
+    "initial_old_test_violating": 39,
+    "maximum_future_excess": {
+      "max": 0.037634365881159045,
+      "mean": 0.03549153904428371,
+      "min": 0.03270225753462639
+    },
+    "maximum_future_minus_initial": {
+      "max": 0.0026268340840286328,
+      "mean": 0.0010519383639501815,
+      "min": -0.0005925666674700542
+    },
+    "new_old_test_crossings_from_safe_initial": 0,
+    "paths": 39,
+    "restored_terminal_to_warmup": 0,
+    "returned_steps": {
+      "8": 39
+    },
+    "terminal_excess": {
+      "max": 0.037634365881159045,
+      "mean": 0.03545001948043861,
+      "min": 0.03270225753462639
+    },
+    "terminal_minus_initial": {
+      "max": 0.0026268340840286328,
+      "mean": 0.001010418800105078,
+      "min": -0.0008930963713862372
+    }
+  },
+  "instantiated_slots": 78,
+  "interpretation": [
+    "All6 checkpoints already violate independent old-test retention before any tested branch.",
+    "All66 repaired certifications retain a positive old-test excess at all8 returned steps; there are0 new crossings from an initially safe old-test checkpoint and0 terminal restorations.",
+    "27 repair-only certifications are probe-only rescues; the original rejected guard supplies no continuing path comparator for those27 cases.",
+    "39 both-certified paths are paired under the same initial state and intended plan; their endpoint differences are descriptive and neither side restores the old-test threshold.",
+    "Paths, actions, checkpoints and fitted seeds here are not independent new source cohorts. V5 and V6 use different disjoint selected cohorts, so cross-version retention differences are not a causal effect of repair."
+  ],
+  "no_crossing": 9,
+  "production_authority": false,
+  "registered_searches": 12,
+  "repair_only_probe_certified": {
+    "all_eight_future_steps_above_warmup": 27,
+    "future_old_test_violating": 27,
+    "initial_excess": {
+      "max": 0.037866707973102806,
+      "mean": 0.036275821623602156,
+      "min": 0.033135352635695635
+    },
+    "initial_old_test_violating": 27,
+    "maximum_future_excess": {
+      "max": 0.0388071482163203,
+      "mean": 0.0373596867274368,
+      "min": 0.03576506403909992
+    },
+    "maximum_future_minus_initial": {
+      "max": 0.002744775741504578,
+      "mean": 0.0010838651038346469,
+      "min": -0.00022480902869394248
+    },
+    "new_old_test_crossings_from_safe_initial": 0,
+    "paths": 27,
+    "restored_terminal_to_warmup": 0,
+    "returned_steps": {
+      "8": 27
+    },
+    "terminal_excess": {
+      "max": 0.0388071482163203,
+      "mean": 0.037346691037904875,
+      "min": 0.03576506403909992
+    },
+    "terminal_minus_initial": {
+      "max": 0.002744775741504578,
+      "mean": 0.0010708694143027192,
+      "min": -0.0003146780171862443
+    }
+  },
+  "repaired_certified": {
+    "all_eight_future_steps_above_warmup": 66,
+    "future_old_test_violating": 66,
+    "initial_excess": {
+      "max": 0.037866707973102806,
+      "mean": 0.03519078197530706,
+      "min": 0.033135352635695635
+    },
+    "initial_old_test_violating": 66,
+    "maximum_future_excess": {
+      "max": 0.0388071482163203,
+      "mean": 0.03625578127830088,
+      "min": 0.03270225753462639
+    },
+    "maximum_future_minus_initial": {
+      "max": 0.002744775741504578,
+      "mean": 0.0010649993029938265,
+      "min": -0.0005925666674700542
+    },
+    "new_old_test_crossings_from_safe_initial": 0,
+    "paths": 66,
+    "restored_terminal_to_warmup": 0,
+    "returned_steps": {
+      "8": 66
+    },
+    "terminal_excess": {
+      "max": 0.0388071482163203,
+      "mean": 0.036225930572129354,
+      "min": 0.03270225753462639
+    },
+    "terminal_minus_initial": {
+      "max": 0.002744775741504578,
+      "mean": 0.001035148596822295,
+      "min": -0.0008930963713862372
+    }
+  },
+  "schema": "hepta.cell-field-v6-pressure-independent-retention",
+  "searches": [
+    {
+      "head": "linear",
+      "kind": "search",
+      "seed": 7,
+      "status": "no_pressure_crossing",
+      "task": "agnews",
+      "tau": null
+    },
+    {
+      "head": "linear",
+      "kind": "search",
+      "seed": 17,
+      "status": "no_pressure_crossing",
+      "task": "agnews",
+      "tau": null
+    },
+    {
+      "head": "linear",
+      "kind": "search",
+      "seed": 29,
+      "status": "no_pressure_crossing",
+      "task": "agnews",
+      "tau": null
+    },
+    {
+      "head": "gated",
+      "kind": "search",
+      "seed": 7,
+      "status": "pressure_crossing",
+      "task": "agnews",
+      "tau": 88
+    },
+    {
+      "head": "gated",
+      "kind": "search",
+      "seed": 17,
+      "status": "pressure_crossing",
+      "task": "agnews",
+      "tau": 89
+    },
+    {
+      "head": "gated",
+      "kind": "search",
+      "seed": 29,
+      "status": "pressure_crossing",
+      "task": "agnews",
+      "tau": 89
+    },
+    {
+      "head": "linear",
+      "kind": "search",
+      "seed": 7,
+      "status": "no_pressure_crossing",
+      "task": "dbpedia",
+      "tau": null
+    },
+    {
+      "head": "linear",
+      "kind": "search",
+      "seed": 17,
+      "status": "no_pressure_crossing",
+      "task": "dbpedia",
+      "tau": null
+    },
+    {
+      "head": "linear",
+      "kind": "search",
+      "seed": 29,
+      "status": "no_pressure_crossing",
+      "task": "dbpedia",
+      "tau": null
+    },
+    {
+      "head": "gated",
+      "kind": "search",
+      "seed": 7,
+      "status": "no_pressure_crossing",
+      "task": "dbpedia",
+      "tau": null
+    },
+    {
+      "head": "gated",
+      "kind": "search",
+      "seed": 17,
+      "status": "no_pressure_crossing",
+      "task": "dbpedia",
+      "tau": null
+    },
+    {
+      "head": "gated",
+      "kind": "search",
+      "seed": 29,
+      "status": "no_pressure_crossing",
+      "task": "dbpedia",
+      "tau": null
+    }
+  ],
+  "thresholds": {
+    "comparison_tolerance": 0.0,
+    "old_test_excess_reference": "original warmup old-test dataset-mean NLL",
+    "probe_threshold": "original warmup probe loss; strict verifier has no slack"
+  },
+  "uninstantiated_conditions": "9 explicitly recorded no-pressure-crossing searches; no checkpoint/control outcomes fabricated"
+}

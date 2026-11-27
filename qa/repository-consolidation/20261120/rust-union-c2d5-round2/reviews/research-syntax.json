@@ -1,0 +1,26 @@
+{
+  "before_blob": "130e02b1693325682878dd9a4d1b8bebef10adc9",
+  "minimal_after_blob": "df0a2911ea0770f2d0b4154cdf35efdb5daad255",
+  "baseline": {
+    "type": "SyntaxError",
+    "lineno": 52,
+    "message": "invalid syntax"
+  },
+  "after_compile": "PASS normal and optimized",
+  "discovered_original_tests": {
+    "test_missing_run": "self.corrupt('missing', 'missing or reordered cases')",
+    "test_changed_weight": "self.corrupt('weights', 'trained weight SHA mismatch')",
+    "test_rehashed_false_time": "self.corrupt('time', 'forged time')",
+    "test_rehashed_false_cost": "self.corrupt('cost', 'forged final cost')",
+    "test_rehashed_source_forgery": "self.corrupt('source', 'source identity mismatch')",
+    "test_exact_certificate_forgery": "self.corrupt('certificate', 'exact certificate mismatch')"
+  },
+  "behavior_tests": "NOT_RUN: genuine NDU_R14_RUNS packet not available locally",
+  "verifier_changed": false,
+  "source_identity_set": "sweep.SOURCE_FILES excludes test_tamper.py; all seven training source files unchanged",
+  "formatted_after_blob": "5972d5726ebd32aca815887cb3cf1e0e9048094f",
+  "formatted_after_sha256": "ff234db34df0b5d44e71f9bc5fd45cd0f456f109b7781c31e63b63500a81837e",
+  "formatter": "repository-locked Ruff 0.15.13 actual format; full AST unchanged from single-newline repair",
+  "semantic_repair": "single inserted newline; every original byte retained in order",
+  "byte_preservation_scope": "minimal-syntax-after.py only; final postimage adds actual Ruff layout with identical complete AST"
+}

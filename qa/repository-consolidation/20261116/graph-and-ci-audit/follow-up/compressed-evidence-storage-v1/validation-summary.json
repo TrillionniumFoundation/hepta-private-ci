@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "published_source_head": "c0e525fd94e6eea2957bd1a12764627b86dd71ec",
+  "reviewed_source_parent": "59a450cc7b33a2f8d833043cc093b7fc92f2b7ab",
+  "carrier_source_tree": "ae858ea52bc55d2e7ccfb10bfa6a1a57c50bcf38",
+  "carrier_entry_manifest_sha256": "21ad072048c936580f416f516c3e7d124706bcf3887047775bb467feb8396931",
+  "carrier_plan_sha256": "f1f41d64076d6350af771a44c69f5bd5feb7f622a2ce34e2e9c9195f9743f9ef",
+  "change": {
+    "entries": 107,
+    "new_or_modified": 59,
+    "deleted_physical_fragment_names": 48,
+    "independent_gzip_carriers": 49,
+    "archive_groups": 9,
+    "original_fragment_count": 48,
+    "max_carrier_bytes": 480168,
+    "old_archive_and_fragment_bytes_preserved": true,
+    "historical_compressed_metadata_unchanged": true,
+    "two_historical_cell_xz_fragments_unchanged": true,
+    "active_index_inverse_objects_equal": true
+  },
+  "validation": {
+    "original_hosted_failure": {
+      "job_id": 133543726413,
+      "findings": 224,
+      "failed_fragment_paths": 5,
+      "preserved": true
+    },
+    "original_local_failure": {
+      "changed_path_count": 1036,
+      "exit_code": 65,
+      "findings": 224,
+      "inputs_unchanged": true
+    },
+    "suffix_only_counterexample": {
+      "original_and_renamed_findings": 39,
+      "both_exit_codes": 65,
+      "conclusion": "The file content detector, rather than the filename suffix, determines text classification."
+    },
+    "final_original_codespell": {
+      "changed_path_count": 1051,
+      "exit_code": 0,
+      "elapsed_seconds": 3.1023645401000977,
+      "includes_all_binary_paths": true,
+      "unchanged_skip_config_and_custody": true,
+      "scope": "Every added or modified path from7e through the reviewed nine source changes and the carrier proposal."
+    },
+    "positive_restore": {
+      "original_fragments": 48,
+      "original_archives": 9,
+      "exact_bytes": true,
+      "destination_mode": "0700"
+    },
+    "strict_rejection": {
+      "actual_cli_cases": 13,
+      "all_rejected_before_destination_creation": true,
+      "budget_checked_before_decoding": true,
+      "source_symlink_boundary": "Static paths are checked. No claim of directory descriptor isolation against concurrent hostile replacement."
+    },
+    "formatters": {
+      "prettier": "3.5.3 with original repository config",
+      "ruff": "0.15.13 from frozen scripts project",
+      "passed": true
+    },
+    "original_size_gate": {
+      "base": "285e971b3af3a93a79169b56a42263069e473057",
+      "head_tree": "ae858ea52bc55d2e7ccfb10bfa6a1a57c50bcf38",
+      "default_max_bytes": 512000,
+      "exit_code": 0,
+      "elapsed_seconds": 25.81758451461792,
+      "controls_unchanged": true,
+      "first_missing_object_attempt_preserved": true,
+      "bounded_recovery_baseline_blobs": 3
+    },
+    "scope_limit": "These checks establish lossless storage, parser rejection, and the stated maintenance gates. They do not establish native platform, sandbox, security, or scientific qualification."
+  },
+  "proof": {
+    "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/validation-proof.tar.gz",
+    "bytes": 482047,
+    "sha256": "ff5f37efa6df3c1784c83cea713fef364bacf798d141e4011e06d70a14eaebf8",
+    "uncompressed_tar_sha256": "bc63837e9a38ed7a9e0152b0a77bda15d2fa6fab4a178e09fa5ac9f3643b1015",
+    "members": 87,
+    "all_member_bytes_read_back_equal": true
+  },
+  "remote_refs_changed": false
+}

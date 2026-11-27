@@ -1,0 +1,112 @@
+{
+  "backward_scope": "six scalar autograd calls, same graph, probability and signed content for three quantities",
+  "cases": [
+    {
+      "child_result": "case-000.json",
+      "child_result_sha256": "35ee48ccd7f0293bda9b55fb798aac4b009ea419546bc58b1d2c985a9f838fc2",
+      "cpu_soft_limit": 43,
+      "fresh_process_cpu_seconds": 2.989845,
+      "full_process_wall_limit": 45,
+      "full_process_wall_seconds": 3.0294817559988587,
+      "index": 0,
+      "last_observed_phase": "complete",
+      "returncode": 0,
+      "status": "completed",
+      "stderr": "/workspace/scratch/d741f7769aeb/worktrees/longtime-diagnostic/qualification/hcsn_currentstate/study_longtime.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  maximum_signed_mass_balance_error=float((values[:,1]+values[:,2]-rate.new_tensor([1.,-.3])).abs().max()),\n",
+      "stdout": "{\"phase\": \"complete\", \"status\": \"completed\", \"target\": \"1/5\"}\n",
+      "target": "1/5"
+    },
+    {
+      "child_result": "case-001.json",
+      "child_result_sha256": "b26f502dbe605933249a4f817ffdf004455c5e9862b55c153bceedec7ad7badd",
+      "cpu_soft_limit": 43,
+      "fresh_process_cpu_seconds": 2.144642,
+      "full_process_wall_limit": 45,
+      "full_process_wall_seconds": 2.1606733320004423,
+      "index": 1,
+      "last_observed_phase": "complete",
+      "returncode": 0,
+      "status": "completed",
+      "stderr": "/workspace/scratch/d741f7769aeb/worktrees/longtime-diagnostic/qualification/hcsn_currentstate/study_longtime.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  maximum_signed_mass_balance_error=float((values[:,1]+values[:,2]-rate.new_tensor([1.,-.3])).abs().max()),\n",
+      "stdout": "{\"phase\": \"complete\", \"status\": \"completed\", \"target\": \"4/5\"}\n",
+      "target": "4/5"
+    },
+    {
+      "child_result": "case-002.json",
+      "child_result_sha256": "fc89758d0b89c28e5b0e17d1dd9bbe6a3205be3802c153faab8d564dcb59f8bf",
+      "cpu_soft_limit": 43,
+      "fresh_process_cpu_seconds": 1.7590600000000003,
+      "full_process_wall_limit": 45,
+      "full_process_wall_seconds": 1.7666200359999493,
+      "index": 2,
+      "last_observed_phase": "complete",
+      "returncode": 0,
+      "status": "completed",
+      "stderr": "/workspace/scratch/d741f7769aeb/worktrees/longtime-diagnostic/qualification/hcsn_currentstate/study_longtime.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  maximum_signed_mass_balance_error=float((values[:,1]+values[:,2]-rate.new_tensor([1.,-.3])).abs().max()),\n",
+      "stdout": "{\"phase\": \"complete\", \"status\": \"completed\", \"target\": \"16/5\"}\n",
+      "target": "16/5"
+    },
+    {
+      "child_result": "case-003.json",
+      "child_result_sha256": "2e2904e1567c609ccfbe00969b14cc3739f17da31e2f0ed57e17c6ef0da1039a",
+      "cpu_soft_limit": 43,
+      "fresh_process_cpu_seconds": 2.209923,
+      "full_process_wall_limit": 45,
+      "full_process_wall_seconds": 2.224153581999417,
+      "index": 3,
+      "last_observed_phase": "complete",
+      "returncode": 0,
+      "status": "completed",
+      "stderr": "/workspace/scratch/d741f7769aeb/worktrees/longtime-diagnostic/qualification/hcsn_currentstate/study_longtime.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  maximum_signed_mass_balance_error=float((values[:,1]+values[:,2]-rate.new_tensor([1.,-.3])).abs().max()),\n",
+      "stdout": "{\"phase\": \"complete\", \"status\": \"completed\", \"target\": \"32/5\"}\n",
+      "target": "32/5"
+    },
+    {
+      "child_result": "case-004.json",
+      "child_result_sha256": "026fad8aa41ae5239287614428b6ccc1e3f203bbb87881787044edf1641cd608",
+      "cpu_soft_limit": 43,
+      "fresh_process_cpu_seconds": 4.281307999999999,
+      "full_process_wall_limit": 45,
+      "full_process_wall_seconds": 4.313903558002494,
+      "index": 4,
+      "last_observed_phase": "complete",
+      "returncode": 0,
+      "status": "completed",
+      "stderr": "/workspace/scratch/d741f7769aeb/worktrees/longtime-diagnostic/qualification/hcsn_currentstate/study_longtime.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  maximum_signed_mass_balance_error=float((values[:,1]+values[:,2]-rate.new_tensor([1.,-.3])).abs().max()),\n",
+      "stdout": "{\"phase\": \"complete\", \"status\": \"completed\", \"target\": \"64/5\"}\n",
+      "target": "64/5"
+    }
+  ],
+  "forward_scope": "advance plus refractory with gradients enabled; excludes imports, oracle, construction, output serialization",
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "case_wall_seconds": 45,
+    "max_dimension": 256,
+    "max_exponentials": 2048,
+    "max_packets": 256,
+    "threads": 1,
+    "total_cpu_seconds": 120,
+    "total_wall_seconds": 180
+  },
+  "rss_scope": "fresh child lifetime high-water, Linux KiB; includes imports, references, forward and backward",
+  "schema": "hcsn-currentstate-longtime-cost-diagnostic-v1",
+  "scope": "one-state finite CTMC; no continuum, training or full-network claim",
+  "source_sha256": {
+    "differentiable.py": "fccee9781c86af243c5f691f876d0dec34296edfedc327d6f4a100bcd2def949",
+    "study_longtime.py": "62daf4850b6e0079b5b75d50b57ba74a61ef76e75de9276f9caf3dd2172f502f"
+  },
+  "source_sha256_after": {
+    "differentiable.py": "fccee9781c86af243c5f691f876d0dec34296edfedc327d6f4a100bcd2def949",
+    "study_longtime.py": "62daf4850b6e0079b5b75d50b57ba74a61ef76e75de9276f9caf3dd2172f502f"
+  },
+  "tensor_bytes_scope": "all State tensors including repeated references; excludes Python, allocator and autograd graph",
+  "times": [
+    "1/5",
+    "4/5",
+    "16/5",
+    "32/5",
+    "64/5"
+  ],
+  "total_cpu_seconds": 13.402153136999999,
+  "wall_seconds": 13.50298458999896
+}

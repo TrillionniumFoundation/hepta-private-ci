@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.owner1026.native-log-root-verification.v1",
+  "observed_at_utc": "2026-11-12 13:41:19 UTC",
+  "source": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+  "linux": {
+    "run_id": 43213823243,
+    "job_id": 131167901028,
+    "full_original_decoded_job_log_root_fetched": true,
+    "bytes": 2009920,
+    "sha256": "0e35ce7b3c97ebb4a89f110b5d38bc0b0b39f544d6157fe7439382a09a47633d",
+    "chunks": [
+      {
+        "path": "job131167901028.decoded.log.part-000.bin",
+        "bytes": 350000,
+        "sha256": "e1755c163d14020b7ef257a11ccc3c7c47a35260ada504eaedff80257cdead5b",
+        "git_blob": "37595da4eae98c12c8f018cf8cb8d2ba9998fcba",
+        "ok": true
+      },
+      {
+        "path": "job131167901028.decoded.log.part-001.bin",
+        "bytes": 350000,
+        "sha256": "ad13938f5a3d304ac244a75aa3ab584ba4271a2413e91497788f1d4345da7a66",
+        "git_blob": "dc2e778e1326fb7d282808f1a9168a6d822da787",
+        "ok": true
+      },
+      {
+        "path": "job131167901028.decoded.log.part-002.bin",
+        "bytes": 350000,
+        "sha256": "128f450c965f9b709809fb58036f0faf1279c2811a69ddfb89d27af93bbf11a9",
+        "git_blob": "d8c1cde61e72a0a43e06d22dad5cdd1009bd3947",
+        "ok": true
+      },
+      {
+        "path": "job131167901028.decoded.log.part-003.bin",
+        "bytes": 350000,
+        "sha256": "cf6ba50eea8daf06c4cf04b3e6f3d5eedeb544b7448f677ef00f5d4fcdeb16ab",
+        "git_blob": "0b678acf73dbdf1e0fe0e4b508054bc30288aa1b",
+        "ok": true
+      },
+      {
+        "path": "job131167901028.decoded.log.part-004.bin",
+        "bytes": 350000,
+        "sha256": "82044a2f99a05d2ab8b1a7676f70d68f633543179cbe9258a5a24a2d4ce62c60",
+        "git_blob": "c3b48d110805ee6568dcce614b4b2da54b800288",
+        "ok": true
+      },
+      {
+        "path": "job131167901028.decoded.log.part-005.bin",
+        "bytes": 259920,
+        "sha256": "baf6aeae625bcc459e2c0eac1edc3b18c882ea0246ad4063464e5f3fde785071",
+        "git_blob": "9573c64bd718ed443f668ebdb2471906deeca050",
+        "ok": true
+      }
+    ],
+    "chunk_verification_scope": "Hashes and Git blob IDs independently computed from the complete original job log retrieved by root; match all immutable part IDs in the preservation manifest.",
+    "native_error": "E0659 ambiguous assert_eq",
+    "compile_exit": 101,
+    "native_tests_executed": 0,
+    "junit": "REJECTED_MISSING_XML",
+    "root_fix_fmt": "NOT_RUN"
+  },
+  "windows": {
+    "run_id": 43213822708,
+    "job_id": 131167903537,
+    "complete_original_decoded_job_log_root_fetched": true,
+    "bytes": 376423,
+    "sha256": "e649e3afccec55e17c42c3a6ec743aaba6ec1a7d33b4d58d0ed648e9f2e57956",
+    "selected_methods": 36,
+    "passed": 36,
+    "not_selected_by_filter": 597,
+    "junit_cases_reported_in_original_log": 36,
+    "junit_original_member_readback": "PENDING"
+  },
+  "fix": {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+    "preimage": "d4d777123a8010b0d8295b7b92f0a66194303ab2",
+    "postimage": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+    "only_change": "use pretty_assertions::assert_eq; plus separating blank line",
+    "full_before_after_root_verified": true,
+    "candidate_native_tested": false
+  },
+  "new_a96_integration": "IN_PROGRESS_UNEXECUTED",
+  "prior_results_transferred": false,
+  "owner_decision": null
+}

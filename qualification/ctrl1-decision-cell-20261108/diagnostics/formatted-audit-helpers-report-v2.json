@@ -1,0 +1,39 @@
+{
+  "schema": "ctrl1.native-audit-helpers.v2",
+  "pushed": false,
+  "files": [
+    {
+      "path": "qualification/ctrl1-decision-cell-20261108/audit_primary.py",
+      "original_package_sha256": "7bcf15adbaaf267834c8db45be73c8baa7e2442130400da068844a51b289489a",
+      "before_lint_fix_sha256": "c64b4449163cb500b7255039e40ecdeb8c119c704ac58e4017faee71f2b44bd6",
+      "after_sha256": "f052f179fc498d391670c903931cd28224a9c23e2b30db21ce707194906cd7eb",
+      "after_bytes": 14668,
+      "intentional_ast_changes": [],
+      "executable_ast_equal_after_declared_change": true,
+      "docstring_cleandoc_equal": true
+    },
+    {
+      "path": "qualification/ctrl1-decision-cell-20261108/audit_cpu.py",
+      "original_package_sha256": "ffcbb133a291ed6c9bd2ba5a20e647bceeb40c119370f17ab847ea6b764dc945",
+      "before_lint_fix_sha256": "e5d2c477f81cdea60429cee45881e3deafed28a98a39c76e4e69e6600fb4ff3c",
+      "after_sha256": "184c4c368328dc7e7e916f26ccc35bd8cd825f5f4a40e5c31d82eaab6281007b",
+      "after_bytes": 37262,
+      "intentional_ast_changes": [
+        {
+          "kind": "remove_unused_import_alias",
+          "module": "ndu_ctrl1.model",
+          "name": "Profile",
+          "same_module_still_imported": true
+        }
+      ],
+      "executable_ast_equal_after_declared_change": true,
+      "docstring_cleandoc_equal": true
+    }
+  ],
+  "archive_path": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/formatted-audit-helpers-v2.tar.gz",
+  "archive_sha256": "a3c02230d488ed2381a576c9b141c01624f5e0cdc4aee12090ecca0e318d8923",
+  "archive_bytes": 12879,
+  "code_head": "472c825a87220574acc5338afe59558e1ad2038f",
+  "experiment_source_manifest_unchanged": true,
+  "lint_exception_reason": "Per-import E402 only, because standalone scripts bootstrap the local repository before importing ndu_ctrl1."
+}

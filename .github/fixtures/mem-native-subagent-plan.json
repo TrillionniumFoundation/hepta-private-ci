@@ -1,0 +1,207 @@
+{
+  "commit_readback": {
+    "bytes": 1472,
+    "git_blob": "3c63f41085673b756b0e82170be447a56b933021",
+    "sha256": "291c78589f015fd380b3eaaf88501b9b2054516a771d5614a2c8fcef6ce6544a"
+  },
+  "complete_tree_inventory": {
+    "bytes": 1659663,
+    "git_blob": "cd59d3e7f16e1299f643000c31254253e6101e9d",
+    "sha256": "3ff62a7457e2a5cb9ca7098dbe39eb0be1652b60a98d2a735502540b56a36890"
+  },
+  "complete_tree_leaf_count": 14053,
+  "execution_state": "PREPARED_NOT_ADMITTED_NOT_RUN",
+  "files": {
+    ".github/scripts/windows_current_ci.py": {
+      "bytes": 11926,
+      "git_blob": "161ed1149c8ffb5f2bb2a8272f555f8b91d729fe",
+      "mode": "100644",
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    "AGENTS.md": {
+      "bytes": 22519,
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "mode": "100644",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1788299,
+      "git_blob": "1565448430312c7fb7537a48f97e9cd2da945df3",
+      "mode": "100644",
+      "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+    },
+    "codex-rs/.cargo/config.toml": {
+      "bytes": 634,
+      "git_blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+      "mode": "100644",
+      "sha256": "b8ae1cea341beb2d4a3c8fb81f97a96f4aee1fd53f769c57f140dfe949806a80"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 6617,
+      "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "mode": "100644",
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 421005,
+      "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+      "mode": "100644",
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 23385,
+      "git_blob": "75e83aa2161758c059de8e3965820fcfd65f8b58",
+      "mode": "100644",
+      "sha256": "29451688365bb14c7232338a9118cfdcbb59ddd7ca79738b641bf6f04cc72d6a"
+    },
+    "codex-rs/core/Cargo.toml": {
+      "bytes": 6185,
+      "git_blob": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+      "mode": "100644",
+      "sha256": "3a2576956d2844516f1e38554a207c50e44503dd0c49cd8612fb630d3c6eb5f4"
+    },
+    "codex-rs/core/tests/all.rs": {
+      "bytes": 183,
+      "git_blob": "0ee0cd986a3159e4d1f9e71759b73a239d953067",
+      "mode": "100644",
+      "sha256": "fb65d181d9fcd37714caa2b9ded5a35dd322edd04cee22176c21a8be8ee12f4c"
+    },
+    "codex-rs/core/tests/common/Cargo.toml": {
+      "bytes": 1677,
+      "git_blob": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93",
+      "mode": "100644",
+      "sha256": "f96f988488fa3b982ae33ab11365b534a1d4d542d5b0cb1140eb3a43e3d4e5ef"
+    },
+    "codex-rs/core/tests/common/lib.rs": {
+      "bytes": 23401,
+      "git_blob": "f4e0d11e0b440b57faeba5c400e343975a0506d3",
+      "mode": "100644",
+      "sha256": "34120e98be2ac8e1ee96373373f2241f9383f2cfb724d55cbcce2fb049468de9"
+    },
+    "codex-rs/core/tests/common/responses.rs": {
+      "bytes": 59390,
+      "git_blob": "2285b1427a7ee93190d7b1f2f8c5fdb1d4ccabe6",
+      "mode": "100644",
+      "sha256": "eb0a2f27af9f05a2ee984f30b872c796d6fdf7e54294b77a0f621b1fd4aacb6d"
+    },
+    "codex-rs/core/tests/common/responses_matcher_tests.rs": {
+      "bytes": 3840,
+      "git_blob": "12a495fa0da4f076e8092cb96ed95d895a0960e1",
+      "mode": "100644",
+      "sha256": "b9e72803f56cce4fb2c4635092d77e7b4d716094e2553a7ec7b73e83d8d585f8"
+    },
+    "codex-rs/core/tests/common/test_codex.rs": {
+      "bytes": 52412,
+      "git_blob": "099ec8eb226394c2fc0543188e27d7c146a813c7",
+      "mode": "100644",
+      "sha256": "9eaa4d9f3ab772bd3ea02571bad0c4bba94e087857accd1bac5004c2eb89ac02"
+    },
+    "codex-rs/core/tests/suite/subagent_notifications.rs": {
+      "bytes": 106424,
+      "git_blob": "cd297f2835fa66832bbbef810ed724fcdfc2284f",
+      "mode": "100644",
+      "sha256": "5f5b71e7231846fac3236c816774abe61a3a032f4bfe8290b3cb1ce763ca0d0c"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "mode": "100644",
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    "codex-rs/windows-sandbox-rs/Cargo.toml": {
+      "bytes": 2438,
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "mode": "100644",
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+    },
+    "codex-rs/windows-sandbox-rs/src/helper_materialization.rs": {
+      "bytes": 21445,
+      "git_blob": "7532d191ead69f010f17ef48a8e0b90d2bca3e71",
+      "mode": "100644",
+      "sha256": "37746f520536d158c112b7ed2d0ec4d0fc868822d7bf6fab256864b5f4b685b8"
+    },
+    "codex-rs/windows-sandbox-rs/src/lib.rs": {
+      "bytes": 31313,
+      "git_blob": "22185fc9765823265a99b27e851cd142fcd80e6d",
+      "mode": "100644",
+      "sha256": "ffae596933c17603adf2255450fc022d84b914f381a2f2ab2e93beed1d057927"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup.rs": {
+      "bytes": 83555,
+      "git_blob": "58685b28175bf75fc78f94c13b744781199c55d4",
+      "mode": "100644",
+      "sha256": "60478c6a71edaceb0e79b60bf348ade1de9417d1c36cb944b275f271874587b0"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup_process.rs": {
+      "bytes": 12409,
+      "git_blob": "1e112219d0844dfda16263b14404dc14ed27b6e6",
+      "mode": "100644",
+      "sha256": "602c989a1b3a7e32ebd78c327e1e1a2b260601626ee2fc9447b7cebc8c35d1ae"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup_process_tests.rs": {
+      "bytes": 14212,
+      "git_blob": "5941d0337ddb2f1d86140a881fb9de5a51db41a0",
+      "mode": "100644",
+      "sha256": "4a4e74e38b1689236fabb7f739d7cf709fc476084f8f36e7f0877825c339b7ca"
+    },
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs": {
+      "bytes": 49498,
+      "git_blob": "913096ca90dced2efa4aa4e3366193e3a6761b50",
+      "mode": "100644",
+      "sha256": "a0d63210b29e534b7f1ca822a5f254e7bdc2dd5cd9f4b12c1cecd6ed4683ae11"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "mode": "100644",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "mode": "100644",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "mode": "100644",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    }
+  },
+  "groups": [
+    {
+      "binary_id": "codex-core::all",
+      "cases": [
+        "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context",
+        "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child"
+      ],
+      "filter": "test(=suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context) | test(=suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child)",
+      "id": "v2-subagent-request-routing",
+      "package": "codex-core",
+      "target_args": [
+        "--test",
+        "all"
+      ]
+    }
+  ],
+  "job_timeout_minutes": 65,
+  "model_boundary": "Only the two named local fixtures; no original provider turn, no ignored provider smoke, no model endpoint or credential configuration.",
+  "nextest": {
+    "capture": "unchanged default",
+    "junit_path": "codex-rs/target/nextest/local/junit.xml",
+    "leak_timeout": "unchanged 100ms default",
+    "no_tests": "fail",
+    "profile": "local via repository just recipe",
+    "retries": 0,
+    "test_threads": 1,
+    "version": "0.9.103"
+  },
+  "schema": "mem-native-subagent-frozen-plan-v1",
+  "scoped_fix_packages": [
+    "codex-core"
+  ],
+  "source_case_budgets_modified": false,
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+}

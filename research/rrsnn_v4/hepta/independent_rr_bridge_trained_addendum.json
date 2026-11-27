@@ -1,0 +1,80 @@
+{
+  "schema": "rrsnn.v4.independent-trained-feature-bridge-addendum.v1",
+  "created_at_utc": "2026-10-29T15:20:29.069991+00:00",
+  "reviewer": "/root/r4_query_environment",
+  "status": "passed_with_same_explicit_research_scope_limits",
+  "prior_review_path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/independent_rr_bridge_review.json",
+  "prior_review_sha256": "4e7a3843961d7a3cbc5aaebd9f5c5c925c3d63484b0ddb24e7fae68ca9b452db",
+  "prior_review_preserved_unchanged": true,
+  "published_selection": {
+    "path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/selection.json",
+    "sha256": "dbad2690403992f75c46105722670026e7e13acb523f4973f4726a91d6e5d6bd",
+    "publication_receipt_path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/selection_publication.json",
+    "publication_receipt_sha256": "682f84a5faaaa3e8dd83a6c53810393ec8227859c1c731355e8978c2094f0b02",
+    "commit_sha": "ff2925c115a00b348ac1e46016b4a9130447e695",
+    "remote_read_verified_by_root": true
+  },
+  "candidate": {
+    "variant": "rr_full",
+    "training_seed": 101,
+    "checkpoint_path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/results/rr_full/seed_101/model.pt",
+    "checkpoint_sha256": "32d23ba4e030beb5850b25faff1fd119c08da4af2035ca70ba40aa4c0d5af651",
+    "training_receipt_sha256": "d06b5dbe957092369d0b324c6702c5fb815cedcf77c080564d310c5e886cfeac",
+    "pre_data_protocol_sha256": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+    "training_protocol_sha256": "e550dfca79fdb1b6bca551c5f1e6c3f8e4bd796fda310b6db2c48eaeabbaa09d",
+    "selected_membership_and_completed_receipt_verified": true
+  },
+  "evidence": {
+    "proof_path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/rr_bridge_results/selected-trained-1793287054645308057/proof.json",
+    "proof_sha256": "ea46a817da890d049e2a88870df91f54a475b51e4b7a9c4bfe94f258a056fd6c",
+    "manifest_path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/rr_bridge_results/selected-trained-1793287054645308057/manifest.json",
+    "manifest_sha256": "f0607664a599aabc3a8390f148f865a26ebf9a843a1f269133058e47365219ec",
+    "native_binary_sha256": "f7ea42df3b9e55aa0d3d01a67bd363dee25641a05db54e7907a30fac5092cc87",
+    "source_sha256": {
+      "rr_bridge_backend.py": "910513b7d8b92ebaddda5b8a3cb54889438969755192aa39ef89198b0fcaec39",
+      "rr_bridge_worker.py": "db8bf2b7817d1ffdd1f54b77802720234b1774facffb46ef9ca5248664329440",
+      "rr_bridge_artifact.py": "5d20b461da1de422bccf5aff647148059bbb47c4b813373e838f1274331ab98b",
+      "validate_rr_bridge.py": "d0431a84fc06c00f70fdd8cac22b2a9799f66d005b8192a7c2f029eab8b91639",
+      "rr_bridge_native/src/main.rs": "33202d53e9a7301c7ee038b9723e781aac29e448cfd7a2cc653d72428e952715"
+    },
+    "source_matches_prior_review": true,
+    "source_snapshots_match_manifest": true,
+    "actual_sigkill_windows": [
+      "unconfirmed_prepared",
+      "prepared",
+      "before_witness",
+      "after_witness",
+      "joint_file_written",
+      "joint_published"
+    ],
+    "negative_cases": 19,
+    "direct_uninterrupted_actual_spikes": [
+      0,
+      0,
+      1
+    ]
+  },
+  "checks": {
+    "exact_full_state_and_rng_hashes_equal_to_uninterrupted_reference": true,
+    "confirmed_retries_no_model_reexecution": true,
+    "unconfirmed_retry_recomputed_from_trusted_prior_and_counted": true,
+    "committed_state_and_rng_advance_once": true,
+    "actual_executable_artifact_request_dt_pin_negatives_pass": true,
+    "authority_remains_false": true,
+    "all_reported_native_ticks_abstained": true
+  },
+  "limits": [
+    "Independent trusted controller frontier and pending pins are prerequisites; this is not autonomous recovery after loss of that evidence.",
+    "A pending file persisted before its independent pin is durably retained is rejected; the six tested named cuts do not exhaust every byte-level interleaving.",
+    "The first joint checkpoint must have succeeded; native first-bootstrap gaps are covered separately, not repaired by this bridge.",
+    "Full CoupledState/PCG64 remains an external sidecar and is not encoded into the unchanged native V1 sparse checkpoint.",
+    "Raw native checkpoint/frontier bytes across separately generated runs can differ because admissions bind full host provenance; exact RR state/RNG continuation and each run own pure-kernel predicted anchors are the asserted invariants.",
+    "This addendum closes the selected trained seed101 execution evidence gap only; it is not training, a utility comparison, a new independent future window, or production qualification.",
+    "The complete 81-action policy is computed by RRPolicy but not routed through the native bridge; eight feature outputs feed a separate native sparse owner."
+  ],
+  "heldout_task_data_loaded_for_this_addendum": false,
+  "checkpoint_tensors_reloaded_by_reviewer": false,
+  "owner_source_files_modified_by_reviewer": false,
+  "activation_allowed": false,
+  "all_project_blockers_closed": false
+}

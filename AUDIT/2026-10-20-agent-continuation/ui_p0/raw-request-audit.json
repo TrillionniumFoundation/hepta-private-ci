@@ -1,0 +1,1866 @@
+{
+  "binding": {
+    "sourceSha": "89933fdc84ed1151f04609a1881ab24aaef119b4",
+    "sourceTree": "25b2a7b559549fba0d22fa7d62d78c76c13cd5ce",
+    "uiSourceIdentity": "5b3ffd2bdcd76285cccd7602ab8a101f6034b4bfb7809fd8d6c5002fe6953efb",
+    "uiManifestSha256": "026de9ca6037800af4df12c53aee250f700b4e20ead41fa8d68679b4324bf410",
+    "gateway": {
+      "sourceCommit": "89933fdc84ed1151f04609a1881ab24aaef119b4",
+      "sourceTree": "25b2a7b559549fba0d22fa7d62d78c76c13cd5ce",
+      "sourceHashes": {
+        "codex-rs/Cargo.lock": "7d919cbc82326f470d9448491a24a5f8606217e8f221fc48266176df37fecc3a",
+        "codex-rs/Cargo.toml": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4",
+        "codex-rs/hepta-native-gateway/BUILD.bazel": "73dec956b0102055600d89ee58d1dc04cfc77670dfa7ccf07ffd429a299d97d6",
+        "codex-rs/hepta-native-gateway/Cargo.toml": "a13e4ba58685be73b9612d6a7d1caece142541612aae7b03f436ceb0f575fe26",
+        "codex-rs/hepta-native-gateway/examples/ui_product_preview.rs": "d97a5d3f7c82cbfc3bc7bbc926d1c75f95e7623b7cdf1f2eece6162d2a3c2050",
+        "codex-rs/hepta-native-gateway/src/http_origin.rs": "315f943d1317c687ea6e488298e340263d1b0080658e3be4ef18fc4baa315dc6",
+        "codex-rs/hepta-native-gateway/src/http_origin_tests.rs": "e921fb5a9f9bb2056765871fb477d9a0a484ea572c2a64dd383b4d2a62560434",
+        "codex-rs/hepta-native-gateway/src/http_transport.rs": "3d6a71772150589d1d844c9ab6c75b75efd1504bd0788ec925f51a43e12a9179",
+        "codex-rs/hepta-native-gateway/src/lib.rs": "3abf841a48345f1ada9251a2bd1d6ac79fce52e7cd4e366920bddb53466944bc",
+        "codex-rs/hepta-native-gateway/src/organ_request_tests.rs": "f9b7e0ff6358bc0167f8fc511d1c06e0ffbc6ab12a1a0a5aabc25f63d09b2da2",
+        "codex-rs/hepta-native-gateway/src/owner_status.rs": "29a8bb62da141f9896b8c9b75cbc450efdf80d43b6d176ea0ddb0373f98849e6",
+        "codex-rs/hepta-native-gateway/src/owner_status_tests.rs": "059b1673aebe1b043a0296508f65ecf222c04347965ada7f10994690f132b6c6",
+        "codex-rs/hepta-native-gateway/src/ui_bundle.rs": "667085974b0d18a23ecac7cd90c56a9137d4c8345c5d53dc1c522e9bd06088f6",
+        "codex-rs/hepta-native-gateway/src/ui_bundle_reader.rs": "ae2e16199344e1aac40d106560da31fd20838eb3091f206c3268381045b62b6d",
+        "codex-rs/hepta-native-gateway/src/ui_bundle_tests.rs": "3a3f05fdfc484ad397e1e204b587a758b1e1c04749bdd2f887da4e87af17d112",
+        "codex-rs/rust-toolchain.toml": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+      },
+      "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "binarySha256": "aab393cbd6a376267d08c6d0b19a17c959d1abf9be6d0382f38c5ec785273c9e",
+      "binaryBytes": 10869336
+    }
+  },
+  "scenario": "timeout",
+  "errors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "url": "http://127.0.0.1:4175/api/hepta/runtime",
+      "phase": "initial"
+    },
+    {
+      "text": "[makepad][http][fail] 503 http://127.0.0.1:4175/api/hepta/runtime",
+      "url": "http://127.0.0.1:4175/makepad_platform/web.js",
+      "phase": "initial"
+    },
+    {
+      "text": "[makepad][http][err] GET http://127.0.0.1:4175/api/hepta/owner-status AbortError: signal is aborted without reason tiles=-",
+      "url": "http://127.0.0.1:4175/makepad_platform/web.js",
+      "phase": "timeout"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "url": "http://127.0.0.1:4175/api/hepta/runtime",
+      "phase": "timeout"
+    },
+    {
+      "text": "[makepad][http][fail] 503 http://127.0.0.1:4175/api/hepta/runtime",
+      "url": "http://127.0.0.1:4175/makepad_platform/web.js",
+      "phase": "timeout"
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "url": "http://127.0.0.1:4175/api/hepta/owner-status",
+      "method": "GET",
+      "phase": "initial"
+    },
+    {
+      "id": 2,
+      "url": "http://127.0.0.1:4175/api/hepta/runtime",
+      "method": "GET",
+      "phase": "initial"
+    },
+    {
+      "id": 3,
+      "url": "http://127.0.0.1:4175/api/hepta/owner-status",
+      "method": "GET",
+      "phase": "timeout"
+    },
+    {
+      "id": 4,
+      "url": "http://127.0.0.1:4175/api/hepta/runtime",
+      "method": "GET",
+      "phase": "timeout"
+    }
+  ],
+  "responses": [
+    {
+      "id": 1,
+      "url": "http://127.0.0.1:4175/api/hepta/owner-status",
+      "method": "GET",
+      "phase": "initial",
+      "status": 200,
+      "finished": true,
+      "finishError": null
+    },
+    {
+      "id": 2,
+      "url": "http://127.0.0.1:4175/api/hepta/runtime",
+      "method": "GET",
+      "phase": "initial",
+      "status": 503,
+      "finished": true,
+      "finishError": null
+    },
+    {
+      "id": 4,
+      "url": "http://127.0.0.1:4175/api/hepta/runtime",
+      "method": "GET",
+      "phase": "timeout",
+      "status": 503,
+      "finished": false,
+      "finishError": "Error: Test timeout of 90000ms exceeded."
+    }
+  ],
+  "failures": [
+    {
+      "id": 3,
+      "url": "http://127.0.0.1:4175/api/hepta/owner-status",
+      "method": "GET",
+      "phase": "timeout",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "id": 4,
+      "url": "http://127.0.0.1:4175/api/hepta/runtime",
+      "method": "GET",
+      "phase": "timeout",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "cancellations": [],
+  "proofs": {
+    "initial": {
+      "ownerState": "notAttached",
+      "ownerVerified": true,
+      "transportVerified": true
+    }
+  },
+  "sdkUrl": "http://127.0.0.1:4175/makepad_platform/web.js",
+  "runtimeUrl": "http://127.0.0.1:4175/api/hepta/runtime",
+  "ownerUrl": "http://127.0.0.1:4175/api/hepta/owner-status",
+  "faults": [],
+  "apiDiagnostics": {
+    "network": [
+      {
+        "event": "requestWillBeSent",
+        "phase": "initial",
+        "ms": 11878.157,
+        "requestId": "21200.19",
+        "path": "/api/hepta/owner-status",
+        "method": "GET",
+        "type": "Fetch",
+        "timestamp": 940.342976
+      },
+      {
+        "event": "responseReceived",
+        "phase": "initial",
+        "ms": 11988.183,
+        "requestId": "21200.19",
+        "path": "/api/hepta/owner-status",
+        "timestamp": 940.45523,
+        "status": 200,
+        "protocol": "http/1.1",
+        "mimeType": "application/json",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "headers": {
+          "contentLength": "85",
+          "transferEncoding": "",
+          "contentEncoding": "",
+          "cacheControl": "no-store"
+        }
+      },
+      {
+        "event": "dataReceived",
+        "phase": "initial",
+        "ms": 12087.639,
+        "requestId": "21200.19",
+        "timestamp": 940.552454,
+        "dataLength": 85,
+        "encodedDataLength": 85
+      },
+      {
+        "event": "requestWillBeSent",
+        "phase": "initial",
+        "ms": 12088.063,
+        "requestId": "21200.20",
+        "path": "/api/hepta/runtime",
+        "method": "GET",
+        "type": "Fetch",
+        "timestamp": 940.55422
+      },
+      {
+        "event": "loadingFinished",
+        "phase": "initial",
+        "ms": 12183.659,
+        "requestId": "21200.19",
+        "timestamp": 940.346159,
+        "encodedDataLength": 248
+      },
+      {
+        "event": "responseReceived",
+        "phase": "initial",
+        "ms": 12188.628,
+        "requestId": "21200.20",
+        "path": "/api/hepta/runtime",
+        "timestamp": 940.651406,
+        "status": 503,
+        "protocol": "http/1.1",
+        "mimeType": "application/json",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "headers": {
+          "contentLength": "79",
+          "transferEncoding": "",
+          "contentEncoding": "",
+          "cacheControl": "no-store"
+        }
+      },
+      {
+        "event": "dataReceived",
+        "phase": "initial",
+        "ms": 12278.471,
+        "requestId": "21200.20",
+        "timestamp": 940.744089,
+        "dataLength": 79,
+        "encodedDataLength": 79
+      },
+      {
+        "event": "loadingFinished",
+        "phase": "initial",
+        "ms": 12376.877,
+        "requestId": "21200.20",
+        "timestamp": 940.557396,
+        "encodedDataLength": 259
+      },
+      {
+        "event": "requestWillBeSent",
+        "phase": "timeout",
+        "ms": 13147.154,
+        "requestId": "21200.21",
+        "path": "/api/hepta/owner-status",
+        "method": "GET",
+        "type": "Fetch",
+        "timestamp": 941.613658
+      },
+      {
+        "event": "requestWillBeSent",
+        "phase": "timeout",
+        "ms": 18149.77,
+        "requestId": "21200.22",
+        "path": "/api/hepta/runtime",
+        "method": "GET",
+        "type": "Fetch",
+        "timestamp": 946.615415
+      },
+      {
+        "event": "loadingFailed",
+        "phase": "timeout",
+        "ms": 18149.806,
+        "requestId": "21200.21",
+        "timestamp": 946.616852,
+        "type": "Fetch",
+        "errorText": "net::ERR_ABORTED",
+        "canceled": true
+      },
+      {
+        "event": "responseReceived",
+        "phase": "timeout",
+        "ms": 18152.954,
+        "requestId": "21200.22",
+        "path": "/api/hepta/runtime",
+        "timestamp": 946.619869,
+        "status": 503,
+        "protocol": "http/1.1",
+        "mimeType": "application/json",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "headers": {
+          "contentLength": "79",
+          "transferEncoding": "",
+          "contentEncoding": "",
+          "cacheControl": "no-store"
+        }
+      },
+      {
+        "event": "dataReceived",
+        "phase": "timeout",
+        "ms": 18152.966,
+        "requestId": "21200.22",
+        "timestamp": 946.620125,
+        "dataLength": 79,
+        "encodedDataLength": 0
+      },
+      {
+        "event": "loadingFailed",
+        "phase": "timeout",
+        "ms": 18153.487,
+        "requestId": "21200.22",
+        "timestamp": 946.620535,
+        "type": "Fetch",
+        "errorText": "net::ERR_ABORTED",
+        "canceled": true
+      }
+    ],
+    "waits": [
+      {
+        "name": "timeout-runtime.finished",
+        "state": "start",
+        "phase": "timeout",
+        "ms": 18955.793
+      }
+    ]
+  },
+  "fontDiagnostics": {
+    "fontRequests": [
+      {
+        "id": 1,
+        "path": "/makepad_widgets/resources/NewCMMath-Regular.otf",
+        "method": "GET",
+        "resourceType": "fetch",
+        "isNavigationRequest": false,
+        "frameUrl": "/",
+        "redirectedFrom": null,
+        "phase": "initial",
+        "ms": 431.738
+      },
+      {
+        "id": 2,
+        "path": "/hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf",
+        "method": "GET",
+        "resourceType": "fetch",
+        "isNavigationRequest": false,
+        "frameUrl": "/",
+        "redirectedFrom": null,
+        "phase": "initial",
+        "ms": 431.802
+      },
+      {
+        "id": 3,
+        "path": "/hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf",
+        "method": "GET",
+        "resourceType": "fetch",
+        "isNavigationRequest": false,
+        "frameUrl": "/",
+        "redirectedFrom": null,
+        "phase": "initial",
+        "ms": 431.858
+      },
+      {
+        "id": 4,
+        "path": "/makepad_widgets/resources/IBMPlexSans-Text.ttf",
+        "method": "GET",
+        "resourceType": "fetch",
+        "isNavigationRequest": false,
+        "frameUrl": "/",
+        "redirectedFrom": null,
+        "phase": "initial",
+        "ms": 465.116
+      },
+      {
+        "id": 5,
+        "path": "/makepad_widgets/resources/LXGWWenKaiRegular.ttf",
+        "method": "GET",
+        "resourceType": "fetch",
+        "isNavigationRequest": false,
+        "frameUrl": "/",
+        "redirectedFrom": null,
+        "phase": "initial",
+        "ms": 465.195
+      },
+      {
+        "id": 6,
+        "path": "/makepad_widgets/resources/NotoColorEmoji.ttf",
+        "method": "GET",
+        "resourceType": "fetch",
+        "isNavigationRequest": false,
+        "frameUrl": "/",
+        "redirectedFrom": null,
+        "phase": "initial",
+        "ms": 466.69
+      },
+      {
+        "id": 7,
+        "path": "/makepad_widgets/resources/IBMPlexSans-SemiBold.ttf",
+        "method": "GET",
+        "resourceType": "fetch",
+        "isNavigationRequest": false,
+        "frameUrl": "/",
+        "redirectedFrom": null,
+        "phase": "initial",
+        "ms": 466.756
+      },
+      {
+        "id": 8,
+        "path": "/makepad_widgets/resources/LXGWWenKaiBold.ttf",
+        "method": "GET",
+        "resourceType": "fetch",
+        "isNavigationRequest": false,
+        "frameUrl": "/",
+        "redirectedFrom": null,
+        "phase": "initial",
+        "ms": 466.809
+      }
+    ],
+    "fontEvents": [
+      {
+        "id": 1,
+        "event": "request",
+        "phase": "initial",
+        "ms": 431.742
+      },
+      {
+        "id": 2,
+        "event": "request",
+        "phase": "initial",
+        "ms": 431.803
+      },
+      {
+        "id": 3,
+        "event": "request",
+        "phase": "initial",
+        "ms": 431.859
+      },
+      {
+        "id": 4,
+        "event": "request",
+        "phase": "initial",
+        "ms": 465.119
+      },
+      {
+        "id": 5,
+        "event": "request",
+        "phase": "initial",
+        "ms": 465.196
+      },
+      {
+        "id": 6,
+        "event": "request",
+        "phase": "initial",
+        "ms": 466.692
+      },
+      {
+        "id": 7,
+        "event": "request",
+        "phase": "initial",
+        "ms": 466.758
+      },
+      {
+        "id": 8,
+        "event": "request",
+        "phase": "initial",
+        "ms": 466.809
+      },
+      {
+        "id": 1,
+        "event": "response",
+        "phase": "initial",
+        "ms": 1079.161,
+        "status": 200
+      },
+      {
+        "id": 2,
+        "event": "response",
+        "phase": "initial",
+        "ms": 1080.544,
+        "status": 200
+      },
+      {
+        "id": 3,
+        "event": "response",
+        "phase": "initial",
+        "ms": 1080.832,
+        "status": 200
+      },
+      {
+        "id": 4,
+        "event": "response",
+        "phase": "initial",
+        "ms": 1082.122,
+        "status": 200
+      },
+      {
+        "id": 5,
+        "event": "response",
+        "phase": "initial",
+        "ms": 1082.502,
+        "status": 200
+      },
+      {
+        "id": 6,
+        "event": "response",
+        "phase": "initial",
+        "ms": 1082.842,
+        "status": 200
+      },
+      {
+        "id": 7,
+        "event": "response",
+        "phase": "initial",
+        "ms": 1083.157,
+        "status": 200
+      },
+      {
+        "id": 8,
+        "event": "response",
+        "phase": "initial",
+        "ms": 1083.717,
+        "status": 200
+      },
+      {
+        "id": 1,
+        "event": "requestfinished",
+        "phase": "initial",
+        "ms": 1115.55
+      },
+      {
+        "id": 1,
+        "event": "response.finished",
+        "phase": "initial",
+        "ms": 1115.567,
+        "error": null
+      },
+      {
+        "id": 1,
+        "event": "response.sizes",
+        "phase": "initial",
+        "ms": 1117.722,
+        "responseBodySize": 1151568
+      },
+      {
+        "id": 4,
+        "event": "requestfinished",
+        "phase": "initial",
+        "ms": 1130.985
+      },
+      {
+        "id": 4,
+        "event": "response.finished",
+        "phase": "initial",
+        "ms": 1131.002,
+        "error": null
+      },
+      {
+        "id": 4,
+        "event": "response.sizes",
+        "phase": "initial",
+        "ms": 1132.283,
+        "responseBodySize": 181792
+      },
+      {
+        "id": 7,
+        "event": "requestfinished",
+        "phase": "initial",
+        "ms": 1144.053
+      },
+      {
+        "id": 7,
+        "event": "response.finished",
+        "phase": "initial",
+        "ms": 1144.07,
+        "error": null
+      },
+      {
+        "id": 7,
+        "event": "response.sizes",
+        "phase": "initial",
+        "ms": 1145.341,
+        "responseBodySize": 182176
+      },
+      {
+        "id": 5,
+        "event": "requestfinished",
+        "phase": "initial",
+        "ms": 10492.754
+      },
+      {
+        "id": 5,
+        "event": "response.finished",
+        "phase": "initial",
+        "ms": 10492.77,
+        "error": null
+      },
+      {
+        "id": 5,
+        "event": "response.sizes",
+        "phase": "initial",
+        "ms": 10493.85,
+        "responseBodySize": 19073964
+      },
+      {
+        "id": 2,
+        "event": "requestfinished",
+        "phase": "initial",
+        "ms": 10644.865
+      },
+      {
+        "id": 2,
+        "event": "response.finished",
+        "phase": "initial",
+        "ms": 10644.885,
+        "error": null
+      },
+      {
+        "id": 2,
+        "event": "response.sizes",
+        "phase": "initial",
+        "ms": 10646.301,
+        "responseBodySize": 8331336
+      },
+      {
+        "id": 3,
+        "event": "requestfinished",
+        "phase": "initial",
+        "ms": 10686.916
+      },
+      {
+        "id": 3,
+        "event": "response.finished",
+        "phase": "initial",
+        "ms": 10686.934,
+        "error": null
+      },
+      {
+        "id": 3,
+        "event": "response.sizes",
+        "phase": "initial",
+        "ms": 10690.311,
+        "responseBodySize": 8543168
+      },
+      {
+        "id": 6,
+        "event": "requestfinished",
+        "phase": "initial",
+        "ms": 10803.638
+      },
+      {
+        "id": 6,
+        "event": "response.finished",
+        "phase": "initial",
+        "ms": 10803.664,
+        "error": null
+      },
+      {
+        "id": 6,
+        "event": "response.sizes",
+        "phase": "initial",
+        "ms": 10805.025,
+        "responseBodySize": 10643852
+      },
+      {
+        "id": 8,
+        "event": "requestfinished",
+        "phase": "initial",
+        "ms": 10884.669
+      },
+      {
+        "id": 8,
+        "event": "response.finished",
+        "phase": "initial",
+        "ms": 10884.685,
+        "error": null
+      },
+      {
+        "id": 8,
+        "event": "response.sizes",
+        "phase": "initial",
+        "ms": 10885.99,
+        "responseBodySize": 18546748
+      }
+    ],
+    "cdpFontEvents": [
+      {
+        "event": "requestWillBeSent",
+        "phase": "initial",
+        "ms": 430.583,
+        "requestId": "21200.11",
+        "path": "/makepad_widgets/resources/NewCMMath-Regular.otf",
+        "method": "GET",
+        "type": "Fetch",
+        "loaderId": "9377306E5E980847FAD05AF039903567",
+        "frameId": "8A2EC0920AD3BEE9937614986131F5A6",
+        "documentPath": "/",
+        "timestamp": 928.779217,
+        "initiator": {
+          "type": "script",
+          "path": null,
+          "callFrames": [
+            {
+              "functionName": "network_http_dispatch",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2278,
+              "columnNumber": 0
+            },
+            {
+              "functionName": "js_network_http_request",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2202,
+              "columnNumber": 5
+            },
+            {
+              "functionName": "env.js_network_http_request",
+              "path": "/makepad_wasm_bridge/wasm_bridge.js",
+              "lineNumber": 47,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "$_RNvXs_NtNtNtCs3AedO6CAKCx_16makepad_platform2os3web11web_networkNtB4_22WasmNetworkShimBackendNtNtCsjLmvEpmKLDx_15makep",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 2184520
+            },
+            {
+              "functionName": "$_RNvMNtCsjLmvEpmKLDx_15makepad_network7runtimeNtB2_14NetworkRuntime10http_start",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1171586
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_script_resource_impl",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1974721
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_all_script_resources",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1865431
+            },
+            {
+              "functionName": "$_RNCNvNtNtCs3AedO6CAKCx_16makepad_platform6script3res10script_mods_0B7_",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1864979
+            },
+            {
+              "functionName": "$_RNvMNtCskTnMRUjX62u_14makepad_script13opcodes_callsNtNtB4_2vm8ScriptVm16handle_call_exec",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 838669
+            },
+            {
+              "functionName": "$_RNvMs6_NtCskTnMRUjX62u_14makepad_script2vmNtB5_8ScriptVm8run_core",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1063499
+            },
+            {
+              "functionName": "$_RNvMs6_NtCskTnMRUjX62u_14makepad_script2vmNtB5_8ScriptVm8run_root",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1065621
+            },
+            {
+              "functionName": "$_RNvMs6_NtCskTnMRUjX62u_14makepad_script2vmNtB5_8ScriptVm16eval_with_source",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1065249
+            }
+          ]
+        }
+      },
+      {
+        "event": "requestWillBeSent",
+        "phase": "initial",
+        "ms": 431.164,
+        "requestId": "21200.12",
+        "path": "/hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf",
+        "method": "GET",
+        "type": "Fetch",
+        "loaderId": "9377306E5E980847FAD05AF039903567",
+        "frameId": "8A2EC0920AD3BEE9937614986131F5A6",
+        "documentPath": "/",
+        "timestamp": 928.779717,
+        "initiator": {
+          "type": "script",
+          "path": null,
+          "callFrames": [
+            {
+              "functionName": "network_http_dispatch",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2278,
+              "columnNumber": 0
+            },
+            {
+              "functionName": "js_network_http_request",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2202,
+              "columnNumber": 5
+            },
+            {
+              "functionName": "env.js_network_http_request",
+              "path": "/makepad_wasm_bridge/wasm_bridge.js",
+              "lineNumber": 47,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "$_RNvXs_NtNtNtCs3AedO6CAKCx_16makepad_platform2os3web11web_networkNtB4_22WasmNetworkShimBackendNtNtCsjLmvEpmKLDx_15makep",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 2184520
+            },
+            {
+              "functionName": "$_RNvMNtCsjLmvEpmKLDx_15makepad_network7runtimeNtB2_14NetworkRuntime10http_start",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1171586
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_script_resource_impl",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1974721
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_all_script_resources",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1865431
+            },
+            {
+              "functionName": "$_RNCNvNtNtCs3AedO6CAKCx_16makepad_platform6script3res10script_mods_0B7_",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1864979
+            },
+            {
+              "functionName": "$_RNvMNtCskTnMRUjX62u_14makepad_script13opcodes_callsNtNtB4_2vm8ScriptVm16handle_call_exec",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 838669
+            },
+            {
+              "functionName": "$_RNvMs6_NtCskTnMRUjX62u_14makepad_script2vmNtB5_8ScriptVm8run_core",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1063499
+            },
+            {
+              "functionName": "$_RNvMs6_NtCskTnMRUjX62u_14makepad_script2vmNtB5_8ScriptVm8run_root",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1065621
+            },
+            {
+              "functionName": "$_RNvMs6_NtCskTnMRUjX62u_14makepad_script2vmNtB5_8ScriptVm16eval_with_source",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1065249
+            }
+          ]
+        }
+      },
+      {
+        "event": "requestWillBeSent",
+        "phase": "initial",
+        "ms": 431.231,
+        "requestId": "21200.13",
+        "path": "/hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf",
+        "method": "GET",
+        "type": "Fetch",
+        "loaderId": "9377306E5E980847FAD05AF039903567",
+        "frameId": "8A2EC0920AD3BEE9937614986131F5A6",
+        "documentPath": "/",
+        "timestamp": 928.780192,
+        "initiator": {
+          "type": "script",
+          "path": null,
+          "callFrames": [
+            {
+              "functionName": "network_http_dispatch",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2278,
+              "columnNumber": 0
+            },
+            {
+              "functionName": "js_network_http_request",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2202,
+              "columnNumber": 5
+            },
+            {
+              "functionName": "env.js_network_http_request",
+              "path": "/makepad_wasm_bridge/wasm_bridge.js",
+              "lineNumber": 47,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "$_RNvXs_NtNtNtCs3AedO6CAKCx_16makepad_platform2os3web11web_networkNtB4_22WasmNetworkShimBackendNtNtCsjLmvEpmKLDx_15makep",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 2184520
+            },
+            {
+              "functionName": "$_RNvMNtCsjLmvEpmKLDx_15makepad_network7runtimeNtB2_14NetworkRuntime10http_start",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1171586
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_script_resource_impl",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1974721
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_all_script_resources",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1865431
+            },
+            {
+              "functionName": "$_RNCNvNtNtCs3AedO6CAKCx_16makepad_platform6script3res10script_mods_0B7_",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1864979
+            },
+            {
+              "functionName": "$_RNvMNtCskTnMRUjX62u_14makepad_script13opcodes_callsNtNtB4_2vm8ScriptVm16handle_call_exec",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 838669
+            },
+            {
+              "functionName": "$_RNvMs6_NtCskTnMRUjX62u_14makepad_script2vmNtB5_8ScriptVm8run_core",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1063499
+            },
+            {
+              "functionName": "$_RNvMs6_NtCskTnMRUjX62u_14makepad_script2vmNtB5_8ScriptVm8run_root",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1065621
+            },
+            {
+              "functionName": "$_RNvMs6_NtCskTnMRUjX62u_14makepad_script2vmNtB5_8ScriptVm16eval_with_source",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1065249
+            }
+          ]
+        }
+      },
+      {
+        "event": "requestWillBeSent",
+        "phase": "initial",
+        "ms": 1077.03,
+        "requestId": "21200.14",
+        "path": "/makepad_widgets/resources/IBMPlexSans-Text.ttf",
+        "method": "GET",
+        "type": "Fetch",
+        "loaderId": "9377306E5E980847FAD05AF039903567",
+        "frameId": "8A2EC0920AD3BEE9937614986131F5A6",
+        "documentPath": "/",
+        "timestamp": 928.912054,
+        "initiator": {
+          "type": "script",
+          "path": null,
+          "callFrames": [
+            {
+              "functionName": "network_http_dispatch",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2278,
+              "columnNumber": 0
+            },
+            {
+              "functionName": "js_network_http_request",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2202,
+              "columnNumber": 5
+            },
+            {
+              "functionName": "env.js_network_http_request",
+              "path": "/makepad_wasm_bridge/wasm_bridge.js",
+              "lineNumber": 47,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "$_RNvXs_NtNtNtCs3AedO6CAKCx_16makepad_platform2os3web11web_networkNtB4_22WasmNetworkShimBackendNtNtCsjLmvEpmKLDx_15makep",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 2184520
+            },
+            {
+              "functionName": "$_RNvMNtCsjLmvEpmKLDx_15makepad_network7runtimeNtB2_14NetworkRuntime10http_start",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1171586
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_script_resource_impl",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1974721
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx28load_script_resource_by_path",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1972821
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB5_10FontFamily19ensure_fonts_loaded",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3151193
+            },
+            {
+              "functionName": "$_RNvMs_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB4_8DrawText6layout",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3212987
+            },
+            {
+              "functionName": "$_RNvMs_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB4_8DrawText9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3216656
+            },
+            {
+              "functionName": "$_RNvXNtCs8MzYl5wuB5Y_15makepad_widgets5labelNtB2_5LabelNtNtB4_6widget6Widget9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 4602035
+            },
+            {
+              "functionName": "$_RNvMsc_NtCs8MzYl5wuB5Y_15makepad_widgets6widgetNtB5_9WidgetRef9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 4381101
+            }
+          ]
+        }
+      },
+      {
+        "event": "requestWillBeSent",
+        "phase": "initial",
+        "ms": 1077.352,
+        "requestId": "21200.15",
+        "path": "/makepad_widgets/resources/LXGWWenKaiRegular.ttf",
+        "method": "GET",
+        "type": "Fetch",
+        "loaderId": "9377306E5E980847FAD05AF039903567",
+        "frameId": "8A2EC0920AD3BEE9937614986131F5A6",
+        "documentPath": "/",
+        "timestamp": 928.912645,
+        "initiator": {
+          "type": "script",
+          "path": null,
+          "callFrames": [
+            {
+              "functionName": "network_http_dispatch",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2278,
+              "columnNumber": 0
+            },
+            {
+              "functionName": "js_network_http_request",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2202,
+              "columnNumber": 5
+            },
+            {
+              "functionName": "env.js_network_http_request",
+              "path": "/makepad_wasm_bridge/wasm_bridge.js",
+              "lineNumber": 47,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "$_RNvXs_NtNtNtCs3AedO6CAKCx_16makepad_platform2os3web11web_networkNtB4_22WasmNetworkShimBackendNtNtCsjLmvEpmKLDx_15makep",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 2184520
+            },
+            {
+              "functionName": "$_RNvMNtCsjLmvEpmKLDx_15makepad_network7runtimeNtB2_14NetworkRuntime10http_start",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1171586
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_script_resource_impl",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1974721
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx28load_script_resource_by_path",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1972821
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB5_10FontFamily19ensure_fonts_loaded",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3151193
+            },
+            {
+              "functionName": "$_RNvMs_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB4_8DrawText6layout",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3212987
+            },
+            {
+              "functionName": "$_RNvMs_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB4_8DrawText9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3216656
+            },
+            {
+              "functionName": "$_RNvXNtCs8MzYl5wuB5Y_15makepad_widgets5labelNtB2_5LabelNtNtB4_6widget6Widget9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 4602035
+            },
+            {
+              "functionName": "$_RNvMsc_NtCs8MzYl5wuB5Y_15makepad_widgets6widgetNtB5_9WidgetRef9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 4381101
+            }
+          ]
+        }
+      },
+      {
+        "event": "requestWillBeSent",
+        "phase": "initial",
+        "ms": 1077.452,
+        "requestId": "21200.16",
+        "path": "/makepad_widgets/resources/NotoColorEmoji.ttf",
+        "method": "GET",
+        "type": "Fetch",
+        "loaderId": "9377306E5E980847FAD05AF039903567",
+        "frameId": "8A2EC0920AD3BEE9937614986131F5A6",
+        "documentPath": "/",
+        "timestamp": 928.91329,
+        "initiator": {
+          "type": "script",
+          "path": null,
+          "callFrames": [
+            {
+              "functionName": "network_http_dispatch",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2278,
+              "columnNumber": 0
+            },
+            {
+              "functionName": "js_network_http_request",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2202,
+              "columnNumber": 5
+            },
+            {
+              "functionName": "env.js_network_http_request",
+              "path": "/makepad_wasm_bridge/wasm_bridge.js",
+              "lineNumber": 47,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "$_RNvXs_NtNtNtCs3AedO6CAKCx_16makepad_platform2os3web11web_networkNtB4_22WasmNetworkShimBackendNtNtCsjLmvEpmKLDx_15makep",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 2184520
+            },
+            {
+              "functionName": "$_RNvMNtCsjLmvEpmKLDx_15makepad_network7runtimeNtB2_14NetworkRuntime10http_start",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1171586
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_script_resource_impl",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1974721
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx28load_script_resource_by_path",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1972821
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB5_10FontFamily19ensure_fonts_loaded",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3151193
+            },
+            {
+              "functionName": "$_RNvMs_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB4_8DrawText6layout",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3212987
+            },
+            {
+              "functionName": "$_RNvMs_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB4_8DrawText9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3216656
+            },
+            {
+              "functionName": "$_RNvXNtCs8MzYl5wuB5Y_15makepad_widgets5labelNtB2_5LabelNtNtB4_6widget6Widget9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 4602035
+            },
+            {
+              "functionName": "$_RNvMsc_NtCs8MzYl5wuB5Y_15makepad_widgets6widgetNtB5_9WidgetRef9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 4381101
+            }
+          ]
+        }
+      },
+      {
+        "event": "requestWillBeSent",
+        "phase": "initial",
+        "ms": 1077.734,
+        "requestId": "21200.17",
+        "path": "/makepad_widgets/resources/IBMPlexSans-SemiBold.ttf",
+        "method": "GET",
+        "type": "Fetch",
+        "loaderId": "9377306E5E980847FAD05AF039903567",
+        "frameId": "8A2EC0920AD3BEE9937614986131F5A6",
+        "documentPath": "/",
+        "timestamp": 928.917254,
+        "initiator": {
+          "type": "script",
+          "path": null,
+          "callFrames": [
+            {
+              "functionName": "network_http_dispatch",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2278,
+              "columnNumber": 0
+            },
+            {
+              "functionName": "js_network_http_request",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2202,
+              "columnNumber": 5
+            },
+            {
+              "functionName": "env.js_network_http_request",
+              "path": "/makepad_wasm_bridge/wasm_bridge.js",
+              "lineNumber": 47,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "$_RNvXs_NtNtNtCs3AedO6CAKCx_16makepad_platform2os3web11web_networkNtB4_22WasmNetworkShimBackendNtNtCsjLmvEpmKLDx_15makep",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 2184520
+            },
+            {
+              "functionName": "$_RNvMNtCsjLmvEpmKLDx_15makepad_network7runtimeNtB2_14NetworkRuntime10http_start",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1171586
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_script_resource_impl",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1974721
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx28load_script_resource_by_path",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1972821
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB5_10FontFamily19ensure_fonts_loaded",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3151193
+            },
+            {
+              "functionName": "$_RNvMs_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB4_8DrawText6layout",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3212987
+            },
+            {
+              "functionName": "$_RNvMs_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB4_8DrawText9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3216656
+            },
+            {
+              "functionName": "$_RNvXNtCs8MzYl5wuB5Y_15makepad_widgets5labelNtB2_5LabelNtNtB4_6widget6Widget9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 4602035
+            },
+            {
+              "functionName": "$_RNvMsc_NtCs8MzYl5wuB5Y_15makepad_widgets6widgetNtB5_9WidgetRef9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 4381101
+            }
+          ]
+        }
+      },
+      {
+        "event": "requestWillBeSent",
+        "phase": "initial",
+        "ms": 1077.805,
+        "requestId": "21200.18",
+        "path": "/makepad_widgets/resources/LXGWWenKaiBold.ttf",
+        "method": "GET",
+        "type": "Fetch",
+        "loaderId": "9377306E5E980847FAD05AF039903567",
+        "frameId": "8A2EC0920AD3BEE9937614986131F5A6",
+        "documentPath": "/",
+        "timestamp": 928.918059,
+        "initiator": {
+          "type": "script",
+          "path": null,
+          "callFrames": [
+            {
+              "functionName": "network_http_dispatch",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2278,
+              "columnNumber": 0
+            },
+            {
+              "functionName": "js_network_http_request",
+              "path": "/makepad_platform/web.js",
+              "lineNumber": 2202,
+              "columnNumber": 5
+            },
+            {
+              "functionName": "env.js_network_http_request",
+              "path": "/makepad_wasm_bridge/wasm_bridge.js",
+              "lineNumber": 47,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "$_RNvXs_NtNtNtCs3AedO6CAKCx_16makepad_platform2os3web11web_networkNtB4_22WasmNetworkShimBackendNtNtCsjLmvEpmKLDx_15makep",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 2184520
+            },
+            {
+              "functionName": "$_RNvMNtCsjLmvEpmKLDx_15makepad_network7runtimeNtB2_14NetworkRuntime10http_start",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1171586
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx25load_script_resource_impl",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1974721
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCs3AedO6CAKCx_16makepad_platform6script3resNtNtB9_2cx2Cx28load_script_resource_by_path",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 1972821
+            },
+            {
+              "functionName": "$_RNvMs0_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB5_10FontFamily19ensure_fonts_loaded",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3151193
+            },
+            {
+              "functionName": "$_RNvMs_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB4_8DrawText6layout",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3212987
+            },
+            {
+              "functionName": "$_RNvMs_NtNtCsg1J0sP1zt2K_12makepad_draw6shader9draw_textNtB4_8DrawText9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 3216656
+            },
+            {
+              "functionName": "$_RNvXNtCs8MzYl5wuB5Y_15makepad_widgets5labelNtB2_5LabelNtNtB4_6widget6Widget9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 4602035
+            },
+            {
+              "functionName": "$_RNvMsc_NtCs8MzYl5wuB5Y_15makepad_widgets6widgetNtB5_9WidgetRef9draw_walk",
+              "path": "/hepta-robrix.eb21f68382bc243f.wasm",
+              "lineNumber": 0,
+              "columnNumber": 4381101
+            }
+          ]
+        }
+      },
+      {
+        "event": "responseReceived",
+        "phase": "initial",
+        "ms": 1079.076,
+        "requestId": "21200.11",
+        "timestamp": 929.546421,
+        "type": "Fetch",
+        "path": "/makepad_widgets/resources/NewCMMath-Regular.otf",
+        "status": 200,
+        "mimeType": "font/otf",
+        "protocol": "http/1.1",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "encodedDataLength": 449,
+        "timing": {
+          "requestTime": 928.779765,
+          "proxyStart": -1,
+          "proxyEnd": -1,
+          "dnsStart": 0.069,
+          "dnsEnd": 0.074,
+          "connectStart": 0.074,
+          "connectEnd": 0.188,
+          "sslStart": -1,
+          "sslEnd": -1,
+          "workerStart": -1,
+          "workerReady": -1,
+          "workerFetchStart": -1,
+          "workerRespondWithSettled": -1,
+          "sendStart": 0.633,
+          "sendEnd": 0.675,
+          "pushStart": 0,
+          "pushEnd": 0,
+          "receiveHeadersStart": 1.515,
+          "receiveHeadersEnd": 1.572
+        }
+      },
+      {
+        "event": "responseReceived",
+        "phase": "initial",
+        "ms": 1080.053,
+        "requestId": "21200.12",
+        "timestamp": 929.546757,
+        "type": "Fetch",
+        "path": "/hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf",
+        "status": 200,
+        "mimeType": "font/otf",
+        "protocol": "http/1.1",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "encodedDataLength": 449,
+        "timing": {
+          "requestTime": 928.780219,
+          "proxyStart": -1,
+          "proxyEnd": -1,
+          "dnsStart": 0.066,
+          "dnsEnd": 0.07,
+          "connectStart": 0.07,
+          "connectEnd": 0.756,
+          "sslStart": -1,
+          "sslEnd": -1,
+          "workerStart": -1,
+          "workerReady": -1,
+          "workerFetchStart": -1,
+          "workerRespondWithSettled": -1,
+          "sendStart": 2.056,
+          "sendEnd": 2.127,
+          "pushStart": 0,
+          "pushEnd": 0,
+          "receiveHeadersStart": 2.348,
+          "receiveHeadersEnd": 2.387
+        }
+      },
+      {
+        "event": "responseReceived",
+        "phase": "initial",
+        "ms": 1080.787,
+        "requestId": "21200.13",
+        "timestamp": 929.546986,
+        "type": "Fetch",
+        "path": "/hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf",
+        "status": 200,
+        "mimeType": "font/otf",
+        "protocol": "http/1.1",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "encodedDataLength": 449,
+        "timing": {
+          "requestTime": 928.781113,
+          "proxyStart": -1,
+          "proxyEnd": -1,
+          "dnsStart": 0.076,
+          "dnsEnd": 0.08,
+          "connectStart": 0.08,
+          "connectEnd": 0.764,
+          "sslStart": -1,
+          "sslEnd": -1,
+          "workerStart": -1,
+          "workerReady": -1,
+          "workerFetchStart": -1,
+          "workerRespondWithSettled": -1,
+          "sendStart": 1.986,
+          "sendEnd": 2.047,
+          "pushStart": 0,
+          "pushEnd": 0,
+          "receiveHeadersStart": 2.451,
+          "receiveHeadersEnd": 2.491
+        }
+      },
+      {
+        "event": "responseReceived",
+        "phase": "initial",
+        "ms": 1082.054,
+        "requestId": "21200.14",
+        "timestamp": 929.547654,
+        "type": "Fetch",
+        "path": "/makepad_widgets/resources/IBMPlexSans-Text.ttf",
+        "status": 200,
+        "mimeType": "font/ttf",
+        "protocol": "http/1.1",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "encodedDataLength": 448,
+        "timing": {
+          "requestTime": 928.912793,
+          "proxyStart": -1,
+          "proxyEnd": -1,
+          "dnsStart": 0.123,
+          "dnsEnd": 0.135,
+          "connectStart": 0.135,
+          "connectEnd": 0.396,
+          "sslStart": -1,
+          "sslEnd": -1,
+          "workerStart": -1,
+          "workerReady": -1,
+          "workerFetchStart": -1,
+          "workerRespondWithSettled": -1,
+          "sendStart": 0.476,
+          "sendEnd": 0.55,
+          "pushStart": 0,
+          "pushEnd": 0,
+          "receiveHeadersStart": 0.911,
+          "receiveHeadersEnd": 1.076
+        }
+      },
+      {
+        "event": "responseReceived",
+        "phase": "initial",
+        "ms": 1082.443,
+        "requestId": "21200.15",
+        "timestamp": 929.547916,
+        "type": "Fetch",
+        "path": "/makepad_widgets/resources/LXGWWenKaiRegular.ttf",
+        "status": 200,
+        "mimeType": "font/ttf",
+        "protocol": "http/1.1",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "encodedDataLength": 450,
+        "timing": {
+          "requestTime": 928.913527,
+          "proxyStart": -1,
+          "proxyEnd": -1,
+          "dnsStart": 0.058,
+          "dnsEnd": 0.062,
+          "connectStart": 0.062,
+          "connectEnd": 0.782,
+          "sslStart": -1,
+          "sslEnd": -1,
+          "workerStart": -1,
+          "workerReady": -1,
+          "workerFetchStart": -1,
+          "workerRespondWithSettled": -1,
+          "sendStart": 1.654,
+          "sendEnd": 1.71,
+          "pushStart": 0,
+          "pushEnd": 0,
+          "receiveHeadersStart": 2.104,
+          "receiveHeadersEnd": 2.144
+        }
+      },
+      {
+        "event": "responseReceived",
+        "phase": "initial",
+        "ms": 1082.778,
+        "requestId": "21200.16",
+        "timestamp": 929.548216,
+        "type": "Fetch",
+        "path": "/makepad_widgets/resources/NotoColorEmoji.ttf",
+        "status": 200,
+        "mimeType": "font/ttf",
+        "protocol": "http/1.1",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "encodedDataLength": 450,
+        "timing": {
+          "requestTime": 928.914484,
+          "proxyStart": -1,
+          "proxyEnd": -1,
+          "dnsStart": 0.096,
+          "dnsEnd": 0.102,
+          "connectStart": 0.102,
+          "connectEnd": 0.46,
+          "sslStart": -1,
+          "sslEnd": -1,
+          "workerStart": -1,
+          "workerReady": -1,
+          "workerFetchStart": -1,
+          "workerRespondWithSettled": -1,
+          "sendStart": 1.713,
+          "sendEnd": 1.765,
+          "pushStart": 0,
+          "pushEnd": 0,
+          "receiveHeadersStart": 2.059,
+          "receiveHeadersEnd": 2.098
+        }
+      },
+      {
+        "event": "responseReceived",
+        "phase": "initial",
+        "ms": 1083.092,
+        "requestId": "21200.17",
+        "timestamp": 929.548502,
+        "type": "Fetch",
+        "path": "/makepad_widgets/resources/IBMPlexSans-SemiBold.ttf",
+        "status": 200,
+        "mimeType": "font/ttf",
+        "protocol": "http/1.1",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "encodedDataLength": 448,
+        "timing": {
+          "requestTime": 928.918274,
+          "proxyStart": -1,
+          "proxyEnd": -1,
+          "dnsStart": 0.079,
+          "dnsEnd": 0.087,
+          "connectStart": 0.087,
+          "connectEnd": 0.678,
+          "sslStart": -1,
+          "sslEnd": -1,
+          "workerStart": -1,
+          "workerReady": -1,
+          "workerFetchStart": -1,
+          "workerRespondWithSettled": -1,
+          "sendStart": 1.45,
+          "sendEnd": 1.504,
+          "pushStart": 0,
+          "pushEnd": 0,
+          "receiveHeadersStart": 1.947,
+          "receiveHeadersEnd": 2.004
+        }
+      },
+      {
+        "event": "responseReceived",
+        "phase": "initial",
+        "ms": 1083.66,
+        "requestId": "21200.18",
+        "timestamp": 929.548713,
+        "type": "Fetch",
+        "path": "/makepad_widgets/resources/LXGWWenKaiBold.ttf",
+        "status": 200,
+        "mimeType": "font/ttf",
+        "protocol": "http/1.1",
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "encodedDataLength": 450,
+        "timing": {
+          "requestTime": 928.918786,
+          "proxyStart": -1,
+          "proxyEnd": -1,
+          "dnsStart": 0.087,
+          "dnsEnd": 0.091,
+          "connectStart": 0.091,
+          "connectEnd": 0.355,
+          "sslStart": -1,
+          "sslEnd": -1,
+          "workerStart": -1,
+          "workerReady": -1,
+          "workerFetchStart": -1,
+          "workerRespondWithSettled": -1,
+          "sendStart": 1.358,
+          "sendEnd": 1.408,
+          "pushStart": 0,
+          "pushEnd": 0,
+          "receiveHeadersStart": 1.998,
+          "receiveHeadersEnd": 2.033
+        }
+      },
+      {
+        "event": "loadingFinished",
+        "phase": "initial",
+        "ms": 1115.297,
+        "requestId": "21200.11",
+        "timestamp": 928.799874,
+        "encodedDataLength": 1152017
+      },
+      {
+        "event": "loadingFinished",
+        "phase": "initial",
+        "ms": 1130.76,
+        "requestId": "21200.14",
+        "timestamp": 928.91707,
+        "encodedDataLength": 182240
+      },
+      {
+        "event": "loadingFinished",
+        "phase": "initial",
+        "ms": 1143.928,
+        "requestId": "21200.17",
+        "timestamp": 928.924172,
+        "encodedDataLength": 182624
+      },
+      {
+        "event": "loadingFinished",
+        "phase": "initial",
+        "ms": 10492.704,
+        "requestId": "21200.15",
+        "timestamp": 938.89749,
+        "encodedDataLength": 19074414
+      },
+      {
+        "event": "loadingFinished",
+        "phase": "initial",
+        "ms": 10644.713,
+        "requestId": "21200.12",
+        "timestamp": 939.081302,
+        "encodedDataLength": 8331785
+      },
+      {
+        "event": "loadingFinished",
+        "phase": "initial",
+        "ms": 10686.867,
+        "requestId": "21200.13",
+        "timestamp": 939.120698,
+        "encodedDataLength": 8543617
+      },
+      {
+        "event": "loadingFinished",
+        "phase": "initial",
+        "ms": 10803.563,
+        "requestId": "21200.16",
+        "timestamp": 939.231414,
+        "encodedDataLength": 10644302
+      },
+      {
+        "event": "loadingFinished",
+        "phase": "initial",
+        "ms": 10884.625,
+        "requestId": "21200.18",
+        "timestamp": 939.294043,
+        "encodedDataLength": 18547198
+      }
+    ],
+    "consoleEvents": [
+      {
+        "type": "log",
+        "kind": "other",
+        "path": "/makepad_platform/web.js",
+        "lineNumber": 637,
+        "columnNumber": 16,
+        "characters": 237,
+        "phase": "initial",
+        "ms": 199.47
+      },
+      {
+        "type": "log",
+        "kind": "other",
+        "path": "/makepad_platform/web.js",
+        "lineNumber": 637,
+        "columnNumber": 16,
+        "characters": 370,
+        "phase": "initial",
+        "ms": 222.769
+      },
+      {
+        "type": "log",
+        "kind": "other",
+        "path": "/makepad_platform/web.js",
+        "lineNumber": 637,
+        "columnNumber": 16,
+        "characters": 264,
+        "phase": "initial",
+        "ms": 466.881
+      },
+      {
+        "type": "error",
+        "kind": "other",
+        "path": "/api/hepta/runtime",
+        "lineNumber": 0,
+        "columnNumber": 0,
+        "characters": 88,
+        "phase": "initial",
+        "ms": 12188.554
+      },
+      {
+        "type": "error",
+        "kind": "sdk-http-status-failure",
+        "path": "/makepad_platform/web.js",
+        "lineNumber": 637,
+        "columnNumber": 16,
+        "characters": 65,
+        "phase": "initial",
+        "ms": 12278.294
+      },
+      {
+        "type": "error",
+        "kind": "sdk-http-error",
+        "path": "/makepad_platform/web.js",
+        "lineNumber": 637,
+        "columnNumber": 16,
+        "characters": 122,
+        "phase": "timeout",
+        "ms": 18149.56
+      },
+      {
+        "type": "error",
+        "kind": "other",
+        "path": "/api/hepta/runtime",
+        "lineNumber": 0,
+        "columnNumber": 0,
+        "characters": 88,
+        "phase": "timeout",
+        "ms": 18152.697
+      },
+      {
+        "type": "error",
+        "kind": "sdk-http-status-failure",
+        "path": "/makepad_platform/web.js",
+        "lineNumber": 637,
+        "columnNumber": 16,
+        "characters": 65,
+        "phase": "timeout",
+        "ms": 18153.312
+      }
+    ],
+    "browserLifecycle": {
+      "observationError": "page-unavailable",
+      "fontCompletionSettled": true
+    },
+    "diagnosticOverflow": {
+      "fontRequests": 0,
+      "fontEvents": 0,
+      "consoleEvents": 0,
+      "cdpFontEvents": 0,
+      "apiNetworkEvents": 0,
+      "apiWaits": 0
+    },
+    "diagnosticWaits": [
+      {
+        "scope": "initial-read-audit",
+        "settled": true,
+        "observedCount": 8,
+        "observations": 8,
+        "ms": 13138.566
+      },
+      {
+        "scope": "finally",
+        "settled": true,
+        "observedCount": 8,
+        "observations": 8,
+        "ms": 89978.323
+      }
+    ]
+  }
+}

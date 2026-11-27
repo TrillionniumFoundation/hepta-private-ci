@@ -1,0 +1,325 @@
+{
+  "schema_version": 1,
+  "scope": "Evidence preservation only; no training re-execution",
+  "package_commit": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"committed\":true,\"mode\":384,\"reused\":false,\"sha256\":\"401a43c849525200293a38259bea5c200109994633c8125d8aa1b6ff348e1f11\",\"size\":5852924,\"version\":\"66306:76837060:5852924:1793966294579397435:1793966312778742451\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "extraction_start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793966585735,\n    \"cwd\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53\",\n    \"env_keys\": [\n      \"MKL_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1b0bdb787-fc05-7284\",\n    \"idempotency_key\": \"hcsn-gap-closure-20261106-d216bf53-extract-03\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b0bdb787-fc05-7284\",\n    \"request_digest\": \"0b66f0ac370539c84ddc9c8d567c5d766f345187fa4f71ec1be353bbbd03576d\",\n    \"request_fingerprint\": 821608604489824712,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b0bdb787-fc05-7284\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b0bdb787-fc05-7284\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "job_starts": {
+    "a": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-m\",\n      \"qualification.hcsn_training.verify_host\",\n      \"--signed-worker-executable\",\n      \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/deployment-03/bin/signed-worker\",\n      \"--signed-worker-sha256\",\n      \"2a195957ea1f4f0288ec4af7e00210f96ad78b7283b74da59360aea13494ce46\",\n      \"--backend\",\n      \"value_kernel\",\n      \"--output\",\n      \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/host-a-03\"\n    ],\n    \"created_unix_ms\": 1793966645219,\n    \"cwd\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/deployment-03/source\",\n    \"env_keys\": [\n      \"MKL_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1b0be9fe3-fc05-728c\",\n    \"idempotency_key\": \"hcsn-gap-closure-20261106-d216bf53-host-a-03\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b0be9fe3-fc05-728c\",\n    \"request_digest\": \"df1c89738126b18496d180b91214860ec70d99afb86be39f863dff8965026732\",\n    \"request_fingerprint\": 16076875898986869124,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b0be9fe3-fc05-728c\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b0be9fe3-fc05-728c\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "b": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-m\",\n      \"qualification.hcsn_training.verify_host\",\n      \"--signed-worker-executable\",\n      \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/deployment-03/bin/signed-worker\",\n      \"--signed-worker-sha256\",\n      \"2a195957ea1f4f0288ec4af7e00210f96ad78b7283b74da59360aea13494ce46\",\n      \"--backend\",\n      \"population_grid\",\n      \"--output\",\n      \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/host-b-03\"\n    ],\n    \"created_unix_ms\": 1793966655211,\n    \"cwd\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/deployment-03/source\",\n    \"env_keys\": [\n      \"MKL_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1b0bec6eb-fc05-728d\",\n    \"idempotency_key\": \"hcsn-gap-closure-20261106-d216bf53-host-b-03\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b0bec6eb-fc05-728d\",\n    \"request_digest\": \"ee4d73992bc45d9c681e36690b75ed7ccc38939925f41aecc5b7280134728802\",\n    \"request_fingerprint\": 17171508055935049116,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b0bec6eb-fc05-728d\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b0bec6eb-fc05-728d\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "age": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-m\",\n      \"qualification.hcsn_training.verify_host\",\n      \"--signed-worker-executable\",\n      \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/deployment-03/bin/signed-worker\",\n      \"--signed-worker-sha256\",\n      \"2a195957ea1f4f0288ec4af7e00210f96ad78b7283b74da59360aea13494ce46\",\n      \"--backend\",\n      \"population_age\",\n      \"--output\",\n      \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/host-age-03\"\n    ],\n    \"created_unix_ms\": 1793966695797,\n    \"cwd\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/deployment-03/source\",\n    \"env_keys\": [\n      \"MKL_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1b0bf6575-fc05-7291\",\n    \"idempotency_key\": \"hcsn-gap-closure-20261106-d216bf53-host-age-03\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b0bf6575-fc05-7291\",\n    \"request_digest\": \"964eea4d94712311aa91906fe8fc7690c710abc4aca4bd904f0d265d9f466450\",\n    \"request_fingerprint\": 10830851772796445457,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b0bf6575-fc05-7291\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b0bf6575-fc05-7291\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "job_terminals": {
+    "a": {
+      "at_unix_ms": 1793966649568,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1b0be9fe3-fc05-728c",
+      "launch_nonce": "f811541b7a8116c2a13fdf01048e01c7",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 2153,
+          "stored": 2153
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "b": {
+      "at_unix_ms": 1793966659068,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1b0bec6eb-fc05-728d",
+      "launch_nonce": "f77d6a4f9a932dd1b87881d0a7f80285",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 2155,
+          "stored": 2155
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "age": {
+      "at_unix_ms": 1793966702066,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1b0bf6575-fc05-7291",
+      "launch_nonce": "09c215f801d723c23ef9c869df483d4f",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 2155,
+          "stored": 2155
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "collection_attempts": [
+    {
+      "start": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793967087257,\n    \"cwd\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53\",\n    \"env_keys\": [\n      \"MKL_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1b0c55e99-fc05-72c2\",\n    \"idempotency_key\": \"hcsn-gap-closure-20261106-d216bf53-collect-evidence-03\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b0c55e99-fc05-72c2\",\n    \"request_digest\": \"a3b6207fde0c701cd89994300df496a2273734e240e0d9bce84fdad997f1434a\",\n    \"request_fingerprint\": 11796652007501885468,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b0c55e99-fc05-72c2\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b0c55e99-fc05-72c2\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observation": [
+        {
+          "status": "fulfilled",
+          "value": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\n  \"at_unix_ms\": 1793967094728,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 1,\n  \"job_id\": \"1a1b0c55e99-fc05-72c2\",\n  \"launch_nonce\": \"602fe10fb09e3077b1f98653fffce5df\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 110,\n      \"stored\": 110\n    },\n    \"stdout\": {\n      \"seen\": 0,\n      \"stored\": 0\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"failed\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+              }
+            ],
+            "structuredContent": null,
+            "isError": false
+          }
+        },
+        {
+          "status": "fulfilled",
+          "value": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b0c55e99-fc05-72c2\",\n  \"stderr\": {\n    \"bytes_hex\": \"54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737464696e3e222c206c696e652032392c20696e203c6d6f64756c653e0a4b65794572726f723a2027736f757263652f6863736e2f5f5f696e69745f5f2e7079270a\",\n    \"eof\": true,\n    \"next_offset\": 110,\n    \"offset\": 0,\n    \"size\": 110,\n    \"text\": \"Traceback (most recent call last):\\n  File \\\"<stdin>\\\", line 29, in <module>\\nKeyError: 'source/hcsn/__init__.py'\\n\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  }\n}"
+              }
+            ],
+            "structuredContent": null,
+            "isError": false
+          }
+        }
+      ]
+    },
+    {
+      "start": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793967141510,\n    \"cwd\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53\",\n    \"env_keys\": [\n      \"MKL_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1b0c63286-fc05-72ca\",\n    \"idempotency_key\": \"hcsn-gap-closure-20261106-d216bf53-collect-evidence-03b\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b0c63286-fc05-72ca\",\n    \"request_digest\": \"fde6ba51ea0f2938837adb5f43d07af9a7d0f76aacb0384331c38bd46cfd3314\",\n    \"request_fingerprint\": 18295515397221198136,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b0c63286-fc05-72ca\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b0c63286-fc05-72ca\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observation": [
+        {
+          "status": "fulfilled",
+          "value": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\n  \"at_unix_ms\": 1793967144844,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b0c63286-fc05-72ca\",\n  \"launch_nonce\": \"63363c4cb52744fb9d0147fe638fd8e1\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 578,\n      \"stored\": 578\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+              }
+            ],
+            "structuredContent": null,
+            "isError": false
+          }
+        },
+        {
+          "status": "fulfilled",
+          "value": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b0c63286-fc05-72ca\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22736368656d615f76657273696f6e223a20312c2022737461747573223a2022636f6c6c6563746564222c202261726368697665223a20222f686f6d652f71712f776f726b2f6863736e2d6761702d636c6f737572652d32303236313130362d64323136626635332f616363657074616e63652d65766964656e63652d30332e7461722e787a222c2022736861323536223a202261666265643538326666306435363531303038356661663832633063376165393232383264646134303631316232396361396365616361636235373839363438222c20226279746573223a203132303334342c20226d656d62657273223a203133342c202265766964656e63655f66696c65735f736861323536223a202231336539356331373838393736353630303263613739326236633136663436376531346634313539376535366438386236343962343231346334306632363565222c2022706879736963616c5f73756d6d6172795f736861323536223a202262633264656265323338313764303761353862363664626166343463623435653063343064303265363430356635633839323366333635653937316164393434222c2022616c6c5f74687265655f706879736963616c5f6a6f62735f737563636565646564223a20747275652c20226e6f5f747261696e696e675f6f725f776f726b65725f64697370617463685f68657265223a20747275652c202270726f64756374696f6e223a2066616c73652c2022637564615f63616d706169676e5f73746172746564223a2066616c73657d0a\",\n    \"eof\": true,\n    \"next_offset\": 578,\n    \"offset\": 0,\n    \"size\": 578,\n    \"text\": \"{\\\"schema_version\\\": 1, \\\"status\\\": \\\"collected\\\", \\\"archive\\\": \\\"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/acceptance-evidence-03.tar.xz\\\", \\\"sha256\\\": \\\"afbed582ff0d56510085faf82c0c7ae92282dda40611b29ca9ceacacb5789648\\\", \\\"bytes\\\": 120344, \\\"members\\\": 134, \\\"evidence_files_sha256\\\": \\\"13e95c178897656002ca792b6c16f467e14f41597e56d88b649b4214c40f265e\\\", \\\"physical_summary_sha256\\\": \\\"bc2debe23817d07a58b66dbaf44cb45e0c40d02e6405f5c8923f365e971ad944\\\", \\\"all_three_physical_jobs_succeeded\\\": true, \\\"no_training_or_worker_dispatch_here\\\": true, \\\"production\\\": false, \\\"cuda_campaign_started\\\": false}\\n\"\n  }\n}"
+              }
+            ],
+            "structuredContent": null,
+            "isError": false
+          }
+        }
+      ]
+    }
+  ],
+  "binary_reads": [
+    {
+      "chunk_sha256": "9a9c3557c0db533149ba939e09930c743284193914b0e2d58748de0e3d5facd4",
+      "eof": false,
+      "next_offset": 65536,
+      "offset": 0,
+      "path": "/home/qq/work/hcsn-gap-closure-20261106-d216bf53/acceptance-evidence-03.tar.xz",
+      "size": 120344,
+      "version": "66306:76847196:120344:1793967144778727870:1793967144778727870"
+    },
+    {
+      "chunk_sha256": "b43baa2674d9cf4ff284c1a9cd96f5ea76dc3334cb9ab57329f457f235bdf5b4",
+      "eof": true,
+      "next_offset": 120344,
+      "offset": 65536,
+      "path": "/home/qq/work/hcsn-gap-closure-20261106-d216bf53/acceptance-evidence-03.tar.xz",
+      "size": 120344,
+      "version": "66306:76847196:120344:1793967144778727870:1793967144778727870"
+    }
+  ],
+  "full_archive_sha256": "afbed582ff0d56510085faf82c0c7ae92282dda40611b29ca9ceacacb5789648",
+  "pure_js_chunk_and_full_sha256_verified": true,
+  "base64_decode_reencode_roundtrip_verified": true,
+  "remote_git_hash_start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"hash-object\",\n      \"--no-filters\",\n      \"--\",\n      \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53/acceptance-evidence-03.tar.xz\"\n    ],\n    \"created_unix_ms\": 1793967504380,\n    \"cwd\": \"/home/qq/work/hcsn-gap-closure-20261106-d216bf53\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/git\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1b0cbbbfc-fc05-72f9\",\n    \"idempotency_key\": \"hcsn-gap-closure-20261106-d216bf53-evidence-03-git-hash\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b0cbbbfc-fc05-72f9\",\n    \"request_digest\": \"531a4ba077bf532dd70a6afde185263d2fdb35f8b4c783f7245266b5b5354b63\",\n    \"request_fingerprint\": 5988181807118373677,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b0cbbbfc-fc05-72f9\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b0cbbbfc-fc05-72f9\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "remote_git_hash_observation": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"at_unix_ms\": 1793967512275,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b0cbbbfc-fc05-72f9\",\n  \"launch_nonce\": \"557b4443b47cf0840a7c8032975d9e75\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 41,\n      \"stored\": 41\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b0cbbbfc-fc05-72f9\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"666663666663636533323930323937313738663332616533313137323934393933313534653231310a\",\n    \"eof\": true,\n    \"next_offset\": 41,\n    \"offset\": 0,\n    \"size\": 41,\n    \"text\": \"ffcffcce3290297178f32ae3117294993154e211\\n\"\n  }\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  ],
+  "github_archive_blob_create": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "ffcffcce3290297178f32ae3117294993154e211"
+    },
+    "isError": false
+  },
+  "local_collection_error": "exec-server transport disconnected; failed to resume exec-server session: recovery timed out after 45s; occurred before local collection command process creation"
+}

@@ -1,0 +1,65 @@
+{
+  "batch": 4,
+  "classes": 10,
+  "counts": {
+    "backbone": 17770,
+    "frontend": 2208,
+    "matching": {
+      "hidden_width": 49,
+      "n_parameters": 17770,
+      "parameter_padding": false,
+      "relative_gap": 0.009255129348795719,
+      "target_parameters": 17936
+    },
+    "readout": 330,
+    "total": 20308
+  },
+  "depth": 1,
+  "forward": [
+    {
+      "cpu_seconds": 0.002983126999999808,
+      "wall_seconds": 0.016386624000006123
+    },
+    {
+      "cpu_seconds": 0.002662631000000193,
+      "wall_seconds": 0.0026637820001269574
+    },
+    {
+      "cpu_seconds": 0.0022575279999998976,
+      "wall_seconds": 0.0022513640001307067
+    }
+  ],
+  "forward_cpu_median": 0.002662631000000193,
+  "input_features": 64,
+  "length": 32,
+  "model": "two_gates",
+  "optimizer_cpu_median": 0.01095330799999994,
+  "optimizer_step": [
+    {
+      "cpu_seconds": 0.012011755999999707,
+      "wall_seconds": 0.02279146099999707
+    },
+    {
+      "cpu_seconds": 0.01095330799999994,
+      "wall_seconds": 0.018329863999952067
+    },
+    {
+      "cpu_seconds": 0.010896035000000026,
+      "wall_seconds": 0.017322585999863804
+    }
+  ],
+  "peak_process_rss_kib": 267820,
+  "schema": "hcsn-v2-runtime-case.v1",
+  "scope": "Synthetic full-sequence CPU; not equal-quality throughput, energy or cache comparison",
+  "warmup": {
+    "forward": {
+      "cpu_seconds": 0.003095353999999606,
+      "wall_seconds": 0.007416710000143212
+    },
+    "optimizer_step": {
+      "cpu_seconds": 0.01800788200000003,
+      "wall_seconds": 0.03772517900006278
+    }
+  },
+  "width": 32
+}

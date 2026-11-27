@@ -1,3 +1,4 @@
+use super::durable_history::persisted_response_items;
 use anyhow::Result;
 use codex_core::TurnInputRequest;
 use codex_core::config::CurrentTimeReminderConfig;
@@ -13,13 +14,13 @@ use codex_protocol::protocol::GuardianAssessmentEvent;
 use codex_protocol::protocol::GuardianAssessmentStatus;
 use codex_protocol::protocol::Op;
 use codex_protocol::user_input::UserInput;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
 use core_test_support::responses::mount_sse_once;
 use core_test_support::responses::sse;
-use core_test_support::responses::start_mock_server;
+use core_test_support::responses::strip_response_item_ids_from_json;
 use core_test_support::skip_if_no_network;
-use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
@@ -28,13 +29,14 @@ use std::collections::BTreeMap;
 async fn first_request_item_types_roles_and_content_annotations() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let response = mount_sse_once(
         &server,
         sse(vec![ev_response_created("resp-1"), ev_completed("resp-1")]),
     )
     .await;
-    let test = test_codex()
+    let test = server
+        .test_codex()
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
@@ -141,6 +143,11 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
 
     let request = response.single_request();
     assert!(request.has_content_kinds(&["guardian.approved_action"]));
+    let history = persisted_response_items(&test).await?;
+    assert_eq!(
+        strip_response_item_ids_from_json(serde_json::Value::Array(history)),
+        strip_response_item_ids_from_json(serde_json::Value::Array(request.input()))
+    );
     let mut guardian_item = request
         .input()
         .into_iter()
@@ -220,13 +227,14 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
 async fn content_item_kinds_are_omitted_when_feature_disabled() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let response = mount_sse_once(
         &server,
         sse(vec![ev_response_created("resp-1"), ev_completed("resp-1")]),
     )
     .await;
-    let test = test_codex()
+    let test = server
+        .test_codex()
         .with_config(|config| {
             config.developer_instructions = Some("Keep other metadata intact.".into());
             config

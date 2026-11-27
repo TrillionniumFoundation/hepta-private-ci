@@ -1,0 +1,127 @@
+{
+  "artifact_sha256": {
+    "new-accounting.py": "3deccbaee86f5142391ddd1472522e331055935d4f17c458eb050c177650509b",
+    "old-accounting.py": "29d2fa22915b2e6a08e1d44282460bf95e8eb1a545bae45ef78bc35fc1f6582d",
+    "original-benchmark.json": "0060c66c853dfa6c4bd408dcfb3316703b93512368c5931fb51ffda1daeccc9f",
+    "shared-ledger-fixture.json": "bb2b6b341232ad020ae2383e2f705c9c2b4544c4cc6a1a2c398a815fd7095655",
+    "worker.py": "c61e82e3b37d17ff84ab07f3605b1655313c553d5fc576de4db318f9d423dd19"
+  },
+  "baseline_commit": "f28bc2c51ba30fe0d33cd59f2bd9df8c253afa0c",
+  "claims_excluded": [
+    "whole-build speedup",
+    "qualification pass",
+    "content/utility improvement",
+    "root cause of T7 slowdown",
+    "claim that thread settings caused original mixed timings"
+  ],
+  "corrections_to_original": [
+    "Thread variables are explicitly 1 before NumPy import; original null environment remains preserved and is not established as the cause of its mixed update timings.",
+    "Prefix uses the actual retained d1 seven-stage and 35-total-counter ledger, replacing twelve artificial prefix stages; search_train is the eighth stage.",
+    "Ledger-only uses 256 charges on search_train with the exact S-step inventory and counters, replacing 3000 charges cycling twelve synthetic stages; absolute timings are not directly comparable across protocols."
+  ],
+  "diagnostic_id": "accounting-cache-development-diagnostic-20261023-c1",
+  "equivalence_required": [
+    "old/new stage snapshots, totals, kernels, shared metadata and ledger digests exact",
+    "old/new all model parameters, Adam m/v/step, losses and update counts bitwise equal per pair",
+    "256 actual model updates in full_update; zero actual model updates in ledger_only"
+  ],
+  "execution_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python runs/accounting-cache-development-diagnostic-20261023-c1/worker.py",
+  "execution_status": "prepared only; waiting for explicit root review authorization",
+  "fixture": {
+    "consumed_units_before": 3611371737,
+    "limits": "snapshot prefix is post-shared state, not a chronological replay or measurement of shared preparation",
+    "path": "shared-ledger-fixture.json",
+    "seeding": "public record once per exact retained stage, no stage amplification",
+    "stage_after": "search_train",
+    "stage_count_after": 8,
+    "stage_count_before": 7,
+    "stages": [
+      "base_calibration",
+      "base_compile",
+      "base_data",
+      "base_decoder",
+      "base_export",
+      "base_pretrain",
+      "base_validation"
+    ],
+    "total_counter_count_before": 35
+  },
+  "hand_inputs": {
+    "labels": "64 rng.integers(12), drawn after x; reused unchanged for each of 256 updates",
+    "rng_seed": 93017,
+    "x_distribution": "normal(0,0.2)",
+    "x_shape": [
+      64,
+      202
+    ]
+  },
+  "iterations": {
+    "full_update": 256,
+    "ledger_only": 256
+  },
+  "kind_order": [
+    "ledger_only",
+    "full_update"
+  ],
+  "measurement": {
+    "cpu": "time.process_time_ns",
+    "drop_pairs": false,
+    "extra_profiling": false,
+    "retries": 0,
+    "timing_selected_repetition": false,
+    "tuning": false,
+    "wall": "time.perf_counter_ns",
+    "warmup": 0
+  },
+  "model": {
+    "dimensions": [
+      202,
+      12,
+      192,
+      32
+    ],
+    "initialization_seed": 193,
+    "learning_rate": 0.003,
+    "objective": "supervised CE"
+  },
+  "pair_orders": [
+    [
+      "old",
+      "new"
+    ],
+    [
+      "new",
+      "old"
+    ],
+    [
+      "old",
+      "new"
+    ],
+    [
+      "new",
+      "old"
+    ],
+    [
+      "old",
+      "new"
+    ]
+  ],
+  "pairs_per_kind": 5,
+  "prepared_execution_commit": "382c9967c22acaf185e86c121a6f39c2a8f48c1f",
+  "purpose": "One corrected paired hand-fixture diagnostic of accounting cache and real supervised-update overhead; do not infer whole-build speed, transient slowdown cause, or qualification benefit.",
+  "qualification": false,
+  "required_thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "retention": "Preserve original JSON unchanged, all ten corrected pair CPU/wall timings including negative pairs, and twenty old/new final receipts. Exclusive STARTED marker; any failure nonzero, do not rerun this directory.",
+  "runtime_source_sha256": {
+    "data.py": "a3ac8701a57c2656a8508949e1bdaf09f8902a91cdbf08dc370e4f676cfb8bcb",
+    "independent/learning.py": "ca3f16c8c75cc2fbf55ce7e17906d567e739eb5839d1c11af599cb8761cc2175",
+    "model.py": "36b99a28ea690a5e1c7c82db8debbbf58067d57796502f89cacb146554da4dc8",
+    "utility.py": "bbfcbad5557107e3d9be587f55cd91889e2c1b0d6c3d87d07ec329ff54251037"
+  },
+  "schema": "hepta.accounting-development-diagnostic-protocol.v1",
+  "timing_boundary": "Only 256 quoted ledger admissions or 256 real S objective/forward/backward/Adam updates are timed. Process startup, imports, seven-stage reconstruction, random inputs, model construction, receipts and equality checks are outside timers. There is no warmup; first-use effects remain in the fixed order."
+}

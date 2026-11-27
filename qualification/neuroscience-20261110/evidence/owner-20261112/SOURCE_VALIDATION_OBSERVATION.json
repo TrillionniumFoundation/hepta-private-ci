@@ -1,0 +1,186 @@
+{
+  "schema": "hepta.neuroscience.owner-source-validation-observation.v1",
+  "status": "HOLD_NATIVE_EXECUTION_PENDING",
+  "pr": 6213,
+  "head": "60606b89dd30f78de94b583524131446d45ca49a",
+  "parent": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+  "tree": "177df716b8578216efd502aed91e5672ac979ee0",
+  "representation": "Observed completed local tool results transcribed as metadata; not original local log bytes or a native Rust execution result.",
+  "source_validation": {
+    "tests": 355,
+    "failures": 0,
+    "errors": 0,
+    "test_seconds": 151.394,
+    "wall_seconds": 152.864,
+    "source_bytes_unchanged_during_run": true,
+    "full_checkout": true
+  },
+  "previous_validation": {
+    "initial_tests": 347,
+    "failures": 2,
+    "errors": 14,
+    "readiness_marker_error_count": 14,
+    "upstream_unchanged_reproduction": {
+      "tests": 2,
+      "failures": 2
+    },
+    "after_correction_tests": 347,
+    "after_correction_passed": 347
+  },
+  "format": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "8b4d162cff8fa7c4d53c520370217ceda99ee0aa"
+    ],
+    "cwd": "codex-rs",
+    "rust_toolchain": "1.96.0",
+    "exit_code": 0,
+    "no_local_tests_after_format": true
+  },
+  "raw_local_logs_archived": false,
+  "raw_local_logs_access": "Execution environment disconnected; retained scratch paths are currently inaccessible. No raw logs synthesized.",
+  "native_execution": {
+    "run_id": 43179184471,
+    "jobs": [
+      131050704039,
+      131050704265
+    ],
+    "last_observed_status": "queued",
+    "actual_runner_allocated": false,
+    "compilation_proven": false,
+    "new_positive_native_case_proven": false,
+    "maintenance_fix_gate_proven": false
+  },
+  "ordinary_adopt": 0,
+  "ordinary_evaluated_no_update": 0,
+  "complete_daemon_root_cold_recovery": 0,
+  "owner_decision": null,
+  "files": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "blob": "8a4636f3a6478a8cf8a41a8ba91018ede99db26d",
+      "sha256": "211514f19acf1a6c6bf1f429eb92a4f01546903e461b8eec097ec7911e46edfb",
+      "bytes": 11207,
+      "base_blob": "f8440f960b02ea978724be042b82f07dd6c618cd"
+    },
+    {
+      "path": "CALLERS.toml",
+      "blob": "7ca2289a78cef948728b5d9544e6e2743ff5d2cf",
+      "sha256": "387f9ad3342b181e9edce05c7f5dd4d7047a4f996e3fc70b91d27374cdde2d9a",
+      "bytes": 1043209,
+      "base_blob": "21df2fd489033b9b17c51428bcfd3a5a2a927b19"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "blob": "9b1febb259a50cb02d144af610da65ebf2a700bc",
+      "sha256": "050bf6f10b2a928b4d7d9f66dd86eeb278f974325d70723f29dd777dc6b3168a",
+      "bytes": 4679,
+      "base_blob": "3dbd154ed4558c310625f57138c41aedaa182cc7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_positive_tests.rs",
+      "blob": "b7908d06d12419e029d5d048406e24f915918c19",
+      "sha256": "ec2e60a3336aaa2a65bd47c7e277da544b931ff64fdb5e9e27a48117e6195be8",
+      "bytes": 4701,
+      "base_blob": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_read_tests.rs",
+      "blob": "2c9d23e02cb8bc0069c1411e846960e416a9dce3",
+      "sha256": "657e5b65333223fe694ad190c0ef91290c2ac995d40669c7634a13ab16a2d033",
+      "bytes": 2546,
+      "base_blob": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "blob": "0fe1a11dadac9423b89f9840af75671bde89d589",
+      "sha256": "8ec7c8730fa365eeb1531fcbce7cf2ab55286dc5b778468dc1fac1779875fe52",
+      "bytes": 9385,
+      "base_blob": "2c3c247633ab623d1ba8f4669479ec24b32acfc8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+      "blob": "f8235bff86212e46d82a354e01fb9efaadbd04c5",
+      "sha256": "7e4d0fa04bfc2e7e39f2ba948501d80477048581a533f7ddba034ca01ef85fd8",
+      "bytes": 5224,
+      "base_blob": "31839e7d688471e97945493bf77f08c0b1fc3ce8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "blob": "1e51215fbf5fdbf0998f1cab524c84e94de5355d",
+      "sha256": "fa24cb14da62c793ffc5234685a71a1d96724ed878b94f14cc4d90813ae8a883",
+      "bytes": 11438,
+      "base_blob": "69010268db6932d97e1dc810fbed52d305ba061b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "blob": "b207f9bf99365f63f65326c80be43b7219d119a1",
+      "sha256": "e14abcdcd4887104cd6a3d2e33861be20f2bd895c8eb1644cca1459adbd79704",
+      "bytes": 16200,
+      "base_blob": "c858c9fbc172355f3dab28a68367b183d69c34c5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "blob": "4f54135d674c79a95bb9ce420ce6cdb6bcf66ea8",
+      "sha256": "57674fb384c31b8ee918a7ceb900f4fec679b0625737703ef4df8c2e16e9bb1e",
+      "bytes": 7182,
+      "base_blob": "5f13b084585c882cf016dc1d7e8e3afaa4b89d89"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "blob": "8e011f1d7e4c9b0f58e797bf4520acaf7987af3f",
+      "sha256": "f23bfa9949ec2255983e188fbbd4866f6dd0798544e89a05713b0020e1c91ca5",
+      "bytes": 12195,
+      "base_blob": "b10334c2e89bb2862ea753708a11cee863ab300b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "blob": "a038c6f253ea25a0e6adc8fdb0242f9cea2c6421",
+      "sha256": "9f2cfe2e60c83faf45ff799947b6efd16717e6c89ebf492fd09cc10daddc587e",
+      "bytes": 10146,
+      "base_blob": "9b7aabe73fdeb343bb17347c553ba544174b523b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "blob": "e12e83e3e98fb798da5182367a0f13fcb993077e",
+      "sha256": "06ed2c5ec18b8f424024ce3d706973258ebf7bab914fb8874092f0d2d6566752",
+      "bytes": 7124,
+      "base_blob": "6947e5e0bf9c73b2e8f0de0232b72256dd1ed9e3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+      "blob": "b5a3ab5372bc80a9d75d756b0d7cf802e0c2324c",
+      "sha256": "861f564f183ec857c01d0501954829c6efdbc2e18b9abb1fa727f55b25aa51e1",
+      "bytes": 15056,
+      "base_blob": "b7a6392ceaf4929714525c6c6e109ec306275957"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "blob": "8ce38deba29a978cbd03a5500c27b2ff11386cee",
+      "sha256": "5704a6beb385b840ed54eedc7dbba0c87d3df23c8b24dac3d376d5e82e8d33df",
+      "bytes": 15823,
+      "base_blob": "54f37ffc8a7a562a379f04298eca608b00dfbcea"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "blob": "4a2a8c59a536a77bda06f90e087ca1e9c100e349",
+      "sha256": "a86c6d776fbea24b3f53e4324ab8de74cc4566dddf352d1851e5a322ba0f649e",
+      "bytes": 8695,
+      "base_blob": "d9edf75f940453edd690c534ff947d931f452b50"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "blob": "0cbecba3be2293586637938a5bd3ddd825023c68",
+      "sha256": "98a584cc2aea00d4604d31134bb9803c0ffe3268e6fd592f6d9784754291ea11",
+      "bytes": 4710,
+      "base_blob": "373efb313ea6bbce97d1855a7269d05dcc50e016"
+    }
+  ],
+  "boundaries": [
+    "Read-only Selection evaluated context only; no Selector/NextUse/NewWork authority.",
+    "Credential fixtures and same-process transports are explicit in the native positive case.",
+    "Source-closure tests do not prove Rust compilation or owner behavior."
+  ]
+}

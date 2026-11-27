@@ -1,0 +1,16 @@
+{
+  "error": "exec-server transport disconnected; failed to resume exec-server session: recovery timed out after 45s",
+  "failed_requests": 2,
+  "failed_wrapper_CPU_seconds": null,
+  "failed_wrapper_wall_seconds": null,
+  "native_jobs_changed": false,
+  "no_unknown_cost_converted_to_zero": true,
+  "observed_between_utc": [
+    "2026-11-10T22:10:48Z",
+    "2026-11-10T22:12:29Z"
+  ],
+  "process_started": false,
+  "recovery": "After environment restored, one pwd read succeeded at22:12:29; the original two read requests subsequently succeeded.",
+  "schema": "root-read-wrapper-interruption-v1",
+  "scope": "Two independent read-only exec creation requests, before child process creation. Neither requested a mutation, model read, training restart or oracle run."
+}

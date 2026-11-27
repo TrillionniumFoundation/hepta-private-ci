@@ -3,18 +3,17 @@ use codex_windows_sandbox::to_wide;
 use std::ffi::OsStr;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::ERROR_ALREADY_EXISTS;
-use windows_sys::Win32::Foundation::ERROR_FILE_NOT_FOUND;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::System::Threading::CreateMutexW;
-use windows_sys::Win32::System::Threading::MUTEX_ALL_ACCESS;
-use windows_sys::Win32::System::Threading::OpenMutexW;
 use windows_sys::Win32::System::Threading::ReleaseMutex;
 
 const READ_ACL_MUTEX_NAME: &str = "Local\\CodexSandboxReadAcl";
 
 pub(super) struct ReadAclMutexGuard {
     handle: HANDLE,
+    // Win32 mutex ownership belongs to the acquiring thread.
+    _thread: std::marker::PhantomData<std::rc::Rc<()>>,
 }
 
 impl Drop for ReadAclMutexGuard {
@@ -24,22 +23,6 @@ impl Drop for ReadAclMutexGuard {
             CloseHandle(self.handle);
         }
     }
-}
-
-pub(super) fn read_acl_mutex_exists() -> Result<bool> {
-    let name = to_wide(OsStr::new(READ_ACL_MUTEX_NAME));
-    let handle = unsafe { OpenMutexW(MUTEX_ALL_ACCESS, 0, name.as_ptr()) };
-    if handle == 0 {
-        let err = unsafe { GetLastError() };
-        if err == ERROR_FILE_NOT_FOUND {
-            return Ok(false);
-        }
-        return Err(anyhow::anyhow!("OpenMutexW failed: {err}"));
-    }
-    unsafe {
-        CloseHandle(handle);
-    }
-    Ok(true)
 }
 
 pub(super) fn acquire_read_acl_mutex() -> Result<Option<ReadAclMutexGuard>> {
@@ -57,5 +40,8 @@ pub(super) fn acquire_read_acl_mutex() -> Result<Option<ReadAclMutexGuard>> {
         }
         return Ok(None);
     }
-    Ok(Some(ReadAclMutexGuard { handle }))
+    Ok(Some(ReadAclMutexGuard {
+        handle,
+        _thread: std::marker::PhantomData,
+    }))
 }

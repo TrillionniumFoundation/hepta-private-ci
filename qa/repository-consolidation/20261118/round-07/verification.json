@@ -1,0 +1,214 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "6c6cf2f0aa296fb27d2e120a648dd961b79f9d9b",
+  "additional_merge_parent": "1b75bb2fbedff792ec3a9fafa8f5a0177b2ade83",
+  "tested_ndu_composition_tree": "05e541938e6d8edcc40a1febfa2e8fb41816b37c",
+  "core_recovery": {
+    "tested_patch_sha256": "7e8e3e9d8c0107591a2a652949ca5b9defc0bb2ee0d05d938025fee9629b56f5",
+    "final_patch_sha256": "d7f663e52b23eea8dfe5527a979cd212837a00e2a7e7fcbe068e81ff3ec80374",
+    "tests": [
+      {
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "test",
+          "--offline",
+          "--locked",
+          "-p",
+          "codex-core",
+          "-E",
+          "test(recovery_wait_)",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--test-threads",
+          "4"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 360.2651761540037,
+        "log_sha256": "be467e198a64358686264546f76c10d2a9343d843dd3fec17265d20e8275a1cb",
+        "log_bytes": 81617,
+        "summary": [
+          "     Summary [   0.065s] 4 tests run: 4 passed, 3976 skipped"
+        ],
+        "source_unchanged": true
+      },
+      {
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "test",
+          "--offline",
+          "--locked",
+          "-p",
+          "codex-app-server",
+          "-E",
+          "test(same_process_ephemeral_interrupted_turn_recovers_from_listener_state)",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--test-threads",
+          "4"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 213.12869464499818,
+        "log_sha256": "cc941aa61ed5a439974caf257fd9531957c5c76bcc9616912054d92d7fd17388",
+        "log_bytes": 62860,
+        "summary": [
+          "     Summary [   0.312s] 1 test run: 1 passed, 1353 skipped"
+        ],
+        "source_unchanged": true
+      }
+    ],
+    "finalization": [
+      {
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "fix",
+          "--offline",
+          "--locked",
+          "-p",
+          "codex-core",
+          "-p",
+          "codex-app-server"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 266.37027023099654,
+        "log_bytes": 73525,
+        "log_sha256": "531ec45567e391a140ba5ddac41bf3079bced72b84000b01ed06fa9c2c165726"
+      },
+      {
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "fmt"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.8671165620035026,
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "source_hashes_after_finalization": {
+      "codex-rs/app-server/src/request_processors/turn_processor.rs": "273bd58f5c6a603902ab08cb0852211ca3cd09745826eec15216713245b37911",
+      "codex-rs/core/src/codex_thread.rs": "6aff6253ea734b43e8a196e2eedf59af0cebd32db339413e055ea9dd019839b3",
+      "codex-rs/core/src/session/mod.rs": "53771d864be67fe8faba7bfc5131c6e6848aab5f859b67482246c1f6f99f976b",
+      "codex-rs/core/src/session/turn_input_tests.rs": "af15239e7af3e2a6cab071d5b8ce04cde72a77a534943707abda6823a845a790",
+      "codex-rs/core/src/session/turn_recovery.rs": "ccdf81aa13e4e9b14c0f38fd0f86f952b8cc99e83e847f28ec478bda032aa061"
+    },
+    "changes_after_tests": "Only Rust formatting in turn_input_tests.rs; no tests rerun after fix/fmt."
+  },
+  "ndu": {
+    "recommendation": "merge_exact_source_delta_then_apply_workflow_trigger_fix",
+    "source": {
+      "base_commit": "6c6cf2f0aa296fb27d2e120a648dd961b79f9d9b",
+      "base_tree": "9859238fb542f6c90897c5e462baafb2cf498975",
+      "source_head": "1b75bb2fbedff792ec3a9fafa8f5a0177b2ade83",
+      "merge_base": "d13761500aba28634238ec23fb1d62eae5cf81ec",
+      "exact_composed_tree": "05e541938e6d8edcc40a1febfa2e8fb41816b37c",
+      "changed_files": 120,
+      "changed_modes": {
+        "100644": 120
+      },
+      "patch_sha256": "1db282bcba2e1180017b315ff20925060c49dd31df3612fc980d48ac28fc93ef",
+      "patch_bytes": 1107281,
+      "workflow_fix_sha256": "ed8f6fe3993c3d85a7b0a6b4825492a65abd90d76b15dc7d89d264279e1c0144",
+      "runtime_source_manifest_sha256": "7540d83a5935a8c270809b52565ff3d56b2346b854277cda28139f7bb0f735ce"
+    },
+    "runtime": {
+      "source_files_unchanged": 203,
+      "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+      "torch": "2.10.0+cpu",
+      "numpy": "2.5.4",
+      "pillow": "13.0.0",
+      "platform": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+      "binary_sha256": "ba66f88ad4f8f18efc00c711880ca9722de1662c69b83ba5a983e2a83b2efa79",
+      "source_manifest_sha256": "7540d83a5935a8c270809b52565ff3d56b2346b854277cda28139f7bb0f735ce"
+    },
+    "production_change": {
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs",
+      "behavior": "Admits ordinary kernel only for observed v4 width32/depth1/direct profile; v3 ordinary remains rejected. Model/owner consistency, profile validation, canonical packets, owner budget continuity and weights/input-bound state verification remain unchanged.",
+      "tests": "New kernel_profile_tests is included via proposal_tests path module and Bazel native.glob source list."
+    },
+    "python_review": [
+      "Frozen generator keeps shared tensors byte-identical and only changes private text/image adapters or emissions during its dedicated optimization stage.",
+      "Delivery retains exact original identity, uses exclusive creation and atomic delivery marker, refuses symlink/nonregular/oversized files, and cold-reloads committed output without redispatch or budget renewal.",
+      "Candidate source identity requires immutable full HEAD, clean tracked content, full source blob checks even when assume-unchanged hides edits, and rejects executable untracked imports.",
+      "Training and policy comparison retain NoUpdate/HOLD outcomes and explicitly do not confer daemon or production authority."
+    ],
+    "tests": [
+      {
+        "suite": "finite/lifecycle/delivery/semantic_eval/conditional_particles/stopped_control/stopped_baseline/stopped_diagnostics",
+        "passed": 58,
+        "failed": 0,
+        "skipped": 0,
+        "seconds": 0.562,
+        "environment": "local Python3.12, numpy, Pillow",
+        "log": "observed tool stdout; not separately retained"
+      },
+      {
+        "suite": "candidate/receipts/stopped_observed_inputs/stopped_observed_demo",
+        "passed": 16,
+        "failed": 0,
+        "skipped": 0,
+        "seconds": 0.348,
+        "log": "python-additional-tests.log"
+      },
+      {
+        "suite": "native Rust tests using registered standalone rustc build",
+        "passed": 27,
+        "failed": 0,
+        "skipped": 0,
+        "log": "native-tests.stdout.log",
+        "job": "1a1ede43a6a-392-49c6"
+      },
+      {
+        "suite": "learning/native/frozen_generator/stopped_torch/stopped_calibration_run",
+        "passed": 43,
+        "failed": 0,
+        "skipped": 0,
+        "seconds": 6.739,
+        "log": "torch-tests.stderr.log",
+        "job": "1a1ede530fa-392-49cd"
+      }
+    ],
+    "workflow_fix": {
+      "problem": "PR path filters omitted source components that the qualification actually imports, executes or binds in its source identity.",
+      "patterns": [
+        "scripts/ndu_bimodal/**",
+        "scripts/joint_generation_v4*.py",
+        "scripts/ndu_real_runtime/*.py",
+        "scripts/ndu_real_materials/*.py",
+        "scripts/test_ndu_bimodal_*.py",
+        "scripts/pyproject.toml",
+        "scripts/uv.lock",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/*.py",
+        "codex-rs/hepta-infer-worker-host/src/bin/hepta-joint-propose.rs",
+        "codex-rs/hepta-infer-worker-host/src/joint_generation/*.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration*.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_learning_runtime*.rs",
+        ".github/workflows/ndu-bimodal-candidate.yml"
+      ],
+      "bound_source_paths_checked": 257,
+      "uncovered_paths": [],
+      "git_apply_cached_check": 0,
+      "changes_only": "pull_request.paths"
+    },
+    "limits": [
+      "Native source test follows the registered standalone rustc1.96 recipe; no workspace cargo/just suite was run.",
+      "Torch integration used available Python3.14.4/Torch2.10CPU/NumPy2.5.4 and Pillow13, not a reproduction of workflow Python3.12.14/Torch2.8CPU/NumPy2.3.5.",
+      "The full 1800-step frozen-content training campaign, remote workflow, semantic capability gate and ordinary daemon owner recovery were not rerun.",
+      "This validates the source composition against pinned6c6cf, not a later merge tree containing unrelated conflict resolutions.",
+      "All120 changed entries are regular mode100644; no added symlink or executable mode."
+    ],
+    "evidence_policy": "Historical qualification receipts remain preserved byte-for-byte; their claims were not relabeled as current results."
+  },
+  "protected_boundary": {
+    "snapshot_refs": 7526,
+    "protected_refs": 303,
+    "named_hia_refs": 77,
+    "protected_ref_manifest_sha256": "2b3f0d47140800bfab3db837df3cbaeac1cd69b09855c89899c42d55de0dc2e8",
+    "initial_heads_manifest_sha256": "f6053689ed0dc5ee518f8379ca04dc5fa9f816a42a49929257defd3731a23c8d",
+    "horizon": "All protected names, graph descendants, aliases and HIA PR dependencies identified from the initial snapshot are excluded from ref operations."
+  },
+  "qualification": "Scoped source verification only; repository-wide required CI is still required before main merge or ordinary-branch deletion."
+}

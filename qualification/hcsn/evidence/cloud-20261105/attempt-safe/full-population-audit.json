@@ -1,0 +1,192 @@
+{
+  "benchmark": "qualification/hcsn/evidence/cloud-20261105/attempt-safe/full.json",
+  "benchmark_sha256": "65e999fa43c100b43a0b92b481c3d39ef5575ab1640c7b4cdd09dc1d72ade9a6",
+  "scope": "validation-selected B; verified original held-out inputs; no retraining or selection",
+  "device": "cpu",
+  "records": [
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 0,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 1,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 2,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 3,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 4,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 0,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 1,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 2,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 3,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 4,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 0,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 1,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 2,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 3,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 4,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 0,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 1,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 2,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 3,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 4,
+      "status": "unavailable",
+      "benchmark_status": "unavailable",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    }
+  ],
+  "requested_b_runs": 20,
+  "completed_b_runs": 0,
+  "limitations": [
+    "Smoke weights do not qualify full-budget B.",
+    "Joint refinement sensitivity is descriptive; no universal convergence threshold asserted."
+  ],
+  "audited_b_runs": 0,
+  "failed_b_audits": 0,
+  "status": "unavailable",
+  "source_files_sha256": {
+    "population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "attempts.py": "9c43646b29a2f5fbecd7f8adf0f5da2ee25d0e23768ec3b420d5c79bacc4d470",
+    "__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "baselines.py": "914a244abe4014a919b35539c4db04a9d334f627981d07fda20935af90026408",
+    "tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045",
+    "reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "audit_population.py": "97e6d7cae07ddf35448e8e6f67c42bf3c75dc9216b4a52df320a1dbdbe0dcee8",
+    "population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "benchmark.py": "fc55f0f71cf35af742a423a407e42defb828c84285b9a6602b91d9b314ac2830",
+    "cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6"
+  }
+}

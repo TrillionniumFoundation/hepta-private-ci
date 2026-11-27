@@ -1,0 +1,320 @@
+{
+  "CPU_sample_seconds": 6.795673823,
+  "actual_model_or_numerical_kernel_executed": false,
+  "concurrency": "Read-only JSON scan may overlap the unique numerical audit and independent full-D quality replay.",
+  "energy_joules": null,
+  "finished_utc": "2026-11-10T19:56:03.012939+00:00",
+  "fits": [
+    {
+      "capture_distribution": {
+        "0": {
+          "record_slots": 256,
+          "valid_sample_position_layer_states": 2048
+        },
+        "1": {
+          "record_slots": 90,
+          "valid_sample_position_layer_states": 702
+        }
+      },
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "distribution": [
+        {
+          "captures": [
+            0,
+            1
+          ],
+          "derived_epoch": 1,
+          "derived_phase": "main",
+          "layers": [
+            0
+          ],
+          "model_digests": [
+            "965fb27d183a70b7a05c9fc02b96fa698ad386903d243ddc1447c60b2a3b6c8e"
+          ],
+          "record_slots": 346,
+          "update_index": 0,
+          "valid_sample_position_layer_states": 2750
+        }
+      ],
+      "epoch_ledger_sha256": "fbc1670f95496cb335ad9c46baa72559a85a44acf784108289cc98b60e7ca0b2",
+      "epoch_phase_scope": "Epoch and main phase are derived from exact original epoch_started order, fixed batch/microbatch source and update_index; the raw trace does not record these fields.",
+      "input_receipt_sha256": "95ffb0ccef58a7786b7baf6df4038e6e0f3d8cf85b3b239bce34803a9cb183da",
+      "literal_epoch_and_phase_fields_present": false,
+      "name": "hcsn-s101-lr0.001",
+      "passed_integrity_and_label_reconciliation": true,
+      "post_update_retained_record_slots": 0,
+      "post_update_retained_valid_sample_states": 0,
+      "reconstructed_seen_valid_sample_position_layer_states": 4166205,
+      "retained_record_slots": 346,
+      "retained_sample_state_fraction_of_reconstructed_seen": 0.0006600731361034802,
+      "retained_valid_sample_position_layer_states": 2750,
+      "seen_record_slots": 537856,
+      "seen_valid_scope": "Source/epoch-ledger/manifest reconstruction, matched to observed captures, seen slots and excluded padding; not stored probability states for dropped rows.",
+      "trace_bytes": 33477206,
+      "trace_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s101-lr0.001/training-domain.jsonl",
+      "trace_sha256": "a18a966ca862b35fe4f9f20ff42b2a447b15e9e3b943c7ac4a442ef51fa7eb03",
+      "whole_training_domain_admission": "HOLD"
+    },
+    {
+      "capture_distribution": {
+        "0": {
+          "record_slots": 256,
+          "valid_sample_position_layer_states": 2048
+        },
+        "1": {
+          "record_slots": 90,
+          "valid_sample_position_layer_states": 702
+        }
+      },
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "distribution": [
+        {
+          "captures": [
+            0,
+            1
+          ],
+          "derived_epoch": 1,
+          "derived_phase": "main",
+          "layers": [
+            0
+          ],
+          "model_digests": [
+            "965fb27d183a70b7a05c9fc02b96fa698ad386903d243ddc1447c60b2a3b6c8e"
+          ],
+          "record_slots": 346,
+          "update_index": 0,
+          "valid_sample_position_layer_states": 2750
+        }
+      ],
+      "epoch_ledger_sha256": "5dd82571a2062ec134be7b0c8217318ed0d876f5ebe1a28752c5bc3fc4a1e72a",
+      "epoch_phase_scope": "Epoch and main phase are derived from exact original epoch_started order, fixed batch/microbatch source and update_index; the raw trace does not record these fields.",
+      "input_receipt_sha256": "ca2e85d98545a96935361308d7ced161d3b82a0bdd1788753c7d859f32114e23",
+      "literal_epoch_and_phase_fields_present": false,
+      "name": "hcsn-s101-lr0.003",
+      "passed_integrity_and_label_reconciliation": true,
+      "post_update_retained_record_slots": 0,
+      "post_update_retained_valid_sample_states": 0,
+      "reconstructed_seen_valid_sample_position_layer_states": 4237601,
+      "retained_record_slots": 346,
+      "retained_sample_state_fraction_of_reconstructed_seen": 0.0006489520839739277,
+      "retained_valid_sample_position_layer_states": 2750,
+      "seen_record_slots": 547072,
+      "seen_valid_scope": "Source/epoch-ledger/manifest reconstruction, matched to observed captures, seen slots and excluded padding; not stored probability states for dropped rows.",
+      "trace_bytes": 33477206,
+      "trace_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s101-lr0.003/training-domain.jsonl",
+      "trace_sha256": "6e9a3c4d2ca97535b6af9d4510d25418cdce5ba92144ead0a911c3f3b50b3f00",
+      "whole_training_domain_admission": "HOLD"
+    },
+    {
+      "capture_distribution": {
+        "0": {
+          "record_slots": 256,
+          "valid_sample_position_layer_states": 2048
+        },
+        "1": {
+          "record_slots": 87,
+          "valid_sample_position_layer_states": 696
+        }
+      },
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "distribution": [
+        {
+          "captures": [
+            0,
+            1
+          ],
+          "derived_epoch": 1,
+          "derived_phase": "main",
+          "layers": [
+            0
+          ],
+          "model_digests": [
+            "49f8f6034a53e8c67268dd9227d4745e935eab6fb7525a0af59e8401384a1d13"
+          ],
+          "record_slots": 343,
+          "update_index": 0,
+          "valid_sample_position_layer_states": 2744
+        }
+      ],
+      "epoch_ledger_sha256": "265c202ab164f623c9878c65b8937b9e188fb89aa69ddf8a36f9368decb37d80",
+      "epoch_phase_scope": "Epoch and main phase are derived from exact original epoch_started order, fixed batch/microbatch source and update_index; the raw trace does not record these fields.",
+      "input_receipt_sha256": "e7e5d94ad89c5cd162b5dc5f0a079f53c82772e8a5ee6e08387879092749a5d3",
+      "literal_epoch_and_phase_fields_present": false,
+      "name": "hcsn-s211-lr0.001",
+      "passed_integrity_and_label_reconciliation": true,
+      "post_update_retained_record_slots": 0,
+      "post_update_retained_valid_sample_states": 0,
+      "reconstructed_seen_valid_sample_position_layer_states": 4185984,
+      "retained_record_slots": 343,
+      "retained_sample_state_fraction_of_reconstructed_seen": 0.0006555209002232211,
+      "retained_valid_sample_position_layer_states": 2744,
+      "seen_record_slots": 540416,
+      "seen_valid_scope": "Source/epoch-ledger/manifest reconstruction, matched to observed captures, seen slots and excluded padding; not stored probability states for dropped rows.",
+      "trace_bytes": 33476983,
+      "trace_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.001/training-domain.jsonl",
+      "trace_sha256": "e3da3c17b463abe861e04870b2294b19c19f70f42d6565cb11a9c293273712ea",
+      "whole_training_domain_admission": "HOLD"
+    },
+    {
+      "capture_distribution": {
+        "0": {
+          "record_slots": 256,
+          "valid_sample_position_layer_states": 2048
+        },
+        "1": {
+          "record_slots": 87,
+          "valid_sample_position_layer_states": 696
+        }
+      },
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "distribution": [
+        {
+          "captures": [
+            0,
+            1
+          ],
+          "derived_epoch": 1,
+          "derived_phase": "main",
+          "layers": [
+            0
+          ],
+          "model_digests": [
+            "49f8f6034a53e8c67268dd9227d4745e935eab6fb7525a0af59e8401384a1d13"
+          ],
+          "record_slots": 343,
+          "update_index": 0,
+          "valid_sample_position_layer_states": 2744
+        }
+      ],
+      "epoch_ledger_sha256": "9ce9161604748755215c886b46e890d5fbbe69e7383ddb13b6db2c31aa672e37",
+      "epoch_phase_scope": "Epoch and main phase are derived from exact original epoch_started order, fixed batch/microbatch source and update_index; the raw trace does not record these fields.",
+      "input_receipt_sha256": "17ff8dc6fce288aaa6b59f504feaf4b8f0bcf0ae14af6cfae337fe7e9ac63dc4",
+      "literal_epoch_and_phase_fields_present": false,
+      "name": "hcsn-s211-lr0.003",
+      "passed_integrity_and_label_reconciliation": true,
+      "post_update_retained_record_slots": 0,
+      "post_update_retained_valid_sample_states": 0,
+      "reconstructed_seen_valid_sample_position_layer_states": 4205328,
+      "retained_record_slots": 343,
+      "retained_sample_state_fraction_of_reconstructed_seen": 0.0006525055833932574,
+      "retained_valid_sample_position_layer_states": 2744,
+      "seen_record_slots": 542976,
+      "seen_valid_scope": "Source/epoch-ledger/manifest reconstruction, matched to observed captures, seen slots and excluded padding; not stored probability states for dropped rows.",
+      "trace_bytes": 33476983,
+      "trace_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.003/training-domain.jsonl",
+      "trace_sha256": "4dd27e3d4f55a433c95760994417b9b9b1210d93f3251c2498532c9ca55d101c",
+      "whole_training_domain_admission": "HOLD"
+    },
+    {
+      "capture_distribution": {
+        "0": {
+          "record_slots": 256,
+          "valid_sample_position_layer_states": 2048
+        },
+        "1": {
+          "record_slots": 88,
+          "valid_sample_position_layer_states": 704
+        }
+      },
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "distribution": [
+        {
+          "captures": [
+            0,
+            1
+          ],
+          "derived_epoch": 1,
+          "derived_phase": "main",
+          "layers": [
+            0
+          ],
+          "model_digests": [
+            "6b010304d9caca882138e30371b19ab8c52800402abcb81ca5b0cb1196578531"
+          ],
+          "record_slots": 344,
+          "update_index": 0,
+          "valid_sample_position_layer_states": 2752
+        }
+      ],
+      "epoch_ledger_sha256": "7461887cff28e7947c8e7958c28ac317aee498fa03dd49a4ea6351d59684ef1f",
+      "epoch_phase_scope": "Epoch and main phase are derived from exact original epoch_started order, fixed batch/microbatch source and update_index; the raw trace does not record these fields.",
+      "input_receipt_sha256": "01ce64b65f53a185ce644be3eee89334696d5b898d248afd3cfb89e175a61e39",
+      "literal_epoch_and_phase_fields_present": false,
+      "name": "hcsn-s307-lr0.001",
+      "passed_integrity_and_label_reconciliation": true,
+      "post_update_retained_record_slots": 0,
+      "post_update_retained_valid_sample_states": 0,
+      "reconstructed_seen_valid_sample_position_layer_states": 4168073,
+      "retained_record_slots": 344,
+      "retained_sample_state_fraction_of_reconstructed_seen": 0.0006602571500067297,
+      "retained_valid_sample_position_layer_states": 2752,
+      "seen_record_slots": 538112,
+      "seen_valid_scope": "Source/epoch-ledger/manifest reconstruction, matched to observed captures, seen slots and excluded padding; not stored probability states for dropped rows.",
+      "trace_bytes": 33495160,
+      "trace_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.001/training-domain.jsonl",
+      "trace_sha256": "28c1ca19427ddfe5e295166be56bb8867b7642f551a00ed92fed087707bbc3b9",
+      "whole_training_domain_admission": "HOLD"
+    },
+    {
+      "capture_distribution": {
+        "0": {
+          "record_slots": 256,
+          "valid_sample_position_layer_states": 2048
+        },
+        "1": {
+          "record_slots": 88,
+          "valid_sample_position_layer_states": 704
+        }
+      },
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "distribution": [
+        {
+          "captures": [
+            0,
+            1
+          ],
+          "derived_epoch": 1,
+          "derived_phase": "main",
+          "layers": [
+            0
+          ],
+          "model_digests": [
+            "6b010304d9caca882138e30371b19ab8c52800402abcb81ca5b0cb1196578531"
+          ],
+          "record_slots": 344,
+          "update_index": 0,
+          "valid_sample_position_layer_states": 2752
+        }
+      ],
+      "epoch_ledger_sha256": "9dee645edf8c36b4aaeca06972feb2680f429dbb291f54044e3c7623c147df25",
+      "epoch_phase_scope": "Epoch and main phase are derived from exact original epoch_started order, fixed batch/microbatch source and update_index; the raw trace does not record these fields.",
+      "input_receipt_sha256": "fe98acfbb8ba4a37f074cf92d85de669fdf7dc9a81229808c31a51eb98543303",
+      "literal_epoch_and_phase_fields_present": false,
+      "name": "hcsn-s307-lr0.003",
+      "passed_integrity_and_label_reconciliation": true,
+      "post_update_retained_record_slots": 0,
+      "post_update_retained_valid_sample_states": 0,
+      "reconstructed_seen_valid_sample_position_layer_states": 4188216,
+      "retained_record_slots": 344,
+      "retained_sample_state_fraction_of_reconstructed_seen": 0.0006570816786908793,
+      "retained_valid_sample_position_layer_states": 2752,
+      "seen_record_slots": 540672,
+      "seen_valid_scope": "Source/epoch-ledger/manifest reconstruction, matched to observed captures, seen slots and excluded padding; not stored probability states for dropped rows.",
+      "trace_bytes": 33495160,
+      "trace_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.003/training-domain.jsonl",
+      "trace_sha256": "d2bc1c91d37f73d88a145d77f81e2d413a1395d846617c62e8600f30e63dc502",
+      "whole_training_domain_admission": "HOLD"
+    }
+  ],
+  "optimizer_updates_executed": 0,
+  "passed": true,
+  "peak_RSS_sample_bytes": 96407552,
+  "plan_sha256": "6ae8bb984d994f0d3fa6963e37d0f4180366a3a7bafd316d887e74f2ef1c7d26",
+  "schema": "terminal-original-training-trace-labels-v1",
+  "scientific_admission": "HOLD",
+  "source_sha256": "c31cd17fd3349e2d569b3b39c1bc62f0bbb9fc450a38be45034256e43014a35a",
+  "started_utc": "2026-11-10T19:55:56.269816+00:00",
+  "timing_scope": "Sample before final serialization; tiny standalone JSON scan, separate from numerical/original training costs.",
+  "wall_sample_seconds": 6.744620158104226,
+  "whole_training_domain_admission": "HOLD"
+}

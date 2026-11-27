@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.cell-action-formal-execution.v3",
+  "formal_run_count": 1,
+  "run_exit_code": 0,
+  "run_audit_exit_code": 0,
+  "evaluation_exit_code": 0,
+  "final_audit_exit_code": 0,
+  "source_commit": "c69e4e7ab55456e75476be4ca9a3bcaeaea1934c",
+  "run_log": "cell-action-v3-formal-run.log",
+  "started_at_utc": "2026-10-25T00:34:43.308193+00:00",
+  "execution": {
+    "parent_cpu_ns": 26471940264,
+    "recovery_child_cpu_measured": false,
+    "started_at_utc": "2026-10-25T00:34:43.308193+00:00",
+    "wall_ns": 36360023199
+  },
+  "status_census": {
+    "completed": 342
+  },
+  "pre_evaluation_seal_sha256": "10de1cf44e11ee1bfbe126cfb2bc319b1cb12f42721c784024b0b03d8c733866",
+  "withheld_label_order": "run/candidate freeze -> all scientific paths and predictions seal -> run audit -> validation access/report/seal -> final access/report -> independent score audit",
+  "authority": "DENY_ALL",
+  "production_authority": false
+}

@@ -1,0 +1,1099 @@
+{
+  "content_gate": "descriptive3seed mean within .02 of best external legacy_free/two_gates/Transformer on each task",
+  "core": {
+    "models": [
+      "distribution_free_dual",
+      "distribution_conditional_dual",
+      "distribution_free_ordinary",
+      "active_mean_collapse_free_dual",
+      "legacy_free",
+      "two_gates",
+      "transformer"
+    ],
+    "seeds": [
+      9201,
+      9202,
+      9203
+    ],
+    "tasks": [
+      "selective_copy",
+      "mqar",
+      "irregular",
+      "mnist",
+      "fsdd",
+      "multimodal_select"
+    ]
+  },
+  "cost": {
+    "failures": "preserved and charged; affected comparison incomplete",
+    "full_worker": "os.wait4 includes interpreter/import/hash/setup/bothLR/validation/checkpoint/heldout",
+    "no_energy_measurement": true,
+    "training_clock": "sampling+forward+backward+gradient audit+clip+optimizer; full update overrun charged"
+  },
+  "data": {
+    "fsdd": {
+      "output_dim": 10,
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/fsdd.npz",
+      "sha256": "f61d0215e5224c56a2b52f1ad2ac8acb86f85a622219da8c6b9890169c5c8843"
+    },
+    "irregular": {
+      "output_dim": 2,
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/irregular.npz",
+      "sha256": "3850c5d956e30fdd2a7215378aa8c6054dbee5f622cb8991f2120d3cb7e062f3"
+    },
+    "mnist": {
+      "output_dim": 10,
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/mnist.npz",
+      "sha256": "43967ccabb05540a3b6c831f3737ece02d2ddea16c79e139b46dcb14fd2a4895"
+    },
+    "mqar": {
+      "output_dim": 8,
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/mqar.npz",
+      "sha256": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653"
+    },
+    "multimodal_select": {
+      "output_dim": 10,
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/multimodal_select.npz",
+      "sha256": "88a70438b843596f2500de6345c534212597cbfd11201ed38519917a9fa56e53"
+    },
+    "selective_copy": {
+      "output_dim": 8,
+      "path": "experiments/hcsn_free_boundary_v1/data/study001/selective_copy.npz",
+      "sha256": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7"
+    }
+  },
+  "execution": {
+    "expected_lr_candidates": 352,
+    "expected_searches": 176,
+    "nominal_training_cpu_seconds": 21120.0,
+    "priority_reason": "unlock actual v2 owner integration; remaining job order fixed before outcomes",
+    "workers": 6
+  },
+  "jobs": [
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9207,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9206,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9208,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9208,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9208,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9207,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9205,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9207,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9206,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9204,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9206,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9208,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9204,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9208,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9206,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9206,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9206,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9208,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9205,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9206,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9207,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9204,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9207,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9208,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9207,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9207,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9207,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9205,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9204,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9205,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9205,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9204,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9208,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9208,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9207,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9204,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9204,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9205,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9205,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9205,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9204,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9206,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9206,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9208,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9204,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9205,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9204,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9205,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9206,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9207,
+      "task": "selective_copy"
+    }
+  ],
+  "mechanism": {
+    "assumptions": "sign exchangeability; fixed two tasks are not a random task population",
+    "contrasts": [
+      "distribution_conditional_dual",
+      "distribution_free_ordinary",
+      "active_mean_collapse_free_dual",
+      "two_gates"
+    ],
+    "gate": "mean>=.01 AND Holm p<=.05 AND nominal CI lower>0",
+    "interval": "nominal paired t 95%; not simultaneous",
+    "models": [
+      "distribution_free_dual",
+      "distribution_conditional_dual",
+      "distribution_free_ordinary",
+      "active_mean_collapse_free_dual",
+      "two_gates"
+    ],
+    "reference": "distribution_free_dual",
+    "seeds": [
+      9201,
+      9202,
+      9203,
+      9204,
+      9205,
+      9206,
+      9207,
+      9208
+    ],
+    "tasks": [
+      "selective_copy",
+      "multimodal_select"
+    ],
+    "test": "exact two-sided sign flip; Holm across four contrasts",
+    "unit": "Within seed, equal average of two task accuracy differences"
+  },
+  "optimization": {
+    "batch_size": 32,
+    "depth": 1,
+    "fixed128": "saved if reached, ineligible for primary selection; no coverage-completion retraining",
+    "learning_rates": [
+      0.001,
+      0.003
+    ],
+    "loss": "task cross entropy only",
+    "max_updates": 65536,
+    "optimizer": "Adam defaults, clip gradient L2 at2",
+    "preregistration_budget_history": "20->40->60 proposed using train-only engineering throughput; all before content001 heldout evaluation; final60 is common to every arm",
+    "primary_cpu_checkpoints": [
+      15.0,
+      30.0,
+      60.0
+    ],
+    "selection": "validation CE at common CPU gates only; both LR finish before selection lock and heldout",
+    "threads": 1,
+    "training_cpu_seconds_per_lr": 60.0,
+    "width": 32
+  },
+  "outcome_scope": "new source and seeds; post-v1 diagnostic using previously observed task datasets",
+  "parameter_matching": {
+    "legacy": "old mean-state cell with active learned inner projections to match count; new training required",
+    "padding": false,
+    "same_frontend_readout": true,
+    "target": "actual distribution_free_dual backbone count",
+    "tolerance": 0.03
+  },
+  "parent_commit": "caa94dc53f8b8b721ee00076ce060d44a98d7a4f",
+  "physical_contract": {
+    "boundary": "Brownian infinite-domain optimum with Erlang Laplace factor; not finite-grid or task optimum",
+    "cells": 8,
+    "channels": 8,
+    "collapse": "only active mass collapsed to two-center conditional mean; phase masses retained",
+    "conditional_boundary": "K+.01+3.99*sigmoid(a+s*mu); gap initially.65, slope initially0; bounded to keep reset/initial inside grid-center range",
+    "event": "expected event count including repeated events and boundary-jump atoms, not event probability",
+    "float32_mass_gate": 0.0001,
+    "limitations": "finite lower wall, eight spatial cells, two Erlang phases; task value alignment separately tested",
+    "lower": -2.0,
+    "numerical_profile": {
+      "causality": "fixed numerical choices independent of batch neighbors and future inputs",
+      "fallback": "none; reject out-of-domain rate/duration",
+      "fixed_rate": 8.1,
+      "fixed_terms": 21,
+      "max_physical_duration": 0.36,
+      "parameter_domain": "bounded transforms in model.py"
+    },
+    "ordinary_compute": "ordinary features omit unused policy-value solve; all actual work is charged",
+    "ordinary_information": "same full probability, mu/sigma/rho/K/reset/tau/b and content/time input",
+    "ordinary_variance": "active mass weighted conditional cell-center variance; not full physical variance",
+    "refractory_stages": 2,
+    "same_parameter_arms": "free dual, free ordinary, active mean collapse; conditional adds16 effective parameters",
+    "state": "full active-cell and refractory-phase masses",
+    "time_scale": 0.1,
+    "values": "finite-generator own-policy J/G; G equals forced continuation on refractory states"
+  },
+  "registered_utc": "2026-10-30T01:19:01.760539+00:00",
+  "schema": "hcsn-distribution-content-study.v2",
+  "source_files_sha256": {
+    "experiments/continuous_spiking_network/__init__.py": "192d1f289893035488c967e19332d164c1b2687c127c627ae88ad24ac9db07bc",
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/continuous_spiking_network/cell.py": "486b9f86ad7cdbae2f3e8a151cb500a219b87cd67a438e9a4e10c038a43ac311",
+    "experiments/continuous_spiking_network/data.py": "b8a84e49451001ee3448dd3e22bbdc0f9e153a6864056c77069052c7d048829b",
+    "experiments/continuous_spiking_network/kernels.py": "188334725b39b7e3bfdf5b17dd04cef2d3383ab6eb02c17eedad912dea21ae30",
+    "experiments/continuous_spiking_network/models.py": "5207b97fe7e3667d723c641c61132e4c96984e19c2ada07868f0074b2e4bdbaf",
+    "experiments/continuous_spiking_network/records.py": "dfea24dacbb5d56e53759ea0f0a4887d81cabd9678f3afccd1b96dbafd73e5be",
+    "experiments/hcsn_distributional_v2/content_analysis.py": "338a2bc71d1d2174efcbea39bf73e535b6e49674f1dcf90a5778a8379c2d344a",
+    "experiments/hcsn_distributional_v2/content_study.py": "10a8ced56ad5e834ed90e66509e18a9bbcded7f284938a5ef01354c0dfc24723",
+    "experiments/hcsn_distributional_v2/content_tests.py": "5580ac40fb4d4f4daa8ff8444e157dbf5ff321d26d77a640fc832784d82f02c3",
+    "experiments/hcsn_distributional_v2/content_training.py": "dcf2a195092469e8258374c7a78217930f9f2d56e6b584178162d1de3025ed0e",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "f272aa0808c2d497d4647dfb46fdc261ee481522affe0963b957d13b94f7f752",
+    "experiments/hcsn_distributional_v2/kernel_tests.py": "ac638cb5ea04183f702295707a26bd436f86475713c0d5d982b04a8d9301662d",
+    "experiments/hcsn_distributional_v2/model.py": "118e3381a114c1a63daed60f32ceee0d445e6e4e41fcc0a4c4a79424b1962412",
+    "experiments/hcsn_distributional_v2/model_tests.py": "7a97ed6a33e6d5cfb759c10e57718d7db92fb7ca9fa678dbf453cc37085fb21d",
+    "experiments/hcsn_free_boundary_v1/CONTRACT.md": "4da331cf20ab5b164f9e935fe9ee4d9db698ff2a9eac53dbefa5e009f0169a0a",
+    "experiments/hcsn_free_boundary_v1/MATH.md": "fd7e0c3c635083b3d2cc1b31e29e70e600280c0e39e8a8c77e58005bd919d9de",
+    "experiments/hcsn_free_boundary_v1/PROTOCOL.json": "0b684b1f3030ff9bcdb4f673ae26eb653c1ead868ed6edf8a8803ba735af4ff2",
+    "experiments/hcsn_free_boundary_v1/benchmark_models.py": "171cee706eeba6d3e7baa725998cf88778f53b92571187e0564c96d7255b8606",
+    "experiments/hcsn_free_boundary_v1/data/study001/INDEX.json": "86b0cfe19859290aeae237ba671f6b6f376ce1180fb1b5be126acbe588da4819",
+    "experiments/hcsn_free_boundary_v1/data/study001/SOURCES.json": "34a784a3d04e0c230e3ca260b69a3d029f3bd3d24e1bc77e08fad7f396913e1f",
+    "experiments/hcsn_free_boundary_v1/data/study001/fsdd.json": "9eee62da9680390d3fb028e8afa85b8c660972b4c94324615cd485a12a973e7a",
+    "experiments/hcsn_free_boundary_v1/data/study001/fsdd.npz": "f61d0215e5224c56a2b52f1ad2ac8acb86f85a622219da8c6b9890169c5c8843",
+    "experiments/hcsn_free_boundary_v1/data/study001/irregular.json": "38ae77be00e6203751e2b6472c3aee5f26fb1b417c673adb1cb5c2e3988de38b",
+    "experiments/hcsn_free_boundary_v1/data/study001/irregular.npz": "3850c5d956e30fdd2a7215378aa8c6054dbee5f622cb8991f2120d3cb7e062f3",
+    "experiments/hcsn_free_boundary_v1/data/study001/mnist.json": "d8acee63df201e92791e02e0e7d2cb2cbd6fba981c3166d1c569408363e53729",
+    "experiments/hcsn_free_boundary_v1/data/study001/mnist.npz": "43967ccabb05540a3b6c831f3737ece02d2ddea16c79e139b46dcb14fd2a4895",
+    "experiments/hcsn_free_boundary_v1/data/study001/mqar.json": "60ca235326dc7632327907a53331d3ba1d6d465bfd13f370f45f3acf64cc2c27",
+    "experiments/hcsn_free_boundary_v1/data/study001/mqar.npz": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+    "experiments/hcsn_free_boundary_v1/data/study001/multimodal_select.json": "ae944964121364aaf91fe35ee3389915bc11e0f74ecf08bd66318775a3cd049b",
+    "experiments/hcsn_free_boundary_v1/data/study001/multimodal_select.npz": "88a70438b843596f2500de6345c534212597cbfd11201ed38519917a9fa56e53",
+    "experiments/hcsn_free_boundary_v1/data/study001/selective_copy.json": "e64ca5e594df2bcc9ebcaac46a015940f6a48cb8b32d7fb12971b0d9bb9aad69",
+    "experiments/hcsn_free_boundary_v1/data/study001/selective_copy.npz": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+    "experiments/hcsn_free_boundary_v1/datasets.py": "f87e8f8531483313013d64a413b207c26ab14c09f82500088b506b5a682bc794",
+    "experiments/hcsn_free_boundary_v1/live_study.py": "9bcd88c449bc33fb2bbe9c45776069bce1c266229b1ca1e696ec60f72836dfce",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/native_bridge.py": "77d752f013cbde2cc4e1424f5e2038352e5cda9b4b241222027c2ddeae9957fd",
+    "experiments/hcsn_free_boundary_v1/oracle.py": "72f8171bb3c6121481235288033518516d25eb0644f68c9c9f7d775069eda248",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a",
+    "experiments/hcsn_free_boundary_v1/restore_native.py": "918aa4570b2e5119a760cbcd69ad797d43a2a874ed065f636234c52f93d49f06",
+    "experiments/hcsn_free_boundary_v1/run_matrix.py": "3a8f2ba065a4922a18f5eb7a7a4a86ed128a111e6ed2de3ece6e629e90969323",
+    "experiments/hcsn_free_boundary_v1/run_native_live.py": "0c4055d26bbafc9c762357fdab338a2e438cf7fc5ba97cf8b60317031d177565",
+    "experiments/hcsn_free_boundary_v1/training.py": "1aab526dec037ba19a5b55fc532027d2a688212f4595ed21d5d86f35ebcbe653",
+    "experiments/hcsn_free_boundary_v1/vendor/LICENSE.ncps": "f1f53a56f8ce3de8a66a1cc960cdbdb0284e5caed2e30c51e6e7b7fb05732d17",
+    "experiments/hcsn_free_boundary_v1/vendor/PROVENANCE.json": "06e03ecf7e485e3d89a7721f6c38c13eab773df64e5a55a4a84aafaac027fb49",
+    "experiments/hcsn_free_boundary_v1/vendor/cfc_cell.py": "ae2883e58b1e315e82048e178ca87d64a0e5ebd8f476fea9e3849df9f89c94c9"
+  },
+  "status_at_registration": "no_content001_training_started",
+  "study_id": "content001"
+}

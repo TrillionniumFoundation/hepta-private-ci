@@ -1,0 +1,55 @@
+{
+  "configuration_blob": "4c58c583e5fa327928190f625a1095a9c4d9e72f",
+  "codespell_version": "2.4.3",
+  "PYTHONPATH": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/codespell_vendor",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/node",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/prettier-dist-3.5.3/bin/prettier.cjs",
+        "--config",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/safe-evidence-merge/.prettierrc.toml",
+        "--write",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-publication/README.md"
+      ],
+      "returncode": 0,
+      "stdout": "../audit/root-publication/README.md 100ms\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/node",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/prettier-dist-3.5.3/bin/prettier.cjs",
+        "--config",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/safe-evidence-merge/.prettierrc.toml",
+        "--check",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-publication/README.md"
+      ],
+      "returncode": 0,
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "codespell_lib",
+        "--count",
+        "--ignore-words",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/ci-final-validation/.codespellignore",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-publication/README.md",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-publication/checkpoint-record.json",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-publication/source-overlay.json",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-publication/semantic-server-merges.json",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-publication/subsumed-rust-server-merges.json",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-publication/hia-exclusions-refreshed.json",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-publication/codeql-root-four-source-review.json",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-publication/pr-body-before-update.md.gz"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "0\n"
+    }
+  ],
+  "all_pass": true
+}

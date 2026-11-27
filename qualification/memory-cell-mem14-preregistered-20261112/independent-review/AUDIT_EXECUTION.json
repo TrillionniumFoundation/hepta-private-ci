@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.mem14.independent-audit-execution.v1",
+  "command": [
+    "python",
+    "-B",
+    "/workspace/scratch/ef0c911c24f4/mem14-review/audit.py",
+    "--original",
+    "/workspace/scratch/ef0c911c24f4/mem14-recovered/original",
+    "--archive",
+    "/workspace/scratch/ef0c911c24f4/mem14-recovered/evidence.tar.xz",
+    "--archive-sha256",
+    "36c1526898eb7c117e013c0235cfa322fcc46790f984fa330302cbbf0be4821b",
+    "--archive-bytes",
+    "597704",
+    "--out",
+    "/workspace/scratch/ef0c911c24f4/mem14-recovered/independent-review-v1"
+  ],
+  "exit_code": 0,
+  "status": "VERIFIED_CONSISTENT",
+  "failures": [],
+  "audit_code": {
+    "analysis.py": {
+      "bytes": 4824,
+      "sha256": "62b3eede292c79c4509a1442039a179cb0b6acfaa7eb7a9f7922e074f9f979e1"
+    },
+    "audit.py": {
+      "bytes": 34298,
+      "sha256": "280dd8d6e9acd5caeb3e18828835a2ebf86c99a80a4c1bf4da8a2539169393cb"
+    },
+    "evidence.py": {
+      "bytes": 24236,
+      "sha256": "fa20d07f97a1baa24c49009f8bf8bb1063ec1a9ea6f52e980bf2b75c8918daf4"
+    }
+  },
+  "frozen_ready_archive_sha256": "6f52a4dd937d866789a0d8c7d23149d33e87373e3ccc50b548b43b9f6f3b4ae3",
+  "audit_revision_required": false,
+  "new_model_calls": 0,
+  "remote_commands": 0,
+  "originals_modified": false
+}

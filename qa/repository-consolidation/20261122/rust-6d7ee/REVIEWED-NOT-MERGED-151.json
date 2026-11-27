@@ -1,0 +1,196 @@
+{
+  "status": "REVIEWED_NOT_MERGED_SUBSTANTIVE_RECONCILIATION_REQUIRED",
+  "source": "ce90ea283d04edd517051a28b5b92d0951b0ead9",
+  "incoming": "151a2c80f8fa549e5b7162eef3c846bf2fd90b5d",
+  "default_tree": "3751aa345c01b21bc55cd239f67fab7e811eabbf",
+  "default_merge_exit": 1,
+  "conflict_paths": 12,
+  "default_changed_paths": 21,
+  "no_resolution_or_merge_commit_created": true,
+  "original_commits_reviewed": [
+    {
+      "commit": "02f13e71abb46f9f91c3d9d8aa9dbd8bfa85c70c",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/01-02f13e71abb46f9f91c3d9d8aa9dbd8bfa85c70c.patch",
+      "sha256": "11a35f92a26e19d67d78804aec4b9635850ee849331621fb622810ba5d3f8de3",
+      "bytes": 16934,
+      "review": "Added signed final-use and exact NDU request/payload/scope binding to runtime and product callers; internal tick restricted."
+    },
+    {
+      "commit": "049d48eb0c3e405d87c9904c1521132d9ab2eb88",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/02-049d48eb0c3e405d87c9904c1521132d9ab2eb88.patch",
+      "sha256": "d786900c026d6e8a160c22df6a7cc687328e5065bfdc70ea314eaded5a703dfd",
+      "bytes": 5823,
+      "review": "Changed claim delivery to with_verified_effect revocation fence; added exact-source Rust CI."
+    },
+    {
+      "commit": "30e3f8d3c862981c4889f9f36f2d28b7811607ff",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/03-30e3f8d3c862981c4889f9f36f2d28b7811607ff.patch",
+      "sha256": "81907e8a0cb783d089eac92149ea6d379eddbcd3a2f89616a3b72846042775bf",
+      "bytes": 15723,
+      "review": "Added bounded generation/scope metrics ledger, lifetime file locking, hash chain, partial-tail recovery, group fsync and corruption tests."
+    },
+    {
+      "commit": "14fe29e218a55ef1b84e4c4d5f81cd3931f13223",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/04-14fe29e218a55ef1b84e4c4d5f81cd3931f13223.patch",
+      "sha256": "938ff694cd3c366fa7858ade20852ccca2b0546c61a45d4a53b40de3744ce5ba",
+      "bytes": 25950,
+      "review": "Added shared immutable microbatch plans, request/reservation uniqueness, custom signed backend and fixed reference backend, durable non-authorizing receipts."
+    },
+    {
+      "commit": "75e28facbfb07769ed7472cea5cb7e788aab5a68",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/05-75e28facbfb07769ed7472cea5cb7e788aab5a68.patch",
+      "sha256": "47ab000618fa54e335a42e4493e4cde24f04c64fcef252d0fc6dc4cfcfb9f3cc",
+      "bytes": 7471,
+      "review": "Sealed snapshot fields; added measurements bitmask distinguishing unavailable OS data from measured zero."
+    },
+    {
+      "commit": "4c9e166de2dfd5f89b72df324d0e29b34c75fc71",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/06-4c9e166de2dfd5f89b72df324d0e29b34c75fc71.patch",
+      "sha256": "a5ec3638b7feb2c6526aa06aaf15d8721a8272a2df9a0dd8b2842b1fffd2772b",
+      "bytes": 11812,
+      "review": "Added 64/256/1024/4096 reference qualification executable, host OS sampling, crash-tail reopen checks and workflow command."
+    },
+    {
+      "commit": "4decfbe7a3101293a7a4b329266b5ff463cab19e",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/07-4decfbe7a3101293a7a4b329266b5ff463cab19e.patch",
+      "sha256": "b6cdf876775d700327e930b91fb6be0e7221000cfe4c4d3886a269a49bb14e02",
+      "bytes": 3054,
+      "review": "Repaired qualification file ownership after move and nullable zero-duration rate serialization."
+    },
+    {
+      "commit": "ab558821f86ea0c73c516e35bf48e8df9a0f4d4f",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/08-ab558821f86ea0c73c516e35bf48e8df9a0f4d4f.patch",
+      "sha256": "5fba15ea345f1b73b33c202457ba3b2c9b88b04570d3c9909d5cc42de41ee9b4",
+      "bytes": 6708,
+      "review": "Persisted committed plan identity, rejected duplicate plans on append/recovery and checked restart replay before backend."
+    },
+    {
+      "commit": "9bdb3a2f99d870cf9ecd3582000a74243c2ba244",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/09-9bdb3a2f99d870cf9ecd3582000a74243c2ba244.patch",
+      "sha256": "4e596f5cc6391a5a3a78b348d6968e612a4dd82f13f088ec934dd52128e7abc2",
+      "bytes": 7891,
+      "review": "Enforced system clock and signed expiry <= plan deadline and current authority epoch; added tampered NDU, replay and expiry tests."
+    },
+    {
+      "commit": "97655fb2014918e6c457b00510b2f644870f37bc",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/10-97655fb2014918e6c457b00510b2f644870f37bc.patch",
+      "sha256": "851e97b38147b4ec14756a6875158ff268f97c80737b3f06d9bb55bd7c19486c",
+      "bytes": 3367,
+      "review": "Persisted exact source/toolchain/metadata and JSON reference receipts; asserted observed counts and DENY_ALL."
+    },
+    {
+      "commit": "ed0e063f3842bc6255940d54a960e3e422953a0b",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/11-ed0e063f3842bc6255940d54a960e3e422953a0b.patch",
+      "sha256": "a9e9d5acb55474476471978090f23f3ed329ea000bfa4b2fee743cd9f9d40e0a",
+      "bytes": 5271,
+      "review": "Validated recovered resource measurement mask/value consistency; corruption fixture XOR guarantees changed byte."
+    },
+    {
+      "commit": "8eb070772b8d03c9ba998410e8c59d37b45c8790",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/12-8eb070772b8d03c9ba998410e8c59d37b45c8790.patch",
+      "sha256": "95d415a1dc9e505fc2e57354560e677ee81d0e77bca7786752feb48654aa67b5",
+      "bytes": 11665,
+      "review": "Read full rustfmt patch: line wrapping and spacing only in runtime/metrics/test code."
+    },
+    {
+      "commit": "c6e368b989f248443e4c733be306a6c830a786ec",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/13-c6e368b989f248443e4c733be306a6c830a786ec.patch",
+      "sha256": "f378af0a8f45a55dae350ff64809f0eb6f5354c7dabcdf6e95e6d89cc0928b25",
+      "bytes": 3501,
+      "review": "Continued all focused diagnostic steps then required every outcome success; no failing outcome permitted by final gate."
+    },
+    {
+      "commit": "668bdc9cc3a450e52ef97729a2ceca39f40b940a",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/14-668bdc9cc3a450e52ef97729a2ceca39f40b940a.patch",
+      "sha256": "440232f951a6c50d34f0066ae1d67bd8011e7eab1bde71abf11fc8a1a6847494",
+      "bytes": 23432,
+      "review": "Read full rustfmt patch: line wrapping, formatting trailing commas, closure brace simplification and module order; no intended semantic change."
+    },
+    {
+      "commit": "e5e0cb8c70d259bc2bceac1b48c3f251b2e3a1e3",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/15-e5e0cb8c70d259bc2bceac1b48c3f251b2e3a1e3.patch",
+      "sha256": "663437e3999c57e01aef19f7995976996f341bcd6f5257538b3f1095568dd351",
+      "bytes": 2388,
+      "review": "Added closed-world callers verifier as required final outcome."
+    },
+    {
+      "commit": "388492134ff57c4cc547861a0b5ec4d2d23d749b",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/16-388492134ff57c4cc547861a0b5ec4d2d23d749b.patch",
+      "sha256": "b4a730ca656eb0a23c96fa2b0d62fcd2e54ca25370e529ded92b9bcd4ac46c56",
+      "bytes": 1068,
+      "review": "Expanded FinalUse claim callers to Neuron runtime and microbatch."
+    },
+    {
+      "commit": "f9591bc62e4ce3ebafe7ceff970d4871bb157618",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/17-f9591bc62e4ce3ebafe7ceff970d4871bb157618.patch",
+      "sha256": "efb3541eea8ad372dad0234edc8246ac9b60edce13a6d1d35ccd3b4cf9219610",
+      "bytes": 1069,
+      "review": "Expanded guarded effect callers to Neuron runtime and microbatch."
+    },
+    {
+      "commit": "bbba2252162ee97bd9f5af36abaf4671c38481d9",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/18-bbba2252162ee97bd9f5af36abaf4671c38481d9.patch",
+      "sha256": "6bfc5e5dd3828ce7a5bc99d2a38ad25cc1c0f7d2076dacbeba6ddd5ab40645bb",
+      "bytes": 824,
+      "review": "Replaced test fixture admission unwrap with expect."
+    },
+    {
+      "commit": "4dc8500b0b922e586046039288183dd9c290211f",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/19-4dc8500b0b922e586046039288183dd9c290211f.patch",
+      "sha256": "2e85fb85370b5486cbb9bb41ecb68b59270b7774f8634d4b25fe7b13033a93d3",
+      "bytes": 1914,
+      "review": "Replaced test fixture admission expect with explicit is_ok assertion."
+    },
+    {
+      "commit": "e50301dffde9e591fdb6d2cb1b4ecb88dacb3c09",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/20-e50301dffde9e591fdb6d2cb1b4ecb88dacb3c09.patch",
+      "sha256": "ee4908a583b7e8d49bed8d22b91aef969bd7f0ac5b533ca164758c7b14054b63",
+      "bytes": 1390,
+      "review": "Expanded independent B4 caller allowlist to Neuron runtime and microbatch."
+    },
+    {
+      "commit": "482f83dbc1c528e622a9357415b851223c0d094d",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/21-482f83dbc1c528e622a9357415b851223c0d094d.patch",
+      "sha256": "a1639c7af66d050320dcb0721bb099135f39294e0dcd39cc63c9e22513f9d14b",
+      "bytes": 1606,
+      "review": "Reverted independent allowlist expansion; original history explicitly identified unreviewed expansion."
+    },
+    {
+      "commit": "b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/22-b920d259bfc55c4afb6f0f9ab0f9698e72db1add.patch",
+      "sha256": "90cb85c9858de815e02c73be71495bf8f1aa2db30c1ff75ff8c834f43e8cab8d",
+      "bytes": 1928,
+      "review": "Reverted canonical CALLERS expansion; original history kept DENY_ALL/DRAFT while missing independent approval."
+    },
+    {
+      "commit": "26105daf252e2d6aa416b881c650d6db2c8a9e81",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/23-26105daf252e2d6aa416b881c650d6db2c8a9e81.patch",
+      "sha256": "db979c79a4606eb69ca0f2d2126e895f1766a5911bd1e95036fbfd6c5523fe9d",
+      "bytes": 6551,
+      "review": "Reintroduced canonical/independent caller pair together and independent closed-set regression test and required CI step."
+    },
+    {
+      "commit": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/24-ca5b70d2684fb96063f5b70bb276525906dae7b6.patch",
+      "sha256": "ab30911dc57a8e718694fa865cc4251b4a240838eda95b3ad8a49c5451dcaec0",
+      "bytes": 5567,
+      "review": "Added exact Q24 input/output range checks and negative extreme-value regression tests."
+    },
+    {
+      "commit": "151a2c80f8fa549e5b7162eef3c846bf2fd90b5d",
+      "patch": "/workspace/scratch/6d7ee0821539/integration-151-proof/original-patches/25-151a2c80f8fa549e5b7162eef3c846bf2fd90b5d.patch",
+      "sha256": "76731126cb71a89516e7622ee89d3472d7e1dca3c1679ca3e8171087fda36a99",
+      "bytes": 1242,
+      "review": "Canonicalized Windows fleet fixture paths before binding and asserted exact canonical representation."
+    }
+  ],
+  "protection": "protection-and-coverage.json",
+  "blockers": [
+    "Current runtime_shadow.rs deliberately returns MissingFinalUseAuthorization for non-test legacy tick. Incoming signed route is not an equivalent byte-preserving history merge.",
+    "Current microbatch API uses codex_hepta_neuron frozen plan/reference backend and current metrics types. Incoming adds an incompatible earlier custom-backend/signed API under the same module and exported type names.",
+    "Default merge adds previously absent workflow and legacy qualification binary and changes product method signatures/dependencies; resolving conflicts by choosing source would discard incoming feature semantics without proof.",
+    "CALLERS and independent B4 history contains expansion, revert, and re-expansion. Keep existing closed-set and default-deny semantics; no authority/rules weakening was applied.",
+    "Native compile/test and migrated metrics-format compatibility need substantive design work before this batch can merge; this audit does not establish a missing external user approval gate."
+  ],
+  "next_action": "Prioritize b40/e304/372 exact tree-preserving main merges; this 22-ref cluster remains pending."
+}

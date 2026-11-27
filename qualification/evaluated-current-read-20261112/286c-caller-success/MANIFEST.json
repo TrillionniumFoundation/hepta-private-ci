@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.raw-caller-success-archive.v1",
+  "source_commit": "286c567593ca6bb5e8cf4ee03602155526bf47ec",
+  "source_tree": "65269d8d380a4e0e772c8f0b726fbe8cdf5190ba",
+  "run_id": 43266970494,
+  "job_id": 131353001352,
+  "completed_at": "2026-11-12T18:06:09Z",
+  "status": "completed",
+  "conclusion": "success",
+  "original": {
+    "bytes": 2149098,
+    "sha256": "d2b7ae553c550dc16821a38b9ea69ee0ddb32e5739649effadc3b8fdb37771f6",
+    "git_sha1": "b19b58d27aacd453de2ca09d0a8bb6ea5cd5a0a5"
+  },
+  "parts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part00.log",
+      "blob_sha": "32b1991899ecbb994bd756ad8b94f2efca9148b3",
+      "bytes": 340000,
+      "sha256": "e0ab3de5335b970eef267ae52b86450be355660b2dadd748441da3069ac46c03",
+      "byte_start": 0,
+      "byte_end": 340000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part01.log",
+      "blob_sha": "b030c32783bb9992b03b19e49a8c99df6ca07c0e",
+      "bytes": 340000,
+      "sha256": "f57d6e2c5cc1d48308f0ba07daed6e1719f6fd8ebf942847c2e82d964d697e62",
+      "byte_start": 340000,
+      "byte_end": 680000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part02.log",
+      "blob_sha": "fab5eead1668b68c503726c2457a1d52f2b30f94",
+      "bytes": 340000,
+      "sha256": "060b8ab94a99600c53a8c98d258fced01f3a3cf065468f8d0cfa6754e3913daf",
+      "byte_start": 680000,
+      "byte_end": 1020000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part03.log",
+      "blob_sha": "01a6026e999fd814dce8098c5250f1922e3451f9",
+      "bytes": 340000,
+      "sha256": "2d2e6d293f3b1003d61623df0b997392fa17479e4fed32156d43fe54ddef26ae",
+      "byte_start": 1020000,
+      "byte_end": 1360000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part04.log",
+      "blob_sha": "65ee172fa0110ffafecdeb270aae9c1dfe8d1861",
+      "bytes": 340000,
+      "sha256": "a7cf13e291aece4b74e14e213f31c84b8bfe1d8bc5038fdfa342989ca7ae5ba2",
+      "byte_start": 1360000,
+      "byte_end": 1700000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part05.log",
+      "blob_sha": "485a10f995cc76765cc87192a70603998b7cfbd5",
+      "bytes": 340000,
+      "sha256": "509334e18b81da1812bb95833121fc956af133f26cf38d529e559c03838aff08",
+      "byte_start": 1700000,
+      "byte_end": 2040000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part06.log",
+      "blob_sha": "8faccf0d0d2948941c2bce8377aff2df986927e3",
+      "bytes": 109098,
+      "sha256": "18860fcf294d714ffc1083b630b8f6a17ec70c56aa77e6221817617c8588cdef",
+      "byte_start": 2040000,
+      "byte_end": 2149098
+    }
+  ],
+  "concat": "Concatenate original part bytes in this order without separators or normalization.",
+  "receipt": {
+    "path": "qualification/evaluated-current-read-20261112/286c-caller-success/receipt.original.log",
+    "blob_sha": "f545959c213d7f892f88b4f7b60eaf3286ba6da4",
+    "bytes": 435516,
+    "sha256": "bf420e6a2d5154a8e7bba637078a43f9c13c43b773655b2c47e4f10b7541893c",
+    "line_start": 9602,
+    "line_end": 15886,
+    "extraction": "Original timestamped log lines including embedded BOMs, copied without removing timestamps or reserializing JSON. Counts are derived separately after stripping timestamp prefixes and prefix BOMs for JSON parsing."
+  },
+  "jobs": {
+    "path": "qualification/evaluated-current-read-20261112/286c-caller-success/jobs.original.json",
+    "blob_sha": "7daae65c7720e9d5bb85b4a2a400314187a15eb7",
+    "bytes": 6619,
+    "sha256": "2a7587258dd530ecc7c132f2e537a6c721b49db19bf82900bb15bd927e1ce38c"
+  },
+  "actual_receipt_summary": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "authorityGranted": false,
+    "boundaries": 541,
+    "protected_files": 390,
+    "rust_files_scanned": 6604
+  },
+  "artifact": {
+    "id": 13970331860,
+    "bytes": 21740,
+    "sha256": "517c3d98b7086761bf2cd4ad9dff7ec5cc5111ca6bbdae83888cd12ce00a98a4",
+    "downloaded": false
+  },
+  "limits": [
+    "This success is only for source 286c; edaf caller was still in progress in the last observed API response.",
+    "No artifact ZIP or undisplayed inventory was fetched in this archive.",
+    "This is source caller proof, not ordinary or Root execution or scientific qualification."
+  ]
+}

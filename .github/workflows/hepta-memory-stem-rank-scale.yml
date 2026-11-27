@@ -1,0 +1,42 @@
+name: MemoryCell label-free rank residual geometry
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/stem_rank_scale.py"
+      - "scripts/memory_cell/stem_cell_geometry.py"
+      - "scripts/memory_cell/test_stem_rank_scale.py"
+      - ".github/workflows/hepta-memory-stem-rank-scale.yml"
+permissions:
+  contents: read
+jobs:
+  protocol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test rank math and source-bound geometry without a model
+        run: |
+          set -euo pipefail
+          mkdir /tmp/stem-rank-scale
+          python3 -m unittest -v test_stem_rank_scale test_stem_cell_geometry 2>&1 | tee /tmp/stem-rank-scale/tests.log
+          python3 -m compileall -q scripts/memory_cell/stem_rank_scale.py scripts/memory_cell/stem_cell_geometry.py scripts/memory_cell/test_stem_rank_scale.py
+      - name: Retain exact source and checksums
+        if: always()
+        run: |
+          set -euo pipefail
+          cp scripts/memory_cell/stem_rank_scale.py scripts/memory_cell/stem_cell_geometry.py scripts/memory_cell/test_stem_rank_scale.py /tmp/stem-rank-scale/
+          git rev-parse HEAD > /tmp/stem-rank-scale/commit.txt
+          (cd /tmp/stem-rank-scale && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stem-rank-scale-protocol
+          path: /tmp/stem-rank-scale
+          if-no-files-found: error

@@ -1,0 +1,49 @@
+{
+  "after_blob": "c6a204d9ab8f08fdf51745652a8786b7425793df",
+  "after_sha256": "352f216179825a418edfc96bba5835c79371a21600e43f5ad5135f6f187d331a",
+  "after_source_tree_difference": [
+    "qa/b4-no-bypass/test_q24_original_outcome_control_source_closure.py"
+  ],
+  "base_candidate": "6d972c3f0db26b9b138aa293e85e5aa6613d1dcb",
+  "before_blob": "0d82c774b845749ba312aec5510a9fb67a52830d",
+  "finding": "No static blocker. The sole lexical mutation marker now matches the recovered actual Rust pair-grouping call; the existing bounded/even-length, lowercase digit, signature and identity guards remain unchanged.",
+  "frozen_verifier_and_production_sources_unchanged": true,
+  "only_byte_change": ".chunks_exact(2) -> .as_chunks::<2>()",
+  "production_adapter": {
+    "blob": "2515c46f586dbb165b30a5603b77435b746b3613",
+    "path": "codex-rs/hepta-agentd/src/cell_q24_task_outcome_control.rs",
+    "semantics": "The preceding guard rejects empty, odd or oversized hex. as_chunks::<2>().0.iter() therefore groups the same complete byte pairs as chunks_exact(2); the remainder is necessarily empty. The existing digit closure accepts only decimal and lowercase a-f, and the same pair conversion remains. This patch changes only the test marker, not this source."
+  },
+  "remote_mutations": 0,
+  "retained_execution_evidence": {
+    "combined_scope": "48 tests in six complete original B4 modules; not the full B4 suite or native Rust qualification.",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "test_q24_original_outcome_control_source_closure.py",
+      "-v"
+    ],
+    "other_module_count": 5,
+    "other_status": "PASS against identical source bytes in prior root-qa-7d667 run",
+    "other_test_count": 32,
+    "q24_log_sha256": "60bc3cb20cff1d56a567d0d6f7c6d5f04482c138d6cb5fe4d3de6539251d4716",
+    "q24_status": "PASS",
+    "q24_tests": 16,
+    "result": "/workspace/scratch/c2d514464ab5/root-qa-q24-after/RESULT.json",
+    "result_sha256": "503a174b8c214d36fb38b27bad50a404a7a6f687faf8baa8468f6dd420db105f"
+  },
+  "reviewed_at": "2026-11-20T03:14:52.755538+00:00",
+  "reviewer_reran_tests": false,
+  "schema": "hepta.independent-q24-marker-review.v1",
+  "source_binding_head": "7d667faba0fbcefb1880e97064b1137209290964",
+  "source_bindings_file": "/workspace/scratch/c2d514464ab5/root-qa-7d667/source-bindings.json",
+  "source_bindings_sha256": "b0a2a1f9e7675723aadcfd707b12c6067699682af77c8cf9efa032770cd43079",
+  "source_bindings_verified": 108,
+  "unchanged_files": 107
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "perc.native-v3-owner-reconciliation.v1",
+  "source_checkpoint": {
+    "pr": 5678,
+    "head_at_reconciliation": "25de82c7bdbe01356a3b78eddfbd55263f96ad76",
+    "request_file": "qualification/perc-native-resume-20261110/NATIVE_CONTINUATION_V3.json",
+    "source_commit": "74128de4165d7947ee218a58b0b1d971ce9c7277"
+  },
+  "original_request": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "idempotency_key": "perc-native-resume-20261110-741-clang-resource-v3",
+    "original_args_exactly_reused": true,
+    "resource_contract": {
+      "cpu_quota_percent": 200,
+      "memory_max_bytes": 8589934592,
+      "timeout_seconds": 1400,
+      "nice": 10
+    }
+  },
+  "reconciliation": {
+    "tool": "heptaruntime.process_start",
+    "host": "ai395",
+    "reused": true,
+    "retried_launch": false,
+    "job_id": "1a1c47553da-cf39-35a",
+    "request_digest": "6babd3e011b6bf533636afea39d949593fdbb570932d11c88641b710370e94fc",
+    "created_unix_ms": 1794297385946,
+    "launch_nonce": "23ce3bb5efcfa4dd02488b8ef045bbc7",
+    "terminal_state": "failed",
+    "exit_code": 1,
+    "at_unix_ms": 1794298913569,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "stdout_exact": "{\"clang_resources\": []}\n",
+    "stderr_tail_exact": "RuntimeError: No verified installed clang21 builtin stddef.h; preserve failure, do not change crypto/build guards\n"
+  },
+  "original_probe": {
+    "host": "ai395",
+    "path": "/home/qq/work/perc-native-validation-74128de-20261110/clang-resource-probe.json",
+    "size_bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "file_contents": "[]\n"
+  },
+  "separate_read_only_followup": {
+    "host": "ai395",
+    "job_id": "1a1c59c0d3a-2e65-1e2",
+    "idempotency_key": "perc-readonly-native-v3-resource-inventory-20261110-v1",
+    "state": "succeeded",
+    "exit_code": 0,
+    "source_commit": "74128de4165d7947ee218a58b0b1d971ce9c7277",
+    "clang_on_path": false,
+    "checked_known_executable_paths_absent": [
+      "/usr/bin/clang-21",
+      "/usr/bin/clang",
+      "/usr/lib/llvm-21/bin/clang",
+      "/opt/llvm-21/bin/clang",
+      "/usr/local/bin/clang-21",
+      "/usr/local/swift/usr/bin/clang"
+    ],
+    "checked_files_absent": [
+      "/home/qq/work/perc-native-validation-74128de-20261110/continuation-v3.json",
+      "/home/qq/work/perc-native-validation-74128de-20261110/logs/automation-circuit-v3-clang-resource.log"
+    ],
+    "scope": "Read-only check of PATH and listed candidate paths; not an exhaustive global compiler inventory."
+  },
+  "result": {
+    "native_v3_unknown_resolved": true,
+    "clang_resource_qualification": "BLOCKED_NO_VERIFIED_INSTALLED_CLANG21_STDDEF",
+    "automation_circuit_tests_executed": false,
+    "agentd_native_tests_executed": false,
+    "windows_native_tests_executed": false,
+    "full_CI_qualification": "HOLD",
+    "independent_scientific_qualification": "HOLD",
+    "production_activation": false
+  },
+  "cautions": [
+    "No original job was relaunched: exact persisted request/key returned reused=true.",
+    "The probe and followup do not prove that another installed compiler cannot exist outside checked paths.",
+    "Do not fabricate resource headers or alter cryptographic/permission validation.",
+    "Do not treat a failed build prerequisite as a failed test assertion.",
+    "The separate source-publication process acknowledgement remains UNKNOWN; #5683 exact remote tree was already confirmed."
+  ]
+}

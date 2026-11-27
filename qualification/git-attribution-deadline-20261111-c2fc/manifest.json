@@ -1,0 +1,114 @@
+{
+  "schema": "git-attribution-deadline-qualification-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "c7633658aef42077f51fa71a1b727b4653ddb76b",
+  "base_tree": "cdd2f6d38c322ac97bfc3cae1127251c1a5026ed",
+  "base_branch_observed": "codex/daemon-learning-sqlite-readonly-clippy-20261110",
+  "executed_source_tree_before_fmt": "e9f517f1d249041f563446d9f1dba1fc888f84bb",
+  "formatted_source_tree_before_evidence": "22a07c69b4b9d6dea7ac227f08787861ab74fae2",
+  "formatted_source_blobs": {
+    "codex-rs/ext/git-attribution/src/git_attribution_tests.rs": "8eca8ce9dc49b064d1b18ab2632890a24c034191",
+    "codex-rs/ext/git-attribution/src/policy.rs": "d9a8b63234fc670a90db9233fdfca17479a315e5"
+  },
+  "fmt_changed_only_whitespace": true,
+  "post_fmt_tests_run": false,
+  "post_fmt_rerun_omitted_reason": "AGENTS.md requires no tests after fix/fmt; fmt-only.diff.gz records the sole whitespace change.",
+  "validation": {
+    "unchanged_baseline": {
+      "passed": 2,
+      "failed": 0,
+      "retries": 0
+    },
+    "slow_response_original_test_budget": {
+      "passed": 1,
+      "failed": 1,
+      "retries": 0,
+      "failure": "Elapsed(())"
+    },
+    "slow_response_production_budget": {
+      "passed": 2,
+      "failed": 0,
+      "retries": 0
+    }
+  },
+  "production_timeout_seconds": 5,
+  "test_delay_ms": 600,
+  "original_hosted_failure": {
+    "source": "c7633658aef42077f51fa71a1b727b4653ddb76b",
+    "run_id": 42902094041,
+    "job_id": 130130648526,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42902094041/job/130130648526",
+    "root_cause_proven_by_this_reproducer": false,
+    "other_hosted_failures_resolved_by_this_change": false
+  },
+  "logs": {
+    "baseline.log": {
+      "raw_sha256": "3f270c9f0e66920fa069b6c2d6585e8eeca4e318a1dab3375d571a6421e4e60a",
+      "raw_bytes": 49662,
+      "gzip_sha256": "4b4b9f88d984435ad7c0780df10fedc06b31fe00e2c2eae73d50dba18c6314f1",
+      "gzip_bytes": 9527
+    },
+    "slow-response-original-budget.log": {
+      "raw_sha256": "c65905f7d6b143bc0961ec94933db0146931c7bba729f4446216e09914a52ea5",
+      "raw_bytes": 17890,
+      "gzip_sha256": "3e306d2399e59398205b546a0d4fb1341a28d49d2f83c5ca0cfd9c3d1e2d4831",
+      "gzip_bytes": 2490
+    },
+    "production-budget.log": {
+      "raw_sha256": "20c1f89ed94d52b7f0dffe31a4a14ffce015aaa6086c8aca25381b7f3c2b5745",
+      "raw_bytes": 17401,
+      "gzip_sha256": "f9cc4a9a491bd9b5907643d54e6bab7f31275faab92afc6659177460660fc058",
+      "gzip_bytes": 2269
+    },
+    "fmt.log": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "gzip_bytes": 20
+    }
+  },
+  "measurement_boundary": {
+    "independent_real_confirmation_tasks": 0,
+    "full_ci_success_claimed": false,
+    "production_adoption_claimed": false,
+    "cpu_seconds": null,
+    "complete_cost": null
+  },
+  "host": "ai395",
+  "toolchain": "1.96.0",
+  "test_command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-git-attribution",
+    "--lib",
+    "--retries",
+    "0",
+    "--failure-output",
+    "final",
+    "--success-output",
+    "final"
+  ],
+  "source_patches": {
+    "slow-response-diagnostic.patch": {
+      "raw_sha256": "944a2bba2934694d053ac6b892d5daf02d07340cc7bdde44d16ebe0218808317",
+      "raw_bytes": 1829,
+      "gzip_sha256": "f485e7801ad86288fc44d586d76fe27ec146a2d883acf22bf1651824972ec16d",
+      "gzip_bytes": 640
+    },
+    "production-budget.patch": {
+      "raw_sha256": "bccd2062b63a179c828fbb1bf8a7adf9f917d1b9250403c2bb8817073bd964d8",
+      "raw_bytes": 2689,
+      "gzip_sha256": "4e4a29bd402182b5bcbcb7ecd6c1e1e00db0f49044a08ceb85474d7f2c10b021",
+      "gzip_bytes": 900
+    },
+    "fmt-only.diff": {
+      "raw_sha256": "8544f147b8479c6131894ce71d59b5a191b2a440f9a5978c9df07a444f6b73fc",
+      "raw_bytes": 571,
+      "gzip_sha256": "ecf5fc7560596af75c9565c4248c17c56b349a4a0a099f176da53c686015b92c",
+      "gzip_bytes": 298
+    }
+  }
+}

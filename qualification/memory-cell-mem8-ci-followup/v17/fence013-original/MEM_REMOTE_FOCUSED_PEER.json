@@ -1,0 +1,29 @@
+{
+  "artifact": {
+    "bytes": 1259429,
+    "git_blob": "9faaca6c831f89da9136e2673f3a256a3d336121",
+    "sha256": "f6659c76f23a24d2a0b1e160f4874f2b6494922d39b016a65e4071455ce64574"
+  },
+  "critical_codes": [],
+  "job_id": 130642329146,
+  "limits": [
+    "Focused peer only; complete member/source-tree verification and package remain owned by CI agent.",
+    "Audit healthy is observation-only, not protection enforcement or a full blocking workflow result.",
+    "A later v0.13 job does not explain the prior v0.10 failure.",
+    "No native/model/host/job execution performed by this peer."
+  ],
+  "post_fence_report_mode": "audit",
+  "post_fence_result": "healthy",
+  "protection_available": false,
+  "raw": {
+    "bytes": 1636940,
+    "git_blob": "5f63461a8ca8070bf1598611ed89f88234b51e9e",
+    "sha256": "3743a63be1479793b42f4ba35415e6a4e5c26af43ff744909dc54196e08acb27"
+  },
+  "readiness": "ready_observation_only",
+  "run_id": 43055103354,
+  "schema": "mem.fence013.original-focused-peer.v1",
+  "seven_action_files_match_frozen_pins_and_original_tar": true,
+  "source_before_after_exact_bytes_equal_and_match_tar": true,
+  "status": "NO_MUST_FIX_IN_REQUESTED_SCOPE"
+}

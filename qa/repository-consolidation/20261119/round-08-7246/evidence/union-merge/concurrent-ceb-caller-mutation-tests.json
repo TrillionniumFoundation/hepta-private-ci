@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_current_caller_migrations.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "seconds": 2.1098216579994187,
+  "tree": "c0adb12087366a038511cd8e69723103aec2cba4",
+  "log_sha256": "09441e1d096d101f3b465e0f12ffe896d0ccfc477719f9ed90f99d689649e9fc",
+  "tail": "tion_keeps_explicit_parent_revoke_veto) ... ok\ntest_runtime_wrapper_cannot_stop_delegating (test_current_caller_migrations.CurrentCallerMigrationTests.test_runtime_wrapper_cannot_stop_delegating) ... ok\ntest_write_transaction_cannot_weaken_sqlite_lock (test_current_caller_migrations.CurrentCallerMigrationTests.test_write_transaction_cannot_weaken_sqlite_lock) ... ok\ntest_write_transaction_requires_both_open_checks (test_current_caller_migrations.CurrentCallerMigrationTests.test_write_transaction_requires_both_open_checks) ... ok\ntest_write_transaction_requires_publication_and_managed_refusal (test_current_caller_migrations.CurrentCallerMigrationTests.test_write_transaction_requires_publication_and_managed_refusal) ... ok\ntest_writer_registration_keeps_post_io_parent_deadline (test_current_caller_migrations.CurrentCallerMigrationTests.test_writer_registration_keeps_post_io_parent_deadline) ... ok\ntest_writer_rotation_cannot_use_unpinned_predecessor_boundary (test_current_caller_migrations.CurrentCallerMigrationTests.test_writer_rotation_cannot_use_unpinned_predecessor_boundary) ... ok\n\n----------------------------------------------------------------------\nRan 30 tests in 1.804s\n\nOK\n"
+}

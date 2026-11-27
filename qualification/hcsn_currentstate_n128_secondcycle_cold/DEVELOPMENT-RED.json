@@ -1,0 +1,31 @@
+{
+  "admission": false,
+  "attempts": [
+    {
+      "candidate_dynamic_segments": 0,
+      "candidate_matrix_exponentials": 0,
+      "cause": "MISSING_LOCAL_START_PATH",
+      "exit_code": 1,
+      "identity": "local-unfrozen-direct-lane-001",
+      "oracle_dynamic_segments": 0,
+      "oracle_matrix_exponentials": 0,
+      "status": "FILE_NOT_FOUND_BEFORE_NUMERICAL_IMPORT"
+    },
+    {
+      "candidate_failed_child_dynamic_segments": "UNKNOWN",
+      "candidate_failed_child_matrix_exponentials": "UNKNOWN",
+      "candidate_known_completed_prefix_dynamic_segments": 17,
+      "candidate_known_completed_prefix_matrix_exponentials": 68,
+      "cause": "DIRECT_COLD7_PACKET_ROSTER_MISMATCH",
+      "exit_code": 1,
+      "identity": "local-unfrozen-direct-lane-002",
+      "oracle_cold7_started": false,
+      "oracle_known_completed_prefix_dynamic_segments": 17,
+      "oracle_known_completed_prefix_matrix_exponentials": 68,
+      "status": "DIRECT_SLICE_INVARIANCE_NOT_PASSED"
+    }
+  ],
+  "model_result_published": false,
+  "optimizer_updates": 0,
+  "torch_operations": 0
+}

@@ -1,0 +1,238 @@
+{
+  "checks": [
+    {
+      "case": "exit-code-1",
+      "passed": true
+    },
+    {
+      "case": "original-exit-code-1",
+      "passed": true
+    },
+    {
+      "case": "exit-code-0",
+      "passed": true
+    },
+    {
+      "case": "original-exit-code-0",
+      "passed": true
+    },
+    {
+      "case": "exit-code-2",
+      "passed": true
+    },
+    {
+      "case": "original-exit-code-2",
+      "passed": true
+    },
+    {
+      "case": "exit-code-137",
+      "passed": true
+    },
+    {
+      "case": "original-exit-code-137",
+      "passed": true
+    },
+    {
+      "case": "exit-code--9",
+      "passed": true
+    },
+    {
+      "case": "original-exit-code--9",
+      "passed": true
+    },
+    {
+      "case": "exit-code-None",
+      "passed": true
+    },
+    {
+      "case": "original-exit-code-None",
+      "passed": true
+    },
+    {
+      "case": "exit-code-True",
+      "passed": true
+    },
+    {
+      "case": "original-exit-code-True",
+      "passed": true
+    },
+    {
+      "case": "exit-code-'1'",
+      "passed": true
+    },
+    {
+      "case": "original-exit-code-'1'",
+      "passed": true
+    },
+    {
+      "case": "reject-partial-stdout",
+      "passed": true
+    },
+    {
+      "case": "reject-outer-timeout",
+      "passed": true
+    },
+    {
+      "case": "reject-http-403",
+      "passed": true
+    },
+    {
+      "case": "reject-http-422",
+      "passed": true
+    },
+    {
+      "case": "reject-http-503",
+      "passed": true
+    },
+    {
+      "case": "reject-unknown-error",
+      "passed": true
+    },
+    {
+      "case": "wrong-endpoint",
+      "passed": true
+    },
+    {
+      "case": "wrong-method",
+      "passed": true
+    },
+    {
+      "case": "existing-exact-pr-no-post",
+      "passed": true
+    },
+    {
+      "case": "original-intent-request-uncertain-unchanged",
+      "passed": true
+    },
+    {
+      "case": "reject-state-closed",
+      "passed": true
+    },
+    {
+      "case": "reject-state-merged",
+      "passed": true
+    },
+    {
+      "case": "reject-state-not-draft",
+      "passed": true
+    },
+    {
+      "case": "reject-state-title",
+      "passed": true
+    },
+    {
+      "case": "reject-state-body",
+      "passed": true
+    },
+    {
+      "case": "reject-identity-head-ref",
+      "passed": true
+    },
+    {
+      "case": "reject-identity-head-sha",
+      "passed": true
+    },
+    {
+      "case": "reject-identity-head-repo",
+      "passed": true
+    },
+    {
+      "case": "reject-identity-base-ref",
+      "passed": true
+    },
+    {
+      "case": "reject-identity-base-sha",
+      "passed": true
+    },
+    {
+      "case": "reject-identity-base-repo",
+      "passed": true
+    },
+    {
+      "case": "duplicate-head-base-no-post",
+      "passed": true
+    },
+    {
+      "case": "maximum-two-recovery-posts",
+      "passed": true
+    },
+    {
+      "case": "post-budget-persists-across-invocations",
+      "passed": true
+    },
+    {
+      "case": "no-repeat-after-403",
+      "passed": true
+    },
+    {
+      "case": "restart-no-repeat-after-403",
+      "passed": true
+    },
+    {
+      "case": "no-repeat-after-422",
+      "passed": true
+    },
+    {
+      "case": "restart-no-repeat-after-422",
+      "passed": true
+    },
+    {
+      "case": "no-repeat-after-503",
+      "passed": true
+    },
+    {
+      "case": "restart-no-repeat-after-503",
+      "passed": true
+    },
+    {
+      "case": "no-repeat-after-signal",
+      "passed": true
+    },
+    {
+      "case": "restart-no-repeat-after-signal",
+      "passed": true
+    },
+    {
+      "case": "no-repeat-after-timeout",
+      "passed": true
+    },
+    {
+      "case": "restart-no-repeat-after-timeout",
+      "passed": true
+    },
+    {
+      "case": "no-repeat-after-partial",
+      "passed": true
+    },
+    {
+      "case": "restart-no-repeat-after-partial",
+      "passed": true
+    },
+    {
+      "case": "no-repeat-after-success-invisible",
+      "passed": true
+    },
+    {
+      "case": "restart-no-repeat-after-success-invisible",
+      "passed": true
+    },
+    {
+      "case": "fresh-query-reconciles-created-pr",
+      "passed": true
+    },
+    {
+      "case": "in-flight-result-unknown-blocks-replay",
+      "passed": true
+    },
+    {
+      "case": "unresolved-wrapper-blocks-any-recovery-post",
+      "passed": true
+    }
+  ],
+  "checks_passed": 57,
+  "driver_sha256": "ec9d03e076aa4459829c901f73197bbf0706a5c7d5e7e35b7988a6afd5e287b9",
+  "github_writes_executed": 0,
+  "real_subprocesses_executed": 0,
+  "schema": "hcsn-pr-recovery-independent-offline-review-v1",
+  "scope": "Offline failure classification and durable PR-recovery state-machine checks; identity/ref/Merkle routines reviewed statically, not queried against GitHub."
+}

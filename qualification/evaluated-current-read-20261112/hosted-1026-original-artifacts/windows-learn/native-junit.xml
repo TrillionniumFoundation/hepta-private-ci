@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="36" failures="0" errors="0" uuid="6f23b829-d159-4b19-9922-3838ddedded0" timestamp="2026-11-12T13:12:12.874+00:00" time="15.687">
+    <testsuite name="codex-hepta-agentd" tests="23" disabled="0" errors="0" failures="0">
+        <testcase name="cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:12.880+00:00" time="0.523">
+        </testcase>
+        <testcase name="cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:13.404+00:00" time="2.173">
+        </testcase>
+        <testcase name="cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:15.577+00:00" time="0.526">
+        </testcase>
+        <testcase name="cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:16.103+00:00" time="0.550">
+        </testcase>
+        <testcase name="circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:16.654+00:00" time="1.302">
+        </testcase>
+        <testcase name="circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:17.956+00:00" time="3.346">
+        </testcase>
+        <testcase name="circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:21.302+00:00" time="0.164">
+        </testcase>
+        <testcase name="circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:21.467+00:00" time="0.697">
+        </testcase>
+        <testcase name="circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:22.163+00:00" time="0.385">
+        </testcase>
+        <testcase name="circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:22.549+00:00" time="0.121">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:22.670+00:00" time="0.245">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:22.915+00:00" time="0.224">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:23.139+00:00" time="0.360">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:23.499+00:00" time="1.133">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:24.633+00:00" time="0.271">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:24.904+00:00" time="1.007">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:25.910+00:00" time="0.834">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:26.745+00:00" time="0.246">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:26.990+00:00" time="0.261">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:27.251+00:00" time="0.243">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:27.494+00:00" time="0.228">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:27.722+00:00" time="0.209">
+        </testcase>
+        <testcase name="neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout" classname="codex-hepta-agentd" timestamp="2026-11-12T13:12:27.931+00:00" time="0.204">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-intelligence-eval" tests="6" disabled="0" errors="0" failures="0">
+        <testcase name="product_execution_file::tests::current::current_refuses_length_changes_without_repair" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T13:12:28.135+00:00" time="0.129">
+        </testcase>
+        <testcase name="product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T13:12:28.264+00:00" time="0.033">
+        </testcase>
+        <testcase name="product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T13:12:28.297+00:00" time="0.023">
+        </testcase>
+        <testcase name="product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T13:12:28.320+00:00" time="0.026">
+        </testcase>
+        <testcase name="qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T13:12:28.346+00:00" time="0.008">
+        </testcase>
+        <testcase name="qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T13:12:28.354+00:00" time="0.008">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-learning-ledger" tests="7" disabled="0" errors="0" failures="0">
+        <testcase name="durable::current_tests::current_reads_complete_original_bytes_and_preserves_cursor" classname="codex-hepta-learning-ledger" timestamp="2026-11-12T13:12:28.363+00:00" time="0.018">
+        </testcase>
+        <testcase name="durable::current_tests::current_refuses_truncation_short_tail_extra_tail_and_header_corruption_without_repair" classname="codex-hepta-learning-ledger" timestamp="2026-11-12T13:12:28.380+00:00" time="0.042">
+        </testcase>
+        <testcase name="durable::current_tests::current_rejects_a_different_valid_same_length_ledger" classname="codex-hepta-learning-ledger" timestamp="2026-11-12T13:12:28.422+00:00" time="0.018">
+        </testcase>
+        <testcase name="witness::current_tests::current_detects_rehashed_history_even_with_unchanged_latest_frontier" classname="codex-hepta-learning-ledger" timestamp="2026-11-12T13:12:28.440+00:00" time="0.020">
+        </testcase>
+        <testcase name="witness::current_tests::current_refuses_physical_length_changes_without_repair_or_rearm" classname="codex-hepta-learning-ledger" timestamp="2026-11-12T13:12:28.460+00:00" time="0.046">
+        </testcase>
+        <testcase name="witness::current_tests::current_reread_preserves_original_cursor_bytes_and_append_owner" classname="codex-hepta-learning-ledger" timestamp="2026-11-12T13:12:28.506+00:00" time="0.025">
+        </testcase>
+        <testcase name="witness::current_tests::recovered_current_detects_same_length_corruption_and_valid_frontier_substitution" classname="codex-hepta-learning-ledger" timestamp="2026-11-12T13:12:28.531+00:00" time="0.030">
+        </testcase>
+    </testsuite>
+</testsuites>

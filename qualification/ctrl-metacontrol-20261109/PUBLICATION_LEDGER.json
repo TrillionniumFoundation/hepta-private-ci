@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.ctrl.publication-ledger.v1",
+  "original_base_sha": "f6a7d5307f888d30faa8803d23487c78789b99fe",
+  "stages": [
+    {
+      "stage": "stage1",
+      "pr": 5472,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5472",
+      "branch": "research/ctrl-20261109-e337-01-identity",
+      "head_sha": "332708b415427fb72b75253111de2ba15afc2d3f",
+      "base_sha": "f6a7d5307f888d30faa8803d23487c78789b99fe",
+      "draft": true
+    },
+    {
+      "stage": "native",
+      "pr": 5488,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5488",
+      "branch": "research/ctrl-20261109-e337-02-native",
+      "head_sha": "b8535a67bead9545e16448f77559fcb1c6f6f8ed",
+      "base_sha": "332708b415427fb72b75253111de2ba15afc2d3f",
+      "draft": true
+    },
+    {
+      "stage": "heads",
+      "pr": 5489,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5489",
+      "branch": "research/ctrl-20261109-e337-03-heads",
+      "head_sha": "ce8970456d6effbadc51ec110654ef0814b19c9d",
+      "base_sha": "b8535a67bead9545e16448f77559fcb1c6f6f8ed",
+      "draft": true
+    },
+    {
+      "stage": "checkpoint",
+      "pr": 5490,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5490",
+      "branch": "research/ctrl-20261109-e337-04-checkpoint",
+      "head_sha": "6ce3878285cdfc10d68210e3350738ae2730c6ff",
+      "base_sha": "ce8970456d6effbadc51ec110654ef0814b19c9d",
+      "draft": true
+    },
+    {
+      "stage": "audit",
+      "pr": 5491,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5491",
+      "branch": "research/ctrl-20261109-e337-05-audit",
+      "head_sha": "d17a31828f11e33561145f6aa2d58eb81cb2eb97",
+      "base_sha": "6ce3878285cdfc10d68210e3350738ae2730c6ff",
+      "draft": true
+    },
+    {
+      "stage": "study",
+      "pr": 5492,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5492",
+      "branch": "research/ctrl-20261109-e337-06-study",
+      "head_sha": "d5e7fa43ffac9545d3025bd54be8d5643619c9b0",
+      "base_sha": "d17a31828f11e33561145f6aa2d58eb81cb2eb97",
+      "draft": true
+    },
+    {
+      "stage": "evidence",
+      "pr": 5493,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5493",
+      "branch": "research/ctrl-20261109-e337-07-evidence",
+      "head_sha": "614e8e129448775938d55a64985b9f137c0e9237",
+      "base_sha": "d5e7fa43ffac9545d3025bd54be8d5643619c9b0",
+      "draft": true
+    }
+  ],
+  "report_stage": "This final qualification commit; no native policy admission or production update."
+}

@@ -1,0 +1,195 @@
+{
+  "upstreamPackage": "bm25",
+  "upstreamVersion": "2.3.2",
+  "upstreamRepository": "https://github.com/Michael-JB/bm25",
+  "crateArchive": "https://static.crates.io/crates/bm25/bm25-2.3.2.crate",
+  "crateArchiveSha256": "1cbd8ffdfb7b4c2ff038726178a780a94f90525ed0ad264c0afaa75dd8c18a64",
+  "upstreamVcs": {
+    "git": {
+      "sha1": "8ef726045b41702e148d8996d344f3500844fde1"
+    },
+    "path_in_vcs": ""
+  },
+  "patchPurpose": "Preserve public 32-bit, 64-bit and native-width token IDs using maintained local stable hashing.",
+  "originalFileSha256": {
+    ".cargo_vcs_info.json": "da8d0064f72fcddce84869600d75ede547b8ffc33909c07740144613f97a595e",
+    ".gitignore": "7fa52bbb21bc539ea47df0346e498c17ecb0c0ef6fb4255880181886084418a5",
+    "CHANGELOG.md": "2e10d6b534a3d1837b6284f86960f66188213d50b834b0e672096a65ffed0c66",
+    "Cargo.lock": "53c542ecf5a6c4c19df6ec639168d107572e6389e7716c28950ff5acb56098f5",
+    "Cargo.toml": "7d7a6119470df46ea656b05306491614d15ed24e6efede9c455fa080d16227f6",
+    "Cargo.toml.orig": "b2ea9b1c2359b66d2483259f84c7219b8b69a18d1c13e411a4d7c8267afc7273",
+    "LICENSE": "0039260f31893b6b5797d5fd5be0f086a0e8f10ec81162acdb3199d51cebd5a5",
+    "README.md": "3f3291efb256eeade33fb29e1c7a694a4bb44b182b6741d05c26147feaa11546",
+    "RELEASING.md": "c350f8403413f319c1717308ec745156822b64c4f7f26717a6b6b24539c3355b",
+    "benches/embedder.rs": "5e301820dd4e521b2c3cfa726ed7f47fff759a06de43d3f9130ec08b8f63137b",
+    "benches/search.rs": "fe432e93406929c2e5bbaa3267db0cfe411a61313274249fdca3d8b0756049c9",
+    "src/default_tokenizer.rs": "4bfddbebcde773e4fabc78caf3b1fa2fe54490d0254c46ac41af51e64a1390fb",
+    "src/embedder.rs": "d6eb98d807fe96b6246055420135c8709adc0aa0335c80e90bab419f8f0e4a16",
+    "src/lib.rs": "219c143f2adc183f9a5bbc092601796fbc50299047d0e54579976dd0d44b201b",
+    "src/scorer.rs": "7b9f63a32bfb566be141e8ef0a88eaebd785f94edd5a88b40e1d9906969be689",
+    "src/search.rs": "2062ba8d0e8bf3401c2f91cc586f81785f438bfb7693b412e9ccadb70019b83e",
+    "src/test_data_loader.rs": "dda8f9c75839739aef0bb693f40ffb51180bfcf1edf2890dc1614daaf327b918",
+    "src/tokenizer.rs": "e9019564394770ecc5a647c3081e9c4a953e046d0e0b5379aefeeea83f8af922"
+  },
+  "changedOriginalFiles": [
+    "Cargo.toml",
+    "benches/embedder.rs",
+    "benches/search.rs",
+    "src/default_tokenizer.rs",
+    "src/embedder.rs",
+    "src/lib.rs",
+    "src/scorer.rs",
+    "src/search.rs",
+    "src/test_data_loader.rs"
+  ],
+  "patchedFileSha256": {
+    "Cargo.toml": "348bff074ef6d4732c2991f000112652f04020b97869bfd6660723d4e071950b",
+    "benches/embedder.rs": "92ffb1fa9b7c7d322d2cf481c52de1ec0937579cbc6015db32842095f7df9feb",
+    "benches/search.rs": "a0cad751240af836fe7ae27bb7abc33b73e0936a4e89c8e5570bd606f5029dba",
+    "src/default_tokenizer.rs": "86bbf4527a6140fcfa34f9d19a247bff083cd4a0fd11d4f6b65aeeffd19c7fc7",
+    "src/embedder.rs": "5c9d4bb2847edf81832ac858388b5faa6a8a8545aefadb9d20070ac839238034",
+    "src/lib.rs": "39d7cdad57c7b93d7451fc0238b23a5881bb80845e2073c3e6c452652b92b39e",
+    "src/scorer.rs": "d58e442bbc06b89cc69149fca4c3e8714e3c8e2b9482339119dee1cb8e24868f",
+    "src/search.rs": "72192bc093cd5e22f301da60552d9f4378b4471831e1ba1efbe1742d2e5ee119",
+    "src/test_data_loader.rs": "8c3ca2982657a934db83b3698008150b3447845a1bffe9bfbb2f27077db3e510"
+  },
+  "additionalFiles": [],
+  "supplementalUpstreamTestData": {
+    "sourceCommit": "8ef726045b41702e148d8996d344f3500844fde1",
+    "files": {
+      "LICENSE": {
+        "gitBlobSha1": "af7261ebb73fb9cb5f0fb7ae0e4834c26c19abfd",
+        "sha256": "0039260f31893b6b5797d5fd5be0f086a0e8f10ec81162acdb3199d51cebd5a5",
+        "bytes": 1071,
+        "sourceUrl": "https://api.github.com/repos/Michael-JB/bm25/git/blobs/af7261ebb73fb9cb5f0fb7ae0e4834c26c19abfd"
+      },
+      "data/README.md": {
+        "gitBlobSha1": "5de93ffd2dfab0fdaa59c2434d41921e9a8e32e9",
+        "sha256": "4d4b45b88ebe217cade22d6b044c24b2c29f94e2b845dea4b300211019fbe78e",
+        "bytes": 136,
+        "sourceUrl": "https://api.github.com/repos/Michael-JB/bm25/git/blobs/5de93ffd2dfab0fdaa59c2434d41921e9a8e32e9"
+      },
+      "data/recipes_de.csv": {
+        "gitBlobSha1": "3e5d797439b3378a947db91a67782f6c13c85e2c",
+        "sha256": "d85cb0d3925d743ecc78e4ca2899f4c7fb15695c7cf7dcfc1162f69e43ff2d5e",
+        "bytes": 37022,
+        "sourceUrl": "https://api.github.com/repos/Michael-JB/bm25/git/blobs/3e5d797439b3378a947db91a67782f6c13c85e2c"
+      },
+      "data/recipes_en.csv": {
+        "gitBlobSha1": "1a6fe77c8793f03c640ccb18961fd7c7d19df2af",
+        "sha256": "d97bf41dd568664f708266d04fa4b8fda5762b5501f166b057dccd9c70e3f4a8",
+        "bytes": 31113,
+        "sourceUrl": "https://api.github.com/repos/Michael-JB/bm25/git/blobs/1a6fe77c8793f03c640ccb18961fd7c7d19df2af"
+      }
+    }
+  },
+  "referenceSnapshots": {
+    "generatedBy": "Unmodified official bm25 2.3.2 crate with original fxhash 0.2.1, exact upstream recipes at 8ef726045b41702e148d8996d344f3500844fde1",
+    "referenceCrateArchiveSha256": "1cbd8ffdfb7b4c2ff038726178a780a94f90525ed0ad264c0afaa75dd8c18a64",
+    "referenceCargoLockSha256": "a4504478e6aa01929f89bf8de4af51442d7d225c986f35293ab917b6e826b600",
+    "referenceCommand": "INSTA_UPDATE=always just test --manifest-path bm25-reference/Cargo.toml --locked --all-features --lib --test-threads 2",
+    "candidatePolicy": "INSTA_UPDATE=no; generated expected snapshots are immutable during candidate qualification",
+    "snapshots": {
+      "snapshots/bm25__default_tokenizer__tests__it_matches_snapshot_de.snap": {
+        "sha256": "1fa2b17ac3e24b30401b7b92270d23bfb05afb70e5dbad28ec4b5eee871db801",
+        "bytes": 58797
+      },
+      "snapshots/bm25__default_tokenizer__tests__it_matches_snapshot_en.snap": {
+        "sha256": "66b11abcd7a727c3549d7b990433f3e80dd53a3886f4d0e856ecaa0ed86e0fe9",
+        "bytes": 59543
+      },
+      "snapshots/bm25__embedder__tests__it_matches_snapshot_de.snap": {
+        "sha256": "eb0f378c2f8d39def932f2918d180358e03f999140311cf1c0c8348cebd14419",
+        "bytes": 375471
+      },
+      "snapshots/bm25__embedder__tests__it_matches_snapshot_en.snap": {
+        "sha256": "18a7cb459bd119aa4e9a2fe38e8a96217d24877940611413b2265944434874c2",
+        "bytes": 401912
+      },
+      "snapshots/bm25__search__tests__it_matches_snapshot_de.snap": {
+        "sha256": "aa4db602ecd45ed833bf8716e29bb5cde68dbff1b7e3c5a4081eb22c6ea0aded",
+        "bytes": 12252
+      },
+      "snapshots/bm25__search__tests__it_matches_snapshot_en.snap": {
+        "sha256": "06009a5cce4db4fd1ec02b46484e1a7c312459de14f35d515eb92dc25cba14c7",
+        "bytes": 13008
+      }
+    }
+  },
+  "maintenancePatch": "HEPTA-maintenance.patch",
+  "maintenancePatchSha256": "8ec8779bcf3038718e345c07e75dc8464f37b93996eadd8c5602081be279b29b",
+  "functionalChangedOriginalFiles": [
+    "Cargo.toml",
+    "src/embedder.rs"
+  ],
+  "functionalPatchedFileSha256": {
+    "Cargo.toml": "348bff074ef6d4732c2991f000112652f04020b97869bfd6660723d4e071950b",
+    "src/embedder.rs": "1977a0618faed5eed8d5f00499273c50ac43977cd47f0f673d054de841d7fffa"
+  },
+  "mechanicalFormatting": {
+    "command": "just fmt",
+    "scope": "Repository-mandated mechanical Rust formatting after scoped tests and just fix",
+    "changedFiles": {
+      "benches/embedder.rs": {
+        "beforeSha256": "5e301820dd4e521b2c3cfa726ed7f47fff759a06de43d3f9130ec08b8f63137b",
+        "afterSha256": "92ffb1fa9b7c7d322d2cf481c52de1ec0937579cbc6015db32842095f7df9feb"
+      },
+      "benches/search.rs": {
+        "beforeSha256": "fe432e93406929c2e5bbaa3267db0cfe411a61313274249fdca3d8b0756049c9",
+        "afterSha256": "a0cad751240af836fe7ae27bb7abc33b73e0936a4e89c8e5570bd606f5029dba"
+      },
+      "src/default_tokenizer.rs": {
+        "beforeSha256": "4bfddbebcde773e4fabc78caf3b1fa2fe54490d0254c46ac41af51e64a1390fb",
+        "afterSha256": "86bbf4527a6140fcfa34f9d19a247bff083cd4a0fd11d4f6b65aeeffd19c7fc7"
+      },
+      "src/embedder.rs": {
+        "beforeSha256": "1977a0618faed5eed8d5f00499273c50ac43977cd47f0f673d054de841d7fffa",
+        "afterSha256": "5c9d4bb2847edf81832ac858388b5faa6a8a8545aefadb9d20070ac839238034"
+      },
+      "src/lib.rs": {
+        "beforeSha256": "219c143f2adc183f9a5bbc092601796fbc50299047d0e54579976dd0d44b201b",
+        "afterSha256": "39d7cdad57c7b93d7451fc0238b23a5881bb80845e2073c3e6c452652b92b39e"
+      },
+      "src/scorer.rs": {
+        "beforeSha256": "7b9f63a32bfb566be141e8ef0a88eaebd785f94edd5a88b40e1d9906969be689",
+        "afterSha256": "d58e442bbc06b89cc69149fca4c3e8714e3c8e2b9482339119dee1cb8e24868f"
+      },
+      "src/search.rs": {
+        "beforeSha256": "2062ba8d0e8bf3401c2f91cc586f81785f438bfb7693b412e9ccadb70019b83e",
+        "afterSha256": "72192bc093cd5e22f301da60552d9f4378b4471831e1ba1efbe1742d2e5ee119"
+      },
+      "src/test_data_loader.rs": {
+        "beforeSha256": "dda8f9c75839739aef0bb693f40ffb51180bfcf1edf2890dc1614daaf327b918",
+        "afterSha256": "8c3ca2982657a934db83b3698008150b3447845a1bffe9bfbb2f27077db3e510"
+      }
+    },
+    "patch": "HEPTA-formatting.patch",
+    "patchSha256": "b0e0b461149fcb4cfd16e952dfdc4270d7861e3bbce1b93d17e5e0fae406af2a"
+  },
+  "semanticWhitespaceNormalizations": {
+    "CHANGELOG.md": {
+      "afterSha256": "f581623c505eefeac6a12fab98afcb866153b132e5686b90edfae9b2d6b7258e",
+      "beforeSha256": "2e10d6b534a3d1837b6284f86960f66188213d50b834b0e672096a65ffed0c66",
+      "originalRecoveryPath": "qa/repository-consolidation/20261126/bm25-format-originals/bm25-2.3.2-stable-hash/CHANGELOG.md.original",
+      "validation": "CommonMark with tables rendered HTML equality"
+    },
+    "README.md": {
+      "afterSha256": "d891493e63c46f465ca99e2196b0e34aeb9cf4a5ff0fca0cd3fe2bf01536a05a",
+      "beforeSha256": "3f3291efb256eeade33fb29e1c7a694a4bb44b182b6741d05c26147feaa11546",
+      "originalRecoveryPath": "qa/repository-consolidation/20261126/bm25-format-originals/bm25-2.3.2-stable-hash/README.md.original",
+      "validation": "CommonMark with tables rendered HTML equality"
+    },
+    "RELEASING.md": {
+      "afterSha256": "23707e374cf30a0f669f21f8041d69e141dea2a2bd196b8308b37a8b3fb6d9a7",
+      "beforeSha256": "c350f8403413f319c1717308ec745156822b64c4f7f26717a6b6b24539c3355b",
+      "originalRecoveryPath": "qa/repository-consolidation/20261126/bm25-format-originals/bm25-2.3.2-stable-hash/RELEASING.md.original",
+      "validation": "CommonMark with tables rendered HTML equality"
+    }
+  },
+  "standaloneCargoLock": {
+    "originalRecoveryPath": "qa/repository-consolidation/20261126/bm25-format-originals/bm25-2.3.2-stable-hash/Cargo.lock.original",
+    "originalSha256": "53c542ecf5a6c4c19df6ec639168d107572e6389e7716c28950ff5acb56098f5",
+    "maintainedSha256": "3b5c0cecfa34e1083656d81db732105b327d3599b110b9ea06d49703d0014b26",
+    "change": "Use the existing codex-utils-stable-hash path dependency instead of fxhash"
+  }
+}

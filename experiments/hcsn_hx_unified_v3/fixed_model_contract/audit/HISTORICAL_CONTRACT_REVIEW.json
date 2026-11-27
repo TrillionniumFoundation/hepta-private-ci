@@ -1,0 +1,52 @@
+{
+  "decision": "ACCEPT_REPAIRED_TWO_MODEL_TRUSTED_LOCAL_IDENTITY_CONTRACT",
+  "review_sequence": "Initial execution preceded implementation-level approval and remains a documented process gap. Byte-identity fix received explicit source approval before corrected execution. This final review does not retroactively authorize initial execution.",
+  "independent_replay": {
+    "prepare_exit": 0,
+    "test_exit": 0,
+    "methods": 4,
+    "skips": 0,
+    "default_cli_exit": 0,
+    "second_cli_exit": 0,
+    "root_and_coefficient_reproduction_models": 2,
+    "old_new_bit_identical_asset_outputs": 14,
+    "negative_checks": 47,
+    "result_json_matches_producer": true,
+    "both_generated_sources_byte_identical": true
+  },
+  "model_digests": [
+    "ff595d678287a1d75a59f593214fd87f052b9ca348aa28a184721ef6241915c1",
+    "2cc8f255028d24d8f1c40f824a58bb5ed02b2999e482e46e259cdd3d0c27cfa2"
+  ],
+  "independent_bug": {
+    "issue": "read_text universal-newline normalization accepted CRLF-changed bytes",
+    "counterexample": "BYTE_IDENTITY_COUNTEREXAMPLE.json",
+    "repair": "Compare read_bytes with explicit UTF8 render and emit binary bytes; new CRLF-only negative rejects without import/mutation",
+    "old_receipts_preserved": true
+  },
+  "binding_review": [
+    "Canonical exact rational parameter dictionaries map to exactly2 trusted registry entries; independent stdlib digest recomputation matched already-reviewed source receipts.",
+    "Input contract cannot supply a replacement trust anchor; registered root/coefficient payload digests bind all non-timing fields including numeric constants/domain/precision/status.",
+    "Only exact top-level elapsed_seconds/precompute_seconds excluded; duplicate keys/nonfinite/unknown/missing fields and parameter spelling/type changes reject.",
+    "128KiB bounded strict-UTF8 JSON read now precedes parsing; not a full hostile-resource defense.",
+    "All validate/render happens before atomic local temp output; tested invalid bundles neither emit new files nor overwrite existing good runtime.",
+    "Runtime source identity checker never imports changed runtime; read-only comparison is byte-strict after repair.",
+    "Mathematical kernel AST/constants/ordered operations remain those of previously reviewed2fixedmodels; models/domains/budgets not broadened."
+  ],
+  "limits": [
+    "Registry/code/proof implementation/FLINT and IEEE runtime premises trusted; no signature/authentication/hostile registry guarantee.",
+    "No concurrent file race/TOCTOU/directory security or fsync crash-durability claim.",
+    "No production/default/remote/CI changes or benchmark/performance claim."
+  ],
+  "source_hashes": {
+    "contract.py": "2df2c5d01d5624b36953b808e1c89ed5ad16b233a73a271cf737f162b792734f",
+    "prepare_bundles.py": "256bd310b967e55bceccda1c837144cf07d6575c7b075c4b875a152250275fde",
+    "generate.py": "960ff87857fc82f9618fc8e53c1d6677c512587db04c042f44da7669a354c69d",
+    "test_contract.py": "18c3a05be2d0ee933b50f503a96e0945b0676650788f82092cb146e9063dcd7c",
+    "REGISTRY.json": "7d373c2947591d6d5aef3be5292a1f7d2cdab4e3c5a9aaf3547bfd568b79215a",
+    "PLAN.json": "8645de982e5e24e7569fd33ba4626bcebfc79a73610557c2d46ac7c66a8c00ff",
+    "PROCESS.md": "df1c7434784e4a65e9a656f2e57eb27b428e15829cadd931810d25f7a6ac8be6",
+    "REPORT.md": "1520432b48454291a0e586b54bf99d52d2569439926593835ff8442b63adfc5d"
+  },
+  "producer_identity_manifest_verified_entries": 48
+}

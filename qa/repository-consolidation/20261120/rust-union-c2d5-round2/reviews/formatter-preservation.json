@@ -1,0 +1,49 @@
+{
+  "original_test_methods": 35,
+  "candidate_test_methods": 41,
+  "all_original_tests_preserved": true,
+  "new_tests": [
+    "test_relocated_records_preserve_bytes_and_keep_neighbors_and_active_rust",
+    "test_relocated_record_byte_drift_fails_before_full_and_scoped_format",
+    "test_missing_relocated_record_fails_before_full_and_scoped_format",
+    "test_relocated_record_symlink_is_rejected_even_with_identical_bytes",
+    "test_relocated_inventory_rejects_production_and_noncanonical_paths",
+    "test_relocated_rust_configuration_keeps_unregistered_neighbors_in_scope"
+  ],
+  "registered_original_records_before": 2,
+  "registered_original_records_after": 5,
+  "new_registration_exact_paths": [
+    "qualification/main-consolidation/historical-continuations/continuation-20261021/os/broker-review/broker-original.rs",
+    "qualification/main-consolidation/historical-continuations/continuation-20261021/os/broker-review/session-identity.rs",
+    "qualification/main-consolidation/historical-continuations/continuation-20261021/os/broker-review/session_admission_repro.rs"
+  ],
+  "historical_sources": [
+    {
+      "path": "qualification/main-consolidation/historical-continuations/continuation-20261021/os/broker-review/broker-original.rs",
+      "bytes": 37712,
+      "git_blob": "6b1da02bc04dc09a96d86eb3afa9ca999ef1f80c",
+      "sha256": "bbde2c304566567b9bd12e6214bcf0d52a3f96f3dc889352e14926072617aba5",
+      "unchanged": true
+    },
+    {
+      "path": "qualification/main-consolidation/historical-continuations/continuation-20261021/os/broker-review/session-identity.rs",
+      "bytes": 3802,
+      "git_blob": "cf4845512abe2b231f588f790f69489b66a9e483",
+      "sha256": "d815d6235357a57fc40a8fca5b710e46dfd0d273f93bcadd8a61026a59777231",
+      "unchanged": true
+    },
+    {
+      "path": "qualification/main-consolidation/historical-continuations/continuation-20261021/os/broker-review/session_admission_repro.rs",
+      "bytes": 1796,
+      "git_blob": "9c39d1dcc82b1ee31bbb7b2ba0bb99b45efbb5e5",
+      "sha256": "00c6368be54a58ada1fda01d74294c78cd7d415ed24d25f70de295ff7876f87a",
+      "unchanged": true
+    }
+  ],
+  "production_rust_edits": 0,
+  "callers_or_b4_verifier_edits": 0,
+  "existing_missing_size_hash_symlink_and_canonical_path_refusals_retained": true,
+  "full_rust_formatter_entrypoint_unchanged": true,
+  "scope_subtraction_still_only_verified_exact_paths": true,
+  "active_five_formatter_afterimages_separate": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/mem-format-artifact/active-five-manifest.json"
+}

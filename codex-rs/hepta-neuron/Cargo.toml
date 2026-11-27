@@ -10,14 +10,20 @@ name = "codex_hepta_neuron"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+qualification-owned-file-read = ["codex-hepta-infer-core/qualification-owned-file-read"]
+
 [lints]
 workspace = true
 
 [dependencies]
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 codex-hepta-types = { path = "../hepta-types" }
+libc = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host", features = ["legacy-local-model-boundary"] }
 pretty_assertions = { workspace = true }

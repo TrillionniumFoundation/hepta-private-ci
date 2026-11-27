@@ -1,0 +1,22 @@
+{
+  "host": "mac",
+  "executable": "/Users/qianqi/AI/noct-q/.venv/bin/python",
+  "args": [
+    "-B",
+    "-c",
+    "import pathlib,json,sys,hashlib,importlib.metadata as m\nimport torch,numpy,safetensors\nroot=pathlib.Path('/Users/qianqi/ci-hcsn-neural-20261119-75cf')\nroot.mkdir(exist_ok=False)\ntorch.set_num_threads(1)\ntensor=torch.arange(4,dtype=torch.float32,device='cpu').reshape(2,2)\nreport={'task_root':str(root),'executable':sys.executable,'python':sys.version,'platform':sys.platform,'versions':{n:m.version(n) for n in ['torch','numpy','safetensors']},'torch_file':torch.__file__,'numpy_file':numpy.__file__,'smoke_tensor_device':str(tensor.device),'smoke_tensor_sum':tensor.sum().item(),'torch_threads':torch.get_num_threads(),'scope':'CPU environment readiness only; no candidate tests executed'}\n(root/'environment-readiness.json').write_text(json.dumps(report,indent=2)+'\\n')\nprint(json.dumps(report,indent=2))\n"
+  ],
+  "cwd": "/Users/qianqi",
+  "idempotency_key": "hcsn-neural-cpu-readiness-75cf-v1",
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "timeout_seconds": 180
+}

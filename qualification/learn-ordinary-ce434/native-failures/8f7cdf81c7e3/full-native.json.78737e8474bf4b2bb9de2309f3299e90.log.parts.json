@@ -1,0 +1,31 @@
+{
+  "collection_manifest": "qa/repository-consolidation/20261116/retained-evidence-parts/MANIFEST.json",
+  "original": {
+    "bytes": 949114,
+    "mode": "100644",
+    "oid": "c4cbe7cba6f7604213ce501acc56d63d3be25b44",
+    "original_incoming_commits": [
+      "2d21656444e9c6cd9f89d9d3b5024165e788db85"
+    ],
+    "parts": [
+      {
+        "bytes": 499894,
+        "offset": 0,
+        "oid": "a31fbb94f57deb7ce109c1ae2323793c16ae8c39",
+        "path": "qualification/learn-ordinary-ce434/native-failures/8f7cdf81c7e3/full-native.json.78737e8474bf4b2bb9de2309f3299e90.log.part-001",
+        "sha256": "ac87740c17417a45dbcea0b99146fa076de423f8460076112d774afc31f910d2"
+      },
+      {
+        "bytes": 449220,
+        "offset": 499894,
+        "oid": "890519bd25730d141417c34b080d23908e508300",
+        "path": "qualification/learn-ordinary-ce434/native-failures/8f7cdf81c7e3/full-native.json.78737e8474bf4b2bb9de2309f3299e90.log.part-002",
+        "sha256": "d5704b4b46c36bebda9fe4be160c922ba9d90a47782e4faf05fd3acba5cbd3a6"
+      }
+    ],
+    "path": "qualification/learn-ordinary-ce434/native-failures/8f7cdf81c7e3/full-native.json.78737e8474bf4b2bb9de2309f3299e90.log",
+    "sha256": "51fcaa5d47dbd6a7f8d23ada46d9cd2a2e786bfbb868b9707a695b8df2d3fb9a"
+  },
+  "restore_command": "python3 qa/repository-consolidation/20261116/retained-evidence-parts/verify.py --restore-to /tmp/hepta-retained-evidence-originals",
+  "schema": "hepta.retained-evidence-parts.v1"
+}

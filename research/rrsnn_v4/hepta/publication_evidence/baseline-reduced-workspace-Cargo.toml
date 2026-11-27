@@ -1,0 +1,66 @@
+# GENERATED research workspace; not the upstream root Cargo.toml.
+# The three upstream crate manifests and source trees remain byte-identical.
+[workspace]
+resolver = "2"
+members = ["hepta-types", "hepta-infer-core", "hepta-neuron", "rrsnn-adapter"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
+
+[workspace.dependencies]
+serde = { version = "=1.0.228", features = ["rc"] }
+# Exact upstream lock version; float_roundtrip is a research input-parser feature.
+serde_json = { version = "=1.0.149", features = ["float_roundtrip"] }
+sha2 = "=0.10.9"
+pretty_assertions = "=1.4.1"
+
+[workspace.lints]
+rust = {}
+
+[workspace.lints.clippy]
+# Correctness and runtime safety block integration; mechanical style remains advisory.
+correctness = { level = "deny", priority = -1 }
+await_holding_invalid_type = "deny"
+await_holding_lock = "deny"
+disallowed_methods = "deny"
+expect_used = "deny"
+identity_op = "warn"
+manual_clamp = "warn"
+manual_filter = "warn"
+manual_find = "warn"
+manual_flatten = "warn"
+manual_map = "warn"
+manual_memcpy = "warn"
+manual_non_exhaustive = "warn"
+manual_ok_or = "warn"
+manual_range_contains = "warn"
+manual_retain = "warn"
+manual_strip = "warn"
+manual_try_fold = "warn"
+manual_unwrap_or = "warn"
+needless_borrow = "warn"
+needless_borrowed_reference = "warn"
+needless_collect = "warn"
+needless_late_init = "warn"
+needless_option_as_deref = "warn"
+needless_question_mark = "warn"
+needless_update = "warn"
+redundant_clone = "warn"
+redundant_closure = "warn"
+redundant_closure_for_method_calls = "warn"
+redundant_static_lifetimes = "warn"
+trivially_copy_pass_by_ref = "warn"
+uninlined_format_args = "warn"
+unnecessary_filter_map = "warn"
+unnecessary_lazy_evaluations = "warn"
+unnecessary_sort_by = "warn"
+unnecessary_to_owned = "warn"
+unwrap_used = "deny"
+
+# cargo-shear cannot see the platform-specific openssl-sys usage, so we
+# silence the false positive here instead of deleting a real dependency.
+
+[profile.release]
+codegen-units = 4

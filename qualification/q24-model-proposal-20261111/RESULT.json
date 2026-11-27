@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.q24-model-proposal-component.v1",
+  "base_commit": "72251601928807febae580dbd7754edac20bda10",
+  "scope": "original-material-owner-component-only",
+  "authority": "DENY_ALL",
+  "production_model_payload_enabled": false,
+  "versioned_root_model_profile_registered": false,
+  "source_boundary_controls": {
+    "tests_passed": 20,
+    "tests_failed": 0,
+    "groups": [
+      {
+        "name": "new_model_owner",
+        "tests": 9,
+        "log": "source-closure.log"
+      },
+      {
+        "name": "existing_evaluation_boundary",
+        "tests": 8,
+        "log": "evaluation-source-closure.log"
+      },
+      {
+        "name": "existing_training_no_update_boundary",
+        "tests": 3,
+        "log": "training-no-update-source-closure.log"
+      }
+    ],
+    "kind": "source_mutation_and_unauthorized_caller_controls"
+  },
+  "native_controls": {
+    "tests_authored": 7,
+    "tests_executed_at_this_checkpoint": 0,
+    "status": "PENDING",
+    "intended_filter": "test(q24_model_proposal) | test(neuron_cell_evaluation::tests) | test(q24_training_owner)",
+    "next_attempt": "One combined source-pinned Model + original Evaluation owner run using original CI DEBUG=0 and INCREMENTAL=0, one job and two CPUs."
+  },
+  "native_attempts": [
+    {
+      "attempt": 1,
+      "exit_code": 101,
+      "tests_executed": 0,
+      "cause": "offline pinned aws-smithy-async 1.3.1 was not cached",
+      "log": "attempts/model-proposal-native-attempt1.log"
+    },
+    {
+      "attempt": 2,
+      "exit_code": 101,
+      "tests_executed": 0,
+      "cause": "aws-lc-sys bindgen Clang resource headers unavailable: stddef.h",
+      "log": "attempts/model-proposal-native-attempt2.log"
+    },
+    {
+      "attempt": 3,
+      "status": "FAILED_BEFORE_NEW_MODULE",
+      "exit_code": 101,
+      "tests_executed": 0,
+      "cause": "starlark rustc exited on signal 9 SIGKILL",
+      "resource_cause_confirmed": false,
+      "log": "attempts/model-proposal-native-attempt3.log"
+    }
+  ],
+  "static_review": {
+    "independent_agent_review": true,
+    "native_qualification": false
+  },
+  "ordinary_complete_chains": 0,
+  "ordinary_positive_adoption_chains": 0,
+  "ordinary_no_update_or_rollback_chains": 0,
+  "ordinary_task_custody_verified": false,
+  "independent_b_holdout_custody_verified": false,
+  "independent_c_final_use_verified": false,
+  "real_daemon_and_root_restart_verified": false,
+  "physical_training_cost_verified": false,
+  "policy_gain_verified": false,
+  "settlement_verified": false,
+  "production_activation": false,
+  "qualification": "HOLD_COMPONENT_ONLY",
+  "full_caller_scan_qualification": "PENDING_ORIGINAL_FULL_SCAN",
+  "source_note": "SOURCE_MANIFEST.json lists non-evidence paths; source-control commit/tree binds this packet without a self-referential hash. Hosted CI must qualify its exact published source.",
+  "model_owner_entrypoint_product_callers": 0,
+  "existing_adapter_caller_extensions": {
+    "prepare_cell_learning_evaluation_v1": "cell_q24_model_proposal_admission.rs",
+    "CellQ24TrainingOwnerV1::read_learning_observation": "cell_q24_model_proposal_admission.rs"
+  },
+  "owner_clock": "SystemTime in production; request.now is ignored. Test-only deterministic hook is excluded from production.",
+  "source_boundary_repair": {
+    "initial_failure": "Full in-progress worktree scan rejected the unregistered prepare caller; subsequent targeted check rejected an unresolved generic first-argument receiver.",
+    "correction": "Registered only the explicit material adapter; retained original per-file guard sequences; made the original trainer calls explicit UFCS. No scanner rule was weakened.",
+    "initial_source_was_fixed": false,
+    "targeted_corrected_tests_passed": 20
+  },
+  "native_compilation_prerequisite": {
+    "hosted_failure": "#5875 a15acbf4 Windows job 130243534173: E0425 undefined pending in learning_iteration_recovery_tests.rs",
+    "correction": "Compare unchanged durable state against the original claimed snapshot; keep the full assertion.",
+    "execution_status": "NOT_RUN_ON_THIS_SOURCE"
+  }
+}

@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/839e1cbe28dd/hepta-private-ci/scripts/ndu_ctrl1/verify.py", line 783, in <module>
+    verify(args.directory, check_source=not args.historical_source),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/839e1cbe28dd/hepta-private-ci/scripts/ndu_ctrl1/verify.py", line 767, in verify
+    return _verify(Path(directory).resolve(strict=True), check_source)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/839e1cbe28dd/hepta-private-ci/scripts/ndu_ctrl1/verify.py", line 616, in _verify
+    raise ValueError("Comparison denominator differs from the frozen roster")
+ValueError: Comparison denominator differs from the frozen roster

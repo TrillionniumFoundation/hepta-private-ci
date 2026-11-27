@@ -1,0 +1,232 @@
+{
+  "run": {
+    "id": 42769615520,
+    "status": "completed",
+    "conclusion": "success",
+    "event": "push",
+    "head_sha": "8b1c1789916514471c6cacdf0f6c45467255fef9",
+    "head_branch": "fix/act2-notes-observer-order-20261109",
+    "attempt": 1,
+    "created_at": "2026-11-10T06:36:13Z",
+    "updated_at": "2026-11-10T06:51:58Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42769615520"
+  },
+  "jobs": [
+    {
+      "id": 129674076235,
+      "name": "native-and-real-notes",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 42769615520,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Bind both original source identities and native prerequisites",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Resolve existing verified native inputs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Run the affected automation package through its original runner",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run Notes projection, private readback and original owner tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Build the pinned real Session and App without changing their locks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Observe the real Notes goal after original-owner lost-reply recovery",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Run scoped lint and final official formatting",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Preserve actual source state and records even on failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 30
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 31
+        }
+      ]
+    },
+    {
+      "id": 129674076507,
+      "name": "format",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 42769615520,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Apply the official formatter and retain exact source changes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13742246430,
+      "name": "act2-native-8b1c1789916514471c6cacdf0f6c45467255fef9-1",
+      "size_in_bytes": 72575,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13742246430",
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13742246430/zip",
+      "expired": false,
+      "created_at": "2026-11-10T06:51:53Z",
+      "expires_at": "2026-11-24T06:51:52Z",
+      "updated_at": "2026-11-10T06:51:53Z",
+      "digest": "sha256:d49152b24616f101d4f92b736eb9a98e48a1277b255cad22e5b9315e3399f163",
+      "workflow_run": {
+        "id": 42769615520,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "fix/act2-notes-observer-order-20261109",
+        "head_sha": "8b1c1789916514471c6cacdf0f6c45467255fef9"
+      }
+    },
+    {
+      "id": 13741570460,
+      "name": "act2-format-8b1c1789916514471c6cacdf0f6c45467255fef9-1",
+      "size_in_bytes": 39315,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13741570460",
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13741570460/zip",
+      "expired": false,
+      "created_at": "2026-11-10T06:36:45Z",
+      "expires_at": "2026-11-24T06:36:44Z",
+      "updated_at": "2026-11-10T06:36:45Z",
+      "digest": "sha256:72206bfcd6aeddfe3e73b05673cd57bfe322ee9bff54fe93d70063a7b0c2bb6c",
+      "workflow_run": {
+        "id": 42769615520,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "fix/act2-notes-observer-order-20261109",
+        "head_sha": "8b1c1789916514471c6cacdf0f6c45467255fef9"
+      }
+    }
+  ]
+}

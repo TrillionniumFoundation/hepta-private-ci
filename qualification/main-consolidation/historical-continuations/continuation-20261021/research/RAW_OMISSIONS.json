@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.research-checkpoint-omissions.v1",
+  "files": [
+    {
+      "path_in_original_audit": "memory-disjoint-archived-release.zip",
+      "reason": "Raw ZIP omitted from compact text checkpoint; verified outputs, API metadata and hashes retained",
+      "bytes": 525824,
+      "sha256": "9305aa9c637601cc1efec844537ac4de57c52aaf83fbc1c6fb5a65aaa84defab",
+      "artifact_id": 11906888485,
+      "workflow_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38590620658",
+      "artifact_api": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11906888485/zip"
+    },
+    {
+      "path_in_original_audit": "memory-disjoint-archived-independent-replay.zip",
+      "reason": "Raw ZIP omitted from compact text checkpoint; verified outputs, API metadata and hashes retained",
+      "bytes": 506590,
+      "sha256": "ffb27c88fa665fd5a5f09d712d39a7552010090095c10b2550adeaa8420f85a8",
+      "artifact_id": 11906918262,
+      "workflow_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38590620658",
+      "artifact_api": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11906918262/zip"
+    },
+    {
+      "path_in_original_audit": "reader-2969/reader-intake-ca276897.zip",
+      "reason": "Raw ZIP omitted from compact text checkpoint; verified outputs, API metadata and hashes retained",
+      "bytes": 58501,
+      "sha256": "beb82b997808c7e2d158fa51d711fb04259069480c891f16a67f8627bce5210d",
+      "artifact_id": 12312374935,
+      "workflow_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39524743076",
+      "artifact_api": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12312374935/zip"
+    },
+    {
+      "path_in_original_audit": "reader-2969/job.log",
+      "reason": "Full 1MB job log omitted; exact selected lines retained and full API retrieval identified",
+      "bytes": 1049531,
+      "sha256": "a96875410050cd60888541aa51b8b55f7af88f603dc51ca96465cc7df3adf97c",
+      "job_id": 118976636455,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39524743076/job/118976636455",
+      "included_excerpt": "reader-2969/job-evidence-excerpt.log"
+    }
+  ],
+  "other_omissions": [
+    {
+      "scope": "Historical extracted model inputs/outputs and nested raw archive",
+      "reason": "Available from the two identified historical ZIP artifacts; SHA256 inventories and independent current-source replay results retained"
+    },
+    {
+      "scope": "48-file current #1452 replay implementation closure",
+      "reason": "Recoverable from exact 81d9fcb36bddfcc6dc914f87697c642824273cc1 with every required Git blob in replay-source-identity.json"
+    },
+    {
+      "scope": "Unchanged contract source and full source checkouts",
+      "reason": "Exact current sources and content hashes recorded in SOURCE_AUDIT_SCOPE.json and shared-encoder-source-identity.json"
+    },
+    {
+      "scope": "Cargo.lock and MODULE.bazel.lock complete files, native caches and compiled binaries",
+      "reason": "Not copied into this evidence capsule; final 3-file candidate patch and full file hashes/Git blobs retained; root owns source commit delivery"
+    },
+    {
+      "scope": "Checkpoint weights, individual hosted checkpoint file inventory, complete per-class Reader probabilities, GPU/energy/FLOPs receipts",
+      "reason": "Not present in the retained non-weight artifacts; no claim they were verified"
+    }
+  ],
+  "paths_in_receipts": "Absolute cwd/cache/log paths are historical execution context, not persistent navigation links",
+  "binary_files_in_checkpoint": 0
+}

@@ -1,0 +1,36 @@
+test_accepts_unchanged_declared_mapping_with_original_outputs (qualification.hcsn_joint_dde.test_migration_binding.TestMigrationBinding.test_accepts_unchanged_declared_mapping_with_original_outputs) ... ok
+test_rejects_conservative_replacement_law (qualification.hcsn_joint_dde.test_migration_binding.TestMigrationBinding.test_rejects_conservative_replacement_law) ... FAIL
+test_rejects_same_shape_map_from_another_target_mesh (qualification.hcsn_joint_dde.test_migration_binding.TestMigrationBinding.test_rejects_same_shape_map_from_another_target_mesh) ... FAIL
+test_rejects_undeclared_source_endpoint_and_tail_law (qualification.hcsn_joint_dde.test_migration_binding.TestMigrationBinding.test_rejects_undeclared_source_endpoint_and_tail_law) ... FAIL
+
+======================================================================
+FAIL: test_rejects_conservative_replacement_law (qualification.hcsn_joint_dde.test_migration_binding.TestMigrationBinding.test_rejects_conservative_replacement_law)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/4092c1be8e0c/migration-published/qualification/hcsn_joint_dde/test_migration_binding.py", line 23, in test_rejects_conservative_replacement_law
+    with self.assertRaisesRegex(ValueError, "bound"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_rejects_same_shape_map_from_another_target_mesh (qualification.hcsn_joint_dde.test_migration_binding.TestMigrationBinding.test_rejects_same_shape_map_from_another_target_mesh)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/4092c1be8e0c/migration-published/qualification/hcsn_joint_dde/test_migration_binding.py", line 29, in test_rejects_same_shape_map_from_another_target_mesh
+    with self.assertRaisesRegex(ValueError, "bound"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_rejects_undeclared_source_endpoint_and_tail_law (qualification.hcsn_joint_dde.test_migration_binding.TestMigrationBinding.test_rejects_undeclared_source_endpoint_and_tail_law)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/4092c1be8e0c/migration-published/qualification/hcsn_joint_dde/test_migration_binding.py", line 35, in test_rejects_undeclared_source_endpoint_and_tail_law
+    with self.assertRaisesRegex(ValueError, "bound"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.005s
+
+FAILED (failures=3)

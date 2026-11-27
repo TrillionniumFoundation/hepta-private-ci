@@ -1,0 +1,131 @@
+{
+  "base_tree": "5e70982785ed714321a7d1a999e904bb2b15a203",
+  "base_stage4_patch_sha256": "ccf232e0f5deb046567f1714103ddef50f81cbf1f8db8ab5a878fa53db99fec2",
+  "proposed_source_tree": "8865259c83a2ca183a9c2752126a5efa2fef33e0",
+  "path_count": 10,
+  "paths": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "2f3aa756eac4628d357c91cbcf6aabf3263852d25aa28a2514015d16424ea6b6",
+      "base_sha256": "651f42dd153058710895b07b594f90b7af99aa0787efc050d81e89c0715b85b6",
+      "bytes": 422894
+    },
+    {
+      "path": "codex-rs/external-agent-migration/Cargo.toml",
+      "sha256": "1763b8c715a97efff006501aaa13db46b9c21dcd449e0308fc1842c4d709b825",
+      "base_sha256": "9d8bac37beeef7e70f85b273285b2b0bfc3d80fea758eafc69a51511b5f24997",
+      "bytes": 1361
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/detect/sessions/cla.rs",
+      "sha256": "1962a1bbec9089160348af94418aac3c675c9b653e13938610053c6094243990",
+      "base_sha256": "cb0ef8c57bd55f175b807333d1e06005fe658e986884728ae60616b9ba422556",
+      "bytes": 15218
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/memory_import.rs",
+      "sha256": "654bef8268e78b65e9e2623652cab334bd4af7f4500ecdce13f3495a78741638",
+      "base_sha256": "2679cf56140cb9f4c6355d1ca26caa199ba168eaa213ff3b93f383d9b516a6a6",
+      "bytes": 15517
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/plugins.rs",
+      "sha256": "3b5c796930606d34d20ce303401365d082be59f830578ddeefa96c909cffbf4d",
+      "base_sha256": "a4ddfce7b02dd97058f89f1e937f1d9605b0a786279c84a48ac3bf10d9ff22f9",
+      "bytes": 11837
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/service_tests/general/detection.rs",
+      "sha256": "3db2ba5d4c9b9d3667e828905ebac195331955053186cd198586c2c55b04f625",
+      "base_sha256": "b5eed7a5885de7d7c59719b5af0c6ad5b6c0a499729e255b521a10e4dd1bb19e",
+      "bytes": 25234
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs",
+      "sha256": "317feed5a2f63f1a26f67d414664cbfa2c29c0d01b17e777b130fc038a5e883e",
+      "base_sha256": "a0899f521c2e3eb2a65d012c65a9d9e6531928e4ee692786085ed36131c27d5b",
+      "bytes": 29069
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/sessions/export.rs",
+      "sha256": "5a0a500bea293f57ef4d42be723fb3d8f084f7dbcc0e09f6914cf93a7d453cd7",
+      "base_sha256": "9074a32f12ca92dce3ebfc7e4119a85c1bc59f35b874f673b09cec9767e8200d",
+      "bytes": 20139
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/sessions/records_common.rs",
+      "sha256": "55bd45b09192ce1da6f81210519b0d2248d8a7a601a45ef9c6aa467090cdd272",
+      "base_sha256": "64c474297a808e90a028f2dda0905de5f0646383096debb0d35389f2b1acff88",
+      "bytes": 5635
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/sessions/records_common_tests.rs",
+      "sha256": "faa2a083f950c709f70df1c1bf32efbcf32a268950657797a69a2ca20c4ada90",
+      "base_sha256": "bc6c5ea33c2c001fef36b7b57d466064f7e21600818763ffe8991af2cea58b66",
+      "bytes": 3167
+    }
+  ],
+  "patch_sha256": "a7261275335c5d62e04373862d9fd72c2adc250c2bf3579c67531e73fc072b65",
+  "module_lock_sha256": "8ad25e1a954c14a1850917c77080c7818b94eb876980b672edb30b858e7f1878",
+  "module_lock_changed": false,
+  "cargo_lock_sha256": "2f3aa756eac4628d357c91cbcf6aabf3263852d25aa28a2514015d16424ea6b6",
+  "locked_package_versions_changed": false,
+  "cargo_dependency_delta": {
+    "package": "codex-external-agent-migration",
+    "removed": [
+      "chrono"
+    ],
+    "added": [
+      "time"
+    ]
+  },
+  "whitespace_and_forward_reverse_application": "all passed with exact postimage checks",
+  "validation": {
+    "run_id": "17c4a42b-8cec-451c-bf6e-779068b2775a",
+    "listed_tests": 171,
+    "executed_tests": 171,
+    "passed": 171,
+    "failed": 0,
+    "ignored": 0,
+    "retries": 0,
+    "full_name_set_equal": true,
+    "junit_sha256": "76ad8c2a50c5079ccd138c27a949f7aa62743e271e9a059ff7f235bb3238f81a",
+    "test_list_sha256": "682f45031b488a95ca38434f9e3655b1b503cf1ebb3c1c7445268bc553efce16",
+    "binaries_metadata_sha256": "5e2bbe9e38b5a288917edff6a1362a550be8b608683336f92d3b08daacbdf6bb",
+    "binary_identities_sha256": "53afd029f496576003d8b8157b886ac339851afa21904859cfc85e597928c669",
+    "network_isolation_sha256": "35b0a4b8b279b68950e538697131b6335d1bf246fafada68516c3bd5af42d3dd",
+    "first_attempt": {
+      "run_id": "f61d7f7d-6f8e-4e04-86a3-4d55a36837be",
+      "tests": 171,
+      "passed": 170,
+      "failed": [
+        "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings"
+      ],
+      "junit_sha256": "deb40b494dc8d82b727a50d93dac2471b93c5cc3ba479f4e0f453238c78ad0f7",
+      "same_case_set": true,
+      "fixture_v2_binary_differs": true
+    }
+  },
+  "parser_compatibility": {
+    "inputs_compared": 282254,
+    "all_equal": true,
+    "baseline": "chrono 0.4.45, isolated oracle only",
+    "source_sha256": "55bd45b09192ce1da6f81210519b0d2248d8a7a601a45ef9c6aa467090cdd272",
+    "run_id": "a76c721b-c411-4fe7-a74f-821886a23749",
+    "tests": 7,
+    "junit_sha256": "b9ace38d009690514b1fe0361a8c0ab991fefd03f038b2d08b884d834ac6e713"
+  },
+  "fix_format_after_tests": {
+    "codex-rs/external-agent-migration/src/service_tests/general/detection.rs": {
+      "before": "5e2f0180c8f877f8a3da13fa2cfce527d478ab0e0c22141fb0a9aec6dabcdd07",
+      "after": "3db2ba5d4c9b9d3667e828905ebac195331955053186cd198586c2c55b04f625"
+    }
+  },
+  "tests_rerun_after_fix_or_fmt": false,
+  "remaining_chrono_consumers": {
+    "normal_manifests": 19,
+    "dev_only_manifests": 3,
+    "repository_advisory_gate_cleared": false
+  },
+  "scope": "Native Linux package library targets; no new external network access during tests. Other platforms remain unqualified."
+}

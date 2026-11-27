@@ -1,0 +1,137 @@
+{
+  "counts": {
+    "clones": 1,
+    "decoded_images": 12,
+    "decoder_observations": 1,
+    "extended_reference_rows": 64,
+    "float_serving_tables": 64,
+    "forward_batches": 353,
+    "forward_rows": 22592,
+    "old_guard_attempts": 1,
+    "old_guard_completions": 0,
+    "represented_reference_rows": 64,
+    "restores": 1,
+    "simplex_reference_rows": 64,
+    "training_updates": 117
+  },
+  "diagnosis": "INPUT_MASS_CLOSURE_REFERENCE_SUPPORTED",
+  "extended_precision": {
+    "epsilon": 1.0842021724855044e-19,
+    "mantissa_bits": 63
+  },
+  "failure_row_identity": "Intersection of FP64 and exact-represented failure sets was not saved; no same-row causal claim.",
+  "fixed_prefix": {
+    "failed_pre_update_step": 117,
+    "identity_evidence": "same frozen base/source/sampler deterministic reconstruction and same guard refusal; no original state digest available",
+    "objective": "original aligned independent NDU",
+    "original_prefix_digest_was_not_saved": true,
+    "seed": 11,
+    "updates": 117
+  },
+  "float64": {
+    "constant_rows": 16,
+    "maximum_absolute_residual_mass_difference": 6.002143226879753e-16,
+    "maximum_relative_balance": 2.0333289218349722e-08,
+    "minimum_active_residual": 2.3404153837169872e-08,
+    "nonconstant_rows": 48,
+    "relative_balance_failure_rows": 1
+  },
+  "gates": {
+    "all64_reference_gradients_compared": true,
+    "all_exact_normalized_rows_admitted": true,
+    "all_extended_normalized_rows_admitted": true,
+    "extended_exact_gradient_parity_1e8": true,
+    "extended_exact_joint_parity_1e12": true,
+    "fixed_failure_reproduced": true,
+    "normalization_joint_change_within_1e12": true,
+    "normalization_marginal_change_within_1e12": true,
+    "reference_value_parity_1e10": true
+  },
+  "generation_quality_gate": null,
+  "inherited_base_preparation_CPU_seconds": 0.21998193100000002,
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 4
+  },
+  "maximum_extended_vs_exact_gradient_difference": 8.673617379884035e-19,
+  "maximum_extended_vs_exact_joint_difference": 3.049318610115481e-19,
+  "maximum_extended_vs_exact_value_difference": 1.1102230246251565e-16,
+  "maximum_normalization_marginal_change": 4.440892098500626e-16,
+  "no_new_checkpoints_saved": true,
+  "no_optimizer_updates_after_failed_batch": true,
+  "no_validation_or_TEST": true,
+  "old_failure_and_guards_unchanged": true,
+  "reference_CPU_seconds": {
+    "extended": 0.006351194999999921,
+    "represented": 0.09585384700000005,
+    "simplex": 0.13733039600000002
+  },
+  "reference_summaries": {
+    "extended": {
+      "admitted_rows": 64,
+      "gradient_defined_rows": 64,
+      "maximum_CDF_marginal_error": 3.051436192483617e-19,
+      "maximum_raw_marginal_error": 3.052494983667685e-19,
+      "maximum_relative_balance": 7.98250182120431e-12,
+      "maximum_table_difference_from_original": 4.872396092820384e-16,
+      "minimum_active_residual": 2.3404154313002012e-08,
+      "relative_balance_failure_rows": 0
+    },
+    "represented": {
+      "admitted_rows": 63,
+      "exact_closure_identity_all_rows": true,
+      "gradient_defined_rows": 0,
+      "maximum_CDF_marginal_error": 4.177979361986022e-16,
+      "maximum_exact_input_normalization_error": 3.6491841628515215e-16,
+      "maximum_raw_marginal_error": 5.753584278824704e-16,
+      "maximum_relative_balance": 1.90675774224704e-08,
+      "maximum_table_difference_from_original": 2.220446049250313e-16,
+      "minimum_active_residual": 2.340415386678945e-08,
+      "relative_balance_failure_rows": 1
+    },
+    "simplex": {
+      "admitted_rows": 64,
+      "gradient_defined_rows": 64,
+      "maximum_CDF_marginal_error": 0.0,
+      "maximum_raw_marginal_error": 0.0,
+      "maximum_relative_balance": 0.0,
+      "maximum_table_difference_from_original": 4.8754454114305e-16,
+      "minimum_active_residual": 2.340415431300202e-08,
+      "relative_balance_failure_rows": 0
+    }
+  },
+  "resources": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 5,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 60
+    },
+    "max_rss_kib": 41972,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "result_sha256": "c48009a9e1a72c1cd0abe7cd1f23597714fc8c4829c67d3ddad9ffdb9807c840",
+    "source_freeze_sha256": "ea7ece77059f4055e662edea2c79c4b6bcaff7e520a000c1b06ea3ad570f1c32",
+    "status": "COMPLETE_FIXED_PREFIX_NUMERICAL_DIAGNOSTIC",
+    "supervisor_CPU_observed_prefix_seconds": 0.0031518499999999977,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.008206999999999999,
+    "timed_out": false,
+    "user_CPU_seconds": 0.7058059999999999,
+    "wall_seconds": 0.7279871829996409,
+    "whole_child_CPU_seconds": 0.7140129999999999
+  },
+  "scope": "fixed FIT-prefix numeric diagnosis only; exact represented probabilities distinguished from explicitly normalized references; log-weight gradients and rounded exp cost table, not a silent fix or evaluated learning benefit",
+  "source_freeze_sha256": "ea7ece77059f4055e662edea2c79c4b6bcaff7e520a000c1b06ea3ad570f1c32",
+  "status": "COMPLETE_FIXED_PREFIX_NUMERICAL_DIAGNOSTIC"
+}

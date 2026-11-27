@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.native-ci-routing-followup.v1",
+  "failed_candidate": "ad1e07b004d96b748411db655249dc6a7cf2409c",
+  "observation": {
+    "workflow_run": 42503644841,
+    "linux_gnu_job": 128801619602,
+    "linux_musl_job": 128801619640,
+    "each_linux_job": {
+      "test_targets": 578,
+      "passed": 413,
+      "failed": 1,
+      "skipped": 164,
+      "remaining_failed_target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+      "operator_unit_tests_passed": 14,
+      "operator_unit_tests_failed": 11,
+      "failure": "OpenSSH missing in remote execution environment"
+    },
+    "memory_product_qualification": "passed on both Linux legs",
+    "prior_regex_attempt": "did not route TestRunner to native execution"
+  },
+  "upstream_source": {
+    "registry": {
+      "git_blob_sha": "bf068f2ae52ef1e29661032a1277cc340fb31fbc",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/exec/SpawnStrategyRegistry.java",
+      "finding": "getStrategies skips strategy_regexp matching for the TestRunner mnemonic"
+    },
+    "spawns": {
+      "git_blob_sha": "74c8d9769148f22ff0c7348e746c5d2a33be1f76",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/actions/Spawns.java",
+      "finding": "NO_REMOTE_EXEC excludes a spawn from remote execution"
+    },
+    "remote_runner": {
+      "git_blob_sha": "d76883f76c8b6e43ddc2087be2fb661c231a91c7",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/RemoteSpawnRunner.java",
+      "finding": "canExec delegates to remote execution eligibility"
+    }
+  },
+  "change": {
+    "test_tags": [
+      "no-remote-cache",
+      "no-remote-exec"
+    ],
+    "ci_linux_test_strategy": "remote,linux-sandbox",
+    "production_verifier": "unchanged; original /usr/bin/ssh-keygen remains required",
+    "test_assertions": "unchanged"
+  },
+  "validation": {
+    "native_bazel_version": "bazel 9.3.0",
+    "prior_native_tests": {
+      "memory_product": 9,
+      "automation_and_operator": 163
+    },
+    "cross_platform_routing": "requires new CI; not inferred from native Cargo tests",
+    "rust_tests_rerun": false
+  },
+  "separate_blockers": {
+    "cargo_deny_job": 128801619473,
+    "pin_utils": "RUSTSEC-2026-0441 unmaintained",
+    "vodozemac": "RUSTSEC-2026-0451 vulnerability",
+    "dependency_upgrade": "separate investigation; no ignore or downgrade"
+  },
+  "archive": {
+    "path": "raw-ci-logs.tar.gz",
+    "bytes": 1766809,
+    "sha256": "3d4c805e3008b36d147fa750c36b301f20b82ca9f876f943c63ae24fa01fa02c",
+    "members": [
+      {
+        "job_id": 128801619473,
+        "path": "128801619473.log",
+        "bytes": 19627803,
+        "sha256": "f48834af8de541aa37ad95051b58dd9aca4e98e1696423ce26d06cb41d048fb0"
+      },
+      {
+        "job_id": 128801619602,
+        "path": "128801619602.log",
+        "bytes": 955921,
+        "sha256": "7eab6ac209c8b245758e3ffb6b198682893c8086acc30255d6ed2f1cb62bb02d"
+      },
+      {
+        "job_id": 128801619640,
+        "path": "128801619640.log",
+        "bytes": 953835,
+        "sha256": "30a37ab51bef495ae9eb37903c96690d8504ce1ec20335b9ac5a1b5d375cf5c2"
+      }
+    ]
+  },
+  "research_status": "S0-S5 HOLD",
+  "authority_granted": false
+}

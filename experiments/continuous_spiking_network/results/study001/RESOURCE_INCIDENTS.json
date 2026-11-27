@@ -1,0 +1,93 @@
+[
+  {
+    "observed_unix": 1793172702.540046,
+    "run_id": "scaling/config09/mamba1/seed3301",
+    "execution_receipt": {
+      "command": [
+        "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+        "-m",
+        "experiments.continuous_spiking_network.train",
+        "--output",
+        "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001/scaling/config09/mamba1/seed3301",
+        "--spec",
+        "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001/scaling/config09/mamba1/seed3301/SPEC.json",
+        "--cache-dir",
+        "/workspace/scratch/9bbd63a0445f/hcsn-data"
+      ],
+      "elapsed_seconds": 127.06598091125488,
+      "exit_code": -9,
+      "run_id": "scaling/config09/mamba1/seed3301",
+      "status": "failed"
+    },
+    "classification": "SIGKILL under observed cgroup memory pressure; OOM strongly suspected, exact victim attribution unavailable",
+    "cgroup": {
+      "memory.current": "8513368064\n",
+      "memory.max": "8589934592\n",
+      "memory.peak": "8595619840\n",
+      "memory.events": "low 0\nhigh 0\nmax 1122130\noom 6\noom_kill 4\noom_group_kill 0\n"
+    },
+    "partial_checkpoint_manifest_sha256": "658db7497f136521d8276d1976811ccb2549757d09053f322508e52f5a5ca272",
+    "selected_step": 80,
+    "recovery_plan": "same source, spec, batch size and seed; full retraining with one worker after initial study finishes; optimizer/RNG state is not available for exact continuation"
+  },
+  {
+    "observed_unix": 1793173630.3473656,
+    "run_id": "scaling/config04/mamba1/seed3302",
+    "execution_receipt": {
+      "command": [
+        "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+        "-m",
+        "experiments.continuous_spiking_network.train",
+        "--output",
+        "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001/scaling/config04/mamba1/seed3302",
+        "--spec",
+        "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001/scaling/config04/mamba1/seed3302/SPEC.json",
+        "--cache-dir",
+        "/workspace/scratch/9bbd63a0445f/hcsn-data"
+      ],
+      "elapsed_seconds": 22.07432723045349,
+      "exit_code": -9,
+      "run_id": "scaling/config04/mamba1/seed3302",
+      "status": "failed"
+    },
+    "classification": "external SIGKILL under observed cgroup memory pressure; exact victim attribution unavailable",
+    "cgroup": {
+      "memory.current": "8589819904\n",
+      "memory.max": "8589934592\n",
+      "memory.peak": "8595619840\n",
+      "memory.events": "low 0\nhigh 0\nmax 1292926\noom 8\noom_kill 5\noom_group_kill 0\n"
+    },
+    "recovery_plan": "unchanged source/spec/seed/batch size; full single-worker retraining after initial matrix completes"
+  },
+  {
+    "observed_unix": 1793174147.1341696,
+    "run_id": "scaling/config09/mamba1/seed3302",
+    "execution_receipt": {
+      "command": [
+        "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+        "-m",
+        "experiments.continuous_spiking_network.train",
+        "--output",
+        "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001/scaling/config09/mamba1/seed3302",
+        "--spec",
+        "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001/scaling/config09/mamba1/seed3302/SPEC.json",
+        "--cache-dir",
+        "/workspace/scratch/9bbd63a0445f/hcsn-data"
+      ],
+      "elapsed_seconds": 250.73330926895142,
+      "exit_code": -9,
+      "run_id": "scaling/config09/mamba1/seed3302",
+      "status": "failed"
+    },
+    "classification": "external SIGKILL under observed cgroup memory pressure; exact victim attribution unavailable",
+    "recovery_plan": "full single-worker retraining with unchanged source/spec/batch/seed",
+    "cgroup": {
+      "memory.current": "7736217600\n",
+      "memory.max": "8589934592\n",
+      "memory.peak": "8595619840\n",
+      "memory.events": "low 0\nhigh 0\nmax 1453851\noom 9\noom_kill 6\noom_group_kill 0\n"
+    },
+    "partial_checkpoint_manifest_sha256": "1896dba5d998438d0ac95218a93ee3ec2c629883c7290ffcd3aac671b561e2ba",
+    "selected_step": 40
+  }
+]

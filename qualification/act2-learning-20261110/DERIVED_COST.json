@@ -1,0 +1,37 @@
+{
+  "derived_from": "run2/confirmation-trajectories.jsonl.gz",
+  "sha256": "c53c480a136407c0d71efcf4df74c9dba00d73b245565857449f2dc32eca8ce4",
+  "by_arm": {
+    "B0_workflow": {
+      "custody_ns": 146581032,
+      "private_state_bytes": 0,
+      "oracle_queries": 2944
+    },
+    "B1_macro": {
+      "custody_ns": 142519333,
+      "private_state_bytes": 0,
+      "oracle_queries": 2944
+    },
+    "B2_flat": {
+      "custody_ns": 143769879,
+      "private_state_bytes": 0,
+      "oracle_queries": 2944
+    },
+    "B3_head": {
+      "custody_ns": 145740025,
+      "private_state_bytes": 0,
+      "oracle_queries": 2944
+    },
+    "B4_gru": {
+      "custody_ns": 150485600,
+      "private_state_bytes": 96,
+      "oracle_queries": 2896
+    }
+  },
+  "not_measured": [
+    "human policy design",
+    "engineering development",
+    "deployment/amortized economics",
+    "cross-process model state recovery"
+  ]
+}

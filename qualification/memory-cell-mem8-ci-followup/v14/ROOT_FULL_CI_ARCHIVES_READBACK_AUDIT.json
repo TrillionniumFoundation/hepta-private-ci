@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.mem8.v14.root-full-ci-archive-readback.v1",
+  "verified_at_utc": "2026-11-11T12:40:39.056618+00:00",
+  "source_carrier_commit": "fe190abfe2c6aef6ef02464dd085b8627386d614",
+  "bazel_carrier_commit": "7a0d5f54f693fb8ca9fd9ad82c4a0ddec0c08999",
+  "archives": [
+    {
+      "directory": "source-ci-v5",
+      "full_remote_binary_parts": 13,
+      "archive_bytes": 5410120,
+      "archive_sha256": "b536abac7cba1182f102b3374a55aa83904f89cf9bafbd46bf3d00ab87d6e378",
+      "whole_archive_git_blob_computed": "929a648e000e3995e718b443ad3c556203901da5",
+      "whole_archive_blob_actual_create_claimed": false,
+      "outer_regular_members_verified": 21,
+      "complete_original_zips": [
+        {
+          "path": "original/mem8-source-gates-v5-43015979473-1.zip",
+          "zip_bytes": 6299090,
+          "zip_sha256": "6ecc9f1ab22fcaccbf52f0190c9af0e8edef759a0537dbb8f751b227d09b7c80",
+          "zip_members_crc_read": 337,
+          "records_tar_bytes": 1783500,
+          "records_tar_sha256": "6718333beb6ea7b6faefc2bd026413e8ab1413f24bf4f377a773fc0264dd288a",
+          "records_tar_manifest_members_verified": 335,
+          "original_result": "passed_source_gates_only_review_remaining"
+        }
+      ]
+    },
+    {
+      "directory": "bazel-ci-v5",
+      "full_remote_binary_parts": 5,
+      "archive_bytes": 2227572,
+      "archive_sha256": "64c8a448e02fe6011d7f7fca128751aa86e510ac54d7d9f70e3a4a4adfe07b8d",
+      "whole_archive_git_blob_computed": "6870673702938e45129596b52ebd7d2de2e4d130",
+      "whole_archive_blob_actual_create_claimed": false,
+      "outer_regular_members_verified": 19,
+      "complete_original_zips": [
+        {
+          "path": "initial/mem8-bazel-lock-v5-43020198388-1.zip",
+          "zip_bytes": 1940015,
+          "zip_sha256": "a06ec21789566209edfd3c798efd3f35a16be2990a3c5e2ad1bde2067013faee",
+          "zip_members_crc_read": 36,
+          "records_tar_bytes": 656284,
+          "records_tar_sha256": "f43b2277fb45c8f2f7179f0aab4b3e85629a7963531711bb940c8a50fae2ff87",
+          "records_tar_manifest_members_verified": 29,
+          "original_result": "failed"
+        },
+        {
+          "path": "revision2/mem8-bazel-lock-v5-43020939762-1.zip",
+          "zip_bytes": 2278345,
+          "zip_sha256": "8bbc8c00b0c9a25aeac964d8486a065c6557e9aab9d819cbb21f1ddd213fbb95",
+          "zip_members_crc_read": 52,
+          "records_tar_bytes": 659176,
+          "records_tar_sha256": "d8b5413e20d2a316d2038a4a178e8fc79e4285b4059954eddd7159144b19a883",
+          "records_tar_manifest_members_verified": 44,
+          "original_result": "passed_exact_source_bazel_lock_only"
+        }
+      ]
+    }
+  ],
+  "all_18_binary_parts_fully_fetched_and_reassembled": true,
+  "archive_supplied_code_executed": false,
+  "new_native_or_model_calls": 0,
+  "status": "ALL_FULL_ORIGINAL_CI_ARCHIVES_VERIFIED",
+  "qualification_scope": "Only the explicitly verified original source gates and module-lock operation. Historical failures and new native CI remain separate."
+}

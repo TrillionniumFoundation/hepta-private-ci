@@ -1,0 +1,312 @@
+{
+  "sourceCommit": "3d6d17adfa92757085a371d67cd269e043d8dbed",
+  "sourceTree": "2df942a48b4deb6b3539a48f6417f5308aabada3",
+  "overlay": "Three independently reviewed Agentd fixture files in transfer manifest; utils/pty and its package command inputs unchanged from source commit. No fourth fixture file was applied here.",
+  "host": "Configured native macOS operator host",
+  "sourceCount": 12014,
+  "tests": {
+    "focused": {
+      "run": 1,
+      "passed": 1,
+      "filtered": 29
+    },
+    "fullPackage": {
+      "run": 30,
+      "passed": 30,
+      "filtered": 0
+    }
+  },
+  "nativeResults": [
+    {
+      "name": "original-drain-single",
+      "returncode": 0,
+      "seconds": 9.213653417,
+      "bytes": 5664,
+      "sha256": "a48a435b5f8daa4b6fccb54d21400c11877ee934dd31ea35af254cb5757422f8",
+      "allInputsUnchanged": true,
+      "changedPaths": [],
+      "summaries": [
+        "     Summary [   0.139s] 1 test run: 1 passed, 29 skipped"
+      ],
+      "freeBytesAfter": 100610834432
+    },
+    {
+      "name": "original-full-package",
+      "returncode": 0,
+      "seconds": 3.3706560420000002,
+      "bytes": 4633,
+      "sha256": "8df4d55b30386fc34514838e9c6247befdb672aeec54b3d6af5e88242caf253b",
+      "allInputsUnchanged": true,
+      "changedPaths": [],
+      "summaries": [
+        "     Summary [   1.606s] 30 tests run: 30 passed, 0 skipped"
+      ],
+      "freeBytesAfter": 100579545088
+    }
+  ],
+  "originalHostedFailureRetained": true,
+  "productionOrTestCodeModifiedForReproduction": false,
+  "timeoutsIncreased": false,
+  "automaticRetries": false,
+  "scopeLimit": "This establishes the original commands passed on the configured Mac with pinned source. It does not prove the original hosted timeout cause or qualify the full hosted matrix. The separate standard library experiment is not Rust qualification.",
+  "archive": {
+    "sourceCommit": "3d6d17adfa92757085a371d67cd269e043d8dbed",
+    "sourceTree": "2df942a48b4deb6b3539a48f6417f5308aabada3",
+    "members": 46,
+    "rawTarBytes": 5785600,
+    "rawTarSha256": "d09b4c362743f6fd183cf4215931d449a44cab0fc7361db237f6e96ab9afa85c",
+    "gzipBytes": 1675774,
+    "gzipSha256": "485b834e52ee4f59f32bbc357edab3dcdc86135cd47f2bcdfe44f73d080e5275",
+    "gzipMtime": 0,
+    "orderedParts": [
+      {
+        "name": "mac-pty-native-proof.part-0000.gz",
+        "bytes": 480000,
+        "sha256": "b406e846be0aa6ccc9d2d170a494ae852fd53c7b15eb66ed609b8d87cbe197bb"
+      },
+      {
+        "name": "mac-pty-native-proof.part-0001.gz",
+        "bytes": 480000,
+        "sha256": "7a9500c6d17b086a8b7a7b8de9f456bca9c454bb049466834be68e5fe916e06c"
+      },
+      {
+        "name": "mac-pty-native-proof.part-0002.gz",
+        "bytes": 480000,
+        "sha256": "7a2f149eb83082cb2edac346a7d9cc924aa5de9dc9ec64358e93ede0e25d615a"
+      },
+      {
+        "name": "mac-pty-native-proof.part-0003.gz",
+        "bytes": 235774,
+        "sha256": "1d74677ab75b27cb7eacd1bcf4d9ca0a5f5b4b0479968896f9e49b0848d3ff67"
+      }
+    ],
+    "roundTripByteEquality": true,
+    "memberHashes": [
+      {
+        "path": "audit/pty-dropped-output-mac-v1/stdlib-reproduction.json",
+        "bytes": 1447,
+        "sha256": "f089dae0804bd07774a5e890cc434663bd857adcae4e96f8a79ff7b50d883a53"
+      },
+      {
+        "path": "audit/pty-native-diagnosis-v1/source-transfer.stderr",
+        "bytes": 183,
+        "sha256": "6f3d1d67644c7edb22de2b55358977c6eed861cb15df80edcfd89a32804de351"
+      },
+      {
+        "path": "audit/pty-native-diagnosis-v2/native-attempt-1/input-sources.json",
+        "bytes": 1653346,
+        "sha256": "695802754b33f0b16671683d04ff0f4471582b8ba9723b8ba9a575c15b65cab3"
+      },
+      {
+        "path": "audit/pty-native-diagnosis-v2/native-attempt-1/invocation.json",
+        "bytes": 2717,
+        "sha256": "3e3ea7d402db69f74eafa73341483b10490b76f071306e5dca811808bcdab5c2"
+      },
+      {
+        "path": "audit/pty-native-diagnosis-v2/native-attempt-1/original-drain-single.log",
+        "bytes": 5664,
+        "sha256": "a48a435b5f8daa4b6fccb54d21400c11877ee934dd31ea35af254cb5757422f8"
+      },
+      {
+        "path": "audit/pty-native-diagnosis-v2/native-attempt-1/original-full-package.log",
+        "bytes": 4633,
+        "sha256": "8df4d55b30386fc34514838e9c6247befdb672aeec54b3d6af5e88242caf253b"
+      },
+      {
+        "path": "audit/pty-native-diagnosis-v2/native-attempt-1/results.json",
+        "bytes": 770,
+        "sha256": "f0e527aefc56431a1f2395ca14087087217591b1b83efc9737019e282eef6a5b"
+      },
+      {
+        "path": "audit/pty-native-diagnosis-v2/source-transfer-receipt.json",
+        "bytes": 630,
+        "sha256": "54f653470292536e45a79c645230da8fe3757c8db219310693355e69c369c1a2"
+      },
+      {
+        "path": "audit/pty-native-diagnosis-v2/source-transfer.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "audit/pty-native-diagnosis-v2/tool-setup-invocation.json",
+        "bytes": 445,
+        "sha256": "5f15d41b295acedbe1f8c432d60938e0543668b468891eac3ec1629d52ba764a"
+      },
+      {
+        "path": "audit/pty-native-diagnosis-v2/tool-setup-result.json",
+        "bytes": 717,
+        "sha256": "7c27e37720f8284a7f14dd32fddefb611c16884afa91b908f0bf68adffb9932c"
+      },
+      {
+        "path": "runner.py",
+        "bytes": 3694,
+        "sha256": "fbd5b45bb141f6f51e4a349b0456e1fde4947fd0cb54e8d9e8c902403437489e"
+      },
+      {
+        "path": "source/AGENTS.md",
+        "bytes": 22519,
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      },
+      {
+        "path": "source/codex-rs/.config/nextest.toml",
+        "bytes": 9622,
+        "sha256": "72a4a810750bafa704541b9814a22a080774ab5efd7c135bb197f421ba217860"
+      },
+      {
+        "path": "source/codex-rs/Cargo.lock",
+        "bytes": 422790,
+        "sha256": "6629440b8121f2971abe2aa8e0e4cfcabb6ecac96907dd5c37b2796c11f221ff"
+      },
+      {
+        "path": "source/codex-rs/Cargo.toml",
+        "bytes": 24176,
+        "sha256": "3be8da55d49613d0a58a0b0b91dca2fc00b4743d050a4d53673a0def10e3da65"
+      },
+      {
+        "path": "source/codex-rs/rust-toolchain.toml",
+        "bytes": 78,
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/BUILD.bazel",
+        "bytes": 115,
+        "sha256": "d8ff7e3358ff7e0e1df90274cfa69585231fff351b1efa10b9ba3d4755c9efe8"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/Cargo.toml",
+        "bytes": 860,
+        "sha256": "3333e26a50a65111ea1c961fa0eec59661196a88e1b2bf51ab647b8cc50ab08f"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/README.md",
+        "bytes": 2328,
+        "sha256": "fc6029dfdeaf712fff69a8c4b48e04ca3370bf814221d0dcbbbad08bebd46f6b"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/cleanup_custody.rs",
+        "bytes": 687,
+        "sha256": "c1b66aaeb96cd94081891b0eaef6d161cd913b765d2e1b56acf80c88fd8d65f8"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/driver_terminal_tests.rs",
+        "bytes": 1950,
+        "sha256": "9affb053677055f81adb0cdc4630a4ab8c7f947f5059f689671b4abf7850c001"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/lib.rs",
+        "bytes": 2004,
+        "sha256": "aa774e8efc32934e300ddc92d5649e540ff9ffbd0e046914b261ec802e05ffee"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/pipe.rs",
+        "bytes": 10629,
+        "sha256": "ce78d972bb162d5a54c47214aa4c83777f895dd316f6b32b75493c608e0654ab"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/pipe_tests.rs",
+        "bytes": 526,
+        "sha256": "f9a8fc8902a869b49687d3b295abf956d7f326569b1058e3fca4d6d125cc47d4"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/process.rs",
+        "bytes": 16667,
+        "sha256": "ed719d5c4b501c2114640b57c2d8dee1a2894532ea40e47453f18f50ec9684c4"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/process_group.rs",
+        "bytes": 9395,
+        "sha256": "4c9c062f990c9bfef8c61641956765379586c4f4bb8fc61db67cf1a515d084d3"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/process_group_tests.rs",
+        "bytes": 3355,
+        "sha256": "f28f56e7923869e73adbe30728362b14fcc7cbd5088a52e0a7cf63629879b000"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/pty.rs",
+        "bytes": 17842,
+        "sha256": "3c032e44b1129720ecf41ffb890071d6214a0c2b8b2921957dee38259f749298"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/tests.rs",
+        "bytes": 55137,
+        "sha256": "ab267d9ac2f7ea6f7a62274c18f03c7ed5077c6f04c7fd41cfe07b936e702f6f"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/unix_io.rs",
+        "bytes": 4285,
+        "sha256": "47896eb04ba66a2081479a6366abe380f3af4237d00de4c4c1de566d12586603"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/win/conpty.rs",
+        "bytes": 5489,
+        "sha256": "42ad368b406d3864a7bfd69945cc621455b45f9ec20f0a1108cfb1f4454564c0"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/win/job.rs",
+        "bytes": 8506,
+        "sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/win/mod.rs",
+        "bytes": 6362,
+        "sha256": "83f3c3b5e2ac40a79c1c4f697070c6479e3e4236a8042b37bd58965da90f45da"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/win/native_observation_tests.rs",
+        "bytes": 6519,
+        "sha256": "7f8d778c69e5d2d900e244616c6fc6d16ef8568e34d1045346b21474012b499f"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/win/procthreadattr.rs",
+        "bytes": 4545,
+        "sha256": "374e85842cedfbe44eb6a7f3b23eaa345f3e7c2b4e23879013c5f07ee249c9bb"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/win/psuedocon.rs",
+        "bytes": 11902,
+        "sha256": "919099dfdc4962c5bd47c58393d9441f034f2a080907d960be6f6a96ed51e60c"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/windows_input.rs",
+        "bytes": 1236,
+        "sha256": "bac4b55825fe7becafb532c00d98188cd253a0ce07525f6474f8c76ad3681bad"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/windows_input_tests.rs",
+        "bytes": 706,
+        "sha256": "dca6cc92c081ca7a3bfdaaec13cc7bbf32185e3c0b343e6def76d2039a2a6921"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/src/windows_tests.rs",
+        "bytes": 15893,
+        "sha256": "0a5bd604c03f3ef7149937a61609a7d9e1ffad0aa253549c0a276cdd706be6c0"
+      },
+      {
+        "path": "source/codex-rs/utils/pty/tests/conpty_search_path.rs",
+        "bytes": 1982,
+        "sha256": "d2313cad3570a982a3aab1bba040b2528cda8b93cf228921b74b88e374a437e7"
+      },
+      {
+        "path": "source/justfile",
+        "bytes": 7838,
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      {
+        "path": "source/scripts/just-shell.py",
+        "bytes": 2030,
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      {
+        "path": "source/scripts/run-nextest.py",
+        "bytes": 10206,
+        "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+      },
+      {
+        "path": "source/transfer-source-manifest.json",
+        "bytes": 3371788,
+        "sha256": "4c69b4e6c29ecc7bdd1ae6d1831eea86837b24cff0fd743218d4ea82514cbf50"
+      }
+    ]
+  }
+}

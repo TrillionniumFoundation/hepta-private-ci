@@ -1,0 +1,199 @@
+{
+  "status": "STATIC_MERGE_READY_FOR_INDEPENDENT_REVIEW_NOT_RUN_NOT_FMT",
+  "fixed": {
+    "ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "ours": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+    "theirs": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+    "base_tree": "57558558841da4a3209164d0033b903a553205d6"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "ancestor": "14c46a6e0518f511c0e8cf59c67f7486d274d8cf",
+      "ours": "2c787e9e1faea7eb11dc525ddd549229341ec06a",
+      "theirs": "bc1fb375181db5ea9d2965e53f38a1d0ef1eff8c",
+      "post_bytes": 23957,
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "ancestor": "3dbd154ed4558c310625f57138c41aedaa182cc7",
+      "ours": "0c3f8a1c20a739f5e32bd17f6cd494b5a357a2e8",
+      "theirs": "fcf8819ba26b451c0d5dd978c375dec9b2312838",
+      "post_bytes": 4901,
+      "unchanged_from_theirs": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "ancestor": "f83c91242ee6b27f0523fb40e78eb923b607d953",
+      "ours": "316d35149c78e6c961a8d942fedb19e9c826e587",
+      "theirs": "843407d83bfeb48dfc7db01a7d574a5a02740373",
+      "post_bytes": 20290,
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "ancestor": "0254a9257c0a6f2f2c21a3b4ea37284235b13802",
+      "ours": "1158844757e5eaac308922eba2476db88442a207",
+      "theirs": "f9b33de904789c2af255afcbd3473c751d134997",
+      "post_bytes": 13432,
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "ancestor": "c3866fec34f554713cfa0c436a84c14c1bb2f7e0",
+      "ours": "4b73e8a07bd27bd108d8d3fd539632974514a378",
+      "theirs": "a4b4fd8169407c81360b279f6796b366240de9ca",
+      "post_bytes": 15520,
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "ancestor": "901c0a2fdfb475d4f09477a273a00fe437d47393",
+      "ours": "4f54cff102f768355bcf8422cbfbe14250f70d3d",
+      "theirs": "233e8d41360320695aa6a152c9c78212800843f3",
+      "post_bytes": 17415,
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "ancestor": "d15d23cbab985ef52d9490c1c00349c8892d44e2",
+      "ours": "b251f72da8c5a6640c0cb4b00502de155d27e4ff",
+      "theirs": "7f2fd5d54dfb0a391a260db864d4d989c87cac8e",
+      "post_bytes": 7072,
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "ancestor": "ccc2f10eeba27fe2c2dd2f94a13d1dfc19eeecb4",
+      "ours": "02a46c7735336689df347040f34dd2aeeb30d345",
+      "theirs": "b10204ed4683a6afd83585c81ef7e05268284cca",
+      "post_bytes": 10396,
+      "unchanged_from_theirs": false
+    }
+  ],
+  "checks": [
+    {
+      "name": "cell_q24_training_candidate_tests.rs",
+      "missing_ours": [],
+      "missing_theirs": [],
+      "missing_modules": [],
+      "assert_count": {
+        "ours": 78,
+        "theirs": 76,
+        "post": 78
+      }
+    },
+    {
+      "name": "circuit_completion_readiness_support_tests.rs",
+      "missing_ours": [],
+      "missing_theirs": [],
+      "missing_modules": [],
+      "assert_count": {
+        "ours": 0,
+        "theirs": 0,
+        "post": 0
+      }
+    },
+    {
+      "name": "circuit_evaluated_next_use_receipt_tests.rs",
+      "missing_ours": [],
+      "missing_theirs": [],
+      "missing_modules": [],
+      "assert_count": {
+        "ours": 46,
+        "theirs": 46,
+        "post": 46
+      }
+    },
+    {
+      "name": "circuit_evaluated_retention_publication_support_tests.rs",
+      "missing_ours": [],
+      "missing_theirs": [],
+      "missing_modules": [],
+      "assert_count": {
+        "ours": 11,
+        "theirs": 11,
+        "post": 11
+      }
+    },
+    {
+      "name": "circuit_evaluated_retention_receipt_tests.rs",
+      "missing_ours": [],
+      "missing_theirs": [],
+      "missing_modules": [],
+      "assert_count": {
+        "ours": 30,
+        "theirs": 30,
+        "post": 30
+      }
+    },
+    {
+      "name": "circuit_next_use_command_support_tests.rs",
+      "missing_ours": [],
+      "missing_theirs": [],
+      "missing_modules": [],
+      "assert_count": {
+        "ours": 4,
+        "theirs": 4,
+        "post": 4
+      }
+    },
+    {
+      "name": "circuit_original_evaluation_host_support_tests.rs",
+      "missing_ours": [],
+      "missing_theirs": [],
+      "missing_modules": [],
+      "assert_count": {
+        "ours": 0,
+        "theirs": 0,
+        "post": 0
+      }
+    },
+    {
+      "name": "circuit_original_evaluation_panel_tests.rs",
+      "missing_ours": [],
+      "missing_theirs": [],
+      "missing_modules": [],
+      "assert_count": {
+        "ours": 27,
+        "theirs": 27,
+        "post": 27
+      }
+    }
+  ],
+  "required_combined_dependencies": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "blob": "c45505b07af09894ff697030bcb57838e4bc5a43",
+      "reason": "Preserve ours-only actual PanelMemberFixture::complete boxed output; no extra edit here."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "blob": "7b64a69e5e0ad9c3dbb7c6a8180f9ecabb843d99",
+      "reason": "Peer production merge provides cfg(test) EvidenceDiagnosticsFlush outside each original exchange and original fixture response wrapper; retain new upstream timing/4 stage markers."
+    }
+  ],
+  "diagnostics": {
+    "capacity": 8,
+    "scope": "per-thread fixed diagnostic event buffer, no payload/signature/source/current cache",
+    "callback_io": false,
+    "flush": "after channel.exchange returns including original error/EOF",
+    "transport_cap": 128,
+    "timeout_ms": 500,
+    "lifetime_seconds": 300,
+    "semantics": "one actual callback; errors preserve original conversion, EOF returns request_id-1, exhaustion remains Unavailable",
+    "instrumentation": "monotonic sampling and bounded CPU overhead; no performance claim"
+  },
+  "c_case_coverage": "All three real Trainer/Evaluator/Selector fault fixtures retained. Original method is Trainer-only and two separate sibling methods complete the exact original roster. No cap/deadline/error/byte/frame/cleanup weakening.",
+  "heap": "Original Box aggregate ownership preserved; new upstream future façades and before_publication path retained, before_publication returns boxed HostFixture.",
+  "registrations": "All ours and upstream path modules retained including candidate_current, remote_next_use, S command, Version and version_material.",
+  "execution": {
+    "fmt": "NOT_RUN",
+    "source_checks": "NOT_RUN",
+    "rust_compile": "NOT_RUN",
+    "native_tests": "NOT_RUN",
+    "actors": 0
+  },
+  "scope": "8-path partial overlay, requires parent merge of production/QA/ours-only paths. No commits, ref, pushes, actors, manual Bazel."
+}

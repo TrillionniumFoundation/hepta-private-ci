@@ -1,0 +1,65 @@
+{
+  "schema": "hcsn-two-cycle-positive-kernels-v1",
+  "status": "HOLD_NO_GO",
+  "all_closed": false,
+  "source_commit": "c3a5b3d64693222dc44687c82079084860a01dd9",
+  "parent": "3793ee9e9f4c5b3503c3f4b20e84a03ac895a1f4",
+  "cases": [
+    "near800",
+    "near960",
+    "control_erlang",
+    "control_mixed"
+  ],
+  "query_gaps": [
+    0.001,
+    0.003,
+    0.02,
+    0.04,
+    0.08,
+    0.16
+  ],
+  "new_serial_kernel_evaluations": 72,
+  "positive_series_terms": 2127264,
+  "old_DDE_replays": 0,
+  "neural_model_calls": 0,
+  "training_calls": 0,
+  "new_meshes": 0,
+  "source_before": {
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/audit.py": "289ede82bc6834e88770f1a7cde90597912ba187da398dd5d8e2b90fd1c0532a",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/positive_serial.py": "b0732aeb09f0cdf53069f7d0e2538a672ad3a8cf84d23e94a93a6fc144697fc7",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/analytic_reference.py": "6d24f468ac079cf7932c312bb9a8c22ddb53aceb0f1dc9d2e4087961a425ea46",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/PLAN.json": "f1d0c2da8cbe8fe7ccd9dff1f5f42049b1e2129295587ae0270aac1abf7b9e84"
+  },
+  "source_after": {
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/audit.py": "289ede82bc6834e88770f1a7cde90597912ba187da398dd5d8e2b90fd1c0532a",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/positive_serial.py": "b0732aeb09f0cdf53069f7d0e2538a672ad3a8cf84d23e94a93a6fc144697fc7",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/analytic_reference.py": "6d24f468ac079cf7932c312bb9a8c22ddb53aceb0f1dc9d2e4087961a425ea46",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/PLAN.json": "f1d0c2da8cbe8fe7ccd9dff1f5f42049b1e2129295587ae0270aac1abf7b9e84"
+  },
+  "input_sha256": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/evidence/new-near800-atol18-001/RAW.npz": "8c9daf9d14eef1eff60906a252ca0aa9632b267665f2f4edce10b27c4a5ffaba",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/evidence/new-near960-atol18-001/RAW.npz": "6afdbbcaf7ae4a76676e6abc3b2d19ba170b4075f685a3e2f8dc0ebbca954705"
+  },
+  "output_sha256": {
+    "near800.npz": "b3245183b67e0c54728c40da85951b40986c985e89c5f48bc3fd7c990316076e",
+    "near800.json": "b9f635ffbbc77f5adfd22d8151ecc15484ef9338fde6d57ef149bca7fa9e4644",
+    "near960.npz": "cfe979f27e005a8ec995252a47145648c9b019503a692dde9d099c526b5a4a60",
+    "near960.json": "db538c419721e4c7cd878b9682f324bffb29405d2e653ff4cee0b92f66c2bfdf",
+    "control_erlang.npz": "42eb5fdc70a4b869c181e45291bedc178c9e49f9f03e2c22fa842c386b28f152",
+    "control_erlang.json": "0cd6937af99ae9343f4f07527a2b02615079d0c17ed6b7d579902394892984e7",
+    "control_mixed.npz": "21c0241a0e34f9a4e24ef8b15359c00f13217ba82caaad6fce6aa0a2f9b0288d",
+    "control_mixed.json": "f031f381bd03de2bddca101a7359b4678361bddda33ab04603fe3077ae5c9f09"
+  },
+  "wall_seconds": 50.94856894899931,
+  "cpu_seconds": 50.46436611,
+  "peak_rss_kib_linux": 77496,
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "limitations": [
+    "Renewal statistics candidate, not full current spatial state or complete Cell",
+    "Only two cycles, fixed physics/rates/resets and exposed gap offsets",
+    "M/H channels are physical and auxiliary killed CTMC respectively",
+    "Poisson bound excludes floating point roundoff",
+    "No prospective scientific gate"
+  ]
+}

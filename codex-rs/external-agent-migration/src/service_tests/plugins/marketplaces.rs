@@ -1,5 +1,8 @@
 use super::super::*;
+use codex_core_plugins::marketplace_add::MarketplaceAddRequest;
+use codex_core_plugins::marketplace_add::add_marketplace;
 use pretty_assertions::assert_eq;
+use std::cell::Cell;
 
 #[tokio::test]
 async fn import_plugins_requires_source_marketplace_details() {
@@ -480,9 +483,23 @@ async fn import_plugins_supports_relative_external_agent_plugin_marketplace_path
 
 #[tokio::test]
 async fn import_plugins_infers_external_official_marketplace_when_missing_from_settings() {
-    let (_root, external_agent_home, codex_home) = fixture_paths();
+    let (root, external_agent_home, codex_home) = fixture_paths();
     fs::create_dir_all(&external_agent_home).expect("create external agent home");
     fs::create_dir_all(&codex_home).expect("create codex home");
+    let marketplace_root = root.path().join("official-marketplace");
+    fs::create_dir_all(marketplace_root.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))
+        .expect("create marketplace manifest dir");
+    fs::write(
+        marketplace_root
+            .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)
+            .join("marketplace.json"),
+        serde_json::to_string(&serde_json::json!({
+            "name": EXTERNAL_OFFICIAL_MARKETPLACE_NAME,
+            "plugins": [],
+        }))
+        .expect("serialize marketplace manifest"),
+    )
+    .expect("write marketplace manifest");
 
     fs::write(
         external_agent_home.join("settings.json"),
@@ -496,8 +513,9 @@ async fn import_plugins_infers_external_official_marketplace_when_missing_from_s
     )
     .expect("write settings");
 
+    let add_calls = Cell::new(0);
     let outcome = service_for_paths(external_agent_home, codex_home)
-        .import_plugins(
+        .import_plugins_with_adder(
             /*cwd*/ None,
             Some(MigrationDetails {
                 plugins: vec![PluginsMigration {
@@ -506,10 +524,32 @@ async fn import_plugins_infers_external_official_marketplace_when_missing_from_s
                 }],
                 ..Default::default()
             }),
+            |codex_home, requirements, request| {
+                assert_eq!(
+                    request,
+                    MarketplaceAddRequest {
+                        source: crate::source_cla::OFFICIAL_MARKETPLACE_SOURCE.to_string(),
+                        ref_name: None,
+                        sparse_paths: Vec::new(),
+                    }
+                );
+                add_calls.set(add_calls.get() + 1);
+                // Keep inference and installation real while making the upstream
+                // marketplace contents deterministic and independent of network access.
+                add_marketplace(
+                    codex_home,
+                    requirements,
+                    MarketplaceAddRequest {
+                        source: marketplace_root.to_string_lossy().into_owned(),
+                        ..request
+                    },
+                )
+            },
         )
         .await
         .expect("import plugins");
 
+    assert_eq!(add_calls.get(), 1);
     assert_eq!(
         outcome.succeeded_marketplaces,
         vec![EXTERNAL_OFFICIAL_MARKETPLACE_NAME.to_string()]

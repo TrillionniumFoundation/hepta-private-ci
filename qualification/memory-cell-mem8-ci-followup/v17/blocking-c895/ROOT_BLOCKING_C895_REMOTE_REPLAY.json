@@ -1,0 +1,43 @@
+{
+  "schema": "mem8.v17.root-c895-blocking-full-remote-replay.v1",
+  "ref": "8a4c9ae3a0ba85cc7caff64ec98bd4e42ed505e2",
+  "objects_full_equal": 12,
+  "archive": {
+    "bytes": 1188896,
+    "git_blob": "0fb8e1e98ca22a49d0614172f8b99a75c0b85c47",
+    "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz",
+    "regular_members": 76,
+    "sha256": "2051f3661c4db6dd127071085d31edfe7452f2003fd02b99bb4a6e60bf858ec1"
+  },
+  "unchanged_verifier_exit": 0,
+  "full_result_equal": true,
+  "result": {
+    "cargo_deny_full_raw_gap_retained": true,
+    "complete_original_job_raw_logs": 17,
+    "complete_source_tree_entries": 14053,
+    "eleven_bazel_artifacts_metadata_only": true,
+    "job_counts": {
+      "cancelled": 4,
+      "failure": 9,
+      "skipped": 4,
+      "success": 20
+    },
+    "mac_complete_raw_present": true,
+    "mac_core_all_displayed_attempt_bodies": 7,
+    "mac_core_all_reported_failed_attempts": 16,
+    "mac_target_outcomes": {
+      "FAILED": 4,
+      "FLAKY": 3,
+      "PASSED": 402,
+      "SKIPPED": 172,
+      "TIMEOUT": 3
+    },
+    "no_native_or_model_execution": true,
+    "original_attempt": 1,
+    "original_jobs": 37,
+    "original_run_id": 43048568477,
+    "outer_regular_members": 76,
+    "status": "PASS",
+    "test_job_records_replayed": 7
+  }
+}

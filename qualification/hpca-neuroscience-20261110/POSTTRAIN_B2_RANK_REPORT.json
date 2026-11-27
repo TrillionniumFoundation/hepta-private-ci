@@ -1,0 +1,606 @@
+{
+  "authority": "DENY_ALL",
+  "independent_evaluator": false,
+  "interpretation": "In-sample, operator-constructed B2 threshold-free ranking diagnostic; no efficacy, external ground truth, calibration, or deployment claim.",
+  "model_inference_reexecuted": false,
+  "original_manifest_sha256": "0f12ac4aa7fd32989ba62983ed82367b83fe6a3f51868e4c1b8f567a9decf12a",
+  "original_result_sha256": "937a87f1da2e502f954be0870cd3a64ce06df0245938fc984b8b2a5ed0d95731",
+  "qualification": "HOLD_NO_GO",
+  "runs": [
+    {
+      "arm": "frozen_base",
+      "families": {
+        "comparison": {
+          "auc": 0.1111111111111111,
+          "max_p_yes": 0.289408177,
+          "mean_p_yes_true_no": 0.27713233249999997,
+          "mean_p_yes_true_yes": 0.2453631115,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 8,
+          "yes": 6
+        },
+        "divisibility": {
+          "auc": 0.7777777777777778,
+          "max_p_yes": 0.191088006,
+          "mean_p_yes_true_no": 0.15685845666666667,
+          "mean_p_yes_true_yes": 0.16581489883333334,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 56,
+          "yes": 6
+        },
+        "even": {
+          "auc": 0.19444444444444445,
+          "max_p_yes": 0.284278452,
+          "mean_p_yes_true_no": 0.26364540566666667,
+          "mean_p_yes_true_yes": 0.25125040849999997,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 14,
+          "yes": 6
+        },
+        "prime": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.212116614,
+          "mean_p_yes_true_no": 0.18694183733333333,
+          "mean_p_yes_true_yes": 0.18027030433333333,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        },
+        "set_membership": {
+          "auc": 0.4166666666666667,
+          "max_p_yes": 0.292376041,
+          "mean_p_yes_true_no": 0.280478994,
+          "mean_p_yes_true_yes": 0.28136792266666666,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 30,
+          "yes": 6
+        }
+      },
+      "pooled": {
+        "auc": 0.43555555555555553,
+        "max_p_yes": 0.292376041,
+        "mean_p_yes_true_no": 0.23301140523333333,
+        "mean_p_yes_true_yes": 0.22481332916666666,
+        "no": 30,
+        "total_pairs": 900,
+        "twice_wins": 784,
+        "yes": 30
+      },
+      "seed": 0
+    },
+    {
+      "arm": "interleaved",
+      "families": {
+        "comparison": {
+          "auc": 0.1111111111111111,
+          "max_p_yes": 0.280454099,
+          "mean_p_yes_true_no": 0.2685509916666667,
+          "mean_p_yes_true_yes": 0.23750748233333333,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 8,
+          "yes": 6
+        },
+        "divisibility": {
+          "auc": 0.7777777777777778,
+          "max_p_yes": 0.183968425,
+          "mean_p_yes_true_no": 0.15093246583333333,
+          "mean_p_yes_true_yes": 0.15965470183333333,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 56,
+          "yes": 6
+        },
+        "even": {
+          "auc": 0.19444444444444445,
+          "max_p_yes": 0.274549425,
+          "mean_p_yes_true_no": 0.254413781,
+          "mean_p_yes_true_yes": 0.24217897166666666,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 14,
+          "yes": 6
+        },
+        "prime": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.204049006,
+          "mean_p_yes_true_no": 0.17971151066666669,
+          "mean_p_yes_true_yes": 0.1732673445,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        },
+        "set_membership": {
+          "auc": 0.4166666666666667,
+          "max_p_yes": 0.285211712,
+          "mean_p_yes_true_no": 0.27316609266666664,
+          "mean_p_yes_true_yes": 0.27424972266666664,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 30,
+          "yes": 6
+        }
+      },
+      "pooled": {
+        "auc": 0.4388888888888889,
+        "max_p_yes": 0.285211712,
+        "mean_p_yes_true_no": 0.22535496836666666,
+        "mean_p_yes_true_yes": 0.2173716446,
+        "no": 30,
+        "total_pairs": 900,
+        "twice_wins": 790,
+        "yes": 30
+      },
+      "seed": 11
+    },
+    {
+      "arm": "bursty",
+      "families": {
+        "comparison": {
+          "auc": 0.1111111111111111,
+          "max_p_yes": 0.279874802,
+          "mean_p_yes_true_no": 0.26798120633333333,
+          "mean_p_yes_true_yes": 0.23696512466666667,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 8,
+          "yes": 6
+        },
+        "divisibility": {
+          "auc": 0.7777777777777778,
+          "max_p_yes": 0.183549181,
+          "mean_p_yes_true_no": 0.15057208616666665,
+          "mean_p_yes_true_yes": 0.1592774565,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 56,
+          "yes": 6
+        },
+        "even": {
+          "auc": 0.19444444444444445,
+          "max_p_yes": 0.274012029,
+          "mean_p_yes_true_no": 0.25388917566666663,
+          "mean_p_yes_true_yes": 0.2416698385,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 14,
+          "yes": 6
+        },
+        "prime": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.203605458,
+          "mean_p_yes_true_no": 0.1793058091666667,
+          "mean_p_yes_true_yes": 0.17287442083333335,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        },
+        "set_membership": {
+          "auc": 0.4166666666666667,
+          "max_p_yes": 0.284724355,
+          "mean_p_yes_true_no": 0.27266819783333335,
+          "mean_p_yes_true_yes": 0.273747042,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 30,
+          "yes": 6
+        }
+      },
+      "pooled": {
+        "auc": 0.4388888888888889,
+        "max_p_yes": 0.284724355,
+        "mean_p_yes_true_no": 0.22488329503333335,
+        "mean_p_yes_true_yes": 0.2169067765,
+        "no": 30,
+        "total_pairs": 900,
+        "twice_wins": 790,
+        "yes": 30
+      },
+      "seed": 11
+    },
+    {
+      "arm": "interleaved",
+      "families": {
+        "comparison": {
+          "auc": 0.1111111111111111,
+          "max_p_yes": 0.273774385,
+          "mean_p_yes_true_no": 0.261920621,
+          "mean_p_yes_true_yes": 0.23172304533333335,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 8,
+          "yes": 6
+        },
+        "divisibility": {
+          "auc": 0.7777777777777778,
+          "max_p_yes": 0.17953673,
+          "mean_p_yes_true_no": 0.14778545766666665,
+          "mean_p_yes_true_yes": 0.15633477033333334,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 56,
+          "yes": 6
+        },
+        "even": {
+          "auc": 0.19444444444444445,
+          "max_p_yes": 0.268892884,
+          "mean_p_yes_true_no": 0.2490517548333333,
+          "mean_p_yes_true_yes": 0.23687875016666668,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 14,
+          "yes": 6
+        },
+        "prime": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.200021058,
+          "mean_p_yes_true_no": 0.17625038066666665,
+          "mean_p_yes_true_yes": 0.16985415166666665,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        },
+        "set_membership": {
+          "auc": 0.4166666666666667,
+          "max_p_yes": 0.276038259,
+          "mean_p_yes_true_no": 0.2647188005,
+          "mean_p_yes_true_yes": 0.2655773858333333,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 30,
+          "yes": 6
+        }
+      },
+      "pooled": {
+        "auc": 0.43666666666666665,
+        "max_p_yes": 0.276038259,
+        "mean_p_yes_true_no": 0.21994540293333334,
+        "mean_p_yes_true_yes": 0.21207362066666666,
+        "no": 30,
+        "total_pairs": 900,
+        "twice_wins": 786,
+        "yes": 30
+      },
+      "seed": 17
+    },
+    {
+      "arm": "bursty",
+      "families": {
+        "comparison": {
+          "auc": 0.1111111111111111,
+          "max_p_yes": 0.273389459,
+          "mean_p_yes_true_no": 0.2615403435,
+          "mean_p_yes_true_yes": 0.231377604,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 8,
+          "yes": 6
+        },
+        "divisibility": {
+          "auc": 0.7777777777777778,
+          "max_p_yes": 0.179240242,
+          "mean_p_yes_true_no": 0.14754046016666666,
+          "mean_p_yes_true_yes": 0.15608072533333334,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 56,
+          "yes": 6
+        },
+        "even": {
+          "auc": 0.19444444444444445,
+          "max_p_yes": 0.268506825,
+          "mean_p_yes_true_no": 0.24868745116666668,
+          "mean_p_yes_true_yes": 0.23652333016666668,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 14,
+          "yes": 6
+        },
+        "prime": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.199699715,
+          "mean_p_yes_true_no": 0.17596611383333335,
+          "mean_p_yes_true_yes": 0.16957825683333336,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        },
+        "set_membership": {
+          "auc": 0.4166666666666667,
+          "max_p_yes": 0.275693834,
+          "mean_p_yes_true_no": 0.2643688791666667,
+          "mean_p_yes_true_yes": 0.26523178833333333,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 30,
+          "yes": 6
+        }
+      },
+      "pooled": {
+        "auc": 0.43666666666666665,
+        "max_p_yes": 0.275693834,
+        "mean_p_yes_true_no": 0.21962064956666666,
+        "mean_p_yes_true_yes": 0.21175834093333332,
+        "no": 30,
+        "total_pairs": 900,
+        "twice_wins": 786,
+        "yes": 30
+      },
+      "seed": 17
+    },
+    {
+      "arm": "interleaved",
+      "families": {
+        "comparison": {
+          "auc": 0.1111111111111111,
+          "max_p_yes": 0.296532303,
+          "mean_p_yes_true_no": 0.2837938615,
+          "mean_p_yes_true_yes": 0.25164750966666666,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 8,
+          "yes": 6
+        },
+        "divisibility": {
+          "auc": 0.7777777777777778,
+          "max_p_yes": 0.200019389,
+          "mean_p_yes_true_no": 0.16448102166666667,
+          "mean_p_yes_true_yes": 0.17346464583333332,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 56,
+          "yes": 6
+        },
+        "even": {
+          "auc": 0.19444444444444445,
+          "max_p_yes": 0.290364027,
+          "mean_p_yes_true_no": 0.269393787,
+          "mean_p_yes_true_yes": 0.2569539225,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 14,
+          "yes": 6
+        },
+        "prime": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.21594809,
+          "mean_p_yes_true_no": 0.19050265349999998,
+          "mean_p_yes_true_yes": 0.18356858916666666,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        },
+        "set_membership": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.306066245,
+          "mean_p_yes_true_no": 0.29438717666666664,
+          "mean_p_yes_true_yes": 0.29478694499999997,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        }
+      },
+      "pooled": {
+        "auc": 0.44333333333333336,
+        "max_p_yes": 0.306066245,
+        "mean_p_yes_true_no": 0.24051170006666667,
+        "mean_p_yes_true_yes": 0.23208432243333332,
+        "no": 30,
+        "total_pairs": 900,
+        "twice_wins": 798,
+        "yes": 30
+      },
+      "seed": 23
+    },
+    {
+      "arm": "bursty",
+      "families": {
+        "comparison": {
+          "auc": 0.1111111111111111,
+          "max_p_yes": 0.297105372,
+          "mean_p_yes_true_no": 0.284308076,
+          "mean_p_yes_true_yes": 0.2521345715,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 8,
+          "yes": 6
+        },
+        "divisibility": {
+          "auc": 0.7777777777777778,
+          "max_p_yes": 0.200491935,
+          "mean_p_yes_true_no": 0.16485265633333332,
+          "mean_p_yes_true_yes": 0.1738668706666667,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 56,
+          "yes": 6
+        },
+        "even": {
+          "auc": 0.2222222222222222,
+          "max_p_yes": 0.290923029,
+          "mean_p_yes_true_no": 0.26994236066666666,
+          "mean_p_yes_true_yes": 0.2574902846666667,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 16,
+          "yes": 6
+        },
+        "prime": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.216277331,
+          "mean_p_yes_true_no": 0.19078916316666664,
+          "mean_p_yes_true_yes": 0.18385533733333334,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        },
+        "set_membership": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.306437463,
+          "mean_p_yes_true_no": 0.29475638266666665,
+          "mean_p_yes_true_yes": 0.2951536676666667,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        }
+      },
+      "pooled": {
+        "auc": 0.4444444444444444,
+        "max_p_yes": 0.306437463,
+        "mean_p_yes_true_no": 0.24092972776666668,
+        "mean_p_yes_true_yes": 0.23250014636666666,
+        "no": 30,
+        "total_pairs": 900,
+        "twice_wins": 800,
+        "yes": 30
+      },
+      "seed": 23
+    },
+    {
+      "arm": "interleaved",
+      "families": {
+        "comparison": {
+          "auc": 0.1388888888888889,
+          "max_p_yes": 0.292363793,
+          "mean_p_yes_true_no": 0.27999166166666667,
+          "mean_p_yes_true_yes": 0.2483311566666667,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 10,
+          "yes": 6
+        },
+        "divisibility": {
+          "auc": 0.8055555555555556,
+          "max_p_yes": 0.19127132,
+          "mean_p_yes_true_no": 0.156256313,
+          "mean_p_yes_true_yes": 0.16566060733333335,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 58,
+          "yes": 6
+        },
+        "even": {
+          "auc": 0.16666666666666666,
+          "max_p_yes": 0.283666253,
+          "mean_p_yes_true_no": 0.26349534333333335,
+          "mean_p_yes_true_yes": 0.25090616416666667,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 12,
+          "yes": 6
+        },
+        "prime": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.210125178,
+          "mean_p_yes_true_no": 0.1848169266666667,
+          "mean_p_yes_true_yes": 0.17835929483333332,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        },
+        "set_membership": {
+          "auc": 0.4166666666666667,
+          "max_p_yes": 0.286129326,
+          "mean_p_yes_true_no": 0.2739017853333333,
+          "mean_p_yes_true_yes": 0.27483674900000005,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 30,
+          "yes": 6
+        }
+      },
+      "pooled": {
+        "auc": 0.43444444444444447,
+        "max_p_yes": 0.292363793,
+        "mean_p_yes_true_no": 0.231692406,
+        "mean_p_yes_true_yes": 0.22361879440000001,
+        "no": 30,
+        "total_pairs": 900,
+        "twice_wins": 782,
+        "yes": 30
+      },
+      "seed": 29
+    },
+    {
+      "arm": "bursty",
+      "families": {
+        "comparison": {
+          "auc": 0.1388888888888889,
+          "max_p_yes": 0.292336583,
+          "mean_p_yes_true_no": 0.2799618295,
+          "mean_p_yes_true_yes": 0.2483022311666667,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 10,
+          "yes": 6
+        },
+        "divisibility": {
+          "auc": 0.8055555555555556,
+          "max_p_yes": 0.191266432,
+          "mean_p_yes_true_no": 0.15629638483333333,
+          "mean_p_yes_true_yes": 0.1656837015,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 58,
+          "yes": 6
+        },
+        "even": {
+          "auc": 0.16666666666666666,
+          "max_p_yes": 0.283759683,
+          "mean_p_yes_true_no": 0.26357435916666666,
+          "mean_p_yes_true_yes": 0.2509835561666667,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 12,
+          "yes": 6
+        },
+        "prime": {
+          "auc": 0.3888888888888889,
+          "max_p_yes": 0.210238531,
+          "mean_p_yes_true_no": 0.18492961933333332,
+          "mean_p_yes_true_yes": 0.17846027033333334,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 28,
+          "yes": 6
+        },
+        "set_membership": {
+          "auc": 0.4166666666666667,
+          "max_p_yes": 0.286358833,
+          "mean_p_yes_true_no": 0.274151745,
+          "mean_p_yes_true_yes": 0.2750840585,
+          "no": 6,
+          "total_pairs": 36,
+          "twice_wins": 30,
+          "yes": 6
+        }
+      },
+      "pooled": {
+        "auc": 0.43444444444444447,
+        "max_p_yes": 0.292336583,
+        "mean_p_yes_true_no": 0.23178278756666665,
+        "mean_p_yes_true_yes": 0.22370276353333332,
+        "no": 30,
+        "total_pairs": 900,
+        "twice_wins": 782,
+        "yes": 30
+      },
+      "seed": 29
+    }
+  ],
+  "schema": "hpca.b2.retained.rank-diagnostic.v1"
+}

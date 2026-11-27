@@ -1,0 +1,98 @@
+{
+  "schema": "hcsn-secondcycle-frozen-plan-v1",
+  "status": "FROZEN_BEFORE_EXECUTION",
+  "parent_head": "3793ee9e9f4c5b3503c3f4b20e84a03ac895a1f4",
+  "candidate_object": "positive serial2 phase-type renewal-statistics operator; not current spatial state or a full Cell",
+  "domain_lanes": [
+    {
+      "name": "near800",
+      "input": "new-near800-atol18-001",
+      "reset": 0.32
+    },
+    {
+      "name": "near960",
+      "input": "new-near960-atol18-001",
+      "reset": 0.32725
+    }
+  ],
+  "mesh_changes": 0,
+  "physics": {
+    "mu": -0.12,
+    "sigma": 0.35,
+    "q": 0.15,
+    "delay": 0.2,
+    "initial_uniform_remaining_width": 0.025
+  },
+  "original_gaps": [
+    0.001,
+    0.003,
+    0.02,
+    0.04,
+    0.08,
+    0.16
+  ],
+  "query_rule": "T=float(delay+gap); active offset=T-delay, exact by Sterbenz and asserted with Fraction; original gap rounding retained",
+  "cycles_max": 2,
+  "finite_controls": [
+    {
+      "kind": "one-state killed Erlang",
+      "lower": 2,
+      "upper": 0.3,
+      "initial": [
+        1
+      ],
+      "reset": [
+        1
+      ]
+    },
+    {
+      "kind": "two-state killed birth-death",
+      "down": [
+        2,
+        3
+      ],
+      "up": [
+        1,
+        0.5
+      ],
+      "initial": [
+        0.6,
+        0.4
+      ],
+      "reset": [
+        0.25,
+        0.75
+      ]
+    }
+  ],
+  "kernel_budget": {
+    "calls": 72,
+    "total_series_terms_max": 2500000,
+    "per_call_terms_max": 250000,
+    "cpu_soft_seconds": 300,
+    "cpu_hard_seconds": 310,
+    "rss_guard_mib": 512
+  },
+  "reference_budget": {
+    "positive_integral_evaluations_max": 224,
+    "precisions": [
+      80,
+      120
+    ],
+    "finite_reference_expm_calls_max": 10000,
+    "cpu_soft_seconds": 480,
+    "cpu_hard_seconds": 490,
+    "rss_guard_mib": 512
+  },
+  "artifact_max_bytes": 1048576,
+  "old_DDE_replays": 0,
+  "neural_model_calls": 0,
+  "training_calls": 0,
+  "new_candidate_kernel_evaluations_are_explicit_not_claimed_zero": true,
+  "relative_reference_floor": 1e-12,
+  "formal_new_risk_gate": false,
+  "original_continuation_gate_not_retested_or_relaxed": 0.01,
+  "truncation": "upper escape permanently active/nonreturning; continuum coupled escape bound uses whole T; no CTMC-roundoff certificate",
+  "component_policy": "M2/H2/Zsecond/Asecondloss separately retained; below floor receives null relative diagnostics; aggregate M/H/R/A/Z cannot certify rare components",
+  "no_post_result_mesh_or_threshold_search": true
+}

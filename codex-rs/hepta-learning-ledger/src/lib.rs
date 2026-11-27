@@ -7,9 +7,14 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+mod ack_only_nonce;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+mod ack_only_recovery;
 mod causal_v2;
 mod checkpoint;
 mod dataset_receipt_v3;
+mod dataset_records;
 mod durable;
 mod durable_codec;
 mod durable_lock;
@@ -28,6 +33,26 @@ mod signed_evidence;
 mod trust_distribution;
 mod witness;
 
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_nonce::AckOnlyGrantNonceJournalV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyCurrentRevocationCutV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyRecoveryError;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyRecoveryGrantV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyRecoveryProofV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyRootDelegationV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyRootPinV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlySourceEscrowV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyTestReceiptV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::reconcile_one_existing_ack_qualification;
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
 pub use causal_v2::CandidateSetCompletenessReceiptV1;
@@ -58,7 +83,17 @@ pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
 pub use durable::DurableLedger;
 pub use durable::DurableLedgerError;
 pub use durable::LedgerAnchor;
+#[cfg(unix)]
+pub use durable::LedgerReadOnlyCutV1;
+#[cfg(unix)]
+pub use durable::LedgerReadOnlyObservationV1;
 pub use durable::LedgerRecovery;
+#[cfg(unix)]
+pub use durable::ReadOnlyLedgerViewV1;
+#[cfg(unix)]
+pub use durable::decode_readonly_ledger_data_v1;
+#[cfg(unix)]
+pub use durable::encode_readonly_ledger_data_v1;
 pub use durable::inspect_ledger;
 pub use error::LedgerError;
 pub use journal::DurableLearningJournal;
@@ -83,6 +118,7 @@ pub use model::PromptDeliveryObservation;
 pub use model::RetrievalAssignmentFact;
 pub use model::Revocation;
 pub use model::UnlearningLineageEventV1;
+pub use production::CommittedLearningAppendV1;
 pub use production::DatasetFreezePlanV2;
 pub use production::LedgerWriter;
 pub use production::ProductionDecisionV2;
@@ -124,6 +160,10 @@ pub use retrieval_assignment::retrieval_assignment_event;
 pub use retrieval_assignment::retrieval_assignment_event_with_delivery;
 pub use retrieval_assignment::retrieval_assignment_event_with_delivery_policy;
 pub use run_start::DurableRunStartJournal;
+#[cfg(unix)]
+pub use run_start::OriginalRunStartPrefixV1;
+#[cfg(unix)]
+pub use run_start::ReadOnlyRunStartViewV1;
 pub use run_start::RunStartAdmissionBindingV1;
 pub use run_start::RunStartAnchor;
 pub use run_start::RunStartAppendDisposition;
@@ -132,10 +172,17 @@ pub use run_start::RunStartAuthenticationV1;
 pub use run_start::RunStartConflictRecordV1;
 pub use run_start::RunStartJournal;
 pub use run_start::RunStartObjectiveDispositionV1;
+pub use run_start::RunStartPublication;
+#[cfg(unix)]
+pub use run_start::RunStartReadOnlyFrameV1;
+#[cfg(unix)]
+pub use run_start::RunStartReadOnlyPublicationV1;
 pub use run_start::RunStartRecordV1;
 pub use run_start::RunStartRecovery;
 pub use run_start::RunStartSnapshotV1;
 pub use run_start::RunStartStoreError;
+#[cfg(unix)]
+pub use run_start::observe_original_run_start_prefix_v1;
 pub use segments::LedgerSegmentCheckpoint;
 pub use segments::LedgerSegmentLimits;
 pub use segments::MAX_LEDGER_SEGMENTS;

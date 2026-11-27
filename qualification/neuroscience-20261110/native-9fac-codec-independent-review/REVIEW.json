@@ -1,0 +1,112 @@
+{
+  "schema": "neuro4.independent-codec-review.v1",
+  "base_commit": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "base_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "candidate_code_tree": "9d77309549da9637e9ab3f9489ed2655278d4048",
+  "reviewed_manifest_blob": "191c8e6c9a5bb260fd9b8a5d0ba7f59812faa88f",
+  "code_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs",
+      "base_blob": "8b083bb62da5506b29a9eaadd7b1b059d799a128",
+      "post_blob": "2faee4cacb7f58b63efc46e821ee36a744a59751",
+      "base_sha256": "d35ae398da651c7d1a75acac6de5a5fde116d5b4085987dc804c1694d40185c9",
+      "post_sha256": "923b9c75463b3f548b50411fa71334ff23d01af298dc8dbab5f10d091cab3e8b",
+      "base_and_post_git_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+      "base_blob": "adc26468ecd874b9aaf5d32beac21dfa4ecc30a9",
+      "post_blob": "40d2c6d4ae804cdf0a582bfde4d32b9412e4e32c",
+      "base_sha256": "b6928800b4a9192745c4f1942b5de17c08ce8b2550b3ffa890defba5b1332b46",
+      "post_sha256": "b26d35c97617a284d90646d9df638b406f053de61e48e65f72d5cf19b6184c54",
+      "base_and_post_git_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "base_blob": "d1dedb4b386ac822833e265ecd3192e000848730",
+      "post_blob": "447de9525d154c5a8d1bc9bef472b5ff1b7e9ed4",
+      "base_sha256": "090a5a485aa4b6c01be9cdf516292c1bef5099c88f0d63e71a0b0a546d6daee1",
+      "post_sha256": "c5474be07f9d3f08a5b5731f991b1a14c4f0d5cb49810b113ff20d31e8ce1a45",
+      "base_and_post_git_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+      "base_blob": "4c3063ecd9da813de7ef4b5b57bac4d16c27deee",
+      "post_blob": "6c02579cfc05f35c2252d501c1b7cfd096b4c4d1",
+      "base_sha256": "7dab4ab4b46422a14042761a1f9769c61bdf0d8f3711dd3f80a2ff0492c5c4cb",
+      "post_sha256": "a297111c1e321835d832239fee6066efcae57a1681ca944510fcf42462894871",
+      "base_and_post_git_verified": true
+    }
+  ],
+  "sources": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "sha256": "19d794ead41cbf3d230255a2bfdd96c5e793f1f86600d4404d8c6ca8b97350af",
+      "finding": "Qualification v4 has seven digests, three IDs, disposition, u64-count failed_metrics, candidate ID, two principals, claim scope, u64-count snapshot_ids, two DENY_ALL bytes. Each ID retains a u32 length."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "blob": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb",
+      "sha256": "147e5d80a5efc4587c67de53b65fd1b42c52841907e2ed5b0439c46cf65daa7c",
+      "finding": "Independent decision/request v1 push_id_vec uses checked u32 counts; candidate leaves its ids() reader byte-identical."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "blob": "c9b8a264cbf51fbf4c405042e1252e931717524a",
+      "sha256": "5fea425ed508b38f37fc4ac17a377bb8e2629597a497707ad8ee40794dbd3bdc",
+      "finding": "Modified Qualification tests reach member::verify before the final aggregated qualification/panel identity comparison; tests preserve all original signatures and unrelated material."
+    },
+    {
+      "path": "CALLERS.toml",
+      "blob": "13d9f42390e529bb1712d9358a2e42a1c3ead802",
+      "sha256": "d67c2f5595286ddc49c03f7a763d2a8734166060d6cf016d10271194de51419f",
+      "finding": "Complete source read; no changed four path or qualification.ids/ids_u64 marker. No new original-owner call."
+    }
+  ],
+  "qa_sources": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "blob": "f54675a31fc4c625991bde34a97f0bd6865964e8",
+      "sha256": "f8a5ab9bca5458a8bafa28fb707c891ac546db9a5cad87f9273c270f14e97c41"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "blob": "d6c093a72c22dd46ce03c06631547fbe970c2ceb",
+      "sha256": "08d986508f7f2258557dfde187d8c9071e1c8f46b9dc3b846ad3ef5d6f229d52"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "blob": "6fc51eed804792d4f009697f76f2d3c20a5c9827",
+      "sha256": "d06d8d50b02fdb1ae5f5913348e6d9337c0e02515f7ad1e64dbdb1bed03e8039"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "blob": "ea4db2d35de8ec8d4b7ae8a3adec8aef4ea17966",
+      "sha256": "0ea1f68517daef9109c7dc273d55b22a2c6ee0984e0fc21ea868d2fe1b911ec9"
+    }
+  ],
+  "assessment": {
+    "result": "NO_STATIC_BLOCKER_FOUND",
+    "bounded_decoder": "take(8), checked usize conversion, count<=1024 and minimum remaining four-byte ID prefixes before the unchanged 128-byte/UTF8/StableId parser; no width fallback or authority constructor.",
+    "scope": "Only the two Product Qualification v4 list positions change; original u32 count/ids and other fields are unchanged.",
+    "regression": "Uses actual original completed Panel material bytes, independent primitive reads to locate both lists, then direct ids_u64 success/truncated-count and complete-material count/fallback negatives. No new owner I/O or manufactured Qualification.",
+    "withdrawal_sync": "Test pause is signalled only after an actual first Page(index=0,offset=0), preserving original close.is_err and final live Finish read.",
+    "rust": "No visible borrow, type, visibility, temporary-lifetime, overflow, or macro ambiguity blocker; no formatter was executed.",
+    "guards": "Four related QA files read; no direct changed-path/old-id-marker contradiction found. This is not a full source-closure run."
+  },
+  "validation": {
+    "format": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "native_tests": "NOT_RUN",
+    "source_qa": "NOT_RUN",
+    "h_dispatch": false,
+    "ref_mutation": false
+  },
+  "original_failures_retained": {
+    "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+    "job": 131309678676,
+    "index_blob": "3d9e6598abd60bb22af198b74d3210492e9dcc86"
+  },
+  "owner_decision": null
+}

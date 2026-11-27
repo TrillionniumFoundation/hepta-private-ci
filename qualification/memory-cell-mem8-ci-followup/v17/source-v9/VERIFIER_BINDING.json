@@ -1,0 +1,104 @@
+{
+  "after": {
+    "bytes": 15953,
+    "git_blob": "ae5f521d8e05bec11e067a68a0a3343ca17e9d40",
+    "sha256": "8972405238649060c811d31860ac5cc94c0266a00ab41ee2b0e95d96415ed3b0"
+  },
+  "attempt": 1,
+  "before": {
+    "bytes": 15953,
+    "git_blob": "501b4d71c1e5bce1ccfbd29bb9c401587f88e9ac",
+    "sha256": "6d7145a8dc4b47b807a3439969131367c8bdd79c15663a121f7a3dc34873da1e"
+  },
+  "changes": [
+    {
+      "count": 1,
+      "new": "HEAD = '408226fc670bfa8c1736e2b264750b549237b7c4'",
+      "old": "HEAD = '1c063ba9e934f060181d4fc17d724361ba2a37fd'"
+    },
+    {
+      "count": 1,
+      "new": "TREE = '112fe78dedd76b258b17976cff14693c52897c8d'",
+      "old": "TREE = '4e702e173439f422a7d00917d3c94064e42d45aa'"
+    },
+    {
+      "count": 1,
+      "new": "HARNESS = '43d28191901d7d08c4543884d2f81c0b44eb8678'",
+      "old": "HARNESS = '68a4b0cddbf11367e763eff7d55a57089d197704'"
+    },
+    {
+      "count": 1,
+      "new": "INPUT_SHA = '66bafeebc5d006befa4b333eadb0f555304d6cac72ee520c6dda55e3ed78c90a'",
+      "old": "INPUT_SHA = 'd99b74ae9c63f632d3beec553884cfabed7fdbc0284609cf61881dc1c1473b9b'"
+    },
+    {
+      "count": 1,
+      "new": "original V9 source-only",
+      "old": "original V8 source-only"
+    },
+    {
+      "count": 1,
+      "new": "(HARNESS, '43054829731', '1')",
+      "old": "(HARNESS, '43046107709', '1')"
+    },
+    {
+      "count": 1,
+      "new": "len(encoded) == 388060",
+      "old": "len(encoded) == 376112"
+    },
+    {
+      "count": 1,
+      "new": "'210febab5369cbd99bd38c1b39cf8523b8f9399e'",
+      "old": "'0eeeabdb6c8604d0f6dcf4613f9586d2363c7fb1'"
+    },
+    {
+      "count": 1,
+      "new": "source[\"source_gate_run_version\"] == 9",
+      "old": "source[\"source_gate_run_version\"] == 8"
+    },
+    {
+      "count": 1,
+      "new": "len(source[\"files\"]) == len(capsule[\"files\"]) == 117",
+      "old": "len(source[\"files\"]) == len(capsule[\"files\"]) == 116"
+    },
+    {
+      "count": 1,
+      "new": "len(input_rows) == len(post_rows) == 117",
+      "old": "len(input_rows) == len(post_rows) == 116"
+    },
+    {
+      "count": 1,
+      "new": "len(retained_paths) == 116",
+      "old": "len(retained_paths) == 114"
+    },
+    {
+      "count": 1,
+      "new": "source-ci.v9.offline-verification",
+      "old": "source-ci.v8.offline-verification"
+    },
+    {
+      "count": 1,
+      "new": "\"original_run\": 43054829731, \"original_job\": 130641359569",
+      "old": "\"original_run\": 43046107709, \"original_job\": 130610340916"
+    },
+    {
+      "count": 1,
+      "new": "\"overlay_paths\": 117",
+      "old": "\"overlay_paths\": 116"
+    }
+  ],
+  "executed_on_v9_records": false,
+  "harness": "43d28191901d7d08c4543884d2f81c0b44eb8678",
+  "inverse_full_script_equal": true,
+  "job": 130641359569,
+  "patch": {
+    "bytes": 5176,
+    "git_blob": "ae9f5e2b2264912e498f8d72210bd37532cd8a6a",
+    "sha256": "574c1df671270d9b00637dfcf88892c62b328da9243df1f677ee5f36ad232558"
+  },
+  "run": 43054829731,
+  "schema": "mem8.v9.original-verifier-binding.v1",
+  "source": "408226fc670bfa8c1736e2b264750b549237b7c4",
+  "strict_zero_old_names_full_golden_18_regressions_600s_locks_unchanged": true,
+  "tree": "112fe78dedd76b258b17976cff14693c52897c8d"
+}

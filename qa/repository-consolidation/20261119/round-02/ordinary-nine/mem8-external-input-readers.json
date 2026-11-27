@@ -1,0 +1,37 @@
+{
+  "scope": "Replay of four unchanged historical archive readers in a separate copied folder; never execution of archived code or new native/model work. Original incoming blobs and reports are unchanged.",
+  "readers": [
+    {
+      "script": "verify_bazel_archive.py",
+      "original_script_sha256": "9019e0f4ba0226dd124d3aa54bb6f24c03c7edb477213469e1b080e79eb74676",
+      "exit": 1,
+      "seconds": 0.057086,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "82391d573d287516b478a614b083be1688d53aace9975f5ebffc8f95b312c455"
+    },
+    {
+      "script": "verify_ci189_readback.py",
+      "original_script_sha256": "e890b3e11999bea51ad54b12c28631fc24a14a334986d27443457bea4fbaefca",
+      "exit": 1,
+      "seconds": 0.064321,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "dccf039794bb451c42faf8a14aa87822d79276a5dfd27087b05c62a16afbd4ef"
+    },
+    {
+      "script": "verify_extra_readbacks.py",
+      "original_script_sha256": "764c43239b7a9179e759c6c2fb6f65a321b100f2d772fe1afacfc3f3cca89e06",
+      "exit": 1,
+      "seconds": 0.042833,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "013f04c44309d355753afdcdeb57667467d7fe949b8edfb88c0800d0343a1994"
+    },
+    {
+      "script": "verify_pending_source.py",
+      "original_script_sha256": "9039fb8ed607b36e0914185c5bfc4b42d47ee68f5c1035fb36815680d917862a",
+      "exit": 1,
+      "seconds": 0.043362,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "bb35cd8e0fdd4584f9df23c7d5d687b92990198e73990d6c93d91d2e35bb735d"
+    }
+  ]
+}

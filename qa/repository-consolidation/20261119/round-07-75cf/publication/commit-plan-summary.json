@@ -1,0 +1,769 @@
+[
+  {
+    "sha": "1bba6e39258a86945c83109e869152b23007d3b7",
+    "parents": [
+      "8047312e93277de56726d5535f02bbbf7c985572",
+      "6cfa2345cc26e271d443d32e3fff669f7492d1bc"
+    ],
+    "tree": "102b83f0752c3e5c44bbafdfab25f938aacbfde5",
+    "base_commit_for_tree": "6cfa2345cc26e271d443d32e3fff669f7492d1bc",
+    "message": "Merge ordinary Windows frontier with audited source boundaries\n\nNormal merge of audit/windows-merged-native-20261116 at\n6cfa2345cc26e271d443d32e3fff669f7492d1bc. Preserve current and incoming\nRust behavior, original failure evidence, deadlines and admission refusals.\nAll 276 conflicting paths are reconciled; the full 1,652-boundary caller\nscan passes across 8,923 Rust sources without drift. Exact review and\nvalidation scopes are retained under the 20261119 round-02 checkpoint.\n\nKeep the stricter empty advisory-ignore policy. Native platform failures\nand seven unmaintained transitive dependencies remain explicit blockers.\nNo main update, branch deletion, production admission or scientific\nqualification is implied by this integration checkpoint. Protected HIA\nroots and refs are outside this merge.\n",
+    "delta_entry_count": 8785
+  },
+  {
+    "sha": "2a7ebd5bd02f8626dca6774bc35e93a285dc6898",
+    "parents": [
+      "1bba6e39258a86945c83109e869152b23007d3b7"
+    ],
+    "tree": "41a31a62c16b6746fab92d16aac7e056c7dd76b9",
+    "base_commit_for_tree": "1bba6e39258a86945c83109e869152b23007d3b7",
+    "message": "Retain original research producer bytes and independent drift checks\n\nKeep the incoming stopping manifest and recover the original assembly\nmanifest at an explicit separate historical path, without rewriting either.\nPreserve all18 HPCA assertions; reconstruct the six exact original producer\nfiles for historical CLI validation and add two live/source-mutation negative\ncontrols, including optimized Python execution. Both20-case modes pass.\n\nThe expanded C2 suite has51 cases. The successor current-source manifest\nwill bind this source commit and retain new execution receipts separately.\n",
+    "delta_entry_count": 15
+  },
+  {
+    "sha": "9cbfc17d2b55c55dcc7ea59b3c193595aa7dea8c",
+    "parents": [
+      "2a7ebd5bd02f8626dca6774bc35e93a285dc6898"
+    ],
+    "tree": "8bc3522595c4f4d96aa3669f916f36028b40f92e",
+    "base_commit_for_tree": "2a7ebd5bd02f8626dca6774bc35e93a285dc6898",
+    "message": "Bind the reviewed research source successor and retain its actual joint run\n\nPin source2a7ebd5 and all39 declared files, including the complete C2\nPython source set and original producer fixtures. Execute the joint runner\non unchanged source:19 spatial,51 terminal,20 HPCA normal and20 optimized\ncases all pass, along with both mechanism probes. Preserve each prior\nfailed attempt distinctly. These checks do not claim model efficacy,\nindependent full C2 replay or production qualification.\n",
+    "delta_entry_count": 20
+  },
+  {
+    "sha": "6e43e7dc81a69c1427e89b117d022b77e4940a96",
+    "parents": [
+      "e3443eb41426a1dc496793e1fa5fc19c98f1eb74"
+    ],
+    "tree": "e6358b4f7a4b6e31f54390f9da8bd4e8569b0a90",
+    "base_commit_for_tree": "e3443eb41426a1dc496793e1fa5fc19c98f1eb74",
+    "message": "refactor(time): checkpoint independent chrono retirement\n\nUse maintained time calendars and Jiff local presentation with a shared UTC timestamp boundary. Preserve signed epochs, legacy serde spelling, RFC3339 precision, leap seconds, and cloud-cache HMAC bytes. All first-party Chrono code edges are removed; official serde_with optional metadata is retained.\n\nCheckpoint validation: 306 protocol/helper tests passed; 261152 timestamp differential cases, 342091 arithmetic checks, and 67040 filename cases passed. Consumer native checks and joint canonical Bazel lock regeneration remain in progress; this commit is not a release qualification.\n",
+    "delta_entry_count": 191
+  },
+  {
+    "sha": "d93ee6da4e55ed48908646b47949fb500a5d9cee",
+    "parents": [
+      "6e43e7dc81a69c1427e89b117d022b77e4940a96"
+    ],
+    "tree": "61f7246380dbe761401118e741b97c26bf8f7e55",
+    "base_commit_for_tree": "6e43e7dc81a69c1427e89b117d022b77e4940a96",
+    "message": "fix(time): retain epoch defaults and trim redundant dependencies\n\nKeep the existing TUI update-cache epoch default on the shared UTC type. Remove direct time edges from three crates whose duration calls use the standard library; regenerate the Cargo lock normally.\n\ncargo-deny 0.19.0 --all-features --locked check passes all four policy sections without new ignores or skips. The inactive serde_with Chrono metadata edge is correctly filtered by cargo-deny.\n",
+    "delta_entry_count": 5
+  },
+  {
+    "sha": "9171f963b155de49d66fd99f669c39579aa1fb6f",
+    "parents": [
+      "d93ee6da4e55ed48908646b47949fb500a5d9cee"
+    ],
+    "tree": "18c41395702cb93151b46a0d3e52c62d4666ba3d",
+    "base_commit_for_tree": "d93ee6da4e55ed48908646b47949fb500a5d9cee",
+    "message": "refactor(time): make UTC layouts infallible and explicit\n",
+    "delta_entry_count": 11
+  },
+  {
+    "sha": "9a326653d012dfa54b49318a144f474cb7e06a00",
+    "parents": [
+      "9171f963b155de49d66fd99f669c39579aa1fb6f"
+    ],
+    "tree": "eff73f9ebf0763063da1965492b1253378263d79",
+    "base_commit_for_tree": "9171f963b155de49d66fd99f669c39579aa1fb6f",
+    "message": "chore(time): close migration lints and format consumers\n",
+    "delta_entry_count": 93
+  },
+  {
+    "sha": "b3ed6bd40150c1866541ed9905beff880ea0f096",
+    "parents": [
+      "9cbfc17d2b55c55dcc7ea59b3c193595aa7dea8c",
+      "9a326653d012dfa54b49318a144f474cb7e06a00"
+    ],
+    "tree": "92a5a3b667f5bbfb5ea44a2b75dcee3e77c3999c",
+    "base_commit_for_tree": "9cbfc17d2b55c55dcc7ea59b3c193595aa7dea8c",
+    "message": "Merge maintained UTC timestamp history into the ordinary Windows union\n\nNormal merge preserves all four original timestamp migration commits through\n9a326653d012dfa54b49318a144f474cb7e06a00. Reconcile only the two Cargo\nconflicts with the reviewed joint-resolution postimages and canonical locks.\nNo new first-party Chrono consumer remains; the timezone/serialization\ncompatibility qualification remains recorded at its exact original source.\n\nThe current Windows observation binds this reviewed Cargo source and lock\nfingerprint. All826 protected-file guards pass and joint source formatting\npasses. Full native joint tests and the complete final caller census remain\nrequired; the stricter empty advisory-ignore policy still exposes seven\nmaintainability blockers until the separate maintenance follow-up is joined.\n",
+    "delta_entry_count": 195
+  },
+  {
+    "sha": "4c14246197df4c6ef5ae97ecd284d353d6a550e0",
+    "parents": [
+      "b3ed6bd40150c1866541ed9905beff880ea0f096"
+    ],
+    "tree": "765b9c13c0f30f1728d7db84a79b07c737f7a79f",
+    "base_commit_for_tree": "b3ed6bd40150c1866541ed9905beff880ea0f096",
+    "message": "Repair two native compiler errors exposed by the ordinary union\n\nKeep one canonical withdrawal-frontier module and restore the referenced delivery-encoding error variant. The original implementation, assertions, deadlines and refusal behavior are unchanged. All826 protected-file guards pass; exact native rerun remains pending on ROG.\n",
+    "delta_entry_count": 4
+  },
+  {
+    "sha": "a244bf61d922eb94abd7a4d6cc41ec9b07828535",
+    "parents": [
+      "4c14246197df4c6ef5ae97ecd284d353d6a550e0"
+    ],
+    "tree": "e7c295b0048c6c5801c77c952e8e8927ffd33350",
+    "base_commit_for_tree": "4c14246197df4c6ef5ae97ecd284d353d6a550e0",
+    "message": "fix(merge): disambiguate NDU migration exports and duplicate modules\n",
+    "delta_entry_count": 5
+  },
+  {
+    "sha": "73019f40c8ad8029abe3ccf8b735672befe99d3e",
+    "parents": [
+      "a244bf61d922eb94abd7a4d6cc41ec9b07828535"
+    ],
+    "tree": "3ecdc7108bdb05c368430933a0592a4d517e75ad",
+    "base_commit_for_tree": "a244bf61d922eb94abd7a4d6cc41ec9b07828535",
+    "message": "fix(ndu): preserve historical receipts behind explicit legacy API\n",
+    "delta_entry_count": 5
+  },
+  {
+    "sha": "89617a376cfcf10d1355152c66de9ce524787788",
+    "parents": [
+      "73019f40c8ad8029abe3ccf8b735672befe99d3e"
+    ],
+    "tree": "263ea59a3f2a35a5d55a01f69bde764249f47d30",
+    "base_commit_for_tree": "73019f40c8ad8029abe3ccf8b735672befe99d3e",
+    "message": "fix(control-plane): remove duplicate route digest re-export\n",
+    "delta_entry_count": 3
+  },
+  {
+    "sha": "454ec4af726c15ce7718400fd1268a9a51ac31c2",
+    "parents": [
+      "89617a376cfcf10d1355152c66de9ce524787788"
+    ],
+    "tree": "08ad3c868bdef7404aa0dc61637e30f73997d5c2",
+    "base_commit_for_tree": "89617a376cfcf10d1355152c66de9ce524787788",
+    "message": "fix(prompt-optimizer): preserve compat modules without duplicate declarations\n",
+    "delta_entry_count": 3
+  },
+  {
+    "sha": "f6cc0d1bccdd2b1e0dd405ca90d6a0707aaf9398",
+    "parents": [
+      "454ec4af726c15ce7718400fd1268a9a51ac31c2"
+    ],
+    "tree": "0a678d73fde3a846c2e98b8e461fb872c9767a6f",
+    "base_commit_for_tree": "454ec4af726c15ce7718400fd1268a9a51ac31c2",
+    "message": "fix(agentd): remove aliases duplicating the original dataset error\n",
+    "delta_entry_count": 5
+  },
+  {
+    "sha": "29531a3a96c6dddd94bd47eb66a48ea9b15d6b4d",
+    "parents": [
+      "73019f40c8ad8029abe3ccf8b735672befe99d3e",
+      "35edda311360c60aab3ca7454ba036f2896f7392"
+    ],
+    "tree": "ee33d8ea1fdc15acf780d9a6faf28f0cfa9ff1cc",
+    "base_commit_for_tree": "73019f40c8ad8029abe3ccf8b735672befe99d3e",
+    "message": "merge: retain fail-closed V8 historical-lock canary fallback\n\nMerge ordinary head 35edda311360c60aab3ca7454ba036f2896f7392 with the default three-way strategy. Preserve strict candidate parsing and run full canaries when only historical lock parsing is unavailable.\n",
+    "delta_entry_count": 3
+  },
+  {
+    "sha": "48874d7eeaebef5588cf706e0dfb96b3119127fb",
+    "parents": [
+      "29531a3a96c6dddd94bd47eb66a48ea9b15d6b4d",
+      "58691a7ec8a4ae8fc3903e3d3040b09d8fd4401a"
+    ],
+    "tree": "66e75dda17cd2d4ae6f947e42c7a88ca4b7e8fde",
+    "base_commit_for_tree": "29531a3a96c6dddd94bd47eb66a48ea9b15d6b4d",
+    "message": "merge: preserve ctutils evidence and durable SQLite fixture successors\n\nNormal three-way merge of 58691a7ec8a4ae8fc3903e3d3040b09d8fd4401a. Resolve two historical fixture conflicts using the reviewed current implementations: all incoming central shim/on-disk lifetime and assertions remain represented, with newer WAL/FULL, isolation and permissions coverage retained. Preserve the branch-specific read-only evidence workflow verbatim.\n",
+    "delta_entry_count": 1
+  },
+  {
+    "sha": "6899153fe2808688aba56418f583998d34948ebd",
+    "parents": [
+      "48874d7eeaebef5588cf706e0dfb96b3119127fb",
+      "41698ae03b4cbb82979f037e4364617813f5f959"
+    ],
+    "tree": "2b170eae067b03784438f822096c1ab02537e13f",
+    "base_commit_for_tree": "48874d7eeaebef5588cf706e0dfb96b3119127fb",
+    "message": "merge: narrow spelling exclusion to immutable raw transcript parts\n\nNormal three-way merge of 41698ae03b4cbb82979f037e4364617813f5f959. Retain all current unrelated exclusions while replacing the whole raw-transcript directory skip with the reviewed part-*.txt pattern. Preserve both original scope regression tests.\n",
+    "delta_entry_count": 2
+  },
+  {
+    "sha": "2baa0210e275e087146e293755612859bffb7b64",
+    "parents": [
+      "6899153fe2808688aba56418f583998d34948ebd",
+      "bd5bc7f39742fdce2f548d490ad6942de6b475e9"
+    ],
+    "tree": "e69e46f38b67b8a22876480c4a413bff92063aa1",
+    "base_commit_for_tree": "6899153fe2808688aba56418f583998d34948ebd",
+    "message": "merge: preserve first-passage glossary entry\n\nNormal three-way merge of bd5bc7f39742fdce2f548d490ad6942de6b475e9. Keep all current glossary entries and add the reviewed FPT spelling. Other incoming behavior is already represented by the default merge.\n",
+    "delta_entry_count": 1
+  },
+  {
+    "sha": "1ae7211cea2098c850a9fd41d0539e540d2f2c24",
+    "parents": [
+      "2baa0210e275e087146e293755612859bffb7b64",
+      "276f78a5660b03d837f337dd5c8da1c1040a72d2"
+    ],
+    "tree": "2ed01eb2810a4f5f19b2d2578b1835a139d424df",
+    "base_commit_for_tree": "2baa0210e275e087146e293755612859bffb7b64",
+    "message": "merge: retain historical trained replay evidence and provenance\n\nNormal three-way merge of 276f78a5660b03d837f337dd5c8da1c1040a72d2. Preserve all21 historical evidence assets verbatim and add only cach/nd to the accumulated glossary, retaining FPT. These records retain their historical descendant and zero-new-training scope.\n",
+    "delta_entry_count": 22
+  },
+  {
+    "sha": "587baefcba354832ec44abcbd4ce353e4d25d929",
+    "parents": [
+      "1ae7211cea2098c850a9fd41d0539e540d2f2c24",
+      "b5bed98f9db33eede1afe065e2812bffd462ca09"
+    ],
+    "tree": "5b32f35a303302906a6cfaa1b77c565dc734693e",
+    "base_commit_for_tree": "1ae7211cea2098c850a9fd41d0539e540d2f2c24",
+    "message": "merge: preserve executed HCSN review and exact inventory custody\n\nNormal three-way merge of b5bed98f9db33eede1afe065e2812bffd462ca09. Retain all16 historical report/inventory assets verbatim. Both original inventory reconstruction verifiers pass. Pin the one pre-existing oversized gzip by exact path and SHA256 without changing its bytes or the512000-byte default policy.\n",
+    "delta_entry_count": 17
+  },
+  {
+    "sha": "534a51bf417ab7d144bffd2beb0470c672461823",
+    "parents": [
+      "587baefcba354832ec44abcbd4ce353e4d25d929"
+    ],
+    "tree": "8d2fbec35a0d053f5521558e7cf02ce572f73aec",
+    "base_commit_for_tree": "587baefcba354832ec44abcbd4ce353e4d25d929",
+    "message": "style: format merged canary and spelling regression sources\n\nRun the repository formatter over the reviewed six-merge delta. All three changed Python ASTs are identical, including every original assertion and literal; historical evidence bytes remain unchanged.\n",
+    "delta_entry_count": 3
+  },
+  {
+    "sha": "4836b0ae4fe93b93bf4f8f61f92fd2b6db7203fc",
+    "parents": [
+      "f6cc0d1bccdd2b1e0dd405ca90d6a0707aaf9398",
+      "534a51bf417ab7d144bffd2beb0470c672461823"
+    ],
+    "tree": "b04cb959535cc8c6cd7c291c94f779a463018098",
+    "base_commit_for_tree": "534a51bf417ab7d144bffd2beb0470c672461823",
+    "message": "merge: integrate six reviewed ordinary histories and retain native fixes\n",
+    "delta_entry_count": 17
+  },
+  {
+    "sha": "9196abc7aeda425b9b7d0dca2534d8fca9226e62",
+    "parents": [
+      "4836b0ae4fe93b93bf4f8f61f92fd2b6db7203fc",
+      "b51d9ca526fe06447e6bc58227b615b68df09ba0"
+    ],
+    "tree": "efc1af84da1bdb4025f5a0434825a63bbdb3408b",
+    "base_commit_for_tree": "4836b0ae4fe93b93bf4f8f61f92fd2b6db7203fc",
+    "message": "merge: retain external integration repairs and new HIA protection\n",
+    "delta_entry_count": 16
+  },
+  {
+    "sha": "533a84b0691e38b8d3fdf3430ff3beb0e85cde8e",
+    "parents": [
+      "9196abc7aeda425b9b7d0dca2534d8fca9226e62"
+    ],
+    "tree": "1ca9c7616e11862c2868513a61b8253d253570f6",
+    "base_commit_for_tree": "9196abc7aeda425b9b7d0dca2534d8fca9226e62",
+    "message": "fix(agentd): adapt original Ed25519 paths to typed AuthBus suites\n",
+    "delta_entry_count": 17
+  },
+  {
+    "sha": "2f7fbdd300c631dcdc73a99edcbeb67068304113",
+    "parents": [
+      "533a84b0691e38b8d3fdf3430ff3beb0e85cde8e"
+    ],
+    "tree": "86c73473a2409a04012f4dcce5eb7d97c554e524",
+    "base_commit_for_tree": "533a84b0691e38b8d3fdf3430ff3beb0e85cde8e",
+    "message": "fix(agentd): preserve original assertions across merged test fixtures\n",
+    "delta_entry_count": 19
+  },
+  {
+    "sha": "8e8056ff3dcddbe84be80b8d5b043d4f5956ea93",
+    "parents": [
+      "2f7fbdd300c631dcdc73a99edcbeb67068304113"
+    ],
+    "tree": "bf0fa213091d77664acfc58939ee9854def3306d",
+    "base_commit_for_tree": "2f7fbdd300c631dcdc73a99edcbeb67068304113",
+    "message": "Retire unmaintained dependency implementations without changing formats\n\nMaintain legacy Starlark and BM25 hashing in an owned tested utility; replace derivative expansions with standard trait implementations; route paste macros to maintained pastey; backport age i18n maintenance; declare pagable's actual Postcard std/CRC features. Preserve all public runtime features, archive provenance, licenses, original test fixtures and independently generated old-BM25 snapshots.\n\nRepair i18n-config Bazel representation by removing its contradictory workspace membership while retaining the path patch. Regenerate both canonical locks. Targeted suites pass 329 tests; legacy hash oracle passes 1,761,494 comparisons. Strict cargo-deny retains only the separately owned Syntect bincode/yaml-rust blockers, with no policy ignores. Record functional and final formatter patches independently.\n",
+    "delta_entry_count": 595
+  },
+  {
+    "sha": "ebbc9f18004fa6165139b8d71f8e0fbbb14c6016",
+    "parents": [
+      "8e8056ff3dcddbe84be80b8d5b043d4f5956ea93"
+    ],
+    "tree": "29c0ee3fd143f7cd12b7006040595f5cd141741c",
+    "base_commit_for_tree": "8e8056ff3dcddbe84be80b8d5b043d4f5956ea93",
+    "message": "Maintain Syntect codecs with verified legacy assets and strict dependency closure\n\nUse bincode-next 3.2.0 legacy serialization with explicit buffered I/O error propagation and yaml-rust2 0.11.1. Preserve all original features, immutable syntax/theme assets, original assertions, complete pinned upstream fixtures and reference snapshots. Review the seven dump-result and three YAML error nominal type changes against the original implementation on the same common dependency graph.\n\nQualify 630 codec corpus cases, six syntax assets, 57820 highlighting lines, 39 themes, 44 failure cases and 20 YAML cases. Original onig and fancy suites plus codec regressions pass 124 tests each; public API assertion passes. Preserve five exact byte-pinned Rust syntax inputs during formatting, fail closed on drift or escape, and keep genuine/unregistered source in normal scope; 32 scope tests pass. Actual canonical Cargo/Bazel resolution, configured Syntect cquery and strict cargo-deny pass without new ignores. Separate functional, lint and formatter provenance.\n",
+    "delta_entry_count": 1816
+  },
+  {
+    "sha": "fcb4091ed56359bfbf29f6d63ff3277f12fbab16",
+    "parents": [
+      "ebbc9f18004fa6165139b8d71f8e0fbbb14c6016"
+    ],
+    "tree": "32c455d28247cca56285fe9d0455a051ede600a7",
+    "base_commit_for_tree": "ebbc9f18004fa6165139b8d71f8e0fbbb14c6016",
+    "message": "ci(ndu): bind native source checks to reviewed dependency closure\n",
+    "delta_entry_count": 3
+  },
+  {
+    "sha": "d4a3c791a8945322f09511e1673d98262a827518",
+    "parents": [
+      "fcb4091ed56359bfbf29f6d63ff3277f12fbab16",
+      "c0b8960ea2ed8f0c8c6e27176260d6b6ef494d8d"
+    ],
+    "tree": "a39fd5a872accad6d1201d3bbb33db9617817576",
+    "base_commit_for_tree": "fcb4091ed56359bfbf29f6d63ff3277f12fbab16",
+    "message": "Merge commit 'c0b8960ea2ed8f0c8c6e27176260d6b6ef494d8d' into work/publish-single-main-20261119-2f49\n",
+    "delta_entry_count": 9
+  },
+  {
+    "sha": "0299a9454aecd86a94ce82268b3b6b22fd989748",
+    "parents": [
+      "d4a3c791a8945322f09511e1673d98262a827518"
+    ],
+    "tree": "2dbfebaea2fa54259d734a4bec13b8d79607b2d9",
+    "base_commit_for_tree": "d4a3c791a8945322f09511e1673d98262a827518",
+    "message": "build: preserve Cargo development checks in Bazel HEPTA profiles\n",
+    "delta_entry_count": 13
+  },
+  {
+    "sha": "c5d9ce3003241e4a7a55ca6fe7098be777e01277",
+    "parents": [
+      "d4a3c791a8945322f09511e1673d98262a827518",
+      "4939bf7cbefaae9f9f71533b36580c6b81327e45"
+    ],
+    "tree": "bf353f0895c5ce5857da5a3e572262751534431c",
+    "base_commit_for_tree": "d4a3c791a8945322f09511e1673d98262a827518",
+    "message": "Merge ordinary HX cell budget and retained evidence\n",
+    "delta_entry_count": 33
+  },
+  {
+    "sha": "1b7a6007304f655dbfc46fb6a60f7d48812e4e7c",
+    "parents": [
+      "c5d9ce3003241e4a7a55ca6fe7098be777e01277",
+      "7d7df6d0349ed4d3930556f5003a9ba90ae1e5d0"
+    ],
+    "tree": "00705db223532a5d28324a016efba49b56e39b5e",
+    "base_commit_for_tree": "c5d9ce3003241e4a7a55ca6fe7098be777e01277",
+    "message": "Merge ordinary HX far-tail gradients and original controls\n",
+    "delta_entry_count": 10
+  },
+  {
+    "sha": "6063ad5dbdc8d2d0025f12c0ca16b2fb39ebd38c",
+    "parents": [
+      "1b7a6007304f655dbfc46fb6a60f7d48812e4e7c",
+      "8fe7bc209803659cc3f4780be0940c5183ca6e9b"
+    ],
+    "tree": "23406969f008769732c8f0b4e0743091292b5333",
+    "base_commit_for_tree": "1b7a6007304f655dbfc46fb6a60f7d48812e4e7c",
+    "message": "Merge ordinary coupled-network research and retained evidence\n",
+    "delta_entry_count": 114
+  },
+  {
+    "sha": "d54fbb6a9204c542fe790ad53d8233244f20ef9a",
+    "parents": [
+      "6063ad5dbdc8d2d0025f12c0ca16b2fb39ebd38c",
+      "0d7ae07438c2b820c917fdcf2aae1bd6b7c630f9"
+    ],
+    "tree": "ae7daba1a610596b8dac54641e83b5364ef52c01",
+    "base_commit_for_tree": "6063ad5dbdc8d2d0025f12c0ca16b2fb39ebd38c",
+    "message": "Merge ordinary N256 hosted runtime snapshot evidence\n",
+    "delta_entry_count": 127
+  },
+  {
+    "sha": "60acd3febe906efc7ef573dbc76b87859a2f39ec",
+    "parents": [
+      "d54fbb6a9204c542fe790ad53d8233244f20ef9a",
+      "defbe9d13cf067037de742a497988c6cae7fd799"
+    ],
+    "tree": "1fe34c6fbbf3d380702110b43e21c6e649e337a8",
+    "base_commit_for_tree": "d54fbb6a9204c542fe790ad53d8233244f20ef9a",
+    "message": "Merge ordinary N256 static action readback evidence\n",
+    "delta_entry_count": 63
+  },
+  {
+    "sha": "f9dab213762d02589799658c39fc39da13e90e6a",
+    "parents": [
+      "60acd3febe906efc7ef573dbc76b87859a2f39ec",
+      "74fa2098330d738463626bafdf0a34385f321efe"
+    ],
+    "tree": "28c9b2d431f4f7e48f8b6b86b752f2405ec853c2",
+    "base_commit_for_tree": "60acd3febe906efc7ef573dbc76b87859a2f39ec",
+    "message": "Merge ordinary N256 archived reader bindings\n",
+    "delta_entry_count": 34
+  },
+  {
+    "sha": "3776097fe4495f4ebd092615d7b15dbe5a01a9eb",
+    "parents": [
+      "f9dab213762d02589799658c39fc39da13e90e6a",
+      "a6c4794b1df4df2222004fa0d220bfd1ff8f743f"
+    ],
+    "tree": "1a5dc8b657b84d62e0eea9b3bbcf8e7345826372",
+    "base_commit_for_tree": "f9dab213762d02589799658c39fc39da13e90e6a",
+    "message": "Merge ordinary N256 multistep study and completed-attempt evidence\n",
+    "delta_entry_count": 38
+  },
+  {
+    "sha": "69bf55eba7ae309eb2ece92269663ca49418f86f",
+    "parents": [
+      "3776097fe4495f4ebd092615d7b15dbe5a01a9eb",
+      "865e8f4960577f7e4774aa6c24df85fe5b3d5cb6"
+    ],
+    "tree": "1da00966ff071ccd4009de3dee5762e447cd46f3",
+    "base_commit_for_tree": "3776097fe4495f4ebd092615d7b15dbe5a01a9eb",
+    "message": "Merge ordinary C2 partial-resume originals and source controls\n",
+    "delta_entry_count": 337
+  },
+  {
+    "sha": "86d27210f5d8a71abe730e5f267518bd33e14425",
+    "parents": [
+      "69bf55eba7ae309eb2ece92269663ca49418f86f",
+      "21df04700aa885aef72b70962f270b966a112de6"
+    ],
+    "tree": "6982f34d660b57f80aa461604db1121745b0fe34",
+    "base_commit_for_tree": "69bf55eba7ae309eb2ece92269663ca49418f86f",
+    "message": "Merge ordinary MEM8 CI follow-up originals and audit evidence\n",
+    "delta_entry_count": 1024
+  },
+  {
+    "sha": "e4e086fb1648d935a5607f062eeb8b0885f74d94",
+    "parents": [
+      "86d27210f5d8a71abe730e5f267518bd33e14425"
+    ],
+    "tree": "8b3d86e5d75e1f07c494064f5c8074a091449add",
+    "base_commit_for_tree": "86d27210f5d8a71abe730e5f267518bd33e14425",
+    "message": "Preserve consumed research originals and verify consolidated readback\n",
+    "delta_entry_count": 45
+  },
+  {
+    "sha": "a1ecf55d48bb0daf59261271c7942efe73bb62e5",
+    "parents": [
+      "0299a9454aecd86a94ce82268b3b6b22fd989748",
+      "e4e086fb1648d935a5607f062eeb8b0885f74d94"
+    ],
+    "tree": "b2aa12e04e77c0692b590595565c268d98141c9f",
+    "base_commit_for_tree": "e4e086fb1648d935a5607f062eeb8b0885f74d94",
+    "message": "Merge nine ordinary research histories with exact evidence custody\n",
+    "delta_entry_count": 13
+  },
+  {
+    "sha": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "parents": [
+      "a1ecf55d48bb0daf59261271c7942efe73bb62e5"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "a1ecf55d48bb0daf59261271c7942efe73bb62e5",
+    "message": "audit: retain full caller, native, dependency and branch custody receipts\n",
+    "delta_entry_count": 92
+  },
+  {
+    "sha": "cafac72b479e26faa93753f137d97eeec6b704bd",
+    "parents": [
+      "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583"
+    ],
+    "tree": "04f1690aa60f178d70b4373f1bf203076581e911",
+    "base_commit_for_tree": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "message": "audit: bind final protected-source and blob-policy checks\n",
+    "delta_entry_count": 2
+  },
+  {
+    "sha": "39402433026e154f87f7965b4eda4c1c4b63a985",
+    "parents": [
+      "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+      "ce4589f8cc05cce09bb2c812f85a19cb9beab5eb"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "message": "Merge reviewed ordinary history ce4589f8cc05\n\nThe first incoming edit only adapts the restore validation marker to rustfmt; that exact literal is already present. The second adapts a removed HostAuthorityLearningScopeV2 constructor marker. Current production new_scoped_v2 directly freezes request/owners/scope/update_rule using FrozenLearningScopeV2::freeze and the current guard tests that actual call. Preserve the current mutation guards and their later caller coverage.\n\nThe exact complete tree is unchanged after the explicit path resolutions; original parents remain intact.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "9170b0e2ee6e2ca42c47304873e21a9de736a392",
+    "parents": [
+      "39402433026e154f87f7965b4eda4c1c4b63a985",
+      "7f3024890b0656fd27d9245f8d3c24c9923b170e"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "39402433026e154f87f7965b4eda4c1c4b63a985",
+    "message": "Merge reviewed ordinary history 7f3024890b06\n\nThe complete authorized_source_closure function and original cross-source/transitive-summary test are AST-identical to the incoming implementation. Current read_memory invokes that function, records its rejection count, and additionally rechecks authorization during delivery. Preserve these later receipt validation and revocation protections. The automatic test-file merge duplicates the already present identical test method; explicitly retain the current single definition and all later tests.\n\nThe exact complete tree is unchanged after the explicit path resolutions; original parents remain intact.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "44e2aa3dad5bc31f55415d188286f902ebd57cc6",
+    "parents": [
+      "9170b0e2ee6e2ca42c47304873e21a9de736a392",
+      "a6edb28a1654a072ed2e498a960fc9ebe1451503"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "9170b0e2ee6e2ca42c47304873e21a9de736a392",
+    "message": "Merge reviewed ordinary history a6edb28a1654\n\nThe incoming two-file change routes the Agentd integration targets through the same _UNIT_TEST_DEPENDENCIES map. Current Agentd already opts into integration_test_use_unit_test_dependencies; defs.bzl computes the same replacement dependencies for all three integration targets and additionally substitutes the qualification library for the product library. Preserve this complete current variant closure, the explicit missing-map refusal, and newer native profile settings. The earlier separate replacement argument has no other incoming callers.\n\nThe exact complete tree is unchanged after the explicit path resolutions; original parents remain intact.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "638f6774391441f7ea9294f21905adeb6caf4693",
+    "parents": [
+      "44e2aa3dad5bc31f55415d188286f902ebd57cc6",
+      "37d108ccb5251d2851911c081c58c652fc384683"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "44e2aa3dad5bc31f55415d188286f902ebd57cc6",
+    "message": "Merge reviewed ordinary history 37d108ccb525\n\nBoth branches directly include main_impl.rs under the crate recursion limit. Current adds explanatory text and the existing entrypoint root regressions. Preserve those additions. The three other CLI paths are standard-merged and remain identical to the current tree; see the independent cli-frontier-resolution review.\n\nThe exact complete tree is unchanged after the explicit path resolutions; original parents remain intact.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "49ebefe90508029e94965125a7f18bd8fab90577",
+    "parents": [
+      "638f6774391441f7ea9294f21905adeb6caf4693",
+      "f1b128f888f021591fdb11b94e28cf467633d70f"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "638f6774391441f7ea9294f21905adeb6caf4693",
+    "message": "Merge reviewed ordinary history f1b128f888f0\n\nThe current keyring 4.2/core/ZBus stack has removed the native dbus, dbus-secret-service and libdbus-sys packages. The old vendored keyring-v3 feature and its three lock edges are superseded; restoring them would conflict with the present API and dependency graph.\n\nExplicit hunk review preserves the complete current tree; both original histories remain reachable.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "7b8efc003897a83582b998476130d559796c065a",
+    "parents": [
+      "49ebefe90508029e94965125a7f18bd8fab90577",
+      "21eeda36754b523461464a423acfc0c5f6388a01"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "49ebefe90508029e94965125a7f18bd8fab90577",
+    "message": "Merge reviewed ordinary history 21eeda36754b\n\nRMCP uses the shared synchronous keyring_core::Entry adapter through codex-keyring-store, and the current OAuth documentation explains v4/ZBus and configured fallback. Old direct v3 sync/vendored target flags and unconditional-fallback wording must not be reintroduced.\n\nExplicit hunk review preserves the complete current tree; both original histories remain reachable.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "623a05868664263552dc93241f7a37b272acc3cf",
+    "parents": [
+      "7b8efc003897a83582b998476130d559796c065a",
+      "08fac00c29e474fada5feede86d89eb22e816d97"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "7b8efc003897a83582b998476130d559796c065a",
+    "message": "Merge reviewed ordinary history 08fac00c29e4\n\nCurrent source already clones verified slots, teacher targets and each student-forward input. It also returns paired receipts and retains the in-place-student regression. Its late-mutation regression uses a training forward hook instead of replacing optimizer.step, preserving the later optimizer-integrity guards and all additional tests.\n\nExplicit hunk review preserves the complete current tree; both original histories remain reachable.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "9d1b95442c5f5a3df8a3e31994c1d9edebb585aa",
+    "parents": [
+      "623a05868664263552dc93241f7a37b272acc3cf",
+      "50bf2c7a4793b155ee1d5b79682c51455870420e"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "623a05868664263552dc93241f7a37b272acc3cf",
+    "message": "Merge reviewed ordinary history 50bf2c7a4793\n\nPreserve the token-identical Manifest, TickInput, TickReceipt and three wire domains, with the existing governed SplitProposal extension. Resolve the three textual conflicts and the automatically duplicated module/imports exactly as independently reviewed.\n\nThe complete resulting tree is unchanged.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "0adbc74f85cc629e803cdb50fe726689c00aab0f",
+    "parents": [
+      "9d1b95442c5f5a3df8a3e31994c1d9edebb585aa",
+      "b712447b7ffbd5725a9eed6f8c1adbf5ead9290b"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "9d1b95442c5f5a3df8a3e31994c1d9edebb585aa",
+    "message": "Merge reviewed ordinary history b712447b7ffb\n\nPreserve the four maintained codex-utils-yaml/serde-saphyr consumers and their current APIs and lock graph. The incoming serde_yaml retirement is already implemented; remove only the reviewed obsolete and unreferenced noyalib package blocks introduced by automatic merging.\n\nThe complete resulting tree is unchanged.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "2956211395d8f3d84e601d51076a1497f44dc153",
+    "parents": [
+      "0adbc74f85cc629e803cdb50fe726689c00aab0f",
+      "818b4a29d1e4375e210eba238d8a3149f5cf21c0"
+    ],
+    "tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "base_commit_for_tree": "0adbc74f85cc629e803cdb50fe726689c00aab0f",
+    "message": "Retain authenticated Agentd peer boundaries\n\nThe two control.rs conflicts are covered by the same Unix peer helper before permit allocation, the inherited owner/root gate, and the protected Windows named-pipe DACL plus bounded token authentication. Retain the relocated actual-connection test and the additional ordering regression. See r3-review/agentd-peer-frontier-resolution.json.\n\nNormal three-way merge with explicit reviewed conflict resolutions. Original incoming history is retained as the second parent. No protected HIA ancestry is included.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "da03f99788223198ba65ee8d05e92827968174ed",
+    "parents": [
+      "2956211395d8f3d84e601d51076a1497f44dc153",
+      "9c7a8c877ddcd4e936b077eadbea21d2e9056b95"
+    ],
+    "tree": "d009988b7f02e089c67f908857ed9ee2574cb12f",
+    "base_commit_for_tree": "2956211395d8f3d84e601d51076a1497f44dc153",
+    "message": "Merge reviewed CI tool version pins\n\nUse the install action supported tool@version input for sccache and nextest. Preserve current cargo-chef 0.1.78 and the stronger fleet admission assertion. Pinned action inputs and YAML have been checked.\n\nNormal three-way merge with explicit reviewed conflict resolutions. Original incoming history is retained as the second parent. No protected HIA ancestry is included.\n",
+    "delta_entry_count": 2
+  },
+  {
+    "sha": "08fd92aaaea5313d05ed7a0a17db2be5f6e31940",
+    "parents": [
+      "da03f99788223198ba65ee8d05e92827968174ed",
+      "6dd0621bb0f8d9c29b71fdc1da77c9b818195347"
+    ],
+    "tree": "a07baaae83eaea15a52e74220fbf2ad79db651c5",
+    "base_commit_for_tree": "da03f99788223198ba65ee8d05e92827968174ed",
+    "message": "Merge reviewed global cohort task identity history\n\nThe runtime validation is already present. Preserve it and retain the incoming documentation and fixture explanation. Twelve original scoped tests pass against the reviewed files.\n\nNormal three-way merge with explicit reviewed conflict resolutions. Original incoming history is retained as the second parent. No protected HIA ancestry is included.\n",
+    "delta_entry_count": 2
+  },
+  {
+    "sha": "1bcbe6350191c2bc748fc4b4b532c7dede15cd6f",
+    "parents": [
+      "08fd92aaaea5313d05ed7a0a17db2be5f6e31940",
+      "bb853fdb731cdec41df2eae826d6be78aa57e366"
+    ],
+    "tree": "a71b857a6e91c57fe206e214cd240c9af454d108",
+    "base_commit_for_tree": "08fd92aaaea5313d05ed7a0a17db2be5f6e31940",
+    "message": "Merge V8 Windows sandbox qualification workflow\n\nRetain the existing Once allocator initialization and concurrency regression instead of restoring the historical test mutex. Add the original sandbox Windows workflow with COMMIT_SHA bound to the actual checkout. Static checks pass; Windows execution remains a CI gate.\n\nNormal three-way merge with explicit reviewed conflict resolutions. Original incoming history is retained as the second parent. No protected HIA ancestry is included.\n",
+    "delta_entry_count": 1
+  },
+  {
+    "sha": "9b6632376958d0dc23b3a15055583f247db50c10",
+    "parents": [
+      "1bcbe6350191c2bc748fc4b4b532c7dede15cd6f",
+      "27da01c95b586702110a1823258f9e1bcbc44aa3"
+    ],
+    "tree": "012d3faf355c2141a302d4743a5dae674b364be3",
+    "base_commit_for_tree": "1bcbe6350191c2bc748fc4b4b532c7dede15cd6f",
+    "message": "Merge original Windows WAL partial-body regression\n\nPreserve current Windows write/truncate(false), owner locking and explicit append seek, together with Unix no-follow append protection. Retain the original new partial-body recovery regression. Windows native execution is still required.\n\nNormal three-way merge with explicit reviewed conflict resolutions. Original incoming history is retained as the second parent. No protected HIA ancestry is included.\n",
+    "delta_entry_count": 1
+  },
+  {
+    "sha": "9583e97a8fdf673ef8e97161a5dba31547127c83",
+    "parents": [
+      "9b6632376958d0dc23b3a15055583f247db50c10",
+      "d01883413fbdae31b5e4bc3c19a01057a5df5b06"
+    ],
+    "tree": "694584761fad8367cdd7faca8587e27e78c6a4fe",
+    "base_commit_for_tree": "9b6632376958d0dc23b3a15055583f247db50c10",
+    "message": "Preserve original memory objective-sender evidence\n\nNormal conflict-free merge of 46 historical evidence files. JSON, XML, Python syntax and all 18 receipt hashes were checked; original failures remain intact. Archived scripts were read without replay and historical counts do not qualify the current tree.\n\nNormal three-way merge with explicit reviewed conflict resolutions. Original incoming history is retained as the second parent. No protected HIA ancestry is included.\n",
+    "delta_entry_count": 46
+  },
+  {
+    "sha": "7c744af158dbb33c3dbf8e8cea070d39896943c8",
+    "parents": [
+      "9583e97a8fdf673ef8e97161a5dba31547127c83",
+      "2e1f37169dacddb2827a4ace92beaea10c25fcd4"
+    ],
+    "tree": "d82f291f4c3d2e69e0e7e32a84e6099cc688ee8e",
+    "base_commit_for_tree": "9583e97a8fdf673ef8e97161a5dba31547127c83",
+    "message": "Merge source-bound memory reliability history\n\nNormal conflict-free merge of connected provenance grouping, publication epoch binding and the preserved negative Reader evidence. Fifteen original pure-data tests pass; tensor and source-bound TCP suites remain separate pending native gates.\n\nNormal three-way merge with explicit reviewed conflict resolutions. Original incoming history is retained as the second parent. No protected HIA ancestry is included.\n",
+    "delta_entry_count": 17
+  },
+  {
+    "sha": "96c7318a3dffa5918424c787dcf0201ca0bb93e2",
+    "parents": [
+      "7c744af158dbb33c3dbf8e8cea070d39896943c8",
+      "0bb26140ed20a9e4193dec96dd4bf92c94c91ef3"
+    ],
+    "tree": "a68ada49261d55e00fba9370f1296a36d8099e08",
+    "base_commit_for_tree": "7c744af158dbb33c3dbf8e8cea070d39896943c8",
+    "message": "Merge independent public Q24 source admission reader\n\nNormal conflict-free merge of the independent-utterance reader and its original tests. It preserves DENY_ALL and NO_MODEL_PROMOTION. A follow-up adds both new paths to the workflow trigger. Real CPU tensor tests are required before qualification.\n\nNormal three-way merge with explicit reviewed conflict resolutions. Original incoming history is retained as the second parent. No protected HIA ancestry is included.\n",
+    "delta_entry_count": 4
+  },
+  {
+    "sha": "98119c9fb6d3254638a1fd2816f72cb6a9e74068",
+    "parents": [
+      "96c7318a3dffa5918424c787dcf0201ca0bb93e2",
+      "5739a9ce5dfcfb8708eff0b3f4690de65a784d02"
+    ],
+    "tree": "8f4e698051efb6d3c53aab31e06b0a0b0f6c9828",
+    "base_commit_for_tree": "96c7318a3dffa5918424c787dcf0201ca0bb93e2",
+    "message": "Merge durable provider recovery material with compatible migration history\n\nPersist the exact provider occurrence key and wire bytes before external contact while retaining prepare_claim and inherited recovery semantics. Preserve original provider-recovery migration SQL bytes at 0023; relocate legacy v20 only on exact original checksum, clean history and an unoccupied target in one immediate transaction. Existing Circuit migrations remain byte-identical. Original Automation package tests pass on the documented old graph with exact matching caller files; final combined-head CI is still required.\n\nNormal three-way merge with explicit reviewed conflict resolutions. Original incoming history is retained as the second parent. No protected HIA ancestry is included.\n",
+    "delta_entry_count": 8
+  },
+  {
+    "sha": "530fbd1ff2fb48d643ee08937eca3a326e86fff3",
+    "parents": [
+      "98119c9fb6d3254638a1fd2816f72cb6a9e74068",
+      "a8ce72907288d1836612446b87cb1d5c184993ac"
+    ],
+    "tree": "8f4e698051efb6d3c53aab31e06b0a0b0f6c9828",
+    "base_commit_for_tree": "98119c9fb6d3254638a1fd2816f72cb6a9e74068",
+    "message": "Merge reviewed integration follow-up: storage\n\nThe existing four-shard native job already retains all four exact storage-reduction settings. Preserve its 75-minute budget, nextest thread bound and exhaustive owner/reverse-consumer shard selection. Explicitly resolve the sole outdated-context conflict without changing any source bytes.\n",
+    "delta_entry_count": 0
+  },
+  {
+    "sha": "2dab8dce61fda9ac5c3a079338149e5b4fa54465",
+    "parents": [
+      "530fbd1ff2fb48d643ee08937eca3a326e86fff3",
+      "cafac72b479e26faa93753f137d97eeec6b704bd"
+    ],
+    "tree": "06e1b81af3005146c69a1e04ab878c27ce3ff34b",
+    "base_commit_for_tree": "530fbd1ff2fb48d643ee08937eca3a326e86fff3",
+    "message": "Merge reviewed integration follow-up: prior-audit\n\nPreserve the complete prior candidate native-validation and publication checkpoint as a normal conflict-free merge. Its historical execution receipts retain their original source qualification and do not count as final combined-head CI.\n",
+    "delta_entry_count": 2
+  },
+  {
+    "sha": "20872beca8fcfaf228c5d33cb6044954db209209",
+    "parents": [
+      "2dab8dce61fda9ac5c3a079338149e5b4fa54465",
+      "adc66e6407f83bbc191648ec1784b351541df4bb"
+    ],
+    "tree": "ccd602b948c462185562c12ab4dead274dba883a",
+    "base_commit_for_tree": "2dab8dce61fda9ac5c3a079338149e5b4fa54465",
+    "message": "Merge reviewed integration follow-up: remote-advance\n\nPreserve all three concurrent remote commits, including the round-05 live census. The one source conflict has equivalent platform-specific futures within the original deadline expression; retain the remote let-connection form and exact rustfmt output. Both forms evaluate the original deadline before constructing the connection and keep Windows owner-local authentication. All other previously reviewed changes are byte-identical.\n",
+    "delta_entry_count": 10
+  },
+  {
+    "sha": "6fa36569564e93bef7e3040bae15df1790e8d22a",
+    "parents": [
+      "20872beca8fcfaf228c5d33cb6044954db209209"
+    ],
+    "tree": "4952cf83904b145d498e2973a95c33f41f25ba8f",
+    "base_commit_for_tree": "20872beca8fcfaf228c5d33cb6044954db209209",
+    "message": "fix(ci): trigger public Q24 reader tests on both new source paths\n\nKeep the original normal and optimized physical test invocations reachable when either independent reader source changes.\n",
+    "delta_entry_count": 1
+  },
+  {
+    "sha": "6c2577f6b5499a6774ec93d84698bbdb077ab3ec",
+    "parents": [
+      "6fa36569564e93bef7e3040bae15df1790e8d22a",
+      "da1edb7f1fb5e64a6bce6509979b85aa605edaca"
+    ],
+    "tree": "b61f6022a03e79f950d77645204857f4525280aa",
+    "base_commit_for_tree": "6fa36569564e93bef7e3040bae15df1790e8d22a",
+    "message": "merge: preserve protected cost checks with current cohort gates\n\nKeep current per-seed independent-source coverage and absolute service floors.\nAdd physical cost-unit and digest-shape validation plus direction-specific\nprotected loss, quality, ambiguity and inconsistency checks from the original tip.\nPreserve all current tests and the four incoming adversarial test bodies.\n",
+    "delta_entry_count": 2
+  },
+  {
+    "sha": "4824bf93b41e5c2c37f661f6a88d01ab95fc451d",
+    "parents": [
+      "6c2577f6b5499a6774ec93d84698bbdb077ab3ec",
+      "227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+    ],
+    "tree": "1f6447b1b1d7246c1029c34a988d234e18f98b65",
+    "base_commit_for_tree": "6c2577f6b5499a6774ec93d84698bbdb077ab3ec",
+    "message": "merge: document protected budget history against current invariants\n\nPreserve the protected-cost merge and its two tested Python blobs. Current\nfrozen Boolean membership, independent-source and service floors, direct hard\ncaps, all-arm overrun gate and bootstrap cost margin cover the historical\nrequirements. Retain the original branch document under an explicit historical\nlabel with a current-schema mapping; preserve its original tip as a parent.\n",
+    "delta_entry_count": 1
+  },
+  {
+    "sha": "5b37792343bbe24baf14918dc519f9786f422a03",
+    "parents": [
+      "4824bf93b41e5c2c37f661f6a88d01ab95fc451d",
+      "8d1c0f8603f988dfcef77e808183931f18c4aab8"
+    ],
+    "tree": "8e84335fce3c2c152ae2dafdf2d9c55bc6302f7f",
+    "base_commit_for_tree": "4824bf93b41e5c2c37f661f6a88d01ab95fc451d",
+    "message": "merge: retain native fixture coverage with current lookup and CI contracts\n\nKeep canonical private SQLite fixtures, exact supervisor faults and metadata-only\nCargo/Bazel/Nextest lookup. Add the canonical WorkspaceBinding assertion and\n11 real child-process lookup scenarios; retain current Nextest regressions.\nRequire scoped Clippy warnings to be denied and preserve complete build-input\nCI coverage through the real planner fixtures.\n",
+    "delta_entry_count": 5
+  },
+  {
+    "sha": "3417a57a6eb960f01fe66f8f3a9762c8ce160eee",
+    "parents": [
+      "5b37792343bbe24baf14918dc519f9786f422a03"
+    ],
+    "tree": "a30fd2df370a275244a59bd8747eefef58b5a5d3",
+    "base_commit_for_tree": "5b37792343bbe24baf14918dc519f9786f422a03",
+    "message": "test(memory): canonicalize the temporary receipt fixture root\n\nResolve the test temporary-directory alias before constructing its reader and\nscript paths. Keep every original isolation and receipt assertion and leave\nmodel-process runtime canonicalization unchanged. The original Mac stdlib\nreceipt case passed with all other frozen source files unchanged.\n",
+    "delta_entry_count": 1
+  },
+  {
+    "sha": "41d193cbd34571fb67a047c206a97734a677e21c",
+    "parents": [
+      "3417a57a6eb960f01fe66f8f3a9762c8ce160eee",
+      "b35518642af4c77833e4b00753827f893725d0d5"
+    ],
+    "tree": "6c4be51196a79aac0cf538706ca0ca458f12ce98",
+    "base_commit_for_tree": "3417a57a6eb960f01fe66f8f3a9762c8ce160eee",
+    "message": "merge: retain paired source-group bootstrap history\n\nKeep the current evaluator and all 62 tests, including protected-cost fixes,\nstrict frozen cohorts, full split isolation and absolute service/budget gates.\nThe historical branch test intents are already represented by the current\nsource. Correct the overview to describe paired source-group block sampling\nwhile preserving current detailed amendments and the original tip as a parent.\n",
+    "delta_entry_count": 1
+  },
+  {
+    "sha": "3aeee638cf589590878b2dd88e4d3558ad76e37b",
+    "parents": [
+      "41d193cbd34571fb67a047c206a97734a677e21c",
+      "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d"
+    ],
+    "tree": "25e0859ea2b44e2e23bd798f71c3a19e37270163",
+    "base_commit_for_tree": "41d193cbd34571fb67a047c206a97734a677e21c",
+    "message": "Merge concurrent integration advances with complete caller and CI guards\n\nPreserve the current 1652-boundary, 826-file caller manifest; its exact\ndeadline guards already cover the incoming mutation regression.\nRetain current Windows source/lock pins and all HCSN qualification gates.\nCarry forward the independent diagnostic environment fix, original neural\nresearch and historical CPU evidence without expanding their claims.\nThe actual five-conflict resolution matches an independently constructed\ncurrent-plus-reviewed-delta tree; existing Rust, H3 and MGP source is intact.\n",
+    "delta_entry_count": 26
+  },
+  {
+    "sha": "1109776d0b777999f0605ff92c98ddfcb03c2159",
+    "parents": [
+      "3aeee638cf589590878b2dd88e4d3558ad76e37b"
+    ],
+    "tree": "0ef5bf40bced3af12f1f49245acb2a87272cd520",
+    "base_commit_for_tree": "3aeee638cf589590878b2dd88e4d3558ad76e37b",
+    "message": "ci: match HCSN Torch assertion to the installed CPU runtime\n\nThe HCSN job installs torch==2.8.0+cpu, but its accumulated assertion\nexpected 2.10.0+cpu and would fail before qualification. Assert the exact\ninstalled 2.8.0+cpu version and retain all existing scientific gates.\n",
+    "delta_entry_count": 1
+  }
+]

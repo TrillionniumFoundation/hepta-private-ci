@@ -1,6 +1,7 @@
-load("//:defs.bzl", "codex_rust_crate")
+load("//:defs.bzl", "codex_rust_crate", "hepta_dev_rustc_flags")
 
 codex_rust_crate(
     name = "hepta-types",
     crate_name = "codex_hepta_types",
+    rustc_flags_extra = hepta_dev_rustc_flags(1),
 )

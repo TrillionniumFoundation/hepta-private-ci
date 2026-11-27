@@ -1,0 +1,36 @@
+{
+  "start": "623a05868664263552dc93241f7a37b272acc3cf",
+  "head": "0adbc74f85cc629e803cdb50fe726689c00aab0f",
+  "merges": [
+    {
+      "tip": "50bf2c7a4793b155ee1d5b79682c51455870420e",
+      "base_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "result_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "paths": {
+        "codex-rs/hepta-cognitive-types/src/lib.rs": "fc80ce505bc5c86d9cfffc8a206e6c209f08ac08",
+        "codex-rs/hepta-cognitive-types/src/memory_cell.rs": "b7d7aa0b773db3cba79cec90ddf940c40f459f42",
+        "codex-rs/hepta-cognitive-types/src/memory_cell_tests.rs": "90e8dc56893f7adb9f1a370472199f7a36a8ff0a",
+        "codex-rs/hepta-cognitive-types/src/wire.rs": "b510517935f512d95cf23c10ba26edcfea75dc58"
+      },
+      "reason": "Preserve the token-identical Manifest, TickInput, TickReceipt and three wire domains, with the existing governed SplitProposal extension. Resolve the three textual conflicts and the automatically duplicated module/imports exactly as independently reviewed.",
+      "prior": "623a05868664263552dc93241f7a37b272acc3cf",
+      "automatic_tree": "15e7ebea2c898e946975dd633de0082c6bb89953",
+      "commit": "9d1b95442c5f5a3df8a3e31994c1d9edebb585aa"
+    },
+    {
+      "tip": "b712447b7ffbd5725a9eed6f8c1adbf5ead9290b",
+      "base_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "result_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+      "paths": {
+        "codex-rs/Cargo.lock": "0c19e75a9c773c0eb6c9d82cd6e6c062574aa7e6",
+        "codex-rs/Cargo.toml": "520b0ba00e7e1e11f24773e42c21b5324578895b",
+        "codex-rs/core-plugins/src/command_migration.rs": "cff28675154032ff7e8f7b1e393259af9d4743d2",
+        "codex-rs/external-agent-migration/src/subagents.rs": "ce26d941009ddca023ea2cf044378b1c6ea2e02d"
+      },
+      "reason": "Preserve the four maintained codex-utils-yaml/serde-saphyr consumers and their current APIs and lock graph. The incoming serde_yaml retirement is already implemented; remove only the reviewed obsolete and unreferenced noyalib package blocks introduced by automatic merging.",
+      "prior": "9d1b95442c5f5a3df8a3e31994c1d9edebb585aa",
+      "automatic_tree": "40169240b8ce4f42303c9c58203494ed783ec077",
+      "commit": "0adbc74f85cc629e803cdb50fe726689c00aab0f"
+    }
+  ]
+}

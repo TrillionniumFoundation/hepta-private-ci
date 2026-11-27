@@ -1,0 +1,209 @@
+--- a/root29-original.py
++++ b/root29-8bf-inert.py
+@@ -2,1 +2,1 @@
+-"""Prepared 4537458b51b6-only Root29 append. Not dispatched by the preparing agent.
++"""Prepared 8bf3881afa8c-only Root29 append. Not dispatched by the preparing agent.
+@@ -6,0 +7,4 @@
++BINDING = None
++if BINDING is None:
++    raise SystemExit("INERT: actual 8bf native201 and terminal evidence is not bound; no filesystem action is permitted")
++
+@@ -19,3 +23,11 @@
+-SOURCE = "4537458b51b6ca936264aecea7cfe384b941d0d1"
+-TREE = "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+-REPO = Path("/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1")
++if not isinstance(BINDING, dict) or set(BINDING) != {
++    "main_native_sha256", "main_execution_sha256"
++}:
++    raise RuntimeError("actual Root29 prerequisite binding shape differs")
++if any(not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None
++       for value in BINDING.values()):
++    raise RuntimeError("actual Root29 prerequisite hash is unbound")
++
++SOURCE = "8bf3881afa8cccff286fc58909995c96f3e0b260"
++TREE = "c8730bab75eabe47a3b0b3260a6203a0d86d1443"
++REPO = Path("/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1")
+@@ -23,1 +35,1 @@
+-MAIN = EVIDENCE / "live-owners-full-4537458b51b6-isolated-v1"
++MAIN = EVIDENCE / "live-owners-full-8bf3881afa8c-isolated-v1"
+@@ -25,3 +37,3 @@
+-TARGET = Path("/data/hepta-learn-ce434-runtime-20261112-v2/target")
+-TARGET_CREATION = EVIDENCE / "build-root-recovery-e5c7-v2/result.json"
+-TARGET_CREATION_SHA256 = "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb"
++TARGET = Path("/data/hepta-learn-ce434-runtime-20261112-v3/target")
++TARGET_CREATION = EVIDENCE / "build-root-recovery-4537458b51b6-v3-attempt2/result.json"
++TARGET_CREATION_SHA256 = "1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b"
+@@ -33,2 +45,2 @@
+-NATIVE_DRIVER = EVIDENCE / "unified-4537458b51b6-isolated-v1/native-runner.py"
+-NATIVE_DRIVER_SHA256 = "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb"
++NATIVE_DRIVER = EVIDENCE / "unified-8bf3881afa8c-isolated-v1/native-runner.py"
++NATIVE_DRIVER_SHA256 = "3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a"
+@@ -121,3 +133,14 @@
+-    return subprocess.check_output(
+-        ["git", "--no-optional-locks", *arguments], cwd=REPO, env=normal_env, text=True
+-    ).strip()
++    command = ["git", "--no-optional-locks", *arguments]
++    process = subprocess.Popen(command, cwd=REPO, env=normal_env, stdout=subprocess.PIPE)
++    try:
++        stdout, _ = process.communicate()
++    except BaseException:
++        try:
++            process.communicate()
++        finally:
++            process.wait()
++        raise
++    process.wait()
++    if process.returncode:
++        raise subprocess.CalledProcessError(process.returncode, command, output=stdout)
++    return stdout.decode("utf-8").strip()
+@@ -133,1 +156,1 @@
+-            "Root29 requires the same clean 4537458b51b6 checkout")
++            "Root29 requires the same clean 8bf3881afa8c checkout")
+@@ -151,3 +174,8 @@
+-        result = subprocess.run(command, cwd=REPO, env=environment,
+-                                stdout=stream, stderr=subprocess.STDOUT, check=False)
+-    row = {"name": name, "command": command, "exit_code": result.returncode,
++        process = subprocess.Popen(command, cwd=REPO, env=environment,
++                                   stdout=stream, stderr=subprocess.STDOUT)
++        try:
++            returncode = process.wait()
++        except BaseException:
++            process.wait()
++            raise
++    row = {"name": name, "command": command, "exit_code": returncode,
+@@ -158,1 +186,1 @@
+-    return result.returncode, log
++    return returncode, log
+@@ -174,1 +202,1 @@
+-            "original helper verifier did not certify this clean 4537458b51b6 source")
++            "original helper verifier did not certify this clean 8bf3881afa8c source")
+@@ -177,0 +206,40 @@
++def verify_main_execution(main):
++    data = read_stable(MAIN / "focused-native.json")
++    require(digest_bytes(data) == BINDING["main_execution_sha256"],
++            "bound original native201 execution record differs")
++    execution = json.loads(data)
++    cases = main.get("expected_owner_cases")
++    require(isinstance(cases, list) and len(cases) == 201
++            and all(isinstance(row, list) and len(row) == 2
++                    and all(isinstance(value, str) and value for value in row) for row in cases)
++            and len({tuple(row) for row in cases}) == 201,
++            "original native201 case inventory differs")
++    packages = sorted({row[0] for row in cases})
++    require(packages == ["codex-hepta-agentd", "codex-hepta-intelligence-eval",
++                         "codex-hepta-learning-artifacts", "codex-hepta-neuron"],
++            "original native201 package set differs")
++    expression = " | ".join("(package(=" + package + ") & test(=" + name + "))"
++                            for package, name in cases)
++    expected = ["just", "test", "--locked", "--offline",
++                *(arg for package in packages for arg in ("-p", package)),
++                "--lib", "-E", expression, "--test-threads", "2", "--retries", "0",
++                "--no-tests", "fail", "--status-level", "pass",
++                "--success-output", "final", "--failure-output", "final"]
++    require(execution.get("source_sha") == execution.get("tested_sha") == SOURCE
++            and execution.get("lane") == "source-head"
++            and execution.get("working_directory") == str(REPO / "codex-rs")
++            and execution.get("before") == execution.get("after")
++            and execution.get("before", {}).get("commit") == SOURCE
++            and execution.get("before", {}).get("tree") == TREE
++            and execution.get("before", {}).get("dirty") is False
++            and execution.get("command") == expected
++            and execution.get("status") == "passed"
++            and isinstance(execution.get("finished_at"), str) and bool(execution["finished_at"])
++            and all(type(execution.get(key)) is int and execution[key] == 0
++                    for key in ("exit_code", "returncode", "command_exit_code"))
++            and execution.get("timed_out") is False
++            and execution.get("output_limit_exceeded") is False,
++            "the actual original native201 child did not pass this exact source and command")
++    return data, execution
++
++
+@@ -217,2 +285,2 @@
+-def verify_target_v2():
+-    # e5c is immutable creation provenance, not this run's tested source.
++def verify_target_v3():
++    # 453 is immutable creation provenance, not this run's tested source.
+@@ -222,1 +290,1 @@
+-            "original target-v2 creation record differs")
++            "original target-v3 creation record differs")
+@@ -233,1 +301,1 @@
+-            "original target-v2 creation record changed while reading")
++            "original target-v3 creation record changed while reading")
+@@ -235,1 +303,1 @@
+-            "original target-v2 creation record hash differs")
++            "original target-v3 creation record hash differs")
+@@ -239,2 +307,2 @@
+-            == "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4"
+-            and created["source_tree"] == "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76"
++            == "4537458b51b6ca936264aecea7cfe384b941d0d1"
++            and created["source_tree"] == "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+@@ -247,1 +315,1 @@
+-            "original target-v2 creation provenance differs")
++            "original target-v3 creation provenance differs")
+@@ -256,1 +324,1 @@
+-                "original target-v2 directory was replaced")
++                "original target-v3 directory was replaced")
+@@ -271,1 +339,1 @@
+-assert p.parent == Path("/run") and p.name.startswith("hepta-learn-root29-4537458b51b6-")
++assert p.parent == Path("/run") and p.name.startswith("hepta-learn-root29-8bf3881afa8c-")
+@@ -275,1 +343,8 @@
+-subprocess.run(["/usr/bin/mount", "--bind", str(p / "source"), str(p / "bind")], check=True)
++process = subprocess.Popen(["/usr/bin/mount", "--bind", str(p / "source"), str(p / "bind")])
++try:
++    code = process.wait()
++except BaseException:
++    process.wait()
++    raise
++if code:
++    raise subprocess.CalledProcessError(code, process.args)
+@@ -305,1 +380,8 @@
+-subprocess.run(["/usr/bin/umount", "--", str(p / "bind")], check=True)
++process = subprocess.Popen(["/usr/bin/umount", "--", str(p / "bind")])
++try:
++    code = process.wait()
++except BaseException:
++    process.wait()
++    raise
++if code:
++    raise subprocess.CalledProcessError(code, process.args)
+@@ -313,1 +395,1 @@
+-    raise SystemExit("usage: root29-4537458b51b6-runner.py vN (new, explicitly selected attempt)")
++    raise SystemExit("usage: root29-8bf3881afa8c-runner.py vN (new, explicitly selected attempt)")
+@@ -318,2 +400,2 @@
+-out = EVIDENCE / ("root-29-4537458b51b6-isolated-" + attempt)
+-root_dir = Path("/run") / ("hepta-learn-root29-4537458b51b6-" + attempt)
++out = EVIDENCE / ("root-29-8bf3881afa8c-isolated-" + attempt)
++root_dir = Path("/run") / ("hepta-learn-root29-8bf3881afa8c-" + attempt)
+@@ -332,1 +414,1 @@
+-require(file_hash(NATIVE_DRIVER) == NATIVE_DRIVER_SHA256, "frozen original 4537458b51b6 native driver differs")
++require(file_hash(NATIVE_DRIVER) == NATIVE_DRIVER_SHA256, "frozen original 8bf3881afa8c native driver differs")
+@@ -333,0 +416,2 @@
++require(digest_bytes(main_bytes) == BINDING["main_native_sha256"],
++        "bound original native201 main receipt differs")
+@@ -350,0 +435,1 @@
++main_execution_bytes, main_execution = verify_main_execution(main)
+@@ -354,1 +439,1 @@
+-target_creation = verify_target_v2()
++target_creation = verify_target_v3()
+@@ -359,1 +444,1 @@
+-    "schema": "hepta.learn.root29-4537458b51b6-original-ci-append.v1",
++    "schema": "hepta.learn.root29-8bf3881afa8c-original-ci-append.v1",
+@@ -364,0 +450,3 @@
++    "main_original_execution_record": {"path": str(MAIN / "focused-native.json"),
++                                       "sha256": digest_bytes(main_execution_bytes),
++                                       "status": main_execution["status"]},
+@@ -410,1 +498,1 @@
+-        "resource_values_and_path_prefix": "fixed original 4537458b51b6 native-runner.py dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
++        "resource_values_and_path_prefix": "actual frozen 8bf native-runner.py 7b38fb189736532092d88f59da6a71dd63498ae3; original resources unchanged",
+@@ -415,1 +503,1 @@
+-        "helper": "same-4537458b51b6 original helper --verify-only and exact env.json",
++        "helper": "same-8bf3881afa8c original helper --verify-only and exact env.json",
+@@ -445,1 +533,2 @@
+-    require(identity() == initial and read_stable(MAIN / "result.json") == main_bytes,
++    require(identity() == initial and read_stable(MAIN / "result.json") == main_bytes
++            and read_stable(MAIN / "focused-native.json") == main_execution_bytes,
+@@ -551,0 +641,1 @@
++        and read_stable(MAIN / "focused-native.json") == main_execution_bytes
+@@ -578,1 +668,1 @@
+-    report["source_identity_claim"] = "same fixed 4537458b51b6 fixture mechanisms only; no ordinary daemon cold-start or adoption claim"
++    report["source_identity_claim"] = "same fixed 8bf3881afa8c fixture mechanisms only; no ordinary daemon cold-start or adoption claim"

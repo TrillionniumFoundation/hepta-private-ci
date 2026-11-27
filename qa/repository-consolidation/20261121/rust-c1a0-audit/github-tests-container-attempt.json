@@ -1,0 +1,26 @@
+{
+  "source": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+  "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    ".github/scripts",
+    "-p",
+    "test_*.py"
+  ],
+  "exit_code": 1,
+  "seconds": 5.494563579559326,
+  "log": "b4-current.log",
+  "log_bytes": 12143,
+  "log_sha256": "50631bd9e7e8c4a16f6adf5898aa60283208efbb6dfabdac1d60dbac8ae04d87",
+  "source_after": "",
+  "suite": "top-level .github/scripts (not B4)",
+  "tests_run": 314,
+  "errors": 6,
+  "errors_explained_by": "Cargo executable absent in the scratch execution environment",
+  "tests_skipped": 0,
+  "not_b4": true
+}

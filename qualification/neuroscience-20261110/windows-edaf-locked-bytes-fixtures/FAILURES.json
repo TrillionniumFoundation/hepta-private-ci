@@ -1,0 +1,92 @@
+{
+  "schema": "neuro4.windows-original-os33-index.v1",
+  "job_id": 131310622783,
+  "source_sha": "6344842074357063c00dce9f2b67d789b2988c6f",
+  "source_kind": "Original Bazel PR merge checkout, not source-head execution",
+  "original_log": {
+    "bytes": 859515,
+    "sha256": "76bc57cb5bbfeb8a57c74629779a10456cebf3b4e11dbabc6e90b20bd3a35d6d"
+  },
+  "excerpt_note": "Exact first failing stdout blocks extracted from original decoded job log; timestamp/newline bytes preserved. Method-to-change explanation is static source analysis, not a rerun.",
+  "candidate_methods": [
+    {
+      "name": "cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes",
+      "path": "codex-rs/hepta-neuron/src/cell_feature_current_journal_tests.rs",
+      "change": "terminal read after last recovered owner use",
+      "original_first_failure_excerpt": "2026-11-12T16:19:50.8683237Z ---- cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes stdout ----\r\n2026-11-12T16:19:50.8684059Z \r\n2026-11-12T16:19:50.8685054Z thread 'cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes' (4212) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:\r\n2026-11-12T16:19:50.8686915Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n2026-11-12T16:19:50.8688229Z \r\n",
+      "original_log_byte_offset": 337628,
+      "bytes": 705,
+      "sha256": "b0450ef3d2e6bce35078e0438e393e5957ae1b67ac460b0e59799f2a1968f902",
+      "blob": "3920aa9e10b6a66aec67e60f7a47ccf3ebc8e5d3"
+    },
+    {
+      "name": "cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work",
+      "path": "codex-rs/hepta-neuron/src/cell_feature_current_journal_tests.rs",
+      "change": "hot full bytes through the same lock-owning File",
+      "original_first_failure_excerpt": "2026-11-12T16:19:50.8689133Z ---- cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work stdout ----\r\n2026-11-12T16:19:50.8689821Z \r\n2026-11-12T16:19:50.8690658Z thread 'cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work' (3176) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:\r\n2026-11-12T16:19:50.8692390Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n2026-11-12T16:19:50.8693423Z \r\n2026-11-12T16:19:50.8693427Z ",
+      "original_log_byte_offset": 338333,
+      "bytes": 698,
+      "sha256": "0c45ef4a5a317f7e90395a06d580a39f7e2c3a7b151680ec0d7f6707267ca5cc",
+      "blob": "30ad0af9b6496e405a82a31e7ebbff1577f6c728"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs",
+      "change": "terminal read after original Serving.finish; original no-write host shutdown",
+      "original_first_failure_excerpt": "2026-11-12T16:20:13.4655960Z ---- neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent stdout ----\r\n2026-11-12T16:20:13.4656630Z Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n2026-11-12T16:20:13.4657014Z \r\n",
+      "original_log_byte_offset": 688769,
+      "bytes": 371,
+      "sha256": "3d7ce844f066421708e6aab5936f9ec43bb33ed729f7790cf86de970faf23413",
+      "blob": "a24d06b43c06fc74839b2e71f60fc73e7f93eb5a"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_tests.rs",
+      "change": "hot ledger/witness bytes through existing qualification API; generation bytes at existing cold seams",
+      "original_first_failure_excerpt": "2026-11-12T16:20:13.4659946Z ---- neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome stdout ----\r\n2026-11-12T16:20:13.4660300Z \r\n2026-11-12T16:20:13.4660777Z thread 'neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome' (3192) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\n2026-11-12T16:20:13.4662118Z generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n2026-11-12T16:20:13.4662845Z \r\n",
+      "original_log_byte_offset": 689807,
+      "bytes": 657,
+      "sha256": "8a3a3a565aae5300e986f55c462c9f88c4106145a49f94da6a8f85997295a9cd",
+      "blob": "76d76002a77ac882e748c444a7a854fdf7e87cee"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_tests.rs",
+      "change": "hot ledger/witness bytes through existing qualification API",
+      "original_first_failure_excerpt": "2026-11-12T16:20:13.4663289Z ---- neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation stdout ----\r\n2026-11-12T16:20:13.4663910Z \r\n2026-11-12T16:20:13.4664726Z thread 'neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation' (8480) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\n2026-11-12T16:20:13.4670240Z generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n2026-11-12T16:20:13.4671063Z \r\n",
+      "original_log_byte_offset": 690464,
+      "bytes": 657,
+      "sha256": "47c059b7d02fd4301e1e73b4937901e79f6bae86ba247682275b88b3c7286e20",
+      "blob": "cdf6d450a04cd80e437a0e63469b464a70482a9b"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_credit_tests.rs",
+      "change": "hot ledger/witness bytes through existing qualification API; generation bytes at existing cold seams",
+      "original_first_failure_excerpt": "2026-11-12T16:20:13.4652889Z ---- neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again stdout ----\r\n2026-11-12T16:20:13.4653265Z \r\n2026-11-12T16:20:13.4653963Z thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again' (10216) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\n2026-11-12T16:20:13.4655123Z generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n2026-11-12T16:20:13.4655666Z \r\n",
+      "original_log_byte_offset": 688093,
+      "bytes": 676,
+      "sha256": "b965fe0eb6fef2cd9bc7fdb14a4bcb70293f6b0204c8bbeeacd77e5dbd26d09f",
+      "blob": "15da06156f4c16986737773191ee8f8120282638"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_credit_tests.rs",
+      "change": "hot ledger/witness bytes through existing qualification API",
+      "original_first_failure_excerpt": "2026-11-12T16:20:13.4657304Z ---- neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends stdout ----\r\n2026-11-12T16:20:13.4657670Z \r\n2026-11-12T16:20:13.4658177Z thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends' (8352) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:\r\n2026-11-12T16:20:13.4659155Z generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n2026-11-12T16:20:13.4659662Z \r\n",
+      "original_log_byte_offset": 689140,
+      "bytes": 667,
+      "sha256": "e9db55fa7aadbd205991b1b8ce91b28b1681d5df4bb4384b74bc448969752a43",
+      "blob": "4aaf6ff021172c40240c03cd13fc508986d326e1"
+    }
+  ],
+  "remaining_hot_generation_methods": [
+    "neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model",
+    "neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation",
+    "neuron_generation_runtime::tests::control::stale_generation_changed_content_and_oversized_input_do_not_mutate_owner",
+    "neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback",
+    "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+    "neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending",
+    "neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen"
+  ]
+}

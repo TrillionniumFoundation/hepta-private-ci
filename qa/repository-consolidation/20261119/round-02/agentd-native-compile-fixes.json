@@ -1,0 +1,14 @@
+{
+  "reason": "Native Rust1.96 build of clean preview1e681e550 exposed duplicated module declaration and missing explicit evidence-encoding error variant. No authority checks, source bodies or deadlines changed.",
+  "native_job": "1a1f3f4bae9-ffbe-e8e",
+  "files": {
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs": {
+      "before_sha256": "19b61f84a468c2f25b5bc21f6fdb866a4744bd78d2bf1f5979a5a35aa6987988",
+      "after_sha256": "645a351d4a0219a586f8e05a94796b2eb111c94d56a0dd6dd7ac2c17edf715a9"
+    },
+    "codex-rs/hepta-context-compiler/src/v2.rs": {
+      "before_sha256": "368cf40e693e47602a625fe7509b90292d4fa055ea64df6d89d7655d4aec97df",
+      "after_sha256": "18898707f5b49ff91dc56930092886b99ffd4aa0d6bc511a16ae6ae9028145fd"
+    }
+  }
+}

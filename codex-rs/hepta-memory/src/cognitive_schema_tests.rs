@@ -1,13 +1,18 @@
 //! Independently derive the schema from compiled migrations, never owner bytes.
-use sqlx::sqlite::SqlitePoolOptions;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 
 use super::*;
 
 #[tokio::test]
 async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected() {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+    // Use the central SQLite shim and the same durable evidence profile as
+    // the owner. Keep this private fixture independent of owner database bytes.
+    let temp = tempfile::tempdir().expect("schema fixture directory");
+    let home = AbsolutePathBuf::try_from(temp.path().canonicalize().expect("fixture path"))
+        .expect("absolute fixture path");
+    let pool = SqliteConfig::new_for_testing(home)
+        .open_durable_evidence_pool(&temp.path().join("schema-oracle.sqlite"))
         .await
         .expect("reference SQLite");
     MIGRATOR.run(&pool).await.expect("compiled migration chain");
@@ -42,4 +47,70 @@ async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejecte
         matches!(verify_store(&pool, &owner).await, Err(CognitiveStoreError::Corrupt(message)) if message.contains("schema definition oracle mismatch"))
     );
     pool.close().await;
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn first_generation_wal_uses_private_file_permissions() -> std::io::Result<()> {
+    use std::os::unix::fs::MetadataExt;
+
+    let directory = canonical_database_test_directory()?;
+    let path = directory.path().join(COGNITIVE_DB_FILENAME);
+    create_private_initial_database(&path).expect("atomically create private initial database");
+    let sqlite_home =
+        AbsolutePathBuf::try_from(directory.path().to_path_buf()).expect("absolute SQLite home");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(&path)
+        .await
+        .expect("open the real WAL/FULL SQLite pool");
+    sqlx::query("CREATE TABLE private_wal_probe (value INTEGER NOT NULL)")
+        .execute(&pool)
+        .await
+        .expect("create test table through WAL");
+    sqlx::query("INSERT INTO private_wal_probe (value) VALUES (1)")
+        .execute(&pool)
+        .await
+        .expect("append through WAL");
+
+    let mut wal_name = path.as_os_str().to_os_string();
+    wal_name.push("-wal");
+    let wal = PathBuf::from(wal_name);
+    assert!(wal.exists(), "a live WAL must exist during the test");
+    for file in [&path, &wal] {
+        let metadata = fs::symlink_metadata(file).expect("private SQLite file");
+        assert!(metadata.file_type().is_file(), "no symlink or special file");
+        assert_eq!(metadata.nlink(), 1, "no hard-linked SQLite file");
+        assert_eq!(metadata.mode() & 0o7777, 0o600, "private SQLite mode");
+    }
+    let mut shm_name = path.as_os_str().to_os_string();
+    shm_name.push("-shm");
+    let shm = PathBuf::from(shm_name);
+    if shm.exists() {
+        let metadata = fs::symlink_metadata(&shm).expect("shared-memory sidecar");
+        assert_eq!(metadata.mode() & 0o7777, 0o600, "private SHM mode");
+        assert_eq!(metadata.nlink(), 1, "no hard-linked SHM");
+    }
+    pool.close().await;
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn private_initialization_never_replaces_existing_database() -> std::io::Result<()> {
+    let directory = canonical_database_test_directory()?;
+    let path = directory.path().join(COGNITIVE_DB_FILENAME);
+    fs::write(&path, b"retained-existing-bytes").expect("existing data");
+    use std::os::unix::fs::PermissionsExt;
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o600))
+        .expect("prepare valid existing database");
+    let before = fs::metadata(&path).expect("original metadata");
+    create_private_initial_database(&path).expect("preserve existing database");
+    let after = fs::metadata(&path).expect("retained metadata");
+    use std::os::unix::fs::MetadataExt;
+    assert_eq!(before.ino(), after.ino(), "existing inode is not replaced");
+    assert_eq!(
+        fs::read(&path).expect("original contents"),
+        b"retained-existing-bytes"
+    );
+    Ok(())
 }

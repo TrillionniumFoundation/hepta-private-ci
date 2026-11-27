@@ -1,0 +1,18 @@
+test_binary_archive_exemption_does_not_cover_neighboring_paths (test_codespell_custody.CodespellCustodyTests.test_binary_archive_exemption_does_not_cover_neighboring_paths) ... ok
+test_binary_archive_shard_requires_matching_unchanged_bytes (test_codespell_custody.CodespellCustodyTests.test_binary_archive_shard_requires_matching_unchanged_bytes) ... ok
+test_changed_original_is_rejected (test_codespell_custody.CodespellCustodyTests.test_changed_original_is_rejected) ... ok
+test_consolidation_binary_names_do_not_exempt_sources_or_neighbor_shards (test_codespell_custody.CodespellCustodyTests.test_consolidation_binary_names_do_not_exempt_sources_or_neighbor_shards) ... ok
+test_directory_and_symbolic_link_are_rejected (test_codespell_custody.CodespellCustodyTests.test_directory_and_symbolic_link_are_rejected) ... ok
+test_duplicate_manifest_keys_are_rejected (test_codespell_custody.CodespellCustodyTests.test_duplicate_manifest_keys_are_rejected) ... ok
+test_failed_verification_does_not_emit_skip_output (test_codespell_custody.CodespellCustodyTests.test_failed_verification_does_not_emit_skip_output) ... Codespell custody validation failed: drift
+ok
+test_invalid_manifest_and_digest_are_rejected (test_codespell_custody.CodespellCustodyTests.test_invalid_manifest_and_digest_are_rejected) ... ok
+test_missing_original_is_rejected (test_codespell_custody.CodespellCustodyTests.test_missing_original_is_rejected) ... ok
+test_only_exact_named_original_is_excluded (test_codespell_custody.CodespellCustodyTests.test_only_exact_named_original_is_excluded) ... ok
+test_path_patterns_and_escape_forms_are_rejected (test_codespell_custody.CodespellCustodyTests.test_path_patterns_and_escape_forms_are_rejected) ... ok
+test_read_is_bounded_and_replacement_is_rejected (test_codespell_custody.CodespellCustodyTests.test_read_is_bounded_and_replacement_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.012s
+
+OK

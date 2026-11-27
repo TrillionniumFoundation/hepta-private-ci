@@ -349,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+    "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -424,7 +424,7 @@
   ],
   "productCallers": [
     {
-      "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_submission.rs",
       "nativeSymbol": "submit",
       "state": "authenticated_configured_objective_host"
     }
@@ -432,7 +432,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "object": "84a4b156fa04f27665319300e241732697a0ea01"
+      "object": "a6907b2dfe891d12ed884d470edb077a5cba6f7a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_submission.rs",
+      "object": "2324beba583cc06619da79cbd8d54f418de8992a"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
@@ -440,11 +444,11 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
-      "object": "cfbb34705a6dee9a2b0c5afda76592109c83f86b"
+      "object": "6d9a23cc5bdc2e2c3091d0108f5caf5c780ac4e7"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "5172fd19fe60ac5330c1176b98154ede13b3a570"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",
@@ -498,5 +502,15 @@
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
       "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-objective"
   ]
 }

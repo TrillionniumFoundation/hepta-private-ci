@@ -1,0 +1,756 @@
+{
+  "additional_source_paths": [
+    "qualification/hcsn_regenerative/resource_migration_v4/__init__.py",
+    "qualification/hcsn_regenerative/resource_migration_v4/freeze_v4.py",
+    "qualification/hcsn_regenerative/resource_migration_v4/rawdiff_guard.py",
+    "qualification/hcsn_regenerative/resource_migration_v4/RESOURCE_AMENDMENT.json",
+    "qualification/hcsn_regenerative/resource_migration_v4/test_resource_migration.py",
+    "qualification/hcsn_regenerative/colab_execution_v4/__init__.py",
+    "qualification/hcsn_regenerative/colab_execution_v4/native_owner.py",
+    "qualification/hcsn_regenerative/colab_execution_v4/cloud_batch.py",
+    "qualification/hcsn_regenerative/colab_execution_v4/finalize_mechanism.py",
+    "qualification/hcsn_regenerative/colab_execution_v4/capsule_contract.py",
+    "qualification/hcsn_regenerative/colab_execution_v4/test_colab_execution.py",
+    "qualification/hcsn_regenerative/colab_qualification_v4/__init__.py",
+    "qualification/hcsn_regenerative/colab_qualification_v4/asset_transport.py",
+    "qualification/hcsn_regenerative/colab_qualification_v4/qualification_runner.py",
+    "qualification/hcsn_regenerative/colab_qualification_v4/build_qualification.py",
+    "qualification/hcsn_regenerative/colab_qualification_v4/test_asset_transport.py",
+    "qualification/hcsn_regenerative/colab_execution_v4/fixed_kernel_provider.py",
+    "qualification/hcsn_regenerative/colab_execution_v4/test_fixed_kernel_provider.py"
+  ],
+  "authority": "Explicit user instruction to use Hepta runtime Colab/Kaggle compute and native GitHub channel, continuing outstanding engineering and frozen experiments",
+  "budget": {
+    "episode_seeds_are_training_repeats": false,
+    "fit_timeout_seconds": 480,
+    "fits_per_group": 20,
+    "groups": 8,
+    "holm_alpha": 0.05,
+    "independent_training_seeds_per_task_arm": 4,
+    "maximum_selected_fits": 80,
+    "minimum_remaining_before_operation_seconds": 720,
+    "minimum_useful_absolute_mse_reduction": 0.01,
+    "ordered_fit_roster_sha256": "fcce78273b9eaab029840546bf41da3a568580b7a777c06b978986b42884da5b",
+    "provider_timeout_seconds": 3000,
+    "registered_optimizer_updates": 64000,
+    "registered_training_attempts": 160,
+    "selected_fit_episode_evaluations": 160,
+    "selected_test_examples": 163840,
+    "statistical_family_size": 20,
+    "training_examples": 4096000,
+    "validation_examples": 81920
+  },
+  "cost_policy": {
+    "fresh_qualification_cost": "Record all attempts/failed jobs/native transport/CPU/GPU intervals separately; no automatic retry credit",
+    "full_physical_energy_joules": null,
+    "nested_durations_not_added": true,
+    "original_construction_cost": "Shared historical bundle asset; reference original metadata once,do not fabricate recomputation or multiply by arm",
+    "physical_energy_unknown_blocks_expansion": true,
+    "retain_all_prior_failed_costs": true
+  },
+  "expansion_admission": "HOLD",
+  "external_retention_status": "unmeasured",
+  "fixed_grid": {
+    "active_cells": 64,
+    "fresh_failure_policy": "HOLD; do not change chosen state count or train before passing fixed S81 numerical gates",
+    "parameters": 2890,
+    "phase_cells": 16,
+    "state_count": 81
+  },
+  "fresh_qualification": {
+    "bundle_metadata_zip_member": "inputs/prior-qualified-bundle/operators-s81.json",
+    "bundle_zip_member": "inputs/prior-qualified-bundle/operators-s81.npz",
+    "commands": [
+      {
+        "args": [
+          "-m",
+          "qualification.hcsn_regenerative.colab_qualification_v4.qualification_runner",
+          "--capability",
+          "--request-id",
+          "hcsn-s81-colab-v4-qualification-20261107-1631115f163f",
+          "--output",
+          "evidence/capability.json"
+        ],
+        "name": "capability",
+        "timeout_seconds": 60
+      },
+      {
+        "args": [
+          "-m",
+          "unittest",
+          "qualification.hcsn_regenerative.tests.test_distribution",
+          "-v"
+        ],
+        "name": "fv-unit",
+        "timeout_seconds": 120,
+        "unit_methods_expected": 8
+      },
+      {
+        "accepted_statuses": [
+          "pass"
+        ],
+        "args": [
+          "-m",
+          "qualification.hcsn_regenerative.run_distribution_audit",
+          "--device",
+          "cpu",
+          "--output",
+          "evidence/fv-audit-cpu.json"
+        ],
+        "check_key": "pass_",
+        "checks_expected": 12,
+        "name": "fv-audit-cpu",
+        "result_json": "evidence/fv-audit-cpu.json",
+        "timeout_seconds": 300
+      },
+      {
+        "accepted_statuses": [
+          "pass"
+        ],
+        "args": [
+          "-m",
+          "qualification.hcsn_regenerative.run_distribution_audit",
+          "--device",
+          "cuda",
+          "--output",
+          "evidence/fv-audit-cuda.json"
+        ],
+        "check_key": "pass_",
+        "checks_expected": 12,
+        "name": "fv-audit-cuda",
+        "result_json": "evidence/fv-audit-cuda.json",
+        "timeout_seconds": 300
+      },
+      {
+        "accepted_statuses": [
+          "BOUNDED_FP64_CONSTRUCTION_CHECKS_PASS"
+        ],
+        "args": [
+          "-m",
+          "qualification.hcsn_regenerative.run_fixed_renewal_audit",
+          "--output",
+          "evidence/fixed-renewal-audit-s81.json"
+        ],
+        "name": "fixed-renewal-audit",
+        "result_json": "evidence/fixed-renewal-audit-s81.json",
+        "timeout_seconds": 120
+      },
+      {
+        "accepted_statuses": [
+          "complete"
+        ],
+        "args": [
+          "-m",
+          "resolution_scope.run_resolution_probe",
+          "--device",
+          "cpu",
+          "--output",
+          "evidence/resolution-s81-fixed.json"
+        ],
+        "name": "resolution-s81-fixed",
+        "result_json": "evidence/resolution-s81-fixed.json",
+        "timeout_seconds": 300
+      },
+      {
+        "args": [
+          "-m",
+          "unittest",
+          "qualification.hcsn_regenerative.tests.test_mechanism_training",
+          "-v"
+        ],
+        "name": "mechanism-unit",
+        "timeout_seconds": 120,
+        "unit_methods_expected": 13
+      },
+      {
+        "accepted_statuses": [
+          "pass"
+        ],
+        "args": [
+          "-m",
+          "qualification.hcsn_regenerative.mechanism_qualify",
+          "--bundle",
+          "inputs/prior-qualified-bundle/operators-s81.npz",
+          "--device",
+          "cpu",
+          "--output",
+          "evidence/mechanism-graph-cpu.json"
+        ],
+        "check_key": "passed",
+        "checks_expected": 47,
+        "name": "mechanism-graph-cpu",
+        "result_json": "evidence/mechanism-graph-cpu.json",
+        "timeout_seconds": 120
+      },
+      {
+        "accepted_statuses": [
+          "pass"
+        ],
+        "args": [
+          "-m",
+          "qualification.hcsn_regenerative.mechanism_qualify",
+          "--bundle",
+          "inputs/prior-qualified-bundle/operators-s81.npz",
+          "--device",
+          "cuda",
+          "--output",
+          "evidence/mechanism-graph-cuda.json"
+        ],
+        "check_key": "passed",
+        "checks_expected": 47,
+        "name": "mechanism-graph-cuda",
+        "result_json": "evidence/mechanism-graph-cuda.json",
+        "timeout_seconds": 120
+      },
+      {
+        "accepted_statuses": [
+          "pass"
+        ],
+        "args": [
+          "-m",
+          "qualification.hcsn_regenerative.mechanism_sequence_probe",
+          "--bundle",
+          "inputs/prior-qualified-bundle/operators-s81.npz",
+          "--device",
+          "cpu",
+          "--output",
+          "evidence/sequence-cpu"
+        ],
+        "check_key": "passed",
+        "checks_expected": 42,
+        "name": "mechanism-sequence-cpu",
+        "result_json": "evidence/sequence-cpu/receipt.json",
+        "timeout_seconds": 300
+      },
+      {
+        "accepted_statuses": [
+          "pass"
+        ],
+        "args": [
+          "-m",
+          "qualification.hcsn_regenerative.mechanism_sequence_probe",
+          "--bundle",
+          "inputs/prior-qualified-bundle/operators-s81.npz",
+          "--device",
+          "cuda",
+          "--output",
+          "evidence/sequence-cuda"
+        ],
+        "check_key": "passed",
+        "checks_expected": 42,
+        "name": "mechanism-sequence-cuda",
+        "result_json": "evidence/sequence-cuda/receipt.json",
+        "timeout_seconds": 300
+      },
+      {
+        "accepted_statuses": [
+          "completed"
+        ],
+        "args": [
+          "-m",
+          "qualification.hcsn_regenerative.mechanism_budget_probe",
+          "--bundle",
+          "inputs/prior-qualified-bundle/operators-s81.npz",
+          "--device",
+          "cuda",
+          "--output",
+          "evidence/budget-cuda"
+        ],
+        "name": "mechanism-nontask-budget-cuda",
+        "result_json": "evidence/budget-cuda/result.json",
+        "timeout_seconds": 540
+      }
+    ],
+    "execution_schema": "hcsn-s81-colab-v4-qualification-execution-v1",
+    "formal_task_dataset_reads": 0,
+    "formal_training_fits": 0,
+    "fresh_process_recovery": "Original mechanism 64-step sequence probes on CPU/CUDA,actual new runtime,next full episode optimizer recovery3 updates",
+    "fresh_slots": {
+      "budget": "evidence/budget-cuda/result.json",
+      "fixed_renewal": "evidence/fixed-renewal-audit-s81.json",
+      "graph_cpu": "evidence/mechanism-graph-cpu.json",
+      "graph_cuda": "evidence/mechanism-graph-cuda.json",
+      "resolution": "evidence/resolution-s81-fixed.json",
+      "sequence_cpu": "evidence/sequence-cpu/receipt.json",
+      "sequence_cuda": "evidence/sequence-cuda/receipt.json",
+      "unit": "evidence/mechanism-unit-result.json"
+    },
+    "legacy_fv_recovery_14x2": "Historical separate evidence only; not called fresh Colab qualification",
+    "nonmathematical_entrypoint_change": "Versioned capability module/request identity only; no compute or threshold change.",
+    "only_command_argv_difference": "Relative to V3, only capability module/request identity changes from V3 to V4. Its4096 FP32 CUDA identity/synchronize gate and60s budget are unchanged; remaining11 complete command records and all12 timeout budgets remain exact.",
+    "original_capability_args": [
+      "-m",
+      "qualification.hcsn_regenerative.colab_qualification_v3.qualification_runner",
+      "--capability",
+      "--request-id",
+      "hcsn-s81-colab-v3-qualification-20261107-1631115f163f",
+      "--output",
+      "evidence/capability.json"
+    ],
+    "physical_execution": "Fresh actual Colab T4 runtime; unchanged35 qualification source map plus5 V4 controls; all60 parent source bytes separately present and checked. Public plan78 pins are distinct from the40 qualification source/control map.",
+    "requested_artifacts": [
+      "asset-materialization.json",
+      "execution.json",
+      "outer-timing.json",
+      "source-manifest.json",
+      "suite-artifacts.zip"
+    ],
+    "resolution": "Original full12row matrix with fixed thresholds and four reference crosschecks;retain coarse failures,require fixed S81 eligibility",
+    "slots": [
+      "unit",
+      "graph_cpu",
+      "graph_cuda",
+      "sequence_cpu",
+      "sequence_cuda",
+      "resolution",
+      "fixed_renewal",
+      "budget"
+    ],
+    "stage_timeout_sum_seconds": 2700,
+    "stages": [
+      "capability",
+      "fv-unit",
+      "fv-audit-cpu",
+      "fv-audit-cuda",
+      "fixed-renewal-audit",
+      "resolution-s81-fixed",
+      "mechanism-unit",
+      "mechanism-graph-cpu",
+      "mechanism-graph-cuda",
+      "mechanism-sequence-cpu",
+      "mechanism-sequence-cuda",
+      "mechanism-nontask-budget-cuda"
+    ]
+  },
+  "hepta_ndu_completion_credit": 0,
+  "implementation_readiness": "Prospective controls sealed before allocation; no actual V4 qualification, frozen plan, publication or formal fit is claimed",
+  "input_provenance": {
+    "already_held_zip_bytes": 585492,
+    "already_held_zip_sha256": "9ec88b996749732155d4c31e7830b297a668fbf648a3f849aff6aa8cab334661",
+    "bundle_sha256": "a1d7168201def0ec0503ab753fe431fc66de12adde22be5c984da0a3e5eaef8a",
+    "metadata_sha256": "bbfb5372e8642f05d19bd54bfba69ba7404d8d90b057cc6380eb08bd40505f64",
+    "new_private_producer_required": true,
+    "new_qualification_input_sources": [],
+    "use": "Only reuse exact authorized NPZ/metadata bytes; upload into exclusive task-owned Colab asset namespace; all historical reports have zero fresh qualification credit",
+    "v1_qualification_credit": 0
+  },
+  "input_transport": {
+    "archive_bytes_max": 134217728,
+    "chunk_bytes_max": 65536,
+    "code_bytes_max": 262144,
+    "directory_policy": "Exclusive task namespace and durable owner; original SDK only",
+    "integrity": "Full archive byte count/SHA and every chunk/member before importing scientific sources",
+    "put_policy": "Persist intent before single PUT; unknown result permits only readback of identical path; no retry or foreign overwrite"
+  },
+  "original42_source_pins": {
+    "qualification/hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "qualification/hcsn_regenerative/DISTRIBUTION_PROTOCOL.md": "f4d7e5bb3cd9ed713ba640c997cfa401a2249002801d4e80ef61ecf8924d8492",
+    "qualification/hcsn_regenerative/FIXED_RENEWAL.md": "b80c5f3abaa799f6586f172f8493cf58943e250180a4737fac0aa343547c9799",
+    "qualification/hcsn_regenerative/MECHANISM_EXECUTION_AMENDMENT_20261107.md": "0f8f8d8218a3c66329e828045b7a64389744128cb0fad5617755c5a109f4022f",
+    "qualification/hcsn_regenerative/MECHANISM_PILOT_PROTOCOL.md": "d3cfc8198cd915e238c3ebd0f06247959f43e6f9862f36c8bb26050728659694",
+    "qualification/hcsn_regenerative/MECHANISM_RESOLUTION_RESULT.json": "a5a286d46f15964c52413ebe594936fba6267c67de1fe5beafe526ebd06c0588",
+    "qualification/hcsn_regenerative/MECHANISM_RESOLUTION_RESULT.md": "2668b634fab73a63d5664081c7a1dd1fb0453f0b71168386823d06abe72589df",
+    "qualification/hcsn_regenerative/MECHANISM_SEQUENCE_PROTOCOL.md": "b29d7342bd421625baca6bd8109e7b43ed95f001767a1c774457ae40ef28a2e7",
+    "qualification/hcsn_regenerative/__init__.py": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319",
+    "qualification/hcsn_regenerative/distribution.py": "7cdc0c45ec2d22334a5cc57e5b583ccf0fcc1ae04a96b8b3536c88104d9636af",
+    "qualification/hcsn_regenerative/distribution_kernel.py": "97be7116e7b7d4fb86529f13197b684e5b39d1bead394c1f561858caefae3ac4",
+    "qualification/hcsn_regenerative/distribution_manifest.py": "3faffcc5e1b42c0285979100c6434036dd0ab48e52ee4a071a3203835a3d3cc1",
+    "qualification/hcsn_regenerative/distribution_operator.py": "7593edd1f70eab0d21551a2e61ac7ebcce69655f5bf2b7bd2d6f35c3767295b4",
+    "qualification/hcsn_regenerative/fixed_renewal.py": "b6f0a3da026797886fe38c78cff44a063cf27de85e5088f0b8b4cfc8ee2b38d3",
+    "qualification/hcsn_regenerative/freeze_mechanism_plan.py": "53b35c2dfe178f0ecc5b6f6616ceb9440638bf95b1bc5259b40d269b5c9d591a",
+    "qualification/hcsn_regenerative/mechanism_analysis.py": "92a9b6e26e2de812d159a995dbd5170a67d21fe71069720770c5a544c015ca42",
+    "qualification/hcsn_regenerative/mechanism_budget_probe.py": "40cd0730e924af42c81ee15c603a8fa83a0206fd6d331896e8cecc111090511c",
+    "qualification/hcsn_regenerative/mechanism_contract.py": "790b253974f482514e9cb95c4a5291616cbcb52e84f05934d36fe71859171f39",
+    "qualification/hcsn_regenerative/mechanism_model.py": "16465538c2d91932a4414eaca3165e670f378947da744250487326ee7ae2922f",
+    "qualification/hcsn_regenerative/mechanism_operators.py": "dff77f43076868ce54263a52aa7dc511e3bb4095cc8cefb1ab803527f1884ea2",
+    "qualification/hcsn_regenerative/mechanism_qualify.py": "6a6e8ca3d5fac968e0380890e45740c76353b27f929b04c3a59d25c1cb9e022b",
+    "qualification/hcsn_regenerative/mechanism_sequence_probe.py": "4be9c431bf1f75041cce38e16ede6b50b3466ee73019c966ed847ec9f5c9518f",
+    "qualification/hcsn_regenerative/mechanism_training.py": "a5c8ddf7f8f4170a1391644dd9e679c8d150f45798e6b01e657f180106416c4f",
+    "qualification/hcsn_regenerative/mechanism_worker.py": "d2f5079c59530a9eda7253f427165d853753ff17c27a8f068ded769e5c3e1a48",
+    "qualification/hcsn_regenerative/process.py": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67",
+    "qualification/hcsn_regenerative/run_distribution_audit.py": "20487cd0c8e881d870b960b119ac7579d39b20fb08c87ebf26404f406bcc5d19",
+    "qualification/hcsn_regenerative/run_distribution_recovery.py": "5c010c9c64da6ae93210d20a46790979665c2d19e7d439dd9384ba071874a345",
+    "qualification/hcsn_regenerative/run_fixed_renewal_audit.py": "da26546f297e1372067cb73922efd30658494b5c169948c1811e306a1acf091b",
+    "qualification/hcsn_regenerative/tensor.py": "1cf419e0c9af02c434d0492d4269e427a3c4783c683456c1eb514f6cb90cbc56",
+    "qualification/hcsn_regenerative/tensor_normal.py": "d1423414112361bd5fe2c218ccc297a93972a6f9b79517abef343d4fc9c918e8",
+    "qualification/hcsn_regenerative/tensor_short.py": "a49ba3a629d8198a9176e1b9ced30edd447309bdb7139a22fcc1c0084d2db07b",
+    "qualification/hcsn_regenerative/tensor_state.py": "173c8fb75d1bc669ce316d03d26d545af6cbf460539c2a6f57e778db11d65f7f",
+    "qualification/hcsn_regenerative/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification/hcsn_regenerative/tests/test_distribution.py": "375ba90b16686bfb5c090adc1c0baadbfd3ffe17f7d62f4ce64be4e48b859427",
+    "qualification/hcsn_regenerative/tests/test_fixed_renewal.py": "41fc1e6dd233f9f1bf395d3ea5b4b01f6e2c67f33e56c0b5fad9e39901bc922c",
+    "qualification/hcsn_regenerative/tests/test_mechanism_analysis.py": "952f641799c616fa0d5f67989d955f9c1d41c560392d5da0daf48ac2dfd5f670",
+    "qualification/hcsn_regenerative/tests/test_mechanism_training.py": "60eaa2856fad47ed7b68c167a02b2585d0391c26552d5b1984c7a874e4a9e55e",
+    "resolution_scope/RESOLUTION_PROTOCOL.md": "3cb878a4c4969a89384d0de8caf33002be2f38722518ff3475d77b07fa8bf527",
+    "resolution_scope/resolution_reference.py": "d40e2ad74bf16ddf473d0ab46310c7fa66154f8cac5bef76811a02f9e4a980dd",
+    "resolution_scope/run_resolution_probe.py": "07b6d8225d47196cd900a53d2c7a8a1134bd62378a5801a26d8bfc88149cf1b8"
+  },
+  "original_campaign_completion_credit": 0,
+  "original_scientific_commit": "e5dc735b316888eab617b05f5c365f905992e63b",
+  "parent_plan_sha256": "8d06c97c1bd13fce531ca7e913ab2b099edfce9388523716e7565b1295221085",
+  "parent_published_commit": "7e9520e9978e43580bd680d967a789c10c15ea73",
+  "parent_published_tree": "75d196c08b695b1596d4edfb7c3ba984ea489c70",
+  "parent_scientific_commit": "7e9520e9978e43580bd680d967a789c10c15ea73",
+  "parent_study_id": "hcsn-regenerative-mechanisms-fv-pilot-20261107-1631115f163f-v3",
+  "permitted_plan_difference": {
+    "additional_top_level": [],
+    "gpu": "Same Tesla T4 name and compute capability; actual driver-reported memory and qualified software recorded afresh, then frozen exactly for all fits",
+    "runtime_feasibility_policy": {
+      "changed_keys": [],
+      "new": "colab",
+      "old": "colab",
+      "rule": "All runtime feasibility fields are byte-value equal to the frozen V3 parent policy; only separate actual resource lineage is replaced."
+    },
+    "top_level": [
+      "study_id",
+      "frozen_at",
+      "source_pins",
+      "qualification_receipts",
+      "numerical_resolution",
+      "execution_environment",
+      "runtime_feasibility_policy",
+      "resource_migration"
+    ]
+  },
+  "predecessor_no_dispatch": {
+    "all_prior_costs_retained": true,
+    "archive": {
+      "bytes": 94026,
+      "members": 33,
+      "sha256": "20f489a089abdc04a57ebb740a13050210ee6cdb60ac0346aefe54d24797ac19"
+    },
+    "ever_claimed_required": 0,
+    "formal_fit_completion_credit": 0,
+    "full_physical_energy_joules": null,
+    "members": {
+      "actual/000001.json": {
+        "bytes": 47570,
+        "sha256": "705fffa8c2359809426750328dd8c32a4e584365242f47a4e02eac6955f00c84"
+      },
+      "actual/000002.json": {
+        "bytes": 47603,
+        "sha256": "5f3cb23e6831b195d8455719d92fef60e7511a7d87e9b141998b0b26df41c996"
+      },
+      "actual/NO_DISPATCH_EVIDENCE.json": {
+        "bytes": 11239,
+        "sha256": "a65fc3213a2d59ab65c589018cd604cf3bb490dc930d0a4566438665b440ca51"
+      },
+      "actual/asset-upload-journal.json": {
+        "bytes": 4413,
+        "sha256": "f6b8c93c511e8770bcbb2a5aa5db2fab3fd1eacfbde2f7726f4b4201b2a12a49"
+      },
+      "actual/exit.json": {
+        "bytes": 504,
+        "sha256": "9ba00853d81713f2c5dd470a4c006bd7779d1e95f9538633dbe5183b86d82f97"
+      },
+      "actual/exit.witness.json": {
+        "bytes": 207,
+        "sha256": "be4d07741fb6c0f4daa4a88f837f9b4fc3ce871afae756205beefe77d2e8530f"
+      },
+      "actual/local-readonly-probe-raw.json": {
+        "bytes": 33710,
+        "sha256": "fe1ba8c06bfc1bed0988386fd814e3d8a13d37eba7567ef7a48fbc0c0b131188"
+      },
+      "actual/local-readonly-probe-result.json": {
+        "bytes": 10078,
+        "sha256": "36b6b1d3d5c47ff84c921b2f3d9550141678c548c1f5c1658a18941e07f2c1e5"
+      },
+      "actual/local-readonly-probe-source.py": {
+        "bytes": 1306,
+        "sha256": "92e56200103031d3775ab8aaf15ff833b17c45adca752813400a395077794307"
+      },
+      "actual/native-files/child.json": {
+        "bytes": 117,
+        "sha256": "ed39ae5fb51f90ca26aa85c015998025884bc648732a7812b3900b95816b6a05"
+      },
+      "actual/native-files/native-owner-admission.json": {
+        "bytes": 4557,
+        "sha256": "559335554de06fb8e3ea3ff8594335bbb5a5550c987e0f52e4663940fc84e217"
+      },
+      "actual/native-files/owner-intent.json": {
+        "bytes": 331,
+        "sha256": "6926714ed4ef17c97dc331741f07ba1abc6342f122394e8a21b66325f9c776aa"
+      },
+      "actual/native-files/started.json": {
+        "bytes": 331,
+        "sha256": "6926714ed4ef17c97dc331741f07ba1abc6342f122394e8a21b66325f9c776aa"
+      },
+      "actual/native-start.json": {
+        "bytes": 4714,
+        "sha256": "9e5eabba985972c9cb3cda17c23237c8ba0684c2139bf69fe9bac3d84c7c30a1"
+      },
+      "actual/status.json": {
+        "bytes": 733,
+        "sha256": "664d980f693367ba77a4d9242ff1784f6f0de384f8e2a5f4e67e63dc5288e319"
+      },
+      "prepared/native-owner-launch-specification.json": {
+        "bytes": 5236,
+        "sha256": "42dfcfe6fb1f4386857ed381788d76516b6e35d970f839bd995474d96c32560d"
+      },
+      "prepared/native-owner-wrapper.py": {
+        "bytes": 3406,
+        "sha256": "4997a65d993200c885d46337484228a44843c3b0932632f604218f9d8220ae9f"
+      },
+      "prepared/owner-config-final.json": {
+        "bytes": 49750,
+        "sha256": "ed60771dda8d33524dc86f1e6db36cec42f044eb69a615526e220bf06e38b08e"
+      }
+    },
+    "monetary_cost": null,
+    "new_ledger_policy": "Independent160UNSTARTED; immutable predecessor evidence, never release or rewrite parent reservations",
+    "new_request_namespace_required": true,
+    "old_request_replay_allowed": false,
+    "old_runtime_interpretation": "Original manager cannot uniquely resolve the fixed assigned runtime; physical destruction, cause and timing are not established",
+    "required_status": "FORMAL_OWNER_HALTED_BEFORE_ASSET_PUT_OR_ENGINE_REGISTRATION",
+    "reserved_count_retained_in_parent": 20,
+    "review": {
+      "bytes": 5502,
+      "sha256": "3df19c701aab4eabdae9f846e44631b128df5137d896dfa6500b9ba9171dc242"
+    },
+    "unstarted_count_retained_in_parent": 140
+  },
+  "preserved_parent_source_pins": {
+    "qualification/hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "qualification/hcsn_regenerative/DISTRIBUTION_PROTOCOL.md": "f4d7e5bb3cd9ed713ba640c997cfa401a2249002801d4e80ef61ecf8924d8492",
+    "qualification/hcsn_regenerative/FIXED_RENEWAL.md": "b80c5f3abaa799f6586f172f8493cf58943e250180a4737fac0aa343547c9799",
+    "qualification/hcsn_regenerative/MECHANISM_EXECUTION_AMENDMENT_20261107.md": "0f8f8d8218a3c66329e828045b7a64389744128cb0fad5617755c5a109f4022f",
+    "qualification/hcsn_regenerative/MECHANISM_PILOT_PROTOCOL.md": "d3cfc8198cd915e238c3ebd0f06247959f43e6f9862f36c8bb26050728659694",
+    "qualification/hcsn_regenerative/MECHANISM_RESOLUTION_RESULT.json": "a5a286d46f15964c52413ebe594936fba6267c67de1fe5beafe526ebd06c0588",
+    "qualification/hcsn_regenerative/MECHANISM_RESOLUTION_RESULT.md": "2668b634fab73a63d5664081c7a1dd1fb0453f0b71168386823d06abe72589df",
+    "qualification/hcsn_regenerative/MECHANISM_SEQUENCE_PROTOCOL.md": "b29d7342bd421625baca6bd8109e7b43ed95f001767a1c774457ae40ef28a2e7",
+    "qualification/hcsn_regenerative/__init__.py": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319",
+    "qualification/hcsn_regenerative/colab_execution_v3/__init__.py": "54430866fc730f46799d680d4c96ceddc6675ecaec092a3eb2ff24d3db526258",
+    "qualification/hcsn_regenerative/colab_execution_v3/capsule_contract.py": "cbbe763b8b70e7c3a753a95ace99b8e6c58268a392695e3b3de0101882f8df0c",
+    "qualification/hcsn_regenerative/colab_execution_v3/cloud_batch.py": "ac2828f5b09460444cc24b8f8cc7261c0b7a0cfb047bfbde9c975d4c80fe1999",
+    "qualification/hcsn_regenerative/colab_execution_v3/finalize_mechanism.py": "4b12d7b6651ee3b8fca0dcb90ad4867031b80a11ecb5d9f8ea9e35a94db65a45",
+    "qualification/hcsn_regenerative/colab_execution_v3/fixed_kernel_provider.py": "70dd63111800d98131550810b0e3119290888d2b630c7f6d5a66ab2148508cb2",
+    "qualification/hcsn_regenerative/colab_execution_v3/native_owner.py": "6f43a1512393599c7f0ba49240457419d772d311312eb2af84689f5dd71ff518",
+    "qualification/hcsn_regenerative/colab_execution_v3/test_colab_execution.py": "0cad0221b48ccb1b857992a64276babed9ceb79157d7bac9f72b83dcbb020a06",
+    "qualification/hcsn_regenerative/colab_execution_v3/test_fixed_kernel_provider.py": "092ea4b6074e1723bfd8b9ab1c802015702b4c75f30c032eddca97852971a9a3",
+    "qualification/hcsn_regenerative/colab_qualification_v3/__init__.py": "11bf395a20454dc14ab75ebf0462f573bce5c2e33e17fd6318c8622583835e87",
+    "qualification/hcsn_regenerative/colab_qualification_v3/asset_transport.py": "35836ca2b5eaba579052111478e8db3d10ca5b52bdf3c6ac68e7eec85e98eec6",
+    "qualification/hcsn_regenerative/colab_qualification_v3/build_qualification.py": "8eb356e3be483c716c17eb87be0798ad905e653fb500c1990c446ee70ddcf0aa",
+    "qualification/hcsn_regenerative/colab_qualification_v3/qualification_runner.py": "b289641fed81a004fb446c451a72a6e750ba855c87cf3bd7d3b4d3384e0d1e9a",
+    "qualification/hcsn_regenerative/colab_qualification_v3/test_asset_transport.py": "0dda15c4c43b5bc01a626c6450551d6e998706b907b073f6dec0c634a2c507b3",
+    "qualification/hcsn_regenerative/distribution.py": "7cdc0c45ec2d22334a5cc57e5b583ccf0fcc1ae04a96b8b3536c88104d9636af",
+    "qualification/hcsn_regenerative/distribution_kernel.py": "97be7116e7b7d4fb86529f13197b684e5b39d1bead394c1f561858caefae3ac4",
+    "qualification/hcsn_regenerative/distribution_manifest.py": "3faffcc5e1b42c0285979100c6434036dd0ab48e52ee4a071a3203835a3d3cc1",
+    "qualification/hcsn_regenerative/distribution_operator.py": "7593edd1f70eab0d21551a2e61ac7ebcce69655f5bf2b7bd2d6f35c3767295b4",
+    "qualification/hcsn_regenerative/fixed_renewal.py": "b6f0a3da026797886fe38c78cff44a063cf27de85e5088f0b8b4cfc8ee2b38d3",
+    "qualification/hcsn_regenerative/freeze_mechanism_plan.py": "53b35c2dfe178f0ecc5b6f6616ceb9440638bf95b1bc5259b40d269b5c9d591a",
+    "qualification/hcsn_regenerative/mechanism_analysis.py": "92a9b6e26e2de812d159a995dbd5170a67d21fe71069720770c5a544c015ca42",
+    "qualification/hcsn_regenerative/mechanism_budget_probe.py": "40cd0730e924af42c81ee15c603a8fa83a0206fd6d331896e8cecc111090511c",
+    "qualification/hcsn_regenerative/mechanism_contract.py": "790b253974f482514e9cb95c4a5291616cbcb52e84f05934d36fe71859171f39",
+    "qualification/hcsn_regenerative/mechanism_model.py": "16465538c2d91932a4414eaca3165e670f378947da744250487326ee7ae2922f",
+    "qualification/hcsn_regenerative/mechanism_operators.py": "dff77f43076868ce54263a52aa7dc511e3bb4095cc8cefb1ab803527f1884ea2",
+    "qualification/hcsn_regenerative/mechanism_qualify.py": "6a6e8ca3d5fac968e0380890e45740c76353b27f929b04c3a59d25c1cb9e022b",
+    "qualification/hcsn_regenerative/mechanism_sequence_probe.py": "4be9c431bf1f75041cce38e16ede6b50b3466ee73019c966ed847ec9f5c9518f",
+    "qualification/hcsn_regenerative/mechanism_training.py": "a5c8ddf7f8f4170a1391644dd9e679c8d150f45798e6b01e657f180106416c4f",
+    "qualification/hcsn_regenerative/mechanism_worker.py": "d2f5079c59530a9eda7253f427165d853753ff17c27a8f068ded769e5c3e1a48",
+    "qualification/hcsn_regenerative/process.py": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67",
+    "qualification/hcsn_regenerative/resource_migration_v3/RESOURCE_AMENDMENT.json": "a9e07eabf5d48733b0c825906db1e0887b740067186f0d944f278f09f2a1ef88",
+    "qualification/hcsn_regenerative/resource_migration_v3/__init__.py": "3935a26584ef198a2a53a2a536f1cd2a3a4937ac5881707a4eebd13c1ac3a03d",
+    "qualification/hcsn_regenerative/resource_migration_v3/freeze_v3.py": "38455477e617a9619c22397aea1da3bf985a0d8810dfb2707a0555496daebfd0",
+    "qualification/hcsn_regenerative/resource_migration_v3/rawdiff_guard.py": "a754b107eaee765d94630bb66199f1bbed4ea44a9e64543c8c8d1c2176909d88",
+    "qualification/hcsn_regenerative/resource_migration_v3/test_resource_migration.py": "6757a05adc02a075aa6daf0f3ef23d078f13e469fea6797eade7022072dfc938",
+    "qualification/hcsn_regenerative/run_distribution_audit.py": "20487cd0c8e881d870b960b119ac7579d39b20fb08c87ebf26404f406bcc5d19",
+    "qualification/hcsn_regenerative/run_distribution_recovery.py": "5c010c9c64da6ae93210d20a46790979665c2d19e7d439dd9384ba071874a345",
+    "qualification/hcsn_regenerative/run_fixed_renewal_audit.py": "da26546f297e1372067cb73922efd30658494b5c169948c1811e306a1acf091b",
+    "qualification/hcsn_regenerative/tensor.py": "1cf419e0c9af02c434d0492d4269e427a3c4783c683456c1eb514f6cb90cbc56",
+    "qualification/hcsn_regenerative/tensor_normal.py": "d1423414112361bd5fe2c218ccc297a93972a6f9b79517abef343d4fc9c918e8",
+    "qualification/hcsn_regenerative/tensor_short.py": "a49ba3a629d8198a9176e1b9ced30edd447309bdb7139a22fcc1c0084d2db07b",
+    "qualification/hcsn_regenerative/tensor_state.py": "173c8fb75d1bc669ce316d03d26d545af6cbf460539c2a6f57e778db11d65f7f",
+    "qualification/hcsn_regenerative/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification/hcsn_regenerative/tests/test_distribution.py": "375ba90b16686bfb5c090adc1c0baadbfd3ffe17f7d62f4ce64be4e48b859427",
+    "qualification/hcsn_regenerative/tests/test_fixed_renewal.py": "41fc1e6dd233f9f1bf395d3ea5b4b01f6e2c67f33e56c0b5fad9e39901bc922c",
+    "qualification/hcsn_regenerative/tests/test_mechanism_analysis.py": "952f641799c616fa0d5f67989d955f9c1d41c560392d5da0daf48ac2dfd5f670",
+    "qualification/hcsn_regenerative/tests/test_mechanism_training.py": "60eaa2856fad47ed7b68c167a02b2585d0391c26552d5b1984c7a874e4a9e55e",
+    "resolution_scope/RESOLUTION_PROTOCOL.md": "3cb878a4c4969a89384d0de8caf33002be2f38722518ff3475d77b07fa8bf527",
+    "resolution_scope/resolution_reference.py": "d40e2ad74bf16ddf473d0ab46310c7fa66154f8cac5bef76811a02f9e4a980dd",
+    "resolution_scope/run_resolution_probe.py": "07b6d8225d47196cd900a53d2c7a8a1134bd62378a5801a26d8bfc88149cf1b8"
+  },
+  "prior_ledgers_policy": "Keep V1, V2 and V3 ledgers immutable, including V3 HALTED, its UNKNOWN upload journal and20 RESERVED/140 UNSTARTED with0ever-claimed. V4 creates its own160-UNSTARTED genesis only after exact no-dispatch evidence verification; it never clears, releases, imports or replays the prior request.",
+  "public_private_evidence_policy": "Public plan records typed resource hashes and job UUID only; raw profile, account, session, host paths, native job/source/fetch evidence remain in private exact-byte audit. No invented Kaggle notebook identity.",
+  "publication_branch": "codex/hcsn-mechanisms-s81-colab-v4-20261107",
+  "qualification_contract_sha256": "8bad2ea24c338677879a4f7790f04f6e81010eb22c367036492ae96e9ad68fc2",
+  "qualification_request_id": "hcsn-s81-colab-v4-qualification-20261107-1631115f163f",
+  "qualification_source_files": {
+    "qualification/hcsn/__init__.py": {
+      "bytes": 84,
+      "sha256": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d"
+    },
+    "qualification/hcsn/population.py": {
+      "bytes": 8894,
+      "sha256": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178"
+    },
+    "qualification/hcsn/reference.py": {
+      "bytes": 15847,
+      "sha256": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2"
+    },
+    "qualification/hcsn_regenerative/DISTRIBUTION_PROTOCOL.md": {
+      "bytes": 7854,
+      "sha256": "f4d7e5bb3cd9ed713ba640c997cfa401a2249002801d4e80ef61ecf8924d8492"
+    },
+    "qualification/hcsn_regenerative/FIXED_RENEWAL.md": {
+      "bytes": 4869,
+      "sha256": "b80c5f3abaa799f6586f172f8493cf58943e250180a4737fac0aa343547c9799"
+    },
+    "qualification/hcsn_regenerative/MECHANISM_SEQUENCE_PROTOCOL.md": {
+      "bytes": 5618,
+      "sha256": "b29d7342bd421625baca6bd8109e7b43ed95f001767a1c774457ae40ef28a2e7"
+    },
+    "qualification/hcsn_regenerative/__init__.py": {
+      "bytes": 87,
+      "sha256": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319"
+    },
+    "qualification/hcsn_regenerative/distribution.py": {
+      "bytes": 12570,
+      "sha256": "7cdc0c45ec2d22334a5cc57e5b583ccf0fcc1ae04a96b8b3536c88104d9636af"
+    },
+    "qualification/hcsn_regenerative/distribution_kernel.py": {
+      "bytes": 5673,
+      "sha256": "97be7116e7b7d4fb86529f13197b684e5b39d1bead394c1f561858caefae3ac4"
+    },
+    "qualification/hcsn_regenerative/distribution_manifest.py": {
+      "bytes": 2078,
+      "sha256": "3faffcc5e1b42c0285979100c6434036dd0ab48e52ee4a071a3203835a3d3cc1"
+    },
+    "qualification/hcsn_regenerative/distribution_operator.py": {
+      "bytes": 12828,
+      "sha256": "7593edd1f70eab0d21551a2e61ac7ebcce69655f5bf2b7bd2d6f35c3767295b4"
+    },
+    "qualification/hcsn_regenerative/fixed_renewal.py": {
+      "bytes": 13444,
+      "sha256": "b6f0a3da026797886fe38c78cff44a063cf27de85e5088f0b8b4cfc8ee2b38d3"
+    },
+    "qualification/hcsn_regenerative/mechanism_budget_probe.py": {
+      "bytes": 8799,
+      "sha256": "40cd0730e924af42c81ee15c603a8fa83a0206fd6d331896e8cecc111090511c"
+    },
+    "qualification/hcsn_regenerative/mechanism_contract.py": {
+      "bytes": 15954,
+      "sha256": "790b253974f482514e9cb95c4a5291616cbcb52e84f05934d36fe71859171f39"
+    },
+    "qualification/hcsn_regenerative/mechanism_model.py": {
+      "bytes": 12111,
+      "sha256": "16465538c2d91932a4414eaca3165e670f378947da744250487326ee7ae2922f"
+    },
+    "qualification/hcsn_regenerative/mechanism_operators.py": {
+      "bytes": 18582,
+      "sha256": "dff77f43076868ce54263a52aa7dc511e3bb4095cc8cefb1ab803527f1884ea2"
+    },
+    "qualification/hcsn_regenerative/mechanism_qualify.py": {
+      "bytes": 10705,
+      "sha256": "6a6e8ca3d5fac968e0380890e45740c76353b27f929b04c3a59d25c1cb9e022b"
+    },
+    "qualification/hcsn_regenerative/mechanism_sequence_probe.py": {
+      "bytes": 19925,
+      "sha256": "4be9c431bf1f75041cce38e16ede6b50b3466ee73019c966ed847ec9f5c9518f"
+    },
+    "qualification/hcsn_regenerative/mechanism_training.py": {
+      "bytes": 28832,
+      "sha256": "a5c8ddf7f8f4170a1391644dd9e679c8d150f45798e6b01e657f180106416c4f"
+    },
+    "qualification/hcsn_regenerative/mechanism_worker.py": {
+      "bytes": 13445,
+      "sha256": "d2f5079c59530a9eda7253f427165d853753ff17c27a8f068ded769e5c3e1a48"
+    },
+    "qualification/hcsn_regenerative/process.py": {
+      "bytes": 19818,
+      "sha256": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67"
+    },
+    "qualification/hcsn_regenerative/run_distribution_audit.py": {
+      "bytes": 10081,
+      "sha256": "20487cd0c8e881d870b960b119ac7579d39b20fb08c87ebf26404f406bcc5d19"
+    },
+    "qualification/hcsn_regenerative/run_distribution_recovery.py": {
+      "bytes": 15042,
+      "sha256": "5c010c9c64da6ae93210d20a46790979665c2d19e7d439dd9384ba071874a345"
+    },
+    "qualification/hcsn_regenerative/run_fixed_renewal_audit.py": {
+      "bytes": 4337,
+      "sha256": "da26546f297e1372067cb73922efd30658494b5c169948c1811e306a1acf091b"
+    },
+    "qualification/hcsn_regenerative/tensor.py": {
+      "bytes": 14807,
+      "sha256": "1cf419e0c9af02c434d0492d4269e427a3c4783c683456c1eb514f6cb90cbc56"
+    },
+    "qualification/hcsn_regenerative/tensor_normal.py": {
+      "bytes": 1969,
+      "sha256": "d1423414112361bd5fe2c218ccc297a93972a6f9b79517abef343d4fc9c918e8"
+    },
+    "qualification/hcsn_regenerative/tensor_short.py": {
+      "bytes": 5046,
+      "sha256": "a49ba3a629d8198a9176e1b9ced30edd447309bdb7139a22fcc1c0084d2db07b"
+    },
+    "qualification/hcsn_regenerative/tensor_state.py": {
+      "bytes": 6157,
+      "sha256": "173c8fb75d1bc669ce316d03d26d545af6cbf460539c2a6f57e778db11d65f7f"
+    },
+    "qualification/hcsn_regenerative/tests/__init__.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_regenerative/tests/test_distribution.py": {
+      "bytes": 9859,
+      "sha256": "375ba90b16686bfb5c090adc1c0baadbfd3ffe17f7d62f4ce64be4e48b859427"
+    },
+    "qualification/hcsn_regenerative/tests/test_fixed_renewal.py": {
+      "bytes": 6683,
+      "sha256": "41fc1e6dd233f9f1bf395d3ea5b4b01f6e2c67f33e56c0b5fad9e39901bc922c"
+    },
+    "qualification/hcsn_regenerative/tests/test_mechanism_training.py": {
+      "bytes": 24069,
+      "sha256": "60eaa2856fad47ed7b68c167a02b2585d0391c26552d5b1984c7a874e4a9e55e"
+    },
+    "resolution_scope/RESOLUTION_PROTOCOL.md": {
+      "bytes": 2901,
+      "sha256": "3cb878a4c4969a89384d0de8caf33002be2f38722518ff3475d77b07fa8bf527"
+    },
+    "resolution_scope/resolution_reference.py": {
+      "bytes": 5883,
+      "sha256": "d40e2ad74bf16ddf473d0ab46310c7fa66154f8cac5bef76811a02f9e4a980dd"
+    },
+    "resolution_scope/run_resolution_probe.py": {
+      "bytes": 9450,
+      "sha256": "07b6d8225d47196cd900a53d2c7a8a1134bd62378a5801a26d8bfc88149cf1b8"
+    }
+  },
+  "qualification_source_set_sha256": "ad130bd8cd307ae4e6971a11978863ed6771ccc269b1f40b468d530f1f9f9c4e",
+  "resource_selection": {
+    "accelerator_class": "Tesla T4",
+    "adapter_source_sha256": "55acb80ca2351b4aaafc16b04fb642100e52a9ddb021cb0551a6703513c068c2",
+    "authorizer_source_sha256": "7c4a297f1c781701dd5d1ac23e63111b9f3d2976ba77cfe88ae2e9774998f40b",
+    "compute_capability": [
+      7,
+      5
+    ],
+    "execution_profile_max_artifact_bytes": 134217728,
+    "execution_profile_max_output_bytes": 8388608,
+    "execution_profile_max_wall_seconds": 3000,
+    "fixed_kernel_provider_policy": "Use identical pinned guard for capability, qualification and formal jobs; existing bound kernel only; forbid unexpected create/restart/delete and retain sanitized actual HTTP diagnostics; original installed adapter/runner and authoritative ledger unchanged",
+    "fixed_kernel_provider_source_path": "qualification/hcsn_regenerative/colab_execution_v4/fixed_kernel_provider.py",
+    "fresh_owned_binding_required": true,
+    "long_job_reconciliation_policy": "After the sole Engine.run returns a nonterminal observation, persist that exact return and the intent for at most one Engine.status on the same registered job UUID. Status uses the unchanged original provider construction, allowing its existing proxy-token refresh. Preserve both returns, never execute or submit again, and retain HALT if the latest state is still unknown. A resolved terminal must still pass identity, cloud-stop and full artifact gates.",
+    "native_qualification_launch_contract_sha256": "d758be7c745bc42bb27123748795f64fb2530b5d02bd503a7143215331b1a4f9",
+    "native_qualification_launch_policy": "Before allocation, seal a private exact launch contract. Compare the actual Hepta h_process_start executable, -B -c script bytes, idempotency key and native process identity to that contract and the actual adapter worker PID/start ticks; the public amendment stores only the contract digest. No parent coordinator is substituted for the worker.",
+    "new_profile_preserves_all_bound_auth_and_session_fields": true,
+    "original_binding_profile_unchanged": true,
+    "profile_changes_allowed": [
+      "name",
+      "max_wall_seconds",
+      "max_artifact_bytes"
+    ],
+    "provider": "colab",
+    "remote_runner_source_sha256": "56047c73774c5507ba150dca310aa87b432b344193d1c827310e56f689a43d68",
+    "same_authoritative_adapter_ledger": true
+  },
+  "schema": "hcsn-s81-colab-resource-amendment-v4",
+  "study_id": "hcsn-regenerative-mechanisms-fv-pilot-20261107-1631115f163f-v4",
+  "v1_fit_completion_credit": 0,
+  "v2_fit_completion_credit": 0,
+  "v3_fit_completion_credit": 0
+}

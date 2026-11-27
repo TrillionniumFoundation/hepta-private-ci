@@ -1,0 +1,375 @@
+{
+  "cpu_seconds": 0.21247274299999996,
+  "directional_fd_output_comparisons": 3480,
+  "geometries": [
+    {
+      "all_four_normal_and_data_mutation_guards_reported": true,
+      "directional_fd_cases_exact": [
+        {
+          "coordinates": 144,
+          "direction": 0,
+          "gate_failures": 0,
+          "maximum_absolute_error": 1.6295992333326126e-12,
+          "maximum_gate_ratio": 4.8572257322632075e-06,
+          "projected_fd": -0.08586944335968497,
+          "projected_vjp": -0.08586944335371008,
+          "step": 0.0002
+        },
+        {
+          "coordinates": 144,
+          "direction": 0,
+          "gate_failures": 0,
+          "maximum_absolute_error": 3.4095139905820915e-12,
+          "maximum_gate_ratio": 1.4571677193958504e-05,
+          "projected_fd": -0.08586944335843838,
+          "projected_vjp": -0.08586944335371008,
+          "step": 0.0001
+        },
+        {
+          "coordinates": 144,
+          "direction": 1,
+          "gate_failures": 0,
+          "maximum_absolute_error": 6.639435529143256e-12,
+          "maximum_gate_ratio": 1.8281563600994423e-05,
+          "projected_fd": 0.0857964354140844,
+          "projected_vjp": 0.08579643542352927,
+          "step": 0.0002
+        },
+        {
+          "coordinates": 144,
+          "direction": 1,
+          "gate_failures": 0,
+          "maximum_absolute_error": 4.46871012416139e-12,
+          "maximum_gate_ratio": 1.8735013533529504e-05,
+          "projected_fd": 0.08579643541517214,
+          "projected_vjp": 0.08579643542352927,
+          "step": 0.0001
+        },
+        {
+          "coordinates": 144,
+          "direction": 2,
+          "gate_failures": 0,
+          "maximum_absolute_error": 6.840639166227902e-12,
+          "maximum_gate_ratio": 1.4354836759586852e-05,
+          "projected_fd": 0.4561562083693966,
+          "projected_vjp": 0.45615620837611903,
+          "step": 0.0002
+        },
+        {
+          "coordinates": 144,
+          "direction": 2,
+          "gate_failures": 0,
+          "maximum_absolute_error": 7.534528556618625e-12,
+          "maximum_gate_ratio": 1.752070710122625e-05,
+          "projected_fd": 0.45615620837225374,
+          "projected_vjp": 0.45615620837611903,
+          "step": 0.0001
+        },
+        {
+          "coordinates": 144,
+          "direction": 3,
+          "gate_failures": 0,
+          "maximum_absolute_error": 4.084875146470601e-11,
+          "maximum_gate_ratio": 0.00010130785079177992,
+          "projected_fd": 0.10444175447956433,
+          "projected_vjp": 0.10444175443298662,
+          "step": 0.0002
+        },
+        {
+          "coordinates": 144,
+          "direction": 3,
+          "gate_failures": 0,
+          "maximum_absolute_error": 4.187223831553233e-11,
+          "maximum_gate_ratio": 0.00010408340834194131,
+          "projected_fd": 0.10444175447483134,
+          "projected_vjp": 0.10444175443298662,
+          "step": 0.0001
+        },
+        {
+          "coordinates": 144,
+          "direction": 4,
+          "gate_failures": 0,
+          "maximum_absolute_error": 3.8834234439288906e-11,
+          "maximum_gate_ratio": 7.2320407897039e-05,
+          "projected_fd": 0.5605249548994231,
+          "projected_vjp": 0.5605249548789247,
+          "step": 0.0002
+        },
+        {
+          "coordinates": 144,
+          "direction": 4,
+          "gate_failures": 0,
+          "maximum_absolute_error": 3.9788006223062666e-11,
+          "maximum_gate_ratio": 7.415513633629677e-05,
+          "projected_fd": 0.5605249549026428,
+          "projected_vjp": 0.5605249548789247,
+          "step": 0.0001
+        }
+      ],
+      "fsum_vjp_vs_stored_maximum_error": 8.881784197001252e-16,
+      "geometry": "uniform",
+      "input_vjp_coordinates": 27,
+      "intervals": 7,
+      "maximum_stability_ratio": 1.2490009023393004e-05,
+      "native_full_four_block_vjp_vs_fsum_maximum_error": 1.3322676295501878e-15,
+      "native_primal_vs_direct_maximum_error": 7.268016050110404e-12,
+      "native_raw_gradcheck_reported": true,
+      "native_reported_vjp_error": 1.5543122344752192e-15,
+      "native_uniform_oracle_output_maximum_error": 1.7596191864699406e-11,
+      "native_uniform_oracle_raw_vjp_maximum_error": 1.3119794139981877e-10,
+      "normalized_chain_implied_maximum_error": 4.1974451692183834e-11,
+      "normalized_chain_reported_native_maximum_error": 4.197447944775945e-11,
+      "normalized_chain_scope": "Analytic softmax/content chain reconstructed from constant raw linear VJPs; native individual normalized gradients are not archived, only its actual gradcheck/assert flags and scalar maximum.",
+      "normalized_native_gradient_arrays_archived": false,
+      "old_physical_api_tensor_prior_refusal_reported": true,
+      "operator_scalars": 432
+    },
+    {
+      "directional_fd_cases_exact": [
+        {
+          "coordinates": 204,
+          "direction": 0,
+          "gate_failures": 0,
+          "maximum_absolute_error": 1.799267866317046e-11,
+          "maximum_gate_ratio": 8.881510222395022e-05,
+          "projected_fd": -0.18485901715107117,
+          "projected_vjp": -0.18485901716008074,
+          "step": 0.0002
+        },
+        {
+          "coordinates": 204,
+          "direction": 0,
+          "gate_failures": 0,
+          "maximum_absolute_error": 2.1468826607966285e-11,
+          "maximum_gate_ratio": 0.00010613912855589859,
+          "projected_fd": -0.18485901713180786,
+          "projected_vjp": -0.18485901716008074,
+          "step": 0.0001
+        },
+        {
+          "coordinates": 204,
+          "direction": 1,
+          "gate_failures": 0,
+          "maximum_absolute_error": 1.0502002154196e-11,
+          "maximum_gate_ratio": 4.90424037568469e-05,
+          "projected_fd": 0.14362393325107906,
+          "projected_vjp": 0.14362393329534293,
+          "step": 0.0002
+        },
+        {
+          "coordinates": 204,
+          "direction": 1,
+          "gate_failures": 0,
+          "maximum_absolute_error": 1.6292275688278846e-11,
+          "maximum_gate_ratio": 7.710453167604714e-05,
+          "projected_fd": 0.1436239332491132,
+          "projected_vjp": 0.14362393329534293,
+          "step": 0.0001
+        },
+        {
+          "coordinates": 204,
+          "direction": 2,
+          "gate_failures": 0,
+          "maximum_absolute_error": 1.1518563880485999e-11,
+          "maximum_gate_ratio": 5.759281933609134e-05,
+          "projected_fd": -0.3715385998617984,
+          "projected_vjp": -0.37153859988636595,
+          "step": 0.0002
+        },
+        {
+          "coordinates": 204,
+          "direction": 2,
+          "gate_failures": 0,
+          "maximum_absolute_error": 9.392861488599635e-12,
+          "maximum_gate_ratio": 2.2898349872407166e-05,
+          "projected_fd": -0.371538599871971,
+          "projected_vjp": -0.37153859988636595,
+          "step": 0.0001
+        },
+        {
+          "coordinates": 204,
+          "direction": 3,
+          "gate_failures": 0,
+          "maximum_absolute_error": 2.7810084096691057e-11,
+          "maximum_gate_ratio": 4.3609539806343934e-05,
+          "projected_fd": 0.336763913000854,
+          "projected_vjp": 0.3367639130388788,
+          "step": 0.0002
+        },
+        {
+          "coordinates": 204,
+          "direction": 3,
+          "gate_failures": 0,
+          "maximum_absolute_error": 3.38534165977844e-11,
+          "maximum_gate_ratio": 5.3669193466384044e-05,
+          "projected_fd": 0.3367639129897282,
+          "projected_vjp": 0.3367639130388788,
+          "step": 0.0001
+        },
+        {
+          "coordinates": 204,
+          "direction": 4,
+          "gate_failures": 0,
+          "maximum_absolute_error": 3.1228460789511914e-11,
+          "maximum_gate_ratio": 4.9808915572853964e-05,
+          "projected_fd": -0.07600977082391161,
+          "projected_vjp": -0.07600977071222495,
+          "step": 0.0002
+        },
+        {
+          "coordinates": 204,
+          "direction": 4,
+          "gate_failures": 0,
+          "maximum_absolute_error": 3.362671599504985e-11,
+          "maximum_gate_ratio": 5.3634095806097446e-05,
+          "projected_fd": -0.07600977082845653,
+          "projected_vjp": -0.07600977071222495,
+          "step": 0.0001
+        }
+      ],
+      "fsum_vjp_vs_stored_maximum_error": 8.881784197001252e-16,
+      "geometry": "graded",
+      "input_vjp_coordinates": 42,
+      "intervals": 12,
+      "maximum_stability_ratio": 3.202010412102316e-05,
+      "native_full_four_block_vjp_vs_fsum_maximum_error": 3.8413716652030416e-13,
+      "native_primal_vs_direct_maximum_error": 6.536535852516567e-11,
+      "native_raw_gradcheck_reported": true,
+      "native_reported_vjp_error": 3.8413716652030416e-13,
+      "operator_scalars": 952
+    }
+  ],
+  "inspector_source": {
+    "bytes": 15204,
+    "path": "/workspace/scratch/c06d659c1e72/independent-recovery-review/review_initial_vjp.py",
+    "sha256": "2b081062c881e28843f1446cfcd0f76b3838da03e7c0da67d2582f9a665be1d7"
+  },
+  "limitations": [
+    "Two small-grid fixed-physics/support fixtures only; N<=32,K<=8,C<=4, map<=7400 scalars and up to three basis forwards per API call.",
+    "This differentiates the computed finite basis operator. It is not a scalable n512 adjoint or full-network/filtering/migration/physical-parameter/support gradient.",
+    "Raw input domain is bounded nonnegative unnormalized probability amplitudes and independent signed contents; gradients are ambient linear-extension VJPs. Normalization and probability-times-marks binding belong to a live client chain.",
+    "Directional FD probes and fast-mode gradchecks are not exhaustive elementwise Jacobian checks. All 69 coordinates of the chosen raw VJPs are independently compared.",
+    "Native mutation counterexamples were executed on the uniform fixture; implementation is shared across both exact supported model types.",
+    "The NumPy development run was source-guarded but not precommitted. The native run used the separately precommitted source manifest."
+  ],
+  "native_arrays": {
+    "bytes": 7693,
+    "path": "/workspace/scratch/c06d659c1e72/joint-initial-vjp/qualification/hcsn_initial_vjp/evidence/native002/recovered-originals/native-result/ARRAYS.npz",
+    "sha256": "43c3fb9ea9838cf21772a13f50acb7dbe713bdb4028817ae25d06fa2d71a7307"
+  },
+  "native_bundle": {
+    "bytes": 130888,
+    "path": "/workspace/scratch/c06d659c1e72/joint-initial-vjp/qualification/hcsn_initial_vjp/evidence/native002/recovered-originals/BUNDLE.tar.gz",
+    "sha256": "424407ffbbc484768eefa1898c2599c6276a16cd02d8f6e9e98a5ba3c6ab45e8"
+  },
+  "native_call_labels": {
+    "graded_raw_gradcheck": 10,
+    "graded_vjp": 1,
+    "mutation_input0_unsafeFalse": 1,
+    "mutation_input0_unsafeTrue": 1,
+    "mutation_input1_unsafeFalse": 1,
+    "mutation_input1_unsafeTrue": 1,
+    "mutation_input2_unsafeFalse": 1,
+    "mutation_input2_unsafeTrue": 1,
+    "mutation_input3_unsafeFalse": 1,
+    "mutation_input3_unsafeTrue": 1,
+    "uniform_normalized_client_graph": 9,
+    "uniform_raw_gradcheck": 10,
+    "uniform_vjp": 1
+  },
+  "new_ode_kernel_torch_optimizer_calls": 0,
+  "numpy_arrays": {
+    "bytes": 118458,
+    "path": "/workspace/scratch/c06d659c1e72/joint-initial-vjp/qualification/hcsn_initial_vjp/evidence/numpy001/ARRAYS.npz",
+    "sha256": "2dcfe03f2911cb0b6c55b2c24f095d7688d150eb84177d1bb7e4970daa8fa305"
+  },
+  "passed": true,
+  "preexisting_native_basis_flows": 39,
+  "preexisting_native_uniform_torch_oracles": 2,
+  "preexisting_numpy_candidate_flows": 44,
+  "raw_native_input_vjp_coordinates": 69,
+  "schema": "hcsn-independent-initial-amplitude-vjp-review-v1",
+  "source_commit": "372d84ed9a04cab0e1d873f9cdd534a33689b485",
+  "source_format_checks": [
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_boundary_audit/refractory_transport.py",
+      "published_sha256": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+      "tested_sha256": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_boundary_audit/spatial_generator.py",
+      "published_sha256": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+      "tested_sha256": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_graded/model.py",
+      "published_sha256": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+      "tested_sha256": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_graded/spatial.py",
+      "published_sha256": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+      "tested_sha256": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_initial_vjp/check_linear_map.py",
+      "published_sha256": "57a138bd12e3332a9836d6e847bc562240b670df04c197cd094a4f51155c30ad",
+      "tested_sha256": "7cd284bec6f2bb04988af0afe710354b0d0a0203031ddcea8bfd5fe73cdadb8f"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_initial_vjp/linear_map.py",
+      "published_sha256": "df18f00b50490944e3db9c07987be9e7d9383374e10fe1bf18413845c4464e99",
+      "tested_sha256": "b775960e023c04acb592e2e6db4b910006f246eb81331bc0aad524b4dbd01883"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_initial_vjp/native_probe.py",
+      "published_sha256": "66f96add734125fd62ee2cbd10b51ad489110dcbe2d1c14394a9997c808074c5",
+      "tested_sha256": "e705c7b9e3b00e43204b755974b5b352b2e155aca48772c02e0708a5fe506cbf"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_initial_vjp/reference_uniform_cascade.py",
+      "published_sha256": "0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773",
+      "tested_sha256": "0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_initial_vjp/torch_flow.py",
+      "published_sha256": "93342358ca74ee25e1988352f0e5f12a0db1bab46308dab1e432d98b805413f2",
+      "tested_sha256": "ea8d1f4c31419d4b6a36a72ef343657bbee51f9892f78b594c8a7e42fd90f30b"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_joint_dde/graded_sensitivities.py",
+      "published_sha256": "b5b2fa8fdfd185cfb7dfef045536a06d9f55e17df7abd2c6de13620e6eda6548",
+      "tested_sha256": "b5b2fa8fdfd185cfb7dfef045536a06d9f55e17df7abd2c6de13620e6eda6548"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_joint_dde/model.py",
+      "published_sha256": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+      "tested_sha256": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_joint_dde/sensitivities.py",
+      "published_sha256": "d2c6c754b04a1e4ed21f317146a70de2aeb3020b01bd48a18e5301fb22c09f1a",
+      "tested_sha256": "d2c6c754b04a1e4ed21f317146a70de2aeb3020b01bd48a18e5301fb22c09f1a"
+    },
+    {
+      "ast_equal": true,
+      "path": "qualification/hcsn_joint_dde/torch_physical.py",
+      "published_sha256": "c203a7015d538f83e2f9eb4c5452ce0883ff060fa470680a4a516dba7f19d731",
+      "tested_sha256": "c203a7015d538f83e2f9eb4c5452ce0883ff060fa470680a4a516dba7f19d731"
+    }
+  ],
+  "source_originals_unchanged_files": 12,
+  "wall_seconds": 0.21034634599982382
+}

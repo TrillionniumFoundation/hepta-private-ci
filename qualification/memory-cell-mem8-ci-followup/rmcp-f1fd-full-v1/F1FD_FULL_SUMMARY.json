@@ -1,0 +1,199 @@
+{
+  "schema": "hepta.mem8.f1fd-full-rmcp-summary.v1",
+  "source_commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+  "source_tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+  "review_base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+  "source_pr": 5934,
+  "changed_source_paths": 65,
+  "run_key": "mem8-f1fd-full-rmcp-consumers-v1-ed353817",
+  "pty_session_id": "dpty-648ccfb8497838339eecb3dd3bb1cf12007730ed89c645200dd09563ee617741",
+  "native_task_path": "/home/qian-qi/mem8-f1fd-full-rmcp-consumers-ed353817-v1",
+  "started_at": "2026-11-11T05:35:42.902082+00:00",
+  "finished_at": "2026-11-11T06:02:44.268223+00:00",
+  "phases": [
+    {
+      "phase": "same-source-codex-cli-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-cli",
+        "--bin",
+        "codex"
+      ],
+      "receipt": "records/same-source-codex-cli-build.json",
+      "receipt_sha256": "d7defac989961abe0c20e086cdec03cf642754967299cb1003d0e437a4c027b3",
+      "started_at": "2026-11-11T05:35:42.902082+00:00",
+      "finished_at": "2026-11-11T05:47:56.414504+00:00",
+      "command_budget_seconds": 1800,
+      "deadline": "2026-11-11T06:05:42.902082+00:00",
+      "elapsed_seconds": 733.5070005711168,
+      "command_exit_code": 0,
+      "actual_passed": 0,
+      "actual_failed": 0,
+      "source_before": {
+        "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+        "dirty": false,
+        "parents": [
+          "dc96a441312e239c165c1642880084dfeccc2c71"
+        ],
+        "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+      },
+      "source_after": {
+        "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+        "dirty": false,
+        "parents": [
+          "dc96a441312e239c165c1642880084dfeccc2c71"
+        ],
+        "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+      },
+      "raw_log": "records/same-source-codex-cli-build.json.46d8df3f79d64fd6a81488f8b9f844fa.log",
+      "raw_bytes": 66000,
+      "raw_sha256": "f7b3c2b902a00cfc6bfc18c129cf7b3e704c9990ef259b14c852343ce8300b66"
+    },
+    {
+      "phase": "full-rmcp-268",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-rmcp-client",
+        "--test-threads",
+        "2",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "receipt": "records/full-rmcp-268.json",
+      "receipt_sha256": "f9eefc70b6502fa3ca722ab200b745b6bcf20fd15a65639a8d3216c25202f047",
+      "started_at": "2026-11-11T05:48:01.285265+00:00",
+      "finished_at": "2026-11-11T05:55:54.430909+00:00",
+      "command_budget_seconds": 1800,
+      "deadline": "2026-11-11T06:18:01.285265+00:00",
+      "elapsed_seconds": 473.1086338260211,
+      "command_exit_code": 0,
+      "actual_passed": 268,
+      "actual_failed": 0,
+      "source_before": {
+        "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+        "dirty": false,
+        "parents": [
+          "dc96a441312e239c165c1642880084dfeccc2c71"
+        ],
+        "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+      },
+      "source_after": {
+        "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+        "dirty": false,
+        "parents": [
+          "dc96a441312e239c165c1642880084dfeccc2c71"
+        ],
+        "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+      },
+      "raw_log": "records/full-rmcp-268.json.258dccb802c34ff5a2f0500c989f7b30.log",
+      "raw_bytes": 68445,
+      "raw_sha256": "cc9bd580088f8ed2af79e585efa61b8eff9fc55adfaa46497c89b86773a3685d"
+    },
+    {
+      "phase": "scoped-rmcp-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-rmcp-client"
+      ],
+      "receipt": "records/scoped-rmcp-fix.json",
+      "receipt_sha256": "cfd3058ece5293ccf572a7963d5fe6d17f904c9c9bda0f95984cd7d65329cae1",
+      "started_at": "2026-11-11T05:55:59.767833+00:00",
+      "finished_at": "2026-11-11T06:02:43.963442+00:00",
+      "command_budget_seconds": 1800,
+      "deadline": "2026-11-11T06:25:59.767833+00:00",
+      "elapsed_seconds": 403.95885290391743,
+      "command_exit_code": 0,
+      "actual_passed": 0,
+      "actual_failed": 0,
+      "source_before": {
+        "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+        "dirty": false,
+        "parents": [
+          "dc96a441312e239c165c1642880084dfeccc2c71"
+        ],
+        "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+      },
+      "source_after": {
+        "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+        "dirty": false,
+        "parents": [
+          "dc96a441312e239c165c1642880084dfeccc2c71"
+        ],
+        "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+      },
+      "raw_log": "records/scoped-rmcp-fix.json.b633af9047a84f49930a74d665f577c9.log",
+      "raw_bytes": 33761,
+      "raw_sha256": "5ac223b0373f39debf43675f9390385680dd1f6d7201fcc85662a82136179b7f"
+    }
+  ],
+  "qualification": {
+    "source_commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+    "source_tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+    "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "selected": 268,
+    "passed": 268,
+    "failed": 0,
+    "selected_skipped": 0,
+    "filtered_or_ignored": 7,
+    "retries": 0,
+    "junit_run_id": "b86c9959-e257-4ce0-91e0-f2eb7120d2cc",
+    "original_unique_case_ids_match": true,
+    "raw_unique_pass_ids_match_junit": true,
+    "full_raw_hashes_verified": 3,
+    "full_junit_hash_verified": true,
+    "cli_before_after_same": true,
+    "cli_sha256": "da59e2327aa74b81be2b6f64a97c060bf67e17db17c860f7642541f804dadbe2",
+    "scoped_fix_exit_zero_and_source_unchanged": true,
+    "all_phase_source_identities_clean": true,
+    "whole_ci_pass_claimed": false,
+    "memory_benefit_claimed": false
+  },
+  "original_case_ids_run": "c6520272-0490-4d9f-bee4-5d08be7198bd",
+  "original_case_ids_file": "EXPECTED_CASE_IDS.json",
+  "junit_path": "records/full-rmcp-268.junit.xml",
+  "junit_bytes": 59390,
+  "junit_sha256": "19b1028b33bebbd26bd92ddc15195f397d6ce8cfe1107bf3b4bab399680c299e",
+  "junit_run_id": "b86c9959-e257-4ce0-91e0-f2eb7120d2cc",
+  "actual_cli_bytes": 1440865824,
+  "actual_cli_sha256": "da59e2327aa74b81be2b6f64a97c060bf67e17db17c860f7642541f804dadbe2",
+  "cli_before_receipt": "records/CLI_BEFORE_TESTS.json",
+  "cli_after_receipt": "records/CLI_AFTER_TESTS.json",
+  "all_source_clean": true,
+  "fix_outcome": "exit0_clean_no_rewrite",
+  "terminal_exit_code": 0,
+  "whole_ci_pass_claimed": false,
+  "other_source_heads_qualified_by_this_run": false,
+  "archive_pointers": {
+    "schema": "hepta.mem8.f1fd-full-rmcp-package.v1",
+    "archive_name": "mem8-f1fd-full-rmcp-native-v1.tar.xz",
+    "bytes": 59956,
+    "sha256": "03393baed2329c3a9eb50337678c67a0856bc568f753f2527272903492f25a8a",
+    "git_blob": "b22984b6650ec4b523760f9ef09ac94196f831d3",
+    "member_count": 43,
+    "source_commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+    "source_tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+    "selected": 268,
+    "passed": 268,
+    "failed": 0,
+    "selected_skipped": 0,
+    "filtered_or_ignored": 7,
+    "retries": 0,
+    "junit_run_id": "b86c9959-e257-4ce0-91e0-f2eb7120d2cc",
+    "full_raw_and_junit_verified": true,
+    "all_tar_member_bytes_read_back": true,
+    "fix_exit0_clean": true,
+    "whole_ci_pass_claimed": false,
+    "publication_state": "GIT_BLOB_CREATED_AWAITING_TREE_ATTACHMENT"
+  }
+}

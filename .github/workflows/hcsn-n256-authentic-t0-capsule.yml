@@ -1,0 +1,37 @@
+name: HCSN N256 authentic t0 capsule
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_t0_capsule_v1/**"
+      - ".github/workflows/hcsn-n256-authentic-t0-capsule.yml"
+  workflow_dispatch:
+
+jobs:
+  exact-static-capsule:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify frozen source and historical gap
+        run: python qualification/hcsn_currentstate_n256_t0_capsule_v1/verify_source.py
+      - name: Run zero-dynamics controls normally
+        run: python -m unittest qualification.hcsn_currentstate_n256_t0_capsule_v1.test_t0_capsule -v
+      - name: Run zero-dynamics controls optimized
+        run: python -O -m unittest qualification.hcsn_currentstate_n256_t0_capsule_v1.test_t0_capsule -v
+      - name: Build once and audit in a fresh process
+        run: |
+          mkdir -p /tmp/hcsn-n256-t0
+          python -m qualification.hcsn_currentstate_n256_t0_capsule_v1.builder --root . --output /tmp/hcsn-n256-t0/capsule.bin --receipt /tmp/hcsn-n256-t0/BUILD.json
+          python -m qualification.hcsn_currentstate_n256_t0_capsule_v1.cold_audit --root . --capsule /tmp/hcsn-n256-t0/capsule.bin --receipt /tmp/hcsn-n256-t0/AUDIT.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcsn-n256-authentic-t0-capsule-${{ github.run_id }}
+          path: /tmp/hcsn-n256-t0
+          if-no-files-found: error

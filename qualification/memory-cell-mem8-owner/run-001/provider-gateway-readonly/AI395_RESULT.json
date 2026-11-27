@@ -1,0 +1,97 @@
+{
+  "boundary": "Only exact original identifiers were projected. Missing matches do not establish provider completion, failure, or nonexecution. Current unit metadata is not proof of the historical configuration.",
+  "current_unit_log_destination": {
+    "command_receipt": {
+      "argv": [
+        "systemctl",
+        "--user",
+        "show",
+        "dual-llm-gateway.service",
+        "--no-pager",
+        "--property=Id",
+        "--property=FragmentPath",
+        "--property=DropInPaths",
+        "--property=StandardOutput",
+        "--property=StandardError",
+        "--property=SyslogIdentifier",
+        "--property=LogNamespace",
+        "--property=LogsDirectory",
+        "--property=ActiveState",
+        "--property=SubState"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-11-11T05:53:25.247770+00:00",
+      "raw_stderr_persisted": false,
+      "raw_stdout_persisted": false,
+      "started_at": "2026-11-11T05:53:25.243551+00:00",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 321,
+      "stdout_sha256": "1851fec60659ef4f53c740303331ae239a90e2ea785f61325e4e9317112294e1",
+      "stop_reason": null
+    },
+    "historical_configuration_proven": false,
+    "properties": {
+      "ActiveState": "active",
+      "DropInPaths": "/home/qq/.config/systemd/user/dual-llm-gateway.service.d/40-ai-max-codex-length.conf",
+      "FragmentPath": "/home/qq/.config/systemd/user/dual-llm-gateway.service",
+      "Id": "dual-llm-gateway.service",
+      "LogNamespace": "",
+      "LogsDirectory": "",
+      "StandardError": "inherit",
+      "StandardOutput": "journal",
+      "SubState": "running",
+      "SyslogIdentifier": ""
+    }
+  },
+  "entry_limit_may_have_truncated_window": false,
+  "exact_identifier_match_count": 0,
+  "finished_at": "2026-11-11T05:53:25.347529+00:00",
+  "invalid_record_count": 0,
+  "journal_command_receipt": {
+    "argv": [
+      "journalctl",
+      "--user",
+      "--unit=dual-llm-gateway.service",
+      "--since=2026-11-11 04:47:00 UTC",
+      "--until=2026-11-11 04:49:00 UTC",
+      "--output=json",
+      "--no-pager",
+      "--all",
+      "--quiet",
+      "--lines=2000"
+    ],
+    "exit_code": 0,
+    "finished_at": "2026-11-11T05:53:25.347457+00:00",
+    "raw_stderr_persisted": false,
+    "raw_stdout_persisted": false,
+    "started_at": "2026-11-11T05:53:25.247961+00:00",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stop_reason": null
+  },
+  "journal_entries_parsed": 0,
+  "journal_queries": 1,
+  "journal_read_status": "BOUNDED_READ_COMPLETE",
+  "matched_records": [],
+  "model_requests": 0,
+  "nonmatching_records_and_credentials_disclosed": false,
+  "original_identifiers": {
+    "client_key": "qualification-e2e-message:Integer(2)",
+    "thread": "01a1c8ef-125f-75ae-aaf1-0fe5a4c079f6",
+    "turn": "01a1c8ef-1fbd-75b0-bc6e-2b22a1f1f596"
+  },
+  "original_provider_final_status": "UNKNOWN",
+  "run_id": "mem8-provider-journal-ai395-20261111-ed353-v1",
+  "schema": "hepta.mem8.provider-original-journal-readonly.v1",
+  "service_changes": false,
+  "started_at": "2026-11-11T05:53:25.243464+00:00",
+  "time_proximity_is_request_identity": false,
+  "unit": "dual-llm-gateway.service",
+  "window_utc": {
+    "since": "2026-11-11 04:47:00 UTC",
+    "until": "2026-11-11 04:49:00 UTC"
+  }
+}

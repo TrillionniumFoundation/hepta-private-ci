@@ -1,0 +1,338 @@
+{
+  "artifacts": {
+    "ATTRIBUTION.json": {
+      "bytes": 1537,
+      "path": "/tmp/hepta-audio-codec-001/reconstruction-002/ATTRIBUTION.json",
+      "sha256": "edea26d99175ffccdede388832fbaa3d5054c16ea6dc922b38b907313c596f70"
+    },
+    "LICENSE-MIT-Descript.txt": {
+      "bytes": 1074,
+      "path": "/tmp/hepta-audio-codec-001/reconstruction-002/LICENSE-MIT-Descript.txt",
+      "sha256": "5d7a5f644313f30aad5ef032669ada67efdacefecb2c7d7b875683698bd70e87"
+    },
+    "dac-reconstructed-first-two-seconds.wav": {
+      "bytes": 64044,
+      "path": "/tmp/hepta-audio-codec-001/reconstruction-002/dac-reconstructed-first-two-seconds.wav",
+      "sha256": "36aff4a6c30d6ce567797493509706e5aa006ccbc085f135420789719e9f1c5c"
+    },
+    "discrete-codes.npy": {
+      "bytes": 9824,
+      "path": "/tmp/hepta-audio-codec-001/reconstruction-002/discrete-codes.npy",
+      "sha256": "268af016558e5fcebdedbe7a203506003b472517b0f6ab625cd654802f59aa07"
+    },
+    "input-first-two-seconds.wav": {
+      "bytes": 64044,
+      "path": "/tmp/hepta-audio-codec-001/reconstruction-002/input-first-two-seconds.wav",
+      "sha256": "d283a4684c21994819d2a485a023c68b02b33bac4843fe358b17d2c5f3b56b13"
+    },
+    "pip-freeze.txt": {
+      "bytes": 1754,
+      "path": "/tmp/hepta-audio-codec-001/reconstruction-002/pip-freeze.txt",
+      "sha256": "4826bed77a305c3ae8e8f961bd6fcf2a083f39eec16e8066d267f31a1e7df26b"
+    },
+    "reconstructed-float32.npy": {
+      "bytes": 128128,
+      "path": "/tmp/hepta-audio-codec-001/reconstruction-002/reconstructed-float32.npy",
+      "sha256": "de0ab7a0ad82bc06b23d7dea30eb003db120f669575c3082facfc03bb1e66e78"
+    }
+  },
+  "codec_path": {
+    "decoder_input": "latent reconstructed solely from integer codes and frozen codebooks",
+    "fixed_right_zero_guard_samples": 320,
+    "padded_input_shape": [
+      1,
+      1,
+      32320
+    ],
+    "projected_encoder_latent_shape": [
+      1,
+      96,
+      101
+    ],
+    "quantized_latent_max_abs_code_roundtrip_error": 1.9073486328125e-06,
+    "retained_samples": 32000,
+    "untrimmed_output_shape": [
+      1,
+      1,
+      32312
+    ]
+  },
+  "command": [
+    "experiments/multimodal_output_portfolio/natural_io/audio_codec_smoke.py",
+    "--input-directory",
+    "/tmp/hepta-natural-io-001",
+    "--weights",
+    "/tmp/hepta-audio-codec-001/weights-16khz-0.0.5.pth",
+    "--upstream-license",
+    "/tmp/hepta-audio-codec-001/LICENSE-MIT-Descript.txt",
+    "--output-directory",
+    "/tmp/hepta-audio-codec-001/reconstruction-002",
+    "--receipt",
+    "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-002.json",
+    "--threads",
+    "4"
+  ],
+  "completed_at_utc": "2026-10-23T05:22:50.072895+00:00",
+  "decoded_shape_before_length_check": [
+    1,
+    1,
+    32312
+  ],
+  "export": {
+    "channels": 1,
+    "clipped_samples": 0,
+    "metrics_use_float_output_before_PCM16_rounding": true,
+    "sample_count": 32000,
+    "sample_rate": 16000,
+    "sample_width_bytes": 2
+  },
+  "final_memory": {
+    "process_current_rss_bytes": 700354560,
+    "process_peak_rss_bytes": 1166176256
+  },
+  "initial_memory": {
+    "process_current_rss_bytes": 16535552,
+    "process_peak_rss_bytes": 16384000
+  },
+  "input": {
+    "all_finite": true,
+    "attribution": {
+      "author": "Fiver, der Hellseher",
+      "caption_is_generated": false,
+      "caption_is_time_aligned_transcript": false,
+      "caption_language": "de",
+      "caption_provenance": "human-provided Description field on the pinned Commons file page",
+      "changes": [
+        "audio resampled to 16 kHz mono PCM",
+        "frame extracted at 2 seconds and resized to width 256",
+        "original seconds 1 through 5 sampled to four temporal frames, resized to width 128, VP9 encoded without audio",
+        "original human German description copied without translation",
+        "fixed first 32000 samples of the 16 kHz mono derivative retained",
+        "frozen pretrained DAC encoding, integer-code dequantization and decoding",
+        "decoded audio rounded to PCM16 for the listening derivative"
+      ],
+      "derivative_license": "CC-BY-SA-4.0",
+      "expected_bytes": 12123649,
+      "expected_sha1": "42b0f35d2c2f44197c97c6ce2686ed9fc7ca28d7",
+      "license": "CC-BY-SA-4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "no_endorsement_implied": true,
+      "original_file_url": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Lachender_Hans_%28Tierpark_Zittau%29.webm",
+      "source_creation_date": "2022-05-08",
+      "source_declaration": "own work by the credited uploader",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Lachender_Hans_(Tierpark_Zittau).webm",
+      "source_page_revision": "https://commons.wikimedia.org/w/index.php?title=File:Lachender_Hans_(Tierpark_Zittau).webm&oldid=1138468463",
+      "title": "Lachender Hans (Tierpark Zittau).webm"
+    },
+    "dtype": "float32",
+    "header": {
+      "channels": 1,
+      "frames": 167602,
+      "sample_rate": 16000,
+      "sample_width_bytes": 2
+    },
+    "path": "/tmp/hepta-natural-io-001/recorded-audio-16khz.wav",
+    "prefix_samples": 32000,
+    "prefix_seconds": 2.0,
+    "prefix_start_sample": 0,
+    "rms": 0.10825859287785872,
+    "selection": "fixed prefix before reconstruction; no quality-based selection",
+    "sha256": "e81fc702ce828c0711c4bfd2133619b0e58aba17cf4685d7a5aa9b90ebada384",
+    "shape": [
+      1,
+      1,
+      32000
+    ]
+  },
+  "memory_scope": "whole-process RSS/high-water mark; includes imports, weights and native tensor allocations",
+  "model": {
+    "all_parameters_frozen": true,
+    "codebook_size": 1024,
+    "decoder_rates": [
+      8,
+      5,
+      4,
+      2
+    ],
+    "encoder_rates": [
+      2,
+      4,
+      5,
+      8
+    ],
+    "hop_length": 320,
+    "latent_dim": 1024,
+    "n_codebooks": 12,
+    "parameter_bytes": 296703624,
+    "parameters": 74175906,
+    "sample_rate": 16000,
+    "state_dict_load_strict": true,
+    "training": false
+  },
+  "model_provenance": {
+    "code_archive_sha256": "a8fa0e7ba90aaf6b53405f4a541ee6dee18aaef932cf110651b4fb2bc6833963",
+    "code_revision": "c7cfc5d2647e26471dc394f95846a0830e7bec34",
+    "installed_source_sha256": {
+      "dac/model/dac.py": "412c6bb1fddfd01a96e4f73df6934a5cdcbc9c6ee50e2b462433917dbceb7300",
+      "dac/nn/quantize.py": "e2dc61f32f6123aa48a0aeb934a0d9a41ea29a5eae8db28119c791885c9f1b07",
+      "dac/utils/__init__.py": "ac4e097f5db5f730bdd944bfd7ddf66761e776ba22d14d5ad7e3d6bd902addf5"
+    },
+    "license": "MIT",
+    "license_sha256": "5d7a5f644313f30aad5ef032669ada67efdacefecb2c7d7b875683698bd70e87",
+    "license_source": "https://github.com/descriptinc/descript-audio-codec/blob/c7cfc5d2647e26471dc394f95846a0830e7bec34/LICENSE",
+    "paper": "https://arxiv.org/abs/2306.06546",
+    "repository": "https://github.com/descriptinc/descript-audio-codec",
+    "weight_license_statement": "https://github.com/descriptinc/descript-audio-codec/blob/c7cfc5d2647e26471dc394f95846a0830e7bec34/README.md",
+    "weight_license_statement_excerpt": "Weights are released as part of this repo under MIT license.",
+    "weights_asset_id": 115688008,
+    "weights_bytes": 296820733,
+    "weights_release": "0.0.5",
+    "weights_sha256": "95ab7176b67137d4d4c6c54b8d6ef3cea797faec228cb03ad084badcad570b4d",
+    "weights_url": "https://github.com/descriptinc/descript-audio-codec/releases/download/0.0.5/weights_16khz.pth"
+  },
+  "phases": [
+    {
+      "process_cpu_seconds": 2.2261166549999998,
+      "process_current_rss_bytes": 885100544,
+      "process_peak_rss_bytes": 1166176256,
+      "stage": "load_pretrained_model",
+      "wall_seconds": 0.8988665980014048
+    },
+    {
+      "process_cpu_seconds": 2.235062999,
+      "process_current_rss_bytes": 951070720,
+      "process_peak_rss_bytes": 1166176256,
+      "stage": "encode_and_quantize",
+      "wall_seconds": 1.054007269000067
+    },
+    {
+      "process_cpu_seconds": 0.029828125999999955,
+      "process_current_rss_bytes": 951070720,
+      "process_peak_rss_bytes": 1166176256,
+      "stage": "reconstruct_latent_from_integer_codes",
+      "wall_seconds": 0.005491552999956184
+    },
+    {
+      "process_cpu_seconds": 3.8612756940000006,
+      "process_current_rss_bytes": 1134940160,
+      "process_peak_rss_bytes": 1166176256,
+      "stage": "decode_from_integer_code_latent",
+      "wall_seconds": 1.5396788110010675
+    }
+  ],
+  "pip_check": {
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "No broken requirements found.\n"
+  },
+  "reconstruction_metrics": {
+    "alignment": "same sample indices after one fixed right zero hop and truncation; no shift or gain fitting",
+    "exact_reconstruction": false,
+    "mse": 0.020331324765231498,
+    "perceptual_or_task_quality_established": false,
+    "rmse": 0.14258795448855943,
+    "sample_count": 32000,
+    "signal_power": 0.011719922931893962,
+    "snr_db": -2.3924092182910854,
+    "snr_definition": "10 log10(mean(input^2) / mean((output-input)^2))"
+  },
+  "runtime": {
+    "cpu_count": 9,
+    "cuda_build": null,
+    "device": "cpu",
+    "executable": "/tmp/hepta-audio-codec-env-001/bin/python",
+    "memory_after_imports": {
+      "process_current_rss_bytes": 264851456,
+      "process_peak_rss_bytes": 264380416
+    },
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "torch_threads": 4,
+    "versions": {
+      "descript-audio-codec": "1.0.0",
+      "descript-audiotools": "0.7.2",
+      "numpy": "1.26.4",
+      "torch": "2.5.1+cpu",
+      "torchaudio": "2.5.1+cpu"
+    }
+  },
+  "schema": "hepta.natural-audio-pretrained-codec-smoke.v1",
+  "scope": {
+    "formal_v3_source_or_protocol_changed": false,
+    "generalization_established": false,
+    "natural_foundation_model_blocker_closed": false,
+    "ndu_controller_invoked": false,
+    "neural_decoding_completed": true,
+    "neural_encoding_completed": true,
+    "pretrained_codec_loaded": true,
+    "pretrained_codec_reconstruction": true,
+    "real_recorded_audio": true,
+    "target_blind_generation": false,
+    "training_performed": false
+  },
+  "script_sha256": "43710a2aa2268d90fd6a31d8df04457d4d11d4cd391963c3903b7b75b9cc0b50",
+  "stage": "complete",
+  "started_at_utc": "2026-10-23T05:22:44.483635+00:00",
+  "status": "completed_frozen_pretrained_codec_reconstruction_only",
+  "tensors": {
+    "discrete_codes": {
+      "all_finite": true,
+      "dtype": "int64",
+      "max": 1022.0,
+      "min": 0.0,
+      "shape": [
+        1,
+        12,
+        101
+      ]
+    },
+    "quantized_latent": {
+      "all_finite": true,
+      "dtype": "float32",
+      "max": 14.813920974731445,
+      "min": -15.845667839050293,
+      "shape": [
+        1,
+        1024,
+        101
+      ]
+    },
+    "reconstructed_audio": {
+      "all_finite": true,
+      "dtype": "float32",
+      "max": 0.949492871761322,
+      "min": -0.8469173908233643,
+      "shape": [
+        1,
+        1,
+        32000
+      ]
+    }
+  },
+  "timing_scope": "one local CPU run, no warmup/repeats; excludes dependency installation and prior weight download",
+  "total_process_cpu_seconds": 10.777155030000001,
+  "total_wall_seconds": 5.589294385999892,
+  "warnings": [
+    {
+      "category": "DeprecationWarning",
+      "count": 1,
+      "filename": "/tmp/hepta-audio-codec-env-001/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py",
+      "line": 92,
+      "message": "datetime.datetime.utcfromtimestamp() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.fromtimestamp(timestamp, datetime.UTC)."
+    },
+    {
+      "category": "FutureWarning",
+      "count": 1,
+      "filename": "/tmp/hepta-audio-codec-env-001/lib/python3.12/site-packages/audiotools/ml/layers/base.py",
+      "line": 172,
+      "message": "You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature."
+    },
+    {
+      "category": "FutureWarning",
+      "count": 84,
+      "filename": "/tmp/hepta-audio-codec-env-001/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py",
+      "line": 143,
+      "message": "`torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`."
+    }
+  ]
+}

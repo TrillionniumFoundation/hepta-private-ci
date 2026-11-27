@@ -1,0 +1,20 @@
+{
+  "NC_build_ns": 8537556029,
+  "N_build_ns": 8307966292,
+  "build_gap_ns_per_request": "765.2991233333333333333333333333333333333",
+  "measured_saving_evidence": false,
+  "necessary_saving_microseconds_per_request": "1.548783508486087421235177083333333333333",
+  "necessary_saving_ns_per_request": "1548.783508486087421235177083333333333333",
+  "nonadditive_median_proxy_used": false,
+  "price": "0.02",
+  "qualification": false,
+  "raw_deficit": "0.00021338087227628004",
+  "raw_deficit_equivalent_ns_per_request": "783.484385152754087901843750",
+  "reference_ns": "73435.296875",
+  "regret_extension": "add raw_regret * reference_ns / price; strictly positive net needs strictly greater saving",
+  "requests_per_seed": 100000,
+  "schema": "hepta.h4.conditional-necessary-savings.v1",
+  "scope": "Existing saved arrays/costs only; no new measurements. Fixed whole-arm builds, current potential laws and empirical equal seed/source weights.",
+  "seeds": 3,
+  "selector_scope": "Input-level selection/mixture of the two fixed conditional laws; selection randomization independent of potential output realization. New outcome-adaptive feedback needs a new joint-kernel/oracle derivation."
+}

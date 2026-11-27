@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.publication_fixture.unused_config_storage_delta.v1",
+  "status": "exact static delta; independent review pending; native pending",
+  "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+  "preimage": {
+    "git_blob": "4d302f702181a832329ded730541107bf2ddad92",
+    "bytes": 32457,
+    "sha256": "039906fd235388fa7971bee37dc8e4464c0ccdc218569ae38cae83fcf3f613d6"
+  },
+  "postimage": {
+    "git_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac",
+    "bytes": 32386,
+    "sha256": "20c2ad06db87ed4c97805d673945393fa373aacd93ed03be57149126f6b6242a"
+  },
+  "operations": [
+    {
+      "old": "    pub(super) config: HostAuthorityServiceConfig,\n",
+      "new": ""
+    },
+    {
+      "old": "            _witnesses: witnesses,\n            config,\n            config_file,\n",
+      "new": "            _witnesses: witnesses,\n            config_file,\n"
+    }
+  ],
+  "reason": "The reviewed live issuer revocation removed the sole external read of Fixture.config. Remove only the unreferenced copied configuration field and Self initializer; preserve the original local config construction, serialization, original config_file and every service/readback/assertion.",
+  "supersedes_as_candidate_file_only": "4d302f702181a832329ded730541107bf2ddad92",
+  "replaces_prior_patch_review": false,
+  "callers_changes": 0,
+  "assertions_changed": 0,
+  "product_authority_changes": 0,
+  "native_executed": false
+}

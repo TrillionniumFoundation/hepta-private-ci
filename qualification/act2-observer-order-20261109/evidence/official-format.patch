@@ -1,0 +1,14 @@
+diff --git a/codex-rs/hepta-agentd/src/notes_document_observer.rs b/codex-rs/hepta-agentd/src/notes_document_observer.rs
+index f9cf4269..af5e5213 100644
+--- a/codex-rs/hepta-agentd/src/notes_document_observer.rs
++++ b/codex-rs/hepta-agentd/src/notes_document_observer.rs
+@@ -52,7 +52,8 @@ impl AgentdNotesDocumentObserver {
+                     && observed.text_sha256 != previous.text_sha256)
+         }) {
+             return Err(AgentdError::Protocol(
+-                "Notes document observation regressed or changed content at the same revision".into(),
++                "Notes document observation regressed or changed content at the same revision"
++                    .into(),
+             ));
+         }
+         // Receipt retirement changes independently of document content. It does

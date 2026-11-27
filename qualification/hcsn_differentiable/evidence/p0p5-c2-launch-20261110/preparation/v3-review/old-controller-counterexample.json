@@ -1,0 +1,29 @@
+{
+  "cpu_seconds": 0.011147615999999999,
+  "expected_status": "failed",
+  "missing_result_file": true,
+  "model_processes_started": 0,
+  "observed_old_status": "completed",
+  "observed_old_totals": {
+    "actual_continuations_started": 1,
+    "actual_continuations_started_is_lower_bound": false,
+    "attempt_cost_accounting_complete": true,
+    "attempt_sums_are_lower_bounds": false,
+    "incomplete_attempt_accounting_names": [],
+    "launch_status_unknown_names": [],
+    "missing_terminal_attempt_names": [],
+    "sum_attempt_outer_wall_seconds": 2.0,
+    "sum_attempt_wrapper_wall_seconds": 2.1,
+    "sum_exact_per_child_cpu_seconds": 0.5
+  },
+  "requirement_violated": true,
+  "schema": "explicit-c2-controller-metadata-counterexample-v1",
+  "scope": "actual v1 AST branch on pure metadata; not a native process outcome",
+  "source": {
+    "bytes": 17796,
+    "path": "c2-execution-candidate-v1/c2_controller.py",
+    "sha256": "195c8100a4147111cbc6b220cd1548aa8ca76d13ba4ebe0f4063005ef1912791"
+  },
+  "training_or_forward_or_backward": false,
+  "wall_seconds": 0.011151299000630388
+}

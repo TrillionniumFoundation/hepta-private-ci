@@ -1,0 +1,228 @@
+{
+  "schema": 1,
+  "source_head": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "source_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "actual_checkout": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "run_id": 43254705812,
+  "job_id": 131309678429,
+  "job": {
+    "id": 131309678429,
+    "run_id": 43254705812,
+    "workflow_name": "Hepta daemon learning native",
+    "head_branch": "research/neuro4-evaluated-current-read-20261112-862531d",
+    "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43254705812",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTrgxoM8AAAAekqqvXQ",
+    "head_sha": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/131309678429",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43254705812/job/131309678429",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T16:04:44Z",
+    "started_at": "2026-11-12T16:04:47Z",
+    "completed_at": "2026-11-12T16:39:05Z",
+    "name": "caller-proof",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-11-12T16:04:47Z",
+        "completed_at": "2026-11-12T16:04:48Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-11-12T16:04:48Z",
+        "completed_at": "2026-11-12T16:07:57Z"
+      },
+      {
+        "name": "Verify the full caller inventory and retain original execution",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-12T16:07:57Z",
+        "completed_at": "2026-11-12T16:39:02Z"
+      },
+      {
+        "name": "Retain complete caller proof evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-11-12T16:39:02Z",
+        "completed_at": "2026-11-12T16:39:03Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-11-12T16:39:03Z",
+        "completed_at": "2026-11-12T16:39:03Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-11-12T16:39:03Z",
+        "completed_at": "2026-11-12T16:39:03Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/131309678429",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000133067,
+    "runner_name": "GitHub Actions 1000133067",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  "raw_log": {
+    "bytes": 2145300,
+    "sha256": "edae7bf327161cfc19fcd391a682708fafab14e1365186e0408e5319c7f801b4",
+    "parts": [
+      {
+        "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part00",
+        "blob_sha": "d063debe1ae28c0c5d09ed439c08ad0130d8f58f",
+        "bytes": 350000,
+        "sha256": "dedee59bbcecb64ecef69a9ecb8d3a4fe63f1e89d11a3841e394b620e46f48fe",
+        "start_byte": 0,
+        "end_byte_exclusive": 350000
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part01",
+        "blob_sha": "00a4d35c3a0be3e6b9dbf857ea9d1ead81d2f6f2",
+        "bytes": 350000,
+        "sha256": "100426c7a5889a06f9f44cb171d2dc6695bdfa9f621dcc7fa478b83d99b132f3",
+        "start_byte": 350000,
+        "end_byte_exclusive": 700000
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part02",
+        "blob_sha": "2740500a5be331b3b809c391416d70e8a5d55dd4",
+        "bytes": 350000,
+        "sha256": "7588d6bbec463aa96fb2c2562fde59ae75e8a906bc64cb3ae13aec976f2faf58",
+        "start_byte": 700000,
+        "end_byte_exclusive": 1050000
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part03",
+        "blob_sha": "7ddf2daafd5d6668875dc1251ba5dfb0197c7248",
+        "bytes": 350000,
+        "sha256": "289dc57f9576ed24d1c67e0374a4933460de4c4a3df9d8c990e9379ef356e1dc",
+        "start_byte": 1050000,
+        "end_byte_exclusive": 1400000
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part04",
+        "blob_sha": "33c8d608dc2c51d67f4c50482022f19f332bab91",
+        "bytes": 350000,
+        "sha256": "49a6d7db82f3b3ec2a39391cf79ad63c70c093ee6bc5f716c880f42a064976f5",
+        "start_byte": 1400000,
+        "end_byte_exclusive": 1750000
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part05",
+        "blob_sha": "a1a25bc922353e5f735d678da206839110f17192",
+        "bytes": 350000,
+        "sha256": "f64b5c331e0d214714c6453454c669e9740b8ff45fb6ac063b8017dde3259552",
+        "start_byte": 1750000,
+        "end_byte_exclusive": 2100000
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part06",
+        "blob_sha": "acecbc2585b809c3ebd5cac9c9f6ab38996018bb",
+        "bytes": 45300,
+        "sha256": "776d928f9aaf226861220cd209f785a4621206583325e8ed377dbaab0bfd5b31",
+        "start_byte": 2100000,
+        "end_byte_exclusive": 2145300
+      }
+    ],
+    "reconstruction": "Concatenate ordered parts without any added bytes. Original UTF-8 BOMs, all timestamps and line endings are preserved."
+  },
+  "observations": {
+    "self_test": "PASS_HEPTA_CALLER_PROOF_SELF_TEST",
+    "full_verify": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "boundary_count": 541,
+    "privileged_inventory_count": 541,
+    "protected_record_count": 390,
+    "rust_files_scanned": 6604,
+    "authority_granted": false,
+    "source_identity": "Direct exact head checkout is present in the original job log. Workflow's before/after tracked-source identity checks are in the completed successful step. No parsed/re-serialized file is presented as original output.",
+    "limits": "This caller proof qualifies the original caller inventory only. It does not imply any native test, Root suite, scientific experiment or later source passed."
+  },
+  "artifact": {
+    "id": 13962289750,
+    "zip_bytes": 21741,
+    "zip_sha256": "5d3f4fed9766199fafd458be01849de664840ffbfb0c5da3bdcefa6687e32a50",
+    "retrieval": "NOT_PERFORMED"
+  },
+  "files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part00",
+      "blob_sha": "d063debe1ae28c0c5d09ed439c08ad0130d8f58f",
+      "bytes": 350000,
+      "sha256": "dedee59bbcecb64ecef69a9ecb8d3a4fe63f1e89d11a3841e394b620e46f48fe",
+      "start_byte": 0,
+      "end_byte_exclusive": 350000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part01",
+      "blob_sha": "00a4d35c3a0be3e6b9dbf857ea9d1ead81d2f6f2",
+      "bytes": 350000,
+      "sha256": "100426c7a5889a06f9f44cb171d2dc6695bdfa9f621dcc7fa478b83d99b132f3",
+      "start_byte": 350000,
+      "end_byte_exclusive": 700000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part02",
+      "blob_sha": "2740500a5be331b3b809c391416d70e8a5d55dd4",
+      "bytes": 350000,
+      "sha256": "7588d6bbec463aa96fb2c2562fde59ae75e8a906bc64cb3ae13aec976f2faf58",
+      "start_byte": 700000,
+      "end_byte_exclusive": 1050000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part03",
+      "blob_sha": "7ddf2daafd5d6668875dc1251ba5dfb0197c7248",
+      "bytes": 350000,
+      "sha256": "289dc57f9576ed24d1c67e0374a4933460de4c4a3df9d8c990e9379ef356e1dc",
+      "start_byte": 1050000,
+      "end_byte_exclusive": 1400000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part04",
+      "blob_sha": "33c8d608dc2c51d67f4c50482022f19f332bab91",
+      "bytes": 350000,
+      "sha256": "49a6d7db82f3b3ec2a39391cf79ad63c70c093ee6bc5f716c880f42a064976f5",
+      "start_byte": 1400000,
+      "end_byte_exclusive": 1750000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part05",
+      "blob_sha": "a1a25bc922353e5f735d678da206839110f17192",
+      "bytes": 350000,
+      "sha256": "f64b5c331e0d214714c6453454c669e9740b8ff45fb6ac063b8017dde3259552",
+      "start_byte": 1750000,
+      "end_byte_exclusive": 2100000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part06",
+      "blob_sha": "acecbc2585b809c3ebd5cac9c9f6ab38996018bb",
+      "bytes": 45300,
+      "sha256": "776d928f9aaf226861220cd209f785a4621206583325e8ed377dbaab0bfd5b31",
+      "start_byte": 2100000,
+      "end_byte_exclusive": 2145300
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/jobs.original.json",
+      "blob_sha": "da6a10658291529fa9b7084641cf9bb01cf1c746",
+      "bytes": 6294,
+      "sha256": "2c90eb1a44ed4dc580f7c09192ad9593c1031c691f0bf6f1421ff36d0ec3b6aa"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "before": "type FixtureResult<T> = Result<T, Box<dyn std::error::Error>>;\n\n    ",
+    "after": "",
+    "decision": "Unused Result alias belongs only to the alternative propagation style.",
+    "semantic_mapping_id": "result_return_plumbing"
+  },
+  {
+    "id": 2,
+    "before": "fn ledger() -> Result<LeaseLedger, LeaseLedgerError>",
+    "after": "fn ledger() -> LeaseLedger",
+    "decision": "Keep the explicitly asserted admission helper's direct result type.",
+    "semantic_mapping_id": "result_return_plumbing"
+  },
+  {
+    "id": 3,
+    "before": "let mut ledger = ledger()?;",
+    "after": "let mut ledger = ledger();",
+    "decision": "Match the preserved helper signature; its assert still fails on error.",
+    "semantic_mapping_id": "result_return_plumbing"
+  },
+  {
+    "id": 4,
+    "before": "        Ok(())\n    }\n\n    #[test]",
+    "after": "    }\n\n    #[test]",
+    "decision": "First test preserves its unit-returning signature and complete assertions.",
+    "semantic_mapping_id": "result_return_plumbing"
+  },
+  {
+    "id": 5,
+    "before": "fn allocation_binding_changes_when_owner_mutation_semantics_change() -> FixtureResult<()>",
+    "after": "fn allocation_binding_changes_when_owner_mutation_semantics_change()",
+    "decision": "Second test remains unit-returning with current fail-on-error setup.",
+    "semantic_mapping_id": "result_return_plumbing"
+  },
+  {
+    "id": 6,
+    "before": "        Ok(())\n    }\n}\n",
+    "after": "    }\n}\n",
+    "decision": "Second test's final success value is unnecessary with its preserved signature.",
+    "semantic_mapping_id": "result_return_plumbing"
+  }
+]

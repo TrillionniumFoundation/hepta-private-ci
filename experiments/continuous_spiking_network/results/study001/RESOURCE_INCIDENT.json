@@ -1,0 +1,31 @@
+{
+  "observed_unix": 1793172702.540046,
+  "run_id": "scaling/config09/mamba1/seed3301",
+  "execution_receipt": {
+    "command": [
+      "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+      "-m",
+      "experiments.continuous_spiking_network.train",
+      "--output",
+      "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001/scaling/config09/mamba1/seed3301",
+      "--spec",
+      "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001/scaling/config09/mamba1/seed3301/SPEC.json",
+      "--cache-dir",
+      "/workspace/scratch/9bbd63a0445f/hcsn-data"
+    ],
+    "elapsed_seconds": 127.06598091125488,
+    "exit_code": -9,
+    "run_id": "scaling/config09/mamba1/seed3301",
+    "status": "failed"
+  },
+  "classification": "SIGKILL under observed cgroup memory pressure; OOM strongly suspected, exact victim attribution unavailable",
+  "cgroup": {
+    "memory.current": "8513368064\n",
+    "memory.max": "8589934592\n",
+    "memory.peak": "8595619840\n",
+    "memory.events": "low 0\nhigh 0\nmax 1122130\noom 6\noom_kill 4\noom_group_kill 0\n"
+  },
+  "partial_checkpoint_manifest_sha256": "658db7497f136521d8276d1976811ccb2549757d09053f322508e52f5a5ca272",
+  "selected_step": 80,
+  "recovery_plan": "same source, spec, batch size and seed; full retraining with one worker after initial study finishes; optimizer/RNG state is not available for exact continuation"
+}

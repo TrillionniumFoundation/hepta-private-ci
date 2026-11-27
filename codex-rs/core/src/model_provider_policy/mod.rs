@@ -1,3 +1,4 @@
+#[path = "binding_v2.rs"]
 mod binding;
 
 // Registered ahead of the transport caller for the same staged-review reason

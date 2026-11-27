@@ -1,0 +1,1835 @@
+{
+  "schema": 1,
+  "meaning": "Fixed current-source regression identity, preserving all original negative cases and historical contract bytes. No runtime or scientific qualification.",
+  "contracts": {
+    "0": {
+      "historical_path": "qualification/learn-ordinary-ce434/paired-product-domain-20261112/guard-contract.json",
+      "historical_sha256": "09b9cd228d9d3904ed1d69aab3618f0b6d7cc5ee560daff17000230e07593f3a",
+      "guard_rows": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_release.rs",
+          "canonical_sha256": "b5e44fd5de21280523c86accb45b4c2d6991dd03d388baab38146e74a03314f9"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+          "canonical_sha256": "5c542a70ce65016e05439e61f86bff047fbab54953425621d5b85e2661cb18d0"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+          "canonical_sha256": "b4a2e5ebc57340bb547d942a8d68512b9b4e6e06f4aff64dad4444ad88696c32"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+          "canonical_sha256": "a70bde99aa2756e86617c5123e24c48f4e37eae7b620c9f0d4d836554f950539"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "canonical_sha256": "274995f3b2e05d1d917003fe2448f8218b102e34c8fb05ade68965edea2906c9"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+          "canonical_sha256": "4ce8388fa082bf659f2f529b7fe3e903ea8937535c9ca030935916a1673a71a9"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+          "canonical_sha256": "cdb5e4d2c5d8d5ec90724424095ecaf7864099692f138a45785f1e25e41a262a"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+          "canonical_sha256": "3fc18f8ca30d9525f35221cc05fa25ba2575d84b1ac7c77f37bf93d17f1b1650"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+          "canonical_sha256": "a3124be5a8f76c0d185a044d7e467e6c16289db7f91eee0fdeaacb2bfc112e6b"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_paired_evaluation.rs",
+          "canonical_sha256": "af7b0607f49240029348787cc128b554ba199fae93a8049f776dffc8db215ec3"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_material_commitments.rs",
+          "canonical_sha256": "f46655585e3bbd2565c3deabd19c33350b0cbc74056158d1b31afd88e2e0f89a"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+          "canonical_sha256": "4af01f29a1774b843d316f1975d38d95f6bd4fb0f33f8bd796e364142820bc3a"
+        }
+      ],
+      "record_counts": {
+        "codex-rs/hepta-intelligence-eval/src/lib.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/metric_roles.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_holdout_release.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_material_commitments.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_paired.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_paired_evaluation.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_runner.rs": 1
+      },
+      "boundaries": [
+        {
+          "id": "product_paired_original_plan_freeze",
+          "symbol": "freeze_paired_on_policy_product_evaluation_plan_v1",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+          "definition_markers": [
+            "pub fn freeze_paired_on_policy_product_evaluation_plan_v1(",
+            "require_comparable_plans(candidate_temporal, baseline_temporal)?",
+            "inputs::validate_pair_contract(&pairing)?",
+            "frozen.validate_integrity()?"
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+            "codex-rs/hepta-intelligence-eval/src/product_policy.rs"
+          ],
+          "caller_markers": [
+            "freeze_paired_on_policy_product_evaluation_plan_v1("
+          ]
+        },
+        {
+          "id": "product_paired_original_holdout_release",
+          "symbol": "FinalHoldoutProviderV1::release_paired_after_consumption",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "definition_markers": [
+            "fn release_paired_after_consumption(",
+            "Err(ProductProviderErrorV1::Rejected)"
+          ],
+          "product_callers": [],
+          "caller_markers": [
+            "provider.release_paired_after_consumption(&holdout, pairing)?"
+          ],
+          "call_pattern": "(?:\\.|::)\\s*release_paired_after_consumption\\s*\\("
+        },
+        {
+          "id": "product_paired_original_runner_dispatch",
+          "symbol": "ProductEvaluationRunnerV1::evaluate_paired_on_policy_comparison",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+          "definition_markers": [
+            "pub(super) fn evaluate_paired_on_policy_comparison<P: FinalHoldoutProviderV1>",
+            "evaluation::evaluate("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-intelligence-eval/src/product_runner.rs"
+          ],
+          "caller_markers": [
+            "return self.evaluate_paired_on_policy_comparison("
+          ],
+          "call_pattern": "(?:\\.|::)\\s*evaluate_paired_on_policy_comparison\\s*\\("
+        },
+        {
+          "id": "product_paired_original_mode_read",
+          "symbol": "ProductFrozenEvaluationPlanV1::comparison_mode",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+          "definition_markers": [
+            "pub fn comparison_mode(&self) -> &ProductComparisonModeV1",
+            "&self.comparison"
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+            "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+            "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+            "codex-rs/hepta-intelligence-eval/src/product_runner.rs"
+          ],
+          "caller_markers": [
+            ".comparison_mode()"
+          ],
+          "call_pattern": "(?:\\.|::)\\s*comparison_mode\\s*\\("
+        },
+        {
+          "id": "product_paired_original_execution_encode",
+          "symbol": "paired_codec::encode_execution",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+          "definition_markers": [
+            "pub(super) fn encode_execution(",
+            "receipt.validate_integrity()?",
+            "b\"HPEXRP01\""
+          ],
+          "product_callers": [
+            "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs"
+          ],
+          "caller_markers": [
+            "paired_codec::encode_execution(receipt)"
+          ]
+        },
+        {
+          "id": "product_paired_original_execution_decode",
+          "symbol": "paired_codec::decode_execution",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+          "definition_markers": [
+            "pub(super) fn decode_execution(",
+            "let paired_input = reader.digest()?",
+            "reader.finish()?",
+            "receipt.validate_integrity()?",
+            "if encode_execution(&receipt)? != bytes"
+          ],
+          "product_callers": [
+            "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs"
+          ],
+          "caller_markers": [
+            "paired_codec::decode_execution(bytes, plan, holdout)"
+          ]
+        }
+      ],
+      "case_mappings": [
+        {
+          "before": {
+            "path": "codex-rs/hepta-intelligence-eval/src/product_paired_evaluation.rs",
+            "function": "fn evaluate<",
+            "category": "original_owner",
+            "marker": "let mut released = provider.release_paired_after_consumption(&holdout, pairing)?;"
+          },
+          "after": {
+            "path": "codex-rs/hepta-intelligence-eval/src/product_paired_evaluation.rs",
+            "function": "fn evaluate<",
+            "category": "original_owner",
+            "marker": "let mut released = super::super::holdout_release::release_original_paired_holdout(\n        &mut runner.holdout,\n        &product_plan.frozen_plan,\n        &holdout,\n        pairing,\n        provider,\n    )?;"
+          },
+          "reason": "same actual consumed mutable holdout through its current fenced helper"
+        },
+        {
+          "before": {
+            "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+            "function": "fn execution_digest(",
+            "marker": "ProductComparisonModeV1::SharedBehavior => b\"hepta.intelligence-eval.product-execution.v1\".to_vec(),"
+          },
+          "after": {
+            "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+            "function": "fn execution_digest(",
+            "marker": "ProductComparisonModeV1::SharedBehavior => {\n            b\"hepta.intelligence-eval.product-execution.v1\".to_vec()\n        }"
+          },
+          "reason": "same returned byte vector in an explicit match-arm block"
+        },
+        {
+          "before": {
+            "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+            "function": "fn execution_digest(",
+            "marker": "ProductComparisonModeV1::PairedOnPolicy(_) => b\"hepta.intelligence-eval.paired-on-policy-product-execution.v1\".to_vec(),"
+          },
+          "after": {
+            "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+            "function": "fn execution_digest(",
+            "marker": "ProductComparisonModeV1::PairedOnPolicy(_) => {\n            b\"hepta.intelligence-eval.paired-on-policy-product-execution.v1\".to_vec()\n        }"
+          },
+          "reason": "same returned byte vector in an explicit match-arm block"
+        },
+        {
+          "before": {
+            "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+            "function": "fn product_evaluation_seal(",
+            "marker": "ProductComparisonModeV1::SharedBehavior => b\"hepta.intelligence-eval.product-evaluation-receipt.v1\".to_vec(),"
+          },
+          "after": {
+            "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+            "function": "fn product_evaluation_seal(",
+            "marker": "ProductComparisonModeV1::SharedBehavior => {\n            b\"hepta.intelligence-eval.product-evaluation-receipt.v1\".to_vec()\n        }"
+          },
+          "reason": "same returned byte vector in an explicit match-arm block"
+        }
+      ]
+    },
+    "1": {
+      "historical_path": "qualification/learn-ordinary-ce434/pre-b-product-policy-v2-20261112/guard-contract.json",
+      "historical_sha256": "518ffd4b8b1d869d6808362e4ad0a59627f14a32a1e3dd65401f1440336afe68",
+      "guard_rows": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_release.rs",
+          "canonical_sha256": "b5e44fd5de21280523c86accb45b4c2d6991dd03d388baab38146e74a03314f9"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+          "canonical_sha256": "5c542a70ce65016e05439e61f86bff047fbab54953425621d5b85e2661cb18d0"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+          "canonical_sha256": "b4a2e5ebc57340bb547d942a8d68512b9b4e6e06f4aff64dad4444ad88696c32"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "canonical_sha256": "274995f3b2e05d1d917003fe2448f8218b102e34c8fb05ade68965edea2906c9"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+          "canonical_sha256": "3fc18f8ca30d9525f35221cc05fa25ba2575d84b1ac7c77f37bf93d17f1b1650"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+          "canonical_sha256": "e9838b1d5c3b63ffca41694dec53864bef1c7041cea9bcbd4d6f1dc37896da7f"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+          "canonical_sha256": "21403f7099496d53a72833d6cd88aca9f9679242dfbbec445949332b8813d596"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_policy_codec.rs",
+          "canonical_sha256": "70a31aeb40d72c0f587644c30e1d45dd68c9fece959ed8c1971ccf6e04bb750e"
+        }
+      ],
+      "record_counts": {
+        "codex-rs/hepta-intelligence-eval/src/closure.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/lib.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/metric_roles.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_holdout_release.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_policy.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_policy_codec.rs": 1,
+        "codex-rs/hepta-intelligence-eval/src/product_runner.rs": 1
+      },
+      "boundaries": [
+        {
+          "id": "product_pre_b_policy_v2_freeze",
+          "symbol": "ProductEvaluationPolicyV2::freeze",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+          "definition_markers": [
+            "pub fn freeze(",
+            "codec::encode(&context, &input)?;",
+            "normalize_cross_fold_metadata(",
+            "role_contract_commitment_bytes(",
+            "Ok(policy)"
+          ],
+          "product_callers": [],
+          "caller_markers": [
+            "freeze("
+          ],
+          "receiver_type": "ProductEvaluationPolicyV2",
+          "receiver_methods": [
+            "freeze"
+          ]
+        },
+        {
+          "id": "product_pre_b_policy_v2_decode",
+          "symbol": "ProductEvaluationPolicyV2::from_canonical_commitment_bytes",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+          "definition_markers": [
+            "pub fn from_canonical_commitment_bytes(",
+            "let (context, input) = codec::decode(bytes)?;",
+            "ProductEvaluationPolicyV2::freeze(context, input)?;",
+            "ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes"
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs"
+          ],
+          "caller_markers": [
+            "from_canonical_commitment_bytes("
+          ],
+          "receiver_type": "ProductEvaluationPolicyV2",
+          "receiver_methods": [
+            "from_canonical_commitment_bytes"
+          ]
+        },
+        {
+          "id": "product_pre_b_policy_v2_encode",
+          "symbol": "ProductEvaluationPolicyV2::canonical_commitment_bytes",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+          "definition_markers": [
+            "pub fn canonical_commitment_bytes(&self) -> Result<Vec<u8>, ProductEvaluationError>",
+            "codec::encode(&self.context, &self.input)"
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs"
+          ],
+          "caller_markers": [
+            "canonical_commitment_bytes("
+          ],
+          "receiver_type": "ProductEvaluationPolicyV2",
+          "receiver_methods": [
+            "canonical_commitment_bytes"
+          ]
+        },
+        {
+          "id": "product_pre_b_policy_v2_digest",
+          "symbol": "ProductEvaluationPolicyV2::digest",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+          "definition_markers": [
+            "pub fn digest(&self) -> Result<Digest32, ProductEvaluationError>",
+            "ProductEvaluationPolicyV2::canonical_commitment_bytes(self)?"
+          ],
+          "product_callers": [],
+          "caller_markers": [
+            "digest("
+          ],
+          "receiver_type": "ProductEvaluationPolicyV2",
+          "receiver_methods": [
+            "digest"
+          ]
+        },
+        {
+          "id": "product_pre_b_policy_v2_instantiate",
+          "symbol": "ProductEvaluationPolicyV2::instantiate",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+          "definition_markers": [
+            "pub fn instantiate(",
+            "freeze_paired_on_policy_product_evaluation_plan_v1(",
+            "self.bound_plan(bindings)"
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+          ],
+          "caller_markers": [
+            "instantiate("
+          ],
+          "receiver_type": "ProductEvaluationPolicyV2",
+          "receiver_methods": [
+            "instantiate"
+          ]
+        },
+        {
+          "id": "product_pre_b_policy_v2_expected_commitments",
+          "symbol": "ProductEvaluationPolicyV2::expected_commitment_bytes",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+          "definition_markers": [
+            "pub fn expected_commitment_bytes(",
+            "paired::commitments::estimand_fields(",
+            "cross_fold_plan_v2_commitments(&mut bound, &mut metric_roles)?;",
+            "paired::commitments::plan_fields(",
+            "Ok(ProductEvaluationPolicyCommitmentsV2 {\n            plan,\n            estimand,\n            roles,\n        })",
+            "Ok(ProductEvaluationPolicyCommitmentsV2 {"
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs"
+          ],
+          "caller_markers": [
+            "expected_commitment_bytes("
+          ],
+          "receiver_type": "ProductEvaluationPolicyV2",
+          "receiver_methods": [
+            "expected_commitment_bytes"
+          ]
+        },
+        {
+          "id": "product_original_cross_fold_receipt_from_commitments",
+          "symbol": "frozen_plan_from_commitments",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+          "definition_markers": [
+            "pub(crate) fn frozen_plan_from_commitments(",
+            "authority: AuthorityPosture::DENY_ALL,",
+            "receipt.receipt_seal = frozen_plan_receipt_seal(&receipt);"
+          ],
+          "product_callers": [
+            "codex-rs/hepta-intelligence-eval/src/metric_roles.rs"
+          ],
+          "caller_markers": [
+            "frozen_plan_from_commitments(plan, commitments)"
+          ]
+        },
+        {
+          "id": "product_paired_original_plan_freeze",
+          "symbol": "freeze_paired_on_policy_product_evaluation_plan_v1",
+          "definition_path": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+          "definition_markers": [
+            "pub fn freeze_paired_on_policy_product_evaluation_plan_v1(",
+            "require_comparable_plans(candidate_temporal, baseline_temporal)?",
+            "inputs::validate_pair_contract(&pairing)?",
+            "frozen.validate_integrity()?"
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+            "codex-rs/hepta-intelligence-eval/src/product_policy.rs"
+          ],
+          "caller_markers": [
+            "freeze_paired_on_policy_product_evaluation_plan_v1("
+          ]
+        }
+      ],
+      "case_mappings": []
+    },
+    "2": {
+      "historical_path": "qualification/learn-ordinary-ce434/pre-b-agentd-policy-v2-20261112/closure-contract.json",
+      "historical_sha256": "8dc316be19e9bc85d343b2b0039c187307748b02721d23cfe7a8a357d87a1108",
+      "guard_rows": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+          "canonical_sha256": "81b938f90dec0963ba7f98626f4d9c243a1ec86cee5a227c02d5d49aff34f903"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "canonical_sha256": "462ae9cf7a16023f93ddd9bc2eb1a237578e8fc2df825d48f84330473488f822"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+          "canonical_sha256": "3f5fedf0cd2d7178add9b446aaae2d0480433adfcef8fa85b5fa8a939ca9067e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+          "canonical_sha256": "e76274adaac911642817cf19e4f78d42635e3dfec2681149ad73a2067474fbb5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "canonical_sha256": "45f036e3d19887302461b9ba930b706e7a6b4ea7789a4946da294717ebf8391a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+          "canonical_sha256": "53f5baba09c26258434ca39ffb13a01000324281242c72097685ecfb97999be5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+          "canonical_sha256": "1af9e872a1a6c6a681b8b7a1f2aa95fba75deccff9092e33899c8b92fc6f3236"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+          "canonical_sha256": "72c9a85465839832894dd18e8793a8e094a9e659284ee09e8415d59a069c71ea"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "canonical_sha256": "adb49529d3354c5e6778d3d4f5288df08769fc794826ee08309da9c29e9a3715"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs",
+          "canonical_sha256": "07a1202399af41d42c6d9982290fa6af3f914840a57ccbad2f2880ea7a71631f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_comparison.rs",
+          "canonical_sha256": "d3a925fb401ed6c25805ee1cec0c0c475ecc791c5596147463f36d244a883584"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+          "canonical_sha256": "df8d7f5017fb928bfaf532467ada97d79cdd4d15e7e4610ced2fc13049f47123"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+          "canonical_sha256": "125154bd38254a4edf377eedc15b9415891ffa8214d5a510bb7d0ea2c60a8fc6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs",
+          "canonical_sha256": "85a5cadd5fb059eb203107fcc84ca1ddb98b6421c9a0a8210116aea079c84945"
+        }
+      ],
+      "record_counts": {
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs": 1,
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs": 1,
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs": 1,
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs": 1,
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_comparison.rs": 1,
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs": 1,
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs": 1,
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs": 1,
+        "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs": 1,
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs": 1,
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs": 1,
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs": 1,
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs": 1,
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs": 1
+      },
+      "boundaries": [
+        {
+          "id": "learning_pre_b_policy_freeze",
+          "symbol": "OriginalCircuitOnPolicyEvaluationPolicyV2::freeze",
+          "receiver_type": "OriginalCircuitOnPolicyEvaluationPolicyV2",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "definition_markers": [
+            "fn freeze("
+          ],
+          "product_callers": [],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_policy_decode",
+          "symbol": "OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes",
+          "receiver_type": "OriginalCircuitOnPolicyEvaluationPolicyV2",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "definition_markers": [
+            "fn from_canonical_commitment_bytes("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_policy_original_rule",
+          "symbol": "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_rule",
+          "receiver_type": "OriginalCircuitOnPolicyEvaluationPolicyV2",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "definition_markers": [
+            "fn require_original_rule("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_policy_original_training",
+          "symbol": "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_policy_training",
+          "receiver_type": "OriginalCircuitOnPolicyEvaluationPolicyV2",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "definition_markers": [
+            "fn require_original_policy_training("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_panel_freeze",
+          "symbol": "OriginalCircuitOnPolicyPanelPolicyV2::freeze",
+          "receiver_type": "OriginalCircuitOnPolicyPanelPolicyV2",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+          "definition_markers": [
+            "fn freeze("
+          ],
+          "product_callers": [],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_panel_initial",
+          "symbol": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial",
+          "receiver_type": "OriginalCircuitOnPolicyPanelPolicyV2",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+          "definition_markers": [
+            "fn require_original_panel_initial("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_panel_training",
+          "symbol": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training",
+          "receiver_type": "OriginalCircuitOnPolicyPanelPolicyV2",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+          "definition_markers": [
+            "fn require_original_panel_training("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_cohort_config",
+          "symbol": "OriginalCircuitOnPolicyCohortConfigV2::from_original",
+          "receiver_type": "OriginalCircuitOnPolicyCohortConfigV2",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+          "definition_markers": [
+            "fn from_original("
+          ],
+          "product_callers": [],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_cohort_capture",
+          "symbol": "OriginalCircuitOnPolicyCohortV1::read_original_v2",
+          "receiver_type": "OriginalCircuitOnPolicyCohortV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "definition_markers": [
+            "fn read_original_v2("
+          ],
+          "product_callers": [],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_cohort_declaration",
+          "symbol": "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy",
+          "receiver_type": "OriginalCircuitOnPolicyCohortV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "definition_markers": [
+            "fn original_pre_b_policy("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_cohort_plan",
+          "symbol": "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan",
+          "receiver_type": "OriginalCircuitOnPolicyCohortV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "definition_markers": [
+            "fn require_original_pre_b_plan("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "cell_pre_b_paired_evaluation_freeze",
+          "symbol": "freeze_paired_cell_learning_evaluation_plan_v2",
+          "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+          "definition_markers": [
+            "pub fn freeze_paired_cell_learning_evaluation_plan_v2<"
+          ],
+          "product_callers": [],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_pre_b_remote_policy_verify",
+          "symbol": "verify_pre_b_policy",
+          "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+          "definition_markers": [
+            "fn verify_pre_b_policy("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs"
+          ],
+          "caller_markers": []
+        }
+      ],
+      "case_mappings": [
+        {
+          "before": {
+            "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+            "function": "fn verify_pre_b_policy(",
+            "marker": "record.as_object().map(|object| object.len()) != Some(6)",
+            "replacement": "false"
+          },
+          "after": {
+            "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+            "function": "fn verify_pre_b_policy(",
+            "marker": "record.as_object().map(serde_json::Map::len) != Some(6)",
+            "replacement": "false"
+          },
+          "reason": "same serde_json Map length method through UFCS"
+        }
+      ],
+      "scope_mutations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "function": "fn freeze(",
+          "original_row": 0,
+          "scope_index": 0,
+          "original_marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::canonical_commitment_bytes(&policy)?",
+          "marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::canonical_commitment_bytes(&policy)?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "function": "fn canonical_commitment_bytes(",
+          "original_row": 0,
+          "scope_index": 1,
+          "original_marker": "encoding::encode(self)",
+          "marker": "encoding::encode(self)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "function": "fn digest(",
+          "original_row": 0,
+          "scope_index": 2,
+          "original_marker": "Digest32::of_bytes(&self.canonical_commitment_bytes()?)",
+          "marker": "Digest32::of_bytes(&self.canonical_commitment_bytes()?)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "function": "fn cohort_rule_digest(",
+          "original_row": 0,
+          "scope_index": 3,
+          "original_marker": "self.legacy_rule.as_array()",
+          "marker": "self.legacy_rule.as_array()",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "function": "fn from_canonical_commitment_bytes(",
+          "original_row": 0,
+          "scope_index": 4,
+          "original_marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes",
+          "marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "function": "fn require_original_rule(",
+          "original_row": 0,
+          "scope_index": 5,
+          "original_marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::freeze(rule, ledger,",
+          "marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::freeze(\n            rule,\n            ledger,",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "function": "fn require_original_policy_training(",
+          "original_row": 0,
+          "scope_index": 6,
+          "original_marker": "training.request.envelope.objective_digest != self.product.context().objective_digest",
+          "marker": "training.request.envelope.objective_digest != self.product.context().objective_digest",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "function": "fn pairing(",
+          "original_row": 0,
+          "scope_index": 7,
+          "original_marker": "LearningIterationCoordinatorV1::from_snapshot(training.clone())?",
+          "marker": "LearningIterationCoordinatorV1::from_snapshot(training.clone())?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "function": "fn comparison(",
+          "original_row": 0,
+          "scope_index": 8,
+          "original_marker": "self.comparison.observed(training, candidate_structure, baseline_structure)",
+          "marker": "self.comparison\n            .observed(training, candidate_structure, baseline_structure)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+          "function": "fn validate(",
+          "original_row": 0,
+          "scope_index": 9,
+          "original_marker": "self.legacy_rule, self.task, self.ledger, self.baseline",
+          "marker": "self.legacy_rule, self.task, self.ledger, self.baseline",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_comparison.rs",
+          "function": "fn normalize(",
+          "original_row": 1,
+          "scope_index": 0,
+          "original_marker": "updates.maximum_parameters_per_step > capacity.trainable_parameters",
+          "marker": "updates.maximum_parameters_per_step > capacity.trainable_parameters",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_comparison.rs",
+          "function": "fn observed(",
+          "original_row": 1,
+          "scope_index": 1,
+          "original_marker": "LearningIterationCoordinatorV1::from_snapshot(training.clone())?",
+          "marker": "LearningIterationCoordinatorV1::from_snapshot(training.clone())?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+          "function": "fn new(",
+          "original_row": 2,
+          "scope_index": 0,
+          "original_marker": "bytes.is_empty() || bytes.len() > MAX_POLICY_BYTES",
+          "marker": "bytes.is_empty() || bytes.len() > MAX_POLICY_BYTES",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+          "function": "fn put_bytes(",
+          "original_row": 2,
+          "scope_index": 1,
+          "original_marker": "&(value.len() as u64).to_be_bytes()",
+          "marker": "&(value.len() as u64).to_be_bytes()",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+          "function": "fn take(",
+          "original_row": 2,
+          "scope_index": 2,
+          "original_marker": "self.bytes.get(self.offset..end)",
+          "marker": "self\n            .bytes\n            .get(self.offset..end)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+          "function": "fn literal(",
+          "original_row": 2,
+          "scope_index": 3,
+          "original_marker": "self.take(value.len())? != value",
+          "marker": "self.take(value.len())? != value",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+          "function": "fn count(",
+          "original_row": 2,
+          "scope_index": 4,
+          "original_marker": "usize::try_from(self.u64()?)",
+          "marker": "usize::try_from(self.u64()?)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+          "function": "fn bytes(",
+          "original_row": 2,
+          "scope_index": 5,
+          "original_marker": "self.count(MAX_POLICY_BYTES)?",
+          "marker": "self.count(MAX_POLICY_BYTES)?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+          "function": "fn id(",
+          "original_row": 2,
+          "scope_index": 6,
+          "original_marker": "std::str::from_utf8(self.take(count)?)",
+          "marker": "std::str::from_utf8(self.take(count)?)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+          "function": "fn finish(",
+          "original_row": 2,
+          "scope_index": 7,
+          "original_marker": "self.offset != self.bytes.len()",
+          "marker": "self.offset != self.bytes.len()",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs",
+          "function": "fn encode(",
+          "original_row": 3,
+          "scope_index": 0,
+          "original_marker": "ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy.product)",
+          "marker": "ProductEvaluationPolicyV2::canonical_commitment_bytes(\n            &policy.product,\n        )",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs",
+          "function": "fn decode(",
+          "original_row": 3,
+          "scope_index": 1,
+          "original_marker": "decision: read.id()?, principal: read.id()?, episode: read.id()?, run: read.id()?",
+          "marker": "decision: read.id()?,\n                principal: read.id()?,\n                episode: read.id()?,\n                run: read.id()?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+          "function": "fn freeze(",
+          "original_row": 4,
+          "scope_index": 0,
+          "original_marker": "plan_id: policy.product.context().plan_id.clone()",
+          "marker": "plan_id: policy.product.context().plan_id.clone()",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+          "function": "fn require_declaration(",
+          "original_row": 4,
+          "scope_index": 1,
+          "original_marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(&bytes)? != *policy",
+          "marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(&bytes)?\n                != *policy",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+          "function": "fn require_original_panel_initial(",
+          "original_row": 4,
+          "scope_index": 2,
+          "original_marker": "LearningIterationCoordinatorV1::from_snapshot(initial.clone())?",
+          "marker": "LearningIterationCoordinatorV1::from_snapshot(initial.clone())?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+          "function": "fn require_original_panel_training(",
+          "original_row": 4,
+          "scope_index": 3,
+          "original_marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_policy_training(policy, training)?",
+          "marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_policy_training(\n                policy, training,\n            )?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+          "function": "fn from_original(",
+          "original_row": 5,
+          "scope_index": 0,
+          "original_marker": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(&policy, &original.training)?",
+          "marker": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(\n            &policy,\n            &original.training,\n        )?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn read_original_v2(",
+          "original_row": 6,
+          "scope_index": 0,
+          "original_marker": "Self::read_with_policy(owners, config.original, Some(config.policy), now)",
+          "marker": "Self::read_with_policy(owners, config.original, Some(config.policy), now)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn original_pre_b_policy(",
+          "original_row": 6,
+          "scope_index": 1,
+          "original_marker": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(",
+          "marker": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn require_original_pre_b_plan(",
+          "original_row": 6,
+          "scope_index": 2,
+          "original_marker": "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(self)?",
+          "marker": "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(self)?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn into_final_holdout_provider(",
+          "original_row": 6,
+          "scope_index": 3,
+          "original_marker": "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(&self)?",
+          "marker": "OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(&self)?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn release_with_clock(",
+          "original_row": 6,
+          "scope_index": 4,
+          "original_marker": "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(&self.original, &self.plan)",
+          "marker": "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(\n            &self.original,\n            &self.plan,\n        )",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "function": "fn validate_configuration(",
+          "original_row": 7,
+          "scope_index": 0,
+          "original_marker": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(",
+          "marker": "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "function": "fn require_plan(",
+          "original_row": 7,
+          "scope_index": 1,
+          "original_marker": "learning_evaluation_profile: Some(snapshot.request.evaluation_profile.into_array())",
+          "marker": "learning_evaluation_profile: Some(snapshot.request.evaluation_profile.into_array())",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+          "function": "fn freeze_paired_cell_learning_evaluation_plan_v2<",
+          "original_row": 8,
+          "scope_index": 0,
+          "original_marker": "learning_evaluation_profile: Some(training.request.evaluation_profile.into_array())",
+          "marker": "learning_evaluation_profile: Some(training.request.evaluation_profile.into_array())",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+          "function": "fn read_current_with_clock(",
+          "original_row": 9,
+          "scope_index": 0,
+          "original_marker": "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(&self.original, &self.plan)?",
+          "marker": "OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(\n                &self.original,\n                &self.plan,\n            )?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+          "function": "fn cohort(",
+          "original_row": 10,
+          "scope_index": 0,
+          "original_marker": "policy_bound: !paired::is_paired(member) || paired_v2",
+          "marker": "policy_bound: !paired::is_paired(member) || paired_v2",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+          "function": "fn verify_pre_b_policy(",
+          "original_row": 11,
+          "scope_index": 0,
+          "original_marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(bytes)",
+          "marker": "OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(bytes)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+          "function": "fn material(",
+          "original_row": 12,
+          "scope_index": 0,
+          "original_marker": "let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified)",
+          "marker": "let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs",
+          "function": "fn pairing(",
+          "original_row": 13,
+          "scope_index": 0,
+          "original_marker": "for _ in 0..5 { plan.digest()?; }",
+          "marker": "for _ in 0..5 {\n        plan.digest()?;\n    }",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn read_original(",
+          "original_row": 14,
+          "scope_index": 0,
+          "original_marker": "Self::read_original_with_clock(owners, config, now)",
+          "marker": "Self::read_original_with_clock(owners, config, now)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn read_original_with_clock(",
+          "original_row": 14,
+          "scope_index": 1,
+          "original_marker": "Self::read_with_policy(owners, config,",
+          "marker": "Self::read_with_policy(owners, config,",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn read_with_policy(",
+          "original_row": 14,
+          "scope_index": 2,
+          "original_marker": "binding::validate_configuration(&owners, &config, policy.as_deref())?",
+          "marker": "binding::validate_configuration(&owners, &config, policy.as_deref())?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn into_final_holdout_provider(",
+          "original_row": 14,
+          "scope_index": 3,
+          "original_marker": "binding::require_plan(&self, &plan)?",
+          "marker": "binding::require_plan(&self, &plan)?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn read_current_with_clock(",
+          "original_row": 14,
+          "scope_index": 4,
+          "original_marker": "OriginalCircuitOnPolicyCohortV1::read_original_material(",
+          "marker": "OriginalCircuitOnPolicyCohortV1::read_original_material(",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn authority(",
+          "original_row": 14,
+          "scope_index": 5,
+          "original_marker": "AuthorityPosture::DENY_ALL",
+          "marker": "AuthorityPosture::DENY_ALL",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn manifest_digest(",
+          "original_row": 14,
+          "scope_index": 6,
+          "original_marker": "self.manifest_with_clock(now)",
+          "marker": "self.manifest_with_clock(now)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn manifest_with_clock(",
+          "original_row": 14,
+          "scope_index": 7,
+          "original_marker": "return Err(ProductProviderErrorV1::Indeterminate)",
+          "marker": "return Err(ProductProviderErrorV1::Indeterminate)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn release_with_clock(",
+          "original_row": 14,
+          "scope_index": 8,
+          "original_marker": "if observed.manifest != plan.final_holdout_digest || &observed.pairing != pairing",
+          "marker": "if observed.manifest != plan.final_holdout_digest || &observed.pairing != pairing",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn now(",
+          "original_row": 14,
+          "scope_index": 9,
+          "original_marker": ".map(|elapsed| elapsed.as_secs())",
+          "marker": ".map(|elapsed| elapsed.as_secs())",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn into_readback_only(",
+          "original_row": 14,
+          "scope_index": 10,
+          "original_marker": "OriginalCircuitOnPolicyCohortReadbackV1::read_current(&mut readback)?",
+          "marker": "OriginalCircuitOnPolicyCohortReadbackV1::read_current(&mut readback)?",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn into_original_readback(",
+          "original_row": 14,
+          "scope_index": 11,
+          "original_marker": "OriginalCircuitOnPolicyCohortReadbackV1::retaining(\n            self.original,\n            self.plan,\n        )",
+          "marker": "OriginalCircuitOnPolicyCohortReadbackV1::retaining(\n            self.original,\n            self.plan,\n        )",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn release_after_consumption(",
+          "original_row": 14,
+          "scope_index": 12,
+          "original_marker": "Err(ProductProviderErrorV1::Rejected)",
+          "marker": "Err(ProductProviderErrorV1::Rejected)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "function": "fn release_paired_after_consumption(",
+          "original_row": 14,
+          "scope_index": 13,
+          "original_marker": "self.release_with_clock(receipt, pairing, now)",
+          "marker": "self.release_with_clock(receipt, pairing, now)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "function": "fn validate_configuration(",
+          "original_row": 15,
+          "scope_index": 0,
+          "original_marker": "config.training.request.evaluation_profile != config.registration.evaluation_profile()",
+          "marker": "config.training.request.evaluation_profile != config.registration.evaluation_profile()",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "function": "fn authenticate_training(",
+          "original_row": 15,
+          "scope_index": 1,
+          "original_marker": "receipt.observed_unix_seconds >= config.rule.candidate_plan.fold.evaluation_start",
+          "marker": "receipt.observed_unix_seconds >= config.rule.candidate_plan.fold.evaluation_start",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "function": "fn require_plan(",
+          "original_row": 15,
+          "scope_index": 2,
+          "original_marker": "original\n                    .config\n                    .registration\n                    .evaluation_profile()\n                    .into_array()",
+          "marker": "original\n                    .config\n                    .registration\n                    .evaluation_profile()\n                    .into_array()",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "function": "fn pairing_contract(",
+          "original_row": 15,
+          "scope_index": 3,
+          "original_marker": "owners.iter().find(|owner| owner.run_id == episode.behavior_run_id)",
+          "marker": "owners\n                .iter()\n                .find(|owner| owner.run_id == episode.behavior_run_id)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "function": "fn episode_lineage(",
+          "original_row": 15,
+          "scope_index": 4,
+          "original_marker": "ledger.binding_digest().as_array()",
+          "marker": "ledger.binding_digest().as_array()",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+          "function": "fn execution(",
+          "original_row": 16,
+          "scope_index": 0,
+          "original_marker": "paired::is_paired(member) && head.digest()?.is_zero()",
+          "marker": "paired::is_paired(member) && head.digest()?.is_zero()",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+          "function": "fn cohort(",
+          "original_row": 16,
+          "scope_index": 1,
+          "original_marker": "paired::is_paired(member) && inclusion != task.cohort_rule_digest",
+          "marker": "paired::is_paired(member) && inclusion != task.cohort_rule_digest",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+          "function": "fn holdout(",
+          "original_row": 16,
+          "scope_index": 2,
+          "original_marker": "holdout.digest()? != Digest32::of_bytes(&member.roles)",
+          "marker": "holdout.digest()? != Digest32::of_bytes(&member.roles)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+          "function": "fn material(",
+          "original_row": 17,
+          "scope_index": 0,
+          "original_marker": "let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified)",
+          "marker": "let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified)",
+          "unmatched_nonselected_markers": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+          "function": "fn digest(",
+          "original_row": 17,
+          "scope_index": 1,
+          "original_marker": "serde_json::from_value(value.clone())?",
+          "marker": "serde_json::from_value(value.clone())?",
+          "unmatched_nonselected_markers": []
+        }
+      ]
+    },
+    "3": {
+      "historical_path": "qualification/learn-ordinary-ce434/model-root-closure-repair-441-20261112/route-current-contract.json",
+      "historical_sha256": "ac2f3d9e8ab1f290fd5894deddbeda977231600ff885cb551a1f7b96764f849e",
+      "guard_rows": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+          "canonical_sha256": "c4d6c0f4731a5b603289ee5702edbd0f341f6de1e05a7ace3fc2fcf290710407"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+          "canonical_sha256": "3c45c3f56cc3224d72be9fc12541903a04c7f433bee0ac655bb74586f77b96e2"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+          "canonical_sha256": "a74f3af292ca8c89ca42e5eddff1df5f850b90fd7b8be09418d83f136c23d342"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+          "canonical_sha256": "07b1247c2652e97ce45d475d65cc9280a2a046943279b507b872d1665906efef"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+          "canonical_sha256": "de9fdccde90b5694275bbb477732cbb70f61565835de8a56f683e924ebaefcc0"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+          "canonical_sha256": "97acf6f49825d67faad302d581a08508ff946391c2242ce6357baf2ae38ba5dd"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+          "canonical_sha256": "e676cabe6b1fb4436ec62907a05927b67f5fc713e3cfaa072647e252e2e19317"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+          "canonical_sha256": "bbc91b685db2949d5f915916ca90f1797509b378e0aa4f09a5122f5462371aab"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+          "canonical_sha256": "6b430d74b632b813c0b0c0e3bb4133e1daf3fbd3d7fa4f19020599d5c3ce9808"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+          "canonical_sha256": "c7de22d1e0fb2a1d5fc792edc102208b63af2fca3d7f2ea5687d7550f4f9c996"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+          "canonical_sha256": "7dc154e706246931991dd736ff91abe30f82c9774812f8efa00d4097f0829aa6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+          "canonical_sha256": "320602d823cdb68579c8f16adc0265df56a285755a91a8bc5fc430b2fbd68de1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+          "canonical_sha256": "e961477aaf854e2ccc3af52910cad086fd54394386732c80079e585edd0e5392"
+        }
+      ],
+      "record_counts": {
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs": 1,
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs": 1,
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs": 1,
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs": 1,
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs": 1,
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs": 1,
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs": 1,
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs": 1,
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs": 1,
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs": 1,
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs": 1,
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs": 1,
+        "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs": 1
+      },
+      "boundaries": [
+        {
+          "id": "learning_original_candidate_operation_begin",
+          "symbol": "CandidateOriginalOperation::begin",
+          "receiver_type": "CandidateOriginalOperation",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+          "definition_markers": [
+            "pub(super) async fn begin("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_original_candidate_operation_close",
+          "symbol": "CandidateOriginalOperation::close",
+          "receiver_type": "CandidateOriginalOperation",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+          "definition_markers": [
+            "pub(super) async fn close("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_original_candidate_operation_evidence_consume",
+          "symbol": "OriginalCandidateOperationEvidence::into_original_parts",
+          "receiver_type": "OriginalCandidateOperationEvidence",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+          "definition_markers": [
+            "pub(crate) fn into_original_parts("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_original_model_operation_completed_model",
+          "symbol": "OriginalCellQ24ModelReadCompletionV1::model",
+          "receiver_type": "OriginalCellQ24ModelReadCompletionV1",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_model_read_operation.rs",
+          "definition_markers": [
+            "fn model("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+            "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+            "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs",
+            "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+            "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+            "codex-rs/hepta-agentd/src/circuit_model_version_state.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_original_model_operation_completed_material",
+          "symbol": "OriginalCellQ24ModelReadCompletionV1::material",
+          "receiver_type": "OriginalCellQ24ModelReadCompletionV1",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_model_read_operation.rs",
+          "definition_markers": [
+            "fn material("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+            "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+            "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs",
+            "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+            "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+            "codex-rs/hepta-agentd/src/circuit_model_version_state.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_publication_context_receipt",
+          "symbol": "OriginalCircuitModelPublicationContextV1::from_original_receipt",
+          "receiver_type": "OriginalCircuitModelPublicationContextV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+          "definition_markers": [
+            "fn from_original_receipt("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_publication_context_material",
+          "symbol": "OriginalCircuitModelPublicationContextV1::authenticate_material",
+          "receiver_type": "OriginalCircuitModelPublicationContextV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+          "definition_markers": [
+            "fn authenticate_material("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+            "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+            "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs",
+            "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+            "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+            "codex-rs/hepta-agentd/src/circuit_model_version_state.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_published_context_model",
+          "symbol": "OriginalCircuitCandidateLearningReadContextV1::from_original_model",
+          "receiver_type": "OriginalCircuitCandidateLearningReadContextV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs",
+          "definition_markers": [
+            "pub fn from_original_model("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_selection_receipt_context",
+          "symbol": "OriginalCircuitModelSelectionCommandReceiptV1::original_publication_context",
+          "receiver_type": "OriginalCircuitModelSelectionCommandReceiptV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs",
+          "definition_markers": [
+            "fn original_publication_context("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+            "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_selection_client_bind",
+          "symbol": "OriginalCircuitModelSelectionCommandClientV1::bind_original_stage_channel",
+          "receiver_type": "OriginalCircuitModelSelectionCommandClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs",
+          "definition_markers": [
+            "fn bind_original_stage_channel("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_selection_client_attest",
+          "symbol": "OriginalCircuitModelSelectionCommandClientV1::execute_selection",
+          "receiver_type": "OriginalCircuitModelSelectionCommandClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs",
+          "definition_markers": [
+            "fn execute_selection("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_selection_client_readback",
+          "symbol": "OriginalCircuitModelSelectionCommandClientV1::readback",
+          "receiver_type": "OriginalCircuitModelSelectionCommandClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs",
+          "definition_markers": [
+            "fn readback("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_version_client_bind",
+          "symbol": "OriginalCircuitModelVersionClientV1::bind_original_stage_channel",
+          "receiver_type": "OriginalCircuitModelVersionClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+          "definition_markers": [
+            "fn bind_original_stage_channel("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_version_client_recover",
+          "symbol": "OriginalCircuitModelVersionClientV1::recover_original_stage_channel",
+          "receiver_type": "OriginalCircuitModelVersionClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+          "definition_markers": [
+            "fn recover_original_stage_channel("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_version_client_publish",
+          "symbol": "OriginalCircuitModelVersionClientV1::publish_original_version",
+          "receiver_type": "OriginalCircuitModelVersionClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+          "definition_markers": [
+            "fn publish_original_version("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_version_client_readback",
+          "symbol": "OriginalCircuitModelVersionClientV1::readback",
+          "receiver_type": "OriginalCircuitModelVersionClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+          "definition_markers": [
+            "fn readback("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_c_readiness_bind",
+          "symbol": "OriginalCircuitCandidateCompletionReadinessClientV1::bind_original_stage_channel",
+          "receiver_type": "OriginalCircuitCandidateCompletionReadinessClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs",
+          "definition_markers": [
+            "pub(crate) fn bind_original_stage_channel("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_c_readiness_current",
+          "symbol": "OriginalCircuitCandidateCompletionReadinessClientV1::read_current",
+          "receiver_type": "OriginalCircuitCandidateCompletionReadinessClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs",
+          "definition_markers": [
+            "pub(crate) async fn read_current("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_next_use_client_bind",
+          "symbol": "OriginalCircuitCandidateNextUseCommandClientV1::bind_original_stage_channel",
+          "receiver_type": "OriginalCircuitCandidateNextUseCommandClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_stage_binding.rs",
+          "definition_markers": [
+            "pub(in super::super) fn bind_original_stage_channel("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_next_use_client_attest",
+          "symbol": "OriginalCircuitCandidateNextUseCommandClientV1::attest_completed_task",
+          "receiver_type": "OriginalCircuitCandidateNextUseCommandClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs",
+          "definition_markers": [
+            "pub async fn attest_completed_task("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_next_use_client_readback",
+          "symbol": "OriginalCircuitCandidateNextUseCommandClientV1::readback",
+          "receiver_type": "OriginalCircuitCandidateNextUseCommandClientV1",
+          "definition_path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs",
+          "definition_markers": [
+            "pub async fn readback("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "root_resident_gate_effect_current",
+          "symbol": "RootResidentLearningEffectGateV3::require_current",
+          "receiver_type": "RootResidentLearningEffectGateV3",
+          "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs",
+          "definition_markers": [
+            "pub(crate) async fn require_current("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "root_resident_gate_training_cancel",
+          "symbol": "RootResidentLearningEffectGateV3::training_cancellation",
+          "receiver_type": "RootResidentLearningEffectGateV3",
+          "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs",
+          "definition_markers": [
+            "pub(crate) fn training_cancellation("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_original_candidate_stage_model_readback",
+          "symbol": "OriginalCellQ24CandidateStageOwnersV1::read_original_model",
+          "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+          "definition_markers": [
+            "pub(crate) async fn read_original_model("
+          ],
+          "product_callers": [],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_candidate_model_current",
+          "symbol": "OriginalCellQ24CandidateStageOwnersV1::read_model_for_adoption",
+          "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+          "definition_markers": [
+            "fn read_model_for_adoption("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_candidate_selection_operation",
+          "symbol": "OriginalCellQ24CandidateStageOwnersV1::original_selection",
+          "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+          "definition_markers": [
+            "fn original_selection("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_candidate_next_use_operation",
+          "symbol": "OriginalCellQ24CandidateStageOwnersV1::original_next_use",
+          "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+          "definition_markers": [
+            "fn original_next_use("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_candidate_selection_evidence",
+          "symbol": "ClosedCandidateOriginalOperation::selection",
+          "receiver_type": "ClosedCandidateOriginalOperation",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+          "definition_markers": [
+            "fn selection("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_candidate_next_use_evidence",
+          "symbol": "ClosedCandidateOriginalOperation::next_use",
+          "receiver_type": "ClosedCandidateOriginalOperation",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+          "definition_markers": [
+            "fn next_use("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_candidate_suffix_authentication",
+          "symbol": "OriginalCandidateOperationEvidence::authenticate_original_suffix",
+          "receiver_type": "OriginalCandidateOperationEvidence",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+          "definition_markers": [
+            "fn authenticate_original_suffix("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_candidate_selection_channels",
+          "symbol": "Continuation::take_candidate_selection_channels",
+          "receiver_type": "Continuation",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+          "definition_markers": [
+            "fn take_candidate_selection_channels("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_positive_candidate_next_use_channels",
+          "symbol": "Continuation::take_candidate_next_use_channels",
+          "receiver_type": "Continuation",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+          "definition_markers": [
+            "fn take_candidate_next_use_channels("
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"
+          ],
+          "caller_markers": []
+        },
+        {
+          "id": "learning_original_candidate_adoption_stage",
+          "symbol": "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage",
+          "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+          "definition_markers": [
+            "pub(crate) fn require_original_adoption_stage(",
+            "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+            "if self.common.root.is_none() {",
+            "return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));"
+          ],
+          "product_callers": [
+            "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs"
+          ],
+          "caller_markers": [
+            "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage("
+          ]
+        }
+      ],
+      "case_mappings": []
+    }
+  }
+}

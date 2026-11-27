@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.types",
@@ -39,7 +39,8 @@
       "publicSymbols": [
         "BoundedText",
         "BoundedBytes"
-      ]
+      ],
+      "sourceBlob": "5b8afd7be362d5383283d03b785b57b6128fa28d"
     },
     {
       "operation": "validate_id",
@@ -59,7 +60,8 @@
         "IdProfileV1",
         "IdNamespaceV1",
         "validate_id"
-      ]
+      ],
+      "sourceBlob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f"
     },
     {
       "operation": "raw_authority_ingress",
@@ -78,7 +80,8 @@
         "AuthorityFlagsV1",
         "AuthorityPosture",
         "NonAuthorizingPosture"
-      ]
+      ],
+      "sourceBlob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f"
     },
     {
       "operation": "canonical_digest_v1",
@@ -98,7 +101,8 @@
       "publicSymbols": [
         "canonical_encode_v1",
         "canonical_digest_v1"
-      ]
+      ],
+      "sourceBlob": "c9859f5407ed28c0933ee4a377629a242e75aa9c"
     },
     {
       "operation": "canonical_validate_v1",
@@ -117,7 +121,8 @@
       "delegatedCallees": [],
       "publicSymbols": [
         "canonical_validate_v1"
-      ]
+      ],
+      "sourceBlob": "c9859f5407ed28c0933ee4a377629a242e75aa9c"
     },
     {
       "operation": "fixed_q32",
@@ -136,7 +141,8 @@
         "FixedQ32",
         "ProbabilityQ32",
         "FIXED_Q32_ARITHMETIC_PROFILE_V1"
-      ]
+      ],
+      "sourceBlob": "3c2674dce405fd20f254f5f1816654aae99d7c13"
     },
     {
       "operation": "contract_registry_v1",
@@ -155,7 +161,8 @@
         "ContractRegistryV1",
         "RegistryDefinitionV1",
         "RegistryKindV1"
-      ]
+      ],
+      "sourceBlob": "88526505a75f1c072ea12dcf29c535e80f276187"
     },
     {
       "operation": "numeric_profile_definition_v1",
@@ -173,7 +180,8 @@
       "publicSymbols": [
         "NumericProfileV1",
         "NumericProfileDefinitionV1"
-      ]
+      ],
+      "sourceBlob": "383ef3eb7a62873b74faa50f097f7aa11130b18a"
     },
     {
       "operation": "rescale_signal",
@@ -192,7 +200,8 @@
         "NumericSignalV1",
         "NumericConversionReceiptV1",
         "rescale_signal"
-      ]
+      ],
+      "sourceBlob": "a515b8c0b793d15a98ffb933dcacced3993f44e1"
     },
     {
       "operation": "rescale_signal_registered",
@@ -209,7 +218,8 @@
       "delegatedCallees": [],
       "publicSymbols": [
         "rescale_signal_registered"
-      ]
+      ],
+      "sourceBlob": "a515b8c0b793d15a98ffb933dcacced3993f44e1"
     },
     {
       "operation": "generated_bindings_v1",
@@ -229,7 +239,8 @@
         "generated/python/hepta_platform_types_v1.py",
         "generated/javascript/hepta_platform_types_v1.mjs",
         "generated/typescript/hepta_platform_types_v1.d.ts"
-      ]
+      ],
+      "sourceBlob": "f8f2d0ceb0d84d79cbf0121a727259b140f7b2f2"
     }
   ],
   "ownedTargetProtocols": [
@@ -277,12 +288,19 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-types"
-  ]
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "platform.types",
+    "previousMapBlob": "ec940aa0d3b29400b8e7b9ff471d686139588086",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }

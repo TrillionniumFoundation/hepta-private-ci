@@ -1,0 +1,77 @@
+{
+  "after": {
+    "branch": "codex/cell-p0-final-caller-audit-f7c0",
+    "callers_sha256": "e24624826d94bd7726e55c5ffb3ffc55f182819949dbe7b66c92879441e38b19",
+    "clean": true,
+    "clean_scope": "tracked and non-ignored untracked files as reported by git status",
+    "head": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "observed_at_utc": "2026-11-11T02:16:39.541540+00:00",
+    "status_bytes": 0,
+    "status_command": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "-z",
+      "--untracked-files=all"
+    ],
+    "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+    "verifier_sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa"
+  },
+  "authority_granted": false,
+  "before": {
+    "branch": "codex/cell-p0-final-caller-audit-f7c0",
+    "callers_sha256": "e24624826d94bd7726e55c5ffb3ffc55f182819949dbe7b66c92879441e38b19",
+    "clean": true,
+    "clean_scope": "tracked and non-ignored untracked files as reported by git status",
+    "head": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "observed_at_utc": "2026-11-11T02:04:06.300202+00:00",
+    "status_bytes": 0,
+    "status_command": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "-z",
+      "--untracked-files=all"
+    ],
+    "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+    "verifier_sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa"
+  },
+  "boundaries_count": 223,
+  "child_cpu_scope": "RUSAGE_CHILDREN delta around only the verifier subprocess; excludes preparation, Git snapshots, orchestration and external CI.",
+  "child_pid": 31,
+  "child_system_cpu_seconds": 2.857495,
+  "child_user_cpu_seconds": 734.443381,
+  "command": [
+    "python3",
+    "scripts/verify_hepta_callers.py",
+    "verify",
+    "--root",
+    "/workspace/scratch/f7c0ded86bcc/hepta-p0-learn-merge"
+  ],
+  "ended_at_utc": "2026-11-11T02:16:39.223603+00:00",
+  "exit_code": 0,
+  "key": "p0-cb0598-full-caller-scan-20261111-v1",
+  "original_branch_retained": true,
+  "privileged_inventory_count": 223,
+  "protected_files_count": 218,
+  "qualified_exact_source_caller_scan": true,
+  "rust_files_scanned": 6302,
+  "source_identity_unchanged": true,
+  "started_at_utc": "2026-11-11T02:04:06.305159+00:00",
+  "status": "COMPLETED",
+  "stderr": {
+    "bytes": 0,
+    "file": "SCAN.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 103063,
+    "file": "SCAN.stdout.json",
+    "sha256": "83201a799a7be1e04116ad1b089b32761ae6d37ed77de35885e12d441f825c7c"
+  },
+  "verifier_receipt_parse_error": null,
+  "verifier_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "wall_seconds": 752.9178542629998
+}

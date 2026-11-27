@@ -1,0 +1,64 @@
+{
+  "task_venv": "/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1",
+  "python": "/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/bin/python",
+  "backing_read_only_site_packages": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages",
+  "installation_command": [
+    "/usr/bin/pip3",
+    "--isolated",
+    "--disable-pip-version-check",
+    "install",
+    "--no-cache-dir",
+    "--no-deps",
+    "--only-binary=:all:",
+    "--target",
+    "/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/lib/python3.14/site-packages",
+    "peft==0.17.1",
+    "accelerate==1.10.1"
+  ],
+  "installation_exit": 0,
+  "package_constraints": [
+    "peft==0.17.1",
+    "accelerate==1.10.1"
+  ],
+  "new_downloads_exclude": [
+    "torch",
+    "CUDA",
+    "models"
+  ],
+  "existing_venv_mutated": false,
+  "real_import_exit": 1,
+  "real_imports": [
+    "torch",
+    "transformers",
+    "safetensors",
+    "peft",
+    "accelerate",
+    "LlamaConfig",
+    "LlamaForCausalLM",
+    "LoraConfig",
+    "get_peft_model"
+  ],
+  "elapsed_seconds": 65.60609412193298,
+  "logs": {
+    "memory-dependency-install.stdout.log": {
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-install.stdout.log",
+      "bytes": 265,
+      "sha256": "c03dfe1c5e8a41418ac5f3fcc20f84d82fc29ca795f8f48ff03976c4f632a0f7"
+    },
+    "memory-dependency-install.stderr.log": {
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-install.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-dependency-import.stdout.log": {
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-import.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-dependency-import.stderr.log": {
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-import.stderr.log",
+      "bytes": 1596,
+      "sha256": "6e5ee3a0aa4a8a6dc3713e9758213e5b40fdf577e79873a5774cb834b85bd600"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "hcsn-n256-input-lineage-admission-source-freeze-v1",
+  "identity": "hcsn-n256-input-lineage-admission-20261113-c06d-001",
+  "base_commit": "a5c5d01aecc7658eb3ce60f4159e89a43ac85ecf",
+  "source_sha256": {
+    "__init__.py": "23b148153fabbbab44e985b4cf317e468b7b0ffa0e6fc2a6bc705a89ae6a67d2",
+    "verify.py": "21e05e5d6012b3191b7439339ef716696c492e28f117c304fa4ad676db3c3dc6",
+    "review.py": "0c47d07b49ee88c2dff10c1a2f982d955ae3dc1363407d31c98caa84a57f953f",
+    "test_verify.py": "5ddf82e3c33ff0d45432c56664bf996c5a6518276a660033c35a9cb433307c54",
+    "README.md": "f60116f6aff9d5f0b7f512bd6b1389c46c99a1771eac51a7dd3c5b80e1cd5513",
+    "REQUEST.json": "fd50b7719609bbdf76d8e016603087d5318bf8fe698f6421ad62fbc37f850ec9"
+  },
+  "pinned_original_sha256": {
+    "new_export_receipt": "1d1f65f5dfcaaec8a9d87fb7689e007699a032a9649c4ebdd32537de9ef993c9",
+    "new_export_audit": "a2d04692c564e713b2cd57d7854ee86d6c4277d8b579afd2df2cf111686b451b",
+    "roster_summary": "e3e21bd9f21940e22738b8f06b9b50333d82a923a6d46894316c242b88dd122f",
+    "roster_audit": "b14d60562ae0144b4369d719568d932756149b9335eb30e67e84f33d2f418fae",
+    "engineering_red": "4ee017d5c418f6288c24fbad6f451e0e78524ad048a9b20d75bf5e626bd28376",
+    "streaming_plan": "5200a73ded53f421b658ecf84863d28563e25ca7c5ca9b010df09184b99e952d",
+    "streaming_audit": "0d0e26a873f10b71ac363095567699f7885b1ced4be02e23af23fb1914a2f590"
+  },
+  "prefreeze_development": {
+    "stdlib_unit_tests": 3,
+    "unit_test_job": "1a1d3e9be0a-392-225",
+    "unit_test_exit_code": 0,
+    "fmt_failed_job": "1a1d3e9fe38-392-227",
+    "fmt_failed_exit_code": 127,
+    "fmt_failure": "absolute /usr/bin/just absent; zero formatter execution",
+    "fmt_success_job": "1a1d3ea4aec-392-228",
+    "fmt_success_exit_code": 0
+  },
+  "numerical_execution_performed": false,
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "oracle_numeric_calls": 0,
+  "serializer_numeric_calls": 0,
+  "torch_calls": 0,
+  "backward_calls": 0,
+  "optimizer_steps": 0,
+  "training_runs": 0,
+  "historical_N256_export_recovered": false,
+  "historical_N256_missing_statement_preserved": true,
+  "new_export_only": true,
+  "largegrid_qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}

@@ -1,0 +1,35 @@
+{
+  "observed_utc": "2026-10-21T01:22:05.488Z",
+  "schema": "hepta.ci-base-identity-investigation.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 2968,
+  "source_head": "0cb777545966333a96be265a69d03c9982231bc7",
+  "event_base": "603238ba4721b2e9656c4647ce41c5f1664c1154",
+  "current_parent_owner_pr": 2944,
+  "current_parent_branch": "codex/hepta-blocker-convergence-20261020",
+  "current_parent_head": "98b40cb04a23a36a07212ef7d826024f37536057",
+  "current_pull_merge": "6b074e52621d77338112f02119beb0cb1a6f869f",
+  "current_pull_merge_parents": [
+    "98b40cb04a23a36a07212ef7d826024f37536057",
+    "0cb777545966333a96be265a69d03c9982231bc7"
+  ],
+  "current_pull_merge_tree": "cc6170562020d8271196cbdf9d0e71fde7955ded",
+  "local_automatic_merge_tree": "cc6170562020d8271196cbdf9d0e71fde7955ded",
+  "local_conflicts": 0,
+  "failed_job": 118980327865,
+  "failed_run": 39525055148,
+  "evidence_scope": "Job log directly shows failure in prospective-merge parent/tree validation before any architecture test. The later API ref and signed merge object confirm a different first parent from event BASE_SHA. The failed shell did not print the actual comparison values, so identifying the exact failed assertion at job time is an inference from retained current ref plus timestamps.",
+  "status": "BLOCKED_STALE_BASE_IDENTITY",
+  "resolution": "Preserve both source ancestries through a real merge of current parent owner in isolated repair branch, then re-run original exact source and prospective merge gates. Do not relax equality or accept stale evidence.",
+  "initial_local_attempts": [
+    {
+      "result": "refused unrelated histories",
+      "cause": "shallow partial clone lacked parent ancestry",
+      "resolution": "fetch depth=4 for both exact SHAs; observed common ancestor603238"
+    },
+    {
+      "result": "promisor blob fetch unavailable in default sandbox",
+      "resolution": "normal authenticated read-only fetch with approved network access; automatic merge then succeeded"
+    }
+  ]
+}

@@ -1,0 +1,1200 @@
+{
+  "admission_evidence": {
+    "derived_source": {
+      "path": "experiments/hcsn_distributional_v2/content_supplemental_analysis.py",
+      "sha256": "2f4dd656fcd868a891ee78808f7974e45a990a713020a1aaef2b89e74d771413"
+    },
+    "interpretation": "Original strict gate failed175/1 and is not repaired; a separate post-hoc producer-exact integrity audit admits only this unchanged random-weight CPU diagnostic",
+    "original_invalid_metadata": [
+      {
+        "error": "AssertionError: cross entropy summary",
+        "job": {
+          "model": "transformer",
+          "seed": 9202,
+          "task": "fsdd"
+        },
+        "valid": false
+      }
+    ],
+    "original_strict": {
+      "execution_path": "experiments/hcsn_distributional_v2/results/content_analysis002/EXECUTION.json",
+      "execution_sha256": "888306666e60ee51c40aa7af02e8c2f46bd4aaf4ff88a2601fd1dd5d51b37218",
+      "expected": 176,
+      "gate_passed": false,
+      "invalid": 1,
+      "path": "experiments/hcsn_distributional_v2/results/content_analysis002/ANALYSIS.json",
+      "sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76",
+      "valid": 175
+    },
+    "schema": "hcsn-scaling002-main-admission.v1",
+    "scientific_comparisons_preserved": true,
+    "supplemental": {
+      "expected": 176,
+      "invalid": 0,
+      "path": "experiments/hcsn_distributional_v2/results/content_analysis_supplement001/ANALYSIS.json",
+      "post_hoc": true,
+      "protocol_path": "experiments/hcsn_distributional_v2/CONTENT_SUPPLEMENT001_PROTOCOL.json",
+      "protocol_sha256": "5e431b9165efc855d7b45cad5185cc7d093c900a533c2aa37e2c81eec231a6c2",
+      "sha256": "6e7aa0c66627663ea84e962f502a7a73dcb46b0c0569e71feb932e51b27ecffd",
+      "statistical_gates_changed": false,
+      "valid": 176
+    },
+    "supplemental_execution": {
+      "path": "experiments/hcsn_distributional_v2/results/content_analysis_supplement001_execution/EXECUTION.json",
+      "sha256": "d7507b04aa6393298a56429d6332b2b17b1bb693e804967e1f14e6214dca64d1"
+    }
+  },
+  "cases": [
+    {
+      "batch": 1,
+      "case_id": "distribution_free_dual_b1_t16_w32_d1",
+      "depth": 1,
+      "length": 16,
+      "model": "distribution_free_dual",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "grid_cells": 8,
+        "input_dim": 64,
+        "lower": -2.0,
+        "max_independent_chunks": 1048576,
+        "max_physical_substep": 0.36,
+        "name": "distribution_free_dual",
+        "output_dim": 10,
+        "per_token_chunks": true,
+        "physical_channels": 8,
+        "physical_time_scale": 0.1,
+        "precomputed_operators": true,
+        "refractory_stages": 2,
+        "seed": 743002,
+        "uniformization_rate": 8.1,
+        "uniformization_terms": 21,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "two_gates_b1_t16_w32_d1",
+      "depth": 1,
+      "length": 16,
+      "model": "two_gates",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17770,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 49,
+          "n_parameters": 17770,
+          "parameter_padding": false,
+          "relative_gap": 0.009255129348795719,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20308
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "two_gates",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "transformer_b1_t16_w32_d1",
+      "depth": 1,
+      "length": 16,
+      "model": "transformer",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 18392,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 36,
+          "n_parameters": 18392,
+          "parameter_padding": false,
+          "relative_gap": 0.025423728813559324,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20930
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "transformer",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "distribution_free_dual_b1_t32_w32_d1",
+      "depth": 1,
+      "length": 32,
+      "model": "distribution_free_dual",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "grid_cells": 8,
+        "input_dim": 64,
+        "lower": -2.0,
+        "max_independent_chunks": 1048576,
+        "max_physical_substep": 0.36,
+        "name": "distribution_free_dual",
+        "output_dim": 10,
+        "per_token_chunks": true,
+        "physical_channels": 8,
+        "physical_time_scale": 0.1,
+        "precomputed_operators": true,
+        "refractory_stages": 2,
+        "seed": 743002,
+        "uniformization_rate": 8.1,
+        "uniformization_terms": 21,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "two_gates_b1_t32_w32_d1",
+      "depth": 1,
+      "length": 32,
+      "model": "two_gates",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17770,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 49,
+          "n_parameters": 17770,
+          "parameter_padding": false,
+          "relative_gap": 0.009255129348795719,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20308
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "two_gates",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "transformer_b1_t32_w32_d1",
+      "depth": 1,
+      "length": 32,
+      "model": "transformer",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 18392,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 36,
+          "n_parameters": 18392,
+          "parameter_padding": false,
+          "relative_gap": 0.025423728813559324,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20930
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "transformer",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "distribution_free_dual_b1_t64_w32_d1",
+      "depth": 1,
+      "length": 64,
+      "model": "distribution_free_dual",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "grid_cells": 8,
+        "input_dim": 64,
+        "lower": -2.0,
+        "max_independent_chunks": 1048576,
+        "max_physical_substep": 0.36,
+        "name": "distribution_free_dual",
+        "output_dim": 10,
+        "per_token_chunks": true,
+        "physical_channels": 8,
+        "physical_time_scale": 0.1,
+        "precomputed_operators": true,
+        "refractory_stages": 2,
+        "seed": 743002,
+        "uniformization_rate": 8.1,
+        "uniformization_terms": 21,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "two_gates_b1_t64_w32_d1",
+      "depth": 1,
+      "length": 64,
+      "model": "two_gates",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17770,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 49,
+          "n_parameters": 17770,
+          "parameter_padding": false,
+          "relative_gap": 0.009255129348795719,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20308
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "two_gates",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "transformer_b1_t64_w32_d1",
+      "depth": 1,
+      "length": 64,
+      "model": "transformer",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 18392,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 36,
+          "n_parameters": 18392,
+          "parameter_padding": false,
+          "relative_gap": 0.025423728813559324,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20930
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "transformer",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "distribution_free_dual_b1_t128_w32_d1",
+      "depth": 1,
+      "length": 128,
+      "model": "distribution_free_dual",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "grid_cells": 8,
+        "input_dim": 64,
+        "lower": -2.0,
+        "max_independent_chunks": 1048576,
+        "max_physical_substep": 0.36,
+        "name": "distribution_free_dual",
+        "output_dim": 10,
+        "per_token_chunks": true,
+        "physical_channels": 8,
+        "physical_time_scale": 0.1,
+        "precomputed_operators": true,
+        "refractory_stages": 2,
+        "seed": 743002,
+        "uniformization_rate": 8.1,
+        "uniformization_terms": 21,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "two_gates_b1_t128_w32_d1",
+      "depth": 1,
+      "length": 128,
+      "model": "two_gates",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17770,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 49,
+          "n_parameters": 17770,
+          "parameter_padding": false,
+          "relative_gap": 0.009255129348795719,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20308
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "two_gates",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "transformer_b1_t128_w32_d1",
+      "depth": 1,
+      "length": 128,
+      "model": "transformer",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 18392,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 36,
+          "n_parameters": 18392,
+          "parameter_padding": false,
+          "relative_gap": 0.025423728813559324,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20930
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "transformer",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "distribution_free_dual_b1_t256_w32_d1",
+      "depth": 1,
+      "length": 256,
+      "model": "distribution_free_dual",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "grid_cells": 8,
+        "input_dim": 64,
+        "lower": -2.0,
+        "max_independent_chunks": 1048576,
+        "max_physical_substep": 0.36,
+        "name": "distribution_free_dual",
+        "output_dim": 10,
+        "per_token_chunks": true,
+        "physical_channels": 8,
+        "physical_time_scale": 0.1,
+        "precomputed_operators": true,
+        "refractory_stages": 2,
+        "seed": 743002,
+        "uniformization_rate": 8.1,
+        "uniformization_terms": 21,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "two_gates_b1_t256_w32_d1",
+      "depth": 1,
+      "length": 256,
+      "model": "two_gates",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17770,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 49,
+          "n_parameters": 17770,
+          "parameter_padding": false,
+          "relative_gap": 0.009255129348795719,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20308
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "two_gates",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "transformer_b1_t256_w32_d1",
+      "depth": 1,
+      "length": 256,
+      "model": "transformer",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 18392,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 36,
+          "n_parameters": 18392,
+          "parameter_padding": false,
+          "relative_gap": 0.025423728813559324,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20930
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "transformer",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "distribution_free_dual_b1_t512_w32_d1",
+      "depth": 1,
+      "length": 512,
+      "model": "distribution_free_dual",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "grid_cells": 8,
+        "input_dim": 64,
+        "lower": -2.0,
+        "max_independent_chunks": 1048576,
+        "max_physical_substep": 0.36,
+        "name": "distribution_free_dual",
+        "output_dim": 10,
+        "per_token_chunks": true,
+        "physical_channels": 8,
+        "physical_time_scale": 0.1,
+        "precomputed_operators": true,
+        "refractory_stages": 2,
+        "seed": 743002,
+        "uniformization_rate": 8.1,
+        "uniformization_terms": 21,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "two_gates_b1_t512_w32_d1",
+      "depth": 1,
+      "length": 512,
+      "model": "two_gates",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 17770,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 49,
+          "n_parameters": 17770,
+          "parameter_padding": false,
+          "relative_gap": 0.009255129348795719,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20308
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "two_gates",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "transformer_b1_t512_w32_d1",
+      "depth": 1,
+      "length": 512,
+      "model": "transformer",
+      "panel": "length",
+      "registered_counts": {
+        "backbone": 18392,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 36,
+          "n_parameters": 18392,
+          "parameter_padding": false,
+          "relative_gap": 0.025423728813559324,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20930
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "transformer",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "distribution_free_dual_b1_t64_w32_d2",
+      "depth": 2,
+      "length": 64,
+      "model": "distribution_free_dual",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 35872,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 16,
+          "content": 37802,
+          "dynamics": 560,
+          "refractory": 16,
+          "reset": 16
+        },
+        "readout": 330,
+        "total": 38410
+      },
+      "registered_model_config": {
+        "depth": 2,
+        "grid_cells": 8,
+        "input_dim": 64,
+        "lower": -2.0,
+        "max_independent_chunks": 1048576,
+        "max_physical_substep": 0.36,
+        "name": "distribution_free_dual",
+        "output_dim": 10,
+        "per_token_chunks": true,
+        "physical_channels": 8,
+        "physical_time_scale": 0.1,
+        "precomputed_operators": true,
+        "refractory_stages": 2,
+        "seed": 743002,
+        "uniformization_rate": 8.1,
+        "uniformization_terms": 21,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "two_gates_b1_t64_w32_d2",
+      "depth": 2,
+      "length": 64,
+      "model": "two_gates",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 36172,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 52,
+          "n_parameters": 36172,
+          "parameter_padding": false,
+          "relative_gap": 0.00836306868867083,
+          "target_parameters": 35872
+        },
+        "readout": 330,
+        "total": 38710
+      },
+      "registered_model_config": {
+        "depth": 2,
+        "input_dim": 64,
+        "name": "two_gates",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "transformer_b1_t64_w32_d2",
+      "depth": 2,
+      "length": 64,
+      "model": "transformer",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 36255,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 37,
+          "n_parameters": 36255,
+          "parameter_padding": false,
+          "relative_gap": 0.010676851025869759,
+          "target_parameters": 35872
+        },
+        "readout": 330,
+        "total": 38793
+      },
+      "registered_model_config": {
+        "depth": 2,
+        "input_dim": 64,
+        "name": "transformer",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "distribution_free_dual_b1_t64_w32_d4",
+      "depth": 4,
+      "length": 64,
+      "model": "distribution_free_dual",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 71744,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 32,
+          "content": 73066,
+          "dynamics": 1120,
+          "refractory": 32,
+          "reset": 32
+        },
+        "readout": 330,
+        "total": 74282
+      },
+      "registered_model_config": {
+        "depth": 4,
+        "grid_cells": 8,
+        "input_dim": 64,
+        "lower": -2.0,
+        "max_independent_chunks": 1048576,
+        "max_physical_substep": 0.36,
+        "name": "distribution_free_dual",
+        "output_dim": 10,
+        "per_token_chunks": true,
+        "physical_channels": 8,
+        "physical_time_scale": 0.1,
+        "precomputed_operators": true,
+        "refractory_stages": 2,
+        "seed": 743002,
+        "uniformization_rate": 8.1,
+        "uniformization_terms": 21,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "two_gates_b1_t64_w32_d4",
+      "depth": 4,
+      "length": 64,
+      "model": "two_gates",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 71529,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 53,
+          "n_parameters": 71529,
+          "parameter_padding": false,
+          "relative_gap": 0.0029967662801070475,
+          "target_parameters": 71744
+        },
+        "readout": 330,
+        "total": 74067
+      },
+      "registered_model_config": {
+        "depth": 4,
+        "input_dim": 64,
+        "name": "two_gates",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "transformer_b1_t64_w32_d4",
+      "depth": 4,
+      "length": 64,
+      "model": "transformer",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 70073,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 37,
+          "n_parameters": 70073,
+          "parameter_padding": false,
+          "relative_gap": 0.023291146297948262,
+          "target_parameters": 71744
+        },
+        "readout": 330,
+        "total": 72611
+      },
+      "registered_model_config": {
+        "depth": 4,
+        "input_dim": 64,
+        "name": "transformer",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 32
+      },
+      "width": 32
+    },
+    {
+      "batch": 1,
+      "case_id": "distribution_free_dual_b1_t64_w64_d1",
+      "depth": 1,
+      "length": 64,
+      "model": "distribution_free_dual",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 50160,
+        "frontend": 4416,
+        "groups": {
+          "boundary": 8,
+          "content": 54666,
+          "dynamics": 536,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 650,
+        "total": 55226
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "grid_cells": 8,
+        "input_dim": 64,
+        "lower": -2.0,
+        "max_independent_chunks": 1048576,
+        "max_physical_substep": 0.36,
+        "name": "distribution_free_dual",
+        "output_dim": 10,
+        "per_token_chunks": true,
+        "physical_channels": 8,
+        "physical_time_scale": 0.1,
+        "precomputed_operators": true,
+        "refractory_stages": 2,
+        "seed": 743002,
+        "uniformization_rate": 8.1,
+        "uniformization_terms": 21,
+        "width": 64
+      },
+      "width": 64
+    },
+    {
+      "batch": 1,
+      "case_id": "two_gates_b1_t64_w64_d1",
+      "depth": 1,
+      "length": 64,
+      "model": "two_gates",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 50122,
+        "frontend": 4416,
+        "matching": {
+          "hidden_width": 81,
+          "n_parameters": 50122,
+          "parameter_padding": false,
+          "relative_gap": 0.0007575757575757576,
+          "target_parameters": 50160
+        },
+        "readout": 650,
+        "total": 55188
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "two_gates",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 64
+      },
+      "width": 64
+    },
+    {
+      "batch": 1,
+      "case_id": "transformer_b1_t64_w64_d1",
+      "depth": 1,
+      "length": 64,
+      "model": "transformer",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 50214,
+        "frontend": 4416,
+        "matching": {
+          "hidden_width": 59,
+          "n_parameters": 50214,
+          "parameter_padding": false,
+          "relative_gap": 0.001076555023923445,
+          "target_parameters": 50160
+        },
+        "readout": 650,
+        "total": 55280
+      },
+      "registered_model_config": {
+        "depth": 1,
+        "input_dim": 64,
+        "name": "transformer",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 64
+      },
+      "width": 64
+    },
+    {
+      "batch": 1,
+      "case_id": "distribution_free_dual_b1_t64_w64_d2",
+      "depth": 2,
+      "length": 64,
+      "model": "distribution_free_dual",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 100320,
+        "frontend": 4416,
+        "groups": {
+          "boundary": 16,
+          "content": 104266,
+          "dynamics": 1072,
+          "refractory": 16,
+          "reset": 16
+        },
+        "readout": 650,
+        "total": 105386
+      },
+      "registered_model_config": {
+        "depth": 2,
+        "grid_cells": 8,
+        "input_dim": 64,
+        "lower": -2.0,
+        "max_independent_chunks": 1048576,
+        "max_physical_substep": 0.36,
+        "name": "distribution_free_dual",
+        "output_dim": 10,
+        "per_token_chunks": true,
+        "physical_channels": 8,
+        "physical_time_scale": 0.1,
+        "precomputed_operators": true,
+        "refractory_stages": 2,
+        "seed": 743002,
+        "uniformization_rate": 8.1,
+        "uniformization_terms": 21,
+        "width": 64
+      },
+      "width": 64
+    },
+    {
+      "batch": 1,
+      "case_id": "two_gates_b1_t64_w64_d2",
+      "depth": 2,
+      "length": 64,
+      "model": "two_gates",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 100426,
+        "frontend": 4416,
+        "matching": {
+          "hidden_width": 86,
+          "n_parameters": 100426,
+          "parameter_padding": false,
+          "relative_gap": 0.0010566188197767144,
+          "target_parameters": 100320
+        },
+        "readout": 650,
+        "total": 105492
+      },
+      "registered_model_config": {
+        "depth": 2,
+        "input_dim": 64,
+        "name": "two_gates",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 64
+      },
+      "width": 64
+    },
+    {
+      "batch": 1,
+      "case_id": "transformer_b1_t64_w64_d2",
+      "depth": 2,
+      "length": 64,
+      "model": "transformer",
+      "panel": "width_depth",
+      "registered_counts": {
+        "backbone": 99968,
+        "frontend": 4416,
+        "matching": {
+          "hidden_width": 64,
+          "n_parameters": 99968,
+          "parameter_padding": false,
+          "relative_gap": 0.0035087719298245615,
+          "target_parameters": 100320
+        },
+        "readout": 650,
+        "total": 105034
+      },
+      "registered_model_config": {
+        "depth": 2,
+        "input_dim": 64,
+        "name": "transformer",
+        "output_dim": 10,
+        "seed": 743002,
+        "width": 64
+      },
+      "width": 64
+    }
+  ],
+  "content_data_or_checkpoints_used": false,
+  "content_protocols_unchanged": true,
+  "expected_cases": 30,
+  "frozen_benchmark": {
+    "functions": [
+      "benchmark",
+      "summary_report"
+    ],
+    "implementation_modified": false,
+    "path": "experiments/hcsn_distributional_v2/scaling_eval.py",
+    "sha256": "be79c27898c56e557b3b58ee9858d116dbfd61998129a5f1e2ab84f0115db6fa"
+  },
+  "inherited_protocol": {
+    "path": "experiments/hcsn_distributional_v2/SCALING001_PROTOCOL.json",
+    "sha256": "287c56ae904ec5c4cabe6e5ee309d6a22b8f4648e9b1890ed650af2b0fbc1fa3"
+  },
+  "limitations": [
+    "30 CPU implementation points with random weights/labels; no content quality comparison",
+    "Actual parameters and chosen internal widths reported; no imposed 3% parameter-equivalence claim",
+    "No GPU, energy, foundation-model, multi-device or equal-quality extrapolation",
+    "Three repeats are descriptive; no fitted asymptotic scaling law"
+  ],
+  "measurement": {
+    "batch": 1,
+    "classes": 10,
+    "device": "cpu",
+    "dtype": "float32",
+    "failures": "Preserve partial measurements, nonzero/signal/timeout receipt and explicit FAILURE; attempt all registered configurations",
+    "gradient_clip_norm": 2.0,
+    "inference_scope": "full-sequence inference_mode forward plus output finite/shape checks; fresh state each call",
+    "input_features": 64,
+    "learning_rate": 0.001,
+    "loss": "mean cross-entropy on random labels at every sequence position",
+    "measured_forward": 3,
+    "measured_optimizer_step": 3,
+    "optimizer": "Adam",
+    "optimizer_scope": "zero_grad, forward, loss, backward, gradient finite check, clipping, Adam step, parameter/optimizer-state finite checks",
+    "order": "warmup forward, warmup optimizer, three forwards, three optimizer steps",
+    "peak_rss_scope": "whole-worker Linux wait4 high-water RSS; operation snapshots are cumulative process peaks",
+    "startup_scope": "Full worker wait4 includes imports, matching configuration search, inputs, warmup, measurements, checks, serialization and exit; nested body costs are not added",
+    "thread_count": 1,
+    "warmup_forward": 1,
+    "warmup_optimizer_step": 1,
+    "worker_cpu_limit_seconds": 300,
+    "worker_wall_limit_seconds": 600,
+    "workers": 1
+  },
+  "new_admission": "Exact preserved strict175/1 plus independent post-hoc producer-exact176 audit, completed LIF study/analysis and final original-pointer cost normalization",
+  "new_preflight": false,
+  "original_not_executed": {
+    "path": "experiments/hcsn_distributional_v2/results/scaling001/NOT_EXECUTED.json",
+    "sha256": "842eb51ba69d9f3619215d94fde27dfa729f9e009d845f5798e3e795b28dcd08"
+  },
+  "preflight": {
+    "execution_sha256": "74e8426253fe4615679676cffcf5ca5f15eae7e65c5aa6a3b0a0ad119233d05f",
+    "path": "experiments/hcsn_distributional_v2/results/scaling_preflight001",
+    "results_sha256": "cab0cba23b3290ed972d6e28425622ce6840e62af5182601540983f9fe33366d"
+  },
+  "randomness": {
+    "input_seed": 743001,
+    "inputs": "One shared master random sequence; each T is its prefix, identical across models/width/depth",
+    "maximum_length": 512,
+    "model_seed": 743002
+  },
+  "registered_utc": "2026-10-30T05:46:45.072080+00:00",
+  "schema": "hcsn-v2-scaling-protocol.v2",
+  "source_files_sha256": {
+    "experiments/continuous_spiking_network/__init__.py": "192d1f289893035488c967e19332d164c1b2687c127c627ae88ad24ac9db07bc",
+    "experiments/continuous_spiking_network/audit.py": "1b0d26a202ab457087b4d510dc46bb82c972efd4209fb8507615fd80e05fe24e",
+    "experiments/continuous_spiking_network/audit_checks.py": "2c67d2f1970819b186ecac979d65d2309a34377474f22e4b00a10576620d6f84",
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/continuous_spiking_network/boundary.py": "f17f39003e9a7a8f043bb862042a9a2b9b2ceec932e7fb9286da4bacf7522303",
+    "experiments/continuous_spiking_network/boundary_study.py": "635254c518fcfd45de098c3f44be60e651152aedd74f99138f0b44782a3f7f65",
+    "experiments/continuous_spiking_network/cell.py": "486b9f86ad7cdbae2f3e8a151cb500a219b87cd67a438e9a4e10c038a43ac311",
+    "experiments/continuous_spiking_network/data.py": "b8a84e49451001ee3448dd3e22bbdc0f9e153a6864056c77069052c7d048829b",
+    "experiments/continuous_spiking_network/kernels.py": "188334725b39b7e3bfdf5b17dd04cef2d3383ab6eb02c17eedad912dea21ae30",
+    "experiments/continuous_spiking_network/measure_study.py": "18ea0ae64beac35d4756ac638258dc969a9a61053f41547b322cababbf982ff1",
+    "experiments/continuous_spiking_network/models.py": "5207b97fe7e3667d723c641c61132e4c96984e19c2ada07868f0074b2e4bdbaf",
+    "experiments/continuous_spiking_network/performance.py": "d2915914ad3426ec8830ff00d6eacdae1370d0d7692746d99b09e1e126f96263",
+    "experiments/continuous_spiking_network/prepare_data.py": "d77bbd97f4c4e7ec174b0e9b5bb15668bbd4f81dc98b963da6c0fcdd1e643bc5",
+    "experiments/continuous_spiking_network/records.py": "dfea24dacbb5d56e53759ea0f0a4887d81cabd9678f3afccd1b96dbafd73e5be",
+    "experiments/continuous_spiking_network/run_study.py": "99c82d276a5ea292659183e6951254d724f0030f994e2ebec50f627f2b913a3c",
+    "experiments/continuous_spiking_network/train.py": "d244efb72584fb3ad304d290a291bb112c9f9b301bf041e4755cdc9cc235c51c",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_distributional_v2/model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+    "experiments/hcsn_distributional_v2/runtime_eval.py": "de2cdf04300287d541bd2beb7c450c0a0c85330aab2a0970f7ba642ee6a22665",
+    "experiments/hcsn_distributional_v2/scaling_admission.py": "6bc97068e332461bf87eb62b79e68c31b0d8a1948ac4c291a0bb190b0aea25df",
+    "experiments/hcsn_distributional_v2/scaling_eval.py": "be79c27898c56e557b3b58ee9858d116dbfd61998129a5f1e2ab84f0115db6fa",
+    "experiments/hcsn_free_boundary_v1/analysis.py": "ed50b8d88e797038b4102283b2e6c7c4e6c12add80889de75af278f7318d63ff",
+    "experiments/hcsn_free_boundary_v1/analysis_report.py": "6e46cb5dcfe760c05a35c83ab7bccd8a12373bb9421d849363aefb25f7ff5d68",
+    "experiments/hcsn_free_boundary_v1/analysis_secondary.py": "a74038ecbe6bb4753129eeee8c005be6a4257c2b56305e76ca54b0a48951238f",
+    "experiments/hcsn_free_boundary_v1/analysis_tests.py": "beb977a6a79940ff77ef2f763034ee1e7135b105e740f468fa502edf010cc316",
+    "experiments/hcsn_free_boundary_v1/archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "experiments/hcsn_free_boundary_v1/archive_tests.py": "f7cb0d0f9ac6528fc0c45c5b023a56e42b852dc6831874c1198058e018fa3700",
+    "experiments/hcsn_free_boundary_v1/benchmark_models.py": "171cee706eeba6d3e7baa725998cf88778f53b92571187e0564c96d7255b8606",
+    "experiments/hcsn_free_boundary_v1/closure_audit.py": "199d78f7e099eac32af184118d310e87368d97c03c9edef721ece86454fa8178",
+    "experiments/hcsn_free_boundary_v1/conditional_analysis.py": "522f3448b4012b631a62cf51f1d7596727ad66895842530a23c31d3507ebaeac",
+    "experiments/hcsn_free_boundary_v1/conditional_analysis_tests.py": "0c892cd6da68ef7438aa92dd55c19e37b89547172da111caca8bf71919ed3b3c",
+    "experiments/hcsn_free_boundary_v1/conditional_control.py": "17af2aa5d1778519674f2d8ba1a0269b3a3fe65b0a6a0aa3cf8e7f3946b7f2c4",
+    "experiments/hcsn_free_boundary_v1/conditional_control_tests.py": "57ce3096a33443ea3e0e112ffb633052e64fa52f070db74cd8239f72fc29c1c6",
+    "experiments/hcsn_free_boundary_v1/datasets.py": "f87e8f8531483313013d64a413b207c26ab14c09f82500088b506b5a682bc794",
+    "experiments/hcsn_free_boundary_v1/datasets_tests.py": "366a7f7be584b93aee7f6715033521597f98387475fe364fdd98326d38b40667",
+    "experiments/hcsn_free_boundary_v1/distributional_flow.py": "f63f0ba94e6ce0aa348e33557b20d64261308d10bf832d1f7324aceec79965a3",
+    "experiments/hcsn_free_boundary_v1/distributional_flow_tests.py": "a1ef5413f26abc293815e2e9f9c9c3e622c68e32a26974d67e3e162c09a2d0a9",
+    "experiments/hcsn_free_boundary_v1/equal_updates_core002.py": "d78fb409d07c0cef5c72469a492f34af9a0d76577841e2d5823e661cd71a6c57",
+    "experiments/hcsn_free_boundary_v1/equal_updates_core002_analysis.py": "c1ea6191864476f1a7237e14272e8803d8445b8bdfea6ca3e74fdd9984166668",
+    "experiments/hcsn_free_boundary_v1/equal_updates_core002_analysis_tests.py": "7807261fe767eab24971de6571e615c0cea653bf9884b5bc362af659c4facb1e",
+    "experiments/hcsn_free_boundary_v1/equal_updates_core002_tests.py": "0834f79c57b8074f897b2e8d2aa3f7cdc2db7e4c49048fbdb9fbbdc14b5950c5",
+    "experiments/hcsn_free_boundary_v1/live_study.py": "9bcd88c449bc33fb2bbe9c45776069bce1c266229b1ca1e696ec60f72836dfce",
+    "experiments/hcsn_free_boundary_v1/live_study_tests.py": "a5bb17d9edb6b16f533c6704550dfa2e9465be39d6a14fce9c92ec930b670717",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/model_tests.py": "c711cec562177b9825e46216a5ed1016a07f31528f804479bfcb03f019c6b929",
+    "experiments/hcsn_free_boundary_v1/moving_flow.py": "698a7e621f89fcde4aee6f485575470ec04e2d11fe1021b2c5ce4e92e720a05c",
+    "experiments/hcsn_free_boundary_v1/moving_flow_tests.py": "ae59cf2fcc2c9a7aff648373254af54b38a5fed2ee88d8add085d8bcf7cd9d68",
+    "experiments/hcsn_free_boundary_v1/native003_adversarial.py": "a06d3d5e3febc8610c6793f502c8d211e3e97ed49c9a3a601970cd60b3549d30",
+    "experiments/hcsn_free_boundary_v1/native003_common.py": "95ecaab4f66ba7b32d831ee3f8d4523080ad80b4d5a372ff8fe206cfe81f7f34",
+    "experiments/hcsn_free_boundary_v1/native003_data.py": "0ad3b195f59300f92e9de13e5c50b59a25271c5b1738fe45c201a5419f99ff8e",
+    "experiments/hcsn_free_boundary_v1/native003_eval.py": "f5bc33a9c108222e2816845dc44342a2d774edf9510db333306d3a2f9f14333a",
+    "experiments/hcsn_free_boundary_v1/native003_heads.py": "8322203e0099bee086e8b199ab03a5f8b84a17c9a83971e817e83f82576aae20",
+    "experiments/hcsn_free_boundary_v1/native003_run.py": "cd6062edb13dde507e9352f8eff00445e63033d985149f080d91dee9c77a554f",
+    "experiments/hcsn_free_boundary_v1/native003_tests.py": "0339f6f251a5ee0d299b2eedfaf5f4e80d616e220d70868350fea3398fe20a83",
+    "experiments/hcsn_free_boundary_v1/native003_train.py": "5a115cd191e7163af61a42b97a4a31868f7496ff26a10d2e9eea26f073b3690d",
+    "experiments/hcsn_free_boundary_v1/native_bridge.py": "77d752f013cbde2cc4e1424f5e2038352e5cda9b4b241222027c2ddeae9957fd",
+    "experiments/hcsn_free_boundary_v1/native_tests.py": "0ea799b73dcaffe2652415713901813628fbf3776991d2b289a1d795e2ca6ca0",
+    "experiments/hcsn_free_boundary_v1/oracle.py": "72f8171bb3c6121481235288033518516d25eb0644f68c9c9f7d775069eda248",
+    "experiments/hcsn_free_boundary_v1/oracle_fast.py": "51a47ae40369d202c71c5492c0f509dc4d1d919717a4f4c610e24d894bd7d08e",
+    "experiments/hcsn_free_boundary_v1/oracle_fast_tests.py": "deefc6cd6dba94a44b6a3bfaf4f9b57bb26ee7b9ba8663187d100c0cde6158ca",
+    "experiments/hcsn_free_boundary_v1/oracle_tests.py": "c42b030fa7beee041ac28b8eaaa22f33030f963d5363429b4ad2bcf86705ab41",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a",
+    "experiments/hcsn_free_boundary_v1/plot_results.py": "a94c9fb5283ae8a8f463e6093ac72ac201d90022ab2606e9d2e927f2fbffd927",
+    "experiments/hcsn_free_boundary_v1/restore_native.py": "918aa4570b2e5119a760cbcd69ad797d43a2a874ed065f636234c52f93d49f06",
+    "experiments/hcsn_free_boundary_v1/run_matrix.py": "3a8f2ba065a4922a18f5eb7a7a4a86ed128a111e6ed2de3ece6e629e90969323",
+    "experiments/hcsn_free_boundary_v1/run_native.py": "2d824eb438ea823ef2ebff307188cde4d24af521c7a6386d643775d97dc993c3",
+    "experiments/hcsn_free_boundary_v1/run_native_live.py": "0c4055d26bbafc9c762357fdab338a2e438cf7fc5ba97cf8b60317031d177565",
+    "experiments/hcsn_free_boundary_v1/scale.py": "e0c233a2d0834d491ca260a0445610ba656c0834661b6502ac8cb871356c8363",
+    "experiments/hcsn_free_boundary_v1/scale_tests.py": "97deee2da8b57ffce33909d38cf466ee4277533ef822db475e6ad165252b4d20",
+    "experiments/hcsn_free_boundary_v1/training.py": "1aab526dec037ba19a5b55fc532027d2a688212f4595ed21d5d86f35ebcbe653",
+    "experiments/hcsn_free_boundary_v1/training_tests.py": "ed2368b6a6ea7dfe012d98b78366187ba3a708f8207eb833abf1c3eab4d32087"
+  },
+  "study_id": "scaling002",
+  "timing_parameter_seed_or_repetition_change": false
+}

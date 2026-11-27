@@ -1,0 +1,210 @@
+{
+  "candidate": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "heads": [
+    {
+      "sha": "5bd72a53cd2e2e46e5ca3ca4ecfa60d4e9059883",
+      "parents": [
+        "5fd8ee8b6a333b6385733b9ff8ebe1d076177766"
+      ],
+      "names": [
+        "codex/2751-supervisor-signed-abort-exact-20261024-watch11"
+      ],
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "classification": "superseded_legacy_unsigned_abort_preserve_current_signed_recovery_contract",
+      "decisions": [
+        "Historical production hunks allow an exact-digest but unsigned recovery directive to terminalize a signed intent, clear a durable pending restart, and remove quarantine. They treat Aborted as terminal and allow later different grants; the added same-digest replay guard only addresses that newly admitted state.",
+        "Current recover_signed_intent intentionally accepts only Committed or RolledBack as terminal; other states remain or become RecoveryRequired and fence runtime. apply_production_transition also refuses every non-Committed/non-RolledBack signed intent, including an Aborted record. Thus no clean lease absence or successful kill can auto-authorize a legacy unsigned abort or replay its grant.",
+        "The current explicit resolve_production_recovery API requires a RecoveryRequired intent and release transaction, matching grant, registered release-binding digests, lifecycle and authority epoch, and a verify_recovery-validated independent signature with exact signer, time validity and all digest bindings. The historical unsigned directive would bypass this contract even if its digest is current.",
+        "Keep the complete current production implementation. Preserve the historical stale-directive rejection test already present. The old positive auto-abort test is intentionally superseded by the current matching-unsigned-directive rejection and repeated-cold-recovery tests, preserving exact intent, directive, inactivity and quarantine. No test is skipped or gate relaxed."
+      ],
+      "coverage_sources": [
+        "codex-rs/hepta-supervisor/src/supervisor.rs::recover_signed_intent",
+        "codex-rs/hepta-supervisor/src/supervisor.rs::resolve_production_recovery",
+        "codex-rs/hepta-supervisor/src/signed_authority.rs::verify_recovery"
+      ],
+      "validation": [
+        "just test --locked -p codex-hepta-supervisor --test signed_intent_recovery: 3 tests passed, 0 skipped",
+        "nextest run d6674f53-c148-4b37-aea2-94e87be37e86",
+        "see signed-intent-test.log"
+      ],
+      "native_pass_claimed": true,
+      "files": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+          "historical_final_blob": "f663c7c4f10d2d0ea3d3e142d2beaa02bbe93307",
+          "historical_evidence_path": "evidence/5bd72a53cd2e2e46e5ca3ca4ecfa60d4e9059883/codex-rs/hepta-supervisor/src/supervisor.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 54948,
+          "candidate_blob": "bc38be8d1b3a9e85a42bb92c5279db40b9e0e404",
+          "resolved_blob": "bc38be8d1b3a9e85a42bb92c5279db40b9e0e404",
+          "changed_from_candidate": false
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+          "historical_final_blob": "2a186f468fcac46df5f75a5565136982a3ee6de9",
+          "historical_evidence_path": "evidence/5bd72a53cd2e2e46e5ca3ca4ecfa60d4e9059883/codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 9087,
+          "candidate_blob": "fc05862834a565935c5570431be877e63dd2be5d",
+          "resolved_blob": "fc05862834a565935c5570431be877e63dd2be5d",
+          "changed_from_candidate": false
+        }
+      ]
+    },
+    {
+      "sha": "e6d906bb354470e63d451c898ade48f36bcf5655",
+      "parents": [
+        "5fd8ee8b6a333b6385733b9ff8ebe1d076177766"
+      ],
+      "names": [
+        "codex/2751-v8-smoke-serialized-exact-20261024"
+      ],
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "classification": "superseded_by_once_guarded_default_allocator_initialization",
+      "decisions": [
+        "The historical hunk adds a Mutex held over all evaluate_expression calls solely to prevent the initial Windows sandbox allocator pool from racing; it adds no tests and leaves production concurrency unchanged.",
+        "Current initialize_v8 performs drop(v8::new_default_allocator()) inside INIT.call_once after platform and V8 initialization. Every evaluate_expression calls initialize_v8 before creating its isolate; the Once completion synchronizes all later smoke calls with the allocator initialization.",
+        "The exact locked v8 150.4.0 implementation proves this call reaches the intended lazy state: Rust new_default_allocator -> binding.cc v8__ArrayBuffer__Allocator__NewDefaultAllocator -> api.cc NewDefaultAllocator -> ArrayBufferAllocator constructor -> IsolateGroup::GetSandboxedArrayBufferAllocator -> backend_allocator_.LazyInitialize(sandbox()).",
+        "With partition allocation, LazyInitialize constructs impl_ on first use without its own mutex; executing it once before parallel calls prevents that first-use race. The backend lives in the default IsolateGroup and the wrapper owns only pointers, so dropping the wrapper does not tear down the initialized backend. The non-partition backend also initializes under its own mutex. Keep current localized initialization and all original smoke assertions instead of serializing evaluation.",
+        "This is source-level equivalence for the stated lazy-initialization problem. It is not a claim that Windows V8 binaries or the complete platform matrix passed in this environment."
+      ],
+      "coverage_sources": [
+        "codex-rs/v8-poc/src/lib.rs::initialize_v8",
+        "codex-rs/Cargo.lock::v8@150.4.0"
+      ],
+      "validation": [
+        "v8 150.4.0 exact local Cargo registry sources inspected; crate lock checksum 42a978ff11f15b24e5c05a7123cf2b68f41e763546699781a924ef4e2cf43a49",
+        "native V8 execution not run; archive download blocked in this environment according to root"
+      ],
+      "native_pass_claimed": false,
+      "files": [
+        {
+          "path": "codex-rs/v8-poc/src/lib.rs",
+          "historical_final_blob": "f94cd5503b41d813a23e63bd4e9bb05a58f9c42b",
+          "historical_evidence_path": "evidence/e6d906bb354470e63d451c898ade48f36bcf5655/codex-rs/v8-poc/src/lib.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 3286,
+          "candidate_blob": "5137098615ccd350c5626a727a18f3e65bd825b8",
+          "resolved_blob": "5137098615ccd350c5626a727a18f3e65bd825b8",
+          "changed_from_candidate": false
+        }
+      ]
+    },
+    {
+      "sha": "c87b4c66810e51b84682d5e709164c86a532c171",
+      "parents": [
+        "11fe6faed5efe69450331039988908e2000c2c15"
+      ],
+      "names": [
+        "codex/learn-original-qualification-owner-ce434-20261111-v1"
+      ],
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "classification": "pure_formatting_covered_current_files_already_formatted",
+      "decisions": [
+        "Fetched and verified all eight historical postimage Git blob hashes. Reversed the complete API patches in an isolated directory to reconstruct preimages, then parsed/formatted both revisions with rustfmt 1.96 using edition 2024 and skip_children. All eight normalized outputs are byte-identical, proving the isolated commit is only formatting, including lib.rs module ordering/line wraps.",
+        "The seven paths still present in candidate 6ffe are already rustfmt-identical. The eighth historical circuit_model_qualification_test_support.rs was replaced by current circuit_model_qualification_support_tests.rs, referenced from circuit_model_selection_evaluation_support_tests.rs; do not resurrect a stale duplicate module for a formatting-only historical commit.",
+        "Preserve the current tree for all eight paths and retain original history. No original runtime or assertion semantics are introduced by this head."
+      ],
+      "validation": [
+        "all 8 original postimage Git hashes verified",
+        "all 8 reconstructed preimages rustfmt-normalize byte-identically to postimages",
+        "all 7 surviving current files are already formatted",
+        "see c87-format-equivalence.json and c87-current-format.json"
+      ],
+      "native_pass_claimed": false,
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_model_qualification_owner_tests.rs",
+          "historical_final_blob": "f9ab37bd211bd951c29a5a37da32af30dd1e226a",
+          "historical_evidence_path": "evidence/c87b4c66810e51b84682d5e709164c86a532c171/codex-rs/hepta-agentd/src/circuit_model_qualification_owner_tests.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 17863,
+          "candidate_blob": "02cc474f4780466fe8d6ef97b33226cf77db632f",
+          "resolved_blob": "02cc474f4780466fe8d6ef97b33226cf77db632f",
+          "changed_from_candidate": false
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_model_qualification_test_support.rs",
+          "historical_final_blob": "3982a12b31a1686d6ec2ceb150e7fc96981ba6d5",
+          "historical_evidence_path": "evidence/c87b4c66810e51b84682d5e709164c86a532c171/codex-rs/hepta-agentd/src/circuit_model_qualification_test_support.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 7976,
+          "candidate_blob": null,
+          "resolved_blob": null,
+          "changed_from_candidate": false
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_model_selection_evaluation_support_tests.rs",
+          "historical_final_blob": "ba7a31b312cb8c0d8ed63d2b57a3676ac3efbd10",
+          "historical_evidence_path": "evidence/c87b4c66810e51b84682d5e709164c86a532c171/codex-rs/hepta-agentd/src/circuit_model_selection_evaluation_support_tests.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 19357,
+          "candidate_blob": "25364b385f04ef8439136a3a3baf3da98a25f7ac",
+          "resolved_blob": "25364b385f04ef8439136a3a3baf3da98a25f7ac",
+          "changed_from_candidate": false
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "historical_final_blob": "1e60f1dddcb6944c194472d4d524e177bc16d668",
+          "historical_evidence_path": "evidence/c87b4c66810e51b84682d5e709164c86a532c171/codex-rs/hepta-agentd/src/lib.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 55405,
+          "candidate_blob": "5328a065e461f872f80bd97dddc6da08a86648ae",
+          "resolved_blob": "5328a065e461f872f80bd97dddc6da08a86648ae",
+          "changed_from_candidate": false
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_binding.rs",
+          "historical_final_blob": "a2c6587ba48572844f57bee3f030589813f822ce",
+          "historical_evidence_path": "evidence/c87b4c66810e51b84682d5e709164c86a532c171/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_binding.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 13280,
+          "candidate_blob": "aa6c0b3ecee11a8022fc323b71e95a1c32f4c679",
+          "resolved_blob": "aa6c0b3ecee11a8022fc323b71e95a1c32f4c679",
+          "changed_from_candidate": false
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+          "historical_final_blob": "1b25c4e61651f207db9ca3fccdf1fc883bee0abe",
+          "historical_evidence_path": "evidence/c87b4c66810e51b84682d5e709164c86a532c171/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 10256,
+          "candidate_blob": "c1aad7fb747f76915baf1058c8d35758333d366c",
+          "resolved_blob": "c1aad7fb747f76915baf1058c8d35758333d366c",
+          "changed_from_candidate": false
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+          "historical_final_blob": "bfaedfbf07784eeb3f6862989a52b1bd489f39bd",
+          "historical_evidence_path": "evidence/c87b4c66810e51b84682d5e709164c86a532c171/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 5945,
+          "candidate_blob": "6bf1adf145d4ed700e2bd76becaf1c01a4ad7e3e",
+          "resolved_blob": "6bf1adf145d4ed700e2bd76becaf1c01a4ad7e3e",
+          "changed_from_candidate": false
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+          "historical_final_blob": "31c97708e059d1e1a68bc512cd6728cf6df2970c",
+          "historical_evidence_path": "evidence/c87b4c66810e51b84682d5e709164c86a532c171/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+          "historical_blob_verified": true,
+          "historical_bytes": 4122,
+          "candidate_blob": "5a874742815f4984611f682fecd8d78f426eadcd",
+          "resolved_blob": "5a874742815f4984611f682fecd8d78f426eadcd",
+          "changed_from_candidate": false
+        }
+      ]
+    }
+  ],
+  "remote_writes": false,
+  "shared_checkout_edits": false
+}

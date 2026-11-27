@@ -1,0 +1,91 @@
+{
+  "actual_audit_execution_authorized": false,
+  "complete_historical_preparation_CPU_and_wall": "not available; recorded child/process scopes only",
+  "costs": [
+    {
+      "CPU_seconds": 2.172732,
+      "id": "preparation-attempt-01",
+      "receipt": {
+        "bytes": 4965,
+        "sha256": "0858027640239b39dd14a38b075bebb1135aa0ff183a90bd43a60e53c48b3658"
+      },
+      "returncode": 1,
+      "scope": "synthetic test child including its own short synthetic subprocesses",
+      "wall_seconds": 1.5220034939993639
+    },
+    {
+      "CPU_seconds": 2.714767,
+      "id": "preparation-attempt-02",
+      "receipt": {
+        "bytes": 5259,
+        "sha256": "2d01ec960c224ebce8f475fd9afc3e399348a012cc5f6257afe285c12a47223b"
+      },
+      "returncode": 0,
+      "scope": "synthetic test child including its own short synthetic subprocesses",
+      "wall_seconds": 2.0227098719988135
+    },
+    {
+      "CPU_seconds": 2.715391,
+      "id": "preparation-attempt-03",
+      "receipt": {
+        "bytes": 5806,
+        "sha256": "f7ee7e79c8fdfc3bd32437efced974b31219575cf9d1fdf3b0e9c7ebae04f5de"
+      },
+      "returncode": 0,
+      "scope": "synthetic test child including its own short synthetic subprocesses",
+      "wall_seconds": 2.172983327000111
+    },
+    {
+      "CPU_waited_children_seconds": 2.7752030000000003,
+      "id": "final-validation-interval",
+      "not_additive_with_children": true,
+      "own_CPU_sample_seconds": 0.052490889,
+      "receipt": {
+        "bytes": 8395,
+        "sha256": "99b84ac7e022fc1f36d7c9f1ae3989fdf4d34c4ff426cb27f59a7801e7dd72bb"
+      },
+      "scope": "two validation children plus orchestration interval, excluding initial source ZIP creation and final receipt serialization",
+      "wall_seconds": 2.2397962590002862
+    }
+  ],
+  "energy_joules": null,
+  "known_earlier_test_failure": "attempt01 trace fixture shared Python list references with its expected data; mutations affected both. Fixture was deep-copied and original failed source/log retained. No production claim was made.",
+  "plan": {
+    "bytes": 11617,
+    "sha256": "1fc0d941bc9d96544c8caa5740aaba130685fed74b620f6e62dc22bec4a715ad"
+  },
+  "production_C2_files_read": 0,
+  "production_model_reads": 0,
+  "program": {
+    "bytes": 73473,
+    "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+  },
+  "program_manifest": {
+    "bytes": 3081,
+    "sha256": "4cc126ad4cf11e12c80408a868f8c673be70bccdce95a02228fda9d1543ef8d2"
+  },
+  "resources": {
+    "RSS_bytes": 2147483648,
+    "internal_finalization_reserve_seconds": 60,
+    "metadata_seconds": 360,
+    "per_full_D_seconds": 210,
+    "threads": 1,
+    "whole_hard_wall_seconds": 1800,
+    "workers": 1
+  },
+  "runtime_control_independent_closure": {
+    "archive": {
+      "bytes": 177828,
+      "sha256": "5a5d01213b780790c924f889e297432ca1dc2965e713a7fb67ac26c2fe6c927b"
+    },
+    "positive_controls": 2,
+    "rejected_negative_controls": 5
+  },
+  "schema": "c2-terminal-auditor-preparation-evidence-v1",
+  "scientific_admission": "HOLD",
+  "software_test_scope": "synthetic metadata/tensors and short non-model subprocesses; no production C2 reads",
+  "software_tests_passed": 28,
+  "status": "prepared_and_frozen_not_executed",
+  "training_or_oracle_calls": 0,
+  "whole_training_numerical_admission": "HOLD"
+}

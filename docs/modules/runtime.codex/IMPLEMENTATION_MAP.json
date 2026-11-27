@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
@@ -40,7 +40,8 @@
       "operation": "open_thread",
       "nativeSymbol": "pub(crate) async fn thread_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/thread_processor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "b0efc2c9c2a75b1f7af9dcd70687a92433080d5e"
     },
     {
       "designOperation": "submit_turn",
@@ -63,7 +64,8 @@
       "operation": "submit_turn",
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "3bc5011c98d9b2b2ba27861c8ffc7622cd1ab86d"
     },
     {
       "designOperation": "dispatch_tool",
@@ -94,7 +96,8 @@
       "operation": "dispatch_tool",
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "3bc5011c98d9b2b2ba27861c8ffc7622cd1ab86d"
     },
     {
       "designOperation": "observe_delivery",
@@ -125,7 +128,8 @@
       "operation": "observe_delivery",
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "3bc5011c98d9b2b2ba27861c8ffc7622cd1ab86d"
     }
   ],
   "repositoryControlledGaps": [
@@ -309,15 +313,15 @@
   "sourceObjects": [
     {
       "path": "codex-rs/app-server",
-      "object": "369db165729574a745833cb651a17faf3fd00a46"
+      "object": "4645957087a2b292ddbb574bfb259e1f71efa9da"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
-      "object": "6126faf53271e6108c96394b0217bc763213cf86"
+      "object": "b0efc2c9c2a75b1f7af9dcd70687a92433080d5e"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-      "object": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+      "object": "3bc5011c98d9b2b2ba27861c8ffc7622cd1ab86d"
     },
     {
       "path": "codex-rs/app-server/tests/suite/v2/thread_start.rs",
@@ -325,7 +329,7 @@
     },
     {
       "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
-      "object": "e624887eccb92cc0be6eaceeec9c5a50da20dbc1"
+      "object": "e41b363c9bbfc7b12dd31abf89ba91175db4a9b2"
     },
     {
       "path": "codex-rs/codex-app-server/BINDING.json",
@@ -333,7 +337,7 @@
     },
     {
       "path": "codex-rs/core/src/codex_thread.rs",
-      "object": "7272a699937ac9f5e474e2f11ee47db3d3725b8c"
+      "object": "32158da394054fe3f5ca1e734c3f461680a9106b"
     },
     {
       "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
@@ -345,15 +349,32 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
-      "object": "b25375be9219be18baba2ab4d3488658d0040897"
+      "object": "6268095c91398f8bb44dd85c3e0cec529a79985a"
     },
     {
       "path": "codex-rs/hepta-codex-adapter",
-      "object": "5643ca35d5a347bd53bf6a5f9bcd0dfbe964d90b"
+      "object": "b102f24ea98eecdc4b0d2e120fa742d88ec454ff"
     },
     {
       "path": "docs/modules/runtime.codex/TECHNICAL.md",
       "object": "28590a009a9a3b47042547bb5c6fe23f60bdffad"
     }
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "runtime.codex",
+    "previousMapBlob": "a78fc528a83438da44f3dcb77d7c89082efde107",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  },
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/app-server",
+    "codex-rs/hepta-codex-adapter"
   ]
 }

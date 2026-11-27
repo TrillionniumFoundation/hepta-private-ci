@@ -1,0 +1,47 @@
+{
+  "schema": "hcsn-common-source-gate-overview-v1",
+  "same_source": true,
+  "source_commit": "9f6c7c4dc24510472ca012647ebd1d96c1405c69",
+  "source_published_before_execution": true,
+  "original_threshold": {
+    "metric": "abs(candidate - original_continuum) / max(1, abs(original_continuum))",
+    "upper_bound": 0.01,
+    "failure_comparison": "strictly greater than 0.01",
+    "changed": false
+  },
+  "source_guard_scope": {
+    "common_source_and_protocol_files": 18,
+    "state_python_files_including_tests": 16,
+    "domain_executed_python_closure": 9,
+    "domain_protocol_files": 1,
+    "domain_guard_has_state_io": true
+  },
+  "counts": {
+    "tests": 28,
+    "skipped": 0,
+    "original_positions_per_mesh": 14336,
+    "meshes": [
+      256,
+      512
+    ],
+    "prior_and_posterior_per_position": true,
+    "actual_direct_DDE_integrations": 30,
+    "direct_DDE_query_records": 210,
+    "fresh_process_recovery": true,
+    "optimizer_calls": 0,
+    "complete_C2_replays": 0,
+    "independent_future_tasks": 0
+  },
+  "continuation_failures_per_mesh": {
+    "256": 0,
+    "512": 0
+  },
+  "cold_resume_clock": 0.417,
+  "cold_maximum_absolute_error": 7.671177582047051e-11,
+  "all_positions_are_linear_kernel_evaluations": true,
+  "all_positions_are_individual_DDE_integrations": false,
+  "persistent_recovery_repeated_for_all_positions": false,
+  "Torch_uniform_gradients_included": false,
+  "old_passes_pooled": false,
+  "status": "HOLD_NO_GO"
+}

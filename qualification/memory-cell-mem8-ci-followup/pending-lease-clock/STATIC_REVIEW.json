@@ -1,0 +1,120 @@
+{
+  "added": 451,
+  "audit_wall_clock_helpers_and_timestamp_inserts_unchanged": true,
+  "base_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "bazel_lock_regenerated": false,
+  "bazel_package_variants": 9,
+  "caller_boundaries_checked_for_delta": 160,
+  "caller_deltas": [],
+  "caller_manifest_unchanged": true,
+  "cargo_normal_dependencies_and_defaults_unchanged": true,
+  "deleted": 53,
+  "existing_qualification_target_features_and_commands_unchanged": true,
+  "expiry_check_counts": {
+    "h7_trajectory_store.rs": 3,
+    "local_lease_outbox.rs": 3,
+    "logical_turn_registry.rs": 4
+  },
+  "files": 23,
+  "formatter_executed": false,
+  "full_repo_caller_gate_executed": false,
+  "limitations": [
+    "Static closure and source checks do not prove Rust compilation or Bazel target analysis.",
+    "Existing full caller/source gate must run on the eventual combined source.",
+    "Original expiry failures remain recorded; no native result is replaced."
+  ],
+  "native_executed": false,
+  "ordinary_agentd_test_graph_unchanged": true,
+  "ordinary_bazel_macro_calls_unchanged_except_extension_unit_dependency": true,
+  "ordinary_recovery_read_only_clock_defaults": "Real",
+  "schema": "mem8.qualification-clock.static-review.v1",
+  "source_preimages_exact": true,
+  "status": "PASS_STATIC_REVIEW_ONLY",
+  "type_edges": [
+    {
+      "from": "codex-app-server",
+      "replacement": "//codex-rs/hepta-memory:hepta-memory-qualification-clock-lib",
+      "to": "codex-hepta-memory"
+    },
+    {
+      "from": "codex-app-server",
+      "replacement": "//codex-rs/ext/hepta-memory:hepta-memory-qualification-clock-lib",
+      "to": "codex-hepta-memory-extension"
+    },
+    {
+      "from": "codex-app-server-client",
+      "replacement": "//codex-rs/app-server:app-server-qualification-clock-lib",
+      "to": "codex-app-server"
+    },
+    {
+      "from": "codex-hepta-agentd",
+      "replacement": "//codex-rs/app-server:app-server-qualification-clock-lib",
+      "to": "codex-app-server"
+    },
+    {
+      "from": "codex-hepta-agentd",
+      "replacement": "//codex-rs/app-server-client:app-server-client-qualification-clock-lib",
+      "to": "codex-app-server-client"
+    },
+    {
+      "from": "codex-hepta-agentd",
+      "replacement": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-qualification-clock-lib",
+      "to": "codex-hepta-codex-adapter"
+    },
+    {
+      "from": "codex-hepta-agentd",
+      "replacement": "//codex-rs/hepta-cognitive-store:hepta-cognitive-store-qualification-clock-lib",
+      "to": "codex-hepta-cognitive-store"
+    },
+    {
+      "from": "codex-hepta-agentd",
+      "replacement": "//codex-rs/hepta-memory:hepta-memory-qualification-clock-lib",
+      "to": "codex-hepta-memory"
+    },
+    {
+      "from": "codex-hepta-agentd",
+      "replacement": "//codex-rs/ext/hepta-memory:hepta-memory-qualification-clock-lib",
+      "to": "codex-hepta-memory-extension"
+    },
+    {
+      "from": "codex-hepta-agentd",
+      "replacement": "//codex-rs/hepta-supervisor:hepta-supervisor-qualification-clock-lib",
+      "to": "codex-hepta-supervisor"
+    },
+    {
+      "from": "codex-hepta-codex-adapter",
+      "replacement": "//codex-rs/app-server-client:app-server-client-qualification-clock-lib",
+      "to": "codex-app-server-client"
+    },
+    {
+      "from": "codex-hepta-cognitive-store",
+      "replacement": "//codex-rs/hepta-memory:hepta-memory-qualification-clock-lib",
+      "to": "codex-hepta-memory"
+    },
+    {
+      "from": "codex-hepta-infer-worker-host",
+      "replacement": "//codex-rs/app-server-client:app-server-client-qualification-clock-lib",
+      "to": "codex-app-server-client"
+    },
+    {
+      "from": "codex-hepta-infer-worker-host",
+      "replacement": "//codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib",
+      "to": "codex-hepta-agentd"
+    },
+    {
+      "from": "codex-hepta-infer-worker-host",
+      "replacement": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-qualification-clock-lib",
+      "to": "codex-hepta-codex-adapter"
+    },
+    {
+      "from": "codex-hepta-memory-extension",
+      "replacement": "//codex-rs/hepta-memory:hepta-memory-qualification-clock-lib",
+      "to": "codex-hepta-memory"
+    },
+    {
+      "from": "codex-hepta-supervisor",
+      "replacement": "//codex-rs/hepta-memory:hepta-memory-qualification-clock-lib",
+      "to": "codex-hepta-memory"
+    }
+  ]
+}

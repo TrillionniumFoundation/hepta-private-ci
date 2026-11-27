@@ -1,11 +1,17 @@
 #![forbid(unsafe_code)]
 
+mod authbus_crypto_profile;
+mod authbus_issuer_floor;
 mod authbus_outbox;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
+mod authbus_owner_policy;
 mod authbus_recovery;
 mod authbus_store;
 mod canonical;
+mod execution_complete_v1;
+mod execution_entry_deny_v1;
+mod execution_preparation_v1;
 mod governance_store;
 mod governance_validation;
 mod historical;
@@ -19,6 +25,28 @@ mod recovery_frontier;
 mod schema_validation;
 mod store;
 mod summary;
+mod verify1_checker;
+mod verify1_report;
+
+pub use verify1_checker::Verify1FixtureGoal;
+pub use verify1_checker::check_verify1_sqlite;
+pub use verify1_report::Verify1CalibrationReport;
+pub use verify1_report::Verify1ModelIdentity;
+pub use verify1_report::Verify1Record;
+pub use verify1_report::Verify1RiskPrediction;
+pub use verify1_report::Verify1Scope;
+pub use verify1_report::Verify1Verdict;
+pub use verify1_report::Verify1VerificationReceipt;
+pub use verify1_report::parse_verify1_payload;
+pub use verify1_report::verify1_receipt_payload;
+
+#[cfg(test)]
+#[path = "verify1_report_tests.rs"]
+mod verify1_report_tests;
+
+#[cfg(test)]
+#[path = "verify1_checker_tests.rs"]
+mod verify1_checker_tests;
 
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
@@ -31,9 +59,20 @@ pub use authbus_outbox_record::AuthBusDeliveryState;
 pub use authbus_outbox_record::AuthBusDeliveryStatus;
 pub use authbus_outbox_record::AuthBusLease;
 pub use authbus_outbox_record::AuthBusOutboxError;
+pub use authbus_outbox_record::AuthBusRetainedDelivery;
 pub use authbus_recovery::AuthBusRecoveryError;
 pub use authbus_recovery::ReplayCheckpoint;
 pub use authbus_store::AuthBusAdmissionError;
+pub use execution_complete_v1::RecoveredExecutionPreparationV1;
+pub use execution_entry_deny_v1::EXECUTION_EFFECT_ENTRY_P2B_PERMITTED;
+pub use execution_entry_deny_v1::ExecutionEffectEntryAuditV1;
+pub use execution_entry_deny_v1::ExecutionEffectEntryDeniedV1;
+pub use execution_preparation_v1::EXECUTION_PREPARE_P2A_EXECUTE_ALLOWED;
+pub use execution_preparation_v1::EXECUTION_PREPARE_P2A_FINAL_USE_AUTHORITY;
+pub use execution_preparation_v1::EXECUTION_PREPARE_P2A_PRODUCTION_CALLER;
+pub use execution_preparation_v1::ExecutionPreparationReadbackStatusV1;
+pub use execution_preparation_v1::ExecutionPreparationReadbackV1;
+pub use execution_preparation_v1::ExecutionPreparationReceiptV1;
 pub use historical::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
 pub use historical::HistoricalEvidenceFamily;
 pub use historical::HistoricalEvidenceRecord;
@@ -117,6 +156,10 @@ mod provider_claim_tests;
 mod provider_effect_tests;
 
 #[cfg(test)]
+#[path = "execution_preparation_v1_tests.rs"]
+mod execution_preparation_v1_tests;
+
+#[cfg(test)]
 #[path = "summary_tests.rs"]
 mod summary_tests;
 
@@ -135,3 +178,11 @@ mod authbus_outbox_quarantine_tests;
 #[cfg(test)]
 #[path = "qualification_tests.rs"]
 mod qualification_tests;
+
+#[cfg(test)]
+#[path = "execution_complete_v1_tests.rs"]
+mod execution_complete_v1_tests;
+
+#[cfg(test)]
+#[path = "execution_entry_deny_v1_tests.rs"]
+mod execution_entry_deny_v1_tests;

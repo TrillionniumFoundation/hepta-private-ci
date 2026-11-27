@@ -1,0 +1,29 @@
+{
+  "captured_utc": "2026-11-22T17:39:46.580204+00:00",
+  "original_report": "integration-followup-f5-qa-review/REVIEW.json",
+  "original_sha256": "178da67f9654a132a749950cd9e4d5b4b9f0977e33eced1da809219ad7411453",
+  "verbatim_original_wrapper": "INDEPENDENT-REVIEW.original.json.gz",
+  "wrapper_sha256": "b466e46c0820380b56c3d87008db553ba87a2ef61d46f058f8e91e7cd7767862",
+  "display_copy": "INDEPENDENT-REVIEW.json",
+  "display_sha256": "fe4bc262978d00adc2580912e59d8239cc377f5ae800bc55049647cc3fd37a6a",
+  "display_original_json_values_equal": true,
+  "duplicate_json_keys": false,
+  "original_archive_and_17_output_files_unchanged": true,
+  "initial_prettier_check": {
+    "exit": 1,
+    "only_flagged_path": "qa/repository-consolidation/20261122/followup-f5/INDEPENDENT-REVIEW.json",
+    "message": "Code style issues found in the above file. Run Prettier with --write to fix."
+  },
+  "formatter": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/scratch/6d7ee0821539/rust-integration/node_modules/prettier/bin/prettier.cjs",
+      "--write",
+      "/workspace/scratch/6d7ee0821539/rust-integration/qa/repository-consolidation/20261122/followup-f5/INDEPENDENT-REVIEW.json"
+    ],
+    "exit": 0,
+    "stdout": "qa/repository-consolidation/20261122/followup-f5/INDEPENDENT-REVIEW.json 70ms\n",
+    "stderr": ""
+  },
+  "scope": "Only a separately added display copy was formatted. The independent original report remains byte-exact in its standard gzip wrapper and in the original review directory. All 273 archived records and the original 17 package files are unchanged."
+}

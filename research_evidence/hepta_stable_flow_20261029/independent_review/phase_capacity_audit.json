@@ -1,0 +1,101 @@
+{
+  "version": "hepta-independent-phase-capacity-audit-20261029-v1",
+  "created_unix": 1793279227.580893,
+  "checks": {
+    "protocol_sha_matches": true,
+    "raw_arrays_sha_matches": true,
+    "source_snapshot_sha_matches": true,
+    "source_live_sha_matches": true,
+    "reported_metrics_match_raw": true,
+    "formal_core_remains_frozen": true
+  },
+  "artifact_integrity_passed": true,
+  "phase_results_sha256": "fb29dd15cba58644804ef8dbb557d35ec7d20065c4025014b38c67af0a79d3aa",
+  "formal_core_protocol_sha256": "f94ff6491a2e98c1288ee2476404943f920042800d468435eba46d5235c0197b",
+  "rows": [
+    {
+      "case": "regenerative_recovery",
+      "gain": 3.0,
+      "linear_trace": 0.33333333333333326,
+      "linear_determinant": 0.16666666666666666,
+      "reported_linear_values_match": true,
+      "tail_margin_peak_to_peak": 0.8960043458093794,
+      "reported_amplitude_matches": true,
+      "independent_linearly_interpolated_upcrossing_period_mean": 15.080843363875667,
+      "upcrossings": [
+        96.92784188699453,
+        112.00912597145285,
+        127.08960927920839,
+        142.17038020685027,
+        157.25176339704012,
+        172.33205870637286
+      ],
+      "trajectory_metrics": [
+        {
+          "internal_step": 0.0625,
+          "recomputed_scaled_state_error": 0.013316404880515,
+          "matches_report": true,
+          "passed_declared_gate": false,
+          "failure_flag_retained_correctly": true
+        },
+        {
+          "internal_step": 0.03125,
+          "recomputed_scaled_state_error": 0.0033862762501374734,
+          "matches_report": true,
+          "passed_declared_gate": true,
+          "failure_flag_retained_correctly": true
+        }
+      ],
+      "raw_zero_crossing_interval_mean": 15.080843363875667,
+      "period_resolved_above_amplitude_0_001": true,
+      "period_note": "Linear interpolation of upward zero crossings gives an independent finite-time period estimate; peak-sampled period has 0.125 time-grid resolution."
+    },
+    {
+      "case": "restoring",
+      "gain": 1.5,
+      "linear_trace": -0.41666666666666674,
+      "linear_determinant": 0.16666666666666666,
+      "reported_linear_values_match": true,
+      "tail_margin_peak_to_peak": 1.4364470724004264e-09,
+      "reported_amplitude_matches": true,
+      "independent_linearly_interpolated_upcrossing_period_mean": null,
+      "upcrossings": [
+        93.63029185064684,
+        113.17696374622356,
+        125.02546473949006,
+        130.7854545713797,
+        150.49697518071935,
+        156.88319672131146,
+        164.78302344942418,
+        174.81730355220668
+      ],
+      "trajectory_metrics": [
+        {
+          "internal_step": 0.0625,
+          "recomputed_scaled_state_error": 2.410000590611458e-06,
+          "matches_report": true,
+          "passed_declared_gate": true,
+          "failure_flag_retained_correctly": true
+        },
+        {
+          "internal_step": 0.03125,
+          "recomputed_scaled_state_error": 6.097673298714651e-07,
+          "matches_report": true,
+          "passed_declared_gate": true,
+          "failure_flag_retained_correctly": true
+        }
+      ],
+      "raw_zero_crossing_interval_mean": 11.598144528794263,
+      "period_resolved_above_amplitude_0_001": false,
+      "period_note": "Tail amplitude is below the source diagnostic prominence scale; tiny residual/noise zero crossings must not be presented as sustained oscillation."
+    }
+  ],
+  "scope": "Untrained hand-selected parameter capacity and long-horizon numerical stress; no formal data or learned checkpoint is involved",
+  "interpretation": [
+    "The local Jacobian supports decay at gain1.5 and instability at gain3.0; finite-time traces demonstrate sustained continuous threshold-crossing oscillations in the latter case",
+    "Classical smooth Hopf bifurcation conditions and global limit-cycle uniqueness have not been established; the piecewise operators are C1 and generally not C2",
+    "The registered formal h=1/16 fails the separate long-duration oscillatory phase-error gate and this failure is retained; h=1/32 passes that diagnostic without changing the formal study",
+    "No trained spiking, hard-reset behavior, event sparsity, biological fit or task superiority follows"
+  ],
+  "verification_scope": "Read-only recomputation from retained arrays and source/protocol hash binding; no simulation or training rerun"
+}

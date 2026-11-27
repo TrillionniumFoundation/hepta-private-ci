@@ -1,0 +1,30 @@
+{
+  "caption": "blue cross right",
+  "choices": {
+    "text": 11,
+    "image": 11
+  },
+  "image_sha256": "c6765fd611d6347ea48765af88835e3c130cbf0560191848b02028535fd5a620",
+  "spent": {
+    "controller": 341,
+    "generator": 14964,
+    "output_bytes": 107
+  },
+  "frozen_runtime": {
+    "compute_price": 0.02,
+    "cost_ratio": 0.0,
+    "decision_price": 0.0,
+    "inference_cap_full_equivalents": 2.0,
+    "rho": 1.5,
+    "runtime_batch_size": 64
+  },
+  "selection_ready": false,
+  "controller_cost_calibrated": true,
+  "critic_kind": "low-hidden-instruction-affine-v1",
+  "bundle_sha256": "ecf06216f39d644f66f5de0478ba925b53e8b87bcaa310028975ec307c9232f3",
+  "exact_reload_choices_and_png": true,
+  "checkpoint_restored": true,
+  "labels_or_observer_at_serving": false,
+  "profile": "one handcrafted external RGB request, artifact reload/replay; not formal batch qualification",
+  "diagnostic_cumulative_process_cpu_ns": 695437713
+}

@@ -7,11 +7,67 @@
 
 #![forbid(unsafe_code)]
 
-/// Model-manifest/grant state machine for native driver implementations.
+/// Experimental signed-grant local-model boundary. It is absent from default
+/// builds and cannot be treated as production execution evidence.
+#[cfg(feature = "local-model-experimental")]
+pub mod local_model;
+
+/// Legacy in-memory model-driver fixture. Validation-only and never provider
+/// execution evidence.
+#[cfg(feature = "legacy-local-model-boundary")]
 pub mod model_worker;
 
+/// Registered generation backend using the explicit qualification-only legacy driver.
+#[cfg(feature = "legacy-local-model-boundary")]
+pub mod generation_driver;
+
+/// Shared-feature reference neuron microbatch planning and execution.
+pub mod neuron_microbatch;
+pub use neuron_microbatch::NeuronMicrobatchExecutionV1;
+pub use neuron_microbatch::NeuronMicrobatchWorkerError;
+pub use neuron_microbatch::NeuronMicrobatchWorkerV1;
+
+/// Composition-aware shared encoder residency seam (qualification only).
+pub mod composition;
+
+/// Explicit qualification bridge, available only with the optional legacy fixture.
+#[cfg(feature = "composition-model-driver-qualification")]
+pub mod composition_model_adapter;
+
+/// Identity data shared by composition and the optional legacy model driver.
+pub mod model_manifest;
+
 pub mod final_use_authorizer;
+pub mod governed_app_server;
 pub mod native_app_server;
+/// Durable evidence adapter for signed terminal/usage reconciliation.
+pub mod verified_reconciliation;
+
+/// Closed-world public capability split for `inference.worker`.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum InferenceWorkerProfile {
+    HostedAppServerWorker,
+    LocalModelWorker,
+    LegacyReceiptBoundary,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ProfileMaturity {
+    ProductionCandidateNotActivated,
+    ExperimentalNonProduction,
+    ValidationOnly,
+}
+
+#[must_use]
+pub const fn profile_maturity(profile: InferenceWorkerProfile) -> ProfileMaturity {
+    match profile {
+        InferenceWorkerProfile::HostedAppServerWorker => {
+            ProfileMaturity::ProductionCandidateNotActivated
+        }
+        InferenceWorkerProfile::LocalModelWorker => ProfileMaturity::ExperimentalNonProduction,
+        InferenceWorkerProfile::LegacyReceiptBoundary => ProfileMaturity::ValidationOnly,
+    }
+}
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -267,3 +323,11 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+// Uses the same explicit qualification-only legacy driver contract.
+#[cfg(feature = "legacy-local-model-boundary")]
+mod memory_cell_driver;
+#[cfg(feature = "legacy-local-model-boundary")]
+pub use memory_cell_driver::MemoryCellBindingV1;
+#[cfg(feature = "legacy-local-model-boundary")]
+pub use memory_cell_driver::MemoryCellDriver;

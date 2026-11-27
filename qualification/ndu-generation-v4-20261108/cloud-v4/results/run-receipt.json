@@ -1,0 +1,84 @@
+{
+  "adoption_authorized": false,
+  "attempt_id": "ndu-gen-986c-joint-native-20261108-v4",
+  "checks": [
+    {
+      "exit_code": 0,
+      "name": "python-dependencies",
+      "status": "PASS",
+      "stderr": "python-dependencies.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "python-dependencies.stdout.log",
+      "stdout_sha256": "e274420ec65d2a35bcd158cbfc9d94e686130e9ecd2562b4bf7d03220b05a76a",
+      "wall_seconds": 4.815199770999982
+    },
+    {
+      "exit_code": 0,
+      "name": "runtime-contract-tests",
+      "status": "PASS",
+      "stderr": "runtime-contract-tests.stderr.log",
+      "stderr_sha256": "24728514b2e5a3ae718c586aa422b28b98219d3aa73e10d96ab670f659041d1a",
+      "stdout": "runtime-contract-tests.stdout.log",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 2.028290307999953
+    },
+    {
+      "exit_code": 0,
+      "name": "joint-v4-tests",
+      "status": "PASS",
+      "stderr": "joint-v4-tests.stderr.log",
+      "stderr_sha256": "31060af0af8247f826c6300a520a005fa0ee976c8483b3180972b09e5d4b31d9",
+      "stdout": "joint-v4-tests.stdout.log",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 16.334455906000017
+    },
+    {
+      "exit_code": 0,
+      "name": "joint-v4-ndu-diagnostic",
+      "status": "PASS",
+      "stderr": "joint-v4-ndu-diagnostic.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "joint-v4-ndu-diagnostic.stdout.log",
+      "stdout_sha256": "0bd4d5ab6b5fcadd3cb449fbf66167306745514b5b72ff7bf694aae0e89865f7",
+      "wall_seconds": 29.78856958700004
+    }
+  ],
+  "full_workspace_validation": false,
+  "native": {
+    "bytes": 1011544,
+    "compiled_in_this_cloud_job": false,
+    "execution_binary_sha256": "0866ace1c10daa70abf95eaa5f45020293986ea00ec06bbc9e03dbd59f9f9967",
+    "source_and_binary_pins_verified": true,
+    "source_manifest_sha256": "565219e31e08b2093be2093870bba47d1445290d9ceaaf612704aacc96c9327f"
+  },
+  "production_model_training": false,
+  "runner_sha256": "8c1865bef7258eb00f56ececdf4be1e99c22eb25f70deafbe651a6a7b4720029",
+  "runtime": {
+    "device": "cpu",
+    "libc": [
+      "glibc",
+      "2.39"
+    ],
+    "machine": "x86_64",
+    "packages": {
+      "Pillow": "13.0.0",
+      "cuda_available": false,
+      "ffprobe_present": true,
+      "numpy": "2.1.3",
+      "torch": "2.11.0+cpu",
+      "torch_interop_threads": 1,
+      "torch_threads": 1
+    },
+    "python": "3.13.18",
+    "system": "Linux",
+    "thread_limit": 1
+  },
+  "schema": "ndu-joint-v4-native-qualification-v2",
+  "scientific_task_evidence": false,
+  "scope": "synthetic v4 training, export, native planning and content codecs",
+  "source_files_verified": 73,
+  "source_manifest_sha256": "2f734a88013333b6eb82124b47d1af8f86b9541bdaa98fe77c4417cf2082d0b9",
+  "source_payload_sha256": "5f9b2426d8929cf8cea2dec273695f0a3329fa250089b07a1292efb17a107492",
+  "status": "PASS",
+  "wall_seconds": 53.004391655000006
+}

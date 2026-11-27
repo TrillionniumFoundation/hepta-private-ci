@@ -1,0 +1,15 @@
+{
+  "command_verbatim": "python - <<'PY'\nimport os,fcntl\nf=os.open('/workspace/shared/rgb-class-preservation-20261030/benchmark.lock',os.O_RDONLY)\nfcntl.flock(f,fcntl.LOCK_EX|fcntl.LOCK_NB)\nprint('SHARED_LOCK_AVAILABLE')\nos.close(f)\nPY\npython -I -B strict-history-content-memo-candidate-v1/run_once.py",
+  "functions_exec_status": "Script completed",
+  "kind": "POSTHOC_TOOL_TRANSCRIPT_EXCERPT_NOT_PROSPECTIVE_RECEIPT",
+  "response_fields": {
+    "chunk_id": "e28eea",
+    "exit_code": 0,
+    "original_token_count": 205,
+    "wall_time_seconds": 0.134073081
+  },
+  "scope": "wrapper shell completion only; transport wall is not synchronized method timing",
+  "session_id_returned": false,
+  "source": "exec_command response delivered in this task at 2026-11-04 01:50:26 UTC; selected fields and output quoted, not a second wait",
+  "stdout_verbatim": "SHARED_LOCK_AVAILABLE\n{\"complete_wait\": true, \"exit_code\": 0, \"raw_wait_status\": 0, \"whole_child_CPU_seconds\": 0.17779699999999998, \"user_CPU_seconds\": 0.136007, \"system_CPU_seconds\": 0.04179, \"wall_seconds\": 0.1799031179980375, \"max_rss_kib\": 12708, \"source_freeze_sha256\": \"4b0653dddd7465e9740e4d723ee492db89a9587320b287bc082c4b8adcc68828\", \"result_sha256\": \"a10c9d466c0bbb7d982e8511979d565d370b60618d2b74ca773011da964075bc\", \"automatic_retry\": false, \"outer_CPU_prefix_seconds\": 0.031517557, \"outer_final_tail\": \"unknown_nonzero\", \"preparation_review_and_history\": \"additional_nonzero\", \"scope\": \"stdlib fresh-bytes content memo only; NOT strict256 admission\", \"limits\": {\"child_CPU_seconds\": 4, \"outer_CPU_seconds\": 6, \"AS_MiB\": 256, \"file_MiB\": 2, \"child_wall_alarm_seconds\": 45, \"outer_wall_alarm_seconds\": 60}}\n"
+}

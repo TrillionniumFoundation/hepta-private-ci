@@ -1,0 +1,188 @@
+{
+  "schema": "hepta.mem15.pretest-format-recovery.v1",
+  "source_commit": "b0e4ba507aa3e1d7dee8158b54a61453035d75e6",
+  "source_tree": "7bfc61aa8a8b1d408b679dee279ddcf8f9425368",
+  "base": "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d",
+  "started_unix_ns": 1794474264147992142,
+  "status": "formatted_pending_publication",
+  "commands": [
+    {
+      "name": "dotslash-help",
+      "command": [
+        "/home/qq/work/mem15-native-qualification-20261112-ef0c/format-recovery01/bin/dotslash",
+        "--help"
+      ],
+      "started_unix_ns": 1794474272083271758,
+      "finished_unix_ns": 1794474272085792330,
+      "exit_code": 0,
+      "log": "/home/qq/work/mem15-native-qualification-20261112-ef0c/format-recovery01/dotslash-help.log",
+      "bytes": 1394,
+      "sha256": "f657d32366c55f0ff423b66b7270a80935747ea90441411f14e76b0b2d3ae6b7",
+      "git_blob": "0f08801e94c402495f305e409a7e2b2ab80b1f3a"
+    },
+    {
+      "name": "pinned-buildifier-version",
+      "command": [
+        "/home/qq/work/mem15-native-qualification-20261112-ef0c/format-recovery01/bin/dotslash",
+        "/home/qq/work/mem15-native-qualification-20261112-ef0c/source-draft/tools/buildifier",
+        "--version"
+      ],
+      "started_unix_ns": 1794474272086400139,
+      "finished_unix_ns": 1794474279516573806,
+      "exit_code": 0,
+      "log": "/home/qq/work/mem15-native-qualification-20261112-ef0c/format-recovery01/pinned-buildifier-version.log",
+      "bytes": 105,
+      "sha256": "ada73c58c0ce991ec14ee9db509aa30784337e5e4083b0c6258820eb81048b00",
+      "git_blob": "a74a6a1cc513ec7f7ea4e13f46bb0169d2587397"
+    },
+    {
+      "name": "just-format",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d"
+      ],
+      "started_unix_ns": 1794474279536845262,
+      "finished_unix_ns": 1794474279701690755,
+      "exit_code": 0,
+      "log": "/home/qq/work/mem15-native-qualification-20261112-ef0c/format-recovery01/just-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  ],
+  "tests_executed": 0,
+  "model_calls": 0,
+  "system_packages_modified": false,
+  "pretest_format_only": true,
+  "original_format_result": {
+    "bytes": 5399,
+    "sha256": "21c99d2e25875d661fe97314eb19ab014132b89c3c7b667987dc72d498b3831b",
+    "git_blob": "eed49f04381c5ae81b4b71d3bf91f679d4cfa529"
+  },
+  "first_format_partial_patch": {
+    "bytes": 23606,
+    "sha256": "4d127d7377ac3c162b217a9a43d534fb872758a89d2c81c38d7aac4aedb3a0ae",
+    "git_blob": "d60b9de5012864f1a08dbd1dc7bc603f7e39edf3"
+  },
+  "first_format_changed_paths": [
+    "codex-rs/hepta-agentd/src/production_episodic_process.rs",
+    "codex-rs/hepta-agentd/src/production_episodic_process_child.rs",
+    "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs"
+  ],
+  "dotslash": {
+    "tag": "v0.5.9",
+    "release_api": "https://api.github.com/repos/meta/dotslash/releases/tags/v0.5.9",
+    "release_metadata": {
+      "bytes": 31701,
+      "sha256": "2a90726efa1a71c928a2a7aa4645afe0df1765b73b22857fb8b1781ce4e306ff",
+      "git_blob": "c815ffce491ceaf0ffbb35b14dcba00a1523f5eb"
+    },
+    "asset_name": "dotslash-ubuntu-22.04.x86_64.tar.gz",
+    "asset_id": 392789322,
+    "official_asset_digest": "sha256:7400dd0dbdf05d3be4e604b62807eb1bcbaa0d1bced010d30746243759e0ac03",
+    "asset_url": "https://github.com/meta/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.tar.gz",
+    "archive": {
+      "bytes": 775216,
+      "sha256": "7400dd0dbdf05d3be4e604b62807eb1bcbaa0d1bced010d30746243759e0ac03",
+      "git_blob": "4c7f506ac3030da1231f2a3abd564ba9ff02d9a7"
+    },
+    "binary": {
+      "bytes": 1642752,
+      "sha256": "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936",
+      "git_blob": "cd9b03e269eb3ec43931b86e27c415ea01adbd18"
+    }
+  },
+  "buildifier_manifest": {
+    "path": "/home/qq/work/mem15-native-qualification-20261112-ef0c/source-draft/tools/buildifier",
+    "bytes": 2172,
+    "sha256": "818bfc01e21fceb0d83ddaf4614531418ea763e25499f7f9fd03c7a853948fe6",
+    "git_blob": "d18dd60ac6b317d06c6ccf850654b2e06e29395d",
+    "platform": {
+      "size": 7757842,
+      "hash": "sha256",
+      "digest": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7",
+      "path": "buildifier",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-linux-amd64"
+        }
+      ]
+    }
+  },
+  "buildifier_resolved": [
+    {
+      "path": "/home/qq/work/mem15-native-qualification-20261112-ef0c/format-recovery01/tool-cache/dotslash/38/49595345ba081dc58d065529866038a1e5ed8d/buildifier",
+      "bytes": 7757842,
+      "sha256": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7",
+      "git_blob": "4bb940eb1a17f798ec39612c9df941f558c6307f"
+    }
+  ],
+  "format_patch": {
+    "bytes": 23961,
+    "sha256": "cfccf8888aec1ab51ae70fe0a2526ba4c3c4182b20fc7a576182d25fff0878d8",
+    "git_blob": "4a4ed271f3d2e263186cd3ce032db83667225798"
+  },
+  "format_changed_paths": [
+    "codex-rs/hepta-agentd/BUILD.bazel",
+    "codex-rs/hepta-agentd/src/production_episodic_process.rs",
+    "codex-rs/hepta-agentd/src/production_episodic_process_child.rs",
+    "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs"
+  ],
+  "formatted_postimages": {
+    "codex-rs/hepta-agentd/BUILD.bazel": {
+      "bytes": 9281,
+      "sha256": "54c2c6607501b48713493b0a25322e7f594efece1f7ea17da43dc3c28a575e9b",
+      "git_blob": "f88ce36fc2765ac6bb755c4617e22df1d16b83ec"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_process.rs": {
+      "bytes": 10580,
+      "sha256": "56a13536ac49c6a9b55a0b18eefee849de7892531310971d5b52a1082aa23261",
+      "git_blob": "b64754a0129f930655941a9aeee5b817b1fe2ae2"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_process_child.rs": {
+      "bytes": 9547,
+      "sha256": "0cf402e5c461f1e47c2ce5c8a150f1a785febf3da7e78bfa692b45b0de19118b",
+      "git_blob": "2833ffab057c33473071c87fdf8f8ea598bf50f5"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_process_child_tests.rs": {
+      "bytes": 2504,
+      "sha256": "c29c43559bdbea4f18a757669030dfa7a4d36424ebb9e6d8a851bd4cece29f4e",
+      "git_blob": "931a9dd060d1c2f991f3cbd63bcadd0ecfaf8bb1"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs": {
+      "bytes": 6849,
+      "sha256": "1acfbf6310fed1eec50faa1ecf371a85116ad09083cf26c8f2a08d122deba230",
+      "git_blob": "947289cce8cbbc4dfcd8c8af1e86eaeb23273d4b"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs": {
+      "bytes": 25756,
+      "sha256": "f11e97e93b01c26fadcd9051b657684efdf08e76fcbec663d7d44fd398cb286d",
+      "git_blob": "60f2bcd0df16f740b6aa083e1e095651b17ea436"
+    },
+    "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs": {
+      "bytes": 8340,
+      "sha256": "1382fb9ec9aadc9ba16a39bc95258f5fd1a8532ec502815a5272f9a35a1b892a",
+      "git_blob": "ce8ec9e341672d71acbfd19c1e549dee0059dcd9"
+    },
+    "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker/context_delivery_tests.rs": {
+      "bytes": 736,
+      "sha256": "4ad65c8768d26210f221539208a1e887bd78c0e1a303e0caf39f56b09173b4f9",
+      "git_blob": "3cd1b46cdae1d5a9b3a844de8812750801355e19"
+    },
+    "qualification/memory-cell-mem15-native-a-exit-20261112/PROTOCOL.md": {
+      "bytes": 8839,
+      "sha256": "185cb14910570b34870b2029ff28d583d0e9cc62806a21dc7d56cfcab12996f5",
+      "git_blob": "fed4cd99a8be99bfb401d83eb9cc8b6732d3dfce"
+    }
+  },
+  "formatted_tree": "1450dbd43d2e7674dc5d7ab6814af605cb79c030",
+  "formatted_codex_rs_tree": "ed240f298fa2cbb104c65054596e64e7d1e9bca8",
+  "source_after": {
+    "commit": "b0e4ba507aa3e1d7dee8158b54a61453035d75e6",
+    "tree": "7bfc61aa8a8b1d408b679dee279ddcf8f9425368",
+    "status": "M codex-rs/hepta-agentd/BUILD.bazel\n M codex-rs/hepta-agentd/src/production_episodic_process.rs\n M codex-rs/hepta-agentd/src/production_episodic_process_child.rs\n M codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs"
+  },
+  "finished_unix_ns": 1794474280135746985
+}

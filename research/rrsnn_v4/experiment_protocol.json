@@ -1,0 +1,66 @@
+{
+  "seeds": [
+    101,
+    211,
+    307,
+    401,
+    503
+  ],
+  "variants": [
+    "rr_full",
+    "fp_no_rollover",
+    "rr_mean_maturity",
+    "rr_shuffle_maturity",
+    "rr_fixed_boundary",
+    "rr_frozen_resource",
+    "lif",
+    "alif",
+    "resource_lif",
+    "ctrnn",
+    "ctrnn_state",
+    "ctrnn_upper_state",
+    "alif_analog",
+    "ctrnn_analog"
+  ],
+  "cpu_matched_variants": {
+    "ctrnn_state_cpu": "ctrnn_state",
+    "ctrnn_analog_cpu": "ctrnn_analog"
+  },
+  "training": {
+    "epochs": 16,
+    "batch_size": 64,
+    "learning_rate": 0.003,
+    "clip_norm": 1.0,
+    "validation_every": 4,
+    "validation_draws": 4,
+    "validation_seed": 777001,
+    "cpu_epoch_cap": 10000,
+    "train_episodes": 512,
+    "validation_episodes": 128
+  },
+  "schema": "rrsnn.v4-training-protocol.1",
+  "created_at_utc": "2026-10-29T14:35:26.701653+00:00",
+  "pre_data_freeze_sha256": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+  "pre_data_publication_commit": "a13487edccd39d8a073e774914e9a133fc18f2d5",
+  "frozen_files": {
+    "__init__.py": "227d288ec36b913d650a35915373df53b20d7c22cf3547f6106ffece9af6f0cb",
+    "aggregate.py": "eb4157f0f149089a35e66a51f1fd4a808aeab53e8edc5acef8f0eee43dffe671",
+    "baselines.py": "14d06b7189982bdef8b737c912e2704a8d2647385789c60f5a9760f279037325",
+    "evaluate.py": "04509ce268f11b02e8c601e605adafe7e1dd114582e4c236f56a91dea048162c",
+    "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+    "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+    "prepare_data.py": "592abdc964eb515db6abee381ff99a9867bd4e644943e1ce48e897672c508e7c",
+    "task.py": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4",
+    "train.py": "0abc20779fc64aa1ec0ff0d24ec1b6fe4ad84a585f60ec22b8d53a9c66860825",
+    "train_matrix.py": "39aad256271acc8763db88b96992824382fd44492b48cbe971329eefa108c31a",
+    "validate_baselines.py": "e676aa43ad32c3133f1adee2bd8a1e852df7c103b580671364a3f302ef53a6e4",
+    "validate_models.py": "ab79f903c340473ee959056f91c384769f93ca5a4464d9d870818b271145fe82",
+    "validate_task.py": "3f44689c64369cbe5a8ed9d0ddcf0f9020e9ebd034c6dff93c694bc3772b46d7",
+    "validate_training.py": "c5f4f84a31214533e5cb82d3adb08b6644fa2e1f467becd8025a9496a3269855",
+    "pre_data_freeze.json": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+    "data/train.npz": "ec2b041b3eb284a7ec49a7f256974a0c8ca0b355e64d8ef34801bdf4399218d6",
+    "data/validation.npz": "e387032a65a6235e567bdd65aeb8c4e3738ae3095f78f0b88314755d05201e4e",
+    "data/manifest.json": "e73ca37411ccc8b25f2b9552b5f6c7b348c7aae6ebbdf525716ab7817d88e5a8"
+  },
+  "holdout_metrics_used_for_protocol": false
+}

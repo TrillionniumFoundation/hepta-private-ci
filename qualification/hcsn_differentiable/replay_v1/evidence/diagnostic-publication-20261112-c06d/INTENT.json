@@ -1,0 +1,57 @@
+{
+  "schema": "hcsn-diagnostic-originals-publication-intent-v1",
+  "parent": "3d2451ebfcaf19912a77a5a888d01c55f7a9dca3",
+  "publisher_blob": "07724d6dc425673f5f001a28b6533a08c526dee4",
+  "branch": "artifact/hcsn-diagnostic-originals-20261112-c06d-v1",
+  "state": "/home/qian-qi/hcsn-diagnostic-originals-gh-c06d-v1",
+  "request_key": "hcsn-diagnostic-originals-normal-gh-publication-c06d-v1",
+  "scope": "publish existing attempt4092 diagnostic originals; distinct from the original input ZIP and attemptd706",
+  "model_executions": 0,
+  "optimizer_calls": 0,
+  "independent_complete_training_replays": 0,
+  "scientific_admission": "HOLD_NO_GO",
+  "raw_files": [
+    {
+      "path": "/home/qian-qi/hcsn-real-recovery-20261112-4092/ARCHIVE.json",
+      "bytes": 550,
+      "sha256": "e1a0213e3f8a86c902912f7f9fb67605681f8d3dc033bc1feb839f1d5b993e45",
+      "version": "2050:10030059:550:1794469433392292290:1794469433392292290"
+    },
+    {
+      "path": "/home/qian-qi/hcsn-real-recovery-20261112-4092/ORIGINALS-MANIFEST.json",
+      "bytes": 21930,
+      "sha256": "2de3cda19999b5b41d36cdfcea190b0417e4091049f5815e7af2e48885825ebc",
+      "version": "2050:10030057:21930:1794469429324363414:1794469429324363414"
+    }
+  ],
+  "readonly_archive_info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/hcsn-real-recovery-20261112-4092/originals.tar.xz",
+    "sha256": "f3f6992f31d7ab85a10eaa727dfc894fdb72ef5dafbba6bc43fc36d23a899dc7",
+    "size": 7070892,
+    "version": "2050:10030058:7070892:1794469433299025822:1794469433299025822"
+  },
+  "prior_input_publication_authorization": {
+    "blob": "08f1372ebaafbcc6f202b9b6d3cd34c184a6924f",
+    "bytes": 96,
+    "sha256": "ef7b34ade0f99ab69e03f328f045dc8b9bacca5f6e180f55579306e4829e0fb2"
+  },
+  "validation": {
+    "command": "python3 -m unittest -v test_publish_diagnostic_originals",
+    "tests": 10,
+    "exit_code": 0,
+    "format_command": "just fmt",
+    "format_exit_code": 127,
+    "format_limitation": "just executable absent after scratch reset; formatting command attempted after tests, no tests rerun"
+  }
+}

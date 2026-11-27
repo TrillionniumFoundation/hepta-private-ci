@@ -1,0 +1,78 @@
+{
+  "status": "PASS_SCOPED_STATIC_SELECTED_FASHION_SHARED_LEASE_HANDOFF_REVIEW",
+  "freeze_sha256": "461044bb87086d5fe61bf9e70f342495a42622c79d1a0f85e0c4737f146fb659",
+  "review_mode": "Static read/hash/AST and saved-data canonical reconstruction only. No candidate import, model, qualifier or optimizer execution; RUN_ONCE absent.",
+  "frozen_files_verified": 29,
+  "python_AST_files": 23,
+  "runtime_files_byteexact_training_lease_candidate": 20,
+  "outer_launcher_byteexact": true,
+  "source_selection": {
+    "original_RESUMED_sha256": "64740bd27a4ca096e07ba6e1de05034845c4de37266bebb7a9f1e536a3abe994",
+    "original_bytes": 4178134,
+    "original_freeze": "6c1ba4f5d710134aab2e0ecd1018cea02e15631f960d6796a9787b62efa7aa0f",
+    "original_saved_review_sha256": "0ef8f92808a322fb11a033801a5d10a24154ef916113ea2f0bdc6679a73b265a",
+    "selected_checkpoint_sha256": "710683470e228f1de553fc43d39efab5d38b5b302aa3760a278dd30adcdef291",
+    "selected_bytes": 4175418,
+    "exact_canonical_saved_payload_derivation_verified": true,
+    "cursor": 2,
+    "tokens": {
+      "step0": "committed",
+      "step1-after-recovery": "committed"
+    },
+    "model_bytes": 4172492,
+    "model_sha256": "e4c4058fcd672baae793fb9cd7d49d0180f66b38a801b504e621b344a466982d",
+    "binding": "Full original file/freeze/review hashes verified. Selected manifest checksum and fashion_backend source hash verified. Original and new schedule/profile construction source match exactly: linspace/flipped batches, clean .45, label2, zero noise, sequences empty/T, objective N, lr1e-5. No numerical model operation used for this review."
+  },
+  "chronology_review": [
+    "Supervisor stages hash-bound selected checkpoint in isolated shared root; SessionWriter acquires lease before concrete Fashion restoration, checks cursor2/no pending/full selected payload, writes READY.",
+    "Independent contender launches only after bound own-PID READY; must refuse before provider or allocation while holder waits. Supervisor verifies/reaps contender, checks holder still alive, then atomically publishes PID/freeze-bound permit.",
+    "Holder writes new model handoff under lease, explicitly closes, proves closed payload refusal, exits. Supervisor reaps and hash-verifies checkpoint/handoff before launch inference. No planned kill; failure cleanup only own active PIDs.",
+    "Inference only reads same-run handoff, restores actual backend, same root lease, publishes2 fragments then durable intent/cancelled. Explicit close before new adapter; cancelled/frontier/intent restores all refuse unchanged state/output. Full afterstate saved and compared to handoff."
+  ],
+  "fixed_work": {
+    "new_optimizer_steps": 0,
+    "new_objective_calls": 0,
+    "new_random_initializations": 0,
+    "allocation_restores": 2,
+    "actual_inference_calls": 1,
+    "transport_calls": 1,
+    "inference_identity_guard_calls": 4,
+    "separate_afterstate_serialization": 1,
+    "holder_checks_refusals": [
+      3,
+      1
+    ],
+    "contender_checks_refusals": [
+      1,
+      1
+    ],
+    "inference_checks_refusals": [
+      8,
+      3
+    ],
+    "controlled_prefix_bytes": 8227
+  },
+  "cost_boundary": "Historical model clock2 and prior attempt receipts are input history, not new Adam calls; prior training costs remain additional, not zero. New restore/list/hash/serialization/guard/output/refusal work included in measured process subtree, no nested double counting.",
+  "resources": {
+    "role_actual_CPU_seconds": 4,
+    "role_OS_CPU_seconds": 5,
+    "role_alarm_seconds": 30,
+    "holder_coordination_seconds": 20,
+    "supervisor_OS_CPU_seconds": 5,
+    "method_actual_subtree_CPU_seconds": 17,
+    "sum_OS_CPU_seconds": 20,
+    "AS_bytes": 536870912,
+    "largest_RSS_bytes": 268435456,
+    "file_bytes": 8388608,
+    "retained_bytes": 33554432,
+    "scope": "Full outer wait4 includes reaped workers and supervisor tail; outerprefix/unknown tail, prior/source/review additional. Largest RSS not concurrent sum. No automatic retries/cap increases."
+  },
+  "scope_limits": [
+    "Real concrete Fashion session loading/lease handoff and controlled partial cancellation only; zero fresh training, not a fullimage-success run or all-boundaries integration.",
+    "Explicit trusted selected checkpoint, not latest-root authority/global token ledger or external callback exactly-once.",
+    "Cooperative stable local root only; no hostile raw session/core/backend bypass protection, distributed lock, fork-FD lifetime, powerloss/directory fsync or production-owner authority.",
+    "Original platform/data/science holds and prior provenance correction unchanged."
+  ],
+  "execution_authorization": "Source pass only; parent once-only admission required.",
+  "review_outside_freeze": true
+}

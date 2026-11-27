@@ -1,0 +1,53 @@
+{
+  "after": {
+    "commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+    "dirty": false,
+    "parents": [
+      "841fb932deb95cf4368ef01e28f0c8081a1c48fa"
+    ],
+    "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+    "dirty": false,
+    "parents": [
+      "841fb932deb95cf4368ef01e28f0c8081a1c48fa"
+    ],
+    "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 86.70847036200001,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T15:05:56.147888+00:00",
+  "job": "native",
+  "lane": "source-head",
+  "log_bytes": 93216,
+  "log_file": "source-closure.json.c6aa608f7be74ee4ac6f397959abeee2.log",
+  "log_sha256": "0ada44715ddf969f6a08ebf94feeffc4066bb8a28cad4bf319f6474d13574176",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 414,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "43243479903",
+  "schema_version": 1,
+  "source_sha": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "started_at": "2026-11-12T15:04:29.339068+00:00",
+  "status": "passed",
+  "tested_sha": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

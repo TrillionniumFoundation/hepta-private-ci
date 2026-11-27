@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.source-bound-acceptance-publication.v1",
+  "raw_evidence_directory": "/data/asterinas-audit-build.8tdrjboi/hepta-owner-aggregate-dedup-02",
+  "files": [
+    {
+      "raw": "result.json",
+      "published": "result.json",
+      "raw_bytes": 1062,
+      "raw_sha256": "0be20f5b619a3bf7f5e4f8b1c97875d50c9566c91bea7f16d3eef1d61f99d566",
+      "published_sha256": "0be20f5b619a3bf7f5e4f8b1c97875d50c9566c91bea7f16d3eef1d61f99d566",
+      "compressed": false
+    },
+    {
+      "raw": "source-after.json",
+      "published": "source-after.json.gz",
+      "raw_bytes": 2335187,
+      "raw_sha256": "2a3ab4d0ac16ca405a1e4f20269cd6b2e23c4eee401617a2d29606596f9e2cee",
+      "published_sha256": "dc55775365c03fccaa144de92d37fecc5759159eb105625a7a8d15d047177093",
+      "compressed": true
+    },
+    {
+      "raw": "source-before.json",
+      "published": "source-before.json.gz",
+      "raw_bytes": 2335187,
+      "raw_sha256": "2a3ab4d0ac16ca405a1e4f20269cd6b2e23c4eee401617a2d29606596f9e2cee",
+      "published_sha256": "dc55775365c03fccaa144de92d37fecc5759159eb105625a7a8d15d047177093",
+      "compressed": true
+    },
+    {
+      "raw": "tests.log",
+      "published": "tests.log.gz",
+      "raw_bytes": 208556,
+      "raw_sha256": "cddcf80cd910699664ecc92b650f200c9de8cc06d5481109f0f5d6d8a80018f8",
+      "published_sha256": "38675a00e5aeb59aa9299ea5173ce75baedf1cba53d8dcc8d86a61be62c4979d",
+      "compressed": true
+    }
+  ],
+  "selection": "Original text receipts/manifests/logs only. Private disks, keys, binaries and targets are not published. Original receipts retain binary hashes.",
+  "production_ready": false,
+  "g2_complete": false,
+  "passed": false,
+  "source_head": "03fcfdcd347a7125e3f7dd77f083baa0543cda80",
+  "source_tree": "ebeb849e53f1f29745384acde3d559a8f63a7de0",
+  "executed": 1068,
+  "passed_count": 1061,
+  "failed": 1,
+  "timed_out": 6,
+  "skipped": 26,
+  "original_retry_then_pass": 1,
+  "boundary": "Original four owning packages, unchanged60s oracle. One supervisor read timeout failure plus six timeouts remain open; no whole-workspace qualification."
+}

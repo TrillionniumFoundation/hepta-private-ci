@@ -1,0 +1,62 @@
+{
+  "archive_part_bytes_max": 400000,
+  "archives": {
+    "08872353f5fb5f5e172ec4d461f64f0741cf84d966567e5e6fdaefba4914cfef": {
+      "compressed_bytes": 14572,
+      "compressed_sha256": "d3623713817f180953fd6a3c4079c7939e52cbf893686423c5b9a4a20c32352d",
+      "original_bytes": 82457,
+      "original_sha256": "08872353f5fb5f5e172ec4d461f64f0741cf84d966567e5e6fdaefba4914cfef",
+      "parts": [
+        {
+          "bytes": 14572,
+          "path": "analysis/audit_archives/08872353f5fb5f5e172ec4d461f64f0741cf84d966567e5e6fdaefba4914cfef.gz",
+          "sha256": "d3623713817f180953fd6a3c4079c7939e52cbf893686423c5b9a4a20c32352d"
+        }
+      ],
+      "reused_existing_archive": false
+    },
+    "5767b633d5be059d75e144abb71483d419bdb7eeaa7710392f1abe19b8aa9814": {
+      "compressed_bytes": 19355,
+      "compressed_sha256": "25ee0968ff759645a4f4ab1b5acf1249b68cead6b80049ca804c8e3a403128da",
+      "original_bytes": 137061,
+      "original_sha256": "5767b633d5be059d75e144abb71483d419bdb7eeaa7710392f1abe19b8aa9814",
+      "parts": [
+        {
+          "bytes": 19355,
+          "path": "analysis/audit_archives/5767b633d5be059d75e144abb71483d419bdb7eeaa7710392f1abe19b8aa9814.gz",
+          "sha256": "25ee0968ff759645a4f4ab1b5acf1249b68cead6b80049ca804c8e3a403128da"
+        }
+      ],
+      "reused_existing_archive": false
+    }
+  },
+  "compression": "gzip, mtime=0",
+  "manifest_sha256": "4d867f97d596a404729c954aee767fb57beaf83a29bf6510256483dd05f9ed44",
+  "original_files_unchanged": true,
+  "originals": [
+    {
+      "bytes": 82457,
+      "compressed_bytes": 14572,
+      "compressed_sha256": "d3623713817f180953fd6a3c4079c7939e52cbf893686423c5b9a4a20c32352d",
+      "kind": "utf8",
+      "path": "analysis/figures_v2/mechanism_paired_intervals.svg",
+      "selection_reason": "preserve_exact_receipt_bound_svg_bytes",
+      "sha256": "08872353f5fb5f5e172ec4d461f64f0741cf84d966567e5e6fdaefba4914cfef"
+    },
+    {
+      "bytes": 137061,
+      "compressed_bytes": 19355,
+      "compressed_sha256": "25ee0968ff759645a4f4ab1b5acf1249b68cead6b80049ca804c8e3a403128da",
+      "kind": "utf8",
+      "path": "analysis/figures_v2/representation_all_tasks.svg",
+      "selection_reason": "preserve_exact_receipt_bound_svg_bytes",
+      "sha256": "5767b633d5be059d75e144abb71483d419bdb7eeaa7710392f1abe19b8aa9814"
+    }
+  ],
+  "purpose": "Restore the original receipt-bound SVGs byte-for-byte; no visual or scientific recomputation.",
+  "root_scope": "study002",
+  "schema": "hcsn002-audit-archive-manifest-v1",
+  "selection": {
+    "additive_to": "analysis/audit_archives/MANIFEST_002.json"
+  }
+}

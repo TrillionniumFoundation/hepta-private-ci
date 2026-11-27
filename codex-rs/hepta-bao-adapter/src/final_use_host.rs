@@ -14,8 +14,11 @@ use std::sync::Mutex;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_contracts::FinalUseApprovalVerifier;
+use codex_hepta_contracts::FinalUseAuthenticationProfile;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseControlError;
+use codex_hepta_contracts::FinalUseError;
+use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
 use codex_hepta_contracts::FinalUseRevocationReceipt;
 use codex_hepta_contracts::SignedFinalUseApproval;
@@ -64,7 +67,7 @@ pub struct BaoFinalUseHost {
     approval_verifier: FinalUseApprovalVerifier,
     revocation_verifier: FinalUseRevocationFeedVerifier,
     clock: Arc<dyn AuthorityClock>,
-    revocation_fresh_until_unix_ms: Mutex<u64>,
+    revocation_lease: Mutex<Option<FinalUseRevocationReceipt>>,
     consumers: BTreeMap<String, BaoConsumerCallback>,
 }
 
@@ -87,6 +90,11 @@ impl BaoFinalUseHost {
         clock: Arc<dyn AuthorityClock>,
         consumers: impl IntoIterator<Item = RegisteredBaoConsumer>,
     ) -> Result<Self, BaoFinalUseHostError> {
+        if authority.authentication_profile() != approval_verifier.authentication_profile()
+            || authority.authentication_profile() != revocation_verifier.authentication_profile()
+        {
+            return Err(BaoFinalUseHostError::AuthenticationProfileMismatch);
+        }
         let mut registry = BTreeMap::new();
         for consumer in consumers {
             if registry.insert(consumer.id, consumer.callback).is_some() {
@@ -101,7 +109,7 @@ impl BaoFinalUseHost {
             approval_verifier,
             revocation_verifier,
             clock,
-            revocation_fresh_until_unix_ms: Mutex::new(0),
+            revocation_lease: Mutex::new(None),
             consumers: registry,
         })
     }
@@ -110,17 +118,63 @@ impl BaoFinalUseHost {
         self.consumers.len()
     }
 
-    fn ensure_revocation_fresh(&self) -> Result<(), BaoFinalUseHostError> {
+    fn ensure_joint_authority(
+        &self,
+        grant: &FinalUseGrant,
+    ) -> Result<(u64, u64), BaoFinalUseHostError> {
+        // Every host path takes this lease lock before reading/updating the
+        // authority owner. It is released before I/O and consumer callbacks.
+        let lease = self
+            .revocation_lease
+            .lock()
+            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
+        let lease = lease
+            .as_ref()
+            .ok_or(BaoFinalUseHostError::StaleRevocationFeed)?;
+        let head = self
+            .authority
+            .revocation_head()
+            .map_err(|error| BaoFinalUseHostError::Client(BaoClientError::Authority(error)))?;
         let now_unix_ms = self
             .clock
             .now_unix_ms()
             .map_err(BaoFinalUseHostError::Trust)?;
-        let fresh_until = *self
-            .revocation_fresh_until_unix_ms
-            .lock()
-            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
-        if fresh_until == 0 || now_unix_ms >= fresh_until {
+        if head.authority_epoch != lease.authority_epoch()
+            || head.revision != lease.revision()
+            || now_unix_ms >= lease.valid_until_unix_ms()
+        {
             return Err(BaoFinalUseHostError::StaleRevocationFeed);
+        }
+        // One protected time sample must be inside both the grant and feed
+        // windows. Signature/nonce ownership stays with the original verifier.
+        let grant_error = if grant.authority_epoch != head.authority_epoch {
+            Some(FinalUseError::EpochMismatch)
+        } else if head.revoked_grant_ids.contains(&grant.grant_id) {
+            Some(FinalUseError::Revoked)
+        } else if now_unix_ms < grant.not_before_unix_ms {
+            Some(FinalUseError::NotYetValid)
+        } else if now_unix_ms >= grant.expires_at_unix_ms {
+            Some(FinalUseError::Expired)
+        } else {
+            None
+        };
+        if let Some(error) = grant_error {
+            return Err(BaoFinalUseHostError::Client(BaoClientError::Authority(
+                error,
+            )));
+        }
+        Ok((head.authority_epoch, head.revision))
+    }
+
+    fn ensure_claimed_authority(
+        &self,
+        grant: &FinalUseGrant,
+        claimed_head: (u64, u64),
+    ) -> Result<(), BaoFinalUseHostError> {
+        if self.ensure_joint_authority(grant)? != claimed_head {
+            return Err(BaoFinalUseHostError::Client(BaoClientError::Authority(
+                FinalUseError::StaleRevocationHead,
+            )));
         }
         Ok(())
     }
@@ -128,33 +182,51 @@ impl BaoFinalUseHost {
     /// Apply one independently signed revocation head. The feed signature is
     /// checked before the durable authority owner sees the head; the authority
     /// itself enforces epoch/revision monotonicity and same-epoch superset rules.
+    /// PQ may freshly authenticate the current durable head after a restart;
+    /// that confirmation neither advances the owner nor restores spent nonces.
     pub fn apply_revocation_update(
         &self,
         update: &SignedFinalUseRevocationUpdate,
     ) -> Result<FinalUseRevocationReceipt, BaoFinalUseHostError> {
+        // Keep apply/confirm and lease publication in one ordered operation.
+        // An older head's longer lease must never overwrite a newer head's lease.
+        let mut lease = self
+            .revocation_lease
+            .lock()
+            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
         let now_unix_ms = self
             .clock
             .now_unix_ms()
             .map_err(BaoFinalUseHostError::Trust)?;
-        let receipt = self
-            .revocation_verifier
-            .apply(&self.authority, update, now_unix_ms)
-            .map_err(BaoFinalUseHostError::Control)?;
-        let mut fresh_until = self
-            .revocation_fresh_until_unix_ms
-            .lock()
-            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
-        *fresh_until = receipt.valid_until_unix_ms();
+        let receipt = match self.authority.authentication_profile() {
+            FinalUseAuthenticationProfile::ClassicalV1 => {
+                self.revocation_verifier
+                    .apply(&self.authority, update, now_unix_ms)
+            }
+            FinalUseAuthenticationProfile::MlDsa65V2 => self
+                .revocation_verifier
+                .apply_or_confirm_current(&self.authority, update, now_unix_ms),
+        }
+        .map_err(BaoFinalUseHostError::Control)?;
+        let retain_longer_same_head = lease.as_ref().is_some_and(|current| {
+            current.authority_epoch() == receipt.authority_epoch()
+                && current.revision() == receipt.revision()
+                && current.valid_until_unix_ms() > receipt.valid_until_unix_ms()
+        });
+        if !retain_longer_same_head {
+            *lease = Some(receipt.clone());
+        }
         Ok(receipt)
     }
 
     /// Production composition boundary. The request's signed `consumer_id`
     /// selects one pre-enrolled callback; callers cannot substitute a closure at
     /// the callsite. Independent operator approval is verified before any
-    /// provider dispatch. Freshness is checked again at the registered consumer
-    /// entry after provider I/O, so a feed that expires while the network call is
-    /// in flight cannot release a secret. The lower-level client performs the
-    /// claim/network/digest/final-delivery authority fencing.
+    /// provider dispatch. The grant, claimed head and feed must agree at one
+    /// protected time before dispatch and again at registered consumer entry.
+    /// A feed that expires or changes while provider I/O is in flight cannot
+    /// release a secret under the older claim. The lower-level client retains
+    /// the original claim/network/digest/final-delivery authority boundaries.
     pub async fn consume_kv_v2(
         &self,
         client: &BaoClient,
@@ -162,7 +234,7 @@ impl BaoFinalUseHost {
         approval: &SignedFinalUseApproval,
         request: &BaoReadRequest,
     ) -> Result<BaoSecretReceipt, BaoFinalUseHostError> {
-        self.ensure_revocation_fresh()?;
+        self.ensure_joint_authority(&grant.grant)?;
         self.approval_verifier
             .verify(grant, approval)
             .map_err(BaoFinalUseHostError::Control)?;
@@ -172,12 +244,26 @@ impl BaoFinalUseHost {
             .cloned()
             .ok_or(BaoFinalUseHostError::UnregisteredConsumer)?;
         match client
-            .consume_kv_v2_guarded(&self.authority, grant, request, move |secret| {
-                self.ensure_revocation_fresh()?;
-                consumer(secret).map_err(|()| {
-                    BaoFinalUseHostError::Client(BaoClientError::ConsumerIndeterminate)
-                })
-            })
+            .consume_kv_v2_guarded(
+                &self.authority,
+                grant,
+                request,
+                |token| {
+                    self.ensure_claimed_authority(
+                        &grant.grant,
+                        (
+                            token.claimed_authority_epoch(),
+                            token.claimed_revocation_revision(),
+                        ),
+                    )
+                },
+                move |secret, claimed_head| {
+                    self.ensure_claimed_authority(&grant.grant, claimed_head)?;
+                    consumer(secret).map_err(|()| {
+                        BaoFinalUseHostError::Client(BaoClientError::ConsumerIndeterminate)
+                    })
+                },
+            )
             .await
             .map_err(BaoFinalUseHostError::Client)?
         {
@@ -199,6 +285,7 @@ fn consumer_id(value: &str) -> bool {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BaoFinalUseHostError {
+    AuthenticationProfileMismatch,
     InvalidConsumerId,
     DuplicateConsumer,
     EmptyConsumerRegistry,

@@ -1,0 +1,36 @@
+[
+  {
+    "lane": "STATE",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_joint_dde.qualify_state",
+      "--output",
+      "evidence/common-001/state"
+    ],
+    "returncode": 0,
+    "wall_seconds": 61.27567954500046,
+    "user_cpu_seconds": 46.945273,
+    "system_cpu_seconds": 2.70989,
+    "maximum_child_rss_kib": 81560
+  },
+  {
+    "lane": "DOMAIN",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_joint_dde.audit_graded",
+      "--input-root",
+      "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit",
+      "--output-dir",
+      "evidence/common-001/domain"
+    ],
+    "returncode": 0,
+    "wall_seconds": 214.09270965299947,
+    "user_cpu_seconds": 161.32812,
+    "system_cpu_seconds": 5.819244000000001,
+    "maximum_child_rss_kib": 343620
+  }
+]

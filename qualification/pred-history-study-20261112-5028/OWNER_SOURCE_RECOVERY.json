@@ -1,0 +1,205 @@
+{
+  "additional_process_metadata": [
+    {
+      "errors": [
+        {
+          "after_pid": 8562,
+          "error": "tool call error: tool call failed for `codex_apps/h.host_processes`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+          "page": 3
+        }
+      ],
+      "host": "main",
+      "last_returned_page": {
+        "has_more": true,
+        "next_after_pid": 8562,
+        "sampled_at_unix_ms": 1794444752995,
+        "snapshot_atomic": false
+      },
+      "matches": [],
+      "requests": 3,
+      "returned_process_records": 256
+    },
+    {
+      "errors": [
+        {
+          "after_pid": 305,
+          "error": "tool call error: tool call failed for `codex_apps/h.host_processes`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+          "page": 3
+        }
+      ],
+      "host": "desktop",
+      "last_returned_page": {
+        "has_more": true,
+        "next_after_pid": 305,
+        "sampled_at_unix_ms": 1794444757095,
+        "snapshot_atomic": false
+      },
+      "matches": [],
+      "requests": 3,
+      "returned_process_records": 256
+    },
+    {
+      "errors": [],
+      "host": "mac",
+      "last_returned_page": {
+        "has_more": true,
+        "next_after_pid": 40988,
+        "sampled_at_unix_ms": 1794444935035,
+        "snapshot_atomic": false
+      },
+      "matches": [
+        {
+          "identity": "ps:Wed Nov 11 14:13:27 2026",
+          "name": "hepta-runtime",
+          "pid": 9572,
+          "uid": 501
+        },
+        {
+          "identity": "ps:Mon Nov  9 22:58:43 2026",
+          "name": "tunnel-client",
+          "pid": 13189,
+          "uid": 501
+        },
+        {
+          "identity": "ps:Mon Nov  9 22:58:52 2026",
+          "name": "tunnel-client",
+          "pid": 13294,
+          "uid": 501
+        }
+      ],
+      "requests": 4,
+      "returned_process_records": 512
+    },
+    {
+      "errors": [
+        {
+          "after_pid": 1220,
+          "error": "tool call error: tool call failed for `codex_apps/h.host_processes`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+          "page": 3
+        }
+      ],
+      "host": "rog",
+      "last_returned_page": {
+        "has_more": true,
+        "next_after_pid": 1220,
+        "sampled_at_unix_ms": 1794444755787,
+        "snapshot_atomic": false
+      },
+      "matches": [],
+      "requests": 3,
+      "returned_process_records": 256
+    },
+    {
+      "host": "ai395",
+      "last_successful_has_more": true,
+      "last_successful_next_after_pid": 6207,
+      "matches": [],
+      "pages_attempted": 4,
+      "pages_with_process_records": 3,
+      "records_received": 384,
+      "scanned_pid_max": 6207,
+      "scanned_pid_min": 1,
+      "source_status": "No matching process names in received records; database presence and owner authenticity remain unestablished",
+      "stopped_reason": "current_page_failed_no_retry"
+    },
+    {
+      "host": "x230",
+      "last_successful_has_more": false,
+      "last_successful_next_after_pid": 4145874,
+      "matches": [],
+      "pages_attempted": 2,
+      "pages_with_process_records": 2,
+      "records_received": 252,
+      "scanned_pid_max": 4145874,
+      "scanned_pid_min": 1,
+      "source_status": "No matching process names in received records; database presence and owner authenticity remain unestablished",
+      "stopped_reason": "reported_last_page"
+    }
+  ],
+  "adoption_decision": "NoUpdate",
+  "archive": {
+    "bytes": 27168,
+    "members": 16,
+    "path": "owner-source-recovery.tar.xz",
+    "readback_verified": true,
+    "sha256": "7c990b21552ba8b2c4c2838ac3a592ced4d10c1d7306f0877703d26084766c71"
+  },
+  "arrival_sequencer_established": false,
+  "business_actions_started": 0,
+  "current_probe_source_sha256": "b3dff44a6f2fe2a09e76b2170d3061393802af2b2ffa608576790573ea5fc7f6",
+  "effective_config_recovered": true,
+  "historical_pocket4_unknown_reconciled": false,
+  "historical_pocket4_unknown_replayed": false,
+  "host_list_recovered": true,
+  "independent_effect_labels_created": 0,
+  "independent_effect_observer_established": false,
+  "initial_timeout_record_preserved": "OWNER_SOURCE_OBSERVATION.json",
+  "live_owner_records_collected": 0,
+  "new_ai395_unknown_idempotency_key": "pred-owner-current-agentd-502873993f89-ai395-v1",
+  "new_policy_real_task_comparisons": 0,
+  "new_readonly_probe_confirmed_exit_zero": 2,
+  "new_readonly_probe_start_requests": 3,
+  "new_readonly_probe_unknown": 1,
+  "owner_database_located": false,
+  "owner_database_write_calls": 0,
+  "pocket4_authenticated_ssh_healthy": true,
+  "pocket4_command_roundtrip_ms": 599.339,
+  "probes": [
+    {
+      "agentd_candidates": [],
+      "errors": [],
+      "hepta_name_matches": [],
+      "host": "pocket4",
+      "process_entries_seen": 561,
+      "process_entries_truncated": false,
+      "same_uid_entries_examined": 153,
+      "scope": "same UID, current names, non-atomic bounded observation; not all identities or disk locations",
+      "terminal": {
+        "bytes": 799,
+        "chunk_sha256": "168b44dcbe576ba7560792fd69d34c4a8e1ecc53b14b6dafff412873fe9eab0d",
+        "exit_code": 0,
+        "output_complete": true,
+        "session_id": "dpty-e4ceac2733b203e1cb14fb6f659f6b254d04f1d1dda23476b322f425a23adc25",
+        "state": "exited"
+      }
+    },
+    {
+      "agentd_candidates": [],
+      "errors": [],
+      "hepta_name_matches": [
+        {
+          "name": "hepta-paper-rus",
+          "pid": 2969621,
+          "start_ticks": "144635291"
+        }
+      ],
+      "host": "desktop",
+      "process_entries_seen": 1035,
+      "process_entries_truncated": false,
+      "same_uid_entries_examined": 277,
+      "scope": "same UID, current names, non-atomic bounded observation; not all identities or disk locations",
+      "terminal": {
+        "bytes": 873,
+        "chunk_sha256": "e8c01b877cba3994da8a7518265f96465362f13a2ed30e9f5d2256d9012f7d4d",
+        "exit_code": 0,
+        "output_complete": true,
+        "session_id": "dpty-774fde83325587599d232b95e5d4443783cfec28b182baf34bfbd645809c9246",
+        "state": "exited"
+      }
+    },
+    {
+      "error": "MCP -32603: MCP request timed out",
+      "host": "ai395",
+      "idempotency_key": "pred-owner-current-agentd-502873993f89-ai395-v1",
+      "not_retried": true,
+      "session_id": null,
+      "source_absence_inferred": false,
+      "terminal": "UNKNOWN"
+    }
+  ],
+  "publication_projection": "Metadata receipt JSON omits private PTY archive_path and reduces absolute process name paths to basename; exact probe source and stdout remain byte-identical. Original-file digests and transformation counts are in OWNER_RECOVERY_ARCHIVE.json.",
+  "qualification": "HOLD",
+  "schema": "pred-owner-source-recovery-v1",
+  "scope": "Current bounded read-only source discovery after executor/tool recovery; not training or a policy experiment",
+  "source_absence_established": false
+}

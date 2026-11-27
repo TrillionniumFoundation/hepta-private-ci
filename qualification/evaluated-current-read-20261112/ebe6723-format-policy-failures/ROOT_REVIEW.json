@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "source_head": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+  "tree": "b5f2e580046dd68c96ca26106c9084d952f4d5a7",
+  "actual_execution_commit": "3c3fb974477299ce6e23877677dcb408521a0f1f",
+  "rustfmt": {
+    "job": 131249361646,
+    "conclusion": "failure",
+    "bytes": 136711,
+    "sha256": "2725f52e45ccf559fb2763cccadd48cc4cdcb44f484f81b44f2942d85cd977e7",
+    "raw_original_path": "qualification/evaluated-current-read-20261112/ebe6723-format-policy-failures/rustfmt.job.original.log"
+  },
+  "blobpolicy": {
+    "job": 131247514443,
+    "conclusion": "failure",
+    "bytes": 1709163,
+    "sha256": "dd46c5a5f785c9f7ee2c82ffbc9da4091ef27454be6c1b3226f4970d3e4d5963",
+    "parts": [
+      {
+        "path": "qualification/evaluated-current-read-20261112/ebe6723-format-policy-failures/blobpolicy.job.original.log.part-000.bin",
+        "offset": 0,
+        "bytes": 350000,
+        "sha256": "f8a6a3395dc63b053cf3c47e3d14d0c0eba5fd0047d882db3341a0bbe81a638f",
+        "git_blob": "d3023ff8b31ac3900fceec9a40a057e0aa7d6b93"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/ebe6723-format-policy-failures/blobpolicy.job.original.log.part-001.bin",
+        "offset": 350000,
+        "bytes": 350000,
+        "sha256": "d5576058695ac14c63d760daa3c3c4a425c062fe53a365e79e768dbd7d982c8d",
+        "git_blob": "161589994c2e6dfa17ba15ea9573fffa151b8376"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/ebe6723-format-policy-failures/blobpolicy.job.original.log.part-002.bin",
+        "offset": 700000,
+        "bytes": 350000,
+        "sha256": "3cf6d31c0e058fce7287a7a5fcad0b5f9c0c648cc693eccf964e83f332538ac2",
+        "git_blob": "86e2f5d31e87de88f7b54d1f3952e80f9b2a57bc"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/ebe6723-format-policy-failures/blobpolicy.job.original.log.part-003.bin",
+        "offset": 1050000,
+        "bytes": 350000,
+        "sha256": "2d3b2d69403fc390b4e31a65b74fa4f69fbc91f3107e9048e9a1b8e826596ef7",
+        "git_blob": "caf0fe2b649ee86fc1e405bf965daff0f6a0ed94"
+      },
+      {
+        "path": "qualification/evaluated-current-read-20261112/ebe6723-format-policy-failures/blobpolicy.job.original.log.part-004.bin",
+        "offset": 1400000,
+        "bytes": 309163,
+        "sha256": "a3ca01a84ebd728d77739c4b1253bd3205cccb0c167f88bc5cbb4223a35c9818",
+        "git_blob": "d0e06a8fe00acfaf1e80b95b22692c7de124014c"
+      }
+    ],
+    "original_unit_tests_passed": 7,
+    "error": "conflicting asset entries for CALLERS.toml"
+  },
+  "followup_commit": "841fb932deb95cf4368ef01e28f0c8081a1c48fa",
+  "formatter_fix": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_positive_tests.rs",
+      "pre_blob": "be937fcf611a99aa20c7368ef32479bdb304144d",
+      "post_blob": "a2fc0b0e84880b318b75346debb38385d184dffb",
+      "pre_bytes": 5174,
+      "post_bytes": 5165,
+      "post_sha256": "d4ae541131d96310896dc991fc448657373d8e74877309b688e2b87af96dcaa8",
+      "pre_hunk": "        .collect::<std::io::Result<Vec<_>>>()?;\n    let mut previous_read = None;\n    for readback in [false, true] {\n        let context =\n            || -> anyhow::Result<crate::OriginalCircuitEvaluatedLearningReadContextV1> {\n                let original = if readback {\n                    f.readback_context()?\n                } else {\n                    f.context()?\n                };\n                Ok(crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(\n                    original,\n                )?)\n            };\n        let owner = Arc::new(\n            OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners(\n                c.cell.clone(),",
+      "post_hunk": "        .collect::<std::io::Result<Vec<_>>>()?;\n    let mut previous_read = None;\n    for readback in [false, true] {\n        let context = || -> anyhow::Result<crate::OriginalCircuitEvaluatedLearningReadContextV1> {\n            let original = if readback {\n                f.readback_context()?\n            } else {\n                f.context()?\n            };\n            Ok(\n                crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(\n                    original,\n                )?,\n            )\n        };\n        let owner = Arc::new(\n            OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners(\n                c.cell.clone(),",
+      "content": "//! Original retained CURRENT readbacks after actual native Candidate training\n//! and independent NoUpdate Evaluation. Existing same-process transports and\n//! explicit test issuers remain fixtures. Readback-origin proof is not a Root\n//! or daemon restart, and this test performs no ordinary C execution.\n\nuse std::sync::Arc;\n\nuse pretty_assertions::assert_eq;\nuse pretty_assertions::assert_ne;\n\nuse super::*;\nuse crate::OriginalCircuitLearningReadOwnerV1;\nuse crate::circuit_feature_current::original_learning_read_fixture as read_transport;\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn evaluated_retained_current_reads_fresh_and_cold_original_owners() -> anyhow::Result<()> {\n    let mut f = Box::pin(PublicationFixture::ready()).await?;\n    let context = f.context()?;\n    assert_eq!(context.snapshot(), f.evaluation.snapshot());\n    assert_eq!(&context.snapshot().receipts[2], f.training.receipt());\n    assert_eq!(\n        f.evaluation.training_attestation(),\n        f.training.attestation()\n    );\n    assert!(context.snapshot().training_no_update_v2().is_none());\n    assert!(matches!(\n        f.training.receipt().observation,\n        LearningIterationObservationV1::Training { .. }\n    ));\n    assert!(matches!(\n        f.evaluation.receipt().observation,\n        LearningIterationObservationV1::Evaluation {\n            disposition: LearningEvaluationDispositionV1::NoUpdate,\n            ..\n        }\n    ));\n    assert_ne!(f.bundle.digest()?, f.host.original.candidate.digest()?);\n    let source_before = f.host.original.predecessor_bytes()?;\n    let b_before = f.host.upstream_files()?;\n    let evaluation_before = f.host.original_files()?;\n    let nonces = f.host.original.version.authority.capacity()?.used_nonces;\n    let (trainer, evaluator, peers) = f.clients()?;\n    let prepared = Box::pin(prepare_original_circuit_evaluated_retention_v1(\n        context,\n        trainer,\n        evaluator,\n        f.inputs()?,\n    ))\n    .await?;\n    assert_eq!(\n        prepared.final_use_binding().destination_id,\n        \"agentd.cell-generation.next-task-same-model\"\n    );\n    let signed = f.host.original.version.sign(prepared.final_use_binding())?;\n    let (task, trainer, evaluator) = prepared\n        .publish_and_retain_original_evidence(signed)\n        .await?;\n    assert_ne!(f.source_a.scope.run_id, task.source().scope.run_id);\n    let mut c = f.start_c(task).await?;\n    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);\n    let baseline = f.bundle.digest()?;\n    let publication_before = f.publication_bytes()?;\n    let c_paths = [\n        \"q24-source.journal\",\n        \"q24-source.witness\",\n        \"q24-cell.journal\",\n        \"q24-cell.witness\",\n    ]\n    .map(|name| c.runtime.identity.home_root.join(name));\n    let c_before = c_paths\n        .iter()\n        .map(std::fs::read)\n        .collect::<std::io::Result<Vec<_>>>()?;\n    let mut previous_read = None;\n    for readback in [false, true] {\n        let context = || -> anyhow::Result<crate::OriginalCircuitEvaluatedLearningReadContextV1> {\n            let original = if readback {\n                f.readback_context()?\n            } else {\n                f.context()?\n            };\n            Ok(\n                crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(\n                    original,\n                )?,\n            )\n        };\n        let owner = Arc::new(\n            OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners(\n                c.cell.clone(),\n                c.source.as_ref().clone(),\n                c.runtime.identity.clone(),\n                context()?,\n            )?,\n        );\n        let (client, server) = read_transport::evaluated_client(context()?)?;\n        let peer = read_transport::serve(owner, server);\n        let first = client.read_current().await?;\n        assert!(matches!(\n            first.observation(),\n            LearningIterationObservationV1::Selection { candidate_bundle, .. }\n                if *candidate_bundle == baseline\n        ));\n        assert_eq!(client.read_current().await?, first);\n        if let Some(previous) = previous_read.replace(first.clone()) {\n            assert_eq!(previous, first);\n        }\n        drop(client);\n        assert_eq!(peer.join().expect(\"original CURRENT read peer\")?, 2);\n    }\n    assert_eq!(trainer.readback().await?, f.training);\n    assert_eq!(evaluator.readback().await?, f.evaluation);\n    drop(trainer);\n    drop(evaluator);\n    assert_eq!(peers.finish()?, [5, 5]);\n    assert_eq!(\n        f.host.original.version.authority.capacity()?.used_nonces,\n        nonces + 1\n    );\n    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);\n    assert_eq!(f.publication_bytes()?, publication_before);\n    assert_eq!(\n        c_paths\n            .iter()\n            .map(std::fs::read)\n            .collect::<std::io::Result<Vec<_>>>()?,\n        c_before\n    );\n    assert_eq!(f.host.original.predecessor_bytes()?, source_before);\n    assert_eq!(f.host.upstream_files()?, b_before);\n    assert_eq!(f.host.original_files()?, evaluation_before);\n    c.stop().await?;\n    drop(c);\n    f.finish().await\n}\n",
+      "exact_original_formatter_delta_applied": true,
+      "whole_other_source_bytes_preserved": true,
+      "only_whitespace_or_trailing_argument_comma_changed": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_read_tests.rs",
+      "pre_blob": "431f3743032b047ab738e649e43e4db94a9dfd24",
+      "post_blob": "7581f85b1b9971908922a125dc4fdacc314e40f8",
+      "pre_bytes": 4356,
+      "post_bytes": 4321,
+      "post_sha256": "bfbc3faa6ae41b6310626dfb62466a2f774557f84fc0d5de8446621b57ae86d1",
+      "pre_hunk": "            \"prefix_head\",\n            serde_json::json!(Digest32::of_bytes(b\"other-cut\").to_string()),\n        ),\n        (\n            \"operation_id\",\n            serde_json::json!(\"other-source-operation\"),\n        ),\n        (\"mode\", serde_json::json!(\"next_use\")),\n    ] {\n        let mut changed = value.clone();",
+      "post_hunk": "            \"prefix_head\",\n            serde_json::json!(Digest32::of_bytes(b\"other-cut\").to_string()),\n        ),\n        (\"operation_id\", serde_json::json!(\"other-source-operation\")),\n        (\"mode\", serde_json::json!(\"next_use\")),\n    ] {\n        let mut changed = value.clone();",
+      "content": "//! The canonical evaluated read profile consumes actual opaque T/B results.\n//! Fresh/cold publication origins remain distinct before explicit read-only\n//! conversion. This private fixture neither exports fields nor grants work.\n\nuse pretty_assertions::assert_eq;\n\nuse super::*;\nuse crate::OriginalCircuitLearningReadContextV1;\nuse crate::OriginalCircuitRetainedPublicationErrorV1;\n\npub(crate) fn check_evaluated_profiles(\n    fresh: OriginalCircuitEvaluatedRetentionContextV1,\n    cold: OriginalCircuitEvaluatedRetentionContextV1,\n    evaluation_expires_at: u64,\n) -> anyhow::Result<()> {\n    let at = now()?;\n    // The original publication distinction is preserved before conversion.\n    fresh.require_new_original_receipt(at)?;\n    assert!(matches!(\n        cold.require_new_original_receipt(at),\n        Err(OriginalCircuitRetainedPublicationErrorV1::Binding(\n            \"recovered evaluated retention is read-only\"\n        ))\n    ));\n    let (scope, verifier, training_evidence) = fresh.receipt_configuration();\n    let expired = training_evidence\n        .expires_at\n        .max(evaluation_expires_at)\n        .saturating_add(1);\n    let mut legacy = OriginalCircuitLearningReadContextV1 {\n        prefix: fresh.snapshot().clone(),\n        scope,\n        verifier,\n        training_evidence,\n        selection_evidence: None,\n    };\n    let fresh = OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(fresh)?;\n    let cold = OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(cold)?;\n    for profile in [&fresh, &cold] {\n        let OriginalCut::Selection(original) = &profile.original else {\n            anyhow::bail!(\"Selection input became a NextUse capability\");\n        };\n        assert!(matches!(\n            original.require_new_original_receipt(at),\n            Err(OriginalCircuitRetainedPublicationErrorV1::Binding(\n                \"recovered evaluated retention is read-only\"\n            ))\n        ));\n    }\n    let fresh = ReadProfile::Evaluated(fresh);\n    let cold = ReadProfile::Evaluated(cold);\n    let binding = fresh.binding(at)?;\n    // The public Selection read factory attenuates both origins to the same\n    // read-only purpose; neither retains fresh publication or receipt authority.\n    assert_eq!(binding, cold.binding(at)?);\n    assert_eq!(fresh.mode()?, wire::Mode::Selection);\n    assert_eq!(cold.mode()?, wire::Mode::Selection);\n    assert_eq!(fresh.decision()?.snapshot(), fresh.prefix());\n    assert_eq!(fresh.prefix(), cold.prefix());\n    assert!(fresh.legacy().is_err());\n    assert!(cold.legacy().is_err());\n\n    let request = fresh.request(binding, /*request_id*/ 1)?;\n    fresh.require_request(&request, binding, /*request_id*/ 1)?;\n    cold.require_request(&request, binding, /*request_id*/ 1)?;\n    let value = serde_json::to_value(&request)?;\n    for (field, replacement) in [\n        (\"schema\", serde_json::json!(2)),\n        (\"operation\", serde_json::json!(wire::OPERATION)),\n        (\"request_id\", serde_json::json!(2)),\n        (\n            \"binding\",\n            serde_json::json!(Digest32::of_bytes(b\"other-proof\").to_string()),\n        ),\n        (\n            \"prefix_head\",\n            serde_json::json!(Digest32::of_bytes(b\"other-cut\").to_string()),\n        ),\n        (\"operation_id\", serde_json::json!(\"other-source-operation\")),\n        (\"mode\", serde_json::json!(\"next_use\")),\n    ] {\n        let mut changed = value.clone();\n        changed[field] = replacement;\n        let changed: wire::Request = serde_json::from_value(changed)?;\n        assert!(matches!(\n            fresh.require_request(&changed, binding, /*request_id*/ 1),\n            Err(Error::Binding(\"original fixed evaluated read request\"))\n        ));\n    }\n    let mut injected = value;\n    injected[\"execute\"] = serde_json::json!(true);\n    assert!(serde_json::from_value::<wire::Request>(injected).is_err());\n\n    // The public legacy DTO cannot relabel CandidateTraining/Evaluation as\n    // TrainingNoUpdate, including a fabricated extra Selector hint.\n    assert!(wire::context_binding(&legacy, at).is_err());\n    legacy.selection_evidence = Some(legacy.training_evidence.clone());\n    assert!(wire::context_binding(&legacy, at).is_err());\n    assert!(fresh.binding(expired).is_err());\n    assert!(cold.binding(expired).is_err());\n    Ok(())\n}\n",
+      "exact_original_formatter_delta_applied": true,
+      "whole_other_source_bytes_preserved": true,
+      "only_whitespace_or_trailing_argument_comma_changed": true
+    }
+  ],
+  "allowlist_fix": {
+    "original_parser_blob": "18bc6175c274abaeabe3ef0c32d82627d498bbe7",
+    "base_blob": "fb736ed76a3cd13450ad41831eeda6056fb1da14",
+    "post_blob": "a3e3d33e61eef032c35e61298493caae05cd64c5",
+    "post_sha256": "9f61c2e667730807b3ccf248ea368ae7099f2af498950ff6f6f63eed4f57e93c",
+    "only_exact_16_historical_callers_asset_lines_removed": true,
+    "all_other_bytes_identical": true,
+    "active_paths": 61,
+    "current_callers_only_pin": "sha256:07bb70760a33aa9c65488938a93e00ba891a89ac086463e5a28e55b7a68eebdf",
+    "actual_python_gate": "NOT_RERUN_PENDING_CI",
+    "original_failure_retained": true
+  },
+  "production_or_checker_widened": false,
+  "followup_results_not_transferred": true
+}

@@ -1,0 +1,47 @@
+{
+  "whole_job_bytes": 651260,
+  "whole_sha256": "84a9303e8c58bf860d239cb67d8ae1d6c78c4c6ee01487ccbb1944a9f59c16f3",
+  "whole_git_blob_calculated_not_created": "d12b88e9f210e76dbf67b67a0d2fc78c82c1b25a",
+  "spans": [
+    {
+      "start_line_1based": 4036,
+      "end_line_1based_inclusive": 4052,
+      "offset": 413957,
+      "git_blob_sha": "0f988e11b930c3d9e6286998c038ec018f39cf2a",
+      "bytes": 1185,
+      "sha256": "0d9d707287b325c9bf4f0cdfa7721955cd8232a4f0a12ef0d75b18b3f74d2578",
+      "original_text": "2026-11-12T20:28:25.6679802Z ---- tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery stdout ----\r\n2026-11-12T20:28:25.6680190Z \r\n2026-11-12T20:28:25.6680582Z thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (608) panicked at tui/src/lib.rs:3265:9:\r\n2026-11-12T20:28:25.6681176Z assertion failed: `(left == right)`\r\n2026-11-12T20:28:25.6681363Z \r\n2026-11-12T20:28:25.6681506Z Diff < left / right > :\r\n2026-11-12T20:28:25.6681826Z <\"D:\\\\tmp\\\\.tmpPAsGaQ\\\\sqlite-home\\\\logs_2.sqlite\"\r\n2026-11-12T20:28:25.6682202Z >\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpPAsGaQ\\\\sqlite-home\\\\logs_2.sqlite\"\r\n2026-11-12T20:28:25.6682440Z \r\n2026-11-12T20:28:25.6682444Z \r\n2026-11-12T20:28:25.6682677Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r\n2026-11-12T20:28:25.6682964Z \r\n2026-11-12T20:28:25.6682969Z \r\n2026-11-12T20:28:25.6683085Z failures:\r\n2026-11-12T20:28:25.6683493Z     tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery\r\n2026-11-12T20:28:25.6683946Z \r\n2026-11-12T20:28:25.6684226Z test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 11.49s\r\n",
+      "tail_replay": false
+    },
+    {
+      "start_line_1based": 4599,
+      "end_line_1based_inclusive": 4615,
+      "offset": 482832,
+      "git_blob_sha": "613630c11e934d75cd7e13ce4139d6d3d9e6385a",
+      "bytes": 1185,
+      "sha256": "921341d0cbc24cf46f8122a44ee025e1dcb121c79b50d7dc5e0d3b0f67d5ef7e",
+      "original_text": "2026-11-12T20:28:25.7430016Z ---- tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery stdout ----\r\n2026-11-12T20:28:25.7430025Z \r\n2026-11-12T20:28:25.7430648Z thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (2632) panicked at tui/src/lib.rs:3265:9:\r\n2026-11-12T20:28:25.7430813Z assertion failed: `(left == right)`\r\n2026-11-12T20:28:25.7430822Z \r\n2026-11-12T20:28:25.7430963Z Diff < left / right > :\r\n2026-11-12T20:28:25.7431159Z <\"D:\\\\tmp\\\\.tmpvdRJbF\\\\sqlite-home\\\\logs_2.sqlite\"\r\n2026-11-12T20:28:25.7431375Z >\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpvdRJbF\\\\sqlite-home\\\\logs_2.sqlite\"\r\n2026-11-12T20:28:25.7431383Z \r\n2026-11-12T20:28:25.7431390Z \r\n2026-11-12T20:28:25.7431977Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r\n2026-11-12T20:28:25.7431986Z \r\n2026-11-12T20:28:25.7432006Z \r\n2026-11-12T20:28:25.7432125Z failures:\r\n2026-11-12T20:28:25.7432847Z     tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery\r\n2026-11-12T20:28:25.7432856Z \r\n2026-11-12T20:28:25.7433482Z test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 3.17s\r\n",
+      "tail_replay": false
+    },
+    {
+      "start_line_1based": 5162,
+      "end_line_1based_inclusive": 5178,
+      "offset": 551707,
+      "git_blob_sha": "04b515448391d81668b4e80c7f20bef2e8952d82",
+      "bytes": 1185,
+      "sha256": "f10b4c9cce026a47d39f73c5be06c17b116e84e57dd617544ebfb6fe2672b75b",
+      "original_text": "2026-11-12T20:28:25.7627525Z ---- tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery stdout ----\r\n2026-11-12T20:28:25.7627531Z \r\n2026-11-12T20:28:25.7628232Z thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (3720) panicked at tui/src/lib.rs:3265:9:\r\n2026-11-12T20:28:25.7628393Z assertion failed: `(left == right)`\r\n2026-11-12T20:28:25.7628400Z \r\n2026-11-12T20:28:25.7628545Z Diff < left / right > :\r\n2026-11-12T20:28:25.7628725Z <\"D:\\\\tmp\\\\.tmpTbRUk7\\\\sqlite-home\\\\logs_2.sqlite\"\r\n2026-11-12T20:28:25.7628922Z >\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpTbRUk7\\\\sqlite-home\\\\logs_2.sqlite\"\r\n2026-11-12T20:28:25.7628930Z \r\n2026-11-12T20:28:25.7628936Z \r\n2026-11-12T20:28:25.7629264Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r\n2026-11-12T20:28:25.7629284Z \r\n2026-11-12T20:28:25.7629290Z \r\n2026-11-12T20:28:25.7629404Z failures:\r\n2026-11-12T20:28:25.7629787Z     tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery\r\n2026-11-12T20:28:25.7629793Z \r\n2026-11-12T20:28:25.7630220Z test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 2.98s\r\n",
+      "tail_replay": false
+    },
+    {
+      "start_line_1based": 5593,
+      "end_line_1based_inclusive": 5609,
+      "offset": 611471,
+      "git_blob_sha": "dca76f9745ceffa7b45353d9743d4e119f0ba454",
+      "bytes": 1257,
+      "sha256": "3edd1831bc72b18cc8fc60bc9a429d7e910c8fd724244a33ffbb748e4d19b3bc",
+      "original_text": "2026-11-12T20:28:39.6904021Z ---- tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery stdout ----\r\n2026-11-12T20:28:39.6904371Z \r\n2026-11-12T20:28:39.6904726Z thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (3720) panicked at tui/src/lib.rs:3265:9:\r\n2026-11-12T20:28:39.6905264Z assertion failed: `(left == right)`\r\n2026-11-12T20:28:39.6905427Z \r\n2026-11-12T20:28:39.6905664Z \u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\r\n2026-11-12T20:28:39.6906051Z \u001b[31m<\"D:\\\\tmp\\\\.tmpTbRUk7\\\\sqlite-home\\\\logs_2.sqlite\"\u001b[0m\r\n2026-11-12T20:28:39.6906542Z \u001b[32m>\"\u001b[0m\u001b[1;48;5;22;32m\\\\\\\\?\\\\\u001b[0m\u001b[32mD:\\\\tmp\\\\.tmpTbRUk7\\\\sqlite-home\\\\logs_2.sqlite\"\u001b[0m\r\n2026-11-12T20:28:39.6906817Z \r\n2026-11-12T20:28:39.6906821Z \r\n2026-11-12T20:28:39.6907010Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r\n2026-11-12T20:28:39.6907288Z \r\n2026-11-12T20:28:39.6907291Z \r\n2026-11-12T20:28:39.6907369Z failures:\r\n2026-11-12T20:28:39.6907676Z     tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery\r\n2026-11-12T20:28:39.6907957Z \r\n2026-11-12T20:28:39.6908220Z test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 2.98s\r\n",
+      "tail_replay": true
+    }
+  ]
+}

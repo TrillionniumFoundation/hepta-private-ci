@@ -1,0 +1,280 @@
+{
+  "refs": {
+    "base": "dd4b6c17344986a3a9379e372bf19d282f812a30",
+    "left": "32c0160e60d377eb79983abc394832efce12c988",
+    "right": "57ffff832355d75937045f240fed2c2d48783029"
+  },
+  "roots": {
+    "base": "935622f0a83d2991d7630324db7022612d556df9",
+    "left": "a2afbbad566929ddf2b001215c54fe041823d273",
+    "right": "f2b297cf94da0029c02e26b644694f7653fa12d7"
+  },
+  "scope": "Git-object three-way source merge and complete-record audit in the connected API runtime; no Python/Rust/native/full-caller qualification",
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "python_tuple_changes": [
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "right_blob": "0fe76619a63a9dbbd1dc2038d7f956d2bacdd792",
+      "merged_blob": "abad9b42de3df49deffe0421fd285375a9b7eb2f",
+      "left_non_tuple_bytes_equal_base": true,
+      "right_added_file": false,
+      "right_non_tuple_bytes_unchanged": true,
+      "callers": 32
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "right_blob": "cd463b9a7c34ef8de050a458dc78b6adf02924b6",
+      "merged_blob": "b4012f75fc29a93db26364045a751ac0cfe6ce17",
+      "left_non_tuple_bytes_equal_base": true,
+      "right_added_file": false,
+      "right_non_tuple_bytes_unchanged": true,
+      "callers": 32
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "right_blob": "6a6d0ece6e7f4c93e8c790b8db1e24c3ab5d2c62",
+      "merged_blob": "de4900fad3c4f524b224cb746d98e0107bc62825",
+      "left_non_tuple_bytes_equal_base": true,
+      "right_added_file": false,
+      "right_non_tuple_bytes_unchanged": true,
+      "callers": 32
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "right_blob": "18c8471c4331452e47e8e4aa4198f4dcbce6daf5",
+      "merged_blob": "e50b0e45dca1b92d891ba1c5dfc5bfbbbfd6a914",
+      "left_non_tuple_bytes_equal_base": true,
+      "right_added_file": false,
+      "right_non_tuple_bytes_unchanged": true,
+      "callers": 32
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "right_blob": "0f156bc009c71eb7fd95ed40077c9db9ca5ef5d5",
+      "merged_blob": "a7b2b421b9085f7ea9182ab29e0c568fc20d00a3",
+      "left_non_tuple_bytes_equal_base": true,
+      "right_added_file": false,
+      "right_non_tuple_bytes_unchanged": true,
+      "callers": 32
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "right_blob": "1d39225b3ca6b478d77230c553997ce0259b8286",
+      "merged_blob": "a8c6a483a21f294851820627cb1913033588ab4c",
+      "left_non_tuple_bytes_equal_base": true,
+      "right_added_file": false,
+      "right_non_tuple_bytes_unchanged": true,
+      "callers": 32
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "right_blob": "edf9577a24599f8ea068a586c5d65d127abd7fe4",
+      "merged_blob": "a19c904422c8b01dbda2cd6de6c8d58443808766",
+      "left_non_tuple_bytes_equal_base": true,
+      "right_added_file": false,
+      "right_non_tuple_bytes_unchanged": true,
+      "callers": 32
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_readonly_ready_source_closure.py",
+      "right_blob": "d03ae36f9a622b159244673c7432637c0c500985",
+      "merged_blob": "776739940956cc01011f6f71d11e942aca1bb45c",
+      "left_non_tuple_bytes_equal_base": null,
+      "right_added_file": true,
+      "right_non_tuple_bytes_unchanged": true,
+      "callers": 32
+    }
+  ],
+  "rust_postimages": [
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "a72bd5e91fa814926a1fbf63730b49626a7de29d",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_owner.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "87d6eeabd08237ca4ffe6494886a9da87d12253f",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "8134933c69bfa4f99d53fec2415ad0962d39c870",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_support_tests.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "21cb8811a743daad7c21eb2dc371010aae3ffa51",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_tests.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "13d9388836c47567ce5e6d5b9c45e5f9a38fdd4f",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_head_source.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "72bba110c8c9b372e5bbb46959640d57add02095",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_head_source_claims.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "790f375b7a38c7b801e20ea8277ff30a7f82defb",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "f69eb403a0f8ef3e64a7eb3f60dc63d650a70fd3",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host_registry_durable.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "27fb4b55cda215f301f36aff05b0a3ead388c0d7",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_preparation.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "5b6936bfe349246cee06cfbd3520c110ecee0db0",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_preparation_tests.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "a1a8ad8efb50a8b352561b51c067e9ea60fe65e8",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "3497155288ebd4f552438764a533542fd62d0f19",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host_preparation.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "26159d4c482956ac8a7209ffa5983e541e2155ec",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/publication_original.rs",
+      "source_parent": "32c0160e60d377eb79983abc394832efce12c988",
+      "blob_sha": "7b43ec3696910b53db5492f5242c2046c567f433",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "source_parent": "57ffff832355d75937045f240fed2c2d48783029",
+      "blob_sha": "46e4204a23bfc22cc87bfd8b254291bf44fc88be",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs",
+      "source_parent": "57ffff832355d75937045f240fed2c2d48783029",
+      "blob_sha": "87649557ffd3cc698549673f46514e0c8b40be11",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "source_parent": "57ffff832355d75937045f240fed2c2d48783029",
+      "blob_sha": "fcb1dc7eec6dedb51f1bd46f8d88eed8ab7b2d85",
+      "exact_parent_postimage": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "source_parent": "57ffff832355d75937045f240fed2c2d48783029",
+      "blob_sha": "d40411fd402849c73e00fa4128568b3d7111df65",
+      "exact_parent_postimage": true
+    }
+  ],
+  "manifest": {
+    "boundary_count": 554,
+    "complete_protected_records": 400,
+    "distinct_paths": 328,
+    "shared_callers": 32,
+    "full_record_counter_preserved": true
+  },
+  "qa_python_files_scanned": 51,
+  "coverage_blob": "f4af5aec84b2fdebc0abf5fa0fd1f375361e9f64",
+  "coverage_exact_left_parent": true,
+  "expected_merge_tree": "88d880a399c9b4e2175f24ca4838756daeead6df",
+  "novel_blob_readbacks": [
+    {
+      "path": "CALLERS.toml",
+      "blob_sha": "deee32fe51366c5a01e1ca3bc78c7bf67aab7791",
+      "bytes": 1082635,
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "blob_sha": "abad9b42de3df49deffe0421fd285375a9b7eb2f",
+      "bytes": 25598,
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "blob_sha": "b4012f75fc29a93db26364045a751ac0cfe6ce17",
+      "bytes": 17324,
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "blob_sha": "de4900fad3c4f524b224cb746d98e0107bc62825",
+      "bytes": 21715,
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "blob_sha": "e50b0e45dca1b92d891ba1c5dfc5bfbbbfd6a914",
+      "bytes": 16249,
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "blob_sha": "a7b2b421b9085f7ea9182ab29e0c568fc20d00a3",
+      "bytes": 18709,
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "blob_sha": "a8c6a483a21f294851820627cb1913033588ab4c",
+      "bytes": 14767,
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "blob_sha": "a19c904422c8b01dbda2cd6de6c8d58443808766",
+      "bytes": 14111,
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_readonly_ready_source_closure.py",
+      "blob_sha": "776739940956cc01011f6f71d11e942aca1bb45c",
+      "bytes": 16320,
+      "full_readback_equal": true
+    }
+  ],
+  "canonical_source": {
+    "sha": "6b7519f95d5d6aa863548c99b559ecaaa768a50d",
+    "tree": "88d880a399c9b4e2175f24ca4838756daeead6df",
+    "parents": [
+      "32c0160e60d377eb79983abc394832efce12c988",
+      "57ffff832355d75937045f240fed2c2d48783029"
+    ],
+    "base": "dd4b6c17344986a3a9379e372bf19d282f812a30",
+    "branch": "codex/learn-head-readonly-converged-ce434-20261112-v6"
+  }
+}

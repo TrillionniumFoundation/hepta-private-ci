@@ -1,0 +1,29 @@
+{
+  "schema": "hcsn-n256-streaming-fullstate-source-amendment-v1",
+  "original_source_commit": "f2a83b0f7b818c01ad3dd991e5679c7119ff46e5",
+  "plan_source_sha256": "f24c2b562d67135eafc1dc60142e2f0eacbf7beafb9e7e783c80d64b589726aa",
+  "review_source_sha256": "854b8305ec07df5dea431ad5108e8e6b2ab089ebd8e5876b499d40d1a0de7052",
+  "source_files_changed": false,
+  "attempt001": {
+    "request_key": "hcsn-n256-streaming-fullstate-static-20261113-c06d-001",
+    "durable_host_job": "1a1d3b29d99-392-1ad",
+    "exit_code": 125,
+    "failure_receipt_sha256": "ddbb5f5adb9761a6871c4c5a236e90443504c52706c28b5c9ffe26e9d170c23e",
+    "stderr_sha256": "03dba97e3fbe7add2d3b815dcf167ca2605c1c33e43b64a66e8504a7b5e5149a",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate_source_entered": false
+  },
+  "attempt002": {
+    "request_sha256": "d9a9826c35bb2eb9bb1c627fb670fba64732985d07668f42ca8d9467024d43d0",
+    "request_key": "hcsn-n256-streaming-fullstate-static-20261113-c06d-002-after-time-cli-red",
+    "only_command_change": "/usr/bin/time -l to /usr/bin/time -v"
+  },
+  "numerical_execution_performed": false,
+  "matrix_exponentials": 0,
+  "oracle_numeric_calls": 0,
+  "serializer_numeric_calls": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "largegrid_qualification": false,
+  "all_closed": false
+}

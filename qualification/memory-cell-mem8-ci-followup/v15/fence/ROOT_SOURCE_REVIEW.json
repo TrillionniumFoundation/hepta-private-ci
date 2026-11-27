@@ -1,0 +1,15 @@
+{
+  "review": "Fail-closed code mapping, all-mode preflight and separate audit baseline read directly. Original unavailable subreason cannot be recovered from generic error. No policy change inferred.",
+  "critical_paths": [
+    "upstream/src/local_control.rs",
+    "upstream/src/dns_mediator.rs"
+  ],
+  "source_files_full_hash_verified": 18,
+  "repo_workflow_bound_to_complete_9bd2_tree": true,
+  "schema": "mem8.root-readonly-source-review.v1",
+  "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "product_blocker_closed": false,
+  "new_native_tests": 0,
+  "new_model_requests": 0
+}

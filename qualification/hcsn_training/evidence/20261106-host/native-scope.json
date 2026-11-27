@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "audit_created_utc": "2026-11-06T09:43:05.981080+00:00",
+  "activity": "Evidence packaging only; no builds, tests, source edits, or Git index operations",
+  "verification_epoch": "All recorded local tests and Cargo artifact streams precede the final just fix / just fmt pass. This archive makes no claim of post-fix/post-format test execution.",
+  "base_commit": "21f99f78e6a176233e711ce5ad233cec0166b8d6",
+  "actual_full_workspace": "/workspace/scratch/7ee3ec79bc34/full-source",
+  "source_projection_used_for_these_tests": false,
+  "original_dependency_lock": {
+    "path": "codex-rs/Cargo.lock",
+    "bytes": 418038,
+    "sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+    "git_blob": "8a9eab30d8957daab7dd027e86e88ca792e04a1c",
+    "matches_base_commit": true
+  },
+  "environment": {
+    "toolchain": "/workspace/scratch/2e04527a60e8/toolchain/1.95.0-x86_64-unknown-linux-gnu/bin",
+    "just_tools": "/workspace/scratch/734df8eaf8dc/bin",
+    "cargo_home": "/workspace/scratch/c084ba2352cd/cargo-home",
+    "cargo_target_dir": "/workspace/scratch/7ee3ec79bc34/automation-target",
+    "cargo_build_jobs": 2
+  },
+  "test_runs": [
+    {
+      "name": "automation",
+      "command": "just test --locked -p codex-hepta-automation --lib --test hcsn_taskflow",
+      "command_provenance": "Child exec session83673 and retained adapter-native-verification.json; wrapper log does not echo argv",
+      "log": "adapter-native-test-02.log",
+      "exit_code": 0,
+      "passed": 42,
+      "skipped": 0,
+      "library_unit_tests": 41,
+      "newly_added_library_tests": 16,
+      "signed_database_integration_tests": 1
+    },
+    {
+      "name": "neuron_and_learning_owner",
+      "command": "just test --locked -p codex-hepta-neuron -p codex-hepta-learning-artifacts",
+      "command_provenance": "Root exec session69840, exit0, confirmed by parent; wrapper log does not echo argv",
+      "log": "native-clock-owner-tests.log",
+      "exit_code": 0,
+      "passed": 194,
+      "skipped": 1,
+      "per_package_passes": {
+        "codex-hepta-learning-artifacts": 99,
+        "codex-hepta-neuron": 95
+      },
+      "ignored_helper": {
+        "test": "owner_host::tests::owner_host_process_fault_worker",
+        "package": "codex-hepta-learning-artifacts",
+        "declared_reason": "worker is invoked only by owner_host_process_kill_reopen_matrix",
+        "invoked_by_passed_test": "owner_host::tests::owner_host_process_kill_reopen_matrix",
+        "interpretation": "Intentionally excluded as a standalone case; the process crash/reopen matrix invokes the helper as a subprocess"
+      }
+    }
+  ],
+  "totals": {
+    "passed": 236,
+    "standalone_ignored_helpers": 1
+  },
+  "first_automation_attempt": {
+    "log": "adapter-native-test-01.log",
+    "exit_code": 101,
+    "issue": "Baseline compile-data docs/modules/MODULES.json was absent from the sparse checkout",
+    "resolution": "Hydrated exact base Git blob e4a5965a06b0af917130bd929158e714684a91bc; no baseline source edit"
+  },
+  "cargo_builds": [
+    {
+      "attempt": 1,
+      "artifact_stream": "cargo-supervised-artifacts.jsonl",
+      "build_log": "cargo-supervised-build.log",
+      "cargo_build_success": true,
+      "automation_artifact_reported_fresh": true,
+      "top_level_selected_libraries": [
+        "codex_hepta_automation",
+        "codex_hepta_contracts",
+        "codex_hepta_learning_artifacts",
+        "codex_hepta_neuron"
+      ],
+      "bridge_use_status": "superseded: stale pre-HCSN production automation artifact"
+    },
+    {
+      "attempt": 2,
+      "artifact_stream": "cargo-supervised-artifacts-02.jsonl",
+      "build_log": "cargo-supervised-build-02.log",
+      "cargo_build_success": true,
+      "automation_artifact_reported_fresh": true,
+      "top_level_selected_libraries": [
+        "codex_hepta_automation",
+        "codex_hepta_contracts",
+        "codex_hepta_learning_artifacts",
+        "codex_hepta_neuron",
+        "codex_hepta_types",
+        "ed25519_dalek",
+        "serde_json"
+      ],
+      "bridge_use_status": "superseded: stale pre-HCSN production automation artifact"
+    },
+    {
+      "attempt": 3,
+      "artifact_stream": "cargo-supervised-artifacts-03.jsonl",
+      "build_log": "cargo-supervised-build-03.log",
+      "cargo_build_success": true,
+      "automation_artifact_reported_fresh": false,
+      "top_level_selected_libraries": [
+        "codex_hepta_automation",
+        "codex_hepta_contracts",
+        "codex_hepta_learning_artifacts",
+        "codex_hepta_neuron",
+        "codex_hepta_types",
+        "ed25519_dalek",
+        "serde_json"
+      ],
+      "bridge_use_status": "production automation rebuilt after mtime repair"
+    }
+  ],
+  "cache_correction": {
+    "record": "cargo-source-mtime-repair.json",
+    "source_bytes_changed": false,
+    "cause": "shutil.copy2 preserved lib.rs mtime older than the baseline production fingerprint, so Cargo reused production metadata without the new exports",
+    "correction": "Refreshed mtimes of eight unchanged native files and rebuilt selected production packages",
+    "independent_observation": "The test feature variant compiled the new sources; the initial production dep-info did not list HCSN modules. Third artifact stream reports automation fresh:false."
+  },
+  "limitations": [
+    "Automation integration targets other than hcsn_taskflow were not run locally in this scope.",
+    "The signed database integration uses a labelled provider double; native transport unit tests use labelled fault-injection executables. Actual Python worker/supervisor and A/B bridge acceptance have separate evidence.",
+    "Cargo build success in rounds1 and2 did not validate new HCSN production exports; those streams are retained as superseded failure-context evidence.",
+    "Build binaries, rlibs, rmeta files and checkpoints are deliberately excluded; their original paths may appear in copied logs and inventories."
+  ]
+}

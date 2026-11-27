@@ -1,0 +1,22 @@
+{
+  "schema": "new-renderer-native155-parser-source-adaptation-v1",
+  "origin": {
+    "path": "/workspace/scratch/c385a7439f8e/c2-resource-analysis-program-v2/native_parsers.py",
+    "bytes": 7695,
+    "sha256": "af21314b3114d443861581948c50d827ce23ab5d66cb96bbbbd0e140dcf7565e"
+  },
+  "copied_function_bodies": {
+    "payload": "b75559ca714ff326344c4ea67856b09387894151c2bd642e544d3402c94ca161",
+    "number": "ec11df7ef39fef6381c563f35602e90fbf12a0e8e28c6fca32246dd0a9f5622c",
+    "gnu_time": "1fdb00ec00e7e54dbea009677d88c6dc22f0462dcd278c010d0b81cf25f9696c",
+    "complete_logs": "75f3daa88a899d719933e0f625da161d74f9bdc3e06ea9be48ab84f4b8013e2c"
+  },
+  "explicit_changes": [
+    "New module header; fixed NATIVE_WALL=155 and NATIVE_RSS=536870912 instead of 1950/2147483648.",
+    "Use pinned renderer strict_json/require/identity functions; no metadata_io/resource_arithmetic imports.",
+    "Bootstrap-specific G launch() is not copied or reused. A separate native155 supervisor launch gate is implemented."
+  ],
+  "old_G_bytes_unchanged": true,
+  "old_G_test_credit_inherited": false,
+  "actual_execution_or_render": false
+}

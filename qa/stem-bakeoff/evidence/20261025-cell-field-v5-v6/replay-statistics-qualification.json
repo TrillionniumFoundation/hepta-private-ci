@@ -1,0 +1,71 @@
+{
+  "actual_complete_run_audits": [
+    {
+      "failures": [],
+      "file": "/workspace/scratch/60f94d809f44/pft-audit-v5/replay-audit.json",
+      "sha256": "562adba4bbe95f3e5a3aa9102f839ddccc1d13e446809b332f2d370f5e395086",
+      "status": "passed",
+      "version": "v5"
+    },
+    {
+      "failures": [],
+      "file": "/workspace/scratch/60f94d809f44/pft-audit-v5/statistics-audit.json",
+      "sha256": "b8d9376902fd58bef689300e66e944728783b2a40e9626b7bf246c8c2a76cd76",
+      "status": "passed",
+      "version": "v5"
+    },
+    {
+      "failures": [],
+      "file": "/workspace/scratch/60f94d809f44/pft-audit-v6/replay-audit.json",
+      "sha256": "0583a25d3a4be583db868d1711d4b9aa99ebfa32ca135f4aafaeaae03f5d92be",
+      "status": "passed",
+      "version": "v6"
+    },
+    {
+      "failures": [],
+      "file": "/workspace/scratch/60f94d809f44/pft-audit-v6/statistics-audit.json",
+      "sha256": "af4dc90a48f6ea3a1c4bea5f2d3b5164d67f9c93659e832d78794e0a25bdaf54",
+      "status": "passed",
+      "version": "v6"
+    }
+  ],
+  "measurement_note": "Counts are the observed suite results in this session. Reproduction commands use the published repo directory. No test durations are asserted and no additional tests were run to write this receipt.",
+  "new_science_or_frozen_source_changes": false,
+  "schema": "hepta.independent-replay-statistics-qualification.v1",
+  "scope": "post-run execution/statistical integrity verification; both V5 andV6 scientific verdicts remain REJECT; these audits do not grant publication/activation authority",
+  "source_sha256": {
+    "cell_field_replay_v5.py": "8a7909923a4fd95e27f9757d4300e522fe7a885bf31aad84c8815cca896d0a48",
+    "cell_field_replay_v6.py": "49d63701f54e2956f6ed7ab9b844cb40f6ce08549f13dcae3f2aa64d4a20c129",
+    "cell_field_statistics_audit_v6.py": "19420c36721c0eef34c590df10e740cf06e93be07caae2d624340511dd11bbd9",
+    "test_cell_field_replay_v5.py": "9bce365ed6610756de686527c0f4def8bb6f640293164c0e85d7ebe455b28706",
+    "test_cell_field_replay_v6.py": "111002ec53ce7d2d4da289577ff04c62d185dbbd0a09bb9aa80c8baa77fc2080",
+    "test_cell_field_statistics_audit_v6.py": "17866c3ef2c2db9d46b2452f4f39ae204f1f7755ebb660f5ba555afa0ed23c71"
+  },
+  "test_suites": [
+    {
+      "coverage": "actual six-policy replay, checkpoint restoration/replan, all seven fixed maps and49 nonlinear branches, pressure census, mutation rejection",
+      "module": "test_cell_field_replay_v5",
+      "recorded_failed": 0,
+      "recorded_passed": 5,
+      "reproduction_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /workspace/scratch/60f94d809f44/pft-venv/bin/python -m unittest test_cell_field_replay_v5 -v",
+      "working_directory": "/workspace/scratch/60f94d809f44/hepta-repo/qa/stem-bakeoff"
+    },
+    {
+      "coverage": "actual six-policy replay, atomic repair receipts, independent forward quotient algebra, midpoint replan/suffix, paired pressure and mutation rejection",
+      "module": "test_cell_field_replay_v6",
+      "recorded_failed": 0,
+      "recorded_passed": 5,
+      "reproduction_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /workspace/scratch/60f94d809f44/pft-venv/bin/python -m unittest test_cell_field_replay_v6 -v",
+      "working_directory": "/workspace/scratch/60f94d809f44/hepta-repo/qa/stem-bakeoff"
+    },
+    {
+      "coverage": "source component weighting, seed averaging, higher quantile, four strata and strict/inclusive gates",
+      "module": "test_cell_field_statistics_audit_v6",
+      "recorded_failed": 0,
+      "recorded_passed": 3,
+      "reproduction_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /workspace/scratch/60f94d809f44/pft-venv/bin/python -m unittest test_cell_field_statistics_audit_v6 -v",
+      "working_directory": "/workspace/scratch/60f94d809f44/hepta-repo/qa/stem-bakeoff"
+    }
+  ],
+  "unique_test_methods": 13
+}

@@ -1,0 +1,24 @@
+{
+  "ordered_parents": [
+    "f8c5a4dd99564525a6ce139560f82139501508aa",
+    "7c0096067a1452e8b71b1f1c34029aa62f0b59af"
+  ],
+  "incoming_single_parent": "2e3040eedebce38b99fff1268b73dc69fd9ad058",
+  "source_file": "codex-rs/hepta-infer-core/src/durable_control.rs",
+  "only_source_change": "Add cfg(test) to existing private append wrapper. Exact function body, both existing test callers, all assertions and production headroom-aware write paths remain unchanged.",
+  "default_merge_conflicts": 0,
+  "old_source_sha256": "48f61f9ac5cf9482f4c630e6d95e87b1e0104d39b5ead49b78f2756b65bf3977",
+  "new_source_sha256": "9ebcdab49960c0ab7a05c6dbe5bad2c1c4faf7f73cd0d07f4b9be66f65a6c5e4",
+  "final_just_fmt_exit": 0,
+  "formatter_source_changes": 0,
+  "protected_ancestry_argument": "New incoming commit has only already audited ordinary2e as parent; both merged parent closures exclude498 historical/current HIA pins.",
+  "protected_names": 478,
+  "protected_pins": 498,
+  "ordinary_covered": 2800,
+  "ordinary_pending": 4369,
+  "main_updated": false,
+  "protected_ref_writes": 0,
+  "branch_deletions": 0,
+  "previous_publication_attempt": "Fresh remote value changed from expected2e to7c, so previous durable publisher invoked no git push and performed zero remote ref writes.",
+  "required_ci": "Pending on the final published candidate; old results retain exact original source bindings."
+}

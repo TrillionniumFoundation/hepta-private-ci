@@ -1,0 +1,72 @@
+{
+  "all_member_hashes_verified": true,
+  "archive": {
+    "bytes": 702616,
+    "git_blob": "587574aac4de98596b55d840feb1d844b0b14f83",
+    "sha256": "44c090bb96f72f431de52fbc15cf82b70c2ef13358fe21ab6d542f9b2115fe8e"
+  },
+  "archived_native_or_repository_commands_executed": 0,
+  "native": {
+    "base_identical_tree_reuse_condition_source_head_success_met": true,
+    "base_native_execution": 0,
+    "binary_normalization": "Cargo crate underscores and nextest package names map to package::lib; integration targets retain their own target name.",
+    "command_groups": 26,
+    "cross_group_duplicate_ids": [
+      {
+        "binary": "codex-hepta-intelligence-eval::lib",
+        "case": "self_evolution_selection::tests::selector_and_rollback_are_opaque_independent_admissions",
+        "executions": 2
+      },
+      {
+        "binary": "codex-hepta-supervisor::lib",
+        "case": "module_runtime::tests::stateful_promotion_consumes_terminal_writer_handoff",
+        "executions": 2
+      },
+      {
+        "binary": "codex-hepta-types::lib",
+        "case": "topology::tests::related_module_bounds_are_checked_before_digest_allocation",
+        "executions": 2
+      },
+      {
+        "binary": "codex-hepta-types::lib",
+        "case": "topology::tests::selected_digest_cannot_hide_substituted_delta_content",
+        "executions": 2
+      },
+      {
+        "binary": "codex-hepta-types::lib",
+        "case": "topology::tests::split_requires_individually_bound_add_participants",
+        "executions": 2
+      }
+    ],
+    "distinct_package_target_case_ids": 521,
+    "executions": 526,
+    "failed": 0,
+    "one_explicit_ignored_scale_case_executed": true
+  },
+  "original_zip_member_counts": {
+    "13873952864": 20,
+    "13877116867": 65
+  },
+  "package_members": 28,
+  "python": {
+    "base": {
+      "raw_only": 8,
+      "receipted": 136,
+      "total": 144
+    },
+    "distinct_case_names": 146,
+    "executions": 290,
+    "source": {
+      "raw_only": 8,
+      "receipted": 138,
+      "total": 146
+    }
+  },
+  "reader_regenerated_audits_byte_identical": [
+    "ARCH_COMPLETE_ORIGINAL_AUDIT.json"
+  ],
+  "scope": "Original Architecture software/fixture workflow only; advisory transport remains UNKNOWN and other required CI is separate.",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "status": "PASS_FULL_ORIGINAL_ARCHITECTURE_PACKAGE_REPLAY"
+}

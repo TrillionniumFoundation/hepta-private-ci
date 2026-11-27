@@ -1,0 +1,33 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-prompt-optimizer",
+    "-p",
+    "codex-hepta-intelligence",
+    "-p",
+    "codex-hepta-objective",
+    "-p",
+    "codex-hepta-ndu",
+    "-p",
+    "codex-hepta-context-compiler",
+    "-p",
+    "codex-hepta-cognitive-types",
+    "-p",
+    "codex-hepta-cognitive-read",
+    "-p",
+    "codex-hepta-cognitive-store"
+  ],
+  "source_code_commit": "1a116535d5a3a0f8d7d6d00df8bd9f1b683337c3",
+  "cargo_lock_sha256": "3735942b85e35ab36efcdf8c1238ed10ae960f687955311d38bffdd372bec1a6",
+  "started_unix": 1794964583.3767438,
+  "build_environment": {
+    "CARGO_BUILD_JOBS": "4",
+    "CMAKE": "cmake",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 13.90287160873413
+}

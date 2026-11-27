@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.ctrl.payload-diagnostic-source-regression.v1",
+  "source_head_under_test": "4e4d0413d0b7859c0b230b6b5c66d88756ec3f9c",
+  "source_scope": "synthetic historical content-audit unit tests only, no prospective actor run",
+  "date_utc": "2026-11-10",
+  "host": "ai395",
+  "original_preflight_attempt": {
+    "job_id": "1a1c3d2c071-cf39-4",
+    "idempotency_key": "ctrl5614-exact-source-py7-20261110-4e4d0413-v1",
+    "exit_code": 86,
+    "reason": "Test harness Git-blob header used escaped literal slash-zero rather than NUL; failed SOURCE_BLOB_MISMATCH before writing sources or entering tests. No scientific data or source was changed."
+  },
+  "corrected_source_bound_run": {
+    "job_id": "1a1c3d42319-cf39-f",
+    "idempotency_key": "ctrl5614-exact-source-py7-20261110-4e4d0413-v2",
+    "exit_code": 0,
+    "process_state": "succeeded",
+    "output_complete": true,
+    "python": "/usr/bin/python3",
+    "execution": "ephemeral stdlib tempfile; complete sources read with GitHub connector; byte-for-byte checked against Git blob SHA1 before import; no checkout, network fetch, fixture substitution or permanent source writes",
+    "command": "/usr/bin/python3 -m unittest ndu_real_runtime.test_content_audit -v",
+    "verified_source_blob_count": 9,
+    "tests_run": 7,
+    "failures": 0,
+    "errors": 0,
+    "reported_unittest_duration_seconds": 0.382
+  },
+  "source_blobs": {
+    "ndu_real_runtime/content_audit.py": "38bd66c3fc95e8b01650f2d1ff90016d7d0e83b4",
+    "ndu_real_runtime/test_content_audit.py": "be5f5fda9803a4a2ac844b93694e368bb039c9ef",
+    "ndu_real_runtime/content_identity.py": "45120e8225a80078c206f76f6aba4644c9ac6091",
+    "ndu_real_runtime/metering.py": "de6c2f8cfd31210f4afda0c7a36f93b5c1964150",
+    "ndu_real_runtime/span_meter.py": "583a606c8d5e7d50792f2d9c2e81b6d64d722363",
+    "ndu_real_runtime/__init__.py": "f17ea999869e5f16ed7b0c274a6da9a2651e8f6e",
+    "ndu_real_materials/common.py": "cb081a409a6cbc2ab03586fd9a051e5248066f06",
+    "ndu_real_materials/evaluator.py": "af49ae1f6c4bd1e1019ae13316028bd37117c508",
+    "ndu_real_materials/__init__.py": "8280c0d9390bcc5b21809676b5e368f870c3900b"
+  },
+  "tested_cases": [
+    "legacy selection remains unknown",
+    "CLI create-only output and no evidence modification",
+    "current witness and tamper rejection",
+    "nonzero exit, unisolated launch and bool false exit fail-closed",
+    "mutated actor wire cannot prove payload fault",
+    "missing score and invalid pin remain unknown/rejected",
+    "distinct original trajectories from repeated case allowed but duplicate artifact pairs rejected"
+  ],
+  "qualification": {
+    "no_skipped_test_claim": true,
+    "fixture_only": true,
+    "independent_owner_authentication": false,
+    "independent_real_policy_evaluation": false,
+    "security_advisories_remediated": false,
+    "full_cost_benefit_established": false,
+    "production_adoption": "no-update",
+    "decision": "HOLD_NO_GO"
+  }
+}

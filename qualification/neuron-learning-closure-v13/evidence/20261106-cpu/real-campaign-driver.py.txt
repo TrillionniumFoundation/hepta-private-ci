@@ -1,0 +1,230 @@
+"""Actual fixed #4532 material controls; each result keeps its measured cost."""
+
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[1]
+SOURCE = ROOT / "qualification/neuron-learning-closure-v13"
+MATERIAL = ROOT / "materials"
+OUT = ROOT / "evidence/real-campaign"
+sys.path.insert(0, str(SOURCE))
+from closure_common import canonical, sha
+from feature_replay import ReplayLimits, verify_feature_origin
+
+
+def inventory():
+    return {
+        str(path.relative_to(SOURCE)): sha(path.read_bytes())
+        for path in sorted(SOURCE.rglob("*"))
+        if path.is_file()
+        and (path.suffix in (".py", ".source") or path.name.endswith("PROVENANCE.json"))
+    }
+
+
+def base():
+    return dict(
+        checkpoint_path=MATERIAL / "model.npz",
+        source_snapshot=MATERIAL / "source-snapshot.json",
+        encoder_manifest_path=MATERIAL / "encoder.json",
+        encoder_root=MATERIAL / "minilm",
+        dataset_npz_path=MATERIAL / "train_features.npz",
+        inputs_root=MATERIAL,
+        expected_data_id="a365892342cd04abfc2f4c762470cf0f2945c3c191cc3d91519132e2d9cfac9b",
+        release_manifest_path=MATERIAL / "release.json",
+    )
+
+
+def write(path, value):
+    path.write_text(
+        json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False)
+        + "\n"
+    )
+
+
+def main():
+    OUT.mkdir(exist_ok=False)
+    before = inventory()
+    write(OUT / "source-before.json", before)
+    materials = json.loads((MATERIAL / "MATERIALS_MANIFEST.json").read_text())
+    for record in materials:
+        raw = (MATERIAL / record["path"]).read_bytes()
+        assert sha(raw) == record["sha256"]
+        assert (
+            hashlib.sha1(f"blob {len(raw)}\0".encode() + raw).hexdigest()
+            == record["git_blob"]
+        )
+    observations = []
+
+    def run(name, expected, **changes):
+        result = verify_feature_origin(**{**base(), **changes})
+        write(OUT / f"{name}.json", result)
+        item = {
+            "case": name,
+            "expected": expected,
+            "observed": result["status"],
+            "control_satisfied": result["status"] == expected,
+            "cost": result["cost"],
+            "worker_termination": result["worker_termination"],
+            "progress": result.get("progress"),
+        }
+        observations.append(item)
+        print(json.dumps(item), flush=True)
+        return result
+
+    original = run("original", "VERIFIED")
+    with tempfile.TemporaryDirectory(prefix="hepta-v13-mutants-") as temporary:
+        root = Path(temporary)
+        source = json.loads((MATERIAL / "source-snapshot.json").read_text())
+        source["records"][0]["body"] += " "
+        changed_source = root / "source.json"
+        write(changed_source, source)
+        run("source-body-drift", "REJECTED", source_snapshot=changed_source)
+
+        inputs = root / "inputs"
+        inputs.mkdir()
+        shutil.copyfile(MATERIAL / "train_features.npz", inputs / "train_features.npz")
+        original_rows = json.loads((MATERIAL / "train_rows.json").read_text())
+        rows = json.loads(canonical(original_rows))
+        rows[0]["text"] += " changed input"
+        write(inputs / "train_rows.json", rows)
+        run("raw-text-drift", "REJECTED", inputs_root=inputs)
+        rows = json.loads(canonical(original_rows))
+        rows[0], rows[1] = rows[1], rows[0]
+        write(inputs / "train_rows.json", rows)
+        run("raw-row-order-drift", "REJECTED", inputs_root=inputs)
+
+        with np.load(MATERIAL / "train_features.npz", allow_pickle=False) as saved:
+            arrays = {key: saved[key].copy() for key in saved.files}
+        arrays["X"][0, 0] = np.nextafter(arrays["X"][0, 0], np.float32(np.inf))
+        bad_features = root / "changed-features.npz"
+        np.savez_compressed(bad_features, **arrays)
+        run("aggregate-feature-drift", "REJECTED", dataset_npz_path=bad_features)
+        write(inputs / "train_rows.json", original_rows)
+        shutil.copyfile(bad_features, inputs / "train_features.npz")
+        run("source-feature-archive-drift", "REJECTED", inputs_root=inputs)
+
+        encoder = root / "encoder"
+        manifest = json.loads((MATERIAL / "encoder.json").read_text())
+        for name in manifest["files"]:
+            target = encoder / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if name == "tokenizer.json":
+                target.write_bytes((MATERIAL / "minilm" / name).read_bytes() + b" ")
+            else:
+                os.link(MATERIAL / "minilm" / name, target)
+        run("tokenizer-drift", "REJECTED", encoder_root=encoder)
+        manifest["max_length"] = 128
+        changed_manifest = root / "encoder.json"
+        write(changed_manifest, manifest)
+        run("mask-profile-drift", "REJECTED", encoder_manifest_path=changed_manifest)
+
+        with np.load(MATERIAL / "model.npz", allow_pickle=False) as saved:
+            arrays = {key: saved[key].copy() for key in saved.files}
+        arrays["params_A"][0, 0] += 0.125
+        changed_model = root / "model.npz"
+        np.savez_compressed(changed_model, **arrays)
+        run("checkpoint-state-drift", "REJECTED", checkpoint_path=changed_model)
+        run("missing-real-encoder", "HOLD", encoder_root=root / "not-present")
+        run("original-one-second-cpu-bound", "HOLD", limits=ReplayLimits(cpu_seconds=1))
+
+    receipt_path = OUT / "original.json"
+    receipt_digest = sha(receipt_path.read_bytes())
+    code = """
+import os,sys,json
+sys.path.insert(0,sys.argv[1])
+counts={'compute_import_attempts':0,'external_operation_attempts':0,'write_attempts':0,'model_read_attempts':0}
+def audit(event,args):
+    if event=='import' and args[0].split('.')[0] in {'numpy','onnxruntime','tokenizers','backend','adapter','tasks'}:
+        counts['compute_import_attempts']+=1
+        raise RuntimeError('Readback tried to import computation')
+    if event.startswith('socket.') or event=='subprocess.Popen':
+        counts['external_operation_attempts']+=1
+        raise RuntimeError('Readback tried an external operation')
+    if event=='open':
+        if args[2] & (os.O_WRONLY|os.O_RDWR|os.O_CREAT|os.O_TRUNC|os.O_APPEND):
+            counts['write_attempts']+=1
+            raise RuntimeError('Readback tried to write')
+        if isinstance(args[0],str) and ('/reference/' in args[0] or args[0].endswith(('.onnx','model.npz','tokenizer.json'))):
+            counts['model_read_attempts']+=1
+            raise RuntimeError('Readback tried to read model material')
+sys.addaudithook(audit)
+from feature_replay import readback_receipt
+result=readback_receipt(sys.argv[2],sys.argv[3])
+result['audit_counts']=counts
+print(json.dumps(result,sort_keys=True,indent=2))
+"""
+    readback = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-B",
+            "-c",
+            code,
+            str(SOURCE),
+            str(receipt_path),
+            receipt_digest,
+        ],
+        capture_output=True,
+        timeout=10,
+    )
+    (OUT / "cold-readback.stdout.json").write_bytes(readback.stdout)
+    (OUT / "cold-readback.stderr.log").write_bytes(readback.stderr)
+    observed_readback = json.loads(readback.stdout) if readback.returncode == 0 else {}
+    cold_ok = (
+        readback.returncode == 0
+        and observed_readback.get("retained_receipt") == original
+        and all(
+            value == 0
+            for value in observed_readback.get("audit_counts", {"missing": 1}).values()
+        )
+    )
+    after = inventory()
+    write(OUT / "source-after.json", after)
+    summary = {
+        "schema": "hepta.v13.real-material-campaign.v1",
+        "base_commit": "dd1adf3defc5f1b1bcf3358419e23490e24b9a6a",
+        "material_source_commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+        "authority": "DENY_ALL",
+        "observations": observations,
+        "all_attempts": len(observations),
+        "controls_satisfied": sum(item["control_satisfied"] for item in observations),
+        "cold_readback": {
+            "exit": readback.returncode,
+            "control_satisfied": cold_ok,
+            "audit_counts": observed_readback.get("audit_counts"),
+            "receipt_sha256": receipt_digest,
+        },
+        "source_unchanged": before == after,
+        "total_all_attempt_wall_seconds": sum(
+            item["cost"]["wall_seconds"] for item in observations
+        ),
+        "total_all_attempt_cpu_seconds": sum(
+            item["cost"]["total_cpu_seconds"] for item in observations
+        ),
+        "ordinary_cell_runtime_qualified": False,
+        "independent_quality_qualified": False,
+        "next_task_adoption_qualified": False,
+    }
+    for record in materials:
+        assert sha((MATERIAL / record["path"]).read_bytes()) == record["sha256"]
+    write(OUT / "SUMMARY.json", summary)
+    print(json.dumps(summary, indent=2), flush=True)
+    return (
+        0
+        if all(item["control_satisfied"] for item in observations)
+        and cold_ok
+        and before == after
+        else 1
+    )
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

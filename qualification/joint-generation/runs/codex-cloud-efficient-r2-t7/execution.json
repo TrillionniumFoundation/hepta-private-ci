@@ -1,0 +1,17 @@
+{
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m independent.run train --freeze independent/frozen-r2-preparation-forecast.json --out runs/codex-cloud-efficient-r2-t7",
+  "exit_code": 1,
+  "source_commit": "2a08efc131c7bd241466cd48d1e4297e3f1be060",
+  "execution_commit": "862b16d43e",
+  "freeze_sha256": "3eb0e3a54adce989b2170b47ef3e3ca078e9938b93cd7d03e239d314d5d334b0",
+  "formal_test_opened": false,
+  "selection_created": false,
+  "completed_candidates": 0,
+  "selected_cloud_environment_id": "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5OA",
+  "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "error": "shared build leaves no useful candidate training budget",
+  "error_type": "ValueError",
+  "shared_cpu_seconds": 9.077421498,
+  "attributed_shared_operator_units": 3611371737,
+  "observed_record_utc": "2026-10-23T12:11:24.809134+00:00"
+}

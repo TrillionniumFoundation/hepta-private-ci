@@ -1,0 +1,193 @@
+{
+  "best_checkpoint": {
+    "bytes": 450552,
+    "sha256": "30d56642b69e6c0596fcaafb6d02281707ee3044ce8343c4cbd3c11e1860836d"
+  },
+  "best_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.001/checkpoints/epoch-0104.pt",
+  "checkpoint": {
+    "bytes": 450552,
+    "sha256": "e963e9ce1d00829f5e62db0c019ecb0d08c96562f4903d99f9026cf84bd9dd85"
+  },
+  "checkpoint_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.001/checkpoints/epoch-0105.pt",
+  "epoch": {
+    "complete": true,
+    "cumulative_process_cpu_seconds": null,
+    "cumulative_process_wall_seconds": 31162.668936423725,
+    "development": {
+      "accuracy": 0.6505383074611918,
+      "balanced_accuracy_present_classes": 0.3406022984611423,
+      "brier_half_sum": 0.2700961947957488,
+      "brier_mean_classes": 0.04910839905377251,
+      "confusion_matrix": [
+        [
+          5737,
+          0,
+          99,
+          0,
+          0,
+          712,
+          40,
+          2,
+          13,
+          6,
+          0
+        ],
+        [
+          111,
+          0,
+          0,
+          37,
+          0,
+          269,
+          6,
+          20,
+          188,
+          0,
+          0
+        ],
+        [
+          671,
+          2,
+          244,
+          5,
+          0,
+          77,
+          30,
+          56,
+          32,
+          23,
+          0
+        ],
+        [
+          2,
+          0,
+          195,
+          9171,
+          0,
+          0,
+          962,
+          1010,
+          160,
+          0,
+          0
+        ],
+        [
+          182,
+          0,
+          17,
+          0,
+          0,
+          86,
+          3,
+          0,
+          0,
+          9,
+          0
+        ],
+        [
+          1040,
+          0,
+          91,
+          0,
+          0,
+          3720,
+          26,
+          0,
+          39,
+          75,
+          0
+        ],
+        [
+          177,
+          0,
+          161,
+          1383,
+          0,
+          242,
+          723,
+          67,
+          501,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          55,
+          278,
+          0,
+          4,
+          92,
+          466,
+          117,
+          8,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          1016,
+          0,
+          16,
+          82,
+          120,
+          709,
+          0,
+          0
+        ],
+        [
+          100,
+          0,
+          2,
+          0,
+          0,
+          70,
+          7,
+          0,
+          3,
+          16,
+          0
+        ],
+        [
+          13,
+          0,
+          0,
+          107,
+          0,
+          37,
+          35,
+          2,
+          167,
+          0,
+          0
+        ]
+      ],
+      "ece_15_equal_width_bins": 0.18046591418612556,
+      "events": 31952,
+      "macro_f1_11_classes": 0.32800390761993775,
+      "macro_f1_present_classes": 0.32800390761993775,
+      "nll": 1.1753964014156306
+    },
+    "epoch": 105,
+    "events": 89216,
+    "phase_process_cpu_seconds": 16777.241765518,
+    "phase_process_wall_seconds": 16786.31735015288,
+    "training_target_weight_sum": 47014.67413821177,
+    "training_weighted_loss": 1.3072969165398756,
+    "training_weighted_loss_numerator": 61462.138533011275
+  },
+  "logical_main_updates": 1260,
+  "previous_commit": {
+    "bytes": 3901,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.001/commits/epoch-0104.json",
+    "sha256": "c56538a8cb769e13bf448a8fd9f27e6a8d2c2f4ce83c6f3d12ec7d37ce4a4ffa"
+  },
+  "schema": "hcsn-c2-complete-epoch-commit-v1",
+  "stopping": {
+    "best": 0.33807429871203515,
+    "best_epoch": 104,
+    "plateau_anchor": 0.33807429871203515,
+    "stale_epochs": 1
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn-n256-joint-execution-envelope-intent-v1",
+  "identity": "hcsn-n256-joint-execution-envelope-20261113-c06d-001",
+  "base_source_commit": "e981eb3f678e5e9e486c3b4f1cc6726b758b2ac9",
+  "candidate_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+  "oracle_source_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+  "serializer_source_sha256": "3107fb296043de8f3e3c78e13aa940aea38aa64c16dfe68d342d2adb0c7aa97a",
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "resource_snapshot_source_freeze_sha256": "f58815dc902d9129a99a91770ce644af2e3b56b00a8d0bd02440b3d7055467e9",
+  "resource_observation_job_id": "1a1d4587885-392-376",
+  "resource_observation_sample_utc": "2026-11-13T09:58:58Z",
+  "candidate_reserved_idempotency_key": "hcsn-n256-sparse-dynamic-numerical-20261113-c06d-001",
+  "oracle_reserved_idempotency_key": "hcsn-n256-independent-oracle-numerical-20261113-c06d-001",
+  "serializer_reserved_idempotency_key": "hcsn-n256-canonical-serializer-20261113-c06d-001",
+  "numerical_execution_allowed": false,
+  "execution_key": null,
+  "joint_admission_sha256": null,
+  "required_external_freeze": {
+    "runtime_profile_sha256": null,
+    "host_snapshot_sha256": null,
+    "ancestor_cgroup_snapshot_sha256": null,
+    "allocation_sha256": null,
+    "calendar_sha256": null,
+    "candidate_admission_sha256": null,
+    "oracle_admission_sha256": null,
+    "serializer_admission_sha256": null
+  },
+  "historical_resource_red_6295_unchanged": true,
+  "resource_snapshot_is_observation_only": true,
+  "largegrid_qualification": false,
+  "all_closed": false
+}

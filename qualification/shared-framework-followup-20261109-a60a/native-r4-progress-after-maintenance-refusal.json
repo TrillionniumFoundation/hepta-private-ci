@@ -1,0 +1,142 @@
+{
+  "source": "fb1397873bef0eea81efe0c8aac48c56385ffe55",
+  "commands": [
+    {
+      "name": "fetch",
+      "argv": [
+        "git",
+        "fetch",
+        "--depth",
+        "2",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "codex/shared-cell-framework-followup-20261109-a60a"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 8.762115955352783,
+      "log": "fetch.log"
+    },
+    {
+      "name": "checkout",
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "fb1397873bef0eea81efe0c8aac48c56385ffe55"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.015724897384643555,
+      "log": "checkout.log"
+    },
+    {
+      "name": "helper",
+      "argv": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/helpers",
+        "--github-env",
+        "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/helper-env"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 221.3506417274475,
+      "log": "helper.log"
+    },
+    {
+      "name": "tests",
+      "argv": [
+        "python3",
+        "scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "3600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/tests.json",
+        "--",
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--config-file",
+        "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/nextest.toml"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 271.13777470588684,
+      "log": "tests.log"
+    },
+    {
+      "name": "helper-after",
+      "argv": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--verify-only",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/helpers"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.1138148307800293,
+      "log": "helper-after.log"
+    },
+    {
+      "name": "junit",
+      "argv": [
+        "python3",
+        "scripts/hepta_ci_junit.py",
+        "--execution",
+        "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/tests.json",
+        "--junit",
+        "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/junit-original.xml",
+        "--output",
+        "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/junit.xml"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.06384587287902832,
+      "log": "junit.log"
+    },
+    {
+      "name": "fix",
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 129.86278128623962,
+      "log": "fix.log"
+    },
+    {
+      "name": "fmt",
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "71738345326b98d88b738250d2b84ecbcb466eb8"
+      ],
+      "exit_code": 2,
+      "wall_seconds": 0.06422543525695801,
+      "log": "fmt.log"
+    }
+  ],
+  "complete": false,
+  "temporary_directory": "/home/qq/t-a60a4",
+  "nextest_test_threads": 2,
+  "tree": "6cfb290845cd8952a94ddd1d12fa3ebacb3ef621",
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+  "storage_bytes": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme0n1p2  1.8T  1.4T  372G  79% /",
+  "storage_inodes": "Filesystem        Inodes    IUsed     IFree IUse% Mounted on\n/dev/nvme0n1p2 122028032 11038110 110989922   10% /",
+  "nextest_config_sha256": "edf2b7d20482a77e49743c16261aeefeb8ba9ae57b5ef7cf0a668ad70985fc2f",
+  "configuration_delta": "profile.local.junit.path only; package selection and all other settings preserved"
+}

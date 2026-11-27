@@ -1,0 +1,62 @@
+{
+  "archive": {
+    "bytes": 269574,
+    "path": "/workspace/scratch/c385a7439f8e/hcsn-c2-feasibility-20261110-v2.zip",
+    "sha256": "cea3eb1509ecec51174b0c86b0f60b5ed4eb938d0739972bcaa6c46f94fb5e96"
+  },
+  "archive_crc_safe_unique_paths": true,
+  "archive_member_bytes_exact_to_local_inputs": 10,
+  "archive_members": 11,
+  "closed_findings": [
+    "C2-01 first historical plateau",
+    "C2-02 negative initial clock",
+    "C2-03 negative real AdamW second moment"
+  ],
+  "counterexample_result": {
+    "bytes": 1375,
+    "path": "/workspace/scratch/c385a7439f8e/clock-c2-independent-review-v1/COUNTEREXAMPLES.json",
+    "sha256": "1e20f69ed02476eca3b9812c81f2c770d9bd641f0f090b00d32407ed73dafd85"
+  },
+  "execution_authorized": false,
+  "model_forward_or_training_performed": false,
+  "native_C2_started": false,
+  "native_checkpoint_read": false,
+  "outcome": "three prior structural gaps closed by exact versioned code; no new blocker found in the reviewed diff",
+  "owner_stderr": {
+    "bytes": 3135,
+    "path": "/workspace/scratch/c385a7439f8e/c2-feasibility-v2/validation/stderr.log",
+    "sha256": "b09f53fe402f67ae509840e8230b0aebde3edce11e12439cf6a85c874ac30df4"
+  },
+  "owner_stdout": {
+    "bytes": 0,
+    "path": "/workspace/scratch/c385a7439f8e/c2-feasibility-v2/validation/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "owner_tests_reported_passed": 21,
+  "owner_validation": {
+    "bytes": 1397,
+    "path": "/workspace/scratch/c385a7439f8e/c2-feasibility-v2/validation/RESULT.json",
+    "sha256": "ae4902ac00f1ba4e2b5b5b8a4ee384d90dbd23ce835207a10fdce729b9699c56"
+  },
+  "owner_validation_complete_process_wall_seconds": 3.3880163450012333,
+  "owner_validation_waited_child_cpu_seconds": 4.165834,
+  "schema": "independent-C2-v2-closure-static-review-v1",
+  "scientific_admission": "HOLD",
+  "source": {
+    "bytes": 16215,
+    "path": "/workspace/scratch/c385a7439f8e/c2-feasibility-v2/c2_boundary.py",
+    "sha256": "177a23a3d0502a79912efdd2a14a365bc716961698a6949bb45d380ba147e6dd"
+  },
+  "source_data_runtime_admission_still_required": true,
+  "tests": {
+    "bytes": 12832,
+    "path": "/workspace/scratch/c385a7439f8e/c2-feasibility-v2/test_c2_boundary.py",
+    "sha256": "e7e960a1717eb2d2dfeeb8643fead83446f52abfe658fd556e051041d8e2f5b6"
+  },
+  "tests_rerun_by_this_review": 0,
+  "v1_capsule_preserved": {
+    "bytes": 278414,
+    "path": "/workspace/scratch/c385a7439f8e/hcsn-c2-feasibility-20261110-v1.zip",
+    "sha256": "23fbe126fb13dc2aee5731919f174b0974abbb237d4e15c201cbf14c6cf05dbe"
+  }
+}

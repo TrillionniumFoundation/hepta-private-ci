@@ -1,0 +1,33 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-c",
+      "set -eu\ncd /tmp/hcsn-3b20-publication-v1\nOPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 /home/qq/.venvs/rocm10/bin/python -B -m proposals.hcsn_persistence_v1.run_successor_tests --successor /tmp/hcsn-3b20-final-validation-v1/successor --output /tmp/hcsn-3b20-final-validation-v1/INHERITED-RESULT-v2.json"
+    ],
+    "created_unix_ms": 1794374145252,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/bin/sh",
+    "execution_mode": "operator",
+    "host": "ai395",
+    "id": "1a1c90894e4-135c4-39c",
+    "idempotency_key": "hcsn-3b20-final-inherited-cli-v2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1c90894e4-135c4-39c",
+    "request_digest": "c9c4ec6513a40cd086df2e5f9cb2ee1913e3991990379dce0a5f87f2bc286c56",
+    "request_fingerprint": 14539005415924175000,
+    "ssh_target": "ai395-lan",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1c90894e4-135c4-39c"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1c90894e4-135c4-39c"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

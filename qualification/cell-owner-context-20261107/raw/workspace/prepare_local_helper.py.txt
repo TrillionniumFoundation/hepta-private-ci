@@ -1,0 +1,53 @@
+"""Prepare the real helper for dirty-tree development tests, not release qualification."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+
+output = Path(os.environ.get('HEPTA_CELL_HELPER_OUTPUT', str(Path(__file__).parent / 'local-helper')))
+output.mkdir()
+command = ['cargo', 'build', '--locked', '--offline', '--profile', 'dev-small',
+           '-p', 'codex-hepta-infer-worker-host', '--bin', 'hepta-joint-propose',
+           '--message-format=json-render-diagnostics']
+receipt = {'purpose': 'developer test helper; not clean-source native release qualification',
+           'command': command, 'started_at': datetime.datetime.now(datetime.UTC).isoformat(),
+           'source_head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+           'source_status': subprocess.check_output(['git', 'status', '--porcelain=v1'], text=True),
+           'artifacts': []}
+with (output / 'cargo.jsonl').open('xb') as stdout, (output / 'cargo.stderr.log').open('xb') as stderr:
+    result = subprocess.run(command, stdout=stdout, stderr=stderr, check=False)
+receipt['exit_code'] = result.returncode
+print(json.dumps({'cargo_exit_code': result.returncode, 'output': str(output)}), flush=True)
+(output / 'build-exit.json').write_text(json.dumps(receipt, indent=2) + '\n')
+if result.returncode:
+    raise SystemExit(result.returncode)
+finished = False
+for line in (output / 'cargo.jsonl').read_text().splitlines():
+    item = json.loads(line)
+    if item.get('reason') == 'build-finished':
+        finished = item.get('success') is True
+    if item.get('reason') != 'compiler-artifact' or item.get('target', {}).get('name') != 'hepta-joint-propose' or not item.get('executable'):
+        continue
+    executable = Path(item['executable'])
+    assert executable.is_absolute()
+    pinned = output / 'hepta-joint-propose'
+    shutil.copy2(executable, pinned)
+    sha = hashlib.file_digest(executable.open('rb'), 'sha256').hexdigest()
+    assert hashlib.file_digest(pinned.open('rb'), 'sha256').hexdigest() == sha
+    pinned.chmod(pinned.stat().st_mode & ~0o222)
+    receipt['artifacts'].append({'package_id': item['package_id'], 'profile': item['profile'],
+                                 'compiler_executable': str(executable), 'executable': str(pinned),
+                                 'bytes': pinned.stat().st_size, 'sha256': sha})
+receipt['build_finished'] = finished
+receipt['ended_at'] = datetime.datetime.now(datetime.UTC).isoformat()
+(output / 'manifest.json').write_text(json.dumps(receipt, indent=2) + '\n')
+assert result.returncode == 0 and finished and len(receipt['artifacts']) == 1, receipt
+executable = receipt['artifacts'][0]['executable']
+environment = {f'CARGO_BIN_EXE_{name}': executable for name in ('hepta-joint-propose', 'hepta_joint_propose')}
+(output / 'env.json').write_text(json.dumps(environment, indent=2) + '\n')
+print(json.dumps({'manifest': str(output / 'manifest.json'), 'environment': str(output / 'env.json'),
+                  'exit_code': 0, 'binary_sha256': receipt['artifacts'][0]['sha256']}), flush=True)

@@ -1,0 +1,1271 @@
+{
+  "base_commit": "68eb16caa9c14c7b5729585c86d9c293018a987c",
+  "created_utc": "2026-10-29T12:55:08.234791+00:00",
+  "data_directory": "experiments/hcsn_free_boundary_v1/data/study001",
+  "files": {
+    "experiments/continuous_spiking_network/__init__.py": "192d1f289893035488c967e19332d164c1b2687c127c627ae88ad24ac9db07bc",
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/continuous_spiking_network/cell.py": "486b9f86ad7cdbae2f3e8a151cb500a219b87cd67a438e9a4e10c038a43ac311",
+    "experiments/continuous_spiking_network/data.py": "b8a84e49451001ee3448dd3e22bbdc0f9e153a6864056c77069052c7d048829b",
+    "experiments/continuous_spiking_network/kernels.py": "188334725b39b7e3bfdf5b17dd04cef2d3383ab6eb02c17eedad912dea21ae30",
+    "experiments/continuous_spiking_network/models.py": "5207b97fe7e3667d723c641c61132e4c96984e19c2ada07868f0074b2e4bdbaf",
+    "experiments/continuous_spiking_network/records.py": "dfea24dacbb5d56e53759ea0f0a4887d81cabd9678f3afccd1b96dbafd73e5be",
+    "experiments/hcsn_free_boundary_v1/CONTRACT.md": "4da331cf20ab5b164f9e935fe9ee4d9db698ff2a9eac53dbefa5e009f0169a0a",
+    "experiments/hcsn_free_boundary_v1/MATH.md": "fd7e0c3c635083b3d2cc1b31e29e70e600280c0e39e8a8c77e58005bd919d9de",
+    "experiments/hcsn_free_boundary_v1/PROTOCOL.json": "0b684b1f3030ff9bcdb4f673ae26eb653c1ead868ed6edf8a8803ba735af4ff2",
+    "experiments/hcsn_free_boundary_v1/benchmark_models.py": "171cee706eeba6d3e7baa725998cf88778f53b92571187e0564c96d7255b8606",
+    "experiments/hcsn_free_boundary_v1/data/study001/INDEX.json": "86b0cfe19859290aeae237ba671f6b6f376ce1180fb1b5be126acbe588da4819",
+    "experiments/hcsn_free_boundary_v1/data/study001/SOURCES.json": "34a784a3d04e0c230e3ca260b69a3d029f3bd3d24e1bc77e08fad7f396913e1f",
+    "experiments/hcsn_free_boundary_v1/data/study001/fsdd.json": "9eee62da9680390d3fb028e8afa85b8c660972b4c94324615cd485a12a973e7a",
+    "experiments/hcsn_free_boundary_v1/data/study001/fsdd.npz": "f61d0215e5224c56a2b52f1ad2ac8acb86f85a622219da8c6b9890169c5c8843",
+    "experiments/hcsn_free_boundary_v1/data/study001/irregular.json": "38ae77be00e6203751e2b6472c3aee5f26fb1b417c673adb1cb5c2e3988de38b",
+    "experiments/hcsn_free_boundary_v1/data/study001/irregular.npz": "3850c5d956e30fdd2a7215378aa8c6054dbee5f622cb8991f2120d3cb7e062f3",
+    "experiments/hcsn_free_boundary_v1/data/study001/mnist.json": "d8acee63df201e92791e02e0e7d2cb2cbd6fba981c3166d1c569408363e53729",
+    "experiments/hcsn_free_boundary_v1/data/study001/mnist.npz": "43967ccabb05540a3b6c831f3737ece02d2ddea16c79e139b46dcb14fd2a4895",
+    "experiments/hcsn_free_boundary_v1/data/study001/mqar.json": "60ca235326dc7632327907a53331d3ba1d6d465bfd13f370f45f3acf64cc2c27",
+    "experiments/hcsn_free_boundary_v1/data/study001/mqar.npz": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+    "experiments/hcsn_free_boundary_v1/data/study001/multimodal_select.json": "ae944964121364aaf91fe35ee3389915bc11e0f74ecf08bd66318775a3cd049b",
+    "experiments/hcsn_free_boundary_v1/data/study001/multimodal_select.npz": "88a70438b843596f2500de6345c534212597cbfd11201ed38519917a9fa56e53",
+    "experiments/hcsn_free_boundary_v1/data/study001/selective_copy.json": "e64ca5e594df2bcc9ebcaac46a015940f6a48cb8b32d7fb12971b0d9bb9aad69",
+    "experiments/hcsn_free_boundary_v1/data/study001/selective_copy.npz": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+    "experiments/hcsn_free_boundary_v1/datasets.py": "f87e8f8531483313013d64a413b207c26ab14c09f82500088b506b5a682bc794",
+    "experiments/hcsn_free_boundary_v1/live_study.py": "9bcd88c449bc33fb2bbe9c45776069bce1c266229b1ca1e696ec60f72836dfce",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/native_bridge.py": "77d752f013cbde2cc4e1424f5e2038352e5cda9b4b241222027c2ddeae9957fd",
+    "experiments/hcsn_free_boundary_v1/oracle.py": "72f8171bb3c6121481235288033518516d25eb0644f68c9c9f7d775069eda248",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a",
+    "experiments/hcsn_free_boundary_v1/restore_native.py": "918aa4570b2e5119a760cbcd69ad797d43a2a874ed065f636234c52f93d49f06",
+    "experiments/hcsn_free_boundary_v1/run_matrix.py": "3a8f2ba065a4922a18f5eb7a7a4a86ed128a111e6ed2de3ece6e629e90969323",
+    "experiments/hcsn_free_boundary_v1/run_native_live.py": "0c4055d26bbafc9c762357fdab338a2e438cf7fc5ba97cf8b60317031d177565",
+    "experiments/hcsn_free_boundary_v1/training.py": "1aab526dec037ba19a5b55fc532027d2a688212f4595ed21d5d86f35ebcbe653",
+    "experiments/hcsn_free_boundary_v1/vendor/LICENSE.ncps": "f1f53a56f8ce3de8a66a1cc960cdbdb0284e5caed2e30c51e6e7b7fb05732d17",
+    "experiments/hcsn_free_boundary_v1/vendor/PROVENANCE.json": "06e03ecf7e485e3d89a7721f6c38c13eab773df64e5a55a4a84aafaac027fb49",
+    "experiments/hcsn_free_boundary_v1/vendor/cfc_cell.py": "ae2883e58b1e315e82048e178ca87d64a0e5ebd8f476fea9e3849df9f89c94c9"
+  },
+  "identity_sha256": "caa1a503288d4986bf2f0bc3608bc211a12e221a45c822bfbd19fdacce953bc3",
+  "jobs": [
+    {
+      "model": "free_dual",
+      "seed": 9101,
+      "task": "mnist"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9106,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9104,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9105,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9105,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "cfc",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9103,
+      "task": "fsdd"
+    },
+    {
+      "model": "transformer",
+      "seed": 9101,
+      "task": "mqar"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9104,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9105,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9108,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9107,
+      "task": "selective_copy"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9106,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9108,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "cfc",
+      "seed": 9102,
+      "task": "mnist"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9106,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9106,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9102,
+      "task": "fsdd"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9101,
+      "task": "irregular"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9104,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9107,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9105,
+      "task": "selective_copy"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9102,
+      "task": "mnist"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9106,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9103,
+      "task": "fsdd"
+    },
+    {
+      "model": "transformer",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9101,
+      "task": "fsdd"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9107,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9102,
+      "task": "mnist"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9104,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "cfc",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "transformer",
+      "seed": 9102,
+      "task": "fsdd"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9108,
+      "task": "selective_copy"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9103,
+      "task": "irregular"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9101,
+      "task": "irregular"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9106,
+      "task": "selective_copy"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9103,
+      "task": "fsdd"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9105,
+      "task": "selective_copy"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9103,
+      "task": "irregular"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9101,
+      "task": "fsdd"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9104,
+      "task": "selective_copy"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9103,
+      "task": "mnist"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9108,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "transformer",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9108,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9104,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9102,
+      "task": "fsdd"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9103,
+      "task": "irregular"
+    },
+    {
+      "model": "cfc",
+      "seed": 9101,
+      "task": "mnist"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9106,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9103,
+      "task": "fsdd"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9101,
+      "task": "irregular"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9106,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9107,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9106,
+      "task": "selective_copy"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9107,
+      "task": "selective_copy"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9101,
+      "task": "irregular"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9102,
+      "task": "irregular"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9105,
+      "task": "selective_copy"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9102,
+      "task": "fsdd"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9108,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "cfc",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9102,
+      "task": "irregular"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9101,
+      "task": "mnist"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "cfc",
+      "seed": 9101,
+      "task": "fsdd"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9105,
+      "task": "selective_copy"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9103,
+      "task": "mqar"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9101,
+      "task": "fsdd"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9102,
+      "task": "mnist"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9101,
+      "task": "irregular"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9106,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9101,
+      "task": "fsdd"
+    },
+    {
+      "model": "cfc",
+      "seed": 9101,
+      "task": "irregular"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9102,
+      "task": "mqar"
+    },
+    {
+      "model": "cfc",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9102,
+      "task": "mqar"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9102,
+      "task": "mnist"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9102,
+      "task": "mqar"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9102,
+      "task": "mnist"
+    },
+    {
+      "model": "transformer",
+      "seed": 9103,
+      "task": "mnist"
+    },
+    {
+      "model": "transformer",
+      "seed": 9101,
+      "task": "irregular"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9103,
+      "task": "fsdd"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9105,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9102,
+      "task": "mqar"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9102,
+      "task": "mqar"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9107,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9107,
+      "task": "selective_copy"
+    },
+    {
+      "model": "cfc",
+      "seed": 9102,
+      "task": "fsdd"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9102,
+      "task": "fsdd"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9104,
+      "task": "selective_copy"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9107,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9103,
+      "task": "fsdd"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9101,
+      "task": "mqar"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9102,
+      "task": "mqar"
+    },
+    {
+      "model": "transformer",
+      "seed": 9103,
+      "task": "irregular"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "cfc",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9101,
+      "task": "fsdd"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9103,
+      "task": "mqar"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9102,
+      "task": "mnist"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9108,
+      "task": "selective_copy"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9101,
+      "task": "mnist"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9106,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9103,
+      "task": "irregular"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9103,
+      "task": "mqar"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9101,
+      "task": "mqar"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9103,
+      "task": "mnist"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "cfc",
+      "seed": 9103,
+      "task": "fsdd"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9101,
+      "task": "mqar"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9105,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9107,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9102,
+      "task": "mnist"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9101,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9103,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9103,
+      "task": "fsdd"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9104,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9102,
+      "task": "mqar"
+    },
+    {
+      "model": "cfc",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9102,
+      "task": "irregular"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9107,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9104,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9108,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9103,
+      "task": "irregular"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9101,
+      "task": "mqar"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9107,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "cfc",
+      "seed": 9102,
+      "task": "mqar"
+    },
+    {
+      "model": "transformer",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9104,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9106,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9102,
+      "task": "fsdd"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9108,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9101,
+      "task": "fsdd"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9105,
+      "task": "selective_copy"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9104,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "transformer",
+      "seed": 9101,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9105,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9108,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9105,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9104,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9101,
+      "task": "irregular"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9105,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "cfc",
+      "seed": 9103,
+      "task": "mqar"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9107,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9106,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9108,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9101,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9103,
+      "task": "irregular"
+    },
+    {
+      "model": "cfc",
+      "seed": 9102,
+      "task": "irregular"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9102,
+      "task": "irregular"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9104,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9108,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9101,
+      "task": "mnist"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "cfc",
+      "seed": 9103,
+      "task": "mnist"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9103,
+      "task": "mnist"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9105,
+      "task": "selective_copy"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9103,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9101,
+      "task": "fsdd"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9103,
+      "task": "mnist"
+    },
+    {
+      "model": "free_continuation",
+      "seed": 9106,
+      "task": "selective_copy"
+    },
+    {
+      "model": "cfc",
+      "seed": 9103,
+      "task": "irregular"
+    },
+    {
+      "model": "free_ordinary",
+      "seed": 9108,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "transformer",
+      "seed": 9103,
+      "task": "mqar"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9103,
+      "task": "mnist"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9102,
+      "task": "irregular"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9103,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9103,
+      "task": "mnist"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9107,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "lif_snn",
+      "seed": 9102,
+      "task": "irregular"
+    },
+    {
+      "model": "transformer",
+      "seed": 9101,
+      "task": "mnist"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9101,
+      "task": "mnist"
+    },
+    {
+      "model": "free_dual",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9102,
+      "task": "fsdd"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9107,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "direct_dual",
+      "seed": 9102,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "continuous_rnn",
+      "seed": 9103,
+      "task": "selective_copy"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9101,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9102,
+      "task": "irregular"
+    },
+    {
+      "model": "cfc",
+      "seed": 9101,
+      "task": "mqar"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9108,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "mamba1",
+      "seed": 9103,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9102,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_hcsn",
+      "seed": 9101,
+      "task": "mnist"
+    },
+    {
+      "model": "fixed_dual",
+      "seed": 9104,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "free_margin",
+      "seed": 9103,
+      "task": "multimodal_select"
+    }
+  ],
+  "outcomes_available": false,
+  "protocol_path": "experiments/hcsn_free_boundary_v1/PROTOCOL.json",
+  "schema": "hcsn-study-freeze.v1"
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "hepta-current-ledger-helper-repair-v1",
+  "parent": "4144e3685640bb0da2889855b58797683c67f696",
+  "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+  "before_blob": "e2ca73648b60e5c3c9492ddb89283ed23621e507",
+  "after_blob": "d77f102073ede43d2541c7dae9f177446ed2c25a",
+  "before_sha256": "02da6fe5d0a2a8a7c9426246aaa1801d6632abd33c8b33bda04ec885841432ab",
+  "after_sha256": "6d00439a5a340004f97f764c742ed53c911fd8782957722baea301a9e66d5051",
+  "change": "Remove only the first of two byte-identical unconditional module-level closed_ledger_bytes definitions.",
+  "preserved": "Every original test, assertion, caller, and the remaining identical close/read/reopen helper body are byte-identical.",
+  "static_proof": {
+    "before_helper_definitions": 2,
+    "after_helper_definitions": 1,
+    "exact_duplicate_removal": true,
+    "all_other_function_declarations_unchanged": true
+  },
+  "format_check": {
+    "input_sha256": "6d00439a5a340004f97f764c742ed53c911fd8782957722baea301a9e66d5051",
+    "input_bytes": 20903,
+    "rustfmt_version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+    "command": [
+      "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "--edition",
+      "2024",
+      "--config",
+      "imports_granularity=Item,skip_children=true",
+      "--check",
+      "/tmp/hepta-ca77-vendor-75cf-shadow-20261119.rs"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "input_unchanged": true
+  },
+  "native_compile_executed": false,
+  "native_tests_executed": false,
+  "qualification": "Scoped rustfmt parsing/format check and exact source proof only. The complete required CI for the resulting head remains required.",
+  "protected_ref_count": 478,
+  "protected_pin_count": 498,
+  "parent_complete_ancestor_count": 44577,
+  "protected_ancestor_intersection": [],
+  "fresh_ref_count": 7648,
+  "fresh_ref_changes_since_4144_publication": [],
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "no_branch_deletions": true
+}

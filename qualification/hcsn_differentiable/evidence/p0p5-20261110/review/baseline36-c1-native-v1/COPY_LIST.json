@@ -1,0 +1,733 @@
+{
+  "schema": "baseline36-C1-review-small-originals-v1",
+  "created_utc": "2026-11-10T17:59:58.576498+00:00",
+  "copy_policy": "Original file bytes preserved; no original report or failed v1 rewritten.",
+  "original_files": 103,
+  "original_bytes": 2234546,
+  "files": [
+    {
+      "relative_path": "v1/output/ARCHIVE.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/ARCHIVE.json",
+      "bytes": 316,
+      "sha256": "bc7ae17f502624f395e5146c5b458be081a364991c8e55d9d5e238a8cc24fcc3"
+    },
+    {
+      "relative_path": "v1/output/C1-attention-s101-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/C1-attention-s101-lr0.001.json",
+      "bytes": 1205,
+      "sha256": "b0bde0ce887ba0939b3ed5ddaffa6c99fc2f4d46c6753c667fbe94e2a27fb1e6"
+    },
+    {
+      "relative_path": "v1/output/C1-attention-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/C1-attention-s211-lr0.001.json",
+      "bytes": 1205,
+      "sha256": "8d9b0e0549fa2f78513d626d0970cedfcca929a306957a194f8facc55f8dcb75"
+    },
+    {
+      "relative_path": "v1/output/C1-attention-s307-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/C1-attention-s307-lr0.001.json",
+      "bytes": 1205,
+      "sha256": "0fd7bfaacf5e8729e6355d2d5a8560d13753d1a3afc922146ea0961b495a1531"
+    },
+    {
+      "relative_path": "v1/output/C1-gru-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/C1-gru-s211-lr0.001.json",
+      "bytes": 1199,
+      "sha256": "ffa20ca3974ac7f37cda435c46b36eeb3f5f9870804ff88ce6697a74144d0dfc"
+    },
+    {
+      "relative_path": "v1/output/C1-ssm_s4d-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/C1-ssm_s4d-s211-lr0.001.json",
+      "bytes": 1203,
+      "sha256": "e2d1aac74bea696197686a817d884f4bb85a947015a2cc9be0929396fcb5ad52"
+    },
+    {
+      "relative_path": "v1/output/C1-ssm_s4d-s211-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/C1-ssm_s4d-s211-lr0.003.json",
+      "bytes": 1203,
+      "sha256": "2bdc9a2166d504438eefa79cd60362bf92d70a388d4ac2cd8fdcd34ff7e58f9e"
+    },
+    {
+      "relative_path": "v1/output/C1-ssm_s4d-s307-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/C1-ssm_s4d-s307-lr0.001.json",
+      "bytes": 1203,
+      "sha256": "c76ebc7dbb2d3611b50497e154618eab847fff4e1836971ac0306876d4baaa2f"
+    },
+    {
+      "relative_path": "v1/output/MANIFEST.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/MANIFEST.json",
+      "bytes": 8325,
+      "sha256": "097753167f3e7c42e1e45c968360fe657b86eadb8b965730f448e9a2e0f32889"
+    },
+    {
+      "relative_path": "v1/output/SUMMARY.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/SUMMARY.json",
+      "bytes": 926,
+      "sha256": "6c4ef38c9ba41c228e86f4ec9db43919d0b49dcf7c85692c75caf4dd82851549"
+    },
+    {
+      "relative_path": "v1/output/original-attention-s101-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-attention-s101-lr0.001.json",
+      "bytes": 7685,
+      "sha256": "1923e821f245deccb43205bfe7673586c5289bfa70b2a11fb12ec521d5801f9f"
+    },
+    {
+      "relative_path": "v1/output/original-attention-s101-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-attention-s101-lr0.003.json",
+      "bytes": 7386,
+      "sha256": "153d87d1dd90df0ccf3b396f529e6da4f277ebf3517d9eebfd8645997c5de6e2"
+    },
+    {
+      "relative_path": "v1/output/original-attention-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-attention-s211-lr0.001.json",
+      "bytes": 7337,
+      "sha256": "e83bc0fd7ed316f69d0960c4bc97cfa75534ebc6707d24c616d74d6fc045487e"
+    },
+    {
+      "relative_path": "v1/output/original-attention-s211-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-attention-s211-lr0.003.json",
+      "bytes": 7269,
+      "sha256": "6b60463318593dbddbcb105bdeb53e1c86e719563a5f35e69c49726f4f938c54"
+    },
+    {
+      "relative_path": "v1/output/original-attention-s307-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-attention-s307-lr0.001.json",
+      "bytes": 7297,
+      "sha256": "47c8461b62aec8b6ddf3538e41077b616cfd3bd2bd8828d0fc713bf79920570f"
+    },
+    {
+      "relative_path": "v1/output/original-attention-s307-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-attention-s307-lr0.003.json",
+      "bytes": 7278,
+      "sha256": "c0a4c3737a301ce9585551be43db246f69597f398875820054689557f59e214d"
+    },
+    {
+      "relative_path": "v1/output/original-cfc-s101-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-cfc-s101-lr0.001.json",
+      "bytes": 7580,
+      "sha256": "e4a8287758458c0d375ce73920210dfffc9433ebea1cf1018d8b9a15fc18f31c"
+    },
+    {
+      "relative_path": "v1/output/original-cfc-s101-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-cfc-s101-lr0.003.json",
+      "bytes": 7197,
+      "sha256": "c7658d6bcdf5eb7f5bca8428a7f1b2869269ce3b83dd0f63b70e9080eb87c63e"
+    },
+    {
+      "relative_path": "v1/output/original-cfc-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-cfc-s211-lr0.001.json",
+      "bytes": 7226,
+      "sha256": "c0e7b3b0e4259efec2b325ba4a094cb158dab49446eceeea00ae971a1e8dc251"
+    },
+    {
+      "relative_path": "v1/output/original-cfc-s211-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-cfc-s211-lr0.003.json",
+      "bytes": 7275,
+      "sha256": "0f1f752459347a6be0dd9a49cb2f8a4e209f2e7fd86d5d62a15088e21df681b1"
+    },
+    {
+      "relative_path": "v1/output/original-cfc-s307-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-cfc-s307-lr0.001.json",
+      "bytes": 7202,
+      "sha256": "07058ce206fcba76d9ff1fbefa188d0b839c7ef0b2261f022d375d17e18225f3"
+    },
+    {
+      "relative_path": "v1/output/original-cfc-s307-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-cfc-s307-lr0.003.json",
+      "bytes": 7198,
+      "sha256": "058d195b13233d19c854887a05e0f0d4eaab29121de2ebd2ef5cacbade6a53ec"
+    },
+    {
+      "relative_path": "v1/output/original-commands-context-after.jsonl",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-commands-context-after.jsonl",
+      "bytes": 166152,
+      "sha256": "6d365332edad098abf5269b143e1f1e49665b98dcf3f3651bdb473267f7c1fcf"
+    },
+    {
+      "relative_path": "v1/output/original-commands-context.jsonl",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-commands-context.jsonl",
+      "bytes": 166152,
+      "sha256": "6d365332edad098abf5269b143e1f1e49665b98dcf3f3651bdb473267f7c1fcf"
+    },
+    {
+      "relative_path": "v1/output/original-event_time_lif-s101-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-event_time_lif-s101-lr0.001.json",
+      "bytes": 7717,
+      "sha256": "98190d10a77fe4ffe2322afe16a8f11facf1e086ac416c3f3700b0250d0c6ad2"
+    },
+    {
+      "relative_path": "v1/output/original-event_time_lif-s101-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-event_time_lif-s101-lr0.003.json",
+      "bytes": 7121,
+      "sha256": "fc47ed7ecaa12a644e14c3753145523e174cdb926ae4ee21179dd2d89e147f95"
+    },
+    {
+      "relative_path": "v1/output/original-event_time_lif-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-event_time_lif-s211-lr0.001.json",
+      "bytes": 7131,
+      "sha256": "abb8c1754e64e87c4a111dacb51f959bef9c3f0cb738bbac038d195e1f21bb9c"
+    },
+    {
+      "relative_path": "v1/output/original-event_time_lif-s211-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-event_time_lif-s211-lr0.003.json",
+      "bytes": 7265,
+      "sha256": "ea0215a6601f5ea17f5028a3efd9e99784ecbbb6018d71f4b265746adac4547a"
+    },
+    {
+      "relative_path": "v1/output/original-event_time_lif-s307-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-event_time_lif-s307-lr0.001.json",
+      "bytes": 7163,
+      "sha256": "f48533418835dc90d63b73d8626d94f2670be9a86d54d637eba5a0f7e0e69eda"
+    },
+    {
+      "relative_path": "v1/output/original-event_time_lif-s307-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-event_time_lif-s307-lr0.003.json",
+      "bytes": 7275,
+      "sha256": "eaecbe866d9584bd624f1de688419e85618248b8628f230e612fe4e2792d0422"
+    },
+    {
+      "relative_path": "v1/output/original-gru-s101-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-gru-s101-lr0.001.json",
+      "bytes": 7596,
+      "sha256": "b482a52faed47d49b026f7116869d99c92c29531cd75c2af59e3f5591ec9e393"
+    },
+    {
+      "relative_path": "v1/output/original-gru-s101-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-gru-s101-lr0.003.json",
+      "bytes": 7155,
+      "sha256": "8a1e2c56276b99f2d8c8751ae921cb32b403cb9bec0ae3dc39aa09c09d995dda"
+    },
+    {
+      "relative_path": "v1/output/original-gru-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-gru-s211-lr0.001.json",
+      "bytes": 7252,
+      "sha256": "8afe45161d114e353f892d1316d85f01cd69ea2cd471ddaa770efb6ca06ad6d5"
+    },
+    {
+      "relative_path": "v1/output/original-gru-s211-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-gru-s211-lr0.003.json",
+      "bytes": 7162,
+      "sha256": "98fa4394136bc202772f2c5195cd1a7c566dd0961ec26922207edda057a41ab6"
+    },
+    {
+      "relative_path": "v1/output/original-gru-s307-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-gru-s307-lr0.001.json",
+      "bytes": 7200,
+      "sha256": "fb3bdc80b45b55be0d5154a6445f7d4119dc757016b9b20a4c442eb19f286810"
+    },
+    {
+      "relative_path": "v1/output/original-gru-s307-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-gru-s307-lr0.003.json",
+      "bytes": 7250,
+      "sha256": "c18f413896c83e735412bc22f09b698c6d351d32289f156d86e840fb25799a51"
+    },
+    {
+      "relative_path": "v1/output/original-snn_plif-s101-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-snn_plif-s101-lr0.001.json",
+      "bytes": 7732,
+      "sha256": "c3a18e529d8472fb1f4e37101d75d445538e2455d73ec8dd63dded3ac89a4d6f"
+    },
+    {
+      "relative_path": "v1/output/original-snn_plif-s101-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-snn_plif-s101-lr0.003.json",
+      "bytes": 7367,
+      "sha256": "2fc84fd21130fd10dd0f76f3ecbd154565e4fe7ce0f8db8a461fb4b3d237daf8"
+    },
+    {
+      "relative_path": "v1/output/original-snn_plif-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-snn_plif-s211-lr0.001.json",
+      "bytes": 7364,
+      "sha256": "f056e21b141daac0359afb569d6a921cbc68d35f32a33356f3fd00357768e4b4"
+    },
+    {
+      "relative_path": "v1/output/original-snn_plif-s211-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-snn_plif-s211-lr0.003.json",
+      "bytes": 7233,
+      "sha256": "f71aa5c89dd465b4fc9bb0994c45023d959d7faa9b4cafd525a6397bfdb4fb92"
+    },
+    {
+      "relative_path": "v1/output/original-snn_plif-s307-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-snn_plif-s307-lr0.001.json",
+      "bytes": 7371,
+      "sha256": "1375d5039db731d19aa90cc47dc8424c459b52a21610976790aba8c27bb9eed1"
+    },
+    {
+      "relative_path": "v1/output/original-snn_plif-s307-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-snn_plif-s307-lr0.003.json",
+      "bytes": 7415,
+      "sha256": "db7ca96b11b3a2aae91426959204494cf7a66af9303d5898782ef53dce34a99d"
+    },
+    {
+      "relative_path": "v1/output/original-ssm_s4d-s101-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-ssm_s4d-s101-lr0.001.json",
+      "bytes": 7577,
+      "sha256": "d648197043492934cad471dd7bb2c45ee4e04b69507820c8be797007adcd31fe"
+    },
+    {
+      "relative_path": "v1/output/original-ssm_s4d-s101-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-ssm_s4d-s101-lr0.003.json",
+      "bytes": 7316,
+      "sha256": "9ea264c695926ab6c6f232d0d5c6945ed231baeaff0250c0bb090771b0aecc3b"
+    },
+    {
+      "relative_path": "v1/output/original-ssm_s4d-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-ssm_s4d-s211-lr0.001.json",
+      "bytes": 7242,
+      "sha256": "8d197c1286c64befffb04d5f7fbc55983c6db66e06ea2c4bab1e3972749081a1"
+    },
+    {
+      "relative_path": "v1/output/original-ssm_s4d-s211-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-ssm_s4d-s211-lr0.003.json",
+      "bytes": 7186,
+      "sha256": "8af438590640b403b4617fde4299b3b2c3796be68be4be6ffeb1d89013460978"
+    },
+    {
+      "relative_path": "v1/output/original-ssm_s4d-s307-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-ssm_s4d-s307-lr0.001.json",
+      "bytes": 7204,
+      "sha256": "2c8f4463420463df1c8c5f641dc0da4b8f1191ad52ae67692db6d7426d3788a9"
+    },
+    {
+      "relative_path": "v1/output/original-ssm_s4d-s307-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/original-ssm_s4d-s307-lr0.003.json",
+      "bytes": 7279,
+      "sha256": "91794434e6189a1d73d3070f33d52284d3cb068648e9b6637b87c28346ee1ce0"
+    },
+    {
+      "relative_path": "v1/launch/launch.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-launch-v1/launch.json",
+      "bytes": 1400,
+      "sha256": "bd79587003520b39fde19d50712c7a88b6730cdce976d499357acad71790f05f"
+    },
+    {
+      "relative_path": "v1/launch/receipt.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-launch-v1/receipt.json",
+      "bytes": 3481,
+      "sha256": "3fd710bd48e35ffd9f42e9b8ce134906b3a43cfca9a3d21465eb06333e40d3e7"
+    },
+    {
+      "relative_path": "v1/launch/review.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-launch-v1/review.stderr",
+      "bytes": 407,
+      "sha256": "8662c2e88762ea62bd6f6a9e2680fa57de84dd317034bb69c774b01c2ea0c4a8"
+    },
+    {
+      "relative_path": "v1/launch/review.stdout",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-launch-v1/review.stdout",
+      "bytes": 6304,
+      "sha256": "6d1926c5b14bbde4cfec5cb951d7f2bb9599a243abe5f08297c1d7b5601b427b"
+    },
+    {
+      "relative_path": "v1/preparation/VALIDATION.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/VALIDATION.json",
+      "bytes": 15044,
+      "sha256": "981378bf6cac8b5efe314b708106b31f9e6a4dbe500d2141998c24ff64a6746c"
+    },
+    {
+      "relative_path": "v1/preparation/MANIFEST.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/MANIFEST.json",
+      "bytes": 9559,
+      "sha256": "e0bd84a6356f7e2df30f5eee853ff458c09f7f304e15696be4e662a57895ce31"
+    },
+    {
+      "relative_path": "v1/preparation/README.md",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/README.md",
+      "bytes": 4033,
+      "sha256": "a661b9c3ea008064adf25b9c9114c5338a696c3066c08eb64d7dc7fa1ab43c20"
+    },
+    {
+      "relative_path": "v1/preparation/validation/adapter-tests.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/validation/adapter-tests.stderr",
+      "bytes": 1591,
+      "sha256": "631b47df8358dfbebceda5a22bb920b61acf871d6c8e4ec68f31a2980e2a180e"
+    },
+    {
+      "relative_path": "v1/preparation/validation/adapter-tests.stdout",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/validation/adapter-tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v1/preparation/validation/disabled-assertions-rejected.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/validation/disabled-assertions-rejected.stderr",
+      "bytes": 658,
+      "sha256": "d0b84480ff14ea40599ab70dcf388a637dbe4dde9de77df2f5288e7bf1a67770"
+    },
+    {
+      "relative_path": "v1/preparation/validation/disabled-assertions-rejected.stdout",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/validation/disabled-assertions-rejected.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v1/preparation/validation/frozen-helper-tests.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/validation/frozen-helper-tests.stderr",
+      "bytes": 3885,
+      "sha256": "d876302be331e8ebee6db2004f0682bfdbb73c3fa96ae2173eee677a87532dcf"
+    },
+    {
+      "relative_path": "v1/preparation/validation/frozen-helper-tests.stdout",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/validation/frozen-helper-tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v1/preparation/validation/help.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/validation/help.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v1/preparation/validation/help.stdout",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/validation/help.stdout",
+      "bytes": 238,
+      "sha256": "24a9b7953f4cb7525ab0f98a6642758b1dd1fad222b4f13e9e7842d99cb6c33b"
+    },
+    {
+      "relative_path": "v1/source/baseline36-c1-independent-reviewer-program-v1.zip",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-independent-reviewer-program-v1.zip",
+      "bytes": 160604,
+      "sha256": "2f68f48b5cf4f758ab503ac1621cf4b17039ef9169a4c57cfd4dd7f6d8c25034"
+    },
+    {
+      "relative_path": "v1/source/launch_baseline36_c1_review_v1.py",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/launch_baseline36_c1_review_v1.py",
+      "bytes": 5685,
+      "sha256": "56b64f43b110635f1d4330767556465fada7e22bae2406224ddb0c4379ebaae9"
+    },
+    {
+      "relative_path": "v2/output/ARCHIVE.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/ARCHIVE.json",
+      "bytes": 316,
+      "sha256": "85704299e872ec220936ad9cefeb6512d4ef4c28a177062754bda1a2b77f4ad6"
+    },
+    {
+      "relative_path": "v2/output/C1-attention-s101-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/C1-attention-s101-lr0.001.json",
+      "bytes": 57683,
+      "sha256": "a0cc8d971e3e847d3bf452d8f3719dc6ea4d0373e66f94ae12ced6c7fce787fd"
+    },
+    {
+      "relative_path": "v2/output/C1-attention-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/C1-attention-s211-lr0.001.json",
+      "bytes": 44592,
+      "sha256": "6d0158003a848f8c381a88f7979f6e6b301dae8ca3e709a39bfdf043081ac53d"
+    },
+    {
+      "relative_path": "v2/output/C1-attention-s307-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/C1-attention-s307-lr0.001.json",
+      "bytes": 79998,
+      "sha256": "a717dc8efb752bcc07a15011cc9cc423b321cd84fad2e6788b2e938065352f0c"
+    },
+    {
+      "relative_path": "v2/output/C1-gru-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/C1-gru-s211-lr0.001.json",
+      "bytes": 44261,
+      "sha256": "2d5f997d2b36cf1ea28fc3d36f4d847cb8ec979ae23d94517adefe5797a69d3f"
+    },
+    {
+      "relative_path": "v2/output/C1-ssm_s4d-s211-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/C1-ssm_s4d-s211-lr0.001.json",
+      "bytes": 125649,
+      "sha256": "d6f05e9a6435b0cfe749c9d6b62f6ac3187e077b1031fb01c25dbd05c28fa406"
+    },
+    {
+      "relative_path": "v2/output/C1-ssm_s4d-s211-lr0.003.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/C1-ssm_s4d-s211-lr0.003.json",
+      "bytes": 67726,
+      "sha256": "484c1d8f4706eb8a23ccc1d85a1b7676ee129479b30c5bdea3cff7deccd7fa2e"
+    },
+    {
+      "relative_path": "v2/output/C1-ssm_s4d-s307-lr0.001.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/C1-ssm_s4d-s307-lr0.001.json",
+      "bytes": 99576,
+      "sha256": "9259874f5dd25f93672afbb328000132609466337f359ad080dcde751d8b3c5c"
+    },
+    {
+      "relative_path": "v2/output/CORE_TABLE.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/CORE_TABLE.json",
+      "bytes": 70494,
+      "sha256": "ebf943e36a3da47352a70d46d41e9ad73d5e97d7778908fd4933bda699455dfe"
+    },
+    {
+      "relative_path": "v2/output/MANIFEST.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/MANIFEST.json",
+      "bytes": 3014,
+      "sha256": "dc6e757ba8c40698f59b21272884cf875f9d47e3fdd61269068554f3a0ef8713"
+    },
+    {
+      "relative_path": "v2/output/README.md",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/README.md",
+      "bytes": 1762,
+      "sha256": "a48b9c53fb57e6d421c4e7d530f383e0b3f9b3369425a8669859a5a846d38deb"
+    },
+    {
+      "relative_path": "v2/output/SUMMARY.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/SUMMARY.json",
+      "bytes": 900,
+      "sha256": "cad3db1ac581338371f51da8f0bd1214ac6d4e61bde61de2512e264f616881d6"
+    },
+    {
+      "relative_path": "v2/output/original-commands-context-after.jsonl",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/original-commands-context-after.jsonl",
+      "bytes": 166152,
+      "sha256": "6d365332edad098abf5269b143e1f1e49665b98dcf3f3651bdb473267f7c1fcf"
+    },
+    {
+      "relative_path": "v2/output/original-commands-context.jsonl",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/original-commands-context.jsonl",
+      "bytes": 166152,
+      "sha256": "6d365332edad098abf5269b143e1f1e49665b98dcf3f3651bdb473267f7c1fcf"
+    },
+    {
+      "relative_path": "v2/launch/launch.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-launch-v2/launch.json",
+      "bytes": 1492,
+      "sha256": "b01ba7fbf7cb470c55a47162c46df98c1ea4ea147cb2ecbec9ff9be5205e2777"
+    },
+    {
+      "relative_path": "v2/launch/receipt.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-launch-v2/receipt.json",
+      "bytes": 3545,
+      "sha256": "312a2ff92b530e9cd3aa69c2051eb6cd1f189d3dc96c694b7725935ef30b985c"
+    },
+    {
+      "relative_path": "v2/launch/review.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-launch-v2/review.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v2/launch/review.stdout",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-launch-v2/review.stdout",
+      "bytes": 1460,
+      "sha256": "1bd1e2b937b32338853796c5256fd2cf777066a4bc6175f8f4e078e0dae13f20"
+    },
+    {
+      "relative_path": "v2/preparation/VALIDATION.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/VALIDATION.json",
+      "bytes": 16052,
+      "sha256": "b331de24b72e73458ee9e73c76ae700efc99436a86cde9ca5845f5163f3bc85e"
+    },
+    {
+      "relative_path": "v2/preparation/MANIFEST.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/MANIFEST.json",
+      "bytes": 10286,
+      "sha256": "0d5c1360b8e4f418cfff3ff2f29b7e392ffcb8cd4c281a00c09dd16946a06601"
+    },
+    {
+      "relative_path": "v2/preparation/README.md",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/README.md",
+      "bytes": 3669,
+      "sha256": "de8a0461227554856fe454e3a7d0b790268e645653a8aa071623b941ee93dbeb"
+    },
+    {
+      "relative_path": "v2/preparation/validation/adapter-tests.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/validation/adapter-tests.stderr",
+      "bytes": 2326,
+      "sha256": "dd0458a5953f00a7a15d4fc2264795ea29d2fe2180daf1ff28037bd47db1a7bc"
+    },
+    {
+      "relative_path": "v2/preparation/validation/adapter-tests.stdout",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/validation/adapter-tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v2/preparation/validation/disabled-assertions-rejected.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/validation/disabled-assertions-rejected.stderr",
+      "bytes": 664,
+      "sha256": "a60ac72cbbebbb7bce0248bbbfe3b5cfaa6866b0f70d214ed86ae04763baf0d0"
+    },
+    {
+      "relative_path": "v2/preparation/validation/disabled-assertions-rejected.stdout",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/validation/disabled-assertions-rejected.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v2/preparation/validation/frozen-helper-tests.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/validation/frozen-helper-tests.stderr",
+      "bytes": 3885,
+      "sha256": "d876302be331e8ebee6db2004f0682bfdbb73c3fa96ae2173eee677a87532dcf"
+    },
+    {
+      "relative_path": "v2/preparation/validation/frozen-helper-tests.stdout",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/validation/frozen-helper-tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v2/preparation/validation/help.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/validation/help.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v2/preparation/validation/help.stdout",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/validation/help.stdout",
+      "bytes": 241,
+      "sha256": "8b991fdf0fbd2697a804d2dcf98de2418fe2dc77cbd71b87633a817fe2cbc3dc"
+    },
+    {
+      "relative_path": "v2/source/baseline36-c1-independent-reviewer-program-v2.zip",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-independent-reviewer-program-v2.zip",
+      "bytes": 174435,
+      "sha256": "6ede11014d33e219f6ebc109911ad50a8550bb585388b16b5c604a2d4cb54c51"
+    },
+    {
+      "relative_path": "v2/source/launch_baseline36_c1_review_v2.py",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/launch_baseline36_c1_review_v2.py",
+      "bytes": 5768,
+      "sha256": "94be43962ba77b72cc99ae12ea057dc8af6318e17908c496718828819ae6d6f4"
+    },
+    {
+      "relative_path": "v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-bootstrap-v2/6e1c204a063b39f1fff14c405c09d153fe3ca57f.json",
+      "bytes": 240641,
+      "sha256": "1511fe97bec17637deef2dd336b97f8bb04dbc6421708d55909896e9f6bba6e6"
+    },
+    {
+      "relative_path": "v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-bootstrap-v2/6e1c204a063b39f1fff14c405c09d153fe3ca57f.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v2/bootstrap/7c1d5728af45e5f3c337b6f1b724a47eaa720580.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-bootstrap-v2/7c1d5728af45e5f3c337b6f1b724a47eaa720580.json",
+      "bytes": 8255,
+      "sha256": "919e21825b57cf6a15fcd8826d9735517e7e9d5a22ec608dacca8af90a3e8096"
+    },
+    {
+      "relative_path": "v2/bootstrap/7c1d5728af45e5f3c337b6f1b724a47eaa720580.stderr",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-bootstrap-v2/7c1d5728af45e5f3c337b6f1b724a47eaa720580.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "v2/bootstrap/bootstrap-source.py",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-bootstrap-v2/bootstrap-source.py",
+      "bytes": 3924,
+      "sha256": "d1b6110e6b877f1a1dfde88a30d8a1c98acb7918e2ab18c5599558a5ff2d5ca9"
+    },
+    {
+      "relative_path": "v2/bootstrap/download-receipt.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-bootstrap-v2/download-receipt.json",
+      "bytes": 1226,
+      "sha256": "39095018f5c43f852c307a64f18a363a9d5bfd32300db185d8fdb4543036b581"
+    },
+    {
+      "relative_path": "v2/bootstrap/receipt.json",
+      "original_native_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/baseline36-c1-review-bootstrap-v2/receipt.json",
+      "bytes": 1716,
+      "sha256": "9d9970413afa6ed2f78d4547ec4f1eb1f867034141f2394dd1b04af510e4854b"
+    }
+  ],
+  "excluded_large_originals": [
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/RESULT.json",
+      "bytes": 542491,
+      "sha256": "368494d90c42339c5b8d8e7afbed7592c4cb2ef52d52a4611a3e89d7fea59052",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/fresh-original-attention-s101-lr0.001.pt",
+      "bytes": 3071893,
+      "sha256": "f6e21d39ccb2fc239fe1380dda7ecafbcbe92987cd1aab94cb603776fa9b9124",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/fresh-original-cfc-s101-lr0.001.pt",
+      "bytes": 3071845,
+      "sha256": "18df1fb004dfee4e8b64d332d444b9d4c810f870369949d6c7a99d2e75d773e2",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/fresh-original-event_time_lif-s101-lr0.001.pt",
+      "bytes": 3071933,
+      "sha256": "844d06230c0c90a33fc2ab3bc5bc677f36397d7f09f96cf7c6ecc52a32b15e78",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/fresh-original-gru-s101-lr0.001.pt",
+      "bytes": 3071845,
+      "sha256": "62f285193dc2f8cdce7ba7abe82c542f9a3f3afd2c8271d18ccb40dc347b094f",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/fresh-original-snn_plif-s101-lr0.001.pt",
+      "bytes": 3072013,
+      "sha256": "deb867108f5c8643b70663b6803ac806aadbf75de019f9f3b33b789b02b1000d",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1/fresh-original-ssm_s4d-s101-lr0.001.pt",
+      "bytes": 3071877,
+      "sha256": "80c3bdab8df6a4524edf44993ac0cfd32b099d8330a236a93ef5373b6075a4a2",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/RESULT.json",
+      "bytes": 887134,
+      "sha256": "c90afba67ce09871e49c2a117cec3403a2b7fdec6528e600402557d6a7863094",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/fresh-C1-attention-s101-lr0.001.pt",
+      "bytes": 3071845,
+      "sha256": "bdf42416ff8d9421955f4f98455a4d191244b2411af51a9f3f3a45af28e98d09",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/fresh-C1-attention-s211-lr0.001.pt",
+      "bytes": 3071845,
+      "sha256": "1161eca86403319c37204e62582a3ecbab34bfab43dbad1522a9103cbba8ba26",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/fresh-C1-attention-s307-lr0.001.pt",
+      "bytes": 3071845,
+      "sha256": "ef57f15f72229de3750653a6c38cb79693d05a5e7487f3ec5574fe5a4c7a2b12",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/fresh-C1-gru-s211-lr0.001.pt",
+      "bytes": 3071797,
+      "sha256": "d644e742285d4b83da34f4a40ea0b1d092b714d4704c6f163e6da8e6937148a8",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/fresh-C1-ssm_s4d-s211-lr0.001.pt",
+      "bytes": 3071829,
+      "sha256": "d792fce74a689bc6d41e2aece33f66f59444e578807aab0f8b88b499b1790c5f",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/fresh-C1-ssm_s4d-s211-lr0.003.pt",
+      "bytes": 3071829,
+      "sha256": "578a77ce20e449e473fd82d1bd6e1e1b0da8e10e10c7e7d0518d9012d167a9f0",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    },
+    {
+      "source": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2/fresh-C1-ssm_s4d-s307-lr0.001.pt",
+      "bytes": 3071829,
+      "sha256": "bf831912e4d3c3c25aa005479ef3a9bf9ef95d8bd7ab05082254964665200913",
+      "reason": "Kept in original full review archive; not a bounded small copy."
+    }
+  ],
+  "claims": {
+    "v1_overall": "failed",
+    "v1_original_baselines_passed": 36,
+    "v1_C1_failed": 7,
+    "v2_original36_reused_with_all_hashes_rechecked": true,
+    "v2_C1_fresh_audit_passed": 7,
+    "original_heuristic_adequacy": "26/36",
+    "combined_heuristic_adequacy": "33/36",
+    "full42_final_audit": false,
+    "HCSN_final_model_read": false
+  },
+  "collection_wall_sample_seconds": 0.258591776015237,
+  "collection_CPU_sample_seconds": 0.273758552,
+  "collection_peak_rss_bytes": 20799488
+}

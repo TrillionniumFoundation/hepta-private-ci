@@ -1,0 +1,5 @@
+# Additional ChatGPT Library source snapshot — hepta-private-ci
+
+These files were originally stored at the root of ChatGPT Library without repository directories. This is a **best-effort, reviewable repository attribution**, not an assertion that the files currently belong to any live production build. They are preserved under a separate, non-executed recovery path and branch, never overwriting current code. If attribution is wrong, reassign during review rather than activating this archived copy.
+
+Offline reproducibility of **source bytes**: `python3 verify_snapshot.py` verifies each original SHA-256, size and Git Blob SHA against `MANIFEST.json`. `python3 -m compileall -q files` checks Python syntax only. Go, Rust and native fragments require their exact original module layout and fixtures. No running-model/production acceptance is claimed. Historical source snapshots, tests and scripts are the only content; raw evidence, model weights, datasets, cache and build artifacts are excluded. Legacy patches will be evaluated as a distinct historical-diff set.

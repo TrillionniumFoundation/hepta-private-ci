@@ -1,0 +1,78 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-progress-observation-v4",
+  "progress_file": {
+    "sha256": "1f3ecc92f2a97bacf9d2249cbda40375fd059b74252b32cedae7bb06917c5021",
+    "bytes": 14152,
+    "updated_utc": "2026-11-08T11:15:37.846877+00:00"
+  },
+  "campaign": {
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "process_state": "running",
+    "systemd_active_state": "active",
+    "systemd_sub_state": "running",
+    "systemd_result": "success",
+    "active_stage": "full",
+    "active_stage_started_utc": "2026-11-06T08:08:57.361720+00:00",
+    "progress_reported_completed_cuda_runs": 87,
+    "requested_cuda_runs": 170,
+    "registered_run_indexes": {
+      "completed": 87,
+      "failed": 0,
+      "unavailable": 0
+    },
+    "qualification": "open",
+    "interpretation": "Progress-reported terminal registrations only; not an independently verified model/checkpoint/weight/budget qualification count."
+  },
+  "local_observation": {
+    "campaign_directory_listing": "Stage JSONs and full.runs entries are present; full.json, terminal.json, full.runtime-manifest.json and full-b-audit.json were not present in the listing at this observation.",
+    "full_runtime_profile": "full.runtime.json exists in listing; profile content not independently read.",
+    "run_index_contents": "not independently read",
+    "identity_87_checkpoint_sha256": "not verified",
+    "identity_87_attempt_and_budget_records": "not verified",
+    "identity_level_audit": "open",
+    "read_capacity": "Subsequent direct SSH file reads returned admitted-capacity-exhausted; no child submitted and no automatic retry."
+  },
+  "runtime_receipt_hashes_referenced_by_progress": {
+    "TORCH_READY_json_sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+    "MAMBA_READY_json_sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76"
+  },
+  "frozen_references": {
+    "expected_research_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "expected_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "expected_campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "local_runtime_manifest_reverified": false
+  },
+  "github": {
+    "exact_source_ci": {
+      "run_id": 42078258351,
+      "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+      "conclusion": "success",
+      "job_id": 127424159520,
+      "job_name": "kernel-and-mechanisms",
+      "job_conclusion": "success",
+      "steps_passed": 10,
+      "steps_total": 10
+    },
+    "trusted_main_gpu_probe": {
+      "run_id": 39526325715,
+      "job_id": 127299267982,
+      "conclusion": "cancelled",
+      "run_attempt": 5
+    },
+    "pr_4873_read": "404 Not Found; no mutation performed"
+  },
+  "qualification": {
+    "full_170_run": "open",
+    "b_full_audit": "open",
+    "mamba2_full_matrix": "open",
+    "strict_baseline_candidate_and_fixed_parity": "previously recorded results not rerun in this observation",
+    "physical_gpu_energy": "null; no imputation"
+  },
+  "execution_policy": {
+    "source_branch_modified": false,
+    "campaign_outputs_modified": false,
+    "training_started_or_retried": false,
+    "budget_changed": false,
+    "credentials_or_private_paths_published": false
+  }
+}

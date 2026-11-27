@@ -1,0 +1,124 @@
+{
+  "schema": "hepta.ca77.owner-qualified-subset.v1",
+  "base": "89e66450318ea1a7ac5376fdaf82e4f0f1da1409",
+  "reviewed_incoming_source": "ca77c88d01b5dc800bdba7cfdc673c7d8d89101a",
+  "scope": "Twelve-path Core/Goal/Queue source and canonical dependency subset only. This commit does not merge ca77 and does not count its remaining frontier as covered.",
+  "paths": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 424458,
+      "sha256": "d4cecc8d8a806f4c8406d7165ab04ec5f77e13cfb20d60e069f363e26f3dc306",
+      "git_blob": "dbe7a02fc4acd53156e5694aa7a8c2399c348cb9",
+      "before_git_blob": "1d7559d5cd96c978780a8f063554015deb743c15",
+      "before_sha256": "77b97b277e334533fafeedc0dd5294ee0adaf71b8890e56adf3cf68d54370cc8",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control.rs",
+      "bytes": 32395,
+      "sha256": "efec554aab16ef0d080e6d313f6a3f1c8b814274fb80b3abd13dbbfbade832d6",
+      "git_blob": "ae5d82ff777d3c86226e9755b223115b9f0f7c2d",
+      "before_git_blob": "3d6adc42465b12aeeb6068ea18b5b856ae878cea",
+      "before_sha256": "1b96a6f76cf207402f03e8a6b1ff20bf388dfaa4ef9daf15ea8a8808d99dba21",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/execution.rs",
+      "bytes": 4295,
+      "sha256": "2eba470524ce80751ee798a3e0ee98899fe9662e75b664f607953bc8b36043c3",
+      "git_blob": "f79539c03231406c26d96854a0f8a064356cef33",
+      "before_git_blob": "3201b5886d2be0d6ad97749254a0e482d6cc532c",
+      "before_sha256": "7325b38ff82e7edec0632b59b639d722c757396510fa0561484ea6387c04c7d3",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "bytes": 51096,
+      "sha256": "05eda62683ae032118e1865ddcb6fe4640a33edcd484432b6c95712b40639272",
+      "git_blob": "92d3cd8a1ce64c5cd2ba840a81eeda10bbcdb7b3",
+      "before_git_blob": "f41c898642e884decd61ccf0d21037df19caf1be",
+      "before_sha256": "5e0deacf0b0df2b39b03b402500fc8de249b0d0fed0b5dbabebbd5f8a03cefa4",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/ext/goal/Cargo.toml",
+      "bytes": 1073,
+      "sha256": "19114f6a056ca00d8f4adc8dc3be138157ff30e62fb04765096dd222713f4ba4",
+      "git_blob": "9611565427ae17a4de01e77734842b5547c0cf46",
+      "before_git_blob": "8a20967935b18128f484c64f111414e347075b01",
+      "before_sha256": "230806626937460f9874b4ff8be198724abcefb07d7ad4b5dad32b2bec419e4b",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/ext/goal/src/extension.rs",
+      "bytes": 17519,
+      "sha256": "8b5d3a2553987e32651ddaf6115affc670597f23463098befb8a22d850c0633f",
+      "git_blob": "c9f66df6a0031655cf862784e2a6933f51553057",
+      "before_git_blob": "a8c3f570c83a820482c649043dfea27c3213bf31",
+      "before_sha256": "b99f87f5d502be8a51ba1952746208b2cb42b36ae0a6a24b0c7966b083e4d131",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/ext/goal/src/runtime.rs",
+      "bytes": 21155,
+      "sha256": "148861bf9c21ce3b88c9b8bd063990938d7205051b9c552bfb2955e20effa11d",
+      "git_blob": "4f6547aca71ae4ad63cc7f1b5578f02bbb0c2971",
+      "before_git_blob": "28cc32712700ef0de5506eb8c05ecc45e776cfe1",
+      "before_sha256": "2c2529b94a9e41df2e8e41bdabfc0d48e46975a4f806a737e057edec81b25798",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/ext/goal/src/runtime/idle_continuation.rs",
+      "bytes": 4589,
+      "sha256": "e18843c74d0b9feb103a840c084df00f28dc61c3ff3bc96e5123ab6ccf393ec1",
+      "git_blob": "8e044f5f929215a28d28a447bfb2bb9b06b0557c",
+      "before_git_blob": null,
+      "before_sha256": null,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/ext/goal/tests/idle_continuation.rs",
+      "bytes": 16756,
+      "sha256": "391fc62f8b16ce72b322daeb6f86b981518a9230d4d80329f346eec5aecf3269",
+      "git_blob": "9accd6d08795b7e6042ca5daa8d5b02cb8fa4923",
+      "before_git_blob": null,
+      "before_sha256": null,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/ext/queue/src/idle_dispatch.rs",
+      "bytes": 5084,
+      "sha256": "c43938508bd32641181d914c9e568c67b26cd6786db68ddf23d7a46885479718",
+      "git_blob": "1c02a899604e7bf0ec1f185fcf528940ffef93b6",
+      "before_git_blob": null,
+      "before_sha256": null,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/ext/queue/src/service.rs",
+      "bytes": 81916,
+      "sha256": "d2d85011c03987b61d829ed865c7fde814e0cbf1fe0f6608440c5de7b619e092",
+      "git_blob": "2053e58f84ffb753aa02c9fb11325141b48f2648",
+      "before_git_blob": "50b0f61f26e35f75c7a07d2445db02fc28083f37",
+      "before_sha256": "c7cae8b177091761f46c3a17819e322c2e9c2d667c2890deb7a9d966b2322c42",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "bytes": 120323,
+      "sha256": "7c82ef8983ef31324c6eee5d7342efa08a99121298babfe3a9f6c32dbed165c1",
+      "git_blob": "9b7dfb593aac7f5d9bf03f4a296c990694e15f54",
+      "before_git_blob": "1062e4e717b4a3dfaa4fc7462eecccda3c3cce1d",
+      "before_sha256": "9ce8ac3d88867bdc5e86d35304adbcfcc0765503505a15b9e21a5214840d35dc",
+      "mode": "100644"
+    }
+  ],
+  "decisions": [
+    "Typed pre-admission TurnStartCapacity preserves positive NotSubmitted before registration during exact Core terminalization.",
+    "Goal and Queue idle deferral uses the existing bounded Core scheduler, exact generation, weak wake ownership and loaded-thread Arc identity.",
+    "Goal verifies generation after queue ordering; Queue verifies the same loaded Arc inside its dispatch guard. Current cleanup ownership and all current safety guards remain.",
+    "Three new Goal regression tests cover cleanup deferral deduplication/capacity, completed replacement generation and loaded Arc replacement. Existing Queue test now sends64 duplicate idle notifications while preserving all original assertions.",
+    "Held-gate tests capture the real Started turn ID before releasing the gate, then assert public TurnComplete after release. A legitimate replacement test calls public ThreadStore shutdown before reopening; production delivery and live-writer guards remain unchanged.",
+    "New Goal dev dependency core_test_support has its single Cargo.lock edge. Canonical Bazel module update/check completed; MODULE.bazel.lock has no byte change."
+  ]
+}

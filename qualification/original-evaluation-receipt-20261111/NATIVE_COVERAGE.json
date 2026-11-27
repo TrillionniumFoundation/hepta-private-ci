@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "status": "DECLARED_SELECTION_COVERS_ALL_18_NATIVE_EXECUTION_PENDING",
+  "groups": [
+    {
+      "group": "Model proposal",
+      "count": 7,
+      "source": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+      "expected_test_names_from_module_tree": [
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_original_training_commit_and_cold_readback",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rejects_tampered_training_before_claim_and_on_readback",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_pending_and_lost_ack_recover_without_new_commit",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_trainer_no_update_refuses_before_file_initialization",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rechecks_original_witness_after_final_receipt_decode",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_host_clock_rejects_request_backdating_and_expired_evidence"
+      ],
+      "ignored": false,
+      "daemon_full_lib_selected": true,
+      "shared_framework_full_lib_selected": true,
+      "native_execution_observed": false
+    },
+    {
+      "group": "Original Evaluation receipt",
+      "count": 5,
+      "source": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "expected_test_names_from_module_tree": [
+        "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes",
+        "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rejects_changed_custody_namespace_and_unsigned_no_update",
+        "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_pending_never_resigns_and_complete_ack_replays",
+        "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rechecks_source_before_signing_and_after_commit",
+        "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_expired_signature_is_not_renewed"
+      ],
+      "ignored": false,
+      "daemon_full_lib_selected": true,
+      "shared_framework_full_lib_selected": true,
+      "native_execution_observed": false
+    },
+    {
+      "group": "Original Training receipt",
+      "count": 6,
+      "source": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs",
+      "expected_test_names_from_module_tree": [
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_signs_actual_candidate_and_no_update_then_reopens_exactly",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_refuses_wrong_key_trust_scope_and_changed_dataset_prefix",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_pending_native_job_never_claims_or_signs",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_ack_reopens_pending_or_exact_completed_signature",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_expired_signature_never_renews_or_retrains",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_genesis_witness_ack_stays_blocked"
+      ],
+      "ignored": false,
+      "daemon_full_lib_selected": true,
+      "shared_framework_full_lib_selected": true,
+      "native_execution_observed": false
+    }
+  ],
+  "workflows": [
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "platform": "ubuntu-24.04",
+      "trigger": "pull_request paths codex-rs/hepta-agentd/**",
+      "ordinary_arguments": [
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "--test-threads",
+        "2"
+      ],
+      "filterset": null,
+      "additional_runner_arguments": [
+        "--locked",
+        "--offline",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "note": "The later six explicitly ignored Root parents are a separate suite; all 18 new nonignored tests belong to the preceding ordinary full-library suite."
+    },
+    {
+      "path": ".github/workflows/hepta-shared-framework.yml",
+      "platform": "ubuntu-24.04",
+      "trigger": "pull_request paths codex-rs/hepta-agentd/**",
+      "arguments": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib"
+      ],
+      "filterset": null
+    }
+  ],
+  "wrapper": "just selects NEXTEST_PROFILE=local; run-nextest.py preserves package/lib/filter arguments and only chooses metadata strategy. Neither local nor default has default-filter or test-skip configuration.",
+  "other_lanes": "Architecture named subsets do not select these 18 tests; Windows does not execute their Unix/Linux test modules. Their success cannot replace the two Linux full-lib suites.",
+  "required_workflow_change": null,
+  "source_proofs": [
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "blob": "30542aef705485940519a346517ec8f6f4a740f8",
+      "sha256": "913be8cd1abdf2c4d90d41734336d6730e18506360093814506d9c659d994ab9"
+    },
+    {
+      "path": ".github/workflows/hepta-shared-framework.yml",
+      "blob": "1c60cc72e63bec9fb1de320d710ecbd785249d74",
+      "sha256": "7d3013696084d55222eacdaacbea5ead11520afeee53b7d104b398e8531e48a5"
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "blob": "c1490cedf609e35ab0b2115f5e01c5987583c353",
+      "sha256": "f716b0941f6e47aa72b94d97f80d157e24273c38652d45eb9c1eb3ff1e39b6ac"
+    },
+    {
+      "path": "justfile",
+      "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "blob": "666748f626ecf9adbe44201ee1ea79562d8cf835",
+      "sha256": "59c4182b2649ba576a7808d252542da6d9b12514805024c0bd2f204a79eb9f01"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+      "blob": "4256c5b8a17c8e523b6438191c582883025e2b92",
+      "sha256": "34a25b49c3ebb7382914a64efdffec496f2476381e196a0d0572be6a67334f33"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "blob": "4ec010f9fb94da99266be18d834487a1e38698a5",
+      "sha256": "64f553c4051cb085f5d965e54a72fffdb18dc4b011663eee8aa16f8f646ee870"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_tests.rs",
+      "blob": "cd85b466292f1175d7b803440e8f0401f73ee048",
+      "sha256": "3cecb2ba327e7f0ebda5231bd74454b4552bf541c7bbd88b469ec15b481d5860"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_tests.rs",
+      "blob": "644d86e8e0e7d74ed50c5a19625255e960ef03f0",
+      "sha256": "ee48f3a58e3bf72b5351cd7dfdcd373bb734831f132bae96475eaaf026f2b238"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner_tests.rs",
+      "blob": "d84b89803800449ca66829fbe36acc84e0a2d7ba",
+      "sha256": "2da7c4e4fb5705c3c59ce4d49ab778cb8f68f5b6cf80a9bb9356588a1eede867"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "blob": "cc556120ea54dbd30548224b0f836b085ddcc5da",
+      "sha256": "d07c434cbd8ad6976503dc81bd20aa9ccef2d6bc23dd366dae4deaddd1be8bde"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_tests.rs",
+      "blob": "20012480084d31d81de7b70a36c3486a509f2ee9",
+      "sha256": "f965764f17be058c169b6bab13843b6874415d644a7581aa094b6e25fd9474be"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+      "blob": "003ae45f7fadfe155221694c481ece7cc06b6871",
+      "sha256": "627159736bae29d35480617b5c6d317f3cc018d9cef3fc6d2fc0f409b715ed44"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "blob": "7dc9c197f009b90fde594f05523b6e7f9820a162",
+      "sha256": "53d31cc6a1844ae7e890b0557269a651f61d51046be2ffdd2d151eaf2f52ccb9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs",
+      "blob": "179e982d5db2a3e29b512ff18866795a13a8cb32",
+      "sha256": "9a910003ec742732f70045549e5c7ab341b36ec3c37b9f2b2f38777e9cef58a0"
+    }
+  ],
+  "original_checked_commit": "30692d721d67321df0414c5c3f990449d7b9fea8",
+  "original_checked_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+  "current_code_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "current_code_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "source_comparison": "SOURCE_COMPARISON.json",
+  "note": "Current macro import does not change module names, test attributes, runner arguments or CI selection; this is declared coverage, not observed native execution."
+}

@@ -1,0 +1,54 @@
+{
+  "candidate_not_experiment_freeze": true,
+  "files_relative_to_qualification_root": {
+    "independent/FASHION_MNIST_TRAIN_CANDIDATE.md": {
+      "bytes": 19804,
+      "sha256": "74cb72e4b9ceac6b5a859de1d8a7b4858d2f43ea0db54410059b2008ac87927e"
+    },
+    "research/fashion-mnist-candidate-20261023/arithmetic-execution.json": {
+      "bytes": 659,
+      "sha256": "d9eeeb55bbc6f0cc3623a3593f0be70201d545fb51900284d0483cfebab1a26c"
+    },
+    "research/fashion-mnist-candidate-20261023/environment-validation.json": {
+      "bytes": 840,
+      "sha256": "2841ade9b54f038993a2b2201b27fb96e3cb9cb0c2d4d840ddcaf53d3b6d113e"
+    },
+    "research/fashion-mnist-candidate-20261023/format.log": {
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    "research/fashion-mnist-candidate-20261023/history-preservation.json": {
+      "bytes": 478,
+      "sha256": "9d631756d0806adeb70563ee3ca28149631ebfffe04bc2393d7621631c94191e"
+    },
+    "research/fashion-mnist-candidate-20261023/independent-review.json": {
+      "bytes": 2480,
+      "sha256": "5b785b91b6fa8318a6e060fbb7dd2f68e11afc74d123f58b0da9847bc9446544"
+    },
+    "research/fashion-mnist-candidate-20261023/model-inventory.json": {
+      "bytes": 6753,
+      "sha256": "806ec69b4292a09a8b83153879d92dbb20a6762796e74910e3503e61b599f0af"
+    },
+    "research/fashion-mnist-candidate-20261023/model_inventory.py": {
+      "bytes": 8916,
+      "sha256": "7c49632877635105d2e8e3756936cf4c71bc6cdb3aa3e455bb3063d71a3b4b7b"
+    },
+    "research/fashion-mnist-candidate-20261023/official-source-manifest.json": {
+      "bytes": 1842,
+      "sha256": "d9112d47608fd7c389158b48b6201ba1e178a578930530cf3806ccbf071044b3"
+    },
+    "research/fashion-mnist-candidate-20261023/plan.json": {
+      "bytes": 10179,
+      "sha256": "3b022e38985a89cf4855b0717053724f4a6cdc08932903a145bd9945c0907ea1"
+    },
+    "research/fashion-mnist-candidate-20261023/scope-and-access.json": {
+      "bytes": 1909,
+      "sha256": "1cbbe250a05721f20251fcac183bfbb13d27918d6597ec67f42b2e10e4a5805f"
+    }
+  },
+  "history_preservation_receipt": "research/fashion-mnist-candidate-20261023/history-preservation.json",
+  "prior_results_unchanged": true,
+  "schema": "hepta.fashion-candidate.publication.v1",
+  "scope": "New candidate documents and reproducible integer arithmetic only; no experiment/model/data execution",
+  "self_hash_policy": "Manifest excludes itself; Git commit binds it."
+}

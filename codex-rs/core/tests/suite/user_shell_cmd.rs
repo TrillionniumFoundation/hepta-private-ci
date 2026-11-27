@@ -71,7 +71,10 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
         .unwrap();
     let msg = wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandEnd(_))).await;
     let EventMsg::ExecCommandEnd(ExecCommandEndEvent {
-        stdout, exit_code, ..
+        turn_id: list_turn,
+        stdout,
+        exit_code,
+        ..
     }) = msg
     else {
         unreachable!()
@@ -82,6 +85,16 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
         "ls output should include {file_name}, got: {stdout:?}"
     );
 
+    // Command output precedes turn cleanup. Wait for it before starting a separate turn.
+    let completed = wait_for_event_match(&codex, |event| match event {
+        EventMsg::TurnComplete(completed) if completed.turn_id == list_turn => {
+            Some(completed.clone())
+        }
+        _ => None,
+    })
+    .await;
+    assert_eq!(completed.error, None);
+
     // 2) shell command should print the file contents verbatim
     let cat_cmd = format!("cat {file_name}");
     codex
@@ -90,6 +103,7 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
         .unwrap();
     let msg = wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandEnd(_))).await;
     let EventMsg::ExecCommandEnd(ExecCommandEndEvent {
+        turn_id: cat_turn,
         mut stdout,
         exit_code,
         ..
@@ -97,6 +111,7 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
     else {
         unreachable!()
     };
+    assert_ne!(cat_turn, list_turn);
     assert_eq!(exit_code, 0);
     if cfg!(windows) {
         // Windows shells emit CRLF line endings; normalize so the assertion remains portable.
@@ -182,10 +197,6 @@ async fn user_shell_cmd_can_be_interrupted() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn user_shell_command_does_not_replace_active_turn() -> anyhow::Result<()> {
-    let server = start_mock_server().await;
-    let mut builder = test_codex().with_model("gpt-5.4");
-    let fixture = builder.build(&server).await?;
-
     let call_id = "active-turn-shell-call";
     let args = if cfg!(windows) {
         serde_json::json!({
@@ -207,7 +218,23 @@ async fn user_shell_command_does_not_replace_active_turn() -> anyhow::Result<()>
         ev_assistant_message("msg-1", "done"),
         ev_completed("resp-2"),
     ]);
-    let mock = responses::mount_sse_sequence(&server, vec![first, second]).await;
+    // Hold the active turn at its real response stream until the user shell ends.
+    // Shell startup latency must not decide whether the two tasks overlap.
+    let (release_turn, wait_for_user_shell) = tokio::sync::oneshot::channel();
+    let mut release_turn = Some(release_turn);
+    let (server, _) = core_test_support::streaming_sse::start_streaming_sse_server(vec![
+        vec![core_test_support::streaming_sse::StreamingSseChunk {
+            gate: None,
+            body: first,
+        }],
+        vec![core_test_support::streaming_sse::StreamingSseChunk {
+            gate: Some(wait_for_user_shell),
+            body: second,
+        }],
+    ])
+    .await;
+    let mut builder = test_codex().with_model("gpt-5.4");
+    let fixture = builder.build_with_streaming_server(&server).await?;
 
     let cwd = fixture.config.cwd.clone();
     let (sandbox_policy, permission_profile) =
@@ -273,6 +300,11 @@ async fn user_shell_command_does_not_replace_active_turn() -> anyhow::Result<()>
             }
             EventMsg::ExecCommandEnd(ev) if ev.source == ExecCommandSource::UserShell => {
                 saw_user_shell_end = true;
+                if let Some(release_turn) = release_turn.take() {
+                    release_turn.send(()).map_err(|()| {
+                        anyhow::anyhow!("active turn closed before user shell ended")
+                    })?;
+                }
             }
             EventMsg::TurnComplete(_) => {
                 saw_turn_complete = true;
@@ -293,11 +325,12 @@ async fn user_shell_command_does_not_replace_active_turn() -> anyhow::Result<()>
     );
 
     assert_eq!(
-        mock.requests().len(),
+        server.requests().await.len(),
         2,
         "active turn should continue and issue the follow-up model request"
     );
 
+    server.shutdown().await;
     Ok(())
 }
 

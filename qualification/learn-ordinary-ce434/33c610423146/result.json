@@ -1,0 +1,96 @@
+{
+  "source_sha": "33c610423146597a3d1102efe77f09507477673e",
+  "source_tree": "5d7cea0336f4eca767967a8938734c92ed81ff43",
+  "canonical_tmpdir": "/tmp/hlca-6ycqsdwt",
+  "v8_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+  "state": "passed",
+  "steps": [
+    {
+      "name": "helper-build",
+      "exit_code": 0,
+      "seconds": 4.302373235113919,
+      "log_sha256": "819e2a44af24e06a4b6438faacc31d7548265adad06ca0bc912a5e4ae765b96d",
+      "log_bytes": 218
+    },
+    {
+      "name": "helper-verify",
+      "exit_code": 0,
+      "seconds": 0.18833985785022378,
+      "log_sha256": "a1eab49135bae90f67e7285196c9426f68b8983fca1ee5bf69e3b6b2afe0b53b",
+      "log_bytes": 1198
+    },
+    {
+      "name": "focused-native",
+      "exit_code": 0,
+      "seconds": 156.68384008202702,
+      "log_sha256": "a55455ad4b0d8cf97d59397e14025f1a94c9b4e18135fa64d73e338e6777ea5c",
+      "log_bytes": 39353
+    },
+    {
+      "name": "focused-junit",
+      "exit_code": 0,
+      "seconds": 0.06875661597587168,
+      "log_sha256": "6971fbbfbf877a942ee9c11c32140e92b4eb8f13ccd4ee3f8f220ee401e48d81",
+      "log_bytes": 2002
+    }
+  ],
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "required_coverage": {
+    "cases": 6,
+    "expected": [
+      "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore",
+      "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack",
+      "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use",
+      "learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames"
+    ],
+    "failed_or_skipped": [],
+    "raw_log_rows": [
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use"
+      ]
+    ],
+    "log_file": "focused-native.json.e1d602675da2437f9b48845253a8ce62.log",
+    "log_bytes": 36710,
+    "log_sha256": "9d40a859509a6d67a03412147215d9590e437b471fe294f9dc9ff78c1833d718",
+    "junit_bytes": 2122,
+    "junit_sha256": "96534bc423645459cd1fa435e95ec7dff785351e8ee2b8020aff1a32ce63e4c2",
+    "exact_pass": true
+  },
+  "native_exit_code": 0,
+  "collection_exit_code": 0,
+  "source_after": "33c610423146597a3d1102efe77f09507477673e",
+  "source_status_after": ""
+}

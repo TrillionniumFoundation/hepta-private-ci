@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "snapshot_utc": "2026-11-11 00:51:21 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "mode": "read-only source and original-run audit; no h jobs, source mutation, publication, or tests executed",
+  "decision": "narrow_transplant_source_compatible_candidate; exact_native_qualification_unknown",
+  "refs": {
+    "baseline": "c7633658aef42077f51fa71a1b727b4653ddb76b",
+    "production": "4073268ead64aa1f8303973d37c5c6d73c951061",
+    "with_extra_tests": "1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89"
+  },
+  "trees": {
+    "baseline": "cdd2f6d38c322ac97bfc3cae1127251c1a5026ed",
+    "production": "baf7b8d3f189212cc3ed445daf502f8bd5bd645d",
+    "with_extra_tests": "1f5986c2c27c970a01d49dc4e2547c55861006f8"
+  },
+  "ancestry": {
+    "baseline_to_production": {
+      "status": "ahead",
+      "ahead_by": 66,
+      "behind_by": 0,
+      "merge_base": "c7633658aef42077f51fa71a1b727b4653ddb76b",
+      "changed_files": 132,
+      "changed_core_files": 4,
+      "dependency_manifest_pty_exec_server_sandbox_changes": []
+    },
+    "production_to_with_extra_tests": {
+      "status": "ahead",
+      "ahead_by": 2,
+      "behind_by": 0,
+      "merge_base": "4073268ead64aa1f8303973d37c5c6d73c951061",
+      "changed_files": 2,
+      "added_lines": 126,
+      "deleted_lines": 0
+    }
+  },
+  "files": [
+    {
+      "path": "codex-rs/core/src/unified_exec/async_watcher.rs",
+      "baseline_blob": "c0a25db2fe19e4d80208dd289689dd0f9c1519f0",
+      "production_head_blob": "3f2a3f687ecbfbd64c8f74082de4b1ef17b09603",
+      "final_postimage_blob": "3f2a3f687ecbfbd64c8f74082de4b1ef17b09603",
+      "role": "production",
+      "postimage_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89/codex-rs/core/src/unified_exec/async_watcher.rs"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+      "baseline_blob": "bffc5cf9f80e4266400f27bcebe11b895226deab",
+      "production_head_blob": "0992e0fd217b7c38ee7327b48e9d3b5cce4ea4fb",
+      "final_postimage_blob": "0992e0fd217b7c38ee7327b48e9d3b5cce4ea4fb",
+      "role": "required_test_signature_fixture_adaptation_and_regression",
+      "postimage_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89/codex-rs/core/src/unified_exec/async_watcher_tests.rs"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process.rs",
+      "baseline_blob": "549d118cfe090af1aea51a47ba0eeb1eb5ff0098",
+      "production_head_blob": "0b32ec80adfc3c672c848ad48472ae0def4ddadb",
+      "final_postimage_blob": "0b32ec80adfc3c672c848ad48472ae0def4ddadb",
+      "role": "production",
+      "postimage_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89/codex-rs/core/src/unified_exec/process.rs"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "baseline_blob": "181551409d2d511a3ff8f027048200beb27606ec",
+      "production_head_blob": "790bc38f22f6642480a40027572f6f435d7b3a0d",
+      "final_postimage_blob": "790bc38f22f6642480a40027572f6f435d7b3a0d",
+      "role": "production",
+      "postimage_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89/codex-rs/core/src/unified_exec/process_manager.rs"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+      "baseline_blob": "21f2bdf08c3a4a30beb5d07bf7690d00240a9d66",
+      "production_head_blob": "21f2bdf08c3a4a30beb5d07bf7690d00240a9d66",
+      "final_postimage_blob": "29a9bfe7b7cbadf407a437af48f325d477973a9f",
+      "role": "additional_regression",
+      "postimage_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89/codex-rs/core/src/unified_exec/process_observation_tests.rs"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+      "baseline_blob": "df7cbf7439dfaf895e9737d87df756d46310d529",
+      "production_head_blob": "df7cbf7439dfaf895e9737d87df756d46310d529",
+      "final_postimage_blob": "46d1874128b54ebaefc7678ef8833df7b2343490",
+      "role": "additional_regression",
+      "postimage_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89/codex-rs/core/src/unified_exec/process_remote_observation_tests.rs"
+    }
+  ],
+  "preserved_byte_identical_files": [
+    {
+      "path": "codex-rs/core/src/unified_exec/mod.rs",
+      "baseline_blob": "3762b7f437b275bf558c5bcc47b994d928fd6b0f",
+      "final_blob": "3762b7f437b275bf558c5bcc47b994d928fd6b0f",
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/head_tail_buffer.rs",
+      "baseline_blob": "0c9df7c1be3d43ef8effa98429fd7c748642f068",
+      "final_blob": "0c9df7c1be3d43ef8effa98429fd7c748642f068",
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec.rs",
+      "baseline_blob": "cb35cd03dafbf51072e912943dfd3ea23c7b19d8",
+      "final_blob": "cb35cd03dafbf51072e912943dfd3ea23c7b19d8",
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/utils/pty/src/process.rs",
+      "baseline_blob": "ada4ef4016ef21b671dfeaa50650bf8e7087243b",
+      "final_blob": "ada4ef4016ef21b671dfeaa50650bf8e7087243b",
+      "byte_identical": true
+    }
+  ],
+  "cause_assessment": {
+    "original_path": "SpawnedPty reliable mpsc stdout/stderr -> combine_output_receivers broadcast(256) -> process poll buffer + output_tx broadcast(64) -> async watcher-owned transcript; Lagged errors skip dropped chunks",
+    "new_path": "Process owner consumes original reliable mpsc stdout/stderr and records capped transcript before poll buffer/live broadcast; watcher emits live deltas only",
+    "relationship_to_original_failure": "Mechanistically addresses missing HEAD and omitted-byte marker/count caused by loss or late subscription before transcript recording. This is source-based causal plausibility, not proof that the original exact-head acceptance now passes.",
+    "remote_behavior": "Transcript insertion after existing sequence checks and for existing readback chunks filtered above last_seq; state/denial/failure/readback logic unchanged."
+  },
+  "narrow_transplant": {
+    "minimal_required_files": [
+      "codex-rs/core/src/unified_exec/async_watcher.rs",
+      "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+      "codex-rs/core/src/unified_exec/process.rs",
+      "codex-rs/core/src/unified_exec/process_manager.rs"
+    ],
+    "recommended_additional_tests": [
+      "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+      "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs"
+    ],
+    "do_not_import_whole_pr5865": true,
+    "no_extra_external_dependencies_observed": true,
+    "apply_compile_native_checks_performed": false,
+    "already_included": "All three production postimages and required async watcher test postimage are identical at 407 and 1e49; do not duplicate on either. 1e49 preserves 407 in full and adds only two tests."
+  },
+  "preserved_semantics": {
+    "retained_bytes_per_head_tail_buffer": 1048576,
+    "head_budget_bytes": 524288,
+    "tail_budget_bytes": 524288,
+    "omission_marker": "... {omitted_bytes} bytes omitted ...; marker/delimiter bytes remain additional to retained payload",
+    "live_delta_max_bytes": 8192,
+    "live_delta_count_cap": "MAX_EXEC_OUTPUT_DELTAS_PER_CALL unchanged; numeric value not independently read in this audit",
+    "live_broadcast_capacity": 64,
+    "default_max_output_tokens": 10000,
+    "max_unified_exec_processes": 64,
+    "early_exit_grace_ms": 150,
+    "trailing_output_grace_ms": 100,
+    "caller_token_truncation_and_original_acceptance_assertions": "unchanged",
+    "approval_sandbox_denial_write_termination_logic": "no semantic diff in the three production files outside transcript ownership/stream ingress; runtime safety qualification not performed"
+  },
+  "original_failure": {
+    "source_sha": "c7633658aef42077f51fa71a1b727b4653ddb76b",
+    "run_id": 42902094041,
+    "job_id": 130130648526,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42902094041/job/130130648526",
+    "run_metadata_independently_read": true,
+    "run_conclusion": "failure",
+    "test": "suite::unified_exec::unified_exec_formats_large_output_summary",
+    "source_path": "codex-rs/core/tests/suite/unified_exec.rs",
+    "input": {
+      "stdout_bytes": 1300010,
+      "max_output_tokens": 100,
+      "yield_time_ms": 3000
+    },
+    "observations": [
+      {
+        "attempt": 1,
+        "timestamp": "2026-11-10T22:04:46.7925463Z",
+        "duration_seconds": 1.087,
+        "line": 3188,
+        "failure": "regex did not match actual value (omitted-byte marker)"
+      },
+      {
+        "attempt": 2,
+        "timestamp": "2026-11-10T22:04:47.3955004Z",
+        "duration_seconds": 0.602,
+        "line": 3186,
+        "failure": "assertion failed: end_event.aggregated_output.contains(\"HEAD\\n\")"
+      }
+    ],
+    "independent_test_cases": 1,
+    "full_job_terminal": {
+      "tests_run": 18469,
+      "passed": 18457,
+      "failed": 12,
+      "skipped": 126
+    },
+    "excerpt_path": "/workspace/scratch/c2fccbdb195e/p0-native-driver-20261111/core-original-hosted-excerpt.log",
+    "excerpt_sha256": "51c8abf28bedde4661b1c535f9d7a3d5f02cfc47691919c2eb528b251dc04d99",
+    "excerpt_provenance": "p0_identity retained from previously fetched original API job text; this agent read excerpt and independently read original run SHA metadata, not the full log again"
+  },
+  "published_validation": {
+    "pr5865": {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5865",
+      "body_reported_helper_reproduction": {
+        "input_chunks": 513,
+        "chunk_bytes": 4096,
+        "received_chunks": 257,
+        "lost_chunks": 256,
+        "retained_bytes": 1052672,
+        "input_bytes": 2101248,
+        "original_raw_helper_log_read_by_this_audit": false
+      },
+      "blocking_run": {
+        "id": 42930978373,
+        "status": "queued",
+        "conclusion": null
+      },
+      "focused_core_native_result": null
+    },
+    "pr5875": {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5875",
+      "body_reports": [
+        "git diff --check passed",
+        "just fmt --base 4073268ead64aa1f8303973d37c5c6d73c951061 passed"
+      ],
+      "two_added_tests_native_qualified": false,
+      "blocking_run": {
+        "id": 42932590491,
+        "status": "queued",
+        "conclusion": null
+      },
+      "superseded_prior_local_build_qualifies_final_tree": false
+    }
+  },
+  "targeted_tests_requiring_actual_candidate_evidence": [
+    "suite::unified_exec::unified_exec_formats_large_output_summary",
+    "output_transcript_survives_lagged_deltas_polling_and_late_output",
+    "transcript_survives_late_subscriber_lag_and_repeated_poll_drains",
+    "remote_transcript_records_recovered_sequences_once_after_poll_drain",
+    "streaming_output_preserves_multibyte_characters_across_chunks",
+    "streaming_output_bounds_invalid_bytes_and_keeps_the_full_transcript",
+    "streaming_output_finishes_on_close_without_waiting_for_grace",
+    "streaming_output_keeps_grace_as_fallback_without_close",
+    "exit_watcher_waits_for_late_network_denial_before_classifying_end"
+  ],
+  "limits": [
+    "No exact postimage native acceptance PASS established by this audit.",
+    "Unchanged upstream spawn_from_driver adapter still consumes broadcast and skips Lagged; tests pace source ingress to target downstream optional-subscriber lag. This is not a proof of losslessness before the reliable mpsc boundary.",
+    "Existing 100 ms trailing-output grace remains; no guarantee of arbitrary delayed trailing bytes added.",
+    "No cross-stream causal total order is introduced; stdout and stderr are selected as available, as before.",
+    "No new independent research confirmations; no learning, selection, final-use or production adoption authority."
+  ],
+  "retrieval_issues": [
+    {
+      "operation": "github_fetch actions/jobs/130130648526 metadata",
+      "result": "INVALID_ARGUMENT public-endpoint allowlist rejection",
+      "resolved_by": "original run SHA metadata plus retained original job excerpt; no replacement experiment"
+    }
+  ],
+  "real_independent_confirmations_added": 0,
+  "adoption": "HOLD"
+}

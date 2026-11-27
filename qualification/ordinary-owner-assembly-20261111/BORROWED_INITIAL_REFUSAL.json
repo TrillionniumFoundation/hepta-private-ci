@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "source_base": "89b3b44747bedbc80732f73eda2405b7a397b926",
+  "previous_required_fix_manifest": "3504cf4dbf56191b21d0183fccf69cf5c4a98211",
+  "purpose": "Refuse borrowed retained serving when the independent Initial route is enabled. The route requires the consuming original service scope; the borrowed API does not create or omit its worker.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+      "base_blob": "c7e4a7366c60352a095bcd44f19314a6790dd455",
+      "base_sha256": "4717a4175e30a2a0e35ef27f8136d99ba3245ff1f9fab188356448c7400daee0",
+      "new_blob": "69c23bafd6c3a5515bbf4250864c7dee58866127",
+      "new_sha256": "f7e8e3bc775a37d8e4be1c7d36e324bbb603a065b69b6ff5a46ac2a09191a2bf",
+      "bytes": 7771,
+      "additions": 5,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_text": "    pub fn serve_retained(&self) -> io::Result<()> {\n        if self.learning.is_some() {\n            return Err(io::Error::other(\n                \"registered learning requires the consuming original session serve scope\",\n            ));\n        }\n        if self.root_admin.is_none() {",
+          "new_text": "    pub fn serve_retained(&self) -> io::Result<()> {\n        if self.learning.is_some() {\n            return Err(io::Error::other(\n                \"registered learning requires the consuming original session serve scope\",\n            ));\n        }\n        if self.initial_publication.is_some() {\n            return Err(io::Error::other(\n                \"registered Initial publication requires the consuming original session serve scope\",\n            ));\n        }\n        if self.root_admin.is_none() {"
+        }
+      ]
+    }
+  ],
+  "callers": {
+    "delta_blob": "db803da1374a49044e9b258a91bef60fd10bdb3e",
+    "delta_sha256": "20054995ab10f042f0a0746981730661ba1724a15397d5791deac9a1148f5480",
+    "delta_bytes": 2126,
+    "boundary_id": "root_same_retained_service_serve",
+    "product_callers_unchanged": [
+      "codex-rs/hepta-agentd/src/native_g2_entry/root.rs",
+      "codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs"
+    ]
+  },
+  "unchanged": [
+    "Original learning refusal and error text",
+    "All existing serving paths when no Initial capability is enabled",
+    "Original writer, files, keys, roles, lease and capability creation",
+    "Original caller set and checkers"
+  ],
+  "qualification": {
+    "native_executed": false,
+    "shared_or_measured_source_modified": false
+  }
+}

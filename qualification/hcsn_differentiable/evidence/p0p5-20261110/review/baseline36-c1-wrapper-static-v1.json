@@ -1,0 +1,65 @@
+{
+  "schema": "hcsn-baseline36-c1-wrapper-static-review-v1",
+  "reviewed_utc": "2026-11-10T17:37:24.200875+00:00",
+  "status": "no_remaining_static_blocker_found_in_reviewed_scope",
+  "actual_dataset_or_checkpoint_audit_performed_by_this_review": false,
+  "new_training_performed": false,
+  "files": {
+    "subset_context.py": {
+      "bytes": 12037,
+      "sha256": "0be6d9786b460070f88352f9dfe27cd12469c2c62e2f979f5c525b08af9c4c8f"
+    },
+    "subset_baselines.py": {
+      "bytes": 7648,
+      "sha256": "c3cafe4ac65c7a179c6fa96f05fabb4c529044d22f60f03bd2435d6c283752fd"
+    },
+    "subset_c1.py": {
+      "bytes": 10149,
+      "sha256": "0904dfa9716fa4402e0a57f667fb359378ebae1a7ceda7f453fdd739210c9b28"
+    },
+    "subset_checkpoints.py": {
+      "bytes": 6775,
+      "sha256": "684b71cdf3367540436b6635ed476730dbb43b6e6541e4c6012bf9922f5dcc46"
+    },
+    "run_subset_review.py": {
+      "bytes": 15078,
+      "sha256": "ba8469e4aa4f8068edb8e9e8ca7f635ce12710b3c0ca485acc9d9b2d54873f8f"
+    }
+  },
+  "findings": [
+    {
+      "id": "SR-01",
+      "severity": "medium",
+      "finding": "Counting terminal records without the source-specific intent/launch state machine could miss duplicate process starts.",
+      "resolution": "Owner now requires the frozen controller sequence of three started records plus terminal, process_started False/False/True/True, one actual PID shared with terminal, and seven unique PIDs. An earlier reviewer suggestion of exactly one started record was corrected after owner checked the frozen controller.",
+      "status": "addressed_in_reviewed_code"
+    },
+    {
+      "id": "SR-02",
+      "severity": "medium",
+      "finding": "Per-arm all-six cost summed only independently passed candidates, undercounting when an artifact audit fails.",
+      "resolution": "Owner now charges all six original outer records plus corresponding C1 outer records regardless of artifact audit outcome; quality still refuses incomplete seed groups.",
+      "status": "addressed_in_reviewed_code"
+    },
+    {
+      "id": "SR-03",
+      "severity": "hardening",
+      "finding": "Adam moments and final phase CPU needed tighter consistency checks and clock scope.",
+      "resolution": "Owner checks pinned AdamW constructor defaults, finite/nonnegative real and imaginary second moments, final CPU sampling >= epoch clocks, and explicitly distinguishes the report sampling point from exit rusage.",
+      "status": "addressed_in_reviewed_code"
+    }
+  ],
+  "accepted_boundaries": [
+    "Original36 is a subset; no claim of completed original42.",
+    "C1 is a separate adaptive continuation stage, not the original cap result.",
+    "No pre-first-update resume snapshot exists for C1; final invariants and source checks cannot be called direct observation of initial restoration.",
+    "Original best SHA is preserved absent strict improvement; all parent+phase epoch scores drive the strict argmax and inherited plateau state.",
+    "Original full outer wall is charged and CPU gaps are not invented."
+  ],
+  "clock_adapter_note": {
+    "status": "separate_v2_protocol_reviewed_not_yet_executed_by_this_reviewer",
+    "actual_v1_failure_reported_by_owner": "All seven C1 chains failed the frozen helper equality for two sequential elapsed() samples; original36 passed.",
+    "approved_condition": "Retain original reports/failure/cost; prove finite early<=late=original cumulative-parent outer<=child outer; normalize only a deep-copy helper phase clock to late, retain original cumulative for quality/cost; reject negative/nonfinite/out-of-bound differences.",
+    "not_a_tolerance_relaxation": true
+  }
+}

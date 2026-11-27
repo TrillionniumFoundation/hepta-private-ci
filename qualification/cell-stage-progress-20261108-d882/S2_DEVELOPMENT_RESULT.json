@@ -1,0 +1,239 @@
+{
+  "energy_joules": null,
+  "execution_status": "completed",
+  "financial_cost": null,
+  "finished_at": "2026-11-09T02:36:21.394629+00:00",
+  "new_confirmation_runs": 0,
+  "new_training_runs": 0,
+  "physical_cost_complete": false,
+  "records": [
+    {
+      "arms": {
+        "adaptive": {
+          "bayes_regret": 0.021091240977763978,
+          "complete_environment_cost": 2.7713178294573644,
+          "expected_net_utility": 0.20109983235068496,
+          "realized_net_utility": 0.19090116279069766,
+          "stop_rate": 0.6666666666666666
+        },
+        "fixed_1": {
+          "bayes_regret": 0.020406126123001796,
+          "complete_environment_cost": 2.7713178294573644,
+          "expected_net_utility": 0.20109983235068496,
+          "realized_net_utility": 0.19090116279069766,
+          "stop_rate": 0.6666666666666666
+        },
+        "fixed_3": {
+          "bayes_regret": 0.014908839374694439,
+          "complete_environment_cost": 2.8457364341085274,
+          "expected_net_utility": 0.19967284075364725,
+          "realized_net_utility": 0.22382364341085273,
+          "stop_rate": 0.6666666666666666
+        },
+        "fixed_6": {
+          "bayes_regret": 0.014483396576306129,
+          "complete_environment_cost": 2.9689922480620154,
+          "expected_net_utility": 0.1882011303252225,
+          "realized_net_utility": 0.19869186046511628,
+          "stop_rate": 0.6666666666666666
+        }
+      },
+      "checkpoint_sha256": "a70daa8574ea4efca0681b354166c692cf3e0eacf715cdc8632d05e693606b15",
+      "dataset_fingerprint": "887e01004a8725cabd1970d6afb884a96a650afbdeecf7377161546a222812c3",
+      "meter": {
+        "choice_panel_process_cpu_seconds": 0.00033420700000000303,
+        "choice_panel_wall_seconds": 0.00033275099985985435,
+        "decision_time_unit": "simulator_ticks; not measured host wall time",
+        "end_to_end_process_cpu_seconds": 0.008622277999999983,
+        "end_to_end_wall_seconds": 0.008630689000256098,
+        "energy_joules": null,
+        "environment_cost_unit": "simulator_dimensionless_work",
+        "evaluation_process_cpu_seconds": 0.0010678880000000168,
+        "evaluation_wall_seconds": 0.0010666850002962747,
+        "financial_cost": null,
+        "inference_process_cpu_seconds": 0.006880386000000016,
+        "inference_wall_seconds": 0.006884328999603895,
+        "physical_cost_complete": false,
+        "prediction_calls": 12,
+        "prediction_rows": 516,
+        "queried_episodes": 43,
+        "shared_panel_charged_to_each_arm": true,
+        "training_cost": null
+      },
+      "panel": "same_expanded_development_resource_panel",
+      "seed": 9011
+    },
+    {
+      "arms": {
+        "adaptive": {
+          "bayes_regret": 0.0,
+          "complete_environment_cost": 1.0790697674418603,
+          "expected_net_utility": -0.03237209302325582,
+          "realized_net_utility": -0.03237209302325582,
+          "stop_rate": 1.0
+        },
+        "fixed_1": {
+          "bayes_regret": 0.0,
+          "complete_environment_cost": 1.0790697674418603,
+          "expected_net_utility": -0.03237209302325582,
+          "realized_net_utility": -0.03237209302325582,
+          "stop_rate": 1.0
+        },
+        "fixed_3": {
+          "bayes_regret": 0.0,
+          "complete_environment_cost": 1.0790697674418603,
+          "expected_net_utility": -0.03237209302325582,
+          "realized_net_utility": -0.03237209302325582,
+          "stop_rate": 1.0
+        },
+        "fixed_6": {
+          "bayes_regret": 0.0,
+          "complete_environment_cost": 1.0790697674418603,
+          "expected_net_utility": -0.03237209302325582,
+          "realized_net_utility": -0.03237209302325582,
+          "stop_rate": 1.0
+        }
+      },
+      "checkpoint_sha256": "a70daa8574ea4efca0681b354166c692cf3e0eacf715cdc8632d05e693606b15",
+      "dataset_fingerprint": "2cd7c241a1194494102e81364847752af446571b1d32349bc31c5c18ddc0b6ea",
+      "meter": {
+        "choice_panel_process_cpu_seconds": 0.00024947999999999637,
+        "choice_panel_wall_seconds": 0.0002555280002525251,
+        "decision_time_unit": "simulator_ticks; not measured host wall time",
+        "end_to_end_process_cpu_seconds": 0.0014544529999999944,
+        "end_to_end_wall_seconds": 0.0014685999999528576,
+        "energy_joules": null,
+        "environment_cost_unit": "simulator_dimensionless_work",
+        "evaluation_process_cpu_seconds": 0.0009424219999999983,
+        "evaluation_wall_seconds": 0.0009478199999648496,
+        "financial_cost": null,
+        "inference_process_cpu_seconds": 6.0990000000094025e-06,
+        "inference_wall_seconds": 6.740000117133604e-06,
+        "physical_cost_complete": false,
+        "prediction_calls": 0,
+        "prediction_rows": 0,
+        "queried_episodes": 0,
+        "shared_panel_charged_to_each_arm": true,
+        "training_cost": null
+      },
+      "panel": "original_generator_resource_panel",
+      "seed": 9011
+    },
+    {
+      "arms": {
+        "adaptive": {
+          "bayes_regret": 0.0384501004127936,
+          "complete_environment_cost": 2.8736434108527136,
+          "expected_net_utility": 0.1832081183409081,
+          "realized_net_utility": 0.20128100775193802,
+          "stop_rate": 0.6666666666666666
+        },
+        "fixed_1": {
+          "bayes_regret": 0.036878914173201945,
+          "complete_environment_cost": 2.856589147286822,
+          "expected_net_utility": 0.18457451060306043,
+          "realized_net_utility": 0.18873062015503878,
+          "stop_rate": 0.6666666666666666
+        },
+        "fixed_3": {
+          "bayes_regret": 0.025859281600898443,
+          "complete_environment_cost": 2.7837209302325583,
+          "expected_net_utility": 0.18848632362846937,
+          "realized_net_utility": 0.20211821705426358,
+          "stop_rate": 0.6666666666666666
+        },
+        "fixed_6": {
+          "bayes_regret": 0.025549170405144237,
+          "complete_environment_cost": 2.9612403100775193,
+          "expected_net_utility": 0.1772471256228539,
+          "realized_net_utility": 0.16756782945736434,
+          "stop_rate": 0.6666666666666666
+        }
+      },
+      "checkpoint_sha256": "bc516adc2f764e01e62dfd741a628759da621890d93c689399c88b26d05a2d4b",
+      "dataset_fingerprint": "8a829157be3aa36250d02871fea95fcf02e09c46d9b52a143633831aefe53681",
+      "meter": {
+        "choice_panel_process_cpu_seconds": 0.00025627200000000183,
+        "choice_panel_wall_seconds": 0.00025495699992461596,
+        "decision_time_unit": "simulator_ticks; not measured host wall time",
+        "end_to_end_process_cpu_seconds": 0.00786231599999998,
+        "end_to_end_wall_seconds": 0.00787049600012324,
+        "energy_joules": null,
+        "environment_cost_unit": "simulator_dimensionless_work",
+        "evaluation_process_cpu_seconds": 0.0010102120000000103,
+        "evaluation_wall_seconds": 0.001014107999708358,
+        "financial_cost": null,
+        "inference_process_cpu_seconds": 0.0063557749999999524,
+        "inference_wall_seconds": 0.006352723999953014,
+        "physical_cost_complete": false,
+        "prediction_calls": 12,
+        "prediction_rows": 516,
+        "queried_episodes": 43,
+        "shared_panel_charged_to_each_arm": true,
+        "training_cost": null
+      },
+      "panel": "same_expanded_development_resource_panel",
+      "seed": 9017
+    },
+    {
+      "arms": {
+        "adaptive": {
+          "bayes_regret": 0.0,
+          "complete_environment_cost": 1.0790697674418606,
+          "expected_net_utility": -0.03237209302325582,
+          "realized_net_utility": -0.03237209302325582,
+          "stop_rate": 1.0
+        },
+        "fixed_1": {
+          "bayes_regret": 0.0,
+          "complete_environment_cost": 1.0790697674418606,
+          "expected_net_utility": -0.03237209302325582,
+          "realized_net_utility": -0.03237209302325582,
+          "stop_rate": 1.0
+        },
+        "fixed_3": {
+          "bayes_regret": 0.0,
+          "complete_environment_cost": 1.0790697674418606,
+          "expected_net_utility": -0.03237209302325582,
+          "realized_net_utility": -0.03237209302325582,
+          "stop_rate": 1.0
+        },
+        "fixed_6": {
+          "bayes_regret": 0.0,
+          "complete_environment_cost": 1.0790697674418606,
+          "expected_net_utility": -0.03237209302325582,
+          "realized_net_utility": -0.03237209302325582,
+          "stop_rate": 1.0
+        }
+      },
+      "checkpoint_sha256": "bc516adc2f764e01e62dfd741a628759da621890d93c689399c88b26d05a2d4b",
+      "dataset_fingerprint": "7c18d0bdae59ea5f12ed17cfe894b1d9fb4c07db45a87070944ba14ddeabdfd5",
+      "meter": {
+        "choice_panel_process_cpu_seconds": 0.00023811400000001148,
+        "choice_panel_wall_seconds": 0.00023736000002827495,
+        "decision_time_unit": "simulator_ticks; not measured host wall time",
+        "end_to_end_process_cpu_seconds": 0.0013559080000000168,
+        "end_to_end_wall_seconds": 0.0013571350000347593,
+        "energy_joules": null,
+        "environment_cost_unit": "simulator_dimensionless_work",
+        "evaluation_process_cpu_seconds": 0.000860890000000003,
+        "evaluation_wall_seconds": 0.0008595199997216696,
+        "financial_cost": null,
+        "inference_process_cpu_seconds": 5.087999999986437e-06,
+        "inference_wall_seconds": 5.588000021816697e-06,
+        "physical_cost_complete": false,
+        "prediction_calls": 0,
+        "prediction_rows": 0,
+        "queried_episodes": 0,
+        "shared_panel_charged_to_each_arm": true,
+        "training_cost": null
+      },
+      "panel": "original_generator_resource_panel",
+      "seed": 9017
+    }
+  ],
+  "started_at": "2026-11-09T02:36:21.119190+00:00",
+  "status": "HOLD",
+  "total_process_cpu_seconds": 0.18909073199999998,
+  "total_wall_seconds": 0.2754314079998039
+}

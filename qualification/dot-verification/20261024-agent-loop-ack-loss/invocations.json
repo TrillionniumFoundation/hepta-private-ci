@@ -1,0 +1,24 @@
+{
+  "parent": "d282d937aab7cf1ba3a1751db72f337442d54078",
+  "cwd": "/workspace/scratch/f24caf690188/hepta-native-loop-ack-loss/codex-rs",
+  "environment": {
+    "RUSTUP_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup",
+    "CARGO_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/workspace/scratch/f24caf690188/hepta-native-loop-combined-evidence/target",
+    "PATH_prefix": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/bin:/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/bin"
+  },
+  "commands": {
+    "targeted": "just test --offline --locked -p codex-hepta-agent-loop --features context-v2 --test commit_ack_loss",
+    "full": "just test --offline --locked -p codex-hepta-agent-loop --features context-v2 --success-output immediate",
+    "format": "just fmt",
+    "scoped_clippy": "cargo clippy --offline --locked -p codex-hepta-agent-loop --features context-v2 --all-targets --no-deps -- -D warnings",
+    "diff_check": "git diff --check"
+  },
+  "final_test_sha256": "556ab6444ec8af2fadec694e050f94951c4c23b663034e447222ec9c94630f31",
+  "unchanged_runner_sha256": "c8e89152bb7ae520314be240e8ddb1940c614443be90c7d5189ac8ce7bca2a96",
+  "expected_negative_control": "same effect key observed twice; effect executions=2 when owner receipt deliberately missing"
+}

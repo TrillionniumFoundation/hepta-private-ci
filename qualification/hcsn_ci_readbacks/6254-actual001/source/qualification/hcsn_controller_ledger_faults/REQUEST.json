@@ -1,0 +1,37 @@
+{
+  "base_source": "994def0b188c5105d0ceb9ace281af7f4bd0e3b2",
+  "identity": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1",
+  "maximum_controller_workers": 13,
+  "maximum_executed_toys": 10,
+  "maximum_failed_exec_attempts": 1,
+  "maximum_intentional_self_SIGKILLs": 3,
+  "numerical_imports_and_api_calls": 0,
+  "post_execution_payload_limit_bytes": 2097152,
+  "selected_AST_sha256": {
+    "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+    "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+    "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+    "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+  },
+  "source_paths": [
+    "qualification/hcsn_controller_ledger_faults/probe.py",
+    "qualification/hcsn_controller_ledger_faults/SPEC.md",
+    "qualification/hcsn_controller_ledger_faults/REQUEST.json",
+    "qualification/hcsn_adjoint_adam_resume/native_probe.py",
+    ".github/workflows/hcsn-controller-ledger-faults.yml"
+  ],
+  "status": "INTENT_NOT_EXECUTED",
+  "synthetic_starting_reserved_bound_only": [
+    3,
+    3,
+    2
+  ],
+  "target_controller_sha256": "f2e0b5bf8c4c15bbfd2df967749d949acffe22e4093320aa17c7ff9fbdc84ae2",
+  "toy_expected_calls": [
+    0,
+    0,
+    0
+  ],
+  "toy_timeout_seconds": 3,
+  "worker_timeout_seconds": 8
+}

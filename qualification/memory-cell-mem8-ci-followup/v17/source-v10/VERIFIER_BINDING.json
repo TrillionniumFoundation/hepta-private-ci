@@ -1,0 +1,108 @@
+{
+  "actual_job": 130660630288,
+  "actual_run": 43060276203,
+  "attempt": 1,
+  "complete_inverse_restores_original_v9": true,
+  "current_verifier": {
+    "bytes": 15956,
+    "git_blob": "30374819346a235b0b7bd8d70e8fcb382d12ea61",
+    "sha256": "67c3d25824f4a486ad208d4d1b26f8ae377c314ca25e4a58af518ac35ab1d40c"
+  },
+  "exact_edits": [
+    {
+      "count": 1,
+      "new": "original V10 source-only",
+      "old": "original V9 source-only"
+    },
+    {
+      "count": 1,
+      "new": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "old": "408226fc670bfa8c1736e2b264750b549237b7c4"
+    },
+    {
+      "count": 1,
+      "new": "658fa040046285116b1fd81b94ff8c96444072ad",
+      "old": "112fe78dedd76b258b17976cff14693c52897c8d"
+    },
+    {
+      "count": 1,
+      "new": "be4b90394bc69170f8e67aee5a4a6d3e361f9cbc",
+      "old": "43d28191901d7d08c4543884d2f81c0b44eb8678"
+    },
+    {
+      "count": 1,
+      "new": "587c5df701802927459237c989e74aa87c2b8529f794edf8c28bf071b69be65e",
+      "old": "66bafeebc5d006befa4b333eadb0f555304d6cac72ee520c6dda55e3ed78c90a"
+    },
+    {
+      "count": 2,
+      "new": "43060276203",
+      "old": "43054829731"
+    },
+    {
+      "count": 1,
+      "new": "130660630288",
+      "old": "130641359569"
+    },
+    {
+      "count": 1,
+      "new": "len(encoded) == 388592",
+      "old": "len(encoded) == 388060"
+    },
+    {
+      "count": 1,
+      "new": "152015a59718c256efc493024e5a62d9e880b406",
+      "old": "210febab5369cbd99bd38c1b39cf8523b8f9399e"
+    },
+    {
+      "count": 1,
+      "new": "source[\"source_gate_run_version\"] == 10",
+      "old": "source[\"source_gate_run_version\"] == 9"
+    },
+    {
+      "count": 1,
+      "new": "len(source[\"files\"]) == len(capsule[\"files\"]) == 118",
+      "old": "len(source[\"files\"]) == len(capsule[\"files\"]) == 117"
+    },
+    {
+      "count": 1,
+      "new": "len(input_rows) == len(post_rows) == 118",
+      "old": "len(input_rows) == len(post_rows) == 117"
+    },
+    {
+      "count": 1,
+      "new": "len(retained_paths) == 117",
+      "old": "len(retained_paths) == 116"
+    },
+    {
+      "count": 1,
+      "new": "hepta.mem8.source-ci.v10.offline-verification.v1",
+      "old": "hepta.mem8.source-ci.v9.offline-verification.v1"
+    },
+    {
+      "count": 1,
+      "new": "\"overlay_paths\": 118",
+      "old": "\"overlay_paths\": 117"
+    }
+  ],
+  "harness": "be4b90394bc69170f8e67aee5a4a6d3e361f9cbc",
+  "original_v9_verifier": {
+    "bytes": 15953,
+    "git_blob": "ae5f521d8e05bec11e067a68a0a3343ca17e9d40",
+    "sha256": "8972405238649060c811d31860ac5cc94c0266a00ab41ee2b0e95d96415ed3b0"
+  },
+  "schema": "mem8.v10.runtime-offline-verifier-binding-v1",
+  "source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_or_native_model_execution": false,
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "status": "PREPARED_READ_ONLY_NOT_EXECUTED",
+  "unchanged_gates": [
+    "600 seconds",
+    "18 exact Python cases",
+    "6204 complete Rust inventory",
+    "full golden equality except established6200->6204",
+    "13 retired names and zero remaining hits",
+    "full before/post/patch/tree equality",
+    "both locks untouched"
+  ]
+}

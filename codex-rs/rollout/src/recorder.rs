@@ -13,13 +13,13 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use chrono::SecondsFormat;
 use codex_protocol::RolloutId;
 use codex_protocol::SessionId;
 use codex_protocol::ThreadId;
 use codex_protocol::capabilities::SelectedCapabilityRoot;
 use codex_protocol::dynamic_tools::DynamicToolSpec;
 use codex_protocol::models::BaseInstructions;
+use codex_utils_time::SecondsFormat;
 use serde_json::Value;
 use time::OffsetDateTime;
 use time::format_description::FormatItem;
@@ -2024,9 +2024,18 @@ fn thread_item_from_state_metadata(
         agent_role: item.agent_role,
         model_provider: Some(item.model_provider),
         cli_version: Some(item.cli_version),
-        created_at: Some(item.created_at.to_rfc3339_opts(SecondsFormat::Secs, true)),
-        updated_at: Some(item.updated_at.to_rfc3339_opts(SecondsFormat::Millis, true)),
-        recency_at: Some(item.recency_at.to_rfc3339_opts(SecondsFormat::Millis, true)),
+        created_at: Some(
+            item.created_at
+                .to_rfc3339_opts(SecondsFormat::Secs, /*use_z*/ true),
+        ),
+        updated_at: Some(
+            item.updated_at
+                .to_rfc3339_opts(SecondsFormat::Millis, /*use_z*/ true),
+        ),
+        recency_at: Some(
+            item.recency_at
+                .to_rfc3339_opts(SecondsFormat::Millis, /*use_z*/ true),
+        ),
     }
 }
 

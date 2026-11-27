@@ -1,0 +1,37 @@
+{
+  "schema": "mem.d0f.windows-current-auditor-preparation.v1",
+  "source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "run": 43062473110,
+  "job": 130668436858,
+  "prior_reader": {
+    "bytes": 13799,
+    "sha256": "448170083601485e5721f0e79f8d50f72e0758709f4dfbaff0992aaae98039fe",
+    "git_blob": "47cd8c4816ab8a343728604c6e65d396beb097fe"
+  },
+  "reader": {
+    "bytes": 13797,
+    "sha256": "e141e5bccfba7a66602a548585d69cce4f8df34816a09c285931cf5625b54550",
+    "git_blob": "4e4550c82d09c985b0e678085db9679644fd583f"
+  },
+  "changes": "Six identity/documentation substitutions only; unchanged reader assertions and raw/JUnit classification. Future original outcomes not assumed to pass. If an observed result differs from historical delete observations, preserve it before a separately reviewed audit update.",
+  "read_from_exact_source": {
+    ".github/workflows/hepta-windows-current-ci.yml": {
+      "bytes": 2749,
+      "sha256": "cd649ec9a1786c20531c6757ad07743f5a16ecc698d25ad59be8cf2dfd15a794",
+      "git_blob": "d9dc4986a86a6d29e51203e34b7cc3e4f08c536b"
+    },
+    ".github/scripts/windows_current_ci.py": {
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd",
+      "git_blob": "161ed1149c8ffb5f2bb2a8272f555f8b91d729fe"
+    },
+    ".github/fixtures/windows-current-ci-scope.json": {
+      "bytes": 31515,
+      "sha256": "0f07308d07f630fe29faa27fbc3a95abc67a9a315bbeab58033fc3aad711adab",
+      "git_blob": "72f75127e9f92236def02a67a099fd90bb2a9b09"
+    }
+  },
+  "native_or_model_commands": 0,
+  "original_not_replayed": true
+}

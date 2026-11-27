@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-n256-firststep-hosted-admission-intent-development-red-v1",
+  "identity": "hcsn-n256-firststep-hosted-admission-intent-20261118-c06d-001",
+  "command": "python3 -m qualification.hcsn_currentstate_n256_firststep_hosted_admission_intent.verify_source",
+  "terminal": "failed",
+  "exit_code": 1,
+  "exception": "KeyError: 'runtime_admitted'",
+  "cause": "verifier read top-level admission flags from the nested observation object",
+  "repair": "read exactly runtime_admitted and resource_admitted from the top-level hosted observation record",
+  "n256_input_reads": 0,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "preserved": true,
+  "all_closed": false
+}

@@ -25,10 +25,14 @@ use crate::LifecycleSnapshot;
 use crate::SessionIngress;
 use crate::SessionTransport;
 use crate::cognitive_context::CognitiveContextError;
+use crate::episodic_import::EpisodicImportIngress;
 
 use super::AgentdState;
 use super::poisoned_state;
 use super::run_error;
+
+#[path = "state_run_reconciliation.rs"]
+mod run_reconciliation;
 
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
@@ -40,6 +44,10 @@ const COGNITIVE_CONTROL_UNAVAILABLE_CODE: &str = "cognitive_control_unavailable"
 const COGNITIVE_CONTROL_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private cognitive control storage is unavailable";
 const COGNITIVE_READ_UNAVAILABLE_CODE: &str = "cognitive_read_unavailable";
+
+#[path = "native_memory_control.rs"]
+mod native_memory_control;
+use native_memory_control::NativeMemoryOperation;
 
 impl AgentdState {
     pub(crate) async fn response(
@@ -84,6 +92,90 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::Q24OriginalInitialTaskProgress { request } => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::Q24OriginalInitialTaskProgress(
+                        AgentdState::read_original_q24_initial_task_progress(self, &request)
+                            .await?,
+                    )
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    let _ = request;
+                    return Err(AgentdError::Protocol(
+                        "original Initial task progress unavailable on this platform".into(),
+                    ));
+                }
+            }
+            crate::AgentdMethod::OriginalQ24TerminalAcceptance {} => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::OriginalQ24TerminalAcceptance {
+                        data: AgentdState::read_original_q24_terminal_acceptance(self)?,
+                    }
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    return Err(AgentdError::Protocol(
+                        "original terminal acceptance unavailable on this platform".into(),
+                    ));
+                }
+            }
+            crate::AgentdMethod::OriginalQ24CompletedHistory {} => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::OriginalQ24CompletedHistory {
+                        data: AgentdState::read_original_q24_completed_history(self)?,
+                    }
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    return Err(AgentdError::Protocol(
+                        "original completed history unavailable on this platform".into(),
+                    ));
+                }
+            }
+            crate::AgentdMethod::Q24OriginalTaskObservation {} => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::Q24OriginalTaskObservation(
+                        self.read_original_q24_control_task()?,
+                    )
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    return Err(AgentdError::Protocol(
+                        "original Q24 task observation unavailable on this platform".into(),
+                    ));
+                }
+            }
+            crate::AgentdMethod::Q24OriginalTerminalOutcome { request } => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::Q24OriginalTerminalOutcome(
+                        self.submit_original_q24_control_outcome(&request)?,
+                    )
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    let _ = request;
+                    return Err(AgentdError::Protocol(
+                        "original Q24 Outcome owner unavailable on this platform".into(),
+                    ));
+                }
+            }
+            crate::AgentdMethod::Generation { request } => {
+                AgentdPayload::Generation(self.generation_control(request).await?)
+            }
+            crate::AgentdMethod::MemoryCellReadStart { request } => {
+                self.native_memory_control(NativeMemoryOperation::Start(request))
+                    .await?
+            }
+            crate::AgentdMethod::MemoryCellReadStatus { invocation_id } => {
+                self.native_memory_control(NativeMemoryOperation::Status(invocation_id))
+                    .await?
+            }
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
                     crate::AgentdCapability::new(
@@ -93,12 +185,62 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
+                #[cfg(target_os = "linux")]
+                if self.original_q24_completed_history.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::AGENTD_Q24_COMPLETED_HISTORY_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                #[cfg(target_os = "linux")]
+                if self.original_q24_outcome_control.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::AGENTD_Q24_ORIGINAL_TASK_OBSERVATION_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::AGENTD_Q24_ORIGINAL_OUTCOME_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                if self.generation_control_enabled()? {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::AGENTD_GENERATION_CONTROL_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
                 if self.automation_effect_host().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT,
                             1,
                             0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                if self.episodic_snapshot_import.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::EPISODIC_SNAPSHOT_IMPORT_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
                         )
                         .map_err(AgentdError::Protocol)?,
                     );
@@ -128,6 +270,20 @@ impl AgentdState {
                 if self.objective_runtime.get().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new("objective.start", 1, 0)
+                            .map_err(AgentdError::Protocol)?,
+                    );
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            "objective.admission.read",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                if self.native_memory_cell.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new("memory.cell.native", 1, 0)
                             .map_err(AgentdError::Protocol)?,
                     );
                 }
@@ -227,6 +383,15 @@ impl AgentdState {
                     },
                 }
             }
+            crate::AgentdMethod::ObjectiveAdmission { query } => {
+                let outcome = match self.objective_runtime.get() {
+                    Some(host) => host.admission_history(self.identity(), query),
+                    None => crate::ObjectiveAdmissionOutcome::Unknown {
+                        reason: crate::ObjectiveAdmissionUnknownReason::OwnerUnavailable,
+                    },
+                };
+                AgentdPayload::ObjectiveAdmission { outcome }
+            }
             crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
                 crate::authbus_ingress::submit(self, request).await?,
             ),
@@ -234,6 +399,13 @@ impl AgentdState {
                 AgentdPayload::AuthBusTextStatus(
                     crate::authbus_ingress::status(self, delivery_id).await?,
                 )
+            }
+            crate::AgentdMethod::AuthBusTextLookup { delivery_id } => {
+                let status = crate::authbus_ingress::lookup(self, &delivery_id).await?;
+                AgentdPayload::AuthBusTextLookup {
+                    delivery_id,
+                    status,
+                }
             }
             crate::AgentdMethod::KernelEvidenceAppend { request } => {
                 AgentdPayload::KernelEvidenceResult(
@@ -249,6 +421,9 @@ impl AgentdState {
                 AgentdPayload::KernelEvidenceResult(
                     crate::evidence_host::verify(self, request).await?,
                 )
+            }
+            crate::AgentdMethod::EpisodicSnapshotImport { snapshot_json } => {
+                self.import_episodic_snapshot(&snapshot_json).await?
             }
             crate::AgentdMethod::CognitiveContext { query, limit } => {
                 require_cognitive_control_ready(
@@ -269,18 +444,34 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
+                let source = self
+                    .episodic_snapshot_import
+                    .get()
+                    .map(EpisodicImportIngress::source_read)
+                    .transpose()?;
+                if let Some(source) = &source {
+                    source.revalidate_native().await?;
+                }
                 let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
                     &query,
                     limit,
-                    self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
-                    self.cognitive_retrieval_learning.get(),
-                    Some(request_id),
+                    crate::cognitive_context::CognitiveContextReadOptions {
+                        ranker: self.cognitive_ranker.get(),
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                        learning_sink: self.cognitive_retrieval_learning.get(),
+                        request_id: Some(request_id),
+                    },
                 )
                 .await;
+                if result.is_ok()
+                    && let Some(source) = source
+                {
+                    source.revalidate_native().await?;
+                    source.revalidate()?;
+                }
                 self.refresh_generation()?;
                 {
                     let runtime = self.runtime.lock().map_err(poisoned_state)?;
@@ -349,19 +540,35 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
+                let source = self
+                    .episodic_snapshot_import
+                    .get()
+                    .map(EpisodicImportIngress::source_read)
+                    .transpose()?;
+                if let Some(source) = &source {
+                    source.revalidate_native().await?;
+                }
                 let result = crate::cognitive_context::revalidate_with_retrieval_context(
                     store.as_ref(),
                     &self.identity.agent_id,
-                    &snapshot_digest,
-                    &read_digest,
-                    omitted_records,
-                    &items,
-                    plan.as_ref(),
+                    crate::cognitive_context::CognitiveContextRevalidationInput {
+                        snapshot_digest: &snapshot_digest,
+                        read_digest: &read_digest,
+                        omitted_records,
+                        items: &items,
+                        plan: plan.as_ref(),
+                    },
                     self.cognitive_ranker.get(),
                     self.identity.spawn_generation,
                     self.cognitive_retrieval_context.get(),
                 )
                 .await;
+                if result.is_ok()
+                    && let Some(source) = source
+                {
+                    source.revalidate_native().await?;
+                    source.revalidate()?;
+                }
                 self.refresh_generation()?;
                 {
                     let runtime = self.runtime.lock().map_err(poisoned_state)?;
@@ -487,19 +694,7 @@ impl AgentdState {
                 run_id,
                 expected_revision,
                 reason,
-            } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let (disposition, receipt) = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .cancel_run(now_ms()?, &run_id, expected_revision, &reason)
-                    .map_err(run_error)?;
-                AgentdPayload::RunCancellation(crate::AgentRunCancellation {
-                    disposition: wire_cancellation_disposition(disposition),
-                    receipt: wire_run_receipt(receipt),
-                })
-            }
+            } => self.run_cancellation_payload(run_id, expected_revision, reason)?,
             crate::AgentdMethod::RunObserveTerminal {
                 run_id,
                 expected_revision,
@@ -520,15 +715,18 @@ impl AgentdState {
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
-            crate::AgentdMethod::RunStatus { run_id } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let run = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .run(&run_id)
-                    .map(wire_run_receipt);
-                AgentdPayload::RunStatus { run }
+            crate::AgentdMethod::RunStatus { run_id } => self.run_status_payload(run_id)?,
+            crate::AgentdMethod::RunMarkBoundDispatched { binding } => {
+                self.run_mark_bound_dispatched_payload(binding)?
+            }
+            crate::AgentdMethod::RunCancelBound { binding, reason } => {
+                self.run_cancel_bound_payload(binding, reason)?
+            }
+            crate::AgentdMethod::RunObserveBoundTerminal { observation } => {
+                self.run_observe_bound_terminal_payload(observation)?
+            }
+            crate::AgentdMethod::RunReconciliationState { run_id } => {
+                self.run_reconciliation_state_payload(run_id)?
             }
             crate::AgentdMethod::RunReleaseClosed {
                 run_id,
@@ -621,7 +819,7 @@ impl AgentdState {
                         store,
                         &intent,
                         &wire_payload,
-                        &signed_grant,
+                        signed_grant.as_ref(),
                         &command_id,
                         now_ms()?,
                     )
@@ -666,7 +864,7 @@ impl AgentdState {
                         receipt,
                     ) => crate::AutomationEffectReconcileSnapshot {
                         state: crate::AutomationEffectReconcileState::Terminal,
-                        effect: Some(effect_snapshot(receipt)?),
+                        effect: Some(effect_snapshot(*receipt)?),
                     },
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                         crate::AutomationEffectReconcileSnapshot {
@@ -1107,7 +1305,7 @@ fn decode_effect_wire_hex(value: &str) -> Result<Vec<u8>, AgentdError> {
         ));
     }
     let mut output = Vec::with_capacity(value.len() / 2);
-    for pair in value.as_bytes().chunks_exact(2) {
+    for pair in value.as_bytes().as_chunks::<2>().0 {
         let high = control_hex_nibble(pair[0]).ok_or_else(|| {
             AgentdError::Invalid("automation effect wire payload contains non-hex data".to_string())
         })?;
@@ -1142,7 +1340,7 @@ fn cognitive_control_unavailable() -> AgentdPayload {
     }
 }
 
-fn require_cognitive_control_ready(
+pub(super) fn require_cognitive_control_ready(
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
     critical_stores_ready: bool,
@@ -1233,7 +1431,7 @@ fn require_run_admission_ready(
     }
 }
 
-fn require_run_reconciliation_ready(
+pub(super) fn require_run_reconciliation_ready(
     lifecycle: AgentLifecycle,
     fenced: bool,
 ) -> Result<(), AgentdError> {
@@ -1331,7 +1529,7 @@ fn wire_run_phase(value: crate::RunPhase) -> crate::AgentRunPhase {
     }
 }
 
-fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
+pub(super) fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
     crate::AgentRunReceipt {
         run_id: value.run_id,
         revision: value.revision,
@@ -1349,7 +1547,7 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
     }
 }
 
-fn wire_cancellation_disposition(
+pub(super) fn wire_cancellation_disposition(
     value: crate::CancellationDisposition,
 ) -> crate::AgentCancellationDisposition {
     match value {
@@ -1390,7 +1588,7 @@ fn require_automation_ready(
     }
 }
 
-fn now_ms() -> Result<u64, AgentdError> {
+pub(super) fn now_ms() -> Result<u64, AgentdError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|_| AgentdError::Protocol("system clock precedes Unix epoch".to_string()))?

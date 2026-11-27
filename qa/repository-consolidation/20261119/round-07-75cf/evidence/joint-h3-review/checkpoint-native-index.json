@@ -1,0 +1,954 @@
+{
+  "schema": "hepta-checkpoint-native-evidence-index-v1",
+  "checkpoint": "round-07-75cf",
+  "created_utc": "2026-11-19T17:12:23.514253+00:00",
+  "workspace_root": "/workspace/scratch/75cf41417dcc",
+  "purpose": "Index of existing scoped evidence and remaining gaps, not a full repository CI acceptance statement.",
+  "actions_for_this_index": {
+    "new_tests": false,
+    "new_fetches": false,
+    "repository_or_ref_changes": false,
+    "only_new_file": "joint-h3-review/checkpoint-native-index.json"
+  },
+  "count_policy": {
+    "cross_suite_total": null,
+    "h3_113_is_subset_of_205": true,
+    "q24_physical1_is_environment_condition_not_extra_test": true,
+    "q24_modes_repeat_same_eight": true,
+    "native_child_scenarios_are_nested_not_additional_cases": true,
+    "loader_errors_are_not_model_tests": true,
+    "prior_failures_and_retries_not_added": true
+  },
+  "runtimes": {
+    "rog_old_graph": {
+      "host": "rog",
+      "platform": "Linux x86_64",
+      "runner": "just test -> Cargo Nextest",
+      "source_head": "1e681e550a5c5d4584b5882529e531599459dc31",
+      "graph": "OLD_GRAPH_SCOPED_NATIVE_ONLY",
+      "cargo_lock_sha256": "3b87221ff5ae147a333b3242296648d2ffecfa8440274bba2d609e5d7e53bde5",
+      "recorded_toolchain_path": "1.96.0-x86_64-unknown-linux-gnu",
+      "same_host_version_context": {
+        "cargo nextest --version": "cargo-nextest 0.9.137 (75ddba7e9 2026-05-26)\nrelease: 0.9.137\ncommit-hash: 75ddba7e911b44c5c0700dac0415d824403de9bd\ncommit-date: 2026-05-26\nhost: x86_64-unknown-linux-musl",
+        "cargo --version": "cargo 1.96.0 (30a34c682 2026-05-25)",
+        "rustc --version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+        "just --version": "just 1.58.0"
+      },
+      "version_context_artifact": "rog_versions_context",
+      "version_limit": "Version probes belong to the contemporaneous separate peer job on the same host and tool paths; no fresh version probes or independently captured per-stage version claims.",
+      "final_combined_graph_tested": false
+    },
+    "mac_existing_cpu": {
+      "host": "mac",
+      "platform": "Darwin",
+      "device": "cpu",
+      "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+      "executable": "/Users/qianqi/AI/noct-q/.venv/bin/python",
+      "versions": {
+        "torch": "2.15.0",
+        "safetensors": "0.8.0",
+        "numpy": "2.5.4",
+        "packaging": "26.3",
+        "transformers": "5.22.1"
+      },
+      "workflow_pins_matched": false
+    }
+  },
+  "validations": [
+    {
+      "id": "h3_automation",
+      "status": "PASS_SCOPED_OLD_GRAPH",
+      "evidence": [
+        "h3",
+        "h3_manifest",
+        "h3_graph",
+        "h3_callers",
+        "h3_inputs",
+        "h3_stage",
+        "h3_maintenance",
+        "h3_full_log"
+      ],
+      "source": {
+        "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+        "incoming_required_second_parent": "5739a9ce5dfcfb8708eff0b3f4690de65a784d02",
+        "tested_tree": "da7576365ab1da6b4208d4e83fd046660549996d",
+        "final_reviewed_tree": "e4020d30bb749f489593360bb7285ed98f602533",
+        "automation_bytes_unchanged_between_tested_and_final_tree": true,
+        "eight_preimages_match_base": true,
+        "twelve_caller_files_match_base": true,
+        "sqlx_lock_entries_match_base": true,
+        "original_0020_blob_preserved_as_0023": "c5240481c83f294470dc9b6045fbc8b7bdc1165d"
+      },
+      "actual_counts": {
+        "executed": 205,
+        "passed": 205,
+        "failed": 0,
+        "ignored": 4,
+        "binaries": 15,
+        "earlier_library_subset": 113,
+        "additional_count_from_subset": 0
+      },
+      "runtime_ref": "rog_old_graph",
+      "job_id": "1a1f489ffe9-ffbe-105f",
+      "nextest_run_id": "9bcff31a-1598-4562-a149-84c8172108fa",
+      "stage": 0,
+      "stage_exit": 0,
+      "test_seconds": 3.473,
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-automation",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-j",
+        "4"
+      ],
+      "scope": "Complete automation package: actual SQLite migration histories and corruption/checksum cases, authorized-effect, action and HCSN taskflow boundaries.",
+      "limits": [
+        "Four ignored cases were not run directly.",
+        "The later stage of the same wrapper failed Agentd compilation due to a missing copied source fixture; wrapper exit101 does not negate automation stage0 exit0.",
+        "The 113 library cases are a subset of the 205 and are not added.",
+        "Old dependency graph only; final combined tree CI remains unproven by this run."
+      ],
+      "maintenance": {
+        "job": "1a1f49cac52-ffbe-10a8",
+        "just_fix_exit": 0,
+        "clean_lint_claim": false,
+        "fix_limit": "Unrelated checkpoint-codec autofix attempts produced four E0432 diagnostics and were not retained.",
+        "just_fmt_exit": 1,
+        "fmt_limits": [
+          "uv absent",
+          "Isolated backup was scanned as edition2021 and contained let chains"
+        ],
+        "candidate_rustfmt_edition2024_exit": 0,
+        "eight_candidate_files_changed": false,
+        "outside_candidate_edit_propagated": false,
+        "tests_rerun_after_maintenance": false
+      }
+    },
+    {
+      "id": "agentd20",
+      "status": "PASS_AFTER_REAL_TEST_DISCOVERED_FIX",
+      "evidence": [
+        "h3",
+        "h3_manifest",
+        "agentd_stage",
+        "agentd_status",
+        "agentd_full_log",
+        "agentd_previous_failure",
+        "h3_maintenance"
+      ],
+      "source": {
+        "tree": "e4020d30bb749f489593360bb7285ed98f602533",
+        "blob": "062d2b097000ff4ce836e914f70016fc8c7c8f25",
+        "sha256": "0100d3c61f44d945beb9a93cb9a6494bfec04f743850c5eaf89f0061d1173dbf",
+        "fix": "Some(WIRE) -> Some(wire) in the shared helper, retaining original opaque/non-skill cases and exact durable-byte assertion."
+      },
+      "actual_counts": {
+        "executed": 20,
+        "passed": 20,
+        "failed": 0,
+        "scope_filtered": 1703
+      },
+      "runtime_ref": "rog_old_graph",
+      "job_id": "1a1f49579fc-ffbe-1089",
+      "nextest_run_id": "676df8bc-57b7-404e-a163-972f1545789b",
+      "exit": 0,
+      "test_seconds": 2.24,
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-j",
+        "4",
+        "-E",
+        "test(automation_effect) | test(automation_hcsn)"
+      ],
+      "previous_run": {
+        "job_id": "1a1f48f9080-ffbe-1071",
+        "passed": 19,
+        "failed": 1,
+        "exit": 100,
+        "failed_test": "automation_effect_host::tests::host_preserves_ordinary_opaque_and_non_skill_json_payloads",
+        "add_to_coverage": false
+      },
+      "scope": "All selected automation_effect and automation_hcsn Agentd library cases.",
+      "limits": [
+        "1703 scope-filtered cases untested.",
+        "Same old Cargo graph and maintenance limits as H3; no final-graph CI claim."
+      ]
+    },
+    {
+      "id": "q24_8_plus_8",
+      "status": "PASS_BOTH_MODES",
+      "evidence": [
+        "python",
+        "q24_normal",
+        "q24_optimized",
+        "q24_request",
+        "python_job"
+      ],
+      "source": {
+        "tree": "983dfaf9e4cc0cbf615e0417b1aac39d03927d10",
+        "files": [
+          {
+            "tree": "983dfaf9e4cc0cbf615e0417b1aac39d03927d10",
+            "path": "qualification/neuron-gated-sparse-v3/public_q24_independent_cases.py",
+            "blob": "a31b790f1c49c7916a0e2769d28fcf0bb5a785b9",
+            "bytes": 11462,
+            "sha256": "52bb2693ce9c7aa3357945f721c2510ce859a261b0ace3930caca4e791b33f6e"
+          },
+          {
+            "tree": "983dfaf9e4cc0cbf615e0417b1aac39d03927d10",
+            "path": "qualification/neuron-gated-sparse-v3/test_public_q24_independent_cases.py",
+            "blob": "37e4f448a5764b3108513717fad3e3d34fbc2cb5",
+            "bytes": 7920,
+            "sha256": "18d1b236d31afddf2d4e5348924ff46b57eca596d3420b98d2a41c687d87ac8e"
+          }
+        ],
+        "original_bytes_unchanged": true
+      },
+      "actual_counts": {
+        "normal": {
+          "executed": 8,
+          "passed": 8,
+          "failed": 0,
+          "skipped": 0
+        },
+        "python_O": {
+          "executed": 8,
+          "passed": 8,
+          "failed": 0,
+          "skipped": 0
+        },
+        "unique_original_methods": 8,
+        "additional_physical_test_count": 0
+      },
+      "execution_condition": {
+        "HEPTA_NEURON_PHYSICAL_TESTS": "1",
+        "correction": "physical=1 is an environment setting enabling the existing tests, not an additional test. Any prior physical1-as-test count is superseded; original receipts preserved."
+      },
+      "runtime_ref": "mac_existing_cpu",
+      "job_id": "1a1f49f3fcf-ffbe-10b1",
+      "normal_command": [
+        "/Users/qianqi/AI/noct-q/.venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/neuron-gated-sparse-v3",
+        "-p",
+        "test_public_q24_independent_cases.py",
+        "-v"
+      ],
+      "optimized_command": [
+        "/Users/qianqi/AI/noct-q/.venv/bin/python",
+        "-B",
+        "-O",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/neuron-gated-sparse-v3",
+        "-p",
+        "test_public_q24_independent_cases.py",
+        "-v"
+      ],
+      "normal_exit": 0,
+      "optimized_exit": 0,
+      "normal_unittest_seconds": 0.849,
+      "optimized_unittest_seconds": 2.935,
+      "scope": "Original eight Q24 independent-case tests in normal and optimized Python, including the enabled small tensor/SVD fixture.",
+      "limits": [
+        "Both modes repeat the same eight methods.",
+        "Actual runtime versions differ from workflow pins.",
+        "No GPU, large-model training or scientific qualification claimed."
+      ]
+    },
+    {
+      "id": "cost62",
+      "status": "PASS_SCOPED_UNIT_REGRESSIONS",
+      "evidence": [
+        "cost",
+        "cost_log"
+      ],
+      "source": {
+        "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+        "incoming": "da1edb7f1fb5e64a6bce6509979b85aa605edaca",
+        "tree": "3cef0335f7a643c8e4e6c2f889c26bc6ae36b79d",
+        "blobs": {
+          "experiments/ndu_mgp_gates/paired_superiority.py": "f293bdde77961e35de85c20894a50c4a05412b37",
+          "experiments/ndu_mgp_gates/test_paired_superiority.py": "267753f679530f31884d5d12150e8c86c2c889de"
+        },
+        "integration_commit": "6c2577f6b5499a6774ec93d84698bbdb077ab3ec"
+      },
+      "actual_counts": {
+        "executed": 62,
+        "passed": 62,
+        "failed": 0
+      },
+      "runtime": {
+        "host": "local task runtime",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "other_package_versions": "Not captured in stage report."
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".",
+        "-p",
+        "test_paired_superiority.py",
+        "-v"
+      ],
+      "test_seconds": 19.32,
+      "scope": "Actual paired-superiority evaluator regressions including four incoming adversarial bodies.",
+      "limits": [
+        "Synthetic unit tests only.",
+        "HOLD_NO_GO, DENY_ALL, LOCAL_RESEARCH_UNAUTHENTICATED and scientific_superiority_proven=False unchanged.",
+        "No full repository CI claim."
+      ]
+    },
+    {
+      "id": "fixtures39_python_plus_3_native",
+      "status": "PASS_SCOPED",
+      "evidence": [
+        "fixtures",
+        "fixtures_python15",
+        "fixtures_python24",
+        "fixtures_native",
+        "fixtures_native_status",
+        "fixtures_native_log",
+        "fixtures_maintenance",
+        "fixtures_clippy",
+        "fixtures_fmt"
+      ],
+      "source": {
+        "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+        "incoming": "8d1c0f8603f988dfcef77e808183931f18c4aab8",
+        "tree": "60103d01f8b8c852eeb7b321fbd2c07543f7c6de",
+        "integration_commit": "5b37792343bbe24baf14918dc519f9786f422a03",
+        "native_preimages_match_base": true,
+        "native_postimages_match_candidate": true,
+        "original_source_unchanged": true
+      },
+      "actual_counts": {
+        "python_ci_exec": 15,
+        "python_native_feedback": 24,
+        "python_total_passed": 39,
+        "python_failed": 0,
+        "native_passed": 3,
+        "native_failed": 0,
+        "native_scope_filtered": 45,
+        "nested_new_child_scenarios": 11,
+        "nested_existing_child_scenarios": 10,
+        "additional_count_from_child_scenarios": 0
+      },
+      "runtime": {
+        "native_ref": "rog_old_graph",
+        "python_tests": {
+          "host": "local task runtime",
+          "interpreter": "python3",
+          "exact_version": "Not captured in the preserved stage receipts; formatter version is not substituted."
+        },
+        "supplemental_formatter": {
+          "python": "3.12.14",
+          "ruff": "0.15.13",
+          "locked": true,
+          "offline": true
+        }
+      },
+      "native_job_id": "1a1f4a390c4-ffbe-10ba",
+      "nextest_run_id": "fab0dfb1-e2b8-416f-b6af-4fcdd8774b8d",
+      "native_command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-utils-cargo-bin",
+        "-p",
+        "codex-hepta-fleet",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-j",
+        "4",
+        "-E",
+        "package(codex-utils-cargo-bin) | test(workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths)"
+      ],
+      "native_test_seconds": 0.011,
+      "scope": "CI execution-record/native-feedback Python tests and native Cargo-bin child lookup plus registry workspace sweep.",
+      "prior_failures": [
+        "Initial Python feedback fixtures lacked exact production helper; supplied it and reran all24 successfully.",
+        "Initial native compile lacked exact docs/modules/MODULES.json fixture; supplied base bytes and reran unchanged tests."
+      ],
+      "maintenance": {
+        "scoped_clippy_exit": 0,
+        "clippy_wrapper_exit": 1,
+        "wrapper_failure": "Post-Clippy formatter setup copy failed; Clippy had passed.",
+        "just_fmt_exit": 1,
+        "rust_formatter_passed": true,
+        "fmt_failure": "uv absent",
+        "supplemental_locked_python_format_exit": 0,
+        "three_python_files_unchanged": true,
+        "tests_rerun_after_maintenance": false
+      },
+      "limits": [
+        "11+10 child scenarios are inside the three Nextest cases, not additional cases.",
+        "Native old Cargo graph only.",
+        "No new Windows/macOS/Bazel-runfiles-manifest or full combined CI qualification."
+      ]
+    },
+    {
+      "id": "mac_fixture1",
+      "status": "PASS_ORIGINAL_TEST_AFTER_TEST_ONLY_PATH_FIX",
+      "evidence": [
+        "mac_fixture",
+        "mac_fixture_manifest",
+        "mac_fixture_log",
+        "mac_fixture_fmt",
+        "memory_final_jobs"
+      ],
+      "source": {
+        "base_tree": "00b29969a0a2f50c71fc50c64fc36a7f423fe27b",
+        "fixed_tree": "f8eab319c3871c4a10fcf6c4c399f9df62c79b8b",
+        "path": "scripts/memory_cell_network/test_model_process.py",
+        "before_blob": "b73b24b3b4c40b7e1efc9102143adda9a352ed6f",
+        "after_blob": "b474e45c4c677cd859c52b281bf634e3d26e9c3a",
+        "sha256": "c06fd8ed1adfebe0303df7b290ed155afa8a3d1004bb6875e19fef410b8c2189",
+        "bytes": 12509,
+        "integration_commit": "3417a57a6eb960f01fe66f8f3a9762c8ce160eee",
+        "change": "root = Path(directory).resolve(); all original assertions and runtime source unchanged."
+      },
+      "actual_counts": {
+        "executed": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "runtime": {
+        "host": "mac",
+        "platform": "Darwin",
+        "python": "3.14.3",
+        "executable": "/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/bin/python",
+        "scope": "stdlib-only process receipt test"
+      },
+      "job_id": "1a1f4aa9034-ffbe-10df",
+      "command": [
+        "/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "test_model_process.ModelProcessTests.test_receipt_preserves_raw_output_and_empty_reader_directory",
+        "-v"
+      ],
+      "exit": 0,
+      "test_seconds": 0.051,
+      "source_records_verified": 182,
+      "scope": "Single original receipt-preservation and empty-reader-directory test that previously failed on /var versus /private/var.",
+      "limits": [
+        "This is a rerun of the original fixture test, not new source-network coverage.",
+        "Full tensor/TCP suite still blocked by PEFT/Transformers incompatibility."
+      ],
+      "maintenance": {
+        "locked_ruff": "0.15.13",
+        "exit": 0,
+        "bytes_changed": false,
+        "tests_rerun_after_format": false
+      }
+    },
+    {
+      "id": "hcsn_current4",
+      "status": "PASS_EXACT_CURRENT_EIGHT_SOURCE_CPU",
+      "evidence": [
+        "hcsn_binding",
+        "hcsn_result",
+        "hcsn_log",
+        "hcsn_freeze"
+      ],
+      "source": {
+        "tested_tree": "c3995fc4c03db4a139fc0a71525085f47092a683",
+        "merge_commit": "3aeee638cf589590878b2dd88e4d3558ad76e37b",
+        "merge_parents": [
+          "41d193cbd34571fb67a047c206a97734a677e21c",
+          "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d"
+        ],
+        "final_commit": "1109776d0b777999f0605ff92c98ddfcb03c2159",
+        "final_tree": "0ef5bf40bced3af12f1f49245acb2a87272cd520",
+        "final_parents": [
+          "3aeee638cf589590878b2dd88e4d3558ad76e37b"
+        ],
+        "eight_source_bytes_and_modes_match_final": true,
+        "current_operator_blob": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+        "original_test_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+        "all_eight_hashes_in": "hcsn_binding"
+      },
+      "actual_counts": {
+        "executed": 4,
+        "passed": 4,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "runtime": {
+        "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+        "platform": "darwin",
+        "versions": {
+          "torch": "2.15.0",
+          "numpy": "2.5.4",
+          "scipy": "1.18.1",
+          "safetensors": "0.8.0"
+        },
+        "executable": "/Users/qianqi/AI/noct-q/.venv/bin/python",
+        "torch_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/torch/__init__.py",
+        "numpy_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/numpy/__init__.py",
+        "scipy_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/scipy/__init__.py",
+        "default_tensor_device": "cpu",
+        "cuda_build": null,
+        "torch_threads": 1
+      },
+      "workflow_runtime_pins": [
+        "python-version: \"3.12.3\"",
+        "python -m pip install --disable-pip-version-check \"torch==2.8.0+cpu\" --index-url https://download.pytorch.org/whl/cpu",
+        "python -m pip install --disable-pip-version-check \"numpy==2.5.4\" \"mpmath==1.3.0\" \"scipy==1.17.0\""
+      ],
+      "job_id": "1a1f4bd9b0d-ffbe-112a",
+      "exit": 0,
+      "output_complete": true,
+      "command": [
+        "/Users/qianqi/AI/noct-q/.venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "qualification.hcsn_differentiable.tests.test_neural_control"
+      ],
+      "test_seconds": 0.726,
+      "wall_seconds": 1.9100953330053017,
+      "scope": "Complete original four neural-control tests with current higher-order operator; all eight module origins and before/after bytes checked.",
+      "limits": [
+        "Current original four tests passed on the recorded existing Mac CPU environment.",
+        "The workflow-pinned runtime image and full repository CI were not executed by this task.",
+        "No source or original test changes, no stubs, no dependency installation, no GPU job and no expansion beyond the original four tests."
+      ],
+      "superseded_receipt_limit": "Older CPU receipt used another operator blob and matched only7/8 current sources; this real current-source run closes that mismatch."
+    },
+    {
+      "id": "peft_failure_and_memory_gap",
+      "status": "BLOCKED_REAL_IMPORT_FAILURE",
+      "evidence": [
+        "python",
+        "memory_original",
+        "peft_result",
+        "peft_error",
+        "memory_final_jobs"
+      ],
+      "source": {
+        "original_memory_tree": "00b29969a0a2f50c71fc50c64fc36a7f423fe27b",
+        "original_sources_unchanged": true,
+        "fixture_followup": "mac_fixture1"
+      },
+      "actual_counts": {
+        "original_unittest_reported": 10,
+        "test_bodies_executed": 4,
+        "passed": 3,
+        "failed": 1,
+        "import_error_placeholders": 3,
+        "linux_only_skipped": 3,
+        "source_network_tensor_TCP_cases_executed": 0,
+        "full_suite_tests_after_dependency_import_failure": 0
+      },
+      "runtime": {
+        "base_runtime_ref": "mac_existing_cpu",
+        "isolated_venv": "/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1",
+        "small_installed_packages": [
+          "peft==0.17.1",
+          "accelerate==1.10.1"
+        ],
+        "existing_transformers": "5.22.1",
+        "original_user_venv_mutated": false,
+        "torch_cuda_models_downloaded": false
+      },
+      "original_job_id": "1a1f49f3fcf-ffbe-10b1",
+      "original_suite_exit": 1,
+      "dependency_job_id": "1a1f4a7f981-ffbe-10d3",
+      "dependency_wrapper_exit": 0,
+      "installation_exit": 0,
+      "real_import_exit": 1,
+      "scope": "Original Memory suite attempted, followed by permitted small isolated PEFT/accelerate installation and real import check.",
+      "failures": [
+        "Original suite: missing peft produced three import-error placeholders; one Mac fixture path-alias failure and three Linux-only skips.",
+        "The Mac fixture failure was separately corrected and its original single test passed.",
+        "PEFT0.17.1 cannot import HybridCache from existing Transformers5.22.1; no compatible full-suite run followed."
+      ],
+      "limits": [
+        "Wrapper exit0 reflects report collection, not import success.",
+        "Loader errors do not count as executed tensor/TCP tests.",
+        "No stubs or large dependency downloads; no full Memory-suite pass claimed."
+      ]
+    }
+  ],
+  "artifacts": {
+    "h3": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/durable-recovery-candidate.json",
+      "relative_path": "joint-h3-review/durable-recovery-candidate.json",
+      "sha256": "b165c62328ac8d9b2777e0a963232995fa88c049061a8038ecc638a1da8af350",
+      "bytes": 7747,
+      "recommended_copy": true
+    },
+    "h3_manifest": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/durable-recovery-final-eight-paths-v2.json",
+      "relative_path": "joint-h3-review/durable-recovery-final-eight-paths-v2.json",
+      "sha256": "24c1eae89741d4c3936f02b90400387bb2c55f10d6f69093b769523cefdd6fdd",
+      "bytes": 5075,
+      "recommended_copy": true
+    },
+    "h3_graph": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-cargo-graph-delta.json",
+      "relative_path": "joint-h3-review/native-cargo-graph-delta.json",
+      "sha256": "ee11398562e3a04d68287897b59acfa16ca95e7ea0a6304d7228b2b5ae2d2036",
+      "bytes": 2145,
+      "recommended_copy": true
+    },
+    "h3_callers": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-caller-working-closure.json",
+      "relative_path": "joint-h3-review/native-caller-working-closure.json",
+      "sha256": "3e942ad74dc288c7d55d65872d54bb1fb4a95e9754cf7944ea2ee4047e264e84",
+      "bytes": 2994,
+      "recommended_copy": true
+    },
+    "h3_inputs": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-final-receipts/native-test-inputs.json",
+      "relative_path": "joint-h3-review/native-final-receipts/native-test-inputs.json",
+      "sha256": "8e01f7ab3a4865b61b882a0af61e9fd68cd640c39ac5fea4eec771ef9b48dcf6",
+      "bytes": 1743,
+      "recommended_copy": true
+    },
+    "h3_stage": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-final-receipts/native-boundary-stage-0.json",
+      "relative_path": "joint-h3-review/native-final-receipts/native-boundary-stage-0.json",
+      "sha256": "f74c8cad2a3da7ee53c45f1da44ed58f87ee5fa67ea10f3a366395062ab05b90",
+      "bytes": 276,
+      "recommended_copy": true
+    },
+    "agentd_stage": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-final-receipts/native-agentd-test-result-v3.json",
+      "relative_path": "joint-h3-review/native-final-receipts/native-agentd-test-result-v3.json",
+      "sha256": "8b5d07688695eb16829e8fb46a433539f243b57eeff1d2d14ab3d6bfade050c6",
+      "bytes": 350,
+      "recommended_copy": true
+    },
+    "agentd_status": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-agentd-v3-status.json",
+      "relative_path": "joint-h3-review/native-agentd-v3-status.json",
+      "sha256": "f0fd0e1aead44dead00927edd36f177af34007d184f7edd7d871a399ae439c35",
+      "bytes": 962,
+      "recommended_copy": true
+    },
+    "h3_maintenance": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-final-receipts/maintenance-results.json",
+      "relative_path": "joint-h3-review/native-final-receipts/maintenance-results.json",
+      "sha256": "3d876eb3b317a9bb81b0383861f89c62e8d853400ec4f000b9b6240334e993ce",
+      "bytes": 1906,
+      "recommended_copy": true
+    },
+    "rog_versions_context": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/peer-native-receipt.json",
+      "relative_path": "r3-review/peer-native-receipt.json",
+      "sha256": "d5bbfe023f6bffcb42b94c4ca6d5242969d24249eccc740b373fbcefb2808e0a",
+      "bytes": 3302,
+      "recommended_copy": true
+    },
+    "python": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/python-native-results.json",
+      "relative_path": "joint-h3-review/python-native-review/python-native-results.json",
+      "sha256": "06e1a264104786ff3a193d060740751ef9cb5047a37b0d3442962c3799f7389d",
+      "bytes": 11968,
+      "recommended_copy": true
+    },
+    "q24_normal": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/q24-normal.stderr.log",
+      "relative_path": "joint-h3-review/python-native-review/q24-normal.stderr.log",
+      "sha256": "69b1a9a8fbd79319ffdb671dc13896b3897a6d2656562931b94536acb3bd4943",
+      "bytes": 1550,
+      "recommended_copy": true
+    },
+    "q24_optimized": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/q24-optimized.stderr.log",
+      "relative_path": "joint-h3-review/python-native-review/q24-optimized.stderr.log",
+      "sha256": "8952fee869c0a89560b3e97b6ee70af840ab430337258cd24405c39bce0b0d8b",
+      "bytes": 1550,
+      "recommended_copy": true
+    },
+    "q24_request": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/native-request.json",
+      "relative_path": "joint-h3-review/python-native-review/native-request.json",
+      "sha256": "3168c879191a07f241c8d45decb2d9c3e671654f5fb4bc8e9b1c6eb31dab6298",
+      "bytes": 3516,
+      "recommended_copy": true
+    },
+    "python_job": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/native-receipt.json",
+      "relative_path": "joint-h3-review/python-native-review/native-receipt.json",
+      "sha256": "25b8841a2fff36b25676e958ba8e76bac3ee1d170ea572a3bc95734189253dcf",
+      "bytes": 4645,
+      "recommended_copy": true
+    },
+    "memory_original": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/memory-network-original-suite.stderr.log",
+      "relative_path": "joint-h3-review/python-native-review/memory-network-original-suite.stderr.log",
+      "sha256": "512b034acd35223340aa53cdca036fe71b33ca882e2a182ff67e4ad306c9e77f",
+      "bytes": 6213,
+      "recommended_copy": true
+    },
+    "peft_result": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/memory-dependency-result.json",
+      "relative_path": "joint-h3-review/python-native-review/memory-dependency-result.json",
+      "sha256": "2405e1c536cfae1936460f87bb523e1ad956bbfa94fa4af90db8011882988502",
+      "bytes": 2096,
+      "recommended_copy": true
+    },
+    "peft_error": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/memory-dependency-import.stderr.log",
+      "relative_path": "joint-h3-review/python-native-review/memory-dependency-import.stderr.log",
+      "sha256": "6e5ee3a0aa4a8a6dc3713e9758213e5b40fdf577e79873a5774cb834b85bd600",
+      "bytes": 1596,
+      "recommended_copy": true
+    },
+    "memory_final_jobs": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/final-native-receipts-bundle.json",
+      "relative_path": "joint-h3-review/python-native-review/final-native-receipts-bundle.json",
+      "sha256": "3e5d7e92be1a135e48ba161fbf22e1deb01d982de0042b7dc71af119539c158d",
+      "bytes": 19205,
+      "recommended_copy": true
+    },
+    "mac_fixture": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/memory-path-fixture-result.json",
+      "relative_path": "joint-h3-review/python-native-review/memory-path-fixture-result.json",
+      "sha256": "5f5731fd3b43cb3ab32cee7d93acafaf10dfe24acc4e568c282acafad9c7c9cb",
+      "bytes": 1279,
+      "recommended_copy": true
+    },
+    "mac_fixture_manifest": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/memory-path-fixture.json",
+      "relative_path": "joint-h3-review/python-native-review/memory-path-fixture.json",
+      "sha256": "904c5dea3e3ae1ad06e1c434f0199e8ba6819c2ec48fb03b455b5d53b9d76dcc",
+      "bytes": 765,
+      "recommended_copy": true
+    },
+    "mac_fixture_log": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/memory-path-fixture.stderr.log",
+      "relative_path": "joint-h3-review/python-native-review/memory-path-fixture.stderr.log",
+      "sha256": "187f4ee6942a892d66e0bf31c96ee546d40b8dbd5f27d0b2acdacd0666efaaae",
+      "bytes": 265,
+      "recommended_copy": true
+    },
+    "mac_fixture_fmt": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/protected-composition/mac-fixture-format-result.json",
+      "relative_path": "joint-h3-review/protected-composition/mac-fixture-format-result.json",
+      "sha256": "ec6f1b22c0e0451651b739c584b22b019a3ff8e4999e9f37bb5055b7bbd4e43e",
+      "bytes": 458,
+      "recommended_copy": true
+    },
+    "cost": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/protected-cost/resolution.json",
+      "relative_path": "r3-review/protected-cost/resolution.json",
+      "sha256": "d92409ae2b3e8d3b919567018a4b71ede2e2fddcc22863c8c23e66896c4ef9dd",
+      "bytes": 3734,
+      "recommended_copy": true
+    },
+    "cost_log": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/protected-cost/paired-superiority-tests.log",
+      "relative_path": "r3-review/protected-cost/paired-superiority-tests.log",
+      "sha256": "798d9e7c8028047b66dc6fb0dc1dcff69c54839ab468a1894c2a7acabbc8a3dd",
+      "bytes": 9830,
+      "recommended_copy": true
+    },
+    "fixtures": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/native-fixtures/resolution.json",
+      "relative_path": "r3-review/native-fixtures/resolution.json",
+      "sha256": "9f14e48ff2b6437741a97596279ec95d30387ff65ce699f16acc1f34bc84b6b7",
+      "bytes": 16386,
+      "recommended_copy": true
+    },
+    "fixtures_python15": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/native-fixtures/python-ci-exec.log",
+      "relative_path": "r3-review/native-fixtures/python-ci-exec.log",
+      "sha256": "a4e5e005bfebe21540dd9a3e5a460c9188722990d47bdef1995ccfdca0ce72a4",
+      "bytes": 2500,
+      "recommended_copy": true
+    },
+    "fixtures_python24": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/native-fixtures/python-native-feedback-run2.log",
+      "relative_path": "r3-review/native-fixtures/python-native-feedback-run2.log",
+      "sha256": "e00e249ad0d257a40b8b401ee6655ddf2fd70bd8dda476a493cffc4ac2a0fcda",
+      "bytes": 4183,
+      "recommended_copy": true
+    },
+    "fixtures_native": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/native-fixtures/native-receipt.json",
+      "relative_path": "r3-review/native-fixtures/native-receipt.json",
+      "sha256": "3f6f52d428ecfefce8d06f359a029b968113ed8d6239435a136ec07d3120a0fd",
+      "bytes": 3828,
+      "recommended_copy": true
+    },
+    "fixtures_native_status": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/native-fixtures/native-status.json",
+      "relative_path": "r3-review/native-fixtures/native-status.json",
+      "sha256": "42b792340f8b87309d60acfac6a095993ddf2d88d873d59003568bb9718d1165",
+      "bytes": 736,
+      "recommended_copy": true
+    },
+    "fixtures_native_log": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/native-fixtures/native.stderr.log",
+      "relative_path": "r3-review/native-fixtures/native.stderr.log",
+      "sha256": "a99ecbc1a1bc7afea3ceab93571a35e388c49e3066403d4a211f6fd2d9d9667b",
+      "bytes": 2939,
+      "recommended_copy": true
+    },
+    "fixtures_maintenance": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/native-fixtures/maintenance-receipt.json",
+      "relative_path": "r3-review/native-fixtures/maintenance-receipt.json",
+      "sha256": "d1d6f76628369cf6fc6273444ec78973f55d6a363c2f280b2e86b1becb497df5",
+      "bytes": 3323,
+      "recommended_copy": true
+    },
+    "fixtures_clippy": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/native-fixtures/clippy.stderr.log",
+      "relative_path": "r3-review/native-fixtures/clippy.stderr.log",
+      "sha256": "abb0852f04e6a763ec46eb929422b7a876d1e754a9a3dc9f6292015f503c3ce1",
+      "bytes": 2537,
+      "recommended_copy": true
+    },
+    "fixtures_fmt": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/protected-composition/format-offline-result.json",
+      "relative_path": "joint-h3-review/protected-composition/format-offline-result.json",
+      "sha256": "892c3e462bbbae8d89d5e2091933ff6748265b2e279eed592d3c3d5a54548da9",
+      "bytes": 1229,
+      "recommended_copy": true
+    },
+    "hcsn_binding": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/hcsn-neural-revalidation/final-source-binding.json",
+      "relative_path": "joint-h3-review/hcsn-neural-revalidation/final-source-binding.json",
+      "sha256": "029697c1ea808ed92a3c9050551cdee9058086924ada541a418bc1e864c0dc78",
+      "bytes": 7035,
+      "recommended_copy": true
+    },
+    "hcsn_result": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/hcsn-neural-revalidation/current-neural-cpu-result.json",
+      "relative_path": "joint-h3-review/hcsn-neural-revalidation/current-neural-cpu-result.json",
+      "sha256": "2b9cd7c2701361a6e352dc1c03751d1586a2a459d931b170b9975bcff234372d",
+      "bytes": 11516,
+      "recommended_copy": true
+    },
+    "hcsn_log": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/hcsn-neural-revalidation/tests.stderr.log",
+      "relative_path": "joint-h3-review/hcsn-neural-revalidation/tests.stderr.log",
+      "sha256": "59a243ac6340b3ed28f52eadb072192a2a67d07b66556fa51e593922b784492f",
+      "bytes": 814,
+      "recommended_copy": true
+    },
+    "hcsn_freeze": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/hcsn-neural-revalidation/source-freeze.json",
+      "relative_path": "joint-h3-review/hcsn-neural-revalidation/source-freeze.json",
+      "sha256": "0dd9e4b23ceb8a452a3b108c1cc1c48862d6d1eb754956f0cae6ea1326b924f8",
+      "bytes": 3281,
+      "recommended_copy": true
+    },
+    "h3_full_log": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-boundary-v1.log",
+      "relative_path": "joint-h3-review/native-boundary-v1.log",
+      "sha256": "f4c4e51d180a4dc62d64e2ef4c108c214f1f596396d82bf03fdc04c5c0969bbb",
+      "bytes": 126305,
+      "recommended_copy": false
+    },
+    "agentd_full_log": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-agentd-v3.log",
+      "relative_path": "joint-h3-review/native-agentd-v3.log",
+      "sha256": "6a248c970a09aa7c488d641aa97b937a03c2257a47e353358cd7412bd20143fd",
+      "bytes": 107907,
+      "recommended_copy": false
+    },
+    "agentd_previous_failure": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-agentd-v2.log",
+      "relative_path": "joint-h3-review/native-agentd-v2.log",
+      "sha256": "23c94471fe001886d52a7225a23cddc03ac23b87c9105290b996f69c46c7635a",
+      "bytes": 65137,
+      "recommended_copy": false
+    },
+    "h3_subset113": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-automation-lib-v2.log",
+      "relative_path": "joint-h3-review/native-automation-lib-v2.log",
+      "sha256": "0ee56d83fb01fe82925ebf6a8711e53e931c994b655e5f857f15ba4a56a225f0",
+      "bytes": 42321,
+      "recommended_copy": false
+    },
+    "h3_maintenance_full_log": {
+      "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/native-maintenance.log",
+      "relative_path": "joint-h3-review/native-maintenance.log",
+      "sha256": "cc2b6a7a4426588c1b7e93a6525ee1732e0db2776f491060b7a494ecf1f0b0af",
+      "bytes": 230015,
+      "recommended_copy": false
+    }
+  },
+  "recommended_copy": {
+    "artifact_ids": [
+      "h3",
+      "h3_manifest",
+      "h3_graph",
+      "h3_callers",
+      "h3_inputs",
+      "h3_stage",
+      "agentd_stage",
+      "agentd_status",
+      "h3_maintenance",
+      "rog_versions_context",
+      "python",
+      "q24_normal",
+      "q24_optimized",
+      "q24_request",
+      "python_job",
+      "memory_original",
+      "peft_result",
+      "peft_error",
+      "memory_final_jobs",
+      "mac_fixture",
+      "mac_fixture_manifest",
+      "mac_fixture_log",
+      "mac_fixture_fmt",
+      "cost",
+      "cost_log",
+      "fixtures",
+      "fixtures_python15",
+      "fixtures_python24",
+      "fixtures_native",
+      "fixtures_native_status",
+      "fixtures_native_log",
+      "fixtures_maintenance",
+      "fixtures_clippy",
+      "fixtures_fmt",
+      "hcsn_binding",
+      "hcsn_result",
+      "hcsn_log",
+      "hcsn_freeze"
+    ],
+    "file_count_excluding_index": 38,
+    "total_bytes_excluding_index": 155477,
+    "layout": "Preserve each artifact relative_path under the checkpoint root; also copy this index.",
+    "include_index": "joint-h3-review/checkpoint-native-index.json",
+    "exclude": [
+      ".index and .pyc files",
+      "source/worktree copies, tarballs and binary overlays",
+      "large uncompressed native logs (catalogued with hashes but recommended_copy=false)"
+    ],
+    "note": "Root owns checkpoint copying and may include other existing small final JSON/log receipts; this list is the compact recommended set."
+  }
+}

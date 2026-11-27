@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/neuro4-evaluated-current-read-20261112-862531d",
+  "head": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "tree": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+  "parent": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+  "integrated_base": "1cb195e590f7f5038a38625a943f259badea489a",
+  "changed_paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "before": null,
+      "after": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "before": null,
+      "after": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "before": "0b328d77083060c943234ae0d8bf68088474bd6f",
+      "after": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "before": "980b7c9b8d364453e13cd0a220611600d6204891",
+      "after": "4807f4f5aa158f885119d2cb394e2170e6842385"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "before": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096",
+      "after": "f5f74bba8822b567ec732225226d1e5dd2d2ec41"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "before": "c18766a6ab02eb4d9882df1224b12e093e7d0453",
+      "after": "d1f255a21ef9a590e7bbd536177df0b16875a8ea"
+    },
+    {
+      "path": "CALLERS.toml",
+      "before": "73fdfb4db43bee14530701784ab163a64dbb5956",
+      "after": "f7f23187de3b243ae3331231722dce9b9a4e219b"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "before": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+      "after": "b4f6f957d9f523941d59d9e52d00c7dd0e7662cf"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "before": "2621dfc2c5c25bf66cac95d206d3b4e5d9cc9790",
+      "after": "d657dff9aa7be59bad252fe37ffd8e3171a9cb74"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "before": "6cbc878cc2d85691dba75c9e21a4699506368164",
+      "after": "6179ad309c5cbaeb7ab938acbc8aa4ee7fa13698"
+    }
+  ],
+  "full_tree_diff_pairs": 9,
+  "all10_postimages_full_byte_verified": true,
+  "independent_B_review_manifest": "b012623de28fc5b5beacd83d5436cc90dad13a0a",
+  "root_B_review": "ROOT_B_MEMBER_READBACK_REVIEW.json",
+  "root_format_review": "ROOT_SOURCE2F_FORMAT_REVIEW.json",
+  "actual_commit": {
+    "sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+    "node_id": "C_kwDOTrgxoNoAKDBhNWMzMWI3MzY2N2IzOTIyZDg5NjQzY2YxOGYwNDgyZmE5YTFiODc",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T21:25:05Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T21:25:05Z"
+    },
+    "tree": {
+      "sha": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/d49a133a75fa36eca4a101fcab2d8b67653216ba"
+    },
+    "message": "fix(hepta): bound readonly panel checks to each original member call\n\nKeep each actual member's first and last Trainer read and authenticate the full original signed Training at intermediate slots. The private one-use proof binds the actual Trainer, complete Qualification configuration, call and Source. Execute and Bound paths retain their original behavior.\n\nAdd actual-peer repeated-readback, proof lifecycle and Source-withdrawal regressions; preserve every old boundary and update only the two protected rows plus the new private boundary and exact CALLERS pin. Apply the two whitespace hunks reported by the original source2f Rustfmt job.\n\nStatic review and full tree/byte readbacks are complete. Original automatic CI at this source remains required; production Bound budget and all complete scientific/authority gates remain open.",
+    "parents": [
+      {
+        "sha": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2f12492547c382156eb0dd15a4d3cf1018e37523",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2f12492547c382156eb0dd15a4d3cf1018e37523"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "actual_ref": {
+    "ref": "refs/heads/research/neuro4-evaluated-current-read-20261112-862531d",
+    "node_id": "REF_kwDOTrgxoNoAQnJlZnMvaGVhZHMvcmVzZWFyY2gvbmV1cm80LWV2YWx1YXRlZC1jdXJyZW50LXJlYWQtMjAyNjExMTItODYyNTMxZA",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/neuro4-evaluated-current-read-20261112-862531d",
+    "object": {
+      "sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/0a5c31b73667b3922d89643cf18f0482fa9a1b87"
+    }
+  },
+  "published": true,
+  "published_at_utc": "2026-11-12 21:27:46 UTC",
+  "execution": "PENDING_OWN_ORIGINAL_AUTOMATIC_CI",
+  "all_blockers_closed": false,
+  "owner_decision": null
+}

@@ -1,0 +1,338 @@
+{
+  "schema": "hepta.learn.final-8bf-isolated-validation-carrier.v1",
+  "status": "PREPARED_ACTUAL_V3_BOUND_NOT_DISPATCHED",
+  "source": {
+    "sha": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+    "tree": "c8730bab75eabe47a3b0b3260a6203a0d86d1443",
+    "manifest_blob": "95c8261a6c3eec23d038ba5aec754d618731d222",
+    "boundaries": 737,
+    "complete_protected_records": 506
+  },
+  "authority": {
+    "preparation": "Git/API and V8 static only",
+    "H": false,
+    "Python": false,
+    "Rust": false,
+    "PR_changed": false,
+    "production_source_changed": false,
+    "main_launched": false,
+    "fullcaller_launched": false,
+    "ordinary_acceptance": 0
+  },
+  "original_inputs": {
+    "source_runner": {
+      "sha": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+      "bytes": 71126,
+      "sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4"
+    },
+    "native_runner": {
+      "sha": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+      "bytes": 13265,
+      "sha256": "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb"
+    },
+    "outer": {
+      "sha": "ae3c3de05092b3ba49bc91ddbc3e9b566188a7ec",
+      "bytes": 101858,
+      "sha256": "98ebeb50134af56141dfbc06f5c3cf9d24d552719f8d004e6387b47009db00a3"
+    },
+    "outer_request": {
+      "sha": "8c6d6935cbd1d78cb9b711889bd33dbfc30e1f38",
+      "bytes": 106352,
+      "sha256": "fb6d46182ec9fc9d49ffb6ed1e5611175ab93986afc0fcf4aa955344f81784cd"
+    },
+    "caller_wrapper": {
+      "sha": "0bf2afcec7aab958a9f7d8f0244c7a58d701b05a",
+      "bytes": 30466,
+      "sha256": "04e43d69932573017a417f808c77fd72323a918e5b3cf64d9d79a2220f652fac"
+    },
+    "caller_request": {
+      "sha": "d1ca12201454d42b628ddcbf2a13c9b094b52c93",
+      "bytes": 32962,
+      "sha256": "d5adac44222ba4daa07fdc2249ec6917bc35c02a4d34becdfb5be3f10e89fc6d"
+    },
+    "caller_recorder": {
+      "sha": "1e3f26115da3d0e101eafed24aa88549e7546d02",
+      "bytes": 18927,
+      "sha256": "5f2365e084627a38b57ffec539beba67bbccae525183c6ff0a1201eb6ceae171"
+    }
+  },
+  "final_artifacts": {
+    "source_after": {
+      "path": "source-suite-runner.py",
+      "sha": "b9ed6ad2bd778763901c3cc16f8544efb750c30c",
+      "bytes": 71447,
+      "sha256": "522c37f67debe9ddf3b55608440f227977971623f28337a95cedbf337dee62ff"
+    },
+    "native_bound": {
+      "path": "native-runner.py",
+      "sha": "7b38fb189736532092d88f59da6a71dd63498ae3",
+      "bytes": 14371,
+      "sha256": "3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a"
+    },
+    "outer_bound": {
+      "path": "main-carrier.py",
+      "sha": "832bec9def487d219c51508a2e8816f4142fc2cb",
+      "bytes": 107760,
+      "sha256": "27563b4a3ad10a32df7881ea984b1e7a040ffe45d975bf31dda0386c496d04fd"
+    },
+    "outer_request_bound": {
+      "path": "main-frozen-request.json",
+      "sha": "7c92fa060f463cacf52531512ca1c1c67656cac7",
+      "bytes": 112558,
+      "sha256": "f157d0e4dc22b57f7a5bd6926e52be026725e1701465a027f8f9448f2e52ef3c"
+    },
+    "recorder_after": {
+      "path": "full-caller-recorder.py",
+      "sha": "79e985f8b5aed7c13e99eab4e7c19c44d32ba442",
+      "bytes": 18927,
+      "sha256": "e1be76aafffdd65fcc36778ba4b00f2feb184cc39149f63791005e2c8d7582a0"
+    },
+    "caller_wrapper_after": {
+      "path": "full-caller-launcher.py",
+      "sha": "dc3f1aa0852b93e22e7d65288fafdba55ccf02cb",
+      "bytes": 30466,
+      "sha256": "1658cacb17034130ab4e3a46a6678efccb3a59daf49f48673196d76f74ff282e"
+    },
+    "caller_request_after": {
+      "path": "full-caller-request.prepared.json",
+      "sha": "30f3c79f9b19d962c4cedd9bc763fa4dc1d81cdb",
+      "bytes": 32962,
+      "sha256": "9c11aa1ff2c06e4da43fbc1f76b506871615c2c19c3d8575b6852f1bf42ae44a"
+    }
+  },
+  "actual_v3": {
+    "receipt_blob": "c67c20427461211dcd17af6cead26a1de73a2d0d",
+    "receipt_bytes": 12843,
+    "receipt_sha256": "1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b",
+    "evidence_commit": "6f22e3a0ab33032e5db3f79d4a775351bf03b585",
+    "receipt_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-4537458b51b6-v3-attempt2/result.json",
+    "schema": "learn.original-build-root-recovery.v1",
+    "state": "isolated-build-target-created-original-pins-retained",
+    "creation_source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "creation_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "runtime_root": "/data/hepta-learn-ce434-runtime-20261112-v3",
+    "target": "/data/hepta-learn-ce434-runtime-20261112-v3/target",
+    "root_identity": {
+      "device": 2067,
+      "inode": 47972373,
+      "mode": "0o40700",
+      "uid": 1000,
+      "nlink": 3
+    },
+    "target_identity": {
+      "device": 2067,
+      "inode": 47972398,
+      "mode": "0o40700",
+      "uid": 1000,
+      "nlink": 2
+    },
+    "raw_receipt_preserved": true,
+    "source_before_after_full_objects_equal": true,
+    "preserved_source_before_after_full_objects_equal": true,
+    "archive_only_restoration_before_after_full_objects_equal": true,
+    "original_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+    "original_recovery_sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc",
+    "artifacts": [
+      {
+        "key": "RUSTY_V8_ARCHIVE",
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "bytes": 29366352,
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+        "metadata_before": {
+          "device": 2067,
+          "inode": 40370259,
+          "mode": "0o100400",
+          "uid": 1000,
+          "nlink": 1
+        },
+        "metadata_after": {
+          "device": 2067,
+          "inode": 40370259,
+          "mode": "0o100400",
+          "uid": 1000,
+          "nlink": 1
+        }
+      },
+      {
+        "key": "RUSTY_V8_SRC_BINDING_PATH",
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "bytes": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+        "metadata_before": {
+          "device": 2067,
+          "inode": 40370261,
+          "mode": "0o100400",
+          "uid": 1000,
+          "nlink": 1
+        },
+        "metadata_after": {
+          "device": 2067,
+          "inode": 40370261,
+          "mode": "0o100400",
+          "uid": 1000,
+          "nlink": 1
+        }
+      }
+    ],
+    "original_receipt_bound_bytes": 16384,
+    "actual_receipt_fits_original_bound": true,
+    "runtime_checks": "The native entry freshly opens the exact original receipt O_NOFOLLOW, preserves full stable descriptor identity checks, verifies the bound size/hash, then compares actual owned0700 root/target device/inode/uid/mode to that receipt. It retains the original two V8 full hashes and original manifest/dependency recovery proofs.",
+    "creation_is_not_test_source": "The new target was actually created under clean source453/tree8cbd. Native qualification independently requires clean source8bf/treec873. The two identities are not substituted.",
+    "actual_native_execution_from_creation": 0
+  },
+  "worktrees": {
+    "new": "/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1",
+    "new_actual_identity": null,
+    "new_creation_receipt": null,
+    "original_fetch_repository": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111",
+    "preserved_a671": {
+      "path": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+      "sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+      "status": ""
+    },
+    "preserved_453": {
+      "path": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+      "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+      "status": ""
+    },
+    "creation": "Original fetch transport; original checkout-space calculation; exclusive0700 new directory; git worktree add --detach exact8bf. Same common Git directory is required for original, both preserved worktrees, and the new checkout.",
+    "old_observations": "Both old SHA/tree/clean states are read before, after fetch, after worktree creation, before tests and after completion. Actual directory identities are captured and compared before/after, with available failure observations retained.",
+    "original_disk_accounting_unchanged": true,
+    "checkout_admin_reserve_bytes": 67108864,
+    "no_old_checkout_reset_clean_removal": true,
+    "cleanup_attempted": false
+  },
+  "outputs": {
+    "main": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-8bf3881afa8c-isolated-v1",
+    "native": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-8bf3881afa8c-isolated-v1",
+    "caller_launch": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-8bf3881afa8c-isolated-launch-v1",
+    "caller_records": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-8bf3881afa8c-isolated-v1"
+  },
+  "source_inventory": {
+    "original_methods": 443,
+    "methods": 445,
+    "modules": 62,
+    "added_ids": [
+      "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_private_adoption_dispatch_keeps_exact_fresh_cut_and_installed_gate",
+      "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_private_adoption_never_replaces_generic_denials_or_actual_root_fences"
+    ],
+    "added_zero_based_positions": [
+      379,
+      380
+    ],
+    "original443_order_and_multiplicity_preserved": true,
+    "only_source_runner_changes": "Insert two existing7dd methods and change both443 count literals to445.",
+    "actual_method_definitions_blob": "40e257dfe3eaf926a95711e95949425fc4387ae9",
+    "actual_run": null
+  },
+  "native_inventory": {
+    "cases": 201,
+    "groups": 43,
+    "inventory_blob": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87",
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-neuron"
+    ],
+    "all_case_names_bodies_packages_selection_argv_and_helper_protocol_unchanged": true,
+    "minimum_tests": 201,
+    "ci_timeout_seconds": 3600,
+    "test_threads": 2,
+    "retries": 0,
+    "command_family": "just test --locked --offline, original exact201 selector and four packages",
+    "resource_environment_only_target_v2_to_v3_changes": true,
+    "complete_native_tail_from_private_environment_to_exit_byte_equal_original21cb": true,
+    "no_direct_cargo_test": true,
+    "no_optional_tests_added": true,
+    "actual_run": null
+  },
+  "fullcaller": {
+    "original_recorder_preimage_blob": "1e3f26115da3d0e101eafed24aa88549e7546d02",
+    "permitted_exact_stamps": [
+      "SOURCE_SHA",
+      "SOURCE_TREE",
+      "PINS[CALLERS.toml]",
+      "EXPECTED_BOUNDARIES"
+    ],
+    "every_other_recorder_byte_equal": true,
+    "original_commands": [
+      [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ]
+    ],
+    "no_base_option": true,
+    "source_roots_rust_files": 6655,
+    "main_all_tracked_rust_files": 6777,
+    "self_test_seconds": 300,
+    "verify_seconds": 4800,
+    "output_limit_bytes": 67108864,
+    "maximum_observation_seconds": 10800,
+    "receipt_started_inner_exit_and_complete_record_multiset_gates_unchanged": true,
+    "late_exit_zero_does_not_reset_failed_budget_gate": true,
+    "no_process_signal_added": true,
+    "interpretation": "10800s remains observation of the same original verifier; it does not extend the original4800s pass gate. A launcher or recorder exit is not a substitute for each started phase.original.json actual terminal/complete/child-exit evidence. No duration or pass is predicted.",
+    "actual_run": null
+  },
+  "worktree_ready": {
+    "actual_receipt": null,
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-8bf3881afa8c-isolated-v1/worktree-ready.json",
+    "schema": "learn.fixed-isolated-worktree-ready.v1",
+    "state": "fixed-worktree-created-and-read-back",
+    "before_any_source_or_native_test_dispatch": true,
+    "requirements": [
+      "Actual create-isolated-fixed-worktree directly owned command returned integer0.",
+      "New exact8bf/treec873/clean source and newly created directory identity were freshly read; common Git store matches.",
+      "Both old worktrees still have their fixed clean source and original directory identities.",
+      "All6777 tracked Rust source files, original201-case inventory pin and full frozen source/native runner hashes were checked.",
+      "The new ready receipt is written once, flushed and fsynced; its complete byte count/hash is included in the main report."
+    ],
+    "parallel_launch": "After Root retrieves and verifies this actual complete ready receipt, the independently reviewed fullcaller may start while the main source/native jobs run. H launch ACK, fetch success or worktree-add exit alone is insufficient. Fullcaller itself freshly rechecks fixed clean8bf before launch.",
+    "does_not_require_native_success_for_readonly_caller": true,
+    "does_not_prove_ordinary_assembly_or_acceptance": true
+  },
+  "requests": {
+    "main_key": "learn-ce434-8bf3881afa8c-isolated-full-source-native-v1",
+    "caller_key": "learn-ce434-8bf3881afa8c-isolated-full-caller-v1",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qian-qi",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "only_changed_fields_from_each_original_request": [
+      "script argument",
+      "idempotency_key"
+    ],
+    "no_supervisor_timeout_or_resource_override_added": true,
+    "dispatch_by": "Root only; no request dispatched in this preparation"
+  },
+  "exact_change_counts": {
+    "source_runner": 2,
+    "native_runner": 8,
+    "main_carrier": 27,
+    "caller_recorder": 4,
+    "caller_wrapper": 8,
+    "each_request_fields": 2,
+    "actual_binding_transition": {
+      "native": 1,
+      "outer": 3
+    }
+  },
+  "proof_limits": [
+    "Full original inputs and final blobs were read and hash checked through Git APIs; exact forward/inverse source migrations were checked in V8.",
+    "No Python parse/run, H action, tests, Rust compilation or ordinary task was executed during preparation.",
+    "The actual successful v3 receipt establishes the dependency target creation only. It is not a result for8bf validation.",
+    "Source453 and parent7dd results remain attached to those exact sources; they are not relabeled as8bf passes.",
+    "No Root29 or final fix/fmt is automatically invoked."
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "commit": {
+    "sha": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+    "node_id": "C_kwDOTrgxoNoAKGJlOGFkY2JiNWU5OTI1ZjcyZTA1MzMwYjhmYjMwNTA5Y2JhNDU0NGI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/be8adcbb5e9925f72e05330b8fb30509cba4544b",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/be8adcbb5e9925f72e05330b8fb30509cba4544b",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-11T03:55:55Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-11T03:55:55Z"
+    },
+    "tree": {
+      "sha": "eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125"
+    },
+    "message": "fix(cell): read original Training completion from full iteration snapshots",
+    "parents": [
+      {
+        "sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/30a697c50e10abd56e61b6b84f28ac9ae9f32f5d"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "branch": {
+    "ref": "refs/heads/codex/cell-p0-training-snapshot-20261111-f7c0",
+    "node_id": "REF_kwDOTrgxoNoAOHJlZnMvaGVhZHMvY29kZXgvY2VsbC1wMC10cmFpbmluZy1zbmFwc2hvdC0yMDI2MTExMS1mN2Mw",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/cell-p0-training-snapshot-20261111-f7c0",
+    "object": {
+      "sha": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/be8adcbb5e9925f72e05330b8fb30509cba4544b"
+    }
+  },
+  "pull_request": {
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5914",
+    "number": 5914,
+    "state": "open",
+    "merged": false,
+    "mergeable": false,
+    "draft": true,
+    "body": "## Why\n\nRestore passes the current full iteration snapshot to original stage owners. The typed Q24 Training stage requires its exact Dataset cut. Without reconstructing that original cut, a completed or intermediate history cannot read its original Training receipt through this boundary.\n\n## Changes\n\n- Validate the complete snapshot with the existing Coordinator before extracting its Dataset prefix.\n- Replay receipts at their original observation times; require a Training expected receipt and a legal historical extension.\n- Compare retained Training, expected Training and the actual original owner completion in every field.\n- Delegate exactly once to the original typed stage readback. Preserve the existing non-queuing lane, Dataset/scope binding, both original CURRENT checks and signed-evidence expiry checks.\n- Allow Dataset-only lost-ACK readback only when the original owner has a retained completion. Missing/Pending does not fit, claim, first-attest, sign or renew.\n- Add five Rust behavior cases and source-boundary mutation checks; register the one new helper-to-stage readback caller.\n\nThe production module is 74 lines. The original stage, native owner, receipt owner, six existing stage tests and caller verifier are unchanged.\n\n## Fixed identity\n\n- Published source: `be8adcbb5e9925f72e05330b8fb30509cba4544b`\n- Tree: `eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125`\n- Parent / target candidate: `30a697c50e10abd56e61b6b84f28ac9ae9f32f5d`\n- Independently reviewed local equivalent: `8ad9f24e238b0680f975fea8c9d26db146066a8c`, exact same tree.\n- This draft targets the P0 candidate branch from #5865, preserving its current full-repository CI run while the component gets its own exact-source qualification.\n\n## Validation\n\n- Scoped `just fmt --base 30a697c\u2026` and `git diff --check`: PASS on the reviewed identical tree.\n- Nine source-closure unit cases: PASS.\n- Complete protected/inventory configuration check: 224 boundaries, 224 inventory records, 219 protected records; all authority values false.\n- Independent fixed-source review: no blocking issue found.\n- Fresh complete caller scan on the published source: in progress.\n- The five new Rust cases and the six unchanged Training-stage cases still require this source's native CI; no local native build was started under the existing resource constraint.\n\nThe five new cases cover real native Candidate/NoUpdate fixtures, Dataset-only lost ACK, intermediate/full histories, owner reopen, structurally valid receipt replacement, invalid/foreign cuts, Missing/Pending, request deadline versus signature expiry, two CURRENT changes, and unchanged bytes of the four original files. Later-stage histories are explicitly structural fixtures.\n\n## Scope limits\n\nThis component authenticates Training only. Its caller must supply original checkpoint CURRENT custody and authenticate other stages. It does not create a complete `LearningIterationStageOwnerPortsV1`, wire Root startup, provision file/key/trust custody, define Dataset extraction semantics, or admit native SGD candidates through the governed proposal protocol.\n\nThe new helper itself has no ordinary product caller yet; constructor/execute/attestation and Root assembly remain fail-closed. Ordinary complete Adopt and correct NoUpdate runs both remain **0**. Historical `30a` or earlier CI results are not transferred to this new source.\n",
+    "title": "fix(cell): read original Training receipts from full iteration snapshots",
+    "base": "codex/cell-p0-converged-20261110-f7c0",
+    "base_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+    "head": "codex/cell-p0-training-snapshot-20261111-f7c0",
+    "head_sha": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+    "head_repo_id": 1320694176,
+    "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "merge_commit_sha": null,
+    "user": {
+      "login": "ProfHepta",
+      "name": "ProfHepta",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+      "id": 102159240
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-11T03:56:37Z",
+    "updated_at": "2026-11-11T03:56:37Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 1,
+    "changed_files": 7,
+    "additions": 674,
+    "deletions": 5,
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5914",
+    "display_title": "fix(cell): read original Training receipts from full iteration snapshots"
+  }
+}

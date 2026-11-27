@@ -1,0 +1,26 @@
+{
+  "base_commit": "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d",
+  "overlay_source_file_sha256": {
+    "scripts/format.py": "374839d73d51cddde230f514888cd05532f791534bdd35c1842df19b8b2e2be9",
+    "scripts/test_hepta_format_scope.py": "a11eb6fa3d5d4f8fc5edfcec680e20f11dd9f8a4a977005b625dea3db743377c"
+  },
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+    "--cache-dir",
+    "/workspace/scratch/c1a0d7534606/format-repair/uv-cache",
+    "run",
+    "--frozen",
+    "--offline",
+    "--project",
+    "scripts",
+    "ruff",
+    "format",
+    "--check",
+    "scripts",
+    ".github"
+  ],
+  "exit_code": 0,
+  "seconds": 0.057778120040893555,
+  "stdout": "1145 files already formatted\n",
+  "log_sha256": "55ebd15e0d7f4264fd627f7487857f94c1f6118b369c4ec8f1c21c5694bc7204"
+}

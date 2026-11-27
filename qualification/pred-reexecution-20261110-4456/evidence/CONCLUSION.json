@@ -1,0 +1,38 @@
+{
+  "schema": "pred-reexecution-004-conclusion-v1",
+  "execution_id": "PRED1-CROSSED-REEXEC-004-20261110-4456",
+  "new_execution_registration_commit": "260922ba18438a24b2941c306606ec853f4a7348",
+  "original_189_fit_artifacts": "ORIGINAL_ARTIFACTS_NOT_LOCATED",
+  "training": {
+    "status": "COMPLETE",
+    "expected_fits": 189,
+    "completed_fits": 189,
+    "failed_fits": 0,
+    "epochs_per_fit": 30,
+    "optimizer_calls": 181440,
+    "sample_presentations": 23224320,
+    "checkpoint_count": 189,
+    "outer_wall_seconds": 623.474455454998,
+    "child_cpu_seconds": 622.591221
+  },
+  "replay": {
+    "status": "COMPLETE",
+    "checkpoints": 189,
+    "new_fits": 0,
+    "outer_wall_seconds": 16.06539743200119,
+    "child_cpu_seconds": 15.712234
+  },
+  "independent_recomputation": {
+    "training_numeric_leaves": 1276,
+    "training_max_abs_difference": 2.4647e-14,
+    "replay_numeric_leaves": 2926,
+    "replay_max_abs_difference": 8.88e-16
+  },
+  "native_training_or_owner_collection_performed": false,
+  "independent_confirmation_units_added": 0,
+  "new_p_value_computed": false,
+  "physical_cost_complete": false,
+  "independent_paid_task_gain_established": false,
+  "qualification": "HOLD_UNCHANGED",
+  "production_activation": false
+}

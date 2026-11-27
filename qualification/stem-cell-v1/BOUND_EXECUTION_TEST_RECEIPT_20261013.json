@@ -1,0 +1,136 @@
+{
+  "changed_source_blobs": {
+    "hf_encoder_kernel.py": {
+      "bytes": 13177,
+      "git_blob_sha1": "30ac3d3914bf74c1aea9763dbbe46a19f0f7258d",
+      "lines": 273,
+      "sha256": "d1cf5206245a5bda03a56740c96326720e0816fe47433d3d995868eb4e5935be"
+    },
+    "hf_joint_decision_runner.py": {
+      "bytes": 15012,
+      "git_blob_sha1": "0d5f979472ef5180666d1725e38e46068bf5700c",
+      "lines": 291,
+      "sha256": "e3c9b8f3aa3cd56f7b34d5efb91896d9f013ccc985791ed1463e9434f10ae73e"
+    },
+    "matrix_bank.py": {
+      "bytes": 6590,
+      "git_blob_sha1": "20a6fa38cbecd5feee6a03bfa8ffbacb514f344d",
+      "lines": 122,
+      "sha256": "0c3b2857b7b7dbe99ae59a887d3561c81109230e3a2a841f9d2453b9c3eb4fe9"
+    },
+    "matrix_export.py": {
+      "bytes": 11394,
+      "git_blob_sha1": "92f9fe18c25a4099af7cd7baf7a30eece542141f",
+      "lines": 173,
+      "sha256": "1cc99f14699d5e58b42a7dfabe245082ebf85ee6e4bd13117dc095ceb90f2b43"
+    },
+    "matrix_materials.py": {
+      "bytes": 7434,
+      "git_blob_sha1": "4b54c198b1abd4b9391105c6b1f01d49f478795f",
+      "lines": 143,
+      "sha256": "9148e132bcad1d422c5e4f1264cccabb01b2e8e178e3170de7e330897611fbfd"
+    },
+    "matrix_runtime.py": {
+      "bytes": 13058,
+      "git_blob_sha1": "d2c1d1364fbc569dbe5d9eae1aed6c21c6078b12",
+      "lines": 242,
+      "sha256": "fb407147c769b5f6681929845b49dd27febf34d1e2baaed8c2b1b5f917ebe210"
+    },
+    "matrix_test_support.py": {
+      "bytes": 2182,
+      "git_blob_sha1": "38acf0a59226c206c6a4f79519a1c7307e6b71dc",
+      "lines": 48,
+      "sha256": "9dbd749eafb0c3c0acfbf8c081e81b16d660bc2497cf8b04caa6bdf0335c2922"
+    },
+    "test_matrix_export.py": {
+      "bytes": 7619,
+      "git_blob_sha1": "ff016b5742bfc05372233927afe09215ab2a6a47",
+      "lines": 144,
+      "sha256": "4439e464eaa6bf4af24eb9b9d7d9478dff01cfe91c4528d52c3bf39493594bad"
+    },
+    "test_matrix_materials.py": {
+      "bytes": 4192,
+      "git_blob_sha1": "31b04155569ffd78df3b8c58a444ab9c8d79c816",
+      "lines": 84,
+      "sha256": "f6753488cd9ab235af0bff4a87cba9944e6977a19277181067991d7d51e8af59"
+    },
+    "test_matrix_runtime.py": {
+      "bytes": 7158,
+      "git_blob_sha1": "79e8086dbb7741c384576a62cb1e0d3140a8131f",
+      "lines": 137,
+      "sha256": "9512bfebc62f04bb6f06153fb48b0776b42b724762d6ff8117bfa7f351f667c3"
+    }
+  },
+  "code_candidate": "b9c3a9b1393dd5bcd933086624719f0ee3e69f1a",
+  "compileall": "passed",
+  "date": "2026-10-13",
+  "execution_surface": "session CPU source mirror; not full repository or project cloud",
+  "full_flops_energy_peak_memory": "not_measured",
+  "full_repository_tests": "not_run",
+  "git_diff_cached_check": "passed",
+  "legacy_function_ast_comparison": {
+    "count": 12,
+    "equal": true,
+    "names": [
+      "build_head",
+      "head_sha256",
+      "head_width",
+      "main",
+      "render_joint",
+      "run",
+      "snapshot_validation",
+      "train_head",
+      "validate_encoder_loading_info",
+      "vectorize_case",
+      "vectorize_scope_batch",
+      "verify_loaded_safetensors"
+    ]
+  },
+  "log_file": "BOUND_EXECUTION_TEST_LOG_20261013.txt",
+  "log_sha256": "2365b618c55d1d7bc2c981233cf1b81fcb8d234a74b98fda88ef6775bfae8272",
+  "pretrained_model_experiment_executed": false,
+  "production_authorized": false,
+  "remote_actions": "not_run_or_claimed",
+  "remote_blob_matches_verified": [
+    "hf_encoder_kernel.py",
+    "hf_joint_decision_runner.py",
+    "matrix_bank.py",
+    "matrix_export.py",
+    "matrix_materials.py",
+    "matrix_runtime.py",
+    "matrix_test_support.py",
+    "test_matrix_export.py",
+    "test_matrix_materials.py",
+    "test_matrix_runtime.py"
+  ],
+  "runtime": {
+    "cuda_available": false,
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu",
+    "transformers_installed": false
+  },
+  "rust_fmt_build_tests": "not_run",
+  "schema": "hepta.stem.bound-execution-local-tests.v1",
+  "source_baseline": "23f4ceae08e1cb47dde7ef44d1be7cc564f4a706",
+  "statistical_superiority_established": false,
+  "target_host_executed": false,
+  "test_command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v",
+  "tests": {
+    "by_module": {
+      "test_head_surgery.py": 8,
+      "test_matrix_export.py": 8,
+      "test_matrix_materials.py": 9,
+      "test_matrix_runtime.py": 11,
+      "test_next_round_matrix.py": 9,
+      "test_paired_execution.py": 13,
+      "test_system2_execution.py": 8
+    },
+    "errors": 0,
+    "failures": 0,
+    "passed": 66,
+    "run": 66,
+    "skips": 0
+  }
+}

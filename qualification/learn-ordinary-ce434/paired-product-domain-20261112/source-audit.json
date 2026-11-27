@@ -1,0 +1,268 @@
+{
+  "schema": "hepta.paired-product-domain-source-checkpoint.v1",
+  "parent": "48844493c046fdd79734ddd2c1866314023a15cb",
+  "parent_tree": "360375952ff4fa51e817f2c773e5a5bc2a842a27",
+  "status": "reviewable source checkpoint; no formatter, Rust, native, Python QA or full caller verification has run for this source",
+  "scope": "explicit separately frozen paired on-policy comparison through the existing original Product execution, single holdout consume and signed Qualification owners",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+      "sha": "69ff98bd438b64e573289f7c444654020b4806e6",
+      "size": 7383,
+      "previous_sha": null,
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "sha": "7a4594464384af516182f9e35cd2f1a46e38b5c8",
+      "size": 13642,
+      "previous_sha": null,
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "sha": "fdd76d44138b0369a04005dcd11c33309bbe9bb0",
+      "size": 6972,
+      "previous_sha": null,
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_evaluation.rs",
+      "sha": "66bbd0256a08782314f575efffcb260f0aee0933",
+      "size": 4751,
+      "previous_sha": null,
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "size": 41992,
+      "previous_sha": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_material_commitments.rs",
+      "sha": "de8401e61ecf5a0aee9633d703ed49a0d2428538",
+      "size": 3885,
+      "previous_sha": "3629d278c28a18a103226c112c4d3f2ab3bec06c",
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "sha": "f78e1b87e063c901989b6de6f8154867db250427",
+      "size": 16342,
+      "previous_sha": "f95462aab649ccd650e47976b44bba6300a77701",
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+      "sha": "063c67b115a8b386ebcf4b2ee38a7231c0226e96",
+      "size": 4511,
+      "previous_sha": null,
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "sha": "afee1a31f8b115c8ae7e356dbca8bb9ad243339e",
+      "size": 12680,
+      "previous_sha": "95004dcb72d74b0b42c80c5d56b2c134f7883d52",
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_support_tests.rs",
+      "sha": "f066d4cb4e41233fc731fa614b21dc92699e1f11",
+      "size": 9147,
+      "previous_sha": null,
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_tests.rs",
+      "sha": "825ca924ccd2f9ae497c80503119cf3fd655509f",
+      "size": 17084,
+      "previous_sha": null,
+      "full_blob_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_tests.rs",
+      "sha": "a007272866e86cfe3920cdd04a2d804d40b16ab9",
+      "size": 19240,
+      "previous_sha": "b03f2983a4c026958c850bb029599daba9ead1c7",
+      "full_blob_readback": true
+    }
+  ],
+  "canonical_contract_blob": "ae603f8bf0d512db8814aaec9e5e312eb2533ac1",
+  "legacy_source_preservation": {
+    "unchanged": [
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "function": "fn product_estimand_commitment_bytes(",
+        "byte_equal": true,
+        "length": 699
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "function": "fn derive_metric_gates(",
+        "byte_equal": true,
+        "length": 2048
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "function": "fn comparison_digests(",
+        "byte_equal": true,
+        "length": 1134
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "function": "fn validate_comparable_observations(",
+        "byte_equal": true,
+        "length": 1763
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "function": "fn qualification_bundle(",
+        "byte_equal": true,
+        "length": 1849
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "function": "fn qualify_and_persist(",
+        "byte_equal": true,
+        "length": 2903
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "function": "fn product_qualification_evidence_digest(",
+        "byte_equal": true,
+        "length": 170
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "function": "fn product_qualification_seal(",
+        "byte_equal": true,
+        "length": 360
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "function": "fn bound_estimand_digest(",
+        "byte_equal": true,
+        "length": 350
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+        "function": "fn encode_envelope(",
+        "byte_equal": true,
+        "length": 952
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+        "function": "fn decode_envelope(",
+        "byte_equal": true,
+        "length": 931
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+        "function": "fn encode_temporal(",
+        "byte_equal": true,
+        "length": 1642
+      },
+      {
+        "file": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+        "function": "fn decode_temporal(",
+        "byte_equal": true,
+        "length": 1465
+      }
+    ],
+    "shared_execution_exact_except_typed_branch_and_none": true,
+    "shared_freeze_exact_except_shared_tag": true,
+    "retained_full_files": [
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+        "sha": "96c1d265345551a389934657051158d47e8959d5"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/ope.rs",
+        "sha": "52fb8b882012f2561c65a95639a63da8e2c12ff4"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+        "sha": "be7f0e9ccd6ce2fed3fa635bb018cf70d62df75c"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
+        "sha": "5225462749ff1e082ddb6597567b00040a656a56"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/temporal_fold.rs",
+        "sha": "3447e550262f7b85223a90031620a6b95b11dc69"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+        "sha": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+        "sha": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb"
+      }
+    ],
+    "original_execution_tests_prefix_exact": true,
+    "shared_encoding_exact_except_typed_branch": true
+  },
+  "native_cases_pending": [
+    "product_runner::tests::execution_tests::paired_tests::paired_default_provider_refuses_after_one_original_consumption",
+    "product_runner::tests::execution_tests::paired_tests::paired_original_estimators_and_qualification_keep_the_frozen_thresholds",
+    "product_runner::tests::execution_tests::paired_tests::paired_equal_outcomes_do_not_pass_original_primary_superiority",
+    "product_runner::tests::execution_tests::paired_tests::paired_identity_source_state_and_probability_changes_stay_pending",
+    "product_runner::tests::execution_tests::paired_tests::paired_contract_and_temporal_protocol_are_fixed_before_consumption",
+    "product_runner::tests::execution_tests::paired_tests::paired_one_actual_principal_is_not_split_into_independent_clusters",
+    "product_runner::tests::execution_tests::paired_tests::paired_signed_completion_lost_ack_cold_reads_without_release_or_resign",
+    "product_runner::tests::execution_tests::paired_tests::paired_changed_execution_body_cannot_replace_original_signature",
+    "product_runner::tests::execution_tests::paired_tests::paired_mode_cannot_decode_or_reuse_a_shared_behavior_execution",
+    "product_runner::tests::execution_tests::paired_tests::paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineligible"
+  ],
+  "actual_agentd_peer_source_review": {
+    "commit": "048b4a31b6014769d98bff4f23e619f9c030bb65",
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_contract.rs",
+        "sha": "6cd43b7e4b6f41f1f4609adb836ccea3282747ab"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+        "sha": "448b410a7fe36e1769c07aa5e38752f4349b0b3c"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+        "sha": "005e108f3bede3723753d10b89f6f1f05e70da42"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_protocol.rs",
+        "sha": "c4152c599aa2fa1fe572738b402750956ec0cc37"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs",
+        "sha": "e588433c4c01bc46dcdb6ce97bc8970b4dd1fbab"
+      }
+    ],
+    "limits": "narrow static source/interface review only; not all 21 producer files, actual B authority, runtime or native validation"
+  },
+  "pending": [
+    "Full precise protected-file and caller contract updates and original Python source QA.",
+    "Original H formatter, compiler and the ten listed mechanism cases plus required existing compatibility checks.",
+    "Actual ordinary producer capability, registered plan, real independent principal clusters, finite E frame budget and ordinary entry assembly."
+  ],
+  "ordinary_acceptance": {
+    "positive_adoption": 0,
+    "no_update_or_fallback": 0,
+    "fresh_C_input_session": 0,
+    "cold_daemon_Root": 0
+  },
+  "retained_limits": [
+    "Existing Root and Candidate positive execution gates are inherited unchanged from the parent.",
+    "Existing source-fixture alpha50000,m1,W4 is mathematically unable to pass strict Primary at the producer's optimistic <=31 pairs even with maximal real clusters and extreme outcomes.",
+    "The 512-pair IPS positive unit fixture is mechanism-only and exceeds the current agentd producer cap.",
+    "One actual principal stays one cluster; the original InsufficientClusters check is retained.",
+    "New separate W1+IPS mathematical reachability is not an issued grant, actual registered ordinary plan or replacement of any existing frozen metric/weight/threshold.",
+    "Metadata checks do not authenticate original sources; actual agentd owners retain that responsibility.",
+    "No key, grant, runtime admission, inference authority, new metric threshold, new cap, CURRENT cache or reconnect is introduced."
+  ]
+}

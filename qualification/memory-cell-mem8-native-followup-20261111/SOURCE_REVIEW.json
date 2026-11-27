@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.mem.native-followup.source-review.v1",
+  "owner": {
+    "formatted_manifest_blob": "4507fd2e1e6621e1cbdc4c5aced92f1725356599",
+    "postimages_verified": 7,
+    "reviewer": "independent mem_owner_review",
+    "format_only_delta": "Four files have whitespace/trailing-comma changes; three are byte-identical. No assertion or semantic changes found.",
+    "native_evidence": "ROOT_OWNER_READBACK.json"
+  },
+  "delivery": {
+    "formatted_manifest_blob": "2bb9922d4231e81589552b0d88e9a3bd7cb854d3",
+    "postimages_verified": 6,
+    "reviewer": "independent mem_owner_review",
+    "format_diff_lines": 531,
+    "format_only_delta": "Import/module order, line wrapping/indentation, optional trailing commas and equivalent closure-expression blocks. Assertions, budgets, two mock provider requests, three authority claims, revocation hook and Conflict checks unchanged.",
+    "default_compatibility": "run and run_intelligence default to Attach; CognitiveTestHost::start uses Standard; ExplicitContextOnly requires the named new entry point.",
+    "withhold_boundary": "Shared read, bounded serialization, retained owner context and final revalidation. Withhold suppresses explicit attachment and binds the intervention to durable admission.",
+    "final_use": "Revalidation is gated on retained context, not additional_context; final-use enter precedes physical send.",
+    "must_fix_findings": []
+  },
+  "scope": "Read-only review and full source hash verification. No native test execution added by this review."
+}

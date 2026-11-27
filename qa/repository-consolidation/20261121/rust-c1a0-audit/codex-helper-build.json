@@ -1,0 +1,147 @@
+{
+  "after": {
+    "commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "dirty": false,
+    "parents": [
+      "394e28812368f5174b890cea51ff13e882231756"
+    ],
+    "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb"
+  },
+  "before": {
+    "commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "dirty": false,
+    "parents": [
+      "394e28812368f5174b890cea51ff13e882231756"
+    ],
+    "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb"
+  },
+  "command": [
+    "/home/qian-qi/.cargo/bin/cargo",
+    "+1.96.0",
+    "build",
+    "--locked",
+    "-p",
+    "codex-cli",
+    "--bin",
+    "codex",
+    "--message-format=json-render-diagnostics"
+  ],
+  "command_log": {
+    "bytes": 1167086,
+    "device": 66306,
+    "git_blob": "47574fd1f92c72e618100cc51cd8171571030888",
+    "inode": 28772488,
+    "mode": "0o600",
+    "path": "/home/qian-qi/hepta-c1a0-native-20261121-01/validation-01/01-build-codex.exec.json.e9c24bd892b74b6ba1f7050fba039422.log",
+    "sha256": "49233bdb5b79706623ca4846068bdb2f94896a88f9e00c3b503a0761fa7641a5"
+  },
+  "elapsed_seconds": 185.30244443000993,
+  "execution_record": {
+    "after": {
+      "commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "dirty": false,
+      "parents": [
+        "394e28812368f5174b890cea51ff13e882231756"
+      ],
+      "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb"
+    },
+    "base_sha": "65b720ec799ac278aadcc54c9466b7d17df235c7",
+    "before": {
+      "commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "dirty": false,
+      "parents": [
+        "394e28812368f5174b890cea51ff13e882231756"
+      ],
+      "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb"
+    },
+    "command": [
+      "/home/qian-qi/.cargo/bin/cargo",
+      "+1.96.0",
+      "build",
+      "--locked",
+      "-p",
+      "codex-cli",
+      "--bin",
+      "codex",
+      "--message-format=json-render-diagnostics"
+    ],
+    "command_exit_code": 0,
+    "elapsed_seconds": 185.20530545298243,
+    "exit_code": 0,
+    "finished_at": "2026-11-21T12:26:35.369956+00:00",
+    "job": null,
+    "lane": "source-head",
+    "log_bytes": 1167086,
+    "log_file": "01-build-codex.exec.json.e9c24bd892b74b6ba1f7050fba039422.log",
+    "log_sha256": "49233bdb5b79706623ca4846068bdb2f94896a88f9e00c3b503a0761fa7641a5",
+    "minimum_tests": 0,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 0,
+    "run_attempt": null,
+    "run_id": null,
+    "schema_version": 1,
+    "source_sha": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "started_at": "2026-11-21T12:23:30.163823+00:00",
+    "status": "passed",
+    "tested_sha": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "timed_out": false,
+    "working_directory": "/home/qian-qi/hepta-c1a0-native-20261121-01/repo/codex-rs"
+  },
+  "execution_record_file": {
+    "bytes": 1576,
+    "device": 66306,
+    "git_blob": "7364ac7daa61a6804cd2cf14c89c474de84ca3bf",
+    "inode": 28772489,
+    "mode": "0o600",
+    "path": "/home/qian-qi/hepta-c1a0-native-20261121-01/validation-01/01-build-codex.exec.json",
+    "sha256": "772fce2bc82e4b33532ce83473376a7f02a6b7524201f172280b75d14d758ced"
+  },
+  "finished_at": "2026-11-21T12:26:35.437257+00:00",
+  "minimum_tests": 0,
+  "remaining_task_budget_seconds_at_dispatch": 3600,
+  "stage": "01-build-codex",
+  "started_at": "2026-11-21T12:23:30.134815+00:00",
+  "status": "passed",
+  "working_directory": "/home/qian-qi/hepta-c1a0-native-20261121-01/repo/codex-rs",
+  "wrapper_argv": [
+    "/usr/bin/python3.12",
+    "/home/qian-qi/hepta-c1a0-native-20261121-01/repo/scripts/hepta_ci_exec.py",
+    "--timeout-seconds",
+    "3600",
+    "--minimum-tests",
+    "0",
+    "--output",
+    "/home/qian-qi/hepta-c1a0-native-20261121-01/validation-01/01-build-codex.exec.json",
+    "--",
+    "/home/qian-qi/.cargo/bin/cargo",
+    "+1.96.0",
+    "build",
+    "--locked",
+    "-p",
+    "codex-cli",
+    "--bin",
+    "codex",
+    "--message-format=json-render-diagnostics"
+  ],
+  "wrapper_exit_code": 0,
+  "wrapper_stderr": {
+    "bytes": 0,
+    "device": 66306,
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "inode": 28772486,
+    "mode": "0o600",
+    "path": "/home/qian-qi/hepta-c1a0-native-20261121-01/validation-01/01-build-codex.wrapper.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "wrapper_stdout": {
+    "bytes": 1168502,
+    "device": 66306,
+    "git_blob": "d701c1a898ccfab050f00a0ab8089870a81b189a",
+    "inode": 28772485,
+    "mode": "0o600",
+    "path": "/home/qian-qi/hepta-c1a0-native-20261121-01/validation-01/01-build-codex.wrapper.stdout.log",
+    "sha256": "99acb3f2ee454a3c621843e22c5f427bce0b480f2a42b5271213bda0000c17d0"
+  }
+}

@@ -1,0 +1,92 @@
+name: Hepta Execution Envelope P1 (contracts only)
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-contracts/src/execution_contract_v1.rs
+      - codex-rs/hepta-contracts/src/execution_contract_v1_tests.rs
+      - codex-rs/hepta-contracts/src/lib.rs
+      - codex-rs/hepta-contracts/EXECUTION_ENVELOPE.md
+      - .github/workflows/hepta-execution-envelope-p1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-execution-envelope-p1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts-only:
+    name: Rust execution envelope P1 (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Check out exact source, without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Freeze original source and synthetic merge identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          if [ '${{ matrix.lane }}' = base-merge ]; then
+            test -n "$BASE_SHA"
+            git cat-file -e "$BASE_SHA^{commit}"
+            tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            merge="$(printf '%s\n' 'Synthetic qualification only' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            test "$(git show -s --format=%P "$merge")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$merge"
+            test "$(git rev-parse HEAD^{tree})" = "$tree"
+          fi
+          printf 'source=%s base=%s tested=%s tree=%s\n' "$SOURCE_SHA" "$BASE_SHA" \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+
+      - name: Confirm no unreviewed lockfile change
+        run: python3 scripts/verify_cargo_lock.py
+
+      - name: Run pinned Rustfmt
+        working-directory: codex-rs
+        run: |
+          rustc --version --verbose
+          cargo --version
+          cargo fmt -p codex-hepta-contracts -- --check
+
+      - name: Compile existing owner crate with exact Cargo lock
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-contracts --all-targets
+
+      - name: Execute new native adversarial tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-contracts --lib execution_contract_v1 -- --nocapture
+
+      - name: Strict all-target Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-contracts --all-targets -- -D warnings
+
+      - name: Verify committed working tree remains pristine
+        run: |
+          git diff --check
+          git diff --quiet
+          git diff --cached --quiet

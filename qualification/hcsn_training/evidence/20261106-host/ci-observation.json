@@ -1,0 +1,161 @@
+{
+  "observation_number": 12,
+  "requested_at_utc": "2026-11-06T10:28:58.587Z",
+  "received_at_utc": "2026-11-06T10:28:59.070Z",
+  "expected_head": "fcffa43043ec7f36fa680c449c54b9b3446eb6a6",
+  "run": {
+    "id": 42201095686,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "fcffa43043ec7f36fa680c449c54b9b3446eb6a6",
+    "head_matches": true,
+    "created_at": "2026-11-06T10:14:10Z",
+    "updated_at": "2026-11-06T10:28:03Z",
+    "run_attempt": 1,
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201095686"
+  },
+  "jobs": [
+    {
+      "id": 127836285317,
+      "name": "source-and-owner",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-06T10:22:16Z",
+      "completed_at": "2026-11-06T10:28:02Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-06T10:22:16Z",
+          "completed_at": "2026-11-06T10:22:17Z"
+        },
+        {
+          "name": "Prepare isolated evidence directory",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-06T10:22:17Z",
+          "completed_at": "2026-11-06T10:22:17Z"
+        },
+        {
+          "name": "Check out exact candidate without write credentials",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-06T10:22:17Z",
+          "completed_at": "2026-11-06T10:22:24Z"
+        },
+        {
+          "name": "Retain exact Git identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-06T10:22:24Z",
+          "completed_at": "2026-11-06T10:22:24Z"
+        },
+        {
+          "name": "Install existing repository test tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-06T10:22:24Z",
+          "completed_at": "2026-11-06T10:22:30Z"
+        },
+        {
+          "name": "Install pinned CPU development fixture runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-06T10:22:30Z",
+          "completed_at": "2026-11-06T10:22:57Z"
+        },
+        {
+          "name": "Build exact native crates with the repository lockfile",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-06T10:22:57Z",
+          "completed_at": "2026-11-06T10:25:49Z"
+        },
+        {
+          "name": "Run the two affected native packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-06T10:25:49Z",
+          "completed_at": "2026-11-06T10:25:59Z"
+        },
+        {
+          "name": "Strict shared-graph CPU derivative and recovery fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-06T10:25:59Z",
+          "completed_at": "2026-11-06T10:26:22Z"
+        },
+        {
+          "name": "A graph through native supervisor, owner and second training block",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-06T10:26:22Z",
+          "completed_at": "2026-11-06T10:26:32Z"
+        },
+        {
+          "name": "B graph through native supervisor, owner and second training block",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-06T10:26:32Z",
+          "completed_at": "2026-11-06T10:26:40Z"
+        },
+        {
+          "name": "Full authorized TaskFlow package tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-06T10:26:40Z",
+          "completed_at": "2026-11-06T10:27:48Z"
+        },
+        {
+          "name": "Verify tracked source remained unchanged",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-06T10:27:48Z",
+          "completed_at": "2026-11-06T10:27:49Z"
+        },
+        {
+          "name": "Retain complete logs and partial or successful fixture outputs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-06T10:27:49Z",
+          "completed_at": "2026-11-06T10:27:59Z"
+        },
+        {
+          "name": "Post Check out exact candidate without write credentials",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-11-06T10:27:59Z",
+          "completed_at": "2026-11-06T10:27:59Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29,
+          "started_at": "2026-11-06T10:27:59Z",
+          "completed_at": "2026-11-06T10:27:59Z"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "read_only": true,
+  "terminal": true,
+  "changed": true
+}

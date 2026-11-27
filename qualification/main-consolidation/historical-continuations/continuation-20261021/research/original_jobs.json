@@ -1,0 +1,4312 @@
+{
+  "total_count": 37,
+  "jobs": [
+    {
+      "id": 115694041596,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-b5_A",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694041596",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694041596",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:30Z",
+      "started_at": "2026-10-13T15:35:09Z",
+      "completed_at": "2026-10-13T15:35:23Z",
+      "name": "preflight",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:35:10Z",
+          "completed_at": "2026-10-13T15:35:11Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:35:11Z",
+          "completed_at": "2026-10-13T15:35:17Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:35:17Z",
+          "completed_at": "2026-10-13T15:35:17Z"
+        },
+        {
+          "name": "Verify exact sharded-source format, integrity contracts and tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:35:17Z",
+          "completed_at": "2026-10-13T15:35:19Z"
+        },
+        {
+          "name": "Preserve exact source and formatting repair evidence even on gate failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:35:19Z",
+          "completed_at": "2026-10-13T15:35:19Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:35:19Z",
+          "completed_at": "2026-10-13T15:35:20Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-13T15:35:20Z",
+          "completed_at": "2026-10-13T15:35:20Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-13T15:35:20Z",
+          "completed_at": "2026-10-13T15:35:21Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-13T15:35:21Z",
+          "completed_at": "2026-10-13T15:35:21Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694041596",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000088072,
+      "runner_name": "GitHub Actions 1000088072",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694042594,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-b94g",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694042594",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694042594",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T15:52:51Z",
+      "completed_at": "2026-10-13T15:56:26Z",
+      "name": "calibration-shard (2, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:52:52Z",
+          "completed_at": "2026-10-13T15:52:54Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:52:54Z",
+          "completed_at": "2026-10-13T15:52:59Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:52:59Z",
+          "completed_at": "2026-10-13T15:52:59Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:52:59Z",
+          "completed_at": "2026-10-13T15:53:00Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:53:00Z",
+          "completed_at": "2026-10-13T15:54:29Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:54:29Z",
+          "completed_at": "2026-10-13T15:56:20Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T15:56:20Z",
+          "completed_at": "2026-10-13T15:56:22Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T15:56:22Z",
+          "completed_at": "2026-10-13T15:56:23Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T15:56:23Z",
+          "completed_at": "2026-10-13T15:56:23Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T15:56:23Z",
+          "completed_at": "2026-10-13T15:56:23Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T15:56:23Z",
+          "completed_at": "2026-10-13T15:56:23Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694042594",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088572,
+      "runner_name": "GitHub Actions 1000088572",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694042682,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-b-Og",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694042682",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694042682",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T15:36:58Z",
+      "completed_at": "2026-10-13T15:39:20Z",
+      "name": "calibration-shard (1, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:36:59Z",
+          "completed_at": "2026-10-13T15:37:00Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:37:00Z",
+          "completed_at": "2026-10-13T15:37:05Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:37:05Z",
+          "completed_at": "2026-10-13T15:37:05Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:37:05Z",
+          "completed_at": "2026-10-13T15:37:05Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:37:05Z",
+          "completed_at": "2026-10-13T15:38:33Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:38:33Z",
+          "completed_at": "2026-10-13T15:39:15Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T15:39:15Z",
+          "completed_at": "2026-10-13T15:39:16Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T15:39:16Z",
+          "completed_at": "2026-10-13T15:39:17Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T15:39:17Z",
+          "completed_at": "2026-10-13T15:39:17Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T15:39:17Z",
+          "completed_at": "2026-10-13T15:39:17Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T15:39:17Z",
+          "completed_at": "2026-10-13T15:39:17Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694042682",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088161,
+      "runner_name": "GitHub Actions 1000088161",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694042712,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-b-WA",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694042712",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694042712",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T15:37:27Z",
+      "completed_at": "2026-10-13T15:40:06Z",
+      "name": "calibration-shard (0, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:37:28Z",
+          "completed_at": "2026-10-13T15:37:29Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:37:29Z",
+          "completed_at": "2026-10-13T15:37:35Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:37:35Z",
+          "completed_at": "2026-10-13T15:37:35Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:37:35Z",
+          "completed_at": "2026-10-13T15:37:35Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:37:35Z",
+          "completed_at": "2026-10-13T15:38:51Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:38:51Z",
+          "completed_at": "2026-10-13T15:40:03Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T15:40:03Z",
+          "completed_at": "2026-10-13T15:40:03Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T15:40:03Z",
+          "completed_at": "2026-10-13T15:40:04Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T15:40:04Z",
+          "completed_at": "2026-10-13T15:40:04Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T15:40:04Z",
+          "completed_at": "2026-10-13T15:40:05Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T15:40:05Z",
+          "completed_at": "2026-10-13T15:40:05Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694042712",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088174,
+      "runner_name": "GitHub Actions 1000088174",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694042759,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-b-hw",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694042759",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694042759",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T15:48:07Z",
+      "completed_at": "2026-10-13T15:51:21Z",
+      "name": "calibration-shard (1, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:48:08Z",
+          "completed_at": "2026-10-13T15:48:09Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:48:09Z",
+          "completed_at": "2026-10-13T15:48:11Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:48:11Z",
+          "completed_at": "2026-10-13T15:48:11Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:48:11Z",
+          "completed_at": "2026-10-13T15:48:11Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:48:11Z",
+          "completed_at": "2026-10-13T15:49:26Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:49:26Z",
+          "completed_at": "2026-10-13T15:51:18Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T15:51:18Z",
+          "completed_at": "2026-10-13T15:51:19Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T15:51:19Z",
+          "completed_at": "2026-10-13T15:51:19Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T15:51:19Z",
+          "completed_at": "2026-10-13T15:51:19Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T15:51:19Z",
+          "completed_at": "2026-10-13T15:51:20Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T15:51:20Z",
+          "completed_at": "2026-10-13T15:51:20Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694042759",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088511,
+      "runner_name": "GitHub Actions 1000088511",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694043004,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-b_fA",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694043004",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694043004",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T15:38:19Z",
+      "completed_at": "2026-10-13T15:40:47Z",
+      "name": "calibration-shard (4, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:38:19Z",
+          "completed_at": "2026-10-13T15:38:20Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:38:20Z",
+          "completed_at": "2026-10-13T15:38:28Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:38:28Z",
+          "completed_at": "2026-10-13T15:38:28Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:38:28Z",
+          "completed_at": "2026-10-13T15:38:28Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:38:28Z",
+          "completed_at": "2026-10-13T15:39:37Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:39:37Z",
+          "completed_at": "2026-10-13T15:40:43Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T15:40:43Z",
+          "completed_at": "2026-10-13T15:40:44Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T15:40:44Z",
+          "completed_at": "2026-10-13T15:40:45Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T15:40:45Z",
+          "completed_at": "2026-10-13T15:40:45Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T15:40:45Z",
+          "completed_at": "2026-10-13T15:40:45Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T15:40:45Z",
+          "completed_at": "2026-10-13T15:40:45Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694043004",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088231,
+      "runner_name": "GitHub Actions 1000088231",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694043053,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-b_rQ",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694043053",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694043053",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T15:55:47Z",
+      "completed_at": "2026-10-13T15:58:11Z",
+      "name": "calibration-shard (4, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:55:48Z",
+          "completed_at": "2026-10-13T15:55:50Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:55:50Z",
+          "completed_at": "2026-10-13T15:55:53Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:55:53Z",
+          "completed_at": "2026-10-13T15:55:53Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:55:53Z",
+          "completed_at": "2026-10-13T15:55:54Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:55:54Z",
+          "completed_at": "2026-10-13T15:57:14Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:57:14Z",
+          "completed_at": "2026-10-13T15:58:06Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T15:58:06Z",
+          "completed_at": "2026-10-13T15:58:07Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T15:58:07Z",
+          "completed_at": "2026-10-13T15:58:08Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T15:58:08Z",
+          "completed_at": "2026-10-13T15:58:08Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T15:58:08Z",
+          "completed_at": "2026-10-13T15:58:08Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T15:58:08Z",
+          "completed_at": "2026-10-13T15:58:08Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694043053",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088599,
+      "runner_name": "GitHub Actions 1000088599",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694043365,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cA5Q",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694043365",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694043365",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T16:10:11Z",
+      "completed_at": "2026-10-13T16:13:15Z",
+      "name": "calibration-shard (3, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T16:10:12Z",
+          "completed_at": "2026-10-13T16:10:13Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T16:10:13Z",
+          "completed_at": "2026-10-13T16:10:19Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T16:10:19Z",
+          "completed_at": "2026-10-13T16:10:20Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T16:10:20Z",
+          "completed_at": "2026-10-13T16:10:20Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T16:10:20Z",
+          "completed_at": "2026-10-13T16:11:54Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T16:11:54Z",
+          "completed_at": "2026-10-13T16:13:11Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T16:13:11Z",
+          "completed_at": "2026-10-13T16:13:12Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T16:13:12Z",
+          "completed_at": "2026-10-13T16:13:12Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T16:13:12Z",
+          "completed_at": "2026-10-13T16:13:13Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T16:13:13Z",
+          "completed_at": "2026-10-13T16:13:13Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T16:13:13Z",
+          "completed_at": "2026-10-13T16:13:13Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694043365",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088828,
+      "runner_name": "GitHub Actions 1000088828",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694043470,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cBTg",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694043470",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694043470",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T15:38:12Z",
+      "completed_at": "2026-10-13T15:41:14Z",
+      "name": "calibration-shard (3, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:38:13Z",
+          "completed_at": "2026-10-13T15:38:14Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:38:14Z",
+          "completed_at": "2026-10-13T15:38:22Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:38:22Z",
+          "completed_at": "2026-10-13T15:38:22Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:38:22Z",
+          "completed_at": "2026-10-13T15:38:23Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:38:23Z",
+          "completed_at": "2026-10-13T15:39:52Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:39:52Z",
+          "completed_at": "2026-10-13T15:41:10Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T15:41:10Z",
+          "completed_at": "2026-10-13T15:41:11Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T15:41:11Z",
+          "completed_at": "2026-10-13T15:41:12Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T15:41:12Z",
+          "completed_at": "2026-10-13T15:41:12Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T15:41:12Z",
+          "completed_at": "2026-10-13T15:41:12Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T15:41:12Z",
+          "completed_at": "2026-10-13T15:41:12Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694043470",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088227,
+      "runner_name": "GitHub Actions 1000088227",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694043490,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cBYg",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694043490",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694043490",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T16:27:21Z",
+      "completed_at": "2026-10-13T16:31:15Z",
+      "name": "calibration-shard (5, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T16:27:22Z",
+          "completed_at": "2026-10-13T16:27:24Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T16:27:24Z",
+          "completed_at": "2026-10-13T16:27:29Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T16:27:29Z",
+          "completed_at": "2026-10-13T16:27:29Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T16:27:29Z",
+          "completed_at": "2026-10-13T16:27:30Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T16:27:30Z",
+          "completed_at": "2026-10-13T16:29:17Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T16:29:17Z",
+          "completed_at": "2026-10-13T16:31:06Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T16:31:06Z",
+          "completed_at": "2026-10-13T16:31:07Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T16:31:07Z",
+          "completed_at": "2026-10-13T16:31:08Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T16:31:08Z",
+          "completed_at": "2026-10-13T16:31:08Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T16:31:08Z",
+          "completed_at": "2026-10-13T16:31:08Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T16:31:08Z",
+          "completed_at": "2026-10-13T16:31:08Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694043490",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000089051,
+      "runner_name": "GitHub Actions 1000089051",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694043541,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cBlQ",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694043541",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694043541",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T16:09:02Z",
+      "completed_at": "2026-10-13T16:11:26Z",
+      "name": "calibration-shard (2, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T16:09:02Z",
+          "completed_at": "2026-10-13T16:09:05Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T16:09:05Z",
+          "completed_at": "2026-10-13T16:09:10Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T16:09:10Z",
+          "completed_at": "2026-10-13T16:09:10Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T16:09:10Z",
+          "completed_at": "2026-10-13T16:09:11Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T16:09:11Z",
+          "completed_at": "2026-10-13T16:10:37Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T16:10:37Z",
+          "completed_at": "2026-10-13T16:11:22Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T16:11:22Z",
+          "completed_at": "2026-10-13T16:11:23Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T16:11:23Z",
+          "completed_at": "2026-10-13T16:11:24Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T16:11:24Z",
+          "completed_at": "2026-10-13T16:11:24Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T16:11:24Z",
+          "completed_at": "2026-10-13T16:11:24Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T16:11:24Z",
+          "completed_at": "2026-10-13T16:11:24Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694043541",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088817,
+      "runner_name": "GitHub Actions 1000088817",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694043639,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cB9w",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694043639",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694043639",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T15:56:16Z",
+      "completed_at": "2026-10-13T15:58:45Z",
+      "name": "calibration-shard (5, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:56:17Z",
+          "completed_at": "2026-10-13T15:56:18Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:56:18Z",
+          "completed_at": "2026-10-13T15:56:23Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:56:23Z",
+          "completed_at": "2026-10-13T15:56:24Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:56:24Z",
+          "completed_at": "2026-10-13T15:56:24Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:56:24Z",
+          "completed_at": "2026-10-13T15:57:48Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:57:48Z",
+          "completed_at": "2026-10-13T15:58:41Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T15:58:41Z",
+          "completed_at": "2026-10-13T15:58:42Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T15:58:42Z",
+          "completed_at": "2026-10-13T15:58:43Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T15:58:43Z",
+          "completed_at": "2026-10-13T15:58:43Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T15:58:43Z",
+          "completed_at": "2026-10-13T15:58:43Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T15:58:43Z",
+          "completed_at": "2026-10-13T15:58:43Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694043639",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088606,
+      "runner_name": "GitHub Actions 1000088606",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694043906,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cDAg",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694043906",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694043906",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T16:03:46Z",
+      "completed_at": "2026-10-13T16:06:16Z",
+      "name": "calibration-shard (6, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T16:03:47Z",
+          "completed_at": "2026-10-13T16:03:49Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T16:03:49Z",
+          "completed_at": "2026-10-13T16:03:55Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T16:03:55Z",
+          "completed_at": "2026-10-13T16:03:55Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T16:03:55Z",
+          "completed_at": "2026-10-13T16:03:55Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T16:03:55Z",
+          "completed_at": "2026-10-13T16:05:26Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T16:05:26Z",
+          "completed_at": "2026-10-13T16:06:12Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T16:06:12Z",
+          "completed_at": "2026-10-13T16:06:13Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T16:06:13Z",
+          "completed_at": "2026-10-13T16:06:14Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T16:06:14Z",
+          "completed_at": "2026-10-13T16:06:14Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T16:06:14Z",
+          "completed_at": "2026-10-13T16:06:14Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T16:06:14Z",
+          "completed_at": "2026-10-13T16:06:14Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694043906",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088688,
+      "runner_name": "GitHub Actions 1000088688",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694043965,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cDPQ",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694043965",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694043965",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T01:34:52Z",
+      "completed_at": "2026-10-14T01:37:15Z",
+      "name": "calibration-shard (6, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T01:34:53Z",
+          "completed_at": "2026-10-14T01:34:54Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T01:34:54Z",
+          "completed_at": "2026-10-14T01:35:00Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T01:35:00Z",
+          "completed_at": "2026-10-14T01:35:00Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T01:35:00Z",
+          "completed_at": "2026-10-14T01:35:00Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T01:35:00Z",
+          "completed_at": "2026-10-14T01:36:06Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T01:36:06Z",
+          "completed_at": "2026-10-14T01:37:07Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T01:37:07Z",
+          "completed_at": "2026-10-14T01:37:13Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T01:37:13Z",
+          "completed_at": "2026-10-14T01:37:14Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-14T01:37:14Z",
+          "completed_at": "2026-10-14T01:37:14Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-14T01:37:14Z",
+          "completed_at": "2026-10-14T01:37:14Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T01:37:14Z",
+          "completed_at": "2026-10-14T01:37:14Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694043965",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000092337,
+      "runner_name": "GitHub Actions 1000092337",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694044151,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cD9w",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694044151",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694044151",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T16:42:54Z",
+      "completed_at": "2026-10-13T16:46:08Z",
+      "name": "calibration-shard (7, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T16:42:55Z",
+          "completed_at": "2026-10-13T16:42:57Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T16:42:57Z",
+          "completed_at": "2026-10-13T16:43:03Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T16:43:03Z",
+          "completed_at": "2026-10-13T16:43:03Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T16:43:03Z",
+          "completed_at": "2026-10-13T16:43:04Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T16:43:04Z",
+          "completed_at": "2026-10-13T16:44:40Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T16:44:40Z",
+          "completed_at": "2026-10-13T16:46:03Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T16:46:03Z",
+          "completed_at": "2026-10-13T16:46:04Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T16:46:04Z",
+          "completed_at": "2026-10-13T16:46:05Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T16:46:05Z",
+          "completed_at": "2026-10-13T16:46:06Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T16:46:06Z",
+          "completed_at": "2026-10-13T16:46:06Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T16:46:06Z",
+          "completed_at": "2026-10-13T16:46:06Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694044151",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000089256,
+      "runner_name": "GitHub Actions 1000089256",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694044456,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cFKA",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694044456",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694044456",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-13T16:03:49Z",
+      "completed_at": "2026-10-13T16:06:05Z",
+      "name": "calibration-shard (7, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T16:03:50Z",
+          "completed_at": "2026-10-13T16:03:51Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T16:03:51Z",
+          "completed_at": "2026-10-13T16:03:56Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T16:03:56Z",
+          "completed_at": "2026-10-13T16:03:56Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T16:03:56Z",
+          "completed_at": "2026-10-13T16:03:56Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T16:03:56Z",
+          "completed_at": "2026-10-13T16:05:16Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T16:05:16Z",
+          "completed_at": "2026-10-13T16:06:00Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T16:06:00Z",
+          "completed_at": "2026-10-13T16:06:01Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T16:06:01Z",
+          "completed_at": "2026-10-13T16:06:02Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T16:06:02Z",
+          "completed_at": "2026-10-13T16:06:02Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T16:06:02Z",
+          "completed_at": "2026-10-13T16:06:02Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T16:06:02Z",
+          "completed_at": "2026-10-13T16:06:02Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694044456",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088693,
+      "runner_name": "GitHub Actions 1000088693",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694045264,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cIUA",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694045264",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694045264",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T04:49:58Z",
+      "completed_at": "2026-10-14T04:52:53Z",
+      "name": "evaluation-shard (0, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T04:49:59Z",
+          "completed_at": "2026-10-14T04:50:00Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T04:50:00Z",
+          "completed_at": "2026-10-14T04:50:06Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T04:50:06Z",
+          "completed_at": "2026-10-14T04:50:06Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T04:50:06Z",
+          "completed_at": "2026-10-14T04:50:07Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T04:50:07Z",
+          "completed_at": "2026-10-14T04:50:08Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T04:50:08Z",
+          "completed_at": "2026-10-14T04:51:30Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T04:51:30Z",
+          "completed_at": "2026-10-14T04:52:50Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T04:52:50Z",
+          "completed_at": "2026-10-14T04:52:50Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T04:52:50Z",
+          "completed_at": "2026-10-14T04:52:51Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T04:52:51Z",
+          "completed_at": "2026-10-14T04:52:51Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T04:52:51Z",
+          "completed_at": "2026-10-14T04:52:52Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T04:52:52Z",
+          "completed_at": "2026-10-14T04:52:52Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694045264",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094002,
+      "runner_name": "GitHub Actions 1000094002",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694045383,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cIxw",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694045383",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694045383",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T01:38:33Z",
+      "completed_at": "2026-10-14T01:38:48Z",
+      "name": "calibration-collect",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T01:38:34Z",
+          "completed_at": "2026-10-14T01:38:35Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T01:38:35Z",
+          "completed_at": "2026-10-14T01:38:41Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T01:38:41Z",
+          "completed_at": "2026-10-14T01:38:41Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T01:38:41Z",
+          "completed_at": "2026-10-14T01:38:42Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T01:38:42Z",
+          "completed_at": "2026-10-14T01:38:43Z"
+        },
+        {
+          "name": "Reassemble 40 original answers before any calibration-only scoring",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T01:38:43Z",
+          "completed_at": "2026-10-14T01:38:45Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T01:38:45Z",
+          "completed_at": "2026-10-14T01:38:46Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-14T01:38:46Z",
+          "completed_at": "2026-10-14T01:38:46Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-14T01:38:46Z",
+          "completed_at": "2026-10-14T01:38:46Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-14T01:38:46Z",
+          "completed_at": "2026-10-14T01:38:46Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694045383",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000092401,
+      "runner_name": "GitHub Actions 1000092401",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694045673,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cJ6Q",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694045673",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694045673",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T05:02:07Z",
+      "completed_at": "2026-10-14T05:05:28Z",
+      "name": "evaluation-shard (0, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T05:02:07Z",
+          "completed_at": "2026-10-14T05:02:09Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T05:02:09Z",
+          "completed_at": "2026-10-14T05:02:14Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T05:02:14Z",
+          "completed_at": "2026-10-14T05:02:14Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T05:02:14Z",
+          "completed_at": "2026-10-14T05:02:15Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T05:02:15Z",
+          "completed_at": "2026-10-14T05:02:16Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T05:02:16Z",
+          "completed_at": "2026-10-14T05:03:44Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T05:03:44Z",
+          "completed_at": "2026-10-14T05:05:23Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T05:05:23Z",
+          "completed_at": "2026-10-14T05:05:24Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T05:05:24Z",
+          "completed_at": "2026-10-14T05:05:25Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T05:05:25Z",
+          "completed_at": "2026-10-14T05:05:25Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T05:05:25Z",
+          "completed_at": "2026-10-14T05:05:26Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T05:05:26Z",
+          "completed_at": "2026-10-14T05:05:26Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694045673",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094168,
+      "runner_name": "GitHub Actions 1000094168",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694045855,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cKnw",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694045855",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694045855",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T01:41:39Z",
+      "completed_at": "2026-10-14T01:44:16Z",
+      "name": "evaluation-shard (1, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T01:41:40Z",
+          "completed_at": "2026-10-14T01:41:42Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T01:41:42Z",
+          "completed_at": "2026-10-14T01:41:47Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T01:41:47Z",
+          "completed_at": "2026-10-14T01:41:47Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T01:41:47Z",
+          "completed_at": "2026-10-14T01:41:48Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T01:41:48Z",
+          "completed_at": "2026-10-14T01:41:49Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T01:41:49Z",
+          "completed_at": "2026-10-14T01:43:09Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T01:43:09Z",
+          "completed_at": "2026-10-14T01:44:11Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T01:44:11Z",
+          "completed_at": "2026-10-14T01:44:12Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T01:44:12Z",
+          "completed_at": "2026-10-14T01:44:13Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T01:44:13Z",
+          "completed_at": "2026-10-14T01:44:13Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T01:44:13Z",
+          "completed_at": "2026-10-14T01:44:13Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T01:44:13Z",
+          "completed_at": "2026-10-14T01:44:13Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694045855",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000092452,
+      "runner_name": "GitHub Actions 1000092452",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694045867,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cKqw",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694045867",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694045867",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T05:00:36Z",
+      "completed_at": "2026-10-14T05:04:38Z",
+      "name": "evaluation-shard (2, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T05:00:36Z",
+          "completed_at": "2026-10-14T05:00:38Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T05:00:38Z",
+          "completed_at": "2026-10-14T05:00:43Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T05:00:43Z",
+          "completed_at": "2026-10-14T05:00:44Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T05:00:44Z",
+          "completed_at": "2026-10-14T05:00:45Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T05:00:45Z",
+          "completed_at": "2026-10-14T05:00:46Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T05:00:46Z",
+          "completed_at": "2026-10-14T05:02:17Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T05:02:17Z",
+          "completed_at": "2026-10-14T05:04:34Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T05:04:34Z",
+          "completed_at": "2026-10-14T05:04:35Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T05:04:35Z",
+          "completed_at": "2026-10-14T05:04:36Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T05:04:36Z",
+          "completed_at": "2026-10-14T05:04:36Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T05:04:36Z",
+          "completed_at": "2026-10-14T05:04:36Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T05:04:36Z",
+          "completed_at": "2026-10-14T05:04:36Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694045867",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094154,
+      "runner_name": "GitHub Actions 1000094154",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694046062,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cLbg",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694046062",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694046062",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T05:16:47Z",
+      "completed_at": "2026-10-14T05:20:48Z",
+      "name": "evaluation-shard (3, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T05:16:48Z",
+          "completed_at": "2026-10-14T05:16:52Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T05:16:52Z",
+          "completed_at": "2026-10-14T05:16:59Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T05:16:59Z",
+          "completed_at": "2026-10-14T05:16:59Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T05:16:59Z",
+          "completed_at": "2026-10-14T05:17:00Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T05:17:00Z",
+          "completed_at": "2026-10-14T05:17:01Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T05:17:01Z",
+          "completed_at": "2026-10-14T05:18:52Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T05:18:52Z",
+          "completed_at": "2026-10-14T05:20:39Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T05:20:39Z",
+          "completed_at": "2026-10-14T05:20:40Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T05:20:40Z",
+          "completed_at": "2026-10-14T05:20:46Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T05:20:46Z",
+          "completed_at": "2026-10-14T05:20:46Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T05:20:46Z",
+          "completed_at": "2026-10-14T05:20:46Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T05:20:46Z",
+          "completed_at": "2026-10-14T05:20:46Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694046062",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094583,
+      "runner_name": "GitHub Actions 1000094583",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694046079,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cLfw",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694046079",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694046079",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T05:16:39Z",
+      "completed_at": "2026-10-14T05:20:27Z",
+      "name": "evaluation-shard (2, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T05:16:40Z",
+          "completed_at": "2026-10-14T05:16:42Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T05:16:42Z",
+          "completed_at": "2026-10-14T05:16:47Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T05:16:47Z",
+          "completed_at": "2026-10-14T05:16:47Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T05:16:47Z",
+          "completed_at": "2026-10-14T05:16:49Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T05:16:49Z",
+          "completed_at": "2026-10-14T05:17:00Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T05:17:00Z",
+          "completed_at": "2026-10-14T05:18:32Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T05:18:32Z",
+          "completed_at": "2026-10-14T05:20:22Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T05:20:22Z",
+          "completed_at": "2026-10-14T05:20:23Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T05:20:23Z",
+          "completed_at": "2026-10-14T05:20:24Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T05:20:24Z",
+          "completed_at": "2026-10-14T05:20:24Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T05:20:24Z",
+          "completed_at": "2026-10-14T05:20:24Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T05:20:24Z",
+          "completed_at": "2026-10-14T05:20:24Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694046079",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094572,
+      "runner_name": "GitHub Actions 1000094572",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694046138,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cLug",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694046138",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694046138",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T05:02:44Z",
+      "completed_at": "2026-10-14T05:05:33Z",
+      "name": "evaluation-shard (3, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T05:02:44Z",
+          "completed_at": "2026-10-14T05:02:45Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T05:02:45Z",
+          "completed_at": "2026-10-14T05:02:50Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T05:02:50Z",
+          "completed_at": "2026-10-14T05:02:50Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T05:02:50Z",
+          "completed_at": "2026-10-14T05:02:51Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T05:02:51Z",
+          "completed_at": "2026-10-14T05:03:02Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T05:03:02Z",
+          "completed_at": "2026-10-14T05:04:11Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T05:04:11Z",
+          "completed_at": "2026-10-14T05:05:28Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T05:05:28Z",
+          "completed_at": "2026-10-14T05:05:29Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T05:05:29Z",
+          "completed_at": "2026-10-14T05:05:31Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T05:05:31Z",
+          "completed_at": "2026-10-14T05:05:31Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T05:05:31Z",
+          "completed_at": "2026-10-14T05:05:31Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T05:05:31Z",
+          "completed_at": "2026-10-14T05:05:31Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694046138",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094195,
+      "runner_name": "GitHub Actions 1000094195",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694046270,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cMPg",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694046270",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694046270",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T05:02:00Z",
+      "completed_at": "2026-10-14T05:04:42Z",
+      "name": "evaluation-shard (1, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T05:02:01Z",
+          "completed_at": "2026-10-14T05:02:02Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T05:02:02Z",
+          "completed_at": "2026-10-14T05:02:07Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T05:02:07Z",
+          "completed_at": "2026-10-14T05:02:07Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T05:02:07Z",
+          "completed_at": "2026-10-14T05:02:08Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T05:02:08Z",
+          "completed_at": "2026-10-14T05:02:08Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T05:02:08Z",
+          "completed_at": "2026-10-14T05:03:23Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T05:03:23Z",
+          "completed_at": "2026-10-14T05:04:38Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T05:04:38Z",
+          "completed_at": "2026-10-14T05:04:39Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T05:04:39Z",
+          "completed_at": "2026-10-14T05:04:40Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T05:04:40Z",
+          "completed_at": "2026-10-14T05:04:40Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T05:04:40Z",
+          "completed_at": "2026-10-14T05:04:40Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T05:04:40Z",
+          "completed_at": "2026-10-14T05:04:40Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694046270",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094165,
+      "runner_name": "GitHub Actions 1000094165",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694046339,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cMgw",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694046339",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694046339",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T01:45:56Z",
+      "completed_at": "2026-10-14T01:49:32Z",
+      "name": "evaluation-shard (5, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T01:45:57Z",
+          "completed_at": "2026-10-14T01:45:58Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T01:45:58Z",
+          "completed_at": "2026-10-14T01:46:03Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T01:46:03Z",
+          "completed_at": "2026-10-14T01:46:04Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T01:46:04Z",
+          "completed_at": "2026-10-14T01:46:04Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T01:46:04Z",
+          "completed_at": "2026-10-14T01:46:05Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T01:46:05Z",
+          "completed_at": "2026-10-14T01:47:41Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T01:47:41Z",
+          "completed_at": "2026-10-14T01:49:29Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T01:49:29Z",
+          "completed_at": "2026-10-14T01:49:30Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T01:49:30Z",
+          "completed_at": "2026-10-14T01:49:30Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T01:49:30Z",
+          "completed_at": "2026-10-14T01:49:30Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T01:49:30Z",
+          "completed_at": "2026-10-14T01:49:31Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T01:49:31Z",
+          "completed_at": "2026-10-14T01:49:31Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694046339",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000092528,
+      "runner_name": "GitHub Actions 1000092528",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694046619,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cNmw",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694046619",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694046619",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:31Z",
+      "started_at": "2026-10-14T01:44:13Z",
+      "completed_at": "2026-10-14T01:47:45Z",
+      "name": "evaluation-shard (4, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T01:44:14Z",
+          "completed_at": "2026-10-14T01:44:15Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T01:44:15Z",
+          "completed_at": "2026-10-14T01:44:21Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T01:44:21Z",
+          "completed_at": "2026-10-14T01:44:21Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T01:44:21Z",
+          "completed_at": "2026-10-14T01:44:22Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T01:44:22Z",
+          "completed_at": "2026-10-14T01:44:23Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T01:44:23Z",
+          "completed_at": "2026-10-14T01:46:01Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T01:46:01Z",
+          "completed_at": "2026-10-14T01:47:40Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T01:47:40Z",
+          "completed_at": "2026-10-14T01:47:41Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T01:47:41Z",
+          "completed_at": "2026-10-14T01:47:42Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T01:47:42Z",
+          "completed_at": "2026-10-14T01:47:42Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T01:47:42Z",
+          "completed_at": "2026-10-14T01:47:42Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T01:47:42Z",
+          "completed_at": "2026-10-14T01:47:42Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694046619",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000092485,
+      "runner_name": "GitHub Actions 1000092485",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694046821,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cOZQ",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694046821",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694046821",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:32Z",
+      "started_at": "2026-10-14T01:44:16Z",
+      "completed_at": "2026-10-14T01:47:16Z",
+      "name": "evaluation-shard (4, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T01:44:16Z",
+          "completed_at": "2026-10-14T01:44:18Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T01:44:18Z",
+          "completed_at": "2026-10-14T01:44:23Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T01:44:23Z",
+          "completed_at": "2026-10-14T01:44:23Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T01:44:23Z",
+          "completed_at": "2026-10-14T01:44:24Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T01:44:24Z",
+          "completed_at": "2026-10-14T01:44:25Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T01:44:25Z",
+          "completed_at": "2026-10-14T01:45:56Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T01:45:56Z",
+          "completed_at": "2026-10-14T01:47:12Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T01:47:12Z",
+          "completed_at": "2026-10-14T01:47:13Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T01:47:13Z",
+          "completed_at": "2026-10-14T01:47:14Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T01:47:14Z",
+          "completed_at": "2026-10-14T01:47:14Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T01:47:14Z",
+          "completed_at": "2026-10-14T01:47:14Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T01:47:14Z",
+          "completed_at": "2026-10-14T01:47:14Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694046821",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000092486,
+      "runner_name": "GitHub Actions 1000092486",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694047100,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cPfA",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694047100",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694047100",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:32Z",
+      "started_at": "2026-10-14T05:13:42Z",
+      "completed_at": "2026-10-14T05:16:04Z",
+      "name": "evaluation-shard (7, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T05:13:42Z",
+          "completed_at": "2026-10-14T05:13:43Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T05:13:43Z",
+          "completed_at": "2026-10-14T05:13:49Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T05:13:49Z",
+          "completed_at": "2026-10-14T05:13:49Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T05:13:49Z",
+          "completed_at": "2026-10-14T05:13:50Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T05:13:50Z",
+          "completed_at": "2026-10-14T05:13:51Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T05:13:51Z",
+          "completed_at": "2026-10-14T05:14:58Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T05:14:58Z",
+          "completed_at": "2026-10-14T05:15:59Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T05:15:59Z",
+          "completed_at": "2026-10-14T05:16:00Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T05:16:00Z",
+          "completed_at": "2026-10-14T05:16:01Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T05:16:01Z",
+          "completed_at": "2026-10-14T05:16:01Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T05:16:01Z",
+          "completed_at": "2026-10-14T05:16:01Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T05:16:01Z",
+          "completed_at": "2026-10-14T05:16:01Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694047100",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094514,
+      "runner_name": "GitHub Actions 1000094514",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694047329,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cQYQ",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694047329",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694047329",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:32Z",
+      "started_at": "2026-10-14T05:04:47Z",
+      "completed_at": "2026-10-14T05:08:36Z",
+      "name": "evaluation-shard (6, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T05:04:48Z",
+          "completed_at": "2026-10-14T05:04:49Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T05:04:49Z",
+          "completed_at": "2026-10-14T05:04:54Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T05:04:54Z",
+          "completed_at": "2026-10-14T05:04:55Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T05:04:55Z",
+          "completed_at": "2026-10-14T05:04:55Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T05:04:55Z",
+          "completed_at": "2026-10-14T05:04:56Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T05:04:56Z",
+          "completed_at": "2026-10-14T05:06:12Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T05:06:12Z",
+          "completed_at": "2026-10-14T05:08:32Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T05:08:32Z",
+          "completed_at": "2026-10-14T05:08:33Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T05:08:33Z",
+          "completed_at": "2026-10-14T05:08:34Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T05:08:34Z",
+          "completed_at": "2026-10-14T05:08:34Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T05:08:34Z",
+          "completed_at": "2026-10-14T05:08:34Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T05:08:34Z",
+          "completed_at": "2026-10-14T05:08:34Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694047329",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094325,
+      "runner_name": "GitHub Actions 1000094325",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694047437,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cQzQ",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694047437",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694047437",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:32Z",
+      "started_at": "2026-10-14T04:52:39Z",
+      "completed_at": "2026-10-14T04:56:47Z",
+      "name": "evaluation-shard (5, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T04:52:40Z",
+          "completed_at": "2026-10-14T04:52:43Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T04:52:43Z",
+          "completed_at": "2026-10-14T04:52:50Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T04:52:50Z",
+          "completed_at": "2026-10-14T04:52:50Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T04:52:50Z",
+          "completed_at": "2026-10-14T04:52:51Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T04:52:51Z",
+          "completed_at": "2026-10-14T04:52:53Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T04:52:53Z",
+          "completed_at": "2026-10-14T04:54:22Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T04:54:22Z",
+          "completed_at": "2026-10-14T04:56:41Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T04:56:41Z",
+          "completed_at": "2026-10-14T04:56:43Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T04:56:43Z",
+          "completed_at": "2026-10-14T04:56:44Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T04:56:44Z",
+          "completed_at": "2026-10-14T04:56:44Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T04:56:44Z",
+          "completed_at": "2026-10-14T04:56:44Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T04:56:44Z",
+          "completed_at": "2026-10-14T04:56:44Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694047437",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094040,
+      "runner_name": "GitHub Actions 1000094040",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694047453,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cQ3Q",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694047453",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694047453",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:32Z",
+      "started_at": "2026-10-14T01:47:28Z",
+      "completed_at": "2026-10-14T01:51:19Z",
+      "name": "evaluation-shard (6, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T01:47:29Z",
+          "completed_at": "2026-10-14T01:47:32Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T01:47:32Z",
+          "completed_at": "2026-10-14T01:47:38Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T01:47:38Z",
+          "completed_at": "2026-10-14T01:47:38Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T01:47:38Z",
+          "completed_at": "2026-10-14T01:47:39Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T01:47:39Z",
+          "completed_at": "2026-10-14T01:47:41Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T01:47:41Z",
+          "completed_at": "2026-10-14T01:49:24Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T01:49:24Z",
+          "completed_at": "2026-10-14T01:51:14Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T01:51:14Z",
+          "completed_at": "2026-10-14T01:51:15Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T01:51:15Z",
+          "completed_at": "2026-10-14T01:51:16Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T01:51:16Z",
+          "completed_at": "2026-10-14T01:51:16Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T01:51:16Z",
+          "completed_at": "2026-10-14T01:51:16Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T01:51:16Z",
+          "completed_at": "2026-10-14T01:51:16Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694047453",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000092540,
+      "runner_name": "GitHub Actions 1000092540",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694048061,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-cTPQ",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694048061",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694048061",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:32Z",
+      "started_at": "2026-10-14T01:52:57Z",
+      "completed_at": "2026-10-14T01:56:05Z",
+      "name": "evaluation-shard (7, 1)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T01:52:58Z",
+          "completed_at": "2026-10-14T01:52:59Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T01:52:59Z",
+          "completed_at": "2026-10-14T01:53:04Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T01:53:04Z",
+          "completed_at": "2026-10-14T01:53:04Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T01:53:04Z",
+          "completed_at": "2026-10-14T01:53:05Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T01:53:05Z",
+          "completed_at": "2026-10-14T01:53:06Z"
+        },
+        {
+          "name": "Verify frozen policy and model identity before looking at final test plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T01:53:06Z",
+          "completed_at": "2026-10-14T01:54:31Z"
+        },
+        {
+          "name": "Execute each original nine-arm read after k was sealed",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T01:54:31Z",
+          "completed_at": "2026-10-14T01:56:01Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T01:56:01Z",
+          "completed_at": "2026-10-14T01:56:02Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-14T01:56:02Z",
+          "completed_at": "2026-10-14T01:56:03Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T01:56:03Z",
+          "completed_at": "2026-10-14T01:56:03Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-14T01:56:03Z",
+          "completed_at": "2026-10-14T01:56:03Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-14T01:56:03Z",
+          "completed_at": "2026-10-14T01:56:03Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694048061",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000092576,
+      "runner_name": "GitHub Actions 1000092576",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694078016,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-eIQA",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694078016",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694078016",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:38Z",
+      "started_at": "2026-10-13T15:35:41Z",
+      "completed_at": "2026-10-13T15:36:51Z",
+      "name": "prepare",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:35:42Z",
+          "completed_at": "2026-10-13T15:35:43Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:35:43Z",
+          "completed_at": "2026-10-13T15:35:45Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:35:45Z",
+          "completed_at": "2026-10-13T15:35:46Z"
+        },
+        {
+          "name": "Independently download and verify original immutable event sources",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:35:46Z",
+          "completed_at": "2026-10-13T15:35:50Z"
+        },
+        {
+          "name": "Publish pinned model identity only; no historical answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:35:50Z",
+          "completed_at": "2026-10-13T15:35:51Z"
+        },
+        {
+          "name": "Seal eight calibration-only scopes and externally pinned environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:35:51Z",
+          "completed_at": "2026-10-13T15:36:46Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T15:36:46Z",
+          "completed_at": "2026-10-13T15:36:47Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T15:36:47Z",
+          "completed_at": "2026-10-13T15:36:48Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T15:36:48Z",
+          "completed_at": "2026-10-13T15:36:48Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T15:36:48Z",
+          "completed_at": "2026-10-13T15:36:49Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T15:36:49Z",
+          "completed_at": "2026-10-13T15:36:49Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694078016",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088087,
+      "runner_name": "GitHub Actions 1000088087",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115694084301,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7-egzQ",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115694084301",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115694084301",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T05:16:40Z",
+      "started_at": "2026-10-13T15:50:45Z",
+      "completed_at": "2026-10-13T15:53:42Z",
+      "name": "calibration-shard (0, 0)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T15:50:46Z",
+          "completed_at": "2026-10-13T15:50:48Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T15:50:48Z",
+          "completed_at": "2026-10-13T15:50:53Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T15:50:53Z",
+          "completed_at": "2026-10-13T15:50:53Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T15:50:53Z",
+          "completed_at": "2026-10-13T15:50:54Z"
+        },
+        {
+          "name": "Validate only calibration-scoped bytes; stage frozen BF16 Qwen",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T15:50:54Z",
+          "completed_at": "2026-10-13T15:52:26Z"
+        },
+        {
+          "name": "Generate only preregistered calibration sources; retain unaltered answers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T15:52:26Z",
+          "completed_at": "2026-10-13T15:53:37Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T15:53:37Z",
+          "completed_at": "2026-10-13T15:53:38Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T15:53:38Z",
+          "completed_at": "2026-10-13T15:53:39Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-13T15:53:39Z",
+          "completed_at": "2026-10-13T15:53:39Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-13T15:53:39Z",
+          "completed_at": "2026-10-13T15:53:39Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-13T15:53:39Z",
+          "completed_at": "2026-10-13T15:53:39Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115694084301",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000088544,
+      "runner_name": "GitHub Actions 1000088544",
+      "runner_group_id": null,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115695234003,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7_kr0w",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115695234003",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115695234003",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-10-14T05:20:49Z",
+      "started_at": "2026-10-14T05:21:01Z",
+      "completed_at": "2026-10-14T05:21:23Z",
+      "name": "evaluation-collect",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T05:21:01Z",
+          "completed_at": "2026-10-14T05:21:03Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T05:21:03Z",
+          "completed_at": "2026-10-14T05:21:08Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T05:21:08Z",
+          "completed_at": "2026-10-14T05:21:08Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T05:21:08Z",
+          "completed_at": "2026-10-14T05:21:09Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T05:21:09Z",
+          "completed_at": "2026-10-14T05:21:09Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T05:21:09Z",
+          "completed_at": "2026-10-14T05:21:20Z"
+        },
+        {
+          "name": "Seal complete 72 original nine-arm outputs, without imputing failures",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7,
+          "started_at": "2026-10-14T05:21:20Z",
+          "completed_at": "2026-10-14T05:21:21Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-14T05:21:21Z",
+          "completed_at": "2026-10-14T05:21:21Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-14T05:21:21Z",
+          "completed_at": "2026-10-14T05:21:21Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-14T05:21:21Z",
+          "completed_at": "2026-10-14T05:21:21Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-14T05:21:21Z",
+          "completed_at": "2026-10-14T05:21:21Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115695234003",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": 1000094726,
+      "runner_name": "GitHub Actions 1000094726",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 115695397370,
+      "run_id": 38423223376,
+      "workflow_name": "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence",
+      "head_branch": "codex/memory-cell-evidence-20261008",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376",
+      "run_attempt": 16,
+      "node_id": "CR_kwDOTrgxoM8AAAAa7_up-g",
+      "head_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/115695397370",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/job/115695397370",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-10-14T05:21:23Z",
+      "started_at": "2026-10-14T05:21:23Z",
+      "completed_at": "2026-10-14T05:21:23Z",
+      "name": "independent-replay",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/115695397370",
+      "labels": [
+        "ubuntu-22.04"
+      ],
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null
+    }
+  ]
+}

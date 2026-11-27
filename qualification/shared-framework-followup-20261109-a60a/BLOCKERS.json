@@ -1,0 +1,35 @@
+{
+  "candidate": "fb1397873bef0eea81efe0c8aac48c56385ffe55",
+  "production_activation": false,
+  "independent_scientific_acceptance": false,
+  "behavior_repairs": {
+    "temporal_capacity": "PASSED_NATIVE_OWNER_REGRESSION",
+    "check_plan_binding": "PASSED_NATIVE_REGRESSION",
+    "cold_exact_ack_retirement": "PASSED_NATIVE_SQLITE_REGRESSION"
+  },
+  "validation": {
+    "native_passed": 1088,
+    "native_failed": 0,
+    "native_excluded_ignored": 67,
+    "caller_qa_passed": 65,
+    "protected_rows_passed": 166,
+    "full_closed_set_boundaries": 182,
+    "full_scan_rust_files": 6176,
+    "maintenance": "PASSED_SCOPED_FIX_AND_PINNED_FMT",
+    "post_maintenance_full_scan": "PASS",
+    "native_tests_after_maintenance": "NOT_RUN_PER_AGENTS"
+  },
+  "candidate_remaining_gates": [
+    "ordinary_daemon_typed_loader_assembly",
+    "cross_task_state_policy_and_migration",
+    "external_causal_event_occurrence_availability_freshness",
+    "real_checker_remediation_and_action_outcomes",
+    "durable_per_operation_scoped_v2_capabilities",
+    "automatic_successor_learning_requests",
+    "independent_complete_cost_benefit_evaluation",
+    "production_qualification"
+  ],
+  "native_tested_commit": "fb1397873bef0eea81efe0c8aac48c56385ffe55",
+  "formatted_code_commit": "a2f9589a13eb1c7899c0b6694ef0c27d178f121d",
+  "formatted_tree": "b8071a1add7bb68ff036cc07ed932e127edc0cc2"
+}

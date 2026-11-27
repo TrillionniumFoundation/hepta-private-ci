@@ -1,0 +1,14 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "bb853fdb731cdec41df2eae826d6be78aa57e366",
+  "tree": "d832b9f8fcb5de634892ac251381b65657ce4827",
+  "preview_tree": "0a857c6cda10ec42f5dbafcfb8cfde16f709c22b",
+  "resolution": {
+    "path": "codex-rs/v8-poc/BUILD.bazel",
+    "blob": "e7d9c59c5feab97aa004c4e04c5a109834826791",
+    "reason": "Both sides set crate_features=[sandbox]. Only conflicting explanatory comments differ; retain current explanation which does not hard-code obsolete V8 150.4.0. Preserve current v8 alias."
+  },
+  "source_changes": ".github/workflows/hepta-v8-windows-sandbox.yml | 67 ++++++++++++++++++++++++++\n codex-rs/v8-poc/src/lib.rs                     |  7 +++\n 2 files changed, 74 insertions(+)",
+  "validation": "Static semantic review only. Requires repository formatting and original V8 unit target plus Windows MSVC qualification before main acceptance.",
+  "status": "SUPERSEDED: do not adopt the historical mutex; use v8-final-review.json after semantic successor review"
+}

@@ -1,0 +1,167 @@
+{
+  "schema": "hepta.neuron.shared-encoder-head-r8.protocol.v1",
+  "kind": "preproduction_shadow_experiment_protocol",
+  "source_base_commit": "78fdb0cf8537e3a84fc6e0a849707559c80881e8",
+  "production_admitted": false,
+  "selection_enabled": false,
+  "promotion": "BLOCKED",
+  "scopes": {
+    "isolation": "separate principal/workspace/cell working state",
+    "permission": "feature reuse only under validated scope and feature identity",
+    "model": "encoder tokenizer normalizer quantization runtime device and head digests pinned",
+    "replay": "withdrawal lineage checked by existing learning.ledger"
+  },
+  "roles": {
+    "trainer": "learning.operator candidate-only",
+    "evaluator": "independent learning.eval using separate outcome source",
+    "selector": "independent existing artifact selector (never invoked by synthetic fixture)",
+    "executor": "existing artifact owner; no invocation from this package"
+  },
+  "common": {
+    "baseline": "actual currently deployed no-change frozen before any training",
+    "data_splits": [
+      "source-group-disjoint-train",
+      "source-group-disjoint-validation",
+      "future heldout events",
+      "OOD independent observation"
+    ],
+    "random_seeds": [
+      13,
+      29,
+      47
+    ],
+    "hard_blockers": [
+      "missing real no-change",
+      "synthetic evaluation used as truth",
+      "leaked source group",
+      "identity drift",
+      "unverified backend",
+      "wrong scope",
+      "incomplete legal choice set",
+      "calibration/OOD not verified",
+      "negative transfer",
+      "no independent future NDU gain",
+      "missing recovery/restart/rollback",
+      "missing target-host p95/p99 and GPU/RSS/WAL receipts"
+    ],
+    "quality": [
+      "accuracy",
+      "macro per-task accuracy",
+      "Brier",
+      "ECE",
+      "NLL",
+      "OOD AUROC",
+      "future retention",
+      "negative transfer by task/organ",
+      "independently measured NDU utility"
+    ],
+    "resource": [
+      "effective trainable params",
+      "all resident bytes",
+      "optimizer state and activations",
+      "CPU utilization",
+      "GPU peak allocated",
+      "p50/p95/p99",
+      "throughput",
+      "cache hit/miss",
+      "WAL bytes",
+      "checkpoint physical bytes",
+      "restart/recovery",
+      "head updates"
+    ]
+  },
+  "experiments": {
+    "01_head_capacity": {
+      "candidate_heads": [
+        "linear",
+        "film",
+        "lowrank8",
+        "lowrank16",
+        "mlp",
+        "swiglu"
+      ],
+      "parameter_caps": [
+        2048,
+        16384,
+        65536,
+        262144
+      ],
+      "fixed": [
+        "encoder weights/tokenizer",
+        "feature normalization",
+        "training/validation/heldout split",
+        "legal candidate set and task schema",
+        "output dimensions",
+        "step budget",
+        "evaluator"
+      ],
+      "additional_matched_controls": [
+        "equal wall time",
+        "equal FLOPs",
+        "same measured total cost"
+      ],
+      "report_actual_parameter_count": true,
+      "trained_model_weights_required_for_real_result": true
+    },
+    "02_representation": {
+      "required_arms": [
+        "laya_original",
+        "shared_laya_head",
+        "organ_expert_bank",
+        "modernbert_base_head"
+      ],
+      "controls": [
+        "same questions, state, candidate options and option order",
+        "same independent future outcomes",
+        "original Laya exact pinned SDK and model SHA256",
+        "full input not truncated",
+        "shared-state cache is not original-Laya equivalence"
+      ],
+      "block_if_missing_any_arm": true,
+      "distillation_recovery": "separate teacher/pupil evidence and held-out gain",
+      "slow_path": "OOD, uncertainty or unsatisfied semantic expressivity"
+    },
+    "03_cell_scale": {
+      "cell_counts": [
+        64,
+        256,
+        1024,
+        4096
+      ],
+      "input_patterns": [
+        "same",
+        "partial",
+        "distinct"
+      ],
+      "active_fractions": [
+        0.25,
+        1
+      ],
+      "update_fractions": [
+        0,
+        0.05
+      ],
+      "cache_entries": [
+        0,
+        32,
+        128
+      ],
+      "additional_profiles": [
+        "head budget 2048/16384/65536/262144",
+        "real loaded encoder vs fast cached head",
+        "CPU / target GPU",
+        "fresh cold and warmed runs",
+        "version cutover",
+        "kill/restart/recovery"
+      ],
+      "claim": "synthetic numeric projection is a software smoke test only; production inference benchmarks require real encoder, checkpoint and WAL owners"
+    }
+  },
+  "observations": {
+    "synthetic_only_ci": true,
+    "real_teacher_weights": "NOT_PROVIDED",
+    "real_encoder_backend": "NOT_INTEGRATED",
+    "independent_ndu": "NOT_MEASURED",
+    "production_qualification": "BLOCKED"
+  }
+}

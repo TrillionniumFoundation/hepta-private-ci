@@ -1,0 +1,127 @@
+{
+  "references": [
+    {
+      "path": "joint-prototype-product-gap-audit-v1/MANIFEST.json",
+      "bytes": 776,
+      "sha256": "95f7935ffa74f7c56d715d1b5fcc2714c8a2ca48a9e985fd757917ece7e60d03"
+    },
+    {
+      "path": "joint-prototype-product-gap-audit-v1/INDEPENDENT_PRODUCT_REVIEW.json",
+      "bytes": 4242,
+      "sha256": "859704a82b02e270a167a1cf842a2d4e143645dd6a15d097225b77d85542f0d0"
+    },
+    {
+      "path": "content-shared-lease-publication-assessment-v1/MANIFEST.json",
+      "bytes": 5513,
+      "sha256": "4edef82d1e49bdc596273602d090314f3deb5d70c7a6a1cdd3de62d7ee914b02"
+    },
+    {
+      "path": "content-fashion-shared-lease-handoff-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "bytes": 4911,
+      "sha256": "34de1abf0753e7e8ed6db7e8d1ec57b4657a50a616eb535dc1ac106f77e74450"
+    }
+  ],
+  "source_mappings": [
+    {
+      "new_file": "attempt.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/attempt.py",
+        "bytes": 8338,
+        "sha256": "b9a0359933aad501ec8896588bd0334f43298f76169f505fcb6c8b5479a95552"
+      },
+      "byteexact": false
+    },
+    {
+      "new_file": "content_input.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/content_input.py",
+        "bytes": 3080,
+        "sha256": "f7eea06d4dffc3683b1c5e3dcfe39f434d91e5dd83a271f09c06d8ae5810f898"
+      },
+      "byteexact": false
+    },
+    {
+      "new_file": "contracts.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/contracts.py",
+        "bytes": 6997,
+        "sha256": "cad384c480aa2ace4c214eed750188a96eb1022682bfbe8fb3fb9a1befd33dc2"
+      },
+      "byteexact": true
+    },
+    {
+      "new_file": "cost.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/cost.py",
+        "bytes": 3122,
+        "sha256": "76008bde5e457d8709e49fb4e45d8f54d93a98e454c6ab67565dd0cc0416dde5"
+      },
+      "byteexact": true
+    },
+    {
+      "new_file": "fashion_research/autodiff.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/fashion_research/autodiff.py",
+        "bytes": 6844,
+        "sha256": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa"
+      },
+      "byteexact": true
+    },
+    {
+      "new_file": "fashion_research/model.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/fashion_research/model.py",
+        "bytes": 19110,
+        "sha256": "503180f85d37ce39c735489cd08c7cf7b734480dcfe6b8e4852543f63291831f"
+      },
+      "byteexact": true
+    },
+    {
+      "new_file": "fashion_research/transport.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/fashion_research/transport.py",
+        "bytes": 6313,
+        "sha256": "5f7f89a117197b00d1fbe656cd101c35418121847fdfa816d769430dadc11e73"
+      },
+      "byteexact": true
+    },
+    {
+      "new_file": "guarded_core.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/guarded_core.py",
+        "bytes": 7728,
+        "sha256": "3ccf504beb4e519693e241e1b9cb159106f8dee6318f0951e98a0a8bd623fa68"
+      },
+      "byteexact": false
+    },
+    {
+      "new_file": "guarded_delivery.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/guarded_delivery.py",
+        "bytes": 3065,
+        "sha256": "61a2d76dd0e6143304297d75b18f55e6c6e732e39bf8aebb29472c35993460bc"
+      },
+      "byteexact": true
+    },
+    {
+      "new_file": "multimodal_contract.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/multimodal_contract.py",
+        "bytes": 14141,
+        "sha256": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108"
+      },
+      "byteexact": true
+    },
+    {
+      "new_file": "persistence.py",
+      "source": {
+        "path": "content-shared-lease-publication-assessment-v1/runtime/persistence.py",
+        "bytes": 3952,
+        "sha256": "be796ff7ff4614cb40936cd4d5fb371866eed30faf10463f3e9bc48073bc3adf"
+      },
+      "byteexact": true
+    }
+  ],
+  "model_mathematics": "published model/autodiff exact; private primitive selection is new explicit backend; source full actor paired to content by complete export state",
+  "authoring_note": "initial source assembly requested nonexistent __init__ path and exited before editing algorithms or executing models; corrected source to existing guarded module before freeze, no candidate run"
+}

@@ -1,0 +1,227 @@
+{
+  "snapshot_utc": "2026-10-20 02:41:43 UTC",
+  "disposition": "Reuse existing PR2909 as the unique complete audited WAL successor. Do not create a synonymous Cell-owner PR.",
+  "selected_source": {
+    "number": 2909,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2909",
+    "title": "[DRAFT][CI] Format exact Scope WAL recovery assertions on integrated Cell candidate",
+    "state": "open",
+    "draft": true,
+    "head_ref": "fix/2904-scope-wal-rustfmt-20261019",
+    "head_sha": "5993cb909547070e4b56ca9465996a5a946fafca",
+    "base_ref": "integration/cell-owner-clippy-sqlite-20261019",
+    "base_sha": "4ccbef2318c2ff965f2fd3494975ba793fefa876",
+    "synthetic_merge_sha": "9da90d731f521e65a9fbc8384aa725d90e29b5e0",
+    "updated_at": "2026-10-19T12:30:36Z",
+    "mergeable_state": "unstable",
+    "assignees": [],
+    "requested_reviewers": []
+  },
+  "selected_full_tree": "dfa98997ef9f82773c4c9967ab3034d717961abb",
+  "scope": "Four-path WAL-only projection on exact PR2734 source dc271d4; not a replay of the entire integrated branch.",
+  "projection": {
+    "paths": [
+      {
+        "path": "codex-rs/Cargo.lock",
+        "base_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+        "base_blob": "8c0b0635664cd77f4313838bbf7618ca2a89f8f5",
+        "selected_source_sha": "5993cb909547070e4b56ca9465996a5a946fafca",
+        "selected_source_blob": "232fc40e53a20d597a5faa7b0737d642909d26ed",
+        "origin_pr": 2890,
+        "origin_sha": "33e8302efd89a385c168199b4cba2c9c96d5708e"
+      },
+      {
+        "path": "codex-rs/hepta-control-plane/Cargo.toml",
+        "base_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+        "base_blob": "37cd75393a4ef4164d96ba827a3531f37d668d15",
+        "selected_source_sha": "5993cb909547070e4b56ca9465996a5a946fafca",
+        "selected_source_blob": "eac52190589d64a7b6809c313c044d28d70e1252",
+        "origin_pr": 2890,
+        "origin_sha": "33e8302efd89a385c168199b4cba2c9c96d5708e"
+      },
+      {
+        "path": "codex-rs/hepta-control-plane/src/scope_lane_wal.rs",
+        "base_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+        "base_blob": "23e91d965db5aa697b2f3e6aa64d431b8a27c6a0",
+        "selected_source_sha": "5993cb909547070e4b56ca9465996a5a946fafca",
+        "selected_source_blob": "39add8ab37a9d93f7502e8e8b3122eaba99aa4b6",
+        "origin_pr": 2897,
+        "origin_sha": "1689f7400b810ec2d56a6e4bc6763c1c28d678e0"
+      },
+      {
+        "path": "codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs",
+        "base_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+        "base_blob": "47b1b226659899609826a24ba3bf54b77c1d43be",
+        "selected_source_sha": "5993cb909547070e4b56ca9465996a5a946fafca",
+        "selected_source_blob": "67a34edc7993dc33feb22c8f3bb45c1fbac428ae",
+        "origin_pr": 2909,
+        "origin_sha": "5993cb909547070e4b56ca9465996a5a946fafca"
+      }
+    ],
+    "commands": [
+      {
+        "command": [
+          "git",
+          "apply",
+          "--check",
+          "/workspace/scratch/e42bf1712d56/cell_p0/cell-wal-four-paths.patch"
+        ],
+        "returncode": 0,
+        "output": ""
+      },
+      {
+        "command": [
+          "git",
+          "apply",
+          "/workspace/scratch/e42bf1712d56/cell_p0/cell-wal-four-paths.patch"
+        ],
+        "returncode": 0,
+        "output": ""
+      }
+    ],
+    "patch_applies_to_exact_base": true,
+    "applied_blobs_match_selected_existing_tree": true,
+    "wal_non_open_logic_byte_identical": true,
+    "baseline_tests_byte_preserved": true,
+    "test_names": [
+      "scope_lanes_are_independent_and_fenced",
+      "export_reopen_roundtrip_and_bad_frame_rejection",
+      "file_wal_syncs_frames_and_repairs_torn_tail",
+      "file_wal_repairs_incomplete_length_before_new_commits",
+      "incremental_scope_lanes_replay_many_distinct_committed_frames",
+      "poisoned_scope_writer_cannot_acknowledge_even_an_old_duplicate",
+      "file_wal_rejects_symlink_and_hardlink_before_writing_header",
+      "newly_created_scope_wal_is_owner_only_on_unix",
+      "torn_tail_recovery_can_append_again_without_overwriting_predecessor"
+    ],
+    "native_tests_run_locally": false,
+    "projection_size": {
+      "additions": 109,
+      "deletions": 7,
+      "files": 4
+    },
+    "excluded_from_source_projection": [
+      ".github/workflows/hepta-windows-scope-lane-wal.yml",
+      "codex-rs/hepta-fleet/src/authority_port.rs",
+      "codex-rs/hepta-automation/src/migration_convergence_tests.rs"
+    ],
+    "exact_selected_tree": "dfa98997ef9f82773c4c9967ab3034d717961abb"
+  },
+  "windows_evidence": {
+    "source_sha": "5993cb909547070e4b56ca9465996a5a946fafca",
+    "full_source_tree": "dfa98997ef9f82773c4c9967ab3034d717961abb",
+    "base_sha": "4ccbef2318c2ff965f2fd3494975ba793fefa876",
+    "synthetic_merge_sha": "9da90d731f521e65a9fbc8384aa725d90e29b5e0",
+    "tested_revision": "source head (explicit workflow checkout), not synthetic merge",
+    "run_id": 39252617291,
+    "job_id": 118059888568,
+    "run_attempt": 1,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39252617291/job/118059888568",
+    "job_status": "completed",
+    "job_conclusion": "success",
+    "passed": 7,
+    "failed": 0,
+    "ignored": 0,
+    "filtered_out": 110,
+    "test_output": [
+      "2026-10-19T12:57:58.9917800Z test scope_lane_wal::tests::export_reopen_roundtrip_and_bad_frame_rejection ... ok",
+      "2026-10-19T12:57:59.0109784Z test scope_lane_wal::tests::file_wal_repairs_incomplete_length_before_new_commits ... ok",
+      "2026-10-19T12:57:59.0316138Z test scope_lane_wal::tests::file_wal_syncs_frames_and_repairs_torn_tail ... ok",
+      "2026-10-19T12:57:59.2337653Z test scope_lane_wal::tests::incremental_scope_lanes_replay_many_distinct_committed_frames ... ok",
+      "2026-10-19T12:57:59.2471937Z test scope_lane_wal::tests::poisoned_scope_writer_cannot_acknowledge_even_an_old_duplicate ... ok",
+      "2026-10-19T12:57:59.2477300Z test scope_lane_wal::tests::scope_lanes_are_independent_and_fenced ... ok",
+      "2026-10-19T12:57:59.2689266Z test scope_lane_wal::tests::torn_tail_recovery_can_append_again_without_overwriting_predecessor ... ok"
+    ],
+    "sha256": "798d518bc0aaec73ce58f2e8cf11e2e81023870c60994f2ef7004a37ac6fe464",
+    "platform": "Windows",
+    "unix_alias_and_mode_tests_executed_here": false,
+    "source_projection_locally_executed": false
+  },
+  "old_failures": [
+    {
+      "pr": 2734,
+      "source_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+      "base_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "synthetic_merge_sha": "cb55c1e964f6a6bf80cd2d51ebc0caea56e16184",
+      "job_id": 117826243985,
+      "error": "Io(PermissionDenied)",
+      "tests": [
+        "file_wal_repairs_incomplete_length_before_new_commits",
+        "file_wal_syncs_frames_and_repairs_torn_tail"
+      ],
+      "log_sha256": "1d819d740347258bb8764e167bcb2aef6ddbc37403e56df9c3d9534ac83b8c79"
+    },
+    {
+      "pr": 2890,
+      "source_sha": "33e8302efd89a385c168199b4cba2c9c96d5708e",
+      "base_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+      "synthetic_merge_sha": "55a4c964bfcbeda474564151800dff04c2b2ccee",
+      "job_id": 118041065193,
+      "error": "Io(PermissionDenied)",
+      "same_two_tests": true,
+      "log_sha256": "242ac42fab2c6581d62934506ddbfe15afd86db71a6cd6d83cfe0ffbcf9d3934"
+    }
+  ],
+  "deduplication_decisions": [
+    {
+      "pr": 2890,
+      "role": "Unix no-follow, link-count, creation-mode hardening and libc graph dependency; retained in the chosen successor."
+    },
+    {
+      "pr": 2897,
+      "role": "Windows truncation-capable handle while retaining Unix O_APPEND, O_NOFOLLOW, nlink checks; new platform-neutral reappend test retains both exact predecessor envelopes. Its 7 Windows tests passed but its job failed subsequent Rustfmt."
+    },
+    {
+      "pr": 2909,
+      "role": "Exact Rustfmt completion on the integrated secure WAL chain; all 7 actual Windows tests and formatting/immutable checkout steps succeeded."
+    },
+    {
+      "pr": 2905,
+      "role": "Parallel sibling of 2897, diverged from common base 33e8302. Its Windows-only partial-body test is covered by chosen platform-neutral reappend test with stronger exact envelope assertions. Current scoped lane failed with ENOSPC before dispatch. Do not stack duplicate handle changes or duplicate test."
+    },
+    {
+      "pr": 2903,
+      "role": "Windows handle/reappend and Supervisor branch based directly on dc271d4. Lacks Unix alias guards and private creation mode from 2890; never overwrite selected WAL file with its blob."
+    },
+    {
+      "pr": 2914,
+      "role": "Fleet formatting descendant of 2903. Inherits the same WAL security omissions relative to 2909. It is not a newer complete WAL successor."
+    },
+    {
+      "pr": 2900,
+      "role": "Fleet-only integration in chosen history; outside four-path projection."
+    },
+    {
+      "pr": 2904,
+      "role": "Automation migration fixture-only integration in chosen history; outside four-path projection."
+    }
+  ],
+  "safety_contract": {
+    "unchanged_owner": "ScopeLaneFileWalV1 owns one LockedFile; no alternative journal or owner introduced.",
+    "prewrite_guards": "Unix O_NOFOLLOW and mode(0600) at open, regular-file check plus exclusive try_lock, then nlink==1 before header/replay writes.",
+    "windows_strategy": "Windows requests write access without append; append_frame seeks to EOF while exclusive owner lock is held.",
+    "durability_and_faults": "Original sync_all-before-projection, incomplete tail set_len+sync_all, corrupt-frame and chain rejection, poisoned writer guard, generation/owner fencing and DENY_ALL receipts are byte-preserved.",
+    "trust_limit": "Existing contract requires a trusted parent and valid run-root lineage. This module does not add a standalone Windows DACL/reparse-point validator or validate permissions of every preexisting Unix file. The Windows 7-test job cannot qualify Unix alias/mode tests or full platform access-control closure."
+  },
+  "current_gates": {
+    "pr2909_ci_required": "failure",
+    "pr2909_architecture_required": "success",
+    "pr2909_windows_crash_tail": "success, 7 actual tests",
+    "pr2909_scoped_native": {
+      "job_id": 118069853019,
+      "cause": "ENOSPC while compiling codex-goal-extension goal_extension_backend",
+      "log_sha256": "f07a6894b7432e4b101f809a11c8d19ba4e7972aeaae67dc40ea54d0ee43733c"
+    },
+    "unix_attack_test_execution_for_selected_head": "not established by this audit",
+    "full_windows_and_required_qualification": "not established"
+  },
+  "actions_performed": {
+    "local_source_copy_and_patch_validation": true,
+    "full_worktree_clone": false,
+    "production_worktree_changed": false,
+    "compiled": false,
+    "remote_mutation": false,
+    "ci_triggered": false
+  },
+  "next_action": "Continue from existing PR2909/source 5993cb9 on the Cell owner. Root can use the verified four-path patch for review/reconciliation, then run required scope and Unix alias/mode coverage after the shared disk-profile work is qualified. No synonymous new Cell-owner branch is needed."
+}

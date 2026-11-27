@@ -1,0 +1,69 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "/dev/shm/hcsn-class-collapse-audit-001/audit.py",
+    "--command",
+    "/dev/shm/hcsn-class-collapse-audit-001/COMMAND.json",
+    "--output",
+    "/dev/shm/hcsn-class-collapse-audit-001/RESULT.json"
+  ],
+  "cwd": "/dev/shm/hcsn-class-collapse-audit-001",
+  "inputs": {
+    "gru_data": {
+      "bytes": 910670,
+      "path": "/workspace/scratch/8262eeaa059c/hcsn-local-full-001/DATA.json",
+      "sha256": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427"
+    },
+    "gru_seed11_development": {
+      "bytes": 46436,
+      "path": "/dev/shm/hepta-hcsn-gru-001/seed11/development.json",
+      "sha256": "46612455a2e54087cfb4eda98a4d46bffbc485caa562c58cc27ef9c47a8cdd76"
+    },
+    "gru_seed23_development": {
+      "bytes": 46753,
+      "path": "/dev/shm/hepta-hcsn-gru-001/seed23/development.json",
+      "sha256": "0d5df41f6bc6481a6960bc6d0552bd678d3e1cba839903da1569800af17f4fcb"
+    },
+    "gru_seed37_development": {
+      "bytes": 47247,
+      "path": "/dev/shm/hepta-hcsn-gru-001/seed37/development.json",
+      "sha256": "7c337a4563c7a34785657384cf0bceef5c87b91934e7d17947b00818ca352e90"
+    },
+    "gru_summary": {
+      "bytes": 20118,
+      "path": "/dev/shm/hepta-hcsn-gru-001/SUMMARY.json",
+      "sha256": "9c6bf865315e720c01b730a90043baa14ba2cd03b84e65aa19889b4c377e2cfa"
+    },
+    "hcsn_data": {
+      "bytes": 910670,
+      "path": "/dev/shm/hepta-hcsn-full-002/DATA.json",
+      "sha256": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427"
+    },
+    "hcsn_seed11_development": {
+      "bytes": 47045,
+      "path": "/dev/shm/hepta-hcsn-full-002/seed11-c1_b1/development.json",
+      "sha256": "e41f1af9e1c0ff72d349541f9de9bb17d7078811209e1852ec49fb70960990df"
+    },
+    "hcsn_seed23_development": {
+      "bytes": 46775,
+      "path": "/dev/shm/hepta-hcsn-full-002/seed23-c1_b1/development.json",
+      "sha256": "d64e8ecedf241d57e15fdb350b1bb6f3584dd9e1f529bb0c5889c067a093b5b3"
+    },
+    "hcsn_seed37_development": {
+      "bytes": 46753,
+      "path": "/dev/shm/hepta-hcsn-full-002/seed37-c1_b1/development.json",
+      "sha256": "50e744e194bcb9297dce87df9bebe7509b1558f865c01b6b8667316d0e7f218c"
+    },
+    "hcsn_summary": {
+      "bytes": 62221,
+      "path": "/dev/shm/hepta-hcsn-full-002/SUMMARY.json",
+      "sha256": "3ea5dc8f1f9e7d0f9e9a8d684f25efd6563b3cc4e88fdc750e9b13e13db91881"
+    }
+  },
+  "python": "3.12.14",
+  "schema": "hcsn-class-collapse-read-only-launch-v1",
+  "scope": "Standard-library read-only statistics on six retained logits files; zero model imports, forward calls or optimizer steps",
+  "script_sha256": "2a15ba2cb0fe64d9454b920c2cc6501adcff312b94f551364f267751222fef9e",
+  "started_utc": "2026-11-12T01:08:44.939213+00:00"
+}

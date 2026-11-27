@@ -1,0 +1,51 @@
+{
+  "schema": "hcsn-regenerative-process-test-attempts-v1",
+  "candidate_base": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "attempts": [
+    {
+      "id": "initial-value-12",
+      "evidence_kind": "observed_tool_result_summary",
+      "exit_code": 1,
+      "tests": 12,
+      "passed": 11,
+      "failed": 1,
+      "duration_seconds": 3.767,
+      "failure": "test_infinite_bin_edge_has_no_warning_or_renormalization: RuntimeWarning invalid value encountered in subtract at inherited population.py:_positive_difference, log_b-log_a; fixed locally by treating last half-line as finite-edge tail."
+    },
+    {
+      "id": "value-12-after-local-fix",
+      "evidence_kind": "observed_tool_result_summary",
+      "exit_code": 0,
+      "tests": 12,
+      "duration_seconds": 2.717
+    },
+    {
+      "id": "successor-16",
+      "evidence_kind": "observed_tool_result_summary",
+      "exit_code": 0,
+      "tests": 16,
+      "duration_seconds": 3.296
+    },
+    {
+      "id": "successor-17-with-low-noise",
+      "evidence_kind": "captured_subprocess",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "qualification.hcsn_regenerative.tests.test_process",
+        "-v"
+      ],
+      "started_at": "2026-11-07T00:01:42.069416+00:00",
+      "wall_seconds": 4.831618375999824,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_boundary_and_zero_horizon_atoms (qualification.hcsn_regenerative.tests.test_process.KilledGeneratorTests.test_boundary_and_zero_horizon_atoms) ... ok\ntest_infinite_bin_edge_has_no_warning_or_renormalization (qualification.hcsn_regenerative.tests.test_process.KilledGeneratorTests.test_infinite_bin_edge_has_no_warning_or_renormalization) ... ok\ntest_laplace_solves_same_interior_generator (qualification.hcsn_regenerative.tests.test_process.KilledGeneratorTests.test_laplace_solves_same_interior_generator) ... ok\ntest_survivor_hit_and_upper_tail_share_mass (qualification.hcsn_regenerative.tests.test_process.KilledGeneratorTests.test_survivor_hit_and_upper_tail_share_mass) ... ok\ntest_domains_and_unresolved_tail_fail_explicitly (qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_domains_and_unresolved_tail_fail_explicitly) ... ok\ntest_low_noise_active_occupation (qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_low_noise_active_occupation) ... ok\ntest_remaining_time_boundary_identity_and_release_atom (qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_remaining_time_boundary_identity_and_release_atom) ... ok\ntest_tail_receipt_bounds_tolerance_change (qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_tail_receipt_bounds_tolerance_change) ... ok\ntest_two_hit_window_against_independent_time_convolution (qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_two_hit_window_against_independent_time_convolution) ... ok\ntest_zero_refractory_and_multiple_hits (qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_zero_refractory_and_multiple_hits) ... ok\ntest_renewal_fixed_point_and_boundary (qualification.hcsn_regenerative.tests.test_process.StationaryHXTests.test_renewal_fixed_point_and_boundary) ... ok\ntest_same_interior_cashflow_for_E_and_U (qualification.hcsn_regenerative.tests.test_process.StationaryHXTests.test_same_interior_cashflow_for_E_and_U) ... ok\ntest_instant_reset_successor_and_undiscounted_counts (qualification.hcsn_regenerative.tests.test_process.SuccessorTests.test_instant_reset_successor_and_undiscounted_counts) ... ok\ntest_invalid_remaining_time_partition (qualification.hcsn_regenerative.tests.test_process.SuccessorTests.test_invalid_remaining_time_partition) ... ok\ntest_low_noise_successor_resolves_active_and_refractory_phases (qualification.hcsn_regenerative.tests.test_process.SuccessorTests.test_low_noise_successor_resolves_active_and_refractory_phases) ... ok\ntest_reset_successor_and_remaining_time_atoms (qualification.hcsn_regenerative.tests.test_process.SuccessorTests.test_reset_successor_and_remaining_time_atoms) ... ok\ntest_successor_matches_independent_time_and_space_kernel (qualification.hcsn_regenerative.tests.test_process.SuccessorTests.test_successor_matches_independent_time_and_space_kernel) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 4.137s\n\nOK\n"
+    }
+  ],
+  "owned_source_sha256": {
+    "qualification/hcsn_regenerative/process.py": "71d8038149af518290808a92928909d4fa9735c7ce111d5eb4bc184fd743895f",
+    "qualification/hcsn_regenerative/tests/test_process.py": "3a4c5bbe3b07e44a0dae26279766cb9047670814e59c7ef16a6f582b87676e02",
+    "qualification/hcsn_regenerative/REGENERATIVE.md": "171e5ca1b38e0456404a7d1731ff5bfe335e68ba419b8fcf293be4850be33b3f"
+  }
+}

@@ -1,0 +1,320 @@
+{
+  "schema": "hepta.executor-final-observation.v1",
+  "utc": "2026-10-18T16:37:01.282680+00:00",
+  "host": "2313cba36518",
+  "scope": "Accessible executor only; no independent identification as the configured Dot/dedicated project host and no remote-host absence claim.",
+  "workspace_disk": {
+    "total_bytes": 33770192896,
+    "used_bytes": 33502920704,
+    "free_bytes": 0
+  },
+  "visible_cpus": 9,
+  "cgroup": {
+    "cpu.max": "800000 100000\n",
+    "memory.max": "8589934592\n",
+    "memory.current": "7100596224\n"
+  },
+  "processes": [
+    {
+      "pid": 1,
+      "ppid": 0,
+      "comm": "supervisord",
+      "process_state": "S",
+      "cwd": "/",
+      "argv_redacted": [
+        "/usr/bin/python3",
+        "/usr/bin/supervisord",
+        "-n",
+        "-c",
+        "[CODE_OR_LONG_ARGUMENT_REDACTED]"
+      ],
+      "start_utc": "2026-10-18T01:02:38.320000+00:00",
+      "cpu_ticks": 1041,
+      "rss_bytes": 23400448,
+      "output_destinations": {
+        "1": "pipe:[4113]",
+        "2": "pipe:[4114]"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 3,
+      "ppid": 1,
+      "comm": "rsync",
+      "process_state": "S",
+      "cwd": "/",
+      "argv_redacted": [
+        "rsync",
+        "--daemon",
+        "--no-detach"
+      ],
+      "start_utc": "2026-10-18T01:02:39.490000+00:00",
+      "cpu_ticks": 105,
+      "rss_bytes": 2228224,
+      "output_destinations": {
+        "1": "pipe:[6166]",
+        "2": "pipe:[6167]"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 4,
+      "ppid": 1,
+      "comm": "sync_share.sh",
+      "process_state": "S",
+      "cwd": "/",
+      "argv_redacted": [
+        "/bin/bash",
+        "/usr/local/scripts/sync_share.sh"
+      ],
+      "start_utc": "2026-10-18T01:02:39.500000+00:00",
+      "cpu_ticks": 6,
+      "rss_bytes": 1966080,
+      "output_destinations": {
+        "1": "pipe:[6169]",
+        "2": "pipe:[6170]"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 5,
+      "ppid": 1,
+      "comm": "sync_share.sh",
+      "process_state": "S",
+      "cwd": "/",
+      "argv_redacted": [
+        "/bin/bash",
+        "/usr/local/scripts/sync_share.sh"
+      ],
+      "start_utc": "2026-10-18T01:02:39.500000+00:00",
+      "cpu_ticks": 292,
+      "rss_bytes": 1966080,
+      "output_destinations": {
+        "1": "pipe:[6172]",
+        "2": "pipe:[6173]"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 6,
+      "ppid": 1,
+      "comm": "caas-prefix-tra",
+      "process_state": "S",
+      "cwd": "/",
+      "argv_redacted": [
+        "/usr/local/bin/caas-prefix-transfer-server",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "1040"
+      ],
+      "start_utc": "2026-10-18T01:02:39.500000+00:00",
+      "cpu_ticks": 3107,
+      "rss_bytes": 311296,
+      "output_destinations": {
+        "1": "/tmp/caas-prefix-transfer-server.log",
+        "2": "/tmp/caas-prefix-transfer-server.log"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 7,
+      "ppid": 1,
+      "comm": "sites-preview",
+      "process_state": "S",
+      "cwd": "/",
+      "argv_redacted": [
+        "/usr/local/bin/sites-preview",
+        "daemon"
+      ],
+      "start_utc": "2026-10-18T01:02:39.500000+00:00",
+      "cpu_ticks": 3668,
+      "rss_bytes": 131072,
+      "output_destinations": {
+        "1": "pipe:[6178]",
+        "2": "pipe:[6179]"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 81,
+      "ppid": 4,
+      "comm": "inotifywait",
+      "process_state": "S",
+      "cwd": "/",
+      "argv_redacted": [
+        "inotifywait",
+        "-rq",
+        "-e",
+        "[CODE_OR_LONG_ARGUMENT_REDACTED]",
+        "--exclude",
+        "(^|/)(\\.git|\\.rsync-tmp|.*tmp|.*\\.crdownload|node_modules(/|$))",
+        "/root/.codex/browser"
+      ],
+      "start_utc": "2026-10-18T01:34:57.880000+00:00",
+      "cpu_ticks": 0,
+      "rss_bytes": 786432,
+      "output_destinations": {
+        "1": "pipe:[6169]",
+        "2": "pipe:[6170]"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 132,
+      "ppid": 1,
+      "comm": "codex",
+      "process_state": "S",
+      "cwd": "/",
+      "argv_redacted": [
+        "/opt/codex/bin/codex",
+        "app-server",
+        "--listen",
+        "ws://0.0.0.0:9267",
+        "--ws-auth",
+        "[REDACTED_OPTION]",
+        "[REDACTED_OPTION]",
+        "[REDACTED_ARGUMENT]"
+      ],
+      "start_utc": "2026-10-18T01:35:02.750000+00:00",
+      "cpu_ticks": 5122,
+      "rss_bytes": 72847360,
+      "output_destinations": {
+        "1": "/dev/null",
+        "2": "pipe:[4114]"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 302,
+      "ppid": 1,
+      "comm": "codex",
+      "process_state": "S",
+      "cwd": "/",
+      "argv_redacted": [
+        "/opt/codex/bin/codex",
+        "exec-server",
+        "-c",
+        "[CODE_OR_LONG_ARGUMENT_REDACTED]",
+        "-c",
+        "[CODE_OR_LONG_ARGUMENT_REDACTED]",
+        "-c",
+        "[CODE_OR_LONG_ARGUMENT_REDACTED]",
+        "-c",
+        "[CODE_OR_LONG_ARGUMENT_REDACTED]",
+        "-c",
+        "[CODE_OR_LONG_ARGUMENT_REDACTED]",
+        "-c",
+        "[CODE_OR_LONG_ARGUMENT_REDACTED]",
+        "-c",
+        "[CODE_OR_LONG_ARGUMENT_REDACTED]",
+        "--remote",
+        "https://codex-cloud-environments.chatgpt.com/api",
+        "--environment-id",
+        "[OPAQUE_ARGUMENT_REDACTED]"
+      ],
+      "start_utc": "2026-10-18T02:50:55.730000+00:00",
+      "cpu_ticks": 9362,
+      "rss_bytes": 94597120,
+      "output_destinations": {
+        "1": "/tmp/flora-cca/exec-server.log",
+        "2": "/tmp/flora-cca/exec-server.log"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 447176,
+      "ppid": 302,
+      "comm": "bash",
+      "process_state": "S",
+      "cwd": "/workspace/scratch/855e2f95cede",
+      "argv_redacted": [
+        "/bin/bash",
+        "-lc",
+        "[CODE_OR_LONG_ARGUMENT_REDACTED]"
+      ],
+      "start_utc": "2026-10-18T16:36:59.420000+00:00",
+      "cpu_ticks": 0,
+      "rss_bytes": 1966080,
+      "output_destinations": {
+        "1": "pipe:[3330216]",
+        "2": "pipe:[3330217]"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 447179,
+      "ppid": 447176,
+      "comm": "python",
+      "process_state": "R",
+      "cwd": "/workspace/scratch/855e2f95cede",
+      "argv_redacted": [
+        "python",
+        "-B",
+        "-"
+      ],
+      "start_utc": "2026-10-18T16:36:59.430000+00:00",
+      "cpu_ticks": 2,
+      "rss_bytes": 12320768,
+      "output_destinations": {
+        "1": "pipe:[3330216]",
+        "2": "pipe:[3330217]"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": 0.0
+    },
+    {
+      "pid": 447181,
+      "ppid": 5,
+      "comm": "rsync",
+      "process_state": "R",
+      "cwd": "/workspace/scratch",
+      "argv_redacted": [
+        "rsync",
+        "-a",
+        "--no-owner",
+        "--no-group",
+        "--delay-updates",
+        "--partial-dir=.rsync-tmp",
+        "--update",
+        "--times",
+        "--delete",
+        "--exclude=*.crdownload",
+        "--exclude=.git/",
+        "--exclude=.rsync-tmp/",
+        "--exclude=node_modules",
+        "/workspace/scratch/",
+        "rsync://share@gaas-browser/scratch/"
+      ],
+      "start_utc": "2026-10-18T16:36:59.760000+00:00",
+      "cpu_ticks": 64,
+      "rss_bytes": 22937600,
+      "output_destinations": {
+        "1": "pipe:[6172]",
+        "2": "pipe:[6173]"
+      },
+      "status": "RUNNING_AT_OBSERVATION",
+      "cpu_sample_percent": null
+    }
+  ],
+  "git_worktree_snapshot": "The full 15:30:22 UTC git/worktree/dirty-path snapshot is preserved in runtime-evidence.tar.gz; this final probe refreshes process/resource state only.",
+  "collaboration_tasks": {
+    "/root": "publishing checkpoint",
+    "/root/github_inventory": "completed",
+    "/root/ci_audit": "completed",
+    "/root/research_os_audit": "completed"
+  },
+  "local_native_or_model_work_started_by_this_audit": false,
+  "native_build_blocker": "BLOCKED_EXTERNAL_ENOSPC",
+  "command": "python -B collector imports unchanged capture_environment.processes(), samples twice one second apart, and reads workspace disk/cgroup resource counters"
+}

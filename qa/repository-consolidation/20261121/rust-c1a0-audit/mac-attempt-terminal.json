@@ -1,0 +1,21 @@
+{
+  "session_id": "dpty-7f66429c029e6d7b45ecf4d2bba1473291411d2db4e35f7d254d65e510369f6a",
+  "host": "mac",
+  "status": {
+    "boot": "{ sec = 1794536756, usec = 317449 } Fri Nov 13 10:25:56 2026",
+    "bytes_seen": 2115,
+    "bytes_stored": 2115,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1795262349808,
+    "exit_code": 1,
+    "output_complete": true,
+    "owner_pid": 34248,
+    "pid": 34250,
+    "state": "exited"
+  },
+  "offset": 400,
+  "next_offset": 2115,
+  "available_end": 2115,
+  "text": "{\"event\": \"stage_end\", \"name\": \"01-clone\", \"argv\": [\"git\", \"clone\", \"--filter=blob:none\", \"--no-checkout\", \"--single-branch\", \"--depth=1\", \"--branch\", \"fix/rust-linux-fixtures-20261120-c755\", \"https://github.com/TrillionniumFoundation/hepta-private-ci.git\", \"/Users/qianqi/hepta-c1a0-authbus-20261121-01/repo\"], \"cwd\": \"/Users/qianqi/hepta-c1a0-authbus-20261121-01\", \"started\": 1795262349.829891, \"exit_code\": 124, \"timeout\": true, \"seconds\": 299.9563810825348, \"log\": \"/Users/qianqi/hepta-c1a0-authbus-20261121-01/01-clone.log\", \"log_sha256\": \"40bcac5f0ffc67aff2a59b129871299bd5814ab92fbe93f07c5ff27281d0056f\", \"log_bytes\": 85}\r\nCloning into '/Users/qianqi/hepta-c1a0-authbus-20261121-01/repo'...\r\nfatal: early EOF\r\n\r\n{\"event\": \"final\", \"candidate\": \"5a42644ff02a511e12ce2f95f1c11f85b709835f\", \"tree\": \"cf4965757cc8ef01109c06b40ade160f3a6f57bb\", \"host\": \"mac\", \"stages\": [{\"name\": \"01-clone\", \"argv\": [\"git\", \"clone\", \"--filter=blob:none\", \"--no-checkout\", \"--single-branch\", \"--depth=1\", \"--branch\", \"fix/rust-linux-fixtures-20261120-c755\", \"https://github.com/TrillionniumFoundation/hepta-private-ci.git\", \"/Users/qianqi/hepta-c1a0-authbus-20261121-01/repo\"], \"cwd\": \"/Users/qianqi/hepta-c1a0-authbus-20261121-01\", \"started\": 1795262349.829891, \"exit_code\": 124, \"timeout\": true, \"seconds\": 299.9563810825348, \"log\": \"/Users/qianqi/hepta-c1a0-authbus-20261121-01/01-clone.log\", \"log_sha256\": \"40bcac5f0ffc67aff2a59b129871299bd5814ab92fbe93f07c5ff27281d0056f\", \"log_bytes\": 85}], \"source\": \"/Users/qianqi/hepta-c1a0-authbus-20261121-01/repo\", \"target\": \"/Users/qianqi/hepta-c1a0-authbus-20261121-01/target\", \"tests_started\": false, \"status\": \"failed\", \"error\": \"01-clone failed\", \"total_seconds\": 300.011166958}\r\n"
+}

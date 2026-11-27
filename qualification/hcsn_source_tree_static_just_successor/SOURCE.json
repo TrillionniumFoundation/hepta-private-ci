@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn-source-tree-static-just-successor-inventory-v1",
+  "identity": "hcsn-original-visit897-source-tree-static-just-successor-20261112-c06d",
+  "parent_pr": 6262,
+  "parent_head": "ce18cb8854349934ed9cbd61e28f4c620cba0aba",
+  "parent_source_inventory_sha256": "aaee122301c1d172b72ebec2b0f7e22ed9a186af5b806ff3cbff7ce7c8bab212",
+  "runtime_closure": [
+    "qualification/hcsn_adjoint_torch/torch_flow.py",
+    "qualification/hcsn_boundary_audit/refractory_transport.py",
+    "qualification/hcsn_boundary_audit/spatial_generator.py",
+    "qualification/hcsn_graded/model.py",
+    "qualification/hcsn_graded/spatial.py",
+    "qualification/hcsn_initial_adjoint/solver.py",
+    "qualification/hcsn_initial_law/migration.py",
+    "qualification/hcsn_joint_dde/model.py",
+    "qualification/hcsn_source_migration_vjp_n128/large_adjoint.py",
+    "qualification/hcsn_source_migration_vjp_n128/native_probe.py",
+    "qualification/hcsn_source_migration_vjp_n128/source_flow.py"
+  ],
+  "source_sha256": {
+    ".github/actions/setup-ci-tools/action.yml": "c3cd9dbcbe45215f172f76ecb827ca90db329e76c6caffed7b3c156565d4587d",
+    ".github/workflows/hcsn-source-tree-static-just-successor.yml": "aebac21f36592c9236415ee32371decc8431dc934d71a8520d51658eb71f1957",
+    "qualification/hcsn_source_migration_vjp_n128_successor/SOURCE.json": "aaee122301c1d172b72ebec2b0f7e22ed9a186af5b806ff3cbff7ce7c8bab212",
+    "qualification/hcsn_source_tree_static_just_successor/PARENT-RED-LEDGER.json": "12f39ae1ed608e7b187805e9f9f0f142c7ff888dd9ffbcfae62e0d0e8c196973",
+    "qualification/hcsn_source_tree_static_just_successor/REQUEST.json": "7a9968cfa4dda82c4d2d2a01150c26c241e88a4001940659f36a5af979ac1222",
+    "qualification/hcsn_source_tree_static_just_successor/SPEC.md": "3fbfe6a5d95c2f1ea2205c16a39eeaaef4a143f2db8b9a4a419ad63c502880b8",
+    "qualification/hcsn_source_tree_static_just_successor/static_review.py": "c784d072110f15edae5bba70d76cbe41e1260d517e28eabafe5d8c312b6ed52c"
+  },
+  "parent_manifest_files": 27,
+  "status": "FROZEN_STATIC_ONLY_NOT_EXECUTED",
+  "candidate_imports": 0,
+  "model_forwards": 0,
+  "adjoints": 0,
+  "optimizer_updates": 0,
+  "numerical_identity": null,
+  "numerical_execution_authorized": false,
+  "global_status": "HOLD",
+  "all_closed": false
+}

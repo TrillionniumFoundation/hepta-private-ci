@@ -1,0 +1,137 @@
+{
+  "sha": "60e508e44f3419985e275e1131c87a812981c711",
+  "node_id": "C_kwDOTrgxoNoAKDYwZTUwOGU0NGYzNDE5OTg1ZTI3NWUxMTMxYzg3YTgxMjk4MWM3MTE",
+  "commit": {
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T17:29:55Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T17:29:55Z"
+    },
+    "message": "fix(ci): bind exact PR SHA and restore the CLI crate root\n\nRepair the three observed architecture-scope regressions without disabling\nrequired gates. Select the preexisting byte-identical main.rs root for the\ncodex binary and retain repository isolation while including PR identity\nand exact source SHA in required-workflow concurrency keys.\n\nPreserve existing test scope and original source/experiment content;\nrecord the source-head and synthetic-merge failures for native recheck.",
+    "tree": {
+      "sha": "f7d93be21c4a524a3d2f0ff204732843cfe0fb70",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/f7d93be21c4a524a3d2f0ff204732843cfe0fb70"
+    },
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/60e508e44f3419985e275e1131c87a812981c711",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/60e508e44f3419985e275e1131c87a812981c711",
+  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/60e508e44f3419985e275e1131c87a812981c711",
+  "comments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/60e508e44f3419985e275e1131c87a812981c711/comments",
+  "author": {
+    "login": "ProfHepta",
+    "id": 102159240,
+    "node_id": "U_kgDOBhbTiA",
+    "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/ProfHepta",
+    "html_url": "https://github.com/ProfHepta",
+    "followers_url": "https://api.github.com/users/ProfHepta/followers",
+    "following_url": "https://api.github.com/users/ProfHepta/following{/other_user}",
+    "gists_url": "https://api.github.com/users/ProfHepta/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/ProfHepta/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/ProfHepta/subscriptions",
+    "organizations_url": "https://api.github.com/users/ProfHepta/orgs",
+    "repos_url": "https://api.github.com/users/ProfHepta/repos",
+    "events_url": "https://api.github.com/users/ProfHepta/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/ProfHepta/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "ProfHepta",
+    "id": 102159240,
+    "node_id": "U_kgDOBhbTiA",
+    "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/ProfHepta",
+    "html_url": "https://github.com/ProfHepta",
+    "followers_url": "https://api.github.com/users/ProfHepta/followers",
+    "following_url": "https://api.github.com/users/ProfHepta/following{/other_user}",
+    "gists_url": "https://api.github.com/users/ProfHepta/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/ProfHepta/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/ProfHepta/subscriptions",
+    "organizations_url": "https://api.github.com/users/ProfHepta/orgs",
+    "repos_url": "https://api.github.com/users/ProfHepta/repos",
+    "events_url": "https://api.github.com/users/ProfHepta/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/ProfHepta/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ceb13e41b9d0f6505e98b155a4fd72b09c127901"
+    }
+  ],
+  "stats": {
+    "total": 54,
+    "additions": 51,
+    "deletions": 3
+  },
+  "files": [
+    {
+      "sha": "067ad1f9a0949e92de80466fec26352e0b3ab56b",
+      "filename": ".github/workflows/blocking-ci.yml",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/60e508e44f3419985e275e1131c87a812981c711/.github%2Fworkflows%2Fblocking-ci.yml",
+      "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/60e508e44f3419985e275e1131c87a812981c711/.github%2Fworkflows%2Fblocking-ci.yml",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/.github%2Fworkflows%2Fblocking-ci.yml?ref=60e508e44f3419985e275e1131c87a812981c711",
+      "patch": "@@ -6,7 +6,7 @@ on:\n     branches: [main]\n \n concurrency:\n-  group: blocking-ci::${{ github.event.pull_request.head.repo.full_name || github.repository }}::${{ github.event.pull_request.head.ref || github.ref_name }}\n+  group: blocking-ci::${{ github.event.pull_request.head.repo.full_name || github.repository }}::${{ github.event.pull_request.number || github.ref_name }}::${{ github.event.pull_request.head.sha || 'main' }}\n   cancel-in-progress: true\n \n permissions:"
+    },
+    {
+      "sha": "7d033192d28dc3be5c5364a2c4efc7eeb55eb70e",
+      "filename": ".github/workflows/hepta-architecture-convergence.yml",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/60e508e44f3419985e275e1131c87a812981c711/.github%2Fworkflows%2Fhepta-architecture-convergence.yml",
+      "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/60e508e44f3419985e275e1131c87a812981c711/.github%2Fworkflows%2Fhepta-architecture-convergence.yml",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/.github%2Fworkflows%2Fhepta-architecture-convergence.yml?ref=60e508e44f3419985e275e1131c87a812981c711",
+      "patch": "@@ -10,7 +10,7 @@ permissions:\n   contents: read\n \n concurrency:\n-  group: hepta-architecture-convergence::${{ github.event.pull_request.head.repo.full_name || github.repository }}::${{ github.event.pull_request.head.ref || github.ref_name }}\n+  group: hepta-architecture-convergence::${{ github.event.pull_request.head.repo.full_name || github.repository }}::${{ github.event.pull_request.number || github.ref_name }}::${{ github.event.pull_request.head.sha || 'manual' }}\n   cancel-in-progress: true\n \n env:"
+    },
+    {
+      "sha": "9cb428e03dfac3cfb84eea9d960ce87070284236",
+      "filename": "codex-rs/cli/Cargo.toml",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/60e508e44f3419985e275e1131c87a812981c711/codex-rs%2Fcli%2FCargo.toml",
+      "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/60e508e44f3419985e275e1131c87a812981c711/codex-rs%2Fcli%2FCargo.toml",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs%2Fcli%2FCargo.toml?ref=60e508e44f3419985e275e1131c87a812981c711",
+      "patch": "@@ -10,7 +10,7 @@ default-run = \"codex\"\n \n [[bin]]\n name = \"codex\"\n-path = \"src/codex.rs\"\n+path = \"src/main.rs\"\n \n [[bin]]\n name = \"hepta\""
+    },
+    {
+      "sha": "83454d0999976787b1c745fd11c0eb78c6aa6e87",
+      "filename": "qa/repository-consolidation/20261119/round-08-architecture-regression/CHECKPOINT.json",
+      "status": "added",
+      "additions": 48,
+      "deletions": 0,
+      "changes": 48,
+      "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/60e508e44f3419985e275e1131c87a812981c711/qa%2Frepository-consolidation%2F20261119%2Fround-08-architecture-regression%2FCHECKPOINT.json",
+      "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/60e508e44f3419985e275e1131c87a812981c711/qa%2Frepository-consolidation%2F20261119%2Fround-08-architecture-regression%2FCHECKPOINT.json",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/qa%2Frepository-consolidation%2F20261119%2Fround-08-architecture-regression%2FCHECKPOINT.json?ref=60e508e44f3419985e275e1131c87a812981c711",
+      "patch": "@@ -0,0 +1,48 @@\n+{\n+  \"schema_version\": 1,\n+  \"prior_exact_source_sha\": \"ceb13e41b9d0f6505e98b155a4fd72b09c127901\",\n+  \"prior_exact_source_tree\": \"323f8caa556634b70c0ee9385c4c7247681f1217\",\n+  \"branch\": \"integration/hepta-single-main-20261113-ab5b\",\n+  \"pr_number\": 6293,\n+  \"observed_main\": \"732e934ba496d90fbe042b8d41d479ef901643e5\",\n+  \"source_failures\": [\n+    {\n+      \"job\": 135744419226,\n+      \"lane\": \"source-head\",\n+      \"failed\": 3,\n+      \"passed\": 22,\n+      \"assertions\": [\n+        \"codex root manifest differs from test\",\n+        \"blocking-ci exact PR SHA concurrency absent\",\n+        \"architecture exact PR SHA concurrency absent\"\n+      ]\n+    },\n+    {\n+      \"job\": 135744418550,\n+      \"lane\": \"base-merge\",\n+      \"failed\": 3,\n+      \"passed\": 22,\n+      \"same_tree\": true\n+    },\n+    {\n+      \"job\": 135746996563,\n+      \"gate\": \"Architecture required\",\n+      \"result\": \"failure\"\n+    }\n+  ],\n+  \"repair\": [\n+    \"CLI codex binary now selects existing byte-identical src/main.rs root\",\n+    \"Both required workflows retain repository isolation and add explicit PR-number and exact-head-SHA identity to concurrency grouping\"\n+  ],\n+  \"regression_validation\": \"Static exact-string checks passed; native workflow and full CI not yet qualified\",\n+  \"inherited_protection_baseline\": \"round-07-75cf: 478 protected branch refs/498 pins; new commit has only existing candidate as parent and no new HIA ancestry\",\n+  \"inherited_ordinary_coverage\": \"round-07-75cf frozen 7169 ordinary tips; 2794 covered in candidate / 4375 outstanding; not recalculated on this commit\",\n+  \"new_ordinary_branch_heads_merged\": 0,\n+  \"main_merged\": false,\n+  \"deleted_refs\": 0,\n+  \"receipts\": [\n+    \"https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44576251410/job/135744419226\",\n+    \"https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44576251410/job/135744418550\",\n+    \"https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44576251410/job/135746996563\"\n+  ]\n+}"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.causal-b.prospective-analysis-policy.v1",
+  "registered_utc": "2026-11-08T09:49:09.146115+00:00",
+  "design_policy_registered_utc": "2026-11-08T09:44:13.451599+00:00",
+  "registration_scope": "BudgetStop semantics were frozen in the evaluation design and original PILOT_PLAN before tune/pilot; this artifact binds their executable analysis adapter before analysis.",
+  "analysis_helper_sha256": "c65f3eef739d1994aefedd6ef114d867d94b5f529470dc03ec78d4d329bcf29a",
+  "analysis_helper_bytes": 36582,
+  "evaluation_design_sha256": "ce3a8a096fd1c2a629124658f90ca3527cf9cc1d25272681a38f2ceb07384f63",
+  "evaluation_plan_sha256": "0c8622ac6cac3d3b0257bdae84f363c215fc8511a02b74677133584f4ef8eff7",
+  "budget_stop_analysis_policy": {
+    "analysis_only_mapping": "Map BudgetStop to statistical Completed only when an actual evaluator/rubric-bound finite score and an observed finite nonnegative deployment_wall_seconds are both present; otherwise use Unresolved.",
+    "audit": "Retain original and statistical status counts and every BudgetStop adaptation separately.",
+    "energy_or_provider_unknown_blocks_mapping": false,
+    "full_improvement_budget_gate": false,
+    "meaning": "Resolved statistical observation only; no claim of original execution success or acceptable quality.",
+    "original_terminal_status": "Preserve BudgetStop and the original paired rows.",
+    "required_cost_scope": "Measured deployment wall cost used by the frozen utility; energy and provider prices need not be known for this mapping."
+  },
+  "utility_derivation": "For a resolved BudgetStop, verify existing finite analysis_utility against score minus latency_weight times deployment_wall_seconds; if the derived field is absent, compute it from those recorded inputs. No counterfactual score or time is generated.",
+  "full_improvement_budget_gate": false,
+  "confirmatory_use": false,
+  "adoption_authorized": false,
+  "original_rows_mutated": false,
+  "format_stage": "Final exact Ruff byte binding; the recorded AST is unchanged from the prospectively frozen adapter. The registered_utc and design policy registration time are preserved.",
+  "format_binding_completed_utc": "2026-11-08T09:56:01.302336+00:00",
+  "pre_format_policy": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/ANALYSIS_POLICY.pre-format.json",
+    "sha256": "41b7692c747d321cf2bd50b745c4a01c1f9fbeecb82a8033ddc8e5b3585efb90",
+    "bytes": 2087
+  },
+  "format_receipt": {
+    "path": "/workspace/scratch/cf0b0141e32e/helper-format-v2/format-receipt.json",
+    "sha256": "e10eef605bf8fa6c4bafd1f5aa78afc53ab1b2259488105f7015705f446317ad",
+    "bytes": 1303
+  }
+}

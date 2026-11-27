@@ -514,7 +514,7 @@ impl SqliteQueueStore {
 
         let queued_item_id = adopted_item_id.unwrap_or_else(|| Uuid::now_v7().to_string());
         let reservation_id = Uuid::now_v7().to_string();
-        let now_ms = datetime_to_epoch_millis(Utc::now());
+        let now_ms = datetime_to_epoch_millis(codex_utils_time::Timestamp::now());
         sqlx::query(
             "INSERT INTO queued_client_bindings (
                 thread_id, client_user_message_id, payload_sha256, state,
@@ -620,7 +620,7 @@ impl SqliteQueueStore {
                 .bind(process_lock.lock_identity.device)
                 .bind(process_lock.lock_identity.inode)
                 .bind(revision)
-                .bind(datetime_to_epoch_millis(Utc::now()))
+                .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
                 .bind(&thread_id_string)
                 .bind(&process_lock.client_id)
                 .bind(&process_lock.payload_sha256)
@@ -729,7 +729,7 @@ impl SqliteQueueStore {
         )
         .bind(lease_expires_at_ms)
         .bind(revision)
-        .bind(datetime_to_epoch_millis(Utc::now()))
+        .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
         .bind(&thread_id_string)
         .bind(&lease.client_id)
         .bind(&lease.payload_sha256)
@@ -832,7 +832,7 @@ impl SqliteQueueStore {
         .bind(new_owner_id)
         .bind(lease_expires_at_ms)
         .bind(revision)
-        .bind(datetime_to_epoch_millis(Utc::now()))
+        .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
         .bind(expired.thread_id.to_string())
         .bind(&expired.client_id)
         .bind(&expired.payload_sha256)
@@ -914,7 +914,7 @@ impl SqliteQueueStore {
                AND state = 'dispatching' AND dispatch_owner_id = ?
                AND dispatch_lock_device = ? AND dispatch_lock_inode = ? AND revision = ?",
         )
-        .bind(datetime_to_epoch_millis(Utc::now()))
+        .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
         .bind(&thread_id_string)
         .bind(&lease.client_id)
         .bind(&lease.payload_sha256)
@@ -1059,7 +1059,7 @@ impl SqliteQueueStore {
                  SET state = 'queued', revision = revision + 1, updated_at_ms = ?
                  WHERE thread_id = ? AND client_user_message_id = ?",
             )
-            .bind(datetime_to_epoch_millis(Utc::now()))
+            .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
             .bind(&thread_id_string)
             .bind(&client_id)
             .execute(transaction.as_mut())
@@ -1087,6 +1087,33 @@ impl SqliteQueueStore {
             return Ok(QueuedClientBindingFinalizeOutcome::Missing);
         }
 
+        if mode == QueuedClientBindingFinalizeMode::CloseIfAbsent {
+            // The caller scanned the authoritative rollout under its original
+            // dispatch guard. Retain the same exact client binding so a late
+            // AllowIfAbsent cannot turn this durable rejection into a new send.
+            let changed = sqlx::query(
+                "UPDATE queued_client_bindings
+                 SET state = 'cancelled', queued_item_id = NULL,
+                     revision = revision + 1, updated_at_ms = ?
+                 WHERE thread_id = ? AND client_user_message_id = ?
+                   AND state = 'reserved' AND reservation_id = ? AND revision = ?",
+            )
+            .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
+            .bind(&thread_id_string)
+            .bind(&client_id)
+            .bind(&lease.reservation_id)
+            .bind(lease.revision)
+            .execute(transaction.as_mut())
+            .await?;
+            if changed.rows_affected() != 1 {
+                return Err(binding_conflict(
+                    "original close reservation changed".into(),
+                ));
+            }
+            transaction.commit().await?;
+            return Ok(QueuedClientBindingFinalizeOutcome::Cancelled);
+        }
+
         enforce_capacity(transaction.as_mut(), &thread_id_string, runtime_capacity).await?;
         let record = insert_queued_record(
             transaction.as_mut(),
@@ -1101,7 +1128,7 @@ impl SqliteQueueStore {
              WHERE thread_id = ? AND client_user_message_id = ?
                AND state = 'reserved' AND reservation_id = ? AND revision = ?",
         )
-        .bind(datetime_to_epoch_millis(Utc::now()))
+        .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
         .bind(&thread_id_string)
         .bind(&client_id)
         .bind(&lease.reservation_id)
@@ -1243,7 +1270,7 @@ impl SqliteQueueStore {
              RETURNING id, thread_id, payload_json",
         )
         .bind(payload_json)
-        .bind(datetime_to_epoch_millis(Utc::now()))
+        .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
         .bind(&thread_id_string)
         .bind(item_id)
         .fetch_optional(transaction.as_mut())
@@ -1291,7 +1318,7 @@ impl SqliteQueueStore {
                      revision = revision + 1, updated_at_ms = ?
                  WHERE thread_id = ? AND client_user_message_id = ?",
             )
-            .bind(datetime_to_epoch_millis(Utc::now()))
+            .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
             .bind(&thread_id_string)
             .bind(client_id)
             .execute(transaction.as_mut())
@@ -1324,7 +1351,7 @@ impl SqliteQueueStore {
             )
             .into());
         }
-        let now_ms = datetime_to_epoch_millis(Utc::now());
+        let now_ms = datetime_to_epoch_millis(codex_utils_time::Timestamp::now());
         let max_queue_order = rows.last().map_or(-1, |(_, queue_order)| *queue_order);
         for (index, item_id) in ordered_ids.iter().enumerate() {
             sqlx::query(
@@ -1382,7 +1409,7 @@ impl SqliteQueueStore {
             .filter(|thread_id| unique_thread_ids.insert(thread_id.clone()))
             .collect::<Vec<_>>();
         let deletion_id = Uuid::now_v7().to_string();
-        let created_at_ms = datetime_to_epoch_millis(Utc::now());
+        let created_at_ms = datetime_to_epoch_millis(codex_utils_time::Timestamp::now());
         let mut transaction = self.pool.begin_with("BEGIN IMMEDIATE").await?;
 
         let root_thread_id_string = root_thread_id.to_string();
@@ -1709,7 +1736,7 @@ async fn insert_queued_record(
     payload_json: &str,
     item_id: &str,
 ) -> anyhow::Result<QueuedUserSubmissionRecord> {
-    let now_ms = datetime_to_epoch_millis(Utc::now());
+    let now_ms = datetime_to_epoch_millis(codex_utils_time::Timestamp::now());
     let row = sqlx::query(
         "INSERT INTO queued_items (
             id, thread_id, payload_json, queue_order, created_at_ms, updated_at_ms
@@ -1777,7 +1804,7 @@ async fn transition_binding_to_persisted(
          WHERE thread_id = ? AND client_user_message_id = ? AND payload_sha256 = ?",
     )
     .bind(turn_id)
-    .bind(datetime_to_epoch_millis(Utc::now()))
+    .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
     .bind(thread_id)
     .bind(client_id)
     .bind(payload_sha256)
@@ -2006,7 +2033,7 @@ async fn transition_dispatch_lease_to_persisted(
            AND dispatch_lock_device = ? AND dispatch_lock_inode = ? AND revision = ?",
     )
     .bind(turn_id)
-    .bind(datetime_to_epoch_millis(Utc::now()))
+    .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
     .bind(lease.thread_id.to_string())
     .bind(&lease.client_id)
     .bind(&lease.payload_sha256)
@@ -2040,7 +2067,7 @@ async fn transition_dispatch_binding_to_persisted(
            AND revision = ? AND dispatch_lease_expires_at_ms <= ?",
     )
     .bind(turn_id)
-    .bind(datetime_to_epoch_millis(Utc::now()))
+    .bind(datetime_to_epoch_millis(codex_utils_time::Timestamp::now()))
     .bind(expired.thread_id.to_string())
     .bind(&expired.client_id)
     .bind(&expired.payload_sha256)

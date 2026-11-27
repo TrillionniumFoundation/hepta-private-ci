@@ -1,0 +1,204 @@
+{
+  "adoption_authorized": false,
+  "all_topology_execution_absent_claim": false,
+  "benefit_proven": false,
+  "change_scope": {
+    "all_changed_source_files_are_python": true,
+    "changed_source_hashes_still_match_formatted_freeze": true,
+    "existing_rust_primitives_are_not_newly_implemented_or_exercised_by_these_18_python_files": true,
+    "format_receipt_sha256": "a124ea5434d5827c1eebf759243f0012695ef5d9661bbc82a16aba9b3ba070c8",
+    "frozen_changed_source_files": 18,
+    "paths": [
+      "scripts/ndu_real_runtime/_causal_checks.py",
+      "scripts/ndu_real_runtime/causal_ace.py",
+      "scripts/ndu_real_runtime/causal_analysis.py",
+      "scripts/ndu_real_runtime/causal_b.py",
+      "scripts/ndu_real_runtime/causal_b_contract.py",
+      "scripts/ndu_real_runtime/causal_composition.py",
+      "scripts/ndu_real_runtime/causal_improver.py",
+      "scripts/ndu_real_runtime/causal_protocol.py",
+      "scripts/ndu_real_runtime/causal_topology.py",
+      "scripts/ndu_real_runtime/fit_loop.py",
+      "scripts/ndu_real_runtime/matrix.py",
+      "scripts/ndu_real_runtime/pipeline.py",
+      "scripts/ndu_real_runtime/test_causal_ace.py",
+      "scripts/ndu_real_runtime/test_causal_b.py",
+      "scripts/ndu_real_runtime/test_causal_protocol.py",
+      "scripts/ndu_real_runtime/test_causal_topology.py",
+      "scripts/ndu_real_runtime/training.py",
+      "scripts/ndu_real_runtime/training_grid.py"
+    ],
+    "rust_topology_engine_modified_in_this_change": false
+  },
+  "fixture_tests_observed": {
+    "count": 6,
+    "engineering_evidence_only": true,
+    "original_job_id": "1a1ba880fd8-12894-1b64",
+    "suite_skipped": 0,
+    "suite_tests": 79,
+    "test_log_sha256": "28ac606014f3ac60183ce5f0538c367114c2c52ee9125de3d9195f8ac25d1a54"
+  },
+  "matched_D_causal_runner_found_in_audited_scope": false,
+  "minimal_next_implementation": [
+    "Reuse HeptaRuntime apply/recovery and TaskFlow/circuit primitives inside an isolated prospective experimental adapter with a real original owner and legitimately issued authority.",
+    "Bind a single frozen adaptive scheduler and common recovery/resource/tuning contracts to fixed and dynamic arms; implement all split/merge/rewire successor executions.",
+    "Emit original graph/state/message/next-task/recovery artifacts and complete organization cost events, then authenticate the owner receipt independently.",
+    "Use the existing validator to check those artifacts; only after independent matched repeats and blinded quality/cost evaluation assess whether dynamic topology earns its overhead."
+  ],
+  "observed_at": "2026-11-08T10:12:09.274474+00:00",
+  "read_source_files": [
+    {
+      "bytes": 43769,
+      "finding": "Public topology_snapshot/apply_governed_topology/recover_governed_topology APIs exist.",
+      "path": "codex-rs/hepta-runtime/src/lib.rs",
+      "sha256": "6a031142cf4941b3088a0fd120b44e959211fdfd382878bf683cea2254f8eef5"
+    },
+    {
+      "bytes": 15726,
+      "finding": "Existing live owner validates the transition, consumes external final-use authority, invokes generation replacement/recovery with a migration owner, then switches its route.",
+      "path": "codex-rs/hepta-runtime/src/organs.rs",
+      "sha256": "3ebb46cc935be69754e33fdab83f237cb51fda7944d2a167c54c314453efb68b"
+    },
+    {
+      "bytes": 13456,
+      "finding": "Typed original/successor graph bindings and RuntimeTopologyMigrationOwnerV1 exist; external authority and a prepared successor host are required.",
+      "path": "codex-rs/hepta-runtime/src/topology_execution.rs",
+      "sha256": "eb8c18fa349eecdc8fc7c0eefa1b05a4eb03124f5197f88b88fdc14239116815"
+    },
+    {
+      "bytes": 21494,
+      "finding": "Governed proposal/registry anchor host is durable and explicitly does not apply topology.",
+      "path": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
+      "sha256": "48e3b0da87d3e3d72c12aa5474055186efea35edece7900740afbb426899bd57"
+    },
+    {
+      "bytes": 21819,
+      "finding": "Authenticated proposal composition binds separate evidence roles; it does not itself apply topology.",
+      "path": "codex-rs/hepta-intelligence/src/topology_product.rs",
+      "sha256": "60382822617b90470cb1ea72d0c06a613d56fa15f2c1f605504054cd7fec577c"
+    },
+    {
+      "bytes": 6206,
+      "finding": "Authenticated canary observations exist; authentication does not apply topology or grant activation authority.",
+      "path": "codex-rs/hepta-intelligence/src/topology_canary_product.rs",
+      "sha256": "78eb04393667679f938f2c3cbd599a6f6ec4cf61f077d303d07aea4a307501fb"
+    },
+    {
+      "bytes": 23328,
+      "finding": "Bounded typed Split/Merge/Rewire proposal kinds exist; this module only proposes candidates.",
+      "path": "codex-rs/hepta-plasticity/src/topology_v2.rs",
+      "sha256": "66ec4fdebb11ece487a8c45038ba3a5055a2bb86162894c221f3e61869be5006"
+    },
+    {
+      "bytes": 20802,
+      "finding": "Versioned circuit candidates compile to existing TaskFlow ownership and recovery; this is a reusable primitive, not a D causal comparison runner.",
+      "path": "codex-rs/hepta-automation/src/neural_circuit.rs",
+      "sha256": "492e2b0b5f42dd6872d0a41fda63d0dbd5492884b8741972298eac096f0b5f9d"
+    },
+    {
+      "bytes": 16563,
+      "finding": "Validates exact graph/state/trace/cost/recovery/owner evidence and matched fixed/dynamic pairs; never executes graph mutations or authorizes adoption.",
+      "path": "scripts/ndu_real_runtime/causal_topology.py",
+      "sha256": "43bfaa9357871dcf3c79ad823e6ec4922244ade43adec767eea275817d0ce092"
+    },
+    {
+      "bytes": 11469,
+      "finding": "Six generated-fixture evidence-contract tests, including forged owner, stale generation, unconsumed edge, migration/recovery, unknown costs and asymmetry rejection.",
+      "path": "scripts/ndu_real_runtime/test_causal_topology.py",
+      "sha256": "82d2a2f4b6296ae82a620ada644d13ae1956a5991354bbd888e48791dd064cdf"
+    },
+    {
+      "bytes": 10162,
+      "finding": "Prospective D arms and common matching/cost requirements; declaring a protocol does not execute it.",
+      "path": "scripts/ndu_real_runtime/causal_protocol.py",
+      "sha256": "a450ca58bdb923cc7dd11ecf5ef08fbca55a975ad41e9475df8b0ce8327df8a2"
+    }
+  ],
+  "real_D_experiment_executed_this_round": false,
+  "real_D_original_job_ids": [],
+  "real_D_owner_receipts": [],
+  "real_runtime_apply_and_recovery_primitives_present": true,
+  "required_common_cost_stages": [
+    "preparation",
+    "collection",
+    "training",
+    "search",
+    "controller",
+    "messages",
+    "reencoding",
+    "graph_compile",
+    "evaluation",
+    "migration",
+    "recovery",
+    "io"
+  ],
+  "required_original_artifacts": [
+    "before_graph",
+    "after_graph",
+    "before_state",
+    "after_state",
+    "migration",
+    "trace",
+    "recovery",
+    "costs",
+    "owner"
+  ],
+  "rust_runtime_executed_or_compiled_by_this_audit": false,
+  "schema": "hepta.cell-causal.d-capability-audit.v1",
+  "scientific_admission": "HOLD",
+  "search_observations": [
+    "Matched D arm names and topology-owner receipt schema were found in the new protocol, validator, fixture tests and qualification/source manifests; no D runner was found in this bounded search.",
+    "Runtime apply/recovery entrypoints and migration-owner interfaces are present. Their existence is not evidence that the matched D experiment was run.",
+    "The native job ran 79 engineering tests and B train-only jobs. The six D tests are fixtures and do not constitute real graph execution or a benefit comparison."
+  ],
+  "search_scope": [
+    "scripts",
+    "qualification/cell-causal-abcde-20261108",
+    "codex-rs/hepta-runtime/src",
+    "codex-rs/hepta-agentd/src",
+    "codex-rs/hepta-plasticity/src/topology_v2.rs",
+    "codex-rs/hepta-intelligence/src/topology_product.rs",
+    "codex-rs/hepta-intelligence/src/topology_canary_product.rs",
+    "codex-rs/hepta-automation/src/neural_circuit.rs"
+  ],
+  "source_audit_only": true,
+  "source_identity": {
+    "baseline_commit": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+    "computed_code_commit": "1e9c2890fef92ea63dab472e1bdb0c444c9656b5",
+    "computed_code_tree": "20f0836afc9c790fee23ddd150817a6d11550598",
+    "source_closure_sha256": "30a8a23f848617e2aa17672d867d4c8086d51ec487d6a36095a15ed052fb273d"
+  },
+  "status": "BLOCKED_FOR_D_CAUSAL_EXPERIMENT",
+  "unmet_evidence": [
+    {
+      "missing": "One concrete runner binding the fixed graph with a well-tuned adaptive scheduler and split/merge/rewire successors to the existing original runtime owner, with equal recovery, capacity and tuning opportunities.",
+      "requirement": "matched original execution runner"
+    },
+    {
+      "missing": "Original before/after node and edge bytes for all three operations, generation identity, next-task dispatch of successor nodes and messages consuming new edges.",
+      "requirement": "actual graph mutation and next-task consumption"
+    },
+    {
+      "missing": "Before/after actual state bytes and owners, source/target values, explicit migration/reset policy and initializer pins from the real execution.",
+      "requirement": "persistent state ownership and migration/reset"
+    },
+    {
+      "missing": "Original failure-injection job and restored graph/state readback under the same recovery mechanism in both arms.",
+      "requirement": "concrete recovery"
+    },
+    {
+      "missing": "Externally trusted original-host observer receipt SHA binding the exact run, arm, comparison, installed graph and all evidence artifacts.",
+      "requirement": "independent original-owner evidence"
+    },
+    {
+      "missing": "Actual message/message-byte, encoder/duplicate-encoder, graph-search, compile, optimizer, migration-byte, evaluation and recovery counters with non-overlapping wall/CPU and explicit energy/provider accounting.",
+      "requirement": "organization and full-budget costs"
+    },
+    {
+      "missing": "Independent matched training repetitions, prospective selection and blinded quality/cost evaluation on the same tasks; fixture equality and graph manifests cannot establish benefit.",
+      "requirement": "causal benefit comparison"
+    }
+  ],
+  "validator_or_fixture_proves_dynamic_topology_benefit": false,
+  "validator_or_fixture_proves_real_D_execution": false
+}

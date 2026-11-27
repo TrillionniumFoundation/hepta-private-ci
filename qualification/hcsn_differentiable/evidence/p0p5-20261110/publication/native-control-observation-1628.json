@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-native-readonly-reconcile-observation-v1",
+  "request_started_utc": "2026-11-10 16:26:38 UTC",
+  "response_observed_utc": "2026-11-10 16:28:52 UTC",
+  "operation": "read existing campaign-v2-monitor/LATEST.json",
+  "path": "ssh://desktop/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-monitor/LATEST.json",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.view`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "connection_verified": false,
+  "new_training_state_observed": false,
+  "last_confirmed_native_progress_utc": "2026-11-10T14:59:52.514228+00:00",
+  "mutations_sent": [],
+  "c1_execution_status": "not_started",
+  "note": "Request changed from immediate tunnel_client_not_seen to MCP timeout; this alone is not restored connectivity. No later controller/upload receipt was retrieved."
+}

@@ -16,6 +16,7 @@ workspace = true
 [features]
 default = []
 qualification-legacy-write = []
+qualification-ack-only-recovery = []
 
 [dependencies]
 codex-hepta-intuition = { path = "../hepta-intuition" }
@@ -25,6 +26,9 @@ codex-hepta-types = { path = "../hepta-types" }
 ed25519-dalek = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs", "process"] }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }

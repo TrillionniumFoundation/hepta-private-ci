@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.p0.bounded-ci-retry-request.v1",
+  "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "run_id": 42951157619,
+  "original_job_id": 130295510605,
+  "requested_at_utc": "2026-11-11 03:38:05 UTC",
+  "reason": "One bounded retry after archived crates.io TLS unexpected EOF; original native testcase executions zero.",
+  "maximum_requests": 1,
+  "tool": "github_rerun_workflow_job",
+  "result": {
+    "success": true
+  },
+  "scope": "Only original failed daemon job after preserving attempt1 terminal metadata, artifact and full log. No source, dependency, TLS or assertion changes; successful Windows lane was not rerun.",
+  "actual_subsequent_job_id": 130304826142,
+  "actual_subsequent_attempt": 2,
+  "subsequent_status_at_initial_observation": "queued",
+  "initial_api_capture": "daemon-attempt2-initial-api.json"
+}

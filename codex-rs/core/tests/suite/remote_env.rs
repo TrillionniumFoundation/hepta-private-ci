@@ -833,10 +833,18 @@ async fn settings_update_does_not_retarget_active_turn_environment() -> Result<(
             },
         })
         .await?;
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
+    timeout(Duration::from_secs(10), async {
+        let turn_id = wait_for_event_match(&test.codex, |event| match event {
+            EventMsg::TurnComplete(event) => Some(event.turn_id.clone()),
+            _ => None,
+        })
+        .await;
+        if let Some(completion) = test.codex.pending_normal_turn_finish_completion(&turn_id) {
+            completion.await;
+        }
     })
-    .await;
+    .await
+    .context("the completed settings turn must finish within the original event budget")?;
     test.submit_turn("start the next turn").await?;
 
     let request_texts = response_mock
@@ -1013,10 +1021,22 @@ async fn deferred_executor_promotes_primary_environment_when_startup_completes()
 }
 
 async fn read_exec_server_json(websocket: &mut WebSocketStream<TcpStream>) -> Value {
+    read_exec_server_json_with_deadline(websocket, Some(Duration::from_secs(5))).await
+}
+
+async fn read_exec_server_json_with_deadline(
+    websocket: &mut WebSocketStream<TcpStream>,
+    frame_timeout: Option<Duration>,
+) -> Value {
     loop {
-        match timeout(Duration::from_secs(5), websocket.next())
-            .await
-            .expect("websocket read should not time out")
+        let next_frame = websocket.next();
+        let frame = match frame_timeout {
+            Some(deadline) => timeout(deadline, next_frame)
+                .await
+                .expect("websocket read should not time out"),
+            None => next_frame.await,
+        };
+        match frame
             .expect("websocket should stay open")
             .expect("websocket frame should read")
         {
@@ -1038,11 +1058,12 @@ async fn accept_initialized_exec_server(listener: TcpListener) -> WebSocketStrea
 
     let initialize = read_exec_server_json(&mut websocket).await;
     assert_eq!(initialize["method"], "initialize");
+    assert_eq!(initialize["params"]["processExitObservation"], true);
     websocket
         .send(Message::Text(
             json!({
                 "id": initialize["id"],
-                "result": { "sessionId": "test-session" }
+                "result": { "sessionId": "test-session", "processExitObservation": true }
             })
             .to_string()
             .into(),
@@ -1089,7 +1110,9 @@ async fn serve_environment_with_agents_md(
     let mut agents_md_reads = 0;
     loop {
         let request = tokio::select! {
-            request = read_exec_server_json(&mut websocket) => request,
+            // This fixture serves a long-lived connection. Only the caller
+            // decides when it has finished; waiting idle is not an RPC timeout.
+            request = read_exec_server_json_with_deadline(&mut websocket, None) => request,
             _ = &mut shutdown => return agents_md_reads,
         };
         let is_agents_md = request["params"]["path"]
@@ -1753,7 +1776,7 @@ async fn ready_before_selection_resolves_resumed_thread_capability_root_after_wa
         .await;
 
     let runtime_paths = ExecServerRuntimePaths::new(
-        std::env::current_exe()?,
+        core_test_support::test_binary_helper_exe()?,
         /*codex_linux_sandbox_exe*/ None,
     )?;
     let remote_config = RemoteEnvironmentConfig::new(

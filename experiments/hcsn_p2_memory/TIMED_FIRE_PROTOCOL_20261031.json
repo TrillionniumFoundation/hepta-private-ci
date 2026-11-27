@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn-p2-physical-timestamp-migration-confirm-v1",
+  "date": "2026-10-31",
+  "parent_head": "0898cac14d8e8edf575a667a849d92e6264fb48d",
+  "parent_pr": 4501,
+  "scope": "RESEARCH_ONLY / DENY_ALL / NO_GO",
+  "change": "For each actual Brownian FIRE timestamp, decay content to event time and apply one event operator, then decay to observation and write, instead of per-observation total-count aggregation.",
+  "physical_clock_source": "renewal_spike_sampler.py Git blob df65b3b2a167e544b45e0f480a57fbe7a09d725b",
+  "frozen_model_source": "event_content.py Git blob d180a30b790f516406ff36891e2c5350f8b81973",
+  "expected_weight_sha256": {
+    "copy": "e92c7f7d5efd75ba4bd7c3511da02bc157f13af127e48cd16ba72dea24dfa895",
+    "mqar4": "bd8cf2b234e749b0320d2372a27a1c2dab1b7a2692b9ba3897e8e28966ec1a62"
+  },
+  "training": "Use existing P2 aggregate-count-trained frozen seed0 weights (400 updates, train_n=test_n=256, hidden 32); regenerate deterministic via train_pilot and require weight digest match. NO retraining for the new timed operator.",
+  "paired_data": "Identical examples, timestamps, FIRE stream seed/identity and frozen model for both arms. Copy and MQAR4 tasks, sequence lengths 16 ID and 32 OOD; data seeds 200 and 300. 256 actors per task/length; queries: 256 Copy or 1024 MQAR4 per slice.",
+  "endpoints": [
+    "Correct/total binary queried predictions",
+    "Per-actor paired accuracy delta (timed minus aggregate)",
+    "Number of changed predictions",
+    "Process CPU and wall seconds, both include FIRE sampling/recurrent content/head but exclude model loading/training"
+  ],
+  "primary_functional_gates": [
+    "6 focused integrity/timestamp/gradient/cold-restore tests",
+    "All sampled FIRE timestamps identical across arms",
+    "Exact split/whole and new-process model-bound snapshot equality",
+    "Invalid event/timestamps/checkpoints fail with no in-memory state change"
+  ],
+  "scientific_gate": "P2 and P0-P5 remain OPEN. This is a frozen-weight model-migration stress test, not matched-budget retraining or evidence of improved learning quality.",
+  "explicit_restrictions": [
+    "No training advantage claim from frozen aggregate-trained weights",
+    "CPU float32 content only; no CUDA/Rust/physical Joules",
+    "No host durable journal or authenticated checkpoint",
+    "No hidden materialization of historical failures"
+  ],
+  "production_activation": false,
+  "all_scientific_blockers_closed": false
+}

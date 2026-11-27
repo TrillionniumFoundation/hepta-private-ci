@@ -1,0 +1,88 @@
+{
+  "archive": {
+    "bytes": 1188896,
+    "git_blob": "0fb8e1e98ca22a49d0614172f8b99a75c0b85c47",
+    "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz",
+    "regular_members": 76,
+    "sha256": "2051f3661c4db6dd127071085d31edfe7452f2003fd02b99bb4a6e60bf858ec1"
+  },
+  "offline_result": {
+    "cargo_deny_full_raw_gap_retained": true,
+    "complete_original_job_raw_logs": 17,
+    "complete_source_tree_entries": 14053,
+    "eleven_bazel_artifacts_metadata_only": true,
+    "job_counts": {
+      "cancelled": 4,
+      "failure": 9,
+      "skipped": 4,
+      "success": 20
+    },
+    "mac_complete_raw_present": true,
+    "mac_core_all_displayed_attempt_bodies": 7,
+    "mac_core_all_reported_failed_attempts": 16,
+    "mac_target_outcomes": {
+      "FAILED": 4,
+      "FLAKY": 3,
+      "PASSED": 402,
+      "SKIPPED": 172,
+      "TIMEOUT": 3
+    },
+    "no_native_or_model_execution": true,
+    "original_attempt": 1,
+    "original_jobs": 37,
+    "original_run_id": 43048568477,
+    "outer_regular_members": 76,
+    "status": "PASS",
+    "test_job_records_replayed": 7
+  },
+  "parts": [
+    {
+      "bytes": 450000,
+      "git_blob": "960e75abca2e6b1efcfed2ee15b46dff9a5b32b7",
+      "offset": 0,
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-01",
+      "sha256": "e53446930b120d309622835fb4eea571e05d627c7e64df604c07b1fd6deda0c0"
+    },
+    {
+      "bytes": 450000,
+      "git_blob": "268259c31ef8ef13e03031213b5034fe107f17fb",
+      "offset": 450000,
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-02",
+      "sha256": "adb76a492bad50050d7e9ead50416a42238925c92aaa7fe93da6b712302b0d73"
+    },
+    {
+      "bytes": 288896,
+      "git_blob": "6fc30219ea21a6192d82184e274847c667250fec",
+      "offset": 900000,
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-03",
+      "sha256": "404f8b7315ac8eb1cdb5c9fdf3b38f53776fe73a3481fde92ffb305f3ade96df"
+    }
+  ],
+  "schema": "mem-c895-original-blocking-archive-v1",
+  "texts": [
+    {
+      "bytes": 17357,
+      "git_blob": "a1fa0e7c08def8b9bcab98b0dfa4b27e4b2e042b",
+      "path": "FILE_MANIFEST.json",
+      "sha256": "d23235c039d759d5a729f9c5ac9687146fc55465b5f96d1c1ef0eeb7fbac5d22"
+    },
+    {
+      "bytes": 25384,
+      "git_blob": "5a32193771276259cdc71da092af73479c1da1b0",
+      "path": "QUALIFICATION_SUMMARY.json",
+      "sha256": "d5531100ca60d1cb9eb72eddcfd68ef99ba7515c8f9279dc93f0080c3208c1d0"
+    },
+    {
+      "bytes": 6909,
+      "git_blob": "9f9743f8e19c0fcce759ac9743bec023e05075e7",
+      "path": "verify_package.py",
+      "sha256": "5018e493780424d048ea6cf4215edac75d892e8fbeb3554a88537b4827647eef"
+    },
+    {
+      "bytes": 6582,
+      "git_blob": "27e0fcfb00d6a9ede672a0307a93abd24b167899",
+      "path": "README.md",
+      "sha256": "a78228514781a1676c6e6540190bdb56d65fb347655ddf7509420210eae59712"
+    }
+  ]
+}

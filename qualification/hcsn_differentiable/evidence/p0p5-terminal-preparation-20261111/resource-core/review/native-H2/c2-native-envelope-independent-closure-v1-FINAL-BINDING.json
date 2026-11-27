@@ -1,0 +1,31 @@
+{
+  "schema": "independent-h2-final-resource-core-byte-rebind-v1",
+  "status": "source_rebind_passed_not_executed",
+  "program_manifest": {
+    "bytes": 3861,
+    "sha256": "f2d1ce683591a9b8575aab2d0981bf67b9e465bf9686a8da2e87a2246a0ea70e"
+  },
+  "program_zip": {
+    "bytes": 70198,
+    "sha256": "5950d877802609331c3626ce6bf149eb579835112338782b821146ec6cc94678"
+  },
+  "checked_members": 26,
+  "all_python_sources_equal_H2_reviewed_snapshot": true,
+  "new_analysis_program": "v2; not replacement byte identity for missing v1",
+  "H2_closure": {
+    "path": "/workspace/scratch/c385a7439f8e/c2-native-envelope-independent-closure-v1/cases/CLOSURE.json",
+    "bytes": 6716,
+    "sha256": "fe12424d3160e96fb4df0ac04df3b01b75b5026f5c4793f1883be8b0d79d42bd"
+  },
+  "closure_capsule": {
+    "path": "/workspace/scratch/c385a7439f8e/c2-native-envelope-independent-closure-v1.zip",
+    "bytes": 106638,
+    "sha256": "53efc16c711a1097353ab3f2013d0ff921ca501e762e0598135d742e67b429f5",
+    "armor_git_blob": "dfcd7d07f34bd2affdff12314ce4ea76c98eba7a",
+    "armor_exact_readback": true
+  },
+  "owner_final_52_tests": "Owner-reported; not rerun by this independent review. This receipt only verifies bytes/ZIP and rebinds the independently executed four-case closure.",
+  "no_actual_C2_or_model_or_E_access": true,
+  "analysis_execution_authorized": false,
+  "preparation_scan_full_CPU_wall": "Not separately metered; not a zero-cost assertion."
+}

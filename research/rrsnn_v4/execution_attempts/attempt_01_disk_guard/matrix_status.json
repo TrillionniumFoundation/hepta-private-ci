@@ -1,0 +1,549 @@
+{
+  "schema": "rr-v4-matrix-status-1",
+  "all_completed": false,
+  "fixed_jobs": 70,
+  "expected_receipts": 80,
+  "completed": [],
+  "errors": [
+    {
+      "job": [
+        "rr_full",
+        211
+      ],
+      "error": "disk guard: 196874240 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_full",
+        101
+      ],
+      "error": "disk guard: 196870144 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_full",
+        401
+      ],
+      "error": "disk guard: 196866048 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_full",
+        307
+      ],
+      "error": "disk guard: 196861952 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_full",
+        503
+      ],
+      "error": "disk guard: 196861952 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "fp_no_rollover",
+        101
+      ],
+      "error": "disk guard: 196845568 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "fp_no_rollover",
+        211
+      ],
+      "error": "disk guard: 196841472 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "fp_no_rollover",
+        401
+      ],
+      "error": "disk guard: 196833280 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "fp_no_rollover",
+        307
+      ],
+      "error": "disk guard: 196833280 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "fp_no_rollover",
+        503
+      ],
+      "error": "disk guard: 196825088 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_mean_maturity",
+        211
+      ],
+      "error": "disk guard: 196820992 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_mean_maturity",
+        101
+      ],
+      "error": "disk guard: 196816896 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_mean_maturity",
+        307
+      ],
+      "error": "disk guard: 196808704 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_mean_maturity",
+        503
+      ],
+      "error": "disk guard: 196804608 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_mean_maturity",
+        401
+      ],
+      "error": "disk guard: 196800512 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_shuffle_maturity",
+        101
+      ],
+      "error": "disk guard: 196796416 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_shuffle_maturity",
+        211
+      ],
+      "error": "disk guard: 196788224 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_shuffle_maturity",
+        307
+      ],
+      "error": "disk guard: 196784128 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_shuffle_maturity",
+        401
+      ],
+      "error": "disk guard: 196780032 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_shuffle_maturity",
+        503
+      ],
+      "error": "disk guard: 196775936 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_fixed_boundary",
+        211
+      ],
+      "error": "disk guard: 196767744 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_fixed_boundary",
+        101
+      ],
+      "error": "disk guard: 196767744 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_fixed_boundary",
+        307
+      ],
+      "error": "disk guard: 196763648 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_fixed_boundary",
+        503
+      ],
+      "error": "disk guard: 196759552 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_fixed_boundary",
+        401
+      ],
+      "error": "disk guard: 196759552 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_frozen_resource",
+        211
+      ],
+      "error": "disk guard: 196743168 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_frozen_resource",
+        101
+      ],
+      "error": "disk guard: 196743168 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_frozen_resource",
+        401
+      ],
+      "error": "disk guard: 196734976 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_frozen_resource",
+        307
+      ],
+      "error": "disk guard: 196734976 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "rr_frozen_resource",
+        503
+      ],
+      "error": "disk guard: 196730880 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "lif",
+        101
+      ],
+      "error": "disk guard: 196718592 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "lif",
+        211
+      ],
+      "error": "disk guard: 196714496 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "lif",
+        307
+      ],
+      "error": "disk guard: 196714496 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "lif",
+        401
+      ],
+      "error": "disk guard: 196710400 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "lif",
+        503
+      ],
+      "error": "disk guard: 196702208 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "alif",
+        211
+      ],
+      "error": "disk guard: 196698112 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "alif",
+        101
+      ],
+      "error": "disk guard: 196698112 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "alif",
+        401
+      ],
+      "error": "disk guard: 196689920 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "alif",
+        503
+      ],
+      "error": "disk guard: 196685824 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "alif",
+        307
+      ],
+      "error": "disk guard: 196681728 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "resource_lif",
+        101
+      ],
+      "error": "disk guard: 196673536 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "resource_lif",
+        211
+      ],
+      "error": "disk guard: 196669440 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "resource_lif",
+        401
+      ],
+      "error": "disk guard: 196665344 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "resource_lif",
+        307
+      ],
+      "error": "disk guard: 196665344 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "resource_lif",
+        503
+      ],
+      "error": "disk guard: 196653056 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn",
+        101
+      ],
+      "error": "disk guard: 196648960 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn",
+        211
+      ],
+      "error": "disk guard: 196644864 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn",
+        307
+      ],
+      "error": "disk guard: 196640768 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn",
+        503
+      ],
+      "error": "disk guard: 196636672 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn",
+        401
+      ],
+      "error": "disk guard: 196636672 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_state",
+        211
+      ],
+      "error": "disk guard: 196628480 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_state",
+        307
+      ],
+      "error": "disk guard: 196620288 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_state",
+        101
+      ],
+      "error": "disk guard: 196612096 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_state",
+        401
+      ],
+      "error": "disk guard: 196608000 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_state",
+        503
+      ],
+      "error": "disk guard: 196608000 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_upper_state",
+        211
+      ],
+      "error": "disk guard: 196599808 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_upper_state",
+        101
+      ],
+      "error": "disk guard: 196591616 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_upper_state",
+        307
+      ],
+      "error": "disk guard: 196587520 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_upper_state",
+        401
+      ],
+      "error": "disk guard: 196587520 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_upper_state",
+        503
+      ],
+      "error": "disk guard: 196583424 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "alif_analog",
+        211
+      ],
+      "error": "disk guard: 196575232 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "alif_analog",
+        307
+      ],
+      "error": "disk guard: 196571136 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "alif_analog",
+        401
+      ],
+      "error": "disk guard: 196567040 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "alif_analog",
+        101
+      ],
+      "error": "disk guard: 196562944 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "alif_analog",
+        503
+      ],
+      "error": "disk guard: 196562944 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_analog",
+        101
+      ],
+      "error": "disk guard: 196546560 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_analog",
+        307
+      ],
+      "error": "disk guard: 196546560 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_analog",
+        211
+      ],
+      "error": "disk guard: 196546560 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_analog",
+        401
+      ],
+      "error": "disk guard: 196534272 bytes free, need 209715200; no files deleted"
+    },
+    {
+      "job": [
+        "ctrnn_analog",
+        503
+      ],
+      "error": "disk guard: 196534272 bytes free, need 209715200; no files deleted"
+    }
+  ],
+  "workers": 2,
+  "cpus": [
+    0,
+    1
+  ],
+  "elapsed_seconds": 0.05845088999194559,
+  "protocol_sha256": "e550dfca79fdb1b6bca551c5f1e6c3f8e4bd796fda310b6db2c48eaeabbaa09d",
+  "resources_before": {
+    "disk_free_bytes": 196890624,
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 1900605,
+      "oom": 1,
+      "oom_kill": 1,
+      "oom_group_kill": 0
+    },
+    "memory.current": 6527266816,
+    "memory.max": 8589934592,
+    "memory.stat": {
+      "anon": 251162624,
+      "file": 5054058496,
+      "pgscan": 140984640,
+      "pgsteal": 91077085,
+      "pgfault": 2182017328,
+      "pgmajfault": 2829381
+    }
+  },
+  "resources_after": {
+    "disk_free_bytes": 196526080,
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 1900605,
+      "oom": 1,
+      "oom_kill": 1,
+      "oom_group_kill": 0
+    },
+    "memory.current": 6528974848,
+    "memory.max": 8589934592,
+    "memory.stat": {
+      "anon": 251445248,
+      "file": 5059416064,
+      "pgscan": 140984640,
+      "pgsteal": 91077085,
+      "pgfault": 2182018368,
+      "pgmajfault": 2829381
+    }
+  },
+  "holdout_opened": false
+}

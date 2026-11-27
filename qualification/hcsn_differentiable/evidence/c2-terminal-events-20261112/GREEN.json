@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qualification/hcsn_differentiable/c2_successor_v1",
+    "-p",
+    "test_terminal*.py",
+    "-v"
+  ],
+  "returncode": 0,
+  "wall_seconds": 0.46227436399999533,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "controller_sha256": "72b3b188a6650e206190178de75d4bab4fe0d12b08ec5d3f8ca018a52d073e1c",
+  "controller_git_blob": "b68562259694f35056087c93f8b0e63fd2024e57",
+  "tests": 19,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "scope": "synthetic actual-source AST admission only; no model loads or training"
+}

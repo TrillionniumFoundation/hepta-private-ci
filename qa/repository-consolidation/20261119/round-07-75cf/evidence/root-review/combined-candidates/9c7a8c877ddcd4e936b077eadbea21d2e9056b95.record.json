@@ -1,0 +1,26 @@
+{
+  "tip": "9c7a8c877ddcd4e936b077eadbea21d2e9056b95",
+  "prior": "2956211395d8f3d84e601d51076a1497f44dc153",
+  "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "approved_tree": "d009988b7f02e089c67f908857ed9ee2574cb12f",
+  "fixed_automatic_tree": "c092c447caa6ad8e44c52339bf5a6f7a3f84be27",
+  "actual_automatic_tree": "481c9b07f6cdab7b25be9e11aa349e0febb1d513",
+  "fixed_exit": 1,
+  "actual_exit": 1,
+  "actual_conflicts": [
+    ".github/workflows/rust-ci-full.yml",
+    "codex-rs/hepta-fleet/src/authority_port.rs"
+  ],
+  "resolution_paths": [
+    ".github/workflows/rust-ci-full.yml",
+    "codex-rs/hepta-fleet/src/authority_port.rs"
+  ],
+  "changes_from_review_base": [
+    ".github/workflows/rust-ci-full-nextest-platform.yml",
+    ".github/workflows/rust-ci-full.yml"
+  ],
+  "resolved_tree": "d009988b7f02e089c67f908857ed9ee2574cb12f",
+  "expected_composed_tree": "d009988b7f02e089c67f908857ed9ee2574cb12f",
+  "commit": "da03f99788223198ba65ee8d05e92827968174ed",
+  "reason": "Use the install action supported tool@version input for sccache and nextest. Preserve current cargo-chef 0.1.78 and the stronger fleet admission assertion. Pinned action inputs and YAML have been checked."
+}

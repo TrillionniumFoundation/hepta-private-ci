@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.candidate.v18",
+  "parent": "903b6fbae86acff2db2ab0422b9852421d938032",
+  "parent_tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f",
+  "status": "unqualified-diagnostic-candidate",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c10e077d4dc36f1d6cebf829f24b68164def548a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01ea7514ea9b743dcd7b9729cf1c8832a33ce28c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a01cf875af9ff78945e13d73d8c5e519aa9168dc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "69f1c5256c39c3831fa0ade24eb59f35a413ebd7"
+    }
+  ],
+  "scope": "Five existing modules retain the original checks and errors while adding test-build failure observations. This is not a behavior repair or acceptance.",
+  "registry": {
+    "sections": {
+      "boundary": 492,
+      "protected_file": 358
+    },
+    "git_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+    "bytes": 649761,
+    "sha256": "ba5227700100722f935b710674225c0880a6a771dec418ad6a72c62100065e72",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "checkers_modified": false
+  },
+  "registry_changed": false,
+  "root_parent_count": 17,
+  "root_roster_changed": false,
+  "original_failure": {
+    "schema": "hepta.original-root17-failure.v2",
+    "source": "903b6fbae86acff2db2ab0422b9852421d938032",
+    "tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f",
+    "status": "root-component-diagnostic-failed",
+    "actual_uid": 0,
+    "executed": 17,
+    "passed": 15,
+    "failed": 2,
+    "skipped": 0,
+    "retries": 0,
+    "started_at": "2026-11-12T01:12:15.508835+00:00",
+    "finished_at": "2026-11-12T01:12:50.843808+00:00",
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "source_clean_before_after": true,
+    "evidence": [
+      {
+        "name": "root.counts.json",
+        "blob": "567ce64cba4a66a7e4f8c9d9d2875f8dbe94c3c8",
+        "bytes": 98,
+        "sha256": "3aa7c5c63701c9c42c2ead17ac64a706c7646b96c6133cdc3c46a58fbeb39261"
+      },
+      {
+        "name": "root.execution.json",
+        "blob": "b5e89ca3bf9889569a9b4e34539234131b219152",
+        "bytes": 3968,
+        "sha256": "af4a92c731c3b961d7ccabc023cc75263c0a1a8beb2803046952d0313702dd7c"
+      },
+      {
+        "name": "root.junit.xml",
+        "blob": "4641d85d6d54c41c3b31621d545937b2985226f0",
+        "bytes": 9203,
+        "sha256": "9cfad38d30ffcc18759c9cc3c5ace21361c727312d178133f6aa4d68950f2274"
+      },
+      {
+        "name": "root.uid.json",
+        "blob": "266757e59e0faa35f7a0e7fbbe9b0f5d0287921e",
+        "bytes": 47,
+        "sha256": "36aad66676d9ef95e33be889a498b63c7cc042e436967c6a40562c1cf671f6f1"
+      },
+      {
+        "name": "root.junit.summary.json",
+        "blob": "c42647e5af87696cf76662dcd26e13dd61e0c80d",
+        "bytes": 3331,
+        "sha256": "d0fdf50e0de3928fdf6b0a58ed63fe7490a6dc57cfdf002b300f92820285b3fa"
+      },
+      {
+        "name": "final-source-identity.json",
+        "blob": "997a3bbeb0e1a2a0bf437c01d59dd806acb6aa33",
+        "bytes": 127,
+        "sha256": "72ddd20360227e181c9091ce7ec17ff919eb2efd9cfb6e8a1d066ac8b408b17e"
+      },
+      {
+        "name": "root.execution.json.957f373ac3e24b74af635da321147f65.log",
+        "blob": "390186ba594322aaa045c42c9aed16cb937d19cc",
+        "bytes": 46878,
+        "sha256": "009e76b5d35fe2aa4ce06c35218fbd8f33be329c7ac07a2a9cca2146bf4bc8a9"
+      }
+    ],
+    "first_observed_errors": {
+      "initial": "Original five-lane inputs connected; original Feature CURRENT publish returned Invalid(Unavailable).",
+      "publication": "Original inputs connected and Learning ready; connect original CURRENT purpose returned root writer observation unavailable or fenced.",
+      "parent": "Later PeerDenied can also report original owner process exit; it does not establish the first failure was peer identity."
+    },
+    "diagnosis": "Not uniquely established. Test-only failure observations are added without refresh, warmup, retry, extra clock sampling, altered window or weakened checks.",
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_ordinary_consumer": false,
+    "cold_process_restart": false,
+    "full_qualification": false
+  },
+  "no_new_refresh_or_clock_sample": true,
+  "no_wait_or_retry_added": true,
+  "no_policy_or_timeout_change": true,
+  "no_qualification_inheritance": true,
+  "no_main_merge": true,
+  "remaining_code_and_protocol_gaps": [
+    "Original in-memory retained A cannot survive the actual retirement required for a new Starting incarnation; no authorized reconstruction/rebinding path is assembled.",
+    "Current B contract still requires actual selected-parent provenance, equal cumulative budgets and complete authenticated costs.",
+    "No ordinary product caller connects the late-writer adapter.",
+    "Successor durable source still defaults to NonLearning; ordinary C-to-A experience feedback is not connected."
+  ],
+  "business_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "daemon_and_root_os_restart_accepted": false
+  },
+  "evidence_transfer": {
+    "v5_archive_retained_at_origin": true,
+    "git_push_attempts": 1,
+    "git_push_result": "failed: no host GitHub username credential; remote ref absent after failure",
+    "host_credentials_changed": false,
+    "original_failed_publish_records_retained": true
+  }
+}

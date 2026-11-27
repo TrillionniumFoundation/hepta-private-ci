@@ -1,0 +1,39 @@
+{
+  "formatter": "ruff 0.15.13",
+  "format_exit": 0,
+  "check_exit": 0,
+  "stdout": "5 files reformatted\n",
+  "check_stdout": "5 files already formatted\n",
+  "files": {
+    "scripts/hepta_cell_joint_config.py": {
+      "ast_unchanged": true,
+      "before_sha256": "48f016c10bbf4301f0dc6357f40eca0628bdbad711c36c109cdd0d43c65b3e12",
+      "after_sha256": "3abac6ed6d2b373e50f09e6212cd86040cea50b46833ca5e3f4f4a18b5c9cc47",
+      "diff_lines": 80
+    },
+    "scripts/hepta_ci_chef.py": {
+      "ast_unchanged": true,
+      "before_sha256": "82e2dced3f853f0b9c205bac9ee8f61c02d02df5015e33baaf7ace6e96f5048e",
+      "after_sha256": "31a1e1bf5b7ab15fc020279c9f01707372258cc416d08c71cd7c7011e1abc513",
+      "diff_lines": 108
+    },
+    "scripts/test_hepta_cell_joint_config.py": {
+      "ast_unchanged": true,
+      "before_sha256": "cf2efcf3487fbe5b99790dfef3068369af557d99aaba5baf045b40b30a2134b5",
+      "after_sha256": "39dced58d8ff3bdd7ec768a1998e8533703c1d690f4799f1e14a1748839327f4",
+      "diff_lines": 102
+    },
+    "scripts/test_hepta_ci_chef.py": {
+      "ast_unchanged": true,
+      "before_sha256": "77734693dc31e308b0195e6297fc9b0a39c6a52a3c929969efe02c807474aecf",
+      "after_sha256": "9fe162aba9d253789b1ac463f0307f2ed75e62ce05a92c0eee236185f5e9b02d",
+      "diff_lines": 124
+    },
+    "scripts/test_hepta_module_status_facts.py": {
+      "ast_unchanged": true,
+      "before_sha256": "121c3d0f61d1a33e722d4526e7a6b5ba356afe499451b24b9e4ed366464f81c7",
+      "after_sha256": "8a57ebd7d2a6a89da95936e099b10e0d9ce1d7dc3db753a096cec87d3ad1e68c",
+      "diff_lines": 13
+    }
+  }
+}

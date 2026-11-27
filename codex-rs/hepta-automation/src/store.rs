@@ -1273,7 +1273,13 @@ fn unavailable(_error: impl std::fmt::Display) -> AutomationError {
 
 fn create_private_directory(path: &Path) -> Result<(), AutomationError> {
     fs::create_dir_all(path).map_err(unavailable)?;
-    if path.canonicalize().map_err(unavailable)? != path {
+    let canonical = path.canonicalize().map_err(unavailable)?;
+    #[cfg(not(windows))]
+    if canonical != path {
+        return Err(AutomationError::Invalid);
+    }
+    #[cfg(windows)]
+    if !windows_canonical_root_without_reparse(&canonical, path).map_err(unavailable)? {
         return Err(AutomationError::Invalid);
     }
     #[cfg(unix)]
@@ -1281,6 +1287,68 @@ fn create_private_directory(path: &Path) -> Result<(), AutomationError> {
         use std::os::unix::fs::PermissionsExt;
         fs::set_permissions(path, fs::Permissions::from_mode(0o700)).map_err(unavailable)?;
     }
+    Ok(())
+}
+
+// std::fs::canonicalize uses a verbatim device prefix on Windows even when
+// the caller supplied the exact same ordinary drive or UNC root. That prefix
+// alone is not a redirect; symbolic links and junctions still fail closed.
+#[cfg(windows)]
+fn windows_canonical_root_without_reparse(
+    canonical: &Path,
+    requested: &Path,
+) -> std::io::Result<bool> {
+    use std::os::windows::fs::MetadataExt;
+    use std::path::Component;
+    use std::path::Prefix;
+
+    let mut resolved = canonical.components();
+    let mut supplied = requested.components();
+    let (Some(Component::Prefix(left)), Some(Component::Prefix(right))) =
+        (resolved.next(), supplied.next())
+    else {
+        return Ok(false);
+    };
+    let same_prefix = match (left.kind(), right.kind()) {
+        (
+            Prefix::Disk(left) | Prefix::VerbatimDisk(left),
+            Prefix::Disk(right) | Prefix::VerbatimDisk(right),
+        ) => left == right,
+        (
+            Prefix::UNC(left_host, left_share) | Prefix::VerbatimUNC(left_host, left_share),
+            Prefix::UNC(right_host, right_share) | Prefix::VerbatimUNC(right_host, right_share),
+        ) => left_host == right_host && left_share == right_share,
+        _ => false,
+    };
+    if !same_prefix || !resolved.eq(supplied) {
+        return Ok(false);
+    }
+
+    const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0400;
+    for ancestor in requested.ancestors() {
+        if fs::symlink_metadata(ancestor)?.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+#[cfg(all(test, windows))]
+#[test]
+fn windows_private_root_rejects_redirect_but_accepts_verbatim() -> std::io::Result<()> {
+    let temporary = tempfile::tempdir()?;
+    let root = temporary.path().join("owner");
+    fs::create_dir(&root)?;
+    let canonical = root.canonicalize()?;
+    assert!(windows_canonical_root_without_reparse(&canonical, &root)?);
+    assert!(create_private_directory(&root).is_ok());
+
+    let unrelated = temporary.path().join("different-owner");
+    fs::create_dir(&unrelated)?;
+    assert!(!windows_canonical_root_without_reparse(
+        &unrelated.canonicalize()?,
+        &root,
+    )?);
     Ok(())
 }
 
@@ -1293,8 +1361,9 @@ fn protect_database_file(_path: &Path) -> Result<(), AutomationError> {
     Ok(())
 }
 
-/// Preserve the two independently applied v4/v5 histories after their source
-/// imports collided. Only exact original checksums can move to versions 17/18.
+/// Preserve independently applied histories whose migration numbers collided.
+/// Only exact original checksums may move from v4/v5 to versions 17/18 or from
+/// provider-recovery v20 to version 23. The canonical Circuit v20 stays v20.
 /// This transaction changes migration identities, never their SQL, checksums,
 /// timestamps or product data. Unknown/dirty/duplicate histories fail closed.
 async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), AutomationError> {
@@ -1339,6 +1408,7 @@ async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), Automat
         let relocated = match version {
             4 => 17,
             5 => 18,
+            20 => 23,
             _ => return Err(AutomationError::Corrupt),
         };
         if !MIGRATOR.iter().any(|migration| {
@@ -1371,3 +1441,7 @@ async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), Automat
 #[cfg(test)]
 #[path = "migration_convergence_tests.rs"]
 mod migration_convergence_tests;
+
+#[cfg(test)]
+#[path = "provider_recovery_migration_tests.rs"]
+mod provider_recovery_migration_tests;

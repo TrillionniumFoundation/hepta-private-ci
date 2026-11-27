@@ -1,0 +1,55 @@
+{
+  "baseCommit": "533a84b0691e38b8d3fdf3430ff3beb0e85cde8e",
+  "workflowPath": ".github/workflows/ndu-windows-storage-probe.yml",
+  "baseWorkflowIdentity": {
+    "bytes": 54143,
+    "mode": "100644",
+    "oid": "8f8f2936fa34db13e3391473b277192acdcd1cfa",
+    "sha256": "0e2cf7af538b1001bb319d5acefecb3637103a6b989cef6535ccd4fd60d83949"
+  },
+  "updatedWorkflowIdentity": {
+    "bytes": 54143,
+    "mode": "100644",
+    "oid": "7aed12ad2f7a28e7ae25d742c285893baba1e0e2",
+    "sha256": "966741fe5e492c15abbb7410eb12e624a17275e20c99360be5f6a006d7aacdd6"
+  },
+  "rootCurrentPinDrift": {},
+  "rootCurrentOtherLockFingerprint": "7b7fd2cf755c486e14fa506032f5c5d5e6922873361c74c3ca24d5f2887c572a",
+  "rootCurrentOtherLockPinMatches": true,
+  "oldCargoManifestPin": {
+    "bytes": 26035,
+    "mode": "100644",
+    "oid": "24552d4cb39aa937cb867a81431e109a37b78d0d",
+    "sha256": "202f526f1581bb311c5bd27c515409de7085cdbf05150b742d35ecb2489053ba"
+  },
+  "newCargoManifestPin": {
+    "bytes": 27073,
+    "mode": "100644",
+    "oid": "520b0ba00e7e1e11f24773e42c21b5324578895b",
+    "sha256": "033474d5d437dcaab5f771aa3bf1a90a10f768fb3465925a1f3ad2a3137c9f81"
+  },
+  "oldOtherLockFingerprint": "7b7fd2cf755c486e14fa506032f5c5d5e6922873361c74c3ca24d5f2887c572a",
+  "newOtherLockFingerprint": "5b6a0101389c198fa322f9bd296d773c150d459301be96271bf9636b6ee888b7",
+  "finalCargoLockSha256": "0d07fb66bca0191cc8d288b13235353e7072e9aba77238322a6101e331ff5012",
+  "otherPinsChanged": [],
+  "allGateFunctionAstsUnchanged": true,
+  "otherWorkflowBytesUnchanged": true,
+  "positiveActualLockBlockPassed": true,
+  "negativeActualLockBlockCases": {
+    "anyhow_version_change": {
+      "rejected": true,
+      "reason": "Normal resolver must select exact anyhow 1.0.104"
+    },
+    "matrix_path_edge_removed": {
+      "rejected": true,
+      "reason": "Normal lock must contain the exact reviewed Matrix path-utils dependency"
+    },
+    "unrelated_registry_checksum_change": {
+      "rejected": true,
+      "reason": "Normal lock differs from the reviewed ordinary-union dependency fingerprint"
+    }
+  },
+  "nativeWindowsSourceSnapshotExecuted": false,
+  "scope": "Read-only original-source audit and literal pin postimage. The unchanged embedded lock-check AST is executed on real final lock bytes and mutations. Native OS, exact-head, clean-index, complete-source, test and refusal checks are not bypassed or represented as executed on Linux.",
+  "applicationCondition": "Apply after the dependency commits, only if final root Cargo.toml and Cargo.lock match these identities. Any later dependency edit requires another reviewed fingerprint, never a wildcard or second accepted hash."
+}

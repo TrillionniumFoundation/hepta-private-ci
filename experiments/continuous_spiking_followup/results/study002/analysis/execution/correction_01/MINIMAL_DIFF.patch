@@ -1,0 +1,37 @@
+--- audit_training.py (frozen v1)
++++ audit_training_v2.py
+@@ -63,7 +63,7 @@
+         "thread contract",
+     )
+     require(
+-        read_json(run / "DATA.json") == bundle.manifest, "regenerated data manifest"
++        read_json(run / "DATA.json") == json.loads(json.dumps(bundle.manifest, allow_nan=False)), "regenerated data manifest"
+     )
+     sources = decode_arrays(run / "sources", result["sources_manifest_sha256"])
+     expected = expected_sources(bundle)
+@@ -378,6 +378,8 @@
+         else "incomplete"
+         if missing
+         else "passed",
++        "analysis_version": "v2-json-manifest-normalization",
++        "analysis_correction_sha256": sha(Path(__file__).parent / "ANALYSIS_CORRECTION_01.json"),
+         "expected_jobs": len(inventory),
+         "completed_results": len(found & ids),
+         "audited_jobs": len(checked),
+@@ -403,6 +405,7 @@
+             name: sha(Path(__file__).parent / name)
+             for name in (
+                 "audit_training.py",
++                "audit_training_v2.py",
+                 "audit_training_checks.py",
+                 "audit_training_identity.py",
+                 "controller_receipts.py",
+@@ -437,7 +440,7 @@
+     destination = (
+         Path(arguments.output)
+         if arguments.output
+-        else Path(arguments.results) / "TRAINING_AUDIT.json"
++        else Path(arguments.results) / "TRAINING_AUDIT_V2.json"
+     )
+     records.write_json(destination, result)
+     print(

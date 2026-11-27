@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.lif_supplement",
+    "register",
+    "--protocol",
+    "experiments/hcsn_distributional_v2/LIF_SUPPLEMENT001_PROTOCOL.json",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/lif_supplement001",
+    "--preflight",
+    "experiments/hcsn_distributional_v2/results/lif_preflight002/RESULTS.json"
+  ],
+  "complete_child_cpu_seconds": 2.58221,
+  "error": "preflight_path.relative_to(ROOT) received relative path; no protocol or study directory had been written",
+  "error_type": "ValueError",
+  "exit_code": 1,
+  "peak_rss_kib_linux": 200684,
+  "resolution": "Retry unchanged source with absolute paths. No training started and no result omitted.",
+  "schema": "hcsn-lif-registration-execution.v1",
+  "stdout": "",
+  "system_cpu_seconds": 0.28541099999999997,
+  "user_cpu_seconds": 2.296799,
+  "utc": "2026-10-30T01:56:01.691419+00:00",
+  "wall_seconds": 6.78859146800005
+}

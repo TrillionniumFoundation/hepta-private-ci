@@ -1,0 +1,63 @@
+{
+  "attempts": 1,
+  "authority": "DENY_ALL",
+  "cost": {
+    "child_block_inputs": 0,
+    "child_block_outputs": 1440,
+    "child_involuntary_context_switches": 2,
+    "child_peak_rss_bytes": 31338496,
+    "child_system_seconds": 0.014943,
+    "child_user_seconds": 0.12484999999999999,
+    "child_voluntary_context_switches": 1,
+    "energy_joules": null,
+    "parent_cpu_seconds": 0.0025056269999998992,
+    "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads.",
+    "total_cpu_seconds": 0.1422986269999999,
+    "wall_seconds": 0.14473675299814204
+  },
+  "enforced_resources": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 60,
+    "single_file_bytes": 134217728
+  },
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 60,
+    "input_bytes": 536870912,
+    "max_dataset_rows": 512,
+    "max_datasets": 8,
+    "output_bytes": 2097152,
+    "wall_seconds": 120
+  },
+  "progress": {
+    "adapter_calls_attempted": 0,
+    "admitted_source_copy_bytes": 709818,
+    "encoder_batches_attempted": 0,
+    "encoder_batches_completed": 0,
+    "encoder_calls_attempted": 0,
+    "encoder_loads_attempted": 0,
+    "executor_calls_attempted": 0,
+    "staging_copy_bytes": 709818
+  },
+  "reason": "ClosureError: Cannot open a bounded, unlinked regular input",
+  "schema": "hepta.v13.feature-and-reference-replay.v1",
+  "status": "HOLD",
+  "worker_exit": 0,
+  "worker_output": {
+    "stderr": {
+      "bytes": 1689,
+      "captured_bytes": 1689,
+      "complete": true,
+      "sha256": "73636ac30e75a9517fcdcf7ee3e77e4928000663011948fb787ae72656375015"
+    },
+    "stdout": {
+      "bytes": 518,
+      "captured_bytes": 518,
+      "complete": true,
+      "sha256": "bff59517f0e062913c9d3b103aec3986a08c4716c8a4c735b4a21495909f62fb"
+    }
+  },
+  "worker_stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/closure_io.py\", line 41, in open_regular\n    directory = os.open(root, flags | os.O_DIRECTORY)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/hepta-v13-mutants-w3i7lgb9/not-present'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_replay.py\", line 91, in _worker_main\n    result.update(execute_reference(config, limits, progress))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_worker.py\", line 241, in execute_reference\n    files[\"encoder/\" + name] = _copy(\n                               ^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_worker.py\", line 69, in _copy\n    open_regular(source, maximum, root=root) as stream,\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py\", line 137, in __enter__\n    return next(self.gen)\n           ^^^^^^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/closure_io.py\", line 58, in open_regular\n    raise ClosureError(\"Cannot open a bounded, unlinked regular input\") from error\nclosure_io.ClosureError: Cannot open a bounded, unlinked regular input\n",
+  "worker_stdout": "{\"authority\":\"DENY_ALL\",\"enforced_resources\":{\"address_space_bytes\":4294967296,\"cpu_seconds\":60,\"single_file_bytes\":134217728},\"progress\":{\"adapter_calls_attempted\":0,\"admitted_source_copy_bytes\":709818,\"encoder_batches_attempted\":0,\"encoder_batches_completed\":0,\"encoder_calls_attempted\":0,\"encoder_loads_attempted\":0,\"executor_calls_attempted\":0,\"staging_copy_bytes\":709818},\"reason\":\"ClosureError: Cannot open a bounded, unlinked regular input\",\"schema\":\"hepta.v13.feature-and-reference-replay.v1\",\"status\":\"HOLD\"}\n",
+  "worker_termination": "completed"
+}

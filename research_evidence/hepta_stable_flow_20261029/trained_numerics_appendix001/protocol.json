@@ -1,0 +1,208 @@
+{
+  "appendix_source_sha256": {
+    "PROTOCOL_SPEC.json": "3818ce7a1a7e9bdb8d131d88627a41fab56200c795eebf1ed4f874b60f9ffa9e",
+    "checkpoints.py": "0791cf0428e606303dab0a747f1d8d7fb66c0e2bd08c6ca176c79019f8622713"
+  },
+  "diagnostic_data": {
+    "episode_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "preserve_inputs": "Registered FP32 inputs and dt are promoted exactly for FP64; labels stay int64",
+    "sequence": "All 32 external ticks, including every visible query",
+    "source_split": "train",
+    "target_use": "Query-masked cross entropy objective only; targets never passed as model inputs",
+    "test_or_validation_examples_used": false
+  },
+  "end_to_end": {
+    "comparison_denominator_floor": 1e-08,
+    "evaluations": [
+      "fp32_h",
+      "fp64_h",
+      "fp64_h_over_2",
+      "fp64_h_over_4"
+    ],
+    "initial_state": "Production learned parameter-dependent initialization, no state detach",
+    "model_mode": "eval; gradients enabled; no optimizer, clipping, dropout or parameter update",
+    "objective": "Mean cross entropy over targets != -100 on the four fixed training episodes",
+    "parameter_groups": [
+      "content",
+      "boundary_input",
+      "boundary_dynamics",
+      "rate_head"
+    ],
+    "raw_outputs": [
+      "loss",
+      "logits",
+      "flow_rate_trace",
+      "final_flow_state",
+      "final_memory",
+      "full_named_parameter_gradient"
+    ],
+    "reference_consistency_h_over_2_vs_h_over_4": {
+      "gradient_relative_l2_max_full_and_each_group": 0.0025,
+      "scaled_logit_max": 0.00025
+    },
+    "reference_rule": "If the fixed h/2 vs h/4 consistency gate fails, report reference_unresolved; do not add adaptive meshes or label h/4 a continuous truth",
+    "registered_h_vs_h_over_4": {
+      "gradient_relative_l2_max_full_and_each_group": 0.01,
+      "scaled_logit_max": 0.001
+    },
+    "reported_metrics": [
+      "loss_absolute_difference",
+      "loss_scaled_difference",
+      "logit_max_absolute_difference",
+      "logit_scaled_max",
+      "flow_feature_scaled_max",
+      "final_flow_state_scaled_max",
+      "gradient_ref_norm",
+      "gradient_observed_norm",
+      "gradient_absolute_l2_difference",
+      "gradient_relative_l2_difference",
+      "gradient_cosine_when_norm_above_floor"
+    ],
+    "same_h_precision": {
+      "gradient_relative_l2_max_full_and_each_group": 0.0001,
+      "scaled_logit_max": 1e-05
+    }
+  },
+  "environment": {
+    "numpy": "2.3.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu"
+  },
+  "execution": {
+    "failure_policy": "Retain failed/unresolved flags and all available raw arrays; no parameter changes, retraining, checkpoint exclusion, reselection or replacement of primary test scores",
+    "outputs": "Separate immutable numerical receipts and raw arrays, never overwrite a checkpoint or selection",
+    "preferred_run_before": "Test scoring; the runner never reads test data or test score files",
+    "register_before": [
+      "candidate training",
+      "validation selection",
+      "test scoring"
+    ],
+    "run_after": "Validation selection is sealed",
+    "source_binding": "Bind immutable core protocol, source hashes, freeze seal and this appendix source snapshot at registration",
+    "torch_deterministic_algorithms": true,
+    "torch_threads": 1
+  },
+  "formal_freeze_seal_sha256": "b18fce0abd11203f84404970a0c9d58228d215f889e59e9797374002c9c6244e",
+  "formal_protocol_sha256": "f94ff6491a2e98c1288ee2476404943f920042800d468435eba46d5235c0197b",
+  "formal_registered_max_step": 0.0625,
+  "formal_source_sha256": {
+    "audit.py": "9fb7acbc25b489bfeb571e6edd2a9861836a086de5b76f26ebda1590c35c90d9",
+    "data.py": "13ad1d59884821ec76e071a0481911de5d675135abde3e41dc84e07fd5e57772",
+    "flow.py": "bfbfcbc290d8677cf3872418446981d9d7f67ce6656255b31cc5a75f577fa95e",
+    "memory.py": "75b0f6b348b8704116a6e496704a945525a701e119c169f436c7b4c7fabc082a",
+    "models.py": "54e1686a51ae668d5e541cf6e7e8f5fa139c5075cd6894a93fe1f823ab64bc77",
+    "numerics.py": "a1c24cbe295ffc0ab68d44ad314e7e67e113d478cb652cc4ad5a99ac8dd6ce86",
+    "study.py": "12663dc80fb38b18b595812a64f191e70796994ea734d8bfc61c9ec16156ba17",
+    "tests/test_data.py": "dc2b9647145712c36c10a905362b6a3a04a0b3664578888e393a4f9656a2b57f",
+    "tests/test_flow.py": "2f9559ad06746d2366702776d34b60f2b9781c137b3ad5cf56c612a45892b2cf",
+    "tests/test_memory.py": "2286e781169204998b450ae2ba4b4c7da86040ecaa152df75449d4ae54fced68",
+    "tests/test_numerics.py": "d88be39828ce931a4acd8545879948e5446b270ff3f0df6ac091e7cd36013def"
+  },
+  "formal_study": "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/formal_run001",
+  "independent_flow": {
+    "directions": {
+      "count": 4,
+      "distribution": "iid normal, each vector normalized to unit L2",
+      "seed": 20261029
+    },
+    "episode_index": 0,
+    "expected_aliases": 8,
+    "finite_difference_epsilons": [
+      1e-05,
+      5e-06
+    ],
+    "initial_state": "Independently recomputed learned equilibrium (0,q_star,z_star)",
+    "limitations": [
+      "Four parameter directions do not certify the full continuous-time Jacobian",
+      "Flow-only DOP is distinct from end-to-end CE mesh diagnostics",
+      "One trajectory does not certify the whole learned parameter domain"
+    ],
+    "objective": "audit.numpy_loss of the complete v/q/z trace; this is not end-to-end CE",
+    "oracle": {
+      "atol": 1e-13,
+      "method": "independent NumPy parameter/channel/RHS implementation and SciPy DOP853",
+      "rtol": 1e-11,
+      "tight_atol": 3e-15,
+      "tight_rtol": 3e-13
+    },
+    "parameter_snapshot": "flow.named_parameters order; model flow. prefix removed; weights loaded as stored FP32 then exactly promoted",
+    "reference_rule": "Oracle state and finite-difference consistency must pass before claiming flow qualification; otherwise reference_unresolved",
+    "seed": 81301,
+    "sequence": "All 32 external ticks of the registered first training episode",
+    "subset_rule": "Both arms, both tasks, both regimes at predeclared seed 81301; eight aliases before physical deduplication",
+    "thresholds": {
+      "directional_gradient_relative_l2": 0.01,
+      "oracle_fd_gradient_relative_change": 0.0001,
+      "oracle_scaled_state_change": 1e-08,
+      "same_h_precision_directional_gradient_relative": 0.0001,
+      "same_h_precision_scaled_state": 1e-05,
+      "scaled_state_max": 0.001
+    }
+  },
+  "interpretation": [
+    "All numerical thresholds classify this appendix only and are not additional model-selection criteria",
+    "A small aggregate gradient error cannot hide a failing boundary parameter group",
+    "Near-zero reference gradients use the declared absolute denominator floor and retain their raw norms",
+    "Finite-mesh agreement is not an analytic continuous-time solution",
+    "Results apply to these newly trained checkpoints and fixed training probes, not the unavailable old checkpoints"
+  ],
+  "purpose": "Numerical appendix for new trained checkpoints; no claim of recovering or repairing old checkpoints",
+  "registered_data": {
+    "mqar": {
+      "episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "formal_train_file_sha256": "5aeaf18cc50b7d65a0ddee8e2c48dcca01a53b12d4fad94ff7ba8ffc745daeae",
+      "registered_file": "diagnostic_data/mqar.npz",
+      "registered_sha256": "0838527e65cdc65abc2ef08f98542bae62886b99041a062bc43c48ec873a538e"
+    },
+    "selective_copy": {
+      "episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "formal_train_file_sha256": "34e0f3d1d244d53c97ca00785421ff5c70cd2d0c9e62bad1272bfd26633ee04e",
+      "registered_file": "diagnostic_data/selective_copy.npz",
+      "registered_sha256": "02576a9092206230678eeb6cac962178d18749a7b53d290a2427050e3f0c6e97"
+    }
+  },
+  "registered_unix": 1793278906.3947072,
+  "scope": {
+    "arms": [
+      "analytic",
+      "matched_c1"
+    ],
+    "checkpoint_source": "Only the already sealed validation selection; no reselection by this appendix",
+    "expected_selected_aliases": 24,
+    "physical_deduplication_key": [
+      "task",
+      "arm",
+      "checkpoint_sha256"
+    ],
+    "regimes": [
+      "cpu30",
+      "updates384"
+    ],
+    "seeds": [
+      81301,
+      81302,
+      81303
+    ],
+    "tasks": [
+      "selective_copy",
+      "mqar"
+    ]
+  },
+  "version": "hepta-trained-checkpoint-numerics-20261029-v1"
+}

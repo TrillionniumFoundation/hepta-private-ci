@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.campaign-retrieval-limits.v1",
+  "read_batch": {
+    "status": "RETRIEVAL_INTERRUPTED",
+    "reason": "Read-only 47-chunk batch did not settle during the observation window; stopped to avoid admitting further queued reads. No campaign or remote process cancellation was requested.",
+    "raw_campaign_status": "original campaign stage exit 0; bootstrap exit 1 retained",
+    "first_chunk_verified_before_batch": true,
+    "pinned_version": "66306:56671040:3108442:1794472608162908889:1794472608162908889",
+    "report_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a"
+  },
+  "verified_report_prefix_bytes": 131072,
+  "full_report_bytes": 3108442,
+  "full_report_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+  "complete_original_report_archived": false,
+  "lossless_archive_preparation": "IN_PROGRESS separately; this record describes the original interrupted chunk retrieval only",
+  "campaign_redispatched": false
+}

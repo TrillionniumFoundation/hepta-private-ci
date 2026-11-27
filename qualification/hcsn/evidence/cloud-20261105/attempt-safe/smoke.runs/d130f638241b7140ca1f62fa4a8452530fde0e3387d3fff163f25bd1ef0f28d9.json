@@ -1,0 +1,120 @@
+{
+  "key": "d130f638241b7140ca1f62fa4a8452530fde0e3387d3fff163f25bd1ef0f28d9",
+  "source_sha256": "f6debd63e6ac6979144a923efdaad5d1f4a99ad2cd602b9174831bcebc6bb2ad",
+  "config": {
+    "profile": "smoke",
+    "device": "cpu",
+    "tasks": [
+      "delayed_recall"
+    ],
+    "models": [
+      "hx_dual",
+      "hx_fixed",
+      "hx_call",
+      "hx_risk",
+      "no_rollover",
+      "softplus",
+      "no_recovery",
+      "hx_attention",
+      "population_flux",
+      "gru",
+      "lif",
+      "adaptive_lif",
+      "pif",
+      "transformer",
+      "cfc",
+      "mamba2"
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "data_seed": 271828,
+    "train_count": 128,
+    "validation_count": 32,
+    "test_count": 64,
+    "length": 8,
+    "hidden_size": 8,
+    "batch_size": 16,
+    "train_steps": 8,
+    "learning_rate": 0.003,
+    "dt": 0.1,
+    "latency_repeats": 7,
+    "cpu_threads": 2
+  },
+  "dataset": {
+    "split_sha256": [
+      "1ecc3a567b3b4359948876f79f51cd44b1c42ba4d125604845fa666f384bc3ad",
+      "8bae8824da9018c9c8d39ce8eae69f9ad06b8511729c09a7a4a4ed4272c9c3ce",
+      "8adc6dbef831cbc0ed3a85a5a451e403ade660944bc63af8582cd45ef30b9979"
+    ],
+    "constant_predictor_test_mse": 0.3680054843425751
+  },
+  "hardware": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "machine": "x86_64",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "logical_cpu_count": 5,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "torch": "2.8.0+cpu",
+    "device": "cpu",
+    "device_name": "AMD EPYC 9V74 80-Core Processor",
+    "cpu_threads": 2,
+    "deterministic_requested": true,
+    "cuda_runtime": null,
+    "cuda_available": false
+  },
+  "software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "ncps": "1.0.1",
+    "mamba-ssm": null,
+    "triton": null,
+    "causal-conv1d": null,
+    "nvidia-ml-py": null
+  },
+  "task": "delayed_recall",
+  "model": "softplus",
+  "seed": 2,
+  "attempt_id": "43efedfa686641b3b952e8d0068be9c8",
+  "result": {
+    "task": "delayed_recall",
+    "model": "softplus",
+    "seed": 2,
+    "status": "completed",
+    "training_status": "completed",
+    "training_examples_seen": 128,
+    "training_tokens_seen": 1024,
+    "training_steps_completed": 8,
+    "budget_measurement_scope": "examples/tokens submitted to training forward; optimizer steps counted separately",
+    "energy": {
+      "joules_by_physical_counter": null,
+      "scope": "training wall interval; device/package, not process attribution",
+      "sampling_interval_seconds": 1.0,
+      "partial_unavailable_reasons": [],
+      "missing_reason": "no accessible RAPL package or NVML device energy counter"
+    },
+    "encoder_class": "ValueKernelCell",
+    "parameters": 257,
+    "trainable_parameters": 209,
+    "peak_gpu_allocated_bytes": null,
+    "peak_gpu_missing_reason": "CPU execution has no GPU allocation",
+    "training_wall_seconds_including_validation": 0.07223632900013399,
+    "training_examples_per_second": 1771.9615845894186,
+    "best_checkpoint": "/workspace/hepta-private-ci/qualification/hcsn/evidence/cloud-20261105/attempt-safe/smoke.runs/d130f638241b7140ca1f62fa4a8452530fde0e3387d3fff163f25bd1ef0f28d9.attempts/43efedfa686641b3b952e8d0068be9c8.pt",
+    "best_checkpoint_sha256": "be51222bc116c844a05fbc5bca3578f8b9e12562cb6cfab71b1bc018228faa04",
+    "test_mse": 0.3998337388038635,
+    "best_validation_mse": 0.30663761496543884,
+    "initial_training_mse": 0.5214900374412537,
+    "final_training_mse": 0.26310980319976807,
+    "inference_batch_size": 16,
+    "inference_examples_per_second": 8420.091601616416,
+    "latency_p50_ms": 1.7953199999283243,
+    "latency_p95_ms": 2.318386199908673,
+    "best_checkpoint_relative": "d130f638241b7140ca1f62fa4a8452530fde0e3387d3fff163f25bd1ef0f28d9.attempts/43efedfa686641b3b952e8d0068be9c8.pt"
+  },
+  "verified_weights": "/workspace/hepta-private-ci/qualification/hcsn/evidence/cloud-20261105/attempt-safe/smoke.runs/d130f638241b7140ca1f62fa4a8452530fde0e3387d3fff163f25bd1ef0f28d9.attempts/43efedfa686641b3b952e8d0068be9c8.pt"
+}

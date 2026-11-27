@@ -1,0 +1,104 @@
+{
+  "schema": "hepta.bimodal.content-training.v1",
+  "seed": 41,
+  "steps": 12,
+  "baseline_sha256": "b2bb46e59c4c517b2d21ac1ac3353f61961277aa9d06c239f6815fe7d04423e7",
+  "candidate_sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61",
+  "training_sources": [
+    "ceb32354dff217e2f9be2889b6d0d1ac9b38f8231ed90c22e9c726864cf62d30",
+    "78a9fe8ade058e5dfedc9a9308ca7505054ddfba43795bd92b2481646a847708",
+    "8127c6ed9d492b449dac8d5efd53ea6c24775c59c913876c5bd58ac18cae2351",
+    "838b677d80154917926d44e23531904a8a8577a3163d787c8c6d58c81aaad213",
+    "4f063c5421928b7995175912de6d1c685cba5437da3e0ea149c81bed57053d7a",
+    "0fb622adb8dff0526b51c14ec6c75239bf5656caae04332791afddb0c7ce5817",
+    "864e2828f2d53287605792c5be996b5eef788b8a251bb306ffe008e0806dc9ed",
+    "0072d35245f4a32ed19d597a9d4533ee9a02b4e8094ad296ef91754c0c3d46a1",
+    "a7a07706a18a785cdb9f1b54d046aa8e12abf43de5dff8d25b2d6090bc1e081b",
+    "89d7a2c4a1bb14db6ec24c0abd60f61c8f7b91e481c10859e1dc23e0216fe64d",
+    "8889c3adb6c54918f2ebbf9106f2f515f7eab91f2c85479f49e27bc206ae7c7c",
+    "4294ae3546efd81d61cdadfdf5dfa9671641e9480ddd499d7238916de1294438"
+  ],
+  "changed_parameter_groups": [
+    "action_embedding",
+    "adapters",
+    "audio_encoder",
+    "core",
+    "emissions",
+    "encoder_fusion",
+    "feedback_projection",
+    "image_encoder",
+    "initial_slots",
+    "text_condition",
+    "text_recurrent",
+    "token_encoder",
+    "transition_input",
+    "video_encoder"
+  ],
+  "terminal_heads_trained": false,
+  "old_actor_trained": false,
+  "losses": [
+    {
+      "step": 0,
+      "image_mse": 0.15829262197087093,
+      "text_nll": 5.358055562044598
+    },
+    {
+      "step": 1,
+      "image_mse": 0.15197966274898977,
+      "text_nll": 4.992281871009267
+    },
+    {
+      "step": 2,
+      "image_mse": 0.16190736628291696,
+      "text_nll": 5.1104916105961795
+    },
+    {
+      "step": 3,
+      "image_mse": 0.159024754621297,
+      "text_nll": 5.006091798705261
+    },
+    {
+      "step": 4,
+      "image_mse": 0.1549532075871799,
+      "text_nll": 4.759342934136859
+    },
+    {
+      "step": 5,
+      "image_mse": 0.15484911808124793,
+      "text_nll": 4.485814459721968
+    },
+    {
+      "step": 6,
+      "image_mse": 0.1430236504936249,
+      "text_nll": 4.058571989243253
+    },
+    {
+      "step": 7,
+      "image_mse": 0.1514230660845632,
+      "text_nll": 4.053302352507051
+    },
+    {
+      "step": 8,
+      "image_mse": 0.13798251633652872,
+      "text_nll": 3.7080175268179545
+    },
+    {
+      "step": 9,
+      "image_mse": 0.14796421797092918,
+      "text_nll": 3.6411480925846478
+    },
+    {
+      "step": 10,
+      "image_mse": 0.1505343185550708,
+      "text_nll": 3.416509693892973
+    },
+    {
+      "step": 11,
+      "image_mse": 0.12676398446649204,
+      "text_nll": 3.164413813951056
+    }
+  ],
+  "wall_seconds": 0.9084639900029288,
+  "scope": "generated colour-card content training; no semantic or NDU gain claim",
+  "training_identity": "ff00cf8f00fab5c91c3be59d9fada53dee45fc670d5b0a2b4ae6308a284a8a81"
+}

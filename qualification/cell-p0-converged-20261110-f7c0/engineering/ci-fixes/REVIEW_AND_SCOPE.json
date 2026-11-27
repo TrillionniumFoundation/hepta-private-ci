@@ -1,0 +1,156 @@
+{
+  "schema": "hepta.p0.joint-ci-repair-review-and-scope.v1",
+  "recorded_at_utc": "2026-11-11T03:10:33.242064+00:00",
+  "base_source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "reviewed_local_source_sha": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+  "reviewed_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "published_candidate_source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "source_files": [
+    {
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2375bd00314e26c70aea54209a8ca8f606eee0f3",
+      "bytes": 6820,
+      "sha256": "f6d6906c6a6b4602d8358b9c324f57e1e7fbbb6aa7e75f68500bfc8b7bb48e65"
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6dbee7f5c44b6581d7adce8719b8f3f25f211219",
+      "bytes": 18827,
+      "sha256": "278f90e1b14afd235106c84efe2d14dd7458ff4eb36ed71f4c823bc8392b885d"
+    },
+    {
+      "path": "MODULE.bazel",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f3e7c21d9e7d54c0ac371caf17fe170c356bdf34",
+      "bytes": 24766,
+      "sha256": "3be346c68d608527936a029ca5685e5cb44d3c55d98ee1ff3b210d740318800e"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "278bf63d343b4615e34179d85e2ad98cc3ea0fce",
+      "bytes": 15270,
+      "sha256": "f5073ba560a08f5c496e1f13272498b28fd1652eddbd90a18c254dacca5b468e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "abdeea194ee4bd1de796c2d21bf7d6b4f212c4a1",
+      "bytes": 13770,
+      "sha256": "c8be41a31e4dc3cd7d70508fcc5b200de2ec438df75e197240cc8c20eb80b65e"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc6b518fb1016af209319b7e7e4eda0f96999c52",
+      "bytes": 28154,
+      "sha256": "737a92f3af84b4ba1356f36307c6b2c3ca81a0fe22bc24829fe620ff1d656e09"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/sync_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "31ffc6a9806768dd93f12f02228dc9c5f54e6d4f",
+      "bytes": 23061,
+      "sha256": "aa42e1eebd256f356089e00857718310deb5aa93721bad161b0252ad18156acd"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "56cb4b9d8a9a597d4b1f7097087f98bd80e409dd",
+      "bytes": 12465,
+      "sha256": "0db33a2e8505870351f54fb53c4b0d11b698ee162c88167af54499dd379e4fae"
+    },
+    {
+      "path": "docs/hepta-generation-learning-readback.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ae25ef4acf0e4f8dc0b3f55fe33e5c9df2c4617",
+      "bytes": 8285,
+      "sha256": "11581f969668abd0b8b3e131cbcdb76254955db9da9f7d3b0ba2cee193f3f62b"
+    }
+  ],
+  "reviewed_components": {
+    "format_and_lexical_guard_lifetime": "e453a28965ed0364fd5691129a5a5836ecdc85b9",
+    "matrix_diagnostics_original": "7b5ff407bb33ccbf1fc067aefb9c2b37e202ed55",
+    "matrix_diagnostics_integrated": "73bcbb3a7effcdb6aee4887f63c2f3aa96b992d0",
+    "bazel_dependency_optimization": "7d5c776dca0245a498896f612a24f5412271bb63",
+    "stage_test_macro_import": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8"
+  },
+  "fixes": [
+    {
+      "kind": "FORMAT",
+      "files": 3,
+      "tool": "Prettier 3.5.3",
+      "scope": "Existing Markdown table spacing and final YAML blank lines only."
+    },
+    {
+      "kind": "CLIPPY_GUARD_LIFETIME",
+      "scope": "Put the retained guard and every original assertion in one lexical block; original explicit drop already existed. Production output collector files are byte-identical.",
+      "runtime_deadlock_established": false
+    },
+    {
+      "kind": "MATRIX_DIAGNOSTICS",
+      "scope": "Preserve initialization stage plus the original source error; retain the first restore failure if one fallback login also fails. Existing original inner classifications through build await ?? are preserved.",
+      "original_five_second_deadlines_unchanged": true,
+      "kdf_strength_unchanged": true,
+      "success_validation_and_persistence_paths_unchanged": true,
+      "single_fallback_login_preserved": true,
+      "public_rust_api_change": true,
+      "public_api_details": [
+        "Initialization unit variant becomes a struct variant with stage and optional boxed source.",
+        "RestoreFallback variant is added.",
+        "Clone, Copy, Eq and PartialEq derives are removed.",
+        "Six existing equality assertions are exact variant matches; no expected classification is relaxed."
+      ],
+      "standard_error_source_chain": "Follows fallback for RestoreFallback; restore is retained as a separate field and visible in Debug, not claimed as a second linear source chain.",
+      "native_compilation_qualified": false,
+      "wasm_compilation_qualified": false,
+      "old_reopen_runtime_failure_cause_established": false
+    },
+    {
+      "kind": "BAZEL_PROFILE_ALIGNMENT",
+      "scope": "Only matrix-sdk-store-encryption 0.19.1 in crates receives -Copt-level=3, matching the existing Cargo package-specific setting.",
+      "historical_bazel_opt_level_zero_observed": true,
+      "upstream_schema_and_flag_order_reviewed": true,
+      "dependency_versions_changed": false,
+      "cargo_manifests_and_all_lockfiles_unchanged": true,
+      "cause_or_runtime_fix_proven": false
+    },
+    {
+      "kind": "E0659_TEST_MACRO",
+      "scope": "One explicit pretty_assertions::assert_eq import resolves the glob/prelude ambiguity.",
+      "root_verified_removing_one_line_restores_byte_identical_cb_test_file": true,
+      "test_cases_and_assertions_unchanged": true,
+      "old_cb_error_count": 22,
+      "old_cb_native_runtime_cases": 0,
+      "new_stage_cases_written": 6,
+      "fresh_native_execution_required": true
+    }
+  ],
+  "local_validation": "VALIDATION.json",
+  "independent_review": "independent-review/INDEPENDENT_REVIEWS.json; independent code review, not native execution or scientific custody.",
+  "full_source_patch": {
+    "path": "finalfix9.patch.gz",
+    "original_bytes": 21527,
+    "original_sha256": "dd502922e890cd3c05aee32ab03f72a5b5f9512f339b86ecb285db372d1394a8",
+    "lossless": true
+  },
+  "qualification": {
+    "new_final_source_native_test_cases_executed_locally": 0,
+    "full_ordinary_adopt_runs": 0,
+    "full_ordinary_no_update_runs": 0,
+    "original_owner_custody_created": false,
+    "production_activated": false
+  },
+  "bazel_lock_check": "../bazel-lock/RESULTS.json"
+}

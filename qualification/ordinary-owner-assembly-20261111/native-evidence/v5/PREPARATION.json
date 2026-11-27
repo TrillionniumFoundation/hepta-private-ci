@@ -1,0 +1,339 @@
+{
+  "schema": "hepta.original-records-export.v5.preparation-review.v1",
+  "status": "prepared-not-executed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prior_request_blob": "ad32cf2bc53a79f574b7b20e458f8d613b8dff2a",
+  "request": {
+    "blob": "8e16a604428568c346fdba3cb1b961d5f626b523",
+    "bytes": 199062,
+    "sha256": "71478a60b9f41529044a9c066e7177df8ab9be9c19bb5a833daf8b78ea7d97b5",
+    "idempotency_key": "hepta-715-and-caller-original-records-export-v5-20261112"
+  },
+  "config": {
+    "blob": "da380354b5d8aede46e25308e38af41f825ae6fd",
+    "bytes": 182169,
+    "sha256": "04f040b1687f02a280581c5dbfe5f126912d0348029b005a0470243eedbd8560"
+  },
+  "exporter": {
+    "blob": "79494fe659157c453d4f0804cb01581eecce6052",
+    "bytes": 4370,
+    "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815",
+    "byte_identical_to_prior_request_args_1": true
+  },
+  "wrapper": {
+    "blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+    "bytes": 146,
+    "sha256": "869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d",
+    "purpose": "Reassemble four bounded argv chunks without changing the exporter or its effective sys.argv.",
+    "source": "import sys\n_original_exporter = sys.argv[1]\nsys.argv = [sys.argv[0], ''.join(sys.argv[2:])]\nexec(compile(_original_exporter, '<string>', 'exec'))\n"
+  },
+  "compact_config_argv": {
+    "bytes": 179315,
+    "sha256": "1cee8da9967d5ee78fab1dff4eeea1ae21a2325bc088d0853c4eddcbd974b289"
+  },
+  "chunks": [
+    {
+      "index": 0,
+      "bytes": 48000,
+      "sha256": "1ab65f2a89ac05cdaaf718089c1fdece29de4a42f473c91ab5cb311d54d6ab87"
+    },
+    {
+      "index": 1,
+      "bytes": 48000,
+      "sha256": "4e7158d9f6e352a0bcb5e8896b751a8c0b50164ce27984a9072900a1211d7349"
+    },
+    {
+      "index": 2,
+      "bytes": 48000,
+      "sha256": "8502b274c245f65abc9e2d1c13c99a069a02ed900c6f4c1858cf2f125dcbb605"
+    },
+    {
+      "index": 3,
+      "bytes": 35315,
+      "sha256": "cf95a2efebad51513011484d6b44c97463714a128a2bb748c9897f032b261ce8"
+    }
+  ],
+  "anchor": {
+    "source": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+    "head": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd"
+  },
+  "destination": "/home/qq/af52-learning-local-decision-20261111/ordinary-715-and-caller-original-records-export-v5-20261112",
+  "sources": [
+    {
+      "name": "ordinary-full-successor-maintenance-pty-v12",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-successor-maintenance-pty-v12/records",
+      "terminal": "progress.json",
+      "sha256": "bd1f7d5fd80b8cfe1a8fb7fb0171bb80dc0709588172c14159a2d9f5b873794c",
+      "expected": {
+        "status": "failed"
+      }
+    },
+    {
+      "name": "ordinary-198947-all-boundary-diagnostic-v1",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-all-boundary-diagnostic-v1/records",
+      "terminal": "result.json",
+      "sha256": "8007a25bf9dea4424378ae6af8c524aa0c33dd0f3b7a0f7dbd7519f058a336ce",
+      "expected": {
+        "status": "completed"
+      }
+    },
+    {
+      "name": "ordinary-198947-receiver-file-diagnostic-v1",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-receiver-file-diagnostic-v1/records",
+      "terminal": "result.json",
+      "sha256": "8b005bfb48e336f2d8a703ef7dd749bc897f4f1ef15ace7cd129ab41a9b59762",
+      "expected": {
+        "status": "diagnostic-completed-with-findings"
+      }
+    },
+    {
+      "name": "ordinary-715a572-root17-diagnostic-v1",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v1/records",
+      "terminal": "progress.json",
+      "sha256": "7c027bcdf25a692b20a10ded860875e27e01e430f21181ec02e3c212113e9773",
+      "expected": {
+        "status": "failed"
+      }
+    },
+    {
+      "name": "ordinary-715a572-root17-diagnostic-v2",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/records",
+      "terminal": "progress.json",
+      "sha256": "fb5f100b7543af2512bbc2c22f744a4e5c91794925b87656934227881c4d7114",
+      "expected": {
+        "status": "root-component-diagnostic-failed"
+      }
+    },
+    {
+      "name": "ordinary-715a572-late-writer-file-diagnostic-v1",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-late-writer-file-diagnostic-v1/records",
+      "terminal": "result.json",
+      "sha256": null,
+      "expected": {
+        "status": "diagnostic-incomplete"
+      }
+    },
+    {
+      "name": "ordinary-715a572-late-writer-file-diagnostic-v2",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-late-writer-file-diagnostic-v2/records",
+      "terminal": "result.json",
+      "sha256": "2a7c10992868764cf67efa11b2bcf2e12a1ebf05b24b2f7cb6df161b1cd935e0",
+      "expected": {
+        "status": "diagnostic-completed"
+      }
+    }
+  ],
+  "original_request_provenance": [
+    {
+      "name": "fullMaintenanceV12Request",
+      "blob": "c41c650cf687c5cb9a23cddc96d89e76aced7942",
+      "bytes": 10975,
+      "sha256": "063d239275102c225dec5cb46b9f0a81d54840e1331fc08889d9bebe609d95af",
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "key": "hepta-successor-maintenance-pty-v12-20261111",
+      "top_level_keys": [
+        "host",
+        "executable",
+        "args",
+        "cwd",
+        "idempotency_key",
+        "rows",
+        "cols"
+      ]
+    },
+    {
+      "name": "allBoundary198947DiagnosticRequest",
+      "blob": "319b281c088edc2c2741eaf3090178be15581f38",
+      "bytes": 5967,
+      "sha256": "a0b9c1c00082d9dad6ed1550114a0b13863f30b79894a87f765f915d8fd5dea7",
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "key": "hepta-198947-all-boundary-diagnostic-v1-20261111",
+      "top_level_keys": [
+        "host",
+        "executable",
+        "args",
+        "cwd",
+        "idempotency_key",
+        "rows",
+        "cols"
+      ]
+    },
+    {
+      "name": "receiverFile198947DiagnosticRequest",
+      "blob": "eb095f4a691294b080d244aa4c7f7bf679599fea",
+      "bytes": 17549,
+      "sha256": "db279fd95a875744916a5c1e9c215ce31c89ebb99928bb06c3baac0ce21d4f91",
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "key": "af52-198947-receiver-file-diagnostic-v1",
+      "top_level_keys": [
+        "host",
+        "executable",
+        "args",
+        "cwd",
+        "env",
+        "idempotency_key",
+        "rows",
+        "cols"
+      ]
+    },
+    {
+      "name": "root17DiagnosticV1Request",
+      "blob": "7f5a5f73e9f08885eb7e54ed7d7060466ef77eef",
+      "bytes": 51221,
+      "sha256": "40d0d5fdafc1b270f6eb893548594f9c4b303d961f9d54eaea615868fd039bdc",
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "key": "hepta-715a572-root17-component-diagnostic-v1-20261111",
+      "top_level_keys": [
+        "host",
+        "executable",
+        "args",
+        "cwd",
+        "idempotency_key",
+        "rows",
+        "cols"
+      ]
+    },
+    {
+      "name": "root17DiagnosticV2Request",
+      "blob": "817e6ac943c089be44e3cd15edec82e93eed4ecb",
+      "bytes": 55922,
+      "sha256": "aa9d3768df9d6e9bdc13cdbeeff2239f4931180acf65958e12c0f06b2b9f9287",
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "key": "ordinary-715a572-root17-diagnostic-v2",
+      "top_level_keys": [
+        "host",
+        "executable",
+        "args",
+        "cwd",
+        "idempotency_key",
+        "rows",
+        "cols"
+      ]
+    },
+    {
+      "name": "lateWriterFileDiagnosticV1Request",
+      "blob": "2caa0818519cc5a7c57ff0767d327f7ef17a6907",
+      "bytes": 15426,
+      "sha256": "85ead3e4a537f30c6399ab5109f66b50bf473a0733d30106df73edbdb0cdffbc",
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "key": "af52-715a572-late-writer-file-diagnostic-v1",
+      "top_level_keys": [
+        "host",
+        "executable",
+        "args",
+        "cwd",
+        "env",
+        "idempotency_key",
+        "rows",
+        "cols"
+      ]
+    },
+    {
+      "name": "lateWriterFileDiagnosticV2Request",
+      "blob": "fdd7cd3f6dbba4a0d96647b81230801316112b25",
+      "bytes": 15930,
+      "sha256": "c90922cf3f2f0ea8240b83d381dd50bc9431025d04b26aade84675f1180a7a5e",
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "key": "af52-715a572-late-writer-file-diagnostic-v2",
+      "top_level_keys": [
+        "host",
+        "executable",
+        "args",
+        "cwd",
+        "env",
+        "idempotency_key",
+        "rows",
+        "cols"
+      ]
+    }
+  ],
+  "exact_changes": {
+    "retained_outer_fields": [
+      "host",
+      "executable",
+      "cwd",
+      "rows",
+      "cols"
+    ],
+    "changed_outer_fields": [
+      "args",
+      "idempotency_key"
+    ],
+    "config_fields_retained": [
+      "root"
+    ],
+    "config_fields_replaced": [
+      "work",
+      "head",
+      "tree",
+      "source",
+      "sources",
+      "requests",
+      "observations"
+    ],
+    "exporter_code_changes": [],
+    "transmission_only": "Original compact CONFIG is 179315 UTF-8 bytes. Four arguments are 48000, 48000, 48000, 35315 bytes. The 146-byte wrapper assigns the exact original exporter string and sets sys.argv to ['-c', joined_config] before executing it.",
+    "effective_exporter_argv_equal": true,
+    "config_pretty_and_compact_json_values_equal": true,
+    "embedded_original_request_json_values_equal": true,
+    "original_request_json_formatting": "Unchanged exporter canonicalizes complete request objects into tar JSON members. The source blobs and raw byte hashes are retained in provenance; no request body is truncated or reduced to a reference.",
+    "unknown_root17_v3": "Not included. The seven requested record groups remain the entire roster."
+  },
+  "unchanged_exporter_checks": [
+    "Destination must not already exist; exclusive metadata writes and original failure record behavior remain.",
+    "Anchor actual HEAD, tree and clean tracked/untracked status are checked before reading records and again after collection.",
+    "Each terminal JSON must not be running, match its exact expected status, and match a supplied SHA256 when non-null.",
+    "All original record-directory files are recursively collected, including full before/after source fingerprints.",
+    "Original regular-file/nlink=1, per-file 32 MiB, total 128 MiB limits and helpers/bin exclusion are unchanged.",
+    "Each collected original file retains path, length, SHA256, Git blob digest and mtime; device/inode/size/mtime and full bytes are rechecked before archiving.",
+    "Tar membership set and every complete extracted member byte string are compared to the collected payloads before export metadata is written.",
+    "Original source outcomes are preserved. verified-original-record-export describes export integrity only; business_acceptance remains false."
+  ],
+  "nullable_terminal_digest": {
+    "source": "ordinary-715a572-late-writer-file-diagnostic-v1",
+    "sha256": null,
+    "reason": "No original result.json digest has been read. Do not invent it; exporter requires diagnostic-incomplete and records/validates the actual observed stable file."
+  },
+  "git_readback_checks": [
+    {
+      "name": "script",
+      "sha": "79494fe659157c453d4f0804cb01581eecce6052",
+      "bytes": 4370,
+      "readback_byte_equal": true
+    },
+    {
+      "name": "config",
+      "sha": "da380354b5d8aede46e25308e38af41f825ae6fd",
+      "bytes": 182169,
+      "readback_byte_equal": true
+    },
+    {
+      "name": "wrapper",
+      "sha": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+      "bytes": 146,
+      "readback_byte_equal": true
+    },
+    {
+      "name": "request",
+      "sha": "8e16a604428568c346fdba3cb1b961d5f626b523",
+      "bytes": 199062,
+      "readback_byte_equal": true
+    }
+  ],
+  "execution": {
+    "h_tools_called": false,
+    "remote_programs_started": false,
+    "cargo_or_tests_run": false,
+    "branch_or_ref_updated": false,
+    "python_ast_or_runtime_execution_claimed": false,
+    "review_method": "Git reads, code-mode JSON/UTF-8 reconstruction comparisons, and exact Git blob roundtrip only."
+  }
+}

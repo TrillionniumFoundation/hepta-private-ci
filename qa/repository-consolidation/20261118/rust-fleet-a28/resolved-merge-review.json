@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "local_review_commit": "b3957ba39ffb9e0378b4ab652e2cb6463acb7004",
+  "parents": [
+    "770179d123b879355b53db1d75f8f9f301280d3e",
+    "0e378dd351e0fca99d32f67613639b37c85605da"
+  ],
+  "merge_base": "7a95aea0002de94d18a11a6e95db3b36cc2c41a8",
+  "native_merge_conflicted_tree": "550954d5cccbbf30662e1c9d9de5666445b3c902",
+  "resolved_tree": "6911d7b83a7d2ae573efb4fbe08446f748a7a3a4",
+  "first_parent_tree": "6911d7b83a7d2ae573efb4fbe08446f748a7a3a4",
+  "whole_repository_tree_identity": true,
+  "source_delta_paths": [],
+  "new_history_relative_to_first_parent": [
+    "777e741d25b73d6a52048be34be63fab3fc6d79e",
+    "0e378dd351e0fca99d32f67613639b37c85605da",
+    "b3957ba39ffb9e0378b4ab652e2cb6463acb7004"
+  ],
+  "new_nonmerge_incoming_commits": 2,
+  "additional_local_review_merge_commits": 1,
+  "covered_refs_at_reviewed_snapshot": [
+    {
+      "name": "codex/sngr-fleet-canonical-sweep-20261029",
+      "tip": "0e378dd351e0fca99d32f67613639b37c85605da"
+    },
+    {
+      "name": "codex/sngr-fleet-authority-clippy-20261028",
+      "tip": "777e741d25b73d6a52048be34be63fab3fc6d79e"
+    }
+  ],
+  "native_merge_command": "git merge --no-ff --no-commit 0e378dd351e0fca99d32f67613639b37c85605da",
+  "conflict_resolutions": {
+    "authority_blocks": 5,
+    "registry_blocks": 1,
+    "separately_resolved_automatic_result_style_edits": 6
+  },
+  "ours_strategy_used": false,
+  "remote_changes": false,
+  "root_or_peer_checkout_changes": false,
+  "native_tests_repeated": false,
+  "formatter_repeated": false,
+  "reason_no_native_or_format": "Entire resolved tree exactly equals the first parent; no source or generated output changed. No fresh runtime, Clippy, or Windows qualification claimed.",
+  "publication_note": "Review-only local candidate based on exact 770179d. Publication on an advanced first parent requires its own real merge and exact-path/tree/ancestry verification."
+}

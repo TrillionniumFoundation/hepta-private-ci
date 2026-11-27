@@ -1,0 +1,64 @@
+{
+  "schema": "mem8.v8.actual-formatter-independent-peer.v1",
+  "reviewer": "mem_ci_integration",
+  "reviewed_at": "2026-11-11T15:21:33.128528+00:00",
+  "verdict": "NO_SEMANTIC_CHANGE_FOUND",
+  "source_head": "1c063ba9e934f060181d4fc17d724361ba2a37fd",
+  "pre_format_tree": "4e702e173439f422a7d00917d3c94064e42d45aa",
+  "post_format_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "patch": {
+    "bytes": 1429,
+    "sha256": "85f0a1b9019bc81013e0392e4f4e6c123834eed0a381e385b93d88104f3a68a9",
+    "git_blob": "217b2b42d3fb1c5f5f232579d5e8a2e83842618a"
+  },
+  "files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 11145,
+        "sha256": "d8d4561eafefa4cd63f4b26eaf921097f23e696c494a9d930221599269b294d2",
+        "git_blob": "7f4c84e566250831293392d6b85f6e0a3b236a23"
+      },
+      "after": {
+        "bytes": 11142,
+        "sha256": "dab92a6a3283564c9f2ca10bae5255873bd3a54902f0236127831ddde4cd47a6",
+        "git_blob": "7dcfa0c3268af5720c27fe283a351db9de0f2e30"
+      },
+      "exact_single_layout_substitution": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 6817,
+        "sha256": "f4035ccd79119eb328c800bfd6c3b541225e7d909cab659a5dc6a714a645c6b6",
+        "git_blob": "3f8a8f401b71b72c274daae62f744060b4d58cbf"
+      },
+      "after": {
+        "bytes": 6813,
+        "sha256": "6ecb06e2b478a45764833917aa4600b3361a4c2d2a3ddcd6231eba00db61ec16",
+        "git_blob": "ee46d664d9abd0f085958d1cb333baa155aceb5b"
+      },
+      "exact_single_layout_substitution": true
+    }
+  ],
+  "independent_checks": {
+    "complete_patch_reconstructed_from_exact_full_pre_post": true,
+    "complete_tree_changed_path_set_exactly_two": true,
+    "full_pre_post_git_blob_and_mode_bindings": true,
+    "isolated_git_apply_check_and_forward_full_byte_match": true,
+    "reverse_patch_restores_full_original_bytes": true,
+    "all_other_file_bytes_unchanged_by_exact_single_substitution": true
+  },
+  "semantics": [
+    "elevated_impl.rs changes only line wrapping and the optional trailing comma after the same is_cancelled method-pointer argument. The original receiver, callback, call order, wait and cancellation behavior are unchanged.",
+    "helper_manifest.rs moves the brace of the existing if-let chain to its own line and fixes indentation. Both patterns, lookup call, question-mark error propagation, short circuit, return and subsequent error remain identical.",
+    "No case, assertion, filter, deadline, retry, token, ACL, production boundary or qualification threshold changes."
+  ],
+  "scope_limits": [
+    "This peer mechanically applied and reversed the already-recorded patch in an isolated temporary directory only.",
+    "It did not rerun rustfmt, caller gates, native tests, host/model work or mutate any Git ref.",
+    "It does not claim native qualification or settle the original scoped-fix clean-gate failure."
+  ]
+}

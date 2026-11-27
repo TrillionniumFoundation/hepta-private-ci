@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.ndu480e.explicit-binary-target.v1",
+  "path": "codex-rs/hepta-ndu/Cargo.toml",
+  "target_name": "ndu-feedback-generation",
+  "target_path": "src/bin/ndu-feedback-generation.rs",
+  "dependency_changes": false,
+  "other_automatic_targets_preserved": true,
+  "rules_rs_version": "0.0.96",
+  "primary_sources": {
+    "rs/extensions.bzl": "58c14568d92044c37273c4f55b94ed1b11899690e6403ea92f48c3f1ce69ceea",
+    "rs/private/cargo_workspace_graph.bzl": "d2e0ed14798e938289af72a3d2269d8a542d8fe81356b2acd16a0c1801e52798"
+  },
+  "source_observation": "Workspace package manifests are watched at cargo_workspace_graph.bzl:553-554; metadata bin targets populate binaries at 687-703 and DEP_DATA at 758. The explicit bin declaration changes the watched manifest as well as adding the source file.",
+  "actual_query_target": "//codex-rs/hepta-ndu:ndu-feedback-generation",
+  "canonical_lock_check_exit": 0,
+  "actual_query_exit": 0,
+  "both_locks_unchanged": true
+}

@@ -1,0 +1,245 @@
+{
+  "schema": "hepta.fixed-full-caller-launch.contract.v1",
+  "status": "prepared-not-dispatched",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "fixed_source": {
+    "commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "six_pins": {
+      "CALLERS.toml": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+      "scripts/verify_hepta_callers.py": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+      "scripts/hepta_typed_callers.py": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "scripts/hepta_ci_exec.py": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      ".github/workflows/hepta-daemon-learning-native.yml": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+      "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    "final_exact_ref_pins_verified": true,
+    "prior_basis": "a7571fe7ca197de52cd071741b85b14a237d6bd5",
+    "a757_to_final_changes": "Six existing .rs files modified; no Rust path addition, deletion or rename. Full six fixed pin files unchanged.",
+    "boundary_records": 736,
+    "protected_records_with_multiplicity": 506,
+    "manifest_source_roots": [
+      "codex-rs"
+    ],
+    "scoped_Rust_files": 6655,
+    "whole_repo_tracked_Rust_files": 6777,
+    "scoped_path_list_blob": "f4998431db2cede056ac45e2b8c2dc1926e71095",
+    "scoped_path_list_sha256": "c548ca0923e16e5664fe5981e054de218a0074db02a1c8214136218f828921b7",
+    "delivery_documentation_commit_is_not_the_checkout_source": true
+  },
+  "exact_stamp": {
+    "template_blob": "2e6ae028ee0f0402ced542c3d76c89578e45e0b0",
+    "stamped_runner": {
+      "sha": "51a2a836d2b7fdddb25183674669e1426ae7222c",
+      "bytes": 18927,
+      "sha256": "a96496fe0a3a82eedb81a13863dbeaefadd2c561a4bade36cd8a2f4ddee4dfd3",
+      "full_readback": true
+    },
+    "edits": [
+      {
+        "before": "SOURCE_SHA = \"__ROOT_FINAL_SOURCE_SHA_40_HEX__\"",
+        "after": "SOURCE_SHA = \"a6717d7228045e6cb60532966f06e6e02c4a6abe\""
+      },
+      {
+        "before": "SOURCE_TREE = \"__ROOT_FINAL_SOURCE_TREE_40_HEX__\"",
+        "after": "SOURCE_TREE = \"647b9e78151299c1e7de455eae9c530ca93b28c9\""
+      }
+    ],
+    "exactly_two_unique_replacements": true,
+    "reverse_reconstructs_complete_template_bytes": true,
+    "all_original_imports_functions_and_gates_byte_identical_to_template": true,
+    "no_other_counter_or_budget_change": true
+  },
+  "delivery_files": {
+    "full-caller-recorder.py": {
+      "sha": "51a2a836d2b7fdddb25183674669e1426ae7222c",
+      "bytes": 18927,
+      "sha256": "a96496fe0a3a82eedb81a13863dbeaefadd2c561a4bade36cd8a2f4ddee4dfd3",
+      "full_readback": true
+    },
+    "launch-full-caller.py": {
+      "sha": "516f54f6455a1c906cc98ac2c8640566069bec5b",
+      "bytes": 30423,
+      "sha256": "4f816c9fcc31cb948edc9946ab9f5baab06cabad72d43b81405fd176336a135d",
+      "full_readback": true
+    },
+    "request.json": {
+      "sha": "1955deff94a7bf2e1d2a5461295c7e0b650e3aa8",
+      "bytes": 32902,
+      "sha256": "6b69492d1a421e2f5556497405537b47d3cc52b57f6fa4b946adaf0e0ee4ad96",
+      "full_readback": true
+    }
+  },
+  "original_caller_semantics": {
+    "full_original_recorder_blob": "8e39295637267d3ebc17cd3a57421cf451670dfd",
+    "original_contract_blob": "b8be0f2162e77cc69925be29050593801c375d71",
+    "reviewed_rebind_contract_blob": "a9474482835f5c1e294916a974874a437aec1e79",
+    "original_verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "phases": [
+      {
+        "command": [
+          "python3",
+          "scripts/verify_hepta_callers.py",
+          "self-test"
+        ],
+        "budget_seconds": 300
+      },
+      {
+        "command": [
+          "python3",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "budget_seconds": 4800
+      }
+    ],
+    "output_limit_bytes_per_phase": 67108864,
+    "maximum_active_observation_seconds": 10800,
+    "no_base_or_scoped_mode": true,
+    "no_retry": true,
+    "no_process_signals": true,
+    "deadline_or_output_gate_failure_remains_immutable_even_if_original_child_later_exits_zero": true,
+    "observation_limit_is_not_extra_pass_budget": true,
+    "verifier_children_can_remain_unobserved_after_recorder_cutoff": true,
+    "original_full_manifest_receipt_and_protected_multiplicity_checks_unchanged": true
+  },
+  "launch": {
+    "worktree": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "existing_parent": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native",
+    "exclusive_launcher_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-a6717d722804-launch-v1",
+    "recorder_creates_exclusive_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-a6717d722804-v1",
+    "runner_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-a6717d722804-launch-v1/full-caller-recorder.py",
+    "initial_checks": [
+      "Existing exact real worktree",
+      "Existing owned real known evidence parent",
+      "HEAD and tree equal fixed a671/647b; full porcelain clean",
+      "Recorder evidence path absent",
+      "Embedded complete runner byte count and SHA256 equal fixed postimage"
+    ],
+    "launcher_directory_mode": "0700",
+    "new_script_and_log_file_mode": "0600",
+    "exclusive_write_flags": [
+      "O_CREAT",
+      "O_EXCL",
+      "O_NOFOLLOW",
+      "O_CLOEXEC"
+    ],
+    "runner_readback": "Full written file SHA256 and byte count plus regular/single-link/owner and descriptor/path stability before starting the recorder.",
+    "child_argv": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-a6717d722804-launch-v1/full-caller-recorder.py",
+      "--repo",
+      "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+      "--evidence-dir",
+      "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-a6717d722804-v1"
+    ],
+    "child_cwd": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "child_environment_changes": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "inherited_environment_values_not_exported": true,
+    "wrapper_sets_TMPDIR": false,
+    "original_recorder_phase_TMPDIR": "recorder evidence directory/tmp",
+    "target_or_recovery_or_V8_read_write_by_wrapper": false,
+    "start_count": "One Popen site and no dispatch loop; the same Popen handle is waited without a timeout.",
+    "error_after_start": "If preparation of the started record or wait raises, finally attempts wait on that same owned child; never starts or adopts another process.",
+    "waits_have_no_timeout": true,
+    "wrapper_process_signals": false,
+    "wrapper_process_limit_or_resource_override": false,
+    "idempotency": "H exact request key reconciles the durable job. Independently invoking this wrapper again cannot reuse the existing exclusive launcher/recorder directories.",
+    "no_source_checkout_reset_or_mutation": true,
+    "no_target_creation_or_dependency_installation": true,
+    "no_grants_keys_policies_or_owner_custody_changes": true
+  },
+  "evidence": {
+    "launcher_files": [
+      "full-caller-recorder.py",
+      "launch-plan.json",
+      "launch-started.json",
+      "recorder.stdout.log",
+      "recorder.stderr.log",
+      "launch-result.json",
+      "launch-result.sha256"
+    ],
+    "atomic_json": "Write a new private temporary file inside the owned launcher directory, flush+fsync, os.replace to the owned record name and fsync the directory.",
+    "exact_actual_exit": "actual_child_exit is the raw returncode of the one directly spawned full-caller recorder. It is distinct from launcher_exit_code and does not represent the recorder's verifier subprocesses.",
+    "raw_logs": "Separate direct exclusive regular stdout/stderr files, flushed and fsynced after the owned recorder wait; full stable bytes and SHA256 retained. No pipe truncation or synthetic success output.",
+    "source_after": "Always attempted after wait; exact HEAD/tree/full porcelain comparison is included in atomic terminal JSON.",
+    "terminal_success": "Recorder actual exit0, both stable complete direct-child logs, no launcher recording errors, and unchanged fixed clean source. This is recorder_returned_zero, not ordinary-task acceptance.",
+    "terminal_nonzero": "Preserves original direct child code0..255 as launcher exit when recording is complete; negative signal returncodes stay exact in actual_child_exit while wrapper classifies failure1.",
+    "incomplete": "No dispatch, wait/record/source-after error or incomplete logs produce launcher exit2 and no success. Missing/corrupt terminal record is never a pass.",
+    "interrupted_observation": "This wrapper has no new observation timeout and sends no signals. If external interruption prevents final recording, preserve the original owned directories and treat actual terminal state as unknown.",
+    "original_verifier_results": "Read original recorder phase.started/gate/original/stdout/stderr files to determine verifier terminal or late/incomplete status; direct recorder completion alone must not replace them.",
+    "full_caller_10800_limit": "At original observation cutoff the recorder may return with a verifier child still unobserved. Wrapper completion does not claim that verifier child was killed or reaped.",
+    "external_H_supervisor": "No-signal and no-timeout properties describe this wrapper/request only, not an independent external supervisor lifecycle policy.",
+    "ordinary_acceptance": 0
+  },
+  "typed_request": {
+    "tool": "mcp__codex_apps__h_process_start",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "wrapper_in_last_arg_byte_identical": true,
+    "cwd": "/home/qian-qi",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "idempotency_key": "learn-ce434-a671-full-caller-v1",
+    "exact_argument_keys": [
+      "args",
+      "cwd",
+      "env",
+      "executable",
+      "host",
+      "idempotency_key"
+    ],
+    "omitted": [
+      "timeout_seconds",
+      "cpu_quota_percent",
+      "memory_max_bytes",
+      "nice",
+      "stdin"
+    ],
+    "request_blob": "1955deff94a7bf2e1d2a5461295c7e0b650e3aa8",
+    "dispatch_owner": "Root",
+    "dispatch_precondition": "Root waits for the already-running a671 source443 gate's actual terminal result before dispatch, to avoid overlapping source-proof CPU. The wrapper does not start, poll, stop or adopt that other job.",
+    "dispatched_by_this_preparation": false
+  },
+  "static_checks": {
+    "exact_stamped_runner_only_two_edits": true,
+    "one_recorder_Popen_site": true,
+    "one_git_run_site": true,
+    "no_subprocess_timeout_argument": true,
+    "no_signals_or_termination": true,
+    "no_signal_import": true,
+    "one_exclusive_launch_mkdir": true,
+    "no_source_or_target_command_mutation": true,
+    "no_retry_or_reconnect_route": true,
+    "one_environment_assignment": true,
+    "no_record_directory_creation_in_wrapper": true,
+    "stamp_written_with_exclusive_nofollow": true,
+    "exact_script_full_readback_before_launch": true,
+    "only_same_child_handle_waited": true,
+    "actual_exit_always_separate_from_launcher_exit": true,
+    "atomic_terminal_result": true,
+    "evidence_only_paths_outside_source": true,
+    "no_H_dispatch": true
+  },
+  "limitations": {
+    "pure_V8_and_Git_API_only": true,
+    "Python_parse_compile_or_execute": false,
+    "H_query_or_dispatch": false,
+    "actual_host_directory_existence_and_ownership_not_observed_by_this_preparation": true,
+    "actual_original_gate_pass_not_claimed": true,
+    "current_source443_or_native201_results_not_inferred": true,
+    "ordinary_acceptance": 0
+  }
+}

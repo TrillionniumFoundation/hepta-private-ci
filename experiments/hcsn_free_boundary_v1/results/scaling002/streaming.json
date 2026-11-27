@@ -1,0 +1,55 @@
+{
+  "batch": 2,
+  "batch_cpu_seconds": 0.5624473939999994,
+  "claim": "only this HCSN step state is measured; baseline caches are unmeasured",
+  "depth": 2,
+  "expected_tensor_elements": 514,
+  "inference_mode": true,
+  "length": 512,
+  "max_batch_vs_step_logit_error": 3.5762786865234375e-07,
+  "passed": true,
+  "samples": [
+    {
+      "length": 32,
+      "retains_autograd_graph": false,
+      "tensor_bytes": 2056,
+      "tensor_elements": 514,
+      "tensors": 9,
+      "unique_storage_bytes": 2056
+    },
+    {
+      "length": 64,
+      "retains_autograd_graph": false,
+      "tensor_bytes": 2056,
+      "tensor_elements": 514,
+      "tensors": 9,
+      "unique_storage_bytes": 2056
+    },
+    {
+      "length": 128,
+      "retains_autograd_graph": false,
+      "tensor_bytes": 2056,
+      "tensor_elements": 514,
+      "tensors": 9,
+      "unique_storage_bytes": 2056
+    },
+    {
+      "length": 256,
+      "retains_autograd_graph": false,
+      "tensor_bytes": 2056,
+      "tensor_elements": 514,
+      "tensors": 9,
+      "unique_storage_bytes": 2056
+    },
+    {
+      "length": 512,
+      "retains_autograd_graph": false,
+      "tensor_bytes": 2056,
+      "tensor_elements": 514,
+      "tensors": 9,
+      "unique_storage_bytes": 2056
+    }
+  ],
+  "streaming_cpu_seconds": 2.096001281000003,
+  "width": 32
+}

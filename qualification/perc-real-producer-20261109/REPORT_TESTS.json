@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/workspace/scratch/45b9487ed5d1/.venv/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_perc1_document_report.py",
+    "-v"
+  ],
+  "returncode": 0,
+  "wall_ns": 7475457685,
+  "tested_sha256s": {
+    "scripts/perc1/document_pilot.py": "b5f4162581309a1a03ae10b92d4bc7a1cc7c4d6084d55a698a377c9108a9d8ac",
+    "scripts/perc1/document_report.py": "0c2ad0f6a89e5f8c7559d05c73d116f3779aa4238d9061fcab1aedd170fe0a10",
+    "scripts/test_perc1_document_report.py": "4ebca70061c967e27cc492f304f27772dad66aac93cc456278798d7832a88c64"
+  },
+  "source_unchanged_during_tests": true
+}

@@ -1,0 +1,563 @@
+{
+  "schema": "hepta.concurrent-ceb-resolution-guidance.v1",
+  "ours": "094132189b7f94b941ac61cb3c812cb9a51cdc2b",
+  "incoming": "ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+  "merge_base": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+  "reviewed_replacement_base": "a4d8e4ba3a203a2437351cb478d131d5ca618266",
+  "approved_manifest_sha256": "924a309105f4c935e8d2f793758f854d0f61f407eed2e7bb0ac8f1366b7b932d",
+  "result": "All27 approved dependency paths retain094; workflow retains094 for C52+repaired locks; the extra fleet test conflict preserves the incoming assertion. This guidance is exact-source scoped and makes no CI or production qualification claim.",
+  "paths": [
+    {
+      "path": "MODULE.bazel.lock",
+      "baseline": "0e2e486c1971f1aec385cae176af2286a2593723",
+      "ours": "7b50a1951e53ab2af5c05fd89aba45702d5da27b",
+      "incoming": "0e2e486c1971f1aec385cae176af2286a2593723",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "5336311a0fa5c53fd5b3f5ef966d661afed27453a69d84ff3dd55dbc431ff501",
+      "ours_bytes": 1800885,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "baseline": "0c19e75a9c773c0eb6c9d82cd6e6c062574aa7e6",
+      "ours": "1d7559d5cd96c978780a8f063554015deb743c15",
+      "incoming": "0c19e75a9c773c0eb6c9d82cd6e6c062574aa7e6",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "77b97b277e334533fafeedc0dd5294ee0adaf71b8890e56adf3cf68d54370cc8",
+      "ours_bytes": 424436,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/current_time.rs",
+      "baseline": "5dd77ea7da5d69cd814ef5938e0c0f26555b48fe",
+      "ours": "d5e2c41a814f66d823433773c583cfae133da04f",
+      "incoming": "5dd77ea7da5d69cd814ef5938e0c0f26555b48fe",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "c8ff648f55896b8e24b736993708a932344e42b5a42e9aaa2406736c347be61c",
+      "ours_bytes": 4435,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/cloud-tasks/src/util.rs",
+      "baseline": "1422c05c333d812965a4a9e317704c2331918cb7",
+      "ours": "3221a36baee1883df35d83de8f762fc4352c4c30",
+      "incoming": "1422c05c333d812965a4a9e317704c2331918cb7",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "cc109c4dde258e901adf41fe1e84d78f9616a71eca876ff2aebb0f8c749aff62",
+      "ours_bytes": 4561,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "baseline": "a3bf6d70575b8ad0b5a63b5604cd9a903030c47e",
+      "ours": "9e395aeb0d3e975088c309e5bba3f45fc78138dc",
+      "incoming": "a3bf6d70575b8ad0b5a63b5604cd9a903030c47e",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "c5dd3758372c97fc60b507bd8f16eafd36cf9879a751337cad666ddac4a4c440",
+      "ours_bytes": 505505,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/core/src/session/turn_context.rs",
+      "baseline": "b40c8eda9d1edb98c1e68802b7230505dc5f9be1",
+      "ours": "4b031fad175bcf3260198792aa548d59b3322f18",
+      "incoming": "b40c8eda9d1edb98c1e68802b7230505dc5f9be1",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "a40398eb2fee4979a62deed6f3550c757864aab8d306390cdd09536299cf0bbf",
+      "ours_bytes": 43124,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/core/src/session/world_state.rs",
+      "baseline": "1e1316b04123e1cacbd52a43b8e8df1847f15282",
+      "ours": "af01e0da3e551c0fede5584ddf352ab5b698fcb0",
+      "incoming": "1e1316b04123e1cacbd52a43b8e8df1847f15282",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "0695f5c771f8732efcd18920031fce3728b9fa67f189bbabbbe89dda46435e09",
+      "ours_bytes": 13280,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/core/tests/suite/current_time_reminder.rs",
+      "baseline": "8843513af188b51b4a8c6c25fed626628d0d9960",
+      "ours": "5d58019dd507f0c0a4074c68d5564f271c49488d",
+      "incoming": "8843513af188b51b4a8c6c25fed626628d0d9960",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "3484d3c1469d07fc594243ea0b0fb14b0adddc2ab9372f15de64daeaf677768f",
+      "ours_bytes": 19361,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/core/tests/suite/guardian_review.rs",
+      "baseline": "d6245e8ed536d41790c3d61d711c5ae899305ae4",
+      "ours": "65a7f71c489067b89d85531690589f32b3d2a2e2",
+      "incoming": "d6245e8ed536d41790c3d61d711c5ae899305ae4",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "7d1bb4efa40456cc1ed70de5487dc8a3c511e5af426a10bab38a41db20801f78",
+      "ours_bytes": 58823,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/protocol/src/error.rs",
+      "baseline": "0d814cf4cdcf7d2e07a2da758760d1523c0648b0",
+      "ours": "c5c4f267c0a84f565d3273f2b084dead2ae419a0",
+      "incoming": "0d814cf4cdcf7d2e07a2da758760d1523c0648b0",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "f55c16051f2cb942a5ec633d947011f9a6832e0e3612df33de021761241bc761",
+      "ours_bytes": 29933,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/tui/src/chatwidget/reset_credits.rs",
+      "baseline": "ae6ff737810aa93f4155e53336430e9bd85dafb6",
+      "ours": "d2ae45671b49aefa99b04c5917189bec51d3801e",
+      "incoming": "ae6ff737810aa93f4155e53336430e9bd85dafb6",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "c74c41b1f084de5d8cc409c1eaaad455ca90671459d76f924aaa1c021fc3a11d",
+      "ours_bytes": 2706,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/tui/src/status/helpers.rs",
+      "baseline": "18c6037b67d54de015c33286c24a7576ac4bdec9",
+      "ours": "0e769269dc199e4036b5c0d71d9a4cb11d9f9384",
+      "incoming": "18c6037b67d54de015c33286c24a7576ac4bdec9",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "980d5cc18039e9f9a4cfd952072a82fce00efbbe1fc46db5c9f6070941474173",
+      "ours_bytes": 11909,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/Cargo.toml",
+      "baseline": "260ce8cc19e7739bc6cd207dd9e73346725e7ddd",
+      "ours": "563113ed2358695a783fdde8a02c6e76be6b0e32",
+      "incoming": "260ce8cc19e7739bc6cd207dd9e73346725e7ddd",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "45320d1615c9bd00ec4412ec2400412692b3f3acc2cc608bf7527622861b4aff",
+      "ours_bytes": 778,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/lib.rs",
+      "baseline": "0a990d8b43bd4658761dee772056a109fda3b5d5",
+      "ours": "ada3d522975c221122fd2df318d98075c72143fd",
+      "incoming": "0a990d8b43bd4658761dee772056a109fda3b5d5",
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "6a526157aaa3ec685d177aae7f268cecd6dd2943cd0f08c34bcc219866f468f3",
+      "ours_bytes": 14793,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local.rs",
+      "baseline": null,
+      "ours": "5efe3d870a42cd5cc6d7f0c033e75b0dc23c5973",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "ed14c53ca771b38eff5c666c16a80034620fc386a67df42aea0c4bea11dc546f",
+      "ours_bytes": 6962,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_mobile.rs",
+      "baseline": null,
+      "ours": "7c7ef6ad010937c5d0cedef694a793e64a63ba28",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "204a61d21c03adb9318d140065a9259de5bbe9a66e6871e39d689fb5ee1684c2",
+      "ours_bytes": 2809,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_mobile_tests.rs",
+      "baseline": null,
+      "ours": "12e08df036fad99033ac2e51d2b41a7edf029a0b",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "28b6ff175b61cfb7816720e30fb00b9e2849b48a17fd883f7087128922d16cc6",
+      "ours_bytes": 1936,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_posix_compat.rs",
+      "baseline": null,
+      "ours": "a82181baa21f0d9ddb6ea3b4c41369eecfac5544",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "1a022d9277606a9dc8fd047d283f2e7f97b3484e4b1940b226e86e009b5e9d8a",
+      "ours_bytes": 10098,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_tests.rs",
+      "baseline": null,
+      "ours": "1d5f5ee533244df72ae7d6e22ee52a5748aa9e83",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "c197ec143538b4e89bd380ae5878e231872a2911fe604c6146e2908d7925bc14",
+      "ours_bytes": 7352,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_unix.rs",
+      "baseline": null,
+      "ours": "5e4e5c9dc21f41a4dddbed178ff0c2198a0727fc",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "a2b9c395ef5ef1dc37c40a017b9f47e6b118d5ca9c02f7c1129e5b3441969a7d",
+      "ours_bytes": 5436,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_unix_tests.rs",
+      "baseline": null,
+      "ours": "ea3ca94f1886be4e04a23f8d17eac5425558b895",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "829dc3275310eab11b50833c4612f5ba9cb8b1af4523ae0a1e16b241480af3ec",
+      "ours_bytes": 2550,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_wasm.rs",
+      "baseline": null,
+      "ours": "bb628b1602392d2069df5a3bb18430770ad957ae",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "13dea3ef0ee8c9ea8e3fdbb6ca0e06f91b40a53b9037b971ec5db31cd7e06ecb",
+      "ours_bytes": 553,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_windows.rs",
+      "baseline": null,
+      "ours": "2e5c85182af7e4f6d56fa25c77831085e2ff6774",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "d4e74a6b71f81fc309b56fbc419242f32c75f81e005a4d44c0ec0cc41293f956",
+      "ours_bytes": 1843,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_windows_rules.rs",
+      "baseline": null,
+      "ours": "6b6610bf17d8aa8c583e1db58352947de2a4f699",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "8637eba29c2ff3c6faf7c9283967d2d26e606dda4b9bfc81e17f0fd23d17b4d2",
+      "ours_bytes": 4941,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_windows_rules_tests.rs",
+      "baseline": null,
+      "ours": "3e41d952ee313253162e57f786544e96b8080610",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "d5ea3023e1fc08ebb59ed24d69854bea716f79e58b36bf511ba12676d980cbfa",
+      "ours_bytes": 5355,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_zone.rs",
+      "baseline": null,
+      "ours": "4eb870db8b4a2ac6257a5e55b7713309d320b336",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "d018a9435da7719e84541587e4da173d33c05a3d21322d35c2150e44da7f0ed8",
+      "ours_bytes": 11318,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": "codex-rs/utils/time/src/local_zone_tests.rs",
+      "baseline": null,
+      "ours": "67209b169c577b6e597e5bea1b12f70bc41af511",
+      "incoming": null,
+      "incoming_equals_a4d8": true,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 0,
+      "incoming_delta_path": null,
+      "ours_sha256": "d37bfe1f4e6b181b01999c76da4724417f3bc23bd92b31e39f614df8e3a0bc1d",
+      "ours_bytes": 5538,
+      "ours_matches_approved_manifest": true,
+      "resolution": "retain exact 094 postimage",
+      "reason": "Incoming blob equals the exact a4d8 baseline of the independently reviewed replacement; no incoming change beyond that baseline."
+    },
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "baseline": "7aed12ad2f7a28e7ae25d742c285893baba1e0e2",
+      "ours": "fde62cb0cfbeb80ddc4472c876766f7d56e2ff44",
+      "incoming": "43101886f21b9b5a032c98c0a550f59b70e96f3d",
+      "incoming_equals_a4d8": false,
+      "incoming_equals_094": false,
+      "incoming_delta_bytes": 1411,
+      "incoming_delta_path": "/workspace/scratch/724669789c83/ci-audit/concurrent-ceb-review/.github__workflows__ndu-windows-storage-probe.yml.a4d8-to-ceb.diff",
+      "ours_sha256": "5b0b0b99851bd3a4799838e531dd30a5782370c8a269bd418f2259bacd0e32c6",
+      "incoming_sha256": "2cb3dd544f6d7c150dcb2e7fdb6d25ea56323907567a7221bcb62c94f6f765b6",
+      "ours_bytes": 54143,
+      "resolution": "retain exact 094 workflow when retaining repaired paired locks and C52",
+      "reason": "The full byte difference consists only of the canonical Cargo-lock remainder and C-source digest substitutions; all controls, method lists, commands, artifact rules and Python trace pin are otherwise identical.",
+      "two_hash_inverse_proof": true
+    }
+  ],
+  "lock_records": {
+    "ours": {
+      "chrono": [
+        {
+          "version": "0.4.45",
+          "dependencies": [
+            "iana-time-zone",
+            "num-traits",
+            "serde",
+            "windows-link"
+          ],
+          "checksum": "1aa79e62e7697b8e29b513a68abacf485adcd1fe8284a4316c5ae868e6633327"
+        }
+      ],
+      "codex-utils-time": [
+        {
+          "version": "0.0.0",
+          "dependencies": [
+            "iana-time-zone",
+            "js-sys",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "tempfile",
+            "time",
+            "tz-rs",
+            "wasm-bindgen",
+            "windows-sys 0.61.2"
+          ],
+          "checksum": null
+        }
+      ],
+      "time": [
+        {
+          "version": "0.3.55",
+          "dependencies": [
+            "deranged",
+            "js-sys",
+            "libc",
+            "num-conv",
+            "num_threads",
+            "powerfmt",
+            "serde_core",
+            "time-core",
+            "time-macros"
+          ],
+          "checksum": "cdb87b95ec50ddfa440816d227a17b2ccbdda963a316a727fda0fc4334f7d134"
+        }
+      ],
+      "tz-rs": [
+        {
+          "version": "0.7.3",
+          "dependencies": [],
+          "checksum": "4fc6c929ffa10fb34f4a3c7e9a73620a83ef2e85e47f9ec3381b8289e6762f42"
+        }
+      ]
+    },
+    "incoming": {
+      "chrono": [
+        {
+          "version": "0.4.45",
+          "dependencies": [
+            "iana-time-zone",
+            "num-traits",
+            "serde",
+            "windows-link"
+          ],
+          "checksum": "1aa79e62e7697b8e29b513a68abacf485adcd1fe8284a4316c5ae868e6633327"
+        }
+      ],
+      "codex-utils-time": [
+        {
+          "version": "0.0.0",
+          "dependencies": [
+            "jiff",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "time"
+          ],
+          "checksum": null
+        }
+      ],
+      "time": [
+        {
+          "version": "0.3.55",
+          "dependencies": [
+            "deranged",
+            "js-sys",
+            "libc",
+            "num-conv",
+            "num_threads",
+            "powerfmt",
+            "serde_core",
+            "time-core",
+            "time-macros"
+          ],
+          "checksum": "cdb87b95ec50ddfa440816d227a17b2ccbdda963a316a727fda0fc4334f7d134"
+        }
+      ]
+    }
+  },
+  "trace_source_bindings": {
+    ".github/scripts/windows-appcontainer-probe/child_trace.c": {
+      "ours": "c59a908daa1df6c827d5d3245de563c3952f9e28fb044555ea3417581e07d697",
+      "incoming": "717521474cef3d5f49cb6170bfb9ab6cc6fd96430cccbf69263bed0f59bc22a8"
+    },
+    ".github/scripts/windows-appcontainer-probe/child_trace.py": {
+      "ours": "f370bf331f1277afa1168ff27c2fe852e5ff11188d3b206ce884585f1ca2cbe8",
+      "incoming": "f370bf331f1277afa1168ff27c2fe852e5ff11188d3b206ce884585f1ca2cbe8"
+    },
+    ".github/scripts/windows-appcontainer-probe/probe.py": {
+      "ours": "d73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192",
+      "incoming": "d73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192"
+    },
+    ".github/scripts/windows-appcontainer-probe/win32_api.py": {
+      "ours": "9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10",
+      "incoming": "9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10"
+    }
+  },
+  "additional_conflict": {
+    "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+    "in_approved27_manifest": false,
+    "resolution": "retain ceb exact file for this isolated conflict, or reproduce its exact added assertion in the union",
+    "incoming_sha256": "289227743978c6537c9189d70ab5b85cdac705802ba9881568aa0ee82f128d49",
+    "incoming_git_blob": "22b3bf3a78199f1047ac8225569cbcdb765f5f8b",
+    "delta": "Save canonical path, build binding from it, assert binding.as_path()==canonical.as_path(), return Ok(binding). This adds a real identity assertion and keeps the original overlap oracle.",
+    "source_relation": "094 equals a4d8 for this path; ceb adds the assertion beyond both.",
+    "qualification": "The new assertion must remain enabled in subsequent native hepta-fleet qualification; static review does not claim Windows pass."
+  },
+  "source_mutation_performed": false
+}

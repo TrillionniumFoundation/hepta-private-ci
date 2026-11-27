@@ -1,0 +1,459 @@
+{
+  "schema": "hepta.d397-caller-manifest-merge.v1",
+  "refs": {
+    "ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "ours": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+    "theirs": "d3977d9a1bed3e89952c576c45660b04ea674faf"
+  },
+  "input_blobs": [
+    {
+      "lane": "ancestor",
+      "path": "CALLERS.toml",
+      "sha": "6eb79688b56aca6306bc500b96f3b10654660196",
+      "bytes": 1124758,
+      "sha256": "d1528f92e274a081dd1c77356a10b5ab2944f00f59eb72ef6b0d9d3e95f20903"
+    },
+    {
+      "lane": "ancestor",
+      "path": ".github/blob-size-allowlist.txt",
+      "sha": "d335890b19646a4d9776ffd3a1943bea573b0150",
+      "bytes": 12375,
+      "sha256": "78b1c0a05f309914e94f44b622222d1b328b27e578129fc2cd699e63319cff9e"
+    },
+    {
+      "lane": "ours",
+      "path": "CALLERS.toml",
+      "sha": "a78d6b4960878f0df2b895c45fd131afe6caf87e",
+      "bytes": 1131679,
+      "sha256": "a5fe2dfabc9dfd0486c96a10d9c9e1a11f8c3908e5c6de2f93ef164abf8ba46f"
+    },
+    {
+      "lane": "ours",
+      "path": ".github/blob-size-allowlist.txt",
+      "sha": "2bca82fb841d53f177cc6b7448d45946606e108b",
+      "bytes": 11699,
+      "sha256": "c83cf494a67b205be32cc2c24427e2800cc78cccb85eb0470bcb090bdac7f87a"
+    },
+    {
+      "lane": "theirs",
+      "path": "CALLERS.toml",
+      "sha": "7b5af7a67e9f960ca260d9ef4f5a59579e13034e",
+      "bytes": 1835944,
+      "sha256": "a7db9c047ed16b33a889fd95934e64b2268ff1c1b8d4225dc4b558968fddf757"
+    },
+    {
+      "lane": "theirs",
+      "path": ".github/blob-size-allowlist.txt",
+      "sha": "d8e4f723209da9a0b6cfcf72612fcd2a495ec427",
+      "bytes": 12709,
+      "sha256": "f54d02aec8ec75ead3a58db22b1e88c3d43bd0b0996e51dab642d5ef58f0bd48"
+    },
+    {
+      "lane": "meta",
+      "path": "production",
+      "sha": "ded2662c3c3668ef17c49a6f6dcaa8a6af40539e",
+      "bytes": 15909,
+      "sha256": "9b6fc3ffbe584c619be732f2d6340144152b15078a5e5eae8bb699773b071edb"
+    },
+    {
+      "lane": "meta",
+      "path": "tuples",
+      "sha": "8cb6fe196d4852b81ac1695eabe4720554b85c25",
+      "bytes": 35135,
+      "sha256": "9038b91d0cd2656820fa8ffefb9540c8bcf456b27871d85c8c54c110d19a5fb7"
+    }
+  ],
+  "status": "STATIC_NOT_RUN_NOT_FMT",
+  "code_tree": "e7296c7648fdc3dab62d22e8a473623d26dc2c0b",
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "blob": "f6efa0852dd91312b3571332bea862908eb8997c",
+      "bytes": 1842850,
+      "sha256": "03df70c12e195c96d09423e8bfa2b52c321520918ba4fea8c88eaff758ca0b63",
+      "full_readback": true,
+      "exact_text_equal": true
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "blob": "3c3a465aa84669eaefb90e1e299f5d2de4695f85",
+      "bytes": 11847,
+      "sha256": "51696d4f119b073abf906f8a8f4ce6ae06c5370910e4afac1f71c2f2cf79cafc",
+      "full_readback": true,
+      "exact_text_equal": true
+    }
+  ],
+  "counts": {
+    "boundaries": 608,
+    "protected_rows": 426,
+    "protected_paths": 352,
+    "required_function_guards": 1127
+  },
+  "source_manifest": "ded2662c3c3668ef17c49a6f6dcaa8a6af40539e",
+  "boundary_tuples": "8cb6fe196d4852b81ac1695eabe4720554b85c25",
+  "hash_helper": "e3472da05742114e32c0a81febf2e8bd2b47d531",
+  "parser_helper": "868b1c24d92a86e4a568ed7f0c9a887f97dcfd1c",
+  "changed_groups": [
+    {
+      "key": "table:privileged_inventory",
+      "old_line": 19,
+      "new_line": 19,
+      "old_lines": 3,
+      "new_lines": 3,
+      "before_git_sha": "1f5fb1158ad73b15d8428eb083f4bedbb4109f97",
+      "after_git_sha": "b43af39fa8ed8465f4fdd6d6468c017f8ef6286c"
+    },
+    {
+      "key": "boundary:circuit_feature_original_next_use_observation",
+      "old_line": 2605,
+      "new_line": 2605,
+      "old_lines": 9,
+      "new_lines": 9,
+      "before_git_sha": "9a298542f1fac9d72f793638865d9aaf421a154f",
+      "after_git_sha": "74df9e1af0ac7c5b2169c549eeef168804f1c9f9"
+    },
+    {
+      "key": "boundary:learning_original_owner_command_channel",
+      "old_line": 3212,
+      "new_line": 3212,
+      "old_lines": 8,
+      "new_lines": 8,
+      "before_git_sha": "b69b30a102ee95f028215a514422d5fb55ea6e20",
+      "after_git_sha": "d76bb35893898a5300bf5e47524a82809113cc56"
+    },
+    {
+      "key": "boundary:learning_original_circuit_selection_remote_readback",
+      "old_line": 3603,
+      "new_line": 3603,
+      "old_lines": 11,
+      "new_lines": 11,
+      "before_git_sha": "f8c9957d9b6afda425a63d2c75fa770c44a7dc88",
+      "after_git_sha": "dce869c753677eb6a663009caffb528307df3ce4"
+    },
+    {
+      "key": "boundary:learning_original_selector_command_context",
+      "old_line": 3636,
+      "new_line": 3636,
+      "old_lines": 11,
+      "new_lines": 11,
+      "before_git_sha": "71d43a0bde7a0e6ebfec8c44c87c256e30c37954",
+      "after_git_sha": "f592bfe9928ca00478b570032b0ff6131985e689"
+    },
+    {
+      "key": "boundary:learning_original_selector_command_owner_factory",
+      "old_line": 3667,
+      "new_line": 3667,
+      "old_lines": 11,
+      "new_lines": 11,
+      "before_git_sha": "03be2bf785705150c3c010b9139e82b2cc59137a",
+      "after_git_sha": "c1b2ca29939540c0eae59349cc7e00f851de1447"
+    },
+    {
+      "key": "boundary:learning_original_dataset_readback_current",
+      "old_line": 3766,
+      "new_line": 3766,
+      "old_lines": 10,
+      "new_lines": 10,
+      "before_git_sha": "a460907502c1fe04271351fa3eaca246a4efbf58",
+      "after_git_sha": "cbc283ec3fc6d8b90f2c0858808660cae78c444f"
+    },
+    {
+      "key": "boundary:learning_original_material_initial_context_check",
+      "old_line": 3904,
+      "new_line": 3904,
+      "old_lines": 9,
+      "new_lines": 9,
+      "before_git_sha": "d77228732ad0e6cf816292c55a9bc8f6cf665ce4",
+      "after_git_sha": "38785fe82b1bbbeaba4e1715783f7b8acbfde6af"
+    },
+    {
+      "key": "boundary:learning_original_material_dataset_context_check",
+      "old_line": 3913,
+      "new_line": 3913,
+      "old_lines": 9,
+      "new_lines": 9,
+      "before_git_sha": "f72f1a93cc5a421b35847312740565c84b9f93bb",
+      "after_git_sha": "87f6b9be46ddac75929b04d48ae03495dc8a9f65"
+    },
+    {
+      "key": "boundary:learning_original_next_use_command_owner_factory",
+      "old_line": 3953,
+      "new_line": 3953,
+      "old_lines": 11,
+      "new_lines": 11,
+      "before_git_sha": "6e3fcb2e2af4e7660cb98642dc9acd7bbd5aa7b6",
+      "after_git_sha": "bb8e5cb294c62034d3807215747b272a42097cff"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "old_line": 6694,
+      "new_line": 6694,
+      "old_lines": 9,
+      "new_lines": 9,
+      "before_git_sha": "3d5190a2ef1f004d6c9702ac2c89a55fc71b2917",
+      "after_git_sha": "cb03797d5b1064f621efab3354f6fe54347febbd"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "old_line": 8294,
+      "new_line": 8294,
+      "old_lines": 26,
+      "new_lines": 26,
+      "before_git_sha": "903600a6f5d58a0687df5bd88e2f9295e6e822bf",
+      "after_git_sha": "a7746b64fcabcbe9aedf3f5835d68807934980d8"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "old_line": 8718,
+      "new_line": 8718,
+      "old_lines": 7,
+      "new_lines": 7,
+      "before_git_sha": "0beaa6347c9b4ff7389a1bf628310b6341daf13b",
+      "after_git_sha": "de8e819c7ff3be84f776c188762b437b78891f92"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "old_line": 8725,
+      "new_line": 8725,
+      "old_lines": 6,
+      "new_lines": 6,
+      "before_git_sha": "c431c0d600c0a1f685987f79ed3f72826d9353d8",
+      "after_git_sha": "08cd6578681c2b7ad01c18c1b071d417f2f5d5d9"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "old_line": 8731,
+      "new_line": 8731,
+      "old_lines": 8,
+      "new_lines": 8,
+      "before_git_sha": "7679b3a5a3f238138a5b7d52e4adf06a09c0883a",
+      "after_git_sha": "3e8a272b607d2ce95e8b9777a0f329565f85d780"
+    },
+    {
+      "key": "boundary:learning_original_evaluation_host_receipt_current",
+      "old_line": 8845,
+      "new_line": 8845,
+      "old_lines": 12,
+      "new_lines": 12,
+      "before_git_sha": "f3de39c058ef213ff82793f51c9612ec3c0d559f",
+      "after_git_sha": "a1c560e00e5247d52d2a1ff8cb46d6bc82a1e96e"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "old_line": 9013,
+      "new_line": 9013,
+      "old_lines": 7,
+      "new_lines": 7,
+      "before_git_sha": "37ae70356d899f328e5597d780fe67a49e698085",
+      "after_git_sha": "74f09e87d7065c06eba583b7480385d7d86b7e45"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "old_line": 9020,
+      "new_line": 9020,
+      "old_lines": 7,
+      "new_lines": 7,
+      "before_git_sha": "ccb5fec92acf7b36a92504c9cada96d5c366c357",
+      "after_git_sha": "8be3833e4a23dc75e83bd7bf3d641c4951f52f1e"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "old_line": 9027,
+      "new_line": 9027,
+      "old_lines": 20,
+      "new_lines": 20,
+      "before_git_sha": "746e02cd2b31ea82552d3f7ae8f5955e0cdefefc",
+      "after_git_sha": "f64363414dc1c5ad536bc96532196a60df5fea01"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "old_line": 9053,
+      "new_line": 9053,
+      "old_lines": 20,
+      "new_lines": 20,
+      "before_git_sha": "28ab6dbb973e91bf79dd662097560c709254e3c3",
+      "after_git_sha": "1224696f41cfc19e96dc2637bcb0b4e413b766e0"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "old_line": 9768,
+      "new_line": 9768,
+      "old_lines": 6,
+      "new_lines": 6,
+      "before_git_sha": "6e50ee1426e9cf7f3ab1a954ecf53eae15daa004",
+      "after_git_sha": "dbfb326468fbcf48002a66467ef8307e65349cec"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs",
+      "old_line": 10717,
+      "new_line": 10717,
+      "old_lines": 7,
+      "new_lines": 7,
+      "before_git_sha": "f3079e0788f1046e4a19f142f6ed92b0d4f286c5",
+      "after_git_sha": "c0d1e7f4dca63b80ba1515a1f44d77e2524cd0b5"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_binding.rs",
+      "old_line": 10724,
+      "new_line": 10724,
+      "old_lines": 6,
+      "new_lines": 6,
+      "before_git_sha": "2f899efda7d12e0d8b9ba15521010eb0b5c7809a",
+      "after_git_sha": "cdeac7656bad3e095f372c1508758abd7a816339"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+      "old_line": 10736,
+      "new_line": 10736,
+      "old_lines": 7,
+      "new_lines": 7,
+      "before_git_sha": "627ac87c1139c816c6115f8797cb915c142bdeb6",
+      "after_git_sha": "ed021cb0a45f112845b0d60fd5e94cdbe7bab909"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs",
+      "old_line": 10743,
+      "new_line": 10743,
+      "old_lines": 6,
+      "new_lines": 6,
+      "before_git_sha": "7c25df71e2cf6fec9b2e16ba2a92c62269886ddd",
+      "after_git_sha": "52aab41b3d8115d62a27339586bb588a13e54c60"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_attestations.rs",
+      "old_line": 10755,
+      "new_line": 10755,
+      "old_lines": 6,
+      "new_lines": 6,
+      "before_git_sha": "8d9aa4ad3f4dbf7fb1fc0dcc296f2856f3b57311",
+      "after_git_sha": "b7d7eb67db740f2180a41aee942137f7ec907350"
+    },
+    {
+      "key": "boundary:circuit_feature_original_next_use_read_set",
+      "old_line": 10862,
+      "new_line": 10862,
+      "old_lines": 0,
+      "new_lines": 9,
+      "before_git_sha": null,
+      "after_git_sha": "90e9a81e870cb4911f93fbe56aadb112644e0a70"
+    },
+    {
+      "key": "protected:codex-rs/hepta-agentd/src/cell_q24_resident_lane.rs",
+      "old_line": 10862,
+      "new_line": 10871,
+      "old_lines": 0,
+      "new_lines": 11,
+      "before_git_sha": null,
+      "after_git_sha": "c5a3f7116e365d57c4296355f6618e0b5744cf49"
+    }
+  ],
+  "protected_source_bindings": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "base": "5d2b1eeb3d9971741145563a4d708c28d6cd2eae",
+      "post": "ff108c4b3a11f3dbdfc014ff6c5fc485ee7dfc73",
+      "bytes": 12381,
+      "sha256": "a2702c756212445a29776cc10fd214ae9096f095d74d9a4fb6dc5bbafe1762e6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "base": "05359fcfecf67f7695a99aa666f761db169aa5ed",
+      "post": "551a281e0df6b0abb0033cd8b4840eeb48882d2e",
+      "bytes": 6640,
+      "sha256": "f71a15f6ea0b8735188487ca67cf471826d95f7bb4358530ad85de4efaca5078"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "base": "7213c87054bf7335622eda758659baf2f1a41e8e",
+      "post": "2d1813e4f5a8c4b0f0d852d3c51b817d25f93c90",
+      "bytes": 15775,
+      "sha256": "2bbb8b979707da80b850c90342f94e3862b56cb4d08ba5d5ebe5f28762643727"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs",
+      "base": "5520712840c75b8e8a0831628f2c8715315aad36",
+      "post": "7232ad40b7bdbc69d9813e40c056766dc3344bff",
+      "bytes": 11035,
+      "sha256": "d197a9d98286b3b37bd7ac46aabadaa6ab1a2513c92c4ee3fafc86d84ccdaae8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_attestations.rs",
+      "base": "e884bb91508d86382e7189edaab8fe403581be6b",
+      "post": "2154edd35a20d36064fd5dedefb71e73966bdc99",
+      "bytes": 6997,
+      "sha256": "eff941b87b4da222d6f8e6af13b571326a823b281bd1ed3bf36ba54a28206465"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_binding.rs",
+      "base": "a53143e30fd9a1b7ee5c0c3bafc6ca083acb163d",
+      "post": "7a624fbb69c9b557a9496ddb3f484916d2608beb",
+      "bytes": 5223,
+      "sha256": "484f1414ca4c60fc4e0071de16c6ab305274e992f88f581f844a06cd40e5bba3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+      "base": "02bc38551e1ccb6e574567277f902c05ca83dd86",
+      "post": "1ee4e558ae60296f47a0049eb08654c726e0c2e4",
+      "bytes": 10772,
+      "sha256": "f55ebb81067da6fbb079efec95a33a0a05c10ca65aacd22729ec5bc860899303"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs",
+      "base": "bd28119fd00c39ecb246bad3bf500aece080160f",
+      "post": "53c87af635fd882bc509fa6ef37f679be2b90b15",
+      "bytes": 9491,
+      "sha256": "b6e60af75d7e7b5d0e7d8a1436d89d3a93e88ce55c71ed5efb7c720fb676c86e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "base": "2820145d2546e42b7d697a2f64eca855b1132584",
+      "post": "366400a019bcaf29016d74c9540823be8da7969b",
+      "bytes": 12237,
+      "sha256": "836277fd5d7b6a18979baabeda0f0c4c4c48b7ad355f33c363ef7cb9932f8d93"
+    }
+  ],
+  "allowlist": {
+    "active_CALLERS_pins": 1,
+    "removed_upstream_historical_active_pins": [
+      "sha256:385f4939552913fd9d869c33c4fb5c376f4a2ff8ce6bad25ce4709dc98cf13c4 CALLERS.toml",
+      "sha256:b76d9fc58c178d9e1edb33efb3e5ed12b397c028b9e0ec218f94a9161ca3830d CALLERS.toml",
+      "sha256:6a8ebaaed565060351cd7e5861206659c9b191b367bf2e42937e8df008ef7e5f CALLERS.toml",
+      "sha256:a425554c89ffcb18b6dfa6fef2be6ef4c9b5c34781747fb9ac8f7451f2b6c29b CALLERS.toml",
+      "sha256:529c421f3580b87f3eedbea2b53f93fa2f39e45ea478dcbbb69b69e91a95723d CALLERS.toml",
+      "sha256:40a0eff01f8e453532f248fdaf2b624d6f246034511352c2e54b2a0887e83808 CALLERS.toml",
+      "sha256:f2188af3c5ba2a69bb1f8f91f0fd0218f1e66aa0cebc61e3b1d8b94debf6c46a CALLERS.toml",
+      "sha256:a1fe445e3656787397731f83beb005d4454bb60b043a7f3846f15613658b74ce CALLERS.toml",
+      "sha256:7725f09680e6f63b9123f8c1ee51e19e8b9e54d169c8c34fc8c7c6165b8d5a22 CALLERS.toml",
+      "sha256:446216e0cc4c2a8738394e4c8b7b8aec81319aedd5b44dca6989cc5d50007b24 CALLERS.toml",
+      "sha256:d1528f92e274a081dd1c77356a10b5ab2944f00f59eb72ef6b0d9d3e95f20903 CALLERS.toml",
+      "sha256:abd68af6b993cb2b363c1909581b628e6f94bab0696eff2e55120d5cf9d2f4b9 CALLERS.toml",
+      "sha256:a7db9c047ed16b33a889fd95934e64b2268ff1c1b8d4225dc4b558968fddf757 CALLERS.toml"
+    ],
+    "non_CALLERS_rules_equal_to_both_inputs": true
+  },
+  "limits": [
+    "The source guards bind the separate reviewed thirteen-file merge; this tree changes two manifests only.",
+    "No formatter, Rust/Python source gate, caller checker, Bazel, actor or h job was executed.",
+    "No commit/ref/branch was created or updated.",
+    "Function guard shape and inventory counts are static parsing observations, not executed repository gates."
+  ],
+  "patch_application": {
+    "base": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+    "exact_reconstruction": true,
+    "scope": "Pure JavaScript application of the saved unified diff to full original CALLERS bytes; not repository tests."
+  },
+  "review_artifacts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-caller-manifest-merge/CALLERS.diff",
+      "blob": "35e52e0dfaaa52952a6f171c95ef502ab7b884e9",
+      "bytes": 252929,
+      "sha256": "e1b15fbf583335d724c51456c4f84a6b504c7eef26f80570ca65cee07cfc8f00"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-caller-manifest-merge/PROTECTED_DELTAS.json",
+      "blob": "a8902a84ee3a458118d138759e6a57992c4a0eba",
+      "bytes": 132917,
+      "sha256": "232873b80e6f9ea7485aeb479399f1f6a78656b2ada410ecd3254e395d8ac850"
+    }
+  ]
+}

@@ -32,7 +32,7 @@ pub use evaluation::AgentdEvaluationBindingV1;
 use evaluation::AgentdEvaluationSessionV1;
 pub use evaluation::AgentdIntelligenceEvaluationError;
 pub use evaluation::AgentdSignedEvaluationV1;
-pub use evaluation::intelligence_evaluation_binding_payload_v1;
+pub use evaluation::intelligence_evaluation_binding_payload_v2;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -171,7 +171,7 @@ impl FileBackedFreshnessOracleV1 {
         for owner in file.owners {
             let owner_id = StableId::new(owner.owner_id.clone())
                 .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-            if seen.insert(owner_id.clone(), owner).is_some() {
+            if seen.insert(owner_id, owner).is_some() {
                 return Err(CanonicalIntelligenceError::FreshnessUnavailable(
                     requested.clone(),
                 ));
@@ -582,7 +582,7 @@ impl PreparedAgentdIntelligenceRunV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceProductOutcomeV1 {
-    Ready(PreparedAgentdIntelligenceRunV1),
+    Ready(Box<PreparedAgentdIntelligenceRunV1>),
     Abstained,
     SlowPath,
 }
@@ -592,7 +592,7 @@ pub enum AgentdIntelligenceProductOutcomeV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceAdmittedOutcomeV1 {
     Ready {
-        prepared: PreparedAgentdIntelligenceRunV1,
+        prepared: Box<PreparedAgentdIntelligenceRunV1>,
         run_receipt: crate::RunReceipt,
     },
     Abstained,
@@ -722,7 +722,7 @@ pub struct PendingIntelligenceLedgerAppendV1 {
 pub enum AgentdIntelligenceLedgerError {
     Currentness(CanonicalIntelligenceError),
     Ledger(DurableLedgerError),
-    Indeterminate(PendingIntelligenceLedgerAppendV1),
+    Indeterminate(Box<PendingIntelligenceLedgerAppendV1>),
     NotSelected,
     InvalidOutcome,
 }
@@ -736,7 +736,7 @@ impl StdError for AgentdIntelligenceLedgerError {}
 
 #[cfg(test)]
 #[path = "intelligence_product_tests.rs"]
-mod tests;
+pub(crate) mod tests;
 
 #[cfg(test)]
 #[path = "intelligence_evaluation_tests.rs"]

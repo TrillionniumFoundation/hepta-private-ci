@@ -1,0 +1,46 @@
+# HCSN P0–P2 数学梯度、通道斜率与不规则时间再生：本地增量
+
+日期：2026-10-31。目标仓库：`TrillionniumFoundation/hepta-private-ci`。
+
+**状态：** `LOCAL_RESEARCH_ONLY` / `DENY_ALL`。GitHub 连接器返回 HTTP 403（账户被暂停），未核验当前远端 HEAD，未提交、合并或部署。本文件是原 133 项离线测试包的**独立新增**研究说明，不是对原始 He–Xiong 2012 耦合均衡的完成声明。
+
+## 可复验的新增代码
+
+1. `experiments/hcsn_hx_unified_v3/torch_implicit_regenerative.py`：实装 CPU/f64 的 PyTorch `torch.autograd.Function`，前向通过独立 SciPy/Brent 计算标量再生 QVI 的根，反向通过隐函数定理传递六个参数的局部梯度。继续价值、立即 FIRE 价值与有符号安全裕度进入可微张量头。精确在边界或近边界的分支拒绝；不是 GPU/BF16/F32 或全网络的性能证明。
+2. `experiments/hcsn_hx_unified_v3/local_slope_calibration.py`：从**简化 GBM Put** 构造 Call-like 特征、固定边界 Brownian 首达 Risk 特征和对数安全裕度 Margin，解析计算物理状态 `V` 的带符号导数。在训练锚点用仿射变换匹配普通门控的数值与一阶导数。拒绝临界值、导数退化、巨大增益和非法输入。**并未**通过同信息/同参数/同训练预算的真实成对数据实验。
+3. `experiments/hcsn_distributional_v2/time_varying_refractory_reference.py`：实现分段固定、非负强度 λ(t) 下的确定不应期重复发放**正质量离散化**；事件按单元中点入队、`k` 个步长后再生，半区间指数存活严格保持活动/不应期概率守恒。`P(N_T>=1)=1-exp(-ΣλΔt)` 与 `E[N_T]` 分别计算。该时间网格中点近似**不是**对连续时间重置系统的精确解；还需要独立收敛与误差证书。
+
+## 本轮新证据
+
+- 基线本地包：133/133 Python unittest passed，0 skipped。
+- 以上三个新模块的测试：**7（P2）+8（P1）+5（P0/BP）=20**。
+- 同一离线工作树执行：**153/153 Python unittest passed，0 skipped、0 failed**。这是研究**单元测试数量**，不能等同于 153 项独立产品验收。
+- P2 常数强度校验：`λ=1.1,T=6,τ=0.4`，独立 Gamma 解析期望数 `4.630015432098766`。300/600/1200 格中点队列近似的绝对误差依次为 `5.265761e-5 / 1.316445e-5 / 3.291114e-6`；这是所测三格的数值收敛，不是全参数误差定理。
+- P2 非齐次率：`[.2×80, 2.4×90, 0×60, .8×120, 3.1×50]`，单元 `dt=.02`，不应期 `τ=.2`；本地预测首次事件概率 `0.9999362154780684`，期望发放数 `6.899095086273601`。与独立事件路径 Monte Carlo 的误差在本测试声明容差内；不能推断模型在 Selective Copy/MQAR 已具备长时记忆能力。
+- P0 PyTorch 梯度：6 个 raw 参数全部具有有限非零 task-loss 梯度且执行 SGD 后改变；对 2 组物理输入的 6×2 条隐式边界梯度与独立中央差分匹配。
+- P1 三个特征在 3 个训练锚点与中央差分对比，并在 3 个通道完成数值和带符号斜率的局部对齐。
+
+## 已知局限与未关闭门禁
+
+| 阶段 | 状态及剩余核心缺口 |
+|---|---|
+| P0 | 未证实**原始 HX Eq.(8)/(12)/(A7)** 耦合自洽固定点、全域 obstacle、严格浮点包含区间、原生 FP32/BF16。简化 GBM Put 和标量再生 QVI 不可替代原始 HX 均衡。 |
+| P1 | 只建立数学锚点校准器；尚无新鲜预登记数据、同信息同成本的 Call/Risk/Margin 1/2/3 通道全消融。历史 0/4 正向机制门失败有效。 |
+| P2 | 已有固定强度 Gamma/不规则速率再生数值参考及因果检查；没有真正可训练的 Copy/MQAR 覆盖写、长时召回或完整模型的端到端恢复证明。 |
+| P3 | 保留原四模态媒体完整性 gate；真实独立文本/图像/音频/视频 Encoder、跨模态检索与 OOD 仍未测。 |
+| P4 | 未运行 Rust/Cargo、GPU 原生神经核或焦耳测量，未进行 64/256/1024/4096 Cell 的性能/恢复全矩阵。 |
+| P5 | P1–P4 未闭合，无同质量同完整成本 Transformer/SSM 模型优势；不能扩容生产。 |
+
+所有门禁保持 `INCOMPLETE`，生产准入 `DENY_ALL`。`torch.autograd` 的局部连续值不是离散 FIRE 的处处真导数；真实事件跨边界需单独建模。
+
+## 复现命令
+
+```bash
+python -m unittest -v experiments.hcsn_hx_unified_v3.test_torch_implicit_regenerative
+python -m unittest -v experiments.hcsn_hx_unified_v3.test_local_slope_calibration
+python -m unittest -v experiments.hcsn_distributional_v2.test_time_varying_refractory_reference
+python -m unittest discover -v -s .
+python -m p0_p5_gatebook
+```
+
+研究运行环境：Python 3.13.5，NumPy 2.3.5，SciPy 1.17.0，mpmath 1.3.0，PyTorch 2.10.0+cpu。要集成到真实仓库，先恢复 GitHub 权限、冻结最新 HEAD/已存在同名文件、检验 add-only 补丁无冲突，再做目标源精确测试；不建议在未读源码情况下直接合并。

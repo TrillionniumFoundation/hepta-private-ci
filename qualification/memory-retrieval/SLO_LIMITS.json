@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.memory-retrieval.qualification-limits.v1",
+  "status": "candidate_github_hosted_limits_not_production_slo",
+  "phases": {
+    "sqlite-owner": {
+      "maximum": {
+        "retrieval_p95_us": 50000,
+        "retrieval_p99_us": 100000,
+        "revalidation_p95_us": 50000,
+        "revalidation_p99_us": 100000
+      }
+    },
+    "hnmf": {
+      "maximum": {
+        "p95_us": 20000,
+        "p99_us": 40000,
+        "candidate_events": 512,
+        "settling_steps": 4
+      },
+      "minimum": {
+        "candidate_events": 512,
+        "settling_steps": 4
+      }
+    },
+    "hnmf-full-ceiling": {
+      "maximum": {
+        "p95_us": 250000,
+        "p99_us": 500000,
+        "nodes": 4096,
+        "synapses": 32768,
+        "settling_steps": 4
+      },
+      "minimum": {
+        "nodes": 4096,
+        "synapses": 32768,
+        "settling_steps": 4
+      }
+    },
+    "agentd-e2e": {
+      "maximum": {
+        "warm_p95_us": 150000,
+        "warm_p99_us": 300000,
+        "warm_max_us": 1000000,
+        "concurrency_1_p95_us": 150000,
+        "concurrency_8_p95_us": 400000,
+        "concurrency_32_p95_us": 1000000,
+        "owner_write_contention_p95_us": 500000,
+        "provider_rotation_contention_p95_us": 500000,
+        "abstention_ppm": 1000000,
+        "stale_context_rejection_ppm": 1000000
+      },
+      "minimum": {
+        "candidate_records": 1,
+        "sqlite_reads_per_request": 1,
+        "provider_rotation_attempts": 1,
+        "stale_context_checks": 1
+      }
+    }
+  }
+}

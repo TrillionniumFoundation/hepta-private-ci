@@ -1,0 +1,19 @@
+{
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--locked",
+    "--cargo-profile",
+    "dev-small",
+    "-j",
+    "4",
+    "-E",
+    "test(automation_effect) | test(automation_hcsn)"
+  ],
+  "exit": 0,
+  "candidate": "e4020d30bb749f489593360bb7285ed98f602533",
+  "graph": "OLD_GRAPH_SCOPED_NATIVE_ONLY"
+}

@@ -1,0 +1,63 @@
+{
+  "attempts": 1,
+  "authority": "DENY_ALL",
+  "cost": {
+    "child_block_inputs": 0,
+    "child_block_outputs": 992,
+    "child_involuntary_context_switches": 0,
+    "child_peak_rss_bytes": 29597696,
+    "child_system_seconds": 0.023677,
+    "child_user_seconds": 0.090055,
+    "child_voluntary_context_switches": 1,
+    "energy_joules": null,
+    "parent_cpu_seconds": 0.0017913680000000154,
+    "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads.",
+    "total_cpu_seconds": 0.11552336800000002,
+    "wall_seconds": 0.12295068700041156
+  },
+  "enforced_resources": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 60,
+    "single_file_bytes": 134217728
+  },
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 60,
+    "input_bytes": 536870912,
+    "max_dataset_rows": 512,
+    "max_datasets": 8,
+    "output_bytes": 2097152,
+    "wall_seconds": 120
+  },
+  "progress": {
+    "adapter_calls_attempted": 0,
+    "admitted_source_copy_bytes": 478924,
+    "encoder_batches_attempted": 0,
+    "encoder_batches_completed": 0,
+    "encoder_calls_attempted": 0,
+    "encoder_loads_attempted": 0,
+    "executor_calls_attempted": 0,
+    "staging_copy_bytes": 478924
+  },
+  "reason": "ClosureError: Source body hash mismatch",
+  "schema": "hepta.v13.feature-and-reference-replay.v1",
+  "status": "REJECTED",
+  "worker_exit": 0,
+  "worker_output": {
+    "stderr": {
+      "bytes": 791,
+      "captured_bytes": 791,
+      "complete": true,
+      "sha256": "704ad27c1ef5b6868875928f7acdcea9a93a33d646509bd022dccb0fa0612c29"
+    },
+    "stdout": {
+      "bytes": 502,
+      "captured_bytes": 502,
+      "complete": true,
+      "sha256": "7efe33bac52953d3e24ae7a30ab785c38b4f578b676f3f1f3865fa088e68b2f5"
+    }
+  },
+  "worker_stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_replay.py\", line 91, in _worker_main\n    result.update(execute_reference(config, limits, progress))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_worker.py\", line 194, in execute_reference\n    source = check_sources(snapshot, bounds)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/closure_inputs.py\", line 72, in source_snapshot\n    raise ClosureError(\"Source body hash mismatch\")\nclosure_io.ClosureError: Source body hash mismatch\n",
+  "worker_stdout": "{\"authority\":\"DENY_ALL\",\"enforced_resources\":{\"address_space_bytes\":4294967296,\"cpu_seconds\":60,\"single_file_bytes\":134217728},\"progress\":{\"adapter_calls_attempted\":0,\"admitted_source_copy_bytes\":478924,\"encoder_batches_attempted\":0,\"encoder_batches_completed\":0,\"encoder_calls_attempted\":0,\"encoder_loads_attempted\":0,\"executor_calls_attempted\":0,\"staging_copy_bytes\":478924},\"reason\":\"ClosureError: Source body hash mismatch\",\"schema\":\"hepta.v13.feature-and-reference-replay.v1\",\"status\":\"REJECTED\"}\n",
+  "worker_termination": "completed"
+}

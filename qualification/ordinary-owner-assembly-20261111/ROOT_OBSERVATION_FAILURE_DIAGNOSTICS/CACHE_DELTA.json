@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.exact-source-delta.v1",
+  "source_ref": "903b6fbae86acff2db2ab0422b9852421d938032",
+  "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+  "before_blob": "76cfd19e13470a6ced412ef5e7b7a7fa228c53b4",
+  "before_sha256": "d52c214a953085d8402766620aaf044351f371717f868e4b0f9513bb5eea401e",
+  "after_sha256": "6f5cf48ad4379cc79f132fa5793c0c2ce91c05bc226b21b6c1e642ee2dd1798e",
+  "supersedes_ops": "47ff39620e030233ba89bc68032bf2077f3b3652",
+  "operations": [
+    {
+      "old_text": "        if self.fenced.load(Ordering::Acquire) {\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        let result = (|| {",
+      "new_text": "        if self.fenced.load(Ordering::Acquire) {\n            #[cfg(test)]\n            eprintln!(\n                \"ROOT_OBSERVATION_CACHE phase=accept reason=already-fenced now={now} started={started} ended={ended}\"\n            );\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        let result = (|| {"
+    },
+    {
+      "old_text": "                .lock()\n                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n            let clock = &observation.clock;",
+      "new_text": "                .lock()\n                .map_err(|_| {\n                    #[cfg(test)]\n                    eprintln!(\"ROOT_OBSERVATION_CACHE phase=accept reason=retained-lock-poisoned\");\n                    AgentdRootAuthorityError::Unavailable\n                })?;\n            let clock = &observation.clock;"
+    },
+    {
+      "old_text": "            {\n                return Err(AgentdRootAuthorityError::Unavailable);\n            }\n            let projected = project(&observation, now)?;",
+      "new_text": "            {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_OBSERVATION_CACHE phase=accept reason=sample-validation now={now} started={started} ended={ended} age_ns={:?} schema={} purpose_valid={} epoch={} head_epoch={} head_revision={} clock_schema={} boot_matches={} anchor_unix_ms={} ceiling_unix_ms={} anchor_boottime_ns={} observed_unix_ms={}\",\n                    now.checked_sub(started),\n                    observation.schema_version,\n                    observation.operation == HOST_AUTHORITY_OBSERVATION_V2,\n                    observation.authority_epoch,\n                    head.authority_epoch,\n                    head.revision,\n                    clock.schema_version,\n                    clock.boot_id == self.boot_id,\n                    clock.anchor_unix_ms,\n                    clock.ceiling_unix_ms,\n                    clock.anchor_boottime_ns,\n                    observation.observed_unix_ms,\n                );\n                return Err(AgentdRootAuthorityError::Unavailable);\n            }\n            let projected = project(&observation, now)?;"
+    },
+    {
+      "old_text": "                {\n                    return Err(AgentdRootAuthorityError::Unavailable);\n                }\n            }\n            *slot = Some(Retained {",
+      "new_text": "                {\n                    #[cfg(test)]\n                    eprintln!(\n                        \"ROOT_OBSERVATION_CACHE phase=accept reason=retained-validation now={now} started={started} ended={ended} old_started={} old_last_checked={} old_age_ns={:?} time_regressed={} epoch_changed={} agent_changed={} spawn_changed={} lease_changed={} lease_digest_changed={} writer_digest_changed={} owner_changed={} local_lease_changed={} local_generation_changed={} old_store_revision={} new_store_revision={} old_head_revision={} new_head_revision={} equal_revision_changed_head={} revocations_shrunk={} old_observed_unix_ms={} new_observed_unix_ms={} projected_unix_ms={projected} old_anchor_boottime_ns={} old_anchor_unix_ms={}\",\n                        previous.request_started_ns,\n                        previous.last_checked_ns,\n                        now.checked_sub(previous.request_started_ns),\n                        now < previous.last_checked_ns,\n                        observation.authority_epoch != old.authority_epoch,\n                        observation.registered_agent_id != old.registered_agent_id,\n                        observation.spawn_generation != old.spawn_generation,\n                        observation.writer.authority_lease != old.writer.authority_lease,\n                        observation.writer.authority_lease_sha256 != old.writer.authority_lease_sha256,\n                        observation.writer.writer_authorization_sha256 != old.writer.writer_authorization_sha256,\n                        observation.writer.owner_epoch != old.writer.owner_epoch,\n                        observation.writer.local_lease_id != old.writer.local_lease_id,\n                        observation.writer.local_lease_generation != old.writer.local_lease_generation,\n                        old.writer.store_revision,\n                        observation.writer.store_revision,\n                        old.revocations.revision,\n                        head.revision,\n                        head.revision == old.revocations.revision && *head != old.revocations,\n                        !head.revoked_grant_ids.is_superset(&old.revocations.revoked_grant_ids),\n                        old.observed_unix_ms,\n                        observation.observed_unix_ms,\n                        old.clock.anchor_boottime_ns,\n                        old.clock.anchor_unix_ms,\n                    );\n                    return Err(AgentdRootAuthorityError::Unavailable);\n                }\n            }\n            *slot = Some(Retained {"
+    },
+    {
+      "old_text": "        if result.is_err() {\n            self.fence();\n        }\n        result\n    }\n    pub(crate) fn current(",
+      "new_text": "        if result.is_err() {\n            #[cfg(test)]\n            eprintln!(\n                \"ROOT_OBSERVATION_CACHE phase=accept reason=original-error-fence now={now} started={started} ended={ended}\"\n            );\n            self.fence();\n        }\n        result\n    }\n    pub(crate) fn current("
+    },
+    {
+      "old_text": "        if self.fenced.load(Ordering::Acquire) || self.updating.load(Ordering::Acquire) {\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        // Contention",
+      "new_text": "        if self.fenced.load(Ordering::Acquire) || self.updating.load(Ordering::Acquire) {\n            #[cfg(test)]\n            eprintln!(\n                \"ROOT_OBSERVATION_CACHE phase=current reason=already-fenced-or-updating now={now}\"\n            );\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        // Contention"
+    },
+    {
+      "old_text": "            .try_lock()\n            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n        let result = (|| {",
+      "new_text": "            .try_lock()\n            .map_err(|_error| {\n                #[cfg(test)]\n                match _error {\n                    std::sync::TryLockError::WouldBlock => eprintln!(\n                        \"ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-contention now={now}\"\n                    ),\n                    std::sync::TryLockError::Poisoned(_) => eprintln!(\n                        \"ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-poisoned now={now}\"\n                    ),\n                }\n                AgentdRootAuthorityError::Unavailable\n            })?;\n        let result = (|| {"
+    },
+    {
+      "old_text": "            {\n                return Err(AgentdRootAuthorityError::Unavailable);\n            }\n            let projected = project(&retained.observation, now)?;",
+      "new_text": "            {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_OBSERVATION_CACHE phase=current reason=retained-time now={now} last_checked={} request_started={} age_ns={:?} time_regressed={}\",\n                    retained.last_checked_ns,\n                    retained.request_started_ns,\n                    now.checked_sub(retained.request_started_ns),\n                    now < retained.last_checked_ns,\n                );\n                return Err(AgentdRootAuthorityError::Unavailable);\n            }\n            let projected = project(&retained.observation, now)?;"
+    },
+    {
+      "old_text": "            if self.fenced.load(Ordering::Acquire) || self.updating.load(Ordering::Acquire) {\n                return Err(AgentdRootAuthorityError::Unavailable);\n            }\n            Ok((Arc::clone",
+      "new_text": "            if self.fenced.load(Ordering::Acquire) || self.updating.load(Ordering::Acquire) {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_OBSERVATION_CACHE phase=current reason=fenced-or-updating-after-projection now={now}\"\n                );\n                return Err(AgentdRootAuthorityError::Unavailable);\n            }\n            Ok((Arc::clone"
+    },
+    {
+      "old_text": "        if result.is_err() && !self.updating.load(Ordering::Acquire) {\n            self.fence();\n        }",
+      "new_text": "        if result.is_err() && !self.updating.load(Ordering::Acquire) {\n            #[cfg(test)]\n            eprintln!(\"ROOT_OBSERVATION_CACHE phase=current reason=original-error-fence now={now}\");\n            self.fence();\n        }"
+    },
+    {
+      "old_text": "    if projected > value.clock.ceiling_unix_ms {\n        return Err(AgentdRootAuthorityError::Unavailable);\n    }",
+      "new_text": "    if projected > value.clock.ceiling_unix_ms {\n        #[cfg(test)]\n        eprintln!(\n            \"ROOT_OBSERVATION_CACHE phase=project reason=durable-ceiling now={now} projected_unix_ms={projected} ceiling_unix_ms={} anchor_boottime_ns={} anchor_unix_ms={}\",\n            value.clock.ceiling_unix_ms,\n            value.clock.anchor_boottime_ns,\n            value.clock.anchor_unix_ms,\n        );\n        return Err(AgentdRootAuthorityError::Unavailable);\n    }"
+    },
+    {
+      "old_text": "        self.accept_at(observation, started, ended, boottime_ns()?)",
+      "new_text": "        self.accept_at(\n            observation,\n            started,\n            ended,\n            boottime_ns().inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\"ROOT_OBSERVATION_CACHE phase=accept reason=boottime-sample-failed\");\n            })?,\n        )"
+    },
+    {
+      "old_text": "        let now = boottime_ns().inspect_err(|_| self.fence())?;",
+      "new_text": "        let now = boottime_ns().inspect_err(|_| {\n            #[cfg(test)]\n            eprintln!(\"ROOT_OBSERVATION_CACHE phase=current reason=boottime-sample-failed\");\n            self.fence();\n        })?;"
+    },
+    {
+      "old_text": "            let retained = slot.as_mut().ok_or(AgentdRootAuthorityError::Unavailable)?;",
+      "new_text": "            let retained = slot\n                .as_mut()\n                .ok_or(AgentdRootAuthorityError::Unavailable)\n                .inspect_err(|_error| {\n                    #[cfg(test)]\n                    eprintln!(\"ROOT_OBSERVATION_CACHE phase=current reason=cache-absent now={now}\");\n                })?;"
+    },
+    {
+      "old_text": "    let elapsed = now\n        .checked_sub(value.clock.anchor_boottime_ns)\n        .ok_or(AgentdRootAuthorityError::Unavailable)?;",
+      "new_text": "    let elapsed = now\n        .checked_sub(value.clock.anchor_boottime_ns)\n        .ok_or(AgentdRootAuthorityError::Unavailable)\n        .inspect_err(|_error| {\n            #[cfg(test)]\n            eprintln!(\n                \"ROOT_OBSERVATION_CACHE phase=project reason=boottime-before-anchor now={now} anchor_boottime_ns={}\",\n                value.clock.anchor_boottime_ns,\n            );\n        })?;"
+    },
+    {
+      "old_text": "        .checked_add(elapsed.div_ceil(1_000_000))\n        .ok_or(AgentdRootAuthorityError::Unavailable)",
+      "new_text": "        .checked_add(elapsed.div_ceil(1_000_000))\n        .ok_or(AgentdRootAuthorityError::Unavailable)\n        .inspect_err(|_error| {\n            #[cfg(test)]\n            eprintln!(\n                \"ROOT_OBSERVATION_CACHE phase=project reason=unix-overflow now={now} elapsed_ns={elapsed} anchor_unix_ms={}\",\n                value.clock.anchor_unix_ms,\n            );\n        })"
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+{
+  "status": "AUDITED_NOT_MERGED; explicit protocol composition required",
+  "base": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "tree": "75127f7175708277f28974daff78cc6e7d92ab0c",
+  "scope": "Read-only repository audit plus isolated local fixture tests. No remote refs, frozen publication files, source branches, native training jobs, or held C2D scopes changed.",
+  "graph_evidence": "ANCESTRY.json",
+  "path_evidence": "PATH-BINDINGS.json",
+  "topology": [
+    {
+      "tip": "bba8cdf2ebe9ec53ebe413c6ce5013c1a1e8ce5c",
+      "tip_names": [
+        "research/ctrl-answer-repair-20261110-e323-04-ci"
+      ],
+      "all_newly_covered_ordinary_names": {
+        "research/ctrl-20261109-e323-01-identity": "e3124d79e198aa8e2b0397f5123cdb973228ef6b",
+        "research/ctrl-20261109-e323-02-replay": "ae0fac0fb9b85c7bb9c32a8cdb509848d926da2e",
+        "research/ctrl-20261109-e323-03-observations": "f55d9f23f643e987c70ea3c645305050e146e7af",
+        "research/ctrl-20261109-e323-04-heads": "43454a5c3f4728815f8181ff47f50e86300e4a30",
+        "research/ctrl-answer-repair-20261110-e323-01-core": "c85357327de4f30fe46b72355452c683e1e132cc",
+        "research/ctrl-answer-repair-20261110-e323-02-native": "6a1c38f357b6f67580e7341f398b021fc4c7e668",
+        "research/ctrl-answer-repair-20261110-e323-03-results": "4da7316416482205a0c10062d88d731458475e2b",
+        "research/ctrl-answer-repair-20261110-e323-04-ci": "bba8cdf2ebe9ec53ebe413c6ce5013c1a1e8ce5c"
+      },
+      "merge_bases_vs_current": [
+        "f6a7d5307f888d30faa8803d23487c78789b99fe"
+      ],
+      "protected_pin_intersection": [],
+      "protected_head_intersection": []
+    },
+    {
+      "tip": "9613d62b0485b549b4845ad20724cf0cff9a56a2",
+      "tip_names": [
+        "codex/seven-cell-task-byte-binding-cfe0b879"
+      ],
+      "all_newly_covered_ordinary_names": {
+        "codex/seven-cell-61217-01-content-contract": "0938554d4bde6836eb186095b9cb1bbd06cc8b02",
+        "codex/seven-cell-61217-02-content-runtime": "eeadc84b42f33350a9cb86164504acc07eb3836e",
+        "codex/seven-cell-61217-03-content-validation": "07df2e38e6bdcc6649c602e8ce6cd71d88b7497f",
+        "codex/seven-cell-61217-04-sampling-units": "136f8b26e0ebe86e94df9fc4ed36476ecf23cf1a",
+        "codex/seven-cell-61217-05-research-gate": "259f387cfa829ffb7f8a5e91f5be261cd41d236a",
+        "codex/seven-cell-61217-06-ci-maintenance": "ea973fd90863ce8319ce206e4ba4ac7f87c9fef9",
+        "codex/seven-cell-task-byte-binding-cfe0b879": "9613d62b0485b549b4845ad20724cf0cff9a56a2"
+      },
+      "merge_bases_vs_current": [
+        "e2e20033daa67d9d9826d4942e4d6bdd15ba4ab5"
+      ],
+      "protected_pin_intersection": [],
+      "protected_head_intersection": []
+    }
+  ],
+  "bba8": {
+    "files": 36,
+    "new_paths": 32,
+    "overlapping_paths": 4,
+    "identical_current_postimages": 0,
+    "new_commits": 8,
+    "new_ordinary_names": 8,
+    "functional_additions": [
+      {
+        "paths": [
+          "answer_repair.py",
+          "test_answer_repair.py"
+        ],
+        "behavior": "Bounded 24-wide frozen-embedding answer-head fit. Exact40 original sources split32/8;37 future and20 excluded disjoint. Source-balanced marginal positive-candidate loss, deduplicated states, bounded predeclared trials, immutable shared bias, NoUpdate production state. Current neural source still CONTENT_WIDTH=24 and nn.Linear(CONTENT_WIDTH,1)."
+      },
+      {
+        "paths": [
+          "answer_repair_native.py",
+          "test_answer_repair_native.py"
+        ],
+        "behavior": "Pins request/runner/core/collection/source inventory/normalizer/fit rows/base weights, executes verified core bytes, trains only answer.weight, checks unchanged tensors, float32 selection parity and cold reload, writes separate create-once research output. Three tests cover pin refusal/create-once only; no Torch fitting run in this audit."
+      },
+      {
+        "paths": [
+          "control_observations.py",
+          "control_investment.py",
+          "control_test_fixtures.py",
+          "test_control_observations.py",
+          "test_control_investment.py"
+        ],
+        "behavior": "Public-state-only shadow probability/value heads. Missing evidence remains unknown. Continuation label requires matched independent STOP/one-continuation records with same source/state/snapshot/evaluator/tariff and full eight-category costs. Training sources balanced; calibration disjoint and group-max residual descriptive only; unsupported public context/feature range abstains."
+      },
+      {
+        "paths": [
+          "audit_content_trace.py",
+          "test_audit_content_trace.py"
+        ],
+        "behavior": "Read-only caller-pinned historical trajectory/delivery/evaluator audit; optional authorized reference is separately pinned. Missing selected-index provenance stays unknown. Reports delivery and scorer mismatches without rewriting originals."
+      },
+      {
+        "paths": [
+          "content_identity.py",
+          "actor.py",
+          "episode.py",
+          "test_content_identity.py",
+          "test_content_identity_integration.py"
+        ],
+        "behavior": "Older selection/delivery diagnostics with candidate_count/raw-text hashes and optional training candidate metadata, latest-write terminal continuity output. These conflict with stronger current live identity contract."
+      },
+      {
+        "paths": [
+          ".github/workflows/hepta-answer-repair-contracts.yml"
+        ],
+        "behavior": "New source-head workflow pins Python3.12.14/NumPy2.3.5/uv0.11.3; separately enforces6 optimizer and3 input-integrity minima; formatting/fatal checks and external receipts. No private input or Torch execution."
+      }
+    ],
+    "historical_evidence_paths": 19,
+    "conflicts": {
+      "actor_filewise_regions": 1,
+      "episode_filewise_regions": 2,
+      "additional_add_add_paths": [
+        "scripts/ndu_real_runtime/content_identity.py",
+        "scripts/ndu_real_runtime/test_content_identity.py"
+      ]
+    },
+    "loss_risks": [
+      "Replacing current content_identity drops strict selected-candidate field/size/origin binding, actual actor-wire identity, readiness chronology, qualified-launch checks, exact snapshot order and per-snapshot evaluator coverage. Incoming validate_selection/observe_delivery imports do not exist in current module.",
+      "Resolving actor/episode to incoming sides discards current metered WRITE_TEXT-only receipt, candidate-memory/selector audit and original-task-field binding, action effects and complete content-identity report.",
+      "The two old identity tests files cannot simply overwrite or be appended to current module. They require old API and fixture shapes. All three selection schemas share the same v1 string but differ structurally."
+    ],
+    "recommended_composition": [
+      "Preserve current actor.py, episode.py, content_identity.py and existing identity tests as the behavioral baseline while preparing an explicit composite.",
+      "New answer-repair, shadow heads and offline historical audit can be retained additively with their existing tests and new dedicated workflow; they do not require weakening current runtime checks.",
+      "If older continuity records must remain executable, isolate an explicitly legacy decoder/module and rename its tests; require a distinct receipt contract or explicit format discriminator, and never silently reinterpret old v1 hashes as current receipts.",
+      "Preserve all19 historical evidence files as historical artifacts; their recorded NoUpdate/HOLD is not current native qualification or new independent quality evidence."
+    ]
+  },
+  "9613": {
+    "files": 22,
+    "new_paths": 11,
+    "overlapping_paths": 11,
+    "identical_current_postimages": 4,
+    "new_commits": 7,
+    "new_ordinary_names": 7,
+    "already_preserved": [
+      {
+        "paths": [
+          "scripts/memory_cell_mem1/environment.py",
+          "scripts/memory_cell_mem1/native.py",
+          "scripts/memory_cell_mem1/run.py",
+          "scripts/memory_cell_mem1/test_environment.py"
+        ],
+        "proof": "All4 incoming blobs exactly equal final73 tree entries."
+      },
+      {
+        "paths": [
+          "scripts/hepta_cell_research_gate.py",
+          "scripts/hepta_cell_research_units.py",
+          "scripts/test_hepta_cell_research_units.py"
+        ],
+        "proof": "Current retains incoming protocol/experiment v2 and task-byte grouping, adds normalized source-alias rejection, per-arm unknown cost accounting and task-balanced repetition weights. All16 incoming units tests pass against exact current production modules; current41 gate+units tests also pass."
+      },
+      {
+        "paths": [
+          ".github/workflows/hepta-cell-research-stages.yml",
+          ".github/workflows/repo-checks.yml"
+        ],
+        "proof": "Current already has research-units CI with stronger18 minimum and prospective-comparison checks; current repo-checks keeps40 minute measured budget plus custody and Windows long-path checks. Incoming20-minute budget would regress current."
+      }
+    ],
+    "unique_functionality": [
+      "Create-once public candidate catalog bound to case/step/observation and prior delivery; retained host catalog copy before effects, including STOP and committed-text semantics.",
+      "Original actor-proposal and rejected/failed/completed outcome retention, effect readback, value-owned last_public and bounded scorer output reads.",
+      "Exact delivery/image snapshot pins verified before and after scorer; full scorer case/source/episode/role/reference/rubric/evaluator/delivery identity; confirmation remains sealed.",
+      "New14-test source-head content-chain workflow and7 historical QA evidence paths."
+    ],
+    "conflicts": {
+      "actor_filewise_regions": 3,
+      "episode_filewise_regions": 4,
+      "evidence": "9613-filewise-merges.json"
+    },
+    "loss_risks": [
+      "Incoming switches actor-observation.v1 to v2 without adapting current content_identity_report or all current audit consumers. Current report accepts v1 only.",
+      "Incoming replaces content_selection with a different catalog receipt but keeps identical content-selection.v1 schema string; exact current validator rejects the incoming fields.",
+      "Keeping only incoming callback path loses newer candidate/selector bindings, action-effect observation and current wire/snapshot report; keeping only current path loses incoming immutable catalog/outcome/image-scoring protections.",
+      "Adding retained_catalog and delivery_readback into the same dict used for original-wire comparison needs explicit host/actor separation; blindly stripping arbitrary fields would weaken integrity."
+    ],
+    "recommended_composition": [
+      "Retain current research gate/units/workflows and all4 identical memory files exactly; no reason to revert their stronger behavior.",
+      "Compose catalog retention as a separately versioned receipt or explicit additive field beside current content_selection; preserve current actor readiness contract and v1 consumer support unless every dependent consumer is intentionally migrated.",
+      "Retain every current candidate-memory/selector/original-task/parameter/action guard; add catalog validation and retained copy before any effect, then separate host outcome records from original actor proposal.",
+      "Carry incoming pre/post snapshot image revalidation and full scorer identity in addition to current exact actor chronology/per-snapshot evidence, with both current and adapted incoming integration tests.",
+      "This is a protocol integration change, not a safe automatic conflict resolution. No composed candidate has been built or qualified in this audit."
+    ]
+  },
+  "new_current_baseline_defect": {
+    "id": "HOST_EFFECT_VS_ORIGINAL_WIRE",
+    "sources": {
+      "episode.py": "d4dc3d3748a14d0027c6793fb68a8b727570444c",
+      "content_identity.py": "4d1bde6e43ee9ba158b48425224051e65e755a07",
+      "action_effects.py": "e5d47fa9129cfe8ca02c2c63c207e26348c021eb"
+    },
+    "behavior": "EpisodeHost.callback inserts action_effect into the observation retained in steps. verify_content_identity strips only observed_action_seconds before comparing supplied actor wire to that dict. A correctly bound actor wire passes before host decoration, but the actual host effect decoration causes ValueError: Actor wire differs from the observed action.",
+    "reproduction": "COMPATIBILITY-REPRO.json; compatibility_repro.py executes actual validators/effect construction and real temporary catalog publication; no native inference.",
+    "scope": "Pre-existing at73, independent of either incoming head and independent of hermetic strip fix.",
+    "repair_recommendation": "Keep original actor proposal immutable or explicitly separate host-only annotations. Reject host-reserved annotation fields before effects; if normalizing for comparison, remove only fixed host-owned fields with explicit ownership and preserve exact equality for every actor-supplied field. Add an actual callback\u2192snapshot\u2192score\u2192wire regression, not only pure receipt fixtures. Do not drop the wire check."
+  },
+  "validation": {
+    "bba8-original-contracts": {
+      "stage": "incoming-bba8",
+      "modules": [
+        "ndu_real_runtime.test_answer_repair",
+        "ndu_real_runtime.test_answer_repair_native",
+        "ndu_real_runtime.test_control_observations",
+        "ndu_real_runtime.test_control_investment",
+        "ndu_real_runtime.test_content_identity",
+        "ndu_real_runtime.test_audit_content_trace",
+        "ndu_real_runtime.test_content_identity_integration"
+      ],
+      "returncode": 0,
+      "seconds": 0.8474662999997236,
+      "tests_run": 38,
+      "log_sha256": "86b524a2eafb22bb842c4a0bab55f74f8377bd4017c2e6a51b6e6be6b4ea2bac",
+      "native_model_inference": false
+    },
+    "current-preservation-contracts": {
+      "stage": "current",
+      "modules": [
+        "test_hepta_cell_research_gate",
+        "test_hepta_cell_research_units"
+      ],
+      "returncode": 0,
+      "seconds": 4.842626140999528,
+      "tests_run": 41,
+      "log_sha256": "29d656e9022a31de5a9bba34ea6f3079cc044aa317629df293e4425e22c653dd",
+      "native_model_inference": false
+    },
+    "9613-original-content-contracts": {
+      "stage": "incoming-9613",
+      "modules": [
+        "ndu_real_runtime.test_content_chain",
+        "ndu_real_runtime.test_content_episode"
+      ],
+      "returncode": 0,
+      "seconds": 0.4705798140003026,
+      "tests_run": 14,
+      "log_sha256": "1ec241a348fad07b923a9cc60f3962dca2c4100fcf0d32ae097fb0a8ccd9f3d4",
+      "native_model_inference": false
+    },
+    "incoming-units-on-current": {
+      "source_test_blob": "38fc575695eb176764791dd9d8099ca4d773893d",
+      "production": "current73 exactresearch-gate and units",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "successful": true,
+      "log_sha256": "b9c64f20e92bb11ff7073b39b9633366b8c2f667cf671b575832d56a1314ebd2"
+    }
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "pillow": "13.0.0"
+  },
+  "not_performed": [
+    "Native model inference or training",
+    "Merged composite runtime tests",
+    "Any ref publication, main merge or branch retirement"
+  ],
+  "completion": "Both candidate branch audits complete. Parent may select a separately reviewed composite plan; all15 live branch names remain pending and cannot be retired before main covers their exact tips."
+}

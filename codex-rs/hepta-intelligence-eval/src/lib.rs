@@ -14,9 +14,14 @@ mod closure;
 mod durable_holdout;
 mod fenced_holdout;
 mod fenced_holdout_file;
+mod holdout_envelope;
+mod holdout_file_lock;
 mod holdout_journal;
 mod ndu_convergence;
 mod ndu_well_posedness;
+mod paired_data;
+mod paired_plan;
+mod paired_runner;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
 pub use durable_holdout::HoldoutAnchorAuthorityV1;
@@ -32,10 +37,26 @@ pub use fenced_holdout::HoldoutWriterFenceV1;
 pub use fenced_holdout_file::LockedFileCasErrorV1;
 pub use fenced_holdout_file::LockedFileFinalHoldoutCasStoreV1;
 mod ope;
+mod product_execution_file;
+mod product_execution_store;
+mod product_qualification_use;
 mod product_runner;
+#[cfg(any(test, feature = "qualification-file-observation"))]
+mod qualification_file_observation;
 mod self_evolution_selection;
 mod sequential;
 mod signed_evaluation;
+mod structural_comparison;
+pub use structural_comparison::FrozenStructuralComparisonV1;
+pub use structural_comparison::SignedStructuralComparisonDecisionV1;
+pub use structural_comparison::SignedStructuralComparisonV1;
+pub use structural_comparison::StructuralComparisonDispositionV1;
+pub use structural_comparison::StructuralComparisonErrorV1;
+pub use structural_comparison::StructuralComparisonObservationV1;
+pub use structural_comparison::StructuralMutationKindV1;
+pub use structural_comparison::assess_signed_structural_comparison_v1;
+pub use structural_comparison::structural_comparison_plan_digest_v1;
+pub use structural_comparison::structural_comparison_signing_payload_v1;
 mod temporal_evaluation;
 mod temporal_fold;
 
@@ -134,8 +155,35 @@ pub use ope::OpePlan;
 pub use ope::OpeRow;
 pub use ope::estimate_cluster_intervals;
 pub use ope::estimate_ope;
+pub use product_execution_file::LockedFileProductEvaluationExecutionErrorV1;
+pub use product_execution_file::LockedFileProductEvaluationExecutionStoreV1;
+pub use product_execution_file::ProductEvaluationExecutionAnchorV1;
+pub use product_execution_file::ReadOnlyProductEvaluationExecutionStoreV1;
+pub use product_execution_file::decode_original_product_evaluation_execution_image_v1;
+pub use product_execution_file::decode_original_product_evaluation_execution_records_v1;
+pub use product_execution_store::MAX_PRODUCT_EVALUATION_EXECUTION_BYTES_V1;
+pub use product_execution_store::ProductEvaluationExecutionClaimV1;
+pub use product_execution_store::ProductEvaluationExecutionKeyV1;
+pub use product_execution_store::ProductEvaluationExecutionStateV1;
+pub use product_execution_store::ProductEvaluationExecutionStoreErrorV1;
+pub use product_execution_store::ProductEvaluationExecutionStoreV1;
+pub use product_qualification_use::revalidate_product_qualification_v1;
 pub use product_runner::FinalHoldoutProviderV1;
+pub use product_runner::OnPolicyArmBindingV1;
+pub use product_runner::OnPolicyArmProvenanceV1;
+pub use product_runner::OnPolicyEvaluationArmInputsV1;
+pub use product_runner::OnPolicyPairContractV1;
+pub use product_runner::OnPolicyPairingContractV1;
+pub use product_runner::OnPolicyTemporalComparisonInputsV1;
+pub use product_runner::OriginalFinalHoldoutConsumptionV1;
+pub use product_runner::OriginalProductQualificationCommitmentsV1;
+pub use product_runner::ProductComparisonModeV1;
 pub use product_runner::ProductEvaluationError;
+pub use product_runner::ProductEvaluationPolicyBindingsV2;
+pub use product_runner::ProductEvaluationPolicyCommitmentsV2;
+pub use product_runner::ProductEvaluationPolicyContextV2;
+pub use product_runner::ProductEvaluationPolicyInputV2;
+pub use product_runner::ProductEvaluationPolicyV2;
 pub use product_runner::ProductEvaluationRunnerV1;
 pub use product_runner::ProductEvidenceSinkErrorV1;
 pub use product_runner::ProductFrozenEvaluationPlanV1;
@@ -148,6 +196,13 @@ pub use product_runner::ProductQualificationReceiptV1;
 pub use product_runner::ProductTemporalEvaluationReceiptV1;
 pub use product_runner::ProductTimingEvidenceV1;
 pub use product_runner::TemporalComparisonInputsV1;
+pub use product_runner::execution::OriginalProductEvaluationExecutionEvidenceV1;
+pub use product_runner::execution::ProductEvaluationExecutionAttestationRequestV1;
+pub use product_runner::execution::ProductEvaluationExecutionAttestorV1;
+pub use product_runner::execution::ProductEvaluationExecutionErrorV1;
+pub use product_runner::execution::ProductEvaluationExecutionRequestV1;
+pub use product_runner::execution::product_evaluation_execution_key_v1;
+pub use product_runner::freeze_paired_on_policy_product_evaluation_plan_v1;
 pub use product_runner::freeze_product_evaluation_plan_v1;
 pub use self_evolution_selection::PreparedSelfEvolutionSelectionV1;
 pub use self_evolution_selection::SelfEvolutionSelectionError;
@@ -160,7 +215,7 @@ pub use self_evolution_selection::admit_self_evolution_rollback_v1;
 pub use self_evolution_selection::admit_self_evolution_selection_v1;
 pub use self_evolution_selection::prepare_self_evolution_selection_v1;
 pub use self_evolution_selection::rollback_signing_payload_v1;
-pub use self_evolution_selection::selection_signing_payload_v1;
+pub use self_evolution_selection::selection_signing_payload_v2;
 pub use sequential::DepthSupport;
 pub use sequential::FiniteHorizonEstimand;
 pub use sequential::SequentialError;
@@ -180,7 +235,7 @@ pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
 #[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
-pub use signed_evaluation::decide_with_signed_evidence_v2;
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
@@ -298,10 +353,12 @@ fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> 
         }
     }
 
-    let disposition = if !failed_metrics.is_empty() {
-        Disposition::Ineligible
-    } else if insufficient {
+    // Compatibility evaluations retain known failures without labeling a
+    // partial comparison as a complete negative result.
+    let disposition = if insufficient {
         Disposition::InsufficientEvidence
+    } else if !failed_metrics.is_empty() {
+        Disposition::Ineligible
     } else {
         Disposition::EligibleForFurtherReview
     };
@@ -381,3 +438,63 @@ pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
 #[cfg(test)]
 #[path = "signed_qualification_e2e_tests.rs"]
 mod signed_qualification_e2e_tests;
+
+pub use holdout_envelope::HoldoutJournalRecordV2;
+pub use holdout_envelope::HoldoutJournalSnapshotV2;
+pub use holdout_envelope::HoldoutPlanEnvelopeV2;
+pub use holdout_envelope::HoldoutUseEnvelopeV2;
+pub use holdout_envelope::PairedHoldoutJournalReceiptV1;
+pub use paired_data::PairedArmV1;
+pub use paired_data::PairedBoundedIntervalV1;
+pub use paired_data::PairedDataV1;
+pub use paired_data::PairedManifestV1;
+pub use paired_data::PairedObservationV1;
+pub use paired_data::PairedSourceCaseV1;
+pub use paired_data::PairedStatisticsV1;
+pub use paired_data::PairedVersionV1;
+pub use paired_plan::FrozenPairedPlanV1;
+pub use paired_plan::PairedPlanSpecV1;
+pub use paired_plan::PairedProfileError;
+pub use paired_plan::freeze_paired_plan_v1;
+pub use paired_runner::OriginalPairedFinalHoldoutConsumptionV1;
+pub use paired_runner::PairedEvaluationError;
+pub use paired_runner::PairedEvaluationEvidenceSinkV1;
+pub use paired_runner::PairedEvaluationReceiptV1;
+pub use paired_runner::PairedFinalHoldoutProviderV1;
+pub use paired_runner::PublishedPairedEvaluationV1;
+pub use paired_runner::SignedPairedEvaluationV1;
+pub use paired_runner::evaluate_paired_full_information_v1;
+pub use paired_runner::paired_evaluation_signing_payload_v1;
+pub use paired_runner::paired_observation_signing_payload_v1;
+pub use paired_runner::paired_plan_signing_payload_v1;
+
+mod citation_audit;
+#[cfg(test)]
+#[path = "paired_owner_tests.rs"]
+mod paired_owner_tests;
+pub use citation_audit::CitationAuditCountsV1;
+pub use citation_audit::CitationAuditError;
+pub use citation_audit::CitationAuditJudgementV1;
+pub use citation_audit::CitationAuditRequestV1;
+pub use citation_audit::CitationClaimKindV1;
+pub use citation_audit::CitationClaimV1;
+pub use citation_audit::CitationJudgementV1;
+pub use citation_audit::CitationSourceV1;
+pub use citation_audit::CitationVerdictV1;
+pub use citation_audit::VerifiedCitationAuditV1;
+pub use citation_audit::citation_judgement_payload_v1;
+pub use citation_audit::citation_request_payload_v1;
+pub use citation_audit::validate_citation_judgement_v1;
+pub use citation_audit::verify_signed_citation_audit_v1;
+
+mod memory_citation_gate;
+pub use memory_citation_gate::MemoryCitationCensusV1;
+pub use memory_citation_gate::MemoryCitationGateCountsV1;
+pub use memory_citation_gate::MemorySnapshotCensusV1;
+pub use memory_citation_gate::VerifiedMemoryCitationGateV1;
+pub use memory_citation_gate::memory_citation_census_payload_v1;
+pub use memory_citation_gate::verify_memory_citation_census_v1;
+
+mod cell_role_qualification_replay;
+pub use cell_role_qualification_replay::CELL_ROLE_QUALIFICATION_REPLAY_SCHEMA_V1;
+pub use cell_role_qualification_replay::CellRoleQualificationReplayV1;

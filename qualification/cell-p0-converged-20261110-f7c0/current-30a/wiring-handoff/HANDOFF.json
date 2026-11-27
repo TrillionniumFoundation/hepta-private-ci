@@ -1,0 +1,1299 @@
+{
+  "schema": "hepta.p0.original-owner-wiring-handoff.v1",
+  "recorded_at_utc": "2026-11-11T03:36:58.637495+00:00",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+    "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+    "read_only_object_store": "/workspace/scratch/f7c0ded86bcc/hepta-p0-converged",
+    "read_method": "git show <exact source SHA>:<path>; full-file identities pinned below; listed line ranges are the reviewed anchors"
+  },
+  "scope": {
+    "requested": [
+      "StageOwnerPorts production implementation",
+      "startup.receive to launch.run",
+      "Original Training public consumers",
+      "Exact original Dataset bridge",
+      "governed Q24 Model proposal"
+    ],
+    "method": "Named interface lookup and dependency-directed reads; reused the existing independent exact-source full CALLERS result, did not start a scan. No general repo architecture sweep.",
+    "named_symbol_lookup": {
+      "symbol": "LearningIterationStageOwnerPortsV1",
+      "source_root": "codex-rs",
+      "matches": [
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/config_root_learning.rs:11:use crate::LearningIterationStageOwnerPortsV1;",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/config_root_learning.rs:33:        stages: Arc<dyn LearningIterationStageOwnerPortsV1>,",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs:20:use crate::LearningIterationStageOwnerPortsV1;",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs:35:    stages: Arc<dyn LearningIterationStageOwnerPortsV1>,",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs:45:        stages: Arc<dyn LearningIterationStageOwnerPortsV1>,",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs:66:        stages: Arc<dyn LearningIterationStageOwnerPortsV1>,",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs:16:use crate::LearningIterationStageOwnerPortsV1;",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs:44:impl LearningIterationStageOwnerPortsV1 for StageOwners {",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/learning_iteration_ports.rs:45:pub trait LearningIterationStageOwnerPortsV1: Send + Sync {",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/lib.rs:820:pub use learning_iteration_ports::LearningIterationStageOwnerPortsV1;",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/root_production_learning_inputs.rs:22:use crate::LearningIterationStageOwnerPortsV1;",
+        "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d:codex-rs/hepta-agentd/src/root_production_learning_inputs.rs:177:        stages: Arc<dyn LearningIterationStageOwnerPortsV1>,"
+      ],
+      "only_impl_is_test_file": true
+    },
+    "exact_dataset_label_note": "An exact lookup of ExactDataset in codex-rs and CALLERS.toml had no match; this handoff uses the actual existing DatasetSnapshotReceiptV3 and Q24 types instead.",
+    "source_changed": false,
+    "native_jobs_started": 0,
+    "ci_runs_started": 0,
+    "caller_scans_started": 0,
+    "actual_custody_materials_inspected": false
+  },
+  "conclusion": {
+    "production_stage_owners_assembled": false,
+    "full_ordinary_adopt_abc_cold_recovery_runs": 0,
+    "full_ordinary_no_update_abc_cold_recovery_runs": 0,
+    "production_authority_granted": false,
+    "source_gaps_are_real": [
+      "Missing concrete StageOwnerPorts composition and startup host consumer",
+      "Missing original Dataset-to-Q24 provenance/receipt bridge",
+      "Missing governed typed native-Q24 Model proposal and durable admission path"
+    ],
+    "external_material_boundary": "Original keys/enrollment, authoritative ledger/source records, independently retained CURRENT/anchors, B evaluation and actual C use must come from their real holders. This audit does not claim those values are globally absent; it neither received nor authenticated a complete production bundle.",
+    "next_bounded_code_unit": "Snapshot-aware read-only Training receipt adapter: full structural CURRENT snapshot -> exact original Dataset prefix -> existing typed stage receipt_attestation. Existing types and coordinator rules define it completely; no new source semantics or custody provisioning is needed to implement and meaningfully behavior-test the software.",
+    "full_startup_dependency": "Complete the source protocol/bridge gaps and consume genuine original owner bundles before installing the existing with_root_learning_stage_owners call."
+  },
+  "items": [
+    {
+      "id": "stage_owner_production_composition",
+      "classification": "SOURCE_COMPOSITION_GAP_PLUS_ORIGINAL_OWNER_INPUTS",
+      "existing_interface": "LearningIterationStageOwnerPortsV1: Send + Sync",
+      "required_methods": [
+        "validate_recovery(snapshot)",
+        "execute_stage(snapshot, stage)",
+        "prepare_proposal(snapshot)",
+        "receipt_attestation(snapshot, receipt, now_unix_seconds)"
+      ],
+      "observed_gap": "The exact named-symbol lookup finds only the StageOwners implementation in learning_iteration_checkpoint_ports_tests.rs. CheckpointedIterationPorts delegates to the supplied trait object; it does not implement the original stage work.",
+      "can_implement_source_without_new_keys": true,
+      "can_close_full_production_composition_by_wiring_current_types_alone": false,
+      "minimal_legal_source_next_step": {
+        "action": "Implement a host-owned concrete composition only when its mandatory original ports are present. Route Training to OriginalCellQ24TrainingStageV1, evaluation and selection/use readback to their existing typed owners, and retain the original checkpoint composition. Do not expose a training-only object as a completed all-stage implementation.",
+        "required_code_before_complete_assembly": [
+          "Original Experience/Dataset resolver and receipt bridge",
+          "Governed Q24 trained-Model proposal protocol",
+          "Original Selection/NextUse receipt resolver and current owner reconciliation"
+        ],
+        "recovery_rule": "validate_recovery must reconcile the complete restored snapshot with original CURRENT/withdrawal/revocation and the proposal durable anchor, including empty, NoUpdate and completed snapshots; it must not rerun work or synthesize evidence.",
+        "not_a_permission_block": "The missing production impl and dispatch are source work. Real custody is a dependency of constructing and executing the impl, not a reason to label the source gap itself external."
+      },
+      "required_original_inputs": [
+        {
+          "type": "LearningIterationSnapshotV1 + FrozenLearningScopeV2",
+          "material": "Original registered request, owners, exact prefix and current checkpoint capability; not a local replacement snapshot."
+        },
+        {
+          "type": "LearningEvidenceVerifierV1",
+          "material": "Bootstrap-pinned trust/objective with enrolled Observer, Generator, Evaluator and Selector principals and actual role/controller separation."
+        },
+        {
+          "type": "OriginalCellQ24TrainingStageV1<TW,RW>",
+          "material": "The already-bound native/receipt owner pair described in the Training item."
+        },
+        {
+          "type": "CellLearningEvaluationReadbackRequestV1 + LearningIterationEvidenceClientV1",
+          "material": "Actual independent evaluation runner result, qualification, context, timing and signed evidence; original admitted trainer/evaluator connections."
+        },
+        {
+          "type": "GenerationLearningStageReadbackRequestV1 + LearningIterationEvidenceClientV1",
+          "material": "Already issued Selection/NextUse receipt, actual published generation actor, original previous manifest where applicable and committed distinct-task intent."
+        }
+      ],
+      "evidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+          "lines": [
+            40,
+            77
+          ],
+          "claim": "Original stage trait and mandatory recovery contract"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs",
+          "lines": [
+            88,
+            190
+          ],
+          "claim": "Checkpoint composition delegates restore reconciliation and stage work"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+          "lines": [
+            20,
+            43
+          ],
+          "claim": "Recovery authenticates every original non-Proposal receipt"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+          "lines": [
+            73,
+            126
+          ],
+          "claim": "Role separation and original role mapping"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+          "lines": [
+            29,
+            81
+          ],
+          "claim": "Actual evaluation readback inputs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs",
+          "lines": [
+            24,
+            108
+          ],
+          "claim": "Selection/use readback requires original receipt and current actor observations"
+        }
+      ]
+    },
+    {
+      "id": "ordinary_startup_receive_to_launch",
+      "classification": "SOURCE_HOST_ASSEMBLY_AND_HANDOFF_GAP",
+      "existing_interfaces": [
+        "AgentdProductionStartup::receive",
+        "AgentdConfig::with_root_learning_inputs",
+        "AgentdConfig::with_root_learning_stage_owners",
+        "AgentdRootLearningInputsV1::into_learning_runtime",
+        "AgentdProductionLaunch::run"
+      ],
+      "observed_gap": "main receives the original Root inputs at line 33, configures unrelated existing profiles, then calls launch.run at line 238 without supplying stage owners. receive retains checkpoint inputs; launch.run refuses the unassembled learning capability before runtime startup.",
+      "can_implement_source_without_new_keys": true,
+      "can_complete_by_adding_an_unconditional_call_in_main": false,
+      "minimal_legal_source_next_step": {
+        "action": "Add one admitted-host assembly point between startup.receive and launch.run that consumes a complete typed stage-owner bundle and the pinned verifier, calls with_root_learning_stage_owners exactly once, and retains the returned handle. Extend a real original-holder capability handoff if the owners reside in another process; do not derive them from CLI paths or public profile bytes.",
+        "needs_completed_dependencies": [
+          "stage_owner_production_composition",
+          "original_training_public_consumer",
+          "exact_original_dataset_bridge",
+          "governed_q24_model_proposal"
+        ],
+        "keep_refusal": "require_root_learning_assembled must remain active whenever the original learning checkpoint was received but the original stage bundle is unavailable."
+      },
+      "required_original_inputs": [
+        {
+          "type": "Arc<dyn LearningIterationStageOwnerPortsV1>",
+          "material": "A real concrete composition, currently absent in product source; not the test StageOwners."
+        },
+        {
+          "type": "LearningEvidenceVerifierV1",
+          "material": "Original host-pinned verifier matching initial.owners.evidence_trust_digest and objective."
+        },
+        {
+          "type": "RootLearningHandoffV1 / AgentdRootLearningInputsV1",
+          "material": "Existing authenticated bootstrap file plus same Root pidfd and live registered checkpoint socket. This handoff supplies checkpoint access only, not trainer/evaluator keys, journals, Dataset contents or a complete stage bundle."
+        }
+      ],
+      "evidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/main.rs",
+          "lines": [
+            31,
+            39
+          ],
+          "claim": "Ordinary Linux receive"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/main.rs",
+          "lines": [
+            201,
+            242
+          ],
+          "claim": "Profile setup reaches launch without stage-owner composition"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "lines": [
+            142,
+            191
+          ],
+          "claim": "Learning capability is received and retained in config"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "lines": [
+            197,
+            207
+          ],
+          "claim": "Production run fails closed before runtime setup"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+          "lines": [
+            28,
+            52
+          ],
+          "claim": "Available assembly method and mandatory refusal"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+          "lines": [
+            8,
+            40
+          ],
+          "claim": "Only sealed descriptor and original Root pidfd are transferred"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "lines": [
+            25,
+            33
+          ],
+          "claim": "Receiving the handoff establishes checkpoint access only"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "lines": [
+            173,
+            211
+          ],
+          "claim": "Actual stage/verifier input is still required to build the channel"
+        }
+      ]
+    },
+    {
+      "id": "original_training_public_consumer",
+      "classification": "EXISTING_TYPED_ADAPTER_WITH_MISSING_PRODUCT_HOST_CONSUMER",
+      "existing_interfaces": [
+        "OriginalCellQ24TrainingStageV1::from_original_owners",
+        "OriginalCellQ24TrainingStageV1::execute_training",
+        "OriginalCellQ24TrainingStageV1::readback",
+        "OriginalCellQ24TrainingStageV1::receipt_attestation"
+      ],
+      "observed_gap": "The native fit/readback and original Generator attestation are already connected inside the typed pair adapter. All four stage public entry boundaries, receipt create/recover and Root stage assembly still have empty productCallers in the existing exact-30a full caller receipt.",
+      "can_implement_source_without_new_keys": true,
+      "minimal_legal_source_next_step": {
+        "action": "In the genuine host composition, consume the two original typed owners once, retain the resulting bounded Training stage, dispatch the exact Dataset prefix to execute_training, and use readback/receipt_attestation for restored results. Register only this actual consumer in CALLERS. Keep construction outside the generic CLI profile parser.",
+        "assembly_inputs_must_be_transferred_not_invented": true,
+        "recovery_rules": [
+          "Exact Dataset/scope and native CURRENT are checked on every blocking entry",
+          "Completed receipt requires both original receipt and native completion; no renewed timestamp or signature",
+          "Missing receipt distinguishes native Missing/Completed/Pending and checks fresh enrollment/deadline before any new side effect",
+          "One try_acquire lane remains held by the actual blocking closure even if the awaiting future is dropped"
+        ]
+      },
+      "required_original_inputs": [
+        {
+          "type": "CellQ24TrainingOwnerV1<TW>",
+          "material": "Original exclusive training File and independent AnchorWitnessStore, CellQ24SingleHeadTrainingPlanV1, exact CellQ24TrainingBatchV1 and CellQ24SgdRuleV1; reopen uses the original witness/current rather than genesis fallback."
+        },
+        {
+          "type": "OriginalCellQ24TrainingReceiptOwnerV1<RW>",
+          "material": "Original receipt File and independent witness, OriginalCellQ24TrainingSigningConfigV1 and the already enrolled Generator SigningKey. No key generation or trust construction in the consumer."
+        },
+        {
+          "type": "OriginalCellQ24TrainingSigningConfigV1",
+          "material": "Exact Dataset snapshot, FrozenLearningScopeV2, TrustedLearningSignerV1, pinned LearningEvidenceVerifierV1, preselected bounded signature lifetime."
+        },
+        {
+          "type": "LoadedCellQ24ModelV1 / CellQ24PrivateHeadV1 / optimizer-rule Digest32",
+          "material": "Actual baseline bytes matching selected_bundle, fixed row and pre-frozen optimizer rule; these are not obtained from a finished candidate."
+        }
+      ],
+      "evidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+          "lines": [
+            63,
+            85
+          ],
+          "claim": "Consumes already authorized typed owners"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+          "lines": [
+            88,
+            165
+          ],
+          "claim": "Training, retained completion and exact attestation branches"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+          "lines": [
+            175,
+            207
+          ],
+          "claim": "Bounded blocking lane and both-owner readback"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+          "lines": [
+            56,
+            149
+          ],
+          "claim": "Original files/witness and create-versus-recover inputs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+          "lines": [
+            56,
+            107
+          ],
+          "claim": "Original Generator signing configuration and retained journal"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+          "lines": [
+            180,
+            210
+          ],
+          "claim": "Enrolled Generator identity, pinned trust, Dataset and scope binding"
+        },
+        {
+          "path": "CALLERS.toml",
+          "lines": [
+            3345,
+            3448
+          ],
+          "claim": "Receipt owner and stage boundary caller lists"
+        }
+      ],
+      "immediate_source_ready_subunit": "snapshot_aware_original_training_receipt_readback; see immediate_code_action for exact methods, dual snapshot cases and behavior oracle"
+    },
+    {
+      "id": "exact_original_dataset_bridge",
+      "classification": "SOURCE_DATA_DERIVATION_AND_RECEIPT_BRIDGE_PLUS_REAL_DATA_CUSTODY",
+      "terminology": "ExactDataset is an audit label, not an existing Rust type name in the exact source lookup.",
+      "existing_interfaces": [
+        "DurableLedger::snapshot",
+        "inspect_ledger(file, binding, max_records, LedgerAnchor)",
+        "DatasetSnapshotReceiptV3",
+        "verify_dataset_snapshot_receipt_against_ledger_v3",
+        "CellQ24TrainingBatchV1::new",
+        "CellQ24SingleHeadTrainingPlanV1::from_dataset_cut"
+      ],
+      "observed_gap": "The authenticated ledger/snapshot-receipt end and the bounded Q24 sample/batch end exist. No reviewed production bridge derives Q24 input/target samples from the exact active source records under a fixed extraction rule, binds the byte/row counts to the original Observer Dataset receipt and supplies that exact prefix to the Training plan. Batch::new checks shape/range and canonical bytes, not source provenance.",
+      "can_implement_source_without_new_keys": true,
+      "can_establish_real_source_provenance_from_a_batch_constructor": false,
+      "minimal_legal_source_next_step": {
+        "action": "Implement a bounded, read-only Dataset-to-Q24 validator/converter using the existing ledger inspection and V3 receipt verifier. Accept the authenticated original ledger view, its source bytes and an explicit pre-frozen extraction/target rule; derive the batch deterministically, check dataset digest/row count/exact encoded-byte count against the original Dataset cut and batch digest in the frozen optimizer rule, then return the validated batch/plan inputs. Resolve the original Observer receipt through an already admitted owner; do not sign locally or manufacture a Dataset cut.",
+        "source_work_available_now": [
+          "Define the explicit conversion contract and input ownership/lifetimes",
+          "Implement bounded source-record selection, current-ledger/V3 validation and deterministic Q24 conversion for the chosen frozen rule",
+          "Bind original Dataset cut, batch digest, optimizer digest and row/byte budgets with fail-closed errors"
+        ],
+        "material_dependent_part": "The actual extraction/target semantics and source preimages are not defined by DatasetSnapshotReceiptV3 or CellQ24TrainingBatchV1. Implement the complete converter only against an explicit owner-frozen rule, real eligible source bytes, current cuts and original Observer receipt. Existing ledger/receipt validation is available now but is not an extraction rule.",
+        "original_holder_gap": "DatasetSnapshotReceiptV3 contains an authenticated-principal description and reproducible digest fields; it is not by itself the learning-stage SignedLearningEvidenceV1 receipt required by the worker."
+      },
+      "required_original_inputs": [
+        {
+          "type": "DurableLedger or host-authorized File + Digest32 binding + LedgerAnchor",
+          "material": "Actual authoritative committed ledger and current external anchor in its original rollback domain; inspect_ledger is historical and does not grant ongoing revocation/use authority."
+        },
+        {
+          "type": "DatasetSnapshotReceiptV3",
+          "material": "Producer, snapshot identity/objective/ledger head, exact source_record_digests, eligible frontier, outcome watermark, correction cut, revocation cut and inclusion policy."
+        },
+        {
+          "type": "LearningIterationReceiptV1 with Dataset observation + SignedLearningEvidenceV1(Observer)",
+          "material": "Original operation/predecessor/actor/time, episode digest, withdrawal frontier and exact rows/bytes, verified against bootstrap trust and current original owner."
+        },
+        {
+          "type": "Explicit frozen Q24 extraction/target rule and source-record preimages",
+          "material": "Not yet provided as a complete production input in this bounded audit. Needed to turn genuine records into CellQ24TrainingSampleV1 without inventing targets."
+        },
+        {
+          "type": "FrozenLearningScopeV2 + CellQ24SgdRuleV1",
+          "material": "Original pre-Training row/optimizer contract binds the derived batch digest; no post-fit scope replacement."
+        }
+      ],
+      "evidence": [
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/dataset_receipt_v3.rs",
+          "lines": [
+            27,
+            54
+          ],
+          "claim": "Existing reproducible dataset receipt"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/dataset_receipt_v3.rs",
+          "lines": [
+            56,
+            120
+          ],
+          "claim": "Receipt and authoritative ledger/source-set verification"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/dataset_receipt_v3.rs",
+          "lines": [
+            123,
+            175
+          ],
+          "claim": "Active source digests and dataset digest preimage"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+          "lines": [
+            251,
+            294
+          ],
+          "claim": "Existing ledger snapshot and exact anchored read-only inspection"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+          "lines": [
+            39,
+            105
+          ],
+          "claim": "Q24 batch constructor and its provenance limitation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+          "lines": [
+            117,
+            131
+          ],
+          "claim": "Optimizer digest includes batch digest"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+          "lines": [
+            265,
+            300
+          ],
+          "claim": "Dataset receipt digest/rows/bytes and training quota binding"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs",
+          "lines": [
+            71,
+            124
+          ],
+          "claim": "Exact Dataset cut and original frozen row rule"
+        },
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+          "lines": [
+            93,
+            105
+          ],
+          "claim": "Actual Dataset observation fields"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+          "lines": [
+            108,
+            126
+          ],
+          "claim": "Dataset stage requires original Observer role"
+        }
+      ],
+      "can_implement_complete_converter_with_existing_semantics_alone": false
+    },
+    {
+      "id": "governed_q24_model_proposal",
+      "classification": "SOURCE_PROTOCOL_GAP_NOT_JUST_MISSING_CREDENTIALS",
+      "existing_interfaces": [
+        "LearningIterationProposalPayloadV1::{Parameter,Topology}",
+        "PreparedLearningIterationProposalV1",
+        "submit_iteration_proposal_v1",
+        "ParameterPlasticityProductRequestV1",
+        "propose_authenticated_parameter_plasticity_v1",
+        "DurableProposalRegistry::append_v2(ParameterProposalV2)"
+      ],
+      "observed_gap": "The production learning payload has no distinct request for the original native Q24 trained-model result. Parameter admission accepts a Model baseline, but its result must still equal deterministic Parameter V3 regeneration. The test-only ResearchExternalTrainedArtifact branch is not a production substitute, and the existing parameter durable writer accepts ParameterProposalV2.",
+      "can_complete_by_casting_model_to_parameter": false,
+      "can_implement_source_without_new_keys": true,
+      "requires_versioned_existing_protocol_work": true,
+      "minimal_legal_source_next_step": {
+        "action": "Extend the existing governed proposal protocol with a versioned typed trained-Model submission and durable recovery binding before adding its learning dispatch branch. Bind the exact native candidate bytes/bundle, original Dataset and frozen update rule, original Generator completion, independent qualification, current registry/ledger owner evidence and expected proposal predecessor. Preserve the existing independent anchor/uncertain-commit semantics and then add the real StageOwner prepare_proposal mapping. Do not create an authority-free parallel proposal owner to bypass this gap.",
+        "minimum_existing_surfaces_to_change": [
+          "hepta-plasticity proposal record/codec/verification and anchored durable append/recovery",
+          "hepta-intelligence authenticated product proposal admission",
+          "hepta-agentd LearningIterationProposalPayloadV1 and submit_iteration_proposal_v1",
+          "host resolver for current original Model artifact, Dataset, training and evaluation evidence"
+        ],
+        "bounded_preparatory_code": "A typed validator/readback for an original Q24 candidate and its independently qualified evidence can be implemented without provisioning new custody. It must remain non-publishing until the existing governed durable protocol has an admitted model branch.",
+        "do_not_expand_claim": "Neither such validation nor a new proposal record would itself authorize selection, installation or next-task execution."
+      },
+      "required_original_inputs": [
+        {
+          "type": "CellQ24TrainedCandidateV1 + original Training receipt/attestation",
+          "material": "Actual unselected trained Model/heads bytes and bundle/lineage from the retained native job; not a fabricated GeneratedParameterCandidateSetV3."
+        },
+        {
+          "type": "ProductQualificationReceiptV1 + IndependentEvaluationBundleV1 + SignedEvaluationEvidenceV1",
+          "material": "Actual independent B qualification under the evaluation profile fixed before Training; development training metrics are insufficient."
+        },
+        {
+          "type": "ArtifactRegistry + DurableLedger + PlasticityOwnerEvidenceResolverV1 + PlasticityOwnerEvidencePolicyV1",
+          "material": "Current original baseline eligibility, registry/ledger heads and real owner evidence; Observer attestation over that resolved admission."
+        },
+        {
+          "type": "AnchoredPlasticityWriterV1 / PlasticityAnchorCommitterV1 / original durable predecessor",
+          "material": "Existing admitted proposal writer and independent retained rollback anchor. A protocol extension is required; possession of these current types alone does not admit arbitrary Q24 results."
+        },
+        {
+          "type": "Selector and NextUse original owner receipts",
+          "material": "Required after proposal; the proposal path grants no selection/activation authority."
+        }
+      ],
+      "evidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+          "lines": [
+            20,
+            37
+          ],
+          "claim": "Only Parameter/Topology are production proposal payloads"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_proposal.rs",
+          "lines": [
+            26,
+            42
+          ],
+          "claim": "Exact iteration/candidate/evaluation binding"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_proposal.rs",
+          "lines": [
+            43,
+            119
+          ],
+          "claim": "Research branch is cfg(test, unix); ordinary branches submit Parameter/Topology"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+          "lines": [
+            49,
+            113
+          ],
+          "claim": "Current typed parameter admission/request/receipt"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+          "lines": [
+            353,
+            389
+          ],
+          "claim": "Original generated set and independent role authentication"
+        },
+        {
+          "path": "codex-rs/hepta-plasticity/src/generator_v3.rs",
+          "lines": [
+            186,
+            193
+          ],
+          "claim": "Complete equality to deterministic regeneration"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+          "lines": [
+            639,
+            698
+          ],
+          "claim": "Model baseline is accepted, but current owner evidence still resolved"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+          "lines": [
+            182,
+            204
+          ],
+          "claim": "Original independent anchor and retained writer"
+        },
+        {
+          "path": "codex-rs/hepta-plasticity/src/durable_registry.rs",
+          "lines": [
+            404,
+            445
+          ],
+          "claim": "Current parameter durable append type and exact predecessor/idempotence"
+        }
+      ]
+    }
+  ],
+  "reused_evidence": {
+    "full_callers": {
+      "directory": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_30a697c_20261111",
+      "invocation_id": "p0-30a697c-full-caller-scan-20261111-v1",
+      "source": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "exit_code": 0,
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "authorityGranted": false,
+      "rustFilesScanned": 6302,
+      "before_after_clean_same_source": true,
+      "stdout": {
+        "path": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_30a697c_20261111/stdout.raw",
+        "bytes": 103063,
+        "sha256": "83201a799a7be1e04116ad1b089b32761ae6d37ed77de35885e12d441f825c7c"
+      },
+      "metadata": [
+        {
+          "path": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_30a697c_20261111/BEFORE.json",
+          "bytes": 7317,
+          "sha256": "63508708684313d3945bb08447dced17661f35246f36f88b17b94b6ddbb75ddf"
+        },
+        {
+          "path": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_30a697c_20261111/AFTER.json",
+          "bytes": 7316,
+          "sha256": "b31a895c221d4d3c9635fd87e0e6f92376fedf00d03b33983ff8ed4f0222a358"
+        },
+        {
+          "path": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_30a697c_20261111/ATTEMPT.json",
+          "bytes": 998,
+          "sha256": "4863e6f45a7d37c43c8f4dc368fa626665964a4b19864f3d9e3277554cdf1d44"
+        },
+        {
+          "path": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_30a697c_20261111/EXECUTION.json",
+          "bytes": 2486,
+          "sha256": "0dc6be10d031232da42f31ad08053e0a4587a462b31a260483a52ae78ef929b6"
+        }
+      ],
+      "selected_boundaries": [
+        {
+          "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_root_learning_stage_owners\\s*\\(",
+          "id": "root_learning_original_stage_assembly",
+          "productCallers": [],
+          "receiverMethods": [],
+          "receiverType": null,
+          "symbol": "AgentdConfig::with_root_learning_stage_owners"
+        },
+        {
+          "callPattern": null,
+          "id": "learning_original_training_receipt_create",
+          "productCallers": [],
+          "receiverMethods": [],
+          "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+          "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::create"
+        },
+        {
+          "callPattern": null,
+          "id": "learning_original_training_receipt_recover",
+          "productCallers": [],
+          "receiverMethods": [],
+          "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+          "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::recover"
+        },
+        {
+          "callPattern": null,
+          "id": "learning_original_training_receipt_attest",
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+          ],
+          "receiverMethods": [],
+          "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+          "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::attest_original_completion"
+        },
+        {
+          "callPattern": null,
+          "id": "learning_original_training_receipt_readback",
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+          ],
+          "receiverMethods": [],
+          "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+          "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::readback"
+        },
+        {
+          "callPattern": null,
+          "id": "cell_q24_original_training_execute",
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+          ],
+          "receiverMethods": [],
+          "receiverType": "CellQ24TrainingOwnerV1",
+          "symbol": "CellQ24TrainingOwnerV1::fit_or_readback"
+        },
+        {
+          "callPattern": null,
+          "id": "cell_q24_original_training_pair_binding",
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+          ],
+          "receiverMethods": [],
+          "receiverType": "CellQ24TrainingOwnerV1",
+          "symbol": "CellQ24TrainingOwnerV1::require_original_dataset_scope"
+        },
+        {
+          "callPattern": null,
+          "id": "learning_original_training_stage_constructor",
+          "productCallers": [],
+          "receiverMethods": [],
+          "receiverType": "OriginalCellQ24TrainingStageV1",
+          "symbol": "OriginalCellQ24TrainingStageV1::from_original_owners"
+        },
+        {
+          "callPattern": null,
+          "id": "learning_original_training_stage_execute",
+          "productCallers": [],
+          "receiverMethods": [],
+          "receiverType": "OriginalCellQ24TrainingStageV1",
+          "symbol": "OriginalCellQ24TrainingStageV1::execute_training"
+        },
+        {
+          "callPattern": null,
+          "id": "learning_original_training_stage_readback",
+          "productCallers": [],
+          "receiverMethods": [],
+          "receiverType": "OriginalCellQ24TrainingStageV1",
+          "symbol": "OriginalCellQ24TrainingStageV1::readback"
+        },
+        {
+          "callPattern": null,
+          "id": "learning_original_training_stage_attestation",
+          "productCallers": [],
+          "receiverMethods": [],
+          "receiverType": "OriginalCellQ24TrainingStageV1",
+          "symbol": "OriginalCellQ24TrainingStageV1::receipt_attestation"
+        }
+      ],
+      "costs_are_reused_original_not_new_audit_work": true,
+      "original_costs": {
+        "wall_seconds": 707.9864971160005,
+        "child_user_cpu_seconds": 688.9000550000001,
+        "child_system_cpu_seconds": 3.47934,
+        "child_cpu_seconds_total": 692.379395,
+        "measurement": "monotonic wall time and RUSAGE_CHILDREN deltas surrounding the one verifier subprocess, before post-run Git reads",
+        "excluded": [
+          "preparation/fetch/switch",
+          "before/after source snapshots",
+          "assistant orchestration and communication",
+          "other agents/CI",
+          "archive construction"
+        ],
+        "unmeasured": [
+          "monetary cost",
+          "energy",
+          "whole-session resource cost"
+        ]
+      }
+    },
+    "training_stage_same_blob_as_prior_review": {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "prior_review_sha256": "cec5780821b4e092ebc09f41d13876d0f271bc2858ebbb0d8796b11b119b226d",
+      "matches": true
+    }
+  },
+  "source_files": [
+    {
+      "path": "CALLERS.toml",
+      "git_blob": "470bf7bc71420b79223dac86826d61704abba3ea",
+      "bytes": 345198,
+      "sha256": "e24624826d94bd7726e55c5ffb3ffc55f182819949dbe7b66c92879441e38b19",
+      "read_ranges": [
+        [
+          3345,
+          3448
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+      "git_blob": "a88c6f4254a660d94f5f3bef55011101d38e7221",
+      "bytes": 15510,
+      "sha256": "3987c195204a4bf1884e81bb62976febd75972e85d6919fe80c76921944b5b6c",
+      "read_ranges": [
+        [
+          39,
+          105
+        ],
+        [
+          117,
+          131
+        ],
+        [
+          265,
+          300
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "git_blob": "2f99436cc89f15f99198b3e414135707ecee391d",
+      "bytes": 14599,
+      "sha256": "121e08b87de9fceadeffeda8a0a02f530575510bf3640ed20ee073da4b554380",
+      "read_ranges": [
+        [
+          56,
+          149
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs",
+      "git_blob": "11b5132fe5a93429557e8634004154fda8ade3e4",
+      "bytes": 6590,
+      "sha256": "ba108771a6ad13231d52c43ffa2e0c2c9d9ff99c0719b65fccf024c9b89e6cdb",
+      "read_ranges": [
+        [
+          71,
+          124
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+      "git_blob": "fffe066843ecc6ff02e5887a9ac926983d019e05",
+      "bytes": 12605,
+      "sha256": "5840b19c784bb58dc812271d10487c201aa8cd9a193f6e1930b1e9817eddde39",
+      "read_ranges": [
+        [
+          56,
+          107
+        ],
+        [
+          180,
+          210
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs",
+      "git_blob": "55412aa998e15961d9c11118250a68739ec54a40",
+      "bytes": 18377,
+      "sha256": "bb9358e3a4d928f662d6a205b5c2af2017911d4c50fb371dd94df6dbbec8a9be",
+      "read_ranges": [
+        [
+          20,
+          55
+        ],
+        [
+          110,
+          170
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "git_blob": "c56be75dd8a2e86894864c3d26a33eb1a3d4d416",
+      "bytes": 8915,
+      "sha256": "cec5780821b4e092ebc09f41d13876d0f271bc2858ebbb0d8796b11b119b226d",
+      "read_ranges": [
+        [
+          63,
+          85
+        ],
+        [
+          88,
+          165
+        ],
+        [
+          175,
+          207
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs",
+      "git_blob": "abdeea194ee4bd1de796c2d21bf7d6b4f212c4a1",
+      "bytes": 13770,
+      "sha256": "c8be41a31e4dc3cd7d70508fcc5b200de2ec438df75e197240cc8c20eb80b65e",
+      "read_ranges": [
+        [
+          1,
+          101
+        ],
+        [
+          140,
+          191
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "git_blob": "792703744b84ab6df841035f1e6652e3c7bd71ad",
+      "bytes": 2102,
+      "sha256": "09356c0edad6cd17a37b61a12233948e976fbd5a4900bbfca7aa69564071c2a8",
+      "read_ranges": [
+        [
+          28,
+          52
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+      "git_blob": "6e1a88f8412304bf92456d4cec0705eded02e6c4",
+      "bytes": 6925,
+      "sha256": "7819a40f8384772d2e17fbfb90144ddfe140ea5bfd649ed6011ccf85aea82c5b",
+      "read_ranges": [
+        [
+          20,
+          43
+        ],
+        [
+          73,
+          126
+        ],
+        [
+          108,
+          126
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs",
+      "git_blob": "8f54b20150252f6f119120810b1930ebb50d034d",
+      "bytes": 7639,
+      "sha256": "5beb7a633af2ea60844455a4460587425f9ddfe98e145f6cc4a054e7fb7907e9",
+      "read_ranges": [
+        [
+          88,
+          190
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs",
+      "git_blob": "bc46f398c02ae2976eb456d435d667fa3e399bcf",
+      "bytes": 14641,
+      "sha256": "4fc1c4736bd7f03e8ea00a062f60e7c693e5485d2303e9b74d2e0409aa2eb369",
+      "read_ranges": [
+        [
+          1,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+      "git_blob": "e099a12408afcb7bb993c733d0ec067c18fa8926",
+      "bytes": 8068,
+      "sha256": "779316f273e35c8e99ebf63a93ee23d5ac73107cf0af631433dfcf0df9d155ea",
+      "read_ranges": [
+        [
+          29,
+          103
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs",
+      "git_blob": "f544581f3a35f8e41eda3aadd767a12f2ea6e47d",
+      "bytes": 8499,
+      "sha256": "a1cfd504e09ff4621d39a9618318240f6ea2ffbc830309f5c41fae4fe1404436",
+      "read_ranges": [
+        [
+          24,
+          108
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+      "git_blob": "7fcda7d31f37fd12923054ddeae50ccb563ce3dc",
+      "bytes": 6139,
+      "sha256": "79de88acf165d9439004c9ce003061dd15950879d3cb44b27bf02e9ce258d639",
+      "read_ranges": [
+        [
+          20,
+          37
+        ],
+        [
+          40,
+          77
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_proposal.rs",
+      "git_blob": "c013194e0c652e25782db1f68ab4b580d70447d4",
+      "bytes": 6704,
+      "sha256": "6128bacd9c849553b4440d2e3e21ba11976bef34a8d2b83de4fae8a4a2cab4f0",
+      "read_ranges": [
+        [
+          26,
+          42
+        ],
+        [
+          43,
+          119
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "git_blob": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+      "bytes": 13038,
+      "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97",
+      "read_ranges": [
+        [
+          31,
+          39
+        ],
+        [
+          201,
+          242
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "git_blob": "1885a371bcea2952103a61d7dd9f2e2f9092c536",
+      "bytes": 48602,
+      "sha256": "ab8914b81c0ea2925812e85b2e0385d27cebb8875095c10cf7b5c5092c7d52c0",
+      "read_ranges": [
+        [
+          639,
+          698
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "git_blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+      "bytes": 18594,
+      "sha256": "f5aa92d683df793c1a2aa6076f783759496c7d0e6fcface276239ddf6cbea097",
+      "read_ranges": [
+        [
+          142,
+          191
+        ],
+        [
+          197,
+          207
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+      "git_blob": "c3372a8e6493b8a9f5acc09c2d73a03e452ac22c",
+      "bytes": 4136,
+      "sha256": "daec53d03c4f9e34323c5903354529c5f151bb5c08a1f030f7ab9c870009d78e",
+      "read_ranges": [
+        [
+          8,
+          40
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+      "git_blob": "f12e808a049e0fa1418df0a578c0f9dde9bbe538",
+      "bytes": 8373,
+      "sha256": "ef442ef7599e7f01139e7fd5af23cce3fae2d3389a584f4c9449c32a798836a6",
+      "read_ranges": [
+        [
+          25,
+          33
+        ],
+        [
+          173,
+          211
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "git_blob": "7004ae2981587a63f9941376196af9435dbbdc6d",
+      "bytes": 30817,
+      "sha256": "3087c92d11eb53676564e932379a1167d040777058571863a5f18822406849e2",
+      "read_ranges": [
+        [
+          49,
+          113
+        ],
+        [
+          182,
+          204
+        ],
+        [
+          353,
+          389
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+      "git_blob": "827d05abc541498920013465880e6fd4211088b9",
+      "bytes": 7792,
+      "sha256": "fe2b03a31b5d7e48f27674bad66ce627323d130ec3401861f25c2957a857a0f8",
+      "read_ranges": [
+        [
+          93,
+          105
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/dataset_receipt_v3.rs",
+      "git_blob": "f92a2ec61c20beb821f1fd47fae3c8252ad73c85",
+      "bytes": 11165,
+      "sha256": "6d5d71a674f497af25673736af7403e8e76779b31a147e9bfa8a3eab5d6d7a82",
+      "read_ranges": [
+        [
+          27,
+          54
+        ],
+        [
+          56,
+          120
+        ],
+        [
+          123,
+          175
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+      "git_blob": "4881a7f08aaf3f98c08012fee4dae95235f11232",
+      "bytes": 14107,
+      "sha256": "598041d22b9b61d900372058f6181c48edfba5e04463b49f834414c24a3aa4fc",
+      "read_ranges": [
+        [
+          251,
+          294
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/durable_registry.rs",
+      "git_blob": "867fc7ee755b11819566afc369a03bc88d47023a",
+      "bytes": 33331,
+      "sha256": "0bf16d1bd2fa6d49228f3acfc8cd1d62e6cd3a0f5999d131162984ef68588d58",
+      "read_ranges": [
+        [
+          404,
+          445
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/generator_v3.rs",
+      "git_blob": "c201c954f302cc21fd82ae265cbf012debd57902",
+      "bytes": 24133,
+      "sha256": "96cadc7778c8c45737c562b11ce1c311a1fd875d7b79e9330dd92304d7007f9c",
+      "read_ranges": [
+        [
+          186,
+          193
+        ]
+      ]
+    }
+  ],
+  "limitations": [
+    "Static source/interface review is not native compilation, behavior-test execution, product assembly or scientific confirmation.",
+    "Required original material availability was not audited outside these source/evidence interfaces.",
+    "No new type described as a next step is claimed to exist in 30a.",
+    "The existing Parameter host accepts a Model baseline; the unresolved issue is the native-Q24 result/evidence protocol, not blanket rejection of Model artifacts.",
+    "A conversion/factory written with fixtures would validate software behavior only, not real source custody, independent task B or next-task C."
+  ],
+  "new_audit_costs": {
+    "wall_seconds": null,
+    "cpu_seconds": null,
+    "monetary_cost": null,
+    "reason": "No enclosing timer or complete resource accounting was started for this bounded interactive read-only audit; no estimate substituted."
+  },
+  "revision": 2,
+  "previous_version_sha256": "91b4d75a2da265ff5e02e657555af7c53b11880a7f4b82f8e04b61c5e98178c4",
+  "implementation_at_audit_cut": "NOT_IMPLEMENTED_IN_30a; subsequent component work must have a separate source identity and evidence",
+  "immediate_code_action": {
+    "id": "snapshot_aware_original_training_receipt_readback",
+    "status": "SOURCE_READY_WITH_EXISTING_RULES_AND_TYPES",
+    "not_yet_implemented_in_audited_source": true,
+    "why_it_is_real_wiring": "Recovery receipt_attestation receives the complete restored CURRENT snapshot. OriginalCellQ24TrainingStageV1 readback/attestation require its exact frozen Dataset cut. The existing evaluation readback adapter reconstructs the appropriate historical predecessor, but the Training typed stage has no corresponding full-snapshot consumer.",
+    "existing_inputs": [
+      "&OriginalCellQ24TrainingStageV1<TW,RW>",
+      "&LearningIterationSnapshotV1",
+      "&LearningIterationReceiptV1"
+    ],
+    "existing_methods": [
+      "LearningIterationCoordinatorV1::from_snapshot",
+      "LearningIterationCoordinatorV1::new",
+      "LearningIterationCoordinatorV1::record",
+      "LearningIterationCoordinatorV1::snapshot",
+      "LearningIterationCoordinatorV1::next_stage",
+      "LearningIterationObservationV1::stage",
+      "OriginalCellQ24TrainingStageV1::receipt_attestation"
+    ],
+    "output": "The original SignedLearningEvidenceV1, or original structural/binding/owner error; no synthesized evidence or timestamps.",
+    "algorithm_contract": [
+      "Validate the full supplied snapshot using the existing Coordinator before reconstructing a Training predecessor.",
+      "Require the expected receipt stage to be Training (including TrainingNoUpdateV2).",
+      "If the full snapshot already contains Training, require exact equality to that retained receipt and replay only its earlier original receipts at their original observation times to obtain the Dataset prefix.",
+      "If the snapshot has only the Dataset cut, require next_stage==Training and validate the expected original receipt as that exact extension using its historical time. This supports an already completed owner whose checkpoint ACK was lost; it does not authorize new work.",
+      "Call the existing typed stage receipt_attestation on the exact Dataset prefix and expected receipt. Preserve all native/receipt CURRENT, key/trust, signature expiry and equality checks.",
+      "Do not call execute_training, fit_or_readback, attest_original_completion or checkpoint; do not mutate the supplied full snapshot or use a reconstructed prefix to substitute another owners CURRENT.",
+      "Limit the result to original Training evidence. Structural validation of later stages is not their authentication and is not a completed StageOwner implementation."
+    ],
+    "meaningful_behavior_oracles": [
+      "Use existing ReceiptFixture with real native fit and real file/witness receipt owner for Candidate and quantized NoUpdate. Record that actual Training receipt into a coordinator; full-snapshot readback must return exactly the already retained signature.",
+      "Pass the original Dataset-only checkpoint with an already completed Training owner (lost ACK); readback returns the same original signature without new fit or signing.",
+      "Original native/receipt Missing or Pending remains the same original error and cannot trigger first attestation or fit.",
+      "Wrong structurally valid Dataset prefix, a replaced expected receipt and malformed/foreign full history are refused.",
+      "Repeated reads and file-object reopen preserve the four original file byte arrays, native elapsed/weights and exact receipt/signature time window. A current-witness drift or expired signature remains an error."
+    ],
+    "fixture_boundary": "These fixtures test actual native owner and signature-journal behavior; any full-history suffix is test structure, not independent B/C evidence or product cold recovery.",
+    "source_anchors": [
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+        "lines": [
+          20,
+          43
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "lines": [
+          146,
+          172
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+        "lines": [
+          82,
+          103
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs",
+        "lines": [
+          15,
+          73
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs",
+        "lines": [
+          122,
+          170
+        ]
+      }
+    ]
+  },
+  "decision_boundary": [
+    {
+      "unit": "snapshot_aware_original_training_receipt_readback",
+      "can_implement_now": true,
+      "reason": "Existing snapshot replay, Training/NoUpdate stage identity and typed original readback semantics fully define it.",
+      "still_not_claimed": "Product host assembly, full-chain authentication, real independent B/C or full-process cold recovery."
+    },
+    {
+      "unit": "dataset_current_and_v3_receipt_checks",
+      "can_implement_now": true,
+      "reason": "Existing inspect_ledger / DurableLedger::snapshot and verify_dataset_snapshot_receipt_against_ledger_v3 already define the checks. They can be composed with supplied typed material.",
+      "still_not_claimed": "Such checks alone do not define the Q24 feature/target transformation or authenticate an unprovided stage receipt."
+    },
+    {
+      "unit": "real_dataset_to_q24_feature_target_extraction",
+      "can_implement_now": false,
+      "reason": "No complete owner-frozen extraction/target semantics and authenticated source preimages were supplied/validated here. Do not choose default targets or infer the rule from the desired trained result.",
+      "unblock_input": "An explicit pre-Training extraction/target rule plus actual eligible source-record preimages and original Observer Dataset receipt; then implement the deterministic converter against those exact semantics."
+    },
+    {
+      "unit": "main_receive_to_launch_full_stage_assembly",
+      "can_implement_now": false,
+      "reason": "An unconditional call has no real typed StageOwner object to supply. The API already exists; missing concrete original-owner composition/handoff and model/dataset protocol pieces cannot be replaced with empty stubs.",
+      "unblock_input": "Completed concrete stage composition and authenticated original owner bundle; then a single existing with_root_learning_stage_owners call is ordinary wiring."
+    },
+    {
+      "unit": "governed_native_q24_model_proposal",
+      "can_implement_as_small_wiring_under_current_protocol": false,
+      "can_progress_as_explicit_source_protocol_work": true,
+      "reason": "Model baseline admission exists, but the Parameter V3 generated-candidate contract and durable ParameterProposalV2 record do not define admission of this native SGD result. A reviewed versioned extension to existing governed owner/record/recovery is required, rather than credential provisioning alone."
+    }
+  ]
+}

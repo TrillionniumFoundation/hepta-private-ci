@@ -1,0 +1,134 @@
+{
+  "clock_interval_checks": [
+    {
+      "continued_epochs": 23,
+      "intervals_checked": 23,
+      "maximum_sample_gap_seconds": 3.7050340324640274e-06,
+      "minimum_sample_gap_seconds": 1.5131663531064987e-06,
+      "name": "attention-s101-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 1,
+      "intervals_checked": 1,
+      "maximum_sample_gap_seconds": 1.9669532775878906e-06,
+      "minimum_sample_gap_seconds": 1.9669532775878906e-06,
+      "name": "attention-s211-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 60,
+      "intervals_checked": 60,
+      "maximum_sample_gap_seconds": 4.270812496542931e-06,
+      "minimum_sample_gap_seconds": 1.553911715745926e-06,
+      "name": "attention-s307-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 1,
+      "intervals_checked": 1,
+      "maximum_sample_gap_seconds": 1.8968712538480759e-06,
+      "minimum_sample_gap_seconds": 1.8968712538480759e-06,
+      "name": "gru-s211-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 135,
+      "intervals_checked": 135,
+      "maximum_sample_gap_seconds": 1.1297175660729408e-05,
+      "minimum_sample_gap_seconds": 1.2919772416353226e-06,
+      "name": "ssm_s4d-s211-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 39,
+      "intervals_checked": 39,
+      "maximum_sample_gap_seconds": 4.464993253350258e-06,
+      "minimum_sample_gap_seconds": 1.3550743460655212e-06,
+      "name": "ssm_s4d-s211-lr0.003",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 92,
+      "intervals_checked": 92,
+      "maximum_sample_gap_seconds": 4.353933036327362e-06,
+      "minimum_sample_gap_seconds": 1.393025740981102e-06,
+      "name": "ssm_s4d-s307-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    }
+  ],
+  "combined_heuristic_passes": 33,
+  "fixed_LR_table_checks": [
+    {
+      "D_mean_macro_f1": 0.42497474692463916,
+      "LR_means_from_all_six": {
+        "0.001": 0.22946824670467572,
+        "0.003": 0.42497474692463916
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 784.2627707126085,
+      "arm": "gru",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    },
+    {
+      "D_mean_macro_f1": 0.34902507718809056,
+      "LR_means_from_all_six": {
+        "0.001": 0.26743966294056803,
+        "0.003": 0.34902507718809056
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 1701.8565244667698,
+      "arm": "cfc",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    },
+    {
+      "D_mean_macro_f1": 0.14997869521819712,
+      "LR_means_from_all_six": {
+        "0.001": 0.1163387990950381,
+        "0.003": 0.14997869521819712
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 1308.9980340020265,
+      "arm": "snn_plif",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    },
+    {
+      "D_mean_macro_f1": 0.3130305208406941,
+      "LR_means_from_all_six": {
+        "0.001": 0.1625964947358252,
+        "0.003": 0.3130305208406941
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 3926.9682609040756,
+      "arm": "event_time_lif",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    },
+    {
+      "D_mean_macro_f1": 0.3668656108888712,
+      "LR_means_from_all_six": {
+        "0.001": 0.32435676821803466,
+        "0.003": 0.3668656108888712
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 817.0979199488647,
+      "arm": "ssm_s4d",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    },
+    {
+      "D_mean_macro_f1": 0.40261652244880747,
+      "LR_means_from_all_six": {
+        "0.001": 0.3977463063281223,
+        "0.003": 0.40261652244880747
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 1461.6004569418728,
+      "arm": "attention",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    }
+  ],
+  "original_heuristic_passes": 26,
+  "passed_scoped_recomputation": true,
+  "schema": "independent-C1-actual-clock-and-selection-review-v1",
+  "scientific_admission": "HOLD",
+  "small_manifest_members_checked": 105
+}

@@ -1,0 +1,76 @@
+{
+  "state": "failed",
+  "fixed_input_sha": "3a3af4848cb7478f13febb8f6923864c59478a64",
+  "fixed_input_tree": "5a69ead80475492f63e9a31c7083db7c18f96e02",
+  "steps": [
+    {
+      "name": "fetch-fixed",
+      "exit_code": 0,
+      "seconds": 2.284793326864019,
+      "log_bytes": 144,
+      "log_sha256": "30c5d05db7024350f5f8a37e5df7f0c97166732e3407bee7df69f5b571e6672b"
+    },
+    {
+      "name": "create-worktree",
+      "exit_code": 0,
+      "seconds": 1.5581475859507918,
+      "log_bytes": 1603,
+      "log_sha256": "96fcef819037873131646b9cab19f94060049c709a4dd3bf99a053fe035dc0b6"
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 4.074911278905347,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diffcheck-working",
+      "exit_code": 0,
+      "seconds": 0.014542717020958662,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "stage-format",
+      "exit_code": 0,
+      "seconds": 0.04309638706035912,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "commit-format",
+      "exit_code": 0,
+      "seconds": 0.03835603198967874,
+      "log_bytes": 171,
+      "log_sha256": "87c2167e972801987f725cfedf2709eec4ae1ded83070ebd20613a89d9a8ba7f"
+    },
+    {
+      "name": "diffcheck-full-committed",
+      "exit_code": 0,
+      "seconds": 0.030007617082446814,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-closure",
+      "exit_code": 1,
+      "seconds": 75.2038666268345,
+      "log_bytes": 46142,
+      "log_sha256": "e18fc1d677cd3a5b496377f7440ed8aa8fbb3886afd383ac767a8d8985a27117"
+    }
+  ],
+  "new_isolated_qualification": true,
+  "prior_private_qualifications": "UNKNOWN; this work does not inspect, resolve or mutate other worktrees",
+  "rust_executed": false,
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "source_sha": "83af1c661b857bedeccd22cc3274eb4f68db7775",
+  "source_tree": "fe87c4bbb9ae07ef8045354d4d303e567b756435",
+  "error": "RuntimeError('source-closure failed')",
+  "source_after": "83af1c661b857bedeccd22cc3274eb4f68db7775",
+  "source_status_after": ""
+}

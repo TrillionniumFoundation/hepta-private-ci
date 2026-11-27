@@ -1,0 +1,13 @@
+{
+  "archive_child_exit_code": null,
+  "bundle_name": "work_tree_rejected",
+  "complete_archive_child_cpu_seconds": 0.0,
+  "coordinator_whole_self_cpu_seconds_through_cutoff": 0.053426145,
+  "error": "Traceback (most recent call last):\n  File \"/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/sealing_smoke001/fixture/experiments/hcsn_distributional_v2/seal_bundle.py\", line 66, in run\n    raise ValueError('An include contains archives or an internal staging work tree')\nValueError: An include contains archives or an internal staging work tree\n",
+  "manifest_path": "artifacts/work_tree_rejected.json",
+  "schema": "hcsn-v2-staged-bundle-execution.v1",
+  "scope": "One bundle per interpreter. Add complete child and whole wrapper self CPU once; inner seal/body/pack/restore clocks are nested. Final receipt serialization/exit is outside cutoff.",
+  "source_sha256": "432ec83121406b9c0e1012d76cf85777c66335f9b5a45ad731fa46436953a8fa",
+  "status": "failed",
+  "wall_seconds": 0.0031789129998287535
+}

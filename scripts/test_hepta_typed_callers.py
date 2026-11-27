@@ -20,6 +20,26 @@ class TypedAuthorityCallTests(unittest.TestCase):
             )
         )
 
+    def test_arc_clone_preserves_the_original_authority_receiver(self):
+        self.assertTrue(
+            self.match(
+                "fn f(original: &Arc<Gate>) { let renamed = Arc::clone(original); renamed.enter(); }"
+            )
+        )
+
+    def test_unknown_shared_clone_cannot_hide_possible_authority(self):
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                "fn f(known: &Gate) { let opaque = Arc::clone(&unknown); opaque.enter(); }"
+            )
+
+    def test_shared_clone_of_explicit_other_type_is_not_authority(self):
+        self.assertFalse(
+            self.match(
+                "fn f(known: &Gate, other: &Arc<Other>) { let alias = std::sync::Arc::clone(other); alias.enter(); }"
+            )
+        )
+
     def test_constructor_binding_never_depends_on_receiver_name(self):
         self.assertTrue(
             self.match("fn f() { let surprise = Gate::open(); surprise.enter(); }")
@@ -74,6 +94,28 @@ class TypedAuthorityCallTests(unittest.TestCase):
                 "fn f(same: &Other) { same.enter(); } fn g(same: &Gate) { same.enter(); }"
             )
         )
+
+    def test_malformed_matching_owner_still_refuses(self):
+        parent = "struct Holder { authority: Gate }"
+        child = "impl Holder { fn f(&self) { self.authority.enter();"
+        with self.assertRaisesRegex(
+            UnresolvedTypedReceiver, "unbalanced Rust authority context"
+        ):
+            self.match(child, {"parent": parent, "child": child})
+
+    def test_absent_method_does_not_parse_unbalanced_owner(self):
+        parent = "struct Holder { authority: Gate }"
+        child = "impl Holder { fn f(&self) { self.authority.other();"
+        self.assertFalse(self.match(child, {"parent": parent, "child": child}))
+
+    def test_qualified_use_does_not_hide_an_opaque_receiver(self):
+        with self.assertRaisesRegex(
+            UnresolvedTypedReceiver, "unresolved possible Gate::enter receiver"
+        ):
+            self.match(
+                "fn f(known: &Gate) { Gate::enter(known); "
+                "let opaque = opaque_factory(known); opaque.enter(); }"
+            )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,42 @@
+{
+  "schema": "hcsn-n256-firststep-resource-runtime-hold-v1",
+  "status": "HOLD_RUNTIME_IDENTITY_REMEDIATION",
+  "source_commit": "1c6edb5f91a466318c2c1dd0b43e7958aecad402",
+  "attempt002_evidence_sha256": {
+    "PROCESS_START.json": "e85af0d9ba7ac43a22052d3f96dee99aa2c1df2a998a5f39b82eaf006533eec9",
+    "STDERR.txt": "989b562412dc7aeaf6fcf9af1d141aef3ce0f914de8a83b2359aa5b7435eeccc",
+    "TERMINAL.json": "f4fa669ad0a879b1d9a564db4b1c8f6000c2cfe06030f52b11a67a0bab0a1b37"
+  },
+  "attempts": [
+    {
+      "job_id": "1a1ece4d9ea-392-4590",
+      "idempotency_key": "hcsn-n256-firststep-resource-snapshot-20261117-c06d-v1",
+      "terminal_state": "failed",
+      "exit_code": 1
+    },
+    {
+      "job_id": "1a1ecea79d3-392-45a1",
+      "idempotency_key": "hcsn-n256-firststep-resource-snapshot-20261117-c06d-v2-after-v1-runtime-rejection",
+      "terminal_state": "failed",
+      "exit_code": 1
+    }
+  ],
+  "observation": "The current selected venv exposes numpy.__file__ as null both with and without the v1 PYTHONNOUSERSITE override.",
+  "next_runtime_requirements": [
+    "concrete importable NumPy and SciPy module files",
+    "hashable NumPy and SciPy distribution RECORD metadata",
+    "new source/runtime/request freeze before any further job",
+    "no N256 numerical execution until a zero-model observation succeeds"
+  ],
+  "next_idempotency_key": null,
+  "n256_input_reads": 0,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "allocation_contract": null,
+  "calendar_contract": null,
+  "resource_admitted": false,
+  "all_closed": false
+}

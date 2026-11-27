@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.root-exact-formatter-afterimage-review.v1",
+  "observed_at": "2026-11-20T04:44:06.850813+00:00",
+  "head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "manifest_sha256": "236df90cb61787189591193608e4ea7cbca45c54a98864c516b9c9eee8240fad",
+  "frozen_sha256": "72a7040a256c54e7d7c4d4cbf4d7676d6bf502cda1e5f7bf9729ce31b58ef608",
+  "patch_sha256": "0814a4c04d61f52c3ce625ca2dd576143cb981500fe0d63f278932b147954d6f",
+  "artifact_binding": "Independently opened both actual workflow ZIPs, verified complete archive digests and extracted exact before/after tar members. Five afterimages match frozen candidate bytes.",
+  "files": [
+    {
+      "path": "codex-rs/app-server/tests/common/rollout.rs",
+      "before_git_blob": "28365554da578b5723e0a2baffd5788b4e093664",
+      "after_git_blob": "05fdbcc137f1b5eff43c0ca4b2457ba8f42df09e",
+      "artifact_bytes_exact": true,
+      "preservation": "Exactly one closure-expression layout with identical sole macro expression and all other bytes unchanged."
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_list.rs",
+      "before_git_blob": "73134fa2d2a1af3ba17e30749f382a29b4c8f8ce",
+      "after_git_blob": "77d3eba9824b5b7b138294ac33bf8815200bbb4c",
+      "artifact_bytes_exact": true,
+      "preservation": "Exactly one closure-expression layout with identical sole macro expression and all other bytes unchanged."
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "before_git_blob": "efc0c62ce6326637e5626f943375197035973cd3",
+      "after_git_blob": "024c0692a009eec5feaaa5da5653de35be1747a0",
+      "artifact_bytes_exact": true,
+      "preservation": "Exactly one closure-expression layout with identical sole macro expression and all other bytes unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+      "before_git_blob": "1a6da84fd666213a8753f071e1bcbaebed092e22",
+      "after_git_blob": "3376659e2d972bfe4659a0c5be1b928289f2b45b",
+      "artifact_bytes_exact": true,
+      "preservation": "Exactly one call-layout and trailing-comma change; all other bytes unchanged."
+    },
+    {
+      "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+      "before_git_blob": "06dfc4157651fe72d23400bb834e15278633724b",
+      "after_git_blob": "5006a79180c806942c9447dc67ad9480f8bdfaab",
+      "artifact_bytes_exact": true,
+      "preservation": "Only whitespace changed; every quoted literal and complete prior union function retained."
+    }
+  ],
+  "total_paths": 5,
+  "source_semantics_changed": false,
+  "new_Rust_native_tests": "NOT_RUN; genuine CI formatter output is accepted as byte evidence, originating required fmt gate remains FAILED until a subsequent head is tested.",
+  "decision": "ACCEPT_EXACT_FIVE_AFTERIMAGES_FOR_NEXT_SOURCE_COMPOSITION",
+  "remote_writes": 0
+}

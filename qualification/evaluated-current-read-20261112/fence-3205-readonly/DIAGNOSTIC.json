@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.fence-readonly-diagnostic.v1",
+  "source_commit": "320533a257a257bbb8c43c3c1cdb6a645e841b53",
+  "job_id": 131304431939,
+  "run_id": 43253106477,
+  "action_commit": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+  "bundle_source_commit": "735375fadb54cc11a7d2d10642b3150f93fe8720",
+  "bundle_manifest_blob": "11bb7b6f29e6f018f52f5fe5657de30c434f2042",
+  "local_control_source_blob": "491baa1c3b9ee9131b4f36775f44190787935269",
+  "packaged_source_equals_action_source": true,
+  "workflow_blob": "d870b6f9c1e025aff458c32f0461c752fcd2f0b3",
+  "actual_failure": {
+    "stage": "Fence resident service before readiness and checkout",
+    "code": "local_control_inventory_unavailable",
+    "checker_executed": false
+  },
+  "diagnosis": {
+    "exact_condition": "observe status Unavailable, snapshot scan status Unavailable, or nonempty snapshot unavailable_inputs",
+    "candidate_inputs": [
+      "proc",
+      "proc_scan",
+      "process_identity",
+      "process_identity_drift",
+      "process_fd_scan",
+      "process_fd_readlink",
+      "cgroup_identity",
+      "unix_table",
+      "ipv4_table",
+      "ipv6_table",
+      "socket ownership/reachability/malformed inventory"
+    ],
+    "specific_input": "UNKNOWN: original log contains only aggregate error code",
+    "existing_configuration": "GitHub hosted ubuntu-24.04; Fence is first step; audit mode. These match the fixed version's documented startup requirements.",
+    "confirmed_repository_configuration_fix": "NONE identified by this bounded read-only review",
+    "official_diagnostic": "Fixed action main.cts emitServiceDiagnostics sends service journal into debugGroup; docs/troubleshooting.md describes ACTIONS_STEP_DEBUG for additional diagnostics.",
+    "performed_changes": "None: no guard weakening, action change, workflow rerun, secret/settings change, sudo or new execution."
+  },
+  "source_references": [
+    {
+      "repository": "openai/fence",
+      "commit": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "path": "action/main.cts",
+      "blob": "019d85e877d1ef75434eeb683913ecdbacbe03cf"
+    },
+    {
+      "repository": "openai/fence",
+      "commit": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "path": "src/local_control.rs",
+      "blob": "491baa1c3b9ee9131b4f36775f44190787935269"
+    },
+    {
+      "repository": "openai/fence",
+      "commit": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "path": "docs/troubleshooting.md",
+      "blob": "554c7877c1cf881f046ebf58477dfd7ac1bb39d9"
+    }
+  ],
+  "limits": "No live runner inspection or reproduction occurred. The failed job does not establish invalid repository blob hashes."
+}

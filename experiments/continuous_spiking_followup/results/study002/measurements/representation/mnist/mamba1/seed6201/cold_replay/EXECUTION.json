@@ -1,0 +1,89 @@
+{
+  "accounting": "parent total excludes child CPU; wall includes child lifetime; phase costs are nested, not additional totals",
+  "child": {
+    "arrays_manifest_sha256": "55ca99ec1d73410e5e1e31dd0a17c655317c6b43f5e30556c55d858bd35bfe58",
+    "costs_seconds": {
+      "continuation": {
+        "cpu": 0.015695153000000017,
+        "wall": 0.01569554299931042
+      },
+      "input_restore": {
+        "cpu": 0.0010634499999999658,
+        "wall": 0.0010650559997884557
+      },
+      "model_initialization_reload": {
+        "cpu": 0.008619697000000093,
+        "wall": 0.008620063003036194
+      },
+      "module_import_setup": {
+        "cpu": 1.528601422,
+        "wall": 1.5314580210033455
+      },
+      "result_serialization_and_state_hash": {
+        "cpu": 0.0019523669999998994,
+        "wall": 0.0019539650020306
+      },
+      "stream_construction_restore": {
+        "cpu": 0.00811865799999989,
+        "wall": 0.008119375001115259
+      }
+    },
+    "final_state_sha256": "93293c1c86a3c5be43ac2f33af42304cb58d3ab71fdf45a89f3877ce493a6f02",
+    "model_sha256": "27d0ff0a35208515357a0417b198671a56629f7b7b3eb63a4d7fac9896ab69b9",
+    "module_total_cpu_seconds": 1.564456544,
+    "module_total_wall_seconds": 1.5673098740007845,
+    "numpy_version": "2.3.5",
+    "parent_pid": 1444152,
+    "pid": 1444155,
+    "processed_rows": 512,
+    "request_sha256": "692bcc2e681bd3c87aa3cde92696b7da5af9c3c60a8a1f34a79f4b231a95f15c",
+    "scope": "module timer includes imports through result construction; parent external timer also includes interpreter startup, final write and shutdown; nested costs are not additive to totals",
+    "state_bytes": 77952,
+    "steps": 32,
+    "torch_version": "2.8.0+cpu"
+  },
+  "command": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "-m",
+    "experiments.continuous_spiking_followup.stream_replay",
+    "--request",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/measurements/representation/mnist/mamba1/seed6201/cold_replay/REQUEST.json",
+    "--output",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/measurements/representation/mnist/mamba1/seed6201/cold_replay/child",
+    "--request-sha256",
+    "692bcc2e681bd3c87aa3cde92696b7da5af9c3c60a8a1f34a79f4b231a95f15c"
+  ],
+  "distinct_process": true,
+  "exact_final_state": true,
+  "exact_logits": true,
+  "external_process_cost_seconds": {
+    "child_cpu": 2.23901,
+    "parent_cpu": 0.004189597999999961,
+    "wall": 2.2804629800011753
+  },
+  "max_abs_logit_error": 0.0,
+  "parent_expected_final_state_sha256": "93293c1c86a3c5be43ac2f33af42304cb58d3ab71fdf45a89f3877ce493a6f02",
+  "parent_expected_manifest_sha256": "55ca99ec1d73410e5e1e31dd0a17c655317c6b43f5e30556c55d858bd35bfe58",
+  "parent_pid": 1444152,
+  "passed": true,
+  "preparation_cost_seconds": {
+    "cpu": 0.02276056500000001,
+    "wall": 0.022760914005630184
+  },
+  "reference_cost_seconds": {
+    "cpu": 0.020206090999999926,
+    "wall": 0.020206334003887605
+  },
+  "request_sha256": "692bcc2e681bd3c87aa3cde92696b7da5af9c3c60a8a1f34a79f4b231a95f15c",
+  "returncode": 0,
+  "split_step": 16,
+  "state_receipt": {
+    "manifest_sha256": "edd158ba475f1d17a0897f3c6fca9f3225d68092c4352617bb1a0d7ff8300013",
+    "payload_sha256": "23ddefa5c7e8008175123fc4cd29d73bff5791d460482610061578618e8b0d92",
+    "serialized_bytes": 75492,
+    "state_tensor_bytes": 77952
+  },
+  "status": "completed",
+  "total_parent_cpu_seconds": 0.052102863,
+  "total_wall_seconds": 2.328421067999443
+}

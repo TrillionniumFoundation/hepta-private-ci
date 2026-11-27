@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.act1.plain-host.validation.v1",
+  "code_commit": "97f8643b958a7637c16a718ec181faa3e3e8eb07",
+  "base": "95617b64dfdb035780f18c20df5f344ace1fc34a",
+  "tested_tree": "37c8cd3e59803413dfec95ab2ae6e9c6080f46c1",
+  "formatted_code_tree": "879288375ebb76c27c1e7128d90a2aff16e1ea69",
+  "native_jobs": {
+    "red": "1a1bc27c5e0-138b0-8c",
+    "red-r2": "1a1bc2de718-138b0-b6",
+    "green": "1a1bc30ca40-138b0-c2",
+    "format": "1a1bc323a49-138b0-ca"
+  },
+  "native_exit_codes": {
+    "red": 101,
+    "red-r2": 100,
+    "green": 0,
+    "format": 0
+  },
+  "selected_host_tests": {
+    "run": 3,
+    "passed": 3,
+    "failed": 0,
+    "not_selected": 748,
+    "skill_input_variants": 11,
+    "ordinary_input_variants_in_additional_test": 4
+  },
+  "archive": {
+    "path": "native-evidence.tar.gz",
+    "bytes": 53966,
+    "sha256": "423d1a8e689bb86df73f43f8c4ba2ef1ef17a891dfa9208b220e73feef3bef94",
+    "members": 37,
+    "all_bindings_reverified": true,
+    "manifest_bound_members": 36
+  },
+  "production_source_unchanged_by_formatter": true,
+  "tests_rerun_after_formatter": false,
+  "production_activation": false,
+  "goal_observer_registered": false,
+  "scientific_admission": "HOLD",
+  "scope": "Direct real Agentd host, durable AutomationStore/FinalUse and local HTTP integration; not daemon socket or deployed-provider qualification.",
+  "compatibility": "Top-level contract_digest plus destination_id is reserved; opaque bytes without recognizable skill identity retain the ordinary path.",
+  "recorded_utc": "2026-11-08T17:33:55.394852+00:00"
+}

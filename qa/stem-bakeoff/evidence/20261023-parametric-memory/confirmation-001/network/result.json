@@ -1,0 +1,121 @@
+{
+  "active_slots_per_query": 1,
+  "chosen_arm": "continue",
+  "distributed_consensus_tested": false,
+  "fresh_decoder_processes": 6,
+  "metrics": {
+    "continue": {
+      "correct": 16,
+      "exact_match": 1.0,
+      "total": 16
+    },
+    "nochange": {
+      "correct": 16,
+      "exact_match": 1.0,
+      "total": 16
+    },
+    "split": {
+      "correct": 16,
+      "exact_match": 1.0,
+      "total": 16
+    }
+  },
+  "nochange_slots_share_one_parent_artifact": true,
+  "physical_hosts": 1,
+  "production_accepted": false,
+  "routed_calls": [
+    {
+      "cell": "nochange-0",
+      "fresh_process_wall_seconds": 13.482951528998456,
+      "manifest_sha256": "c22b8bb5ee8fc94062818d8e8442d185511c7bdd7bb7554d92c8319a92c22d2a",
+      "query_indices": [
+        0,
+        1,
+        4,
+        7,
+        8,
+        14,
+        15
+      ]
+    },
+    {
+      "cell": "nochange-1",
+      "fresh_process_wall_seconds": 14.429152024998984,
+      "manifest_sha256": "c22b8bb5ee8fc94062818d8e8442d185511c7bdd7bb7554d92c8319a92c22d2a",
+      "query_indices": [
+        2,
+        3,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12,
+        13
+      ]
+    },
+    {
+      "cell": "continue-0",
+      "fresh_process_wall_seconds": 13.082714940999722,
+      "manifest_sha256": "4673cc3b274c155718d0767382349a66194d886849b08e300cf6924d21102573",
+      "query_indices": [
+        0,
+        1,
+        4,
+        7,
+        8,
+        14,
+        15
+      ]
+    },
+    {
+      "cell": "continue-1",
+      "fresh_process_wall_seconds": 13.054133337000167,
+      "manifest_sha256": "b8edbed2776742fd528bd437f9faa242f5f6b9fd6e21ec6adf8e1ba1a51846dc",
+      "query_indices": [
+        2,
+        3,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12,
+        13
+      ]
+    },
+    {
+      "cell": "split-0",
+      "fresh_process_wall_seconds": 13.165443705000143,
+      "manifest_sha256": "44626783ebf24455bbfdc446a4bcd37a4d3fa40cf04222c99d930ad1a3d85073",
+      "query_indices": [
+        0,
+        1,
+        4,
+        7,
+        8,
+        14,
+        15
+      ]
+    },
+    {
+      "cell": "split-1",
+      "fresh_process_wall_seconds": 13.318788800999755,
+      "manifest_sha256": "2f5e5d7fbd349e0e629d52c5eeb79191a795b0d0f4945a7ba07268c936777a04",
+      "query_indices": [
+        2,
+        3,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12,
+        13
+      ]
+    }
+  ],
+  "router_input_tokens": 888,
+  "schema": "hepta.parametric-memory.local-network.v1",
+  "worker_data_inputs": "weights, scope, provenance hashes and question strings"
+}

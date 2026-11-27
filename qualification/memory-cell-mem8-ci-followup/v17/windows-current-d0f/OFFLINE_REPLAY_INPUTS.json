@@ -1,0 +1,21 @@
+{
+  "command": "python3 records/verify_original.py records",
+  "counts": "Only original per-group Nextest terminal records count. Duplicate summary rows are de-duplicated, 9 Python strict-parser controls are separate, absent terminal cases remain unknown.",
+  "frozen_reader": {
+    "bytes": 13797,
+    "git_blob": "4e4550c82d09c985b0e678085db9679644fd583f",
+    "sha256": "e141e5bccfba7a66602a548585d69cce4f8df34816a09c285931cf5625b54550"
+  },
+  "lock_representation_reference": "Original observed Cargo.lock SHA matches CRLF encoding of exact source Git blob 025813e20504f31d12dae2092a0807a1a4066419. Its LF bytes are available in previously published two-native preparation publication 11c317586715589a39597dd0082befe8bf33589c; original Windows raw lock bytes are not archived here.",
+  "metadata_projection": "Full GitHub API JSON binds head/attempt/branch/times; normalized purpose-tool shared fields are compared separately. Its logs_url:null is not evidence that original logs are missing.",
+  "original_zip": {
+    "bytes": 108425,
+    "git_blob": "14a05019138f1bd6b4eb765de115245f289a7a92",
+    "sha256": "fe6535a78b73e0755191c7ce9d8a2c755f82c31f8d55d4e3bbb93cc4d34bff10"
+  },
+  "qualification_boundary": "NOT_QUALIFIED_ORIGINAL_CANCELLED_ONE_FAILED_CASE_AND_43_UNOBSERVED_TERMINALS",
+  "schema": "mem-d0f-windows-original-replay-boundary-v1",
+  "scope": "The reader verifies retained original records only; no archived native driver or model is executed.",
+  "unchanged_reader_first_run": true,
+  "zip_members": 20
+}

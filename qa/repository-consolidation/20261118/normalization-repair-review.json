@@ -1,0 +1,39 @@
+{
+  "baseHead": "d2422433dccc232e10256973df68823331928a28",
+  "files": [
+    {
+      "path": "codex-rs/hepta-intelligence/src/vertical.rs",
+      "baseBlob": "eb89f2f5324d861b7bab680c4c99b03a370402e6",
+      "repairedBlob": "b20c78bf6735cfdfd7e63dfa08e02d287ee9d576",
+      "lines": 609,
+      "added": 55,
+      "removed": 13
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+      "baseBlob": "47bea20420bf19827f7ce37a3c7a56c336b198f0",
+      "repairedBlob": "77e9b9d0dd52506c41d2f465ffc9888f8d9c66d2",
+      "lines": 723,
+      "added": 222,
+      "removed": 0
+    }
+  ],
+  "patchSha256": "bdddf3453fb51a8894c23bb4e444c39b660c4c2f9f220dbde0ac7f84a8ca71ac",
+  "patchChecks": {
+    "forward": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "reverse": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "cleanupPlanOverlap": [],
+  "preservesOriginalHalfWeightFixture": true,
+  "rustNativeRun": false,
+  "rustFmtRun": false,
+  "publicApiVariantAdded": false
+}

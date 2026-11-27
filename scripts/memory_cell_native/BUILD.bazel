@@ -1,0 +1,7 @@
+exports_files(
+    [
+        "native_tick_contract.py",
+        "native_tick_interop.py",
+    ],
+    visibility = ["//codex-rs/hepta-agentd:__pkg__"],
+)

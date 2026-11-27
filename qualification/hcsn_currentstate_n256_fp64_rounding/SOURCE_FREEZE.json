@@ -1,0 +1,18 @@
+{
+  "files": {
+    ".github/workflows/hcsn-currentstate-n256-fp64-rounding.yml": "0005ba94630a073831d35d008030937bb8406dd699800bfe002d0e934a7740ea",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/README.md": "2438a50b162d677ef06e4166d337e5aaa4e2467878c126450f72b7284ff53578",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/REQUEST.json": "b4e7b1406c209355d92c7325b1dd511e89b61b10f0645d2c54620bd65c542ff1",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/__init__.py": "f97853b0bfcd16adc84bee9d70a6e80898cd4716c0687bba6d8184c8ed895394",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py": "4179ddeb850b62e4a239a7fbbcaf3de249b2f052d21a0db28374923795ae0917",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/test_fp64_round.py": "258690f3a382cd4221e3aa254074d84014b5ab4df83a71ebea9a1c44f5097a4c",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py": "752ff737be144459a22ef770667d64625f411d1391bc2677f33946d9f892dfbf"
+  },
+  "forbidden_source_tokens": [
+    "hcsn_currentstate_n256_sparse_dynamic_intent",
+    "hcsn_currentstate_n256_independent_oracle_intent",
+    "expm_multiply"
+  ],
+  "identity": "hcsn-n256-exact-rational-binary64-rounding-source-20261114-c06d-v1",
+  "scope": "source-only rational-to-binary64 roundTiesToEven primitive"
+}

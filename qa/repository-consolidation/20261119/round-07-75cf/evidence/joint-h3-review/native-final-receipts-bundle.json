@@ -1,0 +1,84 @@
+{
+  "files": [
+    {
+      "eof": true,
+      "path": "/home/qian-qi/ci-h3-recovery-20261119-75cf/maintenance-results.json",
+      "sha256": "3d876eb3b317a9bb81b0383861f89c62e8d853400ec4f000b9b6240334e993ce",
+      "size": 1906,
+      "text": "{\n  \"results\": [\n    {\n      \"command\": [\n        \"just\",\n        \"fix\",\n        \"-p\",\n        \"codex-hepta-automation\",\n        \"-p\",\n        \"codex-hepta-agentd\",\n        \"--allow-no-vcs\",\n        \"--locked\",\n        \"--profile\",\n        \"dev-small\",\n        \"-j\",\n        \"4\"\n      ],\n      \"exit\": 0\n    },\n    {\n      \"command\": [\n        \"just\",\n        \"fmt\"\n      ],\n      \"exit\": 1\n    },\n    {\n      \"command\": [\n        \"rustfmt\",\n        \"--edition\",\n        \"2024\",\n        \"--config\",\n        \"imports_granularity=Item,skip_children=true\",\n        \"--check\",\n        \"/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-agentd/src/automation_effect_host.rs\",\n        \"/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/action_skill_tests.rs\",\n        \"/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/authorized_effect.rs\",\n        \"/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/effect_dispatch_ledger.rs\",\n        \"/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs\",\n        \"/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/provider_recovery_migration_tests.rs\",\n        \"/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/store.rs\"\n      ],\n      \"exit\": 0\n    }\n  ],\n  \"changed_paths\": [\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs\",\n      \"scope\": \"outside_candidate\",\n      \"before_sha256\": \"390ced8f07a8f7c8f26c7cb8e2d1022198823b428813c151bdb778f7db5db662\",\n      \"after_sha256\": \"6c708f895d30a5936fa8880b05f6419f9bd7863801acf1924423e3bb804c81ca\",\n      \"bytes\": 13647\n    }\n  ],\n  \"tests_rerun_after_maintenance\": false,\n  \"candidate_before\": \"e4020d30bb749f489593360bb7285ed98f602533\",\n  \"source_scope\": \"isolated copied files only\",\n  \"graph\": \"OLD_GRAPH_SCOPED_NATIVE_ONLY\"\n}\n",
+      "version": "66306:27326210:1906:1795105597503289498:1795105597503289498"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/ci-h3-recovery-20261119-75cf/maintenance-candidate.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "66306:27326208:0:1795105597502190028:1795105597502190028"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/ci-h3-recovery-20261119-75cf/maintenance-outside_candidate.diff",
+      "sha256": "a0c78dab3ebb2f0896fc45101134390c0e359dc593c3ed0e520466b8ac55b4ed",
+      "size": 835,
+      "text": "--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs\n+++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs\n@@ -230,7 +230,7 @@\n                 wire::Action::Execute => {\n                     OriginalCellEvaluationReceiptOwnerV1::attest_with_training(\n                         &mut self.evaluator,\n-                        sources.into(),\n+                        sources,\n                         training,\n                     )\n                     .await?\n@@ -238,7 +238,7 @@\n                 wire::Action::Readback => {\n                     OriginalCellEvaluationReceiptOwnerV1::readback_with_training(\n                         &mut self.evaluator,\n-                        sources.into(),\n+                        sources,\n                         training,\n                     )\n                     .await?\n",
+      "version": "66306:27326209:835:1795105597503235717:1795105597503235717"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/ci-h3-recovery-20261119-75cf/native-test-inputs.json",
+      "sha256": "8e01f7ab3a4865b61b882a0af61e9fd68cd640c39ac5fea4eec771ef9b48dcf6",
+      "size": 1743,
+      "text": "{\n  \"base_source_commit\": \"1e681e550a5c5d4584b5882529e531599459dc31\",\n  \"target_candidate_tree\": \"da7576365ab1da6b4208d4e83fd046660549996d\",\n  \"graph_qualification\": \"OLD_GRAPH_SCOPED_NATIVE_ONLY\",\n  \"before_8_paths_match_4b\": true,\n  \"after_all_9_records_match_candidate\": true,\n  \"files\": {\n    \"codex-rs/Cargo.toml\": \"e4a06b14ebbcbe6955097d342bedca5327614b3751e1734311fed05efe30ed21\",\n    \"codex-rs/Cargo.lock\": \"3b87221ff5ae147a333b3242296648d2ffecfa8440274bba2d609e5d7e53bde5\",\n    \"codex-rs/hepta-automation/Cargo.toml\": \"e758c1494f4113350b6fb31899f84361a07d38a37922d7e11229d010594b202d\",\n    \"codex-rs/hepta-agentd/Cargo.toml\": \"fd67bdb9303dba468a768a6a8b8093a98ff1d3a9ced40d2a6a118f1442b7f549\",\n    \"justfile\": \"74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124\"\n  },\n  \"sqlx_packages\": [\n    {\n      \"name\": \"sqlx\",\n      \"version\": \"0.9.0\",\n      \"source\": \"registry+https://github.com/rust-lang/crates.io-index\"\n    },\n    {\n      \"name\": \"sqlx-core\",\n      \"version\": \"0.9.0\",\n      \"source\": \"registry+https://github.com/rust-lang/crates.io-index\"\n    },\n    {\n      \"name\": \"sqlx-macros\",\n      \"version\": \"0.9.0\",\n      \"source\": \"registry+https://github.com/rust-lang/crates.io-index\"\n    },\n    {\n      \"name\": \"sqlx-macros-core\",\n      \"version\": \"0.9.0\",\n      \"source\": \"registry+https://github.com/rust-lang/crates.io-index\"\n    },\n    {\n      \"name\": \"sqlx-mysql\",\n      \"version\": \"0.9.0\",\n      \"source\": \"registry+https://github.com/rust-lang/crates.io-index\"\n    },\n    {\n      \"name\": \"sqlx-postgres\",\n      \"version\": \"0.9.0\",\n      \"source\": \"registry+https://github.com/rust-lang/crates.io-index\"\n    },\n    {\n      \"name\": \"sqlx-sqlite\",\n      \"version\": \"0.9.0\",\n      \"source\": null\n    }\n  ]\n}\n",
+      "version": "66306:27324375:1743:1795103812907904236:1795103812907904236"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/ci-h3-recovery-20261119-75cf/native-automation-test-result-v2.json",
+      "sha256": "ac877f576112fe89484a02c6c418e5714847ad46a587fd96cd6611a077521786",
+      "size": 289,
+      "text": "{\n  \"command\": [\n    \"just\",\n    \"test\",\n    \"-p\",\n    \"codex-hepta-automation\",\n    \"--lib\",\n    \"--locked\",\n    \"--cargo-profile\",\n    \"dev-small\",\n    \"-j\",\n    \"4\"\n  ],\n  \"exit\": 0,\n  \"graph\": \"OLD_GRAPH_SCOPED_NATIVE_ONLY\",\n  \"candidate\": \"da7576365ab1da6b4208d4e83fd046660549996d\"\n}\n",
+      "version": "66306:27324511:289:1795103957974929621:1795103957974929621"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/ci-h3-recovery-20261119-75cf/native-boundary-stage-0.json",
+      "sha256": "f74c8cad2a3da7ee53c45f1da44ed58f87ee5fa67ea10f3a366395062ab05b90",
+      "size": 276,
+      "text": "{\n  \"command\": [\n    \"just\",\n    \"test\",\n    \"-p\",\n    \"codex-hepta-automation\",\n    \"--locked\",\n    \"--cargo-profile\",\n    \"dev-small\",\n    \"-j\",\n    \"4\"\n  ],\n  \"exit\": 0,\n  \"graph\": \"OLD_GRAPH_SCOPED_NATIVE_ONLY\",\n  \"candidate\": \"da7576365ab1da6b4208d4e83fd046660549996d\"\n}\n",
+      "version": "66306:27324512:276:1795104060507951729:1795104060507951729"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/ci-h3-recovery-20261119-75cf/native-agentd-test-result-v3.json",
+      "sha256": "8b5d07688695eb16829e8fb46a433539f243b57eeff1d2d14ab3d6bfade050c6",
+      "size": 350,
+      "text": "{\n  \"command\": [\n    \"just\",\n    \"test\",\n    \"-p\",\n    \"codex-hepta-agentd\",\n    \"--lib\",\n    \"--locked\",\n    \"--cargo-profile\",\n    \"dev-small\",\n    \"-j\",\n    \"4\",\n    \"-E\",\n    \"test(automation_effect) | test(automation_hcsn)\"\n  ],\n  \"exit\": 0,\n  \"candidate\": \"e4020d30bb749f489593360bb7285ed98f602533\",\n  \"graph\": \"OLD_GRAPH_SCOPED_NATIVE_ONLY\"\n}\n",
+      "version": "66306:27324523:350:1795105092767279759:1795105092767279759"
+    }
+  ],
+  "maintenance_status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1795105597523,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1f49cac52-ffbe-10a8\",\n  \"launch_nonce\": \"0c29d665a30f7cb4df365a170f8bffbb\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 227308,\n      \"stored\": 227308\n    },\n    \"stdout\": {\n      \"seen\": 2705,\n      \"stored\": 2705\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "maintenance_start": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-c\",\n      \"import pathlib,hashlib,json,subprocess,os,difflib\\nroot=pathlib.Path('/home/qian-qi/ci-h3-recovery-20261119-75cf');candidate=json.loads((root/'durable-recovery-candidate-v2.json').read_text());selected={x.split('\\\\t',1)[1] for x in candidate['changed_paths']};paths=sorted(p for crate in ['hepta-automation','hepta-agentd'] for p in (root/'codex-rs'/crate).rglob('*.rs'));before={str(p.relative_to(root)):p.read_bytes() for p in paths};backup=root/'maintenance-before';backup.mkdir()\\nfor path,b in before.items():p=backup/path;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b)\\nenv=os.environ.copy();env['PATH']='/home/qian-qi/.local/state/hepta-runtime-repair-20261109/tools:'+env['PATH'];env['CARGO_TARGET_DIR']='/home/qian-qi/ci-agentd-musl-test-target-20261119';env['GIT_CEILING_DIRECTORIES']=str(root.parent)\\ncommands=[['just','fix','-p','codex-hepta-automation','-p','codex-hepta-agentd','--allow-no-vcs','--locked','--profile','dev-small','-j','4'],['just','fmt']];results=[]\\nfor cmd in commands:\\n print(json.dumps({'command':cmd,'graph':'OLD_GRAPH_SCOPED_NATIVE_ONLY','note':'isolated copy contains no git refs'}),flush=True);r=subprocess.run(cmd,cwd=root,env=env);results.append({'command':cmd,'exit':r.returncode})\\nrust=sorted(path for path in selected if path.endswith('.rs'));fmt=['rustfmt','--edition','2024','--config','imports_granularity=Item,skip_children=true','--check',*[str(root/x) for x in rust]];print(json.dumps({'command':fmt}),flush=True);r=subprocess.run(fmt,cwd=root/'codex-rs',env=env);results.append({'command':fmt,'exit':r.returncode})\\nif r.returncode:\\n fmt.remove('--check');r=subprocess.run(fmt,cwd=root/'codex-rs',env=env);results.append({'command':fmt,'exit':r.returncode})\\nchanged=[];patches={'candidate':[],'outside_candidate':[]}\\nfor path,b in before.items():\\n after=(root/path).read_bytes()\\n if b==after:continue\\n kind='candidate' if path in selected else 'outside_candidate';changed.append({'path':path,'scope':kind,'before_sha256':hashlib.sha256(b).hexdigest(),'after_sha256':hashlib.sha256(after).hexdigest(),'bytes':len(after)});patches[kind].extend(difflib.unified_diff(b.decode().splitlines(True),after.decode().splitlines(True),fromfile='a/'+path,tofile='b/'+path))\\nfor name,lines in patches.items():(root/('maintenance-'+name+'.diff')).write_text(''.join(lines))\\nrecord={'results':results,'changed_paths':changed,'tests_rerun_after_maintenance':False,'candidate_before':candidate['tree'],'source_scope':'isolated copied files only','graph':'OLD_GRAPH_SCOPED_NATIVE_ONLY'};(root/'maintenance-results.json').write_text(json.dumps(record,indent=2)+'\\\\n');print(json.dumps(record),flush=True)\\n\"\n    ],\n    \"created_unix_ms\": 1795105270866,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"rog\",\n    \"id\": \"1a1f49cac52-ffbe-10a8\",\n    \"idempotency_key\": \"h3-recovery-maintenance-75cf-20261119-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1f49cac52-ffbe-10a8\",\n    \"request_digest\": \"b0ec274a66c7df8e90660d56fe0aa494fc2d4d32ab1b8f875e54ef2a0a6a5dbe\",\n    \"request_fingerprint\": 12748607845684469646,\n    \"ssh_target\": \"rog-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1f49cac52-ffbe-10a8\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1f49cac52-ffbe-10a8\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "qualification": "OLD_GRAPH_SCOPED_NATIVE_ONLY"
+}

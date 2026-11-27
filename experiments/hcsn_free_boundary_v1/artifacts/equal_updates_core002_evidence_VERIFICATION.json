@@ -1,0 +1,151 @@
+{
+  "archive_sha256": "9e384d4e7514de87e938fdec45bbb38d03e13ca92358b3faf985cd061fccf0f0",
+  "archive_tool_sha256": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+  "cleanup_triggered_by_available_space_metric": false,
+  "compressed_bytes": 4904848,
+  "driver_sha256": "68e1cd46fc4335b81b4acb0be55df08a4c14bacbde6951af947bde2cce77477e",
+  "files_deleted": 0,
+  "final_entry_points": [
+    "README.md",
+    "analysis002/REPORT.md",
+    "FINAL_AUDIT.md",
+    "FINAL_AUDIT.json"
+  ],
+  "groups": {
+    "ANALYSIS.json": {
+      "bytes": 388260,
+      "members": 1
+    },
+    "ANALYSIS.process.log": {
+      "bytes": 1693,
+      "members": 1
+    },
+    "ANALYSIS_EXECUTION.json": {
+      "bytes": 560,
+      "members": 1
+    },
+    "COMPLETE.json": {
+      "bytes": 20999,
+      "members": 1
+    },
+    "COMPUTE.csv": {
+      "bytes": 1416,
+      "members": 1
+    },
+    "FINAL_AUDIT.json": {
+      "bytes": 6226,
+      "members": 1
+    },
+    "FINAL_AUDIT.md": {
+      "bytes": 7437,
+      "members": 1
+    },
+    "PROGRESS.json": {
+      "bytes": 20525,
+      "members": 1
+    },
+    "README.md": {
+      "bytes": 1817,
+      "members": 1
+    },
+    "REFERENCE_PREFIX_AUDIT.json": {
+      "bytes": 670540,
+      "members": 1
+    },
+    "REGISTRATION.json": {
+      "bytes": 472,
+      "members": 1
+    },
+    "REPORT.md": {
+      "bytes": 9829,
+      "members": 1
+    },
+    "STUDY001_KEEP_ABSOLUTE.txt": {
+      "bytes": 130377,
+      "members": 1
+    },
+    "TABLE.csv": {
+      "bytes": 8840,
+      "members": 1
+    },
+    "analysis001": {
+      "bytes": 30529,
+      "members": 2
+    },
+    "analysis002": {
+      "bytes": 551500,
+      "members": 7
+    },
+    "process_logs": {
+      "bytes": 1059,
+      "members": 18
+    },
+    "runs": {
+      "bytes": 11764390,
+      "members": 366
+    }
+  },
+  "hardlink_staging_used": false,
+  "initial_incomplete_audit_and_snapshots_preserved": true,
+  "interpretation": "Top-level REPORT.md and ANALYSIS.json retain the first incomplete audit. Final analysis source binding is post-audit provenance, not pretraining registration; training/protocol/numerical results were not changed for archiving.",
+  "last_part_bytes": 710544,
+  "manifest": "equal_updates_core002_evidence.json",
+  "manifest_sha256": "771914ebfaecadf609f8abec33c1680bcb149e4172195bb75cf69cdaa0a3fa15",
+  "member_count": 407,
+  "member_path_convention": "Relative to equal_updates_core002 itself: COMPLETE.json, runs/..., analysis001/..., analysis002/...; no results/study prefix.",
+  "original_frozen_source_files_unchanged": 38,
+  "original_member_inode_mtime_size_unchanged": 407,
+  "original_members_size_sha256_independently_checked": 407,
+  "owner_final_artifact_sha256_unchanged": {
+    "FINAL_AUDIT.json": "5ab8e8f4259a79b7b67819df4de89df457fffe248035d54682736dbdc1b95338",
+    "FINAL_AUDIT.md": "4a58658d106a1127ca8170cedadadaa6fbd8c2d05b7dfa3f3727979254a7f727",
+    "analysis002/REPORT.md": "fd17b3fa9e91a1a8b8277c0d9d58ab252a2d3597c2e74d6f6cabd03e3cf19f53"
+  },
+  "owner_final_source_sha256_unchanged": {
+    "equal_updates_core002.py": "d78fb409d07c0cef5c72469a492f34af9a0d76577841e2d5823e661cd71a6c57",
+    "equal_updates_core002_analysis.py": "c1ea6191864476f1a7237e14272e8803d8445b8bdfea6ca3e74fdd9984166668"
+  },
+  "part_bytes": 4194304,
+  "part_count": 2,
+  "phases": {
+    "PACK": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-c",
+        "import json\nfrom experiments.hcsn_free_boundary_v1.archive import pack\nm = pack('/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/results/equal_updates_core002', '/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts', 'equal_updates_core002_evidence', part_bytes=4194304)\nprint(json.dumps({k:m[k] for k in (\"name\",\"archive_sha256\",\"compressed_bytes\",\"uncompressed_file_bytes\")}))"
+      ],
+      "complete_child_cpu_seconds": 5.030367999999999,
+      "log": "equal_updates_core002_evidence_PACK.log",
+      "log_sha256": "a2de6f7936f4908b1e4f81ce4e591d3c301561f5af61e4281ba9acfcce759fcb",
+      "returncode": 0,
+      "wall_seconds": 5.0399753770034295,
+      "whole_child_peak_rss_kib": 120560
+    },
+    "RESTORE": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-c",
+        "import json\nfrom unittest.mock import patch\nfrom experiments.hcsn_free_boundary_v1 import archive\nwith patch.object(archive.tempfile, \"TemporaryFile\", side_effect=AssertionError(\"Direct-root members must already exist identically\")):\n    r = archive.restore('/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts/equal_updates_core002_evidence.json', '/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/results/equal_updates_core002')\nprint(json.dumps(r))"
+      ],
+      "complete_child_cpu_seconds": 0.427091,
+      "log": "equal_updates_core002_evidence_RESTORE.log",
+      "log_sha256": "eea05326adc17e2deeb5c9bdf7cd8b57aa3babb2332e69838282a49cb14dcda1",
+      "returncode": 0,
+      "wall_seconds": 0.42802149399358314,
+      "whole_child_peak_rss_kib": 32308
+    }
+  },
+  "restore_TemporaryFile_forbidden": true,
+  "restore_destination": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/results/equal_updates_core002",
+  "restore_result": {
+    "archive_sha256": "9e384d4e7514de87e938fdec45bbb38d03e13ca92358b3faf985cd061fccf0f0",
+    "restored_or_already_identical": 407
+  },
+  "schema": "hcsn-equal-updates-direct-root-archive-verification.v1",
+  "scientific_runs_repeated": false,
+  "seal": "he_xiong_math explicitly confirmed equal_updates_core002 sealed after architecture independent read-only review, with no subsequent writes planned.",
+  "source_or_results_modified_by_archival_task": false,
+  "source_root": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/results/equal_updates_core002",
+  "status": "passed",
+  "uncompressed_file_bytes": 13616469
+}

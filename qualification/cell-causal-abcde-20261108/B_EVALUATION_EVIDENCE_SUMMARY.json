@@ -1,0 +1,258 @@
+{
+  "adoption_authorized": false,
+  "archive": {
+    "bytes": 961082,
+    "manifest_sha256": "bad01f8f5181e14bf0435a59631059af059cf064f64a7ed33736c840765fa3c3",
+    "original_files": 35,
+    "path": "evidence-final.tar.gz",
+    "sha256": "97560c34ebe322956f3b23d4d20a2f0ecffb7419586a22265f6f0ff10e109f78"
+  },
+  "budget_qualification": {
+    "costs_are_nested_and_overlap": true,
+    "energy_and_provider_charges_known": false,
+    "note": "Do not add episode costs to phase costs or phase costs to enclosing evaluation totals. Category spans are observed lower bounds; uninstrumented/startup/waiting costs are not silently zero. max_self_rss is not aggregate child peak memory.",
+    "subcategory_status_counts": {
+      "OBSERVED_LOWER_BOUNDS; startup, waiting and uninstrumented work are UNKNOWN": 960
+    },
+    "whole_improvement_budget_complete": false
+  },
+  "confirmation_access": false,
+  "denominators": {
+    "development_source_groups": 2,
+    "independent_training_seed_groups": 2,
+    "pilot_development_cases": 10,
+    "pilot_episodes": 960,
+    "pilot_profiles_observed": 80,
+    "pilot_retention_cases": 2,
+    "profiles_planned": 80,
+    "profiles_selected": 80,
+    "retention_validation_source_groups": 2,
+    "training_jobs": 56,
+    "training_source_groups": 2,
+    "tuning_cases": 5,
+    "tuning_episodes": 400,
+    "tuning_source_groups": 1
+  },
+  "evaluation_costs": {
+    "cpu_seconds": 2226.787863,
+    "energy_joules": null,
+    "max_self_rss_kib": 285264,
+    "phase_costs_overlap_total": true,
+    "phases": {
+      "pilot": {
+        "completed": true,
+        "cpu_seconds": 1376.002036,
+        "nested_episode_costs_are_included": true,
+        "wall_seconds": 554.8369154748507
+      },
+      "tune": {
+        "completed": true,
+        "cpu_seconds": 848.7209660000001,
+        "nested_episode_costs_are_included": true,
+        "wall_seconds": 301.7057671439834
+      }
+    },
+    "provider_charges": null,
+    "wall_seconds": 858.688839948969
+  },
+  "evidence_class": "two_seed_bounded_development_pilot",
+  "limits": {
+    "max_drain_seconds": 360,
+    "max_workers": 4,
+    "native_aggregate_memory_max_bytes": 4294967296,
+    "native_cpu_quota_percent": 400,
+    "native_timeout_seconds": 3300,
+    "per_phase_admission_wall_seconds": 1200
+  },
+  "observed_completeness": {
+    "analysis_failure_penalty_applied": 0,
+    "evaluator_sha256_counts": {
+      "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45": 960
+    },
+    "finite_analysis_utility": 960,
+    "finite_gross_scores": 960,
+    "finite_nonnegative_deployment_wall": 960,
+    "nonnull_errors": 0,
+    "retry_of_nonnull": 0,
+    "rubric_sha256_counts": {
+      "fee667c32ec08286bbaf4e9f70b6489aff55bc7d790dca37fc657e5350084300": 960
+    }
+  },
+  "original_evaluation_job_id": "1a1ba90eccb-12894-1ba3",
+  "original_evaluation_result_sha256": "a85da401d28ea6a97ff63d5104ad522166a82203a97f058fcde63a5d8c6d5fd1",
+  "original_fit_results_sha256": "3e9c36ec8d8bc84a4d0e80cac4a786a6da56a69747ab5c27a39b72d8ef121406",
+  "original_paired_rows_sha256": "7a553992aa057475887482021f00d9ab5f9cb837215ee29b909ee1c0dcfa1add",
+  "original_phase_results": {
+    "incumbent-retention": {
+      "admission_deadline_seconds": 1200,
+      "completed_or_unresolved": 0,
+      "dispatched": 0,
+      "elapsed_wall_seconds": 0.0005494409706443548,
+      "maximum_declared_drain_seconds": 360,
+      "maximum_workers": 4,
+      "not_started": 0,
+      "original_phase_sha256": "e4d71014399ad0b9dd56afdb04e8868d83a45f24ea42b6b40e7bc7cbb9f8f4e4",
+      "original_terminal_status_counts": {},
+      "planned": 0
+    },
+    "pilot": {
+      "admission_deadline_seconds": 1200,
+      "completed_or_unresolved": 960,
+      "dispatched": 960,
+      "elapsed_wall_seconds": 553.4115633361507,
+      "maximum_declared_drain_seconds": 360,
+      "maximum_workers": 4,
+      "not_started": 0,
+      "original_phase_sha256": "c057ac733bec20dbe67d9a669f4f4f4ecb938ecd7216da5386a828ffc879cdd8",
+      "original_terminal_status_counts": {
+        "BudgetStop": 44,
+        "Completed": 916
+      },
+      "planned": 960
+    },
+    "search": {
+      "admission_deadline_seconds": 1200,
+      "completed_or_unresolved": 400,
+      "dispatched": 400,
+      "elapsed_wall_seconds": 300.949858318083,
+      "maximum_declared_drain_seconds": 360,
+      "maximum_workers": 4,
+      "not_started": 0,
+      "original_phase_sha256": "ba249732aa774fe441198e824233a6b843fee242f9f60a3f8552206f13ddaa7b",
+      "original_terminal_status_counts": {
+        "BudgetStop": 20,
+        "Completed": 380
+      },
+      "planned": 400
+    }
+  },
+  "original_pilot_terminal_status_counts": {
+    "BudgetStop": 44,
+    "Completed": 916
+  },
+  "original_training_job_id": "1a1ba880fd8-12894-1b64",
+  "pilot_plan_sha256": "0c8622ac6cac3d3b0257bdae84f363c215fc8511a02b74677133584f4ef8eff7",
+  "quality": {
+    "by_split": {
+      "development": {
+        "committed_output_preserved_count": 800,
+        "finite_score_count": 800,
+        "image_quality_zero_count": 548,
+        "maximum_score": 1.0,
+        "mean_score": 0.3010983647728443,
+        "minimum_score": 0.0,
+        "negative_score_count": 0,
+        "positive_score_count": 412,
+        "rows": 800,
+        "score_equal_one_count": 160,
+        "text_quality_zero_count": 480,
+        "zero_score_count": 388
+      },
+      "retention_validation": {
+        "committed_output_preserved_count": 160,
+        "finite_score_count": 160,
+        "image_quality_zero_count": 160,
+        "maximum_score": 0.0,
+        "mean_score": 0.0,
+        "minimum_score": 0.0,
+        "negative_score_count": 0,
+        "positive_score_count": 0,
+        "rows": 160,
+        "score_equal_one_count": 0,
+        "text_quality_zero_count": 160,
+        "zero_score_count": 160
+      }
+    },
+    "note": "Completed is an execution terminal label, not a quality-pass label. Zero-score counts are reported directly; no new binary quality threshold was introduced. Aggregates are descriptive within the frozen pilot and are not independent training samples.",
+    "overall": {
+      "committed_output_preserved_count": 960,
+      "finite_score_count": 960,
+      "image_quality_zero_count": 708,
+      "maximum_score": 1.0,
+      "mean_score": 0.2509153039773703,
+      "minimum_score": 0.0,
+      "negative_score_count": 0,
+      "positive_score_count": 412,
+      "rows": 960,
+      "score_equal_one_count": 160,
+      "text_quality_zero_count": 640,
+      "zero_score_count": 548
+    }
+  },
+  "retention_incumbents": 0,
+  "retention_zero_observations": {
+    "canonical_null_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "commitment_preserved": 160,
+    "evaluator_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+    "final_image_sha256_null": 160,
+    "final_text_canonical_hash_equals_null": 47,
+    "gross_score_zero": 160,
+    "image_quality_zero": 160,
+    "note": "The frozen episode writer defines image hash null as no final delivered image. Matching canonical null text hash indicates absent final text. Actions are absent from compact rows and are not inferred here.",
+    "original_completed": 160,
+    "rows": 160,
+    "text_quality_zero": 160
+  },
+  "schema": "hepta.causal-b.original-evaluation-summary.v1",
+  "scientific_admission": "HOLD",
+  "selection_lock_sha256": "19d508875481336823ec9075c631ee0ab70df5f525406181a131e6dda04ea3a5",
+  "training": {
+    "budget_overrun_seconds": 0.0,
+    "campaign_wall_seconds": 451.43282959703356,
+    "episode_seeds_are_independent_fits": false,
+    "independent_seed_groups_complete": 2,
+    "independent_seed_groups_planned": 2,
+    "job_costs_overlap_campaign_envelope": true,
+    "observer_envelope_cpu_seconds": 423.400482,
+    "planned_jobs": 56,
+    "status_counts": {
+      "completed": 56
+    },
+    "sum_job_cpu_seconds": 423.10724799999997,
+    "sum_job_wall_seconds": 450.9644429651089,
+    "upstream_collection_costs_included": false
+  },
+  "training_audits": {
+    "initialization_audit": [
+      {
+        "all_observed_initializations_equal": true,
+        "completed_jobs_observed": 28,
+        "cores_observed": [
+          "hepta",
+          "ordinary"
+        ],
+        "initial_parameter_sha256s": [
+          "82881ce9d251a1de315918c7d60a3b51db1907d610382e762251fe5642942bbe"
+        ],
+        "initialization_scope": "seeded_constructor_before_pretraining_or_loading_content",
+        "training_seed": 104729
+      },
+      {
+        "all_observed_initializations_equal": true,
+        "completed_jobs_observed": 28,
+        "cores_observed": [
+          "hepta",
+          "ordinary"
+        ],
+        "initial_parameter_sha256s": [
+          "5deec88a07f0fc44aaf762412b133332cd736a698aa9e5408e7ec87aa790943f"
+        ],
+        "initialization_scope": "seeded_constructor_before_pretraining_or_loading_content",
+        "training_seed": 130363
+      }
+    ],
+    "initialization_scope": "Seeded constructor before content pretraining or loading content; does not assert equal trained content checkpoints",
+    "paired_audit_boolean_field_counts": {
+      "complete": {
+        "True": 28
+      },
+      "memory_specific_pretrained_content_may_differ": {
+        "True": 28
+      },
+      "same_initialization_data_batches_and_opportunities": {
+        "True": 28
+      }
+    },
+    "paired_training_audit_count": 28
+  }
+}

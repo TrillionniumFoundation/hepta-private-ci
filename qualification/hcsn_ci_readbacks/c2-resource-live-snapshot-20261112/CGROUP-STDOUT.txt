@@ -1,0 +1,331 @@
+schema=hcsn-c2-desktop-cgroup-witness-v1
+sampled_at_utc=2026-11-12T15:38:23Z
+hostname=qian-qi
+kernel=Linux 7.0.0-38-generic x86_64 GNU/Linux
+meminfo_MemTotal:=131760804 kB
+meminfo_MemAvailable:=78596520 kB
+meminfo_SwapTotal:=8388604 kB
+meminfo_SwapFree:=252 kB
+self_cgroup_begin
+0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d068d908-2564-1b7c.service
+self_cgroup_end
+ancestor_begin depth=0 path=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d068d908-2564-1b7c.service
+file=memory.current value_begin
+12120064
+file=memory.current value_end
+file=memory.max value_begin
+max
+file=memory.max value_end
+file=memory.high value_begin
+max
+file=memory.high value_end
+file=memory.low value_begin
+0
+file=memory.low value_end
+file=memory.min value_begin
+0
+file=memory.min value_end
+file=memory.swap.current value_begin
+0
+file=memory.swap.current value_end
+file=memory.swap.max value_begin
+max
+file=memory.swap.max value_end
+file=memory.events value_begin
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+file=memory.events value_end
+file=memory.events.local value_begin
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+file=memory.events.local value_end
+file=cpu.max value_begin
+max 100000
+file=cpu.max value_end
+file=cpu.weight value_begin
+100
+file=cpu.weight value_end
+file=pids.current value_begin
+5
+file=pids.current value_end
+file=pids.max value_begin
+142893
+file=pids.max value_end
+file=cgroup.controllers value_begin
+cpu memory pids
+file=cgroup.controllers value_end
+file=cgroup.events value_begin
+populated 1
+frozen 0
+file=cgroup.events value_end
+ancestor_end depth=0 path=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d068d908-2564-1b7c.service
+ancestor_begin depth=1 path=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice
+file=memory.current value_begin
+71824101376
+file=memory.current value_end
+file=memory.max value_begin
+max
+file=memory.max value_end
+file=memory.high value_begin
+max
+file=memory.high value_end
+file=memory.low value_begin
+0
+file=memory.low value_end
+file=memory.min value_begin
+0
+file=memory.min value_end
+file=memory.swap.current value_begin
+7976849408
+file=memory.swap.current value_end
+file=memory.swap.max value_begin
+max
+file=memory.swap.max value_end
+file=memory.events value_begin
+low 0
+high 0
+max 6338168
+oom 315
+oom_kill 15
+oom_group_kill 0
+sock_throttled 50895
+file=memory.events value_end
+file=memory.events.local value_begin
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+file=memory.events.local value_end
+file=cpu.max value_begin
+max 100000
+file=cpu.max value_end
+file=cpu.weight value_begin
+100
+file=cpu.weight value_end
+file=pids.current value_begin
+2142
+file=pids.current value_end
+file=pids.max value_begin
+max
+file=pids.max value_end
+file=cgroup.controllers value_begin
+cpu memory pids
+file=cgroup.controllers value_end
+file=cgroup.events value_begin
+populated 1
+frozen 0
+file=cgroup.events value_end
+ancestor_end depth=1 path=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice
+ancestor_begin depth=2 path=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service
+file=memory.current value_begin
+73901428736
+file=memory.current value_end
+file=memory.max value_begin
+max
+file=memory.max value_end
+file=memory.high value_begin
+max
+file=memory.high value_end
+file=memory.low value_begin
+0
+file=memory.low value_end
+file=memory.min value_begin
+0
+file=memory.min value_end
+file=memory.swap.current value_begin
+8104144896
+file=memory.swap.current value_end
+file=memory.swap.max value_begin
+max
+file=memory.swap.max value_end
+file=memory.events value_begin
+low 0
+high 0
+max 6338168
+oom 315
+oom_kill 15
+oom_group_kill 0
+sock_throttled 50903
+file=memory.events value_end
+file=memory.events.local value_begin
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+file=memory.events.local value_end
+file=cpu.max value_begin
+max 100000
+file=cpu.max value_end
+file=cpu.weight value_begin
+100
+file=cpu.weight value_end
+file=pids.current value_begin
+2565
+file=pids.current value_end
+file=pids.max value_begin
+max
+file=pids.max value_end
+file=cgroup.controllers value_begin
+cpu memory pids
+file=cgroup.controllers value_end
+file=cgroup.events value_begin
+populated 1
+frozen 0
+file=cgroup.events value_end
+ancestor_end depth=2 path=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service
+ancestor_begin depth=3 path=/sys/fs/cgroup/user.slice/user-1000.slice
+file=memory.current value_begin
+90349314048
+file=memory.current value_end
+file=memory.max value_begin
+max
+file=memory.max value_end
+file=memory.high value_begin
+max
+file=memory.high value_end
+file=memory.low value_begin
+0
+file=memory.low value_end
+file=memory.min value_begin
+0
+file=memory.min value_end
+file=memory.swap.current value_begin
+8223965184
+file=memory.swap.current value_end
+file=memory.swap.max value_begin
+max
+file=memory.swap.max value_end
+file=memory.events value_begin
+low 0
+high 0
+max 6338168
+oom 315
+oom_kill 15
+oom_group_kill 0
+sock_throttled 50956
+file=memory.events value_end
+file=memory.events.local value_begin
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+file=memory.events.local value_end
+file=cpu.max value_begin
+max 100000
+file=cpu.max value_end
+file=cpu.weight value_begin
+100
+file=cpu.weight value_end
+file=pids.current value_begin
+2589
+file=pids.current value_end
+file=pids.max value_begin
+314366
+file=pids.max value_end
+file=cgroup.controllers value_begin
+cpu memory pids
+file=cgroup.controllers value_end
+file=cgroup.events value_begin
+populated 1
+frozen 0
+file=cgroup.events value_end
+ancestor_end depth=3 path=/sys/fs/cgroup/user.slice/user-1000.slice
+ancestor_begin depth=4 path=/sys/fs/cgroup/user.slice
+file=memory.current value_begin
+90356371456
+file=memory.current value_end
+file=memory.max value_begin
+max
+file=memory.max value_end
+file=memory.high value_begin
+max
+file=memory.high value_end
+file=memory.low value_begin
+0
+file=memory.low value_end
+file=memory.min value_begin
+0
+file=memory.min value_end
+file=memory.swap.current value_begin
+8223965184
+file=memory.swap.current value_end
+file=memory.swap.max value_begin
+max
+file=memory.swap.max value_end
+file=memory.events value_begin
+low 0
+high 0
+max 6338168
+oom 315
+oom_kill 15
+oom_group_kill 0
+sock_throttled 50956
+file=memory.events value_end
+file=memory.events.local value_begin
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+file=memory.events.local value_end
+file=cpu.max value_begin
+max 100000
+file=cpu.max value_end
+file=cpu.weight value_begin
+100
+file=cpu.weight value_end
+file=pids.current value_begin
+2589
+file=pids.current value_end
+file=pids.max value_begin
+max
+file=pids.max value_end
+file=cgroup.controllers value_begin
+cpuset cpu io memory hugetlb pids rdma misc dmem
+file=cgroup.controllers value_end
+file=cgroup.events value_begin
+populated 1
+frozen 0
+file=cgroup.events value_end
+ancestor_end depth=4 path=/sys/fs/cgroup/user.slice
+ancestor_begin depth=5 path=/sys/fs/cgroup
+file=memory.current missing
+file=memory.max missing
+file=memory.high missing
+file=memory.low missing
+file=memory.min missing
+file=memory.swap.current missing
+file=memory.swap.max missing
+file=memory.events missing
+file=memory.events.local missing
+file=cpu.max missing
+file=cpu.weight missing
+file=pids.current missing
+file=pids.max missing
+file=cgroup.controllers value_begin
+cpuset cpu io memory hugetlb pids rdma misc dmem
+file=cgroup.controllers value_end
+file=cgroup.events missing
+ancestor_end depth=5 path=/sys/fs/cgroup
+complete=true

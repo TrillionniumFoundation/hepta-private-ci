@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.real-report-driver-build.v4",
+  "scope": "standalone driver workspace compiling actual native owner/types source paths",
+  "native_baseline": "a47190bb84714cb1262fcd85ebb723081fdb0581",
+  "native_published_before_driver": "1cd0af7b03a5f1cb5e6f6bed11920bf54527c87b",
+  "build": {
+    "command": "cargo build --locked --manifest-path qualification/scientific-candidate-review/actual-review-driver/Cargo.toml",
+    "exit_code": 0,
+    "elapsed_seconds": 0.59
+  },
+  "clippy": {
+    "command": "just fix --manifest-path ../qualification/scientific-candidate-review/actual-review-driver/Cargo.toml -p hepta-real-review-rejection-qualification",
+    "exit_code": 0,
+    "warnings": 0,
+    "elapsed_seconds": 1.75
+  },
+  "format": {
+    "command": "just fmt",
+    "exit_code": 0
+  },
+  "independent_source_review": "census, strict thresholds, independently recomputed aggregates and negative-only all-pass handling clear; bootstrap and tensors remain evaluator/exporter responsibilities",
+  "authority": "DENY_ALL",
+  "candidate_publication_supported_by_driver": false,
+  "production_dependencies_added": false,
+  "files": {
+    "Cargo.lock": "1012539dc291ca54ff24cbca2d1c5716cc49aeef8c1fa50008af14a14d4fae2f",
+    "Cargo.toml": "9333639c29af9e084024104f5b89f56710aead71967a1dec8af09a811c801a99",
+    "README.md": "0dcfa7cacd150918aa8d65794b2baf66f914d9cc0e622c74b99d206cb74192b0",
+    "RUN.md": "6a216d42e575ae21c9e7277bd8c66d663bb5b718038a3e006e4f8b038309da45",
+    "build.txt": "992248155a31a27c8215740514f4894bc37b9646a002e02981914b81f63a0070",
+    "clippy.txt": "430704566d4983d69d75da63af502043984e83d5f041a8330b239e91d08e2b19",
+    "native-rejection.json": "d0b94580cbdb5a1831b3ff65fc9402b7d089a6152958b1652d5841c4238599dc",
+    "src/main.rs": "ac827450bee3d350306827ba35d32465eeea153e17e853fccf5e0d07135ac925",
+    "src/owner.rs": "8d1b3acd759301b79b63f39e91d61c32b3f10a5770675c2be92734f06143a352",
+    "src/report.rs": "a70e27872d770eaeae2341bbec92306cb4301fec9478f04803352f5978d83631"
+  },
+  "actual_run": {
+    "exit_code": 0,
+    "native_result": "GateFailed(task)",
+    "receipt_sha256": "d0b94580cbdb5a1831b3ff65fc9402b7d089a6152958b1652d5841c4238599dc",
+    "owner_bytes_unchanged": true,
+    "candidate_published": false
+  }
+}

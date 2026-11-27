@@ -1,0 +1,102 @@
+{
+  "schema": "hepta.mem8.ci9bd2.complete-original-evidence.v1",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "included_original_artifacts": 5,
+  "included_original_zip_regular_members": 230,
+  "actual_original_runs": [
+    {
+      "run_id": 43021840437,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "run_id": 43021840388,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "actual_MEM_native": {
+    "executions": 34,
+    "distinct_cases": 33,
+    "memory": 11,
+    "Agentd": 6,
+    "qualification_profile": 1,
+    "protocol": 16,
+    "failed": 0,
+    "drain_child_markers": [
+      "commit",
+      "revoke",
+      "panic"
+    ],
+    "markers_not_extra_cases": true,
+    "fmt_and_three_fixes_clean": true,
+    "strict_receipts": 10,
+    "retained_source_blobs_independently_verified": 209
+  },
+  "MEM_python": {
+    "executions": 154,
+    "distinct_cases": 120,
+    "repeated_observations": 34,
+    "failed": 0
+  },
+  "MEM_integrity_synthetic_process_campaign": {
+    "passed_scenarios": 14,
+    "readers": 14,
+    "exited_writers": 3,
+    "model_calls": 0
+  },
+  "Architecture_source_head": {
+    "strict_receipts": 31,
+    "passed_execution_observations": 664,
+    "failed": 0,
+    "python_passed": 138,
+    "rust_passed": 526,
+    "metadata_commands_zero_cases": 1,
+    "rust_libtest_ignored_observations": 5,
+    "rust_libtest_filtered_observations": 2808,
+    "rust_nextest_skipped_observations": 899,
+    "all_receipts_exact_head_tree_clean_before_after": true,
+    "counts_are_executions_not_claim_of_unique_cases": true
+  },
+  "Architecture_base_merge": {
+    "tested_head": "6032d1f09f2b2e70c6be42336b6922fdade5f60c",
+    "tree": "c77785ecb368c44ea699769001a47402c9f50591",
+    "python_passed": 136,
+    "failed": 0,
+    "scope": "Separate merge identity; no cross-head result transfer."
+  },
+  "Architecture_required": {
+    "job_id": 130546877927,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "candidate_transport_advisory": {
+    "activation_authorized": false,
+    "admin_denial_proven": false,
+    "advisory": true,
+    "credential_separation_proven": false,
+    "http_status": 403,
+    "observation_status": "unknown",
+    "pull_request_write_denial_proven": false,
+    "reason": "no_explicit_write_denial",
+    "write_transport_denied": null
+  },
+  "scope_limits": [
+    "This is not a full-repository CI success claim.",
+    "Original provider settlement remains UNKNOWN and physical request count remains unknown.",
+    "Ignored original provider/G model cases were not executed by these selected test groups.",
+    "No unseen successor benefit or original production-owner / independent-trust recovery is established.",
+    "Filtered and ignored test observations are not passes; repeated executions are not distinct new cases."
+  ],
+  "historical_metadata_correction": {
+    "superseded": "ARCHITECTURE_AUDIT.json",
+    "authoritative": "ARCHITECTURE_AUDIT_V2.json",
+    "reason": "Duplicate source_head dictionary key in the first local audit metadata; raw identities and counts were unchanged."
+  },
+  "archive_test_code_executed_by_packager": false,
+  "audit_sources_scope": "Included auditors only read evidence. For portable reuse replace original absolute reference input with bundled reference/CANDIDATE_TREE.ls-tree; never execute archived product/tests.",
+  "remote_full_binary_readback": "Pending independent root readback after carrier attachment; successful Git blob creation alone is not full binary readback."
+}

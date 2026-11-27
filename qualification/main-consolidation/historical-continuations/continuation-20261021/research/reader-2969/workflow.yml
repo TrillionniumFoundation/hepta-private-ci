@@ -1,0 +1,178 @@
+name: Future OOD and harness receipt contracts
+
+on:
+  pull_request:
+    paths:
+      - "scripts/hepta_sngr_reader_eval.py"
+      - "scripts/hepta_sngr_reader_cases.json"
+      - "qualification/neuron-shared-encoder/**"
+      - ".github/workflows/hepta-future-ood-harness-contract.yml"
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-future-ood-harness-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run full shared-encoder contract suite
+        run: python3 -m unittest discover -v -s qualification/neuron-shared-encoder/tests -p 'test_*.py'
+      - name: Compile research modules
+        run: |
+          python3 -m py_compile \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/future_ood_matrix.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/harness_receipt_adapter.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/resource_checkpoint_binding.py
+          git diff --check
+
+  laya-reader-intake:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      HF_HUB_DOWNLOAD_TIMEOUT: "120"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Checkout exact research source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact checkout
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Install pinned CPU runtime
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu torch==2.11.0
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: numpy==2.2.6 safetensors==0.8.0 transformers==4.57.6 huggingface_hub==0.36.0
+          python3 -m pip install --disable-pip-version-check --no-deps laya==0.3.20
+          python3 -m pip check
+      - name: Apply audited Torch CSE compatibility patch
+        env:
+          RUNTIME_RECEIPT_PATH: ${{ runner.temp }}/hepta-runtime-receipt.json
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import importlib.metadata
+          import json
+          import os
+          import platform
+          from pathlib import Path
+          import torch
+
+          package_dir = Path(torch.__file__).resolve().parent
+          target = package_dir / "_inductor" / "codegen" / "cutedsl" / "cutedsl_kernel.py"
+          if not target.is_file():
+              raise SystemExit(f"expected Torch CuTeDSL source missing: {target}")
+          original = target.read_bytes()
+          needle = b"CSE[Any]"
+          replacement = b"CSE[Any, Any]"
+          matches = original.count(needle)
+          if matches != 1:
+              raise SystemExit(f"expected exactly one audited CSE annotation, found {matches}")
+          patched = original.replace(needle, replacement, 1)
+          target.write_bytes(patched)
+          receipt = {
+              "schema": "hepta.sngr.runtime-compatibility-receipt.v1",
+              "runtime_kind": "real_reader_cpu",
+              "torch_version": torch.__version__,
+              "python_version": platform.python_version(),
+              "transformers_version": importlib.metadata.version("transformers"),
+              "laya_version": importlib.metadata.version("laya"),
+              "patch_path": target.relative_to(package_dir).as_posix(),
+              "match_count": matches,
+              "source_sha256": hashlib.sha256(original).hexdigest(),
+              "patched_sha256": hashlib.sha256(patched).hexdigest(),
+              "patch_id": "torch-cutedsl-cse-two-args-v1",
+              "production_selection_authority": False,
+          }
+          Path(os.environ["RUNTIME_RECEIPT_PATH"]).write_text(
+              json.dumps(receipt, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+          python3 - <<'PY'
+          from torch._inductor.codegen.cutedsl.cutedsl_kernel import CuteDSLTemplateKernel
+          print(f"torch_cse_compatibility_smoke=ok:{CuteDSLTemplateKernel.__name__}")
+          PY
+      - name: Download only the pinned public checkpoint revision
+        env:
+          HF_REPO: convaiinnovations/laya
+          HF_REVISION: c5d78730f3493e4fe16d61507ef4b78eef7318cf
+          CHECKPOINT_DIR: ${{ runner.temp }}/hepta-laya421
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+          target = Path(os.environ["CHECKPOINT_DIR"])
+          target.mkdir(parents=True, exist_ok=False)
+          snapshot_download(
+              repo_id=os.environ["HF_REPO"],
+              revision=os.environ["HF_REVISION"],
+              local_dir=str(target),
+              allow_patterns=["model.safetensors", "rl_agent_config.json", "tokenizer/**", "encoder/**", "*.json"],
+              ignore_patterns=["*.bin", "*.pt", "*.pth"],
+              max_workers=2,
+          )
+          files = [p for p in target.rglob("*") if p.is_file()]
+          if not files or any(p.is_symlink() for p in files):
+              raise SystemExit("checkpoint download produced no regular immutable files")
+          if not (target / "model.safetensors").is_file() or not (target / "rl_agent_config.json").is_file():
+              raise SystemExit("required Laya checkpoint files are missing")
+          print(f"downloaded_regular_files={len(files)}")
+          PY
+      - name: Run the registered Reader evaluator
+        env:
+          CHECKPOINT_DIR: ${{ runner.temp }}/hepta-laya421
+          REPORT_PATH: ${{ runner.temp }}/hepta-reader-report.json
+          SUMMARY_PATH: ${{ runner.temp }}/hepta-reader-summary.json
+          RUNTIME_RECEIPT_PATH: ${{ runner.temp }}/hepta-runtime-receipt.json
+        run: |
+          set -u
+          set +e
+          python3 scripts/hepta_sngr_reader_eval.py --checkpoint-dir "$CHECKPOINT_DIR" --source-checkout "$GITHUB_WORKSPACE" --presentations 1 --max-calls 320 --output "$REPORT_PATH" > "$SUMMARY_PATH"
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "reader_status=evaluated"
+          elif [ "$status" -eq 2 ]; then
+            echo '{"status":"unavailable","production_selection_authority":false,"evidence_class":"INCOMPLETE","reason":"registered evaluator could not produce a real model result"}' > "$REPORT_PATH"
+            echo "reader_status=unavailable"
+          else
+            cat "$SUMMARY_PATH" >&2
+            exit "$status"
+          fi
+      - name: Retain only non-weight receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-real-reader-intake-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-reader-report.json
+            ${{ runner.temp }}/hepta-reader-summary.json
+            ${{ runner.temp }}/hepta-runtime-receipt.json
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 0

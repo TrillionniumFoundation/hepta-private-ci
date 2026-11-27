@@ -1,0 +1,36 @@
+{
+  "created_utc": "2026-10-23T17:08:16.984746+00:00",
+  "cwd": "/workspace/hepta-private-ci",
+  "denied_web_reads": [
+    {
+      "error": "Failed to fetch https://openaccess.thecvf.com/content_cvpr_2017/papers/Johnson_CLEVR_A_Diagnostic_CVPR_2017_paper.pdf: (403) Forbidden",
+      "outcome": "denied; stopped without retry or alternate download",
+      "target": "https://openaccess.thecvf.com/content_cvpr_2017/papers/Johnson_CLEVR_A_Diagnostic_CVPR_2017_paper.pdf"
+    },
+    {
+      "error": "Failed to fetch https://developer.blender.org/docs/release_notes/2.80/python_api/scene_and_object_api/: (402) Payment Required",
+      "outcome": "denied; stopped without retry or alternate download",
+      "target": "https://developer.blender.org/docs/release_notes/2.80/python_api/scene_and_object_api/"
+    },
+    {
+      "error": "Failed to fetch https://docs.blender.org/api/4.3/bpy.types.RenderSettings.html: (402) Payment Required",
+      "outcome": "denied; stopped without retry or alternate download",
+      "target": "https://docs.blender.org/api/4.3/bpy.types.RenderSettings.html"
+    }
+  ],
+  "environment": "selected saved Codex Cloud",
+  "python": "3.12.14",
+  "read_only_environment_checks": {
+    "Pillow": "12.3.0",
+    "blender --version": "Blender 4.3.2",
+    "numpy": "2.3.5",
+    "torch_metadata": "not installed; not imported"
+  },
+  "remaining_access_effect": "Compatibility documentation/replay not verified. No training/execution environment quota denial occurred; successful official pinned code reads support the narrow review.",
+  "repo_head_before_review": "ee74daffcdeb9b3f9e5ecad83c6770424d4275ed",
+  "research_administration_cpu": "Not globally metered; no zero-cost claim or registered experiment budget credit.",
+  "schema": "hepta.clevr-feasibility.source-only.v1",
+  "source_text_bytes_downloaded": 62641,
+  "source_text_files_downloaded": 7,
+  "work_scope": "Official pinned source inspection and arithmetic only; no new training, image rendering, model execution, evaluation, dataset/asset download, authority or credential change."
+}

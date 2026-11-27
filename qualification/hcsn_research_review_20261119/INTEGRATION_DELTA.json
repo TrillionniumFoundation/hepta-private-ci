@@ -1,0 +1,306 @@
+{
+  "schema": "hcsn-final-integration-delta-v1",
+  "from_commit": "38351c487b286c86ce5d54e7d20bac364a1819da",
+  "from_tree": "ae6756959590c2281d5460d8f2bab1fb428d8e4b",
+  "to_commit": "e3443eb41426a1dc496793e1fa5fc19c98f1eb74",
+  "to_tree": "9f5f29637febfbe736602de54e932fbe349e5afa",
+  "observed_at_utc": "2026-11-19 08:34:39 UTC",
+  "api_comparison": {
+    "status": "ahead",
+    "ahead_by": 6,
+    "behind_by": 0,
+    "total_commits": 6,
+    "merge_base": "38351c487b286c86ce5d54e7d20bac364a1819da",
+    "files_count": 35
+  },
+  "root_entries": 63,
+  "subtree": {
+    "sha": "4edcd1df868538de937b446d81c5da53976f95ee",
+    "truncated": false,
+    "entries": 1704
+  },
+  "changes": [
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/CELL_INPUT_COVERAGE_PROTOCOL.md",
+      "type": "blob",
+      "sha": "86abdd0bc3d80c98d2b9e1d2de1ec7d81242e474",
+      "bytes": 5815,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/CELL_INPUT_COVERAGE_RUN.md",
+      "type": "blob",
+      "sha": "a373049b426dde327ba35344e39df77e25f1f86f",
+      "bytes": 2768,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/bounded_text_inputs.py",
+      "type": "blob",
+      "sha": "d26f9c5de9841f971468447f4990b9d9aac06a75",
+      "bytes": 5830,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/coverage_checkpoint.py",
+      "type": "blob",
+      "sha": "a09a50bdb5670e68466d1160c7cab7f7fef1c44b",
+      "bytes": 5134,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/coverage_feature_export.py",
+      "type": "blob",
+      "sha": "b2f4e9b0b96373b3fd3316ca8dc1c2ad77d4d969",
+      "bytes": 9190,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/coverage_retrieval.py",
+      "type": "blob",
+      "sha": "4261ac69f35eec036369f2b7994b032dc601d65d",
+      "bytes": 4696,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/AUDIT_MANIFEST.json",
+      "type": "blob",
+      "sha": "7327c75e55642b4e5b88f20bef1b2f5307a6aafc",
+      "bytes": 3995,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/AUDIT_MANIFEST.original.json",
+      "type": "blob",
+      "sha": "5ce114124ea4d63d351dd809d79f1960f3596eb5",
+      "bytes": 2651,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/EVIDENCE_INPUTS.json",
+      "type": "blob",
+      "sha": "497c6cf71c2292e2762c53bf53f25a53c71a1df0",
+      "bytes": 1590,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/REPRODUCTION.md",
+      "type": "blob",
+      "sha": "e8a311d7f711877ed551d6c2816eff568c64ea0d",
+      "bytes": 1303,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/SCIENCE_GATE_AUDIT.md",
+      "type": "blob",
+      "sha": "70038e546de08e6162435a7795ab660c64eb4dcd",
+      "bytes": 27090,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/evolution-inventory.json",
+      "type": "blob",
+      "sha": "c1be9cc429aceabf5a11e384ebadcbd213a8f1f9",
+      "bytes": 50057,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/evolution-plan.json",
+      "type": "blob",
+      "sha": "1c059d2c02e01d25782da6216e91e1f42d04b541",
+      "bytes": 89373,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/evolution-v2v3-parity.json",
+      "type": "blob",
+      "sha": "71079d9fb61ff46500ce796f185d1d1ea4c1941e",
+      "bytes": 10672,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/ndu-status-snapshot.json",
+      "type": "blob",
+      "sha": "495c7e1961287d3b17cea8649ad1ed9889834b5c",
+      "bytes": 1464,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/offline-diagnostic.json",
+      "type": "blob",
+      "sha": "c79eea8d059dafb227c83fdc9e1e687406f64b8e",
+      "bytes": 25919,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/pft-math-audit.json",
+      "type": "blob",
+      "sha": "80089d96b07c6288c06f127c77bb1784c01cc890",
+      "bytes": 234633,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/reanalyze_published_evidence.py",
+      "type": "blob",
+      "sha": "4369ed9fadb2065b2e88bdd585a5b461ee1e8d3d",
+      "bytes": 13485,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/source-cell_evolution_snapshot.py",
+      "type": "blob",
+      "sha": "5508c74d0931690e83d4ba614b679c9773812f4d",
+      "bytes": 21696,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/source-cell_evolution_training.py",
+      "type": "blob",
+      "sha": "4f190142daf4614dbd4af12d94e987cb0b01caa0",
+      "bytes": 23965,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-growth-gate-audit/source-real_evolution_probe.py",
+      "type": "blob",
+      "sha": "1bb2ac58d3353216afaae045c645ce1462d3787d",
+      "bytes": 28387,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-input-coverage/README.md",
+      "type": "blob",
+      "sha": "e6bb8d1a074d955fd74a689fa06c8760b4de3125",
+      "bytes": 8626,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-input-coverage/archive-index.json",
+      "type": "blob",
+      "sha": "1b7874eb142a514bc5b10a7047752023b3e6638f",
+      "bytes": 557,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-input-coverage/blockers.json",
+      "type": "blob",
+      "sha": "51af8ce2898103a2fbe74c675775844db8f61eb2",
+      "bytes": 2938,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-input-coverage/bm25-replay.json",
+      "type": "blob",
+      "sha": "ba9a14ca58b8d471b5c5e12c204f9dadb15544f7",
+      "bytes": 23575,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-input-coverage/cost-components.json",
+      "type": "blob",
+      "sha": "b6bcac4d1828d5c79b1b46c64d8152ae3f112daf",
+      "bytes": 2166,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-input-coverage/failure-v1.json",
+      "type": "blob",
+      "sha": "ab6bc518580ce12c0b79ab1eb7b920412890a1cb",
+      "bytes": 374,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-input-coverage/results.json",
+      "type": "blob",
+      "sha": "248b5bbe8465fe7773e37c543e64f90ea7c6aa14",
+      "bytes": 96064,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-input-coverage/source-selection.json",
+      "type": "blob",
+      "sha": "ce5f641cc0cad2e4b09ba3065b60dea073344055",
+      "bytes": 297295,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/evidence/20261024-input-coverage/source/bm25_replay_cost.py",
+      "type": "blob",
+      "sha": "c05bb83ba02f1e26a06ae2ee1842ca014457f4a7",
+      "bytes": 9911,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/fit_input_coverage.py",
+      "type": "blob",
+      "sha": "ecc1a4c5e7245202e9cc70727e4669190cff2dc4",
+      "bytes": 11051,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/prepare_input_coverage.py",
+      "type": "blob",
+      "sha": "3c829c762e284ea1356a71042ff9136571e294ba",
+      "bytes": 9814,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/score_input_coverage.py",
+      "type": "blob",
+      "sha": "48a87e647f693b4d6cb6e6504f73b472f0377e9d",
+      "bytes": 7916,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/test_bounded_text_inputs.py",
+      "type": "blob",
+      "sha": "2d5cc5365fee7a4404d050ce1ad76556815192c4",
+      "bytes": 3454,
+      "mode": "100644"
+    },
+    {
+      "status": "added",
+      "path": "qa/stem-bakeoff/test_coverage_controls.py",
+      "type": "blob",
+      "sha": "c03efa181755af26db7ee9321401d2d6e5e9a719",
+      "bytes": 2697,
+      "mode": "100644"
+    }
+  ],
+  "scope": "Historical Cell input-coverage and growth-gate evidence added; no original HCSN source path changed. No historical scripts or training executed by this delta capture.",
+  "model_calls": 0
+}

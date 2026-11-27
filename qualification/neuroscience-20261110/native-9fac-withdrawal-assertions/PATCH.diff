@@ -1,0 +1,51 @@
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs
+@@ -110,7 +110,7 @@
+                 f.host.retention_b.withdraw_target()?;
+                 assert!(matches!(
+                     evaluator.readback().await,
+-                    Err(crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain)
++                    Err(crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable)
+                 ));
+             }
+             _ => unreachable!(),
+
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs
+@@ -388,7 +388,7 @@
+                 read,
+                 Err(SelectionError::Evaluated(
+                     crate::OriginalCircuitRetainedPublicationErrorV1::Evaluation(
+-                        crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
++                        crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable
+                     )
+                 ))
+             )),
+
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs
+@@ -335,7 +335,7 @@
+             "evaluator" => assert!(matches!(
+                 result,
+                 Err(NextUseError::Evaluated(PublicationError::Evaluation(
+-                    crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
++                    crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable
+                 )))
+             )),
+             "selector" => assert!(matches!(
+
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs
+@@ -320,7 +320,7 @@
+                 result,
+                 Err(SelectionError::Evaluated(
+                     crate::OriginalCircuitRetainedPublicationErrorV1::Evaluation(
+-                        crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
++                        crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable
+                     )
+                 ))
+             ));

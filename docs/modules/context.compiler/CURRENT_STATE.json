@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.context-compiler-current-state.v1",
+  "schemaVersion": 1,
+  "module": "context.compiler",
+  "owner": "intelligence-platform",
+  "deputy": "security-authority",
+  "provenance": {
+    "sourceBaseMode": "module_local_strict",
+    "sourceBase": {
+      "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+      "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
+    },
+    "generatedFrom": "docs/modules/context.compiler/CURRENT_STATE.json",
+    "generator": "scripts/generate-context-compiler-docs.py",
+    "qualificationIdentityRule": "Exact candidate SHA and tree are supplied only by an immutable qualification receipt; documentation generation never self-asserts execution."
+  },
+  "status": {
+    "coreImplementation": "complete",
+    "productComposition": "partial",
+    "v2ProviderClosure": "incomplete",
+    "currentHeadQualification": "absent"
+  },
+  "statusMeaning": {
+    "coreImplementation": "The verified V2 compiler, admission, serialization, attachment, revalidation and observation primitives exist as owner source.",
+    "productComposition": "Named product callers exercise part of the path, but the provider owner still has a parallel representation/evidence boundary.",
+    "v2ProviderClosure": "No single V2 preparation currently binds the exact final provider request bytes, final-request tokenizer proof and terminal evidence end to end.",
+    "currentHeadQualification": "No immutable receipt set bound to the exact current candidate SHA/tree is recorded by this manifest."
+  },
+  "byteIdentities": [
+    {
+      "object": "canonical context bundle",
+      "owner": "context.compiler / intelligence product",
+      "contents": "Selected context items plus canonical typed context framing only.",
+      "requiredDigest": "canonical_context_bundle_sha256",
+      "tokenization": "Compiler budget accounting; not sufficient as final provider-request proof.",
+      "mayBeRebuiltAfterBinding": false
+    },
+    {
+      "object": "prompt fragments",
+      "owner": "prompt product adapter",
+      "contents": "Typed role/content fragments derived from the canonical context bundle for request composition.",
+      "requiredDigest": "prompt_fragments_semantic_sha256",
+      "tokenization": "Diagnostic only until final provider request is constructed.",
+      "mayBeRebuiltAfterBinding": true
+    },
+    {
+      "object": "provider final request",
+      "owner": "Core/provider request finalizer",
+      "contents": "The exact logical request submitted to the provider adapter, including roles, tools, templates and provider framing under the registered model profile.",
+      "requiredDigest": "provider_final_request_sha256",
+      "tokenization": "Must be counted by the registered real model tokenizer after final construction.",
+      "mayBeRebuiltAfterBinding": false
+    },
+    {
+      "object": "provider wire semantic digest",
+      "owner": "provider adapter",
+      "contents": "Canonical semantic digest of the actual provider wire attempt; transport-only nondeterminism is excluded by the provider contract.",
+      "requiredDigest": "provider_wire_semantic_sha256",
+      "tokenization": "Must reference the same logical final-request identity; it is not a substitute for the final-request tokenizer proof.",
+      "mayBeRebuiltAfterBinding": false
+    }
+  ],
+  "sequence": [
+    {"id": 1, "actor": "Registry authority", "action": "emit authenticated admission snapshot and candidates"},
+    {"id": 2, "actor": "context.compiler", "action": "compile_v2 under exact model profile and budget"},
+    {"id": 3, "actor": "context.compiler", "action": "emit canonical context bundle and segment-complete serialization evidence"},
+    {"id": 4, "actor": "Core request finalizer", "action": "construct canonical provider final request exactly once"},
+    {"id": 5, "actor": "Registered model tokenizer", "action": "tokenize exact final request bytes and bind tokenizer identity"},
+    {"id": 6, "actor": "context.compiler", "action": "build attachment from serialization and fresh admission state"},
+    {"id": 7, "actor": "Registry authority", "action": "emit typed monotonic snapshot successor"},
+    {"id": 8, "actor": "context.compiler", "action": "prepare delivery bound to successor, final request and tokenizer proof"},
+    {"id": 9, "actor": "Provider owner", "action": "submit only the preparation-bound request; reconstruction is forbidden"},
+    {"id": 10, "actor": "Provider owner", "action": "record provider attempt and terminal evidence"},
+    {"id": 11, "actor": "context.compiler", "action": "observe_delivery and authenticate final request / wire evidence lineage"},
+    {"id": 12, "actor": "Durable receipt store", "action": "persist idempotent ContextDeliveryReceiptV2 and recovery state"}
+  ],
+  "requiredTokenizerBinding": [
+    "provider_id",
+    "model_id",
+    "tokenizer_binary_sha256",
+    "tokenizer_version",
+    "vocabulary_sha256",
+    "normalization_policy_sha256",
+    "provider_final_request_sha256",
+    "exact_token_count"
+  ],
+  "serializerCoverage": {
+    "allowedSegmentKinds": ["selected_item", "typed_framing"],
+    "requirements": [
+      "segments are ordered, non-overlapping and contiguous",
+      "segments cover every byte of the canonical payload exactly once",
+      "selected-item segments bind item id, role and content digest",
+      "typed-framing segments bind a registered framing kind and schema version",
+      "unknown gaps, duplicate selected items and untyped bytes fail closed"
+    ]
+  },
+  "repositoryControlledGaps": [
+    "Run the registered real model tokenizer over the exact final provider request after Core construction.",
+    "Bind final-request bytes, tokenizer identity, typed snapshot successor and provider attempt into one construction-closed preparation.",
+    "Make provider submit consume only the preparation-bound request and reject parallel reconstruction.",
+    "Persist and reconcile terminal delivery receipts across crash, retry and acknowledgement loss.",
+    "Produce exact-candidate fmt, clippy, cargo-deny, Bazel, source qualification and immutable receipt evidence."
+  ],
+  "generatedTargets": [
+    "docs/modules/context.compiler/TECHNICAL.md",
+    "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+    "qualification/module-execution-dossiers/detail/context.compiler.md"
+  ]
+}

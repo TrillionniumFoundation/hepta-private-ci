@@ -1,0 +1,151 @@
+{
+  "schema": "mem8.integrated189.original-ci-evidence.v1",
+  "source_head": "189711e3563ea13a5328d52e99a286f082045b98",
+  "source_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "tested_pr_merge": "83b67d85bc8ba58ca1f4e758efdc32dbe5f11c58",
+  "scope": "Original terminal failures and current snapshot for the first 69-path repair source; no old2ae runs are included.",
+  "blocking_run": 43002359918,
+  "snapshot_observed_at": "2026-11-11 10:45:18 UTC",
+  "snapshot_counts": {
+    "blocking": {
+      "success": 22,
+      "failure": 5,
+      "in_progress": 4,
+      "skipped": 4
+    },
+    "windows-private": {
+      "success": 1
+    },
+    "windows-current": {
+      "in_progress": 1
+    }
+  },
+  "raw_logs": [
+    {
+      "job_id": 130461335389,
+      "path": "logs/job-130461335389-decoded.log",
+      "encoding": "utf-8",
+      "raw_bytes": 3866,
+      "raw_sha256": "48f9fc102e2c107a9bdcdae94d9484ab30532726292ffa5e4ea07a34500dc8d1",
+      "stored_bytes": 3866,
+      "stored_sha256": "48f9fc102e2c107a9bdcdae94d9484ab30532726292ffa5e4ea07a34500dc8d1"
+    },
+    {
+      "job_id": 130461514712,
+      "path": "logs/job-130461514712-decoded.log.xz",
+      "encoding": "xz",
+      "raw_bytes": 1110811,
+      "raw_sha256": "b8dccf1b4249ed339b5e3c473bc50df413d1e869bb88c335c59baee24512f258",
+      "stored_bytes": 83120,
+      "stored_sha256": "ae303c4c5c9a17e2b3c6c7eb6661003b54d6cf21a5d3c0cb51cf40825ac883a0"
+    },
+    {
+      "job_id": 130461514922,
+      "path": "logs/job-130461514922-decoded.log.xz",
+      "encoding": "xz",
+      "raw_bytes": 1110401,
+      "raw_sha256": "70153c458677e2062da7ad5e2a37c26c4be1c0b0c0908ce80c73353baeb7c23d",
+      "stored_bytes": 83840,
+      "stored_sha256": "5fde673a8ce3ccc2a5c172e904db8fed7df09ab78a0261155d348b7e4b73dae7"
+    },
+    {
+      "job_id": 130461514980,
+      "path": "logs/job-130461514980-decoded.log.xz",
+      "encoding": "xz",
+      "raw_bytes": 490017,
+      "raw_sha256": "18deb3f1d93e0a1e110f2c0a098293a6b1bc6a634b95a5e5b045de2d5e824c1d",
+      "stored_bytes": 47456,
+      "stored_sha256": "be2864a7ddd27b4b9aff76b8c651049a5614a61d0450af8d5198bf71d4703351"
+    },
+    {
+      "job_id": 130461514744,
+      "path": "logs/job-130461514744-decoded.log.xz",
+      "encoding": "xz",
+      "raw_bytes": 461019,
+      "raw_sha256": "2edebdefca1d44d70571252bf76024495e58684b6901f85be8fd78655251969a",
+      "stored_bytes": 43008,
+      "stored_sha256": "0a5d9774b509532281d90b23a442fa2281497024fa6fc8544da3b77270edebf9"
+    },
+    {
+      "job_id": 130461333221,
+      "path": "logs/job-130461333221-decoded.log.xz",
+      "encoding": "xz",
+      "raw_bytes": 332381,
+      "raw_sha256": "cfdb1c8ea75d9bce279086f74dc23882bfe88003b16bb5e4d6a42e3bdf51454d",
+      "stored_bytes": 44160,
+      "stored_sha256": "58dce792161e24f9f07a3d03edeffbbed43871bd60a4854f4e9cd84d0a1c55e0"
+    }
+  ],
+  "failures": [
+    {
+      "job_id": 130461335389,
+      "class": "pre-checkout Fence infrastructure",
+      "evidence": "local_control_inventory_unavailable; resident service failed before readiness; checkout and blob policy did not run",
+      "source_defect_proven": false,
+      "root_rerun_request": "Root reports one job-rerun API attempt was rejected403 because the containing run was still running; no new run attempt is claimed; its request is not copied into this archive."
+    },
+    {
+      "job_id": 130461514712,
+      "class": "model-list cache barrier fixture",
+      "targets": [
+        "//codex-rs/app-server:app-server-all-test",
+        "//codex-rs/app-server:app-server-all-wine-exec-test"
+      ],
+      "case": "suite::v2::model_list::list_models_uses_chatgpt_remote_catalog_as_source_of_truth",
+      "causal_review": "patches/model/STATIC_AUDIT.json"
+    },
+    {
+      "job_id": 130461514922,
+      "class": "second job observation of identical Linux failure payloads",
+      "targets": [
+        "//codex-rs/app-server:app-server-all-test",
+        "//codex-rs/app-server:app-server-all-wine-exec-test"
+      ],
+      "case": "suite::v2::model_list::list_models_uses_chatgpt_remote_catalog_as_source_of_truth",
+      "independent_execution_not_inferred": true
+    },
+    {
+      "job_id": 130461514980,
+      "class": "two Windows targets",
+      "cases": [
+        "durable_control::tests::qualification_observes_physical_same_length_changes_and_retains_the_lock_and_cursor",
+        "cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch"
+      ],
+      "infer": "Original append-only fixture truncation fails with OS5 before the corruption assertions; test-only candidate is included, no native success claimed.",
+      "neuron": "Observed CommitUncertain vs expected Conflict at cell_generation_control_tests.rs:381; cause remains pending independent review."
+    },
+    {
+      "job_id": 130461514744,
+      "class": "Windows hard-link write refusal assertion",
+      "case": "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace",
+      "evidence": "Expected Windows refusal for an existing hard link outside workspace; tool returned exit0 and updated hard-link.txt. Three distinct attempt payloads plus one final reprint. No root cause or fix is claimed here."
+    }
+  ],
+  "counting_boundaries": [
+    "GNU and musl jobs each contain the same eight normalized model stdout blocks: six distinct payloads and two final reprints. The two job labels are not treated as twelve independent executions.",
+    "Each model-list failed shard reports52 passed/1 failed/0 ignored/968 filtered; these are shard observations, not a complete suite count.",
+    "Windows shard3 infer is37 passed/1 failed/1 ignored. Neuron failing shard is70 passed/1 failed/115 filtered; its other two printed shards are79 passed and36 passed. Final tails reprint original failures.",
+    "Windows shard4 hard-link case has3 distinct reported attempts, each67 passed/1 failed/1 ignored/1057 filtered. The tail repeats the final attempt.",
+    "Bazel Executed/targets/skipped numbers are retained literally in raw logs and never added to libtest or nextest case counts.",
+    "The remote-control WebSocket handshake error is also present in one original block per Linux job; final target persistence is not inferred from this emitted block alone."
+  ],
+  "windows_private_success": {
+    "run_id": 43002359628,
+    "job_id": 130461333221,
+    "signed_case_pass": 1,
+    "signed_case_fail": 0,
+    "filtered": 270,
+    "retries": 0,
+    "exact_source_before_after_clean": true,
+    "receipt_provenance": "Parsed from the complete original job output. The separately uploaded workflow artifact has not been independently downloaded by this packager."
+  },
+  "candidate_source": {
+    "model_post_blob": "0295b921099f63f245953eafd9b377db435184a9",
+    "infer_post_blob": "83430468bd935407208061f07b382015836f26a4",
+    "infer_latest_audit_blob": "88a1cfe6fe9f53cfbc034a2bffd8df68e8fc595b",
+    "native_tests_executed": 0,
+    "formatted": false,
+    "published_ref_modified": false
+  },
+  "whole_ci_pass": false
+}

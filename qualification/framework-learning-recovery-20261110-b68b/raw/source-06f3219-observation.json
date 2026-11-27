@@ -1,0 +1,146 @@
+{
+  "record_kind": "local_frozen_code_identity_observation",
+  "observed_source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+  "observed_source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+  "observed_parent_sha": "204da40ebd7a1e5b41cb3c3a684f7d83e3398b37",
+  "base_sha": "abf75d8e2097785b2ad01897c15a7531eebe6e44",
+  "started_at": "2026-11-10T13:47:57.405868+00:00",
+  "finished_at": "2026-11-10T13:47:57.859983+00:00",
+  "checkout": "/workspace/scratch/b68b63394cea/hepta-framework",
+  "before_status": "",
+  "after_status": "",
+  "cumulative_diff": [
+    {
+      "path": "CALLERS.toml",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+      "added": 5,
+      "removed": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "added": 54,
+      "removed": 15
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_capacity_tests.rs",
+      "added": 183,
+      "removed": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs",
+      "added": 10,
+      "removed": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+      "added": 32,
+      "removed": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "added": 3,
+      "removed": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_recovery_tests.rs",
+      "added": 237,
+      "removed": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_readback_budget_tests.rs",
+      "added": 187,
+      "removed": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_recovery_tests.rs",
+      "added": 19,
+      "removed": 3
+    }
+  ],
+  "current_commit_diff": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "added": 10,
+      "removed": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs",
+      "added": 3,
+      "removed": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_readback_budget_tests.rs",
+      "added": 187,
+      "removed": 0
+    }
+  ],
+  "changed_source_files": [
+    {
+      "path": "CALLERS.toml",
+      "bytes": 279868,
+      "sha256": "3c787db9f61d3a11f6a30e79c92be19417df4957f764e6765dedaa02fb4e98e8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+      "bytes": 5388,
+      "sha256": "9a03c31b50955e193225da01d7f0205e4e8bd2a24fd8bffa9237a8f17cb6fe45"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "bytes": 19443,
+      "sha256": "76c9fed6e8b85d635aa21a9bc9a42e84353f53069c29be9df93ad92539333c82"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_capacity_tests.rs",
+      "bytes": 6553,
+      "sha256": "a6501ecf461d62e17651226ab579179083d0ead3b3dc675937b10f41460b2816"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+      "bytes": 8429,
+      "sha256": "ec8685d747e80e7afeeb6ba664e96c7699fb4dbcf824bd4e17127b9b3fa6c074"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs",
+      "bytes": 24308,
+      "sha256": "8cc49f7a3cc36b38fc1310361213feed7a449709a736fb557c6d03f64f774c02"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+      "bytes": 8068,
+      "sha256": "779316f273e35c8e99ebf63a93ee23d5ac73107cf0af631433dfcf0df9d155ea"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "bytes": 8298,
+      "sha256": "7b9bc4d5a3277b57f9ccf0be10b353cd6ac7850745468e399169d65e4ba17be2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_recovery_tests.rs",
+      "bytes": 9785,
+      "sha256": "1bca4572829df326a7f8c0cc3846ddbf48e477d820053236448139a84be0596e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_readback_budget_tests.rs",
+      "bytes": 6712,
+      "sha256": "8add2061783e338eb48ab6b6cd5a550f0acb249709fb6429a2a503ab2a206430"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_recovery_tests.rs",
+      "bytes": 25979,
+      "sha256": "657ad110b8355125aaa91f0a293cfa06ba5917771b3b78f30fe273988dc45a63"
+    }
+  ],
+  "publication_observation": "Root coordinator reports published PR #5720 head; this record independently verifies the local checkout only",
+  "test_result": null,
+  "grants_test_qualification": false
+}

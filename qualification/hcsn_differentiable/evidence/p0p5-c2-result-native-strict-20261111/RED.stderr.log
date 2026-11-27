@@ -1,0 +1,64 @@
+test_duplicate_native_job_rejected (test_c2_native_replay.NativeObservationTests.test_duplicate_native_job_rejected) ... ok
+test_exit_zero_mismatch_rejected (test_c2_native_replay.NativeObservationTests.test_exit_zero_mismatch_rejected) ... ok
+test_failed_terminal_not_scientific_success (test_c2_native_replay.NativeObservationTests.test_failed_terminal_not_scientific_success) ... ok
+test_missing_native_status_rejected (test_c2_native_replay.NativeObservationTests.test_missing_native_status_rejected) ... ok
+test_missing_roster_keeps_full_denominator (test_c2_native_replay.NativeObservationTests.test_missing_roster_keeps_full_denominator) ... ok
+test_native_unknown_and_false_terminal_rejected (test_c2_native_replay.NativeObservationTests.test_native_unknown_and_false_terminal_rejected) ... ok
+test_non_wait4_child_cost_rejected_even_if_rehashed (test_c2_native_replay.NativeObservationTests.test_non_wait4_child_cost_rejected_even_if_rehashed) ... ok
+test_numeric_zero_does_not_mean_untruncated_native_logs (test_c2_native_replay.NativeObservationTests.test_numeric_zero_does_not_mean_untruncated_native_logs) ... FAIL
+test_numeric_zero_nested_native_logs_rejected (test_c2_native_replay.NativeObservationTests.test_numeric_zero_nested_native_logs_rejected) ... FAIL
+test_rebound_duplicate_resource_json_key_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_duplicate_resource_json_key_rejected) ... ok
+test_rebound_duplicate_result_keys_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_duplicate_result_keys_rejected) ... FAIL
+test_rebound_nonfinite_extra_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_nonfinite_extra_resource_field_rejected) ... ok
+test_rebound_nonfinite_result_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_nonfinite_result_field_rejected) ... FAIL
+test_rebound_overflow_exponent_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_overflow_exponent_resource_field_rejected) ... ok
+test_rebound_oversized_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_oversized_resource_field_rejected) ... ok
+test_rebound_result_not_json_object_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_result_not_json_object_rejected) ... FAIL
+test_resource_hash_change_rejected (test_c2_native_replay.NativeObservationTests.test_resource_hash_change_rejected) ... ok
+test_six_matching_copies_not_live_attestation_or_science (test_c2_native_replay.NativeObservationTests.test_six_matching_copies_not_live_attestation_or_science) ... ok
+test_undurable_output_rejected (test_c2_native_replay.NativeObservationTests.test_undurable_output_rejected) ... ok
+
+======================================================================
+FAIL: test_numeric_zero_does_not_mean_untruncated_native_logs (test_c2_native_replay.NativeObservationTests.test_numeric_zero_does_not_mean_untruncated_native_logs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hcsn-c2-exported-native-semantics-v5-20261111/qualification/hcsn_differentiable/recovery_v1/test_c2_native_replay.py", line 197, in test_numeric_zero_does_not_mean_untruncated_native_logs
+    self.assertIn(NAMES[0], self.audit()["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+======================================================================
+FAIL: test_numeric_zero_nested_native_logs_rejected (test_c2_native_replay.NativeObservationTests.test_numeric_zero_nested_native_logs_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hcsn-c2-exported-native-semantics-v5-20261111/qualification/hcsn_differentiable/recovery_v1/test_c2_native_replay.py", line 203, in test_numeric_zero_nested_native_logs_rejected
+    self.assertIn(NAMES[0], self.audit()["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+======================================================================
+FAIL: test_rebound_duplicate_result_keys_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_duplicate_result_keys_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hcsn-c2-exported-native-semantics-v5-20261111/qualification/hcsn_differentiable/recovery_v1/test_c2_native_replay.py", line 184, in test_rebound_duplicate_result_keys_rejected
+    self.assertIn(NAMES[0], report["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+======================================================================
+FAIL: test_rebound_nonfinite_result_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_nonfinite_result_field_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hcsn-c2-exported-native-semantics-v5-20261111/qualification/hcsn_differentiable/recovery_v1/test_c2_native_replay.py", line 188, in test_rebound_nonfinite_result_field_rejected
+    self.assertIn(NAMES[0], report["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+======================================================================
+FAIL: test_rebound_result_not_json_object_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_result_not_json_object_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hcsn-c2-exported-native-semantics-v5-20261111/qualification/hcsn_differentiable/recovery_v1/test_c2_native_replay.py", line 192, in test_rebound_result_not_json_object_rejected
+    self.assertIn(NAMES[0], report["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+----------------------------------------------------------------------
+Ran 19 tests in 1.887s
+
+FAILED (failures=5)

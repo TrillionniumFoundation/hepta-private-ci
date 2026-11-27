@@ -1,0 +1,59 @@
+{
+  "actual_model_condition_count": 9,
+  "base_accuracy": 0.4583333333333333,
+  "four_seed_pairs": [
+    {
+      "bursty_minus_interleaved_accuracy": 0.0,
+      "bursty_minus_interleaved_logloss": 0.00018336561592868783,
+      "decision_disagreements_on_24": 0,
+      "seed": 11
+    },
+    {
+      "bursty_minus_interleaved_accuracy": 0.0,
+      "bursty_minus_interleaved_logloss": 6.964300889233943e-05,
+      "decision_disagreements_on_24": 0,
+      "seed": 17
+    },
+    {
+      "bursty_minus_interleaved_accuracy": 0.0,
+      "bursty_minus_interleaved_logloss": 1.8715974872907104e-05,
+      "decision_disagreements_on_24": 0,
+      "seed": 23
+    },
+    {
+      "bursty_minus_interleaved_accuracy": 0.0,
+      "bursty_minus_interleaved_logloss": -4.9948209115524556e-05,
+      "decision_disagreements_on_24": 0,
+      "seed": 29
+    }
+  ],
+  "full_run_cost_as_reported": {
+    "io_delta": {
+      "cancelled_write_bytes": 0,
+      "rchar": 390165,
+      "read_bytes": 14946304,
+      "syscr": 137,
+      "syscw": 9,
+      "wchar": 648,
+      "write_bytes": 0
+    },
+    "process_cpu_seconds": 33.539317821,
+    "ru_maxrss_kib_lifetime_peak": 1229628,
+    "wall_seconds": 9.919518772978336
+  },
+  "limitations": [
+    "operator-created public tasks and labels",
+    "no independent future B or owner",
+    "self-declared hashes are not signed receipts",
+    "no source model re-execution in this audit",
+    "no actual downstream effects or cold recovery",
+    "four seed pairs not enough for confirmatory gain"
+  ],
+  "original_forward_rows_verified": 216,
+  "original_result_sha256": "3002553ec485b19247f510863e9c78d2cce7747434ad7737f68b7dd3f9a74a2a",
+  "paired_mean_bursty_minus_interleaved_accuracy": 0.0,
+  "paired_mean_bursty_minus_interleaved_logloss": 5.544409764460245e-05,
+  "real_forward_execution_claim": "READONLY_UNATTESTED",
+  "source_plan_sha256": "acb16047e5942d317262ddb8273a2d62e9131e758d6627dcf1c2f42081d98043",
+  "status": "HOLD_NO_GO_OPERATOR_ONLY"
+}

@@ -26,7 +26,7 @@ pub(super) fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn binding() -> Digest32 {
+pub(super) fn binding() -> Digest32 {
     digest("production-ledger-binding")
 }
 
@@ -107,7 +107,7 @@ fn trust_root_key() -> SigningKey {
     SigningKey::from_bytes(&[99; 32])
 }
 
-fn activated_trust() -> ActivatedLearningTrustV1 {
+pub(super) fn activated_trust() -> ActivatedLearningTrustV1 {
     let root_key = trust_root_key();
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
@@ -180,9 +180,18 @@ impl Fixture {
             "hepta-cell-owner-loop-{}-{serial}",
             std::process::id()
         ));
-        fs::create_dir(&root).unwrap();
-        File::create(root.join("ledger")).unwrap();
-        File::create(root.join("witness")).unwrap();
+        #[cfg(windows)]
+        {
+            let directory = codex_utils_path::create_private_state_directory(&root).unwrap();
+            codex_utils_path::create_private_state_child(&directory, "ledger").unwrap();
+            codex_utils_path::create_private_state_child(&directory, "witness").unwrap();
+        }
+        #[cfg(not(windows))]
+        {
+            fs::create_dir(&root).unwrap();
+            File::create(root.join("ledger")).unwrap();
+            File::create(root.join("witness")).unwrap();
+        }
         Self { root }
     }
 
@@ -195,7 +204,16 @@ impl Fixture {
     }
 
     pub(super) fn directory(&self) -> File {
-        File::open(&self.root).unwrap()
+        // The original durable owner calls sync_all on this retained directory.
+        // Windows needs the native private directory open with write access.
+        #[cfg(windows)]
+        {
+            codex_utils_path::open_existing_private_state_directory(&self.root).unwrap()
+        }
+        #[cfg(not(windows))]
+        {
+            File::open(&self.root).unwrap()
+        }
     }
 
     pub(super) fn writer(&self) -> LedgerWriter {
@@ -214,31 +232,6 @@ impl Fixture {
             trust,
             &ledger_directory,
             &witness_directory,
-        )
-        .unwrap()
-    }
-}
-
-impl Fixture {
-    pub(super) fn recover_writer(
-        &self,
-        limit: usize,
-        frontier: LedgerWitnessFrontier,
-    ) -> LedgerWriter {
-        let ledger = DurableLedger::recover(
-            self.file("ledger"),
-            binding(),
-            limit,
-            LedgerRecovery::Acknowledged(frontier.anchor),
-        )
-        .unwrap();
-        let witness = LedgerWitnessStore::recover(self.file("witness"), binding()).unwrap();
-        LedgerWriter::from_durable(
-            ledger,
-            witness,
-            activated_trust(),
-            &self.directory(),
-            &self.directory(),
         )
         .unwrap()
     }

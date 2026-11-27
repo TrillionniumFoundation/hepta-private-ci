@@ -1,0 +1,44 @@
+{
+  "group_count": 192,
+  "groups_sha256": "074e4da7f6049bda14d1536d5bdbf5a2a67124f544f416be379f243b0baf4197",
+  "inputs_sha256": "3863542c447c6b5f898f9ac14d7f9e76afb5f602ddb9798f65f20cba39cbff68",
+  "profile_sha256": "ed8d6d855015774a2b31176a3179722121017eb14dc4d53b1d95ef82f0219c95",
+  "reconstruction_profile": {
+    "background_range": [
+      0.0,
+      0.04
+    ],
+    "foreground_range": [
+      0.75,
+      1.0
+    ],
+    "instructions_per_source": 8,
+    "noise_range": [
+      0.03,
+      0.12
+    ],
+    "schema": "hepta.joint-generation.independent-data.v1",
+    "seeds": {
+      "test": 130303,
+      "train": 130101,
+      "validation": 130202
+    },
+    "sources_per_class": {
+      "test": 6,
+      "train": 16,
+      "validation": 6
+    },
+    "variants": 2,
+    "vertical_shifts": [
+      -1,
+      0,
+      1
+    ]
+  },
+  "rows": 3072,
+  "schema": "hepta.joint-generation.independent-data.v1",
+  "source_count": 192,
+  "source_ids_sha256": "871610869b1481f326c77ac534b6368e3ccd60b99066e7c5ed7e21b2a77373b0",
+  "sources_sha256": "c9272aed0e6e850b74fb244d8e4fbab7193e7c940d66fa159bad86004ecc1b95",
+  "split": "train"
+}

@@ -408,6 +408,13 @@ async fn legacy_oauth_discovery_rejects_authorization_metadata_redirect_cycles()
         ),
         "expected the SDK to report its bounded OAuth discovery redirect limit: {error:#}",
     );
+    assert!(
+        error.chain().any(|cause| matches!(
+            cause.downcast_ref::<AuthError>(),
+            Some(AuthError::DiscoveryRequestFailed { .. })
+        )),
+        "metadata compatibility must preserve the SDK's typed discovery cause: {error:#}",
+    );
     authorization_server.verify().await;
     resource_server.verify().await;
     assert_authorization_requests_exclude_resource_headers(&authorization_server).await?;

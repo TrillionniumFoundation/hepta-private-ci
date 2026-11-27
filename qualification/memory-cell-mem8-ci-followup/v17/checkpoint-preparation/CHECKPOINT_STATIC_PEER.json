@@ -1,0 +1,67 @@
+{
+  "schema": "mem8.v17.long-checkpoint-final-static-peer.v1",
+  "status": "NO_MUST_FIX_IN_REQUESTED_EVIDENCE_BOUNDARIES",
+  "draft": {
+    "bytes": 43959,
+    "sha256": "6fe5310cd562102f201a39fa8eba734dc5d72a94580a5f16968f7912dd7a5391",
+    "git_blob": "b64ac69692d9966c8074525bff91aa1cdb1df2ea"
+  },
+  "reviewed_lines": 249,
+  "document_edited_by_peer": false,
+  "scope": [
+    "Exact V11 clean Windows lint results against the already verified original audit.",
+    "Pre-outage local ZIP/member/reader replay versus later root full remote compressed-byte/hash checks.",
+    "H read-only observations and original unknown process/write settlement.",
+    "Unchanged complete V10 owner baseline plus separate V11 companion semantics.",
+    "Mac ZIP not preserved in this Git checkpoint versus separately recovered complete original raw logs."
+  ],
+  "findings": [
+    {
+      "lines": "124-130",
+      "result": "PASS_STATIC_CONSISTENCY",
+      "detail": "Original V11 run/job/attempt, cead source, helper build 723.468s and one lint 403.797s, zero native test/model commands, stable source/locks/tools/helpers and no rewrites match original 3312-byte audit 962e0681b1ff010b0c8c51ebea1c3644214cee41. Original d0f dirty failure remains at lines 98-100."
+    },
+    {
+      "lines": "126, 134-140",
+      "result": "BOUNDARY_CORRECT",
+      "detail": "Root's post-outage validation is explicitly full remote binary size/SHA/Git verification, not a claimed new XZ extraction or reader rerun. The pre-outage completed agent replay and later recovery are separate."
+    },
+    {
+      "lines": "146-148, 246",
+      "result": "BOUNDARY_CORRECT",
+      "detail": "Two exact-identity reads do not increase 128-row registry coverage or settle original V3/V4 jobs, late writes or effects. No new H mutation or unnecessary user-permission gate is claimed."
+    },
+    {
+      "lines": "248",
+      "result": "BOUNDARY_CORRECT",
+      "detail": "Current checkpoint composition uses unchanged full 134567-byte V10 baseline plus explicit companion. Original gates/intakes/closures/18 closed entries remain in the original blob; old-only consumers retain historical V10 context. Frozen Python execution/equivalence is not claimed."
+    },
+    {
+      "lines": "80, 138",
+      "result": "BOUNDARY_CORRECT",
+      "detail": "Mac ZIP is identified as fully checked locally but not copied into this Git checkpoint; raw job logs have separate complete hash-bound recovery. Missing parser/output is not represented as a replay. This peer did not newly redo all raw-log or ZIP audits."
+    }
+  ],
+  "nonblocking_wording_correction": {
+    "line": 90,
+    "from": "It builds the two real source-bound Windows helpers and runs one clean `just fix --locked -p codex-windows-sandbox`;",
+    "to": "It builds the two real source-bound Windows helpers and requires a clean `just fix --locked -p codex-windows-sandbox`;",
+    "reason": "Describe the d0f harness clean-source requirement without allowing the isolated sentence to sound like its later explicitly retained dirty-source failure passed.",
+    "source_occurrences": 1,
+    "root_accepted_correction": true
+  },
+  "unevaluated_dynamic_placeholders": [
+    "CURRENT_HEADLINE",
+    "D0F_BLOCKING_FINAL",
+    "D0F_TERMINAL_EVIDENCE_LINKS",
+    "FINAL_SOURCE_PUBLICATION"
+  ],
+  "final_publication_boundary": "Fill dynamic values only from the actual original musl terminal and actual publication/readback receipts; this review does not approve guessed terminal or source/ref values.",
+  "not_repeated": [
+    "Root's relative-link/object membership checks.",
+    "Every other platform target-count audit or external-paper review.",
+    "No native, host, model, workflow, original parser or local runtime execution."
+  ],
+  "native_or_model_execution": 0,
+  "ref_mutation": false
+}

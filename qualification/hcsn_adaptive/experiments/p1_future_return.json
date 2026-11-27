@@ -1,0 +1,116 @@
+{
+  "device": "cpu",
+  "dtype": "float64",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "flow": {
+    "bins": 6,
+    "stages": 2,
+    "content_size": 4,
+    "upper_mode": "reflecting",
+    "transport_precision": "float64"
+  },
+  "learner": {
+    "steps": 64,
+    "batch_size": 32,
+    "evaluate_every": 8,
+    "ridge": 0.001
+  },
+  "budget": {
+    "wall_seconds": 60.0,
+    "development_queries": 10
+  },
+  "feature_budget": {
+    "wall_seconds": 300.0,
+    "encoder_events": 500000
+  },
+  "experiment_id": "HCSN-ADAPTIVE-P1_FUTURE_RETURN-20261120-1d88-v1",
+  "data_dir": "/home/qian-qi/hcsn-adaptive-20261120-1d88/data/future_return-formal-v1",
+  "stage": "P1",
+  "variants": [
+    {
+      "id": "fixed_dynamics",
+      "boundary": "fixed",
+      "drift": "fixed",
+      "channels": "dual"
+    },
+    {
+      "id": "input_drift",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "dual"
+    },
+    {
+      "id": "free_scalar",
+      "boundary": "scalar",
+      "drift": "input",
+      "channels": "dual"
+    },
+    {
+      "id": "input_boundary",
+      "boundary": "input_boundary",
+      "drift": "input",
+      "channels": "dual"
+    },
+    {
+      "id": "task_continuation",
+      "boundary": "task_continuation",
+      "drift": "input",
+      "channels": "dual"
+    },
+    {
+      "id": "no_call",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "risk_only"
+    },
+    {
+      "id": "no_risk",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "call_only"
+    },
+    {
+      "id": "no_risk_call",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "neither"
+    },
+    {
+      "id": "no_margin",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "no_margin"
+    },
+    {
+      "id": "no_occupation",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "no_occupation"
+    },
+    {
+      "id": "phase1",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "dual",
+      "flow": {
+        "stages": 1
+      }
+    },
+    {
+      "id": "phase4",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "dual",
+      "flow": {
+        "stages": 4
+      }
+    }
+  ],
+  "methods": [
+    "ridge"
+  ]
+}

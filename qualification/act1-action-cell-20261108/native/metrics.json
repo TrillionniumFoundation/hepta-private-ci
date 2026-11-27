@@ -1,0 +1,554 @@
+{
+  "actual_business_success": 15,
+  "dispatch_contacts": 30,
+  "duplicate_effects": 0,
+  "false_success": 0,
+  "metrics": [
+    {
+      "baseline": "deterministic_durable_workflow",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 1
+      },
+      "recovery_queries": 1,
+      "reported_success": true,
+      "scenario": "sigkill_after_commit",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "handwritten_dsl_macro",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 1
+      },
+      "recovery_queries": 1,
+      "reported_success": true,
+      "scenario": "sigkill_after_commit",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "flat_skill_library",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 1
+      },
+      "recovery_queries": 1,
+      "reported_success": true,
+      "scenario": "sigkill_after_commit",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "deterministic_durable_workflow",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 0
+      },
+      "recovery_queries": 0,
+      "reported_success": true,
+      "scenario": "no_fault",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "deterministic_durable_workflow",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 1
+      },
+      "recovery_queries": 1,
+      "reported_success": true,
+      "scenario": "committed_ack_lost",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "deterministic_durable_workflow",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 0,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "waiting_for_input",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "deterministic_durable_workflow",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 1,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "partial_success",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "deterministic_durable_workflow",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 1,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "rejected_after_partial_effect",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "deterministic_durable_workflow",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 0,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "cancel_before_commit",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "deterministic_durable_workflow",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 0
+      },
+      "recovery_queries": 0,
+      "reported_success": true,
+      "scenario": "commit_before_cancel",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "deterministic_durable_workflow",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 0,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "exit_zero_without_effect",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "deterministic_durable_workflow",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "lookup_unavailable",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "handwritten_dsl_macro",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 0
+      },
+      "recovery_queries": 0,
+      "reported_success": true,
+      "scenario": "no_fault",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "handwritten_dsl_macro",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 1
+      },
+      "recovery_queries": 1,
+      "reported_success": true,
+      "scenario": "committed_ack_lost",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "handwritten_dsl_macro",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 0,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "waiting_for_input",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "handwritten_dsl_macro",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 1,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "partial_success",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "handwritten_dsl_macro",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 1,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "rejected_after_partial_effect",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "handwritten_dsl_macro",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 0,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "cancel_before_commit",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "handwritten_dsl_macro",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 0
+      },
+      "recovery_queries": 0,
+      "reported_success": true,
+      "scenario": "commit_before_cancel",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "handwritten_dsl_macro",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 0,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "exit_zero_without_effect",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "handwritten_dsl_macro",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "lookup_unavailable",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "flat_skill_library",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 0
+      },
+      "recovery_queries": 0,
+      "reported_success": true,
+      "scenario": "no_fault",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "flat_skill_library",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 1
+      },
+      "recovery_queries": 1,
+      "reported_success": true,
+      "scenario": "committed_ack_lost",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "flat_skill_library",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 0,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "waiting_for_input",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "flat_skill_library",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 1,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "partial_success",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "flat_skill_library",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 1,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "rejected_after_partial_effect",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "flat_skill_library",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 0,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "cancel_before_commit",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "flat_skill_library",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 0
+      },
+      "recovery_queries": 0,
+      "reported_success": true,
+      "scenario": "commit_before_cancel",
+      "unknown_retained": false
+    },
+    {
+      "baseline": "flat_skill_library",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": false,
+        "business_events": 0,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "exit_zero_without_effect",
+      "unknown_retained": true
+    },
+    {
+      "baseline": "flat_skill_library",
+      "dispatch_budget": 1,
+      "evaluation": "single_effect_conformance",
+      "false_success": false,
+      "lookup_budget": 2,
+      "oracle": {
+        "actual_business_success": true,
+        "business_events": 2,
+        "dispatch_contacts": 1,
+        "duplicate_effects": 0,
+        "lookup_contacts": 2
+      },
+      "recovery_queries": 2,
+      "reported_success": false,
+      "scenario": "lookup_unavailable",
+      "unknown_retained": true
+    }
+  ],
+  "raw_log_sha256": "5e4cad774f6a5c14d70384bf5f674d748e15ec8f4b31d5a2f841fd4b085f3305",
+  "recovery_queries": 42,
+  "reported_success": 12,
+  "rows": 30,
+  "unknown_but_effect_committed": 3,
+  "unknown_retained": 18
+}

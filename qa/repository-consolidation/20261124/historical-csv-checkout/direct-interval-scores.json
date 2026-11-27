@@ -1,0 +1,20 @@
+{
+  "source_commit": "70025b8f7d0ab8a9c40876c688732d66c8091868",
+  "path": "codex-rs/hepta-ndu/research/native_stem_abcd/direct_interval/SCORES.csv",
+  "original_bytes": 26180,
+  "original_sha256": "9cb8ebb83a9f8f073c422c088167b36cd441b4ddd83339baaeb267987b41d224",
+  "original_git_blob": "e2844fde370b6b5f2d3887afd38957a4fac17c21",
+  "original_carrier": {
+    "path": "qa/repository-consolidation/20261124/historical-csv-checkout/direct-interval-original-scores.csv.gz",
+    "bytes": 7493,
+    "sha256": "c6aa678d653deeb7268937b996dfd8c3887de9ea8afee9dae89a5214fb0e0eae",
+    "encoding": "gzip"
+  },
+  "checkout_bytes": 26182,
+  "checkout_sha256": "bd2fb4f4ce183ff81257e7297d194a860150e4251dae33ddafb0b5aca2e3d5c7",
+  "canonical_lf_sha256": "95216862769cdb466ff7cbed6c33a57f064b8111af2665e3d919129fa3d26ab0",
+  "parsed_records_with_header": 81,
+  "fields_per_header": 23,
+  "logical_change": "CSV record 17 quotes its final field so the original solver status, including the final space, survives CSV decoding.",
+  "restore": "Decompress the original_carrier to read the exact scientific export at its original byte identity."
+}

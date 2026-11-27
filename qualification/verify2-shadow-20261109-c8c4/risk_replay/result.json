@@ -1,0 +1,833 @@
+{
+  "dataset_scope": "controlled_sqlite_ack_only_templates",
+  "gates": {
+    "completed_inference_and_decision_bindings": true,
+    "completed_trajectory_count": 108,
+    "host_frontiers_and_label_order": true,
+    "incomplete_trajectory_count": 0,
+    "operation_and_trajectory_rosters": true,
+    "panel_bindings": true
+  },
+  "independent_real_task_evaluator": false,
+  "interpretation": "Retrospective labeled-subset diagnostics; repeated policies/frontiers are dependent; no scheduling gain claim.",
+  "new_neural_model_forwards": 0,
+  "new_neural_model_inference": false,
+  "new_original_effects": false,
+  "predictions": 240,
+  "production_authority": "NONE",
+  "prospective_shadow": false,
+  "reports": {
+    "calibration": {
+      "panel": {
+        "acceptance_coverage": null,
+        "accepted_error_missing_label_bounds": null,
+        "all_trajectory_false_accept_missing_label_bounds": null,
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "interrupted": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "reject": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "unknown": {
+            "known_labels": 12,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 12
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.2227891156462585,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6377616405797456,
+            "missing_labels": 0,
+            "predictions": 12,
+            "scored": 12,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.14583333333333334,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.4707841205631325,
+            "missing_labels": 0,
+            "predictions": 12,
+            "scored": 12,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": false,
+        "independent_sampling_established": false,
+        "known_labels": 12,
+        "policy_metric_reason": "no_policy_acceptance_decision",
+        "prediction_count": 24,
+        "production_authority": "NONE",
+        "trajectories": 12,
+        "trajectories_with_predictions": 12,
+        "version": "verify-shadow-metrics-v1"
+      }
+    },
+    "confirmation": {
+      "bases_two": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 4,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 4
+          },
+          "interrupted": {
+            "known_labels": 2,
+            "label_acquisition_rate": 0.25,
+            "missing_reasons": {
+              "uninterrupted_horizon_not_observed": 6
+            },
+            "trajectories": 8
+          },
+          "reject": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.31802721088435376,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.833690528880452,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.22916666666666666,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6538861686744841,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 6,
+        "prediction_count": 24,
+        "production_authority": "NONE",
+        "trajectories": 12,
+        "trajectories_with_predictions": 12,
+        "version": "verify-shadow-metrics-v1"
+      },
+      "constant_prior": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 4,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 4
+          },
+          "interrupted": {
+            "known_labels": 2,
+            "label_acquisition_rate": 0.25,
+            "missing_reasons": {
+              "uninterrupted_horizon_not_observed": 6
+            },
+            "trajectories": 8
+          },
+          "reject": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.31802721088435376,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.833690528880452,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.22916666666666666,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6538861686744841,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 6,
+        "prediction_count": 24,
+        "production_authority": "NONE",
+        "trajectories": 12,
+        "trajectories_with_predictions": 12,
+        "version": "verify-shadow-metrics-v1"
+      },
+      "fixed_check": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 4,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 4
+          },
+          "interrupted": {
+            "known_labels": 8,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 8
+          },
+          "reject": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.2227891156462585,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6377616405797456,
+            "missing_labels": 0,
+            "predictions": 12,
+            "scored": 12,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.14583333333333334,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.4707841205631325,
+            "missing_labels": 0,
+            "predictions": 12,
+            "scored": 12,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 12,
+        "prediction_count": 24,
+        "production_authority": "NONE",
+        "trajectories": 12,
+        "trajectories_with_predictions": 12,
+        "version": "verify-shadow-metrics-v1"
+      },
+      "intervention/cost_high": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 2,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 2
+          },
+          "interrupted": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "reject": {
+            "known_labels": 4,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 4
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.2227891156462585,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6377616405797456,
+            "missing_labels": 0,
+            "predictions": 6,
+            "scored": 6,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.14583333333333334,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.4707841205631325,
+            "missing_labels": 0,
+            "predictions": 6,
+            "scored": 6,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 6,
+        "prediction_count": 12,
+        "production_authority": "NONE",
+        "trajectories": 6,
+        "trajectories_with_predictions": 6,
+        "version": "verify-shadow-metrics-v1"
+      },
+      "intervention/cost_low": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 2,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 2
+          },
+          "interrupted": {
+            "known_labels": 0,
+            "label_acquisition_rate": 0.0,
+            "missing_reasons": {
+              "uninterrupted_horizon_not_observed": 3
+            },
+            "trajectories": 3
+          },
+          "reject": {
+            "known_labels": 1,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 1
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.31802721088435376,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.833690528880452,
+            "missing_labels": 3,
+            "predictions": 6,
+            "scored": 3,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.22916666666666666,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6538861686744841,
+            "missing_labels": 3,
+            "predictions": 6,
+            "scored": 3,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 3,
+        "prediction_count": 12,
+        "production_authority": "NONE",
+        "trajectories": 6,
+        "trajectories_with_predictions": 6,
+        "version": "verify-shadow-metrics-v1"
+      },
+      "intervention/risk_high": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 2,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 2
+          },
+          "interrupted": {
+            "known_labels": 0,
+            "label_acquisition_rate": 0.0,
+            "missing_reasons": {
+              "uninterrupted_horizon_not_observed": 3
+            },
+            "trajectories": 3
+          },
+          "reject": {
+            "known_labels": 1,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 1
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.31802721088435376,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.833690528880452,
+            "missing_labels": 3,
+            "predictions": 6,
+            "scored": 3,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.22916666666666666,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6538861686744841,
+            "missing_labels": 3,
+            "predictions": 6,
+            "scored": 3,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 3,
+        "prediction_count": 12,
+        "production_authority": "NONE",
+        "trajectories": 6,
+        "trajectories_with_predictions": 6,
+        "version": "verify-shadow-metrics-v1"
+      },
+      "intervention/risk_low": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 2,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 2
+          },
+          "interrupted": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "reject": {
+            "known_labels": 4,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 4
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.2227891156462585,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6377616405797456,
+            "missing_labels": 0,
+            "predictions": 6,
+            "scored": 6,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.14583333333333334,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.4707841205631325,
+            "missing_labels": 0,
+            "predictions": 6,
+            "scored": 6,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 6,
+        "prediction_count": 12,
+        "production_authority": "NONE",
+        "trajectories": 6,
+        "trajectories_with_predictions": 6,
+        "version": "verify-shadow-metrics-v1"
+      },
+      "readout_heads_two": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 4,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 4
+          },
+          "interrupted": {
+            "known_labels": 2,
+            "label_acquisition_rate": 0.25,
+            "missing_reasons": {
+              "uninterrupted_horizon_not_observed": 6
+            },
+            "trajectories": 8
+          },
+          "reject": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.31802721088435376,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.833690528880452,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.22916666666666666,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6538861686744841,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 6,
+        "prediction_count": 24,
+        "production_authority": "NONE",
+        "trajectories": 12,
+        "trajectories_with_predictions": 12,
+        "version": "verify-shadow-metrics-v1"
+      },
+      "repeat_two": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 4,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 4
+          },
+          "interrupted": {
+            "known_labels": 2,
+            "label_acquisition_rate": 0.25,
+            "missing_reasons": {
+              "uninterrupted_horizon_not_observed": 6
+            },
+            "trajectories": 8
+          },
+          "reject": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.31802721088435376,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.833690528880452,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.22916666666666666,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6538861686744841,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 6,
+        "prediction_count": 24,
+        "production_authority": "NONE",
+        "trajectories": 12,
+        "trajectories_with_predictions": 12,
+        "version": "verify-shadow-metrics-v1"
+      },
+      "roles_two": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 4,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 4
+          },
+          "interrupted": {
+            "known_labels": 2,
+            "label_acquisition_rate": 0.25,
+            "missing_reasons": {
+              "uninterrupted_horizon_not_observed": 6
+            },
+            "trajectories": 8
+          },
+          "reject": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.31802721088435376,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.833690528880452,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.22916666666666666,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6538861686744841,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 6,
+        "prediction_count": 24,
+        "production_authority": "NONE",
+        "trajectories": 12,
+        "trajectories_with_predictions": 12,
+        "version": "verify-shadow-metrics-v1"
+      },
+      "single": {
+        "acceptance_coverage": 0.3333333333333333,
+        "accepted_error_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "all_trajectory_false_accept_missing_label_bounds": [
+          0.0,
+          0.0
+        ],
+        "bounds_kind": "finite_dataset_missing_labels_not_confidence_intervals",
+        "by_disposition": {
+          "accept": {
+            "known_labels": 4,
+            "label_acquisition_rate": 1.0,
+            "missing_reasons": {},
+            "trajectories": 4
+          },
+          "interrupted": {
+            "known_labels": 2,
+            "label_acquisition_rate": 0.25,
+            "missing_reasons": {
+              "uninterrupted_horizon_not_observed": 6
+            },
+            "trajectories": 8
+          },
+          "reject": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          },
+          "unknown": {
+            "known_labels": 0,
+            "label_acquisition_rate": null,
+            "missing_reasons": {},
+            "trajectories": 0
+          }
+        },
+        "by_step": {
+          "0": {
+            "brier": 0.31802721088435376,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.833690528880452,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          },
+          "2": {
+            "brier": 0.22916666666666666,
+            "infinite_log_loss_count": 0,
+            "log_loss": 0.6538861686744841,
+            "missing_labels": 6,
+            "predictions": 12,
+            "scored": 6,
+            "unsupported": 0
+          }
+        },
+        "has_policy_acceptance_decision": true,
+        "independent_sampling_established": false,
+        "known_labels": 6,
+        "prediction_count": 24,
+        "production_authority": "NONE",
+        "trajectories": 12,
+        "trajectories_with_predictions": 12,
+        "version": "verify-shadow-metrics-v1"
+      }
+    },
+    "train": {}
+  },
+  "risk_table_fits": 1,
+  "scientific_admission": "HOLD",
+  "status": "RETAINED_REPLAY_COMPLETED",
+  "training_trajectories": 12
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "renderer-v3-static-source-alignment-v1",
+  "status": "source_only_alignment",
+  "main_renderer_old_bytes_unchanged": true,
+  "renderer": {
+    "bytes": 14032,
+    "sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef"
+  },
+  "new_core_manifest": {
+    "bytes": 3861,
+    "sha256": "f2d1ce683591a9b8575aab2d0981bf67b9e465bf9686a8da2e87a2246a0ea70e"
+  },
+  "supervisor_old": {
+    "bytes": 16554,
+    "sha256": "7f2762c444031bc3d84131ec4cb6dd74790cbebd4b6a9229c6027886885ec0f9"
+  },
+  "supervisor_new": {
+    "bytes": 16554,
+    "sha256": "6e6be1db16c1a05f49806b63f8024111ed25c02bda61510dcde4a9e4e3a39be0"
+  },
+  "supervisor_delta": "Only old3ac to newf2d manifest string; helper byte-exact f58. No functional execution performed by this alignment.",
+  "parser_origin": {
+    "bytes": 7695,
+    "sha256": "af21314b3114d443861581948c50d827ce23ab5d66cb96bbbbd0e140dcf7565e"
+  },
+  "four_function_bodies_equal": true,
+  "new_parser_header_and_constants_and_imports": "Explicit new155/512MiB adapter, no inherited G-test qualification.",
+  "current_source_compile_and_metadata_tests": "See separate validation attempt01 and attempt02; neither runs Matplotlib or renders.",
+  "no_actual_analysis_or_model_or_E_access": true
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "hcsn-n256-corrected-t0-precommit-negative-v1",
+  "identity": "hcsn-n256-corrected-t0-capsule-contract-20261117-c06d-001",
+  "execution_key": "hcsn-n256-corrected-t0-capsule-20261117-c06d-001",
+  "observed_at_utc": "2026-11-18T01:38:44Z",
+  "execution_completed_at_utc": null,
+  "execution_completed_at_status": "UNKNOWN_NOT_RECORDED_BY_ORIGINAL_COMMAND",
+  "source_git_commit": null,
+  "source_precommitted": false,
+  "status": "REJECT_PRECOMMIT_PROTOCOL_FAILURE",
+  "qualification": false,
+  "failure_reason": "the authentic serializer and independent parser executed before the source was committed to Git",
+  "runtime": {
+    "python": "3.12.14",
+    "surface": "codex-cloud-managed",
+    "cwd": "/workspace/scratch/c6bc0db959e6"
+  },
+  "source_sha256": {
+    "ADMISSION.json": "243fcde7e705b6daf21d250000ec1b1ae268f40c53ea0c582c16729d52165638",
+    "BUILDER.py": "71131780a6bfbb9a734c57a7607a5e313b5f67c4560af1be32434f8eeb8a872e",
+    "COLD_AUDIT.py": "d39434c3b358cc86c75f13cf709723e09f2fb6353145410c23e624855a4eb2fc"
+  },
+  "original_sha256": {
+    "BUILD.json": "f2d79f811710b02991670f387fa504bbfe196473a387ff649432d46a18281b9f",
+    "RECEIPT.json": "36732f5d0624a06221c92025b233451a6bb154fe4bc33401152eff3677ff9fb6",
+    "capsule.bin": "4db9898201cf10c2c5cf588e3f08fa60788580bb119ca6199f3b4d1c870bf8da"
+  },
+  "git_blob_sha": {
+    "ADMISSION.json": "8e34497ff3d00f28206f0d5fb16c636f222dc3a0",
+    "BUILDER.py": "ad55d58ff6d04678cf96c2c42c0014cc89d3e19a",
+    "COLD_AUDIT.py": "480c29b8060091cea40c4dc0595efe88639ac1ad",
+    "BUILD.json": "283548675eb90e3a0d5651d8ef509432988973a3",
+    "RECEIPT.json": "687c3dce3036a377a45588b7b3585c302fe300ba",
+    "capsule.bin": "07fa5ab4204ddb11c04f2af57e7107c0bd9d1672"
+  },
+  "original_sizes": {
+    "BUILD.json": 1279,
+    "RECEIPT.json": 3484,
+    "capsule.bin": 24511
+  },
+  "observed_counts": {
+    "candidate_phase_parser_calls": 8,
+    "canonical_decode_calls": 1,
+    "canonical_encode_invocations": 2,
+    "dynamic_runs": 0,
+    "independent_parser_calls": 1,
+    "matrix_exponential_actions": 0,
+    "optimizer_steps": 0,
+    "oracle_adapter_calls": 1,
+    "provider_calls": 0,
+    "publish_atomic_calls": 1,
+    "torch_calls": 0
+  },
+  "coordinate_counts": {
+    "compared": 2656,
+    "equal": 2656,
+    "mismatches": 0,
+    "packet": 56,
+    "state": 2600,
+    "total": 2656
+  },
+  "same_key_rerun_allowed": false,
+  "historical_negative_and_unknown_preserved": true,
+  "cold_load_qualified": false,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn-n256-corrected-t0-capsule-contract-source-freeze-v1",
+  "identity": "hcsn-n256-corrected-t0-capsule-contract-20261117-c06d-001",
+  "base_commit": "d40c166e4d8a1f051473afe9ef78981b2a7c3183",
+  "files": {
+    ".github/workflows/hcsn-currentstate-n256-corrected-t0-contract.yml": "3c2349bedad593f064c5011630ba907ce2881bca3a6af3429a0ff62d251a2028",
+    "qualification/hcsn_currentstate_n256_corrected_t0_contract/README.md": "0667052e181f524b3f3d264beea1d9ec662ac4d24609c350f1bfab2233a30814",
+    "qualification/hcsn_currentstate_n256_corrected_t0_contract/REQUEST.json": "64ecdbbf953209aaec31cac4fb0f62af89330b0029837fd1d396e8be723d75a0",
+    "qualification/hcsn_currentstate_n256_corrected_t0_contract/__init__.py": "ba3142b3d631c2ba1a6f49a22d9269fad552644d052fd6e8edcc4d60bbe5bc36",
+    "qualification/hcsn_currentstate_n256_corrected_t0_contract/contract.py": "9174d667adeb65747d4c56c1f583bc1870a3a45149e650448c7a32ccdcb9ac28",
+    "qualification/hcsn_currentstate_n256_corrected_t0_contract/static_inspector.py": "a9128f06c0b104ce26290a329847fe2583780959df7d638aa00602bce0b25403",
+    "qualification/hcsn_currentstate_n256_corrected_t0_contract/test_contract.py": "89e598c5054cd572591b470b6fe17101359ea68a204fafa54e33391ae93acede"
+  },
+  "inherited_source_sha256": {
+    "qualification/hcsn_currentstate_n256_canonical_serializer_intent/canonical_serializer.py": "3107fb296043de8f3e3c78e13aa940aea38aa64c16dfe68d342d2adb0c7aa97a",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/REQUEST.json": "b99b8621b4ea6c4083815d736d07de96ef056251104224044d780c2135f7cdcc",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/adapter.py": "311eeeb69ba5002171d3aa765610bc9caea1cb2942309ba6e67543297cb74084",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/admission.py": "7f3c24118a3504d393d59b31576e8a140c206a154dfaecf4c5ec0aa327feb90c",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/REQUEST.json": "9db32bf0c81051a8ba719a0fd54ece202e312ae84ab5ede43d181e3d86f410fe",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/admission.py": "d3ec236043f1563a6c05d0843a1b431ec1288da70047a3dc451031c25f67f61b",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/sparse_dynamic.py": "49616d4fcff9685a6cfcbee00ff45a2fd9ab4eb9c6ce04e62c02f927752d50db",
+    "qualification/hcsn_currentstate_n256_t0_capsule_v1/builder.py": "e96f8165cffc3e9f616f07bf42e18a0960a6213582f1e525f93ac5a8623f0b6c",
+    "qualification/hcsn_currentstate_n256_terminal_publication_intent/REQUEST.json": "0db12c26ccf722406f62542e35d34982122986f077dc5a3f0806b2e89e10d23b"
+  },
+  "authentic_input_sha256": {
+    "qualification/hcsn_n256_new_export/evidence/attempt001/METADATA.json": "88e84dd3aea396d34c7e2dd08d31f2e30bf694c20516dccde57e6dd1b0c2a3c6",
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_PHASE.json": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.json": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c",
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.npz.b64": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb"
+  },
+  "decoded_npz_sha256": "c98a3339504c908081dbf77d2235a18de96da06b1ebda7b1c0f9192af1570eb8",
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "historical_capsule_sha256": "1ebdf4750ccbb56b4ef00d6764b1af266359d648e5449db371ffe631bb32c67d",
+  "historical_capsule_transfer_allowed": false,
+  "authentic_capsules": 0,
+  "authentic_coordinates": 0,
+  "authentic_serializer_calls": 0,
+  "dynamic_runs": 0,
+  "matrix_exponential_actions": 0,
+  "provider_calls": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "historical_negative_and_unknown_preserved": true,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false,
+  "status": "PASS_SOURCE_ONLY_CONTRACT_HOLD_AUTHENTIC_CAPSULE"
+}

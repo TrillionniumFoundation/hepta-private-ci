@@ -1,0 +1,45 @@
+{
+  "by_family": {
+    "arithmetic": {
+      "correct": 1,
+      "n": 6,
+      "valid": 1
+    },
+    "conditional": {
+      "correct": 2,
+      "n": 6,
+      "valid": 5
+    },
+    "negation": {
+      "correct": 3,
+      "n": 6,
+      "valid": 5
+    },
+    "taxonomy": {
+      "correct": 0,
+      "n": 6,
+      "valid": 1
+    }
+  },
+  "checked_at_utc": "2026-11-12T05:06:18.893031+00:00",
+  "independent_future_evaluator": false,
+  "journal_sha256": "9c4dc311c45b22a179d000edbb7f994b58bd9e3e9c1246a60f26303861a19ef7",
+  "limitations": "Recomputes recorded public outputs, input model asset hashes and parsers; does not rerun forward, independent future B, causal HPCA training gain or production owner.",
+  "model_files_full_sha256_rechecked": 8,
+  "owner_qualified": false,
+  "preexecution_sha256": "10a68d75e5608b494977eb8d2d923fe908fa74c18e2e0ebd40cb93f39c839d3e",
+  "production_qualified": false,
+  "result_sha256": "93bb1be598d8f5964ce4de890a34a48bfd606be130c2a383b5b9c962dd6c58de",
+  "schema": "neuro4-chat-independent-t6-recheck-v1",
+  "source_head": "4669280bd92804e6b5357ec0d8a27197858a5b6a",
+  "source_tree": "d78b935a2f5abe1273dced958460c7a3e23ddea6",
+  "status": "recomputed_source_assets_and_public_24_pass",
+  "summary": {
+    "correct": 6,
+    "first_eos": 0,
+    "independent_future": 0,
+    "n": 24,
+    "valid": 12
+  },
+  "weights_updated": false
+}

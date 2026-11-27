@@ -1,0 +1,162 @@
+{
+  "schema": "hepta.original-initial.source-ops.v1",
+  "base": "05acfd02b53d2165ef91ddd0d000070af59031de",
+  "rule": "Apply only these operations to shared files. Preserve concurrent CLI and other source changes. The full postimages are fixed-05 references, never instructions to overwrite later shared files.",
+  "operations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "old": "#[path = \"authority_host_learning_registration.rs\"]",
+      "new": "#[path = \"authority_host_generation_initial_context.rs\"]\nmod initial_context;\n\n#[path = \"authority_host_learning_registration.rs\"]",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "old": "#[path = \"authority_host_generation_publication.rs\"]",
+      "new": "#[path = \"authority_host_generation_initial.rs\"]\npub(crate) mod generation_initial;\npub use generation_initial::HostGenerationInitialDeploymentV1;\npub use generation_initial::RootGenerationInitialEnrollmentV1;\npub use generation_initial::RootGenerationInitialModeV1;\npub use generation_initial::RootGenerationInitialOfferV1;\n#[path = \"authority_host_generation_publication.rs\"]",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "old": "pub use session::PreparedHostAuthoritySession;",
+      "new": "pub use session::PreparedHostAuthoritySession;\npub use session::RootGenerationInitialEnrollmentCapabilityV1;\npub use session::RootGenerationInitialRegistrationV1;",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "old": "#[path = \"authority_host_generation_publication_session.rs\"]",
+      "new": "#[path = \"authority_host_generation_initial_session.rs\"]\nmod generation_initial;\npub use generation_initial::RootGenerationInitialEnrollmentCapabilityV1;\npub use generation_initial::RootGenerationInitialRegistrationV1;\n\n#[path = \"authority_host_generation_publication_session.rs\"]",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "old": "    publication: Option<generation_publication::PublicationRuntime>,",
+      "new": "    publication: Option<generation_publication::PublicationRuntime>,\n    initial_publication: Option<generation_initial::InitialRuntime>,",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "old": "            publication: None,",
+      "new": "            publication: None,\n            initial_publication: None,",
+      "count": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "old": "            publication,\n            ..",
+      "new": "            publication,\n            initial_publication,\n            ..",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "old": "            .map(|owner| learning::BoundLearning::bind(owner, &config, publication))\n            .transpose()?;",
+      "new": "            .map(|owner| learning::BoundLearning::bind(owner, &config, publication))\n            .transpose()?;\n        let initial_publication = initial_publication.map(|runtime| {\n            if learning.as_ref().is_some_and(|lane| lane.contains_path(runtime.path())) {\n                return Err(io::Error::other(\"initial publication requires a distinct lane\"));\n            }\n            generation_initial::BoundInitial::bind(runtime, &config)\n        }).transpose()?;",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "old": "                    .is_some_and(|lane| lane.contains_path(&text.socket_path))",
+      "new": "                    .is_some_and(|lane| lane.contains_path(&text.socket_path))\n                || initial_publication.as_ref().is_some_and(|lane| lane.path() == text.socket_path)",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "old": "            let serve = || {\n                learning::serve_optional(\n                    learning.as_ref(),\n                    &service,\n                    &config,\n                    &registration,\n                    &owner_pidfd,\n                    || {\n                        std::thread::scope(|scope| {\n                            let worker = scope.spawn(|| {\n                                service.serve_text_ui(\n                                    &text,\n                                    &ui_pidfd,\n                                    &owner_pidfd,\n                                    std::time::Duration::from_millis(config.timeout_ms),\n                                    std::time::Duration::from_millis(config.lifetime_ms),\n                                )\n                            });\n                            let original = listeners::serve_bound_lanes(\n                                &service,\n                                &config,\n                                &registration,\n                                &owner_pidfd,\n                                bound,\n                            );\n                            let ui = worker\n                                .join()\n                                .map_err(|_| io::Error::other(\"text UI lane panicked\"))?;\n                            original.and(ui)\n                        })\n                    },\n                )\n            };\n            match &root_admin",
+      "new": "            let serve = || {\n                generation_initial::serve_optional(\n                    initial_publication.as_ref(), &service, &config, &registration, &owner_pidfd,\n                    || {\n                    learning::serve_optional(\n                        learning.as_ref(),\n                        &service,\n                        &config,\n                        &registration,\n                        &owner_pidfd,\n                        || {\n                            std::thread::scope(|scope| {\n                                let worker = scope.spawn(|| {\n                                    service.serve_text_ui(\n                                        &text,\n                                        &ui_pidfd,\n                                        &owner_pidfd,\n                                        std::time::Duration::from_millis(config.timeout_ms),\n                                        std::time::Duration::from_millis(config.lifetime_ms),\n                                    )\n                                });\n                                let original = listeners::serve_bound_lanes(\n                                    &service,\n                                    &config,\n                                    &registration,\n                                    &owner_pidfd,\n                                    bound,\n                                );\n                                let ui = worker\n                                    .join()\n                                    .map_err(|_| io::Error::other(\"text UI lane panicked\"))?;\n                                original.and(ui)\n                            })\n                        },\n                    )\n                    },\n                )\n            };\n            match &root_admin",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "old": "            let serve = || {\n                learning::serve_optional(\n                    learning.as_ref(),\n                    &service,\n                    &config,\n                    &registration,\n                    &owner_pidfd,\n                    || {\n                        listeners::serve_lanes_with_ready(\n                            &service,\n                            &config,\n                            &registration,\n                            &owner_pidfd,\n                            || {\n                                ready()?;\n                                if let Some(admin) = &root_admin {\n                                    admin.activate()?;\n                                }\n                                Ok(())\n                            },\n                        )\n                    },\n                )\n            };\n            match &root_admin",
+      "new": "            let serve = || {\n                generation_initial::serve_optional(\n                    initial_publication.as_ref(), &service, &config, &registration, &owner_pidfd,\n                    || {\n                    learning::serve_optional(\n                        learning.as_ref(),\n                        &service,\n                        &config,\n                        &registration,\n                        &owner_pidfd,\n                        || {\n                            listeners::serve_lanes_with_ready(\n                                &service,\n                                &config,\n                                &registration,\n                                &owner_pidfd,\n                                || {\n                                    ready()?;\n                                    if let Some(admin) = &root_admin {\n                                        admin.activate()?;\n                                    }\n                                    Ok(())\n                                },\n                            )\n                        },\n                    )\n                    },\n                )\n            };\n            match &root_admin",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "old": "#[path = \"root_generation_publication_handoff.rs\"]",
+      "new": "#[path = \"root_generation_initial_handoff.rs\"]\nmod generation_initial;\npub use generation_initial::RootGenerationInitialHandoffV1;\npub use generation_initial::receive_root_generation_initial_handoff;\npub use generation_initial::send_root_generation_initial_handoff;\n\n#[path = \"root_generation_publication_handoff.rs\"]",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "old": "#[path = \"neuron_generation_current_initial.rs\"]",
+      "new": "#[cfg(target_os = \"linux\")]\n#[path = \"neuron_generation_current_initial_root.rs\"]\npub(crate) mod initial_root;\n#[path = \"neuron_generation_current_initial.rs\"]",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "old": "enum Store {",
+      "new": "enum Store {\n    #[cfg(target_os = \"linux\")]\n    RootInitial(crate::root_generation_initial_client::RootGenerationInitialClient),",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "old": "    #[cfg(target_os = \"linux\")]\n    pub(super) fn is_original_host",
+      "new": "    #[cfg(target_os = \"linux\")]\n    pub(super) fn from_original_initial(\n        original: crate::root_generation_initial_client::RootGenerationInitialClient,\n    ) -> Result<Self, AgentdError> {\n        Ok(Self {\n            owner_id: owner_id(original.scope())?,\n            store: Store::RootInitial(original),\n        })\n    }\n\n    #[cfg(target_os = \"linux\")]\n    pub(super) fn is_original_host",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "old": "            Store::Root(original) => original.observe()?,",
+      "new": "            Store::Root(original) => original.observe()?,\n            #[cfg(target_os = \"linux\")]\n            Store::RootInitial(original) => original.observe_initial_current()?,",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "old": "            Store::Root(original) => original.replace(expected, next),",
+      "new": "            Store::Root(original) => original.replace(expected, next),\n            #[cfg(target_os = \"linux\")]\n            Store::RootInitial(original) => original.publish_initial_current(expected, next),",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "old": "pub(crate) fn validate_initial_target<W: AnchorWitnessStore>(\n    selected: &AgentdSelectedGenerationV1,\n    target: &AgentdGenerationUpdateTargetV1<W>,\n) -> Result<CellGenerationOwnerBindingV1, AgentdError> {\n    if selected.manifest() != &target.config.manifest\n        || target.config.initial.revision != 0\n        || !target.config.initial.prefix.is_empty()\n        || target.config.initial.stopped\n    {\n        return Err(invalid(\"initial generation requires its selected genesis\"));\n    }\n    CellGenerationOwnerBindingV1::new(&target.config, target.max_records).map_err(invalid)\n}\n",
+      "new": "pub(crate) fn validate_initial_target<W: AnchorWitnessStore>(\n    selected: &AgentdSelectedGenerationV1,\n    target: &AgentdGenerationUpdateTargetV1<W>,\n) -> Result<CellGenerationOwnerBindingV1, AgentdError> {\n    validate_initial_configuration(selected, &target.config, target.max_records)\n}\n\npub(crate) fn validate_initial_configuration(\n    selected: &AgentdSelectedGenerationV1,\n    config: &codex_hepta_neuron::CellGenerationConfigV2,\n    max_records: u64,\n) -> Result<CellGenerationOwnerBindingV1, AgentdError> {\n    if selected.manifest() != &config.manifest\n        || config.initial.revision != 0\n        || !config.initial.prefix.is_empty()\n        || config.initial.stopped\n    {\n        return Err(invalid(\"initial generation requires its selected genesis\"));\n    }\n    CellGenerationOwnerBindingV1::new(config, max_records).map_err(invalid)\n}\n",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_validation.rs",
+      "old": "pub(super) fn require_executable_feature(",
+      "new": "pub(crate) fn require_executable_feature(",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "old": "#[cfg(target_os = \"linux\")]\nmod root_generation_current_client;",
+      "new": "#[cfg(target_os = \"linux\")]\nmod root_generation_initial_client;\n#[cfg(target_os = \"linux\")]\nmod root_generation_initial_inputs;\n#[cfg(target_os = \"linux\")]\nmod root_generation_initial_prepare;\n#[cfg(target_os = \"linux\")]\nmod circuit_feature_initial_root;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationInitialEnrollmentCapabilityV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationInitialRegistrationV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::HostGenerationInitialDeploymentV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::RootGenerationInitialEnrollmentV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::RootGenerationInitialModeV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::RootGenerationInitialOfferV1;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::RootGenerationInitialHandoffV1;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::receive_root_generation_initial_handoff;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::send_root_generation_initial_handoff;\n#[cfg(target_os = \"linux\")]\npub use root_generation_initial_inputs::OriginalRootGenerationInitialV1;\n#[cfg(target_os = \"linux\")]\npub use circuit_feature_initial_root::OriginalRootInitialFeatureTargetV1;\n#[cfg(target_os = \"linux\")]\npub use circuit_feature_initial_root::PreparedRootInitialFeatureV1;\n\n#[cfg(target_os = \"linux\")]\nmod root_generation_current_client;",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "old": "#[cfg(all(test, target_os = \"linux\"))]\n#[path = \"authority_host_generation_publication_root_tests.rs\"]\nmod publication_root_tests;",
+      "new": "#[cfg(all(test, target_os = \"linux\"))]\n#[path = \"authority_host_generation_publication_root_tests.rs\"]\nmod publication_root_tests;\n\n#[cfg(all(test, target_os = \"linux\"))]\n#[path = \"authority_host_generation_initial_root_tests.rs\"]\nmod initial_root_tests;",
+      "count": 1
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "old": "              \"neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current\",",
+      "new": "              \"neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current\",\n              \"neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery\",",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer.rs",
+      "old": "    /// Before preparation the original target may still be empty.",
+      "new": "    /// A fresh initial reservation requires the same original unwritten file\n    /// and initialized empty witness. This read never creates genesis.\n    pub fn require_original_unwritten(&self) -> Result<(), CellGenerationErrorV2> {\n        let before = self.stamps()?;\n        if before.0.0 != 0 || self.witness_head()?.is_some()\n            || self.stamps()? != before\n        {\n            return Err(CellGenerationErrorV2::Pending);\n        }\n        Ok(())\n    }\n\n    /// Before preparation the original target may still be empty.",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer_tests.rs",
+      "old": "    assert!(reader.require_original_unwritten_or_genesis().is_ok());",
+      "new": "    assert!(reader.require_original_unwritten().is_ok());\n    assert!(reader.require_original_unwritten_or_genesis().is_ok());",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer_tests.rs",
+      "old": "    assert!(reader.observe().unwrap().is_genesis());",
+      "new": "    assert!(reader.observe().unwrap().is_genesis());\n    assert_eq!(reader.require_original_unwritten().err(), Some(CellGenerationErrorV2::Pending));\n    assert!(reader.require_original_unwritten_or_genesis().is_ok());",
+      "count": 1
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer_tests.rs",
+      "append": "\n#[test]\nfn fresh_initial_observer_refuses_uninitialized_witness_and_existing_genesis() {\n    let files = Files::new();\n    let _journal = files.file(\"journal\");\n    let _uninitialized = files.file(\"witness\");\n    let reader = observer(&files);\n    assert_eq!(reader.require_original_unwritten().err(), Some(CellGenerationErrorV2::Unavailable));\n    let witness = files.witness();\n    reader.require_original_unwritten().unwrap();\n    drop(witness);\n    let original_owner = owner(&files);\n    let original = reader.observe().unwrap();\n    assert!(original.is_genesis());\n    drop(original_owner);\n    assert_eq!(reader.require_original_unwritten().err(), Some(CellGenerationErrorV2::Pending));\n    // A header cannot be called a fresh absent target, even with empty witness.\n    assert_eq!(reader.observe().unwrap(), original);\n}\n",
+      "original_end": "         files.file(\"journal\"),\n            observer_config(),\n        )\n        .is_err()\n    );\n}\n"
+    }
+  ]
+}

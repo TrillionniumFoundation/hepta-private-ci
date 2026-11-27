@@ -1,0 +1,317 @@
+{
+  "schema": "hepta.learn.original-candidate-timeout-fixture-reuse.v1",
+  "source_parent": "a7571fe7ca197de52cd071741b85b14a237d6bd5",
+  "source_parent_tree": "71382739c728e026f1d3ae4aab146eb770074c7e",
+  "runtime_evidence": {
+    "commit": "19d65ba6e4b974ecacd128dbc6f4aa7c3b284747",
+    "execution_log_git_blob": "b47f12c4658e9e73a4b9e53c9aae581409a0fbba",
+    "bytes": 61032,
+    "sha256": "3f3344f5fd7918d7be34cfca0a806c9d911cf72eebf572c9ac19ae719fb9a276",
+    "tested_source": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+    "test": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+    "terminal": "TIMEOUT",
+    "seconds": 60.008,
+    "complete_first_six_faults": [
+      {
+        "fault": "WrongPage",
+        "fixture_ms": 8538,
+        "readback_ms": 823,
+        "peer_join_ms": 1,
+        "close_ms": 1,
+        "case_completed_at_ms": 9378
+      },
+      {
+        "fault": "WrongCompletion",
+        "fixture_ms": 8652,
+        "readback_ms": 875,
+        "peer_join_ms": 0,
+        "close_ms": 2,
+        "case_completed_at_ms": 18916
+      },
+      {
+        "fault": "WrongOffset",
+        "fixture_ms": 8830,
+        "readback_ms": 847,
+        "peer_join_ms": 0,
+        "close_ms": 3,
+        "case_completed_at_ms": 28613
+      },
+      {
+        "fault": "WrongTotal",
+        "fixture_ms": 8869,
+        "readback_ms": 880,
+        "peer_join_ms": 0,
+        "close_ms": 2,
+        "case_completed_at_ms": 38380
+      },
+      {
+        "fault": "CorruptHeads",
+        "fixture_ms": 8852,
+        "readback_ms": 990,
+        "peer_join_ms": 1,
+        "close_ms": 2,
+        "case_completed_at_ms": 48236
+      },
+      {
+        "fault": "CloseAfterFirst",
+        "fixture_ms": 8298,
+        "readback_ms": 821,
+        "peer_join_ms": 0,
+        "close_ms": 2,
+        "case_completed_at_ms": 57372
+      }
+    ],
+    "first_six_fixture_ms": 52039,
+    "first_six_readback_ms": 5236,
+    "first_six_join_ms": 2,
+    "last_observed_phase": {
+      "fault": "WrongFinishDigest",
+      "phase": "fault-fixture-start",
+      "elapsed_ms": 57372
+    },
+    "conclusion": "The original 60-second run expired during its seventh repeated completed-candidate construction. The completed first six fault peer joins total 2ms; the evidence does not support a 30-second peer wait as this timeout cause.",
+    "completed_candidate_constructions_observed": 6,
+    "started_candidate_constructions_observed": 7
+  },
+  "change": {
+    "classification": "cfg(test) fixture setup reuse plus actual-success observation; no production modification",
+    "construction_map": [
+      {
+        "cases": [
+          "WrongPage",
+          "WrongCompletion",
+          "WrongOffset",
+          "WrongTotal",
+          "CorruptHeads",
+          "CloseAfterFirst",
+          "WrongFinishDigest",
+          "DropFinishAck"
+        ],
+        "before": "8 independently trained fixtures, one per response fault",
+        "after": "1 actually completed Trainer with the same four live original Source connections; each fault retains its own fresh channel, Session, client and current reads"
+      },
+      {
+        "cases": [
+          "renewed-original-signature",
+          "expired-original-channel-window",
+          "raw-page-bound"
+        ],
+        "before": 1,
+        "after": 1,
+        "unchanged": true
+      },
+      {
+        "cases": [
+          "real-original-source-withdrawal"
+        ],
+        "before": 1,
+        "after": 1,
+        "unchanged": true
+      },
+      {
+        "cases": [
+          "cancelled-readback-no-later-Page-or-Finish"
+        ],
+        "before": 1,
+        "after": 1,
+        "unchanged": true
+      }
+    ],
+    "no_cached_reply": "PagePeer still invokes the original candidate_material_response for each actual request. Production Begin/Finish independently call the original native/source reader; only fixture creation is shared.",
+    "counter_semantics": "Count only original handler replies successfully decoded as Begin/Page or Finish/Finished, before fault mutation or ACK suppression. Every response fault asserts exactly one successful Begin; WrongFinishDigest and DropFinishAck additionally require exactly one actual successful Finish, other faults zero. This prevents a failed shared owner or unavailable Source from satisfying a later negative through a different error.",
+    "all_original_faults_in_original_order": [
+      "WrongPage",
+      "WrongCompletion",
+      "WrongOffset",
+      "WrongTotal",
+      "CorruptHeads",
+      "CloseAfterFirst",
+      "WrongFinishDigest",
+      "DropFinishAck"
+    ],
+    "original_error_frame_unavailable_and_disk_assertions_preserved": true,
+    "disk_binding": "One complete original Training/Material byte snapshot is compared after every response fault, across the whole shared lifetime.",
+    "original_single_test_id_preserved": true,
+    "split_tests": false,
+    "deadlines_and_durations_byte_identical": true,
+    "test_duration_tokens": [
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_millis(40)",
+      "Duration::from_millis(80)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(30)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(30)"
+    ],
+    "support_duration_tokens": [],
+    "nextest_60_seconds_unchanged": true,
+    "read_only_source_connections_not_reopened_or_renewed_during_fault_loop": true,
+    "expected_completed_candidate_constructions_on_full_test_path": {
+      "before": 11,
+      "after": 4,
+      "removed": 7
+    }
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "before": "f8825e69d0a6a558dc9292404c6648e21e53c8d8",
+      "after": "b974191f9a27368db425da2efc9e903d905cf088",
+      "bytes_before": 24895,
+      "bytes_after": 25728,
+      "exact_edits": [
+        {
+          "before": "    for fault in [\n        Fault::WrongPage,",
+          "after": "    // These faults change only replies after successful original owner reads.\n    // Share the completed T and its four live Source connections; each case\n    // still gets its own channel, Session and irreversibly consumed client.\n    report(\"fault-fixture-start\", None);\n    let run = completed_candidate().await?;\n    report(\"fault-fixture-ready\", None);\n    let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);\n    for fault in [\n        Fault::WrongPage,"
+        },
+        {
+          "before": "        report(\"fault-fixture-start\", Some(fault));\n        let run = completed_candidate().await?;\n        report(\"fault-fixture-ready\", Some(fault));\n        let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);\n",
+          "after": "        report(\"fault-case-start\", Some(fault));\n"
+        },
+        {
+          "before": "        report(\"fault-readback-finished\", Some(fault));\n        match fault {",
+          "after": "        report(\"fault-readback-finished\", Some(fault));\n        // Count successful replies from the actual original handler before\n        // any fault mutation. An earlier failed owner cannot satisfy a later\n        // negative case by returning Missing, Pending or Uncertain instead.\n        assert_eq!(peer.original_begins.load(Ordering::Acquire), 1);\n        assert_eq!(\n            peer.original_finishes.load(Ordering::Acquire),\n            if matches!(fault, Fault::WrongFinishDigest | Fault::DropFinishAck) {\n                1\n            } else {\n                0\n            }\n        );\n        match fault {"
+        },
+        {
+          "before": "        run.close()?;\n        report(\"fault-fixture-closed\", Some(fault));\n    }\n\n    report(\"renewal-fixture-start\", None);",
+          "after": "        report(\"fault-case-finished\", Some(fault));\n    }\n    run.close()?;\n    report(\"fault-fixture-closed\", None);\n\n    report(\"renewal-fixture-start\", None);"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_support_tests.rs",
+      "before": "f51e543764021ec30791ffd86b7cf8fe630ad254",
+      "after": "c940b7ecd633bf502005bf6b8f6c2db4baf1ac1e",
+      "bytes_before": 9277,
+      "bytes_after": 10292,
+      "exact_edits": [
+        {
+          "before": "pub(super) struct PagePeer {\n    pub frames: Arc<AtomicU64>,\n    server: JoinHandle<anyhow::Result<u64>>,\n}",
+          "after": "pub(super) struct PagePeer {\n    pub frames: Arc<AtomicU64>,\n    pub original_begins: Arc<AtomicU64>,\n    pub original_finishes: Arc<AtomicU64>,\n    server: JoinHandle<anyhow::Result<u64>>,\n}"
+        },
+        {
+          "before": "    let frames = Arc::new(AtomicU64::new(0));\n    let observed = Arc::clone(&frames);\n    let server = std::thread::spawn(move || -> anyhow::Result<u64> {",
+          "after": "    let frames = Arc::new(AtomicU64::new(0));\n    let original_begins = Arc::new(AtomicU64::new(0));\n    let original_finishes = Arc::new(AtomicU64::new(0));\n    let observed = Arc::clone(&frames);\n    let began = Arc::clone(&original_begins);\n    let finished = Arc::clone(&original_finishes);\n    let server = std::thread::spawn(move || -> anyhow::Result<u64> {"
+        },
+        {
+          "before": "                let mut response: candidate_wire::Response = serde_json::from_slice(&bytes)\n                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?;\n                if request_id == 1 {",
+          "after": "                let mut response: candidate_wire::Response = serde_json::from_slice(&bytes)\n                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?;\n                // Observe the real handler's successful physical boundary,\n                // before a transport fault changes or withholds its reply.\n                if response.request.phase == candidate_wire::Phase::Begin\n                    && matches!(&response.result, candidate_wire::MaterialResult::Page { .. })\n                {\n                    began.fetch_add(1, Ordering::AcqRel);\n                }\n                if response.request.phase == candidate_wire::Phase::Finish\n                    && matches!(&response.result, candidate_wire::MaterialResult::Finished { .. })\n                {\n                    finished.fetch_add(1, Ordering::AcqRel);\n                }\n                if request_id == 1 {"
+        },
+        {
+          "before": "    Ok((connection, PagePeer { frames, server }))",
+          "after": "    Ok((connection, PagePeer { frames, original_begins, original_finishes, server }))"
+        }
+      ]
+    }
+  ],
+  "complete_changed_functions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "function": "original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+      "before": "async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel()\n-> anyhow::Result<()> {\n    let started = std::time::Instant::now();\n    // Fixed test phases locate a timeout without changing its budget or coverage.\n    let report = |phase: &str, fault: Option<Fault>| {\n        eprintln!(\n            \"HEPTA_CANDIDATE_MATERIAL_PHASE phase={phase} fault={fault:?} elapsed_ms={}\",\n            started.elapsed().as_millis()\n        );\n    };\n    for fault in [\n        Fault::WrongPage,\n        Fault::WrongCompletion,\n        Fault::WrongOffset,\n        Fault::WrongTotal,\n        Fault::CorruptHeads,\n        Fault::CloseAfterFirst,\n        Fault::WrongFinishDigest,\n        Fault::DropFinishAck,\n    ] {\n        report(\"fault-fixture-start\", Some(fault));\n        let run = completed_candidate().await?;\n        report(\"fault-fixture-ready\", Some(fault));\n        let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);\n        let (connection, peer) = page_peer(\n            Arc::clone(&run.owner),\n            run.fixture.config.clone(),\n            Origin::Fresh,\n            /*expected*/ None,\n            fault,\n            /*gate*/ None,\n            Duration::from_secs(300),\n        )?;\n        let client = bind(\n            connection,\n            &run.fixture,\n            run.dataset.clone(),\n            run.training.clone(),\n        )?;\n        report(\"fault-readback-start\", Some(fault));\n        let error = match client.readback().await {\n            Ok(_) => anyhow::bail!(\"invalid original page unexpectedly accepted: {fault:?}\"),\n            Err(error) => error,\n        };\n        report(\"fault-readback-finished\", Some(fault));\n        match fault {\n            Fault::WrongPage | Fault::WrongCompletion => assert!(matches!(\n                error,\n                CandidateError::Binding(\"exact Candidate purpose, page and full completion pin\")\n            )),\n            Fault::WrongOffset | Fault::WrongTotal => assert!(matches!(\n                error,\n                CandidateError::Binding(\"signed Candidate length and consecutive page\")\n            )),\n            Fault::CorruptHeads => assert!(matches!(\n                error,\n                CandidateError::Binding(\"complete signed original Candidate body\")\n            )),\n            Fault::CloseAfterFirst | Fault::DropFinishAck => assert!(matches!(\n                error,\n                CandidateError::Command(CommandError::Transport(_))\n            )),\n            Fault::WrongFinishDigest => assert!(matches!(\n                error, CandidateError::Command(CommandError::CommitUncertain)\n            )),\n            Fault::Original => unreachable!(),\n        }\n        assert!(matches!(\n            client.readback().await,\n            Err(CandidateError::Unavailable)\n        ));\n        drop(client);\n        report(\"fault-peer-join-start\", Some(fault));\n        if matches!(fault, Fault::DropFinishAck) {\n            assert_eq!(peer.frames.load(Ordering::Acquire), 4);\n            assert!(peer.finish().is_err(), \"actual Finish was read before its ACK was lost\");\n        } else {\n            assert_eq!(\n                peer.finish()?,\n                match fault {\n                    Fault::CorruptHeads => 3,\n                    Fault::WrongFinishDigest => 4,\n                    _ => 1,\n                }\n            );\n        }\n        report(\"fault-peer-joined\", Some(fault));\n        assert_eq!(\n            (run.fixture.training_bytes()?, run.fixture.bytes()?),\n            original\n        );\n        run.close()?;\n        report(\"fault-fixture-closed\", Some(fault));\n    }\n\n    report(\"renewal-fixture-start\", None);\n    let run = completed_candidate().await?;\n    report(\"renewal-fixture-ready\", None);\n    let context = support::context(&run.fixture, &run.dataset);\n    let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);\n    let mut renewed = run.training.attestation().clone();\n    renewed.expires_at += 1;\n    // Negative control only: a valid signature from the explicit fixture key,\n    // over the same real receipt, must not replace the original saved window.\n    renewed.signature = ed25519_dalek::SigningKey::from_bytes(&[1; 32])\n        .sign(&renewed.signing_bytes())\n        .to_bytes();\n    let renewed = wire::authenticate_receipt(\n        &context,\n        run.training.receipt().clone(),\n        renewed,\n        command_now()?,\n    )?;\n    assert_ne!(renewed.attestation(), run.training.attestation());\n    assert!(\n        wire::authenticate_receipt(\n            &context,\n            run.training.receipt().clone(),\n            run.training.attestation().clone(),\n            run.training.attestation().expires_at,\n        )\n        .is_err()\n    );\n    assert!(\n        wire::authenticate_receipt(\n            &context,\n            renewed.receipt().clone(),\n            renewed.attestation().clone(),\n            run.training.attestation().expires_at,\n        )\n        .is_ok()\n    );\n    let (connection, peer) = page_peer(\n        Arc::clone(&run.owner),\n        run.fixture.config.clone(),\n        Origin::Recovered,\n        Some(run.training.clone()),\n        Fault::Original,\n        /*gate*/ None,\n        Duration::from_secs(300),\n    )?;\n    assert!(matches!(\n        connection.bind_original_candidate_material(\n            run.dataset.clone(),\n            renewed.clone(),\n            run.fixture.training_baseline(),\n        ),\n        Err(ConnectionError::Candidate(CandidateError::Binding(\n            \"same original Candidate predecessor and baseline\"\n        )))\n    ));\n    assert_eq!(peer.finish()?, 0);\n    let (connection, peer) = page_peer(\n        Arc::clone(&run.owner),\n        run.fixture.config.clone(),\n        Origin::Fresh,\n        /*expected*/ None,\n        Fault::Original,\n        /*gate*/ None,\n        Duration::from_secs(300),\n    )?;\n    let client = bind(connection, &run.fixture, run.dataset.clone(), renewed)?;\n    report(\"renewed-readback-start\", None);\n    assert!(matches!(\n        client.readback().await,\n        Err(CandidateError::Command(CommandError::Transport(_)))\n    ));\n    report(\"renewed-readback-finished\", None);\n    assert!(matches!(\n        client.readback().await,\n        Err(CandidateError::Unavailable)\n    ));\n    drop(client);\n    report(\"renewed-peer-join-start\", None);\n    assert!(\n        peer.finish().is_err(),\n        \"the actual original owner refuses a different full signature\"\n    );\n    report(\"renewed-peer-joined\", None);\n\n    let (connection, peer) = page_peer(\n        Arc::clone(&run.owner),\n        run.fixture.config.clone(),\n        Origin::Fresh,\n        /*expected*/ None,\n        Fault::Original,\n        /*gate*/ None,\n        Duration::from_millis(40),\n    )?;\n    tokio::time::sleep(Duration::from_millis(80)).await;\n    assert!(\n        connection\n            .bind_original_candidate_material(\n                run.dataset.clone(),\n                run.training.clone(),\n                run.fixture.training_baseline(),\n            )\n            .is_err()\n    );\n    assert_eq!(peer.frames.load(Ordering::Acquire), 0);\n    if let Ok(count) = peer.finish() {\n        assert_eq!(count, 0);\n    }\n    report(\"expired-window-peer-joined\", None);\n    let mut request = request(&context)?;\n    request.page = candidate_wire::MAX_PAGES as u8;\n    assert!(raw_page(Arc::clone(&run.owner), request).await.is_err());\n    assert_eq!(\n        (run.fixture.training_bytes()?, run.fixture.bytes()?),\n        original\n    );\n    run.close()?;\n    report(\"renewal-fixture-closed\", None);\n\n    report(\"withdrawal-fixture-start\", None);\n    let mut run = completed_candidate().await?;\n    report(\"withdrawal-fixture-ready\", None);\n    let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);\n    let reached = Arc::new(tokio::sync::Notify::new());\n    let (release, released) = std::sync::mpsc::channel();\n    let (connection, peer) = page_peer(\n        Arc::clone(&run.owner),\n        run.fixture.config.clone(),\n        Origin::Fresh,\n        /*expected*/ None,\n        Fault::Original,\n        Some(ResponseGate {\n            reached: Arc::clone(&reached),\n            release: released,\n        }),\n        Duration::from_secs(300),\n    )?;\n    let client = Arc::new(bind(\n        connection,\n        &run.fixture,\n        run.dataset.clone(),\n        run.training.clone(),\n    )?);\n    let pending = tokio::spawn({\n        let client = Arc::clone(&client);\n        async move { client.readback().await }\n    });\n    report(\"withdrawal-first-page-wait\", None);\n    tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;\n    report(\"withdrawal-first-page-reached\", None);\n    run.fixture.withdraw()?;\n    release.send(())?;\n    report(\"withdrawal-readback-wait\", None);\n    assert!(matches!(\n        pending.await?,\n        Err(CandidateError::Command(CommandError::CommitUncertain))\n    ));\n    report(\"withdrawal-readback-finished\", None);\n    assert!(matches!(\n        client.readback().await,\n        Err(CandidateError::Unavailable)\n    ));\n    drop(client);\n    report(\"withdrawal-peer-join-start\", None);\n    assert_eq!(peer.finish()?, 4);\n    report(\"withdrawal-peer-joined\", None);\n    assert_eq!(\n        (run.fixture.training_bytes()?, run.fixture.bytes()?),\n        original\n    );\n    drop(run.owner);\n    report(\"withdrawal-source-peers-join-start\", None);\n    let mut source_failure = false;\n    for peer in run.peers {\n        source_failure |= peer\n            .join()\n            .expect(\"original withdrawn Material peer\")\n            .is_err();\n    }\n    assert!(\n        source_failure,\n        \"a real original source/evidence read must reject withdrawal\"\n    );\n    report(\"withdrawal-source-peers-joined\", None);\n\n    report(\"cancel-fixture-start\", None);\n    let run = completed_candidate().await?;\n    report(\"cancel-fixture-ready\", None);\n    let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);\n    let reached = Arc::new(tokio::sync::Notify::new());\n    let (release, released) = std::sync::mpsc::channel();\n    let (connection, peer) = page_peer(\n        Arc::clone(&run.owner),\n        run.fixture.config.clone(),\n        Origin::Fresh,\n        /*expected*/ None,\n        Fault::Original,\n        Some(ResponseGate {\n            reached: Arc::clone(&reached),\n            release: released,\n        }),\n        Duration::from_secs(300),\n    )?;\n    let client = Arc::new(bind(\n        connection,\n        &run.fixture,\n        run.dataset.clone(),\n        run.training.clone(),\n    )?);\n    let pending = tokio::spawn({\n        let client = Arc::clone(&client);\n        async move { client.readback().await }\n    });\n    report(\"cancel-first-page-wait\", None);\n    tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;\n    report(\"cancel-first-page-reached\", None);\n    pending.abort();\n    match pending.await {\n        Err(error) => assert!(error.is_cancelled()),\n        Ok(_) => anyhow::bail!(\"Candidate await was not cancelled\"),\n    }\n    report(\"cancel-waiter-aborted\", None);\n    assert!(matches!(\n        client.readback().await,\n        Err(CandidateError::Unavailable)\n    ));\n    release.send(())?;\n    drop(client);\n    // The already-running Begin may return, but cancellation prevents every\n    // later Page/Finish and the partial original channel is never restored.\n    report(\"cancel-peer-join-start\", None);\n    assert_eq!(peer.finish()?, 1);\n    report(\"cancel-peer-joined\", None);\n    assert_eq!(\n        (run.fixture.training_bytes()?, run.fixture.bytes()?),\n        original\n    );\n    run.close()?;\n    report(\"cancel-fixture-closed\", None);\n    Ok(())\n}",
+      "after": "async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel()\n-> anyhow::Result<()> {\n    let started = std::time::Instant::now();\n    // Fixed test phases locate a timeout without changing its budget or coverage.\n    let report = |phase: &str, fault: Option<Fault>| {\n        eprintln!(\n            \"HEPTA_CANDIDATE_MATERIAL_PHASE phase={phase} fault={fault:?} elapsed_ms={}\",\n            started.elapsed().as_millis()\n        );\n    };\n    // These faults change only replies after successful original owner reads.\n    // Share the completed T and its four live Source connections; each case\n    // still gets its own channel, Session and irreversibly consumed client.\n    report(\"fault-fixture-start\", None);\n    let run = completed_candidate().await?;\n    report(\"fault-fixture-ready\", None);\n    let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);\n    for fault in [\n        Fault::WrongPage,\n        Fault::WrongCompletion,\n        Fault::WrongOffset,\n        Fault::WrongTotal,\n        Fault::CorruptHeads,\n        Fault::CloseAfterFirst,\n        Fault::WrongFinishDigest,\n        Fault::DropFinishAck,\n    ] {\n        report(\"fault-case-start\", Some(fault));\n        let (connection, peer) = page_peer(\n            Arc::clone(&run.owner),\n            run.fixture.config.clone(),\n            Origin::Fresh,\n            /*expected*/ None,\n            fault,\n            /*gate*/ None,\n            Duration::from_secs(300),\n        )?;\n        let client = bind(\n            connection,\n            &run.fixture,\n            run.dataset.clone(),\n            run.training.clone(),\n        )?;\n        report(\"fault-readback-start\", Some(fault));\n        let error = match client.readback().await {\n            Ok(_) => anyhow::bail!(\"invalid original page unexpectedly accepted: {fault:?}\"),\n            Err(error) => error,\n        };\n        report(\"fault-readback-finished\", Some(fault));\n        // Count successful replies from the actual original handler before\n        // any fault mutation. An earlier failed owner cannot satisfy a later\n        // negative case by returning Missing, Pending or Uncertain instead.\n        assert_eq!(peer.original_begins.load(Ordering::Acquire), 1);\n        assert_eq!(\n            peer.original_finishes.load(Ordering::Acquire),\n            if matches!(fault, Fault::WrongFinishDigest | Fault::DropFinishAck) {\n                1\n            } else {\n                0\n            }\n        );\n        match fault {\n            Fault::WrongPage | Fault::WrongCompletion => assert!(matches!(\n                error,\n                CandidateError::Binding(\"exact Candidate purpose, page and full completion pin\")\n            )),\n            Fault::WrongOffset | Fault::WrongTotal => assert!(matches!(\n                error,\n                CandidateError::Binding(\"signed Candidate length and consecutive page\")\n            )),\n            Fault::CorruptHeads => assert!(matches!(\n                error,\n                CandidateError::Binding(\"complete signed original Candidate body\")\n            )),\n            Fault::CloseAfterFirst | Fault::DropFinishAck => assert!(matches!(\n                error,\n                CandidateError::Command(CommandError::Transport(_))\n            )),\n            Fault::WrongFinishDigest => assert!(matches!(\n                error, CandidateError::Command(CommandError::CommitUncertain)\n            )),\n            Fault::Original => unreachable!(),\n        }\n        assert!(matches!(\n            client.readback().await,\n            Err(CandidateError::Unavailable)\n        ));\n        drop(client);\n        report(\"fault-peer-join-start\", Some(fault));\n        if matches!(fault, Fault::DropFinishAck) {\n            assert_eq!(peer.frames.load(Ordering::Acquire), 4);\n            assert!(peer.finish().is_err(), \"actual Finish was read before its ACK was lost\");\n        } else {\n            assert_eq!(\n                peer.finish()?,\n                match fault {\n                    Fault::CorruptHeads => 3,\n                    Fault::WrongFinishDigest => 4,\n                    _ => 1,\n                }\n            );\n        }\n        report(\"fault-peer-joined\", Some(fault));\n        assert_eq!(\n            (run.fixture.training_bytes()?, run.fixture.bytes()?),\n            original\n        );\n        report(\"fault-case-finished\", Some(fault));\n    }\n    run.close()?;\n    report(\"fault-fixture-closed\", None);\n\n    report(\"renewal-fixture-start\", None);\n    let run = completed_candidate().await?;\n    report(\"renewal-fixture-ready\", None);\n    let context = support::context(&run.fixture, &run.dataset);\n    let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);\n    let mut renewed = run.training.attestation().clone();\n    renewed.expires_at += 1;\n    // Negative control only: a valid signature from the explicit fixture key,\n    // over the same real receipt, must not replace the original saved window.\n    renewed.signature = ed25519_dalek::SigningKey::from_bytes(&[1; 32])\n        .sign(&renewed.signing_bytes())\n        .to_bytes();\n    let renewed = wire::authenticate_receipt(\n        &context,\n        run.training.receipt().clone(),\n        renewed,\n        command_now()?,\n    )?;\n    assert_ne!(renewed.attestation(), run.training.attestation());\n    assert!(\n        wire::authenticate_receipt(\n            &context,\n            run.training.receipt().clone(),\n            run.training.attestation().clone(),\n            run.training.attestation().expires_at,\n        )\n        .is_err()\n    );\n    assert!(\n        wire::authenticate_receipt(\n            &context,\n            renewed.receipt().clone(),\n            renewed.attestation().clone(),\n            run.training.attestation().expires_at,\n        )\n        .is_ok()\n    );\n    let (connection, peer) = page_peer(\n        Arc::clone(&run.owner),\n        run.fixture.config.clone(),\n        Origin::Recovered,\n        Some(run.training.clone()),\n        Fault::Original,\n        /*gate*/ None,\n        Duration::from_secs(300),\n    )?;\n    assert!(matches!(\n        connection.bind_original_candidate_material(\n            run.dataset.clone(),\n            renewed.clone(),\n            run.fixture.training_baseline(),\n        ),\n        Err(ConnectionError::Candidate(CandidateError::Binding(\n            \"same original Candidate predecessor and baseline\"\n        )))\n    ));\n    assert_eq!(peer.finish()?, 0);\n    let (connection, peer) = page_peer(\n        Arc::clone(&run.owner),\n        run.fixture.config.clone(),\n        Origin::Fresh,\n        /*expected*/ None,\n        Fault::Original,\n        /*gate*/ None,\n        Duration::from_secs(300),\n    )?;\n    let client = bind(connection, &run.fixture, run.dataset.clone(), renewed)?;\n    report(\"renewed-readback-start\", None);\n    assert!(matches!(\n        client.readback().await,\n        Err(CandidateError::Command(CommandError::Transport(_)))\n    ));\n    report(\"renewed-readback-finished\", None);\n    assert!(matches!(\n        client.readback().await,\n        Err(CandidateError::Unavailable)\n    ));\n    drop(client);\n    report(\"renewed-peer-join-start\", None);\n    assert!(\n        peer.finish().is_err(),\n        \"the actual original owner refuses a different full signature\"\n    );\n    report(\"renewed-peer-joined\", None);\n\n    let (connection, peer) = page_peer(\n        Arc::clone(&run.owner),\n        run.fixture.config.clone(),\n        Origin::Fresh,\n        /*expected*/ None,\n        Fault::Original,\n        /*gate*/ None,\n        Duration::from_millis(40),\n    )?;\n    tokio::time::sleep(Duration::from_millis(80)).await;\n    assert!(\n        connection\n            .bind_original_candidate_material(\n                run.dataset.clone(),\n                run.training.clone(),\n                run.fixture.training_baseline(),\n            )\n            .is_err()\n    );\n    assert_eq!(peer.frames.load(Ordering::Acquire), 0);\n    if let Ok(count) = peer.finish() {\n        assert_eq!(count, 0);\n    }\n    report(\"expired-window-peer-joined\", None);\n    let mut request = request(&context)?;\n    request.page = candidate_wire::MAX_PAGES as u8;\n    assert!(raw_page(Arc::clone(&run.owner), request).await.is_err());\n    assert_eq!(\n        (run.fixture.training_bytes()?, run.fixture.bytes()?),\n        original\n    );\n    run.close()?;\n    report(\"renewal-fixture-closed\", None);\n\n    report(\"withdrawal-fixture-start\", None);\n    let mut run = completed_candidate().await?;\n    report(\"withdrawal-fixture-ready\", None);\n    let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);\n    let reached = Arc::new(tokio::sync::Notify::new());\n    let (release, released) = std::sync::mpsc::channel();\n    let (connection, peer) = page_peer(\n        Arc::clone(&run.owner),\n        run.fixture.config.clone(),\n        Origin::Fresh,\n        /*expected*/ None,\n        Fault::Original,\n        Some(ResponseGate {\n            reached: Arc::clone(&reached),\n            release: released,\n        }),\n        Duration::from_secs(300),\n    )?;\n    let client = Arc::new(bind(\n        connection,\n        &run.fixture,\n        run.dataset.clone(),\n        run.training.clone(),\n    )?);\n    let pending = tokio::spawn({\n        let client = Arc::clone(&client);\n        async move { client.readback().await }\n    });\n    report(\"withdrawal-first-page-wait\", None);\n    tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;\n    report(\"withdrawal-first-page-reached\", None);\n    run.fixture.withdraw()?;\n    release.send(())?;\n    report(\"withdrawal-readback-wait\", None);\n    assert!(matches!(\n        pending.await?,\n        Err(CandidateError::Command(CommandError::CommitUncertain))\n    ));\n    report(\"withdrawal-readback-finished\", None);\n    assert!(matches!(\n        client.readback().await,\n        Err(CandidateError::Unavailable)\n    ));\n    drop(client);\n    report(\"withdrawal-peer-join-start\", None);\n    assert_eq!(peer.finish()?, 4);\n    report(\"withdrawal-peer-joined\", None);\n    assert_eq!(\n        (run.fixture.training_bytes()?, run.fixture.bytes()?),\n        original\n    );\n    drop(run.owner);\n    report(\"withdrawal-source-peers-join-start\", None);\n    let mut source_failure = false;\n    for peer in run.peers {\n        source_failure |= peer\n            .join()\n            .expect(\"original withdrawn Material peer\")\n            .is_err();\n    }\n    assert!(\n        source_failure,\n        \"a real original source/evidence read must reject withdrawal\"\n    );\n    report(\"withdrawal-source-peers-joined\", None);\n\n    report(\"cancel-fixture-start\", None);\n    let run = completed_candidate().await?;\n    report(\"cancel-fixture-ready\", None);\n    let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);\n    let reached = Arc::new(tokio::sync::Notify::new());\n    let (release, released) = std::sync::mpsc::channel();\n    let (connection, peer) = page_peer(\n        Arc::clone(&run.owner),\n        run.fixture.config.clone(),\n        Origin::Fresh,\n        /*expected*/ None,\n        Fault::Original,\n        Some(ResponseGate {\n            reached: Arc::clone(&reached),\n            release: released,\n        }),\n        Duration::from_secs(300),\n    )?;\n    let client = Arc::new(bind(\n        connection,\n        &run.fixture,\n        run.dataset.clone(),\n        run.training.clone(),\n    )?);\n    let pending = tokio::spawn({\n        let client = Arc::clone(&client);\n        async move { client.readback().await }\n    });\n    report(\"cancel-first-page-wait\", None);\n    tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;\n    report(\"cancel-first-page-reached\", None);\n    pending.abort();\n    match pending.await {\n        Err(error) => assert!(error.is_cancelled()),\n        Ok(_) => anyhow::bail!(\"Candidate await was not cancelled\"),\n    }\n    report(\"cancel-waiter-aborted\", None);\n    assert!(matches!(\n        client.readback().await,\n        Err(CandidateError::Unavailable)\n    ));\n    release.send(())?;\n    drop(client);\n    // The already-running Begin may return, but cancellation prevents every\n    // later Page/Finish and the partial original channel is never restored.\n    report(\"cancel-peer-join-start\", None);\n    assert_eq!(peer.finish()?, 1);\n    report(\"cancel-peer-joined\", None);\n    assert_eq!(\n        (run.fixture.training_bytes()?, run.fixture.bytes()?),\n        original\n    );\n    run.close()?;\n    report(\"cancel-fixture-closed\", None);\n    Ok(())\n}"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_support_tests.rs",
+      "function": "page_peer",
+      "before": "pub(super) fn page_peer(\n    owner: Arc<Host>,\n    config: crate::OriginalCellQ24MaterialReceiptConfigV1,\n    origin: Origin,\n    expected: Option<crate::OriginalCellQ24TrainingCommandReceiptV1>,\n    fault: Fault,\n    gate: Option<ResponseGate>,\n    lifetime: Duration,\n) -> anyhow::Result<(crate::OriginalCellQ24TrainingCommandConnectionV1, PagePeer)> {\n    let (connection, mut channel) = match origin {\n        Origin::Fresh => connection::fresh_peer(config, lifetime)?,\n        Origin::Recovered => connection::recovered_peer(\n            config,\n            expected.map(|value| (value.receipt().clone(), value.attestation().clone())),\n            lifetime,\n        )?,\n    };\n    let frames = Arc::new(AtomicU64::new(0));\n    let observed = Arc::clone(&frames);\n    let server = std::thread::spawn(move || -> anyhow::Result<u64> {\n        let mut session = candidate_wire::Session::new();\n        for request_id in 1..=128_u64 {\n            let mut disposition = candidate_wire::SessionDisposition::CloseReadback;\n            let mut original_error = None;\n            let exchanged = channel.exchange(|bytes| {\n                observed.fetch_add(1, Ordering::AcqRel);\n                let (bytes, next) = owner\n                    .candidate_material_response(bytes, request_id, &mut session)\n                    .map_err(|error| {\n                        original_error = Some(error);\n                        HostIssuerTransportError::InvalidRequest\n                    })?;\n                disposition = next;\n                let mut response: candidate_wire::Response = serde_json::from_slice(&bytes)\n                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?;\n                if request_id == 1 {\n                    if let Some(gate) = &gate {\n                        gate.reached.notify_one();\n                        gate.release\n                            .recv()\n                            .map_err(|_| HostIssuerTransportError::Unavailable)?;\n                    }\n                    match fault {\n                        Fault::WrongPage => response.request.page += 1,\n                        Fault::WrongCompletion => {\n                            response.request.completion =\n                                Digest32::of_bytes(b\"another full T\").to_string();\n                        }\n                        Fault::WrongOffset | Fault::WrongTotal | Fault::CorruptHeads => {\n                            let candidate_wire::MaterialResult::Page {\n                                offset,\n                                total,\n                                heads,\n                                ..\n                            } = &mut response.result\n                            else {\n                                return Err(HostIssuerTransportError::InvalidRequest);\n                            };\n                            match fault {\n                                Fault::WrongOffset => *offset += 1,\n                                Fault::WrongTotal => *total -= 1,\n                                Fault::CorruptHeads => {\n                                    let mut raw = STANDARD_NO_PAD\n                                        .decode(&*heads)\n                                        .map_err(|_| HostIssuerTransportError::InvalidRequest)?;\n                                    raw[100] ^= 1;\n                                    *heads = STANDARD_NO_PAD.encode(raw);\n                                }\n                                _ => unreachable!(),\n                            }\n                        }\n                        Fault::Original | Fault::CloseAfterFirst\n                        | Fault::WrongFinishDigest | Fault::DropFinishAck => {}\n                    }\n                }\n                if response.request.phase == candidate_wire::Phase::Finish {\n                    match fault {\n                        Fault::WrongFinishDigest => {\n                            let candidate_wire::MaterialResult::Finished { heads_digest, .. } =\n                                &mut response.result else {\n                                    return Err(HostIssuerTransportError::InvalidRequest);\n                                };\n                            *heads_digest = Digest32::of_bytes(b\"wrong whole Candidate Finish\").to_string();\n                        }\n                        Fault::DropFinishAck => return Err(HostIssuerTransportError::Unavailable),\n                        _ => {}\n                    }\n                }\n                serde_json::to_vec(&response).map_err(|_| HostIssuerTransportError::InvalidRequest)\n            });\n            match exchanged {\n                Ok(false) => return Ok(request_id - 1),\n                Ok(true) => {}\n                Err(error) => {\n                    return Err(original_error\n                        .map(anyhow::Error::from)\n                        .unwrap_or_else(|| anyhow::Error::from(error)));\n                }\n            }\n            if disposition == candidate_wire::SessionDisposition::CloseReadback\n                || matches!(fault, Fault::CloseAfterFirst)\n            {\n                return Ok(request_id);\n            }\n        }\n        anyhow::bail!(\"original Candidate connection frame budget exhausted\")\n    });\n    Ok((connection, PagePeer { frames, server }))\n}",
+      "after": "pub(super) fn page_peer(\n    owner: Arc<Host>,\n    config: crate::OriginalCellQ24MaterialReceiptConfigV1,\n    origin: Origin,\n    expected: Option<crate::OriginalCellQ24TrainingCommandReceiptV1>,\n    fault: Fault,\n    gate: Option<ResponseGate>,\n    lifetime: Duration,\n) -> anyhow::Result<(crate::OriginalCellQ24TrainingCommandConnectionV1, PagePeer)> {\n    let (connection, mut channel) = match origin {\n        Origin::Fresh => connection::fresh_peer(config, lifetime)?,\n        Origin::Recovered => connection::recovered_peer(\n            config,\n            expected.map(|value| (value.receipt().clone(), value.attestation().clone())),\n            lifetime,\n        )?,\n    };\n    let frames = Arc::new(AtomicU64::new(0));\n    let original_begins = Arc::new(AtomicU64::new(0));\n    let original_finishes = Arc::new(AtomicU64::new(0));\n    let observed = Arc::clone(&frames);\n    let began = Arc::clone(&original_begins);\n    let finished = Arc::clone(&original_finishes);\n    let server = std::thread::spawn(move || -> anyhow::Result<u64> {\n        let mut session = candidate_wire::Session::new();\n        for request_id in 1..=128_u64 {\n            let mut disposition = candidate_wire::SessionDisposition::CloseReadback;\n            let mut original_error = None;\n            let exchanged = channel.exchange(|bytes| {\n                observed.fetch_add(1, Ordering::AcqRel);\n                let (bytes, next) = owner\n                    .candidate_material_response(bytes, request_id, &mut session)\n                    .map_err(|error| {\n                        original_error = Some(error);\n                        HostIssuerTransportError::InvalidRequest\n                    })?;\n                disposition = next;\n                let mut response: candidate_wire::Response = serde_json::from_slice(&bytes)\n                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?;\n                // Observe the real handler's successful physical boundary,\n                // before a transport fault changes or withholds its reply.\n                if response.request.phase == candidate_wire::Phase::Begin\n                    && matches!(&response.result, candidate_wire::MaterialResult::Page { .. })\n                {\n                    began.fetch_add(1, Ordering::AcqRel);\n                }\n                if response.request.phase == candidate_wire::Phase::Finish\n                    && matches!(&response.result, candidate_wire::MaterialResult::Finished { .. })\n                {\n                    finished.fetch_add(1, Ordering::AcqRel);\n                }\n                if request_id == 1 {\n                    if let Some(gate) = &gate {\n                        gate.reached.notify_one();\n                        gate.release\n                            .recv()\n                            .map_err(|_| HostIssuerTransportError::Unavailable)?;\n                    }\n                    match fault {\n                        Fault::WrongPage => response.request.page += 1,\n                        Fault::WrongCompletion => {\n                            response.request.completion =\n                                Digest32::of_bytes(b\"another full T\").to_string();\n                        }\n                        Fault::WrongOffset | Fault::WrongTotal | Fault::CorruptHeads => {\n                            let candidate_wire::MaterialResult::Page {\n                                offset,\n                                total,\n                                heads,\n                                ..\n                            } = &mut response.result\n                            else {\n                                return Err(HostIssuerTransportError::InvalidRequest);\n                            };\n                            match fault {\n                                Fault::WrongOffset => *offset += 1,\n                                Fault::WrongTotal => *total -= 1,\n                                Fault::CorruptHeads => {\n                                    let mut raw = STANDARD_NO_PAD\n                                        .decode(&*heads)\n                                        .map_err(|_| HostIssuerTransportError::InvalidRequest)?;\n                                    raw[100] ^= 1;\n                                    *heads = STANDARD_NO_PAD.encode(raw);\n                                }\n                                _ => unreachable!(),\n                            }\n                        }\n                        Fault::Original | Fault::CloseAfterFirst\n                        | Fault::WrongFinishDigest | Fault::DropFinishAck => {}\n                    }\n                }\n                if response.request.phase == candidate_wire::Phase::Finish {\n                    match fault {\n                        Fault::WrongFinishDigest => {\n                            let candidate_wire::MaterialResult::Finished { heads_digest, .. } =\n                                &mut response.result else {\n                                    return Err(HostIssuerTransportError::InvalidRequest);\n                                };\n                            *heads_digest = Digest32::of_bytes(b\"wrong whole Candidate Finish\").to_string();\n                        }\n                        Fault::DropFinishAck => return Err(HostIssuerTransportError::Unavailable),\n                        _ => {}\n                    }\n                }\n                serde_json::to_vec(&response).map_err(|_| HostIssuerTransportError::InvalidRequest)\n            });\n            match exchanged {\n                Ok(false) => return Ok(request_id - 1),\n                Ok(true) => {}\n                Err(error) => {\n                    return Err(original_error\n                        .map(anyhow::Error::from)\n                        .unwrap_or_else(|| anyhow::Error::from(error)));\n                }\n            }\n            if disposition == candidate_wire::SessionDisposition::CloseReadback\n                || matches!(fault, Fault::CloseAfterFirst)\n            {\n                return Ok(request_id);\n            }\n        }\n        anyhow::bail!(\"original Candidate connection frame budget exhausted\")\n    });\n    Ok((connection, PagePeer { frames, original_begins, original_finishes, server }))\n}"
+    }
+  ],
+  "preserved_functions": [
+    {
+      "name": "completed_candidate",
+      "sha256": "d1ddcdc71d84d6621c57357edcb4e5db3cbf066aa3d017232fc828815338871e",
+      "unchanged": true
+    },
+    {
+      "name": "Completed::close",
+      "sha256": "123bf7d6602fe99cf59e9b81426fb5088c7559303994d15d315f33018c01f352",
+      "unchanged": true
+    },
+    {
+      "name": "PagePeer::finish",
+      "sha256": "038d1e7f8dcb48b2d1ec6a6649bef4773835ce62140a917ac2b29f563c239698",
+      "unchanged": true
+    },
+    {
+      "name": "bind",
+      "sha256": "2bf1be52afb9c18d2dc40209ae6477614e3d6d7d71d4464eeb1aa69566ad0523",
+      "unchanged": true
+    },
+    {
+      "name": "request",
+      "sha256": "271614a5caa240df0f7b34b14ab20812f0fe1b328c444a261d57fae6d0c8dba7",
+      "unchanged": true
+    },
+    {
+      "name": "raw_page",
+      "sha256": "d4469fb6de3036b32b8f9c7f870362126b52415f3d129f7b983e059d13068696",
+      "unchanged": true
+    }
+  ],
+  "preservation_checks": {
+    "full_files_reverse_exact": true,
+    "first_two_candidate_tests_full_prefix_byte_identical": true,
+    "renewal_through_end_of_file_byte_identical": true,
+    "original_assertion_and_bail_invocations": 34,
+    "after_invocations": 36,
+    "all_original_invocations_full_text_multiset_preserved": true,
+    "added_actual_success_assertions": 2
+  },
+  "production_review": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+      "git_blob": "abdca127862c4c9aaf350267a9d669bb8e1792bc",
+      "ref": "a7571fe7ca197de52cd071741b85b14a237d6bd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_transfer.rs",
+      "git_blob": "878eed28141215cd985dbfd4fe796de50dccbe66",
+      "ref": "a7571fe7ca197de52cd071741b85b14a237d6bd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+      "git_blob": "02029f1ac91b719544c7d063136b7d36cdf45852",
+      "ref": "a7571fe7ca197de52cd071741b85b14a237d6bd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+      "git_blob": "5e73201dba7618038f219bb25d77859c8305d3d8",
+      "ref": "a7571fe7ca197de52cd071741b85b14a237d6bd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "git_blob": "ab0fe50a075f29757518a6ac6f88b9ec5b5117ca",
+      "ref": "a7571fe7ca197de52cd071741b85b14a237d6bd5"
+    }
+  ],
+  "guard_and_inventory_impact": {
+    "manifest_git_blob": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+    "full_manifest_bytes": 1619553,
+    "exact_changed_fixture_path_mentions": 0,
+    "manifest_changed": false,
+    "qa_changed": false,
+    "inventory_git_blob": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87",
+    "inventory_changed": false,
+    "native_test_ids_added_or_removed": 0,
+    "production_blob_changes": 0
+  },
+  "validation": {
+    "static_audit_only": true,
+    "original_runtime_failure_full_log_readback": true,
+    "new_rust_compilation": false,
+    "new_native_execution": false,
+    "new_python_or_source_qa": false,
+    "new_fullcaller": false,
+    "h_calls": false,
+    "no_runtime_pass_claim": true
+  },
+  "ordinary_acceptance_credit": 0
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.cell-field-v1-source-recovery.v1",
+  "at_utc": "2026-10-24T23:43:04.803534+00:00",
+  "mode": "published_pre_evaluation_seal",
+  "published_evidence_commit": "ff5baef731f36420370c5bcc049c50a567cda06a",
+  "seal_sha256": "68c5b247fa399901fea32076e11ed0a4a5149cbd52ba3690ff1bdc09adf66549",
+  "sources": {
+    "sha256": "d3d8c203c2fd88966fa937d0e0b5cf2826399f558a26dc1e256e47ab479a0482",
+    "bytes": 315623
+  },
+  "original_receipt_commitment": {
+    "sha256": "57742ed6e70c5c33053e4092bc3f58d46f791e84ffedb2efe79fd187e2e707ea",
+    "bytes": 4055
+  },
+  "original_receipt_restored": false,
+  "original_receipt_fabricated": false,
+  "source_bytes_identical_to_published_commitment": true,
+  "verified_components": 512,
+  "reason": "runtime reset; binary archive unavailable through current connector; source-only exact reconstruction",
+  "method": "pinned v1 cohort selection plus exact sources serialization; reject any SHA or size mismatch",
+  "source_archive_sha256": "1f5f08691f0ce576cb0b5cfdbcb8c55e0ec14dda8f3e07933da72c500338845a",
+  "code_sha256": {
+    "cell_field_source_recovery.py": "69039ed175915e3eb13bc5f892a92ead7532894dff9c03ad0f61636d7b099a09",
+    "cell_field_data.py": "4cb83eb855c1ab1e322d6ac24857fbd9322c7fe4ff37e589cedf5c11f8e22f62",
+    "prepare_news_cohorts.py": "33fa46322d4e9ee341b1f5ea80f37b79713a7f9420f14df9204766f38b6b45b1"
+  },
+  "raw_source_rows": 422935,
+  "raw_source_components": 3172,
+  "final_label_file_opened": false,
+  "model_outputs_observed": false
+}

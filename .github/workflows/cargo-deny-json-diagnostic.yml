@@ -1,0 +1,68 @@
+name: cargo-deny NEW JSON source-bound diagnostic
+
+on:
+  push:
+    branches:
+      - research/dot-cargo-deny-json-20261025
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout diagnostic control code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: control
+          persist-credentials: false
+
+      - name: Checkout actual fixed PR merge source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 2e259b959339f1709370772c380145834e6bc0b7
+          path: source
+          persist-credentials: false
+
+      - name: Checkout unchanged official action source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: EmbarkStudios/cargo-deny-action
+          ref: 82eb9f621fbc699dd0918f3ea06864c14cc84246
+          path: official-action
+          persist-credentials: false
+
+      - name: Set up pinned Python for TOML-aware input checks
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - name: Test diagnostic collector without Docker
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s control/.github/scripts -p 'test_cargo_deny_json_diagnostic.py' -v
+          python3 -O -m unittest discover -s control/.github/scripts -p 'test_cargo_deny_json_diagnostic.py' -v
+
+      - name: Run one NEW JSON diagnostic (not original command)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/cargo-deny-json"
+          python3 control/.github/scripts/cargo_deny_json_diagnostic.py \
+            "$GITHUB_WORKSPACE/source" "$GITHUB_WORKSPACE/official-action" \
+            "$RUNNER_TEMP/cargo-deny-json" "$GITHUB_WORKSPACE/control" \
+            "$GITHUB_SHA" "$GITHUB_WORKFLOW_SHA"
+
+      - name: Upload only publication-gated new diagnostic files
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: cargo-deny-json-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cargo-deny-json/public/
+          if-no-files-found: error
+          retention-days: 7

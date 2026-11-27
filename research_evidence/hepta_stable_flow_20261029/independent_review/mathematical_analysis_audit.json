@@ -1,0 +1,189 @@
+{
+  "analysis_sha256": "cd9996da39f1eb0978ed9817a6d8c1d7253743e65697f8d6cebace59c21f68fd",
+  "artifact_integrity_passed": true,
+  "bound_artifacts": [
+    {
+      "path": "experiments/call_put_stable_flow_analysis/ANALYSIS.md",
+      "sha256": "cd9996da39f1eb0978ed9817a6d8c1d7253743e65697f8d6cebace59c21f68fd"
+    },
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/protocol.json",
+      "sha256": "f94ff6491a2e98c1288ee2476404943f920042800d468435eba46d5235c0197b"
+    }
+  ],
+  "checks": {
+    "J_trace_determinant_exact": true,
+    "P_determinant_exact": true,
+    "P_positive_definite_exact": true,
+    "analysis_expected_sha_matches": true,
+    "frozen_core_unchanged": true,
+    "lyapunov_identity_exact": true
+  },
+  "claim_limits": [
+    "No proof of trained spiking, reset behavior, event sparsity, biological fit, task superiority or scaling advantage.",
+    "No certification of original missing checkpoints or the entire original He-Xiong pricing system.",
+    "Phase h=1/16 long-horizon failure and outer coupling discrepancy remain disclosed; mathematical existence does not close all numerical accuracy questions."
+  ],
+  "created_unix": 1793280779.50418,
+  "exact_rational_results": {
+    "J": [
+      [
+        "1/2",
+        "-1"
+      ],
+      [
+        "1/4",
+        "-1/6"
+      ]
+    ],
+    "J_transpose_P_plus_PJ": [
+      [
+        "1",
+        "0"
+      ],
+      [
+        "0",
+        "1"
+      ]
+    ],
+    "P": [
+      [
+        "37/16",
+        "-21/8"
+      ],
+      [
+        "-21/8",
+        "51/4"
+      ]
+    ],
+    "PJ": [
+      [
+        "1/2",
+        "-15/8"
+      ],
+      [
+        "15/8",
+        "1/2"
+      ]
+    ],
+    "det_J": "1/6",
+    "det_P": "723/32",
+    "trace_J": "1/3"
+  },
+  "manual_mathematical_review": [
+    {
+      "finding": "Algebra checked against current production definition; C is a residual, p is a normalized value and not a probability; C1 does not imply global C2.",
+      "statement": "Reduced perpetual-put/residual construction and C1 boundary derivatives"
+    },
+    {
+      "finding": "At fixed kappa both channels depend on v-q-log(beta); p_x is strictly negative at every finite margin in exact real arithmetic. This does not reduce the recurrent flow or memory state dimension.",
+      "statement": "Rank-one current-channel state Jacobian"
+    },
+    {
+      "finding": "Signs and derivatives checked. g_recovery>=g_put is sufficient for the scalar equilibrium equation to be strictly decreasing, not enforced by training and not sufficient for stability.",
+      "statement": "Feedback signs, q/z trace and determinant, and conditional equilibrium uniqueness"
+    },
+    {
+      "finding": "Each target lies in its coordinate interval and ETD2 predictor/final coefficients are nonnegative and sum to one. The conclusion does not certify floating-point invariance, accuracy, gradient contraction or carried states across parameter changes.",
+      "statement": "Continuous bounded rectangle and exact-arithmetic ETD2 convex invariance"
+    },
+    {
+      "finding": "Strictly inward rectangle plus sufficiently small outward Lyapunov ellipse gives a compact forward-invariant equilibrium-free annulus. C1 planar Poincare-Bendixson implies a periodic orbit. All hypotheses and the explicit rational Lyapunov identity were checked. No uniqueness, isolation, stability, exact period or smooth Hopf claim is made.",
+      "statement": "Periodic orbit existence in the untrained invariant v=0 plane"
+    },
+    {
+      "finding": "It preserves the channel bounds, nonnegative Call, zero stopped branch, and boundary first derivatives used in the proof. Thus this capacity is not evidence of an analytic-global-shape advantage.",
+      "statement": "Matched operator admits the same periodic-orbit existence argument"
+    },
+    {
+      "finding": "Rank-one exponential and variation of constants yield the stated division-free update for arbitrary key norm. The norm bound is conditional on identical held inputs and rates; it does not bound the full parameter gradient or full BPTT map.",
+      "statement": "Conditional matrix-memory propagation and contraction"
+    },
+    {
+      "finding": "Actual source advances flow first and then memory with endpoint rates. The non-writing scalar example correctly gives the Delta^2/2 discrepancy in log multiplier. Internal h refinement does not remove fixed outer-Delta splitting error. Mesh ceil-switches can change the discrete time map; fixed-dt parameter differentiation and time differentiation across switches are different claims.",
+      "statement": "Outer splitting and sampling scope"
+    }
+  ],
+  "primary_sources_checked": [
+    {
+      "scope": "Journal of Finance 67(2), April2012; eq4 rollover equity cash flow; eq5 finite-maturity bond PDE with liquidity term. This is materially richer than the current neural reduced construction.",
+      "url": "https://www.princeton.edu/~wxiong/papers/rollover.pdf",
+      "web_reference": "turn33view1"
+    },
+    {
+      "scope": "Author-maintained formalization of the general theorem. The Hepta-specific annulus argument is analytical review, not a new machine-checked formal proof.",
+      "url": "https://isa-afp.org/entries/Poincare_Bendixson.html",
+      "web_reference": "turn33view0"
+    }
+  ],
+  "schema": "hepta-independent-mathematical-review-20261029-v1",
+  "source_bindings": [
+    {
+      "frozen_sha256": "9fb7acbc25b489bfeb571e6edd2a9861836a086de5b76f26ebda1590c35c90d9",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/audit.py",
+      "sha256": "9fb7acbc25b489bfeb571e6edd2a9861836a086de5b76f26ebda1590c35c90d9"
+    },
+    {
+      "frozen_sha256": "13ad1d59884821ec76e071a0481911de5d675135abde3e41dc84e07fd5e57772",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/data.py",
+      "sha256": "13ad1d59884821ec76e071a0481911de5d675135abde3e41dc84e07fd5e57772"
+    },
+    {
+      "frozen_sha256": "bfbfcbc290d8677cf3872418446981d9d7f67ce6656255b31cc5a75f577fa95e",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/flow.py",
+      "sha256": "bfbfcbc290d8677cf3872418446981d9d7f67ce6656255b31cc5a75f577fa95e"
+    },
+    {
+      "frozen_sha256": "75b0f6b348b8704116a6e496704a945525a701e119c169f436c7b4c7fabc082a",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/memory.py",
+      "sha256": "75b0f6b348b8704116a6e496704a945525a701e119c169f436c7b4c7fabc082a"
+    },
+    {
+      "frozen_sha256": "54e1686a51ae668d5e541cf6e7e8f5fa139c5075cd6894a93fe1f823ab64bc77",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/models.py",
+      "sha256": "54e1686a51ae668d5e541cf6e7e8f5fa139c5075cd6894a93fe1f823ab64bc77"
+    },
+    {
+      "frozen_sha256": "a1c24cbe295ffc0ab68d44ad314e7e67e113d478cb652cc4ad5a99ac8dd6ce86",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/numerics.py",
+      "sha256": "a1c24cbe295ffc0ab68d44ad314e7e67e113d478cb652cc4ad5a99ac8dd6ce86"
+    },
+    {
+      "frozen_sha256": "12663dc80fb38b18b595812a64f191e70796994ea734d8bfc61c9ec16156ba17",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/study.py",
+      "sha256": "12663dc80fb38b18b595812a64f191e70796994ea734d8bfc61c9ec16156ba17"
+    },
+    {
+      "frozen_sha256": "dc2b9647145712c36c10a905362b6a3a04a0b3664578888e393a4f9656a2b57f",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/tests/test_data.py",
+      "sha256": "dc2b9647145712c36c10a905362b6a3a04a0b3664578888e393a4f9656a2b57f"
+    },
+    {
+      "frozen_sha256": "2f9559ad06746d2366702776d34b60f2b9781c137b3ad5cf56c612a45892b2cf",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/tests/test_flow.py",
+      "sha256": "2f9559ad06746d2366702776d34b60f2b9781c137b3ad5cf56c612a45892b2cf"
+    },
+    {
+      "frozen_sha256": "2286e781169204998b450ae2ba4b4c7da86040ecaa152df75449d4ae54fced68",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/tests/test_memory.py",
+      "sha256": "2286e781169204998b450ae2ba4b4c7da86040ecaa152df75449d4ae54fced68"
+    },
+    {
+      "frozen_sha256": "d88be39828ce931a4acd8545879948e5446b270ff3f0df6ac091e7cd36013def",
+      "matches": true,
+      "path": "experiments/call_put_stable_flow/tests/test_numerics.py",
+      "sha256": "d88be39828ce931a4acd8545879948e5446b270ff3f0df6ac091e7cd36013def"
+    }
+  ],
+  "status": "complete"
+}

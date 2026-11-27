@@ -3,14 +3,13 @@ use std::sync::Mutex;
 use std::sync::OnceLock;
 use std::time::Duration;
 
+use anyhow::Context;
 use anyhow::Result;
 use anyhow::bail;
 use app_test_support::ChatGptAuthFixture;
 use app_test_support::TestAppServer;
 use app_test_support::to_response;
 use app_test_support::write_chatgpt_auth;
-use chrono::Duration as ChronoDuration;
-use chrono::Utc;
 use codex_app_server_protocol::HookMetadata;
 use codex_app_server_protocol::HookTrustStatus;
 use codex_app_server_protocol::HooksListParams;
@@ -42,6 +41,7 @@ use flate2::Compression;
 use flate2::write::GzEncoder;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
+use time::Duration as TimeDuration;
 use tokio::time::sleep;
 use tokio::time::timeout;
 use wiremock::Mock;
@@ -2162,7 +2162,7 @@ async fn plugin_list_honors_global_remote_catalog_cache_ttl() -> Result<()> {
 
     rewrite_cached_remote_catalog_fetched_at(
         codex_home.path(),
-        Utc::now() - ChronoDuration::hours(4),
+        codex_utils_time::Timestamp::now() - TimeDuration::hours(4),
     )?;
     server.reset().await;
     mount_delayed_remote_plugin_list(&server, "GLOBAL", &refreshed_body).await;
@@ -3720,7 +3720,7 @@ async fn plugin_list_fetches_workspace_directory_kind_when_remote_plugin_disable
 
     rewrite_cached_remote_catalog_fetched_at(
         codex_home.path(),
-        Utc::now() - ChronoDuration::hours(4),
+        codex_utils_time::Timestamp::now() - TimeDuration::hours(4),
     )?;
     server.reset().await;
     mount_delayed_remote_plugin_list(&server, "WORKSPACE", &refreshed_workspace_plugin_body).await;
@@ -4627,16 +4627,22 @@ async fn wait_for_cached_remote_catalog_plugin_ids(
         .map(str::to_string)
         .collect::<Vec<_>>();
     expected_plugin_ids.sort();
+    let mut observed_plugin_ids = Vec::new();
     timeout(DEFAULT_TIMEOUT, async {
         loop {
-            let plugin_ids = cached_remote_catalog_plugin_ids(codex_home)?;
-            if plugin_ids == expected_plugin_ids {
+            observed_plugin_ids = cached_remote_catalog_plugin_ids(codex_home)?;
+            if observed_plugin_ids == expected_plugin_ids {
                 return Ok::<(), anyhow::Error>(());
             }
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
     })
-    .await??;
+    .await
+    .with_context(|| {
+        format!(
+            "remote catalog cache did not match within the original deadline: expected {expected_plugin_ids:?}, last observed {observed_plugin_ids:?}"
+        )
+    })??;
     Ok(())
 }
 
@@ -4665,7 +4671,7 @@ fn cached_remote_catalog_plugin_ids(codex_home: &std::path::Path) -> Result<Vec<
 
 fn rewrite_cached_remote_catalog_fetched_at(
     codex_home: &std::path::Path,
-    fetched_at: chrono::DateTime<Utc>,
+    fetched_at: codex_utils_time::Timestamp,
 ) -> Result<()> {
     let cache_dir = codex_home.join("cache/remote_plugin_catalog");
     for entry in std::fs::read_dir(cache_dir)? {

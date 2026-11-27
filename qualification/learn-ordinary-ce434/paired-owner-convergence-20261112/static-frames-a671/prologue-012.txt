@@ -1,0 +1,83 @@
+
+/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000005a027e0 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$17h0e4054f6a1345fb5E>:
+ 5a027e0:	push   %r14
+ 5a027e2:	push   %rbx
+ 5a027e3:	mov    %rsp,%r11
+ 5a027e6:	sub    $0x1e3000,%r11
+ 5a027ed:	sub    $0x1000,%rsp
+ 5a027f4:	movq   $0x0,(%rsp)
+ 5a027fc:	cmp    %r11,%rsp
+ 5a027ff:	jne    5a027ed <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$17h0e4054f6a1345fb5E+0xd>
+ 5a02801:	sub    $0x8e8,%rsp
+ 5a02808:	mov    %rsi,0xbc8(%rsp)
+ 5a02810:	mov    %rdi,0xbd0(%rsp)
+ 5a02818:	mov    %rdi,0xbd8(%rsp)
+ 5a02820:	mov    %rdx,0xbe8(%rsp)
+ 5a02828:	movzbl 0x1de5f(%rsi),%eax
+ 5a0282f:	mov    %rax,0xbe0(%rsp)
+ 5a02837:	mov    0xbe0(%rsp),%rcx
+ 5a0283f:	lea    -0x3decfd2(%rip),%rax        # 1c15874 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0xa0134>
+ 5a02846:	movslq (%rax,%rcx,4),%rcx
+ 5a0284a:	add    %rcx,%rax
+ 5a0284d:	jmp    *%rax
+ 5a0284f:	ud2
+ 5a02851:	mov    0xbc8(%rsp),%rsi
+ 5a02859:	movb   $0x0,0x1de41(%rsi)
+ 5a02860:	movb   $0x0,0x1de5e(%rsi)
+ 5a02867:	movb   $0x0,0x1de5d(%rsi)
+ 5a0286e:	movb   $0x0,0x1de40(%rsi)
+ 5a02875:	movb   $0x0,0x1de5c(%rsi)
+ 5a0287c:	movb   $0x0,0x1de3f(%rsi)
+ 5a02883:	movb   $0x0,0x1de5b(%rsi)
+ 5a0288a:	movb   $0x0,0x1de5a(%rsi)
+ 5a02891:	movb   $0x0,0x1afdf7(%rsp)
+ 5a02899:	movb   $0x0,0x1de3e(%rsi)
+ 5a028a0:	movb   $0x0,0x1afdf6(%rsp)
+ 5a028a8:	movb   $0x0,0x1afdf5(%rsp)
+ 5a028b0:	movb   $0x0,0x1afdf4(%rsp)
+ 5a028b8:	movb   $0x0,0x1de59(%rsi)
+ 5a028bf:	movb   $0x0,0x1de58(%rsi)
+ 5a028c6:	movb   $0x0,0x1de57(%rsi)
+ 5a028cd:	movb   $0x0,0x1de54(%rsi)
+ 5a028d4:	movb   $0x0,0x1de53(%rsi)
+ 5a028db:	movb   $0x0,0x1de3c(%rsi)
+ 5a028e2:	movb   $0x0,0x1de52(%rsi)
+ 5a028e9:	movb   $0x0,0x1afdf3(%rsp)
+ 5a028f1:	movb   $0x0,0x1afdf2(%rsp)
+ 5a028f9:	movb   $0x0,0x1afdf1(%rsp)
+ 5a02901:	movb   $0x0,0x1de51(%rsi)
+ 5a02908:	movb   $0x0,0x1de50(%rsi)
+ 5a0290f:	movb   $0x0,0x1afdf0(%rsp)
+ 5a02917:	movb   $0x0,0x1afdef(%rsp)
+ 5a0291f:	movb   $0x0,0x1afdee(%rsp)
+ 5a02927:	movb   $0x0,0x1de3b(%rsi)
+ 5a0292e:	movb   $0x0,0x1afded(%rsp)
+ 5a02936:	movb   $0x0,0x1de3a(%rsi)
+ 5a0293d:	movb   $0x0,0x1afdec(%rsp)
+ 5a02945:	movb   $0x0,0x1de4f(%rsi)
+ 5a0294c:	movb   $0x0,0x1afdeb(%rsp)
+ 5a02954:	movb   $0x0,0x1afdea(%rsp)
+ 5a0295c:	movb   $0x0,0x1afde9(%rsp)
+ 5a02964:	movb   $0x0,0x1de4e(%rsi)
+ 5a0296b:	movb   $0x0,0x1de4d(%rsi)
+ 5a02972:	movb   $0x0,0x1de4b(%rsi)
+ 5a02979:	movb   $0x0,0x1de36(%rsi)
+ 5a02980:	movb   $0x0,0x1de4a(%rsi)
+ 5a02987:	movb   $0x0,0x1de49(%rsi)
+ 5a0298e:	movb   $0x0,0x1afde8(%rsp)
+ 5a02996:	movb   $0x0,0x1afde7(%rsp)
+ 5a0299e:	movb   $0x0,0x1afde6(%rsp)
+ 5a029a6:	movb   $0x0,0x1de48(%rsi)
+ 5a029ad:	movb   $0x0,0x1afde5(%rsp)
+ 5a029b5:	movb   $0x0,0x1de35(%rsi)
+ 5a029bc:	movb   $0x0,0x1de47(%rsi)
+ 5a029c3:	movb   $0x0,0x1de46(%rsi)
+ 5a029ca:	movb   $0x0,0x1de34(%rsi)
+ 5a029d1:	movb   $0x0,0x1de33(%rsi)
+ 5a029d8:	movb   $0x0,0x1de32(%rsi)
+ 5a029df:	.byte 0xc6

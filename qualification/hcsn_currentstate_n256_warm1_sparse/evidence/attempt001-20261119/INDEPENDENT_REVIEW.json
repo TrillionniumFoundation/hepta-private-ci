@@ -1,0 +1,189 @@
+{
+  "all_closed": false,
+  "archive_sha256": "8f6a75afafeedaa5cfe6ad2b8b80af6b7d2b54f102f75d406ac1d92eb4b36629",
+  "bitwise_mismatches": 1291,
+  "capsule_bytes": 560358,
+  "capture_age_independently_reconstructible_from_artifact": false,
+  "capture_age_note": "Runner and child enforce <=30s; artifact does not retain the exact child-check timestamp.",
+  "channel_balances": [
+    {
+      "channel": 0,
+      "final_active": 0.9640755830395111,
+      "final_upper": 1.3739262799137578e-113,
+      "initial_active_upper": 0.9693442699581465,
+      "lower_hit": 0.005271450958432786,
+      "released": 2.7640397932555985e-06,
+      "residual": 4.173360553758618e-15
+    },
+    {
+      "channel": 1,
+      "final_active": 0.053717312249938025,
+      "final_upper": 5.241481697460566e-115,
+      "initial_active_upper": 0.0536303143574846,
+      "lower_hit": -8.688185172095757e-05,
+      "released": 1.1604073220753784e-07,
+      "residual": 2.5693880216655205e-16
+    },
+    {
+      "channel": 2,
+      "final_active": 0.0023667119626276157,
+      "final_upper": -8.407849162173527e-116,
+      "initial_active_upper": 0.002474818236573189,
+      "lower_hit": 0.00010823703334057706,
+      "released": 1.3075939507353066e-07,
+      "residual": -6.990380272210489e-17
+    },
+    {
+      "channel": 3,
+      "final_active": -0.10620600566312084,
+      "final_upper": -8.967018530644774e-115,
+      "initial_active_upper": -0.10647633477485052,
+      "lower_hit": -0.0002705673564265696,
+      "released": -2.382446965963602e-07,
+      "residual": -2.924831766044293e-16
+    },
+    {
+      "channel": 4,
+      "final_active": -0.1012874388513753,
+      "final_upper": -1.4022702799827279e-114,
+      "initial_active_upper": -0.1017726099882893,
+      "lower_hit": -0.0004853463539537689,
+      "released": -1.7521703955652908e-07,
+      "residual": -2.1188915634348508e-16
+    }
+  ],
+  "child_cost": {
+    "child_maxrss_kib": 116212,
+    "includes_numerical_imports_and_coordinate_comparison": true,
+    "returncode": 0,
+    "system_cpu_seconds": 0.08126,
+    "timed_out": false,
+    "user_cpu_seconds": 1.111539,
+    "wall_seconds": 1.196541021
+  },
+  "coordinate_counts": {
+    "packet": 67128,
+    "packet_alpha": 1320,
+    "packet_generator": 65544,
+    "packet_output": 264,
+    "state": 2600,
+    "total": 69728
+  },
+  "execution_counts_independently_instrumented": false,
+  "families": {
+    "packet/alpha": {
+      "bitwise_mismatches": 2,
+      "coordinates": 1320,
+      "max_abs_error": 1.4907779871675686e-19,
+      "max_symmetric_rel_error": 1.2847023271977664e-15,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "packet/generator": {
+      "bitwise_mismatches": 0,
+      "coordinates": 65544,
+      "max_abs_error": 0.0,
+      "max_symmetric_rel_error": 0.0,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "packet/output": {
+      "bitwise_mismatches": 0,
+      "coordinates": 264,
+      "max_abs_error": 0.0,
+      "max_symmetric_rel_error": 0.0,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "state/active": {
+      "bitwise_mismatches": 1269,
+      "coordinates": 2550,
+      "max_abs_error": 9.08995101411847e-16,
+      "max_symmetric_rel_error": 5.5018733734279256e-14,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "state/discounted_hit": {
+      "bitwise_mismatches": 5,
+      "coordinates": 10,
+      "max_abs_error": 4.336808689942018e-18,
+      "max_symmetric_rel_error": 4.006971235108724e-15,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "state/mass": {
+      "bitwise_mismatches": 5,
+      "coordinates": 10,
+      "max_abs_error": 7.37257477290143e-17,
+      "max_symmetric_rel_error": 1.3985854807408111e-14,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "state/occupation": {
+      "bitwise_mismatches": 5,
+      "coordinates": 15,
+      "max_abs_error": 3.2526065174565133e-19,
+      "max_symmetric_rel_error": 6.1691972473597234e-15,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    },
+    "state/upper": {
+      "bitwise_mismatches": 5,
+      "coordinates": 15,
+      "max_abs_error": 6.339783291631441e-132,
+      "max_symmetric_rel_error": 7.271601786362678e-15,
+      "outside_1e_13_plus_1e_11_abs_oracle": 0
+    }
+  },
+  "full_roster_qualification": false,
+  "largegrid_qualification": false,
+  "manifest_members_verified": 10,
+  "original_bitwise_gate": "RED",
+  "producer_execution_result": {
+    "actions": [
+      {
+        "cpu_seconds": 0.08520047899999994,
+        "csr_bytes": 10240,
+        "nnz": 767,
+        "order": 258,
+        "wall_seconds": 0.08520208999999568
+      },
+      {
+        "cpu_seconds": 0.08702970300000001,
+        "csr_bytes": 13340,
+        "nnz": 1025,
+        "order": 259,
+        "wall_seconds": 0.08704805900000423
+      }
+    ],
+    "all_closed": false,
+    "authentic_input_loads": 1,
+    "channel_balance_residuals": [
+      4.1204514877413254e-15,
+      2.598661480322629e-16,
+      -6.995801283072917e-17,
+      -2.9101950367157385e-16,
+      -2.096665418898898e-16
+    ],
+    "coordinate_counts": {
+      "packet": 67128,
+      "packet_alpha": 1320,
+      "packet_generator": 65544,
+      "packet_output": 264,
+      "state": 2600,
+      "total": 69728
+    },
+    "dense_expm_actions": 0,
+    "dynamic_steps": 1,
+    "full_roster_qualification": false,
+    "largegrid_qualification": false,
+    "optimizer_steps": 0,
+    "packet_count": 9,
+    "payload_sha256": "248cfc56d575b15d4a8340267e8b668fd0b6dc94be71b61e2b0cec8b913981b1",
+    "probability_active_minimum": 0.0,
+    "serialized_bytes": 560358,
+    "sparse_exponential_actions": 2,
+    "torch_calls": 0
+  },
+  "recorded_runtime_identity_satisfied": true,
+  "recorded_static_resource_thresholds_satisfied": true,
+  "review_authentic_input_reads": 1,
+  "review_dynamic_steps": 0,
+  "review_numerical_imports": 0,
+  "review_source_sha256": "4b08966a92d87d7fdea444f33a85402369995400f44a9a5310dba352176b7ef4",
+  "source_freeze_sha256": "005a889f2e56fe343512eb6be42079f9baf3cdcea331bdcb0b67a15851be4268",
+  "sparse_capsule_sha256": "248cfc56d575b15d4a8340267e8b668fd0b6dc94be71b61e2b0cec8b913981b1"
+}

@@ -1,0 +1,43 @@
+{
+  "scope": "Local reader-development attempts; these are not independent experiments or scientific samples",
+  "earlier_attempts": [
+    {
+      "description": "Existing seven reader tests after shape guards",
+      "result": "7 passed",
+      "raw_log": "Tool output only; no separately archived process stream"
+    },
+    {
+      "description": "Initial new two-class suite",
+      "result": "9 test methods executed; integration method had 28 failed subcases",
+      "cause": "New campaign fixture used canonical JSON digest while write_json retained indented JSON bytes; healthy rows therefore failed the public-case byte pin before scoring",
+      "raw_log": "Tool output was truncated; complete original process stream was not retained",
+      "production_policy_relaxed": false
+    },
+    {
+      "description": "Corrected the fixture to digest actual json_bytes",
+      "result": "9 passed",
+      "raw_log": "Tool output only"
+    },
+    {
+      "description": "Added recursive shape and missing-steps coverage",
+      "result": "11 passed",
+      "raw_log": "Tool output only"
+    },
+    {
+      "description": "Moved new tests into existing workflow-discovered test module",
+      "result": "11 passed",
+      "raw_log": "Tool output only"
+    },
+    {
+      "description": "Added frozen source-pin rejection",
+      "result": "12 passed",
+      "raw_log": "evidence/tests-before-oserror.stderr.log; metadata in TEST_RESULT-before-oserror.json"
+    },
+    {
+      "description": "Added episode-local OSError handling and missing/symlink integration coverage",
+      "result": "13 passed, zero skips",
+      "raw_log": "evidence/tests.stderr.log; metadata in TEST_RESULT.json"
+    }
+  ],
+  "maintenance": "No fix/fmt executed in this reduced checkout. Required formatting remains for the complete repository."
+}

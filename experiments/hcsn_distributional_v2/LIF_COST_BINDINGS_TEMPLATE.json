@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn-lif-cost-bindings.v1",
+  "instruction": "Copy to a new bindings file and replace the explicit placeholders only after inspecting the actual completed analyzer outer receipt and final watcher snapshot. This template cannot pass normalization as written.",
+  "scopes": [
+    {
+      "scope_id": "lif_scheduler",
+      "receipt": "experiments/hcsn_distributional_v2/results/lif_supplement001/SCHEDULER_EXECUTION.json",
+      "field": "/complete_child_cpu_seconds",
+      "success_field": "/exit_code",
+      "success_value": 0,
+      "measurement_kind": "complete_process_tree_wait4",
+      "scope": "Complete Linux waited LIF scheduler tree, including all 18 waited search workers; worker, candidate and training clocks are nested."
+    },
+    {
+      "scope_id": "lif_analysis",
+      "receipt": "__ACTUAL_ANALYSIS_OUTER_RECEIPT_REPO_RELATIVE_PATH__",
+      "field": "/__ACTUAL_COMPLETE_ANALYZER_CHILD_CPU_FIELD__",
+      "success_field": "/__ACTUAL_ANALYZER_EXIT_FIELD__",
+      "success_value": 0,
+      "measurement_kind": "complete_process_tree_wait4",
+      "scope": "Complete isolated LIF analyzer child measured by its outer wait4 receipt; analyzer body/self clocks are nested and parent content training is reused without an additional charge."
+    },
+    {
+      "scope_id": "lif_analysis_watcher",
+      "receipt": "experiments/hcsn_distributional_v2/results/lif_supplement001/ANALYSIS_WATCHER.json",
+      "field": "/own_cpu_seconds",
+      "success_field": "/status",
+      "success_value": "__ACTUAL_FINAL_SUCCESS_STATUS__",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "scope": "One final cumulative watcher process-self CPU through its receipt, excluding the analyzer child; earlier heartbeat snapshots are not additive. Verify this exact field and terminal status in the original final file."
+    }
+  ]
+}

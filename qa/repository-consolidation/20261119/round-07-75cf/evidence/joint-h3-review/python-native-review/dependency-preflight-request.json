@@ -1,0 +1,12 @@
+{
+  "host": "mac",
+  "executable": "/Users/qianqi/AI/noct-q/.venv/bin/python",
+  "args": [
+    "-B",
+    "-c",
+    "import sys,json,importlib.metadata as m,importlib.util,shutil,pathlib\nroot=pathlib.Path('/Users/qianqi/ci-small-python-20261119-75cf')\npackages=['pip','torch','safetensors','numpy','packaging','transformers','peft','accelerate','huggingface-hub','psutil','PyYAML','regex','requests','tqdm','filelock','tokenizers']\nout={'executable':sys.executable,'python':sys.version,'prefix':sys.prefix,'overlay_exists':(root/'dependency-overlay-v1').exists(),'tools':{x:shutil.which(x) for x in ['uv','pip','pip3']},'packages':{}}\nfor n in packages:\n try:\n  d=m.distribution(n)\n  out['packages'][n]={'version':d.version,'location':str(d.locate_file('')),'requires':d.requires or []}\n except m.PackageNotFoundError: out['packages'][n]=None\nout['pip_module']=str(importlib.util.find_spec('pip'))\nprint(json.dumps(out,indent=2))\n"
+  ],
+  "cwd": "/Users/qianqi/ci-small-python-20261119-75cf",
+  "idempotency_key": "h3-memory-dependency-preflight-75cf-v1",
+  "timeout_seconds": 90
+}

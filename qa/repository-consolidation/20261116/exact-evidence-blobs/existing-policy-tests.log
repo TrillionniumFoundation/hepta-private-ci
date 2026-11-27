@@ -1,0 +1,15 @@
+test_exact_binary_pin_preserves_asset_without_allowing_changed_bytes (test_blob_size_policy.BlobSizePolicyTests.test_exact_binary_pin_preserves_asset_without_allowing_changed_bytes) ... ok
+test_legacy_exact_asset_entry_remains_supported_without_a_prefix_match (test_blob_size_policy.BlobSizePolicyTests.test_legacy_exact_asset_entry_remains_supported_without_a_prefix_match) ... ok
+test_malformed_or_conflicting_pins_fail_closed (test_blob_size_policy.BlobSizePolicyTests.test_malformed_or_conflicting_pins_fail_closed) ... ok
+test_original_limit_accepts_boundary_and_refuses_one_extra_byte (test_blob_size_policy.BlobSizePolicyTests.test_original_limit_accepts_boundary_and_refuses_one_extra_byte) ... ok
+test_pin_preserves_exact_paths_with_spaces (test_blob_size_policy.BlobSizePolicyTests.test_pin_preserves_exact_paths_with_spaces) ... ok
+test_pin_uses_requested_head_even_if_worktree_has_different_bytes (test_blob_size_policy.BlobSizePolicyTests.test_pin_uses_requested_head_even_if_worktree_has_different_bytes) ... ok
+test_same_bytes_at_an_unlisted_path_are_refused (test_blob_size_policy.BlobSizePolicyTests.test_same_bytes_at_an_unlisted_path_are_refused) ... ok
+test_sampled_summary_preserves_full_cli_output_and_rejection (test_blob_size_policy.BlobSizePolicyTests.test_sampled_summary_preserves_full_cli_output_and_rejection) ... ok
+test_large_multibyte_inventory_keeps_all_totals_and_bounds_summary (test_blob_size_policy.BlobSizeSummaryTests.test_large_multibyte_inventory_keeps_all_totals_and_bounds_summary) ... ok
+test_successful_large_inventory_has_totals_without_per_file_table (test_blob_size_policy.BlobSizeSummaryTests.test_successful_large_inventory_has_totals_without_per_file_table) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.282s
+
+OK

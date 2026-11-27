@@ -1,0 +1,745 @@
+{
+  "all_overlay_modes_verified_from_git_trees": true,
+  "alternative_without_two_ordinary_provider_test_files": {
+    "changed_files": 110,
+    "excluded_paths": [
+      "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "codex-rs/hepta-agentd/tests/support/fleet.rs"
+    ],
+    "expected_tree": "9d65144eedc8d68cd32fd06ddf75e4dbcd151b69",
+    "parents": [
+      "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+      "cb0b276ffdb9852323cdd13ba9b4399b30ae0c37",
+      "f1fd544b3e12ed6aca83872cdeda8114a1e058c0"
+    ],
+    "reason": "Those two files only add opt-in ignored ordinary-provider observation/retention; they are not the MEM production bridge. Include them if preserving the already-reviewed diagnostic follow-up in one software composition."
+  },
+  "base_commit": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+  "base_tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0",
+  "branch_reconstruction_proofs": [
+    {
+      "changed_files": 38,
+      "exact_match": true,
+      "expected_tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+      "name": "G",
+      "recomputed_tree": "07192603a5164f4b5d4da24e37595be2a0a04777"
+    },
+    {
+      "changed_files": 7,
+      "exact_match": true,
+      "expected_tree": "61f266ce7f02e0c3b94c22871ebedcc72f28e456",
+      "name": "windows",
+      "recomputed_tree": "61f266ce7f02e0c3b94c22871ebedcc72f28e456"
+    },
+    {
+      "changed_files": 9,
+      "exact_match": true,
+      "expected_tree": "2ca6930d8abd148fe26fbe7d2857c760daa9316b",
+      "name": "provider",
+      "recomputed_tree": "2ca6930d8abd148fe26fbe7d2857c760daa9316b"
+    },
+    {
+      "changed_files": 65,
+      "exact_match": true,
+      "expected_tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+      "name": "dependency",
+      "recomputed_tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+    }
+  ],
+  "changed_files": 112,
+  "conflicting_paths": [],
+  "duplicate_cb0b_paths_already_in_provider": 7,
+  "expected_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+  "limits": [
+    "A conflict-free Git tree is not compilation or passing integration evidence.",
+    "Do not run either ignored real-provider test in bounded zero-model CI or replay the original unknown provider turn.",
+    "Repository required checks must be obtained from actual workflows/rulesets, not inferred from this file count."
+  ],
+  "mode": "100644",
+  "no_native_or_model_execution": true,
+  "no_new_source_logic": true,
+  "no_remote_mutation": true,
+  "preserved_ancestor_not_extra_parent": "cb0b276ffdb9852323cdd13ba9b4399b30ae0c37",
+  "proposed_parents": [
+    "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "55951ed9094ae894f0256a3461fd9504ef060473",
+    "f1fd544b3e12ed6aca83872cdeda8114a1e058c0"
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.mem.final-composition-tree-plan.v1",
+  "status": "READ_ONLY_TREE_RECONSTRUCTION_COMPLETE_NO_REF_CHANGED",
+  "tree_elements": [
+    {
+      "mode": "100644",
+      "path": ".github/workflows/hepta-mem-python.yml",
+      "sha": "a1ecf3968b8d9bbc27099d792c12f1c5833b4e38",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "sha": "db54c8ce847d135a0213bd2e4a0a8858a32b2a51",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "MODULE.bazel",
+      "sha": "f0be7de63337cb7c0aa2c68dc93771aa5723e546",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "MODULE.bazel.lock",
+      "sha": "1565448430312c7fb7537a48f97e9cd2da945df3",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/Cargo.lock",
+      "sha": "025813e20504f31d12dae2092a0807a1a4066419",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/Cargo.toml",
+      "sha": "75e83aa2161758c059de8e3965820fcfd65f8b58",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/app-server/src/config_manager.rs",
+      "sha": "c4a8bf615541c48a405d08e59c643e96bdf7437a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/app-server/src/config_manager_feature_constraints_tests.rs",
+      "sha": "6c289f8f4b9ee0f1d76a18958387c5d4f3665824",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "sha": "fd1fd483385211eac76afc3c41571541c1de6f0f",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
+      "sha": "efcce3892dac9751927696654f5d6a19d12b1d68",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "sha": "826903cc048dfa6b8f502601aed7780fa6ac3a05",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "sha": "0f25ce6f62ce3e2fd963dda8208913adc17edbbf",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "sha": "1576de268c6da2b4b9a803d46a1244a0010b4949",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/circuit_credit_ledger_test_support.rs",
+      "sha": "690d88809c4743dcf9ba8e27713953751863e9ef",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "sha": "7e3eecfe91f4534f4fb4b2242ddcfda7760923e8",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "sha": "f9f69632f1859aedb23743635a3aad315cd52d65",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "sha": "d6d13a226a7fd9778904893368767c4a38c23e01",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+      "sha": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+      "sha": "eac6a0a296176332eb0a89e2eadb13f657236062",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs",
+      "sha": "595a9aec06808963b580b83f7cb856221d2a7bd5",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read_tests.rs",
+      "sha": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha": "5481bc5bc81558e1246bd3df5e2f081b334266b4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_composition_fixture.rs",
+      "sha": "af775eb84932c102cb00eb301e4edacd2e3cc6bc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+      "sha": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "sha": "1a2f49b93b9c562b9817874652184f06297615a7",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
+      "sha": "8e0ca0b1e1860e916d4017b01bacc593597c9102",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+      "sha": "a9444c7ed750ff4d8d47260470d445cfd49ab118",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs",
+      "sha": "aa0e8fd90b112fe0a4f5eab18bf5dacb76d3a8a7",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "sha": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "sha": "127d953ec345cc7cf2cfda0d6aef8b7550eb4991",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "sha": "c587df24011d5768295a7cf431948a7d4321c5da",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "sha": "e53d6ada7c222ad0084b44803bdfbed4789160fa",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
+      "sha": "6585d7ee856310327d1823ca829ae996dda3c2b8",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "sha": "2d86359ec9e488369c47d182ac9d8fc273b9f675",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "sha": "169ccd842b31c9550cb000f520f8a6e66c5c5bb6",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+      "sha": "994cd51d2f23cb88af6713d46a0716b0c48bc92a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-learning-ledger/src/durable_lock.rs",
+      "sha": "e37cc330a1644e6b5877bd86b926fb2329f90b67",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-learning-ledger/src/durable_lock_qualification_tests.rs",
+      "sha": "6fd8952d50bac3e65bcd93e99b7909ef7a23ccd3",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "sha": "30b5e7eb2570d851e4e90b6105e0c5e856231fe5",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "sha": "c68ce0a3d35afb4ac837d1f9ef1fd53d518a9d78",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/episodic_source.rs",
+      "sha": "4589b4d5607d118f822a1d384f1cdd5a599721fc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/episodic_source_tests.rs",
+      "sha": "d94e1b72c5d04998680147100390fc70e2820e2a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+      "sha": "35061a80421612bfbe92d38a20171935db59990d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "sha": "0cc27055eb23d1cd78c1b3e18cfde3a372b6351d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+      "sha": "14c9d0685cc8b64a85cb9b1b9a01b8d99d702333",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
+      "sha": "d657588ccc28bf1639155fb3fa7f889b27df30dd",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/production_episodic_snapshot.rs",
+      "sha": "08d90381cff19a79eaa35f318175940b12445f11",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+      "sha": "6cb08af29309991e19510cfecd30aaaafa55f6a3",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+      "sha": "245dc875742fb5e645859bd1cfe8c370e4189f12",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
+      "sha": "1c032b45ac066ce4ed2cf4bd204a9834d59626a9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "sha": "15487c549abfe1cf1251f6a65a4be699b6b381fc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/src/auth_status.rs",
+      "sha": "dafa9ce7d6e40779181ed18a82ed14a93749790b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "sha": "36d4f1d1272cb99b72a79ef8c9076ebc35246ff9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/Cargo.toml",
+      "sha": "74c751715e37d7beb97d0a7db18dd23c389c0bee",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/Cargo.toml.orig",
+      "sha": "d713c61c1647ca5ddc14d4116758eb9d98b115cf",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/.cargo_vcs_info.json",
+      "sha": "f133fd70dbc3de37c8faaf09d928ca4e51f42c02",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.lock",
+      "sha": "ab88efa7fef22ae3b0192cc529bb4916e1485543",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml",
+      "sha": "0473ba4659ced1b6b234c450a99117759eefb1a0",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml.orig",
+      "sha": "8f530f3cd5099e83c7a046e108af215fcd828648",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/LICENSE-APACHE",
+      "sha": "965b606f331b51d566b46025f9ff311a7aad0c12",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/LICENSE-MIT",
+      "sha": "76219eb72e8524f15c21ec93b9b2592da49b5460",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/any.rs",
+      "sha": "d6b82e72ade7a5b6ed3764da348c38f947a9fde3",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/arguments.rs",
+      "sha": "79f45a364530b978e40d3af00234d602df05abd5",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/column.rs",
+      "sha": "e32606c728d515b1238b83cab08c2e3f4214db94",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/collation.rs",
+      "sha": "79ee0e5c4981838c77eff0561d4c4c30b1a4688a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/describe.rs",
+      "sha": "d73367da46ce7b24375bafbbffeb8184bf9fcd28",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/deserialize.rs",
+      "sha": "57d2b899ba2e1f2e8ac069f4d9fd944ee10033a8",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs",
+      "sha": "3e8c4f5e23ba50c093d0e49ae308337dc8aedda5",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/execute.rs",
+      "sha": "fa234ba84061022f363b9d095b881f675842557d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/executor.rs",
+      "sha": "c9d887de66e87a5220eceda9c582b4720f3c57e9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/explain.rs",
+      "sha": "af7eecf5a30479ada11f934b29c8faa6b991672b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs",
+      "sha": "7b3b822f15988b2227d1fb6abf14619a3e3bbece",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/intmap.rs",
+      "sha": "b7e2074e72278d2392a5a25f6ff1eac10ee624e2",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/mod.rs",
+      "sha": "22dddefbc993daf6777fd0f2b647824aeefcc0b2",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/preupdate_hook.rs",
+      "sha": "9581dd2317b5c0237b147fb90a4fd774b9b39541",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/worker.rs",
+      "sha": "63f08227e44f38126a963d3f3e8a722f63483699",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/database.rs",
+      "sha": "b795af6acdecd78403de261271dd3bacf7420c2c",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/error.rs",
+      "sha": "fcbbf10f001a0b89698c3a106b7694cf270e900e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/lib.rs",
+      "sha": "207cca70cbda8e6ed7b1f0aad0a788158932ce86",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/logger.rs",
+      "sha": "1464a730c772ed0d29e881e335c721a3a51219a2",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/migrate.rs",
+      "sha": "54c229e2a59d6cf1f2a7cf1473a86784b70c5f33",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/auto_vacuum.rs",
+      "sha": "582631c5bd636e11fd50e2f961ee69c3895f2d8b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connect.rs",
+      "sha": "02f36a00815c2e6139fee68044763d2041a24e55",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/journal_mode.rs",
+      "sha": "5750ce97ec1f9d1ac31cbf86b06aa46d5063d78f",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/locking_mode.rs",
+      "sha": "99afd43eef69906c261830269c13ff80ae93a0cc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/mod.rs",
+      "sha": "4d5801fcfad2a583ca1468c75a544545c1d5fb89",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/parse.rs",
+      "sha": "a621f4bd64899afe1b1f102e72b3d656708e177d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/synchronous.rs",
+      "sha": "709b805bc76e23baa7329ea574347a0267b84a2d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/query_result.rs",
+      "sha": "f7a9a09d91ad2c83ee5b81364f23a741e07fbad9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/regexp.rs",
+      "sha": "2feedc770ef812d65c9c83ee8776e4a645dab7c1",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/row.rs",
+      "sha": "53eeb92520fe54646ffdfd097f08580070e9d4fb",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/handle.rs",
+      "sha": "7a301d4eaa3589da201686fd9fcd66089d445cf8",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/mod.rs",
+      "sha": "8012751b35fea7e2106c4813e9e5b416cb72c7ca",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/unlock_notify.rs",
+      "sha": "1aac6caa72b4e50bb06214aae0f7da9c17ea34a5",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/virtual.rs",
+      "sha": "bb5c2afdde44173ada120ae6aa3da95878cd3f53",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/testing/mod.rs",
+      "sha": "bd8143e382ff0ad68f31219bf5c4953e9bec7cea",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/transaction.rs",
+      "sha": "3636ebbb2ecc0c4ad459de8cc91389348e38a8ff",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/type_checking.rs",
+      "sha": "97af601c86b9efe4f00f440ae668ed1da5a3a881",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/type_info.rs",
+      "sha": "b10dfd93181e977c90988f6d0e71c489d99e9db4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/bool.rs",
+      "sha": "9089b0bcc96030915add5eb627ae6f037efbe8b4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/bytes.rs",
+      "sha": "672ab467e2ff5b8fb265b0f60b9c6e63519e4330",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/chrono.rs",
+      "sha": "272bd5aa682377697ef53f72c6562880227a619a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/float.rs",
+      "sha": "8ad2701d95fc9212ec3f48ef1b6c0f55492f848b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/int.rs",
+      "sha": "81b4d7af81ad8cbb2bb632ea05da613a403b3cf0",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/json.rs",
+      "sha": "0b0d9c560ae5da6b5e0083e1a32d699497a95a2e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/mod.rs",
+      "sha": "d36af7ea1493d67cf15c475fdcc6e0510200c531",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/str.rs",
+      "sha": "05fa6742d6dc447684c2ef0d68a3ab0675d74119",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/text.rs",
+      "sha": "0a9bf21f26f928a9d629f95705a81c3a465bdf95",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "sha": "9c582de4836f8a80c61d538bd130b59057350d94",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/uint.rs",
+      "sha": "029faf09c0c5f77d1b70b0466b77373d5486d333",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/uuid.rs",
+      "sha": "64abcca9287c467773839fdc5f047d1ea249edf4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/value.rs",
+      "sha": "781dc7353a046942e979c61192da50b7f66a3379",
+      "type": "blob"
+    }
+  ]
+}

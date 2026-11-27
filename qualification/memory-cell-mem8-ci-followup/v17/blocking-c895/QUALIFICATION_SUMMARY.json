@@ -1,0 +1,615 @@
+{
+  "all_complete_displayed_libtest_summary_counts_reconciled": true,
+  "all_summary_target_counts_reconciled": true,
+  "artifact_boundary": "All11Bazel execution-artifact metadata objects, including originalMac13872750986, are retained. No payload ZIP was fetched for this packet; no full artifact recovery is claimed.",
+  "attempt": 1,
+  "cancelled_jobs": [
+    {
+      "cause": "unknown",
+      "job_id": 130619380156,
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "cause": "unknown",
+      "job_id": 130619380496,
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "cause": "unknown",
+      "job_id": 130619380591,
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "cause": "unknown",
+      "job_id": 130619380621,
+      "runner_id": 0,
+      "steps": []
+    }
+  ],
+  "complete_original_raw_logs": 17,
+  "event": "pull_request",
+  "fence_original": {
+    "actual": "local_control_inventory_unavailable before checkout",
+    "job_id": 130619112490,
+    "new_v013_qualification_not_transferred_to_this_run": true,
+    "pin": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+    "subreason": "UNKNOWN"
+  },
+  "final_required": {
+    "actual_error": "CI gate rejected: invalid or absent CI result: bazel",
+    "boundary": "The aggregate needs values are preserved; a successful individual repo-checks build job does not replace its original abandoned aggregate result.",
+    "job_id": 130654241277,
+    "original_needs": {
+      "bazel": {
+        "outputs": {},
+        "result": "abandoned"
+      },
+      "blob-size-policy": {
+        "outputs": {},
+        "result": "failure"
+      },
+      "cargo-deny": {
+        "outputs": {},
+        "result": "success"
+      },
+      "codespell": {
+        "outputs": {},
+        "result": "success"
+      },
+      "hepta-contract-gate": {
+        "outputs": {},
+        "result": "success"
+      },
+      "hepta-scoped": {
+        "outputs": {},
+        "result": "skipped"
+      },
+      "lightweight": {
+        "outputs": {},
+        "result": "skipped"
+      },
+      "repo-checks": {
+        "outputs": {},
+        "result": "abandoned"
+      },
+      "rust-ci": {
+        "outputs": {},
+        "result": "success"
+      },
+      "scope": {
+        "outputs": {
+          "derived": "true",
+          "effects": "true",
+          "full_repo": "true",
+          "inference": "true",
+          "learning": "true",
+          "lifecycle": "true",
+          "native": "true",
+          "objective": "true"
+        },
+        "result": "success"
+      },
+      "sdk": {
+        "outputs": {},
+        "result": "failure"
+      }
+    }
+  },
+  "job_counts": {
+    "cancelled": 4,
+    "failure": 9,
+    "skipped": 4,
+    "success": 20
+  },
+  "jobs": 37,
+  "linux": {
+    "combined_unique_passed_target_labels_per_job": 415,
+    "each_main_command": {
+      "failed_targets": 2,
+      "passed_targets": 414,
+      "skipped_targets": 167
+    },
+    "each_separate_operator_command": {
+      "passed_targets": 1
+    },
+    "job_ids": [
+      130619380704,
+      130619380693
+    ],
+    "warning": "These are two separate commands and Bazel target labels, not415Rust cases; GNU/musl and repeated Wine-wrapper targets are separate original jobs/instances."
+  },
+  "mac": {
+    "complete_raw_present": true,
+    "core_all_failure_body_coverage": "The target reports16failed/28attempts and prints16log paths; the original full job displays7 core-all libtest bodies. Do not invent per-case outcomes for the other9 paths.",
+    "duplicate_display_name_boundary": "Some parameterized display names repeat within the same complete libtest block and are included in its original summary. The reader retains every occurrence, exposes non-unique names and does not claim unique case IDs.",
+    "failed_target_attempt_reports": [
+      {
+        "label": "//codex-rs/core:core-unit-tests",
+        "printed_failure_log_paths": [
+          {
+            "line": 13019,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_7_of_8/test_attempts/attempt_1.log"
+          }
+        ],
+        "reported_attempts": {
+          "failed": 1,
+          "total": 9
+        }
+      },
+      {
+        "label": "//codex-rs/tui:tui-unit-tests",
+        "printed_failure_log_paths": [
+          {
+            "line": 13022,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test_attempts/attempt_1.log"
+          }
+        ],
+        "reported_attempts": {
+          "failed": 1,
+          "total": 9
+        }
+      },
+      {
+        "label": "//codex-rs/app-server:app-server-all-test",
+        "printed_failure_log_paths": [
+          {
+            "line": 13040,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_7_of_16/test_attempts/attempt_1.log"
+          },
+          {
+            "line": 13041,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_7_of_16/test_attempts/attempt_2.log"
+          }
+        ],
+        "reported_attempts": {
+          "failed": 2,
+          "total": 18
+        }
+      },
+      {
+        "label": "//codex-rs/core:core-all-test",
+        "printed_failure_log_paths": [
+          {
+            "line": 13047,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test_attempts/attempt_1.log"
+          },
+          {
+            "line": 13048,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_12_of_16/test_attempts/attempt_1.log"
+          },
+          {
+            "line": 13049,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_8_of_16/test_attempts/attempt_1.log"
+          },
+          {
+            "line": 13050,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_8_of_16/test_attempts/attempt_2.log"
+          },
+          {
+            "line": 13051,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log"
+          },
+          {
+            "line": 13052,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test_attempts/attempt_1.log"
+          },
+          {
+            "line": 13053,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test_attempts/attempt_2.log"
+          },
+          {
+            "line": 13054,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_14_of_16/test.log"
+          },
+          {
+            "line": 13055,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_14_of_16/test_attempts/attempt_1.log"
+          },
+          {
+            "line": 13056,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_14_of_16/test_attempts/attempt_2.log"
+          },
+          {
+            "line": 13057,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log"
+          },
+          {
+            "line": 13058,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test_attempts/attempt_1.log"
+          },
+          {
+            "line": 13059,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test_attempts/attempt_2.log"
+          },
+          {
+            "line": 13060,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_9_of_16/test.log"
+          },
+          {
+            "line": 13061,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_9_of_16/test_attempts/attempt_1.log"
+          },
+          {
+            "line": 13062,
+            "path": "/Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-all-test/shard_9_of_16/test_attempts/attempt_2.log"
+          }
+        ],
+        "reported_attempts": {
+          "failed": 16,
+          "total": 28
+        }
+      }
+    ],
+    "job_id": 130619380498,
+    "memory_partial_display": {
+      "complete_libtest_summary": false,
+      "displayed_failed": 1,
+      "displayed_ignored": 9,
+      "displayed_ok": 364,
+      "failure_reason_text": "not emitted in this original block before timeout",
+      "initial_running_tests": 429
+    },
+    "original_displayed_blocks": 17,
+    "original_summary_passed_including_three_flaky": 405,
+    "raw": {
+      "bytes": 2677695,
+      "git_blob": "e2754bf690fd742978fe0a2505699a6f1ae635d1",
+      "sha256": "27e26dcd3c2a81f11b08ac00717f0e2b9533f6cba67d1426625f132a223a53ce"
+    },
+    "strict_passed_fully_cached": 381,
+    "strict_passed_not_marked_cached": 21,
+    "target_outcomes": {
+      "FAILED": 4,
+      "FLAKY": 3,
+      "PASSED": 402,
+      "SKIPPED": 172,
+      "TIMEOUT": 3
+    },
+    "timed_out_targets": "hepta-evidence, hepta-memory and paired_process_product have partial displayed output but no complete terminal libtest summary.",
+    "unique_failed_display_names": [
+      "agent::control::tests::resume_agent_from_rollout_skips_descendants_when_parent_resume_fails",
+      "app::tests::patch_approval_tests::active_patch_approval_preserves_deferred_startup_protection",
+      "cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation",
+      "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+      "ide_context::ipc::tests::fetch_ide_context_uses_unregistered_request_route",
+      "remote_session::connection::driver::tests::concurrent_large_delegate_results_do_not_disconnect_a_backpressured_bulk_lane",
+      "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+      "suite::code_mode::code_mode_node_repl_image_flag_without_enhanced_stays_disabled::test_case_1_node_repl",
+      "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_14_cua_text_fallback_without_context_bound",
+      "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_7_text_fallback_with_insufficient_context",
+      "suite::guardian_review_cancellation::cancelling_tool_aborts_its_guardian_review::test_case_2_code_mode_turn",
+      "suite::guardian_review_cancellation::cancelling_tool_aborts_its_guardian_review::test_case_3_code_mode_cell",
+      "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child",
+      "suite::v2::plugin_list::plugin_list_fetches_workspace_directory_kind_when_remote_plugin_disabled"
+    ]
+  },
+  "native_case_total_not_inferred_from_target_counts": true,
+  "original_cargo_deny_raw_gap": {
+    "api_conclusion": "success",
+    "full_raw_obtained": false,
+    "job_id": 130619379892,
+    "no_test_counts_claimed": true,
+    "original_read_failures": 2,
+    "reason": "Transport closed"
+  },
+  "private_separate": {
+    "archive_bytes": 79144,
+    "archive_git_blob": "32f0255ddb0cacb43b8433b2d030aa407b194e30",
+    "archive_sha256": "46ddc9886334f4fa19cbe72f1e58bc6ff9a9720ca705d7ae62c2cddacca1cbed",
+    "run_id": 43048568252,
+    "scope": "34unique primaryPASS cases; repeated acquisition and counterfactual controls reported separately; not duplicated here"
+  },
+  "raw_inventory": [
+    {
+      "bytes": 3862,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "failure",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "35115a646caa3f49667aacd443255ef2051f8154",
+      "job_id": 130619112490,
+      "job_name": "Blob size policy / Blob size policy",
+      "local_tool_wrapper_identity": {
+        "bytes": 3960,
+        "git_blob": "47281f3494b0b639a249054fa30b4adb5ff4dfd0",
+        "sha256": "b0f2a5e708f9307e24787f8573da99ce1fec71d251d975d5c3e6cdfd3cd8f179"
+      },
+      "path": "job-130619112490.log",
+      "sha256": "f133870c1951e334551c0d9e5baa24279473add86d9fd537703636389b48b30b"
+    },
+    {
+      "bytes": 223633,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "success",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "a82d0c93fd045a95ac480665e5ae83b78f875f98",
+      "job_id": 130619380317,
+      "job_name": "repo-checks / build-test",
+      "local_tool_wrapper_identity": {
+        "bytes": 233502,
+        "git_blob": "350c87da3d1989a2300d6ae4b6e29b78385b3c89",
+        "sha256": "ce5d4d01ba9a5c3ba60b428723a3389b5b629f487adfb647cab9cafddee1051b"
+      },
+      "path": "job-130619380317.log",
+      "sha256": "0446f40ffea380387d9e1c23746a209279320fd1d4d4fbf78c49858cdfd401de"
+    },
+    {
+      "bytes": 23762,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "failure",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "1d50dd75844b66f478b773c9b5363ef88534c71a",
+      "job_id": 130619380384,
+      "job_name": "sdk / sdks",
+      "local_tool_wrapper_identity": {
+        "bytes": 24279,
+        "git_blob": "cd17b11bde1136dc66b2612a8dd44fe9bfd5df20",
+        "sha256": "7bd790e0d143377a5bc6c72aa68b565fd214c7bbc9140477a1b9ca8a7c63a790"
+      },
+      "path": "job-130619380384.log",
+      "sha256": "a3a5061742853dd20226243f1d79ed7d517f1f352c8e741125590e80bcfdcabd"
+    },
+    {
+      "bytes": 843455,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "success",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "9cb704ec7ca10ae8c77d47f31910238e62118371",
+      "job_id": 130619380491,
+      "job_name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "local_tool_wrapper_identity": {
+        "bytes": 854118,
+        "git_blob": "2b5505e5fc62d77c37f792392ef4ed49fc777ef3",
+        "sha256": "4ce9697448d2e0104787bc77b613cf81a07160b4312a9abc776dbd8eb4642b8d"
+      },
+      "path": "job-130619380491.log",
+      "sha256": "53ffd27695d0c2b51c6909a2d9c5f8787e76a8aa38bb759ceaee4880a42aae96"
+    },
+    {
+      "bytes": 411634,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "success",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "67c2c2fa50ab1a77a12a7da44b3930b8c60b6c7e",
+      "job_id": 130619380598,
+      "job_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "local_tool_wrapper_identity": {
+        "bytes": 430476,
+        "git_blob": "50bd73b84a64c205189f5f1265c35a075d0c4996",
+        "sha256": "d468eba78f0b6afb0f9ad1266fcec0d94a282bb5a00591c209ba581eb1700d74"
+      },
+      "path": "job-130619380598.log",
+      "sha256": "4d198438f24182ba362c1f54bbb68d1859bfd01f979882a2a86449f7f732ffef"
+    },
+    {
+      "bytes": 612856,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "success",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "f633088066bd6895d7bbd993c5e273a80c38417f",
+      "job_id": 130619380653,
+      "job_name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "local_tool_wrapper_identity": {
+        "bytes": 636905,
+        "git_blob": "2a912df85b879390036cc6ec9dcd53fb362a076a",
+        "sha256": "76aedb81e0bc10097e1d315dee42b5b4d47f0872a5d18711a365beaa8753ead7"
+      },
+      "path": "job-130619380653.log",
+      "sha256": "5b78aa1ac9d6c00e6fd4ee70f020ca7e0309e8b88c6c284c552b8b67d46183d9"
+    },
+    {
+      "bytes": 557420,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "failure",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "20724bac9f48f5ae47e53dd4dc10a36f9a8b3f8c",
+      "job_id": 130619380671,
+      "job_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "local_tool_wrapper_identity": {
+        "bytes": 579221,
+        "git_blob": "b6ec82d84f04f1157cf13df5fcf19f6206ee6b79",
+        "sha256": "049d2e7397dca143551202565139e92a697cfa493e9db236bb01f055f0e82faa"
+      },
+      "path": "job-130619380671.log",
+      "sha256": "a4775cb506cba9b9129553d6f7b8edae5d2d1c54efd9ae12884b2633dccb2ded"
+    },
+    {
+      "bytes": 413968,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "success",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "bf0e05947c83c72a950a0fedd81b133d15cd485a",
+      "job_id": 130619380678,
+      "job_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "local_tool_wrapper_identity": {
+        "bytes": 431987,
+        "git_blob": "a30ed2e9723c41ee4cc50a2e4c456c6245d5d3fa",
+        "sha256": "7a585047bf0d67024bfc3bfe147a6a1b90e4163230383625fffca925ecbd8df7"
+      },
+      "path": "job-130619380678.log",
+      "sha256": "e69598c5181ad959843faa5229b8792dc90f21518a64ff88ffada3e17cd67c46"
+    },
+    {
+      "bytes": 2217487,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "failure",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "6e316f304d76b6ad0637eecdfaa8279c4ae01f5b",
+      "job_id": 130619380693,
+      "job_name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "local_tool_wrapper_identity": {
+        "bytes": 2264670,
+        "git_blob": "94e00f138b234871defd9efb14e207017561938b",
+        "sha256": "7ed78868d70e4ec4178e52f3269967f87fad8e70000b109386c2c551652a44bb"
+      },
+      "path": "job-130619380693.log",
+      "sha256": "cc05698c0a5d17186fdf1eec08ce858882b0b9252e36be4cea42bf84a865f18e"
+    },
+    {
+      "bytes": 2226072,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "failure",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "297edbb7fcc7d88ea334b078b346d65b16095661",
+      "job_id": 130619380704,
+      "job_name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "local_tool_wrapper_identity": {
+        "bytes": 2273569,
+        "git_blob": "bd36ea672d322d73b0e51c41a11eecdd9c01e924",
+        "sha256": "26470f03cdecc4365155ef4bdef36eabee23c35c057d4bfbe2bb7ba138e30d41"
+      },
+      "path": "job-130619380704.log",
+      "sha256": "466552f1b179943611b0e0046b603738d9d3675196507d1ffa068c766792adec"
+    },
+    {
+      "bytes": 554082,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "success",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "d1c5397b5da99b00f93be92fae9a3b7dabd43b85",
+      "job_id": 130619380777,
+      "job_name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "local_tool_wrapper_identity": {
+        "bytes": 576559,
+        "git_blob": "340b58bc7d9ca9ebf3983ee80a8b26d09a8f88c8",
+        "sha256": "8b4feadbc9deafd75fcb7a1cd52faceb87917b68eba4e6d514960c3e50df7456"
+      },
+      "path": "job-130619380777.log",
+      "sha256": "044f4cf478f44733ee393b68eda86c3bac53b3ce6e128b42902a54c9d3da1592"
+    },
+    {
+      "bytes": 806022,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "success",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "b78ce1ccb59bf76da7ddea0bbe019190b6450c05",
+      "job_id": 130619380964,
+      "job_name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "local_tool_wrapper_identity": {
+        "bytes": 816454,
+        "git_blob": "cd06431260a6e1f3d6b7592d69cddd3eec295fee",
+        "sha256": "63c874897a9ac33507d3b7d7310576d47c1d652aec26cd45a111ed06a0fe0bcb"
+      },
+      "path": "job-130619380964.log",
+      "sha256": "6d8b3fd2dca6e4a70b27f820780680e142183d461245da4437a83d5c81a1daef"
+    },
+    {
+      "bytes": 931888,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "failure",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "241d49ba968a94567be85dabb7d58250ae606d51",
+      "job_id": 130619381008,
+      "job_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "local_tool_wrapper_identity": {
+        "bytes": 965539,
+        "git_blob": "4ee7348b0153ca0d7d55bee68728dc6d243303cd",
+        "sha256": "f1f5fb9965f97010bf60af88bd9d0e19bc8ca0b47007ce6a3322c1a4417f7b29"
+      },
+      "path": "job-130619381008.log",
+      "sha256": "b59a00415d1b5d9d24b10e07e3d3f05176d2733ae7b3c4d7916d0bab26fc5aab"
+    },
+    {
+      "bytes": 133643,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "success",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "115f1e0c5b8a2f73aa7ec1339163b0cb4a02d907",
+      "job_id": 130619534876,
+      "job_name": "rust-ci / Rust format",
+      "local_tool_wrapper_identity": {
+        "bytes": 136855,
+        "git_blob": "aad654bbc324e1d7e62d25fd542e1c28baa5795e",
+        "sha256": "8fe30c9fdc73ad907b3538816eb9bc75c14d63af403fdb0e375c1074eb64b1bb"
+      },
+      "path": "job-130619534876.log",
+      "sha256": "74c56f2c2c314b7a6f9b7463cdc3abacea424653ec206c10a7f4941ab006846f"
+    },
+    {
+      "bytes": 2640,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "failure",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "22676018e3dd279385c4bd8f15f8e35df2e8030e",
+      "job_id": 130632985454,
+      "job_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+      "local_tool_wrapper_identity": {
+        "bytes": 2890,
+        "git_blob": "e96de71809b6558a92beb4b6a3f6a7f49b89cba4",
+        "sha256": "7ee795add5d7d21147afe5dbdb13f077dd7c8896b20cd97a60780f23be7b332a"
+      },
+      "path": "job-130632985454.log",
+      "sha256": "515c940aa6d745c3fe2cc833f5f5406fcc43e72c1c2b1c32f3a05a5f08f33179"
+    },
+    {
+      "bytes": 2677695,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "failure",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "e2754bf690fd742978fe0a2505699a6f1ae635d1",
+      "job_id": 130619380498,
+      "job_name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "local_tool_wrapper_identity": {
+        "bytes": 2739953,
+        "git_blob": "dd12df25f973e76b6b3d4b436afe73cf7a09c233",
+        "sha256": "49a9bd2a7eefafff00087e0ec780c147adcaaba8eae5db5d42a5241e69c0ff5d"
+      },
+      "path": "job-130619380498.log",
+      "sha256": "27e26dcd3c2a81f11b08ac00717f0e2b9533f6cba67d1426625f132a223a53ce"
+    },
+    {
+      "bytes": 19108,
+      "capture_content_utf8_exact_equal": true,
+      "conclusion": "failure",
+      "duplicate_transport_wrapper_retained": false,
+      "git_blob": "6d0c69e346e43ce613d710bcd7bafa5088dbd3f6",
+      "job_id": 130654241277,
+      "job_name": "CI required",
+      "local_tool_wrapper_identity": {
+        "bytes": 19947,
+        "git_blob": "83b22ebf2f0636926ceb35663e8e27dd54471f72",
+        "sha256": "71d9aab5deba8172970e9ec2ef76a8f4da460865b3af1c0b773b570db77ae2f7"
+      },
+      "path": "job-130654241277.log",
+      "sha256": "5f2683f38a603695bbcec53ce4a2032515f7ce6a88eeb97822ad012afd4db514"
+    }
+  ],
+  "read_only_collection": {
+    "cancellations": 0,
+    "dispatches": 0,
+    "host_actions": 0,
+    "model_requests_started": 0,
+    "native_executions_started": 0,
+    "ref_changes": 0,
+    "reruns": 0
+  },
+  "run_id": 43048568477,
+  "run_updated_at": "2026-11-11T16:27:29Z",
+  "schema": "mem-c895-original-blocking-terminal-v1",
+  "sdk_original": {
+    "actual": "azure.archive.ubuntu.com DNS failure followed by apt100",
+    "job_id": 130619380384,
+    "sdk_tests_executed": 0
+  },
+  "source_head": "c89540598693697577cda8cba31cb07f6ce65317",
+  "terminal": "failure",
+  "test_job_records": 7,
+  "tested_merge": "f0a379f3ae78e6cb01abcc6ac6458bacef23997b",
+  "tested_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "windows_shard2": {
+    "job_id": 130619380671,
+    "original_boundary": "ordinary unprivileged control succeeds; elevated outside-delete violates its original assertion; two later cases report shared lock poisoning in the same process",
+    "target_failed": 1,
+    "target_passed": 108,
+    "target_skipped": 42
+  },
+  "windows_shard4": {
+    "job_id": 130619381008,
+    "original_boundary": "two subagent-route cases fail in three displayed attempts each; the workspace metadata case also reports CreateProcessWithLogonW1326 in two later attempts after one earlierPASS",
+    "target_failed": 1,
+    "target_passed": 109,
+    "target_skipped": 33
+  }
+}

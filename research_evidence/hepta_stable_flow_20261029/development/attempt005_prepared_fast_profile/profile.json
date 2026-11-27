@@ -1,0 +1,51 @@
+{
+  "new_execution": true,
+  "development_only": true,
+  "formal_validation_or_test_read": false,
+  "source_sha256": {
+    "audit.py": "88765e918f60909f476d40e7b1bef618862768f247a1836020ee55df4f204d7e",
+    "data.py": "6360553bb21adef417e2b9663c865c82a9740111561608a45a4d255765afa623",
+    "flow.py": "0c2cff8aba381a6498bd7d666da1500c561f52ea8d2b9ec1a3f81332fb7dd3a9",
+    "memory.py": "2820ee2d9a67f60f415ee4aad6f101f21fb3119ca542e8a7c8a77ab1b4b9a5dc",
+    "models.py": "23057770711a050e86b9bf6e184f1c413c8dcb82127ecf8e6e638aea1096743e",
+    "numerics.py": "6499df238499265211cc3d8baaffef5ddc94a9501ffdae0b9599ffa6e367802f",
+    "study.py": "02e20e77266e2cb32ff8f4f2a9103618c74d4e2af6cfd38d046bfbd36203ee02",
+    "tests/test_data.py": "5eee7f9060e38c92fe01779659b286992a1262f20ea1ea47fe7b45b08c7dd9da",
+    "tests/test_flow.py": "ebfe993aa80103fec5dd15776a868dc6b42e97993116ba4ed5f4a29c0aca9e31",
+    "tests/test_memory.py": "6494b3416e246450165af9dd51b79327639d470e0584257ade56e723a8d1493e",
+    "tests/test_numerics.py": "b7b03e677ae98f23d0fbe5974d51559ad81e004544aaff1faa5374ac66ccfc49"
+  },
+  "profile_source_sha256": "05f95f88b62ba6cd9c0d55c30756935ce5dfc7e9c95165435064d2acc231389f",
+  "rows": [
+    {
+      "arm": "analytic",
+      "one_update_cpu_seconds": 0.9425061690000001,
+      "loss": 2.068631887435913,
+      "gradient_norm": 0.09634830057621002
+    },
+    {
+      "arm": "matched_c1",
+      "one_update_cpu_seconds": 0.9130331259999998,
+      "loss": 2.0686254501342773,
+      "gradient_norm": 0.09652388095855713
+    },
+    {
+      "arm": "sigmoid",
+      "one_update_cpu_seconds": 0.5608876399999998,
+      "loss": 2.068619728088379,
+      "gradient_norm": 0.0962844118475914
+    },
+    {
+      "arm": "ordinary",
+      "one_update_cpu_seconds": 0.5061188779999997,
+      "loss": 2.0685129165649414,
+      "gradient_norm": 0.09806520491838455
+    },
+    {
+      "arm": "frozen_flow",
+      "one_update_cpu_seconds": 0.3104998969999997,
+      "loss": 2.068631887435913,
+      "gradient_norm": 0.09634023159742355
+    }
+  ]
+}

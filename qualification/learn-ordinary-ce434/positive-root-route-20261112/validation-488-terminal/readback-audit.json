@@ -1,0 +1,161 @@
+{
+  "source_sha": "48844493c046fdd79734ddd2c1866314023a15cb",
+  "source_tree": "360375952ff4fa51e817f2c773e5a5bc2a842a27",
+  "original_request_commit": "caa1c00ae3d542246ade1e9b5aa66ef51bf761a4",
+  "idempotency_key": "learn-ce434-fixed-48844493-source-native180-v1",
+  "original_pty": "dpty-01eb3f3956ee92eec732eb0156752332043c12a05c6a75ed1959a07949d195da",
+  "terminal": "exited",
+  "exit_code": 1,
+  "source_after_clean": true,
+  "source": {
+    "methods": 401,
+    "failures": 13,
+    "errors": 105,
+    "skipped": 0,
+    "unique_affected_methods": 41,
+    "method_ids_source": "complete original h_view ERROR/FAIL headings; 118 entries include subtests, not 118 unique methods",
+    "json_bytes": 130287,
+    "json_sha256": "dd9fe893291f97d49800f2c7f10b817363a02c5ae957bdcb877b05baa4103d6b",
+    "full_json_retrieved": false,
+    "log_bytes": 312355,
+    "log_sha256": "c2c0d2c3daeeebef53a2f97625abb79554a5a8ab18ce42f935f38b176eb64482",
+    "full_raw_log_retrieved": false
+  },
+  "native": {
+    "helper_build_exit": 0,
+    "helper_verify_exit": 0,
+    "test_compile_exit": 101,
+    "tests_started": 0,
+    "junit_collection_exit": 1,
+    "diagnostic": "E0659: assert_eq ambiguous in hepta-learning-artifacts/src/owner_service_readback_support_tests.rs:109; just test's test-binary compilation failed before running tests.",
+    "expected_cases": 180,
+    "expected_groups": 40,
+    "result_bytes": 40010,
+    "result_sha256": "626c94f1c6e290e7edef72ca92e9573e99368373fb10b1756e80c9922511c29d",
+    "execution_log_bytes": 28448,
+    "execution_log_sha256": "e187e7fc2a33eff29b33943949792dd571a7b9df333b898e4722554264c13cc0",
+    "full_result_retrieved": false
+  },
+  "self_test_exit": 0,
+  "full_caller_executed": false,
+  "formatter_executed": false,
+  "readback_limit": "Large binary reads timed out. Small pinned binary header, complete bounded h_view windows/search and authoritative PTY/outer result were actually retrieved; no full raw log byte claim.",
+  "files": [
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/outer-result.json",
+      "sha": "593c9801ad18fa9806928f89e0987d7a932250e0",
+      "bytes": 2391,
+      "sha256": "4d51567817d59fcb8658ef0f2bd2ec081225ab24184cf15c8f7b14687c652238"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/source-suite-header.json.partial",
+      "sha": "a9c2dbf2c89a644fdc90b6cd7b595b40875beb5b",
+      "bytes": 4096,
+      "sha256": "e71e4bb07b9f272c1e6313672696fe54ce0df53b92b9d8a07281071bd0c9d70d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/source-failure-headings.view.txt",
+      "sha": "9656e0507b8e8bb6e35a5b9865b3f176b162a5f5",
+      "bytes": 35932,
+      "sha256": "931af7a703418f9d3287c1dfa2ceaa21e8a9b51b7301171ea7c94cbcb442c79d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/native-result-tail.view.txt",
+      "sha": "b6d49d291fd0dc9c54ae528c6ee1dbf506c25107",
+      "bytes": 5452,
+      "sha256": "ad776fb6b425480a7f40bc029c892a794543e59bb049234ae665c33292796fe1"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/native-diagnostics.view.txt",
+      "sha": "5d89d26a7f9564f26b74b1bf74064b807f226b80",
+      "bytes": 2387,
+      "sha256": "40e2a380c8905854cea96a561385c128c6324f464da87d3f0f4dfdcb851c93c4"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/native-steps.view.txt",
+      "sha": "a7acb480c136fe0dbadedf14411a77a13baf4ee4",
+      "bytes": 2944,
+      "sha256": "06c8b3db6f3ec08b965c9172e3c47d0eecbfe8fd2db1cb0901b886a8e308a8f0"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/source-errors-1.view.txt",
+      "sha": "18fa021a059d7ecc5db9bd8bd9db87579991387e",
+      "bytes": 14261,
+      "sha256": "a1e5e57d66b3d5a73b72019646d762f4f0541a837bcb58aae3455b24ecbbe656"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/source-errors-model.view.txt",
+      "sha": "172e21aa61689609eaa013904cba06ca64b43ba4",
+      "bytes": 9413,
+      "sha256": "edab460dec05be2475b8e51b313318187da783afd2fc68ad33b74eb61efe899a"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/source-errors-root.view.txt",
+      "sha": "d5ddf6b2d404db5356417ce56e8a2d6c2249ac46",
+      "bytes": 3408,
+      "sha256": "e2a8069fd9506eb2a846964608172486f39c955225ff0a611e672863bfc440b5"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/original-pty-terminal.json",
+      "sha": "85ff5ef9dc433ce2562649580c485961d3180ba3",
+      "bytes": 2058,
+      "sha256": "05a74d2c1a37be553387a0fa36e0636e62e90f794ff0af0fd55d6c212ef98fdc"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/source-failed-method-ids.json",
+      "sha": "06854db979ea3ba797625987c9518b5d3a17bb28",
+      "bytes": 6010,
+      "sha256": "469e0cc0b7e3460f2f8543c3a882edbb9bdd2653e3aad29cac1980991a76bcc2"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/source-verification-failures.view.txt",
+      "sha": "01bcd21c2b99bb5e901c9555e9c7e0219170a88e",
+      "bytes": 19357,
+      "sha256": "daef1a4c74c260057e9ed15d7cfbb443872239d2f25c8d27f35b403fef4e9bbf"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/source-failures-final.view.txt",
+      "sha": "91f12b2842b0226ff50ff339860ee9a4fffe4193",
+      "bytes": 17297,
+      "sha256": "36a7a6f65dffc0d9a384c70a15dc6ec4de71d962d328d687d6d63de7c8d64356"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/validation-488-terminal/original-readback-responses.json",
+      "sha": "8556620edcc8eb2aa26b59e9fe520effc5ff52e2",
+      "bytes": 126224,
+      "sha256": "207de8738e2c7edf78dafe31b48567654893a36301d3b23fe1033bee371e3382"
+    }
+  ],
+  "ordinary": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "observed_schema_issues": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs",
+      "field": "required_order",
+      "scope": "complete protected record",
+      "detail": "One inner sequence has one marker; original verifier requires at least two."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+      "function": "fn source_operation_fenced(",
+      "field": "function.required_order",
+      "detail": "Actual original diagnostic reports invalid marker-sequence structure. Independent of wire record."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "function": "fn joined(",
+      "field": "function.required_order",
+      "detail": "Actual original diagnostic reports invalid marker-sequence structure. Independent of wire record."
+    }
+  ],
+  "diagnostic_corrections": {
+    "source_operation_not_wire_cascade": true,
+    "readonly_failures": "Baseline rejected two complete protected records by an obsolete QA len==1 assumption; not evidence that deletion of six runtime checks was accepted.",
+    "physical_fence": "QA required one self.fenced=true within require_current, but two legitimate rejection branches exist; do not remove either production fence.",
+    "retention": "Full-panel authenticity and insufficient-evidence rejection exist; original aggregate qualification currently follows primary. Do not claim Ineligible retention already blocks aggregate or equate Ineligible with proven regression."
+  }
+}

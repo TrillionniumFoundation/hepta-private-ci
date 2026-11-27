@@ -1,0 +1,196 @@
+{
+  "fits": {
+    "hcsn-s211-lr0.001": {
+      "completed_updates": 3,
+      "events": 31,
+      "first_completed_update": {
+        "backward_seconds": 8.121913096052594,
+        "batch_index": 0,
+        "epoch": 127,
+        "events": 8089,
+        "forward_seconds": 52.44871522806352,
+        "gradient_norm": 0.5310263703750616,
+        "kind": "optimizer_completed",
+        "last_microbatch_diagnostics": {
+          "advance_calls": 256,
+          "bptt": "full",
+          "event_semantics": "conditional expected interval counts, not sampled spikes",
+          "layer_count": 1,
+          "maximum_mass_residual": 4.440892098500626e-16,
+          "maximum_negative_probability": 0,
+          "minimum_observation_evidence": 0.6987043154074011,
+          "numerical_admission": "development_only_unqualified",
+          "sequence_position": 256,
+          "truncate_every": null,
+          "truncation_unit": "global shared input positions, including padding"
+        },
+        "loss": 1.1775529477712174,
+        "micro_forward_calls": 4,
+        "new_number": 1,
+        "new_phase_wall_seconds": 219.60840566002298,
+        "number": 1513,
+        "optimizer_return_elapsed_seconds": 219.60838863399113,
+        "target_weight_sum": 4284.09340187528,
+        "weighted_loss_numerator": 5044.746813905458,
+        "within_scientific_budget": true
+      },
+      "inherited_best_validation": {
+        "events": 31952,
+        "fresh_accuracy": 0.70621557336004,
+        "fresh_macro_f1": 0.37790299262340454,
+        "scalar_absolute_differences": {
+          "accuracy": 0,
+          "balanced_accuracy_present_classes": 0,
+          "brier_half_sum": 0,
+          "brier_mean_classes": 0,
+          "ece_15_equal_width_bins": 0,
+          "events": 0,
+          "macro_f1_11_classes": 0,
+          "macro_f1_present_classes": 0,
+          "nll": 0
+        }
+      },
+      "last_complete_epoch": null,
+      "last_events": [
+        {
+          "epoch": 127,
+          "kind": "micro_forward_started",
+          "new_phase_wall_seconds": 283.0907994270092
+        },
+        {
+          "epoch": 127,
+          "kind": "micro_forward_started",
+          "new_phase_wall_seconds": 289.69976192503236
+        },
+        {
+          "epoch": 127,
+          "kind": "micro_forward_started",
+          "new_phase_wall_seconds": 296.04740507603856
+        },
+        {
+          "epoch": 127,
+          "kind": "micro_forward_started",
+          "new_phase_wall_seconds": 302.34552320704097
+        }
+      ]
+    },
+    "hcsn-s307-lr0.001": {
+      "completed_updates": 5,
+      "events": 44,
+      "first_completed_update": {
+        "backward_seconds": 8.052282134012785,
+        "batch_index": 0,
+        "epoch": 128,
+        "events": 7995,
+        "forward_seconds": 45.55430491408333,
+        "gradient_norm": 0.5420318692017909,
+        "kind": "optimizer_completed",
+        "last_microbatch_diagnostics": {
+          "advance_calls": 256,
+          "bptt": "full",
+          "event_semantics": "conditional expected interval counts, not sampled spikes",
+          "layer_count": 1,
+          "maximum_mass_residual": 4.440892098500626e-16,
+          "maximum_negative_probability": 0,
+          "minimum_observation_evidence": 0.7063581149413529,
+          "numerical_admission": "development_only_unqualified",
+          "sequence_position": 256,
+          "truncate_every": null,
+          "truncation_unit": "global shared input positions, including padding"
+        },
+        "loss": 1.0714215312041069,
+        "micro_forward_calls": 4,
+        "new_number": 1,
+        "new_phase_wall_seconds": 184.85516920604277,
+        "number": 1525,
+        "optimizer_return_elapsed_seconds": 184.85514001903357,
+        "target_weight_sum": 4052.1920169370724,
+        "weighted_loss_numerator": 4341.605775519776,
+        "within_scientific_budget": true
+      },
+      "inherited_best_validation": {
+        "events": 31952,
+        "fresh_accuracy": 0.6724774661992989,
+        "fresh_macro_f1": 0.33231907785802234,
+        "scalar_absolute_differences": {
+          "accuracy": 0,
+          "balanced_accuracy_present_classes": 0,
+          "brier_half_sum": 0,
+          "brier_mean_classes": 0,
+          "ece_15_equal_width_bins": 0,
+          "events": 0,
+          "macro_f1_11_classes": 0,
+          "macro_f1_present_classes": 0,
+          "nll": 0
+        }
+      },
+      "last_complete_epoch": null,
+      "last_events": [
+        {
+          "epoch": 128,
+          "events": 7796,
+          "gradient_norm": 0.5768546741272774,
+          "kind": "optimizer_completed",
+          "loss": 1.0246720490249206,
+          "new_number": 5,
+          "new_phase_wall_seconds": 303.84174048900604,
+          "number": 1529
+        },
+        {
+          "kind": "optimizer_checkpoint_committed",
+          "new_phase_wall_seconds": 303.9298853490036,
+          "number": 1529
+        },
+        {
+          "epoch": 128,
+          "kind": "update_started",
+          "new_phase_wall_seconds": 303.97902013000567
+        },
+        {
+          "epoch": 128,
+          "kind": "micro_forward_started",
+          "new_phase_wall_seconds": 303.98495924205054
+        }
+      ]
+    }
+  },
+  "observed_unix": 1795070580.4785142,
+  "processes": [
+    {
+      "args": [
+        "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python",
+        "/home/qian-qi/hepta-c2-continuation-20261119-d741/runner.py",
+        "--fit",
+        "hcsn-s211-lr0.001",
+        ""
+      ],
+      "cpu_seconds": 302.54,
+      "pid": 1036680,
+      "status": {
+        "Cpus_allowed_list": "0",
+        "State": "R (running)",
+        "Threads": "1",
+        "VmHWM": "3325776 kB",
+        "VmRSS": "3229924 kB"
+      }
+    },
+    {
+      "args": [
+        "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python",
+        "/home/qian-qi/hepta-c2-continuation-20261119-d741/runner.py",
+        "--fit",
+        "hcsn-s307-lr0.001",
+        ""
+      ],
+      "cpu_seconds": 301.98,
+      "pid": 1036681,
+      "status": {
+        "Cpus_allowed_list": "1",
+        "State": "R (running)",
+        "Threads": "1",
+        "VmHWM": "3304744 kB",
+        "VmRSS": "2965964 kB"
+      }
+    }
+  ]
+}

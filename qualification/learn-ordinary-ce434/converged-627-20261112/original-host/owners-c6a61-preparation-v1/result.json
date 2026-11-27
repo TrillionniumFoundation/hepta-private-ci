@@ -1,0 +1,36 @@
+{
+  "state": "native-running",
+  "source_sha": "c6a61dfb57cbf8535805fd8fdf59aa6ccd57cd76",
+  "source_tree": "da32ba390e4b70e01812609b1dbb68ee6f0ba4bd",
+  "steps": [
+    {
+      "name": "fetch-exact-source",
+      "exit_code": 0,
+      "bytes": 144,
+      "sha256": "6f3f38c0c6c8620977183137640cf61c7e20a322eec7dd5c3fbcf285f6b097d8"
+    },
+    {
+      "name": "create-source-worktree",
+      "exit_code": 0,
+      "bytes": 2995,
+      "sha256": "3a6bbab69112e8ede0eaf3eb030350cdcae91c8894e0ef3b151fbf1eff14a543"
+    },
+    {
+      "name": "format-existing-libc-source",
+      "exit_code": 0,
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    }
+  ],
+  "suite_expected_cases": 150,
+  "suite_expected_groups": 32,
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "repository": "/home/qian-qi/hepta-learn-owner-suite-ce434-20261112-c6a61-v1",
+  "native_result": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-c6a61dfb57cb-v1/result.json",
+  "driver_sha256": "8f3a390da99f70131120937dd14c28a119b15e831e0a785fdb890d6a6fe5d504",
+  "tracked_rust_files": 6638
+}

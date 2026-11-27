@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.ndu480e.final-fix-format.v1",
+  "source_commit": "83154c9ff185a4c2e6e41de4a23c3ac6acfb62a8",
+  "source_tree": "647e88d88611b35a3dca1c0425ae3d121c4dfb7d",
+  "status": "REVIEW_REQUIRED",
+  "steps": [
+    {
+      "name": "scoped-just-fix",
+      "argv": [
+        "$USER_CARGO_BIN/just",
+        "fix",
+        "-p",
+        "codex-hepta-ndu"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 16.197837352752686,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 211210,
+      "stderr_sha256": "75dc3f7b24ec805d512ac00f33dd3bf408a37db7605c6805b80b8c8aaaaccbb5"
+    },
+    {
+      "name": "final-just-fmt",
+      "argv": [
+        "$USER_CARGO_BIN/just",
+        "fmt",
+        "--base",
+        "2df7993caa719c46d316f320e90b16d96b8ff2d7"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.4152054786682129,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "started_at": 1795112700.99702,
+  "execution_order": "Original Rust tests and actual binary parity; canonical Bazel lock check and target query; scoped just fix; just fmt. No tests after final fix/fmt.",
+  "source_changes": [
+    {
+      "path": "codex-rs/hepta-ndu/src/group_tests.rs",
+      "before_sha256": "0fbba5a0929871f0cc70bcd94b36c5d3b53d538aaac3b8e29002028b9daba58c",
+      "after_sha256": "dc028189e8da2aad97b65f3795eae65e83d6e25295fa5fa2e799be50b134057d",
+      "after_bytes": 22461,
+      "after_oid": "47a1865c8b329dfeb2daee3a855aa6de386ad362"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/output_portfolio_tests.rs",
+      "before_sha256": "9a78aaf03a09aaef823df222c3ce3e8589e2ad08a1fd483e62465a748dd38982",
+      "after_sha256": "29de06c7b787e91f46ba9ace7e21f5ccb2cd38634d2d5cfc936cc78f2f387969",
+      "after_bytes": 58405,
+      "after_oid": "916688a276b53c26efb68bf504f66dee0a982e08"
+    }
+  ],
+  "git_status": " M codex-rs/hepta-ndu/src/group_tests.rs\n M codex-rs/hepta-ndu/src/output_portfolio_tests.rs\n",
+  "diff_sha256": "d02daa49fc249eddc71af7c18e02f2c7b9089a780294e3dcce4e2ccbc8c03214",
+  "diff_bytes": 2603,
+  "finished_at": 1795112717.721187,
+  "disk_free_after": 6860677120
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "hcsn-c2-resource-analysis-native-envelope-inputs-v1",
+  "preparation_only": true,
+  "execution_authorized": false,
+  "whole_native_limit_seconds": 155,
+  "peak_RSS_limit_bytes": 536870912,
+  "native_job_id": null,
+  "idempotency_key": null,
+  "native_request_digest": null,
+  "expected_output_directory": null,
+  "launch_request": {
+    "path": null,
+    "identity": {
+      "bytes": null,
+      "sha256": null
+    }
+  },
+  "launch_ack": {
+    "path": null,
+    "identity": {
+      "bytes": null,
+      "sha256": null
+    }
+  },
+  "terminal_status": {
+    "path": null,
+    "identity": {
+      "bytes": null,
+      "sha256": null
+    }
+  },
+  "read_pages": [
+    {
+      "path": null,
+      "identity": {
+        "bytes": null,
+        "sha256": null
+      }
+    }
+  ],
+  "gnu_time": {
+    "path": null,
+    "identity": {
+      "bytes": null,
+      "sha256": null
+    }
+  },
+  "analysis_authorization": {
+    "path": null,
+    "identity": {
+      "bytes": null,
+      "sha256": null
+    }
+  },
+  "analysis_binding": {
+    "path": null,
+    "identity": {
+      "bytes": null,
+      "sha256": null
+    }
+  },
+  "supervisor_sources": {
+    "complete_os_envelope.py": {
+      "path": null,
+      "identity": {
+        "bytes": null,
+        "sha256": null
+      }
+    },
+    "os_processes.py": {
+      "path": null,
+      "identity": {
+        "bytes": null,
+        "sha256": null
+      }
+    }
+  },
+  "dispatch_records": [],
+  "notes": [
+    "Each path is the later exact local evidence file; add source_path only when it differs from its original native path.",
+    "Original request must be direct GNU time with eighteen args, timeout155, memory536870912, CPU100, nice10, LC_ALL=C and one-thread env.",
+    "Same-key reconciliation requires original response/error, identical original request, final same-job ACK and complete terminal/logs; this is not an execution retry.",
+    "The native155 record is separate from native1950 auditor and analysis120 child."
+  ]
+}

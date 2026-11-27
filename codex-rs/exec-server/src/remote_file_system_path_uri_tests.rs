@@ -185,8 +185,35 @@ async fn authorized_reads_fail_closed_for_legacy_or_disabled_capability() {
 }
 
 #[tokio::test]
+async fn authorized_reads_fail_closed_for_explicit_false_capability_on_fresh_connection() {
+    let (websocket_url, captured_params, server) =
+        record_authorized_reads(vec![(Some(false), Ok(String::new()))]).await;
+    let file_system = remote_file_system(websocket_url);
+    let sandbox = authorized_sandbox();
+    let path = non_native_cwd().join("AGENTS.md").expect("file URI");
+
+    for _ in 0..2 {
+        let error = file_system
+            .read_file_bounded_authorized(&path, &sandbox, 4)
+            .await
+            .expect_err("explicit false capability must fail closed");
+        assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+        assert_eq!(
+            error.to_string(),
+            "remote exec-server does not support stable-handle authorized reads"
+        );
+    }
+    assert!(captured_params.await.expect("captured params").is_empty());
+    server.await.expect("recording server should succeed");
+}
+
+#[tokio::test]
 async fn authorized_read_redacts_all_remote_server_errors() {
     let cases = [
+        (
+            AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE,
+            std::io::ErrorKind::InvalidData,
+        ),
         (INVALID_REQUEST_ERROR_CODE, std::io::ErrorKind::InvalidInput),
         (-32602, std::io::ErrorKind::InvalidInput),
         (NOT_FOUND_ERROR_CODE, std::io::ErrorKind::NotFound),
@@ -221,6 +248,203 @@ async fn authorized_read_redacts_all_remote_server_errors() {
         assert!(!error.to_string().contains("provider"));
     }
     server.await.expect("recording server should succeed");
+}
+
+#[tokio::test]
+async fn authorized_read_recognized_metadata_survives_framed_rpc_without_fallback() {
+    let cases = [
+        (
+            -32600,
+            serde_json::json!({
+                "method": "fs/readFileAuthorized",
+                "version": 1,
+                "kind": "permissionDenied",
+            }),
+            std::io::ErrorKind::PermissionDenied,
+            "Permission denied",
+        ),
+        (
+            -32603,
+            serde_json::json!({
+                "method": "fs/readFileAuthorized",
+                "version": 1,
+                "kind": "boundExceeded",
+            }),
+            std::io::ErrorKind::InvalidData,
+            "authorized file read exceeds bound",
+        ),
+    ];
+    let responses = cases
+        .iter()
+        .map(|(code, data, _, _)| {
+            (
+                Some(true),
+                Err(JSONRPCErrorError {
+                    code: *code,
+                    data: Some(data.clone()),
+                    message: "/private/var/SECRET-peer-path and provider contents".to_string(),
+                }),
+            )
+        })
+        .collect();
+    let (websocket_url, captured_params, server) = record_authorized_reads(responses).await;
+    let file_system = remote_file_system(websocket_url);
+    let sandbox = authorized_sandbox();
+    let path = non_native_cwd().join("AGENTS.md").expect("file URI");
+
+    for (_, _, expected_kind, expected_message) in cases {
+        let error = file_system
+            .read_file_bounded_authorized(&path, &sandbox, 4)
+            .await
+            .expect_err("recognized error metadata must not return bytes");
+        assert_eq!(
+            (error.kind(), error.to_string()),
+            (expected_kind, expected_message.to_string())
+        );
+    }
+    assert_eq!(
+        captured_params.await.expect("captured params"),
+        vec![
+            FsReadFileAuthorizedParams {
+                path,
+                sandbox: sandbox.drop_cwd_if_unused(),
+                max_bytes: 4,
+            };
+            2
+        ]
+    );
+    server
+        .await
+        .expect("recording server must reject fallback requests");
+}
+
+#[tokio::test]
+async fn authorized_read_unrecognized_metadata_keeps_legacy_errors_without_read_fallback() {
+    let unrecognized_data = [
+        None,
+        Some(serde_json::Value::Null),
+        Some(serde_json::json!("permissionDenied")),
+        Some(serde_json::json!([])),
+        Some(serde_json::json!({})),
+        Some(serde_json::json!({"method": "fs/readFileAuthorized", "kind": "permissionDenied"})),
+        Some(
+            serde_json::json!({"method": "fs/readFileAuthorized", "version": "1", "kind": "permissionDenied"}),
+        ),
+        Some(
+            serde_json::json!({"method": "fs/readFileAuthorized", "version": 1.0, "kind": "permissionDenied"}),
+        ),
+        Some(
+            serde_json::json!({"method": "fs/readFileAuthorized", "version": 2, "kind": "permissionDenied"}),
+        ),
+        Some(
+            serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "unknown"}),
+        ),
+        Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": 1})),
+        Some(
+            serde_json::json!({"method": "fs/readFile", "version": 1, "kind": "permissionDenied"}),
+        ),
+        Some(
+            serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "permissionDenied", "extra": true}),
+        ),
+    ];
+    let mut cases = unrecognized_data
+        .into_iter()
+        .map(|data| {
+            (
+                INVALID_REQUEST_ERROR_CODE,
+                data,
+                std::io::ErrorKind::InvalidInput,
+                "remote authorized file read is not permitted",
+            )
+        })
+        .collect::<Vec<_>>();
+    cases.extend([
+        (
+            -32603,
+            None,
+            std::io::ErrorKind::Other,
+            "remote authorized file read failed",
+        ),
+        (
+            -32603,
+            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "permissionDenied"})),
+            std::io::ErrorKind::Other,
+            "remote authorized file read failed",
+        ),
+        (
+            INVALID_REQUEST_ERROR_CODE,
+            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "boundExceeded"})),
+            std::io::ErrorKind::InvalidInput,
+            "remote authorized file read is not permitted",
+        ),
+        (
+            -32602,
+            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "permissionDenied"})),
+            std::io::ErrorKind::InvalidInput,
+            "remote authorized file read is not permitted",
+        ),
+        (
+            METHOD_NOT_FOUND_ERROR_CODE,
+            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "boundExceeded"})),
+            std::io::ErrorKind::Unsupported,
+            "remote exec-server does not support stable-handle authorized reads",
+        ),
+        (
+            -32099,
+            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "boundExceeded"})),
+            std::io::ErrorKind::Other,
+            "remote authorized file read failed",
+        ),
+        (
+            -32603,
+            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 2, "kind": "boundExceeded"})),
+            std::io::ErrorKind::Other,
+            "remote authorized file read failed",
+        ),
+    ]);
+    let expected_requests = cases.len();
+    let responses = cases
+        .iter()
+        .map(|(code, data, _, _)| {
+            (
+                Some(true),
+                Err(JSONRPCErrorError {
+                    code: *code,
+                    data: data.clone(),
+                    message: "/private/var/SECRET-peer-path and provider contents".to_string(),
+                }),
+            )
+        })
+        .collect();
+    let (websocket_url, captured_params, server) = record_authorized_reads(responses).await;
+    let file_system = remote_file_system(websocket_url);
+    let sandbox = authorized_sandbox();
+    let path = non_native_cwd().join("AGENTS.md").expect("file URI");
+
+    for (_, _, expected_kind, expected_message) in cases {
+        let error = file_system
+            .read_file_bounded_authorized(&path, &sandbox, 4)
+            .await
+            .expect_err("unrecognized error metadata must not return bytes");
+        assert_eq!(
+            (error.kind(), error.to_string()),
+            (expected_kind, expected_message.to_string())
+        );
+    }
+    assert_eq!(
+        captured_params.await.expect("captured params"),
+        vec![
+            FsReadFileAuthorizedParams {
+                path,
+                sandbox: sandbox.drop_cwd_if_unused(),
+                max_bytes: 4,
+            };
+            expected_requests
+        ]
+    );
+    server
+        .await
+        .expect("recording server must reject fallback requests");
 }
 
 #[tokio::test]
@@ -859,6 +1083,7 @@ async fn complete_websocket_initialize(websocket: &mut WebSocketStream<TcpStream
         JSONRPCMessage::Response(JSONRPCResponse {
             id: request.id,
             result: serde_json::to_value(InitializeResponse {
+                process_exit_observation: true,
                 session_id: "session-1".to_string(),
                 environment_info: None,
             })

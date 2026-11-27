@@ -1,0 +1,177 @@
+{
+  "constraints_preserved": [
+    "Original five-second wait and every message/content/model/send/receive correlation assertion unchanged.",
+    "No production communication, lifecycle, scheduler, tracing emit, or gate changed.",
+    "No global subscriber replacement, test serialization, retries, ignored tests, or added sleep.",
+    "No HIA branch or remote reference modified."
+  ],
+  "created_utc": "2026-11-15T17:32:44.150965+00:00",
+  "finding": {
+    "deterministic_order": "Install one scoped capture, let an otherwise unsubscribed OS thread first call the same enabled/send/receive sites, join it, then call the sites on the capturing thread. No sleeps or scheduler luck are required.",
+    "evidence_strength": "The exact tracing/tracing-core/tracing-subscriber versions reproduce missing send and receive, and the patch removes that registration path. This explains the observed signature; the original full integration suite on the patched commit remains a separate validation gate.",
+    "mechanism": "tracing-core's single-dispatch callsite-registration optimization consults the first caller thread's current dispatcher. With one scoped subscriber on another test thread, the first caller can have no subscriber and cache shared communication callsites as disabled. A scoped capture's prior registration or a one-time cache rebuild does not prevent that later first-call ordering.",
+    "primary_sources": [
+      "https://docs.rs/tracing-core/0.1.36/src/tracing_core/callsite.rs.html",
+      "https://docs.rs/tracing-test/0.2.6/src/tracing_test/subscriber.rs.html",
+      "https://docs.rs/tracing/0.1.44/src/tracing/instrument.rs.html"
+    ]
+  },
+  "historical_evidence": [
+    {
+      "decoded_log_normalization": "UTF-8 decoded connector response, CRLF normalized to LF and one final LF retained.",
+      "excerpt": "linux-failure-excerpt.log",
+      "executed_merge_commit": "0c1509953cafd9d39637114f78dccd0b1b7a1458",
+      "failure": "test_case_4_legacy_encrypted_leaf reached the final five-second tracing wait; actual child request/content/model assertions had completed. A later retry passed.",
+      "full_decoded_log": {
+        "bytes": 166558,
+        "path": "linux-8576-job132877426547.log.gz",
+        "sha256": "644825e69c35b2b994b816ed329d8ab08408a6f146028830a219373d65091e25"
+      },
+      "job_id": 132877426547,
+      "normalized_raw_log": {
+        "bytes": 1404420,
+        "sha256": "9a9b9231f0494db0e36a0eb9b5e07c366fa3d35763f296535e7e26296550bb66"
+      },
+      "platform": "Linux",
+      "pr_head": "8576cdb382d6d49cfccb45d0b07e651fc7aa474e",
+      "run_id": 43735547173,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43735547173/job/132877426547"
+    },
+    {
+      "excerpt": "windows-failure-excerpts.log",
+      "executed_merge_commit": "136f0cd55a54a20d74fb516841c114bb6622aa85",
+      "failure": "test_case_3_luna_encrypted_leaf and test_case_4_legacy_encrypted_leaf each failed three attempts at the same final five-second tracing wait.",
+      "full_log": {
+        "bytes": 1221240,
+        "sha256": "7833c1a9ed4adbbe7d8a5110f82aa4048e0df874716df9c21938d3e5ab1daf0f"
+      },
+      "full_log_local_audit_path": "../ci-win-132852523869.log",
+      "job_id": 132852523869,
+      "platform": "Windows",
+      "pr_head": "9b8de495b169486910a6a1da30690ac42306ae98",
+      "run_id": 43727434727,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43727434727/job/132852523869"
+    }
+  ],
+  "native_reproduction": {
+    "cargo_lock": {
+      "bytes": 7034,
+      "sha256": "c6b517834b1595958ad8f0e7439962daa6fefb389ce790d1273f07e2294e9ad5"
+    },
+    "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "environment": "Independent task directory on ROG; offline Cargo build; no existing repository worktree or running target directory modified.",
+    "expected_experiment_outcomes": {
+      "baseline": 12,
+      "rebuild-only": 12,
+      "retained-dispatch": 0
+    },
+    "idempotency_key": "078e4036190f-subagent-tracing-repro-rust196-20261115",
+    "job_id": "1a1e042a901-392-2a0f",
+    "overall_exit_zero_meaning": "Build succeeded and the driver asserted both negative controls fail with exit 12 and the retained-dispatch case passes with exit 0. The negative controls are deliberately reported as failures, not counted as passing tests.",
+    "prior_default_compiler_run": {
+      "compiler_series": "1.100.0",
+      "job_id": "1a1e040e5f8-392-2a0a",
+      "result": "same three outcomes; superseded by explicit repository-pinned 1.96.0 confirmation"
+    },
+    "receipt": {
+      "build_exit": 0,
+      "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "experiments": [
+        {
+          "exit": 12,
+          "mode": "baseline",
+          "stdout": "mode=baseline captured_send=false captured_receive=false bytes=0\n"
+        },
+        {
+          "exit": 12,
+          "mode": "rebuild-only",
+          "stdout": "mode=rebuild-only captured_send=false captured_receive=false bytes=0\n"
+        },
+        {
+          "exit": 0,
+          "mode": "retained-dispatch",
+          "stdout": "mode=retained-dispatch captured_send=true captured_receive=true bytes=274\n2026-11-15T17:30:38.660038Z  INFO codex_otel.agent_communication: agent communication kind=\"spawn\" state=\"send\" communication_id=\"fixture-id\"\n2026-11-15T17:30:38.660054Z  INFO codex_otel.agent_communication: agent communication state=\"receive\" communication_id=\"fixture-id\"\n"
+        }
+      ],
+      "source_files": {
+        "Cargo.lock": "c6b517834b1595958ad8f0e7439962daa6fefb389ce790d1273f07e2294e9ad5",
+        "Cargo.toml": "5881fb70b57aef3f7a88057586dd7463687467fca4e2340686dfdf3852a7ccdf",
+        "src/main.rs": "c1f0f4ad01b051809e6a31a617ff7b34a5cb426794ea6761374ac31421297a63"
+      }
+    },
+    "terminal": {
+      "at_unix_ms": 1794763838712,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1e042a901-392-2a0f",
+      "launch_nonce": "229f490caf65447dd8025eee6a5d3ed7",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 1548,
+          "stored": 1548
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "patch": {
+    "assertions_modified": false,
+    "patch_bytes": 779,
+    "patch_sha256": "11dd1c5b4ad32eed2c46db52bf8def543b194a452327ae8ad9a1a360257a7c15",
+    "path": "codex-rs/core/tests/suite/subagent_notifications.rs",
+    "production_modified": false,
+    "result_sha256": "507dac23ddda9ffcc922ef3750a9bd7cbcf518d6802b8266596d7e6677f7af11",
+    "source_sha256": "1526a29260c484c4f717930e2227e4668005d73d3bf5121852fcbff3736dadf5",
+    "timeout_modified": false
+  },
+  "pending": [
+    "Apply the patch to the combined integration candidate and run normal just fmt.",
+    "Run the four original parameterized cases through just test -p codex-core --test all -E 'test(multi_agent_v2_spawn_sends_agent_message_to_child)' with real helper metadata.",
+    "Run adjacent subagent_notifications coverage and actual Windows CI; the deterministic Linux reproducer does not replace those gates."
+  ],
+  "repair": "Keep a second inactive NoSubscriber Dispatch alive for the complete scoped capture. This makes callsite interest consider all live dispatches while leaving the target test's subscriber/filter unchanged.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema_version": 1,
+  "source_file": "codex-rs/core/tests/suite/subagent_notifications.rs",
+  "source_review": {
+    "capture": "The test uses a current-thread Tokio runtime and a scoped INFO subscriber. MockWriter also prints captured bytes to stdout; the historical excerpts therefore expose what it recorded.",
+    "dependency_versions": {
+      "tracing": "0.1.44",
+      "tracing-core": "0.1.36",
+      "tracing-subscriber": "0.3.23",
+      "tracing-test": "0.2.6"
+    },
+    "event_order": "session/handlers.rs emits the receive log after successful mailbox enqueue and before starting the child's turn. The captured child request therefore demonstrates successful spawn receipt even when the log assertion fails.",
+    "test_file_sha256": "1526a29260c484c4f717930e2227e4668005d73d3bf5121852fcbff3736dadf5",
+    "test_file_unchanged_between_heads": [
+      "9b8de495b169486910a6a1da30690ac42306ae98",
+      "8576cdb382d6d49cfccb45d0b07e651fc7aa474e",
+      "ee793e80723fe27bc7024e853f7e1e2173fea275"
+    ],
+    "unrelated_warning": "A terminalizing warning can come from completion notification sent back to the parent after the child finishes. It is not evidence that the initial spawn communication was rejected."
+  },
+  "test": "suite::subagent_notifications::multi_agent_v2_spawn_sends_agent_message_to_child"
+}

@@ -1,6 +1,26 @@
-load("//:defs.bzl", "codex_rust_crate")
+load("//:defs.bzl", "codex_rust_crate", "hepta_dev_rustc_flags")
 
 codex_rust_crate(
     name = "hepta-neuron",
+    compile_data = [
+        "tests/fixtures/hcsn-streaming-ridge-v1.json",
+        "tests/fixtures/joint-synthetic-v1.json",
+        "tests/fixtures/perception-bytes-v1.json",
+        "tests/support/joint_synthetic.rs",
+    ],
     crate_name = "codex_hepta_neuron",
+    rustc_flags_extra = hepta_dev_rustc_flags(1),
+    unit_test_dependency_replacements = {
+        "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+    },
+    unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
+    unit_test_features = ["qualification-owned-file-read"],
+)
+
+exports_files(
+    [
+        "tests/fixtures/joint-synthetic-v1.json",
+        "tests/support/joint_synthetic.rs",
+    ],
+    visibility = ["//codex-rs/hepta-agentd:__pkg__"],
 )

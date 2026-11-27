@@ -1,0 +1,126 @@
+{
+  "adversarial_review": [
+    "Global unresolved failure accounting includes shared attempts without a candidate.",
+    "Only a named native retry chain can close failed attempts; unrelated prior success cannot.",
+    "Unresolved original attempts, forward retry references and divergent retry branches are rejected.",
+    "An evaluated candidate cap may close a bounded search, while absent evaluation evidence cannot be disguised as an unperformed evaluation.",
+    "Repeated current-use verification retains receipt identity and rechecks expiry."
+  ],
+  "artifacts": {
+    "native-clippy-final-2.log.gz": {
+      "sha256": "15f2dd25b2fcb1ef3a7d899852b2af822421aaaec93626dcb43d0ec185e478db",
+      "uncompressed_bytes": 251,
+      "uncompressed_sha256": "9e21b5d8fe1313e67f027436d8c5de87e40a4d0256a9d61e54923aee325dfb54"
+    },
+    "native-clippy-final.log.gz": {
+      "sha256": "d0d7a9b9827657c550b09d69ebfa7205d7f95d522a0dbcd207c0f7f9430a19fa",
+      "uncompressed_bytes": 251,
+      "uncompressed_sha256": "38d7b88a8357c58c271c9b5e1d3ec70c0e17e47fb5f7fac57a5bae588711d3ee"
+    },
+    "native-clippy.log.gz": {
+      "sha256": "e3a2e1a14be495bc24e57f2cd34508adbcd3f5365b4ccc55f05f243f987af7d0",
+      "uncompressed_bytes": 3742,
+      "uncompressed_sha256": "e81fc49e1561ee656e59d22f4530ce6f8d4b63fc1df768916020ea63adcb7ca4"
+    },
+    "native-format-final.log.gz": {
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native-format.log.gz": {
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native-tests-attempt-1.log.gz": {
+      "sha256": "31a2a7b7bdf1f23a6e4c329c7ebccb34e12eb50eb430051f54fb3a0ea47d0708",
+      "uncompressed_bytes": 41109,
+      "uncompressed_sha256": "022a9f52139b6432c1563c93375d31e437a6b11a34b44f2fb1bd90ee2f5e730e"
+    },
+    "native-tests-attempt-2.log.gz": {
+      "sha256": "595d9749a34c58ecf490535842658a3ed2267190dd9ec4c69dc1f81e34a5ba60",
+      "uncompressed_bytes": 15237,
+      "uncompressed_sha256": "15839b58e16e3fdd548630986bca53ff40018e4c052506ce2dd6c3703a3288bc"
+    },
+    "native-tests-attempt-3.log.gz": {
+      "sha256": "69d6ad3df776dc1a493c9c08ebb84fe34dffad7f47f6c8aa6db0f3df422db928",
+      "uncompressed_bytes": 15729,
+      "uncompressed_sha256": "58f3d022c70c1056b4cb26c95925fa6a6fd2be64f4e51aadf905f1a91d503054"
+    },
+    "native-tests-final.log.gz": {
+      "sha256": "5482354f1408870ff30b1275e7b78644f8f812c6e072b241650e05160a4116fa",
+      "uncompressed_bytes": 15890,
+      "uncompressed_sha256": "09ecef4ead35d146f5c23d3612c338d72c0a7b3765aadd028d0d8d684225a181"
+    }
+  },
+  "base_commit": "cef48673f8a9d8c7192aeff5920d77ccad3d8eb1",
+  "clippy": {
+    "command": "just fix -p codex-hepta-intelligence",
+    "exit_code": 0,
+    "log": "native-clippy-final-2.log.gz"
+  },
+  "evidence_kind": "synthetic-authenticated-native-contract-regression",
+  "final_new_regressions": 12,
+  "format": {
+    "command": "just fmt",
+    "exit_code": 0,
+    "log": "native-format-final.log.gz"
+  },
+  "formatted_source_sha256": {
+    "codex-rs/hepta-intelligence/src/learning_decision.rs": "be1bf953caea9ec21149b9a54a10ba29bba6559b6d4450ba3759fa40a513e895",
+    "codex-rs/hepta-intelligence/src/learning_decision_tests.rs": "352750726214e0d4733b79acef8e951a7eb7b264a6902003a7bff1412ce9ba77",
+    "codex-rs/hepta-intelligence/src/learning_decision_types.rs": "1b504ec1bb4b699fa396532e30c43722db8c1222f3e1a59b93da4efda221ea5c",
+    "codex-rs/hepta-intelligence/src/lib.rs": "f5fbb8e08e0f032a4a84145ac0d4b991de682519bf2a58702a3009886b14c630",
+    "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs": "4045e34f7ca888a29e042b62cd48a459380927bd6652f0fda580ed09b526c622"
+  },
+  "integration_status": {
+    "automatic_adoption_authority": false,
+    "chain_v5_or_reward_rules_changed": false,
+    "durable_cycle_publication_integrated": false,
+    "independently_administered_evaluator_proved": false,
+    "native_contract_tests": "passed",
+    "native_owner_inventory_collection_integrated": false,
+    "next_task_incumbent_use_executed": false,
+    "real_learning_experiment_executed": false
+  },
+  "post_test_change": "Rust formatting only after the scoped Clippy gate. Per AGENTS.md tests were not repeated after final formatting. These hashes distinguish tested and formatted bytes.",
+  "schema": "hepta-learning-cycle-contract-validation-v1",
+  "test_runs": [
+    {
+      "exit_code": 101,
+      "log": "native-tests-attempt-1.log.gz",
+      "reason": "Test imports exposed a LearningDecisionV1 name collision with the existing episode decision and an assert_eq macro collision. Fixed without relaxing tests.",
+      "result": "compile-failed"
+    },
+    {
+      "exit_code": 0,
+      "log": "native-tests-attempt-2.log.gz",
+      "passed": 97,
+      "scope": "before independent adversarial review",
+      "skipped": 0
+    },
+    {
+      "exit_code": 0,
+      "log": "native-tests-attempt-3.log.gz",
+      "passed": 100,
+      "scope": "after explicit retry lineage and shared failure classification",
+      "skipped": 0
+    },
+    {
+      "exit_code": 0,
+      "log": "native-tests-final.log.gz",
+      "passed": 101,
+      "scope": "includes stable receipt revalidation and expiry",
+      "skipped": 0
+    }
+  ],
+  "tested_source_sha256": {
+    "codex-rs/hepta-intelligence/src/learning_decision.rs": "b31821c268523545dff9fe7ebb89ef6ba4ce024b460437b353c1605eef982a9f",
+    "codex-rs/hepta-intelligence/src/learning_decision_tests.rs": "a223167b66a3e450b173004c1be36c6c20a7a4022551e4a00c81bd5f0c963320",
+    "codex-rs/hepta-intelligence/src/learning_decision_types.rs": "8b82da44e8a1ef1131b10ec6cc7712a2a5c2d211eb592f7e9889fd1aa56edfa6",
+    "codex-rs/hepta-intelligence/src/lib.rs": "04cdfea3c3d06b9062c0f0c3cc71b161227ad79b2c7736d5162d745646577216",
+    "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs": "4045e34f7ca888a29e042b62cd48a459380927bd6652f0fda580ed09b526c622"
+  },
+  "tests_command": "just test -p codex-hepta-intelligence",
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+}

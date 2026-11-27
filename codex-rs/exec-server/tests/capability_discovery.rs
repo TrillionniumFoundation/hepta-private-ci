@@ -518,6 +518,7 @@ async fn initialize(server: &mut common::exec_server::ExecServerHarness) -> anyh
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "capability-discovery-test".to_string(),
                 resume_session_id: None,
             })?,

@@ -1,0 +1,383 @@
+{
+  "schema": "hepta.exact-head-ci-audit.v1",
+  "recorded_at": "2026-11-19 17:14:58 UTC",
+  "source_head": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+  "original_required_run": 44566606095,
+  "qualifications_scope": "Only the named exact-head jobs. No result is transferred to the later unpublished candidate.",
+  "jobs": [
+    {
+      "id": 135711856766,
+      "name": "cargo-deny / cargo-deny",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-19T16:33:53Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135711856766",
+      "failed_steps": [
+        {
+          "number": 7,
+          "name": "Run cargo-deny"
+        }
+      ]
+    },
+    {
+      "id": 135711856906,
+      "name": "repo-checks / build-test",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-19T16:57:13Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135711856906",
+      "failed_steps": []
+    },
+    {
+      "id": 135711857204,
+      "name": "sdk / sdks",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-19T16:38:20Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135711857204",
+      "failed_steps": [
+        {
+          "number": 14,
+          "name": "Test SDK packages"
+        }
+      ]
+    },
+    {
+      "id": 135711858011,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-19T16:51:35Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135711858011",
+      "failed_steps": [
+        {
+          "number": 7,
+          "name": "bazel test //..."
+        }
+      ]
+    },
+    {
+      "id": 135711858044,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-19T16:43:16Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135711858044",
+      "failed_steps": [
+        {
+          "number": 7,
+          "name": "bazel test shard"
+        }
+      ]
+    },
+    {
+      "id": 135711858098,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-19T16:48:26Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135711858098",
+      "failed_steps": [
+        {
+          "number": 7,
+          "name": "bazel test shard"
+        }
+      ]
+    },
+    {
+      "id": 135711858199,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-19T16:46:13Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135711858199",
+      "failed_steps": [
+        {
+          "number": 7,
+          "name": "bazel test shard"
+        }
+      ]
+    },
+    {
+      "id": 135712478869,
+      "name": "rust-ci / Rust format",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-19T16:34:02Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135712478869",
+      "failed_steps": []
+    },
+    {
+      "id": 135714669009,
+      "name": "rust-ci / CI results (required)",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-19T16:36:13Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135714669009",
+      "failed_steps": []
+    },
+    {
+      "id": 135722972179,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-19T16:48:34Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135722972179",
+      "failed_steps": [
+        {
+          "number": 2,
+          "name": "Confirm Windows Bazel test shards passed"
+        }
+      ]
+    },
+    {
+      "id": 135728685040,
+      "name": "CI required",
+      "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-19T16:58:04Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135728685040",
+      "failed_steps": [
+        {
+          "number": 3,
+          "name": "Require successful applicable dependencies"
+        }
+      ]
+    }
+  ],
+  "cargo_deny": {
+    "job": 135711856766,
+    "job_conclusion": "failure",
+    "failed_step": "Run cargo-deny",
+    "public_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135711856766",
+    "observed_public_annotation": "Internal server error. Correlation ID: 2ddedeff-ec0f-4d69-b6b9-7e26c5697a00",
+    "annotation_observed_via": "Read-only GitHub public job page; Open job annotations",
+    "log_retrieval": "Connector repeatedly returned Transport closed. Public page requires sign-in for full logs; no sign-in was attempted.",
+    "limit": "This is the observed job annotation, not proof that the dependency graph check passed or emitted a dependency violation. The strict gate remains unsuccessful."
+  },
+  "caller_and_format": {
+    "rust_format_job": 135712478869,
+    "caller_job": 135711856906,
+    "caller_step": "Verify Hepta privileged caller closed set",
+    "caller_receipt_extract": [
+      {
+        "line": 20053,
+        "text": "2026-11-19T16:49:15.7498390Z   \"status\": \"PASS_HEPTA_CALLER_CLOSED_SET\""
+      }
+    ],
+    "conclusion": "Both named exact-head jobs succeeded."
+  },
+  "windows_failures": {
+    "missing_qualified_boundary": "The original nine cases still terminate at ElevatedWindowsSandboxIsolationUnavailable; these are production-path failures.",
+    "cases_by_job": {
+      "135711858098": [
+        "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output",
+        "unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots",
+        "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary"
+      ],
+      "135711858199": [
+        "restricted_tokens_select_stable_routes_and_cleanup",
+        "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+        "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+        "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+      ]
+    },
+    "additional_failures": [
+      {
+        "job": 135711858044,
+        "test": "exec_server_accepts_initialize",
+        "observation": "Timeout waiting for exec-server WebSocket event after process/connection setup; the original event timeout is 5 seconds.",
+        "cause": "The logs do not isolate dispatch, session attachment, native capability probing, transport or scheduling.",
+        "extracts": [
+          {
+            "line": 4734,
+            "text": "2026-11-19T16:41:05.5215924Z test exec_server_accepts_initialize ... FAILED"
+          },
+          {
+            "line": 4739,
+            "text": "2026-11-19T16:41:05.5816893Z ---- exec_server_accepts_initialize stdout ----"
+          },
+          {
+            "line": 4740,
+            "text": "2026-11-19T16:41:05.5817627Z Error: timed out waiting for exec-server websocket event"
+          },
+          {
+            "line": 4744,
+            "text": "2026-11-19T16:41:05.5818518Z     exec_server_accepts_initialize"
+          },
+          {
+            "line": 4746,
+            "text": "2026-11-19T16:41:05.5819558Z test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.93s"
+          },
+          {
+            "line": 5026,
+            "text": "2026-11-19T16:43:03.7968940Z test exec_server_accepts_initialize ... FAILED"
+          },
+          {
+            "line": 5031,
+            "text": "2026-11-19T16:43:03.7970850Z ---- exec_server_accepts_initialize stdout ----"
+          },
+          {
+            "line": 5032,
+            "text": "2026-11-19T16:43:03.7971197Z Error: timed out waiting for exec-server websocket event"
+          }
+        ]
+      },
+      {
+        "job": 135711858098,
+        "test": "app_server_startup_refreshes_cached_remote_catalog_without_blocking_plugin_list",
+        "observation": "Original refresh-deadline assertion expected Plugin 111, last observed Plugin 000.",
+        "cause": "Observed timing assertion failure; not dismissed as infrastructure."
+      }
+    ]
+  },
+  "sdk": {
+    "job": 135711857204,
+    "test": "Codex › passes approvalPolicy to exec",
+    "observation": "Jest 5000 ms timeout followed by ENOTEMPTY while removing the owned SDK fixture directory; 46 passed and 1 failed.",
+    "source_review": "The test starts a real child without AbortSignal; mock cleanup is empty, afterEach removes the home directory, and exec cleanup kills a live child but does not await termination in finally.",
+    "interpretation": "The lifecycle gap is compatible with the cleanup error, but it does not prove the cause of the original timeout or an incorrect approvalPolicy argument.",
+    "extracts": [
+      {
+        "line": 7415,
+        "text": "2026-11-19T16:38:09.0816818Z   ● Codex › passes approvalPolicy to exec"
+      },
+      {
+        "line": 7417,
+        "text": "2026-11-19T16:38:09.0818264Z     thrown: \"Exceeded timeout of 5000 ms for a test."
+      },
+      {
+        "line": 7424,
+        "text": "2026-11-19T16:38:09.0824057Z         thrown: \"Exceeded timeout of 5000 ms for a test."
+      },
+      {
+        "line": 7429,
+        "text": "2026-11-19T16:38:09.0827208Z         \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 387 |\u001b[39m   it(\u001b[32m\"passes approvalPolicy to exec\"\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {"
+      },
+      {
+        "line": 7438,
+        "text": "2026-11-19T16:38:09.0830477Z   ● Codex › passes approvalPolicy to exec"
+      },
+      {
+        "line": 7440,
+        "text": "2026-11-19T16:38:09.0831159Z     ENOTEMPTY: directory not empty, rmdir '/home/runner/.cache/codex-ci/tmp/codex-sdk-test-lI64Le'"
+      },
+      {
+        "line": 7445,
+        "text": "2026-11-19T16:38:14.7856803Z Tests:       1 failed, 46 passed, 47 total"
+      }
+    ]
+  },
+  "musl": {
+    "job": 135711858011,
+    "terminal_original_failure": "Original bazel test //... failed at the hepta-agentd next_use diagnostic: command readback succeeded in 955059 us; evidence readback returned OwnerUnavailable(\"original learning evidence owner\") in 501920 us.",
+    "original_summary": "434 passed, 1 failed, 189 skipped; hepta-agentd target 375 passed, 1 failed, 44 ignored.",
+    "diagnostic_followups": "Later explicitly selected app-server/core attempts contained failures and then passed with Bazel FLAKY outcomes. They are not counted as additional terminal //... failures.",
+    "extracts": [
+      {
+        "line": 10997,
+        "text": "2026-11-19T16:39:10.6485692Z LEARN_FDE_C_TIMING command_readback_elapsed_us=955059 result=Ok(())"
+      },
+      {
+        "line": 11002,
+        "text": "2026-11-19T16:39:10.6489313Z LEARN_FDE_C_TIMING evidence_readback_elapsed_us=501920 result=Err(OwnerUnavailable(\"original learning evidence owner\"))"
+      },
+      {
+        "line": 11020,
+        "text": "2026-11-19T16:39:10.6500997Z Error: OwnerUnavailable(\"original learning evidence owner\")"
+      },
+      {
+        "line": 11026,
+        "text": "2026-11-19T16:39:10.6503692Z test result: FAILED. 375 passed; 1 failed; 44 ignored; 0 measured; 1233 filtered out; finished in 114.12s"
+      },
+      {
+        "line": 12129,
+        "text": "2026-11-19T16:39:11.0640400Z Executed 1 out of 624 tests: 434 tests pass, 1 fails remotely, and 189 were skipped."
+      },
+      {
+        "line": 12305,
+        "text": "2026-11-19T16:39:23.9990372Z LEARN_FDE_C_TIMING command_readback_elapsed_us=955059 result=Ok(())"
+      },
+      {
+        "line": 12310,
+        "text": "2026-11-19T16:39:23.9993399Z LEARN_FDE_C_TIMING evidence_readback_elapsed_us=501920 result=Err(OwnerUnavailable(\"original learning evidence owner\"))"
+      },
+      {
+        "line": 12328,
+        "text": "2026-11-19T16:39:24.0002275Z Error: OwnerUnavailable(\"original learning evidence owner\")"
+      },
+      {
+        "line": 12334,
+        "text": "2026-11-19T16:39:24.0004336Z test result: FAILED. 375 passed; 1 failed; 44 ignored; 0 measured; 1233 filtered out; finished in 114.12s"
+      },
+      {
+        "line": 13867,
+        "text": "2026-11-19T16:51:18.2046801Z //codex-rs/app-server:app-server-all-test                                 FLAKY, failed in 1 out of 17 in 68.5s"
+      },
+      {
+        "line": 13885,
+        "text": "2026-11-19T16:51:18.2069242Z //codex-rs/core:core-all-test                                             FLAKY, failed in 4 out of 20 in 87.4s"
+      }
+    ]
+  },
+  "auxiliary_original_windows": {
+    "run": 44566601458,
+    "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+    "status": "in_progress",
+    "jobs": [
+      {
+        "id": 135710550150,
+        "name": "Original regressions (process)",
+        "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+        "status": "in_progress",
+        "conclusion": null,
+        "completed_at": null,
+        "in_progress_step": [
+          "Run the original process, transport and backend regressions"
+        ]
+      },
+      {
+        "id": 135710550950,
+        "name": "Original regressions (owners)",
+        "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+        "status": "completed",
+        "conclusion": "success",
+        "completed_at": "2026-11-19T16:58:08Z",
+        "in_progress_step": []
+      }
+    ],
+    "private_state": {
+      "run": 44566606123,
+      "job": 135710088765,
+      "conclusion": "success",
+      "completed_at": "2026-11-19T16:53:31Z"
+    }
+  },
+  "unrelated_cancellation": {
+    "run": 44566600546,
+    "job": 135710020002,
+    "conclusion": "cancelled",
+    "observation": "Source checkout git fetch consumed the declared 10 minute job window (16:29:27 to 16:39:26); no native/source test was reached.",
+    "classification": "Checkout/job timeout, not a functional test verdict."
+  },
+  "candidate_integrity": {
+    "source_head": "275cbf2ad6f3f05a1d0e42b3f521f28b53a0dc08",
+    "tree": "ea3ddd3b9274ffd02744b79f8981eb3ac5894a40",
+    "independent_receipt": "275-sourcepin-independent-review.json",
+    "receipt_sha256": "d82d1459bb009a371eeb547612d0f84464a5398f5180756dada7e83f910bb89d",
+    "conclusion": "37 object pins, four probe/trace pins, exact paired locks and canonical remainder verified against the committed tree. This is source integrity only; native CI qualification is pending."
+  }
+}

@@ -1,0 +1,398 @@
+{
+  "schema": "hepta.q24.dataset.component-evidence.v1",
+  "scope": "Original Dataset to native Q24 component; not ordinary full-loop qualification",
+  "authority_granted": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "root_uid0_gate": "not run",
+  "model_root_stage_owner": "not installed by this component",
+  "prior_failed_candidate": {
+    "github": "97a1fcadbf6c6699a86cf7c68210bea3fcdfda3e",
+    "tree": "69aa60e46be91f8c10c1b0d809d72cb52b362430",
+    "local_source": "293adf279520d3ad71ade4abe4255a505808b4ac",
+    "native_exit": 100,
+    "native_results": [
+      "  TRY 1 FAIL [   5.991s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_original_task_and_terminal_target_drive_native_fit_and_no_update",
+      "    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 981 filtered out; finished in 5.98s",
+      "  TRY 1 FAIL [   7.166s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_expiry_is_an_error_for_a_no_update_target",
+      "    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 981 filtered out; finished in 7.15s",
+      "  TRY 1 FAIL [   7.864s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze",
+      "    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 981 filtered out; finished in 7.85s",
+      "  TRY 2 FAIL [   5.523s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_original_task_and_terminal_target_drive_native_fit_and_no_update",
+      "    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 981 filtered out; finished in 5.51s",
+      "  TRY 1 FAIL [  11.734s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_row_order_and_original_withdrawal_are_preserved",
+      "    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 981 filtered out; finished in 11.72s",
+      "  TRY 2 FAIL [   5.826s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_expiry_is_an_error_for_a_no_update_target",
+      "    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 981 filtered out; finished in 5.81s",
+      "  TRY 2 FAIL [   9.205s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze",
+      "    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 981 filtered out; finished in 9.19s",
+      "  TRY 2 FAIL [  19.258s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_row_order_and_original_withdrawal_are_preserved",
+      "    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 981 filtered out; finished in 19.25s",
+      "     Summary [  45.337s] 911 tests run: 907 passed (1 slow), 4 failed, 71 skipped",
+      "  TRY 2 FAIL [   5.826s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_expiry_is_an_error_for_a_no_update_target",
+      "  TRY 2 FAIL [   5.523s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_original_task_and_terminal_target_drive_native_fit_and_no_update",
+      "  TRY 2 FAIL [   9.205s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze",
+      "  TRY 2 FAIL [  19.258s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_row_order_and_original_withdrawal_are_preserved",
+      "error: test run failed",
+      "error: recipe `test` failed on line 89 with exit code 100"
+    ],
+    "source_unchanged": true,
+    "helper_verify_after_exit": 0,
+    "callers_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "callers_boundaries": 236,
+    "callers_protected": 225,
+    "callers_rust_files": 6311
+  },
+  "second_failed_candidate": {
+    "github": "08f963973e02e0f74e499c962635518965f4f68a",
+    "tree": "2b700f32ebd90f88e022432e0a62584e4713a69b",
+    "local_source": "3e905f189af5c516cdb6bb3cbd15e0a1f51856a7",
+    "native_exit": 100,
+    "gates": {
+      "focused": {
+        "command": [
+          "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+          "test",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--locked",
+          "--offline",
+          "-E",
+          "test(q24_dataset_)"
+        ],
+        "exit": 100,
+        "elapsed_seconds": 100.62532567977905,
+        "log": "/home/qq/af52-learning-20261111/dataset-native-focused-v2.log",
+        "log_bytes": 33760,
+        "log_sha256": "ff7298506535422e402127fc3278772524ade7ff5a8b2ddf90f3892470d907f1",
+        "result_lines": [
+          "  TRY 1 FAIL [   7.755s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze",
+          "    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 981 filtered out; finished in 7.74s",
+          "  TRY 2 FAIL [  10.495s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze",
+          "    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 981 filtered out; finished in 10.48s",
+          "     Summary [  18.271s] 4 tests run: 3 passed, 1 failed, 978 skipped",
+          "  TRY 2 FAIL [  10.495s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze",
+          "error: test run failed",
+          "error: recipe `test` failed on line 89 with exit code 100"
+        ]
+      }
+    },
+    "source_unchanged": true,
+    "helper_verify_after_exit": 0,
+    "callers_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "callers_exit": 0,
+    "callers_boundaries": 236,
+    "callers_protected": 225,
+    "callers_rust_files": 6311
+  },
+  "latest_test_only_source": {
+    "schema": "hepta.q24.dataset.source-export.v1",
+    "base_local_commit": "3e905f189af5c516cdb6bb3cbd15e0a1f51856a7",
+    "base_github_commit": "08f963973e02e0f74e499c962635518965f4f68a",
+    "commit": "bc8ac0dc25c621959b7be52280bcfed70b52bb07",
+    "tree": "f0f85fcccf7c51e4d6ae46a252bf785bcaa66f61",
+    "gates": {
+      "fmt-before": 0,
+      "fix": 0,
+      "fmt-after": 0,
+      "protected_files": 225
+    },
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer_tests.rs",
+        "mode": "100644",
+        "bytes": 30057,
+        "sha256": "12e9c95a993b764bd5fe8b0ac074bb4b00a86b0103786da0a85281a45a3f0cf4",
+        "git_blob": "0eae8d23b2e1e9e9a3f5719acb64c6343ab5805a",
+        "parts": [
+          {
+            "path": "/home/qq/af52-learning-20261111/dataset-source-v3/tests-part-000.b64",
+            "decoded_offset": 0,
+            "decoded_bytes": 24576,
+            "base64_sha256": "6f0e71826aea7e05c87154687aa532c410163e0e0602e71988821f09ef55d068"
+          },
+          {
+            "path": "/home/qq/af52-learning-20261111/dataset-source-v3/tests-part-001.b64",
+            "decoded_offset": 24576,
+            "decoded_bytes": 5481,
+            "base64_sha256": "a9d9c79080a2f8671050abf9e492bbc826c1970248d7065f679e81c9888f310f"
+          }
+        ]
+      }
+    ],
+    "patch_sha256": "a8a1e1a2949436ed3758edc927b436a6ef77a760469d64864be7f8445e1fed66",
+    "production_and_callers_unchanged": true,
+    "full_typed_caller_scan": {
+      "previous_source": {
+        "commit": "3e905f189af5c516cdb6bb3cbd15e0a1f51856a7",
+        "tree": "2b700f32ebd90f88e022432e0a62584e4713a69b",
+        "worktree": ""
+      },
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "boundaries": 236,
+      "protected_files": 225,
+      "rust_files": 6311,
+      "this_test_only_commit": "not rerun; final unified source gate pending"
+    },
+    "native_tests": "pending published source; focused four then final unified two-crate full suite",
+    "prior_candidate": "08f963973e02e0f74e499c962635518965f4f68a",
+    "prior_focused_result": "3 passed, 1 failed; missing-abstain original ledger rejection retained",
+    "ordinary_complete_chains": 0
+  },
+  "maintenance": {
+    "first_bindgen_attempt": {
+      "log": "dataset-just-fix-v1.log",
+      "exit": 101,
+      "scope": "pre-freeze working tree; stopped in aws-lc-sys bindgen because stddef.h was unavailable to libclang"
+    },
+    "header_correction": {
+      "evidence": "clang-header-readonly.json",
+      "bindgen_extra_clang_args": "-isystem/usr/lib/gcc/x86_64-linux-gnu/15/include",
+      "system_or_dependency_files_modified": false
+    },
+    "first_frozen_source_gates": {
+      "fmt-before": 0,
+      "fix": 0,
+      "fmt-after": 0,
+      "protected_files": 225
+    },
+    "fixed_frozen_source_gates": {
+      "fmt-before": 0,
+      "fix": 0,
+      "fmt-after": 0,
+      "protected_files": 225
+    }
+  },
+  "files": [
+    {
+      "path": "clang-header-readonly.json",
+      "bytes": 2784,
+      "sha256": "d2d99dbb6a1041d2d919f1a00e1acbd9263c2a0b6ae97ec59de9be611feb544a"
+    },
+    {
+      "path": "dataset-just-fix-v1.log",
+      "bytes": 26768,
+      "sha256": "962e35aa61e84875146b0c241baa1c4d80ef34df39dee6eb911e0c7e966c0f39"
+    },
+    {
+      "path": "dataset-just-fix-v2.log",
+      "bytes": 59675,
+      "sha256": "66b901b56015b40eae1dc9119d9d7937e4dfe6b13b7c37540c6e949429f68497"
+    },
+    {
+      "path": "dataset-maintenance-v3.log",
+      "bytes": 18758,
+      "sha256": "9f0d99a623f7793892a3ac0f223ca6d2ac9d183144de10f4bf25cc167e7b64be"
+    },
+    {
+      "path": "dataset-ci-fix-maintenance-v1.log",
+      "bytes": 28009,
+      "sha256": "00bafd6205153974b4ea6c40a2894ff91d17636271f1c8632d0e4cce7494a156"
+    },
+    {
+      "path": "dataset-callers-v2-before.json",
+      "bytes": 131,
+      "sha256": "ef01c0f8e4733f0d6380a0567714424e53d71f7e3099bbba6ddd8cfa8eabef7c"
+    },
+    {
+      "path": "dataset-callers-v2-summary.json",
+      "bytes": 934,
+      "sha256": "fef772abd98cd0f4572343886400bb2c97416f41758b41e4deef58bc5f4dead6"
+    },
+    {
+      "path": "dataset-callers-v2.json",
+      "bytes": 108405,
+      "sha256": "12e66aee09a6a7cfb2504ceaf3a44cadb97cbe55c5e556ea000500045a74ed6e"
+    },
+    {
+      "path": "dataset-callers-v2.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "dataset-callers-v3-before.json",
+      "bytes": 131,
+      "sha256": "2fdc7b7646eae2ce984a9b9295fe5ebfabbb636b7a3456292b1767314f2c59f1"
+    },
+    {
+      "path": "dataset-callers-v3-summary.json",
+      "bytes": 935,
+      "sha256": "85409394c52c71d06b058cade9f98fa6b754f2d7137d83cc1f68c3b8d34a0d1b"
+    },
+    {
+      "path": "dataset-callers-v3.json",
+      "bytes": 108405,
+      "sha256": "12e66aee09a6a7cfb2504ceaf3a44cadb97cbe55c5e556ea000500045a74ed6e"
+    },
+    {
+      "path": "dataset-callers-v3.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "dataset-native-fetch-v1.log",
+      "bytes": 142,
+      "sha256": "2fe10264569b8aedb96a84bd012bb2f0a4c783643b421352387f41e6bf6c42f1"
+    },
+    {
+      "path": "dataset-native-full-v1-before.json",
+      "bytes": 377,
+      "sha256": "7c71cc6975c5fec749547fef5b6dfb6d504cdf24728a4e569eab956abccd4a6a"
+    },
+    {
+      "path": "dataset-native-full-v1-summary.json",
+      "bytes": 6555,
+      "sha256": "c402a402e410bf0975e5984589b2f040a9f75898ee01a17933f998885996bf80"
+    },
+    {
+      "path": "dataset-native-full-v1.log",
+      "bytes": 191288,
+      "sha256": "74c840eb818bc8732a973e3d7e34e8effcbba22083ef6919db89445c0a78c450"
+    },
+    {
+      "path": "dataset-native-helpers-v1.log",
+      "bytes": 175,
+      "sha256": "730fca4351682911b3f9eca21f92b3372e2da7ed83e914b06c0ef32e0c2883f7"
+    },
+    {
+      "path": "dataset-native-helpers-v1-verify-before.json",
+      "bytes": 1069,
+      "sha256": "dd0c2c7428e3cfc35f9ca43f7812cde39aeaf86320c65b1f855737f1ef71048a"
+    },
+    {
+      "path": "dataset-native-helpers-v1-verify-after.json",
+      "bytes": 1069,
+      "sha256": "dd0c2c7428e3cfc35f9ca43f7812cde39aeaf86320c65b1f855737f1ef71048a"
+    },
+    {
+      "path": "dataset-native-helpers-v1/manifest.json",
+      "bytes": 1799,
+      "sha256": "6ae47d85c29ac2668684ebea38998b52f33a6489dda8aef3a93079f9ef786d4a"
+    },
+    {
+      "path": "dataset-native-helpers-v1/env.json",
+      "bytes": 251,
+      "sha256": "5aabb874526da23e07efb57688da0e68a6a60d6bc4766750c02695aee6a7551b"
+    },
+    {
+      "path": "dataset-native-helpers-v1/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1004427,
+      "sha256": "2f8b44cee0232688ff3df1af6eebb9aa6d9ee7241ad414148feb8f1d2cfbf4c7"
+    },
+    {
+      "path": "dataset-native-helpers-v1/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 59542,
+      "sha256": "ae40ed6f9e23316d3dc448f8e1fe6a3216da908c5b8292b026c073239fb88bd1"
+    },
+    {
+      "path": "dataset-native-fetch-v2.log",
+      "bytes": 142,
+      "sha256": "3aa57439c0d914385f911b0df95003412b34db2116e43a5aaf5786ef1cab7fcb"
+    },
+    {
+      "path": "dataset-native-v2-before.json",
+      "bytes": 539,
+      "sha256": "b86352874cfc15548796d37f42cebe44aac96701e987520854f613a29c47a4d6"
+    },
+    {
+      "path": "dataset-native-v2-summary.json",
+      "bytes": 4440,
+      "sha256": "6ff878f5dc5ad4b4d96bdbd69c217c263379f27853cb8d172d86c6a5b92c6148"
+    },
+    {
+      "path": "dataset-native-focused-v2-result.json",
+      "bytes": 1748,
+      "sha256": "4a64be0cd0c5031118b31888e1b5ee46526fcbed10c61c6297f827eff566baa3"
+    },
+    {
+      "path": "dataset-native-focused-v2.log",
+      "bytes": 33760,
+      "sha256": "ff7298506535422e402127fc3278772524ade7ff5a8b2ddf90f3892470d907f1"
+    },
+    {
+      "path": "dataset-native-helpers-v2.log",
+      "bytes": 175,
+      "sha256": "23f181ba84fb9292c50712693d3f876ed2c6b4785857e65de795941845945a60"
+    },
+    {
+      "path": "dataset-native-helpers-v2-verify-before.json",
+      "bytes": 1069,
+      "sha256": "9c0d907bd867d14e4fec24d5d69bba09731fb5523bd97f55637c0a776a1f7806"
+    },
+    {
+      "path": "dataset-native-helpers-v2-verify-after.json",
+      "bytes": 1069,
+      "sha256": "9c0d907bd867d14e4fec24d5d69bba09731fb5523bd97f55637c0a776a1f7806"
+    },
+    {
+      "path": "dataset-native-helpers-v2/manifest.json",
+      "bytes": 1799,
+      "sha256": "224d689c1af39a4d238869426a10c086ec9028555b7a45ff77bd65b1af1bac32"
+    },
+    {
+      "path": "dataset-native-helpers-v2/env.json",
+      "bytes": 251,
+      "sha256": "996f6487405386eb4271b3cca5a3adf87efffa7b07de26c9f8b4f9f70eb0d912"
+    },
+    {
+      "path": "dataset-native-helpers-v2/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1003464,
+      "sha256": "c75107ab5749af28a2a8c374a7741e4eddfa95895e6ee751de32b02e26c90c3e"
+    },
+    {
+      "path": "dataset-native-helpers-v2/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 25616,
+      "sha256": "ec38dafbc366c4d412ecf1d5b59f0031ad202be638ca138adf349710bf92ddb8"
+    },
+    {
+      "path": "dataset-source-v1/manifest.json",
+      "bytes": 13069,
+      "sha256": "9a822962b39f7c9f658e891cc41f153cb9f22e65ac4424d8ed904456c77b9cc6"
+    },
+    {
+      "path": "dataset-source-v1/change.patch",
+      "bytes": 87233,
+      "sha256": "070b0707a9b63a0b34d3173d8f2ebee14af1f3819c4fee4dc6ba6e68a55f9b5f"
+    },
+    {
+      "path": "dataset-source-v1/CALLERS_PATCH.json",
+      "bytes": 26721,
+      "sha256": "7326b96cc1e138f469732d68abe6d75276c02bcde7b1bde138fc1a5ea1a2a4f1"
+    },
+    {
+      "path": "dataset-source-v2/manifest.json",
+      "bytes": 7539,
+      "sha256": "ca24fd9318c52db542adc4e0e00068f675f5e861b203e258ea9eeddf1bc6ce4a"
+    },
+    {
+      "path": "dataset-source-v2/change.patch",
+      "bytes": 24144,
+      "sha256": "62e3073d81cb36537bfb9a32228605e3fa33c1f2ff435dbe0037f8daab441805"
+    },
+    {
+      "path": "dataset-source-v2/CALLERS_PATCH.json",
+      "bytes": 4579,
+      "sha256": "e94ac0b2ba862073a910cf9420c16dd66ca2150d02a2e1f2c156307945f42d66"
+    },
+    {
+      "path": "dataset-source-v3/manifest.json",
+      "bytes": 2100,
+      "sha256": "8d2724d28517c9716ba024b8107658b92bd8668a77e70bf584b5dc5202c9581f"
+    },
+    {
+      "path": "dataset-source-v3/change.patch",
+      "bytes": 2293,
+      "sha256": "a8a1e1a2949436ed3758edc927b436a6ef77a760469d64864be7f8445e1fed66"
+    },
+    {
+      "path": "dataset-negative-fixture-maintenance-v1.log",
+      "bytes": 28009,
+      "sha256": "eaaeff6225b31dae5289bb7d22a65b4f61932c2b58f3f9ed2a6ecb778f443467"
+    }
+  ],
+  "helper_binaries": "The exact immutable copies remain at the manifest paths. This lossless archive includes their source-bound preparation and pre/post content-verification receipts, not executable bytes.",
+  "reproduction": "Reproduce each attempt only at its exact recorded commit using its helper script and commands. This history preserves two failed native attempts and does not assert native acceptance of the newest test-only or final unified source.",
+  "hosted_ci": "Captured independently by root, including synthetic merge identities; not substituted for these direct-SHA native results."
+}

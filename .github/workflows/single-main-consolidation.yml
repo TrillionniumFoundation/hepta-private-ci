@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   stage-foundation:
+    if: github.event.deleted == false
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -64,9 +65,9 @@ jobs:
           ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
           fetch-depth: 0
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
         with:
-          toolchain: 1.95.0
+          toolchain: 1.96.0
           components: rustfmt
       - name: Check exact source, regressions and Rust formatting
         shell: bash

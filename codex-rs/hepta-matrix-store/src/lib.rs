@@ -7,7 +7,11 @@
 #![forbid(unsafe_code)]
 
 mod model;
+mod storage_paths;
 mod store;
+
+pub use storage_paths::prepare_matrix_storage_directory;
+pub use storage_paths::validate_matrix_database_paths;
 
 pub use codex_hepta_matrix_protocol::MatrixEventId;
 pub use codex_hepta_matrix_protocol::MatrixRoomId;

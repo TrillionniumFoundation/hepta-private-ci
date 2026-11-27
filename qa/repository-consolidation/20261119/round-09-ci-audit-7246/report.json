@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.compilation-repair-qualification.v1",
+  "baseline_commit": "f8c5a4dd99564525a6ce139560f82139501508aa",
+  "baseline_tree": "8333e427717d900a5161ca08fb5acddd1b8054ac",
+  "source_postimages": "source-postimages.json",
+  "changed_source_paths": 5,
+  "scope": [
+    "Propagate setup errors from four supervisor authority-distribution fixture helpers; preserve four negative assert blocks and two positive verification assertions byte for byte.",
+    "Keep AuthBus signature and verifying-key bytes in explicit existing Ed25519 wrapper types via three From conversions.",
+    "Pass the fourth writer_lock argument as None in the original replay-file test; preserve every original test assertion.",
+    "Compile two observation methods on the private AuthBus authority store only under cfg(test), preserving their complete bodies and all six original test callers. The production recovery SQL and fail-closed RecoveryRequired branch are untouched."
+  ],
+  "dependencies_modified": false,
+  "validation_environment": {
+    "host": "ROG",
+    "rust": "1.96.0",
+    "just": "1.58.0",
+    "nextest": "0.9.152",
+    "python": "3.12.3",
+    "cargo_jobs": 2,
+    "cargo_incremental": 0,
+    "dev_and_test_debuginfo": 0,
+    "cargo_locked": true,
+    "cargo_offline": true,
+    "cargo_home_and_target": "isolated task directories",
+    "temporary_directory": "isolated task directory"
+  },
+  "original_tests": [
+    {
+      "package": "codex-hepta-supervisor",
+      "target": "authority_distribution",
+      "passed": 3,
+      "skipped": 0,
+      "job": "1a1f513a166-ffbe-1254",
+      "stderr_sha256": "c2dd4a143e6d02fc519315db43d80b580bb1201b8ff5aaa91ee327921572832d",
+      "source_scope": "first three-file repair; supervisor inputs unchanged by subsequent private AuthBus test attributes"
+    },
+    {
+      "package": "codex-hepta-authbus",
+      "passed": 51,
+      "skipped": 0,
+      "job": "1a1f51d8170-ffbe-126e",
+      "stderr_sha256": "b2ba6e7e3eea0eee133e09dede20f4e3e8baf02f8c499c796f05b16fe1a6d895",
+      "source_scope": "final five-file repair before final formatting"
+    },
+    {
+      "package": "codex-hepta-authbus-p1-3-qualification",
+      "passed": 3,
+      "skipped": 0,
+      "job": "1a1f51d8170-ffbe-126e",
+      "stderr_sha256": "c90ddf17974c3620f885dc58433045344acf9ffc5e6ff323db4d022a80b47e08",
+      "source_scope": "final five-file repair before final formatting"
+    }
+  ],
+  "distinct_original_tests_passed": 57,
+  "repeated_qualification_tests_not_double_counted": true,
+  "infer_tests": "Not repeated here; parent separately retains original 131 pass and 8 default skipped tests on f8 plus the same replay-file argument repair. Those tests are not counted in this receipt.",
+  "source_verification": {
+    "real_files": 4718,
+    "real_local_cargo_manifests": 222,
+    "full_local_dependency_directories": 65,
+    "combined_input_manifest_sha256": "e37523e64baf4de3a58252b4f80ca6b310927a43ea9446ef1bfe4650242a8ee6",
+    "source_before_after_checks": true,
+    "synthetic_manifests_or_stubs": false
+  },
+  "final_fix_and_format": {
+    "job": "1a1f51fd25a-ffbe-1276",
+    "scoped_packages": [
+      "codex-hepta-supervisor",
+      "codex-hepta-authbus",
+      "codex-hepta-authbus-p1-3-qualification",
+      "codex-hepta-infer-core"
+    ],
+    "fix_exit": 0,
+    "fmt_exit": 0,
+    "source_changes": [],
+    "post_final_fix_fmt_tests_run": false,
+    "stderr_sha256": "3f60d52285dfd686fa6d69aa76144f016f13549a8ad4e8535c1d907ef1e3026a"
+  },
+  "retained_failures": [
+    {
+      "stage": "original source materialization",
+      "cause": "12 original blobs absent in the borrowed native store; exact original blob pack was imported into the isolated object store and fully verified."
+    },
+    {
+      "job": "1a1f50e08c6-ffbe-1242",
+      "cause": "Offline tz-rs 0.7.3 archive missing; no tests executed. The exact 48104-byte archive with locked checksum 4fc6c929ffa10fb34f4a3c7e9a73620a83ef2e85e47f9ec3381b8289e6762f42 was supplied to the isolated Cargo cache."
+    },
+    {
+      "job": "1a1f511b3c3-ffbe-124b",
+      "cause": "C compiler failed closing /tmp files with disk quota exceeded; no tests executed. An isolated TMPDIR was used for the successful subsequent run."
+    }
+  ],
+  "limitations": {
+    "github_required_ci_pass_claimed": false,
+    "windows_production_qualification_claimed": false,
+    "strict_clippy_pass_claimed": false,
+    "remaining_observed_warnings": [
+      "AuthBus qualification retains pre-existing expect_used diagnostics at lib.rs:81 and lib.rs:302; just fix caps deny lints to warnings, so its exit 0 does not prove strict Clippy.",
+      "The exact f8 baseline still warns about private infer append; later b337 has a separate cfg(test) repair that is outside this source snapshot.",
+      "The exact f8 baseline warns about control-plane cns_route_digest_v1 and three bellman-operator unused items.",
+      "Vendored sqlx-sqlite emits 40 time API deprecation warnings; no dependency source or warning policy was changed."
+    ]
+  },
+  "raw_evidence": "native-repair-evidence.tar.gz",
+  "cleanup": "terminal-cleanup.json"
+}

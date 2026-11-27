@@ -1,0 +1,40 @@
+{
+  "findings": [
+    "The v3 caller passes Reader absolute 120-second setup deadline into observe; the unchanged helper rejects an expired deadline immediately before attempting Popen.",
+    "setup_wall_seconds is actual popen_started_monotonic minus bootstrap start, including preparation inside observe. None, negative, and greater-than-120 starts are rejected.",
+    "A small check-to-Popen race cannot receive successful admission when the actual recorded startup exceeds 120 seconds.",
+    "The 1800-second core envelope and required 1950-second native outer envelope remain unchanged. This is not a budget extension."
+  ],
+  "limits": [
+    "Only this timing delta and the relevant unchanged helper path were reviewed.",
+    "No tests or actual core/native execution were run by this reviewer.",
+    "Earlier v2 wrapper/process-source review and its eighteen-test snapshot remain separate; no lost fourteen-test credit is inherited.",
+    "Actual original C2 terminal barrier and a separately bound root execution decision are still required."
+  ],
+  "model_operations": 0,
+  "native_calls": 0,
+  "reviewed_files": [
+    {
+      "bytes": 18074,
+      "path": "/workspace/scratch/c385a7439f8e/c2-terminal-bootstrap-recovery-v2/bootstrap.py",
+      "sha256": "c18f7341f0ca972c6070b8b440b0b6c7679368a0b798a935f9b301b6532da63b",
+      "snapshot": "source/c2-terminal-bootstrap-recovery-v2/bootstrap.py"
+    },
+    {
+      "bytes": 18282,
+      "path": "/workspace/scratch/c385a7439f8e/c2-terminal-bootstrap-recovery-v3/bootstrap.py",
+      "sha256": "fedff1dde25bdff874b99ad2a13a0b39a12a4452bd5e38bb262c0f96db77697e",
+      "snapshot": "source/c2-terminal-bootstrap-recovery-v3/bootstrap.py"
+    },
+    {
+      "bytes": 15037,
+      "path": "/workspace/scratch/c385a7439f8e/c2-terminal-bootstrap-recovery-v3/os_processes.py",
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6",
+      "snapshot": "source/c2-terminal-bootstrap-recovery-v3/os_processes.py"
+    }
+  ],
+  "reviewer": "/root/training",
+  "schema": "independent-bootstrap-clock-delta-static-review-v1",
+  "status": "no_new_static_clock_blocker_found",
+  "tests_run_by_reviewer": 0
+}

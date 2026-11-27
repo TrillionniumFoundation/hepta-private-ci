@@ -1,0 +1,1994 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-11-12 21:57:21 UTC",
+  "current_source": {
+    "head": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+    "tree": "682b75ad7c7bf0fdf59b1b4fc803f1f61614c427",
+    "lanes": [
+      {
+        "lane": "native",
+        "run_id": 43313237884,
+        "jobs": [
+          {
+            "job_id": 131514473053,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "native",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:44:41Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Prepare source-bound evidence driver",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check original owner source closure before native compilation",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check exact learning owner evidence parser controls",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Install native prerequisites",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Install repository-pinned uv for Python maintenance",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run sudo install -m 0755 \"$(command -v dotslash)\" /usr/local/bin/dotslash",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Resolve the repository-verified V8 pair",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Record toolchain and fetch locked native dependencies",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Build and pin the same-source joint proposal helper",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Run ordinary and Root suites then scoped maintenance",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Retain raw evidence and recoverable maintenance",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Install repository-pinned uv for Python maintenance",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131514473217,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "caller-proof",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:44:41Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Verify the full caller inventory and retain original execution",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Retain complete caller proof evidence",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "lane": "shared",
+        "run_id": 43313237380,
+        "jobs": []
+      },
+      {
+        "lane": "windows_private",
+        "run_id": 43313237350,
+        "jobs": [
+          {
+            "job_id": 131514545194,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:44:49Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Checkout immutable PR head without saved credentials",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Install repository test runners",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Verify exact source identity and pinned native compiler",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Exercise private file handles, ACL, reparse and hardlink invariants",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Exercise actual Prompt Registry Windows durable owner",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Exercise signed final-use and authority-lease durable stores",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Validate Agentd Prompt Runtime integration and reopened state",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Enforce source-level Rust formatting for durable owners",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Prove directory acquisition rejects both original native attacks",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Exercise exact Windows LEARN file and CURRENT regressions",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Confirm no generated or modified tracked source",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Preserve exact source and all acquisition qualification logs",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Retain native LEARN logs, exact case coverage and original JUnit",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Checkout immutable PR head without saved credentials",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "lane": "blocking",
+        "run_id": 43313237694,
+        "jobs": [
+          {
+            "job_id": 131514917058,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Select blocking CI scope",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:28Z",
+            "completed_at": "2026-11-12T21:45:49Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Checkout exact candidate",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Prepare exact comparison trees",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Select dependency impact",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Regression-test scoped fan-in policy",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Checkout exact candidate",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131514917369,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Blob size policy / Blob size policy",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:28Z",
+            "completed_at": "2026-11-12T21:48:16Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run openai/fence@c7675fea986c29f1d655753a7a61fd6b4141be8f",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Determine comparison range",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test blob size policy",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check changed blob sizes",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Run openai/fence@c7675fea986c29f1d655753a7a61fd6b4141be8f",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131514917486,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Codespell / Check for spelling errors",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:29Z",
+            "completed_at": "2026-11-12T21:46:00Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Build codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Checkout",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Annotate locations with typos",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Codespell",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Checkout",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515140384,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "repo-checks / build-test",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:45:53Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Checkout repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run ./.github/actions/setup-ci",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Verify codex-rs Cargo manifests inherit workspace settings",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test Cargo manifest migration boundaries",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Verify Hepta privileged caller closed set",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Verify codex-tui does not import codex-core directly",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Verify Bazel clippy flags match Cargo workspace lints",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Test Bazel wrapper regression suite",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Test Codex package builder",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Test standalone installer",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Test macOS notarization",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Setup pnpm",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Setup Node.js",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Install dependencies",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Ensure root README.md contains only ASCII and certain Unicode code points",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check root README ToC",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Install uv",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check formatting (run `just fmt` to fix)",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Prettier (run `pnpm run format:fix` to fix)",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Checkout repository",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131515140444,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "sdk / python-sdk",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:52Z",
+            "completed_at": "2026-11-12T21:47:19Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Checkout repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test Python SDK",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Checkout repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515140480,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "sdk / sdks",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:53Z",
+            "completed_at": "2026-11-12T21:52:15Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Checkout repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Install Linux bwrap build dependencies",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Setup pnpm",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Setup Node.js",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Set up Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Build codex and code-mode host with Bazel",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Warm up Bazel-built SDK executables",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Install dependencies",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Build SDK packages",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Lint SDK packages",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test SDK packages",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Save bazel repository cache",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Set up Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Setup Node.js",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Setup pnpm",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Checkout repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515140496,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "cargo-deny / cargo-deny",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:52Z",
+            "completed_at": "2026-11-12T21:47:26Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Build EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Checkout",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Enforce tracked RustSec no-suppression policy",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run ./.github/actions/setup-ci-build",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Install Rust toolchain",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run cargo-deny",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Checkout",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515140530,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "repo-checks / Native Hepta paths on windows-latest",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:53:35Z",
+            "completed_at": "2026-11-12T21:55:40Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Checkout repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test wrappers on the native host",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run ./.github/actions/setup-ci",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test host-native state and fleet roots",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Checkout repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515140695,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:53Z",
+            "completed_at": "2026-11-12T21:46:43Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Checkout repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test wrappers on the native host",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run ./.github/actions/setup-ci",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test host-native state and fleet roots",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Checkout repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515140723,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:52Z",
+            "completed_at": "2026-11-12T21:48:23Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check out repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Validate branch policy",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Validate canonical contract and readiness documents",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Check out repository",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515140783,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "repo-checks / Native Hepta paths on macos-15",
+            "status": "queued",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:45:50Z",
+            "completed_at": null,
+            "steps": []
+          },
+          {
+            "job_id": 131515140787,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "rust-ci / Detect changed areas",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:53Z",
+            "completed_at": "2026-11-12T21:46:06Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Fetch exact pull request comparison",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test fast-feedback failure semantics",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test dependency prewarm source custody",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Detect changed paths (no external action)",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515141066,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:53Z",
+            "completed_at": "2026-11-12T21:53:18Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "bazel build verify-release-build targets",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Verify Bazel builds bwrap",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Save bazel repository cache",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515141069,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:45:54Z",
+            "completed_at": "2026-11-12T21:52:24Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "bazel build --config=clippy lint targets",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Save bazel repository cache",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515141103,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:53:37Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test BuildBuddy Bazel wrapper",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Smoke test the native MSVC header parser",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "bazel test shard",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131515141105,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+            "status": "queued",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:45:50Z",
+            "completed_at": null,
+            "steps": []
+          },
+          {
+            "job_id": 131515141112,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+            "status": "queued",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:45:50Z",
+            "completed_at": null,
+            "steps": []
+          },
+          {
+            "job_id": 131515141126,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:53:36Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "bazel build --config=clippy lint targets",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Save bazel repository cache",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131515141129,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "status": "queued",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:45:50Z",
+            "completed_at": null,
+            "steps": []
+          },
+          {
+            "job_id": 131515141133,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:53:36Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "bazel build verify-release-build targets",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Verify Bazel builds bwrap",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Save bazel repository cache",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131515141142,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:45:53Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check rusty_v8 MODULE.bazel checksums",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "Check MODULE.bazel.lock is up to date",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "Install OpenSSH for the native operator-acceptance test action",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "bazel test //...",
+                "status": "completed",
+                "conclusion": "failure"
+              },
+              {
+                "name": "Run operator acceptance with native OpenSSH",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Save bazel repository cache",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131515141148,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:53:36Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test BuildBuddy Bazel wrapper",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Smoke test the native MSVC header parser",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "bazel test shard",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131515141166,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:45:54Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check rusty_v8 MODULE.bazel checksums",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "Check MODULE.bazel.lock is up to date",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "Install OpenSSH for the native operator-acceptance test action",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "bazel test //...",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Run operator acceptance with native OpenSSH",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Save bazel repository cache",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131515141170,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:53:39Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test BuildBuddy Bazel wrapper",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Smoke test the native MSVC header parser",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "bazel test shard",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131515141240,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:53:43Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Test BuildBuddy Bazel wrapper",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Smoke test the native MSVC header parser",
+                "status": "completed",
+                "conclusion": "skipped"
+              },
+              {
+                "name": "bazel test shard",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131515141372,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "in_progress",
+            "conclusion": null,
+            "started_at": "2026-11-12T21:45:54Z",
+            "completed_at": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Prepare Bazel CI",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check rusty_v8 MODULE.bazel checksums",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check MODULE.bazel.lock is up to date",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Install OpenSSH for the native operator-acceptance test action",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "bazel test //...",
+                "status": "completed",
+                "conclusion": "failure"
+              },
+              {
+                "name": "Run operator acceptance with native OpenSSH",
+                "status": "in_progress",
+                "conclusion": null
+              },
+              {
+                "name": "Upload Bazel execution logs",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Save bazel repository cache",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Prepare Bazel CI",
+                "status": "pending",
+                "conclusion": null
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "pending",
+                "conclusion": null
+              }
+            ]
+          },
+          {
+            "job_id": 131515142396,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Hepta scoped native checks",
+            "status": "completed",
+            "conclusion": "skipped",
+            "started_at": "2026-11-12T21:45:50Z",
+            "completed_at": "2026-11-12T21:45:49Z",
+            "steps": []
+          },
+          {
+            "job_id": 131515143227,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Lightweight prose and derived checks",
+            "status": "completed",
+            "conclusion": "skipped",
+            "started_at": "2026-11-12T21:45:50Z",
+            "completed_at": "2026-11-12T21:45:49Z",
+            "steps": []
+          },
+          {
+            "job_id": 131515144298,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+            "status": "completed",
+            "conclusion": "skipped",
+            "started_at": "2026-11-12T21:45:50Z",
+            "completed_at": "2026-11-12T21:45:50Z",
+            "steps": []
+          },
+          {
+            "job_id": 131515291238,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "rust-ci / Rust format",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:46:08Z",
+            "completed_at": "2026-11-12T21:46:51Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run ./.github/actions/setup-ci",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "cargo fmt",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515291283,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "rust-ci / cargo shear",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:46:08Z",
+            "completed_at": "2026-11-12T21:46:52Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run ./.github/actions/setup-ci",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "cargo shear",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515291302,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "rust-ci / Cargo manifest preflight",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:46:09Z",
+            "completed_at": "2026-11-12T21:46:33Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check local manifest graph before installing native prerequisites",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Validate Cargo metadata for the actual checkout",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131515293784,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "rust-ci / Argument comment lint package",
+            "status": "completed",
+            "conclusion": "skipped",
+            "started_at": "2026-11-12T21:46:06Z",
+            "completed_at": "2026-11-12T21:46:06Z",
+            "steps": []
+          },
+          {
+            "job_id": 131515546326,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "rust-ci / Rust benchmark smoke",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:46:35Z",
+            "completed_at": "2026-11-12T21:47:41Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run ./.github/actions/setup-ci",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Rust benchmark smoke test",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          },
+          {
+            "job_id": 131516176733,
+            "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+            "name": "rust-ci / CI results (required)",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-12T21:47:44Z",
+            "completed_at": "2026-11-12T21:47:47Z",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Summarize",
+                "status": "completed",
+                "conclusion": "success"
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "source2f": {
+    "head": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+    "ordinary_native_and_caller": "Separate original jobs still under observation; no status inference from shared",
+    "shared_complete_review": "ROOT_SOURCE2F_SHARED_FULL_REVIEW.json"
+  },
+  "scope": "Derived exact-head job/step observation. Method rosters and historical terminal originals are kept separately; no previous-source results transferred."
+}

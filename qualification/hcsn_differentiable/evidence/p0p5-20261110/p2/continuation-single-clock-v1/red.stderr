@@ -1,0 +1,14 @@
+test_epoch_cost_fields_share_one_clock_sample (__main__.ContinuationTests.test_epoch_cost_fields_share_one_clock_sample) ... FAIL
+
+======================================================================
+FAIL: test_epoch_cost_fields_share_one_clock_sample (__main__.ContinuationTests.test_epoch_cost_fields_share_one_clock_sample)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c385a7439f8e/hcsn-clock-fix/proposals/localization-v3/test_continuation.py", line 326, in test_epoch_cost_fields_share_one_clock_sample
+    self.assertEqual(
+AssertionError: 0.807686384998533 != 0.8066863849985566
+
+----------------------------------------------------------------------
+Ran 1 test in 0.823s
+
+FAILED (failures=1)

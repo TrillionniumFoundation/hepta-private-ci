@@ -1,0 +1,62 @@
+{
+  "integration_source": "129ddee27614f71351f6ea013927caff25fc8c7c",
+  "integration_tree": "7de809428b03b7cdf1772431974335338373f5e2",
+  "state": "native-completed",
+  "steps": [
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 2.445808766875416,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diffcheck",
+      "exit_code": 0,
+      "seconds": 0.012618458131328225,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "stage-format",
+      "exit_code": 0,
+      "seconds": 0.02919342485256493,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "commit-format",
+      "exit_code": 0,
+      "seconds": 0.03857281291857362,
+      "log_bytes": 164,
+      "log_sha256": "95671a2370fa6e7d8f17eb0b62085f891527d4e2c2392fc52ee9a53c71d6c9e2"
+    },
+    {
+      "name": "source-closure",
+      "exit_code": 0,
+      "seconds": 56.95352768385783,
+      "log_bytes": 34242,
+      "log_sha256": "05f5f6221cdf4629085f9d3bded3a0c38c6ce0ca6f4edba567d60527dd085029"
+    },
+    {
+      "name": "parser-controls",
+      "exit_code": 0,
+      "seconds": 0.20053044497035444,
+      "log_bytes": 2705,
+      "log_sha256": "dee008ae2e9443b86dae6cd8846d79bd814c0d37c7535fd73d3a7a7b2d9867c6"
+    },
+    {
+      "name": "push-candidate",
+      "exit_code": 0,
+      "seconds": 5.380568029824644,
+      "log_bytes": 708,
+      "log_sha256": "692609245aa8a69027abbc204dfd08f16a096e7c11bd9db62d78f0e4eef58145"
+    }
+  ],
+  "source_sha": "0bfe47e53bae47977c4423362e4d3823edac99fd",
+  "source_tree": "8663f89daca111ba7f681d2c36442f6f4ded97f5",
+  "native_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-0bfe47e53bae-v1",
+  "native_exit_code": 0,
+  "source_after": "0bfe47e53bae47977c4423362e4d3823edac99fd",
+  "source_status_after": ""
+}

@@ -48,6 +48,7 @@ struct BlockingMetadataFileSystem {
 struct BlockingMetadataCalls {
     paths: Mutex<Vec<PathUri>>,
     started: Notify,
+    first_release: Semaphore,
     release: Semaphore,
 }
 
@@ -56,6 +57,7 @@ impl Default for BlockingMetadataCalls {
         Self {
             paths: Mutex::new(Vec::new()),
             started: Notify::new(),
+            first_release: Semaphore::new(0),
             release: Semaphore::new(0),
         }
     }
@@ -120,15 +122,20 @@ impl ExecutorFileSystem for BlockingMetadataFileSystem {
             return self.inner.get_metadata(path, options, sandbox);
         }
 
-        self.calls
-            .paths
-            .lock()
-            .expect("metadata paths lock")
-            .push(path.clone());
+        let first_probe = {
+            let mut paths = self.calls.paths.lock().expect("metadata paths lock");
+            let first_probe = paths.is_empty();
+            paths.push(path.clone());
+            first_probe
+        };
         self.calls.started.notify_one();
         Box::pin(async move {
-            self.calls
-                .release
+            let release = if first_probe {
+                &self.calls.first_release
+            } else {
+                &self.calls.release
+            };
+            release
                 .acquire()
                 .await
                 .expect("metadata release semaphore")
@@ -406,7 +413,30 @@ async fn repo_ancestry_without_project_marker_does_not_walk_parents() {
     fs::create_dir_all(outer.join(".agents/skills")).expect("create outer skills");
     fs::create_dir_all(cwd.join(".agents/skills")).expect("create cwd skills");
 
-    let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &stack(Vec::new()), &cwd)
+    // Other concurrent sandboxes can temporarily create metadata mount targets
+    // in the common temp parent. Keep this no-marker fixture independent of them
+    // without disabling the ancestor-marker search with an empty marker list.
+    let marker = format!(
+        ".codex-test-missing-project-marker-{}",
+        temp_dir
+            .path()
+            .file_name()
+            .expect("temp name")
+            .to_string_lossy()
+    );
+    let mut config = toml::map::Map::new();
+    config.insert(
+        "project_root_markers".to_string(),
+        toml::Value::Array(vec![toml::Value::String(marker)]),
+    );
+    let config_stack = stack(vec![ConfigLayerEntry::new(
+        ConfigLayerSource::User {
+            file: absolute(temp_dir.path()).join("config.toml"),
+            profile: None,
+        },
+        toml::Value::Table(config),
+    )]);
+    let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &config_stack, &cwd)
         .await
         .into_iter()
         .map(|root| root.path)
@@ -563,7 +593,8 @@ async fn repo_ancestry_limits_concurrent_probes_and_preserves_order() {
             &expected_probes[..CONCURRENCY_LIMIT]
         );
 
-        calls.release.add_permits(/*n*/ 1);
+        // Release the ordered head even if semaphore waiters registered out of order.
+        calls.first_release.add_permits(/*n*/ 1);
         tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), async {
             loop {
                 let started = calls.started.notified();

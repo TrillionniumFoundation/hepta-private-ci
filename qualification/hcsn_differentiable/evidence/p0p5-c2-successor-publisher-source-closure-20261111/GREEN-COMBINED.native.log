@@ -1,0 +1,21 @@
+COMMAND: /home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python -B -m unittest discover -s /home/qian-qi/hcsn-p0p5-durable-dep-t7-direct-20261111/qualification/hcsn_differentiable/c2_successor_v1 -p test_*.py -v
+PYTORCH: 3.12.3 2.8.0+cu128
+EXIT: 0
+STDOUT:
+
+STDERR:
+test_matching_durable_bytes_and_module_origin_enter_input_closure (test_program_source_closure.ProgramDependencyClosureTests.test_matching_durable_bytes_and_module_origin_enter_input_closure) ... ok
+test_mutated_recovery_durable_code_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_mutated_recovery_durable_code_must_fail_closed) ... ok
+test_no_recovery_durable_digest_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_no_recovery_durable_digest_must_fail_closed) ... ok
+test_shadowed_durable_import_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_shadowed_durable_import_must_fail_closed) ... ok
+test_actual_torch_optimizer_rng_and_frozen_data_roundtrip (test_successor_wiring.SuccessorWiringTests.test_actual_torch_optimizer_rng_and_frozen_data_roundtrip) ... ok
+test_both_real_c2_entrypoints_wired (test_successor_wiring.SuccessorWiringTests.test_both_real_c2_entrypoints_wired) ... ok
+test_checkpoint_incomplete_semantic_roundtrip_never_publishes (test_successor_wiring.SuccessorWiringTests.test_checkpoint_incomplete_semantic_roundtrip_never_publishes) ... ok
+test_completed_producer_roster_remains_hold (test_successor_wiring.SuccessorWiringTests.test_completed_producer_roster_remains_hold) ... ok
+test_result_file_create_only_even_after_failure (test_successor_wiring.SuccessorWiringTests.test_result_file_create_only_even_after_failure) ... ok
+test_serialize_exception_never_creates_zero_final_checkpoint (test_successor_wiring.SuccessorWiringTests.test_serialize_exception_never_creates_zero_final_checkpoint) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.136s
+
+OK

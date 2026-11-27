@@ -185,11 +185,15 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/registry_tests.rs",
-          "function": "registration_is_immutable_and_idempotent"
+          "function": "registration_is_immutable_and_idempotent",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "registry::tests::registration_is_immutable_and_idempotent"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/registry_tests.rs",
-          "function": "event_identity_reuse_with_drift_fails"
+          "function": "event_identity_reuse_with_drift_fails",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "registry::tests::event_identity_reuse_with_drift_fails"
         }
       ],
       "status": "native_test_mapped"
@@ -201,15 +205,21 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
-          "function": "zero_binding_leaves_created_file_empty_for_host_reconciliation"
+          "function": "zero_binding_leaves_created_file_empty_for_host_reconciliation",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "storage::tests::zero_binding_leaves_created_file_empty_for_host_reconciliation"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
-          "function": "bytes_appearing_after_atomic_creation_are_indeterminate"
+          "function": "bytes_appearing_after_atomic_creation_are_indeterminate",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "storage::tests::bytes_appearing_after_atomic_creation_are_indeterminate"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
-          "function": "loads_exact_pinned_manifest_and_payload"
+          "function": "loads_exact_pinned_manifest_and_payload",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "pinned::tests::loads_exact_pinned_manifest_and_payload"
         }
       ],
       "status": "native_test_mapped"
@@ -221,15 +231,21 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
-          "function": "payload_corruption_and_invalid_receipt_reject"
+          "function": "payload_corruption_and_invalid_receipt_reject",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "storage::tests::payload_corruption_and_invalid_receipt_reject"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
-          "function": "every_truncation_and_wrong_external_witness_rejects_without_repair"
+          "function": "every_truncation_and_wrong_external_witness_rejects_without_repair",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "storage::tests::every_truncation_and_wrong_external_witness_rejects_without_repair"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
-          "function": "objective_and_compatibility_drift_are_pin_mismatches"
+          "function": "objective_and_compatibility_drift_are_pin_mismatches",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "pinned::tests::objective_and_compatibility_drift_are_pin_mismatches"
         }
       ],
       "status": "native_test_mapped"
@@ -241,15 +257,21 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
-          "function": "revoked_ancestor_blocks_loading"
+          "function": "revoked_ancestor_blocks_loading",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "pinned::tests::revoked_ancestor_blocks_loading"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs",
-          "function": "persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback"
+          "function": "persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "dataset_revocation::tests::persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs",
-          "function": "art_03_registry_head_witness_rejects_rollback"
+          "function": "art_03_registry_head_witness_rejects_rollback",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "closure_v2::tests::art_03_registry_head_witness_rejects_rollback"
         }
       ],
       "status": "native_test_mapped"
@@ -549,19 +571,45 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
-          "function": "named_owner_service_publishes_retries_and_reopens_from_current_head"
+          "function": "named_owner_service_publishes_retries_and_reopens_from_current_head",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
-          "function": "owner_host_process_kill_reopen_matrix"
+          "function": "owner_host_process_kill_reopen_matrix",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "owner_host::tests::owner_host_process_kill_reopen_matrix"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
-          "function": "independent_current_head_anchor_rejects_restored_old_backup"
+          "function": "independent_current_head_anchor_rejects_restored_old_backup",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "owner_host::tests::independent_current_head_anchor_rejects_restored_old_backup"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
-          "function": "current_head_rotation_preserves_history_and_requires_current_key_epoch"
+          "function": "current_head_rotation_preserves_history_and_requires_current_key_epoch",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "owner_host::tests::current_head_rotation_preserves_history_and_requires_current_key_epoch"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_tests.rs",
+          "function": "owner_drain_closes_admission_but_preserves_original_readback_and_fence",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "owner_service::publication_readback_tests::owner_drain_closes_admission_but_preserves_original_readback_and_fence"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service_preparation_tests.rs",
+          "function": "owner_drain_waits_for_the_exact_inflight_continuation",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "owner_service::preparation::tests::owner_drain_waits_for_the_exact_inflight_continuation"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service_preparation_tests.rs",
+          "function": "original_registry_preparation_preserves_failed_withdrawal_install_fence",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "owner_service::preparation::tests::original_registry_preparation_preserves_failed_withdrawal_install_fence"
         }
       ],
       "status": "native_test_mapped"
@@ -573,19 +621,27 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
-          "function": "art_12_independent_selector_binds_exact_current_and_manifest"
+          "function": "art_12_independent_selector_binds_exact_current_and_manifest",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "selection::tests::art_12_independent_selector_binds_exact_current_and_manifest"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
-          "function": "art_12_selection_rejects_self_selection_and_revoked_selector"
+          "function": "art_12_selection_rejects_self_selection_and_revoked_selector",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "selection::tests::art_12_selection_rejects_self_selection_and_revoked_selector"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
-          "function": "art_12_verified_selection_records_only_selected_transition"
+          "function": "art_12_verified_selection_records_only_selected_transition",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "selection::tests::art_12_verified_selection_records_only_selected_transition"
         },
         {
           "source": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
-          "function": "existing_artifact_owner_new_process_predictions_and_revoked_rollback"
+          "function": "existing_artifact_owner_new_process_predictions_and_revoked_rollback",
+          "binaryId": "codex-hepta-shadow-qualification::durable_learning_roundtrip",
+          "testName": "tabular_reload::existing_artifact_owner_new_process_predictions_and_revoked_rollback"
         }
       ],
       "status": "native_test_mapped"
@@ -597,11 +653,15 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
-          "function": "art_05_admission_is_domain_registry_and_scope_bound"
+          "function": "art_05_admission_is_domain_registry_and_scope_bound",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "admission_v3::tests::art_05_admission_is_domain_registry_and_scope_bound"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
-          "function": "art_05_withdrawal_race_invalidates_admission"
+          "function": "art_05_withdrawal_race_invalidates_admission",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "admission_v3::tests::art_05_withdrawal_race_invalidates_admission"
         }
       ],
       "status": "native_test_mapped"
@@ -613,11 +673,15 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
-          "function": "art_06_lifecycle_journal_enforces_head_state_and_role"
+          "function": "art_06_lifecycle_journal_enforces_head_state_and_role",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "lifecycle_journal::tests::art_06_lifecycle_journal_enforces_head_state_and_role"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
-          "function": "art_06_lifecycle_snapshot_replay_survives_actor_expiry"
+          "function": "art_06_lifecycle_snapshot_replay_survives_actor_expiry",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "lifecycle_journal::tests::art_06_lifecycle_snapshot_replay_survives_actor_expiry"
         }
       ],
       "status": "native_test_mapped"
@@ -629,15 +693,21 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
-          "function": "art_07_publication_requires_ordered_durable_phases_before_ack"
+          "function": "art_07_publication_requires_ordered_durable_phases_before_ack",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "publication::tests::art_07_publication_requires_ordered_durable_phases_before_ack"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
-          "function": "art_07_crash_snapshots_never_promote_partial_publication"
+          "function": "art_07_crash_snapshots_never_promote_partial_publication",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "publication::tests::art_07_crash_snapshots_never_promote_partial_publication"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
-          "function": "art_07_withdrawal_advance_blocks_recovered_publication"
+          "function": "art_07_withdrawal_advance_blocks_recovered_publication",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "publication::tests::art_07_withdrawal_advance_blocks_recovered_publication"
         }
       ],
       "status": "native_test_mapped"
@@ -649,11 +719,15 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
-          "function": "art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt"
+          "function": "art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "durable_snapshots::tests::art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
-          "function": "art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry"
+          "function": "art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "durable_snapshots::tests::art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry"
         }
       ],
       "status": "native_test_mapped"
@@ -665,15 +739,21 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
-          "function": "sensor_core_kind_survives_durable_registry_roundtrip"
+          "function": "sensor_core_kind_survives_durable_registry_roundtrip",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "storage::tests::sensor_core_kind_survives_durable_registry_roundtrip"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
-          "function": "operator_sensor_core_projection_has_one_physical_owner"
+          "function": "operator_sensor_core_projection_has_one_physical_owner",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "sensor_core_registry::tests::operator_sensor_core_projection_has_one_physical_owner"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
-          "function": "operator_sensor_core_projection_tracks_revocation_without_second_write"
+          "function": "operator_sensor_core_projection_tracks_revocation_without_second_write",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "sensor_core_registry::tests::operator_sensor_core_projection_tracks_revocation_without_second_write"
         }
       ],
       "status": "native_test_mapped"
@@ -685,15 +765,21 @@
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/iteration.rs",
-          "function": "transitions_are_monotonic_and_terminal"
+          "function": "transitions_are_monotonic_and_terminal",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "iteration::tests::transitions_are_monotonic_and_terminal"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
-          "function": "records_bounded_external_transitions"
+          "function": "records_bounded_external_transitions",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "iteration_ledger::tests::records_bounded_external_transitions"
         },
         {
           "source": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
-          "function": "snapshot_replay_is_exact_and_duplicate_receipts_fail"
+          "function": "snapshot_replay_is_exact_and_duplicate_receipts_fail",
+          "binaryId": "codex-hepta-learning-artifacts",
+          "testName": "iteration_ledger::tests::snapshot_replay_is_exact_and_duplicate_receipts_fail"
         }
       ],
       "status": "native_test_mapped"

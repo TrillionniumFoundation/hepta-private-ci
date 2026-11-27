@@ -1,0 +1,88 @@
+{
+  "activation": false,
+  "after_registry_head": "199aa3fbb032aff92aadcb194f94b3d7af50640b798b73773615d3ef6988f1f4",
+  "aggregates": [
+    {
+      "available": true,
+      "criterion_met": false,
+      "estimate": 0.0074371589079688105,
+      "gate": "task",
+      "lower_bound": -710.0,
+      "lower_bound_semantics": "conservative NLL-difference support floor from float64 tiny clipping; not a bootstrap lower CI",
+      "observations": 512,
+      "threshold": -0.001,
+      "upper_bound": 0.013572910162638549
+    },
+    {
+      "available": true,
+      "criterion_met": false,
+      "estimate": 0.024124179918622386,
+      "gate": "retention",
+      "lower_bound": -710.0,
+      "lower_bound_semantics": "conservative NLL-difference support floor from float64 tiny clipping; not a bootstrap lower CI",
+      "observations": 512,
+      "threshold": 0.0,
+      "upper_bound": 0.08099798246276808
+    },
+    {
+      "available": true,
+      "criterion_met": true,
+      "estimate": 0.6691057742341061,
+      "gate": "total_cost",
+      "lower_bound": 0.0,
+      "lower_bound_semantics": "zero support floor; upper is maximum measured CPU ratio, not a CI",
+      "observations": 3,
+      "threshold": 3.0,
+      "upper_bound": 0.6691057742341061
+    }
+  ],
+  "all_numeric_gates_pass": false,
+  "before_registry_head": "199aa3fbb032aff92aadcb194f94b3d7af50640b798b73773615d3ef6988f1f4",
+  "candidate_published": false,
+  "candidate_sha256": "2772464bd91dadba90e2db093301318aae98723f88ef70bf3ef663d266d68198",
+  "compiled_source_sha256": {
+    "census": "bd745ed0f14fc9b33bf8b806670a529acc128cbf2e81b5c1ea0379d334154770",
+    "main": "c8f3232ecca004561e3be482e289c6a510b4930633356accfd9bb51a20e022f4",
+    "native_candidate_review": "9cc33363a127cd6cecf6b3f88b2ce6d8fbe88f084b6474f88d74197f7d0c2513",
+    "native_trained_cell": "c8399c8240c0c7e5919a50a7e5a6c3cd302ff6e75da2bc164177f3b9d9d1dcaa",
+    "native_typed_owner": "6ac9683ffb262cd58d5dddca0540021d4e4157105ee6f5b8748424120ce47317",
+    "owner": "12098169a7309fda148cd19fd98e515fc44cc0a275374cb35a55329b9360966a",
+    "parity": "ad74e712828bd262d3ce6b2ffa1084440dfc6c70226097fddc64fb51279868ac",
+    "payload": "d3f03c99763656e71ff089bc2ed6043cb473c920ea3b8b49ee03abb3538a40d6",
+    "positive": "2303ab29ec6586aedd2b0d39fe5435a3a04beaae07db3745179c3d511a86a2a5",
+    "positive_owner": "126ff5196d521850050d3c590302ebb14809ccb578e9698ada744c2ba1974eb6",
+    "report": "2d20524e1d60958afabb1e76686c48846a0b98b2dc85453f87e6cd9b8661110a",
+    "serve": "37cd090e75834b3fedffee59076677f49f7c2e52b6259d70d974142f805411cf"
+  },
+  "gate_input_sha256": "67835f7d55639f6bbc753f185c04474fc5e414e10b4a8d3b8e6782e40b1cf74e",
+  "native_result": "GateFailed(task)",
+  "owner_bytes_unchanged": true,
+  "owner_file_sha256": {
+    "heads/1-7c89e53736720b469fe3eb3dc120a071accb547a8c7fc9bf44d8c915be9ae94c.head": "d7ec535469dfbdc4e8f5647b3f4d7729ab30dc6b70324e7742cdcd0100a395ee",
+    "payloads/all12-typed-warmup-v5-48faedf7f46f64b6cbd86e83666b55b79f4086e8ef8f7b7cd5d501c663b49aba.bin": "48faedf7f46f64b6cbd86e83666b55b79f4086e8ef8f7b7cd5d501c663b49aba",
+    "registries/199aa3fbb032aff92aadcb194f94b3d7af50640b798b73773615d3ef6988f1f4-efd55ba9b2019dc6c74e1f266a36c7336fa1b5bb77d5c3942ebc7566fbe019a5.snapshot": "efd55ba9b2019dc6c74e1f266a36c7336fa1b5bb77d5c3942ebc7566fbe019a5",
+    "transactions/75d9ce85e9fcb429630115fae618d8f2c56220f7330572ac495fc31c3370922c-0.checkpoint": "e09318fc7a0e9891e653108b90a3339fae58001893c0ffae93b4f219a837272d",
+    "transactions/75d9ce85e9fcb429630115fae618d8f2c56220f7330572ac495fc31c3370922c-1.checkpoint": "5a0f87015a8ecf0784fd111bc050109e3ecd2e46940f8dbf7256675217461797",
+    "transactions/75d9ce85e9fcb429630115fae618d8f2c56220f7330572ac495fc31c3370922c-2.checkpoint": "284cf74f5940b4e692d9edce30c87910634e39e3f043086fdfc8b536413e1a0a",
+    "transactions/75d9ce85e9fcb429630115fae618d8f2c56220f7330572ac495fc31c3370922c-3.checkpoint": "f01f0923ab63f59d8038ee80788db9f4ee085e3cbb5759dc3d74aca1d1135983",
+    "transactions/75d9ce85e9fcb429630115fae618d8f2c56220f7330572ac495fc31c3370922c-4.checkpoint": "3138f9614d11c579014820e990dd6f1c416a51d05a5d460d479ad58dc176dc53",
+    "witnesses/1-a216230b1d8bb667b278af1054f45270db9e60d689d421d58238b30f83247d9e.witness": "845a5a409c8ff41ebf4d9585060c1ecc99656ab4401e077be5d4ff9b886c7c3f",
+    "writer/owner.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "parameter_scope": "actual all12 typed float64 linear/gated native serving payload; scientific rejection prevents candidate publication and activation",
+  "policy_digest": "40406ae4e330e161517fb5344997fb253b39906abe4d112ae3fb56d1f77b5b2f",
+  "predecessor_sha256": "48faedf7f46f64b6cbd86e83666b55b79f4086e8ef8f7b7cd5d501c663b49aba",
+  "production_authority": false,
+  "protocol_sha256": "cdd777f64265acfd6b8e44960a4f3c3bfbd5d856f76bc7c9d9c696bf4e11f41f",
+  "report_sha256": "3764528e546afde510c834e6f1391002d7abba45ca211b9274f8c6a6a9172498",
+  "review_archive": {
+    "encoding": "native V1 canonical signing bytes followed by 64-byte Ed25519 signature",
+    "reviewer_public_key_hex": "a09aa5f47a6759802ff955f8dc2d2a14a5c99d23be97f864127ff9383455a4f0",
+    "signed_review_hex": "68657074612e6c6561726e696e672d6172746966616374732e736369656e74696669632d7265766965772e7631000000000000001b72657365617263682d72657669657765722d657068656d6572616c000000000000002872657365617263682d696d706f72742d616c6c31322d74797065642d63616e6469646174652d7635000000000000000140406ae4e330e161517fb5344997fb253b39906abe4d112ae3fb56d1f77b5b2f917bbbdfe2cae186273d0d9c1fd495fc05642561cf5258b7b000d1885aefda57199aa3fbb032aff92aadcb194f94b3d7af50640b798b73773615d3ef6988f1f43764528e546afde510c834e6f1391002d7abba45ca211b9274f8c6a6a9172498019dd8ee85e86922d3b9c999625865bb39f284f67eb80dd1f5f63dff84324d19093764528e546afde510c834e6f1391002d7abba45ca211b9274f8c6a6a91724980000000000000200c0863000000000003f7e766d248edf803f8bcc1d2a14a418019a9cc60b1588c6a400a7cd54579d9036f4398055aa9bacea0d6fa0fdf2af001e3764528e546afde510c834e6f1391002d7abba45ca211b9274f8c6a6a91724980000000000000200c0863000000000003f98b4024f2c57a53fb4bc48a5b835c50104c8836153038569c44d5f51b9d948b4dd07876340d67dce671964650ba950833764528e546afde510c834e6f1391002d7abba45ca211b9274f8c6a6a9172498000000000000000300000000000000003fe56950833ccecf3fe56950833ccecf000000006addfe22000000006addff4e51f28e8ee7c1ee44c1fc5b691ecba4ea3b86083480f69df8160c9f429e1ef981c122f03f9f9c19bd32ee30f8d7b43df9ef63089d37fb8952ef5edc642086e70a",
+    "trust_scope": "public ephemeral research identity only"
+  },
+  "review_digest": "861df426708a24def11a610e8c869f15b13ef5fe8ffeef0efcb86cd73af2dbe8",
+  "schema": "hepta.real-report-native-rejection.v5",
+  "signed_negative_review_submitted": true,
+  "trust_scope": "public ephemeral research owner/reviewer keys; no production trust installed"
+}

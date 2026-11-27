@@ -1036,6 +1036,15 @@ fn read_sha_file(sha_path: &Path) -> Option<String> {
 }
 
 fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String> {
+    // A private staging path must not redirect extraction through a symlink.
+    if let Ok(metadata) = std::fs::symlink_metadata(destination)
+        && metadata.file_type().is_symlink()
+    {
+        return Err(format!(
+            "curated plugins extraction root {} is a symbolic link",
+            destination.display()
+        ));
+    }
     std::fs::create_dir_all(destination).map_err(|err| {
         format!(
             "failed to create curated plugins extraction directory {}: {err}",
@@ -1046,6 +1055,9 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
     let cursor = std::io::Cursor::new(bytes);
     let mut archive = ZipArchive::new(cursor)
         .map_err(|err| format!("failed to open curated plugins zip archive: {err}"))?;
+    if archive.has_duplicate_names() {
+        return Err("curated plugins zip contains duplicate central directory names".to_string());
+    }
 
     for index in 0..archive.len() {
         let mut entry = archive
@@ -1054,9 +1066,32 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         let Some(relative_path) = entry.enclosed_name() else {
             return Err(format!(
                 "curated plugins zip entry `{}` escapes extraction root",
-                entry.name()
+                entry
+                    .name()
+                    .map(std::borrow::Cow::into_owned)
+                    .unwrap_or_else(|_| "<invalid>".to_string())
             ));
         };
+        if entry.is_symlink() {
+            return Err(format!(
+                "curated plugins zip entry `{}` is a symlink",
+                entry
+                    .name()
+                    .map(std::borrow::Cow::into_owned)
+                    .unwrap_or_else(|_| "<invalid>".to_string())
+            ));
+        }
+
+        if let Some(mode) = entry.unix_mode() {
+            let file_type = mode & 0o170000;
+            let expected_type = if entry.is_dir() { 0o040000 } else { 0o100000 };
+            if file_type != 0 && file_type != expected_type {
+                return Err(format!(
+                    "curated plugins zip entry '{}' has an unsafe Unix file type",
+                    relative_path.display()
+                ));
+            }
+        }
 
         let mut components = relative_path.components();
         let Some(std::path::Component::Normal(_)) = components.next() else {
@@ -1074,6 +1109,19 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         }
 
         let output_path = destination.join(&output_relative);
+        // Do not follow a preexisting symlink within the staging tree.
+        let mut checked_path = destination.to_path_buf();
+        for component in output_relative.components() {
+            checked_path.push(component);
+            if let Ok(metadata) = std::fs::symlink_metadata(&checked_path)
+                && metadata.file_type().is_symlink()
+            {
+                return Err(format!(
+                    "curated plugins zip path {} traverses a symbolic link",
+                    checked_path.display()
+                ));
+            }
+        }
         if entry.is_dir() {
             std::fs::create_dir_all(&output_path).map_err(|err| {
                 format!(
@@ -1092,42 +1140,63 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 )
             })?;
         }
-        let mut output = std::fs::File::create(&output_path).map_err(|err| {
-            format!(
-                "failed to create curated plugins file {}: {err}",
-                output_path.display()
-            )
-        })?;
+        // Exclusive creation preserves existing staging contents and rejects
+        // duplicate normalized output paths.
+        let mut output = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&output_path)
+            .map_err(|err| {
+                format!(
+                    "failed to create curated plugins file {}: {err}",
+                    output_path.display()
+                )
+            })?;
         std::io::copy(&mut entry, &mut output).map_err(|err| {
             format!(
                 "failed to write curated plugins file {}: {err}",
                 output_path.display()
             )
         })?;
-        apply_zip_permissions(&entry, &output_path)?;
+        apply_zip_permissions(entry.unix_mode(), &output, &output_path)?;
     }
 
     Ok(())
 }
 
 #[cfg(unix)]
-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
+fn apply_zip_permissions(
+    mode: Option<u32>,
+    output: &File,
+    output_path: &Path,
+) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
 
-    let Some(mode) = entry.unix_mode() else {
+    let Some(mode) = mode else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
-        format!(
-            "failed to set permissions on curated plugins file {}: {err}",
-            output_path.display()
-        )
-    })
+    // Never adopt special bits or group/world writes supplied by an archive.
+    // Preserve owner writes and the requested read and execute permissions.
+    let safe_mode = safe_zip_file_mode(mode);
+    output
+        .set_permissions(std::fs::Permissions::from_mode(safe_mode))
+        .map_err(|err| {
+            format!(
+                "failed to set permissions on curated plugins file {}: {err}",
+                output_path.display()
+            )
+        })
+}
+
+#[cfg(unix)]
+fn safe_zip_file_mode(mode: u32) -> u32 {
+    mode & 0o755
 }
 
 #[cfg(not(unix))]
 fn apply_zip_permissions(
-    _entry: &zip::read::ZipFile<'_>,
+    _mode: Option<u32>,
+    _output: &File,
     _output_path: &Path,
 ) -> Result<(), String> {
     Ok(())

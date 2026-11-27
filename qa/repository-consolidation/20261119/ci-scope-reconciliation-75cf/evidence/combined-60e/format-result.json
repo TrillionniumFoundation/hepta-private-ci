@@ -1,0 +1,18 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--offline",
+    "--frozen",
+    "--project",
+    "scripts",
+    "ruff",
+    "format",
+    "scripts/tests/test_hepta_ci_scope.py"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.30278491973876953,
+  "sha256_before": "09ed2ecf682cd71f1e5f58eaf6f4e2a41d5a85b7c7d3df9b222cd645b16d0485",
+  "sha256_after": "09ed2ecf682cd71f1e5f58eaf6f4e2a41d5a85b7c7d3df9b222cd645b16d0485",
+  "changed": false
+}

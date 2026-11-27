@@ -1,0 +1,123 @@
+{
+  "source_base": "c84d35ad0c57d592586cb50fd010547ad7f5c868",
+  "observed_source": "d95c8993b5a80d1636aa74f369586e5b75ef420e",
+  "job": 130925917223,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "original_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+      "observed_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+      "exact_same_blob": true,
+      "hunks": 10,
+      "all_old_spans_uniquely_matched": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "original_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac",
+      "observed_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac",
+      "exact_same_blob": true,
+      "hunks": 5,
+      "all_old_spans_uniquely_matched": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "original_blob": "01ea7514ea9b743dcd7b9729cf1c8832a33ce28c",
+      "observed_blob": "01ea7514ea9b743dcd7b9729cf1c8832a33ce28c",
+      "exact_same_blob": true,
+      "hunks": 4,
+      "all_old_spans_uniquely_matched": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "original_blob": "a01cf875af9ff78945e13d73d8c5e519aa9168dc",
+      "observed_blob": "a01cf875af9ff78945e13d73d8c5e519aa9168dc",
+      "exact_same_blob": true,
+      "hunks": 1,
+      "all_old_spans_uniquely_matched": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "original_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+      "observed_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+      "exact_same_blob": true,
+      "hunks": 3,
+      "all_old_spans_uniquely_matched": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "original_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+      "observed_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+      "exact_same_blob": true,
+      "hunks": 3,
+      "all_old_spans_uniquely_matched": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "original_blob": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+      "observed_blob": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+      "exact_same_blob": true,
+      "hunks": 5,
+      "all_old_spans_uniquely_matched": true
+    }
+  ],
+  "all_hunks": 31,
+  "existing_CALLERS_blob": "4c110238b99023f254153eff20c3170d09a39e3a",
+  "protected_boundary_rows_referencing_changed_files": 6,
+  "changed_existing_guard_spans": 0,
+  "qa_python_files_read": 19,
+  "qa_explicitly_references_changed_files": [
+    "qa/b4-no-bypass/test_root_admin_source_closure.py"
+  ],
+  "original_negative_mutation_unchanged": true,
+  "metadata_plan": "CALLERS, exact allowlist and source QA unchanged because their actual relevant spans are byte-identical before and after formatting.",
+  "local_fmt_execution": "not run: no usable execution environment",
+  "source_qa_execution": "not run on new postimage: exact-head CI required",
+  "log_identity": {
+    "run_id": 43140461436,
+    "job_id": 130925917223,
+    "sha256": "fc9445373515f0f34d67a019432a9ca6307ff8260e2c94d75b9d27403f78b374",
+    "bytes": 295893,
+    "representation": "complete decoded job-log string encoded in UTF-8, retaining BOM and CRLF"
+  },
+  "source_files_sha256": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "original": "23f42d446cc731161c31fb25689f4d3ec831bedd9117ff8f40149cefb956bdcd",
+      "postimage": "5a5d730961878ff010daf26a438ef6e1223cdcdece3e7bf47c19e6c5426619c7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "original": "20c2ad06db87ed4c97805d673945393fa373aacd93ed03be57149126f6b6242a",
+      "postimage": "76d2f8d2816df52142e309b143236a9a5c7fbfa1e1c046f0734131aa36ad3f7b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "original": "daa4fc02cc7e317ed35be72368c8dff84dc68c9fa47011f9670e64758e342b7e",
+      "postimage": "7987a54f7cfa8735dd7d5db470e67f63d560a99cf258442d0550940ef71b4a8f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "original": "7fc6523ff1fabe0815a3d1a01221ba1be5a4473a9d008eaee30fa90b1bf0d1d5",
+      "postimage": "5268171d28a80c2953f03e6acd84f83f70164caa66b144eee6c2b2ad9255c676"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "original": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18",
+      "postimage": "ff7eef15506dcad862c202514c5674e1b7454d9966bd5342a20fcd9008cdae8a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "original": "e9f8aad0f3b89182f35a60962aa538d632dcb7cd3d0364ff10c578082f7c8871",
+      "postimage": "bc16ec0bff94cc3bf3331cb3b2c5cdec98b61cd5484c690150e3ceaab203d955"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "original": "6f5cf48ad4379cc79f132fa5793c0c2ce91c05bc226b21b6c1e642ee2dd1798e",
+      "postimage": "3f9ab8536bd153c64a2ebab1b7f89a68fa76a7bc0df47f91844054d57cf9e387"
+    }
+  ],
+  "original_format_command": "cargo fmt --package codex-utils-path --package codex-hepta-prompt-registry --package codex-hepta-contracts --package codex-hepta-agentd -- --check",
+  "guard_occurrence_counts_unchanged": true,
+  "original_scope_failed_step": "Enforce source-level Rust formatting for durable owners",
+  "original_scope_skipped_step": "Prove directory acquisition rejects both original native attacks"
+}

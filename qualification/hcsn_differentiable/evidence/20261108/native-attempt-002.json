@@ -1,0 +1,965 @@
+{
+  "claim_boundary": "Small CPU mechanism fixtures only; no full-parameter-domain, high-resolution fidelity, large-model, hardware-energy, or formal-study claim.",
+  "cpu_interop_threads": 1,
+  "cpu_threads": 1,
+  "deterministic_algorithms": true,
+  "device": "cpu",
+  "errors": 0,
+  "evidence_class": "synthetic_mechanism_and_gradient_qualification",
+  "expected_failures": 0,
+  "failures": 0,
+  "finished_utc": "2026-11-08T05:25:22.004668+00:00",
+  "formal_fits_started": 0,
+  "old_s81_completion_credit": 0,
+  "peak_rss_native": 651700,
+  "peak_rss_native_unit": "KiB",
+  "peak_rss_scope": "Entire qualification process high-water mark; unavailable where Python resource is unsupported.",
+  "physical_energy_joules": null,
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "process_cpu_seconds": 18.536367627,
+  "provider_charges": null,
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "schema": "hcsn-differentiable-cpu-qualification-v1",
+  "skipped": 0,
+  "source_after": {
+    "MODEL.md": {
+      "bytes": 17988,
+      "sha256": "983c7a20ddd86529614bedf0cdf040129e2344f5ba5b243671d1d07d2ac71d4f"
+    },
+    "README.md": {
+      "bytes": 9477,
+      "sha256": "a917d26bfc407d6a7203956137f0713d10a43a46889a3c995830eb9132b0894e"
+    },
+    "__init__.py": {
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123"
+    },
+    "checkpoint.py": {
+      "bytes": 7943,
+      "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793"
+    },
+    "contract.py": {
+      "bytes": 4514,
+      "sha256": "35338e23a8809c1d5ec83159247e3ae7a3511b2857e60dbc78098bdedb8ec41f"
+    },
+    "encoder.py": {
+      "bytes": 7996,
+      "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18"
+    },
+    "network.py": {
+      "bytes": 27528,
+      "sha256": "5b92871b84f24e6b3ccb8231e8068b1d834b5edb4b351a8caa684e52c80611bd"
+    },
+    "operator.py": {
+      "bytes": 23203,
+      "sha256": "75a81f620c954433ad14ae4b3253038bc88af69f300052495cec8eb782ba58c5"
+    },
+    "run_qualification.py": {
+      "bytes": 8088,
+      "sha256": "01d52568e1a93fd6a646ab515ce15a1b0c439d7afeb4dc3b927bbb4059ba7911"
+    },
+    "tests/test_encoder.py": {
+      "bytes": 4515,
+      "sha256": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011"
+    },
+    "tests/test_network.py": {
+      "bytes": 24930,
+      "sha256": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759"
+    },
+    "tests/test_operator.py": {
+      "bytes": 28682,
+      "sha256": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779"
+    }
+  },
+  "source_before": {
+    "MODEL.md": {
+      "bytes": 17988,
+      "sha256": "983c7a20ddd86529614bedf0cdf040129e2344f5ba5b243671d1d07d2ac71d4f"
+    },
+    "README.md": {
+      "bytes": 9477,
+      "sha256": "a917d26bfc407d6a7203956137f0713d10a43a46889a3c995830eb9132b0894e"
+    },
+    "__init__.py": {
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123"
+    },
+    "checkpoint.py": {
+      "bytes": 7943,
+      "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793"
+    },
+    "contract.py": {
+      "bytes": 4514,
+      "sha256": "35338e23a8809c1d5ec83159247e3ae7a3511b2857e60dbc78098bdedb8ec41f"
+    },
+    "encoder.py": {
+      "bytes": 7996,
+      "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18"
+    },
+    "network.py": {
+      "bytes": 27528,
+      "sha256": "5b92871b84f24e6b3ccb8231e8068b1d834b5edb4b351a8caa684e52c80611bd"
+    },
+    "operator.py": {
+      "bytes": 23203,
+      "sha256": "75a81f620c954433ad14ae4b3253038bc88af69f300052495cec8eb782ba58c5"
+    },
+    "run_qualification.py": {
+      "bytes": 8088,
+      "sha256": "01d52568e1a93fd6a646ab515ce15a1b0c439d7afeb4dc3b927bbb4059ba7911"
+    },
+    "tests/test_encoder.py": {
+      "bytes": 4515,
+      "sha256": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011"
+    },
+    "tests/test_network.py": {
+      "bytes": 24930,
+      "sha256": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759"
+    },
+    "tests/test_operator.py": {
+      "bytes": 28682,
+      "sha256": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779"
+    }
+  },
+  "source_unchanged": true,
+  "started_utc": "2026-11-08T05:25:03.420035+00:00",
+  "status": "passed",
+  "tests": [
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_chunk_continuation_uses_exact_previous_clock",
+      "wall_seconds": 0.007789072813466191
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_continuation_never_rounds_a_retained_fp64_clock_down_to_fp32",
+      "wall_seconds": 0.0027409058529883623
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_fp64_absolute_times_differenced_before_model_cast",
+      "wall_seconds": 0.002410499146208167
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_invalid_observed_values_and_backward_time_reject",
+      "wall_seconds": 0.0016080511268228292
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_missing_channels_have_zero_input_gradient",
+      "wall_seconds": 0.026598991127684712
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_per_example_time_missingness_and_padding_are_distinct",
+      "wall_seconds": 0.002426968887448311
+    },
+    {
+      "measurements": {
+        "advance_calls": 12,
+        "bptt": "full",
+        "elapsed_seconds": [
+          0.36500000000000005,
+          0.35
+        ],
+        "event_semantics": "conditional expected interval counts, not sampled spikes",
+        "expected_events_by_layer": [
+          1.4795259400504719,
+          1.5255986811716502
+        ],
+        "irregular_vs_uniform_prediction_max_difference": 0.01689737657401985,
+        "layer_count": 2,
+        "maximum_mass_residual": 2.220446049250313e-16,
+        "maximum_negative_probability": 0.0,
+        "minimum_observation_evidence": 0.8978280836886122,
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit",
+        "sequence_position": 6,
+        "truncate_every": null,
+        "truncation_unit": "global shared input positions, including padding"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_actual_dt_batched_mass_and_exactly_one_advance_per_layer_step",
+      "wall_seconds": 0.7549554219003767
+    },
+    {
+      "measurements": {
+        "recovery": {
+          "archive_bytes": 54113,
+          "autograd_tape_restored": false,
+          "next_optimizer_parameter_max_error": 0.0,
+          "next_prediction_max_error": 0.0
+        },
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_checkpoint_consumed_next_step_and_adam_match_detached_reference",
+      "wall_seconds": 2.6702553660143167
+    },
+    {
+      "measurements": {
+        "chunk_prediction_max_error": 0.0,
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_chunk_continuation_preserves_full_layer_content_and_clocks",
+      "wall_seconds": 0.5639179989229888
+    },
+    {
+      "measurements": {
+        "bptt": {
+          "full_first_input_l1": 0.015421157831189528,
+          "truncated_early_input_l1": 0.0,
+          "truncated_last_input_l1": 0.006150970830426639
+        },
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_explicit_tbptt_cuts_early_inputs_without_changing_forward_values",
+      "wall_seconds": 0.6145519139245152
+    },
+    {
+      "measurements": {
+        "next_adam_step_after_rejections_finite": true,
+        "optimizer_moment_shape_and_nonfinite_rejections": 2,
+        "rejected_restore_cases": 9,
+        "same_shape_physics_parameter_permutation_rejected": true,
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_failed_restoration_preserves_all_model_optimizer_and_rng_values",
+      "wall_seconds": 1.7986838759388775
+    },
+    {
+      "measurements": {
+        "cross_layer_fd": {
+          "autograd": 0.009637279488704263,
+          "finite_difference": 0.009637279489715933,
+          "raw_parameter_step": 2e-05,
+          "relative_error": 1.0497463683475491e-10
+        },
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_first_layer_content_parameter_reaches_final_task_loss",
+      "wall_seconds": 1.094703322974965
+    },
+    {
+      "measurements": {
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_missing_observation_advances_but_padding_preserves_state",
+      "wall_seconds": 0.19553955900482833
+    },
+    {
+      "measurements": {
+        "long_no_observation": {
+          "elapsed": 2.4000000000000004,
+          "fidelity_claim": false,
+          "graph_retained": false,
+          "killed_expected_events": [
+            0.8912426963401778,
+            0.8912426963401778
+          ],
+          "killed_mass_residual": 2.220446049250313e-16,
+          "regenerative_expected_events": [
+            2.5591549844912205,
+            2.5591549844912205
+          ],
+          "regenerative_mass_residual": 6.661338147750939e-16,
+          "steps": 32
+        },
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_no_reset_control_and_32_step_unobserved_transport",
+      "wall_seconds": 1.6556335710920393
+    },
+    {
+      "measurements": {
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_operator_grid_ownership_cannot_differ_at_equal_state_count",
+      "wall_seconds": 0.003304349025711417
+    },
+    {
+      "measurements": {
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_parameter_update_requires_explicit_new_episode",
+      "wall_seconds": 0.13776101591065526
+    },
+    {
+      "measurements": {
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_semantic_hyperparameter_and_buffer_changes_reject_continuation",
+      "wall_seconds": 0.015883120940998197
+    },
+    {
+      "measurements": {
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit",
+        "sensor_encoder_gradient_l1": 0.07433232752123015
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_sensor_encoder_streaming_and_checkpoint_use_actual_clock",
+      "wall_seconds": 0.9479700468946248
+    },
+    {
+      "measurements": {
+        "cross_call_bptt": {
+          "early_gradient_l1": 0.0,
+          "last_gradient_l1": 0.006150970830426639,
+          "sequence_position": 6
+        },
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_tbptt_phase_survives_one_position_chunks",
+      "wall_seconds": 0.6002839079592377
+    },
+    {
+      "measurements": {
+        "physical_finite_differences": [
+          {
+            "absolute_error": 4.980718745425938e-12,
+            "autograd": 0.0015884699119797312,
+            "finite_difference": 0.0015884699069990125,
+            "layer": 0,
+            "parameter": "raw_mu",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 3.135544908885559e-09
+          },
+          {
+            "absolute_error": 4.8099085478425785e-12,
+            "autograd": -0.002609531182065506,
+            "finite_difference": -0.0026095311772555974,
+            "layer": 0,
+            "parameter": "raw_sigma",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 1.8432079221354318e-09
+          },
+          {
+            "absolute_error": 2.1275149068682164e-12,
+            "autograd": -3.984557609826848e-05,
+            "finite_difference": -3.9845578225783385e-05,
+            "layer": 0,
+            "parameter": "raw_log_boundary",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 5.339400258700571e-08
+          },
+          {
+            "absolute_error": 8.335939191250318e-13,
+            "autograd": -2.686468880593356e-05,
+            "finite_difference": -2.686468963952748e-05,
+            "layer": 0,
+            "parameter": "raw_absolute_reset",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 3.102935229515995e-08
+          },
+          {
+            "absolute_error": 2.47602979785988e-12,
+            "autograd": 0.016194216523024673,
+            "finite_difference": 0.016194216520548643,
+            "layer": 1,
+            "parameter": "raw_mu",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 1.5289593012045389e-10
+          },
+          {
+            "absolute_error": 1.6365424640452098e-12,
+            "autograd": -0.00530311737187324,
+            "finite_difference": -0.005303117370236698,
+            "layer": 1,
+            "parameter": "raw_sigma",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 3.0860008355182374e-10
+          },
+          {
+            "absolute_error": 3.890464339573185e-14,
+            "autograd": -0.006984861566955482,
+            "finite_difference": -0.006984861566916577,
+            "layer": 1,
+            "parameter": "raw_log_boundary",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 5.569851746208532e-12
+          },
+          {
+            "absolute_error": 2.2819567416232367e-12,
+            "autograd": 0.004678101728710744,
+            "finite_difference": 0.004678101730992701,
+            "layer": 1,
+            "parameter": "raw_absolute_reset",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 4.87795450557464e-10
+          }
+        ],
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_two_layers_all_four_physical_parameters_have_task_fd_gradients",
+      "wall_seconds": 4.108186295023188
+    },
+    {
+      "numerical_evidence": {
+        "all_ad_values": [
+          2.9724808836059955,
+          -0.17043399838278525,
+          1.2440630441374518,
+          -1.6229507217615249
+        ],
+        "dt": 0.08,
+        "gradients": [
+          {
+            "absolute_error": 3.633005007941392e-11,
+            "ad": 2.9724808836059955,
+            "central_fd": 2.9724808836423255,
+            "fd_step": 2e-06,
+            "parameter": "log_boundary",
+            "relative_error": 1.2222130772762765e-11
+          },
+          {
+            "absolute_error": 3.780226132121811e-12,
+            "ad": -0.17043399838278525,
+            "central_fd": -0.17043399838656548,
+            "fd_step": 2e-06,
+            "parameter": "mu",
+            "relative_error": 2.218000028109291e-11
+          },
+          {
+            "absolute_error": 1.450684017356707e-11,
+            "ad": 1.2440630441374518,
+            "central_fd": 1.244063044122945,
+            "fd_step": 2e-06,
+            "parameter": "sigma",
+            "relative_error": 1.1660856129381386e-11
+          },
+          {
+            "absolute_error": 5.069522579503882e-11,
+            "ad": -1.6229507217615249,
+            "central_fd": -1.62295072181222,
+            "fd_step": 2.39443472624362e-06,
+            "parameter": "absolute_reset",
+            "relative_error": 3.123645414102992e-11
+          }
+        ],
+        "grid": {
+          "K": 81,
+          "active": 64,
+          "phase": 16,
+          "quadrature": 16
+        },
+        "old_S81_pass_credit": 0,
+        "physical_values": {
+          "absolute_reset": 1.1972173631218102,
+          "log_boundary": 0.02,
+          "mu": -0.25,
+          "sigma": 0.45
+        },
+        "synthetic_loss": 0.14487103006381769
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_81_state_physical_gradient_fixture_is_new_evidence",
+      "wall_seconds": 0.5341902209911495
+    },
+    {
+      "numerical_evidence": {
+        "active_after_0.075": 0.0,
+        "active_after_0.1": 0.9997519032214841,
+        "aligned_phase_row_l1_error": 0.0,
+        "initial_phase_row_reward_sum": 0.0
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_aligned_remaining_time_transport_does_not_use_erlang_release",
+      "wall_seconds": 0.009858293924480677
+    },
+    {
+      "numerical_evidence": {
+        "all_ad_values": [
+          3.0069023356793014,
+          -0.17007711014025526,
+          1.1907998943933933,
+          -1.568558246349175
+        ],
+        "dt": 0.08,
+        "gradients": [
+          {
+            "absolute_error": 1.0604850331219495e-12,
+            "ad": 3.0069023356793014,
+            "central_fd": 3.006902335678241,
+            "fd_step": 2e-06,
+            "parameter": "log_boundary",
+            "relative_error": 3.5268356425762365e-13
+          },
+          {
+            "absolute_error": 8.59770588057529e-12,
+            "ad": -0.17007711014025526,
+            "central_fd": -0.17007711014885296,
+            "fd_step": 2e-06,
+            "parameter": "mu",
+            "relative_error": 5.055181072309204e-11
+          },
+          {
+            "absolute_error": 1.1887602013871401e-11,
+            "ad": 1.1907998943933933,
+            "central_fd": 1.1907998943815057,
+            "fd_step": 2e-06,
+            "parameter": "sigma",
+            "relative_error": 9.982871236251727e-12
+          },
+          {
+            "absolute_error": 6.15403283887872e-11,
+            "ad": -1.568558246349175,
+            "central_fd": -1.5685582464107153,
+            "fd_step": 2.39443472624362e-06,
+            "parameter": "absolute_reset",
+            "relative_error": 3.923369025639187e-11
+          }
+        ],
+        "grid": {
+          "K": 25,
+          "active": 16,
+          "phase": 8,
+          "quadrature": 16
+        },
+        "old_S81_pass_credit": 0,
+        "physical_values": {
+          "absolute_reset": 1.1972173631218102,
+          "log_boundary": 0.02,
+          "mu": -0.25,
+          "sigma": 0.45
+        },
+        "synthetic_loss": 0.11720666446147865
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_all_four_physical_parameter_gradients_against_fd",
+      "wall_seconds": 0.24235105398111045
+    },
+    {
+      "numerical_evidence": {
+        "maximum_interval_value_difference": 0.0,
+        "maximum_risk_count_difference": 0.0,
+        "zero_duration_active_terminal_value": 0.2,
+        "zero_duration_refractory_terminal_value": 0.0,
+        "zero_duration_total_rewards": 0.0
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_call_is_one_interval_reward_with_terminal_paid_once",
+      "wall_seconds": 0.01925229700282216
+    },
+    {
+      "numerical_evidence": {
+        "events_by_duration": [
+          0.0,
+          0.011778461974473435,
+          0.02644012005219027
+        ],
+        "maximum_content_total_error": 1.1102230246251565e-16,
+        "maximum_mass_residual": 0.0,
+        "minimum_probability": 0.0
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_conservation_content_transport_and_zero_duration",
+      "wall_seconds": 0.03925844398327172
+    },
+    {
+      "numerical_evidence": {},
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_contract_and_episode_snapshot_reject_changes",
+      "wall_seconds": 0.0017265940550714731
+    },
+    {
+      "numerical_evidence": {
+        "absolute_error": 9.119371924271036e-13,
+        "d_initial_mean_d_log_boundary": -1.9477165585359597,
+        "finite_difference": -1.9477165585368716,
+        "fixed_initial_log_std": 0.08
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_initial_absolute_mapping_has_real_boundary_derivative",
+      "wall_seconds": 0.003855629824101925
+    },
+    {
+      "numerical_evidence": {
+        "M_expected_cumulative_events": 142.2381294752234,
+        "average_event_rate_per_time_unit": 1.3890442331564783,
+        "checkpoints": [
+          {
+            "M_expected_cumulative_events": 0.0010839827385822007,
+            "mass_drift": 1.1102230246251565e-16,
+            "maximum_signed_content_total_error": 1.1102230246251565e-16,
+            "minimum_probability": 0.0,
+            "step": 1
+          },
+          {
+            "M_expected_cumulative_events": 0.4731542974509952,
+            "mass_drift": 1.2212453270876722e-15,
+            "maximum_signed_content_total_error": 7.771561172376096e-16,
+            "minimum_probability": 7.431906175955527e-11,
+            "step": 16
+          },
+          {
+            "M_expected_cumulative_events": 8.85887495742804,
+            "mass_drift": 1.1435297153639112e-14,
+            "maximum_signed_content_total_error": 6.439293542825908e-15,
+            "minimum_probability": 4.577637970948979e-05,
+            "step": 256
+          },
+          {
+            "M_expected_cumulative_events": 35.53524689313117,
+            "mass_drift": 4.496403249731884e-14,
+            "maximum_signed_content_total_error": 1.8762769116165146e-14,
+            "minimum_probability": 5.163839493977761e-05,
+            "step": 1024
+          },
+          {
+            "M_expected_cumulative_events": 142.2381294752234,
+            "mass_drift": 1.2090328738167955e-13,
+            "maximum_signed_content_total_error": 5.695444116327053e-14,
+            "minimum_probability": 5.1640354845216036e-05,
+            "step": 4096
+          }
+        ],
+        "dt": 0.025,
+        "elapsed": 102.4,
+        "final_minimum_probability": 5.1640354845216036e-05,
+        "final_signed_content_totals": [
+          0.8301020807629996,
+          -0.6518841019508812,
+          -0.05416971771745607
+        ],
+        "grid_K": 25,
+        "initial_signed_content_totals": [
+          0.8301020807629427,
+          -0.6518841019508312,
+          -0.054169717717448634
+        ],
+        "maximum_recorded_mass_drift": 1.2090328738167955e-13,
+        "maximum_recorded_signed_content_total_error": 5.695444116327053e-14,
+        "scope": "fixed numerical propagation only; no neural long-horizon superiority claim",
+        "steps": 4096
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_long_fixed_operator_conserves_mass_and_signed_content",
+      "wall_seconds": 0.18596597202122211
+    },
+    {
+      "numerical_evidence": {
+        "absorbed_reward_sum": 0.0,
+        "absorbed_self_probability": 1.0,
+        "maximum_absorption_hit_error": 0.0,
+        "regenerative_release_active_mass": 0.7034808034117815,
+        "unreachable_phase_mass": 0.0
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_no_reset_control_is_explicit_permanent_absorption",
+      "wall_seconds": 0.026551820104941726
+    },
+    {
+      "numerical_evidence": {
+        "phase_projection": [
+          {
+            "curve": [
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.013
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.026
+              },
+              {
+                "active_probability": 1.8735013540549512e-17,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.039
+              },
+              {
+                "active_probability": 0.045900000000000205,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.052
+              },
+              {
+                "active_probability": 0.3174300000000003,
+                "deterministic_release_reference": 0.25000000000000017,
+                "elapsed": 0.065
+              },
+              {
+                "active_probability": 0.731088,
+                "deterministic_release_reference": 0.8999999999999999,
+                "elapsed": 0.078
+              }
+            ],
+            "early_release_at_0.052": 0.045900000000000205,
+            "maximum_release_error": 0.16891199999999995,
+            "phase_cells": 10
+          },
+          {
+            "curve": [
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.013
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.026
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.039
+              },
+              {
+                "active_probability": 8.992806499463765e-17,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.052
+              },
+              {
+                "active_probability": 0.27432000000000023,
+                "deterministic_release_reference": 0.25000000000000017,
+                "elapsed": 0.065
+              },
+              {
+                "active_probability": 0.8300159999999999,
+                "deterministic_release_reference": 0.8999999999999999,
+                "elapsed": 0.078
+              }
+            ],
+            "early_release_at_0.052": 8.992806499463765e-17,
+            "maximum_release_error": 0.06998400000000005,
+            "phase_cells": 20
+          },
+          {
+            "curve": [
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.013
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.026
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.039
+              },
+              {
+                "active_probability": 1.1102230246251568e-18,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.052
+              },
+              {
+                "active_probability": 0.2500000000000002,
+                "deterministic_release_reference": 0.25000000000000017,
+                "elapsed": 0.065
+              },
+              {
+                "active_probability": 0.8853120000000001,
+                "deterministic_release_reference": 0.8999999999999999,
+                "elapsed": 0.078
+              }
+            ],
+            "early_release_at_0.052": 1.1102230246251568e-18,
+            "maximum_release_error": 0.014687999999999812,
+            "phase_cells": 40
+          },
+          {
+            "curve": [
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.013
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.026
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.039
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.052
+              },
+              {
+                "active_probability": 0.25000000000000017,
+                "deterministic_release_reference": 0.25000000000000017,
+                "elapsed": 0.065
+              },
+              {
+                "active_probability": 0.8971840000000003,
+                "deterministic_release_reference": 0.8999999999999999,
+                "elapsed": 0.078
+              }
+            ],
+            "early_release_at_0.052": 0.0,
+            "maximum_release_error": 0.0028159999999995966,
+            "phase_cells": 80
+          }
+        ],
+        "warning": "QPR can release earlier through repeated phase projection; it is not exact per-path delay"
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_phase_projection_early_release_and_refinement_are_disclosed",
+      "wall_seconds": 0.14113775198347867
+    },
+    {
+      "numerical_evidence": {
+        "absolute_errors": [
+          5.551115123125783e-17,
+          5.551115123125783e-17,
+          0.0
+        ],
+        "discount": 0.3,
+        "dt": 0.08,
+        "independent_reference": [
+          0.17022608736121497,
+          0.16763803158693885,
+          0.07421851724635825
+        ],
+        "mu": -0.1,
+        "point_row_mass_residual": 0.0,
+        "sigma": 0.5,
+        "torch": [
+          0.17022608736121492,
+          0.1676380315869388,
+          0.07421851724635825
+        ],
+        "x": 0.2
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_point_law_against_independent_first_passage_integrals",
+      "wall_seconds": 0.011449884157627821
+    },
+    {
+      "numerical_evidence": {
+        "interpretation": "finite-basis projection error, not an exact continuum semigroup",
+        "one_0.08_vs_two_0.04_max_row_l1": 0.1866972593498666
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_projected_operator_does_not_claim_exact_semigroup",
+      "wall_seconds": 0.03957522613927722
+    },
+    {
+      "numerical_evidence": {
+        "claim": "observed quadrature agreement, not a certified error bound",
+        "refinement": [
+          {
+            "max_row_l1": 1.199052234699116e-07,
+            "maximum_reward_difference": 3.0190565325494134e-11,
+            "orders": [
+              16,
+              32
+            ]
+          },
+          {
+            "max_row_l1": 2.21310861197825e-12,
+            "maximum_reward_difference": 9.66996621665217e-12,
+            "orders": [
+              32,
+              64
+            ]
+          }
+        ]
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_quadrature_refinement_records_actual_table_discrepancy",
+      "wall_seconds": 0.06960862199775875
+    },
+    {
+      "numerical_evidence": {
+        "continuum_reference": 0.36160619646966047,
+        "elapsed": 0.3,
+        "initial_log_mean": 0.25,
+        "initial_log_std": 0.08,
+        "mu": -0.2,
+        "refinement": [
+          {
+            "absolute_error": 0.036475346990489765,
+            "active_cells": 16,
+            "expected_first_hits": 0.39808154346015023
+          },
+          {
+            "absolute_error": 0.009725660995789698,
+            "active_cells": 32,
+            "expected_first_hits": 0.37133185746545017
+          },
+          {
+            "absolute_error": 0.0024733615868623993,
+            "active_cells": 64,
+            "expected_first_hits": 0.36407955805652287
+          }
+        ],
+        "sigma": 0.4,
+        "steps": 4
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_spatial_refinement_against_continuum_first_hit",
+      "wall_seconds": 0.0531164170242846
+    },
+    {
+      "numerical_evidence": {
+        "deterministic_renewal_reference": 1.4285714285714286,
+        "dt": 0.025,
+        "fixed_delay": 0.1,
+        "mu": -0.5,
+        "refinement": [
+          {
+            "K": 25,
+            "absolute_error": 0.03921098086180419,
+            "active_cells": 16,
+            "minimum_stationary_mass": 5.164035484521382e-05,
+            "phase_cells": 8,
+            "rate": 1.3893604477096244,
+            "refractory_probability": 0.13893604477096227,
+            "relative_error": 0.02744768660326293,
+            "stationarity_residual": 8.326672684688674e-17
+          },
+          {
+            "K": 81,
+            "absolute_error": 8.778344594118082e-06,
+            "active_cells": 64,
+            "minimum_stationary_mass": 2.2780488236278803e-09,
+            "phase_cells": 16,
+            "rate": 1.4285626502268345,
+            "refractory_probability": 0.14285626502268556,
+            "relative_error": 6.144841215882657e-06,
+            "stationarity_residual": 5.082739784612045e-16
+          }
+        ],
+        "reset_margin": 0.3,
+        "sigma": 0.3
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_stationary_rate_against_negative_drift_renewal_mean",
+      "wall_seconds": 0.05844377516768873
+    },
+    {
+      "numerical_evidence": {
+        "tail_first_hit_probability": 0.06515935456380705,
+        "tail_retained_probability": 0.7428895974052401,
+        "tail_to_finite_active_probability": 0.19195104803095286
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_tail_mass_can_return_and_hit",
+      "wall_seconds": 0.026871981099247932
+    }
+  ],
+  "tests_run": 36,
+  "torch": "2.8.0+cu128",
+  "wall_seconds": 18.584664250025526
+}

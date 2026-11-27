@@ -1,0 +1,47 @@
+--- a/accounting.py
++++ b/accounting.py
+@@ -65 +65,6 @@
+-    rows=inventory(rows,verify_receipts=verify_receipts);cid=cell_id(cell)
++    rows=inventory(rows,verify_receipts=verify_receipts)
++    return _standalone_verified(rows,cell,parent_p=parent_p,parent_m=parent_m)
++
++def _standalone_verified(rows,cell, *, parent_p='0',parent_m='0'):
++    # Private: rows must be the local deep copy returned by inventory in this call.
++    cid=cell_id(cell)
+@@ -79,0 +85,25 @@
++
++def standalone_all(rows, *, parent_p='0',parent_m='0',parent_m_clock=None):
++    """One fresh full evidence/DAG check for one all-cell boundary.
++
++    No cross-call cache or unverified public path. The verified deep copy stays
++    local; a new stage/append/wait requires a new invocation. All original
++    per-cell Decimal formulas and ceilings are reused. An optional live clock
++    keeps post-stage accounting work inside M, including a final all-cell gate.
++    """
++    if parent_m_clock is not None and not callable(parent_m_clock):
++        raise TypeError('parent M clock must be callable')
++    checked=inventory(rows)
++    accounts={}
++    for cell in CELLS:
++        current=parent_m if parent_m_clock is None else parent_m_clock()
++        accounts[cell_id(cell)]=_standalone_verified(checked,cell,parent_p=parent_p,parent_m=current)
++    if parent_m_clock is not None:
++        # Shared M is checked for every cell at the end of the batch too. Do not
++        # erase the verification CPU with one early timestamp or clock reset.
++        final_m=parent_m_clock()
++        accounts={cell_id(cell):_standalone_verified(checked,cell,parent_p=parent_p,parent_m=final_m)
++                  for cell in CELLS}
++    return accounts
++
++
+--- a/eval_controller.py
++++ b/eval_controller.py
+@@ -47 +47 @@
+-            accounts={cell_id(c):accounting.standalone(rows,c,parent_p=prep,parent_m=m_prefix) for c in CELLS}
++            accounts=accounting.standalone_all(rows,parent_p=prep,parent_m=m_prefix)
+@@ -83,2 +83,3 @@
+-            for ccell in CELLS:
+-                acct=accounting.standalone(rows,ccell,parent_p=prep,parent_m=time.process_time()-m_start)
++            post_accounts=accounting.standalone_all(rows,parent_p=prep,
++                parent_m_clock=lambda:time.process_time()-m_start)
++            for acct in post_accounts.values():

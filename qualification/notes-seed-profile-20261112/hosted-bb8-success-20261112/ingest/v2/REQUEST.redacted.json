@@ -1,0 +1,49 @@
+{
+  "host": "ai395",
+  "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-c",
+    "import base64,gzip,hashlib,io,json,os,stat,sys,time,traceback,urllib.parse,urllib.request,zipfile\nfrom pathlib import Path,PurePosixPath\nraw_request=sys.stdin.buffer.read(1048577)\ncfg=json.loads(raw_request)\nif os.getuid()!=1000 or os.geteuid()!=1000:raise RuntimeError(\"ordinary uid1000 required\")\nos.umask(0o077)\nroot=Path(cfg[\"root\"]);root.mkdir(parents=True,exist_ok=False)\nresult={\"schema\":\"hepta.original-github-artifact-ingest.v1\",\"status\":\"FAILED\",\"uid\":os.getuid(),\"euid\":os.geteuid(),\"source_sha\":cfg[\"source_sha\"],\"request_sha256\":hashlib.sha256(raw_request).hexdigest(),\"native_build_started\":False,\"tests_started\":False,\"source_modified\":False,\"artifacts\":[],\"started_ns\":str(time.time_ns())}\ndef sha(data):return hashlib.sha256(data).hexdigest()\ndef write_once(path,data):\n path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)\n if not path.parent.resolve().is_relative_to(root.resolve()):raise RuntimeError(\"evidence path escaped\")\n with path.open(\"xb\") as out:out.write(data);out.flush();os.fsync(out.fileno())\n after=path.stat()\n return {\"path\":str(path.relative_to(root)),\"bytes\":len(data),\"sha256\":sha(data),\"stat\":{\"device\":str(after.st_dev),\"inode\":str(after.st_ino),\"mtime_ns\":str(after.st_mtime_ns),\"ctime_ns\":str(after.st_ctime_ns)}}\ndef save(name,value):return write_once(root/name,(json.dumps(value,sort_keys=True,indent=2,allow_nan=False)+\"\\n\").encode())\ndef transfer(path,data,label):\n compressed=not path.endswith(\".gz\") and len(data)>32768\n payload=gzip.compress(data,compresslevel=6,mtime=0) if compressed else data\n parts=[]\n for offset in range(0,len(payload),24576):\n  part=payload[offset:offset+24576];name=\"transfer/\"+label+\"-\"+str(offset).zfill(9)+\".b64\";text=base64.b64encode(part)\n  written=write_once(root/name,text)\n  parts.append({\"path\":name,\"offset\":offset,\"bytes\":len(part),\"sha256\":sha(part),\"base64_bytes\":len(text),\"base64_sha256\":written[\"sha256\"]})\n return {\"codec\":\"gzip\" if compressed else \"identity\",\"gzip_is_transfer_only\":compressed,\"bytes\":len(payload),\"sha256\":sha(payload),\"parts\":parts}\ntry:\n save(\"PLAN.redacted.json\",{**cfg,\"artifacts\":[{k:v for k,v in a.items() if k!=\"download_url\"} for a in cfg[\"artifacts\"]],\"url_query_not_archived\":True})\n for art in cfg[\"artifacts\"]:\n  url=urllib.parse.urlsplit(art[\"download_url\"])\n  if url.scheme!=\"https\" or url.hostname!=art[\"download_host\"]:raise RuntimeError(\"download URL identity\")\n  with urllib.request.urlopen(art[\"download_url\"],timeout=45) as response:\n   final=urllib.parse.urlsplit(response.geturl())\n   if response.status!=200 or final.scheme!=\"https\" or final.hostname!=art[\"download_host\"]:raise RuntimeError(\"artifact download response identity\")\n   data=response.read(art[\"bytes\"]+1)\n  if len(data)!=art[\"bytes\"] or sha(data)!=art[\"sha256\"]:raise RuntimeError(\"original artifact ZIP size/SHA mismatch\")\n  zip_pin=write_once(root/(\"artifact-\"+str(art[\"id\"])+\".zip\"),data)\n  receipt={\"artifact_id\":art[\"id\"],\"name\":art[\"name\"],\"source_sha\":cfg[\"source_sha\"],\"zip\":zip_pin,\"members\":[]}\n  with zipfile.ZipFile(io.BytesIO(data)) as archive:\n   infos=archive.infolist()\n   if len(infos)>4096 or sum(x.file_size for x in infos)>268435456:raise RuntimeError(\"artifact member bounds\")\n   seen=set()\n   for number,info in enumerate(infos):\n    name=PurePosixPath(info.filename)\n    if name.is_absolute() or \"..\" in name.parts or \"\\\\\" in info.filename or info.filename in seen:raise RuntimeError(\"unsafe or duplicate artifact path\")\n    seen.add(info.filename)\n    if info.flag_bits&1 or info.file_size>67108864:raise RuntimeError(\"encrypted or excessive artifact member\")\n    mode=(info.external_attr>>16)&0o170000\n    if mode not in (0,stat.S_IFREG,stat.S_IFDIR):raise RuntimeError(\"artifact member is not a regular file/directory\")\n    if info.is_dir():continue\n    if not name.parts or name.as_posix()==\".\":raise RuntimeError(\"invalid artifact member\")\n    original=archive.read(info)\n    if len(original)!=info.file_size:raise RuntimeError(\"original member size differs\")\n    pin=write_once(root/(\"artifact-\"+str(art[\"id\"]))/ \"originals\"/name.as_posix(),original)\n    receipt[\"members\"].append({**pin,\"member\":info.filename,\"zip_crc32\":info.CRC,\"zip_compressed_bytes\":info.compress_size,\"zip_datetime\":list(info.date_time),\"transport\":transfer(info.filename,original,str(art[\"id\"])+\"-\"+str(number).zfill(4))})\n  result[\"artifacts\"].append(receipt)\n result[\"status\"]=\"ORIGINAL_ARTIFACT_BYTES_VERIFIED\"\nexcept BaseException as error:\n result[\"error\"]={\"type\":type(error).__name__,\"message\":str(error)[:1000] if isinstance(error,RuntimeError) else \"exception details omitted to keep download credentials private\",\"http_status\":getattr(error,\"code\",None)}\nfinally:\n result[\"finished_ns\"]=str(time.time_ns())\n manifest=save(\"RESULT.json\",result)\n print(json.dumps({\"status\":result[\"status\"],\"manifest\":manifest,\"artifact_count\":len(result[\"artifacts\"]),\"error\":result.get(\"error\")},sort_keys=True),flush=True)\nif result[\"status\"]!=\"ORIGINAL_ARTIFACT_BYTES_VERIFIED\":raise SystemExit(1)\n"
+  ],
+  "cwd": "/home/qq",
+  "timeout_seconds": 300,
+  "cpu_quota_percent": 100,
+  "memory_max_bytes": 536870912,
+  "nice": 10,
+  "idempotency_key": "neuro4-act6243-hosted-artifact-bb8-862531d-v2",
+  "stdin": {
+    "root": "/home/qq/neuro-act-evidence-862531d11598/hosted-bb8-artifacts-v2",
+    "source_sha": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+    "artifacts": [
+      {
+        "id": 13951889769,
+        "name": "act2-notes-seed-bb8ac6fe22d1314c36643b0cab95eb031cd86832-1",
+        "bytes": 58747,
+        "sha256": "c1ca84e7e1ccdcfae1515c4e6f5efe50ac0b07d86adbc219bcdb6fc8d08a1c66",
+        "workflow_run": {
+          "id": 43231943175,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "research/neuro4-finite-notes-seed-20261112-862531d",
+          "head_sha": "bb8ac6fe22d1314c36643b0cab95eb031cd86832"
+        },
+        "artifact_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13951889769",
+        "file_id": "file_000000001c4c81f58f78c3ee97df6015",
+        "download_host": "sdmntprcentralus.oaiusercontent.com"
+      }
+    ]
+  },
+  "stdin_sha256": "4a0483f98508642fb58a0db5eff01fbff45d602fe8227e06e95915128f9571e0",
+  "exact_typed_request_sha256": "6ee7a5e33589c60d3a18260cd4f2b9ae5a4ea79ae9bfe7c35f9a588b2cd5c4ed",
+  "url_query_not_archived": true,
+  "previous_ingest": {
+    "job_id": "1a1d0344081-2564-1b44",
+    "state": "failed",
+    "exit_code": 1,
+    "http_status": 403,
+    "artifact_count": 0
+  }
+}

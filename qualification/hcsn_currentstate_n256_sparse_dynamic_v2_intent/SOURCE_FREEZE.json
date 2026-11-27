@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn-n256-sparse-dynamic-source-freeze-v3",
+  "identity": "hcsn-n256-sparse-dynamic-admission-bridge-v3-20261115-c06d-001",
+  "base_commit": "1d03be4db492902294bca637b27968ae1de32ca4",
+  "parent_draft": 6367,
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-sparse-dynamic-v2-intent.yml": "831f107dc74531598b09ceeda2316e04277d9e51dc78e0de4faa797a537e3fd3",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/__init__.py": "d8ef2a8ab0d4e211530b3d9980563f1d756f6e00f26b5a77b742a4515946f7a0",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/admission.py": "d3ec236043f1563a6c05d0843a1b431ec1288da70047a3dc451031c25f67f61b",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/sparse_dynamic.py": "49616d4fcff9685a6cfcbee00ff45a2fd9ab4eb9c6ce04e62c02f927752d50db",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/static_inspector.py": "218ad5ad6ff1e09f948ec785cbdaed1a58a51703867a38a0088bb9ff27239ebc",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/test_static.py": "5b10cd4393ff7963fb7f0d79457062b5ca77c2548992f26095040a03ede5bb96",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/verify_source.py": "98d14414007f9f43ed0687f09b58e44c26deaff56b4df787e0b149f8f84024dc",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/REQUEST.json": "9db32bf0c81051a8ba719a0fd54ece202e312ae84ab5ede43d181e3d86f410fe",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/README.md": "c452c155c33cdad6ecebcb8b4e1c8c823ce7c4104e765b0dc7d961326b42a989"
+  },
+  "bindings": {
+    "parent_v2_source_sha256": "7ce716d2cbc00740d646b13498cbf6f935ba388e3bb43363a5bc4e79cd7312bf",
+    "parent_v2_request_sha256": "1da196b5ddd6ec2b1013cd194fe7da7df3ac895d9285c4b05c529c0041d2f8e1",
+    "execution_admission_bridge_sha256": "90f766fe0f847c471c82731be402a6961a2e72644da1d876dcaaca25b122b887",
+    "historical_v1_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+    "authentic_phase_sha256": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+    "t0_builder_sha256": "e96f8165cffc3e9f616f07bf42e18a0960a6213582f1e525f93ac5a8623f0b6c",
+    "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2"
+  },
+  "synthetic_checks": {
+    "normal_tests": 6,
+    "optimized_tests": 6,
+    "valid_cross_bound_preexecution_fixture": 1,
+    "source_mutation_rejections": 1,
+    "execution_key_mismatch_rejections": 1,
+    "authentic_phase_packets": 8
+  },
+  "execution_counts": {
+    "dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "unresolved": [
+    "authentic v2 provider admission and atomic execution freeze",
+    "authentic source-binding record and independent source review",
+    "runtime profile and current host/ancestor-cgroup snapshots",
+    "allocation, concurrency, and calendar",
+    "independent numerical oracle source",
+    "canonical serializer and cold loader source",
+    "N256 numerical execution and full-state comparison"
+  ],
+  "status": "PASS_SOURCE_ONLY_ADMISSION_BRIDGE_HOLD_NUMERICAL",
+  "largegrid_qualification": false,
+  "all_closed": false
+}

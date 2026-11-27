@@ -1,0 +1,44 @@
+--- plot_training.py (frozen v1)
++++ plot_training_v2.py
+@@ -180,13 +180,13 @@
+     figure.suptitle(title, fontsize=14, fontweight="bold")
+     figure.text(
+         0.5,
+-        0.065 if rows == 1 else 0.045,
++        0.075 if stage == "representation" and not cumulative else (0.065 if rows == 1 else 0.045),
+         "Training CPU excludes separately reported setup, validation and serialization; both LR candidates are charged. Lines join recorded checkpoints only.",
+         ha="center",
+         fontsize=8,
+         color="#444444",
+     )
+-    figure.tight_layout(rect=(0, 0.105 if rows == 1 else 0.08, 1, 0.95))
++    figure.tight_layout(rect=(0, 0.14 if stage == "representation" and not cumulative else (0.105 if rows == 1 else 0.08), 1, 0.95))
+     save_figure(
+         figure,
+         output,
+@@ -236,7 +236,7 @@
+             rotation=24,
+             ha="right",
+         )
+-        axis.set_ylim(0, 100)
++        axis.set_ylim(0, 105)
+         axis.set_title(task, fontsize=11)
+         axis.set_ylabel("Heldout accuracy (%)")
+         axis.grid(axis="y", alpha=0.18)
+@@ -316,6 +316,8 @@
+     representation(summary, output, receipts)
+     mechanism(summary, output, receipts)
+     result = {
++        "analysis_version": "v2-display-padding",
++        "analysis_correction_sha256": hashlib.sha256((Path(__file__).parent / "ANALYSIS_CORRECTION_02.json").read_bytes()).hexdigest(),
+         "summary_sha256": hashlib.sha256(summary_path.read_bytes()).hexdigest(),
+         "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+         "coverage": summary["coverage"],
+@@ -336,6 +338,6 @@
+     parser.add_argument(
+         "--summary", default=str(Path(__file__).parent / "COMPARISON_SUMMARY.json")
+     )
+-    parser.add_argument("--output", default=str(Path(__file__).parent / "figures"))
++    parser.add_argument("--output", default=str(Path(__file__).parent / "figures_v2"))
+     args = parser.parse_args()
+     print(json.dumps({"figures": len(render(args.summary, args.output)["figures"])}))

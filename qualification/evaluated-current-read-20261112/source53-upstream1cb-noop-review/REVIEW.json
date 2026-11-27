@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "ancestor": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "ours": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "theirs": "1cb195e590f7f5038a38625a943f259badea489a",
+  "theirs_tree": "248b3213f6fb7a672b4cb627407d628ec1157322",
+  "scope": "Exact two-file upstream delta integration; no Rust, QA or checker change",
+  "originals": {
+    "ancestor": {
+      "CALLERS": {
+        "git_blob_sha": "b56a7967f0ab444595704bb5995ae16007730c70",
+        "bytes": 1882184,
+        "sha256": "cb874ec8c9cda9fbb00190eb4be47e4f2cbff2c68afb846d592b0dc9c645eb4a"
+      },
+      "allowlist": {
+        "git_blob_sha": "a77dcc268033314ff2a51c8fa89aa0e474a72886",
+        "bytes": 12905,
+        "sha256": "6a73fb47671239729fab1faf2b39c12946ce02abd412230f1acf6b0887376d39"
+      }
+    },
+    "ours": {
+      "CALLERS": {
+        "git_blob_sha": "73fdfb4db43bee14530701784ab163a64dbb5956",
+        "bytes": 1895095,
+        "sha256": "5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f"
+      },
+      "allowlist": {
+        "git_blob_sha": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+        "bytes": 11847,
+        "sha256": "cbf36c921aa37e172e850985527a3582e6aa95e8740baca07cd6341180fbcb4a"
+      }
+    },
+    "theirs": {
+      "CALLERS": {
+        "git_blob_sha": "76908ded9658d8589cf98fea0623dc7a21d265b0",
+        "bytes": 1882653,
+        "sha256": "f470cd80f892e49a30c7295b0fe8dff2ccbcf760b5f373f02a1f588cac17827a"
+      },
+      "allowlist": {
+        "git_blob_sha": "cfab420d513590fc8dd7d2db3d6d118ea9b18eac",
+        "bytes": 13083,
+        "sha256": "213b87d23dac7e276be51c137cc839de151c71515a17e960f0f8030d8ad1c060"
+      }
+    }
+  },
+  "upstream_delta": {
+    "compare_files": [
+      "CALLERS.toml",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "caller_file_lines": [
+      10998,
+      10998
+    ],
+    "changed_caller_lines": 1,
+    "caller_boundary": "learning_original_owner_command_channel",
+    "callers_before": 33,
+    "callers_after": 40,
+    "added_paths": [
+      "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+      "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs"
+    ],
+    "allowlist_change": "append exactly one comment, one blank line and one new hash line"
+  },
+  "resolution": {
+    "type": "SOURCE_TREE_NOOP",
+    "retain_ours_callers_blob": "73fdfb4db43bee14530701784ab163a64dbb5956",
+    "retain_ours_allowlist_blob": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+    "unchanged_source53_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+    "boundary_entire_block_byte_equal": true,
+    "all_seven_actual_product_caller_files_present": true,
+    "all_seven_direct_source_tree_blobs_verified": true,
+    "actual_call_sites": 8,
+    "guards_changed": 0,
+    "qa_changed": 0,
+    "caller_paths_added_to_ours": 0,
+    "reason": "The complete upstream 40-caller boundary block is already byte-identical to ours, including order. All seven newly registered paths still make the actual original_owner_command_channel_v1 call in source53; no path was removed by the read-set optimization.",
+    "allowlist_reason": "Ours retains exactly the current complete CALLERS SHA256 and no other active pin for that path. The upstream hash describes its different entire CALLERS file. Appending it would restore conflicting asset entries, not preserve a required source permission.",
+    "active_pins": {
+      "ancestor": 14,
+      "theirs": 15,
+      "ours": [
+        "sha256:5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f CALLERS.toml"
+      ]
+    },
+    "current_exact_pin": "sha256:5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f CALLERS.toml",
+    "candidate_composition": "A merge parent may acknowledge 1cb without changing the prepared child tree. Preserve any already-reviewed source8 changes on top of source53; this report does not replace that child with the source53 base tree."
+  },
+  "source_tree_proof": {
+    "root": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+    "codex_rs": "3475b14b9d6b0e5b6c00b3758c1a407fe6a6a2c3",
+    "agentd": "fba6edac14d20b25ee570ef43119eb6d852b780f",
+    "src": "c387ed3dd7b2f2ebfa4b905cc2552f2846b4ece7",
+    "entries": [
+      {
+        "path": "artifact_original_head_client.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c050c38ab16e5efb93171a206664cfdcb05cc317",
+        "size": 7210,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/c050c38ab16e5efb93171a206664cfdcb05cc317"
+      },
+      {
+        "path": "artifact_original_head_service.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d639eeeed7160cfe4771a0917be4a6e821c6bb6a",
+        "size": 4445,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d639eeeed7160cfe4771a0917be4a6e821c6bb6a"
+      },
+      {
+        "path": "artifact_original_registry_source.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b19c282177d0624a8974a2f7177261d6fc14e53c",
+        "size": 9325,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b19c282177d0624a8974a2f7177261d6fc14e53c"
+      },
+      {
+        "path": "cell_q24_training_bootstrap_readback.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7aa99759a05a3de496ab969bdd5f42c6d2fcd737",
+        "size": 4792,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/7aa99759a05a3de496ab969bdd5f42c6d2fcd737"
+      },
+      {
+        "path": "cell_q24_training_command_readback.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+        "size": 10825,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/028a4ceba0738db604bcaf3bc1bf548f8c5dd832"
+      },
+      {
+        "path": "circuit_selection_command_readback.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5a69cc5f3bbfbb58b4050cc1e51c552cacb7e75f",
+        "size": 10679,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5a69cc5f3bbfbb58b4050cc1e51c552cacb7e75f"
+      },
+      {
+        "path": "circuit_selection_command_readback_service.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6e849c4d06337f809bab785a8b934aca8f85e019",
+        "size": 3773,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/6e849c4d06337f809bab785a8b934aca8f85e019"
+      }
+    ],
+    "truncated": false
+  },
+  "exact_upstream_caller_delta": [
+    {
+      "line": 3217,
+      "before": "product_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_command.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_material_command.rs\", \"codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_read_service.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_command.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs\", \"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs\", \"codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs\"]",
+      "after": "product_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_command.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_material_command.rs\", \"codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_read_service.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_command.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs\", \"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs\", \"codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs\", \"codex-rs/hepta-agentd/src/artifact_original_head_client.rs\", \"codex-rs/hepta-agentd/src/artifact_original_head_service.rs\", \"codex-rs/hepta-agentd/src/artifact_original_registry_source.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs\"]"
+    }
+  ],
+  "execution": {
+    "source_gate": "NOT_RUN",
+    "caller_gate": "NOT_RUN",
+    "native": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "ref_changed": false
+  },
+  "limitations": [
+    "This is a static three-way source integration proof, not a new gate result.",
+    "The real source53 hosted caller was still in progress when this review began; the separately archived successful source84 caller result is not transferred to source53 or the prepared child."
+  ]
+}

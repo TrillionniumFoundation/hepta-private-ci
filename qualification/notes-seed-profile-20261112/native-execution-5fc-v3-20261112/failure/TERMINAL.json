@@ -1,0 +1,63 @@
+{
+  "error": {
+    "message": "build failed",
+    "type": "RuntimeError"
+  },
+  "execution_environment": "ai395 ordinary uid1000; not hosted CI",
+  "final_use_qualified": false,
+  "finished_unix_ns": 1794486902852421199,
+  "full_dynamic_tool_handler_qualified": false,
+  "learning_gain_qualified": false,
+  "owner_decision": null,
+  "production_authority": false,
+  "research_B_C_actor_calls": 0,
+  "source_inventory_unchanged": true,
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "source_tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+  "stages": [
+    {
+      "elapsed_seconds": 0.7699932081159204,
+      "exit_code": 0,
+      "log_sha256": "a87a90c3e48634eb3307061569090112928d34ecd199d95628134d89728429c7",
+      "stage": "source-clone"
+    },
+    {
+      "elapsed_seconds": 7.557736189104617,
+      "exit_code": 0,
+      "log_sha256": "36ac487ad8bf3584553c8b078c4a10c479838f82ee26b262471fa6363405a061",
+      "stage": "source-fetch"
+    },
+    {
+      "elapsed_seconds": 0.5145089800935239,
+      "exit_code": 0,
+      "log_sha256": "3b52b35052235621d4f840c533a1076a176975c063e0eaffed11cb5c05dfc97c",
+      "stage": "source-checkout"
+    },
+    {
+      "elapsed_seconds": 24.93396119493991,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stage": "v8-prepare"
+    },
+    {
+      "elapsed_seconds": 0.016254928894340992,
+      "exit_code": 0,
+      "log_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "stage": "rustc-version"
+    },
+    {
+      "elapsed_seconds": 154.49632344697602,
+      "exit_code": 0,
+      "log_sha256": "8c1b9b74b4f695d38377c3165ebb3c6f067ab8337af8a686d7eb791287f1ed45",
+      "stage": "caller-proof"
+    },
+    {
+      "elapsed_seconds": 22.19536772184074,
+      "exit_code": 101,
+      "log_sha256": "1bbc81aae6e61b58510065d2aa7136ba8a8ba073855fba280fa5ffda6df91a86",
+      "stage": "build"
+    }
+  ],
+  "status": "FAILED",
+  "tracked_file_count": 13722
+}

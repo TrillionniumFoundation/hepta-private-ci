@@ -1,0 +1,69 @@
+{
+  "all_closed": false,
+  "artifact_id": 14005439766,
+  "artifact_name": "hcsn-n128-thirdcycle-numeric-attempt001-originals",
+  "attempt": 1,
+  "candidate": {
+    "capsule_bytes": 302719,
+    "capsule_identity": "a1b28a130e282bb042d382f2f310df5a3d22bd321bf052e55a6336ab279eecba",
+    "capsule_sha256": "6750218e07dc4cc488d2b84200e32f56c3062d67e926350e1285686c31258ba3",
+    "coordinate_count": 1151028,
+    "coordinate_sha256": "d69c08c7d477161f05d1790e7ef56c22e2ae939c4396992b8da277cdbdce0d87",
+    "dynamic_segments": 3,
+    "matrix_exponentials": 14,
+    "wall_seconds": 2.12,
+    "user_seconds": 7.35,
+    "system_seconds": 0.07,
+    "maximum_rss_kib": 100512
+  },
+  "expected_from_local_postdevelopment": {
+    "capsule_sha256": "41c95005e6f97e7aa22a224b5934f18e84197fe8d5a9443bdacee1b6ce091bb4",
+    "coordinate_sha256": "bfad7775702b865516355ffc15e1cc28a1460d8020e88e79dbb8e71852971eb8",
+    "precommitted": false,
+    "qualification": false
+  },
+  "failure_preserved": true,
+  "failure_stage": "post_execution_frozen_cross_runtime_hash_gate_before_aggregate_result",
+  "hosted_internal_byte_comparisons": {
+    "candidate_vs_oracle": true,
+    "candidate_vs_fresh_restore": true,
+    "comparison_coordinates_per_pair": 1151028,
+    "comparison_pairs": 2,
+    "total_compared_coordinates": 2302056
+  },
+  "job_id": 131657632608,
+  "job_status": "failure",
+  "numerical_consumed": {
+    "dynamic_segments": 6,
+    "matrix_exponentials": 28,
+    "torch_operations": 0,
+    "optimizer_updates": 0
+  },
+  "oracle": {
+    "coordinate_count": 1151028,
+    "coordinate_sha256": "d69c08c7d477161f05d1790e7ef56c22e2ae939c4396992b8da277cdbdce0d87",
+    "dynamic_segments": 3,
+    "matrix_exponentials": 14,
+    "wall_seconds": 2.07,
+    "user_seconds": 7.46,
+    "system_seconds": 0.07,
+    "maximum_rss_kib": 117316
+  },
+  "qualification": false,
+  "restore": {
+    "capsule_sha256": "6750218e07dc4cc488d2b84200e32f56c3062d67e926350e1285686c31258ba3",
+    "coordinate_count": 1151028,
+    "coordinate_sha256": "d69c08c7d477161f05d1790e7ef56c22e2ae939c4396992b8da277cdbdce0d87",
+    "dynamic_segments": 0,
+    "matrix_exponentials": 0,
+    "wall_seconds": 0.22,
+    "user_seconds": 0.47,
+    "system_seconds": 0.03,
+    "maximum_rss_kib": 58864
+  },
+  "root_cause": "SciPy/BLAS expm output was byte-exact within the hosted runtime but not byte-identical to the frozen local post-development runtime; the predeclared expected hashes therefore rejected the attempt.",
+  "run_id": 43355857430,
+  "source_commit": "ce0fc3e2b3f618b8e5b06b606f25735f87414fa7",
+  "status": "RED_FROZEN_CROSS_RUNTIME_BYTE_HASH_MISMATCH",
+  "unique_execution_key": "hcsn-n128-thirdcycle-numeric-20261113-c06d-001"
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "prior_exact_source_sha": "ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+  "prior_exact_source_tree": "323f8caa556634b70c0ee9385c4c7247681f1217",
+  "branch": "integration/hepta-single-main-20261113-ab5b",
+  "pr_number": 6293,
+  "observed_main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "source_failures": [
+    {
+      "job": 135744419226,
+      "lane": "source-head",
+      "failed": 3,
+      "passed": 22,
+      "assertions": [
+        "codex root manifest differs from test",
+        "blocking-ci exact PR SHA concurrency absent",
+        "architecture exact PR SHA concurrency absent"
+      ]
+    },
+    {
+      "job": 135744418550,
+      "lane": "base-merge",
+      "failed": 3,
+      "passed": 22,
+      "same_tree": true
+    },
+    {
+      "job": 135746996563,
+      "gate": "Architecture required",
+      "result": "failure"
+    }
+  ],
+  "repair": [
+    "CLI codex binary now selects existing byte-identical src/main.rs root",
+    "Both required workflows retain repository isolation and add explicit PR-number and exact-head-SHA identity to concurrency grouping"
+  ],
+  "regression_validation": "Static exact-string checks passed; native workflow and full CI not yet qualified",
+  "inherited_protection_baseline": "round-07-75cf: 478 protected branch refs/498 pins; new commit has only existing candidate as parent and no new HIA ancestry",
+  "inherited_ordinary_coverage": "round-07-75cf frozen 7169 ordinary tips; 2794 covered in candidate / 4375 outstanding; not recalculated on this commit",
+  "new_ordinary_branch_heads_merged": 0,
+  "main_merged": false,
+  "deleted_refs": 0,
+  "receipts": [
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44576251410/job/135744419226",
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44576251410/job/135744418550",
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44576251410/job/135746996563"
+  ]
+}

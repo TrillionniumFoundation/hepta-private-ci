@@ -1,0 +1,14 @@
+{
+  "scope": "Offline generator invariant controls only, no actual source/model/CI execution",
+  "command": [
+    "python",
+    "/workspace/scratch/ed3538174819/mem8-owner-v11-root/audit_generator_invariants.py",
+    "--baseline",
+    "/workspace/scratch/ed3538174819/mem8-owner-v10-root/BLOCKERS_FINAL.json",
+    "--output",
+    "/workspace/scratch/ed3538174819/mem8-owner-v11-root/OFFLINE_INVARIANT_CONTROLS.json"
+  ],
+  "exit_code": 0,
+  "stdout": "{\n  \"output\": \"/workspace/scratch/ed3538174819/mem8-owner-v11-root/OFFLINE_INVARIANT_CONTROLS.json\",\n  \"bytes\": 1543,\n  \"sha256\": \"2f7972e8d27eaad4c332151feca7febcc4d3616cab2e3e50546e4072244db3dc\",\n  \"git_blob\": \"3e0544317c87986fdde865b908c5b93a1482f20e\",\n  \"controls_passed\": 8\n}\n",
+  "stderr": ""
+}

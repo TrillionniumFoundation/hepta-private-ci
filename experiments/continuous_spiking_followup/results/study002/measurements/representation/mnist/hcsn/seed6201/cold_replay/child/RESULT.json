@@ -1,0 +1,42 @@
+{
+  "arrays_manifest_sha256": "f03c6ee7edc63fba14c9292fbc2d9a13a5063799c3296696b28f0041e15cf3fc",
+  "costs_seconds": {
+    "continuation": {
+      "cpu": 0.019627272999999335,
+      "wall": 0.01962834200094221
+    },
+    "input_restore": {
+      "cpu": 0.0023583750000000236,
+      "wall": 0.002360069003771059
+    },
+    "model_initialization_reload": {
+      "cpu": 0.011943712999999967,
+      "wall": 0.011945316000492312
+    },
+    "module_import_setup": {
+      "cpu": 4.447051371,
+      "wall": 4.4595617430022685
+    },
+    "result_serialization_and_state_hash": {
+      "cpu": 0.0024558880000000727,
+      "wall": 0.0024567590007791296
+    },
+    "stream_construction_restore": {
+      "cpu": 0.00980511900000014,
+      "wall": 0.009844449996307958
+    }
+  },
+  "final_state_sha256": "c54dff7c37467aa3c5d688883dd5fd3cdc7e5df7958078a669e0cba49d89184b",
+  "model_sha256": "dd1dcfc5e92f15a1cf1ec49cb0f65083677eceff7f86449f6cefb643586fc188",
+  "module_total_cpu_seconds": 4.493551463,
+  "module_total_wall_seconds": 4.506081473999075,
+  "numpy_version": "2.3.5",
+  "parent_pid": 1444075,
+  "pid": 1444076,
+  "processed_rows": 512,
+  "request_sha256": "aee7c2fa1b1d27b35bd7084372714810bedfe6a9f6d23ff67ea0e4f6fd8e2acb",
+  "scope": "module timer includes imports through result construction; parent external timer also includes interpreter startup, final write and shutdown; nested costs are not additive to totals",
+  "state_bytes": 8320,
+  "steps": 32,
+  "torch_version": "2.8.0+cpu"
+}

@@ -1,0 +1,1063 @@
+{
+  "base_commit": "f571db956745d0702baba6da800b6c923aed34cc",
+  "proposed_source_tree": "5e70982785ed714321a7d1a999e904bb2b15a203",
+  "path_count": 199,
+  "paths": [
+    {
+      "path": "codex-rs/Cargo.toml",
+      "sha256": "0fc44cd5eb3b0664e972d73e43297d83f203f14837c127b9ae3acfaedd9f161d",
+      "bytes": 24594
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "651f42dd153058710895b07b594f90b7af99aa0787efc050d81e89c0715b85b6",
+      "bytes": 422896
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "sha256": "8ad25e1a954c14a1850917c77080c7818b94eb876980b672edb30b858e7f1878",
+      "bytes": 1792873
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/BUILD.bazel",
+      "sha256": "c248e68b67038ba6f7eab324c96a9c3bed8b88bd39dc47782bdb933b4bc4d87b",
+      "bytes": 185
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/CHANGELOG.md",
+      "sha256": "1ca8ab2f5dfcb85ea251a355cf262708c0e8ac236d19a51770be985e4732dfd3",
+      "bytes": 71985
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/Cargo.toml",
+      "sha256": "833be809b2831fe21fd303960964f7215c579aed63144124b041dc7c33b8db8d",
+      "bytes": 19887
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/Cargo.toml.orig",
+      "sha256": "50f0c24b0e8229fee40d3211e33feb9cc124b525b236f307a15ef90195352ccb",
+      "bytes": 14370
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/HEPTA-REPOSITORY-FORMAT.patch.gz",
+      "sha256": "c9f235b180c403ea8f53d31009e6c86a3f9f2e589e5f52cf481977d53faf90ab",
+      "bytes": 37536
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/HEPTA-SOURCE-PROVENANCE.json",
+      "sha256": "a1f535c382cc3a87bb49444c066ca5d2d836284bd59cb3e59bdab6cc3c27cbfd",
+      "bytes": 85552
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/HEPTA-TIME-MIGRATION.patch.gz",
+      "sha256": "fe871672cdf40e97a59a5b7406ed63619e3f1159b118aace71a0c2a42770fe44",
+      "bytes": 4946
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/HEPTA.md",
+      "sha256": "bf5603989b669bcdfdb53ac7b98a8c7e8608ea30a6def90860eaf64fc25f9ffc",
+      "bytes": 5217
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/LICENSE",
+      "sha256": "0382b0057770ca05e9c350a50aa3b1c1fea84da0bc81d723bf00b9aa841be58a",
+      "bytes": 12227
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/README.md",
+      "sha256": "e2bed55087789ee5f9195ef39eb17c9ba2430a20806e89f3cd1b070a4364812b",
+      "bytes": 3382
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/build.rs",
+      "sha256": "31b905abf91292bab290271e993e347e06a1944e6305f742f69dbd01e6b89349",
+      "bytes": 858
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/clock.rs",
+      "sha256": "73e6aa1609e13aed2ac7b04a2873df86ca31602fbd68b896199d9ae50193f46f",
+      "bytes": 2103
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/clock_tests.rs",
+      "sha256": "98bc3c9f2097b322c1d9d19e514f3d5bf197ea1f65be76523b540f3787688680",
+      "bytes": 4021
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/error.rs",
+      "sha256": "62f75779207428dcc25f10c20384031d2c6ec2dbafcccb0775a2c3057efef61f",
+      "bytes": 2056
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/client/progress.rs",
+      "sha256": "3781ebdf3e4033e07c7ecd8335d464caaf256b0283dfdba67a87e25112f2fa99",
+      "bytes": 11978
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/client.rs",
+      "sha256": "e14b03133bfcd6e2f5dfb9e013d2fef386e3fe7e9fafbef981aa53c57e5fd24b",
+      "bytes": 18566
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/common.rs",
+      "sha256": "f25fb211d1d91765daa9552d3e2fb2bb32739bf8612deef079a158504eb58c90",
+      "bytes": 17265
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/prompt.rs",
+      "sha256": "45fc6830583dda84e431bff49eb466d605aae231b33a5f0ebb221206376fba53",
+      "bytes": 13877
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/resource.rs",
+      "sha256": "9bccde581f51f505a83db7475285762e069601544603c5fba783e12907db27b4",
+      "bytes": 55
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/router/prompt.rs",
+      "sha256": "1ee3bcdd44b9c05c05433aa11cd949f810e7684f8821d3b3440de9326894ec81",
+      "bytes": 5566
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/router/tool/tool_traits.rs",
+      "sha256": "a4b75aaca28b4c29875e4770cea325f274ffd847128996a54b0f5a9ba88d025a",
+      "bytes": 10991
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/router/tool.rs",
+      "sha256": "fb001d71d1d7b9795cc6193387a05919107454affac7010f2472a73023035d9e",
+      "bytes": 23227
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/router.rs",
+      "sha256": "405b164528c046c342bd4296256f897693e82786ffbf06021fb28df4ef0d5509",
+      "bytes": 7982
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/tool.rs",
+      "sha256": "fae247260783e4842ede7f749ae24706823f9913701297aeb71e74251f978b93",
+      "bytes": 14252
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/tool_name_validation.rs",
+      "sha256": "1ada28573a196eb2745a24d98fcccff7b4553deae898f4840fdd0fd5cd215897",
+      "bytes": 8075
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/wrapper/json.rs",
+      "sha256": "03d4abc4e2a90797baf9eade9cdcc54b99945047abc9d4d31a4b1ac7f1c06dd6",
+      "bytes": 1443
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/wrapper/parameters.rs",
+      "sha256": "4b2ba0e54cd347a38978bfa6c8fa1e2dec81ff478937b2c4c8601535549a9d4f",
+      "bytes": 2032
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server/wrapper.rs",
+      "sha256": "e594439b9d2c2df8911fb16c93290c55f717db83d74098b9d68817da44f9befe",
+      "bytes": 66
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler/server.rs",
+      "sha256": "3972c5f65791654aa5375395a567c6745716a97c3dea5ec5317bfcdfb1686dea",
+      "bytes": 42770
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/handler.rs",
+      "sha256": "dc1087d79c9566009906a26162321096ab77aea17499dfabcbb49964aba5b9ed",
+      "bytes": 86
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/lib.rs",
+      "sha256": "1e8e7b1b483be6e189864a637310da4545d557d046cce76d6351f2f141424a4b",
+      "bytes": 1910
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/annotated.rs",
+      "sha256": "6134b03a559c2d97e0b630b6b82d816bf9f70adb10adeae1b8d514281d01f9f8",
+      "bytes": 4359
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/capabilities.rs",
+      "sha256": "7f31a117fe878fb7b5ae43a980c37f64a9fd079460b23537b74c5e0c76c25061",
+      "bytes": 29312
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/content.rs",
+      "sha256": "33b014a99453845c9c050b0d4f7ad2e39f3e0fb9929a307f03e8cc0e2b5ed717",
+      "bytes": 15088
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/elicitation_schema.rs",
+      "sha256": "d26be0dc6e77ff2abc69c43a3e1ffe70245dbf7b9b793dee9d14a1a91377299a",
+      "bytes": 78251
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/extension.rs",
+      "sha256": "361e8722116e8e70743db11eb8ee96a9df5fb4072cbc7b594cf8d4537aac69a9",
+      "bytes": 9759
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/meta.rs",
+      "sha256": "cba8d0e38d98437aa8bcf19b3eb949e5c96e74d3c277244446a9df5b48192a54",
+      "bytes": 29621
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/mrtr.rs",
+      "sha256": "9463a6683faf0f424e809c5a33d6f97fd98a36352d2db16e1fb5965002572079",
+      "bytes": 20121
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/prompt.rs",
+      "sha256": "8770bcbaf6ae9f9f575346fa06839cfce2d186ed023a39d18882727af48f2993",
+      "bytes": 11394
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/request_state.rs",
+      "sha256": "8c33e7b4e3fba05a0f5cac88b4f3691135a33956a2e83cc0c49669baa11288a3",
+      "bytes": 55445
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/resource.rs",
+      "sha256": "e64d28e1a4b89ade30ad4d32a33c9a84048bf4597b2552b813b449ffcccc9791",
+      "bytes": 10629
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/serde_impl.rs",
+      "sha256": "88ff4bd0e0ae6920100bbc68344f4b5c0c3213e2ca180478dfe88ec73f04e200",
+      "bytes": 35419
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/skill.rs",
+      "sha256": "cf9cbc49a292f717cacbff4299367fd79e19c722b9038206a94cb3048ea43c7c",
+      "bytes": 28480
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/task.rs",
+      "sha256": "9f295c0c9d9b4a78292457e0880432cf717d14cf368c3c602aa9a3401c993703",
+      "bytes": 19514
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model/tool.rs",
+      "sha256": "a69a827e56e3611e9d97f9f0350588e18f04b300b8b40922475a30d7f0128927",
+      "bytes": 8396
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/model.rs",
+      "sha256": "4256555a997fbdb100b99e42ca45eede61303441b521a374f41f8ee25851d39b",
+      "bytes": 225661
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/service/client/cache.rs",
+      "sha256": "ce7e580912cd8547c6b862c66b80b05333a4e0f9ad53da963720b6304d219b30",
+      "bytes": 14292
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/service/client.rs",
+      "sha256": "476e97d7c42c7651ce25b8b5d7d378025c01ec74ff8115e84650e6b5fe6cb1f9",
+      "bytes": 112810
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/service/server.rs",
+      "sha256": "86113f70c3f5ae45585c8056cc47fe1edd3bf9b3798410a2c7dd0c50dde8471e",
+      "bytes": 55602
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/service/tower.rs",
+      "sha256": "ee9fc8107f792600ca6a9d2b0036e83558da4eac9912120edfa30aa9fc57dfff",
+      "bytes": 1510
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/service.rs",
+      "sha256": "ab696ac981dab8f0a06397df2ba0eb0efc6462ec70dd26eebc5915274b86bc0a",
+      "bytes": 76307
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/task_manager.rs",
+      "sha256": "c2464be65af29df5ca0fb315d9ac4d0e16b4cf33da2bc63eb93c397bb16d4f74",
+      "bytes": 39221
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/async_rw.rs",
+      "sha256": "bc0c0773b8361cdfcfa82b886cc3c275149df1c5cd949d3c6b6c0a6608efd02e",
+      "bytes": 39424
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/auth/enterprise.rs",
+      "sha256": "c7b9acbd2664469ea241b5400e44c463d032178e805805f4732cbee1f0f53558",
+      "bytes": 30958
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/auth/enterprise_tests.rs",
+      "sha256": "f296b210e9d9c72e33659ec0a3409bd68f8c2e9502146352a8ac8c754fa0274f",
+      "bytes": 49259
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/auth/metadata_resolver.rs",
+      "sha256": "cc2b4f9c1ac7b479c653a7d1bf22c85d19a540f759f84f564829ca238d6df5cb",
+      "bytes": 28556
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/auth.rs",
+      "sha256": "c5038d66a68f5a2157c6f050cee7b6c93b31f0f09af963fe67074842859dd73b",
+      "bytes": 417568
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/child_process.rs",
+      "sha256": "847708bc07674b4a921fc000bf76a9a8cd15a58f8f6691b3552e21ef9c005a0d",
+      "bytes": 13807
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/auth/streamable_http_client.rs",
+      "sha256": "73ce139e38a993311e192ea8120abddbb1221994ce0251ca4bb1237e208303f4",
+      "bytes": 14654
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/auth.rs",
+      "sha256": "7e0e1e85ec7f8836dd2295c7608eb8e2cf05e5b72306277dfe2598fa538e9ea4",
+      "bytes": 81
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/client_side_http.rs",
+      "sha256": "0d732ea6da27fcd0a2240b283f96bdc742dd77d7176a5464d81ca30ff42f68bb",
+      "bytes": 3972
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/client_side_sse.rs",
+      "sha256": "79b7ed82603d70644847c288978fb146a04651ab78446590f2c9cf707ca0b549",
+      "bytes": 32083
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/http_header.rs",
+      "sha256": "910010a61f31a5fbd39f583638fc69132d29da757c4336081569dc09a9a93c38",
+      "bytes": 4783
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/mcp_headers.rs",
+      "sha256": "9325fadf2f3c9e3ffa3ac12229ea374e3109c313fae2b09bf8065ce3d38fd871",
+      "bytes": 37412
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/reqwest/streamable_http_client.rs",
+      "sha256": "110e5cb5e45dedc81c0c13bfa8cb393400961b6001de3addb9fbfeb8dfd50140",
+      "bytes": 42272
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/reqwest.rs",
+      "sha256": "469486be9b576c6a1ff6a40121dd948e7b46d1de82ad5322a6438cb1567099e3",
+      "bytes": 89
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/server_side_http.rs",
+      "sha256": "0ce14e8d6b5ae35c6ded26dad0a6d2becbbabf6cd998f18d3bc4b196b21481dd",
+      "bytes": 13255
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/unix_socket.rs",
+      "sha256": "2a44030384268b5f0acc054dbd350b617d8efb309cfe90da7682fe1908a3a61a",
+      "bytes": 23616
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common.rs",
+      "sha256": "324c109429d18b47c1fba18691409bfdf75a19719c9d94ceaae39b35064b48c0",
+      "bytes": 828
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/io.rs",
+      "sha256": "ebd09f243e1c44858c17c8e331219a65f20a469dcd68dac0c69524ef16ff3321",
+      "bytes": 13949
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/sink_stream.rs",
+      "sha256": "b2a6eaa45f91197955c0c953fe0b5780baf30efa02313722c840fb34b3dd3709",
+      "bytes": 2446
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/streamable_http_client.rs",
+      "sha256": "5d11f1235c6dac5d6556bc22de437a5a25c94bda1ca50783ed8bc413edaf396e",
+      "bytes": 111180
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/streamable_http_server/session/local.rs",
+      "sha256": "1df323f83da225ac4326aea75e5e6affc498f38b28574518c950271616763950",
+      "bytes": 52372
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/streamable_http_server/session/never.rs",
+      "sha256": "125c958c659f89e821ad43b0904bc65e928d98e2901074c6da7ca5843c02be27",
+      "bytes": 3883
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/streamable_http_server/session/store.rs",
+      "sha256": "8bdce772196b45ef00a10944895aa50f98712f8dd3866c13c78a460a108080fb",
+      "bytes": 4790
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/streamable_http_server/session.rs",
+      "sha256": "89f7bd7f60b0e6bc30253c46a616ed7bd50480798ba9291bbd604904a2bb3a11",
+      "bytes": 6967
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/streamable_http_server/tower.rs",
+      "sha256": "c5a63215704f6e17c3a248c2b54fd63edc84685a2862ed7a08b3d95ba09c9d04",
+      "bytes": 103375
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/streamable_http_server.rs",
+      "sha256": "50513ebf006eea9b71364eca9806461302cd92cb46260a0179bc2fb7a085b3d7",
+      "bytes": 492
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/worker.rs",
+      "sha256": "3553dd15480efd8b931c5647cd9e041573191c417812fcf01ec4bbdad8847164",
+      "bytes": 19439
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/ws.rs",
+      "sha256": "57025a04e15634a80dc4e8247601b62014ce835568b049f3ea433164bdd7811b",
+      "bytes": 51
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport.rs",
+      "sha256": "9f26bcb0340c1197950f4001ad59690c70f1a920ed30659e0a1a0c4b6fbc0540",
+      "bytes": 12316
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/common/calculator.rs",
+      "sha256": "d90eef921dfc404c0871635a9a9e4920d95b115f91a60edd8aa393e13bc6b562",
+      "bytes": 1606
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/common/handlers.rs",
+      "sha256": "4646ca699740f38102430afb5eb421cb91e6e00c71639ef8fc9bd423f2e71aa5",
+      "bytes": 6474
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/common/mod.rs",
+      "sha256": "97f837d42a2c8133d5cff7d58910a67cef0a67798a728d23097f0d60e455f961",
+      "bytes": 38
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_abandoned_request_cancel.rs",
+      "sha256": "e5ac0db60f2d5148e7a50d8e0225b027d2e79a77d207e6a277f524d04ba10760",
+      "bytes": 13526
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_async_rw_max_line_length.rs",
+      "sha256": "2717613f4a8f3362479e5950e7b4def2d7bcba21d6df01a16f12513e1c118441",
+      "bytes": 7441
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_auth_error_classification.rs",
+      "sha256": "4640bc7e569fd25b1cfc457765525458f227ec1929fd1be082cfa0a72c1c7b5b",
+      "bytes": 7193
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_cache_hints.rs",
+      "sha256": "72db6eb63d26ee3146f8b32b0c48638996fc15c5eca5f48980452a15abb6c669",
+      "bytes": 3417
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_cancelled_response.rs",
+      "sha256": "160fdf1adb49284fb6d4b563f4403e803128ee6149cc538861e0a8eda4f41b6e",
+      "bytes": 22665
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_client_credentials.rs",
+      "sha256": "e1e546f6e789ae9e10780e54be82891b19b7c2c738c44c24cc302817b7492c39",
+      "bytes": 8460
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_client_initialization.rs",
+      "sha256": "32c87c5bf992d3dc5fc056653f14d3c70adb6a2bcc47234a10a02c28b1494832",
+      "bytes": 8010
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_client_lifecycle_modes.rs",
+      "sha256": "b776dafff0885d922b0a7415342186bbbc6caf7199161b14f809376c35af7215",
+      "bytes": 31483
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_close_connection.rs",
+      "sha256": "70caec34e1c3a9732cd0527af8db0a6bb2499c8a77846fd1343c0ccf6975d153",
+      "bytes": 4104
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_completion.rs",
+      "sha256": "38eaa4c98ed94895b406be681d13a215976f0916bd96d230920816bd802200fa",
+      "bytes": 7003
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_complex_schema.rs",
+      "sha256": "b57943b0b2e193ed2261f3f16f4f6174326264f10d92271aa7a82706f58d093a",
+      "bytes": 2424
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_custom_headers.rs",
+      "sha256": "53529acb56babc6c94a57909c8139e8ab9677b89f4d01cfe2094940682ac907c",
+      "bytes": 49268
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_custom_request.rs",
+      "sha256": "c26181b38aebac693086da8b2089eef7890ae1ef45cdd2db2efb1d1e4a41e3c7",
+      "bytes": 6419
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_deserialization/tool_list_result.json",
+      "sha256": "6bf673681ba3b6a30380f067076b0bbaa7c63950ecc5f77725ae0b8383baaa9d",
+      "bytes": 835
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_deserialization.rs",
+      "sha256": "7310af89d1a38cf26279cfb57ef5af3cb89df5508cac2d309b9136d83b8f5646",
+      "bytes": 18448
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_discover_http_client_startup.rs",
+      "sha256": "0dd16b11aa57edb211927243e2994a53bdb209a05a84786fe41fc0b263eff6ad",
+      "bytes": 12229
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_elicitation.rs",
+      "sha256": "5f5e6b61d018ccd40ce113c1bbd13bd35d6eed6996bc449d72d764b2ce5db7c7",
+      "bytes": 70579
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_embedded_resource_meta.rs",
+      "sha256": "8b2a75d7276a6685cf58b7a31ae0ca9cd294cc6d0b34b1fa0457cf09b5e6bb3b",
+      "bytes": 3615
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_handler_cache_hints.rs",
+      "sha256": "ddbcb68907b23df88e1ac62cef4ad498fdc62c15ed3ea3acccf3b3c9cd43307a",
+      "bytes": 9160
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_handler_wrappers.rs",
+      "sha256": "b0d24d7343fd9139110693b159a9a82ba8bb2ad9ca82bcbb08565a1c46fe2392",
+      "bytes": 973
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_inflight_response_drain.rs",
+      "sha256": "47a15d93f3b7b3177ac41a8c43bb3b9f2b1c603b670b4b7f38820169b871790a",
+      "bytes": 7978
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_json_schema_detection.rs",
+      "sha256": "ea1e68fbb3f0b5216d203508efa6a757564dd16ad3e58f22ec7912ab7ea189e7",
+      "bytes": 5883
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_list_tools_result/list_tools_result.json",
+      "sha256": "81a34ef905aad85620b72a4d03898ebb538abf6ec4e875a17b3ed88f93d33e73",
+      "bytes": 1553
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_list_tools_result.rs",
+      "sha256": "573212935e9dce9f7f7b9e72789a6fb9b6e4565b022de71583d69032663fac28",
+      "bytes": 1575
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_live_oauth_refresh.rs",
+      "sha256": "b6c15d0b81a97179caa3b632d2d3e603c1fa7d4073cae9f78d1b94d5cc92750a",
+      "bytes": 8268
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_local_client_handler.rs",
+      "sha256": "454203858af20d8c88ee19c15d5fa5b17de8861c817d26c274b5a915d5ac5cc5",
+      "bytes": 324
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_logging.rs",
+      "sha256": "c4f42fc47a239128995422aa04d123ffdc7f30caa03e727b17083a795424ba7b",
+      "bytes": 10807
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_message_protocol.rs",
+      "sha256": "3c9bad7b5f27c0aa7200616be55efa0eb85d702cc06846a8d2b3736020be0b7a",
+      "bytes": 13034
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_message_schema/client_json_rpc_message_schema.json",
+      "sha256": "85952c04e86393df437f942a417d2aaaf25044b3fca3dc60e6cf8e0000bcdbfc",
+      "bytes": 70781
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_message_schema/client_json_rpc_message_schema_current.json",
+      "sha256": "85952c04e86393df437f942a417d2aaaf25044b3fca3dc60e6cf8e0000bcdbfc",
+      "bytes": 70781
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_message_schema/server_json_rpc_message_schema.json",
+      "sha256": "b76cb6f6d1fe98354ef62ee5b2a9513c3c13ca99eb7a7433bcafa40d1e7a612e",
+      "bytes": 125452
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_message_schema/server_json_rpc_message_schema_current.json",
+      "sha256": "7949788b66181ad07598c657891c86c9dad0f55a12ed662baa82bfcacdc1777e",
+      "bytes": 125452
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_message_schema.rs",
+      "sha256": "4066fa96acf4ce9e1a6fc63e3004da755a0a2d0bf8f5c889ee3b9565dba98e25",
+      "bytes": 5942
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_meta_helpers.rs",
+      "sha256": "67f568a538108c6eaa9e9ff3fbd7ffb40cde408f002c0edcf165d05654f36952",
+      "bytes": 3406
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_mrtr_behavior.rs",
+      "sha256": "3551936229f5227f6fb7d14899e9dd5fa003d31a49e5581e116a0eba1c5734a8",
+      "bytes": 25773
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_notification.rs",
+      "sha256": "37e65b51248cc158ba6ed260a7c0e7bb803349edcaf6279eccf8d1f56b105c07",
+      "bytes": 7672
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_progress_subscriber.rs",
+      "sha256": "26e1c7d7d5434f0b1d06dfb58f5d0abd541c996d42fc3086854914cae2249342",
+      "bytes": 8146
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_prompt_handler.rs",
+      "sha256": "f59397675e7b76305a12de66554962a8e29ef2c8e3bae1f7e9be907ff7bfbcd4",
+      "bytes": 4108
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_prompt_macro_annotations.rs",
+      "sha256": "c3ba51287f678d689d25967f0b3dbc328c6716ebad856ba0b912de31989f5733",
+      "bytes": 8271
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_prompt_macros.rs",
+      "sha256": "b5a4900fddb7346e84072b423f204b7692e75982d4c1dba9fd95eec00f502e9c",
+      "bytes": 11828
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_prompt_routers.rs",
+      "sha256": "d1f64dfb0babd76729af0f38971d462a68e93a88dec6c85524c576bc64131f95",
+      "bytes": 4403
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_protocol_version_negotiation.rs",
+      "sha256": "9b02c19f963982f4775fc231bdb338c6131e22f071ae9539bf6a6a4238eb93d7",
+      "bytes": 10765
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_request_timeout_progress.rs",
+      "sha256": "23362ce01ca05ee1ec1e73e5e9ce91a5491399529d56aeb5b686c554d8e2aa93",
+      "bytes": 6319
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_resource_link.rs",
+      "sha256": "7d0c0b149abb4331619c5f29fb36e114957efed1139d415aaccdb76ce04a6e8a",
+      "bytes": 3159
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_resource_link_integration.rs",
+      "sha256": "28b1279a883c2bb40540da8b3713f440ab50aefa8a337e49760beb4a13aaa10f",
+      "bytes": 4966
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_resource_not_found_version.rs",
+      "sha256": "eed0b38d555f14fd9bbeb884ed7662737bb3bed40919cba950e2afa3d083fb14",
+      "bytes": 3243
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_result_type_version.rs",
+      "sha256": "582964af2805d824faba866059cad4355d50cc584f0ca2d3636407554d3536b7",
+      "bytes": 3105
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_result_type_wire.rs",
+      "sha256": "6719f00c19b4356bee6b7a1b5f0bd38d5239648f2a70ee4f29e7120b49c3191d",
+      "bytes": 6311
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_sampling.rs",
+      "sha256": "27b19f998c75b9463ccbd72b85d292b1c83505be665372d4619b4c3813d7d38d",
+      "bytes": 22827
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_sep_2260_request_association.rs",
+      "sha256": "e09c13841b51be403c87e162d98413fae024792b6f2ce6729b9f9292aa33fbde",
+      "bytes": 15907
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_sep_2260_stream_enforcement.rs",
+      "sha256": "47d98c20f9c9345d65c238a6a3fdbc2da3c8b36b21a18198b5232203b39517aa",
+      "bytes": 11733
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_sep_2260_stream_routing.rs",
+      "sha256": "c3ab4c1068117c5a7045d47a513e2a6a884cd1bd809e437199498426c0b557fc",
+      "bytes": 5875
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_server_discover.rs",
+      "sha256": "163c2ae357439658083bdee35e233d76f1696d2dd4fd4dddd4cc83bb3d79745e",
+      "bytes": 8121
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_server_discover_client.rs",
+      "sha256": "674e0ca3bec36c9c93f24dc0a47e5f108ef2ec92c9bef72258f59317db148a41",
+      "bytes": 2353
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_server_discover_http.rs",
+      "sha256": "816bbef8eb787ebaf4c1ca40501aaf602ebaf392d6146813f34d7e6a5c7684a4",
+      "bytes": 12004
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_server_initialization.rs",
+      "sha256": "28c9ece991e32307dcbcf81594d76d84a86e1ecb11007b12b492ffcfdc7041d9",
+      "bytes": 23329
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_skills.rs",
+      "sha256": "7fc1cedb727bff16cd9364766ce61e551a18bec427e64615e8c9edc5ed403203",
+      "bytes": 17016
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_sse_concurrent_streams.rs",
+      "sha256": "896e78e686196c71088c1e5a900ff3cc3e6d38ddb3836e77e217756901c9e013",
+      "bytes": 27941
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_stateless_http_server_requests.rs",
+      "sha256": "33f15eff245a485585dafb2b7606d072988fc97b2b0423f6d0e155719ea4ed7b",
+      "bytes": 5343
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_stateless_protocol_version.rs",
+      "sha256": "4f556da1970bc7e1f4ee9fd64c67293b3aaaae5f1c082952fa5df04d057682b2",
+      "bytes": 7724
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_stateless_server_requests.rs",
+      "sha256": "e681a29fc7c8e948c22092ee74e22782ba8fa0416049f69afc8c4801ea336ff1",
+      "bytes": 11222
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_stdio_response_concurrency.rs",
+      "sha256": "62fc9995f6dde382899481abf3f9a33c624dbe8105d9c1667e07898586f7e7e8",
+      "bytes": 6212
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_4xx_error_body.rs",
+      "sha256": "c1887835080568b72cef21c06dd09ab99b635b869b100f90ad44495631167fea",
+      "bytes": 6633
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_client_concurrency.rs",
+      "sha256": "1ea6b57d9a9ae12f272c0426261de08d7852637bc895bb418abd8978e25bc014",
+      "bytes": 43217
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_connection_reuse.rs",
+      "sha256": "6c60c24e20601e9a2f1543043050eaf0d75f529f0a01bc1ce61d5f739383f2a1",
+      "bytes": 4151
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_disconnect_cancel.rs",
+      "sha256": "4cea80b1935ff3efb78f42b348c59cd9ec0315bbe6248d1ed1a5c3f70248a854",
+      "bytes": 7059
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_empty_2xx_notification.rs",
+      "sha256": "1d86ad1d7d5010a77b60777a1fcaf09007a7b9b0bacd146b94f59ff149ea2efb",
+      "bytes": 1574
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_event_store.rs",
+      "sha256": "e4867ee1aff0e3a874a6bfe3053c21123818a3d21dbfa462621f1e3b5dcc801b",
+      "bytes": 13517
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_get_stream_auth_challenge.rs",
+      "sha256": "09acdf62c0ca8452c5d9a1ec5afee20fd17bcca9ce23e0d955abef178221022f",
+      "bytes": 3954
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_idle_timeout_log.rs",
+      "sha256": "fca098ed155c562dccdac306d5f89cb91e65d08051604f70bcd95735626f37aa",
+      "bytes": 8085
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_init_timeout.rs",
+      "sha256": "16d70a19b8edb89dc98f1caad3c0102bdafa4b29c4503034d5e6bc601bd8461f",
+      "bytes": 2171
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_initialize_error.rs",
+      "sha256": "e8e690e9439fc79dcb46fa40f8827ccaa000952f30573ab603128eee8946cfc3",
+      "bytes": 8342
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_json_response.rs",
+      "sha256": "d84420a5cacb504af052cda1c7e1eeb0761b7f1fba6b118d44a9f0d068519cc1",
+      "bytes": 12988
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_malformed_json_request.rs",
+      "sha256": "a76ebf1f436e128cbc795749519c6a07a28f19552fe34c7edd99b4d685181924",
+      "bytes": 6967
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_priming.rs",
+      "sha256": "db438d10011e9507713c7f66f9e47ebac33f41d6f8ee7221c242bd21ae0ac5e7",
+      "bytes": 18192
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_protocol_version.rs",
+      "sha256": "434ec6cec5ffd821f36d36594f70c044d86e5cbfcbde57e2c744924550bf370f",
+      "bytes": 33533
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_reconnect_classification.rs",
+      "sha256": "ce4c30a575ef57c0c1e2bce51f1c9c045d4421cd7a7d88f0737dd8c26a6e7b6d",
+      "bytes": 17347
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_response_limits.rs",
+      "sha256": "2a829e637517d696a5f66a3114e2778a111903a9b20093cf296bb780fbcd3345",
+      "bytes": 23957
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_session_isolation.rs",
+      "sha256": "3633305905f745c85f88429e9824627529d95820d739adc3ee3bf02b2cf438e8",
+      "bytes": 6097
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_session_store.rs",
+      "sha256": "3eb4ee161b126c048cfad8cefa8004e0a7361f6bd38adea42c52c56f0f2ba5f0",
+      "bytes": 17041
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_stale_session.rs",
+      "sha256": "b4bed142a0852eae712b450e7c081a82b7242f8d798ca7c6dc1b8b701f26d95c",
+      "bytes": 16652
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_standard_headers.rs",
+      "sha256": "69ee319b815cc0a928d851f114918c7c0283931d814505e890f5c86a55f81356",
+      "bytes": 21233
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_streamable_http_status_metadata.rs",
+      "sha256": "c52ab97631e81ebc2c86db605fc8d6764696151acaccd81715b4c6ac15f9d0f3",
+      "bytes": 9405
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_structured_output.rs",
+      "sha256": "dfb77bd9738b04d306ae24c7385607745ce4f3e54a22fe2eca6d1f48f2297ae9",
+      "bytes": 15323
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_subscriptions.rs",
+      "sha256": "c4f182205cad3767cd901779020a4d617171e74ff344ccb2a01e06c64e2afddb",
+      "bytes": 22585
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_subscriptions_model.rs",
+      "sha256": "51acbcc635434dbf34146b2b1cb31f1cac2f140b80743ebf062d834db1072ea3",
+      "bytes": 9207
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_subscriptions_streamable_http.rs",
+      "sha256": "db2aa52d2b7b1f3ddab44bc0d455c5967a0fbcc403da27929ce77ca31c046d8a",
+      "bytes": 10822
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_task.rs",
+      "sha256": "ad561d3f7f0459d7a4c5113d252696e4a7d1aaf74347ce69ad9a23ebc3cf5e0f",
+      "bytes": 14522
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_tool_builder_methods.rs",
+      "sha256": "ac71955dc07d0236e608d378bb8d2700c9f4a0745f18dbccffc24142f5507995",
+      "bytes": 3508
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_tool_disable_notification.rs",
+      "sha256": "89e837072576e2ce3aed6bbfc31bce97b84df8da017d854193847e3921bf9f2a",
+      "bytes": 5745
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_tool_handler.rs",
+      "sha256": "9bccde581f51f505a83db7475285762e069601544603c5fba783e12907db27b4",
+      "bytes": 55
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_tool_macro_annotations.rs",
+      "sha256": "3e100377d002f3a175ad8ed7d777e611304f31ce8a29baa0c7beb35cac12bc5a",
+      "bytes": 1550
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_tool_macros.rs",
+      "sha256": "25f2bc7c2bc51cfe9739289e70b869cf107d622c6045808ecdd2e400afdef338",
+      "bytes": 17895
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_tool_result_meta.rs",
+      "sha256": "31a61807f2ec10e6611775b9016e9c2fbf8ec83d535a681e78020f8736903e86",
+      "bytes": 1446
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_tool_routers.rs",
+      "sha256": "627e03ebc97fff7eeb6fbb50fe9026e56f6732b085beafaf28a2cbc364d5df83",
+      "bytes": 11989
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_trace_context.rs",
+      "sha256": "905f781382ec122187839addfb42b2295f1e185a5dd1e892d173a2a9cf653af3",
+      "bytes": 2986
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_unix_socket_response_limits.rs",
+      "sha256": "09d69b1eab57430f3f3370d6bbaae782f3c49e9ada8e61ba297c50f542a32f7d",
+      "bytes": 3894
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_unix_socket_transport.rs",
+      "sha256": "2d40ad907cba35bed5d2f6748fa06a79ad6fb298fcf13c18a3b838f14764d020",
+      "bytes": 11941
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js/.gitignore",
+      "sha256": "5ffdbe92c121baedcd42f33b4e66e15026dc06fd48932478c48aca34474aa368",
+      "bytes": 31
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js/client.js",
+      "sha256": "1f1b26431e26706dc2d380f9fc3475bc78ada1c0c0ebe7302c1c59267a64b123",
+      "bytes": 763
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js/package.json",
+      "sha256": "5ae5c2acca557c0150ee0111f87fd3ad71f68e6b94e4d5dd5261f4acc3c869cb",
+      "bytes": 355
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js/server.js",
+      "sha256": "760f0721c1b9f44272cc3416a71172a9163044c12d2b58310c72d3286081df81",
+      "bytes": 736
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js/streamable_client.js",
+      "sha256": "af4ccaf89ec0b34cda1b2af71edf9acd04924410a4ed4f579a0ccbd1360ec18a",
+      "bytes": 773
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js/streamable_server.js",
+      "sha256": "01074613ae942d99028c3f31b1ff35e64817c6de30ab8beabeb3823cb97e7498",
+      "bytes": 2884
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js.rs",
+      "sha256": "373576242319cd0c69e1853a17cf6020775a4d9e93367945ce0f6168c0f1d63e",
+      "bytes": 4790
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_python/.gitignore",
+      "sha256": "618d61694f582d0ed04e6c7edc8d7d24966331bcf4249f13bf372fd57607f2fb",
+      "bytes": 188
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_python/client.py",
+      "sha256": "522e2401016ad7d87efa6b13a113c618cc1c1ee568b8f51bd1b92a605668b0ab",
+      "bytes": 775
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_python/pyproject.toml",
+      "sha256": "24c16a04204c0ccc6c30a77514b488ac63419de3da27d88652bf92b8ed5ebae0",
+      "bytes": 278
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_python/server.py",
+      "sha256": "d27a404deb187a66f6b521d2deea4743bb8dc1e64179f2bf2e3a6cfb58aaa4d9",
+      "bytes": 418
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_python.rs",
+      "sha256": "1e06253fd493587a2e00c869841747441cc361ad8c53b57216bd29d04881095c",
+      "bytes": 2291
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/HEPTA-LOOPBACK-FIXTURES.patch.gz",
+      "sha256": "86dd4961005524e495582fe55f43e3a4adf73d5d9851d9141305ef975a4e34ad",
+      "bytes": 1714
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "sha256": "93d8250390d2bae807df3132cfccc366116e16b48a461817fa08dfd84abfddd2",
+      "bytes": 5668
+    }
+  ],
+  "patch_sha256": "ccf232e0f5deb046567f1714103ddef50f81cbf1f8db8ab5a878fa53db99fec2",
+  "semantic_source_paths": [
+    "Cargo.toml",
+    "Cargo.toml.orig",
+    "src/handler/server/resource.rs",
+    "src/lib.rs",
+    "src/model/annotated.rs",
+    "src/model/request_state.rs",
+    "src/service.rs",
+    "src/task_manager.rs",
+    "tests/common/handlers.rs",
+    "tests/test_json_schema_detection.rs",
+    "tests/test_logging.rs",
+    "tests/test_tool_handler.rs",
+    "src/clock.rs",
+    "src/clock_tests.rs"
+  ],
+  "fixture_source_paths": [
+    "src/transport/auth.rs",
+    "src/transport/auth/metadata_resolver.rs"
+  ],
+  "additional_agentd_dependency": "arc-swap existing locked 1.9.2; dependency edge only",
+  "module_lock_sha256": "8ad25e1a954c14a1850917c77080c7818b94eb876980b672edb30b858e7f1878",
+  "cargo_lock_sha256": "651f42dd153058710895b07b594f90b7af99aa0787efc050d81e89c0715b85b6",
+  "whitespace_and_forward_reverse_application": "all passed with exact postimage checks",
+  "validation": {
+    "run_id": "301e91ce-0d7f-43a9-aefa-7d571feaaa95",
+    "listed_tests": 1605,
+    "executed_tests": 1601,
+    "passed": 1601,
+    "failed": 0,
+    "ignored_tests": [
+      {
+        "binary_id": "rmcp::test_live_oauth_refresh",
+        "name": "live_concurrent_refreshes_survive_refresh_token_rotation"
+      },
+      {
+        "binary_id": "rmcp::test_live_oauth_refresh",
+        "name": "live_refresh_rejects_credentials_for_another_client"
+      },
+      {
+        "binary_id": "rmcp::test_live_oauth_refresh",
+        "name": "live_refresh_rotates_the_stored_token"
+      },
+      {
+        "binary_id": "rmcp::test_live_oauth_refresh",
+        "name": "live_reusing_a_rotated_refresh_token_is_rejected"
+      }
+    ],
+    "full_name_set_equal": true,
+    "junit_sha256": "50ac5c04e48e430003d13be3b969014df670045350cfe6e1b57ebf285fb251eb",
+    "test_list_sha256": "6a14263c3fda4f167d9aae6d62ffbfc678121aa177444f87eee20c42b1b7c430",
+    "binaries_metadata_sha256": "ec471018e50bef8a54cd84de78bb32742284e2c17ae3dbfba8a93e5a592797f1",
+    "network_isolation_sha256": "95c1d76648496fb3fdbda72a8c74f2b415e3a6bd5c518b99f8145a55d1f5c94b",
+    "retries": 0
+  },
+  "remaining_chrono_consumers": {
+    "normal_manifests": 20,
+    "dev_only_manifests": 3,
+    "repository_advisory_gate_cleared": false
+  }
+}

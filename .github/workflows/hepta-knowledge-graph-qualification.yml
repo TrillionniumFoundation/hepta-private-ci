@@ -77,6 +77,10 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-implementation-maps.py verify --profile development
 
+      - name: Self-test target-host evidence harness
+        shell: bash
+        run: python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
+
       - name: Observe repository-wide detailed-design health
         continue-on-error: true
         shell: bash
@@ -101,7 +105,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config libdbus-1-dev
           sudo sysctl -w kernel.unprivileged_userns_clone=1
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0

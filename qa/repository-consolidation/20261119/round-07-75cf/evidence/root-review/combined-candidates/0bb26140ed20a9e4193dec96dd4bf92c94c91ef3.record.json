@@ -1,0 +1,22 @@
+{
+  "tip": "0bb26140ed20a9e4193dec96dd4bf92c94c91ef3",
+  "prior": "7c744af158dbb33c3dbf8e8cea070d39896943c8",
+  "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "approved_tree": "983dfaf9e4cc0cbf615e0417b1aac39d03927d10",
+  "fixed_automatic_tree": "983dfaf9e4cc0cbf615e0417b1aac39d03927d10",
+  "actual_automatic_tree": "a68ada49261d55e00fba9370f1296a36d8099e08",
+  "fixed_exit": 0,
+  "actual_exit": 0,
+  "actual_conflicts": [],
+  "resolution_paths": [],
+  "changes_from_review_base": [
+    ".github/workflows/hepta-neuron-near-matched-physical.yml",
+    "qualification/neuron-gated-sparse-v3/PUBLIC_Q24_READONLY_ADMISSION_20261016.md",
+    "qualification/neuron-gated-sparse-v3/public_q24_independent_cases.py",
+    "qualification/neuron-gated-sparse-v3/test_public_q24_independent_cases.py"
+  ],
+  "resolved_tree": "a68ada49261d55e00fba9370f1296a36d8099e08",
+  "expected_composed_tree": "a68ada49261d55e00fba9370f1296a36d8099e08",
+  "commit": "96c7318a3dffa5918424c787dcf0201ca0bb93e2",
+  "reason": "Normal conflict-free merge of the independent-utterance reader and its original tests. It preserves DENY_ALL and NO_MODEL_PROMOTION. A follow-up adds both new paths to the workflow trigger. Real CPU tensor tests are required before qualification."
+}

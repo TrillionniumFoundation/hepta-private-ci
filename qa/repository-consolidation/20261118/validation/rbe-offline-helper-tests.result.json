@@ -1,0 +1,41 @@
+{
+  "workflow_yaml_parsed": true,
+  "existing_jobs_preserved_byte_for_byte": true,
+  "publication_permissions_and_guards_unchanged": true,
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "-B",
+        ".github/rbe-openssh/helper_regressions.py"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 0.13987135887145996
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        ".github/rbe-openssh/tool_supply_tests.py"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 0.10149836540222168
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_qualify_rbe_openssh.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.10400605201721191
+    }
+  ]
+}

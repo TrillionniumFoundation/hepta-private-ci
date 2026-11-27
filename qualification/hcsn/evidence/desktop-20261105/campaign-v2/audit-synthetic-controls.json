@@ -1,0 +1,233 @@
+{
+  "scope": "Synthetic non-Torch admission and ownership controls; no model training, CUDA or numerical parity",
+  "script_sha256": "7a5e27f123ba2f8d32d17385f13650b230c03cd9d51496364bb2da39f082a7de",
+  "protocol_sha256": "1b0c726785a406501a83ab33265bb04428b611264120ad502c44e599bd4154e7",
+  "checker_sha256": "8fd44e90e7af111a7e1f7c167d17629203558941a48a43019aab6f19da658add",
+  "passed": 25,
+  "failed": 0,
+  "frozen_candidate_unchanged": true,
+  "records": [
+    {
+      "name": "coverage_policy0",
+      "child_exit_code": 2,
+      "status_received": "unavailable",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "49b6e078f0151195a317ace52313803c019fe56e0142552ed5ff19c1e2d2a834",
+      "status": "passed"
+    },
+    {
+      "name": "coverage_policy1",
+      "child_exit_code": 2,
+      "status_received": "unavailable",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "73f33457b31f925dd3da43963bf875b5e983f8b1af07478f92751c1e35884134",
+      "status": "passed"
+    },
+    {
+      "name": "source_drift",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "a58a34b4bec91462c0959dee19971cc8965ddf81593dd6bcf955891f9181aac5",
+      "status": "passed"
+    },
+    {
+      "name": "package_config_drift",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "58867096e16a41568615a376145c9a1261fccf7a23f91b570838515d585a8017",
+      "status": "passed"
+    },
+    {
+      "name": "selected_budget_drift",
+      "child_exit_code": 1,
+      "status_received": "failed",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "70899da214679bb8b98b449a232010ffbe1b3fb0789f9f5fe3962039f05da2ad",
+      "status": "passed"
+    },
+    {
+      "name": "report_source_drift",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "cadefa887fc5756f089cd0729f651b367f11085a53239a40f8e64d5d0e35859c",
+      "status": "passed"
+    },
+    {
+      "name": "missing_identity",
+      "child_exit_code": 1,
+      "status_received": "failed",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "3156d844972b3058176488c0f384a5c4576700fd6c6b44b36f01810605a726d9",
+      "status": "passed"
+    },
+    {
+      "name": "duplicate_identity",
+      "child_exit_code": 1,
+      "status_received": "failed",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "5756e0a90da4c80026ab02f9f86551acbd65678be213d340850bedd16e193aae",
+      "status": "passed"
+    },
+    {
+      "name": "checkpoint_hash_mismatch",
+      "child_exit_code": 1,
+      "status_received": "failed",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "8f803457aed704994302902af887e37a3703686c3bc22e33c8f4843f9769a684",
+      "status": "passed"
+    },
+    {
+      "name": "checkpoint_path_escape",
+      "child_exit_code": 1,
+      "status_received": "failed",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "d77861c22a6fbafd2ca815d9d5841c56ea14f4238f65731e04e32ef7319329f5",
+      "status": "passed"
+    },
+    {
+      "name": "runtime_link_mismatch",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "3dc9a2b2a181274511ab67b3d841e8145128506f064b05ee1738751c78f0c0fd",
+      "status": "passed"
+    },
+    {
+      "name": "missing_cublas_environment",
+      "child_exit_code": 1,
+      "status_received": "failed",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "c6a3b0569ca2ced910fdd33c91b4ac8e0582ee48675a2fcfc42f6f388bf2b5ec",
+      "status": "passed"
+    },
+    {
+      "name": "protocol_drift",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "d90a712bf94306440ed83317623040968d6d181eb94b088a0461d39b3bbe945e",
+      "status": "passed"
+    },
+    {
+      "name": "existing_output",
+      "child_exit_code": 2,
+      "existing_bytes_unchanged": true,
+      "status": "passed"
+    },
+    {
+      "name": "runtime_flags_drift",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "65618b521166503458c56aba1caba5a784d9a23b69cb7f1158392f827da4a11c",
+      "status": "passed"
+    },
+    {
+      "name": "preimport_without_launch_profile",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "dc5889c99c18ce32fccbbfda851bcf0a3bce87ef6175efc26714c228d8632827",
+      "status": "passed"
+    },
+    {
+      "name": "launch_binding_coverage",
+      "child_exit_code": 2,
+      "status_received": "unavailable",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "158d807c4357458c8ee35ad3accbe19ddab00f9e5c4db95bff20294b99579266",
+      "status": "passed"
+    },
+    {
+      "name": "launch_entry_hash_mismatch",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "1cb82bbc5b0fd5700776fb09251437375e9612c8ba722a4699918b2ac7e6e0fe",
+      "status": "passed"
+    },
+    {
+      "name": "launch_stale_pid",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "4e0be6002feba58e2719672ef551a60652228e8e544dbe18199fbdc53df7ce64",
+      "status": "passed"
+    },
+    {
+      "name": "launch_arguments_mismatch",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "d25bc0ec9a0f955e16b10b1e1fe8d84f40d1fa77b23d4e2b7f160289c9bdfaea",
+      "status": "passed"
+    },
+    {
+      "name": "benchmark_uuid_raw_mismatch",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "d21162a0c2c00fa8718bd27f66ed91a33949c3ce83b8381fe2b0255d5366a48d",
+      "status": "passed"
+    },
+    {
+      "name": "profile_uuid_raw_mismatch",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "d4a922bf9bbe02bdd1d3a2f929f31bd907ba27dcffdeb1320c21b3a143a95683",
+      "status": "passed"
+    },
+    {
+      "name": "profile_mig_identity",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "901e588b3065c9fe0c1a7abf18b6a4e67afeb7e8f4dbe938db7c211f40727528",
+      "status": "passed"
+    },
+    {
+      "name": "profile_canonical_field_bare",
+      "child_exit_code": 1,
+      "status_received": "invalidated",
+      "before_torch_import": true,
+      "coverage_preserved": 20,
+      "receipt_sha256": "c0414daa756257d9c015f45b7e0df935f2e39644cf19ba426b0af2bfdc6a1d2c",
+      "status": "passed"
+    },
+    {
+      "name": "exclusive_initial_owner",
+      "status": "passed",
+      "outcomes": [
+        "claimed",
+        "FileExistsError"
+      ]
+    }
+  ],
+  "status": "passed"
+}

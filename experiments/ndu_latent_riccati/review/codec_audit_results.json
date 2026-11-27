@@ -1,0 +1,103 @@
+{
+  "schema": "ndu-latent-codec-metric-audit-v1",
+  "finished_utc": "2026-10-21T13:36:23.963461+00:00",
+  "scope": "Known physical raw-output probes, not heldout learned-model efficacy",
+  "source_sha256": {
+    "data.py": "d8bb3d8d59e33593f9fad3960cbbd07e3a254722396b610f5bcbab18001c702b",
+    "codec.py": "d870e9e201547136efed138a4cd3d811e28567c07af30a39eea0496818d20362",
+    "codec_audit.py": "6d5eb417b841b0a4a2ae3e428b2e89bcbf920f384f4e8a6c951e8e7c3b6b8fc1"
+  },
+  "probes": {
+    "canonical": {
+      "factual_loss": 8.000947127584368e-05,
+      "correct": 1.0,
+      "resolved": 1.0,
+      "correct_resolved": 1.0,
+      "disagreement": 0.00024898353149183095,
+      "style_lawful": 1.0,
+      "style_consistent": 1.0,
+      "lawful_consistent": 1.0
+    },
+    "uncertain_text": {
+      "factual_loss": 8.000947127584368e-05,
+      "correct": 1.0,
+      "resolved": 0.0,
+      "correct_resolved": 0.0,
+      "disagreement": 0.00024898353149183095,
+      "style_lawful": 1.0,
+      "style_consistent": 1.0,
+      "lawful_consistent": 1.0
+    },
+    "missing_audio": {
+      "factual_loss": 0.2500799000263214,
+      "correct": 0.0,
+      "resolved": 0.0,
+      "correct_resolved": 0.0,
+      "disagreement": 0.09113071858882904,
+      "style_lawful": 0.0,
+      "style_consistent": 0.53125,
+      "lawful_consistent": 0.0
+    },
+    "coherent_wrong": {
+      "factual_loss": 0.08727413415908813,
+      "correct": 0.0,
+      "resolved": 1.0,
+      "correct_resolved": 0.0,
+      "disagreement": 0.0002635934797581285,
+      "style_lawful": 1.0,
+      "style_consistent": 1.0,
+      "lawful_consistent": 1.0
+    },
+    "style_midpoint": {
+      "factual_loss": 8.000749221537262e-05,
+      "correct": 1.0,
+      "resolved": 1.0,
+      "correct_resolved": 1.0,
+      "disagreement": 0.00024900955031625926,
+      "style_lawful": 0.0,
+      "style_consistent": 0.4375,
+      "lawful_consistent": 0.0
+    }
+  },
+  "nonfinite_probes": {
+    "text": {
+      "factual_loss": 1.0,
+      "invalid_nonfinite": 1.0,
+      "resolved": 0.0,
+      "all_metrics_finite": true
+    },
+    "audio": {
+      "factual_loss": 1.0,
+      "invalid_nonfinite": 1.0,
+      "resolved": 0.0,
+      "all_metrics_finite": true
+    },
+    "image": {
+      "factual_loss": 1.0,
+      "invalid_nonfinite": 1.0,
+      "resolved": 0.0,
+      "all_metrics_finite": true
+    },
+    "video": {
+      "factual_loss": 1.0,
+      "invalid_nonfinite": 1.0,
+      "resolved": 0.0,
+      "all_metrics_finite": true
+    },
+    "style_logits": {
+      "factual_loss": 1.0,
+      "invalid_nonfinite": 1.0,
+      "resolved": 0.0,
+      "all_metrics_finite": true
+    }
+  },
+  "gates": {
+    "canonical_raw_readback": true,
+    "uncertain_text_not_resolved": true,
+    "missing_audio_not_resolved": true,
+    "coherent_wrong_is_wrong": true,
+    "averaged_style_not_lawful": true,
+    "nonfinite_outputs_fail_closed": true
+  },
+  "all_passed": true
+}

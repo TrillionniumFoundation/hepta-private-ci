@@ -1,0 +1,66 @@
+name: NDU P0 local source transfer (research-only)
+
+on:
+  push:
+    branches: [research/ndu-p0-local-source-transfer-20261023]
+    paths: [.github/workflows/ndu-p0-local-source-transfer.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-export:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/research/ndu-p0-local-source-transfer-20261023'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: experiments/ndu_latent_riccati
+
+      - name: Verify frozen source and create local handoff archive
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, zipfile
+          root=pathlib.Path('experiments/ndu_latent_riccati')
+          freeze=json.loads((root/'SOURCE_FREEZE.json').read_text())
+          request=json.loads((root/'CLOUD_RUN_REQUEST.json').read_text())
+          assert freeze['implementation_commit'] == 'd84a49cc45ba90fbb2a15f63e4cd295dd71a1443'
+          assert request['implementation_commit'] == freeze['implementation_commit']
+          assert request['protocol_sha256'] == freeze['files']['protocol.json']
+          assert not freeze['formal_heldout_accessed']
+          sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          assert sha == os.environ['EXPECTED_HEAD']
+          for name, expected in freeze['files'].items():
+              assert hashlib.sha256((root/name).read_bytes()).hexdigest()==expected,name
+          target=pathlib.Path(os.environ['RUNNER_TEMP'])/'ndu-p0-source-handoff'
+          target.mkdir(exist_ok=True)
+          names=sorted(p for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts)
+          with zipfile.ZipFile(target/'ndu-p0-sources.zip','w',zipfile.ZIP_DEFLATED) as out:
+              for p in names:
+                  out.write(p,p.as_posix())
+          receipt={'workflow_source_sha':sha,'frozen_implementation_commit':freeze['implementation_commit'],
+                   'frozen_files_checked':len(freeze['files']),'file_count':len(names),
+                   'zip_sha256':hashlib.sha256((target/'ndu-p0-sources.zip').read_bytes()).hexdigest(),
+                   'local_handoff_only':True,'dedicated_runner_execution_claimed':False,
+                   'scientific_efficacy_claimed':False,'runtime_authority':'DENY_ALL'}
+          (target/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print(json.dumps(receipt))
+          PY
+
+      - name: Upload public research source handoff
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-p0-local-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/ndu-p0-source-handoff/
+          if-no-files-found: error
+          retention-days: 2

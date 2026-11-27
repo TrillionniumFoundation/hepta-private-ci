@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="75" failures="0" errors="0" uuid="745a817f-6d10-4c95-a04c-ce95404db25c" timestamp="2026-11-10T09:05:44.447-05:00" time="44.064">
+    <testsuite name="codex-hepta-agentd" tests="75" disabled="0" errors="0" failures="0">
+        <testcase name="learning_iteration_checkpoint::ports_tests::cancelled_checkpoint_waiter_keeps_the_original_persistence_lane" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.468-05:00" time="0.049">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::ports_tests::checkpoint_ports_reconcile_lost_commit_ack_without_repeating_write" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.468-05:00" time="0.055">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::profile::tests::learning_profile_refuses_a_progress_checkpoint_as_initial_registration" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.523-05:00" time="0.022">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::profile::tests::learning_profile_refuses_unknown_storage_fields_and_incompatible_schema" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.545-05:00" time="0.023">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::profile::tests::learning_profile_requires_same_agent_and_nonzero_writer_pin" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.568-05:00" time="0.022">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::profile::tests::learning_profile_roundtrip_retains_exact_scope_and_original_writer" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.590-05:00" time="0.022">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::profile::tests::scoped_learning_profile_roundtrips_and_refuses_scope_substitution" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.612-05:00" time="0.033">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::ports_tests::registered_checkpoint_ports_reopen_every_stage_and_preserve_owner_errors" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.519-05:00" time="0.334">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.853-05:00" time="0.057">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::malformed_counts_strings_tags_and_truncated_checkpoints_are_rejected" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.910-05:00" time="0.021">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.931-05:00" time="0.044">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.646-05:00" time="0.422">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::profile_tests::changed_frozen_profile_cannot_restore_or_replace_the_original_checkpoint" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.068-05:00" time="0.066">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:44.975-05:00" time="0.215">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::scope_tests::scoped_checkpoint_exchange_rejects_legacy_or_rebound_transport_before_storage" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.190-05:00" time="0.041">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::profile_tests::previous_or_missing_profile_bytes_are_refused_in_both_outer_schemas" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.134-05:00" time="0.130">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::scope_tests::scoped_checkpoint_rejects_structurally_valid_cross_cadence_candidate_before_cas" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.231-05:00" time="0.096">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::valid_json_with_corrupt_protected_record_metadata_is_never_restored" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.327-05:00" time="0.069">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::write_failure_and_lost_ack_reconcile_original_record_without_reexecution" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.396-05:00" time="0.057">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::transport::tests::learning_checkpoint_cancel_after_commit_requires_original_owner_reconciliation" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.453-05:00" time="0.050">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::transport::tests::learning_checkpoint_commit_without_ack_requires_fresh_original_connection" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.503-05:00" time="0.050">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::tests::scope_tests::scoped_checkpoint_reopens_all_decisions_and_refuses_profile_downgrade" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.265-05:00" time="0.522">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::transport::tests::learning_checkpoint_wrong_purpose_binding_sequence_and_capacity_never_write" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.786-05:00" time="0.034">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::transport::tests::learning_checkpoint_wrong_semantic_ack_consumes_original_lane" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.821-05:00" time="0.025">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::transport::tests::ports_tests::root_checkpoint_ports_preserve_uncertainty_until_original_owner_reconnects" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.846-05:00" time="0.045">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::transport::tests::learning_checkpoint_maximum_histories_cross_real_frames_and_reopen" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.553-05:00" time="0.710">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::cancelling_an_inflight_read_drops_the_original_lane_without_reconnect" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:46.263-05:00" time="0.027">
+        </testcase>
+        <testcase name="learning_iteration_checkpoint::transport::tests::ports_tests::root_checkpoint_ports_recover_original_stages_for_all_decisions" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:45.891-05:00" time="0.703">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::evaluation::missing_original_trainer_refuses_no_update_before_contacting_evaluator" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:46.594-05:00" time="2.806">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::evaluation::product_signature_cannot_replace_the_original_iteration_attestation" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:49.400-05:00" time="2.970">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::evaluation::current_signed_qualification_reads_original_stage_evidence_for_all_decisions" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:46.290-05:00" time="9.153">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::evaluation::recovery::corrupted_or_replaced_evaluation_history_is_refused_before_owner_io" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:55.443-05:00" time="3.124">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::exact_receipt_readback_supports_recovery_without_sending_a_signing_payload" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:58.568-05:00" time="0.048">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::evaluation::recovery::completed_and_intermediate_histories_read_original_evaluation_after_work_expiry" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:52.370-05:00" time="6.429">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::generation::revocation_during_attestation_read_is_rechecked_by_original_actor" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:58.800-05:00" time="3.258">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::generation::substituted_receipt_and_unpublished_actor_never_contact_evidence_owner" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:02.058-05:00" time="7.576">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::public_constructor_refuses_the_daemons_own_uid_before_any_request" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:09.649-05:00" time="0.045">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::substituted_binding_and_invalid_attestations_permanently_consume_connection" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:09.695-05:00" time="0.067">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::coordinator_uses_native_proposal_owner_and_reconciles_lost_ack" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:09.762-05:00" time="0.597">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::evaluated_no_update_waits_for_selection_and_cannot_resume_after_expiry" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:10.359-05:00" time="0.423">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::invalid_signature_prevents_dataset_training_and_checkpoint_progress" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:10.783-05:00" time="0.136">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::no_update_next_use_checks_actual_selection_stage_and_controller" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:10.919-05:00" time="0.578">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::profile_tests::signed_training_profile_drift_stops_before_evaluation_in_both_scope_profiles" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:11.497-05:00" time="0.465">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::actual_delivery_preserves_pending_with_closed_owner_and_reconciles_existing_claim" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:11.963-05:00" time="1.119">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::completed_recovery_checks_current_revocation_controller_and_signature_expiry" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:13.082-05:00" time="0.707">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::completed_recovery_checks_ready_and_clock_after_awaiting_owner_attestation" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:13.789-05:00" time="0.337">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::completed_recovery_reauthenticates_all_signed_stages_without_reproposing_or_checkpointing" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:14.126-05:00" time="1.528">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::generation::retained_and_updated_original_evidence_survives_actor_and_runtime_reopen" classname="codex-hepta-agentd" timestamp="2026-11-10T09:05:58.616-05:00" time="17.555">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::completed_recovery_rejects_each_invalid_retained_signature_before_work" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:15.655-05:00" time="1.256">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::full_learning_actor_leaves_completion_unclaimed_then_delivers_once" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:16.171-05:00" time="2.273">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::lost_learning_delivery_response_reconciles_without_repeating_stages" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:16.911-05:00" time="2.107">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_absent_source_never_consumes_other_intents" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:18.444-05:00" time="3.306">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_app_ready_with_closed_admission_never_claims" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:19.018-05:00" time="2.761">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_bootstrap_rejects_duplicate_and_foreign_request" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:21.778-05:00" time="0.108">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_authenticates_completed_snapshot_and_retains_required_service" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:21.750-05:00" time="1.454">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_claimed_missing_or_partial_state_only_reads_back" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:21.887-05:00" time="3.346">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_fresh_request_executes_one_fixture_iteration_and_acknowledges_next_use" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:23.204-05:00" time="2.460">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::original_root_delivery_refuses_missing_objective_before_claim_or_stage_work" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:25.665-05:00" time="0.986">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_waits_for_app_server_readiness_before_claim" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:25.233-05:00" time="1.617">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::expired_learning_readback_allows_multiple_bounded_original_owner_reads" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:26.651-05:00" time="0.268">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:26.850-05:00" time="0.101">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:26.918-05:00" time="0.126">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::fresh_receipt_wait_rechecks_time_and_ready_before_checkpointing" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:27.044-05:00" time="0.243">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::root_learning_post_claim_source_refusal_keeps_original_claim_without_stage_work" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:26.951-05:00" time="0.643">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::readback_missing_or_partial_checkpoint_never_creates_or_resumes_work" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:27.594-05:00" time="0.088">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::partial_and_completed_recovery_preserve_deadlines_and_only_resume_after_authentication" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:27.288-05:00" time="0.433">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::scope_and_generation_readiness_refuse_before_owner_work" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:27.683-05:00" time="0.231">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::scope_tests::scoped_circuit_enrollment_rejects_rebound_request_before_owner_work" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:27.720-05:00" time="0.199">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::scope_tests::scoped_native_no_update_reaches_selection_and_refuses_later_rebound_request" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:27.914-05:00" time="0.234">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::scope_tests::scoped_readback_rechecks_training_before_requesting_any_attestation" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:28.149-05:00" time="0.173">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::scope_tests::scoped_native_runtime_stops_cross_cadence_training_before_evaluation_or_checkpoint" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:27.919-05:00" time="0.464">
+        </testcase>
+        <testcase name="root_production_learning_inputs::tests::learning_bundle_refuses_other_agent_initial_operation_and_profile_bytes" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:28.383-05:00" time="0.029">
+        </testcase>
+        <testcase name="root_production_learning_inputs::tests::learning_bundle_requires_same_original_writer_peer_identity_and_fixed_lane" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:28.412-05:00" time="0.025">
+        </testcase>
+        <testcase name="root_production_learning_inputs::tests::scoped_learning_handoff_requires_its_complete_original_profile" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:28.438-05:00" time="0.030">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::learning_iteration_tests::separate_keys_under_one_controller_cannot_self_evaluate" classname="codex-hepta-agentd" timestamp="2026-11-10T09:06:28.322-05:00" time="0.177">
+        </testcase>
+    </testsuite>
+</testsuites>

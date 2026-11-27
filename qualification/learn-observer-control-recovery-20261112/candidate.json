@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.observer-control-recovery-evidence.v1",
+  "base": "106f5e41f2ff8421c5aad10eeb746d453ed00563",
+  "source": {
+    "local": "b67cb049ae5d579b09cf7d5c90283e59ac43ba5d",
+    "remote": "55d3447f8af0fb1d4fb4687e8697185db4581221",
+    "tree": "503329b3245e6d4cae15152e4dbaa89dacbadcbc"
+  },
+  "tests": {
+    "local": "4945c98ac9008af1a5589ba0d353b29079c93fac",
+    "remote": "f59ba61abcca1f8428acb45e05b9e47d63d3a692",
+    "tree": "ef7e8a45f8505913fc95bff30dfcc4689f2d5fae",
+    "native": "not run",
+    "filters": [
+      "test(original_q24_outcome_control_)",
+      "test(q24_original_outcome_wire_)"
+    ],
+    "expectedCases": [
+      5,
+      2
+    ]
+  },
+  "guards": {
+    "local": "41dd2778dd90d2d8f8c48ba28a70dbfa03957b90",
+    "remote": "a8a1e66210a7ab3e2ab2b4a0f4a53f69c1af2760",
+    "tree": "241e8fb88ea0cc10f5d52a30092762e3faa72b14",
+    "files": [
+      {
+        "path": "CALLERS.toml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9dd3ff8102dc99f43750d1fc3a202723c34bd0dd",
+        "bytes": 706202,
+        "sha256": "ec05f704f5d2268e3a83d8de6da5bf6d75e1cc4751ff885a33f3abdc924e815f"
+      },
+      {
+        "path": ".github/blob-size-allowlist.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6363f47eb7574c5cd83fc598b6c713a3afd32092",
+        "bytes": 11742,
+        "sha256": "c5b610d37d4aa4d31c9ce1475c825df3bf999ddc00ec02baa1b857261328ad0e"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_original_outcome_control_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e5f64717d26d3503a88fdadbd65a66734d4ec89a",
+        "bytes": 14973,
+        "sha256": "7675b98fc1d709e9e237627bc0ff74dea7425112357be1775938082b1465551e"
+      }
+    ]
+  },
+  "observedUtc": "2026-11-12T06:07:24Z",
+  "sourceQaMethods": 16,
+  "scopedCallerBoundaries": 8,
+  "protectedRows": 379,
+  "inventoryEntries": 511,
+  "fullCallerScan": "not run",
+  "native": "not run",
+  "endToEndQualified": {
+    "adopt": 0,
+    "noUpdate": 0,
+    "daemonPlusRootColdRestart": 0
+  },
+  "actualRawLogs": [
+    {
+      "filename": "guards-source_qa.log",
+      "bytes": 2757,
+      "sha256": "7dffe685ebf6ab61677fd6014476d40f2caed5aecfbf12df9f53d801767a36ab"
+    },
+    {
+      "filename": "guards-all_protected_inventory.log",
+      "bytes": 108,
+      "sha256": "3deba412f675d98f0d8bda33cbed803f048d493c420b5fecda8562351b0103b0"
+    }
+  ],
+  "startAcknowledgement": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "unavailableHistoricalResultsReused": false
+}

@@ -1,0 +1,56 @@
+{
+  "arrays": {
+    "elapsed": {
+      "bytes": 128,
+      "dtype": "float64",
+      "sha256": "f9cedc0c24479f692128f115037366f20b44a523ce1a8d369cbce786a0a88522",
+      "shape": [
+        16
+      ]
+    },
+    "layer_000__conv": {
+      "bytes": 12288,
+      "dtype": "float32",
+      "sha256": "1855b733ed6e132b1e08c5d14e2b86a14921fd05b66f6baee1eb9835336c30ec",
+      "shape": [
+        16,
+        64,
+        3
+      ]
+    },
+    "layer_000__ssm": {
+      "bytes": 65536,
+      "dtype": "float32",
+      "sha256": "e3e4b453033b6921df497c211ea3a6d02e3ee3aae9f4dc0247c2ac0d8b3c2228",
+      "shape": [
+        16,
+        64,
+        16
+      ]
+    }
+  },
+  "layer_keys": [
+    [
+      "conv",
+      "ssm"
+    ]
+  ],
+  "payload_bytes": 74254,
+  "payload_sha256": "23ddefa5c7e8008175123fc4cd29d73bff5791d460482610061578618e8b0d92",
+  "snapshot": {
+    "batch_size": 16,
+    "config": {
+      "architecture": "mamba1",
+      "classes": 10,
+      "depth": 1,
+      "input_dim": 64,
+      "match_cell_budget": false,
+      "seed": 6201,
+      "width": 32
+    },
+    "format": "hcsn-incremental-state-v2",
+    "model_sha256": "27d0ff0a35208515357a0417b198671a56629f7b7b3eb63a4d7fac9896ab69b9",
+    "processed_rows": 256,
+    "steps": 16
+  }
+}

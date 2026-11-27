@@ -1,0 +1,30 @@
+{
+  "attempts": [
+    {
+      "attempt": "post-development-candidate-red-001",
+      "candidate_dynamic_segments": 3,
+      "candidate_matrix_exponentials": 18,
+      "error": "ValueError: third-cycle result denominator",
+      "execution_finished": false,
+      "failure_stage": "post-numerical frozen denominator guard",
+      "root_cause": "origin 3 was evolved before the generation-3 packet released at time 0.4, creating premature target-4 packets",
+      "wall_seconds": 2.882
+    },
+    {
+      "attempt": "post-development-candidate-red-002",
+      "candidate_dynamic_segments": 3,
+      "candidate_matrix_exponentials": 14,
+      "error": "ValueError: third-cycle result denominator",
+      "execution_finished": false,
+      "failure_stage": "post-numerical frozen denominator guard",
+      "root_cause": "the parent static 984136 denominator omitted four pending packets emitted by the 0.36 and 0.375 segments; the complete 25-packet denominator is 1151028",
+      "wall_seconds": 2.978
+    }
+  ],
+  "failure_preserved": true,
+  "identity": "hcsn-n128-thirdcycle-numeric-development-20261113-c06d",
+  "optimizer_updates": 0,
+  "precommitted": false,
+  "qualification": false,
+  "torch_operations": 0
+}

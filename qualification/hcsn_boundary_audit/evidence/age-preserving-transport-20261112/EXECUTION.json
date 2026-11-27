@@ -1,0 +1,65 @@
+{
+  "formatting": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "earlier_invocations": [
+      {
+        "command": "just --working-directory codex-rs fmt",
+        "exit": 2,
+        "reason": "wrong justfile location, before root justfile retrieval"
+      },
+      {
+        "command": "just fmt with root-relative log redirection from codex-rs",
+        "exit": 1,
+        "reason": "shell redirection failed before formatter executed"
+      }
+    ],
+    "exit": 0,
+    "scope": "No changed files need formatting; no owning formatter for qualification paths",
+    "working_directory": "codex-rs"
+  },
+  "parent_sha": "8adb86c7c501032fdba4fbdabda1abf5a637c5e4",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "probe_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "qualification.hcsn_boundary_audit.probe_refractory_transport",
+    "/workspace/scratch/c06d659c1e72/hcsn-repair/qualification/hcsn_boundary_audit/evidence/age-preserving-transport-20261112/RESULT.json"
+  ],
+  "probe_exit": 0,
+  "python": "3.12.14",
+  "schema": "hcsn-exact-refractory-local-execution-v1",
+  "scope": "stdlib-only synthetic packet tests, no model training or inference",
+  "source_sha256_after": {
+    "qualification/hcsn_boundary_audit/probe_refractory_transport.py": "06f811e0d2f012b67c6a40488b4d34a8425e2583da13276d819ddc5263d8f2be",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/test_phase_delay_oracle.py": "86c353af842e19a6f7b1f6a15e00b99a2ac5b893e084dca21441a44baf40886b",
+    "qualification/hcsn_boundary_audit/test_refractory_transport.py": "2ddb92627dcbe80c2bdcef7f14a17e2f852b6b7031f9f752dc0acf234a9543dc"
+  },
+  "source_sha256_after_format": {
+    "qualification/hcsn_boundary_audit/probe_refractory_transport.py": "06f811e0d2f012b67c6a40488b4d34a8425e2583da13276d819ddc5263d8f2be",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/test_phase_delay_oracle.py": "86c353af842e19a6f7b1f6a15e00b99a2ac5b893e084dca21441a44baf40886b",
+    "qualification/hcsn_boundary_audit/test_refractory_transport.py": "2ddb92627dcbe80c2bdcef7f14a17e2f852b6b7031f9f752dc0acf234a9543dc"
+  },
+  "source_sha256_before": {
+    "qualification/hcsn_boundary_audit/probe_refractory_transport.py": "06f811e0d2f012b67c6a40488b4d34a8425e2583da13276d819ddc5263d8f2be",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/test_phase_delay_oracle.py": "86c353af842e19a6f7b1f6a15e00b99a2ac5b893e084dca21441a44baf40886b",
+    "qualification/hcsn_boundary_audit/test_refractory_transport.py": "2ddb92627dcbe80c2bdcef7f14a17e2f852b6b7031f9f752dc0acf234a9543dc"
+  },
+  "source_unchanged": true,
+  "status": "HOLD_NO_GO",
+  "test_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "qualification.hcsn_boundary_audit.test_refractory_transport",
+    "qualification.hcsn_boundary_audit.test_phase_delay_oracle",
+    "-v"
+  ],
+  "test_exit": 0,
+  "test_wall_seconds": 0.23545933400009744
+}

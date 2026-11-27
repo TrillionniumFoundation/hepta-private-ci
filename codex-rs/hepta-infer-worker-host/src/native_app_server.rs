@@ -3,7 +3,6 @@
 //! This profile observes real turn events and token usage. It makes no claim
 //! about local weights, accelerator memory, artifact selection or training.
 
-use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
 use std::pin::Pin;
@@ -17,9 +16,8 @@ use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_app_server_client::RemoteAppServerObservedEvent;
+use codex_app_server_client::RemoteAppServerObservedResponse;
 use codex_app_server_client::RemoteObservedTypedRequestError;
-use codex_app_server_protocol::AdditionalContextEntry;
-use codex_app_server_protocol::AdditionalContextKind;
 use codex_app_server_protocol::AskForApproval;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::JSONRPCErrorError;
@@ -42,7 +40,6 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY;
 use codex_hepta_agentd::HealthSnapshot;
-use codex_hepta_agentd::MAX_COGNITIVE_CONTEXT_BYTES;
 use codex_hepta_codex_adapter::APP_SERVER_V2_PROTOCOL_ID;
 use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_codex_adapter::AppServerRequestBinding;
@@ -64,17 +61,25 @@ use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejectionStatus;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
-use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
+#[path = "native_context.rs"]
+mod context;
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_output.rs"]
+mod native_output;
+#[path = "native_recovery.rs"]
+mod recovery;
+pub use context::NativeContextDelivery;
+use context::NativeContextRequest;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+use native_output::AgentMessageOutput;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -82,11 +87,32 @@ use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
+const MAX_STOP_REASON_BYTES: usize = 4096;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 const LOCAL_CANCELLED: &str = "cancelled";
 const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
+
+fn truncate_utf8(value: &str, maximum_bytes: usize) -> &str {
+    let mut end = value.len().min(maximum_bytes);
+    while !value.is_char_boundary(end) {
+        end -= 1;
+    }
+    &value[..end]
+}
+
+fn append_stop_reason(existing: Option<String>, note: String) -> String {
+    let Some(existing) = existing.filter(|reason| !reason.is_empty()) else {
+        return truncate_utf8(&note, MAX_STOP_REASON_BYTES).to_string();
+    };
+    let note = truncate_utf8(&note, MAX_STOP_REASON_BYTES.saturating_sub(2));
+    let existing = truncate_utf8(
+        &existing,
+        MAX_STOP_REASON_BYTES.saturating_sub(note.len() + 2),
+    );
+    format!("{existing}; {note}")
+}
 
 #[cfg(test)]
 struct FinalRevalidationTestHook {
@@ -135,12 +161,14 @@ pub trait TurnStartAuthorizer: Send + Sync {
 pub struct NativeWorkerConfig {
     pub agentd_socket: PathBuf,
     pub agent_id: AgentId,
+    /// Exact Agentd spawn identity used by the control connection and native
+    /// journal. An Intelligence run freezes its own lifecycle generation.
     pub generation: u64,
     pub model: String,
     pub timeout: Duration,
 }
 
-/// A real provider client. Each new request uses a fresh ephemeral thread
+/// A real provider client. Each new request uses a fresh retained thread
 /// behind the exact Agent identity. The control journal owns dispatch identity,
 /// local slot admission and settlement; duplicate requests never start a turn.
 pub struct AppServerModelDriver {
@@ -178,240 +206,6 @@ impl AppServerModelDriver {
         self
     }
 
-    /// Reconcile a previously prepared/dispatched operation without issuing a
-    /// new turn/start. Only an opaque thread/read response from the current
-    /// exact-generation Agent/App Server may settle the durable record.
-    pub(super) async fn reconcile_existing(
-        &self,
-        record: &NativeRunRecord,
-        expected_prompt: &str,
-    ) -> Result<Option<NativeRunOutput>> {
-        if record.request.principal_id != self.config.agent_id.to_string()
-            || record.request.worker_generation != self.config.generation
-            || record.request.model != self.config.model
-        {
-            return Err("durable native request no longer matches configured Agent/model".into());
-        }
-        let Some(dispatch) = record.dispatch.as_ref() else {
-            return Ok(None);
-        };
-        let (
-            Some(payload_digest),
-            Some(expected_request_digest),
-            Some(app_server_version),
-            Some(protocol_id),
-            Some(source_admission_digest),
-            Some(codex_home_digest),
-            Some(original_connection_id),
-            Some(session_id),
-            Some(deadline_ms),
-            Some(_authority_witness),
-        ) = (
-            dispatch.codex_payload_digest.as_deref(),
-            dispatch.codex_request_digest.as_deref(),
-            dispatch.app_server_version.as_deref(),
-            dispatch.protocol_id.as_deref(),
-            dispatch.codex_source_admission_digest.as_deref(),
-            dispatch.codex_home_digest.as_deref(),
-            dispatch.codex_connection_id,
-            dispatch.codex_session_id.as_deref(),
-            dispatch.codex_deadline_ms,
-            dispatch.codex_authority_witness_sha256.as_deref(),
-        )
-        else {
-            // Historical dispatches predate exact runtime.codex recovery binding.
-            return Ok(None);
-        };
-        if protocol_id != APP_SERVER_V2_PROTOCOL_ID {
-            return Err("durable runtime.codex protocol is not App Server v2".into());
-        }
-
-        let owner = AgentdClient::new(
-            self.config.agentd_socket.clone(),
-            self.config.agent_id.clone(),
-            self.config.generation,
-        )?;
-        let health = owner.health().await?;
-        if !health.ready || health.fenced {
-            return Ok(None);
-        }
-        let ingress = owner.session_ingress().await?;
-        let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
-        let client = match timeout(
-            RPC_TIMEOUT,
-            RemoteAppServerClient::connect_with_bounded_events(
-                RemoteAppServerConnectArgs {
-                    endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
-                    client_name: "hepta-infer-worker-reconciler".to_string(),
-                    client_version: env!("CARGO_PKG_VERSION").to_string(),
-                    experimental_api: true,
-                    mcp_server_openai_form_elicitation: false,
-                    opt_out_notification_methods: Vec::new(),
-                    channel_capacity: 32,
-                },
-                /*event_channel_capacity*/ 64,
-            ),
-        )
-        .await
-        {
-            Ok(Ok(client)) => client,
-            _ => return Ok(None),
-        };
-        let observed_home = match client.codex_home() {
-            Some(home) => home.to_string(),
-            None => {
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Ok(None);
-            }
-        };
-        let expected_home_digest: Digest32 = codex_home_digest.parse()?;
-        if Digest32::of_bytes(observed_home.as_bytes()) != expected_home_digest
-            || Some(observed_home.as_str()) != health.home_root.to_str()
-            || client.server_version() != Some(app_server_version)
-        {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err(
-                "reconciliation App Server identity does not match durable dispatch".into(),
-            );
-        }
-
-        let expected_input = vec![UserInput::Text {
-            text: expected_prompt.to_string(),
-            text_elements: Vec::new(),
-        }];
-        let payload_digest: Digest32 = payload_digest.parse()?;
-        let source_admission_digest: Digest32 = source_admission_digest.parse()?;
-        if source_admission_digest.to_string() != record.request.payload_digest {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("durable runtime.codex source admission binding drifted".into());
-        }
-        let intent = CodexOperationIntent {
-            operation_id: StableId::new(format!(
-                "native:{}",
-                Digest32::of_bytes(record.request.request_id.as_bytes())
-            ))?,
-            thread_id: StableId::new(dispatch.thread_id.clone())?,
-            method_id: StableId::new(TURN_START_METHOD_ID)?,
-            payload_digest,
-            lease_payload_digest: payload_digest,
-            deadline_ms,
-            app_server_binding: Some(AppServerRequestBinding {
-                source_admission_digest,
-                agent_generation: Generation::new(record.request.worker_generation)?,
-                session_id: StableId::new(session_id.to_string())?,
-                client_user_message_id: StableId::new(record.request.request_id.clone())?,
-                user_input_digest: Digest32::of_bytes(&serde_json::to_vec(&expected_input)?),
-                protocol_id: StableId::new(protocol_id.to_string())?,
-                app_server_version: app_server_version.to_string(),
-                codex_home_digest: expected_home_digest,
-                connection_id: original_connection_id,
-            }),
-        };
-        if codex_request_digest(&intent).to_string() != expected_request_digest {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("durable runtime.codex request digest mismatch during recovery".into());
-        }
-
-        let observed = match timeout(
-            RPC_TIMEOUT,
-            client.request_typed_observed_response::<ThreadReadResponse>(
-                ClientRequest::ThreadRead {
-                    request_id: RequestId::Integer(20),
-                    params: ThreadReadParams {
-                        thread_id: dispatch.thread_id.clone(),
-                        include_turns: true,
-                    },
-                },
-            ),
-        )
-        .await
-        {
-            Ok(Ok(observed)) => observed,
-            _ => {
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Ok(None);
-            }
-        };
-        if observed.response().thread.model_provider != dispatch.model_provider {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("reconciled model provider does not match durable dispatch".into());
-        }
-        let receipt = adapt_observed_thread_read_reconciliation(
-            &intent,
-            &record.request.request_id,
-            &expected_input,
-            &observed,
-        )?;
-        let Some(receipt) = receipt else {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Ok(None);
-        };
-        let turn_id = receipt
-            .turn_id
-            .as_ref()
-            .ok_or("reconciled terminal receipt omitted turn id")?
-            .as_str();
-        let turn = observed
-            .response()
-            .thread
-            .turns
-            .iter()
-            .find(|turn| turn.id == turn_id)
-            .ok_or("reconciled terminal receipt turn disappeared")?;
-
-        let mut output_text = String::new();
-        for item in &turn.items {
-            if let ThreadItem::AgentMessage { text, .. } = item {
-                if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output_text.len()) {
-                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Err("reconciled output byte limit exceeded".into());
-                }
-                output_text.push_str(text);
-            }
-        }
-        let (status, boundary_status) = match receipt.status {
-            AdapterStatus::Succeeded => {
-                (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
-            }
-            AdapterStatus::Failed => (NativeRunStatus::Failed, NativeBoundaryStatus::Failed),
-            AdapterStatus::Interrupted => (
-                NativeRunStatus::Interrupted,
-                NativeBoundaryStatus::Interrupted,
-            ),
-            _ => {
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Err("thread/read reconciliation produced nonterminal status".into());
-            }
-        };
-        let mut output = NativeRunOutput {
-            thread_id: dispatch.thread_id.clone(),
-            turn_id: turn.id.clone(),
-            model: record.request.model.clone(),
-            model_provider: dispatch.model_provider.clone(),
-            status,
-            boundary_status,
-            output: output_text,
-            observed_output_tokens: None,
-            terminal_observed: true,
-            owner_authority: NativeOwnerAuthority::Unverified,
-            stop_reason: turn
-                .error
-                .as_ref()
-                .map(|error| error.message.chars().take(1024).collect()),
-            codex_terminal_correlation_digest: Some(
-                receipt
-                    .correlation_digest
-                    .ok_or("reconciled terminal receipt omitted correlation digest")?
-                    .to_string(),
-            ),
-        };
-        let _ =
-            verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
-        downgrade_for_owner_loss(&mut output);
-        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-        Ok(Some(output))
-    }
-
     /// Execute once. Transport loss after turn/start remains indeterminate and
     /// must never be automatically replayed as a fresh request.
     async fn run_once(
@@ -419,7 +213,7 @@ impl AppServerModelDriver {
         control: &mut DurableInferenceControl,
         request_id: &str,
         prompt: String,
-        context_query: Option<String>,
+        context_request: NativeContextRequest,
         intelligence: Option<&NativeIntelligenceRunBinding>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
@@ -438,7 +232,7 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
-        if context_query.is_some() {
+        if context_request.query.is_some() {
             let capabilities = owner.capabilities().await?;
             let supports_revalidation = capabilities.capabilities.iter().any(|capability| {
                 capability.id == COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY && capability.major == 1
@@ -495,7 +289,10 @@ impl AppServerModelDriver {
                     cwd: health.workspace.to_str().map(str::to_string),
                     approval_policy: Some(AskForApproval::Never),
                     sandbox: Some(SandboxMode::ReadOnly),
-                    ephemeral: Some(true),
+                    // Retain the exact turn for reconcile-only recovery after worker
+                    // or App Server loss; the durable journal alone cannot
+                    // recover an ephemeral thread.
+                    ephemeral: Some(false),
                     environments: Some(Vec::new()),
                     ..Default::default()
                 },
@@ -507,36 +304,20 @@ impl AppServerModelDriver {
             return Err("provider substituted the requested model".into());
         }
         // Recheck the actual generation after connecting and creating the
-        // ephemeral thread. Only now acquire the retrieval result that will be
+        // retained thread. Only now acquire the retrieval result that will be
         // attached to turn/start. Agentd performs exact owner-cut, candidate
         // and retrieval-context revalidation before returning this value, so
         // preparatory provider I/O cannot leave an older context parked across
         // the final model-request attachment boundary.
         owner.session_ingress().await?;
-        let context = match context_query {
+        let context = match context_request.query {
             Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
             None => None,
         };
-        let owner_context_digest = context
-            .as_ref()
-            .map(|snapshot| -> Result<_> { Ok(control::digest(&serde_json::to_vec(snapshot)?)) })
-            .transpose()?;
-        let additional_context = context
-            .as_ref()
-            .map(|snapshot| -> Result<_> {
-                let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_COGNITIVE_CONTEXT_BYTES {
-                    return Err("verified context exceeds the model attachment byte limit".into());
-                }
-                Ok(HashMap::from([(
-                    "hepta-cognitive-owner".to_string(),
-                    AdditionalContextEntry {
-                        value,
-                        kind: AdditionalContextKind::Untrusted,
-                    },
-                )]))
-            })
-            .transpose()?;
+        let context::PreparedContext {
+            owner_context_digest,
+            additional_context,
+        } = context::prepare_attachment(context.as_ref(), context_request.delivery)?;
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
@@ -565,6 +346,12 @@ impl AppServerModelDriver {
         let adapted_at_ms = unix_time_ms()?;
         let execution_timeout_ms = u64::try_from(self.config.timeout.as_millis())
             .map_err(|_| "native execution timeout does not fit u64 milliseconds")?;
+        let worker_deadline_ms = adapted_at_ms
+            .checked_add(execution_timeout_ms)
+            .ok_or("native execution deadline overflow")?;
+        let deadline_ms = intelligence.map_or(worker_deadline_ms, |binding| {
+            worker_deadline_ms.min(binding.snapshot.deadline_ms)
+        });
         let source_admission_digest: Digest32 = control
             .native_record(request_id)
             .ok_or("missing durable native admission")?
@@ -580,9 +367,7 @@ impl AppServerModelDriver {
             method_id: StableId::new(TURN_START_METHOD_ID)?,
             payload_digest,
             lease_payload_digest: payload_digest,
-            deadline_ms: adapted_at_ms
-                .checked_add(execution_timeout_ms)
-                .ok_or("native execution deadline overflow")?,
+            deadline_ms,
             app_server_binding: Some(AppServerRequestBinding {
                 source_admission_digest,
                 agent_generation: Generation::new(self.config.generation)?,
@@ -643,23 +428,25 @@ impl AppServerModelDriver {
         verify_persisted_dispatch_binding(
             control,
             request_id,
-            payload_digest,
-            request_receipt.request_digest,
-            source_admission_digest,
-            codex_home_digest,
-            connection_id,
-            &started.thread.session_id,
-            adapter_intent.deadline_ms,
-            authority_epoch,
-            revocation_revision,
-            &revocation_head_digest,
-            &authority_witness,
-            &app_server_version,
+            PersistedDispatchBinding {
+                payload_digest,
+                request_digest: request_receipt.request_digest,
+                source_admission_digest,
+                codex_home_digest,
+                connection_id,
+                session_id: &started.thread.session_id,
+                deadline_ms: adapter_intent.deadline_ms,
+                authority_epoch,
+                revocation_revision,
+                revocation_head_digest: &revocation_head_digest,
+                authority_witness: &authority_witness,
+                app_server_version: &app_server_version,
+            },
         )?;
 
         if let Some(binding) = intelligence {
             let dispatched = match owner
-                .run_mark_dispatched(binding.run_id.clone(), binding.expected_revision)
+                .run_mark_bound_dispatched(binding.expected_run_binding(binding.expected_revision))
                 .await
             {
                 Ok(receipt) => receipt,
@@ -677,9 +464,10 @@ impl AppServerModelDriver {
             };
             // Idempotent acknowledgement is reconciliation, not a second
             // physical-send permit. A competing worker must not redispatch.
-            if dispatched.phase != AgentRunPhase::Dispatched
+            if binding.validate_receipt(&dispatched).is_err()
+                || dispatched.phase != AgentRunPhase::Dispatched
                 || dispatched.idempotent
-                || dispatched.generation != self.config.generation
+                || dispatched.generation != binding.snapshot.generation
                 || dispatched.terminal_observed
                 || dispatched.context_digest.as_deref() != Some(binding.context_digest.as_str())
                 || dispatched.compilation_receipt_digest.as_deref()
@@ -788,6 +576,7 @@ impl AppServerModelDriver {
         // From here on, a missing acknowledgement is reconcile-only. Recovery
         // cannot recreate the local pre-effect proof that is deliberately lost.
         drop(pre_effect_abort);
+        let expected_turn_input = turn_params.input.clone();
         let response = timeout(
             send_budget,
             send_authorized_turn_start(&mut client, entered_use, turn_params),
@@ -887,9 +676,8 @@ impl AppServerModelDriver {
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
                 let _ = owner
-                    .run_cancel(
-                        binding.run_id.clone(),
-                        revision,
+                    .run_cancel_bound(
+                        binding.expected_run_binding(revision),
                         "native start journal update failed".to_string(),
                     )
                     .await;
@@ -900,74 +688,97 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
-        let result = self
-            .observe(
-                &mut client,
-                &mut output,
-                deadline,
-                cancellation,
-                Some(&owner),
-                &binding,
-            )
-            .await;
+        let mut messages = AgentMessageOutput::default();
+        let result = Self::observe(
+            &mut client,
+            &mut output,
+            &mut messages,
+            deadline,
+            cancellation,
+            Some(&owner),
+            &binding,
+        )
+        .await;
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
-            output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
-                    .run_cancel(
-                        binding.run_id.clone(),
-                        revision,
+            output.stop_reason = Some(truncate_utf8(&reason, MAX_STOP_REASON_BYTES).to_string());
+            // Preserve the classified boundary, usage and owner loss before
+            // any cleanup await, including the Agentd cancellation RPC.
+            let observation_recorded = control
+                .settle_native(request_id, output.clone())
+                .map(|_| ());
+            let cancel_recorded = control.cancel_native(request_id);
+            #[cfg(all(test, unix))]
+            failure_tests::pause_after_observation_journal(request_id).await;
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
+                    .run_cancel_bound(
+                        binding.expected_run_binding(revision),
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
-            // Persist cancellation intent, but still interrupt if that write
-            // fails. A failed journal write fences later admission/settlement.
-            // Commit observed authority loss before waiting for interruption:
-            // a process crash must not erase it from a later settlement.
-            let loss_recorded =
-                if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
-                    control
-                        .settle_native(request_id, output.clone())
-                        .map(|_| ())
-                } else {
-                    Ok(())
-                };
-            let cancel_recorded = control.cancel_native(request_id);
+            // Attempt physical cleanup even if a journal append failed. The
+            // retained error still fences settlement and later admission.
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
-            let _ = self
-                .observe(
-                    &mut client,
-                    &mut output,
-                    Instant::now() + INTERRUPT_GRACE,
-                    &grace,
-                    /*owner*/ None,
-                    &binding,
-                )
-                .await;
-            loss_recorded?;
+            let _ = Self::observe(
+                &mut client,
+                &mut output,
+                &mut messages,
+                Instant::now() + INTERRUPT_GRACE,
+                &grace,
+                /*owner*/ None,
+                &binding,
+            )
+            .await;
+            observation_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
                 && let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
                 && let Err(error) = owner
-                    .run_observe_terminal(
-                        binding.run_id.clone(),
-                        revision,
-                        AgentRunPhase::Indeterminate,
-                        /*terminal_observed*/ false,
-                    )
+                    .run_observe_bound_terminal(codex_hepta_agentd::AgentRunTerminalObservation {
+                        binding: binding.expected_run_binding(revision),
+                        phase: AgentRunPhase::Indeterminate,
+                        terminal_observed: false,
+                    })
                     .await
             {
                 let note = format!("Agentd indeterminate reconciliation required: {error}");
-                output.stop_reason = Some(match output.stop_reason.take() {
-                    Some(existing) => format!("{existing}; {note}"),
-                    None => note,
-                });
+                output.stop_reason = Some(append_stop_reason(output.stop_reason.take(), note));
+            }
+        }
+        // A terminal event can precede the final assistant message delta. Never
+        // report success with an empty answer: read the original turn without
+        // creating a new turn/start, and verify its exact request binding.
+        if output.terminal_observed
+            && output.status == NativeRunStatus::Completed
+            && output.output.trim().is_empty()
+        {
+            match reconcile_missing_terminal_message(
+                &mut client,
+                &output,
+                &binding,
+                request_id,
+                &expected_turn_input,
+            )
+            .await
+            {
+                Ok(message) => output.output = message,
+                Err(reason) => {
+                    // Preserve the authenticated physical terminal observation. Missing
+                    // content denies success; it does not make that observed event
+                    // disappear or violate the durable terminal/status invariant.
+                    output.boundary_status = NativeBoundaryStatus::Quarantined;
+                    output.stop_reason = Some(
+                        format!("terminal output could not be verified: {reason}")
+                            .chars()
+                            .take(1024)
+                            .collect(),
+                    );
+                }
             }
         }
         if output.terminal_observed {
@@ -990,24 +801,14 @@ impl AppServerModelDriver {
             let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
                 .await;
             downgrade_for_owner_loss(&mut output);
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
-                && let Err(error) =
-                    commit_intelligence_terminal(&owner, binding, revision, &output).await
-            {
-                let note = format!("Agentd terminal reconciliation required: {error}");
-                output.stop_reason = Some(match output.stop_reason.take() {
-                    Some(existing) => format!("{existing}; {note}"),
-                    None => note,
-                });
-            }
         }
         Ok(output)
     }
 
     async fn observe(
-        &self,
         client: &mut RemoteAppServerClient,
         output: &mut NativeRunOutput,
+        messages: &mut AgentMessageOutput,
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
@@ -1029,7 +830,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, messages, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1146,22 +947,40 @@ async fn send_authorized_turn_start(
         .await
 }
 
-fn verify_persisted_dispatch_binding(
-    control: &DurableInferenceControl,
-    request_id: &str,
+struct PersistedDispatchBinding<'a> {
     payload_digest: Digest32,
     request_digest: Digest32,
     source_admission_digest: Digest32,
     codex_home_digest: Digest32,
     connection_id: u64,
-    session_id: &str,
+    session_id: &'a str,
     deadline_ms: u64,
     authority_epoch: u64,
     revocation_revision: u64,
-    revocation_head_digest: &str,
-    authority_witness: &str,
-    app_server_version: &str,
+    revocation_head_digest: &'a str,
+    authority_witness: &'a str,
+    app_server_version: &'a str,
+}
+
+fn verify_persisted_dispatch_binding(
+    control: &DurableInferenceControl,
+    request_id: &str,
+    expected: PersistedDispatchBinding<'_>,
 ) -> Result<()> {
+    let PersistedDispatchBinding {
+        payload_digest,
+        request_digest,
+        source_admission_digest,
+        codex_home_digest,
+        connection_id,
+        session_id,
+        deadline_ms,
+        authority_epoch,
+        revocation_revision,
+        revocation_head_digest,
+        authority_witness,
+        app_server_version,
+    } = expected;
     let dispatch = control
         .native_record(request_id)
         .and_then(|record| record.dispatch.as_ref())
@@ -1281,21 +1100,18 @@ async fn reconcile_intelligence_start_unknown(
 ) -> NativeRunOutput {
     if let (Some(binding), Some(revision)) = (binding, revision)
         && let Err(error) = owner
-            .run_observe_terminal(
-                binding.run_id.clone(),
-                revision,
-                AgentRunPhase::Indeterminate,
-                false,
-            )
+            .run_observe_bound_terminal(codex_hepta_agentd::AgentRunTerminalObservation {
+                binding: binding.expected_run_binding(revision),
+                phase: AgentRunPhase::Indeterminate,
+                terminal_observed: false,
+            })
             .await
     {
         let reason = output.stop_reason.take().unwrap_or_default();
-        output.stop_reason = Some(
-            format!("{reason}; Agentd reconciliation remains required: {error}")
-                .chars()
-                .take(1024)
-                .collect(),
-        );
+        output.stop_reason = Some(append_stop_reason(
+            Some(reason),
+            format!("Agentd reconciliation remains required: {error}"),
+        ));
     }
     output
 }
@@ -1304,23 +1120,25 @@ async fn require_intelligence_handoff(
     owner: &AgentdClient,
     binding: &NativeIntelligenceRunBinding,
 ) -> Result<u64> {
-    if binding.run_id.is_empty()
+    if binding.snapshot.run_id.is_empty()
         || binding.expected_revision == 0
         || binding.context_digest.is_empty()
         || binding.envelope_digest.is_empty()
     {
         return Err("invalid intelligence execution binding".into());
     }
-    StableId::new(binding.run_id.clone())?;
+    StableId::new(binding.snapshot.run_id.clone())?;
     let context: Digest32 = binding.context_digest.parse()?;
     let envelope: Digest32 = binding.envelope_digest.parse()?;
     if context.is_zero() || envelope.is_zero() {
         return Err("zero intelligence binding".into());
     }
-    let run = owner
-        .run_status(binding.run_id.clone())
+    let current = owner
+        .run_reconciliation_state(binding.snapshot.run_id.clone())
         .await?
         .ok_or("intelligence run is not admitted in Agentd")?;
+    binding.validate_current(&current)?;
+    let run = current.receipt;
     if run.phase != AgentRunPhase::ContextAttached
         || run.revision != binding.expected_revision
         || run.context_digest.as_deref() != Some(binding.context_digest.as_str())
@@ -1330,44 +1148,6 @@ async fn require_intelligence_handoff(
         return Err("Agentd intelligence handoff is stale or mixed".into());
     }
     Ok(run.revision)
-}
-
-async fn commit_intelligence_terminal(
-    owner: &AgentdClient,
-    binding: &NativeIntelligenceRunBinding,
-    expected_revision: u64,
-    output: &NativeRunOutput,
-) -> Result<()> {
-    if !output.terminal_observed
-        || !matches!(output.owner_authority, NativeOwnerAuthority::ObservedReady)
-        || output.codex_terminal_correlation_digest.is_none()
-    {
-        return Err("intelligence terminal publication requires exact observed correlation and current owner authority".into());
-    }
-    let phase = match output.status {
-        NativeRunStatus::Completed => AgentRunPhase::Succeeded,
-        NativeRunStatus::Failed => AgentRunPhase::Failed,
-        NativeRunStatus::Interrupted => AgentRunPhase::Cancelled,
-        NativeRunStatus::Indeterminate => {
-            return Err("cannot commit a nonterminal intelligence observation".into());
-        }
-    };
-    let receipt = owner
-        .run_observe_terminal(
-            binding.run_id.clone(),
-            expected_revision,
-            phase,
-            /*terminal_observed*/ true,
-        )
-        .await?;
-    if receipt.phase != phase
-        || !receipt.terminal_observed
-        || receipt.context_digest.as_deref() != Some(binding.context_digest.as_str())
-        || receipt.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
-    {
-        return Err("Agentd terminal receipt lost the intelligence handoff binding".into());
-    }
-    Ok(())
 }
 
 async fn verify_owner_health(
@@ -1417,23 +1197,115 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
     .await;
 }
 
+/// Reconcile the content of an already completed turn after a missing delta.
+/// Neither this read nor a failure can create a second model invocation.
+async fn reconcile_missing_terminal_message(
+    client: &mut RemoteAppServerClient,
+    output: &NativeRunOutput,
+    binding: &CodexTurnBinding,
+    request_id: &str,
+    expected_input: &[UserInput],
+) -> std::result::Result<String, String> {
+    let observed = timeout(
+        RPC_TIMEOUT,
+        client.request_typed_observed_response::<ThreadReadResponse>(ClientRequest::ThreadRead {
+            request_id: RequestId::Integer(60),
+            params: ThreadReadParams {
+                thread_id: output.thread_id.clone(),
+                include_turns: true,
+            },
+        }),
+    )
+    .await
+    .map_err(|_| "thread/read timed out".to_string())?
+    .map_err(|error| format!("thread/read failed: {error}"))?;
+
+    terminal_message_from_observed_response(output, binding, request_id, expected_input, &observed)
+}
+
+fn terminal_message_from_observed_response(
+    output: &NativeRunOutput,
+    binding: &CodexTurnBinding,
+    request_id: &str,
+    expected_input: &[UserInput],
+    observed: &RemoteAppServerObservedResponse<ThreadReadResponse>,
+) -> std::result::Result<String, String> {
+    if observed.response().thread.model_provider != output.model_provider {
+        return Err("reconciliation model provider drifted".to_string());
+    }
+    let receipt = adapt_observed_thread_read_reconciliation(
+        &binding.intent,
+        request_id,
+        expected_input,
+        observed,
+    )
+    .map_err(|error| format!("thread/read binding invalid: {error}"))?
+    .ok_or_else(|| "original turn not yet terminal".to_string())?;
+
+    if receipt.turn_id.as_ref().map(StableId::as_str) != Some(output.turn_id.as_str())
+        || receipt.status != AdapterStatus::Succeeded
+        || receipt.correlation_digest.is_none()
+    {
+        return Err("reconciliation does not prove the exact successful turn".to_string());
+    }
+    // The notification digest and the thread/read digest attest different
+    // observations; never compare them as if the raw payloads were identical.
+    let mut matching_turns = observed
+        .response()
+        .thread
+        .turns
+        .iter()
+        .filter(|turn| turn.id == output.turn_id);
+    let turn = matching_turns
+        .next()
+        .ok_or_else(|| "verified turn disappeared".to_string())?;
+    if matching_turns.next().is_some() {
+        return Err("thread/read contains duplicate original turn IDs".to_string());
+    }
+    let mut recovered_output = output.clone();
+    recovered_output.output.clear();
+    let mut recovered_messages = AgentMessageOutput::default();
+    recovered_messages.complete_turn(&turn.items, &mut recovered_output)?;
+    let message = recovered_output.output;
+    if message.trim().is_empty() {
+        return Err("terminal turn has no verifiable assistant message".to_string());
+    }
+    Ok(message)
+}
+
 fn observe_event(
     output: &mut NativeRunOutput,
+    messages: &mut AgentMessageOutput,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
     let AppServerEvent::ServerNotification(notification) = observed.event() else {
         return Ok(false);
     };
-    match notification.as_ref() {
-        ServerNotification::AgentMessageDelta(delta)
-            if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
-        {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
-            }
-            output.output.push_str(&delta.delta);
+    let matches_message = match notification.as_ref() {
+        ServerNotification::AgentMessageDelta(delta) => {
+            delta.thread_id == output.thread_id && delta.turn_id == output.turn_id
         }
+        ServerNotification::ItemStarted(started) => {
+            started.thread_id == output.thread_id
+                && started.turn_id == output.turn_id
+                && matches!(&started.item, ThreadItem::AgentMessage { .. })
+        }
+        ServerNotification::ItemCompleted(completed) => {
+            completed.thread_id == output.thread_id
+                && completed.turn_id == output.turn_id
+                && matches!(&completed.item, ThreadItem::AgentMessage { .. })
+        }
+        _ => false,
+    };
+    if matches_message {
+        // Validate the actual connection/version/home before retaining text.
+        // Terminal receipt validation remains in its exact thread/turn branch.
+        adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+            .map_err(|error| format!("invalid App Server message witness: {error}"))?;
+        messages.observe(notification, output)?;
+    }
+    match notification.as_ref() {
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
@@ -1446,6 +1318,8 @@ fn observe_event(
                 return Err("provider cumulative usage regressed".to_string());
             }
             output.observed_output_tokens = Some(observed_tokens);
+            #[cfg(all(test, unix))]
+            failure_tests::notify_observed_usage(observed_tokens);
         }
         ServerNotification::TurnCompleted(completed)
             if completed.thread_id == output.thread_id && completed.turn.id == output.turn_id =>
@@ -1453,6 +1327,7 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            messages.complete_turn(&completed.turn.items, output)?;
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;
@@ -1492,3 +1367,11 @@ fn observe_event(
 #[cfg(test)]
 #[path = "native_app_server_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "native_failure_tests.rs"]
+mod failure_tests;
+
+#[cfg(all(test, unix))]
+#[path = "native_test_process.rs"]
+pub(crate) mod test_process;

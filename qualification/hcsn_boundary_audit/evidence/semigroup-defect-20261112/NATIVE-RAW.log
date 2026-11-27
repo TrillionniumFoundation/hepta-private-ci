@@ -1,0 +1,31 @@
+===== REJECTED_EXACT_SEMIGROUP_NULL / 1a1cd69b5ae-2564-12a5 / exit 1 / failed =====
+[STDOUT]
+Null hypothesis P(.001)^2 == P(.002) in fixed 16-cell representation, max total variation 0.023689623092389506
+[STDERR]
+Traceback (most recent call last):
+  File "<stdin>", line 13, in <module>
+AssertionError: Intentionally rejected exact-semigroup hypothesis; this is numerical evidence, NOT a software regression
+
+===== SIX_REGIME_GREEN / 1a1cd68fdb4-2564-12a3 / exit 0 / succeeded =====
+[STDOUT]
+{"measurements": [{"active_mean_total_variation": 0.015598882865301152, "dt": 0.001, "mass_error": 2.220446049250313e-16, "matrices_finite": true, "max_total_variation": 0.02367502218377265, "mu": -0.4, "row5_total_variation": 0.01592077216884516}, {"active_mean_total_variation": 0.04894826193347535, "dt": 0.02, "mass_error": 2.220446049250313e-16, "matrices_finite": true, "max_total_variation": 0.10269222762447545, "mu": -0.4, "row5_total_variation": 0.049384267780028225}, {"active_mean_total_variation": 0.015614302644797746, "dt": 0.001, "mass_error": 5.551115123125783e-16, "matrices_finite": true, "max_total_variation": 0.023689623092389506, "mu": 0.0, "row5_total_variation": 0.015937469056132483}, {"active_mean_total_variation": 0.05063870509388512, "dt": 0.02, "mass_error": 4.440892098500626e-16, "matrices_finite": true, "max_total_variation": 0.09262459023061453, "mu": 0.0, "row5_total_variation": 0.051121005865610816}, {"active_mean_total_variation": 0.01559829201099637, "dt": 0.001, "mass_error": 4.440892098500626e-16, "matrices_finite": true, "max_total_variation": 0.02367529385651671, "mu": 0.4, "row5_total_variation": 0.015920772168845156}, {"active_mean_total_variation": 0.04902921184451699, "dt": 0.02, "mass_error": 2.220446049250313e-16, "matrices_finite": true, "max_total_variation": 0.1084838821898577, "mu": 0.4, "row5_total_variation": 0.04938426778002814}], "python": "3.12.3", "schema": "hcsn-projected-semigroup-defect-v1", "scope": "fixed initial basis, synthetic physical parameters, no trained posterior", "source_sha256": {"qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e", "qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1"}, "torch": "2.8.0+cpu"}
+[STDERR]
+test_fixed_basis_nonsemigroup_is_visible_and_mass_conserved (__main__.TestProjectedSemigroupGap.test_fixed_basis_nonsemigroup_is_visible_and_mass_conserved)
+A diagnostic sentinel: do not infer Q(t)^2 = Q(2t) from row mass. ... ok
+test_zero_drift_short_gap_pinned_discrepancy (__main__.TestProjectedSemigroupGap.test_zero_drift_short_gap_pinned_discrepancy) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.111s
+
+OK
+
+===== PUBLISHED_BLOB_GREEN / 1a1cd6b4dda-2564-12ae / exit 0 / succeeded =====
+[STDOUT]
+[STDERR]
+test_existing_nonsemigroup_discrepancy_not_hidden_by_mass (__main__.TestProjectedSemigroupDiagnostic.test_existing_nonsemigroup_discrepancy_not_hidden_by_mass) ... ok
+test_original_zero_drift_short_gap_identity (__main__.TestProjectedSemigroupDiagnostic.test_original_zero_drift_short_gap_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.114s
+
+OK

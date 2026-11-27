@@ -8,10 +8,17 @@
 
 #![forbid(unsafe_code)]
 
+mod crypto;
+mod crypto_profile;
+pub use crypto::AuthBusAlgorithm;
+pub use crypto::AuthBusSignature;
+pub use crypto::AuthBusVerifyingKey;
+
 mod authority;
 mod authority_schema;
 mod authority_store;
 mod host;
+mod owner;
 mod quota;
 mod quota_store;
 mod recovery;
@@ -19,6 +26,7 @@ mod settlement;
 mod settlement_store;
 mod signed;
 mod sqlite;
+mod time_freshness;
 mod trust;
 mod trust_store;
 pub use authority::AuthBusAuthorityError;
@@ -27,8 +35,12 @@ pub use authority::PolicyDecision;
 pub use authority::PolicyEffect;
 pub use authority::PolicySpec;
 pub use authority::TrustedTimeSample;
-pub use authority_store::AuthBusAuthorityStore;
-pub use host::AuthBusAuthorityHost;
+pub(crate) use authority_store::AuthBusAuthorityStore;
+pub(crate) use host::AuthBusAuthorityHost;
+pub use owner::AuthBusAdminPort;
+pub use owner::AuthBusAuthorityOwner;
+pub use owner::AuthBusEffectPort;
+pub use owner::AuthBusReadPort;
 pub use quota::QuotaReservation;
 pub use quota::QuotaSnapshot;
 pub use quota::QuotaSpec;
@@ -37,13 +49,13 @@ pub use quota::ReservationState;
 pub use recovery::AuthorityCheckpoint;
 pub use settlement::Settlement;
 pub use settlement::SettlementEvidenceClaims;
-pub use settlement::SettlementIssuerRegistration;
 pub use settlement::SettlementStatus;
 pub use settlement::SignedSettlementEvidence;
 pub use signed::AuthenticatedMessage;
 pub use signed::IssuerRegistration;
 pub use signed::SignedMessage;
 pub use signed::SignedMessageClaims;
+pub use time_freshness::TrustedTimeChallenge;
 pub use trust::IssuerLifecycleState;
 pub use trust::IssuerPurpose;
 pub use trust::IssuerRecord;
@@ -201,17 +213,7 @@ impl ReplayWindow {
         }
         self.highest_sequence.insert(replay_key, envelope.sequence);
 
-        let mut bytes = Vec::new();
-        bytes.extend_from_slice(b"hepta.authbus.preverified-replay.v1\0");
-        push_id(&mut bytes, &context.issuer_id);
-        bytes.extend_from_slice(&context.key_epoch.get().to_be_bytes());
-        push_id(&mut bytes, &envelope.message_id);
-        push_id(&mut bytes, &envelope.subject_id);
-        bytes.extend_from_slice(envelope.scope_digest.as_array());
-        bytes.extend_from_slice(envelope.payload_digest.as_array());
-        bytes.extend_from_slice(envelope.signature_digest.as_array());
-        bytes.extend_from_slice(&envelope.sequence.to_be_bytes());
-        bytes.extend_from_slice(&envelope.expires_at_ms.to_be_bytes());
+        let envelope_digest = envelope_digest(&context.issuer_id, context.key_epoch, &envelope);
 
         Ok(VerificationReceipt {
             message_id: envelope.message_id,
@@ -219,10 +221,29 @@ impl ReplayWindow {
             key_epoch: context.key_epoch,
             subject_id: envelope.subject_id,
             sequence: envelope.sequence,
-            envelope_digest: Digest32::of_bytes(&bytes),
+            envelope_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
     }
+}
+
+fn envelope_digest(
+    issuer_id: &StableId,
+    key_epoch: Generation,
+    envelope: &PreverifiedAuthEnvelope,
+) -> Digest32 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.authbus.preverified-replay.v1\0");
+    push_id(&mut bytes, issuer_id);
+    bytes.extend_from_slice(&key_epoch.get().to_be_bytes());
+    push_id(&mut bytes, &envelope.message_id);
+    push_id(&mut bytes, &envelope.subject_id);
+    bytes.extend_from_slice(envelope.scope_digest.as_array());
+    bytes.extend_from_slice(envelope.payload_digest.as_array());
+    bytes.extend_from_slice(envelope.signature_digest.as_array());
+    bytes.extend_from_slice(&envelope.sequence.to_be_bytes());
+    bytes.extend_from_slice(&envelope.expires_at_ms.to_be_bytes());
+    Digest32::of_bytes(&bytes)
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
@@ -234,3 +255,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "owner_windows_tests.rs"]
+mod owner_windows_tests;

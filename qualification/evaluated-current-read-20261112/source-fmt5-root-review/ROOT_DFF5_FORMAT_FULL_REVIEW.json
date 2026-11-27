@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "source": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+  "tree": "682b75ad7c7bf0fdf59b1b4fc803f1f61614c427",
+  "run_id": 43313237694,
+  "job_id": 131515291238,
+  "conclusion": "success",
+  "completed_at": "2026-11-12T21:46:51Z",
+  "format_step": {
+    "name": "cargo fmt",
+    "status": "completed",
+    "conclusion": "success",
+    "number": 5,
+    "started_at": "2026-11-12T21:46:25Z",
+    "completed_at": "2026-11-12T21:46:49Z"
+  },
+  "clean_step": {
+    "name": "Check for a clean worktree",
+    "status": "completed",
+    "conclusion": "success",
+    "number": 6,
+    "started_at": "2026-11-12T21:46:49Z",
+    "completed_at": "2026-11-12T21:46:49Z"
+  },
+  "actual_checkout": "e095f0aafe92e9248c9283faffcbc4cb84b4d54e",
+  "actual_checkout_tree_equal": true,
+  "full_original": {
+    "bytes": 134490,
+    "sha256": "85546f995318faf6a0f46c5cea63282a6ffde72d805a9b5bc38695d885fa2e0d",
+    "git_blob": "e02892147a897ab9b5b77daac9cebb6a1791521b"
+  },
+  "own_source_only": true,
+  "ordinary_native_or_research_pass_inferred": false
+}

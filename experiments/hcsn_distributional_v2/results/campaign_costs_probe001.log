@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/campaign_costs.py", line 461, in <module>
+    main()
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/campaign_costs.py", line 423, in main
+    fixed_scopes(ledger)
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/campaign_costs.py", line 222, in fixed_scopes
+    aggregate_receipts(ledger)
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/campaign_costs.py", line 165, in aggregate_receipts
+    item = ledger.binding(original, fields.get(row["path"], "/complete_child_cpu_seconds"))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/campaign_costs.py", line 92, in binding
+    value = numeric(pointer(data, field))
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/campaign_costs.py", line 38, in pointer
+    value = value[int(item)] if isinstance(value, list) else value[item]
+                                                             ~~~~~^^^^^^
+KeyError: 'complete_child_cpu_seconds'

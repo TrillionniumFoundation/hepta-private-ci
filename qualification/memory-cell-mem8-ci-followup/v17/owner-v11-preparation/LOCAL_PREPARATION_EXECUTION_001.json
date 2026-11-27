@@ -1,0 +1,32 @@
+{
+  "scope": "Python read-only/offline ledger preparation, no archived commands executed",
+  "results": [
+    {
+      "command": [
+        "python",
+        "/workspace/scratch/ed3538174819/mem8-owner-v11-root/prepare_owner_v11.py",
+        "--baseline",
+        "/workspace/scratch/ed3538174819/mem8-owner-v10-root/BLOCKERS_FINAL.json",
+        "--inspect-baseline"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"baseline\": {\n    \"bytes\": 134567,\n    \"sha256\": \"bac85ca6969f7fe47b75245cb688bbcf995871204e5ad921c327df736aa85b36\",\n    \"git_blob\": \"2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2\"\n  },\n  \"value_spans\": 2272,\n  \"original_open_gates\": 10,\n  \"original_closed_entries\": 18,\n  \"candidate_written\": false,\n  \"Git_or_ref_writes\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python",
+        "/workspace/scratch/ed3538174819/mem8-owner-v11-root/freeze_report_selections.py",
+        "--root",
+        "/workspace/scratch/ed3538174819",
+        "--blocking-observation",
+        "mem-ci-d0f-original/snapshot-016/OBSERVATION.json",
+        "--output",
+        "/workspace/scratch/ed3538174819/mem8-owner-v11-root/FROZEN_REPORT_SELECTIONS_01758.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"output\": \"/workspace/scratch/ed3538174819/mem8-owner-v11-root/FROZEN_REPORT_SELECTIONS_01758.json\",\n  \"bytes\": 26965,\n  \"sha256\": \"be3743b60d7486d3dff8011aa0ccc56ee6af55dddbf174aa7073480ae599358e\",\n  \"git_blob\": \"6a2fc7ba242b946906b86e6d47fc57ac390b161b\",\n  \"report_count\": 16,\n  \"final_owner_ledger_written\": false,\n  \"Git_or_ref_operations\": 0\n}\n",
+      "stderr": ""
+    }
+  ]
+}

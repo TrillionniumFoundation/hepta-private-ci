@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn-n256-independent-uniformization-primitive-source-v1",
+  "identity": "hcsn-n256-independent-uniformization-primitive-20261114-c06d-001",
+  "base_commit": "0edada80594c6c2e7df6ed39f14a9fccf7779f15",
+  "parent_draft": 6316,
+  "method_id": "decimal_sparse_uniformization_primitive_v1",
+  "scope": "finite small-fixture row-vector Metzler action with truncation-only L1 bound",
+  "imports_candidate_or_oracle": false,
+  "uses_scipy_expm_multiply": false,
+  "uses_numpy": false,
+  "input_rounding_certified": false,
+  "finite_precision_rounding_certified": false,
+  "delay_reset_packet_engine_implemented": false,
+  "all_roster_operators_certified": false,
+  "n256_provider_source_sha256": null,
+  "n256_provider_admission_sha256": null,
+  "numerical_idempotency_key": null,
+  "n256_numerical_execution_allowed": false,
+  "execution_counts": {
+    "n256_dynamic_runs": 0,
+    "n256_matrix_actions": 0,
+    "candidate_calls": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "preserved_history": {
+    "red_6295": true,
+    "red_unknown_6302": true,
+    "red_joint_hold_6303": true,
+    "shared_kernel_hold_6316": true
+  },
+  "largegrid_qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}

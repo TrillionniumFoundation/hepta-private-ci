@@ -1,0 +1,98 @@
+
+/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000004e085a0 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE>:
+ 4e085a0:	mov    %rsp,%r11
+ 4e085a3:	sub    $0x317000,%r11
+ 4e085aa:	sub    $0x1000,%rsp
+ 4e085b1:	movq   $0x0,(%rsp)
+ 4e085b9:	cmp    %r11,%rsp
+ 4e085bc:	jne    4e085aa <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0xa>
+ 4e085be:	sub    $0xbe8,%rsp
+ 4e085c5:	mov    %rdi,0x388(%rsp)
+ 4e085cd:	mov    %rsi,0x398(%rsp)
+ 4e085d5:	movzbl 0x37311(%rdi),%eax
+ 4e085dc:	mov    %rax,0x390(%rsp)
+ 4e085e4:	mov    0x390(%rsp),%rcx
+ 4e085ec:	lea    -0x3234c9b(%rip),%rax        # 1bd3958 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x5e218>
+ 4e085f3:	movslq (%rax,%rcx,4),%rcx
+ 4e085f7:	add    %rcx,%rax
+ 4e085fa:	jmp    *%rax
+ 4e085fc:	ud2
+ 4e085fe:	mov    0x388(%rsp),%rax
+ 4e08606:	movb   $0x0,0x37310(%rax)
+ 4e0860d:	lea    0x73a70(%rsp),%rdi
+ 4e08615:	xor    %esi,%esi
+ 4e08617:	call   4e01cb0 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members12PanelFixture9completed17hd325fc69a32369f7E>
+ 4e0861c:	jmp    4e086c4 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x124>
+ 4e08621:	xor    %eax,%eax
+ 4e08623:	test   $0x1,%al
+ 4e08625:	jne    4e08621 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x81>
+ 4e08627:	jmp    4e08714 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x174>
+ 4e0862c:	xor    %eax,%eax
+ 4e0862e:	test   $0x1,%al
+ 4e08630:	jne    4e0862c <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x8c>
+ 4e08632:	jmp    4e08721 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x181>
+ 4e08637:	mov    0x398(%rsp),%rax
+ 4e0863f:	mov    %rax,0x398(%rsp)
+ 4e08647:	jmp    4e086fc <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x15c>
+ 4e0864c:	mov    0x398(%rsp),%rax
+ 4e08654:	mov    %rax,0x398(%rsp)
+ 4e0865c:	jmp    4e08a44 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x4a4>
+ 4e08661:	mov    0x398(%rsp),%rax
+ 4e08669:	mov    %rax,0x398(%rsp)
+ 4e08671:	jmp    4e09b63 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x15c3>
+ 4e08676:	mov    0x398(%rsp),%rax
+ 4e0867e:	mov    %rax,0x398(%rsp)
+ 4e08686:	jmp    4e0a1d8 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x1c38>
+ 4e0868b:	mov    0x388(%rsp),%rax
+ 4e08693:	movb   $0x0,0x37310(%rax)
+ 4e0869a:	movb   $0x2,0x37311(%rax)
+ 4e086a1:	mov    0x2dd148(%rsp),%rdi
+ 4e086a9:	call   b1aac70 <_Unwind_Resume@plt>
+ 4e086ae:	mov    %rax,%rcx
+ 4e086b1:	mov    %edx,%eax
+ 4e086b3:	mov    %rcx,0x2dd148(%rsp)
+ 4e086bb:	mov    %eax,0x2dd150(%rsp)
+ 4e086c2:	jmp    4e0868b <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0xeb>
+ 4e086c4:	lea    0x34010(%rsp),%rdi
+ 4e086cc:	lea    0x73a70(%rsp),%rsi
+ 4e086d4:	call   4ead200 <_ZN59_$LT$F$u20$as$u20$core..future..into_future..IntoFuture$GT$11into_future17h8c20d8932f894797E>
+ 4e086d9:	jmp    4e086db <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x13b>
+ 4e086db:	mov    0x388(%rsp),%rdi
+ 4e086e3:	add    $0x37318,%rdi
+ 4e086ea:	lea    0x34010(%rsp),%rsi
+ 4e086f2:	mov    $0x3fa60,%edx
+ 4e086f7:	call   b1aac60 <memcpy@plt>
+ 4e086fc:	mov    0x388(%rsp),%rax
+ 4e08704:	add    $0x37318,%rax
+ 4e0870a:	mov    %rax,0x380(%rsp)
+ 4e08712:	jmp    4e0875d <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x1bd>
+ 4e08714:	lea    0x6442015(%rip),%rdi        # b24a730 <_ZN8starlark6values5types8ellipsis1_6__CTOR17h831d15bf5f0de9b2E+0x9d668>
+ 4e0871b:	call   *0x67262af(%rip)        # b52e9d0 <_DYNAMIC+0x28a8>
+ 4e08721:	lea    0x6442008(%rip),%rdi        # b24a730 <_ZN8starlark6values5types8ellipsis1_6__CTOR17h831d15bf5f0de9b2E+0x9d668>
+ 4e08728:	call   *0x67262aa(%rip)        # b52e9d8 <_DYNAMIC+0x28b0>
+ 4e0872e:	mov    0x388(%rsp),%rdi
+ 4e08736:	add    $0x37318,%rdi
+ 4e0873d:	call   32d1ec0 <_ZN4core3ptr211drop_in_place$LT$codex_hepta_agentd..runtime..tests..circuit_task_ingress..q24_tests..model_selection_owner..original..evaluation_provider..panel_members..PanelFixture..completed..$u7b$$u7b$closure$u7d$$u7d$$GT$17h8037004e83fc96a8E>
+ 4e08742:	jmp    4e0868b <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0xeb>
+ 4e08747:	mov    %rax,%rcx
+ 4e0874a:	mov    %edx,%eax
+ 4e0874c:	mov    %rcx,0x2dd148(%rsp)
+ 4e08754:	mov    %eax,0x2dd150(%rsp)
+ 4e0875b:	jmp    4e0872e <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x18e>
+ 4e0875d:	mov    0x380(%rsp),%rsi
+ 4e08765:	mov    0x398(%rsp),%rdx
+ 4e0876d:	lea    0xb34d0(%rsp),%rdi
+ 4e08775:	call   4e01cd0 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members12PanelFixture9completed28_$u7b$$u7b$closure$u7d$$u7d$17h2c21aec63681edabE>
+ 4e0877a:	jmp    4e0877c <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x1dc>
+ 4e0877c:	xor    %eax,%eax
+ 4e0877e:	mov    $0x1,%ecx
+ 4e08783:	cmpq   $0x3,0xb34d0(%rsp)
+ 4e0878c:	cmove  %rcx,%rax
+ 4e08790:	test   $0x1,%rax
+ 4e08796:	je     4e087cb <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0x22b>
+ 4e08798:	mov    0x388(%rsp),%rax

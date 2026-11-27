@@ -1,0 +1,85 @@
+{
+  "status": "PASS_SCOPED_MAINTENANCE_NO_SOURCE_CHANGE",
+  "job": "1a1ef64e917-ffbe-4b5",
+  "idempotency_key": "a28-learning-scoped-fix-20261118-v1",
+  "head": "076b20004f7ba6d7653dc41e61edaffd05424925",
+  "qualified_formatted_commit": "31b56711b5d755777d16130d0351d0b562d5159b",
+  "fix_argv": [
+    "/home/qian-qi/.cargo/bin/just",
+    "fix",
+    "--offline",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd"
+  ],
+  "fmt_argv": [
+    "/home/qian-qi/.cargo/bin/just",
+    "fmt",
+    "--base",
+    "342b284c1514da3d3d8b6451b6bd3fb6edfc783a"
+  ],
+  "fix_exit_code": 0,
+  "fmt_exit_code": 0,
+  "rust_source_files_hashed": 1622,
+  "all_1622_sources_identical_before_after_fix_after_fmt": true,
+  "learning_hashes_before": {
+    "codex-rs/hepta-agentd/src/learning_iteration.rs": "3481ea38124907223662fb71842846c6914fe74dda8cd617e7d11f8f7a09fb15",
+    "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs": "6dba8688549dfdd4dae1c4b4c078fecbc9158f8cb421e5eeefa226656449dbc6",
+    "codex-rs/hepta-agentd/src/learning_iteration_handoff_tests.rs": "f58d47470aed3bd2f32562243293b47bcd446315645dc78ef782247845e4776a"
+  },
+  "learning_hashes_after": {
+    "codex-rs/hepta-agentd/src/learning_iteration.rs": "3481ea38124907223662fb71842846c6914fe74dda8cd617e7d11f8f7a09fb15",
+    "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs": "6dba8688549dfdd4dae1c4b4c078fecbc9158f8cb421e5eeefa226656449dbc6",
+    "codex-rs/hepta-agentd/src/learning_iteration_handoff_tests.rs": "f58d47470aed3bd2f32562243293b47bcd446315645dc78ef782247845e4776a"
+  },
+  "manifest_hashes_before": {
+    "CALLERS.toml": "e505b3bc0bc85c7156f9de63561aceb365394dcb50541157d418f772029824ed",
+    "scripts/hepta_callers_manifest_parts/part-0000.toml.gz": "16b249e92c24695ad70b8b4507106c7c384e953ad03f076fc4065964f6d2340c",
+    "codex-rs/Cargo.toml": "0fc44cd5eb3b0664e972d73e43297d83f203f14837c127b9ae3acfaedd9f161d",
+    "codex-rs/Cargo.lock": "2f3aa756eac4628d357c91cbcf6aabf3263852d25aa28a2514015d16424ea6b6",
+    "codex-rs/hepta-agentd/Cargo.toml": "93d8250390d2bae807df3132cfccc366116e16b48a461817fa08dfd84abfddd2"
+  },
+  "manifest_hashes_after": {
+    "CALLERS.toml": "e505b3bc0bc85c7156f9de63561aceb365394dcb50541157d418f772029824ed",
+    "scripts/hepta_callers_manifest_parts/part-0000.toml.gz": "16b249e92c24695ad70b8b4507106c7c384e953ad03f076fc4065964f6d2340c",
+    "codex-rs/Cargo.toml": "0fc44cd5eb3b0664e972d73e43297d83f203f14837c127b9ae3acfaedd9f161d",
+    "codex-rs/Cargo.lock": "2f3aa756eac4628d357c91cbcf6aabf3263852d25aa28a2514015d16424ea6b6",
+    "codex-rs/hepta-agentd/Cargo.toml": "93d8250390d2bae807df3132cfccc366116e16b48a461817fa08dfd84abfddd2"
+  },
+  "new_source_changes": [],
+  "outside_package_changes": [],
+  "tests_after_maintenance": false,
+  "fix_seconds": 377.30759263038635,
+  "total_seconds": 377.63676714897156,
+  "native_raw_archive": {
+    "file": "learning-scoped-fix-originals.tar.gz",
+    "bytes": 489974,
+    "sha256": "51d1160999072a11fc870a37b6a1d09c75dbf130fd379aef224caf33274b2050"
+  },
+  "logs": {
+    "fix.stderr.log": {
+      "bytes": 222356,
+      "sha256": "94e84edf46d9d5d23e692bafd92b6eeaa7e4381bf9f8cb6cf6062b64b39f25f8"
+    },
+    "fix.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fmt.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fmt.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "root_independent_member_verification": {
+    "native_regular_members": 10,
+    "control_regular_members": 13,
+    "all_member_sizes_and_hashes_verified": true,
+    "all_1622_source_hashes_equal_at_three_stages": true,
+    "all_five_manifests_match_publishing_parent": true,
+    "all_three_learning_sources_match_staged_postimages": true
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "pred-owner-staged-publication-v1",
+  "base_commit": "a3aa398580cbd052f9decbc08af36deea25c6155",
+  "stages": [
+    {
+      "stage": "owner_capture",
+      "sha": "bacf24b42ba080f56836461014b69db41353873e",
+      "pr": 5721,
+      "branch": "research/pred-owner-capture-20261110-9e31"
+    },
+    {
+      "key": "evaluation",
+      "sha": "0343303da8926d3e52bd77bfebcb6f93a53a8e40",
+      "tree": "b80c81dd7488ca3c04527e7326ff249b6c7f5fe2",
+      "branch": "research/pred-observed-evaluation-20261110-9e31",
+      "pr": 5737,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5737"
+    },
+    {
+      "key": "models",
+      "sha": "c67db0459bd34fe0d3db177f96b2aae0550478b0",
+      "tree": "b4dafc03529519ea2c687f91eb79047a255b9d66",
+      "branch": "research/pred-observed-models-20261110-9e31",
+      "pr": 5738,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5738"
+    },
+    {
+      "key": "bridge",
+      "sha": "0a7dcd39974c768440134105b25ebc16624f89a4",
+      "tree": "d72e01260c20feb9f44d770cdec491188393884d",
+      "branch": "research/pred-owner-choice-effect-20261110-9e31",
+      "pr": 5740,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5740"
+    },
+    {
+      "key": "runner",
+      "sha": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "tree": "d73b9ebd61944ce64e2061555d002129e6d66ea6",
+      "branch": "research/pred-owner-development-run-20261110-9e31",
+      "pr": 5741,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5741"
+    }
+  ],
+  "merged_to_main": false,
+  "production_activation": false
+}

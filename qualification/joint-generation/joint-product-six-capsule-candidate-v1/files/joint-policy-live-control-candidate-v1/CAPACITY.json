@@ -1,0 +1,13 @@
+{
+  "normal_file_upper_bound": 60,
+  "per_file_limit_bytes": 2097152,
+  "terminal_total_bytes": 16777216,
+  "terminal_inventory_files": 100,
+  "known_largest_model_bytes": 1560407,
+  "per_control_frame_bytes": 2048,
+  "per_control_record_bytes": 65536,
+  "root_journal_fixed_files": 12,
+  "normal_total_reason": "root12 plus at most35 chain files (including added readonly pair),outer5 <=52 conservative, possible temporary residues remain below100 terminal assertion",
+  "bounded_success_data_conservative_bytes": 12582912,
+  "bound_reason": "two model NPZ<2MiB combined; <=16 attempt/inventory files each<=512KiB,<=30 control/diagnostic files each<=64KiB plus receipt/logs margin. Source controls all strings/arrays pinned; terminal16MiB check remains actual acceptance, not live hard quota. FSIZE2MiB each applies."
+}

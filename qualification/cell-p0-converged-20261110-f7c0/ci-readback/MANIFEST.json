@@ -1,0 +1,98 @@
+{
+  "complete_decoded_job_log_count": 6,
+  "failed_heads": [
+    "0b13cc85f2b602b6c27afa731b2c4a0e1d11075b",
+    "4073268ead64aa1f8303973d37c5c6d73c951061"
+  ],
+  "included_files": {
+    "API_CAPTURE.json.gz": {
+      "bytes": 6478,
+      "sha256": "b0097e75087f624b7d0a5cf0d7b93809e41930f338a981d57d669c4908fa2221",
+      "uncompressed_bytes": 133092,
+      "uncompressed_sha256": "d738f9410ebc15f4059d24e42407821bb022f8535fc2e00aee05415bf91a522f"
+    },
+    "ARTIFACT_INDEX.json": {
+      "bytes": 24518,
+      "sha256": "d83062d21eadc1abd30aee81835bff4340e329c911192d776de197836d828dc1"
+    },
+    "CI_EVIDENCE.json": {
+      "bytes": 20323,
+      "sha256": "0bb1aad58e7f0d0fc222fe99d7b8232fdc9a2a6f7258a0eff5eda12113d5dc51"
+    },
+    "RAW_ARTIFACT_RECORDS.zip": {
+      "bytes": 344032,
+      "sha256": "0707028ea25496d614ab7d87f67b0bcb6996ba89ac998a13fd3e210fc9d33065"
+    },
+    "RESULTS.md": {
+      "bytes": 11361,
+      "sha256": "004a4289bbb6b94b52a7a2f648c05cc62229aa5923fed8da9f4c1b7555a28998"
+    },
+    "job-130222044286.log.gz": {
+      "bytes": 391935,
+      "sha256": "dbc5a20d6031775d3b931a6f42bb8c90089cd37901f9c5361b6d9067a0505867",
+      "uncompressed_bytes": 3096375,
+      "uncompressed_sha256": "c3e80f0c9d8f7be06246a1cd476e0e40a85cd65d1df0fbd880590aa850c62476"
+    },
+    "job-130222044526.log.gz": {
+      "bytes": 63797,
+      "sha256": "1294c6b99f633d222db0a2858d9f55da769d5482c201a348e79534bec0a0a8f7",
+      "uncompressed_bytes": 333376,
+      "uncompressed_sha256": "12cc0a4fc89aec175979d104f1ba479f519eaf1733cba70ae99715c0be86776c"
+    },
+    "job-130226830039.log.gz": {
+      "bytes": 207774,
+      "sha256": "d81a6982d3a146437b25608f5778fadc9e267a6de017fe44267080e1abafde6b",
+      "uncompressed_bytes": 1725963,
+      "uncompressed_sha256": "cde4ceb84242f2c22a7639f58b3086e26c8cf19f04e2f8eba818303f56d00a7b"
+    },
+    "job-130227475305.log.gz": {
+      "bytes": 14376,
+      "sha256": "8c8563420109e4fb8fa8d21642ec098b5e1a73c97060df0683e67bb5c0557549",
+      "uncompressed_bytes": 67077,
+      "uncompressed_sha256": "0c9f9f317d8fc670343c11a2e827a3e2bc88e5a314ebc69222403c44817c06eb"
+    },
+    "job-130229409114.log.gz": {
+      "bytes": 48957,
+      "sha256": "93f4d465d8b897a1e1572ed3ba097c656540867b9b749a2434d4a38420665000",
+      "uncompressed_bytes": 231835,
+      "uncompressed_sha256": "32687683ed9c59866a19b7fd5fbe5218d897834e6385620b4e536bd9cae84f08"
+    },
+    "job-130233394425.log.gz": {
+      "bytes": 14259,
+      "sha256": "af4504018935c7f60a76939e52a649c355c90ed4a50dd33878c3c2f137441d9c",
+      "uncompressed_bytes": 66904,
+      "uncompressed_sha256": "3f080b083ccc2226f926f4f84c257dff04c26a3dee6d423d330f4ed278ac4a81"
+    },
+    "FAILURE_DIAGNOSTICS.txt.gz": {
+      "bytes": 2203,
+      "sha256": "89b4ec0f247ffc445c64d69e5071c44ba3ca8454ae00e8a1f3a659066e596fbc",
+      "uncompressed_bytes": 8821,
+      "uncompressed_sha256": "28e89c7ee2e5db3d966fec682944c2cc38c54ac4b6eb84acc974aa35c52d7414"
+    }
+  },
+  "later_heads_qualified": false,
+  "new_ci_runs_started": 0,
+  "original_zip_count": 5,
+  "run_ids": [
+    42928810231,
+    42928810298,
+    42930233308,
+    42930233285,
+    42930978528,
+    42930978522
+  ],
+  "schema": "hepta.p0.exact-source-ci-readback-manifest.v1",
+  "selected_original_artifact_records": 77,
+  "self_excluded_from_hashes": true,
+  "successful_head": "8c9c51eca0befdaab6cfc12551c14ad9587a5131",
+  "successful_tree": "f14dfd771c86ef23125e60c388e8367cc8781ab3",
+  "validation_scope": "Exact artifacts/logs, source/tree, execution record and JUnit hashes, independent Root names, source inventories, maintenance status and failure diagnostics",
+  "validation_status": "passed",
+  "source_delivery_manifest_sha256": "af13b2ade83deaf9512e898b77cee1b9578734aab25a4df59d1d9f3d958ae5d7",
+  "storage_only_transform": {
+    "original_path": "FAILURE_DIAGNOSTICS.txt",
+    "stored_path": "FAILURE_DIAGNOSTICS.txt.gz",
+    "reason": "Preserve exact diagnostic excerpt bytes including original trailing spaces without introducing text whitespace violations. Complete original job logs are also retained unchanged.",
+    "native_evidence_bytes_changed": false
+  }
+}

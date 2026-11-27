@@ -1,0 +1,251 @@
+{
+  "schema": "hcsn-desktop-campaign-qualification-status-v3",
+  "publication_state": "interim repository evidence snapshot; CUDA qualification remains open",
+  "is_interim_observation": true,
+  "global_qualification": "open",
+  "prepared_at_utc": "2026-11-05T17:26:38.203095+00:00",
+  "runtime_snapshot_utc": "2026-11-05T17:10:56.040300+00:00",
+  "ci_snapshot_utc": "2026-11-05 17:08:22 UTC",
+  "snapshot_scope": "Actual durable launch and separately read progress/claim/staging receipts copied byte-exact locally; not a claim about unobserved later state.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4873,
+  "source_branch": "research/hcsn-hx-20261105",
+  "source_commit": "fe1def4a8a6655a361726f3ca275d9f5688dd394",
+  "original_baseline_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+  "evidence_branch": "research/hcsn-desktop-evidence-20261105",
+  "expected_evidence_base_commit": "716b7d6354bead8517527a25d66871e9ddaf4056",
+  "source_branch_modified_by_this_packet": false,
+  "source_publication": {
+    "status": "published",
+    "receipt": "candidate-source-publication.json",
+    "canonical_source_map_sha256": "1c49f03c3525adde66be08a6be0779dccb2ed803c497bf74daba66ad6e5c2087",
+    "benchmark_source_sha256": "abff34d45fe5829f59c28fc324e6a5c25dc5c04e533ae52b8d2048740ac1e72a",
+    "cuda_qualified": false
+  },
+  "registered_experiment": {
+    "requested_training_runs": 170,
+    "completed_cuda_runs": 0,
+    "requested_full_budget_b_audits": 20,
+    "completed_full_budget_b_audits": 0,
+    "models": 17,
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "train_steps_per_run": 400,
+    "batch_size": 64,
+    "length": 64,
+    "hidden_size": 64,
+    "examples_per_completed_run": 25600,
+    "tokens_per_completed_run": 1638400,
+    "data_split_counts": {
+      "train": 4096,
+      "validation": 512,
+      "test": 1024
+    },
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "budget_changed": false,
+    "historical_unavailable_cloud_matrix_not_relabeled_as_desktop_runs": true
+  },
+  "deployment": {
+    "bundle_archive_sha256": "3219e48fb0e8b28a77e1e245ad967f3be5d37948eddac24a64b05dcf17dce2a2",
+    "bundle_manifest_sha256": "90b3c9f6c6dc206362ee21f3617bd487c5484ca00ad61189195aa832382d3e40",
+    "archive_bytes": 135416,
+    "status": "staging_verified_then_controller_launched",
+    "staging_receipt": "campaign-runtime-staging.json",
+    "runtime_files_verified": 39,
+    "task_dependencies_verified": 10,
+    "baseline_python_files_verified": 23,
+    "candidate_python_files_verified": 26,
+    "staging_attempts": [
+      {
+        "job": "1a1acabf2e4-fc05-564a",
+        "state": "failed",
+        "exit_code": 1,
+        "reason": "staging script assumed no ZIP directory prefix; KeyError before target directory creation",
+        "model_computation_performed": false
+      },
+      {
+        "job": "1a1acafc1f4-fc05-5660",
+        "state": "succeeded",
+        "exit_code": 0,
+        "terminal_publication_confirmed": true,
+        "output_complete": true,
+        "output_durable": true,
+        "fix": "strip only verified campaign-bundle-v1/ archive prefix; payload bytes unchanged",
+        "model_computation_performed": false
+      }
+    ],
+    "payload_bytes_changed_to_fix_staging": false,
+    "model_computation_performed_during_staging": false
+  },
+  "controller": {
+    "status": "waiting_for_pinned_runtime",
+    "process_state": "running",
+    "job_id": "1a1acb0a367-fc05-5667",
+    "idempotency_key": "hcsn-cuda-r1-gated-full170-campaign-v1",
+    "pid": 124088,
+    "stages": [],
+    "observed_completed_cuda_runs": 0,
+    "runtime_wait_deadline_seconds": 86400,
+    "durable_job_timeout_seconds": 604800,
+    "no_automatic_training_retries": true,
+    "launch_receipt": "campaign-runtime-launch.json",
+    "progress_receipt": "campaign-runtime-progress-initial.json",
+    "claim_receipt": "campaign-runtime-claim.json",
+    "waiting_is_not_a_test_pass": true
+  },
+  "runtime_preparation": {
+    "numeric_environment_on_new_task_root": "ready; actual NUMERIC_READY receipt independently read and copied byte-exact",
+    "numeric_ready_receipt": "numeric-runtime-ready.json",
+    "numeric_ready_receipt_sha256": "74bd91aa38786f49beb3f4fc5be7ca9cf278f79d13d1246e02174d696ca9052f",
+    "numeric_ready_finished_at_utc": "2026-11-05T16:57:14.506804+00:00",
+    "numeric_python": "/data/hcsn-cuda-170run-20261105-r1/.venv/bin/python",
+    "numeric_versions": {
+      "future": "1.0.0",
+      "ncps": "1.0.1",
+      "numpy": "2.3.5",
+      "nvidia-ml-py": "13.610.43",
+      "packaging": "26.3",
+      "scipy": "1.17.0"
+    },
+    "numeric_readiness_scope": "The raw numeric receipt records model_computation_performed=false; numeric readiness does not establish Torch/CUDA readiness or a model test pass.",
+    "dependency_progress_receipt": "runtime-dependency-progress.json",
+    "dependency_progress_receipt_sha256": "e9029b0629895604b27903c43265def116a0270c28ec305a19a1463f8bd20ef9",
+    "dependency_progress_recorded_at_utc": "2026-11-05 17:22:06 UTC",
+    "dependency_progress_states": {
+      "resumable-torch-stage-status.json": "download_verified_ranges",
+      "mamba-download-status.json": "download_verified_ranges"
+    },
+    "dependency_last_payload_at_utc": {
+      "resumable-torch-stage-status.json": "2026-11-05T17:20:36.491683+00:00",
+      "mamba-download-status.json": "2026-11-05T17:20:33.225133+00:00"
+    },
+    "dependency_raw_status_files_published": false,
+    "dependency_projection_scope": "Process-owner paths, cache inventories and command metadata are omitted; original full-file SHA256 retained.",
+    "torch_and_mamba": "Recorded safe status excerpts show verified-range downloads; installed pinned runtime readiness and model results are not established by these progress observations.",
+    "actual_model_stages_started": 0,
+    "strict_cpu_pass_observed_for_this_campaign": false,
+    "actual_cuda_fullshape_or_parity_pass_observed_for_this_campaign": false
+  },
+  "execution_policy": {
+    "allowed_population_checkpoint_steps": [
+      0,
+      1
+    ],
+    "cuda_memory_fraction": 0.5,
+    "selection_uses_heldout_quality": false,
+    "applies_uniformly_to_all_b_identities": 20,
+    "selected_policy_at_snapshot": null,
+    "policy_0_gate": "Original full-shape B CUDA succeeds.",
+    "policy_1_gates": [
+      "Original full-shape B actual CUDA graph OOM",
+      "Fixed complete 16-case CPU parity passes",
+      "Fixed complete 16-case CUDA parity passes",
+      "Both full-shape B candidate probes pass"
+    ],
+    "admission_observed": false
+  },
+  "local_preparation_controls": {
+    "controller_v3": {
+      "passed": 9,
+      "failed": 0,
+      "receipt": "controller-synthetic-controls-v3.json"
+    },
+    "external_audit": {
+      "passed": 21,
+      "failed": 0,
+      "receipt": "audit-synthetic-controls-v1.json"
+    },
+    "scope": "Synthetic admission/ownership checks and local file-lock controls, plus independent static reviews; no Torch numerical or CUDA qualification."
+  },
+  "physical_energy": {
+    "status": "tested_NOT_SUPPORTED_in_recorded_NVML_queries",
+    "device_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+    "device_name": "NVIDIA GeForce RTX 4060",
+    "observed_at_utc": "2026-11-05T15:50:36.652083+00:00",
+    "direct_power_status": 3,
+    "direct_energy_status": 3,
+    "queried_field_ids": [
+      186,
+      185,
+      83,
+      191
+    ],
+    "all_recorded_fields_not_supported": true,
+    "task_energy_measured": false,
+    "task_energy_joules": null,
+    "receipt": "nvml-field-values.json",
+    "missing_values_zero_filled": false,
+    "tdp_or_estimated_energy_substitution": false,
+    "physical_energy_qualification": "open"
+  },
+  "github_ci": {
+    "old_run_id": 42043926869,
+    "old_conclusion": "cancelled",
+    "replacement_run_id": 42066954076,
+    "replacement_job_id": 127383593260,
+    "head_sha": "fe1def4a8a6655a361726f3ca275d9f5688dd394",
+    "replacement_job_status": "queued",
+    "runner_id_at_observation": 0,
+    "steps_at_observation": [],
+    "conclusion": null,
+    "pass_established": false,
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42066954076",
+    "transition_receipt": "ci-source-transition.json",
+    "latest_local_receipt": "ci-candidate-latest.json"
+  },
+  "historical_adverse_b_results": {
+    "scope": "Unchanged validation-selected smoke weights on original baseline, not full-budget CUDA results.",
+    "evidence_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/28a61d14ea7d4c3b3c515ab57b29c98de22e5673/qualification/hcsn/evidence/cloud-20261105/attempt-safe/population-audit.json",
+    "trained_grid_max_mass_error": 3.5763e-07,
+    "all_refinements_max_mass_error": 6.5566e-07,
+    "observed_escape": 0,
+    "hidden_output_rms_change_range": [
+      0.166,
+      0.1977
+    ],
+    "trained_grid_mean_test_mse": 0.3702743,
+    "constant_predictor_test_mse": 0.36800548,
+    "supports_mass_conservation_and_replay": true,
+    "resolution_independence_established": false,
+    "task_advantage_established": false
+  },
+  "research_scope": {
+    "full_b_cuda_audit": "Prepared and staged; 20 identities and fixed factor1/2/4 protocol; no execution at this snapshot.",
+    "factor1_batch": 64,
+    "refined_grid_diagnostic_batch": 8,
+    "test_inputs_per_identity": 1024,
+    "posthoc_convergence_threshold": null,
+    "diagnostic_counts_toward_170_training_runs": false
+  },
+  "next_evidence": "Append or separately publish later actual READY, strict-test, CUDA-probe, parity, matrix and audit receipts; preserve these dated waiting/queued and partial observations.",
+  "recorded_inputs_sha256": {
+    "archive-inventory.json": "fb0d989f2447f094f546f37512d65ee15b24d158104af02e68b1ba6e0cc5cb1d",
+    "audit-independent-review-v2.json": "7cc4fa3268c61e22f64480df1dffe99b0c2951c20327065236fb93048fd0d23e",
+    "audit-synthetic-controls-v1.json": "c6336a8a9014563e2c13214829ac88cfcea1f340951137c0c62340c0fb409587",
+    "bundle-independent-review-v1.json": "1c4fd1d9beca242091efaf324045998f6678522f99c2c7028341e3a80e33e991",
+    "campaign-runtime-claim.json": "da9f73687ad113544c6a6873fc7b8cd152a37f2938a7180dd38a6cf84309dc11",
+    "campaign-runtime-launch.json": "b5baef11722dbda46c2e68b6d75df2c2accde8154c7ae424a8d6797bb9a40d4d",
+    "campaign-runtime-progress-initial.json": "e6f0407736ae6248a613e38d3304dd4b9b312f1578bf074f5966596cfd094745",
+    "campaign-runtime-staging.json": "9eee742d770fbe6c82de993541a96f65421ecf85ae0da36d766da05e1799d238",
+    "candidate-source-publication.json": "82b748d3469308b5b1591e65ff7e504e2313a3bab9d0f73c48a178fd73960f0a",
+    "ci-candidate-latest.json": "38c69a8af80a6e46596f7b7854cd5a289ea8577a8f5a8a8e28fad7e168285f46",
+    "ci-source-transition.json": "0ccfd0993b182bd58b2da47a8c0cf4254e82efae3f6d31a247dfec4e4f6f244c",
+    "controller-synthetic-controls-v3.json": "4a6da098f6e5bc1743781ceb74c55e52a6c44c10aa122cf83a6d3b33460c809e",
+    "full-b-audit-package.json": "a41fe7f4adf6a791490f33b94ee3a9643388e30006ab96cb82a507ef705958ae",
+    "full-b-audit-protocol.md": "7b84c9b56118c3418e6a5b8ee9980e45c2286d2c2fbccba69019b092ad2f99b0",
+    "nvml-field-values.json": "848977ad65af0f8fe31a0f1a6dd68a0a21246f4e92ef05f2f8bcf8eabcf4ffc7",
+    "numeric-runtime-ready.json": "74bd91aa38786f49beb3f4fc5be7ca9cf278f79d13d1246e02174d696ca9052f",
+    "runtime-dependency-progress.json": "e9029b0629895604b27903c43265def116a0270c28ec305a19a1463f8bd20ef9"
+  },
+  "runtime_dependency_snapshot_utc": "2026-11-05 17:22:06 UTC",
+  "numeric_ready_finished_at_utc": "2026-11-05T16:57:14.506804+00:00"
+}

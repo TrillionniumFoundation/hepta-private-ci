@@ -1,0 +1,30 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "prepare_complete_os_rebind_v3.py",
+    "numerics-exact-recovery-20261111-v1/supervisor-v2",
+    "c2-resource-analysis-program-v2",
+    "complete-os-supervisor-rebind-v3"
+  ],
+  "complete_child_wait4_CPU_seconds": 0.09484,
+  "complete_child_wall_seconds": 0.10354085500057408,
+  "output_files": {
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 462,
+      "sha256": "0f505b139ce52d9239268ac36ff7df05b5070862f17a32e51eaaf261a815e898"
+    }
+  },
+  "pid": 3,
+  "returncode": 0,
+  "schema": "hcsn-local-complete-child-receipt-v1",
+  "scope": "Local Linux child pre-spawn through wait4 reap. The wrapper's final hashing, receipt write and exit are outside this measurement. No grand total or scientific pass inferred.",
+  "source": "prepare_complete_os_rebind_v3.py",
+  "source_sha256": "ea234ee9f5c35b5505125bb646644f91ab6a1abf8d61da12fbc09df49ccd7cba",
+  "source_unchanged": true,
+  "wait4_peak_RSS_KiB": 12800
+}

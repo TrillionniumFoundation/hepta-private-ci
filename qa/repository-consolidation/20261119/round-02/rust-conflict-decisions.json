@@ -1,0 +1,1337 @@
+{
+  "candidate": "e3443eb41426a1dc496793e1fa5fc19c98f1eb74",
+  "incoming": "6cfa2345cc26e271d443d32e3fff669f7492d1bc",
+  "preview_tree": "9b498917427ae97f80b34e6ec4adaa10a49eaa38",
+  "paths": {
+    "codex-rs/arg0/src/lib.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Preserve current explicit executable dispatch helper used by native test harnesses.",
+      "additional_replacements": [],
+      "candidate_sha256": "1e6e62bb405f4532406bba9f6c02dca8f261851e2a4c11d406de9f2b343dd056",
+      "incoming_sha256": "2b59bf385904656bf11640ba16d779401deb3da55ebd3817f7beded9c2bb0408",
+      "resolved_sha256": "1e6e62bb405f4532406bba9f6c02dca8f261851e2a4c11d406de9f2b343dd056"
+    },
+    "codex-rs/core-plugins/src/command_migration.rs": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "Retain incoming shared YAML facade/scalar mapping migration with its matching iterator shape; remove the superseded serde_yaml Value import.",
+      "additional_replacements": [
+        "use serde_yaml::Value as YamlValue;\n"
+      ],
+      "candidate_sha256": "6b16fca68f2c7fe710e38efe4d4a675bba956fb53d7ad1780ea2668d4319d330",
+      "incoming_sha256": "1dbb263aa6136621f9d7c895a02082ac727b878b8f724c0cda6e4fb0c6b7e783",
+      "resolved_sha256": "1dbb263aa6136621f9d7c895a02082ac727b878b8f724c0cda6e4fb0c6b7e783"
+    },
+    "codex-rs/core-plugins/src/plugin_metrics.rs": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "Use incoming shared YAML facade while retaining explicit validation of duplicate keys before typed analytics conversion.",
+      "additional_replacements": [],
+      "candidate_sha256": "3b78551eb511b25621122febc765e3e779a314c48af6237d53755609ba7660af",
+      "incoming_sha256": "659efd724a935cb04c8bdb3f0ba20cf8fa52b16a964e86447a54111a2affd1dd",
+      "resolved_sha256": "659efd724a935cb04c8bdb3f0ba20cf8fa52b16a964e86447a54111a2affd1dd"
+    },
+    "codex-rs/core-plugins/src/startup_sync.rs": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain the current version-independent unix-mode permissions helper, applying incoming caller/body edits to that stable Option<u32> interface.",
+      "additional_replacements": [
+        "apply_zip_permissions(&entry, &output_path)?;",
+        "let Some(mode) = entry.unix_mode() else {"
+      ],
+      "candidate_sha256": "761c2de4441b411d770e12a06fadc0d8ce784a71dc6a80c869f4c62e30d47fb0",
+      "incoming_sha256": "826cb68afdaab9e97d8de6ada9f5b960b0f725653fae89e05b91b11ba351f1ba",
+      "resolved_sha256": "91eaa0efb65f9ead206e7a13089269a7b252266bf5eb70289951186bf40d3957"
+    },
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain the stronger current absolute-directory and canonical URI round-trip assertions.",
+      "additional_replacements": [],
+      "candidate_sha256": "3312740e09209ee2e1639badc36a45bb5e2f405c52dd99de7e86c989a0d4d241",
+      "incoming_sha256": "055c1ce9715eba9f300c5ffa859a57b5482ca7e9aef27a52d261df9556fa1dad",
+      "resolved_sha256": "3312740e09209ee2e1639badc36a45bb5e2f405c52dd99de7e86c989a0d4d241"
+    },
+    "codex-rs/ext/skills/src/loader/environment.rs": {
+      "conflicts": 2,
+      "choices": [
+        "incoming",
+        "incoming"
+      ],
+      "rationale": "Use the incoming shared YAML facade for both environment metadata deserializations.",
+      "additional_replacements": [],
+      "candidate_sha256": "592d4c30ef204c13936f1762a75876407264e60a9deed38a9607f870d2bb8438",
+      "incoming_sha256": "cb049ed3640dafda1d457b7bfb28e85f7089813d70af750f2649bb0acb459732",
+      "resolved_sha256": "cb049ed3640dafda1d457b7bfb28e85f7089813d70af750f2649bb0acb459732"
+    },
+    "codex-rs/ext/skills/src/loader/metadata.rs": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "Use the incoming shared YAML facade consistently with its migrated crate dependency.",
+      "additional_replacements": [],
+      "candidate_sha256": "0b203b4696b17ccf695bbcf8eb3a4e471e9c8b47477081126a06f98f35f600eb",
+      "incoming_sha256": "49a2e2de83ac7bee1ee11023d9b065cc22ff449db48ee6fd571fa052c2ccefda",
+      "resolved_sha256": "49a2e2de83ac7bee1ee11023d9b065cc22ff449db48ee6fd571fa052c2ccefda"
+    },
+    "codex-rs/external-agent-migration/src/subagents.rs": {
+      "conflicts": 2,
+      "choices": [
+        "incoming",
+        "incoming"
+      ],
+      "rationale": "Use the incoming scalar-mapping facade and remove obsolete serde_yaml Value imports while retaining current validation/tests.",
+      "additional_replacements": [],
+      "candidate_sha256": "7126601a29edbfd2b4470710683965f9efa30990be669428fd5305e5daf64e47",
+      "incoming_sha256": "5aa90bd0f5eb5721a80c1bd8c82ab3de84f3736e5ffed38ccb9ff767a5aa8bc1",
+      "resolved_sha256": "5aa90bd0f5eb5721a80c1bd8c82ab3de84f3736e5ffed38ccb9ff767a5aa8bc1"
+    },
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current Windows canonical private-root normalization before open_root.",
+      "additional_replacements": [],
+      "candidate_sha256": "c0c31e6aa2438ca86fe5f41f52f3e13cd3c36cedaea854e82110592b02b5c051",
+      "incoming_sha256": "4c4be5e133d9f77ac75d5ef8138aa0b14765148db220b7ce92864cbc6e2efb95",
+      "resolved_sha256": "c0c31e6aa2438ca86fe5f41f52f3e13cd3c36cedaea854e82110592b02b5c051"
+    },
+    "codex-rs/hepta-automation/tests/automation.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current stronger proof of latest-schema drain trigger and both later owner tables before exact v1 rewind, including post-drop absence assertions.",
+      "additional_replacements": [],
+      "candidate_sha256": "981babbb11994737cf50a2a4ffc169ac2c8d7db1feb8592ab9f9fd1faa64d42b",
+      "incoming_sha256": "4a89d34c93370797fd8c19d2db14a5a452216e5425b3e24f2d6d1a340ff5152b",
+      "resolved_sha256": "981babbb11994737cf50a2a4ffc169ac2c8d7db1feb8592ab9f9fd1faa64d42b"
+    },
+    "codex-rs/hepta-automation/tests/hcsn_signed_worker.rs": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current imported AuthorizedEffectDispatchRequest spelling; incoming qualified spelling denotes the identical type and no assertions differ.",
+      "additional_replacements": [],
+      "candidate_sha256": "415c6b04787f343bbf6efc9365f86ce9b2072f905806b47975249881c1b533e3",
+      "incoming_sha256": "5647a51623b0e151ccf4799163ca0b7ceb305f23ed2dc7658d26fd3159c384bd",
+      "resolved_sha256": "415c6b04787f343bbf6efc9365f86ce9b2072f905806b47975249881c1b533e3"
+    },
+    "codex-rs/hepta-automation/tests/hcsn_taskflow.rs": {
+      "conflicts": 4,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current imported AuthorizedEffectDispatchRequest spelling; incoming qualified spelling denotes the identical type and no assertions differ.",
+      "additional_replacements": [],
+      "candidate_sha256": "7d4e5e62c78bb8ec05beb408a6dadbe4d46976874ef24931aa71b23841f83cd5",
+      "incoming_sha256": "3c3d1726108b5236024ddebf2ed56e019070fea6c460bf79f8481ae2dd1f197c",
+      "resolved_sha256": "7d4e5e62c78bb8ec05beb408a6dadbe4d46976874ef24931aa71b23841f83cd5"
+    },
+    "codex-rs/hepta-automation/tests/support/hcsn_signed_cancel.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current imported AuthorizedEffectDispatchRequest spelling; incoming qualified spelling denotes the identical type and no assertions differ.",
+      "additional_replacements": [],
+      "candidate_sha256": "712c1f861e3d2fb94b2b2a5e813b7d3479199016348dcd8728149e09a307c60b",
+      "incoming_sha256": "2e896328e973125952fdfa06ca227e34a51ecbc942e9cdd3d07dddb827c2dffc",
+      "resolved_sha256": "712c1f861e3d2fb94b2b2a5e813b7d3479199016348dcd8728149e09a307c60b"
+    },
+    "codex-rs/hepta-automation/tests/support/hcsn_signed_recovery.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current imported AuthorizedEffectDispatchRequest spelling; incoming qualified spelling denotes the identical type and no assertions differ.",
+      "additional_replacements": [],
+      "candidate_sha256": "645276bd1b6083f8b5b88bf77ac4b693ad2b11e041de0349794e591fd6442740",
+      "incoming_sha256": "c66c45cd74ed1397452844efc5eb1076ec74f3a1d48df6466a80deae21710200",
+      "resolved_sha256": "645276bd1b6083f8b5b88bf77ac4b693ad2b11e041de0349794e591fd6442740"
+    },
+    "codex-rs/hepta-context-compiler/src/v2/delivery_evidence.rs": {
+      "conflicts": 5,
+      "choices": [
+        "incoming",
+        "incoming",
+        "candidate",
+        "incoming",
+        "candidate"
+      ],
+      "rationale": "Use incoming typed opaque DeliveryEvidenceEncodingFailed boundary while retaining all current canonical evidence regression tests and formatting.",
+      "additional_replacements": [],
+      "candidate_sha256": "9805dd55bf970e095d57585a8716890f88e531788a8998b50cdec1e415520081",
+      "incoming_sha256": "5f6b3ab9ee23d9f4cce3164ba4e5a384247edd3d9560f8dad255fa7673f42673",
+      "resolved_sha256": "a6079a6580ea97c293beba906ecf5723e9dc78d9e319635dca3aa3cdd184d22f"
+    },
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Preserve current Unix/Windows platform qualification guard; supported native platforms continue running the test.",
+      "additional_replacements": [],
+      "candidate_sha256": "4ae5fe2e886c216f5456a766ddd36d0d7ffb5dad89302e0a8a1c916af78f9452",
+      "incoming_sha256": "dc95a64800751f888b3dab953a78a6ccaf1328fc45614803f5ea9299210fe5ac",
+      "resolved_sha256": "02da6fe5d0a2a8a7c9426246aaa1801d6632abd33c8b33bda04ec885841432ab"
+    },
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "Connect independent incoming owner-withdrawal-frontier module.",
+      "additional_replacements": [],
+      "candidate_sha256": "d47eee6cfd8e43c4dba0c2c74f55628a2ea92573983bc511dae2474efe2aad0c",
+      "incoming_sha256": "645a351d4a0219a586f8e05a94796b2eb111c94d56a0dd6dd7ac2c17edf715a9",
+      "resolved_sha256": "19b61f84a468c2f25b5bc21f6fdb866a4744bd78d2bf1f5979a5a35aa6987988"
+    },
+    "codex-rs/hepta-learning-ledger/src/durable.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Whitespace-only conflict; preserve current formatting and all nonconflicting source changes.",
+      "additional_replacements": [],
+      "candidate_sha256": "498d1dd6d9b411dd4553354a9ef74548b21bb0b0f39c49b19604bd432a79d3d0",
+      "incoming_sha256": "f7e1272d6d2c3137cc4e1ffbe96068f4776e37a5f3e4bb6d61025f87862fcac9",
+      "resolved_sha256": "498d1dd6d9b411dd4553354a9ef74548b21bb0b0f39c49b19604bd432a79d3d0"
+    },
+    "codex-rs/hepta-learning-ledger/src/witness.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Whitespace-only conflict; preserve current formatting and all nonconflicting source changes.",
+      "additional_replacements": [],
+      "candidate_sha256": "9361830d550c5750fb94941f77c30835f3b88fca21c6c26593a9e618be09689d",
+      "incoming_sha256": "9c2f91c85cf3e645ee6959307cc5599fa7e26c116d461f953594c20948be0839",
+      "resolved_sha256": "6b83e83f3e1d807aeac6d31710268e98331532859bf673f00d00977ea2ce44b3"
+    },
+    "codex-rs/hepta-neuron/src/cell_generation_journal.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Whitespace-only conflict; preserve current formatting.",
+      "additional_replacements": [],
+      "candidate_sha256": "985916b9ee29604990e087cb1c4403d1d33d787ad320708d96b9aa4d81d784d4",
+      "incoming_sha256": "07af17a9aad2161f882cd8ab05d9ef411eb6f81d3d7d7fb8438ddc2b41af4504",
+      "resolved_sha256": "985916b9ee29604990e087cb1c4403d1d33d787ad320708d96b9aa4d81d784d4"
+    },
+    "codex-rs/hepta-neuron/src/lib.rs": {
+      "conflicts": 4,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve current data-plane, low-rank MinGRU, and metrics modules/exports alongside incoming nonconflicting additions.",
+      "additional_replacements": [],
+      "candidate_sha256": "1493a2f21d725d0080fc6e811f053574d871e3dc20cad85ef4d3c60303824801",
+      "incoming_sha256": "48445707f90ec40862f0f149685ce47ab3cd69f39168161dc4727bf9c68bab8a",
+      "resolved_sha256": "8a6bccdba5c135bb56d5e5279654cffc59e5550245f1061db615856433c6c925"
+    },
+    "codex-rs/hepta-types/src/lib.rs": {
+      "conflicts": 1,
+      "choices": [
+        "independent_items"
+      ],
+      "rationale": "Union incoming manifest/numeric-registry declarations and RegisteredNumericConversionReceiptV1 export without duplicating current moved NDU/cell-role/cell-split declarations.",
+      "additional_replacements": [],
+      "candidate_sha256": "a82f356b1a1e78968b913bb28f061146f48682823a81872b2b5d28eaf8bacb7b",
+      "incoming_sha256": "bc112596990aba5fed83013a9a9156d9716e2deb207f31d6ecc03d95eabfecb3",
+      "resolved_sha256": "9965c2a5483ff98904e26335115b48b7a4d140e9c5f1b8853410491a1b68d942"
+    },
+    "codex-rs/hepta-types/src/ndu_snapshot_ref_tests.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain the current final-use move instead of an unnecessary clone; later source contains no further initial use.",
+      "additional_replacements": [],
+      "candidate_sha256": "dda1534e51ef02f3114a6c366d880e1314316bf536a2ffb55612a9b2f8005a41",
+      "incoming_sha256": "5a800d1e67614300750bbbeefffc66f03eeee367c4e686fda55cc54fbfc0aee8",
+      "resolved_sha256": "dda1534e51ef02f3114a6c366d880e1314316bf536a2ffb55612a9b2f8005a41"
+    },
+    "codex-rs/skills/src/parser.rs": {
+      "conflicts": 4,
+      "choices": [
+        "incoming",
+        "incoming",
+        "incoming",
+        "incoming"
+      ],
+      "rationale": "Use shared YAML facade error, parse, repair, and validation operations consistently, retaining surrounding parser assertions.",
+      "additional_replacements": [],
+      "candidate_sha256": "f3532df1cc16f4da423b8e5c813269940c90317bcd211b6659cad449fd877e89",
+      "incoming_sha256": "7c7e4970b4318eadfebab3420bdb82dd001558abfa9471441d420eeb1a205cf5",
+      "resolved_sha256": "7c7e4970b4318eadfebab3420bdb82dd001558abfa9471441d420eeb1a205cf5"
+    },
+    "codex-rs/tui/src/lib.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current canonical equality of both actual and expected database paths; both canonicalizations already use the same native representation.",
+      "additional_replacements": [],
+      "candidate_sha256": "feb879e8ef45e04afdcbf289ac3ab78f22bac52ec4b689654b5e18302bc21f9c",
+      "incoming_sha256": "310d47817aa4893e664cf132a5b1cade73f2e5996d80e2c3a78e683ff973a29e",
+      "resolved_sha256": "feb879e8ef45e04afdcbf289ac3ab78f22bac52ec4b689654b5e18302bc21f9c"
+    },
+    "codex-rs/core/tests/common/responses.rs": {
+      "conflicts": 1,
+      "choices": [
+        "response_mock_derives"
+      ],
+      "rationale": "Retain current request matcher regression module and add incoming Default derivation to the identical recorder fields.",
+      "additional_replacements": [],
+      "candidate_sha256": "fc02e5a0e225638d74cfcb366933ab7435076566e3fc6b4ef4611daf87637cc2",
+      "incoming_sha256": "b690a00a2ce9923fd966533dfc62cda6e34c603c85df3c2416dee3870c37c2af",
+      "resolved_sha256": "a071be7ad439d38c25f00e2da60821c39b1f4f0599a7b9e25129797adb525578"
+    },
+    "codex-rs/core/tests/common/streaming_sse.rs": {
+      "conflicts": 2,
+      "choices": [
+        "streaming_types",
+        "streaming_record"
+      ],
+      "rationale": "Union current request-identity routing and response-header gates with incoming full HTTP-head/body recording; select the response before moving the body into its recorded request.",
+      "additional_replacements": [],
+      "candidate_sha256": "0af6e823fb9688931bd702e41faf65a74c02ae853f956c478baeba9155b99cc9",
+      "incoming_sha256": "e68b488da0c89051e6c29dba9d20405ccba876f02c42a44dda767d89a3857c01",
+      "resolved_sha256": "40e57c1c34fa3ceef7a1f7c2eb3af4e7293d8188d680c3e6b67da4144625a024"
+    },
+    "codex-rs/core/tests/suite/network_approval.rs": {
+      "conflicts": 8,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "incoming",
+        "candidate"
+      ],
+      "rationale": "Current identity-routed cross-turn fixture supersedes the incoming FIFO/gated rewrite of the same test: preserve its complete current function and exact six-request invariant, while retaining independent incoming diagnostic output and common fixture header recording.",
+      "additional_replacements": [],
+      "whole_functions_preserved": [
+        "background_network_approval_uses_active_turn_after_original_turn_completes",
+        "managed_network_unified_exec_test_with_features"
+      ],
+      "candidate_sha256": "cfd9384fc9119d72db531bc6a4e487ecf6439772294266c04cc1ff16c35ed4ab",
+      "incoming_sha256": "608229491bfe1e33819b50657039787a45874aae752ce3d9a082e1d9a1694aa1",
+      "resolved_sha256": "c9f9d9c0f193ebd817e8a7bd1ef53f8fe996144e5d6338fd038bdd00e68024e5"
+    },
+    "codex-rs/hepta-contracts/src/final_use_live_owner.rs": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "Run live-owner revalidation on both Unix and Windows using the incoming held-marker Windows adapter.",
+      "additional_replacements": [],
+      "candidate_sha256": "f0fd6d4b91fb88171cf71b6df116ae9799961145461a49e574f11a081be56502",
+      "incoming_sha256": "626c045724b94769ec874470219c94ac3f70183cd53afa6f2ae577c3938fbb03",
+      "resolved_sha256": "626c045724b94769ec874470219c94ac3f70183cd53afa6f2ae577c3938fbb03"
+    },
+    "codex-rs/hepta-contracts/src/final_use_store.rs": {
+      "conflicts": 3,
+      "choices": [
+        "incoming",
+        "incoming",
+        "incoming"
+      ],
+      "rationale": "Retain both independent Unix journal revalidation and Windows held-owner revalidation, and connect the explicit Windows ownership adapter.",
+      "additional_replacements": [],
+      "candidate_sha256": "cccb0a8efab9070ff1999cd185453be4ed90ff361df2c7a4ca92dfa7aee24620",
+      "incoming_sha256": "bbabaac9cd09894682fed1853376b257f8522fb4e229f2d18fedefd516b2233a",
+      "resolved_sha256": "bbabaac9cd09894682fed1853376b257f8522fb4e229f2d18fedefd516b2233a"
+    },
+    "codex-rs/hepta-contracts/src/final_use_store_io.rs": {
+      "conflicts": 3,
+      "choices": [
+        "incoming",
+        "incoming",
+        "incoming"
+      ],
+      "rationale": "Use the incoming Directory/StoreFile adapter that explicitly distinguishes existing path owners from held Windows capabilities. It delegates ordinary path checks to the retained current windows module; stage handles are passed to replacement operations.",
+      "additional_replacements": [],
+      "candidate_sha256": "3348ba016ceca7147a90c0a7df7b3f5c60bacff7745868d50f38fbe964678f79",
+      "incoming_sha256": "13c68461e7fe2aff4ac4f8eceaf71be59b70040a83ae51a73fa22dceb6afae87",
+      "resolved_sha256": "13c68461e7fe2aff4ac4f8eceaf71be59b70040a83ae51a73fa22dceb6afae87"
+    },
+    "codex-rs/hepta-contracts/src/final_use_store_tests.rs": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "Add incoming incompatible experimental PQ-profile rejection test, including byte-for-byte state/claims preservation assertions.",
+      "additional_replacements": [],
+      "candidate_sha256": "885c8d6b4ad42f002bf38449264bef09eaf9831aafff62e870d9488820ffd288",
+      "incoming_sha256": "2454c72140bb0907555bb13559d3b4793b76940631a08c2459452ae409affbe7",
+      "resolved_sha256": "2454c72140bb0907555bb13559d3b4793b76940631a08c2459452ae409affbe7"
+    },
+    "codex-rs/hepta-supervisor/src/recovery.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Preserve current distinction between absent restart budget and a recovered consumed budget; existing pending/runtime handling remains intact.",
+      "additional_replacements": [],
+      "candidate_sha256": "c14ff5e9b54aae3cfa3e5f54d6abee527c90e538e0fc89de39909efe0dc2e2a5",
+      "incoming_sha256": "58976fdf193a00c9b043c673e51c3582959fdfa7360c73d9a9b43f4a7ee80076",
+      "resolved_sha256": "c14ff5e9b54aae3cfa3e5f54d6abee527c90e538e0fc89de39909efe0dc2e2a5"
+    },
+    "codex-rs/hepta-supervisor/src/restart_budget.rs": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Keep current single validated budget read with explicit None for an absent journal. This already preserves consumed counts and pending claims and avoids incoming duplicate function/type declarations.",
+      "additional_replacements": [
+        "return Ok(RecoveredRestartBudget {\n            attempts: 0,\n            pending: None,\n        });"
+      ],
+      "candidate_sha256": "22060db18ea87d39f29456ef3e456103bd67833b9b649041950d449cd09e04da",
+      "incoming_sha256": "29002ff38ef0ca3f88e53f0ef7f2fe2b323ffaa95d227153f90da5e83a86b4f7",
+      "resolved_sha256": "22060db18ea87d39f29456ef3e456103bd67833b9b649041950d449cd09e04da"
+    },
+    "codex-rs/hepta-supervisor/tests/paired_process_product.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current extracted fixture helper, which implements the incoming schema/generation/drain rules plus refusal for a fenced health snapshot and its dedicated tests.",
+      "additional_replacements": [],
+      "candidate_sha256": "0a213c427b42f28f94faa4abf543e6b9b8fa9fefd4f1fc532e4ca9d044909072",
+      "incoming_sha256": "5d932dfd7d5b4a7aa8eab58a68acb9f17ad564df75817177313795da840a53ca",
+      "resolved_sha256": "6e8028250063e14eb5bbd12c23197ea5b91f179ea36ff8126aa170c427f3d464"
+    },
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": {
+      "conflicts": 5,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "restart_queue_assertions",
+        "candidate"
+      ],
+      "rationale": "Preserve current recovered-budget assertions and exact queued snapshots, adding the independent incoming RestartQueued event assertion for attempt three.",
+      "additional_replacements": [],
+      "candidate_sha256": "dcb8cbb54cccfed83d0e15cbcee0e4ed040495b6e430f0a8f3de9c0f6802aff6",
+      "incoming_sha256": "9cf6957e2636dfaf91f90dc5e2045866d4c7e232132a091601f3aab28f5a2031",
+      "resolved_sha256": "50b6e7f3c01b54ef890e6ff97e50b9c6728d10fa240e6c2bfc11efaccf376fd2"
+    },
+    "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current stale-abort rejection and repeated-cold-recovery unsigned-abort quarantine regressions unchanged.",
+      "additional_replacements": [],
+      "candidate_sha256": "415ae953c02c914d5b657d0a1499e9d8bcb03b14e59894a1765409d47d8e5d8d",
+      "incoming_sha256": "e9af2774f969cc2610617cf8ad959471f369c4de84b8a1a872f9843d892e12c8",
+      "resolved_sha256": "415ae953c02c914d5b657d0a1499e9d8bcb03b14e59894a1765409d47d8e5d8d"
+    },
+    "codex-rs/hepta-cell-roles/src/action_proposal.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current final-use move; no incoming semantic change beyond unnecessary cloning.",
+      "additional_replacements": [],
+      "candidate_sha256": "3cfd2a82706ba6a28bb081a56bb2f0786a8f57fe7477597a1ee9ca6cd1dbcf6c",
+      "incoming_sha256": "3fe755d0ba44ccecbf9608360d67e79c5eef020f8609e0a460a723e3d3a529b7",
+      "resolved_sha256": "3cfd2a82706ba6a28bb081a56bb2f0786a8f57fe7477597a1ee9ca6cd1dbcf6c"
+    },
+    "codex-rs/hepta-cell-roles/src/circuit_roles.rs": {
+      "conflicts": 3,
+      "choices": [
+        "incoming",
+        "candidate",
+        "incoming"
+      ],
+      "rationale": "Add incoming context/expected generation fence and wrong-generation regression; retain current final-use move in existing test.",
+      "additional_replacements": [],
+      "candidate_sha256": "7e3fafaacff8a436cb2bd604fec599362dd2b693a8e7c1e8f55cf7e8c5071a79",
+      "incoming_sha256": "f3db19e089c6d33c44fc0e64f0b27d2e76b424a9711d266b146bb3c33be01387",
+      "resolved_sha256": "80fbf4285ec899692d58afbe78b9d25bda16ddbbd2eea0964607e3a086ad94b8"
+    },
+    "codex-rs/hepta-cell-roles/src/control_owner.rs": {
+      "conflicts": 9,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve current bounded control-file reads, writable-handle durability flush, strict 0/1 option discriminant decoding, and their regression modules. Incoming alternatives would regress these invariants or only add redundant references/clones.",
+      "additional_replacements": [],
+      "candidate_sha256": "bbfa4d37e427c7324f52a797f26049a85b655bf8e0a17b769b97cc821618691b",
+      "incoming_sha256": "3a5b18fd62350e854581d12b1f1468bf99f8de57914f414f003847f0e2cd8311",
+      "resolved_sha256": "bbfa4d37e427c7324f52a797f26049a85b655bf8e0a17b769b97cc821618691b"
+    },
+    "codex-rs/hepta-cell-roles/src/control_wal.rs": {
+      "conflicts": 9,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve current bounded locked-handle WAL reads, Windows reparse rejection and same-file identity witness, unsupported-platform refusal, collision-proof private fixture creation, and exact read/Windows identity tests.",
+      "additional_replacements": [],
+      "candidate_sha256": "815247d66057e8b58a32528b1bde95d8cb744c33700873d2549a9609f6a9ae3e",
+      "incoming_sha256": "93a9aa68cb508d381f1ddc36d7d3ba5085e361238651f1dac91f25e5d87bc9ed",
+      "resolved_sha256": "815247d66057e8b58a32528b1bde95d8cb744c33700873d2549a9609f6a9ae3e"
+    },
+    "codex-rs/hepta-cell-roles/src/decision_owner.rs": {
+      "conflicts": 12,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve current checkpoint allocation bounds, exclusive private staging file, required durability flush, strict tombstone option decoding, and checkpoint regression module/helper visibility.",
+      "additional_replacements": [],
+      "candidate_sha256": "d28494eb807499458c27b8c784bdbda4ffac891a0e110d01fd34155c92ee26df",
+      "incoming_sha256": "91f337a4ad4444f72aefdfa9cc3b6ad616bfe4550644538a988b646aac63d159",
+      "resolved_sha256": "d28494eb807499458c27b8c784bdbda4ffac891a0e110d01fd34155c92ee26df"
+    },
+    "codex-rs/hepta-cell-roles/src/production_owner.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current final-use move without unnecessary clone.",
+      "additional_replacements": [],
+      "candidate_sha256": "7cc344c45ab4e2300a5c34082ea1b9a430ef93c522cfbd1c408b14f0f2fb4774",
+      "incoming_sha256": "645549b5fb279400bae6459fee8bed718897ce96ca7518a43b1b419b9aacaff5",
+      "resolved_sha256": "7cc344c45ab4e2300a5c34082ea1b9a430ef93c522cfbd1c408b14f0f2fb4774"
+    },
+    "codex-rs/hepta-cell-roles/src/role_qualification.rs": {
+      "conflicts": 8,
+      "choices": [
+        "incoming",
+        "incoming",
+        "incoming",
+        "incoming",
+        "incoming",
+        "incoming",
+        "candidate",
+        "incoming"
+      ],
+      "rationale": "Add incoming pre-evaluator digest API, step scope/capability and fault-kind binding checks, common digest helper, and wrong-owner evidence regressions; retain current formatter syntax.",
+      "additional_replacements": [],
+      "candidate_sha256": "6f97b8924a9102873de81ee99c022bc6d5636f5ae6ee16daceb1349d52a8c85e",
+      "incoming_sha256": "ff095b59a70dfa7d69a40f4e2ed5fd0123a64c99854ca9a85bbc22102b611450",
+      "resolved_sha256": "768d9bec8276894aaff1af3deb877418123804386afff88a50f7278ce349aa4b"
+    },
+    "codex-rs/hepta-cell-roles/src/role_split_admission.rs": {
+      "conflicts": 8,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "nested_tests_and_external_module"
+      ],
+      "rationale": "Retain current early complete split/outer-role validation and reusable test helpers, and add incoming rehashed role/cross-split/post-evaluation tests while preserving the current independent verification test module.",
+      "additional_replacements": [],
+      "candidate_sha256": "7be110a57418b255a174b4a5eaca7fdfd2f4f8095f60870e9266f91c83a8a7ef",
+      "incoming_sha256": "0f651a554f2b7181f729230f3499a681d45b9f144889d8ddd10f84b0ded6d457",
+      "resolved_sha256": "710a1337464658231a17baf7c52e1e43327c321752398555ed178a53abed4dd1"
+    },
+    "codex-rs/hepta-cell-roles/src/role_split_metrics.rs": {
+      "conflicts": 4,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Current verify already validates the full split before digest acceptance and binds cell/generation/proposer/evaluator in the original rejection predicate. Keep that earlier validation and dedicated rehash regression tests instead of duplicating incoming later checks.",
+      "additional_replacements": [],
+      "candidate_sha256": "310def82cd5a72dc23dbb506c6b3421b46bce72e950f6c6355326e2621f27f31",
+      "incoming_sha256": "7ea487bd87aea72b0754ae76beaa582f68d2652392113e384022df37b1bed93f",
+      "resolved_sha256": "310def82cd5a72dc23dbb506c6b3421b46bce72e950f6c6355326e2621f27f31"
+    },
+    "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs": {
+      "conflicts": 11,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve current exact physical-image digest, replay, post-append readback and poisoning controls alongside incoming qualification observation API. Reconcile the constructor's close and retain both independent post-sync reads.",
+      "additional_replacements": [
+        "            history_digest: observed.history_digest,\n            poisoned: false,\n        })\n    }\n\n    /// Recover",
+        "if current::read_physical(&mut file, binding, minimum)?.bytes != observed.bytes {"
+      ],
+      "candidate_sha256": "6554def6c4c054bc975c0a6c0b0d55ca688fc5a966171a368c6923c071e7f350",
+      "incoming_sha256": "004f863bba0b88860ed505e33add84077bb426af113db9f17a63ab3740e7caba",
+      "resolved_sha256": "9fd96bec4c068e4231d5752b34ddf14df97d66bbcb657584c0e21598f257465a"
+    },
+    "codex-rs/hepta-intelligence-eval/src/lib.rs": {
+      "conflicts": 1,
+      "choices": [
+        "union"
+      ],
+      "rationale": "Union current paired holdout/evaluation exports and tests with incoming citation audit, memory citation census, and role-qualification replay APIs.",
+      "additional_replacements": [],
+      "candidate_sha256": "a38e37069bd6183b68244442e89aab842bef00268753d0c9d98991b43888adc0",
+      "incoming_sha256": "bc6a2a18f2ff3c1a0ffb12fa388f37831e600799c6d9aaf1490ece594dc01ba7",
+      "resolved_sha256": "a549464c95879f0adcc762389fd309b34517d9d88133cbc3fc9542572fe0815b"
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve current verified replay cache path, second physical-image read and cursor-restoration-before-publication invariant.",
+      "additional_replacements": [],
+      "candidate_sha256": "9371c924c603e0cc239c53cf50cd8ede3f2a79174334d54469e903f7de7ea0f8",
+      "incoming_sha256": "71ede168b6a7278758c64905fae7ffe45ab4957a8d65406efd17ed6bb8b111c6",
+      "resolved_sha256": "9371c924c603e0cc239c53cf50cd8ede3f2a79174334d54469e903f7de7ea0f8"
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current verified replay cache state required by physical-current validation.",
+      "additional_replacements": [],
+      "candidate_sha256": "560a5011df35e0ee685f8786c406ebda9ad059641d90bc8b636f4434f9826b6e",
+      "incoming_sha256": "512949a5ec8a0a2a69b1a33dfc68074e53933f08a8ca26844508a360e374e443",
+      "resolved_sha256": "560a5011df35e0ee685f8786c406ebda9ad059641d90bc8b636f4434f9826b6e"
+    },
+    "codex-rs/hepta-intelligence-eval/src/product_runner.rs": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "incoming"
+      ],
+      "rationale": "Preserve current non-authorizing paired-release contract and add incoming original-owner borrowed reread wrapper for paired consumption.",
+      "additional_replacements": [],
+      "candidate_sha256": "5abe25c59bf8313ed02d6b6ae3480e61fc96219cde5e23f7971c2bf4d148e1ef",
+      "incoming_sha256": "ce977c8d197625e8a76406e32f1e69de68b6a939aaac33d9e212b8412927e83d",
+      "resolved_sha256": "8800b0b66a2100ca3d15267d1634306b1625b6ff9e20e3e4df857de55575225a"
+    },
+    "codex-rs/hepta-prompt-optimizer/src/lib.rs": {
+      "conflicts": 1,
+      "choices": [
+        "union"
+      ],
+      "rationale": "Retain current graph/local-shadow modules and add independent incoming compatibility adapter.",
+      "additional_replacements": [],
+      "candidate_sha256": "f5d8a4355d3690a67680709cfa3cd2ad4b6fa31e8343c30cf76b05197ccf9796",
+      "incoming_sha256": "279ac6d61e77ea1710254cac7a180f3d20d59e3c93ca9cd67b53e513372bfc76",
+      "resolved_sha256": "901f8358101fb68a1af21f425a3063c0d3d07963e17b36c89eef76c5dc40ced9"
+    },
+    "codex-rs/hepta-prompt-optimizer/src/verified.rs": {
+      "conflicts": 3,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Keep current single ordered imports; incoming only repositions the same canonical bounds/types.",
+      "additional_replacements": [],
+      "candidate_sha256": "f7b30beffd3cd12e57aa7f0ba986deb210b943ca9046003149ddca99d4c96116",
+      "incoming_sha256": "6852ba0271e19885ac1bfc53bafb5c0a0650ea37c244989c00c6a01b369964c9",
+      "resolved_sha256": "f7b30beffd3cd12e57aa7f0ba986deb210b943ca9046003149ddca99d4c96116"
+    },
+    "codex-rs/hepta-prompt-optimizer/src/verified_digest.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Signature formatting-only conflict.",
+      "additional_replacements": [],
+      "candidate_sha256": "f1c86ca85c23f33ec62108a26df8deea22c74f7d268f916db523485bc512ddaf",
+      "incoming_sha256": "d565dd57a6c14272d181997b4921cdaa59c38501506c7be4f572b28a586c76f1",
+      "resolved_sha256": "f1c86ca85c23f33ec62108a26df8deea22c74f7d268f916db523485bc512ddaf"
+    },
+    "codex-rs/hepta-prompt-optimizer/src/verified_pipeline.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current expected-selected postimage binding in the verification context.",
+      "additional_replacements": [],
+      "candidate_sha256": "7250dd56d70e62e28cec4e3da7fb5b9b71eac01c738f75ba0029df170a7c125e",
+      "incoming_sha256": "15889165f72a27986f04cdd7c968e9522de3b6fbceabcebe2aea623f85f7a546",
+      "resolved_sha256": "7250dd56d70e62e28cec4e3da7fb5b9b71eac01c738f75ba0029df170a7c125e"
+    },
+    "codex-rs/hepta-prompt-optimizer/src/verified_tests.rs": {
+      "conflicts": 5,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current actual registry digest construction and rehashed-invalid-frontier/model/realization/selection-grammar regressions; incoming uses a synthetic placeholder and omits these checks.",
+      "additional_replacements": [],
+      "candidate_sha256": "0469ce0bb158717e3161d97d67192e36dbbea2e05915ab2c012015070860f072",
+      "incoming_sha256": "f23b2299a9921af448f7eacd5cb11110df91fbcb5e57b19f403b10cd22d70676",
+      "resolved_sha256": "0469ce0bb158717e3161d97d67192e36dbbea2e05915ab2c012015070860f072"
+    },
+    "codex-rs/hepta-prompt-optimizer/src/verified_types.rs": {
+      "conflicts": 3,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve current expected-selected context field; remaining differences are whitespace.",
+      "additional_replacements": [],
+      "candidate_sha256": "3413cf7c47268c3298a0691d078b737d6267cf90f1ba528ab074a2ee99e100d1",
+      "incoming_sha256": "515ab911c4a5327dfde6c07edfaa3621be53b86e43266832e49085f8c6ea606f",
+      "resolved_sha256": "3413cf7c47268c3298a0691d078b737d6267cf90f1ba528ab074a2ee99e100d1"
+    },
+    "codex-rs/hepta-prompt-optimizer/src/verified_validation.rs": {
+      "conflicts": 9,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve current nonempty selection grammar, model/registry/realization validation, all eight model-tuple identity bindings, and exact selected-postimage comparison. Other differences are formatting.",
+      "additional_replacements": [],
+      "candidate_sha256": "33e852a30c9b3dcb27ee7ba035c5a7f0c175a0bfde66be84224d6dbcc12f3660",
+      "incoming_sha256": "4d7491a3f6e4d4cfbda5b5f5f83436bbf0d5d3b972f0ea44054d50f48a861248",
+      "resolved_sha256": "33e852a30c9b3dcb27ee7ba035c5a7f0c175a0bfde66be84224d6dbcc12f3660"
+    },
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "conflicts": 6,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current factored startup helper enforcing the same shared 20-second deadline and shorter per-request limits, including precise timeout stages and publish errors. Incoming inline copies are superseded by that tested helper.",
+      "additional_replacements": [],
+      "superseded_private_methods": [
+        "finish_startup",
+        "build_until",
+        "authenticate_until"
+      ],
+      "candidate_sha256": "ee322a5287764052e37ac38d3823ee6d3600b3253080ea76bc1659fd7c29697e",
+      "incoming_sha256": "38ef7310c87299debeb9cd1ddb73036d271855b79e881dda59ee176a70b4ba3a",
+      "resolved_sha256": "ee322a5287764052e37ac38d3823ee6d3600b3253080ea76bc1659fd7c29697e"
+    },
+    "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs": {
+      "conflicts": 9,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Keep current factored-helper coverage and stronger exact timeout-stage/error assertions, including already-expired and synchronous-Ready-after-deadline rejection.",
+      "additional_replacements": [],
+      "candidate_sha256": "28b32b22a9633bcdcb74bdf21afb43053fd3c7c3e158446185a142fb98611bbf",
+      "incoming_sha256": "8742691e5e087f39821df6c8f1bd0f99593121d6ea332938f92425af17347daa",
+      "resolved_sha256": "28b32b22a9633bcdcb74bdf21afb43053fd3c7c3e158446185a142fb98611bbf"
+    },
+    "codex-rs/hepta-matrixd/src/control.rs": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "Compile platform-independent health-state tests on all platforms while retaining explicit non-Unix guards on unsupported control-socket tests.",
+      "additional_replacements": [],
+      "candidate_sha256": "8940f5ebcde241db4e9cd94490b89ed51e16bb0e184826f705b4efb14e9ade53",
+      "incoming_sha256": "dd8ab2a1bf57c11553c4f5e09959fb0b18d4b526e7d782755bc270e9dcf69f9f",
+      "resolved_sha256": "17842c7343b0200615083b679e9b92299e1b6cf2698cb96014c6ee398b42ca48"
+    },
+    "codex-rs/hepta-matrixd/src/control_platform_tests.rs": {
+      "conflicts": 3,
+      "choices": [
+        "incoming",
+        "incoming",
+        "incoming"
+      ],
+      "rationale": "Add incoming direct health/lifecycle test without requiring socket capabilities; retain non-Unix path-preserving refusal assertions under their precise cfg.",
+      "additional_replacements": [],
+      "candidate_sha256": "e8a0259c430b2e713bde1b31b6d0c7bddd76b80cb26f82e3e4956396f4d053ab",
+      "incoming_sha256": "96ef8c1ebee0dd9c497bc01fe01039c320497e8b57f2edaeec53ec039d199586",
+      "resolved_sha256": "96ef8c1ebee0dd9c497bc01fe01039c320497e8b57f2edaeec53ec039d199586"
+    },
+    "codex-rs/hepta-memory/src/cognitive_store.rs": {
+      "conflicts": 4,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "sqlite_tests"
+      ],
+      "rationale": "Preserve current initial-generation-only, exclusive no-follow private SQLite creation and regular/single-link/mode validation, avoiding recreation of missing recovered generations. Retain both original external and incoming WAL/SHM/existing-file byte-mode tests with the current helper.",
+      "additional_replacements": [],
+      "candidate_sha256": "df1579811f721092d1da9cdc77f446a91187a2aff84b9a1614350f663001120d",
+      "incoming_sha256": "a34870a17761219f4144be2a9eac922f111d534ca853d62338c023871effda32",
+      "resolved_sha256": "dcb8da841a0da27e955e8140df9471609882dad6f646a4f2f62e897e15a174e6"
+    },
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "Include incoming migration 19 in the exact expected migration chain; preserve all earlier migrations.",
+      "additional_replacements": [],
+      "candidate_sha256": "08604bdb2d31cc7a573f39c5b522feaf634051b438c80a5ccb0e1d0f60d3b4ba",
+      "incoming_sha256": "29fe67b9b718f88245bd5d2d987829fb6242a4c90491161fcfbf1fb27bae062f",
+      "resolved_sha256": "29fe67b9b718f88245bd5d2d987829fb6242a4c90491161fcfbf1fb27bae062f"
+    },
+    "codex-rs/hepta-memory/src/local_lease_outbox.rs": {
+      "conflicts": 1,
+      "choices": [
+        "notes_fence_and_general"
+      ],
+      "rationale": "Retain incoming NotesFenceExcluded transaction proof validation and current General struct-variant payload/outcome semantics together.",
+      "additional_replacements": [],
+      "candidate_sha256": "3b95b454ee6a3e255aad7363e2f23caadb82cefad9848d1a41ec6ec69fbff705",
+      "incoming_sha256": "95efebfc465e41a1fbd0864e0dc1aac2939c1eeebcd438ec9d495b7a75dca985",
+      "resolved_sha256": "8d075d7feb749759c3f4ead35ce8b54fc8c4aeb995d003d96fb6f9c696925762"
+    },
+    "codex-rs/hepta-memory/src/production_writer.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current extracted terminal journal observer module and TerminalObservation type.",
+      "additional_replacements": [],
+      "candidate_sha256": "ad3985f22236e045c48d5573ed94509fb6018bacc8636c93866f5b18e577a24a",
+      "incoming_sha256": "9890ed394039a9a2857926a79d0a2626aa7625c98c4235ce3522d1d04048b293",
+      "resolved_sha256": "3738a89866a7ab4d0f7ff8a868b4406faf728395d5f2472485f0123ab78ea8dd"
+    },
+    "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Only formatting/argument comments differ; preserve current named primitive arguments.",
+      "additional_replacements": [],
+      "candidate_sha256": "eb7f9248ac1b8e1dd1fae4bbe333b5fe3e95983d568c2e95b6750693f2d9d0d6",
+      "incoming_sha256": "feba9cad48608e732a45188f77f0762655a3c788b37a3e41d2efe6418656510a",
+      "resolved_sha256": "eb7f9248ac1b8e1dd1fae4bbe333b5fe3e95983d568c2e95b6750693f2d9d0d6"
+    },
+    "codex-rs/hepta-ndu/src/evaluator_tests.rs": {
+      "conflicts": 5,
+      "choices": [
+        "candidate",
+        "incoming",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Add incoming operational rejection/quarantine metric observations while retaining current scalarization profile/canonicalization/bounds regression tests and argument annotations.",
+      "additional_replacements": [],
+      "candidate_sha256": "f390d48b81c3e203dc1983c0f50da9c76e5ef578eebd524c13287af416797349",
+      "incoming_sha256": "1ad7052f7e2760884f7a9b480b517a7cdb1d11fe0511d43190a22dbb53fd5bed",
+      "resolved_sha256": "ca420d61465dc3ee1b7d964ade6a4fe39bfb72ff016148dbd8c3e9e505034e24"
+    },
+    "codex-rs/hepta-ndu/src/lib.rs": {
+      "conflicts": 1,
+      "choices": [
+        "union"
+      ],
+      "rationale": "Retain current generation rollout API and add independent incoming group budget preflight export.",
+      "additional_replacements": [],
+      "candidate_sha256": "02d2af44569f71894dfef6934714d8ce3318e800469d6c1cda81fc92a467fddc",
+      "incoming_sha256": "be1941da7f6098909b8a239694b20f0cb69308d36360814e67e930dc43875d53",
+      "resolved_sha256": "7d7ab9f2b4838addc8a8b0432e9212122cecf3b3b7d812cfc2774edce5bc5657"
+    },
+    "codex-rs/hepta-ndu/src/sngr_graph_shadow.rs": {
+      "conflicts": 6,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "graph_depth_check"
+      ],
+      "rationale": "Preserve current legal-action resource bound and explicit Active/Complete memoization state with saturating depth arithmetic; add incoming final aggregate depth refusal before publishing a cached height.",
+      "additional_replacements": [],
+      "candidate_sha256": "7a6376612a9406a14bf062d0eb6e471b5fb77ecabd2e735764327ca02ba8ee78",
+      "incoming_sha256": "df0ee67a6a31c23e17ae8019c2eed654483d94a5065b935ae9be0e91c530f8e8",
+      "resolved_sha256": "c0c4334df0050ee1a84f7d9a12b2a88b7569f84ee6e4b5b11b1f3a8f60b38628"
+    },
+    "codex-rs/hepta-ndu/src/sngr_graph_shadow_tests.rs": {
+      "conflicts": 1,
+      "choices": [
+        "independent_test_functions"
+      ],
+      "rationale": "Retain current shared-tail and unused-mask bounds regressions and add incoming forward/reverse traversal tests at both 64- and 65-level boundaries.",
+      "additional_replacements": [],
+      "candidate_sha256": "af0fe5d923dd3828aa47302159f4b8f126966f42320f6cab8ff823e6a0754a2a",
+      "incoming_sha256": "bd1212f75f97b4c7d7a66e0e58bc1dc6e6acc1b393958c98088981e28119ef7c",
+      "resolved_sha256": "2155a2ff062b4749def87faac47e8b6dfa2b90cd85a46d6953a69dfb658e5de4"
+    },
+    "codex-rs/hepta-ndu/src/validated_scalarization.rs": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "Retain incoming local scalarization validation tests alongside the current evaluator-level copies; no assertions are removed.",
+      "additional_replacements": [],
+      "candidate_sha256": "81191549a89acdc0cc682f5dcfc994f2fb5d97f7f9ca0c5215f1b8f5fc3a9a68",
+      "incoming_sha256": "9bfe570f2e6c1640d64609ec24ddb7d47b11304716dd0146cb72f701c516f719",
+      "resolved_sha256": "9bfe570f2e6c1640d64609ec24ddb7d47b11304716dd0146cb72f701c516f719"
+    },
+    "codex-rs/hepta-cognitive-types/src/lib.rs": {
+      "conflicts": 2,
+      "choices": [
+        "union",
+        "union"
+      ],
+      "rationale": "Union current consumer/registry/strict modules with incoming consumer-adapter and memory-cell modules.",
+      "additional_replacements": [],
+      "candidate_sha256": "b67f215171e5761f6e8fcabb722953d6463f473ce7894fbbc029f1289a13ef73",
+      "incoming_sha256": "8bf899e65603c602960da4d9d2b318994fc3cb914f36b926cac035086d9241ad",
+      "resolved_sha256": "e6e6e95edf6f136723003ba4ed8d965e77216dc13073741a5974d72109d32cac"
+    },
+    "codex-rs/hepta-cognitive-types/src/contract.rs": {
+      "conflicts": 8,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve the established checked V1 diagnostic schema, fixed structured-error validator, bounded fields, and domain-bound digest API. Add incoming error categories, Unicode policy metadata, accessors, and associated-error structural-validation capability additively, rather than replacing the active V1 trait/schema.",
+      "additional_replacements": [],
+      "candidate_sha256": "de5887635ff5fa9ebf78b3e2c2b9d55e9e4da91e9308341d304a6bc6ee061fc0",
+      "incoming_sha256": "2d3ff1c5c21672c042cafa9a227d0d7edf04ed422f623a854ce46ad8e7959526",
+      "resolved_sha256": "03a993404e4df16e6af2b0ca85d01f0d2b178fd19ad25f3fc75c5aa99c2b17d7"
+    },
+    "codex-rs/hepta-cognitive-types/src/contract_convergence_tests.rs": {
+      "conflicts": 0,
+      "choices": [
+        "dependent_api_reconciliation"
+      ],
+      "rationale": "Exercise checked diagnostic bounds and associated-error structural validation through a sibling test module, preserving the established V1 schema and rejecting invalid construction.",
+      "candidate_sha256": null,
+      "incoming_sha256": null,
+      "resolved_sha256": "d88761b029ec5a2b00e532017781999cae647440a48fae158b7e90930f6deb39"
+    },
+    "codex-rs/hepta-cognitive-types/src/consumer_adapters.rs": {
+      "conflicts": 0,
+      "choices": [
+        "dependent_api_reconciliation"
+      ],
+      "rationale": "Adapt the incoming independent consumer registry/shadow comparison module to the retained checked diagnostic constructor without weakening any validation or changing successful receipts.",
+      "candidate_sha256": null,
+      "incoming_sha256": "efbe918e72421633738adc4bb1c80bd5cc1aa0b520943d992218ab65fac9de8e",
+      "resolved_sha256": "3c0f3bbd77646a48e7787f269620a9d5bfda0bf3ad7705b36deb2c33e20178ab"
+    },
+    "codex-rs/hepta-infer-core/src/durable_control.rs": {
+      "conflicts": 5,
+      "choices": [
+        "union",
+        "incoming",
+        "union",
+        "incoming",
+        "append_with_observational_metrics"
+      ],
+      "rationale": "Union incoming checkpoint compaction and per-record reserved terminal headroom with current bounded namespace validation and physical owner observations. Keep current append metrics, poisoning before uncertain I/O/callbacks, and publish-after-fsync semantics.",
+      "additional_replacements": [],
+      "candidate_sha256": "f0e75707674c78e7f14e72bd83d0939c7cdbbd23b2b2e009817e63f0f8862738",
+      "incoming_sha256": "c9bb96ebdf3983c3bee28a42319028b0237aeaf325977f32a218535c77a77173",
+      "resolved_sha256": "48f61f9ac5cf9482f4c630e6d95e87b1e0104d39b5ead49b78f2756b65bf3977"
+    },
+    "codex-rs/hepta-infer-core/src/durable_control_tests.rs": {
+      "conflicts": 1,
+      "choices": [
+        "union"
+      ],
+      "rationale": "Retain current physical locked-file observation, WAL metrics/outage, and unsupported-platform tests alongside incoming checkpoint round-trip and incremental tests.",
+      "additional_replacements": [],
+      "candidate_sha256": "a1a092a3d1d836f72ccc96fb7161af61ee45cf088ede476a7cb21910b8b80cee",
+      "incoming_sha256": "10a60307762279c6b7c5c0ccabb45d63d4a439f18113e40b85fbeb49e8dae89b",
+      "resolved_sha256": "b5ddb5fcaee4bd6e3eb494124848e89fb6bfefa229427d93bcf63f612065dc67"
+    },
+    "codex-rs/hepta-infer-core/src/lib.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain the current reference microbatch module alongside all auto-merged incoming APIs.",
+      "additional_replacements": [],
+      "candidate_sha256": "fffb5e40310f010f8809f79aad8a2456ff3dfe3e094cd76ac40789056fae8319",
+      "incoming_sha256": "a7b9fda049d7380832debf75cf5040705ecede6f081db39cfc231c1d4c5d6fff",
+      "resolved_sha256": "911866b02ce0d42ac39f8544be8b0129ebc2762405178f66d4ec1225bd4ec159"
+    },
+    "codex-rs/hepta-infer-core/src/native_control.rs": {
+      "conflicts": 5,
+      "choices": [
+        "incoming",
+        "incoming",
+        "incoming",
+        "incoming",
+        "active_reservation_transitions"
+      ],
+      "rationale": "Use incoming checkpoint-compatible active_reservations spelling, affected-record staging, exact event/request identity and headroom reservation. Preserve current checked accounting in both active-to-released and released-to-active directions, reconstructed by semantic replay.",
+      "additional_replacements": [],
+      "candidate_sha256": "9e9fbd9fab5bde94eb0c3adf65bd6cffba8108c30ff534db6a83fd047037fc7a",
+      "incoming_sha256": "df3d6bbeb300151845bdc7fbd1f408467741c4f77e045dfb59de25f1f9d68196",
+      "resolved_sha256": "051721252816a6a7da514e3218455212358e68f783c2ea02023e9d142cc76736"
+    },
+    "codex-rs/hepta-infer-core/src/native_control_tests.rs": {
+      "conflicts": 1,
+      "choices": [
+        "union"
+      ],
+      "rationale": "Keep the current many-released-record slot accounting regression and all incoming compaction, reserved terminal headroom, checkpoint, incremental, growth, maintenance and usage cases.",
+      "additional_replacements": [],
+      "candidate_sha256": "7fed2731a5cac552fdce5f2120462060c375bbec1ea2c0decaa4902f1faa29de",
+      "incoming_sha256": "78f5c5c830839a4c453437e1de662f525e8d3efa4dec7a24d616f095e0398f89",
+      "resolved_sha256": "75632bc3eebd86f19007d8c63bb1bfa83d49dc63905bd9420af1138d4b2bf8c9"
+    },
+    "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs": {
+      "conflicts": 4,
+      "choices": [
+        "worker_help",
+        "worker_input_validation",
+        "worker_execution",
+        "union"
+      ],
+      "rationale": "Preserve explicit Attach/Withhold delivery and its validation while adding immutable intelligence snapshots and resume-with-original-input. Resume rejects replacement delivery/context/intelligence inputs and does not construct a new dispatch authorizer.",
+      "additional_replacements": [],
+      "candidate_sha256": "1382fb9ec9aadc9ba16a39bc95258f5fd1a8532ec502815a5272f9a35a1b892a",
+      "incoming_sha256": "b7b7cc7e380fd6b13129012785d858852a90caf1fb31c879a9d627b0b208e892",
+      "resolved_sha256": "82f8c29d5155c14f2772d15e7b65c18a5492e72722a4a5e10b79f56a9d586790"
+    },
+    "codex-rs/hepta-infer-worker-host/src/generation_driver.rs": {
+      "conflicts": 6,
+      "choices": [
+        "candidate",
+        "incoming",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current namespace initializer/dangling-link refusal and strict deadline checks through decode. Add incoming normalizer identity binding to the exact snapshot and neuron projection as well as source/configuration/parameters.",
+      "additional_replacements": [],
+      "candidate_sha256": "560f9a062639db75175a3f2d86734450ceabed828143e0795ec5995961f56add",
+      "incoming_sha256": "f738b647f41bb4c5e425a327b5a0deb3e060b09eacd1d6941fed6d18e8b65666",
+      "resolved_sha256": "4662dc8246bbe83ba0f8d434bfe3282603e12a11343583897bdd2fb2b132a13e"
+    },
+    "codex-rs/hepta-infer-worker-host/src/generation_driver_tests.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain all current namespace and model-substitution regressions alongside auto-merged incoming binding tests.",
+      "additional_replacements": [],
+      "candidate_sha256": "463aee7aad5b8495ecb5c1d719d45234646b460a5771bb2a273ddf71e701ab7d",
+      "incoming_sha256": "3c9dd33b74b657896df28da7e267ad5a400cd650d862e92809b6c3e6c8f8640c",
+      "resolved_sha256": "463aee7aad5b8495ecb5c1d719d45234646b460a5771bb2a273ddf71e701ab7d"
+    },
+    "codex-rs/hepta-infer-worker-host/src/lib.rs": {
+      "conflicts": 1,
+      "choices": [
+        "worker_modules"
+      ],
+      "rationale": "Keep current independent neuron microbatch execution available in ordinary builds. Add incoming experimental local-model boundary and qualification-only legacy model/generation driver feature gates; the microbatch module has no dependency on those legacy drivers.",
+      "additional_replacements": [],
+      "candidate_sha256": "e1bfccf45c40e0c029693088fbf85d132dfd16fa368eb0b1aa864cd466966ce2",
+      "incoming_sha256": "1808708479da639e64829df97afc84266c7217f07319afa79c0465ba940b5511",
+      "resolved_sha256": "fc9330be08140a310df021c64188db9baedf47d8f1e67cf720073b7b824e14be"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "The incoming native_run_control path durably settles the normalized terminal first, then reconciles to the original bound Agentd run through current-owner/fence checks. Remove the superseded pre-WAL publication call (its implementation was replaced by native_intelligence_recovery), retaining all health downgrades and original terminal tests.",
+      "additional_replacements": [],
+      "candidate_sha256": "07f4370c1850ec39b7444d14e7c2c4ec5d96d2b5c0a879953a98dbb1fecec6c7",
+      "incoming_sha256": "937147322a7a806627abccb2428a6b7f5acec6e8371da18e862e16a8ed049548",
+      "resolved_sha256": "f05efb9f1f72e6147958e5d107243759baf863cecbe26281718eb29ddf06109a"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs": {
+      "conflicts": 2,
+      "choices": [
+        "incoming",
+        "incoming"
+      ],
+      "rationale": "Use the reconciled typed Arg0DispatchPaths CognitiveTestHost API. The existing helper retains current_exe and Linux sandbox executable discovery, preserving real production helper dispatch.",
+      "additional_replacements": [],
+      "candidate_sha256": "4b9e76669f72bfbfe9fca61d49696eb53ca4da7716e4560f3f95e8d2bdeba0ef",
+      "incoming_sha256": "facd37e175d4127ef3808b4da185f55e199baeb48b42ac746e4ee93adfb4f2e9",
+      "resolved_sha256": "61126a7d14037c50034af7fc256b1be9cf91a2724082abcb22c9840333e8b263"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs": {
+      "conflicts": 1,
+      "choices": [
+        "all_native_run_tests"
+      ],
+      "rationale": "Keep the current Attach/Withhold durable-identity regression plus all incoming retained snapshot and resume refusal/reconciliation tests. Observe exact WAL bytes through the original owner's bounded qualification reader, preserving byte equality assertions under Windows exclusive locks.",
+      "additional_replacements": [
+        "std::fs::read(&path).unwrap()"
+      ],
+      "candidate_sha256": "d94b40e32f5d90806119376a2c8f9d4d101ac7e7032e0c71bb596a3bcc9f7b17",
+      "incoming_sha256": "0efea4479a8ac712e154e34757d71fa6b826fd63f2c1aecaae39634e69ecf3b5",
+      "resolved_sha256": "26e78b72b16273966dd0666e311551ba92154673df7327496b5fc3fac3844a6d"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_run_control.rs": {
+      "conflicts": 0,
+      "choices": [
+        "dependent_api_reconciliation"
+      ],
+      "rationale": "Repair clean-auto-merge type/name errors between current explicit delivery and incoming retained-input resume. Attach/intelligence persist original V2 input; Withhold keeps its existing intervention digest and explicit retry behavior, never silently inferred as Attach on resume.",
+      "candidate_sha256": "a448a5f968f83503693d8f98d09036169d5a9e2483a1faeef78439c0d64c661c",
+      "incoming_sha256": "45c6bd893d1b5da3987da949a282fc090ceb79adbee6cbd02f5eb907ccde18cb",
+      "resolved_sha256": "ddbfc21bd16eee00990c9289ac03f0883b2592e0386087f089e496a77edac1d3"
+    },
+    "codex-rs/windows-sandbox-rs/src/acl_deny.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain the current inherited-deny rule: inherited unconditional denies cannot grant access and are skipped without certifying explicit effective/recursive coverage; earlier allows and unsupported ACEs still fail closed.",
+      "additional_replacements": [],
+      "candidate_sha256": "8437f822af3ffb04823d1cf684138642bc173e2a13cf02027e700279403dd0d8",
+      "incoming_sha256": "9d69c10558f7d50ff0b8641a8137565552fac7c8fe4841cd11a1e93526b79ca7",
+      "resolved_sha256": "8437f822af3ffb04823d1cf684138642bc173e2a13cf02027e700279403dd0d8"
+    },
+    "codex-rs/windows-sandbox-rs/src/acl_tests.rs": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain both current inherited-deny repair regressions and add all four independent incoming split-scope/effective-file deny tests.",
+      "additional_replacements": [],
+      "candidate_sha256": "4aab332c6e9c6fc0b6aa3144f46955ed8ca948cb8f01a6043bbbda85ec0191fa",
+      "incoming_sha256": "bbee27090679eeb517bc82c468ae182e89d3f91aa73f9c8fd1134c6b7add0d23",
+      "resolved_sha256": "84473bbe64a4134970390633222c230fb389f5b5d5e60e3f90a52ec42be6942c"
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Preserve the exact current elevated admission refusal before any child process or provisioning action. Remove the unused superseded boundary import.",
+      "additional_replacements": [],
+      "candidate_sha256": "43167849dd825c12793938437b90152c4ac0719bdd1301d148875ef0a721c4d6",
+      "incoming_sha256": "ded60417ae76549f98940ef6a9b221e4998f297f3d081ac07d3a7d8f91d9afeb",
+      "resolved_sha256": "946ed7393a2e4135f00095a8017dd85f1ce280fe1164b0c06deeaac9decbe7d0"
+    },
+    "codex-rs/windows-sandbox-rs/src/elevated_impl.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Preserve the exact current elevated filesystem isolation guard, including its error identity and pre-effect placement.",
+      "additional_replacements": [],
+      "candidate_sha256": "86bf7b5b7e6d5f284930b7caa38c66856169bcaa2c272be82eb476edf84c25ed",
+      "incoming_sha256": "6ee7a2ca776b0e3460b4f764339b320f3bfca91844a6ea679edd21cacdf45b61",
+      "resolved_sha256": "6480ef86e03c7aecf89bb36894b556d94d5ad4ea2a05ca7208f7b58a0ce19998"
+    },
+    "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Preserve the current Elevated branch's mandatory filesystem isolation refusal; no test assertion or unified_exec/tests.rs content is changed.",
+      "additional_replacements": [],
+      "candidate_sha256": "0d3994e3212178d117e8c96990f444ca0f84aa55e643324196ce8961c97400f8",
+      "incoming_sha256": "6643c4b7babec3e9b43200209c4a891db18d86d16bdb5dfd97ae04a93f341bd6",
+      "resolved_sha256": "0d3994e3212178d117e8c96990f444ca0f84aa55e643324196ce8961c97400f8"
+    },
+    "codex-rs/windows-sandbox-rs/src/desktop_tests.rs": {
+      "conflicts": 3,
+      "choices": [
+        "candidate",
+        "candidate",
+        "separate_desktop_test"
+      ],
+      "rationale": "Keep current public legacy refusal and owned-desktop mechanism tests exactly, deduplicate the unchanged unrestricted-token test, and add incoming separate desktop role isolation against equal read roots.",
+      "additional_replacements": [],
+      "candidate_sha256": "9efe21b6f9831ccd7a019457aba3d35c5309b2d9a3ebbedb0e86703a0d51e370",
+      "incoming_sha256": "a0911d01f638f4a00c00f11732de619b72cc2ecad5ecace387f4a21083155da3",
+      "resolved_sha256": "d9efa93c0b367cac1a72c9d42417bd0efc76b8786c1b52fae64df2af35aef00d"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup.rs": {
+      "conflicts": 2,
+      "choices": [
+        "setup_metadata",
+        "setup_version"
+      ],
+      "rationale": "Retain current isolated setup-process launcher and incoming role/request plan binding with version 7 markers. Keep MetadataExt required by reparse-point validation; the superseded inline CommandExt launcher import is unnecessary.",
+      "additional_replacements": [],
+      "candidate_sha256": "60478c6a71edaceb0e79b60bf348ade1de9417d1c36cb944b275f271874587b0",
+      "incoming_sha256": "c6540ad3e750f7730bc1125a1a979942b05e57835d0a9206049e5b50869f3163",
+      "resolved_sha256": "8a670cc04ab8a0e55b4dc995caed93be126db0e11c1ade35ca9a64d3b0e662d2"
+    },
+    "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs": {
+      "conflicts": 9,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve every current MIC counterexample operation, exact observed outcomes, public legacy/elevated refusal check and fixture non-mutation assertion. Incoming hypothesis assertions predate retained counterexample evidence and do not supersede it.",
+      "additional_replacements": [],
+      "candidate_sha256": "06dd2efb32eb98292f3953ce707cce29608f8b4a7cce221a028ae43596e16b36",
+      "incoming_sha256": "26e86c30048c0c61111af6beade63e0bb922432e6f78d7c94a37af05808bbb31",
+      "resolved_sha256": "06dd2efb32eb98292f3953ce707cce29608f8b4a7cce221a028ae43596e16b36"
+    },
+    "codex-rs/windows-sandbox-rs/src/token_probe_support.rs": {
+      "conflicts": 2,
+      "choices": [
+        "incoming",
+        "incoming"
+      ],
+      "rationale": "The incoming common workspace constructor is now fully restricted. Explicitly retain the original WRITE_RESTRICTED mechanism for the current MIC/read-authority probes using the incoming diagnostic-only constructor; no production admission is granted.",
+      "additional_replacements": [],
+      "candidate_sha256": "8bbea9b387cd5642c843467db9f1d8c9300d5ddc7eabb4e529083cb1030ba4fb",
+      "incoming_sha256": "a67efa64eb0a759790def336d292814d0755c6ea4a8ab0cc6ef5b63afae0994f",
+      "resolved_sha256": "a67efa64eb0a759790def336d292814d0755c6ea4a8ab0cc6ef5b63afae0994f"
+    },
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs": {
+      "conflicts": 3,
+      "choices": [
+        "token_import_union",
+        "union",
+        "additional_token_diagnostics"
+      ],
+      "rationale": "Retain every current admission/counterexample test and add incoming prepared filesystem, strict full-restriction ACL repair and broad-identity diagnostic tests. Deduplicate identical RAII impersonation and module declarations; no positive assertion is removed.",
+      "additional_replacements": [],
+      "candidate_sha256": "ef800fd9dc0d608d86de7b5a07ee0f2719f0e432063b84a02e90b2e1c95115d4",
+      "incoming_sha256": "7893ed87ca7f72ef0946a781e42c485f84d37f265788122eed804615ddfd2822",
+      "resolved_sha256": "ec809c30a582bde4d78e0113a3709700d08ec37bfe36478f42ef6d8ac3d5d7b3"
+    },
+    "codex-rs/windows-sandbox-rs/src/token_full_restriction_tests.rs": {
+      "conflicts": 3,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve the current two original full-restriction mechanism tests exactly. The independent incoming diagnostic candidate's two tests and helpers are retained in a parallel module to avoid replacing either experiment or weakening their assertions.",
+      "additional_replacements": [],
+      "candidate_sha256": "f38fbc9f428ffa9960c4bc365328dcc264f8179b8dede2777da12ef578df3e1d",
+      "incoming_sha256": "70a558ec88221319b2830467299812e21bad14f1827e6923b9fd3be1c5a1cf71",
+      "resolved_sha256": "f38fbc9f428ffa9960c4bc365328dcc264f8179b8dede2777da12ef578df3e1d"
+    },
+    "codex-rs/windows-sandbox-rs/src/token_full_restriction_candidate_tests.rs": {
+      "conflicts": 0,
+      "choices": [
+        "dependent_api_reconciliation"
+      ],
+      "rationale": "Retain the full incoming unqualified-token diagnostic suite as a parallel module, preserving original current full-restriction tests and all new native read/execute/delete/security-right assertions.",
+      "candidate_sha256": null,
+      "incoming_sha256": null,
+      "resolved_sha256": "70a558ec88221319b2830467299812e21bad14f1827e6923b9fd3be1c5a1cf71"
+    },
+    "codex-rs/windows-sandbox-rs/src/token_mechanism_fixture.rs": {
+      "conflicts": 0,
+      "choices": [
+        "dependent_api_reconciliation"
+      ],
+      "rationale": "Pin original current owned-object counterexample fixtures to WRITE_RESTRICTED after the incoming private workspace constructor changes mode. This preserves the old test mechanism and assertions alongside independent new fully restricted candidates; all public admission guards remain unchanged.",
+      "candidate_sha256": "dd1fc9753142431013e22dd13781ddd086115c5c0eebb146c736844920b20731",
+      "incoming_sha256": null,
+      "resolved_sha256": "712c8c4f7aa135e88526333877b98cf00c7ecf4afc272f37721bc379d0a345ce"
+    }
+  },
+  "validation": {
+    "rustfmt_parser": {
+      "files": 102,
+      "status": "PASS"
+    },
+    "just_fmt": {
+      "status": "PASS",
+      "worktree": "/workspace/scratch/2f490fb85225/windows-sandbox-worktree",
+      "command": "PATH=/home/agent/.cargo/bin:$PATH just fmt"
+    },
+    "compilation": "PENDING_ROOT_INTEGRATION",
+    "native_windows_tests": "NOT_RUN"
+  }
+}

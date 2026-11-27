@@ -25,6 +25,7 @@ use crate::RemoveOptions;
 use crate::WalkOptions;
 use crate::WalkOutcome;
 use crate::WriteFileOptions;
+use crate::authorized_read_error::AuthorizedReadRpcError;
 use crate::client::LazyRemoteExecServerClient;
 use crate::protocol::FsCanonicalizeParams;
 use crate::protocol::FsCopyParams;
@@ -36,6 +37,7 @@ use crate::protocol::FsReadFileParams;
 use crate::protocol::FsRemoveParams;
 use crate::protocol::FsWalkParams;
 use crate::protocol::FsWriteFileParams;
+use crate::rpc::AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE;
 
 const INVALID_REQUEST_ERROR_CODE: i64 = -32600;
 const METHOD_NOT_FOUND_ERROR_CODE: i64 = -32601;
@@ -127,13 +129,13 @@ impl RemoteFileSystem {
             return Err(unsupported_authorized_read());
         }
         let response = client
-            .fs_read_file_authorized(FsReadFileAuthorizedParams {
+            .fs_read_file_authorized_classified(FsReadFileAuthorizedParams {
                 path: path.clone(),
                 sandbox: sandbox.clone().drop_cwd_if_unused(),
                 max_bytes: max_bytes_u64,
             })
             .await
-            .map_err(map_authorized_read_remote_error)?;
+            .map_err(map_classified_authorized_read_remote_error)?;
         let max_encoded_len = max_bytes
             .checked_add(2)
             .and_then(|len| (len / 3).checked_mul(4))
@@ -508,8 +510,30 @@ fn unsupported_authorized_read() -> io::Error {
     )
 }
 
+fn map_classified_authorized_read_remote_error(error: AuthorizedReadRpcError) -> io::Error {
+    match error.failure {
+        Some(failure) => failure.into_io_error(),
+        None => map_authorized_read_remote_error(error.error),
+    }
+}
+
 fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
     match error {
+        ExecServerError::Server {
+            code: AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE,
+            ..
+        } => io::Error::new(
+            io::ErrorKind::InvalidData,
+            "authorized file read exceeds bound",
+        ),
+        ExecServerError::Server {
+            code: -32603,
+            message,
+        } if message == "authorized file read exceeds bound" => {
+            // Preserve the legacy server's bounded-read failure without forwarding
+            // arbitrary server messages or returning a truncated prefix.
+            invalid_authorized_read_data(READ_EXCEEDED)
+        }
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
             unsupported_authorized_read()
         }
@@ -518,7 +542,7 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
             ..
         } => io::Error::new(
             io::ErrorKind::InvalidInput,
-            "remote authorized file read was rejected",
+            "remote authorized file read is not permitted",
         ),
         ExecServerError::Server { code, .. } if code == NOT_FOUND_ERROR_CODE => io::Error::new(
             io::ErrorKind::NotFound,
@@ -534,6 +558,10 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
 #[cfg(all(test, any(unix, windows)))]
 #[path = "remote_file_system_path_uri_tests.rs"]
 mod path_uri_tests;
+
+#[cfg(test)]
+#[path = "remote_file_system_authorized_error_tests.rs"]
+mod authorized_error_tests;
 
 #[cfg(test)]
 mod tests {

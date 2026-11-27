@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.canonical-fixture-port.v1",
+  "base": "190e2cee65d35770511539f40c3e1f07905c41c2",
+  "donor": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+  "donor_pr": 5618,
+  "all_seven_original_git_blobs_equal_donor_parent": true,
+  "records": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_credit_signed_tests.rs",
+      "base": "6724634a8e9aba1fc409311046a11f701191d23f",
+      "donor_base": "6724634a8e9aba1fc409311046a11f701191d23f",
+      "donor": "4c59f0a411c6a08ab33589cff9a3544684fc62eb",
+      "exact_base_match": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_driver_tests.rs",
+      "base": "0c59b61c9546707970ac7aa364e51250628a5632",
+      "donor_base": "0c59b61c9546707970ac7aa364e51250628a5632",
+      "donor": "ca30daa0e41273b0664bb7f7f756b98c63519f1f",
+      "exact_base_match": true
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_drain_tests.rs",
+      "base": "c63c4757cf7e61715856a974b5cd242164e10d09",
+      "donor_base": "c63c4757cf7e61715856a974b5cd242164e10d09",
+      "donor": "57d4b77745cb44e1238e4cd26b525d71622aeb1a",
+      "exact_base_match": true
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_expired_recovery_tests.rs",
+      "base": "605dacc1fa363158204af33703e054f37ffc882d",
+      "donor_base": "605dacc1fa363158204af33703e054f37ffc882d",
+      "donor": "49cd687c8a7aefacdf33a501e8d8c2da9c0d42cd",
+      "exact_base_match": true
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_learning_outbox_tests.rs",
+      "base": "434b7e51f857291b93a6368a6d4ffd00a5a3b689",
+      "donor_base": "434b7e51f857291b93a6368a6d4ffd00a5a3b689",
+      "donor": "d6f1771ab57a46db80ad61d570d17108dd587a28",
+      "exact_base_match": true
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_recovery_budget_tests.rs",
+      "base": "6ec5515761cc071f91589697d13f68f0dc98c27d",
+      "donor_base": "6ec5515761cc071f91589697d13f68f0dc98c27d",
+      "donor": "85ebb85d50f3cda5125728662299b4b571a90ba2",
+      "exact_base_match": true
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_task_readback_tests.rs",
+      "base": "05067ee9a2d1a0757d2adb25afa5300ef64043ee",
+      "donor_base": "05067ee9a2d1a0757d2adb25afa5300ef64043ee",
+      "donor": "2d1c68d55e153846c69b75621ba4e58589bf995f",
+      "exact_base_match": true
+    }
+  ],
+  "formatter": {
+    "host": "rog",
+    "job_id": "1a1c45e35ee-cf39-295",
+    "request_digest": "96a9030d8509cd252e17dae96a6520670895fcbb47adff683a0f1cd7e84208f2",
+    "state": "succeeded",
+    "exit_code": 0,
+    "postimages_unchanged": true
+  },
+  "filesystem_contrast": {
+    "raw_alias_differs": true,
+    "canonical_parent_child_matches": true,
+    "scope": "actual filesystem relation only; AutomationStore and platform-native tests were not executed"
+  },
+  "native_test_execution": false,
+  "full_P0": "NOT_ESTABLISHED"
+}

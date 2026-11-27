@@ -1,0 +1,106 @@
+"""Pre-model pointer admission must behave identically with Python -O."""
+
+import copy
+import json
+from pathlib import Path
+import subprocess
+import sys
+import unittest
+
+from artifact_pointer import validate_pointer
+from cpu_migration import ARCHIVE_BYTES, ARCHIVE_SHA256
+
+
+def frozen():
+    return {
+        "schema": "hcsn-cpu-replay-artifact-pointer-v1",
+        "status": "FROZEN",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "manifest_path": "qualification/hcsn_differentiable/replay_v1/artifact/EXPORT.json",
+        "archive": {"bytes": ARCHIVE_BYTES, "sha256": ARCHIVE_SHA256},
+        "commit": "a" * 40,
+    }
+
+
+class ArtifactPointerTests(unittest.TestCase):
+    def test_frozen_pointer_returns_same_identity(self):
+        pointer = frozen()
+        self.assertEqual(validate_pointer(json.dumps(pointer)), pointer)
+
+    def test_missing_and_changed_commitments_refuse(self):
+        variants = []
+        for key, value in (
+            ("schema", "other"),
+            ("status", "MISSING"),
+            ("repository", "other/repository"),
+            ("manifest_path", "../EXPORT.json"),
+            ("commit", "a" * 39),
+            ("commit", "A" * 40),
+            ("commit", "a" * 40 + "\ncommit=injected"),
+            ("commit", 123),
+            ("archive", {"bytes": ARCHIVE_BYTES, "sha256": "0" * 64}),
+            ("archive", {"bytes": float(ARCHIVE_BYTES), "sha256": ARCHIVE_SHA256}),
+            ("claim", ["untyped"]),
+            ("unexpected", "field"),
+        ):
+            variants.append({**frozen(), key: value})
+        absent = frozen()
+        del absent["commit"]
+        variants.append(absent)
+        for pointer in variants:
+            with self.subTest(pointer=pointer), self.assertRaises(ValueError):
+                validate_pointer(json.dumps(pointer))
+
+    def test_ambiguous_and_nonfinite_json_refuse(self):
+        valid = json.dumps(frozen())
+        variants = [
+            valid[:-1] + ',"status":"FROZEN"}',
+            valid.replace('"bytes": ' + str(ARCHIVE_BYTES), '"bytes": NaN'),
+            valid.replace('"bytes": ' + str(ARCHIVE_BYTES), '"bytes": Infinity'),
+            valid.replace('"bytes": ' + str(ARCHIVE_BYTES), '"bytes": 1e999'),
+            "[]",
+        ]
+        for raw in variants:
+            with self.subTest(raw=raw), self.assertRaises(ValueError):
+                validate_pointer(raw)
+
+    def test_real_missing_pointer_refuses(self):
+        raw = Path(__file__).with_name("CPU-ARTIFACT.json").read_bytes()
+        with self.assertRaisesRegex(ValueError, "HOLD: immutable archive publication"):
+            validate_pointer(raw)
+
+    def test_subprocess_optimization_cannot_skip_admission(self):
+        variants = []
+        missing = frozen()
+        missing["status"] = "MISSING"
+        variants.append(json.dumps(missing))
+        wrong = copy.deepcopy(frozen())
+        wrong["archive"]["sha256"] = "0" * 64
+        variants.append(json.dumps(wrong))
+        variants.append(json.dumps(frozen())[:-1] + ',"status":"MISSING"}')
+        code = (
+            "import json,sys; from artifact_pointer import validate_pointer; "
+            "p=validate_pointer(sys.stdin.buffer.read()); "
+            "print(json.dumps(p)); "
+            "sys.exit(7 if 'torch' in sys.modules else 0)"
+        )
+        for optimized in (False, True):
+            command = [sys.executable] + (["-O"] if optimized else []) + ["-B", "-c", code]
+            for raw in variants:
+                with self.subTest(optimized=optimized, raw=raw):
+                    result = subprocess.run(
+                        command, input=raw, text=True, capture_output=True,
+                        cwd=Path(__file__).parent, check=False,
+                    )
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertEqual(result.stdout, "")
+            result = subprocess.run(
+                command, input=json.dumps(frozen()), text=True, capture_output=True,
+                cwd=Path(__file__).parent, check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(json.loads(result.stdout), frozen())
+
+
+if __name__ == "__main__":
+    unittest.main()

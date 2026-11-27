@@ -1,0 +1,263 @@
+{
+  "actual_counts_from_retained_logs": {
+    "full_automation": {
+      "failed": 0,
+      "passed": 119,
+      "passed_by_binary": {
+        "codex-hepta-automation": 41,
+        "codex-hepta-automation::authorized_effect": 10,
+        "codex-hepta-automation::automation": 18,
+        "codex-hepta-automation::durable_causal_chain": 10,
+        "codex-hepta-automation::hcsn_taskflow": 1,
+        "codex-hepta-automation::kernel_operations_destination": 4,
+        "codex-hepta-automation::operation_timer_fence": 3,
+        "codex-hepta-automation::retirement_recovery": 4,
+        "codex-hepta-automation::taskflow": 13,
+        "codex-hepta-automation::taskflow_execution_boundary": 11,
+        "codex-hepta-automation::taskflow_step": 4
+      },
+      "run": 119,
+      "skipped": 0,
+      "source": "artifact-selected/taskflow-tests.log"
+    },
+    "native_neuron_learning_artifacts": {
+      "failed": 0,
+      "passed": 194,
+      "passed_by_package": {
+        "codex-hepta-learning-artifacts": 99,
+        "codex-hepta-neuron": 95
+      },
+      "run": 194,
+      "skipped": 1,
+      "source": "artifact-selected/rust-tests.log"
+    },
+    "python": {
+      "failed": 0,
+      "modules": {
+        "test_joint_graph": 8,
+        "test_native_build": 5,
+        "test_population_graph": 8,
+        "test_supervisor": 11,
+        "test_training_state": 8
+      },
+      "passed": 40,
+      "run": 40,
+      "skipped": 0,
+      "source": "artifact-selected/python-tests.log"
+    }
+  },
+  "artifact": {
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13495121785/zip",
+    "created_at": "2026-11-06T10:27:59Z",
+    "digest": "sha256:45611d819dd2ecb6fa1a36a6fef9f17aa39de8fb3b018c1f082e6ab65c6e1d91",
+    "expired": false,
+    "expires_at": "2027-02-04T10:14:10Z",
+    "id": 13495121785,
+    "name": "hcsn-training-bridge-fcffa43043ec7f36fa680c449c54b9b3446eb6a6-1",
+    "size_in_bytes": 108165145,
+    "updated_at": "2026-11-06T10:27:59Z",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13495121785",
+    "workflow_run": {
+      "head_branch": "codex/hcsn-taskflow-integration-20261106",
+      "head_repository_id": 1320694176,
+      "head_sha": "fcffa43043ec7f36fa680c449c54b9b3446eb6a6",
+      "id": 42201095686,
+      "repository_id": 1320694176
+    }
+  },
+  "artifact_extraction": {
+    "all_file_entries_stream_hashed": 411,
+    "executable_hashes_match_native_build_records": true,
+    "extracted_bytes": 1490704,
+    "large_native_executables_extracted": 0,
+    "small_files_extracted": 406,
+    "source": "artifact-entries.json"
+  },
+  "bridges": [
+    {
+      "backend": "value_kernel",
+      "base_bytes_unchanged": true,
+      "candidate_digest": "7803391a9c8b694d239a445e28fe405c6fed5880ea2798c38f7d3ad60d6f30a1",
+      "gradient_cells": 2,
+      "gradient_parameters": 172,
+      "logical_cells": 2,
+      "resumed_all_state_exact": true,
+      "resumed_output_exact": true,
+      "second_training_block": {
+        "base_checkpoint_digest": "7803391a9c8b694d239a445e28fe405c6fed5880ea2798c38f7d3ad60d6f30a1",
+        "branch": "independent training branch from the published candidate clock; inference continuation is a separate fixture branch",
+        "candidate_digest": "7745108e93ea88925e4878edb38e6f8559195a8378e86a277cde004e38d3b3ec",
+        "cold_owner": {
+          "candidate_digest": "7745108e93ea88925e4878edb38e6f8559195a8378e86a277cde004e38d3b3ec",
+          "candidate_only": true,
+          "old_model_clock_restore_rejected": true,
+          "payload_bytes": 11459,
+          "pid": 17251,
+          "recovery_required": false,
+          "required_current_head": "278e0e787e20fd617eebdfc1183325662b1fa97f6baab67aad85370525256496",
+          "tampered_payload_rejected": true
+        },
+        "complete_state_exact": true,
+        "initial_state_digest": "333a2dbd31ab93b3841e31cdce55482b6dd7e90b1764a1c317ec3cffb039fcad",
+        "initial_state_unchanged": true,
+        "initial_time_micros": 750017,
+        "intervals": 4,
+        "mode": "resume",
+        "native_publication": {
+          "acknowledged_at": 10,
+          "admission_digest": "1f4cd6d74b53f434fd2ef928bca988a78b76ea88ca12ad2c42d21d1951c5f95f",
+          "authority": "DENY_ALL",
+          "candidate_digest": "7745108e93ea88925e4878edb38e6f8559195a8378e86a277cde004e38d3b3ec",
+          "candidate_only": true,
+          "changed_receipt_rejected": true,
+          "pid": 17250,
+          "production_trust": false,
+          "publication_state_digest": "a08f242a4ebf2d47b4f793b22c7216769510b2687cfefb32898ef335f8c7e8b5",
+          "registry_head_digest": "278e0e787e20fd617eebdfc1183325662b1fa97f6baab67aad85370525256496",
+          "retry_same_receipt": true,
+          "second_writer_rejected": true,
+          "synthetic_test_trust": true,
+          "witness_digest": "8dcad4d238525b0574f87bb09fb48c73dd5879bce1ce77747c52351ed639f76a",
+          "wrong_dispatch_rejected": true
+        },
+        "optimizer_steps": 2,
+        "original_checkpoint_unchanged": true,
+        "prediction_exact": true,
+        "reset_prediction_max_difference": 0.2575933629256573,
+        "scope": "second completed-block training; fixture trust only; not multi-generation quality improvement",
+        "status": "passed",
+        "weights_exact": true,
+        "worker_pid": 17248
+      },
+      "source_digest": "e4b16a76a5dc33b050ef245c2e47d05e0e3dccafc28cf77b82d799b81b50b55d",
+      "status": "passed",
+      "supervised": true,
+      "trainable_parameters": 172
+    },
+    {
+      "backend": "population_grid",
+      "base_bytes_unchanged": true,
+      "candidate_digest": "a899a0fdc2467b8b15c2a2604414205730a62538d4383f8457ef7da389e373d9",
+      "gradient_cells": 2,
+      "gradient_parameters": 8,
+      "logical_cells": 2,
+      "resumed_all_state_exact": true,
+      "resumed_output_exact": true,
+      "second_training_block": {
+        "base_checkpoint_digest": "a899a0fdc2467b8b15c2a2604414205730a62538d4383f8457ef7da389e373d9",
+        "branch": "independent training branch from the published candidate clock; inference continuation is a separate fixture branch",
+        "candidate_digest": "26917dc11ecfb915f6be87087d47a39cfaf26ce45a9ba5d4fe620775b77d2100",
+        "cold_owner": {
+          "candidate_digest": "26917dc11ecfb915f6be87087d47a39cfaf26ce45a9ba5d4fe620775b77d2100",
+          "candidate_only": true,
+          "old_model_clock_restore_rejected": true,
+          "payload_bytes": 11285,
+          "pid": 17317,
+          "recovery_required": false,
+          "required_current_head": "81075061d2c0a1b643619869bc16a111e5dd25bb66ba38928f0d294eada810d5",
+          "tampered_payload_rejected": true
+        },
+        "complete_state_exact": true,
+        "initial_state_digest": "8bb9b4c9628d1d9d1a9a8b5137c9df538157011be84e7079009eb7a5d939abd4",
+        "initial_state_unchanged": true,
+        "initial_time_micros": 500017,
+        "intervals": 2,
+        "mode": "resume",
+        "native_publication": {
+          "acknowledged_at": 10,
+          "admission_digest": "0e79c05a3afe76391480120848ff1c0b6d828f30bb4ad2b632bc143f4652ecd9",
+          "authority": "DENY_ALL",
+          "candidate_digest": "26917dc11ecfb915f6be87087d47a39cfaf26ce45a9ba5d4fe620775b77d2100",
+          "candidate_only": true,
+          "changed_receipt_rejected": true,
+          "pid": 17316,
+          "production_trust": false,
+          "publication_state_digest": "267d7a09c46c1020568312c05541495837ac7664499e33df056bd3a172c1f5de",
+          "registry_head_digest": "81075061d2c0a1b643619869bc16a111e5dd25bb66ba38928f0d294eada810d5",
+          "retry_same_receipt": true,
+          "second_writer_rejected": true,
+          "synthetic_test_trust": true,
+          "witness_digest": "9c4cf282dd1890449126a4acc33a318dd8b63c255aebfde7f3af6ca037e441fb",
+          "wrong_dispatch_rejected": true
+        },
+        "optimizer_steps": 2,
+        "original_checkpoint_unchanged": true,
+        "prediction_exact": true,
+        "reset_prediction_max_difference": 0.30416179121450104,
+        "scope": "second completed-block training; fixture trust only; not multi-generation quality improvement",
+        "status": "passed",
+        "weights_exact": true,
+        "worker_pid": 17315
+      },
+      "source_digest": "e4b16a76a5dc33b050ef245c2e47d05e0e3dccafc28cf77b82d799b81b50b55d",
+      "status": "passed",
+      "supervised": true,
+      "trainable_parameters": 8
+    }
+  ],
+  "campaign_scope": "Separate one-time read-only snapshot is recorded in ../campaign-final; it remains 1/170 completed with global qualification open at its recorded time, independently of this successful source CI.",
+  "conclusion": "success",
+  "download_verification": {
+    "artifact_id": 13495121785,
+    "digest_matches": true,
+    "download_finished_at_utc": "2026-11-06T10:30:17.380313+00:00",
+    "download_started_at_utc": "2026-11-06T10:30:12.208825+00:00",
+    "elapsed_seconds": 5.171592642996984,
+    "expected_sha256": "45611d819dd2ecb6fa1a36a6fef9f17aa39de8fb3b018c1f082e6ab65c6e1d91",
+    "expected_size_in_bytes": 108165145,
+    "path": "/workspace/scratch/7ee3ec79bc34/ci-repair-run/hcsn-repaired-head-fcffa430-ci-42201095686.zip",
+    "sha256": "45611d819dd2ecb6fa1a36a6fef9f17aa39de8fb3b018c1f082e6ab65c6e1d91",
+    "size_in_bytes": 108165145,
+    "size_matches": true
+  },
+  "evidence_state": "terminal success preserved for this exact repaired head; previous failed run remains independently retained",
+  "head_sha": "fcffa43043ec7f36fa680c449c54b9b3446eb6a6",
+  "job_id": 127836285317,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201095686/job/127836285317",
+  "observer_actions": "Read-only GitHub APIs and artifact download; local evidence writes only. No CI rerun/cancel, campaign mutation, code execution from the downloaded artifact, or source edits.",
+  "qualification_limits": [
+    "CPU engineering fixtures only; DENY_ALL synthetic owner trust and candidate-only publication. No production adoption, production trust, task-quality improvement or CUDA qualification is claimed.",
+    "Real signed TaskFlow authorization DB/reopen/reconciliation test passed with a provider double. Separate A/B fixtures exercised actual native supervisor process transport and Python workers. These are distinct evidence paths, not a single signed-grant-to-real-worker E2E.",
+    "The source-only import hook assumes a host-managed immutable private source tree and .py files for actual qualification modules. It is not a general Python loading sandbox or complete dependency-binary attestation."
+  ],
+  "record_created_at_utc": "2026-11-06T10:31:40.931937+00:00",
+  "repair_commit_files": [
+    {
+      "additions": 32,
+      "changes": 32,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-automation/tests/automation.rs",
+      "status": "modified"
+    }
+  ],
+  "repaired_regression": {
+    "previous_conclusion": "failure",
+    "previous_evidence_preserved_at": "../new-code-ci/",
+    "previous_head_sha": "92a8b4acbd648deae34ebd90cccc905c6b604d79",
+    "previous_run_id": 42197891722,
+    "raw_log_line": "PASS [   0.263s] codex-hepta-automation::automation v1_store_migrates_atomically_to_dispatch_outcome_schema",
+    "result": "PASS",
+    "source": "artifact-selected/taskflow-tests.log",
+    "test": "codex-hepta-automation::automation v1_store_migrates_atomically_to_dispatch_outcome_schema"
+  },
+  "run_attempt": 1,
+  "run_id": 42201095686,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201095686",
+  "signed_taskflow_db_test": {
+    "name": "signed_dispatch_reopens_without_relaunch_and_distinct_cancel_reconciles",
+    "raw_log_line": "PASS [   0.349s] codex-hepta-automation::hcsn_taskflow signed_dispatch_reopens_without_relaunch_and_distinct_cancel_reconciles",
+    "result": "PASS",
+    "source": "artifact-selected/taskflow-tests.log"
+  },
+  "source_txt_head_and_tree_match_expected": true,
+  "status": "completed",
+  "terminal_logs_and_artifacts_window": {
+    "received_at_utc": "2026-11-06T10:29:18.969Z",
+    "requested_at_utc": "2026-11-06T10:29:15.996Z"
+  },
+  "terminal_observation_window": {
+    "received_at_utc": "2026-11-06T10:28:59.070Z",
+    "requested_at_utc": "2026-11-06T10:28:58.587Z"
+  },
+  "tree_sha": "d0a50e37bda5073506734f0784807ba6f694d127"
+}

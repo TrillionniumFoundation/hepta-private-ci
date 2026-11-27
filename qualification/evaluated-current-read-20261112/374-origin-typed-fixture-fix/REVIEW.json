@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.real-ci-typed-fixture-fix.v1",
+  "status": "STATIC_ONLY_NOT_FMT_NOT_COMPILED_NOT_RUN",
+  "source_parent": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "base_tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "observed_failure": {
+    "source": "parent read and supplied original full job log",
+    "run_id": 43288106947,
+    "job_id": 131426787479,
+    "compiler": "E0308",
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs",
+    "cause": "readonly_channel returns OriginalCellQ24TrainingReadbackConnectionV1, while Candidate fixture_from_original_clients requires OriginalCellQ24TrainingCommandConnectionV1",
+    "test_execution": 0,
+    "junit": "absent after compilation failure, not an independent passed or failed test result"
+  },
+  "repair": [
+    "Use the existing actual same-process connected pair factory for the correct Candidate initial connection type.",
+    "Expose exactly two aliases through the already cfg(test) original_bootstrap_test_ports module: fresh_peer and recovered_peer.",
+    "Select the real original fixture connection origin from the same four Pairing variants as the Material common channels; no unsafe cast, fake receipt, constructor weakening, extra stream or runtime effect."
+  ],
+  "preserved": {
+    "test_method": "resident_root_consuming_origins_match_before_cas_issuance_and_dispatch",
+    "branches": [
+      "NoUpdate",
+      "Candidate"
+    ],
+    "pairings": [
+      "FreshRegistrationRecoveredChannels",
+      "RecoveredRegistrationFreshChannels",
+      "FreshRegistrationFreshChannels",
+      "RecoveredRegistrationRecoveredChannels"
+    ],
+    "total_cases": 8,
+    "assertion_blocks_exact_unchanged": 7,
+    "zero_frame_probe_callback_exact_unchanged": true,
+    "original_CAS_inodes_and_bytes_assertions_exact_unchanged": true,
+    "issuance_sequence_and_dispatch_assertions_exact_unchanged": true,
+    "original_ignore_annotation_unchanged": true,
+    "original_300_second_connection_lifetime": true,
+    "production_credential_checks_unchanged": true
+  },
+  "production": "No runtime source change; module and aliases exist only in the original cfg(test) graph. Original private pair() remains the same UnixStream pair, same actual process pidfd, same policy, and same material initial-context validation.",
+  "limits": "A successful compile/run is still required. No build, test, h, actor or ref was started here; the original failure remains evidence.",
+  "inputs": [
+    {
+      "name": "actual_new_origin_test",
+      "bytes": 9083,
+      "sha256": "083dc934269c0fe818e8a3f7ad0aac8c86b1ba0d83900acf005db08ed10c7838",
+      "git_blob_sha": "9572c684aa5fb5839ecd984469ffacb5cfb9e961"
+    },
+    {
+      "name": "existing_original_bootstrap_ports",
+      "bytes": 5133,
+      "sha256": "a5ec4adaf8c6f3c48bfbd37282873a943ce6a7fd6cd83c5994ea1744f43840a7",
+      "git_blob_sha": "36289de55d67d19d5ed710044efdf7012c08d3a3"
+    },
+    {
+      "name": "existing_typed_connection",
+      "bytes": 8621,
+      "sha256": "04675236cd230cc42b788b29bd2b1d86f4e15ffd5cd803078fd3371fee4d8aa3",
+      "git_blob_sha": "ce2aabb0fb2948e9691476403b17731becfad375"
+    },
+    {
+      "name": "existing_test_pair_factory",
+      "bytes": 2282,
+      "sha256": "7a2759950fc8def989df0d65965489f3c6ea03c6283ac057d70c89149cb6d4c7",
+      "git_blob_sha": "3546571b4cb448383c76b7ff11bf14a19104e86f"
+    },
+    {
+      "name": "actual_fixture_receiver",
+      "bytes": 12381,
+      "sha256": "a2702c756212445a29776cc10fd214ae9096f095d74d9a4fb6dc5bbafe1762e6",
+      "git_blob_sha": "ff108c4b3a11f3dbdfc014ff6c5fc485ee7dfc73"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs",
+      "base_blob": "9572c684aa5fb5839ecd984469ffacb5cfb9e961",
+      "bytes": 9876,
+      "sha256": "0b5cdef2831ea87da90335e49df516e537aad8fbca74c350f1b3e9b96c872374",
+      "git_blob_sha": "bbf4dfbe8777739946ae87654cd5259a004cfad6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "base_blob": "36289de55d67d19d5ed710044efdf7012c08d3a3",
+      "bytes": 5301,
+      "sha256": "f3d857ae666a7d801b56eb8caa4866378fbbbd1c19162faa1a017c804ef6ffc7",
+      "git_blob_sha": "8d2e57069155bc4968a755717bb48ba473a66435"
+    }
+  ],
+  "exact_edits": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs",
+      "edits": [
+        {
+          "before": "                    let (candidate, mut peer) =\n                        original_bootstrap_test_ports::readonly_channel(material.config.clone())?;\n",
+          "after": "                    let (candidate, mut peer) = match pairing {\n                        Pairing::FreshRegistrationRecoveredChannels\n                        | Pairing::RecoveredRegistrationRecoveredChannels => {\n                            original_bootstrap_test_ports::recovered_candidate_channel(\n                                material.config.clone(),\n                                /*expected*/ None,\n                                Duration::from_secs(300),\n                            )?\n                        }\n                        Pairing::RecoveredRegistrationFreshChannels\n                        | Pairing::FreshRegistrationFreshChannels => {\n                            original_bootstrap_test_ports::fresh_candidate_channel(\n                                material.config.clone(),\n                                Duration::from_secs(300),\n                            )?\n                        }\n                    };\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "edits": [
+        {
+          "before": "use super::super::connection;\n",
+          "after": "use super::super::connection;\npub(crate) use super::super::connection::fresh_peer as fresh_candidate_channel;\npub(crate) use super::super::connection::recovered_peer as recovered_candidate_channel;\n"
+        }
+      ]
+    }
+  ]
+}

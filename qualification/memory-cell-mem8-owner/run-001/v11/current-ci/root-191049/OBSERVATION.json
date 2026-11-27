@@ -1,0 +1,97 @@
+{
+  "schema": "mem8.v11.root-current-blocking-observation.v1",
+  "observed_at_utc": "2026-11-11 19:10:49 UTC",
+  "source": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "run": 43082162592,
+  "attempt": 1,
+  "run_status": "in_progress",
+  "run_conclusion": null,
+  "listed_jobs": 35,
+  "state_counts": {
+    "success": 18,
+    "cancelled": 4,
+    "in_progress": 6,
+    "failure": 3,
+    "skipped": 4
+  },
+  "terminal_failures": [
+    {
+      "id": 130737440408,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T18:54:53Z",
+      "completed_at": "2026-11-11T19:10:25Z",
+      "failed_steps": [
+        {
+          "name": "bazel test //...",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-11T18:55:28Z",
+          "completed_at": "2026-11-11T19:08:33Z"
+        }
+      ]
+    },
+    {
+      "id": 130737440461,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T18:54:53Z",
+      "completed_at": "2026-11-11T19:02:30Z",
+      "failed_steps": [
+        {
+          "name": "bazel test //...",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-11T18:55:21Z",
+          "completed_at": "2026-11-11T19:01:38Z"
+        }
+      ]
+    },
+    {
+      "id": 130737440544,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T18:54:53Z",
+      "completed_at": "2026-11-11T19:02:20Z",
+      "failed_steps": [
+        {
+          "name": "bazel test //...",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-11T18:55:38Z",
+          "completed_at": "2026-11-11T19:01:38Z"
+        }
+      ]
+    }
+  ],
+  "full_original_API_objects": [
+    {
+      "path": "current-ci/root-191049/run.json",
+      "bytes": 16560,
+      "sha256": "02e3674305cfe377f70d39077cd0f0ae4040105f83d1a65cf274cd1b112f0912",
+      "git_blob": "ac9456a8fc0ea99eb355eab114938d3cb10d7571"
+    },
+    {
+      "path": "current-ci/root-191049/jobs.json",
+      "bytes": 82845,
+      "sha256": "ceba4b63723424a890e72c4e98c0b51f2697b9e4c5c202ee4629b64d3538ce53",
+      "git_blob": "01b35ee4ea8f4ea61cc915864bf74b6d7316ae8d"
+    }
+  ],
+  "native_case_or_target_counts_inferred_from_API": false,
+  "original_log_bodies_read_for_this_root_observation": 0,
+  "global_run_terminal_predicted": false,
+  "all_required_CI_accepted": false,
+  "all_ten_adoption_gates_remain_open": true,
+  "old_d0f_outcomes_transferred": false,
+  "actions": {
+    "read_only": true,
+    "rerun": 0,
+    "cancel": 0,
+    "new_model_requests": 0,
+    "H_mutations": 0
+  }
+}

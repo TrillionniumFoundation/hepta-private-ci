@@ -1,0 +1,376 @@
+{
+  "schema": "hepta.original-ordinary-input-handoff.current-status-addendum.v1",
+  "document_kind": "docs-only current-status appendix; not a runtime configuration or authority object",
+  "current_source": {
+    "commit": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+    "tree": "c8730bab75eabe47a3b0b3260a6203a0d86d1443",
+    "manifest_blob": "95c8261a6c3eec23d038ba5aec754d618731d222",
+    "boundaries": 737,
+    "protected_complete_records": 506
+  },
+  "historical_contract": {
+    "path": "qualification/learn-ordinary-ce434/original-ordinary-input-handoff-20261112/input-contract.json",
+    "blob": "09d097abb75b7b2a8069e64cd5d2ab2f6e796e05",
+    "source": {
+      "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+      "tree": "360375952ff4fa51e817f2c773e5a5bc2a842a27"
+    },
+    "bytes": 40026,
+    "sha256": "34eba26f8a2f2e05d99ed062a3c9b4c599f05af34dfdd5e80c7af4c5b778d691",
+    "preserved": "原文件及 488 时点陈述原字节保留。其 remaining_source_gate 是历史结论；本附录说明 8bf 的差异，不将 8bf 状态回填到旧合同。",
+    "superseded_for_current_source_only": [
+      "status.remaining_source_gate: Candidate Selection/NextUse require_stage blanket denial"
+    ],
+    "input_and_authority_boundaries": "原输入、权限、独立 B/C 和冷重启要求仍适用；具体当前状态以下列固定来源为准。"
+  },
+  "bounded_evidence": {
+    "reused_453_assembly_audit": {
+      "blob": "782a41774414237ab06df421c3184e24b8ca0e9d",
+      "readme_blob": "f5f7914443e66457b11950ed8249ff602d6feb21",
+      "source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+      "scope": "40 explicitly listed Agentd source/test files plus two identified source-closure QA files and exact CALLERS records; current fixed Git bytes verified. No full workspace scan or H read."
+    },
+    "delta_reviews": [
+      {
+        "commit": "7dd5b5efe75de6a950f0c9ba9acf6856f6df997e",
+        "audit_blob": "a894b5473aa265838ee467941cdb222deb7de14b",
+        "peer_blob": "943cb4537cea3567525cf6a396ba1a390a8a09df",
+        "mechanism_limit_blob": "aebad12ca8cf4a29562b05d2f4bafacf3283fefd"
+      },
+      {
+        "commit": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+        "audit_blob": "a04669099068a43497d1a9be1b6182d401e9e205",
+        "peer_blob": "1feeb81de00587210ae05a2836f7b70c3ba4f78c"
+      }
+    ],
+    "this_appendix": "复用上述固定字节、三处已审生产变更与 20 个已列 boundary 的完整 record。未扩大源码/主机搜索；未运行 H、source QA、full caller 或 native。",
+    "negative_claim_limit": "在已核范围尚未定位/未形成普通装配，不等于全仓或原主机不存在外部 launcher/owner。20 个空 caller 登记不是本次新完成的全域 caller 扫描。"
+  },
+  "source_changes_since_453": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "before": "e8400d75ebd2822e5477b38cf49e44ce38ad0733",
+      "after": "02671dff43091e3bb56a050166d3990a64f57e79",
+      "change": "require_stage 将 Candidate 正向 Selection/NextUse 的 blanket denial 改为 concrete Candidate 私有资格调用；通用 trait 不因这一步开放。"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "before": "936300641ff24012652f186713f840d908d283e3",
+      "after": "65137e97220c76a891ac390c56f9bfd8d2aa506b",
+      "change": "新增 crate-private require_original_adoption_stage，复用原 require_adoption_cut(snapshot, stage, Action::Execute) 并要求已安装原 Root gate。原 effect 方法逐字保留。"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "before": "300f86174ba4bc506acf6938ba75a8d678d3e4e7",
+      "after": "0064aef61f48479535f129bf3f9564df42add58f",
+      "change": "两处同一 journal 的 readback 改为原 ProductEvaluationExecutionStoreV1 trait UFCS；实际 journal/key/I/O/fresh/fence 不变。这是已观察 caller 类型歧义修复，不是新增部署装配。"
+    }
+  ],
+  "private_dispatch": {
+    "status": "implemented in 7dd and retained by 8bf; current fixed-source checks pending",
+    "eligibility": [
+      "原 exact cut 5→Selection / cut 6→NextUse",
+      "原 Fresh origin、next-stage、完整 Model cut 和期限",
+      "已安装原 private Root gate 的存在性"
+    ],
+    "does_not_establish": [
+      "原 gate 此刻 CURRENT",
+      "原 T/E/Model/S/Version/C 服务已装配或可用",
+      "完整 Qualified primary+非空 retention 已产生",
+      "新的 principal、grant、key、UID、peer 或公共 owner 权限",
+      "普通任务 5→6→7 已成功"
+    ],
+    "preserved_generic_denials": {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "blob": "d467d499a6d20e4e77a913889294d05c7159d91f",
+      "scope": "Candidate 正向 generic execute_stage / receipt_attestation 拒绝，以及既有 NoUpdate / recovery / read-only 边界不因私有接线放宽。"
+    },
+    "effect_chain": "require_stage 仅作 dispatch 资格预检；实际 runtime 仍须原 gate.begin 的 CAS，随后只经 execute_original_evidence / 同 operation opaque evidence 消费。原 Model/E、Version/S/C 实读、CURRENT、peer/pidfd、absolute deadline、取消/撤销、principal 和完整 panel 检查继续约束 effects。",
+    "native_mechanism_limit": "已有 RootModel fixture 的 E/Product metadata 不能充当完整 Qualified、非空 retention 的原 owner 6/7 成功证据。原 ProjectionInputs 与现成 Fresh/Recovered adapters 不能凭空转移未持有的原 clients/Trainer/TrainingConnection/baseline；未新增 signer、假 gate、连接或 Origin 转换强凑机制。"
+  },
+  "remaining_source_composition": [
+    {
+      "location": "main.rs / production_launcher.rs / config_root_learning.rs / config_resident_learning.rs",
+      "existing": "AgentdProductionStartup::receive → run 与实际 delivery consumer 已存在；checkpoint 分支需要 with_root_learning_stage_owners，resident 分支需要实际 CircuitQ24TaskProfileV1 和 with_root_resident_learning_enrollment。",
+      "still_missing_in_reviewed_call_graph": "普通 receive 的 checkpoint-only handoff 没有实际 stage owners / resident enrollment / B 执行 / C FinalUse 输入。require_root_learning_assembled 对缺 owners 继续拒绝；两种模式互斥。",
+      "legal_next_code_work": "定位真正持有原 typed 输入的普通 launcher 后，在其已有调用点消费输入并调用现有配置/运行入口。不能用新增无人调用 wrapper、DTO、文件路径文本或 OS root 补出 custody。"
+    },
+    {
+      "location": "circuit_on_policy_evaluation_policy_panel.rs → cell_q24_material_receipt_owner.rs → cell_q24_training_bootstrap.rs",
+      "existing": "完整 pre-B PanelPolicyV2 → Material ConfigV2/create_v2 → Training Bootstrap ConfigV2/from_original_custody_v2 的校验和 effect 前重验已实现。",
+      "still_missing_in_reviewed_call_graph": "真实原 Material/T host 的普通生产 caller、事前冻结 preimage 和该次 A/B 的实际原连接尚未定位并装配。",
+      "legal_next_code_work": "只在既有原 owner 持有 files/witness/key、原 D/T streams 和原 policy 输入时调用已有桥。不可把 immutable policy metadata 或跨 UID Arc 当执行权限。"
+    },
+    {
+      "location": "authority_host_resident_registration.rs / authority_host_learning_resident.rs / authority_host_learning_resident_transport.rs / resident_learning_delivery.rs",
+      "existing": "原 profile/intent/exact lease → register → into_candidate_runtime(actual stages) → serve_original_stream → 原 Root stream client → enroll_original_root；已有 runtime 等实际 A/outbox 完成。",
+      "still_missing_in_reviewed_call_graph": "上游原 Root 注册/enrollment 与 Candidate 原 streams 工厂的真实普通调用者尚未接上；所需 T/E/Model/S/Version/C 原 custody 不能从 checkpoint 派生。",
+      "legal_next_code_work": "在真实原 Root service 与普通 launcher 中消费已经持有的 config custody、streams、pidfd 和 deadlines，接到这些既有消费者。"
+    },
+    {
+      "location": "circuit_model_version_host.rs / circuit_model_version_service.rs",
+      "existing": "from_original_owners、ordinary/read/NextUse/readiness 服务与真正 publish 后的 C runtime 已存在。",
+      "still_missing_in_reviewed_call_graph": "普通 Version producer/service caller 与其原 Model/Artifact/C task/issuer 输入映射仍未定位；20 个所列 factory records 包括这些空登记。",
+      "legal_next_code_work": "由原 Version host 消费其实际 held endpoints 与资源启动已有服务；不能用 S 签名或 Ready 读回代替 publish/FinalUse。"
+    }
+  ],
+  "deployment_inputs_that_code_cannot_derive": [
+    {
+      "id": "pre_adoption_B",
+      "required": "既存、已获准在采用前运行 exact candidate/baseline 的独立 task/inference owner；真实每臂 RunStart、Source/Cell/ledger、终态 Outcome 和 primary+非空 retention 输入。",
+      "boundary": "read_original_v2 只读取已完成事实；原普通 Q24 profile 要求 sealed PublishedTask；模型字节、raw worker、签名 DTO 不提供 B 执行能力。"
+    },
+    {
+      "id": "frozen_profile_and_independent_principals",
+      "required": "由原 owner 交付真实事前冻结的完整 metrics/sources、Primary/NI roles、margins、temporal/holdout/comparability 与 baseline/objective/profile，以及实际有效的独立 T/E/S/C principals。",
+      "boundary": "真实可达性及有效窗口待原 owner 输入和实际核验。未替部署选择 fixture profile，不建议降低原阈值或修改冻结规则。"
+    },
+    {
+      "id": "Version_and_C_FinalUse",
+      "required": "原 Version/Artifact/checkpoint/CURRENT 资源、已持原 issuer transport，以及允许真实 Prepared binding 的原 policy；C 独立鉴权的全新会话 RunStart 与真实任务内容。",
+      "boundary": "原 issuer 实现存在且可以拒绝；LEARN、S、Ready、模型数据和 OS root 都不替代 C FinalUse。"
+    },
+    {
+      "id": "cold_restart",
+      "required": "既有 daemon 与 Root 生命周期 owner、持久化 CURRENT/checkpoint/private 状态、原恢复连接与真实新进程身份。",
+      "boundary": "fixture reopen、同 Arc 重建或只重启 inference worker 不构成 daemon/Root 真冷重启。"
+    }
+  ],
+  "publication_denial_and_uncertainty": {
+    "prepared_may_preexist": true,
+    "rule": "真实 Version operation 可以先持久化 Prepared，随后 issuer 拒绝。正确边界是不发布选定 CURRENT、不释放 C 执行 capability；不可概括成 Version 零写入。",
+    "preservation": "必须保留并实读 Prepared、Pending/Uncertain、原 journal/witness、CURRENT 与恢复证据；不能抹掉未决状态或由拒绝推定可以重新执行效果。"
+  },
+  "original_empty_factory_records": {
+    "meaning": "453 审计选定的 20 个 boundary 全部逐条以完整 raw record 对比到当前 95c，原 product_callers=[] 及全部记录字节未变；不是按 path 去重或新 full-caller 通过。",
+    "source_manifest_blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+    "current_manifest_blob": "95c8261a6c3eec23d038ba5aec754d618731d222",
+    "selected_count": 20,
+    "records": [
+      {
+        "id": "root_learning_original_stage_assembly",
+        "symbol": "AgentdConfig::with_root_learning_stage_owners",
+        "definition_path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "074719f4d76d6d3326ccc452060bacd01e5cadd0d01f5679236142f4b80ecf5b"
+      },
+      {
+        "id": "root_resident_original_register",
+        "symbol": "register_host_resident_learning_v3",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "7f591055b38fb2cc98180f2d6d3c53fbdeee9a168f23ca3bf86c67e12a51fe81"
+      },
+      {
+        "id": "root_resident_service_register",
+        "symbol": "HostAuthorityService::register_resident_learning_v3",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "24b71da3acbfc920cb634aff36bd1eb25a06d1973894c2bd27193478675c3391"
+      },
+      {
+        "id": "root_resident_original_stream_serve",
+        "symbol": "RootResidentLearningHandleV3::serve_original_stream",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "6a97f1f08ce8ea11f4ead13ecec22eed0c8357a97ba469914c6b6e53e7c05170"
+      },
+      {
+        "id": "root_resident_original_client_create",
+        "symbol": "AgentdRootResidentLearningClientV3::from_original_root_stream",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "1d257b8bee9c8c60fc7fd81e5066c5b819adb1902b8cccd9d670e47de03d060e"
+      },
+      {
+        "id": "root_resident_late_enrollment_config",
+        "symbol": "AgentdConfig::with_root_resident_learning_enrollment",
+        "definition_path": "codex-rs/hepta-agentd/src/config_resident_learning.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "5c81719ce11908b2595daee5674bba684f89aba9ddc2dd5f982ba8e496068bdd"
+      },
+      {
+        "id": "root_resident_late_enrollment_submit",
+        "symbol": "AgentdRootResidentEnrollmentV3::enroll_original_root",
+        "definition_path": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "8fa47bde72585878a6b7e8f8646d5755ba2dda9bd516182ee314667211bb3be2"
+      },
+      {
+        "id": "learning_original_candidate_stage_create",
+        "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "377120c1da9876ec81c8742e352094d585ad046631376de281b876e46ee8f280"
+      },
+      {
+        "id": "root_resident_candidate_runtime_consume",
+        "symbol": "RootResidentLearningRegistrationV3::into_candidate_runtime",
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "30ce44b17622e4f7be111c14c6c22454e5c225387e0b56c61b1e27a804eb8636"
+      },
+      {
+        "id": "learning_original_evaluation_shared_training_host",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::into_host_from_original_training_readback",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "c7cf1f0cbbae8b7158f3df16448784b25d5b2cf271b5bfead6493ba70a6f55ea"
+      },
+      {
+        "id": "learning_positive_version_owner_create",
+        "symbol": "OriginalCircuitModelVersionHostV1::from_original_owners",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "6fc107d7e661e682c82984e0d4eed62be733266a05b152737a1179e26df9e451"
+      },
+      {
+        "id": "learning_positive_version_owner_ordinary",
+        "symbol": "OriginalCircuitModelVersionHostV1::serve_original_ordinary",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "6148729da45e722ec0e661cb53c111f703f73fe33eb940330c561cf58fc994d7"
+      },
+      {
+        "id": "learning_positive_version_owner_selection_read",
+        "symbol": "OriginalCircuitModelVersionHostV1::serve_original_selection_readback",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "1527a4f6c3d74b2c75d77d70b4a5e5441555ce0b09c0d57f6961399fc177d83b"
+      },
+      {
+        "id": "learning_positive_version_owner_next_use_read",
+        "symbol": "OriginalCircuitModelVersionHostV1::serve_original_next_use_readback",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "10ec6d716b35656b10cb4ac8ed9623efbfea306f6bedb0ffb244946c95dd8268"
+      },
+      {
+        "id": "learning_positive_version_owner_readiness",
+        "symbol": "OriginalCircuitModelVersionHostV1::serve_original_completion_readiness",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "cb298487bfc492ad5d35e672cd8469486f3e56df79cfde6acca48e5684983659"
+      },
+      {
+        "id": "learning_original_material_config_v2",
+        "symbol": "OriginalCellQ24MaterialReceiptConfigV2::from_original",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "aba2d16f2aea0cf20bf95deb986d0377982a17fc343650f7ae277ff14ea4a959"
+      },
+      {
+        "id": "learning_original_material_create_v2",
+        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::create_v2",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "bf202325e038366168975a2459f744ca14e28fc83ae3bd8d15143148de77b8e9"
+      },
+      {
+        "id": "learning_original_training_bootstrap_config_v2",
+        "symbol": "OriginalCellQ24TrainingBootstrapConfigV2::from_original",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "8ea3cdef9d38bd49c1041e5e20a3e14995fb50dbee39c6e32a5a7fc3eb095db7"
+      },
+      {
+        "id": "learning_original_training_bootstrap_create_v2",
+        "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::from_original_custody_v2",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "0091d4bd889d99a1042bdef0aa102310016689446ba00ffa898220a223a17f5f"
+      },
+      {
+        "id": "learning_pre_b_panel_freeze",
+        "symbol": "OriginalCircuitOnPolicyPanelPolicyV2::freeze",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+        "product_callers": [],
+        "unchanged_complete_record_from453": true,
+        "complete_record_sha256": "abf29138671c272a8a2d62af31fc71a428242f4e8eaf5b1dae7c5c8347058477"
+      }
+    ]
+  },
+  "observed_launcher_locator": {
+    "evidence_commit": "c4234ba466b725580ff7797a23a4010c79b7a9ac",
+    "result_blob": "91410e3eee751cafb4a8b47134b6366726fb91e9",
+    "execution_blob": "3374417354f753787b4c5f2e3b281e68774ab270",
+    "fixed_target": "/data/hepta-service-root-01.py",
+    "target_bytes": 1379,
+    "target_sha256": "9919f15ae0ba3c58fa1630345b51adb566fc1ba18914c0d0051e50075246ef77",
+    "inspection_actual_exit": 0,
+    "original_process_complete": true,
+    "result_bytes": 3133,
+    "result_sha256": "ac5c699e9f5610f3522f5eb1675bdb2f2e1702b0da4f880b7989c2c5c8dc2b39",
+    "classification": "unknown_static_purpose",
+    "target_executed": false,
+    "authority_or_runtime_owner_proven": false,
+    "interpretation": "成功的是只读、固定 hash、封闭 AST 分类器本身。目标脚本未执行、引用路径未读取；unknown 既不证明 ordinary/Root29，也不证明 launcher 不存在，不授权扩大搜索。"
+  },
+  "minimal_next_handoff": {
+    "request": "请提供一个真实既有的 launcher 源码/配置/服务入口 locator，以及原 host/deployment 标识和对应 revision（如可取得）。可只给非秘密路径、服务名或固定源码 URL。",
+    "fields": {
+      "existing_launcher_or_config_locator": null,
+      "original_host_or_deployment": null,
+      "revision_or_original_configuration_identity": null
+    },
+    "purpose": "从该既有入口继续只读追踪已持原 owner、连接和 policy 的交付位置，再判断能在现有生产调用点完成哪些接线；locator 本身不是 capability 或运行配置。",
+    "do_not_upload": [
+      "私钥、token、secret 值",
+      "完整环境或无关 argv",
+      "用 fixture keys、签名 DTO 或 OS root 身份替代原 capability"
+    ],
+    "deferred_original_inputs": "B 采用前能力、C FinalUse、冻结 profile/有效独立 principals、真实重启和恢复 owner 的非秘密定位，可沿同一原入口继续核对，不要求在聊天中上传 custody 内容。"
+  },
+  "current_validation_and_acceptance": {
+    "source_candidate": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+    "fixed_source_checks": {
+      "source_qa": "pending",
+      "full_caller": "pending",
+      "native": "pending",
+      "root29": "pending/conditional; must retain its original actual-201-pass prerequisite"
+    },
+    "expected_inventory_only": {
+      "source_methods": 445,
+      "source_modules": 62,
+      "native_cases": 201,
+      "native_groups": 43,
+      "root29_cases": 29,
+      "boundaries": 737,
+      "protected_complete_records": 506
+    },
+    "dispatch_observation": "Root 已报告提交本候选主验证请求；本附录未读取 H 回执，不将提交请求当作启动或通过。",
+    "no_result_transfer": "旧 453 的 source PASS/full-caller FAIL/native preflight failure 及其他历史候选结果各归原源码；不迁移为 8bf PASS。",
+    "ordinary_acceptance": {
+      "task_A": 0,
+      "actual_training_or_no_update": 0,
+      "independent_B_and_retention": 0,
+      "positive_adoption": 0,
+      "fresh_session_task_C": 0,
+      "cold_daemon_and_Root_restart": 0
+    },
+    "counts_scope": "仅本次同固定源码普通入口验收，保留旧真实训练/旧机制实验的独立事实。",
+    "required_end_to_end": "实际 A 经验 → 原 Training 候选或明确 NoUpdate → 独立 B+旧能力 retention → 原 S/Version 决定 → 实际 C → 真 daemon/Root 冷重启读回；至少一例正向采用及一例正确 NoUpdate/回退。",
+    "task_C_evidence": "新 session/RunStart 必须独立证明；A/C 实际任务内容或模型 observation 的独立 digest 也须证明确有不同，不能只用含 run/session/时间的整体摘要变化。此为本次验收证据要求，不新增生产永久禁止重复输入规则。",
+    "restart_evidence": "实际 daemon 与 Root 新进程/boot 身份，磁盘 CURRENT 和私有状态原读回，以及任何未决效果的原始状态。"
+  }
+}

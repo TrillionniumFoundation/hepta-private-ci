@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.original-paired-agentd-source-checks.v1",
+  "source_commit": "048b4a31b6014769d98bff4f23e619f9c030bb65",
+  "statistical_dependency": "e4a253087fe32a768455fee31fbb100ae8fcf362",
+  "root_reference": {
+    "commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+    "tree": "360375952ff4fa51e817f2c773e5a5bc2a842a27",
+    "toml_blob": "7df13b4c965af0a6e1c93989075b173fd1ff8db5",
+    "parsed_blob": "178c0f33deb52ea34a6c45b71ed1d27cfd018699",
+    "boundaries": 686,
+    "protected_records": 463
+  },
+  "javascript_projection": {
+    "positive": 19,
+    "mutations": 75,
+    "forbidden": 305,
+    "errors": [],
+    "unchangedTouched": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "ok": true
+      }
+    ],
+    "execution": "Pure JavaScript source-marker projection, not Python/native/Rust/fullcaller execution"
+  },
+  "original_record_preservation": {
+    "before_records": 1020,
+    "after_records": 1052,
+    "unowned_records": 1011,
+    "changed_records": 9,
+    "new_records": 32,
+    "missing": 0,
+    "exact_bytes_preserved": true
+  },
+  "qa_changes": {
+    "retained_methods": {
+      "test_original_evaluation_panel_source_closure.py": 8,
+      "test_original_evaluation_provider_source_closure.py": 8
+    },
+    "new_file": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+    "new_methods": 8,
+    "mechanism": "Existing verifier, exact full-record selectors, actual function boundaries, literal domain sites, original mode/type joins, negative unauthorized caller/deletion/movement/authority substitutions.",
+    "execution_status": "Written and inspected, not run in Python."
+  },
+  "unchanged_behavior": "This child contains guards, source tests and evidence only. All 21 production/fixture Rust blobs remain exactly source 048b4a31b6014769d98bff4f23e619f9c030bb65.",
+  "native_and_ordinary": {
+    "rust": false,
+    "python": false,
+    "typed_fullcaller": false,
+    "h": false,
+    "ordinary_acceptance": 0
+  },
+  "remaining": "The paired original provider reads real original owners but does not provide evaluator-only inference grants. No production B principal supply or viable frozen ordinary paired profile has been established; no Qualified real E to Version positive effect is asserted. Existing W4/metric contracts and the positive-route admission gates remain unchanged."
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "independent-native-envelope-h2-static-and-metadata-review-v1",
+  "status": "closed_for_reviewed_prospective_gaps",
+  "runtime": {
+    "native_envelope.py": {
+      "bytes": 14526,
+      "sha256": "47ffc00bf9f33511b036457a1fdc31eb7f710c74e0d345cd4d5278541d0bf2f4"
+    },
+    "native_parsers.py": {
+      "bytes": 7695,
+      "sha256": "af21314b3114d443861581948c50d827ce23ab5d66cb96bbbbd0e140dcf7565e"
+    }
+  },
+  "bound_bootstrap": {
+    "bootstrap.py": {
+      "bytes": 18282,
+      "sha256": "fedff1dde25bdff874b99ad2a13a0b39a12a4452bd5e38bb262c0f96db77697e"
+    },
+    "os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    }
+  },
+  "findings": [
+    {
+      "id": "H2-CPU",
+      "status": "closed",
+      "basis": "Disjoint bootstrap own CPU prefix plus preflight/core exact wait4 CPU is compared with GNU whole CPU plus 0.02 seconds of printed U/S quantization allowance; nested components are not billed twice."
+    },
+    {
+      "id": "H2-WALL",
+      "status": "closed",
+      "basis": "Source-bound bootstrap prefix fits GNU conservative whole elapsed upper; finalization prefix remains bounded. GNU complete native terminal is still required."
+    },
+    {
+      "id": "H2-PID-TIME",
+      "status": "closed",
+      "basis": "Finite observation clocks and source-exact before/preflight/audit/after/prefix ordering are checked, with common observer identity."
+    }
+  ],
+  "validation": {
+    "scope": "Only one new four-case stdlib synthetic metadata execution; owner test suites, actual data and native commands were not run.",
+    "closure": {
+      "bytes": 6716,
+      "sha256": "fe12424d3160e96fb4df0ac04df3b01b75b5026f5c4793f1883be8b0d79d42bd"
+    },
+    "execution": {
+      "bytes": 7032,
+      "sha256": "a8116016a8de54d597d06541bd83d7be195cfe01a291f363be21e8249e91f0cb"
+    },
+    "positive_control_passed": true,
+    "three_original_bad_values_rejected": true,
+    "complete_child_wall_seconds": 0.41014256100061175,
+    "complete_wait4_child_CPU_seconds": 0.404489,
+    "complete_wait4_peak_RSS_bytes": 21155840
+  },
+  "limits": [
+    "This is source/metadata admission review, not deployment or an actual C2 audit.",
+    "The prior H1 red example capsule remains immutable. H2 positive fixture explicitly adds required source-produced scan timestamps.",
+    "Source qualification does not prove future raw records are available, nor train adequacy, numerical domain validity, scientific benefit, energy or GPU performance.",
+    "Full supervisor preparation/save/exit cost was not separately measured; exact reported cost belongs to the single metadata child."
+  ],
+  "actual_C2_or_model_or_E_access": false,
+  "execution_authorized": false,
+  "scientific_qualification": "HOLD"
+}

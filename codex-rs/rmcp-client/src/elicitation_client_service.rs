@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use rmcp::RoleClient;
-use rmcp::model::ClientInfo;
+use rmcp::model::ClientConfig;
 use rmcp::model::ClientResult;
 use rmcp::model::CustomRequest;
 use rmcp::model::CustomResult;
@@ -22,6 +22,8 @@ use serde_json::Map;
 use serde_json::Value;
 
 use crate::logging_client_handler::LoggingClientHandler;
+use crate::mrtr::OwnedInputContext;
+use crate::mrtr::inactive_owner;
 use crate::rmcp_client::Elicitation;
 use crate::rmcp_client::ElicitationPauseState;
 use crate::rmcp_client::ElicitationResponse;
@@ -50,7 +52,7 @@ pub(crate) struct ElicitationClientService {
 
 impl ElicitationClientService {
     pub(crate) fn new(
-        client_info: ClientInfo,
+        client_info: ClientConfig,
         send_elicitation: SendElicitation,
         pause_state: ElicitationPauseState,
     ) -> Self {
@@ -76,12 +78,30 @@ impl ElicitationClientService {
         request: Elicitation,
         context: RequestContext<RoleClient>,
     ) -> Result<ElicitationResponse, rmcp::ErrorData> {
-        let RequestContext { id, meta, .. } = context;
+        let modern_session = context
+            .peer
+            .peer_info()
+            .is_some_and(|info| info.protocol_version >= ProtocolVersion::V_2026_07_28);
+        let owner = context.extensions.get::<OwnedInputContext>().cloned();
+        let RequestContext { id, meta, ct, .. } = context;
         let request = restore_context_meta(request, meta);
-        let _pause = self.pause_state.enter();
-        (self.send_elicitation)(id, request)
-            .await
-            .map_err(|err| rmcp::ErrorData::internal_error(err.to_string(), None))
+        let callback = || async {
+            let _pause = self.pause_state.enter();
+            (self.send_elicitation)(id, request)
+                .await
+                .map_err(|err| rmcp::ErrorData::internal_error(err.to_string(), None))
+        };
+        if modern_session {
+            owner.ok_or_else(inactive_owner)?.run(ct, callback).await
+        } else {
+            // Legacy callbacks keep their existing wire contract and use the
+            // transport's own cancellation token, never remote metadata as owner.
+            tokio::select! {
+                biased;
+                _ = ct.cancelled() => Err(inactive_owner()),
+                result = async { callback().await } => result,
+            }
+        }
     }
 }
 
@@ -168,7 +188,7 @@ impl Service<RoleClient> for ElicitationClientService {
         .await
     }
 
-    fn get_info(&self) -> ClientInfo {
+    fn get_info(&self) -> ClientConfig {
         <LoggingClientHandler as Service<RoleClient>>::get_info(&self.handler)
     }
 }

@@ -7,6 +7,7 @@ use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
+use codex_hepta_infer_worker_host::native_app_server::NativeContextDelivery;
 use codex_hepta_infer_worker_host::native_app_server::NativeIntelligenceRunBinding;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use tokio::io::AsyncReadExt;
@@ -22,20 +23,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut request_id = None;
     let mut maximum_in_flight = None;
     let mut context_query = None;
+    let mut context_delivery = "attach".to_string();
     let mut final_use_authority_config = None;
-    let mut intelligence_run_id = None;
+    let mut intelligence_snapshot = None;
     let mut intelligence_revision = None;
     let mut intelligence_context_digest = None;
     let mut intelligence_envelope_digest = None;
     let mut native_profile_selected = false;
+    let mut resume = false;
     let mut timeout_ms = 120_000_u64;
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-snapshot-json JSON --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--context-delivery attach|withhold] [--timeout-ms N] [--resume]\nReads one prompt from stdin for a new run; an independent final-use authority must sign the exact turn/start binding before model dispatch. --resume reads only original journal input and reconciles a previously dispatched run without another turn/start. Withhold requires a context query and cannot be combined with intelligence binding."
             );
             return Ok(());
+        }
+        if flag == "--resume" {
+            resume = true;
+            continue;
         }
         let value = args.next().ok_or("missing argument value")?;
         match flag.as_str() {
@@ -49,10 +56,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--request-id" => request_id = Some(value),
             "--maximum-in-flight" => maximum_in_flight = Some(value.parse()?),
             "--context-query" => context_query = Some(value),
+            "--context-delivery" => context_delivery = value,
             "--final-use-authority-config" => {
                 final_use_authority_config = Some(PathBuf::from(value))
             }
-            "--intelligence-run-id" => intelligence_run_id = Some(value),
+            "--intelligence-run-snapshot-json" => {
+                intelligence_snapshot = Some(parse_intelligence_snapshot(&value)?);
+            }
             "--intelligence-revision" => intelligence_revision = Some(value.parse()?),
             "--intelligence-context-digest" => intelligence_context_digest = Some(value),
             "--intelligence-envelope-digest" => intelligence_envelope_digest = Some(value),
@@ -63,8 +73,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !native_profile_selected {
         return Err("--profile native-app-server must be selected explicitly".into());
     }
-    let final_use_authorizer = UnixFinalUseAuthorizer::open(
-        &final_use_authority_config.ok_or("--final-use-authority-config is required")?,
+    if resume
+        && (context_delivery != "attach"
+            || context_query.is_some()
+            || intelligence_snapshot.is_some()
+            || intelligence_revision.is_some()
+            || intelligence_context_digest.is_some()
+            || intelligence_envelope_digest.is_some())
+    {
+        return Err(
+            "--resume uses only retained input; context and intelligence arguments are forbidden"
+                .into(),
+        );
+    }
+    let context_delivery = validate_context_delivery(
+        &context_delivery,
+        context_query.as_deref(),
+        intelligence_snapshot.is_some()
+            || intelligence_revision.is_some()
+            || intelligence_context_digest.is_some()
+            || intelligence_envelope_digest.is_some(),
     )?;
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: socket.ok_or("--agentd-socket is required")?,
@@ -72,8 +100,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         generation: generation.ok_or("--generation is required")?,
         model: model.ok_or("--model is required")?,
         timeout: Duration::from_millis(timeout_ms),
-    })?
-    .with_turn_start_authorizer(Arc::new(final_use_authorizer));
+    })?;
+    let driver = if resume {
+        driver
+    } else {
+        let final_use_authorizer = UnixFinalUseAuthorizer::open(
+            &final_use_authority_config.ok_or("--final-use-authority-config is required")?,
+        )?;
+        driver.with_turn_start_authorizer(Arc::new(final_use_authorizer))
+    };
     let journal = journal.ok_or("--journal is required")?;
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());
@@ -84,10 +119,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
     };
     let mut prompt = String::new();
-    tokio::io::stdin()
-        .take(32 * 1024 + 1)
-        .read_to_string(&mut prompt)
-        .await?;
+    if !resume {
+        tokio::io::stdin()
+            .take(32 * 1024 + 1)
+            .read_to_string(&mut prompt)
+            .await?;
+    }
     let cancellation = CancellationToken::new();
     let signal = cancellation.clone();
     let signal_task = tokio::spawn(async move {
@@ -96,15 +133,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     });
     let intelligence = match (
-        intelligence_run_id,
+        intelligence_snapshot,
         intelligence_revision,
         intelligence_context_digest,
         intelligence_envelope_digest,
     ) {
         (None, None, None, None) => None,
-        (Some(run_id), Some(expected_revision), Some(context_digest), Some(envelope_digest)) => {
+        (Some(snapshot), Some(expected_revision), Some(context_digest), Some(envelope_digest)) => {
             Some(NativeIntelligenceRunBinding {
-                run_id,
+                snapshot,
                 expected_revision,
                 context_digest,
                 envelope_digest,
@@ -114,29 +151,45 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             return Err("all four --intelligence-* arguments must be supplied together".into());
         }
     };
-    let result = match intelligence {
-        Some(binding) => {
-            driver
-                .run_intelligence(
-                    &mut control,
-                    admission,
-                    prompt,
-                    context_query,
-                    binding,
-                    &cancellation,
-                )
-                .await
-        }
-        None => {
-            driver
-                .run(
-                    &mut control,
-                    admission,
-                    prompt,
-                    context_query,
-                    &cancellation,
-                )
-                .await
+    let result = if resume {
+        driver.resume(&mut control, admission, &cancellation).await
+    } else {
+        match intelligence {
+            Some(binding) => {
+                driver
+                    .run_intelligence(
+                        &mut control,
+                        admission,
+                        prompt,
+                        context_query,
+                        binding,
+                        &cancellation,
+                    )
+                    .await
+            }
+            None if context_delivery == NativeContextDelivery::Withhold => {
+                driver
+                    .run_with_context_delivery(
+                        &mut control,
+                        admission,
+                        prompt,
+                        context_query.ok_or("withhold requires --context-query")?,
+                        context_delivery,
+                        &cancellation,
+                    )
+                    .await
+            }
+            None => {
+                driver
+                    .run(
+                        &mut control,
+                        admission,
+                        prompt,
+                        context_query,
+                        &cancellation,
+                    )
+                    .await
+            }
         }
     };
     signal_task.abort();
@@ -150,3 +203,37 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     }
     Ok(())
 }
+
+fn validate_context_delivery(
+    value: &str,
+    query: Option<&str>,
+    intelligence: bool,
+) -> Result<NativeContextDelivery, &'static str> {
+    match value {
+        "attach" => Ok(NativeContextDelivery::Attach),
+        "withhold" if query.is_none_or(str::is_empty) => {
+            Err("withhold requires a nonempty --context-query")
+        }
+        "withhold" if intelligence => Err("withhold cannot be combined with --intelligence-*"),
+        "withhold" => Ok(NativeContextDelivery::Withhold),
+        _ => Err("--context-delivery must be attach or withhold"),
+    }
+}
+
+#[cfg(test)]
+#[path = "hepta-infer-worker/context_delivery_tests.rs"]
+mod context_delivery_tests;
+fn parse_intelligence_snapshot(
+    value: &str,
+) -> Result<codex_hepta_agentd::AgentRunSnapshot, Box<dyn std::error::Error + Send + Sync>> {
+    if value.len() > 16 * 1024 {
+        return Err("intelligence run snapshot exceeds its byte bound".into());
+    }
+    // No default fields and no lookup of the current daemon. A retry supplies
+    // the original immutable admission, which the driver checks against Agentd.
+    Ok(serde_json::from_str(value)?)
+}
+
+#[cfg(test)]
+#[path = "../native_worker_cli_tests.rs"]
+mod tests;

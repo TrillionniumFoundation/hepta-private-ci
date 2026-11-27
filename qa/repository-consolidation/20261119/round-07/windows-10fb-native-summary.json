@@ -1,0 +1,445 @@
+{
+  "source_head": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+  "run": 44566605077,
+  "mechanism_job": 135709969880,
+  "mechanism_artifact": 14553080274,
+  "trace_artifact": 14551344512,
+  "trace_zip_sha256": "7cccbe8db23b7e8a6f5ee6cc292b3fbccb045e15faa558bac56547b9da3869c9",
+  "mechanism_zip_sha256": "3e8e2e27b04e255b3a877b280dd9962f544a0549a6b3b911c82456e338dba7a0",
+  "trace_source_unchanged": true,
+  "cases": [
+    {
+      "mode": "appcontainer",
+      "trace_exit_code": 0,
+      "trace_complete": true,
+      "trace_records": 35,
+      "token": {
+        "is_appcontainer": 1,
+        "package_sid": "S-1-15-2-3564891057-1659286421-574880478-1322419670-4110317708-2617486765-2461658971",
+        "integrity_sid": "S-1-16-4096",
+        "user_sid": "S-1-5-21-3289802278-1561746829-1498425070-500",
+        "capability_count": 0
+      },
+      "package_access": 3,
+      "native_operations": [
+        {
+          "kind": "operation",
+          "operation": "OpenProcessToken",
+          "path": "self",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "child-delete.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "child-delete.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "trace-inherited-medium.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "trace-inherited-medium.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "trace-inherited-low.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "trace-inherited-low.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "trace-explicit-medium.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "trace-explicit-medium.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "trace-explicit-low.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "trace-explicit-low.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "..\\outside\\child-null-ME.txt",
+          "success": false,
+          "winerror": 5
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "..\\outside\\child-null-ME.txt",
+          "success": false,
+          "winerror": 5
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "..\\outside\\child-null-LW.txt",
+          "success": false,
+          "winerror": 5
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "..\\outside\\child-null-LW.txt",
+          "success": false,
+          "winerror": 5
+        },
+        {
+          "kind": "operation",
+          "operation": "RemoveDirectoryW",
+          "path": "child-delete-dir",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "RemoveDirectoryW",
+          "path": ".git",
+          "success": false,
+          "winerror": 5
+        }
+      ],
+      "cmd_exit_code": 22,
+      "cmd_streams": [
+        {
+          "name": "stdout.bin",
+          "bytes": 0,
+          "hex": ""
+        },
+        {
+          "name": "stderr.bin",
+          "bytes": 19,
+          "hex": "4163636573732069732064656e6965642e0d0a"
+        }
+      ],
+      "cmd_postconditions": {
+        "actual_child_ordinary_operations": false,
+        "native_allowed_bytes_and_deletions": true,
+        "outside_original_bytes_retained": true,
+        "protected_git_retained": true,
+        "outside_new_file_absent": true
+      },
+      "cmd_files": [
+        {
+          "path": "child-created.txt",
+          "exists": true,
+          "attributes": 32
+        },
+        {
+          "path": "child-delete.txt",
+          "exists": true,
+          "attributes": 32
+        },
+        {
+          "path": "child-delete-dir",
+          "exists": true,
+          "attributes": 16
+        },
+        {
+          "path": "child-readable.txt",
+          "exists": false,
+          "attributes": null
+        },
+        {
+          "path": "child-attempts-done.txt",
+          "exists": false,
+          "attributes": null
+        },
+        {
+          "path": "child-probe.cmd",
+          "exists": true,
+          "attributes": 32
+        }
+      ],
+      "native_parent_delete_child_counterexample": [
+        {
+          "case": "parent_delete_child_counterexample",
+          "kind": "remove_dir",
+          "path": "contaminated-parent/.git",
+          "expected_success": true,
+          "success": true,
+          "error": 0,
+          "matches_required_hypothesis": true
+        }
+      ],
+      "trace_cleanup": {
+        "child_closed": true,
+        "stdio_closed": true,
+        "token_closed": true,
+        "fixture_removed": true,
+        "profile_delete_hresult": 0
+      },
+      "cmd_cleanup": {
+        "owned_child_closed": true,
+        "owned_stdio_handles_closed": true,
+        "owned_token_closed": true,
+        "fixture_removed": true,
+        "profile_delete_hresult": 0
+      }
+    },
+    {
+      "mode": "lpac",
+      "trace_exit_code": 0,
+      "trace_complete": true,
+      "trace_records": 35,
+      "token": {
+        "is_appcontainer": 1,
+        "package_sid": "S-1-15-2-1887550149-1323677435-1562632185-3053339809-2342678820-1043911340-985228524",
+        "integrity_sid": "S-1-16-4096",
+        "user_sid": "S-1-5-21-3289802278-1561746829-1498425070-500",
+        "capability_count": 0
+      },
+      "package_access": 2,
+      "native_operations": [
+        {
+          "kind": "operation",
+          "operation": "OpenProcessToken",
+          "path": "self",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "child-delete.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "child-delete.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "trace-inherited-medium.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "trace-inherited-medium.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "trace-inherited-low.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "trace-inherited-low.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "trace-explicit-medium.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "trace-explicit-medium.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "trace-explicit-low.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "trace-explicit-low.txt",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "..\\outside\\child-null-ME.txt",
+          "success": false,
+          "winerror": 5
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "..\\outside\\child-null-ME.txt",
+          "success": false,
+          "winerror": 5
+        },
+        {
+          "kind": "operation",
+          "operation": "CreateFileW_DELETE",
+          "path": "..\\outside\\child-null-LW.txt",
+          "success": false,
+          "winerror": 5
+        },
+        {
+          "kind": "operation",
+          "operation": "DeleteFileW",
+          "path": "..\\outside\\child-null-LW.txt",
+          "success": false,
+          "winerror": 5
+        },
+        {
+          "kind": "operation",
+          "operation": "RemoveDirectoryW",
+          "path": "child-delete-dir",
+          "success": true,
+          "winerror": 0
+        },
+        {
+          "kind": "operation",
+          "operation": "RemoveDirectoryW",
+          "path": ".git",
+          "success": false,
+          "winerror": 5
+        }
+      ],
+      "cmd_exit_code": 1,
+      "cmd_streams": [
+        {
+          "name": "stdout.bin",
+          "bytes": 0,
+          "hex": ""
+        },
+        {
+          "name": "stderr.bin",
+          "bytes": 0,
+          "hex": ""
+        }
+      ],
+      "cmd_postconditions": {
+        "actual_child_ordinary_operations": false,
+        "native_allowed_bytes_and_deletions": true,
+        "outside_original_bytes_retained": true,
+        "protected_git_retained": true,
+        "outside_new_file_absent": true
+      },
+      "cmd_files": [
+        {
+          "path": "child-created.txt",
+          "exists": false,
+          "attributes": null
+        },
+        {
+          "path": "child-delete.txt",
+          "exists": true,
+          "attributes": 32
+        },
+        {
+          "path": "child-delete-dir",
+          "exists": true,
+          "attributes": 16
+        },
+        {
+          "path": "child-readable.txt",
+          "exists": false,
+          "attributes": null
+        },
+        {
+          "path": "child-attempts-done.txt",
+          "exists": false,
+          "attributes": null
+        },
+        {
+          "path": "child-probe.cmd",
+          "exists": true,
+          "attributes": 32
+        }
+      ],
+      "native_parent_delete_child_counterexample": [
+        {
+          "case": "parent_delete_child_counterexample",
+          "kind": "remove_dir",
+          "path": "contaminated-parent/.git",
+          "expected_success": true,
+          "success": true,
+          "error": 0,
+          "matches_required_hypothesis": true
+        }
+      ],
+      "trace_cleanup": {
+        "child_closed": true,
+        "stdio_closed": true,
+        "token_closed": true,
+        "fixture_removed": true,
+        "profile_delete_hresult": 0
+      },
+      "cmd_cleanup": {
+        "owned_child_closed": true,
+        "owned_stdio_handles_closed": true,
+        "owned_token_closed": true,
+        "fixture_removed": true,
+        "profile_delete_hresult": 0
+      }
+    }
+  ],
+  "acl_observe": {
+    "job": 135709970372,
+    "native_tests_executed": false,
+    "first_failure": "Normal lock differs beyond the reviewed anyhow record and exact Matrix dependency addition",
+    "cascade": "preflight.json missing, then terminal artifact directories absent"
+  },
+  "next_candidate": "This diagnostic distinguishes directory enumeration and absolute path prerequisites; no underlying cmd Win32 cause is yet demonstrated.",
+  "primary_reference": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilew",
+  "reference_implication": "FindFirstFileW opens a search handle; wildcard/directory paths require root/subdirectory permissions and successful search handles must be FindClosed. This motivates measurement, not a claim about actual cmd internals."
+}

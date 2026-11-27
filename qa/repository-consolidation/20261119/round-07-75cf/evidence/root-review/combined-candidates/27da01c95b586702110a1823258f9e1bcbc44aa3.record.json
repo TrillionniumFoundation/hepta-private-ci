@@ -1,0 +1,23 @@
+{
+  "tip": "27da01c95b586702110a1823258f9e1bcbc44aa3",
+  "prior": "1bcbe6350191c2bc748fc4b4b532c7dede15cd6f",
+  "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "approved_tree": "ccdd8dab2dd997dfab6ca6ef42efabdfda3bfa8c",
+  "fixed_automatic_tree": "0426a9e3ad3c17862fbaa1e823f5af2420f6afc3",
+  "actual_automatic_tree": "4919950eb796feda821d7aec9c5c8782dedf157b",
+  "fixed_exit": 1,
+  "actual_exit": 1,
+  "actual_conflicts": [
+    "codex-rs/hepta-control-plane/src/scope_lane_wal.rs"
+  ],
+  "resolution_paths": [
+    "codex-rs/hepta-control-plane/src/scope_lane_wal.rs"
+  ],
+  "changes_from_review_base": [
+    "codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs"
+  ],
+  "resolved_tree": "012d3faf355c2141a302d4743a5dae674b364be3",
+  "expected_composed_tree": "012d3faf355c2141a302d4743a5dae674b364be3",
+  "commit": "9b6632376958d0dc23b3a15055583f247db50c10",
+  "reason": "Preserve current Windows write/truncate(false), owner locking and explicit append seek, together with Unix no-follow append protection. Retain the original new partial-body recovery regression. Windows native execution is still required."
+}

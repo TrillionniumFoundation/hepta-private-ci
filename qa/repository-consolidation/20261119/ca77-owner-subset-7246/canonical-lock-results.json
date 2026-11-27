@@ -1,0 +1,44 @@
+{
+  "update_raw_receipt_sha256": "a6d2266630737cb59453d1d2c74338ef2a30ad02fce362c5bf4b79eb7feb3cbc",
+  "update_step": {
+    "name": "owner-canonical-bazel-lock-update-attempt04",
+    "argv": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 87.8764877319336,
+    "stdout_sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+    "stdout_bytes": 18,
+    "stderr_sha256": "d00df72b0df52ed4e7c06eb8367fc5fc067336ed67716601112616ef529ad24b",
+    "stderr_bytes": 3793
+  },
+  "check_raw_receipt_sha256": "08475a014ca0371c1356d2bd1f042d5eb344ccd4c309bbcb07cee8730499b02b",
+  "check_steps": [
+    {
+      "name": "owner-canonical-bazel-lock-check-attempt05",
+      "argv": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 2.567319631576538,
+      "stdout_sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+      "stdout_bytes": 18,
+      "stderr_sha256": "6a73ce0312f839e2ac5f26542b42b2f987a02f97adc8bc4697f42b5bff580859",
+      "stderr_bytes": 1081
+    }
+  ],
+  "lock_sha256_after": {
+    "codex-rs/Cargo.lock": "d4cecc8d8a806f4c8406d7165ab04ec5f77e13cfb20d60e069f363e26f3dc306",
+    "MODULE.bazel.lock": "5336311a0fa5c53fd5b3f5ef966d661afed27453a69d84ff3dd55dbc431ff501"
+  },
+  "lock_diff_sha256": "e732b0a286aeee31147cb5a5cb2f3dca1794b27861916c459b1236aad5c9f2f2",
+  "retained_setup_failures": [
+    "attempt01 rejected an inappropriate mod-deps jobs flag before graph resolution.",
+    "attempt02 revealed four omitted original Bazel source files.",
+    "attempt03 revealed two omitted original target entrypoints in the argument-comment-lint workspace.",
+    "attempt04 update succeeded but check lacked its original BuildBuddy helper; attempt05 restored exact helper and completed check without repeating update."
+  ],
+  "isolation_correction": "Attempts02/03 used the own-source workspace hash under the default Bazel output path because direct just update did not read wrapper environment overrides. Later wrapper pins its private output/repository paths in argv. No supplier cache or shared directories were removed."
+}

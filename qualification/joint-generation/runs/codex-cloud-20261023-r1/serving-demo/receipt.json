@@ -1,0 +1,58 @@
+{
+  "acceptance_evidence": false,
+  "budget": {
+    "compute_units": 100000,
+    "output_bytes": 4096
+  },
+  "bundle_digest": "a9a628ba087c56fcf5a400ef576ef49077f753634becaf98e6b5f1095f7380c9",
+  "commands": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "serve.py",
+        "--bundle",
+        "runs/codex-cloud-20261023-r1/bundles/ndu-11-0.01",
+        "--request",
+        "runs/codex-cloud-20261023-r1/serving-demo/request.json",
+        "--out",
+        "runs/codex-cloud-20261023-r1/serving-demo/sample"
+      ],
+      "exit_code": 0,
+      "log_sha256": "c6b5f574522f6373ed1d0181a8b65f7e001e85f6587c4f782c0d17f308f7d26f"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "serve.py",
+        "--bundle",
+        "runs/codex-cloud-20261023-r1/bundles/ndu-11-0.01",
+        "--request",
+        "runs/codex-cloud-20261023-r1/serving-demo/request.json",
+        "--out",
+        "runs/codex-cloud-20261023-r1/serving-demo/reload-replay"
+      ],
+      "exit_code": 0,
+      "log_sha256": "8849ec905696bc4bf5e72d6358a144b2847dc60a9dca6b35834912b530d0d991"
+    }
+  ],
+  "continued": false,
+  "input_origin": "independently hand-authored 8x8 RGB red square on black background; no dataset construction or labels",
+  "output_caption": "blue cross right",
+  "output_choices": {
+    "image": 11,
+    "text": 11
+  },
+  "output_image_sha256": "c6765fd611d6347ea48765af88835e3c130cbf0560191848b02028535fd5a620",
+  "qualification_only": true,
+  "request_sha256": "82d8ac63934e2254791d4f168ba59ec2a00f5e32c95cd975ccaecd46df0e3d6d",
+  "sample_seed": 42,
+  "schema": "hepta.joint-generation.external-demo.v1",
+  "selected_bundle": "ndu-11-0.01",
+  "selection": "first declared model seed; NDU learning rate selected by validation only",
+  "separate_process_reload_replay_verified": true,
+  "spent": {
+    "controller": 328,
+    "generator": 14848,
+    "output_bytes": 107
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "hcsn-clock-fix-preflight-failure-v1",
+  "stage": "formatter setup after successful ruff",
+  "exception": "FileNotFoundError",
+  "reason": "Sparse worktree omitted codex-rs working directory; formatter process was not started. Retained ruff receipt measures its completed phase.",
+  "whole_failed_wrapper_wall_seconds": null,
+  "whole_failed_wrapper_cpu_seconds": null,
+  "recovery": "Create the formatter working directory; just resolves the retained root Justfile. Do not rerun ruff."
+}

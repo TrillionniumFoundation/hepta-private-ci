@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.mem7.two-host-source-blob-repro.v1",
+  "date_utc": "2026-11-10",
+  "source_repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent_pr": 5798,
+  "parent_commit": "bc03ff36aae43fb14f711e9f0b74ee42db033079",
+  "source_file_git_blob_sha1": {
+    "scripts/ndu_real_runtime/episodic_memory.py": "05eeda6a778eea69c513ba1fa761979efc0ef2a0",
+    "scripts/ndu_real_runtime/test_episodic_memory.py": "68663098e31ccb1c56bdaf49a99274f6aca61497"
+  },
+  "source_acquisition": "GitHub connector fetch_file(ref=parent_commit), reconstructed in clean isolated directories on each host; git hash-object enforced before tests.",
+  "source_closure": "Exactly two Git blobs checked; not a full-commit or full-tree checkout.",
+  "command": "python3 -B -m unittest -v scripts.ndu_real_runtime.test_episodic_memory",
+  "execution_host_python": {
+    "ai395": "3.14.4",
+    "desktop": "3.12.3"
+  },
+  "original_failure": "Initial heredoc added newline; blob check rejected it before tests ran. First failed jobs and raw logs retained.",
+  "verified_counts": {
+    "ai395": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    "desktop": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "jobs": [
+    {
+      "host": "ai395",
+      "role": "failed_transfer",
+      "job_id": "1a1c696f01b-5074-1b1",
+      "state": "failed",
+      "exit_code": 42,
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 53,
+          "stored": 53
+        }
+      },
+      "stdout": "BAD_BLOB_scripts/ndu_real_runtime/episodic_memory.py\n",
+      "stderr": ""
+    },
+    {
+      "host": "desktop",
+      "role": "failed_transfer",
+      "job_id": "1a1c697d3dc-5074-1b5",
+      "state": "failed",
+      "exit_code": 42,
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 53,
+          "stored": 53
+        }
+      },
+      "stdout": "BAD_BLOB_scripts/ndu_real_runtime/episodic_memory.py\n",
+      "stderr": ""
+    },
+    {
+      "host": "ai395",
+      "role": "verified_suite",
+      "job_id": "1a1c6992c87-5074-1bb",
+      "state": "succeeded",
+      "exit_code": 0,
+      "log_bytes": {
+        "stderr": {
+          "seen": 2304,
+          "stored": 2304
+        },
+        "stdout": {
+          "seen": 237,
+          "stored": 237
+        }
+      },
+      "stdout": "blob_verified scripts/ndu_real_runtime/episodic_memory.py 05eeda6a778eea69c513ba1fa761979efc0ef2a0\nblob_verified scripts/ndu_real_runtime/test_episodic_memory.py 68663098e31ccb1c56bdaf49a99274f6aca61497\nSOURCE_BLOB_PINNED_REPRO_FINISHED\n",
+      "stderr": "test_bounded_tombstones_prevent_replay_and_admission_rolls_back (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_bounded_tombstones_prevent_replay_and_admission_rolls_back) ... ok\ntest_byte_admission_failure_preserves_existing_data_and_generation (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_byte_admission_failure_preserves_existing_data_and_generation) ... ok\ntest_caller_cannot_mutate_stored_provenance_or_returned_record (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_caller_cannot_mutate_stored_provenance_or_returned_record) ... ok\ntest_current_authority_is_required_and_snapshot_has_its_identity (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_current_authority_is_required_and_snapshot_has_its_identity) ... ok\ntest_namespace_isolation_and_foreign_dependency_rejection (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_namespace_isolation_and_foreign_dependency_rejection) ... ok\ntest_reverse_key_order_chain_revokes_entire_dependency_closure (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_reverse_key_order_chain_revokes_entire_dependency_closure) ... ok\ntest_revoke_removes_payload_and_old_snapshot_never_reactivates_it (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_revoke_removes_payload_and_old_snapshot_never_reactivates_it) ... ok\ntest_snapshot_corruption_and_forged_record_are_rejected (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_corruption_and_forged_record_are_rejected) ... ok\ntest_update_cannot_create_an_indirect_dependency_cycle (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_cannot_create_an_indirect_dependency_cycle) ... ok\ntest_update_revokes_transitive_dependencies_and_filters_old_snapshot (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_revokes_transitive_dependencies_and_filters_old_snapshot) ... ok\ntest_working_state_is_copied_bounded_and_cleared_on_new_session (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_working_state_is_copied_bounded_and_cleared_on_new_session) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.241s\n\nOK\n"
+    },
+    {
+      "host": "desktop",
+      "role": "verified_suite",
+      "job_id": "1a1c69a3651-5074-1bf",
+      "state": "succeeded",
+      "exit_code": 0,
+      "log_bytes": {
+        "stderr": {
+          "seen": 2304,
+          "stored": 2304
+        },
+        "stdout": {
+          "seen": 237,
+          "stored": 237
+        }
+      },
+      "stdout": "blob_verified scripts/ndu_real_runtime/episodic_memory.py 05eeda6a778eea69c513ba1fa761979efc0ef2a0\nblob_verified scripts/ndu_real_runtime/test_episodic_memory.py 68663098e31ccb1c56bdaf49a99274f6aca61497\nSOURCE_BLOB_PINNED_REPRO_FINISHED\n",
+      "stderr": "test_bounded_tombstones_prevent_replay_and_admission_rolls_back (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_bounded_tombstones_prevent_replay_and_admission_rolls_back) ... ok\ntest_byte_admission_failure_preserves_existing_data_and_generation (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_byte_admission_failure_preserves_existing_data_and_generation) ... ok\ntest_caller_cannot_mutate_stored_provenance_or_returned_record (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_caller_cannot_mutate_stored_provenance_or_returned_record) ... ok\ntest_current_authority_is_required_and_snapshot_has_its_identity (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_current_authority_is_required_and_snapshot_has_its_identity) ... ok\ntest_namespace_isolation_and_foreign_dependency_rejection (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_namespace_isolation_and_foreign_dependency_rejection) ... ok\ntest_reverse_key_order_chain_revokes_entire_dependency_closure (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_reverse_key_order_chain_revokes_entire_dependency_closure) ... ok\ntest_revoke_removes_payload_and_old_snapshot_never_reactivates_it (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_revoke_removes_payload_and_old_snapshot_never_reactivates_it) ... ok\ntest_snapshot_corruption_and_forged_record_are_rejected (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_corruption_and_forged_record_are_rejected) ... ok\ntest_update_cannot_create_an_indirect_dependency_cycle (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_cannot_create_an_indirect_dependency_cycle) ... ok\ntest_update_revokes_transitive_dependencies_and_filters_old_snapshot (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_revokes_transitive_dependencies_and_filters_old_snapshot) ... ok\ntest_working_state_is_copied_bounded_and_cleared_on_new_session (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_working_state_is_copied_bounded_and_cleared_on_new_session) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 2.283s\n\nOK\n"
+    }
+  ],
+  "not_qualified": [
+    "Whole-repository/required CI",
+    "macOS/Windows Bazel",
+    "Cargo-deny advisories",
+    "Full Git HEAD/tree provenance on remote",
+    "Native 4096-scale performance",
+    "Owner authorization, rollback resistance and full recovery",
+    "Independent science and real successor benefit"
+  ],
+  "scientific_acceptance": "HOLD",
+  "adoption_action": "NoUpdate",
+  "mem5_actor_rerun": false,
+  "archive_key_changed": false,
+  "sealed_access": false
+}

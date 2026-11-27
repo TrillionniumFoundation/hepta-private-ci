@@ -1,0 +1,12 @@
+{
+  "host": "mac",
+  "executable": "/Users/qianqi/AI/noct-q/.venv/bin/python",
+  "args": [
+    "-B",
+    "-c",
+    "import pathlib,hashlib,json,subprocess,os,time\nroot=pathlib.Path('/Users/qianqi/ci-small-python-20261119-75cf')\nmanifest=json.loads((root/'source-manifest.json').read_text())\nfixed='memory/scripts/memory_cell_network/test_model_process.py'\nfixed_sha='c06fd8ed1adfebe0303df7b290ed155afa8a3d1004bb6875e19fef410b8c2189'\ndef verify():\n checked=[]\n for rec in manifest['records']:\n  p=root/rec['archive_path'];b=p.read_bytes();want=fixed_sha if rec['archive_path']==fixed else rec['sha256']\n  assert hashlib.sha256(b).hexdigest()==want,rec['archive_path']\n  checked.append({'path':rec['archive_path'],'sha256':want})\n return checked\nbefore=verify()\npy=root/'venv-memory-v1/bin/python'\ncmd=[str(py),'-B','-m','unittest','test_model_process.ModelProcessTests.test_receipt_preserves_raw_output_and_empty_reader_directory','-v']\nmemory=root/'memory'\nenv=dict(os.environ)\nenv.update(PYTHONPATH=':'.join(str(memory/'scripts'/x) for x in ['memory_cell_network','memory_cell_service','memory_cell_catalog','memory_cell']),PYTHONDONTWRITEBYTECODE='1',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',OMP_NUM_THREADS='1')\nstart=time.time()\nwith (root/'memory-path-fixture.stdout.log').open('wb') as out,(root/'memory-path-fixture.stderr.log').open('wb') as err:\n p=subprocess.run(cmd,cwd=memory,env=env,stdout=out,stderr=err,timeout=45)\nafter=verify();assert before==after\nresult={'command':cmd,'exit':p.returncode,'wall_seconds':time.time()-start,'base_tree':'00b29969a0a2f50c71fc50c64fc36a7f423fe27b','fixture_fixed_tree':'f8eab319c3871c4a10fcf6c4c399f9df62c79b8b','verified_source_records':len(before),'exact_original_records':len(before)-1,'fixed_fixture_sha256':fixed_sha,'all_before_after_sources_unchanged':True,'scope':'single original stdlib process receipt test; full tensor/TCP suite remains blocked by transformers HybridCache API incompatibility','logs':{}}\nfor name in ['memory-path-fixture.stdout.log','memory-path-fixture.stderr.log']:\n b=(root/name).read_bytes();result['logs'][name]={'path':str(root/name),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()};print(name+'\\n'+b.decode(),flush=True)\n(root/'memory-path-fixture-result.json').write_text(json.dumps(result,indent=2)+'\\n')\nprint(json.dumps(result,indent=2),flush=True)\n"
+  ],
+  "cwd": "/Users/qianqi/ci-small-python-20261119-75cf",
+  "idempotency_key": "h3-memory-path-fixture-test-75cf-v1",
+  "timeout_seconds": 120
+}

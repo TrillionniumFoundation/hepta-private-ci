@@ -1,0 +1,288 @@
+{
+  "calibration": {
+    "explicit_binary_chat": {
+      "accuracy_including_invalid": 0.625,
+      "correct": 10,
+      "first_eos": 0,
+      "n": 16,
+      "valid": 16
+    },
+    "original_chat": {
+      "accuracy_including_invalid": 0.125,
+      "correct": 2,
+      "first_eos": 0,
+      "n": 16,
+      "valid": 5
+    }
+  },
+  "decision": "HOLD_NO_GO",
+  "exact_label_only_calibration": {
+    "explicit_binary_chat": 9,
+    "original_chat": 0
+  },
+  "exact_label_only_main": 375,
+  "exact_label_only_scope": "descriptive entire stripped answer, case-insensitive; primary parser unchanged",
+  "external_custody": "MISSING",
+  "independent_future_B": false,
+  "journal_events": 1249,
+  "main": {
+    "base": {
+      "context_worlds": {
+        "accuracy_including_invalid": 0.5,
+        "correct": 16,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      },
+      "retention": {
+        "accuracy_including_invalid": 0.5625,
+        "correct": 18,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      }
+    },
+    "seed11 bursty": {
+      "context_worlds": {
+        "accuracy_including_invalid": 0.5,
+        "correct": 16,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      },
+      "retention": {
+        "accuracy_including_invalid": 0.53125,
+        "correct": 17,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      }
+    },
+    "seed11 interleaved": {
+      "context_worlds": {
+        "accuracy_including_invalid": 0.5,
+        "correct": 16,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      },
+      "retention": {
+        "accuracy_including_invalid": 0.53125,
+        "correct": 17,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      }
+    },
+    "seed17 bursty": {
+      "context_worlds": {
+        "accuracy_including_invalid": 0.5,
+        "correct": 16,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      },
+      "retention": {
+        "accuracy_including_invalid": 0.53125,
+        "correct": 17,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      }
+    },
+    "seed17 interleaved": {
+      "context_worlds": {
+        "accuracy_including_invalid": 0.5,
+        "correct": 16,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      },
+      "retention": {
+        "accuracy_including_invalid": 0.53125,
+        "correct": 17,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      }
+    },
+    "seed23 bursty": {
+      "context_worlds": {
+        "accuracy_including_invalid": 0.46875,
+        "correct": 15,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      },
+      "retention": {
+        "accuracy_including_invalid": 0.5625,
+        "correct": 18,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      }
+    },
+    "seed23 interleaved": {
+      "context_worlds": {
+        "accuracy_including_invalid": 0.46875,
+        "correct": 15,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      },
+      "retention": {
+        "accuracy_including_invalid": 0.5625,
+        "correct": 18,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      }
+    },
+    "seed29 bursty": {
+      "context_worlds": {
+        "accuracy_including_invalid": 0.5,
+        "correct": 16,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      },
+      "retention": {
+        "accuracy_including_invalid": 0.53125,
+        "correct": 17,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      }
+    },
+    "seed29 interleaved": {
+      "context_worlds": {
+        "accuracy_including_invalid": 0.5,
+        "correct": 16,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      },
+      "retention": {
+        "accuracy_including_invalid": 0.53125,
+        "correct": 17,
+        "first_eos": 0,
+        "n": 32,
+        "valid": 32
+      }
+    }
+  },
+  "native_generations_recounted": 624,
+  "new_model_inferences": 0,
+  "paired_correct_count_deltas": {
+    "11": {
+      "context_worlds": 0,
+      "retention": 0
+    },
+    "17": {
+      "context_worlds": 0,
+      "retention": 0
+    },
+    "23": {
+      "context_worlds": 0,
+      "retention": 0
+    },
+    "29": {
+      "context_worlds": 0,
+      "retention": 0
+    }
+  },
+  "prediction_counts": {
+    "base": {
+      "context_worlds": {
+        "yes": 32
+      },
+      "retention": {
+        "no": 8,
+        "yes": 24
+      }
+    },
+    "seed11 bursty": {
+      "context_worlds": {
+        "yes": 32
+      },
+      "retention": {
+        "no": 9,
+        "yes": 23
+      }
+    },
+    "seed11 interleaved": {
+      "context_worlds": {
+        "yes": 32
+      },
+      "retention": {
+        "no": 9,
+        "yes": 23
+      }
+    },
+    "seed17 bursty": {
+      "context_worlds": {
+        "no": 2,
+        "yes": 30
+      },
+      "retention": {
+        "no": 9,
+        "yes": 23
+      }
+    },
+    "seed17 interleaved": {
+      "context_worlds": {
+        "no": 2,
+        "yes": 30
+      },
+      "retention": {
+        "no": 9,
+        "yes": 23
+      }
+    },
+    "seed23 bursty": {
+      "context_worlds": {
+        "no": 1,
+        "yes": 31
+      },
+      "retention": {
+        "no": 8,
+        "yes": 24
+      }
+    },
+    "seed23 interleaved": {
+      "context_worlds": {
+        "no": 1,
+        "yes": 31
+      },
+      "retention": {
+        "no": 8,
+        "yes": 24
+      }
+    },
+    "seed29 bursty": {
+      "context_worlds": {
+        "no": 2,
+        "yes": 30
+      },
+      "retention": {
+        "no": 9,
+        "yes": 23
+      }
+    },
+    "seed29 interleaved": {
+      "context_worlds": {
+        "no": 2,
+        "yes": 30
+      },
+      "retention": {
+        "no": 9,
+        "yes": 23
+      }
+    }
+  },
+  "schema": "hpca-native624-retained-byte-review-v1",
+  "selected_wrapper": "explicit_binary_chat",
+  "status": "CONSISTENCY_PASS",
+  "verified_members": 17,
+  "zip_sha256": "583a41faee2ea035aa93b89d6ffc774d1b01ef293c761e304552e265b3dc836a"
+}

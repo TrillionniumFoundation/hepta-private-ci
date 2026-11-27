@@ -1,0 +1,136 @@
+{
+  "additional_reviewed_source_sha256": {
+    "audit_training_v2.py": "1776bc39d6f5308a18c9ce24c3c89833d3c7ff56c4dac78dd938ae3deffee7d9",
+    "plot_training_v2.py": "ce262db0bbd442b83bbd75613a7f6120fcf9baa077f24451d8fb8de9d49fccdf",
+    "restore_audit_archives.py": "0927a727139aa250545655c81e28ba423d1e9b95e0a096f8a0edb8b0f7286e35"
+  },
+  "base_scientific_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+  "commands": {
+    "just_fmt": {
+      "command": "/workspace/scratch/9bbd63a0445f/hcsn-format-tools/bin/just fmt",
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "output_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "scope": "repository changed-file formatter reported no changed files requiring formatting",
+      "version": "1.55.0"
+    },
+    "ruff": {
+      "command": "ruff check --ignore E402 audit_training_v2.py plot_training_v2.py restore_audit_archives.py",
+      "exit_code": 0,
+      "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "scope": "three additional analysis/transport files; E402 excluded for standalone scripts with explicit repository import path"
+    }
+  },
+  "created_unix": 1793195987.7806094,
+  "numeric_parity": {
+    "final_class_changes": 0,
+    "passed": 54,
+    "prefix_class_changes": 0,
+    "retained_exception": "scaling/config00/transformer/seed7301",
+    "total": 55
+  },
+  "original_analysis_files_verified": 20,
+  "original_analysis_seal": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+  "original_inputs_edited": false,
+  "report": {
+    "bytes": 28036,
+    "lines": 263,
+    "local_links": [
+      {
+        "sha256": "a21c41b6571cc8f172183ffa2cbe1b3fd13bd86437a59eefec196ec889c0532c",
+        "target": "results/study002/analysis/COMPARISON_TABLES.md"
+      },
+      {
+        "sha256": "842fddb51bd19df9c671fdabead0af789320392ddefac89569a9cb6bd7ac12cc",
+        "target": "results/study002/analysis/ONLINE_TABLES.md"
+      },
+      {
+        "sha256": "d1a467055283acb79cc2cca82fc563aa2d4e7209a732a27b47212989fc91b0a0",
+        "target": "results/study002/analysis/audit_archives/README.md"
+      },
+      {
+        "sha256": "486b9f86ad7cdbae2f3e8a151cb500a219b87cd67a438e9a4e10c038a43ac311",
+        "target": "../continuous_spiking_network/cell.py"
+      },
+      {
+        "sha256": "4f1e67df6e001e4f1c6164a234b6a874429b35c701dcdc0da0b6aebeafbe2eba",
+        "target": "STREAMING.md"
+      },
+      {
+        "sha256": "b767d981d26496208722ff7ce1f8e41931bd6da079a87fa7fcfdb727de812503",
+        "target": "PROTOCOL.json"
+      },
+      {
+        "sha256": "08872353f5fb5f5e172ec4d461f64f0741cf84d966567e5e6fdaefba4914cfef",
+        "target": "results/study002/analysis/figures_v2/mechanism_paired_intervals.svg"
+      },
+      {
+        "sha256": "a21c41b6571cc8f172183ffa2cbe1b3fd13bd86437a59eefec196ec889c0532c",
+        "target": "results/study002/analysis/COMPARISON_TABLES.md"
+      },
+      {
+        "sha256": "bc049820e57389a28881745105d66f55cebc61678e85331741449d89dc73041a",
+        "target": "../continuous_spiking_network/DATA.md"
+      },
+      {
+        "sha256": "5767b633d5be059d75e144abb71483d419bdb7eeaa7710392f1abe19b8aa9814",
+        "target": "results/study002/analysis/figures_v2/representation_all_tasks.svg"
+      },
+      {
+        "sha256": "7422f9e4888ff025aef2e061bc92af906c7f0f55a9b14934f6d3f5ba0bb41e79",
+        "target": "results/study002/analysis/figures_v2/scaling_search_trajectories.png"
+      },
+      {
+        "sha256": "8266ca80becb23923351100a0486bb57793844f1a2f05edd17b90a41b3146bc3",
+        "target": "results/study002/analysis/packed/COMPARISON_SUMMARY.json.gz"
+      },
+      {
+        "sha256": "cef1ab0d6ccdb2afccead0afff0049e37d1be4c483e6cb3948c1fdec2ea14a3e",
+        "target": "results/study002/analysis/PARITY_EXCEPTION_DETAIL.json"
+      },
+      {
+        "sha256": "27ff7b18d09db66f72ce3ae351cfb8e1648326c13f1eaaa7bdda9486d7fac050",
+        "target": "NATIVE_BRIDGE.md"
+      },
+      {
+        "sha256": "282d47e2f69dc44993d905b0bc79609249ff0eb62ada43c592ee5a2e461e375f",
+        "target": "results/study002/analysis/ANALYSIS_CORRECTION_01.json"
+      },
+      {
+        "sha256": "d7c9f06185a97b29424355f299669dd2a103f1685ab130e6f6cefde394ee3fe4",
+        "target": "results/study002/analysis/ANALYSIS_CORRECTION_02.json"
+      },
+      {
+        "sha256": "b767d981d26496208722ff7ce1f8e41931bd6da079a87fa7fcfdb727de812503",
+        "target": "PROTOCOL.json"
+      },
+      {
+        "sha256": "dde09efb67fa83e0fac26eb1ad81513c238d9d6241714e0d37616d7bc3c0e4e8",
+        "target": "RUNS.json"
+      },
+      {
+        "sha256": "ad2c234c8f19460ca1f3dc7e17af91fa43c2a4382f18c70b158a0da9300fe98a",
+        "target": "README.md"
+      },
+      {
+        "sha256": "9da328d60fa0e91d1ffaf82ebed7b1a1d16ba62e93889e8788c2105eb820915f",
+        "target": "MEASUREMENT.md"
+      },
+      {
+        "sha256": "27ff7b18d09db66f72ce3ae351cfb8e1648326c13f1eaaa7bdda9486d7fac050",
+        "target": "NATIVE_BRIDGE.md"
+      },
+      {
+        "sha256": "d1a467055283acb79cc2cca82fc563aa2d4e7209a732a27b47212989fc91b0a0",
+        "target": "results/study002/analysis/audit_archives/README.md"
+      }
+    ],
+    "math_blocks": 3,
+    "review": "two independent read-only reviews; all numeric rounding, milestone, timing-scope, task-scope and math-display corrections incorporated",
+    "sha256": "1380d26a07ad16b48180b34e8202fceeb9167c415452e2b27019889a6ae08fb5"
+  },
+  "schema": "hcsn002-final-local-verification-v1",
+  "scientific_files_verified": 25,
+  "scientific_source_seal": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673",
+  "status": "passed"
+}

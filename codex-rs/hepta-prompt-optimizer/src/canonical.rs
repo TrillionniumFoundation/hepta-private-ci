@@ -644,10 +644,7 @@ pub fn select_portfolio_v1(
             | KnowledgeRelationKindV2::PromptSubstitutes => {
                 let key = pair_key(left, right);
                 if numeric_edges
-                    .insert(
-                        key.clone(),
-                        (edge.validity_digest, edge.identity.relation.clone()),
-                    )
+                    .insert(key, (edge.validity_digest, edge.identity.relation.clone()))
                     .is_some()
                 {
                     return Err(CanonicalPromptError::DuplicateInteraction);

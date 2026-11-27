@@ -1,0 +1,411 @@
+{
+  "schema_version": 1,
+  "purpose": "Frozen Original Evaluation receipt component on published Model candidate; no production stage assembly claim",
+  "head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+  "tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+  "base": "5b633a85ba74c829f3ec82e71c044442bd31c2ac",
+  "base_tree": "95abd141c673d04369e28a33dd233b937a4b463e",
+  "branch": "codex/original-evaluation-receipt-20261111-b4d6",
+  "source_directory": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+  "clean": true,
+  "commit_object": "tree 790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4\nparent 5b633a85ba74c829f3ec82e71c044442bd31c2ac\nauthor Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794361171 -0500\ncommitter Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794361171 -0500\n\nfeat(learning): issue original Evaluation receipts from retained execution\n\nBind the original Trainer attestation, sealed evaluation qualification and completed execution to an enrolled Evaluator key and witnessed original journal. Re-read original evidence before signing and after commit; never refresh expired signatures. Keep four new production ports closed and no CURRENT/Root authority.\n\nIntegrate with the fixed Q24 Model material owner. Fifty-six targeted source controls pass; native and ordinary closure remain pending.",
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "base_blob": "f58701e2761b585a24a07b15eb06eb5fa03156ae",
+      "blob": "4f9bb253844ce98ad8adbdca5bc1166def8c540b",
+      "sha256": "d17051d0108930e7499a1d1aab4b7273226de3e992916eda1a09002f6ee263b2",
+      "bytes": 351650
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "base_blob": "c350256b2e513053afde2e1950faf5739d525870",
+      "blob": "7dc9c197f009b90fde594f05523b6e7f9820a162",
+      "sha256": "53d31cc6a1844ae7e890b0557269a651f61d51046be2ffdd2d151eaf2f52ccb9",
+      "bytes": 29257
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "base_blob": "227313d5fb146d67af1cfe3fc86ea7f985bd2e73",
+      "blob": "666748f626ecf9adbe44201ee1ea79562d8cf835",
+      "sha256": "59c4182b2649ba576a7808d252542da6d9b12514805024c0bd2f204a79eb9f01",
+      "bytes": 50753
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "base_blob": null,
+      "blob": "8dbf4097769d84b4093867d6918e0e871c89bd30",
+      "sha256": "44e1c771ae778f2637178eb0a19a540349969485a20f2e86f45896cb381a7dd7",
+      "bytes": 20868
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs",
+      "base_blob": "81ebffad7c918f1c89df9e4923de1142bbff9765",
+      "blob": "6562026955ed620f96c3ef19457b5c3b3d97dff3",
+      "sha256": "b3732dee71f54ead10f859f8b5013616efc3cb5d6460e625035ed077a72ded49",
+      "bytes": 31170
+    },
+    {
+      "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+      "base_blob": "01e6ccc961082d1f214bb18cc6e41602981f61f2",
+      "blob": "63b205bc1c145ef10aaed87217e44ec1c601102b",
+      "sha256": "c3a45003ea4271bdb906e4dbc3494d87a63530e29537e16962d1bddb2e4c446e",
+      "bytes": 11132
+    },
+    {
+      "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+      "base_blob": "537c22ed9376683668c9c92d1e2b4164ebd1719f",
+      "blob": "2032e55bab47db0f18263bdfd82a130d901811e4",
+      "sha256": "a7d73a77de4634ad8ec3ae655e1444617f3d1dbfb3dd998cd810e6b1195846cc",
+      "bytes": 7286
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+      "base_blob": "5203176af56587b7b4d0cac527c7236143187afc",
+      "blob": "8d607e733cf950165475cd80b9e3a080b13ed949",
+      "sha256": "36c96acedbed534ce2df59f60afc362ce2cccdf7b9631a1a165b2303cb661fde",
+      "bytes": 8442
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+      "base_blob": null,
+      "blob": "83c2b0ab02f2e505ad4a615646c5088fd27177e0",
+      "sha256": "28c0d2779b2ef3d7c679a15edaf1554b21c698769964f1e9c95c164dc502d3dd",
+      "bytes": 13759
+    }
+  ],
+  "checks": [
+    {
+      "suite": "original_evaluation_receipt_owner",
+      "command": "python -m unittest discover -v -s qa/b4-no-bypass -p 'test_original_evaluation_receipt_owner_source_closure.py'",
+      "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+      "exit_code": 0,
+      "tests": 9,
+      "log": "source-checks/evaluation-unified-original_evaluation_receipt_owner-source-closure.log",
+      "sha256": "324b4254219b75f36e043cb197989d6b2b0cfad2a84e0eaa1c7c3f1db60e7d7b",
+      "executed_head": "9f5e5b99831c6c19ecb231c3a5c2fbdc83febac5",
+      "applies_to_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "same_tree_verified": true
+    },
+    {
+      "suite": "cell_learning_evaluation",
+      "command": "python -m unittest discover -v -s qa/b4-no-bypass -p 'test_cell_learning_evaluation_source_closure.py'",
+      "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+      "exit_code": 0,
+      "tests": 8,
+      "log": "source-checks/evaluation-unified-cell_learning_evaluation-source-closure.log",
+      "sha256": "1706e73eff9b3c7f520b09ec65892247d158b0937122a8143f00a3864160e61f",
+      "executed_head": "9f5e5b99831c6c19ecb231c3a5c2fbdc83febac5",
+      "applies_to_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "same_tree_verified": true
+    },
+    {
+      "suite": "generation_learning_evidence",
+      "command": "python -m unittest discover -v -s qa/b4-no-bypass -p 'test_generation_learning_evidence_source_closure.py'",
+      "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+      "exit_code": 0,
+      "tests": 6,
+      "log": "source-checks/evaluation-unified-generation_learning_evidence-source-closure.log",
+      "sha256": "3b1e61706d52b40a0e2eee1a359fb1741413e768b7b8729279b1e1b12e3b32de",
+      "executed_head": "9f5e5b99831c6c19ecb231c3a5c2fbdc83febac5",
+      "applies_to_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "same_tree_verified": true
+    },
+    {
+      "suite": "learning_evaluation_recovery",
+      "command": "python -m unittest discover -v -s qa/b4-no-bypass -p 'test_learning_evaluation_recovery_source_closure.py'",
+      "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+      "exit_code": 0,
+      "tests": 7,
+      "log": "source-checks/evaluation-unified-learning_evaluation_recovery-source-closure.log",
+      "sha256": "19ede4f22e47a8feaa4705a3a3763e5e2bdc6b6e18d6a90722db95f26fcee6ba",
+      "executed_head": "9f5e5b99831c6c19ecb231c3a5c2fbdc83febac5",
+      "applies_to_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "same_tree_verified": true
+    },
+    {
+      "suite": "q24_model_proposal",
+      "command": "python -m unittest discover -v -s qa/b4-no-bypass -p 'test_q24_model_proposal_source_closure.py'",
+      "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+      "exit_code": 0,
+      "tests": 9,
+      "log": "source-checks/evaluation-unified-q24_model_proposal-source-closure.log",
+      "sha256": "55b768f358df10f5cfe4bdf18a9fb1d64ad3ee239a1de17c8f4c01c2b4abb094",
+      "executed_head": "9f5e5b99831c6c19ecb231c3a5c2fbdc83febac5",
+      "applies_to_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "same_tree_verified": true
+    },
+    {
+      "suite": "original_training_owner",
+      "command": "python -m unittest discover -v -s qa/b4-no-bypass -p 'test_original_training_owner_source_closure.py'",
+      "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+      "exit_code": 0,
+      "tests": 4,
+      "log": "source-checks/evaluation-unified-original_training_owner-source-closure.log",
+      "sha256": "adb02d97775bcaf2f59d911b5490941ea8d005f0fc56fe4a6da2b91b1f048d21",
+      "executed_head": "9f5e5b99831c6c19ecb231c3a5c2fbdc83febac5",
+      "applies_to_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "same_tree_verified": true
+    },
+    {
+      "suite": "original_learning_owner",
+      "command": "python -m unittest discover -v -s qa/b4-no-bypass -p 'test_original_learning_owner_source_closure.py'",
+      "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+      "exit_code": 0,
+      "tests": 13,
+      "log": "source-checks/evaluation-unified-original_learning_owner-source-closure.log",
+      "sha256": "f63c8c32e41c0678a7c46df033576bc8e280f6123e3459ca084674e35ba12196",
+      "executed_head": "9f5e5b99831c6c19ecb231c3a5c2fbdc83febac5",
+      "applies_to_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "same_tree_verified": true
+    }
+  ],
+  "source_tests_passed": 56,
+  "format": {
+    "command": "just fmt",
+    "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated/codex-rs",
+    "exit_code": 0
+  },
+  "diff_check": {
+    "command": "git diff --cached --check",
+    "exit_code": 0
+  },
+  "native_tests": {
+    "status": "FAILED_BEFORE_TEST_EXECUTION",
+    "tests_executed": 0,
+    "source_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+    "source_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+    "coordinated_run": null,
+    "requested_test_groups": [
+      "Model proposal material owner (7 tests)",
+      "Original Evaluation receipt owner (5 tests)",
+      "Original Training receipt owner (6 tests)",
+      "related Cell learning and evidence helpers"
+    ],
+    "official_ci_environment": {
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_BUILD_JOBS": "1"
+    },
+    "cpu_affinity_count": 2,
+    "note": "No native PASS is claimed. Parent-coordinated run uses the clean remote tree and shared original target.",
+    "previous_attempts": [
+      {
+        "id": "model-evaluation-native-attempt4",
+        "source_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+        "source_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+        "status": "FAILED_BEFORE_TEST_EXECUTION",
+        "exit_code": 101,
+        "new_tests_executed": 0,
+        "failure": "rust-lld terminated with signal 7 (Bus error) while linking sentry-contexts build script",
+        "root_cause": "Not determined; no attribution to source semantics or disk exhaustion is asserted.",
+        "raw_log": "native-attempts/model-evaluation-native-attempt4.log",
+        "raw_log_sha256": "4d16ea782e0b28f65672bd80724cda53acb5a119abdd1579818715d0f869cea8",
+        "runner_completion": {
+          "exit_code": 101,
+          "elapsed_seconds": 1233.612,
+          "finished_utc": "2026-11-11T02:00:53.342411+00:00",
+          "source_status_after": ""
+        }
+      },
+      {
+        "id": "model-evaluation-native-attempt5",
+        "source_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+        "source_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+        "status": "FAILED_BEFORE_TEST_EXECUTION",
+        "exit_code": 101,
+        "new_tests_executed": 0,
+        "failure": "rustc compiling codex-rmcp-client terminated with signal 9 (SIGKILL); cause not established by this diagnostic.",
+        "cpu_affinity_count": 2,
+        "raw_log": "native-attempts/model-evaluation-native-attempt5.log",
+        "raw_log_sha256": "9a4aa8c180c503a02987cc5a3a77694bf16090ab4c45f0d6bd6a17581b1b20a2",
+        "runner_completion": {
+          "exit_code": 101,
+          "elapsed_seconds": 279.238,
+          "finished_utc": "2026-11-11T02:10:16.317695+00:00",
+          "source_status_after": ""
+        }
+      },
+      {
+        "id": "model-evaluation-native-attempt6",
+        "source_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+        "source_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+        "status": "FAILED_BEFORE_TEST_EXECUTION",
+        "exit_code": 101,
+        "new_tests_executed": 0,
+        "failure": "codex-app-server could not create a temporary directory: ENOSPC (os error 28).",
+        "cpu_affinity_count": 1,
+        "raw_log": "native-attempts/model-evaluation-native-attempt6.log",
+        "raw_log_sha256": "2b59a02ef99a988308b9780bcde94752466d63bda629c3d7ec813ae1db3a3494",
+        "runner_completion": {
+          "exit_code": 101,
+          "elapsed_seconds": 403.273,
+          "finished_utc": "2026-11-11T02:23:13.728836+00:00",
+          "source_status_after": "",
+          "disk_free_after_bytes": 0,
+          "child_peak_rss_kb": 2427312
+        }
+      }
+    ],
+    "retry_basis": "Parent and native owner retained attempt4 and reused the same reviewed source, command and official CI profile after removing superseded build outputs outside the source tree; failed dependency build unit was rebuilt.",
+    "maintenance_note": "A scoped just fix run is separate maintenance, not a native test PASS. Parent stopped same-graph local native retries after explicit ENOSPC."
+  },
+  "patch": {
+    "path": "SOURCE.patch",
+    "sha256": "a0824ec2b03bf065dcd9b34d5b77cfb64267399885ed33cacb84fca0ddaab7a7"
+  },
+  "limitations": [
+    "Four new public owner entrypoints have empty production caller sets.",
+    "Host must explicitly supply the enrolled Evaluator key, original execution/journals, current sealed qualification, independent witness and already admitted Trainer connection.",
+    "No key generation, trust registration, original RPC server, StageOwnerPorts assembly, Root enablement, CURRENT adoption or normal C FinalUse is introduced.",
+    "Five native behavior tests reuse synthetic signed LearningFixture cohorts and test-only original-owner transport.",
+    "Source mutation coverage is scoped to registered guards and targeted paths; not a full-repository caller scan or native runtime qualification."
+  ],
+  "same_tree_local_commit": "9f5e5b99831c6c19ecb231c3a5c2fbdc83febac5",
+  "checked_source_controls": [
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa"
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    }
+  ],
+  "full_repository_callers": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+    "tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+    "command": "python scripts/verify_hepta_callers.py verify --root . --manifest CALLERS.toml",
+    "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+    "resource_control": "one process, nice 10, affinity restricted to one allowed CPU",
+    "exit_code": 0,
+    "stdout": "source-checks/full-callers.stdout",
+    "stdout_sha256": "6411f4f431c13454109143339de0fb7e287aeed22f468a0c4ad236cad56c41e3",
+    "stderr": "source-checks/full-callers.stderr",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "rust_files_scanned": 6304,
+    "boundaries": 225,
+    "privileged_inventory": 225,
+    "protected_files": 219,
+    "authority_granted": false,
+    "source_clean_after": true,
+    "started_utc_from_empty_stderr_creation": "2026-11-11T01:41:11.185347+00:00",
+    "completed_output_utc": "2026-11-11T01:52:45.005013+00:00"
+  },
+  "hosted_native": {
+    "source_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+    "source_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+    "run_id": 42940551826,
+    "job_id": 130261056461,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42940551826/job/130261056461",
+    "status": "FAILED_LIB_TEST_COMPILATION",
+    "error_code": "E0659",
+    "error_occurrences": 18,
+    "source_file": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+    "cause": "assert_eq macro from glob-imported pretty_assertions conflicts with the std prelude; explicit test-module macro import is missing.",
+    "minimum_fix": "Add use pretty_assertions::assert_eq; to the test module, retaining every assertion. No source changes made by this read-only audit.",
+    "observed_passed_tests": 0,
+    "observed_failed_tests": 0,
+    "raw_log": "hosted-attempts/evaluation-30692-daemon-130261056461.log",
+    "raw_log_sha256": "6c803a422961403ba4eb3464b5c1fbe5cdce37494fc51d3b7aa0f184feb84c25",
+    "original_execution_record": {
+      "after": {
+        "commit": "30692d721d67321df0414c5c3f990449d7b9fea8",
+        "dirty": false,
+        "parents": [
+          "5b633a85ba74c829f3ec82e71c044442bd31c2ac"
+        ],
+        "tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4"
+      },
+      "base_sha": "",
+      "before": {
+        "commit": "30692d721d67321df0414c5c3f990449d7b9fea8",
+        "dirty": false,
+        "parents": [
+          "5b633a85ba74c829f3ec82e71c044442bd31c2ac"
+        ],
+        "tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4"
+      },
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "--test-threads",
+        "2",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "command_exit_code": 101,
+      "elapsed_seconds": 229.02546886999994,
+      "error": "required tests were not observed passing",
+      "exit_code": 101,
+      "finished_at": "2026-11-11T02:25:11.756105+00:00",
+      "job": "native",
+      "lane": "source-head",
+      "log_bytes": 46406,
+      "log_file": "ordinary.json.8bf2661e4d56413596cf833c461851c1.log",
+      "log_sha256": "3770ced00d2e06a52ecff09d9bc1622de7eaa09394b23be282612522878e1bb8",
+      "minimum_tests": 1,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 101,
+      "run_attempt": "1",
+      "run_id": "42940551826",
+      "schema_version": 1,
+      "source_sha": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "started_at": "2026-11-11T02:21:22.730014+00:00",
+      "status": "failed",
+      "tested_sha": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "timed_out": false,
+      "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+    }
+  },
+  "successor_candidate": {
+    "head": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+    "tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+    "parents": [
+      "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "5066cb8bdd3e4f598d747d48aae0a64a21e8cbfc"
+    ],
+    "reason": "Explicit pretty_assertions::assert_eq import resolves the original 18 E0659 test-module macro errors; assertions and production source are unchanged.",
+    "status": "NATIVE_PENDING",
+    "daemon_run_id": 42946454461,
+    "daemon_job_id": 130280341039,
+    "shared_run_id": 42946454356,
+    "shared_job_id": 130280341079,
+    "architecture_run_id": 42946454598,
+    "original_full_scanner_pass_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+    "full_scanner_rerun_on_successor": false,
+    "prior_native_results_transferred": false
+  },
+  "successor_maintenance": {
+    "source_head": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+    "source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+    "index": "maintenance/INDEX.json",
+    "original_manifest": "maintenance/ORIGINAL_MAINTENANCE_MANIFEST.json",
+    "original_manifest_sha256": "8c6e03e15c989cdf925652a0d84166e1bb45b5320428fd7022bc5dd57b2690ca",
+    "just_fix_exit_code": 0,
+    "just_fmt_exit_code": 0,
+    "whole_tree_unchanged": true,
+    "automatic_source_edits": false,
+    "native_tests_executed": 0
+  }
+}

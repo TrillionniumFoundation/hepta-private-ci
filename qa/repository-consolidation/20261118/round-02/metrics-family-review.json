@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.frontier-reviewed-union-proposal.v1",
+  "base_commit": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "original_parent": "71de6a1111e46b582948dd7e44644aa312a7aa7d",
+  "requires_source_union": "2f72f2f550b89432e2d853774744a88d02f6a532",
+  "requires_source_tree": "a13f8664679435b53af8b109dcf7a349a1a66e5d",
+  "status": "complete-source-review; depends on composed fdd sources; shares explicitly unqualified complete-Neuron native gate",
+  "new_source_entries": [],
+  "per_path_proof": [
+    {
+      "path": ".github/workflows/hepta-neuron-metrics-alias.yml",
+      "original_blob": "b3f1e8ad4c4ddbaf665a57e1ca0190b5065938f2",
+      "fdd_blob": "c4729acaa9b0b12ddb95ae1cb6b7d9a8489172aa",
+      "exact_match": false,
+      "decision": "Workflow identical to reviewed fdd workflow except this older version lacks SOURCE_SHA/TESTED_SHA/HEPTA_CI_LANE env pins. Same explicit retirement under current aggregate/deep-qualification CI topology applies; no automatic native pass claim."
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/metrics.rs",
+      "original_blob": "463bae29a34a92b1ebcc15912f3497dc77ec6c7f",
+      "fdd_blob": "463bae29a34a92b1ebcc15912f3497dc77ec6c7f",
+      "exact_match": true,
+      "decision": "Exact same original source blob as fdd14_path_decisions.json; composed file-identity guards and historical alias regression already ported and tested there."
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/metrics_tests.rs",
+      "original_blob": "0a7af8710ba94dc0f854ce0a2463c4ec20d39096",
+      "fdd_blob": "0a7af8710ba94dc0f854ce0a2463c4ec20d39096",
+      "exact_match": true,
+      "decision": "Exact same original source blob as fdd14_path_decisions.json; composed file-identity guards and historical alias regression already ported and tested there."
+    }
+  ],
+  "additional_original_commits_after_fdd": [
+    "71de6a1111e46b582948dd7e44644aa312a7aa7d",
+    "b8017dec88a8ab53af295d26ccd5a59cbf32fc77"
+  ],
+  "additional_ordinary_names_after_fdd": [
+    {
+      "name": "dot/2858-metrics-ci-source-binding-20261019",
+      "sha": "71de6a1111e46b582948dd7e44644aa312a7aa7d",
+      "protected": false
+    },
+    {
+      "name": "dot/2858-metrics-rustfmt-c620-20261019",
+      "sha": "71de6a1111e46b582948dd7e44644aa312a7aa7d",
+      "protected": false
+    }
+  ],
+  "additional_unique_tips_after_fdd": 1,
+  "limits": [
+    "No original ancestor was recorded by this agent. Six native metrics cases passed on the exact composed source union. Full Neuron helper qualification is not established; see helper-native-gate-receipt.json.",
+    "No Windows/macOS/hosted-CI qualification inferred.",
+    "Original workflow semantics are explicitly retired under current CI policy rather than counted as automatically exercised."
+  ]
+}

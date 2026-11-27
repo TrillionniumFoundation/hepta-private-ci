@@ -1,0 +1,69 @@
+"""Retain scoped Hepta commands, source inputs and natural exit codes."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+root = Path('/workspace/scratch/93ddee66e1b3/hepta-cell')
+logs = Path(os.environ.get('HEPTA_CELL_LOG_DIR', str(Path(__file__).resolve().parent)))
+name, *command = sys.argv[1:]
+env = os.environ.copy()
+env['PATH'] = ':'.join([
+    '/workspace/scratch/62902f6722b7/native-hepta-next/rust-1.96.0/bin',
+    '/workspace/scratch/62902f6722b7/hepta-runtime-next/tools/bin',
+    '/workspace/scratch/62902f6722b7/native-dependencies/cmake-python/bin',
+    env['PATH'],
+])
+env['CARGO_HOME'] = '/workspace/scratch/62902f6722b7/cargo-next'
+env['CARGO_TARGET_DIR'] = os.environ.get('HEPTA_CELL_TARGET_DIR', '/workspace/scratch/62902f6722b7/hepta-target')
+env['CARGO_NET_OFFLINE'] = 'true'
+env['CARGO_BUILD_JOBS'] = os.environ.get('HEPTA_CELL_BUILD_JOBS', '2')
+env['LIBCLANG_PATH'] = '/workspace/scratch/62902f6722b7/native-dependencies/libclang-python/clang/native'
+env['BINDGEN_EXTRA_CLANG_ARGS'] = '-I/workspace/scratch/62902f6722b7/native-dependencies/clang-headers/usr/lib/llvm-18/lib/clang/18/include'
+env['OPENSSL_INCLUDE_DIR'] = '/usr/include'
+env['OPENSSL_LIB_DIR'] = '/usr/lib/x86_64-linux-gnu'
+env['CMAKE'] = '/workspace/scratch/62902f6722b7/native-dependencies/cmake-python/cmake/data/bin/cmake'
+helper_file = os.environ.get('HEPTA_CELL_HELPER_ENV')
+helper_environment = json.loads(Path(helper_file).read_text()) if helper_file else {}
+assert all(name in ('CARGO_BIN_EXE_hepta-joint-propose', 'CARGO_BIN_EXE_hepta_joint_propose')
+           and Path(value).is_absolute() for name, value in helper_environment.items())
+env.update(helper_environment)
+
+def changed_inputs():
+    paths = set()
+    for args in (['git', 'diff', '--name-only', 'HEAD', '-z'],
+                 ['git', 'ls-files', '--others', '--exclude-standard', '-z']):
+        paths.update(p.decode() for p in subprocess.check_output(args, cwd=root).split(b'\0') if p)
+    return {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in sorted(paths) if (root / p).is_file()}
+
+receipt = {
+    'command': command,
+    'cwd': str(root / 'codex-rs'),
+    'source_head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
+    'source_tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=root, text=True).strip(),
+    'changed_inputs_before': changed_inputs(),
+    'started_at': datetime.datetime.now(datetime.UTC).isoformat(),
+    'environment': {k: env.get(k) for k in ('CARGO_HOME','CARGO_TARGET_DIR','CARGO_NET_OFFLINE','CARGO_BUILD_JOBS','CARGO_INCREMENTAL','LIBCLANG_PATH','BINDGEN_EXTRA_CLANG_ARGS','OPENSSL_INCLUDE_DIR','OPENSSL_LIB_DIR','CMAKE')},
+    'helper_environment': helper_environment,
+}
+(logs / (name + '.start.json')).write_text(json.dumps(receipt, indent=2) + '\n')
+started = time.monotonic()
+with (logs / (name + '.log')).open('wb') as log:
+    result = subprocess.run(command, cwd=root / 'codex-rs', env=env, stdout=log, stderr=subprocess.STDOUT, check=False)
+receipt.update(exit_code=result.returncode, elapsed_seconds=time.monotonic() - started,
+               ended_at=datetime.datetime.now(datetime.UTC).isoformat(), changed_inputs_after=changed_inputs())
+print(json.dumps({'name': name, 'exit_code': result.returncode, 'elapsed_seconds': receipt['elapsed_seconds'],
+                  'source_unchanged': receipt['changed_inputs_before'] == receipt['changed_inputs_after'],
+                  'log': str(logs / (name + '.log'))}), flush=True)
+try:
+    (logs / (name + '.result.json')).write_text(json.dumps(receipt, indent=2) + '\n')
+except OSError as error:
+    receipt['result_write_error'] = str(error)
+    backup = Path(__file__).resolve().parent / (name + '.result-backup.json')
+    backup.write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps({'result_write_error': str(error), 'backup': str(backup)}), flush=True)
+raise SystemExit(result.returncode)

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.task_future_calibration",
+    "--worker",
+    "--output",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/task_future_calibration001"
+  ],
+  "complete_child_cpu_seconds": 0.40221799999999996,
+  "exit_code": 0,
+  "peak_rss_kib_linux": 68292,
+  "scope": "Complete read-only numerical analysis worker including imports; no neural/model/solver calls",
+  "wall_seconds": 1.1252408350001133
+}

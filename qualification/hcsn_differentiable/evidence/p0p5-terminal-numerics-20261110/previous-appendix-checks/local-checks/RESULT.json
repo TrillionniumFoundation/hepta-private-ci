@@ -1,0 +1,735 @@
+{
+  "schema": "hcsn-evidence-chain-integrity-v1",
+  "passed": true,
+  "errors": [],
+  "git_head": "a143bfda5036a54ed87afe21d184b5a9749fa0ee",
+  "git_committed_tree": "772cbf882db520525d6fa5c805c296aa2e8b97eb",
+  "source_sha256": {
+    "qualification/hcsn_differentiable/BENCHMARK.md": "bcfbeb4174d834115017d23e4921838c401aa741fd49eef2572776ed633bc969",
+    "qualification/hcsn_differentiable/CURRENT.md": "9af0af087846f6abfe238b45d717cc1e395e9722c31ffbc682d70c9481290c67",
+    "qualification/hcsn_differentiable/DATASET.md": "820da5ac36a1553346a756eedac57aa9928a97e4e8c566ef5ca8beff01359bbd",
+    "qualification/hcsn_differentiable/MODEL.md": "8919ff5f44af1e8929f2a6838d765f8e0333c807190834f6a957db8a142b611b",
+    "qualification/hcsn_differentiable/README.md": "04c0380de4ed9f0e9f7322962188d5c2fb95aa5d81193216acb4b51fb8468600",
+    "qualification/hcsn_differentiable/TRAINING_DOMAIN.md": "5db87e87f2859cc731e06aad7447c008cc99c40b07d060bee714d0ea6041fb44",
+    "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "qualification/hcsn_differentiable/ci_baseline.json": "9788b360050963ea0aee86fb825335fa45cdb4f32e0db60adfdf25812c9c4db2",
+    "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "qualification/hcsn_differentiable/error_budget.json": "58581f46eaba0381884665b7b7ca7d191a4d026d7b3866622c5da72702649a86",
+    "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "qualification/hcsn_differentiable/evidence_chain.py": "a20735bfe660028797a1ac466a6e91c2d9c8362d6308f854183440c06b4d9dbb",
+    "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "qualification/hcsn_differentiable/research_protocol.json": "27c84c4867f3967e2544639ca188fae865768dfc9d6928074062e027ca2a83e8",
+    "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "qualification/hcsn_differentiable/semantic_contract.json": "8df947e79cc4157735ce57b00d53b586c9dd598291747d706afd0c78d4d89fab",
+    "qualification/hcsn_differentiable/semantics.py": "b90883ecfc4170227864a7dd0c9def70a37d100096b248435f87fae785534119",
+    "qualification/hcsn_differentiable/tests/test_benchmark_admission.py": "f5372a17de53d86f39604f79a137cfa2fc0108b1158c04d52f7056b715d01e55",
+    "qualification/hcsn_differentiable/tests/test_encoder.py": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011",
+    "qualification/hcsn_differentiable/tests/test_evidence_chain.py": "8b4cdec79d4dbd9735e52e4993319f45f8643ef9c5fdddb17a0c99581788a089",
+    "qualification/hcsn_differentiable/tests/test_finite_renewal.py": "394014c3c8b569af4436619e3c2a846970c282d5a3ff6d7248c1b091e89038aa",
+    "qualification/hcsn_differentiable/tests/test_logrisk.py": "644e612bb3e943cc5084a3321664fb1d2b8eb564feffe1856e9801b794c20426",
+    "qualification/hcsn_differentiable/tests/test_network.py": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759",
+    "qualification/hcsn_differentiable/tests/test_operator.py": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779",
+    "qualification/hcsn_differentiable/tests/test_probability_intervals.py": "14aba48940fbc279532a6a081d708f3a42fc3c94bcfeefad2aaaee09ff945ba9",
+    "qualification/hcsn_differentiable/tests/test_readout_semantics.py": "30e2bd3ef470580471ffb74c83f9acd1f61fdd237ce1fba94e56935fcb2b1539",
+    "qualification/hcsn_differentiable/tests/test_regenerative.py": "d3b6b14859b235f7b2eee3ecefebf76a8e45d1eec34aa55315983be5e26887e0",
+    "qualification/hcsn_differentiable/tests/test_semantics.py": "2020d11cd0b991a44f18d31eca22d4a2a5453f3515ac69067196663a3cc6d8b2",
+    "qualification/hcsn_differentiable/tests/test_training_domain.py": "a263c67294a0a6a36a2126cf00d4f9fc14316c3c5c59bd61b66da1ca4211cd6d",
+    "qualification/hcsn_differentiable/tests/test_training_domain_finite.py": "fff63fce8e55ee392bc7005b2387cf4d6f7a0dbbc423a9a39ba8219615b919ae",
+    "qualification/hcsn_differentiable/tests/test_value.py": "ce6d57768ca785d656fdcb1ab7c86d7379d16f47a58540044474d40378e2acf9",
+    "qualification/hcsn_differentiable/training_domain.py": "4dda92ee43218594454a0693fd86ce687a842380d4ac0b4ba5ba6a14fd176ddf",
+    "qualification/hcsn_differentiable/training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+    "qualification/hcsn_differentiable/training_domain_finite.py": "7ef9d7ef0ea033e2f4c6212daaa56b94ee5c8e7740f6e075838bf3d1124a665e",
+    "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+  },
+  "source_tree_digest": "a895f16c8da7af03b54e80dbf4807f50c00ed7f824aae2edc2ace27e0cadcc71",
+  "input_sha256": {
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/MANIFEST.json": "c014034c6be627876f18eec594cb0332144912f2714b62b0be5a71cc53257fcf",
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md": "53bb24618d67f927d83971576b5990d8d22b0e6edbca3c078245fcfd885ff450"
+  },
+  "verified_files": {
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/ARCHIVES.json": {
+      "bytes": 88808,
+      "sha256": "b3544bd88fe335989b69da966a30b91eb43c4fa64a3650d307f67c804e471e32"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/COPY-RECEIPT.json": {
+      "bytes": 31124,
+      "sha256": "44a8cdfbe938da3992645ec5becab88e7b035a446f27f097ffb2894d6af9dfcf"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/COSTS.json": {
+      "bytes": 3096,
+      "sha256": "24efa8da8c73532499d368e18d5e7311fce3d0943eb7b94290ba6684d2cbf0c3"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md": {
+      "bytes": 9753,
+      "sha256": "53bb24618d67f927d83971576b5990d8d22b0e6edbca3c078245fcfd885ff450"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/STATUS.json": {
+      "bytes": 2750,
+      "sha256": "f64e5729fdf656fa4d38b72137495f244c24abf654618ed6ea818bc8808f23b1"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/ci/observations-original.zip": {
+      "bytes": 12245,
+      "sha256": "283ad80cec569d516cf2cef757d8f9e775be57878367f3697786a7b33c324c72"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/ci/observations-original.zip.json": {
+      "bytes": 742,
+      "sha256": "41ac6f52e9d85f8c1d0e9bbd97cfe2e7b9487f4dde30dd57c3ad746537844838"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-interface-review/RESULT.json": {
+      "bytes": 2976,
+      "sha256": "72cffa5955c718aefd0f7e741f4ccbe06da274d1ae2be4b1a7ef2e891b3211b5"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/ASSEMBLY-RECEIPT.json": {
+      "bytes": 917,
+      "sha256": "93c3e8218781e703212083a20bcbcc67f46c4c86156cf957a2829b372e3c9c1d"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/BUDGET-BASIS.json": {
+      "bytes": 2223,
+      "sha256": "f018d10ea525fae3af61a6109769bb325e9714a9bb35eb54e47492290ad0b66d"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/INPUTS.json": {
+      "bytes": 3849,
+      "sha256": "32421360e7294f9986c447f20e9873d8580f1446ae444587a3ce5c5b9d6842b9"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/MANIFEST.json": {
+      "bytes": 2818,
+      "sha256": "22b156417b0f136421b60337a962b8a54291d9d2bd1586343732eab029fba576"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/PLAN.json": {
+      "bytes": 19917,
+      "sha256": "be778e57d203779e7765ff2e2bc84e977d61a992894d747dd1b89b091a486ddf"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/PROPOSAL.md": {
+      "bytes": 12866,
+      "sha256": "eb8c7b10a674b797014ef461e32c7b4d24e852a65d54b3d59747b4781a6c6f2f"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/README.md": {
+      "bytes": 1891,
+      "sha256": "b0be1ec8a25d862de29d7c78cf2f0a4abcf224fa89e6117f70d056b30d51871b"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/assemble_candidate.py": {
+      "bytes": 21260,
+      "sha256": "7251ce195200aaf81eb949c18dbca83bb251a38d46722121920bcfe79be5df09"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/c2_auditor_checks.py": {
+      "bytes": 9345,
+      "sha256": "27e83c8ee06cf43edab8e1c11ea8a3eb11468eea71ae7b1e4c1f7d115796838b"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/c2_terminal_audit_PLAN.json": {
+      "bytes": 11617,
+      "sha256": "1fc0d941bc9d96544c8caa5740aaba130685fed74b620f6e62dc22bec4a715ad"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/campaign-v2-plan.json": {
+      "bytes": 3861,
+      "sha256": "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/development_episodes.py": {
+      "bytes": 9697,
+      "sha256": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/formal_protocol.json": {
+      "bytes": 5721,
+      "sha256": "c9a7e3c4f98a131e9fb639832b413e18c00e25ba6f608a0d97c83d728c0a0465"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/full-d-replay-SUMMARY.json": {
+      "bytes": 23573,
+      "sha256": "04cc502f1bb2b7714982dd1e458c278cd78c48dbd0e8be9a34d513c848f82d16"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/initial_research_protocol.json": {
+      "bytes": 1989,
+      "sha256": "27c84c4867f3967e2544639ca188fae865768dfc9d6928074062e027ca2a83e8"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/legacy_data_loader.py": {
+      "bytes": 6767,
+      "sha256": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/localization-v2-PROTOCOL.md": {
+      "bytes": 10223,
+      "sha256": "7f785054f4d54a5c51d9229a70f6319eb9c773b70d2daaf25dc5f77182cb8ffa"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/localization-v3-README.md": {
+      "bytes": 16537,
+      "sha256": "1d329eb632407fc7dd2161cc2b202ffe7efadd3a74adb0f31d353fa5fc04024f"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/source-context/resource_analysis.py": {
+      "bytes": 19222,
+      "sha256": "dc398a012bd25d611c0bbbfc09f64a3c76c7d1d367c84c5178864140c769ee95"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/curation-source/build_c2_progress_evidence_v1.py": {
+      "bytes": 11394,
+      "sha256": "1e0516c4b167fd20a24e2061512a00b4f53d617038194ef0e63733149b97a704"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/ARCHIVE-GNU-TIME.txt": {
+      "bytes": 1219,
+      "sha256": "d522ed14ec65572502e5e4e199d3fd7198191221d19d20434ad944b5ab673e35"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/COPY_LIST.json": {
+      "bytes": 2061,
+      "sha256": "90573dffbac6b25ddecd2ffcc03fcaf9209c3d0a4da3a0f26304fa731f10e572"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/COST-SCOPE-ADDENDUM.json": {
+      "bytes": 1313,
+      "sha256": "5fb3f1eadb3406314f77c1580ee23cfbc5ace68473f5e644054aa84d8377010b"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/HANDOFF.json": {
+      "bytes": 2226,
+      "sha256": "6c405e9e0997cf4b69075759d7cb3cc8d6a6c5efc08f6f6585bb5fa4c33ba633"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/PACKAGE-RECEIPT.json": {
+      "bytes": 168,
+      "sha256": "601190907a8f3f91387f89fc0bf112a1e5a1700facf8f7655d9267bc7b2f3de5"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/RECOVERY-RECEIPT.json": {
+      "bytes": 497,
+      "sha256": "5356b3620a5d9222c99b20cc096ab5e929d37e954f22441ab2bd57bf18042cef"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/control-plane-originals-v1.zip": {
+      "bytes": 198729,
+      "sha256": "cb0ea382eb8d61e9c77d4b4fffa350c923997aad7561c6e40d8efb3b2e9f2d8b"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/hcsn-c2-first-terminal-metadata-20261110-v1.zip": {
+      "bytes": 181719,
+      "sha256": "27c4ab90aa4d3ff44a81c6a154a8a8572706caa9f314f00b5684913132c24828"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/payload/fit/result.json": {
+      "bytes": 360283,
+      "sha256": "c5c3f1f75a305fff6d97fdfd263ca8aac0c765698ba94c1debc17b01978b889d"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/payload/outer/RESULT.json": {
+      "bytes": 3281,
+      "sha256": "189da59739ac6337152cbc6c58e455087a30decaf50171c19a2c8b74e9629edc"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/COPY_LIST.json": {
+      "bytes": 1996,
+      "sha256": "22f89004135655dca3eea92043370808fee2604cb81afdb3e8aba622d978ecaf"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/GNU-TIME.txt": {
+      "bytes": 1200,
+      "sha256": "924a4ccd5ae98f507a17eb5025b37ca9d8c3874bcf62cdb4de1e47608cefee88"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/HANDOFF.json": {
+      "bytes": 6672,
+      "sha256": "4782f20d9ad2a6f4d2c0a0733f38277baf47cec7e980ca139f3634b4789c4495"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/PACKAGE-RECEIPT.json": {
+      "bytes": 373,
+      "sha256": "dc429e6140e75cfef0a98fb67271f8039e0abec386dc3b27fce121e6d66d40bf"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/RECOVERY-RECEIPT.json": {
+      "bytes": 512,
+      "sha256": "f6594e51a1bf27cb9069e6d1cf0475c04f6a1218c2c12a6c2c544d046e2d0c59"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/control-plane-originals-v2.zip": {
+      "bytes": 285736,
+      "sha256": "5684dfcfc3772ecefbd118bb2253c85b833e348a066240963b1fa704063abe88"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/hcsn-c2-epoch-observation-20261110-v2.zip": {
+      "bytes": 270446,
+      "sha256": "bf9d044b26820eb9cdccc6fb6e6cc947ff9b7fa851fb6d8823d52323c0613c2e"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/payload/SUMMARY.json": {
+      "bytes": 278400,
+      "sha256": "66eece2c69435f4e19cb172b5768c2e4500722833b7e500d7d59856a70379ed2"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/COPY_LIST.json": {
+      "bytes": 1629,
+      "sha256": "33a3465cc8f3ef185a80205aeeb98bb4cc7d59045a118ac51386dd3538f8d0ad"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/GNU-TIME.txt": {
+      "bytes": 1203,
+      "sha256": "e271d0c167bae045115bdf52845876b0ef52b3fd0c643478f6504c053589812e"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/HANDOFF.json": {
+      "bytes": 3492,
+      "sha256": "aa21e30a25125ce8837d834a193e3a7a16adbc9e2834cc693d7e7942c95bfe7a"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/PACKAGE-RECEIPT.json": {
+      "bytes": 154,
+      "sha256": "ca25787b17e4ac28471a56dde90f88211a2c4318b13a97f8547671663296392a"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/RECOVERY-RECEIPT.json": {
+      "bytes": 414,
+      "sha256": "4fbe70b4d711aaed2533cac23273768d93f97e238b4686f7b4ea9e54267b5d33"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/control-plane-originals-v1.zip": {
+      "bytes": 129737,
+      "sha256": "9020038760380edd89666221b45d090c60f83d52d81fd5520e8e84f53758a58b"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/hcsn-c2-epoch-observation-20261110-v1.zip": {
+      "bytes": 111899,
+      "sha256": "965b0d35b2c4e5e5b4074d0d5b69cd3e2eeff36ec9d844918467022504ce0437"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/payload/SUMMARY.json": {
+      "bytes": 128250,
+      "sha256": "8f0730a795d5983d2fc551dd0e0abcfeee357324d43489e824c7a6596cbb3fdb"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/codespell-red-green.zip": {
+      "bytes": 2900,
+      "sha256": "e9979ce1161fe9c023388a44fd0a1b40e8e79575c62ffbb39b9bae12db4b9968"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/codespell-red-green.zip.json": {
+      "bytes": 1817,
+      "sha256": "666b948d7ca50f631b73daebb0b01be38965bae0dc6b1ed04a0abed55faf84d7"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/committed-blobs/EXECUTION.json": {
+      "bytes": 187783,
+      "sha256": "47afe6ba4d5050bfdec08a91410abb9cb1c4d89f9485624462e509fd2516b6d5"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/committed-blobs/RESULT.json": {
+      "bytes": 375375,
+      "sha256": "61d6e35bcf25bc0b84d951c97cf93f303d8244f2aec4b52eb92c3a63b5fe0eb7"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/committed-blobs/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/committed-blobs/stdout": {
+      "bytes": 162,
+      "sha256": "8571cfe39f9b94b7c25a33599489b0279aede4988a5ac4782ee38289476ed791"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/worktree/EXECUTION.json": {
+      "bytes": 10805,
+      "sha256": "8fbe4592fb4811e4c2be1ad1a1bd3f81dbcb7bdc91097a3643f3bb2dd4b4960c"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/worktree/RESULT.json": {
+      "bytes": 415218,
+      "sha256": "9edbbae56bd0f25a7e47ab4183c351b755aaf08c9d881465b61ae8f95b2de481"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/worktree/formatter.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/worktree/formatter.stdout": {
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/worktree/integrity.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/worktree/integrity.stdout": {
+      "bytes": 45,
+      "sha256": "5c054da59979767ebad34591ed4cbf4ed65176f3c0aaefa92f5a850110152593"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/publication-preparation/root-static-review/CLOUD-READ-INTERRUPTION.json": {
+      "bytes": 767,
+      "sha256": "c6e0ab3aed393053eb86e6830d4970f41aeaa0e889e78c98a1e3b5749d604465"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/publication-preparation/root-static-review/RESULT.json": {
+      "bytes": 2001,
+      "sha256": "d2f0e710fe7ce4f416de8d000ec5cd276bf5c572f94a1dbf7913675e5be99ab4"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/publication-preparation/uploader.py": {
+      "bytes": 13296,
+      "sha256": "8409832f5c6561075634fc86cae060fc9c3212c4098679fb00b9d38dbc181cc3"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/publication/PR5856-created.json": {
+      "bytes": 9492,
+      "sha256": "7a774525097719a55f712bd3afeb11f491ce2b38a1b2697515e0498676e289cc"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/publication/api-progress.json": {
+      "bytes": 81114,
+      "sha256": "5da6d32733413b4239fa2fbfa72ce0fb6137f39e212c76bb58ee0458f512f267"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/publication/local-stages.json": {
+      "bytes": 1278,
+      "sha256": "60a8b3d46138c57b22d6c4cdf5b3717af63e2fcab7948428e9febcaf26aa2615"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/publication/publish_helpers.js": {
+      "bytes": 8794,
+      "sha256": "b12f8dd60f794497493008e72b543215843c9e294651f894e5fa958fe2f21b88"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan-review/INPUT-PLAN.json": {
+      "bytes": 8456,
+      "sha256": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan-review/MANIFEST.json": {
+      "bytes": 1053,
+      "sha256": "6324b770c0366e85110aff9245240d3a385501d5047d31ab8b2523c5b9b07cfe"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan-review/REPORT.md": {
+      "bytes": 1724,
+      "sha256": "1fb60ca53380b5b0bbf71133ba8518fa48eec9e1023b4e8a662071869c82a822"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan-review/RESULT.json": {
+      "bytes": 5703,
+      "sha256": "bf8f38f879079f68c6392b1be7bae94b6443750b79690387888faf2d393be0e9"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan-review/WRITE-OBSERVATION.json": {
+      "bytes": 762,
+      "sha256": "c06a1748045b63e0f8ad654b4576b836724f99bd2343a0b40af71d311c64b1e7"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan-review/review_plan.py": {
+      "bytes": 8130,
+      "sha256": "02c0fdb12592aaf4501b261028c33f106ad2de762c06cdc296fb8b618459197f"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan-review/source-context/c2_controller.py": {
+      "bytes": 24685,
+      "sha256": "5958053887fa3f29ee4a13aff9d06a151793e76d6369c68f554e77eb229104f6"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan-review/source-context/c2_runner.py": {
+      "bytes": 27503,
+      "sha256": "161d803d878b2aa368f60f1f481de773d6577a91068a4c8dbff0b839074cde11"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan/MANIFEST.json": {
+      "bytes": 423,
+      "sha256": "bbeeceae59ad2e10748b497862fa4d79bf86050985a7f440529c2f0034a93adf"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan/PLAN.json": {
+      "bytes": 8456,
+      "sha256": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan/PREPARATION.json": {
+      "bytes": 247,
+      "sha256": "e377dc7a537f06859771b37f0bb25bebd95230fb8969bbf21a0f0baa59eba013"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan/freeze_source.py": {
+      "bytes": 9184,
+      "sha256": "f718e37f30dc9481769e2e4167b9a11be8ff0d73c0d2d8e7316b006ba71f372c"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/PLAN.json": {
+      "bytes": 11617,
+      "sha256": "1fc0d941bc9d96544c8caa5740aaba130685fed74b620f6e62dc22bec4a715ad"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/PROGRAM-MANIFEST.json": {
+      "bytes": 3081,
+      "sha256": "4cc126ad4cf11e12c80408a868f8c673be70bccdce95a02228fda9d1543ef8d2"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/COPY_LIST.json": {
+      "bytes": 999,
+      "sha256": "a4c3999b34b4c36e93a725b06275ea1a2343612ad85f6c06be7910306700038c"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/MANIFEST.json": {
+      "bytes": 3349,
+      "sha256": "6a085322108500edfb7c69c8c341164c1f27892b1d2cab1a6dfaeb61f6afe66f"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/SUMMARY.json": {
+      "bytes": 3317,
+      "sha256": "84f8124846c46ca83cb4771f1d1b6e583f20cd3c34f0a3e80648045e968bf0b6"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/final-validation/RESULT.json": {
+      "bytes": 8395,
+      "sha256": "99b84ac7e022fc1f36d7c9f1ae3989fdf4d34c4ff426cb27f59a7801e7dd72bb"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/final-validation/TESTED-SOURCE.zip": {
+      "bytes": 73473,
+      "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/final-validation/help.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/final-validation/help.stdout": {
+      "bytes": 544,
+      "sha256": "362bf52455bfe901dd8ff2e814e3e9b582834d040277392386809d64e5d5bef4"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/final-validation/synthetic-tests.stderr": {
+      "bytes": 3791,
+      "sha256": "dfcd7c22567590136a7be836215a538658bfea76fe9263a3a7dc89aef39f8ce4"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/final-validation/synthetic-tests.stdout": {
+      "bytes": 4179,
+      "sha256": "2b93a0d479b281871dd38c66cfa5707aadb207f9f637bcecb1fea6cc8ed87c19"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/independent-closure.zip": {
+      "bytes": 177828,
+      "sha256": "5a5d01213b780790c924f889e297432ca1dc2965e713a7fb67ac26c2fe6c927b"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/independent-red-examples.zip": {
+      "bytes": 72000,
+      "sha256": "78462d039d769b1798dcdd3c7c723d4367f1fef032aa53b121e02d780f6986cc"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-01/RESULT.json": {
+      "bytes": 4965,
+      "sha256": "0858027640239b39dd14a38b075bebb1135aa0ff183a90bd43a60e53c48b3658"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-01/TESTED-SOURCE.zip": {
+      "bytes": 60033,
+      "sha256": "82d82c951ea2d1d802d5fc1f14f1174d7ce5c3e63a243ec9afcdbc70f39dce03"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-01/stderr": {
+      "bytes": 4413,
+      "sha256": "4f8ab55869981ed84904fafbb8ade40b7531c84383abf380206fa343364f9f67"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-01/stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-02/RESULT.json": {
+      "bytes": 5259,
+      "sha256": "2d01ec960c224ebce8f475fd9afc3e399348a012cc5f6257afe285c12a47223b"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-02/TESTED-SOURCE.zip": {
+      "bytes": 62233,
+      "sha256": "d9a1dca464807bf141312907803fe39cfb6ecb085d95a6d1637549548a48eba6"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-02/stderr": {
+      "bytes": 3008,
+      "sha256": "3163fc77d71b2d88050ad59ac75bf5442e4f4ca3ef3249d26e78cd83145d8412"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-02/stdout": {
+      "bytes": 4177,
+      "sha256": "51375e60c6c1efc932aeceb8773e858a651793c358c473fb82c326dcabd328f5"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-03/RESULT.json": {
+      "bytes": 5806,
+      "sha256": "f7ee7e79c8fdfc3bd32437efced974b31219575cf9d1fdf3b0e9c7ebae04f5de"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-03/TESTED-SOURCE.zip": {
+      "bytes": 69146,
+      "sha256": "aa082bc5432eb80f70bd6c81ea225bf94cdcee596a3f0017e7669d6b221ace60"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-03/stderr": {
+      "bytes": 3610,
+      "sha256": "639d2f1e0f80b2437846a511a37705e9adb190a977391155f80f5b0171ed13b6"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-03/stdout": {
+      "bytes": 4178,
+      "sha256": "e5959b11a546d0b870ea889118b06c8d69082b03f6daec79297791ff05aa9be3"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/program.zip": {
+      "bytes": 73473,
+      "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/root-source-review/SOURCE-RECEIPT.json": {
+      "bytes": 810,
+      "sha256": "1647d81d73716782c9095ee73b44b6aa23804f6906d7c32e8ca4ac2aed601b9b"
+    }
+  },
+  "archives": {
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/ci/observations-original.zip": {
+      "members": 3,
+      "expanded_bytes": 271750,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/control-plane-originals-v1.zip": {
+      "members": 15,
+      "expanded_bytes": 280476,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/hcsn-c2-first-terminal-metadata-20261110-v1.zip": {
+      "members": 28,
+      "expanded_bytes": 1400226,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/control-plane-originals-v2.zip": {
+      "members": 12,
+      "expanded_bytes": 413260,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/hcsn-c2-epoch-observation-20261110-v2.zip": {
+      "members": 55,
+      "expanded_bytes": 1958725,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/control-plane-originals-v1.zip": {
+      "members": 11,
+      "expanded_bytes": 204621,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/hcsn-c2-epoch-observation-20261110-v1.zip": {
+      "members": 28,
+      "expanded_bytes": 708393,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/codespell-red-green.zip": {
+      "members": 7,
+      "expanded_bytes": 5506,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/final-validation/TESTED-SOURCE.zip": {
+      "members": 23,
+      "expanded_bytes": 214222,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/independent-closure.zip": {
+      "members": 148,
+      "expanded_bytes": 428469,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/independent-red-examples.zip": {
+      "members": 72,
+      "expanded_bytes": 159550,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-01/TESTED-SOURCE.zip": {
+      "members": 17,
+      "expanded_bytes": 180174,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-02/TESTED-SOURCE.zip": {
+      "members": 18,
+      "expanded_bytes": 186492,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/preparation-attempt-03/TESTED-SOURCE.zip": {
+      "members": 20,
+      "expanded_bytes": 204212,
+      "crc_passed": true
+    },
+    "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/program.zip": {
+      "members": 23,
+      "expanded_bytes": 214222,
+      "crc_passed": true
+    }
+  },
+  "relative_links": [
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "../p0p5-c2-launch-20261110/README.md",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/README.md"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "STATUS.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/STATUS.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "observations/first-epochs/payload/SUMMARY.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/first-epochs/payload/SUMMARY.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "observations/at-220042/payload/SUMMARY.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/payload/SUMMARY.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "observations/at-220042/HANDOFF.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/observations/at-220042/HANDOFF.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "first-terminal/payload/fit/result.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/payload/fit/result.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "first-terminal/payload/outer/RESULT.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/payload/outer/RESULT.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "first-terminal/COST-SCOPE-ADDENDUM.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/COST-SCOPE-ADDENDUM.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "first-terminal/hcsn-c2-first-terminal-metadata-20261110-v1.zip",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/hcsn-c2-first-terminal-metadata-20261110-v1.zip"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "first-terminal/control-plane-originals-v1.zip",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/first-terminal/control-plane-originals-v1.zip"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "terminal-auditor/preparation/program.zip",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/program.zip"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "terminal-auditor/PROGRAM-MANIFEST.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/PROGRAM-MANIFEST.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "terminal-auditor/PLAN.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/PLAN.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "terminal-auditor/preparation/SUMMARY.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/terminal-auditor/preparation/SUMMARY.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "resource-plan/PLAN.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan/PLAN.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "resource-plan-review/REPORT.md",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan-review/REPORT.md"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "confirmation-E-proposal/PROPOSAL.md",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/PROPOSAL.md"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "confirmation-E-interface-review/RESULT.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-interface-review/RESULT.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "publication/api-progress.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/publication/api-progress.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "prior-head-checks/worktree/RESULT.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/worktree/RESULT.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "prior-head-checks/committed-blobs/RESULT.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/committed-blobs/RESULT.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "ci/observations-original.zip",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/ci/observations-original.zip"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "prior-head-checks/codespell-red-green.zip",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/prior-head-checks/codespell-red-green.zip"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "MANIFEST.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/MANIFEST.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "ARCHIVES.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/ARCHIVES.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "COPY-RECEIPT.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/COPY-RECEIPT.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "COSTS.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/COSTS.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "publication-preparation/root-static-review/RESULT.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/publication-preparation/root-static-review/RESULT.json"
+    },
+    {
+      "document": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md",
+      "target": "publication-preparation/root-static-review/CLOUD-READ-INTERRUPTION.json",
+      "resolved": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/publication-preparation/root-static-review/CLOUD-READ-INTERRUPTION.json"
+    }
+  ],
+  "atomic_snapshot": false,
+  "markdown_scope": "simple inline relative file links; no fragments or external URLs",
+  "numerical_qualification": false,
+  "scientific_benefit": false,
+  "repository_ci_pass": null
+}

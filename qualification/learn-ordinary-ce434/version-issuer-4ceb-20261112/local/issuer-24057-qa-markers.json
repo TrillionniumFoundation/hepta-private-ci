@@ -1,0 +1,44 @@
+[
+  {
+    "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+    "source_path": "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+    "function": "into_original_retained_version_issuer",
+    "old": "self.protected_root.as_ref()",
+    "new": "self\n            .protected_root\n            .as_ref()"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+    "source_path": "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+    "function": "into_original_retained_version_issuer",
+    "old": "self.stream.try_lock()",
+    "new": "self\n                .stream\n                .try_lock()"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+    "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs",
+    "function": "claim_original_final_use",
+    "old": "state.final_use_issuer.take().ok_or(Error::ReadbackRequired)?",
+    "new": "state\n            .final_use_issuer\n            .take()\n            .ok_or(Error::ReadbackRequired)?"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+    "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+    "function": "new",
+    "old": "RetainedVersionOriginV1::Recovered => RetainedVersionFinalUseOutcomeV1::Published as u8",
+    "new": "RetainedVersionOriginV1::Recovered => {\n                    RetainedVersionFinalUseOutcomeV1::Published as u8\n                }"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+    "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "function": "publish_original_final_use",
+    "old": "task.install_original(published, cut, intent)",
+    "new": "task\n                .install_original(published, cut, intent)"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+    "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "function": "publish_original_final_use",
+    "old": "self.final_use_outcome.store(RetainedVersionFinalUseOutcomeV1::Published as u8, Ordering::Release)",
+    "new": "self.final_use_outcome.store(\n                RetainedVersionFinalUseOutcomeV1::Published as u8,\n                Ordering::Release,\n            )"
+  }
+]

@@ -1,0 +1,176 @@
+{
+  "schema": "hepta.learn.original-panel-policy-static-peer.v1",
+  "reviewer": "learn_readonly_bootstrap",
+  "scope": "Exact supplied draft Git blobs and the unchanged FDE Model material consumer, not an executed ordinary A/B/C run.",
+  "result": "No confirmed defect in the reviewed V1-readonly/V2-release and remote Model/Selector policy-admission paths.",
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+      "git_blob": "8b850bb43ba160406c319e61c70ffb38cb52ed4a",
+      "bytes": 15322
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "git_blob": "e1b5ae581d897c3a077d720030fdb877b78b9426",
+      "bytes": 10874
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "git_blob": "70cee4b87c3e662eec59c5d5cce6df2a72a12c5b",
+      "bytes": 5122
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_codec.rs",
+      "git_blob": "53d666e3027dff653c891c2c1403c79131ee1044",
+      "bytes": 2963
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_comparison.rs",
+      "git_blob": "9c53e2efc865081e68805e060b025b6d0ea5cf8e",
+      "bytes": 5039
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+      "git_blob": "230f309a45642550b230a3a8df2e0de7321e9f5c",
+      "bytes": 11107
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "git_blob": "5ad097ac7176d778feaff513a3dc34910496a191",
+      "bytes": 17635
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      "git_blob": "02f5309fb3001f8a5855153e9305c57d6593a1bf",
+      "bytes": 4557
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "git_blob": "66b49b4218291ea0e47876cc5fe522578dc6470d",
+      "bytes": 13499
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_config.rs",
+      "git_blob": "4b213bbb565f667cb8b6523ec292433cf2f637d6",
+      "bytes": 1187
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "git_blob": "bb536a7d4dd4edd8f9bed768bf00353d1d3137e6",
+      "bytes": 10674
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+      "git_blob": "8a70c3b256a4f7e47d348d62417e45c1266f26eb",
+      "bytes": 10301
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs",
+      "git_blob": "37443cfc2674bf341ce51a917e825ca8c959772d",
+      "bytes": 6027,
+      "role": "Previously supplied exact encoding dependency; final containing tree not yet published."
+    }
+  ],
+  "checks": [
+    {
+      "id": "explicit-version-custody",
+      "sources": [
+        "circuit_on_policy_evaluation.rs",
+        "circuit_on_policy_evaluation_policy_config.rs"
+      ],
+      "functions": [
+        "OriginalCircuitOnPolicyCohortV1::read_original",
+        "read_original_v2",
+        "read_with_policy",
+        "OriginalCircuitOnPolicyCohortConfigV2::from_original"
+      ],
+      "observed": "V1 passes None; only explicit ConfigV2 supplies Some immutable panel metadata. ConfigV2 fields are pub(super), matching the actual parent consumer. Both paths retain and actually read original Source/ledger custody. Metadata adds no execution capability."
+    },
+    {
+      "id": "legacy-readonly-new-release",
+      "sources": [
+        "circuit_on_policy_evaluation.rs",
+        "circuit_on_policy_evaluation_readback.rs"
+      ],
+      "functions": [
+        "into_final_holdout_provider",
+        "original_pre_b_policy",
+        "release_with_clock",
+        "into_readback_only",
+        "read_current_with_clock"
+      ],
+      "observed": "New provider construction and release require original_pre_b_policy, whose None branch rejects legacy paired V1. Readback-only retains the original V1 domain and original byte sequence; V2 alone uses a distinct domain and adds the full canonical policy preimage. Actual reads, fences and complete equality remain."
+    },
+    {
+      "id": "complete-original-policy",
+      "sources": [
+        "circuit_on_policy_evaluation_policy.rs",
+        "circuit_on_policy_evaluation_policy_encoding.rs",
+        "circuit_on_policy_evaluation_policy_codec.rs",
+        "circuit_on_policy_evaluation_policy_panel.rs",
+        "circuit_on_policy_evaluation_binding.rs"
+      ],
+      "functions": [
+        "freeze",
+        "require_original_rule",
+        "require_original_panel_initial",
+        "require_original_panel_training",
+        "validate_configuration",
+        "authenticate_training",
+        "require_plan"
+      ],
+      "observed": "The separate V2 domain binds the unchanged legacy rule digest plus the whole policy preimage: Product context/metrics/roles/margins/sources, fixed comparison policy, baseline, actual-ledger identity, and declared pair/run/episode/input/protocol identities. Panel validation checks exact signed T evaluation_profile, all member baseline/objective consistency, nonempty retention, strict canonical roundtrip and a necessary size rejection. The new panel rejects non-Qualification claim scope before creating a declaration. Actual configuration reconstructs the whole rule from the same original ledger, then authenticates the original signed T and actual data. Full frozen Cell record/Product plan equality is checked for V2."
+    },
+    {
+      "id": "remote-path-is-actually-called",
+      "sources": [
+        "neuron_cell_evaluation_model_material_proofs.rs",
+        "neuron_cell_evaluation_on_policy_policy.rs"
+      ],
+      "functions": [
+        "cohort",
+        "paired_policy::verify_pre_b_policy"
+      ],
+      "observed": "The actual cohort parser recognizes the V2 domain, verifies full original T/freeze signatures and original dataset bindings, bounds and consumes the complete policy preimage, then calls verify_pre_b_policy. The callee strictly decodes policy metadata, matches the registered rule/profile, actual ledger/snapshot/objective/watermarks, original T-before-B time, full actual pairing, full Cell comparison/estimand/cost policy, and reconstructs raw expected Product plan/estimand/roles bytes. It does not reconstruct a Cell, runner, qualification, execution or authority seal."
+    },
+    {
+      "id": "legacy-cannot-gain-adoption",
+      "sources": [
+        "neuron_cell_evaluation_model_material_proofs.rs",
+        "neuron_cell_evaluation_model_material_verify.rs",
+        "neuron_cell_evaluation_model_material.rs"
+      ],
+      "functions": [
+        "cohort",
+        "material",
+        "require_original_model_input",
+        "require_original_selector_material"
+      ],
+      "observed": "Paired V1 yields policy_bound=false while staying readable. Every member is verified before all_policies_bound and all qualified verdicts are combined. Complete nonempty retention, full original signatures, original panel digest and signed primary disposition are still checked. Model admission calls the complete verification and rejects !qualified; Selector admission first calls that same Model input gate. A known signed Ineligible primary remains Ineligible and is not upgraded."
+    },
+    {
+      "id": "material-training-bridge-names",
+      "source_commit": "676eee82e7334face4b63c8aa3b4c0d286098de0",
+      "functions": [
+        "require_original_panel_initial",
+        "require_original_panel_training"
+      ],
+      "observed": "The supplied final Panel methods match the exact UFCS names in the four unchanged 495/676 bridge blobs. Metadata is immutable, contains no authority and is not used as cross-UID Arc identity proof. The separate already-delivered bridge review covers validation before original writers and repeated checks on actual D plus queued writer entry."
+    }
+  ],
+  "limitations": [
+    "No local Python, source QA, full-caller, Rust, native or H execution was performed for this review.",
+    "This is a static review of fixed supplied blobs; the producer's final containing commit/tree had not yet been supplied.",
+    "The ProductEvaluationPolicyV2 pure implementation and its separate mechanism tests remain the Model owner's responsibility; this review verifies the actual callers and exact comparison of its public metadata outputs.",
+    "The size guard is necessary, not sufficient to prove that a complete original E connection and all later reads fit the unchanged protocol/frame budget.",
+    "A signed T evaluation_profile commits the complete policy before the authenticated B window; it does not prove that a particular factory was actually called before A.",
+    "An actual existing launcher/config, independent authorized original principals, B inference/task custody, original Source/Cell/ledger/holdout owners and original C FinalUse custody remain required. No new grant/key/policy or fixture evidence supplies them.",
+    "Ordinary positive adoption, NoUpdate/fallback, fresh-session different-content C and genuine daemon/Root cold-restart acceptance remain unexecuted."
+  ],
+  "execution": {
+    "h": false,
+    "rust": false,
+    "python": false,
+    "ordinary_acceptance_credit": 0
+  }
+}

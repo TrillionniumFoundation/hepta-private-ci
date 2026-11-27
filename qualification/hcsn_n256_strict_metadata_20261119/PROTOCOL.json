@@ -1,0 +1,16 @@
+{
+  "identity": "hcsn-n256-strict-metadata-20261119-v1",
+  "scope": "Synthetic decoded-JSON validation only; no numerical execution or admission",
+  "parent_pr": 6742,
+  "parent_head": "8a43dec4bf4ad92b3be9af6b42ce272d6d08763b",
+  "parent_tree": "78b4e581886239351a213de0db5e9e7fe569d8cf",
+  "original_contract_sha256": "0cd86de60d0bac10f5289ec3d07d9a4452f592858e85d889a32c5fe3564e1b72",
+  "original_request_sha256": "2b68630e633daf9533eea0f40cc1c4934494600124585f1371c3ac604d5a4907",
+  "execution": ["python -m qualification.hcsn_n256_strict_metadata_20261119.controls", "python -O -m qualification.hcsn_n256_strict_metadata_20261119.controls"],
+  "acceptance": "Both valid controls pass unchanged; every malformed control rejects in strict profile; original bypasses retained; same results with and without -O",
+  "scientific_gate": {"coordinates": 69728, "bit_mismatches_required": 0, "original_observed_bit_mismatches": 1291, "original_status": "RED_UNCHANGED"},
+  "cost_scope": "Record complete child wall and CPU including imports, plus body time and peak RSS; zero numerical/model/optimizer work",
+  "original_files_modified": false,
+  "full_roster_qualification": false,
+  "all_closed": false
+}

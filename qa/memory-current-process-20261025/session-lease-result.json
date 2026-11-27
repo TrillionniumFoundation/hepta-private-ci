@@ -1,0 +1,269 @@
+{
+  "schema": "hepta.memory-current-process-session-lease-result.v1",
+  "recorded_utc": "2026-10-25T15:01:25.128419+00:00",
+  "local_engineering_qualification_passed": true,
+  "cycle": "native/session-lease-cycle-001",
+  "reason_for_new_cycle": "Previous final just fix002 exposed a denied mutex guard across await and also failed ENOSPC. The owned SessionLease change is a semantic lifecycle correction, separately qualified.",
+  "source_identity": {
+    "profile": "development-inventory",
+    "local_git_head": "ba32a22de7c586ae6a1ac6ebeb5d67b54259021b",
+    "committed_source_qualified": false,
+    "source_files": 469,
+    "source_before_after_sha256": "16896d2a7559f75a37d1692c4a41218b7f97de3df0c5f9a091b1681f2a3386f2",
+    "implementation_and_workflow_files": 23,
+    "manifest_file": "session-lease-source-sha256.json",
+    "executed_before_root_final_fix_fmt": true
+  },
+  "gates": [
+    {
+      "name": "owned session busy/error/cancel/poison/invariant",
+      "attempt": "session-lease-tests-002",
+      "selected_passed": 6,
+      "selected_failed": 0,
+      "selected_skipped": 0,
+      "other_tests_filtered": 198,
+      "sources_unchanged": 323
+    },
+    {
+      "name": "actual default process before-dispatch revoke, attempted-state retention, consumed replay, restart",
+      "attempt": "process-tests-008",
+      "selected_passed": 1,
+      "selected_failed": 0,
+      "other_positive_test_filtered": 1,
+      "sources_unchanged": 323
+    },
+    {
+      "name": "actual default process one trained read, signed revoke, replay, Drain and restart",
+      "attempt": "process-positive-002",
+      "registration": "positive-prepared-004",
+      "selected_passed": 1,
+      "selected_failed": 0,
+      "other_negative_test_filtered": 1,
+      "runner_sources_unchanged": 374,
+      "full_sources_unchanged": 469
+    }
+  ],
+  "process": {
+    "issuer_pid": 746781,
+    "daemon_pid": 746820,
+    "worker_pid": 746918,
+    "worker_parent_pid": 746820,
+    "binary_sha256": "10722897975accd2c1d52050de0228902065c86f9fe459fc6356fe6dde4b085f",
+    "raw_answer": "order",
+    "answer_postprocessed": false,
+    "facts_received": false,
+    "retrieval_received": false,
+    "abstain": true,
+    "authority_grants_any": false,
+    "signed_revocation_delivery_error": "native memory rejected: Authority(Revoked)",
+    "spent_execute_error": "unknown or consumed prepared read",
+    "shutdown": {
+      "drain_acknowledged": true,
+      "exit_code": 0,
+      "pid": 746820,
+      "run_released": true,
+      "sigkill_used": false,
+      "signal": "SIGTERM"
+    },
+    "restart": {
+      "error": "Error: invalid agentd configuration: pinned file drift\n",
+      "exit_code": 1,
+      "new_spawn_generation": 5,
+      "old_authority_cut_rebound_to_current_generation": true,
+      "production_qualified": false
+    },
+    "all_processes_joined": true
+  },
+  "model": {
+    "new_decoder_queries": 1,
+    "new_feature_forwards": 1,
+    "training_updates_added": 0,
+    "training_updates_reused": 96,
+    "training_objective": "completion_ce",
+    "rank": 8,
+    "seed": 24031,
+    "learning_rate": 0.01,
+    "adapter_sha256": "d78441dcbf75118c1539b493c16a1ee50976ce7e61e3cf735ab03081bd6a8509",
+    "base_identity": "46b83e37620f8bb1ae57754856718886c6aa1b12d267b5b0993e779f9596f96f",
+    "runtime_digest": "83c9bb90ed98d58435b30348b6c3dae6134879de9ad41619af1e4c1cff802cfe",
+    "source_document_sha256": "187467358e7f2c6b6c30f0131a5de50406a5b329c54117da52d2c668871c49f2",
+    "request_sha256": "8cbd59e2f0f2eac78a97fd9c835d4b2be710e150dc13f3ead7ff961913aa3fae",
+    "decoder_latency_micros": 3767842,
+    "process_peak_rss_bytes": 1131999232,
+    "parameter_bytes_excludes_allocator": 539903232,
+    "refreshed_pin_fields": [
+      "runtime_digest"
+    ],
+    "runtime_refresh_reason": "Two shared Python files had already been formatted; parametric_model AST is identical, source_value_margin_v2 differs only in leading docstring whitespace. 004 binds actual new bytes; the other immutable model/profile pins did not change.",
+    "automatic_retry": false
+  },
+  "measured_commands": [
+    {
+      "name": "session-lease-tests-001",
+      "returncode": 101,
+      "wall_ns": 1138877647,
+      "waited_child_cpu_ns": 1062088000,
+      "waited_child_max_rss_bytes": 174706688,
+      "receipt_sha256": "489fc83cf56896011389af589d91f940e8f17e6f5670d32c95ed48d39679093d"
+    },
+    {
+      "name": "session-lease-tests-002",
+      "returncode": 0,
+      "wall_ns": 775628370497,
+      "waited_child_cpu_ns": 765648883000,
+      "waited_child_max_rss_bytes": 2895011840,
+      "receipt_sha256": "3f38fb46be066140894e504322859af4cbaf0862a8b046d000393590e7cf0e7c"
+    },
+    {
+      "name": "process-tests-008",
+      "returncode": 0,
+      "wall_ns": 70790196779,
+      "waited_child_cpu_ns": 74792032000,
+      "waited_child_max_rss_bytes": 3150692352,
+      "receipt_sha256": "583cca915cda86aaefa1ddb26dc926e15bea8653630c14a8f59c564b20213a54"
+    },
+    {
+      "name": "prepare-004",
+      "returncode": 0,
+      "wall_ns": 892448534,
+      "waited_child_cpu_ns": 449990999,
+      "waited_child_max_rss_bytes": 21958656,
+      "receipt_sha256": "dc0d523fce597149280a3916af156bbca02f08eb322c1e6b180ae0fa0ee82ebd"
+    },
+    {
+      "name": "process-positive-002",
+      "returncode": 0,
+      "wall_ns": 49216350976,
+      "waited_child_cpu_ns": 49468116000,
+      "waited_child_max_rss_bytes": 1131999232,
+      "receipt_sha256": "f56f43c5f5c70649d785561cda828ec79c67ed6c250c05492f6d0fdd5cf1bd36"
+    },
+    {
+      "name": "finish-004",
+      "returncode": 0,
+      "wall_ns": 2047567311,
+      "waited_child_cpu_ns": 1486609000,
+      "waited_child_max_rss_bytes": 34152448,
+      "receipt_sha256": "eb6783062b080b3f2e02d605cac866a0355a8f96247e83821a49102258070949"
+    }
+  ],
+  "cost_scope": {
+    "summed_recorded_wall_ns": 899713811744,
+    "summed_waited_child_cpu_ns": 892907718999,
+    "nested_model_receipts": "attribution only; not added again",
+    "controller_self_cpu_ns": null,
+    "whole_host_cpu_ns": null,
+    "energy_joules": null,
+    "disk_waiting_and_previous_fix002_not_in_sum": true,
+    "peak_rss": "per waited child, not aggregate simultaneous peak"
+  },
+  "preserved_nonpasses": [
+    "session-lease-tests-001 exit101 before compilation/tests: uncached Inflector0.11.4 with an extra offline override; only that override was removed for named attempt002.",
+    "negative disk preflight refused before any test; full source pins unchanged.",
+    "positive preflight001 falsely matched the tool executor command payload; executable/early-argv matching corrected that control check, with zero test/model calls.",
+    "004 registered successfully, then physical free fell to158875648B; the 300MB positive launch gate refused before any test/model call. Root preserved the check archive in a verified memfd and the new preflight passed.",
+    "Earlier final just fix002 remains a real exit101 ENOSPC and denied-await-lock failure; this new lifecycle qualification does not relabel it clean."
+  ],
+  "boundaries": {
+    "pending_future_cancellation_unit_qualified": true,
+    "actual_daemon_mid_decoder_cancellation_qualified": false,
+    "external_deployed_authority_qualified": false,
+    "production_qualified": false,
+    "protected_clock_or_frontier_qualified": false,
+    "rollback_resistance_qualified": false,
+    "independent_future_tasks": 0,
+    "future_accuracy": null,
+    "final_fix_fmt": "performed separately by root after this executed-source snapshot; no further tests/models in this cycle"
+  },
+  "historical_receipts_unchanged": {
+    "local-result.json": "87b51303e8bdd4b24b0a5e364e2ff492f0e5c7b258eccce12325c58600a8e965",
+    "executed-source-sha256.json": "530779a86b64c6c0537eb7a0a0758ac5c95bc4c1964b8539a479a6051ad1beed"
+  },
+  "raw_control_root": "memory-round3-control-20261025",
+  "raw_files": {
+    "native/session-lease-cycle-001/execution-plan-001.json": {
+      "sha256": "8976e074fff73b91f086512c0c443a80ddd7aea7639ac28ab0b2709b648c5f0b",
+      "bytes": 3570
+    },
+    "native/session-lease-cycle-001/independent-review-001.json": {
+      "sha256": "b746b647e8609f5c96760393ceff873d8c50b95ce400a9733be890abac7e509c",
+      "bytes": 1182
+    },
+    "native/session-lease-cycle-001/unit-result-002.json": {
+      "sha256": "df15e061f23a22602a58b4b57b21814d815c9164ca738cb2036671a8085447ab",
+      "bytes": 1456
+    },
+    "native/session-lease-cycle-001/negative-result-008.json": {
+      "sha256": "25e38b0765156351e3ebb4b155db6f90b16b25012f7ad3b474cd86dd55ceefdd",
+      "bytes": 4879
+    },
+    "native/session-lease-cycle-001/positive-result-002.json": {
+      "sha256": "5566948c97a1036b162be7f4797ee7b6dfd964c596a45992dc04ecc0da335365",
+      "bytes": 10484
+    },
+    "native/session-lease-cycle-001/executed-source-sha256.json": {
+      "sha256": "9e080f239e8d931a312ea8e65e572466a99691a4d0c5db135d74d7989c1189f4",
+      "bytes": 3813
+    },
+    "native/session-lease-cycle-001/negative-preflight-001-failure.json": {
+      "sha256": "7c58061c4a37e7c232d55418c2ff105a827f40c4ac4ce5191876c30a0d6fcb41",
+      "bytes": 818
+    },
+    "native/session-lease-cycle-001/positive-preflight-001.json": {
+      "sha256": "382b78c41611bfc1e8958ef6a2b165e7e8dc2fcef51d3a44b740495be562c4eb",
+      "bytes": 839
+    },
+    "native/session-lease-cycle-001/positive-preflight-002.json": {
+      "sha256": "a5c7dc29e47447bb46460eed88a0dea4092769404123529c590568df3738cd94",
+      "bytes": 1018
+    },
+    "native/session-lease-cycle-001/registration-004-launch-space-failure.json": {
+      "sha256": "9440e87aa85f55ec4b58bdc9c752e8d58b6061d2456a375a5c5302c13c233462",
+      "bytes": 175
+    },
+    "native/session-lease-cycle-001/positive-preflight-003.json": {
+      "sha256": "918fec3c6fff22c33093a7163eccc35d85b6536c83bb43f5331867f111147fd3",
+      "bytes": 858
+    },
+    "native/session-lease-cycle-001/python-source-drift-before-004.json": {
+      "sha256": "371c7cedb86650268853687ed250de2a4b436d1b19c2a111e3504e1806219b33",
+      "bytes": 1144
+    },
+    "native/positive-prepared-004/registration.json": {
+      "sha256": "e5b4a388cc2ae27cb00aae962f22dbcf40a0de05085f3e9fde1be02a8694bb9f",
+      "bytes": 4935
+    },
+    "native/positive-prepared-004/report.json": {
+      "sha256": "5e792c4568b7f24b4159426b25451289d8bf6b11a92b9eb7d2eeb32439bf55aa",
+      "bytes": 1453613
+    },
+    "native/positive-prepared-004/source-before.json": {
+      "sha256": "16896d2a7559f75a37d1692c4a41218b7f97de3df0c5f9a091b1681f2a3386f2",
+      "bytes": 79402
+    },
+    "native/positive-prepared-004/source-after.json": {
+      "sha256": "16896d2a7559f75a37d1692c4a41218b7f97de3df0c5f9a091b1681f2a3386f2",
+      "bytes": 79402
+    },
+    "native/process-positive-002/receipt.json": {
+      "sha256": "308cd2a6ba908009d8dfd23f1f6aa92cb71ce762aa716965f34b12d3c2914762",
+      "bytes": 1356
+    },
+    "finalization/rust-fix-002.json": {
+      "sha256": "e5c56e8d9e48cf6cd164fcff095628483b7393f303d77831a72385b22a99146a",
+      "bytes": 308
+    },
+    "finalization/rust-fix-002.log": {
+      "sha256": "ff2b656f9da7564a5de08ca54fb478fa97c799090542df698c8d5a1bd9e5f45f",
+      "bytes": 55800
+    },
+    "finalization/rust-fix-002-source-diff.json": {
+      "sha256": "4581ff4512c95b5d5605ff8ad6334327292466f6603d933204fc7973ba3d7204",
+      "bytes": 60
+    },
+    "finalization/python-format-bridge.json": {
+      "sha256": "78a1c26a0d0b1e36bf0ad9452b00e61ed5def25acdc719b9d48467be974568b5",
+      "bytes": 12381
+    }
+  }
+}

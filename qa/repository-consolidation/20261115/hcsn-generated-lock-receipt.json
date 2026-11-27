@@ -1,0 +1,218 @@
+{
+  "schema": "hepta.hcsn-generated-full-lock.v1",
+  "source_binding": {
+    "remote_base_commit": "9b8de495b169486910a6a1da30690ac42306ae98",
+    "local_equivalent_base_commit": "b6a5e15aa4b05ddfe63c88cb870de85c19a87214",
+    "base_tree": "e68e2e4ef51775850c29d33fb5a8c06ead824f69",
+    "source_patch": {
+      "path": "hcsn-native-source-v1.patch",
+      "sha256": "51000037ba11a16a665ca0c5ec1d8779ec9bd23b6877b03142af8759daca9406",
+      "bytes": 548510
+    },
+    "source_manifest": {
+      "path": "hcsn-native-source-v1.json",
+      "sha256": "1e8a228da4552aeb552a1e506b5947afd9154c09054a7105007b90696b012ba4",
+      "entries": 71
+    },
+    "format_patch_sha256": "36ac8b24056bb700286076a02628928201e8b7f1e348970319b69ca106a328a7",
+    "verified_changed_source_files": 71,
+    "workspace_manifest_sha256": "d11a310d64b11a6b64447c0b17545c8848f8b3e787cb2036f981497fe40c67e3",
+    "scope": "Original full HCSN workspace; excludes subsequent Learning/Memory source. This is not combined-source or full test qualification."
+  },
+  "generation": {
+    "host": "rog",
+    "job_id": "1a1e01bb0bb-392-299b",
+    "command": "cargo check -p codex-hepta-contracts -p codex-hepta-neuron --lib (original full workspace; seeded lock; unlocked resolution)",
+    "cargo_version": "1.96.0",
+    "job_exit_code": 101,
+    "resolution_result": "Cargo wrote the full lock successfully; later compiler/rustup environment failed. The same complete lock subsequently passed the explicit 1.96 --locked check."
+  },
+  "locked_check": {
+    "host": "rog",
+    "job_id": "1a1e023652e-392-29ae",
+    "command": [
+      "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "check",
+      "--locked",
+      "-p",
+      "codex-hepta-contracts",
+      "-p",
+      "codex-hepta-neuron",
+      "--lib"
+    ],
+    "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "cargo_version": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "exit_code": 0,
+    "terminal_output_complete": true,
+    "fresh_target": "/home/qian-qi/hepta-rust-audit-078e4036190f-hcsn-target-196-v1",
+    "stdout_sha256": "95f6af254b3b1b37fdfdcf0fcbcaafa53247dac805677914e63cdf659646d6ad",
+    "stderr_sha256": "38980f442a181969853d50c2b37654ce1d553fcdaef47c7eb5a1cc48c3bde9c6",
+    "source_log": "hcsn-rog-full-fresh-check-stdout.log"
+  },
+  "lock": {
+    "before_sha256": "5e4abf95544bd79366da19103521e250124ef156831c56bd43bd76a3257fd7d9",
+    "before_bytes": 421117,
+    "after_sha256": "3b6f931b2e16d4f366195b5394741d0d56f700f1ab6d6a3643e438b9321a47a0",
+    "after_bytes": 422488,
+    "package_count": 1527,
+    "file": "hcsn-generated-full-Cargo.lock",
+    "patch": "hcsn-real-full-Cargo-lock.patch",
+    "patch_sha256": "faea91774f3f70ab7051d90301b1365703d8cda3d71dda35968ffa360ca7f148",
+    "handwritten": false,
+    "registry_sources": [
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ]
+  },
+  "delta": {
+    "added_package_versions": [
+      {
+        "name": "ctutils",
+        "version": "0.4.8",
+        "checksum": "261af4dc7a06ea8a527a8717d8cbba3417530d6ea14e1edb3de6b67806be474f"
+      },
+      {
+        "name": "keccak",
+        "version": "0.2.2",
+        "checksum": "d8f198d1db720e4940b5a493201d199d9f24f568f8f746bd13706243a2f71598"
+      },
+      {
+        "name": "ml-dsa",
+        "version": "0.1.1",
+        "checksum": "add6b9d92e496f16f4526d68ff29da1483aba4b119baeab8bed3b9e3544a6f3d"
+      },
+      {
+        "name": "module-lattice",
+        "version": "0.2.4",
+        "checksum": "c4a1e412c8ee83a1c678f427806219c49c96b2511b9f07497514f0e43fb26155"
+      },
+      {
+        "name": "shake",
+        "version": "0.1.0",
+        "checksum": "09057cb2149ad4cbd2da1e26b351f9a4c354219421229c69c3063e6f61947c4a"
+      },
+      {
+        "name": "sponge-cursor",
+        "version": "0.1.0",
+        "checksum": "3a0219bd7d979d58245a4f41f695e1ac9f8befdffadd7f61f1bae9e39abc6620"
+      }
+    ],
+    "removed_package_versions": [
+      {
+        "name": "ctutils",
+        "version": "0.4.6"
+      }
+    ],
+    "dependency_edges": [
+      {
+        "package": [
+          "bindgen",
+          "0.73.2",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "added": [
+          "syn 3.0.9"
+        ],
+        "removed": [
+          "syn 2.0.119"
+        ]
+      },
+      {
+        "package": [
+          "codex-hepta-agentd",
+          "0.0.0",
+          "path"
+        ],
+        "added": [
+          "rustix 1.1.5"
+        ],
+        "removed": []
+      },
+      {
+        "package": [
+          "codex-hepta-contracts",
+          "0.0.0",
+          "path"
+        ],
+        "added": [
+          "ml-dsa"
+        ],
+        "removed": []
+      },
+      {
+        "package": [
+          "hybrid-array",
+          "0.4.15",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "added": [
+          "ctutils"
+        ],
+        "removed": []
+      },
+      {
+        "package": [
+          "sha3",
+          "0.10.9",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "added": [
+          "keccak 0.1.6"
+        ],
+        "removed": [
+          "keccak"
+        ]
+      }
+    ],
+    "detail": "hcsn-full-lock-structural-diff.json"
+  },
+  "prior_failures": [
+    {
+      "scope": "original full workspace",
+      "kind": "registry network/cache",
+      "observations": [
+        "insta index timeout",
+        "language-tags index timeout",
+        "offline rama-crypto/time resolution cache conflict"
+      ],
+      "seed_lock_unchanged": true
+    },
+    {
+      "job_id": "1a1e003ae46-392-2944",
+      "exit_code": 101,
+      "kind": "registry network",
+      "detail": "ecdsa index HTTP 90-second zero-byte timeout; seed lock unchanged"
+    },
+    {
+      "job_id": "1a1e0127168-392-297a",
+      "exit_code": 101,
+      "kind": "registry network",
+      "detail": "temporary command-only official GitHub sparse index route also timed out for ansi-to-tui; seed lock unchanged; no repo configuration retained"
+    },
+    {
+      "job_id": "1a1e01bb0bb-392-299b",
+      "exit_code": 101,
+      "kind": "compiler environment after successful lock generation",
+      "detail": "direct cargo plus rustc shim selected global stable and attempted a conflicting rustup update; output lock retained"
+    },
+    {
+      "job_id": "1a1e01f696f-392-29a5",
+      "exit_code": 101,
+      "kind": "compiler target cache",
+      "detail": "explicit Rust1.96 encountered unicode_ident metadata built by1.94 in the old target; fixed by dedicated fresh target, without deleting old evidence"
+    }
+  ],
+  "bazel": {
+    "status": "PENDING",
+    "required_command": "just bazel-lock-update",
+    "reason": "Awaiting final combined Cargo manifest graph, including Memory tokio/process; no old HCSN MODULE lock is asserted current.",
+    "installed_version": "9.3.0",
+    "binary_sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+    "install_job_id": "1a1e02c9ac7-392-29c3"
+  },
+  "not_qualification_for": [
+    "all workspace packages",
+    "full HCSN test suite",
+    "subsequent combined Learning/Memory source",
+    "Bazel lock or Windows isolation"
+  ]
+}

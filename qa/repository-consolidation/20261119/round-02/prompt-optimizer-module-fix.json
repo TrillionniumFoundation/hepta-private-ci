@@ -1,0 +1,16 @@
+{
+  "base": "89617a376cfcf10d1355152c66de9ce524787788",
+  "native_base": "1e681e550a5c5d4584b5882529e531599459dc31",
+  "patch_sha256": "4cfd8b41058ef42557136f40ca892ee4a5bde16d43bc9a835b25fa4f3f269d2f",
+  "files": {
+    "codex-rs/hepta-prompt-optimizer/src/lib.rs": {
+      "before_sha256": "901f8358101fb68a1af21f425a3063c0d3d07963e17b36c89eef76c5dc40ced9",
+      "after_sha256": "279ac6d61e77ea1710254cac7a180f3d20d59e3c93ca9cd67b53e513372bfc76"
+    }
+  },
+  "decision": "Remove only duplicate root mod graph and pub mod local_shadow declarations. compat.rs already instantiates the same graph.rs and local_shadow.rs via explicit path attributes. Root pub use compat::local_shadow and all historical exports remain; both file implementations, canonical/verified policy, tests, authority and public caller paths are unchanged. Postimage exactly equals the reviewed incoming lib.rs; scope-specific proof, not blanket parent selection.",
+  "checks": {
+    "postimage_matches_incoming_lib": true,
+    "protected_rows": []
+  }
+}

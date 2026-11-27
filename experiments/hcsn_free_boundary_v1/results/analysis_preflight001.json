@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn.analysis-preflight.v1",
+  "tests_run": 12,
+  "passed": true,
+  "failures": 0,
+  "errors": 0,
+  "scope": "synthetic fixtures only; no main-study outcomes read",
+  "source_sha256": {
+    "analysis.py": "ed50b8d88e797038b4102283b2e6c7c4e6c12add80889de75af278f7318d63ff",
+    "analysis_secondary.py": "a74038ecbe6bb4753129eeee8c005be6a4257c2b56305e76ca54b0a48951238f",
+    "analysis_tests.py": "beb977a6a79940ff77ef2f763034ee1e7135b105e740f468fa502edf010cc316",
+    "PROTOCOL.json": "0b684b1f3030ff9bcdb4f673ae26eb653c1ead868ed6edf8a8803ba735af4ff2"
+  },
+  "test_output": "test_common_update_prefix_ignores_only_unshared_suffix (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_common_update_prefix_ignores_only_unshared_suffix) ... ok\ntest_complete_run_integrity_and_independent_parameter_changes (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_complete_run_integrity_and_independent_parameter_changes) ... ok\ntest_completion_guard_precedes_any_outcome_read (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_completion_guard_precedes_any_outcome_read) ... ok\ntest_end_to_end_incomplete_report_keeps_all_declared_rows (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_end_to_end_incomplete_report_keeps_all_declared_rows) ... ok\ntest_exact128_selection_never_uses_nearby_checkpoint_or_primary_winner (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_exact128_selection_never_uses_nearby_checkpoint_or_primary_winner) ... ok\ntest_failed_run_preserves_process_cost (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_failed_run_preserves_process_cost) ... ok\ntest_holm_known_example_and_full_family (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_holm_known_example_and_full_family) ... ok\ntest_mechanism_seed_units_effect_and_missing_gate (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_mechanism_seed_units_effect_and_missing_gate) ... ok\ntest_sign_flip_minimum_and_zero_effect (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_sign_flip_minimum_and_zero_effect) ... ok\ntest_strata_follow_sample_coordinates_not_prediction_row_number (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_strata_follow_sample_coordinates_not_prediction_row_number) ... ok\ntest_supervised_metric_mapping_allows_explicit_row_permutation (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_supervised_metric_mapping_allows_explicit_row_permutation) ... ok\ntest_tasks_are_equally_averaged_within_seed (experiments.hcsn_free_boundary_v1.analysis_tests.AnalysisTests.test_tasks_are_equally_averaged_within_seed) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 0.073s\n\nOK\n"
+}

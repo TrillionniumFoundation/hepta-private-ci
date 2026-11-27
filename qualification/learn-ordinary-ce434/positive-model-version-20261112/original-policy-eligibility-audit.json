@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "source_commit": "ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c",
+  "source_tree": "4d8d4e95fb146d3b7f1fe9e7d4271020ee698a45",
+  "finding": "The current original deterministic Circuit producer plus shared-behavior OPE comparison cannot yield EligibleForIndependentSelection for a changed candidate through the actual B/retention provider.",
+  "scope": "OriginalCircuitEvaluationCohortV1 -> ProductEvaluationRunnerV1; not all possible evaluators or research fixtures.",
+  "evidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs",
+      "blob": "06f4bf5f7a58a61bcf9e144ea132eaf88aadd87b",
+      "function": "read",
+      "markers": [
+        "let expected = if candidate_id == selected",
+        "1_000_000",
+        "probability_ppm != expected"
+      ],
+      "meaning": "deterministic original policy, not a fixture-only restriction",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c/codex-rs/hepta-agentd/src/circuit_task_source_policy.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+      "blob": "0e6fe664a9956863a4c233c359b9813b4cf07451",
+      "function": "observation / probability / assemble",
+      "markers": [
+        "behavior_probability: probability(behavior.probability_ppm)?",
+        "evaluation_probability: probability(evaluated.probability_ppm)?",
+        "0 => Ok(ProbabilityQ32::ZERO)",
+        "1_000_000 => Ok(ProbabilityQ32::ONE)"
+      ],
+      "meaning": "the original exact propensities reach both OPE arms",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/ope.rs",
+      "blob": "52fb8b882012f2561c65a95639a63da8e2c12ff4",
+      "function": "estimate_row",
+      "markers": [
+        "if evaluation > 0 && behavior == 0",
+        "return Err(OpeError::UnsupportedAction);",
+        "let weighted_outcome = round_ratio(weight * i128::from(outcome.raw()), SCALE)?;"
+      ],
+      "meaning": "nonzero target support at a zero behavior probability fails closed",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c/codex-rs/hepta-intelligence-eval/src/ope.rs"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "function": "validate_comparable_observations / derive_metric_gates / ProductMetricSourceV1",
+      "markers": [
+        "left.finalized_outcome != right.finalized_outcome",
+        "left.outcome_evidence != right.outcome_evidence",
+        "left.behavior_probability != right.behavior_probability",
+        "ProductMetricSourceV1::Ips => estimate.ips",
+        "ProductMetricSourceV1::Snips => estimate.snips",
+        "ProductMetricSourceV1::DoublyRobust => estimate.doubly_robust"
+      ],
+      "meaning": "current plan compares policies on one actual behavior/outcome cohort; no separate arm outcome import",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c/codex-rs/hepta-intelligence-eval/src/product_runner.rs"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+      "blob": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2",
+      "function": "decide_independently_v2 / role_contract_commitment_bytes",
+      "markers": [
+        "improvement > i128::from(minimum_improvement.raw())",
+        "if minimum_improvement < FixedQ32::ZERO",
+        "if primary_count == 0"
+      ],
+      "meaning": "at least one preregistered primary requires strict nonnegative-margin superiority",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c/codex-rs/hepta-intelligence-eval/src/metric_roles.rs"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "blob": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb",
+      "function": "decide_with_metric_contract",
+      "markers": [
+        "if !relative_gate(metric) || !safety",
+        "IndependentEvaluationDispositionV1::Ineligible"
+      ],
+      "meaning": "a failed primary cannot become Eligible",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c/codex-rs/hepta-intelligence-eval/src/closure.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_contract.rs",
+      "blob": "afe96b905ff5aa02486a46288f456c2d2e352d2b",
+      "function": "OriginalCircuitEvaluationTargetV1 / validate",
+      "markers": [
+        "pub(super) const MAX_EPISODES: usize = 64",
+        "pub episode: OriginalCircuitEvaluationEpisodeV1",
+        "pub candidate_run_id: StableId",
+        "pub baseline_run_id: StableId"
+      ],
+      "meaning": "one behavior episode and outcome per paired target; finite original cohort membership",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_contract.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+      "blob": "937aa106c53844ea17c42549ee22414bba89b0a6",
+      "function": "require_original_model_input",
+      "markers": [
+        "if !checked.qualified",
+        "NoUpdate has no model proposal"
+      ],
+      "meaning": "unqualified full E material cannot become original Model input",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs"
+    }
+  ],
+  "proof": [
+    "For every admitted actual behavior row, exactly one action has probability 1 and all others have probability 0.",
+    "Every accepted candidate or baseline evaluation action with nonzero probability must have nonzero original behavior probability.",
+    "Because each arm is also deterministic, both arms must equal that row's sole behavior action, or OPE rejects UnsupportedAction.",
+    "On every successful row, importance weight is exactly 1, IPS contribution is outcome y, and DR contribution is m+1*(y-m)=y. SNIPS is the same sample mean.",
+    "Original shared behavior, finalized Outcome and Outcome evidence are equal between arms. Therefore all three point estimates match.",
+    "Each conservative confidence interval contains its point. Candidate.lower-baseline.upper (or baseline.lower-candidate.upper for Minimize) is nonpositive.",
+    "Every valid frozen role contract includes a PrimarySuperiority with nonnegative margin and a strict comparison. It cannot pass. More rows or a later clock does not change this conclusion.",
+    "Body signatures, role separation, native journals and receipt windows remain necessary, but none changes this statistical impossibility."
+  ],
+  "existing_mechanisms": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "tests": [
+        "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+        "original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support"
+      ],
+      "status": "source inspected; not executed in this audit",
+      "limit": "actual source/ledger/consumption; explicit task/model/credential/time fixtures"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "tests": [
+        "original_panel_reads_actual_b_and_retention_with_full_original_signatures"
+      ],
+      "status": "source inspected; not executed in this audit",
+      "limit": "actual original nonempty panel computes Ineligible; it is not a Qualified donor"
+    }
+  ],
+  "on_policy_finding": {
+    "existing_mode_allows_distinct_original_arm_outcomes": false,
+    "blocking_fields": [
+      "one episode.behavior_run_id and one authenticated Outcome per episode",
+      "common targets and cluster assignments",
+      "same decision_id and chosen_action",
+      "same finalized_outcome, outcome_evidence and observed_at",
+      "same complete behavior distribution"
+    ],
+    "minimal_new_contract": [
+      "Preregister a distinct on-policy comparison mode before Training, with a complete fixed membership of paired inputs and arm-specific original run/episode identities.",
+      "Keep two original Decision/Outcome/Source provenance records; do not relabel one record to satisfy the legacy comparison equality.",
+      "Authenticate exact shared input, objective semantic bytes, candidate mask, protocol/window, units, delay rule and actual principal lineage; permit only the preregistered bundle/arm/run distinction.",
+      "Run each arm's unchanged temporal OPE on its own actual behavior=evaluated deterministic distribution, so weights remain exactly 1.",
+      "Use existing metric roles, minimum margins, confidence rules, Consumption, actual Qualification owner, nonempty retention and final signature-window checks.",
+      "Bind the new comparability contract into frozen plan/cohort digests and original raw execution/qualification receipts; keep the old shared-behavior path unchanged."
+    ],
+    "inference_authority": "Loaded candidate bytes and raw worker methods are computation data, not a PublishedCircuitFeatureTask or an authenticated RunStart. Existing original Evaluator-only task/inference custody still requires concrete source tracing; no new grant, key or policy is created by this audit."
+  },
+  "uncovered_native": [
+    "Version prepare -> original issuer -> changed-model publish -> actual C configuration release with full valid original E material",
+    "post-effect E/Model Finish failure or cancellation and no C capability release"
+  ],
+  "not_changed": [
+    "production source",
+    "training rule",
+    "behavior policy",
+    "zero-support rejection",
+    "eligibility thresholds",
+    "source/transport caps",
+    "role grants/keys",
+    "ordinary acceptance"
+  ],
+  "ordinary_acceptance": 0,
+  "native": "not_run",
+  "python": "not_run",
+  "source_checks": "exact fixed markers read via GitHub blobs; algebraic reasoning, not runtime proof"
+}

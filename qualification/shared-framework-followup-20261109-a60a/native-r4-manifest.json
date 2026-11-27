@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "source_sha": "fb1397873bef0eea81efe0c8aac48c56385ffe55",
+  "source_sha_after": "fb1397873bef0eea81efe0c8aac48c56385ffe55",
+  "source_status_before": "",
+  "source_status_after": "",
+  "workspace": "/home/qq/hepta-framework-followup-a60a-20261110/source/codex-rs",
+  "selected_packages": [
+    "codex-hepta-infer-worker-host"
+  ],
+  "builds": [
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binaries": [
+        "hepta-joint-propose"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "stdout": "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/helpers/codex-hepta-infer-worker-host.jsonl",
+      "stderr": "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "exit_code": 0,
+      "cargo_finished": true,
+      "complete": true
+    }
+  ],
+  "artifacts": {
+    "hepta-joint-propose": {
+      "package": "codex-hepta-infer-worker-host",
+      "package_id": "path+file:///home/qq/hepta-framework-followup-a60a-20261110/source/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+      "compiler_executable": "/home/qq/hepta-shared-framework-f8e4-20261109/target/debug/hepta-joint-propose",
+      "executable": "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/helpers/bin/hepta-joint-propose",
+      "profile": {
+        "opt_level": "0",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "d3330069c16d5193c25def255482015bf896a838993d111d90d7f4d464a9900b",
+      "bytes": 1437512
+    }
+  },
+  "complete": true,
+  "exit_code": 0
+}

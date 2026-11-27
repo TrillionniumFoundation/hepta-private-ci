@@ -1,0 +1,256 @@
+{
+  "evidence_archives": {
+    "nse": {
+      "archive": "NSE_CI_d4a9866649aa.zip",
+      "archive_sha256": "2af41d14858eedfd0901a3dd624e8dc0e98f4a2378faa55b90a722de2fe2df4f"
+    },
+    "postrun": {
+      "archive": "memorycell-reranker-int8-screen-20261104.zip",
+      "archive_sha256": "5d5f1359780d88d07b01b4b65248d47905228f0c4c83a2ce358494c6ef3676ec"
+    },
+    "preregistered": {
+      "archive": "memorycell-quantization-preregistered-code-20261104.zip",
+      "archive_sha256": "03d7c8af103040458a1035e1e5f2bfbf0c3b3428242f870bafd510161d4439bd"
+    }
+  },
+  "origin": "current Library assets, source/test/protocol only; no model weights or raw experimental trace archives",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "research_status": "research-only; original model/experiment admission decisions not affected",
+  "schema": "source-custody-library-new-arrivals-20261104-v1",
+  "source_entries": [
+    {
+      "archive_member": ".gitignore",
+      "git_blob_sha": "23569c24d568dc42bb0c3bede6232aa822da1515",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/.gitignore",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "e007f7d4af26b4ace69fa009dc102394ceec359683518948919615a4664ff800",
+      "size": 122
+    },
+    {
+      "archive_member": "PROTOCOL.md",
+      "git_blob_sha": "f8052a19e51a70ed471d1a5de369cf95136dd64a",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/PROTOCOL.md",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "f959ac6b8f3c483df6c700379c8307c6a5d9a9c0d238c2e8c28cacaf87bcf3ca",
+      "size": 16747
+    },
+    {
+      "archive_member": "common.py",
+      "git_blob_sha": "4d91028e9fbef8b88a406a3fcdd61c8de0a8dbec",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/common.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "4ab131333f3689855c849ccd87fa395adc81f02c1c3d97b10cbffce2a7bb974e",
+      "size": 10361
+    },
+    {
+      "archive_member": "fixture_builder.py",
+      "git_blob_sha": "4374ea43197e626613cf852575ff7eec40e96dc5",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/fixture_builder.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "9bd585463c0a0d18f3b369fb3c702ec89f5bf6e0f1c27aa9fd9fb81b577eaefe",
+      "size": 8220
+    },
+    {
+      "archive_member": "fixtures.json",
+      "git_blob_sha": "ab8641e10d6154edb9a6b60b6447d6eb1ba610ea",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/fixtures.json",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "8e2e00f02c02110a50f0e5a863ef67cba935e036134f72d0829c86a807e9ef42",
+      "size": 48175
+    },
+    {
+      "archive_member": "protocol.json",
+      "git_blob_sha": "24956e41f9b5ff59c1ff1e0bc2e7a201e83a8c01",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/protocol.json",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "c4c08b5e44399c7582dabad19cd55a8a97f402565e9df60b8f157128c7e7f5b4",
+      "size": 1578
+    },
+    {
+      "archive_member": "requirements.txt",
+      "git_blob_sha": "c983b4d4158a70b0167eb2911b63f44519b5c03b",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/requirements.txt",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "f220e875dd35128f958fe243a0aaab64a21a0c1510085ab05c4298a8b53e6c77",
+      "size": 279
+    },
+    {
+      "archive_member": "run_primary.py",
+      "git_blob_sha": "7fc1aa603d424a939b70155dd6cc442950f67154",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/run_primary.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "016f876763c71ac6c0d92d0d4fe170663a54cf557d4e67370dd3d1d87891eacb",
+      "size": 10919
+    },
+    {
+      "archive_member": "runtime_integrity.py",
+      "git_blob_sha": "a7986cb250416cf76d8c0c02b83ff246728b036c",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/runtime_integrity.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "f6b75bb4b177976a76c9338c65d2ee25ec2d72eac441bb9e9a5e93440b276822",
+      "size": 1731
+    },
+    {
+      "archive_member": "seal.json",
+      "git_blob_sha": "a78ddaafcc455c80268673c7c24363e98aeeacfd",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/seal.json",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "6e709a80985828cad71a16c09265e9734a1b9b6792f4f1fc61c49fefd3cc5c35",
+      "size": 1085
+    },
+    {
+      "archive_member": "test_protocol.py",
+      "git_blob_sha": "0fa5f3e15c16da09a4b2de20ac8da73876f1d9ad",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/test_protocol.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "c006f1992ecb4752afbd7aeee79e16da0edca2c6afe9bdc9cfb95c8d7f5db476",
+      "size": 8656
+    },
+    {
+      "archive_member": "worker.py",
+      "git_blob_sha": "fbca5608e1e2223fd3844d93ad83765723be6043",
+      "origin": "memorycell-quantization-preregistered-code-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/preregistered/worker.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "a64d2629c16bc0b7fbb5f561ebb370e8ab5cdd18794377189219ef8d8a9fcfb0",
+      "size": 10288
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/.gitignore",
+      "git_blob_sha": "23569c24d568dc42bb0c3bede6232aa822da1515",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/.gitignore",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "e007f7d4af26b4ace69fa009dc102394ceec359683518948919615a4664ff800",
+      "size": 122
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/PROTOCOL.md",
+      "git_blob_sha": "94877dcb0ed1557d4353c2b89300ba0e8e8c3e46",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/PROTOCOL.md",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "b663c688fad9f619b6537e0f33dacbfc2681c52e55968ef06753d3f1ce375443",
+      "size": 12270
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/aggregate_results.json",
+      "git_blob_sha": "c051915f77b04993c06808588833e13a0986af5f",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/aggregate_results.json",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "2987f50c4881b2d5019a2a53244425e3269281a2d340d9373b9cbd250e6f2214",
+      "size": 14297
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/common.py",
+      "git_blob_sha": "4d91028e9fbef8b88a406a3fcdd61c8de0a8dbec",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/common.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "4ab131333f3689855c849ccd87fa395adc81f02c1c3d97b10cbffce2a7bb974e",
+      "size": 10361
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/fixture_builder.py",
+      "git_blob_sha": "4374ea43197e626613cf852575ff7eec40e96dc5",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/fixture_builder.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "9bd585463c0a0d18f3b369fb3c702ec89f5bf6e0f1c27aa9fd9fb81b577eaefe",
+      "size": 8220
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/fixtures.json",
+      "git_blob_sha": "ab8641e10d6154edb9a6b60b6447d6eb1ba610ea",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/fixtures.json",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "8e2e00f02c02110a50f0e5a863ef67cba935e036134f72d0829c86a807e9ef42",
+      "size": 48175
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/protocol.json",
+      "git_blob_sha": "24956e41f9b5ff59c1ff1e0bc2e7a201e83a8c01",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/protocol.json",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "c4c08b5e44399c7582dabad19cd55a8a97f402565e9df60b8f157128c7e7f5b4",
+      "size": 1578
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/release_manifest.json",
+      "git_blob_sha": "e513c7c980cbfac6a0c812b6ff654b52ee9435a7",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/release_manifest.json",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "d5d876e1b42aa341377253e923338fa018ceaa863b9b6945f51f1fdb656d5223",
+      "size": 2729
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/requirements.txt",
+      "git_blob_sha": "c983b4d4158a70b0167eb2911b63f44519b5c03b",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/requirements.txt",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "f220e875dd35128f958fe243a0aaab64a21a0c1510085ab05c4298a8b53e6c77",
+      "size": 279
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/run_primary.py",
+      "git_blob_sha": "7fc1aa603d424a939b70155dd6cc442950f67154",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/run_primary.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "016f876763c71ac6c0d92d0d4fe170663a54cf557d4e67370dd3d1d87891eacb",
+      "size": 10919
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/runtime_integrity.py",
+      "git_blob_sha": "a7986cb250416cf76d8c0c02b83ff246728b036c",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/runtime_integrity.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "f6b75bb4b177976a76c9338c65d2ee25ec2d72eac441bb9e9a5e93440b276822",
+      "size": 1731
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/seal.json",
+      "git_blob_sha": "add12a89a4f341c7c65673ee04ab7205b2f1788d",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/seal.json",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "56544c0a25e2d1d5cea7104f890540b9ab130fb4aff22e5a60d15dcd8214c465",
+      "size": 1223
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/test_protocol.py",
+      "git_blob_sha": "0fa5f3e15c16da09a4b2de20ac8da73876f1d9ad",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/test_protocol.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "c006f1992ecb4752afbd7aeee79e16da0edca2c6afe9bdc9cfb95c8d7f5db476",
+      "size": 8656
+    },
+    {
+      "archive_member": "reranker-int8-engineering-screen/worker.py",
+      "git_blob_sha": "fbca5608e1e2223fd3844d93ad83765723be6043",
+      "origin": "memorycell-reranker-int8-screen-20261104.zip",
+      "path": "recovery/library-memorycell-int8-20261104/postrun/worker.py",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "sha256": "a64d2629c16bc0b7fbb5f561ebb370e8ab5cdd18794377189219ef8d8a9fcfb0",
+      "size": 10288
+    }
+  ]
+}

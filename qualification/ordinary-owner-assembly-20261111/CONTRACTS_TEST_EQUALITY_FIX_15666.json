@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "base_ref": "15666",
+  "kind": "test-only-minimal-typecheck-correction",
+  "reason": "StoreTrust intentionally derives Eq/PartialEq but not Debug. pretty_assertions::assert_eq! needs Debug; assert!(left == right) preserves the exact full enum-and-digest equality without adding a production trait or weakening the assertion.",
+  "evidence": {
+    "store_trust_blob": "9bfd9adc7e62332e403dd0f8fd1dc00202aedd49",
+    "derive": "Clone, Copy, Deserialize, Eq, PartialEq, Serialize",
+    "variants": [
+      "SingleKey([u8; 32])",
+      "IssuerKeyRing([u8; 32])"
+    ],
+    "native_failure": "contracts libtest E0277 at final_use_root_observer_tests.rs:346 in parent-owned 15666 maintenance v5"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_root_observer_tests.rs",
+      "base_blob": "10dddc2fb37146153d849460e60437c62594e267",
+      "base_sha256": "2e69bbf2c7ada4359d1b0d916e428a37c73a4a743a64f245911ba214c7db463c",
+      "new_blob": "a6ba1746721f2803fd2fc694ab7827aa4249b9e3",
+      "new_sha256": "ad4a958675345fa786c674cb3158f63f4f2d44598f0198d37e82d37fe4c93c16",
+      "size": 16144,
+      "operations": [
+        {
+          "old_text": "    assert_eq!(\n        original_state.trust,\n        StoreTrust::IssuerKeyRing(observer.issuer_trust_digest())\n    );",
+          "new_text": "    assert!(\n        original_state.trust == StoreTrust::IssuerKeyRing(observer.issuer_trust_digest())\n    );"
+        }
+      ]
+    }
+  ],
+  "test": "root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+  "source_changes": "No production source, trust type, key, journal, permission, role or CALLERS changes.",
+  "assertion_strength": "The same stored trust enum variant and all 32 bytes of the actual observer's keyring digest must still be exactly equal.",
+  "native": "Not run by this agent; parent owns the exact-source maintenance and Root gates."
+}

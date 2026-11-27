@@ -1,0 +1,193 @@
+{
+  "fits": {
+    "hcsn-s211-lr0.001": {
+      "epochs": [
+        {
+          "epoch": 127,
+          "f1": 0.3756068636004384,
+          "phase_wall": 576.7145714120124,
+          "stopping": {
+            "best": 0.37790299262340454,
+            "best_epoch": 124,
+            "plateau_anchor": 0.37790299262340454,
+            "stale_epochs": 3
+          }
+        },
+        {
+          "epoch": 128,
+          "f1": 0.3775157306112115,
+          "phase_wall": 846.5123653240153,
+          "stopping": {
+            "best": 0.37790299262340454,
+            "best_epoch": 124,
+            "plateau_anchor": 0.37790299262340454,
+            "stale_epochs": 4
+          }
+        },
+        {
+          "epoch": 129,
+          "f1": 0.377817267300617,
+          "phase_wall": 1108.300404550042,
+          "stopping": {
+            "best": 0.37790299262340454,
+            "best_epoch": 124,
+            "plateau_anchor": 0.37790299262340454,
+            "stale_epochs": 5
+          }
+        },
+        {
+          "epoch": 130,
+          "f1": 0.38419829152748675,
+          "phase_wall": 1371.2708254920435,
+          "stopping": {
+            "best": 0.38419829152748675,
+            "best_epoch": 130,
+            "plateau_anchor": 0.38419829152748675,
+            "stale_epochs": 0
+          }
+        },
+        {
+          "epoch": 131,
+          "f1": 0.3811991654700142,
+          "phase_wall": 1631.754539977992,
+          "stopping": {
+            "best": 0.38419829152748675,
+            "best_epoch": 130,
+            "plateau_anchor": 0.38419829152748675,
+            "stale_epochs": 1
+          }
+        },
+        {
+          "epoch": 132,
+          "f1": 0.3790125118393077,
+          "phase_wall": 1893.0303388159955,
+          "stopping": {
+            "best": 0.38419829152748675,
+            "best_epoch": 130,
+            "plateau_anchor": 0.38419829152748675,
+            "stale_epochs": 2
+          }
+        },
+        {
+          "epoch": 133,
+          "f1": 0.3775116782602859,
+          "phase_wall": 2179.204917538038,
+          "stopping": {
+            "best": 0.38419829152748675,
+            "best_epoch": 130,
+            "plateau_anchor": 0.38419829152748675,
+            "stale_epochs": 3
+          }
+        }
+      ],
+      "last_event": {
+        "batch_index": 7,
+        "epoch": 134,
+        "kind": "micro_forward_started",
+        "new_phase_wall_seconds": 2326.2087156220223
+      },
+      "output_bytes_now": 46371134,
+      "output_files_now": 111,
+      "partial_rows": 0,
+      "process_status": "Name:\tpython\nState:\tR (running)\nVmHWM:\t 3482548 kB\nVmRSS:\t 3407524 kB\nThreads:\t1\nCpus_allowed_list:\t0",
+      "result_present": false,
+      "updates_completed": 91,
+      "updates_started": 91
+    },
+    "hcsn-s307-lr0.001": {
+      "epochs": [
+        {
+          "epoch": 128,
+          "f1": 0.3237973237082517,
+          "phase_wall": 557.6790845080395,
+          "stopping": {
+            "best": 0.33231907785802234,
+            "best_epoch": 126,
+            "plateau_anchor": 0.33231907785802234,
+            "stale_epochs": 2
+          }
+        },
+        {
+          "epoch": 129,
+          "f1": 0.32511205730715104,
+          "phase_wall": 825.4324073330499,
+          "stopping": {
+            "best": 0.33231907785802234,
+            "best_epoch": 126,
+            "plateau_anchor": 0.33231907785802234,
+            "stale_epochs": 3
+          }
+        },
+        {
+          "epoch": 130,
+          "f1": 0.33115051747133145,
+          "phase_wall": 1089.8756348470342,
+          "stopping": {
+            "best": 0.33231907785802234,
+            "best_epoch": 126,
+            "plateau_anchor": 0.33231907785802234,
+            "stale_epochs": 4
+          }
+        },
+        {
+          "epoch": 131,
+          "f1": 0.3316751716209133,
+          "phase_wall": 1354.1586664870265,
+          "stopping": {
+            "best": 0.33231907785802234,
+            "best_epoch": 126,
+            "plateau_anchor": 0.33231907785802234,
+            "stale_epochs": 5
+          }
+        },
+        {
+          "epoch": 132,
+          "f1": 0.31983008276491204,
+          "phase_wall": 1616.1120120180422,
+          "stopping": {
+            "best": 0.33231907785802234,
+            "best_epoch": 126,
+            "plateau_anchor": 0.33231907785802234,
+            "stale_epochs": 6
+          }
+        },
+        {
+          "epoch": 133,
+          "f1": 0.32608829385402366,
+          "phase_wall": 1886.6014301610412,
+          "stopping": {
+            "best": 0.33231907785802234,
+            "best_epoch": 126,
+            "plateau_anchor": 0.33231907785802234,
+            "stale_epochs": 7
+          }
+        },
+        {
+          "epoch": 134,
+          "f1": 0.3261500094658156,
+          "phase_wall": 2167.351919668028,
+          "stopping": {
+            "best": 0.33231907785802234,
+            "best_epoch": 126,
+            "plateau_anchor": 0.33231907785802234,
+            "stale_epochs": 8
+          }
+        }
+      ],
+      "last_event": {
+        "batch_index": 8,
+        "epoch": 135,
+        "kind": "micro_forward_started",
+        "new_phase_wall_seconds": 2326.763721696043
+      },
+      "output_bytes_now": 46837410,
+      "output_files_now": 112,
+      "partial_rows": 0,
+      "process_status": "Name:\tpython\nState:\tR (running)\nVmHWM:\t 3536760 kB\nVmRSS:\t 2966552 kB\nThreads:\t1\nCpus_allowed_list:\t1",
+      "result_present": false,
+      "updates_completed": 92,
+      "updates_started": 92
+    }
+  },
+  "unix_time": 1795072605.1814873
+}

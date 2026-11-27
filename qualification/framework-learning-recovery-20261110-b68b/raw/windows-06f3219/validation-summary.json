@@ -1,0 +1,39 @@
+{
+  "rust_test_runs": [
+    {
+      "run": 15,
+      "passed": 15,
+      "filtered": 5
+    },
+    {
+      "run": 2,
+      "passed": 2,
+      "filtered": 26
+    },
+    {
+      "run": 3,
+      "passed": 3,
+      "filtered": 147
+    },
+    {
+      "run": 2,
+      "passed": 2,
+      "filtered": 148
+    },
+    {
+      "run": 11,
+      "passed": 11,
+      "filtered": 293
+    }
+  ],
+  "rust_tests_passed_total": 33,
+  "python_acquisition_guard_tests": 6,
+  "native_acquisition_lanes": {
+    "positive": "exit 0; both rejection checks PASS",
+    "unchecked-create": "expected exit 1; creation rejection check FAIL",
+    "path-check-open": "expected exit 1; substitution rejection check FAIL"
+  },
+  "coverage_limit": "Windows workflow runs Prompt Runtime tests, not learning capacity/readback-budget tests; Linux Evaluation reader is cfg(target_os=linux).",
+  "artifact_id": 13770209935,
+  "artifact_name": "windows-private-state-acquisition-06f32191452df9f03bb5dc21ff8105db6b66d3d6-42827391087-1"
+}

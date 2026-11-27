@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T03:24:42.689714+00:00",
+  "source_candidate": "b5019ee98bc7b7b99eb689378f41e66691c2d257",
+  "tested_commit": "a9a898bb091efd57b9aea27521c963874d8cba96",
+  "tested_tree": "5164d68c23ffa071a80d4aa9a7f033f068a82dfd",
+  "job_id": 130289659118,
+  "original_failure_index": "windows-shard3-failure-index.json",
+  "original_failure_index_unchanged": true,
+  "new_test_execution": false,
+  "purpose": "Resolve two initially unclassified diagnostic strings using the already retained complete log; no source or result change.",
+  "reclassified_cases": [
+    "circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only",
+    "circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen"
+  ],
+  "exact_diagnostic": "Error: The process cannot access the file because another process has locked a portion of the file. (os error 33)",
+  "diagnostic_class": "Windows byte-range file lock (code 33)",
+  "revised_diagnostic_counts": {
+    "Windows byte-range file lock (code 33)": 33,
+    "Invalid automation fixture/request": 10,
+    "Durable fixture PermissionDenied": 1,
+    "Cross-language fixture exact-byte mismatch": 1,
+    "Windows canonical path spelling mismatch": 1
+  },
+  "distinct_failed_cases_observed": 46,
+  "result_transferred_to_successor": false
+}

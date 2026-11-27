@@ -1,0 +1,6418 @@
+{
+  "archive_sha256": "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c",
+  "authority": "DENY_ALL",
+  "decision": "HOLD_NO_GO",
+  "ended_utc": "2026-11-11T04:15:45.317534+00:00",
+  "evaluator_script_sha256": "3fad178df09fd0735353b01bcaf0ac86f3279b7b0a46ba548955e537ceafb5df",
+  "families": [
+    "even",
+    "comparison",
+    "divisibility",
+    "set_membership",
+    "prime"
+  ],
+  "interpretation": "Post-training operator-constructed arithmetic probe; no independent evaluator or external ACT/CTRL outcome; not a registered confirmatory test.",
+  "manifest_sha256": "0f12ac4aa7fd32989ba62983ed82367b83fe6a3f51868e4c1b8f567a9decf12a",
+  "mean_paired_deltas": {
+    "accuracy": 0.0,
+    "mean_brier": 4.2080741666672417e-05,
+    "mean_log_loss": 0.00014148781249997966
+  },
+  "model": "SmolLM2-135M-Instruct CPU float32 q_proj rank4 LoRA",
+  "not_measured": [
+    "independent task curator",
+    "owner signed source/action/effect",
+    "production terminal outcomes",
+    "training and evaluator role separation",
+    "model serving/network energy",
+    "7 lineage clocks",
+    "NDU factorial",
+    "independent future B and different final-use C",
+    "cold owner recovery"
+  ],
+  "paired_bursty_minus_interleaved": [
+    {
+      "accuracy": 0.0,
+      "mean_brier": 0.0002509423999999538,
+      "mean_log_loss": 0.0007776889166667411,
+      "seed": 11
+    },
+    {
+      "accuracy": 0.0,
+      "mean_brier": 0.00017260896666670966,
+      "mean_log_loss": 0.0005438572999998392,
+      "seed": 17
+    },
+    {
+      "accuracy": 0.0,
+      "mean_brier": -0.0002130400500000018,
+      "mean_log_loss": -0.0006340239166666706,
+      "seed": 23
+    },
+    {
+      "accuracy": 0.0,
+      "mean_brier": -4.218834999997201e-05,
+      "mean_log_loss": -0.00012157104999999113,
+      "seed": 29
+    }
+  ],
+  "qualifier": "ACTUAL_CPU_INFERENCE_UNATTESTED_OPERATOR_ONLY",
+  "runs": [
+    {
+      "arm": "frozen_base",
+      "io_delta": {
+        "cancelled_write_bytes": 0,
+        "rchar": 209436,
+        "read_bytes": 14761984,
+        "syscr": 28,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "process_cpu_seconds": 10.423806128999999,
+      "ru_maxrss_kib_process_peak": 1145128,
+      "scores": {
+        "accuracy": 0.5,
+        "families": {
+          "comparison": {
+            "accuracy": 0.5,
+            "mean_brier": 0.32348405491666665
+          },
+          "divisibility": {
+            "accuracy": 0.5,
+            "mean_brier": 0.36032216749999996
+          },
+          "even": {
+            "accuracy": 0.5,
+            "mean_brier": 0.31524382325
+          },
+          "prime": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3536155051666667
+          },
+          "set_membership": {
+            "accuracy": 0.5,
+            "mean_brier": 0.29767189774999997
+          }
+        },
+        "mean_brier": 0.33006748971666666,
+        "mean_log_loss": 0.8913254321333334,
+        "rows": [
+          {
+            "brier": 0.587796261,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-00",
+            "input_tokens": 16,
+            "log_loss": 1.455338894,
+            "p_yes": 0.233321279,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.552859958,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-01",
+            "input_tokens": 17,
+            "log_loss": 1.360804144,
+            "p_yes": 0.256454468,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.540715009,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-02",
+            "input_tokens": 18,
+            "log_loss": 1.329283844,
+            "p_yes": 0.264666736,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.553791798,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-03",
+            "input_tokens": 18,
+            "log_loss": 1.363249496,
+            "p_yes": 0.255828112,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.563205597,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-04",
+            "input_tokens": 18,
+            "log_loss": 1.388177136,
+            "p_yes": 0.249529749,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.56595212,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-05",
+            "input_tokens": 18,
+            "log_loss": 1.395528437,
+            "p_yes": 0.247702107,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.074559563,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-00",
+            "input_tokens": 18,
+            "log_loss": 0.318905793,
+            "p_yes": 0.273055971,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.066032932,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-01",
+            "input_tokens": 18,
+            "log_loss": 0.297017158,
+            "p_yes": 0.256968737,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.080814238,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.334464088,
+            "p_yes": 0.284278452,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.054133932,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-03",
+            "input_tokens": 16,
+            "log_loss": 0.264834412,
+            "p_yes": 0.232666999,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.072311942,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-04",
+            "input_tokens": 18,
+            "log_loss": 0.313217065,
+            "p_yes": 0.268908799,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.070752529,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.309237362,
+            "p_yes": 0.265993476,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.572015073,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-00",
+            "input_tokens": 20,
+            "log_loss": 1.41188618,
+            "p_yes": 0.243683219,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.595362755,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-01",
+            "input_tokens": 21,
+            "log_loss": 1.476646006,
+            "p_yes": 0.228402466,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.519938151,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-02",
+            "input_tokens": 20,
+            "log_loss": 1.276784992,
+            "p_yes": 0.278932631,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.556671627,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-03",
+            "input_tokens": 21,
+            "log_loss": 1.370831726,
+            "p_yes": 0.2538957,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.541383612,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-04",
+            "input_tokens": 21,
+            "log_loss": 1.331002519,
+            "p_yes": 0.264212251,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.635125475,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-05",
+            "input_tokens": 21,
+            "log_loss": 1.594291198,
+            "p_yes": 0.203052402,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.070063895,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-00",
+            "input_tokens": 21,
+            "log_loss": 0.30747106,
+            "p_yes": 0.264695853,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.074932067,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-01",
+            "input_tokens": 21,
+            "log_loss": 0.319843376,
+            "p_yes": 0.273737222,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.076592624,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-02",
+            "input_tokens": 21,
+            "log_loss": 0.324005484,
+            "p_yes": 0.276753724,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.072788361,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-03",
+            "input_tokens": 21,
+            "log_loss": 0.314427473,
+            "p_yes": 0.269793183,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.083757093,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-04",
+            "input_tokens": 21,
+            "log_loss": 0.341657103,
+            "p_yes": 0.289408177,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.083177926,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-05",
+            "input_tokens": 21,
+            "log_loss": 0.340247524,
+            "p_yes": 0.288405836,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.705069086,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-00",
+            "input_tokens": 23,
+            "log_loss": 1.830607913,
+            "p_yes": 0.16031608,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.721803377,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-01",
+            "input_tokens": 23,
+            "log_loss": 1.894391196,
+            "p_yes": 0.150409877,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.704659043,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-02",
+            "input_tokens": 23,
+            "log_loss": 1.82908583,
+            "p_yes": 0.16056028,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.692902328,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-03",
+            "input_tokens": 23,
+            "log_loss": 1.786220134,
+            "p_yes": 0.167592451,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.654338614,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-04",
+            "input_tokens": 22,
+            "log_loss": 1.655021193,
+            "p_yes": 0.191088006,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.697354098,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-05",
+            "input_tokens": 23,
+            "log_loss": 1.802278404,
+            "p_yes": 0.164922699,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.02451438,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-00",
+            "input_tokens": 22,
+            "log_loss": 0.170279184,
+            "p_yes": 0.156570688,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.027053725,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-01",
+            "input_tokens": 23,
+            "log_loss": 0.179701191,
+            "p_yes": 0.164480165,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.0227173,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-02",
+            "input_tokens": 24,
+            "log_loss": 0.163369401,
+            "p_yes": 0.150722593,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.024929447,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-03",
+            "input_tokens": 23,
+            "log_loss": 0.171845366,
+            "p_yes": 0.157890618,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.02504529,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-04",
+            "input_tokens": 23,
+            "log_loss": 0.172280581,
+            "p_yes": 0.158257037,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.023479322,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-05",
+            "input_tokens": 24,
+            "log_loss": 0.166325741,
+            "p_yes": 0.153229639,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.511232463,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-00",
+            "input_tokens": 49,
+            "log_loss": 1.255284411,
+            "p_yes": 0.284994781,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.538889398,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-01",
+            "input_tokens": 48,
+            "log_loss": 1.324600625,
+            "p_yes": 0.265909135,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.517320853,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-02",
+            "input_tokens": 46,
+            "log_loss": 1.270291406,
+            "p_yes": 0.280749798,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.51549609,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-03",
+            "input_tokens": 49,
+            "log_loss": 1.265779287,
+            "p_yes": 0.282019436,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.515296642,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-04",
+            "input_tokens": 48,
+            "log_loss": 1.265286859,
+            "p_yes": 0.282158345,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.500731667,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-05",
+            "input_tokens": 46,
+            "log_loss": 1.229714492,
+            "p_yes": 0.292376041,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.084877307,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-00",
+            "input_tokens": 46,
+            "log_loss": 0.344375328,
+            "p_yes": 0.291337103,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.064079423,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-01",
+            "input_tokens": 50,
+            "log_loss": 0.291876374,
+            "p_yes": 0.253139138,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.084117904,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-02",
+            "input_tokens": 46,
+            "log_loss": 0.342533784,
+            "p_yes": 0.290030867,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.075214828,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-03",
+            "input_tokens": 48,
+            "log_loss": 0.320554112,
+            "p_yes": 0.274253219,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.083102082,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-04",
+            "input_tokens": 46,
+            "log_loss": 0.34006272,
+            "p_yes": 0.288274318,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.081704116,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-05",
+            "input_tokens": 47,
+            "log_loss": 0.336647299,
+            "p_yes": 0.285839319,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.695076936,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-00",
+            "input_tokens": 17,
+            "log_loss": 1.794038515,
+            "p_yes": 0.166287258,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.669254704,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-01",
+            "input_tokens": 16,
+            "log_loss": 1.704187638,
+            "p_yes": 0.181920111,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.68835851,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-02",
+            "input_tokens": 17,
+            "log_loss": 1.770039489,
+            "p_yes": 0.170326263,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.654066638,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-03",
+            "input_tokens": 17,
+            "log_loss": 1.654141725,
+            "p_yes": 0.191256136,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.649635102,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-04",
+            "input_tokens": 17,
+            "log_loss": 1.639894248,
+            "p_yes": 0.194000557,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.675961041,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-05",
+            "input_tokens": 17,
+            "log_loss": 1.726918802,
+            "p_yes": 0.177831501,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.030884093,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-00",
+            "input_tokens": 17,
+            "log_loss": 0.193267696,
+            "p_yes": 0.175738707,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.03459134,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-01",
+            "input_tokens": 17,
+            "log_loss": 0.205779523,
+            "p_yes": 0.185987473,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.044993458,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.238405187,
+            "p_yes": 0.212116614,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.027250746,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-03",
+            "input_tokens": 17,
+            "log_loss": 0.180416971,
+            "p_yes": 0.165077999,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.034355904,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-04",
+            "input_tokens": 17,
+            "log_loss": 0.205000951,
+            "p_yes": 0.185353458,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.03895759,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.219869882,
+            "p_yes": 0.197376773,
+            "prediction": "no",
+            "truth": "no"
+          }
+        ]
+      },
+      "seed": 0,
+      "wall_seconds": 2.733574964106083
+    },
+    {
+      "arm": "interleaved",
+      "io_delta": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3304,
+        "read_bytes": 319488,
+        "syscr": 10,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "process_cpu_seconds": 10.268087358999999,
+      "ru_maxrss_kib_process_peak": 1231376,
+      "scores": {
+        "accuracy": 0.5,
+        "families": {
+          "comparison": {
+            "accuracy": 0.5,
+            "mean_brier": 0.32707886541666664
+          },
+          "divisibility": {
+            "accuracy": 0.5,
+            "mean_brier": 0.36456164941666663
+          },
+          "even": {
+            "accuracy": 0.5,
+            "mean_brier": 0.31967712741666665
+          },
+          "prime": {
+            "accuracy": 0.5,
+            "mean_brier": 0.358044706
+          },
+          "set_membership": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3007833663333333
+          }
+        },
+        "mean_brier": 0.3340291429166667,
+        "mean_log_loss": 0.9035396880166666,
+        "rows": [
+          {
+            "brier": 0.60122087,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-00",
+            "input_tokens": 16,
+            "log_loss": 1.493364501,
+            "p_yes": 0.224615663,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.566261763,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-01",
+            "input_tokens": 17,
+            "log_loss": 1.396359498,
+            "p_yes": 0.247496337,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.554933491,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-02",
+            "input_tokens": 18,
+            "log_loss": 1.366250909,
+            "p_yes": 0.255061418,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.5675334,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-03",
+            "input_tokens": 18,
+            "log_loss": 1.399777358,
+            "p_yes": 0.246651873,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.576743983,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-04",
+            "input_tokens": 18,
+            "log_loss": 1.424771699,
+            "p_yes": 0.240563378,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.579600284,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-05",
+            "input_tokens": 18,
+            "log_loss": 1.432609914,
+            "p_yes": 0.238685161,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.069342947,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-00",
+            "input_tokens": 18,
+            "log_loss": 0.305615913,
+            "p_yes": 0.263330489,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.061443533,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-01",
+            "input_tokens": 18,
+            "log_loss": 0.284856814,
+            "p_yes": 0.24787806,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.075377387,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.320962334,
+            "p_yes": 0.274549425,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.050266112,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-03",
+            "input_tokens": 16,
+            "log_loss": 0.253861882,
+            "p_yes": 0.224201053,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.067375658,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-04",
+            "input_tokens": 18,
+            "log_loss": 0.300521769,
+            "p_yes": 0.259568214,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.066026101,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.296999269,
+            "p_yes": 0.256955445,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.584158846,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-00",
+            "input_tokens": 20,
+            "log_loss": 1.44520756,
+            "p_yes": 0.23569715,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.606241524,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-01",
+            "input_tokens": 21,
+            "log_loss": 1.507852608,
+            "p_yes": 0.221384868,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.533487898,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-02",
+            "input_tokens": 20,
+            "log_loss": 1.310825392,
+            "p_yes": 0.269597441,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.568322868,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-03",
+            "input_tokens": 21,
+            "log_loss": 1.401903219,
+            "p_yes": 0.246128082,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.553853411,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-04",
+            "input_tokens": 21,
+            "log_loss": 1.363411319,
+            "p_yes": 0.255786717,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.645691581,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-05",
+            "input_tokens": 21,
+            "log_loss": 1.627344097,
+            "p_yes": 0.196450636,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.065727399,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-00",
+            "input_tokens": 21,
+            "log_loss": 0.29621646,
+            "p_yes": 0.256373554,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.070474541,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-01",
+            "input_tokens": 21,
+            "log_loss": 0.308525006,
+            "p_yes": 0.265470415,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.071820234,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-02",
+            "input_tokens": 21,
+            "log_loss": 0.311965166,
+            "p_yes": 0.267992973,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.068342557,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-03",
+            "input_tokens": 21,
+            "log_loss": 0.303031399,
+            "p_yes": 0.261424094,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.078654502,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-04",
+            "input_tokens": 21,
+            "log_loss": 0.329134959,
+            "p_yes": 0.280454099,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.078171024,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-05",
+            "input_tokens": 21,
+            "log_loss": 0.327935916,
+            "p_yes": 0.279590815,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.715086275,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-00",
+            "input_tokens": 23,
+            "log_loss": 1.868388321,
+            "p_yes": 0.15437226,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.731299387,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-01",
+            "input_tokens": 23,
+            "log_loss": 1.932128666,
+            "p_yes": 0.144839555,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.714749645,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-02",
+            "input_tokens": 23,
+            "log_loss": 1.867099641,
+            "p_yes": 0.154571325,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.703022815,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-03",
+            "input_tokens": 23,
+            "log_loss": 1.823030706,
+            "p_yes": 0.161535442,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.665907532,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-04",
+            "input_tokens": 22,
+            "log_loss": 1.69299114,
+            "p_yes": 0.183968425,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.707884623,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-05",
+            "input_tokens": 23,
+            "log_loss": 1.841110204,
+            "p_yes": 0.158641204,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.022698797,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-00",
+            "input_tokens": 22,
+            "log_loss": 0.163297115,
+            "p_yes": 0.1506612,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.025082346,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-01",
+            "input_tokens": 23,
+            "log_loss": 0.172419628,
+            "p_yes": 0.158374071,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.021084342,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-02",
+            "input_tokens": 24,
+            "log_loss": 0.156893002,
+            "p_yes": 0.145204484,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.023142637,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-03",
+            "input_tokens": 23,
+            "log_loss": 0.165024469,
+            "p_yes": 0.152127042,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.023144623,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-04",
+            "input_tokens": 23,
+            "log_loss": 0.165032166,
+            "p_yes": 0.152133569,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.021636771,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-05",
+            "input_tokens": 24,
+            "log_loss": 0.159106439,
+            "p_yes": 0.147094429,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.521254354,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-00",
+            "input_tokens": 49,
+            "log_loss": 1.280060316,
+            "p_yes": 0.278020531,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.549104492,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-01",
+            "input_tokens": 48,
+            "log_loss": 1.350988422,
+            "p_yes": 0.258984149,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.527787187,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-02",
+            "input_tokens": 46,
+            "log_loss": 1.296415754,
+            "p_yes": 0.273510367,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.525805509,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-03",
+            "input_tokens": 49,
+            "log_loss": 1.291436932,
+            "p_yes": 0.274875522,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.52577573,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-04",
+            "input_tokens": 48,
+            "log_loss": 1.291362233,
+            "p_yes": 0.274896055,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.510922296,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-05",
+            "input_tokens": 46,
+            "log_loss": 1.254523525,
+            "p_yes": 0.285211712,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.080367646,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-00",
+            "input_tokens": 46,
+            "log_loss": 0.333365698,
+            "p_yes": 0.28349188,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.06077712,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-01",
+            "input_tokens": 50,
+            "log_loss": 0.283066289,
+            "p_yes": 0.24653016,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.079847744,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-02",
+            "input_tokens": 46,
+            "log_loss": 0.33208468,
+            "p_yes": 0.282573432,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.071248625,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-03",
+            "input_tokens": 48,
+            "log_loss": 0.310506419,
+            "p_yes": 0.266924381,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.078893041,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-04",
+            "input_tokens": 46,
+            "log_loss": 0.329725716,
+            "p_yes": 0.28087905,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.077616652,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-05",
+            "input_tokens": 47,
+            "log_loss": 0.326558257,
+            "p_yes": 0.278597653,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.705780988,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-00",
+            "input_tokens": 17,
+            "log_loss": 1.833254966,
+            "p_yes": 0.159892276,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.680871831,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-01",
+            "input_tokens": 16,
+            "log_loss": 1.743824418,
+            "p_yes": 0.174850419,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.699128117,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-02",
+            "input_tokens": 17,
+            "log_loss": 1.808735641,
+            "p_yes": 0.163861185,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.666149072,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-03",
+            "input_tokens": 17,
+            "log_loss": 1.69379586,
+            "p_yes": 0.183820441,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.661734202,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-04",
+            "input_tokens": 17,
+            "log_loss": 1.679165704,
+            "p_yes": 0.186529532,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.687821068,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-05",
+            "input_tokens": 17,
+            "log_loss": 1.76813935,
+            "p_yes": 0.170650214,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.028510042,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-00",
+            "input_tokens": 17,
+            "log_loss": 0.184943997,
+            "p_yes": 0.16884917,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.032044021,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-01",
+            "input_tokens": 17,
+            "log_loss": 0.197242449,
+            "p_yes": 0.179008439,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.041635997,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.22821766,
+            "p_yes": 0.204049006,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.025065159,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-03",
+            "input_tokens": 17,
+            "log_loss": 0.172355148,
+            "p_yes": 0.158319801,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.031747542,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-04",
+            "input_tokens": 17,
+            "log_loss": 0.196231939,
+            "p_yes": 0.1781784,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.036048433,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.21055345,
+            "p_yes": 0.189864248,
+            "prediction": "no",
+            "truth": "no"
+          }
+        ]
+      },
+      "seed": 11,
+      "wall_seconds": 2.660668008029461
+    },
+    {
+      "arm": "bursty",
+      "io_delta": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3304,
+        "read_bytes": 0,
+        "syscr": 10,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "process_cpu_seconds": 10.156552146,
+      "ru_maxrss_kib_process_peak": 1236844,
+      "scores": {
+        "accuracy": 0.5,
+        "families": {
+          "comparison": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3273382670833333
+          },
+          "divisibility": {
+            "accuracy": 0.5,
+            "mean_brier": 0.36482410975
+          },
+          "even": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3199292639166667
+          },
+          "prime": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3582963396666667
+          },
+          "set_membership": {
+            "accuracy": 0.5,
+            "mean_brier": 0.30101244616666667
+          }
+        },
+        "mean_brier": 0.33428008531666664,
+        "mean_log_loss": 0.9043173769333334,
+        "rows": [
+          {
+            "brier": 0.601983406,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-00",
+            "input_tokens": 16,
+            "log_loss": 1.495555346,
+            "p_yes": 0.224124104,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.567038565,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-01",
+            "input_tokens": 17,
+            "log_loss": 1.398446423,
+            "p_yes": 0.246980369,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.555713461,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-02",
+            "input_tokens": 18,
+            "log_loss": 1.368304792,
+            "p_yes": 0.254538089,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.568307141,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-03",
+            "input_tokens": 18,
+            "log_loss": 1.40186084,
+            "p_yes": 0.246138513,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.577518812,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-04",
+            "input_tokens": 18,
+            "log_loss": 1.426893817,
+            "p_yes": 0.240053415,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.580362793,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-05",
+            "input_tokens": 18,
+            "log_loss": 1.434709521,
+            "p_yes": 0.238184541,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.069042543,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-00",
+            "input_tokens": 18,
+            "log_loss": 0.304841086,
+            "p_yes": 0.262759477,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.061190386,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-01",
+            "input_tokens": 18,
+            "log_loss": 0.284177428,
+            "p_yes": 0.247366905,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.075082592,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.320221833,
+            "p_yes": 0.274012029,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.050054665,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-03",
+            "input_tokens": 16,
+            "log_loss": 0.253253592,
+            "p_yes": 0.223728999,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.067096209,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-04",
+            "input_tokens": 18,
+            "log_loss": 0.299794275,
+            "p_yes": 0.259029359,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.065760594,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.296303511,
+            "p_yes": 0.256438285,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.585017733,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-00",
+            "input_tokens": 20,
+            "log_loss": 1.447593417,
+            "p_yes": 0.235135481,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.607000178,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-01",
+            "input_tokens": 21,
+            "log_loss": 1.510054954,
+            "p_yes": 0.220897838,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.534432947,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-02",
+            "input_tokens": 20,
+            "log_loss": 1.313226852,
+            "p_yes": 0.26895079,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.569128061,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-03",
+            "input_tokens": 21,
+            "log_loss": 1.404074563,
+            "p_yes": 0.245594233,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.554705867,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-04",
+            "input_tokens": 21,
+            "log_loss": 1.36565203,
+            "p_yes": 0.255214214,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.646418908,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-05",
+            "input_tokens": 21,
+            "log_loss": 1.629649845,
+            "p_yes": 0.195998192,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.065442747,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-00",
+            "input_tokens": 21,
+            "log_loss": 0.295469383,
+            "p_yes": 0.255817801,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.070173636,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-01",
+            "input_tokens": 21,
+            "log_loss": 0.307752909,
+            "p_yes": 0.264903069,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.071518809,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-02",
+            "input_tokens": 21,
+            "log_loss": 0.31119639,
+            "p_yes": 0.267430007,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.068039262,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-03",
+            "input_tokens": 21,
+            "log_loss": 0.302245427,
+            "p_yes": 0.260843366,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.078329905,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-04",
+            "input_tokens": 21,
+            "log_loss": 0.328330195,
+            "p_yes": 0.279874802,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.077851152,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-05",
+            "input_tokens": 21,
+            "log_loss": 0.327141376,
+            "p_yes": 0.279018193,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.715709648,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-00",
+            "input_tokens": 23,
+            "log_loss": 1.870778299,
+            "p_yes": 0.154003754,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.731890648,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-01",
+            "input_tokens": 23,
+            "log_loss": 1.934517831,
+            "p_yes": 0.144493923,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.715374006,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-02",
+            "input_tokens": 23,
+            "log_loss": 1.869490886,
+            "p_yes": 0.154202148,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.703647059,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-03",
+            "input_tokens": 23,
+            "log_loss": 1.825337326,
+            "p_yes": 0.16116327,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.66659194,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-04",
+            "input_tokens": 22,
+            "log_loss": 1.695272633,
+            "p_yes": 0.183549181,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.708538916,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-05",
+            "input_tokens": 23,
+            "log_loss": 1.843563656,
+            "p_yes": 0.158252463,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.022590859,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-00",
+            "input_tokens": 22,
+            "log_loss": 0.162874945,
+            "p_yes": 0.150302559,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.024963823,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-01",
+            "input_tokens": 23,
+            "log_loss": 0.171974601,
+            "p_yes": 0.157999441,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.020985961,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-02",
+            "input_tokens": 24,
+            "log_loss": 0.156496301,
+            "p_yes": 0.144865319,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.023034896,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-03",
+            "input_tokens": 23,
+            "log_loss": 0.164606417,
+            "p_yes": 0.151772514,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.023030572,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-04",
+            "input_tokens": 23,
+            "log_loss": 0.164589623,
+            "p_yes": 0.151758268,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.021530989,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-05",
+            "input_tokens": 24,
+            "log_loss": 0.158684428,
+            "p_yes": 0.146734416,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.522032557,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-00",
+            "input_tokens": 49,
+            "log_loss": 1.281999954,
+            "p_yes": 0.277481794,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.549861881,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-01",
+            "input_tokens": 48,
+            "log_loss": 1.352962967,
+            "p_yes": 0.258473277,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.528486186,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-02",
+            "input_tokens": 46,
+            "log_loss": 1.298175627,
+            "p_yes": 0.273029447,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.526529014,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-03",
+            "input_tokens": 49,
+            "log_loss": 1.2932529,
+            "p_yes": 0.27437681,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.52650034,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-04",
+            "input_tokens": 48,
+            "log_loss": 1.293180889,
+            "p_yes": 0.274396569,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.511619249,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-05",
+            "input_tokens": 46,
+            "log_loss": 1.256233743,
+            "p_yes": 0.284724355,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.080081624,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-00",
+            "input_tokens": 46,
+            "log_loss": 0.332661264,
+            "p_yes": 0.282986969,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.060533578,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-01",
+            "input_tokens": 50,
+            "log_loss": 0.282410293,
+            "p_yes": 0.246035725,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.079585971,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-02",
+            "input_tokens": 46,
+            "log_loss": 0.331438725,
+            "p_yes": 0.282109857,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.070981748,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-03",
+            "input_tokens": 48,
+            "log_loss": 0.309824074,
+            "p_yes": 0.266424,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.078596975,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-04",
+            "input_tokens": 46,
+            "log_loss": 0.328992408,
+            "p_yes": 0.28035152,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.077340231,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-05",
+            "input_tokens": 47,
+            "log_loss": 0.3258702,
+            "p_yes": 0.278101116,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.70636738,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-00",
+            "input_tokens": 17,
+            "log_loss": 1.835439605,
+            "p_yes": 0.15954335,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.681525356,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-01",
+            "input_tokens": 16,
+            "log_loss": 1.746091258,
+            "p_yes": 0.17445451,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.699720091,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-02",
+            "input_tokens": 17,
+            "log_loss": 1.810897838,
+            "p_yes": 0.163507268,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.66682808,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-03",
+            "input_tokens": 17,
+            "log_loss": 1.696060748,
+            "p_yes": 0.18340458,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.662425487,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-04",
+            "input_tokens": 17,
+            "log_loss": 1.68144562,
+            "p_yes": 0.186104745,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.688514814,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-05",
+            "input_tokens": 17,
+            "log_loss": 1.770592641,
+            "p_yes": 0.170232072,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.028376592,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-00",
+            "input_tokens": 17,
+            "log_loss": 0.184468094,
+            "p_yes": 0.168453529,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.031907951,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-01",
+            "input_tokens": 17,
+            "log_loss": 0.196779127,
+            "p_yes": 0.178627968,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.041455183,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.22766056,
+            "p_yes": 0.203605458,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.024938534,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-03",
+            "input_tokens": 17,
+            "log_loss": 0.171879535,
+            "p_yes": 0.157919392,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.031603568,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-04",
+            "input_tokens": 17,
+            "log_loss": 0.195739889,
+            "p_yes": 0.177773923,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.03589304,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.210047906,
+            "p_yes": 0.189454585,
+            "prediction": "no",
+            "truth": "no"
+          }
+        ]
+      },
+      "seed": 11,
+      "wall_seconds": 2.65414719004184
+    },
+    {
+      "arm": "interleaved",
+      "io_delta": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3304,
+        "read_bytes": 0,
+        "syscr": 10,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "process_cpu_seconds": 10.408912990000005,
+      "ru_maxrss_kib_process_peak": 1236844,
+      "scores": {
+        "accuracy": 0.5,
+        "families": {
+          "comparison": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3297355664166666
+          },
+          "divisibility": {
+            "accuracy": 0.5,
+            "mean_brier": 0.36688054225000005
+          },
+          "even": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3223458968333333
+          },
+          "prime": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3602486685833333
+          },
+          "set_membership": {
+            "accuracy": 0.5,
+            "mean_brier": 0.30483341183333335
+          }
+        },
+        "mean_brier": 0.33680881718333333,
+        "mean_log_loss": 0.9119373191833334,
+        "rows": [
+          {
+            "brier": 0.607422792,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-00",
+            "input_tokens": 16,
+            "log_loss": 1.511283295,
+            "p_yes": 0.220626667,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.574554424,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-01",
+            "input_tokens": 17,
+            "log_loss": 1.418791451,
+            "p_yes": 0.242006317,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.563263235,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-02",
+            "input_tokens": 18,
+            "log_loss": 1.388331038,
+            "p_yes": 0.249491349,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.576072907,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-03",
+            "input_tokens": 18,
+            "log_loss": 1.422936224,
+            "p_yes": 0.241005331,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.585502997,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-04",
+            "input_tokens": 18,
+            "log_loss": 1.448943151,
+            "p_yes": 0.234818324,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.587791303,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-05",
+            "input_tokens": 18,
+            "log_loss": 1.455325035,
+            "p_yes": 0.233324513,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.066291804,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-00",
+            "input_tokens": 18,
+            "log_loss": 0.29769463,
+            "p_yes": 0.257471949,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.058668399,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-01",
+            "input_tokens": 18,
+            "log_loss": 0.277356371,
+            "p_yes": 0.242215604,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.072303383,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.313195297,
+            "p_yes": 0.268892884,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.048424157,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-03",
+            "input_tokens": 16,
+            "log_loss": 0.24853174,
+            "p_yes": 0.220054895,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.064388199,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-04",
+            "input_tokens": 18,
+            "log_loss": 0.292692333,
+            "p_yes": 0.253748298,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.063467162,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.290254577,
+            "p_yes": 0.251926899,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.592399379,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-00",
+            "input_tokens": 20,
+            "log_loss": 1.468263284,
+            "p_yes": 0.230325148,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.615036176,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-01",
+            "input_tokens": 21,
+            "log_loss": 1.533599823,
+            "p_yes": 0.215757579,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.543548153,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-02",
+            "input_tokens": 20,
+            "log_loss": 1.336579606,
+            "p_yes": 0.262742817,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.577314928,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-03",
+            "input_tokens": 21,
+            "log_loss": 1.426335117,
+            "p_yes": 0.24018757,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.562510863,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-04",
+            "input_tokens": 21,
+            "log_loss": 1.386323329,
+            "p_yes": 0.249992758,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.653943288,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-05",
+            "input_tokens": 21,
+            "log_loss": 1.65374305,
+            "p_yes": 0.1913324,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.062597104,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-00",
+            "input_tokens": 21,
+            "log_loss": 0.287940949,
+            "p_yes": 0.250194132,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.067104731,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-01",
+            "input_tokens": 21,
+            "log_loss": 0.299816477,
+            "p_yes": 0.25904581,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.068343617,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-02",
+            "input_tokens": 21,
+            "log_loss": 0.303034143,
+            "p_yes": 0.261426121,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.064710831,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-03",
+            "input_tokens": 21,
+            "log_loss": 0.293543532,
+            "p_yes": 0.254383236,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.074952414,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-04",
+            "input_tokens": 21,
+            "log_loss": 0.319894549,
+            "p_yes": 0.273774385,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.074365313,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-05",
+            "input_tokens": 21,
+            "log_loss": 0.318416289,
+            "p_yes": 0.272700042,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.720081977,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-00",
+            "input_tokens": 23,
+            "log_loss": 1.887674345,
+            "p_yes": 0.151423559,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.736459257,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-01",
+            "input_tokens": 23,
+            "log_loss": 1.953140535,
+            "p_yes": 0.141827956,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.720158884,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-02",
+            "input_tokens": 23,
+            "log_loss": 1.887973646,
+            "p_yes": 0.151378244,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.708596013,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-03",
+            "input_tokens": 23,
+            "log_loss": 1.843777988,
+            "p_yes": 0.158218548,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.673159977,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-04",
+            "input_tokens": 22,
+            "log_loss": 1.717375468,
+            "p_yes": 0.17953673,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.71297153,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-05",
+            "input_tokens": 23,
+            "log_loss": 1.860315104,
+            "p_yes": 0.155623585,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.021754164,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-00",
+            "input_tokens": 22,
+            "log_loss": 0.159573777,
+            "p_yes": 0.14749293,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.024012927,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-01",
+            "input_tokens": 23,
+            "log_loss": 0.168372557,
+            "p_yes": 0.15496105,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.020235902,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-02",
+            "input_tokens": 24,
+            "log_loss": 0.153446039,
+            "p_yes": 0.142252952,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.022129641,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-03",
+            "input_tokens": 23,
+            "log_loss": 0.161061578,
+            "p_yes": 0.148760349,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.022151716,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-04",
+            "input_tokens": 23,
+            "log_loss": 0.161148723,
+            "p_yes": 0.148834527,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.020854519,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-05",
+            "input_tokens": 24,
+            "log_loss": 0.155965086,
+            "p_yes": 0.144410938,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.534079534,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-00",
+            "input_tokens": 49,
+            "log_loss": 1.312328369,
+            "p_yes": 0.269192547,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.561140763,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-01",
+            "input_tokens": 48,
+            "log_loss": 1.382674099,
+            "p_yes": 0.250906706,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.541030494,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-02",
+            "input_tokens": 46,
+            "log_loss": 1.330094578,
+            "p_yes": 0.264452249,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.537833183,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-03",
+            "input_tokens": 49,
+            "log_loss": 1.321897508,
+            "p_yes": 0.266628891,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.538395427,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-04",
+            "input_tokens": 48,
+            "log_loss": 1.323335851,
+            "p_yes": 0.266245663,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.524120602,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-05",
+            "input_tokens": 46,
+            "log_loss": 1.287215802,
+            "p_yes": 0.276038259,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.075758553,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-00",
+            "input_tokens": 46,
+            "log_loss": 0.321918461,
+            "p_yes": 0.275242716,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.057308978,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-01",
+            "input_tokens": 50,
+            "log_loss": 0.273638396,
+            "p_yes": 0.239392936,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.074874678,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-02",
+            "input_tokens": 46,
+            "log_loss": 0.319699025,
+            "p_yes": 0.273632377,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.066850208,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-03",
+            "input_tokens": 48,
+            "log_loss": 0.299153041,
+            "p_yes": 0.258554071,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.073901234,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-04",
+            "input_tokens": 46,
+            "log_loss": 0.317245206,
+            "p_yes": 0.271847814,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.072707288,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-05",
+            "input_tokens": 47,
+            "log_loss": 0.314221672,
+            "p_yes": 0.269642889,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.710601986,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-00",
+            "input_tokens": 17,
+            "log_loss": 1.851331876,
+            "p_yes": 0.157027885,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.686639778,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-01",
+            "input_tokens": 16,
+            "log_loss": 1.763972927,
+            "p_yes": 0.171362698,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.703930754,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-02",
+            "input_tokens": 17,
+            "log_loss": 1.82638702,
+            "p_yes": 0.160994187,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.672610366,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-03",
+            "input_tokens": 17,
+            "log_loss": 1.715511249,
+            "p_yes": 0.179871738,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.667775469,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-04",
+            "input_tokens": 17,
+            "log_loss": 1.699227503,
+            "p_yes": 0.182824701,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.693816196,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-05",
+            "input_tokens": 17,
+            "log_loss": 1.789499819,
+            "p_yes": 0.167043701,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.027411961,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-00",
+            "input_tokens": 17,
+            "log_loss": 0.181001125,
+            "p_yes": 0.16556558,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.030986696,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-01",
+            "input_tokens": 17,
+            "log_loss": 0.193621622,
+            "p_yes": 0.176030383,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.040008424,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.223169875,
+            "p_yes": 0.200021058,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.024075817,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-03",
+            "input_tokens": 17,
+            "log_loss": 0.168612563,
+            "p_yes": 0.155163839,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.030481655,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-04",
+            "input_tokens": 17,
+            "log_loss": 0.191875,
+            "p_yes": 0.174589962,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.034644921,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.205956428,
+            "p_yes": 0.186131462,
+            "prediction": "no",
+            "truth": "no"
+          }
+        ]
+      },
+      "seed": 17,
+      "wall_seconds": 2.712068172870204
+    },
+    {
+      "arm": "bursty",
+      "io_delta": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3304,
+        "read_bytes": 0,
+        "syscr": 10,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "process_cpu_seconds": 10.196247022000001,
+      "ru_maxrss_kib_process_peak": 1236844,
+      "scores": {
+        "accuracy": 0.5,
+        "families": {
+          "comparison": {
+            "accuracy": 0.5,
+            "mean_brier": 0.32990062558333333
+          },
+          "divisibility": {
+            "accuracy": 0.5,
+            "mean_brier": 0.36705846833333333
+          },
+          "even": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3225262280833333
+          },
+          "prime": {
+            "accuracy": 0.5,
+            "mean_brier": 0.36042727783333334
+          },
+          "set_membership": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3049945309166667
+          }
+        },
+        "mean_brier": 0.33698142615000004,
+        "mean_log_loss": 0.9124811764833333,
+        "rows": [
+          {
+            "brier": 0.607965522,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-00",
+            "input_tokens": 16,
+            "log_loss": 1.512862347,
+            "p_yes": 0.220278561,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.575091332,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-01",
+            "input_tokens": 17,
+            "log_loss": 1.42025563,
+            "p_yes": 0.241652235,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.563825165,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-02",
+            "input_tokens": 18,
+            "log_loss": 1.389832307,
+            "p_yes": 0.249117076,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.576603486,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-03",
+            "input_tokens": 18,
+            "log_loss": 1.424387232,
+            "p_yes": 0.240655884,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.586054828,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-04",
+            "input_tokens": 18,
+            "log_loss": 1.450479577,
+            "p_yes": 0.234457821,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.588322129,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-05",
+            "input_tokens": 18,
+            "log_loss": 1.456809518,
+            "p_yes": 0.232978404,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.066099391,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-00",
+            "input_tokens": 18,
+            "log_loss": 0.297191166,
+            "p_yes": 0.257098019,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.058497832,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-01",
+            "input_tokens": 18,
+            "log_loss": 0.276891502,
+            "p_yes": 0.241863251,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.072095915,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.312667389,
+            "p_yes": 0.268506825,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.048276174,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-03",
+            "input_tokens": 16,
+            "log_loss": 0.248100395,
+            "p_yes": 0.219718397,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.064201848,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-04",
+            "input_tokens": 18,
+            "log_loss": 0.292200043,
+            "p_yes": 0.253380835,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.063281115,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.289760738,
+            "p_yes": 0.25155738,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.592939992,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-00",
+            "input_tokens": 20,
+            "log_loss": 1.469788883,
+            "p_yes": 0.229974031,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.615537916,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-01",
+            "input_tokens": 21,
+            "log_loss": 1.535083251,
+            "p_yes": 0.215437755,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.544125554,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-02",
+            "input_tokens": 20,
+            "log_loss": 1.338070704,
+            "p_yes": 0.262351334,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.577865652,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-03",
+            "input_tokens": 21,
+            "log_loss": 1.427844751,
+            "p_yes": 0.239825249,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.563056562,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-04",
+            "input_tokens": 21,
+            "log_loss": 1.387779261,
+            "p_yes": 0.24962905,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.654403007,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-05",
+            "input_tokens": 21,
+            "log_loss": 1.655229501,
+            "p_yes": 0.191048205,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.062413722,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-00",
+            "input_tokens": 21,
+            "log_loss": 0.287451946,
+            "p_yes": 0.249827385,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.066915088,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-01",
+            "input_tokens": 21,
+            "log_loss": 0.299322236,
+            "p_yes": 0.258679509,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.06814196,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-02",
+            "input_tokens": 21,
+            "log_loss": 0.302511691,
+            "p_yes": 0.261040151,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.064516807,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-03",
+            "input_tokens": 21,
+            "log_loss": 0.293031807,
+            "p_yes": 0.254001588,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.074741796,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-04",
+            "input_tokens": 21,
+            "log_loss": 0.319364652,
+            "p_yes": 0.273389459,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.074149451,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-05",
+            "input_tokens": 21,
+            "log_loss": 0.317871857,
+            "p_yes": 0.272303969,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.720499593,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-00",
+            "input_tokens": 23,
+            "log_loss": 1.889300467,
+            "p_yes": 0.151177526,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.736857138,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-01",
+            "input_tokens": 23,
+            "log_loss": 1.954776158,
+            "p_yes": 0.141596168,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.720572071,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-02",
+            "input_tokens": 23,
+            "log_loss": 1.889582902,
+            "p_yes": 0.151134834,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.709015807,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-03",
+            "input_tokens": 23,
+            "log_loss": 1.845354971,
+            "p_yes": 0.157969236,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.673646581,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-04",
+            "input_tokens": 22,
+            "log_loss": 1.719028241,
+            "p_yes": 0.179240242,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.713406009,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-05",
+            "input_tokens": 23,
+            "log_loss": 1.861969427,
+            "p_yes": 0.155366346,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.021681693,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-00",
+            "input_tokens": 22,
+            "log_loss": 0.159285394,
+            "p_yes": 0.147247046,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.023933818,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-01",
+            "input_tokens": 23,
+            "log_loss": 0.168070291,
+            "p_yes": 0.154705584,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.020169821,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-02",
+            "input_tokens": 24,
+            "log_loss": 0.153175065,
+            "p_yes": 0.142020494,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.022056922,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-03",
+            "input_tokens": 23,
+            "log_loss": 0.160774254,
+            "p_yes": 0.148515731,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.022077238,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-04",
+            "input_tokens": 23,
+            "log_loss": 0.160854565,
+            "p_yes": 0.148584113,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.020784929,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-05",
+            "input_tokens": 24,
+            "log_loss": 0.155683278,
+            "p_yes": 0.144169793,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.534590261,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-00",
+            "input_tokens": 49,
+            "log_loss": 1.313626955,
+            "p_yes": 0.268843204,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.561644165,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-01",
+            "input_tokens": 48,
+            "log_loss": 1.384013867,
+            "p_yes": 0.250570774,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.541557078,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-02",
+            "input_tokens": 46,
+            "log_loss": 1.33144873,
+            "p_yes": 0.264094383,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.538325409,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-03",
+            "input_tokens": 49,
+            "log_loss": 1.323156658,
+            "p_yes": 0.266293377,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.538909919,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-04",
+            "input_tokens": 48,
+            "log_loss": 1.324653191,
+            "p_yes": 0.265895158,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.524619422,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-05",
+            "input_tokens": 46,
+            "log_loss": 1.288464327,
+            "p_yes": 0.275693834,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.075559157,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-00",
+            "input_tokens": 46,
+            "log_loss": 0.321418479,
+            "p_yes": 0.27488026,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.057156081,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-01",
+            "input_tokens": 50,
+            "log_loss": 0.273218353,
+            "p_yes": 0.239073381,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.074685979,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-02",
+            "input_tokens": 46,
+            "log_loss": 0.319224142,
+            "p_yes": 0.273287356,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.066668897,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-03",
+            "input_tokens": 48,
+            "log_loss": 0.298679939,
+            "p_yes": 0.258203208,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.073702536,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-04",
+            "input_tokens": 46,
+            "log_loss": 0.316743096,
+            "p_yes": 0.27148211,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.072515467,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-05",
+            "input_tokens": 47,
+            "log_loss": 0.313734455,
+            "p_yes": 0.26928696,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.711024233,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-00",
+            "input_tokens": 17,
+            "log_loss": 1.852927859,
+            "p_yes": 0.156777471,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.687107958,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-01",
+            "input_tokens": 16,
+            "log_loss": 1.765622554,
+            "p_yes": 0.171080247,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.704353566,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-02",
+            "input_tokens": 17,
+            "log_loss": 1.827953109,
+            "p_yes": 0.160742253,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.673089412,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-03",
+            "input_tokens": 17,
+            "log_loss": 1.717135965,
+            "p_yes": 0.179579735,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.668255421,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-04",
+            "input_tokens": 17,
+            "log_loss": 1.700834772,
+            "p_yes": 0.182531089,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.694290988,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-05",
+            "input_tokens": 17,
+            "log_loss": 1.791207146,
+            "p_yes": 0.166758746,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.027322133,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-00",
+            "input_tokens": 17,
+            "log_loss": 0.180675809,
+            "p_yes": 0.165294081,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.030892495,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-01",
+            "input_tokens": 17,
+            "log_loss": 0.193296694,
+            "p_yes": 0.175762609,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.039879976,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.222768265,
+            "p_yes": 0.199699715,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.023993234,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-03",
+            "input_tokens": 17,
+            "log_loss": 0.168297353,
+            "p_yes": 0.154897496,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.030382178,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-04",
+            "input_tokens": 17,
+            "log_loss": 0.191529633,
+            "p_yes": 0.174304843,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.03453574,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.205595841,
+            "p_yes": 0.185837939,
+            "prediction": "no",
+            "truth": "no"
+          }
+        ]
+      },
+      "seed": 17,
+      "wall_seconds": 2.674127080012113
+    },
+    {
+      "arm": "interleaved",
+      "io_delta": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3304,
+        "read_bytes": 0,
+        "syscr": 10,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "process_cpu_seconds": 10.130554357000001,
+      "ru_maxrss_kib_process_peak": 1236844,
+      "scores": {
+        "accuracy": 0.5,
+        "families": {
+          "comparison": {
+            "accuracy": 0.5,
+            "mean_brier": 0.32065396725
+          },
+          "divisibility": {
+            "accuracy": 0.5,
+            "mean_brier": 0.35520338599999995
+          },
+          "even": {
+            "accuracy": 0.5,
+            "mean_brier": 0.31254265291666666
+          },
+          "prime": {
+            "accuracy": 0.5,
+            "mean_brier": 0.35159413300000003
+          },
+          "set_membership": {
+            "accuracy": 0.5,
+            "mean_brier": 0.29211615441666666
+          }
+        },
+        "mean_brier": 0.3264220587166667,
+        "mean_log_loss": 0.880599579,
+        "rows": [
+          {
+            "brier": 0.581854509,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-00",
+            "input_tokens": 16,
+            "log_loss": 1.438825827,
+            "p_yes": 0.237206116,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.546093195,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-01",
+            "input_tokens": 17,
+            "log_loss": 1.343162795,
+            "p_yes": 0.261018813,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.531111994,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-02",
+            "input_tokens": 18,
+            "log_loss": 1.304803997,
+            "p_yes": 0.271225691,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.543690893,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-03",
+            "input_tokens": 18,
+            "log_loss": 1.336948087,
+            "p_yes": 0.262646019,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.554253508,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-04",
+            "input_tokens": 18,
+            "log_loss": 1.36446258,
+            "p_yes": 0.25551796,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.55635348,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-05",
+            "input_tokens": 18,
+            "log_loss": 1.369992224,
+            "p_yes": 0.254108936,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.078283002,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-00",
+            "input_tokens": 18,
+            "log_loss": 0.328213828,
+            "p_yes": 0.279790998,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.069399588,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-01",
+            "input_tokens": 18,
+            "log_loss": 0.305761887,
+            "p_yes": 0.263438016,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.084311268,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.343003155,
+            "p_yes": 0.290364027,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.055835742,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-03",
+            "input_tokens": 16,
+            "log_loss": 0.269574841,
+            "p_yes": 0.236295879,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.075744822,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-04",
+            "input_tokens": 18,
+            "log_loss": 0.321884044,
+            "p_yes": 0.275217772,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.073579834,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.316432815,
+            "p_yes": 0.27125603,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.564338881,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-00",
+            "input_tokens": 20,
+            "log_loss": 1.391206085,
+            "p_yes": 0.24877508,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.587435191,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-01",
+            "input_tokens": 21,
+            "log_loss": 1.45433001,
+            "p_yes": 0.233556792,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.508882549,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-02",
+            "input_tokens": 20,
+            "log_loss": 1.24952835,
+            "p_yes": 0.286639959,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.546188076,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-03",
+            "input_tokens": 21,
+            "log_loss": 1.343408762,
+            "p_yes": 0.260954618,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.530575579,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-04",
+            "input_tokens": 21,
+            "log_loss": 1.303447678,
+            "p_yes": 0.271593809,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.62668629,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-05",
+            "input_tokens": 21,
+            "log_loss": 1.568464891,
+            "p_yes": 0.2083648,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.073797747,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-00",
+            "input_tokens": 21,
+            "log_loss": 0.316983747,
+            "p_yes": 0.271657407,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.078780794,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-01",
+            "input_tokens": 21,
+            "log_loss": 0.329447799,
+            "p_yes": 0.280679166,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.079978278,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-02",
+            "input_tokens": 21,
+            "log_loss": 0.332406547,
+            "p_yes": 0.28280431,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.076194587,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-03",
+            "input_tokens": 21,
+            "log_loss": 0.323010393,
+            "p_yes": 0.27603367,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.087931407,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-04",
+            "input_tokens": 21,
+            "log_loss": 0.351733321,
+            "p_yes": 0.296532303,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.087058228,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-05",
+            "input_tokens": 21,
+            "log_loss": 0.349637356,
+            "p_yes": 0.295056313,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.691572803,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-00",
+            "input_tokens": 23,
+            "log_loss": 1.781464032,
+            "p_yes": 0.168391436,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.71114926,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-01",
+            "input_tokens": 23,
+            "log_loss": 1.853400828,
+            "p_yes": 0.156703338,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.69275922,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-02",
+            "input_tokens": 23,
+            "log_loss": 1.785707326,
+            "p_yes": 0.167678416,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.680406346,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-03",
+            "input_tokens": 23,
+            "log_loss": 1.742212289,
+            "p_yes": 0.175132528,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.639968977,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-04",
+            "input_tokens": 22,
+            "log_loss": 1.60934097,
+            "p_yes": 0.200019389,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.684156,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-05",
+            "input_tokens": 23,
+            "log_loss": 1.755257247,
+            "p_yes": 0.172862768,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.026939519,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-00",
+            "input_tokens": 22,
+            "log_loss": 0.179285321,
+            "p_yes": 0.164132625,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.029438255,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-01",
+            "input_tokens": 23,
+            "log_loss": 0.188229936,
+            "p_yes": 0.1715758,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.024905873,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-02",
+            "input_tokens": 24,
+            "log_loss": 0.1717567,
+            "p_yes": 0.157815948,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.027347026,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-03",
+            "input_tokens": 23,
+            "log_loss": 0.180766001,
+            "p_yes": 0.165369362,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.02754838,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-04",
+            "input_tokens": 23,
+            "log_loss": 0.181494354,
+            "p_yes": 0.165977046,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.026248973,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-05",
+            "input_tokens": 24,
+            "log_loss": 0.176755495,
+            "p_yes": 0.162015349,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.492075697,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-00",
+            "input_tokens": 49,
+            "log_loss": 1.208921945,
+            "p_yes": 0.298518926,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.518959765,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-01",
+            "input_tokens": 48,
+            "log_loss": 1.274354572,
+            "p_yes": 0.279611379,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.496827538,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-02",
+            "input_tokens": 46,
+            "log_loss": 1.220305263,
+            "p_yes": 0.295140058,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.497373184,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-03",
+            "input_tokens": 49,
+            "log_loss": 1.221617207,
+            "p_yes": 0.294753104,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.49648242,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-04",
+            "input_tokens": 48,
+            "log_loss": 1.219475981,
+            "p_yes": 0.295384914,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.482589626,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-05",
+            "input_tokens": 46,
+            "log_loss": 1.186416852,
+            "p_yes": 0.305313289,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.093676546,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-00",
+            "input_tokens": 46,
+            "log_loss": 0.365378777,
+            "p_yes": 0.306066245,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.071289583,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-01",
+            "input_tokens": 50,
+            "log_loss": 0.310611067,
+            "p_yes": 0.267001092,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.091502199,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-02",
+            "input_tokens": 46,
+            "log_loss": 0.360243165,
+            "p_yes": 0.302493304,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.082789621,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-03",
+            "input_tokens": 48,
+            "log_loss": 0.339300832,
+            "p_yes": 0.287731856,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.091842561,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-04",
+            "input_tokens": 46,
+            "log_loss": 0.36104932,
+            "p_yes": 0.303055376,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.089985113,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-05",
+            "input_tokens": 47,
+            "log_loss": 0.356639497,
+            "p_yes": 0.299975187,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.689699744,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-00",
+            "input_tokens": 17,
+            "log_loss": 1.774794001,
+            "p_yes": 0.169518366,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.664754842,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-01",
+            "input_tokens": 16,
+            "log_loss": 1.689157712,
+            "p_yes": 0.184675008,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.682363499,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-02",
+            "input_tokens": 17,
+            "log_loss": 1.749004415,
+            "p_yes": 0.173947036,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.649238341,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-03",
+            "input_tokens": 17,
+            "log_loss": 1.638626153,
+            "p_yes": 0.194246724,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.643196544,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-04",
+            "input_tokens": 17,
+            "log_loss": 1.619464773,
+            "p_yes": 0.198004648,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.670728645,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-05",
+            "input_tokens": 17,
+            "log_loss": 1.70914912,
+            "p_yes": 0.181019753,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.032196384,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-00",
+            "input_tokens": 17,
+            "log_loss": 0.197760335,
+            "p_yes": 0.17943351,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.035957684,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-01",
+            "input_tokens": 17,
+            "log_loss": 0.210258316,
+            "p_yes": 0.189625114,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.046633578,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.243280049,
+            "p_yes": 0.21594809,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.028158078,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-03",
+            "input_tokens": 17,
+            "log_loss": 0.183686916,
+            "p_yes": 0.16780369,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.035758533,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-04",
+            "input_tokens": 17,
+            "log_loss": 0.209609633,
+            "p_yes": 0.189099267,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.040443724,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.224527321,
+            "p_yes": 0.20110625,
+            "prediction": "no",
+            "truth": "no"
+          }
+        ]
+      },
+      "seed": 23,
+      "wall_seconds": 2.6237861760891974
+    },
+    {
+      "arm": "bursty",
+      "io_delta": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3304,
+        "read_bytes": 0,
+        "syscr": 10,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "process_cpu_seconds": 10.183079879999994,
+      "ru_maxrss_kib_process_peak": 1236844,
+      "scores": {
+        "accuracy": 0.5,
+        "families": {
+          "comparison": {
+            "accuracy": 0.5,
+            "mean_brier": 0.32043716541666667
+          },
+          "divisibility": {
+            "accuracy": 0.5,
+            "mean_brier": 0.35493267841666665
+          },
+          "even": {
+            "accuracy": 0.5,
+            "mean_brier": 0.31229339683333335
+          },
+          "prime": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3514152424166667
+          },
+          "set_membership": {
+            "accuracy": 0.5,
+            "mean_brier": 0.29196661025
+          }
+        },
+        "mean_brier": 0.3262090186666667,
+        "mean_log_loss": 0.8799655550833333,
+        "rows": [
+          {
+            "brier": 0.581214341,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-00",
+            "input_tokens": 16,
+            "log_loss": 1.437057892,
+            "p_yes": 0.237625852,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.545395102,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-01",
+            "input_tokens": 17,
+            "log_loss": 1.341354271,
+            "p_yes": 0.261491299,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.530255909,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-02",
+            "input_tokens": 18,
+            "log_loss": 1.302639943,
+            "p_yes": 0.271813273,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.542795347,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-03",
+            "input_tokens": 18,
+            "log_loss": 1.334637682,
+            "p_yes": 0.26325354,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.553386369,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-04",
+            "input_tokens": 18,
+            "log_loss": 1.362185079,
+            "p_yes": 0.256100565,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.555535921,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-05",
+            "input_tokens": 18,
+            "log_loss": 1.367837034,
+            "p_yes": 0.254657179,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.078625919,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-00",
+            "input_tokens": 18,
+            "log_loss": 0.329064137,
+            "p_yes": 0.280403137,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.069706495,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-01",
+            "input_tokens": 18,
+            "log_loss": 0.306552167,
+            "p_yes": 0.264019877,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.084636209,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.343791196,
+            "p_yes": 0.290923029,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.056046636,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-03",
+            "input_tokens": 16,
+            "log_loss": 0.270158782,
+            "p_yes": 0.236741707,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.076058122,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-04",
+            "input_tokens": 18,
+            "log_loss": 0.322668861,
+            "p_yes": 0.27578637,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.073864392,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.317152139,
+            "p_yes": 0.271780044,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.563553998,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-00",
+            "input_tokens": 20,
+            "log_loss": 1.38910766,
+            "p_yes": 0.249297664,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.586750662,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-01",
+            "input_tokens": 21,
+            "log_loss": 1.452419274,
+            "p_yes": 0.234003484,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.50809811,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-02",
+            "input_tokens": 20,
+            "log_loss": 1.247611295,
+            "p_yes": 0.28718999,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.545451931,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-03",
+            "input_tokens": 21,
+            "log_loss": 1.341501418,
+            "p_yes": 0.261452824,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.529809383,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-04",
+            "input_tokens": 21,
+            "log_loss": 1.301512356,
+            "p_yes": 0.272119939,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.626086805,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-05",
+            "input_tokens": 21,
+            "log_loss": 1.566648922,
+            "p_yes": 0.208743528,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.074085338,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-00",
+            "input_tokens": 21,
+            "log_loss": 0.31771006,
+            "p_yes": 0.27218622,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.079044341,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-01",
+            "input_tokens": 21,
+            "log_loss": 0.330100138,
+            "p_yes": 0.281148255,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.080254253,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-02",
+            "input_tokens": 21,
+            "log_loss": 0.333086518,
+            "p_yes": 0.283291817,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.076480905,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-03",
+            "input_tokens": 21,
+            "log_loss": 0.32372635,
+            "p_yes": 0.276551813,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.088271602,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-04",
+            "input_tokens": 21,
+            "log_loss": 0.352548287,
+            "p_yes": 0.297105372,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.087358657,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-05",
+            "input_tokens": 21,
+            "log_loss": 0.350359187,
+            "p_yes": 0.295564979,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.690923594,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-00",
+            "input_tokens": 23,
+            "log_loss": 1.779148157,
+            "p_yes": 0.168781862,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.710542598,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-01",
+            "input_tokens": 23,
+            "log_loss": 1.851107569,
+            "p_yes": 0.157063112,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.692106056,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-02",
+            "input_tokens": 23,
+            "log_loss": 1.783369469,
+            "p_yes": 0.168070883,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.679724045,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-03",
+            "input_tokens": 23,
+            "log_loss": 1.739852943,
+            "p_yes": 0.175546214,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.639213146,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-04",
+            "input_tokens": 22,
+            "log_loss": 1.606981257,
+            "p_yes": 0.200491935,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.683520162,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-05",
+            "input_tokens": 23,
+            "log_loss": 1.753035698,
+            "p_yes": 0.173247218,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.027062519,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-00",
+            "input_tokens": 22,
+            "log_loss": 0.179733186,
+            "p_yes": 0.164506897,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.029571896,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-01",
+            "input_tokens": 23,
+            "log_loss": 0.188699625,
+            "p_yes": 0.171964809,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.025020893,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-02",
+            "input_tokens": 24,
+            "log_loss": 0.172188992,
+            "p_yes": 0.158179939,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.027462131,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-03",
+            "input_tokens": 23,
+            "log_loss": 0.18118263,
+            "p_yes": 0.165717021,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.027668299,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-04",
+            "input_tokens": 23,
+            "log_loss": 0.181927123,
+            "p_yes": 0.166337907,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.026376802,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-05",
+            "input_tokens": 24,
+            "log_loss": 0.1772258,
+            "p_yes": 0.162409365,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.491533802,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-00",
+            "input_tokens": 49,
+            "log_loss": 1.207628534,
+            "p_yes": 0.298905283,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.518493043,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-01",
+            "input_tokens": 48,
+            "log_loss": 1.273196453,
+            "p_yes": 0.27993539,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.496305917,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-02",
+            "input_tokens": 46,
+            "log_loss": 1.219052017,
+            "p_yes": 0.295510173,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.496827832,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-03",
+            "input_tokens": 49,
+            "log_loss": 1.22030597,
+            "p_yes": 0.295139849,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.495958419,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-04",
+            "input_tokens": 48,
+            "log_loss": 1.218217626,
+            "p_yes": 0.295756847,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.482087951,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-05",
+            "input_tokens": 46,
+            "log_loss": 1.185234588,
+            "p_yes": 0.305674464,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.093903918,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-00",
+            "input_tokens": 46,
+            "log_loss": 0.365913867,
+            "p_yes": 0.306437463,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.071471363,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-01",
+            "input_tokens": 50,
+            "log_loss": 0.311075287,
+            "p_yes": 0.267341286,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.091723471,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-02",
+            "input_tokens": 46,
+            "log_loss": 0.360767349,
+            "p_yes": 0.302858829,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.083008396,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-03",
+            "input_tokens": 48,
+            "log_loss": 0.339834369,
+            "p_yes": 0.288111776,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.092064967,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-04",
+            "input_tokens": 46,
+            "log_loss": 0.361575638,
+            "p_yes": 0.303422093,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.090220244,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-05",
+            "input_tokens": 47,
+            "log_loss": 0.357199151,
+            "p_yes": 0.300366849,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.689206212,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-00",
+            "input_tokens": 17,
+            "log_loss": 1.7730424,
+            "p_yes": 0.169815555,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.664310447,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-01",
+            "input_tokens": 16,
+            "log_loss": 1.687682845,
+            "p_yes": 0.18494758,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.681859532,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-02",
+            "input_tokens": 17,
+            "log_loss": 1.747251962,
+            "p_yes": 0.174252138,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.648781856,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-03",
+            "input_tokens": 17,
+            "log_loss": 1.63716868,
+            "p_yes": 0.19453004,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.642719037,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-04",
+            "input_tokens": 17,
+            "log_loss": 1.617962125,
+            "p_yes": 0.198302403,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.670295384,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-05",
+            "input_tokens": 17,
+            "log_loss": 1.707688715,
+            "p_yes": 0.181284308,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.03229569,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-00",
+            "input_tokens": 17,
+            "log_loss": 0.198097362,
+            "p_yes": 0.179710016,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.036079249,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-01",
+            "input_tokens": 17,
+            "log_loss": 0.210653607,
+            "p_yes": 0.189945385,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.046775884,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.24370006,
+            "p_yes": 0.216277331,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.028223584,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-03",
+            "input_tokens": 17,
+            "log_loss": 0.183921349,
+            "p_yes": 0.167998761,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.035867467,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-04",
+            "input_tokens": 17,
+            "log_loss": 0.20996463,
+            "p_yes": 0.189387083,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.040568567,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.224915624,
+            "p_yes": 0.201416403,
+            "prediction": "no",
+            "truth": "no"
+          }
+        ]
+      },
+      "seed": 23,
+      "wall_seconds": 2.6387429849710315
+    },
+    {
+      "arm": "interleaved",
+      "io_delta": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3305,
+        "read_bytes": 0,
+        "syscr": 10,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "process_cpu_seconds": 10.482255965999997,
+      "ru_maxrss_kib_process_peak": 1236844,
+      "scores": {
+        "accuracy": 0.5,
+        "families": {
+          "comparison": {
+            "accuracy": 0.5,
+            "mean_brier": 0.32206210733333335
+          },
+          "divisibility": {
+            "accuracy": 0.5,
+            "mean_brier": 0.360358978
+          },
+          "even": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3154685359166667
+          },
+          "prime": {
+            "accuracy": 0.5,
+            "mean_brier": 0.35479520024999994
+          },
+          "set_membership": {
+            "accuracy": 0.5,
+            "mean_brier": 0.3005681021666667
+          }
+        },
+        "mean_brier": 0.3306505847333333,
+        "mean_log_loss": 0.8929271300833332,
+        "rows": [
+          {
+            "brier": 0.59029931,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-00",
+            "input_tokens": 16,
+            "log_loss": 1.462352352,
+            "p_yes": 0.231690615,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.554425784,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-01",
+            "input_tokens": 17,
+            "log_loss": 1.364915459,
+            "p_yes": 0.255402267,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.540683365,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-02",
+            "input_tokens": 18,
+            "log_loss": 1.329202548,
+            "p_yes": 0.264688253,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.552922405,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-03",
+            "input_tokens": 18,
+            "log_loss": 1.360967896,
+            "p_yes": 0.256412476,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.562473849,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-04",
+            "input_tokens": 18,
+            "log_loss": 1.386224626,
+            "p_yes": 0.250017434,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.566668785,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-05",
+            "input_tokens": 18,
+            "log_loss": 1.397452623,
+            "p_yes": 0.24722594,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.074773592,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-00",
+            "input_tokens": 18,
+            "log_loss": 0.319444676,
+            "p_yes": 0.273447603,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.06623054,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-01",
+            "input_tokens": 18,
+            "log_loss": 0.297534378,
+            "p_yes": 0.257352948,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.080466543,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.333609094,
+            "p_yes": 0.283666253,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.053800858,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-03",
+            "input_tokens": 16,
+            "log_loss": 0.263900599,
+            "p_yes": 0.231950119,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.072071463,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-04",
+            "input_tokens": 18,
+            "log_loss": 0.312605137,
+            "p_yes": 0.268461287,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.070805937,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.30937412,
+            "p_yes": 0.26609385,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.566721417,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-00",
+            "input_tokens": 20,
+            "log_loss": 1.397594034,
+            "p_yes": 0.247190982,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.591774068,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-01",
+            "input_tokens": 21,
+            "log_loss": 1.466500702,
+            "p_yes": 0.230731472,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.515564008,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-02",
+            "input_tokens": 20,
+            "log_loss": 1.265947007,
+            "p_yes": 0.28197214,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.551339719,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-03",
+            "input_tokens": 21,
+            "log_loss": 1.356823088,
+            "p_yes": 0.257477462,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.536030688,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-04",
+            "input_tokens": 21,
+            "log_loss": 1.31729518,
+            "p_yes": 0.267858833,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.632412938,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-05",
+            "input_tokens": 21,
+            "log_loss": 1.585936002,
+            "p_yes": 0.204756051,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.07130074,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-00",
+            "input_tokens": 21,
+            "log_loss": 0.310639569,
+            "p_yes": 0.267021984,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.076388822,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-01",
+            "input_tokens": 21,
+            "log_loss": 0.323496179,
+            "p_yes": 0.276385278,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.078215826,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-02",
+            "input_tokens": 21,
+            "log_loss": 0.328047121,
+            "p_yes": 0.279670924,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.074318687,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-03",
+            "input_tokens": 21,
+            "log_loss": 0.318298734,
+            "p_yes": 0.272614539,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.085476587,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-04",
+            "input_tokens": 21,
+            "log_loss": 0.345825149,
+            "p_yes": 0.292363793,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.085201788,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-05",
+            "input_tokens": 21,
+            "log_loss": 0.345160706,
+            "p_yes": 0.291893452,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.705898517,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-00",
+            "input_tokens": 23,
+            "log_loss": 1.833692519,
+            "p_yes": 0.15982233,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.722063814,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-01",
+            "input_tokens": 23,
+            "log_loss": 1.895410654,
+            "p_yes": 0.150256619,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.704672203,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-02",
+            "input_tokens": 23,
+            "log_loss": 1.829134648,
+            "p_yes": 0.160552442,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.692548243,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-03",
+            "input_tokens": 23,
+            "log_loss": 1.784951704,
+            "p_yes": 0.167805165,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.654042078,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-04",
+            "input_tokens": 22,
+            "log_loss": 1.654062335,
+            "p_yes": 0.19127132,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.698468421,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-05",
+            "input_tokens": 23,
+            "log_loss": 1.806330505,
+            "p_yes": 0.164255768,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.024499157,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-00",
+            "input_tokens": 22,
+            "log_loss": 0.170221537,
+            "p_yes": 0.156522065,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.026912905,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-01",
+            "input_tokens": 23,
+            "log_loss": 0.17918831,
+            "p_yes": 0.164051533,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.022433813,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-02",
+            "input_tokens": 24,
+            "log_loss": 0.162259217,
+            "p_yes": 0.149779215,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.024702394,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-03",
+            "input_tokens": 23,
+            "log_loss": 0.170989946,
+            "p_yes": 0.157169953,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.024776678,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-04",
+            "input_tokens": 23,
+            "log_loss": 0.171270159,
+            "p_yes": 0.157406092,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.023289513,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-05",
+            "input_tokens": 24,
+            "log_loss": 0.165593086,
+            "p_yes": 0.15260902,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.520287499,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-00",
+            "input_tokens": 49,
+            "log_loss": 1.277653692,
+            "p_yes": 0.278690428,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.549226844,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-01",
+            "input_tokens": 48,
+            "log_loss": 1.351307227,
+            "p_yes": 0.258901596,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.526517423,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-02",
+            "input_tokens": 46,
+            "log_loss": 1.293223791,
+            "p_yes": 0.274384797,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.52497224,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-03",
+            "input_tokens": 49,
+            "log_loss": 1.289347997,
+            "p_yes": 0.275450319,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.524952375,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-04",
+            "input_tokens": 48,
+            "log_loss": 1.289298228,
+            "p_yes": 0.275464028,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.50961134,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-05",
+            "input_tokens": 46,
+            "log_loss": 1.251311383,
+            "p_yes": 0.286129326,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.081234222,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-00",
+            "input_tokens": 46,
+            "log_loss": 0.335495365,
+            "p_yes": 0.285016179,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.060667146,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-01",
+            "input_tokens": 50,
+            "log_loss": 0.282770176,
+            "p_yes": 0.246307015,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.08075447,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-02",
+            "input_tokens": 46,
+            "log_loss": 0.334317194,
+            "p_yes": 0.28417331,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.071517805,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-03",
+            "input_tokens": 48,
+            "log_loss": 0.311193827,
+            "p_yes": 0.26742813,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.079283588,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-04",
+            "input_tokens": 46,
+            "log_loss": 0.330691757,
+            "p_yes": 0.281573415,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.077792274,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-05",
+            "input_tokens": 47,
+            "log_loss": 0.326995017,
+            "p_yes": 0.278912663,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.697136227,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-00",
+            "input_tokens": 17,
+            "log_loss": 1.801487681,
+            "p_yes": 0.165053159,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.673145233,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-01",
+            "input_tokens": 16,
+            "log_loss": 1.717325421,
+            "p_yes": 0.179545715,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.689852932,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-02",
+            "input_tokens": 17,
+            "log_loss": 1.775338181,
+            "p_yes": 0.169426143,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.657197983,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-03",
+            "input_tokens": 17,
+            "log_loss": 1.664303283,
+            "p_yes": 0.189322516,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.653427356,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-04",
+            "input_tokens": 17,
+            "log_loss": 1.652076851,
+            "p_yes": 0.191651464,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.680366351,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-05",
+            "input_tokens": 17,
+            "log_loss": 1.742073865,
+            "p_yes": 0.175156772,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.030080879,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-00",
+            "input_tokens": 17,
+            "log_loss": 0.190480833,
+            "p_yes": 0.1734384,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.03432538,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-01",
+            "input_tokens": 17,
+            "log_loss": 0.204899858,
+            "p_yes": 0.185271099,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.04415259,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.235880799,
+            "p_yes": 0.210125178,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.025881367,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-03",
+            "input_tokens": 17,
+            "log_loss": 0.175397825,
+            "p_yes": 0.16087687,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.03353689,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-04",
+            "input_tokens": 17,
+            "log_loss": 0.202276296,
+            "p_yes": 0.183130801,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.038439215,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.218229659,
+            "p_yes": 0.196059212,
+            "prediction": "no",
+            "truth": "no"
+          }
+        ]
+      },
+      "seed": 29,
+      "wall_seconds": 2.7174715402070433
+    },
+    {
+      "arm": "bursty",
+      "io_delta": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3305,
+        "read_bytes": 0,
+        "syscr": 10,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "process_cpu_seconds": 10.704985507000004,
+      "ru_maxrss_kib_process_peak": 1242076,
+      "scores": {
+        "accuracy": 0.5,
+        "families": {
+          "comparison": {
+            "accuracy": 0.5,
+            "mean_brier": 0.32207498841666665
+          },
+          "divisibility": {
+            "accuracy": 0.5,
+            "mean_brier": 0.36034577958333336
+          },
+          "even": {
+            "accuracy": 0.5,
+            "mean_brier": 0.31543122933333334
+          },
+          "prime": {
+            "accuracy": 0.5,
+            "mean_brier": 0.35473292825
+          },
+          "set_membership": {
+            "accuracy": 0.5,
+            "mean_brier": 0.30045705633333336
+          }
+        },
+        "mean_brier": 0.33060839638333334,
+        "mean_log_loss": 0.8928055590333333,
+        "rows": [
+          {
+            "brier": 0.590140711,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-00",
+            "input_tokens": 16,
+            "log_loss": 1.461906941,
+            "p_yes": 0.231793836,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.554276229,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-01",
+            "input_tokens": 17,
+            "log_loss": 1.364522299,
+            "p_yes": 0.255502701,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.540592732,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-02",
+            "input_tokens": 18,
+            "log_loss": 1.32896973,
+            "p_yes": 0.264749885,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.552838597,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-03",
+            "input_tokens": 18,
+            "log_loss": 1.360748133,
+            "p_yes": 0.256468832,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.562401433,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-04",
+            "input_tokens": 18,
+            "log_loss": 1.386031539,
+            "p_yes": 0.250065714,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.566526627,
+            "correct": false,
+            "family": "even",
+            "id": "even-1-05",
+            "input_tokens": 18,
+            "log_loss": 1.397070743,
+            "p_yes": 0.247320369,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.074806551,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-00",
+            "input_tokens": 18,
+            "log_loss": 0.31952762,
+            "p_yes": 0.273507863,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.066261222,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-01",
+            "input_tokens": 18,
+            "log_loss": 0.297614641,
+            "p_yes": 0.257412553,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.080519558,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.333739531,
+            "p_yes": 0.283759683,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.053844444,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-03",
+            "input_tokens": 16,
+            "log_loss": 0.264022912,
+            "p_yes": 0.232044056,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.072120356,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-04",
+            "input_tokens": 18,
+            "log_loss": 0.312729603,
+            "p_yes": 0.268552333,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.070846292,
+            "correct": true,
+            "family": "even",
+            "id": "even-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.309477431,
+            "p_yes": 0.266169667,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.566780738,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-00",
+            "input_tokens": 20,
+            "log_loss": 1.397753432,
+            "p_yes": 0.247151583,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.591774824,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-01",
+            "input_tokens": 21,
+            "log_loss": 1.466502833,
+            "p_yes": 0.230730981,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.515617506,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-02",
+            "input_tokens": 20,
+            "log_loss": 1.266079131,
+            "p_yes": 0.281934887,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.551405532,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-03",
+            "input_tokens": 21,
+            "log_loss": 1.356995219,
+            "p_yes": 0.257433146,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.536106536,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-04",
+            "input_tokens": 21,
+            "log_loss": 1.31748857,
+            "p_yes": 0.267807037,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.632413412,
+            "correct": false,
+            "family": "comparison",
+            "id": "comparison-1-05",
+            "input_tokens": 21,
+            "log_loss": 1.585937458,
+            "p_yes": 0.204755753,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.071298162,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-00",
+            "input_tokens": 21,
+            "log_loss": 0.310632982,
+            "p_yes": 0.267017156,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.076371426,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-01",
+            "input_tokens": 21,
+            "log_loss": 0.323452689,
+            "p_yes": 0.276353806,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.078201757,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-02",
+            "input_tokens": 21,
+            "log_loss": 0.328012203,
+            "p_yes": 0.279645771,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.074296833,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-03",
+            "input_tokens": 21,
+            "log_loss": 0.318243628,
+            "p_yes": 0.272574455,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.085460678,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-04",
+            "input_tokens": 21,
+            "log_loss": 0.345786698,
+            "p_yes": 0.292336583,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.085172457,
+            "correct": true,
+            "family": "comparison",
+            "id": "comparison-0-05",
+            "input_tokens": 21,
+            "log_loss": 0.345089749,
+            "p_yes": 0.291843206,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.705810958,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-00",
+            "input_tokens": 23,
+            "log_loss": 1.833366527,
+            "p_yes": 0.159874439,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.722030487,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-01",
+            "input_tokens": 23,
+            "log_loss": 1.895280153,
+            "p_yes": 0.150276229,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.704642432,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-02",
+            "input_tokens": 23,
+            "log_loss": 1.829024208,
+            "p_yes": 0.160570174,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.692530064,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-03",
+            "input_tokens": 23,
+            "log_loss": 1.784886616,
+            "p_yes": 0.167816088,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.654049983,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-04",
+            "input_tokens": 22,
+            "log_loss": 1.654087889,
+            "p_yes": 0.191266432,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.698396417,
+            "correct": false,
+            "family": "divisibility",
+            "id": "divisibility-1-05",
+            "input_tokens": 23,
+            "log_loss": 1.80606827,
+            "p_yes": 0.164298847,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.024503617,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-00",
+            "input_tokens": 22,
+            "log_loss": 0.170238426,
+            "p_yes": 0.156536311,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.026921824,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-01",
+            "input_tokens": 23,
+            "log_loss": 0.179220824,
+            "p_yes": 0.164078712,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.02245135,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-02",
+            "input_tokens": 24,
+            "log_loss": 0.162328062,
+            "p_yes": 0.149837747,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.024713637,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-03",
+            "input_tokens": 23,
+            "log_loss": 0.171032379,
+            "p_yes": 0.157205716,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.024790809,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-04",
+            "input_tokens": 23,
+            "log_loss": 0.171323427,
+            "p_yes": 0.157450974,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.023307777,
+            "correct": true,
+            "family": "divisibility",
+            "id": "divisibility-0-05",
+            "input_tokens": 24,
+            "log_loss": 0.165663691,
+            "p_yes": 0.152668849,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.519945887,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-00",
+            "input_tokens": 49,
+            "log_loss": 1.276804224,
+            "p_yes": 0.278927267,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.548837308,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-01",
+            "input_tokens": 48,
+            "log_loss": 1.350292467,
+            "p_yes": 0.259164453,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.526177663,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-02",
+            "input_tokens": 46,
+            "log_loss": 1.292370766,
+            "p_yes": 0.274618953,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.524593001,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-03",
+            "input_tokens": 49,
+            "log_loss": 1.288398172,
+            "p_yes": 0.275712073,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.524577503,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-04",
+            "input_tokens": 48,
+            "log_loss": 1.288359368,
+            "p_yes": 0.275722772,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.509283715,
+            "correct": false,
+            "family": "set_membership",
+            "id": "set_membership-1-05",
+            "input_tokens": 46,
+            "log_loss": 1.250509593,
+            "p_yes": 0.286358833,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.081374453,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-00",
+            "input_tokens": 46,
+            "log_loss": 0.335839346,
+            "p_yes": 0.285262078,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.060801148,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-01",
+            "input_tokens": 50,
+            "log_loss": 0.283130961,
+            "p_yes": 0.246578887,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.080884657,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-02",
+            "input_tokens": 46,
+            "log_loss": 0.334637115,
+            "p_yes": 0.284402281,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.071653917,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-03",
+            "input_tokens": 48,
+            "log_loss": 0.311541106,
+            "p_yes": 0.267682493,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.079418816,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-04",
+            "input_tokens": 46,
+            "log_loss": 0.331025915,
+            "p_yes": 0.281813443,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.077936608,
+            "correct": true,
+            "family": "set_membership",
+            "id": "set_membership-0-05",
+            "input_tokens": 47,
+            "log_loss": 0.32735374,
+            "p_yes": 0.279171288,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.696999699,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-00",
+            "input_tokens": 17,
+            "log_loss": 1.800992432,
+            "p_yes": 0.165134922,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.672956823,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-01",
+            "input_tokens": 16,
+            "log_loss": 1.716686076,
+            "p_yes": 0.179660544,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.68973234,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-02",
+            "input_tokens": 17,
+            "log_loss": 1.774909776,
+            "p_yes": 0.169498742,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.657030612,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-03",
+            "input_tokens": 17,
+            "log_loss": 1.663758144,
+            "p_yes": 0.189425752,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.653240065,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-04",
+            "input_tokens": 17,
+            "log_loss": 1.651472517,
+            "p_yes": 0.19176732,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.68017241,
+            "correct": false,
+            "family": "prime",
+            "id": "prime-1-05",
+            "input_tokens": 17,
+            "log_loss": 1.741402862,
+            "p_yes": 0.175274342,
+            "prediction": "no",
+            "truth": "yes"
+          },
+          {
+            "brier": 0.030120216,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-00",
+            "input_tokens": 17,
+            "log_loss": 0.190617999,
+            "p_yes": 0.173551768,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.034355054,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-01",
+            "input_tokens": 17,
+            "log_loss": 0.204998134,
+            "p_yes": 0.185351163,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.04420024,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-02",
+            "input_tokens": 17,
+            "log_loss": 0.236024317,
+            "p_yes": 0.210238531,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.025934729,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-03",
+            "input_tokens": 17,
+            "log_loss": 0.175595385,
+            "p_yes": 0.161042631,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.0335796,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-04",
+            "input_tokens": 17,
+            "log_loss": 0.202419011,
+            "p_yes": 0.183247373,
+            "prediction": "no",
+            "truth": "no"
+          },
+          {
+            "brier": 0.038473351,
+            "correct": true,
+            "family": "prime",
+            "id": "prime-0-05",
+            "input_tokens": 17,
+            "log_loss": 0.218337929,
+            "p_yes": 0.19614625,
+            "prediction": "no",
+            "truth": "no"
+          }
+        ]
+      },
+      "seed": 29,
+      "wall_seconds": 2.898709180066362
+    }
+  ],
+  "schema": "HPCA-POSTTRAIN-OPERATOR-B2-V1",
+  "seeds": [
+    11,
+    17,
+    23,
+    29
+  ],
+  "source_parent_v2_sha": "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c",
+  "started_utc": "2026-11-11T04:15:21.001012+00:00",
+  "task_count": 60,
+  "torch": "2.9.1+cpu"
+}

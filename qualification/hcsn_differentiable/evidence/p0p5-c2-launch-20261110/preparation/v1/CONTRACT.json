@@ -1,0 +1,42 @@
+{
+  "address_space_bytes": 8589934592,
+  "calendar_scope": "may extend beyond original campaign15000s; active process wall separated from calendar waiting",
+  "confirmation_E_access": false,
+  "cumulative_active_wall_seconds": 43200,
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "execution_authorized": false,
+  "finalization_reserve_seconds": 120,
+  "fit_names": [
+    "hcsn-s101-lr0.001",
+    "hcsn-s101-lr0.003",
+    "hcsn-s211-lr0.001",
+    "hcsn-s211-lr0.003",
+    "hcsn-s307-lr0.001",
+    "hcsn-s307-lr0.003"
+  ],
+  "maximum_epochs": 200,
+  "new_seeds_or_learning_rates_or_diagnostic": false,
+  "optimization_policy_sha256": "a1d5d5b8c11194506e9dea49e6b48eaa9c1edc72c6bc975d1e98bdc241b34875",
+  "parent_campaign": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2",
+  "parent_campaign_plan": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-plan.json",
+  "parent_campaign_plan_sha256": "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114",
+  "parent_campaign_result_sha256": "362bc0345635bb5c9438670c13efa5908140527463aa4f373479235686b5683b",
+  "parent_partial_work_refund_seconds": 0,
+  "peak_rss_bytes": 6442450944,
+  "predeclared_original_quality_cuts_seconds": [
+    300,
+    900,
+    1800
+  ],
+  "python": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+  "runtime_identity_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/fresh42-terminal-archives-v1/RUNTIME-IDENTITY.json",
+  "runtime_identity_sha256": "dc6af342718078939396ec3eed1f438b0e769c892569b49a652b9a885948d0b8",
+  "same_budget_view": "original v8 cutoffs only; C2 is a separate longer-active-resource view",
+  "schema": "hcsn-c2-bounded-preparation-contract-v1",
+  "source": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8",
+  "source_capsule_sha256": "288283cae2b2cf4e7b68432e040e643a5e1b00a7de961fc848dd5cf20eb46102",
+  "supplement_policy_sha256": "8be888e29389321a1e41921244931b7950aa2db63a0d870d55cc5e3fc412a137",
+  "threads": 1,
+  "whole_training_numerical_admission": "HOLD",
+  "workers": 6
+}

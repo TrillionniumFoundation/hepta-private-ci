@@ -1,0 +1,32 @@
+{
+  "address_space_cap_bytes": 268435456,
+  "blas_threads": 1,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-W",
+    "error",
+    "-m",
+    "unittest",
+    "ndu_training.fashion_controls.test_controls",
+    "-v"
+  ],
+  "cpu_cap_seconds": 60,
+  "cpu_seconds": 0.274008,
+  "executor": "dot current execution environment",
+  "exit_code": 0,
+  "peak_rss_bytes": 44236800,
+  "scope": "handmade tensors and randomized initialization only; no real training or data access",
+  "shared_benchmark_lock": true,
+  "sources_sha256": {
+    "ndu_training/fashion_controls/BINDING.json": "7ac6e4f8118654d48d44b175b109c7f637cf1bedf3b6a857bb666d0a55343661",
+    "ndu_training/fashion_controls/PROSPECTIVE.md": "f8b76e78709f1bad5235deca408702246902b25b98c8b127420e6443344bdb38",
+    "ndu_training/fashion_controls/README.md": "619576441c81711ebb65c1174fbf7f490f7d3d4fcf72b149db9172acdee7691b",
+    "ndu_training/fashion_controls/__init__.py": "0714ba44e0a5bc5429823abad13e68a97891dfc3d371233dbd013ddfb6ae3127",
+    "ndu_training/fashion_controls/bound/__init__.py": "1912353d34159ae6c71d8bb9990006ffa9e360ced518ec034dd3d36ff9dec9ac",
+    "ndu_training/fashion_controls/bound/autodiff.py": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+    "ndu_training/fashion_controls/bound/model.py": "a81dc4f3d10533333c18bc3239febcf08095a53f0b0f1d596ffde3bae7702c53",
+    "ndu_training/fashion_controls/fairness.py": "6e80c0883eebb89a4b6d348e88428d002e0ab56c17e2240088930f3eefd7f0db",
+    "ndu_training/fashion_controls/objectives.py": "a61c81726f5d910c14aca6dde16e9e9ee413d1d16c348ccb91029b686e2bd866",
+    "ndu_training/fashion_controls/test_controls.py": "ed1e8a74bcdeb5135332ef864abb4ed572bdcca931a6f2878c4888cc7f8a9159"
+  }
+}

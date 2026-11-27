@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.rust-consolidation-source-checkpoint.v7",
+  "created_utc": "2026-11-19T16:59:23.605011+00:00",
+  "source_commit": "f55c1b3b4b62ce388acc7836436467680d1cde26",
+  "source_tree": "d52da95a0bf6ddb0908144ac24ce4b7d68f25257",
+  "expected_integration_base": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+  "pr": 6293,
+  "branch": "integration/hepta-single-main-20261113-ab5b",
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "target": "Only ordinary Rust main remains; all HIA branches and historical ancestry remain protected.",
+  "counts": {
+    "live_ref_count": 7647,
+    "protected_live_names": 477,
+    "historical_and_current_pins": 497,
+    "ordinary_live_names": 7169,
+    "ordinary_covered": 2776,
+    "ordinary_pending": 4393,
+    "main_exact_retirement_eligible": 0
+  },
+  "ordinary_original_parent_history_preserved": true,
+  "native_dependency_tests": "29 utility and301 protocol pass; Cargo deny and canonical Bazel lock update/check pass for reviewed dependency graph; Windows/wasm/Android cross-checks do not substitute native execution.",
+  "full_local_caller_state": "in_progress",
+  "main_admission": "BLOCKED_PENDING_COMPLETE_NATIVE_CI_AND_WINDOWS_ISOLATION_QUALIFICATION",
+  "main_updates": 0,
+  "branch_deletions": 0,
+  "hia_ref_writes": 0,
+  "force_pushes": 0,
+  "next_steps": [
+    "Read current remote head and require ordinary-only ancestry, never overwrite concurrent source updates.",
+    "Run original native Windows probes on exact source; use new relative/absolute directory enumeration observations to diagnose cmd failure.",
+    "Keep raw unqualified token factories refused; a future qualified API migration must retain original membership and read/launch/IPC/delete assertions.",
+    "Retain original required CI. Do not waive observed Windows, dependency, timeout or deadline failures.",
+    "Continue beyond2776covered ordinary heads using genuine reviewed merges; ca77c88 remains unqualified pending semantic reconciliation.",
+    "Only retire an ordinary ref after exact current head inclusion in main and required gates. No eligible ref exists at this checkpoint.",
+    "Batch audit metadata with substantive reviewed changes; avoid inventory-only updates that cancel active required CI."
+  ],
+  "evidence_files": {
+    "REPORT.md": {
+      "bytes": 6239,
+      "sha256": "63f2fac7493856078e4aae5802ebed067dd9d823c4959147d7dca0fcc345ec15"
+    },
+    "covered-ordinary.json.gz": {
+      "bytes": 101516,
+      "sha256": "2ae52115e27ba294740622d66ebc763b362f0525b679761b0423f757e2c761fc"
+    },
+    "live-refs.json.gz": {
+      "bytes": 285371,
+      "sha256": "00a54cc197f5919d9fe3b71cda3509770f9c48fc84f7c12afaf8155f303acabe"
+    },
+    "new-protected-ancestry-witnesses.json": {
+      "bytes": 68272,
+      "sha256": "7a9ee1c8ddabc7cbcd4ded76979fe278cfc8286c5910362efce6ef6d1405c94b"
+    },
+    "nonworkflow-conflict-resolution.json": {
+      "bytes": 599,
+      "sha256": "6e19a0f62a37a98a35a1438d17ddb1a6dc31931429ac47b3549cbb9deb8680c1"
+    },
+    "pending-ordinary.json.gz": {
+      "bytes": 163796,
+      "sha256": "ffe466f3fe930e3640571b794538f157ac4521f093e248201d56aa4ede7e0b3f"
+    },
+    "protected-history-pins.json": {
+      "bytes": 22865,
+      "sha256": "15a3f9889328f3426e009945ce9326c3cabeeaa71cb0125639b874e2f763c9b3"
+    },
+    "protected-refs.json": {
+      "bytes": 167665,
+      "sha256": "c5eac3cb70a916e15afed46d5f351d1b2cd42f415d8e23d1f9b915428acb9572"
+    },
+    "retained-history-whitespace-result.json": {
+      "bytes": 2003,
+      "sha256": "ecaf2f7c45cf2ec3682247ebacb8abf45b2a873257c969061f6b58fa04df393c"
+    },
+    "small-original-merge-reviews.json": {
+      "bytes": 21460,
+      "sha256": "bebeface9755a86ea57cb5f8b5811a41194e950c3be40d122343ccceb00a8cd9"
+    },
+    "source-protection-and-coverage.json": {
+      "bytes": 5823,
+      "sha256": "5d5c0b87f43ff13bf49cc6492b177afc73028b5fa2e6d474a9ae302624ff4975"
+    },
+    "validation-summary.json": {
+      "bytes": 1644,
+      "sha256": "93371c1b5548b2b54d1950ff1ced8d7cc56afa09fe99d2b2bfa21e4d54975222"
+    },
+    "windows-10fb-native-summary.json": {
+      "bytes": 12654,
+      "sha256": "5a1d70da6c6571621ebad4be393f06c833183a5923af9858fc591261c64c2dee"
+    },
+    "windows-production-integration-map.json": {
+      "bytes": 20100,
+      "sha256": "bb66a8f694b5f6b95d48652df50945e93f076018e6cf3e3b6a8932a0a9b3f72e"
+    },
+    "windows-source-resolution.json": {
+      "bytes": 12157,
+      "sha256": "4152550f5ee220e7ac6ddb3745a28db11f4fdc6711bda90c5c2cb63937600345"
+    }
+  },
+  "updated_utc": "2026-11-19T17:07:46.427272+00:00",
+  "protection_audit_commit": "275cbf2ad6f3f05a1d0e42b3f521f28b53a0dc08",
+  "protection_audit_tree": "ea3ddd3b9274ffd02744b79f8981eb3ac5894a40",
+  "classification_correction": "Expanded397to477protected names by preserving80descendants of historical HIA pins before publication; no newly protected tip was ever included or changed."
+}

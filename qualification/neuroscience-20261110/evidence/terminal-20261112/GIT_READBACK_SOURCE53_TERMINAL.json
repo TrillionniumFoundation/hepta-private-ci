@@ -1,0 +1,2423 @@
+{
+  "schema": "hepta.source53.complete-stage.root-verification.v1",
+  "observed_at_utc": "2026-11-12 20:55:37 UTC",
+  "publication_parent": "9cbd306f544933641c18c4bfcfb2415679650a57",
+  "publication_parent_tree": "22c2294dc2f1d96974b611d4e734a510ab1a243b",
+  "staged_commit": "5c3852f53cf09ae32e2381d745539348e485614d",
+  "staged_tree": "52cbf40069e0bfa1e6d93ea9ee96efd3aec2b3c7",
+  "actual_commit": {
+    "sha": "5c3852f53cf09ae32e2381d745539348e485614d",
+    "node_id": "C_kwDOTrgxoNoAKDVjMzg1MmY1M2NmMDlhZTMyZTIzODFkNzQ1NTM5MzQ4ZTQ4NTYxNGQ",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5c3852f53cf09ae32e2381d745539348e485614d",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/5c3852f53cf09ae32e2381d745539348e485614d",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T20:54:57Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T20:54:57Z"
+    },
+    "tree": {
+      "sha": "52cbf40069e0bfa1e6d93ea9ee96efd3aec2b3c7",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/52cbf40069e0bfa1e6d93ea9ee96efd3aec2b3c7"
+    },
+    "message": "docs(research): add full source53 native shared and platform terminal results",
+    "parents": [
+      {
+        "sha": "909e79006d31b945c92c45f52008a8c12833280a",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/909e79006d31b945c92c45f52008a8c12833280a",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/909e79006d31b945c92c45f52008a8c12833280a"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "changed_paths": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-b-source-qa-migration/B_QA.diff",
+      "before": null,
+      "after": "97f21f964678d725f51a2d7a6193539d0a88d399",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-b-source-qa-migration/MANIFEST.json",
+      "before": null,
+      "after": "60e6f0a413f340be6d2c4ecbbb85fdb0f267c26e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-b-source-qa-migration/ORIGINAL_B_FAILURES.log",
+      "before": null,
+      "after": "cc2c9ddc50d4c1515677731472f1f4184d8cb4cd",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-b-source-qa-migration/STATIC_REVIEW.json",
+      "before": null,
+      "after": "041808b58684e17593f987903d061eb63971aa13",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-caller-manifest-merge/ALLOWLIST.diff",
+      "before": null,
+      "after": "2e91d8f9df1c0c4c4dfe53a4d397ec57f3db7645",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-caller-manifest-merge/CALLERS.diff",
+      "before": null,
+      "after": "cc3429fcecae6415c8adaf518bd35219e8b1500a",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-caller-manifest-merge/MANIFEST.json",
+      "before": null,
+      "after": "13158000cbc3422c32c08159b8c52b392fbd9171",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-caller-manifest-merge/MERGE_DELTAS.json",
+      "before": null,
+      "after": "6f72c2b423c762161b0a22cf38f519398f261861",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-caller-manifest-merge/SOURCE_INPUT_PINS.json",
+      "before": null,
+      "after": "15517f0c2e9f41732a62878630e707b579212d29",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-caller-manifest-merge/STATIC_CHECK.json",
+      "before": null,
+      "after": "8bed6da47fdba5e2063848d334bea870b2809a10",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-fixture-three-way/DIFF.patch",
+      "before": null,
+      "after": "50850e0999f56a35bc1d3fffbfb4dac9908e6cb8",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-fixture-three-way/MANIFEST.json",
+      "before": null,
+      "after": "40e2c3d9cf1a371e3dd01600c89f9033bece51af",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-fixture-three-way/REVIEW.json",
+      "before": null,
+      "after": "c6dde7a14c0e3f5371bca6ce26c36d13d2631342",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-origin-typed-fixture-fix/DIFF.patch",
+      "before": null,
+      "after": "c1ab857f8bb6ff33e6245c46113d194971f8d55e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-origin-typed-fixture-fix/MANIFEST.json",
+      "before": null,
+      "after": "f49b1e9e4e0857d395a4eb5e920beac4921c8831",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-origin-typed-fixture-fix/REVIEW.json",
+      "before": null,
+      "after": "07ace0062a5bb625250ec5ff76dae91a2cff2709",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-connection-budget-independent-review/AUDIT.json",
+      "before": null,
+      "after": "c1c75ae8fd94da5e31173758cad00013a14c8780",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-connection-budget-independent-review/INDEPENDENT_REVIEW.zh-CN.md",
+      "before": null,
+      "after": "4c8a16072addb9e7691925b48e2443c500de45fc",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-connection-budget-independent-review/MANIFEST.json",
+      "before": null,
+      "after": "41ae82079513a60dec362681164b8a4b5826ac9d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-connection-budget-independent-review/SOURCE_PINS.json",
+      "before": null,
+      "after": "60783f611afb3c1eb95114af29cc92647bd7caf1",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-read-budget-reduction-design/MANIFEST.json",
+      "before": null,
+      "after": "aa45f74f3d20a761eb8b26d6d949afa04deb0e43",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-read-budget-reduction-design/REDUCTION_DESIGN.json",
+      "before": null,
+      "after": "4ae6a5e93739182c918944aa59cd0b75feced5fa",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-recursive-material-budget/AUDIT.json",
+      "before": null,
+      "after": "6903278fa49cb8830635dd613eb724ccbfea1bb8",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-recursive-material-budget/MANIFEST.json",
+      "before": null,
+      "after": "1cc3205f92f79e6d0106e86d295b64aa7c11b349",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-recursive-material-budget/README.zh-CN.md",
+      "before": null,
+      "after": "aafd81d0cebfe1a6bc4ad1601ca8fefab10d2c6e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-recursive-material-budget/SOURCE_PINS.json",
+      "before": null,
+      "after": "9b061a91308dc8c638f261d650ad7bbb7fe5f4f6",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-caller-manifest-merge/CALLERS.diff",
+      "before": null,
+      "after": "35e52e0dfaaa52952a6f171c95ef502ab7b884e9",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-caller-manifest-merge/MANIFEST.json",
+      "before": null,
+      "after": "6bc3eab5708651eb4bb889a93c299de85abbfaf8",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-caller-manifest-merge/PROTECTED_DELTAS.json",
+      "before": null,
+      "after": "a8902a84ee3a458118d138759e6a57992c4a0eba",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/CALLERS_MANIFEST.json",
+      "before": null,
+      "after": "84aa55c65331708b01e1e975f80ac8214472165d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/CONFLICT_ASSIGNMENT.json",
+      "before": null,
+      "after": "596b73c607cb6044d00179eec52727e8a0d815d9",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/EXACT_CALLER_TUPLES.json",
+      "before": null,
+      "after": "8cb6fe196d4852b81ac1695eabe4720554b85c25",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/FINAL_QA_TUPLE_SCAN.json",
+      "before": null,
+      "after": "867dd4f98ca08a8adefc72290edfff8a258ddb70",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/FINAL_TREE_PROOF.json",
+      "before": null,
+      "after": "c5dac78d96aa14fb88eb40012358647c8c9465dd",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/FIXTURE_MANIFEST.json",
+      "before": null,
+      "after": "7a2004fc2729eeffabda6d3fd0928637faaede8b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/INPUT_INVENTORY.json",
+      "before": null,
+      "after": "c35701c4aa2c0ecc7b36bb06f4ed2cfdf08aa887",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/MERGE_REVIEW.md",
+      "before": null,
+      "after": "41e9d2a22c81563fe6aa359cfd6c7e28b01b54e7",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/OVERLAY_MANIFEST.json",
+      "before": null,
+      "after": "d0cb3d6ae0581792189d257fe63bb46af8214908",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/PRODUCTION_MERGE.json",
+      "before": null,
+      "after": "ded2662c3c3668ef17c49a6f6dcaa8a6af40539e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/QA_MERGE.json",
+      "before": null,
+      "after": "3e85cdf6537551cc9bb282354c8fde720f432a24",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/QA_TUPLE_PARSER.js.txt",
+      "before": null,
+      "after": "f0b011007e2ba70b2804e89fdcec42906902592e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-complete-three-way/UPSTREAM_LANE_SCAN.json",
+      "before": null,
+      "after": "2dfe12433a9f013b904c093c0911b0f8c901c37a",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-fixture-three-way/DIFF.patch",
+      "before": null,
+      "after": "77c9e988d62c853a7a549e16e52f27ed7d671e36",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-fixture-three-way/MANIFEST.json",
+      "before": null,
+      "after": "7a2004fc2729eeffabda6d3fd0928637faaede8b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-fixture-three-way/MERGE_REVIEW.json",
+      "before": null,
+      "after": "e31f3398e0e21a6376083ab2cb53b3e051212721",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/e403-b-source-qa-merge/E403_B_QA.diff",
+      "before": null,
+      "after": "9b367c3e956acbaa58e8d27e465dcff976b05967",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/e403-b-source-qa-merge/MANIFEST.json",
+      "before": null,
+      "after": "17032818271df495880f75dcc76dba3894890663",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/e403-b-source-qa-merge/STATIC_REVIEW.json",
+      "before": null,
+      "after": "31a410afe0c4496643eab58240072caa0e189a2d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/e72-evaluation-predecessor-diagnostic/MANIFEST.json",
+      "before": null,
+      "after": "82523c65025c09485b1a22acc7e0bae68239cd64",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/e72-evaluation-predecessor-diagnostic/SOURCE.diff",
+      "before": null,
+      "after": "8f48dcf19b666b0620c954e7403c21b0254de416",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/e72-recursive-material-budget/AUDIT.json",
+      "before": null,
+      "after": "e343758f960c807e6e7868fd9392bffdfbe1705e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/e72-recursive-material-budget/MANIFEST.json",
+      "before": null,
+      "after": "03434b8744e9bc1f08811cfebc0c24e5b8b0dfd4",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/e72-recursive-material-budget/README.zh-CN.md",
+      "before": null,
+      "after": "c94e8305dbf66f21f3a68bdd7698d272f52f2879",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate-v2/MANIFEST.json",
+      "before": null,
+      "after": "cc505d4e24b13cb84d23a271d634ead08c29aeae",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate-v2/PATCH.diff",
+      "before": null,
+      "after": "885db58cf4855faeab095d4e77bf5b158bc60e34",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate-v2/REVIEW.json",
+      "before": null,
+      "after": "7972853d93806564593c81949b0ee9596ab7af53",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate-v2/STATIC_CHECKS.json",
+      "before": null,
+      "after": "934be681e0a8e09b181f63fd69444e86d61a2c30",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate/MANIFEST.json",
+      "before": null,
+      "after": "bbbb7a469f23e673a8fc3d16b4e3a24e714900ec",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate/PATCH.diff",
+      "before": null,
+      "after": "ca0871352dd2398467eddc3f1511b28d5759b301",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate/REVIEW.json",
+      "before": null,
+      "after": "754dc9ece32a0948f40dead3eb5ca2d7c7b3bb0b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate/STATIC_CHECKS.json",
+      "before": null,
+      "after": "252d89a80a3019b5b60a5da59c94bfbba786fe08",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-independent-review/REVIEW.json",
+      "before": null,
+      "after": "dd98079df0fe55bb499f528ab16cc7e20e68bd65",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-batch-root-review/REVIEW.json",
+      "before": null,
+      "after": "ae8a6d5ff5807354a8adc90086eb5cac7d7baf54",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cost-merge-static/REVIEW.json",
+      "before": null,
+      "after": "9000da8b60a4abb54ffdd4a830e4e7ec186ecb24",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/FENCE_REPORT_ORIGINAL.json",
+      "before": null,
+      "after": "9cb174d6245c7ea90761e7ca7348b6f0fab2a1e6",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/JOB_SNAPSHOT_FINAL_SDK.json",
+      "before": null,
+      "after": "d61bd9a16585b525a83328074db6e8b0b2bb9c54",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/JOB_SNAPSHOT_PROGRESS_SDK.json",
+      "before": null,
+      "after": "5343517de8cb1912b1e57e3c8acdc2a30cb1fb26",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/JOB_SNAPSHOT_SDK.json",
+      "before": null,
+      "after": "b9b21486e400a8a786581d5ce4f9122f0e00617f",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460269270.log.part00",
+      "before": null,
+      "after": "10b13e38e55d03a0291c08ab5eea1afaf7f93275",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460269270.log.part01",
+      "before": null,
+      "after": "07808c3b792985b86ad403f7cc4125fd8eb7b306",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460269270.log.part02",
+      "before": null,
+      "after": "f33d9b80908e3ca918d5dbc82fcdd1fe5f72396e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460269270.log.part03",
+      "before": null,
+      "after": "826ff89904c920f51a0beef361db94e7a3536486",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460269270.log.part04",
+      "before": null,
+      "after": "dfd29a9af00f5739c08606d0ee12199e6ccb931f",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460269270.log.part05",
+      "before": null,
+      "after": "eab90581dd47394db9c04f3397df84d713bc8fde",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460269270.log.part06",
+      "before": null,
+      "after": "ebca99c755842fc7f810b0c53bbfc00e8ae46952",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460269270.log.part07",
+      "before": null,
+      "after": "a2ed82264f54d814ff342956c8c5e2bee8f3f4ff",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460488835.log.part00",
+      "before": null,
+      "after": "bfcc6e99bb30fb4f8a258b859702b7aa6e96cf85",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489183.log.part00",
+      "before": null,
+      "after": "b6c2ff1980719a1cf0d6ff43e9895c847cb7a7d7",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489183.log.part01",
+      "before": null,
+      "after": "5157436cc485c6f60afffbbbf56e7e3fdbdb5c8f",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489183.log.part02",
+      "before": null,
+      "after": "624d0fca6e32ae40f9554c35d046a681af4c5b59",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489183.log.part03",
+      "before": null,
+      "after": "bc07f5b628d94e410e481610ef98cf4359e6bd86",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489183.log.part04",
+      "before": null,
+      "after": "b901d6ee0bf6c817664d3bd5773ec36c0c5cb8cd",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489183.log.part05",
+      "before": null,
+      "after": "0ada57472c82561c77490c25d8b3c4f74099c636",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489212.log.part00",
+      "before": null,
+      "after": "a851ca6c29c9983c832cc05a3cff0c00e1e8faf1",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489212.log.part01",
+      "before": null,
+      "after": "30bf49cedf8a36668060c2e0a579adede0eb4ed6",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489212.log.part02",
+      "before": null,
+      "after": "c6a1b6456271a1e21199a1f410787c35a95b4642",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489235.log.part00",
+      "before": null,
+      "after": "5f480cf3c390fae84553d408f41c84384ad5e03c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489235.log.part01",
+      "before": null,
+      "after": "4d614db4bb7c16811da9790c945ca111220f530f",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489235.log.part02",
+      "before": null,
+      "after": "9e9a65a4c9070da5406a61b71ea68d5ebe50ed77",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489235.log.part03",
+      "before": null,
+      "after": "99cc18db0e4193202fd36dee49489f6d95ff942f",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489264.log.part00",
+      "before": null,
+      "after": "e63814f559547cea8d891c7356bf05a7c5c64d38",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489264.log.part01",
+      "before": null,
+      "after": "11f7b323726f635661680c64a91d48c946892a71",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489270.log.part00",
+      "before": null,
+      "after": "c3d62e55ddc2e2b7f61298ce78a16303b42d1f5b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489270.log.part01",
+      "before": null,
+      "after": "2790a352519f4ee224dbbe6583073b8904d2f075",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489270.log.part02",
+      "before": null,
+      "after": "67e5e953b9364c8b577bf80b06b45130d41ecd93",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489270.log.part03",
+      "before": null,
+      "after": "6e503aaa905311a0c946d8979b314cf37377f961",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489270.log.part04",
+      "before": null,
+      "after": "bf80760c868b621100533684968df6d86665a06d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489338.log.part00",
+      "before": null,
+      "after": "412c064099648be8b89965181c75fa78e65acb32",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489338.log.part01",
+      "before": null,
+      "after": "8dfdfc85786a60f650eac2b279246f2580f2539c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460489338.log.part02",
+      "before": null,
+      "after": "5693d2e5c8d6144e89732e87710e5aaeabb060f6",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460490666.log.part00",
+      "before": null,
+      "after": "d4a24b7bf7fb9e51984cb8fd1dafb2c2d617cd3b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/job-131460490666.log.part01",
+      "before": null,
+      "after": "f19b1d673b80b0c791aeb59bf615f272ff7ffe84",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/MANIFEST_FINAL.json",
+      "before": null,
+      "after": "2347eea6c9c9d676bcb8533461013d239e33f4c2",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/MANIFEST_INITIAL.json",
+      "before": null,
+      "after": "709f609b264240c0bdfc88be090e80a5a74fb640",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/MANIFEST_PROGRESS.json",
+      "before": null,
+      "after": "82be0a75104713043f560f3d4eb59cdd48a11d6b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/METHOD_OBSERVATIONS_FINAL.json",
+      "before": null,
+      "after": "91a8a2eaa9b64f8ff01e4866c84146c8c606f211",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/OBSERVATIONS_FINAL.json",
+      "before": null,
+      "after": "4b70a0957f1e34c136e5a4272845442b14843886",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/OBSERVATIONS_INITIAL.json",
+      "before": null,
+      "after": "9f4157b8041f5a5329e2c704c237da1365a4e1fc",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/OBSERVATIONS_PROGRESS.json",
+      "before": null,
+      "after": "5ac2eba6b5dbb75f76ee7154ce430c1ce56fc6c1",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/READBACK_VERIFICATION_FINAL.json",
+      "before": null,
+      "after": "0f5e05208f6dc1b7ce89afdddbfdd371d185f65e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/READBACK_VERIFICATION_PROGRESS.json",
+      "before": null,
+      "after": "e483fd0669f543280ca8ef9fe3706e5101955292",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/READBACK_VERIFICATION.json",
+      "before": null,
+      "after": "5b9d6ce537a4ff6e167a0405ed2d12744173bdf7",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/SOURCE_IDENTITY_RAW.json",
+      "before": null,
+      "after": "ff9e0f54edf4401891f8d5e8fdf9a36e44695764",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/SUMMARY_FINAL.md",
+      "before": null,
+      "after": "0119d2cb79f60facb801c90c848baaed10fdcec4",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/SUMMARY_PROGRESS.md",
+      "before": null,
+      "after": "37847e09c48f131d0b3832df2b6893d62ee4c848",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/ACTUAL_CHECKOUT.json",
+      "before": null,
+      "after": "ff9e0f54edf4401891f8d5e8fdf9a36e44695764",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/BLOCKING_JOBS.json",
+      "before": null,
+      "after": "4addeeaf64fd7bf19916c7d6a8e46fdf3ba6f958",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/JOB.log.part-001.txt",
+      "before": null,
+      "after": "0407b24d01c2219644a37b0579cb683e152e0225",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/JOB.log.part-002.txt",
+      "before": null,
+      "after": "a4af734aac9c4c1b2ede0d345b7ca8e9d9034fba",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/JOB.log.part-003.txt",
+      "before": null,
+      "after": "5f73e1770762c764a0fe4e22f4fc23bf6d272b35",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/JOB.log.part-004.txt",
+      "before": null,
+      "after": "61217372bf3e54d42c99b72954a00add3ef49a20",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/JOB.log.part-005.txt",
+      "before": null,
+      "after": "254df77719f672469c4dbd00b13feb5a492fd853",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/JOB.log.part-006.txt",
+      "before": null,
+      "after": "8cfb23a47f0bf82e740c69311b12eae5ce430194",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/MANIFEST.json",
+      "before": null,
+      "after": "f1ee38a029e327a4ebf59466e36a28f09dd67d26",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/RECEIPT.json",
+      "before": null,
+      "after": "1e053dbef86286205ab395993328f60c5a80ee69",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/JOB_STATUS.json",
+      "before": null,
+      "after": "08adc3068d20d64fc14b28eeaf5871b36d17457c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489376.part-001.log.txt",
+      "before": null,
+      "after": "3d55b4ded4b2c995624c0b5609d2887960a23546",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489376.part-002.log.txt",
+      "before": null,
+      "after": "f0769d3edcd7189d3bbfd2010e763c3b263bf541",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489376.part-003.log.txt",
+      "before": null,
+      "after": "23601bfcf2a5835f0b04f1e530150cf4f8014f5e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489376.part-004.log.txt",
+      "before": null,
+      "after": "78bc6bacba4e186e05bb49230ca6adfabdc5bb98",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489376.part-005.log.txt",
+      "before": null,
+      "after": "008c0a456ca8fb9e7410602f937bb6a025ba46f4",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489376.part-006.log.txt",
+      "before": null,
+      "after": "88bf1c262b5d13da82d6d0b18e4356c62fd2819f",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489453.part-001.log.txt",
+      "before": null,
+      "after": "da2c34257a3a3ecf051020ea40a6fcc61bd09895",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489453.part-002.log.txt",
+      "before": null,
+      "after": "bfb1f389dc5b290d2bb649bf7e7dd711d795e321",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489453.part-003.log.txt",
+      "before": null,
+      "after": "abfaf5dcf2f829cda9a02eb23274c3f4a1d8c9ed",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489453.part-004.log.txt",
+      "before": null,
+      "after": "88700e7e7f5a74e73ea9202a83b155a9cb0a9670",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489453.part-005.log.txt",
+      "before": null,
+      "after": "5cee4f0e2a81f8f6d5a425b90ca57392ce45af76",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/job-131460489453.part-006.log.txt",
+      "before": null,
+      "after": "30e4df0816478f533f1ae96e9986671af8b3949b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/MANIFEST.json",
+      "before": null,
+      "after": "294931536dbcc24fdc7b2cf0d59558c5ad481683",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/RESULTS.json",
+      "before": null,
+      "after": "6e95673bfc9a59708ed73cf1de5337db59badebf",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-initial-admission/BLOCKING_JOBS.json",
+      "before": null,
+      "after": "4f9bdd7bcd783d2155d1f2e7dff68294c20eaffa",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-initial-admission/MANIFEST.json",
+      "before": null,
+      "after": "462aa6243e2ca5a836699552b8198022f6bb1f4a",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-initial-admission/NATIVE_JOBS.json",
+      "before": null,
+      "after": "d5a68e965fb79190ac4a07de2ed01142ad200bf9",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-initial-admission/RUNS.json",
+      "before": null,
+      "after": "1017eadc1f67f412ed2c1a96583668f0693da767",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-initial-admission/SHARED_JOBS.json",
+      "before": null,
+      "after": "4bbac4ec5a5d17d3b52b3cbe141308cdada6710c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-initial-admission/WINDOWS_JOBS.json",
+      "before": null,
+      "after": "7760a6741f227d60760ec964723e842d0b74f207",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/FAILURE_INDEX.json",
+      "before": null,
+      "after": "b50243596e212d21bf49a5dbd41e1cfb6d4ab356",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/FAILURES_ORIGINAL_EXCERPT.log.txt",
+      "before": null,
+      "after": "5c908ff80c03b1186d75522dee07ecfa730ab116",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/HELPER_BUILD_FROM_JOBLOG.json",
+      "before": null,
+      "after": "4e8aa38346b6c34153d507bd5178a15663ff6a62",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part001.log.txt",
+      "before": null,
+      "after": "f2f889c63b4a8b56579f93ea3c5e72a8438ef1e6",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part002.log.txt",
+      "before": null,
+      "after": "329e374f75d8cb02025772188439cb88196fff57",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part003.log.txt",
+      "before": null,
+      "after": "88c29b4b933acd707ce9b66cb330edeb37ef7336",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part004.log.txt",
+      "before": null,
+      "after": "f7e475cff5b57a67b6164da8afae7f6ad0f8d490",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part005.log.txt",
+      "before": null,
+      "after": "5c4e8bb479c018e96d5fbc81a54fead5290ec9f3",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part006.log.txt",
+      "before": null,
+      "after": "1347a89374a3ff779e1f77709b06db0e4ba87157",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part007.log.txt",
+      "before": null,
+      "after": "4deab3024f86e149547e36ecf9dbad8265e48c07",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part008.log.txt",
+      "before": null,
+      "after": "42ceb26595bd3df395054114653b7bd77aa7c6a5",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part009.log.txt",
+      "before": null,
+      "after": "b1eca92db30dba6b6e3577c4cd425c7ff8e32c3c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part010.log.txt",
+      "before": null,
+      "after": "f5a117f236a585263b48e15b9dc41b8f35523e7d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part011.log.txt",
+      "before": null,
+      "after": "f48026f5457d54fb1285be800425cb63fe2d2416",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part012.log.txt",
+      "before": null,
+      "after": "13ed7a422e1fffdd96f0b14f0bfde8417f54e63c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part013.log.txt",
+      "before": null,
+      "after": "1d6d449beb5185583c9df2c02190dc6f4275db11",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part014.log.txt",
+      "before": null,
+      "after": "4184849c6eb908af63d6d34fd388fb951d96d4f8",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOBS.json",
+      "before": null,
+      "after": "50a4e361cc5556021b00c8ff0e9b76c8710689d4",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/MANIFEST.json",
+      "before": null,
+      "after": "ed17827683918954fae10888bff18b347c278681",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/METHOD_RESULTS.jsonl",
+      "before": null,
+      "after": "84b852a3e7e5ec2ebec0ef9ae70c6f5454468eeb",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/ORDINARY_EXECUTION_FROM_JOBLOG.json",
+      "before": null,
+      "after": "13881f1e0b8dbe725b7bacff3b4a18e8dcc24f2b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/ORDINARY_JUNIT_FROM_JOBLOG.json",
+      "before": null,
+      "after": "30ddde21a7ca181a8c5748f8c260cee8c4d6e1aa",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/SOURCE_BEFORE_TESTS_FROM_JOBLOG.json",
+      "before": null,
+      "after": "3979542f0f6d08fa09b1d4dbcb5339de1e748998",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/SOURCE_CHECKOUT_FROM_JOBLOG.json",
+      "before": null,
+      "after": "4c00365ed3e55cc0684b6ba9a9c79a60eb257bdf",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/SOURCE_EXECUTION_FROM_JOBLOG.json",
+      "before": null,
+      "after": "e84d33318fcbbed4086b5b94b73ca9f88c18d5bd",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/SOURCE_FINAL_FROM_JOBLOG.json",
+      "before": null,
+      "after": "c46a8337cacf4ea31617ef4b85b0b76d01f3ae2d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-root-review/E0616_FIX_READY.json",
+      "before": null,
+      "after": "b43e44d0c1b66243aa2e9767ea525b38f932d7d1",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-root-review/MANIFEST.json",
+      "before": null,
+      "after": "fc607c04cf99cda371f90a3aa4512a9024dfd376",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-root-review/PR6213_BODY_53B3.md",
+      "before": null,
+      "after": "c39de37f3ce334ca056759bbc66eeb5fad5c464f",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-root-review/PUBLISHED_SOURCE84_FOLLOWUP.json",
+      "before": null,
+      "after": "99d88a9a499f0280e89c3012fd0c9fe69e02b4d2",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-root-review/ROOT_SOURCE84_FORMAT_PIN_REVIEW.json",
+      "before": null,
+      "after": "151484faca40e2f3d010569ab69d8c14804067de",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-root-review/SOURCE53_VS84.json",
+      "before": null,
+      "after": "fcfbe70d849c209e9c898bdc43939ec9502e2d61",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-rustfmt-pass/ACTUAL_CHECKOUT.json",
+      "before": null,
+      "after": "ff9e0f54edf4401891f8d5e8fdf9a36e44695764",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-rustfmt-pass/BLOCKING_JOBS.json",
+      "before": null,
+      "after": "1c9ba31746b824ea523b22c883c8c3f66dc6e24e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-rustfmt-pass/JOB.log.txt",
+      "before": null,
+      "after": "3336c21df60d8cca4a9dc5a2f99b30cdc382360c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-rustfmt-pass/MANIFEST.json",
+      "before": null,
+      "after": "3f7dfab08e952912e4dc4a006137e253b4a2fc10",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/EXECUTION_FROM_JOBLOG.json",
+      "before": null,
+      "after": "1490cc5b052f5be061827792bb8d6e7ced9eebe9",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/EXECUTION_GATE_FROM_JOBLOG.json",
+      "before": null,
+      "after": "7f2694be695072ca98d04b9e4f48cd083177677b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/FAILURE_INDEX.json",
+      "before": null,
+      "after": "22591be9cd5cc55efe23cf140c9abee40ec1b5a5",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/HELPER_BUILD_FROM_JOBLOG.json",
+      "before": null,
+      "after": "6c45514370cf179d51b9eb0b80e9a4471decda96",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/JOB.part001.log.txt",
+      "before": null,
+      "after": "109f716096da3e5320bfca4d1629ff617d486b0e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/JOB.part002.log.txt",
+      "before": null,
+      "after": "c00a3a41429588075d27596d9797803dac1c679d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/JOBS.json",
+      "before": null,
+      "after": "8281914ed5438be5918ea3443595a81d2f141870",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/JUNIT_FROM_JOBLOG.json",
+      "before": null,
+      "after": "1be4966479bfbb60babd87528d96ee57ca7da229",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/MANIFEST.json",
+      "before": null,
+      "after": "97c2a3f1008900c0e5b08d98ee099ab4978228cb",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/METHOD_RESULTS.jsonl",
+      "before": null,
+      "after": "747b5804ffd1fcbe6e9a4a607bce0255e14d602f",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-legacy-admission-audit/AUDIT.md",
+      "before": null,
+      "after": "9466685dd29544570b9e1ff34a19c450113914d0",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-legacy-admission-audit/FIRST_FAILURE_ORIGINAL.log",
+      "before": null,
+      "after": "b2982b790841582a2d5396a8bfddb97a21be7705",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-legacy-admission-audit/MANIFEST.json",
+      "before": null,
+      "after": "f2ac578f901f838c89fc87c14e05ee8cccf33d27",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-legacy-admission-audit/SOURCE_PINS.json",
+      "before": null,
+      "after": "afeea8fd5e4e3454c8ad00406b868e2e15b34888",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/JOB.part001.log.txt",
+      "before": null,
+      "after": "698489155becf1b826af9116363571bb5b666cbe",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/JOB.part002.log.txt",
+      "before": null,
+      "after": "8285671257d7dd95f1709caca1a8f35f416790d4",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/JOBS.json",
+      "before": null,
+      "after": "9fdde005cb3077b655645022907002f04c4d3fe0",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/JUNIT_RECORD_FROM_JOBLOG.json",
+      "before": null,
+      "after": "1f36301a27859987d040d9690605030097eba5fc",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/MANIFEST.json",
+      "before": null,
+      "after": "f1c028899a49d7646fa928728bc87f147ff802c5",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/REGRESSION_RECORD_FROM_JOBLOG.json",
+      "before": null,
+      "after": "26d8f7263de8c9dafb927dc8bee574db124105fa",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/BLOCKING_JOB_SNAPSHOT_RAW.json",
+      "before": null,
+      "after": "d9f06a9121f1176c0b00a5289eb3d41a8f38861b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/FENCE_REPORT_ORIGINAL.json",
+      "before": null,
+      "after": "0e8d1c61d3a3135150ed70c6a7fdd64805736dc0",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/FINAL_RUN_RAW.json",
+      "before": null,
+      "after": "ded51db73209f0c2b009efc9eec046b2ef06fa11",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446137061.log.part00",
+      "before": null,
+      "after": "fe6405c87f179e6f4cf64ef8fbb9513cdce8fb64",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446137061.log.part01",
+      "before": null,
+      "after": "02d30c86c74161de8037a1a1ad5ddcb6135778e2",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446137061.log.part02",
+      "before": null,
+      "after": "2a755eef58e847052887830390be5cabc405ec54",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446137061.log.part03",
+      "before": null,
+      "after": "f5bf9d6b90cc20088163ec99b04eb7b0de6df059",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446137061.log.part04",
+      "before": null,
+      "after": "3901b3f12a02dfeda4e351655828bf61662eb6e9",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446137061.log.part05",
+      "before": null,
+      "after": "2c0da22b7101dca9c86541efb974eac2200d0cf3",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446137061.log.part06",
+      "before": null,
+      "after": "130d1016f7173717d379357596ba2b515b693ba5",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446137061.log.part07",
+      "before": null,
+      "after": "2be8c416eae135060d211ce0db7159429b7629fa",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446360485.log.part00",
+      "before": null,
+      "after": "cec25e46a93ee4af7205fef69d43b98004329590",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446360965.log.part00",
+      "before": null,
+      "after": "49ed3007569fecd9b9a07e6f0c98e81cdc00ebf5",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446360965.log.part01",
+      "before": null,
+      "after": "1c83b71b5d2ea96cdc8c0d114538bce69bad0956",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361182.log.part00",
+      "before": null,
+      "after": "dbb844a600e8a6f4b15a9f3818286507aff5ea7c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361182.log.part01",
+      "before": null,
+      "after": "5b9f949cea4be044126262fb942c061fbe8c07d9",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361182.log.part02",
+      "before": null,
+      "after": "c3587fe7d1f65247a8247ef11e7b8e60298201b5",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361279.log.part00",
+      "before": null,
+      "after": "0fb20cc74d560875ec8bca162b427833448917c4",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361279.log.part01",
+      "before": null,
+      "after": "4a23bda275a32521c7c872d11997b88d90e7644c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361296.log.part00",
+      "before": null,
+      "after": "c38da4be75bad33908cf5463006eaa9c3c57456a",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361296.log.part01",
+      "before": null,
+      "after": "2eea185826084af7d2be9626b2ad1abbbdd5b296",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361296.log.part02",
+      "before": null,
+      "after": "97bf7bba65e04c093b4145a723c3dd1823f5c6ea",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361296.log.part03",
+      "before": null,
+      "after": "b45c1efa0fb3da3e75523d6da5242246f229deba",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361362.log.part00",
+      "before": null,
+      "after": "e7efa8c654a9a8330fb9198f900170995b3b6386",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361362.log.part01",
+      "before": null,
+      "after": "32c9367ae8a161f585caead61585b49dc365ec88",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361362.log.part02",
+      "before": null,
+      "after": "c92432a6dcf308c8e62318d0e611460b8cb5994d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361362.log.part03",
+      "before": null,
+      "after": "d5235624a27ef3c2a48409793a24d15b4cdc7863",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361362.log.part04",
+      "before": null,
+      "after": "6ee3c08eb337aa91c0afd667eb020e697716d041",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361430.log.part00",
+      "before": null,
+      "after": "bbe9b961f96dde7652e42f42be841df62ae00140",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361430.log.part01",
+      "before": null,
+      "after": "42b14562dd93ef1a3381195d41961c4dedfa88bf",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361430.log.part02",
+      "before": null,
+      "after": "55af846c00ba24a03d08fb94cefb72f339859b2b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361489.log.part00",
+      "before": null,
+      "after": "d632fddcf215d3b6a830fa559a92b90bb277fb95",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/job-131446361489.log.part01",
+      "before": null,
+      "after": "7ccff39d0c8764a0544d463cd889a050c8219938",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/MAC_NEURON_ORIGINAL_BLOCK.log",
+      "before": null,
+      "after": "3473021e19a0ef733dbd019a5d68e7d05fe9f061",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/MAC_NEURON_PARTIAL.json",
+      "before": null,
+      "after": "1e456a6a9db193612bb38e7e55f2c583c1a8e895",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/MANIFEST.json",
+      "before": null,
+      "after": "4b912eafb0f2be618454954e37762533fe894c62",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/OBSERVATIONS.json",
+      "before": null,
+      "after": "40d05513945645dabd8a2b1c8723b8e220bb6e15",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/READBACK_VERIFICATION.json",
+      "before": null,
+      "after": "67986334173991c10968b3dec4b07caa71764d52",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/SOURCE_IDENTITY_RAW.json",
+      "before": null,
+      "after": "ae0c8317cb73b04fdb9e54ab2187795dfdd572e0",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/SUMMARY.zh-CN.md",
+      "before": null,
+      "after": "d75cfc8a38eead8a72eed7d14276d4f97e81eaeb",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/ACTUAL_CHECKOUT_COMMIT.json",
+      "before": null,
+      "after": "287c399471b58fb12e748d43ad44387481bdb43d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-clippy.part-001.log",
+      "before": null,
+      "after": "9ad23cb9f7d0c8d1f6ad4acccec9893cdf26067b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-clippy.part-002.log",
+      "before": null,
+      "after": "424116f3f35b8488420b83cb1c0db5a5576591f1",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-clippy.part-003.log",
+      "before": null,
+      "after": "ffd55e4d19d00e5d0c1205ee8d9f52666b73c009",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-clippy.part-004.log",
+      "before": null,
+      "after": "7cae7814640788ff93b760cb710798ce7233e95b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-clippy.part-005.log",
+      "before": null,
+      "after": "16518d3f837d0d46598c563b8ecc39bece2f70d6",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-test.part-001.log",
+      "before": null,
+      "after": "88bb6d2e1238ccecb9141c956375b98dd417ce6c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-test.part-002.log",
+      "before": null,
+      "after": "fa02be2d37ffcd56a9dead6f6ebe63d17db7de8d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-test.part-003.log",
+      "before": null,
+      "after": "ff6e3b8b5e7c932db19fc7e157d55f8e6fc801d7",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-test.part-004.log",
+      "before": null,
+      "after": "6e69f2dac3a78b74b53ae9399087855f0d2d8a28",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-test.part-005.log",
+      "before": null,
+      "after": "9d754979df9de72a39d26b115a03664b3485f005",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/MANIFEST.json",
+      "before": null,
+      "after": "7a7ce36f166ff3661ce6486c14e63cd2e49e44b1",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/musl-test.part-001.log",
+      "before": null,
+      "after": "ff2f62219d1996f3d51ae9d26c50481e46b48d2d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/musl-test.part-002.log",
+      "before": null,
+      "after": "b1be2a70fe848cb861648aafd85923e0fd1f381a",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/musl-test.part-003.log",
+      "before": null,
+      "after": "760bcc86d0328c348033aac47b2205bb912e2066",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/musl-test.part-004.log",
+      "before": null,
+      "after": "a51fc540e0484d244d238957bac332d187fad612",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/musl-test.part-005.log",
+      "before": null,
+      "after": "ff929a1373ff485632b5c31b2aedbab5e968e77f",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/RECEIPT.json",
+      "before": null,
+      "after": "4cf3fdadde75da1f20fb2d11aa52aca8fe40f95d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/SELECTED_ORIGINAL_JOBS.json",
+      "before": null,
+      "after": "5d777ca69cfacb45b799f73a3336c20afe08ea81",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-weak-sender-fix/INDEPENDENT_REVIEW.json",
+      "before": null,
+      "after": "d7445fb9ad98927c648b1441269b8f7d1a3a4e26",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-e0616-weak-sender-fix/MANIFEST.json",
+      "before": null,
+      "after": "d1083684c3cdd2bf900d48848cd64b28817b1385",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-format-pin-repair/ACTUAL_FORMAT_CHECKOUT.json",
+      "before": null,
+      "after": "e89d4eacfb5b8fd3752e0e9866b6d11b63924d81",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-format-pin-repair/MANIFEST.json",
+      "before": null,
+      "after": "220edbb533f866eb8a10a9b94400edd728820a67",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-format-pin-repair/ORIGINAL_FORMAT_HUNKS.json",
+      "before": null,
+      "after": "e03babe7cdc88d539e862657080c1dd56eadb021",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-format-pin-repair/README.md",
+      "before": null,
+      "after": "ab7e85b427f976b99ebaa50cb9724c8c1e0e0edf",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-format-pin-repair/RUNTIME_ACCESSOR_QA_SCAN.json",
+      "before": null,
+      "after": "787fc32fe7bd946a2307cf92cf728bfdedadb742",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/BLOCKING_JOBS_OBSERVED.json",
+      "before": null,
+      "after": "3230cbb4a5d4bfc84e34c992ab8175143dc06465",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/MANIFEST.json",
+      "before": null,
+      "after": "e6a52a93e41bc7cb4d7f75ba5b2ff235223d8bcc",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/NATIVE_JOBS.json",
+      "before": null,
+      "after": "9ab0bab0046960f0ae01eac4027439e4e49cb59e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/NATIVE_SOURCE_JOB.part001.log.txt",
+      "before": null,
+      "after": "831f23237106234a3249bfbfde85949b710a84ab",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/NATIVE_SOURCE_JOB.part002.log.txt",
+      "before": null,
+      "after": "96f694c589c3ab09797efef0a2a9a9111a40ce1e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/NATIVE_SOURCE_JOB.part003.log.txt",
+      "before": null,
+      "after": "2ba4b36a6f836fd7861341685e6838a42e586631",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/NATIVE_SOURCE_JOB.part004.log.txt",
+      "before": null,
+      "after": "cd584f392a04b4c9fe33d99d62d6fe485a945970",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/NATIVE_SOURCE_JOB.part005.log.txt",
+      "before": null,
+      "after": "e992b805a653656db288cc64ff7ca24bc9e24de9",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/NATIVE_SOURCE_JOB.part006.log.txt",
+      "before": null,
+      "after": "1f631f0ab9430e34336037f58510290dfc4c584d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/NATIVE_SOURCE_JOB.part007.log.txt",
+      "before": null,
+      "after": "9dbb5282de76f01f848db77fe5578a327dc8c991",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/RUSTFMT_JOB.log.txt",
+      "before": null,
+      "after": "8697e461e5c467e9878e72154a765f09f2cf0b5b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/SHARED_JOBS.json",
+      "before": null,
+      "after": "dedc3f2ba52e664010b31cf2db6905c2687044d3",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/SHARED_OWNER_JOB.log.txt",
+      "before": null,
+      "after": "88a430d182a227af75141d70db93babaeb2e4757",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/SHARED_RECORD_FROM_JOBLOG.json",
+      "before": null,
+      "after": "f2c1b3f9906167508a59fc5ab7efd555450d811f",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/SOURCE_RECORD_FROM_JOBLOG.json",
+      "before": null,
+      "after": "9dd55fe72660a7018164727686d2930c3a2a7aef",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-initial-failures/WINDOWS_JOBS_OBSERVED.json",
+      "before": null,
+      "after": "c7bf240a50b0c130baefdcffde26bd8e3267f712",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-integration/E403_C_QA_MANIFEST.json",
+      "before": null,
+      "after": "884fb4c1a1522b5127951ba0c9d40916b4f96039",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-integration/INTERFACE_MERGE_374.json",
+      "before": null,
+      "after": "0e599502f176f8f9b7dd5e36ce58d618e50b783c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-integration/OVERLAY_374.json",
+      "before": null,
+      "after": "2c42bc34807ffecdf227295deb5e0957b155cd0b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-integration/OVERLAY_E403.json",
+      "before": null,
+      "after": "b868e615c17300b3470e039f3e0321ff16e3ffb1",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-integration/PRODUCTION_MERGE_374.json",
+      "before": null,
+      "after": "fe4bc5b9e8334a15374154a001c5ba9b86da2d39",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-integration/QA_TUPLES_374.json",
+      "before": null,
+      "after": "2cead15f58fb93c951e0f82fa8e3f8399954e374",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-integration/QA_TUPLES_E403.json",
+      "before": null,
+      "after": "5f0ccc7146dee6f1940da18e6a180c3d46105267",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-integration/TREE_374_AGENT.json",
+      "before": null,
+      "after": "6361944fba9ababe138307c6e332610fa1b007d5",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/MANIFEST.json",
+      "before": null,
+      "after": "360e5d16b34613df66156381b4de47a1418ecfd6",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/PR6213_BODY_84EE.md",
+      "before": null,
+      "after": "e9e6c5cf6042f425b57a8438979e52ee26aa35ba",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/PREPARED_A4A1_OWNER_FINAL.json",
+      "before": null,
+      "after": "d8bd8166f6b3ba6ebd336f29a530cbe8e1ed9978",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/PUBLISHED_SOURCE_A4A1.json",
+      "before": null,
+      "after": "312524845a6d10e060d51c164833b5f7f59a5dfc",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_374_CALLER_REVIEW.json",
+      "before": null,
+      "after": "ee3ea37797ab04e14a92a533f6fb1a67aa818b19",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_374_COMPLETE_TREE_REVIEW.json",
+      "before": null,
+      "after": "fd2781cbe2328fc6bf5a7bd35cd0bf693f8189e5",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_374_CURRENT_SLOT_REVIEW.json",
+      "before": null,
+      "after": "e28d07a2ee3b67e2f9e1ba86f6796bc687d71373",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_374_FIXTURE_REVIEW.json",
+      "before": null,
+      "after": "19f58ac2f33910f03dda20052f2e64edd0f29368",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_374_INTERFACE_REVIEW.json",
+      "before": null,
+      "after": "9716d32338fe61120bad746979bdd4dbb85fe45e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_374_ORIGIN_FIX_REVIEW.json",
+      "before": null,
+      "after": "42a1f5b4171663337fc66ebfe3affa5ca261c69a",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_374_PRODUCTION_REVIEW.json",
+      "before": null,
+      "after": "0590ca9a5f2a1edafd52392a40e591b5989717ae",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_A4A1_TYPED_FIX_EQUIVALENCE.json",
+      "before": null,
+      "after": "f68d7a468a3f5f0fb4486b00afdd6b0084e9fe79",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_CALLER_MERGE_REVIEW.json",
+      "before": null,
+      "after": "8be10664133fdf01e865a97dd12ab0fdaa21ca20",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_COMPLETE_SOURCE_MERGE_REVIEW.json",
+      "before": null,
+      "after": "ed7abefb8c3da40ec307ec79d3d9a9b6dc9ac77c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_E403_FINAL_TREE_REVIEW.json",
+      "before": null,
+      "after": "5f3d4aa14ba2c5c49073f840bbc460b12a5c0ade",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_E403_QA_REVIEW.json",
+      "before": null,
+      "after": "e812396c326ca17f937b9308fc40bcd6e070c95c",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_EVAL_DIAGNOSTIC_REVIEW.json",
+      "before": null,
+      "after": "613b413aedc37a4445359b3e16d3f4e2311f7ad8",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_FINAL_DIAGNOSTIC_TREE_REVIEW.json",
+      "before": null,
+      "after": "06bce22a4458a21b16b58e75fb816ed606ca2bf3",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_FIXTURE_MERGE_REVIEW.json",
+      "before": null,
+      "after": "09baa42a86c2dcba1f2d857d3db90f4a88ef8e3d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_PRODUCTION_REVIEW.json",
+      "before": null,
+      "after": "8ef02610c72a65caecc48408b943178d2298831d",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/ROOT_QA_MERGE_REVIEW.json",
+      "before": null,
+      "after": "ddd090231507dfa0c4c4d8640610736baeb69f95",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/SOURCE84_INITIAL_RUNS.json",
+      "before": null,
+      "after": "a4549141e4cc7ba7d9b849b74c872fd57d222627",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/SOURCE84_VS_A4A1.json",
+      "before": null,
+      "after": "a85273ab33b879976e78dd5c3a2e6f9fc8392a70",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/UPSTREAM_ADVANCE_A4A1.json",
+      "before": null,
+      "after": "029a543be132a8df21290fc117e53222ffbf1b62",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-root-review/UPSTREAM_ADVANCE_E403.json",
+      "before": null,
+      "after": "8bc052785de361d88a9cc0605e43d8e597f57143",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/JOB.part001.log.txt",
+      "before": null,
+      "after": "5e73b0f7a5a25e7e0e60ad9a03382a3a83971c17",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/JOB.part002.log.txt",
+      "before": null,
+      "after": "7ab9eb47470891a9c2da0358b4c8ee4fad84676b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/JOBS.json",
+      "before": null,
+      "after": "e34dcf4684895e9a0ef5bb63d3ab64fea6e463f1",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/JUNIT_RECORD_FROM_JOBLOG.json",
+      "before": null,
+      "after": "69be8f41c4d415a4d52224ee2e9811ac877f6b3e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/MANIFEST.json",
+      "before": null,
+      "after": "dbafec9511886837e39b6f888de933bc58ccb185",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/REGRESSION_RECORD_FROM_JOBLOG.json",
+      "before": null,
+      "after": "cae771a730b91244e8e6273d109680b1c807eebc",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-shared-compile-failure/JOB_131426787479.log",
+      "before": null,
+      "after": "fb0c4195260e382900199cd0be2f61a4d65030c8",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-shared-compile-failure/JOBS.json",
+      "before": null,
+      "after": "36e7e1e25f332a43949c1df7b6c9465133d5994a",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-shared-compile-failure/MANIFEST.json",
+      "before": null,
+      "after": "4389bfb112114cc14b1e4788cd8ec7246ac07421",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-shared-compile-failure/RECEIPT.json",
+      "before": null,
+      "after": "652fef81f7ef04b2e9ed070d555d82f01d662f33",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-001.log",
+      "before": null,
+      "after": "8d487839d4fd4a5cb832c34d38e7d85cc620e04b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-002.log",
+      "before": null,
+      "after": "01643152d8d918ffa4949d09b592025b8cad57db",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-003.log",
+      "before": null,
+      "after": "a5cf87f002da7d85170bee29e7494654ad5a6ebb",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-004.log",
+      "before": null,
+      "after": "599d9d7079f7e0bf74bea95801a40171e818f8b9",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-005.log",
+      "before": null,
+      "after": "fb4a8aa9ee8e595208aa849d61a61609a563c702",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-006.log",
+      "before": null,
+      "after": "d032ce905c64138ed2403909ca2c5643b8eb3f5b",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-007.log",
+      "before": null,
+      "after": "ffcc98da1c962df8e393cab33139a4e0c8c97d81",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-008.log",
+      "before": null,
+      "after": "83b041eb0ceeb850d457ef24d1f2de15354818ee",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/JOBS.json",
+      "before": null,
+      "after": "83d4ae06187f142c54c44104fe14fc1b52b2928a",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/MANIFEST.json",
+      "before": null,
+      "after": "7ae40d9aa6844ca13c922579800cfc788ce96683",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/METHOD_ROSTER.json",
+      "before": null,
+      "after": "e47ccd0d99b9a70a4a1b76b753a89d5b367f6792",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/RECEIPT.json",
+      "before": null,
+      "after": "7f4209369a87c2f37c1238f6111c097e8ca9d46e",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
+      "before": "0261bf9e2d98b84e52c0dcd1d3052e23a04b3705",
+      "after": "f6e1cb20cf5fd2a358f001f01a3c8f821e3b4949",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/BLOCKER_CLOSURE_NEXT-9cbd.md",
+      "before": null,
+      "after": "0261bf9e2d98b84e52c0dcd1d3052e23a04b3705",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/PUBLICATION_MANIFEST-9cbd.json",
+      "before": null,
+      "after": "eba49cd07d7614bbc82bfa0c89e246ce2d10ce34",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/TERMINAL_EVIDENCE-9cbd.json",
+      "before": null,
+      "after": "018ed165c9671f809b0a0380b139dd158e295e82",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/TERMINAL_README-9cbd.md",
+      "before": null,
+      "after": "fc27bd58840c88ceb30a94dd15ff2f9f909321eb",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/IMPORT_MAPPING_SOURCE53.json",
+      "before": null,
+      "after": "52b885c3472bbb26adfd01b42dc55a7aa4b337e2",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/README.md",
+      "before": "fc27bd58840c88ceb30a94dd15ff2f9f909321eb",
+      "after": "2460e7b722412c497eba98f81caac06b93d818b9",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/ROOT_LOG_REASSEMBLY_SOURCE53.json",
+      "before": null,
+      "after": "a336e47d848debbc71701c7f06f442ed2c0c07d5",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/SOURCE53_JOB_OBSERVATION.json",
+      "before": null,
+      "after": "762a5f07b8f6d9c55d7e283d60a1b6a65c20c9ea",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/PUBLICATION_MANIFEST.json",
+      "before": "eba49cd07d7614bbc82bfa0c89e246ce2d10ce34",
+      "after": "874807219b599a0295ac0b87b9661e657f1caf18",
+      "mode": "100644"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
+      "before": "018ed165c9671f809b0a0380b139dd158e295e82",
+      "after": "1354eb0f7a616557b17420e4e540b90e29eeec76",
+      "mode": "100644"
+    }
+  ],
+  "tree_pairs": [
+    {
+      "before": "22c2294dc2f1d96974b611d4e734a510ab1a243b",
+      "after": "52cbf40069e0bfa1e6d93ea9ee96efd3aec2b3c7",
+      "prefix": ""
+    },
+    {
+      "before": "28c89d1f133deb26ac0a246935a7a41d060545d2",
+      "after": "9aa7f5e60cbf4e486d8d62ef993960d20fff1aae",
+      "prefix": "qualification/"
+    },
+    {
+      "before": "7a1b29e38488f0540e5f28a0bad1d9a868711d2e",
+      "after": "d783f573ba9766791a4f8227fe76ed606e1a90ca",
+      "prefix": "qualification/neuroscience-20261110/"
+    },
+    {
+      "before": "0f8d23ddde5a9347185e921788881bf739b4e351",
+      "after": "48274c2f52dc0ae8df1b99fe317f4195142682d3",
+      "prefix": "qualification/evaluated-current-read-20261112/"
+    },
+    {
+      "before": null,
+      "after": "045f75f72ddc27d8163947e7489df128ba12df8e",
+      "prefix": "qualification/evaluated-current-read-20261112/84ee-connection-budget-independent-review/"
+    },
+    {
+      "before": null,
+      "after": "9d7743aef3fa314414d37f4b49e5cccb8a4161e2",
+      "prefix": "qualification/evaluated-current-read-20261112/374-caller-manifest-merge/"
+    },
+    {
+      "before": null,
+      "after": "1956d0971a10cf770177c76e3455afd64f0d13a6",
+      "prefix": "qualification/evaluated-current-read-20261112/374-origin-typed-fixture-fix/"
+    },
+    {
+      "before": null,
+      "after": "224c81f0a5c6c3c0db3ab9f4b837685926f87677",
+      "prefix": "qualification/evaluated-current-read-20261112/84ee-recursive-material-budget/"
+    },
+    {
+      "before": null,
+      "after": "b8f2149836f7ae741ae573f536945676c075379c",
+      "prefix": "qualification/evaluated-current-read-20261112/84ee-read-budget-reduction-design/"
+    },
+    {
+      "before": "fd04f5dc89579b0021c387a35f3729c0143aef11",
+      "after": "40df633ab56a96fa7615a78bdfa82be6c7670d76",
+      "prefix": "qualification/neuroscience-20261110/evidence/"
+    },
+    {
+      "before": null,
+      "after": "567ad98b2ff77ba2fed160eb79064a55d1dad5f4",
+      "prefix": "qualification/evaluated-current-read-20261112/374-b-source-qa-migration/"
+    },
+    {
+      "before": null,
+      "after": "5364e30f85ce84898edb974b9bb6a4a9f61b190b",
+      "prefix": "qualification/evaluated-current-read-20261112/374-fixture-three-way/"
+    },
+    {
+      "before": null,
+      "after": "973c80d0c505336edeecba69f2d11f1dd96198c7",
+      "prefix": "qualification/evaluated-current-read-20261112/d397-complete-three-way/"
+    },
+    {
+      "before": null,
+      "after": "e4f6b5990bfa30a6e0534911b1e5c61319e54698",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate-v2/"
+    },
+    {
+      "before": null,
+      "after": "e0d04022d5cf87636b37b04d1c550853b71d4d16",
+      "prefix": "qualification/evaluated-current-read-20261112/d397-caller-manifest-merge/"
+    },
+    {
+      "before": null,
+      "after": "9047e88455c9344d28aaaeb52d8a439dd1a66d6a",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-cost-batch-candidate/"
+    },
+    {
+      "before": null,
+      "after": "c0465907751f6fc14dcd56a1c72dfbf4698680f9",
+      "prefix": "qualification/evaluated-current-read-20261112/e403-b-source-qa-merge/"
+    },
+    {
+      "before": null,
+      "after": "9cc17b1cfed2f5cffe11dda32444778d6875da4e",
+      "prefix": "qualification/evaluated-current-read-20261112/d397-fixture-three-way/"
+    },
+    {
+      "before": null,
+      "after": "248ca2643d1a32e774e6ab7b9d5ffb3fb5d604c6",
+      "prefix": "qualification/evaluated-current-read-20261112/e72-evaluation-predecessor-diagnostic/"
+    },
+    {
+      "before": null,
+      "after": "cb89da28e3882ad0497e4016525552b656d78f70",
+      "prefix": "qualification/evaluated-current-read-20261112/e72-recursive-material-budget/"
+    },
+    {
+      "before": null,
+      "after": "1b12a1094c02be3aa3b9874384cf7e3e8f88e93d",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-cost-batch-root-review/"
+    },
+    {
+      "before": null,
+      "after": "24930d384a37c3e01d7e51b1e04ae56315454819",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-initial-admission/"
+    },
+    {
+      "before": null,
+      "after": "7d324906b5739f0f684ae2e8ab3e71cfed2e8c39",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-cost-batch-independent-review/"
+    },
+    {
+      "before": null,
+      "after": "4f48b77195a58a774601f263c845c2d8ef013386",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-cost-merge-static/"
+    },
+    {
+      "before": null,
+      "after": "54fe7b251ad07edf6a653e4cbc08356e352e627d",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-gnu-musl-test-failures/"
+    },
+    {
+      "before": null,
+      "after": "75edf86d70ae9084f711f8872eb862348d88d66f",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-cross-platform-readback/"
+    },
+    {
+      "before": null,
+      "after": "26df4329bd8536dc09ea4861340e72499aa1fd33",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-native-failure/"
+    },
+    {
+      "before": null,
+      "after": "ab59445e357da083e43467a28aaf619b7e81d00c",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-gnu-clippy-pass/"
+    },
+    {
+      "before": null,
+      "after": "7d2ce6a69dc55e4343b8792c317372c9c2781389",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-windows-legacy-admission-audit/"
+    },
+    {
+      "before": null,
+      "after": "e625e91ccb5d024e2b09816775b78111d24f6ee9",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-rustfmt-pass/"
+    },
+    {
+      "before": null,
+      "after": "777ca21ce386a26849983160aad48cbeb3793f23",
+      "prefix": "qualification/evaluated-current-read-20261112/source84-e0616-weak-sender-fix/"
+    },
+    {
+      "before": null,
+      "after": "f44936e1055d3f33133053460873a501a8d5cea1",
+      "prefix": "qualification/evaluated-current-read-20261112/source84-cross-platform-readback/"
+    },
+    {
+      "before": null,
+      "after": "882456b60c8a7ceb018d378532cbe9715438c0d6",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-root-review/"
+    },
+    {
+      "before": null,
+      "after": "822dbb25b96d533123e4b6f64c324416aebd4249",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-windows-private-pass/"
+    },
+    {
+      "before": null,
+      "after": "0f0d8bcded3bba19abe64d86291c0432d18eeac4",
+      "prefix": "qualification/evaluated-current-read-20261112/source84-e0616-ci/"
+    },
+    {
+      "before": null,
+      "after": "faae771834531957d841cd7389856d1425d75b09",
+      "prefix": "qualification/evaluated-current-read-20261112/source53-shared-owner-failure/"
+    },
+    {
+      "before": null,
+      "after": "d0666645b52e1a43b8f317ddfc28127fde8fc4bf",
+      "prefix": "qualification/evaluated-current-read-20261112/source84-windows-private-result/"
+    },
+    {
+      "before": null,
+      "after": "413144838d0b67cfcd696183ea4afce07fef5fcd",
+      "prefix": "qualification/evaluated-current-read-20261112/source84-format-pin-repair/"
+    },
+    {
+      "before": null,
+      "after": "156645c8377f76e84f4b947e38de9e8bad9c0333",
+      "prefix": "qualification/evaluated-current-read-20261112/upstream-374-shared-compile-failure/"
+    },
+    {
+      "before": null,
+      "after": "9514d904e74aba66e1de47a8d3ee5a0ea2997a99",
+      "prefix": "qualification/evaluated-current-read-20261112/source84-integration/"
+    },
+    {
+      "before": "b08fa3ef5a3b025d28e53e06f86d4d7fe36f9e33",
+      "after": "4576ed1c1f8f503ea31641f6e2caa0449dd10e13",
+      "prefix": "qualification/neuroscience-20261110/evidence/history-20261112/"
+    },
+    {
+      "before": null,
+      "after": "501a924a3ad8a641378cd2b8b09fb596b5d5f6a8",
+      "prefix": "qualification/evaluated-current-read-20261112/source84-root-review/"
+    },
+    {
+      "before": null,
+      "after": "244550e3985035b383e7cbe4751f70b9f3019778",
+      "prefix": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/"
+    },
+    {
+      "before": null,
+      "after": "2f1905811cf3529c64b2728f954bc622937c006d",
+      "prefix": "qualification/evaluated-current-read-20261112/source84-initial-failures/"
+    },
+    {
+      "before": "715733b71c12e0210e077aecb3c865f7c8ed5ee5",
+      "after": "d199a8d8806646e77f761571de746d5d3ed28bcb",
+      "prefix": "qualification/neuroscience-20261110/evidence/terminal-20261112/"
+    }
+  ],
+  "text_full_readbacks": [
+    {
+      "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
+      "bytes": 124182,
+      "sha256": "8f80dfd2ba5c9fb19146d0b7cdd9487cba42659111251b35cef33bc55c36e868",
+      "git_blob": "1354eb0f7a616557b17420e4e540b90e29eeec76"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
+      "bytes": 21244,
+      "sha256": "6bb45bf0225e2ad3b33864583e5703df9dd4366c30de1c639ece39d5038852c9",
+      "git_blob": "f6e1cb20cf5fd2a358f001f01a3c8f821e3b4949"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/README.md",
+      "bytes": 2308,
+      "sha256": "48002131c35dff1facc8b05cd72982272121912d12ec0dd378c9525b45e9ef67",
+      "git_blob": "2460e7b722412c497eba98f81caac06b93d818b9"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/IMPORT_MAPPING_SOURCE53.json",
+      "bytes": 164374,
+      "sha256": "3d7e973f4b550f1ed3e9fc620f6bf924c75beabd0c4deb9e831e5d0c24eaf6ea",
+      "git_blob": "52b885c3472bbb26adfd01b42dc55a7aa4b337e2"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/ROOT_LOG_REASSEMBLY_SOURCE53.json",
+      "bytes": 12040,
+      "sha256": "e5f13575eab8e88bbb5866a8dfeafbd16f78c0069c4d295740ec31176bd9eff6",
+      "git_blob": "a336e47d848debbc71701c7f06f442ed2c0c07d5"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/SOURCE53_JOB_OBSERVATION.json",
+      "bytes": 134069,
+      "sha256": "7507bb5ab505811ede41049bb637021cd339d7fc2bc99841cfc51ce0710fe35b",
+      "git_blob": "762a5f07b8f6d9c55d7e283d60a1b6a65c20c9ea"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/PUBLICATION_MANIFEST.json",
+      "bytes": 452064,
+      "sha256": "6cc38c8ae91c56e4c6673c1bf730be8340bcacf90344b288a0fb714632de5d9d",
+      "git_blob": "874807219b599a0295ac0b87b9661e657f1caf18"
+    }
+  ],
+  "imported_paths": 343,
+  "all_expected_paths_present": true,
+  "no_other_path_or_mode_or_deletion_change": true,
+  "qualification_only": true,
+  "all_blockers_closed": false,
+  "owner_decision": null,
+  "ref_updated": false
+}

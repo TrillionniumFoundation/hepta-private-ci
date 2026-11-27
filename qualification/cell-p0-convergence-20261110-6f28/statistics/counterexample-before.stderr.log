@@ -1,0 +1,24 @@
+test_task_aliases_do_not_reweight_distinct_tasks_within_a_family (test_hepta_cell_research_units.ResearchUnitsTests.test_task_aliases_do_not_reweight_distinct_tasks_within_a_family) ... FAIL
+test_repeated_task_failures_keep_outcomes_costs_and_unknown_coverage (test_hepta_cell_research_units.ResearchUnitsTests.test_repeated_task_failures_keep_outcomes_costs_and_unknown_coverage) ... FAIL
+
+======================================================================
+FAIL: test_task_aliases_do_not_reweight_distinct_tasks_within_a_family (test_hepta_cell_research_units.ResearchUnitsTests.test_task_aliases_do_not_reweight_distinct_tasks_within_a_family)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/6f28065d17b5/hepta-p0/scripts/test_hepta_cell_research_units.py", line 231, in test_task_aliases_do_not_reweight_distinct_tasks_within_a_family
+    self.assertEqual(after["comparisons"], before["comparisons"])
+AssertionError: {'rag[26 chars]': 0.4, 'minimum_fit_mean_retention': 0.0, 'co[350 chars]rue}} != {'rag[26 chars]': 0.0, 'minimum_fit_mean_retention': 0.0, 'co[353 chars]lse}}
+Diff is 1512 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_repeated_task_failures_keep_outcomes_costs_and_unknown_coverage (test_hepta_cell_research_units.ResearchUnitsTests.test_repeated_task_failures_keep_outcomes_costs_and_unknown_coverage)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/6f28065d17b5/hepta-p0/scripts/test_hepta_cell_research_units.py", line 265, in test_repeated_task_failures_keep_outcomes_costs_and_unknown_coverage
+    self.assertAlmostEqual(result["comparisons"]["rag"]["minimum_fit_mean_gain"], -0.25)
+AssertionError: -0.16666666666666666 != -0.25 within 7 places (0.08333333333333334 difference)
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.260s
+
+FAILED (failures=2)

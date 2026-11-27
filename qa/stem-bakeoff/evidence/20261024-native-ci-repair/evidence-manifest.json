@@ -1,0 +1,33 @@
+{
+  "archive": "native-ci-failures-and-candidate-20261024.tar.gz",
+  "bytes": 539478,
+  "sha256": "0e6585da3edd558b6ba22ee46ed52b8d8aedea1b3bf87cbecc4e2050e7e4748f",
+  "members": 19,
+  "candidate_tested": false,
+  "candidate_formatted": false,
+  "README_lines": 40,
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "sha256": "b6736c418f69cb8551f4e4299ceb2ea2f3f6b274b302b1e81d3ac300b9932d5f",
+      "git_blob_sha": "794182faec7cf834a0fa3fa513472d6c96962023"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+      "sha256": "3b1ca86fb242176315846ea1724fc5fdadf12eb84f4da3d2c525b893739aa1f9",
+      "git_blob_sha": "747ffa7fd44a623810e33e568cdc3678fd329014"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "sha256": "bbdc06e61c9389dc5a0e3558d89167875389a7d4f06ac5d38a048ee0c216d34e",
+      "git_blob_sha": "3aeef4709f1605c175cc8a005e77eed4bd63e1ad"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "sha256": "4c23e2167a6dba4842b476b3accbfb320cdbfc1844e921c7422fecde87a28050",
+      "git_blob_sha": "cbe19ae0766bbf4eab8af3abdb2006365a92b610"
+    }
+  ],
+  "candidate_commit": "f6b97dca1a8621e96a58d98dfb8c9dcc7b4b5ee5",
+  "source_baseline": "f2144a2451e0ca03f8c91e0c30755970cc1e4867"
+}

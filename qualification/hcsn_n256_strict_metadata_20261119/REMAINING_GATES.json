@@ -1,0 +1,97 @@
+{
+  "schema": "hcsn-hpca-remaining-gates-readonly-20261119-v1",
+  "scope": "Original reports, protocols and manifests only; no E labels read, no new model, generation or training in this audit",
+  "report_pr": 6750,
+  "report_head": "b5bed98f9db33eede1afe065e2812bffd462ca09",
+  "gates": [
+    {
+      "id": "original_n256_bitwise",
+      "kind": "observed_numerical_negative",
+      "source_pr": 6742,
+      "source_head": "8a43dec4bf4ad92b3be9af6b42ce272d6d08763b",
+      "path": "qualification/hcsn_currentstate_n256_firststep_contract/REQUEST.json",
+      "sha256": "2b68630e633daf9533eea0f40cc1c4934494600124585f1371c3ac604d5a4907",
+      "requirement": "69728 compared/equal coordinates and zero bit mismatches, nine full-state packets, exact one candidate step/two sparse actions and one oracle step/two dense exponentials; zero Torch/optimizer work",
+      "observed": {"compared": 69728, "bit_mismatches": 1291, "max_abs": 9.08995101411847e-16},
+      "status": "RED_UNCHANGED",
+      "action": "Preserve the observed result. A future changed numerical implementation requires its own source-bound qualifying evidence. Metadata repair and new absolute-error gates do not close this gate."
+    },
+    {
+      "id": "original_n256_all_domain_admission",
+      "kind": "unexecuted_or_unproved_qualification",
+      "path": "qualification/hcsn_currentstate_n256_reference_provider_hold/REQUEST.json",
+      "sha256": "44cef248f3ac8bd34bc2a8886fc6aec2b1e9cdfdec9eea1e1beb3e675c4e2054",
+      "other_paths": ["qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/REQUEST.json", "qualification/hcsn_currentstate_n256_joint_admission/REQUEST.json"],
+      "requirement": "Independent reviewed packet/generator reference, signed-content error and stiffness bounds over the declared domain, permanent-escape/delay/reset/discounted-hit/occupation obligations and original runtime/resource/source admission",
+      "new_evidence": "PR6752 finite absolute comparisons cover the executed 14-capsule topology, 45 segments/142 actions through t=.36, two active generations, with cold bytes exact and independent BDF diagnostics; its implementation rejects the unsupported horizon/generation domain",
+      "new_pr_observed_head": "a6c4794b1df4df2222004fa0d220bfd1ff8f743f",
+      "status": "ORIGINAL_QUALIFICATION_UNCLAIMED",
+      "action": "Use new evidence for its declared finite scope; do not backfill the protected original admission or promote finite empirical errors to continuum/rare-relative/full-history/autograd proof."
+    },
+    {
+      "id": "original_c2_six_fit_full_replay",
+      "kind": "unexecuted_qualifying_work",
+      "source_pr": 6252,
+      "source_head": "5c423c372792105cfa32c6038f32d9c2bfa08974",
+      "path": "qualification/hcsn_ci_readbacks/c2-resource-hold-20261112/original-contract/CONTRACT.json",
+      "sha256": "bc814b8913f5d5777f771030623bcd1f862a526f35144a8da0164e1da60f8e51",
+      "related_paths": ["qualification/hcsn_ci_readbacks/c2-resource-hold-20261112/RESOURCE-HOLD.json", "qualification/hcsn_ci_readbacks/c2-resource-hold-20261112/original-contract/DECISION.json"],
+      "authorization": "The bound DECISION already authorizes work; the preparation contract's false field is not a request for repeated user permission",
+      "requirement": "Six original start parents at epochs [46,47,46,47,46,46], seeds101/211/307 x learning rates .001/.003; source/data/runtime freeze, full parent state identities and per-fit cumulative wall ledger; 43200s per fit including parent/all attempts/finalization reserve, no refunds; genuine replay and independent complete chain audit",
+      "completed_original_full_replays": 0,
+      "available_originals": [
+        {"pr": 6214, "head": "917e4886658ae9f0c342eb1fa0f545d79c39e2c8", "path": "qualification/hcsn_differentiable/replay_v1/artifact/part-000.zip", "sha256": "37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75"},
+        {"pr": 6222, "head": "f515d4fac88171d93be0cb648dca434a2b926856", "path": "qualification/hcsn_differentiable/replay_v1/artifact/diagnostic-4092/originals.tar.xz", "sha256": "f3f6992f31d7ab85a10eaa727dfc894fdb72ef5dafbba6bc43fc36d23a899dc7"},
+        {"pr": 6199, "head": "afa7415d5a740a59bb436cdb90bb157be6f450bf", "path": "qualification/hcsn_differentiable/replay_v1/evidence/native-desktop-20261112-d706/NATIVE_ORIGINALS.zip", "sha256": "d17e71b766631f3789dcb43bdd312dacfbc4ea0ce7e4fc14074587584900a2fe"}
+      ],
+      "action": "Resolve the original start-parent/full-budget identities from the existing originals, bind a concrete current host/ancestor-cgroup/allocation and any explicit runtime/concurrency change, then execute the qualifying replay if the cumulative budget permits. Later checkpoints and successful cold continuity are not the original start-parent replay."
+    },
+    {
+      "id": "original_c2_authoritative_terminal",
+      "kind": "missing_historical_original",
+      "source_pr": 6747,
+      "source_head": "36af54220083137147541f57e0f77243ca3a6f04",
+      "path": "qualification/hcsn_c2_continuation_20261119/evidence/ORIGINAL_NATIVE_STATUS_FINAL.json",
+      "job_id": "1a1c74f3308-be2a-75",
+      "status": "UNKNOWN_NO_AUTHORITATIVE_TERMINAL",
+      "requirement": "Authentic original supervisor terminal/publication receipt and the corresponding original work/cost history",
+      "action": "Only read-only recovery of an actual original journal/receipt can close the historical gap. A new successful continuation or an absent current PID cannot reconstruct unseen old optimizer work or cost. No new concrete missing original was located by this audit.",
+      "new_scope_closed": {"pr": 6751, "head": "865e8f4960577f7e4774aa6c24df85fe5b3d5cb6", "archive_sha256": "fcd2d079441a3006ca55b41afb05282b211245c7d56d1ac96c3ff9379074e061", "result": "Actual partial resume from update1757: remaining seven batches of epoch147 plus full epoch148, 19 new AdamW updates to1776, COMPLETED_PLATEAU stale10, best epoch144 unchanged; independent reader passed. This is not two entirely new epochs or the original six-fit replay."}
+    },
+    {
+      "id": "c2_confirmation_E",
+      "kind": "sealed_procedure_with_unmet_prerequisites",
+      "path": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/PLAN.json",
+      "sha256": "be778e57d203779e7765ff2e2bc84e977d61a992894d747dd1b89b091a486ddf",
+      "git_blob": "cf276838d584bbd41a6dadccc8204895dd2b1e0b",
+      "requirement": "All six genuine C2 terminal chains/no UNKNOWN writer, independent source/checkpoint/D-best/cost audit; D-only common learning rate selection for each family, winning rate's three seeds all adequate; bind21 fixed models, program/runtime, E manifest and allocation; immutable predictions before independent scorer joins labels; no automatic trigger",
+      "status": "E_UNOPENED",
+      "action_available_without_E": "Build the D-only 21-model common-LR/checkpoint/config/adequacy/source-cost manifest; prepare feature/label isolation and synthetic negative controls and D-only temperature calibration. These do not need E labels. This limited21-model candidate protocol does not replace the original five-fresh-seed formal recipe."
+    },
+    {
+      "id": "hpca_independent_future_B_custody",
+      "kind": "external_origin_evidence_required",
+      "source_pr": 6132,
+      "source_head": "0e6634cadf4497c653e191e50e6394387190ca55",
+      "paths": ["qualification/hpca-neuroscience-20261110/PROSPECTIVE_DEVEL_PLAN.json", "qualification/hpca-neuroscience-20261110/PROSPECTIVE_DEVEL_PROTOCOL.md"],
+      "plan_git_blob": "4933b59bb660117de040f2446cf8920a7a840270",
+      "protocol_git_blob": "60a0a69af3b9250eb2a81f7e1acd7883339113d7",
+      "observed": "Operator-generated, investigator-visible tasks; independent_future_B=false, selection DENY_ALL/HOLD",
+      "requirement": "Authenticated independent curator/Owner origin and custody, sealed exposure/allocation records and genuine retention panel; local hashes, disjoint IDs, code review and new investigator-generated examples do not create independent custody",
+      "owner_code": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "owner_binding": "Dataset/objective/qualification-ledger head and authenticated producer/expiry; eligible policy content/objective/artifact-registry head; dynamic modulator/eligibility/parameter-signal facts from actual owner stores. Caller-authored digests alone are not evidence.",
+      "action": "Obtain genuine externally originated records through the established authorized process; no third-party contact was made by this audit and no missing internal archive can substitute for that provenance."
+    },
+    {
+      "id": "hpca_retention_and_learned_utility",
+      "kind": "completed_scientific_negative",
+      "native624": {"pr": 6171, "head": "a3dbba54bbe9239e17e1a55b017267e5ef1f1f84", "path": "qualification/hpca-neuroscience-20261110/evidence/prospective-native624-20261112/NATIVE624-v2.zip", "sha256": "583a41faee2ea035aa93b89d6ffc774d1b01ef293c761e304552e265b3dc836a", "rows": 624, "events": 1249, "base_retention_correct": 18, "retention_total": 32, "required_correct": 24, "required_valid": 28, "bursty_minus_interleaved": 0},
+      "routed": {"pr": 6172, "head": "65d688af66f3797a4d6a61a8f4adf6a5a06b7689", "path": "qualification/hpca_routed_content_v1/evidence/native-20261112-v1/native-originals.tar.xz", "sha256": "7f04348e9d74a705fad8a707d39befb49720e6cc7ea69fe1fee587d499c04bda", "original_members": 71, "base_retention_correct": 8, "base_retention_valid": 14, "retention_total": 32, "routed_mean_accuracy": 0.46875, "shuffled_mean_accuracy": 0.4609375, "base_accuracy": 0.5},
+      "rule_control": {"pr": 6209, "head": "be9694df82258f09dd15fe46f6e0e6461e5e731e", "path": "qualification/hpca-rule-control-20261112/FROZEN_SCORE_EVIDENCE.md", "result": "64/64 equality-rule control, zero learned forwards/optimizer; not learned utility or retention qualification"},
+      "status": "HOLD_NO_GO",
+      "action": "Preserve the complete negative archives. New qualified hypotheses may be studied under separate source/protocol identities, but rerunning, adding hashes or borrowing HCSN small-task results does not turn these observations into positive evidence."
+    }
+  ],
+  "metadata_successor": "Only the strict type/keyset code defect is addressed by this package; historical scientific gates remain separate",
+  "all_closed": false
+}

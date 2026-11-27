@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.mem5.offline_payload_restore_receipt.v1",
+  "frozen_execution_source": "5fa0d0e462cd1393f4f9e95565ff5993e9bad29a",
+  "archive_key_unchanged": "mem5-raw-archive-5fa0d0e-20261110-v1",
+  "original_actor_job": "1a1c46734c8-cf39-2eb",
+  "original_archive_start_job": "UNRESOLVED",
+  "host": "desktop",
+  "verifier_sha256": "3e8466d63a03306f8e52de6e5f68bd378ce235731f98f9022ec47a4696677897",
+  "archive_index_sha256": "470cb2217d2d4727c551b6f935f8f1ffaa66f7702af87ea1fdaa15b86e0b69f4",
+  "manifest_sha256": "c98d559d76dee6d80b509397813e5f57128e53174d2e05b527f1df13a2339304",
+  "tested_script_sha256": "881859228496d626ee080b7bdd84086adebb239494b282a7875cb06ca5c1c9b7",
+  "first_attempt": {
+    "job": "1a1c52bcf93-cf39-63a",
+    "state": "failed",
+    "exit_code": 1,
+    "root_cause": "new utility mistakenly indexed lru_cache callable instead of calling it",
+    "stdout_bytes": 0,
+    "stderr_bytes": 787,
+    "original_actor_and_archive_unchanged": true
+  },
+  "successful_attempt": {
+    "job": "1a1c52cac15-cf39-63e",
+    "started_at_utc": "2026-11-10T11:16:41.621Z",
+    "state": "succeeded",
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "stdout_bytes": 682,
+    "logical_files_written": 4000,
+    "logical_bytes_written": 77913835,
+    "physical_readback_files": 4000,
+    "physical_readback_bytes": 77913835,
+    "target": "/home/qian-qi/mem5-cold-custody-20261110/payload-recovery-5fa0d0e-v1",
+    "code_ast_parse": "PASS",
+    "code_ruff": "NOT_AVAILABLE_ON_DESKTOP"
+  },
+  "unchanged": {
+    "original_actor_reexecuted": false,
+    "archive_regenerated": false,
+    "archive_key_changed": false,
+    "sealed_role_bypassed": false
+  },
+  "claims": {
+    "original_payload_cold_reconstruction": true,
+    "independent_external_custodian": false,
+    "source_owner_authenticated": false,
+    "complete_owner_state_cold_recovery": false,
+    "independent_scientific_confirmation": false,
+    "production_adoption": false
+  },
+  "scientific_acceptance": "HOLD",
+  "production_adoption": "NoUpdate",
+  "boundaries": [
+    "The isolated target was generated from the already verified secondary-host archive; this does not re-create original owner processes, keys, permissions, state transitions, OS metadata, provider effects or provenance authority.",
+    "The original archive-start job ID remains UNRESOLVED; no new archive start, actor run, cohort, or source mutation was attempted.",
+    "The restored payload is on the same operator-controlled desktop host as the secondary archive; no independent third-party custody is inferred."
+  ]
+}

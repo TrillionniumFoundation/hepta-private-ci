@@ -695,3 +695,6 @@ fn canonical_wire_roundtrip_property_holds_across_registered_contracts() {
     roundtrip!(topology(), TopologyProposalV1);
     roundtrip!(forget(), ForgetPropagationReceiptV1);
 }
+
+#[path = "wire_compatibility_tests.rs"]
+mod wire_compatibility_tests;

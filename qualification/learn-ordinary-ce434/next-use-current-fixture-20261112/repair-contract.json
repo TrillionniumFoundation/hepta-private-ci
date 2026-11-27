@@ -1,0 +1,320 @@
+{
+  "schema": 1,
+  "purpose": "Repair the existing NextUse withdrawal mechanism around its real command CURRENT purpose and the unchanged legacy evidence deadline.",
+  "base_commit": "a7571fe7ca197de52cd071741b85b14a237d6bd5",
+  "base_tree": "71382739c728e026f1d3ae4aab146eb770074c7e",
+  "status": {
+    "source_only": true,
+    "original_python_executed": false,
+    "rust_compilation_executed": false,
+    "native_executed": false,
+    "ordinary_acceptance": 0,
+    "new_production_authority": false
+  },
+  "actual_diagnostic": {
+    "commit": "19d65ba6e4b974ecacd128dbc6f4aa7c3b284747",
+    "execution_blob": "b47f12c4658e9e73a4b9e53c9aae581409a0fbba",
+    "execution_utf8_bytes": 61032,
+    "execution_sha256": "3f3344f5fd7918d7be34cfca0a806c9d911cf72eebf572c9ac19ae719fb9a276",
+    "junit_blob": "41e774895bc17164cacc0b8aaead71d335224758",
+    "source_commit": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+    "result": "1 PASS, 2 TIMEOUT; the C timing diagnostic times out during synchronous peer join, after its logged legacy rejection.",
+    "command_readback": {
+      "microseconds": 1214532,
+      "result": "Ok(())"
+    },
+    "legacy_evidence": {
+      "microseconds": 502701,
+      "result": "Err(OwnerUnavailable(\"original learning evidence owner\"))"
+    },
+    "c_test_timeout_seconds": 60.014,
+    "inference": "The actual original owner keeps polling Tokio I/O through its saved runtime Handle after the legacy client has consumed its timed-out connection. A synchronous std-thread join on this current-thread test stops that runtime's reactor. The test now awaits the join through spawn_blocking. This does not claim a production recursive-owner defect or a native pass."
+  },
+  "current_consumer": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+      "blob": "9d66c79cd8ee3890275543c949e554f6bed487f4",
+      "site": "Stage::NextUse: ensure_next_use -> already-held OriginalCircuitNextUseCommandClientV1::readback -> record_next_use",
+      "claim": "This is the current stage adapter's complete CURRENT read purpose; no new adapter or authority is added."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "blob": "c94d6018c54c88fbdec83f12c219a8ef06ee5724",
+      "site": "Stage::NextUse: OriginalCircuitNextUseCommandClientV1::attest_completed_task -> actual ready-observation equality -> record_next_use",
+      "claim": "The same original command client is used for actual completion and subsequent readback."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "blob": "01b1f7d02600b16eba09c581e1dab831b7c9e248",
+      "site": "original_response(false) invokes OriginalCircuitNextUseReceiptOwnerV1::readback_remote on the same original owner/T/S/live clients.",
+      "claim": "The complete original read and last-I/O fresh validation remain in production."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "blob": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c",
+      "site": "evidence_response invokes the same readback_remote; the serving budget stays at 500 ms.",
+      "claim": "Legacy evidence is not promoted to the command purpose or given its longer deadline."
+    }
+  ],
+  "unchanged_protocol_sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "blob": "9c0b806cf23653a776d3cf75232fec8f06027f78"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "blob": "a667b23ad21d3bec8407a8f1c466e6d55ea95969"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "blob": "83e76788acc7e65a912d9507a11afb2a6117e5bf"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "blob": "9d3d24bd5104be99372c8a55859360e792120605"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "blob": "867822ffc4de4aa548771108853f1a4d9fd4ef63"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "blob": "36e4524baea04320b7610325579f0ff206690fab"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_issuer_transport.rs",
+      "blob": "83acf4c92c2d6192454508d57f4998dbd1eac2f3"
+    }
+  ],
+  "assertion_mapping": [
+    {
+      "before": "evidence.readback(...).await? equals the original completed attestation before withdrawal",
+      "after": "A new independent readback on the same already-held original command client returns a fully equal opaque completed receipt and the exact original attestation. This is the real Stage::NextUse CURRENT consumer purpose.",
+      "strength": "The complete snapshot, receipt, predecessor signatures and original attestation are compared, in addition to the original signature check. Legacy success at 500 ms is no longer assumed."
+    },
+    {
+      "before": "actual version.withdraw()",
+      "after": "The identical call remains after the successful command CURRENT; no new admission or effect is requested.",
+      "strength": "Identical production withdrawal action."
+    },
+    {
+      "before": "legacy readback after withdrawal is_err()",
+      "after": "The same legacy client, already consumed by the original timeout, returns exactly OwnerUnavailable(\"original learning evidence owner\").",
+      "strength": "A failed client is not restored or redialed. This second call is deliberately a local fail-closed check, not evidence of an additional post-withdrawal physical read."
+    },
+    {
+      "before": "evidence_server.join().is_err()",
+      "after": "The same original peer is joined with spawn_blocking.await; the helper must report exactly one successful actual evidence_response before its ACK gate, and the original framer must terminate with DeadlineElapsed, Closed or Unavailable.",
+      "strength": "Excludes InvalidRequest and a fabricated owner response; lets the original runtime complete its in-flight I/O. Client/server deadline start times differ, so no assertion requires only one of the three original transport closure outcomes."
+    },
+    {
+      "before": "client.readback after withdrawal returns CommitUncertain",
+      "after": "The identical actual command read and exact CommitUncertain assertion remain on the same command channel.",
+      "strength": "This is the physical post-withdrawal full-current attempt, which rejects at original published observation before another predecessor read."
+    },
+    {
+      "before": "original C owner bytes equal the saved bytes",
+      "after": "Same final comparison plus comparisons after legacy failure and independent command CURRENT.",
+      "strength": "No effect is inferred from a timeout; the already-committed original owner bytes remain observable and unchanged."
+    },
+    {
+      "before": "finish_observer returns 2",
+      "after": "Returns exactly 3: original Execute, new actual full CURRENT, actual post-withdrawal rejection.",
+      "strength": "The one additional command frame is explicit; no repeated Execute, request-id reset, reconnect or hidden cache."
+    },
+    {
+      "before": "service.finish(true,false) > 0",
+      "after": "Same failure flags and > 0 assertion, with only the synchronous joining work delegated to spawn_blocking.",
+      "strength": "Original C published peer is failed by real withdrawal; the original Selector peer remains unmodified and is not replaced."
+    },
+    {
+      "before": "f.finish(false).await",
+      "after": "Identical original fixture termination.",
+      "strength": "No existing daemon or Rust process is stopped by this fixture change."
+    }
+  ],
+  "extra_no_effect_bytes": {
+    "definition_path": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+    "definition_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+    "files": [
+      "q24-source.journal",
+      "q24-source.witness",
+      "q24-cell.journal",
+      "q24-cell.witness",
+      "q24-control.journal"
+    ],
+    "checks": "Captured after actual completion; compared after legacy refusal, command CURRENT and publication withdrawal. The separate version CURRENT is not included."
+  },
+  "request_ledger": {
+    "status": "Exact source-derived expected ledger and executable assertions; not a claim that the new candidate has run.",
+    "original_command_channel": {
+      "same_initial_peer": true,
+      "request_ids": [
+        1,
+        2,
+        3
+      ],
+      "actions": [
+        "Execute",
+        "Readback: independent full CURRENT",
+        "Readback: actual withdrawal -> CommitUncertain"
+      ],
+      "successful_server_exchanges": 3,
+      "assertion": "finish_observer returns 3"
+    },
+    "legacy_evidence_channel": {
+      "same_initial_peer": true,
+      "request_ids": [
+        1
+      ],
+      "actual_owner_responses": 1,
+      "successful_response_deliveries": 0,
+      "attempts": 2,
+      "second_attempt_new_frames": 0,
+      "assertions": [
+        "The one-shot callback increments original_responses only after original evidence_response succeeds; joined count == 1.",
+        "The original client returns OwnerUnavailable and never restores its taken channel.",
+        "The second read fails at the unchanged channel.take().ok_or_else(unavailable) before constructing a request or touching transport."
+      ]
+    },
+    "inner_reads": {
+      "scope": "Original Observer-owned clients only; excludes setup and the Selector host's own separate predecessor clients.",
+      "original_execute": {
+        "published": 3,
+        "trainer": 2,
+        "selector": 2
+      },
+      "legacy_actual_response": {
+        "published": 2,
+        "trainer": 2,
+        "selector": 2
+      },
+      "independent_command_current": {
+        "published": 2,
+        "trainer": 2,
+        "selector": 2
+      },
+      "post_withdrawal_command": {
+        "published_attempt": 1,
+        "trainer": 0,
+        "selector": 0
+      },
+      "expected_total": {
+        "published_attempts": 8,
+        "trainer": 6,
+        "selector": 6
+      },
+      "qualification": "These derive from the unchanged attest_source/readback_source/finish_original_readback paths. Only outer command 3 and completed legacy response 1 are new explicit test counts; inner totals are not described as measured."
+    }
+  },
+  "gate_and_lifecycle": {
+    "test_only_gate": "The same original response bytes are produced once before waiting on the release receiver. Release occurs after the client returns from the original bounded read. The original framer performs its normal post-handler deadline check and never restores the client's consumed channel.",
+    "deadline_bounds_ms": {
+      "legacy": 500,
+      "command": 30000,
+      "absolute_lifetime": 300000
+    },
+    "unchanged": [
+      "Original server/peer/channel",
+      "Original request ids and binding",
+      "Original signatures and snapshot authentication",
+      "Original last-I/O fresh checks",
+      "All production function bodies",
+      "Current 60-second nextest per-case bound",
+      "RUST_MIN_STACK=8388608",
+      "Positive ordinary closed gates"
+    ],
+    "joins": "Only fixture-owned std thread handles are joined through spawn_blocking.await. No signals, sleep extension, new peer, owner restart, execution retry or alternate authority is introduced."
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "beforeBlob": "4274d202bdd47d261139018bd89b7cb64b0b9670",
+      "bytes": 22853,
+      "sha256": "64c5b2a9b51ba59352939c80b478adfcb84aac8840b18af86884d5aa1e041645",
+      "sha": "467b3172deb5d9df4ea895a1eb6354aaa9468f84"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "beforeBlob": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c",
+      "bytes": 5093,
+      "sha256": "96c0d7202cbc9dfb2569eeedda8db4640b77cc8500b369ccd1d7731c21e47bf5",
+      "sha": "8f2b039c6c96ce90029ef22e29d2ccf5d1ed6039"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "beforeBlob": "34dfaeb725b5a32f65f824c97407e5e7ac4e4772",
+      "bytes": 11152,
+      "sha256": "5b51214d1a1610f45ac1891793162b2e11c92b5dbf38558a10d44c955b5605f5",
+      "sha": "b1b0193a7be2d9e8317d12ea66c0b75bc21d8721"
+    }
+  ],
+  "replay": {
+    "function_replacement": {
+      "path": "circuit_next_use_command_owner_tests.rs",
+      "before": "async fn q24_next_use_command_readback_refuses_actual_publication_withdrawal() -> anyhow::Result<()>\n{\n    let mut f = CompletionFixture::ready(None).await?;\n    f.complete_c().await?;\n    let context = f.context()?;\n    let service = ObserverService::start(&f, f.f.original.create_owner()?)?;\n    let (client, channel) = next::client(context.clone(), false, None)?;\n    let server = next::serve(Arc::clone(&service.owner), channel);\n    let completed = client.attest_completed_task().await?;\n    let bytes = f.f.original.bytes()?;\n    let (evidence, channel) = next::evidence_client(&context)?;\n    let evidence_server = next::serve_evidence(Arc::clone(&service.owner), channel);\n    assert_eq!(\n        evidence\n            .readback(completed.snapshot(), completed.receipt())\n            .await?,\n        *completed.attestation(),\n    );\n    f.f.original.version.withdraw()?;\n    assert!(\n        evidence\n            .readback(completed.snapshot(), completed.receipt())\n            .await\n            .is_err()\n    );\n    drop(evidence);\n    assert!(\n        evidence_server\n            .join()\n            .map_err(|_| anyhow::anyhow!(\"withdrawn Observer\"))?\n            .is_err()\n    );\n    assert!(matches!(\n        client.readback().await,\n        Err(OriginalCircuitNextUseCommandErrorV1::CommitUncertain)\n    ));\n    assert_eq!(f.f.original.bytes()?, bytes);\n    assert_eq!(finish_observer(client, server)?, 2);\n    // The actual C publication rejects before another predecessor read.\n    // The Selector channel is left unmodified, never replaced or retried.\n    assert!(service.finish(true, false)? > 0);\n    f.finish(false).await?;\n    Ok(())\n}",
+      "after": "async fn q24_next_use_command_readback_refuses_actual_publication_withdrawal() -> anyhow::Result<()>\n{\n    let mut f = CompletionFixture::ready(None).await?;\n    f.complete_c().await?;\n    let context = f.context()?;\n    let service = ObserverService::start(&f, f.f.original.create_owner()?)?;\n    let (client, channel) = next::client(context.clone(), false, None)?;\n    let server = next::serve(Arc::clone(&service.owner), channel);\n    let completed = client.attest_completed_task().await?;\n    let bytes = f.f.original.bytes()?;\n    let task_bytes = owner_bytes(&f.f.original.session)?;\n\n    // The legacy evidence lane remains bounded to 500 ms. Complete the real\n    // owner read, then hold only its ACK until this original client times out.\n    // No signature, snapshot or CURRENT response is synthesized by this gate.\n    let (evidence, channel) = next::evidence_client(&context)?;\n    let (release, evidence_server) =\n        next::serve_evidence_late_response(Arc::clone(&service.owner), channel);\n    let started = std::time::Instant::now();\n    let legacy = evidence\n        .readback(completed.snapshot(), completed.receipt())\n        .await;\n    eprintln!(\n        \"LEARN_C_LEGACY_BOUND elapsed_us={} result={:?}\",\n        started.elapsed().as_micros(),\n        legacy.as_ref().map(|_| ()),\n    );\n    assert!(matches!(\n        legacy,\n        Err(crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(\n            \"original learning evidence owner\"\n        ))\n    ));\n    release.send(())?;\n    // The server still awaits original Tokio I/O. Joining on the sole runtime\n    // thread would stop its reactor after the client's timeout.\n    let (original_responses, evidence_terminal) =\n        tokio::task::spawn_blocking(move || evidence_server.join())\n            .await?\n            .map_err(|_| anyhow::anyhow!(\"original bounded Observer evidence peer\"))?;\n    assert_eq!(original_responses, 1);\n    eprintln!(\"LEARN_C_LEGACY_BOUND peer_terminal={evidence_terminal:?}\");\n    assert!(matches!(\n        evidence_terminal,\n        Err(OriginalCircuitNextUseCommandErrorV1::Transport(\n            codex_hepta_contracts::HostIssuerTransportError::DeadlineElapsed\n                | codex_hepta_contracts::HostIssuerTransportError::Closed\n                | codex_hepta_contracts::HostIssuerTransportError::Unavailable\n        ))\n    ));\n    assert_eq!(f.f.original.bytes()?, bytes);\n    assert_eq!(owner_bytes(&f.f.original.session)?, task_bytes);\n\n    // Root's actual stage adapter uses this already-held command capability.\n    // A fresh full read proves that a late legacy reply is not used as CURRENT.\n    let started = std::time::Instant::now();\n    let current = client.readback().await;\n    eprintln!(\n        \"LEARN_C_COMMAND_CURRENT elapsed_us={} result={:?}\",\n        started.elapsed().as_micros(),\n        current.as_ref().map(|_| ()),\n    );\n    let current = current?;\n    assert_eq!(current, completed);\n    assert_eq!(current.attestation(), completed.attestation());\n    assert_eq!(f.f.original.bytes()?, bytes);\n    assert_eq!(owner_bytes(&f.f.original.session)?, task_bytes);\n\n    f.f.original.version.withdraw()?;\n    assert!(matches!(\n        evidence\n            .readback(completed.snapshot(), completed.receipt())\n            .await,\n        Err(crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(\n            \"original learning evidence owner\"\n        ))\n    ));\n    drop(evidence);\n    assert!(matches!(\n        client.readback().await,\n        Err(OriginalCircuitNextUseCommandErrorV1::CommitUncertain)\n    ));\n    assert_eq!(f.f.original.bytes()?, bytes);\n    assert_eq!(owner_bytes(&f.f.original.session)?, task_bytes);\n    let commands = tokio::task::spawn_blocking(move || finish_observer(client, server)).await??;\n    // Execute, independent full CURRENT, then the actual withdrawal rejection.\n    assert_eq!(commands, 3);\n    // The actual C publication rejects before another predecessor read.\n    // The Selector channel is left unmodified, never replaced or retried.\n    assert!(tokio::task::spawn_blocking(move || service.finish(true, false)).await?? > 0);\n    f.finish(false).await?;\n    Ok(())\n}"
+    },
+    "append_cfg_test_helper": {
+      "path": "circuit_next_use_command_evidence.rs",
+      "text": "\n// Test-only late-ACK control for the unchanged legacy evidence budget. The\n// actual owner response is completed before this gate; the original framer\n// performs its existing post-handler deadline check and refuses a late reply.\n#[cfg(test)]\npub(crate) fn serve_evidence_late_response<W: AnchorWitnessStore + Send + 'static>(\n    owner: std::sync::Arc<OriginalCircuitNextUseCommandOwnerV1<W>>,\n    mut channel: HostAuthorityPeerChannel,\n) -> (\n    std::sync::mpsc::Sender<()>,\n    std::thread::JoinHandle<(u64, Result<u64, Error>)>,\n) {\n    let (release, wait) = std::sync::mpsc::channel();\n    let peer = std::thread::spawn(move || {\n        let mut original_responses = 0_u64;\n        let result = channel.exchange(|bytes| {\n            let response = owner\n                .evidence_response(bytes, 1)\n                .map_err(|_| HostIssuerTransportError::InvalidRequest)?;\n            original_responses += 1;\n            wait.recv().map_err(|_| HostIssuerTransportError::Closed)?;\n            Ok(response)\n        });\n        (\n            original_responses,\n            result.map(u64::from).map_err(Error::from),\n        )\n    });\n    (release, peer)\n}\n"
+    },
+    "one_line_test_reexport": {
+      "path": "circuit_next_use_command_support_tests.rs",
+      "needle": "pub(crate) use training_transport::pidfd;\n",
+      "added": "pub(crate) use super::evidence::serve_evidence_late_response;\n"
+    }
+  },
+  "source_checks": {
+    "status": "source-only; no original Python/Rust/native execution",
+    "base": "a7571fe7ca197de52cd071741b85b14a237d6bd5",
+    "oneExistingFunctionChanged": [
+      "q24_next_use_command_readback_refuses_actual_publication_withdrawal"
+    ],
+    "allOtherFunctionsExact": 12,
+    "nativeCases": [
+      "q24_next_use_command_attests_actual_different_c_and_shares_dispatch",
+      "q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly",
+      "q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission",
+      "q24_next_use_command_pins_both_original_signatures_before_dispatch",
+      "q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+      "q24_next_use_command_preserves_original_expiry_and_external_custody"
+    ],
+    "nativeNamesUnchanged": true,
+    "productionEvidenceTokensUnchanged": true,
+    "productionEvidenceTokenCount": 648,
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+        "beforeBlob": "4274d202bdd47d261139018bd89b7cb64b0b9670",
+        "bytes": 22853,
+        "sha256": "64c5b2a9b51ba59352939c80b478adfcb84aac8840b18af86884d5aa1e041645"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+        "beforeBlob": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c",
+        "bytes": 5093,
+        "sha256": "96c0d7202cbc9dfb2569eeedda8db4640b77cc8500b369ccd1d7731c21e47bf5"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+        "beforeBlob": "34dfaeb725b5a32f65f824c97407e5e7ac4e4772",
+        "bytes": 11152,
+        "sha256": "5b51214d1a1610f45ac1891793162b2e11c92b5dbf38558a10d44c955b5605f5"
+      }
+    ]
+  },
+  "guard_impact": {
+    "callers_changed": false,
+    "protected_records_changed": false,
+    "reason": "The production evidence file's exact original prefix and 648 production tokens are unchanged; the appended helper and its caller/re-export are all cfg(test). No manifest/verifier/QA script change.",
+    "native_inventory": "All six existing native case names in this file remain unchanged. Total a757 inventory remains 201 cases / 43 groups."
+  },
+  "patch_sha256": "79b6314b298048d392bea9e301994bd579f9f14cb9d814ebd65ce642cff082be",
+  "limitations": [
+    "This change repairs an engineering fixture, not original production custody or a real cold daemon/Root restart.",
+    "The legacy failed client check does not perform a second post-withdrawal remote read; the same original command read supplies that required check.",
+    "Original H compilation/native verification is still required at the new fixed source.",
+    "The separate 13 stack-overflow failures are not attributed or claimed fixed by this C change."
+  ]
+}

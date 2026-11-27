@@ -1,0 +1,1162 @@
+{
+  "schema": "hepta.original-native-evidence.git-publication.v1",
+  "status": "failed-or-uncertain",
+  "base": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "base_tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+  "branch_ref": "refs/heads/codex/ordinary-native-evidence-v5-20261112-af52",
+  "remote": "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+  "steps": [
+    {
+      "name": "source-before-head",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-head.stdout",
+        "bytes": 41,
+        "sha256": "6509988c4d11e515db76b7a14ccfb0218f38a9b0f4cf228c0f1cdce50543a409"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-head.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-before-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-tree.stdout",
+        "bytes": 41,
+        "sha256": "91d14f3d93370c9bcb667453e398dbc3a25f907d9cb670d21968f5dae9e30fe4"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-before-status",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-status.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-status.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-before-refs",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "for-each-ref",
+        "--format=%(refname)%00%(objectname)"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-refs.stdout",
+        "bytes": 98,
+        "sha256": "e14485d1623e9befc16e236da72fee548dc1e86e15ffdd2982ae1381d8b70388"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-refs.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "clone-independent",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "--no-tags",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/clone-independent.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/clone-independent.stderr",
+        "bytes": 120,
+        "sha256": "386e3ad4179019dde1d3a899617ae48c35490c5fc330cc252294183e197bcc98"
+      }
+    },
+    {
+      "name": "independent-root",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/independent-root.stdout",
+        "bytes": 102,
+        "sha256": "dd12f5e1c01bd090133d6e7638c4c220834b09dd93e82de123ff94d8b343bf88"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/independent-root.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "independent-git-dir",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "rev-parse",
+        "--absolute-git-dir"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/independent-git-dir.stdout",
+        "bytes": 107,
+        "sha256": "858486494f05d41855bb93811d800dc5ef637c8675771f7004a32cb3a6f3ad4b"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/independent-git-dir.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "parent-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "rev-parse",
+        "715a5726f5031e50ad963812d2a1270e8d0cf769^{tree}"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/parent-tree.stdout",
+        "bytes": 41,
+        "sha256": "91d14f3d93370c9bcb667453e398dbc3a25f907d9cb670d21968f5dae9e30fe4"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/parent-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "remote-ref-before",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "ls-remote",
+        "--exit-code",
+        "--refs",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "refs/heads/codex/ordinary-native-evidence-v5-20261112-af52"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 2,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/remote-ref-before.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/remote-ref-before.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "load-parent-index",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "read-tree",
+        "715a5726f5031e50ad963812d2a1270e8d0cf769"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/load-parent-index.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/load-parent-index.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "parent-paths",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "715a5726f5031e50ad963812d2a1270e8d0cf769",
+        "--",
+        "qualification/ordinary-owner-assembly-20261111/native-evidence/v5"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/parent-paths.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/parent-paths.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "parent-allowlist-mode",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "ls-tree",
+        "715a5726f5031e50ad963812d2a1270e8d0cf769",
+        "--",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/parent-allowlist-mode.stdout",
+        "bytes": 85,
+        "sha256": "b1165854660fae0c55c0fcc14b0da2a7213fba7db21a45bf39c6d8b82848feda"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/parent-allowlist-mode.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "parent-allowlist",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "show",
+        "715a5726f5031e50ad963812d2a1270e8d0cf769:.github/blob-size-allowlist.txt"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/parent-allowlist.stdout",
+        "bytes": 11418,
+        "sha256": "b81abcacd1f5db312caf677b190394b188dce94905cb5997d56949da7976b492"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/parent-allowlist.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-after-validation-head",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-after-validation-head.stdout",
+        "bytes": 41,
+        "sha256": "6509988c4d11e515db76b7a14ccfb0218f38a9b0f4cf228c0f1cdce50543a409"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-after-validation-head.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-after-validation-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-after-validation-tree.stdout",
+        "bytes": 41,
+        "sha256": "91d14f3d93370c9bcb667453e398dbc3a25f907d9cb670d21968f5dae9e30fe4"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-after-validation-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-after-validation-status",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-after-validation-status.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-after-validation-status.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-after-validation-refs",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "for-each-ref",
+        "--format=%(refname)%00%(objectname)"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-after-validation-refs.stdout",
+        "bytes": 98,
+        "sha256": "e14485d1623e9befc16e236da72fee548dc1e86e15ffdd2982ae1381d8b70388"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-after-validation-refs.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "write-object-00",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-object-00.stdout",
+        "bytes": 41,
+        "sha256": "e52e82da9ee3c2b60f401d6e558485a9648ead00e30cf2aab710cc03ac92fa3e"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-object-00.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "index-object-00",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644",
+        "caa45dc038e2e4fd2da954243a272f709a1528b5",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/index-object-00.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/index-object-00.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "write-object-01",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-object-01.stdout",
+        "bytes": 41,
+        "sha256": "82b7dd08ea2487bd77cae7656db61655fa60e205b5c1fab021d6538ddbe5c571"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-object-01.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "index-object-01",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644",
+        "d73cb42ac6c77cf2cb56ed16676b928838f298d2",
+        "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/PUBLICATION.json"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/index-object-01.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/index-object-01.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "write-object-02",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-object-02.stdout",
+        "bytes": 41,
+        "sha256": "6b743a16d95a433fe093f7ed7860d37104f82d2dd7ce4c05e58c9ea6b4115773"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-object-02.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "index-object-02",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644",
+        "8e16a604428568c346fdba3cb1b961d5f626b523",
+        "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/exact-export-request.json"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/index-object-02.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/index-object-02.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "write-object-03",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-object-03.stdout",
+        "bytes": 41,
+        "sha256": "877dd74e40ba612215eb544fe7de9c44aa809961455ed2074f53c4806a70f26b"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-object-03.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "index-object-03",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644",
+        "57c11f640ace9476be02aca4c02a784691d2e92b",
+        "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/export.json"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/index-object-03.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/index-object-03.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "write-object-04",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-object-04.stdout",
+        "bytes": 41,
+        "sha256": "0ff748b6f7f4df177a383e642d075bbb0f6a9a669958c55e14841301c608dc8b"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-object-04.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "index-object-04",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644",
+        "891109a74a5484451195bdaed03629de505dc131",
+        "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/index-object-04.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/index-object-04.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "write-evidence-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "write-tree"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-evidence-tree.stdout",
+        "bytes": 41,
+        "sha256": "18ac790e90654eec31763454c8720a1855d1b099e23498a9b2c44d59db1bbca6"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/write-evidence-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "verify-exact-tree-delta",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "diff-tree",
+        "--no-commit-id",
+        "--no-renames",
+        "--name-status",
+        "-r",
+        "715a5726f5031e50ad963812d2a1270e8d0cf769",
+        "562351fec397f59cb51707bc59b4202a0383da8d"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/verify-exact-tree-delta.stdout",
+        "bytes": 385,
+        "sha256": "519f724c77116e7870e9416cef7d836b1f037f7b770180e09f289ef914917c1a"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/verify-exact-tree-delta.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "create-evidence-commit",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "-c",
+        "user.name=Hepta qualification evidence",
+        "-c",
+        "user.email=qualification@local.invalid",
+        "commit-tree",
+        "562351fec397f59cb51707bc59b4202a0383da8d",
+        "-p",
+        "715a5726f5031e50ad963812d2a1270e8d0cf769"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/create-evidence-commit.stdout",
+        "bytes": 41,
+        "sha256": "47a8f94e9c10fd71225cc4c96613f637c7e558f56fb8f03cfb68455ce9fece5b"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/create-evidence-commit.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "verify-parent",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        "404b6df62b5f44396d063709a5234036f84e336f"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/verify-parent.stdout",
+        "bytes": 82,
+        "sha256": "718cca57ed387b424a4d21aa85f8a1af2e56cd1e58328390278ac61b6f074c4f"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/verify-parent.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "verify-commit-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "rev-parse",
+        "404b6df62b5f44396d063709a5234036f84e336f^{tree}"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/verify-commit-tree.stdout",
+        "bytes": 41,
+        "sha256": "18ac790e90654eec31763454c8720a1855d1b099e23498a9b2c44d59db1bbca6"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/verify-commit-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "verify-archive-object",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "rev-parse",
+        "404b6df62b5f44396d063709a5234036f84e336f:qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/verify-archive-object.stdout",
+        "bytes": 41,
+        "sha256": "0ff748b6f7f4df177a383e642d075bbb0f6a9a669958c55e14841301c608dc8b"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/verify-archive-object.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "retain-local-evidence-ref",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "update-ref",
+        "refs/heads/codex/ordinary-native-evidence-v5-20261112-af52",
+        "404b6df62b5f44396d063709a5234036f84e336f",
+        "0000000000000000000000000000000000000000"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/retain-local-evidence-ref.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/retain-local-evidence-ref.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-before-push-head",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-push-head.stdout",
+        "bytes": 41,
+        "sha256": "6509988c4d11e515db76b7a14ccfb0218f38a9b0f4cf228c0f1cdce50543a409"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-push-head.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-before-push-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-push-tree.stdout",
+        "bytes": 41,
+        "sha256": "91d14f3d93370c9bcb667453e398dbc3a25f907d9cb670d21968f5dae9e30fe4"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-push-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-before-push-status",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-push-status.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-push-status.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-before-push-refs",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "for-each-ref",
+        "--format=%(refname)%00%(objectname)"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-push-refs.stdout",
+        "bytes": 98,
+        "sha256": "e14485d1623e9befc16e236da72fee548dc1e86e15ffdd2982ae1381d8b70388"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-before-push-refs.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "push-only-new-evidence-ref",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "push",
+        "--porcelain",
+        "--no-follow-tags",
+        "--recurse-submodules=no",
+        "--force-with-lease=refs/heads/codex/ordinary-native-evidence-v5-20261112-af52:",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "refs/heads/codex/ordinary-native-evidence-v5-20261112-af52:refs/heads/codex/ordinary-native-evidence-v5-20261112-af52"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 128,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/push-only-new-evidence-ref.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/push-only-new-evidence-ref.stderr",
+        "bytes": 83,
+        "sha256": "2e554a39e2bb4414b5e2c3f5a90ebc87b405b5b8231d692704ec6df4580e8f60"
+      }
+    },
+    {
+      "name": "remote-ref-after-failure",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+        "ls-remote",
+        "--exit-code",
+        "--refs",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "refs/heads/codex/ordinary-native-evidence-v5-20261112-af52"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 2,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/remote-ref-after-failure.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/remote-ref-after-failure.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-final-head",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-final-head.stdout",
+        "bytes": 41,
+        "sha256": "6509988c4d11e515db76b7a14ccfb0218f38a9b0f4cf228c0f1cdce50543a409"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-final-head.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-final-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-final-tree.stdout",
+        "bytes": 41,
+        "sha256": "91d14f3d93370c9bcb667453e398dbc3a25f907d9cb670d21968f5dae9e30fe4"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-final-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-final-status",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-final-status.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-final-status.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "source-final-refs",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source",
+        "for-each-ref",
+        "--format=%(refname)%00%(objectname)"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "status": "completed",
+      "exit": 0,
+      "stdout": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-final-refs.stdout",
+        "bytes": 98,
+        "sha256": "e14485d1623e9befc16e236da72fee548dc1e86e15ffdd2982ae1381d8b70388"
+      },
+      "stderr": {
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records/source-final-refs.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "push_attempted": true,
+  "native_or_cargo_executed": false,
+  "authorityGranted": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "source_before": {
+    "head": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "status": "",
+    "refs_sha256": "e14485d1623e9befc16e236da72fee548dc1e86e15ffdd2982ae1381d8b70388"
+  },
+  "evidence_tree": "562351fec397f59cb51707bc59b4202a0383da8d",
+  "files": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "mode": "100644",
+      "git_blob": "caa45dc038e2e4fd2da954243a272f709a1528b5",
+      "bytes": 11580,
+      "sha256": "543ebf55728ff2040a42f86fffc907d109ef74953ba3e45c941619b6edddbd3f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/PUBLICATION.json",
+      "mode": "100644",
+      "git_blob": "d73cb42ac6c77cf2cb56ed16676b928838f298d2",
+      "bytes": 374219,
+      "sha256": "a106dbe52263528aee0633fc4547c57f71081392ee44cae47616e492fa83d11d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/exact-export-request.json",
+      "mode": "100644",
+      "git_blob": "8e16a604428568c346fdba3cb1b961d5f626b523",
+      "bytes": 199062,
+      "sha256": "71478a60b9f41529044a9c066e7177df8ab9be9c19bb5a833daf8b78ea7d97b5"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/export.json",
+      "mode": "100644",
+      "git_blob": "57c11f640ace9476be02aca4c02a784691d2e92b",
+      "bytes": 8045,
+      "sha256": "1b413700ceb0b8ebeb49c8030cb4235bc14a8c0e95362de07f7eaeb17cd67074"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz",
+      "mode": "100644",
+      "git_blob": "891109a74a5484451195bdaed03629de505dc131",
+      "bytes": 1894408,
+      "sha256": "b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9"
+    }
+  ],
+  "exact_tree_delta": [
+    "M\t.github/blob-size-allowlist.txt",
+    "A\tqualification/ordinary-owner-assembly-20261111/native-evidence/v5/PUBLICATION.json",
+    "A\tqualification/ordinary-owner-assembly-20261111/native-evidence/v5/exact-export-request.json",
+    "A\tqualification/ordinary-owner-assembly-20261111/native-evidence/v5/export.json",
+    "A\tqualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz"
+  ],
+  "commit": "404b6df62b5f44396d063709a5234036f84e336f",
+  "source_before_push": {
+    "head": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "status": "",
+    "refs_sha256": "e14485d1623e9befc16e236da72fee548dc1e86e15ffdd2982ae1381d8b70388"
+  },
+  "failure": "RuntimeError('push-only-new-evidence-ref: original Git exit 128')",
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 357, in <module>\n    git(\"push-only-new-evidence-ref\", \"push\", \"--porcelain\", \"--no-follow-tags\",\n    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        \"--recurse-submodules=no\", \"--force-with-lease=\" + REF + \":\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        REMOTE, REF + \":\" + REF, budget=300)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 99, in git\n    return run(label, [\"git\", \"-C\", str(cwd), *args], cwd=ROOT,\n               data=data, allowed=allowed, extra_env=extra_env, budget=budget)\n  File \"<string>\", line 95, in run\n    raise RuntimeError(label + \": original Git exit \" + str(p.returncode))\nRuntimeError: push-only-new-evidence-ref: original Git exit 128\n",
+  "remote_after_failed_push": null,
+  "failed_push_commit_observed": false,
+  "source_after": {
+    "head": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "status": "",
+    "refs_sha256": "e14485d1623e9befc16e236da72fee548dc1e86e15ffdd2982ae1381d8b70388"
+  },
+  "source_unchanged": true
+}

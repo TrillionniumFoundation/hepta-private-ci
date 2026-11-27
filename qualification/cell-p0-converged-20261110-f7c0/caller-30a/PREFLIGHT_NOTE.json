@@ -1,0 +1,30 @@
+{
+  "schema": "hepta_verifier_preflight_note_v1",
+  "recorded_at_utc": "2026-11-11T03:14:58.544710+00:00",
+  "stage": "source identity collection before ATTEMPT creation and before verifier subprocess",
+  "result": "FAILED_METADATA_READ_ONLY",
+  "verifier_started": false,
+  "attempt_file_present_after_failure": false,
+  "observed_error": "FileNotFoundError: docs/hepta-generation-learning-readback.md",
+  "original_helper": {
+    "file": "run_full_caller.preflight-v1.py",
+    "bytes": 8178,
+    "sha256": "575b2926ac242f1d60cbab24e12248be3d2fd3d3139d84bc9bd79584eca245a1"
+  },
+  "preexisting_sparse_patterns": [
+    "/*",
+    "!/qualification/",
+    "!/archive/",
+    "!/docs/",
+    "!/assets/"
+  ],
+  "missing_doc_git_index_flag": "S",
+  "caller_source_roots": [
+    "codex-rs"
+  ],
+  "tracked_rust_in_caller_roots": 6302,
+  "worktree_rust_in_caller_roots": 6302,
+  "missing_tracked_rust_in_caller_roots": [],
+  "correction": "Read excluded non-caller documentation from the exact commit Git blob; mark its byte origin. Retain the original sparse checkout and source files.",
+  "cost_boundary": "This failed preflight was not a verifier run. Its resource cost was not separately measured; it is excluded from the later verifier-only cost receipt."
+}

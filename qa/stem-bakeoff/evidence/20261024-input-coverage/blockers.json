@@ -1,0 +1,76 @@
+{
+  "completed_evidence": [
+    "historical SWE-bench train cohort excluding all groups connected to official test/dev sources",
+    "exact native checkpoint body byte identity",
+    "matched native token/padding/forward work",
+    "48 frozen small readouts with independent-process prediction restoration",
+    "unchanged-probability standalone lexical cost replay"
+  ],
+  "next_experiment_requirement": "new frozen source groups, meaningful task outcomes and equal total parameter/compute/resource controls; never reuse exposed evaluation as fresh acceptance",
+  "primary_observation": {
+    "budget": 128,
+    "ci95": [
+      -0.015346479616153628,
+      0.03579345166982965
+    ],
+    "conditioning": "fixed historical tasks, training sources, seeds, and fitted states",
+    "difference": 0.00944794662894712,
+    "left": [
+      "head_tail",
+      "linear"
+    ],
+    "negative_interval": false,
+    "paired_source_group_draws": 2000,
+    "positive_interval": false,
+    "rejected_absent_class_draws": 0,
+    "right": [
+      "prefix",
+      "linear"
+    ],
+    "status": "measured"
+  },
+  "remaining": [
+    {
+      "question": "agent task benefit",
+      "reason": "four structural patch labels in one task family; no tool-use outcome, repair success, or human task utility",
+      "status": "not_measured"
+    },
+    {
+      "question": "future or source-family qualification",
+      "reason": "new historical SWE-bench train source groups; semantic/pretraining overlap remains unknown",
+      "status": "not_established"
+    },
+    {
+      "question": "continual learning and retention",
+      "reason": "fixed offline source budgets and 200-step readouts; no long-running drift or stability trajectory",
+      "status": "not_measured"
+    },
+    {
+      "question": "cell split or migration benefit",
+      "reason": "no fresh equal-total-capacity fixed/random/learned split control in this trial",
+      "status": "not_measured"
+    },
+    {
+      "question": "learned inter-cell edges",
+      "reason": "no no-edge/fixed/random/learned-edge causal comparison or multi-cell credit-assignment test",
+      "status": "not_measured"
+    },
+    {
+      "question": "native multi-host execution",
+      "reason": "isolated Python CPU research on one host; no production neuron admission or multi-host recovery",
+      "status": "not_measured"
+    },
+    {
+      "question": "complete production cost",
+      "reason": "encoding and query/state costs measured; original isolated BM25 build time, energy and real agent total utility are not measured",
+      "status": "not_established"
+    },
+    {
+      "question": "general intelligence or automatic emergence",
+      "reason": "classification, feature sharing and state persistence do not establish a generally capable agent",
+      "status": "not_established"
+    }
+  ],
+  "schema": "hepta.scientific-blocker-ledger.v1",
+  "scope": "input-policy and private-readout experiment"
+}

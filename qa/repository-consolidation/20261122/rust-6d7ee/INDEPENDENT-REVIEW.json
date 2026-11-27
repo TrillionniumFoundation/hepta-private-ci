@@ -1,0 +1,132 @@
+{
+  "reviewed_at": "2026-11-22T13:30:32.215774+00:00",
+  "review_mode": "Read-only root workspace and retained artifacts; no validation tests or mutations performed by this review.",
+  "root_head": "0ac61de676f7076bead25f86078a6c4839f1a132",
+  "workflow_summary": {
+    "count": 131,
+    "run_steps": 637,
+    "yaml_parser": "yaml 2.9.0",
+    "value_deep_equivalence": true,
+    "before_and_after_hash_binding": true,
+    "warnings": 0
+  },
+  "postimage_summary": {
+    "count": 18,
+    "original_inventory_integrity_verified": true,
+    "exact_changed_path_set": true,
+    "all_before_and_after_bindings_verified": true,
+    "currently_staged_count": 18,
+    "currently_unstaged_paths": []
+  },
+  "retained_original_runs": {
+    "ordinary": {
+      "source": "0ac61de676f7076bead25f86078a6c4839f1a132",
+      "tested_sha": "0ac61de676f7076bead25f86078a6c4839f1a132",
+      "passed": 2831,
+      "failed": 0,
+      "exit_code": 0,
+      "junit_skipped": 0,
+      "execution_hash_verified": true,
+      "junit_hash_verified": true,
+      "log_hash_verified": true,
+      "before_dirty": false,
+      "after_dirty": false
+    },
+    "root": {
+      "source": "0ac61de676f7076bead25f86078a6c4839f1a132",
+      "tested_sha": "0ac61de676f7076bead25f86078a6c4839f1a132",
+      "passed": 68,
+      "failed": 0,
+      "exit_code": 0,
+      "junit_skipped": 0,
+      "execution_hash_verified": true,
+      "junit_hash_verified": true,
+      "log_hash_verified": true,
+      "before_dirty": false,
+      "after_dirty": false
+    }
+  },
+  "local_validation_observations": {
+    "intelligence_tests": {
+      "passed": 271,
+      "skipped": 2,
+      "test_binaries": 6,
+      "ignored_helpers": [
+        "memory_cell_transfer::clean_agent_worker (invoked explicitly by transfer test in isolated child process)",
+        "memory_cell_faults::node_worker (executed by parent tests under real OS flock in child processes)"
+      ]
+    },
+    "intelligence_fix": {
+      "exited_successfully": true,
+      "strict_clippy": false,
+      "remaining_warning": "clippy::drop_non_drop at codex-rs/hepta-intelligence-eval/src/product_holdout_release_tests.rs:197"
+    },
+    "github_script_tests": {
+      "tests_run": 314,
+      "unittest_result": "OK",
+      "warning_like_output": "Codespell custody validation failed: drift and synthetic failed-command records are emitted by passing negative test fixtures, not independent outer-suite failures."
+    },
+    "pnpm_frozen_install": {
+      "version": "10.34.5",
+      "completed": true,
+      "typescript_sdk_prepare_completed": true
+    },
+    "pnpm_format": {
+      "original_command": "prettier --check *.json *.md docs/*.md .github/workflows/*.yml **/*.js",
+      "all_matched_files_passed": true
+    },
+    "changed_format": "Original formatter pins and 44 retained evidence files checked; successful fmt/check logs are empty as expected."
+  },
+  "qualifications": [
+    "Original daemon 2831+68 tests are bound to clean 0ac before maintenance, not to reconstructed postimages or the new combined commit.",
+    "Successful just fix is not a strict -D warnings claim; existing package and dependency warnings remain in original logs.",
+    "Operator scoped tests/coverage are independently recorded; this review does not establish complete new-head GitHub CI qualification."
+  ],
+  "log_bindings": {
+    "intelligence-tests.log": {
+      "bytes": 45472,
+      "sha256": "ccf23820fbfdbaae3263ed5877e16fb6fe76645ab6b30fc693a27ada18fe2eaf"
+    },
+    "intelligence-fix.log": {
+      "bytes": 3894,
+      "sha256": "58ca7404a320c8e2860c205c31b853a2bd19d261c601f6e13bc76e4269511542"
+    },
+    "github-script-tests.log": {
+      "bytes": 5094,
+      "sha256": "a4cb9bfc48afb0a75699a714772698218d7b2ffba9f77a8ec77297e97d8dd403"
+    },
+    "daemon-fix.log": {
+      "bytes": 69642,
+      "sha256": "6c0d48208a19ed835287cf57a9c27d31a2b611beb2cca874e35c19c45c857544"
+    },
+    "daemon-fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pnpm-frozen-install.log": {
+      "bytes": 17339,
+      "sha256": "f1efd363aaac696017c77557518906826ce5ab8cbff6c8fd997164bdc9ba03fb"
+    },
+    "prettier-check-frozen-install.log": {
+      "bytes": 215,
+      "sha256": "78452223ee06449c6a1b670be3f9fe01537b0bc4129be4102d236ee113d76603"
+    },
+    "changed-format-recovered.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "changed-format-check.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "child_reports": [
+    "WORKFLOW-REVIEW.json",
+    "POSTIMAGE-REVIEW.json"
+  ],
+  "research_status_markdown_review": {
+    "outside_table_lines_exactly_unchanged": true,
+    "table_cells_and_alignment_identical": true,
+    "only_table_padding_and_separator_width_changed": true
+  }
+}

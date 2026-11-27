@@ -1,0 +1,109 @@
+{
+  "schema": "ci-windows-clock-precision-stage02",
+  "status": "FROZEN_FOR_REVIEW_NATIVE_PENDING",
+  "base_source_head": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "append_to_composite": "674102bd42ee11807d941e0f91b56dad63c2e945",
+  "append_to_tree": "e1abde2f90e25e8c3e462a570c2c5bba0d7a66b3",
+  "before_binding": "Exact immutable stage01 afterimage; the failed original function body was unchanged by stage01.",
+  "files": [
+    {
+      "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+      "mode": "100644",
+      "before": {
+        "git_blob": "4212c00916a6da25e68ff9408dec8032ffccc55d",
+        "sha256": "efb638dbb49bc7e02558523ee167a310efc4f6683190f28324db1c9d54f07adc",
+        "size": 9377
+      },
+      "after": {
+        "git_blob": "f87d8dd948cb88b87ffa4bd0124e427032f1a420",
+        "sha256": "dc10c11e9401fe882ae2e737ad033e7c8fc0d18222764369d303861dae83da95",
+        "size": 10657
+      },
+      "before_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage02/before/codex-rs/utils/time/src/timestamp_tests.rs",
+      "after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage02/after/codex-rs/utils/time/src/timestamp_tests.rs"
+    }
+  ],
+  "original_failure": {
+    "job_id": 136061097394,
+    "run_id": 44667479317,
+    "platform": "windows-latest / x86_64-pc-windows-msvc",
+    "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/logs/job-136061097394.log",
+    "log_sha256": "b699f165f61290d7bcb4313d92e0e93378b890ae6f253f4d7abe987b000e8af8",
+    "test": "tests::preserves_signed_epoch_and_duration_refusals",
+    "assertion_location": "utils/time/src/timestamp_tests.rs:111",
+    "observed_left": 0,
+    "expected_right": -1,
+    "unit_summary": "15 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out",
+    "interpretation": "The 1ns subtraction request was quantized to zero by Windows SystemTime; this does not invalidate Timestamp nanosecond representation."
+  },
+  "primary_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/std/src/time.rs",
+      "retrieval_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage02/std-time-source.json",
+      "retrieval_sha256": "89054673aa696885d10f61cbb9433a5ab60cce33af4e34d0506d25b904139ccc",
+      "content_sha256": "28a33c12597bbbb33342681696734d83d1a8045c0b6f8d70e7bfb468161eae62"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/std/src/sys/time/windows.rs",
+      "retrieval_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage02/std-windows-time-source.json",
+      "retrieval_sha256": "bdaa332b263f807e5360035689866ff579a6549ed16fbdffcf82eab5883e2c9f",
+      "content_sha256": "4c8f96bf6a8f338fcfcbda5c2286b94d59751921a3e3d0ca6adc85d845b6e012"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/std/src/sys/pal/windows/time.rs",
+      "retrieval_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage02/std-pal-windows-time-source.json",
+      "retrieval_sha256": "e8a195e41608c57bc824b07841f39a437fb7840fe99228ed63d9371610e82058",
+      "content_sha256": "c0ba05902236fee9a5f9ff0a1305e8855c92efaffe37e315243f79dc7950fec1"
+    }
+  ],
+  "official_std_basis": "Rust 1.96 documents platform-dependent SystemTime precision: Windows uses 100ns intervals and Linux can represent 1ns. The Windows checked duration conversion divides subsecond nanoseconds by 100 before subtracting interval counts.",
+  "changes": [
+    "Keep the exact original -1 second, -1 millisecond and 999999999 nanosecond assertions against an explicitly constructed Timestamp one nanosecond before the epoch.",
+    "Independently exercise SystemTime one 100ns tick before the epoch, assert the full Timestamp object, and round-trip through the new fallible to_system_time method.",
+    "Always execute the 1ns SystemTime subtraction request. Compare its decoded signed interval to the actual standard-library duration and require an exact SystemTime round-trip; exact 1ns native coverage remains on platforms that represent it."
+  ],
+  "preservation": {
+    "all_existing_test_function_names_unchanged": [
+      "preserves_signed_utc_spelling_and_relaxed_legacy_inputs",
+      "rejects_original_clock_and_syntax_failures",
+      "preserves_leap_second_and_pre_epoch_ordering",
+      "preserves_signed_epoch_and_duration_refusals",
+      "network_and_filename_parsers_retain_distinct_contracts",
+      "system_time_conversion_preserves_signed_fractional_instants",
+      "system_time_conversion_normalizes_explicit_leap_seconds",
+      "system_time_conversion_respects_platform_checked_range"
+    ],
+    "original_three_nanosecond_assertions_exact": true,
+    "all_remaining_file_bytes_from_original_millisecond_test_onward_exact": true,
+    "stage01_three_new_utility_tests_unchanged": true,
+    "stage01_two_new_tui_tests_not_touched": true,
+    "skip_or_ignore_added": false,
+    "conditional_test_bypass_added": false,
+    "production_change": false
+  },
+  "validation": {
+    "patch_apply_check": "PASS",
+    "source_preservation": "PASS",
+    "rust_tests": "NOT_RUN",
+    "rustfmt": "NOT_RUN",
+    "no_native_or_remote_jobs_started": true
+  },
+  "artifacts": {
+    "changed-files.json": {
+      "size": 745,
+      "sha256": "e492333e23f724609023b3eca96d3531803c39124fd04f9eff2e780ecc653122"
+    },
+    "windows-clock-precision.patch": {
+      "size": 2283,
+      "sha256": "93d03cd81892de67bead714694d1c3cf54464a9f94e6ba5e3a7c8b3ace7526f2"
+    },
+    "patch-check.json": {
+      "size": 334,
+      "sha256": "e215f4fff3570e71edb9217a835159d72b0568d45b7b3baacffefc13d23fd7a4"
+    },
+    "original-windows-failure.txt": {
+      "size": 329,
+      "sha256": "d9d5aba3afbfc5357123d6748ca83bbc873198fbc9f4e2ea1a6bc26914374377"
+    }
+  }
+}

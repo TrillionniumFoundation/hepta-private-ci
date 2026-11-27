@@ -291,3 +291,43 @@ The bootstrap source implementation for `cognitive.read` is materialized by work
 - `codex-rs/hepta-cognitive-read`
 
 The source package is now classified `source_implemented_execution_pending`. `.github/workflows/hepta-consolidated-source.yml` is the intended exact-candidate gate for closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. Until a current candidate run is observed, this document does not claim those checks passed. Even a passing source receipt grants no independent acceptance, model/provider authority, promotion or release.
+
+### 2026-11-05 candidate: final owner cut after currentness callbacks
+
+The Agentd consumer entry point is
+`revalidate_with_retrieval_context` in
+`codex-rs/hepta-agentd/src/cognitive_context.rs`. After the retrieval-context
+callback and optional ranker callback return, the candidate calls
+`CognitiveStore::revalidate_lane_c_snapshot` again before returning a successful
+final-use receipt. The existing SQLite owner reacquires a transaction and compares
+scope, all owner frontiers and the complete snapshot, with its existing clock,
+validity and rollback checks. No new memory owner, cache or authority is created.
+
+The new fixtures in `cognitive_context_hnmf_tests.rs` hold the retrieval callback
+inside the existing `spawn_blocking` boundary. A Notify/channel gate waits for a
+real SQLite tombstone or source append to commit before allowing the callback to
+return. The source-only fixture requires an unchanged memory snapshot and a changed
+owner cut, so a selected-item check alone is insufficient.
+
+| Regression boundary | Required native observation |
+| --- | --- |
+| Tombstone during callback | Final use rejects a deletion committed after the first cut and before callback release. |
+| Source-only drift during callback | Final use rejects a changed source frontier even when the complete memory snapshot is unchanged. |
+| Stable context | The existing stable-context acceptance path still returns the original read binding. |
+
+The added reread is also placed after the optional ranker await, but the candidate
+does not add a separate ranker-race fixture. It establishes an owner check at the
+final-use validation boundary. It does not establish atomic authority across
+different owners or across later model attachment, activate a real retrieval
+provider, qualify daemon restart, or convert logical deletion into physical erasure.
+
+These are source-level changes and regression boundaries. Native RED/GREEN and
+broader regression results are recorded separately under their actual execution
+commit/tree, command, terminal status and raw artifacts. Retained historical
+execution pins remain unchanged; this addendum does not assert an execution result. Production implementation, product
+execution, independent acceptance, activation and release claims remain false.
+
+The sourceReviewAddendum reviewedPostimages entries retain the bytes inspected
+during the pre-format review and its historical integration base. They are not
+final candidate or execution hashes; current source-object observations and
+execution receipts are bound separately.

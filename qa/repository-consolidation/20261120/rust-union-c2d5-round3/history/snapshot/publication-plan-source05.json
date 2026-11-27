@@ -1,0 +1,742 @@
+{
+  "schema": "hepta.ordinary-source-publication-plan.v1",
+  "base": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "base_local": "0a455dcc702e89dc44d951a8ecfce2458fe2fdac",
+  "known_server_mapping": {
+    "0a455dcc702e89dc44d951a8ecfce2458fe2fdac": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+    "c1f5b72fe0fd6ecd3052e8991d3daa41a000e138": "752aeac9343e6c8e365188fd8240aecbc320d088",
+    "31b453485b85fb9ed39a709d49857b17882a64b7": "45c9cda60bc21cafa3fe991950e09fc60cbfc542",
+    "4f16e37146d234cb9c7b60874678e6ddf9eb5304": "0773c74ad41874b0e3e76e26cb83fd600b44b3ca"
+  },
+  "steps": [
+    {
+      "label": "Apply five exact formatter afterimages from published2b CI",
+      "local_commit": "c1f5b72fe0fd6ecd3052e8991d3daa41a000e138",
+      "tree": "4e939824a9c4888650bfb0cb13623636d69be1f1",
+      "ordered_parents": [
+        "0a455dcc702e89dc44d951a8ecfce2458fe2fdac"
+      ],
+      "message": "style: apply exact five-file formatter output from CI\n\nApply the five afterimages produced by the existing formatter jobs for\npublished safety head2b538380. Preserve the complete timestamp test union,\nQ24 assertions and app-server behavior. These bytes are independently\nbound to the original CI artifacts and the reviewed before images.\n\nNo formatter or native Rust test was run locally. New-head qualification\nremains pending the original required CI gates.\n",
+      "raw_sha256": "a1aadd0f242393e401b44c9274fc463114c1500a54bb86a2655b6b54487b6c5f",
+      "base_parent": "0a455dcc702e89dc44d951a8ecfce2458fe2fdac",
+      "base_tree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+      "entries": [
+        {
+          "path": "codex-rs/app-server/tests/common/rollout.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "05fdbcc137f1b5eff43c0ca4b2457ba8f42df09e",
+          "before": {
+            "path": "codex-rs/app-server/tests/common/rollout.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "28365554da578b5723e0a2baffd5788b4e093664"
+          },
+          "after": {
+            "path": "codex-rs/app-server/tests/common/rollout.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "05fdbcc137f1b5eff43c0ca4b2457ba8f42df09e"
+          }
+        },
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/thread_list.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "77d3eba9824b5b7b138294ac33bf8815200bbb4c",
+          "before": {
+            "path": "codex-rs/app-server/tests/suite/v2/thread_list.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "73134fa2d2a1af3ba17e30749f382a29b4c8f8ce"
+          },
+          "after": {
+            "path": "codex-rs/app-server/tests/suite/v2/thread_list.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "77d3eba9824b5b7b138294ac33bf8815200bbb4c"
+          }
+        },
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "024c0692a009eec5feaaa5da5653de35be1747a0",
+          "before": {
+            "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "efc0c62ce6326637e5626f943375197035973cd3"
+          },
+          "after": {
+            "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "024c0692a009eec5feaaa5da5653de35be1747a0"
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3376659e2d972bfe4659a0c5be1b928289f2b45b",
+          "before": {
+            "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "1a6da84fd666213a8753f071e1bcbaebed092e22"
+          },
+          "after": {
+            "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "3376659e2d972bfe4659a0c5be1b928289f2b45b"
+          }
+        },
+        {
+          "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5006a79180c806942c9447dc67ad9480f8bdfaab",
+          "before": {
+            "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "06dfc4157651fe72d23400bb834e15278633724b"
+          },
+          "after": {
+            "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "5006a79180c806942c9447dc67ad9480f8bdfaab"
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/FORMATTER-PREPARATION.json",
+          "bytes": 3652,
+          "sha256": "1529c9f4731c00c9eca76863b6c4d83bc492831198c9576875587b0f5d3f1291"
+        },
+        {
+          "path": "/workspace/scratch/c2d514464ab5/root-review/round3-formatter/ROOT-REVIEW.json",
+          "bytes": 2873,
+          "sha256": "40ca03b44ead114dc12705c6bd3b10619db9ec4aaff9d8dbc567d16d080af7c9"
+        }
+      ]
+    },
+    {
+      "label": "Repair six Windows unit-test observations and prepared-input fixtures",
+      "local_commit": "31b453485b85fb9ed39a709d49857b17882a64b7",
+      "tree": "31884ddd8455912d22bcdc98e65667fe601a7f8b",
+      "ordered_parents": [
+        "c1f5b72fe0fd6ecd3052e8991d3daa41a000e138"
+      ],
+      "message": "test: preserve held journal locks during physical byte observations\n\nRead complete journal bytes through the original locked file handle and\nrestore its actual cursor after successful or failed reads. Retain both\nreal read-only append-failure injections and observe their original held\nlock handles. Use a platform-absolute socket fixture and retain an absolute\nsibling for the payload-conflict case. Production locks, path validation,\nplatform refusals, dependencies and qualification features are unchanged.\n\nPreserve all41 original test entries, including the existing ignored\nwriter subprocess entry, and all177 original assertions. Add one real File\nregression with9 assertions for physical mutation, cursor restoration,\nread failure and exclusive ownership. Both independent source reviews\nand exact source-preservation checks passed. Native Rust, Windows and\njust fmt qualification remain NOT_RUN locally and pending required CI.\n",
+      "raw_sha256": "ce9764e8559e2b5a61c527ffee6ab662e53b601f46da75659c8c0c1d60effe80",
+      "base_parent": "c1f5b72fe0fd6ecd3052e8991d3daa41a000e138",
+      "base_tree": "4e939824a9c4888650bfb0cb13623636d69be1f1",
+      "entries": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d3d4f37ea3e04a8de0f1aec8bcfa72d435ced848",
+          "before": {
+            "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "334f00a3c84a7040a61d9c46d50671a489c493b9"
+          },
+          "after": {
+            "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "d3d4f37ea3e04a8de0f1aec8bcfa72d435ced848"
+          }
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/durable_incremental_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "350b70dc132e12592f395228b3b22d18edb76067",
+          "before": {
+            "path": "codex-rs/hepta-infer-core/src/durable_incremental_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "bd086476410491191e04faff6d8ab2bc184c29a6"
+          },
+          "after": {
+            "path": "codex-rs/hepta-infer-core/src/durable_incremental_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "350b70dc132e12592f395228b3b22d18edb76067"
+          }
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_incremental_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bf3b575c76d1eb5a066dc179d0f217801c7c9608",
+          "before": {
+            "path": "codex-rs/hepta-infer-core/src/native_incremental_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "52200533e8b2fe5cfc8e41ccd27442e4b6320f48"
+          },
+          "after": {
+            "path": "codex-rs/hepta-infer-core/src/native_incremental_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "bf3b575c76d1eb5a066dc179d0f217801c7c9608"
+          }
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cdff27a7328a36881bef3a0e0e093f76a1658937",
+          "before": {
+            "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "cac5eded39cc38430c92f03a3ce297a90ddceb45"
+          },
+          "after": {
+            "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "cdff27a7328a36881bef3a0e0e093f76a1658937"
+          }
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_usage_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5174aebf72b7b7bdc75757908460cec0fc2713e1",
+          "before": {
+            "path": "codex-rs/hepta-infer-core/src/native_usage_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "51262008989c112594044789e4d53ce8a8bcc4bc"
+          },
+          "after": {
+            "path": "codex-rs/hepta-infer-core/src/native_usage_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "5174aebf72b7b7bdc75757908460cec0fc2713e1"
+          }
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f3709ec60401cb7937b58114eb19ea4134120ff5",
+          "before": {
+            "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "7cfc2bff6fed8a18c1742aeabcf0ed6333633ce7"
+          },
+          "after": {
+            "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "f3709ec60401cb7937b58114eb19ea4134120ff5"
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/windows-six-review/REVIEW.json",
+          "bytes": 9479,
+          "sha256": "a4bbd154e0159dd66e2cacd31b4b4d763f45923497f1db237d95e744619b7fc9"
+        },
+        {
+          "path": "/workspace/scratch/c2d514464ab5/root-review/round3-windows-test/ROOT-REVIEW.json",
+          "bytes": 3163,
+          "sha256": "a1b4ff0ec9b0d1d4abfe5780582561457081aef00b3be8035d23415ec288746c"
+        },
+        {
+          "path": "/workspace/scratch/c2d514464ab5/branch-audit/windows-test-repair-stage01/TEST-COUNT-CORRECTION.json",
+          "bytes": 11056,
+          "sha256": "282fd93fbe1374fc60e2b172c5187354abdb10ea5ae9c5b8e20c53d07d9551de"
+        }
+      ]
+    },
+    {
+      "label": "Repair research fixture contracts, CPU RNG scope and image dependency",
+      "local_commit": "4f16e37146d234cb9c7b60874678e6ddf9eb5304",
+      "tree": "9cdeda5fba5b4cb02036c62f75781878497931ea",
+      "ordered_parents": [
+        "31b453485b85fb9ed39a709d49857b17882a64b7"
+      ],
+      "message": "fix: preserve research validation controls and isolate baseline RNG\n\nSupply the existing fixture depth and assert the current exact missing\ncheckpoint refusal. Retain the forged slot archive rejection separately\nand exercise the deeper paired teacher-geometry refusal only after both\nreal individual reviewers pass. Production reviewers remain unchanged.\n\nEvaluate the same TokenReader budget inside the existing fork_rng scope\nand retain both budget checks. Add only the pinned Pillow requirement to\nthe original full research regression workflow. Preserve every other pin,\nnative build step and complete test discovery.\n\nThe original source-bound selected Python suite passes39 tests before\nRuff; all3 complete modules are AST-identical after actual Ruff0.15.13.\nThe full research suite, Torch/RNG mechanism and native/just fmt gates\nremain pending. Do not claim CI equivalence for the local NumPy version.\n",
+      "raw_sha256": "e8a174642f82db26130c802fb98740b7a73b01fb4706f773b1281ef0325a5444",
+      "base_parent": "31b453485b85fb9ed39a709d49857b17882a64b7",
+      "base_tree": "31884ddd8455912d22bcdc98e65667fe601a7f8b",
+      "entries": [
+        {
+          "path": "qualification/stem-cell-v1/test_group_attention_campaign_review.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "df74f9f9dec5909410ca52a564a632f225bc4c13",
+          "before": {
+            "path": "qualification/stem-cell-v1/test_group_attention_campaign_review.py",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "dbd92471d7c1dd78086a33e7814741ce3081b626"
+          },
+          "after": {
+            "path": "qualification/stem-cell-v1/test_group_attention_campaign_review.py",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "df74f9f9dec5909410ca52a564a632f225bc4c13"
+          }
+        },
+        {
+          "path": "qualification/stem-cell-v1/binding_v6_bridge.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55163bc757331623d31962ae7ebd8d1ebae72800",
+          "before": {
+            "path": "qualification/stem-cell-v1/binding_v6_bridge.py",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "9cd32188d8f441fe6437019bfb317171efbfbad8"
+          },
+          "after": {
+            "path": "qualification/stem-cell-v1/binding_v6_bridge.py",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "55163bc757331623d31962ae7ebd8d1ebae72800"
+          }
+        },
+        {
+          "path": ".github/workflows/hepta-group-reasoning-research.yml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3cf5faeb281103edbd9a6f65b4379c99b9e33f62",
+          "before": {
+            "path": ".github/workflows/hepta-group-reasoning-research.yml",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "601c39c53051137879655ce1d067e9078ae57fa0"
+          },
+          "after": {
+            "path": ".github/workflows/hepta-group-reasoning-research.yml",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "3cf5faeb281103edbd9a6f65b4379c99b9e33f62"
+          }
+        },
+        {
+          "path": "qualification/stem-cell-v1/test_group_optimizer_paired_review.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6e0991ceda6b98950140d4dca209d25c17c79cd7",
+          "before": {
+            "path": "qualification/stem-cell-v1/test_group_optimizer_paired_review.py",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "aa6ea04a1f512ba26f070be1df018fff305061a4"
+          },
+          "after": {
+            "path": "qualification/stem-cell-v1/test_group_optimizer_paired_review.py",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "6e0991ceda6b98950140d4dca209d25c17c79cd7"
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "path": "/workspace/scratch/c2d514464ab5/root-review/round3-research/ROOT-REVIEW.json",
+          "sha256": "a54d25a85e95e8c11db2e4520ac2afb299fddd1191cee3d22a034059fdcb787e",
+          "bytes": 30257
+        },
+        {
+          "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/research-review/REVIEW.json",
+          "sha256": "cdbcf036d06bb48e2af21ab8d5aa2d7cb95d9ba3b8135dea696c5388acdded86",
+          "bytes": 7394
+        },
+        {
+          "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/FROZEN.json",
+          "sha256": "f302e955c0e04d0c7de5f0e93f68f5f5bc2e1928272bd549f98adcd7531172dc",
+          "bytes": 10053
+        }
+      ]
+    },
+    {
+      "label": "Propagate fixture-helper errors without weakening native test controls",
+      "local_commit": "a42c6d7e2f854576f3881ea826f5078731faf24a",
+      "tree": "65c5b34b173eaf0ada48d7fbd9858ee6abdd6121",
+      "ordered_parents": [
+        "4f16e37146d234cb9c7b60874678e6ddf9eb5304"
+      ],
+      "message": "test: propagate fixture helper errors through original harnesses\n\nRemove the29 strict-Clippy expect/unwrap sites from ordinary fixture\nhelpers. Preserve original error context, convert String errors explicitly\nand propagate failures through existing test results. Preserve both thread\nresult layers: material peer errors remain asserted, Trainer errors remain\npropagated, and outer thread panics resume unchanged.\n\nKeep all28 original tests and144 assertions, all real subprocess and\nauthority controls, the wiremock request expectation and the complete\nautomation production prefix. No lint policy or dependency changes.\n\nBoth source reviews and independent exact preservation checks passed.\nNative test execution, Rustfmt and strict Clippy remain pending CI.\n",
+      "raw_sha256": "48b228e6b5cd069600ebc1f326e427e5d8564c7a991e9188005c7e4c6de054b1",
+      "base_parent": "4f16e37146d234cb9c7b60874678e6ddf9eb5304",
+      "base_tree": "9cdeda5fba5b4cb02036c62f75781878497931ea",
+      "entries": [
+        {
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "089bd0bfa2947c039556c7c6c34fae3f70ad772c",
+          "before": {
+            "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "22ea70c61e8a09846aee51d9546c4f29bebf8c05"
+          },
+          "after": {
+            "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "089bd0bfa2947c039556c7c6c34fae3f70ad772c"
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8fb356816f87daf11d7b9e0fb4feea3590f6360d",
+          "before": {
+            "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "3a6cec34c8e158996dbb64e01282634944242546"
+          },
+          "after": {
+            "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "8fb356816f87daf11d7b9e0fb4feea3590f6360d"
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0c643d58ab7e883618a49f0df19c4ab5045ec8e1",
+          "before": {
+            "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "0fc3fd2fec8a1a9584dfd4e714af30b14f552152"
+          },
+          "after": {
+            "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "0c643d58ab7e883618a49f0df19c4ab5045ec8e1"
+          }
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/memory_serving_process_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "24f32c65455e8c67abd3968410c17d88fe9d67c8",
+          "before": {
+            "path": "codex-rs/hepta-agentd/src/memory_serving_process_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "6cdf6f104ca32bf6584eba67160f973427a29e98"
+          },
+          "after": {
+            "path": "codex-rs/hepta-agentd/src/memory_serving_process_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "24f32c65455e8c67abd3968410c17d88fe9d67c8"
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "path": "/workspace/scratch/c2d514464ab5/root-review/round3-clippy-helpers/ROOT-REVIEW.json",
+          "sha256": "c3300553024ed6ca709de3c6bded24a5094f01e7f87315ce451a1054c4facebd",
+          "bytes": 6850
+        },
+        {
+          "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/clippy-four-review/REVIEW.json",
+          "sha256": "0298c414427ad04e557cafa9ab064a6fec6a97c60ad8dafd38b9ab711adecafe",
+          "bytes": 5546
+        },
+        {
+          "path": "/workspace/scratch/c2d514464ab5/branch-audit/clippy-helper-stage01/FROZEN.json",
+          "sha256": "276fc50750e4f02ae29c7d08b3de9e0e46d0b9eefdb34a4c5268ce92ea534133",
+          "bytes": 3881
+        }
+      ]
+    },
+    {
+      "label": "Propagate prepared-input fixture failures through the full test-module closure",
+      "local_commit": "82574295993f14689045d7f5ddfe83f1b33144fd",
+      "tree": "50600ef174c114ef8b77683d43b6085ad669c76d",
+      "ordered_parents": [
+        "a42c6d7e2f854576f3881ea826f5078731faf24a"
+      ],
+      "message": "test: propagate prepared-input fixture errors across child tests\n\nReturn a private boxed-error Result from input and prepared_request and\npropagate every call through the existing prepared-input and compaction\ntest modules. Preserve all11 tests and45 assertions, including the actual\nchild environment/selector/exit contract, negative identity cases and\nthe complete compaction held-file observation helper.\n\nThis separate follow-up removes an ordinary-helper expect introduced by\nthe earlier Windows fixture correction; preserve that frozen source and\nits review history. No lint relaxation, new skip, fallback or dependency\nis introduced. Source review and exact patch-preservation checks passed.\nNative Rust, Windows, formatter and strict Clippy gates remain pending CI.\n",
+      "raw_sha256": "6b806cde3c2bf559b3fb364908d92b07693dcdbf540a093166d5fc6e8a9ce16d",
+      "base_parent": "a42c6d7e2f854576f3881ea826f5078731faf24a",
+      "base_tree": "65c5b34b173eaf0ada48d7fbd9858ee6abdd6121",
+      "entries": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b872fa11846809f280b850e86d5e945c1fd37a30",
+          "before": {
+            "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "f3709ec60401cb7937b58114eb19ea4134120ff5"
+          },
+          "after": {
+            "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "b872fa11846809f280b850e86d5e945c1fd37a30"
+          }
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_compaction_v3_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "813e9b5dc05222e12cb231243893d5eb6460d886",
+          "before": {
+            "path": "codex-rs/hepta-infer-core/src/native_compaction_v3_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "daff7df091238caf0d06312c521df30cdf98bafe"
+          },
+          "after": {
+            "path": "codex-rs/hepta-infer-core/src/native_compaction_v3_tests.rs",
+            "mode": "100644",
+            "type": "blob",
+            "git_blob": "813e9b5dc05222e12cb231243893d5eb6460d886"
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "path": "/workspace/scratch/c2d514464ab5/root-review/round3-prepared-helpers/ROOT-REVIEW.json",
+          "sha256": "87c9fe28244ecba582135304b8826b8214643200fa1f94803cbed65f41a82999",
+          "bytes": 4647
+        },
+        {
+          "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/prepared-two-review/REVIEW.json",
+          "sha256": "fb06b0a85c5e278e535795b75b81f5aa8ae6bdc4fde946593c59c035b2e99102",
+          "bytes": 5197
+        },
+        {
+          "path": "/workspace/scratch/c2d514464ab5/branch-audit/prepared-input-helper-stage01/FROZEN.json",
+          "sha256": "58bb9281407468ce152695c1d1f08f1e63c1d216c2df0d5aa61e8e888bf2551d",
+          "bytes": 3074
+        },
+        {
+          "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/windows-six-review/CLIPPY-FOLLOWUP-ADDENDUM.json",
+          "sha256": "483faf83a8d221726b474e0cfe51fbaa12726aaf13b51c7ef8334424bcb95b68",
+          "bytes": 968
+        }
+      ]
+    }
+  ],
+  "upload_blobs": [
+    {
+      "git_blob": "024c0692a009eec5feaaa5da5653de35be1747a0",
+      "bytes": 194859,
+      "sha256": "924a08fc14778b1093940976585541b6106f93fb062d2aa57fce533978464882",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/024c0692a009eec5feaaa5da5653de35be1747a0.blob",
+      "paths": [
+        "codex-rs/app-server/tests/suite/v2/thread_resume.rs"
+      ]
+    },
+    {
+      "git_blob": "05fdbcc137f1b5eff43c0ca4b2457ba8f42df09e",
+      "bytes": 12603,
+      "sha256": "dff9beb33752ad82fc3fc2e00790dc6c17c4ad29224074601deb8c556921ada6",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/05fdbcc137f1b5eff43c0ca4b2457ba8f42df09e.blob",
+      "paths": [
+        "codex-rs/app-server/tests/common/rollout.rs"
+      ]
+    },
+    {
+      "git_blob": "089bd0bfa2947c039556c7c6c34fae3f70ad772c",
+      "sha256": "33f990b909cf87744bbd2a00ce39ce60f914dd478aafc957fa66660e9132cbb7",
+      "bytes": 66020,
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/089bd0bfa2947c039556c7c6c34fae3f70ad772c.blob",
+      "paths": [
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+      ]
+    },
+    {
+      "git_blob": "0c643d58ab7e883618a49f0df19c4ab5045ec8e1",
+      "sha256": "787a82e915697ae5cd28272756941a8851570174df230d6e10429736f035fdb0",
+      "bytes": 15739,
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/0c643d58ab7e883618a49f0df19c4ab5045ec8e1.blob",
+      "paths": [
+        "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "24f32c65455e8c67abd3968410c17d88fe9d67c8",
+      "sha256": "34ec919cc61c12e7b5860b707c39d2601628e866f1fc0eeb37e5bd9a03f82575",
+      "bytes": 13138,
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/24f32c65455e8c67abd3968410c17d88fe9d67c8.blob",
+      "paths": [
+        "codex-rs/hepta-agentd/src/memory_serving_process_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "3376659e2d972bfe4659a0c5be1b928289f2b45b",
+      "bytes": 2327,
+      "sha256": "9d5f18209c4290b94ca85fc6b7b05bf62cc702ad45d4681c35b68cf9e3006965",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/3376659e2d972bfe4659a0c5be1b928289f2b45b.blob",
+      "paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "350b70dc132e12592f395228b3b22d18edb76067",
+      "bytes": 2931,
+      "sha256": "f5094f8262cf36cd8fece886d747381687c00e8decdd8b962bf2529100aea9ab",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/350b70dc132e12592f395228b3b22d18edb76067.blob",
+      "paths": [
+        "codex-rs/hepta-infer-core/src/durable_incremental_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "3cf5faeb281103edbd9a6f65b4379c99b9e33f62",
+      "sha256": "21682253cf9148bbcfebabbc4c8945b735a08d4128417ea6212a6f2c62ed3635",
+      "bytes": 5187,
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/3cf5faeb281103edbd9a6f65b4379c99b9e33f62.blob",
+      "paths": [
+        ".github/workflows/hepta-group-reasoning-research.yml"
+      ]
+    },
+    {
+      "git_blob": "5006a79180c806942c9447dc67ad9480f8bdfaab",
+      "bytes": 11715,
+      "sha256": "25ce8afb057830fabf33e70adc8526a3f86121044bf56ed51893ff1234266281",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/5006a79180c806942c9447dc67ad9480f8bdfaab.blob",
+      "paths": [
+        "codex-rs/utils/time/src/timestamp_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "5174aebf72b7b7bdc75757908460cec0fc2713e1",
+      "bytes": 7486,
+      "sha256": "19a34877b80b75d885a32c9ad914d250a3304557b1e01fbed042b52d5519fd52",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/5174aebf72b7b7bdc75757908460cec0fc2713e1.blob",
+      "paths": [
+        "codex-rs/hepta-infer-core/src/native_usage_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "55163bc757331623d31962ae7ebd8d1ebae72800",
+      "sha256": "09962a3fb3536801f6e95e209e827cee2b3b8c7fa3e2f1e868aacf8371d82418",
+      "bytes": 4938,
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/55163bc757331623d31962ae7ebd8d1ebae72800.blob",
+      "paths": [
+        "qualification/stem-cell-v1/binding_v6_bridge.py"
+      ]
+    },
+    {
+      "git_blob": "6e0991ceda6b98950140d4dca209d25c17c79cd7",
+      "sha256": "03ae422efbbb2b384330f9129eab1528ac6974189f62117f274d07eeaf44225e",
+      "bytes": 6333,
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/6e0991ceda6b98950140d4dca209d25c17c79cd7.blob",
+      "paths": [
+        "qualification/stem-cell-v1/test_group_optimizer_paired_review.py"
+      ]
+    },
+    {
+      "git_blob": "77d3eba9824b5b7b138294ac33bf8815200bbb4c",
+      "bytes": 78699,
+      "sha256": "4d7996e4a0a2460ae2bb63859573bd8b4b8c97135d1b13e850cf501776041606",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/77d3eba9824b5b7b138294ac33bf8815200bbb4c.blob",
+      "paths": [
+        "codex-rs/app-server/tests/suite/v2/thread_list.rs"
+      ]
+    },
+    {
+      "git_blob": "813e9b5dc05222e12cb231243893d5eb6460d886",
+      "sha256": "1fc96294cc21349ae268f9cc5d147d0843b4c84e14bf10fd0502250be3c3487c",
+      "bytes": 5166,
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/813e9b5dc05222e12cb231243893d5eb6460d886.blob",
+      "paths": [
+        "codex-rs/hepta-infer-core/src/native_compaction_v3_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "8fb356816f87daf11d7b9e0fb4feea3590f6360d",
+      "sha256": "1f807afbf23d499d1004473b664186fdc77c2c9be7375acd0ff98f4f6e494f23",
+      "bytes": 9204,
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/8fb356816f87daf11d7b9e0fb4feea3590f6360d.blob",
+      "paths": [
+        "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "b872fa11846809f280b850e86d5e945c1fd37a30",
+      "sha256": "9cf3022f04d7be3c65962d10cc43a0ac78ac4e747efa2589ac0ed3d27373e90b",
+      "bytes": 12025,
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/b872fa11846809f280b850e86d5e945c1fd37a30.blob",
+      "paths": [
+        "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "bf3b575c76d1eb5a066dc179d0f217801c7c9608",
+      "bytes": 7091,
+      "sha256": "7126fdf09c83702f8e21bcb8f0f91d6b37991fcf1d61e7b4900d9ed36a701f3e",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/bf3b575c76d1eb5a066dc179d0f217801c7c9608.blob",
+      "paths": [
+        "codex-rs/hepta-infer-core/src/native_incremental_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "cdff27a7328a36881bef3a0e0e093f76a1658937",
+      "bytes": 11072,
+      "sha256": "acb6cfcd37ea51d45acd452c3f9d15df0d451f87a9ad0c544386ddccce4f52be",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/cdff27a7328a36881bef3a0e0e093f76a1658937.blob",
+      "paths": [
+        "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "d3d4f37ea3e04a8de0f1aec8bcfa72d435ced848",
+      "bytes": 21384,
+      "sha256": "01c04b1fd96215f41515064a311f02a87f466b5f4a83d97b19f2329c2d665744",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/d3d4f37ea3e04a8de0f1aec8bcfa72d435ced848.blob",
+      "paths": [
+        "codex-rs/hepta-infer-core/src/durable_control_tests.rs"
+      ]
+    },
+    {
+      "git_blob": "df74f9f9dec5909410ca52a564a632f225bc4c13",
+      "sha256": "ed9ceb6bd34225e4688355e46b3d693354ab03ed76fd652c57083e9e8251010b",
+      "bytes": 34504,
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/df74f9f9dec5909410ca52a564a632f225bc4c13.blob",
+      "paths": [
+        "qualification/stem-cell-v1/test_group_attention_campaign_review.py"
+      ]
+    },
+    {
+      "git_blob": "f3709ec60401cb7937b58114eb19ea4134120ff5",
+      "bytes": 11736,
+      "sha256": "174227f79a359acd082f96bfa8d0d3a1ee3897b5550b767bbe0597862ec11d45",
+      "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/blobs/f3709ec60401cb7937b58114eb19ea4134120ff5.blob",
+      "paths": [
+        "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs"
+      ]
+    }
+  ],
+  "commit_identity_rule": "Use known_server_mapping for already-created server commits; remap only remaining newly-created round3 local IDs. Baseline local0a455 maps to published server2b538380. Never remap original historical parents. This plan contains only single-parent source commits and none of the three held history proposals.",
+  "remote_writes_performed": false,
+  "required_ci_passed": false,
+  "head": "82574295993f14689045d7f5ddfe83f1b33144fd",
+  "tree": "50600ef174c114ef8b77683d43b6085ad669c76d"
+}

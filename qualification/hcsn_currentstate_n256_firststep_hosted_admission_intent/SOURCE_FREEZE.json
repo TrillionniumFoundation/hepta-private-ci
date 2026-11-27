@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn-n256-firststep-hosted-admission-intent-source-freeze-v1",
+  "identity": "hcsn-n256-firststep-hosted-admission-intent-20261118-c06d-001",
+  "base_commit": "4f58ca6b956620fcea05d52e274aa9fc6ac3d29b",
+  "request_sha256": "54192afb8283e580d9528c9599d4587625960a5c8158cf70a08c88c706a47c06",
+  "source_sha256": {
+    "DEVELOPMENT_RED.json": "8188dec91f23c5a9d7d6e7b109c8f7bd3a7bdc8083344ecf654f8b4a2b35ae8f",
+    "README.md": "7d5da72299fb4f4dd185a1035a68ada96fe62370dec1240b7ee42156432ec66e",
+    "REQUEST.json": "54192afb8283e580d9528c9599d4587625960a5c8158cf70a08c88c706a47c06",
+    "__init__.py": "b1b712be63b87d11289abc573c6fb8e4dc4f2f69b97e1a4545eb61d27703e7ca",
+    "policy.py": "4b14ce04195c5cb9a85250ecf9df8af5d2f122fd8401c68188bfe4962914e9c1",
+    "test_policy.py": "834f64e3999b61fc51c195303ec41cadfba587eae9df3911a01747e63b36cbd1",
+    "verify_source.py": "cb42cb3f7512afef8ace992408d949f872bb5618b8c38a1ef0cc7daff8cda4dc",
+    "workflow": "7342d6829f5b31b8ffd330a74259afca94cdb8ab61f652da37fff15e420d50cb"
+  },
+  "bindings": {
+    "development_red_sha256": "8188dec91f23c5a9d7d6e7b109c8f7bd3a7bdc8083344ecf654f8b4a2b35ae8f",
+    "dense_oracle_request_sha256": "9c2fc1ff28a8fa6edb8d9b7cf5bd6c9c92cdd4233123edbe90bc8bb34c9fae3f",
+    "dense_oracle_source_freeze_sha256": "778e3576b751b30846fe5c4f415ea204d0d0e6245262d0de6e4d2f4a80000687",
+    "dense_oracle_sha256": "a3aa6a95cd55d254d9fa911d10768d1ec827e2374265a5b0474e0d6243929bfa",
+    "hosted_runtime_request_v2_sha256": "7688be3f9ad11505af45bce7adb056afad8b36d98d1b96914cd3c080e9ece70b",
+    "hosted_runtime_source_freeze_v2_sha256": "d504af47e13366f8db931cb51f83344c7413e83d215fb8a812fe5d45b6a406ad",
+    "hosted_observation_attempt002_sha256": "c68136d3c80ff4f46feee57556a4d09adaf2e1e1fa6dd14828d353bfc6b64233",
+    "hosted_observation_review_sha256": "b595dc16210e734fb6ab198d7999c24b234f651840dd5d6acff7658de09cf542",
+    "runtime_sha256": "0625973f64197245273674586e60ce187571ef1f9d01bc52ea83a30beaa0ad06",
+    "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "canonical_policy_sha256": "68c2ca49c19dc0708d26eb69aef5777f2346cfa4b2091c1cd422b5c67e338217"
+  },
+  "stdlib_controls": 7,
+  "n256_input_reads": 0,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "all_closed": false
+}

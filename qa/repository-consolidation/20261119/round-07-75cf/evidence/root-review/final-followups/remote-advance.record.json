@@ -1,0 +1,12 @@
+{
+  "tip": "adc66e6407f83bbc191648ec1784b351541df4bb",
+  "label": "remote-advance",
+  "prior": "2dab8dce61fda9ac5c3a079338149e5b4fa54465",
+  "automatic_tree": "fe0cb49388ed6bd949bac2a5c88e9df0b32d62f8",
+  "resolved_tree": "ccd602b948c462185562c12ab4dead274dba883a",
+  "conflicts": [
+    "codex-rs/hepta-agentd/src/client_control.rs"
+  ],
+  "reason": "Preserve all three concurrent remote commits, including the round-05 live census. The one source conflict has equivalent platform-specific futures within the original deadline expression; retain the remote let-connection form and exact rustfmt output. Both forms evaluate the original deadline before constructing the connection and keep Windows owner-local authentication. All other previously reviewed changes are byte-identical.",
+  "commit": "20872beca8fcfaf228c5d33cb6044954db209209"
+}

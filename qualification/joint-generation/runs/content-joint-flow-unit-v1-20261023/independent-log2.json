@@ -1,0 +1,422 @@
+{
+  "actions": [
+    1,
+    1,
+    2
+  ],
+  "admission_envelope_per_request": 38472,
+  "aliases": [],
+  "aliases_add_calls": 0,
+  "final_pairs": [
+    [
+      0,
+      0
+    ],
+    [
+      7,
+      7
+    ],
+    [
+      6,
+      6
+    ]
+  ],
+  "labels": [
+    0,
+    4,
+    11
+  ],
+  "ledger": {
+    "arm": "service-log2",
+    "consumed_units": 58395,
+    "hardware_flops_or_latency": false,
+    "kernels": {
+      "output": {
+        "decoder": {
+          "calls": 1,
+          "compare_ops": 1152,
+          "consumed_units": 9792,
+          "div_ops": 576,
+          "exp_ops": 576,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 1728,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        },
+        "quantize": {
+          "calls": 1,
+          "compare_ops": 1152,
+          "consumed_units": 2304,
+          "div_ops": 0,
+          "exp_ops": 0,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 1152,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        }
+      },
+      "repair": {
+        "exact_boundary_fallback": {
+          "calls": 1,
+          "compare_ops": 0,
+          "consumed_units": 0,
+          "div_ops": 0,
+          "exp_ops": 0,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 0,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        },
+        "repair_pair": {
+          "calls": 1,
+          "compare_ops": 6,
+          "consumed_units": 6,
+          "div_ops": 0,
+          "exp_ops": 0,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 0,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        },
+        "support_comparison": {
+          "calls": 1,
+          "compare_ops": 33,
+          "consumed_units": 69,
+          "div_ops": 0,
+          "exp_ops": 0,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 36,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        },
+        "two_support_products": {
+          "calls": 1,
+          "compare_ops": 0,
+          "consumed_units": 6,
+          "div_ops": 0,
+          "exp_ops": 0,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 6,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        }
+      },
+      "sample": {
+        "sample_original": {
+          "calls": 1,
+          "compare_ops": 78,
+          "consumed_units": 216,
+          "div_ops": 0,
+          "exp_ops": 0,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 138,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        }
+      },
+      "service": {
+        "finite_input_scan": {
+          "calls": 1,
+          "compare_ops": 606,
+          "consumed_units": 606,
+          "div_ops": 0,
+          "exp_ops": 0,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 0,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        },
+        "model_forward": {
+          "calls": 1,
+          "compare_ops": 66,
+          "consumed_units": 45396,
+          "div_ops": 72,
+          "exp_ops": 72,
+          "log_ops": 0,
+          "macs": 21696,
+          "pow_ops": 0,
+          "scalar_ops": 306,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 96
+        }
+      }
+    },
+    "prices": {
+      "compare_ops": 1,
+      "div_ops": 4,
+      "exp_ops": 8,
+      "log_ops": 8,
+      "macs": 2,
+      "pow_ops": 8,
+      "scalar_ops": 1,
+      "sort_items": 1,
+      "sqrt_ops": 4,
+      "tanh_ops": 8
+    },
+    "remaining_units": 57021,
+    "schema": "hepta.independent-work-ledger.v1",
+    "shared_sources": [],
+    "stages": {
+      "output": {
+        "consumed_units": 12096,
+        "decoder_calls": 1,
+        "decoder_elements": 576,
+        "op_compare_ops": 2304,
+        "op_div_ops": 576,
+        "op_exp_ops": 576,
+        "op_log_ops": 0,
+        "op_macs": 0,
+        "op_pow_ops": 0,
+        "op_scalar_ops": 2880,
+        "op_sort_items": 0,
+        "op_sqrt_ops": 0,
+        "op_tanh_ops": 0,
+        "output_bytes": 1576,
+        "png_renders": 3,
+        "serialized_requests": 3
+      },
+      "repair": {
+        "consumed_units": 81,
+        "exact_ratio_operand_bits": 0,
+        "exact_support_comparisons": 0,
+        "op_compare_ops": 39,
+        "op_div_ops": 0,
+        "op_exp_ops": 0,
+        "op_log_ops": 0,
+        "op_macs": 0,
+        "op_pow_ops": 0,
+        "op_scalar_ops": 42,
+        "op_sort_items": 0,
+        "op_sqrt_ops": 0,
+        "op_tanh_ops": 0,
+        "support_comparison_cells": 3
+      },
+      "sample": {
+        "consumed_units": 216,
+        "op_compare_ops": 78,
+        "op_div_ops": 0,
+        "op_exp_ops": 0,
+        "op_log_ops": 0,
+        "op_macs": 0,
+        "op_pow_ops": 0,
+        "op_scalar_ops": 138,
+        "op_sort_items": 0,
+        "op_sqrt_ops": 0,
+        "op_tanh_ops": 0
+      },
+      "service": {
+        "consumed_units": 46002,
+        "model_forward_calls": 1,
+        "model_forward_macs": 21696,
+        "model_forward_rows": 3,
+        "op_compare_ops": 672,
+        "op_div_ops": 72,
+        "op_exp_ops": 72,
+        "op_log_ops": 0,
+        "op_macs": 21696,
+        "op_pow_ops": 0,
+        "op_scalar_ops": 306,
+        "op_sort_items": 0,
+        "op_sqrt_ops": 0,
+        "op_tanh_ops": 96
+      }
+    },
+    "total_cap": 115416,
+    "totals": {
+      "consumed_units": 58395,
+      "decoder_calls": 1,
+      "decoder_elements": 576,
+      "exact_ratio_operand_bits": 0,
+      "exact_support_comparisons": 0,
+      "model_forward_calls": 1,
+      "model_forward_macs": 21696,
+      "model_forward_rows": 3,
+      "op_compare_ops": 3093,
+      "op_div_ops": 648,
+      "op_exp_ops": 648,
+      "op_log_ops": 0,
+      "op_macs": 21696,
+      "op_pow_ops": 0,
+      "op_scalar_ops": 3366,
+      "op_sort_items": 0,
+      "op_sqrt_ops": 0,
+      "op_tanh_ops": 96,
+      "output_bytes": 1576,
+      "png_renders": 3,
+      "serialized_requests": 3,
+      "support_comparison_cells": 3
+    },
+    "unit_profile": "declared-priced-operator-work-v1"
+  },
+  "original_pairs": [
+    [
+      0,
+      9
+    ],
+    [
+      7,
+      3
+    ],
+    [
+      7,
+      6
+    ]
+  ],
+  "outputs": [
+    {
+      "caption": "red square left",
+      "choices": {
+        "image": 0,
+        "text": 0
+      },
+      "png_base64": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAZUlEQVR4nAXBAW4DQAzDMMnpuwes394lHun357de6uJ5wVI1L7eZl4V+0GmKJHP6ygZ8hTss/csF5jFWbuwGpyRad2Jt547haEtoEvq4oBFT0OA92smn3R49OI74gtWlCVK2EP4BaL9HhkYg4/4AAAAASUVORK5CYII=",
+      "png_sha256": "c54044ff97ee78c0f44ce464db1dfd310430947348743130437665bf6bc36222"
+    },
+    {
+      "caption": "green cross right",
+      "choices": {
+        "image": 7,
+        "text": 7
+      },
+      "png_base64": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAZklEQVR4nAXBgWECAQzEMPvyzF3mBpKr5Pvv3XrP5bRXg3UTqjZregKX9pFm52usvcs2M4XfjXntU7DpOE/3CArZnFzqcLuShd5u4rSQFkZoQIdIqVCYy3H+gudTqLXA2XHClfv8Az7YSZWmhxyxAAAAAElFTkSuQmCC",
+      "png_sha256": "625e1729636ccf2af2816776b665cbee302da1b968ae1df45b704bfedb190afb"
+    },
+    {
+      "caption": "green cross left",
+      "choices": {
+        "image": 6,
+        "text": 6
+      },
+      "png_base64": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAY0lEQVR4nAXBhxECARADMYenbBgK57xI/ry/rdkc/yBFF0Wpd5ISezW+LIQ8UwOLoGKEzORi/bJZMxiLnsb1GcYxOqnFo/ZE5ETCF2+ThZFNVjKsRpKFDBPkdSw2Ig6Nh57Wf3ftTqWrDoX1AAAAAElFTkSuQmCC",
+      "png_sha256": "057849374302410ea250b824dea37356447a77a5521cf119eb1b207001337f3b"
+    }
+  ],
+  "probabilities": {
+    "p": [
+      [
+        0.16446244157423176,
+        0.04113002211762258,
+        0.0880340225809411,
+        0.02710909353567006,
+        0.05051381417901515,
+        0.07566306384432693,
+        0.0809368049533123,
+        0.15400793353168854,
+        0.1259262327511782,
+        0.05578033511585236,
+        0.09271671430107092,
+        0.04371952151509025
+      ],
+      [
+        0.1722325380870138,
+        0.029380934617730208,
+        0.0773239215925317,
+        0.05255780658454034,
+        0.10027782479600751,
+        0.05227308847295517,
+        0.06407939268074792,
+        0.11737874249581898,
+        0.12936748758523164,
+        0.10455707538560817,
+        0.05397754136118478,
+        0.04659364634062991
+      ],
+      [
+        0.16868803532510018,
+        0.05757362658263833,
+        0.06309090406419621,
+        0.0331521762488186,
+        0.08554736142997571,
+        0.16602126607362652,
+        0.060466440900045035,
+        0.04792857779326138,
+        0.10882708013389047,
+        0.07599939366147984,
+        0.0315468651992172,
+        0.10115827258775045
+      ]
+    ],
+    "q": [
+      [
+        0.07803334117087048,
+        0.04890379473850466,
+        0.0377037090969498,
+        0.03441699591597939,
+        0.03402581703196819,
+        0.09351655497181689,
+        0.2650565349108079,
+        0.07781965712265841,
+        0.0704586074700876,
+        0.05944243184431384,
+        0.014151726821320853,
+        0.18647082890472208
+      ],
+      [
+        0.04026784606544474,
+        0.0455404201222553,
+        0.06512527507675768,
+        0.08558128357627916,
+        0.05988816648839,
+        0.06359677388217147,
+        0.11774677436599347,
+        0.13970063184496734,
+        0.1187383411390619,
+        0.12523920637002847,
+        0.07675944878745201,
+        0.06181583228119839
+      ],
+      [
+        0.23901245685320552,
+        0.0983737175291272,
+        0.15804729282084462,
+        0.06307603311041701,
+        0.04953903726421604,
+        0.07082815375465089,
+        0.14827516988195968,
+        0.021150618507060414,
+        0.051237199002820075,
+        0.04254064243528521,
+        0.035324803105301936,
+        0.02259487573511131
+      ]
+    ]
+  },
+  "profile": "log2",
+  "recipe": "independent",
+  "reference_units": 19236,
+  "request_cap_units": 38472,
+  "rows": 3,
+  "sampler_seed": 817,
+  "source_ids": [
+    "hand:0",
+    "hand:1",
+    "hand:2"
+  ],
+  "timer_boundary": "before validation/setup through probability/output receipt export; final timing descriptor separate",
+  "work_units": 58395
+}

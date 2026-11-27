@@ -4,4 +4,5 @@ codex_rust_crate(
     name = "hepta-evidence",
     compile_data = glob(["migrations/**"]),
     crate_name = "codex_hepta_evidence",
+    integration_compile_data_extra = ["//qualification/codex-exec-p2e:corpus.json"],
 )

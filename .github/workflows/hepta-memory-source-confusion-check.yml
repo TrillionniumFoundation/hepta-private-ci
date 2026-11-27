@@ -1,0 +1,57 @@
+name: MemoryCell source confusion probe contracts
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - scripts/memory_cell/source_confusion_probe.py
+      - scripts/memory_cell/test_source_confusion_probe.py
+      - .github/workflows/hepta-memory-source-confusion-check.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scoped-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Check source-only contradiction test with the actual Python entrypoint
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-confusion-check
+          python3 -m unittest discover -s scripts/memory_cell -p test_source_confusion_probe.py -v 2>&1 | tee /tmp/source-confusion-check/tests.log
+      - name: Check source and test Ruff formatting without editing either
+        if: always()
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          set +e
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/source_confusion_probe.py scripts/memory_cell/test_source_confusion_probe.py > /tmp/source-confusion-check/format.log 2>&1
+          result=$?
+          set -e
+          cat /tmp/source-confusion-check/format.log
+          if [ "$result" -ne 0 ]; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/source_confusion_probe.py scripts/memory_cell/test_source_confusion_probe.py > /tmp/source-confusion-check/format.diff || true
+            cat /tmp/source-confusion-check/format.diff
+          fi
+          exit "$result"
+      - name: Preserve exact source and failure diagnostics
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-confusion-check/source
+          cp scripts/memory_cell/source_confusion_probe.py scripts/memory_cell/test_source_confusion_probe.py /tmp/source-confusion-check/source/
+          git rev-parse HEAD > /tmp/source-confusion-check/source-commit.txt
+          (cd /tmp/source-confusion-check && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-confusion-check
+          path: /tmp/source-confusion-check
+          if-no-files-found: error

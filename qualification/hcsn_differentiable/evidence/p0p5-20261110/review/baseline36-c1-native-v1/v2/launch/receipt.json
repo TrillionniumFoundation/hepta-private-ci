@@ -1,0 +1,84 @@
+{
+  "address_space_limit_bytes": 8589934592,
+  "argv": [
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/run_c1_clock_supplement.py",
+    "--base",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "--output",
+    "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2"
+  ],
+  "child_peak_rss_bytes": 962494464,
+  "complete_launcher_wall_seconds": 16.201805401127785,
+  "energy_joules": null,
+  "finished_utc": "2026-11-10T17:57:20.208566+00:00",
+  "host_load_after": [
+    11.15283203125,
+    10.27783203125,
+    10.2900390625
+  ],
+  "host_load_before": [
+    10.42919921875,
+    10.1025390625,
+    10.23388671875
+  ],
+  "idempotency_key": "hcsn-baseline36-c1-independent-review-c385-v2",
+  "launcher_sha256": "94be43962ba77b72cc99ae12ea057dc8af6318e17908c496718828819ae6d6f4",
+  "nice_adjustment": 10,
+  "output": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2",
+  "pid": 1843232,
+  "program": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2",
+  "program_archive_sha256": "6ede11014d33e219f6ebc109911ad50a8550bb585388b16b5c604a2d4cb54c51",
+  "program_sources_unchanged": true,
+  "result_sha256": "c90afba67ce09871e49c2a117cec3403a2b7fdec6528e600402557d6a7863094",
+  "returncode": 0,
+  "review_archive": {
+    "all_manifest_members_exact": true,
+    "bytes": 19356087,
+    "manifest_sha256": "dc6e757ba8c40698f59b21272884cf875f9d47e3fdd61269068554f3a0ef8713",
+    "path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2.zip",
+    "sha256": "ef4d8bbb5b72945410e39155728d2b0920d24c46c998b9f0192ab23cf322156d"
+  },
+  "review_summary": {
+    "C1_audit_counts": {
+      "passed_completed_C1_chain_artifacts": 7
+    },
+    "combined_baseline_chain_heuristic_adequacy_passes": 33,
+    "finished_utc": "2026-11-10T17:57:17.673131+00:00",
+    "full42_final_audit": false,
+    "memorization_failures_retained": [
+      "snn_plif-s101-lr0.001",
+      "cfc-s211-lr0.001",
+      "snn_plif-s307-lr0.001"
+    ],
+    "mode": "seven_C1_actual_chains_plus_hash_reused_original36",
+    "original_baseline_heuristic_adequacy_passes": 26,
+    "original_baseline_passed_records_reused": 36,
+    "passed": true,
+    "peak_rss_bytes": 837685248,
+    "result_sha256": "c90afba67ce09871e49c2a117cec3403a2b7fdec6528e600402557d6a7863094",
+    "review_process_cpu_sample_seconds": 12.768826731,
+    "review_process_wall_seconds": 13.613450848031789,
+    "schema": "baseline36-C1-independent-clock-supplement-v2",
+    "scientific_admission": "HOLD",
+    "started_utc": "2026-11-10T17:57:06.339582+00:00"
+  },
+  "schema": "native-baseline36-C1-independent-review-launch-v2",
+  "scope": "Seven C1 chains only; original36 results and all bytes reverified and reused from failed-v1. No HCSN directory read, training replay or optimizer step. May overlap original HCSN jobs. Failed-v1 costs remain additional.",
+  "source_copy_and_hash_seconds": 0.02536861109547317,
+  "started_utc": "2026-11-10T17:57:04.032101+00:00",
+  "status": "completed",
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 1460,
+    "sha256": "1bd1e2b937b32338853796c5256fd2cf777066a4bc6175f8f4e078e0dae13f20"
+  },
+  "timeout_seconds": 1800,
+  "torch_threads": 1,
+  "waited_review_child_cpu_seconds": 15.326924,
+  "whole_review_process_wall_seconds": 16.16734547005035
+}

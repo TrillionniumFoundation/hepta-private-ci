@@ -275,3 +275,6 @@ fn plasticity_anchor_queries_preserve_global_sequence_across_rollover() {
     assert_eq!(checked(recovered.current_anchor()), Some(current));
     assert!(checked(recovered.contains_anchor(seed)));
 }
+
+#[path = "journal_chain_tests.rs"]
+mod chain;

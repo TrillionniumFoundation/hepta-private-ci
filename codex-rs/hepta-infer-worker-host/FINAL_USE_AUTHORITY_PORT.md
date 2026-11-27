@@ -66,7 +66,19 @@ final-use authority configuration. The current Unix implementation pins:
 - an owner-private durable final-use state directory;
 - a nonzero authority epoch and monotonic revocation revision;
 - the configured revoked grant set;
-- a bounded issuer request timeout.
+- a bounded issuer request timeout;
+- on Linux, an issuer process binding in the protected configuration.
+
+Before upgrading a Linux worker to this configuration contract, provision
+`issuer_process_identity` from the independently trusted issuer service. It
+contains lowercase SHA-256 digests of its exact executable, cgroup record, and
+host boot ID. Hash the cgroup and boot-ID records after removing trailing ASCII
+whitespace. Update the protected configuration when the issuer binary, cgroup,
+or host boot changes. Do not learn these digests from an unauthenticated socket
+peer. The worker validates the pinned peer before requesting a grant and
+rechecks its process instance before accepting the response. A missing pin or
+an unreadable peer identity refuses the operation on Linux. This field is not
+supported by the other Unix implementations.
 
 Unsafe paths, symlinks, unsafe ownership/permissions, wrong peer identity,
 malformed or oversized frames, unknown fields, signer/key mismatch, invalid

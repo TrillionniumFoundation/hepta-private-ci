@@ -1,11 +1,8 @@
-use std::collections::HashMap;
-
-use chrono::DateTime;
-use chrono::Utc;
 use codex_rollout::RolloutConfig;
 use codex_rollout::RolloutRecorder;
 use codex_rollout::parse_cursor;
 use codex_state::ThreadFilterOptions;
+use std::collections::HashMap;
 
 use super::LocalThreadStore;
 use super::helpers::resolve_thread_names;
@@ -149,7 +146,7 @@ async fn list_section_threads(
             let timestamp = position
                 .parse::<i64>()
                 .ok()
-                .and_then(DateTime::<Utc>::from_timestamp_millis)
+                .and_then(codex_utils_time::Timestamp::from_timestamp_millis)
                 .ok_or_else(|| ThreadStoreError::InvalidRequest {
                     message: format!("invalid cursor: {cursor}"),
                 })?;
@@ -355,7 +352,7 @@ pub(super) async fn list_rollout_threads(
 
 #[cfg(test)]
 mod tests {
-    use chrono::Utc;
+    use crate::local::test_support::private_home;
     use codex_protocol::ThreadId;
     use codex_protocol::protocol::SessionSource;
     use codex_protocol::protocol::ThreadHistoryMode;
@@ -415,7 +412,7 @@ mod tests {
 
     #[tokio::test]
     async fn list_threads_preserves_sqlite_title_search_results() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(103);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -433,7 +430,7 @@ mod tests {
             .mark_backfill_complete(/*last_watermark*/ None)
             .await
             .expect("backfill should be complete");
-        let created_at = Utc::now();
+        let created_at = codex_utils_time::Timestamp::now();
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             rollout_path,
@@ -485,7 +482,7 @@ mod tests {
 
     #[tokio::test]
     async fn list_paginated_threads_uses_sqlite_name_over_legacy_compatibility() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(104);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -506,7 +503,7 @@ mod tests {
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             rollout_path,
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.history_mode = ThreadHistoryMode::Paginated;
@@ -672,7 +669,7 @@ mod tests {
 
     #[tokio::test]
     async fn section_listing_uses_sqlite_metadata_without_reading_rollouts() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let state = codex_state::StateRuntime::init(
             config.sqlite.clone(),

@@ -1,0 +1,22 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/ff772bc098e2/frontier_merge_audit/worktree/codex-rs/hepta-neuron)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.78s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 0cc64ff3-348c-4aa8-ae37-c657e2a8d48f with nextest profile: local
+    Starting 6 tests across 1 binary (369 tests skipped)
+        PASS [   0.008s] codex-hepta-neuron metrics::tests::metrics_wal_refuses_link_aliases_before_writing_a_header
+        PASS [   0.009s] codex-hepta-neuron metrics::tests::rejects_scope_generation_latency_and_replay_drifts
+        PASS [   0.009s] codex-hepta-neuron metrics::tests::incomplete_tail_is_repaired_but_complete_corruption_fails
+        PASS [   0.010s] codex-hepta-neuron metrics::tests::metric_wal_rejects_symlinks_and_hardlink_aliases_before_writes
+        PASS [   0.013s] codex-hepta-neuron metrics::tests::new_metrics_wal_excludes_group_and_other_permissions
+        PASS [   0.013s] codex-hepta-neuron metrics::tests::durable_group_reopens_and_duplicate_does_not_rewrite
+────────────
+     Summary [   0.016s] 6 tests run: 6 passed, 369 skipped

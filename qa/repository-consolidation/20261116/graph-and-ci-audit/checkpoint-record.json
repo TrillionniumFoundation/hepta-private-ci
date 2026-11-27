@@ -1,0 +1,1438 @@
+{
+  "schema": "hepta.consolidation-checkpoint.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_source": "285e971b3af3a93a79169b56a42263069e473057",
+  "source_commit": "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+  "source_tree": "751e50a0172e467176be68a1331519c8ea171307",
+  "reviewed_history_head": "23a7b1bceda59d792762833920e0e16ed2b8ea5f",
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "branch_count": 7294,
+  "protected_hia_count": 63,
+  "non_hia_non_main_count": 7230,
+  "retained_original_non_hia_heads": 1727,
+  "remaining_original_non_hia_heads": 5503,
+  "scope": "The counts are ancestry of exact original tips. They do not claim whole-repository semantic or native qualification.",
+  "remote_ref_mutations_by_root_in_this_checkpoint": 0,
+  "main_merge_completed": false,
+  "branch_retirements_completed": 0,
+  "source_paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "base": "3ad8fb9146f44514d22bf99fcaa621083b51dba3",
+      "sha": "e422720f507c914a3b4aae65dcc0e9b1d6d09086",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "base": "6a81d66c79e5c38ac0177a6949070dcde5769434",
+      "sha": "e7041ff554d062f1a0894f3d7677e2914ec6baec",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "base": "c94d6018c54c88fbdec83f12c219a8ef06ee5724",
+      "sha": "830c044c079478e1f61751446dd63be0f851586c",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs",
+      "base": "f46ca31538e114546c64aa283ac5b9c430020a15",
+      "sha": "83cff9cd158233cd771ce93281d773c173dbf87e",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "base": "19e4348d9fdced6716077947811f07af7c085231",
+      "sha": "aa9c4b583cebdf26c627223128a65d344a6e0043",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "base": "8aa41d3f63b3679d9bac293eb52403fe3cc4c1a5",
+      "sha": "363a5148708b31da68130cf77f719770f5d7ebef",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "base": "25aafda5ec1d6ee578d8dcc9d8d96b89806182aa",
+      "sha": "d2d6dafc002c5ca8a94b1416e0dfdeb3677c674d",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "base": "a4155815b349bb97740d0d632fe538c6e0b68ea4",
+      "sha": "bd487a036f6af580731b8b3c41d91a887e4b2cd0",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+      "base": "1ef489243cf92c91519d7cab90ad0d031c65d5de",
+      "sha": "85cca820dad1cd7a5d844c912df7ae243badffe9",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "base": "09ace13d5fd6a11eb87c43dfc0b3eb3e4226b377",
+      "sha": "a2baa11ab65870dfa5fb37c4b72ce2389c8f3c5b",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "base": "b6912a6cb316da304f376d0606135b53273caec7",
+      "sha": "df2bf3c19f1a82e3df64a2d2537a081d3476705b",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_original_state_slot.rs",
+      "base": null,
+      "sha": "900e4f12fbc2b0e796694875bd420274e0240600",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_original_state_slot_tests.rs",
+      "base": null,
+      "sha": "1ab7fac1add742b9faf49248b6246f05f9ebbb6f",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_context_binding_tests.rs",
+      "base": "6972f2783fb4d06ffda4535623049a394377c694",
+      "sha": "baa849e596a5a8d1b4bf3c356189cf4cbf59f873",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+      "base": "98923f9c8814028b5950edd72231048fbafdc2e7",
+      "sha": "f26aa5f34d6273aea761bf4ddb6a8a138210b951",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_process_tests.rs",
+      "base": "0886fd70105abcd6da62424c929516107eb2a13d",
+      "sha": "5da1f69992b077691f6670ff9e140fdb8faeb3d0",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_current_tests.rs",
+      "base": "f2dcd46cc9a488fefa6aa6dd8fd216620218f46d",
+      "sha": "62ab59c8fc34aff196c80b1ea93fda7f00c1e5aa",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "base": "1fceadc3ca6c089adcb11a05d1af164d09004c1a",
+      "sha": "6125430050e2b982e3da826586d8e52cd3ef49d5",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs",
+      "base": "a2a307420f0cd0c0d792331878c7da6320e3d955",
+      "sha": "6c1f670060ca16c36a3199ffaec3fbd6dde4e40b",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_tests.rs",
+      "base": "80dc2084ecfaa12789f7a6d13eed6873946a1ef5",
+      "sha": "79a5f221bfde562edc150b88790f504f2ed1bcb7",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+      "base": "bd30c76c296f4a04547d98df80ad467fc0cd2d30",
+      "sha": "5405008109ffeedc2256863af2a368df16665aec",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_host_session_tests.rs",
+      "base": "33f764e716c68d347ae143166ee9c338756ed2b5",
+      "sha": "ed4a0aaefca989636b75a38459c31116fbcbbfcf",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_pretrained_tests.rs",
+      "base": "4742058af4d85831f81be15a44de796f0af466e9",
+      "sha": "eabdde958f09df1198d68622b82a629584f2ecf9",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_startup_tests.rs",
+      "base": "7675bb38b065ac5e07d5a9b1b5fec745d016fb4a",
+      "sha": "d889d5d456c6f6003907c898b9d3d1fe9893ea39",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "base": "1cd1df2ab313ab9866851a362e1ef22625cfa0fb",
+      "sha": "1ed950ae141db70728f6a9bf31ace24677d73b44",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_artifacts.rs",
+      "base": "f271f81408ebdc6e6a2b86bb8b88fb668737f08d",
+      "sha": "32fbdb5e06f8c08d051676a48de8251bb5d8e909",
+      "group": "platform_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+      "base": "24b7907d7bbd635352da19503e78aa71de710c64",
+      "sha": "2ff51712f5bc973519c4bf3a9abcfb91c21f64c4",
+      "group": "platform_patch_payload"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "base": "cd27aa5fdec37e32cb7aa8efeaf67a3a7e4f2037",
+      "sha": "30b1a37edec209465863948144c017348e09b5ee",
+      "group": "platform_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_bootstrap_crash_tests.rs",
+      "base": "0d5a1e68eae7241cf0187a1f6bb29bc0a36b0bb1",
+      "sha": "d717bf472fd8c20853edf4549ef932c479e16353",
+      "group": "canonical_fixture_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "base": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+      "sha": "18d2a93864ece9e9ab77fde0674e4d542fef5592",
+      "group": "windows_lock_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/gated_journal_v3_tests.rs",
+      "base": "557c447ef58d22661c9a800f82128c92d876680b",
+      "sha": "2aaf1596bbb3e05f3fac88ea081a473b96b2f21a",
+      "group": "windows_lock_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "base": "bcb42c2d31f06a306d0cb3c4032494621b45e69a",
+      "sha": "2fb6fdcba6aa69ea2ac5d945ab60c0787b9ed1b2",
+      "group": "provider_candidate_and_route_order"
+    },
+    {
+      "path": "CALLERS.toml",
+      "base": "f0ca333514735562db56b30165817881c3408384",
+      "sha": "4c887ea8eec42566207eaa8bbc6e606618c90fbd",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "base": "195d8a7a38c402f402a6484d8b3a30f15b3898b4",
+      "sha": "0069cb84d58ee799d0cef3ee3d236f5d3c78092f",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_native_memory_authority_source_closure.py",
+      "base": null,
+      "sha": "aea32591092ad5965ab96d61a3d524c3ca763dc0",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_operation_source_closure.py",
+      "base": "aa42c1bd4678b3bf96352cf08c1c3ed1de8608c3",
+      "sha": "e6c46f23c966c85878ebb307133bbbecb7c755d2",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "base": "beb4533bfa73fbd104273533dd0b128b03decdff",
+      "sha": "480b43358d52e54c30a4a6a4f90c7ca2bd556be6",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+      "base": "2a566076c9148a47a5d3f4506c347e862a4bc9c7",
+      "sha": "ec56ee91bb97bac76cf01b5e886087ded94855be",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_state_slot_source_closure.py",
+      "base": null,
+      "sha": "0e110c464ea97a851fd2bd09ea99be88ff1ee87d",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "base": "38fe0551c767176808870f57cb6f6de0668f1318",
+      "sha": "ce8af4ba28e3b6b485d37a43dd1ea2885df48ae4",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "base": "9b77b6a29ec57a13fa8d53a81f2734de799b6a5a",
+      "sha": "cc2dbce9e4f6d46a5e62c74fd0f8932d9af13527",
+      "group": "source_guards"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs",
+      "base": "48ad6216b73344931b22fdc482eefa4e7615a308",
+      "sha": "433b86d4df845b9152b3f30c4de6017c49b5beae",
+      "group": "ci_fixes"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs",
+      "base": "1b43360fe10b570cfd9020fb9acb430fd711c148",
+      "sha": "f9549826fb61fa8d54a930c6bced045b54f6a4f5",
+      "group": "ci_fixes"
+    },
+    {
+      "path": ".github/scripts/codespell_custody.py",
+      "base": "bb1d103eb432905094eca776cd0de072a1fddedc",
+      "sha": "2b7f5645672fd350864c9d7e7d90d83cc46f855b",
+      "group": "ci_fixes"
+    },
+    {
+      "path": ".github/scripts/test_codespell_custody.py",
+      "base": "a7bcf3fe7715fb20086057ce08b7fb04a27c69e3",
+      "sha": "f0275fd0e02c605dfffd87901e2be34bbb81743a",
+      "group": "ci_fixes"
+    },
+    {
+      "path": ".github/codespell-custody.json",
+      "base": "18a8c6bbae4bcdd613a372ce0679ecf790f6e43f",
+      "sha": "c020d5f6dd690b03e87b26ffc670ff77a29ebae2",
+      "group": "ci_fixes"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "base": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a",
+      "sha": "e1ddda3aea6d7b65d2c87ecfe256d589a4ba8f32",
+      "group": "fixture_stack"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "base": "b4adc743f8d2ae0529fcec0522ca00da729ae638",
+      "sha": "73799bd671c89cd410171d924ee66f80bb154549",
+      "group": "fixture_stack"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "base": "2d501a452a258ee000bc5631c2de124311e7a9e6",
+      "sha": "a6df4d43d09af3d4732f194a2d92ae3357f0a405",
+      "group": "fixture_stack"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "base": "4ca274451d2b6b778c186f4402576ec256d590af",
+      "sha": "5470b8abe4430136126864f569690ea7a5e75dad",
+      "group": "fixture_stack"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/tests.rs",
+      "base": "d7c2d18ee65f6e36c0d70c922a744c2dfae8844d",
+      "sha": "b9711cba2f2732c0165113dcb1b57a46738ab7dc",
+      "group": "pty-ready-reviewed-285e971.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+      "base": "8d083db1da3d9473e67012b2f661e3ea4b3d0ee6",
+      "sha": "f3d944dac723233082c0a890d88b2a22375860e6",
+      "group": "drain-diagnostic-reviewed-285e971.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+      "base": "cc68361bde8e44d7251ab7c77338e12b19fce7dd",
+      "sha": "4bfe8a890bcb277429af68de2f8cacd3f571a7b8",
+      "group": "qualification_writer_test_types"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control_frames.rs",
+      "base": "2c1a96f36453516baad01eba194e59df87fce04a",
+      "sha": "af697bb636964a35323b2008298904acf35563b6",
+      "group": "post_write_control_shutdown"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control_frames_tests.rs",
+      "base": "85f08e867c5010a15f9cbf8aab3344189db06d67",
+      "sha": "97cd9944b2f15a3880889a6d5dbbca4c2843cd9d",
+      "group": "post_write_control_shutdown"
+    }
+  ],
+  "server_history": {
+    "ordinary27": {
+      "next_index": 27,
+      "parent": "efc66fe7ff5272ffe1cdcda5c410ce20cf519341",
+      "tree": "40840e3225e3f2d3589f008485eb20cb587d0e32",
+      "mapping": [
+        {
+          "index": 0,
+          "local_commit": "e911c9a688552855cb89b9b934140a2655819149",
+          "published_commit": "2f7cc6b9089e1eb57c08e76e4dd5756518c3ea4e",
+          "tree": "9d33a826f6e678960d2ed906a780a0ee5e9945c7",
+          "parents": [
+            "285e971b3af3a93a79169b56a42263069e473057",
+            "ff04a5c92c4b8d1033adecb3e53666fb862d55a1"
+          ]
+        },
+        {
+          "index": 1,
+          "local_commit": "0b6286a864c79e9136a11281e8191678069b3fdc",
+          "published_commit": "8af22f1648050a260b6b58cf0394f767bb2d22f1",
+          "tree": "be6a08677d20ce75725ce1f3e7318df16a46c28c",
+          "parents": [
+            "2f7cc6b9089e1eb57c08e76e4dd5756518c3ea4e",
+            "524ed37df092b410106d459a19532fe2fe473cc2"
+          ]
+        },
+        {
+          "index": 2,
+          "local_commit": "eab73e3621354a11d3b6cf3ba71229fb2a31d292",
+          "published_commit": "338f65f6144770c049367d408ddb7875bbc2f51a",
+          "tree": "5d3decf529c6ccd39d1e9f7a22a6d85553705030",
+          "parents": [
+            "8af22f1648050a260b6b58cf0394f767bb2d22f1",
+            "f67b816ac863972b322e061e0d9e3591301f25dc"
+          ]
+        },
+        {
+          "index": 3,
+          "local_commit": "318207b19122f5370c1e399f737138332a3af1b2",
+          "published_commit": "446adad669e70fe0f763fc3ca8e89479f3074b72",
+          "tree": "2de3b86aacd84ef23323c5935d846376d27a96a5",
+          "parents": [
+            "338f65f6144770c049367d408ddb7875bbc2f51a",
+            "9f07f7adb05ed1a12d1732f2d4779e1ae6ec8601"
+          ]
+        },
+        {
+          "index": 4,
+          "local_commit": "3654d2817536665ffaf2724239c94f3ccb542423",
+          "published_commit": "929d2702553549effdab5748e210474a9266cc57",
+          "tree": "e946c464e6de6c28f40fa80c3865aa4f48a69638",
+          "parents": [
+            "446adad669e70fe0f763fc3ca8e89479f3074b72",
+            "80d3b764c1e043a0d7a6998b96c1e7277f6b174b"
+          ]
+        },
+        {
+          "index": 5,
+          "local_commit": "120450dc864e1109d96a9fc72873f13f2860d085",
+          "published_commit": "346e6d2072fc6e98533a6ed5324a24fba74f30fb",
+          "tree": "566b1eaff0428b73fbb8329aaa4cd4098d5bb0fa",
+          "parents": [
+            "929d2702553549effdab5748e210474a9266cc57",
+            "5d8726bd2be6884ca0a059194fd80cf9bd5fb7f5"
+          ]
+        },
+        {
+          "index": 6,
+          "local_commit": "f9902af7a49723b383e98c4d5d44c54c0be2ffdf",
+          "published_commit": "6990633bb68b9e8868932edb5c37352ad944ce3a",
+          "tree": "fcb2261b3e31c3238ea6c16784ac9b9b4f8ba186",
+          "parents": [
+            "346e6d2072fc6e98533a6ed5324a24fba74f30fb",
+            "6496d8a36b9aa548e3c5f4927b72d6ea53e27bbc"
+          ]
+        },
+        {
+          "index": 7,
+          "local_commit": "1309e56ff0b2a1f2b25086e400460310bac0b20f",
+          "published_commit": "6f4553decf7dd074a49df423ea2e8643b7f49bfa",
+          "tree": "e0f39e9646f360e056005c580b2788213e9089fc",
+          "parents": [
+            "6990633bb68b9e8868932edb5c37352ad944ce3a",
+            "b662f924cd5fb95b31ec98262f1b471529764323"
+          ]
+        },
+        {
+          "index": 8,
+          "local_commit": "36b48afb45b11b565cb98c8065c2f6dbdc5eb3c2",
+          "published_commit": "d81d24e613178f2215282da8723bc432bbcfae1c",
+          "tree": "411b0c87ddbf22e912300da4aa4b90776b74387b",
+          "parents": [
+            "6f4553decf7dd074a49df423ea2e8643b7f49bfa",
+            "4e4494e02d9d4192df98aeeb3eb9e3206df0500a"
+          ]
+        },
+        {
+          "index": 9,
+          "local_commit": "8e1d44df47e60e78250f7db5ab93011b4413a9f7",
+          "published_commit": "8e0a9c5fb84686ac703a2e54a42e44639e9e1f47",
+          "tree": "863984825753e0c1c7b0d47e63672ed3a2525610",
+          "parents": [
+            "d81d24e613178f2215282da8723bc432bbcfae1c",
+            "f70a31c71a0df0f3a7ab0329b11eb94dc37b16e9"
+          ]
+        },
+        {
+          "index": 10,
+          "local_commit": "6e4ab2b4232c31e126d19caa3fa67c43c85fc393",
+          "published_commit": "a7cd2e2445b9cc8986f7d91eb213ffe0dc4c35b3",
+          "tree": "b1d520da177c615f86a4cae88e2c7012aaeea728",
+          "parents": [
+            "8e0a9c5fb84686ac703a2e54a42e44639e9e1f47",
+            "b9806147d47ed5eb3c5a9fcb0aa76b358aebccd3"
+          ]
+        },
+        {
+          "index": 11,
+          "local_commit": "88a7e113f1c7d35e99d06c0caf1c719fe9abeca7",
+          "published_commit": "c7b5279efef807d5f3c6aafe17c50329d93e4f42",
+          "tree": "42bf84df5d71e1212b810222edc13dacee5b3828",
+          "parents": [
+            "a7cd2e2445b9cc8986f7d91eb213ffe0dc4c35b3",
+            "a5a0fded06632ce5f0eafeb8634aafc8344137f1"
+          ]
+        },
+        {
+          "index": 12,
+          "local_commit": "070573306aafbc777b98566e7555d34ef601a1b7",
+          "published_commit": "956189ff6f974a0db5f5bbacac7a9216037614a9",
+          "tree": "2d85d7322440614febd164e0c735ac0b49ec9f05",
+          "parents": [
+            "c7b5279efef807d5f3c6aafe17c50329d93e4f42",
+            "2d21656444e9c6cd9f89d9d3b5024165e788db85"
+          ]
+        },
+        {
+          "index": 13,
+          "local_commit": "e29bd9540a86faf3df6a3fc584d8afefb7209946",
+          "published_commit": "b801822e66203a39a23c6e69db6fc1f0cf38c0e0",
+          "tree": "e6578b0885a6428883052f74c1875c05508f0082",
+          "parents": [
+            "956189ff6f974a0db5f5bbacac7a9216037614a9",
+            "28fe23b4695c14939bb29f7089f1afae2d9b6df7"
+          ]
+        },
+        {
+          "index": 14,
+          "local_commit": "bc833492a3a3fa72137a6a12ec9e95a00622fde7",
+          "published_commit": "57baca8cd807cb43df8f7efff6d0996d7fd8fe58",
+          "tree": "56a90826ca5fefc4a1829a562189617319342329",
+          "parents": [
+            "b801822e66203a39a23c6e69db6fc1f0cf38c0e0",
+            "f9887cc0c463dba353cdec86713619f95cdb9f0e"
+          ]
+        },
+        {
+          "index": 15,
+          "local_commit": "6c992a9d961217e6881fa62823f828433c0302a0",
+          "published_commit": "c8bc1d91143db018c5b6174e6efd5d0ca35e92bf",
+          "tree": "df55060d324fc1d6f7342054bfb3a5b593195990",
+          "parents": [
+            "57baca8cd807cb43df8f7efff6d0996d7fd8fe58",
+            "58dba0d5bc26e4f7566c004dfde5007219fc3f2b"
+          ]
+        },
+        {
+          "index": 16,
+          "local_commit": "aadbf1ea149a8f0f8ed433f7bb39f3264ef8e168",
+          "published_commit": "c3f703381076c74a70e334a4cae74263905488d4",
+          "tree": "6eeed901238076f427470571aafbd1085ac9aa94",
+          "parents": [
+            "c8bc1d91143db018c5b6174e6efd5d0ca35e92bf",
+            "b1039d77df4472ca11020645651b394b22cb9781"
+          ]
+        },
+        {
+          "index": 17,
+          "local_commit": "b86b8c336268f957a3c144bb35bca81d12951e03",
+          "published_commit": "c97dd225f9de6aa8f4b5778c5859338bfd30e538",
+          "tree": "adde608ed583e4f3cbc838d8afd7804c0793ce5e",
+          "parents": [
+            "c3f703381076c74a70e334a4cae74263905488d4",
+            "75281deeebba1e234639b76552a806214fe2af1a"
+          ]
+        },
+        {
+          "index": 18,
+          "local_commit": "a893be48e6f8443b3f630e542d1afc004e295eee",
+          "published_commit": "c0237f5aea305ccc83324c7b7510f6d41d48c9e0",
+          "tree": "28991e8acc13c7d1997f4f018b3ec9ca81890f81",
+          "parents": [
+            "c97dd225f9de6aa8f4b5778c5859338bfd30e538",
+            "ab61d4ec6190125a11037ce6679895358871252d"
+          ]
+        },
+        {
+          "index": 19,
+          "local_commit": "f7a6eb812ac1dc0d356eef1af90a373a8a32a730",
+          "published_commit": "15fc4566c5297d8200270c9d94d6d9264a525ab7",
+          "tree": "96f47e006795874d34a3d66c7caafbc9d15e6c7e",
+          "parents": [
+            "c0237f5aea305ccc83324c7b7510f6d41d48c9e0",
+            "5f9d46d534106df0e8a9a8aa1b2eb04a915eff68"
+          ]
+        },
+        {
+          "index": 20,
+          "local_commit": "3eaa47e81c20d8d1155468f6c0edddf3d1002c04",
+          "published_commit": "4f1c0a954a55a385615196f3e8e1f9a4d26719f8",
+          "tree": "96f47e006795874d34a3d66c7caafbc9d15e6c7e",
+          "parents": [
+            "15fc4566c5297d8200270c9d94d6d9264a525ab7",
+            "60af6862c23d94a45e30c39e3de91ade8b058ae6"
+          ]
+        },
+        {
+          "index": 21,
+          "local_commit": "10a88763a1296766ac48e53f52f1334fa08004b8",
+          "published_commit": "52451e8016508dc86969f95f22d74c5d1fa960d1",
+          "tree": "30a48e6e22516a6b02889f296d113e3430e90ac0",
+          "parents": [
+            "4f1c0a954a55a385615196f3e8e1f9a4d26719f8",
+            "1cf15fbcbdfd7b09e4d8accd206018537d57c72f"
+          ]
+        },
+        {
+          "index": 22,
+          "local_commit": "bf126282c8ede9c5b8f865c8e69d4f0b8a748c98",
+          "published_commit": "a66f3a7244c777b29cb16ce094beaf9ab03d39fe",
+          "tree": "22c72b6772688bb52451c4b2f7428fcde2749ac0",
+          "parents": [
+            "52451e8016508dc86969f95f22d74c5d1fa960d1",
+            "16c301971a48e39f80dbc35652c4bba2165bf1e7"
+          ]
+        },
+        {
+          "index": 23,
+          "local_commit": "04ce06eddb4e2e54a6666c54575042adba0925d4",
+          "published_commit": "71af2a195b0068e22638df0ec097ad13a18a514e",
+          "tree": "53c24cb6dd79697f278803d863f2db81b00f8c0c",
+          "parents": [
+            "a66f3a7244c777b29cb16ce094beaf9ab03d39fe",
+            "a446a8e5bb4c2922327f46473730e4055d1c1600"
+          ]
+        },
+        {
+          "index": 24,
+          "local_commit": "604a0615e3d566211f82aab90cf133b74bb8c017",
+          "published_commit": "7d20010eeed269d0e5ff5d517c815ebdea61f7b8",
+          "tree": "53c24cb6dd79697f278803d863f2db81b00f8c0c",
+          "parents": [
+            "71af2a195b0068e22638df0ec097ad13a18a514e",
+            "7176667c0807ee49bd6bfc9a571b175f44a243a1"
+          ]
+        },
+        {
+          "index": 25,
+          "local_commit": "5c031d5e0f7dc74c5846f70873948ea96776cd79",
+          "published_commit": "b6bc61d425665f89d3f407478fe5b2470b9dca94",
+          "tree": "ffab7870c6a8b10b2a64dff0f4cfbdd963960f53",
+          "parents": [
+            "7d20010eeed269d0e5ff5d517c815ebdea61f7b8",
+            "dddb627b62ae910f27c4601bfe61987d126b0fb1"
+          ]
+        },
+        {
+          "index": 26,
+          "local_commit": "0726124f11af8b3f7b608edbdabdc8866d081a4f",
+          "published_commit": "efc66fe7ff5272ffe1cdcda5c410ce20cf519341",
+          "tree": "40840e3225e3f2d3589f008485eb20cb587d0e32",
+          "parents": [
+            "b6bc61d425665f89d3f407478fe5b2470b9dca94",
+            "0b36a23986004fb05a5e2cd0604da7527f908b02"
+          ]
+        }
+      ],
+      "repo": "TrillionniumFoundation/hepta-private-ci"
+    },
+    "evidence_maintenance": "6887eee98d25ec60b577d7c508e316af5e60347c",
+    "semantic3": {
+      "base": "6887eee98d25ec60b577d7c508e316af5e60347c",
+      "steps": [
+        {
+          "step": 1,
+          "local": "649456cf0ce1eb22560c95d31d5049931a570009",
+          "server": "7db0c572242e79a40ec1b137d1b45e2c99eaa75a",
+          "parents": [
+            "6887eee98d25ec60b577d7c508e316af5e60347c",
+            "ccbb154c8021e9f5428f8a36d1e40772d9bbd712"
+          ],
+          "tree": "8401c26adbd8af1ac4e582158bfd7742d144f244"
+        },
+        {
+          "step": 2,
+          "local": "16fb375b6746fc61ffb6b57980c010208f205023",
+          "server": "450f5e7b61b6ea4a96a7c7e287f02e3f19937044",
+          "parents": [
+            "7db0c572242e79a40ec1b137d1b45e2c99eaa75a",
+            "b81ab6bad35304314fe2d9201004780a1bf2ecb6"
+          ],
+          "tree": "c80d6dc35c56a34c112c3579cae325d0b98b4c85"
+        },
+        {
+          "step": 3,
+          "local": "dd98bb8660b434bf279918211c1ad095ca3b2661",
+          "server": "2a883b3a31be7e612a463d94b40450087e69ed1f",
+          "parents": [
+            "450f5e7b61b6ea4a96a7c7e287f02e3f19937044",
+            "30729092b4351664f5113e92fe297b300e8511fa"
+          ],
+          "tree": "c80d6dc35c56a34c112c3579cae325d0b98b4c85"
+        }
+      ],
+      "final": "2a883b3a31be7e612a463d94b40450087e69ed1f",
+      "tree": "c80d6dc35c56a34c112c3579cae325d0b98b4c85"
+    },
+    "subsumed_rust2": {
+      "base": "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+      "tree": "751e50a0172e467176be68a1331519c8ea171307",
+      "steps": [
+        {
+          "step": 1,
+          "local": "51712d568ed718bbbf17908fa30b5f340a105072",
+          "server": "5761ec9406f8952ee7cfa158116353b1c1e81b3e",
+          "parents": [
+            "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+            "a93f0ecee81dd431f909fe6cbe891ac2a49d5e97"
+          ],
+          "tree": "751e50a0172e467176be68a1331519c8ea171307"
+        },
+        {
+          "step": 2,
+          "local": "21c7cfaf5a9b3d8410babea869b17cc3b6f69b65",
+          "server": "23a7b1bceda59d792762833920e0e16ed2b8ea5f",
+          "parents": [
+            "5761ec9406f8952ee7cfa158116353b1c1e81b3e",
+            "8df40a53d713e36ebf0ceb1d95e00849f6335e39"
+          ],
+          "tree": "751e50a0172e467176be68a1331519c8ea171307"
+        }
+      ],
+      "final": "23a7b1bceda59d792762833920e0e16ed2b8ea5f"
+    }
+  },
+  "protected_scope_refresh": {
+    "observed_utc": "2026-11-16T12:43:03.959335+00:00",
+    "protected_branch_count": 63,
+    "markers": [
+      "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+      "3aa1f85ba90c79d220a5cadf2261def176892867"
+    ],
+    "original_snapshot_retained": true,
+    "observed_drift": [
+      {
+        "name": "codex/hia-example-validation-oracle-20261116-9f0b",
+        "old": "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8",
+        "new": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+        "protected_hia": true
+      },
+      {
+        "name": "codex/hia-union29-20261116-a90d",
+        "old": "827ec2d5b00e9da12d4014314f1e24b08a42f825",
+        "new": "13cbc3f8bfa551a17229be6194a2550560fcb07c",
+        "protected_hia": true
+      }
+    ],
+    "changed_heads_ancestry": [
+      {
+        "name": "codex/hia-example-validation-oracle-20261116-9f0b",
+        "original_head": "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8",
+        "observed_head": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+        "original_head_is_ancestor": true,
+        "protected_markers_in_history": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ]
+      },
+      {
+        "name": "codex/hia-union29-20261116-a90d",
+        "original_head": "827ec2d5b00e9da12d4014314f1e24b08a42f825",
+        "observed_head": "13cbc3f8bfa551a17229be6194a2550560fcb07c",
+        "original_head_is_ancestor": true,
+        "protected_markers_in_history": [
+          "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ]
+      }
+    ],
+    "heads": [
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-evidence-v1",
+        "sha": "37486a3e2f94b6ab66052c3c0734ac3cd10946e8",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6416:codex/cell-experiments-20261116-0c078a-s12"
+        ],
+        "initial_snapshot_sha": "37486a3e2f94b6ab66052c3c0734ac3cd10946e8"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s01",
+        "sha": "365a195b82c9cc9be66ec1fc9e937df3475b8e81",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6404:codex/cell-hia-joint-20261115-724f"
+        ],
+        "initial_snapshot_sha": "365a195b82c9cc9be66ec1fc9e937df3475b8e81"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s02",
+        "sha": "6d2cbf19bce1c3901c515f4b794c3e90630d86f5",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6405:codex/cell-experiments-20261116-0c078a-s01"
+        ],
+        "initial_snapshot_sha": "6d2cbf19bce1c3901c515f4b794c3e90630d86f5"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s03",
+        "sha": "f5f9e7f64e23173c3c99448c82202629e822add3",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6406:codex/cell-experiments-20261116-0c078a-s02"
+        ],
+        "initial_snapshot_sha": "f5f9e7f64e23173c3c99448c82202629e822add3"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s04",
+        "sha": "9bcc42c7120f449cf256439b1699874219eaa57b",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6407:codex/cell-experiments-20261116-0c078a-s03"
+        ],
+        "initial_snapshot_sha": "9bcc42c7120f449cf256439b1699874219eaa57b"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s05",
+        "sha": "3e4aaebf5f0ca990c730e5d9670f63ece098408e",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6408:codex/cell-experiments-20261116-0c078a-s04"
+        ],
+        "initial_snapshot_sha": "3e4aaebf5f0ca990c730e5d9670f63ece098408e"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s06",
+        "sha": "72da6cfaf091ab55ea0ea4dda4227d409fd926e1",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6409:codex/cell-experiments-20261116-0c078a-s05"
+        ],
+        "initial_snapshot_sha": "72da6cfaf091ab55ea0ea4dda4227d409fd926e1"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s07",
+        "sha": "e5486f99fa1f3b801ff12da99c1580885711a1c5",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6410:codex/cell-experiments-20261116-0c078a-s06"
+        ],
+        "initial_snapshot_sha": "e5486f99fa1f3b801ff12da99c1580885711a1c5"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s08",
+        "sha": "2a9e2a91713e30103b3dd99a07f0f23fa50bedf1",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6411:codex/cell-experiments-20261116-0c078a-s07"
+        ],
+        "initial_snapshot_sha": "2a9e2a91713e30103b3dd99a07f0f23fa50bedf1"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s09",
+        "sha": "173de531bb5bf2cc8ab8c9605225d1876a265992",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6412:codex/cell-experiments-20261116-0c078a-s08"
+        ],
+        "initial_snapshot_sha": "173de531bb5bf2cc8ab8c9605225d1876a265992"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s10",
+        "sha": "6c5b7a788f877077d17c98138a800e3ef465bc60",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6413:codex/cell-experiments-20261116-0c078a-s09"
+        ],
+        "initial_snapshot_sha": "6c5b7a788f877077d17c98138a800e3ef465bc60"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s11",
+        "sha": "e780af7581d6cf00f7cf6a91435412a0eba6effe",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6414:codex/cell-experiments-20261116-0c078a-s10"
+        ],
+        "initial_snapshot_sha": "e780af7581d6cf00f7cf6a91435412a0eba6effe"
+      },
+      {
+        "name": "codex/cell-experiments-20261116-0c078a-s12",
+        "sha": "c333ea22eb8f739aeceed429b53c08a556e7ee82",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6415:codex/cell-experiments-20261116-0c078a-s11"
+        ],
+        "initial_snapshot_sha": "c333ea22eb8f739aeceed429b53c08a556e7ee82"
+      },
+      {
+        "name": "codex/cell-hia-ci-evidence-20261116-724f",
+        "sha": "2a89089230be1c8b850beeeeda4d5f47943bcad2",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "2a89089230be1c8b850beeeeda4d5f47943bcad2"
+      },
+      {
+        "name": "codex/cell-hia-joint-20261115-724f",
+        "sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6400"
+        ],
+        "initial_snapshot_sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+      },
+      {
+        "name": "codex/hepta-doc-map-real-source-20261115-r11",
+        "sha": "97fc55515538d0f661a330da6399c5785eb8eecb",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6379:codex/hia-patch-application-20261115-9f38"
+        ],
+        "initial_snapshot_sha": "97fc55515538d0f661a330da6399c5785eb8eecb"
+      },
+      {
+        "name": "codex/hia-allowed-prefixes-20261115-9f0b",
+        "sha": "ae39735ac801c33c2166f043ea1471c3c445460a",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6372"
+        ],
+        "initial_snapshot_sha": "ae39735ac801c33c2166f043ea1471c3c445460a"
+      },
+      {
+        "name": "codex/hia-ci-core-test-binaries-20261115-a90d",
+        "sha": "4895cd93113b662d590f140d38736a30392081fc",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6363"
+        ],
+        "initial_snapshot_sha": "4895cd93113b662d590f140d38736a30392081fc"
+      },
+      {
+        "name": "codex/hia-command-dispatch-20261115-9f0b",
+        "sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6378"
+        ],
+        "initial_snapshot_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff"
+      },
+      {
+        "name": "codex/hia-cross-owner-premerge-guard-20261116-v1",
+        "sha": "5aa8417222b537dea2bf57515383ff95401b1983",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6397"
+        ],
+        "initial_snapshot_sha": "5aa8417222b537dea2bf57515383ff95401b1983"
+      },
+      {
+        "name": "codex/hia-example-validation-oracle-20261116-9f0b",
+        "sha": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6401"
+        ],
+        "initial_snapshot_sha": "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8"
+      },
+      {
+        "name": "codex/hia-execpolicy-prefix-20261115-9f0b",
+        "sha": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6352"
+        ],
+        "initial_snapshot_sha": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f"
+      },
+      {
+        "name": "codex/hia-file-update-20261115-9f38",
+        "sha": "8b138f979a77baeb78b28b8273febcef960dcb88",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6354"
+        ],
+        "initial_snapshot_sha": "8b138f979a77baeb78b28b8273febcef960dcb88"
+      },
+      {
+        "name": "codex/hia-foundation-contract-20261114-9f38",
+        "sha": "d6690efc44f7ca1d2075f1b6fec81b91100cf61a",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "d6690efc44f7ca1d2075f1b6fec81b91100cf61a"
+      },
+      {
+        "name": "codex/hia-list-agents-completion-20261115-run11",
+        "sha": "355118ec887d22affe13b33ce3907c697e4360f4",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "355118ec887d22affe13b33ce3907c697e4360f4"
+      },
+      {
+        "name": "codex/hia-macos-code-mode-startup-20261115-a90d",
+        "sha": "bb321262064982217002ae608f484a235c160e85",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "bb321262064982217002ae608f484a235c160e85"
+      },
+      {
+        "name": "codex/hia-macos-matrix-cipher-20261115-a90d",
+        "sha": "842a49e96d7e6960267913825e01d53d96aab971",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "842a49e96d7e6960267913825e01d53d96aab971"
+      },
+      {
+        "name": "codex/hia-macos-matrix-phase-20261115-a90d",
+        "sha": "a88f75d39308e6f3eddd046277a6e434f16d2b0f",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "a88f75d39308e6f3eddd046277a6e434f16d2b0f"
+      },
+      {
+        "name": "codex/hia-macos-owner-20261114-a90d",
+        "sha": "57e489472a03515438df8ed7a0fabec882404f02",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "57e489472a03515438df8ed7a0fabec882404f02"
+      },
+      {
+        "name": "codex/hia-native-apparmor-profile-20261114",
+        "sha": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4"
+      },
+      {
+        "name": "codex/hia-native-bwrap-ci-20261114-p9",
+        "sha": "862d66c02f42a7cc56e121691a72e715e40a2ecc",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "862d66c02f42a7cc56e121691a72e715e40a2ecc"
+      },
+      {
+        "name": "codex/hia-native-codex-20261114-a90d",
+        "sha": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6314"
+        ],
+        "initial_snapshot_sha": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc"
+      },
+      {
+        "name": "codex/hia-native-ubuntu2204-sandbox-20261114",
+        "sha": "d5f0e8e7ac6f57a5902b5e07e9fda274cec7a96b",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "d5f0e8e7ac6f57a5902b5e07e9fda274cec7a96b"
+      },
+      {
+        "name": "codex/hia-network-domains-20261115-9f0b",
+        "sha": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6365"
+        ],
+        "initial_snapshot_sha": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b"
+      },
+      {
+        "name": "codex/hia-network-host-20261115-9f0b",
+        "sha": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6382"
+        ],
+        "initial_snapshot_sha": "74d1c0ebeced1b72a0ee74e375a0ace623762b01"
+      },
+      {
+        "name": "codex/hia-patch-application-20261115-9f38",
+        "sha": "cae5db67213f2621910bf39ff048ee60c887317b",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6377"
+        ],
+        "initial_snapshot_sha": "cae5db67213f2621910bf39ff048ee60c887317b"
+      },
+      {
+        "name": "codex/hia-patch-effects-20261115-9f38",
+        "sha": "aeb88f596b83186456caac577080bcb2f253ad32",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6364"
+        ],
+        "initial_snapshot_sha": "aeb88f596b83186456caac577080bcb2f253ad32"
+      },
+      {
+        "name": "codex/hia-patch-integration-20261115-9f38",
+        "sha": "2ff44b608a202c25e7551edca67a7a5362f34d36",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6356"
+        ],
+        "initial_snapshot_sha": "2ff44b608a202c25e7551edca67a7a5362f34d36"
+      },
+      {
+        "name": "codex/hia-patch-output-20261115-9f38",
+        "sha": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6369"
+        ],
+        "initial_snapshot_sha": "e23bc0d7ae5d52e70839982c9c5517a3368ae049"
+      },
+      {
+        "name": "codex/hia-patch-output-agentd-bridge-20261115-gpt6",
+        "sha": "627de3c55ba106b0533b2281a08090aefd50e5d9",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6373"
+        ],
+        "initial_snapshot_sha": "627de3c55ba106b0533b2281a08090aefd50e5d9"
+      },
+      {
+        "name": "codex/hia-patch-parser-20261115-9f38",
+        "sha": "168080b72c4be242d14eadd47168f2a9326590f2",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6353"
+        ],
+        "initial_snapshot_sha": "168080b72c4be242d14eadd47168f2a9326590f2"
+      },
+      {
+        "name": "codex/hia-patch-standalone-20261115-9f38",
+        "sha": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6390"
+        ],
+        "initial_snapshot_sha": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231"
+      },
+      {
+        "name": "codex/hia-patch-standalone-abi-producer-20261115-a11",
+        "sha": "d40247b313fefa03a292fd6cbbc3fb8c2a985d9a",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "d40247b313fefa03a292fd6cbbc3fb8c2a985d9a"
+      },
+      {
+        "name": "codex/hia-plasticity-status-sync-20261115-r11x",
+        "sha": "b34a4670c130111c06e24e070635391fa8694a60",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "b34a4670c130111c06e24e070635391fa8694a60"
+      },
+      {
+        "name": "codex/hia-policy-summary-20261115-9f0b",
+        "sha": "7b51d6614e494ab62aa20f049c862ffef1808ce1",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6361"
+        ],
+        "initial_snapshot_sha": "7b51d6614e494ab62aa20f049c862ffef1808ce1"
+      },
+      {
+        "name": "codex/hia-render19-rama-sdk-bridge-20261116-a11",
+        "sha": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6398"
+        ],
+        "initial_snapshot_sha": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5"
+      },
+      {
+        "name": "codex/hia-retirement-consistency-20261115-turn11",
+        "sha": "086cdfd96c1312ef5cbc31b1cbe9a3a9614a30a3",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6348"
+        ],
+        "initial_snapshot_sha": "086cdfd96c1312ef5cbc31b1cbe9a3a9614a30a3"
+      },
+      {
+        "name": "codex/hia-retirement-precheck-20261115-automation11",
+        "sha": "48b58e8ac6237d44585d27260c6f4bd42f445ce5",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6392"
+        ],
+        "initial_snapshot_sha": "48b58e8ac6237d44585d27260c6f4bd42f445ce5"
+      },
+      {
+        "name": "codex/hia-source-file-20261114-9f38",
+        "sha": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6347"
+        ],
+        "initial_snapshot_sha": "2c02acd781586faf7e8fb270bc5a0719a05e46f6"
+      },
+      {
+        "name": "codex/hia-source-file-fastpath-20261115-9f38",
+        "sha": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e"
+      },
+      {
+        "name": "codex/hia-string-truncate-20261114-9f38",
+        "sha": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6342"
+        ],
+        "initial_snapshot_sha": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c"
+      },
+      {
+        "name": "codex/hia-template-parse-20261115-9f38",
+        "sha": "605832630c0c31742f26eee6c38f10cfa2490d90",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6394"
+        ],
+        "initial_snapshot_sha": "605832630c0c31742f26eee6c38f10cfa2490d90"
+      },
+      {
+        "name": "codex/hia-template-render-20261115-9f38",
+        "sha": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6395"
+        ],
+        "initial_snapshot_sha": "d2fb9ecd772da7736e973aaa3d90f14512dedddf"
+      },
+      {
+        "name": "codex/hia-token-budget-abi-20261114-9f38",
+        "sha": "7fe65ae990187e6ff1130c791f902728b4e50197",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6344"
+        ],
+        "initial_snapshot_sha": "7fe65ae990187e6ff1130c791f902728b4e50197"
+      },
+      {
+        "name": "codex/hia-twelve-integration-20261115-a90d",
+        "sha": "91a1864a9b3aeb53b6ac653adb725a957564e56a",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6360"
+        ],
+        "initial_snapshot_sha": "91a1864a9b3aeb53b6ac653adb725a957564e56a"
+      },
+      {
+        "name": "codex/hia-union29-20261116-a90d",
+        "sha": "13cbc3f8bfa551a17229be6194a2550560fcb07c",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6402"
+        ],
+        "initial_snapshot_sha": "827ec2d5b00e9da12d4014314f1e24b08a42f825"
+      },
+      {
+        "name": "codex/hia-union29-rama-sdk-20261116-gpt6",
+        "sha": "2536943576e90550bf2d69a8baff37a0cd397eaa",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6403"
+        ],
+        "initial_snapshot_sha": "2536943576e90550bf2d69a8baff37a0cd397eaa"
+      },
+      {
+        "name": "codex/hia-uuid-20261115-9f38",
+        "sha": "c468f632201c39957d3fecb92f05b37aa650b45e",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6391"
+        ],
+        "initial_snapshot_sha": "c468f632201c39957d3fecb92f05b37aa650b45e"
+      },
+      {
+        "name": "codex/hia-windowed-native-20261114",
+        "sha": "7e920e23b11e8f57891325a2e7805e8969c63551",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia",
+          "PR_title_HIA#6319"
+        ],
+        "initial_snapshot_sha": "7e920e23b11e8f57891325a2e7805e8969c63551"
+      },
+      {
+        "name": "codex/hia-windows-owner-20261114-a90d",
+        "sha": "bba5c1f6f4bef0c8faf58ef402beabea76543f1f",
+        "protected": false,
+        "reasons": [
+          "name_contains_hia"
+        ],
+        "initial_snapshot_sha": "bba5c1f6f4bef0c8faf58ef402beabea76543f1f"
+      },
+      {
+        "name": "codex/sdk-resolver-abi-20261115-9f0b",
+        "sha": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6374:codex/hia-allowed-prefixes-20261115-9f0b"
+        ],
+        "initial_snapshot_sha": "e744466830b5c823b723d81c2b6cab9c95abd60b"
+      },
+      {
+        "name": "codex/v8-canary-feature-parity-20261114-p9",
+        "sha": "8ca15b214b56eb800c78849ecae298e7f47eaa1d",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6336:codex/hia-native-codex-20261114-a90d"
+        ],
+        "initial_snapshot_sha": "8ca15b214b56eb800c78849ecae298e7f47eaa1d"
+      },
+      {
+        "name": "codex/windows-private-fs-diagnostics-20261115-9f0b",
+        "sha": "3d80582cf7d425df2aec4e3fffec23c7a0c14816",
+        "protected": false,
+        "reasons": [
+          "PR_base_dependency#6355:codex/hia-native-codex-20261114-a90d"
+        ],
+        "initial_snapshot_sha": "3d80582cf7d425df2aec4e3fffec23c7a0c14816"
+      }
+    ],
+    "candidate_head": "dd98bb8660b434bf279918211c1ad095ca3b2661",
+    "candidate_ancestor_collisions": [],
+    "incoming_ancestor_collisions": [],
+    "no_new_or_deleted_remote_heads": true,
+    "all_non_hia_remote_heads_match_initial_snapshot": true,
+    "child_remote_ref_mutations": 0
+  },
+  "validation": {
+    "older_source_guards": {
+      "status": "PASS_ON_PRIOR_RECORDED_SOURCE",
+      "full_b4_tests": 1315,
+      "caller_boundaries": 1645,
+      "rust_files": 7504,
+      "scope": "Exact sources are in the retained proof manifests; subsequent 55-file candidate is being rechecked."
+    },
+    "v4": {
+      "status": "FAILED",
+      "passed": 102,
+      "failed": 6,
+      "run": 108,
+      "filtered": 1499
+    },
+    "v5": {
+      "status": "FAILED",
+      "passed": 62,
+      "failed": 16,
+      "timed_out": 1,
+      "run": 79,
+      "filtered": 1528
+    },
+    "native_v6": {
+      "status": "FAILED",
+      "feature_clippy": "PASS",
+      "original_budget_unchanged": true,
+      "feature_clippy_log_sha256": "51fd72562a8078754e47d6e080e4a0d485fc13410ce2effc77d3145b6642784d",
+      "source_bridge": {
+        "total": 7748,
+        "matching": 7742,
+        "differences": 6,
+        "description": "Four separately tested lock/crash/PTY fixtures and two Windows-only test imports; no Agentd source difference."
+      },
+      "run": 26,
+      "passed": 9,
+      "failed": 1,
+      "timed_out": 16,
+      "filtered": 1584,
+      "control_tests_passed": 8,
+      "execution_seconds": 289.177,
+      "command_seconds": 1407.174,
+      "log_sha256": "bde487fe8413f5b7fd963cdc542a5b788c0c9df225c9571f9978ce5beb4d22ba",
+      "inputs_unchanged": true,
+      "interpretation": "All sixteen provider-family cases reached the unchanged 60-second timeout. The single deep-readonly failure reports an uncertain original C Observer completion. These are not the previous registry assertion failures."
+    },
+    "final_55_source_guards": {
+      "status": "PASS",
+      "commit": "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+      "tree": "751e50a0172e467176be68a1331519c8ea171307",
+      "full_b4_tests": 1315,
+      "caller_boundaries": 1645,
+      "rust_files": 7504,
+      "protected_files": 819,
+      "inputs_unchanged": true
+    },
+    "rog_native": {
+      "lock_fixture_tests_passed": 19,
+      "memory_crash_tests_passed": 2,
+      "pty_tests_passed": 28,
+      "scope": "Exact source/host/command receipts will be retained in the CI audit pack. These are Linux runs, not Windows/macOS native qualification."
+    },
+    "hosted_required": {
+      "source": "285e971b3af3a93a79169b56a42263069e473057",
+      "ci_required": "FAILURE",
+      "architecture_required": "SUCCESS",
+      "new_candidate": "NOT_YET_PUBLISHED"
+    },
+    "windows_admission": {
+      "status": "UNRESOLVED",
+      "functional_tests": 4,
+      "reason": "Current production refuses the unsafe elevated route; retained native evidence has a real parent-delete isolation counterexample. Do not remove refusal guards or weaken the positive functional assertions."
+    },
+    "codeql": {
+      "status": "UNDER_REVIEW_NO_DISMISSALS",
+      "check_run": 133210231982,
+      "source": "285e971b3af3a93a79169b56a42263069e473057",
+      "check_annotations": 23,
+      "reported_high": 13,
+      "reported_critical": 10,
+      "analysis_results": 195,
+      "scope": "Reported severity is not confirmation of exploitability. Exact alerts, source types, fixture boundaries and data flows are being reviewed individually.",
+      "source_reviewed_annotations": 23,
+      "source_remediation_areas": [
+        "CLI partial-key output",
+        "duplicate login material diagnostics",
+        "unbounded upstream authentication error diagnostics"
+      ],
+      "remote_alert_dismissals": 0
+    }
+  },
+  "record_phase": "before_ref_update",
+  "record_updated_utc": "2026-11-16T13:37:50.443780+00:00"
+}

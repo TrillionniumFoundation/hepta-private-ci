@@ -1,0 +1,279 @@
+{
+  "schema": "hepta.private.same-read-current-candidate.v1",
+  "base_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "code_tree": "ec949496b0fdb728ad830ad61e541ba080e3391c",
+  "status": "STATIC_ONLY_NOT_PUBLISHED",
+  "validation": {
+    "immutable_postimage_readback": "11/11 exact Git/SHA256 and text equality",
+    "rustfmt": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "source_and_caller_gates": "NOT_RUN",
+    "native_methods": "NOT_RUN",
+    "same_source_ci": "NOT_RUN",
+    "actor_dispatches": 0,
+    "refs_changed": 0
+  },
+  "original_failure": {
+    "failure_tail_blob": "48c873e78aa594816c87537a45c7188ffdf577ea",
+    "bytes": 17726,
+    "sha256": "33ae5710943289558cd68373101e6f4d2723c9d692d490f6c28a79ee8faad135",
+    "callback_ms": 707.475092,
+    "exchange_ms": 707.83391,
+    "response_bytes": 1007,
+    "callback_error": null,
+    "result": "DeadlineElapsed",
+    "original_deadline_ms": 500
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "base_blob": "300080cc47dea3f0f3af81aeba1c6d4e7fc6c1e6",
+      "base_bytes": 6502,
+      "base_sha256": "f189f9e3a6ecc5e6cd68aae34c75cd7987528a2ad641ae45cfbd3171625c40c5",
+      "post_blob": "849cdf6406fb746be80c6fb93ce3ee8e4d0f4112",
+      "post_bytes": 8039,
+      "post_sha256": "5423690e485670cff1f3c303ba3f7e78be44f0f1961f6878928afb53918886e3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "base_blob": "facfbd75b7a94c7d40f1ddea9d1cfd207f2357cc",
+      "base_bytes": 9561,
+      "base_sha256": "e4f4071f644f6adf89a19ffe794a6137f05397b078ba794a8cdc23b00ae80f34",
+      "post_blob": "32ca73705cb3ccb07938cd930095d3a3dbf3bf17",
+      "post_bytes": 11415,
+      "post_sha256": "39cbe8f2d7c7aeb3d0056dc2bd8771878641defd532e9c49fcbd00d6cf1e7a68"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "base_blob": "63295654af4ba14e56b564dee3f09db5d18d8253",
+      "base_bytes": 16129,
+      "base_sha256": "7a04acd4563a993228a2d4041d1def47194c0139e93cda48e2172e11b305197d",
+      "post_blob": "752bee454a024280be6d5033b826abff398d2edf",
+      "post_bytes": 18406,
+      "post_sha256": "057d18f8c90b5324d72761648092bb6439cd5f77ba5ef20cdb6a4018c3afa652"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "base_blob": "96c2e18be1761e4c81da04bf5081a1bd57313305",
+      "base_bytes": 11113,
+      "base_sha256": "26f09f954a8ccdda618c35ec789eeb7dd59c85fbb23c4fa86315dee50230f3d7",
+      "post_blob": "47969e32eaeec0e48479c9ec7f05b10ee17a7412",
+      "post_bytes": 11423,
+      "post_sha256": "c8dc7ac72aa6cb4f510a7e2b59b2589962ecf1943ab11d237365bedad5c205a8"
+    },
+    {
+      "path": "CALLERS.toml",
+      "base_blob": "13d9f42390e529bb1712d9358a2e42a1c3ead802",
+      "base_bytes": 1129169,
+      "base_sha256": "d67c2f5595286ddc49c03f7a763d2a8734166060d6cf016d10271194de51419f",
+      "post_blob": "a78d6b4960878f0df2b895c45fd131afe6caf87e",
+      "post_bytes": 1131679,
+      "post_sha256": "a5fe2dfabc9dfd0486c96a10d9c9e1a11f8c3908e5c6de2f93ef164abf8ba46f"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "base_blob": "3032a463b76c44a934ee9338d2bffe51640727b9",
+      "base_bytes": 11699,
+      "base_sha256": "8983cbf6ea5bce8098580d840a1c633ca7379062c11d764376dc98e0be7bd07e",
+      "post_blob": "2bca82fb841d53f177cc6b7448d45946606e108b",
+      "post_bytes": 11699,
+      "post_sha256": "c83cf494a67b205be32cc2c24427e2800cc78cccb85eb0470bcb090bdac7f87a"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "base_blob": "e6bb60716905a5eca08f54dd8d90d8f6086ad3d2",
+      "base_bytes": 17403,
+      "base_sha256": "8bccc0d63999c2b0ebbad62ceaf33e97201a0e6f4b6c3a547dc828f05053724e",
+      "post_blob": "8526a800e6d88c8cbd4aa07acb5a960bcd96d999",
+      "post_bytes": 19130,
+      "post_sha256": "8ebe5e564904f06962180ba14afba32f1e0715a20a03967130cc448607783169"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "base_blob": "1a94d6e95dfb5314bfc2fe1e32c19aa71bf0606a",
+      "base_bytes": 26213,
+      "base_sha256": "e4b2027353ce1868ad59754a3d604a502ce16856763401381ace15cb3d496697",
+      "post_blob": "e82e40cf341b980665114e1a95646063597deb7d",
+      "post_bytes": 26472,
+      "post_sha256": "05aea236dd18d4e1ae340a2519cfe1f46c1e63c08afd3935eb24f89046caee2b"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "base_blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234",
+      "base_bytes": 33501,
+      "base_sha256": "d7c324ac68d714371daa6c79e26f32e7a0356945201792d9a135f04ebf9e427d",
+      "post_blob": "6d3f2de97fa58f1c572a5468bab2742c77737fcb",
+      "post_bytes": 33457,
+      "post_sha256": "d4634134216f6a6fbfb29f6f6f502e83fcf6413f15e3dcb271a890f5c211569d"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "base_blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+      "base_bytes": 10942,
+      "base_sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3",
+      "post_blob": "f1518b0e8a2f0469876b3872c1b3e7511cce544d",
+      "post_bytes": 10882,
+      "post_sha256": "c591ab9e83247e178656dae0df6fb83b2163b3bb3c5f80389ec2a237fdd2bab6"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "base_blob": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+      "base_bytes": 12582,
+      "base_sha256": "1b9f8b9c9bfdc004521f7007efaf228a7fcb8819059679dd040ac060786af578",
+      "post_blob": "0c21eebe62b86c858453f69b2ed10c535161e400",
+      "post_bytes": 12586,
+      "post_sha256": "cc345931a775c7cc353c2216614587b4cc4643f9eaff83a66a8517ff32f393d2"
+    }
+  ],
+  "caller_changes": {
+    "newBoundaryId": "circuit_feature_original_next_use_read_set",
+    "oldBoundaryRemovedCaller": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+    "newBoundaryProductCallers": [
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+    ],
+    "definitionFileCalls": "same learning definition is intentionally excluded by original checker; wrapper whole body now protected",
+    "protectedPaths": [
+      "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+    ]
+  },
+  "source_bindings": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "source_blob": "3c799bf03fd99dea05f4905845e45c8bf9107627",
+      "bytes": 4400,
+      "sha256": "26156213658cf0b9bf2e0366308dc82b736348da802b5eeeebe55a7e57c62e0d",
+      "role": "Original C evidence callback and unchanged request/signature authentication"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "source_blob": "23e8989ebd2644947b15c80ab9c641a70767de99",
+      "bytes": 24081,
+      "sha256": "aa0ba3925f51d51217cfd37a50ae6b4f2bba88a9d5fdb5b1c91cf3975d11d70e",
+      "role": "Actual C current/readback predecessor bracketing"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "source_blob": "82dcc4191411c653b8a4f9c09ce879d918fc3601",
+      "bytes": 29826,
+      "sha256": "a4222aff8b59e550fb83543f3af1637a1c78a6715b706d77b4ec0da845d96eea",
+      "role": "Actual nested S evidence and original Trainer/current reads"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "source_blob": "7659699dbf3517e232bdab92449d4c86846fbece",
+      "bytes": 9926,
+      "sha256": "b9f6c508db0fd9be679132b6311091a49e238701306f4d660e83015d7897ccd2",
+      "role": "Original 500ms/300s, nonce correlation and one-channel retained read identity"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_profile.rs",
+      "source_blob": "bec9a048b3a583811ea824dc8f02bafbed3b35da",
+      "bytes": 4648,
+      "sha256": "2610cc9136f5f7631f8452a9693ca707b1ad05ad037cd14a104e241b7e518920",
+      "role": "Original legacy/evaluated context and scope dispatch"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+      "source_blob": "f4c8b85909503ca1ca19c1b8345b6e753499d7a6",
+      "bytes": 14578,
+      "sha256": "2556b9e513f9cf4f9d07027e2f2636a53722d4b20d41e0f335651a6e42534002",
+      "role": "Original read request/response codec and context binding"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "source_blob": "92224a910d3c8050dde8bb079da36e02d73d3373",
+      "bytes": 8089,
+      "sha256": "361f177e3acefea380d63fc627dd3ab0d92ba14284a8ad41fcae01a63c6111d9",
+      "role": "Native committed Cell lookup and CURRENT checks"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "source_blob": "aaa5cdec33f71d30ba82313c5c46d1cdd137390a",
+      "bytes": 2565,
+      "sha256": "dafc0ad870c3402605c42bd79ac5da4983b04be7603ff80bda073e94e60d7333",
+      "role": "Same actual Source input/current/withdrawal reads"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",
+      "source_blob": "0efe1917606802d2d47ed5ceda10e581a7c803c5",
+      "bytes": 6682,
+      "sha256": "ed0569bbc5c818dd256b6a00283329c32a737822c4d2280cb00bb3f72b1bb852",
+      "role": "Immutable completed publication bytes; physical current witness and withdrawal"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "source_blob": "0169864d8a5743a1ce00eacf293392a118026d8d",
+      "bytes": 20803,
+      "sha256": "ec21b2dbf8322e171be194a96799334aa17a774d124dd6cfaae5272ef03d254a",
+      "role": "Previously failing original C command method kept unchanged"
+    }
+  ],
+  "static_counts": {
+    "scope": "Static explicit task.require_current calls in the published CURRENT graph only; excludes nested original Trainer/material operations and internal physical I/O.",
+    "per_current_request": {
+      "Selection": {
+        "before": 10,
+        "after": 6
+      },
+      "NextUse": {
+        "before": 15,
+        "after": 9
+      }
+    },
+    "per_legacy_c_evidence_callback": {
+      "training_requests": {
+        "before": 6,
+        "after": 6
+      },
+      "selector_evidence_requests": {
+        "before": 2,
+        "after": 2
+      },
+      "next_use_current_requests": {
+        "before": 2,
+        "after": 2
+      },
+      "selection_current_requests": {
+        "before": 4,
+        "after": 4
+      },
+      "explicit_task_current_calls": {
+        "before": 70,
+        "after": 42
+      }
+    },
+    "limits": {
+      "request_bound": 128,
+      "timeout_ms": 500,
+      "lifetime_seconds": 300,
+      "changed": false
+    },
+    "latency_result": "NOT_MEASURED",
+    "deep_material_budget": "UNCHANGED_AND_NOT_CLOSED"
+  },
+  "new_tests": {
+    "native": {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "before": 6,
+      "after": 7,
+      "added": [
+        "q24_remote_current_set_rejects_source_withdrawal_after_native_completion"
+      ]
+    },
+    "source": {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "before": 8,
+      "after": 9,
+      "added": [
+        "test_same_call_set_keeps_native_source_and_cell_guards_before_consumption"
+      ]
+    }
+  },
+  "remaining": [
+    "Actual formatter/compiler/source mutation/caller/native gates must execute on the combined exact source.",
+    "Original legacy C method still must satisfy its unchanged 500ms deadline; static read counts do not prove latency.",
+    "Evaluated S PredecessorUnavailable and deep Material 128-frame budget remain independent open causes.",
+    "No fresh authority, owner deployment, scientific result, source independence, or training-benefit gate is closed."
+  ]
+}

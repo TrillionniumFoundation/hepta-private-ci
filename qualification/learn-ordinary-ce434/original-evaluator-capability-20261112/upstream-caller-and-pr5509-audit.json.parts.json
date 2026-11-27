@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.ordered-artifact-parts.v1",
+  "archive_name": "upstream-caller-and-pr5509-audit.json",
+  "archive_bytes": 822705,
+  "archive_sha256": "24fcae7a4789b8843742d24df0e6eef23ecfe328bf1394d3c0a3b248e83f0849",
+  "original_repository_path": "qualification/learn-ordinary-ce434/original-evaluator-capability-20261112/upstream-caller-and-pr5509-audit.json",
+  "original_git_commit": "7bb48279f35021f8ec769d9dc4ce63741f2b36b1",
+  "original_git_blob": "20a648b84a402324f47fef39606cbf4c4430186a",
+  "max_part_bytes": 500000,
+  "ordered_parts": [
+    {
+      "path": "upstream-caller-and-pr5509-audit.json.part000",
+      "offset": 0,
+      "bytes": 500000,
+      "sha256": "03bbdf9cca7d2dae470a5e5a1ddd18a06eeb0bb636a35125e653529725fbec7d"
+    },
+    {
+      "path": "upstream-caller-and-pr5509-audit.json.part001",
+      "offset": 500000,
+      "bytes": 322705,
+      "sha256": "56205404be053033accd0d5a87c377f56d24537658839420be64a44bc18dbde0"
+    }
+  ],
+  "restoration": {
+    "working_directory": "qualification/learn-ordinary-ce434/original-evaluator-capability-20261112",
+    "command": "( set -C; cat upstream-caller-and-pr5509-audit.json.part000 upstream-caller-and-pr5509-audit.json.part001 > upstream-caller-and-pr5509-audit.json )",
+    "verification_command": "printf '%s  %s\\n' 24fcae7a4789b8843742d24df0e6eef23ecfe328bf1394d3c0a3b248e83f0849 upstream-caller-and-pr5509-audit.json | sha256sum -c -",
+    "no_overwrite": true,
+    "instructions": "../../learn-evidence-storage-followup-20261115/README.md"
+  },
+  "storage_only": true,
+  "original_bytes_unchanged": true
+}

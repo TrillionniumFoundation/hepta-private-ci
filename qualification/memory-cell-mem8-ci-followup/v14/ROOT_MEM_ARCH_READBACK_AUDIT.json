@@ -1,0 +1,95 @@
+{
+  "schema": "mem8.root.ci189.mem-architecture.readback.v1",
+  "verified_at": "2026-11-11T11:29:14.925585+00:00",
+  "status": "PASS_OFFLINE_ORIGINAL_BYTE_AND_COUNT_AUDIT",
+  "index": {
+    "bytes": 3683,
+    "sha256": "130b71a7d8e0c4b8515d313db3354486bd753e8a179efff856bcc69e015e8f08",
+    "git_blob": "7bd1c3b5ab6a2a2df882ae909326c3690a76295a"
+  },
+  "archive": {
+    "bytes": 1438920,
+    "sha256": "a624a89aa4936d0f64a5838c6099040fc12ba1d72d87ac3c98cdf07f11550072",
+    "git_blob": "a0f23801ff42085a95d01ebf9b7606178bde9a75"
+  },
+  "full_git_envelopes": 5,
+  "outer_members": 23,
+  "zip_members": 217,
+  "receipts_and_raw_logs": 49,
+  "artifacts": [
+    {
+      "artifact_id": 13848385037,
+      "role": "mem-native",
+      "members": 29,
+      "receipts": 5,
+      "actual_test_executions": 17,
+      "framework_executions": {
+        "nextest": 17,
+        "non-test-command": 0
+      }
+    },
+    {
+      "artifact_id": 13847016455,
+      "role": "mem-python",
+      "members": 25,
+      "receipts": 8,
+      "actual_test_executions": 119,
+      "framework_executions": {
+        "unittest": 119
+      }
+    },
+    {
+      "artifact_id": 13846881701,
+      "role": "mem-integrity",
+      "members": 78,
+      "receipts": 1,
+      "actual_test_executions": 35,
+      "framework_executions": {
+        "unittest": 35
+      }
+    },
+    {
+      "artifact_id": 13845804255,
+      "role": "architecture-base-merge",
+      "members": 20,
+      "receipts": 4,
+      "actual_test_executions": 136,
+      "framework_executions": {
+        "non-test-command": 0,
+        "unittest": 136
+      }
+    },
+    {
+      "artifact_id": 13848553385,
+      "role": "architecture-source-head",
+      "members": 65,
+      "receipts": 31,
+      "actual_test_executions": 664,
+      "framework_executions": {
+        "cargo-libtest": 462,
+        "non-test-command": 0,
+        "unittest": 138,
+        "nextest": 64
+      }
+    }
+  ],
+  "distinct_tests_across_lanes_not_claimed": true,
+  "original_mem_feature_qualification_not_observed": true,
+  "original_mem_protocol_and_fixes_skipped": true,
+  "memory_benefit_actor_executions_added_by_audit": 0,
+  "archived_code_executed": false,
+  "native_tests_executed_by_audit": 0,
+  "model_requests_executed_by_audit": 0,
+  "verifier_history": [
+    {
+      "attempt": 1,
+      "status": "stopped_before_audit_output",
+      "reason": "Strict summary regex expected plural tests; original selector-role summary is 1 test run."
+    },
+    {
+      "attempt": 2,
+      "status": "passed",
+      "change": "Recognize original singular and plural grammar; counts and all byte gates unchanged."
+    }
+  ]
+}

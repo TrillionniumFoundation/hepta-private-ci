@@ -1,0 +1,892 @@
+#!/usr/bin/env python3
+"""Add-only a32 Wine diagnostic: evidence, not a product fix or full-CI substitute."""
+import hashlib
+import io
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import tarfile
+import time
+import traceback
+import urllib.request
+import uuid
+
+BASE = "a32d73f00cfc292ff1ed4ac5cef958ca9f238020"
+BASE_TREE = "603a3e5b69258e37653a828dda625efe45365d7e"
+BRANCH = "diagnostic/a32-wine-readonly-native-20261022"
+LABEL = "//bazel/rules/testing/wine:wine-test-support-unit-tests"
+ALLOW = (
+    ".github/scripts/a32_wine_diagnostic.py",
+    ".github/scripts/test_a32_wine_diagnostic.py",
+    ".github/workflows/a32-wine-diagnostic.yml",
+)
+CASES = (
+    "tests::pinned_powershell_runs_under_wine_with_a_pty",
+    "tests::take_stdout_panics_when_called_twice",
+    "tests::shutdown_reports_nonzero_process_exit",
+    "tests::shutdown_returns_teardown_error",
+)
+PLAN = ("full-original-parallelism", *CASES)
+ASSET = "dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz"
+ASSET_SIZE = 777657
+ASSET_SHA256 = "ba6b6908c69db8264efdb8ee32f4906284ea3b77247c611339b5f60160cc5691"
+DOTSLASH_SHA256 = "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936"
+BAZEL_URL = "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64"
+BAZEL_SIZE = 77023347
+BAZEL_SHA256 = "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8"
+ORIGINAL_TEST_PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+POLICY_FILES = {
+    "unprivileged_userns_clone": "/proc/sys/kernel/unprivileged_userns_clone",
+    "apparmor_restrict_unprivileged_userns": "/proc/sys/kernel/apparmor_restrict_unprivileged_userns",
+    "max_user_namespaces": "/proc/sys/user/max_user_namespaces",
+}
+
+
+def require(ok, message):
+    if not ok:
+        raise RuntimeError(message)
+
+
+def save(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+    temporary.replace(path)
+
+
+def git(root, *args):
+    return subprocess.check_output(["git", "-C", str(root), *args])
+
+
+def sha256(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def git_blob(data):
+    return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+
+
+def tree_entries(root, ref):
+    result = {}
+    for entry in git(root, "ls-tree", "-rz", ref).split(b"\0"):
+        if entry:
+            header, path = entry.split(b"\t", 1)
+            mode, kind, oid = header.decode().split()
+            require(kind == "blob", "unsupported tree entry: " + os.fsdecode(path))
+            result[os.fsdecode(path)] = (mode, oid)
+    return result
+
+
+def guard(root, expected, base=BASE, base_tree=BASE_TREE, allow=ALLOW):
+    """Check HEAD ancestry, complete index and real bytes, not stat-cache cleanliness."""
+    head = git(root, "rev-parse", "HEAD").decode().strip()
+    require(head == expected, "HEAD differs from dispatched SOURCE_SHA")
+    parents = git(root, "rev-list", "--parents", "-n", "1", "HEAD").decode().split()
+    require(parents == [head, base], "input must have exactly one parent: a32")
+    require(git(root, "rev-parse", base + "^{tree}").decode().strip() == base_tree,
+            "base tree mismatch")
+    old, current = tree_entries(root, base), tree_entries(root, "HEAD")
+    require(set(current) - set(old) == set(allow), "new-file allowlist mismatch")
+    require(all(current.get(p) == entry for p, entry in old.items()), "product tree changed")
+    require(all(current[p][0] == "100644" for p in allow), "harness must be regular files")
+    flags = git(root, "ls-files", "-v", "-f", "-z")
+    require(all(p.startswith(b"H ") for p in flags.split(b"\0") if p),
+            "hidden index flags (assume-unchanged/skip-worktree/fsmonitor-valid)")
+    index = {}
+    for entry in git(root, "ls-files", "--stage", "-z").split(b"\0"):
+        if entry:
+            header, path = entry.split(b"\t", 1)
+            mode, oid, stage = header.decode().split()
+            require(stage == "0", "unmerged index")
+            index[os.fsdecode(path)] = (mode, oid)
+    require(index == current, "index differs from input commit")
+    checked = 0
+    for path, (mode, oid) in current.items():
+        file = root / path
+        actual = file.lstat()
+        if mode == "120000":
+            require(stat.S_ISLNK(actual.st_mode), "symlink type changed: " + path)
+            data = os.fsencode(os.readlink(file))
+        else:
+            require(stat.S_ISREG(actual.st_mode), "file type changed: " + path)
+            require(bool(actual.st_mode & 0o111) == (mode == "100755"), "mode changed: " + path)
+            data = file.read_bytes()
+        require(git_blob(data) == oid, "source bytes changed: " + path)
+        checked += len(data)
+    require(not git(root, "status", "--porcelain", "--untracked-files=all"), "dirty worktree")
+    for path in ("user.bazelrc", ".bazeliskrc", "tools/bazel"):
+        require(not os.path.lexists(root / path), "undeclared Bazel configuration: " + path)
+    return {"head": head, "tree": git(root, "rev-parse", "HEAD^{tree}").decode().strip(),
+            "parent": base, "product_tree": base_tree, "allowed_additions": list(allow),
+            "tracked_files": len(current), "checked_bytes": checked,
+            "index_flags_sha256": sha256(flags), "all_source_bytes_match": True}
+
+
+def environment_guard():
+    forbidden = ("BUILDBUDDY_API_KEY", "CODEX_BAZEL_BIN", "BAZEL_OPTS", "BAZEL_ARGS",
+                 "BAZELISK_BAZELRC", "BAZELISK_SKIP_WRAPPER", "RUST_TEST_THREADS",
+                 "RUST_TEST_NOCAPTURE", "TESTBRIDGE_TEST_ONLY", "CODEX_BAZEL_TEST_SKIP_FILTERS",
+                 "RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS")
+    require(not [key for key in forbidden if os.environ.get(key)],
+            "undeclared credential/flag/test-filter environment present")
+    require(os.environ.get("USE_BAZEL_VERSION", "9.3.0") == "9.3.0", "wrong Bazel selection")
+    require(os.environ.get("GITHUB_REF") == "refs/heads/" + BRANCH, "wrong branch")
+    require(os.environ.get("RUNNER_OS") == "Linux" and os.environ.get("RUNNER_ARCH") == "X64",
+            "requires standard Ubuntu24.04 x64 runner")
+
+
+def dotslash_binary(data):
+    require(len(data) == ASSET_SIZE and sha256(data) == ASSET_SHA256,
+            "DotSlash asset length/checksum mismatch")
+    with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as archive:
+        members = [m for m in archive.getmembers() if m.isfile() and Path(m.name).name == "dotslash"]
+        require(len(members) == 1 and 0 < members[0].size <= 10_000_000, "bad DotSlash archive")
+        binary = archive.extractfile(members[0]).read(10_000_001)
+        require(len(binary) == members[0].size, "truncated DotSlash binary")
+        return binary
+
+
+def tool_root():
+    temporary = Path(os.environ["RUNNER_TEMP"])
+    require(temporary.is_absolute() and temporary.resolve() == temporary
+            and not any(c in str(temporary) for c in "\r\n:"), "unsafe job-local temporary root")
+    return temporary / "a32-wine-tools"
+
+
+def host_identity():
+    executable = Path(sys.executable)
+    return {"executable": str(executable), "resolved": str(executable.resolve()),
+            "sha256": sha256(executable.read_bytes()), "version": sys.version,
+            "version_info": list(sys.version_info[:3]), "isolated": sys.flags.isolated,
+            "dont_write_bytecode": sys.dont_write_bytecode}
+
+
+def host_check(out):
+    receipt = {"compatible": False, "state": "HOLD"}
+    try:
+        identity = host_identity()
+        receipt["identity"] = identity
+        receipt["compatible"] = (identity["executable"] == "/usr/bin/python3"
+                                 and identity["version_info"][:2] == [3, 12]
+                                 and identity["isolated"] == 1 and identity["dont_write_bytecode"])
+    except Exception:
+        receipt["identity_error"] = traceback.format_exc()
+    receipt["state"] = "ADMITTED" if receipt["compatible"] else "HOLD"
+    save(out / "host-python.json", receipt)
+    require(receipt["compatible"], "HOLD: host Python identity/version/isolation is unsupported; no installer fallback")
+
+
+def read_capabilities():
+    observed = {}
+    for name, source in POLICY_FILES.items():
+        try:
+            value = Path(source).read_text(encoding="ascii").strip()
+            require(bool(re.fullmatch(r"[0-9]{1,20}", value)), "non-ASCII or invalid policy integer")
+            observed[name] = {"path": source, "value": value}
+        except (OSError, UnicodeError, RuntimeError) as error:
+            observed[name] = {"path": source, "read_error": repr(error)}
+    maximum = observed["max_user_namespaces"].get("value", "0")
+    compatible = (observed["unprivileged_userns_clone"].get("value") == "1"
+                  and observed["apparmor_restrict_unprivileged_userns"].get("value") == "0"
+                  and int(maximum) > 0)
+    return {"observed": observed, "compatible_without_changes": compatible, "host_security_writes": False,
+            "state": "ADMITTED" if compatible else "HOLD",
+            "scope": "Conservative existing-policy prerequisite, not a native sandbox proof"}
+
+
+def admit(out):
+    capabilities = read_capabilities()
+    save(out / "readonly-host-capabilities.json", capabilities)
+    require(capabilities["compatible_without_changes"],
+            "HOLD: existing host policy is incompatible or unknown; no tuning or fallback is permitted")
+    root = tool_root().with_name("a32-wine-build")
+    root.mkdir(exist_ok=False)
+    paths = {"BAZEL_OUTPUT_BASE": root / "o", "BAZEL_OUTPUT_USER_ROOT": root / "b",
+             "BAZEL_REPOSITORY_CACHE": root / "bazel-repository-cache",
+             "BAZEL_REPO_CONTENTS_CACHE": root / "bazel-repo-contents-cache",
+             "CARGO_TARGET_DIR": root / "cargo-target", "TEMP": root / "tmp", "TMP": root / "tmp"}
+    for path in paths.values():
+        path.mkdir(parents=True, exist_ok=True)
+    with open(os.environ["GITHUB_ENV"], "a") as output:
+        output.write(f"CI_BUILD_ROOT={root}\n")
+        output.write(f"CODEX_REPO_ROOT={os.environ['GITHUB_WORKSPACE']}\n")
+        for key, value in paths.items():
+            output.write(f"{key}={value}\n")
+    save(out / "job-local-directories.json", {key: str(value) for key, value in paths.items()})
+
+
+def admitted(out):
+    initial = json.loads((out / "readonly-host-capabilities.json").read_text())
+    current = read_capabilities()
+    require(initial["compatible_without_changes"] and current == initial,
+            "HOLD: existing host policy is unsupported or changed since admission")
+    identity = host_identity()
+    python = json.loads((out / "host-python.json").read_text())
+    require(python["compatible"] and identity == python["identity"], "host Python identity changed")
+    return {"capabilities": current, "python": identity}
+
+
+def bootstrap(out):
+    admitted(out)
+    url = "https://github.com/facebook/dotslash/releases/download/v0.5.9/" + ASSET
+    with urllib.request.urlopen(url, timeout=120) as response:
+        data = response.read(ASSET_SIZE + 1)
+    binary = dotslash_binary(data)
+    require(sha256(binary) == DOTSLASH_SHA256, "DotSlash binary checksum mismatch")
+    tools = tool_root()
+    tools.mkdir(exist_ok=False)
+    test_bin = tools / "test-bin"
+    test_bin.mkdir()
+    executable = test_bin / "dotslash"
+    executable.write_bytes(binary)
+    executable.chmod(0o755)
+    version = subprocess.check_output([str(executable), "--version"], text=True).strip()
+    require(version == "DotSlash 0.5.9", "wrong DotSlash version")
+    save(out / "dotslash.json", {"url": url, "size": len(data), "sha256": sha256(data),
+                                 "binary_sha256": sha256(binary), "version": version,
+                                 "executable": str(executable)})
+
+
+def bootstrap_bazel(out):
+    admitted(out)
+    with urllib.request.urlopen(BAZEL_URL, timeout=120) as response:
+        data = response.read(BAZEL_SIZE + 1)
+    require(len(data) == BAZEL_SIZE and sha256(data) == BAZEL_SHA256, "Bazel asset length/checksum mismatch")
+    build_bin = tool_root() / "build-bin"
+    build_bin.mkdir(exist_ok=False)
+    executable = build_bin / "bazel"
+    executable.write_bytes(data)
+    executable.chmod(0o755)
+    with open(os.environ["GITHUB_PATH"], "a") as path:
+        path.write(str(build_bin) + "\n")
+    save(out / "bazel-download.json", {"url": BAZEL_URL, "size": len(data), "sha256": sha256(data),
+                                       "executable": str(executable), "version_discovery": False})
+
+
+def runtime_inputs(out):
+    identity = admitted(out)
+    tools = tool_root()
+    pins = {"test-bin/dotslash": DOTSLASH_SHA256, "build-bin/bazel": BAZEL_SHA256}
+    entries = list(tools.rglob("*"))
+    require({str(p.relative_to(tools)) for p in entries} == {*pins, "test-bin", "build-bin"}
+            and not any(p.is_symlink() for p in entries), "unexpected job-local tool files")
+    identity["tools"] = {}
+    for relative, expected in pins.items():
+        path = tools / relative
+        require(path.resolve() == path and stat.S_ISREG(path.lstat().st_mode)
+                and path.stat().st_mode & 0o111 and sha256(path.read_bytes()) == expected,
+                "tool byte/type/path mismatch: " + relative)
+        identity["tools"][relative] = {"path": str(path), "sha256": expected}
+    require(shutil.which("bazel") == str(tools / "build-bin/bazel"), "Bazel PATH shadowing")
+    return identity
+
+
+def expected_tests(root):
+    source = (root / "bazel/rules/testing/wine/src/lib_tests.rs").read_text()
+    names = {"tests::" + n for n in re.findall(r"#\[(?:tokio::)?test\]\s+(?:async )?fn (\w+)", source)}
+    require(len(names) == 13 and set(CASES) <= names, "a32 test inventory mismatch")
+    return names
+
+
+def parse_test_log(text, names, total=13):
+    starts = [int(n) for n in re.findall(r"(?m)^running (\d+) tests?\s*$", text)]
+    seen = re.findall(r"(?m)^test (tests::\w+) \.\.\.", text)
+    summaries = re.findall(r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; "
+                           r"(\d+) measured; (\d+) filtered out;", text)
+    outcomes = re.findall(r"(?m)^test (tests::\w+) \.\.\. (ok|FAILED|ignored)(?:[ \t].*)?$", text)
+    # In serial --nocapture mode, a panic/backtrace can split libtest's prefix and status.
+    if len(names) == 1 and not outcomes and seen == list(names):
+        standalone = re.findall(r"(?m)^(ok|FAILED|ignored)[ \t]*$", text)
+        if len(standalone) == 1:
+            outcomes = [(seen[0], standalone[0])]
+    counts = None
+    if len(summaries) == 1:
+        status, *numbers = summaries[0]
+        counts = dict(zip(("passed", "failed", "ignored", "measured", "filtered"), map(int, numbers)))
+        counts["result"] = status
+    passed = (starts == [len(names)] and len(seen) == len(names) and set(seen) == set(names)
+              and len(outcomes) == len(names) and {n for n, _ in outcomes} == set(names)
+              and all(status == "ok" for _, status in outcomes)
+              and counts is not None and counts == {"passed": len(names), "failed": 0,
+                  "ignored": 0, "measured": 0, "filtered": total - len(names), "result": "ok"})
+    return {"running_counts": starts, "observed_test_names": seen, "per_case_outcomes": outcomes, "counts": counts,
+            "summary_count": len(summaries), "summary_marker_count": text.count("test result:"),
+            "count_and_name_guard_passed": passed}
+
+
+def parse_bep(path):
+    records, errors = [], []
+    if path.exists():
+        before = path.stat()
+        require(stat.S_ISREG(before.st_mode), "BEP must be a regular file")
+        with path.open("rb") as source:
+            data = source.read(before.st_size)
+        after = path.stat()
+        require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
+                == (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+                and len(data) == before.st_size, "BEP changed during bounded read")
+        for line_number, line in enumerate(data.decode(errors="replace").splitlines(), 1):
+            try:
+                records.append(json.loads(line))
+            except ValueError:
+                errors.append(line_number)
+    results = [r for r in records if r.get("id", {}).get("testResult", {}).get("label") == LABEL]
+    summaries = [r for r in records if r.get("id", {}).get("testSummary", {}).get("label") == LABEL]
+    summary = summaries[0].get("testSummary", {}) if len(summaries) == 1 else {}
+    status = summary.get("overallStatus")
+    result = results[0].get("testResult", {}) if len(results) == 1 else {}
+    passed = (not errors and len(results) == 1 and len(summaries) == 1 and status == "PASSED"
+              and result.get("status") == "PASSED" and not result.get("cachedLocally", False)
+              and not result.get("executionInfo", {}).get("cachedRemotely", False)
+              and summary.get("totalRunCount") == 1 and summary.get("runCount") == 1
+              and summary.get("attemptCount") == 1 and not summary.get("totalNumCached", 0))
+    return {"test_results": results, "test_summaries": summaries, "malformed_lines": errors,
+            "one_uncached_pass": passed, "overall_status": status}
+
+
+def command(root, out, case, owner=None):
+    argv = [sys.executable, "-I", "-B", "-X", "utf8", str(root / ".github/scripts/run_bazel_with_buildbuddy.py"),
+            "--nosystem_rc", "--nohome_rc", "--output_base=" + os.environ["BAZEL_OUTPUT_BASE"],
+            "test", "--config=ci-linux", "--host_platform=//:local_linux", "--platforms=//:local_linux",
+            "--announce_rc", "--lockfile_mode=error", "--nocache_test_results", "--runs_per_test=1",
+            "--flaky_test_attempts=1", "--test_output=all", "--test_env=RUST_BACKTRACE=1",
+            "--test_arg=--nocapture", "--build_event_json_file=" + str(out / "bep.json"),
+            "--test_env=PATH=" + str(tool_root() / "test-bin") + ":" + ORIGINAL_TEST_PATH]
+    if owner:
+        argv.append("--test_env=A32_WINE_DIAGNOSTIC_OWNER=" + owner)
+    if case in CASES:
+        argv += ["--test_arg=--exact", "--test_arg=" + case, "--test_arg=--test-threads=1"]
+    return [*argv, "--", LABEL]
+
+
+def system_snapshot(out, include_processes=True):
+    commands = [("disk", ["df", "-h"]), ("memory", ["free", "-m"]), ("cpu", ["lscpu"])]
+    if include_processes:
+        commands.append(("processes", ["ps", "-eo", "pid,ppid,stat,etime,comm"]))
+    for name, argv in commands:
+        with (out / (name + ".log")).open("wb") as log:
+            subprocess.run(argv, stdout=log, stderr=subprocess.STDOUT, check=False)
+
+
+def preserve_logs(root, out, started):
+    directory = root / "bazel-testlogs/bazel/rules/testing/wine/wine-test-support-unit-tests"
+    logfile = directory / "test.log"
+    require(logfile.is_file(), "no test.log: test did not run or log unavailable")
+    require(logfile.stat().st_mtime_ns >= started, "stale test.log from earlier invocation")
+    location = directory.resolve()
+    require(location.is_relative_to(Path(os.environ["BAZEL_OUTPUT_BASE"]).resolve()),
+            "test.log outside declared output base")
+    snapshots = {}
+    try:
+        paths = sorted(location.rglob("*"))
+    except OSError:
+        paths = []
+        snapshots[".enumeration"] = {"source_stable_during_copy": False, "snapshot_error": traceback.format_exc()}
+    for path in paths:
+        relative = str(path.relative_to(location))
+        try:
+            before = path.stat()
+            if not stat.S_ISREG(before.st_mode):
+                continue
+            with path.open("rb") as source:
+                data = source.read(before.st_size)  # Never chase a live append stream to EOF.
+            destination = out / "testlogs" / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(data)
+            after = path.stat()
+            stable = ((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
+                      == (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+                      and len(data) == before.st_size)
+            snapshots[relative] = {"snapshot_bytes": len(data), "source_stable_during_copy": stable,
+                                   "source_size_before": before.st_size, "source_size_after": after.st_size}
+        except OSError:
+            snapshots[relative] = {"source_stable_during_copy": False, "snapshot_error": traceback.format_exc()}
+    save(out / "raw-log-snapshots.json", snapshots)
+    require("test.log" in snapshots and all(item["source_stable_during_copy"] for item in snapshots.values()),
+            "raw native logs changed or were unavailable during bounded preservation")
+    return (out / "testlogs/test.log").read_text(errors="replace")
+
+
+def process_identity(pid):
+    text = Path(f"/proc/{pid}/stat").read_text()
+    fields = text.rsplit(")", 1)[1].split()
+    return {"pid": int(pid), "state": fields[0], "ppid": int(fields[1]),
+            "process_group": int(fields[2]), "session": int(fields[3]), "start_ticks": fields[19]}
+
+
+def observe_processes(out, ownership):
+    """Observe only; never signal processes, restore sources, or kill by PID/name."""
+    live, uncertain = [], []
+    owners = {b"A32_WINE_DIAGNOSTIC_OWNER=" + owner.encode() for owner in ownership["markers"]}
+    server_pid_file = Path(os.environ["BAZEL_OUTPUT_BASE"]) / "server/server.pid.txt"
+    try:
+        server_pid = int(server_pid_file.read_text().strip()) if server_pid_file.exists() else None
+    except (OSError, ValueError):
+        server_pid = None
+        uncertain.append("unreadable Bazel server PID identity")
+    controller = ownership.get("controller", {})
+    clients = ownership.get("clients", [])
+    roots = ownership.get("execution_roots", [])
+    server_identity = None
+    if server_pid is not None:
+        try:
+            argument = ("--output_base=" + os.environ["BAZEL_OUTPUT_BASE"]).encode()
+            if argument in Path(f"/proc/{server_pid}/cmdline").read_bytes().split(b"\0"):
+                server_identity = process_identity(server_pid)
+            else:
+                uncertain.append("server PID does not identify the declared output base")
+        except FileNotFoundError:
+            pass
+        except OSError as error:
+            uncertain.append("cannot verify server identity: " + str(error))
+    for proc in Path("/proc").iterdir():
+        if not proc.name.isdecimal() or int(proc.name) == os.getpid():
+            continue
+        try:
+            if proc.stat().st_uid != os.getuid():
+                continue
+            identity = process_identity(proc.name)
+            if identity["state"] == "Z":
+                continue
+            tagged = bool(owners.intersection((proc / "environ").read_bytes().split(b"\0")))
+            controller_live = (identity["pid"] == controller.get("pid")
+                               and identity["start_ticks"] == controller.get("start_ticks"))
+            executable = os.readlink(proc / "exe").removesuffix(" (deleted)")
+            owned_executable = any(executable.startswith(root + "/") for root in roots)
+            owned_session = any(identity["session"] == client["session"]
+                                and int(identity["start_ticks"]) >= int(client["start_ticks"])
+                                for client in clients)
+            owned_ancestry = False
+            ancestor = identity
+            for _ in range(64):
+                parent = ancestor["ppid"]
+                if parent <= 1:
+                    break
+                try:
+                    ancestor = process_identity(parent)
+                except FileNotFoundError:
+                    if proc.exists():
+                        uncertain.append({"pid": proc.name, "error": "ancestor disappeared while process remained"})
+                    break
+                if (server_identity and ancestor["pid"] == server_identity["pid"]
+                        and ancestor["start_ticks"] == server_identity["start_ticks"]):
+                    owned_ancestry = True
+                    break
+                if any(ancestor["pid"] == client["pid"] and ancestor["start_ticks"] == client["start_ticks"]
+                       for client in clients):
+                    owned_ancestry = True
+                    break
+            writers = []
+            for fd in (proc / "fd").iterdir():
+                try:
+                    target = os.readlink(fd).removesuffix(" (deleted)")
+                    if target.startswith(str(out) + "/"):
+                        info = (proc / "fdinfo" / fd.name).read_text()
+                        flags = int(re.search(r"(?m)^flags:\s+(\d+)$", info).group(1), 8)
+                        if flags & os.O_ACCMODE:
+                            writers.append(target)
+                except FileNotFoundError:
+                    pass
+            # A settled Bazel server is permitted only with the exact output-base argument
+            # and PID-file identity, and no still-open evidence writer.
+            server = (server_identity is not None and identity["pid"] == server_identity["pid"]
+                      and identity["start_ticks"] == server_identity["start_ticks"])
+            if writers or controller_live or ((tagged or owned_executable or owned_session or owned_ancestry) and not server):
+                live.append({**identity, "owned_marker": tagged, "controller": controller_live,
+                             "owned_executable": owned_executable, "owned_session": owned_session,
+                             "owned_ancestry": owned_ancestry, "executable": executable,
+                             "evidence_writers": writers})
+        except FileNotFoundError:
+            try:
+                if process_identity(proc.name)["state"] != "Z":
+                    uncertain.append({"pid": proc.name, "error": "incomplete observation of still-live process"})
+            except FileNotFoundError:
+                pass  # The observed process exited, rather than an attribution read failing.
+        except (OSError, ValueError, AttributeError) as error:
+            uncertain.append({"pid": proc.name, "error": str(error)})
+    return {"live_owned_processes_or_writers": live, "uncertain": uncertain,
+            "bazel_server_pid_from_output_base": server_pid, "verified_server_identity": server_identity,
+            "execution_roots": roots, "settled": not live and not uncertain}
+
+
+def quiescence(out):
+    ownership_file = out / "ownership.json"
+    if not ownership_file.exists():
+        return {"settled": False, "reason": "ownership record unavailable"}
+    ownership = json.loads(ownership_file.read_text())
+    history, consecutive = [], 0
+    # At most ~2 seconds of observation after Bazel returns; no test deadline changes.
+    for _ in range(8):
+        try:
+            observation = observe_processes(out, ownership)
+        except Exception:
+            observation = {"settled": False, "uncertain": traceback.format_exc()}
+        history.append(observation)
+        consecutive = consecutive + 1 if observation["settled"] else 0
+        if consecutive == 2:
+            break
+        time.sleep(0.25)
+    return {"settled": consecutive == 2, "observations": history}
+
+
+def run_all(root, out, plan=PLAN, fresh_job=False):
+    environment_guard()
+    names = expected_tests(root)
+    if fresh_job:
+        require(tuple(plan) == fresh_job_plan(), "invalid fresh-job plan")
+        require(json.loads((out / "fresh-job.json").read_text()) == fresh_context(plan), "fresh-job identity changed")
+        require(not list(out.glob("*/result.json")), "refuse a second native invocation in this VM")
+        save(out / "runtime-before.json", runtime_inputs(out))
+    version_argv = ["bazel", "--nosystem_rc", "--nohome_rc"]
+    if os.environ.get("BAZEL_OUTPUT_USER_ROOT"):
+        version_argv += ["--output_user_root=" + os.environ["BAZEL_OUTPUT_USER_ROOT"]]
+    version = subprocess.check_output([*version_argv, "--version"], text=True).strip()
+    require(version == "bazel 9.3.0", "wrong Bazel version: " + version)
+    save(out / "bazel-version.json", {"version": version, "executable": shutil.which("bazel"), "command": version_argv + ["--version"]})
+    roots = [str(Path(os.environ[key]).resolve()) for key in
+             ("BAZEL_OUTPUT_BASE", "BAZEL_OUTPUT_USER_ROOT", "BAZEL_REPO_CONTENTS_CACHE", "BAZEL_REPOSITORY_CACHE")
+             if os.environ.get(key)]
+    require(all(len(Path(root).parts) >= 3 for root in roots), "execution root is not narrowly scoped")
+    ownership = {"controller": process_identity(os.getpid()), "markers": [], "clients": [], "execution_roots": roots}
+    save(out / "ownership.json", ownership)
+    all_passed, blocked = True, None
+    for index, case in enumerate(plan):
+        directory = out / (str(index) + "-" + case.replace("::", "-"))
+        directory.mkdir(parents=True, exist_ok=True)
+        record = {"case": case, "state": "running", "started_ns": time.time_ns(),
+                  "original_internal_parallelism": case == PLAN[0], "passed": False}
+        if blocked:
+            record.update(state="blocked", reason=blocked)
+            save(directory / "result.json", record)
+            all_passed = False
+            continue
+        save(directory / "result.json", record)
+        try:
+            save(directory / "guard-before.json", guard(root, os.environ["SOURCE_SHA"]))
+        except Exception:
+            blocked = {"source_integrity": traceback.format_exc()}
+        if not blocked:
+            owner = uuid.uuid4().hex
+            ownership["markers"].append(owner)
+            save(out / "ownership.json", ownership)
+            argv = command(root, directory, case, owner)
+            record.update(command=argv, ownership_marker=owner)
+            save(directory / "result.json", record)
+            try:
+                with (directory / "console.log").open("wb") as log:
+                    with subprocess.Popen(argv, cwd=root, stdout=log, stderr=subprocess.STDOUT,
+                                          start_new_session=True,
+                                          env={**os.environ, "A32_WINE_DIAGNOSTIC_OWNER": owner}) as process:
+                        record["client"] = process_identity(process.pid)
+                        ownership["clients"].append(record["client"])
+                        save(out / "ownership.json", ownership)
+                        save(directory / "result.json", record)
+                        record["exit_code"] = process.wait()
+                record["bep"] = parse_bep(directory / "bep.json")
+            except Exception:
+                record["error"] = traceback.format_exc()
+            if fresh_job:
+                record["isolation"] = {"boundary": "fresh-github-hosted-job", "global_quiescence": "not-claimed"}
+            else:
+                record["quiescence"] = quiescence(out)
+                save(directory / "quiescence.json", record["quiescence"])
+                if not record["quiescence"]["settled"]:
+                    blocked = {"unsettled_processes_or_writers": record["quiescence"]}
+            try:
+                text = preserve_logs(root, directory, record["started_ns"])
+                record["libtest"] = parse_test_log(text, names if case == PLAN[0] else {case})
+            except Exception:
+                # Never overwrite an unpreserved previous attempt's raw log with another run.
+                blocked = {"evidence_preservation": traceback.format_exc()}
+            record["passed"] = (not blocked and record.get("exit_code") == 0
+                                and record.get("bep", {}).get("one_uncached_pass", False)
+                                and record.get("libtest", {}).get("count_and_name_guard_passed", False))
+        try:
+            save(directory / "guard-after.json", guard(root, os.environ["SOURCE_SHA"]))
+        except Exception:
+            blocked = {"source_integrity": traceback.format_exc()}
+            record["passed"] = False
+        if fresh_job:
+            try:
+                current = runtime_inputs(out)
+                require(current == json.loads((out / "runtime-before.json").read_text()), "runtime inputs changed")
+                save(out / "runtime-after.json", current)
+            except Exception:
+                blocked = {"runtime_integrity": traceback.format_exc()}
+                record["passed"] = False
+        if blocked:
+            record["block_latched"] = blocked
+        record["state"] = "completed"
+        record["finished_ns"] = time.time_ns()
+        if fresh_job or not record["passed"]:
+            system_snapshot(directory, include_processes=not fresh_job)
+        all_passed &= record["passed"]
+        save(directory / "result.json", record)
+        print(json.dumps(record), flush=True)
+    return 0 if all_passed else 1
+
+
+def collect(root, out, plan=PLAN, fresh_job=False):
+    report = {"base": BASE, "base_tree": BASE_TREE, "branch": BRANCH,
+              "step_results": {}, "attempts": []}
+    try:
+        report["step_results"] = json.loads(os.environ.get("STEP_RESULTS", "{}"))
+        require(isinstance(report["step_results"], dict), "step results must be an object")
+    except Exception:
+        report["step_results"] = {}
+        report["step_results_error"] = traceback.format_exc()
+    if fresh_job:
+        report["isolation"] = {"boundary": "fresh-github-hosted-job", "global_quiescence": "not-claimed",
+                               "teardown": "runner-owned job completion; not performed or certified by this collector"}
+    else:
+        report["final_quiescence"] = quiescence(out)
+    try:
+        report["final_guard"] = guard(root, os.environ["SOURCE_SHA"])
+    except Exception:
+        report["integrity_error"] = traceback.format_exc()
+    for index, case in enumerate(plan):
+        path = out / (str(index) + "-" + case.replace("::", "-")) / "result.json"
+        try:
+            record = json.loads(path.read_text()) if path.exists() else {"case": case, "state": "not-run", "passed": False}
+            require(isinstance(record, dict) and record.get("case") == case
+                    and isinstance(record.get("state"), str) and type(record.get("passed")) is bool,
+                    "invalid native result record")
+        except Exception:
+            record = {"case": case, "state": "record-unavailable", "passed": False,
+                      "record_error": traceback.format_exc()}
+        if record["state"] == "running":
+            record["state"] = "interrupted"
+            record["passed"] = False
+            try:
+                record["bep"] = parse_bep(path.parent / "bep.json")
+            except Exception:
+                record["bep_error"] = traceback.format_exc()
+            try:
+                preserve_logs(root, path.parent, record["started_ns"])
+            except Exception:
+                record["log_error"] = traceback.format_exc()
+            try:
+                save(path, record)
+            except Exception:
+                record["record_write_error"] = traceback.format_exc()
+        report["attempts"].append(record)
+    if fresh_job:
+        try:
+            report["runtime_final"] = runtime_inputs(out)
+        except Exception:
+            report["runtime_integrity_error"] = traceback.format_exc()
+        try:
+            report["provenance"] = validate_fresh_provenance(root, out, report, plan)
+        except Exception:
+            report["provenance_error"] = traceback.format_exc()
+    report["passed"] = ("integrity_error" not in report and
+                        ("provenance_error" not in report if fresh_job else report["final_quiescence"]["settled"])
+                        and all(r["passed"] for r in report["attempts"]))
+    report["interpretation"] = ("Diagnostic only; one original-parallel 13-case observation on an admitted host without policy writes, not a product/root-cause fix or isolated-case proof."
+                                if fresh_job else "Diagnostic only; isolated/warm passes do not fix or replace original parallel-suite failure.")
+    save(out / "summary.json", report)
+    # A separate immutable snapshot prevents a surviving orchestration writer from
+    # mutating the uploaded bytes after hashing. Unsettled inputs are clearly partial.
+    frozen = out.with_name("a32-wine-frozen")
+    require(not frozen.exists(), "refuse to overwrite an earlier frozen artifact")
+    frozen.mkdir()
+    snapshots = {}
+    for path in sorted(out.rglob("*")):
+        relative = str(path.relative_to(out))
+        try:
+            before = path.stat()
+            if not stat.S_ISREG(before.st_mode):
+                continue
+            with path.open("rb") as source:
+                data = source.read(before.st_size)  # Fixed prefix, even if the source keeps growing.
+            after = path.stat()
+            destination = frozen / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(data)
+            stable = ((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
+                      == (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+                      and len(data) == before.st_size)
+            snapshots[relative] = {"snapshot_bytes": len(data), "source_stable_during_copy": stable,
+                                   "source_size_before": before.st_size, "source_size_after": after.st_size}
+        except OSError:
+            # An interrupted controller can rename/unlink a .tmp while we seal evidence.
+            # Keep the remaining snapshots and hash manifest; never claim completeness.
+            snapshots[relative] = {"source_stable_during_copy": False,
+                                   "snapshot_error": traceback.format_exc()}
+    report["passed"] &= all(s["source_stable_during_copy"] for s in snapshots.values())
+    stable = all(s["source_stable_during_copy"] for s in snapshots.values())
+    if fresh_job:
+        try:
+            frozen_record = json.loads((frozen / ("0-" + plan[0].replace("::", "-")) / "result.json").read_text())
+            require(frozen_record == report["attempts"][0], "native record changed before sealing")
+            validate_fresh_provenance(root, frozen, report, plan, command_out=out)
+        except Exception:
+            report["sealed_provenance_error"] = traceback.format_exc()
+        report["provenance_valid"] = (stable and "provenance_error" not in report and "integrity_error" not in report
+                                      and "sealed_provenance_error" not in report)
+        report["passed"] &= report["provenance_valid"]
+        report["evidence_state"] = ("sealed-native-result-not-global-quiescence" if report["provenance_valid"] else
+                                    "sealed-partial-or-invalid-provenance")
+    else:
+        report["evidence_state"] = ("partial-unsettled" if not report["final_quiescence"]["settled"] else
+                                    "settled" if stable else "partial-changing-or-unavailable")
+    save(frozen / "summary.json", report)
+    save(frozen / "snapshot-metadata.json", snapshots)
+    hashes = {str(p.relative_to(frozen)): {"sha256": sha256(p.read_bytes()), "bytes": p.stat().st_size}
+              for p in sorted(frozen.rglob("*")) if p.is_file()}
+    save(frozen / "artifact-hashes.json", hashes)
+    if fresh_job and os.environ.get("GITHUB_OUTPUT"):
+        with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+            output.write("provenance_valid=" + str(report["provenance_valid"]).lower() + "\n")
+    print(json.dumps(report, indent=2))
+    return 0 if report["passed"] else 1
+
+
+
+def fresh_job_plan():
+    """Exactly one original-parallel full suite on the reviewed hosted job."""
+    case = os.environ.get("A32_WINE_CASE")
+    require(case in PLAN, "unknown or missing fresh-job case")
+    require(case == PLAN[0], "readonly diagnostic permits the single original suite only")
+    role = "original"
+    require(os.environ.get("GITHUB_JOB") == role, "case/job-role mismatch")
+    require(os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted", "fresh hosted VM required")
+    require(os.environ.get("GITHUB_EVENT_NAME") == "push", "push-only diagnostic")
+    require(os.environ.get("GITHUB_RUN_ATTEMPT") == "1", "reruns are not part of this diagnostic")
+    require(os.environ.get("GITHUB_RUN_ID", "").isdecimal(), "missing run identity")
+    require(bool(os.environ.get("RUNNER_NAME")), "missing hosted runner identity")
+    return (case,)
+
+
+def fresh_context(plan):
+    return {"case": plan[0], "source_sha": os.environ["SOURCE_SHA"],
+            "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+            "job_role": os.environ["GITHUB_JOB"], "runner_name": os.environ.get("RUNNER_NAME"),
+            "runner_environment": os.environ["RUNNER_ENVIRONMENT"], "cross_attempt_host_reuse": False}
+
+
+def validate_fresh_provenance(root, out, report, plan, command_out=None):
+    """Distinguish observed native failure from invalid, interrupted, or zero-test evidence."""
+    require(len(plan) == 1 and tuple(plan) == fresh_job_plan(), "invalid one-attempt plan")
+    environment_guard()
+    context = json.loads((out / "fresh-job.json").read_text())
+    require(context == fresh_context(plan), "fresh-job identity changed")
+    final = report.get("final_guard")
+    require(final and final.get("all_source_bytes_match"), "final source guard missing")
+    require(len(report["attempts"]) == 1, "expected exactly one native invocation")
+    record = report["attempts"][0]
+    require(record.get("case") == plan[0] and record.get("state") == "completed", "native invocation incomplete")
+    require(type(record.get("exit_code")) is int and "error" not in record, "native exit provenance missing")
+    require(record["exit_code"] in (0, 3), "interrupted/build/infrastructure exit is not an ordinary native result")
+    require("block_latched" not in record, "sticky source/evidence failure")
+    directory = out / ("0-" + plan[0].replace("::", "-"))
+    for path in (out / "input.json", directory / "guard-before.json", directory / "guard-after.json"):
+        require(json.loads(path.read_text()) == final, "source guard mismatch: " + str(path))
+    runtime = report.get("runtime_final")
+    require(runtime and "runtime_integrity_error" not in report, "runtime integrity guard missing or failed")
+    for path in (out / "runtime-before.json", out / "runtime-after.json"):
+        require(json.loads(path.read_text()) == runtime, "runtime input guard mismatch")
+    command_directory = (command_out or out) / directory.name
+    require(record.get("command") == command(root, command_directory, plan[0], record.get("ownership_marker")),
+            "unexpected native command")
+    require(bool(record.get("ownership_marker")), "missing invocation identity")
+    steps = report["step_results"]
+    for name in ("checkout_bytes", "checkout", "python", "guard", "contracts", "build", "dotslash", "bazel"):
+        require(steps.get(name, {}).get("outcome") == "success", "bootstrap/provenance step not successful: " + name)
+    require(steps.get("native", {}).get("outcome") in ("success", "failure"), "native step cancelled/skipped")
+    bep = parse_bep(directory / "bep.json")
+    require(not bep["malformed_lines"] and len(bep["test_results"]) == 1 and len(bep["test_summaries"]) == 1,
+            "original target did not produce one complete native attempt")
+    summary = bep["test_summaries"][0]["testSummary"]
+    result = bep["test_results"][0]["testResult"]
+    require(result.get("status") == summary.get("overallStatus") and result.get("status") in ("PASSED", "FAILED", "TIMEOUT"),
+            "inconsistent or incomplete native status")
+    require(summary.get("totalRunCount") == 1 and summary.get("runCount") == 1 and summary.get("attemptCount") == 1,
+            "unexpected attempt count")
+    require(not result.get("cachedLocally", False) and not result.get("executionInfo", {}).get("cachedRemotely", False)
+            and not summary.get("totalNumCached", 0), "cached native result")
+    names = expected_tests(root) if plan[0] == PLAN[0] else {plan[0]}
+    native = parse_test_log((directory / "testlogs/test.log").read_text(errors="replace"), names)
+    require(native["running_counts"] == [len(names)], "zero/wrong actual test count")
+    require(set(native["observed_test_names"]).issubset(names), "unexpected test names")
+    require(len(native["observed_test_names"]) == len(set(native["observed_test_names"])), "duplicate test names")
+    require(all(outcome != "ignored" for _, outcome in native["per_case_outcomes"]), "ignored native case")
+    require(native["summary_count"] == native["summary_marker_count"] and native["summary_count"] <= 1,
+            "multiple or malformed native summaries")
+    outcomes = native["per_case_outcomes"]
+    require(len(outcomes) == len({name for name, _ in outcomes}) and {name for name, _ in outcomes} <= names,
+            "duplicate/unexpected native outcomes")
+    if native["counts"] is not None:
+        counts = native["counts"]
+        require(counts["ignored"] == 0 and counts["measured"] == 0
+                and counts["filtered"] == 13 - len(names), "filtered/ignored native cases")
+        require(counts["passed"] + counts["failed"] == len(names), "impossible native summary totals")
+        require((counts["result"] == "FAILED") == (counts["failed"] > 0), "native summary status/count contradiction")
+        require(set(native["observed_test_names"]) == names, "complete summary lacks expected case names")
+        require(sum(status == "ok" for _, status in outcomes) <= counts["passed"]
+                and sum(status == "FAILED" for _, status in outcomes) <= counts["failed"],
+                "native per-case/summary contradiction")
+    if result["status"] in ("FAILED", "TIMEOUT"):
+        require(native["counts"] is None or native["counts"]["result"] == "FAILED",
+                "native failure contradicts complete all-pass summary")
+        require(not (len(outcomes) == len(names) and all(status == "ok" for _, status in outcomes)),
+                "native failure contradicts all-pass case outcomes")
+    if result["status"] == "FAILED":
+        require(bool(native["observed_test_names"]), "failed native invocation has no named case evidence")
+    require((record["exit_code"] == 0) == (result["status"] == "PASSED"), "exit/BEP status contradiction")
+    passed = record["exit_code"] == 0 and bep["one_uncached_pass"] and native["count_and_name_guard_passed"]
+    require(result["status"] != "PASSED" or passed, "BEP pass contradicts raw case outcomes")
+    require(record.get("passed") is passed, "native result disagrees with raw evidence")
+    require(steps["native"]["outcome"] == ("success" if passed else "failure"), "native step/result contradiction")
+    return {"valid": True, "native_passed": passed, "case": plan[0], "source": final["head"],
+            "basis": "initial/pre/post/final byte/index guards and one completed uncached native attempt"}
+
+
+def main():
+    action, destination = sys.argv[1:]
+    root = Path(os.environ.get("GITHUB_WORKSPACE", ".")).resolve()
+    out = Path(destination).resolve()
+    require(not out.is_relative_to(root), "evidence must be outside checkout")
+    out.mkdir(parents=True, exist_ok=True)
+    fresh = action in ("init-job", "run-job", "collect-job")
+    if action == "collect-job":
+        try:
+            plan = fresh_job_plan()
+        except Exception:
+            # Invalid context blocks provenance, but must not prevent partial sealing.
+            try:
+                case = json.loads((out / "fresh-job.json").read_text()).get("case")
+            except Exception:
+                case = None
+            plan = (case,) if case in PLAN else (PLAN[0],)
+    else:
+        plan = fresh_job_plan() if fresh else PLAN
+    if action == "init-job":
+        environment_guard()
+        save(out / "input.json", guard(root, os.environ["SOURCE_SHA"]))
+        (out / "input.patch").write_bytes(git(root, "diff", "--binary", BASE, "HEAD"))
+        if fresh:
+            require(not (out / "fresh-job.json").exists(), "refuse to reuse a native job evidence directory")
+            save(out / "fresh-job.json", fresh_context(plan))
+        save(out / "plan.json", {"order": plan, "target": LABEL, "expected_full_count": 13,
+             "expected_isolated_count": 1, "per_test_deadlines": "unchanged a32",
+             "bazel_target_timeout": "unchanged short", "retries": 0})
+        return 0
+    for name, handler in (("host", host_check), ("admit", admit), ("dotslash", bootstrap), ("bazel", bootstrap_bazel)):
+        if action == name:
+            handler(out)
+            return 0
+    if action == "run-job":
+        return run_all(root, out, plan=plan, fresh_job=fresh)
+    if action == "collect-job":
+        return collect(root, out, plan=plan, fresh_job=fresh)
+    raise ValueError("unknown action: " + action)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

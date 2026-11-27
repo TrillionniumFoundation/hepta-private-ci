@@ -1,0 +1,73 @@
+{
+  "schema": "mem8.source-v11.independent-published-source-review.v1",
+  "reviewer": "/root/mem_remote_audit",
+  "observed_utc": "2026-11-11 19:11:25 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "verdict": "NO_SUBSTANTIVE_MUST_FIX_IN_REVIEWED_SOURCE_PUBLICATION",
+  "source_publication": {
+    "bytes": 7453,
+    "sha256": "8a57e5872f84a8e20a49deefcd339d95c3f120ac99c84357489dc06b1b013da6",
+    "git_blob": "f68ea685a44a17879c16f79f128de54f855543c0"
+  },
+  "independently_read": {
+    "pull_request": 5935,
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+    "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "ref": "refs/heads/codex/mem8-integrated-source-20261111-ed353817",
+    "tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+    "sole_parent": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "pr_body_equals_publication_receipt_full_body": true,
+    "raw_ref_commit_and_pr_identities_equal": true
+  },
+  "parent_delta": {
+    "scope": "Only the V11 parent delta d0f to cead; not the complete cumulative PR",
+    "files": 1,
+    "additions": 1,
+    "deletions": 1,
+    "path": "codex-rs/windows-sandbox-rs/src/setup_process.rs",
+    "before": {
+      "bytes": 12409,
+      "sha256": "602c989a1b3a7e32ebd78c327e1e1a2b260601626ee2fc9447b7cebc8c35d1ae",
+      "git_blob": "1e112219d0844dfda16263b14404dc14ed27b6e6"
+    },
+    "after": {
+      "bytes": 12410,
+      "sha256": "6d0f48bd28cf4f348118ee9071d9b1db4f482c61054dc7067ee6c689ad1deeec",
+      "git_blob": "9e40662b31d10cf3231c3e69e5bcb6b258ad4248"
+    },
+    "exact_old": ".map_or(std::ptr::null(), |path| path.as_ptr()),",
+    "exact_new": ".map_or(std::ptr::null(), std::vec::Vec::as_ptr),",
+    "complete_file_equals_single_literal_replacement": true,
+    "semantic_scope": "Same Option<&Vec<u16>> buffer pointer and None null pointer; no lifetime, token, handle, flags or environment behavior change."
+  },
+  "acceptance_boundaries": {
+    "current_head_ordinary_CI_accepted": false,
+    "earlier_source_passes_transferred": false,
+    "source_only_and_scoped_lint_results_keep_their_original_run_scope": true,
+    "all_ten_adoption_gates_remain_open": true,
+    "source_merging_and_deployment_not_performed": true,
+    "final_owner_companion_accessibility_and_content": "PENDING_SEPARATE_ACTUAL_OBJECT_REVIEW",
+    "current_new_CI_observation": "Not polled in this review; any later observation must retain its own timestamp and source."
+  },
+  "next_component_publication_read": {
+    "purpose": "Exact receipt read before the forthcoming final companion review; not independent PR/ref verification for this evidence PR",
+    "pin": {
+      "bytes": 5918,
+      "sha256": "113324e110a8556f8e7163e3e244a43db98ff126246f99f9fc1108d64399e8ea",
+      "git_blob": "3d044bfc7548945d8241916bff65a10b6f4d901b"
+    },
+    "head": "21df04700aa885aef72b70962f270b966a112de6",
+    "tree": "d089c6c2fdfdd6b3dbc24db091cc102e41238f37"
+  },
+  "actions": {
+    "local_exec": 0,
+    "host_calls": 0,
+    "model_requests": 0,
+    "CI_reruns": 0,
+    "CI_cancellations": 0,
+    "ref_updates": 0
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "base_contract_commit": "03b2538f0eeab0780f606a78f472645066adb5eb",
+  "base_contract_blob": "65bea37b3ce0af5858f49bc66a6f61aa77862949",
+  "source_commit": "048b4a31b6014769d98bff4f23e619f9c030bb65",
+  "reason": "The original verifier requires at least two ordered markers per function. Bind the actual immutable self parameter before the original stored checkpoint expression, and require the original expression at function-body level. Rust, verifier, boundaries and all other record fields remain unchanged.",
+  "replace_complete_records": [
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs",
+        "required": [
+          "pub(crate) struct CircuitTaskPolicyProjectionV1",
+          "selected: StableId",
+          "entries: Vec<CellPolicyEntryV1>",
+          "checkpoint_before: Digest32",
+          "pub(crate) fn checkpoint_before(&self) -> Digest32"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "Deserialize",
+          "pub selected:",
+          "pub entries:",
+          "pub fn new",
+          "drive_q24",
+          "prediction_q24",
+          "f32",
+          "f64",
+          "unwrap_or",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read(",
+            "sequence": [
+              "fn read(",
+              "publication.result_bytes()",
+              "result.blob()? != publication.output()",
+              "decision.id()? != input.operation_id",
+              "decision.id()? != input.scope.agent_id",
+              "decision.id()? != input.scope.cell_id",
+              "decision.id()? != input.scope.run_id",
+              "let selected = decision.id()?",
+              "decision.digest()? != input.scope.principal_digest",
+              "decision.digest()? != publication.bundle_digest()",
+              "decision.digest()? != input.source_frontier",
+              "let checkpoint_before = decision.digest()?",
+              "decision.digest()? != publication.checkpoint_digest()",
+              "confidence > 1_000_000",
+              "ood > 1_000_000",
+              "decision.take::<1>()? != [0]",
+              "if !(1..=64).contains(&count) || count != input.candidates.len()",
+              "let expected = if candidate_id == selected {\n            1_000_000\n        } else {\n            0\n        }",
+              "candidate_id != mask.candidate_id",
+              "allowed != mask.allowed",
+              "probability_ppm != expected",
+              "probability_ppm != 0 && !allowed",
+              "entries\n                .iter()\n                .any",
+              "decision.take::<1>()? != [0]",
+              "decision.end()?",
+              "result.end()?",
+              "publication.output()",
+              "output.digest()? != input.scope.digest()",
+              "output.digest()? != publication.bundle_digest()",
+              "output.id()? != selected",
+              "output.u32()? != confidence",
+              "output.u32()? != ood",
+              "output.take::<1>()? != [0]",
+              "output.u32()? as usize != entries.len()",
+              "for entry in &entries",
+              "output.id()? != entry.candidate_id",
+              "output.take::<1>()? != [u8::from(entry.allowed)]",
+              "output.u32()? != entry.probability_ppm",
+              "output.end()?",
+              "Ok(CircuitTaskPolicyProjectionV1",
+              "checkpoint_before }"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn new(",
+            "sequence": [
+              "fn new(",
+              "bytes.is_empty() || bytes.len() > 65_536",
+              "bytes.strip_prefix(prefix)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn blob(",
+            "sequence": [
+              "fn blob(",
+              "let length = self.u32()? as usize",
+              "split_at_checked(length)",
+              "self.0 = remaining",
+              "Ok(value)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn end(",
+            "sequence": [
+              "fn end(",
+              "if self.0.is_empty()",
+              "Ok(())",
+              "Err(Error::InvalidBinding)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn checkpoint_before(",
+            "sequence": [
+              "self.checkpoint_before"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs",
+        "required": [
+          "pub(crate) struct CircuitTaskPolicyProjectionV1",
+          "selected: StableId",
+          "entries: Vec<CellPolicyEntryV1>",
+          "checkpoint_before: Digest32",
+          "pub(crate) fn checkpoint_before(&self) -> Digest32"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "Deserialize",
+          "pub selected:",
+          "pub entries:",
+          "pub fn new",
+          "drive_q24",
+          "prediction_q24",
+          "f32",
+          "f64",
+          "unwrap_or",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read(",
+            "sequence": [
+              "fn read(",
+              "publication.result_bytes()",
+              "result.blob()? != publication.output()",
+              "decision.id()? != input.operation_id",
+              "decision.id()? != input.scope.agent_id",
+              "decision.id()? != input.scope.cell_id",
+              "decision.id()? != input.scope.run_id",
+              "let selected = decision.id()?",
+              "decision.digest()? != input.scope.principal_digest",
+              "decision.digest()? != publication.bundle_digest()",
+              "decision.digest()? != input.source_frontier",
+              "let checkpoint_before = decision.digest()?",
+              "decision.digest()? != publication.checkpoint_digest()",
+              "confidence > 1_000_000",
+              "ood > 1_000_000",
+              "decision.take::<1>()? != [0]",
+              "if !(1..=64).contains(&count) || count != input.candidates.len()",
+              "let expected = if candidate_id == selected {\n            1_000_000\n        } else {\n            0\n        }",
+              "candidate_id != mask.candidate_id",
+              "allowed != mask.allowed",
+              "probability_ppm != expected",
+              "probability_ppm != 0 && !allowed",
+              "entries\n                .iter()\n                .any",
+              "decision.take::<1>()? != [0]",
+              "decision.end()?",
+              "result.end()?",
+              "publication.output()",
+              "output.digest()? != input.scope.digest()",
+              "output.digest()? != publication.bundle_digest()",
+              "output.id()? != selected",
+              "output.u32()? != confidence",
+              "output.u32()? != ood",
+              "output.take::<1>()? != [0]",
+              "output.u32()? as usize != entries.len()",
+              "for entry in &entries",
+              "output.id()? != entry.candidate_id",
+              "output.take::<1>()? != [u8::from(entry.allowed)]",
+              "output.u32()? != entry.probability_ppm",
+              "output.end()?",
+              "Ok(CircuitTaskPolicyProjectionV1",
+              "checkpoint_before }"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn new(",
+            "sequence": [
+              "fn new(",
+              "bytes.is_empty() || bytes.len() > 65_536",
+              "bytes.strip_prefix(prefix)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn blob(",
+            "sequence": [
+              "fn blob(",
+              "let length = self.u32()? as usize",
+              "split_at_checked(length)",
+              "self.0 = remaining",
+              "Ok(value)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn end(",
+            "sequence": [
+              "fn end(",
+              "if self.0.is_empty()",
+              "Ok(())",
+              "Err(Error::InvalidBinding)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn checkpoint_before(",
+            "sequence": [
+              "&self",
+              "self.checkpoint_before"
+            ],
+            "top_level": [
+              "self.checkpoint_before"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "performed": "Pure source projection only; original Python/H validation pending."
+}

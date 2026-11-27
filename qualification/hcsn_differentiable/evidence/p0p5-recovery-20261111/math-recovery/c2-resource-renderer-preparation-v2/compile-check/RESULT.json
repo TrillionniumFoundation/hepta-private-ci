@@ -1,0 +1,44 @@
+{
+  "schema": "c2-resource-renderer-v2-new-compile-check-v1",
+  "returncode": 0,
+  "source_before": {
+    "input_contract.py": {
+      "bytes": 13363,
+      "sha256": "52e643f07852073b4ce5dc2afe70f902182cde952dfab52236341e164d06c729"
+    },
+    "render_c2_resources.py": {
+      "bytes": 14032,
+      "sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef"
+    }
+  },
+  "source_after": {
+    "input_contract.py": {
+      "bytes": 13363,
+      "sha256": "52e643f07852073b4ce5dc2afe70f902182cde952dfab52236341e164d06c729"
+    },
+    "render_c2_resources.py": {
+      "bytes": 14032,
+      "sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef"
+    }
+  },
+  "source_unchanged": true,
+  "whole_compile_child_wall_seconds": 0.07874344300000757,
+  "wait4_compile_child_CPU_seconds": 0.047039,
+  "wait4_peak_RSS_bytes": 10354688,
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-c",
+    "import pathlib,sys\nfor arg in sys.argv[1:]:\n p=pathlib.Path(arg);compile(p.read_bytes(),str(p),\"exec\");print(\"Compiled text only:\",p.name)\n",
+    "/workspace/scratch/c385a7439f8e/c2-resource-renderer-preparation-v2/input_contract.py",
+    "/workspace/scratch/c385a7439f8e/c2-resource-renderer-preparation-v2/render_c2_resources.py"
+  ],
+  "cost_scope": "Complete new compile child Popen-to-wait4; outer script hashing/receipt/exit excluded.",
+  "replaces_old_v1_receipt": false,
+  "behavioral_tests": 0,
+  "matplotlib_imports": 0,
+  "actual_C2_inputs_read": false,
+  "model_calls": 0,
+  "E_access": false,
+  "render_calls": 0
+}

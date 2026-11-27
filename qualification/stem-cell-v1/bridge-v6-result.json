@@ -1,0 +1,213 @@
+{
+  "schema": "hepta.bridge.result.v6",
+  "date_utc": "2026-10-15",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 2338,
+  "frozen_runtime_ref": "7fe7e5ec7af93d2bd2645b2ac36ddb40f915ea3d",
+  "auditor_code_ref": "0812d5deff7afb8416ed76a287cc1b4439551bd5",
+  "design_sha256": "5880398dd5cc15c59cf592477ef93968c16f513fdde9a98ef6d11af64dcc63e5",
+  "runtime_source_files": 52,
+  "old_runtime_files_unchanged": 48,
+  "encoder": {
+    "repository": "ibm-granite/granite-embedding-97m-multilingual-r2",
+    "revision": "835ad14087e140460703cf0fae09f97d469d65c2",
+    "parameters": 97441152,
+    "frozen": true,
+    "hidden": 384,
+    "new_forward_calls": 0,
+    "historical_token_cache_reused": true
+  },
+  "reader_parameters": {
+    "base": 38466,
+    "bridge": 42562,
+    "wide": 42562
+  },
+  "scope": {
+    "train_candidates": 128,
+    "paired_candidates": 64,
+    "independent_paired_world_groups": 32,
+    "seeds": [41, 47, 53],
+    "seeds_add_independent_examples": false,
+    "natural_train_candidates": 3909,
+    "natural_internal_candidates": 827,
+    "natural_internal_previously_exposed": true,
+    "official_validation_read": false,
+    "new_controlled_fresh_evaluated": false,
+    "multimodal_evaluated": false,
+    "hosted_ci_consulted": false,
+    "production_promoted": false,
+    "old_binding_internal_candidates": 64,
+    "old_binding_internal_groups": 16,
+    "old_binding_internal_pairs": 32,
+    "longer_chain_tasks_implemented": false
+  },
+  "gates": {
+    "bridge_fit_all_seeds": true,
+    "base_fit_all_seeds": false,
+    "wide_fit_all_seeds": false,
+    "contrastive_retention_all_seeds": false,
+    "feedback_executed": false,
+    "fresh_executed": false,
+    "ordinary_replay_substituted_for_primary": false
+  },
+  "warmup_columns": ["arm", "seed", "updates", "candidate_correct_of_128", "both_worlds_correct_of_64", "saved_probability_CE", "fit_cpu_ns", "historical_reuse"],
+  "warmup_rows": [
+    ["base", 41, 8000, 122, 59, 0.06615159957258028, 121575855567, true],
+    ["bridge", 41, 4000, 128, 64, 0.004756397737065769, 66883195835, false],
+    ["wide", 41, 8000, 126, 62, 0.02174115915196629, 129671969504, false],
+    ["base", 47, 8000, 125, 61, 0.032511309543454374, 124016025003, true],
+    ["bridge", 47, 500, 128, 64, 0.0005540975778774029, 8379710358, false],
+    ["wide", 47, 8000, 125, 61, 0.03251800153244002, 134011535302, false],
+    ["base", 53, 8000, 125, 62, 0.03328887054883091, 130321882254, true],
+    ["bridge", 53, 4250, 128, 64, 0.01818449497487696, 72241522075, false],
+    ["wide", 53, 8000, 124, 60, 0.04385865308133818, 132483592515, false]
+  ],
+  "continuation_columns": ["arm", "seed", "candidate_correct_of_128", "both_worlds_correct_of_64", "retention_passed", "natural_internal_F1a", "natural_internal_EM", "fit_cpu_ns"],
+  "continuation_rows": [
+    ["natural_only", 41, 104, 41, false, 0.48861911987860396, 0.12371134020618557, 83959764486],
+    ["replay", 41, 125, 61, true, 0.47782546494992845, 0.06701030927835051, 93724073828],
+    ["contrastive", 41, 124, 60, false, 0.412751677852349, 0.08247422680412371, 92996474614],
+    ["natural_only", 47, 111, 47, false, 0.50199203187251, 0.09278350515463918, 82651274504],
+    ["replay", 47, 128, 64, true, 0.4881450488145049, 0.08762886597938144, 92451591703],
+    ["contrastive", 47, 128, 64, true, 0.5084306095979247, 0.08247422680412371, 91130382857],
+    ["natural_only", 53, 99, 35, false, 0.43729903536977494, 0.08762886597938144, 87197767437],
+    ["replay", 53, 83, 23, false, 0.4185303514376997, 0.061855670103092786, 95867526321],
+    ["contrastive", 53, 126, 62, true, 0.3724137931034483, 0.07731958762886598, 96605424678]
+  ],
+  "continuation_exposures": {
+    "natural_updates_per_arm": 500,
+    "natural_candidates_per_update": 16,
+    "replay_and_contrastive_extra_binding_updates_per_arm": 500,
+    "natural_total": 72000,
+    "binding_total": 48000,
+    "total_optimizer_updates": 7500
+  },
+  "natural_internal_baselines": {
+    "all_negative": {
+      "accuracy": 0.5477629987908101,
+      "candidates": 827,
+      "exact_match": 0.0,
+      "f1_a": 0.0,
+      "f1_m": 0.34216033107785687,
+      "paragraphs": 16,
+      "questions": 194
+    },
+    "all_positive": {
+      "accuracy": 0.45223700120918986,
+      "candidates": 827,
+      "exact_match": 0.0,
+      "f1_a": 0.6228143213988343,
+      "f1_m": 0.310127701622547,
+      "paragraphs": 16,
+      "questions": 194
+    },
+    "internal_cases": 827,
+    "neural_execution": false,
+    "official_validation_read": false,
+    "reference_file_sha256": "43595f0ee8602e36785c6d19644495df546a4b78fb0feab273a82e4f00c32667",
+    "schema": "hepta.bridge.natural-internal-baselines.v6",
+    "scope": "previously_exposed_training_source_internal_tune_not_fresh",
+    "train_majority": {
+      "accuracy": 0.5477629987908101,
+      "candidates": 827,
+      "exact_match": 0.0,
+      "f1_a": 0.0,
+      "f1_m": 0.34216033107785687,
+      "paragraphs": 16,
+      "questions": 194
+    },
+    "train_majority_class": 0,
+    "training_cases": 3909
+  },
+  "ablation": {
+    "posthoc_train_only": true,
+    "primary_preregistered_experiment": false,
+    "trained_again": false,
+    "original_panels_reused": true,
+    "residual_disabled_by_zeroing_output_matrix": true,
+    "operations_still_executed": true,
+    "new_candidate_forward_observations": 768,
+    "columns": ["arm", "seed", "original_correct_of_128", "disabled_correct_of_128", "original_pairs_of_64", "disabled_pairs_of_64", "prediction_flips"],
+    "rows": [
+      ["bridge", 41, 128, 74, 64, 10, 54],
+      ["wide", 41, 126, 126, 62, 62, 0],
+      ["bridge", 47, 128, 116, 64, 52, 12],
+      ["wide", 47, 125, 123, 61, 59, 4],
+      ["bridge", 53, 128, 123, 64, 59, 5],
+      ["wide", 53, 124, 121, 60, 57, 5]
+    ]
+  },
+  "costs": {
+    "scope": "formal_children_startup_through_exit; historical/cache generation, posthoc ablation, audits and repository operations excluded",
+    "nested_receipts_additive": false,
+    "equal_parameters_imply_equal_compute": false,
+    "equal_budget_cap_implies_equal_actual_cost": false,
+    "formal_phase_columns": ["phase", "cpu_ns", "wall_ns", "peak_rss_kib"],
+    "formal_phase_rows": [
+      ["prepare", 3673675000, 2796808656, 339628],
+      ["warmup", 581705987000, 580881964925, 1170584],
+      ["continue", 867923769000, 867146352523, 1199692]
+    ],
+    "formal_cpu_ns": 1453303431000,
+    "formal_wall_ns": 1450825126104,
+    "formal_peak_rss_kib": 1199692,
+    "historical_base_fit_cpu_ns": 375913762824,
+    "new_bridge_fit_cpu_ns": 147504428268,
+    "new_wide_fit_cpu_ns": 396167097321,
+    "new_continuation_fit_cpu_ns": 816584280428,
+    "posthoc_ablation_child_cpu_ns": 13590302000,
+    "posthoc_ablation_child_wall_ns": 12727451815,
+    "posthoc_ablation_peak_rss_kib": 1485312,
+    "full_formula_flops": null,
+    "individual_case_latency": null
+  },
+  "verification": {
+    "base_regression_tests_passed": 525,
+    "additional_downstream_auditor_tests_passed": 18,
+    "single_combined_test_run": false,
+    "independent_audits": [
+      {
+        "file": "reader-v6-independent-audit/initialization-report.json",
+        "sha256": "55943386fd7c52e874d423f2bceea71993f01e6b08b7e493575a13124892cd18"
+      },
+      {
+        "file": "reader-v6-independent-audit/warmup-report.json",
+        "sha256": "45ca636bc131cfa13fb541f7ef1035c21a6c7c7c760e87c371d4cfb8022bedb3"
+      },
+      {
+        "file": "reader-v6-independent-audit/residual-report.json",
+        "sha256": "a76a57530c0de1ca7acef1859c1d5ba6023c7f564ebe4a59e88788abc918043f"
+      },
+      {
+        "file": "reader-v6-independent-audit/completed-warmup-checkpoint-audit.json",
+        "sha256": "3963b55e909811e3127396157a0dcffd443c99825202cd7277093e32ebaf978a"
+      },
+      {
+        "file": "reader-v6-independent-audit/continuation-report.json",
+        "sha256": "dbdddba1ad2105080b7eb88be296c7e6b7c6008b987e2db0e4d5a21b0e85c673"
+      },
+      {
+        "file": "reader-v6-independent-audit/completed-continuation-checkpoint-audit.json",
+        "sha256": "21d43d88aedef2e1360e5378aa9d37a19531e605215f5e33a8f7f4bcc4c25534"
+      }
+    ],
+    "actual_completed_warmup_checkpoints_decoded": 9,
+    "actual_completed_continuation_checkpoints_decoded": 9,
+    "decoder_attests_neural_execution_gradients_or_clocks": false,
+    "feedback_and_revision_auditors_support_only": true
+  },
+  "conclusion": "Cross-fact bridge fits complete controlled training task in all seeds; stable cross-task retention not established; feedback and fresh gates remain closed.",
+  "not_established": ["reasoning_emergence", "NDU_causal_gain", "optimal_encoder", "multimodal_transfer", "new_task_generalization", "new_task_learning_speed", "lifelong_learning_stability"],
+  "old_binding_internal_columns": ["arm", "seed", "candidate_correct_of_64", "both_worlds_correct_of_32"],
+  "old_binding_internal_rows": [
+    ["natural_only", 41, 31, 3],
+    ["replay", 41, 32, 3],
+    ["contrastive", 41, 31, 5],
+    ["natural_only", 47, 31, 4],
+    ["replay", 47, 33, 7],
+    ["contrastive", 47, 33, 6],
+    ["natural_only", 53, 32, 5],
+    ["replay", 53, 28, 3],
+    ["contrastive", 53, 30, 3]
+  ]
+}

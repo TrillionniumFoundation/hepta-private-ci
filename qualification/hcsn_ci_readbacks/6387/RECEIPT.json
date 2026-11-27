@@ -1,0 +1,88 @@
+{
+  "schema": "hcsn-n256-terminal-publication-ci-readback-v1",
+  "source_pr": 6387,
+  "source_head": "d40c166e4d8a1f051473afe9ef78981b2a7c3183",
+  "source_tree": "1c88c0bf5ccaa256c4b81d6bce79eb595b27ee57",
+  "checked_merge_commit": "6ae597679002c54f9efabe1e8a8c49721ae42440",
+  "workflow_run_id": 43732623014,
+  "job_id": 132868223311,
+  "job_name": "static-terminal-publication-source",
+  "job_conclusion": "success",
+  "job_log": {
+    "bytes": 20643,
+    "sha256": "459949d703773f94d64644ea126e8432b42624b46a46560c04fc4458402f8e1f"
+  },
+  "artifact": {
+    "id": 14169296825,
+    "name": "hcsn-n256-terminal-publication-source-6ae597679002c54f9efabe1e8a8c49721ae42440",
+    "bytes": 2763,
+    "sha256": "6d5b28041059be72ea488423b37edaa964684498c3604558903bd95c8e1487ec",
+    "member_count": 7,
+    "uncompressed_bytes": 6032,
+    "members": [
+      {
+        "name": "COUNTS.json",
+        "size": 299,
+        "sha256": "aaa62e30636541e5340e83046556f1eb704924ad6cc108d4d70185618719535c"
+      },
+      {
+        "name": "REPORT.json",
+        "size": 594,
+        "sha256": "be3b8243ac6b69726be80afc31dd42270f99f780101144851404fbe78baecba2"
+      },
+      {
+        "name": "TEST_OPT_STDERR.txt",
+        "size": 2549,
+        "sha256": "5649f1ec4d1b2daa8f8ca4b39edf67ccf5888be9bd3fed5758edb23b3ebe3e4a"
+      },
+      {
+        "name": "TEST_OPT_STDOUT.txt",
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "TEST_STDERR.txt",
+        "size": 2547,
+        "sha256": "3b3fa25f19497a1d2a3a03a4fccfe867807aa3b08b2327e506c18a27705a772f"
+      },
+      {
+        "name": "TEST_STDOUT.txt",
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "VERIFY.txt",
+        "size": 43,
+        "sha256": "fe8743c407c788dae35149f47842a2fbd13dcc05375c86f0c9155ca57c4a059c"
+      }
+    ]
+  },
+  "verification": {
+    "normal_synthetic_tests": {
+      "passed": 7,
+      "total": 7
+    },
+    "optimized_synthetic_tests": {
+      "passed": 7,
+      "total": 7
+    },
+    "source_verifier": "PASS_N256_TERMINAL_PUBLICATION_SOURCE_HOLD",
+    "static_inspector": "PASS_TERMINAL_PUBLICATION_SOURCE_HOLD"
+  },
+  "work_counts": {
+    "authentic_terminal_originals": 0,
+    "authentic_publications": 0,
+    "provider_calls": 0,
+    "dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "historical_negative_and_unknown_preserved": true,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false,
+  "status": "HOLD"
+}

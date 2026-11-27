@@ -1,0 +1,818 @@
+{
+  "schema": "hepta.compressed-evidence-storage.v1",
+  "source_commit": "c0e525fd94e6eea2957bd1a12764627b86dd71ec",
+  "carrier_limit": 500000,
+  "raw_chunk_limit": 480000,
+  "storage_semantics": "Decode each numbered gzip carrier once, concatenate decoded chunks, and verify the complete original compressed stream and every original logical fragment. The original compressed manifests and archive bytes are preserved. No execution or scientific qualification is granted.",
+  "groups": [
+    {
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz",
+      "archive_bytes": 1099814,
+      "archive_sha256": "8c6f3b0fc5137bdb1441a6c22e58adeadd84fdfe6e7c5dd1be19169bd7a1dbaa",
+      "original_parts": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz.part-000",
+          "offset": 0,
+          "bytes": 500000,
+          "sha256": "d45de3b82f492c920fe688060017afca9e9fd5d4da156e36e6492c4c73becbb3",
+          "git_blob": "db16d934b87f603a78c0fc799b577a12cfd72b9b"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz.part-001",
+          "offset": 500000,
+          "bytes": 500000,
+          "sha256": "5097c58183adeb66bb03939f63a56cf2c7d6c4155e35d90fb9e084707c103041",
+          "git_blob": "3e3b6f398354f8c754c6920a6b84c0802556f2d6"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz.part-002",
+          "offset": 1000000,
+          "bytes": 99814,
+          "sha256": "82333ff2a6392cadf500c448c3c9e4dfdd3d648cdcea2a86c7de0c61d74e7152",
+          "git_blob": "5b96f3b74bd30635e1d1c0c50ede16a3becf8285"
+        }
+      ],
+      "carriers": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz.fragments/part-0000.gz",
+          "bytes": 470912,
+          "sha256": "74768905150f695bd0d6759b32d12ff7663eba42ffa97f6bf7813986375ff30e",
+          "git_blob": "3296808de97808435508daa7001f0a76c41c5c78",
+          "raw_bytes": 480000,
+          "raw_sha256": "636d3442db580073a2ac7479d85fcb01bc6410d1fc96897e83a53197c915cb1b"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz.fragments/part-0001.gz",
+          "bytes": 475579,
+          "sha256": "1f12659599bf1ff6dcbc6be5c4afe2ec4d5e3821ee5194f992052fbef19fbb05",
+          "git_blob": "ac329a0b9502cd6683121a7707b8ffebc06be834",
+          "raw_bytes": 480000,
+          "raw_sha256": "aba1f4269e20711c6ec9c79cc90a4571bf2aa3834967105fb52b9fff15260cac"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz.fragments/part-0002.gz",
+          "bytes": 139863,
+          "sha256": "bb6b66e5ee9b5fe2c2c6e35b8db9602ba6b72871660f0b70c7623f73b309daa1",
+          "git_blob": "dcb6ca7bff0cbb791b31bc88b3eaff144c79e637",
+          "raw_bytes": 139814,
+          "raw_sha256": "e53a15316054ee70fe361bc1959861c7ccb761e487b0ec792a00c66afb67451e"
+        }
+      ]
+    },
+    {
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz",
+      "archive_bytes": 1333132,
+      "archive_sha256": "6e05d6fd221b368acfd9205e6e2f16b2cd8ef58a5d7260b86a9871877ecb6040",
+      "original_parts": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz.part-000",
+          "offset": 0,
+          "bytes": 500000,
+          "sha256": "290961d7c0158e31dc74b53e7abdc11a125300e8ffb48621995099a01a323cbd",
+          "git_blob": "d05a882034776997594d969735d76bb84655bee6"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz.part-001",
+          "offset": 500000,
+          "bytes": 500000,
+          "sha256": "e90b03a918d035ae62effa689d72ceeefcbe3745cab71e0b251253823e0bee64",
+          "git_blob": "a3d035be15358ac39a4252d4563337ba814e7df7"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz.part-002",
+          "offset": 1000000,
+          "bytes": 333132,
+          "sha256": "9f45101f1867aa9011c3d1426eab42d54b3beaa8df4aa72e102f2d88257ba813",
+          "git_blob": "4b06d6629f503fe472862cc6d597173952df5318"
+        }
+      ],
+      "carriers": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz.fragments/part-0000.gz",
+          "bytes": 472204,
+          "sha256": "f3839fdb2b538be65f239973d0dec5ea68ebb4ef271f4046b77520a4e11b4df8",
+          "git_blob": "e7de5d62112f7cf7058bbc495ec43bc66e3c199a",
+          "raw_bytes": 480000,
+          "raw_sha256": "ae116661e1377ef6c283c04fd951916666281a4e331a628bec8540e3b9e35caa"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz.fragments/part-0001.gz",
+          "bytes": 474452,
+          "sha256": "ff48d40ab3b6b7a6aa84e0258b9dff2819836b8de9dfdee3b7c0bb27a7b1226e",
+          "git_blob": "39447eb65c8e3a6dbd18a7db118ad3bfa9f2d005",
+          "raw_bytes": 480000,
+          "raw_sha256": "fc87119a7403861bf5690182284c51b63f6e9b481b38bbbe1bf094a2c9492f6e"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz.fragments/part-0002.gz",
+          "bytes": 372656,
+          "sha256": "1f7e3ab95b88475c63aea1128b7cf0c9d90cbc0160e8f3dfa578caee53ef0231",
+          "git_blob": "f2ee2b1e79f453c77c14d2084dbb53abcc30b92c",
+          "raw_bytes": 373132,
+          "raw_sha256": "964299e0ad002738ad9b04132f96041774d6b97840655b8fecea9e36a6e98bba"
+        }
+      ]
+    },
+    {
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz",
+      "archive_bytes": 1244534,
+      "archive_sha256": "d6cc080fb21748cd8995534ef8caf5ff4386f5bd79bec4295fbd088abe64464a",
+      "original_parts": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz.part-000",
+          "offset": 0,
+          "bytes": 500000,
+          "sha256": "813c0e5f357cbbb1a4d15ca3b18ad3006f7b7b8ca384af3f9975eea9ac477d34",
+          "git_blob": "0a27ff1cf4bbbbf9b2f61e5747cf148a64ca82b4"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz.part-001",
+          "offset": 500000,
+          "bytes": 500000,
+          "sha256": "0c0a9cb9a7fd1800cfc7d5e3cd6f2148f22ed2751b5d9898c7a6523dac40fe7c",
+          "git_blob": "1ad32cda5ffd370f4bf0d482ed906d1dfce3f665"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz.part-002",
+          "offset": 1000000,
+          "bytes": 244534,
+          "sha256": "8e3f65b43d808df3490b930ae7c6f688f5d50e34e08597666190158f2a3174e7",
+          "git_blob": "fb74ad83011f9a1c19a9232b3ecfc56ca9cb6383"
+        }
+      ],
+      "carriers": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz.fragments/part-0000.gz",
+          "bytes": 472175,
+          "sha256": "aeab95c02cd7a5eb86ca39fafe2f40535e000c7109129f1d24665c20d41c4511",
+          "git_blob": "062b8f5de068797b0128d65aecbf8c2c6715facf",
+          "raw_bytes": 480000,
+          "raw_sha256": "b904b9439ca0fa62849aa84a48fbd02468379f22a62ebaa590f93a7b4b7f4470"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz.fragments/part-0001.gz",
+          "bytes": 474091,
+          "sha256": "f3a6c3f2ec047fe646e6570714ca5bed836fe81b1db32c3cd6386cf30228d9d9",
+          "git_blob": "ff15606f144ffefb8a17828929b53e47766dc675",
+          "raw_bytes": 480000,
+          "raw_sha256": "42cfe60968dd775162b5719ae2e3fad55777dff6e7858af4037e316fe741a504"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz.fragments/part-0002.gz",
+          "bytes": 283298,
+          "sha256": "5bea78de86f4ca934da097dae5d482ad9e2b0c5ab8105ee15099fa43a31c9396",
+          "git_blob": "44fdfb87430230bd00b2838705d235da021d0d48",
+          "raw_bytes": 284534,
+          "raw_sha256": "7bdc47b551ffb96cc44a721b16bd25499e52b98ae4794ad7d5e78dbe52156b68"
+        }
+      ]
+    },
+    {
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v8/proof.tar.gz",
+      "archive_bytes": 726417,
+      "archive_sha256": "477ad5ada81f5b90182826d6f284c4f33adf06c97be6866974b28650b9cf3c22",
+      "original_parts": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v8/proof.tar.gz.part-000",
+          "offset": 0,
+          "bytes": 500000,
+          "sha256": "1aa3c092f427d38d651e9e2d214fd318a47c7e7067a8cdcb7ae7f17690aef4e5",
+          "git_blob": "38af86b5ddcf842ef3ee4a3f82aac1d137cf4e75"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v8/proof.tar.gz.part-001",
+          "offset": 500000,
+          "bytes": 226417,
+          "sha256": "7ba7da6e8a88ba2e7e5397a829dfbe7a354954fcd2bbd6037c9bb87735f89fe0",
+          "git_blob": "5a50362d78a31d843aff70c165c8d6fdc3a1cc6f"
+        }
+      ],
+      "carriers": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v8/proof.tar.gz.fragments/part-0000.gz",
+          "bytes": 470453,
+          "sha256": "ad3faa086c86d381edad5efc137a4fb614d18cbd310b601d347a51f5601beb66",
+          "git_blob": "5e21523b7ea9669427b311f3264327a3c6cb168e",
+          "raw_bytes": 480000,
+          "raw_sha256": "e8e32faf8b796f82534cdb67d4537c8fdbef9f781ce418ef310339c5b38121c2"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v8/proof.tar.gz.fragments/part-0001.gz",
+          "bytes": 242334,
+          "sha256": "b95c7d0bb182296a3add1a068e21368e7982d18892068b8e3feef9aac153114f",
+          "git_blob": "1c9ce8bc11e37a6f77d6e8dcb2a2acb54dc7e80f",
+          "raw_bytes": 246417,
+          "raw_sha256": "cfa2a594b0ea82529f0ff66b56b08ba708c3222e1df2f86f5fc314e17a0d94b3"
+        }
+      ]
+    },
+    {
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz",
+      "archive_bytes": 1107624,
+      "archive_sha256": "27822d3b4793a5ec79b4a4b4e6ac33baff505f8e8152b15d292e3726812a2120",
+      "original_parts": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz.part-000",
+          "offset": 0,
+          "bytes": 500000,
+          "sha256": "4c79772db8454ff7aeba326c4bf30b2b48b1639915ee4d934e1a16e2a5fe39d9",
+          "git_blob": "5a88b793787bd3fb4ace97c69a0e4e79a3c1e0b0"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz.part-001",
+          "offset": 500000,
+          "bytes": 500000,
+          "sha256": "4eceef0e201d7df2831addd050c85c5d1647e41353dd94164d9869d99a0001e9",
+          "git_blob": "3122aab24f533b1834cd6e70b3d6359780aff600"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz.part-002",
+          "offset": 1000000,
+          "bytes": 107624,
+          "sha256": "fe50d4a776c48159dd4c9a9b32c01480ea25723565bbec4d5b2427ed7922a642",
+          "git_blob": "2803b5f87c90cc3632a409792dd6eb3620419720"
+        }
+      ],
+      "carriers": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz.fragments/part-0000.gz",
+          "bytes": 470241,
+          "sha256": "42744b479a662a0fe946369574c434d964e0acad4ed353c9499c1d6b8056166b",
+          "git_blob": "94d0f7ca7280b2f38ee57cf1cac547f7bf6f7c25",
+          "raw_bytes": 480000,
+          "raw_sha256": "c88b48be848887fd8950015929c504440553304370762741f59c985503b2da0a"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz.fragments/part-0001.gz",
+          "bytes": 475624,
+          "sha256": "e3da07045201138e6b92a11ab04702a68e576948e1eace7f5f4512c0d73169ad",
+          "git_blob": "a43e9da75ef20c50dcb095ebc8e86e30fec0ae67",
+          "raw_bytes": 480000,
+          "raw_sha256": "34364014557a34ea5712fadd20a66a79686e9d58a30131990ea6fe490b37f2f4"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz.fragments/part-0002.gz",
+          "bytes": 147676,
+          "sha256": "ea59680bec317b0645a8868a0150772f43ceab548288dffefafcab6256e14e04",
+          "git_blob": "3e0e554861c920056034640c5fd77254239de6e5",
+          "raw_bytes": 147624,
+          "raw_sha256": "e2d5e8a1cb5991115731ccd86c0adfd60640d3a1cfdd4d92d4aa912a622064ee"
+        }
+      ]
+    },
+    {
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz",
+      "archive_bytes": 1305554,
+      "archive_sha256": "aef16461aa4d50905d30d3b0bfea7387baf7cb812ab03f93f6909718b3dda530",
+      "original_parts": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz.part-000",
+          "offset": 0,
+          "bytes": 500000,
+          "sha256": "849809c96d9b8b14b82a5db7fdb372dd825fc2e8a637a6d4d798d666a2770b55",
+          "git_blob": "de3496442ea31c226052023d4610c71295033776"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz.part-001",
+          "offset": 500000,
+          "bytes": 500000,
+          "sha256": "7f1189bcf3dfc15c7524429257e9e7355a42ee2d8034953f98246763d43195ba",
+          "git_blob": "9e77f785226b69c4f15a62e1498b037c03e5047f"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz.part-002",
+          "offset": 1000000,
+          "bytes": 305554,
+          "sha256": "06462752f24bb2692a755f95e08af1b88a8cdb534fd113314f043a0095107764",
+          "git_blob": "6e81e0f4a027757e08527e1ba224b9efe3bc6968"
+        }
+      ],
+      "carriers": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz.fragments/part-0000.gz",
+          "bytes": 473374,
+          "sha256": "5c3844c0729bf453b5392906aa3b8e041d953226aed921d0a495329b556b2560",
+          "git_blob": "e6fc1f19754676839878f8fc910a40aa3421d2d2",
+          "raw_bytes": 480000,
+          "raw_sha256": "44d2ff3fc0abafc14c96a766d1e1cccfb8d52611d2b497989ea8a84c3bb60808"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz.fragments/part-0001.gz",
+          "bytes": 473222,
+          "sha256": "fb2a160dd8a604672353775464ee153942a4fc85646db8f5e73959a2a755b02e",
+          "git_blob": "fef94baa2f869e9cd5825ed471c572400e36e518",
+          "raw_bytes": 480000,
+          "raw_sha256": "bae1ce99460e28d7445f5dcde7f4d7ce3f97cfe364bdab4cc9b458a24421d304"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz.fragments/part-0002.gz",
+          "bytes": 345682,
+          "sha256": "bf553072d7a28953c15e5159913b926bf37bbe742f6dc25036c527e0bd905d10",
+          "git_blob": "99a6bd047635ff448ea26b9a81bc031bfe6cb751",
+          "raw_bytes": 345554,
+          "raw_sha256": "589da4dc96fb94d7bf5218ea3870a9d13b18e8829bec595981820b329ff4d7f1"
+        }
+      ]
+    },
+    {
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz",
+      "archive_bytes": 2646233,
+      "archive_sha256": "6cafad20c4e73e6d4ebb70f9651c3914c4168c5d36d87adebe2a0de34160ec6b",
+      "original_parts": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.part001",
+          "offset": 0,
+          "bytes": 500000,
+          "sha256": "6f41fc88ec327b28235f4bcf5e7451885af78c4e59d2b86adf28254be7fcc1dd",
+          "git_blob": "103081b6a450c3ece8ddcc48873be129c914ecaf"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.part002",
+          "offset": 500000,
+          "bytes": 500000,
+          "sha256": "62da3495280962eea48a419ef1495f00b00149c84e355fc29b848ff9cf4a2357",
+          "git_blob": "d93316dba44c1faad9c7a9466abd197268fba663"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.part003",
+          "offset": 1000000,
+          "bytes": 500000,
+          "sha256": "d7526fd8283c01500769340b4a559397ab832890788ac9fe37df8f55667295d2",
+          "git_blob": "1ddf5c1901af305e1ad5a7ea71a7f10c2cd1d1a1"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.part004",
+          "offset": 1500000,
+          "bytes": 500000,
+          "sha256": "7370ab7ba0f5469aef0c83a005c6cdeed8bfbfe8fa5490b97ec5d66dde87e5c0",
+          "git_blob": "222e929248938e2bdc9a323062eeca4826a11b42"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.part005",
+          "offset": 2000000,
+          "bytes": 500000,
+          "sha256": "3333ac57b29ae4469cfc8f5144b861211a5b55e80a03f4763632b279187ebcb0",
+          "git_blob": "42bc00495a8da9274ca7ee63a2cfdc5b2b117df4"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.part006",
+          "offset": 2500000,
+          "bytes": 146233,
+          "sha256": "7e12e2e3fb3d0a1adbcfe39493eb4289b9fa621a4ae7a693c251e47e3aa3964b",
+          "git_blob": "abb98b7e963319cdddfec81e2102c51ff84f4c92"
+        }
+      ],
+      "carriers": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.fragments/part-0000.gz",
+          "bytes": 480168,
+          "sha256": "ccd8d83be65d03377ce83a47a7b3e8b9294f498fdc5c9f9d9116776a6337ac5e",
+          "git_blob": "1a50646dee1857c7e647c7a032156223b651d707",
+          "raw_bytes": 480000,
+          "raw_sha256": "5398c001b20f1be586960077327283cf3b7ec24dd9b5ff1a704f3a568949d8e3"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.fragments/part-0001.gz",
+          "bytes": 480168,
+          "sha256": "944a2d21a5faa25202e9ff77bd3c3f19182c46f8a99a273276a6dfaa988693bd",
+          "git_blob": "82c2e972a63da0b59df8998be847b4b21f4a4011",
+          "raw_bytes": 480000,
+          "raw_sha256": "0c2c99203d9ddcd690f5e05d9b9ede235873d9accf2d265e826b45e732f3c813"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.fragments/part-0002.gz",
+          "bytes": 480168,
+          "sha256": "6e19fd40915fadf778525e8e97598c72ee6bbbde61af8173d160604a5bd7ca3c",
+          "git_blob": "a05d434ad30c881e69a3fcaef830ed5b155a36c4",
+          "raw_bytes": 480000,
+          "raw_sha256": "2613b2c31f0834831b253da9b8a20edc9a228c2a8e0736c2a9b490b322a7b659"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.fragments/part-0003.gz",
+          "bytes": 480168,
+          "sha256": "ccff3963579204630720a29e110c70767df0190230e3c22fd3b2f857b6e67663",
+          "git_blob": "09aa448103a537c51b4ab1224d595387f78f675b",
+          "raw_bytes": 480000,
+          "raw_sha256": "d47207c22b6f3c7f5a5de7a0d58f8ca993712e7f14704d7a381f0c6422866551"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.fragments/part-0004.gz",
+          "bytes": 480163,
+          "sha256": "0f5309e262acb0440b68c643bd7776b5c81a73d86fc259199f55529876563254",
+          "git_blob": "af75f3b2a48b6254b9c048ce09cf5aa5ec352354",
+          "raw_bytes": 480000,
+          "raw_sha256": "23560c54e453b21f22a2b13f384dc7bff11f57369b5cac01689f26ef8c10bf4d"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/cache-recovery-originals.tar.gz.fragments/part-0005.gz",
+          "bytes": 246294,
+          "sha256": "071c068baf1538781df6c94fc198f52f94fc7a97dc6463e1865737c3a159982a",
+          "git_blob": "3e4e9d0c208ecc4249e83ad0281a690c55f15dea",
+          "raw_bytes": 246233,
+          "raw_sha256": "42a8168830e8eb82ec0719c24676b05dc5b2002fe56faf69bdeff591a0bfcfd3"
+        }
+      ]
+    },
+    {
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz",
+      "archive_bytes": 11115354,
+      "archive_sha256": "bbdfefd5f262244139a01d00f16e58d864c9f342b76cfe63a792536b63f66482",
+      "original_parts": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part001",
+          "offset": 0,
+          "bytes": 500000,
+          "sha256": "40a466922b4e1f47a77ce5a1d39d512ddf7fdf795eaf8323650061b7b52b61e8",
+          "git_blob": "0d3d31d41be35386b362ea4ae25e5f6f4e1948f5"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part002",
+          "offset": 500000,
+          "bytes": 500000,
+          "sha256": "db9240a658d55a91fcafe2c50f0f15560728807d597afb8ba9ed393a28f1e06c",
+          "git_blob": "f2ce6cf097853fcf75e9a21c7b384acc27d1e002"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part003",
+          "offset": 1000000,
+          "bytes": 500000,
+          "sha256": "c0790f739d01e69ca801e281a2673fec92a2b66226f6641b163bea9a11d8e481",
+          "git_blob": "cb46c682a00398de88a0b1383cb9732bb266f1c5"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part004",
+          "offset": 1500000,
+          "bytes": 500000,
+          "sha256": "fff3721206ba5ba1604a666aa12fa553b377dffa3993b8d9d4bb8818c879ee1b",
+          "git_blob": "c73729d6bb7915d97a7cf0c91c3c50f766794694"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part005",
+          "offset": 2000000,
+          "bytes": 500000,
+          "sha256": "f7c836e9ae7c887e3c1043e407f13dfa56aa38cc4e8a4e45f390f78db3b257b9",
+          "git_blob": "e0df19bb39852b764584031c4b2ccb050c2049c3"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part006",
+          "offset": 2500000,
+          "bytes": 500000,
+          "sha256": "f01cb48c5adacb4dcfdab1e44f7e7190e62f5ebe524bb0fd82f520d33bbcbdc0",
+          "git_blob": "dbbe956498b0b6c9a7fdd1404cfe4a34a3f718fb"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part007",
+          "offset": 3000000,
+          "bytes": 500000,
+          "sha256": "ca989dd0f02070137f7b2115adf463b9b61b0b7075c32993a6b7710e0ca5cfaa",
+          "git_blob": "3ea0ae92e64dae310625dcf2e33de5dd03be361b"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part008",
+          "offset": 3500000,
+          "bytes": 500000,
+          "sha256": "57c1867e85528b21cb3f5b67b2ff5c955cbe24d7ec21e9fb2f9266654059617c",
+          "git_blob": "b8041342514e68595cc84d493b83a702a8699367"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part009",
+          "offset": 4000000,
+          "bytes": 500000,
+          "sha256": "dc2ae8e29c28da9a306974f1f1e42ec027303e5284005392826161e25f6470b2",
+          "git_blob": "19e5739224955e48ff3dfa3f5c00e446724dacfb"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part010",
+          "offset": 4500000,
+          "bytes": 500000,
+          "sha256": "f222c79f646e462d94d2ed08890b732339886887f258ed0d84bf44d2d616aa02",
+          "git_blob": "35513b398bd70e7f063d77d73a979f9627a201cb"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part011",
+          "offset": 5000000,
+          "bytes": 500000,
+          "sha256": "180656a2e68ca953a890f3d9fc242d2243f107aef0831cbc9114d9a49701659d",
+          "git_blob": "e2ef32f71dc1244be10866956811a4e3841ef63f"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part012",
+          "offset": 5500000,
+          "bytes": 500000,
+          "sha256": "58f3ac9be1c69230db14552fb5766e1f876face1d3208e76a7d87e4218866ed2",
+          "git_blob": "65ad58a878a625c0b6d49fb220fdf7f85a8f0a62"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part013",
+          "offset": 6000000,
+          "bytes": 500000,
+          "sha256": "6beeb45498f4a221798418f730ed5479ce97272f0d2edf8436490213c65bc44e",
+          "git_blob": "5c5aa64990ee471957f9557c9db471ac2d317b59"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part014",
+          "offset": 6500000,
+          "bytes": 500000,
+          "sha256": "6422034bf68b612e544adf5071197c372102a9f0cfff5558325fce3c129aac7e",
+          "git_blob": "23ed1d39817337e6b63070bb7a5b22085d7db69f"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part015",
+          "offset": 7000000,
+          "bytes": 500000,
+          "sha256": "8a13980e7c3d30423c12db17c040192ab1aae07ecaf25d76d68f36e93285cebe",
+          "git_blob": "812709a047044fc6a4b27d58772216092b5681d0"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part016",
+          "offset": 7500000,
+          "bytes": 500000,
+          "sha256": "9edbd5d44ddcf3e2cadde8870084bbab9266804027dec71f1e48f47af1ea39f7",
+          "git_blob": "98fdc541711d1a2b1000c5a9c971bec7cbcbc10b"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part017",
+          "offset": 8000000,
+          "bytes": 500000,
+          "sha256": "6c190cd61fa899ce50613510148e755e21e8400c53004e11d05809b45972a059",
+          "git_blob": "3573a3fd9dd32fa4421e5b46848895e7622fdeb3"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part018",
+          "offset": 8500000,
+          "bytes": 500000,
+          "sha256": "4468967ae034bcbd852ac917be5ad65fa0d022643c5d838dbf1bc4395fcec742",
+          "git_blob": "4b9048f7ff42a27e1fee1fe22b420908bf7959d7"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part019",
+          "offset": 9000000,
+          "bytes": 500000,
+          "sha256": "79d664a8997a9252cae60badfef41dee6aab6602cab2a8b7e9ea47abb97cd2b5",
+          "git_blob": "e68ebf489498b25e0b104bcb49db1443dec2cc2b"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part020",
+          "offset": 9500000,
+          "bytes": 500000,
+          "sha256": "8757fecad5924f8a478b61b9dda0529e07adeabaaf67ef8970168a0a1c95e009",
+          "git_blob": "b13507d5b887afa13a22625425d04141585055f2"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part021",
+          "offset": 10000000,
+          "bytes": 500000,
+          "sha256": "c091effc028e43420fc21282da9a189c9f5eca6b5767af92593ac2f757b3f89b",
+          "git_blob": "6a15e889e112f0a432d07e6ac5c043c20a35feb4"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part022",
+          "offset": 10500000,
+          "bytes": 500000,
+          "sha256": "63f52b3f8c92e540896ff5e74f0d625a4c0a9bbe1257eaf751a2ea1344b20e1c",
+          "git_blob": "6a42b223d513fb4142ca3c018d3af2eef9df3485"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.part023",
+          "offset": 11000000,
+          "bytes": 115354,
+          "sha256": "98893a2caa518d35e2b6fb480e594796c740bf034078e6f922aa567fc41fce29",
+          "git_blob": "1f1ead1f8b7cec5c01f216f5acb32663e19d74fe"
+        }
+      ],
+      "carriers": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0000.gz",
+          "bytes": 479172,
+          "sha256": "918bbebc1cbf055b229d3db52527cac97f3005a9f410cbdcbcac6aa92fd578f4",
+          "git_blob": "fcd76c5061dbcc0c66f376c71f225d5d165e8cdb",
+          "raw_bytes": 480000,
+          "raw_sha256": "61dadd3d969a5ad311e7027ba5acaa8144942c1882ea7ab266cc01a4928bba80"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0001.gz",
+          "bytes": 470253,
+          "sha256": "7f964bff4ae2eb26e09b00aaca61b77ac0878bdf2aa227eacc243c221c1afb78",
+          "git_blob": "d5efe560bf68f30fce96447118fbc36233d3bbb9",
+          "raw_bytes": 480000,
+          "raw_sha256": "03e9c0bb8957b1fe8fc67411b44d90aa17a72a833b94e86b627d961631a6ed19"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0002.gz",
+          "bytes": 477077,
+          "sha256": "afab9d5c60176f086c635af4f8550176bb98cca5602c73304f572df9ae5fc2d0",
+          "git_blob": "5ffa14208fceb8c75ef5b183b0d37374b317b9ff",
+          "raw_bytes": 480000,
+          "raw_sha256": "55577cd48c095d73743724b4297828247d1b09f17ab1e280cc61260b2b5107b8"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0003.gz",
+          "bytes": 479837,
+          "sha256": "22b25c827bf37f3aec22e371ea2507f6d591ff4de5d0c62df13cd0cde2f1af7d",
+          "git_blob": "f69a08bc44c9da0f52bb418a5542c3373f8cc361",
+          "raw_bytes": 480000,
+          "raw_sha256": "5a96d97a40bbe6135492c38d6c6ea0832176bc64523c36f804cc427e979877ca"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0004.gz",
+          "bytes": 473290,
+          "sha256": "2c31d7eec4c6955e47e8b49ce6e5641706750724ea76ba25f786f754406dcda0",
+          "git_blob": "97a264fef0cef02c0d8edad22ac85427703838e1",
+          "raw_bytes": 480000,
+          "raw_sha256": "a2716538b1b2f84fb126f5632e91c1a4f2b180db9c2b72ca40b9e4b2d95e2f89"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0005.gz",
+          "bytes": 471173,
+          "sha256": "3798302c8bab4ba9af14dcb6b69c619bfaefc607c563a664d06f6c03099c2840",
+          "git_blob": "9251102c784315dff39a523297e0134639d9114f",
+          "raw_bytes": 480000,
+          "raw_sha256": "bcec4b039c68f8daba8aaa980cedc71ef6f30ba1c49ba357fe24896b98b09d32"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0006.gz",
+          "bytes": 470153,
+          "sha256": "b2e69f572ca267dd5b10bbf0a82c2db93ea72c4667911ea0465eed7065a7de4a",
+          "git_blob": "1f3f60027d8785b60246d725a34980eff68715e9",
+          "raw_bytes": 480000,
+          "raw_sha256": "72e5c01634f73199c4b8dc6ef9fa2e4526e51a87736b8005c06128646e781008"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0007.gz",
+          "bytes": 478565,
+          "sha256": "59af5b2da2de556339c0d5cb10f0f454b095b848cbba75692a70eb17f17cfa96",
+          "git_blob": "24016f31c26dd6637f94ea4146636f9a4f0546ab",
+          "raw_bytes": 480000,
+          "raw_sha256": "276b9e12931fba33fd1e93fc618ce2a813d4b64b5992c448fd72289b7a25946b"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0008.gz",
+          "bytes": 480168,
+          "sha256": "fb4b340a27c1ef25e41737d533cd5eb983ee19d0fc5ef208910ebf0d82b4e4c9",
+          "git_blob": "d45f19baac80412d2ab6831dce3df1018068da43",
+          "raw_bytes": 480000,
+          "raw_sha256": "e25cc76ff5378d7af54055c531952e4353249b0313e7f67a0f0e8e33c4837c01"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0009.gz",
+          "bytes": 480045,
+          "sha256": "39d4404937251fd096ddef480d5c86d7cf97e273ec08705fe9ef2f2d5adeec46",
+          "git_blob": "f2cc7d7ce02de160dfcea3d8606d96d5f5dfe620",
+          "raw_bytes": 480000,
+          "raw_sha256": "200fc758924c166888d683626c3bb8b1920a8ef26a6603779f250f69ea02bfc1"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0010.gz",
+          "bytes": 479338,
+          "sha256": "1480d8d47a07f2689263f4ea99d4e272d94a0fd0d35d4d1e8b12af80d273e78f",
+          "git_blob": "9d5d4863f3ed951efa8a73a1ce20be23bdeafaf3",
+          "raw_bytes": 480000,
+          "raw_sha256": "b654e397fbdf1eb239e96139bfa1d81b8059c0be1d405632338d2ba23f26d30a"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0011.gz",
+          "bytes": 479878,
+          "sha256": "126de4f091860046de2b3c818fee42be1a43d5b4bcd2bd2804e7de8b209bb7c5",
+          "git_blob": "f05ff6caf8478af222d16d1e0a54ec9f377d9341",
+          "raw_bytes": 480000,
+          "raw_sha256": "24da2a161651027d9df9d79387128dc687117c5a09b2fe4b04119fd57eaf6df7"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0012.gz",
+          "bytes": 480051,
+          "sha256": "7d44c025c27d5c1cecfd837cbaa59f13f022541585f1ae16b1b7f832b834cf9c",
+          "git_blob": "16b76eb5585fdcfac0128935078004acaaa41b26",
+          "raw_bytes": 480000,
+          "raw_sha256": "a905aa1f9d1891953c2746bab72dddd9b67d990b130d232980c5c49d1b1aa29d"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0013.gz",
+          "bytes": 472242,
+          "sha256": "9f89807c666a058b6f2af7f6d73ab3f40992c5715edaa6af8b99f0c03f0a7549",
+          "git_blob": "6ebde86cc74e2270b3b5ddc40ba57cd35b7bdd88",
+          "raw_bytes": 480000,
+          "raw_sha256": "86e1a4a9a09cfca9bc8bfbce0c76c58bff7590898fca8210808178375f71a831"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0014.gz",
+          "bytes": 474057,
+          "sha256": "e710c398b3207b2f61a4e7cade8d1ef1c6e814d6b7d52be46fc6c34da2cbaefb",
+          "git_blob": "36a545c5f7f280b2dfcb6d4cc37739910f05ad1d",
+          "raw_bytes": 480000,
+          "raw_sha256": "a00a2eb4d0505974f38e956ac908b833a2922128bb6f5ecf2790727d80bcb5e1"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0015.gz",
+          "bytes": 474582,
+          "sha256": "06b0746016d854a89577e44f8d1f7059ddce0bf9dfe0ef53eebf10a3a48edd08",
+          "git_blob": "22f489605bac41dc44bbb1cac5f3888e3afcf44a",
+          "raw_bytes": 480000,
+          "raw_sha256": "a8ceecfd439f80398408d360ec2b46e4caca33901c08b3dd7e0d022280912c9d"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0016.gz",
+          "bytes": 471623,
+          "sha256": "0438a476ceedb9b984f16609d0ed0c1cdf52027653c62d8986b81d678fad8eae",
+          "git_blob": "d52095ffc1988187dbf1ed3dd33e08440ce569a6",
+          "raw_bytes": 480000,
+          "raw_sha256": "876ec4b91bb67caf6e88882bda1236df6488e6cf74c25a9b2d1a672af41c35a1"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0017.gz",
+          "bytes": 480168,
+          "sha256": "ff368aff18682a0f79e450d222d5da16751cf1c518bb8e5fa6cf45f846c497d8",
+          "git_blob": "7b9a540d2a8866c7ddc77709fa3e97869a650b6f",
+          "raw_bytes": 480000,
+          "raw_sha256": "1fc801ae3a1b220d1f9895c618f86c505a049b189742c6d3b3507967d79aacc5"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0018.gz",
+          "bytes": 474110,
+          "sha256": "1a4abf6a342d8b7d66403c12f27a199b230afbca2dba515219d5f373787ebf3b",
+          "git_blob": "6a8dd3050c8d56c58fa71e142cb4964003da1ce5",
+          "raw_bytes": 480000,
+          "raw_sha256": "a75f4a2cb97deaffe61f0f37e7327c0c42f2c9ec09892f4df99b362ce0a5cca7"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0019.gz",
+          "bytes": 472177,
+          "sha256": "b34228f3485eaf3896d44d34b4be3a2d3f64edb06a5a286dd1df467a26a6a788",
+          "git_blob": "cfa8aaaed3c686dca55bc1aafabd4235e97dd966",
+          "raw_bytes": 480000,
+          "raw_sha256": "47a283dfbb30b9e4d6800d1ce61c3db76018760c901fa06a38a7aef1a8e67645"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0020.gz",
+          "bytes": 478485,
+          "sha256": "a613361db35edced62c36b20b17fe641ec8a523ce10160b82630cf3b3574ac20",
+          "git_blob": "e56487d0355e8d1743108e58356ec9f4d324410c",
+          "raw_bytes": 480000,
+          "raw_sha256": "4100b8079a5a8ebd488ecb1e23dc93fb6f40d76c4aff0453083f2579ab1f6a49"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0021.gz",
+          "bytes": 470467,
+          "sha256": "5a47b0610de5e9298e0c1c66dddcb9268f297354516495bc5caa087853f843dd",
+          "git_blob": "772f774fab7c13cd9b3ed7d0cffe2ffeb8948ad5",
+          "raw_bytes": 480000,
+          "raw_sha256": "0e8153d5d1539f6653b281091b19ac9f9f8cc0ade3275118736480d354bb8a35"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0022.gz",
+          "bytes": 477331,
+          "sha256": "6f21be5c6b97c4bdfa19c5333dcd942f60b907bd2904d4c48e33267d6570fe10",
+          "git_blob": "9350b55341528f8f8e0f950846327aedae4ca6a3",
+          "raw_bytes": 480000,
+          "raw_sha256": "97d83192998f1fb0ef0edaa3712c8c4be6d2475a592c3792bb36b374b14afbeb"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/matrix-source-union/originals.tar.gz.fragments/part-0023.gz",
+          "bytes": 75393,
+          "sha256": "1ec2d432db169118294259a98d41c4ffe48fe7e1425da4731c05c926c282b838",
+          "git_blob": "0a7a8492bc4e0c459c75006cd9fbf0e265bf529b",
+          "raw_bytes": 75354,
+          "raw_sha256": "d098f571430b992f412417a72081b3428a80b02008aa569ca205f5e901222e1c"
+        }
+      ]
+    },
+    {
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/root-checkpoint-20261116T1825-v2/root-records.tar.gz",
+      "archive_bytes": 754262,
+      "archive_sha256": "68a7839ae8d127cc8436eacbce33c0079b16fd1921c394a1fd60452b035c5ed4",
+      "original_parts": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/root-checkpoint-20261116T1825-v2/root-records.tar.gz.part-0000",
+          "offset": 0,
+          "bytes": 480000,
+          "sha256": "5f8ed67e4fe112d8848a47de7b104c61b3b9fed7521a7bac8fee05f03c239606",
+          "git_blob": "67175d225d7f1197b46bab6d7b973b1a12e39444"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/root-checkpoint-20261116T1825-v2/root-records.tar.gz.part-0001",
+          "offset": 480000,
+          "bytes": 274262,
+          "sha256": "eb79caeb40601c92b9ed270328cc9b576fca9b0a77c2c9c7bdbdcce70e1062fc",
+          "git_blob": "a47d0cd6191f4cc096c51e6d4a5758dc104a783b"
+        }
+      ],
+      "carriers": [
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/root-checkpoint-20261116T1825-v2/root-records.tar.gz.fragments/part-0000.gz",
+          "bytes": 480049,
+          "sha256": "7f5c6704f4226eed4b5995b71113d9775c16e5149bc4d11b5626e804770088a5",
+          "git_blob": "010676d35dab450bc99497c84eb31547db0550cf",
+          "raw_bytes": 480000,
+          "raw_sha256": "5f8ed67e4fe112d8848a47de7b104c61b3b9fed7521a7bac8fee05f03c239606"
+        },
+        {
+          "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/root-checkpoint-20261116T1825-v2/root-records.tar.gz.fragments/part-0001.gz",
+          "bytes": 274365,
+          "sha256": "08c5eaca51b7a0ad27b41bc6891beb3e9c938e58ff2c109407162dbf8dfdd2bc",
+          "git_blob": "927a36f27751741c970ca6d426afdbf0882d8909",
+          "raw_bytes": 274262,
+          "raw_sha256": "eb79caeb40601c92b9ed270328cc9b576fca9b0a77c2c9c7bdbdcce70e1062fc"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+{
+  "schema": "hepta.common.root-handoff.manifest.v1",
+  "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+  "verification": "Outer h_binary_read chunks match their versions/SHA256; outer gzip matches completed command raw-log digest. Root file export base64 was decoded and checked against Root-observed size/SHA/uid0/mode0600. Exact uploaded plan/controller bytes and source/archive pins are retained.",
+  "files": [
+    {
+      "path": "RESULT.json",
+      "bytes": 4366,
+      "sha256": "36f106a68a8c709d3de58ec19e5bd8510af2a37150811d7bedba4de5d43e23d3",
+      "provenance": {
+        "kind": "Exact Root-owned file bytes exported through the completed controller stdout",
+        "root_file": {
+          "name": "RESULT.json",
+          "bytes": 4366,
+          "sha256": "36f106a68a8c709d3de58ec19e5bd8510af2a37150811d7bedba4de5d43e23d3",
+          "path": "/var/lib/hepta-common-e1c98-root-test-f070113b/evidence/RESULT.json",
+          "uid": 0,
+          "mode": "0o600",
+          "inode": 10907063,
+          "mtime_ns": 1794227324645445235
+        },
+        "outer_log": "root-handoff-f070-v1.log.gz",
+        "not_direct_unprivileged_file_read": true
+      }
+    },
+    {
+      "path": "ANCESTORS.json",
+      "bytes": 362,
+      "sha256": "5d6033431b84b118b9abda39a96febeb7773c2309c06c7e033aeea48186d8b3a",
+      "provenance": {
+        "kind": "Exact Root-owned file bytes exported through the completed controller stdout",
+        "root_file": {
+          "name": "ANCESTORS.json",
+          "bytes": 362,
+          "sha256": "5d6033431b84b118b9abda39a96febeb7773c2309c06c7e033aeea48186d8b3a",
+          "path": "/var/lib/hepta-common-e1c98-root-test-f070113b/evidence/ANCESTORS.json",
+          "uid": 0,
+          "mode": "0o600",
+          "inode": 10891273,
+          "mtime_ns": 1794227316933280395
+        },
+        "outer_log": "root-handoff-f070-v1.log.gz",
+        "not_direct_unprivileged_file_read": true
+      }
+    },
+    {
+      "path": "root-handoff.log.gz",
+      "bytes": 490,
+      "sha256": "ec4a78cd0568ccbf9c0adeeb0bff5ac53119d7c64cf70cb1db809d0c066315ff",
+      "provenance": {
+        "kind": "Exact Root-owned file bytes exported through the completed controller stdout",
+        "root_file": {
+          "name": "root-handoff.log.gz",
+          "bytes": 490,
+          "sha256": "ec4a78cd0568ccbf9c0adeeb0bff5ac53119d7c64cf70cb1db809d0c066315ff",
+          "path": "/var/lib/hepta-common-e1c98-root-test-f070113b/evidence/root-handoff.log.gz",
+          "uid": 0,
+          "mode": "0o600",
+          "inode": 10907061,
+          "mtime_ns": 1794227324629782152
+        },
+        "outer_log": "root-handoff-f070-v1.log.gz",
+        "not_direct_unprivileged_file_read": true
+      }
+    },
+    {
+      "path": "root-handoff.junit.xml",
+      "bytes": 846,
+      "sha256": "e20c926765835c73056b8e390d09ad2420621d0df2fbaa8ca0453adee105c0f6",
+      "provenance": {
+        "kind": "Exact Root-owned file bytes exported through the completed controller stdout",
+        "root_file": {
+          "name": "root-handoff.junit.xml",
+          "bytes": 846,
+          "sha256": "e20c926765835c73056b8e390d09ad2420621d0df2fbaa8ca0453adee105c0f6",
+          "path": "/var/lib/hepta-common-e1c98-root-test-f070113b/evidence/root-handoff.junit.xml",
+          "uid": 0,
+          "mode": "0o600",
+          "inode": 10907062,
+          "mtime_ns": 1794227324644899774
+        },
+        "outer_log": "root-handoff-f070-v1.log.gz",
+        "not_direct_unprivileged_file_read": true
+      }
+    },
+    {
+      "path": "ROOT_FILE_EXPORT.json",
+      "bytes": 1300,
+      "sha256": "d9e6b9b2755909b573a4d4ee59cb84ca4e4af07c9583844f29dc3a5964f5959b",
+      "provenance": {
+        "kind": "Derived export index with base64 payload removed; exact exported bytes independently retained"
+      }
+    },
+    {
+      "path": "root-handoff-f070-v1.json",
+      "bytes": 2572,
+      "sha256": "529f72db2c83d10e07127b740e47e56702afffaaa4f3f844eab9db5b42b3cb80",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/root-handoff-f070-v1.json",
+        "remote_version": "66306:86142369:2572:1794227324681710189:1794227324681710189",
+        "chunk_sha256": "529f72db2c83d10e07127b740e47e56702afffaaa4f3f844eab9db5b42b3cb80",
+        "offset": 0,
+        "next_offset": 2572,
+        "eof": true
+      }
+    },
+    {
+      "path": "root-handoff-f070-v1.log.gz",
+      "bytes": 4327,
+      "sha256": "033db2cea94f36a59dac6c49db6307509d32e3d948ccd86461da640552056772",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/root-handoff-f070-v1.log.gz",
+        "remote_version": "66306:86142371:4327:1794227324681581714:1794227324681581714",
+        "chunk_sha256": "033db2cea94f36a59dac6c49db6307509d32e3d948ccd86461da640552056772",
+        "offset": 0,
+        "next_offset": 4327,
+        "eof": true
+      }
+    },
+    {
+      "path": "PLAN.json",
+      "bytes": 4402,
+      "sha256": "20f345d3023f45b6a16481900733aaa25f9d2cc230b67eaab979d48d4c639880",
+      "provenance": {
+        "kind": "Exact uploaded and executed plan bytes",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/root-handoff-plan-f070-v1.json",
+        "upload_version": "66306:85501281:4402:1794227290858254932:1794227290858874078"
+      }
+    },
+    {
+      "path": "MODEL_PREPARATION_RESULT.json",
+      "bytes": 7518,
+      "sha256": "b58d2dbf01aec3168aaabc0acffc3a6f3973cafe4ad40e7a96952de803b308f6",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/RESULT.json",
+        "remote_version": "66306:85632138:7518:1794226943619160163:1794226943619160163",
+        "chunk_sha256": "b58d2dbf01aec3168aaabc0acffc3a6f3973cafe4ad40e7a96952de803b308f6",
+        "eof": true
+      }
+    },
+    {
+      "path": "MODEL_TOOLS.json",
+      "bytes": 2546,
+      "sha256": "fe01045392e7e2206defae85baf70cc41a0e560b6248016551483af009a12c30",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/tools.json",
+        "remote_version": "66306:85632061:2546:1794226932830610607:1794226932830610607",
+        "chunk_sha256": "fe01045392e7e2206defae85baf70cc41a0e560b6248016551483af009a12c30",
+        "eof": true
+      }
+    },
+    {
+      "path": "MODEL_TERMINAL_RECORD.json",
+      "bytes": 2789,
+      "sha256": "f412c3041477fe97b2ddedbc44c27235a2ec937d335921feec93e2451f4c70c4",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/smollm-execute-f070-v1.json",
+        "remote_version": "66306:86142365:2789:1794227049983638023:1794227049983638023",
+        "chunk_sha256": "f412c3041477fe97b2ddedbc44c27235a2ec937d335921feec93e2451f4c70c4",
+        "eof": true
+      }
+    },
+    {
+      "path": "run_root_handoff.py.gz",
+      "bytes": 4260,
+      "sha256": "1c741e7d21bf0cb92ca79b0cd4cc821b71c72bf150d9ce273d40eb980af114c5",
+      "uncompressed": {
+        "bytes": 12532,
+        "sha256": "8d81e563e4af9e146dd0227f25015d51f67d3af1c80587ed6784d0286bcf7303"
+      },
+      "provenance": {
+        "kind": "Lossless gzip of exact uploaded/executed controller",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/root-handoff-controller-f070-v1.py",
+        "upload_version": "66306:85501279:12532:1794227288127543805:1794227288127971209"
+      }
+    },
+    {
+      "path": "PROCESS_START.json",
+      "bytes": 1433,
+      "sha256": "e13bb26888e455be03d33409a6c58fce38ba37965557dbcece2a096ac4a75a77",
+      "provenance": {
+        "method": "h_process_start",
+        "host": "ai395",
+        "job_id": "1a1c04825b9-5e21-9aa",
+        "encoding": "Exact UTF-8 text block returned by process API"
+      }
+    },
+    {
+      "path": "PROCESS_FINAL.json",
+      "bytes": 732,
+      "sha256": "1463cfd9e7734bccd5c4703fb4d610110501a721e7dafe79ea54a04693f33f63",
+      "provenance": {
+        "method": "h_process_status",
+        "host": "ai395",
+        "job_id": "1a1c04825b9-5e21-9aa",
+        "encoding": "Exact UTF-8 text block returned by process API"
+      }
+    }
+  ],
+  "derived_files": [
+    {
+      "path": "README.md",
+      "bytes": 4967,
+      "sha256": "5bb1a2d9ebb216d9050ffa9636f18ab8cf10ae61088648974b1675cb22b75b8d",
+      "provenance": "Local interpretation derived from retained original Root and native evidence."
+    },
+    {
+      "path": "SUMMARY.json",
+      "bytes": 3343,
+      "sha256": "8aa164928256c69c6493641ed3a98650dcd6abeaeffabb79d723e862dd854722",
+      "provenance": "Local interpretation derived from retained original Root and native evidence."
+    }
+  ]
+}

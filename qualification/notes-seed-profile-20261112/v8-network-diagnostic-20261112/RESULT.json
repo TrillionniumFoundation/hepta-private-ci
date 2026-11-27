@@ -1,0 +1,36 @@
+{
+  "actors": 0,
+  "attempts": [
+    {
+      "bytes": 262,
+      "elapsed_seconds": 4.689612004905939,
+      "final_https_host": "release-assets.githubusercontent.com",
+      "http_status": 200,
+      "route": "existing-urllib-environment",
+      "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+      "status": "OFFICIAL_CHECKSUM_BYTES_VERIFIED",
+      "timeout_seconds": 20,
+      "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256"
+    }
+  ],
+  "elapsed_seconds": 4.692764602135867,
+  "euid": 1000,
+  "expected_manifest_sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+  "native_compile_started": false,
+  "original_source_pins": {
+    "codex-rs/Cargo.lock": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+    "scripts/codex_package/v8.py": "d7739840d17ea4f1afff15e552add403f2a479cde6422c27c92c2ef3823c27fc"
+  },
+  "original_source_unchanged": true,
+  "proxy_metadata": {
+    "git_proxy_matches_urllib_https": false,
+    "git_proxy_present": false,
+    "urllib_proxy_schemes": []
+  },
+  "schema": "hepta.act6243.v8-connection-diagnostic.v1",
+  "source_or_failed_run_writes": 0,
+  "source_sha256": "dc04aa8fc6a2147f3fd368217f22c1dfe6c1faef241c353a388f484071b5fa2b",
+  "status": "OFFICIAL_CHECKSUM_CONNECTION_VERIFIED",
+  "uid": 1000,
+  "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256"
+}

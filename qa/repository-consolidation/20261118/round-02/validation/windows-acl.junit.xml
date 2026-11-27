@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="17" failures="1" errors="0" uuid="10d8e0bc-3af4-467b-be9d-46a10e159029" timestamp="2026-11-18T01:53:40.364+00:00" time="0.472">
+    <testsuite name="codex-windows-sandbox" tests="17" disabled="0" errors="0" failures="1">
+        <testcase name="acl::tests::acl_repair_rejects_replaced_path_with_different_object_type" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.367+00:00" time="0.020">
+        </testcase>
+        <testcase name="acl::tests::complete_denies_compare_mapped_masks_and_require_every_right" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.387+00:00" time="0.013">
+        </testcase>
+        <testcase name="acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.401+00:00" time="0.013">
+        </testcase>
+        <testcase name="acl::tests::complete_file_denies_require_direct_scope" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.414+00:00" time="0.013">
+        </testcase>
+        <testcase name="acl::tests::deny_ace_update_failure_is_an_error" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.428+00:00" time="0.015">
+        </testcase>
+        <testcase name="acl::tests::fresh_write_deny_preserves_generic_read_and_denies_data_mutation" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.443+00:00" time="0.017">
+        </testcase>
+        <testcase name="acl::tests::native_file_and_directory_denies_retain_full_masks_and_are_idempotent" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.460+00:00" time="0.022">
+        </testcase>
+        <testcase name="acl::tests::native_normalized_directory_and_file_denies_repeat_without_any_acl_change" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.482+00:00" time="0.019">
+        </testcase>
+        <testcase name="acl::tests::normalized_deny_pair_cannot_combine_wrong_identity_or_nonrecursive_scope" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.501+00:00" time="0.013">
+        </testcase>
+        <testcase name="acl::tests::normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.514+00:00" time="0.014">
+        </testcase>
+        <testcase name="acl::tests::partial_read_deny_is_repaired_before_native_file_data_access" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.529+00:00" time="0.016">
+        </testcase>
+        <testcase name="token::tests::elevated_token_includes_network_proxy_restricting_sid" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.545+00:00" time="0.013">
+            <failure message="Error: elevated Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; a replacement preserving read, launch and IPC behavior has not been qualified" type="test failure with exit code 101">Error: elevated Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; a replacement preserving read, launch and IPC behavior has not been qualified</failure>
+            <system-out>
+running 1 test
+test token::tests::elevated_token_includes_network_proxy_restricting_sid ... FAILED
+
+failures:
+
+failures:
+    token::tests::elevated_token_includes_network_proxy_restricting_sid
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 215 filtered out; finished in 0.00s
+
+</system-out>
+            <system-err>Error: elevated Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; a replacement preserving read, launch and IPC behavior has not been qualified
+</system-err>
+        </testcase>
+        <testcase name="token::tests::mic_probe::mic_counterexamples_require_public_admission_refusal" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.559+00:00" time="0.139">
+        </testcase>
+        <testcase name="token::tests::read_authority_probe::full_restriction_preserves_prepared_read_and_mutation_boundaries" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.698+00:00" time="0.096">
+        </testcase>
+        <testcase name="token::tests::workspace_token_refusal_leaves_existing_files_unchanged" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.795+00:00" time="0.015">
+        </testcase>
+        <testcase name="token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.810+00:00" time="0.013">
+        </testcase>
+        <testcase name="token::tests::workspace_token_refuses_multiple_capabilities_before_native_access" classname="codex-windows-sandbox" timestamp="2026-11-18T01:53:40.823+00:00" time="0.013">
+        </testcase>
+    </testsuite>
+</testsuites>

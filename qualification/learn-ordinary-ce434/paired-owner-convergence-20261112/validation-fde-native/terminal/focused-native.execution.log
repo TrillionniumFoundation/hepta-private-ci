@@ -1,0 +1,3286 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+   Compiling codex-hepta-agentd v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-agentd)
+warning: variable does not need to be mutable
+   --> hepta-neuron/src/cell_generation_observation_tests.rs:310:9
+    |
+310 |     let mut reopened = fixture.open_with(configuration, /*max_records*/ 128);
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codex-hepta-neuron` (lib test) generated 1 warning (run `cargo fix --lib -p codex-hepta-neuron --tests` to apply 1 suggestion)
+warning: unused import: `codex_hepta_learning_ledger::SignedLearningEvidenceV1`
+ --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:4:5
+  |
+4 | use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1`
+    --> hepta-agentd/src/lib.rs:1479:16
+     |
+1479 | pub(crate) use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1;
+     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variable does not need to be mutable
+  --> hepta-agentd/src/cell_q24_model_current_owner.rs:11:9
+   |
+11 |         mut witness: W,
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+  --> hepta-agentd/src/cell_q24_model_current_owner.rs:47:9
+   |
+47 |         mut witness: W,
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/cell_q24_model_proposal.rs:122:9
+    |
+122 |         mut witness: W,
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/cell_q24_model_proposal.rs:160:9
+    |
+160 |         mut witness: W,
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: associated function `bind_original_stage_channel` is never used
+   --> hepta-agentd/src/circuit_candidate_learning_read_capability.rs:244:19
+    |
+241 | impl OriginalCircuitCandidateLearningReadClientV1 {
+    | ------------------------------------------------- associated function in this implementation
+...
+244 |     pub(crate) fn bind_original_stage_channel(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `read_original_model` is never used
+  --> hepta-agentd/src/cell_q24_candidate_stage_model.rs:82:25
+   |
+64 | impl OriginalCellQ24CandidateStageOwnersV1 {
+   | ------------------------------------------ method in this implementation
+...
+82 |     pub(crate) async fn read_original_model(
+   |                         ^^^^^^^^^^^^^^^^^^^
+
+warning: variant `Unavailable` is never constructed
+  --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+   |
+22 | pub(super) enum Status {
+   |                 ------ variant in this enum
+...
+26 |     Unavailable = 4,
+   |     ^^^^^^^^^^^
+   |
+   = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: field `estimand` is never read
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:24:9
+   |
+20 | pub(super) struct Checked {
+   |                   ------- field in this struct
+...
+24 |     pub estimand: Digest32,
+   |         ^^^^^^^^
+
+warning: method `context` is never used
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+   |
+30 | impl Request {
+   | ------------ method in this implementation
+...
+53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+   |                   ^^^^^^^
+
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-infer-worker-host)
+warning: `codex-hepta-agentd` (lib) generated 11 warnings (run `cargo fix --lib -p codex-hepta-agentd` to apply 6 suggestions)
+warning: unused import: `codex_hepta_contracts::HostAuthorityPeerChannel`
+  --> hepta-agentd/src/cell_q24_training_readback_tests.rs:12:5
+   |
+12 | use codex_hepta_contracts::HostAuthorityPeerChannel;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `super::super::evidence_wire`
+  --> hepta-agentd/src/circuit_next_use_command_support_tests.rs:29:5
+   |
+29 | use super::super::evidence_wire;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::LearningIterationEvidenceClientV1`
+  --> hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs:16:5
+   |
+16 | use crate::LearningIterationEvidenceClientV1;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_learning_ledger::SignedLearningEvidenceV1`
+ --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:4:5
+  |
+4 | use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_learning_ledger::LearningEvidenceRoleV1`
+  --> hepta-agentd/src/circuit_model_selection_owner_support_tests.rs:15:5
+   |
+15 | use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_learning_ledger::TrustedLearningSignerV1`
+  --> hepta-agentd/src/circuit_model_selection_owner_support_tests.rs:19:5
+   |
+19 | use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::circuit_original_evaluation_provider::*`
+ --> hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs:5:5
+  |
+5 | use crate::circuit_original_evaluation_provider::*;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_intelligence_eval::*`
+ --> hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs:8:5
+  |
+8 | use codex_hepta_intelligence_eval::*;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/circuit_next_use_command_owner_tests.rs:386:9
+    |
+386 |     let mut f = CompletionFixture::ready(None).await?;
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> hepta-agentd/src/circuit_completion_readiness_owner_tests.rs:59:9
+   |
+59 |     let mut f = CompletionFixture::ready(None).await?;
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/circuit_original_evaluation_host_tests.rs:168:9
+    |
+168 |     let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: method `bytes` is never used
+   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:161:19
+    |
+ 83 | impl LedgerFixture {
+    | ------------------ method in this implementation
+...
+161 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+    |                   ^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `closure` is never used
+   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:202:15
+    |
+202 | pub(super) fn closure(
+    |               ^^^^^^^
+
+warning: associated function `bind_original_stage_channel` is never used
+   --> hepta-agentd/src/circuit_candidate_learning_read_capability.rs:244:19
+    |
+241 | impl OriginalCircuitCandidateLearningReadClientV1 {
+    | ------------------------------------------------- associated function in this implementation
+...
+244 |     pub(crate) fn bind_original_stage_channel(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: field `at` is never read
+  --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+   |
+91 | pub(super) struct Fixture {
+   |                   ------- field in this struct
+92 |     root: PathBuf,
+93 |     pub(super) at: u64,
+   |                ^^
+
+warning: associated function `from_research_store` is never used
+   --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+    |
+133 | impl LearningIterationCheckpointOwnerV1 {
+    | --------------------------------------- associated function in this implementation
+...
+141 |     pub(crate) fn from_research_store(
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: function `ledger` is never used
+  --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:68:15
+   |
+68 | pub(super) fn ledger(
+   |               ^^^^^^
+
+warning: function `material` is never used
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:264:15
+    |
+264 | pub(super) fn material(
+    |               ^^^^^^^^
+
+warning: type alias `Selector` is never used
+  --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+   |
+43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+   |                 ^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib test) generated 28 warnings (9 duplicates) (run `cargo fix --lib -p codex-hepta-agentd --tests` to apply 11 suggestions)
+    Finished `test` profile [unoptimized] target(s) in 3m 11s
+────────────
+ Nextest run ID 4629c376-cf43-44a6-9646-c3d1f5c9b5c0 with nextest profile: local
+    Starting 190 tests across 4 binaries (1490 tests skipped)
+        PASS [   2.413s] (  1/190) codex-hepta-agentd artifact_original_head::source::tests::original_artifact_head_restored_source_cannot_revive_consumed_connection
+        PASS [   2.531s] (  2/190) codex-hepta-agentd artifact_original_head::source::tests::original_artifact_head_lost_reply_reads_original_without_recreating_writer
+        PASS [   0.374s] (  3/190) codex-hepta-agentd artifact_original_head::source::tests::original_artifact_head_signs_once_and_cold_reads_saved_signature
+        PASS [   1.027s] (  4/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_partial_creation_never_finishes_missing_dataset_during_recovery
+        PASS [   1.495s] (  5/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_expired_work_only_reads_original_completed_windows
+        PASS [   1.295s] (  6/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_pending_claim_reopens_without_signing_or_replacing_bytes
+        PASS [   1.575s] (  7/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_resigning
+        PASS [   1.535s] (  8/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_signs_recovers_and_feeds_actual_no_update_training
+        PASS [   1.159s] (  9/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim
+        PASS [   2.314s] ( 10/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_lost_ack_reads_existing_completion_without_reexecution
+        PASS [   2.622s] ( 11/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_executes_and_produces_actual_evidence_readback
+        PASS [   1.279s] ( 12/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_public_bootstrap_refuses_same_process_custody
+        PASS [   2.657s] ( 13/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_recovers_same_job_and_full_signature_read_only
+        PASS [   1.842s] ( 14/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_withdrawal_after_claim_preserves_pending_without_signature
+        PASS [   1.702s] ( 15/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_abandoned_finish_preserves_real_native_effect_and_fences
+        PASS [   2.062s] ( 16/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_wrong_context_cannot_claim_or_consume_admission
+        PASS [   2.055s] ( 17/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_after_read_withdrawal_fences_completed_native_result
+        PASS [   2.086s] ( 18/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_cancelled_waiter_keeps_lane_then_fences
+        PASS [   1.579s] ( 19/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_rejects_equal_capture_from_different_arc
+        FAIL [   2.292s] ( 20/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_candidate_and_model_keep_two_reads_per_lane
+        PASS [   1.369s] ( 21/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_capture_rejects_valid_freeze_resigning_with_identical_training_bytes
+        PASS [   1.534s] ( 22/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_cold_identity_rejects_valid_material_signature_renewal
+        PASS [   1.269s] ( 23/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_rejects_identical_legacy_batch_before_admission
+        PASS [   2.416s] ( 24/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_preserves_frozen_rule_and_recovers_exact_no_update
+        PASS [   1.466s] ( 25/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_before_claim_fences_without_no_update
+        PASS [   1.903s] ( 26/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_after_claim_preserves_pending_without_signature
+        PASS [   0.023s] ( 27/190) codex-hepta-agentd circuit_next_use_receipt_owner::tests::original_observer_deadline_and_saved_signature_window_never_renew
+        PASS [   0.080s] ( 28/190) codex-hepta-agentd circuit_next_use_receipt_owner::tests::original_observer_configuration_rejects_substituted_custody_before_journal_creation
+        PASS [   0.028s] ( 29/190) codex-hepta-agentd circuit_next_use_receipt_owner::tests::original_observer_predecessors_require_bound_signed_roles_and_independent_custody
+        PASS [   0.064s] ( 30/190) codex-hepta-agentd circuit_next_use_receipt_owner::tests::original_observer_pending_claim_reopens_without_signing_or_rewriting
+        PASS [   0.041s] ( 31/190) codex-hepta-agentd circuit_task::source::tests::physical_current::original_source_current_fences_same_length_mutation_after_restore
+        PASS [   0.082s] ( 32/190) codex-hepta-agentd circuit_task::source::tests::physical_current::original_source_current_fences_truncation_and_extra_tail_without_repair
+        PASS [   0.078s] ( 33/190) codex-hepta-agentd circuit_task::source::tests::physical_current::original_source_input_read_is_readonly_and_requires_live_original_configuration
+        PASS [   2.396s] ( 34/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_executes_original_experience_then_dataset_without_uploads
+        PASS [   2.472s] ( 35/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_lost_ack_recovers_original_signatures_and_shared_admission
+        PASS [   1.566s] ( 36/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_pending_claim_and_withdrawal_never_complete_or_rearm
+        PASS [   2.461s] ( 37/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_missing_predecessor_and_cold_missing_never_execute
+        PASS [   1.497s] ( 38/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_pins_original_signatures_and_consumes_invalid_replies
+        PASS [   1.113s] ( 39/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_wrong_context_role_or_custody_never_claims
+        PASS [   1.023s] ( 40/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::ordinary_stage::ordinary_stage_recovery_keeps_original_missing_uncertain_without_claim
+        PASS [   1.003s] ( 41/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::ordinary_stage::ordinary_stage_without_resident_gate_never_dispatches_original_material
+        PASS [   1.420s] ( 42/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_peer_pins_complete_material_and_freeze_signatures
+        PASS [   1.971s] ( 43/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_peer_consumes_wrong_purpose_or_failed_frames
+        PASS [   2.013s] ( 44/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_peer_rejects_raw_batch_provenance_and_frozen_optimizer_rebinding
+        PASS [   1.582s] ( 45/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_request_payload_rebinding_and_public_custody_bypass
+        PASS [   5.265s] ( 46/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_peer_reconstructs_exact_sealed_material_and_cold_rereads
+        PASS [   2.872s] ( 47/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_withdrawn_missing_or_busy_originals
+        PASS [   1.724s] ( 48/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_failed_frame_permanently_consumes_channel
+        PASS [   1.585s] ( 49/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_never_finishes_missing_dataset
+        PASS [   1.925s] ( 50/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_refuses_request_rebinding_and_replay_without_writes
+        PASS [   1.631s] ( 51/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_refuses_withdrawn_source_and_busy_ledger
+        PASS [   1.583s] ( 52/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_rejects_same_uid_peer_and_widened_transport
+        PASS [   2.441s] ( 53/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_returns_original_signatures_and_cold_rereads
+        PASS [   5.129s] ( 54/190) codex-hepta-agentd learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames
+        FAIL [  10.922s] ( 55/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_cancelled_operation_cannot_reuse_original_prefix
+        PASS [   0.990s] ( 56/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch
+        FAIL [  13.745s] ( 57/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners
+        PASS [  20.421s] ( 58/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_reconstructs_actual_pages_and_cold_original_signature
+        PASS [  29.861s] ( 59/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending
+        PASS [  15.449s] ( 60/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature
+        SLOW [> 30.000s] (───────) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel
+        PASS [  18.522s] ( 61/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_rejects_experience_and_valid_other_freeze_context
+        PASS [   1.726s] ( 62/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_attenuation_and_prebound_transport_preserve_original_custody
+        PASS [  14.948s] ( 63/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms
+ TERMINATING [> 60.000s] (───────) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel
+     TIMEOUT [  60.008s] ( 64/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel
+        PASS [   6.039s] ( 65/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements
+        PASS [  15.201s] ( 66/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature
+        PASS [  11.707s] ( 67/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation
+        PASS [   9.198s] ( 68/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody
+        PASS [  13.705s] ( 69/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel
+        PASS [   1.404s] ( 70/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_unready_and_wrong_purpose_never_initialize
+        PASS [   0.067s] ( 71/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_creation_and_recovery_never_repair_partial_anchors
+        PASS [   0.078s] ( 72/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty
+        PASS [   0.101s] ( 73/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty
+        PASS [   0.119s] ( 74/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore
+        PASS [   0.067s] ( 75/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_preserves_missing_pending_and_completed_after_recovery
+        PASS [   0.063s] ( 76/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail
+        PASS [   0.020s] ( 77/190) codex-hepta-agentd neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_commits_full_nonempty_membership_before_any_result
+        PASS [   0.019s] ( 78/190) codex-hepta-agentd neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks
+        PASS [  16.655s] ( 79/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline
+        PASS [   9.346s] ( 80/190) codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore
+        PASS [  10.803s] ( 81/190) codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack
+        PASS [  10.457s] ( 82/190) codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence
+        PASS [  20.655s] ( 83/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning
+        SLOW [> 30.000s] (───────) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources
+        FAIL [  11.132s] ( 84/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows
+        FAIL [  45.019s] ( 85/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources
+        FAIL [  11.371s] ( 86/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support
+     SIGABRT [   1.262s] ( 87/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute
+     SIGABRT [   1.210s] ( 88/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest
+     SIGABRT [   1.221s] ( 89/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression
+     SIGABRT [   1.209s] ( 90/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect
+        FAIL [  10.550s] ( 91/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption
+     SIGABRT [   1.248s] ( 92/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature
+     SIGABRT [   1.218s] ( 93/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence
+     SIGABRT [   2.060s] ( 94/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry
+     SIGABRT [   2.061s] ( 95/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_reads_two_trainers_per_call_and_whole_export
+     SIGABRT [   2.062s] ( 96/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_rejects_equal_evidence_on_another_connection
+     SIGABRT [   2.060s] ( 97/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel
+     SIGABRT [   2.059s] ( 98/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures
+     SIGABRT [   2.072s] ( 99/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures
+     SIGABRT [   2.073s] (100/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback
+        PASS [  10.734s] (101/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_fences_changed_execution_bytes
+        PASS [  13.382s] (102/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_attests_and_recovers_exact_adoption
+        PASS [  10.487s] (103/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_pending_claim_survives_recovery
+        PASS [  11.621s] (104/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_valid_predecessor_resigning
+        PASS [  11.071s] (105/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_training_source
+        PASS [  11.777s] (106/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_version_publication
+        PASS [  13.013s] (107/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_current_corruption_stays_fenced_after_restore
+        PASS [  13.582s] (108/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_lost_completion_ack_preserves_uncertainty_and_exact_recovery
+        PASS [  12.938s] (109/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_missing_and_pending_never_publish_during_recovery
+        PASS [  13.036s] (110/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision
+        PASS [  12.997s] (111/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_rejects_context_and_valid_signature_renewal
+        PASS [   7.743s] (112/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_lost_ack_recovers_original_files_without_another_grant
+        PASS [   5.721s] (113/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_never_converts_candidate_training_into_no_update
+        PASS [  25.710s] (114/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_requires_physical_execution_and_holdout_before_claim
+        PASS [   6.703s] (115/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_actual_artifact_withdrawal_before_final_use
+        PASS [   5.790s] (116/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_another_final_use_purpose_and_only_reads_pending
+        PASS [   6.114s] (117/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_changed_full_training_signature_before_prepare
+        PASS [   5.778s] (118/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_rejects_same_content_even_with_a_new_run_and_task_digest
+        PASS [   8.784s] (119/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_uses_original_selection_and_real_distinct_task_c
+        PASS [  13.256s] (120/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch
+        PASS [   8.674s] (121/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission
+        PASS [   9.428s] (122/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch
+        PASS [  13.718s] (123/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly
+        FAIL [  10.343s] (124/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal
+        FAIL [  16.930s] (125/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody
+        PASS [   9.518s] (126/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication
+        PASS [   8.548s] (127/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_requires_original_selection_and_consumes_wrong_purpose
+        PASS [   6.893s] (128/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending
+        PASS [  10.422s] (129/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch
+        PASS [   7.542s] (130/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal
+        PASS [   8.158s] (131/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch
+        PASS [   7.739s] (132/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly
+        PASS [   6.249s] (133/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches
+        FAIL [  16.881s] (134/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody
+        PASS [   7.146s] (135/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch
+        PASS [  10.653s] (136/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature
+        PASS [   6.989s] (137/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations
+        PASS [   8.229s] (138/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read
+        PASS [   8.672s] (139/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects
+        PASS [   7.883s] (140/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature
+        PASS [  10.101s] (141/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap
+        PASS [   8.590s] (142/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature
+        PASS [  14.826s] (143/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_preserves_pending_and_recovers_completed_lost_ack
+        PASS [   6.951s] (144/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_valid_training_renewal_live_and_cold
+        PASS [   7.374s] (145/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_withdrawn_publication_before_claim
+        PASS [  15.033s] (146/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest
+        PASS [   8.215s] (147/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_substituted_custody_before_store_creation
+        PASS [   9.080s] (148/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use
+        PASS [   0.221s] (149/190) codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_cold_recovery_and_non_target_calls_preserve_original_bytes
+        PASS [   0.030s] (150/190) codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_preserves_cursor_lock_and_fences_read_errors
+        PASS [   0.047s] (151/190) codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_rehashed_history_cannot_preserve_cached_frontier
+        PASS [   0.075s] (152/190) codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_same_length_mutation_fences_after_restore
+        PASS [   0.449s] (153/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original
+        PASS [   0.085s] (154/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::holdout_current::holdout_current_lost_cas_ack_preserves_pending_without_provider_replay
+        PASS [   0.050s] (155/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::equal_execution_with_validly_renewed_signature_has_different_original_evidence
+        PASS [   0.024s] (156/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_missing_and_pending_never_claim
+        PASS [   0.042s] (157/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_rechecks_expiry_after_owner_reads
+        PASS [   0.049s] (158/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_survives_recovery_without_work_or_renewal
+        PASS [   0.301s] (159/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineligible
+        PASS [   0.030s] (160/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_changed_execution_body_cannot_replace_original_signature
+        PASS [   0.083s] (161/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_contract_and_temporal_protocol_are_fixed_before_consumption
+        PASS [   0.034s] (162/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_default_provider_refuses_after_one_original_consumption
+        PASS [   1.017s] (163/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_equal_outcomes_do_not_pass_original_primary_superiority
+        PASS [   0.129s] (164/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_identity_source_state_and_probability_changes_stay_pending
+        PASS [   0.056s] (165/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_mode_cannot_decode_or_reuse_a_shared_behavior_execution
+        PASS [   0.021s] (166/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_one_actual_principal_is_not_split_into_independent_clusters
+        PASS [   1.267s] (167/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_original_estimators_and_qualification_keep_the_frozen_thresholds
+        PASS [   0.034s] (168/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_signed_completion_lost_ack_cold_reads_without_release_or_resign
+        PASS [   0.069s] (169/190) codex-hepta-learning-artifacts owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot
+        PASS [   0.199s] (170/190) codex-hepta-learning-artifacts owner_host::tests::owner_host_resumes_legacy_payload_under_renewed_writer_lease
+        PASS [   0.138s] (171/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_finish_requires_original_signature_withdrawal_and_fresh_time
+        PASS [   0.090s] (172/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_lost_return_and_cold_readback_cannot_recreate_continuation
+        PASS [   0.024s] (173/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_partial_prepare_is_pending_and_readback_never_completes_it
+        PASS [   0.140s] (174/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_physical_corruption_fences_even_after_original_bytes_return
+        PASS [   0.087s] (175/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_preparation_stops_before_head_and_finishes_same_writer_once
+        PASS [   0.247s] (176/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_wrong_context_is_refused_before_consuming_the_writer
+        PASS [  13.715s] (177/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use
+        PASS [   0.099s] (178/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_cold_reopens_exact_pending_without_completion
+        PASS [   0.206s] (179/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged
+        PASS [   0.081s] (180/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_observes_lost_reply_without_republishing
+        PASS [   0.524s] (181/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_bounds_the_actual_transaction_scan
+        PASS [   0.100s] (182/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_refuses_actual_checkpoint_or_current_damage
+        PASS [   0.095s] (183/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_refuses_missing_or_changed_expected_operation
+        PASS [   0.193s] (184/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_uses_live_clock_not_an_old_request_timestamp
+        PASS [   0.199s] (185/190) codex-hepta-learning-artifacts owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head
+        PASS [   0.099s] (186/190) codex-hepta-neuron cell_generation_journal::tests::physical_current::physical_current_fences_witness_change_between_original_descriptor_reads
+        PASS [   0.130s] (187/190) codex-hepta-neuron cell_generation_journal::tests::physical_current::physical_current_preserves_complete_bytes_cursor_state_and_append_owner
+        PASS [   0.053s] (188/190) codex-hepta-neuron cell_generation_journal::tests::physical_current::physical_current_rejects_header_change_and_preserves_cursor_after_restore
+        PASS [   0.082s] (189/190) codex-hepta-neuron cell_generation_journal::tests::physical_current::physical_current_rejects_valid_same_length_rehashed_history_and_cannot_rearm
+        PASS [   0.113s] (190/190) codex-hepta-neuron cell_generation_journal::tests::physical_current::physical_current_rejects_short_tail_extra_tail_and_truncation_without_repair
+────────────
+     Summary [ 507.489s] 190 tests run: 166 passed, 23 failed, 1 timed out, 1490 skipped
+        PASS [   2.413s] (  1/190) codex-hepta-agentd artifact_original_head::source::tests::original_artifact_head_restored_source_cannot_revive_consumed_connection
+  stdout ───
+
+    running 1 test
+    test artifact_original_head::source::tests::original_artifact_head_restored_source_cannot_revive_consumed_connection ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.39s
+
+
+        PASS [   2.531s] (  2/190) codex-hepta-agentd artifact_original_head::source::tests::original_artifact_head_lost_reply_reads_original_without_recreating_writer
+  stdout ───
+
+    running 1 test
+    test artifact_original_head::source::tests::original_artifact_head_lost_reply_reads_original_without_recreating_writer ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.51s
+
+
+        PASS [   0.374s] (  3/190) codex-hepta-agentd artifact_original_head::source::tests::original_artifact_head_signs_once_and_cold_reads_saved_signature
+  stdout ───
+
+    running 1 test
+    test artifact_original_head::source::tests::original_artifact_head_signs_once_and_cold_reads_saved_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.36s
+
+
+        PASS [   1.027s] (  4/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_partial_creation_never_finishes_missing_dataset_during_recovery
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::original_material_pair_partial_creation_never_finishes_missing_dataset_during_recovery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.01s
+
+
+        PASS [   1.495s] (  5/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_expired_work_only_reads_original_completed_windows
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::original_material_pair_expired_work_only_reads_original_completed_windows ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.47s
+
+
+        PASS [   1.295s] (  6/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_pending_claim_reopens_without_signing_or_replacing_bytes
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::original_material_pair_pending_claim_reopens_without_signing_or_replacing_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.27s
+
+
+        PASS [   1.575s] (  7/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_resigning
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_resigning ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.55s
+
+
+        PASS [   1.535s] (  8/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_signs_recovers_and_feeds_actual_no_update_training
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::original_material_pair_signs_recovers_and_feeds_actual_no_update_training ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.51s
+
+
+        PASS [   1.159s] (  9/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.14s
+
+
+        PASS [   2.314s] ( 10/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_lost_ack_reads_existing_completion_without_reexecution
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_lost_ack_reads_existing_completion_without_reexecution ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.29s
+
+
+        PASS [   2.622s] ( 11/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_executes_and_produces_actual_evidence_readback
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_executes_and_produces_actual_evidence_readback ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.60s
+
+
+        PASS [   1.279s] ( 12/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_public_bootstrap_refuses_same_process_custody
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_public_bootstrap_refuses_same_process_custody ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.26s
+
+
+        PASS [   2.657s] ( 13/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_recovers_same_job_and_full_signature_read_only
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_recovers_same_job_and_full_signature_read_only ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.64s
+
+
+        PASS [   1.842s] ( 14/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_withdrawal_after_claim_preserves_pending_without_signature
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_withdrawal_after_claim_preserves_pending_without_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.82s
+
+
+        PASS [   1.702s] ( 15/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_abandoned_finish_preserves_real_native_effect_and_fences
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_abandoned_finish_preserves_real_native_effect_and_fences ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.68s
+
+
+        PASS [   2.062s] ( 16/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_wrong_context_cannot_claim_or_consume_admission
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_wrong_context_cannot_claim_or_consume_admission ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.04s
+
+
+        PASS [   2.055s] ( 17/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_after_read_withdrawal_fences_completed_native_result
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_after_read_withdrawal_fences_completed_native_result ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.04s
+
+
+        PASS [   2.086s] ( 18/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_cancelled_waiter_keeps_lane_then_fences
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_cancelled_waiter_keeps_lane_then_fences ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.07s
+
+
+        PASS [   1.579s] ( 19/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_rejects_equal_capture_from_different_arc
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_rejects_equal_capture_from_different_arc ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.56s
+
+
+        PASS [   1.369s] ( 21/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_capture_rejects_valid_freeze_resigning_with_identical_training_bytes
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::source_bound_capture_rejects_valid_freeze_resigning_with_identical_training_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.35s
+
+
+        PASS [   1.534s] ( 22/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_cold_identity_rejects_valid_material_signature_renewal
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_cold_identity_rejects_valid_material_signature_renewal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.51s
+
+
+        PASS [   1.269s] ( 23/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_rejects_identical_legacy_batch_before_admission
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_rejects_identical_legacy_batch_before_admission ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.25s
+
+
+        PASS [   2.416s] ( 24/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_preserves_frozen_rule_and_recovers_exact_no_update
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_preserves_frozen_rule_and_recovers_exact_no_update ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.40s
+
+
+        PASS [   1.466s] ( 25/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_before_claim_fences_without_no_update
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_before_claim_fences_without_no_update ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.45s
+
+
+        PASS [   1.903s] ( 26/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_after_claim_preserves_pending_without_signature
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_after_claim_preserves_pending_without_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.88s
+
+
+        PASS [   0.023s] ( 27/190) codex-hepta-agentd circuit_next_use_receipt_owner::tests::original_observer_deadline_and_saved_signature_window_never_renew
+  stdout ───
+
+    running 1 test
+    test circuit_next_use_receipt_owner::tests::original_observer_deadline_and_saved_signature_window_never_renew ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.00s
+
+
+        PASS [   0.080s] ( 28/190) codex-hepta-agentd circuit_next_use_receipt_owner::tests::original_observer_configuration_rejects_substituted_custody_before_journal_creation
+  stdout ───
+
+    running 1 test
+    test circuit_next_use_receipt_owner::tests::original_observer_configuration_rejects_substituted_custody_before_journal_creation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.06s
+
+
+        PASS [   0.028s] ( 29/190) codex-hepta-agentd circuit_next_use_receipt_owner::tests::original_observer_predecessors_require_bound_signed_roles_and_independent_custody
+  stdout ───
+
+    running 1 test
+    test circuit_next_use_receipt_owner::tests::original_observer_predecessors_require_bound_signed_roles_and_independent_custody ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.01s
+
+
+        PASS [   0.064s] ( 30/190) codex-hepta-agentd circuit_next_use_receipt_owner::tests::original_observer_pending_claim_reopens_without_signing_or_rewriting
+  stdout ───
+
+    running 1 test
+    test circuit_next_use_receipt_owner::tests::original_observer_pending_claim_reopens_without_signing_or_rewriting ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.05s
+
+
+        PASS [   0.041s] ( 31/190) codex-hepta-agentd circuit_task::source::tests::physical_current::original_source_current_fences_same_length_mutation_after_restore
+  stdout ───
+
+    running 1 test
+    test circuit_task::source::tests::physical_current::original_source_current_fences_same_length_mutation_after_restore ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.02s
+
+
+        PASS [   0.082s] ( 32/190) codex-hepta-agentd circuit_task::source::tests::physical_current::original_source_current_fences_truncation_and_extra_tail_without_repair
+  stdout ───
+
+    running 1 test
+    test circuit_task::source::tests::physical_current::original_source_current_fences_truncation_and_extra_tail_without_repair ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.06s
+
+
+        PASS [   0.078s] ( 33/190) codex-hepta-agentd circuit_task::source::tests::physical_current::original_source_input_read_is_readonly_and_requires_live_original_configuration
+  stdout ───
+
+    running 1 test
+    test circuit_task::source::tests::physical_current::original_source_input_read_is_readonly_and_requires_live_original_configuration ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.06s
+
+
+        PASS [   2.396s] ( 34/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_executes_original_experience_then_dataset_without_uploads
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::command::serving::tests::material_command_executes_original_experience_then_dataset_without_uploads ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.37s
+
+
+        PASS [   2.472s] ( 35/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_lost_ack_recovers_original_signatures_and_shared_admission
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::command::serving::tests::material_command_lost_ack_recovers_original_signatures_and_shared_admission ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.45s
+
+
+        PASS [   1.566s] ( 36/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_pending_claim_and_withdrawal_never_complete_or_rearm
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::command::serving::tests::material_command_pending_claim_and_withdrawal_never_complete_or_rearm ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.55s
+
+
+        PASS [   2.461s] ( 37/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_missing_predecessor_and_cold_missing_never_execute
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::command::serving::tests::material_command_missing_predecessor_and_cold_missing_never_execute ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.44s
+
+
+        PASS [   1.497s] ( 38/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_pins_original_signatures_and_consumes_invalid_replies
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::command::serving::tests::material_command_pins_original_signatures_and_consumes_invalid_replies ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.48s
+
+
+        PASS [   1.113s] ( 39/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::material_command_wrong_context_role_or_custody_never_claims
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::command::serving::tests::material_command_wrong_context_role_or_custody_never_claims ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.09s
+
+
+        PASS [   1.023s] ( 40/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::ordinary_stage::ordinary_stage_recovery_keeps_original_missing_uncertain_without_claim
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::command::serving::tests::ordinary_stage::ordinary_stage_recovery_keeps_original_missing_uncertain_without_claim ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.00s
+
+
+        PASS [   1.003s] ( 41/190) codex-hepta-agentd learning_iteration_evidence_client::material::command::serving::tests::ordinary_stage::ordinary_stage_without_resident_gate_never_dispatches_original_material
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::command::serving::tests::ordinary_stage::ordinary_stage_without_resident_gate_never_dispatches_original_material ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.98s
+
+
+        PASS [   1.420s] ( 42/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_peer_pins_complete_material_and_freeze_signatures
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::source::tests::material_source_peer_pins_complete_material_and_freeze_signatures ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.40s
+
+  stderr ───
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((94173, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((93795, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((92084, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+
+        PASS [   1.971s] ( 43/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_peer_consumes_wrong_purpose_or_failed_frames
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::source::tests::material_source_peer_consumes_wrong_purpose_or_failed_frames ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.95s
+
+  stderr ───
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((94087, Some(3014), None)) response_bytes=Some(2992) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((92372, Some(3014), None)) response_bytes=Some(2965) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((90276, Some(3014), None)) response_bytes=Some(2965) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((87754, Some(3014), None)) response_bytes=Some(3002) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((83177, Some(3014), None)) response_bytes=Some(2965) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((82728, Some(3014), None)) response_bytes=Some(2965) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((83672, Some(3014), None)) response_bytes=Some(2965) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((96906, Some(3014), None)) response_bytes=Some(3052) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+
+        PASS [   2.013s] ( 44/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_peer_rejects_raw_batch_provenance_and_frozen_optimizer_rebinding
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::source::tests::material_source_peer_rejects_raw_batch_provenance_and_frozen_optimizer_rebinding ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.99s
+
+  stderr ───
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((93135, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((92070, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((92814, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((101586, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((94534, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((91414, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((94583, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=None response_bytes=None exchange=Ok(false)
+
+        PASS [   1.582s] ( 45/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_request_payload_rebinding_and_public_custody_bypass
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_request_payload_rebinding_and_public_custody_bypass ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.56s
+
+
+        PASS [   5.265s] ( 46/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_peer_reconstructs_exact_sealed_material_and_cold_rereads
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::source::tests::material_source_peer_reconstructs_exact_sealed_material_and_cold_rereads ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 5.25s
+
+  stderr ───
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((94536, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=Some((92403, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=3 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((94734, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=Some((88854, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=3 owner=Some((88169, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=4 owner=Some((88615, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=5 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((83201, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=Some((83123, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=3 owner=None response_bytes=None exchange=Ok(false)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((101009, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=2 owner=Some((93423, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=3 owner=Some((94516, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=4 owner=Some((83243, Some(3014), None)) response_bytes=Some(3014) exchange=Ok(true)
+    HEPTA_MATERIAL_SOURCE_FRAME request=5 owner=None response_bytes=None exchange=Ok(false)
+
+        PASS [   2.872s] ( 47/190) codex-hepta-agentd learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_withdrawn_missing_or_busy_originals
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_withdrawn_missing_or_busy_originals ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.85s
+
+  stderr ───
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((4843, None, Some("original Material owner: original material readback owner: original source material: original TaskSource: Circuit task owner is unavailable or fenced"))) response_bytes=None exchange=Err(Unavailable)
+    HEPTA_MATERIAL_SOURCE_FRAME request=1 owner=Some((4050, None, Some("original Material owner: original material readback owner: original source material: original TaskSource: Circuit task owner is unavailable or fenced"))) response_bytes=None exchange=Err(Unavailable)
+
+        PASS [   1.724s] ( 48/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_failed_frame_permanently_consumes_channel
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::tests::material_readback_service_failed_frame_permanently_consumes_channel ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.70s
+
+
+        PASS [   1.585s] ( 49/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_never_finishes_missing_dataset
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::tests::material_readback_service_never_finishes_missing_dataset ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.56s
+
+
+        PASS [   1.925s] ( 50/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_refuses_request_rebinding_and_replay_without_writes
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::tests::material_readback_service_refuses_request_rebinding_and_replay_without_writes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.90s
+
+
+        PASS [   1.631s] ( 51/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_refuses_withdrawn_source_and_busy_ledger
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::tests::material_readback_service_refuses_withdrawn_source_and_busy_ledger ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.61s
+
+
+        PASS [   1.583s] ( 52/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_rejects_same_uid_peer_and_widened_transport
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::tests::material_readback_service_rejects_same_uid_peer_and_widened_transport ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.56s
+
+
+        PASS [   2.441s] ( 53/190) codex-hepta-agentd learning_iteration_evidence_client::material::tests::material_readback_service_returns_original_signatures_and_cold_rereads
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::material::tests::material_readback_service_returns_original_signatures_and_cold_rereads ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.42s
+
+
+        PASS [   5.129s] ( 54/190) codex-hepta-agentd learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 5.11s
+
+
+        PASS [   0.990s] ( 56/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.97s
+
+
+        PASS [  20.421s] ( 58/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_reconstructs_actual_pages_and_cold_original_signature
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_reconstructs_actual_pages_and_cold_original_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 20.40s
+
+
+        PASS [  29.861s] ( 59/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 29.84s
+
+
+        PASS [  15.449s] ( 60/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 15.43s
+
+
+        PASS [  18.522s] ( 61/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_rejects_experience_and_valid_other_freeze_context
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_rejects_experience_and_valid_other_freeze_context ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 18.50s
+
+
+        PASS [   1.726s] ( 62/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_attenuation_and_prebound_transport_preserve_original_custody
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_attenuation_and_prebound_transport_preserve_original_custody ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.71s
+
+
+        PASS [  14.948s] ( 63/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 14.93s
+
+
+        PASS [   6.039s] ( 65/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 6.02s
+
+
+        PASS [  15.201s] ( 66/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 15.18s
+
+
+        PASS [  11.707s] ( 67/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 11.69s
+
+  stderr ───
+    HEPTA_DEFERRED_TRAINING_EXECUTE elapsed_us=7785378 result=Ok(())
+    HEPTA_DEFERRED_TRAINING_READONLY client_us=924230 total_us=924468 client=Ok(()) server=Ok(1)
+    HEPTA_DEFERRED_TRAINING_MATERIAL_COUNTS dataset=1 source=24 experience=24 dataset_evidence=24
+
+        PASS [   9.198s] ( 68/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 9.18s
+
+
+        PASS [  13.705s] ( 69/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 13.69s
+
+
+        PASS [   1.404s] ( 70/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_unready_and_wrong_purpose_never_initialize
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_unready_and_wrong_purpose_never_initialize ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 1.38s
+
+
+        PASS [   0.067s] ( 71/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_creation_and_recovery_never_repair_partial_anchors
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_creation_and_recovery_never_repair_partial_anchors ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.05s
+
+
+        PASS [   0.078s] ( 72/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.06s
+
+
+        PASS [   0.101s] ( 73/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.08s
+
+
+        PASS [   0.119s] ( 74/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.10s
+
+
+        PASS [   0.067s] ( 75/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_preserves_missing_pending_and_completed_after_recovery
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_preserves_missing_pending_and_completed_after_recovery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.05s
+
+
+        PASS [   0.063s] ( 76/190) codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.05s
+
+
+        PASS [   0.020s] ( 77/190) codex-hepta-agentd neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_commits_full_nonempty_membership_before_any_result
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_commits_full_nonempty_membership_before_any_result ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.00s
+
+
+        PASS [   0.019s] ( 78/190) codex-hepta-agentd neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 0.00s
+
+
+        PASS [  16.655s] ( 79/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 16.63s
+
+  stderr ───
+    HEPTA_ORIGINAL_TRAINING_READBACK_FRESH_MATERIAL_COUNTS [1, 22, 22, 22]
+    HEPTA_ORIGINAL_TRAINING_READBACK_COLD_MATERIAL_COUNTS [1, 14, 14, 14]
+
+        PASS [   9.346s] ( 80/190) codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore
+  stdout ───
+
+    running 1 test
+    test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 9.33s
+
+
+        PASS [  10.803s] ( 81/190) codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack
+  stdout ───
+
+    running 1 test
+    test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 10.78s
+
+
+        PASS [  10.457s] ( 82/190) codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence
+  stdout ───
+
+    running 1 test
+    test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 10.44s
+
+
+        PASS [  20.655s] ( 83/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 20.62s
+
+  stderr ───
+    HEPTA_DEEP_S_C_MATERIAL_COUNTS dataset=1 source=26 experience=26 dataset_evidence=26
+
+        PASS [  10.734s] (101/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_fences_changed_execution_bytes
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_fences_changed_execution_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 10.71s
+
+
+        PASS [  13.382s] (102/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_attests_and_recovers_exact_adoption
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_attests_and_recovers_exact_adoption ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 13.35s
+
+
+        PASS [  10.487s] (103/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_pending_claim_survives_recovery
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_pending_claim_survives_recovery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 10.46s
+
+
+        PASS [  11.621s] (104/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_valid_predecessor_resigning
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_valid_predecessor_resigning ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 11.59s
+
+
+        PASS [  11.071s] (105/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_training_source
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_training_source ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 11.04s
+
+
+        PASS [  11.777s] (106/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_version_publication
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_version_publication ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 11.75s
+
+
+        PASS [  13.013s] (107/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_current_corruption_stays_fenced_after_restore
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_current_corruption_stays_fenced_after_restore ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 12.99s
+
+
+        PASS [  13.582s] (108/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_lost_completion_ack_preserves_uncertainty_and_exact_recovery
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_lost_completion_ack_preserves_uncertainty_and_exact_recovery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 13.55s
+
+
+        PASS [  12.938s] (109/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_missing_and_pending_never_publish_during_recovery
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_missing_and_pending_never_publish_during_recovery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 12.91s
+
+
+        PASS [  13.036s] (110/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 13.01s
+
+
+        PASS [  12.997s] (111/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_rejects_context_and_valid_signature_renewal
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_rejects_context_and_valid_signature_renewal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 12.97s
+
+
+        PASS [   7.743s] (112/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_lost_ack_recovers_original_files_without_another_grant
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_lost_ack_recovers_original_files_without_another_grant ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 7.72s
+
+
+        PASS [   5.721s] (113/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_never_converts_candidate_training_into_no_update
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_never_converts_candidate_training_into_no_update ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 5.70s
+
+
+        PASS [  25.710s] (114/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_requires_physical_execution_and_holdout_before_claim
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_requires_physical_execution_and_holdout_before_claim ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 25.68s
+
+
+        PASS [   6.703s] (115/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_actual_artifact_withdrawal_before_final_use
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_actual_artifact_withdrawal_before_final_use ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 6.68s
+
+
+        PASS [   5.790s] (116/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_another_final_use_purpose_and_only_reads_pending
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_another_final_use_purpose_and_only_reads_pending ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 5.77s
+
+
+        PASS [   6.114s] (117/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_changed_full_training_signature_before_prepare
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_changed_full_training_signature_before_prepare ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 6.09s
+
+
+        PASS [   5.778s] (118/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_rejects_same_content_even_with_a_new_run_and_task_digest
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_rejects_same_content_even_with_a_new_run_and_task_digest ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 5.75s
+
+
+        PASS [   8.784s] (119/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_uses_original_selection_and_real_distinct_task_c
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_uses_original_selection_and_real_distinct_task_c ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 8.76s
+
+
+        PASS [  13.256s] (120/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 13.23s
+
+
+        PASS [   8.674s] (121/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 8.65s
+
+
+        PASS [   9.428s] (122/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 9.40s
+
+
+        PASS [  13.718s] (123/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 13.69s
+
+
+        PASS [   9.518s] (126/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 9.49s
+
+
+        PASS [   8.548s] (127/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_requires_original_selection_and_consumes_wrong_purpose
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_requires_original_selection_and_consumes_wrong_purpose ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 8.52s
+
+
+        PASS [   6.893s] (128/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 6.87s
+
+
+        PASS [  10.422s] (129/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 10.40s
+
+
+        PASS [   7.542s] (130/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 7.52s
+
+
+        PASS [   8.158s] (131/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 8.13s
+
+
+        PASS [   7.739s] (132/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 7.71s
+
+
+        PASS [   6.249s] (133/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 6.22s
+
+
+        PASS [   7.146s] (135/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 7.12s
+
+
+        PASS [  10.653s] (136/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 10.62s
+
+
+        PASS [   6.989s] (137/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 6.96s
+
+
+        PASS [   8.229s] (138/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 8.20s
+
+
+        PASS [   8.672s] (139/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 8.64s
+
+
+        PASS [   7.883s] (140/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 7.86s
+
+
+        PASS [  10.101s] (141/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 10.07s
+
+
+        PASS [   8.590s] (142/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 8.56s
+
+
+        PASS [  14.826s] (143/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_preserves_pending_and_recovers_completed_lost_ack
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_preserves_pending_and_recovers_completed_lost_ack ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 14.80s
+
+
+        PASS [   6.951s] (144/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_valid_training_renewal_live_and_cold
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_valid_training_renewal_live_and_cold ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 6.92s
+
+
+        PASS [   7.374s] (145/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_withdrawn_publication_before_claim
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_withdrawn_publication_before_claim ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 7.35s
+
+
+        PASS [  15.033s] (146/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 15.01s
+
+
+        PASS [   8.215s] (147/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_substituted_custody_before_store_creation
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_substituted_custody_before_store_creation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 8.19s
+
+
+        PASS [   9.080s] (148/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 9.05s
+
+
+        PASS [   0.221s] (149/190) codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_cold_recovery_and_non_target_calls_preserve_original_bytes
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::physical_current::holdout_current_cold_recovery_and_non_target_calls_preserve_original_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.20s
+
+
+        PASS [   0.030s] (150/190) codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_preserves_cursor_lock_and_fences_read_errors
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::physical_current::holdout_current_preserves_cursor_lock_and_fences_read_errors ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.02s
+
+
+        PASS [   0.047s] (151/190) codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_rehashed_history_cannot_preserve_cached_frontier
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::physical_current::holdout_current_rehashed_history_cannot_preserve_cached_frontier ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.04s
+
+
+        PASS [   0.075s] (152/190) codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_same_length_mutation_fences_after_restore
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::physical_current::holdout_current_same_length_mutation_fences_after_restore ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.07s
+
+
+        PASS [   0.449s] (153/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.44s
+
+
+        PASS [   0.085s] (154/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::holdout_current::holdout_current_lost_cas_ack_preserves_pending_without_provider_replay
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::holdout_current::holdout_current_lost_cas_ack_preserves_pending_without_provider_replay ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.08s
+
+
+        PASS [   0.050s] (155/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::equal_execution_with_validly_renewed_signature_has_different_original_evidence
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::original_evidence::equal_execution_with_validly_renewed_signature_has_different_original_evidence ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.04s
+
+
+        PASS [   0.024s] (156/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_missing_and_pending_never_claim
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::original_evidence::original_execution_evidence_missing_and_pending_never_claim ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.02s
+
+
+        PASS [   0.042s] (157/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_rechecks_expiry_after_owner_reads
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::original_evidence::original_execution_evidence_rechecks_expiry_after_owner_reads ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.03s
+
+
+        PASS [   0.049s] (158/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_survives_recovery_without_work_or_renewal
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::original_evidence::original_execution_evidence_survives_recovery_without_work_or_renewal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.04s
+
+
+        PASS [   0.301s] (159/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineligible
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::paired_tests::paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineligible ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.29s
+
+
+        PASS [   0.030s] (160/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_changed_execution_body_cannot_replace_original_signature
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::paired_tests::paired_changed_execution_body_cannot_replace_original_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.02s
+
+
+        PASS [   0.083s] (161/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_contract_and_temporal_protocol_are_fixed_before_consumption
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::paired_tests::paired_contract_and_temporal_protocol_are_fixed_before_consumption ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.07s
+
+
+        PASS [   0.034s] (162/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_default_provider_refuses_after_one_original_consumption
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::paired_tests::paired_default_provider_refuses_after_one_original_consumption ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.03s
+
+
+        PASS [   1.017s] (163/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_equal_outcomes_do_not_pass_original_primary_superiority
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::paired_tests::paired_equal_outcomes_do_not_pass_original_primary_superiority ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 1.01s
+
+
+        PASS [   0.129s] (164/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_identity_source_state_and_probability_changes_stay_pending
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::paired_tests::paired_identity_source_state_and_probability_changes_stay_pending ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.12s
+
+
+        PASS [   0.056s] (165/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_mode_cannot_decode_or_reuse_a_shared_behavior_execution
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::paired_tests::paired_mode_cannot_decode_or_reuse_a_shared_behavior_execution ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.05s
+
+
+        PASS [   0.021s] (166/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_one_actual_principal_is_not_split_into_independent_clusters
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::paired_tests::paired_one_actual_principal_is_not_split_into_independent_clusters ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.01s
+
+
+        PASS [   1.267s] (167/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_original_estimators_and_qualification_keep_the_frozen_thresholds
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::paired_tests::paired_original_estimators_and_qualification_keep_the_frozen_thresholds ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 1.26s
+
+
+        PASS [   0.034s] (168/190) codex-hepta-intelligence-eval product_runner::tests::execution_tests::paired_tests::paired_signed_completion_lost_ack_cold_reads_without_release_or_resign
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::paired_tests::paired_signed_completion_lost_ack_cold_reads_without_release_or_resign ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 0.02s
+
+
+        PASS [   0.069s] (169/190) codex-hepta-learning-artifacts owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot
+  stdout ───
+
+    running 1 test
+    test owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.05s
+
+
+        PASS [   0.199s] (170/190) codex-hepta-learning-artifacts owner_host::tests::owner_host_resumes_legacy_payload_under_renewed_writer_lease
+  stdout ───
+
+    running 1 test
+    test owner_host::tests::owner_host_resumes_legacy_payload_under_renewed_writer_lease ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.19s
+
+
+        PASS [   0.138s] (171/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_finish_requires_original_signature_withdrawal_and_fresh_time
+  stdout ───
+
+    running 1 test
+    test owner_service::preparation::tests::original_registry_finish_requires_original_signature_withdrawal_and_fresh_time ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.13s
+
+
+        PASS [   0.090s] (172/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_lost_return_and_cold_readback_cannot_recreate_continuation
+  stdout ───
+
+    running 1 test
+    test owner_service::preparation::tests::original_registry_lost_return_and_cold_readback_cannot_recreate_continuation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.08s
+
+
+        PASS [   0.024s] (173/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_partial_prepare_is_pending_and_readback_never_completes_it
+  stdout ───
+
+    running 1 test
+    test owner_service::preparation::tests::original_registry_partial_prepare_is_pending_and_readback_never_completes_it ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.02s
+
+
+        PASS [   0.140s] (174/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_physical_corruption_fences_even_after_original_bytes_return
+  stdout ───
+
+    running 1 test
+    test owner_service::preparation::tests::original_registry_physical_corruption_fences_even_after_original_bytes_return ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.13s
+
+
+        PASS [   0.087s] (175/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_preparation_stops_before_head_and_finishes_same_writer_once
+  stdout ───
+
+    running 1 test
+    test owner_service::preparation::tests::original_registry_preparation_stops_before_head_and_finishes_same_writer_once ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.08s
+
+
+        PASS [   0.247s] (176/190) codex-hepta-learning-artifacts owner_service::preparation::tests::original_registry_wrong_context_is_refused_before_consuming_the_writer
+  stdout ───
+
+    running 1 test
+    test owner_service::preparation::tests::original_registry_wrong_context_is_refused_before_consuming_the_writer ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.24s
+
+
+        PASS [  13.715s] (177/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 13.69s
+
+
+        PASS [   0.099s] (178/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_cold_reopens_exact_pending_without_completion
+  stdout ───
+
+    running 1 test
+    test owner_service::publication_readback_tests::original_publication_readback_cold_reopens_exact_pending_without_completion ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.09s
+
+
+        PASS [   0.206s] (179/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged
+  stdout ───
+
+    running 1 test
+    test owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.20s
+
+
+        PASS [   0.081s] (180/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_observes_lost_reply_without_republishing
+  stdout ───
+
+    running 1 test
+    test owner_service::publication_readback_tests::original_publication_readback_observes_lost_reply_without_republishing ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.07s
+
+
+        PASS [   0.524s] (181/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_bounds_the_actual_transaction_scan
+  stdout ───
+
+    running 1 test
+    test owner_service::publication_readback_tests::original_publication_readback_bounds_the_actual_transaction_scan ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.51s
+
+
+        PASS [   0.100s] (182/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_refuses_actual_checkpoint_or_current_damage
+  stdout ───
+
+    running 1 test
+    test owner_service::publication_readback_tests::original_publication_readback_refuses_actual_checkpoint_or_current_damage ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.09s
+
+
+        PASS [   0.095s] (183/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_refuses_missing_or_changed_expected_operation
+  stdout ───
+
+    running 1 test
+    test owner_service::publication_readback_tests::original_publication_readback_refuses_missing_or_changed_expected_operation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.09s
+
+
+        PASS [   0.193s] (184/190) codex-hepta-learning-artifacts owner_service::publication_readback_tests::original_publication_readback_uses_live_clock_not_an_old_request_timestamp
+  stdout ───
+
+    running 1 test
+    test owner_service::publication_readback_tests::original_publication_readback_uses_live_clock_not_an_old_request_timestamp ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.18s
+
+
+        PASS [   0.199s] (185/190) codex-hepta-learning-artifacts owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head
+  stdout ───
+
+    running 1 test
+    test owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.19s
+
+
+        PASS [   0.099s] (186/190) codex-hepta-neuron cell_generation_journal::tests::physical_current::physical_current_fences_witness_change_between_original_descriptor_reads
+  stdout ───
+
+    running 1 test
+    test cell_generation_journal::tests::physical_current::physical_current_fences_witness_change_between_original_descriptor_reads ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 222 filtered out; finished in 0.08s
+
+
+        PASS [   0.130s] (187/190) codex-hepta-neuron cell_generation_journal::tests::physical_current::physical_current_preserves_complete_bytes_cursor_state_and_append_owner
+  stdout ───
+
+    running 1 test
+    test cell_generation_journal::tests::physical_current::physical_current_preserves_complete_bytes_cursor_state_and_append_owner ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 222 filtered out; finished in 0.12s
+
+
+        PASS [   0.053s] (188/190) codex-hepta-neuron cell_generation_journal::tests::physical_current::physical_current_rejects_header_change_and_preserves_cursor_after_restore
+  stdout ───
+
+    running 1 test
+    test cell_generation_journal::tests::physical_current::physical_current_rejects_header_change_and_preserves_cursor_after_restore ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 222 filtered out; finished in 0.04s
+
+
+        PASS [   0.082s] (189/190) codex-hepta-neuron cell_generation_journal::tests::physical_current::physical_current_rejects_valid_same_length_rehashed_history_and_cannot_rearm
+  stdout ───
+
+    running 1 test
+    test cell_generation_journal::tests::physical_current::physical_current_rejects_valid_same_length_rehashed_history_and_cannot_rearm ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 222 filtered out; finished in 0.07s
+
+
+        PASS [   0.113s] (190/190) codex-hepta-neuron cell_generation_journal::tests::physical_current::physical_current_rejects_short_tail_extra_tail_and_truncation_without_repair
+  stdout ───
+
+    running 1 test
+    test cell_generation_journal::tests::physical_current::physical_current_rejects_short_tail_extra_tail_and_truncation_without_repair ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 222 filtered out; finished in 0.10s
+
+
+        FAIL [   2.292s] ( 20/190) codex-hepta-agentd cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_candidate_and_model_keep_two_reads_per_lane
+  stdout ───
+
+    running 1 test
+    test cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_candidate_and_model_keep_two_reads_per_lane ... FAILED
+
+    failures:
+
+    failures:
+        cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_candidate_and_model_keep_two_reads_per_lane
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 2.27s
+
+  stderr ───
+
+    thread 'cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_candidate_and_model_keep_two_reads_per_lane' (1092887) panicked at hepta-agentd/src/cell_q24_training_source_operation_tests.rs:47:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <4108
+    >32780
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        FAIL [  10.922s] ( 55/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_cancelled_operation_cannot_reuse_original_prefix
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_cancelled_operation_cannot_reuse_original_prefix ... FAILED
+
+    failures:
+
+    failures:
+        learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_cancelled_operation_cannot_reuse_original_prefix
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 10.90s
+
+  stderr ───
+
+    thread 'learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_cancelled_operation_cannot_reuse_original_prefix' (1094032) panicked at hepta-agentd/src/cell_q24_candidate_stage_tests.rs:177:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <1
+    >3
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        FAIL [  13.745s] ( 57/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners
+  stdout ───
+
+    running 1 test
+    test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners ... FAILED
+
+    failures:
+
+    failures:
+        learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 13.72s
+
+  stderr ───
+
+    thread 'learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners' (1094149) panicked at hepta-agentd/src/cell_q24_candidate_stage_tests.rs:90:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <4
+    >3
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+     TIMEOUT [  60.008s] ( 64/190) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel
+  stdout ───
+
+    running 1 test
+
+    (test timed out)
+
+        FAIL [  11.132s] ( 84/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 11.11s
+
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows' (1100668) panicked at hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:37:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     Digest32(
+    <    "66f450623a449dedaee744949a6f47ca0e78565399e1647dff09085efa7341e5",
+    >    "7635f04046a76588024594942858c390cfd9bdfa8adc7e6fdf36014ee9df456d",
+     )
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        FAIL [  45.019s] ( 85/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 44.99s
+
+  stderr ───
+    HEPTA_DEEP_S_C_MATERIAL_COUNTS dataset=1 source=64 experience=64 dataset_evidence=64
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources' (1100019) panicked at hepta-agentd/src/circuit_deep_training_readback_tests.rs:238:5:
+    assertion failed: counts[1] >= 92
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        FAIL [  11.371s] ( 86/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 11.34s
+
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support' (1100919) panicked at hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:37:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     Digest32(
+    <    "389ada27e683b15cf09aa116027d55abf76a73742e4c1b09e5acfe1c4410df57",
+    >    "eea536c1e7abb98ce9df925377bd608723b1d09d821840d1463342757519c072",
+     )
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+     SIGABRT [   1.262s] ( 87/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute' (1101201) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.210s] ( 88/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest' (1101258) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.221s] ( 89/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression' (1101277) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.209s] ( 90/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect' (1101306) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+        FAIL [  10.550s] ( 91/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 10.52s
+
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption' (1101101) panicked at hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:37:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     Digest32(
+    <    "20b1d57405413f690bcab20d41715f820577a6c072510edb65f9c82f0f6fa418",
+    >    "e60435f6e3e8049a006f1d05097d43cd0bff4c6c17005be7b692caaf009b5923",
+     )
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+     SIGABRT [   1.248s] ( 92/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature' (1101352) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.218s] ( 93/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence' (1101395) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.060s] ( 94/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry' (1101406) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.061s] ( 95/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_reads_two_trainers_per_call_and_whole_export
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_reads_two_trainers_per_call_and_whole_export' (1101434) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.062s] ( 96/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_rejects_equal_evidence_on_another_connection
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_rejects_equal_evidence_on_another_connection' (1101453) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.060s] ( 97/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel' (1101477) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.059s] ( 98/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures' (1101520) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.072s] ( 99/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures' (1101559) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.073s] (100/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback' (1101578) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+        FAIL [  10.343s] (124/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 10.32s
+
+  stderr ───
+    Error: OwnerUnavailable("original learning evidence owner")
+
+        FAIL [  16.930s] (125/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 16.90s
+
+  stderr ───
+    Error: original C Observer transport: InvalidRequest
+
+    Caused by:
+        InvalidRequest
+
+        FAIL [  16.881s] (134/190) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1153 filtered out; finished in 16.86s
+
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody' (1106475) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:414:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     (
+         [
+             72,
+             69,
+             80,
+             84,
+             69,
+             88,
+             48,
+             49,
+             148,
+             75,
+             233,
+             2,
+             238,
+             78,
+             153,
+             48,
+             69,
+             163,
+             187,
+             233,
+             123,
+             225,
+             167,
+             171,
+             123,
+             151,
+             244,
+             108,
+             13,
+             168,
+             113,
+             224,
+             116,
+             252,
+             194,
+             235,
+             252,
+             57,
+             85,
+             96,
+             190,
+             41,
+             75,
+             163,
+             104,
+             229,
+             112,
+             206,
+             222,
+             102,
+             122,
+             28,
+             85,
+             96,
+             230,
+             35,
+             149,
+             13,
+             166,
+             231,
+             212,
+             26,
+             80,
+             98,
+             37,
+             76,
+             203,
+             9,
+             121,
+             156,
+             37,
+             40,
+    <        0,
+    <        0,
+    <        0,
+    <        116,
+    <        0,
+    <        0,
+    <        81,
+    <        99,
+    <        105,
+    <        114,
+    <        99,
+    <        117,
+    <        105,
+    <        116,
+    <        46,
+    <        108,
+    <        101,
+    <        97,
+    <        114,
+    <        110,
+    <        105,
+    <        110,
+    <        103,
+    <        46,
+    <        102,
+    <        57,
+    <        98,
+    <        52,
+    <        54,
+    <        53,
+    <        50,
+    <        98,
+    <        100,
+    <        49,
+    <        57,
+    <        97,
+    <        49,
+    <        97,
+    <        55,
+    <        55,
+    <        51,
+    <        97,
+    <        49,
+    <        99,
+    <        98,
+    <        97,
+    <        55,
+    <        51,
+    <        56,
+    <        101,
+    <        56,
+    <        97,
+    <        99,
+    <        57,
+    <        50,
+    <        50,
+    <        55,
+    <        98,
+    <        97,
+    <        54,
+    <        56,
+    <        55,
+    <        51,
+    <        55,
+    <        49,
+    <        55,
+    <        98,
+    <        102,
+    <        53,
+    <        51,
+    <        52,
+    <        97,
+    <        57,
+    <        56,
+    <        56,
+    <        49,
+    <        49,
+    <        51,
+    <        48,
+    <        50,
+    <        55,
+    <        102,
+    <        99,
+    <        53,
+    <        55,
+    <        54,
+    <        54,
+    <        100,
+    <        148,
+    <        75,
+    <        233,
+    <        2,
+    <        238,
+    <        78,
+    <        153,
+    <        48,
+    <        69,
+    <        163,
+    <        187,
+    <        233,
+    <        123,
+    <        225,
+    <        167,
+    <        171,
+    <        123,
+    <        151,
+    <        244,
+    <        108,
+    <        13,
+    <        168,
+    <        113,
+    <        224,
+    <        116,
+    <        252,
+    <        194,
+    <        235,
+    <        252,
+    <        57,
+    <        85,
+    <        96,
+    <        117,
+    <        218,
+    <        159,
+    <        88,
+    <        77,
+    <        41,
+    <        114,
+    <        37,
+    <        141,
+    <        71,
+    <        56,
+    <        224,
+    <        60,
+    <        175,
+    <        186,
+    <        48,
+    <        250,
+    <        152,
+    <        122,
+    <        230,
+    <        205,
+    <        120,
+    <        120,
+    <        131,
+    <        31,
+    <        154,
+    <        228,
+    <        159,
+    <        154,
+    <        3,
+    <        39,
+    <        176,
+         ],
+         [
+             72,
+             80,
+             84,
+             78,
+             87,
+             65,
+             48,
+             49,
+             171,
+             172,
+             244,
+             189,
+             18,
+             249,
+             242,
+             26,
+             117,
+             186,
+             115,
+             155,
+             35,
+             8,
+             38,
+             208,
+             166,
+             11,
+             207,
+             247,
+             198,
+             195,
+             74,
+             231,
+             180,
+             153,
+             50,
+             255,
+             87,
+             167,
+             129,
+             232,
+             226,
+             148,
+             161,
+             195,
+             27,
+             41,
+             144,
+             170,
+             218,
+             224,
+             189,
+             220,
+             164,
+             222,
+             107,
+             92,
+             101,
+             124,
+             21,
+             141,
+             120,
+             114,
+             138,
+             32,
+             62,
+             8,
+             198,
+             71,
+             119,
+             125,
+             180,
+             208,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             1,
+             43,
+             247,
+             26,
+             188,
+             43,
+             2,
+             42,
+             95,
+             172,
+             157,
+             163,
+             178,
+             249,
+             23,
+             21,
+             140,
+             234,
+             174,
+             0,
+             34,
+             21,
+             21,
+             225,
+             137,
+             20,
+             8,
+             244,
+             128,
+             227,
+             211,
+             12,
+             192,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             1,
+             63,
+             240,
+             240,
+             222,
+             36,
+             68,
+             15,
+             83,
+             112,
+             21,
+             32,
+             251,
+             51,
+             246,
+             144,
+             182,
+             42,
+             125,
+             6,
+             208,
+             179,
+             139,
+             230,
+             119,
+             174,
+             176,
+             241,
+             109,
+             72,
+             25,
+             142,
+             146,
+             15,
+             230,
+             154,
+             208,
+             97,
+             131,
+             23,
+             179,
+             235,
+             169,
+             178,
+             92,
+             86,
+             3,
+             207,
+             160,
+             188,
+             147,
+             147,
+             64,
+             81,
+             41,
+             25,
+             126,
+             112,
+             116,
+             18,
+             23,
+             128,
+             86,
+             128,
+             202,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        1,
+    <        63,
+    <        240,
+    <        240,
+    <        222,
+    <        36,
+    <        68,
+    <        15,
+    <        83,
+    <        112,
+    <        21,
+    <        32,
+    <        251,
+    <        51,
+    <        246,
+    <        144,
+    <        182,
+    <        42,
+    <        125,
+    <        6,
+    <        208,
+    <        179,
+    <        139,
+    <        230,
+    <        119,
+    <        174,
+    <        176,
+    <        241,
+    <        109,
+    <        72,
+    <        25,
+    <        142,
+    <        146,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        2,
+    <        117,
+    <        218,
+    <        159,
+    <        88,
+    <        77,
+    <        41,
+    <        114,
+    <        37,
+    <        141,
+    <        71,
+    <        56,
+    <        224,
+    <        60,
+    <        175,
+    <        186,
+    <        48,
+    <        250,
+    <        152,
+    <        122,
+    <        230,
+    <        205,
+    <        120,
+    <        120,
+    <        131,
+    <        31,
+    <        154,
+    <        228,
+    <        159,
+    <        154,
+    <        3,
+    <        39,
+    <        176,
+    <        37,
+    <        157,
+    <        60,
+    <        75,
+    <        110,
+    <        93,
+    <        10,
+    <        176,
+    <        138,
+    <        162,
+    <        251,
+    <        233,
+    <        25,
+    <        3,
+    <        120,
+    <        157,
+    <        34,
+    <        58,
+    <        127,
+    <        229,
+    <        222,
+    <        114,
+    <        203,
+    <        12,
+    <        79,
+    <        34,
+    <        111,
+    <        174,
+    <        209,
+    <        115,
+    <        114,
+    <        81,
+         ],
+     )
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

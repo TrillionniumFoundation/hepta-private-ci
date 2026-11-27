@@ -1,0 +1,105 @@
+{
+  "artifact_commit_unchanged": "f515d4fac88171d93be0cb648dca434a2b926856",
+  "commands": [
+    {
+      "args": [
+        "git",
+        "init"
+      ],
+      "cwd": "/workspace/scratch/c06d659c1e72/c2-publication",
+      "exit_code": 0,
+      "stderr": "hint: Using 'master' as the name for the initial branch. This default branch name\nhint: will change to \"main\" in Git 3.0. To configure the initial branch name\nhint: to use in all of your new repositories, which will suppress this warning,\nhint: call:\nhint:\nhint: \tgit config --global init.defaultBranch <name>\nhint:\nhint: Names commonly chosen instead of 'master' are 'main', 'trunk' and\nhint: 'development'. The just-created branch can be renamed via this command:\nhint:\nhint: \tgit branch -m <name>\nhint:\nhint: Disable this message with \"git config set advice.defaultBranchName false\"\n",
+      "stdout": "Initialized empty Git repository in /workspace/scratch/c06d659c1e72/c2-publication/.git/\n"
+    },
+    {
+      "args": [
+        "git",
+        "add",
+        "AGENTS.md",
+        "justfile",
+        "scripts/format.py",
+        "scripts/just-shell.py"
+      ],
+      "cwd": "/workspace/scratch/c06d659c1e72/c2-publication",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "args": [
+        "git",
+        "-c",
+        "user.name=C2 formatter receipt",
+        "-c",
+        "user.email=c2-formatter@example.invalid",
+        "commit",
+        "-m",
+        "local formatter support baseline"
+      ],
+      "cwd": "/workspace/scratch/c06d659c1e72/c2-publication",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "[master (root-commit) a40285e] local formatter support baseline\n 4 files changed, 1098 insertions(+)\n create mode 100644 AGENTS.md\n create mode 100644 justfile\n create mode 100644 scripts/format.py\n create mode 100644 scripts/just-shell.py\n"
+    },
+    {
+      "args": [
+        "/workspace/scratch/c06d659c1e72/hcsn-format-tools/bin/just",
+        "--version"
+      ],
+      "cwd": "/workspace/scratch/c06d659c1e72/c2-publication",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "just 1.43.1\n"
+    },
+    {
+      "args": [
+        "/workspace/scratch/c06d659c1e72/hcsn-format-tools/bin/just",
+        "--justfile",
+        "../justfile",
+        "fmt"
+      ],
+      "cwd": "/workspace/scratch/c06d659c1e72/c2-publication/codex-rs",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "No changed files need formatting. Use --all for a full repository check.\n"
+    }
+  ],
+  "elapsed_seconds": 0.12704730033874512,
+  "formatter_exit_code": 0,
+  "formatter_version": "just 1.43.1",
+  "new_model_executions": 0,
+  "new_optimizer_calls": 0,
+  "new_publication_jobs": 0,
+  "new_tests_executed": 0,
+  "previous_evidence_commit": "382c652ede0145a7f35b20128404a01b3860f80d",
+  "prior_exit_127_retained": true,
+  "schema": "hcsn-diagnostic-publication-format-completion-v1",
+  "scope": "repository formatter selects owning tools for changed files; qualification Python files have no formatter owner in scripts/format.py",
+  "source_after": {
+    "publish_diagnostic_originals.py": {
+      "bytes": 10032,
+      "git_blob": "07724d6dc425673f5f001a28b6533a08c526dee4",
+      "sha256": "c55e03f4b5a7a68ae2543c430122731670c2a57f5da9313c564824725cfd22ce"
+    },
+    "test_publish_diagnostic_originals.py": {
+      "bytes": 6155,
+      "git_blob": "1d646b42eb984a0f9e2b4051f40f938dd4b00451",
+      "sha256": "c391b32b61d5390687ecb0227039549892d7e2cf5bbd3e889f33b3d96888f2c6"
+    }
+  },
+  "source_before": {
+    "publish_diagnostic_originals.py": {
+      "bytes": 10032,
+      "git_blob": "07724d6dc425673f5f001a28b6533a08c526dee4",
+      "sha256": "c55e03f4b5a7a68ae2543c430122731670c2a57f5da9313c564824725cfd22ce"
+    },
+    "test_publish_diagnostic_originals.py": {
+      "bytes": 6155,
+      "git_blob": "1d646b42eb984a0f9e2b4051f40f938dd4b00451",
+      "sha256": "c391b32b61d5390687ecb0227039549892d7e2cf5bbd3e889f33b3d96888f2c6"
+    }
+  },
+  "source_bytes_unchanged": true,
+  "source_commit": "bb4228dff283976d81342b079bdbb5ddcc9c629b",
+  "workspace_mode": "isolated sparse Git file set with exact root formatter support baseline and exact publication files at repository paths"
+}

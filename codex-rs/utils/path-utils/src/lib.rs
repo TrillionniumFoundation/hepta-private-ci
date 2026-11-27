@@ -1,7 +1,56 @@
 //! Path normalization, symlink resolution, and atomic writes shared across Codex crates.
 
+mod durable_publish;
+pub use durable_publish::publish_synced_file;
+
 pub(crate) mod env;
 pub use env::is_wsl;
+
+#[cfg(windows)]
+mod file_identity_windows;
+#[cfg(windows)]
+pub use file_identity_windows::same_file_handles;
+
+#[cfg(windows)]
+mod private_file_identity_windows;
+#[cfg(windows)]
+pub use private_file_identity_windows::PrivateFileIdentity;
+#[cfg(windows)]
+pub use private_file_identity_windows::PrivateFileKind;
+#[cfg(windows)]
+pub use private_file_identity_windows::PrivateSecurityIdentity;
+#[cfg(windows)]
+pub use private_file_identity_windows::WindowsFileId;
+
+#[cfg(windows)]
+mod private_child_name_windows;
+#[cfg(windows)]
+pub use private_child_name_windows::validate_private_windows_child_name;
+#[cfg(windows)]
+mod private_artifacts_windows;
+#[cfg(windows)]
+pub use private_artifacts_windows::PrivateFile;
+#[cfg(windows)]
+pub use private_artifacts_windows::RetainedPrivateDirectory;
+
+#[cfg(windows)]
+mod private_state_windows;
+#[cfg(windows)]
+pub use private_state_windows::PrivateFileAccess;
+#[cfg(windows)]
+pub use private_state_windows::create_private_state_child;
+#[cfg(windows)]
+pub use private_state_windows::create_private_state_directory;
+#[cfg(windows)]
+pub use private_state_windows::open_existing_private_state_directory;
+#[cfg(windows)]
+pub use private_state_windows::open_private_state_child;
+#[cfg(windows)]
+pub use private_state_windows::open_private_state_directory;
+#[cfg(windows)]
+pub use private_state_windows::private_state_child_exists;
+#[cfg(windows)]
+pub use private_state_windows::replace_private_state_child;
 
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::collections::HashSet;
@@ -119,17 +168,54 @@ pub fn resolve_symlink_write_paths(path: &Path) -> io::Result<SymlinkWritePaths>
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum AtomicWriteStage {
+    ResolveParent,
+    CreateDirectory,
+    CreateTemporaryFile,
+    WriteTemporaryFile,
+    Persist,
+}
+
+#[derive(Debug)]
+pub struct AtomicWriteError {
+    pub stage: AtomicWriteStage,
+    pub error: io::Error,
+}
+
 pub fn write_atomically(write_path: &Path, contents: &str) -> io::Result<()> {
-    let parent = write_path.parent().ok_or_else(|| {
-        io::Error::new(
+    write_atomically_with_error_stage(write_path, contents).map_err(|failure| failure.error)
+}
+
+/// Preserve the original I/O error while identifying the failing atomic-write stage.
+pub fn write_atomically_with_error_stage(
+    write_path: &Path,
+    contents: &str,
+) -> Result<(), AtomicWriteError> {
+    let parent = write_path.parent().ok_or_else(|| AtomicWriteError {
+        stage: AtomicWriteStage::ResolveParent,
+        error: io::Error::new(
             io::ErrorKind::InvalidInput,
             format!("path {} has no parent directory", write_path.display()),
-        )
+        ),
     })?;
-    std::fs::create_dir_all(parent)?;
-    let mut tmp = NamedTempFile::new_in(parent)?;
-    tmp.write_all(contents.as_bytes())?;
-    tmp.persist(write_path)?;
+    std::fs::create_dir_all(parent).map_err(|error| AtomicWriteError {
+        stage: AtomicWriteStage::CreateDirectory,
+        error,
+    })?;
+    let mut tmp = NamedTempFile::new_in(parent).map_err(|error| AtomicWriteError {
+        stage: AtomicWriteStage::CreateTemporaryFile,
+        error,
+    })?;
+    tmp.write_all(contents.as_bytes())
+        .map_err(|error| AtomicWriteError {
+            stage: AtomicWriteStage::WriteTemporaryFile,
+            error,
+        })?;
+    tmp.persist(write_path).map_err(|error| AtomicWriteError {
+        stage: AtomicWriteStage::Persist,
+        error: error.into(),
+    })?;
     Ok(())
 }
 

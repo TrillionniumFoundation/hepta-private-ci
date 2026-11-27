@@ -1,0 +1,55 @@
+{
+  "state": "passed",
+  "source_sha": "b1e85d9a176b8037978e8256e8b1297194a248b4",
+  "source_tree": "afd44002d7fbfcdb92ec08aa4cf84d41ea5a3d33",
+  "steps": [
+    {
+      "name": "fetch-fixed-source",
+      "exit_code": 0,
+      "elapsed_seconds": 2.628914921777323,
+      "bytes": 144,
+      "sha256": "837bcc640b6a54d44a95f8a46e83b57cf4c9d8b875e33799ba1777d2f571256d"
+    },
+    {
+      "name": "fast-forward-fixed-source",
+      "exit_code": 0,
+      "elapsed_seconds": 4.202756159007549,
+      "bytes": 7626,
+      "sha256": "84d6fd9f25da624790ab60d8bb29706c5298f25d98edd725de02ad508fe9b4cf"
+    },
+    {
+      "name": "source-suite",
+      "exit_code": 0,
+      "elapsed_seconds": 240.83604724495672,
+      "bytes": 80706,
+      "sha256": "de2f2fd5e397b369cf177fb7ea32b7a28259a715f7cc2bffe3d49815db23f21a"
+    },
+    {
+      "name": "caller-scanner-self-test",
+      "exit_code": 0,
+      "elapsed_seconds": 0.19071570900268853,
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    }
+  ],
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "native_executed": false,
+  "formatter_executed": false,
+  "started_unix_ms": 1794473022104,
+  "tracked_rust_files": 6709,
+  "manifest_sha256": "b282f1eefedd1dfa4310acb66cb690c711ed58cfb28810e1dd169c1f64559c15",
+  "source_runner_sha256": "4ee9255db22cc24e394476d5d5e7882a33cbf9e47d0a3496a3e57bd03c28fb81",
+  "source_exit_code": 0,
+  "selftest_exit_code": 0,
+  "source_after": "b1e85d9a176b8037978e8256e8b1297194a248b4",
+  "source_status_after": "",
+  "source_suite": {
+    "bytes": 72571,
+    "sha256": "4fb64f57c42391d3ad6d50b0dc85ff203f70698a9fdf9dd0c89d920af5848bec"
+  }
+}

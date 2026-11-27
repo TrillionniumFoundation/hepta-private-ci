@@ -1,0 +1,3967 @@
+{
+  "parser": "tree-sitter 0.25.2 + tree-sitter-rust 0.24.0",
+  "normalization": "Only syntactic terminal commas ignored; all other leaf tokens and comments retained. This is syntax evidence, not compiler qualification. Identical raw-identifier parse errors are recorded rather than hidden.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/selected_memory.rs",
+      "base_sha256": "93b782beb1199a4203ba8dea57f6233ceefb8d3255136b57827ec00bfa316ad7",
+      "incoming_sha256": "2ddba337573525f2e485c7c092edc320698eb436c5012e82d75845d439e014d4",
+      "language": "Rust",
+      "base_parser_errors": [],
+      "incoming_parser_errors": [],
+      "error_fragments_equal": true,
+      "exact_tokens_equal": false,
+      "tokens_equal_ignoring_only_terminal_commas": false,
+      "comments_equal": true,
+      "base_terminal_commas": 9,
+      "incoming_terminal_commas": 13,
+      "incoming_terminal_comma_contexts": [
+        {
+          "token_index": 63,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "unavailable"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "primitive_type",
+              "bool"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "type_identifier",
+              "SelectedMemoryTensorModelV1"
+            ]
+          ]
+        },
+        {
+          "token_index": 156,
+          "context": [
+            [
+              "primitive_type",
+              "u64"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "type_identifier",
+              "SharedMemoryTrainingError"
+            ],
+            [
+              ">",
+              ">"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 187,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              "string_content",
+              "artifact recovery required"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 219,
+          "context": [
+            [
+              "identifier",
+              "clock"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "?",
+              "?"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "await",
+              "await"
+            ]
+          ]
+        },
+        {
+          "token_index": 308,
+          "context": [
+            [
+              "identifier",
+              "clock"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "?",
+              "?"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "map_err"
+            ]
+          ]
+        },
+        {
+          "token_index": 351,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              "string_content",
+              "selected training lineage mismatch"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 443,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              "string_content",
+              "selected training payload mismatch"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 471,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "unavailable"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "false",
+              "false"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "self",
+              "self"
+            ]
+          ]
+        },
+        {
+          "token_index": 495,
+          "context": [
+            [
+              "_",
+              "_"
+            ],
+            [
+              "|",
+              "|"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "await",
+              "await"
+            ]
+          ]
+        },
+        {
+          "token_index": 568,
+          "context": [
+            [
+              "]",
+              "]"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "T"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 609,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              "string_content",
+              "selected memory unavailable"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 647,
+          "context": [
+            [
+              "identifier",
+              "clock"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "?",
+              "?"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "await",
+              "await"
+            ]
+          ]
+        },
+        {
+          "token_index": 748,
+          "context": [
+            [
+              "identifier",
+              "clock"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "?",
+              "?"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "await",
+              "await"
+            ]
+          ]
+        }
+      ],
+      "difference": [
+        "--- \n",
+        "+++ \n",
+        "@@ -797,6 +797,7 @@\n",
+        " ('|', '|')",
+        " ('_', '_')",
+        " ('|', '|')",
+        "+('{', '{')",
+        " ('identifier', 'SharedMemoryTrainingError')",
+        " ('::', '::')",
+        " ('identifier', 'Invalid')",
+        "@@ -805,6 +806,7 @@\n",
+        " ('string_content', 'selection changed during computation')",
+        " ('\"', '\"')",
+        " (')', ')')",
+        "+('}', '}')",
+        " (')', ')')",
+        " ('?', '?')",
+        " (';', ';')"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/shared_memory_training.rs",
+      "base_sha256": "c24af4add8bfaf8760b14d57839542e70902ebc231a22b70ffa4c02963ee31fe",
+      "incoming_sha256": "43228161ef5bef158cd51976c0f4f1c8c3c461e27acdc5849d052b00f7d05d74",
+      "language": "Rust",
+      "base_parser_errors": [],
+      "incoming_parser_errors": [],
+      "error_fragments_equal": true,
+      "exact_tokens_equal": true,
+      "tokens_equal_ignoring_only_terminal_commas": true,
+      "comments_equal": true,
+      "base_terminal_commas": 23,
+      "incoming_terminal_commas": 23,
+      "incoming_terminal_comma_contexts": [
+        {
+          "token_index": 140,
+          "context": [
+            [
+              "'",
+              "'"
+            ],
+            [
+              "identifier",
+              "static"
+            ],
+            [
+              "primitive_type",
+              "str"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "identifier",
+              "fmt"
+            ]
+          ]
+        },
+        {
+          "token_index": 264,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "source"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "type_identifier",
+              "SharedExperienceUseV1"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "type_identifier",
+              "SharedMemoryTrainingV1"
+            ]
+          ]
+        },
+        {
+          "token_index": 305,
+          "context": [
+            [
+              "type_identifier",
+              "Vec"
+            ],
+            [
+              "<",
+              "<"
+            ],
+            [
+              "primitive_type",
+              "u8"
+            ],
+            [
+              ">",
+              ">"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "type_identifier",
+              "SharedMemoryTensorCandidateV1"
+            ]
+          ]
+        },
+        {
+          "token_index": 361,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "pinned"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "type_identifier",
+              "RevalidatingCandidate"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "type_identifier",
+              "AgentdSharedReplayHostV1"
+            ]
+          ]
+        },
+        {
+          "token_index": 391,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "primitive_type",
+              "u64"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 504,
+          "context": [
+            [
+              "{",
+              "{"
+            ],
+            [
+              "shorthand_field_identifier",
+              "parameter_scope"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "shorthand_field_identifier",
+              "artifact_consumer"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "=",
+              "="
+            ],
+            [
+              "&",
+              "&"
+            ]
+          ]
+        },
+        {
+          "token_index": 523,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              "string_content",
+              "training requires Replay purpose"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 561,
+          "context": [
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "as_bytes"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              "{",
+              "{"
+            ],
+            [
+              "identifier",
+              "bytes"
+            ]
+          ]
+        },
+        {
+          "token_index": 633,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "primitive_type",
+              "u64"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 665,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              "string_content",
+              "parameter scope mismatch"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 800,
+          "context": [
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "clone"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ]
+          ]
+        },
+        {
+          "token_index": 804,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "?",
+              "?"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 866,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "primitive_type",
+              "u64"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 918,
+          "context": [
+            [
+              "&",
+              "&"
+            ],
+            [
+              "identifier",
+              "payload"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "?",
+              "?"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 962,
+          "context": [
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "source"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "payload"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "}",
+              "}"
+            ]
+          ]
+        },
+        {
+          "token_index": 994,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "primitive_type",
+              "u64"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 1028,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "await",
+              "await"
+            ]
+          ]
+        },
+        {
+          "token_index": 1071,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              "string_content",
+              "loaded artifact identity/lineage mismatch"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 1133,
+          "context": [
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "source"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "pinned"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "}",
+              "}"
+            ]
+          ]
+        },
+        {
+          "token_index": 1181,
+          "context": [
+            [
+              "]",
+              "]"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "T"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 1215,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "await",
+              "await"
+            ]
+          ]
+        },
+        {
+          "token_index": 1275,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "await",
+              "await"
+            ]
+          ]
+        },
+        {
+          "token_index": 1301,
+          "context": [
+            [
+              "&",
+              "&"
+            ],
+            [
+              "identifier",
+              "codex_hepta_learning_artifacts"
+            ],
+            [
+              "::",
+              "::"
+            ],
+            [
+              "type_identifier",
+              "ArtifactManifest"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "primitive_type",
+              "bool"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/citation_audit.rs",
+      "base_sha256": "fa8ab9433e7dfd4890aa66e58ef148280b3079c102d23793e136ed9d9ba9edaf",
+      "incoming_sha256": "1a315455bf7a88620eb6b1c4cca6b2666c7015fd43a317e3fa4e5c64d171370d",
+      "language": "Rust",
+      "base_parser_errors": [
+        [
+          "ERROR",
+          "&raw"
+        ]
+      ],
+      "incoming_parser_errors": [
+        [
+          "ERROR",
+          "&raw"
+        ]
+      ],
+      "error_fragments_equal": true,
+      "exact_tokens_equal": false,
+      "tokens_equal_ignoring_only_terminal_commas": false,
+      "comments_equal": true,
+      "base_terminal_commas": 12,
+      "incoming_terminal_commas": 22,
+      "incoming_terminal_comma_contexts": [
+        {
+          "token_index": 89,
+          "context": [
+            [
+              "pub",
+              "pub"
+            ],
+            [
+              "field_identifier",
+              "excerpt"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "type_identifier",
+              "String"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "#",
+              "#"
+            ],
+            [
+              "[",
+              "["
+            ]
+          ]
+        },
+        {
+          "token_index": 155,
+          "context": [
+            [
+              "type_identifier",
+              "Vec"
+            ],
+            [
+              "<",
+              "<"
+            ],
+            [
+              "type_identifier",
+              "CitationSourceV1"
+            ],
+            [
+              ">",
+              ">"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "#",
+              "#"
+            ],
+            [
+              "[",
+              "["
+            ]
+          ]
+        },
+        {
+          "token_index": 183,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "Abstention"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "Unreviewed"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "#",
+              "#"
+            ],
+            [
+              "[",
+              "["
+            ]
+          ]
+        },
+        {
+          "token_index": 211,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "Unsupported"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "Unreviewed"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "#",
+              "#"
+            ],
+            [
+              "[",
+              "["
+            ]
+          ]
+        },
+        {
+          "token_index": 245,
+          "context": [
+            [
+              "pub",
+              "pub"
+            ],
+            [
+              "field_identifier",
+              "kind"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "type_identifier",
+              "CitationClaimKindV1"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "#",
+              "#"
+            ],
+            [
+              "[",
+              "["
+            ]
+          ]
+        },
+        {
+          "token_index": 274,
+          "context": [
+            [
+              "pub",
+              "pub"
+            ],
+            [
+              "field_identifier",
+              "verdict"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "type_identifier",
+              "CitationVerdictV1"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "#",
+              "#"
+            ],
+            [
+              "[",
+              "["
+            ]
+          ]
+        },
+        {
+          "token_index": 308,
+          "context": [
+            [
+              "type_identifier",
+              "Vec"
+            ],
+            [
+              "<",
+              "<"
+            ],
+            [
+              "type_identifier",
+              "CitationJudgementV1"
+            ],
+            [
+              ">",
+              ">"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "#",
+              "#"
+            ],
+            [
+              "[",
+              "["
+            ]
+          ]
+        },
+        {
+          "token_index": 365,
+          "context": [
+            [
+              "pub",
+              "pub"
+            ],
+            [
+              "field_identifier",
+              "unreviewed_claims"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "primitive_type",
+              "u32"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "type_identifier",
+              "CitationAuditCountsV1"
+            ]
+          ]
+        },
+        {
+          "token_index": 448,
+          "context": [
+            [
+              "identifier",
+              "Authentication"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              "type_identifier",
+              "SignedEvidenceError"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "identifier",
+              "fmt"
+            ]
+          ]
+        },
+        {
+          "token_index": 555,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "trust_digest"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "type_identifier",
+              "Digest32"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "type_identifier",
+              "VerifiedCitationAuditV1"
+            ]
+          ]
+        },
+        {
+          "token_index": 743,
+          "context": [
+            [
+              "identifier",
+              "request"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "&",
+              "&"
+            ],
+            [
+              "type_identifier",
+              "CitationAuditRequestV1"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 814,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "request"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "prompt_digest"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              "{",
+              "{"
+            ],
+            [
+              "if",
+              "if"
+            ]
+          ]
+        },
+        {
+          "token_index": 1181,
+          "context": [
+            [
+              "identifier",
+              "judgement"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "&",
+              "&"
+            ],
+            [
+              "type_identifier",
+              "CitationAuditJudgementV1"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 1366,
+          "context": [
+            [
+              "::",
+              "::"
+            ],
+            [
+              "identifier",
+              "Unreviewed"
+            ],
+            [
+              "=>",
+              "=>"
+            ],
+            [
+              "integer_literal",
+              "3"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 1447,
+          "context": [
+            [
+              "::",
+              "::"
+            ],
+            [
+              "identifier",
+              "Unreviewed"
+            ],
+            [
+              "=>",
+              "=>"
+            ],
+            [
+              "integer_literal",
+              "3"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 1636,
+          "context": [
+            [
+              "type_identifier",
+              "BTreeSet"
+            ],
+            [
+              "<",
+              "<"
+            ],
+            [
+              "type_identifier",
+              "Digest32"
+            ],
+            [
+              ">",
+              ">"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 2110,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              "string_content",
+              "citation outside factual claim"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 2207,
+          "context": [
+            [
+              "identifier",
+              "Unsupported"
+            ],
+            [
+              "=>",
+              "=>"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "identifier",
+              "counts"
+            ]
+          ]
+        },
+        {
+          "token_index": 2269,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "primitive_type",
+              "u64"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 2316,
+          "context": [
+            [
+              "&",
+              "&"
+            ],
+            [
+              "identifier",
+              "request_bytes"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "?",
+              "?"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 2337,
+          "context": [
+            [
+              "&",
+              "&"
+            ],
+            [
+              "identifier",
+              "judgement_bytes"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "?",
+              "?"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 2395,
+          "context": [
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "trust_digest"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "}",
+              "}"
+            ]
+          ]
+        }
+      ],
+      "difference": [
+        "--- \n",
+        "+++ \n",
+        "@@ -2040,7 +2040,6 @@\n",
+        " ('identifier', 'claim')",
+        " (')', ')')",
+        " ('|', '|')",
+        "-('{', '{')",
+        " ('identifier', 'claim')",
+        " ('.', '.')",
+        " ('field_identifier', 'start')",
+        "@@ -2056,7 +2055,6 @@\n",
+        " ('field_identifier', 'end')",
+        " ('as', 'as')",
+        " ('primitive_type', 'usize')",
+        "-('}', '}')",
+        " (')', ')')",
+        " ('else', 'else')",
+        " ('{', '{')"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/citation_audit_tests.rs",
+      "base_sha256": "d6e37b701106f585275840c73c69f763c620f64e9769f599b85507a770bdb091",
+      "incoming_sha256": "cd29dac5cc21602f126a6b714942b6934d1f125389242dc44e3c10bf25b63937",
+      "language": "Rust",
+      "base_parser_errors": [],
+      "incoming_parser_errors": [],
+      "error_fragments_equal": true,
+      "exact_tokens_equal": false,
+      "tokens_equal_ignoring_only_terminal_commas": true,
+      "comments_equal": true,
+      "base_terminal_commas": 3,
+      "incoming_terminal_commas": 16,
+      "incoming_terminal_comma_contexts": [
+        {
+          "token_index": 214,
+          "context": [
+            [
+              ".",
+              "."
+            ],
+            [
+              "identifier",
+              "into"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ]
+          ]
+        },
+        {
+          "token_index": 217,
+          "context": [
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "fn",
+              "fn"
+            ]
+          ]
+        },
+        {
+          "token_index": 249,
+          "context": [
+            [
+              ":",
+              ":"
+            ],
+            [
+              "identifier",
+              "CitationClaimKindV1"
+            ],
+            [
+              "::",
+              "::"
+            ],
+            [
+              "identifier",
+              "Factual"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ]
+          ]
+        },
+        {
+          "token_index": 269,
+          "context": [
+            [
+              ":",
+              ":"
+            ],
+            [
+              "identifier",
+              "CitationVerdictV1"
+            ],
+            [
+              "::",
+              "::"
+            ],
+            [
+              "identifier",
+              "Entailed"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ]
+          ]
+        },
+        {
+          "token_index": 272,
+          "context": [
+            [
+              "identifier",
+              "Entailed"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "struct",
+              "struct"
+            ]
+          ]
+        },
+        {
+          "token_index": 289,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "verifier"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "type_identifier",
+              "LearningEvidenceVerifierV1"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "type_identifier",
+              "Fixture"
+            ]
+          ]
+        },
+        {
+          "token_index": 331,
+          "context": [
+            [
+              ";",
+              ";"
+            ],
+            [
+              "integer_literal",
+              "32"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "let",
+              "let"
+            ]
+          ]
+        },
+        {
+          "token_index": 428,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "expires_at"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "integer_literal",
+              "100"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "controller_id"
+            ]
+          ]
+        },
+        {
+          "token_index": 492,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "revoked_at"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "identifier",
+              "None"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ]
+          ]
+        },
+        {
+          "token_index": 532,
+          "context": [
+            [
+              ":",
+              ":"
+            ],
+            [
+              "integer_literal",
+              "4"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "signers"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ]
+          ]
+        },
+        {
+          "token_index": 678,
+          "context": [
+            [
+              "integer_literal",
+              "0"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "integer_literal",
+              "64"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "identifier",
+              "signed"
+            ]
+          ]
+        },
+        {
+          "token_index": 723,
+          "context": [
+            [
+              "identifier",
+              "j"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "&",
+              "&"
+            ],
+            [
+              "type_identifier",
+              "CitationAuditJudgementV1"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "[",
+              "["
+            ]
+          ]
+        },
+        {
+          "token_index": 774,
+          "context": [
+            [
+              "string_content",
+              "judgement"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "}",
+              "}"
+            ]
+          ]
+        },
+        {
+          "token_index": 1464,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "CitationVerdictV1"
+            ],
+            [
+              "::",
+              "::"
+            ],
+            [
+              "identifier",
+              "Contradicted"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              "{",
+              "{"
+            ],
+            [
+              "let",
+              "let"
+            ]
+          ]
+        },
+        {
+          "token_index": 1574,
+          "context": [
+            [
+              ":",
+              ":"
+            ],
+            [
+              "identifier",
+              "CitationClaimKindV1"
+            ],
+            [
+              "::",
+              "::"
+            ],
+            [
+              "identifier",
+              "Abstention"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ]
+          ]
+        },
+        {
+          "token_index": 1585,
+          "context": [
+            [
+              "::",
+              "::"
+            ],
+            [
+              "identifier",
+              "new"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "identifier",
+              "assert_eq"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/lib.rs",
+      "base_sha256": "8fb121ae07b8e2f9a90ce5d09b9d105b612c51a1a186a2c1e293ab10e6f54c48",
+      "incoming_sha256": "afac4b37d8a9e1a47ee2aa12b741d00dcd42a2359675d390fd81030a22535b28",
+      "language": "Rust",
+      "base_parser_errors": [],
+      "incoming_parser_errors": [],
+      "error_fragments_equal": true,
+      "exact_tokens_equal": false,
+      "tokens_equal_ignoring_only_terminal_commas": false,
+      "comments_equal": true,
+      "base_terminal_commas": 0,
+      "incoming_terminal_commas": 0,
+      "incoming_terminal_comma_contexts": [],
+      "difference": [
+        "--- \n",
+        "+++ \n",
+        "@@ -59,10 +59,10 @@\n",
+        " ('identifier', 'registry')",
+        " (';', ';')",
+        " ('mod', 'mod')",
+        "+('identifier', 'selected')",
+        "+(';', ';')",
+        "+('mod', 'mod')",
+        " ('identifier', 'selection')",
+        "-(';', ';')",
+        "-('mod', 'mod')",
+        "-('identifier', 'selected')",
+        " (';', ';')",
+        " ('mod', 'mod')",
+        " ('identifier', 'sensor_core_registry')"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/selected.rs",
+      "base_sha256": "730f3de0ee9ef181cd560149293a31ac205bf539f3c6bb8ca27932f7b1c53865",
+      "incoming_sha256": "dc5bef39b76d1112db57bd85d0dcaadf3515269cb44201256e5419ab64126d3e",
+      "language": "Rust",
+      "base_parser_errors": [],
+      "incoming_parser_errors": [],
+      "error_fragments_equal": true,
+      "exact_tokens_equal": false,
+      "tokens_equal_ignoring_only_terminal_commas": true,
+      "comments_equal": true,
+      "base_terminal_commas": 4,
+      "incoming_terminal_commas": 5,
+      "incoming_terminal_comma_contexts": [
+        {
+          "token_index": 84,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "last_checked_at"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "primitive_type",
+              "u64"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "type_identifier",
+              "GuardedSelectedCandidateV1"
+            ]
+          ]
+        },
+        {
+          "token_index": 177,
+          "context": [
+            [
+              "]",
+              "]"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "T"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 202,
+          "context": [
+            [
+              "(",
+              "("
+            ],
+            [
+              "identifier",
+              "PinnedCandidateLoadError"
+            ],
+            [
+              "::",
+              "::"
+            ],
+            [
+              "identifier",
+              "Unavailable"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ";",
+              ";"
+            ]
+          ]
+        },
+        {
+          "token_index": 309,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "primitive_type",
+              "u64"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        },
+        {
+          "token_index": 382,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "last_checked_at"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "}",
+              "}"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/selected_tests.rs",
+      "base_sha256": "23eaaf265b88cdd43318ec8b9ae2335e9285ddf1864abd2c0362492e36a27194",
+      "incoming_sha256": "554cce70d275963aad4657415cf9a717d825ba6255a398ab049938d329c558fb",
+      "language": "Rust",
+      "base_parser_errors": [],
+      "incoming_parser_errors": [],
+      "error_fragments_equal": true,
+      "exact_tokens_equal": false,
+      "tokens_equal_ignoring_only_terminal_commas": false,
+      "comments_equal": true,
+      "base_terminal_commas": 1,
+      "incoming_terminal_commas": 14,
+      "incoming_terminal_comma_contexts": [
+        {
+          "token_index": 168,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "signed"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "type_identifier",
+              "SignedArtifactSelectionV1"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "impl",
+              "impl"
+            ],
+            [
+              "type_identifier",
+              "Drop"
+            ]
+          ]
+        },
+        {
+          "token_index": 339,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "revoked_at"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "identifier",
+              "None"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "let",
+              "let"
+            ]
+          ]
+        },
+        {
+          "token_index": 410,
+          "context": [
+            [
+              "!",
+              "!"
+            ],
+            [
+              "[",
+              "["
+            ],
+            [
+              "identifier",
+              "signer"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "let",
+              "let"
+            ]
+          ]
+        },
+        {
+          "token_index": 487,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "revoked_at"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "identifier",
+              "None"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ]
+          ]
+        },
+        {
+          "token_index": 490,
+          "context": [
+            [
+              "identifier",
+              "None"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "let",
+              "let"
+            ]
+          ]
+        },
+        {
+          "token_index": 605,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "field_identifier",
+              "encoded_size_bytes"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "integer_literal",
+              "7"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "let",
+              "let"
+            ]
+          ]
+        },
+        {
+          "token_index": 642,
+          "context": [
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "clone"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ]
+          ]
+        },
+        {
+          "token_index": 688,
+          "context": [
+            [
+              "\"",
+              "\""
+            ],
+            [
+              "string_content",
+              "binding"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "fixture"
+            ]
+          ]
+        },
+        {
+          "token_index": 732,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "\"",
+              "b\""
+            ],
+            [
+              "string_content",
+              "payload"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "fixture"
+            ]
+          ]
+        },
+        {
+          "token_index": 923,
+          "context": [
+            [
+              "integer_literal",
+              "0"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "integer_literal",
+              "64"
+            ],
+            [
+              "]",
+              "]"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ";",
+              ";"
+            ],
+            [
+              "identifier",
+              "signed"
+            ]
+          ]
+        },
+        {
+          "token_index": 961,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "verifier"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "signed"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "fn",
+              "fn"
+            ]
+          ]
+        },
+        {
+          "token_index": 1055,
+          "context": [
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "trust_digest"
+            ],
+            [
+              "(",
+              "("
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              "fn",
+              "fn"
+            ]
+          ]
+        },
+        {
+          "token_index": 1154,
+          "context": [
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "verifier"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "integer_literal",
+              "30"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ".",
+              "."
+            ],
+            [
+              "field_identifier",
+              "fixture"
+            ]
+          ]
+        },
+        {
+          "token_index": 1562,
+          "context": [
+            [
+              "\"",
+              "\""
+            ],
+            [
+              "string_content",
+              "source withdrawn"
+            ],
+            [
+              "\"",
+              "\""
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              "}",
+              "}"
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              ")",
+              ")"
+            ]
+          ]
+        }
+      ],
+      "difference": [
+        "--- \n",
+        "+++ \n",
+        "@@ -4,63 +4,78 @@\n",
+        " ('::', '::')",
+        " ('identifier', 'fs')",
+        " ('::', '::')",
+        "-('{', '{')",
+        "-('self', 'self')",
+        "-(',', ',')",
+        " ('identifier', 'File')",
+        "-('}', '}')",
+        " (';', ';')",
+        " ('use', 'use')",
+        " ('identifier', 'std')",
+        " ('::', '::')",
+        "-('identifier', 'path')",
+        "-('::', '::')",
+        "-('identifier', 'PathBuf')",
+        "+('identifier', 'fs')",
+        "+('::', '::')",
+        "+('{', '{')",
+        "+('self', 'self')",
+        "+('}', '}')",
+        " (';', ';')",
+        " ('use', 'use')",
+        " ('identifier', 'std')",
+        " ('::', '::')",
+        "+('identifier', 'path')",
+        "+('::', '::')",
+        "+('identifier', 'PathBuf')",
+        "+(';', ';')",
+        "+('use', 'use')",
+        "+('identifier', 'std')",
+        "+('::', '::')",
+        " ('identifier', 'sync')",
+        " ('::', '::')",
+        " ('identifier', 'atomic')",
+        " ('::', '::')",
+        "-('{', '{')",
+        " ('identifier', 'AtomicU64')",
+        "-(',', ',')",
+        "+(';', ';')",
+        "+('use', 'use')",
+        "+('identifier', 'std')",
+        "+('::', '::')",
+        "+('identifier', 'sync')",
+        "+('::', '::')",
+        "+('identifier', 'atomic')",
+        "+('::', '::')",
+        " ('identifier', 'Ordering')",
+        "-('}', '}')",
+        " (';', ';')",
+        " ('use', 'use')",
+        " ('identifier', 'codex_hepta_types')",
+        " ('::', '::')",
+        "-('{', '{')",
+        " ('identifier', 'Digest32')",
+        "-(',', ',')",
+        "+(';', ';')",
+        "+('use', 'use')",
+        "+('identifier', 'codex_hepta_types')",
+        "+('::', '::')",
+        " ('identifier', 'Generation')",
+        "-(',', ',')",
+        "+(';', ';')",
+        "+('use', 'use')",
+        "+('identifier', 'codex_hepta_types')",
+        "+('::', '::')",
+        " ('identifier', 'StableId')",
+        "-('}', '}')",
+        " (';', ';')",
+        " ('use', 'use')",
+        " ('identifier', 'ed25519_dalek')",
+        " ('::', '::')",
+        "-('{', '{')",
+        " ('identifier', 'Signer')",
+        "-(',', ',')",
+        "+(';', ';')",
+        "+('use', 'use')",
+        "+('identifier', 'ed25519_dalek')",
+        "+('::', '::')",
+        " ('identifier', 'SigningKey')",
+        "-('}', '}')",
+        " (';', ';')",
+        " ('use', 'use')",
+        " ('crate', 'crate')",
+        " ('::', '::')",
+        "-('*', '*')",
+        "+('identifier', 'test_support')",
+        "+('::', '::')",
+        "+('identifier', 'FixtureValue')",
+        " (';', ';')",
+        " ('use', 'use')",
+        " ('crate', 'crate')",
+        " ('::', '::')",
+        "-('identifier', 'test_support')",
+        "-('::', '::')",
+        "-('identifier', 'FixtureValue')",
+        "+('*', '*')",
+        " (';', ';')",
+        " ('static', 'static')",
+        " ('identifier', 'NEXT')",
+        "@@ -1671,6 +1686,7 @@\n",
+        " ('(', '(')",
+        " ('|', '|')",
+        " ('|', '|')",
+        "+('{', '{')",
+        " ('identifier', 'cache')",
+        " ('.', '.')",
+        " ('field_identifier', 'with_current')",
+        "@@ -1699,6 +1715,7 @@\n",
+        " ('\"', '\"')",
+        " (')', ')')",
+        " (')', ')')",
+        "+('}', '}')",
+        " (')', ')')",
+        " (')', ')')",
+        " (';', ';')"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/selection_guard.rs",
+      "base_sha256": "40870343fda928666920b27d2c52f733e44d4d26f53e6ef1cb67795c34f63415",
+      "incoming_sha256": "add44d0e94b7b3756c6a585b893f2d95eb6258e81640abc8280ebf0fb4bcabd8",
+      "language": "Rust",
+      "base_parser_errors": [],
+      "incoming_parser_errors": [],
+      "error_fragments_equal": true,
+      "exact_tokens_equal": true,
+      "tokens_equal_ignoring_only_terminal_commas": true,
+      "comments_equal": true,
+      "base_terminal_commas": 1,
+      "incoming_terminal_commas": 1,
+      "incoming_terminal_comma_contexts": [
+        {
+          "token_index": 30,
+          "context": [
+            [
+              ",",
+              ","
+            ],
+            [
+              "identifier",
+              "now"
+            ],
+            [
+              ":",
+              ":"
+            ],
+            [
+              "primitive_type",
+              "u64"
+            ],
+            [
+              ",",
+              ","
+            ],
+            [
+              ")",
+              ")"
+            ],
+            [
+              "->",
+              "->"
+            ],
+            [
+              "type_identifier",
+              "Result"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "scripts/memory_cell/benchmark_collect.py",
+      "base_sha256": "432f6f60ff83c2fbfa78ec433d0120eed9bb0476e45e7629c2b9c7e045ce6b40",
+      "incoming_sha256": "940c4e9dcba18b68f3b66f8ab74950acfcf3ac363925ef95ee8dd423b4e2c977",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/benchmark_coverage.py",
+      "base_sha256": "100697dc3d108b51f9394a69f3283968d30b130025ae171ec1243b16a931200f",
+      "incoming_sha256": "b66d3697ab1534e1fa61bf093d7d91efcf63ceb5051294683d38d9c21b8fb282",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/citation_audit.py",
+      "base_sha256": "cbddd9b9aa2f68c69d92a4df41ba6e1a801c701e0658e48bc8a729a356857502",
+      "incoming_sha256": "4de61f346bcc4e1c38377aef369e7f8c6696061fc05fd548c8c16ad25f224371",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/composition.py",
+      "base_sha256": "818e8c9255eb98b877d2667016ac874e07c3f2fae0f39f423d3ecf0faf833201",
+      "incoming_sha256": "2b0c37b072c917578ff5961c4d87fbf54b176b0a41d410c28caa0d3aafbd94b8",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/index.py",
+      "base_sha256": "4dcc1cd6fc0a052f2bba098c8b38dd7bebc85ddc38e69f7907caea91f7ca78b3",
+      "incoming_sha256": "b49f99a9f5ede79015d762afdbf33210b30d23d52f19f4473c419e8367cd7d7a",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/lesions.py",
+      "base_sha256": "02c1a98902fd69ad169893906a2cd87e41df1a368f6a0f72fca52df2c525c798",
+      "incoming_sha256": "87d879010f76c11f83963782248223cfa3fe8aa7c47e0f469852315ea1489a87",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/native.py",
+      "base_sha256": "5a89f569615c348e574356d569b08d13a76684882f4c36931e9944791919dad0",
+      "incoming_sha256": "6a17551e597c382d4cb948e1edeb1a51329bba082e791a96911e8203e72c52ef",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/pretrained.py",
+      "base_sha256": "5b467293f007d16b06435da3b7233172296585a7b6d20e9ea54d506b26d1d255",
+      "incoming_sha256": "77d61c6003a865c9e0600f02c0b76913f2a11ad7da0d98375663c4a073e26ec9",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/run_native.py",
+      "base_sha256": "6aa260abc009f2e289b4aaf4bc02258ce2122fac46ebda47e22ae059ad831d02",
+      "incoming_sha256": "a0299f7e71c96bcb1f748d93563b81bd495254b5124093cce16e5e02d44904cc",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/sessions.py",
+      "base_sha256": "18f3badc0e16de5c0b07203fea272df9d221cc21eb4ac854d98807a5839afaed",
+      "incoming_sha256": "ab0bebcac01df5147a2522fc8869ad5b102f38d4daad080d1d412d4ff6ba7c0c",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/tensor_contract.py",
+      "base_sha256": "02a7089672ef5b62d93720748a704bf9cc8f62e060d1672ac2685d67c715c3c7",
+      "incoming_sha256": "cad226a12d2fb227326f536f10e85641898f3e22a474175feeb3c56484a6c770",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/test_citation_audit.py",
+      "base_sha256": "79cb4ff310b6fe2ab07d95dd86c0062c4e7413d9697f5cf300f8dbae0e388758",
+      "incoming_sha256": "8b9b77e4cefd371c1a36e42a7edb84738e21a5570a8e30c420a2dca8dfe8ea6f",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/test_collect.py",
+      "base_sha256": "8ea74ea89e41da25a1a88ffece1fe61d6d00802ca6b8c8b6f95ad09aa684876a",
+      "incoming_sha256": "abb4d1bf90ee92628ad8af600b2f89a86e2b45b9ef3756e83d0c4e6240a090f6",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/test_coverage.py",
+      "base_sha256": "c6274aab18f35be77a86c141d0abdc678700abaf3bd8181489e565afad5b03d9",
+      "incoming_sha256": "6f277eba2bb3393a8e6071d80f46d0cb53653af1bc9fb5a35541ba5e5844b4d7",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/test_index_integrity.py",
+      "base_sha256": "f04a40bb2a980abf649e6a48b8dd9acfb2fd1b846de8a7d074edf484eb864263",
+      "incoming_sha256": "b195104f431eb5c7105aadcc75282c6ab0719ec846e2d3af9f19ac61f6d24e03",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/test_lesions.py",
+      "base_sha256": "6463e81ffeed03429bf59f8a6f5cb5fc7721c9ae03fdb932bafec2a047f273cb",
+      "incoming_sha256": "fdbb7f5edac2c79df0671ca7af692fc089593a7a7bd018ef29a41a80a1f48628",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/test_native.py",
+      "base_sha256": "c05cd339fabc34d6d21614f3e251cb8e100f3d9ee511c7ee5bb6aca8e780e205",
+      "incoming_sha256": "43cfc8a833c9a83c16e9925adc2b3f54c53cc94b001458e2836ba1c5fbcb7eb8",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/test_native_conflicts.py",
+      "base_sha256": "e494f799984a098b15fd993c22aa1bbefab754c1f8819f8537bdd52ead9f1c3c",
+      "incoming_sha256": "f0fd66ddb95709c99a4bbbd5f9b1c29ba6f707fd3dc5a4bcbe5060c60d7a406a",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/test_native_runner.py",
+      "base_sha256": "2a39d79128e0a46d2751d05dca72f352b50d6f7609ad1ea7ebee4ab52abe9215",
+      "incoming_sha256": "cee86a6c3346d4a79984c1afb0384c67cfeb70845dc36e2dada1db1e95652dbf",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/test_sessions.py",
+      "base_sha256": "ffb9d4011dcc6689314bd0c240ae5613cd6fc8997a0a4de1d74fffead21d26f7",
+      "incoming_sha256": "f748fd15e25011e5087f1a471ccd4df73723f075311aa27ba9383148c0d2d40b",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    },
+    {
+      "path": "scripts/memory_cell/test_tensor_contract.py",
+      "base_sha256": "3abeca0703c199726869aa4b1c0bb221e6eb6edd3f9e22a4f435c2275b48fc76",
+      "incoming_sha256": "1e8055fc6e4fdec557074373d186a34e3730a85544b258c1d14313881ec8536b",
+      "language": "Python",
+      "ast_equal": true,
+      "comments_equal": true
+    }
+  ]
+}

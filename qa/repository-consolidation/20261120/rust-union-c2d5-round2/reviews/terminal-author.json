@@ -1,0 +1,261 @@
+{
+  "status": "STATIC_REPAIR_PROPOSAL_READY_FOR_INDEPENDENT_REVIEW_NATIVE_NOT_RUN",
+  "base_server_commit": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "base_tree": "75127f7175708277f28974daff78cc6e7d92ab0c",
+  "incoming_heads": [
+    {
+      "tip": "90bb831d030e6aba8c6be546833e535e67483295",
+      "branch_names": [
+        "codex/memory-terminal-37877957390"
+      ],
+      "sole_parent_and_merge_base": "bb471d2e90f52f39c2c00a01bc817bf137c55c02",
+      "unique_commits": 1,
+      "protected_intersection": [],
+      "files": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "after_git_blob": "072e7dfd8f222f65765f0570001eec2b18f9c465",
+          "changes": 31,
+          "patch_sha256": "da6b488ef2b719fde873360ea865fd5a1d162e20ab1c6d89488c4c5b687753cb"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "after_git_blob": "bff3b270e4a39e2695ee907a5212e69dea93a21e",
+          "changes": 77,
+          "patch_sha256": "112f976a6fbb0365d40031177ccd8034600a38f3fed0fe9d73e90bde55b76499"
+        }
+      ]
+    },
+    {
+      "tip": "6612074c96fb379ffac29affe389a1f37ca6f336",
+      "branch_names": [
+        "codex/memory-terminal-37880672927"
+      ],
+      "sole_parent_and_merge_base": "ac6a26cd280d97d8e357ec973fda719778ad7bdf",
+      "unique_commits": 1,
+      "protected_intersection": [],
+      "files": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "after_git_blob": "072e7dfd8f222f65765f0570001eec2b18f9c465",
+          "changes": 31,
+          "patch_sha256": "da6b488ef2b719fde873360ea865fd5a1d162e20ab1c6d89488c4c5b687753cb"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "after_git_blob": "bff3b270e4a39e2695ee907a5212e69dea93a21e",
+          "changes": 77,
+          "patch_sha256": "112f976a6fbb0365d40031177ccd8034600a38f3fed0fe9d73e90bde55b76499"
+        }
+      ]
+    },
+    {
+      "tip": "086de626c32183822e47b04fbba17fb0cdc1005d",
+      "branch_names": [
+        "codex/memory-terminal-37881020611"
+      ],
+      "sole_parent_and_merge_base": "5c465bfb5715745fa26381a077990cab8f0e87e8",
+      "unique_commits": 1,
+      "protected_intersection": [],
+      "files": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "after_git_blob": "072e7dfd8f222f65765f0570001eec2b18f9c465",
+          "changes": 31,
+          "patch_sha256": "da6b488ef2b719fde873360ea865fd5a1d162e20ab1c6d89488c4c5b687753cb"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "after_git_blob": "bff3b270e4a39e2695ee907a5212e69dea93a21e",
+          "changes": 77,
+          "patch_sha256": "112f976a6fbb0365d40031177ccd8034600a38f3fed0fe9d73e90bde55b76499"
+        }
+      ]
+    }
+  ],
+  "incoming_delta": {
+    "files": 2,
+    "all_three_exact_deltas_and_patch_bytes_identical": true,
+    "base_production_blob": "a78c972e273fdd57b4819ecc6bddcf77e8008e85",
+    "base_test_blob": "569110165cc625ac4bfba3285e5a937c800afad8",
+    "base_bytes_obtained_at_each_exact_parent_through_GitHub": true,
+    "incoming_production_blob": "072e7dfd8f222f65765f0570001eec2b18f9c465",
+    "incoming_test_blob": "bff3b270e4a39e2695ee907a5212e69dea93a21e",
+    "reviewed_intents": [
+      "Whitespace-only completed output triggers read-only recovery of the same exact turn.",
+      "Failed content recovery preserves the authenticated Completed fact and quarantines the boundary.",
+      "A verified terminal summary can supply missing message text without a second dispatch.",
+      "Oversized aggregate summary is refused before any summary text or terminal status is committed.",
+      "Duplicate summary text does not duplicate output or restore lost authority."
+    ]
+  },
+  "current_error_contract": {
+    "return_type": "Result<(), String>",
+    "current_native_output_blob": "3cc279a9bfe85443c7a64f40d39898397a23618f",
+    "single_item_apply_message": "Validates completed identity, text byte budget, item count and metadata budget before mutating that item.",
+    "current_complete_turn_defect": "Calls apply_message directly on retained self/output for each item. An early valid item is committed before a later item returns Err, so complete_turn does not currently offer a whole-summary no-mutation guarantee.",
+    "counterexample": "Start with retained streamed text. Process a new valid completed item, then an item whose text alone is MAX_OUTPUT_BYTES. The second item returns output byte limit exceeded; the first item text and completed marker remain in current code.",
+    "second_counterexample": "A new valid item followed by conflicting text for an already completed ID returns completed agent message changed its text after retaining the first new item.",
+    "live_call_site": "observe_event validates the exact thread/turn/transport terminal receipt, calls complete_turn with ?, then updates terminal status, boundary, digest and terminal_observed. A summary failure can therefore mutate text/helper state while leaving terminal fields uncommitted.",
+    "outer_failure_handling": "run_once classifies the error, sets stop_reason and durably settles a clone of output before cleanup. It does not roll back partial summary text, so the static defect reaches the failure record.",
+    "reconciliation_call_site": "terminal_message_from_observed_response already uses a temporary output and temporary helper, so a failed read does not mutate its input output. The helper repair is still valid there.",
+    "error_strings_preserved": [
+      "output byte limit exceeded",
+      "completed agent message changed its text",
+      "output message metadata limit exceeded"
+    ],
+    "no_claim_of_atomicity_for_all_other_observe_event_errors": true
+  },
+  "draft_repair": {
+    "changed_files": [
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+        "mode": "100644",
+        "before_git_blob": "3cc279a9bfe85443c7a64f40d39898397a23618f",
+        "after_git_blob": "9925c81e4f5df5ba7122c59c896eac4388c07ed6",
+        "after_sha256": "7682ecfc8efe9ff2718689153eb3723b929d17409a764fc5971034bff1802946",
+        "bytes": 5886,
+        "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/next-frontier/terminal-summary-draft/after/codex-rs/hepta-infer-worker-host/src/native_output.rs"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+        "mode": "100644",
+        "before_git_blob": "42f35deccbf558be66ddd906fb423a18ebfb84f7",
+        "after_git_blob": "495984a21073698ce27cfac61304b37b9884ce4d",
+        "after_sha256": "b1e8f43485e2c8b2e9c070c082b233bbc9129ae70a2829ce22fde864f017142c",
+        "bytes": 8009,
+        "local_path": "/workspace/scratch/c2d514464ab5/merge-recovery/next-frontier/terminal-summary-draft/after/codex-rs/hepta-infer-worker-host/src/native_output_tests.rs"
+      }
+    ],
+    "patch_sha256": "a5d12abcc9144a0098f848a487d9f9b75b71780234698e0bfe404083c85fb1dd",
+    "strategy": "Clone bounded retained message state and NativeRunOutput. Apply the entire summary to these temporary values through the existing validation code. After every item succeeds, replace the helper and only output.output.",
+    "no_public_api_dependency_manifest_lock_or_authority_change": true,
+    "current_caps_unchanged": {
+      "message_items": 1024,
+      "text_bytes": 1048576,
+      "metadata_bytes": 1048576
+    },
+    "memory_tradeoff": "One temporary copy of bounded message/ID state plus output while handling a terminal summary. No additional retained unbounded collection.",
+    "existing_guard_implementation_unchanged": true,
+    "all_other_NativeRunOutput_fields_unchanged_by_complete_turn": true,
+    "original_four_helper_tests_byte_preserved": true,
+    "all_native_app_server_and_message_output_tests_byte_preserved": true,
+    "new_regressions": [
+      "terminal_summary_is_atomic_when_a_later_item_exceeds_the_byte_limit",
+      "terminal_summary_is_atomic_when_a_later_completed_item_conflicts"
+    ],
+    "regression_oracle": "Compare the entire NativeRunOutput before/after Err, then send a real delta for the first attempted new ID. Successful retry with only the original text plus retry proves no failed-batch text, ID ordering or completed marker leaked."
+  },
+  "original_test_assertion_proofs": [
+    {
+      "name": "terminal_summary_recovers_missing_delta_without_a_second_turn",
+      "assertion_calls_equal_after_only_message_state_argument_adaptation": true,
+      "count": 8,
+      "normalized_assertions_sha256": "391ba166c433dc964c76a9fac109945be2c7aa923ac037f416135df605b54824",
+      "fixture_source_equivalence_claimed": false
+    },
+    {
+      "name": "terminal_summary_rejects_oversize_and_foreign_transport_before_mutation",
+      "assertion_calls_equal_after_only_message_state_argument_adaptation": true,
+      "count": 4,
+      "normalized_assertions_sha256": "1a6eba81ca76a8f3f0765378adec2e0f75d54eda553cbe310fa651914ab15e4d",
+      "fixture_source_equivalence_claimed": false
+    },
+    {
+      "name": "terminal_summary_does_not_duplicate_streamed_content_or_restore_lost_authority",
+      "assertion_calls_equal_after_only_message_state_argument_adaptation": true,
+      "count": 6,
+      "normalized_assertions_sha256": "e592308f978f71b8265412e0ecdf9daa34c9146da07b62f5868783e12c3491d7",
+      "fixture_source_equivalence_claimed": false
+    }
+  ],
+  "intentional_semantic_conflict": {
+    "not_source_equivalent": true,
+    "incoming_third_fixture": "Directly assigned output text and supplied a different terminal message; the old implementation ignored summaries whenever output was nonblank.",
+    "current_third_fixture": "Observes an actual delta for message-final, then completes the same ID with the same text while owner authority is Lost.",
+    "resolution": "Retain current item identity, canonical completed-text replacement, retained earlier messages, late-delta refusal, metadata bounds and transport checks. Restore only the missing whole-summary rejection atomicity.",
+    "preserved_newer_tests": [
+      "terminal_summary_merges_last_message_without_dropping_earlier_messages",
+      "distinct_item_ids_preserve_identical_message_text",
+      "item_start_order_survives_later_item_text_arriving_first",
+      "conflicting_completion_or_late_delta_cannot_change_a_completed_item",
+      "message_transport_is_checked_before_any_item_state_mutation",
+      "interrupt_grace_keeps_item_identity_and_cannot_restore_cancelled_authority"
+    ]
+  },
+  "three_way_resolution_proofs": [
+    {
+      "base_tag": "first",
+      "path_kind": "prod",
+      "one_reviewed_conflict_region": true,
+      "remove_clean_legacy_assignment": true,
+      "resolved_blob": "4aecf51b3ad04e16eeeea0d79adb60df02a10e08",
+      "all_other_automerged_bytes_equal_current": true
+    },
+    {
+      "base_tag": "first",
+      "path_kind": "tests",
+      "one_reviewed_conflict_region": true,
+      "remove_clean_legacy_assignment": false,
+      "resolved_blob": "0cbd98a969ce6b3293278415b38314db726ddf13",
+      "all_other_automerged_bytes_equal_current": true
+    },
+    {
+      "base_tag": "second",
+      "path_kind": "prod",
+      "one_reviewed_conflict_region": true,
+      "remove_clean_legacy_assignment": true,
+      "resolved_blob": "4aecf51b3ad04e16eeeea0d79adb60df02a10e08",
+      "all_other_automerged_bytes_equal_current": true
+    },
+    {
+      "base_tag": "second",
+      "path_kind": "tests",
+      "one_reviewed_conflict_region": true,
+      "remove_clean_legacy_assignment": false,
+      "resolved_blob": "0cbd98a969ce6b3293278415b38314db726ddf13",
+      "all_other_automerged_bytes_equal_current": true
+    },
+    {
+      "base_tag": "third",
+      "path_kind": "prod",
+      "one_reviewed_conflict_region": true,
+      "remove_clean_legacy_assignment": true,
+      "resolved_blob": "4aecf51b3ad04e16eeeea0d79adb60df02a10e08",
+      "all_other_automerged_bytes_equal_current": true
+    },
+    {
+      "base_tag": "third",
+      "path_kind": "tests",
+      "one_reviewed_conflict_region": true,
+      "remove_clean_legacy_assignment": false,
+      "resolved_blob": "0cbd98a969ce6b3293278415b38314db726ddf13",
+      "all_other_automerged_bytes_equal_current": true
+    }
+  ],
+  "proposed_true_merge_plan": [
+    "Create a new isolated object store based on local d7d1726532ef42b22cc805777dc67ce761edf618, whose tree exactly matches server73a96; never modify the frozen17-step plan.",
+    "After independent review, perform actual default three-way merge with original90bb tip and verified base bb471d2e. Retain the current item-aware complete_turn call, remove the obsolete cleanly applied terminal_message assignment, retain the reviewed current test conflict region, and include the two-file atomicity repair as the semantic conflict resolution.",
+    "Preserve ordered parents [current,90bb] in the first real merge. Then independently perform the same actual merge with6612 using baseac6a and086d using base5c46; preserve both original foreign parents and exact reviewed conflict records. These last two may have unchanged trees after the first semantic integration, but must not use an ours strategy.",
+    "Verify the complete final file delta, original foreign-parent identities, exact tree identities, no protected ancestry, and unchanged original tests. Parent alone may publish after review and CI; no remote commit/ref operations are authorized to this worker."
+  ],
+  "native_qualification_required": {
+    "status": "NOT_RUN",
+    "harness": "Actual codex-hepta-infer-worker-host library and protocol dependencies through repository just test / scripts/run-nextest.py; no extracted substitute or Python behavior model.",
+    "working_directory": "<isolated exact candidate checkout>/codex-rs",
+    "negative_control": "just test -p codex-hepta-infer-worker-host --lib -E 'test(terminal_summary_is_atomic_when_a_later_)' (new test file against unchanged production beforeblob; expected two real failing assertions)",
+    "patched_scoped": "just test -p codex-hepta-infer-worker-host --lib -E 'test(native_app_server::native_output::tests::) | test(native_app_server::tests::terminal_summary_) | test(native_app_server::tests::message_output::) | test(message_transport_is_checked_before_any_item_state_mutation)'",
+    "project_tests": "just test -p codex-hepta-infer-worker-host",
+    "format": "just fmt; verify exact resulting diff and preserve any formatter output in qualification evidence",
+    "large_change_lint_if_required": "just fix -p codex-hepta-infer-worker-host; strict CI Clippy remains required",
+    "all_features_required": false,
+    "no_test_pass_claim_from_static_checks": true
+  },
+  "evidence": {
+    "PROPOSAL.json": "e4e0385f23c66e16f710f2588733ef5dced546f8096ca83e38dc7550b8dc59a1",
+    "THREE-HEAD-EVIDENCE.json": "e5250f008822653dffd8d8ee513ac3fc5458a5197d53f8552903c3342d792792",
+    "FILEWISE-CONFLICTS.json": "a15499fca03a14b1676dda2362a43399e8959ab5bb856e2b0e0c6978fe0a0bd8",
+    "AUDITED-SOURCES.json": "0239b918d5ddd99067146423c411b16c917c8b7c5e0791227a5a44873faf613e"
+  },
+  "writes_so_far": "Only new draft/evidence files under next-frontier; no Git objects/refs or frozen plan/source changes."
+}

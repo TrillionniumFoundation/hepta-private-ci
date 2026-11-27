@@ -1,0 +1,35 @@
+{
+  "numpy_development": {
+    "precommitted_before_execution": false,
+    "basis_ode_calls": 2,
+    "direct_ode_calls": 42,
+    "wall_seconds": 10.877126383999894,
+    "cpu_seconds": 10.843905718,
+    "maximum_rss_kib": 99180,
+    "optimizer_updates": 0,
+    "source_before_after_guard": true
+  },
+  "native": {
+    "precommitted_source": "372d84ed9a04cab0e1d873f9cdd534a33689b485",
+    "intent": "7fd5d823b9366b14ee54b9a1036e6cecee01129e",
+    "job": "1a1cefd297d-2564-194e",
+    "api_forward_calls": 39,
+    "basis_ode_calls": 39,
+    "independent_uniform_oracle_calls": 2,
+    "probe_wall_after_imports": 21.311887045856565,
+    "probe_cpu_after_imports": 20.995296779,
+    "probe_maximum_rss_kib": 619104,
+    "wrapper_wall_including_imports": 26.78875705297105,
+    "wrapper_child_cpu_including_imports": 24.627087,
+    "wrapper_child_peak_rss_kib": 696344,
+    "optimizer_updates": 0
+  },
+  "known_ode_forwards": 83,
+  "known_native_uniform_cascade_forwards": 2,
+  "total_optimizer_updates": 0,
+  "v1_inline_shell_source_validation_rejected": true,
+  "v1_successful_numerical_result": false,
+  "archive_recovery_ode_or_optimizer_calls": 0,
+  "hosted_ci": "Separate new-source execution; pending until its original output is observed. Not included above.",
+  "scope": "Disclosed small finite fixed-physics/fixed-support development and native VJP probes, not neural training or complete hardware/serving cost."
+}

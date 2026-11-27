@@ -1,0 +1,19 @@
+{
+  "schema": "c2-terminal-events-producer-compatibility-v1",
+  "sources": {
+    "proposals/localization-v2/episodes.py": {
+      "git_blob": "91c457dffa6a6203c9c2e8021cde788707cd56ff",
+      "source_commit": "a83b2ecda37b0e18b05e7fedcaee0a63037c464f"
+    },
+    "proposals/localization-v3/hcsn_study_support.py": {
+      "git_blob": "4440b9fe880df9edb1e9562cc3aa549bc22c2d99",
+      "source_commit": "a83b2ecda37b0e18b05e7fedcaee0a63037c464f"
+    }
+  },
+  "checked_fields": {
+    "episode_id": "episodes.py chosen id is f\"{sequence}-{start}\" and manifest entry id equals chosen id",
+    "batch_ids": "hcsn_study_support.batches yields [r['id'] for r in selected] in successive batch-size slices",
+    "epoch_commit": "c2_runner.py writes commits/epoch-{epoch:04d}.json with previous_commit, checkpoint and logical_main_updates; event carries its path/bytes/SHA receipt"
+  },
+  "review_scope": "same-session source and fixture review, not external custody or actual C2 completion"
+}

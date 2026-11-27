@@ -1,0 +1,153 @@
+{
+  "after_update_checkpoint": {
+    "bytes": 458040,
+    "semantic_sha256": "bf8dfe3543bead2060974aed4ce936d2dae13d27234d145499bc9a26c1735358",
+    "sha256": "0e3c88ba9e0c471f68a93c4f0d4eca9a9dd0d53d26ed3ea906c2f0c4072c18be"
+  },
+  "after_update_contains_explicit_mid_epoch_cursor": true,
+  "counts": {
+    "micro_forwards_started": 4,
+    "optimizer_completed": 1,
+    "optimizer_started": 1
+  },
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "episode_ids": [
+    "C01-6144",
+    "C02-5632",
+    "B05-4864",
+    "A05-4352",
+    "C04-4608",
+    "C01-1280",
+    "B02-1280",
+    "B05-3328",
+    "B05-2304",
+    "B03-4352",
+    "A05-512",
+    "A02-1280",
+    "B05-3072",
+    "A03-3328",
+    "C01-768",
+    "B02-2048",
+    "A05-4096",
+    "A04-2304",
+    "A04-4352",
+    "C01-4096",
+    "C05-2816",
+    "C04-3072",
+    "C05-4352",
+    "B04-5120",
+    "B02-1536",
+    "B04-2560",
+    "C04-4096",
+    "B03-1536",
+    "C02-2048",
+    "A05-2304",
+    "B01-512",
+    "B04-1536"
+  ],
+  "fit": "hcsn-s211-lr0.001",
+  "frozen_state_unchanged": true,
+  "full_six_fit_replay": false,
+  "full_state_restore_exact": true,
+  "gradient_after_clip_sha256": "a39987eb273dfef54136339684c0248e2ff8dcc3c5354f63b3f0957af83bad9d",
+  "gradient_before_clip_sha256": "a39987eb273dfef54136339684c0248e2ff8dcc3c5354f63b3f0957af83bad9d",
+  "identity": "hcsn-c2-cold-resume-20261119-d741-001",
+  "logical_next_update": 1513,
+  "metrics": {
+    "events": 8089,
+    "gradient_norm": 0.5310263703750616,
+    "loss": 1.1775529477712174,
+    "micro_forward_calls": 4
+  },
+  "optimizer_steps_after": [
+    1513.0,
+    1513.0,
+    1513.0,
+    1513.0,
+    1513.0,
+    1513.0,
+    1513.0,
+    1513.0,
+    1513.0,
+    1513.0,
+    1513.0
+  ],
+  "optimizer_steps_before": [
+    1512.0,
+    1512.0,
+    1512.0,
+    1512.0,
+    1512.0,
+    1512.0,
+    1512.0,
+    1512.0,
+    1512.0,
+    1512.0,
+    1512.0
+  ],
+  "original_controller_terminal": "UNKNOWN",
+  "original_metric_absolute_differences": {
+    "events": 0,
+    "gradient_norm": 0.0,
+    "loss": 0.0,
+    "micro_forward_calls": 0
+  },
+  "original_metrics": {
+    "events": 8089,
+    "gradient_norm": 0.5310263703750616,
+    "loss": 1.1775529477712174,
+    "micro_forward_calls": 4
+  },
+  "original_runtime_exact_replay": false,
+  "replica": 1,
+  "restored_checkpoint": {
+    "bytes": 450552,
+    "semantic_sha256": "dd05b930c0b37e40e0f687d54e60f09e40f81d8a0fad80b89bb5367ec11472e8",
+    "sha256": "e98973d5d41621727444a2c117b89a7f33925b96066f092136c2f945b1453da3"
+  },
+  "runtime": {
+    "executable": "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python",
+    "numpy": "2.3.5",
+    "package_records": {
+      "einops": {
+        "record_sha256": "ea66192231f3191f84ecf3d43d58588104cbabe986f799203cfa06757e8553d4",
+        "version": "0.8.1"
+      },
+      "mpmath": {
+        "record_sha256": "98750bf09ab626059be2cd3aaa538eacb69bcaa508890257cb98157002fb9d7e",
+        "version": "1.3.0"
+      },
+      "numpy": {
+        "record_sha256": "d13dcda1866fc8050dc90e40f9fd2eec4366507495a963a9887412dcb79170cb",
+        "version": "2.3.5"
+      },
+      "torch": {
+        "record_sha256": "611c990a4e2857516698250e3a116bab10bdd4b83b6cec878dd52a56371411d6",
+        "version": "2.8.0+cpu"
+      }
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "resolved_executable_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+    "torch": "2.8.0+cpu",
+    "torch_git": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7"
+  },
+  "scientific_admission": "HOLD",
+  "source_files_verified": 34,
+  "start_epoch": 126,
+  "status": "ONE_REAL_BATCH_COMPLETED",
+  "train_events": 89216,
+  "trainable_parameter_max_abs_changes": {
+    "core.network.layers.0.content_proposal.bias": 0.00035029756130564027,
+    "core.network.layers.0.content_proposal.weight": 0.0008720950511746373,
+    "core.network.layers.0.likelihood.bias": 0.0004738787943266154,
+    "core.network.layers.0.likelihood.weight": 0.001270932147603654,
+    "core.network.layers.0.state_embedding": 0.0012980623053593376,
+    "core.network.layers.0.write_gate.bias": 0.0014940414505699717,
+    "core.network.layers.0.write_gate.weight": 0.0015461140808777363,
+    "core.network.readout.bias": 0.0003101957574458483,
+    "core.network.readout.weight": 0.0005762420870919494,
+    "temporal_adapter.bias": 0.0002509022738948069,
+    "temporal_adapter.weight": 0.0005788013415297666
+  }
+}

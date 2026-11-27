@@ -1,0 +1,71 @@
+{
+  "schema": "hepta-v4-report-v2-pin-verification:v1",
+  "narrative_sha256_pins_verified": 11,
+  "pins": [
+    {
+      "path": "pre-unseal-audit.json",
+      "verification": "local exact bytes",
+      "sha256": "1f99364a998fe6e33be55b9f04974bb3134396ab67aa65be3eb3ab0735cb9991"
+    },
+    {
+      "path": "v4-results-report-candidate-v1.tgz",
+      "verification": "local frozen v1 archive exact bytes",
+      "sha256": "2024d21ec8ce6295ee5a37ccc7ade69396b397af1678f9b3a7506302ce0ad724"
+    },
+    {
+      "path": "prior-attempts/collect_v4_costs_v1_failed.py",
+      "verification": "local exact bytes",
+      "sha256": "4e696e23e955c383a9afc32c484440bcd233a5067855019266252e69da5f156e"
+    },
+    {
+      "path": "evaluation.json",
+      "verification": "local exact bytes",
+      "sha256": "512104e3709b7c4916e621d7b8a46447785ad1fbf9733d6296e0fdee41473456"
+    },
+    {
+      "path": "execution.json",
+      "verification": "local exact bytes",
+      "sha256": "6824be16670c536fe72e2c39bbedfd789b1ad9add03b258e756f4e9ffe6a7fc9"
+    },
+    {
+      "path": "original run/run-seal.json",
+      "verification": "same exact pin in original evaluation, audit and successful cost collector input inventory",
+      "sha256": "a7dfa11a64deef982d0ebdc36dc746b2b3e31c3a0b7def28920d4ab070177346"
+    },
+    {
+      "path": "cost-summary.json",
+      "verification": "local exact bytes",
+      "sha256": "accf5e39b045b7d1be627e5f68f3bdb5ab875d33ae1b1b675831b8271f748e38"
+    },
+    {
+      "path": "source-snapshot/preregistration.md",
+      "verification": "local exact bytes",
+      "sha256": "ae4be0a7c2c8807f286f8d96581c6efa51e3a9f935cec7c1e515dd18d146866b"
+    },
+    {
+      "path": "raw-evidence.tar.xz",
+      "verification": "original successful r2 collector streamed SHA check, confirmed by hash-pinned receipt",
+      "bytes": 13267684,
+      "sha256": "c462a550e18baa63ba230c9dd6c076d676b5fcc0f281589c023b82251b0aa579"
+    },
+    {
+      "path": "prior-attempts/collector-v1-stderr.log",
+      "verification": "local exact bytes",
+      "sha256": "ddeb04123a638f3bbcb57075cdf14c8211e9964988e4eabb4e6e9425593a09e8"
+    },
+    {
+      "path": "source-snapshot/protocol.json",
+      "verification": "local exact bytes",
+      "sha256": "fe0057c499c1a77ca7f5781a05425d83d59693b4250fb1560cab978afb4cd5b2"
+    }
+  ],
+  "protocol_actual_commit_identity": "verified against fa2a8f928dc41f8f3c48ea9bd0d45adf1e27ee09 GitHub file, original source-freeze, feature report and cost receipt",
+  "preregistration_actual_commit_identity": "exact committed source snapshot included",
+  "raw_result_and_cost_receipts_copied_byte_for_byte": true,
+  "prior_failed_collector_and_original_stderr_preserved": true,
+  "all_local_markdown_links_resolve": true,
+  "primary_mechanism_secondary_and_wrapper_costs_unchanged": true,
+  "all_twelve_derived_files_reproduced_byte_for_byte": true,
+  "mechanism_CSVs_and_PNG_SVG_unchanged_from_v1": true,
+  "no_new_training_model_or_label_access": true
+}

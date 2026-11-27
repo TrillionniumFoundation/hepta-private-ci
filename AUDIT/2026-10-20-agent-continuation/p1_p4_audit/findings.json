@@ -1,0 +1,393 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_count": 97,
+  "raw_log_count": 5,
+  "permission_posture": "DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO",
+  "production_files_changed": false,
+  "ci_triggered": false,
+  "cargo_run": false,
+  "models_downloaded": 0,
+  "target_host_workloads_executed": 0,
+  "findings": [
+    {
+      "id": "S1",
+      "classification": "CONFIRMED_CALLER_INVENTORY_BUG_ON_2920_ALREADY_FIXED_IN_2918",
+      "stages": [
+        "P2"
+      ],
+      "source_refs": [
+        {
+          "pr": 2920,
+          "path": "CALLERS.toml",
+          "source_head_sha": "20bf22ba773148a28a1e6b0d16b8401b731d37db",
+          "source_blob": "494c0b6b90fe4baf764d8503296738b2cbe2471f",
+          "sha256": "698b65e27d7a815081a082dd8dec1c35db2aae4a9c7041fe058bff4a93fa3a78",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/20bf22ba773148a28a1e6b0d16b8401b731d37db/CALLERS.toml"
+        },
+        {
+          "pr": 2918,
+          "path": "CALLERS.toml",
+          "source_head_sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+          "source_blob": "9171cd7059507cb70b91440a4c2d6c4f1dc72c9a",
+          "sha256": "6ba1e541608b96d8d9bb11e5be4968999e3d28690d92b929c9ded355f4af7451",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ca5b70d2684fb96063f5b70bb276525906dae7b6/CALLERS.toml"
+        },
+        {
+          "pr": 2918,
+          "path": "codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs",
+          "source_head_sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+          "source_blob": "18592309972fb936462b2a8100f7006f260a282e",
+          "sha256": "805d7a1ac669ba802a936603192204ff1b5724ef821cfbe4e7375d10458b0097",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ca5b70d2684fb96063f5b70bb276525906dae7b6/codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs"
+        },
+        {
+          "pr": 2918,
+          "path": "codex-rs/hepta-neuron/src/runtime.rs",
+          "source_head_sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+          "source_blob": "7427eafd9dc57e8786649cce13ec2fbfe231621a",
+          "sha256": "cb86aa9c25494ad58f86be5930ad7289c020f5b3d9a09aa8170f48cf10f2d202",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ca5b70d2684fb96063f5b70bb276525906dae7b6/codex-rs/hepta-neuron/src/runtime.rs"
+        },
+        {
+          "pr": 2918,
+          "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+          "source_head_sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+          "source_blob": "3bc0927b935c6aac429d59964fe7210b4af96052",
+          "sha256": "f1531ce896bd8a1b3e1b2b8c45adb75c38a98aeb0d04af8a3596c212bd84d7c9",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ca5b70d2684fb96063f5b70bb276525906dae7b6/qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json"
+        }
+      ],
+      "observed": "2920 omits two actual guarded-effect callers; raw signed job 118411015933 fails. Selected 2918 contains both inventories, independent B4 gate and Q24 repair; exact job 118223944566 succeeds. 2921 CALLERS blob equals 2918 but its composition is less complete.",
+      "shortest_next_action": "Keep 2918 exact composition; do not create a synonymous B4 repair or replace it with 2920/2921.",
+      "evidence_jobs": [
+        118411015933,
+        118223944566,
+        118411313757
+      ],
+      "requires_external_input_to_fix": false
+    },
+    {
+      "id": "S2",
+      "classification": "CONFIRMED_TELEMETRY_SEMANTIC_DEFECT",
+      "stages": [
+        "P1",
+        "P4"
+      ],
+      "source_refs": [
+        {
+          "pr": 2734,
+          "path": "codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs",
+          "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+          "source_blob": "e56584aa36046710c767ec264fbe09757ae67a3a",
+          "sha256": "511322c003983900d5e4e2c971dc51a334fd3efa2f223f814fcafe3ed9adb73e",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dc271d4f47028e941decce70cc8ef81fb24d2141/codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs"
+        },
+        {
+          "pr": 2918,
+          "path": "codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs",
+          "source_head_sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+          "source_blob": "18592309972fb936462b2a8100f7006f260a282e",
+          "sha256": "805d7a1ac669ba802a936603192204ff1b5724ef821cfbe4e7375d10458b0097",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ca5b70d2684fb96063f5b70bb276525906dae7b6/codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs"
+        },
+        {
+          "pr": 2918,
+          "path": "codex-rs/hepta-neuron/src/metrics.rs",
+          "source_head_sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+          "source_blob": "bc31ba1a063c41427ab070f221fd818c15a33071",
+          "sha256": "5de92b54cfbe9038e1fb46f18f3c854a84370ef9009e4af0e2fffefbc8895650",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ca5b70d2684fb96063f5b70bb276525906dae7b6/codex-rs/hepta-neuron/src/metrics.rs"
+        }
+      ],
+      "observed": "2734 replaces absent CPU with wall elapsed and absent RSS with zero without per-event observation availability. Its p95/p99 are one batch duration, not measured workload distributions; equal one-sample quantiles alone are not an algorithm defect.",
+      "shortest_next_action": "Map 2918 Option/availability-mask contract into the selected Cell metric schema and writer/replay/export consumers; preserve versioned decoding, measured-zero distinction and final-use. Do not replace the complete same-path worker, whose APIs differ.",
+      "requires_external_input_to_fix": false,
+      "validation_remaining": "Unavailable CPU/RSS vs measured zero, persistence/reopen, source+merge native tests; real target-host distributions later."
+    },
+    {
+      "id": "S3",
+      "classification": "FOUR_REPRODUCED_REPORT_VALIDATOR_DEFECTS_WITH_EXISTING_COMPLETE_REPAIR",
+      "stages": [
+        "P4"
+      ],
+      "source_refs": [
+        {
+          "pr": 2734,
+          "path": "scripts/hepta-cell-split-target-matrix.py",
+          "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+          "source_blob": "a9081eadf885afd3d14aeb2b885168ed94f272aa",
+          "sha256": "f6a2e8c0386ea314d714aaf4305c4eb2e509d0a55d94a5a4c5b848c62e459fdb",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dc271d4f47028e941decce70cc8ef81fb24d2141/scripts/hepta-cell-split-target-matrix.py"
+        },
+        {
+          "pr": 2850,
+          "path": "scripts/hepta-cell-split-target-matrix.py",
+          "source_head_sha": "05cf9bb88fc22054ebda949b34d95e908c4ab9de",
+          "source_blob": "39cfb2a7df5295db978e0089bcb9d201fa402456",
+          "sha256": "a392d6ec4b04b103af52218ff283588b691220b0a6658d7c4d9f3ba9603235cd",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/05cf9bb88fc22054ebda949b34d95e908c4ab9de/scripts/hepta-cell-split-target-matrix.py"
+        },
+        {
+          "pr": 2850,
+          "path": "scripts/test_hepta_cell_split_target_matrix.py",
+          "source_head_sha": "05cf9bb88fc22054ebda949b34d95e908c4ab9de",
+          "source_blob": "6a2ed3fc803e44da30b766b7f8e75ddb944739cf",
+          "sha256": "789ffc1ece09ecd05f86948dc45a4678ce5df1363e63896c0520321f75572920",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/05cf9bb88fc22054ebda949b34d95e908c4ab9de/scripts/test_hepta_cell_split_target_matrix.py"
+        }
+      ],
+      "observed": "Exact 2734 source accepts unsigned self-asserted observer, duplicate 17th case, invalid factor and incorrect final report digest. Existing 2850 source rejects all four. Only synthetic adversarial inputs were used; zero actual workloads/signatures/models.",
+      "shortest_next_action": "Reuse existing 2850 complete script+tests on a reconciled current Cell base, preserving all 27 parameter-expanded tests and full gates. Candidate is ahead1/behind2 from current2734; old green does not qualify new merge. Avoid a synonymous PR.",
+      "evidence_jobs": [
+        117703142266
+      ],
+      "local_repro": "negative_validator_repro_results.json",
+      "requires_external_input_to_fix": false
+    },
+    {
+      "id": "I1",
+      "classification": "PRETRAINED_BACKEND_AND_PRODUCT_BATCH_INTEGRATION_GAP_IN_INSPECTED_CURRENT_OWNERS",
+      "stages": [
+        "P1"
+      ],
+      "source_refs": [
+        {
+          "pr": 2695,
+          "path": "codex-rs/hepta-neuron/src/cell_head.rs",
+          "source_head_sha": "ecc4f8c42035bf6fdec288137ddc822e619d5e59",
+          "source_blob": "43e2259fd71a000c953cad69b85f024e506de1e3",
+          "sha256": "1c1f81c3dcf8e9839b1f45223272304816dc4e3625e46e68ba491f01f959a4e7",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ecc4f8c42035bf6fdec288137ddc822e619d5e59/codex-rs/hepta-neuron/src/cell_head.rs"
+        },
+        {
+          "pr": 2695,
+          "path": "codex-rs/hepta-neuron/src/multimodal_stem.rs",
+          "source_head_sha": "ecc4f8c42035bf6fdec288137ddc822e619d5e59",
+          "source_blob": "624e4fcbd86d3d0b6604015db547d0a416b3afa9",
+          "sha256": "94806c0e0cc3321089d3b4fb874dab95ac7f8eaa2432646f77d937d84c83c176",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ecc4f8c42035bf6fdec288137ddc822e619d5e59/codex-rs/hepta-neuron/src/multimodal_stem.rs"
+        },
+        {
+          "pr": 2695,
+          "path": "codex-rs/hepta-neuron/src/shared_encoder.rs",
+          "source_head_sha": "ecc4f8c42035bf6fdec288137ddc822e619d5e59",
+          "source_blob": "195d93e81308b33662dc4dcba0516aa1d5071f3e",
+          "sha256": "10ff449054491168612e3d0700f7dd82b56818b2125b744a22a47fbd7b934bc6",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ecc4f8c42035bf6fdec288137ddc822e619d5e59/codex-rs/hepta-neuron/src/shared_encoder.rs"
+        },
+        {
+          "pr": 2734,
+          "path": "codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs",
+          "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+          "source_blob": "e56584aa36046710c767ec264fbe09757ae67a3a",
+          "sha256": "511322c003983900d5e4e2c971dc51a334fd3efa2f223f814fcafe3ed9adb73e",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dc271d4f47028e941decce70cc8ef81fb24d2141/codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs"
+        },
+        {
+          "pr": 2734,
+          "path": "codex-rs/hepta-neuron/src/data_plane.rs",
+          "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+          "source_blob": "2778ad028aad2d9a3ed9c5e2209ba6480cafb765",
+          "sha256": "56b7ce6462f357e9659f6688ac3efca804805c61be89d92e18191fc6c00275f7",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dc271d4f47028e941decce70cc8ef81fb24d2141/codex-rs/hepta-neuron/src/data_plane.rs"
+        },
+        {
+          "pr": 2918,
+          "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+          "source_head_sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+          "source_blob": "eda16d16177b6ba90d2984265e9e34b1602b01bd",
+          "sha256": "86e3f2be9c9b40b1d7d01f9364dcffd06dd1c65b1f644e165314d21d5db19758",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ca5b70d2684fb96063f5b70bb276525906dae7b6/codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs"
+        },
+        {
+          "pr": 2918,
+          "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-neuron-microbatch-qualification.rs",
+          "source_head_sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+          "source_blob": "9cfb4e66b6c15c2d89ad292efe0ce2a33094e06c",
+          "sha256": "2e196c3ee20db3bf7b296442f2b4dec9bae03d2f925691656f13319449ee8fc0",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ca5b70d2684fb96063f5b70bb276525906dae7b6/codex-rs/hepta-infer-worker-host/src/bin/hepta-neuron-microbatch-qualification.rs"
+        },
+        {
+          "pr": 2918,
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+          "source_head_sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+          "source_blob": "26ee6559a9de6baf5846ea367d02e5ffb01a40d6",
+          "sha256": "c3389406db8360d0c6430e20117d58a19295b357245e81c078077adf88b0f7da",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ca5b70d2684fb96063f5b70bb276525906dae7b6/codex-rs/hepta-infer-worker-host/src/model_worker.rs"
+        },
+        {
+          "pr": 2918,
+          "path": "codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs",
+          "source_head_sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+          "source_blob": "18592309972fb936462b2a8100f7006f260a282e",
+          "sha256": "805d7a1ac669ba802a936603192204ff1b5724ef821cfbe4e7375d10458b0097",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ca5b70d2684fb96063f5b70bb276525906dae7b6/codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs"
+        }
+      ],
+      "observed": "One shared Arc encoder call and bounded planner/index/head reference math exist. 2734 ReferenceBackendBatch loops per-head math; 2918 reference explicitly is not learned. Native AppServer worker entrypoint is not the Neuron batch loop. No pinned pretrained driver qualification appears in inspected source set. This is not a claim about all historical branches.",
+      "shortest_next_action": "Choose one signed Cell/feature representation, connect real bounded dequeue/batch/SDK execute/validate/durable ack under final-use, and implement pinned model adapter with actual invocation evidence. Reuse existing seams, not unrelated 2695 vendor history.",
+      "external_inputs": [
+        "Pinned licensed weights/tokenizer/model hash",
+        "Named target device/driver",
+        "Independent source and comparison custody"
+      ]
+    },
+    {
+      "id": "C1",
+      "classification": "CANONICAL_OWNER_EXISTS_AND_SECONDARY_EXECUTION_IS_CORRECTLY_DISABLED",
+      "stages": [
+        "P2"
+      ],
+      "source_refs": [
+        {
+          "pr": 2734,
+          "path": "codex-rs/hepta-supervisor/src/cell_split.rs",
+          "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+          "source_blob": "69de2e053bdc657278230a620abfa63b27d58dc5",
+          "sha256": "a597c6e5bf42d1f03e4c3a0cf421e2869dcaa944383cff97578887b941576c41",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dc271d4f47028e941decce70cc8ef81fb24d2141/codex-rs/hepta-supervisor/src/cell_split.rs"
+        },
+        {
+          "pr": 2684,
+          "path": "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
+          "source_head_sha": "b5d32004467c1d9fc7fe27ff9dbf9fbf0a13f6d7",
+          "source_blob": "aa4093880d1e0052c0f3549aca73942ad285595b",
+          "sha256": "db150bdc03c882bd08224cf6ff746afbfa25ffc89fdce9de5389251d9874cbff",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5d32004467c1d9fc7fe27ff9dbf9fbf0a13f6d7/codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+        },
+        {
+          "pr": 2684,
+          "path": "codex-rs/hepta-operator-acceptance/src/cell_split_target_host_runtime.rs",
+          "source_head_sha": "b5d32004467c1d9fc7fe27ff9dbf9fbf0a13f6d7",
+          "source_blob": "f5b0d3e8909d8718a648ca37257d167c42588a16",
+          "sha256": "31335055c1f3ebf5a92b32c2e6ef754432d27058035c83e33230f9a1a2e7b358",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5d32004467c1d9fc7fe27ff9dbf9fbf0a13f6d7/codex-rs/hepta-operator-acceptance/src/cell_split_target_host_runtime.rs"
+        },
+        {
+          "pr": 2684,
+          "path": "codex-rs/hepta-operator-acceptance/src/cell_split_execution_owner.rs",
+          "source_head_sha": "b5d32004467c1d9fc7fe27ff9dbf9fbf0a13f6d7",
+          "source_blob": "ee76a01aff2fd53ccac066b998645a7870441e27",
+          "sha256": "8a7736079fe7a346081efba412d5653b046cb55bda54b400edc2ff7419844a36",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5d32004467c1d9fc7fe27ff9dbf9fbf0a13f6d7/codex-rs/hepta-operator-acceptance/src/cell_split_execution_owner.rs"
+        }
+      ],
+      "observed": "2734 secondary Supervisor mutators reject non-test execution. Existing 2684 operator owner retains original four effects, prepared/WAL identity and ambiguous reconciliation with no second Execute. Exact source Architecture includes69 owner tests passed. Local file runtime and unsigned lifecycle runner do not prove real distributed production effect composition.",
+      "shortest_next_action": "Preserve 2684 canonical ownership; reconcile existing desired primitives there. Do not create a Cell executor on2734. Close same-Control B/effect/C and original native last-use/generation fencing using real domain owners.",
+      "evidence_jobs": [
+        117564830781
+      ],
+      "external_inputs": [
+        "Original physical CAS/CNS/Supervisor/TaskFlow adapters",
+        "Independently held grant/signature trust",
+        "Power-loss target and witnessed rollback floor",
+        "Independent observer/operator acceptance"
+      ]
+    },
+    {
+      "id": "D1",
+      "classification": "CONFIRMED_ANCESTOR_CI_DRIFT_NOT_A_REPRODUCED_CURRENT_FAILURE",
+      "stages": [
+        "P0",
+        "P2"
+      ],
+      "observed": "Live2597 is91a662a, three CI/style commits beyond9030451. 2642/2684 retains frozen9030451 ancestry. Current2684 raw collective Control command still has minimum-tests1 and no serial test-threads. 2684 source gate itself succeeded. Upstream fork/OFD lock explanation remains a hypothesis.",
+      "shortest_next_action": "Review/reuse existing2597 full-suite serial/minimum30 changes with current2684 count/extra3 orphan tests and six post-effect gates, without changing error mapping or removing tests.",
+      "evidence": "canonical_owner_dag.json",
+      "evidence_jobs": [
+        117564830781
+      ],
+      "requires_external_input_to_review": false
+    },
+    {
+      "id": "C2",
+      "classification": "EXISTING_SIGNED_FUTURE_WINDOW_CONTRACT_AND_PRODUCT_CALLERS_FOUND",
+      "stages": [
+        "P3"
+      ],
+      "source_refs": [
+        {
+          "pr": 2734,
+          "path": "codex-rs/hepta-intelligence/src/cell_ndu_selection.rs",
+          "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+          "source_blob": "4bc497de0abd65c33dc7eb16389f65cf42cd103e",
+          "sha256": "657fc27ef2086ceaf14f292c4aef81db2b7bf92761acff5ecf277de71dc4e456",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dc271d4f47028e941decce70cc8ef81fb24d2141/codex-rs/hepta-intelligence/src/cell_ndu_selection.rs"
+        },
+        {
+          "pr": 2734,
+          "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+          "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+          "source_blob": "b46cb572492afa8646b92e5213ce9c47a4feaf7d",
+          "sha256": "da730741b87b34a0896594ab65b3226b93cbcf9c57b27d7f1c44d32f94b6c4c5",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dc271d4f47028e941decce70cc8ef81fb24d2141/codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs"
+        },
+        {
+          "pr": 2734,
+          "path": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+          "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+          "source_blob": "a75053280ae55e6329eab4276034cbfebb8d23b3",
+          "sha256": "d455220de2b728faa2e06b497da87000b41cf28b2f8cd9953d5af84ee70b0d44",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dc271d4f47028e941decce70cc8ef81fb24d2141/codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs"
+        },
+        {
+          "pr": 2734,
+          "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+          "source_blob": "d407375ed7a8f645523e58f0f9435b0359b6f25d",
+          "sha256": "15e82c5fb2b58ec0fffbb74e2b05be75ede0f3d0e21603b95e047edd6ca9fcf4",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dc271d4f47028e941decce70cc8ef81fb24d2141/codex-rs/hepta-intelligence-eval/src/product_runner.rs"
+        },
+        {
+          "pr": 2734,
+          "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+          "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+          "source_blob": "39efe8c7583678df35ddd63ee98cfd5e0e6c17d4",
+          "sha256": "0749241ab62235eac257ccf244aebc3e6be3eabbb9eafc667f4c02dde648eb3c",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dc271d4f47028e941decce70cc8ef81fb24d2141/codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs"
+        },
+        {
+          "pr": 2695,
+          "path": "codex-rs/hepta-ndu/src/group.rs",
+          "source_head_sha": "ecc4f8c42035bf6fdec288137ddc822e619d5e59",
+          "source_blob": "6554ae80d91e8e46a2178afed999591695a09aff",
+          "sha256": "5c680358e812b46e5c78b4b2f94f52d020dfedd87f7da5011f14f1696006790b",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ecc4f8c42035bf6fdec288137ddc822e619d5e59/codex-rs/hepta-ndu/src/group.rs"
+        },
+        {
+          "pr": 2695,
+          "path": "codex-rs/hepta-ndu/src/shadow_system2.rs",
+          "source_head_sha": "ecc4f8c42035bf6fdec288137ddc822e619d5e59",
+          "source_blob": "963ddeeb8115df60a4a66d621367fac6bd773d69",
+          "sha256": "8c795ae8f3aeac7aac03f2964a814eb2cd349005a751fd52cdf39035918f339f",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ecc4f8c42035bf6fdec288137ddc822e619d5e59/codex-rs/hepta-ndu/src/shadow_system2.rs"
+        }
+      ],
+      "observed": "Cell advisory seam has only opaque future_window_digest, but same source has typed2-32 temporal windows, signed freeze, unique cuts, real interval bounds, independent roles, fenced holdout, product qualifier and opaque selection/rollback consumers. No repository-wide missing-window-schema bug was found; group/critic shadow remains deterministic DENY_ALL.",
+      "shortest_next_action": "Reuse signed longitudinal product_runner and verified selector receipts when mapping actual Cell/physical-owner consumers. Do not invent another future schema or treat the advisory digest as qualification.",
+      "external_inputs": [
+        "Real preregistered freeze and prospective data after it",
+        "Trusted clock and independently held observer/generator/evaluator/selector keys",
+        "Measured no-change utility/negative transfer and predefined statistical analysis"
+      ]
+    },
+    {
+      "id": "E1",
+      "classification": "TARGET_SCALE_AND_INDEPENDENT_OPERATIONAL_ACCEPTANCE_UNVERIFIED",
+      "stages": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "observed": "Four reference Cell sizes and64 validator rows are not64 source-bound production workload runs. No audited target-host full matrix or independent production signer/observer/operator acceptance was produced here.",
+      "shortest_next_action": "After software/P0 integration, run fixed native binary/model/workload on named host for64,256,1024,4096 Cells x16 factors, preserving all measured distributions, availability, faults/recovery and paired split/no-change receipts, then obtain independent attestation/acceptance.",
+      "external_inputs": [
+        "Named physical target and source-bound model/native binary",
+        "Independent prime-order Ed25519 observer custody",
+        "True future windows and physical fault injector",
+        "Final operator acceptance"
+      ]
+    }
+  ]
+}

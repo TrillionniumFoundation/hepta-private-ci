@@ -1,0 +1,84 @@
+{
+  "captured_utc": "2026-11-22T17:33:48.377720+00:00",
+  "source_head": "64ddc830635a8ced20e42db3d1767a3467c68ac6",
+  "source_tree": "f3df6f7e2083061d4db674bb446d726fd037c75d",
+  "remote_head_before_publication": "f5eabeecd1e7a77493c933bb8cdabc8d7a81ea37",
+  "main_unchanged": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "branch_deletions": 0,
+  "prepared_source": {
+    "v8_checkout": {
+      "commit": "278c76e8e34912e99f964b2099a49bf70a3dabc9",
+      "scope": "One existing long-path Git setting before Windows checkout; original five steps and all tests retained."
+    },
+    "authbus": {
+      "commit": "37fa48715f4eb2b886d2b737155505052b909b85",
+      "files": 4,
+      "production_changes": 0,
+      "linux_passed": 190,
+      "original_ignored": 1,
+      "windows_new_cases": 4,
+      "windows_runtime": "Pending native CI; GNU check and Clippy passed before the documented formatter-only wrapping.",
+      "original_unix_positive_bodies": "Both byte-identical and passed on Linux.",
+      "root_direct_linux_inputs_bound": 101
+    },
+    "factorial": {
+      "merge": "64ddc830635a8ced20e42db3d1767a3467c68ac6",
+      "parents": [
+        "37fa48715f4eb2b886d2b737155505052b909b85",
+        "77c4b04d90392e90ac02eae1f22b2730417195ee"
+      ],
+      "paths": 22,
+      "original_conflicts": 1,
+      "current_tests_preserved": 17,
+      "incoming_tests_retained": 27,
+      "scoped_passed": 44,
+      "original_discovery_passed": 201,
+      "scoped_cases_subset_of_discovery": true,
+      "cli_checks_passed": 2,
+      "input_bindings": 43,
+      "final_format_change": "Only one EOF blank line removed from each of two new modules; complete AST and assertions unchanged.",
+      "independent_review_sha256": "ddc35a79ede127a2659e40cb589a8c034c529c9bfa2eda7fb33c6cec24229410"
+    }
+  },
+  "native_f5": {
+    "private_artifact_controls": "9 passed, zero retries; original receipts are in the preceding native-f5 QA package.",
+    "original_windows_scope": {
+      "run": 45044041266,
+      "groups": 19,
+      "cases": 175,
+      "passed": 171,
+      "failed": 4,
+      "retries": 0,
+      "missing": 0,
+      "overall": "FAIL_DECLARED_WINDOWS_SCOPE",
+      "owners": "98/98 in eight groups passed",
+      "process": "73/77 in eleven groups passed",
+      "report_sha256": "9bef2a727e2c8bf0b75a3f55a5896df8031427b3f2c5796ad29e1050985764a5"
+    },
+    "bazel_lock": "Original update and check passed with no lock or tracked-file change; preceding native-f5 QA contains original receipts.",
+    "main_ci_snapshot": "32 success, five skipped, seven failures including aggregates, one Intel macOS job still running in the captured snapshot. Repository checks and exact-source operator qualification passed. Deterministic merge, Windows shards 2/3/4 and Linux musl still failed.",
+    "ndu_locations": "All twelve original and fresh-root comparison cases still failed; changing location did not establish a qualified Windows isolation mechanism."
+  },
+  "known_unmerged_components": {
+    "e081": {
+      "tree": "1d8e8a036fb96922fd12808c662519959f029391",
+      "status": "Blocked: original whitespace gate exit 2 with 24 diagnostics in immutable evidence. No pin or log cleanup.",
+      "historical_key_audit": "Two distinct recorded runs used the same one-shot key; preserve both original receipts and the current consumed-entry restriction."
+    },
+    "151": "Original additional source validation is still in progress. Earlier 14 worker-host failures are not claimed closed by narrower signed-admission coverage."
+  },
+  "protection": {
+    "snapshot_refs": 7915,
+    "protected_refs": 559,
+    "protected_nodes": 1497,
+    "known_intersection_with_source_ancestry": [],
+    "STOP_reachable": false,
+    "historical_551st_pin_identity_unrecovered": true
+  },
+  "limits": [
+    "This is a reviewed candidate, not a main merge or a completed repository audit.",
+    "Component tests are bound to their actual source inputs; no whole-stack or post-format local test is claimed.",
+    "Native results belong to exact f5 and do not qualify this later source.",
+    "No ordinary branch is eligible for retirement until its actual current tip is in main."
+  ]
+}

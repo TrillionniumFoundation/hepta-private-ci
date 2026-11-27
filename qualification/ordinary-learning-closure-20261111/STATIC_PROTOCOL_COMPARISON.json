@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.afd2-to-unified-direct-file-comparison.v1",
+  "base": "afd2c91b3b9ef75ab9a174e3af772ad322118f7a",
+  "head": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+  "paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs",
+      "blob": "fb65afa0d4db993436857c686f72349db71266cc",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/afd2c91b3b9ef75ab9a174e3af772ad322118f7a/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs",
+      "unified_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/54de04371be6d625e1ecda49931c7d3585d0a2d0/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs",
+      "encoding": "base64",
+      "content_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+      "blob": "b5e1137882fe7f9072b339f222d912a581d89759",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/afd2c91b3b9ef75ab9a174e3af772ad322118f7a/codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+      "unified_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/54de04371be6d625e1ecda49931c7d3585d0a2d0/codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+      "encoding": "base64",
+      "content_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+      "blob": "5ebb73cab07bc8fb2c82a75ec85229ec858a6994",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/afd2c91b3b9ef75ab9a174e3af772ad322118f7a/codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+      "unified_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/54de04371be6d625e1ecda49931c7d3585d0a2d0/codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+      "encoding": "base64",
+      "content_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs",
+      "blob": "44cd77694b991897d8298e23101681e7269ead90",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/afd2c91b3b9ef75ab9a174e3af772ad322118f7a/codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs",
+      "unified_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/54de04371be6d625e1ecda49931c7d3585d0a2d0/codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs",
+      "encoding": "base64",
+      "content_equal": true
+    }
+  ],
+  "method": "Fetch each exact path at both full commit IDs; compare the Git blob ID and the complete base64-encoded content.",
+  "qualification": "Static equality of these four protocol files only; not a native replay of 54de.",
+  "discarded_method": "The compare endpoint returned 300 files (its cap); absence from that list was not used as proof of unchanged files."
+}

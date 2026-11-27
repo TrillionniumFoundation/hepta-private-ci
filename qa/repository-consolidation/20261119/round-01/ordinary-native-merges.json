@@ -1,0 +1,72 @@
+[
+  {
+    "branch": "codex/mem11-host-audit-diagnostic-20261112-21bb",
+    "incoming": "6ab2a6a034458a20d54cbee9da95c7ec701b4e9d",
+    "parent_before": "4231aef0abcb61f5b64dd0c001e531f031e657a7",
+    "exit": 0,
+    "stdout": "Auto-merging .github/workflows/hepta-mem-python.yml\nMerge made by the 'ort' strategy.\n .github/workflows/hepta-mem-python.yml          |  2 +-\n scripts/ndu_real_runtime/isolation_host.py      | 83 +++++++++++++++++++++++--\n scripts/ndu_real_runtime/test_isolation_host.py | 43 ++++++++++++-\n 3 files changed, 122 insertions(+), 6 deletions(-)\n",
+    "stderr": "",
+    "commit": "52459b2bdf45fbd0dd7990882f148e591167599e",
+    "tree": "6822e2901047c8b2526d0d3bbcd7d7f220a4c36d"
+  },
+  {
+    "branch": "docs/hcsn-current-c2-terminal-correction-20261111-t3",
+    "incoming": "23acdf7051334cbef23b518e228b4790ba34c852",
+    "parent_before": "52459b2bdf45fbd0dd7990882f148e591167599e",
+    "exit": 0,
+    "stdout": "Auto-merging qualification/hcsn_differentiable/CURRENT.md\nMerge made by the 'ort' strategy.\n qualification/hcsn_differentiable/CURRENT.md | 31 +++++++++++++++++++++++++++-\n 1 file changed, 30 insertions(+), 1 deletion(-)\n",
+    "stderr": "",
+    "commit": "f1840246306f711cde7ea36611a50df3907a4722",
+    "tree": "3388bb63d959236207850aef54edc7f36f917f2f"
+  },
+  {
+    "branch": "codex/hcsn-c1-single-clock-api-20261110-c385",
+    "incoming": "a5f32fb86588bd88b5408dea6c920172d48f6e75",
+    "parent_before": "f1840246306f711cde7ea36611a50df3907a4722",
+    "exit": 0,
+    "stdout": "Merge made by the 'ort' strategy.\n proposals/localization-v3/continuation.py      |  5 +++--\n proposals/localization-v3/test_continuation.py | 31 ++++++++++++++++++++++++++\n 2 files changed, 34 insertions(+), 2 deletions(-)\n",
+    "stderr": "",
+    "commit": "449d6b8d1e109923f2a0fca96a18ab05d2b36da8",
+    "tree": "8fbf1ccdb74f3fb280ea5682b49270060f42f59c"
+  },
+  {
+    "branch": "codex/p0-group-subject-receipt-binding-20261023",
+    "incoming": "0575bbb58437945e9726a08b08464647e5cd5c30",
+    "parent_before": "449d6b8d1e109923f2a0fca96a18ab05d2b36da8",
+    "exit": 0,
+    "stdout": "Auto-merging codex-rs/hepta-ndu/src/lib.rs\nMerge made by the 'ort' strategy.\n codex-rs/hepta-ndu/GROUP_SYSTEM2.md            |  26 +++-\n codex-rs/hepta-ndu/src/group.rs                |  40 +++++-\n codex-rs/hepta-ndu/src/group_tests.rs          | 171 +++++++++++++++++++++++++\n codex-rs/hepta-ndu/src/lib.rs                  |   1 +\n codex-rs/hepta-ndu/src/shadow_system2.rs       |  10 +-\n codex-rs/hepta-ndu/src/shadow_system2_tests.rs |  28 ++++\n 6 files changed, 269 insertions(+), 7 deletions(-)\n",
+    "stderr": "",
+    "commit": "df4bd270a38012586bad926970cb40a5db182feb",
+    "tree": "231470d196955a00add4a8bb353271ff2dfd8f35"
+  },
+  {
+    "branch": "codex/utf8-settlement-bound",
+    "incoming": "4146fc33d8d5de756922ed895561853e2382288e",
+    "parent_before": "df4bd270a38012586bad926970cb40a5db182feb",
+    "exit": 0,
+    "stdout": "Auto-merging codex-rs/hepta-infer-worker-host/src/native_app_server.rs\nAuto-merging codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs\nMerge made by the 'ort' strategy.\n .../src/native_app_server.rs                       | 41 ++++++++++++++--------\n .../src/native_app_server_tests.rs                 | 13 +++++++\n 2 files changed, 40 insertions(+), 14 deletions(-)\n",
+    "stderr": "",
+    "commit": "cb536551015a1dac1a859d4f98c777429934c4f8",
+    "tree": "cfaf76d064d14a7217c473529c987f83dd76a56d"
+  },
+  {
+    "branch": "codex/framework-state-eval-20261112-8166",
+    "incoming": "ea4b1e0452adb10c8cb0b7eae2ba1754689d11c6",
+    "parent_before": "cb536551015a1dac1a859d4f98c777429934c4f8",
+    "exit": 0,
+    "stdout": "Auto-merging codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs\nAuto-merging codex-rs/hepta-agentd/src/neuron_cell_evaluation_readback_tests.rs\nAuto-merging codex-rs/hepta-intelligence-eval/src/product_execution.rs\nAuto-merging codex-rs/hepta-intelligence-eval/src/product_runner.rs\nMerge made by the 'ort' strategy.\n .../src/cell_q24_learning_owner_error.rs           | 27 ++++++++\n .../src/cell_q24_learning_owner_error_tests.rs     | 76 ++++++++++++++++++++++\n .../hepta-agentd/src/neuron_cell_evaluation.rs     | 11 +++-\n .../src/neuron_cell_evaluation_readback_tests.rs   | 38 ++++++++---\n .../src/product_execution.rs                       | 10 ++-\n .../hepta-intelligence-eval/src/product_runner.rs  | 14 +++-\n 6 files changed, 164 insertions(+), 12 deletions(-)\n",
+    "stderr": "",
+    "commit": "50018f53b0fd46320be7390aeef6277ff5ab7898",
+    "tree": "be59bd4b28158026ec4c258b761dd701842f1d0c"
+  },
+  {
+    "branch": "research/p0-shared-encoder-output-provenance-20261023",
+    "incoming": "2924190c7f01b04167feb16f9f45496feab10bec",
+    "parent_before": "50018f53b0fd46320be7390aeef6277ff5ab7898",
+    "exit": 0,
+    "stdout": "Auto-merging codex-rs/hepta-neuron/src/cell_head_tests.rs\nAuto-merging codex-rs/hepta-neuron/src/shared_encoder.rs\nMerge made by the 'ort' strategy.\n codex-rs/hepta-neuron/SHARED_ENCODER.md           | 15 ++++++\n codex-rs/hepta-neuron/src/cell_head_tests.rs      |  2 +\n codex-rs/hepta-neuron/src/shared_encoder.rs       | 16 ++++++\n codex-rs/hepta-neuron/src/shared_encoder_tests.rs | 62 +++++++++++++++++++++++\n 4 files changed, 95 insertions(+)\n",
+    "stderr": "",
+    "commit": "49261bd39af706c69d32d1c14da131232cbc6b1a",
+    "tree": "28cdf666668be88b80d387fa8c9b7bda06a4bac0"
+  }
+]

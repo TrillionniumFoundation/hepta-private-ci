@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "source_head": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+  "source_tree": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+  "job_id": 131499033100,
+  "original_actual_result": "FAILURE",
+  "actual_checkout_tree_equal": true,
+  "original_full_log": {
+    "bytes": 135745,
+    "sha256": "6634c6356ab5865ad0154320e610afd801539306965663a011c5c5a37ef1f7bd",
+    "git_blob": "d6ab768fd0a9d66c20e0177dd0c16d4c7916c0d9"
+  },
+  "reported_hunks": 2,
+  "changes": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "base": "2621dfc2c5c25bf66cac95d206d3b4e5d9cc9790",
+      "post": "d657dff9aa7be59bad252fe37ffd8e3171a9cb74",
+      "exact_forward_reverse": true,
+      "nonwhitespace_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "base": "6cbc878cc2d85691dba75c9e21a4699506368164",
+      "post": "6179ad309c5cbaeb7ab938acbc8aa4ee7fa13698",
+      "exact_forward_reverse": true,
+      "nonwhitespace_equal": true
+    }
+  ],
+  "local_execution": "NOT_RUN",
+  "new_source_result": "PENDING",
+  "all_blockers_closed": false
+}

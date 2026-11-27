@@ -1,0 +1,65 @@
+{
+  "schema": "hcsn-math-v2-durable-log-captures-v1",
+  "captures": [
+    {
+      "attempt": "attempt-001",
+      "name": "budget",
+      "job_id": "1a1bad3ae67-12894-1d90",
+      "status_response_sha256": "bd8fab75f0c1dff2748d65c189f9c6dfff90d7d48ea7fb68b8969c1b7dc1fb55",
+      "status_file": "publication/math-v2-native-captures/attempt-001/budget.process-status.json",
+      "read_method": "durable process logs/status only; no numerical process started",
+      "stdout": {
+        "path": "publication/math-v2-native-captures/attempt-001/budget.stdout.jsonl",
+        "bytes": 505,
+        "sha256": "198eea138825209eb42214cf1ecfab956b5d377d261b42597df8d261cf0635dd",
+        "complete_from_zero": true
+      },
+      "stderr": {
+        "path": "publication/math-v2-native-captures/attempt-001/budget.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "complete_from_zero": true
+      }
+    },
+    {
+      "attempt": "attempt-001",
+      "name": "negative-bin-diagnostic",
+      "job_id": "1a1badb5acf-12894-1dd0",
+      "status_response_sha256": "459e3a28295484faa2cee68a9f49f0b7f27585bb4379549e07d467dcd31bde61",
+      "status_file": "publication/math-v2-native-captures/attempt-001/negative-bin-diagnostic.process-status.json",
+      "read_method": "durable process logs/status only; no numerical process started",
+      "stdout": {
+        "path": "publication/math-v2-native-captures/attempt-001/negative-bin-diagnostic.stdout.jsonl",
+        "bytes": 1276,
+        "sha256": "6b4c1521edaed3d6261364f274355dc96e38b81b05610be09982e2f2bab84e78",
+        "complete_from_zero": true
+      },
+      "stderr": {
+        "path": "publication/math-v2-native-captures/attempt-001/negative-bin-diagnostic.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "complete_from_zero": true
+      }
+    },
+    {
+      "attempt": "attempt-002",
+      "name": "combined",
+      "job_id": "1a1bae6f182-12894-1e31",
+      "status_response_sha256": "a2bde43a5a350c55ca30c28c25eeef8431ad9a1ff1f337eefef62e1c2d778801",
+      "status_file": "publication/math-v2-native-captures/attempt-002/combined.process-status.json",
+      "read_method": "durable process logs/status only; no numerical process started",
+      "stdout": {
+        "path": "publication/math-v2-native-captures/attempt-002/combined.stdout.jsonl",
+        "bytes": 3825,
+        "sha256": "05a1af7176bd590fcac1a44f308ea67cb5787cb1c4cfb5281f0c4a3208c05f64",
+        "complete_from_zero": true
+      },
+      "stderr": {
+        "path": "publication/math-v2-native-captures/attempt-002/combined.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "complete_from_zero": true
+      }
+    }
+  ]
+}

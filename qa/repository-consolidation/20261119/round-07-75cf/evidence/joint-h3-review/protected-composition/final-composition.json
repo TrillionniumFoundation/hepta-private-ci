@@ -1,0 +1,202 @@
+{
+  "schema": "hepta.reviewed-followup-composition.v2",
+  "frozen_base": "6fa36569564e93bef7e3040bae15df1790e8d22a",
+  "final_sha": "41d193cbd34571fb67a047c206a97734a677e21c",
+  "final_tree": "6c4be51196a79aac0cf538706ca0ca458f12ce98",
+  "expected_overlay_tree": "6c4be51196a79aac0cf538706ca0ca458f12ce98",
+  "expected_overlay_exact": true,
+  "changed_path_count": 10,
+  "paths": [
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "mode": "100644",
+      "before_blob": "12f18283d6c30c7c7e04ce04b44d0d350c2492b3",
+      "blob": "22b3bf3a78199f1047ac8225569cbcdb765f5f8b",
+      "sha256": "289227743978c6537c9189d70ab5b85cdac705802ba9881568aa0ee82f128d49",
+      "bytes": 13147
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/tests/cargo_bin.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "blob": "e39ec5d7b2970c40f89192ffec821d90d4fbfe6e",
+      "sha256": "8c11254bcc491d9aeacec29565d5b3d47a7a6361cf24edf6411eff6ec2d3cdfa",
+      "bytes": 11746
+    },
+    {
+      "path": "experiments/ndu_mgp_gates/PAIRED_OBSERVED_OUTPUT.md",
+      "mode": "100644",
+      "before_blob": "09ab38e20dd1afeb6184954e7d478b85236c33de",
+      "blob": "008ae8cb6b984895a4ba88b5a0ef21705650d201",
+      "sha256": "5c56b2adb9b643e3bd1a624ebfdb77b330898aa78c74e659a04dd0335909c77d",
+      "bytes": 14963
+    },
+    {
+      "path": "experiments/ndu_mgp_gates/PROTECTED_COST_GATES.md",
+      "mode": "100644",
+      "before_blob": null,
+      "blob": "ca9a7082b8f312dbdc4a132a8c40a442e6d2d31a",
+      "sha256": "2bef8fe52ae0f287ec53329300d19d3583ca9c475c4734555a89e01b2bc66f2b",
+      "bytes": 4218
+    },
+    {
+      "path": "experiments/ndu_mgp_gates/paired_superiority.py",
+      "mode": "100644",
+      "before_blob": "e43b91744f619bd1096f5836647a30a627d678cc",
+      "blob": "f293bdde77961e35de85c20894a50c4a05412b37",
+      "sha256": "daf4bee7a5fc734e89ed28bdbe933a82f6f5982f5ea5494e56bdd35a5a9907d7",
+      "bytes": 25914
+    },
+    {
+      "path": "experiments/ndu_mgp_gates/test_paired_superiority.py",
+      "mode": "100644",
+      "before_blob": "9318345e16ad8745839e00384a47f636f389c8e5",
+      "blob": "267753f679530f31884d5d12150e8c86c2c889de",
+      "sha256": "e50170c11ca5a6ddafd4ad9180796b776817ea9ce4be4c6e9a19c104dac281dd",
+      "bytes": 29235
+    },
+    {
+      "path": "scripts/hepta_ci_dependencies.py",
+      "mode": "100644",
+      "before_blob": "bb00b1fd267d6b5414411b18d01d8f67c8050dab",
+      "blob": "45c63596e1abd3c6f0a9e3b491b9f6eb1b3e9bc6",
+      "sha256": "3aa79281625f94390f6c60f970ecaf315cc096d51ef4c1b8f613e16e6eb90760",
+      "bytes": 28931
+    },
+    {
+      "path": "scripts/memory_cell_network/test_model_process.py",
+      "mode": "100644",
+      "before_blob": "b73b24b3b4c40b7e1efc9102143adda9a352ed6f",
+      "blob": "b474e45c4c677cd859c52b281bf634e3d26e9c3a",
+      "sha256": "c06fd8ed1adfebe0303df7b290ed155afa8a3d1004bb6875e19fef410b8c2189",
+      "bytes": 12509
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec.py",
+      "mode": "100644",
+      "before_blob": "c93426ff142f8019208cba8f08a3838a69f90b18",
+      "blob": "5c672aa6b66bbaa480eeece18fcb0d37b9fec79c",
+      "sha256": "aad462e4bef23dc73804bf576dbe47c178238ba32b7145340a03646c34413aec",
+      "bytes": 16620
+    },
+    {
+      "path": "scripts/test_hepta_native_feedback.py",
+      "mode": "100644",
+      "before_blob": "8d144afc820e861b8349a5782aa3353b5ad6f033",
+      "blob": "724f3e9651e4f5daa3d0606575731ba8c81223b1",
+      "sha256": "45110c2364d1e4c3946f1ef6e03d0fac195ada0805ed3a70242b34723c760ecd",
+      "bytes": 26665
+    }
+  ],
+  "commit_chain": [
+    {
+      "label": "protected-cost",
+      "sha": "6c2577f6b5499a6774ec93d84698bbdb077ab3ec",
+      "tree": "b61f6022a03e79f950d77645204857f4525280aa",
+      "parents": [
+        "6fa36569564e93bef7e3040bae15df1790e8d22a",
+        "da1edb7f1fb5e64a6bce6509979b85aa605edaca"
+      ]
+    },
+    {
+      "label": "protected-budget",
+      "sha": "4824bf93b41e5c2c37f661f6a88d01ab95fc451d",
+      "tree": "1f6447b1b1d7246c1029c34a988d234e18f98b65",
+      "parents": [
+        "6c2577f6b5499a6774ec93d84698bbdb077ab3ec",
+        "227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+      ]
+    },
+    {
+      "label": "native-fixtures",
+      "sha": "5b37792343bbe24baf14918dc519f9786f422a03",
+      "tree": "8e84335fce3c2c152ae2dafdf2d9c55bc6302f7f",
+      "parents": [
+        "4824bf93b41e5c2c37f661f6a88d01ab95fc451d",
+        "8d1c0f8603f988dfcef77e808183931f18c4aab8"
+      ]
+    },
+    {
+      "label": "mac-receipt-fixture",
+      "sha": "3417a57a6eb960f01fe66f8f3a9762c8ce160eee",
+      "tree": "a30fd2df370a275244a59bd8747eefef58b5a5d3",
+      "parents": [
+        "5b37792343bbe24baf14918dc519f9786f422a03"
+      ]
+    },
+    {
+      "label": "source-cluster-document",
+      "sha": "41d193cbd34571fb67a047c206a97734a677e21c",
+      "tree": "6c4be51196a79aac0cf538706ca0ca458f12ce98",
+      "parents": [
+        "3417a57a6eb960f01fe66f8f3a9762c8ce160eee",
+        "b35518642af4c77833e4b00753827f893725d0d5"
+      ]
+    }
+  ],
+  "protected_ancestry": {
+    "unique_pins": 496,
+    "graph_commits": 44563,
+    "missing_parents": [],
+    "protected_intersection": [],
+    "graph_sha256": "089198c2afbe3ff4ae3da49badf11ddef34de13cc98bb912a69626c020bf5d67",
+    "new_pin_checked": "6ef1889a41d117ba61c148846f3c913245dd6147"
+  },
+  "unchanged_protected_roots": {
+    ".github": {
+      "base": "9dbd2b690f7009b725d51fb7357193a91a370632",
+      "final": "9dbd2b690f7009b725d51fb7357193a91a370632",
+      "same": true
+    },
+    "codex-rs/Cargo.toml": {
+      "base": "520b0ba00e7e1e11f24773e42c21b5324578895b",
+      "final": "520b0ba00e7e1e11f24773e42c21b5324578895b",
+      "same": true
+    },
+    "codex-rs/Cargo.lock": {
+      "base": "0c19e75a9c773c0eb6c9d82cd6e6c062574aa7e6",
+      "final": "0c19e75a9c773c0eb6c9d82cd6e6c062574aa7e6",
+      "same": true
+    },
+    "justfile": {
+      "base": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "final": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "same": true
+    },
+    "scripts/format.py": {
+      "base": "5ec5819cd6441798f406a77514736baa7294ef4a",
+      "final": "5ec5819cd6441798f406a77514736baa7294ef4a",
+      "same": true
+    }
+  },
+  "h3_recovery_blobs_preserved": {
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "062d2b097000ff4ce836e914f70016fc8c7c8f25",
+    "codex-rs/hepta-automation/migrations/0023_effect_dispatch_recovery_material.sql": "c5240481c83f294470dc9b6045fbc8b7bdc1165d",
+    "codex-rs/hepta-automation/src/action_skill_tests.rs": "8fb1926a6ddc6a6926a4977e73883b172b12a88e",
+    "codex-rs/hepta-automation/src/authorized_effect.rs": "fc5ee139159cb1b66e40b9def9cbd2e12a664f5b",
+    "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs": "d3e64f1ee9e52dfe67fac41d72b68990822334d6",
+    "codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs": "8cf1880e03efb519ab83b9434acaddafba11cd5c",
+    "codex-rs/hepta-automation/src/provider_recovery_migration_tests.rs": "b697247afde31137ecc8c8547fe93dfab40e2860",
+    "codex-rs/hepta-automation/src/store.rs": "23e84cfe488263db515e84e5ad6a5d8f067d32b6"
+  },
+  "all_non_overlay_paths_same_as_frozen_base": true,
+  "da1_blobs_not_reverted_by_227": true,
+  "refs_before_after_sha256": "05263d917bab85876ad6fd1b8d69d3780469eaffcd1b0ae9b39fc029e0176350",
+  "refs_changed": false,
+  "review_files": [
+    "cost-composition.json",
+    "budget-composition.json",
+    "fixtures-composition.json",
+    "clusters-composition.json"
+  ],
+  "mac_fixture_native_receipt": "/workspace/scratch/75cf41417dcc/joint-h3-review/python-native-review/memory-path-fixture-result.json",
+  "full_combined_ci_pass_claimed": false,
+  "full_dependency_graph_native_pass_claimed": false,
+  "date": "2026-11-19T16:49:23+00:00",
+  "previous_final_sha": "3417a57a6eb960f01fe66f8f3a9762c8ce160eee",
+  "previous_receipt": "final-composition-v1.json",
+  "all_nine_v1_postimages_unchanged": true,
+  "status": "FROZEN_READY_FOR_ROOT_REMOTE_COMBINATION",
+  "b355_da1_source_and_tests_retained": true,
+  "mac_fixture_format_receipt": "mac-fixture-format-result.json"
+}

@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.root-374-fixture-review.v1",
+  "parents": {
+    "ancestor": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+    "ours": "c7ba93274c0e6ccf764120defc642689df499273",
+    "theirs": "374aa919931e8ee5446b4ccdc49e651b7848cc5d"
+  },
+  "actual_blobs_hash_checked": 14,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "post": "5b0d2ae93eabfc79ecbf576d4143fed361fd4812",
+      "bytes": 18476,
+      "sha256": "3acbf74dad10e32f371ab2d910560ca44539e951d6853e3551f6acdb3abe7f62",
+      "git_blob": "5b0d2ae93eabfc79ecbf576d4143fed361fd4812",
+      "missingFunctions": [],
+      "missingModules": [],
+      "parentAssertionCounts": [
+        {
+          "blob": "752bee454a024280be6d5033b826abff398d2edf",
+          "count": 49
+        },
+        {
+          "blob": "1e8022df625af5004456ce60924dda1a7279de5b",
+          "count": 42
+        }
+      ],
+      "postAssertions": 49
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "post": "9c806b1319cfc9ccd326e58a230a79bd42d2ba00",
+      "bytes": 11512,
+      "sha256": "3a0155769db94f769b45eb5a697dec2a89572ba51349203e29f369f873b45838",
+      "git_blob": "9c806b1319cfc9ccd326e58a230a79bd42d2ba00",
+      "missingFunctions": [],
+      "missingModules": [],
+      "parentAssertionCounts": [
+        {
+          "blob": "47969e32eaeec0e48479c9ec7f05b10ee17a7412",
+          "count": 0
+        },
+        {
+          "blob": "0c05c74915c38595cf98a22b6552e1a66c9253eb",
+          "count": 0
+        }
+      ],
+      "postAssertions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "post": "a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a",
+      "bytes": 8026,
+      "sha256": "2b401c2ea7c861c27d72d684eda7d9481dfa7500ea7648a302cf88ac3753ac4e",
+      "git_blob": "a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a",
+      "missingFunctions": [],
+      "missingModules": [],
+      "parentAssertionCounts": [
+        {
+          "blob": "e6d04aef9a58c2db7e78d73d78e2ba6de2320d4a",
+          "count": 0
+        },
+        {
+          "blob": "ff7dc74a1bb6f74178f4cfe76c5d937eb1238439",
+          "count": 0
+        }
+      ],
+      "postAssertions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "post": "1177429c6cff407e9220929f79dce4805ed03bb6",
+      "bytes": 6860,
+      "sha256": "3ca47e2ebc224f0fed5cdea44b3ab2ceedba90e2bcc6a732c6d40fb5652ca174",
+      "git_blob": "1177429c6cff407e9220929f79dce4805ed03bb6",
+      "missingFunctions": [],
+      "missingModules": [],
+      "parentAssertionCounts": [
+        {
+          "blob": "5c71c629246309e7dfa5793d776aa56aa608aa78",
+          "count": 7
+        }
+      ],
+      "postAssertions": 7
+    }
+  ],
+  "scope": "Static byte and function/module retention; no runtime test result",
+  "execution": "NOT_RUN_NOT_FMT_NOT_COMPILED"
+}

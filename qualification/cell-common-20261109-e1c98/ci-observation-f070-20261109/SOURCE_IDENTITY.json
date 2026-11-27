@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.common.ci-checkout-identity.v1",
+  "verification": "Read-only git show -s --format=%H%n%T%n%P; relevant checkout identities are printed by retained job logs.",
+  "commits": {
+    "f070113bb61cda492d2668b3afbbcda13e11fa52": {
+      "commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "parents": [
+        "6e44b51779b5d62689fd0d66d068f893aa297516"
+      ]
+    },
+    "885dae0f3285267e9e9c49d8b43b0d009779f9e8": {
+      "commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+      "tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+      "parents": [
+        "953d548d25b1e050109b1b93e1ea474b2ac7c801"
+      ]
+    },
+    "9498ada2adfa88f5562d9e91acab3dad480fcb3d": {
+      "commit": "9498ada2adfa88f5562d9e91acab3dad480fcb3d",
+      "tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "parents": [
+        "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+        "f070113bb61cda492d2668b3afbbcda13e11fa52"
+      ]
+    },
+    "1fd5f73489497b16fd4a44b4bc0bd40173de7343": {
+      "commit": "1fd5f73489497b16fd4a44b4bc0bd40173de7343",
+      "tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+      "parents": [
+        "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+        "885dae0f3285267e9e9c49d8b43b0d009779f9e8"
+      ]
+    },
+    "dde0c36ef2b90af37f5cdafe7dca0c7572585b09": {
+      "commit": "dde0c36ef2b90af37f5cdafe7dca0c7572585b09",
+      "tree": "19e7619d7b4df0f1ba645151ffb5844a53ad97d3",
+      "parents": [
+        "5776843360db475aee67e44a46defa251da1546b"
+      ]
+    }
+  },
+  "blocking_actual_checkout": "9498ada2adfa88f5562d9e91acab3dad480fcb3d",
+  "blocking_pr_head": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "blocking_merge_tree_equals_pr_head_tree": true,
+  "windows_private_actual_checkout": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "original_m6_windows_actual_checkout": "1fd5f73489497b16fd4a44b4bc0bd40173de7343",
+  "original_m6_merge_tree_equals_m6_tree": true,
+  "selected_failure_sites_m6_f070_equality": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+      "m6_sha256": "b3ce0e22bb85d9f802fb0bf14da3270b152a49c7422f94ece14d558cee1712ab",
+      "f070_sha256": "b3ce0e22bb85d9f802fb0bf14da3270b152a49c7422f94ece14d558cee1712ab",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+      "m6_sha256": "50939aafac217003de1609e8fd0f7a3a3f5629ca385c04f0c8416bfddf0f76b4",
+      "f070_sha256": "50939aafac217003de1609e8fd0f7a3a3f5629ca385c04f0c8416bfddf0f76b4",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "m6_sha256": "42675d790d00256a42d1d5b0bb4c36b2e8e6557d85988b63b7953c9fbb9d46a5",
+      "f070_sha256": "42675d790d00256a42d1d5b0bb4c36b2e8e6557d85988b63b7953c9fbb9d46a5",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_tests.rs",
+      "m6_sha256": "75c2c85cf4c878ccf6bdeb2088f12b5043b95941dcc241283d0c5a796576111d",
+      "f070_sha256": "75c2c85cf4c878ccf6bdeb2088f12b5043b95941dcc241283d0c5a796576111d",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/perception_tests.rs",
+      "m6_sha256": "560757ed1b3bf4179c4618824343d7d7a0440f61535d68df50f87af9d63808eb",
+      "f070_sha256": "560757ed1b3bf4179c4618824343d7d7a0440f61535d68df50f87af9d63808eb",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "m6_sha256": "3e098d622ead84f7865b5d4fcc07be8125715bec205a5b36029f63c081717ced",
+      "f070_sha256": "3e098d622ead84f7865b5d4fcc07be8125715bec205a5b36029f63c081717ced",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/core/src/agent/control_tests.rs",
+      "m6_sha256": "42b448b6b778f38b5788232baf4cd1c57359f4b2311a0ca9d642b87a4eb2cadc",
+      "f070_sha256": "42b448b6b778f38b5788232baf4cd1c57359f4b2311a0ca9d642b87a4eb2cadc",
+      "equal": true
+    }
+  ],
+  "scope_note": "This verifies these specific source files, not every dependency or every runtime path. The two added credit cases use a pre-existing failing fixture; no new runtime defect is established solely from that fact."
+}

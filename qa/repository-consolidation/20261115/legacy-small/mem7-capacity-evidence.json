@@ -1,0 +1,78 @@
+{
+  "observed_at": "2026-11-15T15:53:05.423684+00:00",
+  "base": "f096d8ead8349b34cc7406030325e5829a66efa7",
+  "incoming": "d7a037620e78b8ec323bba904e6abbb752a9102f",
+  "preview_tree": "51af9c34388c34eb6a6b4b7d7011bd85c9edd023",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Complete historical harness and explanation read. Only SHA-pinned local owner code can be loaded; output root must be new. Synthetic writes/mutations use stores under that root; cold readers are owned isolated Python subprocesses with 60s timeouts. Declared wall limit is cooperative population check, explicitly not a hard total deadline. No network/model/deployment path.",
+  "all_incoming_paths_byte_identical": true,
+  "manifest_files_verified": [
+    {
+      "bytes": 3118,
+      "git_blob": "1d5195979ac37cd9d7407662c709d6e6e88dfdc0",
+      "path": "EVENTS.jsonl",
+      "role": "immutable observed artifact",
+      "sha256": "26e6fd2fab54d5d112836b96eea776cd87149a6d803b02afa05ffe1e030a6c07"
+    },
+    {
+      "bytes": 7428,
+      "git_blob": "2fdec20c747c783a8f030d2fb1a53a1a8cc817d9",
+      "path": "README.md",
+      "role": "editorial explanation",
+      "sha256": "36c6ac1f0a185641e29ce05b210a6758e4c9846eec895b7057a346ce54a09705"
+    },
+    {
+      "bytes": 7869,
+      "git_blob": "c02d9934d4e7930c25fa5620983e7fcad16f17c1",
+      "path": "RESULT.json",
+      "role": "immutable observed artifact",
+      "sha256": "512aa664b77047377da0a65057b0b8e1c5f2f0f4b84f2846339245a751ad22d6"
+    },
+    {
+      "bytes": 9895,
+      "git_blob": "16f63561be5799fd40b867546faf521f90343821",
+      "path": "mem7_capacity_probe.py",
+      "role": "immutable observed artifact",
+      "sha256": "867d8be685c3996ed99d17f9a2ff019801d1ffe79763e4a627bd62f91be75b92"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "revoke-cold.stderr",
+      "role": "immutable observed artifact",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 979,
+      "git_blob": "17662270a7c0c0df12663649cd095f13da12d194",
+      "path": "revoke-cold.stdout",
+      "role": "immutable observed artifact",
+      "sha256": "a09056e37b64f1726ae51350ea9844ad63a50ce4b28e1311436ac6cd88c881e3"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "update-cold.stderr",
+      "role": "immutable observed artifact",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 978,
+      "git_blob": "435b6fa256de24a9bdaa2473f3661d3689b1d7a6",
+      "path": "update-cold.stdout",
+      "role": "immutable observed artifact",
+      "sha256": "1dfd94f8d930832e90a209ca5bcffe48acd91ebe46c79daffcb7f42436938281"
+    }
+  ],
+  "complete_event_and_cold_output_pins_verified": true,
+  "current_implementation": {
+    "bytes": 22610,
+    "sha256": "d242ec76144c41fa89906d3f56f85b5b6738220b606fc8b72beac27f3ee21a28"
+  },
+  "historical_implementation_matches_current_bytes": false,
+  "static_python_parse": "PASS",
+  "capacity_harness_executed": false,
+  "new_capacity_samples": 0,
+  "qualification": false
+}

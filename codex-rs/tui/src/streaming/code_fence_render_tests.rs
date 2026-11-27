@@ -8,6 +8,7 @@ use crate::history_cell::HistoryRenderMode;
 use crate::render::highlight::MAX_HIGHLIGHT_LINE_BYTES;
 use insta::assert_debug_snapshot;
 use pretty_assertions::assert_eq;
+use ratatui::style::Modifier;
 
 #[test]
 fn growing_code_fences_preserve_styles_unicode_links_and_blank_lines() {
@@ -144,4 +145,39 @@ fn recomputing_after_resize_or_mode_change_drops_fence_state() {
     assert!(render.open_code_fence.is_some());
     render.clear();
     assert!(render.open_code_fence.is_none());
+}
+
+#[test]
+fn changed_theme_revision_rerenders_completed_fences_before_appending() {
+    let (mut source, mut render) = assert_rich_stream_matches_full_render(
+        &["```rust\nfn first() {}\n```\n\n", "```python\nvalue = 1\n"],
+        Some(80),
+    );
+    assert!(render.stable_source_len > 0);
+    assert!(render.open_code_fence.is_some());
+
+    // Simulate a cache from an earlier theme without changing the process-global theme.
+    for line in &mut render.lines {
+        for span in &mut line.line.spans {
+            span.style = span.style.add_modifier(Modifier::REVERSED);
+        }
+    }
+    render.theme_revision = render.theme_revision.wrapping_sub(1);
+
+    append_rich_and_assert_matches_full(
+        &mut render,
+        &mut source,
+        "value += 1\n",
+        Some(80),
+        &test_cwd(),
+    );
+    append_rich_and_assert_matches_full(&mut render, &mut source, "```\n", Some(80), &test_cwd());
+    assert_debug_snapshot!(lines_to_plain_strings(&render.lines), @r#"
+    [
+        "fn first() {}",
+        "",
+        "value = 1",
+        "value += 1",
+    ]
+    "#);
 }

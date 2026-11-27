@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.protected-composition-ancestry.v1",
+  "inputs": [
+    {
+      "path": "/workspace/scratch/75cf41417dcc/hia-audit/frozen-census-audit/inputs/historical-pins.json",
+      "sha256": "906bcb9d0da912ad18cb7805bbc8e9229f27cdb86f465077ae3b4e5fdad4604e"
+    },
+    {
+      "path": "/workspace/scratch/75cf41417dcc/hia-audit/fresh-7647-audit/protected-477.json",
+      "sha256": "113ea50b34109e5b70cd1f061ba247af97f5db7f8f0443a2c4243e013b6b9b54"
+    }
+  ],
+  "historical_pin_count": 412,
+  "current_protected_name_count": 477,
+  "unique_pin_count": 496,
+  "new_pin_checked": "6ef1889a41d117ba61c148846f3c913245dd6147",
+  "command": [
+    "git",
+    "--no-replace-objects",
+    "--git-dir=/workspace/scratch/75cf41417dcc/consolidation.git",
+    "rev-list",
+    "--parents",
+    "6fa36569564e93bef7e3040bae15df1790e8d22a",
+    "da1edb7f1fb5e64a6bce6509979b85aa605edaca",
+    "227a89333cdb9f8cb330e1a01df9cc5d6b52adf3",
+    "8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  ],
+  "exit_code": 0,
+  "graph_commits": 44557,
+  "graph_sha256": "be75e889d6952aa7e3b3054e443b4071a9b222517a6b286196f634d0c3d20540",
+  "missing_parent_count": 0,
+  "protected_intersection": [],
+  "per_head": [
+    {
+      "head": "6fa36569564e93bef7e3040bae15df1790e8d22a",
+      "ancestor_count": 44549,
+      "missing_parents": [],
+      "protected_intersection": []
+    },
+    {
+      "head": "da1edb7f1fb5e64a6bce6509979b85aa605edaca",
+      "ancestor_count": 33823,
+      "missing_parents": [],
+      "protected_intersection": []
+    },
+    {
+      "head": "227a89333cdb9f8cb330e1a01df9cc5d6b52adf3",
+      "ancestor_count": 33826,
+      "missing_parents": [],
+      "protected_intersection": []
+    },
+    {
+      "head": "8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "ancestor_count": 33861,
+      "missing_parents": [],
+      "protected_intersection": []
+    }
+  ]
+}

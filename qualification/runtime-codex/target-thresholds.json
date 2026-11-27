@@ -1,0 +1,13 @@
+{
+  "schema": "hepta.runtime-codex.target-thresholds.v1",
+  "metrics": {
+    "authorityClaimMs": {"p95": 2000, "p99": 5000},
+    "durablePrepareMs": {"p95": 250, "p99": 1000},
+    "ownerDispatchMs": {"p95": 250, "p99": 1000},
+    "firstTokenMs": {"p95": 15000, "p99": 30000},
+    "terminalMs": {"p95": 60000, "p99": 120000},
+    "reconcileMs": {"p95": 10000, "p99": 30000},
+    "peakRssBytes": {"p99": 2147483648},
+    "cpuMillis": {"p99": 120000}
+  }
+}

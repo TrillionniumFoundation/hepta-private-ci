@@ -1,0 +1,42 @@
+{
+  "cold_info_op": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"admission_is_not_dispatch_completion\":true,\"async_state\":\"queued\",\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"execution_resume_after_restart\":false,\"idempotency_binding_retained\":true,\"operation_id\":\"1e84b6e38f01baed830fb55c39a586b7737b3705e0ea4bc43684749ee42adb93\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reused\":false,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"file_info\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "cold_info_op_status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"1e84b6e38f01baed830fb55c39a586b7737b3705e0ea4bc43684749ee42adb93\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"file_info\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "cold_info_op_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"data_base64\":\"eyJyZXN1bHRUeXBlIjoiY29tcGxldGUiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJtZXRhZGF0YVwiOntcImFjbF9zaGEyNTZcIjpcImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTVcIixcImdpZFwiOjEwMDAsXCJsaW5rX2NvdW50XCI6MSxcIm1ldGFkYXRhX3BsYXRmb3JtXCI6XCJsaW51eFwiLFwibW9kZVwiOjM4NCxcInVpZFwiOjEwMDAsXCJ4YXR0cl9uYW1lc1wiOltdLFwieGF0dHJfc2hhMjU2XCI6e319LFwibW9kZVwiOjM4NCxcInBhdGhcIjpcIi9ob21lL3FxL2hwY2Etcm91dGVkLWNvbnRlbnQtMjAyNjExMTItZDcwNi1jb2xkLXYxL1JFU1VMVC5qc29uXCIsXCJzaGEyNTZcIjpcIjliNDJmZjYyZmMzYzFmYjFiMWRhZjU2YjUyM2VlODZjMmQ2NzM2MmM3ZTFhYzk0YjY4MTMyMTU2OTE4M2JlNTZcIixcInNpemVcIjoxMDQzMDgsXCJ2ZXJzaW9uXCI6XCI2NjMwNjo1MDI0MDU3MzoxMDQzMDg6MTc5NDQ2Njg5MTExNDEwODg1MjoxNzk0NDY2ODkxMTE0MTA4ODUyXCJ9In1dLCJpc0Vycm9yIjpmYWxzZX0=\",\"delivery_proven\":false,\"eof\":true,\"format\":\"serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization\",\"immutable_snapshot\":true,\"next_offset\":569,\"offset\":0,\"operation_id\":\"1e84b6e38f01baed830fb55c39a586b7737b3705e0ea4bc43684749ee42adb93\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_kind\":\"native_result\",\"result_sha256\":\"085185c96688be7bac950e1e617d987588b7a47ef7e0c63de4195879b8d2c197\",\"session_scope\":\"authenticated_private_operator_credential\",\"total_bytes\":569}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "cold_reconciled_final": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-c\",\n      \"import pathlib,hashlib,json,os\\nfrom transformers import AutoTokenizer\\nroot=pathlib.Path('/home/qq/hpca-routed-content-20261112-d706-v3')\\nreport_path=pathlib.Path('/home/qq/hpca-routed-content-20261112-d706-main-v1/RESULT.json')\\nexpected='0bd8a380cd565fc76b42bc184357c14d25f030b69286769d0863af68819e7e2b'\\nif hashlib.sha256(report_path.read_bytes()).hexdigest()!=expected: raise ValueError('original main result changed')\\nreport=json.loads(report_path.read_bytes())\\ntok=AutoTokenizer.from_pretrained('/home/qq/hepta-smollm2-weight-research-20261103/pinned-base',local_files_only=True,use_fast=True)\\ncompleted=[r for r in report['rows'] if r['status']=='completed']\\nbad=[{'condition':r['condition'],'id':r['id']} for r in completed if tok.decode(r['tokens'],skip_special_tokens=True)!=r['text']]\\ncheck={'original_result_sha256':expected,'completed_rows':len(completed),'exact_decodes':len(completed)-len(bad),'mismatches':bad,'model_forward_calls':0}\\nwith pathlib.Path('/home/qq/hpca-routed-content-20261112-d706-token-decode-v1.json').open('x') as f:\\n json.dump(check,f,sort_keys=True,indent=2);f.write('\\\\n');f.flush();os.fsync(f.fileno())\\nif bad: raise ValueError('recorded text differs from original token ids')\\nprint('TOKEN_DECODE_RECHECK',json.dumps(check,sort_keys=True),flush=True)\\npython='/home/qq/hepta-smollm2-weight-research-20261103/venv/bin/python'\\nos.execv(python,[python,str(root/'run.py'),'--model','/home/qq/hepta-smollm2-weight-research-20261103/pinned-base','--out','/home/qq/hpca-routed-content-20261112-d706-cold-v1','--publication',str(root/'PUBLICATION.json'),'--replay-source','/home/qq/hpca-routed-content-20261112-d706-main-v1','--expected-result-sha256',expected])\"\n    ],\n    \"created_unix_ms\": 1794466858548,\n    \"cwd\": null,\n    \"env_keys\": [\n      \"CUDA_VISIBLE_DEVICES\",\n      \"HF_HUB_OFFLINE\",\n      \"TRANSFORMERS_OFFLINE\"\n    ],\n    \"executable\": \"/home/qq/hepta-smollm2-weight-research-20261103/venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1ce8f4634-2564-16ee\",\n    \"idempotency_key\": \"d706-hpca-routed-content-b0ea-cold-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1ce8f4634-2564-16ee\",\n    \"request_digest\": \"f00d036312c86e38a2b373f4255d7fba6cb33d2e2225c4a7f28facd389a860b0\",\n    \"request_fingerprint\": 17297485467851714104,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ce8f4634-2564-16ee\"\n  },\n  \"launch\": null,\n  \"retried_launch\": false,\n  \"reused\": true,\n  \"status\": {\n    \"at_unix_ms\": 1794466891683,\n    \"automatic_retry\": false,\n    \"cancelled\": false,\n    \"exit_code\": 0,\n    \"job_id\": \"1a1ce8f4634-2564-16ee\",\n    \"launch_nonce\": \"6fda98453317b4bf522b2609f181c4f1\",\n    \"log_bytes\": {\n      \"stderr\": {\n        \"seen\": 0,\n        \"stored\": 0\n      },\n      \"stdout\": {\n        \"seen\": 283,\n        \"stored\": 283\n      }\n    },\n    \"log_errors\": {\n      \"stderr\": null,\n      \"stdout\": null\n    },\n    \"log_synced\": {\n      \"stderr\": true,\n      \"stdout\": true\n    },\n    \"log_truncated\": {\n      \"stderr\": false,\n      \"stdout\": false\n    },\n    \"output_complete\": true,\n    \"output_durable\": true,\n    \"state\": \"succeeded\",\n    \"terminal_publication_confirmed\": true,\n    \"terminal_publication_protocol\": 1,\n    \"timed_out\": false\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

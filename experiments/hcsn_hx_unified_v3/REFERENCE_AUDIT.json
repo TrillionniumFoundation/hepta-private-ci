@@ -1,0 +1,40 @@
+{
+  "environment": {
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.13.5",
+    "scipy": "1.17.0"
+  },
+  "fixed_seed": 20261030,
+  "known_negative_equity_witness": {
+    "asset_to_boundary": 1.01,
+    "equity": -0.0004892855718949818,
+    "interpretation": "smooth fit not globally sufficient under this parameter regime",
+    "sale_fraction": 0.2
+  },
+  "maximum_abs_boundary_vs_independent_root": 5.684341886080802e-14,
+  "maximum_abs_closed_vs_resolvent_at_1_6_B": 1.0800249583553523e-12,
+  "maximum_abs_renewal_boundary_vs_brentq": 6.661338147750939e-15,
+  "maximum_abs_sampled_scalar_qvi_residual": 1.2890875880590333e-17,
+  "nonpositive_or_undefined_boundaries": 0,
+  "open_gates": [
+    "certify global obstacle/equity nonnegativity for full legal parameter domain",
+    "independent PDE-grid convergence/interval error bounds across stiff regimes",
+    "actual fp32/fp16 kernels, gradients and degeneracy limits",
+    "matched Call/Risk/Margin mechanism attribution and training",
+    "continuous-time event/refractory/memory workloads",
+    "GPU throughput and real owner scale"
+  ],
+  "positive_algebraic_boundaries": 48,
+  "proof_scope": "finite seeded grid, selected reference comparisons and sampled residuals only",
+  "schema": "hcsn-hx-unified-p0-local-audit-v1",
+  "source_sha256": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "audit.py": "96e2bfe6123df7fbcd1fe968e9904be68f1e0844441367b9ba1378edd4b53950",
+    "hx.py": "3a7d8530e964885321669a8ae750b756968c42311a1d5e16e71493a786d7bf06",
+    "stopping.py": "8f06c1c70ddee27a2943eec7f04fa8a4295262c4750c948270b6a4d1af5befad",
+    "test_oracles.py": "56d418d296f9b37ed7c078881a18244692f221e85629c741beb20fc1b8f9ef3e"
+  },
+  "status": "REFERENCE_TESTED_NOT_ADMITTED",
+  "stressed_parameter_cases": 48
+}

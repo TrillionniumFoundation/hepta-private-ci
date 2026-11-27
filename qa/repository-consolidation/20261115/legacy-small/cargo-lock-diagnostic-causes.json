@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-11-15T15:58:10.628103+00:00",
+  "base": "dac61feca4208c812bf20f85a9adca5e8d4ae8ed",
+  "incoming": "b3226d21f09ec11d74925d8f667c58d98226b2c9",
+  "preview_tree": "54ad2568f821f67dca20c163516b0ecc429bc4f8",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Read entire actual two-workflow delta. Changes only resolver-failure classification: offline failure is unresolved rather than invented lock drift; actual drift versus unchanged lock is distinguished. The original --locked nonzero status remains the final exit and Cargo.lock is restored. Trigger, job conditions, permissions and continue-on-error values unchanged.",
+  "validation": [
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "job": "qualification",
+      "step": "Verify Cargo lock resolution and print exact resolver drift",
+      "bash_parse_exit": 0
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "job": "qualification",
+      "step": "Resolve Cargo lockfile exactly or expose resolver drift",
+      "bash_parse_exit": 0
+    }
+  ],
+  "path_sha256": {
+    ".github/workflows/hepta-architecture-convergence.yml": "0fa2573dcf87355c4637e54c59c3bb7253c3574683533fadc733d93ac9986b78",
+    ".github/workflows/hepta-converged-learning.yml": "1dacd2c2e2241d220f9db0fa81346499b09db9b664d3a150e57cce9b8ba440c2"
+  },
+  "cargo_resolution_executed": false,
+  "qualification": false
+}

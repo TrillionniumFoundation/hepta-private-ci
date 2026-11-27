@@ -1,0 +1,39 @@
+{
+  "identity": "hcsn-n256-multistep-repair-20261119-d741-attempt001",
+  "runtime": {
+    "distributions": {
+      "numpy": {
+        "record_sha256": "6b617ed2ee8397bdd738aa4e7d9985308d9481f21e372c0cfb657679a3288a9c",
+        "version": "2.3.5"
+      },
+      "scipy": {
+        "record_sha256": "94900eedcc86c473afe4836110d54baef222f0c57218d725902c9aa6ab10ff73",
+        "version": "1.17.0"
+      }
+    },
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "executable_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "schema": "hcsn-n256-multistep-source-freeze-v1",
+  "sources": {
+    "qualification/hcsn_currentstate_n128_engineering/candidate.py": "0152e168cd3c5581517522b972276f6317c907eb740a09adb5219a9e820a09ad",
+    "qualification/hcsn_currentstate_n256_engineering/candidate.py": "91c55d87fd993c9d01d1b1e98ba855bf171dfd74f2bdc12bd94fc23d9dc7a9d3",
+    "qualification/hcsn_currentstate_n256_firststep_serializer_v2/serializer.py": "dfa63cbfe7688e9c07cfff627cffd3d1e0352191e09f2be20ad53d1e310c1ab9",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/adapter.py": "311eeeb69ba5002171d3aa765610bc9caea1cb2942309ba6e67543297cb74084",
+    "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001/CAPSULES.json": "eebc5a010c935c9ca5fc3daaa1716733907f34039c7e3ae4e4bf8fff8ef441f8",
+    "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001/PACKET_ROSTER.jsonl": "cc5a9199c076215d2f808f0974cc201d34954eafebafea1bf955c929eb36dc1c",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/sparse_dynamic.py": "49616d4fcff9685a6cfcbee00ff45a2fd9ab4eb9c6ce04e62c02f927752d50db",
+    "qualification/hcsn_n256_multistep/REQUEST.json": "60c0d7968df3ac263b7fc6a1170a15eb7f4fba7dab190b5506f60d58e4ccd3ae",
+    "qualification/hcsn_n256_multistep/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification/hcsn_n256_multistep/controls.py": "1768b6ca2ba99ea394768ea8123ca6782ac25df37ae6411225232d358dd0f6e2",
+    "qualification/hcsn_n256_multistep/flow.py": "26263f34e6a380191c649c1e39034778c4363c773f6db1de95d91884669d22f1",
+    "qualification/hcsn_n256_multistep/reference.py": "142a34dd32e39bd74d1ca3d2e1919d5abaaa9ee76b6f7eea0daf16a6336d53d4",
+    "qualification/hcsn_n256_multistep/review.py": "745b6eb5888c89ee01bc0ee96beb0109d2f27b628f8ca2c62214bf97410d96a5",
+    "qualification/hcsn_n256_multistep/runner.py": "cbe6e2cda2e2ff5bfa163c67af277d59bda4968f9b28629a4891d2efa1764d43",
+    "qualification/hcsn_n256_multistep/storage.py": "7778da337bc0741802114250651c712790794979e1ed00b83769a5b10eb9c4a0",
+    "qualification/hcsn_n256_multistep/study.py": "db2463fba556f0dbbada5e095daa1cafb227aa79a19e3fd462c6744455558600",
+    "qualification/hcsn_n256_multistep/test_storage.py": "61442a76e59c7bcf14bd5a728be1acb77b301af89ac9a40d15cd925d71b54311"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "source": "f571db956745d0702baba6da800b6c923aed34cc",
+  "source_tree_entries": 31257,
+  "source_tree_raw_sha256": "f34c38953de38e62d54958f3ecdc343ff480fa2c45a31ad1cbe4a203f29b2b05",
+  "audited": 4962,
+  "failures": [],
+  "all_head_categories": {
+    "code_or_config_postimage_review": 4457,
+    "clean_unapplied_code_or_config": 483,
+    "only_docs_evidence_uncovered": 19,
+    "exact_all_postimages": 3
+  },
+  "frontier_categories": {
+    "code_or_config_postimage_review": 1760,
+    "clean_unapplied_code_or_config": 43,
+    "only_docs_evidence_uncovered": 1
+  },
+  "elapsed_s": 122.94272017478943,
+  "scope": "Exact mode/blob postimage equality relative to every merge base. Different postimages are review requirements, not asserted textual conflicts. No worktree, index, refs, or remote state mutated.",
+  "frontier_role_presence": {
+    "rust": 1603,
+    "ci": 1688,
+    "build": 1423,
+    "other_code_or_configuration": 1649,
+    "hia_review": 0,
+    "governance": 158,
+    "documentation": 1578,
+    "passive_evidence_candidate": 1221,
+    "other_requires_review": 1212
+  },
+  "all_head_role_presence": {
+    "rust": 3903,
+    "ci": 4412,
+    "build": 3632,
+    "other_code_or_configuration": 4555,
+    "hia_review": 0,
+    "governance": 593,
+    "documentation": 4421,
+    "passive_evidence_candidate": 3628,
+    "other_requires_review": 3294
+  },
+  "exact_heads": [
+    "7a887343015043351da5b0560121dee6a248a434",
+    "9aa9fa75f74ad7a15c3a3db36586502f0215aff0",
+    "c49c15055d0dcece7ddbad41076e171213328359"
+  ]
+}

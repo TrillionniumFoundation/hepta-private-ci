@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.kernel_tests",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/kernel_validation003"
+  ],
+  "complete_child_cpu_seconds": 8.39987,
+  "coordinator_cpu_seconds": 0.0004580820000000055,
+  "exit_code": 0,
+  "logged_output": "experiments/hcsn_distributional_v2/results/kernel_validation003.process.log",
+  "peak_rss_kib_linux": 326292,
+  "schema": "hcsn-kernel-execution.v1",
+  "source_sha256": {
+    "MATH.md": "3899a158c856f72ba52c59de8d1f9d46f3967a9f2b8a1de2fa5e0bad97fb3a96",
+    "distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add"
+  },
+  "system_cpu_seconds": 0.435554,
+  "user_cpu_seconds": 7.964316,
+  "utc": "2026-10-30T01:33:12.944267+00:00",
+  "wall_seconds": 13.870486126999822
+}

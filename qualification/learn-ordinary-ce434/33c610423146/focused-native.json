@@ -1,0 +1,67 @@
+{
+  "after": {
+    "commit": "33c610423146597a3d1102efe77f09507477673e",
+    "dirty": false,
+    "parents": [
+      "a293dc8b4ce43e0ce432c4ce4552f3ba7d746000",
+      "d02af206770255fb0a9c5e44bfe01484b408c2b9"
+    ],
+    "tree": "5d7cea0336f4eca767967a8938734c92ed81ff43"
+  },
+  "base_sha": "73f20ed9a09bc5716484f497654640aedcec268d",
+  "before": {
+    "commit": "33c610423146597a3d1102efe77f09507477673e",
+    "dirty": false,
+    "parents": [
+      "a293dc8b4ce43e0ce432c4ce4552f3ba7d746000",
+      "d02af206770255fb0a9c5e44bfe01484b408c2b9"
+    ],
+    "tree": "5d7cea0336f4eca767967a8938734c92ed81ff43"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(=neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore) | test(=neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack) | test(=neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use) | test(=learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames)",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--no-tests",
+    "fail",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 156.3952555139549,
+  "exit_code": 0,
+  "finished_at": "2026-11-11T17:37:06.050965+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 36710,
+  "log_file": "focused-native.json.e1d602675da2437f9b48845253a8ce62.log",
+  "log_sha256": "9d40a859509a6d67a03412147215d9590e437b471fe294f9dc9ff78c1833d718",
+  "minimum_tests": 6,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 6,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "33c610423146597a3d1102efe77f09507477673e",
+  "started_at": "2026-11-11T17:34:29.653466+00:00",
+  "status": "passed",
+  "tested_sha": "33c610423146597a3d1102efe77f09507477673e",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-all-owners-ce434-20261111-v1/codex-rs"
+}

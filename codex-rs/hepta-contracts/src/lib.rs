@@ -11,15 +11,29 @@ pub mod authbus_b5;
 #[cfg(test)]
 #[path = "authbus_tests.rs"]
 mod authbus_tests;
+mod authority_authentication;
+mod authority_consumer_wire;
+#[cfg(target_os = "linux")]
+mod authority_host_clock;
+#[cfg(target_os = "linux")]
+mod authority_host_issuer_transport;
+#[cfg(unix)]
+mod authority_host_store;
 pub mod authority_lease;
+#[cfg(target_os = "linux")]
+mod authority_root_frontier;
 pub mod authority_trust;
+pub mod authority_trust_unix;
 #[cfg(test)]
 mod callers_manifest_tests;
 mod canonical;
+pub mod exec_server_start_p2c;
+pub mod execution_contract_v1;
 mod final_use;
 mod final_use_control;
 mod identity;
 mod memory;
+pub mod pq_auth;
 mod provider;
 mod provider_effect;
 mod qualification_receipt;
@@ -27,8 +41,43 @@ mod receipt;
 mod stable_id;
 mod verified_use_witness;
 
+pub use authority_authentication::FinalUseAuthenticationProfile;
+pub use authority_authentication::PqAuthorityTrustKey;
+pub use authority_consumer_wire::HostConsumerFrontierRequestV1;
+pub use authority_consumer_wire::HostConsumerFrontierResponseV1;
+pub use authority_consumer_wire::HostConsumerFrontierStatusV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_clock::HostAuthorityClock;
+#[cfg(target_os = "linux")]
+pub use authority_host_clock::HostAuthorityClockObservation;
+#[cfg(target_os = "linux")]
+pub use authority_host_clock::HostAuthorityClockProjection;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostAuthorityPeerChannel;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostAuthorityPeerPolicy;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerPeer;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerSession;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerSessionPolicy;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerTransportError;
+#[cfg(unix)]
+pub use authority_host_store::HostAuthorityFrontierStore;
+#[cfg(unix)]
+pub use authority_host_store::HostFinalUseIssuer;
+#[cfg(unix)]
+pub use authority_host_store::HostIssuerError;
+#[cfg(unix)]
+pub use authority_host_store::RootAuthorityDirectory;
 pub use authority_lease::deliver_authority_lease_with_witness;
 pub use authority_lease::dispatch_authority_lease_with_witness;
+#[cfg(target_os = "linux")]
+pub use authority_root_frontier::RootFinalUseFrontierClient;
+#[cfg(target_os = "linux")]
+pub use authority_root_frontier::RootPeerIdentity;
 pub use authority_trust::AuthorityClock;
 pub use authority_trust::AuthorityFrontierStore;
 pub use authority_trust::AuthorityTrustError;
@@ -43,6 +92,8 @@ pub use final_use::FinalUseFrontier;
 pub use final_use::FinalUseGrant;
 pub use final_use::FinalUseIssuerTrustKey;
 pub use final_use::FinalUseRevocations;
+#[cfg(target_os = "linux")]
+pub use final_use::RootFinalUseObserverV1;
 pub use final_use::SignedFinalUseGrant;
 pub use final_use::VerifiedUseToken;
 pub use final_use::claim_final_use;
@@ -62,6 +113,7 @@ pub use final_use_control::FinalUseRevocationReceipt;
 pub use final_use_control::FinalUseRevocationUpdate;
 pub use final_use_control::FinalUseTrustKey;
 pub use final_use_control::MAX_REVOCATION_FEED_LIFETIME_MS;
+pub use final_use_control::PqFinalUseRevocationNodeTrust;
 pub use final_use_control::SignedFinalUseApproval;
 pub use final_use_control::SignedFinalUseRevocationAck;
 pub use final_use_control::SignedFinalUseRevocationUpdate;
@@ -313,3 +365,20 @@ pub use receipt::PolicyStamp;
 pub use receipt::Sha256Digest;
 pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
+
+mod learning_authentication;
+pub use learning_authentication::LearningAuthenticationProfile;
+pub use learning_authentication::LearningSignature;
+pub use learning_authentication::LearningTrustFrontier;
+pub use learning_authentication::LearningVerificationKey;
+
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::parent_anchor as windows_private_owner;
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::stage::SynchronousStageFile;
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::stage::replace_synced_state_stage;
+
+#[cfg(all(test, windows))]
+#[path = "windows_state_stage_tests.rs"]
+mod windows_state_stage_tests;

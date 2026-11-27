@@ -1,0 +1,40 @@
+{
+  "all_final_caps_hold": true,
+  "analysis_exit_code": 2,
+  "command": [
+    "python3",
+    "-m",
+    "content_joint.run",
+    "run",
+    "--out",
+    "runs/content-joint-train-v1-20261023",
+    "--freeze",
+    "content_joint/frozen-v1.json"
+  ],
+  "complete_costs_including_administration": {
+    "A": {
+      "CPU": 8.830479564000004,
+      "units": 9380309108
+    },
+    "H": {
+      "CPU": 8.945410859000013,
+      "units": 10131672878
+    },
+    "N": {
+      "CPU": 8.969681332000004,
+      "units": 9619535325
+    },
+    "S": {
+      "CPU": 8.862364923999998,
+      "units": 9752320460
+    }
+  },
+  "contrast_inventory": "each contrast: 3 seed subtractions + 3 sum additions + one priced division per14 metrics, plus two positivity comparisons",
+  "exit_code": 0,
+  "final_administration_and_saved_output_analysis_CPU": 0.2038263860000029,
+  "new_run_launcher_and_analysis_CPU_before_receipt": 18.439033000000002,
+  "saved_output_contrast_units": 2982,
+  "scope": "one new TRAIN build; no formal split; all old ledgers unchanged",
+  "source_freeze_commit": "15d77cacd63d41913f639926b44ade0b0f633eff",
+  "wall_seconds": 18.40398781499971
+}

@@ -1,0 +1,147 @@
+{
+  "audit_source_sha256": "fae408449721c3b12ba11523921e31ac0f34b38e33e3aa07a65255bb0cb85cea",
+  "checkpoint_model_replay_performed_by_this_review": false,
+  "energy_joules": null,
+  "failures": [],
+  "input_files_sha256": {
+    "/dev/shm/hepta-hcsn-gru-001/PLAN.json": "0059b0b68f3413acfb83894cdc84dae82130cf55422f68255a1e2819b5f6a873",
+    "/dev/shm/hepta-hcsn-gru-001/SUMMARY.json": "9c6bf865315e720c01b730a90043baa14ba2cd03b84e65aa19889b4c377e2cfa",
+    "/dev/shm/hepta-hcsn-gru-001/seed11/checkpoint.pt": "51548bfc981eae0daf549691a738212e2c9b9720867943911acdd3033b772dc3",
+    "/dev/shm/hepta-hcsn-gru-001/seed11/development.json": "46612455a2e54087cfb4eda98a4d46bffbc485caa562c58cc27ef9c47a8cdd76",
+    "/dev/shm/hepta-hcsn-gru-001/seed11/result.json": "f0e5cc68f322b32b2c10d17a8ae1e810c94f26c57334054fce3246a848543aef",
+    "/dev/shm/hepta-hcsn-gru-001/seed11/training.jsonl": "5bec8230bc559afc650e1658bb9f3913bd005782f75947330e71e0e3e0a64f64",
+    "/dev/shm/hepta-hcsn-gru-001/seed23/checkpoint.pt": "5f9cb1cb1d9f2b48d5374fe2f00208855c1f2804d314dc220d0c8960de10b76a",
+    "/dev/shm/hepta-hcsn-gru-001/seed23/development.json": "0d5df41f6bc6481a6960bc6d0552bd678d3e1cba839903da1569800af17f4fcb",
+    "/dev/shm/hepta-hcsn-gru-001/seed23/result.json": "bb25e058367c787c831200b48717d3c5508dfe27e19a17e16524688d16a22ee8",
+    "/dev/shm/hepta-hcsn-gru-001/seed23/training.jsonl": "ae4c98c076ee5755512d0c9af208478379f94bf8c9d45cfc9e95b872438dcba7",
+    "/dev/shm/hepta-hcsn-gru-001/seed37/checkpoint.pt": "33afa50a1b0b239e2ac8c8975452be91ee7f7335cce6b1d5969d9195257ab9ed",
+    "/dev/shm/hepta-hcsn-gru-001/seed37/development.json": "7c337a4563c7a34785657384cf0bceef5c87b91934e7d17947b00818ca352e90",
+    "/dev/shm/hepta-hcsn-gru-001/seed37/result.json": "8ff1a2fc81fc56b91c0787bbce00f00270b7ef9b57617a7f756e20c9c1fee082",
+    "/dev/shm/hepta-hcsn-gru-001/seed37/training.jsonl": "40264e58318cd84cadfb924840eac844c6b583a44c10493ea2f3354f57c2da30"
+  },
+  "methods": "Independent NumPy logits metrics, schedule/state/byte counts and stored Adam states; zero model forward or optimizer calls",
+  "numpy": "1.26.4",
+  "passed": true,
+  "rows": [
+    {
+      "actual_parameter_tensors": 513,
+      "maximum_metric_error": 8.881784197001252e-16,
+      "metrics": {
+        "accuracy": 0.11458333333333333,
+        "brier_mean_classes": 0.10940603486846885,
+        "cross_entropy": 2.0795867599775577,
+        "macro_f1_8_classes": 0.02570093457943925,
+        "scored_positions": 192
+      },
+      "optimizer_updates": 32,
+      "per_task": {
+        "delayed_copy": {
+          "accuracy": 0.109375,
+          "brier_mean_classes": 0.10990108568000087,
+          "cross_entropy": 2.0948803726764815,
+          "macro_f1_8_classes": 0.02464788732394366,
+          "scored_positions": 64
+        },
+        "overwrite_retrieval": {
+          "accuracy": 0.078125,
+          "brier_mean_classes": 0.10895769950903575,
+          "cross_entropy": 2.0645300029689384,
+          "macro_f1_8_classes": 0.018115942028985508,
+          "scored_positions": 64
+        },
+        "pair_composition": {
+          "accuracy": 0.15625,
+          "brier_mean_classes": 0.10935931941636998,
+          "cross_entropy": 2.0793499042872545,
+          "macro_f1_8_classes": 0.033783783783783786,
+          "scored_positions": 64
+        }
+      },
+      "seed": 11,
+      "trace_rows": 32,
+      "traced_events": 1200,
+      "training_queries": 256
+    },
+    {
+      "actual_parameter_tensors": 513,
+      "maximum_metric_error": 4.440892098500626e-16,
+      "metrics": {
+        "accuracy": 0.125,
+        "brier_mean_classes": 0.10966705603691713,
+        "cross_entropy": 2.0886086578273826,
+        "macro_f1_8_classes": 0.027906976744186046,
+        "scored_positions": 192
+      },
+      "optimizer_updates": 32,
+      "per_task": {
+        "delayed_copy": {
+          "accuracy": 0.0625,
+          "brier_mean_classes": 0.10919777763267044,
+          "cross_entropy": 2.0713849757999867,
+          "macro_f1_8_classes": 0.014705882352941176,
+          "scored_positions": 64
+        },
+        "overwrite_retrieval": {
+          "accuracy": 0.171875,
+          "brier_mean_classes": 0.1102392923040851,
+          "cross_entropy": 2.108502960758845,
+          "macro_f1_8_classes": 0.037162162162162164,
+          "scored_positions": 64
+        },
+        "pair_composition": {
+          "accuracy": 0.140625,
+          "brier_mean_classes": 0.10956409817399593,
+          "cross_entropy": 2.085938036923316,
+          "macro_f1_8_classes": 0.030821917808219176,
+          "scored_positions": 64
+        }
+      },
+      "seed": 23,
+      "trace_rows": 32,
+      "traced_events": 1184,
+      "training_queries": 256
+    },
+    {
+      "actual_parameter_tensors": 513,
+      "maximum_metric_error": 1.3877787807814457e-17,
+      "metrics": {
+        "accuracy": 0.11458333333333333,
+        "brier_mean_classes": 0.11010468549909543,
+        "cross_entropy": 2.1017968848642674,
+        "macro_f1_8_classes": 0.02570093457943925,
+        "scored_positions": 192
+      },
+      "optimizer_updates": 32,
+      "per_task": {
+        "delayed_copy": {
+          "accuracy": 0.109375,
+          "brier_mean_classes": 0.11063121174667025,
+          "cross_entropy": 2.120197325574273,
+          "macro_f1_8_classes": 0.02464788732394366,
+          "scored_positions": 64
+        },
+        "overwrite_retrieval": {
+          "accuracy": 0.078125,
+          "brier_mean_classes": 0.11040778816211969,
+          "cross_entropy": 2.1086241338128806,
+          "macro_f1_8_classes": 0.018115942028985508,
+          "scored_positions": 64
+        },
+        "pair_composition": {
+          "accuracy": 0.15625,
+          "brier_mean_classes": 0.10927505658849632,
+          "cross_entropy": 2.076569195205648,
+          "macro_f1_8_classes": 0.033783783783783786,
+          "scored_positions": 64
+        }
+      },
+      "seed": 37,
+      "trace_rows": 32,
+      "traced_events": 1200,
+      "training_queries": 256
+    }
+  ],
+  "schema": "hcsn-budget-gru-independent-byte-review-v1",
+  "torch": "2.8.0+cpu",
+  "wall_seconds": 0.0895318140001109
+}

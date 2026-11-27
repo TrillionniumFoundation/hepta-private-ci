@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "source_commit": "1bf14200490e5b3ca989c092ec170f03f5f16a18",
+  "workflow_run_id": 43336859045,
+  "workflow_job_id": 131595098649,
+  "artifact_id": 13998440625,
+  "artifact_name": "hcsn-n128-secondcycle-warm-attempt001-originals",
+  "artifact_zip_bytes": 1642069,
+  "artifact_zip_sha256": "d16d645c67bd06f2f9bb0c12014d1b350d20bf633ce5ab47fb28b636e12f48f3",
+  "archive_members": 15,
+  "archive_uncompressed_bytes": 28275050,
+  "restore_command": "cat originals.zip.part000 originals.zip.part001 originals.zip.part002 originals.zip.part003 > originals.zip",
+  "parts": [
+    {
+      "name": "originals.zip.part000",
+      "bytes": 524288,
+      "sha256": "edc0ae228ec70873504f3b5d04f4eb489ec5aff3e0c0f9a668c59202570a1aa7",
+      "git_blob": "3a68873bed82ec22e4026c0036954c2b3ce817c7"
+    },
+    {
+      "name": "originals.zip.part001",
+      "bytes": 524288,
+      "sha256": "0571e7b443b2df25913d976d2711fb7c0abddc941852d4c05d13762c2e485f4f",
+      "git_blob": "22763b83c4e95bea1b1aa422ef8372f8e7802456"
+    },
+    {
+      "name": "originals.zip.part002",
+      "bytes": 524288,
+      "sha256": "e15b9b6e8d93af95bd628b4c76fd52df1a6800f6ee1c6d0d67cf1187862815dc",
+      "git_blob": "3ce7253c93e8355f3aefa834f348d8760695c3b3"
+    },
+    {
+      "name": "originals.zip.part003",
+      "bytes": 69205,
+      "sha256": "1fbdc7a4093d2c98ddc1f21d63131c701b311b926b49a58e1ab244920a4284da",
+      "git_blob": "76b98394c5542b0db9fa11c3e431392f376e0b38"
+    }
+  ],
+  "decoded_job_log": {
+    "git_blob": "327f537e5e3018b8e040e4969ac820c7c97ed3be",
+    "characters": 1772703
+  }
+}

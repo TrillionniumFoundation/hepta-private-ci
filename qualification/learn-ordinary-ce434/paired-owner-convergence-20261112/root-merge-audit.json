@@ -1,0 +1,2543 @@
+{
+  "schema": "learn-root-unified-candidate-integration-v1",
+  "date": "2026-11-12",
+  "base_source_sha": "48844493c046fdd79734ddd2c1866314023a15cb",
+  "first_parent": "2d514df575aae4000a7e644add802dcf7938469e",
+  "first_parent_tree": "721e043b1cd2ab4d85bc55b0035de2814f72d0f3",
+  "ordered_parents": [
+    "2d514df575aae4000a7e644add802dcf7938469e",
+    "6404c531c48675825d7dfb76bc3ed7e8150cbba3",
+    "39b88d8357e766bec8edc77321ffdc6b4644623e",
+    "b3038b287e8303c348bac05a2adf43d34b08d184",
+    "7f45714c361c149c86cec39925fa91723be3fd8d",
+    "81a8a56689d57452a335596a2493ed7dbad5ccfc",
+    "ce7f758e9d16a22e0ea5065b99f4a06674b1d3b7"
+  ],
+  "intent": "Unify original Source/Training, paired original Evaluator producer/Product domain, Model/Selector/Version/Root code, whole-record caller guards, actual-failure repairs and nonempty retention admission on one source candidate. Preserve original grants/custody boundaries.",
+  "merge_basis": {
+    "paired_agentd": "ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c",
+    "paired_product": "48844493c046fdd79734ddd2c1866314023a15cb",
+    "source_readonly": "48844493c046fdd79734ddd2c1866314023a15cb",
+    "evaluation_version": "48844493c046fdd79734ddd2c1866314023a15cb",
+    "model_root": "48844493c046fdd79734ddd2c1866314023a15cb"
+  },
+  "inventory": {
+    "sourceMethods": 423,
+    "sourceModules": 59,
+    "explicitCallerEntries": 565,
+    "nativeCases": 190,
+    "nativeGroups": 41,
+    "boundaries": 710,
+    "protectedRecords": 489,
+    "expected_tracked_rust_files": 6766,
+    "tracked_count_status": "expected from 6748 fixed-488 files plus 7 Product and 11 Agentd new Rust; pending original host enumeration"
+  },
+  "manifest": {
+    "blob": "f11dc34ca24ce63057257702a775e74828e792af",
+    "sha256": "cda84c59761f626e0be4a0df403a7eaea41467b0aa5be07decccf5b4299a9fdb",
+    "bytes": 1536974,
+    "merge": {
+      "operations": [
+        {
+          "kind": "boundary",
+          "identity": "learning_original_source_policy_projection",
+          "status": "replaced complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_original_evaluation_cohort_readback_current",
+          "status": "replaced complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_original_evaluation_cohort_member_binding",
+          "status": "replaced complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_original_evaluation_cohort_final_authentication",
+          "status": "replaced complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs",
+          "status": "replaced complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+          "status": "replaced complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+          "status": "replaced complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+          "status": "replaced complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+          "status": "replaced complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_source_protocol",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_source_checkpoint",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_cohort_capture",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_holdout_provider",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_cohort_cold",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_cohort_after_release",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_cohort_retaining",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_cohort_current",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_cohort_member",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_cohort_authenticate",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_cohort_material",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_paired_cohort_physical_read",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_cohort_custody_current",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_cohort_custody_member",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_cohort_custody_authenticate",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_cohort_custody_material",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_shared_cohort_original_material",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "boundary",
+          "identity": "cell_paired_learning_evaluation_freeze",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_read.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_contract.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_protocol.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs",
+          "status": "added complete record",
+          "owner": "paired-agentd-03"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/product_paired_evaluation.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/product_material_commitments.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "boundary",
+          "identity": "product_paired_original_plan_freeze",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "boundary",
+          "identity": "product_paired_original_holdout_release",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "boundary",
+          "identity": "product_paired_original_runner_dispatch",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "boundary",
+          "identity": "product_paired_original_mode_read",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "boundary",
+          "identity": "product_paired_original_execution_encode",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "boundary",
+          "identity": "product_paired_original_execution_decode",
+          "status": "added complete record",
+          "owner": "paired-product-39"
+        },
+        {
+          "kind": "boundary",
+          "identity": "product_paired_original_plan_freeze",
+          "status": "replaced complete record",
+          "owner": "actual-paired-source-composition"
+        },
+        {
+          "kind": "boundary",
+          "identity": "product_paired_original_mode_read",
+          "status": "replaced complete record",
+          "owner": "actual-paired-source-composition"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs",
+          "status": "replaced complete record",
+          "owner": "actual-wire-schema-failure"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_source_bound_training_owner_create",
+          "status": "replaced complete record",
+          "owner": "actual-source-readonly-488-failure"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_source_bound_training_owner_recover",
+          "status": "replaced complete record",
+          "owner": "actual-source-readonly-488-failure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+          "status": "replaced complete record",
+          "owner": "actual-source-readonly-488-failure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+          "status": "replaced complete record",
+          "owner": "actual-source-readonly-488-failure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs",
+          "status": "replaced complete record",
+          "owner": "paired-policy-singleton-repair"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",
+          "status": "replaced complete record",
+          "owner": "actual-E-Version-488-closure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+          "status": "replaced complete record",
+          "owner": "actual-E-Version-488-closure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+          "status": "replaced complete record",
+          "owner": "actual-E-Version-488-closure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+          "status": "replaced complete record",
+          "owner": "actual-E-Version-488-closure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+          "status": "replaced complete record",
+          "owner": "actual-E-Version-488-closure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+          "status": "replaced complete record",
+          "owner": "actual-E-Version-488-closure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_state.rs",
+          "status": "replaced complete record",
+          "owner": "actual-E-Version-488-closure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+          "status": "replaced complete record",
+          "owner": "actual-E-Version-488-closure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+          "status": "replaced complete record",
+          "owner": "actual-E-Version-488-closure"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+          "status": "replaced complete record",
+          "owner": "E-Version-bc04-original-type-alias"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_state.rs",
+          "status": "replaced complete record",
+          "owner": "E-Version-bc04-original-type-alias"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_wire.rs",
+          "status": "replaced complete record",
+          "owner": "E-Version-bc04-original-type-alias"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+          "status": "replaced complete record",
+          "owner": "E-Version-bc04-original-type-alias"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+          "status": "replaced complete record",
+          "owner": "E-Version-bc04-original-type-alias"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+          "status": "replaced complete record",
+          "owner": "E-Version-bc04-original-type-alias"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs",
+          "status": "replaced complete record",
+          "owner": "E-Version-bc04-original-type-alias"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",
+          "status": "replaced complete record",
+          "owner": "E-Version-bc04-original-type-alias"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs",
+          "status": "replaced complete record",
+          "owner": "Model-Root-81a8"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+          "status": "replaced complete record",
+          "owner": "Model-Root-81a8"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+          "status": "replaced complete record",
+          "owner": "Model-Root-81a8"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+          "status": "replaced complete record",
+          "owner": "Model-Root-81a8"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "status": "replaced complete record",
+          "owner": "Model-Root-81a8"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+          "status": "replaced complete record",
+          "owner": "Model-Root-81a8"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+          "status": "replaced complete record",
+          "owner": "Model-Root-81a8"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+          "status": "replaced complete record",
+          "owner": "Model-Root-81a8"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/circuit_learning_model_binding.rs",
+          "status": "replaced complete record",
+          "owner": "Model-Root-81a8"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs",
+          "status": "retained exact after",
+          "owner": "Model-Root-81a8"
+        },
+        {
+          "kind": "boundary",
+          "identity": "learning_original_owner_snapshot_encode",
+          "status": "replaced complete record",
+          "owner": "Model-Root-actual-context-caller"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+          "status": "replaced complete record",
+          "owner": "retention-7f-actual-admission"
+        },
+        {
+          "kind": "protected_file",
+          "identity": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+          "status": "added complete record",
+          "owner": "retention-7f-entire-verified-panel"
+        }
+      ],
+      "boundaries": 710,
+      "protected_records": 489,
+      "inventory_ids": 710,
+      "complete_record_multiset_verified": true,
+      "unowned_raw_records_preserved": 1113,
+      "other_top_level_unchanged": true,
+      "all_record_and_function_order_shapes_valid": true
+    }
+  },
+  "qa_inventory": [
+    {
+      "path": "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+      "blob": "3a0ebd3b5359ed95c8ab4a70e913919b8b77b891",
+      "methods": [
+        "test_service_is_the_only_host_caller_and_no_publication_cap_is_created",
+        "test_exact_started_operation_and_scan_bound_are_not_optional",
+        "test_original_checkpoint_and_current_are_physically_read_twice",
+        "test_original_signature_window_is_checked_after_all_io",
+        "test_service_never_rebinds_original_storage_or_withdrawal_scope",
+        "test_readback_cannot_resume_write_repair_or_gain_authority",
+        "test_each_actual_receipt_scan_is_bounded_before_metadata_and_decode",
+        "test_seven_real_artifact_cases_are_package_qualified"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_cell_generation_physical_current_source_closure.py",
+      "blob": "0e49d7bb154f4bf740870437f18e11ff554d33b3",
+      "methods": [
+        "test_physical_current_has_an_exact_closed_caller_set",
+        "test_full_original_descriptor_replay_and_same_retained_state_are_required",
+        "test_both_witness_observations_and_cursor_restoration_precede_success",
+        "test_any_failure_fences_recovery_even_after_original_bytes_are_restored"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+      "blob": "5e700c20d3744562bcbf224605bbc6a2743fec69",
+      "methods": [
+        "test_product_callers_are_exact_without_granting_stage_authority",
+        "test_learning_profile_freeze_keeps_nonzero_and_signed_binding",
+        "test_profile_is_required_before_training_and_in_checkpoint_identity",
+        "test_checkpoint_codec_preserves_request_profile_without_legacy_inference",
+        "test_bridge_binds_full_bundles_original_training_and_profile",
+        "test_bridge_revalidates_signed_result_before_mapping_or_recording",
+        "test_original_readback_refreshes_clock_and_verifies_both_signed_roles",
+        "test_fresh_clock_cannot_move_before_either_original_owner_wait"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+      "blob": "904bb3b8bce261590fc86c26bab5ffd54cbd84db",
+      "methods": [
+        "test_original_selector_authority_entries_stay_closed",
+        "test_selection_reads_the_original_sealed_publication",
+        "test_original_training_pin_and_physical_readbacks_cannot_be_skipped",
+        "test_completed_readback_keeps_physical_brackets_and_permanent_failure_fence",
+        "test_missing_pending_deadline_and_role_separation_remain_distinct"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+      "blob": "ab123571779b1e78e3b02f85a3b2f3608c9b5e39",
+      "methods": [
+        "test_original_evidence_and_new_reader_caller_sets_remain_closed",
+        "test_predecessor_replay_cannot_skip_history_or_receipt_binding",
+        "test_stage_read_keeps_original_observation_current_role_and_scope",
+        "test_post_attestation_actor_check_cannot_be_hidden_or_moved",
+        "test_actor_profiles_cannot_substitute_a_different_read",
+        "test_delivery_scope_check_precedes_enrollment_and_cannot_be_deferred"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "blob": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+      "methods": [
+        "test_original_typed_callers_cannot_be_omitted_or_extended",
+        "test_original_writer_checks_cannot_be_borrowed_from_other_methods",
+        "test_service_requires_same_agent_peer_and_both_lifetime_checks",
+        "test_request_binding_and_original_checkpoint_dispatch_are_required",
+        "test_scoped_profile_and_material_validation_cannot_be_omitted",
+        "test_unvalidated_reply_cannot_restore_the_consumed_connection"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+      "blob": "8d607e733cf950165475cd80b9e3a080b13ed949",
+      "methods": [
+        "test_original_recovery_callers_remain_closed",
+        "test_cell_profile_journals_and_exact_plan_precede_execution",
+        "test_pending_signed_bytes_current_consumption_and_evaluator_are_required",
+        "test_authentication_cannot_move_after_private_execution_decode",
+        "test_execution_context_keeps_canonical_original_owner_key_before_claim",
+        "test_read_only_recovery_keeps_plan_journal_and_original_authentication",
+        "test_read_only_recovery_cannot_skip_checks_in_dead_blocks"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_artifact_head_source_closure.py",
+      "blob": "eeaf7a43ec7d5e90560ca5489bc281cce7eaf881",
+      "methods": [
+        "test_original_edges_and_unregistered_native_entrances_remain_exact",
+        "test_cold_protocol_and_low_level_effects",
+        "test_fresh_writer_continuation",
+        "test_physical_original_registry",
+        "test_original_key_and_saved_signature",
+        "test_original_command_and_unknown_effect",
+        "test_original_process_pinned_source",
+        "test_registered_context_and_complete_claims",
+        "test_canonical_purpose_and_bytes"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+      "blob": "1bc8feef36a00badf2606f22f804001f6c4f11c6",
+      "methods": [
+        "test_original_source_lane_and_complete_model_binding_cannot_be_bypassed",
+        "test_one_session_pins_original_windows_pages_and_full_training_signature",
+        "test_readback_cannot_initialize_recover_fit_sign_or_promote_missing",
+        "test_begin_and_finish_require_actual_owner_and_complete_current_tail",
+        "test_transfer_nonce_and_next_independent_begin_cannot_reuse_current",
+        "test_cancelled_or_unfinished_transfer_consumes_the_original_channel"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_operation_source_closure.py",
+      "blob": "cfd8f724d44bc762c6e47ffe4380ab51485a2374",
+      "methods": [
+        "test_only_concrete_same_operation_callers_can_borrow_or_consume",
+        "test_full_original_prefix_brackets_work_and_failure_keeps_the_lane_fenced",
+        "test_private_proof_cannot_be_cloned_forged_deserialized_or_rearmed_on_drop",
+        "test_complete_role_signatures_and_model_record_are_reauthenticated_at_consumption",
+        "test_root_consumes_only_after_actual_root_io_and_independent_reads_start_again",
+        "test_model_finish_precedes_last_actual_model_current_and_fresh_authentication",
+        "test_actual_checkpoint_clock_revalidates_all_evidence_before_any_next_stage",
+        "test_ineligible_and_uncertain_effects_cannot_become_model_success"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "blob": "f3430124c1aca3cbcfb6521daf9d87543cac6675",
+      "methods": [
+        "test_actual_candidate_and_shared_original_edges_remain_exact",
+        "test_initial_handoff_pins_panel_profile_baseline_actor_and_original_time",
+        "test_actual_prefix_and_candidate_pages_cannot_be_replaced_by_cached_material",
+        "test_last_root_and_source_io_precede_fresh_full_original_signature_checks",
+        "test_unknown_cancel_or_recovery_cannot_restore_dispatch_or_cached_success",
+        "test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "blob": "58b6a0774f868c9cb5f19db4bf5cb4d5b0001a40",
+      "methods": [
+        "test_real_read_edges_are_registered_and_owner_constructors_remain_closed",
+        "test_each_source_role_and_clock_constraint_remains_present_in_order",
+        "test_configuration_and_physical_read_guards_cannot_be_dead_branches",
+        "test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed",
+        "test_new_attestation_deadline_and_readback_window_are_distinct",
+        "test_failed_post_commit_observation_fences_both_effect_and_readback",
+        "test_no_key_generation_execution_or_unbound_stage_assembly_is_added"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "blob": "74a8fb799883b344a9f2fc9d271b696e6d2210ab",
+      "methods": [
+        "test_only_actual_concrete_consumers_and_readback_edges_are_admitted",
+        "test_original_brand_and_all_current_reads_precede_final_full_authentication",
+        "test_initial_original_connection_cannot_renew_or_promote_recovery",
+        "test_wrong_context_queued_cancellation_and_completed_regression_never_rearm",
+        "test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch",
+        "test_full_evaluator_role_payload_and_original_generator_separation_remain_required"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_operation_source_closure.py",
+      "blob": "d35214f712441dda4caeacef3cfe0decbe231582",
+      "methods": [
+        "test_private_original_operation_edges_have_exact_typed_callers",
+        "test_actual_before_after_full_context_and_same_connection_cannot_be_removed",
+        "test_whole_completion_and_export_finish_original_training_before_final_authentication",
+        "test_consuming_factory_and_independent_public_paths_cannot_share_claimed_observations",
+        "test_staged_material_keeps_original_channel_full_body_clock_and_cancellation",
+        "test_unfinished_material_cannot_restore_client_or_publish_a_transferable_proof",
+        "test_native_inventory_keeps_original_panels_and_adds_only_explicit_operation_mechanisms"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "blob": "83ebe8fdc7b8646c7e98301e8d89100552181bd6",
+      "methods": [
+        "test_exact_original_panel_edges_remain_closed",
+        "test_registration_rejects_empty_duplicate_and_rebound_original_tasks",
+        "test_each_member_retains_full_original_training_roles_and_config",
+        "test_both_physical_cells_and_actual_completed_qualification_are_read",
+        "test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms",
+        "test_primary_signature_must_name_the_complete_actual_nonempty_panel",
+        "test_each_member_consumes_exact_original_cohort_custody",
+        "test_original_cohort_current_brackets_all_members_before_final_clock"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "blob": "3b446cfc03d872049c492a2ec6fdb11cdebaf5e3",
+      "methods": [
+        "test_exact_cohort_capture_provider_and_original_policy_edges",
+        "test_complete_preregistered_rule_binds_units_time_and_all_original_runs",
+        "test_original_candidate_training_and_full_signature_are_revalidated",
+        "test_original_policy_projection_is_bounded_exact_and_never_smooths_zero_support",
+        "test_actual_independent_outcomes_join_original_execution_without_completion_labels",
+        "test_two_actual_arms_preserve_inputs_lineage_and_unsupported_actions",
+        "test_all_physical_reads_precede_fresh_original_windows_and_sticky_fence",
+        "test_only_the_original_consumed_holdout_releases_rows_once_without_authority"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+      "blob": "c1b35606604c81a4edf59ec41d04ae2839a02957",
+      "methods": [
+        "test_four_original_read_edges_have_exact_typed_registered_callers",
+        "test_four_receipt_ports_and_stage_assembly_remain_closed",
+        "test_exact_training_scope_and_enrolled_key_precede_journal_custody",
+        "test_original_execution_and_sealed_qualification_bind_full_recovered_history",
+        "test_current_original_sources_and_durable_pending_precede_exact_signature",
+        "test_actual_time_full_principals_and_controller_separation_remain_required",
+        "test_original_signature_readback_revalidates_sources_and_witness_before_ack",
+        "test_original_execution_adapter_rejects_writes_and_substituted_namespace",
+        "test_owner_cannot_generate_keys_replace_trust_or_assemble_stage_authority"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_transfer_source_closure.py",
+      "blob": "608d857f599f5905a9f660fcdaae333175a66cb0",
+      "methods": [
+        "test_all_e_transfer_records_validate",
+        "test_new_private_edges_have_exact_typed_callers",
+        "test_guards_cannot_move_to_comments_or_out_of_function",
+        "test_private_observations_cannot_gain_clone_decode_public_state_or_reconnect"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_execution_evidence_source_closure.py",
+      "blob": "8570acac6e5e05410d1f9bec844e8125d900ea44",
+      "methods": [
+        "test_existing_owner_authentication_precedes_private_evidence_and_final_time",
+        "test_original_signature_window_and_principal_are_reverified",
+        "test_cell_adapter_keeps_actual_journals_and_exact_product_plan",
+        "test_readback_cannot_acquire_execution_signing_or_mutation_capabilities",
+        "test_only_actual_cell_adapter_calls_product_evidence_reader"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_execution_owner_source_closure.py",
+      "blob": "25c6a315594e997b82cdf36e033f637f1513ebb2",
+      "methods": [
+        "test_every_physical_mutation_recovery_and_fence_guard_is_effective",
+        "test_original_constructors_are_closed_and_selector_gets_only_readback",
+        "test_recovery_and_all_readback_functions_have_no_effect_calls",
+        "test_selector_cannot_reopen_raw_parts_or_initialize_witnesses",
+        "test_no_owner_can_extract_raw_custody_or_provision_signing_authority",
+        "test_positive_fixture_uses_production_owner_and_retains_custody_limits",
+        "test_file_witness_current_checks_full_history_cursor_and_sticky_poison",
+        "test_file_witness_open_and_cas_preserve_bounds_lock_and_physical_effect_order",
+        "test_file_witness_readback_cannot_reopen_write_clear_poison_or_return_cache"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_holdout_current_source_closure.py",
+      "blob": "ad51db7191f85503e3a4328e55b34fe42f79fcf7",
+      "methods": [
+        "test_each_original_physical_read_write_and_fence_guard_is_effective",
+        "test_cache_is_advanced_only_after_the_actual_post_write_read",
+        "test_same_handle_read_has_no_reopen_unlock_or_effect_fallback",
+        "test_recovery_retains_original_minimum_and_byte_record_bounds",
+        "test_no_new_public_port_and_known_non_effect_errors_are_retained",
+        "test_native_group_uses_actual_eval_package_and_registered_file_owner_cases"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "blob": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+      "methods": [
+        "test_original_sealed_request_cannot_be_replaced_by_caller_bytes",
+        "test_claim_and_witness_must_precede_signing_and_saved_readback",
+        "test_recovered_evidence_must_match_original_key_actor_and_identity",
+        "test_constructor_checks_registered_signer_without_probe_signature",
+        "test_registered_controller_revocation_and_role_are_required",
+        "test_feature_dispatch_must_receive_original_durable_cell_admission",
+        "test_native_control_fences_unknown_execution_and_persists_before_return",
+        "test_source_pending_and_readback_cannot_become_new_work",
+        "test_observer_views_cannot_gain_original_writer_capabilities",
+        "test_published_task_keeps_original_profile_and_distinct_successor",
+        "test_retirement_and_next_use_recheck_source_and_actual_cell",
+        "test_historical_read_never_reactivates_or_repairs_previous_owner",
+        "test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel",
+        "test_live_original_owner_current_brackets_physical_read_with_witness",
+        "test_live_execution_current_replays_original_locked_bytes"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+      "blob": "64c3b5db2071a83ba03cb3664eda595c73ce3e2c",
+      "methods": [
+        "test_retained_evidence_getter_never_permits_new_struct_construction",
+        "test_only_original_pair_consumption_opens_custody_and_external_dispatch_stays_closed",
+        "test_private_origin_shared_admission_and_recovery_cannot_be_rearmed",
+        "test_fixed_roles_exact_context_and_no_uploaded_signing_body",
+        "test_actual_stage_sources_precede_signatures_and_dataset_never_creates_experience",
+        "test_live_readback_full_signatures_and_internal_clock_prevent_renewal",
+        "test_guards_cannot_move_into_comments_helpers_or_optional_branches",
+        "test_peer_liveness_io_precedes_final_signature_clock"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
+      "blob": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8",
+      "methods": [
+        "test_consuming_custody_factory_and_uninstalled_service_stay_closed",
+        "test_exact_readback_callers_reject_an_additional_product_consumer",
+        "test_fixed_peer_limits_and_failed_exchange_cannot_be_bypassed",
+        "test_original_pair_derives_dataset_cut_with_no_network_under_ledger_lock",
+        "test_each_request_correlation_and_monotonic_id_precede_original_response",
+        "test_fresh_clock_and_registered_original_signer_follow_actual_reads",
+        "test_wire_retains_every_original_attestation_field_and_window",
+        "test_service_cannot_sign_execute_cache_or_acquire_replacement_capabilities",
+        "test_comments_nested_helpers_and_conditional_guards_cannot_supply_checks"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_material_owner_source_closure.py",
+      "blob": "1f1a92602ab82b3b21786f1af8e6da8c11749d5e",
+      "methods": [
+        "test_both_original_custodies_and_full_freeze_signature_bind_before_open",
+        "test_actual_material_and_claim_precede_experience_signature",
+        "test_dataset_requires_original_experience_readback_and_exact_signature_bytes",
+        "test_completed_readback_rechecks_physical_owners_and_original_windows",
+        "test_completed_reader_has_exact_original_owner_callers_and_fixed_system_clock",
+        "test_material_owner_cannot_acquire_ambient_trust_training_or_root_authority"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_material_source_peer_source_closure.py",
+      "blob": "34a01df7324eb8b6d51d2b4a18cb00a36ae297c9",
+      "methods": [
+        "test_only_actual_material_edges_open_and_host_handoff_remains_closed",
+        "test_explicit_uid_stream_has_only_the_actual_production_callers",
+        "test_decoder_cannot_detach_signatures_provenance_batch_or_frozen_scope",
+        "test_peer_is_original_finite_and_exhausted_on_uncertainty",
+        "test_final_material_authentication_follows_original_peer_io",
+        "test_source_purpose_only_reads_original_completed_pair"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_continuation_source_closure.py",
+      "blob": "0fc0bb7f9c0443920cbbce8cad2e9566699e9054",
+      "methods": [
+        "test_actual_continuation_edges_and_private_receivers_remain_exact",
+        "test_begin_takes_the_original_channel_once_and_never_resets_its_budget",
+        "test_pages_require_complete_canonical_body_and_monotone_original_transfer",
+        "test_execute_keeps_original_custody_cancellation_and_native_before_after",
+        "test_finish_reads_actual_e_then_last_native_model_before_fresh_release",
+        "test_service_cancellation_and_eof_cannot_resume_a_partial_operation",
+        "test_candidate_closes_actual_prefix_inside_the_same_model_operation",
+        "test_completed_and_provisional_proofs_cannot_be_cloned_exported_or_reconnected"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "blob": "352e30aa82a15ac0d88c9f5aee399638224f83de",
+      "methods": [
+        "test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed",
+        "test_root_projection_requires_the_original_complete_model_and_full_context",
+        "test_every_non_model_receipt_keeps_one_original_role_signature",
+        "test_dispatch_rereads_dte_then_original_model_and_preserves_unknown",
+        "test_initial_model_stream_and_final_root_io_cannot_be_replaced_by_future_dtos",
+        "test_cold_model_pin_is_readonly_and_wire_none_preserves_prior_shape",
+        "test_model_record_codec_reconstructs_only_original_proposal"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "blob": "fee138b3322c52d4df9639a116eb67b0f210dc36",
+      "methods": [
+        "test_each_original_owner_and_fresh_signature_guard_is_effective",
+        "test_selection_binds_original_completed_task_before_version_readback",
+        "test_actual_model_execution_and_publication_edges_are_exact",
+        "test_new_selector_owner_and_root_route_remain_closed",
+        "test_sources_cannot_replace_source_bound_model_or_original_execution_witness",
+        "test_selector_cannot_execute_model_holdout_publication_or_provision_custody"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "blob": "15d633eae74b889609d07844732bdda7f50b7c6d",
+      "methods": [
+        "test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+        "test_fresh_context_pins_actual_selection_and_both_original_signatures",
+        "test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag",
+        "test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io",
+        "test_attestation_and_readback_use_live_original_owners_without_running_c",
+        "test_response_requires_actual_retained_c_with_new_run_and_original_roles",
+        "test_no_key_writer_callback_or_readback_effect_factory_can_be_added"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "blob": "08a785b5c94374e3d2f5f6fb45d5535095481633",
+      "methods": [
+        "test_only_concrete_original_edges_and_resident_installation_are_registered",
+        "test_initial_fixed_context_and_original_deadlines_precede_all_late_binding",
+        "test_resident_gate_and_same_cancellation_remain_at_actual_effect_edges",
+        "test_recovery_and_attestation_use_real_owner_reads_and_final_clock",
+        "test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors",
+        "test_readiness_only_original_unresolved_publication_remains_pending",
+        "test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity",
+        "test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "blob": "a80bca9a11c81a4d9057086acbb4689ebde45520",
+      "methods": [
+        "test_concrete_live_read_edges_are_exact_and_external_factories_stay_closed",
+        "test_source_current_keeps_original_handle_two_witnesses_and_permanent_fence",
+        "test_mode_frozen_scope_cut_and_complete_original_signatures_are_bound",
+        "test_no_historical_read_replaces_remote_io_or_fresh_window_validation",
+        "test_actual_task_source_selection_and_c_completion_precede_wire_response",
+        "test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides",
+        "test_private_wire_is_bounded_mode_exact_and_has_no_writer_or_signer_factory"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+      "blob": "c5a25db4eea151de3d158d123db0d15d583ad597",
+      "methods": [
+        "test_each_original_custody_effect_and_fresh_clock_guard_is_effective",
+        "test_public_owner_routes_are_closed_and_actual_original_edges_are_exact",
+        "test_recovery_and_readback_cannot_acquire_or_repeat_effects",
+        "test_complete_original_signatures_context_and_decision_remain_bound",
+        "test_only_concrete_original_sources_and_internal_time_can_satisfy_readback",
+        "test_actual_fixture_uses_original_owner_and_native_inventory_preserves_limits"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_readonly_ready_source_closure.py",
+      "blob": "d11dab3c405e88d0c34e5351003802ed5efa8796",
+      "methods": [
+        "test_only_actual_readonly_backends_and_consuming_hosts_are_registered",
+        "test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order",
+        "test_first_actual_response_cannot_restart_sequence_or_initial_deadline",
+        "test_unknown_read_and_changed_complete_signature_permanently_consume_channel",
+        "test_readonly_paths_cannot_acquire_writer_key_bootstrap_or_command_purpose",
+        "test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "blob": "fa7bdda7fad139ce72137f2e32c7b74782dbf4c9",
+      "methods": [
+        "test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+        "test_fresh_context_uses_opaque_actual_training_and_full_original_binding",
+        "test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag",
+        "test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io",
+        "test_command_and_readback_keep_actual_owner_and_original_transport_bounds",
+        "test_response_verifies_exact_extension_baseline_and_independent_original_roles",
+        "test_no_key_writer_callback_or_readback_effect_factory_can_be_added"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_source_operation_source_closure.py",
+      "blob": "648601003eb46a404940fbf498d799263040a3b6",
+      "methods": [
+        "test_exact_original_callers_and_private_operations_remain_closed",
+        "test_actual_before_after_full_material_and_same_custody_are_required",
+        "test_native_tail_and_fresh_original_windows_precede_once_only_finish",
+        "test_cancellation_drop_and_failed_proof_fence_original_custody",
+        "test_candidate_and_admission_use_this_borrowed_operation_proof",
+        "test_independent_capture_and_native_precommit_withdrawal_checks_remain",
+        "test_operation_cannot_gain_clone_deserialization_effects_or_reset",
+        "test_generic_lane_markers_cannot_be_transplanted_outside_function"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "blob": "c50d3afdcf55df291298cf18775a5278843ff94e",
+      "methods": [
+        "test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed",
+        "test_dataset_attenuation_keeps_role_full_context_peer_and_original_window",
+        "test_source_connection_retains_initial_peer_and_never_restarts_lifetime",
+        "test_actual_dataset_and_request_are_checked_before_custody_is_consumed",
+        "test_uninitialized_or_missing_material_never_claims_a_training_status",
+        "test_writer_lane_rereads_actual_source_then_checks_time_before_either_writer",
+        "test_ready_is_retained_before_work_and_failed_initialization_never_rearms",
+        "test_only_original_captured_native_and_generator_enter_the_same_stage"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "blob": "1a712f18b636154edce08fb07e30148dbfe8b6be",
+      "methods": [
+        "test_only_concrete_internal_edges_open_host_factories_stay_closed",
+        "test_external_original_process_and_existing_transport_limits_remain_required",
+        "test_client_consumes_once_and_pins_complete_original_response",
+        "test_original_captured_stage_is_required_before_any_command",
+        "test_command_calls_actual_execution_and_actual_readback_without_replay",
+        "test_recovery_preserves_same_job_and_original_validity_window",
+        "test_completed_wire_is_bounded_canonical_exact_dataset_extension",
+        "test_existing_evidence_protocol_reads_real_original_stage_each_time",
+        "test_peer_liveness_io_precedes_final_signature_clock"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "blob": "09f83ec2a0fa55b07918f11309f2ec14c6cee747",
+      "methods": [
+        "test_only_concrete_initial_handoff_checks_open",
+        "test_initial_handoff_binds_original_actor_peer_full_context_and_clock",
+        "test_actual_dataset_moves_the_same_transport_after_final_peer_io_and_authentication",
+        "test_opaque_material_keeps_original_freeze_binding_and_full_signatures",
+        "test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence",
+        "test_late_binding_accepts_only_the_sealed_original_material_cut"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "blob": "c37513f5fe5298ecc4618b3a819234e7d7f57c42",
+      "methods": [
+        "test_training_receipt_ports_have_only_the_original_bootstrap_and_stage_callers",
+        "test_pair_and_model_lane_keep_exact_native_callers",
+        "test_pair_requires_exact_missing_enrollment_and_retained_blocking_lane",
+        "test_signer_enrollment_exact_dataset_and_scope_precede_signature_custody",
+        "test_native_completed_read_precedes_claim_and_no_caller_payload_is_signed",
+        "test_readback_requires_original_time_exact_payload_identity_and_both_current_heads"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+      "blob": "424a41420f1ac9b3c8a4d827862daaba5eb33866",
+      "methods": [
+        "test_full_structure_retained_receipt_and_original_completion_are_all_required",
+        "test_checks_cannot_hide_in_dead_blocks_or_start_work",
+        "test_only_original_snapshot_and_source_gate_read_stage_without_host_registration"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "blob": "835953d9e8b670d6713a6f2728e716182acc542d",
+      "methods": [
+        "test_only_actual_original_read_edges_open_and_new_authority_stays_closed",
+        "test_live_material_and_full_original_signatures_cannot_be_detached",
+        "test_source_domain_does_not_replace_frozen_data_or_original_missing",
+        "test_existing_native_and_model_lanes_keep_live_checks_before_return"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_positive_circuit_next_use_source_closure.py",
+      "blob": "d3a91ad569289d7d33371e44f8d5fc54953ecd8b",
+      "methods": [
+        "test_exact_typed_edges_and_unregistered_callers_are_rejected",
+        "test_complete_positive_protected_records_validate",
+        "test_security_guards_cannot_be_removed_from_their_actual_function",
+        "test_new_adapters_cannot_gain_keys_writers_task_execution_or_reconnect",
+        "test_positive_purposes_are_real_code_not_comment_evidence",
+        "test_positive_c_signature_cannot_outlive_original_s_or_model_windows",
+        "test_original_no_update_hard_profiles_are_preserved"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_positive_model_version_source_closure.py",
+      "blob": "407b721f88d864fb80fd39810469710a57a5ec4d",
+      "methods": [
+        "test_complete_positive_owner_records_validate",
+        "test_exact_private_edges_and_unregistered_callers",
+        "test_each_actual_function_keeps_a_security_guard_in_code",
+        "test_generic_publication_and_cold_recovery_keep_actual_order",
+        "test_generic_publication_orders_remain_inside_the_actual_function",
+        "test_version_releases_mutex_before_original_model_root_and_native_io",
+        "test_owner_provisioning_reconnect_and_public_capability_mutations_fail",
+        "test_version_and_selector_purposes_remain_distinct_real_constants"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_dataset_source_closure.py",
+      "blob": "75f50ba377a9e67154ee5043cd20c6fdeca0ce67",
+      "methods": [
+        "test_original_current_and_freeze_cannot_be_replaced_by_cached_material",
+        "test_clock_and_expiry_guards_cannot_be_exposed_or_disabled",
+        "test_target_requires_independent_authenticated_exact_outcome",
+        "test_material_cannot_acquire_signing_training_or_publication_effects"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "blob": "1de53089884500596231d0b92fd46e56ba4469b8",
+      "methods": [
+        "test_model_borrows_original_lane_and_host_entrypoints_remain_closed",
+        "test_original_training_header_and_receipt_bindings_cannot_be_removed",
+        "test_complete_generator_identity_and_signature_checks_cannot_be_removed",
+        "test_original_manifests_and_qualified_evaluation_are_required",
+        "test_final_readback_cannot_skip_current_witness",
+        "test_commit_cannot_skip_durable_claim_completion_or_witness",
+        "test_owner_creation_cannot_skip_original_trainer",
+        "test_readback_preserves_original_bytes_and_timestamp",
+        "test_owner_clock_cannot_be_replaced_by_request_time",
+        "test_shared_lane_cannot_skip_original_completion_or_exact_attestation",
+        "test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+      "blob": "ad0586ddadce2566d705ae0f57011dc672ec2d6b",
+      "methods": [
+        "test_scope_and_material_entrypoints_keep_exact_callers",
+        "test_rejection_guards_cannot_be_disabled_by_a_false_condition",
+        "test_canonical_rule_keeps_baseline_row_and_nonzero_optimizer",
+        "test_dataset_cut_cannot_omit_original_scope_or_loaded_baseline",
+        "test_training_requires_original_prefix_one_receipt_and_actual_bytes",
+        "test_scope_checks_cannot_move_after_material_acceptance_or_hide"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "blob": "a22b0644aaf5ed7594b44dac03770d49d8ac6eb2",
+      "methods": [
+        "test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle",
+        "test_both_factories_consume_original_values_under_the_same_root_registration",
+        "test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape",
+        "test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "blob": "577398a11b3568d52fecee3f9453e31acd40fa51",
+      "methods": [
+        "test_exact_new_callers_and_external_registration_stay_closed",
+        "test_profile_is_only_canonical_data_and_stable_identity_rejects_rebinding",
+        "test_only_actual_strict_cas_can_mint_the_nonrecoverable_token",
+        "test_original_grant_registry_revocation_and_local_only_fence_are_mandatory",
+        "test_same_continuation_gate_is_cancelled_and_matches_the_durable_effect",
+        "test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate",
+        "test_queued_cancel_and_bound_refusal_never_restore_fresh_admission",
+        "test_actual_completed_a_is_joined_before_claim_and_only_final_readback_retires",
+        "test_every_original_signature_is_revalidated_after_actual_role_and_root_reads",
+        "test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+      "blob": "fc8207a8cb6d4bd04fb6587c881560437800f966",
+      "methods": [
+        "test_only_original_readback_edge_opens_and_host_factories_stay_closed",
+        "test_version_final_artifact_read_follows_control_and_source_io",
+        "test_version_exports_remain_inside_the_linux_module_boundary",
+        "test_context_requires_actual_opaque_training_and_strict_no_update",
+        "test_training_is_live_and_complete_original_signature_never_renews",
+        "test_prepare_keeps_original_selection_and_actual_no_update_operation",
+        "test_publish_consumes_separate_exact_final_use_and_checks_original_current",
+        "test_distinct_c_uses_actual_task_content_not_nonce_or_new_run_alone",
+        "test_cold_unknown_only_reads_exact_original_files_and_does_not_prepare",
+        "test_dropped_queued_work_cannot_send_a_new_publication",
+        "test_no_resident_grant_candidate_upgrade_or_local_signer_shortcut"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+      "blob": "946afd64457e848e2674519f61b35fef6ce5af31",
+      "methods": [
+        "test_original_issuer_has_only_actual_version_callers",
+        "test_legacy_or_non_root_provider_cannot_be_promoted",
+        "test_exact_purpose_and_once_survive_a_legal_denial",
+        "test_claim_comes_only_from_the_actual_current_prepared_owner",
+        "test_queued_cancel_and_last_actual_read_precede_root_request",
+        "test_cold_and_unknown_never_reset_the_original_issuer",
+        "test_publication_and_c_runtime_keep_the_original_verifier_tail",
+        "test_ordinary_host_really_serves_the_issuer_and_preserves_denied_readback",
+        "test_no_new_key_policy_socket_or_resident_grant_authorizes_publication"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "blob": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+      "methods": [
+        "test_slow_check_cannot_drop_its_post_check_deadline",
+        "test_original_registry_cannot_drop_its_locked_deadline",
+        "test_two_cas_stages_cannot_skip_the_original_context_recheck",
+        "test_consumer_confirmation_must_observe_both_original_owners",
+        "test_strict_own_signature_cannot_be_replaced_by_ordinary_verify",
+        "test_valid_signed_artifact_cannot_skip_existing_full_lease_binding",
+        "test_retained_read_only_verification_cannot_authorize_mutation",
+        "test_root_preparation_cannot_unlock_shared_original_file_custody",
+        "test_writer_custody_cannot_replace_original_verification",
+        "test_retirement_cannot_release_consumers_before_fencing",
+        "test_admin_activation_cannot_precede_original_ready_callback"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "blob": "2d0f4bd705fb0159549d9bb1f13d42d3db74afc4",
+      "methods": [
+        "test_inventory_and_exact_product_callers_are_closed",
+        "test_registration_cannot_omit_original_authority_or_postchecks",
+        "test_recovery_is_open_only_and_uses_original_owner",
+        "test_profile_requires_canonical_empty_initial_and_original_writer",
+        "test_handoff_requires_original_root_and_exact_two_rights",
+        "test_client_requires_cross_lane_scope_and_original_current",
+        "test_unassembled_stage_owners_are_refused_before_runtime_side_effects",
+        "test_original_source_scope_requires_registered_membership",
+        "test_original_root_source_join_cannot_be_dropped_or_downgraded",
+        "test_pending_guard_must_execute_at_top_level",
+        "test_registered_learning_cannot_be_silently_dropped_by_retained_serve",
+        "test_scoped_profile_cannot_downgrade_during_registration_handoff_or_runtime"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "blob": "050bd227cc6ef7c9cf9abdbb04557c330aca82c4",
+      "methods": [
+        "test_scoped_product_caller_sets_remain_exact",
+        "test_evidence_uid_constructor_distinguishes_other_stream_types",
+        "test_profile_requires_original_scope_rule_and_matching_schema",
+        "test_transport_cannot_downgrade_or_accept_another_profile",
+        "test_restored_training_and_checkpoint_are_checked_before_cas",
+        "test_worker_checks_scope_before_authentication_and_progress",
+        "test_root_handoff_retains_scope_through_the_worker_choice",
+        "test_frozen_component_boundary_and_rule_cannot_be_widened"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "blob": "0cbecba3be2293586637938a5bd3ddd825023c68",
+      "methods": [
+        "test_readback_boundary_only_admits_original_receipt_and_material_owners",
+        "test_readback_requires_original_completed_bytes_scope_and_current_witness",
+        "test_no_update_keeps_frozen_rule_and_generator_selector_separation"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+      "blob": "8cbf737c8babd802b062ad88351ab7bb6c502edd",
+      "methods": [
+        "test_complete_guard_records_and_exact_caller_delta_are_installed",
+        "test_fixed_model_prefix_cannot_absorb_unsigned_suffix_or_another_model",
+        "test_original_channels_model_finish_and_owner_effects_remain_real",
+        "test_readiness_and_full_original_s_c_evidence_remain_separate",
+        "test_verifier_uses_original_evidence_scope_and_all_three_context_pins",
+        "test_private_adoption_data_cannot_create_signers_or_reconnect"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+      "blob": "9832e7800829bfbe9ee913884c50bd3d2add68bc",
+      "methods": [
+        "test_exact_original_paired_and_closed_cohort_edges",
+        "test_complete_records_preserve_shared_and_paired_guards",
+        "test_each_actual_producer_guard_cannot_move_to_a_comment",
+        "test_original_authority_and_outcome_substitutions_are_rejected",
+        "test_freeze_guards_stay_inside_the_one_original_generic_function",
+        "test_frozen_identity_fresh_empty_and_actual_principal_are_required",
+        "test_distinct_domains_are_real_code_and_cannot_be_comment_substitutes",
+        "test_shared_release_and_cross_mode_current_are_explicitly_closed"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+      "blob": "9fe310b95ab493e9704ad5be39beba2f5d048f9a",
+      "methods": [
+        "test_complete_records_and_actual_composed_callers_are_installed",
+        "test_frozen_protocol_and_temporal_parameters_cannot_drift",
+        "test_original_run_source_outcome_and_principal_identities_cannot_merge",
+        "test_single_original_consumption_and_signed_qualification_path_remain",
+        "test_complete_paired_body_and_legacy_mode_are_not_interchangeable",
+        "test_original_confidence_bounds_and_strict_roles_cannot_be_softened",
+        "test_domains_are_actual_literals_in_the_original_functions",
+        "test_original_shared_function_code_is_preserved",
+        "test_pure_pair_metadata_cannot_mint_authority_or_reconnect"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_retention_admission_source_closure.py",
+      "blob": "ac2e33ebf4eed11a899c1dce96dbbfb0079722f2",
+      "methods": [
+        "test_complete_material_records_validate_without_execution_authority",
+        "test_acceptance_cannot_skip_actual_members_signatures_or_the_complete_retention_set",
+        "test_all_verified_members_govern_admission_without_rewriting_primary_observation",
+        "test_model_and_selector_require_the_same_verified_acceptance_gate"
+      ]
+    }
+  ],
+  "qa_scope": "Source-text inventory and explicit caller alignment only. Original Python execution pending. No old method removed.",
+  "native_inventory": {
+    "path": "scripts/hepta_c_observer_coverage.py",
+    "before_blob": "0cdc7cec763b2912b833c1e9cbc05d3e60a71fd0",
+    "after_blob": "672a90aef6c8791265891fd31b9b2cadb8660952",
+    "base_cases": 180,
+    "base_groups": 40,
+    "cases": 190,
+    "groups": 41,
+    "delta": {
+      "crate": "codex-hepta-intelligence-eval",
+      "cargo_manifest_blob": "0860efdb74b678dd257f4c0bf199a4e002d99daf",
+      "group": "original_paired_product_domain",
+      "cases": [
+        "product_runner::tests::execution_tests::paired_tests::paired_default_provider_refuses_after_one_original_consumption",
+        "product_runner::tests::execution_tests::paired_tests::paired_original_estimators_and_qualification_keep_the_frozen_thresholds",
+        "product_runner::tests::execution_tests::paired_tests::paired_equal_outcomes_do_not_pass_original_primary_superiority",
+        "product_runner::tests::execution_tests::paired_tests::paired_identity_source_state_and_probability_changes_stay_pending",
+        "product_runner::tests::execution_tests::paired_tests::paired_contract_and_temporal_protocol_are_fixed_before_consumption",
+        "product_runner::tests::execution_tests::paired_tests::paired_one_actual_principal_is_not_split_into_independent_clusters",
+        "product_runner::tests::execution_tests::paired_tests::paired_signed_completion_lost_ack_cold_reads_without_release_or_resign",
+        "product_runner::tests::execution_tests::paired_tests::paired_changed_execution_body_cannot_replace_original_signature",
+        "product_runner::tests::execution_tests::paired_tests::paired_mode_cannot_decode_or_reuse_a_shared_behavior_execution",
+        "product_runner::tests::execution_tests::paired_tests::paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineligible"
+      ],
+      "executed": 0,
+      "scope": "synthetic mechanism tests only; no actual B/inference/ordinary authority evidence"
+    },
+    "old_entire_text_preserved_by_removing_only_exact_additions": true
+  },
+  "old_positive_gates_and_post_cas_helper": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "function": "pub(super) fn require_stage(",
+      "bytes": 985,
+      "sha256": "41ba69eada8c3a36fc57a4aa8571ee785f8c9dafcfd11860e6f429a6a579db0a",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "e8400d75ebd2822e5477b38cf49e44ce38ad0733",
+      "final_entire_function_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "function": "fn execute_stage<'a>(",
+      "bytes": 1438,
+      "sha256": "65e7dcb3f1ca708c5e7dc8c14a47194f0e3c3efabe012f21ccbb143f1850f518",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "d467d499a6d20e4e77a913889294d05c7159d91f",
+      "final_entire_function_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "function": "pub(super) fn verify_checkpoint_evidence(",
+      "bytes": 626,
+      "sha256": "80eebfc50ca8e51447df8031530f8dd9d9be10820b105bebe8674fe10c96acc3",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "127ebac10af813a04e4844efdb9e7fa2d381fe71",
+      "final_entire_function_equal": true
+    }
+  ],
+  "original_product_complete_function_byte_checks": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_estimand_commitment_bytes(",
+      "before_blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "after_blob": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "complete_function_bytes": 699,
+      "sha256": "55f623618b2304a883553b0d89dc6c6b6a6bf68050877591c900c255e8c57cd2",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn derive_metric_gates(",
+      "before_blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "after_blob": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "complete_function_bytes": 2048,
+      "sha256": "f21b2060b4d6b1afd66e441560327373071d766f7f2280cead78d63a94790a29",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn comparison_digests(",
+      "before_blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "after_blob": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "complete_function_bytes": 1134,
+      "sha256": "fb765b61d20c8bba7f0cf8339b56aa1c79acebdc603f6490f82ec9453c35696b",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn validate_comparable_observations(",
+      "before_blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "after_blob": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "complete_function_bytes": 1763,
+      "sha256": "f38d0c77cec6a3f505ae9378abb22af9f72d29eafe92b367c4b91fc27c768361",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn qualification_bundle(",
+      "before_blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "after_blob": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "complete_function_bytes": 1849,
+      "sha256": "e6abe8ca2023d6c6644595d097654a0ae250ab6381edbfd6b3cc93dd05e0ce64",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn qualify_and_persist(",
+      "before_blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "after_blob": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "complete_function_bytes": 2903,
+      "sha256": "9565bf622024f48d76c190909f7d980a283c06b771ecaf7d8b18651695a2101a",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_qualification_evidence_digest(",
+      "before_blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "after_blob": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "complete_function_bytes": 170,
+      "sha256": "2f4679ac8ac41a231780f58cc9345734bd63bc61bbf85f2870fd49d4287b9104",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn product_qualification_seal(",
+      "before_blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "after_blob": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "complete_function_bytes": 360,
+      "sha256": "edf783f4a383b501a7adc7c964a71fa1a986f6e4727516d86fda6f9d24ba6816",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "function": "fn bound_estimand_digest(",
+      "before_blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "after_blob": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "complete_function_bytes": 350,
+      "sha256": "6f225cf5ca5799f7f637cfcadc0dbdfaead82f9a3dda460d1302c4c18c0c881e",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn encode_envelope(",
+      "before_blob": "95004dcb72d74b0b42c80c5d56b2c134f7883d52",
+      "after_blob": "afee1a31f8b115c8ae7e356dbca8bb9ad243339e",
+      "complete_function_bytes": 952,
+      "sha256": "c6197c572934729b050a08bfe7a36f945c9aad48ab181ce0f60e30f27a993189",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_envelope(",
+      "before_blob": "95004dcb72d74b0b42c80c5d56b2c134f7883d52",
+      "after_blob": "afee1a31f8b115c8ae7e356dbca8bb9ad243339e",
+      "complete_function_bytes": 931,
+      "sha256": "5787280d0a2591e5a4bac8317e14a153d5777a71b24037b4cf0efdacd2f2ee4b",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn encode_temporal(",
+      "before_blob": "95004dcb72d74b0b42c80c5d56b2c134f7883d52",
+      "after_blob": "afee1a31f8b115c8ae7e356dbca8bb9ad243339e",
+      "complete_function_bytes": 1642,
+      "sha256": "094827b10b2f5e7d3bb459f20e0d27d4b978c9aee3bb978a978b20985e1270d3",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "function": "fn decode_temporal(",
+      "before_blob": "95004dcb72d74b0b42c80c5d56b2c134f7883d52",
+      "after_blob": "afee1a31f8b115c8ae7e356dbca8bb9ad243339e",
+      "complete_function_bytes": 1465,
+      "sha256": "28f2dc3d2c1c5c315d63ef31176c44743d92019e44bd42415399ebd3571f9633",
+      "equal": true
+    }
+  ],
+  "original_product_entire_file_pins": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "sha": "96c1d265345551a389934657051158d47e8959d5",
+      "exactBeforeAfterTreePin": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/ope.rs",
+      "sha": "52fb8b882012f2561c65a95639a63da8e2c12ff4",
+      "exactBeforeAfterTreePin": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+      "sha": "be7f0e9ccd6ce2fed3fa635bb018cf70d62df75c",
+      "exactBeforeAfterTreePin": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
+      "sha": "5225462749ff1e082ddb6597567b00040a656a56",
+      "exactBeforeAfterTreePin": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/temporal_fold.rs",
+      "sha": "3447e550262f7b85223a90031620a6b95b11dc69",
+      "exactBeforeAfterTreePin": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+      "sha": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2",
+      "exactBeforeAfterTreePin": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "sha": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb",
+      "exactBeforeAfterTreePin": true
+    }
+  ],
+  "model_root_file_merge": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "base": "4ed240ecbe3ce939bb382c455a17f5f2441c5477",
+      "left": "4ed240ecbe3ce939bb382c455a17f5f2441c5477",
+      "right": "936300641ff24012652f186713f840d908d283e3",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "base": "fe1f76d21dd51fa67199425fa35bb7752f15ce51",
+      "left": "fe1f76d21dd51fa67199425fa35bb7752f15ce51",
+      "right": "40fb1e1206e05810a90e6d46c48b2a9519d2997e",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "base": "f57849b69797889c719f97a89d7823435eb9747e",
+      "left": "f57849b69797889c719f97a89d7823435eb9747e",
+      "right": "fe8f78c9fd3de48e7ff13318317fa33863749e94",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+      "base": "63562a09f837577990ed2e8405f7a04c22ce1d6b",
+      "left": "63562a09f837577990ed2e8405f7a04c22ce1d6b",
+      "right": "43e24b94f0bdf5c5703ba52fc79cc55db6de673b",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "base": "5029e958937808468d2cef7ad1d0e9e291a51cfc",
+      "left": "5029e958937808468d2cef7ad1d0e9e291a51cfc",
+      "right": "36ae446b390fc4633bada3c1ceec27743bd38cf0",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+      "base": "7674650c6a44bdd48c32fbb64ce18c1eac483a3d",
+      "left": "7674650c6a44bdd48c32fbb64ce18c1eac483a3d",
+      "right": "ebb34d59f692b456506a1025ea23e5c65ffc4d57",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+      "base": "11015207f2b4597c46f8cb5f8bc5e6bc332d8645",
+      "left": "11015207f2b4597c46f8cb5f8bc5e6bc332d8645",
+      "right": "f84a5d13ae2322da6865163c83d1d35ae099bdf7",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_binding.rs",
+      "base": "6c1dd86b2185e0c4775b79c3a5fb49b93b610406",
+      "left": "6c1dd86b2185e0c4775b79c3a5fb49b93b610406",
+      "right": "0162d339e52fc4d4bb79fe27c03f35a191e8fa7b",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+      "base": "c2a5bb3404f3fb9f4e6b830bf39b3ef793390062",
+      "left": "c2a5bb3404f3fb9f4e6b830bf39b3ef793390062",
+      "right": "5adf0fef28ea4c28c9dc65ba9d31f9e4001e15bd",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs",
+      "base": "0bfbe49023186bea2adeab8dcefb5a9c976b83a9",
+      "left": "0bfbe49023186bea2adeab8dcefb5a9c976b83a9",
+      "right": "dbc1dc9cd8b10816f88a762653bfe283c26599f0",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_operation_source_closure.py",
+      "base": "9fc762f987903f1d25993c8c838bda72ca4c8502",
+      "left": "9fc762f987903f1d25993c8c838bda72ca4c8502",
+      "right": "cfd8f724d44bc762c6e47ffe4380ab51485a2374",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_continuation_source_closure.py",
+      "base": "7dfd006ba6f830af0e0f6e2ca6e8e030dc5febca",
+      "left": "26dcfccd07d144ee4676233c051654bdc5edc433",
+      "right": "0fc0bb7f9c0443920cbbce8cad2e9566699e9054",
+      "mode": "both-changed",
+      "resolution": "both E changes exact subset; preserve all Model edits",
+      "leftEdits": [
+        {
+          "start": 198,
+          "end": 199,
+          "lines": [
+            "            \"OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?\","
+          ]
+        },
+        {
+          "start": 222,
+          "end": 223,
+          "lines": [
+            "            \"OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after) != self.body.as_slice()\","
+          ]
+        }
+      ],
+      "rightEdits": [
+        {
+          "start": 198,
+          "end": 199,
+          "lines": [
+            "            \"OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?\","
+          ]
+        },
+        {
+          "start": 222,
+          "end": 223,
+          "lines": [
+            "            \"OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after) != self.body.as_slice()\","
+          ]
+        },
+        {
+          "start": 268,
+          "end": 269,
+          "lines": [
+            "            \"OriginalModelReadHostOperation::started(&original)?\","
+          ]
+        },
+        {
+          "start": 270,
+          "end": 272,
+          "lines": [
+            "            \"OriginalModelReadHostOperation::page(\",",
+            "            \"operation.as_mut().ok_or(Error::ReadbackRequired)?, &request\",",
+            "            \"OriginalModelReadHostOperation::finish(\",",
+            "            \"operation.take().ok_or(Error::ReadbackRequired)?, &request\","
+          ]
+        },
+        {
+          "start": 313,
+          "end": 314,
+          "lines": [
+            "            \"self.model_completion.is_some()\",",
+            "            \"self.selection.is_some()\", \"self.next_use.is_some()\",",
+            "            \"self.publication.is_some()\", \"self.completion_read.is_some()\",",
+            "            \"self.evaluation.snapshot() != snapshot\","
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "base": "02b87b8ba83e9679030e04cebbde11c8bea7f625",
+      "left": "02b87b8ba83e9679030e04cebbde11c8bea7f625",
+      "right": "352e30aa82a15ac0d88c9f5aee399638224f83de",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "base": "fd610e81848e5017674bf75c7fe6880a29a1f8e4",
+      "left": "fd610e81848e5017674bf75c7fe6880a29a1f8e4",
+      "right": "15d633eae74b889609d07844732bdda7f50b7c6d",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "base": "83821c4cd3a2f8ef5f8966f78e6ea15e6d6d3a14",
+      "left": "83821c4cd3a2f8ef5f8966f78e6ea15e6d6d3a14",
+      "right": "fa7bdda7fad139ce72137f2e32c7b74782dbf4c9",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "base": "9527c55d912b6baaa23b5e609eb4859156627a8c",
+      "left": "9527c55d912b6baaa23b5e609eb4859156627a8c",
+      "right": "1a712f18b636154edce08fb07e30148dbfe8b6be",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "base": "bcf2dbb0824b0a99d9acfd8c54afe51356d212a1",
+      "left": "bcf2dbb0824b0a99d9acfd8c54afe51356d212a1",
+      "right": "a22b0644aaf5ed7594b44dac03770d49d8ac6eb2",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "base": "3f04a8ce946d8fe9a67e9974ad5ffa4c5dbfdc8c",
+      "left": "3f04a8ce946d8fe9a67e9974ad5ffa4c5dbfdc8c",
+      "right": "577398a11b3568d52fecee3f9453e31acd40fa51",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-20261112/guard-contract.json",
+      "base": null,
+      "left": null,
+      "right": "f569a3d3bd36f49af0d24e3fde1e23e98ed0c68a",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-20261112/qa-mutation-projection.json",
+      "base": null,
+      "left": null,
+      "right": "8dc7b8530bd7e852e3800b07bc91ccef016180c6",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-20261112/source-projection.json",
+      "base": null,
+      "left": null,
+      "right": "0a5be4166c7a91532d804fb4f7bf50ef390cf7d2",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-20261112/typed-receiver-projection.js",
+      "base": null,
+      "left": null,
+      "right": "4fa990d8f32cb41e54677d9dff4c65d8a3d90db4",
+      "mode": "take-right",
+      "resolution": "exact right full file"
+    }
+  ],
+  "overlapping_qa": {
+    "positive_model_version": {
+      "path": "qa/b4-no-bypass/test_positive_model_version_source_closure.py",
+      "base": "07d2b399503bbc06f7b262c9fb10f245646569e4",
+      "left": "7a845e8029f906eb93ec306dd2c4858d31b5ff67",
+      "right": "a9286061790b1818046e18476c42e935999b1e4d",
+      "result": "407b721f88d864fb80fd39810469710a57a5ec4d",
+      "resolution": "actual-base line merge; fixed-488 caller tuples and new generic-function negative-control method both retained"
+    },
+    "model_continuation": {
+      "path": "qa/b4-no-bypass/test_original_model_continuation_source_closure.py",
+      "base": "7dfd006ba6f830af0e0f6e2ca6e8e030dc5febca",
+      "left": "26dcfccd07d144ee4676233c051654bdc5edc433",
+      "right": "0fc0bb7f9c0443920cbbce8cad2e9566699e9054",
+      "mode": "both-changed",
+      "resolution": "both E changes exact subset; preserve all Model edits",
+      "leftEdits": [
+        {
+          "start": 198,
+          "end": 199,
+          "lines": [
+            "            \"OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?\","
+          ]
+        },
+        {
+          "start": 222,
+          "end": 223,
+          "lines": [
+            "            \"OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after) != self.body.as_slice()\","
+          ]
+        }
+      ],
+      "rightEdits": [
+        {
+          "start": 198,
+          "end": 199,
+          "lines": [
+            "            \"OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?\","
+          ]
+        },
+        {
+          "start": 222,
+          "end": 223,
+          "lines": [
+            "            \"OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after) != self.body.as_slice()\","
+          ]
+        },
+        {
+          "start": 268,
+          "end": 269,
+          "lines": [
+            "            \"OriginalModelReadHostOperation::started(&original)?\","
+          ]
+        },
+        {
+          "start": 270,
+          "end": 272,
+          "lines": [
+            "            \"OriginalModelReadHostOperation::page(\",",
+            "            \"operation.as_mut().ok_or(Error::ReadbackRequired)?, &request\",",
+            "            \"OriginalModelReadHostOperation::finish(\",",
+            "            \"operation.take().ok_or(Error::ReadbackRequired)?, &request\","
+          ]
+        },
+        {
+          "start": 313,
+          "end": 314,
+          "lines": [
+            "            \"self.model_completion.is_some()\",",
+            "            \"self.selection.is_some()\", \"self.next_use.is_some()\",",
+            "            \"self.publication.is_some()\", \"self.completion_read.is_some()\",",
+            "            \"self.evaluation.snapshot() != snapshot\","
+          ]
+        }
+      ]
+    }
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+      "blob": "13bd6f51ebed56fd0e4315d088bb6c9d1e75ea51",
+      "origin": "paired-agentd-03",
+      "bytes": 5734
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+      "blob": "ac759463f6687cc48c4abef5c7af054eed040b77",
+      "origin": "paired-agentd-03",
+      "bytes": 12863
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "blob": "448b410a7fe36e1769c07aa5e38752f4349b0b3c",
+      "origin": "paired-agentd-03",
+      "bytes": 10905
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_contract.rs",
+      "blob": "6cd43b7e4b6f41f1f4609adb836ccea3282747ab",
+      "origin": "paired-agentd-03",
+      "bytes": 11920
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "blob": "112f330ada77a72524a19ebfc7bfa16d6b676668",
+      "origin": "paired-agentd-03",
+      "bytes": 8961
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_protocol.rs",
+      "blob": "c4152c599aa2fa1fe572738b402750956ec0cc37",
+      "origin": "paired-agentd-03",
+      "bytes": 8679
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_read.rs",
+      "blob": "a0670b8fc3125115097b3874acfd9b2ba79a7b19",
+      "origin": "paired-agentd-03",
+      "bytes": 8641
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+      "blob": "172391eea47e3be956c2b8c21f6ef28e6e0141b9",
+      "origin": "paired-agentd-03",
+      "bytes": 10347
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "blob": "005e108f3bede3723753d10b89f6f1f05e70da42",
+      "origin": "paired-agentd-03",
+      "bytes": 9376
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "blob": "5cb29191378daab7890e2024e7837cca66dbd3eb",
+      "origin": "paired-agentd-03",
+      "bytes": 11471
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs",
+      "blob": "26e66ef4e70c6776fed7e0d2b84241312bd6962b",
+      "origin": "paired-agentd-03",
+      "bytes": 6685
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "blob": "ca95ea49e644523fa043c661fb4489e48f6a238d",
+      "origin": "paired-agentd-03",
+      "bytes": 3504
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "blob": "ef238d12a2ad92d805786049525b22ac9b69b52b",
+      "origin": "paired-agentd-03",
+      "bytes": 74069
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "blob": "83ad55ea19c43d3cbe9a17172b28d6c79e0b1a37",
+      "origin": "paired-agentd-03",
+      "bytes": 18072
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+      "blob": "3bcc826373b2519a25d5a498d6548408315cd7cd",
+      "origin": "paired-agentd-03",
+      "bytes": 10838
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "blob": "b6723afcfc34ea2fb5074892b255c8dfa9cefd0c",
+      "origin": "paired-agentd-03",
+      "bytes": 16312
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+      "blob": "a0709ddb5ee25a32e38fcc8d34d5fcbc1999e454",
+      "origin": "paired-agentd-03",
+      "bytes": 3245
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs",
+      "blob": "e588433c4c01bc46dcdb6ce97bc8970b4dd1fbab",
+      "origin": "paired-agentd-03",
+      "bytes": 6656
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "blob": "0d8ee0061e682b23d7e398ecc2969c9c1926cb92",
+      "origin": "paired-agentd-03",
+      "bytes": 8229
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+      "blob": "6cf30270a3b8cd9441784bbe8204904f741abd10",
+      "origin": "paired-agentd-03",
+      "bytes": 5934
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "blob": "85806c3da1a357ac7aa2a2c05973f879857e804f",
+      "origin": "paired-agentd-03",
+      "bytes": 7409
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "blob": "83ebe8fdc7b8646c7e98301e8d89100552181bd6",
+      "origin": "paired-agentd-03",
+      "bytes": 13109
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "blob": "3b446cfc03d872049c492a2ec6fdb11cdebaf5e3",
+      "origin": "paired-agentd-03",
+      "bytes": 17557
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+      "blob": "9832e7800829bfbe9ee913884c50bd3d2add68bc",
+      "origin": "paired-agentd-03",
+      "bytes": 20484
+    },
+    {
+      "path": "qa/b4-no-bypass/test_positive_model_version_source_closure.py",
+      "blob": "407b721f88d864fb80fd39810469710a57a5ec4d",
+      "origin": "actual-base-ae8-line-merge",
+      "bytes": 24043
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-on-policy-20261112/agentd-guard-contract.json",
+      "blob": "65bea37b3ce0af5858f49bc66a6f61aa77862949",
+      "origin": "paired-agentd-03",
+      "bytes": 136968
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-on-policy-20261112/agentd-source-checks.json",
+      "blob": "4bbb7a3692a16c721411b78b4806dd488f24fea8",
+      "origin": "paired-agentd-03",
+      "bytes": 2689
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-on-policy-20261112/producer-source-checkpoint.json",
+      "blob": "d340636ba492a3024241645948f0b86d13d8ea2d",
+      "origin": "paired-agentd-03",
+      "bytes": 3507
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-model-version-20261112/generic-function-scope-audit.json",
+      "blob": "4b95a23be6723edfbdb1b894dcddb429d85a8a90",
+      "origin": "paired-agentd-03",
+      "bytes": 888
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-model-version-20261112/original-connection-budget.json",
+      "blob": "c77e18a541dee3883a8c587df24c8274e23ddf2c",
+      "origin": "paired-agentd-03",
+      "bytes": 12445
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-model-version-20261112/original-policy-eligibility-audit.json",
+      "blob": "dd33dfec3144378688975dc988dc7fc1b62c7b8a",
+      "origin": "paired-agentd-03",
+      "bytes": 10444
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/positive-model-version-20261112/original-policy-eligibility-audit.md",
+      "blob": "eff71867c72687039d3a26b272730dc66e6241ce",
+      "origin": "paired-agentd-03",
+      "bytes": 7555
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_support_tests.rs",
+      "blob": "7906de794e785893eade4f543d814b81fcb1b96e",
+      "origin": "paired-product-39",
+      "bytes": 9181
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_tests.rs",
+      "blob": "e98961acd20cb8d60a6c7dc36c8e3e64ccb4e6b9",
+      "origin": "paired-product-39",
+      "bytes": 17118
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+      "blob": "9fe310b95ab493e9704ad5be39beba2f5d048f9a",
+      "origin": "paired-product-39",
+      "bytes": 9081
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-product-domain-20261112/best-case-power-audit.json",
+      "blob": "3ef3396b871c37324f6d2c8c64138074489b0831",
+      "origin": "paired-product-39",
+      "bytes": 17519
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-product-domain-20261112/guard-contract.json",
+      "blob": "8fa207df345953a1fffedb295f0a07ce64905622",
+      "origin": "paired-product-39",
+      "bytes": 279627
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-product-domain-20261112/guard-source-audit.json",
+      "blob": "0852ad41263e2684cdbbca321d23920f22de99d4",
+      "origin": "paired-product-39",
+      "bytes": 2321
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-product-domain-20261112/wire-schema-repair.json",
+      "blob": "63693c36a0fc5ea2348f5b55a618e04170b46d31",
+      "origin": "paired-product-39",
+      "bytes": 16591
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_readonly_ready_source_closure.py",
+      "blob": "d11dab3c405e88d0c34e5351003802ed5efa8796",
+      "origin": "source-readonly-b303",
+      "bytes": 17325
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_source_operation_source_closure.py",
+      "blob": "648601003eb46a404940fbf498d799263040a3b6",
+      "origin": "source-readonly-b303",
+      "bytes": 20231
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "blob": "835953d9e8b670d6713a6f2728e716182acc542d",
+      "origin": "source-readonly-b303",
+      "bytes": 11469
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "blob": "1de53089884500596231d0b92fd46e56ba4469b8",
+      "origin": "source-readonly-b303",
+      "bytes": 8491
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/source-readonly-488-repair-20261112/README.md",
+      "blob": "4ee5bf96bdc11b0f3c1d71e59b9959128e521b5e",
+      "origin": "source-readonly-b303",
+      "bytes": 2630
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/source-readonly-488-repair-20261112/repair-contract.json",
+      "blob": "6c90c8740007671eb4bf7dd3fca92adb742d51ce",
+      "origin": "source-readonly-b303",
+      "bytes": 86448
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",
+      "blob": "68e241a5f70fc5175bf8154ef871d406550a30fb",
+      "origin": "E-Version-bc04-alias-child",
+      "bytes": 11728
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+      "blob": "c52f9dc88f00e599d046c79997f08940b7cd9d85",
+      "origin": "E-Version-bc04-alias-child",
+      "bytes": 9363
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+      "blob": "0b5e911eb503dfac25932d6604705a330ded7a4f",
+      "origin": "actual-E-Version-5a53",
+      "bytes": 6900
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+      "blob": "ecaf44f44b0c3d04456cf41e16e2f13bf176bd43",
+      "origin": "E-Version-bc04-alias-child",
+      "bytes": 9276
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+      "blob": "14b344feba96f7f1a0ce80ee5b8a11541dfbf663",
+      "origin": "E-Version-bc04-alias-child",
+      "bytes": 8286
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+      "blob": "c4443b4d51a9a528ee4c6f51d9bae889556d244e",
+      "origin": "actual-E-Version-5a53",
+      "bytes": 14227
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_state.rs",
+      "blob": "27dd0a5cb409fd7b87516381530ee1fe134b7a50",
+      "origin": "E-Version-bc04-alias-child",
+      "bytes": 4155
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+      "blob": "34e13d6f0b6ffcb3ca34d9230f047b6b6f455a8e",
+      "origin": "E-Version-bc04-alias-child",
+      "bytes": 9458
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "blob": "74a8fb799883b344a9f2fc9d271b696e6d2210ab",
+      "origin": "actual-E-Version-5a53",
+      "bytes": 16698
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_continuation_source_closure.py",
+      "blob": "0fc0bb7f9c0443920cbbce8cad2e9566699e9054",
+      "origin": "488-three-way-identical-overlap",
+      "bytes": 21353
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "blob": "fee138b3322c52d4df9639a116eb67b0f210dc36",
+      "origin": "actual-E-Version-5a53",
+      "bytes": 10821
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/evaluation-version-closure-20261112/guard-contract.json",
+      "blob": "462b7832789591e213807d9b2eebdbd45ac9d044",
+      "origin": "actual-E-Version-5a53",
+      "bytes": 163516
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/evaluation-version-closure-20261112/source-checks.json",
+      "blob": "8939f20657dc0ddcb372470ea4fd4947161d91b2",
+      "origin": "actual-E-Version-5a53",
+      "bytes": 3129
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-on-policy-20261112/agentd-checkpoint-guard-schema-correction.json",
+      "blob": "dc03f1368521949a707f516ed8b89135e97b2a0c",
+      "origin": "paired-policy-schema-6404",
+      "bytes": 8747
+    },
+    {
+      "path": "CALLERS.toml",
+      "blob": "f11dc34ca24ce63057257702a775e74828e792af",
+      "origin": "root-final-full-record-contract-merge",
+      "bytes": 1536974
+    },
+    {
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "blob": "672a90aef6c8791265891fd31b9b2cadb8660952",
+      "origin": "native-exact-180-plus-10",
+      "bytes": 33199
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs",
+      "blob": "75958df59408cc63e99ab14da1afa157575a79ee",
+      "origin": "E-Version-bc04-alias-child",
+      "bytes": 14981
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_wire.rs",
+      "blob": "dc20449c7ea4d28ab678d8ca452d9c7062815097",
+      "origin": "E-Version-bc04-alias-child",
+      "bytes": 5531
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/evaluation-version-closure-20261112/unique-context-guard-contract.json",
+      "blob": "dd1a57ed8e75cb552e045e8925415b5f60d889e8",
+      "origin": "E-Version-bc04-alias-child",
+      "bytes": 122646
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "blob": "936300641ff24012652f186713f840d908d283e3",
+      "origin": "Model-Root-81a8",
+      "bytes": 12398
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "blob": "40fb1e1206e05810a90e6d46c48b2a9519d2997e",
+      "origin": "Model-Root-81a8",
+      "bytes": 13435
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "blob": "fe8f78c9fd3de48e7ff13318317fa33863749e94",
+      "origin": "Model-Root-81a8",
+      "bytes": 10328
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+      "blob": "43e24b94f0bdf5c5703ba52fc79cc55db6de673b",
+      "origin": "Model-Root-81a8",
+      "bytes": 13470
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "blob": "36ae446b390fc4633bada3c1ceec27743bd38cf0",
+      "origin": "Model-Root-81a8",
+      "bytes": 8192
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+      "blob": "ebb34d59f692b456506a1025ea23e5c65ffc4d57",
+      "origin": "Model-Root-81a8",
+      "bytes": 8301
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+      "blob": "f84a5d13ae2322da6865163c83d1d35ae099bdf7",
+      "origin": "Model-Root-81a8",
+      "bytes": 6120
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_binding.rs",
+      "blob": "0162d339e52fc4d4bb79fe27c03f35a191e8fa7b",
+      "origin": "Model-Root-81a8",
+      "bytes": 5576
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+      "blob": "5adf0fef28ea4c28c9dc65ba9d31f9e4001e15bd",
+      "origin": "Model-Root-81a8",
+      "bytes": 13130
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs",
+      "blob": "dbc1dc9cd8b10816f88a762653bfe283c26599f0",
+      "origin": "Model-Root-81a8",
+      "bytes": 4497
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_operation_source_closure.py",
+      "blob": "cfd8f724d44bc762c6e47ffe4380ab51485a2374",
+      "origin": "Model-Root-81a8",
+      "bytes": 16125
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "blob": "352e30aa82a15ac0d88c9f5aee399638224f83de",
+      "origin": "Model-Root-81a8",
+      "bytes": 29414
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "blob": "15d633eae74b889609d07844732bdda7f50b7c6d",
+      "origin": "Model-Root-81a8",
+      "bytes": 18251
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "blob": "fa7bdda7fad139ce72137f2e32c7b74782dbf4c9",
+      "origin": "Model-Root-81a8",
+      "bytes": 17101
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "blob": "1a712f18b636154edce08fb07e30148dbfe8b6be",
+      "origin": "Model-Root-81a8",
+      "bytes": 15628
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "blob": "a22b0644aaf5ed7594b44dac03770d49d8ac6eb2",
+      "origin": "Model-Root-81a8",
+      "bytes": 10231
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "blob": "577398a11b3568d52fecee3f9453e31acd40fa51",
+      "origin": "Model-Root-81a8",
+      "bytes": 27720
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-20261112/guard-contract.json",
+      "blob": "f569a3d3bd36f49af0d24e3fde1e23e98ed0c68a",
+      "origin": "Model-Root-81a8",
+      "bytes": 242332
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-20261112/qa-mutation-projection.json",
+      "blob": "8dc7b8530bd7e852e3800b07bc91ccef016180c6",
+      "origin": "Model-Root-81a8",
+      "bytes": 153958
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-20261112/source-projection.json",
+      "blob": "0a5be4166c7a91532d804fb4f7bf50ef390cf7d2",
+      "origin": "Model-Root-81a8",
+      "bytes": 33691
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-20261112/typed-receiver-projection.js",
+      "blob": "4fa990d8f32cb41e54677d9dff4c65d8a3d90db4",
+      "origin": "Model-Root-81a8",
+      "bytes": 5368
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "blob": "d1a24c7351d25c9c0728541b011a6608b451b9dc",
+      "origin": "retention-7f-actual-material-adoption-gate",
+      "bytes": 12932
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+      "blob": "8a70c3b256a4f7e47d348d62417e45c1266f26eb",
+      "origin": "retention-7f-actual-material-adoption-gate",
+      "bytes": 10301
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "blob": "45bd5347667ef4092fc7420748e5ff19d26a016c",
+      "origin": "retention-7f-actual-material-adoption-gate",
+      "bytes": 20362
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "blob": "e0694553c68cfbb27c5dd263caf92a1f5c60ba55",
+      "origin": "retention-7f-actual-material-adoption-gate",
+      "bytes": 10554
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_retention_admission_source_closure.py",
+      "blob": "ac2e33ebf4eed11a899c1dce96dbbfb0079722f2",
+      "origin": "retention-7f-actual-material-adoption-gate",
+      "bytes": 6198
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/retention-admission-20261112/decision-boundary-evidence.json",
+      "blob": "1778e72b5706a83e9f5e777525d4b42d80d93c1c",
+      "origin": "retention-7f-actual-material-adoption-gate",
+      "bytes": 5563
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/retention-admission-20261112/guard-contract.json",
+      "blob": "40866e0039c2a306877902d7bb7128d64c42ceb6",
+      "origin": "retention-7f-actual-material-adoption-gate",
+      "bytes": 29877
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-on-policy-20261112/shared-input-reachability-review.json",
+      "blob": "1cfe0b67e74048de00ef2d1d678dc11946deeea8",
+      "origin": "independent-fixed-source-review",
+      "bytes": 54799
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-on-policy-20261112/retained-guard-independent-review.json",
+      "blob": "6d1a6f5586351ffbded4112b8ab75b419041c42d",
+      "origin": "independent-fixed-source-review",
+      "bytes": 262063
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/original-ordinary-input-handoff-20261112/input-contract.json",
+      "blob": "09d097abb75b7b2a8069e64cd5d2ab2f6e796e05",
+      "origin": "existing-ordinary-custody-input-contract-ce7",
+      "bytes": 40026
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/original-ordinary-input-handoff-20261112/README.md",
+      "blob": "ecd9949b37b68cd542a7ab95b8c2963abffa0202",
+      "origin": "existing-ordinary-custody-input-contract-ce7",
+      "bytes": 8640
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/retention-admission-20261112/independent-peer-review.json",
+      "blob": "975663a038a8bd7d53bb2d25aa47ac6b0e313521",
+      "origin": "source-peer-retention-fixed-7f",
+      "bytes": 7218
+    }
+  ],
+  "authority": "No production keys, grants, leases, policy relaxations, new all-role signer, or original gate bypass. Existing evaluator-only B capability and deployed ordinary launcher are not established.",
+  "bounded_protocol": "128 limits refer to complete request-response exchanges (two one-way frames each), not 128 individual frames. Source original stream has no such 128 exchange cap. No cap raised, redial, renewal or synthetic principal split.",
+  "qualification_limit": "Existing frozen W4 alpha 50000 m1 margin0 cannot obtain best-case paired eligibility under actual 64 total episode producer bound. Existing policy is not weakened. Hypothetical preregistered alternatives are not issued authority or acceptance.",
+  "retention": "All nonempty full signed members authenticate before aggregate all(qualified); original primary E signed disposition remains unchanged. Real Ineligible material remains readable but cannot pass Model/Selector adoption.",
+  "validation": {
+    "actual_previous_sha": "48844493c046fdd79734ddd2c1866314023a15cb",
+    "previous_source_methods": 401,
+    "previous_source_failures": 13,
+    "previous_source_errors": 105,
+    "previous_native_compile_exit": 101,
+    "previous_native_tests_started": 0,
+    "current_python_executed": false,
+    "current_full_caller_executed": false,
+    "current_native_executed": false,
+    "current_root_uid_29_executed": false,
+    "formatter_executed": false
+  },
+  "ordinary_acceptance": {
+    "positive": 0,
+    "complete_no_update_or_fallback": 0,
+    "fresh_different_input_C": 0,
+    "daemon_and_root_cold_restart": 0
+  },
+  "limitation": "Fixtures, static projections, old-SHA passes, file reopen, retained Arc, inventory and factory existence do not establish ordinary-task or daemon/Root cold-restart acceptance."
+}

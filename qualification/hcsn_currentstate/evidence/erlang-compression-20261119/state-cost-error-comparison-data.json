@@ -1,0 +1,1437 @@
+{
+  "schema": "hepta.delay-state-cost-error-figure.v1",
+  "points": [
+    {
+      "series": "deterministic",
+      "stages": null,
+      "target_fraction": "1/5",
+      "time_over_mean_delay": 1,
+      "dynamic_tensor_bytes": 192,
+      "physics_tensor_bytes": 64,
+      "physics_tensor_bytes_by_field": {
+        "generator": 8,
+        "lower": 8,
+        "upper": 8,
+        "reset": 8,
+        "reward": 8,
+        "escape_reward": 8,
+        "spike_reward": 8,
+        "discount": 8
+      },
+      "persistent_tensor_bytes": 256,
+      "max_value_absolute_error": 2.7755575615628914e-17,
+      "value_signed_errors": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.7755575615628914e-17,
+          0.0
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 2.7755575615628914e-17,
+      "raw_case": "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/case-000.json",
+      "raw_case_sha256": "35ee48ccd7f0293bda9b55fb798aac4b009ea419546bc58b1d2c985a9f838fc2",
+      "controller_receipt": {
+        "child_result": "case-000.json",
+        "child_result_sha256": "35ee48ccd7f0293bda9b55fb798aac4b009ea419546bc58b1d2c985a9f838fc2",
+        "cpu_soft_limit": 43,
+        "fresh_process_cpu_seconds": 2.989845,
+        "full_process_wall_limit": 45,
+        "full_process_wall_seconds": 3.0294817559988587,
+        "index": 0,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "status": "completed",
+        "stderr": "/workspace/scratch/d741f7769aeb/worktrees/longtime-diagnostic/qualification/hcsn_currentstate/study_longtime.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  maximum_signed_mass_balance_error=float((values[:,1]+values[:,2]-rate.new_tensor([1.,-.3])).abs().max()),\n",
+        "stdout": "{\"phase\": \"complete\", \"status\": \"completed\", \"target\": \"1/5\"}\n",
+        "target": "1/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "deterministic",
+      "stages": null,
+      "target_fraction": "4/5",
+      "time_over_mean_delay": 4,
+      "dynamic_tensor_bytes": 816,
+      "physics_tensor_bytes": 64,
+      "physics_tensor_bytes_by_field": {
+        "generator": 8,
+        "lower": 8,
+        "upper": 8,
+        "reset": 8,
+        "reward": 8,
+        "escape_reward": 8,
+        "spike_reward": 8,
+        "discount": 8
+      },
+      "persistent_tensor_bytes": 880,
+      "max_value_absolute_error": 2.220446049250313e-16,
+      "value_signed_errors": [
+        [
+          2.220446049250313e-16,
+          1.1102230246251565e-16,
+          5.551115123125783e-17
+        ],
+        [
+          0.0,
+          -8.326672684688674e-17,
+          -1.3877787807814457e-17
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 1.3877787807814457e-16,
+      "raw_case": "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/case-001.json",
+      "raw_case_sha256": "b26f502dbe605933249a4f817ffdf004455c5e9862b55c153bceedec7ad7badd",
+      "controller_receipt": {
+        "child_result": "case-001.json",
+        "child_result_sha256": "b26f502dbe605933249a4f817ffdf004455c5e9862b55c153bceedec7ad7badd",
+        "cpu_soft_limit": 43,
+        "fresh_process_cpu_seconds": 2.144642,
+        "full_process_wall_limit": 45,
+        "full_process_wall_seconds": 2.1606733320004423,
+        "index": 1,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "status": "completed",
+        "stderr": "/workspace/scratch/d741f7769aeb/worktrees/longtime-diagnostic/qualification/hcsn_currentstate/study_longtime.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  maximum_signed_mass_balance_error=float((values[:,1]+values[:,2]-rate.new_tensor([1.,-.3])).abs().max()),\n",
+        "stdout": "{\"phase\": \"complete\", \"status\": \"completed\", \"target\": \"4/5\"}\n",
+        "target": "4/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "deterministic",
+      "stages": null,
+      "target_fraction": "16/5",
+      "time_over_mean_delay": 16,
+      "dynamic_tensor_bytes": 9072,
+      "physics_tensor_bytes": 64,
+      "physics_tensor_bytes_by_field": {
+        "generator": 8,
+        "lower": 8,
+        "upper": 8,
+        "reset": 8,
+        "reward": 8,
+        "escape_reward": 8,
+        "spike_reward": 8,
+        "discount": 8
+      },
+      "persistent_tensor_bytes": 9136,
+      "max_value_absolute_error": 1.7763568394002505e-15,
+      "value_signed_errors": [
+        [
+          1.7763568394002505e-15,
+          8.881784197001252e-16,
+          2.220446049250313e-16
+        ],
+        [
+          -6.661338147750939e-16,
+          -3.3306690738754696e-16,
+          -9.71445146547012e-17
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 3.552713678800501e-15,
+      "raw_case": "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/case-002.json",
+      "raw_case_sha256": "fc89758d0b89c28e5b0e17d1dd9bbe6a3205be3802c153faab8d564dcb59f8bf",
+      "controller_receipt": {
+        "child_result": "case-002.json",
+        "child_result_sha256": "fc89758d0b89c28e5b0e17d1dd9bbe6a3205be3802c153faab8d564dcb59f8bf",
+        "cpu_soft_limit": 43,
+        "fresh_process_cpu_seconds": 1.7590600000000003,
+        "full_process_wall_limit": 45,
+        "full_process_wall_seconds": 1.7666200359999493,
+        "index": 2,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "status": "completed",
+        "stderr": "/workspace/scratch/d741f7769aeb/worktrees/longtime-diagnostic/qualification/hcsn_currentstate/study_longtime.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  maximum_signed_mass_balance_error=float((values[:,1]+values[:,2]-rate.new_tensor([1.,-.3])).abs().max()),\n",
+        "stdout": "{\"phase\": \"complete\", \"status\": \"completed\", \"target\": \"16/5\"}\n",
+        "target": "16/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "deterministic",
+      "stages": null,
+      "target_fraction": "32/5",
+      "time_over_mean_delay": 32,
+      "dynamic_tensor_bytes": 34416,
+      "physics_tensor_bytes": 64,
+      "physics_tensor_bytes_by_field": {
+        "generator": 8,
+        "lower": 8,
+        "upper": 8,
+        "reset": 8,
+        "reward": 8,
+        "escape_reward": 8,
+        "spike_reward": 8,
+        "discount": 8
+      },
+      "persistent_tensor_bytes": 34480,
+      "max_value_absolute_error": 8.881784197001252e-15,
+      "value_signed_errors": [
+        [
+          8.881784197001252e-15,
+          2.4424906541753444e-15,
+          7.771561172376096e-16
+        ],
+        [
+          -3.1086244689504383e-15,
+          -3.608224830031759e-16,
+          -1.249000902703301e-16
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 1.9984014443252818e-15,
+      "raw_case": "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/case-003.json",
+      "raw_case_sha256": "2e2904e1567c609ccfbe00969b14cc3739f17da31e2f0ed57e17c6ef0da1039a",
+      "controller_receipt": {
+        "child_result": "case-003.json",
+        "child_result_sha256": "2e2904e1567c609ccfbe00969b14cc3739f17da31e2f0ed57e17c6ef0da1039a",
+        "cpu_soft_limit": 43,
+        "fresh_process_cpu_seconds": 2.209923,
+        "full_process_wall_limit": 45,
+        "full_process_wall_seconds": 2.224153581999417,
+        "index": 3,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "status": "completed",
+        "stderr": "/workspace/scratch/d741f7769aeb/worktrees/longtime-diagnostic/qualification/hcsn_currentstate/study_longtime.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  maximum_signed_mass_balance_error=float((values[:,1]+values[:,2]-rate.new_tensor([1.,-.3])).abs().max()),\n",
+        "stdout": "{\"phase\": \"complete\", \"status\": \"completed\", \"target\": \"32/5\"}\n",
+        "target": "32/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "deterministic",
+      "stages": null,
+      "target_fraction": "64/5",
+      "time_over_mean_delay": 64,
+      "dynamic_tensor_bytes": 134256,
+      "physics_tensor_bytes": 64,
+      "physics_tensor_bytes_by_field": {
+        "generator": 8,
+        "lower": 8,
+        "upper": 8,
+        "reset": 8,
+        "reward": 8,
+        "escape_reward": 8,
+        "spike_reward": 8,
+        "discount": 8
+      },
+      "persistent_tensor_bytes": 134320,
+      "max_value_absolute_error": 6.039613253960852e-14,
+      "value_signed_errors": [
+        [
+          6.039613253960852e-14,
+          7.993605777301127e-15,
+          2.6645352591003757e-15
+        ],
+        [
+          -1.2434497875801753e-14,
+          -3.608224830031759e-16,
+          -1.249000902703301e-16
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 9.059419880941277e-14,
+      "raw_case": "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/case-004.json",
+      "raw_case_sha256": "026fad8aa41ae5239287614428b6ccc1e3f203bbb87881787044edf1641cd608",
+      "controller_receipt": {
+        "child_result": "case-004.json",
+        "child_result_sha256": "026fad8aa41ae5239287614428b6ccc1e3f203bbb87881787044edf1641cd608",
+        "cpu_soft_limit": 43,
+        "fresh_process_cpu_seconds": 4.281307999999999,
+        "full_process_wall_limit": 45,
+        "full_process_wall_seconds": 4.313903558002494,
+        "index": 4,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "status": "completed",
+        "stderr": "/workspace/scratch/d741f7769aeb/worktrees/longtime-diagnostic/qualification/hcsn_currentstate/study_longtime.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  maximum_signed_mass_balance_error=float((values[:,1]+values[:,2]-rate.new_tensor([1.,-.3])).abs().max()),\n",
+        "stdout": "{\"phase\": \"complete\", \"status\": \"completed\", \"target\": \"64/5\"}\n",
+        "target": "64/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_2",
+      "stages": 2,
+      "target_fraction": "1/5",
+      "time_over_mean_delay": 1,
+      "dynamic_tensor_bytes": 136,
+      "physics_tensor_bytes": 144,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 24,
+        "generator": 72,
+        "occupation_weight": 24,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 280,
+      "max_value_absolute_error": 0.07605797072471421,
+      "value_signed_errors": [
+        [
+          0.008081457334006836,
+          0.07605797072471421,
+          -0.07605797072471393
+        ],
+        [
+          -0.002424437200202051,
+          -0.022817391217414273,
+          0.022817391217414162
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.0363477027356679,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-000.json",
+      "raw_case_sha256": "2e63934124db7a619314f8b5ac2fa1b29d4589d8d5ea4747ec329f53a1873f75",
+      "controller_receipt": {
+        "child_result": "case-000.json",
+        "child_result_sha256": "2e63934124db7a619314f8b5ac2fa1b29d4589d8d5ea4747ec329f53a1873f75",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 2.54457,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 2.5819708689996332,
+        "index": 0,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 2,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"1/5\", \"stages\": 2}\n",
+        "target": "1/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_8",
+      "stages": 8,
+      "target_fraction": "1/5",
+      "time_over_mean_delay": 1,
+      "dynamic_tensor_bytes": 232,
+      "physics_tensor_bytes": 816,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 72,
+        "generator": 648,
+        "occupation_weight": 72,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 1048,
+      "max_value_absolute_error": 0.04199150422739237,
+      "value_signed_errors": [
+        [
+          0.0026708497443709844,
+          0.04199150422738984,
+          -0.04199150422739237
+        ],
+        [
+          -0.0008012549233113037,
+          -0.012597451268216958,
+          0.012597451268217708
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.021713894357962518,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-001.json",
+      "raw_case_sha256": "fa1e75eb62c859c7eb6ca63c04acfc8841e97085fa619ab3053a9d658aaa2a3e",
+      "controller_receipt": {
+        "child_result": "case-001.json",
+        "child_result_sha256": "fa1e75eb62c859c7eb6ca63c04acfc8841e97085fa619ab3053a9d658aaa2a3e",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 2.2546829999999995,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 2.2621266749993083,
+        "index": 1,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 8,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"1/5\", \"stages\": 8}\n",
+        "target": "1/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_32",
+      "stages": 32,
+      "target_fraction": "1/5",
+      "time_over_mean_delay": 1,
+      "dynamic_tensor_bytes": 616,
+      "physics_tensor_bytes": 9264,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 264,
+        "generator": 8712,
+        "occupation_weight": 264,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 9880,
+      "max_value_absolute_error": 0.02234545177241193,
+      "value_signed_errors": [
+        [
+          0.0007741613112400292,
+          0.022345451772408764,
+          -0.02234545177241193
+        ],
+        [
+          -0.00023224839337200598,
+          -0.0067036355317226515,
+          0.006703635531723567
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.012258783906948179,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-002.json",
+      "raw_case_sha256": "8f176fa0f14511e3ecce375f2778463c1af28183a19d17e0881ecf703e94eb10",
+      "controller_receipt": {
+        "child_result": "case-002.json",
+        "child_result_sha256": "8f176fa0f14511e3ecce375f2778463c1af28183a19d17e0881ecf703e94eb10",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.7384170000000005,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.7436283649985853,
+        "index": 2,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 32,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"1/5\", \"stages\": 32}\n",
+        "target": "1/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_128",
+      "stages": 128,
+      "target_fraction": "1/5",
+      "time_over_mean_delay": 1,
+      "dynamic_tensor_bytes": 2152,
+      "physics_tensor_bytes": 135216,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 1032,
+        "generator": 133128,
+        "occupation_weight": 1032,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 137368,
+      "max_value_absolute_error": 0.011560383969739685,
+      "value_signed_errors": [
+        [
+          0.0002088494637992877,
+          0.011560383969739685,
+          -0.011560383969702936
+        ],
+        [
+          -6.265483913979464e-05,
+          -0.003468115190921911,
+          0.0034681151909108643
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.0065581703116270595,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-003.json",
+      "raw_case_sha256": "5a1da45d24164e00007e94e32755ce05bae97075281ecabad459c103ffe69fcd",
+      "controller_receipt": {
+        "child_result": "case-003.json",
+        "child_result_sha256": "5a1da45d24164e00007e94e32755ce05bae97075281ecabad459c103ffe69fcd",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.759809999999999,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.7681625269979122,
+        "index": 3,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 128,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"1/5\", \"stages\": 128}\n",
+        "target": "1/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_2",
+      "stages": 2,
+      "target_fraction": "4/5",
+      "time_over_mean_delay": 4,
+      "dynamic_tensor_bytes": 136,
+      "physics_tensor_bytes": 144,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 24,
+        "generator": 72,
+        "occupation_weight": 24,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 280,
+      "max_value_absolute_error": 0.01610265893366969,
+      "value_signed_errors": [
+        [
+          0.01610265893366969,
+          -3.8151977729494746e-05,
+          3.8151977730827014e-05
+        ],
+        [
+          -0.004830797680100918,
+          1.1445593318837322e-05,
+          -1.1445593319253655e-05
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.014135242220852828,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-004.json",
+      "raw_case_sha256": "db0da0113e2c9460f7791b0276fa6b15d9e39f1566a0462383499b5387042c17",
+      "controller_receipt": {
+        "child_result": "case-004.json",
+        "child_result_sha256": "db0da0113e2c9460f7791b0276fa6b15d9e39f1566a0462383499b5387042c17",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.6185279999999989,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.6217911669991736,
+        "index": 4,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 2,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"4/5\", \"stages\": 2}\n",
+        "target": "4/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_8",
+      "stages": 8,
+      "target_fraction": "4/5",
+      "time_over_mean_delay": 4,
+      "dynamic_tensor_bytes": 232,
+      "physics_tensor_bytes": 816,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 72,
+        "generator": 648,
+        "occupation_weight": 72,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 1048,
+      "max_value_absolute_error": 0.004023171065922426,
+      "value_signed_errors": [
+        [
+          0.004023171065922426,
+          3.43361925014829e-06,
+          -3.433619259030074e-06
+        ],
+        [
+          -0.0012069513197767168,
+          -1.0300857750389358e-06,
+          1.0300857777173489e-06
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.003530185305926248,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-005.json",
+      "raw_case_sha256": "c5ae708ff09c57a09f784469e3c68cac8d1d071baa655887595eb4852b0cab45",
+      "controller_receipt": {
+        "child_result": "case-005.json",
+        "child_result_sha256": "c5ae708ff09c57a09f784469e3c68cac8d1d071baa655887595eb4852b0cab45",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.75167,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.7581809980001708,
+        "index": 5,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 8,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"4/5\", \"stages\": 8}\n",
+        "target": "4/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_32",
+      "stages": 32,
+      "target_fraction": "4/5",
+      "time_over_mean_delay": 4,
+      "dynamic_tensor_bytes": 616,
+      "physics_tensor_bytes": 9264,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 264,
+        "generator": 8712,
+        "occupation_weight": 264,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 9880,
+      "max_value_absolute_error": 0.0010053465863892885,
+      "value_signed_errors": [
+        [
+          0.0010053465863892885,
+          1.3441276254466672e-05,
+          -1.3441276263848057e-05
+        ],
+        [
+          -0.00030160397591677546,
+          -4.032382876356655e-06,
+          4.032382879159968e-06
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.0008821361688018392,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-006.json",
+      "raw_case_sha256": "2b3c9d37f44d867506051286720a82cfe3d3da884dffa07da3a24f02bea0f4dd",
+      "controller_receipt": {
+        "child_result": "case-006.json",
+        "child_result_sha256": "2b3c9d37f44d867506051286720a82cfe3d3da884dffa07da3a24f02bea0f4dd",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.7921600000000004,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.7971609339983843,
+        "index": 6,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 32,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"4/5\", \"stages\": 32}\n",
+        "target": "4/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_128",
+      "stages": 128,
+      "target_fraction": "4/5",
+      "time_over_mean_delay": 4,
+      "dynamic_tensor_bytes": 2152,
+      "physics_tensor_bytes": 135216,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 1032,
+        "generator": 133128,
+        "occupation_weight": 1032,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 137368,
+      "max_value_absolute_error": 0.00025143830251050936,
+      "value_signed_errors": [
+        [
+          0.00025143830251050936,
+          4.153982649746091e-06,
+          -4.153982507026921e-06
+        ],
+        [
+          -7.54314907531195e-05,
+          -1.2461947949404806e-06,
+          1.2461947521136274e-06
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.00022090133515517696,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-007.json",
+      "raw_case_sha256": "5d06c844ab03bccd0ab97e8a3dbc714303f59e20284d1285208da423a0a4c4fe",
+      "controller_receipt": {
+        "child_result": "case-007.json",
+        "child_result_sha256": "5d06c844ab03bccd0ab97e8a3dbc714303f59e20284d1285208da423a0a4c4fe",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 2.393517999999999,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 2.3981652469992696,
+        "index": 7,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 128,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"4/5\", \"stages\": 128}\n",
+        "target": "4/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_2",
+      "stages": 2,
+      "target_fraction": "16/5",
+      "time_over_mean_delay": 16,
+      "dynamic_tensor_bytes": 136,
+      "physics_tensor_bytes": 144,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 24,
+        "generator": 72,
+        "occupation_weight": 24,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 280,
+      "max_value_absolute_error": 0.01609489864113378,
+      "value_signed_errors": [
+        [
+          0.01609489864113378,
+          4.3298697960381105e-15,
+          9.992007221626409e-16
+        ],
+        [
+          -0.004828469592340179,
+          -1.3322676295501878e-15,
+          -3.0531133177191805e-16
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.014130727516354469,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-008.json",
+      "raw_case_sha256": "90295204a89c781686a063b2025798c48f24ea213513fe879a3e20a1330f01e8",
+      "controller_receipt": {
+        "child_result": "case-008.json",
+        "child_result_sha256": "90295204a89c781686a063b2025798c48f24ea213513fe879a3e20a1330f01e8",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.9740999999999995,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 2.0154158100012864,
+        "index": 8,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 2,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"16/5\", \"stages\": 2}\n",
+        "target": "16/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_8",
+      "stages": 8,
+      "target_fraction": "16/5",
+      "time_over_mean_delay": 16,
+      "dynamic_tensor_bytes": 232,
+      "physics_tensor_bytes": 816,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 72,
+        "generator": 648,
+        "occupation_weight": 72,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 1048,
+      "max_value_absolute_error": 0.004023724660206618,
+      "value_signed_errors": [
+        [
+          0.004023724660206618,
+          -2.5868196473766147e-14,
+          -8.493206138382448e-15
+        ],
+        [
+          -0.0012071173980618966,
+          7.743805596760467e-15,
+          2.55351295663786e-15
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.003532681879052646,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-009.json",
+      "raw_case_sha256": "a482f4fe45e842a5cc6dfa809c13e13ad5c81ecbebaf0e49d180667e5b23323c",
+      "controller_receipt": {
+        "child_result": "case-009.json",
+        "child_result_sha256": "a482f4fe45e842a5cc6dfa809c13e13ad5c81ecbebaf0e49d180667e5b23323c",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.6462869999999992,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.6536625900007493,
+        "index": 9,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 8,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"16/5\", \"stages\": 8}\n",
+        "target": "16/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_32",
+      "stages": 32,
+      "target_fraction": "16/5",
+      "time_over_mean_delay": 16,
+      "dynamic_tensor_bytes": 616,
+      "physics_tensor_bytes": 9264,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 264,
+        "generator": 8712,
+        "occupation_weight": 264,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 9880,
+      "max_value_absolute_error": 0.001005931164989704,
+      "value_signed_errors": [
+        [
+          0.001005931164989704,
+          -2.7422508708241367e-14,
+          -8.326672684688674e-15
+        ],
+        [
+          -0.0003017793494968224,
+          8.18789480661053e-15,
+          2.4980018054066022e-15
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.0008831704697311871,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-010.json",
+      "raw_case_sha256": "179784f271ecfd64d841007646fda42ceb1a4cfe6ff0cf31c852153275615f45",
+      "controller_receipt": {
+        "child_result": "case-010.json",
+        "child_result_sha256": "179784f271ecfd64d841007646fda42ceb1a4cfe6ff0cf31c852153275615f45",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.6175210000000044,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.6211711350006226,
+        "index": 10,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 32,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"16/5\", \"stages\": 32}\n",
+        "target": "16/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_128",
+      "stages": 128,
+      "target_fraction": "16/5",
+      "time_over_mean_delay": 16,
+      "dynamic_tensor_bytes": 2152,
+      "physics_tensor_bytes": 135216,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 1032,
+        "generator": 133128,
+        "occupation_weight": 1032,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 137368,
+      "max_value_absolute_error": 0.0002514827924215979,
+      "value_signed_errors": [
+        [
+          0.0002514827924215979,
+          4.2221781626494703e-13,
+          1.4205303600078878e-13
+        ],
+        [
+          -7.544483772647936e-05,
+          -1.26704202685346e-13,
+          -4.2618686357798197e-14
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.00022079261770269198,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-011.json",
+      "raw_case_sha256": "eafbbac5609c6977fa653e37db85dd0d8b8042229b76da3d937e3cd304714167",
+      "controller_receipt": {
+        "child_result": "case-011.json",
+        "child_result_sha256": "eafbbac5609c6977fa653e37db85dd0d8b8042229b76da3d937e3cd304714167",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.818966999999999,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.8281409459996212,
+        "index": 11,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 128,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"16/5\", \"stages\": 128}\n",
+        "target": "16/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_2",
+      "stages": 2,
+      "target_fraction": "32/5",
+      "time_over_mean_delay": 32,
+      "dynamic_tensor_bytes": 136,
+      "physics_tensor_bytes": 144,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 24,
+        "generator": 72,
+        "occupation_weight": 24,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 280,
+      "max_value_absolute_error": 0.016094898641167532,
+      "value_signed_errors": [
+        [
+          0.016094898641167532,
+          8.104628079763643e-15,
+          2.609024107869118e-15
+        ],
+        [
+          -0.004828469592350171,
+          -2.4702462297909733e-15,
+          -7.91033905045424e-16
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.01413072751636868,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-012.json",
+      "raw_case_sha256": "c00cbe1a6d4d898326e6d523f8aaed6fba7dffd11bb04de198a45d318280b37a",
+      "controller_receipt": {
+        "child_result": "case-012.json",
+        "child_result_sha256": "c00cbe1a6d4d898326e6d523f8aaed6fba7dffd11bb04de198a45d318280b37a",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.5828330000000022,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.5841542169982858,
+        "index": 12,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 2,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"32/5\", \"stages\": 2}\n",
+        "target": "32/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_8",
+      "stages": 8,
+      "target_fraction": "32/5",
+      "time_over_mean_delay": 32,
+      "dynamic_tensor_bytes": 232,
+      "physics_tensor_bytes": 816,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 72,
+        "generator": 648,
+        "occupation_weight": 72,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 1048,
+      "max_value_absolute_error": 0.004023724659994343,
+      "value_signed_errors": [
+        [
+          0.004023724659994343,
+          -5.162537064506978e-14,
+          -1.715294573045867e-14
+        ],
+        [
+          -0.0012071173979979477,
+          1.5459855617905305e-14,
+          5.134781488891349e-15
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.003532681878952282,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-013.json",
+      "raw_case_sha256": "7cc26fc2197b82f432634c2e87f130fdd98c2da37f6874ee748e1a3131fe7d92",
+      "controller_receipt": {
+        "child_result": "case-013.json",
+        "child_result_sha256": "7cc26fc2197b82f432634c2e87f130fdd98c2da37f6874ee748e1a3131fe7d92",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.9436930000000001,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.957886531999975,
+        "index": 13,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 8,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"32/5\", \"stages\": 8}\n",
+        "target": "32/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_32",
+      "stages": 32,
+      "target_fraction": "32/5",
+      "time_over_mean_delay": 32,
+      "dynamic_tensor_bytes": 616,
+      "physics_tensor_bytes": 9264,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 264,
+        "generator": 8712,
+        "occupation_weight": 264,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 9880,
+      "max_value_absolute_error": 0.0010059311647694358,
+      "value_signed_errors": [
+        [
+          0.0010059311647694358,
+          -5.218048215738236e-14,
+          -1.7041923427996153e-14
+        ],
+        [
+          -0.0003017793494306531,
+          1.5626389071599078e-14,
+          5.093148125467906e-15
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.0008831704696072862,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-014.json",
+      "raw_case_sha256": "c5b39e0a12f031d252ea3be8a4cb2db19608edec06c80d7d60d9a1fc8bd099a3",
+      "controller_receipt": {
+        "child_result": "case-014.json",
+        "child_result_sha256": "c5b39e0a12f031d252ea3be8a4cb2db19608edec06c80d7d60d9a1fc8bd099a3",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.9875340000000001,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.994454076000693,
+        "index": 14,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 32,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"32/5\", \"stages\": 32}\n",
+        "target": "32/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_128",
+      "stages": 128,
+      "target_fraction": "32/5",
+      "time_over_mean_delay": 32,
+      "dynamic_tensor_bytes": 2152,
+      "physics_tensor_bytes": 135216,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 1032,
+        "generator": 133128,
+        "occupation_weight": 1032,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 137368,
+      "max_value_absolute_error": 0.00025148279585884836,
+      "value_signed_errors": [
+        [
+          0.00025148279585884836,
+          8.427702979929563e-13,
+          2.8571589538728404e-13
+        ],
+        [
+          -7.544483875765451e-05,
+          -2.528532938583794e-13,
+          -8.570921750106208e-14
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.00022079261843988007,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-015.json",
+      "raw_case_sha256": "541ee00501c36f06cec94020736dcf497af2548ddda7a6a63e9fdf9fb1849e8a",
+      "controller_receipt": {
+        "child_result": "case-015.json",
+        "child_result_sha256": "541ee00501c36f06cec94020736dcf497af2548ddda7a6a63e9fdf9fb1849e8a",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.9175269999999967,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.9283281759999227,
+        "index": 15,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 128,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"32/5\", \"stages\": 128}\n",
+        "target": "32/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_2",
+      "stages": 2,
+      "target_fraction": "64/5",
+      "time_over_mean_delay": 64,
+      "dynamic_tensor_bytes": 136,
+      "physics_tensor_bytes": 144,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 24,
+        "generator": 72,
+        "occupation_weight": 24,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 280,
+      "max_value_absolute_error": 0.016094898641298983,
+      "value_signed_errors": [
+        [
+          0.016094898641298983,
+          1.609823385706477e-14,
+          5.384581669432009e-15
+        ],
+        [
+          -0.004828469592390583,
+          -4.85722573273506e-15,
+          -1.6237011735142914e-15
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.01413072751640243,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-016.json",
+      "raw_case_sha256": "2b761a0c9dbe98598213e0d1b2b18218cfeb0e3c4265b57f16cc3a5f1c6bd5c4",
+      "controller_receipt": {
+        "child_result": "case-016.json",
+        "child_result_sha256": "2b761a0c9dbe98598213e0d1b2b18218cfeb0e3c4265b57f16cc3a5f1c6bd5c4",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.7895689999999984,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.7940172980015632,
+        "index": 16,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 2,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"64/5\", \"stages\": 2}\n",
+        "target": "64/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_8",
+      "stages": 8,
+      "target_fraction": "64/5",
+      "time_over_mean_delay": 64,
+      "dynamic_tensor_bytes": 232,
+      "physics_tensor_bytes": 816,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 72,
+        "generator": 648,
+        "occupation_weight": 72,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 1048,
+      "max_value_absolute_error": 0.004023724659148797,
+      "value_signed_errors": [
+        [
+          0.004023724659148797,
+          -1.0247358517290195e-13,
+          -3.447242491461111e-14
+        ],
+        [
+          -0.0012071173977448169,
+          3.072542220650121e-14,
+          1.0352829704629585e-14
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.0035326818785677006,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-017.json",
+      "raw_case_sha256": "c13510b159bc15a1b55159914372c52c3525adff752776a668dd5b2179ae8b9a",
+      "controller_receipt": {
+        "child_result": "case-017.json",
+        "child_result_sha256": "c13510b159bc15a1b55159914372c52c3525adff752776a668dd5b2179ae8b9a",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.7646620000000004,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.7735516430002463,
+        "index": 17,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 8,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"64/5\", \"stages\": 8}\n",
+        "target": "64/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_32",
+      "stages": 32,
+      "target_fraction": "64/5",
+      "time_over_mean_delay": 64,
+      "dynamic_tensor_bytes": 616,
+      "physics_tensor_bytes": 9264,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 264,
+        "generator": 8712,
+        "occupation_weight": 264,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 9880,
+      "max_value_absolute_error": 0.001005931163909679,
+      "value_signed_errors": [
+        [
+          0.001005931163909679,
+          -1.0325074129013956e-13,
+          -3.425038030968608e-14
+        ],
+        [
+          -0.00030177934917308136,
+          3.094746681142624e-14,
+          1.0255685189974884e-14
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.0008831704691196762,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-018.json",
+      "raw_case_sha256": "7776c881ffe09c8908a8872d5456b9d578c0e3092fa37dc7d17055eeaa3d5bec",
+      "controller_receipt": {
+        "child_result": "case-018.json",
+        "child_result_sha256": "7776c881ffe09c8908a8872d5456b9d578c0e3092fa37dc7d17055eeaa3d5bec",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.7379979999999966,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.7394714350011782,
+        "index": 18,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 32,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"64/5\", \"stages\": 32}\n",
+        "target": "64/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    },
+    {
+      "series": "erlang_128",
+      "stages": 128,
+      "target_fraction": "64/5",
+      "time_over_mean_delay": 64,
+      "dynamic_tensor_bytes": 2152,
+      "physics_tensor_bytes": 135216,
+      "physics_tensor_bytes_by_field": {
+        "discount": 8,
+        "firing": 1032,
+        "generator": 133128,
+        "occupation_weight": 1032,
+        "rate": 8,
+        "stage_rate": 8
+      },
+      "persistent_tensor_bytes": 137368,
+      "max_value_absolute_error": 0.0002514828095989685,
+      "value_signed_errors": [
+        [
+          0.0002514828095989685,
+          1.6836532168440499e-12,
+          5.707101458085617e-13
+        ],
+        [
+          -7.544484288057873e-05,
+          -5.051237206288306e-13,
+          -1.7121026818500695e-13
+        ]
+      ],
+      "max_lambda_gradient_absolute_error": 0.00022079262121899035,
+      "raw_case": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-019.json",
+      "raw_case_sha256": "e3f9f75db5d83bb0ecb4d12eb6c7878ad3382e7e850670382cc0c7492b5d859c",
+      "controller_receipt": {
+        "child_result": "case-019.json",
+        "child_result_sha256": "e3f9f75db5d83bb0ecb4d12eb6c7878ad3382e7e850670382cc0c7492b5d859c",
+        "cpu_soft_limit": 18,
+        "fresh_process_cpu_seconds": 1.850804000000002,
+        "full_process_wall_limit": 20,
+        "full_process_wall_seconds": 1.8560487779977848,
+        "index": 19,
+        "last_observed_phase": "complete",
+        "returncode": 0,
+        "stages": 128,
+        "status": "completed",
+        "stderr": "",
+        "stdout": "{\"status\": \"completed\", \"phase\": \"complete\", \"target\": \"64/5\", \"stages\": 128}\n",
+        "target": "64/5"
+      },
+      "controller_report": "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json"
+    }
+  ],
+  "input_identities": {
+    "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/REPORT.json": {
+      "sha256": "960bab485749cf40c9846bae8ad59014a86f0b76b1814519bb3d5bebcf8328aa",
+      "bytes": 6634
+    },
+    "qualification/hcsn_currentstate/differentiable.py": {
+      "sha256": "fccee9781c86af243c5f691f876d0dec34296edfedc327d6f4a100bcd2def949",
+      "bytes": 12471
+    },
+    "qualification/hcsn_currentstate/study_longtime.py": {
+      "sha256": "62daf4850b6e0079b5b75d50b57ba74a61ef76e75de9276f9caf3dd2172f502f",
+      "bytes": 12811
+    },
+    "qualification/hcsn_currentstate/evidence/longtime-20261119/REVIEW.json": {
+      "sha256": "6df479dcac5e3ec31ea6721cb07345c2a299e3f886c166bed9de060c2e42075f",
+      "bytes": 4311
+    },
+    "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/case-000.json": {
+      "sha256": "35ee48ccd7f0293bda9b55fb798aac4b009ea419546bc58b1d2c985a9f838fc2",
+      "bytes": 4729
+    },
+    "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/case-001.json": {
+      "sha256": "b26f502dbe605933249a4f817ffdf004455c5e9862b55c153bceedec7ad7badd",
+      "bytes": 4779
+    },
+    "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/case-002.json": {
+      "sha256": "fc89758d0b89c28e5b0e17d1dd9bbe6a3205be3802c153faab8d564dcb59f8bf",
+      "bytes": 4833
+    },
+    "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/case-003.json": {
+      "sha256": "2e2904e1567c609ccfbe00969b14cc3739f17da31e2f0ed57e17c6ef0da1039a",
+      "bytes": 4823
+    },
+    "qualification/hcsn_currentstate/evidence/longtime-20261119/attempt001/case-004.json": {
+      "sha256": "026fad8aa41ae5239287614428b6ccc1e3f203bbb87881787044edf1641cd608",
+      "bytes": 4821
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/REPORT.json": {
+      "sha256": "eedcb140c981b9301aec697ca3ca8db8373a545318df591324e36e9c7c66b717",
+      "bytes": 12876
+    },
+    "qualification/hcsn_currentstate/ERLANG_CONFIG.json": {
+      "sha256": "4e2ed3cd2bfacacb26607655ca14e7e11fabf4de38c20b73c7496af1012b8a9a",
+      "bytes": 759
+    },
+    "qualification/hcsn_currentstate/erlang_refractory.py": {
+      "sha256": "84485fe5e8c1874ccf0aa3dc436a70ce9b1b16ce2fbfdf18db86a8dcc1f92654",
+      "bytes": 4104
+    },
+    "qualification/hcsn_currentstate/study_erlang.py": {
+      "sha256": "be7439a64757f71f684c11c786d30126b603f3b5ecac252351d8ec7325e60d77",
+      "bytes": 13355
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/REVIEW.json": {
+      "sha256": "ae5e3507133941d03ec7fedca891bd54d10830500545783eb43e385bc196c4d8",
+      "bytes": 17606
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-000.json": {
+      "sha256": "2e63934124db7a619314f8b5ac2fa1b29d4589d8d5ea4747ec329f53a1873f75",
+      "bytes": 5615
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-001.json": {
+      "sha256": "fa1e75eb62c859c7eb6ca63c04acfc8841e97085fa619ab3053a9d658aaa2a3e",
+      "bytes": 6136
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-002.json": {
+      "sha256": "8f176fa0f14511e3ecce375f2778463c1af28183a19d17e0881ecf703e94eb10",
+      "bytes": 8353
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-003.json": {
+      "sha256": "5a1da45d24164e00007e94e32755ce05bae97075281ecabad459c103ffe69fcd",
+      "bytes": 17420
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-004.json": {
+      "sha256": "db0da0113e2c9460f7791b0276fa6b15d9e39f1566a0462383499b5387042c17",
+      "bytes": 5601
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-005.json": {
+      "sha256": "c5ae708ff09c57a09f784469e3c68cac8d1d071baa655887595eb4852b0cab45",
+      "bytes": 6131
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-006.json": {
+      "sha256": "2b3c9d37f44d867506051286720a82cfe3d3da884dffa07da3a24f02bea0f4dd",
+      "bytes": 8361
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-007.json": {
+      "sha256": "5d06c844ab03bccd0ab97e8a3dbc714303f59e20284d1285208da423a0a4c4fe",
+      "bytes": 17419
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-008.json": {
+      "sha256": "90295204a89c781686a063b2025798c48f24ea213513fe879a3e20a1330f01e8",
+      "bytes": 5594
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-009.json": {
+      "sha256": "a482f4fe45e842a5cc6dfa809c13e13ad5c81ecbebaf0e49d180667e5b23323c",
+      "bytes": 6117
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-010.json": {
+      "sha256": "179784f271ecfd64d841007646fda42ceb1a4cfe6ff0cf31c852153275615f45",
+      "bytes": 8351
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-011.json": {
+      "sha256": "eafbbac5609c6977fa653e37db85dd0d8b8042229b76da3d937e3cd304714167",
+      "bytes": 17404
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-012.json": {
+      "sha256": "c00cbe1a6d4d898326e6d523f8aaed6fba7dffd11bb04de198a45d318280b37a",
+      "bytes": 5604
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-013.json": {
+      "sha256": "7cc26fc2197b82f432634c2e87f130fdd98c2da37f6874ee748e1a3131fe7d92",
+      "bytes": 6103
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-014.json": {
+      "sha256": "c5b39e0a12f031d252ea3be8a4cb2db19608edec06c80d7d60d9a1fc8bd099a3",
+      "bytes": 8350
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-015.json": {
+      "sha256": "541ee00501c36f06cec94020736dcf497af2548ddda7a6a63e9fdf9fb1849e8a",
+      "bytes": 17385
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-016.json": {
+      "sha256": "2b761a0c9dbe98598213e0d1b2b18218cfeb0e3c4265b57f16cc3a5f1c6bd5c4",
+      "bytes": 5575
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-017.json": {
+      "sha256": "c13510b159bc15a1b55159914372c52c3525adff752776a668dd5b2179ae8b9a",
+      "bytes": 6124
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-018.json": {
+      "sha256": "7776c881ffe09c8908a8872d5456b9d578c0e3092fa37dc7d17055eeaa3d5bec",
+      "bytes": 8347
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/attempt001/case-019.json": {
+      "sha256": "e3f9f75db5d83bb0ecb4d12eb6c7878ad3382e7e850670382cc0c7492b5d859c",
+      "bytes": 17387
+    },
+    "qualification/hcsn_currentstate/ERLANG_FREEZE.json": {
+      "sha256": "d335142c53c549b68734aaaf3b4a149155f44bc2d5db682e93b5c3a3c4907c5f",
+      "bytes": 458
+    },
+    "qualification/hcsn_currentstate/evidence/erlang-compression-20261119/plot_state_cost_error.py": {
+      "sha256": "8e6e8f45ee9744fcb5206697c41b35c1b588081bcfe674af197a2695631abddd",
+      "bytes": 13637
+    }
+  },
+  "frozen_execution_source_sha256": {
+    "deterministic": {
+      "differentiable.py": "fccee9781c86af243c5f691f876d0dec34296edfedc327d6f4a100bcd2def949",
+      "study_longtime.py": "62daf4850b6e0079b5b75d50b57ba74a61ef76e75de9276f9caf3dd2172f502f"
+    },
+    "erlang": {
+      "ERLANG_CONFIG.json": "4e2ed3cd2bfacacb26607655ca14e7e11fabf4de38c20b73c7496af1012b8a9a",
+      "erlang_refractory.py": "84485fe5e8c1874ccf0aa3dc436a70ce9b1b16ce2fbfdf18db86a8dcc1f92654",
+      "study_erlang.py": "be7439a64757f71f684c11c786d30126b603f3b5ecac252351d8ec7325e60d77",
+      "study_longtime.py": "62daf4850b6e0079b5b75d50b57ba74a61ef76e75de9276f9caf3dd2172f502f"
+    }
+  },
+  "quantity_order": [
+    "hit_count",
+    "active",
+    "refractory"
+  ],
+  "channels": [
+    1.0,
+    -0.3
+  ],
+  "rate_fp64_hex": "0x1.b333333333333p+0",
+  "mean_delay_fraction": "1/5",
+  "reference": "Saved common 80-digit finite Gamma renewal reference, rounded to FP64 for the recorded error.",
+  "deterministic_physics_provenance": "Eight one-element FP64 Physics tensor fields in the hash-bound one-state study_longtime.py constructor; fixed rational delay excluded.",
+  "cost_scope": "Dynamic state plus all Physics tensor payload, counting repeated references; excludes Python, autograd, allocator, and temporary matrices.",
+  "interpretation": "Erlang uses a different delay law; costs were observed in separate batches. No paired timing or speedup claim.",
+  "rendering": "All 25 measured points; line segments connect observations only. No fit, extrapolation, smoothing, clipping, or omitted points.",
+  "new_model_calls": 0,
+  "new_reference_calculations": 0,
+  "matplotlib_version": "3.10.8"
+}

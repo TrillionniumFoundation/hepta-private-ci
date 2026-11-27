@@ -1,0 +1,375 @@
+{
+  "schema": "hepta.cargo-bazel-alias-qualification.v1",
+  "result": "scoped_repair_passed",
+  "source_commit": "6e1e9f7c19aa3423b1b0e99928b949ac75d4bd23",
+  "source_tree": "fe5311b358c01f6253953808c2d266347fd539ea",
+  "ordered_parents": [
+    "b33751526c9c9c6158bafd3641c603c646b7da4a"
+  ],
+  "source_postimages_sha256": "0f2dc83f76c47fdd6bcf1a85cafce1b1fd5519ca461b13e561047c07f8e95fd6",
+  "source_paths": [
+    "bazel/rules/BUILD.bazel",
+    "bazel/rules/cargo_crate_aliases.bzl",
+    "defs.bzl",
+    "codex-rs/Cargo.toml",
+    "codex-rs/core/Cargo.toml",
+    "codex-rs/hepta-matrix-sdk/Cargo.toml",
+    "codex-rs/Cargo.lock"
+  ],
+  "actual_build": {
+    "job_id": "1a1f579392a-ffbe-135e",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "command": {
+      "name": "actual-otel-and-binary-test-build",
+      "args": [
+        "/home/qian-qi/ci-agentd-musl-20261119/tools/bazel",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--noexperimental_remote_repo_contents_cache",
+        "--output_user_root=/home/qian-qi/hepta-time-72466978/bazel-cache",
+        "--output_base=/dev/shm/hepta-alias-7246-bazel-output",
+        "--host_jvm_args=-Xmx4096m",
+        "--host_jvm_args=-Djava.io.tmpdir=/dev/shm/hepta-alias-7246-java-tmp",
+        "--host_jvm_args=-XX:ActiveProcessorCount=4",
+        "--max_idle_secs=60",
+        "build",
+        "//codex-rs/otel:otel",
+        "//codex-rs/hepta-infer-core:hepta-infer-control-bin-unit-tests-bin",
+        "--repository_cache=/home/qian-qi/hepta-time-72466978/bazel-repository-cache",
+        "--repo_contents_cache=/home/qian-qi/hepta-time-72466978/bazel-repo-contents-cache",
+        "--config=ci",
+        "--disk_cache=/dev/shm/hepta-alias-7246-bazel-disk-cache",
+        "--jobs=4",
+        "--local_resources=memory=12000",
+        "--lockfile_mode=error"
+      ],
+      "exit_code": 0,
+      "seconds": 1640.5693921629863,
+      "stdout": "/home/qian-qi/hepta-time-72466978/alias-repair-phase4-actual-otel-and-binary-test-build.stdout",
+      "stderr": "/home/qian-qi/hepta-time-72466978/alias-repair-phase4-actual-otel-and-binary-test-build.stderr",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f6d0a2f6bc18d997b183914ac4627a7a919cf1447846f06fb7af8638acafcf58"
+    },
+    "targets": [
+      "//codex-rs/otel:otel",
+      "//codex-rs/hepta-infer-core:hepta-infer-control-bin-unit-tests-bin"
+    ],
+    "tests_executed": false,
+    "source_bytes_match_committed_postimages": true
+  },
+  "cargo_lock": {
+    "base": "b33751526c9c9c6158bafd3641c603c646b7da4a",
+    "before_sha256": "77b97b277e334533fafeedc0dd5294ee0adaf71b8890e56adf3cf68d54370cc8",
+    "after_sha256": "8f311b15cf68d471b7e3635dcf7ad0ce42bdcf44372ac8698c1aede59dc97de4",
+    "package_identities": 1540,
+    "package_identity_changes": 0,
+    "registry_git_checksum_changes": 0,
+    "changes": [
+      {
+        "package": [
+          "codex-hepta-matrix-sdk",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-matrix-sdk",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-hepta-contracts",
+            "codex-hepta-matrix-protocol",
+            "codex-hepta-matrix-store",
+            "codex-hepta-paths",
+            "codex-utils-path",
+            "matrix-sdk",
+            "matrix-sdk-crypto",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "tempfile",
+            "thiserror 2.0.21",
+            "tokio",
+            "tokio-util",
+            "url",
+            "wiremock"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-matrix-sdk",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-hepta-contracts",
+            "codex-hepta-matrix-protocol",
+            "codex-hepta-matrix-store",
+            "codex-hepta-paths",
+            "codex-utils-path",
+            "matrix-sdk",
+            "matrix-sdk-crypto",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "tempfile",
+            "thiserror 2.0.21",
+            "tokio",
+            "tokio-util",
+            "url"
+          ]
+        }
+      }
+    ],
+    "root_metadata_unchanged": true
+  },
+  "bazel_lock": {
+    "canonical_update_exit_code": 0,
+    "canonical_check_exit_code": 0,
+    "sha256": "5336311a0fa5c53fd5b3f5ef966d661afed27453a69d84ff3dd55dbc431ff501",
+    "unchanged": true
+  },
+  "cargo_shear": {
+    "version": "1.11.2",
+    "exit_code": 0,
+    "warnings_preserved": 21,
+    "binary_sha256": "52846641ba25ae1226a9cd8ccddf29e906be494792ab1b1efc8f2c320d358863"
+  },
+  "configured_analysis": {
+    "cquery_exit_code": 0,
+    "aquery_exit_code": 0,
+    "target_labels": [
+      "//codex-rs/hepta-infer-core:hepta-infer-control",
+      "//codex-rs/hepta-infer-core:hepta-infer-control-bin-unit-tests-bin",
+      "//codex-rs/otel:otel",
+      "//codex-rs/otel:otel-tests-test",
+      "//codex-rs/otel:otel-unit-tests-bin"
+    ],
+    "actual_platform_query_exit_code": 0,
+    "complete_mutually_exclusive_target_triples": 10,
+    "native_windows_execution_claimed": false
+  },
+  "final_format": {
+    "commands": [
+      {
+        "name": "alias-final-just-fmt",
+        "args": [
+          "/home/agent/.cargo/bin/just",
+          "fmt"
+        ],
+        "cwd": "/workspace/scratch/724669789c83/dependency-repair/alias-repo/codex-rs",
+        "exit_code": 0,
+        "seconds": 0.8487348070048029,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "alias-final-source-diff-check",
+        "args": [
+          "git",
+          "diff",
+          "--cached",
+          "--check"
+        ],
+        "cwd": "/workspace/scratch/724669789c83/dependency-repair/alias-repo",
+        "exit_code": 0,
+        "seconds": 0.06889675300044473,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "changed_source_paths": []
+  },
+  "prior_time_manifest_transfer": {
+    "prior_manifest_sha256": "924a309105f4c935e8d2f793758f854d0f61f407eed2e7bb0ac8f1366b7b932d",
+    "unchanged_paths": [
+      "MODULE.bazel.lock",
+      "codex-rs/app-server/tests/suite/v2/current_time.rs",
+      "codex-rs/cloud-tasks/src/util.rs",
+      "codex-rs/core/src/session/tests.rs",
+      "codex-rs/core/src/session/turn_context.rs",
+      "codex-rs/core/src/session/world_state.rs",
+      "codex-rs/core/tests/suite/current_time_reminder.rs",
+      "codex-rs/core/tests/suite/guardian_review.rs",
+      "codex-rs/protocol/src/error.rs",
+      "codex-rs/tui/src/chatwidget/reset_credits.rs",
+      "codex-rs/tui/src/status/helpers.rs",
+      "codex-rs/utils/time/Cargo.toml",
+      "codex-rs/utils/time/src/lib.rs",
+      "codex-rs/utils/time/src/local.rs",
+      "codex-rs/utils/time/src/local_mobile.rs",
+      "codex-rs/utils/time/src/local_mobile_tests.rs",
+      "codex-rs/utils/time/src/local_posix_compat.rs",
+      "codex-rs/utils/time/src/local_tests.rs",
+      "codex-rs/utils/time/src/local_unix.rs",
+      "codex-rs/utils/time/src/local_unix_tests.rs",
+      "codex-rs/utils/time/src/local_wasm.rs",
+      "codex-rs/utils/time/src/local_windows.rs",
+      "codex-rs/utils/time/src/local_windows_rules.rs",
+      "codex-rs/utils/time/src/local_windows_rules_tests.rs",
+      "codex-rs/utils/time/src/local_zone.rs",
+      "codex-rs/utils/time/src/local_zone_tests.rs"
+    ],
+    "superseded_paths": [
+      "codex-rs/Cargo.lock"
+    ],
+    "unchanged_paths_verified_natively_and_locally": true
+  },
+  "source_blob_policy": {
+    "args": [
+      "python",
+      "scripts/check_blob_size.py",
+      "--base",
+      "b33751526c9c9c6158bafd3641c603c646b7da4a",
+      "--head",
+      "6e1e9f7c19aa3423b1b0e99928b949ac75d4bd23",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "base": "b33751526c9c9c6158bafd3641c603c646b7da4a",
+    "head": "6e1e9f7c19aa3423b1b0e99928b949ac75d4bd23",
+    "exit_code": 0,
+    "seconds": 0.18482721100008348,
+    "stdout_sha256": "916739d854fdb5ea7e2a356e23e7b89e6b8ec9d8ed68b868b5515990929518a3",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "allowlist_unchanged": true
+  },
+  "preserved_attempts": [
+    {
+      "name": "phase1",
+      "job_id": "1a1f530c67e-ffbe-129a",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_complete": true
+    },
+    {
+      "name": "shear1",
+      "job_id": "1a1f531a121-ffbe-129d",
+      "state": "failed",
+      "exit_code": 2,
+      "output_complete": true
+    },
+    {
+      "name": "shear2",
+      "job_id": "1a1f534b06e-ffbe-12a3",
+      "state": "failed",
+      "exit_code": 2,
+      "output_complete": true
+    },
+    {
+      "name": "shear3",
+      "job_id": "1a1f536ac17-ffbe-12ab",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_complete": true
+    },
+    {
+      "name": "phase2a",
+      "job_id": "1a1f534d5f5-ffbe-12a4",
+      "state": "failed",
+      "exit_code": 37,
+      "output_complete": true
+    },
+    {
+      "name": "phase2b",
+      "job_id": "1a1f539af23-ffbe-12b1",
+      "state": "failed",
+      "exit_code": 1,
+      "output_complete": true
+    },
+    {
+      "name": "phase2c",
+      "job_id": "1a1f53dcd92-ffbe-12b9",
+      "state": "failed",
+      "exit_code": 2,
+      "output_complete": true
+    },
+    {
+      "name": "phase3",
+      "job_id": "1a1f53f9317-ffbe-12bb",
+      "state": "timed_out",
+      "exit_code": 124,
+      "output_complete": true
+    },
+    {
+      "name": "phase4",
+      "job_id": "1a1f579392a-ffbe-135e",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_complete": true
+    }
+  ],
+  "complete_repository_ci_claimed": false,
+  "remote_ref_writes": [],
+  "evidence_packaging": {
+    "previous_commit": "52ca238682a078723e56bdd7d2f8f6495d1cd408",
+    "original_archive_sha256": "2302474a2c848d56e70a7722be5bcdedd58c94a2c93c0341c5c835d316e4120a",
+    "archive_members_unchanged": 154,
+    "raw_part_codespell_attempt_exit": 65,
+    "failure_records": [
+      {
+        "path": "raw-parts-codespell-attempt01.json.gz",
+        "encoding": "gzip",
+        "stored_bytes": 471,
+        "stored_sha256": "ea0e7c97e99fa5850d7d18f7291c22107fb4847945d2ecf4392a70f7d52a3229",
+        "decoded_bytes": 1221,
+        "decoded_sha256": "e81741ea8e6e8523ff466c18de474bd721d1953bcddf8df22e60e430f0fecb7e",
+        "original_record_name": "alias-root-binary-codespell.json"
+      },
+      {
+        "path": "raw-parts-codespell-attempt01.stdout.gz",
+        "encoding": "gzip",
+        "stored_bytes": 567,
+        "stored_sha256": "8c200981165ed53b789837bb87b746663b29ac527c09dfe3d9cb275aba5bf3f7",
+        "decoded_bytes": 3968,
+        "decoded_sha256": "1da226b0c213253a1f82f14fa7269659fac59dbe7743a8e69e9acb6fc3727914",
+        "original_record_name": "alias-root-binary-codespell.stdout"
+      },
+      {
+        "path": "raw-parts-codespell-attempt01.stderr.gz",
+        "encoding": "gzip",
+        "stored_bytes": 171,
+        "stored_sha256": "83e3d4f82417bdb15e64a4f60d17f9efcdf0ae29eff40656a4ab3ddcefb307d7",
+        "decoded_bytes": 186,
+        "decoded_sha256": "4c72b5a36dfdd8206afc0f85b3b437a22e4ce393ddd98517a932de2870cc9b2b",
+        "original_record_name": "alias-root-binary-codespell.stderr"
+      }
+    ],
+    "wrapped_parts_check": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "codespell_lib",
+        "--config",
+        "/workspace/scratch/724669789c83/integration/.codespellrc",
+        "-I",
+        "/workspace/scratch/724669789c83/integration/.codespellignore",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-000.gz",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-001.gz",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-002.gz",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-003.gz",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-004.gz",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-005.gz"
+      ],
+      "exit": 0,
+      "seconds": 0.24885124199499842,
+      "configurations": [
+        {
+          "path": "/workspace/scratch/724669789c83/integration/.codespellrc",
+          "bytes": 971,
+          "sha256": "5bfccdc05f01df2e988212edf7ac7cbf5652c40356ef0917c3ef4448c898a66d"
+        },
+        {
+          "path": "/workspace/scratch/724669789c83/integration/.codespellignore",
+          "bytes": 105,
+          "sha256": "48abab15a4ee9d5ee0b62338b162baae4a6193f172ff84c92596b7c8426c6ad0"
+        }
+      ],
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "All six complete gzip wrappers under the same original matcher, config and dictionary. No policy changes."
+    },
+    "decoded_part_limit_bytes": 400000,
+    "maximum_stored_part_bytes": 400143,
+    "policy_changes": []
+  }
+}

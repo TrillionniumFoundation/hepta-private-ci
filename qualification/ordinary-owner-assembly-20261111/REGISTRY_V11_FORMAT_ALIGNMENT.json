@@ -1,0 +1,322 @@
+{
+  "source_parent": "89b3b44747bedbc80732f73eda2405b7a397b926",
+  "checker_unchanged": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "whitespace": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs",
+      "field": "definition_markers",
+      "old": "store.compare_and_set(owner, &before, &next)",
+      "new": "store\n            .compare_and_set(owner, &before, &next)",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs",
+      "field": "definition_markers",
+      "old": "original.publish(signed)?",
+      "new": "original\n            .publish(signed)?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs",
+      "field": "required_function_order",
+      "old": "store.compare_and_set(owner, &before, &next)",
+      "new": "store\n            .compare_and_set(owner, &before, &next)",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "field": "required_function_order",
+      "old": "channel.exchange(",
+      "new": "channel\n            .exchange(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_client.rs",
+      "field": "required_function_order",
+      "old": "stream.exchange(",
+      "new": "stream\n            .exchange(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/root_generation_initial_client.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_client.rs",
+      "field": "required_function_order",
+      "old": "self.connection.require_original_publication_session()",
+      "new": "self\n            .connection\n            .require_original_publication_session()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/root_generation_initial_client.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_client.rs",
+      "field": "required_function_order",
+      "old": "lane.stream.exchange(",
+      "new": "lane\n            .stream\n            .exchange(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/root_generation_initial_client.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_client.rs",
+      "field": "required_function_order",
+      "old": "self.connection.require_original_publication_session()",
+      "new": "self\n            .connection\n            .require_original_publication_session()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/root_generation_initial_client.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs",
+      "field": "required_function_order",
+      "old": "original.publish(signed)?",
+      "new": "original\n            .publish(signed)?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs"
+      ]
+    }
+  ],
+  "explicit": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs",
+      "reason": "Native rustfmt trailing argument comma and exact per-function indentation; original self.client is retained.",
+      "old": "from_original_root_initial(self.client)?",
+      "new": [
+        "from_original_root_initial(\n                self.client,\n            )?",
+        "from_original_root_initial(\n            self.client,\n        )?"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "reason": "Unchanged checker masks nine comment characters. Keep full raw call as required; ordered marker matches exact masked code with true argument.",
+      "old": "slot.require_target(/*fresh*/ true)?",
+      "new": "slot.require_target(          true)?"
+    }
+  ],
+  "source_ops_verified": [
+    {
+      "kind": "post89:constructors",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+      "sha": "c7e4a7366c60352a095bcd44f19314a6790dd455"
+    },
+    {
+      "kind": "post89:borrowed",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+      "sha": "69c23bafd6c3a5515bbf4250864c7dee58866127"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "sha": "55f280ba8c25e2cb89e9cf6b93a5f645cf73ebd5"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_data.rs",
+      "sha": "9a684c8d5657dd58f235ec8855de30cbfc733471"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs",
+      "sha": "d2cdc1e29fc7c3a3b3e8eae2dbf8f1d1db8f4c09"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_files.rs",
+      "sha": "33a20f299d3ee03621bc691a843e2e31a6da739e"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+      "sha": "3d7c4d004a06dc60830985e1d4d0c0c7e12fc483"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs",
+      "sha": "6c6e7d64b56e2a6471b26367f3a9d2c73c1f2a67"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "sha": "5bf4322f0c3320f30be998191d54cbb9e15ce091"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "sha": "fe22a8557e8f9cfe47956b3c268686ecdb4c4693"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "sha": "2c20de4dbfd743c6b4378b1982229d40e2e6893b"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "sha": "a569fc3e4e1a767cfe3d493e2eca1f66862d0cfc"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha": "753ebd1e6d68c5e67e4938de68f20511c27a994e"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "sha": "d47b37681814154e5f11dce21c0dbe49cec62ea3"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_tests.rs",
+      "sha": "ca5cd35e2081f43fa0d1aaf06b1678fa580f6e27"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_artifacts_tests.rs",
+      "sha": "57582d81e56e244eda0bfb10b3a34a02c2dfc4f6"
+    },
+    {
+      "kind": "root-cli",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "sha": "615dbd0c79316bce165b3143bcafa02247284ce5"
+    },
+    {
+      "kind": "qa-closure",
+      "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+      "sha": "ee0f5225031f82edf413a7f4bed12f77ff479a7b"
+    },
+    {
+      "kind": "qa-closure",
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "sha": "0153b93c21edc31a44cca9581ddc96773ac0ecb1"
+    },
+    {
+      "kind": "qa-closure",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "sha": "933545411cbb79d7adefb4c3975873e6d2133935"
+    }
+  ],
+  "native_v8_fmt_reused": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs",
+      "sha": "e7010b23dde46c73398082d038bae73e45e3716e",
+      "bytes": 10513
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "sha": "379abad9c357ae321ba9e74a99e2b9be819c3606",
+      "bytes": 8345
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_context.rs",
+      "sha": "4c7638bd3ffc433dde4cfd8aeb3293b5c57cea11",
+      "bytes": 3950
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_data_tests.rs",
+      "sha": "69896eb500d0b4a9e4946562e19846288396f2eb",
+      "bytes": 18498
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "sha": "1b25f9ea01b847b9d88bf23e4ffb171865da7fb5",
+      "bytes": 9897
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fd_tests.rs",
+      "sha": "31dfca232ee79b56364e1670ff175c998c0c0370",
+      "bytes": 3585
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs",
+      "sha": "f4d0b45e19003253eb1e5490f96134b5ae9a96e0",
+      "bytes": 6742
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_material_tests.rs",
+      "sha": "f4c6e9c029b114bec90ea82dc1fdb4b14d9ec00e",
+      "bytes": 7353
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_root_tests.rs",
+      "sha": "5d50f5b983597e774736a186a0d4e6c0ab7b0e27",
+      "bytes": 10045
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "sha": "7d3d9a13db15464078f78efec7178b20f3b1b61e",
+      "bytes": 15598
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs",
+      "sha": "24b615a3b5be95c469d18ce80446032bede27438",
+      "bytes": 5742
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "sha": "b73ed61ee4c611d7568276a092c1ba594ceb577f",
+      "bytes": 15239
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs",
+      "sha": "5720c6ef4a73da2f44dc4996023b35978374b372",
+      "bytes": 5160
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "sha": "48cce5b935bcba7918ad75b55ee445abbc936a66",
+      "bytes": 26005
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_initial_inputs_tests.rs",
+      "sha": "1889476841015014dc1a17a4eaad89615d49291b",
+      "bytes": 4430
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "sha": "0599202fbe0db8bef2816fcd72dc031a2c375171",
+      "bytes": 18005
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_client.rs",
+      "sha": "d970542fd254c994ae12510ad3a8c463cacf22c1",
+      "bytes": 8612
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_handoff.rs",
+      "sha": "a77285095b6d412f7bcad09682a5e4480486fab5",
+      "bytes": 3607
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs",
+      "sha": "d3c5da3501fe4395f8aa8e0ce159a62e9bbc6c34",
+      "bytes": 6090
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs",
+      "sha": "d0b37d73d5720a1d66c6915827eec0b1bcba42c2",
+      "bytes": 7740
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer.rs",
+      "sha": "a9dc269b3a1cc2105807d94d2c6440b62154a0f8",
+      "bytes": 9851
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer_tests.rs",
+      "sha": "7aae8679a56f6f7432ae7d18fef9ecd9d1f23446",
+      "bytes": 6728
+    }
+  ],
+  "qualified": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0
+}

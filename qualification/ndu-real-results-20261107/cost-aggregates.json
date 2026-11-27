@@ -1,0 +1,5886 @@
+{
+  "all_pilot_and_incumbent_rows": {
+    "category_seconds": {
+      "codec": 367.134639519,
+      "critic": 213.620349937,
+      "decoder": 2.326180729,
+      "encoder": 3660.562373553,
+      "failure": 0.0,
+      "planning": 243.451288518,
+      "retry": 0.0,
+      "shared": 31.876065608,
+      "sync": 24454.796654805
+    },
+    "deployment_cpu_seconds": {
+      "denominator": 11680,
+      "maximum": 41.124684999999886,
+      "mean": 2.467540485017128,
+      "measured_count": 11680,
+      "minimum": 1.630446999999549,
+      "missing_count": 0,
+      "p50": 2.3136590000001434,
+      "p95": 3.392884600000081,
+      "p99": 4.346392700000004,
+      "sum": 28820.872865000056
+    },
+    "deployment_seconds": {
+      "denominator": 11680,
+      "maximum": 41.154654043,
+      "mean": 2.4806307836189214,
+      "measured_count": 11680,
+      "minimum": 1.635903107,
+      "missing_count": 0,
+      "p50": 2.3283711525,
+      "p95": 3.4113043173,
+      "p99": 4.365966029409993,
+      "sum": 28973.767552669
+    },
+    "evaluation_episode_seed_count": 1,
+    "group": {
+      "scope": "paired_plus_incumbent"
+    },
+    "independent_training_seed_count": 4,
+    "research_cpu_seconds": {
+      "denominator": 11680,
+      "maximum": 41.39520399999992,
+      "mean": 2.568360228253426,
+      "measured_count": 11680,
+      "minimum": 1.690227999999479,
+      "missing_count": 0,
+      "p50": 2.411102000000028,
+      "p95": 3.5516044999999052,
+      "p99": 4.542349069999906,
+      "sum": 29998.44746600002
+    },
+    "research_envelope_seconds": {
+      "denominator": 11680,
+      "maximum": 41.43212946690619,
+      "mean": 2.589011603374431,
+      "measured_count": 11680,
+      "minimum": 1.7022867042105645,
+      "missing_count": 0,
+      "p50": 2.4321802840568125,
+      "p95": 3.5775096517987532,
+      "p99": 4.561416244760619,
+      "sum": 30239.655527413357
+    },
+    "rows": 11680,
+    "status_counts": {
+      "BudgetStop": 1320,
+      "Completed": 10360
+    }
+  },
+  "costs_complete": false,
+  "declared_memory_limit_bytes_not_measured_peak": 8589934592,
+  "episode_panels": [
+    {
+      "category_seconds": {
+        "codec": 367.064946984,
+        "critic": 213.620349937,
+        "decoder": 2.310894983,
+        "encoder": 3621.135013226,
+        "failure": 0.0,
+        "planning": 243.450250769,
+        "retry": 0.0,
+        "shared": 31.661601912,
+        "sync": 24161.829885405
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 11520,
+        "maximum": 41.124684999999886,
+        "mean": 2.4730758055555606,
+        "measured_count": 11520,
+        "minimum": 1.630446999999549,
+        "missing_count": 0,
+        "p50": 2.3267874999997957,
+        "p95": 3.3997123000000893,
+        "p99": 4.356010390000166,
+        "sum": 28489.833280000057
+      },
+      "deployment_seconds": {
+        "denominator": 11520,
+        "maximum": 41.154654043,
+        "mean": 2.4862042485430558,
+        "measured_count": 11520,
+        "minimum": 1.635903107,
+        "missing_count": 0,
+        "p50": 2.3405977919999996,
+        "p95": 3.414736461449999,
+        "p99": 4.374253093029999,
+        "sum": 28641.072943216
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "row_file": "paired-rows.jsonl"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 11520,
+        "maximum": 41.39520399999992,
+        "mean": 2.5741769230902793,
+        "measured_count": 11520,
+        "minimum": 1.690227999999479,
+        "missing_count": 0,
+        "p50": 2.4225745000001098,
+        "p95": 3.558026899999953,
+        "p99": 4.5436784800000805,
+        "sum": 29654.51815400002
+      },
+      "research_envelope_seconds": {
+        "denominator": 11520,
+        "maximum": 41.43212946690619,
+        "mean": 2.5948883851107896,
+        "measured_count": 11520,
+        "minimum": 1.7022867042105645,
+        "missing_count": 0,
+        "p50": 2.4435842245584354,
+        "p95": 3.583223326108418,
+        "p99": 4.5815707002067825,
+        "sum": 29893.114196476294
+      },
+      "rows": 11520,
+      "status_counts": {
+        "BudgetStop": 1320,
+        "Completed": 10200
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.069692535,
+        "critic": 0.0,
+        "decoder": 0.015285746,
+        "encoder": 39.427360327,
+        "failure": 0.0,
+        "planning": 0.001037749,
+        "retry": 0.0,
+        "shared": 0.214463696,
+        "sync": 292.9667694
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 160,
+        "maximum": 2.227575999999999,
+        "mean": 2.0689974062500003,
+        "measured_count": 160,
+        "minimum": 1.8668699999999987,
+        "missing_count": 0,
+        "p50": 2.0690904999999997,
+        "p95": 2.185855199999994,
+        "p99": 2.21987477,
+        "sum": 331.03958500000005
+      },
+      "deployment_seconds": {
+        "denominator": 160,
+        "maximum": 2.239681045,
+        "mean": 2.07934130908125,
+        "measured_count": 160,
+        "minimum": 1.879535274,
+        "missing_count": 0,
+        "p50": 2.0780742615000003,
+        "p95": 2.1932938825,
+        "p99": 2.2288092485899997,
+        "sum": 332.694609453
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "row_file": "retention-incumbent-rows.jsonl"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 160,
+        "maximum": 2.3787150000000006,
+        "mean": 2.1495582000000004,
+        "measured_count": 160,
+        "minimum": 1.9407469999999947,
+        "missing_count": 0,
+        "p50": 2.149040499999998,
+        "p95": 2.27489175,
+        "p99": 2.336969870000002,
+        "sum": 343.92931200000004
+      },
+      "research_envelope_seconds": {
+        "denominator": 160,
+        "maximum": 2.3962711000349373,
+        "mean": 2.165883318356646,
+        "measured_count": 160,
+        "minimum": 1.9573392299935222,
+        "missing_count": 0,
+        "p50": 2.1662358524044976,
+        "p95": 2.2889828155399297,
+        "p99": 2.3580866157240234,
+        "sum": 346.5413309370633
+      },
+      "rows": 160,
+      "status_counts": {
+        "Completed": 160
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 340.763089905,
+        "critic": 179.818267205,
+        "decoder": 1.917657101,
+        "encoder": 3141.885479385,
+        "failure": 0.0,
+        "planning": 204.954494135,
+        "retry": 0.0,
+        "shared": 26.335425439,
+        "sync": 20135.836497357
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 9600,
+        "maximum": 41.124684999999886,
+        "mean": 2.4902621444791713,
+        "measured_count": 9600,
+        "minimum": 1.630446999999549,
+        "missing_count": 0,
+        "p50": 2.346318499999825,
+        "p95": 3.4469132499999144,
+        "p99": 4.542067260000119,
+        "sum": 23906.516587000046
+      },
+      "deployment_seconds": {
+        "denominator": 9600,
+        "maximum": 41.154654043,
+        "mean": 2.503282386513229,
+        "measured_count": 9600,
+        "minimum": 1.635903107,
+        "missing_count": 0,
+        "p50": 2.3590027129999998,
+        "p95": 3.46087276605,
+        "p99": 4.564809975440001,
+        "sum": 24031.510910527
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 9600,
+        "maximum": 41.39520399999992,
+        "mean": 2.5896119058333356,
+        "measured_count": 9600,
+        "minimum": 1.690227999999479,
+        "missing_count": 0,
+        "p50": 2.4384524999999826,
+        "p95": 3.6019202499997505,
+        "p99": 4.7175966099999656,
+        "sum": 24860.27429600002
+      },
+      "research_envelope_seconds": {
+        "denominator": 9600,
+        "maximum": 41.43212946690619,
+        "mean": 2.6101615571970855,
+        "measured_count": 9600,
+        "minimum": 1.7022867042105645,
+        "missing_count": 0,
+        "p50": 2.4584466045489535,
+        "p95": 3.625706799805628,
+        "p99": 4.749290637748785,
+        "sum": 25057.550949092023
+      },
+      "rows": 9600,
+      "status_counts": {
+        "BudgetStop": 1062,
+        "Completed": 8538
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 26.301857079,
+        "critic": 33.802082732,
+        "decoder": 0.393237882,
+        "encoder": 479.249533841,
+        "failure": 0.0,
+        "planning": 38.495756634,
+        "retry": 0.0,
+        "shared": 5.326176473,
+        "sync": 4025.993388048
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 1920,
+        "maximum": 5.103729999999814,
+        "mean": 2.3871441109375064,
+        "measured_count": 1920,
+        "minimum": 1.6376130000003286,
+        "missing_count": 0,
+        "p50": 2.2386169999999765,
+        "p95": 3.213948749999787,
+        "p99": 3.631828529999992,
+        "sum": 4583.3166930000125
+      },
+      "deployment_seconds": {
+        "denominator": 1920,
+        "maximum": 5.137869665,
+        "mean": 2.4008135586921875,
+        "measured_count": 1920,
+        "minimum": 1.64549575,
+        "missing_count": 0,
+        "p50": 2.252689634,
+        "p95": 3.23349480665,
+        "p99": 3.6592312285999995,
+        "sum": 4609.562032689
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 1920,
+        "maximum": 5.3804990000001,
+        "mean": 2.4970020093749983,
+        "measured_count": 1920,
+        "minimum": 1.6906230000004143,
+        "missing_count": 0,
+        "p50": 2.344224999999824,
+        "p95": 3.399847800000072,
+        "p99": 3.9158229500000137,
+        "sum": 4794.243857999997
+      },
+      "research_envelope_seconds": {
+        "denominator": 1920,
+        "maximum": 5.4204896909650415,
+        "mean": 2.5185225246793075,
+        "measured_count": 1920,
+        "minimum": 1.703165499959141,
+        "missing_count": 0,
+        "p50": 2.3671720470301807,
+        "p95": 3.424070262000896,
+        "p99": 3.959643608254846,
+        "sum": 4835.563247384271
+      },
+      "rows": 1920,
+      "status_counts": {
+        "BudgetStop": 258,
+        "Completed": 1662
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.069692535,
+        "critic": 0.0,
+        "decoder": 0.015285746,
+        "encoder": 39.427360327,
+        "failure": 0.0,
+        "planning": 0.001037749,
+        "retry": 0.0,
+        "shared": 0.214463696,
+        "sync": 292.9667694
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 160,
+        "maximum": 2.227575999999999,
+        "mean": 2.0689974062500003,
+        "measured_count": 160,
+        "minimum": 1.8668699999999987,
+        "missing_count": 0,
+        "p50": 2.0690904999999997,
+        "p95": 2.185855199999994,
+        "p99": 2.21987477,
+        "sum": 331.03958500000005
+      },
+      "deployment_seconds": {
+        "denominator": 160,
+        "maximum": 2.239681045,
+        "mean": 2.07934130908125,
+        "measured_count": 160,
+        "minimum": 1.879535274,
+        "missing_count": 0,
+        "p50": 2.0780742615000003,
+        "p95": 2.1932938825,
+        "p99": 2.2288092485899997,
+        "sum": 332.694609453
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "row_file": "retention-incumbent-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 160,
+        "maximum": 2.3787150000000006,
+        "mean": 2.1495582000000004,
+        "measured_count": 160,
+        "minimum": 1.9407469999999947,
+        "missing_count": 0,
+        "p50": 2.149040499999998,
+        "p95": 2.27489175,
+        "p99": 2.336969870000002,
+        "sum": 343.92931200000004
+      },
+      "research_envelope_seconds": {
+        "denominator": 160,
+        "maximum": 2.3962711000349373,
+        "mean": 2.165883318356646,
+        "measured_count": 160,
+        "minimum": 1.9573392299935222,
+        "missing_count": 0,
+        "p50": 2.1662358524044976,
+        "p95": 2.2889828155399297,
+        "p99": 2.3580866157240234,
+        "sum": 346.5413309370633
+      },
+      "rows": 160,
+      "status_counts": {
+        "Completed": 160
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 9.869019758,
+        "critic": 0.13293283,
+        "decoder": 0.13346442,
+        "encoder": 139.730378868,
+        "failure": 0.0,
+        "planning": 0.052520257,
+        "retry": 0.0,
+        "shared": 1.498871025,
+        "sync": 845.175682592
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 12.093973000000005,
+        "mean": 2.4755218400000056,
+        "measured_count": 400,
+        "minimum": 1.7823510000000624,
+        "missing_count": 0,
+        "p50": 2.369765500000085,
+        "p95": 3.268283549999796,
+        "p99": 3.835303869999967,
+        "sum": 990.2087360000022
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 12.121070208,
+        "mean": 2.4914821743749997,
+        "measured_count": 400,
+        "minimum": 1.792722108,
+        "missing_count": 0,
+        "p50": 2.3850720809999997,
+        "p95": 3.298403555549999,
+        "p99": 3.8513418098299987,
+        "sum": 996.59286975
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "A",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 12.218115000000012,
+        "mean": 2.56669164250001,
+        "measured_count": 400,
+        "minimum": 1.8322410000000673,
+        "missing_count": 0,
+        "p50": 2.4652725000000544,
+        "p95": 3.436569100000178,
+        "p99": 3.9414466599999862,
+        "sum": 1026.676657000004
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 12.25519993295893,
+        "mean": 2.5903002085216578,
+        "measured_count": 400,
+        "minimum": 1.847434981027618,
+        "missing_count": 0,
+        "p50": 2.4845769935054705,
+        "p95": 3.4645089823869037,
+        "p99": 3.9635090350522644,
+        "sum": 1036.120083408663
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 205,
+        "Completed": 195
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.144638301,
+        "critic": 0.026595886,
+        "decoder": 0.026537972,
+        "encoder": 23.082736762,
+        "failure": 0.0,
+        "planning": 0.010560786,
+        "retry": 0.0,
+        "shared": 0.297069218,
+        "sync": 171.64805742800002
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.385907999999972,
+        "mean": 2.423836875000018,
+        "measured_count": 80,
+        "minimum": 1.9237139999995634,
+        "missing_count": 0,
+        "p50": 2.3199370000000954,
+        "p95": 3.240403300000059,
+        "p99": 3.3650290899997866,
+        "sum": 193.90695000000144
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.398805811,
+        "mean": 2.4404524544125,
+        "measured_count": 80,
+        "minimum": 1.942473136,
+        "missing_count": 0,
+        "p50": 2.331504556,
+        "p95": 3.2539748935999997,
+        "p99": 3.37539204617,
+        "sum": 195.236196353
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "A",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.6119289999999182,
+        "mean": 2.5348427499999717,
+        "measured_count": 80,
+        "minimum": 2.05023299999948,
+        "missing_count": 0,
+        "p50": 2.483429999999956,
+        "p95": 3.3810259500000144,
+        "p99": 3.510494579999959,
+        "sum": 202.78741999999775
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.6652397359721363,
+        "mean": 2.559531816263916,
+        "measured_count": 80,
+        "minimum": 2.09597698203288,
+        "missing_count": 0,
+        "p50": 2.499919629539363,
+        "p95": 3.408493050397374,
+        "p99": 3.5350641584186806,
+        "sum": 204.76254530111328
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 36,
+        "Completed": 44
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 23.138539658,
+        "critic": 19.883077673,
+        "decoder": 0.103631571,
+        "encoder": 150.936213606,
+        "failure": 0.0,
+        "planning": 21.834995565,
+        "retry": 0.0,
+        "shared": 1.216861815,
+        "sync": 845.624850104
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 4.7427000000000135,
+        "mean": 2.64319842749998,
+        "measured_count": 400,
+        "minimum": 1.9161399999999276,
+        "missing_count": 0,
+        "p50": 2.5557604999999057,
+        "p95": 3.6029524499998815,
+        "p99": 4.558496549999827,
+        "sum": 1057.279370999992
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 4.754391217,
+        "mean": 2.6568454249799998,
+        "measured_count": 400,
+        "minimum": 1.928302962,
+        "missing_count": 0,
+        "p50": 2.566072319,
+        "p95": 3.6321014238999982,
+        "p99": 4.59537379105,
+        "sum": 1062.738169992
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "B",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 5.08263199999999,
+        "mean": 2.7541391400000026,
+        "measured_count": 400,
+        "minimum": 1.9757919999999558,
+        "missing_count": 0,
+        "p50": 2.653477000000109,
+        "p95": 3.748508599999847,
+        "p99": 4.80633739999989,
+        "sum": 1101.655656000001
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 5.1249761399813,
+        "mean": 2.775693044778891,
+        "measured_count": 400,
+        "minimum": 1.9935435059014708,
+        "missing_count": 0,
+        "p50": 2.6750538679771125,
+        "p95": 3.7866097956546576,
+        "p99": 4.836662054779008,
+        "sum": 1110.2772179115564
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 28,
+        "Completed": 372
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 1.432752925,
+        "critic": 3.207253998,
+        "decoder": 0.019990893,
+        "encoder": 24.032062032,
+        "failure": 0.0,
+        "planning": 3.535622103,
+        "retry": 0.0,
+        "shared": 0.227743077,
+        "sync": 174.388064545
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.108306999999968,
+        "mean": 2.5719734500000415,
+        "measured_count": 80,
+        "minimum": 2.03760100000045,
+        "missing_count": 0,
+        "p50": 2.4133549999999957,
+        "p95": 3.454572650000125,
+        "p99": 4.080784979999984,
+        "sum": 205.75787600000334
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 4.162327549,
+        "mean": 2.5855436196625,
+        "measured_count": 80,
+        "minimum": 2.052387337,
+        "missing_count": 0,
+        "p50": 2.4266763035,
+        "p95": 3.4611102068499995,
+        "p99": 4.12001077319,
+        "sum": 206.843489573
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "B",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.4335020000000895,
+        "mean": 2.6942746625000042,
+        "measured_count": 80,
+        "minimum": 2.0981240000005528,
+        "missing_count": 0,
+        "p50": 2.5838929999999323,
+        "p95": 3.732529599999822,
+        "p99": 4.372254090000023,
+        "sum": 215.54197300000033
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 4.496129296952859,
+        "mean": 2.7161056590644876,
+        "measured_count": 80,
+        "minimum": 2.116834595100954,
+        "missing_count": 0,
+        "p50": 2.6061871943529695,
+        "p95": 3.745762682403438,
+        "p99": 4.418973192439879,
+        "sum": 217.288452725159
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 2,
+        "Completed": 78
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 8.524436968,
+        "critic": 0.132709323,
+        "decoder": 0.12973242100000001,
+        "encoder": 146.430052477,
+        "failure": 0.0,
+        "planning": 0.052599882,
+        "retry": 0.0,
+        "shared": 2.084795965,
+        "sync": 833.501558857
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 7.748812999999984,
+        "mean": 2.4611370900000136,
+        "measured_count": 400,
+        "minimum": 1.737434000000576,
+        "missing_count": 0,
+        "p50": 2.3460310000002664,
+        "p95": 3.2076661999998572,
+        "p99": 4.399061919999516,
+        "sum": 984.4548360000053
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 7.774918808,
+        "mean": 2.4771397147325,
+        "measured_count": 400,
+        "minimum": 1.756799316,
+        "missing_count": 0,
+        "p50": 2.35885071,
+        "p95": 3.2192615297,
+        "p99": 4.426948324169999,
+        "sum": 990.855885893
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "C",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 7.845101,
+        "mean": 2.5522059250000204,
+        "measured_count": 400,
+        "minimum": 1.793739000000187,
+        "missing_count": 0,
+        "p50": 2.4335610000000543,
+        "p95": 3.379463850000217,
+        "p99": 4.455815589999891,
+        "sum": 1020.8823700000082
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 7.877450799103826,
+        "mean": 2.575891264011152,
+        "measured_count": 400,
+        "minimum": 1.817822040989995,
+        "missing_count": 0,
+        "p50": 2.4583608225220814,
+        "p95": 3.4127074359450487,
+        "p99": 4.488663921053518,
+        "sum": 1030.3565056044608
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 204,
+        "Completed": 196
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.14827207,
+        "critic": 0.026080702,
+        "decoder": 0.025704813,
+        "encoder": 23.879897939,
+        "failure": 0.0,
+        "planning": 0.010507077,
+        "retry": 0.0,
+        "shared": 0.419323554,
+        "sync": 167.872299818
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.6100530000003346,
+        "mean": 2.3855232875000087,
+        "measured_count": 80,
+        "minimum": 1.923232000000553,
+        "missing_count": 0,
+        "p50": 2.20923700000003,
+        "p95": 3.1522899499998287,
+        "p99": 3.3260464200000466,
+        "sum": 190.8418630000007
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.618040561,
+        "mean": 2.4047760746624998,
+        "measured_count": 80,
+        "minimum": 1.945413784,
+        "missing_count": 0,
+        "p50": 2.2293916014999997,
+        "p95": 3.175290049,
+        "p99": 3.342226600949998,
+        "sum": 192.382085973
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "C",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.7471239999999852,
+        "mean": 2.49103449999998,
+        "measured_count": 80,
+        "minimum": 2.002246999999443,
+        "missing_count": 0,
+        "p50": 2.306246999999985,
+        "p95": 3.2673073000001183,
+        "p99": 3.5439304699998986,
+        "sum": 199.2827599999984
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.7662247489206493,
+        "mean": 2.51789817470999,
+        "measured_count": 80,
+        "minimum": 2.030915695009753,
+        "missing_count": 0,
+        "p50": 2.3200964300194755,
+        "p95": 3.2903156632441095,
+        "p99": 3.5626352859870516,
+        "sum": 201.43185397679918
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 39,
+        "Completed": 41
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 22.290074515,
+        "critic": 20.300304473,
+        "decoder": 0.100371521,
+        "encoder": 192.502619145,
+        "failure": 0.0,
+        "planning": 22.268443857,
+        "retry": 0.0,
+        "shared": 1.62218563,
+        "sync": 844.843344545
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 35.589786000000004,
+        "mean": 2.7466383249999895,
+        "measured_count": 400,
+        "minimum": 1.94146899999987,
+        "missing_count": 0,
+        "p50": 2.547635999999784,
+        "p95": 3.60717744999998,
+        "p99": 4.88771058999998,
+        "sum": 1098.6553299999957
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 35.603376759,
+        "mean": 2.759818359215,
+        "measured_count": 400,
+        "minimum": 1.95425259,
+        "missing_count": 0,
+        "p50": 2.5586490685000003,
+        "p95": 3.6294894471999974,
+        "p99": 4.907219129379985,
+        "sum": 1103.927343686
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "D",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 35.87065399999983,
+        "mean": 2.859150557500004,
+        "measured_count": 400,
+        "minimum": 2.0067629999998644,
+        "missing_count": 0,
+        "p50": 2.651485000000001,
+        "p95": 3.7809647999999805,
+        "p99": 5.362506180000002,
+        "sum": 1143.6602230000017
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 35.89027438987978,
+        "mean": 2.880182470503496,
+        "measured_count": 400,
+        "minimum": 2.022950900020078,
+        "missing_count": 0,
+        "p50": 2.6711896479828283,
+        "p95": 3.806749032472726,
+        "p99": 5.387052438899395,
+        "sum": 1152.0729882013984
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 24,
+        "Completed": 376
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.206856827,
+        "critic": 3.299570794,
+        "decoder": 0.019011168,
+        "encoder": 23.086743778,
+        "failure": 0.0,
+        "planning": 3.631450551,
+        "retry": 0.0,
+        "shared": 0.305955704,
+        "sync": 165.244391904
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.422903000000133,
+        "mean": 2.434698599999992,
+        "measured_count": 80,
+        "minimum": 1.9427060000002712,
+        "missing_count": 0,
+        "p50": 2.2746894999999085,
+        "p95": 3.1994331499997655,
+        "p99": 3.3756712700001104,
+        "sum": 194.77588799999936
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.439590439,
+        "mean": 2.447424759075,
+        "measured_count": 80,
+        "minimum": 1.957415324,
+        "missing_count": 0,
+        "p50": 2.2852106379999997,
+        "p95": 3.2213421007000003,
+        "p99": 3.386135528239999,
+        "sum": 195.793980726
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "D",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.5319009999998343,
+        "mean": 2.5471715625000018,
+        "measured_count": 80,
+        "minimum": 2.0007370000002993,
+        "missing_count": 0,
+        "p50": 2.4048695000001317,
+        "p95": 3.361385050000217,
+        "p99": 3.522113690000026,
+        "sum": 203.77372500000013
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.5497133310418576,
+        "mean": 2.567668151197722,
+        "measured_count": 80,
+        "minimum": 2.0212704229634255,
+        "missing_count": 0,
+        "p50": 2.42454874899704,
+        "p95": 3.3928717360366134,
+        "p99": 3.544129068953916,
+        "sum": 205.41345209581777
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 6,
+        "Completed": 74
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.005146132,
+        "critic": 0.0,
+        "decoder": 0.0,
+        "encoder": 0.0,
+        "failure": 0.0,
+        "planning": 0.0,
+        "retry": 0.0,
+        "shared": 0.0,
+        "sync": 838.350074521
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.1942279999996117,
+        "mean": 2.08663602,
+        "measured_count": 400,
+        "minimum": 1.6598479999997835,
+        "missing_count": 0,
+        "p50": 2.003815000000074,
+        "p95": 2.7303451999998174,
+        "p99": 2.9069074800001315,
+        "sum": 834.654408
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 3.200066262,
+        "mean": 2.0958880516325,
+        "measured_count": 400,
+        "minimum": 1.671180481,
+        "missing_count": 0,
+        "p50": 2.0148056665,
+        "p95": 2.7375204331,
+        "p99": 2.9204987299100003,
+        "sum": 838.355220653
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "initial",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.450439999999844,
+        "mean": 2.17838128500001,
+        "measured_count": 400,
+        "minimum": 1.7181820000005246,
+        "missing_count": 0,
+        "p50": 2.0913170000000605,
+        "p95": 2.8510392999997856,
+        "p99": 3.008231730000043,
+        "sum": 871.3525140000041
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 3.4660292940679938,
+        "mean": 2.1950150422297883,
+        "measured_count": 400,
+        "minimum": 1.7375390739180148,
+        "missing_count": 0,
+        "p50": 2.106875393888913,
+        "p95": 2.871215220482554,
+        "p99": 3.0314677345915695,
+        "sum": 878.0060168919154
+      },
+      "rows": 400,
+      "status_counts": {
+        "Completed": 400
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.000989651,
+        "critic": 0.0,
+        "decoder": 0.0,
+        "encoder": 0.0,
+        "failure": 0.0,
+        "planning": 0.0,
+        "retry": 0.0,
+        "shared": 0.0,
+        "sync": 159.682943844
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 2.7579840000000786,
+        "mean": 1.987056312499962,
+        "measured_count": 80,
+        "minimum": 1.6376130000003286,
+        "missing_count": 0,
+        "p50": 1.8641485000001694,
+        "p95": 2.499080150000008,
+        "p99": 2.709871420000304,
+        "sum": 158.96450499999696
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 2.766294742,
+        "mean": 1.9960491686875,
+        "measured_count": 80,
+        "minimum": 1.64549575,
+        "missing_count": 0,
+        "p50": 1.8717704975,
+        "p95": 2.5084448744499994,
+        "p99": 2.71851138502,
+        "sum": 159.683933495
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "initial",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 2.8699870000002647,
+        "mean": 2.0827555624999734,
+        "measured_count": 80,
+        "minimum": 1.6906230000004143,
+        "missing_count": 0,
+        "p50": 1.9790374999995493,
+        "p95": 2.6126441999999823,
+        "p99": 2.826856950000035,
+        "sum": 166.6204449999979
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 2.888177070999518,
+        "mean": 2.0995983989996603,
+        "measured_count": 80,
+        "minimum": 1.703165499959141,
+        "missing_count": 0,
+        "p50": 1.9993457685923204,
+        "p95": 2.6295014416216866,
+        "p99": 2.841849381343927,
+        "sum": 167.96787191997282
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.005188683,
+        "critic": 0.0,
+        "decoder": 0.0,
+        "encoder": 0.0,
+        "failure": 0.0,
+        "planning": 0.0,
+        "retry": 0.0,
+        "shared": 0.0,
+        "sync": 823.160258568
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.3940229999999474,
+        "mean": 2.04844385250001,
+        "measured_count": 400,
+        "minimum": 1.6572869999999966,
+        "missing_count": 0,
+        "p50": 1.8672664999996869,
+        "p95": 2.7042474499999334,
+        "p99": 2.8470550099996883,
+        "sum": 819.3775410000039
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 3.409427914,
+        "mean": 2.0579136181275,
+        "measured_count": 400,
+        "minimum": 1.666971589,
+        "missing_count": 0,
+        "p50": 1.87669118,
+        "p95": 2.7128010964499985,
+        "p99": 2.8520477774399993,
+        "sum": 823.165447251
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "initial_hepta",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.4983519999999544,
+        "mean": 2.136854499999979,
+        "measured_count": 400,
+        "minimum": 1.714134999999942,
+        "missing_count": 0,
+        "p50": 1.9477695000000494,
+        "p95": 2.834076049999981,
+        "p99": 3.0996456200000964,
+        "sum": 854.7417999999916
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 3.5312037118710577,
+        "mean": 2.153553424603306,
+        "measured_count": 400,
+        "minimum": 1.7312782229855657,
+        "missing_count": 0,
+        "p50": 1.965122735942714,
+        "p95": 2.8454594261944286,
+        "p99": 3.1248023367626594,
+        "sum": 861.4213698413223
+      },
+      "rows": 400,
+      "status_counts": {
+        "Completed": 400
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.001036379,
+        "critic": 0.0,
+        "decoder": 0.0,
+        "encoder": 0.0,
+        "failure": 0.0,
+        "planning": 0.0,
+        "retry": 0.0,
+        "shared": 0.0,
+        "sync": 167.432995397
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 2.9263770000000022,
+        "mean": 2.083826987500028,
+        "measured_count": 80,
+        "minimum": 1.730878999999959,
+        "missing_count": 0,
+        "p50": 1.9015995000002022,
+        "p95": 2.7414742499997256,
+        "p99": 2.9036953099998777,
+        "sum": 166.70615900000226
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 2.935608921,
+        "mean": 2.0929253972,
+        "measured_count": 80,
+        "minimum": 1.739518706,
+        "missing_count": 0,
+        "p50": 1.910451841,
+        "p95": 2.7461126725499994,
+        "p99": 2.91249012084,
+        "sum": 167.434031776
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "initial_hepta",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.147967000000108,
+        "mean": 2.1836745499999886,
+        "measured_count": 80,
+        "minimum": 1.8052010000001246,
+        "missing_count": 0,
+        "p50": 2.0458425000001625,
+        "p95": 2.962485949999973,
+        "p99": 3.0513618500001702,
+        "sum": 174.69396399999908
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.1644995221868157,
+        "mean": 2.2004163282661464,
+        "measured_count": 80,
+        "minimum": 1.8218921858351678,
+        "missing_count": 0,
+        "p50": 2.0616156443720683,
+        "p95": 2.981878684402909,
+        "p99": 3.066678024993743,
+        "sum": 176.03330626129173
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 21.075573899,
+        "critic": 22.213756424,
+        "decoder": 0.103754005,
+        "encoder": 175.08360030400002,
+        "failure": 0.0,
+        "planning": 26.003656076,
+        "retry": 0.0,
+        "shared": 1.199419911,
+        "sync": 840.495314192
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 9.06691499999988,
+        "mean": 2.702650157499995,
+        "measured_count": 400,
+        "minimum": 1.9449220000001333,
+        "missing_count": 0,
+        "p50": 2.5610145000001694,
+        "p95": 3.6223796999999633,
+        "p99": 5.5061021999999396,
+        "sum": 1081.060062999998
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 9.084275609,
+        "mean": 2.7154376870275003,
+        "measured_count": 400,
+        "minimum": 1.948384773,
+        "missing_count": 0,
+        "p50": 2.56863098,
+        "p95": 3.639144499799999,
+        "p99": 5.528622363739983,
+        "sum": 1086.175074811
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "mpc",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 9.157783000000109,
+        "mean": 2.8145178775000126,
+        "measured_count": 400,
+        "minimum": 2.002836999999545,
+        "missing_count": 0,
+        "p50": 2.6502249999996366,
+        "p95": 3.8175729499998954,
+        "p99": 6.033143379999817,
+        "sum": 1125.807151000005
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 9.181328603066504,
+        "mean": 2.835447508259094,
+        "measured_count": 400,
+        "minimum": 2.012454852927476,
+        "missing_count": 0,
+        "p50": 2.673435769509524,
+        "p95": 3.8452592211542633,
+        "p99": 6.066351064306206,
+        "sum": 1134.1790033036377
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 13,
+        "Completed": 387
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 1.573396853,
+        "critic": 4.586929625,
+        "decoder": 0.023048993,
+        "encoder": 23.61976539,
+        "failure": 0.0,
+        "planning": 5.354864323,
+        "retry": 0.0,
+        "shared": 0.268432802,
+        "sync": 166.22664477
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.6482059999998455,
+        "mean": 2.5006992375000197,
+        "measured_count": 80,
+        "minimum": 2.008687999999893,
+        "missing_count": 0,
+        "p50": 2.3575180000000273,
+        "p95": 3.4159817999999285,
+        "p99": 3.6398312100000636,
+        "sum": 200.0559390000016
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.669778128,
+        "mean": 2.52066353445,
+        "measured_count": 80,
+        "minimum": 2.01697275,
+        "missing_count": 0,
+        "p50": 2.3680462799999997,
+        "p95": 3.60150198265,
+        "p99": 3.66648287131,
+        "sum": 201.653082756
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "mpc",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.929055999999946,
+        "mean": 2.620669249999996,
+        "measured_count": 80,
+        "minimum": 2.0704649999997855,
+        "missing_count": 0,
+        "p50": 2.5047489999997197,
+        "p95": 3.5302439499999987,
+        "p99": 3.910222399999991,
+        "sum": 209.6535399999997
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.968807829078287,
+        "mean": 2.6487912241136655,
+        "measured_count": 80,
+        "minimum": 2.085199287161231,
+        "missing_count": 0,
+        "p50": 2.529340622597374,
+        "p95": 3.757212064275518,
+        "p99": 3.9623486333969047,
+        "sum": 211.90329792909324
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 13,
+        "Completed": 67
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 20.54857102,
+        "critic": 23.075245671,
+        "decoder": 0.101744947,
+        "encoder": 196.629850923,
+        "failure": 0.0,
+        "planning": 27.037404908,
+        "retry": 0.0,
+        "shared": 1.633251967,
+        "sync": 848.390339115
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 35.073975999999675,
+        "mean": 2.780250882500005,
+        "measured_count": 400,
+        "minimum": 1.9737119999999777,
+        "missing_count": 0,
+        "p50": 2.5890019999997094,
+        "p95": 3.681379400000143,
+        "p99": 5.334476469999961,
+        "sum": 1112.100353000002
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 35.086982743,
+        "mean": 2.7935410213774996,
+        "measured_count": 400,
+        "minimum": 1.980491179,
+        "missing_count": 0,
+        "p50": 2.6041817545,
+        "p95": 3.6958304706499985,
+        "p99": 5.363700286549994,
+        "sum": 1117.416408551
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "mpc_hepta",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 35.27496199999996,
+        "mean": 2.895092642499999,
+        "measured_count": 400,
+        "minimum": 2.046226999999817,
+        "missing_count": 0,
+        "p50": 2.6982304999999087,
+        "p95": 3.847101050000074,
+        "p99": 5.7405885400000445,
+        "sum": 1158.0370569999995
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 35.313756421906874,
+        "mean": 2.91636294694501,
+        "measured_count": 400,
+        "minimum": 2.0606150671374053,
+        "missing_count": 0,
+        "p50": 2.714095603558235,
+        "p95": 3.8636402399511995,
+        "p99": 5.778833441720341,
+        "sum": 1166.545178778004
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 24,
+        "Completed": 376
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 1.633621482,
+        "critic": 4.435499319,
+        "decoder": 0.022614535,
+        "encoder": 23.871885495,
+        "failure": 0.0,
+        "planning": 5.180221826,
+        "retry": 0.0,
+        "shared": 0.33269426,
+        "sync": 166.472069632
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.265880999999808,
+        "mean": 2.510326487500015,
+        "measured_count": 80,
+        "minimum": 1.987022999999681,
+        "missing_count": 0,
+        "p50": 2.2890859999999975,
+        "p95": 3.4164941000000564,
+        "p99": 3.7294393999999946,
+        "sum": 200.8261190000012
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 4.300629303,
+        "mean": 2.5243575818625,
+        "measured_count": 80,
+        "minimum": 1.993494527,
+        "missing_count": 0,
+        "p50": 2.3047868565,
+        "p95": 3.4220172219999996,
+        "p99": 3.7488492439099956,
+        "sum": 201.948606549
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "mpc_hepta",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.41221500000006,
+        "mean": 2.6271974500000015,
+        "measured_count": 80,
+        "minimum": 2.0459030000001803,
+        "missing_count": 0,
+        "p50": 2.406786000000011,
+        "p95": 3.5791016499998247,
+        "p99": 3.9230778099998163,
+        "sum": 210.1757960000001
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 4.453678863123059,
+        "mean": 2.6488860165234653,
+        "measured_count": 80,
+        "minimum": 2.0595485500525683,
+        "missing_count": 0,
+        "p50": 2.4210149080026895,
+        "p95": 3.593434558145236,
+        "p99": 3.964039292379744,
+        "sum": 211.91088132187724
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 8,
+        "Completed": 72
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 12.299584068,
+        "critic": 0.0,
+        "decoder": 0.046765456,
+        "encoder": 105.917980564,
+        "failure": 0.0,
+        "planning": 0.003645058,
+        "retry": 0.0,
+        "shared": 0.555081963,
+        "sync": 839.056766849
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 4.161824999999908,
+        "mean": 2.382006917500034,
+        "measured_count": 400,
+        "minimum": 1.6640059999999721,
+        "missing_count": 0,
+        "p50": 2.2965749999999616,
+        "p95": 3.2820327499999906,
+        "p99": 3.6599728899999406,
+        "sum": 952.8027670000134
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 4.170712387,
+        "mean": 2.394699559895,
+        "measured_count": 400,
+        "minimum": 1.670324534,
+        "missing_count": 0,
+        "p50": 2.309055414,
+        "p95": 3.295530589,
+        "p99": 3.675632575949998,
+        "sum": 957.879823958
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "tuned_fixed",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 4.287775999999894,
+        "mean": 2.4792309800000125,
+        "measured_count": 400,
+        "minimum": 1.7194089999998141,
+        "missing_count": 0,
+        "p50": 2.3895344999999963,
+        "p95": 3.41356335000022,
+        "p99": 3.917142989999802,
+        "sum": 991.6923920000049
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 4.304173504933715,
+        "mean": 2.4991085333819503,
+        "measured_count": 400,
+        "minimum": 1.73024249705486,
+        "missing_count": 0,
+        "p50": 2.4166598335141316,
+        "p95": 3.440788856009021,
+        "p99": 3.931543844051193,
+        "sum": 999.64341335278
+      },
+      "rows": 400,
+      "status_counts": {
+        "Completed": 400
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.036094675,
+        "critic": 0.0,
+        "decoder": 0.008917861,
+        "encoder": 22.628348314,
+        "failure": 0.0,
+        "planning": 0.000581589,
+        "retry": 0.0,
+        "shared": 0.107696959,
+        "sync": 166.619157308
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.1955740000000787,
+        "mean": 2.3556331500000303,
+        "measured_count": 80,
+        "minimum": 1.9229510000004666,
+        "missing_count": 0,
+        "p50": 2.220304500000111,
+        "p95": 3.018341350000196,
+        "p99": 3.1543628600001234,
+        "sum": 188.45065200000244
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.206702696,
+        "mean": 2.367509958825,
+        "measured_count": 80,
+        "minimum": 1.938964883,
+        "missing_count": 0,
+        "p50": 2.233345568,
+        "p95": 3.0344653998499997,
+        "p99": 3.1648647976499995,
+        "sum": 189.400796706
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "tuned_fixed",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.5204190000001745,
+        "mean": 2.459510374999973,
+        "measured_count": 80,
+        "minimum": 1.9799330000000737,
+        "missing_count": 0,
+        "p50": 2.36831350000017,
+        "p95": 3.132187400000066,
+        "p99": 3.4512908399999302,
+        "sum": 196.76082999999784
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.5380746840965003,
+        "mean": 2.479277796097449,
+        "measured_count": 80,
+        "minimum": 2.0034064759965986,
+        "missing_count": 0,
+        "p50": 2.4023923944914714,
+        "p95": 3.163178583350964,
+        "p99": 3.469883045284077,
+        "sum": 198.34222368779592
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 12.804661054,
+        "critic": 0.0,
+        "decoder": 0.045151751,
+        "encoder": 106.461408813,
+        "failure": 0.0,
+        "planning": 0.00377574,
+        "retry": 0.0,
+        "shared": 0.713373975,
+        "sync": 833.242726159
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.932775999999876,
+        "mean": 2.3710515625000226,
+        "measured_count": 400,
+        "minimum": 1.634382999999616,
+        "missing_count": 0,
+        "p50": 2.3048925000002782,
+        "p95": 3.2080570999998708,
+        "p99": 3.4660790499998084,
+        "sum": 948.4206250000091
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 3.948998894,
+        "mean": 2.38317774373,
+        "measured_count": 400,
+        "minimum": 1.64323568,
+        "missing_count": 0,
+        "p50": 2.320084294,
+        "p95": 3.2153452634499997,
+        "p99": 3.4766863771999987,
+        "sum": 953.271097492
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "tuned_fixed_hepta",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 4.269112000000177,
+        "mean": 2.467291537500012,
+        "measured_count": 400,
+        "minimum": 1.6921479999996336,
+        "missing_count": 0,
+        "p50": 2.407226500000206,
+        "p95": 3.3353814000001925,
+        "p99": 3.613768699999977,
+        "sum": 986.9166150000048
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 4.314273199997842,
+        "mean": 2.4866966053913346,
+        "measured_count": 400,
+        "minimum": 1.7055949508212507,
+        "missing_count": 0,
+        "p50": 2.4245489184977487,
+        "p95": 3.349478826369158,
+        "p99": 3.660194376558065,
+        "sum": 994.6786421565339
+      },
+      "rows": 400,
+      "status_counts": {
+        "Completed": 400
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.034445126,
+        "critic": 0.0,
+        "decoder": 0.008431795,
+        "encoder": 23.608729434,
+        "failure": 0.0,
+        "planning": 0.000591561,
+        "retry": 0.0,
+        "shared": 0.13593957,
+        "sync": 167.993442838
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.3814720000000307,
+        "mean": 2.3851946375000344,
+        "measured_count": 80,
+        "minimum": 1.9426720000001296,
+        "missing_count": 0,
+        "p50": 2.174021500000208,
+        "p95": 3.14355190000004,
+        "p99": 3.257479129999995,
+        "sum": 190.81557100000273
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.395167969,
+        "mean": 2.39726975405,
+        "measured_count": 80,
+        "minimum": 1.950531521,
+        "missing_count": 0,
+        "p50": 2.186758364,
+        "p95": 3.15892895145,
+        "p99": 3.270930078919999,
+        "sum": 191.781580324
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "tuned_fixed_hepta",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.6583180000000084,
+        "mean": 2.4891573499999633,
+        "measured_count": 80,
+        "minimum": 2.0830229999996845,
+        "missing_count": 0,
+        "p50": 2.292172500000106,
+        "p95": 3.3140955499999047,
+        "p99": 3.504608490000006,
+        "sum": 199.13258799999707
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.677213656017557,
+        "mean": 2.5092513524839886,
+        "measured_count": 80,
+        "minimum": 2.10469744191505,
+        "missing_count": 0,
+        "p50": 2.309209536993876,
+        "p95": 3.334037181094754,
+        "p99": 3.5259321114770126,
+        "sum": 200.7401081987191
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 15.544934542,
+        "critic": 0.582931666,
+        "decoder": 0.088633827,
+        "encoder": 149.3045308,
+        "failure": 0.0,
+        "planning": 0.8849644759999999,
+        "retry": 0.0,
+        "shared": 1.034830714,
+        "sync": 835.097881205
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 4.690159000000222,
+        "mean": 2.493201457499987,
+        "measured_count": 400,
+        "minimum": 1.780797999999777,
+        "missing_count": 0,
+        "p50": 2.4163624999998774,
+        "p95": 3.4863484000000193,
+        "p99": 4.116329539999876,
+        "sum": 997.2805829999946
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 4.711590424,
+        "mean": 2.506346768075,
+        "measured_count": 400,
+        "minimum": 1.789281741,
+        "missing_count": 0,
+        "p50": 2.4270162985,
+        "p95": 3.5037680760499996,
+        "p99": 4.1365528220200005,
+        "sum": 1002.53870723
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "voi",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 4.8802969999997,
+        "mean": 2.587171700000008,
+        "measured_count": 400,
+        "minimum": 1.8353870000000825,
+        "missing_count": 0,
+        "p50": 2.5007729999999952,
+        "p95": 3.5707597499998647,
+        "p99": 4.243074029999805,
+        "sum": 1034.8686800000032
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 4.909243342000991,
+        "mean": 2.6074885467108104,
+        "measured_count": 400,
+        "minimum": 1.84874426596798,
+        "missing_count": 0,
+        "p50": 2.5191743230680004,
+        "p95": 3.593803551211021,
+        "p99": 4.276194607636424,
+        "sum": 1042.9954186843242
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 19,
+        "Completed": 381
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.064559654,
+        "critic": 0.084633486,
+        "decoder": 0.015828066,
+        "encoder": 22.889412332,
+        "failure": 0.0,
+        "planning": 0.138680399,
+        "retry": 0.0,
+        "shared": 0.186988181,
+        "sync": 167.922579072
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.302209999999832,
+        "mean": 2.3795382500000004,
+        "measured_count": 80,
+        "minimum": 1.9191060000002835,
+        "missing_count": 0,
+        "p50": 2.334405499999889,
+        "p95": 3.0825184499999976,
+        "p99": 3.2456752299998555,
+        "sum": 190.36306000000002
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.314727596,
+        "mean": 2.391283514875,
+        "measured_count": 80,
+        "minimum": 1.934556016,
+        "missing_count": 0,
+        "p50": 2.346386942,
+        "p95": 3.09409777625,
+        "p99": 3.252919458289999,
+        "sum": 191.30268119
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "voi",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.49766499999987,
+        "mean": 2.4906139000000076,
+        "measured_count": 80,
+        "minimum": 1.9728809999996884,
+        "missing_count": 0,
+        "p50": 2.437276499999939,
+        "p95": 3.2171339000001806,
+        "p99": 3.414271809999806,
+        "sum": 199.2491120000006
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.5139248070772737,
+        "mean": 2.5093505599536003,
+        "measured_count": 80,
+        "minimum": 1.9951367289759219,
+        "missing_count": 0,
+        "p50": 2.4517722849268466,
+        "p95": 3.233833837357815,
+        "p99": 3.4322029463970094,
+        "sum": 200.748044796288
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 13.799653023,
+        "critic": 0.543366478,
+        "decoder": 0.081002506,
+        "encoder": 144.487213742,
+        "failure": 0.0,
+        "planning": 0.833468149,
+        "retry": 0.0,
+        "shared": 1.304366974,
+        "sync": 831.100610465
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 4.151655000000574,
+        "mean": 2.467519270000017,
+        "measured_count": 400,
+        "minimum": 1.7940849999995407,
+        "missing_count": 0,
+        "p50": 2.396220000000312,
+        "p95": 3.287353699999999,
+        "p99": 3.7499008700000314,
+        "sum": 987.0077080000067
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 4.185630665,
+        "mean": 2.4803742033425,
+        "measured_count": 400,
+        "minimum": 1.806113508,
+        "missing_count": 0,
+        "p50": 2.408517041,
+        "p95": 3.2938676678499985,
+        "p99": 3.7636584230399985,
+        "sum": 992.149681337
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "voi_hepta",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 4.345262000000275,
+        "mean": 2.5600200975000074,
+        "measured_count": 400,
+        "minimum": 1.8504710000001978,
+        "missing_count": 0,
+        "p50": 2.5011779999997543,
+        "p95": 3.4396268000000547,
+        "p99": 3.8461954799998717,
+        "sum": 1024.008039000003
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 4.386567794950679,
+        "mean": 2.5801345018768918,
+        "measured_count": 400,
+        "minimum": 1.8686377590056509,
+        "missing_count": 0,
+        "p50": 2.5220429389737546,
+        "p95": 3.4642493869992865,
+        "p99": 3.867294115510301,
+        "sum": 1032.0538007507566
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 18,
+        "Completed": 382
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.06328786,
+        "critic": 0.074782981,
+        "decoder": 0.014737187,
+        "encoder": 23.417781717,
+        "failure": 0.0,
+        "planning": 0.122115364,
+        "retry": 0.0,
+        "shared": 0.230874312,
+        "sync": 163.876025757
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.4349990000000616,
+        "mean": 2.335344937499987,
+        "measured_count": 80,
+        "minimum": 1.8375990000004094,
+        "missing_count": 0,
+        "p50": 2.201116500000012,
+        "p95": 3.0178290499999316,
+        "p99": 3.318452669999996,
+        "sum": 186.82759499999895
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.442707571,
+        "mean": 2.347495064725,
+        "measured_count": 80,
+        "minimum": 1.846376995,
+        "missing_count": 0,
+        "p50": 2.2100445525000003,
+        "p95": 3.03521619005,
+        "p99": 3.328112008539999,
+        "sum": 187.799605178
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "voi_hepta",
+        "regime": "frozen",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.5332100000000537,
+        "mean": 2.437920937499987,
+        "measured_count": 80,
+        "minimum": 2.015064000000166,
+        "missing_count": 0,
+        "p50": 2.264395499999864,
+        "p95": 3.2403191500000044,
+        "p99": 3.5042683500001064,
+        "sum": 195.03367499999896
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.5542817539535463,
+        "mean": 2.4580196939292365,
+        "measured_count": 80,
+        "minimum": 2.0370426850859076,
+        "missing_count": 0,
+        "p50": 2.2832696500699967,
+        "p95": 3.2787077020620923,
+        "p99": 3.5469125787611118,
+        "sum": 196.6415755143389
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 26.811464466,
+        "critic": 0.14766788,
+        "decoder": 0.151553939,
+        "encoder": 174.17990719,
+        "failure": 0.0,
+        "planning": 0.059119547,
+        "retry": 0.0,
+        "shared": 1.723638993,
+        "sync": 837.239353478
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 10.463854000000083,
+        "mean": 2.5825763675000064,
+        "measured_count": 400,
+        "minimum": 1.7950770000002194,
+        "missing_count": 0,
+        "p50": 2.458013499999879,
+        "p95": 3.3981212499998694,
+        "p99": 6.380534019999781,
+        "sum": 1033.0305470000026
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 10.503020734,
+        "mean": 2.6007817637325004,
+        "measured_count": 400,
+        "minimum": 1.802817847,
+        "missing_count": 0,
+        "p50": 2.476514281,
+        "p95": 3.424474553449996,
+        "p99": 6.405978123999997,
+        "sum": 1040.312705493
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "A",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 10.559689000000162,
+        "mean": 2.673093880000013,
+        "measured_count": 400,
+        "minimum": 1.848081000000093,
+        "missing_count": 0,
+        "p50": 2.5355729999996584,
+        "p95": 3.580845599999874,
+        "p99": 6.443361999999327,
+        "sum": 1069.2375520000053
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 10.609958590008318,
+        "mean": 2.6987202663422796,
+        "measured_count": 400,
+        "minimum": 1.861670961137861,
+        "missing_count": 0,
+        "p50": 2.5590885329293087,
+        "p95": 3.6115223289467377,
+        "p99": 6.47865823197411,
+        "sum": 1079.4881065369118
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 234,
+        "Completed": 166
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 6.585452052,
+        "critic": 0.033446458,
+        "decoder": 0.033671547,
+        "encoder": 25.520550685,
+        "failure": 0.0,
+        "planning": 0.014312733,
+        "retry": 0.0,
+        "shared": 0.370345864,
+        "sync": 166.799769259
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 5.103729999999814,
+        "mean": 2.4722804000000336,
+        "measured_count": 80,
+        "minimum": 1.9306950000000143,
+        "missing_count": 0,
+        "p50": 2.296229500000436,
+        "p95": 3.2084273000000847,
+        "p99": 3.824309989999919,
+        "sum": 197.78243200000267
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 5.137869665,
+        "mean": 2.491969357475,
+        "measured_count": 80,
+        "minimum": 1.941156628,
+        "missing_count": 0,
+        "p50": 2.3133178225,
+        "p95": 3.2202078596,
+        "p99": 3.8399923288399895,
+        "sum": 199.357548598
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "A",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 5.3804990000001,
+        "mean": 2.5765776249999917,
+        "measured_count": 80,
+        "minimum": 1.9815099999996164,
+        "missing_count": 0,
+        "p50": 2.3999105000000327,
+        "p95": 3.4024134999998634,
+        "p99": 4.055153130000017,
+        "sum": 206.12620999999933
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 5.4204896909650415,
+        "mean": 2.603692377981497,
+        "measured_count": 80,
+        "minimum": 1.9973052002023906,
+        "missing_count": 0,
+        "p50": 2.423738250043243,
+        "p95": 3.4207829824415965,
+        "p99": 4.0893404303444445,
+        "sum": 208.29539023851976
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 56,
+        "Completed": 24
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 22.16995861,
+        "critic": 22.425528529,
+        "decoder": 0.115524958,
+        "encoder": 196.24257433,
+        "failure": 0.0,
+        "planning": 24.633835332,
+        "retry": 0.0,
+        "shared": 1.302158168,
+        "sync": 856.632445837
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 10.914625000000001,
+        "mean": 2.7951824975000186,
+        "measured_count": 400,
+        "minimum": 1.9073599999996986,
+        "missing_count": 0,
+        "p50": 2.58304999999973,
+        "p95": 4.027610399999985,
+        "p99": 6.926130409999998,
+        "sum": 1118.0729990000075
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 10.929980159,
+        "mean": 2.8088050644100004,
+        "measured_count": 400,
+        "minimum": 1.915666337,
+        "missing_count": 0,
+        "p50": 2.5954913125,
+        "p95": 4.0500963575,
+        "p99": 6.94377143547,
+        "sum": 1123.522025764
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "B",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 11.076864,
+        "mean": 2.910141224999995,
+        "measured_count": 400,
+        "minimum": 1.96804099999963,
+        "missing_count": 0,
+        "p50": 2.67627800000011,
+        "p95": 4.210840450000054,
+        "p99": 7.01738250999997,
+        "sum": 1164.056489999998
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 11.099027389194816,
+        "mean": 2.9315016811690295,
+        "measured_count": 400,
+        "minimum": 1.9816560989711434,
+        "missing_count": 0,
+        "p50": 2.6907617799006402,
+        "p95": 4.2284137798356785,
+        "p99": 7.035820819691288,
+        "sum": 1172.6006724676117
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 21,
+        "Completed": 379
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 3.384477809,
+        "critic": 4.531626647,
+        "decoder": 0.023754664,
+        "encoder": 24.825026503,
+        "failure": 0.0,
+        "planning": 4.985355462,
+        "retry": 0.0,
+        "shared": 0.271236234,
+        "sync": 167.698653989
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.294641000000183,
+        "mean": 2.5579933125000025,
+        "measured_count": 80,
+        "minimum": 2.055895999999848,
+        "missing_count": 0,
+        "p50": 2.3990639999999868,
+        "p95": 3.4101506499999847,
+        "p99": 4.25962267000013,
+        "sum": 204.6394650000002
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 4.330086362,
+        "mean": 2.57150164135,
+        "measured_count": 80,
+        "minimum": 2.061792886,
+        "missing_count": 0,
+        "p50": 2.4233803995,
+        "p95": 3.428459299249999,
+        "p99": 4.28691043275,
+        "sum": 205.720131308
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "B",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.749692999999979,
+        "mean": 2.681095162500012,
+        "measured_count": 80,
+        "minimum": 2.1160399999998845,
+        "missing_count": 0,
+        "p50": 2.5315144999998154,
+        "p95": 3.5492179499998247,
+        "p99": 4.586987760000146,
+        "sum": 214.48761300000098
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 4.780157472938299,
+        "mean": 2.701687121303985,
+        "measured_count": 80,
+        "minimum": 2.1279725399799645,
+        "missing_count": 0,
+        "p50": 2.550459836027585,
+        "p95": 3.574770796159281,
+        "p99": 4.626585205066948,
+        "sum": 216.1349697043188
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 11,
+        "Completed": 69
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 10.151613246,
+        "critic": 0.130131658,
+        "decoder": 0.123737974,
+        "encoder": 150.563168774,
+        "failure": 0.0,
+        "planning": 0.050498375,
+        "retry": 0.0,
+        "shared": 2.08195846,
+        "sync": 835.853526856
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 8.299022999999806,
+        "mean": 2.4816339774999996,
+        "measured_count": 400,
+        "minimum": 1.7772730000001502,
+        "missing_count": 0,
+        "p50": 2.3093450000000075,
+        "p95": 3.411656250000221,
+        "p99": 5.220001810000457,
+        "sum": 992.6535909999999
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 8.31642954,
+        "mean": 2.4973865883574997,
+        "measured_count": 400,
+        "minimum": 1.783489043,
+        "missing_count": 0,
+        "p50": 2.3204798815,
+        "p95": 3.428708907999995,
+        "p99": 5.239048770169994,
+        "sum": 998.954635343
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "C",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 8.372250999999778,
+        "mean": 2.5720347774999794,
+        "measured_count": 400,
+        "minimum": 1.8258379999997487,
+        "missing_count": 0,
+        "p50": 2.4139240000004065,
+        "p95": 3.6310399499999617,
+        "p99": 5.273855410000292,
+        "sum": 1028.8139109999918
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 8.395340593066067,
+        "mean": 2.5950619742227716,
+        "measured_count": 400,
+        "minimum": 1.8381199520081282,
+        "missing_count": 0,
+        "p50": 2.4396109845256433,
+        "p95": 3.64976400907617,
+        "p99": 5.297613256555044,
+        "sum": 1038.0247896891087
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 178,
+        "Completed": 222
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.870195579,
+        "critic": 0.03728612,
+        "decoder": 0.034620437,
+        "encoder": 25.120969836,
+        "failure": 0.0,
+        "planning": 0.016512962,
+        "retry": 0.0,
+        "shared": 0.549017339,
+        "sync": 172.502788579
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.439177999999856,
+        "mean": 2.4698181250000006,
+        "measured_count": 80,
+        "minimum": 1.9120550000002368,
+        "missing_count": 0,
+        "p50": 2.409213499999936,
+        "p95": 3.32201394999978,
+        "p99": 3.407975370000049,
+        "sum": 197.58545000000007
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.473473947,
+        "mean": 2.48914238565,
+        "measured_count": 80,
+        "minimum": 1.930181986,
+        "missing_count": 0,
+        "p50": 2.42711342,
+        "p95": 3.3392542437999997,
+        "p99": 3.4260524779599995,
+        "sum": 199.131390852
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "C",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.5886649999997644,
+        "mean": 2.5780626500000094,
+        "measured_count": 80,
+        "minimum": 1.973276000000169,
+        "missing_count": 0,
+        "p50": 2.5504194999998617,
+        "p95": 3.4400681000001327,
+        "p99": 3.535530389999826,
+        "sum": 206.24501200000077
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.614787759957835,
+        "mean": 2.604994011274539,
+        "measured_count": 80,
+        "minimum": 1.9974490120075643,
+        "missing_count": 0,
+        "p50": 2.581875363481231,
+        "p95": 3.4628815935575403,
+        "p99": 3.573788953151088,
+        "sum": 208.39952090196311
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 58,
+        "Completed": 22
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 25.672280025,
+        "critic": 21.470722423,
+        "decoder": 0.107497731,
+        "encoder": 171.541886959,
+        "failure": 0.0,
+        "planning": 23.653503915,
+        "retry": 0.0,
+        "shared": 1.670399729,
+        "sync": 850.85215451
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 7.585065999999642,
+        "mean": 2.7238291850000085,
+        "measured_count": 400,
+        "minimum": 1.9046640000010484,
+        "missing_count": 0,
+        "p50": 2.5648229999998193,
+        "p95": 3.910594449999979,
+        "p99": 5.903673370000059,
+        "sum": 1089.5316740000035
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 7.603092835,
+        "mean": 2.7374211132300004,
+        "measured_count": 400,
+        "minimum": 1.911349031,
+        "missing_count": 0,
+        "p50": 2.5770970825,
+        "p95": 3.9261006040499997,
+        "p99": 5.926284827579995,
+        "sum": 1094.968445292
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "D",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 7.667238999999881,
+        "mean": 2.8364539824999855,
+        "measured_count": 400,
+        "minimum": 1.987858000000415,
+        "missing_count": 0,
+        "p50": 2.6517689999999448,
+        "p95": 4.113539599999796,
+        "p99": 5.99095017,
+        "sum": 1134.5815929999942
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 7.6932824270334095,
+        "mean": 2.85806762189779,
+        "measured_count": 400,
+        "minimum": 2.0049614189192653,
+        "missing_count": 0,
+        "p50": 2.674109664512798,
+        "p95": 4.146878327417652,
+        "p99": 6.022126015939279,
+        "sum": 1143.2270487591159
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 21,
+        "Completed": 379
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 3.337434305,
+        "critic": 3.879860152,
+        "decoder": 0.021137357,
+        "encoder": 24.26284684,
+        "failure": 0.0,
+        "planning": 4.248633964,
+        "retry": 0.0,
+        "shared": 0.331378069,
+        "sync": 166.193535841
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.298086999999896,
+        "mean": 2.514403037499993,
+        "measured_count": 80,
+        "minimum": 1.9578210000000809,
+        "missing_count": 0,
+        "p50": 2.3992165000001933,
+        "p95": 3.3083160000003544,
+        "p99": 3.9633940199997753,
+        "sum": 201.15224299999946
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 4.333340437,
+        "mean": 2.5284353316,
+        "measured_count": 80,
+        "minimum": 1.973854262,
+        "missing_count": 0,
+        "p50": 2.416389048,
+        "p95": 3.3401350655499997,
+        "p99": 3.9946065690799974,
+        "sum": 202.274826528
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "D",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.826052000000118,
+        "mean": 2.6351093125000093,
+        "measured_count": 80,
+        "minimum": 2.094602000000009,
+        "missing_count": 0,
+        "p50": 2.5233965000001035,
+        "p95": 3.534964549999722,
+        "p99": 4.221631689999942,
+        "sum": 210.80874500000075
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 4.873172553954646,
+        "mean": 2.657182473925059,
+        "measured_count": 80,
+        "minimum": 2.1165322822052985,
+        "missing_count": 0,
+        "p50": 2.5491375535493717,
+        "p95": 3.554104701336473,
+        "p99": 4.2640288245724465,
+        "sum": 212.5745979140047
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 8,
+        "Completed": 72
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.005202692,
+        "critic": 0.0,
+        "decoder": 0.0,
+        "encoder": 0.0,
+        "failure": 0.0,
+        "planning": 0.0,
+        "retry": 0.0,
+        "shared": 0.0,
+        "sync": 827.668090806
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.037597999999889,
+        "mean": 2.0598695574999897,
+        "measured_count": 400,
+        "minimum": 1.6627760000005765,
+        "missing_count": 0,
+        "p50": 1.8951094999997622,
+        "p95": 2.70191205000001,
+        "p99": 2.875477639999874,
+        "sum": 823.9478229999959
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 3.051070475,
+        "mean": 2.069183233745,
+        "measured_count": 400,
+        "minimum": 1.668492846,
+        "missing_count": 0,
+        "p50": 1.9051273155000001,
+        "p95": 2.7098269177499996,
+        "p99": 2.8883663708999996,
+        "sum": 827.673293498
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "initial",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.1307710000000952,
+        "mean": 2.1494071375000043,
+        "measured_count": 400,
+        "minimum": 1.718721000000187,
+        "missing_count": 0,
+        "p50": 2.0393555000002834,
+        "p95": 2.816866300000072,
+        "p99": 3.0117929599998825,
+        "sum": 859.7628550000018
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 3.1516589249949902,
+        "mean": 2.166022383981617,
+        "measured_count": 400,
+        "minimum": 1.7292948400136083,
+        "missing_count": 0,
+        "p50": 2.0615968444617465,
+        "p95": 2.839192672714125,
+        "p99": 3.022986365188844,
+        "sum": 866.4089535926469
+      },
+      "rows": 400,
+      "status_counts": {
+        "Completed": 400
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.00107446,
+        "critic": 0.0,
+        "decoder": 0.0,
+        "encoder": 0.0,
+        "failure": 0.0,
+        "planning": 0.0,
+        "retry": 0.0,
+        "shared": 0.0,
+        "sync": 165.394266546
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.041602000000239,
+        "mean": 2.058784374999969,
+        "measured_count": 80,
+        "minimum": 1.7206289999999171,
+        "missing_count": 0,
+        "p50": 1.8798030000002655,
+        "p95": 2.7040473000000698,
+        "p99": 2.9034238900000027,
+        "sum": 164.70274999999754
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.047667957,
+        "mean": 2.067441762575,
+        "measured_count": 80,
+        "minimum": 1.727580923,
+        "missing_count": 0,
+        "p50": 1.8908988770000001,
+        "p95": 2.7120578415999996,
+        "p99": 2.910238157119999,
+        "sum": 165.395341006
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "initial",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.1270710000001145,
+        "mean": 2.156777687499994,
+        "measured_count": 80,
+        "minimum": 1.775608999999804,
+        "missing_count": 0,
+        "p50": 2.0419864999999504,
+        "p95": 2.889802349999877,
+        "p99": 3.044327190000028,
+        "sum": 172.54221499999954
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.1384607108775526,
+        "mean": 2.1728569313854678,
+        "measured_count": 80,
+        "minimum": 1.790253564948216,
+        "missing_count": 0,
+        "p50": 2.0604148799320683,
+        "p95": 2.90983914390672,
+        "p99": 3.058502413274254,
+        "sum": 173.82855451083742
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.005227878,
+        "critic": 0.0,
+        "decoder": 0.0,
+        "encoder": 0.0,
+        "failure": 0.0,
+        "planning": 0.0,
+        "retry": 0.0,
+        "shared": 0.0,
+        "sync": 826.092350408
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.0396050000000514,
+        "mean": 2.056072530000006,
+        "measured_count": 400,
+        "minimum": 1.6629440000001523,
+        "missing_count": 0,
+        "p50": 1.8841895000001614,
+        "p95": 2.697130699999854,
+        "p99": 2.88629196999987,
+        "sum": 822.4290120000023
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 3.046279269,
+        "mean": 2.0652439457150003,
+        "measured_count": 400,
+        "minimum": 1.667350831,
+        "missing_count": 0,
+        "p50": 1.8922636824999999,
+        "p95": 2.7056846731499995,
+        "p99": 2.8948686426599997,
+        "sum": 826.097578286
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "initial_hepta",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.321704000000068,
+        "mean": 2.146666822500001,
+        "measured_count": 400,
+        "minimum": 1.720171000000164,
+        "missing_count": 0,
+        "p50": 2.0046500000003107,
+        "p95": 2.8360604500000135,
+        "p99": 3.060572709999951,
+        "sum": 858.6667290000005
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 3.3349028741940856,
+        "mean": 2.1629247330577344,
+        "measured_count": 400,
+        "minimum": 1.730730711016804,
+        "missing_count": 0,
+        "p50": 2.0205062945606187,
+        "p95": 2.848754133330658,
+        "p99": 3.0805366195295933,
+        "sum": 865.1698932230938
+      },
+      "rows": 400,
+      "status_counts": {
+        "Completed": 400
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.001040749,
+        "critic": 0.0,
+        "decoder": 0.0,
+        "encoder": 0.0,
+        "failure": 0.0,
+        "planning": 0.0,
+        "retry": 0.0,
+        "shared": 0.0,
+        "sync": 167.31090101499998
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 2.9761640000001535,
+        "mean": 2.082033362499989,
+        "measured_count": 80,
+        "minimum": 1.6792710000000852,
+        "missing_count": 0,
+        "p50": 1.9468544999999438,
+        "p95": 2.752454749999984,
+        "p99": 2.8768641599999243,
+        "sum": 166.56266899999915
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 2.985002497,
+        "mean": 2.0913992720500003,
+        "measured_count": 80,
+        "minimum": 1.686394917,
+        "missing_count": 0,
+        "p50": 1.9598299755,
+        "p95": 2.75780375465,
+        "p99": 2.8839772029899993,
+        "sum": 167.311941764
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "initial_hepta",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.247566000000006,
+        "mean": 2.1884452999999886,
+        "measured_count": 80,
+        "minimum": 1.7303860000001805,
+        "missing_count": 0,
+        "p50": 2.070892500000099,
+        "p95": 2.856810199999683,
+        "p99": 3.1538372399999917,
+        "sum": 175.0756239999991
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.273277164902538,
+        "mean": 2.2088317605288466,
+        "measured_count": 80,
+        "minimum": 1.7420188370160758,
+        "missing_count": 0,
+        "p50": 2.0875844644615427,
+        "p95": 2.8744068933534437,
+        "p99": 3.1719044061820014,
+        "sum": 176.70654084230773
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 18.229228441,
+        "critic": 22.40362044,
+        "decoder": 0.105869872,
+        "encoder": 194.722073249,
+        "failure": 0.0,
+        "planning": 26.197686625,
+        "retry": 0.0,
+        "shared": 1.22924239,
+        "sync": 845.119329198
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 10.158764999999903,
+        "mean": 2.7567786125000118,
+        "measured_count": 400,
+        "minimum": 1.9441380000000663,
+        "missing_count": 0,
+        "p50": 2.5609829999999647,
+        "p95": 4.031144500000171,
+        "p99": 6.813600140000035,
+        "sum": 1102.7114450000047
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 10.181919267,
+        "mean": 2.7700176255374998,
+        "measured_count": 400,
+        "minimum": 1.952235381,
+        "missing_count": 0,
+        "p50": 2.57498071,
+        "p95": 4.047710483199995,
+        "p99": 6.8235190053,
+        "sum": 1108.007050215
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "mpc",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 10.286133000000063,
+        "mean": 2.8670292050000192,
+        "measured_count": 400,
+        "minimum": 2.004428999999618,
+        "missing_count": 0,
+        "p50": 2.670131500000025,
+        "p95": 4.190874149999465,
+        "p99": 6.926295959999384,
+        "sum": 1146.8116820000077
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 10.318726368015632,
+        "mean": 2.8880051416973584,
+        "measured_count": 400,
+        "minimum": 2.01831858814694,
+        "missing_count": 0,
+        "p50": 2.694800244877115,
+        "p95": 4.225195515388621,
+        "p99": 6.943661112450063,
+        "sum": 1155.2020566789433
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 8,
+        "Completed": 392
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 4.589731174,
+        "critic": 5.00387866,
+        "decoder": 0.024453439,
+        "encoder": 24.739161975,
+        "failure": 0.0,
+        "planning": 5.835115874,
+        "retry": 0.0,
+        "shared": 0.280664144,
+        "sync": 168.46606511
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.547618000000057,
+        "mean": 2.5959414500000157,
+        "measured_count": 80,
+        "minimum": 2.0406159999997726,
+        "missing_count": 0,
+        "p50": 2.4433500000000095,
+        "p95": 3.5452372999998936,
+        "p99": 4.072081450000143,
+        "sum": 207.67531600000126
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 4.584738805,
+        "mean": 2.6117383797,
+        "measured_count": 80,
+        "minimum": 2.055498776,
+        "missing_count": 0,
+        "p50": 2.466608904,
+        "p95": 3.5545255098999995,
+        "p99": 4.0933701272799965,
+        "sum": 208.939070376
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "mpc",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 5.0055200000001605,
+        "mean": 2.719633487500041,
+        "measured_count": 80,
+        "minimum": 2.132756000000427,
+        "missing_count": 0,
+        "p50": 2.5589185000003454,
+        "p95": 3.7052194999998496,
+        "p99": 4.31264339000022,
+        "sum": 217.57067900000328
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 5.051588046131656,
+        "mean": 2.7435767364106143,
+        "measured_count": 80,
+        "minimum": 2.1468127979896963,
+        "missing_count": 0,
+        "p50": 2.5914270584471524,
+        "p95": 3.720379222871269,
+        "p99": 4.356743580012111,
+        "sum": 219.48613891284913
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 15,
+        "Completed": 65
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 21.420558196,
+        "critic": 25.198501275,
+        "decoder": 0.109253928,
+        "encoder": 234.273580028,
+        "failure": 0.0,
+        "planning": 29.57267211,
+        "retry": 0.0,
+        "shared": 1.748519398,
+        "sync": 838.4502162900001
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 41.124684999999886,
+        "mean": 2.8633242250000057,
+        "measured_count": 400,
+        "minimum": 1.9936070000003383,
+        "missing_count": 0,
+        "p50": 2.5532915000001424,
+        "p95": 3.7355756499999746,
+        "p99": 5.233375990000185,
+        "sum": 1145.3296900000023
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 41.154654043,
+        "mean": 2.8769332530625,
+        "measured_count": 400,
+        "minimum": 2.003099281,
+        "missing_count": 0,
+        "p50": 2.568246715,
+        "p95": 3.7565449790999996,
+        "p99": 5.269591203079987,
+        "sum": 1150.773301225
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "mpc_hepta",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 41.39520399999992,
+        "mean": 2.9757152100000144,
+        "measured_count": 400,
+        "minimum": 2.052734000000328,
+        "missing_count": 0,
+        "p50": 2.6577440000002,
+        "p95": 3.9183277500001075,
+        "p99": 5.6141223300000735,
+        "sum": 1190.2860840000058
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 41.43212946690619,
+        "mean": 2.9973007743345805,
+        "measured_count": 400,
+        "minimum": 2.0672563340049237,
+        "missing_count": 0,
+        "p50": 2.678874130011536,
+        "p95": 3.9493057455751113,
+        "p99": 5.667403576208733,
+        "sum": 1198.9203097338323
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 25,
+        "Completed": 375
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 1.979358802,
+        "critic": 4.407607509,
+        "decoder": 0.020959856,
+        "encoder": 23.684231009,
+        "failure": 0.0,
+        "planning": 5.136932711,
+        "retry": 0.0,
+        "shared": 0.330078563,
+        "sync": 170.523719847
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.124893999999813,
+        "mean": 2.5620235374999902,
+        "measured_count": 80,
+        "minimum": 1.9756419999998798,
+        "missing_count": 0,
+        "p50": 2.284465500000124,
+        "p95": 3.542849049999998,
+        "p99": 4.120331750000105,
+        "sum": 204.96188299999923
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 4.150732252,
+        "mean": 2.5760361037125,
+        "measured_count": 80,
+        "minimum": 1.98922689,
+        "missing_count": 0,
+        "p50": 2.3019176915,
+        "p95": 3.57101295345,
+        "p99": 4.14259685412,
+        "sum": 206.082888297
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "mpc_hepta",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 4.4654780000000756,
+        "mean": 2.682338049999979,
+        "measured_count": 80,
+        "minimum": 2.0392969999999195,
+        "missing_count": 0,
+        "p50": 2.409251499999982,
+        "p95": 3.849400749999988,
+        "p99": 4.31324026000004,
+        "sum": 214.58704399999831
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 4.491233443841338,
+        "mean": 2.7048997052712367,
+        "measured_count": 80,
+        "minimum": 2.0602564089931548,
+        "missing_count": 0,
+        "p50": 2.429656010004692,
+        "p95": 3.8852617035852743,
+        "p99": 4.350013937372713,
+        "sum": 216.39197642169893
+      },
+      "rows": 80,
+      "status_counts": {
+        "BudgetStop": 6,
+        "Completed": 74
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 12.467437394,
+        "critic": 0.0,
+        "decoder": 0.047499346,
+        "encoder": 109.438589766,
+        "failure": 0.0,
+        "planning": 0.003746571,
+        "retry": 0.0,
+        "shared": 0.563364943,
+        "sync": 837.931373325
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 4.027752999999848,
+        "mean": 2.388337802500021,
+        "measured_count": 400,
+        "minimum": 1.630446999999549,
+        "missing_count": 0,
+        "p50": 2.307120999999988,
+        "p95": 3.214622149999877,
+        "p99": 3.607056870000036,
+        "sum": 955.3351210000085
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 4.0383062,
+        "mean": 2.4011300283625,
+        "measured_count": 400,
+        "minimum": 1.635903107,
+        "missing_count": 0,
+        "p50": 2.3199442374999997,
+        "p95": 3.2305588047500002,
+        "p99": 3.618047296749998,
+        "sum": 960.452011345
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "tuned_fixed",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 4.33089700000005,
+        "mean": 2.485783397499989,
+        "measured_count": 400,
+        "minimum": 1.690227999999479,
+        "missing_count": 0,
+        "p50": 2.3989409999999225,
+        "p95": 3.4196720500000053,
+        "p99": 3.7352780399998253,
+        "sum": 994.3133589999957
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 4.350992802996188,
+        "mean": 2.5057566255884014,
+        "measured_count": 400,
+        "minimum": 1.7022867042105645,
+        "missing_count": 0,
+        "p50": 2.4209256515605375,
+        "p95": 3.43573814734118,
+        "p99": 3.766984620594883,
+        "sum": 1002.3026502353605
+      },
+      "rows": 400,
+      "status_counts": {
+        "Completed": 400
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.037464428,
+        "critic": 0.0,
+        "decoder": 0.009380913,
+        "encoder": 25.039744655,
+        "failure": 0.0,
+        "planning": 0.00059094,
+        "retry": 0.0,
+        "shared": 0.112412523,
+        "sync": 171.8268814
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.3268750000002,
+        "mean": 2.4499996000000155,
+        "measured_count": 80,
+        "minimum": 1.8485319999999774,
+        "missing_count": 0,
+        "p50": 2.45278200000007,
+        "p95": 3.206644300000016,
+        "p99": 3.3021179800001956,
+        "sum": 195.99996800000125
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.337674507,
+        "mean": 2.4628309357375,
+        "measured_count": 80,
+        "minimum": 1.856534916,
+        "missing_count": 0,
+        "p50": 2.4648186670000003,
+        "p95": 3.2197099918,
+        "p99": 3.3155459923799997,
+        "sum": 197.026474859
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "tuned_fixed",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.4551389999999174,
+        "mean": 2.55855440000002,
+        "measured_count": 80,
+        "minimum": 1.9025170000004437,
+        "missing_count": 0,
+        "p50": 2.5601854999997613,
+        "p95": 3.3162788999999973,
+        "p99": 3.442897950000017,
+        "sum": 204.6843520000016
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.473213589983061,
+        "mean": 2.578563777060481,
+        "measured_count": 80,
+        "minimum": 1.9151472500525415,
+        "missing_count": 0,
+        "p50": 2.581168527365662,
+        "p95": 3.353485309961252,
+        "p99": 3.46234855576884,
+        "sum": 206.28510216483846
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 11.948651872,
+        "critic": 0.0,
+        "decoder": 0.048345446,
+        "encoder": 105.583014629,
+        "failure": 0.0,
+        "planning": 0.003701931,
+        "retry": 0.0,
+        "shared": 0.757583112,
+        "sync": 830.30748231
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.8530669999997826,
+        "mean": 2.3588954774999986,
+        "measured_count": 400,
+        "minimum": 1.6828850000001694,
+        "missing_count": 0,
+        "p50": 2.268977500000119,
+        "p95": 3.22014785000002,
+        "p99": 3.5713193300000463,
+        "sum": 943.5581909999994
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 3.875306094,
+        "mean": 2.37162194825,
+        "measured_count": 400,
+        "minimum": 1.691870156,
+        "missing_count": 0,
+        "p50": 2.2816176425,
+        "p95": 3.2321963822499993,
+        "p99": 3.596633564029999,
+        "sum": 948.6487793
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "tuned_fixed_hepta",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 3.9497519999999895,
+        "mean": 2.454232122499991,
+        "measured_count": 400,
+        "minimum": 1.7356700000000274,
+        "missing_count": 0,
+        "p50": 2.368918499999836,
+        "p95": 3.315449800000032,
+        "p99": 3.6596454499999966,
+        "sum": 981.6928489999964
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 3.979811567114666,
+        "mean": 2.4747095873946092,
+        "measured_count": 400,
+        "minimum": 1.7529459891375154,
+        "missing_count": 0,
+        "p50": 2.3848348445026204,
+        "p95": 3.3494130977080196,
+        "p99": 3.690181875636334,
+        "sum": 989.8838349578436
+      },
+      "rows": 400,
+      "status_counts": {
+        "Completed": 400
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.037406606,
+        "critic": 0.0,
+        "decoder": 0.008406203,
+        "encoder": 23.669991851,
+        "failure": 0.0,
+        "planning": 0.0005640280000000001,
+        "retry": 0.0,
+        "shared": 0.1317656,
+        "sync": 165.781727375
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.325513000000001,
+        "mean": 2.357776300000052,
+        "measured_count": 80,
+        "minimum": 1.9208699999999226,
+        "missing_count": 0,
+        "p50": 2.295299500000226,
+        "p95": 2.958403350000242,
+        "p99": 3.1841827899999986,
+        "sum": 188.62210400000416
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.332121694,
+        "mean": 2.3703732707875003,
+        "measured_count": 80,
+        "minimum": 1.930709057,
+        "missing_count": 0,
+        "p50": 2.303809654,
+        "p95": 2.9652364006,
+        "p99": 3.193667675709999,
+        "sum": 189.629861663
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "tuned_fixed_hepta",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.4182039999998324,
+        "mean": 2.460614175000054,
+        "measured_count": 80,
+        "minimum": 1.979377999999997,
+        "missing_count": 0,
+        "p50": 2.450263500000009,
+        "p95": 3.1647667499997962,
+        "p99": 3.3276423500000845,
+        "sum": 196.84913400000434
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.4332721340470016,
+        "mean": 2.4809090051974634,
+        "measured_count": 80,
+        "minimum": 1.9933688410092145,
+        "missing_count": 0,
+        "p50": 2.471298818360083,
+        "p95": 3.1848512945813123,
+        "p99": 3.3450914586172433,
+        "sum": 198.47272041579708
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 18.731256689000002,
+        "critic": 0.620967128,
+        "decoder": 0.092131967,
+        "encoder": 156.128937663,
+        "failure": 0.0,
+        "planning": 0.943754866,
+        "retry": 0.0,
+        "shared": 1.070302571,
+        "sync": 848.989032021
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 5.728441999999859,
+        "mean": 2.553092779999987,
+        "measured_count": 400,
+        "minimum": 1.8410359999998036,
+        "missing_count": 0,
+        "p50": 2.4427009999999427,
+        "p95": 3.5973270499999157,
+        "p99": 4.345882300000013,
+        "sum": 1021.2371119999949
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 5.758973141,
+        "mean": 2.5664409572625,
+        "measured_count": 400,
+        "minimum": 1.860371043,
+        "missing_count": 0,
+        "p50": 2.4533781489999997,
+        "p95": 3.614532354049999,
+        "p99": 4.36454722452,
+        "sum": 1026.576382905
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "voi",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 6.065319999999929,
+        "mean": 2.6482895249999814,
+        "measured_count": 400,
+        "minimum": 1.9000749999995605,
+        "missing_count": 0,
+        "p50": 2.531963499999847,
+        "p95": 3.7202351499998256,
+        "p99": 4.489760640000053,
+        "sum": 1059.3158099999926
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 6.102355839917436,
+        "mean": 2.6688746962777805,
+        "measured_count": 400,
+        "minimum": 1.9251344769727439,
+        "missing_count": 0,
+        "p50": 2.5467485365225,
+        "p95": 3.7435586727224277,
+        "p99": 4.5133233255520455,
+        "sum": 1067.5498785111122
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 24,
+        "Completed": 376
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.071181981,
+        "critic": 0.083427063,
+        "decoder": 0.016178303,
+        "encoder": 25.133586350999998,
+        "failure": 0.0,
+        "planning": 0.135304087,
+        "retry": 0.0,
+        "shared": 0.189170005,
+        "sync": 168.341428122
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.5508709999999155,
+        "mean": 2.410716087499997,
+        "measured_count": 80,
+        "minimum": 1.9014689999999064,
+        "missing_count": 0,
+        "p50": 2.231281500000023,
+        "p95": 3.2517851000000517,
+        "p99": 3.4702467599997764,
+        "sum": 192.85728699999976
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.565597555,
+        "mean": 2.4246284489,
+        "measured_count": 80,
+        "minimum": 1.910366317,
+        "missing_count": 0,
+        "p50": 2.248868347,
+        "p95": 3.2578796741499993,
+        "p99": 3.4856024307099998,
+        "sum": 193.970275912
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "voi",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.664991999999984,
+        "mean": 2.5156051499999896,
+        "measured_count": 80,
+        "minimum": 2.0016579999996793,
+        "missing_count": 0,
+        "p50": 2.34312749999998,
+        "p95": 3.4670749000002843,
+        "p99": 3.5881605500000586,
+        "sum": 201.24841199999918
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.6844941349700093,
+        "mean": 2.5371473850042094,
+        "measured_count": 80,
+        "minimum": 2.0275481450371444,
+        "missing_count": 0,
+        "p50": 2.3633478734409437,
+        "p95": 3.4842033786000686,
+        "p99": 3.6091540541639544,
+        "sum": 202.97179080033675
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 13.244827076,
+        "critic": 0.556803334,
+        "decoder": 0.081989515,
+        "encoder": 141.727897555,
+        "failure": 0.0,
+        "planning": 0.860500895,
+        "retry": 0.0,
+        "shared": 1.325217736,
+        "sync": 842.661735146
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 5.876486000000114,
+        "mean": 2.488442652499998,
+        "measured_count": 400,
+        "minimum": 1.786627999999837,
+        "missing_count": 0,
+        "p50": 2.4299859999997295,
+        "p95": 3.3105118500001645,
+        "p99": 3.906663070000031,
+        "sum": 995.3770609999992
+      },
+      "deployment_seconds": {
+        "denominator": 400,
+        "maximum": 5.902804619,
+        "mean": 2.5011474281425,
+        "measured_count": 400,
+        "minimum": 1.794867584,
+        "missing_count": 0,
+        "p50": 2.441875121,
+        "p95": 3.3318846135499998,
+        "p99": 3.919057219599999,
+        "sum": 1000.458971257
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "voi_hepta",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "development"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 400,
+        "maximum": 6.315190000000257,
+        "mean": 2.5810905700000033,
+        "measured_count": 400,
+        "minimum": 1.8447849999997743,
+        "missing_count": 0,
+        "p50": 2.516027499999609,
+        "p95": 3.4485844499999967,
+        "p99": 4.02082639999995,
+        "sum": 1032.4362280000014
+      },
+      "research_envelope_seconds": {
+        "denominator": 400,
+        "maximum": 6.35182909714058,
+        "mean": 2.601057789552724,
+        "measured_count": 400,
+        "minimum": 1.857925761025399,
+        "missing_count": 0,
+        "p50": 2.5329750339733437,
+        "p95": 3.4655646268161937,
+        "p99": 4.041327539894263,
+        "sum": 1040.4231158210896
+      },
+      "rows": 400,
+      "status_counts": {
+        "BudgetStop": 16,
+        "Completed": 384
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.067087331,
+        "critic": 0.083603332,
+        "decoder": 0.01585188,
+        "encoder": 23.136060943,
+        "failure": 0.0,
+        "planning": 0.137238294,
+        "retry": 0.0,
+        "shared": 0.247390495,
+        "sync": 169.774978652
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.272327000000132,
+        "mean": 2.406036862499957,
+        "measured_count": 80,
+        "minimum": 1.971110999999837,
+        "missing_count": 0,
+        "p50": 2.2552234999999143,
+        "p95": 3.1845974499999214,
+        "p99": 3.24536746000012,
+        "sum": 192.48294899999655
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 3.283701383,
+        "mean": 2.4182776365875,
+        "measured_count": 80,
+        "minimum": 1.983854107,
+        "missing_count": 0,
+        "p50": 2.2686385335,
+        "p95": 3.19692936705,
+        "p99": 3.2530475351899995,
+        "sum": 193.462210927
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "voi_hepta",
+        "regime": "joint",
+        "row_file": "paired-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 3.7275379999999814,
+        "mean": 2.5164123750000256,
+        "measured_count": 80,
+        "minimum": 2.023624999999811,
+        "missing_count": 0,
+        "p50": 2.444101500000002,
+        "p95": 3.299705000000017,
+        "p99": 3.516013920000091,
+        "sum": 201.31299000000206
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 3.742942632874474,
+        "mean": 2.535404135356657,
+        "measured_count": 80,
+        "minimum": 2.0380639010109007,
+        "missing_count": 0,
+        "p50": 2.4616449989844114,
+        "p95": 3.316733981575817,
+        "p99": 3.535239054418633,
+        "sum": 202.83233082853258
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.037707089,
+        "critic": 0.0,
+        "decoder": 0.007488997,
+        "encoder": 19.586369055,
+        "failure": 0.0,
+        "planning": 0.000519043,
+        "retry": 0.0,
+        "shared": 0.120609837,
+        "sync": 146.702543732
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 2.2185639999999998,
+        "mean": 2.070554725,
+        "measured_count": 80,
+        "minimum": 1.8668699999999987,
+        "missing_count": 0,
+        "p50": 2.0690904999999997,
+        "p95": 2.1898134,
+        "p99": 2.218503169999997,
+        "sum": 165.644378
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 2.228540125,
+        "mean": 2.0806904719125,
+        "measured_count": 80,
+        "minimum": 1.879535274,
+        "missing_count": 0,
+        "p50": 2.077673465,
+        "p95": 2.20324800005,
+        "p99": 2.22730544111,
+        "sum": 166.455237753
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "incumbent_hepta",
+        "regime": "frozen",
+        "row_file": "retention-incumbent-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 2.3293820000000025,
+        "mean": 2.1510887875000004,
+        "measured_count": 80,
+        "minimum": 1.9407469999999947,
+        "missing_count": 0,
+        "p50": 2.1483444999999985,
+        "p95": 2.2736887499999994,
+        "p99": 2.32294587,
+        "sum": 172.08710300000004
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 2.348678061971441,
+        "mean": 2.167213680682471,
+        "measured_count": 80,
+        "minimum": 1.9573392299935222,
+        "missing_count": 0,
+        "p50": 2.1659606114262715,
+        "p95": 2.2876495739794334,
+        "p99": 2.3388436142401767,
+        "sum": 173.37709445459768
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.031985446,
+        "critic": 0.0,
+        "decoder": 0.007796749,
+        "encoder": 19.840991272,
+        "failure": 0.0,
+        "planning": 0.000518706,
+        "retry": 0.0,
+        "shared": 0.093853859,
+        "sync": 146.264225668
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 2.227575999999999,
+        "mean": 2.0674400875000005,
+        "measured_count": 80,
+        "minimum": 1.915004999999999,
+        "missing_count": 0,
+        "p50": 2.0691350000000024,
+        "p95": 2.1761216000000063,
+        "p99": 2.22298215,
+        "sum": 165.39520700000006
+      },
+      "deployment_seconds": {
+        "denominator": 80,
+        "maximum": 2.239681045,
+        "mean": 2.0779921462499997,
+        "measured_count": 80,
+        "minimum": 1.925852761,
+        "missing_count": 0,
+        "p50": 2.0787802775,
+        "p95": 2.1847707964,
+        "p99": 2.23139827341,
+        "sum": 166.2393717
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "arm": "incumbent_ordinary",
+        "regime": "frozen",
+        "row_file": "retention-incumbent-rows.jsonl",
+        "split": "retention_validation"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 80,
+        "maximum": 2.3787150000000006,
+        "mean": 2.1480276125,
+        "measured_count": 80,
+        "minimum": 1.978949,
+        "missing_count": 0,
+        "p50": 2.1493789999999984,
+        "p95": 2.2748917500000005,
+        "p99": 2.3543624600000017,
+        "sum": 171.842209
+      },
+      "research_envelope_seconds": {
+        "denominator": 80,
+        "maximum": 2.3962711000349373,
+        "mean": 2.1645529560308203,
+        "measured_count": 80,
+        "minimum": 1.992492649005726,
+        "missing_count": 0,
+        "p50": 2.1662728764349595,
+        "p95": 2.28898281553993,
+        "p99": 2.376801276707556,
+        "sum": 173.16423648246564
+      },
+      "rows": 80,
+      "status_counts": {
+        "Completed": 80
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 170.027463652,
+        "critic": 42.201880186,
+        "decoder": 0.697694662,
+        "encoder": 562.356705101,
+        "failure": 0.0,
+        "planning": 47.832186619,
+        "retry": 0.0,
+        "shared": 9.385959059,
+        "sync": 2786.848005443
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 1320,
+        "maximum": 12.093973000000005,
+        "mean": 2.718396009090906,
+        "measured_count": 1320,
+        "minimum": 1.737434000000576,
+        "missing_count": 0,
+        "p50": 2.5455875000000106,
+        "p95": 3.973257049999893,
+        "p99": 6.033410299999984,
+        "sum": 3588.282731999996
+      },
+      "deployment_seconds": {
+        "denominator": 1320,
+        "maximum": 12.121070208,
+        "mean": 2.7419317384257575,
+        "measured_count": 1320,
+        "minimum": 1.756799316,
+        "missing_count": 0,
+        "p50": 2.5678446385,
+        "p95": 3.9999132471500003,
+        "p99": 6.054170875129992,
+        "sum": 3619.349894722
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "row_file": "paired-rows.jsonl",
+        "terminal_status": "BudgetStop"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 1320,
+        "maximum": 12.218115000000012,
+        "mean": 2.825752350757577,
+        "measured_count": 1320,
+        "minimum": 1.793739000000187,
+        "missing_count": 0,
+        "p50": 2.637656999999983,
+        "p95": 4.140281950000076,
+        "p99": 6.285384320000198,
+        "sum": 3729.9931030000016
+      },
+      "research_envelope_seconds": {
+        "denominator": 1320,
+        "maximum": 12.25519993295893,
+        "mean": 2.8569685774617195,
+        "measured_count": 1320,
+        "minimum": 1.817822040989995,
+        "missing_count": 0,
+        "p50": 2.6661423745099455,
+        "p95": 4.175081204739399,
+        "p99": 6.319459137958465,
+        "sum": 3771.1985222494695
+      },
+      "rows": 1320,
+      "status_counts": {
+        "BudgetStop": 1320
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 197.037483332,
+        "critic": 171.418469751,
+        "decoder": 1.613200321,
+        "encoder": 3058.778308125,
+        "failure": 0.0,
+        "planning": 195.61806415,
+        "retry": 0.0,
+        "shared": 22.275642853,
+        "sync": 21374.981879962
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 10200,
+        "maximum": 41.124684999999886,
+        "mean": 2.4413284850980452,
+        "measured_count": 10200,
+        "minimum": 1.630446999999549,
+        "missing_count": 0,
+        "p50": 2.2953170000002956,
+        "p95": 3.3291676499996923,
+        "p99": 4.078421230000088,
+        "sum": 24901.55054800006
+      },
+      "deployment_seconds": {
+        "denominator": 10200,
+        "maximum": 41.154654043,
+        "mean": 2.4531101027935294,
+        "measured_count": 10200,
+        "minimum": 1.635903107,
+        "missing_count": 0,
+        "p50": 2.307759974,
+        "p95": 3.3448789506999996,
+        "p99": 4.085529419560012,
+        "sum": 25021.723048494
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "row_file": "paired-rows.jsonl",
+        "terminal_status": "Completed"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 10200,
+        "maximum": 41.39520399999992,
+        "mean": 2.5416201030392176,
+        "measured_count": 10200,
+        "minimum": 1.690227999999479,
+        "missing_count": 0,
+        "p50": 2.3932189999999878,
+        "p95": 3.4823879999999114,
+        "p99": 4.321809749999759,
+        "sum": 25924.52505100002
+      },
+      "research_envelope_seconds": {
+        "denominator": 10200,
+        "maximum": 41.43212946690619,
+        "mean": 2.5609721249241986,
+        "measured_count": 10200,
+        "minimum": 1.7022867042105645,
+        "missing_count": 0,
+        "p50": 2.4121656945208088,
+        "p95": 3.507823866559192,
+        "p99": 4.341622128330639,
+        "sum": 26121.915674226824
+      },
+      "rows": 10200,
+      "status_counts": {
+        "Completed": 10200
+      }
+    },
+    {
+      "category_seconds": {
+        "codec": 0.069692535,
+        "critic": 0.0,
+        "decoder": 0.015285746,
+        "encoder": 39.427360327,
+        "failure": 0.0,
+        "planning": 0.001037749,
+        "retry": 0.0,
+        "shared": 0.214463696,
+        "sync": 292.9667694
+      },
+      "deployment_cpu_seconds": {
+        "denominator": 160,
+        "maximum": 2.227575999999999,
+        "mean": 2.0689974062500003,
+        "measured_count": 160,
+        "minimum": 1.8668699999999987,
+        "missing_count": 0,
+        "p50": 2.0690904999999997,
+        "p95": 2.185855199999994,
+        "p99": 2.21987477,
+        "sum": 331.03958500000005
+      },
+      "deployment_seconds": {
+        "denominator": 160,
+        "maximum": 2.239681045,
+        "mean": 2.07934130908125,
+        "measured_count": 160,
+        "minimum": 1.879535274,
+        "missing_count": 0,
+        "p50": 2.0780742615000003,
+        "p95": 2.1932938825,
+        "p99": 2.2288092485899997,
+        "sum": 332.694609453
+      },
+      "evaluation_episode_seed_count": 1,
+      "group": {
+        "row_file": "retention-incumbent-rows.jsonl",
+        "terminal_status": "Completed"
+      },
+      "independent_training_seed_count": 4,
+      "research_cpu_seconds": {
+        "denominator": 160,
+        "maximum": 2.3787150000000006,
+        "mean": 2.1495582000000004,
+        "measured_count": 160,
+        "minimum": 1.9407469999999947,
+        "missing_count": 0,
+        "p50": 2.149040499999998,
+        "p95": 2.27489175,
+        "p99": 2.336969870000002,
+        "sum": 343.92931200000004
+      },
+      "research_envelope_seconds": {
+        "denominator": 160,
+        "maximum": 2.3962711000349373,
+        "mean": 2.165883318356646,
+        "measured_count": 160,
+        "minimum": 1.9573392299935222,
+        "missing_count": 0,
+        "p50": 2.1662358524044976,
+        "p95": 2.2889828155399297,
+        "p99": 2.3580866157240234,
+        "sum": 346.5413309370633
+      },
+      "rows": 160,
+      "status_counts": {
+        "Completed": 160
+      }
+    }
+  ],
+  "native_owner_authentication": "SEPARATE_REQUIRED",
+  "new_statistical_inference_performed": false,
+  "original_plan_sha256": "139a8c0ce912f4eadb62d80463674ac7295b04fad4c455296654ec7630946880",
+  "overlap_warning": "Episode panels and training panels are overlapping descriptive groupings. Do not sum all panels. Sum only a disjoint declared partition; full-pipeline wall already contains its phases.",
+  "phase_throughput": [
+    {
+      "all_terminal_attempts_per_second": 3.39887011340736,
+      "completed_only_episodes_per_second": 3.39887011340736,
+      "dispatched": 200,
+      "elapsed_wall_seconds": 58.843084121122956,
+      "maximum_workers": 8,
+      "not_started": 0,
+      "phase": "collection-content",
+      "planned": 200,
+      "research_cpu_seconds": {
+        "denominator": 200,
+        "maximum": 3.460175999999997,
+        "mean": 2.2967421850000003,
+        "measured_count": 200,
+        "minimum": 1.6782409999999999,
+        "missing_count": 0,
+        "p50": 2.2484139999999986,
+        "p95": 2.7840101499999914,
+        "p99": 2.9298042300000033,
+        "sum": 459.34843700000005
+      },
+      "research_envelope_seconds": {
+        "denominator": 200,
+        "maximum": 3.4739184810314327,
+        "mean": 2.3117850261519197,
+        "measured_count": 200,
+        "minimum": 1.6880761818028986,
+        "missing_count": 0,
+        "p50": 2.260574359446764,
+        "p95": 2.794572342769243,
+        "p99": 2.9428775840718293,
+        "sum": 462.35700523038395
+      },
+      "returned": 200,
+      "status_counts": {
+        "Completed": 200
+      },
+      "throughput_scope": "Actual parallel phase interval from before ProcessPool creation through worker completion/join; request-file preparation and final phase-result serialization are outside this timer. BudgetStop retained in all-terminal numerator; no sum-of-episode-time denominator."
+    },
+    {
+      "all_terminal_attempts_per_second": 2.391187791889999,
+      "completed_only_episodes_per_second": 2.391187791889999,
+      "dispatched": 200,
+      "elapsed_wall_seconds": 83.64044040301815,
+      "maximum_workers": 8,
+      "not_started": 0,
+      "phase": "collection-transitions",
+      "planned": 200,
+      "research_cpu_seconds": {
+        "denominator": 200,
+        "maximum": 24.224899,
+        "mean": 2.8807456200000003,
+        "measured_count": 200,
+        "minimum": 1.991699000000004,
+        "missing_count": 0,
+        "p50": 2.4700105000000043,
+        "p95": 4.724740800000002,
+        "p99": 6.8768509399999544,
+        "sum": 576.149124
+      },
+      "research_envelope_seconds": {
+        "denominator": 200,
+        "maximum": 24.251380757894367,
+        "mean": 2.9020719162386377,
+        "measured_count": 200,
+        "minimum": 2.0074002819601446,
+        "missing_count": 0,
+        "p50": 2.490945581579581,
+        "p95": 4.7555480046779826,
+        "p99": 6.901801660938616,
+        "sum": 580.4143832477275
+      },
+      "returned": 200,
+      "status_counts": {
+        "Completed": 200
+      },
+      "throughput_scope": "Actual parallel phase interval from before ProcessPool creation through worker completion/join; request-file preparation and final phase-result serialization are outside this timer. BudgetStop retained in all-terminal numerator; no sum-of-episode-time denominator."
+    },
+    {
+      "all_terminal_attempts_per_second": 2.669363491065074,
+      "completed_only_episodes_per_second": 2.380269339542499,
+      "dispatched": 10240,
+      "elapsed_wall_seconds": 3836.120496243937,
+      "maximum_workers": 8,
+      "not_started": 0,
+      "phase": "search",
+      "planned": 10240,
+      "research_cpu_seconds": {
+        "denominator": 10240,
+        "maximum": 36.89696099999992,
+        "mean": 2.967792968554687,
+        "measured_count": 10240,
+        "minimum": 1.7030339999996613,
+        "missing_count": 0,
+        "p50": 2.641561499999625,
+        "p95": 3.8208050000002682,
+        "p99": 20.777486119999995,
+        "sum": 30390.199997999993
+      },
+      "research_envelope_seconds": {
+        "denominator": 10240,
+        "maximum": 36.927170859184116,
+        "mean": 2.991222580458566,
+        "measured_count": 10240,
+        "minimum": 1.721715227002278,
+        "missing_count": 0,
+        "p50": 2.664852653397247,
+        "p95": 3.8479439346003343,
+        "p99": 20.82666575033684,
+        "sum": 30630.119223895716
+      },
+      "returned": 10240,
+      "status_counts": {
+        "BudgetStop": 1109,
+        "Completed": 9131
+      },
+      "throughput_scope": "Actual parallel phase interval from before ProcessPool creation through worker completion/join; request-file preparation and final phase-result serialization are outside this timer. BudgetStop retained in all-terminal numerator; no sum-of-episode-time denominator."
+    },
+    {
+      "all_terminal_attempts_per_second": 3.0788153501886604,
+      "completed_only_episodes_per_second": 2.7260344246462096,
+      "dispatched": 11520,
+      "elapsed_wall_seconds": 3741.69889704301,
+      "maximum_workers": 8,
+      "not_started": 0,
+      "phase": "pilot",
+      "planned": 11520,
+      "research_cpu_seconds": {
+        "denominator": 11520,
+        "maximum": 41.39520399999992,
+        "mean": 2.5741769230902793,
+        "measured_count": 11520,
+        "minimum": 1.690227999999479,
+        "missing_count": 0,
+        "p50": 2.4225745000001098,
+        "p95": 3.558026899999953,
+        "p99": 4.5436784800000805,
+        "sum": 29654.51815400002
+      },
+      "research_envelope_seconds": {
+        "denominator": 11520,
+        "maximum": 41.43212946690619,
+        "mean": 2.5948883851107896,
+        "measured_count": 11520,
+        "minimum": 1.7022867042105645,
+        "missing_count": 0,
+        "p50": 2.4435842245584354,
+        "p95": 3.583223326108418,
+        "p99": 4.5815707002067825,
+        "sum": 29893.114196476294
+      },
+      "returned": 11520,
+      "status_counts": {
+        "BudgetStop": 1320,
+        "Completed": 10200
+      },
+      "throughput_scope": "Actual parallel phase interval from before ProcessPool creation through worker completion/join; request-file preparation and final phase-result serialization are outside this timer. BudgetStop retained in all-terminal numerator; no sum-of-episode-time denominator."
+    },
+    {
+      "all_terminal_attempts_per_second": 3.6591502158566507,
+      "completed_only_episodes_per_second": 3.6591502158566507,
+      "dispatched": 160,
+      "elapsed_wall_seconds": 43.7259993609041,
+      "maximum_workers": 8,
+      "not_started": 0,
+      "phase": "incumbent-retention",
+      "planned": 160,
+      "research_cpu_seconds": {
+        "denominator": 160,
+        "maximum": 2.3787150000000006,
+        "mean": 2.1495582000000004,
+        "measured_count": 160,
+        "minimum": 1.9407469999999947,
+        "missing_count": 0,
+        "p50": 2.149040499999998,
+        "p95": 2.27489175,
+        "p99": 2.336969870000002,
+        "sum": 343.92931200000004
+      },
+      "research_envelope_seconds": {
+        "denominator": 160,
+        "maximum": 2.3962711000349373,
+        "mean": 2.165883318356646,
+        "measured_count": 160,
+        "minimum": 1.9573392299935222,
+        "missing_count": 0,
+        "p50": 2.1662358524044976,
+        "p95": 2.2889828155399297,
+        "p99": 2.3580866157240234,
+        "sum": 346.5413309370633
+      },
+      "returned": 160,
+      "status_counts": {
+        "Completed": 160
+      },
+      "throughput_scope": "Actual parallel phase interval from before ProcessPool creation through worker completion/join; request-file preparation and final phase-result serialization are outside this timer. BudgetStop retained in all-terminal numerator; no sum-of-episode-time denominator."
+    }
+  ],
+  "pipeline": {
+    "episode_phase_wall_seconds_sum": 7764.028917171992,
+    "finished_at": "2026-11-07T15:45:20.844865+00:00",
+    "scope": "Full original pipeline wall includes sequential training, collection, search and pilot phases; phase, job and worker costs are nested and must not be added to this wall.",
+    "started_at": "2026-11-07T13:26:07.589949+00:00",
+    "status": "execution_completed",
+    "wall_seconds": 8353.254944340792
+  },
+  "schema": "ndu-original-cost-aggregates-v1",
+  "scientific_admission": "HOLD",
+  "source_cost_report_sha256": "0c8cda25c9ce9353b437a94ff32d72afc37d0438aaca775c9a74c0ea967dd3db",
+  "training_panels": [
+    {
+      "gpu_used_reported": {
+        "False": 1
+      },
+      "group": {
+        "phase": "bootstrap",
+        "scope": "common_collector_not_independent_fit"
+      },
+      "jobs": 1,
+      "outer_cpu_seconds": {
+        "denominator": 1,
+        "maximum": 1.3607200000000002,
+        "mean": 1.3607200000000002,
+        "measured_count": 1,
+        "minimum": 1.3607200000000002,
+        "missing_count": 0,
+        "p50": 1.3607200000000002,
+        "p95": 1.3607200000000002,
+        "p99": 1.3607200000000002,
+        "sum": 1.3607200000000002
+      },
+      "outer_wall_seconds": {
+        "denominator": 1,
+        "maximum": 1.3709574600216001,
+        "mean": 1.3709574600216001,
+        "measured_count": 1,
+        "minimum": 1.3709574600216001,
+        "missing_count": 0,
+        "p50": 1.3709574600216001,
+        "p95": 1.3709574600216001,
+        "p99": 1.3709574600216001,
+        "sum": 1.3709574600216001
+      },
+      "process_max_rss_bytes": {
+        "denominator": 1,
+        "maximum": 232644608,
+        "mean": 232644608.0,
+        "measured_count": 1,
+        "minimum": 232644608,
+        "missing_count": 0,
+        "p50": 232644608.0,
+        "p95": 232644608.0,
+        "p99": 232644608.0,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "BOOTSTRAP_READY_NOT_A_FIT": 1
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 1,
+        "maximum": 1.163790992,
+        "mean": 1.163790992,
+        "measured_count": 1,
+        "minimum": 1.163790992,
+        "missing_count": 0,
+        "p50": 1.163790992,
+        "p95": 1.163790992,
+        "p99": 1.163790992,
+        "sum": 1.163790992
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 1
+      },
+      "group": {
+        "phase": "content",
+        "scope": "common_collector_not_independent_fit"
+      },
+      "jobs": 1,
+      "outer_cpu_seconds": {
+        "denominator": 1,
+        "maximum": 4.2569820000000504,
+        "mean": 4.2569820000000504,
+        "measured_count": 1,
+        "minimum": 4.2569820000000504,
+        "missing_count": 0,
+        "p50": 4.2569820000000504,
+        "p95": 4.2569820000000504,
+        "p99": 4.2569820000000504,
+        "sum": 4.2569820000000504
+      },
+      "outer_wall_seconds": {
+        "denominator": 1,
+        "maximum": 4.321912296116352,
+        "mean": 4.321912296116352,
+        "measured_count": 1,
+        "minimum": 4.321912296116352,
+        "missing_count": 0,
+        "p50": 4.321912296116352,
+        "p95": 4.321912296116352,
+        "p99": 4.321912296116352,
+        "sum": 4.321912296116352
+      },
+      "process_max_rss_bytes": {
+        "denominator": 1,
+        "maximum": 316899328,
+        "mean": 316899328.0,
+        "measured_count": 1,
+        "minimum": 316899328,
+        "missing_count": 0,
+        "p50": 316899328.0,
+        "p95": 316899328.0,
+        "p99": 316899328.0,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "CONTENT_PRETRAINED": 1
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 1,
+        "maximum": 3.965637388,
+        "mean": 3.965637388,
+        "measured_count": 1,
+        "minimum": 3.965637388,
+        "missing_count": 0,
+        "p50": 3.965637388,
+        "p95": 3.965637388,
+        "p99": 3.965637388,
+        "sum": 3.965637388
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 8
+      },
+      "group": {
+        "phase": "content",
+        "scope": "independent_grid"
+      },
+      "jobs": 8,
+      "outer_cpu_seconds": {
+        "denominator": 8,
+        "maximum": 9.359617000000002,
+        "mean": 8.66974875,
+        "measured_count": 8,
+        "minimum": 8.01656,
+        "missing_count": 0,
+        "p50": 8.677490500000001,
+        "p95": 9.324727950000002,
+        "p99": 9.352639190000001,
+        "sum": 69.35799
+      },
+      "outer_wall_seconds": {
+        "denominator": 8,
+        "maximum": 9.375198104884475,
+        "mean": 8.68808471027296,
+        "measured_count": 8,
+        "minimum": 8.034870714182034,
+        "missing_count": 0,
+        "p50": 8.69665731000714,
+        "p95": 9.342270125926007,
+        "p99": 9.368612509092781,
+        "sum": 69.50467768218368
+      },
+      "process_max_rss_bytes": {
+        "denominator": 8,
+        "maximum": 340025344,
+        "mean": 338145280.0,
+        "measured_count": 8,
+        "minimum": 336015360,
+        "missing_count": 0,
+        "p50": 338153472.0,
+        "p95": 339850444.8,
+        "p99": 339990364.16,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "CONTENT_PRETRAINED": 8
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 8,
+        "maximum": 8.779937458,
+        "mean": 8.027288208125,
+        "measured_count": 8,
+        "minimum": 7.329208484,
+        "missing_count": 0,
+        "p50": 8.0331367775,
+        "p95": 8.73797427485,
+        "p99": 8.771544821369998,
+        "sum": 64.218305665
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 144
+      },
+      "group": {
+        "phase": "fit",
+        "scope": "independent_grid"
+      },
+      "jobs": 144,
+      "outer_cpu_seconds": {
+        "denominator": 144,
+        "maximum": 42.875002999999964,
+        "mean": 29.007592743055554,
+        "measured_count": 144,
+        "minimum": 15.157978,
+        "missing_count": 0,
+        "p50": 28.969424499999974,
+        "p95": 41.626436399999996,
+        "p99": 42.29723093999999,
+        "sum": 4177.093355
+      },
+      "outer_wall_seconds": {
+        "denominator": 144,
+        "maximum": 42.93402814702131,
+        "mean": 29.06172789606272,
+        "measured_count": 144,
+        "minimum": 15.181297994917259,
+        "missing_count": 0,
+        "p50": 29.01884853898082,
+        "p95": 41.68978722075699,
+        "p99": 42.3694649301283,
+        "sum": 4184.888817033032
+      },
+      "process_max_rss_bytes": {
+        "denominator": 144,
+        "maximum": 352460800,
+        "mean": 344030947.5555556,
+        "measured_count": 144,
+        "minimum": 336613376,
+        "missing_count": 0,
+        "p50": 343902208.0,
+        "p95": 351883673.6,
+        "p99": 352239984.64,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 144
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 144,
+        "maximum": 42.10725193,
+        "mean": 28.322153338333333,
+        "measured_count": 144,
+        "minimum": 14.476393623,
+        "missing_count": 0,
+        "p50": 28.2829880345,
+        "p95": 40.86452033695,
+        "p99": 41.54286425251,
+        "sum": 4078.39008072
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 1
+      },
+      "group": {
+        "controller": "collector",
+        "core": "ordinary",
+        "phase": "bootstrap",
+        "regime": "frozen",
+        "scope": "common_collector_not_independent_fit"
+      },
+      "jobs": 1,
+      "outer_cpu_seconds": {
+        "denominator": 1,
+        "maximum": 1.3607200000000002,
+        "mean": 1.3607200000000002,
+        "measured_count": 1,
+        "minimum": 1.3607200000000002,
+        "missing_count": 0,
+        "p50": 1.3607200000000002,
+        "p95": 1.3607200000000002,
+        "p99": 1.3607200000000002,
+        "sum": 1.3607200000000002
+      },
+      "outer_wall_seconds": {
+        "denominator": 1,
+        "maximum": 1.3709574600216001,
+        "mean": 1.3709574600216001,
+        "measured_count": 1,
+        "minimum": 1.3709574600216001,
+        "missing_count": 0,
+        "p50": 1.3709574600216001,
+        "p95": 1.3709574600216001,
+        "p99": 1.3709574600216001,
+        "sum": 1.3709574600216001
+      },
+      "process_max_rss_bytes": {
+        "denominator": 1,
+        "maximum": 232644608,
+        "mean": 232644608.0,
+        "measured_count": 1,
+        "minimum": 232644608,
+        "missing_count": 0,
+        "p50": 232644608.0,
+        "p95": 232644608.0,
+        "p99": 232644608.0,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "BOOTSTRAP_READY_NOT_A_FIT": 1
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 1,
+        "maximum": 1.163790992,
+        "mean": 1.163790992,
+        "measured_count": 1,
+        "minimum": 1.163790992,
+        "missing_count": 0,
+        "p50": 1.163790992,
+        "p95": 1.163790992,
+        "p99": 1.163790992,
+        "sum": 1.163790992
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 1
+      },
+      "group": {
+        "controller": "collector",
+        "core": "ordinary",
+        "phase": "content",
+        "regime": "frozen",
+        "scope": "common_collector_not_independent_fit"
+      },
+      "jobs": 1,
+      "outer_cpu_seconds": {
+        "denominator": 1,
+        "maximum": 4.2569820000000504,
+        "mean": 4.2569820000000504,
+        "measured_count": 1,
+        "minimum": 4.2569820000000504,
+        "missing_count": 0,
+        "p50": 4.2569820000000504,
+        "p95": 4.2569820000000504,
+        "p99": 4.2569820000000504,
+        "sum": 4.2569820000000504
+      },
+      "outer_wall_seconds": {
+        "denominator": 1,
+        "maximum": 4.321912296116352,
+        "mean": 4.321912296116352,
+        "measured_count": 1,
+        "minimum": 4.321912296116352,
+        "missing_count": 0,
+        "p50": 4.321912296116352,
+        "p95": 4.321912296116352,
+        "p99": 4.321912296116352,
+        "sum": 4.321912296116352
+      },
+      "process_max_rss_bytes": {
+        "denominator": 1,
+        "maximum": 316899328,
+        "mean": 316899328.0,
+        "measured_count": 1,
+        "minimum": 316899328,
+        "missing_count": 0,
+        "p50": 316899328.0,
+        "p95": 316899328.0,
+        "p99": 316899328.0,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "CONTENT_PRETRAINED": 1
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 1,
+        "maximum": 3.965637388,
+        "mean": 3.965637388,
+        "measured_count": 1,
+        "minimum": 3.965637388,
+        "missing_count": 0,
+        "p50": 3.965637388,
+        "p95": 3.965637388,
+        "p99": 3.965637388,
+        "sum": 3.965637388
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 4
+      },
+      "group": {
+        "controller": "shared",
+        "core": "hepta",
+        "phase": "content",
+        "regime": "frozen",
+        "scope": "independent_grid"
+      },
+      "jobs": 4,
+      "outer_cpu_seconds": {
+        "denominator": 4,
+        "maximum": 9.359617000000002,
+        "mean": 9.28404725,
+        "measured_count": 4,
+        "minimum": 9.256759,
+        "missing_count": 0,
+        "p50": 9.2599065,
+        "p95": 9.344664550000001,
+        "p99": 9.356626510000002,
+        "sum": 37.136189
+      },
+      "outer_wall_seconds": {
+        "denominator": 4,
+        "maximum": 9.375198104884475,
+        "mean": 9.303020305233076,
+        "measured_count": 4,
+        "minimum": 9.276712035061792,
+        "missing_count": 0,
+        "p50": 9.280085540493019,
+        "p95": 9.361086113902275,
+        "p99": 9.372375706688036,
+        "sum": 37.212081220932305
+      },
+      "process_max_rss_bytes": {
+        "denominator": 4,
+        "maximum": 340025344,
+        "mean": 339162112.0,
+        "measured_count": 4,
+        "minimum": 337809408,
+        "missing_count": 0,
+        "p50": 339406848.0,
+        "p95": 339950387.2,
+        "p99": 340010352.64,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "CONTENT_PRETRAINED": 4
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 4,
+        "maximum": 8.779937458,
+        "mean": 8.68667608275,
+        "measured_count": 4,
+        "minimum": 8.652506956,
+        "missing_count": 0,
+        "p50": 8.6571299585,
+        "p95": 8.76195323665,
+        "p99": 8.77634061373,
+        "sum": 34.746704331
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 4
+      },
+      "group": {
+        "controller": "shared",
+        "core": "ordinary",
+        "phase": "content",
+        "regime": "frozen",
+        "scope": "independent_grid"
+      },
+      "jobs": 4,
+      "outer_cpu_seconds": {
+        "denominator": 4,
+        "maximum": 8.098222,
+        "mean": 8.05545025,
+        "measured_count": 4,
+        "minimum": 8.01656,
+        "missing_count": 0,
+        "p50": 8.0535095,
+        "p95": 8.096180649999999,
+        "p99": 8.09781373,
+        "sum": 32.221801
+      },
+      "outer_wall_seconds": {
+        "denominator": 4,
+        "maximum": 8.116602584952489,
+        "mean": 8.073149115312845,
+        "measured_count": 4,
+        "minimum": 8.034870714182034,
+        "missing_count": 0,
+        "p50": 8.070561581058428,
+        "p95": 8.114730348857119,
+        "p99": 8.116228137733415,
+        "sum": 32.29259646125138
+      },
+      "process_max_rss_bytes": {
+        "denominator": 4,
+        "maximum": 338497536,
+        "mean": 337128448.0,
+        "measured_count": 4,
+        "minimum": 336015360,
+        "missing_count": 0,
+        "p50": 337000448.0,
+        "p95": 338326118.4,
+        "p99": 338463252.48,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "CONTENT_PRETRAINED": 4
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 4,
+        "maximum": 7.413766599,
+        "mean": 7.3679003335,
+        "measured_count": 4,
+        "minimum": 7.329208484,
+        "missing_count": 0,
+        "p50": 7.3643131255,
+        "p95": 7.41088177425,
+        "p99": 7.41318963405,
+        "sum": 29.471601334
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "shared",
+        "core": "hepta",
+        "phase": "fit",
+        "regime": "frozen",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 22.72465900000003,
+        "mean": 20.196011583333334,
+        "measured_count": 12,
+        "minimum": 18.106015999999954,
+        "missing_count": 0,
+        "p50": 19.210032999999996,
+        "p95": 22.54492175000003,
+        "p99": 22.68871155000003,
+        "sum": 242.35213900000002
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 22.789413288934156,
+        "mean": 20.240534394746646,
+        "measured_count": 12,
+        "minimum": 18.139755659969524,
+        "missing_count": 0,
+        "p50": 19.24585696309805,
+        "p95": 22.598556399694644,
+        "p99": 22.751241911086254,
+        "sum": 242.88641273695976
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 340131840,
+        "mean": 338230272.0,
+        "measured_count": 12,
+        "minimum": 336736256,
+        "missing_count": 0,
+        "p50": 338216960.0,
+        "p95": 339424460.8,
+        "p99": 339990364.16,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 21.989351611,
+        "mean": 19.487104482916667,
+        "measured_count": 12,
+        "minimum": 17.442558563,
+        "missing_count": 0,
+        "p50": 18.535173739,
+        "p95": 21.78631724375,
+        "p99": 21.94874473755,
+        "sum": 233.845253795
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "light",
+        "core": "hepta",
+        "phase": "fit",
+        "regime": "joint",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 35.750709,
+        "mean": 31.586871999999996,
+        "measured_count": 12,
+        "minimum": 29.188218000000006,
+        "missing_count": 0,
+        "p50": 30.210762000000003,
+        "p95": 35.68505879999999,
+        "p99": 35.73757896,
+        "sum": 379.04246399999994
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 35.81379939103499,
+        "mean": 31.64324069824458,
+        "measured_count": 12,
+        "minimum": 29.2268993339967,
+        "missing_count": 0,
+        "p50": 30.261922327568755,
+        "p95": 35.74236790228169,
+        "p99": 35.79951309328433,
+        "sum": 379.71888837893493
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 344694784,
+        "mean": 344005973.3333333,
+        "measured_count": 12,
+        "minimum": 343539712,
+        "missing_count": 0,
+        "p50": 343924736.0,
+        "p95": 344660992.0,
+        "p99": 344688025.6,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 35.000714786,
+        "mean": 30.897701508,
+        "measured_count": 12,
+        "minimum": 28.458775976,
+        "missing_count": 0,
+        "p50": 29.553672736000003,
+        "p95": 34.9307437299,
+        "p99": 34.98672057478,
+        "sum": 370.772418096
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "mpc",
+        "core": "hepta",
+        "phase": "fit",
+        "regime": "joint",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 42.389183,
+        "mean": 37.370376500000006,
+        "measured_count": 12,
+        "minimum": 33.84456799999998,
+        "missing_count": 0,
+        "p50": 36.06337600000002,
+        "p95": 42.27156989999999,
+        "p99": 42.36566038,
+        "sum": 448.4445180000001
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 42.444018613081425,
+        "mean": 37.441848734684754,
+        "measured_count": 12,
+        "minimum": 33.8871923701372,
+        "missing_count": 0,
+        "p50": 36.20059344009496,
+        "p95": 42.34865925116465,
+        "p99": 42.42494674069807,
+        "sum": 449.30218481621705
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 352153600,
+        "mean": 350911829.3333333,
+        "measured_count": 12,
+        "minimum": 349032448,
+        "missing_count": 0,
+        "p50": 350644224.0,
+        "p95": 352124313.6,
+        "p99": 352147742.72,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 41.612638436,
+        "mean": 36.69816291975,
+        "measured_count": 12,
+        "minimum": 33.312157012,
+        "missing_count": 0,
+        "p50": 35.484435436,
+        "p95": 41.52339238735,
+        "p99": 41.594789226269995,
+        "sum": 440.377955037
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "ndu",
+        "core": "hepta",
+        "phase": "fit",
+        "regime": "joint",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 41.78403799999998,
+        "mean": 37.373818250000014,
+        "measured_count": 12,
+        "minimum": 33.607177000000036,
+        "missing_count": 0,
+        "p50": 36.018890000000006,
+        "p95": 41.75979510000002,
+        "p99": 41.77918941999999,
+        "sum": 448.48581900000016
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 41.84494727291167,
+        "mean": 37.43535786521776,
+        "measured_count": 12,
+        "minimum": 33.6740133180283,
+        "missing_count": 0,
+        "p50": 36.09390541899484,
+        "p95": 41.81489345796872,
+        "p99": 41.83893650992308,
+        "sum": 449.22429438261315
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 352460800,
+        "mean": 351239509.3333333,
+        "measured_count": 12,
+        "minimum": 350261248,
+        "missing_count": 0,
+        "p50": 351070208.0,
+        "p95": 352375193.6,
+        "p99": 352443678.72,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 41.036668422,
+        "mean": 36.69775436958333,
+        "measured_count": 12,
+        "minimum": 32.969457951,
+        "missing_count": 0,
+        "p50": 35.378073406,
+        "p95": 40.9905907794,
+        "p99": 41.027452893479996,
+        "sum": 440.373052435
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "tuned_fixed",
+        "core": "hepta",
+        "phase": "fit",
+        "regime": "joint",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 34.866318999999976,
+        "mean": 30.709353333333336,
+        "measured_count": 12,
+        "minimum": 28.430857000000003,
+        "missing_count": 0,
+        "p50": 29.079619499999993,
+        "p95": 34.71003429999999,
+        "p99": 34.83506205999998,
+        "sum": 368.51224
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 34.90964885498397,
+        "mean": 30.7767737476388,
+        "measured_count": 12,
+        "minimum": 28.46417087689042,
+        "missing_count": 0,
+        "p50": 29.122315629501827,
+        "p95": 34.76364192138426,
+        "p99": 34.88044746826403,
+        "sum": 369.3212849716656
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 344952832,
+        "mean": 343091541.3333333,
+        "measured_count": 12,
+        "minimum": 339668992,
+        "missing_count": 0,
+        "p50": 343177216.0,
+        "p95": 344389632.0,
+        "p99": 344840192.0,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 34.094053906,
+        "mean": 30.045576200416665,
+        "measured_count": 12,
+        "minimum": 27.764374641,
+        "missing_count": 0,
+        "p50": 28.432160931,
+        "p95": 33.9719464876,
+        "p99": 34.06963242232,
+        "sum": 360.546914405
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "voi",
+        "core": "hepta",
+        "phase": "fit",
+        "regime": "joint",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 42.875002999999964,
+        "mean": 37.48245858333331,
+        "measured_count": 12,
+        "minimum": 34.14883599999996,
+        "missing_count": 0,
+        "p50": 35.987127499999986,
+        "p95": 42.26599019999997,
+        "p99": 42.753200439999965,
+        "sum": 449.78950299999974
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 42.93402814702131,
+        "mean": 37.5577825291742,
+        "measured_count": 12,
+        "minimum": 34.193068076856434,
+        "missing_count": 0,
+        "p50": 36.032133809057996,
+        "p95": 42.33460581524996,
+        "p99": 42.81414368066704,
+        "sum": 450.69339035009034
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 351899648,
+        "mean": 350887253.3333333,
+        "measured_count": 12,
+        "minimum": 349134848,
+        "missing_count": 0,
+        "p50": 351180800.0,
+        "p95": 351841075.2,
+        "p99": 351887933.44,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 42.10725193,
+        "mean": 36.846366574166666,
+        "measured_count": 12,
+        "minimum": 33.559708913,
+        "missing_count": 0,
+        "p50": 35.327574277,
+        "p95": 41.531806649699995,
+        "p99": 41.992162873939996,
+        "sum": 442.15639889
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "shared",
+        "core": "ordinary",
+        "phase": "fit",
+        "regime": "frozen",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 19.12396300000006,
+        "mean": 16.58423674999999,
+        "measured_count": 12,
+        "minimum": 15.157978,
+        "missing_count": 0,
+        "p50": 16.033596000000003,
+        "p95": 18.794693399999986,
+        "p99": 19.058109080000044,
+        "sum": 199.0108409999999
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 19.16830780589953,
+        "mean": 16.617845487819675,
+        "measured_count": 12,
+        "minimum": 15.181297994917259,
+        "missing_count": 0,
+        "p50": 16.066681901109405,
+        "p95": 18.843690882006193,
+        "p99": 19.103384421120865,
+        "sum": 199.4141458538361
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 339124224,
+        "mean": 337983829.3333333,
+        "measured_count": 12,
+        "minimum": 336613376,
+        "missing_count": 0,
+        "p50": 337942528.0,
+        "p95": 338802073.6,
+        "p99": 339059793.92,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 18.347208037,
+        "mean": 15.879679819666668,
+        "measured_count": 12,
+        "minimum": 14.476393623,
+        "missing_count": 0,
+        "p50": 15.3495562625,
+        "p95": 18.0321010822,
+        "p99": 18.284186646040002,
+        "sum": 190.556157836
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "light",
+        "core": "ordinary",
+        "phase": "fit",
+        "regime": "joint",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 28.07915299999999,
+        "mean": 24.85732691666668,
+        "measured_count": 12,
+        "minimum": 22.735972999999998,
+        "missing_count": 0,
+        "p50": 23.724172499999995,
+        "p95": 27.655192100000022,
+        "p99": 27.994360819999997,
+        "sum": 298.28792300000015
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 28.12154097785242,
+        "mean": 24.898519133469865,
+        "measured_count": 12,
+        "minimum": 22.759935837006196,
+        "missing_count": 0,
+        "p50": 23.75975036842283,
+        "p95": 27.70324535066029,
+        "p99": 28.037881852413992,
+        "sum": 298.7822296016384
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 340901888,
+        "mean": 339729066.6666667,
+        "measured_count": 12,
+        "minimum": 338440192,
+        "missing_count": 0,
+        "p50": 339705856.0,
+        "p95": 340714905.6,
+        "p99": 340864491.52,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 27.275409013,
+        "mean": 24.13542505291667,
+        "measured_count": 12,
+        "minimum": 22.064910435,
+        "missing_count": 0,
+        "p50": 23.045383422500002,
+        "p95": 26.885961190499998,
+        "p99": 27.1975194485,
+        "sum": 289.625100635
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "mpc",
+        "core": "ordinary",
+        "phase": "fit",
+        "regime": "joint",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 33.34919500000001,
+        "mean": 29.438805333333324,
+        "measured_count": 12,
+        "minimum": 26.907411000000003,
+        "missing_count": 0,
+        "p50": 28.335424499999995,
+        "p95": 32.74860929999998,
+        "p99": 33.229077860000004,
+        "sum": 353.2656639999999
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 33.40515754907392,
+        "mean": 29.488119674361467,
+        "measured_count": 12,
+        "minimum": 26.950894618872553,
+        "missing_count": 0,
+        "p50": 28.378475231002085,
+        "p95": 32.81132811615243,
+        "p99": 33.28639166248962,
+        "sum": 353.8574360923376
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 345350144,
+        "mean": 344477013.3333333,
+        "measured_count": 12,
+        "minimum": 343564288,
+        "missing_count": 0,
+        "p50": 344524800.0,
+        "p95": 345271296.0,
+        "p99": 345334374.4,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 32.59388694,
+        "mean": 28.729474704416663,
+        "measured_count": 12,
+        "minimum": 26.256529335,
+        "missing_count": 0,
+        "p50": 27.597346315000003,
+        "p95": 32.01406451495,
+        "p99": 32.47792245499,
+        "sum": 344.753696453
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "ndu",
+        "core": "ordinary",
+        "phase": "fit",
+        "regime": "joint",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 32.54629699999998,
+        "mean": 29.07448575000001,
+        "measured_count": 12,
+        "minimum": 26.604000999999982,
+        "missing_count": 0,
+        "p50": 27.847445500000013,
+        "p95": 32.30245340000001,
+        "p99": 32.49752827999999,
+        "sum": 348.89382900000015
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 32.58582071703859,
+        "mean": 29.119592567440122,
+        "measured_count": 12,
+        "minimum": 26.65676220296882,
+        "missing_count": 0,
+        "p50": 27.889146763947792,
+        "p95": 32.35841931700706,
+        "p99": 32.540340437032285,
+        "sum": 349.43511080928147
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 346218496,
+        "mean": 344376661.3333333,
+        "measured_count": 12,
+        "minimum": 342372352,
+        "missing_count": 0,
+        "p50": 344375296.0,
+        "p95": 345495347.2,
+        "p99": 346073866.24,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 31.800968523,
+        "mean": 28.388308583666667,
+        "measured_count": 12,
+        "minimum": 26.046348682,
+        "missing_count": 0,
+        "p50": 27.1887917965,
+        "p95": 31.5642331648,
+        "p99": 31.75362145136,
+        "sum": 340.659703004
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "tuned_fixed",
+        "core": "ordinary",
+        "phase": "fit",
+        "regime": "joint",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 26.70379700000001,
+        "mean": 24.047993166666668,
+        "measured_count": 12,
+        "minimum": 22.105361999999996,
+        "missing_count": 0,
+        "p50": 22.91240050000001,
+        "p95": 26.68907350000001,
+        "p99": 26.700852300000008,
+        "sum": 288.575918
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 26.760084880981594,
+        "mean": 24.090101387584582,
+        "measured_count": 12,
+        "minimum": 22.13133501005359,
+        "missing_count": 0,
+        "p50": 22.95393563399557,
+        "p95": 26.74169016123051,
+        "p99": 26.756405937031378,
+        "sum": 289.081216651015
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 340066304,
+        "mean": 339186005.3333333,
+        "measured_count": 12,
+        "minimum": 338489344,
+        "missing_count": 0,
+        "p50": 339171328.0,
+        "p95": 339859046.4,
+        "p99": 340024852.48,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 25.954848011,
+        "mean": 23.38562824083333,
+        "measured_count": 12,
+        "minimum": 21.428244864,
+        "missing_count": 0,
+        "p50": 22.19886997,
+        "p95": 25.93601887595,
+        "p99": 25.95108218399,
+        "sum": 280.62753889
+      }
+    },
+    {
+      "gpu_used_reported": {
+        "False": 12
+      },
+      "group": {
+        "controller": "voi",
+        "core": "ordinary",
+        "phase": "fit",
+        "regime": "joint",
+        "scope": "independent_grid"
+      },
+      "jobs": 12,
+      "outer_cpu_seconds": {
+        "denominator": 12,
+        "maximum": 33.03851499999999,
+        "mean": 29.36937474999999,
+        "measured_count": 12,
+        "minimum": 26.974486,
+        "missing_count": 0,
+        "p50": 28.43786099999999,
+        "p95": 32.695367799999985,
+        "p99": 32.96988555999999,
+        "sum": 352.4324969999999
+      },
+      "outer_wall_seconds": {
+        "denominator": 12,
+        "maximum": 33.092768870992586,
+        "mean": 29.431018532370217,
+        "measured_count": 12,
+        "minimum": 27.08855705196038,
+        "missing_count": 0,
+        "p50": 28.511423828545958,
+        "p95": 32.762938819418196,
+        "p99": 33.026802860677705,
+        "sum": 353.1722223884426
+      },
+      "process_max_rss_bytes": {
+        "denominator": 12,
+        "maximum": 344997888,
+        "mean": 344252416.0,
+        "measured_count": 12,
+        "minimum": 342790144,
+        "missing_count": 0,
+        "p50": 344467456.0,
+        "p95": 344975360.0,
+        "p99": 344993382.4,
+        "scope": "Individual worker lifetime CPU RSS; distribution over jobs, not aggregate concurrent peak."
+      },
+      "status_counts": {
+        "FITTED_NOT_ADOPTED": 12
+      },
+      "torch_versions": [
+        "2.9.1+cpu"
+      ],
+      "worker_meter_wall_seconds": {
+        "denominator": 12,
+        "maximum": 32.364058607,
+        "mean": 28.674657603666663,
+        "measured_count": 12,
+        "minimum": 26.402746155,
+        "missing_count": 0,
+        "p50": 27.7424262015,
+        "p95": 31.979679911749997,
+        "p99": 32.287182867949994,
+        "sum": 344.095891244
+      }
+    }
+  ],
+  "training_totals": {
+    "maximum_individual_worker_rss_bytes": 352460800,
+    "outer_job_cpu_seconds_sum": 4252.069047,
+    "outer_job_wall_seconds_sum": 4260.086364471354,
+    "scope": "Unique original job duration sum and CPU sum; wall sum is not parallel training elapsed time. Nested worker meters are not added. RSS is not concurrent aggregate peak.",
+    "training_gpu_memory_applicability": "not_applicable_for_verified_CPU_workers_only",
+    "training_gpu_memory_bytes": null,
+    "unique_receipts": 154
+  },
+  "unknowns": {
+    "complete_end_to_end_training_phase_throughput": null,
+    "concurrent_pipeline_peak_memory_bytes": null,
+    "deployment_cpu_process_peak_rss_bytes": null,
+    "deployment_gpu_peak_bytes": null,
+    "full_acquisition_setup_cost": null,
+    "full_physical_energy_joules": null,
+    "provider_charges": null
+  }
+}

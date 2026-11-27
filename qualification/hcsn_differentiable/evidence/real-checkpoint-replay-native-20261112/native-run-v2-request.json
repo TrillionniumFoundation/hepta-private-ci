@@ -1,0 +1,31 @@
+{
+  "host": "desktop",
+  "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+  "args": [
+    "-B",
+    "/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-source-5cb83d9/qualification/hcsn_differentiable/replay_v1/run_replay.py",
+    "--original-root",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1",
+    "--study-source",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8",
+    "--output",
+    "/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v2",
+    "--selection",
+    "/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-source-5cb83d9/qualification/hcsn_differentiable/replay_v1/SELECTION.json",
+    "--selection-sha256",
+    "6271b8dd1859b8a124f5ecd06ba307c0f9ebcdc5e6f86a9d164c4ac374cdbd55"
+  ],
+  "cwd": "/home/qian-qi",
+  "env": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONHASHSEED": "0",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "cpu_quota_percent": 200,
+  "memory_max_bytes": 6442450944,
+  "timeout_seconds": 1800,
+  "idempotency_key": "hcsn-real-six-checkpoint-26updates-5cb83d9-c06d-v2-after-confirmed-cancel"
+}

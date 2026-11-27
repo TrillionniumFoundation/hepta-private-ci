@@ -1,0 +1,9 @@
+[
+  {
+    "database": "/home/agent/.cargo/advisory-dbs/advisory-db-3157b0e258782691",
+    "head": "233155b4025b854c68a4b199c0e32d7fd53291a2",
+    "advisory_sha256": "18424c6a155f754151a55ce9fb73376bf66f3709d81750d921f5293da91ccc59",
+    "advisory_blob": "e8129671299e6dfbde59591b103d0764995c39fc",
+    "contents": "```toml\n[advisory]\nid = \"RUSTSEC-2026-0543\"\npackage = \"chrono\"\ndate = \"2026-09-14\"\ninformational = \"unmaintained\"\nurl = \"https://github.com/chronotope/chrono/issues/1768\"\n\n[versions]\npatched = []\n```\n\n# chrono is unmaintained\n\nThe chrono crate is unmaintained; all versions are affected.\n\nRecommended alternatives:\n\n- [jiff](https://crates.io/crates/jiff)\n- [time](https://crates.io/crates/time)\n"
+  }
+]

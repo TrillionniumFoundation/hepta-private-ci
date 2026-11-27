@@ -1,0 +1,31 @@
+{
+  "schema": "hcsn-c2-successor-unadopted-wiring-native-test-v1",
+  "date": "2026-11-11",
+  "host": "desktop",
+  "job_id": "1a1cb470b10-2564-ac6",
+  "python": "3.12.3",
+  "torch": "2.8.0+cu128",
+  "observed_tests": {
+    "passed": 6,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "native_status": "terminal_publication_confirmed",
+  "original_job": {
+    "job_id": "1a1c74f3308-be2a-75",
+    "state": "finalizing",
+    "outcome": "unknown",
+    "terminal_publication_confirmed": false,
+    "controller_RESULT_exists": false,
+    "commands_jsonl_sha256": "1405bced8c59a294276616cd7054f2b4068e10d858ab61d78bb578b93992239f",
+    "producer_result_count": 4,
+    "planned": 6,
+    "zero_byte_interrupted_pt_count": 2,
+    "independent_replay_count": 0
+  },
+  "source_commit": "94b9501cfc82d97411cedce0cacf997bd3c1a51d",
+  "scientific_admission": "HOLD_NO_GO",
+  "caution": "Independent local tests of unadopted source wiring only, not native six-fit training, checkpoint model replay, full repository CI or task benefit."
+}

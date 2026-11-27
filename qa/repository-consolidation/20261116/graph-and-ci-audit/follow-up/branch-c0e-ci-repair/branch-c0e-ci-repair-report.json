@@ -1,0 +1,211 @@
+{
+  "schema": "hepta-c0e-research-ci-repair-review-v1",
+  "captured_utc": "2026-11-16T19:43:08.543824+00:00",
+  "base_head": "c0e525fd94e6eea2957bd1a12764627b86dd71ec",
+  "base_tree": "a14a6c859ccb3fbea90da4568a843cd15fec0286",
+  "source_overlay_tree": "bf7f5423c6fd810882672b6e5bdbe2e05e924993",
+  "remote_objects_or_refs_written": false,
+  "source_entries": [
+    {
+      "path": "qa/ndu-grounded-generation/test_confirmatory_v2.py",
+      "mode": "100644",
+      "type": "blob",
+      "baseBlob": "44a3b239332dc2b3b11f33e92fe9c1491c92d92f",
+      "postBlob": "637bd4656acbdf524e3e500716878b41cca997bc",
+      "bytes": 8659,
+      "sha256": "61f2893b807393486a7c172ddf8557a51c3a78ea8d7f92fdf6709f077a547018",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/c0e-hosted-ci-repair-v1/workspace/qa/ndu-grounded-generation/test_confirmatory_v2.py"
+    },
+    {
+      "path": "qualification/hcsn_hpca_joint_gate/run.py",
+      "mode": "100644",
+      "type": "blob",
+      "baseBlob": "aa0a76c672868526db549ccd214df7a3e153fccc",
+      "postBlob": "a7ca0e8236d8333067e809ec48d8805c231729c9",
+      "bytes": 6821,
+      "sha256": "28d2c90a2c68a2a21d47d15c6234115e99a1f1882789d7fa88f82fceaa433d15",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/c0e-hosted-ci-repair-v1/workspace/qualification/hcsn_hpca_joint_gate/run.py"
+    },
+    {
+      "path": "qualification/hcsn_hpca_joint_gate/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "baseBlob": "37cff16c81ab62c9db1552d336c2797c5d931b01",
+      "postBlob": "796dfc9354c1413f24ffa8a11b262a5ea9ddc5a8",
+      "bytes": 3886,
+      "sha256": "641cb54f883dec6192a49c5ae24b845ddacd1651fff40f839896a44d50e587e1",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/c0e-hosted-ci-repair-v1/workspace/qualification/hcsn_hpca_joint_gate/README.md"
+    },
+    {
+      "path": "qualification/hcsn_hpca_joint_gate/CURRENT_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "baseBlob": null,
+      "postBlob": "3d4fc41210c6de29bd8860f06762b4e9daffc93e",
+      "bytes": 6469,
+      "sha256": "93c403dbd544fe786cd28a33d7d25bcd3d1c62a963f2d2d26151393478c3d1b7",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/c0e-hosted-ci-repair-v1/workspace/qualification/hcsn_hpca_joint_gate/CURRENT_MANIFEST.json"
+    }
+  ],
+  "failure_origin": {
+    "joint_job": 133543746319,
+    "joint_run": 43936893582,
+    "scoped_job": 133543721959,
+    "scoped_run": 43936887727,
+    "head": "c0e525fd94e6eea2957bd1a12764627b86dd71ec",
+    "twelve_relevant_blobs_identical_at": [
+      "285e971b3af3a93a79169b56a42263069e473057",
+      "7e04259b85ee2d3c31182c6b4be8b6a3ace29fc0",
+      "c0e525fd94e6eea2957bd1a12764627b86dd71ec"
+    ],
+    "conclusion": "Both inconsistencies predate this consolidation checkpoint; neither was introduced by the latest research or native source merges."
+  },
+  "repairs": {
+    "joint": {
+      "old_manifest_unchanged": true,
+      "historical_results_unchanged": true,
+      "twenty_source_paths_retained": true,
+      "current_source_changes_since_old_manifest": 2,
+      "source_guard_and_after_checks_retained": true,
+      "old_tests": 82,
+      "current_tests": 88,
+      "scientific_commands_ast_identical": true,
+      "old_hpca_require_calls_preserved": 41,
+      "old_hpca_test_function_asts_preserved": 15,
+      "added_hpca_tests": 3,
+      "scope": "Fresh structural and mechanism checks; original model-output receipts remain immutable."
+    },
+    "confirmatory": {
+      "production_modules_unchanged": true,
+      "original_test_functions_retained": 10,
+      "original_assertion_call_asts_identical": 23,
+      "synthetic_historical_wrapper_removed": true,
+      "original_historical_rows": 384,
+      "original_historical_sha256": "4c2b88f85c9ef5fea08790775a652798a72e9281bed1534561f14c681e7bba9d",
+      "collision_test_uses_original_first_image_id": 250137,
+      "synthetic_candidate_statistics_remain_synthetic": true,
+      "model_promotion_authorized": false
+    }
+  },
+  "validation": {
+    "joint": {
+      "executed_tests": 88,
+      "passed_tests": 88,
+      "skipped_tests": 0,
+      "probes": 2,
+      "all_commands_returned_zero": true,
+      "versions": {
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "versions": {
+          "numpy": "2.3.5",
+          "scipy": "1.17.0"
+        }
+      },
+      "new_model_inferences": 0
+    },
+    "scoped": {
+      "unittest_reported_tests_run": 171,
+      "passed_test_lines": 171,
+      "class_setup_skips": [
+        "setUpClass (test_backend.BackendIntegration) ... skipped 'real model and observation paths must be supplied'"
+      ],
+      "skip_is_not_subtracted_from_executed_test_count": true,
+      "errors": 0,
+      "failures": 0,
+      "versions": {
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "versions": {
+          "torch": "2.10.0+cpu",
+          "torchvision": "0.25.0+cpu",
+          "numpy": "2.2.6",
+          "Pillow": "11.3.0",
+          "transformers": "5.20.2",
+          "tokenizers": "0.23.3",
+          "safetensors": "0.8.0",
+          "huggingface-hub": "2.2.0"
+        }
+      },
+      "all_materialized_inputs_unchanged": true
+    },
+    "mutation_cases": [
+      {
+        "case": "current-source",
+        "path": "qualification/hpca-neuroscience-20261110/chat_evidence_audit.py",
+        "original_sha256": "be749422d54aae0c6672dc15084ff54805bdabf6448b2e6cc55e272a2c24b870",
+        "mutated_sha256": "29e8ca6fe74dc0dbe7fac1c4990caebda69d09c011a0960e299a27c781c81c9b",
+        "mutation": "append one newline without updating any trusted hash",
+        "argv": [
+          "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/c0e-hosted-ci-repair-v1/joint-venv/bin/python",
+          "-B",
+          "qualification/hcsn_hpca_joint_gate/run.py",
+          "--output",
+          "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/c0e-hosted-ci-repair-v1/mutation-output-current-source"
+        ],
+        "returncode": 1,
+        "expected_diagnostic": "joint source differs: qualification/hpca-neuroscience-20261110/chat_evidence_audit.py",
+        "rejected": true
+      },
+      {
+        "case": "historical-manifest",
+        "path": "qualification/hcsn_hpca_joint_gate/MANIFEST.json",
+        "original_sha256": "ec51f35c52eb615ba00f5b43d8f4b4c6a99209c14470bbeb35a998992e5b53e8",
+        "mutated_sha256": "2a608f34f594dc29d0536f1a644087737bfbcb08a4dd30d720c2d9376e50b7a4",
+        "mutation": "append one newline without updating any trusted hash",
+        "argv": [
+          "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/c0e-hosted-ci-repair-v1/joint-venv/bin/python",
+          "-B",
+          "qualification/hcsn_hpca_joint_gate/run.py",
+          "--output",
+          "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/c0e-hosted-ci-repair-v1/mutation-output-historical-manifest"
+        ],
+        "returncode": 1,
+        "expected_diagnostic": "historical joint manifest differs",
+        "rejected": true
+      },
+      {
+        "case": "original-history",
+        "path": "qa/ndu-grounded-generation/historical_exclusions.json",
+        "original_sha256": "4c2b88f85c9ef5fea08790775a652798a72e9281bed1534561f14c681e7bba9d",
+        "mutated_sha256": "5233f33d7572adc227035e72dcd70c384cb726520565b4ba5699aa96ce01f8e7",
+        "mutation": "append one newline without updating any trusted hash",
+        "argv": [
+          "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/c0e-hosted-ci-repair-v1/scoped-venv/bin/python",
+          "-B",
+          "-c",
+          "import sys;sys.path.insert(0,'qa/ndu-grounded-generation');from test_confirmatory_v2 import fixture;fixture()"
+        ],
+        "returncode": 1,
+        "expected_diagnostic": "confirmatory fixture requires original historical bytes",
+        "rejected": true
+      }
+    ],
+    "gates": {
+      "original_blob_limit": 512000,
+      "original_blob_size_pass": true,
+      "codespell_pass": true,
+      "prettier_pass": true,
+      "runner_locked_ruff_pass": true,
+      "original_format_selector_groups": [],
+      "whole_repository_format_gate_reexecuted": false
+    }
+  },
+  "tree_preservation": {
+    "baseline_tree": "a14a6c859ccb3fbea90da4568a843cd15fec0286",
+    "entry_count_before": 29866,
+    "entry_count_after": 29867,
+    "changed_paths": [
+      "qa/ndu-grounded-generation/test_confirmatory_v2.py",
+      "qualification/hcsn_hpca_joint_gate/CURRENT_MANIFEST.json",
+      "qualification/hcsn_hpca_joint_gate/README.md",
+      "qualification/hcsn_hpca_joint_gate/run.py"
+    ],
+    "all_outside_entries_mode_type_oid_identical": true,
+    "partial_clone_construction": "write-tree --missing-ok inherits verified original remote tree OIDs; every changed old/new blob exists and was byte-verified; original size policy ran unchanged."
+  },
+  "limitations": [
+    "Local Python is 3.12.3; hosted Python was 3.12.16. All workflow dependency pins were matched exactly.",
+    "BackendIntegration retains the existing class-level skip because real model and observation paths were not supplied.",
+    "These unit and mechanism checks do not establish external model efficacy, independent scientific qualification, native platform qualification or deployment authority.",
+    "Original failures, failed operational attempts and all raw output streams are preserved in the accompanying evidence archive."
+  ]
+}

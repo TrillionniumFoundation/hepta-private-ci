@@ -1,0 +1,17 @@
+{
+  "architecture": "continuous_rnn",
+  "batch_size": 32,
+  "data_seed": 7123,
+  "depth": 1,
+  "length": 32,
+  "lr": 0.003,
+  "match_cell_budget": false,
+  "seed": 2203,
+  "stage": "representation",
+  "task": "multimodal_select",
+  "test_size": 1024,
+  "train_size": 2048,
+  "updates": 240,
+  "val_size": 512,
+  "width": 32
+}

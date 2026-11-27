@@ -1,0 +1,328 @@
+{
+  "artifacts": {
+    "events.jsonl": "07ee399f8686115a21a33b4228c921a8f7a79466526801b79fc725e38ce40fa0",
+    "initial.pt": "2a0a88e7835943cf75c34000a19d579b991ea012b327d8b8b05337ab7b740b9e",
+    "plan.json": "31fe0563a5338f27d3a02b077d5b3c4aae9f53497fc03d69d3d7f21c2169f643",
+    "training-domain.jsonl": "fc47d07f683ceffae75f3286d85806887c1af86bcf427c24bc3fc830dc6450a5"
+  },
+  "common_weights_unchanged": true,
+  "complete_training_epochs": 0,
+  "confirmation_access": false,
+  "cost_geometry": {
+    "cache_frozen_tables": true,
+    "content_coefficients_per_sample": 4368,
+    "grid": {
+      "active_cells": 256,
+      "endpoint": 4.8,
+      "initial_log_std": 0.08,
+      "phase_cells": 16,
+      "quadrature_order": 32,
+      "refractory": 0.2,
+      "tail_rate": 1.0
+    },
+    "layer_count": 1,
+    "physics_trainable": false,
+    "probability_coefficients_per_sample": 273,
+    "state_payload_fp64_bytes_per_sample": 37128,
+    "state_payload_scope": "probability and content only; excludes clocks, snapshots, autograd and temporary work",
+    "transition_matrix_coefficients_per_distinct_gap": 74529
+  },
+  "cpu_seconds": 48.797799212,
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "energy_joules": null,
+  "episode_ids": [
+    "A01-0",
+    "A01-256",
+    "A01-512",
+    "A01-768",
+    "A01-1024",
+    "A01-1280",
+    "A01-1536",
+    "A01-1792",
+    "A01-2048",
+    "A01-2304",
+    "A01-2560",
+    "A01-2816",
+    "A01-3072",
+    "A01-3328",
+    "A01-3584",
+    "A01-3840",
+    "A01-4096",
+    "A01-4352",
+    "A01-4608",
+    "A01-4864",
+    "A01-5120",
+    "A01-5376",
+    "A01-5632",
+    "A02-0",
+    "A02-256",
+    "A02-512",
+    "A02-768",
+    "A02-1024",
+    "A02-1280",
+    "A02-1536",
+    "A02-1792",
+    "A02-2048"
+  ],
+  "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/profile_hcsn.py\", line 72, in main\n    logits = model(x, dt)\n             ^^^^^^^^^^^^\n  File \"/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1773, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1784, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/cores.py\", line 234, in forward\n    value = self.core(encoded, dt, valid_mask=x[..., 12:24].bool().any(-1))\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1773, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1784, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/cores.py\", line 178, in forward\n    result = self.network(x, dt, state=state, observed=valid_mask, valid_mask=valid_mask,\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1773, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1784, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/network.py\", line 313, in forward\n    flow = layer.operator.advance(current[depth].probability, current[depth].content_mass,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/operator.py\", line 454, in advance\n    tables = [self(params.log_boundary, params.mu, params.sigma, params.absolute_reset,\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1773, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1784, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/frozen_tables.py\", line 94, in forward\n    table = super().forward(log_boundary, mu, sigma, absolute_reset, dt, discount)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/operator.py\", line 415, in forward\n    matrix, rewards = self._construct(params, margin, duration)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/operator.py\", line 357, in _construct\n    active_rows, active_rewards = self._point_row(positions, duration, params)\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/operator.py\", line 321, in _point_row\n    bins = _killed_interval_probability(x[..., None], horizon[..., None], mu, sigma,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/operator.py\", line 199, in _killed_interval_probability\n    + _normal_interval_logprob((left + x - mu * horizon) / scale,\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/operator.py\", line 185, in _normal_interval_logprob\n    return large + torch.log(-torch.expm1(small - large))\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: [enforce fail at alloc_cpu.cpp:124] err == 0. DefaultCPUAllocator: can't allocate memory: you tried to allocate 16842752 bytes. Error code 12 (Cannot allocate memory)\n",
+  "events": 8134,
+  "formal_fits_started": 0,
+  "frozen_table_cache": [
+    {
+      "build_seconds": 39.82762041781098,
+      "bytes_scope": "unique table tensor storages; excludes Python keys and allocator overhead",
+      "checkpoint_load_clears_cache": true,
+      "clears": 0,
+      "cold_start_per_fit": true,
+      "entries": 56,
+      "evictions": 0,
+      "hits": 1699,
+      "max_entries": 512,
+      "misses": 56,
+      "mode": "exact_frozen_table_memoization",
+      "peak_table_tensor_bytes": 34122816,
+      "physical_operator_qualification_extended": false,
+      "resident_table_tensor_bytes": 34122816
+    }
+  ],
+  "grid": {
+    "active_cells": 256,
+    "endpoint": 4.8,
+    "initial_log_std": 0.08,
+    "phase_cells": 16,
+    "quadrature_order": 32,
+    "refractory": 0.2,
+    "tail_rate": 1.0
+  },
+  "model": {
+    "disconnected_parameters": null,
+    "frozen_real_scalars": 607,
+    "parameters": [
+      {
+        "name": "frontend.0.weight",
+        "real_scalars": 400,
+        "shape": [
+          16,
+          25
+        ],
+        "trainable": false
+      },
+      {
+        "name": "frontend.0.bias",
+        "real_scalars": 16,
+        "shape": [
+          16
+        ],
+        "trainable": false
+      },
+      {
+        "name": "head.weight",
+        "real_scalars": 176,
+        "shape": [
+          11,
+          16
+        ],
+        "trainable": false
+      },
+      {
+        "name": "head.bias",
+        "real_scalars": 11,
+        "shape": [
+          11
+        ],
+        "trainable": false
+      },
+      {
+        "name": "core.network.layers.0.state_embedding",
+        "real_scalars": 4368,
+        "shape": [
+          273,
+          16
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.physics.raw_mu",
+        "real_scalars": 1,
+        "shape": [],
+        "trainable": false
+      },
+      {
+        "name": "core.network.layers.0.physics.raw_sigma",
+        "real_scalars": 1,
+        "shape": [],
+        "trainable": false
+      },
+      {
+        "name": "core.network.layers.0.physics.raw_log_boundary",
+        "real_scalars": 1,
+        "shape": [],
+        "trainable": false
+      },
+      {
+        "name": "core.network.layers.0.physics.raw_absolute_reset",
+        "real_scalars": 1,
+        "shape": [],
+        "trainable": false
+      },
+      {
+        "name": "core.network.layers.0.likelihood.weight",
+        "real_scalars": 5733,
+        "shape": [
+          273,
+          21
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.likelihood.bias",
+        "real_scalars": 273,
+        "shape": [
+          273
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.write_gate.weight",
+        "real_scalars": 5733,
+        "shape": [
+          273,
+          21
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.write_gate.bias",
+        "real_scalars": 273,
+        "shape": [
+          273
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.content_proposal.weight",
+        "real_scalars": 336,
+        "shape": [
+          16,
+          21
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.layers.0.content_proposal.bias",
+        "real_scalars": 16,
+        "shape": [
+          16
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.readout.weight",
+        "real_scalars": 336,
+        "shape": [
+          16,
+          21
+        ],
+        "trainable": true
+      },
+      {
+        "name": "core.network.readout.bias",
+        "real_scalars": 16,
+        "shape": [
+          16
+        ],
+        "trainable": true
+      }
+    ],
+    "scalar_identifiability_qualified": false,
+    "scope": "unique registered parameters; complex entries count as two real scalars",
+    "trainable_real_scalars": 17084
+  },
+  "numerical_admission": "HOLD",
+  "peak_rss_bytes": 4383834112,
+  "plan_sha256": "31fe0563a5338f27d3a02b077d5b3c4aae9f53497fc03d69d3d7f21c2169f643",
+  "schema": "hcsn-real-window-cost-probe-v1",
+  "scientific_admission": "HOLD",
+  "scope": "first ABC windows repeated for bounded cost and trained-posterior observation",
+  "source_after": {
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/audit_training.py": "2a745a7821d65e3b33c0d81a7b383fe2d1924fa8eedc0759fc71c477a835200d",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/capacity.py": "f20dffe0929972ea2f7ca19430be3e86f36c8b258fedcd84ecd89e36c395ec3d",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/episodes.py": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/models.py": "59ddde881490a1c99572e645f9b6ef31b27b8164175934877de2a87430e8d877",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/test_capacity.py": "6e09cb95672c961f2804a91624d923d6db6179b2e585aa50ebdf22722806fe6c",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/test_episodes.py": "dc1dc47e854c86c833b6fa497ec29d9642808b307b2a8b3a3736acdaaeeec4c2",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/train_development.py": "4d081f50a9f11c452990c76adab29610c71d20af8c613fa09ef531c32c8b96e0",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/campaign.py": "8011b2f325d1e08ab26088d9eceec029c032e2c3ef3af5d2076a514957f964fb",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/cores.py": "a010e476411f5a73638a49d71fe9338f6f8d03d1080bff3749ec232cc3f24f78",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/frozen_tables.py": "bd3d938014deefaab2b79b6317145573539d3be9a3210b07632de7619b6955e6",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/profile_hcsn.py": "c5ed2e5739aaec31362f0b343c0a3ca6c7a0871fb545c206789bdcce3d7c3ea6",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/test_cores.py": "fbc369576df94736611d1c02a2ce2056a3742c8ce129509392ac01d3940331ad",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/train.py": "56080c325bcc98cdc2e214bcf08a1aabae5088df4996bf4944c40879f4f84706",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/evidence_chain.py": "a20735bfe660028797a1ac466a6e91c2d9c8362d6308f854183440c06b4d9dbb",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/semantics.py": "b90883ecfc4170227864a7dd0c9def70a37d100096b248435f87fae785534119",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/training_domain.py": "64866abc5e4d4fbbf45469fbd7e4514e5d7dc6432d5c1e2f1d778cdc37836ce1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/training_domain_audit.py": "0e887a7ca32ef08628b49a86c08bbfad9b7fd96ec50aadf85d5e0a8dea4c7960",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/training_domain_finite.py": "3d2079db1158fd4e89fc52cbac2121a94be7ce85374cc546565c2e91991986e5",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+  },
+  "source_before": {
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/audit_training.py": "2a745a7821d65e3b33c0d81a7b383fe2d1924fa8eedc0759fc71c477a835200d",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/capacity.py": "f20dffe0929972ea2f7ca19430be3e86f36c8b258fedcd84ecd89e36c395ec3d",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/episodes.py": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/models.py": "59ddde881490a1c99572e645f9b6ef31b27b8164175934877de2a87430e8d877",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/test_capacity.py": "6e09cb95672c961f2804a91624d923d6db6179b2e585aa50ebdf22722806fe6c",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/test_episodes.py": "dc1dc47e854c86c833b6fa497ec29d9642808b307b2a8b3a3736acdaaeeec4c2",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v2/train_development.py": "4d081f50a9f11c452990c76adab29610c71d20af8c613fa09ef531c32c8b96e0",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/campaign.py": "8011b2f325d1e08ab26088d9eceec029c032e2c3ef3af5d2076a514957f964fb",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/cores.py": "a010e476411f5a73638a49d71fe9338f6f8d03d1080bff3749ec232cc3f24f78",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/frozen_tables.py": "bd3d938014deefaab2b79b6317145573539d3be9a3210b07632de7619b6955e6",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/profile_hcsn.py": "c5ed2e5739aaec31362f0b343c0a3ca6c7a0871fb545c206789bdcce3d7c3ea6",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/test_cores.py": "fbc369576df94736611d1c02a2ce2056a3742c8ce129509392ac01d3940331ad",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/proposals/localization-v3/train.py": "56080c325bcc98cdc2e214bcf08a1aabae5088df4996bf4944c40879f4f84706",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/evidence_chain.py": "a20735bfe660028797a1ac466a6e91c2d9c8362d6308f854183440c06b4d9dbb",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/semantics.py": "b90883ecfc4170227864a7dd0c9def70a37d100096b248435f87fae785534119",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/training_domain.py": "64866abc5e4d4fbbf45469fbd7e4514e5d7dc6432d5c1e2f1d778cdc37836ce1",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/training_domain_audit.py": "0e887a7ca32ef08628b49a86c08bbfad9b7fd96ec50aadf85d5e0a8dea4c7960",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/training_domain_finite.py": "3d2079db1158fd4e89fc52cbac2121a94be7ce85374cc546565c2e91991986e5",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v3/qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+  },
+  "source_unchanged": true,
+  "status": "failed",
+  "steps": [],
+  "training_adequacy_established": false,
+  "wall_seconds": 48.838508114917204
+}

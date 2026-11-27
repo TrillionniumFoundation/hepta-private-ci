@@ -1,0 +1,13 @@
+# R22 mathematical proof: exact centered-gradient B&B
+
+Parent R21 exact HEAD 77fc87181d0abe28150b8293070bf48112bcab54. Same two-step 16-leaf known input law, positive risk, 2/3/4-parameter models, literal rational candidates, parameter cube, 0.01 threshold and 4,000 split cap.
+
+The original inherited R21 natural interval score is a rigorous box-wide population lower bound. New interval differentiation propagates exact Fraction bounds for all derivatives of the true forward recurrence, rational feedback, stage+terminal squares, conditional entropic recursion and external penalty. For q(u)=k*u/(1+u^2), the extrema of q'(u) over a closed interval occur at endpoints or included 0,+sqrt(3),-sqrt(3) with exact values k and -k/8.
+
+For rho>0, CE_rho(y0,y1)=(y0+y1)/2+logcosh(rho*(y1-y0)/2)/rho, hence grad(CE)=(grad(y0)+grad(y1))/2 + tanh(rho*(y1-y0)/2)*(grad(y1)-grad(y0))/2. The positive Lambert continued fraction tanh(z)=z/(1+z^2/(3+z^2/(5+...))) has a strictly nonnegative tail bounded above by z^2/(2*N+3) at N=7. Evaluating both tail extremals via exact Fraction and ordering the outputs bounds tanh(z). For negative z, oddness applies; for intervals, monotonicity applies; outside (-4,4), the method uses universal [-1,1]. Integer floor/ceiling at 1e12 denominator and argument floor/ceiling at 1e8 expand every interval.
+
+For box midpoint c and radii r_i, every true partial derivative is bounded in absolute value by M_i on the whole box. The fundamental theorem of calculus therefore implies J(theta)>=J_lower({c})-sum_i(r_i*M_i) for EVERY theta in the box, even when J is nonconvex. Taking max of this with the R21 natural lower is globally sound and never weakens the lower on a fixed box.
+
+Proof-tree bisections exactly cover each parent; pruning is permitted only if an exact rational child lower already exceeds the fixed candidate upper. The frontier together with pruned boxes covers the full root cube. Outside the root cube, nonnegative stage and terminal costs with parameter regularizer imply J>=9/4, above each candidate upper. Float heap keys influence order only, never proof predicates or pruning. The candidate upper minus the minimum remaining exact lower is a rigorous GLOBAL POPULATION COST regret upper bound, NOT uniqueness or optimal-weight-location proof.
+
+All six complete proof trees are independently replayed. The proof does not establish a high-dimensional polynomial-time algorithm, arbitrary nonlinear FBSDE, viscosity solution, unknown world dynamics, pretrained LLM performance or deployment readiness. New W3 certifications are retrospective checks of R21 frozen weights, with no refitting.

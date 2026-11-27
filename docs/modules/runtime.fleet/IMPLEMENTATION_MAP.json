@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+    "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.fleet",
@@ -38,7 +38,8 @@
       "operation": "admit_host",
       "nativeSymbol": "pub fn admit_host(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     },
     {
       "designOperation": "allocate",
@@ -61,7 +62,8 @@
       "operation": "allocate",
       "nativeSymbol": "pub fn issue(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     },
     {
       "designOperation": "renew_or_revoke",
@@ -84,7 +86,8 @@
       "operation": "renew_or_revoke",
       "nativeSymbol": "pub fn renew_or_revoke(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     }
   ],
   "repositoryControlledGaps": [
@@ -119,6 +122,16 @@
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.fleet/TECHNICAL.md",
   "sourceRoot": [
+    "codex-rs/hepta-fleet"
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
     "codex-rs/hepta-fleet"
   ]
 }

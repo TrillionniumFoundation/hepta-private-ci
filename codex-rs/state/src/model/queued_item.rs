@@ -115,6 +115,7 @@ pub enum QueuedClientDispatchClaimOutcome {
 pub enum QueuedClientBindingFinalizeMode {
     AllowIfAbsent,
     ReconcileOnly,
+    CloseIfAbsent,
 }
 
 /// Complete one exact queue admission after the caller has inspected the

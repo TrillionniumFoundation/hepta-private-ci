@@ -1,0 +1,991 @@
+{
+  "schema": "hepta.verify.common-ci-read-only-triage.v1",
+  "recorded_at_utc": "2026-11-10T08:59:10.554210+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 5637,
+  "run_id": 42773881466,
+  "api_head_sha": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+  "actual_bazel_checkout": "534459a988e278a506338649977eb7f4a8b81fff",
+  "both_git_commit_tree_sha": "35decac9eb973c81b303911b2696433729ee1fd5",
+  "identity_scope": "Distinct source-head and synthetic merge commits; Git API independently confirmed identical repository tree bytes. No head/merge commit relabeling.",
+  "jobs_snapshot": {
+    "api_total_count": 36,
+    "received": 36,
+    "per_page": 100,
+    "counts": {
+      "success": 17,
+      "failure": 9,
+      "skipped": 8,
+      "queued": 2
+    },
+    "raw_metadata_file": "jobs-42773881466.json"
+  },
+  "scope": "Read-only acquisition of eight completed failed Bazel jobs. Original cargo-deny job is separately captured elsewhere and is not duplicated here. No source edits, test executions, reruns, merges, or gate closure.",
+  "jobs": [
+    {
+      "job_id": 129692219915,
+      "job_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "api_head_sha": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+      "checkout": [
+        {
+          "line": 187,
+          "text": "HEAD is now at 534459a Merge a2cd828aad47c56ac8c01dc2e423454eca7eafae into 03f5aadfa59c92b7e1a47235f9e8ce86f659d1a2"
+        },
+        {
+          "line": 190,
+          "text": "534459a988e278a506338649977eb7f4a8b81fff"
+        }
+      ],
+      "raw_log": {
+        "path": "129692219915.log",
+        "bytes": 1012924,
+        "sha256": "817ac373379a894c6bc20885f7681c06d3e13afc7b3738642039fbf48a265f57",
+        "line_count": 5167,
+        "scope": "Exact decoded UTF-8 text returned by GitHub job-log connector; BOM and CRLF preserved where returned."
+      },
+      "gzip": {
+        "path": "129692219915.log.gz",
+        "bytes": 177428,
+        "sha256": "2914ac3b95fd1a139f87c101ae32d807bc55b93fc6a4b449961ae270cb01fe32",
+        "roundtrip_bytes_verified": true
+      },
+      "bazel_final_counts": [
+        {
+          "line": 4612,
+          "text": "Executed 51 out of 142 tests: 107 tests pass, 3 fail locally, and 32 were skipped."
+        }
+      ],
+      "observed_bazel_target_statuses": {
+        "//codex-rs/core:core-all-test": {
+          "line": 3750,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/core:core-all-test (Summary)"
+        },
+        "//codex-rs/exec-server:exec-server-file_system_windows-test": {
+          "line": 4583,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-file_system_windows-test              FAILED in 8.3s"
+        },
+        "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests": {
+          "line": 4585,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests     FAILED in 8.5s"
+        }
+      },
+      "failed_or_timed_out_targets": {
+        "//codex-rs/core:core-all-test": {
+          "line": 3750,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/core:core-all-test (Summary)"
+        },
+        "//codex-rs/exec-server:exec-server-file_system_windows-test": {
+          "line": 4583,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-file_system_windows-test              FAILED in 8.3s"
+        },
+        "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests": {
+          "line": 4585,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests     FAILED in 8.5s"
+        }
+      },
+      "flaky_targets": {},
+      "failed_test_names_first_occurrence": {
+        "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance": 2697,
+        "g5_trust::tests::exact_head_and_predecessor_binding_is_required": 2698,
+        "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority": 2699,
+        "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted": 2700,
+        "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge": 2701,
+        "g5_trust::tests::policy_and_revocation_files_must_be_canonical": 2702,
+        "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance": 2707,
+        "trust::tests::trust_policy_digest_is_external_and_fail_closed": 2720,
+        "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy": 2721,
+        "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers": 2722,
+        "file_system_operations_can_reject_junctions_in_any_path_component::test_case_1_local": 2910,
+        "file_system_operations_can_reject_junctions_in_any_path_component::test_case_2_remote": 2911,
+        "file_system_remote_fs_helper_respects_windows_sandbox_write_policy": 2912,
+        "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_1_local": 2913,
+        "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_2_remote": 2914,
+        "shared::file_system_create_directory_creates_nested_directories::test_case_5_local_sandboxed_no_follow": 2927,
+        "shared::file_system_create_directory_creates_nested_directories::test_case_6_remote_sandboxed_no_follow": 2928,
+        "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_1_local": 2935,
+        "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_2_remote": 2936,
+        "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_3_local_sandboxed": 2941,
+        "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_4_remote_sandboxed": 2942,
+        "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_1_local": 2945,
+        "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_2_remote": 2946,
+        "shared::file_system_walk_honors_read_sandbox::test_case_1_local": 2951,
+        "shared::file_system_walk_honors_read_sandbox::test_case_2_remote": 2952,
+        "shared::file_system_write_file_writes_bytes::test_case_5_local_sandboxed_no_follow": 2961,
+        "shared::file_system_write_file_writes_bytes::test_case_6_remote_sandboxed_no_follow": 2962,
+        "suite::workspace_roots::workspace_roots_allow_file_and_command_writes": 3255,
+        "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace": 3483,
+        "suite::workspace_roots::workspace_roots_allow_apply_patch_in_secondary_root": 3829
+      },
+      "failure_count_note": "Failed Rust test names can repeat in retry attempts and tail summaries. These are deduplicated observations, not an episode-level failure rate."
+    },
+    {
+      "job_id": 129692219954,
+      "job_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "api_head_sha": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+      "checkout": [
+        {
+          "line": 186,
+          "text": "HEAD is now at 534459a Merge a2cd828aad47c56ac8c01dc2e423454eca7eafae into 03f5aadfa59c92b7e1a47235f9e8ce86f659d1a2"
+        },
+        {
+          "line": 189,
+          "text": "534459a988e278a506338649977eb7f4a8b81fff"
+        }
+      ],
+      "raw_log": {
+        "path": "129692219954.log",
+        "bytes": 456636,
+        "sha256": "44c3329292e6a0c63ed51748efe3f4db67a03e16b36bc0b5338423bd1aa8287d",
+        "line_count": 3980,
+        "scope": "Exact decoded UTF-8 text returned by GitHub job-log connector; BOM and CRLF preserved where returned."
+      },
+      "gzip": {
+        "path": "129692219954.log.gz",
+        "bytes": 64407,
+        "sha256": "ce85f52fa4883ccc10342f0e4b9a0ba6afc930fbf70142bbac2ebed1afe9ef98",
+        "roundtrip_bytes_verified": true
+      },
+      "bazel_final_counts": [
+        {
+          "line": 3601,
+          "text": "Executed 35 out of 143 tests: 91 tests pass, 2 fail locally, and 50 were skipped."
+        }
+      ],
+      "observed_bazel_target_statuses": {
+        "//codex-rs/exec-server:exec-server-exec_process-test": {
+          "line": 3586,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-exec_process-test                     FAILED in 1.5s"
+        },
+        "//codex-rs/hepta-automation:hepta-automation-unit-tests": {
+          "line": 3588,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-automation:hepta-automation-unit-tests                  FAILED in 154.0s"
+        },
+        "//codex-rs/core:core-unit-tests": {
+          "line": 3590,
+          "status": "FLAKY",
+          "text": "//codex-rs/core:core-unit-tests                                           FLAKY, failed in 1 out of 9 in 111.2s"
+        }
+      },
+      "failed_or_timed_out_targets": {
+        "//codex-rs/exec-server:exec-server-exec_process-test": {
+          "line": 3586,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-exec_process-test                     FAILED in 1.5s"
+        },
+        "//codex-rs/hepta-automation:hepta-automation-unit-tests": {
+          "line": 3588,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-automation:hepta-automation-unit-tests                  FAILED in 154.0s"
+        }
+      },
+      "flaky_targets": {
+        "//codex-rs/core:core-unit-tests": {
+          "line": 3590,
+          "status": "FLAKY",
+          "text": "//codex-rs/core:core-unit-tests                                           FLAKY, failed in 1 out of 9 in 111.2s"
+        }
+      },
+      "failed_test_names_first_occurrence": {
+        "circuit_admission::tests::cancellation_before_a_computation_claim_never_manufactures_execution_authority": 2815,
+        "circuit_admission::tests::downstream_request_changes_and_command_id_reuse_cannot_rebind_the_claim": 2816,
+        "circuit_admission::tests::independent_owner_connections_cannot_both_claim_the_same_computation": 2817,
+        "circuit_admission::tests::lease_takeover_keeps_the_original_invocation_and_only_allows_reconciliation": 2818,
+        "circuit_admission::tests::ready_completed_and_corrupt_activations_cannot_be_admitted_as_pending_work": 2819,
+        "circuit_admission::tests::only_first_persisted_claim_returns_a_single_use_execution_admission": 2820,
+        "circuit_admission::tests::lost_claim_response_before_any_cell_contact_never_reopens_execution": 2821,
+        "circuit_admission::tests::run_deadline_rejects_new_claims_but_preserves_readback_of_existing_reservations": 2822,
+        "circuit_admission::tests::wrong_owner_generation_expiry_and_clock_regression_never_create_a_token": 2823,
+        "circuit_store_tests::concurrent_owner_connections_commit_only_one_revision_and_one_dispatch": 2842,
+        "circuit_store_tests::bounded_circuit_migration_coexists_with_existing_v1_definition": 2843,
+        "circuit_store_tests::corrupt_projection_and_removed_event_tail_are_never_recovered_as_success": 2844,
+        "circuit_store_tests::frozen_join_reference_bytes_survive_canonical_replay_and_reopen": 2846,
+        "circuit_store_tests::separate_agent_partitions_can_use_the_same_run_id_without_state_bleed": 2847,
+        "circuit_store_tests::scope_version_and_owner_mismatch_reject_without_mutating_existing_run": 2848,
+        "circuit_store_tests::durable_dispatch_is_idempotent_and_reopens_without_reissuing_work": 2849,
+        "circuit_store_tests::successor_fences_old_writer_and_reconciles_original_invocation_after_ack_loss": 2852,
+        "remote_windows_sandbox_process_accepts_process_write": 3014,
+        "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context": 3068
+      },
+      "failure_count_note": "Failed Rust test names can repeat in retry attempts and tail summaries. These are deduplicated observations, not an episode-level failure rate."
+    },
+    {
+      "job_id": 129692219959,
+      "job_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "api_head_sha": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+      "checkout": [
+        {
+          "line": 188,
+          "text": "HEAD is now at 534459a Merge a2cd828aad47c56ac8c01dc2e423454eca7eafae into 03f5aadfa59c92b7e1a47235f9e8ce86f659d1a2"
+        },
+        {
+          "line": 191,
+          "text": "534459a988e278a506338649977eb7f4a8b81fff"
+        }
+      ],
+      "raw_log": {
+        "path": "129692219959.log",
+        "bytes": 713620,
+        "sha256": "2752fde2464bf160c79b5973104b227cf9523301cbae64e6869aa4a470c20912",
+        "line_count": 5405,
+        "scope": "Exact decoded UTF-8 text returned by GitHub job-log connector; BOM and CRLF preserved where returned."
+      },
+      "gzip": {
+        "path": "129692219959.log.gz",
+        "bytes": 101163,
+        "sha256": "dda58c2d28b64862eaaf3e0f129435ff1e46bcf2980ae298141a0787ee24c932",
+        "roundtrip_bytes_verified": true
+      },
+      "bazel_final_counts": [
+        {
+          "line": 4877,
+          "text": "Executed 55 out of 149 tests: 104 tests pass, 3 fail locally, and 42 were skipped."
+        }
+      ],
+      "observed_bazel_target_statuses": {
+        "//codex-rs/app-server:app-server-all-test": {
+          "line": 3823,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/app-server:app-server-all-test (Summary)"
+        },
+        "//codex-rs/cli:cli-sandbox_cloud_config-test": {
+          "line": 4835,
+          "status": "FAILED",
+          "text": "//codex-rs/cli:cli-sandbox_cloud_config-test                             FAILED in 2.2s"
+        },
+        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests": {
+          "line": 4837,
+          "status": "FAILED",
+          "text": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 88.0s"
+        }
+      },
+      "failed_or_timed_out_targets": {
+        "//codex-rs/app-server:app-server-all-test": {
+          "line": 3823,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/app-server:app-server-all-test (Summary)"
+        },
+        "//codex-rs/cli:cli-sandbox_cloud_config-test": {
+          "line": 4835,
+          "status": "FAILED",
+          "text": "//codex-rs/cli:cli-sandbox_cloud_config-test                             FAILED in 2.2s"
+        },
+        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests": {
+          "line": 4837,
+          "status": "FAILED",
+          "text": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 88.0s"
+        }
+      },
+      "flaky_targets": {},
+      "failed_test_names_first_occurrence": {
+        "desktop::tests::readonly_preserves_private_and_default_desktop_access": 2975,
+        "desktop::tests::workspace_private_desktop_checks_the_exact_capability": 2978,
+        "spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite": 3102,
+        "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes": 3108,
+        "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces": 3110,
+        "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells": 3112,
+        "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn": 3120,
+        "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn": 3121,
+        "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells": 3122,
+        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit": 3123,
+        "unified_exec::tests::legacy_non_tty_cmd_emits_output": 3127,
+        "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides": 3128,
+        "unified_exec::tests::restricted_token_rejects_managed_network_before_spawn": 3267,
+        "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots": 3268,
+        "sandbox_fetches_and_enforces_cloud_managed_permission_profile": 3326,
+        "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2": 3463,
+        "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image": 3896
+      },
+      "failure_count_note": "Failed Rust test names can repeat in retry attempts and tail summaries. These are deduplicated observations, not an episode-level failure rate."
+    },
+    {
+      "job_id": 129692219997,
+      "job_name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "api_head_sha": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+      "checkout": [
+        {
+          "line": 127,
+          "text": "HEAD is now at 534459a Merge a2cd828aad47c56ac8c01dc2e423454eca7eafae into 03f5aadfa59c92b7e1a47235f9e8ce86f659d1a2"
+        },
+        {
+          "line": 130,
+          "text": "534459a988e278a506338649977eb7f4a8b81fff"
+        }
+      ],
+      "raw_log": {
+        "path": "129692219997.log",
+        "bytes": 1093569,
+        "sha256": "cc688441c97720ecec54af79b016de13d0f436c343502b8f74f3f87a4183f7e0",
+        "line_count": 10239,
+        "scope": "Exact decoded UTF-8 text returned by GitHub job-log connector; BOM and CRLF preserved where returned."
+      },
+      "gzip": {
+        "path": "129692219997.log.gz",
+        "bytes": 115301,
+        "sha256": "50d7c5dc804c176ee66cad5fb20c3be4ee1b7dbf59b838de3247dc01412231e6",
+        "roundtrip_bytes_verified": true
+      },
+      "bazel_final_counts": [
+        {
+          "line": 9627,
+          "text": "Executed 5 out of 580 tests: 410 tests pass, 5 fail remotely, and 165 were skipped."
+        }
+      ],
+      "observed_bazel_target_statuses": {
+        "//codex-rs/core:core-all-wine-exec-test": {
+          "line": 8000,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/core:core-all-wine-exec-test (Summary)"
+        },
+        "//codex-rs/exec-server:exec-server-capability_discovery-test": {
+          "line": 9618,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-capability_discovery-test             FAILED in 0.6s"
+        },
+        "//codex-rs/exec-server:exec-server-file_system_unix-test": {
+          "line": 9620,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-file_system_unix-test                 FAILED in 8.5s"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test": {
+          "line": 9622,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test FAILED in 15.7s"
+        },
+        "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests": {
+          "line": 9624,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests     FAILED in 0.1s"
+        }
+      },
+      "failed_or_timed_out_targets": {
+        "//codex-rs/core:core-all-wine-exec-test": {
+          "line": 8000,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/core:core-all-wine-exec-test (Summary)"
+        },
+        "//codex-rs/exec-server:exec-server-capability_discovery-test": {
+          "line": 9618,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-capability_discovery-test             FAILED in 0.6s"
+        },
+        "//codex-rs/exec-server:exec-server-file_system_unix-test": {
+          "line": 9620,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-file_system_unix-test                 FAILED in 8.5s"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test": {
+          "line": 9622,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test FAILED in 15.7s"
+        },
+        "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests": {
+          "line": 9624,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests     FAILED in 0.1s"
+        }
+      },
+      "flaky_targets": {},
+      "failed_test_names_first_occurrence": {
+        "g5_trust::tests::exact_head_and_predecessor_binding_is_required": 1180,
+        "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority": 1181,
+        "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance": 1182,
+        "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted": 1183,
+        "g5_trust::tests::policy_and_revocation_files_must_be_canonical": 1184,
+        "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge": 1185,
+        "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance": 1187,
+        "trust::tests::differential::original_openssh_sha256_sha512_and_every_packet_binding_are_preserved": 1198,
+        "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy": 1199,
+        "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers": 1200,
+        "trust::tests::trust_policy_digest_is_external_and_fail_closed": 1203,
+        "sandboxed_discovery_batches_roots_without_combining_different_permissions": 4102,
+        "sandboxed_file_system_helper_finds_bwrap_on_preserved_path": 7649,
+        "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends": 7970,
+        "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history": 8055
+      },
+      "failure_count_note": "Failed Rust test names can repeat in retry attempts and tail summaries. These are deduplicated observations, not an episode-level failure rate."
+    },
+    {
+      "job_id": 129692220025,
+      "job_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "api_head_sha": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+      "checkout": [
+        {
+          "line": 184,
+          "text": "HEAD is now at 534459a Merge a2cd828aad47c56ac8c01dc2e423454eca7eafae into 03f5aadfa59c92b7e1a47235f9e8ce86f659d1a2"
+        },
+        {
+          "line": 187,
+          "text": "534459a988e278a506338649977eb7f4a8b81fff"
+        }
+      ],
+      "raw_log": {
+        "path": "129692220025.log",
+        "bytes": 750472,
+        "sha256": "2dff35c7f0a895bad7d61ada810825021c869c5d339cdee16cd83a0da96ab5a6",
+        "line_count": 6418,
+        "scope": "Exact decoded UTF-8 text returned by GitHub job-log connector; BOM and CRLF preserved where returned."
+      },
+      "gzip": {
+        "path": "129692220025.log.gz",
+        "bytes": 126534,
+        "sha256": "e3990b266729ad66673fe8564e64601fccbf619713258b37c2c4067cf45a6c9c",
+        "roundtrip_bytes_verified": true
+      },
+      "bazel_final_counts": [
+        {
+          "line": 5593,
+          "text": "Executed 42 out of 147 tests: 98 tests pass, 4 fail locally, and 45 were skipped."
+        }
+      ],
+      "observed_bazel_target_statuses": {
+        "//codex-rs/tui:tui-unit-tests": {
+          "line": 3675,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/tui:tui-unit-tests (Summary)"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests": {
+          "line": 5576,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 80.9s"
+        },
+        "//codex-rs/hepta-infer-core:hepta-infer-core-unit-tests": {
+          "line": 5578,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-infer-core:hepta-infer-core-unit-tests                  FAILED in 101.0s"
+        },
+        "//codex-rs/hepta-neuron:hepta-neuron-unit-tests": {
+          "line": 5580,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-neuron:hepta-neuron-unit-tests                          FAILED in 95.9s"
+        }
+      },
+      "failed_or_timed_out_targets": {
+        "//codex-rs/tui:tui-unit-tests": {
+          "line": 3675,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/tui:tui-unit-tests (Summary)"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests": {
+          "line": 5576,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 80.9s"
+        },
+        "//codex-rs/hepta-infer-core:hepta-infer-core-unit-tests": {
+          "line": 5578,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-infer-core:hepta-infer-core-unit-tests                  FAILED in 101.0s"
+        },
+        "//codex-rs/hepta-neuron:hepta-neuron-unit-tests": {
+          "line": 5580,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-neuron:hepta-neuron-unit-tests                          FAILED in 95.9s"
+        }
+      },
+      "flaky_targets": {},
+      "failed_test_names_first_occurrence": {
+        "durable_control::generation::tests::exact_binding_payload_deadline_and_size_fail_without_writing": 2815,
+        "durable_control::generation::tests::original_result_and_cancel_survive_reopen_without_redispatch": 2820,
+        "cell_generation_control::tests::invalid_scope_and_invalid_worker_proposals_never_become_terminal_records": 2948,
+        "cell_generation_control::tests::independent_worker_does_not_block_durable_cancellation_or_exact_readback": 2950,
+        "cell_generation_control::tests::terminal_control_reopen_reads_original_bytes_without_running_another_worker": 2952,
+        "cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch": 2954,
+        "cell_generation_current::tests::staged_genesis_is_synced_but_cannot_admit_resume_or_expose_active_snapshot": 2956,
+        "cell_generation_current::tests::retired_guarded_journal_rejects_ordinary_open_and_live_recovery_without_changing_bytes": 2957,
+        "cell_generation_journal::tests::actual_admission_clock_floor_survives_reopen_and_rejects_early_settlement": 2958,
+        "cell_generation_journal::tests::bounded_journal_reserves_cancellation_drain_settlement_and_delivery_ack": 2959,
+        "cell_generation_journal::tests::acknowledged_delivery_rejects_changed_bytes_ack_and_cost_after_reopen": 2960,
+        "cell_generation_journal::tests::independent_process_second_writer_cannot_acquire_the_owner_journal": 2963,
+        "cell_generation_journal::tests::precontact_clock_floor_is_durable_and_observation_does_not_allow_redispatch": 2970,
+        "cell_generation_journal::tests::reopen_with_lower_capacity_rejects_before_repairing_reserved_pending_history": 2972,
+        "cell_generation_journal::tests::observation::pending_cancel_reopen_stop_and_ack_gate_complete_task_cost": 2973,
+        "cell_generation_journal::tests::state_prefix_outbox_cost_and_replay_survive_owner_reopen": 2974,
+        "cell_generation_journal::tests::unobserved_pending_work_never_becomes_fresh_admission_after_reopen": 2975,
+        "cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence": 2976,
+        "cell_generation_journal::tests::torn_unwitnessed_commit_tail_restores_exact_pending_admission": 2977,
+        "cell_generation_journal::tests::task_cost_capacity_is_reserved_before_model_work_and_kept_for_acknowledgement": 3002,
+        "circuit_cell::tests::actual_cost_overrun_is_recorded_and_routes_to_budget_fallback": 3240,
+        "circuit_cell::tests::all_join_materializes_frozen_reference_bytes_for_the_next_native_cell": 3241,
+        "circuit_cell::tests::changed_principal_source_or_deadline_never_reaches_the_model": 3242,
+        "circuit_cell::tests::durable_circuit_to_native_cell_and_ack_loss_replay_use_one_model_call": 3243,
+        "circuit_cell::tests::either_late_phase_clock_regression_preserves_pending_for_readback": 3244,
+        "circuit_cell::tests::final_dispatch_gate_rechecks_time_after_durable_cell_admission": 3245,
+        "circuit_cell::tests::lost_claim_before_cell_admission_cannot_start_new_work_from_recovery": 3247,
+        "circuit_cell::tests::two_cells_share_one_model_facility_but_keep_separate_state_and_causal_output": 3248,
+        "circuit_cell::tests::unknown_model_response_recovers_original_output_and_late_cost_without_reexecution": 3249,
+        "neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison": 3376,
+        "neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown": 3380,
+        "neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison": 3381,
+        "neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider": 3382,
+        "neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed": 3383,
+        "neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout": 3385,
+        "neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model": 3387,
+        "neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback": 3397,
+        "neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent": 3399,
+        "neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation": 3400,
+        "neuron_generation_runtime::tests::control::stale_generation_changed_content_and_oversized_input_do_not_mutate_owner": 3401,
+        "neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation": 3402,
+        "neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome": 3404,
+        "neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending": 3407,
+        "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost": 3409,
+        "neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen": 3411,
+        "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery": 4219
+      },
+      "failure_count_note": "Failed Rust test names can repeat in retry attempts and tail summaries. These are deduplicated observations, not an episode-level failure rate."
+    },
+    {
+      "job_id": 129692220029,
+      "job_name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "api_head_sha": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+      "checkout": [
+        {
+          "line": 127,
+          "text": "HEAD is now at 534459a Merge a2cd828aad47c56ac8c01dc2e423454eca7eafae into 03f5aadfa59c92b7e1a47235f9e8ce86f659d1a2"
+        },
+        {
+          "line": 130,
+          "text": "534459a988e278a506338649977eb7f4a8b81fff"
+        }
+      ],
+      "raw_log": {
+        "path": "129692220029.log",
+        "bytes": 1069251,
+        "sha256": "10a3de4ba717e897af35caec9471459c6709e9ced29a58d7362d18070e4ab1b2",
+        "line_count": 9998,
+        "scope": "Exact decoded UTF-8 text returned by GitHub job-log connector; BOM and CRLF preserved where returned."
+      },
+      "gzip": {
+        "path": "129692220029.log.gz",
+        "bytes": 108958,
+        "sha256": "3380be8447e19eb7add47d2c2888788ee647f26d3f46f91fdce9dd352034b6d0",
+        "roundtrip_bytes_verified": true
+      },
+      "bazel_final_counts": [
+        {
+          "line": 9386,
+          "text": "Executed 5 out of 580 tests: 410 tests pass, 5 fail remotely, and 165 were skipped."
+        }
+      ],
+      "observed_bazel_target_statuses": {
+        "//codex-rs/core:core-all-wine-exec-test": {
+          "line": 7759,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/core:core-all-wine-exec-test (Summary)"
+        },
+        "//codex-rs/exec-server:exec-server-capability_discovery-test": {
+          "line": 9377,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-capability_discovery-test             FAILED in 0.5s"
+        },
+        "//codex-rs/exec-server:exec-server-file_system_unix-test": {
+          "line": 9379,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-file_system_unix-test                 FAILED in 8.6s"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test": {
+          "line": 9381,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test FAILED in 34.0s"
+        },
+        "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests": {
+          "line": 9383,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests     FAILED in 0.1s"
+        }
+      },
+      "failed_or_timed_out_targets": {
+        "//codex-rs/core:core-all-wine-exec-test": {
+          "line": 7759,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/core:core-all-wine-exec-test (Summary)"
+        },
+        "//codex-rs/exec-server:exec-server-capability_discovery-test": {
+          "line": 9377,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-capability_discovery-test             FAILED in 0.5s"
+        },
+        "//codex-rs/exec-server:exec-server-file_system_unix-test": {
+          "line": 9379,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-file_system_unix-test                 FAILED in 8.6s"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test": {
+          "line": 9381,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test FAILED in 34.0s"
+        },
+        "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests": {
+          "line": 9383,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests     FAILED in 0.1s"
+        }
+      },
+      "flaky_targets": {},
+      "failed_test_names_first_occurrence": {
+        "g5_trust::tests::exact_head_and_predecessor_binding_is_required": 964,
+        "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority": 965,
+        "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance": 966,
+        "g5_trust::tests::policy_and_revocation_files_must_be_canonical": 967,
+        "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted": 968,
+        "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance": 970,
+        "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge": 971,
+        "trust::tests::differential::original_openssh_sha256_sha512_and_every_packet_binding_are_preserved": 982,
+        "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy": 983,
+        "trust::tests::trust_policy_digest_is_external_and_fail_closed": 984,
+        "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers": 986,
+        "sandboxed_discovery_batches_roots_without_combining_different_permissions": 7370,
+        "sandboxed_file_system_helper_finds_bwrap_on_preserved_path": 7568,
+        "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends": 7729,
+        "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history": 7814
+      },
+      "failure_count_note": "Failed Rust test names can repeat in retry attempts and tail summaries. These are deduplicated observations, not an episode-level failure rate."
+    },
+    {
+      "job_id": 129692220034,
+      "job_name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "api_head_sha": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+      "checkout": [
+        {
+          "line": 219,
+          "text": "HEAD is now at 534459a Merge a2cd828aad47c56ac8c01dc2e423454eca7eafae into 03f5aadfa59c92b7e1a47235f9e8ce86f659d1a2"
+        },
+        {
+          "line": 222,
+          "text": "534459a988e278a506338649977eb7f4a8b81fff"
+        }
+      ],
+      "raw_log": {
+        "path": "129692220034.log",
+        "bytes": 1481357,
+        "sha256": "b0c0828d321b318bbe2bc508bbd1d60435a638eb1587c89e4f240d8d3a991e29",
+        "line_count": 11757,
+        "scope": "Exact decoded UTF-8 text returned by GitHub job-log connector; BOM and CRLF preserved where returned."
+      },
+      "gzip": {
+        "path": "129692220034.log.gz",
+        "bytes": 175750,
+        "sha256": "37873c09b777c33fcfc3b5644ee085f7420d94fa03e0502acc6da5dbb455098f",
+        "roundtrip_bytes_verified": true
+      },
+      "bazel_final_counts": [
+        {
+          "line": 11123,
+          "text": "Executed 8 out of 580 tests: 402 tests pass, 8 fail locally, and 170 were skipped."
+        }
+      ],
+      "observed_bazel_target_statuses": {
+        "//codex-rs/app-server:app-server-all-test": {
+          "line": 9733,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/app-server:app-server-all-test (Summary)"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests": {
+          "line": 11108,
+          "status": "TIMEOUT",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                         TIMEOUT in 300.3s"
+        },
+        "//codex-rs/hepta-memory:hepta-memory-unit-tests": {
+          "line": 11110,
+          "status": "TIMEOUT",
+          "text": "//codex-rs/hepta-memory:hepta-memory-unit-tests                         TIMEOUT in 300.4s"
+        },
+        "//codex-rs/exec-server:exec-server-forward-test": {
+          "line": 11112,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-forward-test                          FAILED in 33.6s"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test": {
+          "line": 11114,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test FAILED in 293.0s"
+        },
+        "//codex-rs/hepta-automation:hepta-automation-unit-tests": {
+          "line": 11116,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-automation:hepta-automation-unit-tests                  FAILED in 4.0s"
+        },
+        "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests": {
+          "line": 11118,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests    FAILED in 42.0s"
+        },
+        "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test": {
+          "line": 11120,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test FAILED in 1.0s"
+        }
+      },
+      "failed_or_timed_out_targets": {
+        "//codex-rs/app-server:app-server-all-test": {
+          "line": 9733,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/app-server:app-server-all-test (Summary)"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests": {
+          "line": 11108,
+          "status": "TIMEOUT",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                         TIMEOUT in 300.3s"
+        },
+        "//codex-rs/hepta-memory:hepta-memory-unit-tests": {
+          "line": 11110,
+          "status": "TIMEOUT",
+          "text": "//codex-rs/hepta-memory:hepta-memory-unit-tests                         TIMEOUT in 300.4s"
+        },
+        "//codex-rs/exec-server:exec-server-forward-test": {
+          "line": 11112,
+          "status": "FAILED",
+          "text": "//codex-rs/exec-server:exec-server-forward-test                          FAILED in 33.6s"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test": {
+          "line": 11114,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test FAILED in 293.0s"
+        },
+        "//codex-rs/hepta-automation:hepta-automation-unit-tests": {
+          "line": 11116,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-automation:hepta-automation-unit-tests                  FAILED in 4.0s"
+        },
+        "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests": {
+          "line": 11118,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests    FAILED in 42.0s"
+        },
+        "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test": {
+          "line": 11120,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test FAILED in 1.0s"
+        }
+      },
+      "flaky_targets": {},
+      "failed_test_names_first_occurrence": {
+        "circuit_admission::tests::cancellation_before_a_computation_claim_never_manufactures_execution_authority": 1941,
+        "circuit_admission::tests::independent_owner_connections_cannot_both_claim_the_same_computation": 1942,
+        "circuit_admission::tests::downstream_request_changes_and_command_id_reuse_cannot_rebind_the_claim": 1943,
+        "circuit_admission::tests::lease_takeover_keeps_the_original_invocation_and_only_allows_reconciliation": 1944,
+        "circuit_admission::tests::lost_claim_response_before_any_cell_contact_never_reopens_execution": 1945,
+        "circuit_admission::tests::only_first_persisted_claim_returns_a_single_use_execution_admission": 1946,
+        "circuit_admission::tests::run_deadline_rejects_new_claims_but_preserves_readback_of_existing_reservations": 1947,
+        "circuit_admission::tests::ready_completed_and_corrupt_activations_cannot_be_admitted_as_pending_work": 1948,
+        "circuit_admission::tests::wrong_owner_generation_expiry_and_clock_regression_never_create_a_token": 1949,
+        "circuit_store_tests::bounded_circuit_migration_coexists_with_existing_v1_definition": 1969,
+        "circuit_store_tests::corrupt_projection_and_removed_event_tail_are_never_recovered_as_success": 1970,
+        "circuit_store_tests::durable_dispatch_is_idempotent_and_reopens_without_reissuing_work": 1971,
+        "circuit_store_tests::concurrent_owner_connections_commit_only_one_revision_and_one_dispatch": 1972,
+        "circuit_store_tests::frozen_join_reference_bytes_survive_canonical_replay_and_reopen": 1973,
+        "circuit_store_tests::scope_version_and_owner_mismatch_reject_without_mutating_existing_run": 1974,
+        "circuit_store_tests::separate_agent_partitions_can_use_the_same_run_id_without_state_bleed": 1975,
+        "circuit_store_tests::successor_fences_old_writer_and_reconciles_original_invocation_after_ack_loss": 1976,
+        "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash": 2128,
+        "two_real_pairs_restart_one_without_peer_pid_churn": 2129,
+        "forwarder_runs_commands_and_transfers_files": 2190,
+        "native_app_server::recovery::tests::real_agentd_reconciles_failed_terminal_without_replaying_provider": 4406,
+        "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone": 4428,
+        "native_app_server::failure_tests::worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss": 4436,
+        "native_app_server::recovery::tests::real_agentd_reconciles_interrupted_terminal_without_replaying_provider": 4438,
+        "cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation": 8638,
+        "local_compact_executor_tests::terminal_bound_lease_transitions_audit_compact_journal_atomically": 8733,
+        "circuit_cell::tests::actual_cost_overrun_is_recorded_and_routes_to_budget_fallback": 8978,
+        "circuit_cell::tests::all_join_materializes_frozen_reference_bytes_for_the_next_native_cell": 8979,
+        "circuit_cell::tests::changed_principal_source_or_deadline_never_reaches_the_model": 8980,
+        "circuit_cell::tests::durable_circuit_to_native_cell_and_ack_loss_replay_use_one_model_call": 8981,
+        "circuit_cell::tests::either_late_phase_clock_regression_preserves_pending_for_readback": 8982,
+        "circuit_cell::tests::final_dispatch_gate_rechecks_time_after_durable_cell_admission": 8983,
+        "circuit_cell::tests::lost_claim_before_cell_admission_cannot_start_new_work_from_recovery": 8985,
+        "circuit_cell::tests::two_cells_share_one_model_facility_but_keep_separate_state_and_causal_output": 8986,
+        "circuit_cell::tests::unknown_model_response_recovers_original_output_and_late_cost_without_reexecution": 8987,
+        "notes_channel::tests::inherited_socketpair_preserves_exact_frame_bytes": 9148,
+        "five_running_agents_share_only_with_the_explicit_consumer": 9311,
+        "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends": 9317,
+        "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted": 9391,
+        "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference": 9755
+      },
+      "failure_count_note": "Failed Rust test names can repeat in retry attempts and tail summaries. These are deduplicated observations, not an episode-level failure rate."
+    },
+    {
+      "job_id": 129692220121,
+      "job_name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "api_head_sha": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+      "checkout": [
+        {
+          "line": 180,
+          "text": "HEAD is now at 534459a Merge a2cd828aad47c56ac8c01dc2e423454eca7eafae into 03f5aadfa59c92b7e1a47235f9e8ce86f659d1a2"
+        },
+        {
+          "line": 183,
+          "text": "534459a988e278a506338649977eb7f4a8b81fff"
+        }
+      ],
+      "raw_log": {
+        "path": "129692220121.log",
+        "bytes": 3586259,
+        "sha256": "71b827a2687ac36ae7c24293cfa4344544c3e4e1f9f643376ae42d4e7a19e887",
+        "line_count": 15234,
+        "scope": "Exact decoded UTF-8 text returned by GitHub job-log connector; BOM and CRLF preserved where returned."
+      },
+      "gzip": {
+        "path": "129692220121.log.gz",
+        "bytes": 614808,
+        "sha256": "8445ff74f7519169028495776be38c281c7d229be88d0cd5953268c18fc4a46a",
+        "roundtrip_bytes_verified": true,
+        "publication_parts": [
+          {
+            "path": "129692220121.log.gz.part00",
+            "bytes": 480000,
+            "sha256": "de27b45c46ad98a7c4c121569986f724d10d648debaa3aa2979d6145747514ac"
+          },
+          {
+            "path": "129692220121.log.gz.part01",
+            "bytes": 134808,
+            "sha256": "85b610e221f0a0f67711e9e76df3ba73afe8f551baf07c43d077b4d6d6d4313f"
+          }
+        ],
+        "publication_recipe": "Concatenate publication_parts in listed order, verify gzip SHA256, decompress, then verify raw-log SHA256. Full gzip file is local convenience only."
+      },
+      "bazel_final_counts": [
+        {
+          "line": 14166,
+          "text": "Executed 8 out of 580 tests: 402 tests pass, 8 fail locally, and 170 were skipped."
+        }
+      ],
+      "observed_bazel_target_statuses": {
+        "//codex-rs/app-server:app-server-all-test": {
+          "line": 9515,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/app-server:app-server-all-test (Summary)"
+        },
+        "//codex-rs/core:core-all-test": {
+          "line": 12018,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/core:core-all-test (Summary)"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test": {
+          "line": 14153,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test FAILED in 70.7s"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests": {
+          "line": 14155,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 75.2s"
+        },
+        "//codex-rs/hepta-automation:hepta-automation-unit-tests": {
+          "line": 14157,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-automation:hepta-automation-unit-tests                  FAILED in 1.9s"
+        },
+        "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests": {
+          "line": 14159,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests    FAILED in 32.0s"
+        },
+        "//codex-rs/hepta-memory:hepta-memory-unit-tests": {
+          "line": 14161,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-memory:hepta-memory-unit-tests                          FAILED in 160.4s"
+        },
+        "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test": {
+          "line": 14163,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test FAILED in 0.5s"
+        }
+      },
+      "failed_or_timed_out_targets": {
+        "//codex-rs/app-server:app-server-all-test": {
+          "line": 9515,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/app-server:app-server-all-test (Summary)"
+        },
+        "//codex-rs/core:core-all-test": {
+          "line": 12018,
+          "status": "FAILED",
+          "text": "FAILED: //codex-rs/core:core-all-test (Summary)"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test": {
+          "line": 14153,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test FAILED in 70.7s"
+        },
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests": {
+          "line": 14155,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 75.2s"
+        },
+        "//codex-rs/hepta-automation:hepta-automation-unit-tests": {
+          "line": 14157,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-automation:hepta-automation-unit-tests                  FAILED in 1.9s"
+        },
+        "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests": {
+          "line": 14159,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests    FAILED in 32.0s"
+        },
+        "//codex-rs/hepta-memory:hepta-memory-unit-tests": {
+          "line": 14161,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-memory:hepta-memory-unit-tests                          FAILED in 160.4s"
+        },
+        "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test": {
+          "line": 14163,
+          "status": "FAILED",
+          "text": "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test FAILED in 0.5s"
+        }
+      },
+      "flaky_targets": {},
+      "failed_test_names_first_occurrence": {
+        "circuit_admission::tests::cancellation_before_a_computation_claim_never_manufactures_execution_authority": 1457,
+        "circuit_admission::tests::downstream_request_changes_and_command_id_reuse_cannot_rebind_the_claim": 1458,
+        "circuit_admission::tests::independent_owner_connections_cannot_both_claim_the_same_computation": 1459,
+        "circuit_admission::tests::lost_claim_response_before_any_cell_contact_never_reopens_execution": 1460,
+        "circuit_admission::tests::only_first_persisted_claim_returns_a_single_use_execution_admission": 1461,
+        "circuit_admission::tests::lease_takeover_keeps_the_original_invocation_and_only_allows_reconciliation": 1462,
+        "circuit_admission::tests::ready_completed_and_corrupt_activations_cannot_be_admitted_as_pending_work": 1463,
+        "circuit_admission::tests::run_deadline_rejects_new_claims_but_preserves_readback_of_existing_reservations": 1464,
+        "circuit_admission::tests::wrong_owner_generation_expiry_and_clock_regression_never_create_a_token": 1465,
+        "circuit_store_tests::bounded_circuit_migration_coexists_with_existing_v1_definition": 1485,
+        "circuit_store_tests::corrupt_projection_and_removed_event_tail_are_never_recovered_as_success": 1486,
+        "circuit_store_tests::durable_dispatch_is_idempotent_and_reopens_without_reissuing_work": 1487,
+        "circuit_store_tests::concurrent_owner_connections_commit_only_one_revision_and_one_dispatch": 1488,
+        "circuit_store_tests::frozen_join_reference_bytes_survive_canonical_replay_and_reopen": 1489,
+        "circuit_store_tests::scope_version_and_owner_mismatch_reject_without_mutating_existing_run": 1490,
+        "circuit_store_tests::separate_agent_partitions_can_use_the_same_run_id_without_state_bleed": 1491,
+        "circuit_store_tests::successor_fences_old_writer_and_reconciles_original_invocation_after_ack_loss": 1492,
+        "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash": 1826,
+        "two_real_pairs_restart_one_without_peer_pid_churn": 1827,
+        "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone": 7903,
+        "production_writer::objective_sender::protected_checkpoint_tests::observation_tests::crash::protected_checkpoint_current_recovers_after_polling_and_process_kill_without_replay": 8297,
+        "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends": 8392,
+        "circuit_cell::tests::all_join_materializes_frozen_reference_bytes_for_the_next_native_cell": 8442,
+        "circuit_cell::tests::actual_cost_overrun_is_recorded_and_routes_to_budget_fallback": 8443,
+        "circuit_cell::tests::changed_principal_source_or_deadline_never_reaches_the_model": 8444,
+        "circuit_cell::tests::durable_circuit_to_native_cell_and_ack_loss_replay_use_one_model_call": 8445,
+        "circuit_cell::tests::final_dispatch_gate_rechecks_time_after_durable_cell_admission": 8446,
+        "circuit_cell::tests::either_late_phase_clock_regression_preserves_pending_for_readback": 8447,
+        "circuit_cell::tests::lost_claim_before_cell_admission_cannot_start_new_work_from_recovery": 8448,
+        "circuit_cell::tests::two_cells_share_one_model_facility_but_keep_separate_state_and_causal_output": 8450,
+        "circuit_cell::tests::unknown_model_response_recovers_original_output_and_late_cost_without_reexecution": 8451,
+        "notes_channel::tests::inherited_socketpair_preserves_exact_frame_bytes": 8608,
+        "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted": 8885,
+        "suite::approvals::matched_prefix_rule_runs_unsandboxed_under_zsh_fork": 9237,
+        "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference": 9537,
+        "suite::cyber_exec_policy::saved_prefix_only_bypasses_guardian_for_general_models::test_case_2_cyber_zsh_unified_exec_is_reviewed": 9915,
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_persistent_terminal_in_current_turn": 9973,
+        "suite::approvals::env_zsh_script_spawned_by_python_can_request_escalation_under_zsh_fork": 10230,
+        "suite::skill_approval::shell_zsh_fork_still_enforces_workspace_write_sandbox": 10672,
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_keeps_explicit_prompt_rule": 11331,
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_intercepted_execve": 12117
+      },
+      "failure_count_note": "Failed Rust test names can repeat in retry attempts and tail summaries. These are deduplicated observations, not an episode-level failure rate."
+    }
+  ],
+  "status": "HOLD",
+  "production_authority": "NONE"
+}

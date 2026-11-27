@@ -1,0 +1,21 @@
+{
+  "source_commit": "059d65e149469eed44e912f9ec22ee7ea9fce6d6",
+  "source_tree": "05e45678f197219bf6686336af64382d7748a7b9",
+  "source_parent": "6c0495aad88173e5f99f1782ca918d46664ae0f3",
+  "local_equivalent_commit": "89e869e51a7805d09a9b050f69409d9e4338830d",
+  "qualification": "Affected source checks only; no Rust compilation, rustfmt, native execution, full caller proof or deployment qualification.",
+  "source_identity": "Checks ran on the exact working postimages above parent 6c0495. All 32 postimages were committed locally, uploaded via the authorized GitHub connector and checked by Git blob SHA; remote tree exactly matches the local committed tree. Test result JSON preserves the observed base HEAD and diff SHA rather than rewriting history.",
+  "final_results": {
+    "affected_source_cases": 85,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "scoped_boundaries": 29,
+    "protected_rows": 83,
+    "protected_changed_paths": 16,
+    "diff_check": 0
+  },
+  "earlier_results_retained": true,
+  "legacy_577_execution_result": "unknown; not retried or counted",
+  "remaining": "Keyless Root FinalUse issuer integration and new Version native mechanism tests remain follow-up work; host currently consumes a separate exact original signed FinalUse grant. No live deployment or A/B/C closed-loop evidence is claimed."
+}

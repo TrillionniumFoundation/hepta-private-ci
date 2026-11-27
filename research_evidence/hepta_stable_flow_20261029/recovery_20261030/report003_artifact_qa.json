@@ -1,0 +1,3863 @@
+{
+  "all_11_frozen_core_sources_unchanged": true,
+  "artifact_integrity_passed": true,
+  "continuous_flow_alias_status": {
+    "failed": 1,
+    "passed": 7
+  },
+  "created_utc": "2026-10-30T01:13:38.036976+00:00",
+  "end_to_end_alias_status": {
+    "passed": 24
+  },
+  "html_rerender_counter_order_reconstructed_from_alias_order": true,
+  "html_rerender_from_saved_summary_and_images_byte_exact": true,
+  "input_checks": [
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/audit.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/data.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/flow.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/memory.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/models.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/numerics.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/study.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/tests/test_data.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/tests/test_flow.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/tests/test_memory.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow/tests/test_numerics.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow_analysis/ANALYSIS.md",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow_analysis/release.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow_analysis/release_parts.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow_analysis/report.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow_analysis/report_dynamics.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow_analysis/report_figures.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "experiments/call_put_stable_flow_analysis/report_sections.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/coupling_diagnostic001/protocol.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/coupling_diagnostic001/raw_arrays.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/coupling_diagnostic001/results.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/figures/phase001/figure_receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/figures/phase001/hepta_phase_dynamics.png",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/all_training_complete_seal.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81301__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81302__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__analytic__s81303__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81301__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81302__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__frozen_flow__s81303__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81301__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81302__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__matched_c1__s81303__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81301__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81302__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__ordinary__s81303__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81301__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81302__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/mqar__sigmoid__s81303__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81301__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81302__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__analytic__s81303__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81301__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81302__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__frozen_flow__s81303__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81301__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81302__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__matched_c1__s81303__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81301__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81302__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__ordinary__s81303__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81301__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81302__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.001/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.001/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.001/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.001/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.001/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.001/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.001/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.001/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.003/complete.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.003/cpu15.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.003/cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.003/final_train_diagnostics.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.003/step0.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.003/training_trace.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.003/update192.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/candidates/selective_copy__sigmoid__s81303__lr0.003/update384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/data_manifest.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/freeze_seal.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/orchestration/session_20261029T130324Z_5/training_orchestration_summary.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/orchestration/session_20261029T130423Z_5/training_orchestration_summary.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/phase_execution/score_reconstruction_20261030T010322Z/finish.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/phase_execution/score_reconstruction_20261030T010322Z/stderr.log",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/phase_execution/score_reconstruction_20261030T010322Z/stdout.log",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/phase_execution/select_20261029T142922Z/finish.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/phase_execution/select_20261029T142922Z/stderr.log",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/phase_execution/select_20261029T142922Z/stdout.log",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__analytic__s81301__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__analytic__s81301__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__analytic__s81302__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__analytic__s81302__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__analytic__s81303__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__analytic__s81303__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__frozen_flow__s81301__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__frozen_flow__s81301__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__frozen_flow__s81302__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__frozen_flow__s81302__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__frozen_flow__s81303__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__frozen_flow__s81303__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__matched_c1__s81301__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__matched_c1__s81301__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__matched_c1__s81302__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__matched_c1__s81302__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__matched_c1__s81303__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__matched_c1__s81303__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__ordinary__s81301__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__ordinary__s81301__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__ordinary__s81302__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__ordinary__s81302__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__ordinary__s81303__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__ordinary__s81303__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__sigmoid__s81301__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__sigmoid__s81301__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__sigmoid__s81302__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__sigmoid__s81302__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__sigmoid__s81303__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/mqar__sigmoid__s81303__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__analytic__s81301__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__analytic__s81301__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__analytic__s81302__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__analytic__s81302__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__analytic__s81303__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__analytic__s81303__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__frozen_flow__s81301__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__frozen_flow__s81301__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__frozen_flow__s81302__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__frozen_flow__s81302__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__frozen_flow__s81303__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__frozen_flow__s81303__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__matched_c1__s81301__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__matched_c1__s81301__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__matched_c1__s81302__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__matched_c1__s81302__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__matched_c1__s81303__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__matched_c1__s81303__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__ordinary__s81301__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__ordinary__s81301__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__ordinary__s81302__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__ordinary__s81302__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__ordinary__s81303__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__ordinary__s81303__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__sigmoid__s81301__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__sigmoid__s81301__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__sigmoid__s81302__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__sigmoid__s81302__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__sigmoid__s81303__lr0.003__cpu30.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/predictions/selective_copy__sigmoid__s81303__lr0.003__updates384.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/protocol.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/results.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/selection.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/selection_seal.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/historical_context/RECOVERY_STATUS.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/historical_context/provenance.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/independent_review/coupling_diagnostic_audit.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/independent_review/mathematical_analysis_audit.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/independent_review/post_format_numerical_binding.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_appendix001/protocol.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/execution/plan.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/execution/raw_events.jsonl",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/execution/raw_times.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/execution/summary.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/protocol.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/quality_join.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/registration_seal.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/replay_execution/finish.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/replay_execution/start.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/replay_execution/stderr.log",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030/replay_execution/stdout.log",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/numerical_qualification/independent_run001/protocol.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/numerical_qualification/independent_run001/raw_arrays.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/numerical_qualification/independent_run001/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/numerical_qualification/independent_run002/protocol.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/numerical_qualification/independent_run002/raw_arrays.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/numerical_qualification/independent_run002/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/numerical_qualification/independent_run004_execution_optimized/protocol.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/numerical_qualification/independent_run004_execution_optimized/raw_arrays.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/numerical_qualification/independent_run004_execution_optimized/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/phase_dynamics001/protocol.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/phase_dynamics001/raw_arrays.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/phase_dynamics001/results.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/input_availability_initial.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/object_recovery_inventory.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/primary_reconstruction_receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/reconstruct_primary.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/recovery_contract.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/recovery_report.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/run_runtime_replay.py",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/selection_log_reconstruction.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/report002/Hepta_New_Scientific_Report_20261029.html",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/report002/report_receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_appendix001/protocol.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_000_225d66d1ad3c/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_000_225d66d1ad3c/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_000_225d66d1ad3c/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_000_225d66d1ad3c/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_000_225d66d1ad3c/independent_flow_raw.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_000_225d66d1ad3c/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_001_2abef3442b30/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_001_2abef3442b30/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_001_2abef3442b30/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_001_2abef3442b30/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_001_2abef3442b30/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_002_5adb19e38550/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_002_5adb19e38550/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_002_5adb19e38550/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_002_5adb19e38550/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_002_5adb19e38550/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_003_6603c60b4068/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_003_6603c60b4068/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_003_6603c60b4068/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_003_6603c60b4068/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_003_6603c60b4068/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_004_7589cd9ee4c5/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_004_7589cd9ee4c5/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_004_7589cd9ee4c5/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_004_7589cd9ee4c5/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_004_7589cd9ee4c5/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_005_a217c1cbc28a/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_005_a217c1cbc28a/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_005_a217c1cbc28a/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_005_a217c1cbc28a/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_005_a217c1cbc28a/independent_flow_raw.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_005_a217c1cbc28a/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_006_3e4271ba7636/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_006_3e4271ba7636/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_006_3e4271ba7636/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_006_3e4271ba7636/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_006_3e4271ba7636/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_007_41e6e0ec1af6/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_007_41e6e0ec1af6/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_007_41e6e0ec1af6/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_007_41e6e0ec1af6/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_007_41e6e0ec1af6/independent_flow_raw.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_007_41e6e0ec1af6/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_008_5dcbf7f9f9f0/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_008_5dcbf7f9f9f0/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_008_5dcbf7f9f9f0/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_008_5dcbf7f9f9f0/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_008_5dcbf7f9f9f0/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_009_b3e859dceb5d/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_009_b3e859dceb5d/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_009_b3e859dceb5d/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_009_b3e859dceb5d/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_009_b3e859dceb5d/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_010_e5943881a741/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_010_e5943881a741/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_010_e5943881a741/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_010_e5943881a741/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_010_e5943881a741/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_011_e9c0e10bfae8/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_011_e9c0e10bfae8/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_011_e9c0e10bfae8/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_011_e9c0e10bfae8/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_011_e9c0e10bfae8/independent_flow_raw.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_011_e9c0e10bfae8/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_012_02628428c33e/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_012_02628428c33e/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_012_02628428c33e/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_012_02628428c33e/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_012_02628428c33e/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_013_326e149aafc5/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_013_326e149aafc5/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_013_326e149aafc5/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_013_326e149aafc5/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_013_326e149aafc5/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_014_c0bfab41e03a/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_014_c0bfab41e03a/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_014_c0bfab41e03a/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_014_c0bfab41e03a/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_014_c0bfab41e03a/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_015_c91bdfe49119/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_015_c91bdfe49119/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_015_c91bdfe49119/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_015_c91bdfe49119/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_015_c91bdfe49119/independent_flow_raw.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_015_c91bdfe49119/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_016_d80cd992c96a/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_016_d80cd992c96a/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_016_d80cd992c96a/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_016_d80cd992c96a/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_016_d80cd992c96a/independent_flow_raw.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_016_d80cd992c96a/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_017_e3caa5e9d90d/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_017_e3caa5e9d90d/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_017_e3caa5e9d90d/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_017_e3caa5e9d90d/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_017_e3caa5e9d90d/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_018_19d4e4f2a75e/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_018_19d4e4f2a75e/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_018_19d4e4f2a75e/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_018_19d4e4f2a75e/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_018_19d4e4f2a75e/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_019_4a36a2d59298/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_019_4a36a2d59298/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_019_4a36a2d59298/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_019_4a36a2d59298/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_019_4a36a2d59298/independent_flow_raw.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_019_4a36a2d59298/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_020_aa5b12adb1d2/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_020_aa5b12adb1d2/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_020_aa5b12adb1d2/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_020_aa5b12adb1d2/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_020_aa5b12adb1d2/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_021_c4222ed88235/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_021_c4222ed88235/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_021_c4222ed88235/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_021_c4222ed88235/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_021_c4222ed88235/independent_flow_raw.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_021_c4222ed88235/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_022_d00120b1f25b/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_022_d00120b1f25b/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_022_d00120b1f25b/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_022_d00120b1f25b/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_022_d00120b1f25b/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_023_f74cb4f48375/fp32_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_023_f74cb4f48375/fp64_h.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_023_f74cb4f48375/fp64_h_over_2.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_023_f74cb4f48375/fp64_h_over_4.npz",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/checkpoint_023_f74cb4f48375/receipt.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/execution_binding.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/execution/summary.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/protocol.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/registration_seal.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/replay_execution/finish.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/replay_execution/start.json",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/replay_execution/stderr.log",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030/replay_execution/stdout.log",
+      "sha256_matches": true
+    }
+  ],
+  "input_files_verified": 754,
+  "no_claim_of_recovery_of_original_complete_archive_or_clock_data": true,
+  "numerical_data_semantically_equal_to_new_replay_summary": true,
+  "original_report002_and_its_receipt_unchanged": true,
+  "original_report_generator_sources_unchanged": true,
+  "output_checks": [
+    {
+      "bytes_match": true,
+      "path": "Hepta_Recovery_Scientific_Report_20261030.html",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "figures/comparison_intervals.png",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "figures/coupling_error.png",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "figures/inference_cost.png",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "figures/phase_dynamics.png",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "figures/task_quality.png",
+      "sha256_matches": true
+    },
+    {
+      "bytes_match": true,
+      "path": "report_summary.json",
+      "sha256_matches": true
+    }
+  ],
+  "output_files_verified": 7,
+  "primary_data_semantically_equal_to_exact_original": true,
+  "quality_join_semantically_equal": true,
+  "registered_metric_improvement_gates_passed": 0,
+  "report_html_sha256": "fee305a08fa030f21bdd68f9672d28892a15a0df206a7c098cc41dd2d66c5184",
+  "report_receipt_sha256": "3c7a8d8ccf888493e5514214b60e3985a5a8a47578c8bc0129bbbc1e5e934010",
+  "report_summary_sha256": "81ba5fa10adaa3e49788880bc2dfc3ae035ff0fe03e2a7c1ee94c90477e573d9",
+  "runtime_aliases": 20,
+  "runtime_cases": 40,
+  "runtime_data_semantically_equal_to_new_measurement_summary": true,
+  "schema": "hepta-recovery-report-artifact-qa-v1",
+  "status": "complete",
+  "visual_review": {
+    "browser_html_render_performed": false,
+    "method": "Actual view_image inspection of three rendered scientific PNGs",
+    "observations": [
+      "Task-quality plot retains all seed markers and complete sample-SD endpoints, including values exceeding one",
+      "Adjusted-interval plot retains both metrics and all registered comparisons, with a labelled zero line",
+      "New inference plot displays all40 cases acrossB1/B32 and all11-run min/median/max ranges; labels and endpoints visible"
+    ],
+    "viewed": [
+      {
+        "path": "figures/task_quality.png",
+        "sha256": "a67b43f9ffc7bd8a85ed23c78d427b2003e049f8575ea24108530250667400f7"
+      },
+      {
+        "path": "figures/comparison_intervals.png",
+        "sha256": "6cdf2e807a4c522069977858a3cc786ff58d89e026420b175613321fe1c890cb"
+      },
+      {
+        "path": "figures/inference_cost.png",
+        "sha256": "4400b9a0664b22f869ff1b765cee489cb5179372460ce85d047497c2cdc6d215"
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+[workspace]
+resolver = "2"
+members = ["core", "session", "shell", "app-window", "broker"]
+
+[workspace.package]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+rust-version = "1.83"
+
+[workspace.dependencies]
+trill-ui-core = { path = "core" }
+trill-ui-broker = { path = "broker" }
+serde = { version = "=1.0.219", features = ["derive"] }
+serde_json = "=1.0.140"
+eframe = { version = "=0.31.1", default-features = false, features = ["glow", "default_fonts", "wayland", "x11"] }
+ab_glyph = "=0.2.32"

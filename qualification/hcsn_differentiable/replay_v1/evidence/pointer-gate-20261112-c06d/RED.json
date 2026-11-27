@@ -1,0 +1,55 @@
+{
+  "parent_commit": "546f03f56b115045972b0d36c34882148adab39e",
+  "parent_gate_sha256": "baed9288a1cb80036b181154b943fd5b7aff8a17b25337356c6ac03079e9ad3d",
+  "executions": [
+    {
+      "case": "missing-with-commit",
+      "optimized": false,
+      "returncode": 1,
+      "github_output": "",
+      "published_identity": false,
+      "model_calls": 0
+    },
+    {
+      "case": "missing-with-commit",
+      "optimized": true,
+      "returncode": 0,
+      "github_output": "commit=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+      "published_identity": true,
+      "model_calls": 0
+    },
+    {
+      "case": "wrong-archive",
+      "optimized": false,
+      "returncode": 1,
+      "github_output": "",
+      "published_identity": false,
+      "model_calls": 0
+    },
+    {
+      "case": "wrong-archive",
+      "optimized": true,
+      "returncode": 0,
+      "github_output": "commit=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+      "published_identity": true,
+      "model_calls": 0
+    },
+    {
+      "case": "duplicate-status",
+      "optimized": false,
+      "returncode": 1,
+      "github_output": "",
+      "published_identity": false,
+      "model_calls": 0
+    },
+    {
+      "case": "duplicate-status",
+      "optimized": true,
+      "returncode": 0,
+      "github_output": "commit=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+      "published_identity": true,
+      "model_calls": 0
+    }
+  ],
+  "model_calls": 0
+}

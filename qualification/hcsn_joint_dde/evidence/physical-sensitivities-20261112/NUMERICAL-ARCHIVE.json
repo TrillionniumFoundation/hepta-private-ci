@@ -1,0 +1,103 @@
+{
+  "archive_bytes": 130154,
+  "archive_sha256": "860389fd8ecaf5bd62c83bd9c820f3186b0faed3ad16f598c8576b6b2eb094c7",
+  "coordinates": 585,
+  "full_hcsn_qualified": false,
+  "members": [
+    {
+      "bytes": 4573,
+      "path": "RED-fixture.log",
+      "sha256": "c7e6a01e36f20a86931ca236f8c12d9d1fc3d2651c60a5ab96bcb4e6b5fb4cf9"
+    },
+    {
+      "bytes": 3302,
+      "path": "GREEN-numpy.log",
+      "sha256": "55094a80cf523ba7c22bd4e56995d548bf88a1a7d499fa199279f5cc603cb1f6"
+    },
+    {
+      "bytes": 54208,
+      "path": "GREEN-full-arrays.log",
+      "sha256": "f52b400e15240aa53aae8ee344c0791035cb1feebffe228f41f6653eef7c9fa6"
+    },
+    {
+      "bytes": 54396,
+      "path": "GREEN-reviewed.log",
+      "sha256": "d7846791a216d81aba2df721274f342f3a1452aa95e9f790dee9a04e2073ad55"
+    },
+    {
+      "bytes": 73975,
+      "path": "ARRAYS.json",
+      "sha256": "139ac37f08d1555b01a090b3b1dcd5e163ff2218d02397531b67e6e519dae6ee"
+    },
+    {
+      "bytes": 73975,
+      "path": "ARRAYS-reviewed.json",
+      "sha256": "a10ca4cb8fe0fde40bfb521e143ae8162cf1999d3c10f8677d6930264b214ba3"
+    },
+    {
+      "bytes": 673,
+      "path": "FORMAT-SENSITIVITIES.json",
+      "sha256": "e0bf208dda3b64865185b4c60298ae2038954925e366c5edadcdfc4ef8e7c49d"
+    },
+    {
+      "bytes": 88929,
+      "path": "TESTED-NORMALIZED-ASTS.json",
+      "sha256": "d006187327e7a470aa4f726e92dec1c3372ac5c8a59ff29a70a7372bf45a4a91"
+    },
+    {
+      "bytes": 633,
+      "path": "review/SENSITIVITY-REVIEW-001.json",
+      "sha256": "b608982c82deb820a5480624b09ce88ead552202a7515af8909642798447dceb"
+    },
+    {
+      "bytes": 141455,
+      "path": "review/SENSITIVITY-ARRAY-REVIEW-001.json",
+      "sha256": "17640b99e76b943eefd778fcbf49dd5f8634f0f0a0008410dcc5b566753810b6"
+    },
+    {
+      "bytes": 143310,
+      "path": "review/SENSITIVITY-ARRAY-REVIEW-003.json",
+      "sha256": "ddd41581fa4be032805d96ebe9a827e81f62c3e4cde999cffe3c47ab60bb7080"
+    },
+    {
+      "bytes": 2290,
+      "path": "review/SENSITIVITY-ARRAY-REVIEW-003.stdout",
+      "sha256": "4979c66be736b5fcf29a601d7d000c4014a8ac165f50370e3057ec5b79c4d137"
+    },
+    {
+      "bytes": 0,
+      "path": "review/SENSITIVITY-ARRAY-REVIEW-003.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5441,
+      "path": "review/review_sensitivity_arrays.py",
+      "sha256": "6e121b03e3d9475e43c0be0d694b89a413711b89479f0ba9e44013d09faa0830"
+    },
+    {
+      "bytes": 12626,
+      "path": "tested-source/qualification/hcsn_joint_dde/model.py",
+      "sha256": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+    },
+    {
+      "bytes": 10737,
+      "path": "tested-source/qualification/hcsn_joint_dde/sensitivities.py",
+      "sha256": "b0940521678b948052b57fd91174fc63cda9a533c04f9a87e5b6f79abd701e95"
+    },
+    {
+      "bytes": 5920,
+      "path": "tested-source/qualification/hcsn_boundary_audit/spatial_generator.py",
+      "sha256": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441"
+    },
+    {
+      "bytes": 8164,
+      "path": "tested-source/qualification/hcsn_boundary_audit/refractory_transport.py",
+      "sha256": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+    }
+  ],
+  "schema": "hcsn-physical-partials-archived-originals-v1",
+  "source_format_ast_unchanged": true,
+  "tested_harness_normalized_ast_retained": true,
+  "tested_harness_original_bytes_retained": false,
+  "tests": 5
+}

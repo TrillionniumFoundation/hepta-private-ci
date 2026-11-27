@@ -1,0 +1,100 @@
+{
+  "base_commit": "5ec371387c47fe1af3cb511c076867ff2678f940",
+  "reviewed_candidate_commit": "d2422433dccc232e10256973df68823331928a28",
+  "scope": "High-risk review of sanitized union remainingDelta; all 110 after blobs verified against sanitized_union_plan.json. Review used immutable candidate bytes, not root staged or unstaged changes.",
+  "source_manifest": "/workspace/scratch/ff772bc098e2/pr_gate_audit/union_review/MANIFEST.json",
+  "findings": [
+    {
+      "priority": "P1",
+      "area": "Optimizer enumeration admission",
+      "status": "isolated patch supplied; root integration and native package validation pending",
+      "paths": [
+        "codex-rs/hepta-prompt-optimizer/src/verified_validation.rs",
+        "codex-rs/hepta-prompt-optimizer/src/verified_tests.rs"
+      ],
+      "problem": "The new public verified admission wrapper sealed structurally invalid registry snapshots/model tuples/realizations and did not require realization-model compatibility or nonzero selection grammar. Rehashed invalid frontiers, stale snapshot digest and foreign-model bindings could pass the previous boundary. The positive fixture itself had an arbitrary snapshot digest.",
+      "repair": "Reuse existing canonical validators, preserve existing checks and API, require nonzero grammar, cross-bind the eight model dimensions identically to the existing registry producer, fix fixture snapshot digest, add six independent corruption tests.",
+      "patch": "/workspace/scratch/ff772bc098e2/pr_gate_audit/optimizer_integrity_repair/optimizer-admission-integrity.patch",
+      "patch_sha256": "193c750978cc2ff3b4a877f136d4e2350234a795b61e4ccc38c84e90c23a47f9",
+      "validation": "Exact d242 inputs verified; isolated rustfmt parsed/formatted both files; git apply --check passed against exact base. No native Rust test claim."
+    },
+    {
+      "priority": "P2",
+      "area": "RBE CI coverage",
+      "status": "reported to root; no edit made",
+      "path": ".github/workflows/hepta-rbe-openssh-image.yml",
+      "problem": "pull_request.paths omits .github/rbe-openssh/**. The PR job qualifies legacy .github/workflows/Dockerfile.bazel, while new helper regression suites run only in the dedicated branch build job. Helper-only PRs can therefore miss both suites.",
+      "recommended_action": "Add a read-only PR check for helper_regressions.py and tool_supply_tests.py and include .github/rbe-openssh/** in its trigger; preserve all build/publish exact-branch guards."
+    }
+  ],
+  "other_review_results": [
+    {
+      "area": "Cognitive types/store",
+      "result": "New strict validators remain opt-in; legacy wire acceptance is explicitly tested. Canonical store adapter uses existing admitted writer path, validates writer ID/time before mutation, and retains intent binding. No additional concrete blocker found in reviewed production paths."
+    },
+    {
+      "area": "Context compiler",
+      "result": "Provider/model/token limits and predecessor linkage become stricter. V3 canonical byte view stays borrowed and authority-free; no new raw deserialization or dispatch authority. No additional concrete blocker found."
+    },
+    {
+      "area": "NDU",
+      "result": "Exact scalarization normalization is a substantive stricter producer-consumer seam; root assigned Objective-to-NDU repair to hia_preservation_audit. V2 solve receipts require a fresh context-bound solve and do not upcast V1. No additional blocker found."
+    },
+    {
+      "area": "Encoder",
+      "result": "No hepta-encoder production delta exists in the 110-path sanitized remainingDelta. Neuroscience replay change rejects upstream frozen collection rows outside train/calibration."
+    },
+    {
+      "area": "CI and Windows probe",
+      "result": "Bazel collector preserves original test status; branch-deletion job guards prevent obsolete writer runs; AppContainer capture retains original exit/file predicates and deadline. Explicit stdio handles are bounded to the three owned streams. No current Windows execution claim."
+    },
+    {
+      "area": "RBE publication",
+      "result": "Exact repository, dedicated branch, source SHA and same-run artifact checks retain package-write boundary. PR6293/main merge does not satisfy publisher branch guard. Offline helper success does not qualify images or registry access."
+    }
+  ],
+  "observed_validations": [
+    {
+      "command": "python .github/rbe-openssh/helper_regressions.py .github/rbe-openssh",
+      "tests_passed": 9,
+      "exit_code": 0
+    },
+    {
+      "command": "python .github/rbe-openssh/tool_supply_tests.py .github/rbe-openssh",
+      "tests_passed": 13,
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s scripts -p test_qualify_rbe_openssh.py",
+      "tests_passed": 3,
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s qualification/neuroscience-20261110 -p test_replay_perception_native.py",
+      "tests_passed": 11,
+      "exit_code": 0
+    },
+    {
+      "command": "python qualification/cognitive-types-v1/verify_domain_vectors.py",
+      "status": "PASS_COGNITIVE_TYPES_V2_DOMAIN_VECTORS",
+      "exit_code": 0
+    },
+    {
+      "command": "node qualification/cognitive-types-v1/verify_domain_vectors.mjs",
+      "status": "PASS_COGNITIVE_TYPES_V2_DOMAIN_VECTORS",
+      "exit_code": 0
+    }
+  ],
+  "golden_vectors": {
+    "receipt_digest": "3bd1839aaec407d81aeeeaf3148b3257b0e3c082969dca5a5a886f6a3818aa1c",
+    "domain_bound_digest": "9a1d50d4bf71267bb052cecce4069197964f662062751ff0812b0f000e68792f"
+  },
+  "validation_priorities": [
+    "Root run just test -p codex-hepta-prompt-optimizer after applying current patch, then final just fmt per repository workflow.",
+    "Native Cognitive/Context/NDU tests on sanitized union including the Objective normalization seam.",
+    "Original GNU/musl full blocking scope on final candidate, preserving deadlines/retries/assertions.",
+    "Original NextUse 500ms sensitivity remains unresolved; diagnostic 1509-test pass is not a sanitized final qualification.",
+    "Actual Windows AppContainer/Guardian gates as configured."
+  ],
+  "mutation_boundary": "Only this agent own scratch directory changed. No main repository files, branches, PRs or HIA refs mutated."
+}

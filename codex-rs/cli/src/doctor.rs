@@ -3967,36 +3967,130 @@ mod tests {
         assert_eq!(status, Ok("HTTP 405".to_string()));
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn mcp_http_probe_falls_back_to_get_when_head_times_out() {
         let listener = TcpListener::bind("127.0.0.1:0").expect("bind test listener");
+        listener
+            .set_nonblocking(/*nonblocking*/ true)
+            .expect("make fixture accepts nonblocking");
         let addr = listener.local_addr().expect("listener address");
-        let server = std::thread::spawn(move || {
-            let (mut head_stream, _) = listener.accept().expect("accept HEAD probe request");
-            let head = std::thread::spawn(move || {
-                let mut request = [0; 1024];
-                let _ = head_stream.read(&mut request);
-                std::thread::sleep(Duration::from_millis(50));
-            });
+        let (server_ready_tx, server_ready_rx) = tokio::sync::oneshot::channel();
+        let (head_received_tx, head_received_rx) = tokio::sync::oneshot::channel();
+        let (get_received_tx, mut get_received_rx) = tokio::sync::oneshot::channel();
+        let (probe_finished_tx, probe_finished_rx) = std::sync::mpsc::channel();
+        let mut server = tokio::task::spawn_blocking(move || {
+            // This wall-clock watchdog only bounds fixture cleanup. Request time
+            // remains paused and advances through the unchanged 10 ms budget below.
+            let deadline = Instant::now() + Duration::from_secs(3);
+            let remaining = || {
+                deadline
+                    .checked_duration_since(Instant::now())
+                    .filter(|remaining| !remaining.is_zero())
+                    .expect("HTTP fixture exceeded its wall-clock watchdog")
+            };
+            let accept = || loop {
+                let _ = remaining();
+                match listener.accept() {
+                    Ok((stream, _)) => {
+                        stream
+                            .set_nonblocking(/*nonblocking*/ true)
+                            .expect("make fixture stream nonblocking");
+                        break stream;
+                    }
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                        std::thread::sleep(Duration::from_millis(1));
+                    }
+                    Err(error) => panic!("accept probe request: {error}"),
+                }
+            };
+            let read_request = |stream: &mut std::net::TcpStream| {
+                let mut request = Vec::new();
+                let mut buffer = [0; 1024];
+                while !request.ends_with(b"\r\n\r\n") {
+                    let _ = remaining();
+                    match stream.read(&mut buffer) {
+                        Ok(0) => panic!("probe closed before sending complete headers"),
+                        Ok(read) => request.extend_from_slice(&buffer[..read]),
+                        Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                            std::thread::sleep(Duration::from_millis(1));
+                        }
+                        Err(error) => panic!("read probe request: {error}"),
+                    }
+                    assert!(request.len() <= 8192, "probe headers exceed fixture limit");
+                }
+                String::from_utf8(request).expect("probe request headers should be UTF-8")
+            };
 
-            let (mut get_stream, _) = listener.accept().expect("accept GET probe request");
-            let mut request = [0; 1024];
-            let _ = get_stream.read(&mut request);
-            get_stream
-                .write_all(
-                    b"HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
-                )
-                .expect("write response");
-            head.join().expect("HEAD holder should finish");
+            server_ready_tx
+                .send(())
+                .expect("test should await the running blocking fixture");
+            let mut head_stream = accept();
+            let head_request = read_request(&mut head_stream);
+            assert_eq!(head_request.lines().next(), Some("HEAD /mcp HTTP/1.1"));
+            head_received_tx
+                .send(())
+                .expect("test should await the HEAD request");
+
+            let mut get_stream = accept();
+            let get_request = read_request(&mut get_stream);
+            assert_eq!(get_request.lines().next(), Some("GET /mcp HTTP/1.1"));
+            get_received_tx
+                .send(())
+                .expect("test should await the GET request");
+            let mut response =
+                &b"HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"[..];
+            while !response.is_empty() {
+                let _ = remaining();
+                match get_stream.write(response) {
+                    Ok(0) => panic!("probe closed before receiving the response"),
+                    Ok(written) => response = &response[written..],
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                        std::thread::sleep(Duration::from_millis(1));
+                    }
+                    Err(error) => panic!("write GET response: {error}"),
+                }
+            }
+
+            // A live blocking task inhibits Tokio's paused-clock auto-advance.
+            // Keep it alive through response consumption so the GET timer cannot
+            // advance while real socket I/O is still pending.
+            probe_finished_rx
+                .recv_timeout(remaining())
+                .expect("probe should release the blocking fixture");
+            drop(head_stream);
         });
 
-        let status = mcp_http_probe_url_with_timeout(
-            &format!("http://{addr}/mcp"),
-            Duration::from_millis(10),
-        )
-        .await;
-        server.join().expect("probe server thread should finish");
+        server_ready_rx.await.expect("fixture should start");
+        let timeout = Duration::from_millis(10);
+        let started = tokio::time::Instant::now();
+        let mut probe = tokio::spawn(async move {
+            mcp_http_probe_url_with_timeout(&format!("http://{addr}/mcp"), timeout).await
+        });
+        head_received_rx.await.expect("fixture should receive HEAD");
+        assert_eq!(started.elapsed(), Duration::ZERO);
+        tokio::time::advance(Duration::from_millis(9)).await;
+        assert!(!probe.is_finished(), "HEAD must not expire before 10 ms");
+        assert!(matches!(
+            get_received_rx.try_recv(),
+            Err(tokio::sync::oneshot::error::TryRecvError::Empty)
+        ));
+        tokio::time::advance(Duration::from_millis(1)).await;
+        get_received_rx
+            .await
+            .expect("HEAD timeout should start GET");
+        let status = tokio::select! {
+            result = &mut probe => result.expect("probe task should finish"),
+            result = &mut server => {
+                panic!("fixture ended before the probe completed: {result:?}");
+            }
+        };
+        let elapsed = started.elapsed();
+        probe_finished_tx
+            .send(())
+            .expect("fixture should await probe completion");
+        server.await.expect("probe fixture should finish");
 
+        assert_eq!(elapsed, timeout);
         assert_eq!(status, Ok("HTTP 405".to_string()));
     }
 

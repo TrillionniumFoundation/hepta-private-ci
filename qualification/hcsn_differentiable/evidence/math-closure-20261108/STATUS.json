@@ -1,0 +1,147 @@
+{
+  "boundary_policy": "fixed, declared trigger and reset",
+  "colab": {
+    "account_alias": "sunfo",
+    "blocking_error_code": "FIXED_RUNTIME_NOT_FOUND",
+    "cleanup_attempted": true,
+    "cleanup_error_code": "RELEASE_REQUIRES_FIXED_JOBS_STATE_DIRECTORY",
+    "cleanup_status": "cleanup_unconfirmed",
+    "cloud_job_submitted": false,
+    "constraints": "No repeated create or bind, no run submit, no account override, no management-ledger edits, no old runtime adoption.",
+    "error_budget_executed": false,
+    "host": "rog",
+    "kernel_submit_attempts_observed": 0,
+    "key": "hcsn-math-closure-cpu-20261108-v1",
+    "operations": [
+      {
+        "exit_code": 0,
+        "host": "rog",
+        "name": "create",
+        "native_job_id": "1a1bab344cf-12894-1ca8",
+        "native_status_file": "create.process-status.json",
+        "output_complete": true,
+        "state": "succeeded",
+        "stdout_file": "create.stdout.json"
+      },
+      {
+        "exit_code": 2,
+        "host": "rog",
+        "name": "bind",
+        "native_job_id": "1a1babf94fd-12894-1cea",
+        "native_status_file": "bind.process-status.json",
+        "output_complete": true,
+        "state": "failed",
+        "stdout_file": "bind.stdout.json"
+      },
+      {
+        "exit_code": 2,
+        "host": "rog",
+        "name": "reconcile",
+        "native_job_id": "1a1bac4beda-12894-1d11",
+        "native_status_file": "reconcile.process-status.json",
+        "output_complete": true,
+        "state": "failed",
+        "stdout_file": "reconcile.stdout.json"
+      },
+      {
+        "exit_code": 2,
+        "host": "rog",
+        "name": "release",
+        "native_job_id": "1a1bac86490-12894-1d37",
+        "native_status_file": "release.process-status.json",
+        "output_complete": true,
+        "state": "failed",
+        "stdout_file": "release.stdout.json"
+      }
+    ],
+    "physical_energy_joules": null,
+    "provider_charges": null,
+    "publication_redaction_exceptions": [
+      {
+        "file": "colab-v1/create.process-read.json",
+        "original_bytes": 2390,
+        "original_sha256": "76fee41000f4f4b70bcb6e2142a14016d187dce3dc8e164c44e9bd078c44eacb",
+        "reason": "public-repository copy removes account contact email and reversible bytes_hex; original native receipt retained"
+      },
+      {
+        "file": "colab-v1/create.stdout.json",
+        "original_bytes": 665,
+        "original_sha256": "4a070ac1c63d4ad108806e5a9d7a4c7de9c25c5c21d009ae0dbf8cf41ccc4b62",
+        "reason": "public-repository copy removes account contact email and reversible bytes_hex; original native receipt retained"
+      }
+    ],
+    "qualification_credit": false,
+    "qualification_executed": false,
+    "recorded_utc": "2026-11-08T10:56:11Z",
+    "release_dispatch_observation": "Installed helper rejected before its provider unassign call; runtime deletion is not confirmed.",
+    "remaining_action": "Cleanup requires a supported management path for a task-owned runtime whose bind failed; no workaround was applied.",
+    "retention": "stdout files preserve exact original bytes; process status/read files preserve original native tool JSON payloads.",
+    "runtime_endpoint": "m-s-usc1a2-1phanox787epo",
+    "runtime_submit_attempts": 1,
+    "schema": "hcsn-colab-blocked-attempt-v1",
+    "source_archive_inspected_sha256": "353f7c0f50d187adeccbd1fff0638d1a649fe2c547c03ebf23e3fceafa846ff8",
+    "source_archive_inspection_is_execution_evidence": false,
+    "status": "blocked"
+  },
+  "default_grid_qualification": false,
+  "domain_wide_qualification": false,
+  "formal_fits_started": 0,
+  "free_boundary_qvi_solved": false,
+  "historical_repository_integration_status": "HOLD",
+  "localization": {
+    "common_clock_offset_hours": 2,
+    "diagnosis": "v1 incorrectly applied a per-record quantization tolerance to an adjacent difference; compatibility does not prove authors used SQL/.NET",
+    "diagnostic_only": true,
+    "fixed_A01_max_gap_seconds": 0.1081168,
+    "independent_remaining_blocker": "unaltered fixed window exceeds existing propagation domain; v2 requires its own declared model and budget",
+    "operator_gap_limit_seconds": 0.1,
+    "original_attempt_status": "blocked_dataset",
+    "rows": 164860,
+    "single_record_absolute_error_max_seconds": 0.002,
+    "sql_style_display_residual_max_seconds": 0.0
+  },
+  "model_superiority_claim": false,
+  "native_budget_combined_scaled_errors": [
+    0.0012193298448974024,
+    0.002384135060144561,
+    0.002816496455583133,
+    0.001657224759595791
+  ],
+  "native_budget_fixture_count": 4,
+  "native_budget_status": "PASSED_DECLARED_FIXTURES",
+  "native_job": "1a1babb7ce2-12894-1cdc",
+  "native_mechanism_tests": {
+    "cost_scope": "entire CPU qualification process; not a model benchmark",
+    "failed": 0,
+    "passed": 71,
+    "peak_rss_kib": 654380,
+    "skipped": 0,
+    "wall_seconds": 23.57334618503228
+  },
+  "new_hosted_ci_at_snapshot": "not_yet_executed; dedicated workflow supplied, no inherited CI credit",
+  "old_s81_completion_credit": 0,
+  "parent_commit": "bb048cb811c2b755b7e54e97d24c63ec7ec8d1b7",
+  "physical_energy_joules": null,
+  "qualified_grid": {
+    "active_cells": 128,
+    "endpoint": 2.4,
+    "phase_cells": 16,
+    "quadrature_order": 32,
+    "refractory": 0.1
+  },
+  "retained_failed_attempt": {
+    "active_cells": 64,
+    "id": "attempt-001",
+    "reason": "combined and space/time sensitivity budgets exceeded"
+  },
+  "schema": "hcsn-mathematical-closure-status-v1",
+  "smoke_fits_started": 0,
+  "snapshot_kind": "publication-time historical snapshot; hosted checks must be read at their exact run/head",
+  "source_archive_sha256": "353f7c0f50d187adeccbd1fff0638d1a649fe2c547c03ebf23e3fceafa846ff8",
+  "source_files": 28,
+  "stage_three_status": "not_started; gated on real-task evidence",
+  "uncertain_dispatch": {
+    "idempotency_key": "hcsn-math-closure-20261108-desktop-finite-003",
+    "status": "tool transport error before job identity; no execution credit; full final suite covers the same tests"
+  }
+}

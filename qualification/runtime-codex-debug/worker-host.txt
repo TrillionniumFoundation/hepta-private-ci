@@ -1,0 +1,151 @@
+[1m[92m   Compiling[0m codex-hepta-learning-ledger v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-learning-ledger)
+[1m[33mwarning[0m[1m: associated function `new` is never used[0m
+   [1m[94m--> [0mext/hepta-memory/src/cognitive/mod.rs:274:19
+    [1m[94m|[0m
+[1m[94m273[0m [1m[94m|[0m impl CognitiveExtension {
+    [1m[94m|[0m [1m[94m-----------------------[0m [1m[94massociated function in this implementation[0m
+[1m[94m274[0m [1m[94m|[0m     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    [1m[94m|[0m                   [1m[33m^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m[1m: function `api_digest` is never used[0m
+   [1m[94m--> [0mext/hepta-memory/src/cognitive/federation.rs:864:4
+    [1m[94m|[0m
+[1m[94m864[0m [1m[94m|[0m fn api_digest(
+    [1m[94m|[0m    [1m[33m^^^^^^^^^^[0m
+
+[1m[33mwarning[0m: `codex-hepta-memory-extension` (lib) generated 2 warnings
+[1m[33mwarning[0m[1m: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2[0m
+  [1m[94m--> [0mhepta-ndu/src/lib.rs:50:20
+   [1m[94m|[0m
+[1m[94m50[0m [1m[94m|[0m pub use evaluator::evaluate_candidates;
+   [1m[94m|[0m                    [1m[33m^^^^^^^^^^^^^^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `#[warn(deprecated)]` on by default
+
+[1m[33mwarning[0m: `codex-hepta-ndu` (lib) generated 1 warning
+[1m[92m   Compiling[0m codex-app-server-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-client)
+[1m[92m   Compiling[0m codex-hepta-intelligence-eval v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence-eval)
+[1m[92m   Compiling[0m codex-hepta-prompt-optimizer v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-prompt-optimizer)
+[1m[92m   Compiling[0m codex-hepta-intelligence v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence)
+[1m[92m   Compiling[0m codex-hepta-codex-adapter v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-codex-adapter)
+[1m[92m   Compiling[0m codex-hepta-bellman-operator v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-bellman-operator)
+[1m[92m   Compiling[0m codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)
+[1m[33mwarning[0m[1m: field `sequence` is never read[0m
+   [1m[94m--> [0mhepta-agentd/src/browser_servo.rs:317:5
+    [1m[94m|[0m
+[1m[94m316[0m [1m[94m|[0m struct DecodedFrame {
+    [1m[94m|[0m        [1m[94m------------[0m [1m[94mfield in this struct[0m
+[1m[94m317[0m [1m[94m|[0m     sequence: u64,
+    [1m[94m|[0m     [1m[33m^^^^^^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    [1m[94m= [0m[1mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m[1m: methods `append` and `append_with_delivery` are never used[0m
+  [1m[94m--> [0mhepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   [1m[94m|[0m
+[1m[94m24[0m [1m[94m|[0m impl CognitiveRetrievalLearningSink {
+   [1m[94m|[0m [1m[94m-----------------------------------[0m [1m[94mmethods in this implementation[0m
+[1m[94m...[0m
+[1m[94m32[0m [1m[94m|[0m     pub(crate) fn append(
+   [1m[94m|[0m                   [1m[33m^^^^^^[0m
+[1m[94m...[0m
+[1m[94m52[0m [1m[94m|[0m     pub(crate) fn append_with_delivery(
+   [1m[94m|[0m                   [1m[33m^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: field `handle` is never read[0m
+  [1m[94m--> [0mhepta-agentd/src/plasticity_learning_producer.rs:24:5
+   [1m[94m|[0m
+[1m[94m23[0m [1m[94m|[0m pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   [1m[94m|[0m                   [1m[94m----------------------------------[0m [1m[94mfield in this struct[0m
+[1m[94m24[0m [1m[94m|[0m     handle: PlasticityRuntimeHandleV1,
+   [1m[94m|[0m     [1m[33m^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+[1m[33mwarning[0m[1m: methods `submit_parameter` and `submit_topology` are never used[0m
+  [1m[94m--> [0mhepta-agentd/src/plasticity_learning_producer.rs:32:25
+   [1m[94m|[0m
+[1m[94m27[0m [1m[94m|[0m impl AgentdLearningPlasticityProducerV1 {
+   [1m[94m|[0m [1m[94m---------------------------------------[0m [1m[94mmethods in this implementation[0m
+[1m[94m...[0m
+[1m[94m32[0m [1m[94m|[0m     pub(crate) async fn submit_parameter(
+   [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^^[0m
+[1m[94m...[0m
+[1m[94m40[0m [1m[94m|[0m     pub(crate) async fn submit_topology(
+   [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used[0m
+   [1m[94m--> [0mhepta-agentd/src/state.rs:178:25
+    [1m[94m|[0m
+[1m[94m 76[0m [1m[94m|[0m impl AgentdState {
+    [1m[94m|[0m [1m[94m----------------[0m [1m[94mmethods in this implementation[0m
+[1m[94m...[0m
+[1m[94m178[0m [1m[94m|[0m     pub(crate) async fn submit_parameter_plasticity_v1(
+    [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m...[0m
+[1m[94m195[0m [1m[94m|[0m     pub(crate) async fn submit_topology_plasticity_v1(
+    [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[92m   Compiling[0m codex-hepta-infer-worker-host v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-worker-host)
+[1m[33mwarning[0m: `codex-hepta-agentd` (lib) generated 5 warnings
+[1m[92m    Finished[0m `test` profile [unoptimized + debuginfo] target(s) in 19.80s
+[1m[92m     Running[0m unittests src/lib.rs (/home/runner/.cache/codex-ci/cargo-target/debug/deps/codex_hepta_infer_worker_host-0fd947742b634f0f)
+
+running 34 tests
+test final_use_authorizer::tests::connected_issuer_peer_uid_must_match_configured_owner ... ok
+test final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back ... ok
+test final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token ... ok
+test final_use_authorizer::tests::forged_grant_never_reaches_effect_entry ... ok
+test model_worker::tests::executes_authenticated_neuron_feature_tuple_from_loaded_manifest ... ok
+test model_worker::tests::loads_runs_and_unloads_exact_model_tuple ... ok
+test model_worker::tests::lost_driver_terminality_is_indeterminate ... ok
+test model_worker::tests::neuron_feature_path_rejects_payload_drift_and_driver_identity_drift ... ok
+test model_worker::tests::neuron_feature_worker_projects_exact_inference_control_receipt ... ok
+test model_worker::tests::rejects_changed_tokenizer_model_or_payload_tuple ... ok
+test native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity ... ok
+test native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims ... ok
+test native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider ... ok
+test native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown ... ok
+test native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure ... ok
+test native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start ... FAILED
+test native_app_server::tests::disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses ... ok
+test native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift ... ok
+test native_app_server::tests::idempotent_dispatch_loser_never_aborts_the_global_owner ... ok
+test native_app_server::tests::in_progress_is_not_a_terminal_observation ... ok
+test native_app_server::tests::late_completed_cannot_upgrade_cancelled_or_timed_out_boundary ... ok
+test native_app_server::tests::lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread ... ok
+test native_app_server::tests::only_the_bound_turn_can_complete_the_native_request ... ok
+test native_app_server::tests::output_is_observed_bounded_and_never_predeclares_success ... ok
+test native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed ... ok
+test native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success ... ok
+test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone ... FAILED
+test native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner ... ok
+test tests::payload_drift_is_rejected ... ok
+test tests::revoked_lease_is_rejected ... ok
+test tests::terminal_success_requires_exact_authority_binding ... ok
+test tests::timeout_never_becomes_success ... ok
+test tests::token_limit_is_enforced ... ok
+test tests::unobserved_terminal_state_is_indeterminate ... ok
+
+failures:
+
+---- native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start stdout ----
+
+thread 'native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start' (24259) panicked at hepta-infer-worker-host/src/native_app_server_tests.rs:411:10:
+physical turn start
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone stdout ----
+Error: "Agentd test App Server exited before readiness: Err(Custom { kind: InvalidInput, error: AgentdIoContext { operation: \"run Codex App Server unix socket transport\", path: \"/tmp/hepta-cognitive-worker-e2e-1790438457441741196/fleet/run/aaghu64s7r56mdd2v36p3hkrmci.app\", source: Custom { kind: InvalidInput, error: \"Codex executable path is not configured\" } } })"
+
+
+failures:
+    native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start
+    native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone
+
+test result: FAILED. 32 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.34s
+
+[1m[91merror[0m: test failed, to rerun pass `-p codex-hepta-infer-worker-host --lib`

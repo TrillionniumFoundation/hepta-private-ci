@@ -1,0 +1,17 @@
+{
+  "normal_fixed_files": 44,
+  "enumeration": {
+    "outer": 5,
+    "chain_nonroot": 31,
+    "root_namespace": 7,
+    "root_lock": 1
+  },
+  "condition": "successfully closed nooverwrite temps; failures may retain temp but terminal100files limit remains",
+  "normal_bytes_conservative": 6291456,
+  "bound_reason": "2model NPZ<2MiB; 3detached negatives each <512KiB; 7rootrecords total<512KiB; returned wire/route/request/artifact/controls and inventory logs<1MiB; receipts/runtime margins<1MiB,under6MiB. Inputs fixed; terminal16MiB independently counted. Not hard live disk quota.",
+  "per_file_limit_bytes": 2097152,
+  "terminal_limit_bytes": 16777216,
+  "frame_limit_bytes": 2048,
+  "verify_each_record_limit_bytes": 2097152,
+  "receipt_limit_bytes": 65536
+}

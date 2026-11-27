@@ -1,0 +1,26 @@
+{
+  "schema": "mem8.hardlink.public_contract.independent_static_peer.v1",
+  "base_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_pre": {
+    "bytes": 87022,
+    "sha256": "7af4adabc5308eb91c97a8a28251d08ec0c69b248dec99ae5a06cb2e7ff710ce",
+    "git_blob": "a41fc531be015f02aa5f7aef58b16cd4db2e0ada"
+  },
+  "source_post": {
+    "bytes": 87145,
+    "sha256": "f7d06ffaa7aa7374c840c75682d727a84e073fa4110172e7e40c8e064f76651a",
+    "git_blob": "dd76ce5536f75a4e66b7310a2fbf91c96663e78d"
+  },
+  "patch": {
+    "bytes": 1058,
+    "sha256": "f1bc79f86cb89ea0df2f71193ff24cbdd316fcc7261ca9bf84055a25d75ebb53",
+    "git_blob": "2c9ab207588f7a863a235d7f864ef4290d9b5a68"
+  },
+  "exact_full_diff_replay": true,
+  "all_physical_assertion_suffix_bytes_unchanged": true,
+  "reviewed_mapping": "apply_hunks_with_options prints error.to_string(); the Windows write_file outer context is Failed to write file {path.inferred_native_path_string()}. The proposed exact Exit code: 1 and exact path-context lines match this public contract.",
+  "scope": "No remaining static must-fix in this correction; does not identify the original inner refusal cause or prove physical follow-up assertions passed.",
+  "native_executions": 0,
+  "host_processes": 0,
+  "ref_changes": 0
+}

@@ -1,0 +1,11 @@
+{
+  "tests": 58,
+  "failures": 0,
+  "skips": 0,
+  "command": "PYTHONPATH=scripts python -m unittest test_perc1_public_control test_perc1_public_actor test_perc1_acquisition test_perc1_document_report test_perc1 test_perc1_marginal test_perc1_raster test_perc1_document_actor.DocumentBudgetTests -v",
+  "tests_log_sha256": "af7195472c19415e14d0492f88e02da48ada12c84ff2e40f6f506e33cbf0b850",
+  "historical_native_tests_rerun": false,
+  "neural_checkpoint_tests_rerun": false,
+  "initial_attempt": "54 tests: one missing materialization fixture error; restored exact upstream Rust fixture, final 58-test gate passed",
+  "note": "No code tests repeated solely after final formatting; ASTs preserved."
+}

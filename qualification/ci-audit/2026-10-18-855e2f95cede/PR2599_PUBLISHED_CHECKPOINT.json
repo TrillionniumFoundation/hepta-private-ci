@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "observed_utc": "2026-10-18 15:28:37 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 2599,
+  "branch": "fix/ci-clippy-expect-unwrap-20261017",
+  "old_head": "1ebb9b8a9313e6504d2ebf9597412f3fe9c49d9e",
+  "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+  "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "commits": [
+    {
+      "sha": "e21417abcedda77d73a08b1417522966dc2d1c0a",
+      "tree": "10c2b68e495646a93355e059a2573271fdd1849d",
+      "purpose": "Typed fixture error propagation"
+    },
+    {
+      "sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "tree": "4c8ad58586a50f678396dbac4df3623b8dc6f314",
+      "purpose": "Four strict source-map updates"
+    }
+  ],
+  "branch_updated": true,
+  "remote_head_verified": true,
+  "native_tests": "BLOCKED_EXTERNAL_ENOSPC_NOT_STARTED",
+  "local_checks": {
+    "rustfmt": "PASS",
+    "diff_check": "PASS",
+    "derived_check": "PASS",
+    "four_map_source_identity": "PASS",
+    "global_map_qualification": "FAIL_26_MODULES"
+  },
+  "required_checks": "PENDING_NOT_CLOSED",
+  "merge_performed": false,
+  "source_gate_unchanged": true,
+  "detail": "github_inventory/FINAL_PR2599_MAP_RECEIPT.json"
+}

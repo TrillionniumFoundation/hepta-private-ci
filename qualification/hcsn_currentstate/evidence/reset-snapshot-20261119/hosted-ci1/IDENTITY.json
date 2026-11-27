@@ -1,0 +1,36 @@
+{
+  "archival_verification": "Standard-library byte/hash and result-identity checks only; zero model executions.",
+  "archive": {
+    "bytes": 2717,
+    "path": "artifact-14506983967.zip",
+    "sha256": "0fed7cee45fcb4aabbe378d762061a0872254f1cbdde11ed5d315cc9300f3096"
+  },
+  "artifact_id": 14506983967,
+  "members": {
+    "RUNTIME.txt": {
+      "bytes": 196,
+      "sha256": "10a5b4d6ffaf90707f63615ff7056fe0c193cd78afbfe7e6e423c9cd8ff4dae3"
+    },
+    "SOURCE_HEAD.txt": {
+      "bytes": 41,
+      "sha256": "8194df428f9554db90215f8a4ba6c600b5e5352f20f91cf493335863d2d8834d"
+    },
+    "STDERR.txt": {
+      "bytes": 1244,
+      "sha256": "2dec6ab6ba96e7956955e20c476d4c3f67fa1949396a376250abf68f4280c07a"
+    },
+    "STDOUT.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "STUDY.json": {
+      "bytes": 3459,
+      "sha256": "84858c50bac24dc2b7699c8e7da0066fdea94e54220f0f67e02d6a7e9c92214a"
+    }
+  },
+  "run_id": 44479509254,
+  "schema": "hcsn-reset-snapshot-hosted-ci-originals-v1",
+  "scope": "Automatic existing pull-request workflow: six original checks and 60 finite-CTMC identification updates; new two-test reset regression step was not present.",
+  "source_head": "9b20d29391a23fe7f1d4fbb5b1377b10130a1c69",
+  "timing_scope": "STUDY.json wall/CPU counters begin after imports and thread setup; process RSS includes imports. Not whole workflow or fresh-process wall/CPU cost."
+}

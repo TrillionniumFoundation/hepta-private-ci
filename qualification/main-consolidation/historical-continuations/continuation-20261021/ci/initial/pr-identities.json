@@ -1,0 +1,239 @@
+{
+  "scope": "Initial read-only collection; later owner/source changes are recorded elsewhere in the checkpoint. Not a current mergeability conclusion.",
+  "pull_requests": [
+    {
+      "number": 2917,
+      "title": "[DRAFT][P0] Remove zbus RustSec family via sync keyring backend",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2917",
+      "state": "open",
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merged": false,
+      "updated_at": "2026-10-20T05:12:44Z",
+      "commits": 20,
+      "changed_files": 8,
+      "additions": 120,
+      "deletions": 61,
+      "retrieved_at": "2026-10-21T00:40:49.972Z",
+      "head": {
+        "sha": "9a9e3b2e9dabd6957594861208b49f275f273e84",
+        "ref": "fix/rustsec-zbus-sync-keyring-20261019",
+        "label": "TrillionniumFoundation:fix/rustsec-zbus-sync-keyring-20261019"
+      },
+      "base": {
+        "sha": "0e7bee945f56872ea79afeb351995edee46d222e",
+        "ref": "automation/2717-rustsec-no-ignore-guard-20261019-1247",
+        "label": "TrillionniumFoundation:automation/2717-rustsec-no-ignore-guard-20261019-1247"
+      }
+    },
+    {
+      "number": 2918,
+      "title": "[DRAFT][Neuron] Reconcile current-parent Q24 bounds and independent signed B4 caller proof",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2918",
+      "state": "open",
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merged": false,
+      "updated_at": "2026-10-19T18:11:20Z",
+      "commits": 2,
+      "changed_files": 6,
+      "additions": 144,
+      "deletions": 5,
+      "retrieved_at": "2026-10-21T00:40:49.972Z",
+      "head": {
+        "sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+        "ref": "automation/neuron-q24-b4-current-parent-20261019-1808",
+        "label": "TrillionniumFoundation:automation/neuron-q24-b4-current-parent-20261019-1808"
+      },
+      "base": {
+        "sha": "b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+        "ref": "feat/neuron-final-use-production-gate-20261018",
+        "label": "TrillionniumFoundation:feat/neuron-final-use-production-gate-20261018"
+      }
+    },
+    {
+      "number": 2919,
+      "title": "[DRAFT] Windows Fleet canonical workspace fixture parity (non-authorizing)",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2919",
+      "state": "open",
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merged": false,
+      "updated_at": "2026-10-20T01:17:47Z",
+      "commits": 1,
+      "changed_files": 1,
+      "additions": 4,
+      "deletions": 1,
+      "retrieved_at": "2026-10-21T00:40:49.973Z",
+      "head": {
+        "sha": "151a2c80f8fa549e5b7162eef3c846bf2fd90b5d",
+        "ref": "automation/2918-windows-fleet-canonical-workspace-20261020",
+        "label": "TrillionniumFoundation:automation/2918-windows-fleet-canonical-workspace-20261020"
+      },
+      "base": {
+        "sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+        "ref": "automation/neuron-q24-b4-current-parent-20261019-1808",
+        "label": "TrillionniumFoundation:automation/neuron-q24-b4-current-parent-20261019-1808"
+      }
+    },
+    {
+      "number": 2943,
+      "title": "fix(memory): close Operations schema and immutable-proof gaps",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2943",
+      "state": "open",
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merged": false,
+      "updated_at": "2026-10-20T05:59:00Z",
+      "commits": 3,
+      "changed_files": 55,
+      "additions": 3758,
+      "deletions": 1378,
+      "retrieved_at": "2026-10-21T00:40:49.974Z",
+      "head": {
+        "sha": "cff8d91ef68046327f492805193be8f69adfde8d",
+        "ref": "agents/20261020/operations-schema-integrity",
+        "label": "TrillionniumFoundation:agents/20261020/operations-schema-integrity"
+      },
+      "base": {
+        "sha": "b5b31f82d9ef7f3717df4a88d486a434b18cc9d6",
+        "ref": "chatgpt/kernel-operations-final-convergence-20260925",
+        "label": "TrillionniumFoundation:chatgpt/kernel-operations-final-convergence-20260925"
+      }
+    },
+    {
+      "number": 2944,
+      "title": "Converge verified dependency, Objective history and UI repairs with stable Bazel",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2944",
+      "state": "open",
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "merged": false,
+      "updated_at": "2026-10-20T20:59:53Z",
+      "commits": 116,
+      "changed_files": 470,
+      "additions": 123568,
+      "deletions": 8124,
+      "retrieved_at": "2026-10-21T00:43:35.027Z",
+      "head": {
+        "sha": "603238ba4721b2e9656c4647ce41c5f1664c1154",
+        "ref": "codex/hepta-blocker-convergence-20261020",
+        "label": "TrillionniumFoundation:codex/hepta-blocker-convergence-20261020"
+      },
+      "base": {
+        "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+        "ref": "main",
+        "label": "TrillionniumFoundation:main"
+      }
+    },
+    {
+      "number": 2945,
+      "title": "docs: reconcile readiness indexes and current implementation contracts",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2945",
+      "state": "open",
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merged": false,
+      "updated_at": "2026-10-20T07:44:05Z",
+      "commits": 2,
+      "changed_files": 8,
+      "additions": 91,
+      "deletions": 64,
+      "retrieved_at": "2026-10-21T00:40:49.975Z",
+      "head": {
+        "sha": "719243606f6e718ac64b4e4b28a4b3cb4e337c23",
+        "ref": "agents/20261020/readiness-design-index",
+        "label": "TrillionniumFoundation:agents/20261020/readiness-design-index"
+      },
+      "base": {
+        "sha": "cff8d91ef68046327f492805193be8f69adfde8d",
+        "ref": "agents/20261020/operations-schema-integrity",
+        "label": "TrillionniumFoundation:agents/20261020/operations-schema-integrity"
+      }
+    },
+    {
+      "number": 2964,
+      "title": "ci: isolate Bazel failure-status preservation with four regression tests",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2964",
+      "state": "open",
+      "draft": false,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merged": false,
+      "updated_at": "2026-10-20T19:15:35Z",
+      "commits": 1,
+      "changed_files": 2,
+      "additions": 96,
+      "deletions": 3,
+      "retrieved_at": "2026-10-21T00:43:35.027Z",
+      "head": {
+        "sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+        "ref": "agents/20261020/ci-bazel-status-stage1",
+        "label": "TrillionniumFoundation:agents/20261020/ci-bazel-status-stage1"
+      },
+      "base": {
+        "sha": "ddf193c6bb46c2d1e4c6255639686b345ead10aa",
+        "ref": "integration/v8-main-convergence-20261020",
+        "label": "TrillionniumFoundation:integration/v8-main-convergence-20261020"
+      }
+    },
+    {
+      "number": 2965,
+      "title": "fix(ui): validate HTTP boundaries in the minified shipping SDK",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2965",
+      "state": "open",
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merged": false,
+      "updated_at": "2026-10-21T00:26:53Z",
+      "commits": 1,
+      "changed_files": 5,
+      "additions": 103,
+      "deletions": 8,
+      "retrieved_at": "2026-10-21T00:40:49.975Z",
+      "head": {
+        "sha": "d18e1642a1ed4b7c6ba42571974b6a866436e0c8",
+        "ref": "agents/20261020/ui-http-boundary-repair",
+        "label": "TrillionniumFoundation:agents/20261020/ui-http-boundary-repair"
+      },
+      "base": {
+        "sha": "ed7e952c13242a1a3b3810a1b058d981bda28db3",
+        "ref": "agents/a00-ui-main-20261019",
+        "label": "TrillionniumFoundation:agents/a00-ui-main-20261019"
+      }
+    },
+    {
+      "number": 2967,
+      "title": "fix(memory): retain terminal receipts in the original reconciliation journal",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2967",
+      "state": "open",
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "merged": false,
+      "updated_at": "2026-10-21T00:31:00Z",
+      "commits": 1,
+      "changed_files": 6,
+      "additions": 444,
+      "deletions": 26,
+      "retrieved_at": "2026-10-21T00:43:35.027Z",
+      "head": {
+        "sha": "5d82db76436c10e684e03a0d215f19d6097b1478",
+        "ref": "agents/20261020/a07-reconciliation-observation",
+        "label": "TrillionniumFoundation:agents/20261020/a07-reconciliation-observation"
+      },
+      "base": {
+        "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+        "ref": "main",
+        "label": "TrillionniumFoundation:main"
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "hcsn-n256-independent-oracle-source-intent-v1",
+  "identity": "hcsn-n256-independent-oracle-source-20261113-c06d-001",
+  "base_commit": "aa276941148f22520834d7aa9ace8a9a966b38b4",
+  "candidate_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "scope": "freeze independent streaming oracle source and fail-closed admission only",
+  "numerical_execution_allowed": false,
+  "execution_key": null,
+  "admission_sha256": null,
+  "reserved_idempotency_key": "hcsn-n256-independent-oracle-numerical-20261113-c06d-001",
+  "required_external_freeze": {
+    "runtime_profile_sha256": null,
+    "host_snapshot_sha256": null,
+    "ancestor_cgroup_snapshot_sha256": null,
+    "allocation_sha256": null,
+    "calendar_sha256": null,
+    "serializer_source_sha256": null
+  },
+  "forbidden_in_this_source_attempt": [
+    "NumPy or SciPy import before admission",
+    "import from sparse candidate or engineering implementation",
+    "N256 dynamic propagation",
+    "matrix exponential action",
+    "numeric oracle execution",
+    "serializer or cold loader execution",
+    "Torch, backward, optimizer, training, or production adoption"
+  ],
+  "largegrid_qualification": false,
+  "all_closed": false
+}

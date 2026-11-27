@@ -39,7 +39,7 @@ pub(crate) struct AgentFixture {
 }
 
 pub(crate) struct FleetHarness {
-    _temp: tempfile::TempDir,
+    _temp: Option<tempfile::TempDir>,
     root: PathBuf,
     fleet_root: HeptaFleetRoot,
     pub(crate) registry: FleetRegistry,
@@ -51,6 +51,11 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
+        // Darwin's per-user temporary root can exhaust sockaddr_un before the
+        // unchanged fleet/run/<agent>.ctl suffix. Keep the owned fixture short.
+        #[cfg(target_os = "macos")]
+        let temp = tempfile::tempdir_in(Path::new("/tmp").canonicalize()?)?;
+        #[cfg(not(target_os = "macos"))]
         let temp = tempfile::tempdir()?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -68,7 +73,7 @@ impl FleetHarness {
             recovery.faults
         );
         Ok(Self {
-            _temp: temp,
+            _temp: Some(temp),
             root,
             fleet_root,
             registry,
@@ -77,6 +82,32 @@ impl FleetHarness {
             agent_ids: Vec::new(),
             started: false,
         })
+    }
+
+    /// Retain an opt-in real-provider fixture for reconciliation after an
+    /// unknown request outcome. Process cleanup still runs in Drop.
+    #[allow(dead_code)]
+    pub(crate) fn retain_fixture_root(&mut self) -> Result<PathBuf> {
+        use std::os::unix::fs::PermissionsExt;
+
+        ensure!(
+            !self.started,
+            "retain the fixture before starting any agent"
+        );
+        let metadata = std::fs::symlink_metadata(&self.root)?;
+        ensure!(
+            metadata.is_dir() && metadata.permissions().mode() & 0o7777 == 0o700,
+            "retained fixture root must be a private 0700 directory"
+        );
+        let Some(temp) = self._temp.take() else {
+            bail!("fixture root was already retained");
+        };
+        let kept = temp.keep();
+        ensure!(
+            kept.canonicalize()? == self.root,
+            "retained fixture root changed"
+        );
+        Ok(self.root.clone())
     }
 
     #[allow(dead_code)]
@@ -130,6 +161,14 @@ impl FleetHarness {
     pub(crate) fn start(&mut self, agent: &AgentFixture) -> Result<()> {
         let binary = agentd_binary()?;
         let command = AgentCommand::new(binary, Vec::new())?;
+        self.start_command(agent, command)
+    }
+
+    pub(crate) fn start_command(
+        &mut self,
+        agent: &AgentFixture,
+        command: AgentCommand,
+    ) -> Result<()> {
         self.supervisor
             .start(&agent.agent_id, command, Instant::now())?;
         self.started = true;
@@ -357,7 +396,10 @@ impl FleetHarness {
     }
 }
 
-fn readiness_diagnostics(snapshot: Option<&AgentSupervisorSnapshot>, last_health: &str) -> String {
+pub(crate) fn readiness_diagnostics(
+    snapshot: Option<&AgentSupervisorSnapshot>,
+    last_health: &str,
+) -> String {
     let Some(snapshot) = snapshot else {
         return format!("supervisor snapshot missing; last_health={last_health}");
     };

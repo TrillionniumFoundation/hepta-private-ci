@@ -15,24 +15,17 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use crate::model_manifest::ModelManifest;
+
+#[path = "model_memory_accounting.rs"]
+mod memory_accounting;
+pub use memory_accounting::ModelMemoryAccounting;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
 const MAX_NEURON_FEATURES: usize = 512;
 const Q24_STATE_LIMIT: i64 = 8 * (1_i64 << 24);
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ModelManifest {
-    pub model_id: String,
-    pub model_digest: String,
-    pub weights_digest: String,
-    pub tokenizer_digest: String,
-    pub preprocessor_digest: String,
-    pub quantization_digest: String,
-    pub runtime_digest: String,
-    pub device_digest: String,
-    pub maximum_tokens: u32,
-}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ResourceGrant {
@@ -85,7 +78,7 @@ pub struct ModelLoadObservation {
     pub terminal_observed: bool,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ExecutionStatus {
     Succeeded,
     Failed,
@@ -126,6 +119,7 @@ pub enum Error {
     RequestCapacity,
     ModelAlreadyLoaded,
     ModelNotLoaded,
+    IndeterminateLifecycle,
     ModelMismatch,
     PayloadMismatch,
     TokenLimit,
@@ -148,6 +142,12 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 pub trait ModelDriver {
+    /// Declare the scope of load-time memory observations. The worker freezes
+    /// this choice at construction; existing drivers retain per-model charging.
+    fn memory_accounting(&self) -> ModelMemoryAccounting {
+        ModelMemoryAccounting::PerModel
+    }
+
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
     fn run(
         &mut self,
@@ -169,7 +169,9 @@ pub struct InferenceWorker<D: ModelDriver> {
     worker_id: String,
     generation: u64,
     grant: ResourceGrant,
+    memory_accounting: ModelMemoryAccounting,
     driver: D,
+    poisoned: bool,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
 }
@@ -187,11 +189,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if generation == 0 || generation != grant.generation {
             return Err(Error::InvalidGrant);
         }
+        let memory_accounting = driver.memory_accounting();
         Ok(Self {
             worker_id,
             generation,
             grant,
+            memory_accounting,
             driver,
+            poisoned: false,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
@@ -215,10 +220,37 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
+        // A failed load can leave physical device state without a validated
+        // handle. Only a reconciled or new generation may try again.
+        let handle = self
+            .driver
+            .load(&manifest)
+            .inspect_err(|_| self.poisoned = true)?;
+        if let Err(error) = validate_identity(&handle.opaque_id, "model handle") {
+            if self.driver.unload(handle).is_err() {
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+            return Err(error);
+        }
+        // Per-model drivers retain checked aggregation across every handle.
+        // A shared driver reports the entire current worker total in its new
+        // handle; adding prior snapshots would charge the same encoder twice.
+        let total_after_load = match self.memory_accounting {
+            ModelMemoryAccounting::PerModel => self
+                .models
+                .values()
+                .try_fold(0_u64, |total, loaded| {
+                    total.checked_add(loaded.handle.observed_memory_bytes)
+                })
+                .and_then(|total| total.checked_add(handle.observed_memory_bytes)),
+            ModelMemoryAccounting::WorkerWide => Some(handle.observed_memory_bytes),
+        };
+        if !matches!(total_after_load, Some(total) if total <= self.grant.maximum_memory_bytes) {
+            if self.driver.unload(handle).is_err() {
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
             return Err(Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
@@ -293,27 +325,33 @@ impl<D: ModelDriver> InferenceWorker<D> {
         let observed = self.driver.run(&loaded.handle, &request);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        // Releasing the request slot does not prove that physical dispatch did
+        // not occur. Fence the generation when its outcome cannot be trusted.
+        let observed = observed.inspect_err(|_| self.poisoned = true)?;
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
+            self.poisoned = true;
             return Err(Error::TokenLimit);
         }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
+            self.poisoned = true;
             (ExecutionStatus::Indeterminate, None, false)
         } else if observed.succeeded {
             let output = observed
                 .output_digest
                 .as_ref()
-                .ok_or(Error::MissingTerminalOutput)?;
-            validate_digest(output, "output")?;
+                .ok_or(Error::MissingTerminalOutput)
+                .inspect_err(|_| self.poisoned = true)?;
+            validate_digest(output, "output").inspect_err(|_| self.poisoned = true)?;
             (ExecutionStatus::Succeeded, observed.output_digest, true)
         } else {
             if let Some(output) = &observed.output_digest {
-                validate_digest(output, "output")?;
+                validate_digest(output, "output").inspect_err(|_| self.poisoned = true)?;
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
@@ -343,7 +381,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::ActiveRequests);
         }
         let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        if self.driver.unload(loaded.handle).is_err() {
+            // Physical unload may have occurred despite the error. Forbid any
+            // further use of this worker until its owner reconciles/restarts.
+            self.poisoned = true;
+            return Err(Error::IndeterminateLifecycle);
+        }
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -352,6 +395,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::IndeterminateLifecycle);
+        }
         validate_grant(now_ms, &self.grant)
     }
 }
@@ -363,6 +409,7 @@ fn validate_manifest(value: &ModelManifest) -> Result<(), Error> {
         (&value.weights_digest, "weights"),
         (&value.tokenizer_digest, "tokenizer"),
         (&value.preprocessor_digest, "preprocessor"),
+        (&value.normalizer_digest, "normalizer"),
         (&value.quantization_digest, "quantization"),
         (&value.runtime_digest, "runtime"),
         (&value.device_digest, "device"),
@@ -459,6 +506,10 @@ pub struct DriverNeuronFeatureObservation {
     pub drive_q24: Vec<i64>,
     pub prediction_q24: Vec<i64>,
     pub observed_memory_bytes: u64,
+    /// For a native Cell batch this report must cover at least the logical
+    /// Q24 input and both output buffers of this row. Shared physical inputs
+    /// are charged only once by the cohort admission floor. Extra scratch
+    /// is conservatively additive across rows; this is not measured peak RSS.
     pub transient_allocation_bytes: u64,
     pub queue_age_micros: u64,
     pub latency_micros: u64,
@@ -494,6 +545,70 @@ pub trait NeuronFeatureDriver: ModelDriver {
     ) -> Result<DriverNeuronFeatureObservation, Error>;
 }
 
+/// Fail closed when a backend reports disjoint resident and transient Q24
+/// allocations above its resource grant. The backend's reported numbers are
+/// not an independently measured peak RSS or a production qualification.
+fn neuron_feature_memory_within_grant(
+    observed: &DriverNeuronFeatureObservation,
+    maximum_memory_bytes: u64,
+) -> bool {
+    observed
+        .observed_memory_bytes
+        .checked_add(observed.transient_allocation_bytes)
+        .is_some_and(|total| total <= maximum_memory_bytes)
+}
+
+/// Conservative reported *cohort* envelope, not actual peak RSS.
+///
+/// The admission floor already counts every physical input allocation (one
+/// shared Arc for V2) and all simultaneously retained output vectors. Each
+/// row's transient report MUST include those logical input/output bytes,
+/// so subtract the row's input+output floor before charging its additional
+/// scratch to the cohort. This avoids multiplying a shared Arc by Cell count.
+/// Charge a higher reported selected-model resident peak above the loaded
+/// model's baseline; keep other loaded models in the pre-dispatch floor.
+/// Backend telemetry is not independently attested production metering.
+#[cfg(test)]
+fn neuron_batch_reported_memory_within_grant<'a>(
+    observations: impl IntoIterator<Item = &'a DriverNeuronFeatureObservation>,
+    pre_dispatch_floor_bytes: u64,
+    selected_loaded_memory_bytes: u64,
+    input_width: usize,
+    output_width: usize,
+    maximum_memory_bytes: u64,
+) -> bool {
+    let Some(row_floor_bytes) = output_width
+        .checked_mul(2)
+        .and_then(|outputs| input_width.checked_add(outputs))
+        .and_then(|elements| elements.checked_mul(std::mem::size_of::<i64>()))
+        .and_then(|bytes| u64::try_from(bytes).ok())
+    else {
+        return false;
+    };
+    let mut peak_reported_resident_bytes = selected_loaded_memory_bytes;
+    let mut additional_transient_bytes = 0_u64;
+    let mut observed_any = false;
+    for item in observations {
+        observed_any = true;
+        peak_reported_resident_bytes = peak_reported_resident_bytes.max(item.observed_memory_bytes);
+        // A driver reporting scratch-only bytes or an impossible Q24 floor
+        // cannot silently understate the physical cohort. Such telemetry
+        // must be corrected or rejected before returning a success.
+        let Some(extra) = item.transient_allocation_bytes.checked_sub(row_floor_bytes) else {
+            return false;
+        };
+        let Some(total) = additional_transient_bytes.checked_add(extra) else {
+            return false;
+        };
+        additional_transient_bytes = total;
+    }
+    observed_any
+        && pre_dispatch_floor_bytes
+            .checked_add(peak_reported_resident_bytes - selected_loaded_memory_bytes)
+            .and_then(|bytes| bytes.checked_add(additional_transient_bytes))
+            .is_some_and(|bytes| bytes <= maximum_memory_bytes)
+}
+
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     pub fn run_neuron_features(
         &mut self,
@@ -501,10 +616,19 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureExecutionObservation, Error> {
+        self.run_neuron_features_borrowed(now_ms, model_id, &request)
+    }
+
+    fn run_neuron_features_borrowed(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        request: &NeuronFeatureRequest,
+    ) -> Result<NeuronFeatureExecutionObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request.authorization)?;
-        validate_neuron_feature_request(&request)?;
+        validate_neuron_feature_request(request)?;
         if self
             .active_requests
             .contains_key(&request.authorization.request_id)
@@ -522,7 +646,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
-        let payload_digest = canonical_neuron_feature_payload_digest(&request);
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
+        }
+        let payload_digest = canonical_neuron_feature_payload_digest(request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
         {
@@ -530,13 +660,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         }
         if request.authorization.cancelled {
             return Ok(NeuronFeatureExecutionObservation {
-                request_id: request.authorization.request_id,
-                reservation_id: request.authorization.reservation_id,
+                request_id: request.authorization.request_id.clone(),
+                reservation_id: request.authorization.reservation_id.clone(),
                 worker_generation: self.generation,
                 manifest: loaded.manifest.clone(),
-                encoder_digest: request.encoder_digest,
-                head_digest: request.head_digest,
-                input_digest: request.input_digest,
+                encoder_digest: request.encoder_digest.clone(),
+                head_digest: request.head_digest.clone(),
+                input_digest: request.input_digest.clone(),
                 status: ExecutionStatus::Cancelled,
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
@@ -556,30 +686,55 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request.authorization.request_id.clone(),
             model_id.to_string(),
         );
-        let observed = self.driver.run_neuron_features(&loaded.handle, &request);
+        let observed = self.driver.run_neuron_features(&loaded.handle, request);
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // A post-dispatch error cannot prove that the backend never ran.
+        // Fence this generation until the owning control lane reconciles it.
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
+        if !neuron_feature_memory_within_grant(&observed, self.grant.maximum_memory_bytes) {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
+        if observed.encoder_digest != request.encoder_digest
+            || observed.head_digest != request.head_digest
+        {
+            self.poisoned = true;
+            return Err(Error::FeatureOutputMismatch);
+        }
         let status = if !observed.terminal_observed {
+            self.poisoned = true;
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(request, &observed) {
+                self.poisoned = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
         };
+        if status != ExecutionStatus::Succeeded
+            && (!observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty())
+        {
+            self.poisoned = true;
+            return Err(Error::FeatureOutputMismatch);
+        }
         Ok(NeuronFeatureExecutionObservation {
-            request_id: request.authorization.request_id,
-            reservation_id: request.authorization.reservation_id,
+            request_id: request.authorization.request_id.clone(),
+            reservation_id: request.authorization.reservation_id.clone(),
             worker_generation: self.generation,
             manifest: loaded.manifest.clone(),
             encoder_digest: observed.encoder_digest,
             head_digest: observed.head_digest,
-            input_digest: request.input_digest,
+            input_digest: request.input_digest.clone(),
             status,
             drive_q24: observed.drive_q24,
             prediction_q24: observed.prediction_q24,
@@ -601,56 +756,71 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
-        let request_copy = request.clone();
-        let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        let generation =
-            Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
-        let control_request = NeuronFeatureRequestV1 {
-            request_id: StableId::new(request_copy.authorization.request_id)
-                .map_err(|_| Error::FeatureContract)?,
-            generation,
-            model_id: StableId::new(observed.manifest.model_id.clone())
-                .map_err(|_| Error::FeatureContract)?,
-            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
-            head_digest: parse_digest32(&request_copy.head_digest)?,
-            weights_digest: parse_digest32(&request_copy.weights_digest)?,
-            input_digest: parse_digest32(&request_copy.input_digest)?,
-            feature_vector_q24: request_copy.feature_vector_q24,
-            expected_output_width: request_copy.expected_output_width,
-        };
-        let runtime_tuple = NeuronModelRuntimeTupleV1 {
-            model_id: control_request.model_id.clone(),
-            model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
-            weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
-            tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
-            preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
-            quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
-            runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
-            device_digest: parse_digest32(&observed.manifest.device_digest)?,
-        };
-        let status = match observed.status {
-            ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
-            ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
-            ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
-            ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
-        };
-        build_neuron_feature_receipt_v1(
-            &control_request,
-            runtime_tuple,
-            NeuronFeatureObservationV1 {
-                encoder_digest: parse_digest32(&observed.encoder_digest)?,
-                head_digest: parse_digest32(&observed.head_digest)?,
-                drive_q24: observed.drive_q24,
-                prediction_q24: observed.prediction_q24,
-                observed_memory_bytes: observed.observed_memory_bytes,
-                transient_allocation_bytes: observed.transient_allocation_bytes,
-                queue_age_micros: observed.queue_age_micros,
-                latency_micros: observed.latency_micros,
-                status,
-            },
-        )
-        .map_err(|_| Error::FeatureContract)
+        let observed = self.run_neuron_features_borrowed(now_ms, model_id, &request)?;
+        let receipt = project_neuron_feature_receipt_v1(request, observed);
+        if receipt.is_err() {
+            // A syntactically invalid receipt after execution cannot be
+            // dismissed as if no physical dispatch took place.
+            self.poisoned = true;
+        }
+        receipt
     }
+}
+
+/// Shared, authority-free V1 observation projection, used by both single
+/// requests and admitted native batches. This does not create a signed
+/// independent evaluator or final-use authorization.
+pub(crate) fn project_neuron_feature_receipt_v1(
+    request_copy: NeuronFeatureRequest,
+    observed: NeuronFeatureExecutionObservation,
+) -> Result<NeuronFeatureReceiptV1, Error> {
+    let generation =
+        Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
+    let control_request = NeuronFeatureRequestV1 {
+        request_id: StableId::new(request_copy.authorization.request_id)
+            .map_err(|_| Error::FeatureContract)?,
+        generation,
+        model_id: StableId::new(observed.manifest.model_id.clone())
+            .map_err(|_| Error::FeatureContract)?,
+        encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
+        head_digest: parse_digest32(&request_copy.head_digest)?,
+        weights_digest: parse_digest32(&request_copy.weights_digest)?,
+        input_digest: parse_digest32(&request_copy.input_digest)?,
+        feature_vector_q24: request_copy.feature_vector_q24,
+        expected_output_width: request_copy.expected_output_width,
+    };
+    let runtime_tuple = NeuronModelRuntimeTupleV1 {
+        model_id: control_request.model_id.clone(),
+        model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
+        weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
+        tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
+        preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
+        quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
+        runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
+        device_digest: parse_digest32(&observed.manifest.device_digest)?,
+    };
+    let status = match observed.status {
+        ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
+        ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
+        ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
+        ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
+    };
+    build_neuron_feature_receipt_v1(
+        &control_request,
+        runtime_tuple,
+        NeuronFeatureObservationV1 {
+            encoder_digest: parse_digest32(&observed.encoder_digest)?,
+            head_digest: parse_digest32(&observed.head_digest)?,
+            drive_q24: observed.drive_q24,
+            prediction_q24: observed.prediction_q24,
+            observed_memory_bytes: observed.observed_memory_bytes,
+            transient_allocation_bytes: observed.transient_allocation_bytes,
+            queue_age_micros: observed.queue_age_micros,
+            latency_micros: observed.latency_micros,
+            status,
+        },
+    )
+    .map_err(|_| Error::FeatureContract)
 }
 
 fn parse_digest32(value: &str) -> Result<Digest32, Error> {
@@ -711,6 +881,38 @@ fn validate_neuron_feature_output(
     validate_digest(&value.head_digest, "head")?;
     Ok(())
 }
+
+// Keep experimental physical batch dispatch private until signed Final-use
+// authorization and an independently owned model artifact loader are wired.
+#[cfg(test)]
+#[path = "model_worker_batch.rs"]
+mod batch;
+#[cfg(test)]
+pub(crate) use batch::NeuronFeatureBatchDriver;
+#[cfg(test)]
+pub(crate) use batch::NeuronFeatureBatchItemObservationV2;
+
+#[cfg(test)]
+#[path = "model_worker_gated.rs"]
+mod gated_cpu;
+
+#[path = "model_worker_shared_v2.rs"]
+mod shared_v2;
+#[cfg(test)]
+pub(crate) use shared_v2::NeuronSharedFeatureBatchDriverV2;
+pub use shared_v2::SharedNeuronFeatureRequestV2;
+pub use shared_v2::SharedNeuronFeatureResultV2;
+pub use shared_v2::SharedNeuronFeatureResultV3;
+#[expect(
+    deprecated,
+    reason = "Retain the deprecated V2 compatibility export; callers keep its original deprecation."
+)]
+pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
+pub use shared_v2::canonical_shared_neuron_payload_digest_v3;
+
+#[cfg(test)]
+#[path = "model_worker_public_q24_tests.rs"]
+mod public_q24_tests;
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]

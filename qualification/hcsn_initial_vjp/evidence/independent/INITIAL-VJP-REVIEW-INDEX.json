@@ -1,0 +1,41 @@
+{
+  "files": [
+    {
+      "bytes": 15293,
+      "path": "INITIAL-VJP-REVIEW-001.json",
+      "sha256": "017ac92ddae0a9417a31fbaa476aa22654901e48fdc081fa04f7f957e71376ed"
+    },
+    {
+      "bytes": 15517,
+      "path": "INITIAL-VJP-REVIEW-002.json",
+      "sha256": "0601749ef71b287b4050ab0b60e6caa3deca0158328cfc1b672239537ae65422"
+    },
+    {
+      "bytes": 2573,
+      "path": "INITIAL-VJP-ORIGINALS-LINEAGE.json",
+      "sha256": "d470cbeda1057328b5c79daaf4e68ad964d8bca8d5ad831ef0e2025dde71aee4"
+    },
+    {
+      "bytes": 17040,
+      "path": "review_initial_vjp.py",
+      "sha256": "d19468f2fc7991636b37c75dd60e92e9cbc3609e44a43bf200174bd0ee0d03bd"
+    },
+    {
+      "bytes": 15204,
+      "path": "review_initial_vjp.tested.py",
+      "sha256": "2b081062c881e28843f1446cfcd0f76b3838da03e7c0da67d2582f9a665be1d7"
+    },
+    {
+      "bytes": 14109,
+      "path": "review_initial_vjp.attempt001.py",
+      "sha256": "3a74cf6bcd29da1415d0cb8e8b217e119da8cc26296cc6cea2f4b8f76f8ed5f3"
+    },
+    {
+      "bytes": 429,
+      "path": "INITIAL-VJP-INSPECTOR-FORMAT.json",
+      "sha256": "d307d7aeb386d530368984c1ae32b0e29dbfa235e2a545799705bcff740dea19"
+    }
+  ],
+  "schema": "hcsn-initial-vjp-independent-review-originals-v1",
+  "scope": "Two actually executed read-only inspections, zero new ODE/kernel/Torch/optimizer calls. Attempt002 adds exact native primal/report checks and implied normalized scalar comparison. Exact tested source snapshots retained; final own-script full AST equality and scoped formatting recorded. All candidate sources untouched."
+}

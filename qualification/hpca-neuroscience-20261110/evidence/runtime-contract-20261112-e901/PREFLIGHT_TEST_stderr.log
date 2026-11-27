@@ -1,0 +1,44 @@
+test_empty_or_other (test_real_freegen.ParserTests.test_empty_or_other) ... ok
+test_leading_no (test_real_freegen.ParserTests.test_leading_no) ... ok
+test_leading_yes (test_real_freegen.ParserTests.test_leading_yes) ... ok
+test_no_ambiguous_buried_word (test_real_freegen.ParserTests.test_no_ambiguous_buried_word) ... ok
+test_number_underscore_and_unicode_suffixes_not_standalone (test_real_freegen.ParserTests.test_number_underscore_and_unicode_suffixes_not_standalone) ... ok
+test_prefix_not_word (test_real_freegen.ParserTests.test_prefix_not_word) ... ok
+test_standalone_leading_labels_keep_punctuation (test_real_freegen.ParserTests.test_standalone_leading_labels_keep_punctuation) ... ok
+test_unlicensed_buried_answer (test_real_freegen.ParserTests.test_unlicensed_buried_answer) ... ok
+test_duplicated_questions_and_missing_families_are_rejected (test_native_lora_ood_probe.OODPlanContractTests.test_duplicated_questions_and_missing_families_are_rejected) ... ok
+test_original_published_plan_has_balanced_four_families (test_native_lora_ood_probe.OODPlanContractTests.test_original_published_plan_has_balanced_four_families) ... ok
+test_plan_cannot_claim_independence_or_adoption (test_native_lora_ood_probe.OODPlanContractTests.test_plan_cannot_claim_independence_or_adoption) ... ok
+test_score_summary_can_report_bad_model (test_native_lora_ood_probe.OODPlanContractTests.test_score_summary_can_report_bad_model) ... ok
+test_target_conditions_are_exactly_frozen (test_native_lora_ood_probe.OODPlanContractTests.test_target_conditions_are_exactly_frozen) ... ok
+test_original_archive_remains_readable (test_frozen_prompt_condition.FrozenPromptConditionGate.test_original_archive_remains_readable) ... ok
+test_reject_claimed_training_source_swap (test_frozen_prompt_condition.FrozenPromptConditionGate.test_reject_claimed_training_source_swap) ... ok
+test_reject_run_seed_arm_alias (test_frozen_prompt_condition.FrozenPromptConditionGate.test_reject_run_seed_arm_alias) ... ok
+test_reject_shared_but_unregistered_prompt_digests (test_frozen_prompt_condition.FrozenPromptConditionGate.test_reject_shared_but_unregistered_prompt_digests) ... ok
+test_bad_cost_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_bad_cost_refused) ... ok
+test_duplicate_json_key_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_duplicate_json_key_refused) ... ok
+test_false_paired_metric_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_false_paired_metric_refused) ... ok
+test_false_summary_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_false_summary_refused) ... ok
+test_malformed_probability_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_malformed_probability_refused) ... ok
+test_missing_row_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_missing_row_refused) ... ok
+test_nonfinite_json_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_nonfinite_json_refused) ... ok
+test_plan_changed_after_run_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_plan_changed_after_run_refused) ... ok
+test_predicted_label_tamper_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_predicted_label_tamper_refused) ... ok
+test_prompt_changed_between_arms_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_prompt_changed_between_arms_refused) ... ok
+test_real_operator_forward_216_rows (test_ood_forward_audit.FrozenForwardAuditTests.test_real_operator_forward_216_rows) ... ok
+test_changed_source_or_input_is_rejected (test_freegen_contract.RuntimeContractTests.test_changed_source_or_input_is_rejected) ... ok
+test_changed_thread_budget_is_rejected_before_asset_loading (test_freegen_contract.RuntimeContractTests.test_changed_thread_budget_is_rejected_before_asset_loading) ... ok
+test_full_assets_capture_added_and_mutated_tokenizer_generation_files (test_freegen_contract.RuntimeContractTests.test_full_assets_capture_added_and_mutated_tokenizer_generation_files) ... ok
+test_hidden_logit_and_stop_controls_are_rejected (test_freegen_contract.RuntimeContractTests.test_hidden_logit_and_stop_controls_are_rejected) ... ok
+test_missing_or_empty_adapter_is_rejected (test_freegen_contract.RuntimeContractTests.test_missing_or_empty_adapter_is_rejected) ... ok
+test_model_settings_are_not_mutated_or_silently_sanitized (test_freegen_contract.RuntimeContractTests.test_model_settings_are_not_mutated_or_silently_sanitized) ... ok
+test_neutral_greedy_configuration_accepts_native_special_ids (test_freegen_contract.RuntimeContractTests.test_neutral_greedy_configuration_accepts_native_special_ids) ... ok
+test_partial_journal_retains_rows_without_a_completion_claim (test_freegen_contract.RuntimeContractTests.test_partial_journal_retains_rows_without_a_completion_claim) ... ok
+test_preexecution_record_cannot_be_overwritten_or_contain_nonfinite_values (test_freegen_contract.RuntimeContractTests.test_preexecution_record_cannot_be_overwritten_or_contain_nonfinite_values) ... ok
+test_public_reference_is_checked_before_any_generation (test_freegen_contract.RuntimeContractTests.test_public_reference_is_checked_before_any_generation) ... ok
+test_special_token_and_primary_decode_mutation_is_rejected (test_freegen_contract.RuntimeContractTests.test_special_token_and_primary_decode_mutation_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 39 tests in 0.085s
+
+OK

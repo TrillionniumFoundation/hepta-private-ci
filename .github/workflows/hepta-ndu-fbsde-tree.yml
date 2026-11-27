@@ -1,0 +1,37 @@
+name: Hepta NDU FBSDE TREE shadow (read-only)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/ndu-fbsde-tree-p0/**"
+      - ".github/workflows/hepta-ndu-fbsde-tree.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-ndu-fbsde-tree-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: FBSDE TREE shadow contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+      - name: Run tree contract tests
+        run: python3 -m unittest discover -v -s qualification/ndu-fbsde-tree-p0 -p 'test_*.py'
+      - name: Compile and inspect whitespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            qualification/ndu-fbsde-tree-p0/ndu_fbsde_tree.py \
+            qualification/ndu-fbsde-tree-p0/test_ndu_fbsde_tree.py
+          git diff --check

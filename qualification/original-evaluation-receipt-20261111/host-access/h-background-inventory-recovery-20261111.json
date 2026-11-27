@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T03:23:57.323926+00:00",
+  "purpose": "Read-only original-job identity recovery after direct inventory reads timed out",
+  "mechanism": "Native background process_list only; original shell commands were not replayed",
+  "operations": [
+    {
+      "host": "ai395",
+      "operation_id": "ebe0e687dba7310ad7aadada171505c0e1a0d96a4c38b2598504dc60c174aee5",
+      "state": "completed / stored_observed, according to operation_status",
+      "reported_payload_sha256": "c8fc376f688ff8433ef1ae7a0065318fef2895c7691b33bfb7c996e566078b8c",
+      "reported_total_bytes": 959027,
+      "retrieved_pages": [
+        {
+          "offset": 0,
+          "bytes": 16384,
+          "eof": false
+        }
+      ],
+      "full_payload_independently_hash_verified": false,
+      "observed_record_fields": [
+        "created_unix_ms",
+        "execution_mode",
+        "host",
+        "id",
+        "launch_state"
+      ],
+      "original_idempotency_key_mapping_recovered": false,
+      "original_shell_job_id_recovered": false
+    },
+    {
+      "host": "main",
+      "operation_id": "8096ee043f2f63a98f9f40fce345d2f583d37171b8e6d8ba97e0f9c37aba8b40",
+      "state": "completed / stored_observed, according to operation_status",
+      "reported_payload_sha256": "796c235596ffcad8fecdba637021a61740fda674b70f197fa00857a55446469d",
+      "reported_total_bytes": 366574,
+      "retrieved_pages": [
+        {
+          "offset": 0,
+          "bytes": 16384,
+          "eof": false
+        }
+      ],
+      "full_payload_independently_hash_verified": false,
+      "observed_record_fields": [
+        "created_unix_ms",
+        "execution_mode",
+        "host",
+        "id",
+        "launch_state"
+      ],
+      "original_idempotency_key_mapping_recovered": false,
+      "original_shell_job_id_recovered": false
+    }
+  ],
+  "new_shell_or_executable_jobs_started": 0,
+  "original_shell_retries": 0,
+  "unrelated_job_outputs_read": 0,
+  "original_job_process_status_or_read_calls": 0,
+  "original_matching_job_existence": "unknown",
+  "ordinary_production_evidence_granted": false,
+  "limitation": "Only first immutable pages were retrieved. Their job metadata has no original idempotency-key mapping. Do not infer that either original job is absent, a host is offline, or original task/role custody has been established.",
+  "private_key_handling": "New read-operation idempotency keys and unrelated inventory page contents are retained only in task scratch, not included in this record."
+}

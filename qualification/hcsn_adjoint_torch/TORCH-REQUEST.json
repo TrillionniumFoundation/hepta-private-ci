@@ -1,0 +1,55 @@
+{
+  "actual_fixtures": [
+    "uniform_n7",
+    "graded_n12"
+  ],
+  "backward_semantics": "continuous finite-DDE adjoint, not adaptive-BDF-program reverse",
+  "caller_metadata_mutation_controls": 8,
+  "content_channels": 2,
+  "delay": 0.21,
+  "forward_semantics": "original JointModel.solve on copied fixed actual coefficients",
+  "gradcheck": {
+    "atol": 2e-06,
+    "eps": 0.0002,
+    "fast_mode": false,
+    "rtol": 0.0002,
+    "scalar_objective_all_input_coordinates": true
+  },
+  "guard_controls_must_reject_before_adjoint": true,
+  "identity": "hcsn-continuous-adjoint-torch-20261112-c06d-stage1",
+  "keep_raw_gradcheck_pairs_and_all_journals": true,
+  "large_mesh_full_network_adam_restore_qualification": false,
+  "maximum_adjoint_calls": 32,
+  "maximum_admitted_intervals": 12,
+  "maximum_model_forward_calls": 220,
+  "maximum_recorded_array_scalars": 1000000,
+  "native_mutation_control_fixture": "uniform_n7_shared_bridge",
+  "old_execution_keys_or_runs_repeated": false,
+  "optimizer_updates": 0,
+  "probability_domain": "nonnegative unnormalized measures; ambient signed linear extension, explicit normalized client separately checked",
+  "query_times": [
+    0,
+    0.13,
+    0.29,
+    0.53
+  ],
+  "source_paths": [
+    "qualification/hcsn_adjoint_torch/torch_flow.py",
+    "qualification/hcsn_adjoint_torch/native_probe.py",
+    "qualification/hcsn_adjoint_torch/TORCH-REQUEST.json",
+    "qualification/hcsn_initial_adjoint/solver.py",
+    "qualification/hcsn_joint_dde/model.py",
+    "qualification/hcsn_boundary_audit/spatial_generator.py",
+    "qualification/hcsn_boundary_audit/refractory_transport.py",
+    "qualification/hcsn_graded/model.py",
+    "qualification/hcsn_graded/spatial.py",
+    ".github/workflows/hcsn-continuous-adjoint-torch.yml"
+  ],
+  "status": "PREFREEZE_INTENT_NOT_EXECUTED",
+  "tensor_control_types": [
+    "normal_inplace",
+    "unsafe_data_value",
+    "unsafe_data_same_values_new_storage"
+  ],
+  "tensor_mutation_controls": 12
+}

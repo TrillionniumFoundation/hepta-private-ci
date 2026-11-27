@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/c385a7439f8e/resource-analysis-v1/analyze_resources.py",
+    "--curves",
+    "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/CURVES.json",
+    "--plan",
+    "/workspace/scratch/c385a7439f8e/resource-analysis-v1/PLAN.json",
+    "--baseline-v1",
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-aggregate-originals-v1/v1-RESULT.json",
+    "--baseline-v2",
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-aggregate-originals-v1/v2-RESULT.json",
+    "--hcsn-summary",
+    "/workspace/scratch/c385a7439f8e/native-fresh42-terminal-receipts-v1/HCSN-TERMINAL-SUMMARY.json",
+    "--core-table",
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/output/CORE_TABLE.json",
+    "--output",
+    "/workspace/scratch/c385a7439f8e/resource-analysis-v1/output-v1"
+  ],
+  "returncode": 0,
+  "whole_child_wall_seconds": 0.5369948970001133,
+  "waited_child_CPU_seconds": 0.5361769999999999,
+  "source_before": {
+    "PLAN.json": "a893ceda6bff869455adf37e9d7ad61a7a8999379a9d1639fdc9dc5951a1472e",
+    "analyze_resources.py": "dc398a012bd25d611c0bbbfc09f64a3c76c7d1d367c84c5178864140c769ee95",
+    "test_analysis.py": "73b19bac0dc8281df37b8300928d399fa924c5af6c061cd4e2bdfa073ece2172"
+  },
+  "source_after": {
+    "PLAN.json": "a893ceda6bff869455adf37e9d7ad61a7a8999379a9d1639fdc9dc5951a1472e",
+    "analyze_resources.py": "dc398a012bd25d611c0bbbfc09f64a3c76c7d1d367c84c5178864140c769ee95",
+    "test_analysis.py": "73b19bac0dc8281df37b8300928d399fa924c5af6c061cd4e2bdfa073ece2172"
+  },
+  "stderr": "",
+  "stdout_sha256": "7d1f405811e98685c5503e341d70c147eede2b26c5697ed5916bb550fc6ddb0e"
+}

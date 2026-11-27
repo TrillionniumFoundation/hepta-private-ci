@@ -1,0 +1,99 @@
+{
+  "actual_euid": 0,
+  "argv": [
+    "/var/lib/hepta-common-e1c98-root-test-f070113b/bin/just",
+    "test",
+    "--archive-file",
+    "/var/lib/hepta-common-e1c98-root-test-f070113b/inputs/native-nextest.tar.zst",
+    "--workspace-remap",
+    "/var/lib/hepta-common-e1c98-root-test-f070113b/source/codex-rs",
+    "--extract-to",
+    "/var/lib/hepta-common-e1c98-root-test-f070113b/run-extracted",
+    "--run-ignored",
+    "only",
+    "--retries",
+    "0",
+    "--no-tests",
+    "fail",
+    "--test-threads",
+    "1",
+    "-E",
+    "package(=codex-hepta-agentd) & (test(/::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen$/) | test(/::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint$/))"
+  ],
+  "child_cpu_seconds": 0.417438,
+  "child_peak_rss_kib": 65256,
+  "completed_unix": 1794227324.6297903,
+  "cost_scope": "just test subprocess and descendants; preparation and evidence work remain in the outer command record",
+  "cwd": "/var/lib/hepta-common-e1c98-root-test-f070113b/source",
+  "deployed_non_root_consumer": false,
+  "environment": {
+    "CARGO_HOME": "/var/lib/hepta-common-e1c98-root-test-f070113b/cargo-home",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TARGET_DIR": "/var/lib/hepta-common-e1c98-root-test-f070113b/target",
+    "CODEX_REPO_ROOT": "/var/lib/hepta-common-e1c98-root-test-f070113b/source",
+    "HEPTA_CHECKPOINT_TEST_ROOT": "/var/lib/hepta-common-e1c98-root-test-f070113b",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib:/usr/lib/llvm-21/lib",
+    "PATH": "/var/lib/hepta-common-e1c98-root-test-f070113b/bin:/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "RUSTC": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "TMPDIR": "/var/lib/hepta-common-e1c98-root-test-f070113b/tmp",
+    "XDG_CACHE_HOME": "/var/lib/hepta-common-e1c98-root-test-f070113b/cache",
+    "XDG_CONFIG_HOME": "/var/lib/hepta-common-e1c98-root-test-f070113b/config",
+    "XDG_DATA_HOME": "/var/lib/hepta-common-e1c98-root-test-f070113b/data"
+  },
+  "exit_code": 0,
+  "independent_actor_custody": false,
+  "independent_confirmation_tasks": 0,
+  "new_source_paths": [
+    "codex-rs/target/nextest/local/junit.xml"
+  ],
+  "nextest_archive": {
+    "bytes": 90922965,
+    "path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/native-nextest.tar.zst",
+    "resolved": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/native-nextest.tar.zst",
+    "sha256": "a439bbb5bdc4a8d36f1a34495033de2d94d65acf6fe0b665d4a654a3ab8f7244"
+  },
+  "only_nextest_output_added": true,
+  "ordinary_P0_chain": false,
+  "production_adopted": false,
+  "qualified_component_only": true,
+  "raw_log_bytes": 920,
+  "raw_log_sha256": "d094f9ca0de56bcdde165538e1d9f59e51d55d4eb5530e225e47a7109599c906",
+  "research_fixture_metadata": true,
+  "root_parent": "/var/lib/hepta-common-e1c98-root-test-f070113b",
+  "root_process_restarted": false,
+  "same_root_process_storage_and_transport": true,
+  "schema": "hepta.common.actual-root-handoff.v1",
+  "scientific_gain_claimed": false,
+  "source_archive": {
+    "bytes": 91972209,
+    "path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/source.tar.gz",
+    "resolved": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/source.tar.gz",
+    "sha256": "36c55cbff0d7320d0df010e13d76a8a03a7669e6a54e01f81baf372b5ecacfc9"
+  },
+  "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "source_files_unchanged": true,
+  "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+  "started_unix": 1794227318.6180463,
+  "testcases": [
+    {
+      "error": false,
+      "failure": false,
+      "name": "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "skipped": false,
+      "time": "0.025"
+    },
+    {
+      "error": false,
+      "failure": false,
+      "name": "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "skipped": false,
+      "time": "0.014"
+    }
+  ],
+  "two_original_tests_passed": true,
+  "wall_seconds": 0.4267426209989935
+}

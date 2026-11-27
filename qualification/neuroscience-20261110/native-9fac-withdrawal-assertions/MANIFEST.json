@@ -1,0 +1,81 @@
+{
+  "schema": "neuro4.native-evaluated-withdrawal-assertion-fix.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "base_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "original_failure": {
+    "job_id": 131309678676,
+    "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+    "failure_index_blob": "3d9e6598abd60bb22af198b74d3210492e9dcc86",
+    "ordinary": {
+      "run": 1738,
+      "passed": 1726,
+      "failed": 11,
+      "timed_out": 1
+    },
+    "retries": 0
+  },
+  "changes": "Exactly four existing first-withdrawal Evaluation error assertions; all production source, methods, caps, lifetimes, signatures, byte invariants, counts and subsequent-fenced-read assertions remain unchanged.",
+  "code": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "base_blob": "3a0e5d4697c869ba9f9ddf5ce39b35f7f9cc3e51",
+      "post_blob": "a23be4dfcfcc739bb8417d7c32c6b71efd45e62f",
+      "bytes": 13644,
+      "sha256": "c81a1dcae2d9b5a444b79688aa84fe6011b45c069d03108c28dc6234a81e47a9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "base_blob": "c3866fec34f554713cfa0c436a84c14c1bb2f7e0",
+      "post_blob": "4b73e8a07bd27bd108d8d3fd539632974514a378",
+      "bytes": 15368,
+      "sha256": "ef828331e2d00dce4a02ef3f69c2cd80c2959c7ebdc18328ecbd9c7e5ce1fef6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "base_blob": "f83c91242ee6b27f0523fb40e78eb923b607d953",
+      "post_blob": "24fa38967fdb961b4249109e015cf56c513ffc79",
+      "bytes": 19301,
+      "sha256": "40f32d4e7f84db982613305ecbc4d370b3c5c77683b2e89eee5751af48ad9c5e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs",
+      "base_blob": "b63cad54ad8590b940b61ed68d9f986705f622ea",
+      "post_blob": "17bb2b51ccaab08a36c6876b217748fae7012450",
+      "bytes": 16732,
+      "sha256": "38b02dcbee67ec3069fe018ae6838bd48fffd3cc3b8950abe9895b90574b6e73"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "blob": "002394b4a405abfdb51c6f80f19a203a68a62e18",
+      "fact": "Owners::completion fences non-Missing/non-Pending error and returns the original first error; a later call returns CommitUncertain immediately."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+      "blob": "ece1fdf2adcc54de868fa6378ea1638b949a5565",
+      "fact": "original_state maps Panel/Qualification/PredecessorUnavailable to exact PredecessorUnavailable; other errors remain Uncertain."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "blob": "086a50cd688da7e06d4e290dabd56d68ff975e86",
+      "fact": "PredecessorUnavailable returns exact Error::PredecessorUnavailable and does not replace the consumed channel."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "blob": "c18766a6ab02eb4d9882df1224b12e093e7d0453",
+      "fact": "Existing same-source test expects first original retention-B withdrawal PredecessorUnavailable, then a separate read of the fenced host CommitUncertain."
+    }
+  ],
+  "validation": {
+    "format": "NOT_RUN",
+    "rust_compile": "NOT_RUN",
+    "native_tests": "NOT_RUN",
+    "source_qa": "NOT_RUN",
+    "static": "Exact 4 replacements; original recovered-after-fence assertion in publication_tests remains CommitUncertain."
+  },
+  "remaining": "Three C/S readback failures remain under diagnosis; this candidate is not a claim that all seven or the whole native suite passes.",
+  "owner_decision": null,
+  "science": "HOLD"
+}

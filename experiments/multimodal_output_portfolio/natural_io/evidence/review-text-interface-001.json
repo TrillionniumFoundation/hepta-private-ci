@@ -1,0 +1,249 @@
+{
+  "schema": "hepta.natural-text-interface-independent-review.v1",
+  "created_at_utc": "2026-10-23T05:22:26.497653+00:00",
+  "status": "passed_for_current_fixture_interface_scope",
+  "reviewer": "multimodal_architecture subagent",
+  "review_method": "Record of the completed independent read-only source, asset, saved-tensor, provenance and analytical-cost inspection. No model inference was rerun for this review.",
+  "reviewed_receipt": "experiments/multimodal_output_portfolio/natural_io/evidence/text-interface-001.json",
+  "reviewed_receipt_sha256": "067d2fd82c132308e5b3812157447d4fad0fdf021988524f46c93686a139ca96",
+  "reviewed_script_sha256": "73da9ab4639e05e6023f26b6c1a11beb79836137440ec5f8978416fb2215adac",
+  "implementation_module": "/tmp/hepta-natural-text-env/lib/python3.12/site-packages/transformers/models/t5/modeling_t5.py",
+  "implementation_sha256": "ee1a043f5c03c684a2bbb0213ea3b3f8be272a03ab884bdca57c31e7315e7b7e",
+  "checks": {
+    "script_bytes_match_receipt_sha256": true,
+    "implementation_module_bytes_match_receipt_sha256": true,
+    "asset_checks": {
+      "README.md": {
+        "bytes_match": true,
+        "sha256_matches": true,
+        "expected_bytes": 8473,
+        "expected_sha256": "6559de584e57caf42cd2c77a23bb31d5bd28c5aa9995ee1d967b510acd88d410",
+        "upstream_git_blob": "ec7fe4d8539a6aa166b27598bd402329eedc4305"
+      },
+      "config.json": {
+        "bytes_match": true,
+        "sha256_matches": true,
+        "expected_bytes": 1206,
+        "expected_sha256": "530e25060e3a8d5f7b0fcf53bfea9f3601165161f3b1914676e98d97cf07bcf1",
+        "upstream_git_blob": "378f74060b20f6a9a1ea41b03fc0504466206255"
+      },
+      "generation_config.json": {
+        "bytes_match": true,
+        "sha256_matches": true,
+        "expected_bytes": 147,
+        "expected_sha256": "f5a1c7e2be8092018d8835128987edf0111637dd98e90599cc80310fef75d95a",
+        "upstream_git_blob": "d52815623b46b7db1c4b957b5a83a8ad30b0146a"
+      },
+      "spiece.model": {
+        "bytes_match": true,
+        "sha256_matches": true,
+        "expected_bytes": 791656,
+        "expected_sha256": "d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86",
+        "upstream_git_blob": "4e28ff6ebdf584f5372d9de68867399142435d9a"
+      },
+      "tokenizer.json": {
+        "bytes_match": true,
+        "sha256_matches": true,
+        "expected_bytes": 1389353,
+        "expected_sha256": "d2acde0d8d71dd30a711834b07781b9c89feaac33fd332f60507699282740066",
+        "upstream_git_blob": "41911369be79611d82d152725113e66206bd7b79"
+      },
+      "tokenizer_config.json": {
+        "bytes_match": true,
+        "sha256_matches": true,
+        "expected_bytes": 2324,
+        "expected_sha256": "d1e7146101aa96282057f374aa9c3b260fba2109e5990edb1775d6efc70ffa3c",
+        "upstream_git_blob": "4fd6c49c32ecf41886dba213d40030f063c72b07"
+      },
+      "model.safetensors": {
+        "bytes_match": true,
+        "sha256_matches": true,
+        "expected_bytes": 242043056,
+        "expected_sha256": "bd944e5f1b3ad9b70dd9d00010a517059e19265671076b8b0a4a58d9491842bc",
+        "upstream_git_blob": null
+      }
+    },
+    "artifact_checks": {
+      "text-interface-tensors.npz": {
+        "bytes_match": true,
+        "sha256_matches": true,
+        "expected_bytes": 157660,
+        "expected_sha256": "d2056802344ee5cd2f04573f21dd5ac6bc8ca5502f5fb5cb48d4c23cf442b5e7"
+      },
+      "decoded-output.txt": {
+        "bytes_match": true,
+        "sha256_matches": true,
+        "expected_bytes": 56,
+        "expected_sha256": "fc94c0783f5be90a070d4c066eadd6c1d7e92177c93661078abcbf575bcd8a31"
+      }
+    },
+    "saved_tensor_checks": {
+      "input_ids": {
+        "shape_matches": true,
+        "dtype_matches": true,
+        "all_finite": true,
+        "content_sha256_matches": true,
+        "shape": [
+          1,
+          25
+        ],
+        "dtype": "int64",
+        "expected_sha256": "70d32c4ec3e2c1ea355b9b429667cc981bb6844e35d292a253126199b1995be6"
+      },
+      "attention_mask": {
+        "shape_matches": true,
+        "dtype_matches": true,
+        "all_finite": true,
+        "content_sha256_matches": true,
+        "shape": [
+          1,
+          25
+        ],
+        "dtype": "int64",
+        "expected_sha256": "9060d7baa74e0778cf6c0a534a56f8e914c6e6118c28b9328dfbc42962fa69c5"
+      },
+      "encoder_hidden": {
+        "shape_matches": true,
+        "dtype_matches": true,
+        "all_finite": true,
+        "content_sha256_matches": true,
+        "shape": [
+          1,
+          25,
+          512
+        ],
+        "dtype": "float32",
+        "expected_sha256": "afd154eacd7d72153de82d8af41f7aaad52cbe11e7244a2e10bca00e7c83c0c7"
+      },
+      "decoder_first_logits": {
+        "shape_matches": true,
+        "dtype_matches": true,
+        "all_finite": true,
+        "content_sha256_matches": true,
+        "shape": [
+          1,
+          1,
+          32128
+        ],
+        "dtype": "float32",
+        "expected_sha256": "8fc81b3b53168a1ed61016020b975522ccdd035284d94cd163484e70e30480d8"
+      },
+      "generated_ids": {
+        "shape_matches": true,
+        "dtype_matches": true,
+        "all_finite": true,
+        "content_sha256_matches": true,
+        "shape": [
+          1,
+          26
+        ],
+        "dtype": "int64",
+        "expected_sha256": "d03bd18d78629337a9cd130994ae51fb9f42989efab5ea2a5e4f5308f238938d"
+      }
+    },
+    "input_caption_matches_ingestion_artifact_sha256": true,
+    "input_caption_sha256": "fc94c0783f5be90a070d4c066eadd6c1d7e92177c93661078abcbf575bcd8a31",
+    "input_caption_bytes": 56
+  },
+  "loading": {
+    "pinned_model_revision": "df1b051c49625cf57a3d0d8d3863ed4d13564fe4",
+    "model_license_basis": "Apache-2.0 in the pinned google-t5/t5-small model card",
+    "asset_integrity_checked_before_loading": true,
+    "local_files_only": true,
+    "use_safetensors": true,
+    "trust_remote_code": false,
+    "pickle_weight_loading_used": false,
+    "strict_all_checkpoint_keys_loading_claimed": false
+  },
+  "analytical_linear_mac_check": {
+    "method": "Independent shape/configuration derivation; not an additional forward or copied hook implementation.",
+    "context_tokens": 25,
+    "hidden_width": 512,
+    "feed_forward_width": 2048,
+    "encoder_layers": 6,
+    "decoder_layers": 6,
+    "vocabulary_size": 32128,
+    "encoder_passes": 3,
+    "encoder_pass_roles": [
+      "explicit encoder interface probe",
+      "encoder recomputed for first-token logits probe",
+      "encoder computed for autoregressive generation"
+    ],
+    "decoder_token_steps_total": 26,
+    "decoder_token_step_roles": {
+      "first_token_logits_probe": 1,
+      "autoregressive_generation": 25
+    },
+    "encoder_macs_per_pass": 471859200,
+    "encoder_formula": "25 * 6 * (4 * 512 * 512 + 2 * 512 * 2048)",
+    "encoder_macs_total": 1415577600,
+    "decoder_macs_per_token_excluding_context_kv": 38469632,
+    "decoder_per_token_formula": "6 * (4 * 512 * 512 + 2 * 512 * 512 + 2 * 512 * 2048) + 512 * 32128",
+    "decoder_token_macs_total": 1000210432,
+    "context_kv_projection_sets": 2,
+    "context_kv_macs_per_set": 78643200,
+    "context_kv_per_set_formula": "6 * 2 * 25 * 512 * 512",
+    "context_kv_macs_total": 157286400,
+    "independent_total": 2573074432,
+    "recorded_hook_total": 2573074432,
+    "exact_match": true,
+    "interpretation": "The 0.598949 s wall / 0.598629 s process CPU covers all three interface operations, not one encoder call. Generation reuses cross-attention K/V after its first token.",
+    "not_total_model_flops": true,
+    "excluded_operations": [
+      "attention matrix products",
+      "embeddings",
+      "softmax and activations",
+      "layer normalization",
+      "generation control",
+      "loading"
+    ]
+  },
+  "generation_check": {
+    "max_new_tokens": 32,
+    "do_sample": false,
+    "num_beams": 1,
+    "saved_sequence_shape": [
+      1,
+      26
+    ],
+    "decoder_start_token_id": 0,
+    "eos_token_id": 1,
+    "saved_sequence_begins_with_start_token": true,
+    "saved_sequence_ends_with_eos": true,
+    "actual_new_tokens_including_eos": 25,
+    "generated_text_equals_input_description": true,
+    "interpretation": "Actual bounded autoregressive decoding occurred. The 32-token setting is a cap, not the observed token count. Reproducing the unprefixed caption is not a task-quality result."
+  },
+  "checkpoint_parameter_difference": {
+    "safetensors_header_parameter_sum": 60506880,
+    "runtime_unique_model_parameters": 60506624,
+    "difference": 256,
+    "ignored_key": "decoder.block.0.layer.1.EncDecAttention.relative_attention_bias.weight",
+    "ignored_key_shape": [
+      32,
+      8
+    ],
+    "official_implementation_explicitly_ignores_key": true,
+    "cross_attention_constructed_with_relative_attention_bias": false,
+    "official_code_url": "https://github.com/huggingface/transformers/blob/v4.57.1/src/transformers/models/t5/modeling_t5.py",
+    "explanation": "The pinned local implementation lists this legacy cross-attention relative-bias key in _keys_to_ignore_on_load_unexpected and creates cross attention without that parameter. The difference does not indicate a corrupted checkpoint; strict all-key loading is not asserted."
+  },
+  "provenance_scope": {
+    "verified_fixture": "Existing human German Commons description from the completed ingestion experiment",
+    "caption_source_binding": "The actual caption bytes match both the ingestion artifact digest and the T5 receipt.",
+    "current_fixture_verified": true,
+    "generic_caption_provenance_verified": false,
+    "limitation": "The script writes fixed German/Commons provenance metadata even though --caption accepts a path. That declaration is verified only for this recorded fixture; a different caption needs its own explicit source/language binding."
+  },
+  "scope": {
+    "new_model_inference_runs": 0,
+    "source_script_modified": false,
+    "original_receipt_modified": false,
+    "pretrained_text_interface_evidence_confirmed": true,
+    "translation_or_summarization_quality_confirmed": false,
+    "semantic_understanding_confirmed": false,
+    "multimodal_generation_confirmed": false,
+    "ndu_benefit_confirmed": false,
+    "foundation_model_blocker_closed": false
+  }
+}

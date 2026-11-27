@@ -1,0 +1,55 @@
+{
+  "purpose": "One parent-authorized exact-request reconciliation of the prior unknown native174 admission; no new qualification key or arguments.",
+  "original_request": {
+    "git_blob": "a37055a680067712b4ccedce1700726f26abd091",
+    "bytes": 17499,
+    "sha256": "7d0d2709a10fbaa73ab63a1e2124b97a9560f3c8ea42254e90e0f096e7d0df04",
+    "idempotency_key": "learn-ce434-fixed-3270-positive-native174-v1",
+    "typed_arguments_unmodified": true
+  },
+  "calls": {
+    "start": 1,
+    "preparation_read": 1,
+    "additional_status_reads": 0,
+    "additional_pty_reads": 0
+  },
+  "start": {
+    "started_at": "2026-11-12T09:19:39.904Z",
+    "finished_at": "2026-11-12T09:20:40.859Z",
+    "result": {
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "host": "desktop",
+      "persistent_across_runtime_restart": true,
+      "reused": false,
+      "session_id": "dpty-04eeb7c6841befcf9948c084aac0220a7c0d6bbe0c94003828979ec511a86197",
+      "status": {
+        "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+        "bytes_seen": 0,
+        "bytes_stored": 0,
+        "capture_error": null,
+        "created_unix_ms": 1794475204631,
+        "output_complete": false,
+        "owner_pid": 339517,
+        "pid": 339518,
+        "state": "running"
+      }
+    }
+  },
+  "prep": {
+    "started_at": "2026-11-12T09:22:06.209Z",
+    "finished_at": "2026-11-12T09:24:06.303Z",
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/positive-3270-preparation-v1/result.json",
+    "result": "tool returned MCP -32603 request timed out; file bytes not obtained"
+  },
+  "conclusion": "Admission was observed with actual session state running and reused false. Neither native completion nor pass/failure is established. Previous unknown attempt is not reclassified.",
+  "native_completed": false,
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "no_extra_H_mutations": true,
+  "no_kill": true
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.hosted-caller-original-root-preservation.v1",
+  "source": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+  "run_id": 43213823243,
+  "job_id": 131167901712,
+  "status": "completed",
+  "conclusion": "success",
+  "observed_at_utc": "2026-11-12 13:41:19 UTC",
+  "log_representation": "Complete original decoded GitHub job log UTF-8; all returned BOM characters and timestamps preserved.",
+  "bytes": 2132795,
+  "sha256": "2d2715a222862c381c5fec8891ca67bd04abe26a70dfef33cdba671feed8ad21",
+  "parts": [
+    {
+      "offset": 0,
+      "bytes": 350000,
+      "sha256": "39e22ac79afb86473e3eb1bd76c59341b67bf4c78905443ab137b9aa7034be4b",
+      "git_blob": "7f7c2ce198b8f02be27d829a94f621cc34190403",
+      "path": "job131167901712.decoded.log.part-000.bin"
+    },
+    {
+      "offset": 350000,
+      "bytes": 350000,
+      "sha256": "e1e911231584a75dc7552f897f5df0aad70501815a3f9bf3e6144ae3e85acb86",
+      "git_blob": "12bdbf40c94afe1213744905d263f81894d15c03",
+      "path": "job131167901712.decoded.log.part-001.bin"
+    },
+    {
+      "offset": 700000,
+      "bytes": 350000,
+      "sha256": "dad1c561f216cd20c8fcc57cdde98f1a6d2b93f1346252e5bde66b62b6aea906",
+      "git_blob": "74ff0511c54820f8c63242f6712966d25e0e4dda",
+      "path": "job131167901712.decoded.log.part-002.bin"
+    },
+    {
+      "offset": 1050000,
+      "bytes": 350000,
+      "sha256": "a6cf8b6d9f9dc98ed0b140f429b54be6316b98ab705343a347050674f6be9fcd",
+      "git_blob": "ac6e078c1f1b5470308e85bb4a7a3f5e339d38a1",
+      "path": "job131167901712.decoded.log.part-003.bin"
+    },
+    {
+      "offset": 1400000,
+      "bytes": 350000,
+      "sha256": "97d6df834ac734187b6af61525dacdd8b6dc74e3149f0196289e11299c204ac3",
+      "git_blob": "138e2732020055d858cb1cad2b19c93407862adf",
+      "path": "job131167901712.decoded.log.part-004.bin"
+    },
+    {
+      "offset": 1750000,
+      "bytes": 350000,
+      "sha256": "1e10fcdc7f056e68d5b079482daf14e56780b74f2a7bf18558a48a02b9f8a609",
+      "git_blob": "2219454383e53ea16a524ae6efeee8d74e25c4da",
+      "path": "job131167901712.decoded.log.part-005.bin"
+    },
+    {
+      "offset": 2100000,
+      "bytes": 32795,
+      "sha256": "769f97d80a7ec3f95af54e743a02387102d47509f79107f5171545e525bc6da2",
+      "git_blob": "2742ea63d09678e0249448751d963e94f27efa1c",
+      "path": "job131167901712.decoded.log.part-006.bin"
+    }
+  ],
+  "reassembly": "Concatenate part bytes in ascending offset without separators, verify complete SHA256 before UTF-8 decoding.",
+  "receipt_extracted_for_summary_only": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "authorityGranted": false,
+    "boundaries": 537,
+    "rustFilesScanned": 6597,
+    "privilegedInventoryCount": 537,
+    "protectedFilesCount": 386
+  },
+  "prior_results_transferred": false,
+  "native_suite_status": "Separate Linux job failed compile E0659 before any tests; this caller job is not native suite completion.",
+  "owner_decision": null,
+  "original_zip_members_read": false,
+  "artifact": {
+    "id": 13948888085,
+    "bytes": 21652,
+    "sha256": "7ab1f48d81ee80297ae8b5afd6699708d409fdbf5db1eab756d0150ea61ba332"
+  }
+}

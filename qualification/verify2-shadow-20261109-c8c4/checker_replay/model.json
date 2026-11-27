@@ -1,0 +1,92 @@
+{
+  "checkers": [
+    {
+      "checker_id": "qwen-neutral",
+      "cost": 0.0,
+      "version_sha256": "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    },
+    {
+      "checker_id": "qwen-auditor",
+      "cost": 0.0,
+      "version_sha256": "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a"
+    },
+    {
+      "checker_id": "qwen-readout0",
+      "cost": 0.0,
+      "version_sha256": "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1"
+    },
+    {
+      "checker_id": "qwen-readout1",
+      "cost": 0.0,
+      "version_sha256": "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93"
+    },
+    {
+      "checker_id": "smol-neutral",
+      "cost": 0.0,
+      "version_sha256": "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b"
+    },
+    {
+      "checker_id": "qwen-repeat",
+      "cost": 0.0,
+      "version_sha256": "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    }
+  ],
+  "data_sha256": "f0d9de1ddf3ee3cfc51701113e9477e76ecd960b516feb059e2d352a5248fadd",
+  "heldout_groups": [
+    "confirmation/synthetic-template/0",
+    "confirmation/synthetic-template/1"
+  ],
+  "min_class_count": 2,
+  "missing_labels": 0,
+  "model_sha256": "3630760ffbd069520ecde3d556494dee543be6eb633bd08cfd7246e98191f861",
+  "observed_group_counts": [
+    [
+      "calibration/synthetic-template/0",
+      6,
+      0
+    ],
+    [
+      "calibration/synthetic-template/1",
+      6,
+      0
+    ]
+  ],
+  "scope": {
+    "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+    "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+    "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+    "event": "goal_value_error_at_step3_without_optional_interruption",
+    "horizon_end": 3,
+    "horizon_start": 0
+  },
+  "table": [
+    [
+      false,
+      [
+        "pass",
+        "pass",
+        "fail",
+        "fail",
+        "pass",
+        "pass"
+      ],
+      4
+    ],
+    [
+      true,
+      [
+        "pass",
+        "pass",
+        "fail",
+        "fail",
+        "pass",
+        "pass"
+      ],
+      8
+    ]
+  ],
+  "training_groups": [
+    "calibration/synthetic-template/0",
+    "calibration/synthetic-template/1"
+  ]
+}

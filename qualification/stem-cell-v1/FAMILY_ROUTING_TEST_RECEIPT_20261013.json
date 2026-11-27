@@ -1,0 +1,99 @@
+{
+  "checks": {
+    "compileall": "passed",
+    "diff_whitespace": "passed",
+    "full_repository": "not_run",
+    "hosted_CI": "not_checked_or_claimed",
+    "remote_blob_match": true,
+    "rust_fmt": "not_run_no_codex_rs_checkout"
+  },
+  "code_candidate": "c028bf12297e2cfbbb6b2d145390d055af1439e3",
+  "date": "2026-10-13",
+  "evidence_sha256": {
+    "baseline.log": "a9259783eab2ff05f7977ec3e4ce536cd8df357409926a250a0d0d9cbd5acb84",
+    "diagnostic.json": "6bcb6d944c7fca8e16d60264c388c16482abf3dfd862e18ccfde48d415239c2d",
+    "diagnostic.py": "35eb5542b718e87a589365dda46057db092981fbde863f78daf959f74ee6ecb4",
+    "family-first.log": "7e643d3834fef654926a39d289a072a4ad3a1250bb9b95007a48ab239bbc3ccc",
+    "family-second.log": "3f11882ad569466dfb3a83bf4f19c9d35e414b1b1517659e5d44016b3efd2a4e",
+    "family-third.log": "67e237418b2870f345175e60478dcec386e27f5d9c7ced15f211a3419aa555dc",
+    "full-final-1.log": "1cedba6ee1bd1f284c959593146c360d475c6b076f190c0e96fb936188f8a1dc",
+    "full-final-2.log": "b8b7e2d9d06ece8238fca82317f25753d631804317cc68e41edcea6ee8e4c17f",
+    "hf-profile-attempt.log": "0fbedd5248ebb65bcfd0b375837d95773c4fb995bc3999f0d7b3b488e084c15f",
+    "stage1.log": "2dc64570caeb7f0c379f0566443f74cfa30d3566b004f392b29b1dd7551e51c9"
+  },
+  "global_float_parity_established": false,
+  "independent_task_efficacy": false,
+  "installed_hf_attempt": {
+    "checks_executed": 0,
+    "error": "ModuleNotFoundError: transformers",
+    "exit_code": 1
+  },
+  "pretrained_execution": false,
+  "production_authorized": false,
+  "raw_evidence_location": "evidence/ in downloadable source package",
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu"
+  },
+  "schema": "hepta.family-routing.local-tests.v1",
+  "source_baseline": "6cae51e0a3a89292b9099e689f450f84c16b8dc0",
+  "source_blobs": {
+    "family_routing.py": {
+      "bytes": 10405,
+      "git_blob_sha1": "9f0b0c68d9eb980d5233302b5a157c4ab209a5ba",
+      "lines": 178,
+      "sha256": "9681ec627c7195f3328da2235f2de6d89288d458c2c476b07790d7301d4e449b"
+    },
+    "matrix_bank.py": {
+      "bytes": 6692,
+      "git_blob_sha1": "9072895995b9695a3e672e55178bb294be1161e7",
+      "lines": 125,
+      "sha256": "d96bbe470d857968ecf9677729334a20eef9a642b2a2f9bd35e1122cd15428d4"
+    },
+    "matrix_export.py": {
+      "bytes": 16408,
+      "git_blob_sha1": "5c2cf82789115461031b1fb9ee17a3cbc3a7d149",
+      "lines": 241,
+      "sha256": "431d36d996127a97a0f8e8374ba36716f87cd64cc3868a64904b5debe074dbf0"
+    },
+    "matrix_growth.py": {
+      "bytes": 13531,
+      "git_blob_sha1": "2591cf3e9da5a67ee4a92d7bcd74c9831cec1815",
+      "lines": 220,
+      "sha256": "8ae934ff2824a19fd8d84fbbd240bd45cba083d09529d4de79b3b961305b5f09"
+    },
+    "matrix_runtime.py": {
+      "bytes": 18342,
+      "git_blob_sha1": "c7c8e3c3ae29b6611ac1c4f91c996e310009e8c3",
+      "lines": 326,
+      "sha256": "3760a9e27c5d0a9298d309118a950c38a9ff7a304980cedfb089e24c23d5ff1d"
+    },
+    "test_family_export.py": {
+      "bytes": 10207,
+      "git_blob_sha1": "1d25942e884276153f6b4b641346242837585205",
+      "lines": 170,
+      "sha256": "636824096c71000eb5f4b81309d558d4957cd03545cededc1da942c835278311"
+    },
+    "test_family_routing.py": {
+      "bytes": 12965,
+      "git_blob_sha1": "d52e95af96c51cdd668bea8f9e3564f687fddbef",
+      "lines": 232,
+      "sha256": "68b90b58364cde22cad6f48b81d826efd1c1ef9d7e4ca0df9c0ddc9689cbed4e"
+    }
+  },
+  "surface": "session CPU source slice; not a full checkout or project cloud host",
+  "test_command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v",
+  "tests": {
+    "baseline": 142,
+    "errors": 0,
+    "failures": 0,
+    "final": 165,
+    "final_runs": 2,
+    "new_integration": 8,
+    "new_routing": 15,
+    "skips": 0,
+    "stage1": 157
+  }
+}

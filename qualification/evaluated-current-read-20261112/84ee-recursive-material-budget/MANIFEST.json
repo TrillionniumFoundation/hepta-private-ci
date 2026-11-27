@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.qualification.static-read-budget-manifest.v1",
+  "status": "STATIC_ONLY_NOT_EXECUTED",
+  "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "base_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+  "prefix": "qualification/evaluated-current-read-20261112/84ee-recursive-material-budget/",
+  "files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-recursive-material-budget/AUDIT.json",
+      "bytes": 47833,
+      "sha256": "e50d1c94d250bd4b3c7da676f4415198785c2fb2973ab83efbceff3102717c1d",
+      "git_blob_sha": "6903278fa49cb8830635dd613eb724ccbfea1bb8"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-recursive-material-budget/README.zh-CN.md",
+      "bytes": 12666,
+      "sha256": "b4e0795ae52ffc36a6f94d93f1910ab4b948822e3f00fd0046cd5f7cb71fecba",
+      "git_blob_sha": "aafd81d0cebfe1a6bc4ad1601ca8fefab10d2c6e"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/84ee-recursive-material-budget/SOURCE_PINS.json",
+      "bytes": 36924,
+      "sha256": "29e45af77c7609b22c8c99c80ad8d8b1a7c9460d686c4efd0400747646a76698",
+      "git_blob_sha": "9b061a91308dc8c638f261d650ad7bbb7fe5f4f6"
+    }
+  ],
+  "verification": {
+    "every_input_matches_actual_published_src_tree": true,
+    "source_pins": 105,
+    "new_full_byte_rechecks": 24,
+    "previous_full_byte_verified_blobs_identical_to_published_tree": 81,
+    "arithmetic_consistency_checked": true,
+    "arithmetic_check_is_not_product_test": true
+  },
+  "restrictions": {
+    "commits_created": 0,
+    "refs_moved": 0,
+    "product_tests_run": 0,
+    "actor_calls": 0,
+    "runtime_source_changed": false,
+    "scientific_status": "HOLD",
+    "owner_decision": null
+  }
+}

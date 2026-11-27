@@ -1,0 +1,53 @@
+{
+  "base": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "staged_tree": "eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125",
+  "changed_files": [
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback_tests.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+    "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py"
+  ],
+  "unchanged_implementations_and_prior_six_stage_cases": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "git_blob": "c56be75dd8a2e86894864c3d26a33eb1a3d4d416",
+      "bytes": 8915,
+      "sha256": "cec5780821b4e092ebc09f41d13876d0f271bc2858ebbb0d8796b11b119b226d",
+      "exactly_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs",
+      "git_blob": "abdeea194ee4bd1de796c2d21bf7d6b4f212c4a1",
+      "bytes": 13770,
+      "sha256": "c8be41a31e4dc3cd7d70508fcc5b200de2ec438df75e197240cc8c20eb80b65e",
+      "exactly_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+      "git_blob": "fffe066843ecc6ff02e5887a9ac926983d019e05",
+      "bytes": 12605,
+      "sha256": "5840b19c784bb58dc812271d10487c201aa8cd9a193f6e1930b1e9817eddde39",
+      "exactly_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "git_blob": "2f99436cc89f15f99198b3e414135707ecee391d",
+      "bytes": 14599,
+      "sha256": "121e08b87de9fceadeffeda8a0a02f530575510bf3640ed20ee073da4b554380",
+      "exactly_unchanged": true
+    },
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "bytes": 31701,
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+      "exactly_unchanged": true
+    }
+  ],
+  "native_build_or_test": false,
+  "previous_six_native_cases_reexecuted": false,
+  "compatibility_claim": "Existing stage and owner API/body and six prior native case source remain byte-identical; runtime compatibility still requires native CI."
+}

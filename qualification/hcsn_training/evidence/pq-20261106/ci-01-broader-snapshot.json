@@ -1,0 +1,144 @@
+{
+  "observed_at": "2026-11-06T16:22:00Z",
+  "runs": [
+    {
+      "run_id": 42240138319,
+      "counts": {
+        "success": 3,
+        "queued": 14,
+        "failure": 9,
+        "in_progress": 1,
+        "skipped": 3
+      },
+      "failures": [
+        {
+          "id": 127995822797,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "failed_steps": [
+            "Checkout repository",
+            "Check for a clean worktree"
+          ]
+        },
+        {
+          "id": 127995822824,
+          "name": "repo-checks / build-test",
+          "failed_steps": [
+            "Verify Hepta privileged caller closed set"
+          ]
+        },
+        {
+          "id": 127995822924,
+          "name": "cargo-deny / cargo-deny",
+          "failed_steps": [
+            "Run cargo-deny"
+          ]
+        },
+        {
+          "id": 127995823631,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "failed_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "Check for a clean worktree"
+          ]
+        },
+        {
+          "id": 127995823694,
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "failed_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "Check for a clean worktree"
+          ]
+        },
+        {
+          "id": 127995823695,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "failed_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "Check for a clean worktree"
+          ]
+        },
+        {
+          "id": 127995823870,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "failed_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "Check for a clean worktree"
+          ]
+        },
+        {
+          "id": 127995823899,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "failed_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "Check for a clean worktree"
+          ]
+        },
+        {
+          "id": 127995823928,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "failed_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "Check for a clean worktree"
+          ]
+        }
+      ],
+      "active": [
+        {
+          "id": 127995823708,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "step": "bazel test //..."
+        }
+      ]
+    },
+    {
+      "run_id": 42240137997,
+      "counts": {
+        "success": 3,
+        "failure": 4,
+        "queued": 4,
+        "cancelled": 2,
+        "skipped": 1
+      },
+      "failures": [
+        {
+          "id": 127972849494,
+          "name": "Build ptrcomp-sandbox aarch64-unknown-linux-gnu",
+          "failed_steps": [
+            "Smoke test staged artifact with Cargo"
+          ]
+        },
+        {
+          "id": 127972849536,
+          "name": "Build release aarch64-unknown-linux-gnu",
+          "failed_steps": [
+            "Smoke test staged artifact with Cargo"
+          ]
+        },
+        {
+          "id": 127972849577,
+          "name": "Build release x86_64-apple-darwin",
+          "failed_steps": [
+            "Smoke test staged artifact with Cargo"
+          ]
+        },
+        {
+          "id": 127972849934,
+          "name": "Build ptrcomp-sandbox x86_64-apple-darwin",
+          "failed_steps": [
+            "Set up Rust toolchain for Cargo smoke"
+          ]
+        }
+      ],
+      "active": []
+    },
+    {
+      "run_id": 42240137866,
+      "counts": {
+        "success": 2,
+        "queued": 1
+      },
+      "failures": [],
+      "active": []
+    }
+  ]
+}

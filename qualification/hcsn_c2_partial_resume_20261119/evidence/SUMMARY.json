@@ -1,0 +1,208 @@
+{
+  "archive": {
+    "all_members_roundtrip_verified": true,
+    "archive": "/home/qian-qi/hepta-c2-partial-resume-20261119-d741/c2-continuation-exact-artifact.tar.xz",
+    "bytes": 17023928,
+    "cpu_seconds": 12.884274337,
+    "full_six_fit_replay": false,
+    "manifest_bytes": 132158,
+    "manifest_sha256": "b3c7dad789dd1f98574c24b8c2ed57fd0538e7c27dec973c84f5b353d60cce68",
+    "members": 298,
+    "model_forward_calls": 0,
+    "optimizer_calls": 0,
+    "original_controller_terminal": "UNKNOWN",
+    "peak_rss_bytes": 116854784,
+    "resource_scope": "Separate one-thread, 2 GiB address-space, 300 CPU-second postprocessing; no numerical calls or added training budget.",
+    "run_output_files": 38,
+    "schema": "hcsn-c2-continuation-archive-receipt-v1",
+    "scientific_admission": "HOLD",
+    "sha256": "fcd2d079441a3006ca55b41afb05282b211245c7d56d1ac96c3ff9379074e061",
+    "uncompressed_member_bytes": 31547310,
+    "wall_seconds": 13.391180442005862
+  },
+  "closed_for_this_followup": [
+    "strict_actual_partial_state_restoration",
+    "seed211_recorded_plateau_termination",
+    "complete_exact_archive_and_frozen_independent_reader"
+  ],
+  "completed_epoch_records": [
+    147,
+    148
+  ],
+  "confirmation_E_access": false,
+  "final_logical_updates": 1776,
+  "first_restored_adam_update": {
+    "absolute_arithmetic_bound": 1e-12,
+    "forward_backward_calls": 0,
+    "gradient_coordinates": 17356,
+    "maximum_absolute_difference": 5.551115123125783e-17,
+    "optimizer_calls": 0,
+    "parameters": 11,
+    "per_parameter_max_absolute_difference": {
+      "core.network.layers.0.content_proposal.bias": {
+        "exp_avg": 1.734723475976807e-18,
+        "exp_avg_sq": 0.0,
+        "parameter": 0.0
+      },
+      "core.network.layers.0.content_proposal.weight": {
+        "exp_avg": 1.734723475976807e-18,
+        "exp_avg_sq": 0.0,
+        "parameter": 0.0
+      },
+      "core.network.layers.0.likelihood.bias": {
+        "exp_avg": 1.734723475976807e-18,
+        "exp_avg_sq": 1.5407439555097887e-33,
+        "parameter": 5.421010862427522e-20
+      },
+      "core.network.layers.0.likelihood.weight": {
+        "exp_avg": 1.3010426069826053e-18,
+        "exp_avg_sq": 2.710505431213761e-20,
+        "parameter": 2.7755575615628914e-17
+      },
+      "core.network.layers.0.state_embedding": {
+        "exp_avg": 1.6263032587282567e-19,
+        "exp_avg_sq": 4.235164736271502e-22,
+        "parameter": 5.551115123125783e-17
+      },
+      "core.network.layers.0.write_gate.bias": {
+        "exp_avg": 5.421010862427522e-20,
+        "exp_avg_sq": 5.877471754111438e-39,
+        "parameter": 0.0
+      },
+      "core.network.layers.0.write_gate.weight": {
+        "exp_avg": 1.0842021724855044e-19,
+        "exp_avg_sq": 5.293955920339377e-23,
+        "parameter": 6.938893903907228e-18
+      },
+      "core.network.readout.bias": {
+        "exp_avg": 8.673617379884035e-19,
+        "exp_avg_sq": 0.0,
+        "parameter": 0.0
+      },
+      "core.network.readout.weight": {
+        "exp_avg": 8.673617379884035e-19,
+        "exp_avg_sq": 0.0,
+        "parameter": 0.0
+      },
+      "temporal_adapter.bias": {
+        "exp_avg": 4.336808689942018e-19,
+        "exp_avg_sq": 0.0,
+        "parameter": 0.0
+      },
+      "temporal_adapter.weight": {
+        "exp_avg": 1.734723475976807e-18,
+        "exp_avg_sq": 0.0,
+        "parameter": 1.734723475976807e-18
+      }
+    },
+    "scope": "Stored clipped gradients, full restored moments and parameter arithmetic; no regenerated gradient or new optimizer execution."
+  },
+  "historical_cost_refunds": false,
+  "identity": "hcsn-c2-partial-resume-20261119-d741-001",
+  "independent_reader_cost": {
+    "cost_scope": "Whole reader child including Python, NumPy and Torch startup/imports, archive decoding and checks; separate from scientific training budget.",
+    "cpu_system_seconds": 1.203204,
+    "cpu_total_seconds": 4.234424,
+    "cpu_user_seconds": 3.03122,
+    "full_fresh_process_wall_seconds": 4.242280241996923,
+    "limits": {
+      "address_space_bytes": 4294967296,
+      "affinity": [
+        0
+      ],
+      "cpu_hard_seconds": 310,
+      "cpu_soft_seconds": 300,
+      "threads": 1,
+      "wall_seconds": 360
+    },
+    "parse_error": null,
+    "peak_rss_kib": 275216,
+    "pid": 5,
+    "raw_wait_status": 0,
+    "reader_identity_after": {
+      "bytes": 41106,
+      "sha256": "24e7690d1d3e9906febdfed61ea9366240376db550461d019135eca4094db3a0"
+    },
+    "reader_identity_before": {
+      "bytes": 41106,
+      "sha256": "24e7690d1d3e9906febdfed61ea9366240376db550461d019135eca4094db3a0"
+    },
+    "requested_model_forward_calls": 0,
+    "requested_optimizer_calls": 0,
+    "returncode": 0,
+    "schema": "hcsn-c2-archive-reader-fresh-process-cost-v1",
+    "status": "PASSED",
+    "stderr_identity": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout_identity": {
+      "bytes": 11388,
+      "sha256": "1d66bc7adbef4199e331417639a743ce5041f80f420430b3052d7161a7beb564"
+    },
+    "timed_out": false
+  },
+  "independent_reader_sha256": "1d66bc7adbef4199e331417639a743ce5041f80f420430b3052d7161a7beb564",
+  "independent_reader_status": "VERIFIED_ARCHIVED_CONTINUATIONS",
+  "independent_regenerated_gradients": false,
+  "independent_training_replay": false,
+  "initial_logical_updates": 1757,
+  "live_partial_epoch_cursor": null,
+  "native_job_id": "1a1f369e64f-ffbe-d3f",
+  "new_development_forwards": 16,
+  "new_full_epoch_training": 1,
+  "new_optimizer_completed": 19,
+  "new_training_micro_forwards": 70,
+  "open_optimizer_completion_interval": [
+    0,
+    0
+  ],
+  "original_budget_eligibility": false,
+  "original_controller_terminal": "UNKNOWN",
+  "original_independent_complete_training_replays": 0,
+  "original_total_fits": 6,
+  "partial_epoch_completed": 147,
+  "resumed_checkpoint_sha256": "6366cd79877232623cf510629efeb7e5b321dc72a85c0b73b47f92c99c586178",
+  "schema": "hcsn-c2-partial-resume-outcome-v1",
+  "scientific_admission": "HOLD",
+  "selected_best_epoch": 144,
+  "selected_development_macro_f1": 0.388353751030186,
+  "source_commit": "fd052ccbd596a9667963d478735327605ab7d5c7",
+  "source_freeze_sha256": "502ed6d2920948fdf55e15c0b9baf11eebe3b02f3a1a76d8581e35a286f0d214",
+  "source_tree": "8dbeaaac278085a4778ff6d8980841a53dfedd48",
+  "status": "COMPLETED_PLATEAU",
+  "stopping": {
+    "best": 0.388353751030186,
+    "best_epoch": 144,
+    "plateau_anchor": 0.38698437025179494,
+    "stale_epochs": 10
+  },
+  "training_cost": {
+    "assigned_cpu": 0,
+    "cleanup_budget_overrun_wall_seconds": 0.0,
+    "cpu_system_seconds": 39.04618,
+    "cpu_total_seconds": 808.816493,
+    "cpu_user_seconds": 769.770313,
+    "dispatch_monotonic": 435271.195670232,
+    "exit_code": 0,
+    "external_stop": null,
+    "full_fresh_process_wall_seconds": 819.33570400998,
+    "hard_killed": false,
+    "identity": "hcsn-c2-partial-resume-20261119-d741-001-hcsn-s211-lr0.001",
+    "observed_memory_high_water_bytes": 3573891072,
+    "peak_rss_kib": 3490128,
+    "pid": 1467407,
+    "post_deadline_wall_scope": "May include in-flight compute and finalization; no extra scientific budget or qualification credit.",
+    "post_external_stop_wall_seconds": null,
+    "raw_wait_status": 0,
+    "result_error": null,
+    "result_sha256": "55e22dde3ef0060c7f84290024a79ceb87ebee2d433531ab925fb535b66a46fd",
+    "result_status": "COMPLETED_PLATEAU",
+    "rss_limit_exceeded": false,
+    "scientific_wall_budget_seconds": 3600,
+    "status": "REVIEWABLE_TERMINAL",
+    "stop_receipt_error": null,
+    "wait4_return_monotonic": 436090.531374242,
+    "wall_within_scientific_budget_seconds": 819.33570400998
+  }
+}

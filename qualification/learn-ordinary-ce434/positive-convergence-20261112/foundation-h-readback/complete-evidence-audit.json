@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "source_commit": "b1e85d9a176b8037978e8256e8b1297194a248b4",
+  "source_tree": "afd44002d7fbfcdb92ec08aa4cf84d41ea5a3d33",
+  "operation": "Read existing original evidence only; no source run, process start or H mutation.",
+  "integrity": {
+    "source_suite_log": {
+      "bytes": 80706,
+      "sha256": "de2f2fd5e397b369cf177fb7ea32b7a28259a715f7cc2bffe3d49815db23f21a",
+      "matches_original_result": true,
+      "version": "2050:15928689:80706:1794473269415549771:1794473269415549771",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65536,
+          "sha256": "8c3830a549115ee6b7e65caa2987ce11d3a01775940f7a61a9e8048fb7b28904"
+        },
+        {
+          "offset": 65536,
+          "bytes": 15170,
+          "sha256": "ffeae174ed3fad599adf2b4dc3075024320f3f3dd8fdc7c126ab3bccb12f11ec"
+        }
+      ]
+    },
+    "scanner_log": {
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "matches_original_result": true,
+      "version": "2050:15928701:48:1794473270257523697:1794473270257523697"
+    },
+    "source_suite_json": {
+      "bytes": 72571,
+      "sha256": "4fb64f57c42391d3ad6d50b0dc85ff203f70698a9fdf9dd0c89d920af5848bec",
+      "matches_original_result": true,
+      "version": "2050:15928707:72571:1794473269417589434:1794473269417589434",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65536,
+          "sha256": "bab9c70d64a70b29805e9dc8f3d93e8e6607deb9325fc47bc80fd8fbb7aced1e"
+        },
+        {
+          "offset": 65536,
+          "bytes": 7035,
+          "sha256": "5c0e1f45065797e2c69e026726dd59c20dee9f611a24a5fe451cf90ac44601cd"
+        }
+      ]
+    },
+    "original_result": {
+      "bytes": 1746,
+      "sha256": "f4787bc81d9eaadd5753df566ea4e3a5f2c1e06cd78ac73adc02013706c3dd31",
+      "matches_chunk": true,
+      "reference_vectors": 2
+    }
+  },
+  "summary": {
+    "expected_methods": 358,
+    "tests_run": 358,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "elapsed_seconds": 240.1077808109112,
+    "passed": true
+  },
+  "case_integrity": {
+    "actual_cases": 358,
+    "unique_case_ids": 358,
+    "all_statuses_passed": true,
+    "source_modules": 50
+  },
+  "transport_observation": "One source-suite.log read returned remote-helper exit 255 with connection closed. A single repeat of that same original read succeeded; both raw responses are retained. Every continuation pinned the version from its successful first chunk.",
+  "sha256_check": "Pure JavaScript SHA-256 independently checked every returned chunk and each full byte stream against the original result; implementation first checked against empty and abc reference vectors.",
+  "interpretation": "Only the original unchanged foundation source suite and scanner self-test passed. Positive-source qualification, formatter, compiler, native execution and ordinary acceptance are not implied.",
+  "native_executed": false,
+  "formatter_executed": false,
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  }
+}

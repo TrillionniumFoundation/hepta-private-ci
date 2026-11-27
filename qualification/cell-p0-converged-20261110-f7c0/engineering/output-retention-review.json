@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.output-retention-source-review.v1",
+  "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+  "original_fix_source": "5d7f18b06a1830b68ae1adf8155587e7cfd69aa0",
+  "status": "NO_NEW_BLOCKING_DEFECT_FOUND_IN_READ_ONLY_REVIEW",
+  "native_tests_executed_by_review": 0,
+  "source_blobs": {
+    "process.rs": "0b32ec80adfc3c672c848ad48472ae0def4ddadb",
+    "async_watcher.rs": "3f2a3f687ecbfbd64c8f74082de4b1ef17b09603",
+    "process_tests.rs": "2ea0fec49aff64b82082853d014c61c2166b2987",
+    "async_watcher_tests.rs": "0992e0fd217b7c38ee7327b48e9d3b5cce4ea4fb"
+  },
+  "verified_scope": [
+    "Original producer retains history and polling bytes before live broadcast and notification on local and exec-server paths.",
+    "History and polling each retain at most 1048576 bytes, half head and half tail; polling consumes only its own buffer.",
+    "The local producer consumes original stdout/stderr mpsc receivers and closes only after both streams close.",
+    "The live watcher registers close notification before Acquire state check, drains after completed output, and preserves a notification permit for a late exit watcher.",
+    "No new mutex order cycle was found; ordinary consumer reads the same producer history."
+  ],
+  "existing_limits": [
+    "Ordinary polling retains its 50 ms post-exit wait cap; live watcher retains its 100 ms grace. terminate/Drop can still abort producer after observed exit.",
+    "Driver upstream broadcast Lagged handling is unchanged; the new regression deliberately saturates downstream only.",
+    "Exec-server recovery remains bounded by bytes retained by its original remote owner.",
+    "The two retained-byte buffer caps do not establish a whole-process memory cap."
+  ],
+  "new_test_source_assertions": {
+    "observed_bytes": 1310732,
+    "retained_bytes": 1048576,
+    "omitted_bytes": 262156,
+    "executed_in_this_review": false
+  },
+  "whole_product_qualified": false
+}

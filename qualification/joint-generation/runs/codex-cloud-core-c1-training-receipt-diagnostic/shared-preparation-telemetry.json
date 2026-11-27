@@ -1,0 +1,263 @@
+{
+  "after": {
+    "container": {
+      "cpu_stat": {
+        "burst_usec": 0,
+        "nice_usec": 0,
+        "nr_bursts": 0,
+        "nr_periods": 49089,
+        "nr_throttled": 129,
+        "system_usec": 208768861,
+        "throttled_usec": 17019004,
+        "usage_usec": 1018133546,
+        "user_usec": 809364684
+      },
+      "memory_events": {
+        "high": 0,
+        "low": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_group_kill": 0,
+        "oom_kill": 0
+      },
+      "scope": "container, not process; deltas do not establish causation"
+    },
+    "errors": {},
+    "identity": {
+      "pid": 30957,
+      "start_ticks": 2026940,
+      "thread_id": 30957
+    },
+    "process_cpu_ns": 3387977091,
+    "process_threads": 1,
+    "rusage": {
+      "involuntary_context_switches": 7,
+      "major_faults": 0,
+      "minor_faults": 13173,
+      "system_cpu_ns": 127474000,
+      "user_cpu_ns": 3260507000,
+      "voluntary_context_switches": 17
+    },
+    "sampling": {
+      "cpu_ns": 376057,
+      "wall_ns": 375470
+    },
+    "schema": "hepta.resource-snapshot.v1",
+    "thread_cpu_ns": 3388179924,
+    "wall_ns": 20273470388399
+  },
+  "before": {
+    "container": {
+      "cpu_stat": {
+        "burst_usec": 0,
+        "nice_usec": 0,
+        "nr_bursts": 0,
+        "nr_periods": 49052,
+        "nr_throttled": 129,
+        "system_usec": 208586752,
+        "throttled_usec": 17019004,
+        "usage_usec": 1014386050,
+        "user_usec": 805799298
+      },
+      "memory_events": {
+        "high": 0,
+        "low": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_group_kill": 0,
+        "oom_kill": 0
+      },
+      "scope": "container, not process; deltas do not establish causation"
+    },
+    "errors": {},
+    "identity": {
+      "pid": 30957,
+      "start_ticks": 2026940,
+      "thread_id": 30957
+    },
+    "process_cpu_ns": 322997656,
+    "process_threads": 1,
+    "rusage": {
+      "involuntary_context_switches": 0,
+      "major_faults": 0,
+      "minor_faults": 9080,
+      "system_cpu_ns": 47065000,
+      "user_cpu_ns": 275944000,
+      "voluntary_context_switches": 8
+    },
+    "sampling": {
+      "cpu_ns": 453074,
+      "wall_ns": 452560
+    },
+    "schema": "hepta.resource-snapshot.v1",
+    "thread_cpu_ns": 323178697,
+    "wall_ns": 20269732139715
+  },
+  "difference": {
+    "container": {
+      "cpu_stat": {
+        "burst_usec": 0,
+        "nice_usec": 0,
+        "nr_bursts": 0,
+        "nr_periods": 37,
+        "nr_throttled": 0,
+        "system_usec": 182109,
+        "throttled_usec": 0,
+        "usage_usec": 3747496,
+        "user_usec": 3565386
+      },
+      "memory_events": {
+        "high": 0,
+        "low": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_group_kill": 0,
+        "oom_kill": 0
+      },
+      "scope": "container, not process; deltas do not establish causation"
+    },
+    "errors": {},
+    "process_cpu_ns": 3064979435,
+    "process_threads": {
+      "after": 1,
+      "before": 1
+    },
+    "rusage": {
+      "involuntary_context_switches": 7,
+      "major_faults": 0,
+      "minor_faults": 4093,
+      "system_cpu_ns": 80409000,
+      "user_cpu_ns": 2984563000,
+      "voluntary_context_switches": 9
+    },
+    "schema": "hepta.resource-delta.v1",
+    "thread_cpu_ns": 3065001227,
+    "wall_ns": 3738248684
+  },
+  "gc": {
+    "active": false,
+    "count": 22,
+    "cpu_ns_max": 4007123,
+    "cpu_ns_total": 12020419,
+    "dropped_events": 0,
+    "events": [
+      {
+        "cpu_ns": 192710,
+        "generation": 0,
+        "wall_ns": 191281
+      },
+      {
+        "cpu_ns": 158551,
+        "generation": 0,
+        "wall_ns": 157525
+      },
+      {
+        "cpu_ns": 162009,
+        "generation": 0,
+        "wall_ns": 161539
+      },
+      {
+        "cpu_ns": 53419,
+        "generation": 0,
+        "wall_ns": 51287
+      },
+      {
+        "cpu_ns": 1693134,
+        "generation": 1,
+        "wall_ns": 1692881
+      },
+      {
+        "cpu_ns": 42188,
+        "generation": 0,
+        "wall_ns": 41086
+      },
+      {
+        "cpu_ns": 43809,
+        "generation": 0,
+        "wall_ns": 42567
+      },
+      {
+        "cpu_ns": 242095,
+        "generation": 0,
+        "wall_ns": 186301
+      },
+      {
+        "cpu_ns": 20440,
+        "generation": 0,
+        "wall_ns": 20119
+      },
+      {
+        "cpu_ns": 90486,
+        "generation": 0,
+        "wall_ns": 89428
+      },
+      {
+        "cpu_ns": 17839,
+        "generation": 0,
+        "wall_ns": 17867
+      },
+      {
+        "cpu_ns": 18026,
+        "generation": 0,
+        "wall_ns": 17836
+      },
+      {
+        "cpu_ns": 17692,
+        "generation": 0,
+        "wall_ns": 17653
+      },
+      {
+        "cpu_ns": 17472,
+        "generation": 0,
+        "wall_ns": 17492
+      },
+      {
+        "cpu_ns": 17860,
+        "generation": 0,
+        "wall_ns": 17799
+      },
+      {
+        "cpu_ns": 1348208,
+        "generation": 0,
+        "wall_ns": 1349250
+      },
+      {
+        "cpu_ns": 3274110,
+        "generation": 1,
+        "wall_ns": 3273888
+      },
+      {
+        "cpu_ns": 4007123,
+        "generation": 0,
+        "wall_ns": 4007116
+      },
+      {
+        "cpu_ns": 258221,
+        "generation": 0,
+        "wall_ns": 254866
+      },
+      {
+        "cpu_ns": 135285,
+        "generation": 0,
+        "wall_ns": 133865
+      },
+      {
+        "cpu_ns": 68268,
+        "generation": 0,
+        "wall_ns": 68210
+      },
+      {
+        "cpu_ns": 141474,
+        "generation": 0,
+        "wall_ns": 139401
+      }
+    ],
+    "pending": false,
+    "scope": "GC callback intervals; process CPU may include other threads",
+    "unmatched_starts": 0,
+    "unmatched_stops": 0,
+    "wall_ns_max": 4007116,
+    "wall_ns_total": 11949257
+  },
+  "phase": "shared_preparation"
+}

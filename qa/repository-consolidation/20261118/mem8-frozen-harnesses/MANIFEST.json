@@ -1,0 +1,79 @@
+{
+  "schema": "mem8-frozen-harness-history-v1",
+  "candidate_base": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "canonical_sandbox_version": "V11",
+  "canonical_sandbox_head": "fe824cce50037071ff559e1aabdf36f9d5954908",
+  "superseded_sandbox_head": "23d9f41532e5e6310ca791a5b849ab1cff7466eb",
+  "original_carriers": [
+    {
+      "source_head": "23d9f41532e5e6310ca791a5b849ab1cff7466eb",
+      "original_path": ".github/fixtures/mem-windows-sandbox-fix-plan.json",
+      "retained_path": "qa/repository-consolidation/20261118/mem8-frozen-harnesses/v10/.github/fixtures/mem-windows-sandbox-fix-plan.json",
+      "git_blob": "3dbbcb516d0aa5386d2e2bbf550824422017d724",
+      "sha256": "db4dd341980625241262c989b816442c52b1a0ed4af95bc036e3478fe2edfaec",
+      "bytes": 7099
+    },
+    {
+      "source_head": "23d9f41532e5e6310ca791a5b849ab1cff7466eb",
+      "original_path": ".github/workflows/hepta-mem-windows-sandbox-fix.yml",
+      "retained_path": "qa/repository-consolidation/20261118/mem8-frozen-harnesses/v10/.github/workflows/hepta-mem-windows-sandbox-fix.yml",
+      "git_blob": "bd94e2dc6f712c3c48da30597c0c45001dd5e81e",
+      "sha256": "9ea2def1193798e7c9bb6fc20f3e8998e3a8a1271bb2661b01c06456caa26a1f",
+      "bytes": 4517
+    }
+  ],
+  "native_windows_execution_performed_for_this_merge": false,
+  "prepared_state": "PREPARED_NOT_ADMITTED_NOT_RUN",
+  "workflow_trigger_scope": "Existing frozen ordinary branch names only; no main, pull_request, workflow_dispatch or broadened trigger.",
+  "original_driver_and_support_bytes_identical_between_v10_and_v11": true,
+  "integration_formatting": [
+    {
+      "path": ".github/scripts/mem_native_five.py",
+      "historical_blob": "a524828dbc9de8bf65284fb96e1aab47ce2fd738",
+      "resolved_blob": "9c001dd3c72f52cb3f4a2511d8f1de836284e0e9",
+      "ast_sha256": "3745740180fe6c17bbe959fa0b81817c8b3a2214c3cd3332ac17a94df88c853a",
+      "ast_identical": true,
+      "change": "Ruff layout formatting invoked by repository just fmt; support modules also lose two surplus final blank lines."
+    },
+    {
+      "path": ".github/scripts/mem_native_five_support.py",
+      "historical_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+      "resolved_blob": "b60706f9dabb6ea714974d7d360281d4fe8294d6",
+      "ast_sha256": "8648dc69473cf93c5ed9fb10278a32982cdaca861bdac883699e215e0751a64d",
+      "ast_identical": true,
+      "change": "Ruff layout formatting invoked by repository just fmt; support modules also lose two surplus final blank lines."
+    },
+    {
+      "path": ".github/scripts/mem_native_subagent.py",
+      "historical_blob": "62a6c16bfcfd4fc51464149b6d8ce0fe92850efc",
+      "resolved_blob": "a683a45402efd56297758198bd5b9d64601d5bc7",
+      "ast_sha256": "f6524acfc3d312015dd72a5f2900189a12528f1b97288072c434e7e8fea92a1a",
+      "ast_identical": true,
+      "change": "Ruff layout formatting invoked by repository just fmt; support modules also lose two surplus final blank lines."
+    },
+    {
+      "path": ".github/scripts/mem_native_subagent_support.py",
+      "historical_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+      "resolved_blob": "b60706f9dabb6ea714974d7d360281d4fe8294d6",
+      "ast_sha256": "8648dc69473cf93c5ed9fb10278a32982cdaca861bdac883699e215e0751a64d",
+      "ast_identical": true,
+      "change": "Ruff layout formatting invoked by repository just fmt; support modules also lose two surplus final blank lines."
+    },
+    {
+      "path": ".github/scripts/mem_windows_sandbox_fix.py",
+      "historical_blob": "a6e1f9d76de87cb7f86bfe7b7db76b2675034cc4",
+      "resolved_blob": "e2f1795408bd2b8993e182f85a6d93b9f2d3a1c6",
+      "ast_sha256": "7defea865a1b530dd8fff8ddde28bac14c2e5b0a601d6cca28c5e7fec8199eb7",
+      "ast_identical": true,
+      "change": "Ruff layout formatting invoked by repository just fmt; support modules also lose two surplus final blank lines."
+    },
+    {
+      "path": ".github/scripts/mem_windows_sandbox_fix_support.py",
+      "historical_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+      "resolved_blob": "b60706f9dabb6ea714974d7d360281d4fe8294d6",
+      "ast_sha256": "8648dc69473cf93c5ed9fb10278a32982cdaca861bdac883699e215e0751a64d",
+      "ast_identical": true,
+      "change": "Ruff layout formatting invoked by repository just fmt; support modules also lose two surplus final blank lines."
+    }
+  ]
+}

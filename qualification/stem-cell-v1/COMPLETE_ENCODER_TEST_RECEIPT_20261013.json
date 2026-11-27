@@ -1,0 +1,105 @@
+{
+  "checks": {
+    "compileall": "passed",
+    "full_repository_tests": "not_run",
+    "hosted_HF_success": "not_observed",
+    "pretrained_execution": "not_run_locally",
+    "remote_source_blob_matches": true,
+    "rust_fmt": "not_run_no_just_or_full_checkout",
+    "yaml_parse": "passed"
+  },
+  "code_candidate": "0e8eb4f636cd7b745c219c991ceae9e790981559",
+  "date": "2026-10-13",
+  "installed_hf_check": {
+    "attempt_exit": 1,
+    "executed": 0,
+    "failure": "ModuleNotFoundError: transformers",
+    "log": "HF_PROFILE_LOCAL_FAILURE_20261013.txt",
+    "log_sha256": "77e4324fcad79dd84154145b260f5d86de27b3927e17498ab0b6224eef0cfccf",
+    "tests_defined": 3
+  },
+  "local_runs": [
+    {
+      "file": "COMPLETE_ENCODER_TEST_LOG_20261013_1.txt",
+      "seconds": 5.649,
+      "sha256": "f89920ee8aca1bd105e48f3008c7ad2ef265bcd6c95a4908e9e5bf6eea9ae7f8",
+      "tests": 120
+    },
+    {
+      "file": "COMPLETE_ENCODER_TEST_LOG_20261013_2.txt",
+      "seconds": 6.162,
+      "sha256": "1a2c3b81fb30cd35997e2e0de4ce508aae47bd61de3cd3c4bb349340447ae419",
+      "tests": 120
+    }
+  ],
+  "production_authorized": false,
+  "python": "3.13.5",
+  "raw_test_logs_location": "downloadable source package; not repository files",
+  "real_model_efficacy": false,
+  "runtime": {
+    "huggingface_hub": "1.16.1",
+    "numpy": "2.3.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu"
+  },
+  "schema": "hepta.complete-encoder-local-tests.v1",
+  "source_baseline": "5688818fa83f2fb16c4d42753a7c744a1420be22",
+  "source_blobs": {
+    "execution_meter.py": {
+      "git_blob_sha1": "9cf8c5da5ee7bfa26ec00ee7e7f17731cbb5ef62",
+      "sha256": "dbad36b6a5a2d96e093caa42ca8ec2a3e28b1a51e6c665e51aff460a12ca1376"
+    },
+    "hf_complete_checkpoint.py": {
+      "git_blob_sha1": "eb5acb89c0c5ad55061f26a43b1c8bb2937ee956",
+      "sha256": "825d4b6cccd19a1252d4eac318cd2f46957d43f8420a58c753854f831f195b78"
+    },
+    "hf_encoder_kernel.py": {
+      "git_blob_sha1": "172c60cc99d5c8ea66747cce4bc2a724e2208c29",
+      "sha256": "44ed40c1fd2ea6fc6745e4d9a73247c754a5bf0eea608863ee8a231a50b6b88f"
+    },
+    "hf_profile_checks.py": {
+      "git_blob_sha1": "abe24ca3887b1982bb3f86ea50f10399be007026",
+      "sha256": "45a2cdfa23abbe3de40944803106336f037c73925f774e222a5dfd5363bda7e6"
+    },
+    "matrix_materials.py": {
+      "git_blob_sha1": "94d532d498d6354f357cc469f313432bf5ce269c",
+      "sha256": "3745a5544b001f9c1213290fee331a3fa47bf1532304549ae7522d7cb81d228f"
+    },
+    "matrix_runtime.py": {
+      "git_blob_sha1": "34408e7bd47990993109093ff79d4c2fcbf108ad",
+      "sha256": "ab5230630e930531eac4dc3dc6f4e3ee72b923b495b38cd90e30941696e9315c"
+    },
+    "public_encoder_probe.py": {
+      "git_blob_sha1": "347da3db21cc4b7ceda0835d0cc237829ab84600",
+      "sha256": "0a8a9a360e330a4fc0855868f7f14a9e2620f3cee841eef299f6ab0dab60f246"
+    },
+    "test_complete_checkpoint.py": {
+      "git_blob_sha1": "7bc1272c261a2edf9f38e24af2e1fd2842236ec8",
+      "sha256": "24307d9f018f28694b0bf81460d93da9c552cfaea26beb509a0cc879c127b45d"
+    },
+    "test_public_probe.py": {
+      "git_blob_sha1": "7db6630537a05fa463722ca1868104744852021b",
+      "sha256": "36a63621d91c32ab62f87818125513f30f29df97d468312e2f6d7fd5b40b2de9"
+    },
+    "test_transformer_work.py": {
+      "git_blob_sha1": "812d3cfffd3f0dae52c67e4b8cad26a0375f078c",
+      "sha256": "a2f7e99678b0f44a6a9d662bd9649a860b73ccde94755db3c8ea0690f6a11404"
+    },
+    "transformer_work.py": {
+      "git_blob_sha1": "f8a5178a772cde72692ca09958858adbc24044ba",
+      "sha256": "f7ab1cf4f7fd796aaaf33899b37e6a59b28b4a636cc0bbec0af1e4eb3429aa7e"
+    }
+  },
+  "surface": "session Linux CPU source mirror; not project cloud or full checkout",
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "new_checkpoint": 12,
+    "new_public_acquisition": 5,
+    "new_transformer_work": 8,
+    "passed": 120,
+    "retained": 95,
+    "skips": 0
+  },
+  "workflow_blob_sha1": "4b139a288b9257f79aabdd877c7df7a0668a634b"
+}

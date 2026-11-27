@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.seal_bundle",
+    "--name",
+    "tiny_smoke001",
+    "--include",
+    "payload"
+  ],
+  "cpu_seconds_including_children": 0.193677,
+  "log_sha256": "7a17b63c152d13214c836db302df2e779fcce2ec72b5bb99d66b5f8dca0b4650",
+  "name": "successful_wrapper",
+  "peak_rss_kib_linux": 29184,
+  "returncode": 0,
+  "scope": "Nested complete fixture child tree; included in smoke outer wait4 receipt",
+  "wall_seconds": 0.2383015109999178
+}

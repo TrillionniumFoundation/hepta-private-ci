@@ -1,0 +1,13 @@
+Tool-captured stdout transcript; saved after execution, without rerunning the preflight.
+Exec session: 15288; output chunk ID: 1b8dab.
+Exit code: 0
+Checks executed:
+- parent_inputs() against original lifecycle/rebuilt-cell and clean-replay-facts fixture.
+- Deterministic shape_arrivals() and validate_arrival() with registered templates/480 steps.
+- ast.parse() of every new growth Python module.
+- source_identity() including source files and fixture JSON.
+
+{'old_count': 15, 'incoming_count': 15, 'parent_steps': 512, 'frontier_epoch': 1, 'revoked_roots': 2, 'actual_new_updates': 960, 'source_manifest': '2798e94b427c0f1e46af0e7e879d8ac73e5616f30915d6b309811cf297e0c29f'}
+
+The successful preflight followed a corrected first attempt: the shared strict_json helper requires a top-level object, whereas the independently pinned source fixture is a top-level array. The array path now uses json.loads only after its exact SHA-256 pin passes. No model training or final memory evaluation was run by this preflight.
+After these checks, a wording-only protocol edit changed 'shuffle vocabulary twice, then retain first 15' to 'duplicate vocabulary, shuffle once, then retain first 15'. The shuffle implementation did not change and tests were not rerun for that literal.

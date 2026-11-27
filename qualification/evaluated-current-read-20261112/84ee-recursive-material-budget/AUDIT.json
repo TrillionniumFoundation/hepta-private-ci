@@ -1,0 +1,885 @@
+{
+  "schema": "hepta.qualification.recursive-original-read-budget.v2",
+  "status": "STATIC_CONDITIONAL_PATH_AUDIT_NOT_EXECUTED",
+  "sealed_at_utc": "2026-11-12 20:02:23 UTC",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "published_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+    "published_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+    "production_equivalent_tree": "ff564227a417febe21a8187e650d5d80223dff42",
+    "traversal": [
+      {
+        "path": "",
+        "tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85"
+      },
+      {
+        "path": "codex-rs",
+        "tree": "072e68260985fc9647243e56e7626ebdc5592c70"
+      },
+      {
+        "path": "codex-rs/hepta-agentd",
+        "tree": "8510bfd6bc59ea75be5b8ca5a76f5ecb5358b731"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src",
+        "tree": "53388adfbfa9f1ec4ce297d9337d0654f0484e56"
+      }
+    ],
+    "source_pins_file": "SOURCE_PINS.json",
+    "source_pins_count": 105,
+    "source_pins_sha256": "29e45af77c7609b22c8c99c80ad8d8b1a7c9460d686c4efd0400747646a76698",
+    "verification": {
+      "actual_published_src_tree_entries": 945,
+      "newly_fetched_full_blobs_independently_hashed": 24,
+      "prior_byte_verified_immutable_blobs_equal_to_actual_tree": 81,
+      "previous_immutable_audit_blob": "e343758f960c807e6e7868fd9392bffdfbe1705e",
+      "previous_audit_only_used_for_equal_blob_integrity_not_old_formulas": true
+    }
+  },
+  "execution": {
+    "product_builds": 0,
+    "product_tests": 0,
+    "source_closure_tests": 0,
+    "actor_calls": 0,
+    "changed_runtime_source": false,
+    "changed_cap_or_deadline": false,
+    "claimed_end_to_end_pass": false,
+    "scientific_status": "HOLD",
+    "owner_decision": null,
+    "performed": [
+      "read immutable source",
+      "compare exact published tree leaves",
+      "independent Git blob SHA1 and SHA256 checks",
+      "static call graph and symbolic arithmetic"
+    ]
+  },
+  "conclusion": {
+    "main_condition": "The actual complete Version/S/C lifecycle uses one shared_evaluated.evaluator Arc, and that evaluator is served by the original Bound B host whose primary/retention members use one held original Trainer readback client.",
+    "main_demand": "Q = 70 + 10R B Readback invocations; each completed Bound B Readback uses 3 real reads on that same held Trainer readback connection; therefore N = 210 + 30R > 128.",
+    "examples": [
+      {
+        "R": 0,
+        "version_shared_B_readbacks": 70,
+        "bound_B_trainer_demand": 210
+      },
+      {
+        "R": 1,
+        "version_shared_B_readbacks": 80,
+        "bound_B_trainer_demand": 240
+      }
+    ],
+    "additional_condition_for_merged_root": "Root B commands and the Version evaluator are in fact served by that same Bound B host. Equal receipts, cut, actor ID or signatures alone do not prove this physical assembly.",
+    "merged_demand": "N = 3(b+Q)+1 = 244 + 36R; b=11+2R, one B Execute adds one read above the 3-per-call Readback baseline.",
+    "merged_examples": [
+      {
+        "R": 0,
+        "b": 11,
+        "Q": 70,
+        "demand": 244
+      },
+      {
+        "R": 1,
+        "b": 13,
+        "Q": 80,
+        "demand": 280
+      }
+    ],
+    "conservative_merged_subgraph": "3[(11+2R)+(30+8R)+4]+1 = 136+30R; this is a subset and is not added to Q or the full total.",
+    "interpretation": "Demand above the production 128-frame limit prevents this conditional successful path from completing with those exact held connections. These are required requests in a success-path model, not observations that 210/244 requests actually completed.",
+    "not_claimed": [
+      "No proof that every production deployment uses Bound B or merges Root B with Version B.",
+      "No attribution of the old first-S approximately 600 ms PredecessorUnavailable failure to this count.",
+      "No transfer of the finite fixture Material cap to production legacy Material evidence/source servers.",
+      "No proof of 500 ms or 300 s timing success or failure from request counts alone.",
+      "No completed owner, scientific, model-quality or adoption decision."
+    ]
+  },
+  "units_and_conditions": {
+    "R": "Nonnegative number of additional complete six-cut Root readback invocations after the mandatory six-cut checkpoint; R=0 is coordinator completion, R=1 includes one complete result retrieval. Not retries, seeds or polling.",
+    "P": "ceil(actual original Candidate artifact bytes / 2048), between 1 and 17 for the admitted original artifact.",
+    "m": "Number of original B panel members including primary and retention members; m>=2. A Bound call validates 8m logical member slots while reading its held Trainer physically only at the first/last proof slots.",
+    "pair": "One actual T frame and one actual B frame on two distinct purpose-bound connections. A pair is not one total frame.",
+    "successful_path": [
+      "One fresh original Version publication through the original issuer and FinalUse.",
+      "One actual original C runtime configuration consumption, S owner factory, C owner factory and readiness server initialization.",
+      "No retries, failed operations, optional diagnostics or extra authorized observers.",
+      "Original required live checks and complete actual signatures are included; failed partial calls may stop sooner.",
+      "Counts of different physical connections remain separate unless the exact assembly/Arc alias is stated."
+    ],
+    "global_upper": "No finite universal upper bound is asserted: extra authorized calls, original preparation/effect work and externally supplied assembly may add demand or fail earlier."
+  },
+  "endpoint_aliases": [
+    {
+      "endpoint": "V_T",
+      "kind": "original Training command reader retained by Version",
+      "identity": "state.shared_evaluated.training Arc cloned into actual S and C owners",
+      "demand": "Q = 70+10R",
+      "cap": 128,
+      "sources": [
+        "circuit_evaluated_version_commands.rs",
+        "circuit_retained_version_state.rs",
+        "circuit_evaluated_selection_remote.rs",
+        "circuit_evaluated_next_use_remote.rs"
+      ]
+    },
+    {
+      "endpoint": "V_B",
+      "kind": "original Evaluation command reader retained by Version",
+      "identity": "state.shared_evaluated.evaluator Arc cloned into actual S and C owners",
+      "demand": "Q = 70+10R",
+      "cap": 128,
+      "sources": [
+        "circuit_evaluated_version_commands.rs",
+        "circuit_retained_version_state.rs"
+      ]
+    },
+    {
+      "endpoint": "B_T",
+      "kind": "original read-only Training purpose held by Bound B",
+      "identity": "one original Training client Arc installed by into_host_from_original_training_readback; primary/retention logical proof uses Arc identity, not only receipt equality",
+      "demand": "3Q = 210+30R from V_B alone; 244+36R only if Root B also reaches this same host",
+      "cap": 128,
+      "sources": [
+        "neuron_cell_evaluation_host_training_readback.rs",
+        "neuron_cell_evaluation_training_read_proof.rs",
+        "cell_q24_training_command_readback.rs",
+        "cell_q24_training_command_readback_service.rs"
+      ]
+    },
+    {
+      "endpoint": "Root E / Root D / Root T",
+      "kind": "three original Root command purposes",
+      "identity": "original common clients; do not merge their counters with legacy Material evidence purposes",
+      "demand": {
+        "E": "75+12R",
+        "D": "73+12R",
+        "T": "69+12R"
+      },
+      "cap_each": 128,
+      "T_completed_readonly_subcount": "68+12R",
+      "sources": [
+        "cell_q24_no_update_stage_execute.rs",
+        "cell_q24_no_update_stage_state.rs",
+        "cell_q24_candidate_stage_evaluation.rs"
+      ]
+    },
+    {
+      "endpoint": "Root Candidate",
+      "kind": "one original Candidate artifact connection",
+      "identity": "first actual client read consumes P pages; all later reads use one actual Current frame",
+      "demand": "2b+P-1 = 21+4R+P",
+      "cap": 128,
+      "sources": [
+        "cell_q24_training_candidate_readback.rs",
+        "cell_q24_training_candidate_service.rs",
+        "cell_q24_training_candidate_current.rs"
+      ]
+    },
+    {
+      "endpoint": "S command / C command / S evidence",
+      "kind": "three distinct original purposes",
+      "demand": {
+        "S_command": "6+R",
+        "C_command": "3+R",
+        "S_evidence_from_C_and_factory": "7+2R"
+      },
+      "note": "The one S Evidence read in C factory is already included in Q_V=6; do not add it again to Q_SC.",
+      "sources": [
+        "circuit_evaluated_version_commands.rs",
+        "cell_q24_candidate_stage_retention_selection.rs",
+        "cell_q24_candidate_stage_retention_next_use.rs"
+      ]
+    },
+    {
+      "endpoint": "Version command / readiness",
+      "kind": "two original client purposes",
+      "demand": {
+        "Version": "5+p+R, 1<=p<=118 successful Progress requests",
+        "readiness": "q frames, 1<=q<=128"
+      },
+      "note": "Progress and NotReady only add their own purpose frames; they do not each perform another T/B read. Original absolute lifetime and sleeps can reject earlier.",
+      "sources": [
+        "circuit_retained_version_service.rs",
+        "circuit_evaluated_version_readiness.rs",
+        "cell_q24_candidate_stage_retention.rs",
+        "cell_q24_candidate_stage_retention_next_use.rs"
+      ]
+    },
+    {
+      "endpoint": "SourceBound Material E / D / remote Source",
+      "kind": "three original held physical evidence/source endpoints",
+      "identity": "Only combine if Root T, Version T, Bound B readonly T and Candidate really borrow the same SourceBound Stage and those same held endpoints.",
+      "production_counter": "legacy evidence/source loops use checked u64, not a 128-frame limit",
+      "fixture_counter": "finite fixture peers each have 128 frames",
+      "deadlines": "unchanged original per-exchange timeout up to 500 ms and absolute original lifetime up to 300 s",
+      "note": "Local Source profile has no remote Source frame; E/D physical reads and local source validation remain.",
+      "sources": [
+        "cell_q24_training_source_read_lane.rs",
+        "cell_q24_training_source_owner_read.rs",
+        "cell_q24_material_evidence_service.rs",
+        "cell_q24_material_source_service.rs",
+        "cell_q24_training_bootstrap_material_ports_tests.rs"
+      ]
+    }
+  ],
+  "mandatory_root_graph": {
+    "sources": [
+      "authority_host_learning_resident_runtime.rs",
+      "authority_host_learning_resident_stages.rs",
+      "authority_host_learning_resident_auth.rs",
+      "cell_q24_candidate_stage_retention_attestations.rs"
+    ],
+    "sequence": "Each actual stage Execute is followed by actual original_attestations, original signature/role verification and gate.checkpoint. The evaluated vector route returns directly; it does not also execute the legacy per-receipt loop.",
+    "no_remote_watchdog_addition": "The 250 ms Root watchdog is a local Root registry/store/current check, not another T/B/Material RPC.",
+    "evaluation_rows": [
+      {
+        "operation": "B Execute",
+        "calls": 1
+      },
+      {
+        "operation": "mandatory four-cut Root checkpoint",
+        "calls": 1
+      },
+      {
+        "operation": "S Execute",
+        "calls": 2
+      },
+      {
+        "operation": "mandatory five-cut Root checkpoint",
+        "calls": 2
+      },
+      {
+        "operation": "C Execute",
+        "calls": 3
+      },
+      {
+        "operation": "mandatory six-cut Root checkpoint",
+        "calls": 2
+      },
+      {
+        "operation": "each additional full six-cut Root readback",
+        "calls_per_R": 2
+      }
+    ],
+    "b": "11+2R",
+    "one_evaluation_facade": {
+      "actual_B_commands": 1,
+      "candidate_client_reads": 2,
+      "common_E_D_T_prefix_reads": 6,
+      "derivation": "Candidate before/after each have two common prefixes, plus direct common prefix before and after B.",
+      "no_extra_evaluated_predecessors": "It consumes the actual last D/T/B observations from that same Evaluation invocation; it does not reread the common clients."
+    },
+    "early_root_completed_path": {
+      "E": 9,
+      "D": 7,
+      "T": 3,
+      "T_breakdown": {
+        "Execute": 1,
+        "completed_Readback": 2
+      },
+      "note": "These early Root command counts are distinct from SourceBound Material captures during Trainer bootstrap/fit."
+    }
+  },
+  "version_and_nested_graph": {
+    "sources": [
+      "circuit_retained_version_state.rs",
+      "circuit_retained_version_effect.rs",
+      "circuit_retained_version_issuer.rs",
+      "circuit_evaluated_retention_publication.rs",
+      "circuit_evaluated_version_commands.rs",
+      "circuit_evaluated_version_readiness.rs"
+    ],
+    "one_read_original": "Two real require_cut_current calls surrounding original publication/artifact reads; each cut reads D/T/B once. Thus D2/T2/B2.",
+    "original_bind": "First binding reads actual D/T/B once; an already bound evaluated context authenticates its fixed cut without another live read.",
+    "Q_V_rows": [
+      {
+        "operation": "initial bind",
+        "pairs": 1
+      },
+      {
+        "operation": "Prepare: initial cut + real publication prepare before/after + final read_original",
+        "pairs": 5
+      },
+      {
+        "operation": "issuer claim plus immediate pre-request read_original",
+        "pairs": 4
+      },
+      {
+        "operation": "FinalUse publish: outer before + actual publication before/after + outer after",
+        "pairs": 6
+      },
+      {
+        "operation": "run_original_c before consuming original config",
+        "pairs": 2
+      },
+      {
+        "operation": "actual S factory outer before/after",
+        "pairs": 4
+      },
+      {
+        "operation": "actual C factory outer before/after plus one S Evidence read",
+        "pairs": 6
+      },
+      {
+        "operation": "readiness factory outer before/after",
+        "pairs": 4
+      },
+      {
+        "operation": "four required complete Version readbacks plus R full result reads",
+        "pairs": "8+2R"
+      }
+    ],
+    "Q_V": "40+2R",
+    "required_version_reads": [
+      "first complete publication after Prepare/Progress",
+      "S checkpoint",
+      "C execute",
+      "C checkpoint",
+      "each additional full Root readback"
+    ],
+    "S_cost": "Every actual S command or S Evidence read performs two T/B pairs.",
+    "C_cost": "Every actual C command performs two direct T/B pairs and two S Evidence reads; total six T/B pairs.",
+    "Q_SC": "2*(6+R)+6*(3+R) = 30+8R",
+    "Q": "70+10R",
+    "version_D_command_reads": "34+2R; real evaluated publication prepare/publish context.require_current does not reread D, so D is not Q"
+  },
+  "bound_B_graph": {
+    "sources": [
+      "neuron_cell_evaluation_host.rs",
+      "neuron_cell_evaluation_host_training_readback.rs",
+      "neuron_cell_evaluation_training_read_proof.rs",
+      "neuron_cell_evaluation_panel.rs",
+      "neuron_cell_evaluation_panel_member.rs",
+      "neuron_cell_evaluation_qualification_owner.rs",
+      "neuron_cell_evaluation_qualification_readback.rs",
+      "neuron_cell_evaluation_qualification_sources.rs",
+      "neuron_cell_evaluation_receipt_owner.rs"
+    ],
+    "proof": {
+      "logical_slots": "8m",
+      "physical_Trainer_reads": 2,
+      "identity": "same original Trainer Arc, full original receipt/signature, scope/principal/trust and this private invocation identity",
+      "lifetime": "borrowed for one complete Host call; first/last slots perform actual reads, intermediate slots verify the same immutable original pin",
+      "refuses": [
+        "different Source/Trainer Arc",
+        "different context",
+        "wrong slot order",
+        "partial traversal",
+        "cancellation/reuse"
+      ],
+      "preserved": "original per-member cohort, Cell, Qualification, execution and source reads remain"
+    },
+    "receipt_owner": {
+      "completed_Readback_Trainer_reads": 1,
+      "Execute_Trainer_reads": 2,
+      "Execute_reason": "original live preclaim read and completed receipt authentication"
+    },
+    "total_per_completed_call": {
+      "Readback": 3,
+      "Execute": 4
+    },
+    "version_only": "3Q = 210+30R",
+    "merged_root_condition": "Root and Version B endpoints are actually served by this same held host/client; receipt equality is insufficient.",
+    "merged_root": "3*(b+Q)+1 = 244+36R",
+    "supersedes": "The historical e72 formula (8m+1) per B Readback does not apply to the new Bound mode."
+  },
+  "individual_B_and_fixture_boundary": {
+    "per_member_Trainer_reads_per_B_call": 8,
+    "primary_extra_per_Readback": 1,
+    "primary_extra_for_Execute": 1,
+    "distinct_primary_and_retention": {
+      "primary": "9*N_B+1 if one Execute is included",
+      "each_retention": "8*N_B"
+    },
+    "all_members_same_client_without_Bound_proof": "(8m+1)*N_B+1",
+    "fixture": "Default PublicationFixture ready() retains separate fixture original primary and retention Trainer evidence clients, while its external T may be a real SourceBound Stage. It does not establish the Bound B or all-Stage alias used above.",
+    "actual_original_fixture": "New TrainingFixture/into_host_from_original_training_readback explicitly exercises the original Bound mode; its test source is an interface/expected-count source, not a test execution result.",
+    "sources": [
+      "circuit_evaluated_retention_publication_support_tests.rs",
+      "circuit_original_evaluation_host_support_tests.rs",
+      "circuit_original_evaluation_panel_tests.rs",
+      "circuit_original_evaluation_training_read_support_tests.rs",
+      "circuit_original_evaluation_training_read_tests.rs"
+    ]
+  },
+  "lower_material_expansion": {
+    "sources": [
+      "cell_q24_training_source.rs",
+      "cell_q24_training_source_owner.rs",
+      "cell_q24_training_source_read.rs",
+      "cell_q24_training_source_owner_read.rs",
+      "cell_q24_training_source_read_lane.rs",
+      "cell_q24_training_stage.rs",
+      "cell_q24_source_bound_stage.rs",
+      "cell_q24_training_candidate_current.rs"
+    ],
+    "one_completed_Trainer_or_Candidate_call": "One actual Source before and after; each captures E1/D1/remote-Source1. Hence each original physical Material endpoint receives two reads. Local Source profile has no remote-Source transport.",
+    "convergence_condition": "All four purposes actually borrow the same SourceBound Stage/held Material endpoints: Root T, Version T, B's readonly T, Candidate. This is an additional assembly condition.",
+    "post_training_core": {
+      "formula": "2[6b+Q+3(b+Q)+1+(2b+P-1)] = 22b+8Q+2P = 802+124R+2P",
+      "terms": [
+        {
+          "purpose": "Root completed T reads during evaluated phases",
+          "calls": "6b"
+        },
+        {
+          "purpose": "Version/S/C T reads",
+          "calls": "Q"
+        },
+        {
+          "purpose": "same-host Bound B readonly T including one Execute",
+          "calls": "3(b+Q)+1"
+        },
+        {
+          "purpose": "Candidate first P pages then one Current per remaining client read",
+          "calls": "2b+P-1"
+        }
+      ],
+      "R0_P1_to17": [
+        804,
+        836
+      ],
+      "R1_P1_to17": [
+        928,
+        960
+      ]
+    },
+    "early_completed_Root_T_reads_addition": {
+      "extra_T_reads": 2,
+      "extra_reads_per_Material_endpoint": 4,
+      "formula_including_them": "806+124R+2P"
+    },
+    "separately_traced_fresh_setup_and_Train": {
+      "status": "Additional conditional subgraph, not part of the principal readonly core or a universal total.",
+      "setup_rows": [
+        {
+          "operation": "source capture",
+          "reads_per_Material_endpoint": 2
+        },
+        {
+          "operation": "queued prewriter require_current",
+          "reads_per_Material_endpoint": 2
+        },
+        {
+          "operation": "OriginalStage::from_original_owners in_lane",
+          "reads_per_Material_endpoint": 4
+        },
+        {
+          "operation": "SourceBound::from_original_stage in_lane before/capture/after",
+          "reads_per_Material_endpoint": 6
+        },
+        {
+          "operation": "Training CommandOwner bind_original_stage require_context in_lane",
+          "reads_per_Material_endpoint": 4
+        }
+      ],
+      "setup_sum": 18,
+      "genuinely_missing_original_fit_execute": 10,
+      "conditional_total_with_early_T_and_these_additions": "834+124R+2P",
+      "omitted_positive_work": "Other original B/panel/retention preparation and extra authorized observations are not bounded here."
+    },
+    "limit_interpretation": "For production legacy Material evidence/source, this is cost/deadline demand, not a 128-counter violation. For the same finite fixture physical peers, 128 applies. Do not infer wall time from these counts."
+  },
+  "current_read_transaction": {
+    "sources": [
+      "circuit_feature_current_learning.rs",
+      "circuit_feature_current_owner.rs",
+      "circuit_feature_current_read.rs",
+      "circuit_learning_read_service.rs"
+    ],
+    "logical_slots": {
+      "Selection": 6,
+      "NextUse": 9
+    },
+    "physical_CURRENT_reads_per_scoped_transaction": 2,
+    "purpose_slot": 1,
+    "placement": "purpose verified after the first real CURRENT and Source input, before any native read",
+    "preserved": "real Source and Cell tail checks, original signatures, purpose and first/last CURRENT; public individual mode still physically reads every logical slot",
+    "effect_on_T_B_frames": "none; these local CURRENT reads are not the original T/B requests counted in Q or b"
+  },
+  "deadlines_and_cap_scope": {
+    "Training_readonly_client": "cell_q24_training_command_readback.rs: expected receipt and 1..=128 checked before request; linear peer take and request ID increment; no reopening or replenishment.",
+    "Training_readonly_server": "cell_q24_training_command_readback_service.rs and bootstrap_readback: original 1..=128 server loop, only Ready original Stage, fixed purpose.",
+    "outer_deadlines": "The separate original S/Material evidence transports retain <=500 ms exchange and <=300 s absolute lifetime. The purpose-fixed generic original owner command channel separately permits timeout <=30 s and lifetime <=300 s; each caller-provided timeout remains unchanged. Do not describe every command frame as a 500 ms frame.",
+    "initial_idle": "Original exchange may wait for first byte under absolute lifetime, then use per-exchange timeout; an idle wait is not all charged against the callback 500 ms.",
+    "observations": "The old first S callback approximately 600 ms reported PredecessorUnavailable, but the old fixture topology and hidden inner error are separate. This static report does not identify that runtime cause.",
+    "generic_command_source": {
+      "file": "learning_owner_command_channel.rs",
+      "blob": "f42d9f385ecafa17e02d993677ca261e02926beb",
+      "max_timeout_seconds": 30,
+      "max_lifetime_seconds": 300,
+      "separate_evidence_max_timeout_milliseconds": 500
+    }
+  },
+  "minimal_cut_candidates_not_implemented": [
+    {
+      "id": "B_readback_middle_read",
+      "scope": "one Bound B Readback invocation",
+      "idea": "Use the already private same-call first/last actual Trainer proof for completed receipt authentication, retaining full original signed receipt checks; do not remove the original Execute preclaim read.",
+      "obligation": "No proof escape/reuse, no skipped first/last actual read, no generic signature-to-Fresh elevation, receipt and final panel read bound to the same original context.",
+      "best_case_if_Readback_2_Execute_4": {
+        "Version_only": "2Q=140+20R >128",
+        "merged_Root": "2(b+Q)+2=164+24R >128"
+      },
+      "conclusion": "Useful local reduction; insufficient by itself."
+    },
+    {
+      "id": "Version_factory_scoped_cut",
+      "scope": "one actual Version factory invocation",
+      "idea": "Inspect whether nested full read_original pairs can share one actual outer before/after cut while each original artifact/current/signature validation remains present.",
+      "obligation": "Private borrowed token tied to exact owner/source/purpose and this call; no cache across caller invocations, no reusing a pre-effect proof after a real publication effect, no authority change.",
+      "conclusion": "Must provide exact saved frame table and failure/withdrawal counterexamples before proposing a runtime change."
+    },
+    {
+      "id": "C_S_nested_same_call",
+      "scope": "C original call and its actual S evidence validation",
+      "idea": "Investigate one full same-invocation read set for common predecessors; retain actual S evidence, C readiness/receipt and real before/after source validation.",
+      "obligation": "Cross-host evidence cannot borrow an in-memory proof or upgrade to Fresh; protocol/ownership and occupied Trainer lane reentry must be solved explicitly.",
+      "conclusion": "Design only. No new wire capability, owner or receipt has been constructed."
+    }
+  ],
+  "independent_review": {
+    "reviewer": "/root/timing_feedback_research",
+    "status": "Independent 43-source static review sealed separately; its full AUDIT was retrieved and compared before this report was sealed. Not an execution result.",
+    "confirmed": [
+      "b=11+2R",
+      "Q=70+10R",
+      "actual Version/S/C shared evaluator Arc",
+      "Bound B actual same Trainer Arc",
+      "production Training readonly client/server 128",
+      "244+36R under explicit Root/Version same-host condition",
+      "Version-only weaker topology lower bound 210+30R"
+    ],
+    "not_a_test_result": true,
+    "review_tree": "bdb8038a34b53118fe2cf72872d70b03ba08c7f8",
+    "review_manifest_blob": "41ae82079513a60dec362681164b8a4b5826ac9d",
+    "review_audit_blob": "c1c75ae8fd94da5e31173758cad00013a14c8780",
+    "review_43_source_pins_blob": "60783f611afb3c1eb95114af29cc92647bd7caf1"
+  },
+  "historical_records": {
+    "previous_e72_tree": "0cf3d057b1cf5805f70d17cb604b133b8f6b48ec",
+    "previous_e72_audit": "e343758f960c807e6e7868fd9392bffdfbe1705e",
+    "paused_five_path_draft": "f5ebe4098d48f44077dfe4a344114bffa23d0777",
+    "treatment": "Preserved as historical, never integrated by this audit. Old 106/32/616 and e72 B=8m+1 formulas are not added to the new Bound B formulas."
+  },
+  "referenced_source_lookup": [
+    {
+      "file": "authority_host_learning_resident_auth.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "git_blob_sha": "bd744f7b5c34034dfd58f7d6456d773dc22ca8dc",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs"
+    },
+    {
+      "file": "authority_host_learning_resident_runtime.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "git_blob_sha": "17b4748cf90ce55d8e0b3dfd1b7af5c09fb8a219",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs"
+    },
+    {
+      "file": "authority_host_learning_resident_stages.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "git_blob_sha": "8d4991acb6172551be1bde562963850f4152378c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs"
+    },
+    {
+      "file": "cell_q24_candidate_stage_evaluation.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "git_blob_sha": "2d1813e4f5a8c4b0f0d852d3c51b817d25f93c90",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"
+    },
+    {
+      "file": "cell_q24_candidate_stage_retention.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs",
+      "git_blob_sha": "7232ad40b7bdbc69d9813e40c056766dc3344bff",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs"
+    },
+    {
+      "file": "cell_q24_candidate_stage_retention_attestations.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_attestations.rs",
+      "git_blob_sha": "2154edd35a20d36064fd5dedefb71e73966bdc99",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_attestations.rs"
+    },
+    {
+      "file": "cell_q24_candidate_stage_retention_next_use.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs",
+      "git_blob_sha": "53c87af635fd882bc509fa6ef37f679be2b90b15",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs"
+    },
+    {
+      "file": "cell_q24_candidate_stage_retention_selection.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+      "git_blob_sha": "1ee4e558ae60296f47a0049eb08654c726e0c2e4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs"
+    },
+    {
+      "file": "cell_q24_material_evidence_service.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_evidence_service.rs",
+      "git_blob_sha": "b61dc81c7a14eca197fdec9e55c397743b69eac6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_material_evidence_service.rs"
+    },
+    {
+      "file": "cell_q24_material_source_service.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_source_service.rs",
+      "git_blob_sha": "9b4db7d83af9ab11710710adc75279461c134fec",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_material_source_service.rs"
+    },
+    {
+      "file": "cell_q24_no_update_stage_execute.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "git_blob_sha": "830c044c079478e1f61751446dd63be0f851586c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
+    },
+    {
+      "file": "cell_q24_no_update_stage_state.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+      "git_blob_sha": "b0d28eec3dfa87fd79bd3da844e0012338b2a7f5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs"
+    },
+    {
+      "file": "cell_q24_source_bound_stage.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+      "git_blob_sha": "3eeb581ffafbd80957dcf87ad02923f27d8acb29",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+    },
+    {
+      "file": "cell_q24_training_bootstrap_material_ports_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_material_ports_tests.rs",
+      "git_blob_sha": "d30794234278ce7e934b78c27a3330db49628d06",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_material_ports_tests.rs"
+    },
+    {
+      "file": "cell_q24_training_candidate_current.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_current.rs",
+      "git_blob_sha": "ff5ec108298daaf943dbd3365e2323f19994165a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_candidate_current.rs"
+    },
+    {
+      "file": "cell_q24_training_candidate_readback.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+      "git_blob_sha": "17879d20c89446d538c2166f6f61d9fa602a692e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs"
+    },
+    {
+      "file": "cell_q24_training_candidate_service.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+      "git_blob_sha": "1e37283936f6d5219a14b6dcaf4970bc69aace8b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs"
+    },
+    {
+      "file": "cell_q24_training_command_readback.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "git_blob_sha": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs"
+    },
+    {
+      "file": "cell_q24_training_command_readback_service.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+      "git_blob_sha": "fae852c8a1d5022347e632787172b99f9d119307",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+    },
+    {
+      "file": "cell_q24_training_source.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "git_blob_sha": "48a35b8c6aeac859c3fa9085bbaa0231a84008d3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_source.rs"
+    },
+    {
+      "file": "cell_q24_training_source_owner.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "git_blob_sha": "dc0b23e15625bdd6d5442555d259b3cacb12f9b6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
+    },
+    {
+      "file": "cell_q24_training_source_owner_read.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner_read.rs",
+      "git_blob_sha": "5d36c0856b08864b129434f3c15a67bd54fbc7cf",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_source_owner_read.rs"
+    },
+    {
+      "file": "cell_q24_training_source_read.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs",
+      "git_blob_sha": "c0b38e367ca375bfe4382b275130b3781c5ff48b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs"
+    },
+    {
+      "file": "cell_q24_training_source_read_lane.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs",
+      "git_blob_sha": "68b40418df15eada032a272d9732b38daa83e4a9",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs"
+    },
+    {
+      "file": "cell_q24_training_stage.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "git_blob_sha": "2cdf18c555acf11301570d8a555b9f6a37e604bb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+    },
+    {
+      "file": "circuit_evaluated_next_use_remote.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "git_blob_sha": "ace5e11b051086db4500c06489fc308a4cd7a798",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+    },
+    {
+      "file": "circuit_evaluated_retention_publication.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+      "git_blob_sha": "8acd512fa26d221b9386b5b35f2fc536c7ba3eb6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs"
+    },
+    {
+      "file": "circuit_evaluated_retention_publication_support_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "git_blob_sha": "bc1eaa7628ac840ca9ee51e4a2f93f3b70541e64",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs"
+    },
+    {
+      "file": "circuit_evaluated_selection_remote.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "git_blob_sha": "977fc16cc2e8c0383d74f30fe5c2992370abf63f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs"
+    },
+    {
+      "file": "circuit_evaluated_version_commands.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
+      "git_blob_sha": "c09af8045788a82ff53b3824e0521acb2e98e066",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs"
+    },
+    {
+      "file": "circuit_evaluated_version_readiness.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+      "git_blob_sha": "703556738f5fc6adf866c568ff26bcbc06f83081",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs"
+    },
+    {
+      "file": "circuit_feature_current_learning.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "git_blob_sha": "69a88e479494dfa9dda77a642c1cc1c85c1ad590",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs"
+    },
+    {
+      "file": "circuit_feature_current_owner.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "git_blob_sha": "cb3c74f89ee9fa692d16c7d7adf8970d6959411b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs"
+    },
+    {
+      "file": "circuit_feature_current_read.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read.rs",
+      "git_blob_sha": "2c469106274329851ea7329f312ed33d55c4a2f8",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_feature_current_read.rs"
+    },
+    {
+      "file": "circuit_learning_read_service.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "git_blob_sha": "3802bc408a0736dc7c934293dfbb30d0debcf3f0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+    },
+    {
+      "file": "circuit_original_evaluation_host_support_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "git_blob_sha": "a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs"
+    },
+    {
+      "file": "circuit_original_evaluation_panel_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "git_blob_sha": "94f7031daabce5873329350758545227235c5656",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs"
+    },
+    {
+      "file": "circuit_original_evaluation_training_read_support_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "git_blob_sha": "1177429c6cff407e9220929f79dce4805ed03bb6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs"
+    },
+    {
+      "file": "circuit_original_evaluation_training_read_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+      "git_blob_sha": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs"
+    },
+    {
+      "file": "circuit_retained_version_effect.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "git_blob_sha": "5c4dc1ecde384af4b94fc141a3e5011eb443b18f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs"
+    },
+    {
+      "file": "circuit_retained_version_issuer.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs",
+      "git_blob_sha": "0ac3d4464407275b86fc2ea062209bf537c7d4df",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs"
+    },
+    {
+      "file": "circuit_retained_version_service.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "git_blob_sha": "725dc32de0ae7b36c3a5a46c4408387ea2f8df69",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+    },
+    {
+      "file": "circuit_retained_version_state.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "git_blob_sha": "226e0ea70d356f1950a5fc6f1c103cf6615f008e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+    },
+    {
+      "file": "learning_owner_command_channel.rs",
+      "path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+      "git_blob_sha": "f42d9f385ecafa17e02d993677ca261e02926beb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/learning_owner_command_channel.rs"
+    },
+    {
+      "file": "neuron_cell_evaluation_host.rs",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "git_blob_sha": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+    },
+    {
+      "file": "neuron_cell_evaluation_host_training_readback.rs",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "git_blob_sha": "90b880ff4446600afc669fe36fca7437232fd04e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+    },
+    {
+      "file": "neuron_cell_evaluation_panel.rs",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "git_blob_sha": "07c68b6971721515ad819544d9cc8dc442a20336",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs"
+    },
+    {
+      "file": "neuron_cell_evaluation_panel_member.rs",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "git_blob_sha": "49f23508db7805fc7fec663af10269f39fa3a271",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs"
+    },
+    {
+      "file": "neuron_cell_evaluation_qualification_owner.rs",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+      "git_blob_sha": "514d6cbf873acddb19c7e4540d198e3a498fe084",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs"
+    },
+    {
+      "file": "neuron_cell_evaluation_qualification_readback.rs",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "git_blob_sha": "91a3a5b87a1746d1cb4178cc652f9480574986c1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs"
+    },
+    {
+      "file": "neuron_cell_evaluation_qualification_sources.rs",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "git_blob_sha": "a193092ffd45d4c894999b126072f6d9c48fb7b2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs"
+    },
+    {
+      "file": "neuron_cell_evaluation_receipt_owner.rs",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "git_blob_sha": "0416c8965a3cb48e60568ac48b3f1c25dffd19a1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+    },
+    {
+      "file": "neuron_cell_evaluation_training_read_proof.rs",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "git_blob_sha": "0b328d77083060c943234ae0d8bf68088474bd6f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/84ee9c2ed0db8b20b792634d775f9b4f97a34578/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs"
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "kind": "actual-original-ci-error-locations",
+  "source_head": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "executed_commit": "9c122c9b32eedfb7a8d177534035d705cad0e0dc",
+  "executed_tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+  "job_id": 131270677503,
+  "run_id": 43243480071,
+  "joblog": {
+    "bytes": 1291294,
+    "sha256": "a07787696b4682b0390fff172bd872b568d47bcaebeceb122a22815b5ef2c5f2",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43243480071/job/131270677503"
+  },
+  "errors": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "line": 49,
+      "column": 13,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9825999Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9826451Z   --> codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs:49:13\n2026-11-12T15:08:52.9826785Z    |\n2026-11-12T15:08:52.9827085Z 49 |         let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;\n2026-11-12T15:08:52.9827524Z    |             ^^^^^^^^^\n2026-11-12T15:08:52.9827742Z    |\n2026-11-12T15:08:52.9828161Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9828770Z    = note: requested on the command line with `-D clippy::await-holding-invalid-type`\n2026-11-12T15:08:52.9829051Z \n2026-11-12T15:08:52.9829244Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "line": 93,
+      "column": 13,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9829244Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9829884Z   --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs:93:13\n2026-11-12T15:08:52.9830220Z    |\n2026-11-12T15:08:52.9830406Z 93 |         let mut state = self\n2026-11-12T15:08:52.9830637Z    |             ^^^^^^^^^\n2026-11-12T15:08:52.9830841Z    |\n2026-11-12T15:08:52.9831259Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9831670Z \n2026-11-12T15:08:52.9831866Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9832305Z   --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs:98:13"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "line": 98,
+      "column": 13,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9831866Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9832305Z   --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs:98:13\n2026-11-12T15:08:52.9832621Z    |\n2026-11-12T15:08:52.9832891Z 98 |         let mut lane = self.candidate.try_lock().map_err(|_| Error::QueueFull)?;\n2026-11-12T15:08:52.9833226Z    |             ^^^^^^^^\n2026-11-12T15:08:52.9833432Z    |\n2026-11-12T15:08:52.9833844Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9834253Z \n2026-11-12T15:08:52.9834448Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9834894Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:128:13"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "line": 128,
+      "column": 13,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9834448Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9834894Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:128:13\n2026-11-12T15:08:52.9835228Z     |\n2026-11-12T15:08:52.9835514Z 128 |         let mut lane = self.evaluation.try_lock().map_err(|_| Error::QueueFull)?;\n2026-11-12T15:08:52.9835860Z     |             ^^^^^^^^\n2026-11-12T15:08:52.9836073Z     |\n2026-11-12T15:08:52.9836495Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9836896Z \n2026-11-12T15:08:52.9837094Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9837542Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:147:17"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "line": 147,
+      "column": 17,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9837094Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9837542Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:147:17\n2026-11-12T15:08:52.9837872Z     |\n2026-11-12T15:08:52.9838064Z 147 |             let mut common = self\n2026-11-12T15:08:52.9838319Z     |                 ^^^^^^^^^^\n2026-11-12T15:08:52.9838535Z     |\n2026-11-12T15:08:52.9838953Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9839357Z \n2026-11-12T15:08:52.9839644Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9840105Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:228:13"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "line": 228,
+      "column": 13,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9839644Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9840105Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:228:13\n2026-11-12T15:08:52.9840446Z     |\n2026-11-12T15:08:52.9840638Z 228 |         let mut common = self\n2026-11-12T15:08:52.9840879Z     |             ^^^^^^^^^^\n2026-11-12T15:08:52.9841091Z     |\n2026-11-12T15:08:52.9841549Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9842003Z \n2026-11-12T15:08:52.9842229Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9842719Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:134:17"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "line": 134,
+      "column": 17,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9842229Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9842719Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:134:17\n2026-11-12T15:08:52.9843148Z     |\n2026-11-12T15:08:52.9843432Z 134 |             let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;\n2026-11-12T15:08:52.9843789Z     |                 ^^^^^^^^\n2026-11-12T15:08:52.9844018Z     |\n2026-11-12T15:08:52.9844490Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9844990Z \n2026-11-12T15:08:52.9845220Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9845686Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:169:17"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "line": 169,
+      "column": 17,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9845220Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9845686Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:169:17\n2026-11-12T15:08:52.9846030Z     |\n2026-11-12T15:08:52.9846299Z 169 |             let lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;\n2026-11-12T15:08:52.9846643Z     |                 ^^^^\n2026-11-12T15:08:52.9846878Z     |\n2026-11-12T15:08:52.9847508Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9847948Z \n2026-11-12T15:08:52.9848176Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9848647Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:247:13"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "line": 247,
+      "column": 13,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9848176Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9848647Z    --> codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:247:13\n2026-11-12T15:08:52.9848988Z     |\n2026-11-12T15:08:52.9849182Z 247 |         let mut common = self\n2026-11-12T15:08:52.9849543Z     |             ^^^^^^^^^^\n2026-11-12T15:08:52.9849774Z     |\n2026-11-12T15:08:52.9850249Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9850681Z \n2026-11-12T15:08:52.9850876Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9851315Z    --> codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs:124:21"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "line": 124,
+      "column": 21,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9850876Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9851315Z    --> codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs:124:21\n2026-11-12T15:08:52.9851649Z     |\n2026-11-12T15:08:52.9851958Z 124 |                 let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;\n2026-11-12T15:08:52.9852332Z     |                     ^^^^^^^^^\n2026-11-12T15:08:52.9852558Z     |\n2026-11-12T15:08:52.9852999Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9853429Z \n2026-11-12T15:08:52.9853629Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9854102Z    --> codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs:172:21"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "line": 172,
+      "column": 21,
+      "error": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "raw_excerpt": "2026-11-12T15:08:52.9853629Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`\n2026-11-12T15:08:52.9854102Z    --> codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs:172:21\n2026-11-12T15:08:52.9854437Z     |\n2026-11-12T15:08:52.9854751Z 172 |                 let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;\n2026-11-12T15:08:52.9855134Z     |                     ^^^^^^^^^\n2026-11-12T15:08:52.9855363Z     |\n2026-11-12T15:08:52.9855818Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type\n2026-11-12T15:08:52.9856264Z \n2026-11-12T15:08:52.9856400Z warning: large size difference between variants\n2026-11-12T15:08:52.9856792Z   --> codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs:41:1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "line": 26,
+      "column": 18,
+      "error": "used `expect()` on a `Result` value",
+      "raw_excerpt": "2026-11-12T15:09:15.6771012Z error: used `expect()` on a `Result` value\n2026-11-12T15:09:15.6771380Z   --> hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:26:18\n2026-11-12T15:09:15.6771764Z    |\n2026-11-12T15:09:15.6772072Z 26 |         plan_id: StableId::new(\"original-execution-plan\").expect(\"test plan id\"),\n2026-11-12T15:09:15.6772484Z    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-11-12T15:09:15.6772780Z    |\n2026-11-12T15:09:15.6773008Z    = note: if this value is an `Err`, it will panic\n2026-11-12T15:09:15.6773504Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#expect_used\n2026-11-12T15:09:15.6774063Z    = note: requested on the command line with `-D clippy::expect-used`\n2026-11-12T15:09:15.6774313Z "
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "line": 77,
+      "column": 13,
+      "error": "used `expect()` on a `Result` value",
+      "raw_excerpt": "2026-11-12T15:09:15.6774426Z error: used `expect()` on a `Result` value\n2026-11-12T15:09:15.6774797Z   --> hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:77:13\n2026-11-12T15:09:15.6775140Z    |\n2026-11-12T15:09:15.6775380Z 77 |             self.existing_file(\"raw\").expect(\"existing raw\"),\n2026-11-12T15:09:15.6775718Z    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-11-12T15:09:15.6775981Z    |\n2026-11-12T15:09:15.6776203Z    = note: if this value is an `Err`, it will panic\n2026-11-12T15:09:15.6776709Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#expect_used\n2026-11-12T15:09:15.6777110Z \n2026-11-12T15:09:15.6777216Z error: used `expect()` on a `Result` value"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "line": 78,
+      "column": 13,
+      "error": "used `expect()` on a `Result` value",
+      "raw_excerpt": "2026-11-12T15:09:15.6777216Z error: used `expect()` on a `Result` value\n2026-11-12T15:09:15.6777574Z   --> hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:78:13\n2026-11-12T15:09:15.6777917Z    |\n2026-11-12T15:09:15.6778206Z 78 | /             self.witness(self.existing_file(\"witness\").expect(\"existing witness\"))\n2026-11-12T15:09:15.6778608Z 79 | |                 .expect(\"valid original witness file\"),\n2026-11-12T15:09:15.6778927Z    | |______________________________________________________^\n2026-11-12T15:09:15.6779187Z    |\n2026-11-12T15:09:15.6779391Z    = note: if this value is an `Err`, it will panic\n2026-11-12T15:09:15.6779955Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#expect_used\n2026-11-12T15:09:15.6780330Z "
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "line": 78,
+      "column": 26,
+      "error": "used `expect()` on a `Result` value",
+      "raw_excerpt": "2026-11-12T15:09:15.6780437Z error: used `expect()` on a `Result` value\n2026-11-12T15:09:15.6780789Z   --> hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:78:26\n2026-11-12T15:09:15.6781123Z    |\n2026-11-12T15:09:15.6781401Z 78 |             self.witness(self.existing_file(\"witness\").expect(\"existing witness\"))\n2026-11-12T15:09:15.6781795Z    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-11-12T15:09:15.6782066Z    |\n2026-11-12T15:09:15.6782273Z    = note: if this value is an `Err`, it will panic\n2026-11-12T15:09:15.6782747Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#expect_used\n2026-11-12T15:09:15.6783114Z \n2026-11-12T15:09:15.6783453Z warning: call to `std::mem::drop` with a value that does not implement `Drop`. Dropping such a type only extends its contained lifetimes"
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "upstream_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+      "head_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+      "upstream_blob": "c94d6018c54c88fbdec83f12c219a8ef06ee5724",
+      "head_blob": "c94d6018c54c88fbdec83f12c219a8ef06ee5724",
+      "bytes": 11651,
+      "sha256": "7bc6406b608a0302c3b147382e4cc2804e6c88717577dc97c37f27b954575d32",
+      "full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "upstream_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+      "head_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+      "upstream_blob": "5940a804ed01c3e8ee3e0cd857a8a060397d9446",
+      "head_blob": "5940a804ed01c3e8ee3e0cd857a8a060397d9446",
+      "bytes": 8737,
+      "sha256": "2beec9b1a416481f8d64ef173dccde17a4877125d71f6defb15aef392a98d9e1",
+      "full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "upstream_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+      "head_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+      "upstream_blob": "089a57d500eda46aa92bfe110722b9a4183732d3",
+      "head_blob": "089a57d500eda46aa92bfe110722b9a4183732d3",
+      "bytes": 14188,
+      "sha256": "652ec9786c053305e39c3df0e43de461c34b2b90953264edece796f394bef2dd",
+      "full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "upstream_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+      "head_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+      "upstream_blob": "a4b9f14a366d72f47e0086f8d41fb2573bba2b0a",
+      "head_blob": "a4b9f14a366d72f47e0086f8d41fb2573bba2b0a",
+      "bytes": 11023,
+      "sha256": "d1ce53ce7a3b75fd08340fb0ddcf87bae9d9ca1b93e9aeaa3b00d2f7d9e6faf1",
+      "full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "upstream_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+      "head_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+      "upstream_blob": "c2618413b04cc2196ac365b7f721dc062fc715e1",
+      "head_blob": "c2618413b04cc2196ac365b7f721dc062fc715e1",
+      "bytes": 7489,
+      "sha256": "03bafcdcecb5d3ac6938bdc9810f25f482829dd5e5f1336e7a5206d947578ca8",
+      "full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "upstream_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+      "head_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+      "upstream_blob": "9759e7a8af9abf9b02812958ad10d4cbf0303aaf",
+      "head_blob": "9759e7a8af9abf9b02812958ad10d4cbf0303aaf",
+      "bytes": 18321,
+      "sha256": "bf7910b074ac9c44d3dbc036775c96f1424d0ed07f0b6d7339d19e559be98bac",
+      "full_bytes_equal": true
+    }
+  ],
+  "scope": "The six source blobs equal fixed a96. This is source provenance, not a separately executed baseline reproduction."
+}

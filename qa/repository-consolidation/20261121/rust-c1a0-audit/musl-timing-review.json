@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/branch_protection_audit",
+  "reviewed_at_utc": "2026-11-21T12:50:46.301191+00:00",
+  "status": "READ_ONLY_ROOT_CAUSE_BOUNDARY_REVIEW_NO_QUALIFIED_FIX_IDENTIFIED",
+  "original_job": 136829982410,
+  "original_run": 44898577538,
+  "actual_execution_commit": "7714fcc496317e0d09c8673e172f7749d6147608",
+  "candidate_source_binding": {
+    "unchanged_from_6cb_through_55": true,
+    "relevant_source_files": 11,
+    "binding_file": "/workspace/scratch/c1a0d7534606/branch-audit/musl-audit/SOURCE-BINDING.json",
+    "final_candidate": "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d"
+  },
+  "original_result": {
+    "passed": 395,
+    "failed": 1,
+    "ignored": 44,
+    "filtered": 1283,
+    "suite_seconds": 102.42,
+    "command_readback_elapsed_us": 367929,
+    "command_readback_result": "Ok(())",
+    "evidence_readback_elapsed_us": 501403,
+    "evidence_result": "OwnerUnavailable(original learning evidence owner)",
+    "evidence_peer_terminal": "Transport(DeadlineElapsed)",
+    "command_peer_terminal": "Ok(2)",
+    "underlying_peer_terminal": "Ok(6)"
+  },
+  "budget_semantics": {
+    "production_read_limit_ms": 500,
+    "session_limit_seconds": 300,
+    "separate_command_transport_seconds": 30,
+    "client_limit_source": "codex-rs/hepta-agentd/src/root_observation_stream.rs:96-107",
+    "server_limit_source": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs:148-183",
+    "client_starts": "RootObservationStream::read serializes request, takes exclusive original stream, checks peer lifetime, then constructs min(Instant::now()+timeout, original session end) immediately before framed_exchange. The async send, peer handler wait, response receipt and transport JSON decode/final deadline check share that deadline.",
+    "server_starts": "HostAuthorityPeerChannel::exchange_inner waits for the first byte of the frame under session end, then constructs its per-frame deadline; remaining header, request body, synchronous original handler, response writes and final peer check share that original deadline.",
+    "not_from_fixture_creation": true,
+    "not_CI_or_compile_budget": true,
+    "no_deadline_renewal_between_reads_or_writes": true,
+    "expiry_behavior": "The client consumes/closes the original connection on expiry. The server does not forcibly cancel synchronous handler storage; post-handler and post-write checks refuse an overdue reply. The captured server error is a transport deadline error, not a helper lookup failure.",
+    "timer_start_sources": [
+      "codex-rs/hepta-agentd/src/root_observation_stream.rs:165-215",
+      "codex-rs/hepta-contracts/src/authority_host_peer.rs:160-191"
+    ]
+  },
+  "timing_evidence": {
+    "raw_segments": [
+      {
+        "log_line": 8977,
+        "kind": "published read handler",
+        "request_id_on_its_own_channel": 6,
+        "cut_receipts": 4,
+        "owner_read_elapsed_us": 103702,
+        "handler_elapsed_us": 104863,
+        "relative_to_client_error_log": "before",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      },
+      {
+        "log_line": 8978,
+        "kind": "published read handler",
+        "request_id_on_its_own_channel": 12,
+        "cut_receipts": 3,
+        "owner_read_elapsed_us": 67993,
+        "handler_elapsed_us": 69187,
+        "relative_to_client_error_log": "before",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      },
+      {
+        "log_line": 8981,
+        "kind": "published read handler",
+        "request_id_on_its_own_channel": 13,
+        "cut_receipts": 3,
+        "owner_read_elapsed_us": 58350,
+        "handler_elapsed_us": 59794,
+        "relative_to_client_error_log": "before",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      },
+      {
+        "log_line": 8984,
+        "kind": "whole Selector remote readback",
+        "elapsed_us": 136660,
+        "relative_to_client_error_log": "before",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      },
+      {
+        "log_line": 8985,
+        "kind": "published read handler",
+        "request_id_on_its_own_channel": 7,
+        "cut_receipts": 4,
+        "owner_read_elapsed_us": 131454,
+        "handler_elapsed_us": 133084,
+        "relative_to_client_error_log": "before",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      },
+      {
+        "log_line": 8986,
+        "kind": "published read handler",
+        "request_id_on_its_own_channel": 14,
+        "cut_receipts": 3,
+        "owner_read_elapsed_us": 81591,
+        "handler_elapsed_us": 83197,
+        "relative_to_client_error_log": "before",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      },
+      {
+        "log_line": 8990,
+        "kind": "published read handler",
+        "request_id_on_its_own_channel": 15,
+        "cut_receipts": 3,
+        "owner_read_elapsed_us": 75102,
+        "handler_elapsed_us": 76232,
+        "relative_to_client_error_log": "after",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      },
+      {
+        "log_line": 8993,
+        "kind": "whole Selector remote readback",
+        "elapsed_us": 166541,
+        "relative_to_client_error_log": "after",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      }
+    ],
+    "candidate_non_nested_segments": [
+      {
+        "log_line": 8977,
+        "kind": "published read handler",
+        "request_id_on_its_own_channel": 6,
+        "cut_receipts": 4,
+        "owner_read_elapsed_us": 103702,
+        "handler_elapsed_us": 104863,
+        "relative_to_client_error_log": "before",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      },
+      {
+        "log_line": 8984,
+        "kind": "whole Selector remote readback",
+        "elapsed_us": 136660,
+        "relative_to_client_error_log": "before",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      },
+      {
+        "log_line": 8985,
+        "kind": "published read handler",
+        "request_id_on_its_own_channel": 7,
+        "cut_receipts": 4,
+        "owner_read_elapsed_us": 131454,
+        "handler_elapsed_us": 133084,
+        "relative_to_client_error_log": "before",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      },
+      {
+        "log_line": 8993,
+        "kind": "whole Selector remote readback",
+        "elapsed_us": 166541,
+        "relative_to_client_error_log": "after",
+        "thread_id_logged": false,
+        "outer_evidence_request_id_logged": false
+      }
+    ],
+    "inferred_sequential_handler_segment_sum_us": 541148,
+    "sum_is_not_client_elapsed_us": true,
+    "all_segments_fit_inside_client_500ms_window": false,
+    "last_Selector_segment_finishes_after_client_error": true,
+    "raw_timestamps_are_buffered_CI_output_times_not_request_start_times": true,
+    "runtime_parent_request_ids_available": false,
+    "runtime_thread_ids_available": false,
+    "monotonic_start_end_timestamps_available": false,
+    "mapping_method": "A single failed-test stdout block; after the only timed command readback the test creates exactly one evidence client and performs exactly one evidence readback. C publication IDs6/7 have cut_receipts4; nested Selector publication IDs12/13/14/15 have cut_receipts3. The two whole Selector readback durations surround those nested reads. The fixed code awaits C prepare, predecessor reads, C post-prepare, predecessor post-reads serially. This supports a single-handler mapping as a code/log inference, not a complete runtime distributed trace.",
+    "no_double_counting_rule": "Do not add Selector nested publication IDs12-15 on top of their whole Selector remote-readback durations. The sum541148 uses only C IDs6/7 and two whole Selector durations.",
+    "precise_limit": "The 166541us Selector span ends after client timeout. There is no recorded start time to split it into before/after500ms portions. Thus541148 describes an inferred completed server-path subtotal including work after client cancellation, never measured work entirely inside the client interval.",
+    "additional_inference": "With the existing code, the late server result is consistent with a synchronous handler continuing after client cancellation and failing a final deadline check. The exact failing framer check cannot be selected from current logs.",
+    "source_refs": [
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs:19-86",
+      "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs:384-482",
+      "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs:354-369",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs:134-164"
+    ]
+  },
+  "helper_readiness_assessment": {
+    "underlying_original_owners_already_serviced_successful_commands": true,
+    "evidence_thread_has_explicit_ready_ack": false,
+    "server_per_frame_budget_starts_after_first_byte": true,
+    "observed_missing_helper_or_launch_failure": false,
+    "conclusion": "No proven helper/readiness defect explains this failure. A new ready handshake could alter the client-side pre-service scheduling component, but cannot justify ignoring the original server per-frame DeadlineElapsed or make the completed live-owner work free. It is not a qualified fix for this captured failure.",
+    "source_refs": [
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs:631-685",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs:98-122",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs:117-156",
+      "codex-rs/hepta-contracts/src/authority_host_peer.rs:160-191"
+    ]
+  },
+  "performance_review": {
+    "coarse_poll_wait_defect_found": false,
+    "poll_evidence": "OwnerChannel passes exact remaining Duration via Timespec::try_from into poll, multiplexes socket and pidfd, and uses the same absolute deadline on Interrupted/WouldBlock. No fixed sleep, millisecond conversion or retry-budget renewal exists in the inspected loop.",
+    "measured_hot_region": "Published-read owner_io timers surround read_original. In the evidence sequence C IDs6/7 report103702/131454us; Selector nested IDs12-15 report67993/58350/81591/75102us. These owner timers include required state/freshness work, not merely poll wait. CPU vs filesystem vs scheduler contribution is not distinguished by these timers.",
+    "apparently_repeated_I_O": "Observer remote readback brackets its journal with fresh C observations and fresh Trainer/Selector reads. Each Selector readback likewise brackets its journal with fresh publication and Trainer observations. Published read_original repeats task/source/selection checks on both sides of observation. These are explicit consistency/freshness checks, not demonstrated accidental duplicates.",
+    "qualified_minimal_product_patch": null,
+    "qualified_fixture_patch": null,
+    "optimization_boundary": "An optimization would need measurements inside read_original and proof that every original before/after freshness, owner-lifetime, request identity, signature and journal equality check stays in its original order and deadline. Current logs do not isolate a safely removable computation or prove a poll bug.",
+    "smallest_evidence_only_followup": "If requested in a separate review, enrich existing cfg(test) diagnostics with enclosing evidence request ID, channel/source ID, thread ID and monotonic start/end plus remaining budget around original subcalls; keep the original command, test roster, resource limits, read counts and500ms unchanged. This is observability, not a claimed fix or proposed qualification shortcut.",
+    "source_refs": [
+      "codex-rs/hepta-contracts/src/authority_host_channel.rs:71-104,127-189",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs:168-241",
+      "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs:384-482",
+      "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs:372-467"
+    ]
+  },
+  "prohibited_shortcuts_not_proposed": [
+    "increase500ms",
+    "move production timer past existing work",
+    "retry or reconnect expired channel",
+    "skip/ignore diagnostic",
+    "change test roster or scheduling contract",
+    "cache prior CURRENT observation",
+    "drop before/after original owner reads"
+  ],
+  "actions": {
+    "source_modified": false,
+    "native_started": false,
+    "tests_executed": false,
+    "refs_modified": false,
+    "remote_changes": false,
+    "STOP_source_opened": false
+  },
+  "evidence": {
+    "log_path": "/workspace/scratch/c1a0d7534606/ci-logs/job-136829982410.log",
+    "log_bytes": 1703848,
+    "log_sha256": "4afb5669cdf3d9f30f4b22595cd53f201d5cdd04b9423c6de41a58478753c876",
+    "failed_test_excerpt": "/workspace/scratch/c1a0d7534606/branch-audit/musl-audit/ORIGINAL-FAILED-TEST-EXCERPT.txt",
+    "failed_test_excerpt_sha256": "1a12f148e97b5c6a2e37047657f511e5c534f6129da93afa9a1e48e82f36ae38",
+    "source_binding_sha256": "dd1c983878d1b3d7636639ec2d741d14f541a52068fc7c9ab111303afee83e57",
+    "source_refs": {
+      "test_setup_and_measured_calls": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs:631-685",
+      "underlying_helper_startup": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs:98-122",
+      "same_process_explicit_fixture_and_500ms": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs:117-156",
+      "production_client_limit": "codex-rs/hepta-agentd/src/root_observation_stream.rs:96-107",
+      "client_timer_start_and_final_check": "codex-rs/hepta-agentd/src/root_observation_stream.rs:165-215",
+      "production_server_limit": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs:148-183",
+      "server_frame_timer_and_post_handler_checks": "codex-rs/hepta-contracts/src/authority_host_peer.rs:160-191",
+      "poll_and_monotonic_budget": "codex-rs/hepta-contracts/src/authority_host_channel.rs:71-104,127-189",
+      "actual_server_handler": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs:19-86",
+      "outer_observer_read_sequence": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs:384-482",
+      "selector_timer_scope": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs:354-369",
+      "selector_nested_reads": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs:372-467",
+      "published_timer_scope": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs:134-164",
+      "published_freshness_bracketing": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs:168-241"
+    }
+  }
+}

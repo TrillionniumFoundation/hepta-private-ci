@@ -1,0 +1,114 @@
+{
+  "schema_version": 2,
+  "component": "OriginalCellEvaluationReceiptOwnerV1",
+  "status": "PENDING_HOSTED_LINUX",
+  "current_code_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "current_code_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "current_code_parents": [
+    "30692d721d67321df0414c5c3f990449d7b9fea8",
+    "5066cb8bdd3e4f598d747d48aae0a64a21e8cbfc"
+  ],
+  "code_pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5896",
+  "evidence_delivery": "Separate qualification-only branch based on current_code_commit; code PR head is not advanced by this package.",
+  "native": {
+    "status": "PENDING_HOSTED_LINUX",
+    "source_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+    "source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+    "current_tests_observed_passing": 0,
+    "current_tests_observed_failing": 0,
+    "conclusion": "No runtime test PASS is established for the 18 new owner tests. Scope/type checking and formatting are not native test execution.",
+    "no_historical_native_results_transferred": true,
+    "daemon_run_id": 42946454461,
+    "daemon_job_id": 130280341039,
+    "shared_run_id": 42946454356,
+    "shared_job_id": 130280341079,
+    "architecture_run_id": 42946454598
+  },
+  "historical_source_checks": {
+    "executed_code_commit": "30692d721d67321df0414c5c3f990449d7b9fea8",
+    "executed_code_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+    "targeted_source_tests_passed": 56,
+    "same_tree_local_execution_commit": "9f5e5b99831c6c19ecb231c3a5c2fbdc83febac5",
+    "full_repository_callers": {
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+      "command": "python scripts/verify_hepta_callers.py verify --root . --manifest CALLERS.toml",
+      "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+      "resource_control": "one process, nice 10, affinity restricted to one allowed CPU",
+      "exit_code": 0,
+      "stdout": "source-checks/full-callers.stdout",
+      "stdout_sha256": "6411f4f431c13454109143339de0fb7e287aeed22f468a0c4ad236cad56c41e3",
+      "stderr": "source-checks/full-callers.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "rust_files_scanned": 6304,
+      "boundaries": 225,
+      "privileged_inventory": 225,
+      "protected_files": 219,
+      "authority_granted": false,
+      "source_clean_after": true,
+      "started_utc_from_empty_stderr_creation": "2026-11-11T01:41:11.185347+00:00",
+      "completed_output_utc": "2026-11-11T01:52:45.005013+00:00"
+    },
+    "not_new_execution_on_current_commit": true
+  },
+  "current_scoped_maintenance": {
+    "source_head": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+    "source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+    "index": "maintenance/INDEX.json",
+    "original_manifest": "maintenance/ORIGINAL_MAINTENANCE_MANIFEST.json",
+    "original_manifest_sha256": "8c6e03e15c989cdf925652a0d84166e1bb45b5320428fd7022bc5dd57b2690ca",
+    "just_fix_exit_code": 0,
+    "just_fmt_exit_code": 0,
+    "whole_tree_unchanged": true,
+    "automatic_source_edits": false,
+    "native_tests_executed": 0
+  },
+  "production_and_guard_source_comparison": "SOURCE_COMPARISON.json",
+  "prior_candidate_results": "history/30692_RESULT.json",
+  "prior_local_failures": {
+    "source_commit": "30692d721d67321df0414c5c3f990449d7b9fea8",
+    "attempts": [
+      "native-attempts/model-evaluation-native-attempt4.log",
+      "native-attempts/model-evaluation-native-attempt5.log",
+      "native-attempts/model-evaluation-native-attempt6.log"
+    ],
+    "new_tests_executed": 0,
+    "observed_causes": [
+      "sentry-contexts build-script linker SIGBUS; root cause unknown",
+      "codex-rmcp-client rustc SIGKILL; OOM not established",
+      "codex-app-server temporary-directory ENOSPC"
+    ]
+  },
+  "prior_hosted_compile_failure": "hosted-attempts/daemon-30692-execution.json",
+  "host_access_probe": "host-access/exact-key-recovery.json",
+  "original_host_identity_recovered": false,
+  "ordinary_production_acceptance": {
+    "ordinary_complete_chain_count": 0,
+    "positive_adoption_chain_count": 0,
+    "no_update_or_rollback_chain_count": 0,
+    "independent_C_FinalUse_accepted": false,
+    "daemon_and_Root_real_restart_loop_accepted": false,
+    "fixture_free_role_custody_accepted": false
+  },
+  "closed_production_ports": [
+    "learning_original_evaluation_receipt_create",
+    "learning_original_evaluation_receipt_recover",
+    "learning_original_evaluation_receipt_attest",
+    "learning_original_evaluation_receipt_readback"
+  ],
+  "unchanged_closed_assembly": [
+    "cell_learning_evaluation_original_readback",
+    "learning_evidence_original_owner_constructor",
+    "root_learning_original_stage_assembly"
+  ],
+  "declared_native_coverage": "NATIVE_COVERAGE.json",
+  "checkpoint_created_utc": "2026-11-11T02:59:40.271156+00:00",
+  "acceptance_delta": "acceptance-delta/ACCEPTANCE_DELTA.json",
+  "current_native_snapshot": "hosted-attempts/c1d-checkpoint-status.json",
+  "log_storage": "LOG_STORAGE.json",
+  "resource_housekeeping": "maintenance/completed-cargo-cache-release.json",
+  "separate_core_candidate_failure": "core-current/b501-clippy-failure.json",
+  "checkpoint_frozen_utc": "2026-11-11T03:08:03.700287+00:00"
+}

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hepta-architecture-20261025/v4-cost-collector/collect_v4_costs.py", line 239, in <module>
+    main()
+  File "/home/qian-qi/work/hepta-architecture-20261025/v4-cost-collector/collect_v4_costs.py", line 106, in main
+    require(source_freeze["protocol_sha256"] == PROTOCOL, "registered protocol differs")
+  File "/home/qian-qi/work/hepta-architecture-20261025/v4-cost-collector/collect_v4_costs.py", line 24, in require
+    raise ValueError(message)
+ValueError: registered protocol differs

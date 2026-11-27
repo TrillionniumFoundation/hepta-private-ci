@@ -1,0 +1,1096 @@
+{
+  "scope": "All six HEPTA crates and listed qualification variants, including Agentd and both V13 fallback binaries; immutable dependency graph db0757 plus reviewed ten-file profile patch. Intermediate graph qualification, not final root runtime.",
+  "rc_provenance": {
+    "system_rc_enabled": false,
+    "home_rc_enabled": false,
+    "workspace_bazelrc_sha256": "b09b81d581c6cacae77a729641768fa5d4d252dfeabbf1f1fdb900fc058fc119",
+    "workspace_user_bazelrc_exists": false,
+    "repo_contents_cache_overlay": false
+  },
+  "base": "db0757eca20bbeaf7840bf162ebfb6ccb4824e57",
+  "patch_sha256": "53e4c086962c7aef81f3ed6f868e02837459b810f2bdd48249c45bb35ce945ae",
+  "cargo_levels": {
+    "hepta-types": 1,
+    "hepta-contracts": 1,
+    "hepta-learning-artifacts": 3,
+    "hepta-intelligence-eval": 1,
+    "hepta-neuron": 1,
+    "hepta-agentd": 1
+  },
+  "cases": [
+    {
+      "name": "fastbuild",
+      "command": [
+        "/home/qian-qi/ci-agentd-musl-20261119/tools/bazel",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--noexperimental_remote_repo_contents_cache",
+        "--output_user_root=/home/qian-qi/ci-agentd-musl-20261119/bazel-cache",
+        "--host_jvm_args=-Xmx4096m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=4",
+        "--max_idle_secs=60",
+        "cquery",
+        "config(set(//codex-rs/hepta-types:hepta-types //codex-rs/hepta-contracts:hepta-contracts //codex-rs/hepta-learning-artifacts:hepta-learning-artifacts //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval //codex-rs/hepta-neuron:hepta-neuron //codex-rs/hepta-agentd:hepta-agentd //codex-rs/hepta-agentd:hepta-agentd-test-lib //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin //codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-test-bin //codex-rs/hepta-agentd:neuron_v13_acceptance //codex-rs/hepta-agentd:neuron_v13_guarded_acceptance //codex-rs/hepta-contracts:hepta-contracts-authbus-qualification-lib //codex-rs/hepta-contracts:hepta-contracts-authbus-local-qualification-test-bin //codex-rs/hepta-contracts:hepta-contracts-authbus-b3-adapter-qualification-test-bin //codex-rs/hepta-neuron:hepta-neuron-test-lib //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib), target)",
+        "--config=ci",
+        "--lockfile_mode=error",
+        "--noshow_progress",
+        "--loading_phase_threads=4",
+        "--jobs=4",
+        "--repository_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repository-cache",
+        "--repo_contents_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repo-contents-cache",
+        "--compilation_mode=fastbuild",
+        "--output=jsonproto"
+      ],
+      "exit_code": 0,
+      "targets": [
+        {
+          "label": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-neuron:hepta-neuron",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-bin",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-test-bin",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-lib",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-b3-adapter-qualification-test-bin",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-types:hepta-types",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-bin",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-learning-artifacts:hepta-learning-artifacts",
+          "flags": [
+            "-Copt-level=3",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=3",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-qualification-lib",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:neuron_v13_guarded_acceptance",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-local-qualification-test-bin",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:neuron_v13_acceptance",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "dbg",
+      "command": [
+        "/home/qian-qi/ci-agentd-musl-20261119/tools/bazel",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--noexperimental_remote_repo_contents_cache",
+        "--output_user_root=/home/qian-qi/ci-agentd-musl-20261119/bazel-cache",
+        "--host_jvm_args=-Xmx4096m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=4",
+        "--max_idle_secs=60",
+        "cquery",
+        "config(set(//codex-rs/hepta-types:hepta-types), target)",
+        "--config=ci",
+        "--lockfile_mode=error",
+        "--noshow_progress",
+        "--loading_phase_threads=4",
+        "--jobs=4",
+        "--repository_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repository-cache",
+        "--repo_contents_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repo-contents-cache",
+        "--compilation_mode=dbg",
+        "--output=jsonproto"
+      ],
+      "exit_code": 0,
+      "targets": [
+        {
+          "label": "//codex-rs/hepta-types:hepta-types",
+          "flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1",
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "release_cfg",
+      "command": [
+        "/home/qian-qi/ci-agentd-musl-20261119/tools/bazel",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--noexperimental_remote_repo_contents_cache",
+        "--output_user_root=/home/qian-qi/ci-agentd-musl-20261119/bazel-cache",
+        "--host_jvm_args=-Xmx4096m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=4",
+        "--max_idle_secs=60",
+        "cquery",
+        "config(set(//codex-rs/hepta-types:hepta-types //codex-rs/hepta-contracts:hepta-contracts //codex-rs/hepta-learning-artifacts:hepta-learning-artifacts //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval //codex-rs/hepta-neuron:hepta-neuron //codex-rs/hepta-agentd:hepta-agentd //codex-rs/hepta-agentd:hepta-agentd-test-lib //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin //codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-test-bin //codex-rs/hepta-agentd:neuron_v13_acceptance //codex-rs/hepta-agentd:neuron_v13_guarded_acceptance //codex-rs/hepta-contracts:hepta-contracts-authbus-qualification-lib //codex-rs/hepta-contracts:hepta-contracts-authbus-local-qualification-test-bin //codex-rs/hepta-contracts:hepta-contracts-authbus-b3-adapter-qualification-test-bin //codex-rs/hepta-neuron:hepta-neuron-test-lib //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib), target)",
+        "--config=ci",
+        "--lockfile_mode=error",
+        "--noshow_progress",
+        "--loading_phase_threads=4",
+        "--jobs=4",
+        "--repository_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repository-cache",
+        "--repo_contents_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repo-contents-cache",
+        "--compilation_mode=fastbuild",
+        "--@rules_rust//rust/settings:extra_rustc_flag=-Cdebug-assertions=no",
+        "--@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebug-assertions=no",
+        "--output=jsonproto"
+      ],
+      "exit_code": 0,
+      "targets": [
+        {
+          "label": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-lib",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-learning-artifacts:hepta-learning-artifacts",
+          "flags": [
+            "-Copt-level=3"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=3"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:neuron_v13_acceptance",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-qualification-lib",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-neuron:hepta-neuron",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-types:hepta-types",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-test-bin",
+          "flags": [
+            "-Copt-level=1",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-b3-adapter-qualification-test-bin",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin",
+          "flags": [
+            "-Copt-level=1",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin",
+          "flags": [
+            "-Copt-level=1",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin",
+          "flags": [
+            "-Copt-level=1",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-local-qualification-test-bin",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-bin",
+          "flags": [
+            "-Copt-level=1",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:neuron_v13_guarded_acceptance",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib",
+          "flags": [
+            "-Copt-level=1"
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-bin",
+          "flags": [
+            "-Copt-level=1",
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": [
+            "-Copt-level=1"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "opt",
+      "command": [
+        "/home/qian-qi/ci-agentd-musl-20261119/tools/bazel",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--noexperimental_remote_repo_contents_cache",
+        "--output_user_root=/home/qian-qi/ci-agentd-musl-20261119/bazel-cache",
+        "--host_jvm_args=-Xmx4096m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=4",
+        "--max_idle_secs=60",
+        "cquery",
+        "config(set(//codex-rs/hepta-types:hepta-types //codex-rs/hepta-contracts:hepta-contracts //codex-rs/hepta-learning-artifacts:hepta-learning-artifacts //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval //codex-rs/hepta-neuron:hepta-neuron //codex-rs/hepta-agentd:hepta-agentd //codex-rs/hepta-agentd:hepta-agentd-test-lib //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin //codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-test-bin //codex-rs/hepta-agentd:neuron_v13_acceptance //codex-rs/hepta-agentd:neuron_v13_guarded_acceptance //codex-rs/hepta-contracts:hepta-contracts-authbus-qualification-lib //codex-rs/hepta-contracts:hepta-contracts-authbus-local-qualification-test-bin //codex-rs/hepta-contracts:hepta-contracts-authbus-b3-adapter-qualification-test-bin //codex-rs/hepta-neuron:hepta-neuron-test-lib //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib), target)",
+        "--config=ci",
+        "--lockfile_mode=error",
+        "--noshow_progress",
+        "--loading_phase_threads=4",
+        "--jobs=4",
+        "--repository_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repository-cache",
+        "--repo_contents_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repo-contents-cache",
+        "--compilation_mode=opt",
+        "--output=jsonproto"
+      ],
+      "exit_code": 0,
+      "targets": [
+        {
+          "label": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-neuron:hepta-neuron",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:neuron_v13_acceptance",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:neuron_v13_guarded_acceptance",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-learning-artifacts:hepta-learning-artifacts",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-qualification-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-types:hepta-types",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-test-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-b3-adapter-qualification-test-bin",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-local-qualification-test-bin",
+          "flags": [],
+          "expected_profile_flags": []
+        }
+      ]
+    },
+    {
+      "name": "opt_release_cfg",
+      "command": [
+        "/home/qian-qi/ci-agentd-musl-20261119/tools/bazel",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--noexperimental_remote_repo_contents_cache",
+        "--output_user_root=/home/qian-qi/ci-agentd-musl-20261119/bazel-cache",
+        "--host_jvm_args=-Xmx4096m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=4",
+        "--max_idle_secs=60",
+        "cquery",
+        "config(set(//codex-rs/hepta-types:hepta-types //codex-rs/hepta-contracts:hepta-contracts //codex-rs/hepta-learning-artifacts:hepta-learning-artifacts //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval //codex-rs/hepta-neuron:hepta-neuron //codex-rs/hepta-agentd:hepta-agentd //codex-rs/hepta-agentd:hepta-agentd-test-lib //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin //codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-lib //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-test-bin //codex-rs/hepta-agentd:neuron_v13_acceptance //codex-rs/hepta-agentd:neuron_v13_guarded_acceptance //codex-rs/hepta-contracts:hepta-contracts-authbus-qualification-lib //codex-rs/hepta-contracts:hepta-contracts-authbus-local-qualification-test-bin //codex-rs/hepta-contracts:hepta-contracts-authbus-b3-adapter-qualification-test-bin //codex-rs/hepta-neuron:hepta-neuron-test-lib //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib), target)",
+        "--config=ci",
+        "--lockfile_mode=error",
+        "--noshow_progress",
+        "--loading_phase_threads=4",
+        "--jobs=4",
+        "--repository_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repository-cache",
+        "--repo_contents_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repo-contents-cache",
+        "--compilation_mode=opt",
+        "--@rules_rust//rust/settings:extra_rustc_flag=-Cdebug-assertions=no",
+        "--@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebug-assertions=no",
+        "--output=jsonproto"
+      ],
+      "exit_code": 0,
+      "targets": [
+        {
+          "label": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-qualification-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-learning-artifacts:hepta-learning-artifacts",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-neuron:hepta-neuron",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-types:hepta-types",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:neuron_v13_acceptance",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:neuron_v13_guarded_acceptance",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-local-qualification-test-bin",
+          "flags": [],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-test-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin",
+          "flags": [
+            "--remap-path-prefix=../codex-rs=",
+            "--remap-path-prefix=codex-rs="
+          ],
+          "expected_profile_flags": []
+        },
+        {
+          "label": "//codex-rs/hepta-contracts:hepta-contracts-authbus-b3-adapter-qualification-test-bin",
+          "flags": [],
+          "expected_profile_flags": []
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "name": "fastbuild_action",
+      "command": [
+        "/home/qian-qi/ci-agentd-musl-20261119/tools/bazel",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--noexperimental_remote_repo_contents_cache",
+        "--output_user_root=/home/qian-qi/ci-agentd-musl-20261119/bazel-cache",
+        "--host_jvm_args=-Xmx4096m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=4",
+        "--max_idle_secs=60",
+        "aquery",
+        "mnemonic('Rustc', //codex-rs/hepta-types:hepta-types)",
+        "--config=ci",
+        "--lockfile_mode=error",
+        "--noshow_progress",
+        "--loading_phase_threads=4",
+        "--jobs=4",
+        "--repository_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repository-cache",
+        "--repo_contents_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repo-contents-cache",
+        "--compilation_mode=fastbuild",
+        "--output=jsonproto"
+      ],
+      "exit_code": 0,
+      "parsed_actions": [
+        {
+          "mnemonic": "Rustc",
+          "effective_codegen": {
+            "metadata": "-1831636075",
+            "extra-filename": "-1831636075",
+            "opt-level": "1",
+            "debuginfo": "0",
+            "strip": "none",
+            "embed-bitcode": "no",
+            "debug-assertions": "yes",
+            "overflow-checks": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "name": "release_cfg_action",
+      "command": [
+        "/home/qian-qi/ci-agentd-musl-20261119/tools/bazel",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--noexperimental_remote_repo_contents_cache",
+        "--output_user_root=/home/qian-qi/ci-agentd-musl-20261119/bazel-cache",
+        "--host_jvm_args=-Xmx4096m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=4",
+        "--max_idle_secs=60",
+        "aquery",
+        "mnemonic('Rustc', //codex-rs/hepta-types:hepta-types)",
+        "--config=ci",
+        "--lockfile_mode=error",
+        "--noshow_progress",
+        "--loading_phase_threads=4",
+        "--jobs=4",
+        "--repository_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repository-cache",
+        "--repo_contents_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repo-contents-cache",
+        "--compilation_mode=fastbuild",
+        "--@rules_rust//rust/settings:extra_rustc_flag=-Cdebug-assertions=no",
+        "--@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebug-assertions=no",
+        "--output=jsonproto"
+      ],
+      "exit_code": 0,
+      "parsed_actions": [
+        {
+          "mnemonic": "Rustc",
+          "effective_codegen": {
+            "metadata": "-1831636075",
+            "extra-filename": "-1831636075",
+            "opt-level": "1",
+            "debuginfo": "0",
+            "strip": "none",
+            "embed-bitcode": "no",
+            "debug-assertions": "no"
+          }
+        }
+      ]
+    },
+    {
+      "name": "opt_action",
+      "command": [
+        "/home/qian-qi/ci-agentd-musl-20261119/tools/bazel",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--noexperimental_remote_repo_contents_cache",
+        "--output_user_root=/home/qian-qi/ci-agentd-musl-20261119/bazel-cache",
+        "--host_jvm_args=-Xmx4096m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=4",
+        "--max_idle_secs=60",
+        "aquery",
+        "mnemonic('Rustc', //codex-rs/hepta-types:hepta-types)",
+        "--config=ci",
+        "--lockfile_mode=error",
+        "--noshow_progress",
+        "--loading_phase_threads=4",
+        "--jobs=4",
+        "--repository_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repository-cache",
+        "--repo_contents_cache=/home/qian-qi/ci-agentd-musl-20261119/bazel-repo-contents-cache",
+        "--compilation_mode=opt",
+        "--output=jsonproto"
+      ],
+      "exit_code": 0,
+      "parsed_actions": [
+        {
+          "mnemonic": "Rustc",
+          "effective_codegen": {
+            "metadata": "-1831636075",
+            "extra-filename": "-1831636075",
+            "opt-level": "3",
+            "debuginfo": "0",
+            "strip": "debuginfo",
+            "embed-bitcode": "no"
+          }
+        }
+      ]
+    }
+  ],
+  "tree": "98233612665378293d043fbd6a269165677251ee",
+  "lock_sha256": {
+    "codex-rs/Cargo.lock": "0d07fb66bca0191cc8d288b13235353e7072e9aba77238322a6101e331ff5012",
+    "MODULE.bazel.lock": "80e267f70f58a2ac2b3b1fe9008f6512ad99a282c50bb5a1e64f50fcf58d577c"
+  }
+}

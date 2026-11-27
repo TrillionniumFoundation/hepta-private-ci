@@ -1,0 +1,39 @@
+{
+  "actual_parent_bind_only_checks_passed": 6,
+  "byte_read_recovery_did_not_restart_native_jobs": true,
+  "cost_overlap_rule": "GNU total already contains child/controller work. Do not add those overlapping views. Archive work is a separate real process. RPC transfer wall is separately retained, including failures/reconciliation and duplicate read observations.",
+  "exact_child_wait4_cpu_sum_seconds": 54.565968999999996,
+  "gnu_outer_full_wall_seconds_rounded": 58.69,
+  "gnu_outer_peak_rss_bytes": 909975552,
+  "gnu_outer_system_seconds_rounded": 5.94,
+  "gnu_outer_user_seconds_rounded": 51.23,
+  "model_and_optimizer_states_constructed_and_loaded_for_validation": true,
+  "native_archive_gnu_full_wall_seconds_rounded": 0.35,
+  "native_archive_gnu_user_system_seconds_rounded": [
+    0.33,
+    0.01
+  ],
+  "native_archive_peak_rss_bytes": 19668992,
+  "native_software_tests_passed": 53,
+  "numerical_admission": "HOLD",
+  "original_archive": {
+    "bytes": 581500,
+    "path": "/workspace/scratch/c385a7439f8e/c2-native-preflight-recovered-v1/hcsn-c2-native-preflight-20261110-v1.zip",
+    "sha256": "6bfe207f36b47472964d7992b5881f4775775333f6b8cb0d09366321ccf4699c"
+  },
+  "original_result": {
+    "bytes": 65033,
+    "path": "/workspace/scratch/c385a7439f8e/c2-native-preflight-recovered-v1/RESULT.json",
+    "sha256": "61552a97bfffb9e35ac7c7068c411231089cb175b3f36d303f09fca0a51548d7"
+  },
+  "production_forward_backward_optimizer_steps": 0,
+  "schema": "c2-v3-native-preflight-handoff-v1",
+  "scientific_admission": "HOLD",
+  "scope": "V1-V3 failures and earlier cloud attempts remain separate original evidence. V3 validation does not claim production C2 execution.",
+  "script_controller_cpu_prefix_seconds": 2.170231669,
+  "script_wall_prefix_seconds": 58.229858067119494,
+  "source_transport_initial_timeout_retained": true,
+  "source_version": "v3",
+  "status": "passed_native_preflight_only",
+  "v4_native_full_test_claim": false
+}

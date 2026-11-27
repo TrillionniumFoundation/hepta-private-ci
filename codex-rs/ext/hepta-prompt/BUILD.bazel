@@ -3,4 +3,5 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-prompt",
     crate_name = "codex_hepta_prompt_extension",
+    crate_root = "src/root.rs",
 )

@@ -1,0 +1,97 @@
+import hashlib
+import json
+import os
+import stat
+import sys
+
+PATHS = (
+    "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/B-source-after.json",
+    "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/C-source-before.json",
+    "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/C-source-after.json",
+)
+EXPECTED_SHA256 = "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da"
+EXPECTED_BYTES = 40017
+MAX_BYTES = 65536
+DENIED = {
+    "os.system", "os.fork", "os.forkpty", "os.posix_spawn", "os.exec",
+    "os.remove", "os.rename", "os.mkdir", "os.rmdir", "os.chmod",
+    "os.chown", "os.truncate", "os.utime", "os.symlink", "os.link",
+    "os.putenv", "os.unsetenv", "shutil.copyfile", "shutil.rmtree",
+}
+
+
+def audit(event, args):
+    if event in DENIED or event.startswith(("subprocess.", "socket.", "pty.")):
+        raise RuntimeError("Read-only audit denied " + event)
+    if event == "open":
+        path, _, flags = args
+        if path not in PATHS or flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND):
+            raise RuntimeError("Read-only audit denied file open")
+
+
+def identity(info):
+    return (info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
+            info.st_uid, info.st_gid, info.st_size, info.st_mtime_ns,
+            info.st_ctime_ns)
+
+
+def observe(path):
+    first_path = os.stat(path, follow_symlinks=False)
+    fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW)
+    try:
+        before = os.fstat(fd)
+        if identity(first_path) != identity(before):
+            raise RuntimeError("Path changed before read")
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+            raise RuntimeError("Regular unlinked-alias-free file required")
+        if not 0 <= before.st_size <= MAX_BYTES:
+            raise RuntimeError("Snapshot exceeds fixed byte ceiling")
+        raw = bytearray()
+        while True:
+            part = os.read(fd, 8192)
+            if not part:
+                break
+            raw.extend(part)
+            if len(raw) > MAX_BYTES:
+                raise RuntimeError("Snapshot grew past fixed byte ceiling")
+        after = os.fstat(fd)
+    finally:
+        os.close(fd)
+    after_path = os.stat(path, follow_symlinks=False)
+    if identity(before) != identity(after) or identity(before) != identity(after_path):
+        raise RuntimeError("Snapshot changed during read")
+    if len(raw) != before.st_size:
+        raise RuntimeError("Snapshot byte count mismatch")
+    digest = hashlib.sha256(raw).hexdigest()
+    return {
+        "path": path, "bytes": len(raw), "sha256": digest,
+        "version": ":".join(str(item) for item in (
+            before.st_dev, before.st_ino, before.st_size,
+            before.st_mtime_ns, before.st_ctime_ns)),
+        "uid": before.st_uid, "gid": before.st_gid,
+        "mode": stat.S_IMODE(before.st_mode), "link_count": before.st_nlink,
+        "stat_before_after_equal": True,
+        "matches_frozen_snapshot": len(raw) == EXPECTED_BYTES and digest == EXPECTED_SHA256,
+    }
+
+
+if os.geteuid() != 1000:
+    raise RuntimeError("Expected ordinary uid 1000")
+sys.addaudithook(audit)
+files = []
+for path in PATHS:
+    try:
+        files.append(observe(path))
+    except Exception as error:
+        files.append({"path": path, "error": {"type": type(error).__name__, "message": str(error)},
+                      "matches_frozen_snapshot": False})
+matched = all(item["matches_frozen_snapshot"] for item in files)
+print(json.dumps({
+    "schema": "hepta.rv.source-snapshot-readback.v1",
+    "scope": "read-only file content/version observation; not owner attestation",
+    "expected_sha256": EXPECTED_SHA256, "expected_bytes": EXPECTED_BYTES,
+    "files": files, "all_match_frozen_snapshot": matched,
+    "actor_calls": 0, "written_files": 0,
+    "python": {"executable": sys.executable, "version": sys.version, "uid": os.geteuid()},
+}, sort_keys=True, allow_nan=False))
+raise SystemExit(0 if matched else 2)

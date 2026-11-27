@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<stdin>", line 181, in <module>
+  File "<stdin>", line 133, in observe
+  File "<stdin>", line 107, in _runtime
+  File "<stdin>", line 39, in _sha256
+  File "/usr/lib/python3.12/pathlib.py", line 1164, in __init__
+    super().__init__(*args)
+  File "/usr/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'

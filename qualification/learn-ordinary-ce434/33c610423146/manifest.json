@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "source_sha": "33c610423146597a3d1102efe77f09507477673e",
+  "source_tree": "5d7cea0336f4eca767967a8938734c92ed81ff43",
+  "scope": "Six focused native cases only, not a complete ordinary chain or full native suite",
+  "original_files": [
+    {
+      "file": "result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-33c610423146-v1/result.json",
+      "bytes": 4356,
+      "sha256": "6ed84d7d865e9693c02cb2ffddfd15bd27e6590eed9b20715e7853d4313d5a9e"
+    },
+    {
+      "file": "focused-native.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-33c610423146-v1/focused-native.json",
+      "bytes": 2863,
+      "sha256": "5b20099b4e108f21c72b4f8e08a43d50b002c2b1dd51d4e02b37fefdbf2b40eb"
+    },
+    {
+      "file": "focused-native.json.e1d602675da2437f9b48845253a8ce62.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-33c610423146-v1/focused-native.json.e1d602675da2437f9b48845253a8ce62.log",
+      "bytes": 36710,
+      "sha256": "9d40a859509a6d67a03412147215d9590e437b471fe294f9dc9ff78c1833d718"
+    },
+    {
+      "file": "focused-native.junit.xml",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-33c610423146-v1/focused-native.junit.xml",
+      "bytes": 2122,
+      "sha256": "96534bc423645459cd1fa435e95ec7dff785351e8ee2b8020aff1a32ce63e4c2"
+    },
+    {
+      "file": "helper-build.driver.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-33c610423146-v1/helper-build.driver.log",
+      "bytes": 218,
+      "sha256": "819e2a44af24e06a4b6438faacc31d7548265adad06ca0bc912a5e4ae765b96d"
+    },
+    {
+      "file": "helper-verify.driver.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-33c610423146-v1/helper-verify.driver.log",
+      "bytes": 1198,
+      "sha256": "a1eab49135bae90f67e7285196c9426f68b8983fca1ee5bf69e3b6b2afe0b53b"
+    },
+    {
+      "file": "preparation-result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-preparation-v1/result.json",
+      "bytes": 2777,
+      "sha256": "0556301178b2ae741744c915b69091c418f97e8887a6c43949d330bd46ff2fac"
+    },
+    {
+      "file": "source-closure.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-preparation-v1/source-closure.log",
+      "bytes": 28706,
+      "sha256": "2897450402dd8876b96a12b6ef325aeedf2dc8d8873d6380199032ceb8ff4c64"
+    },
+    {
+      "file": "parser-controls.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-preparation-v1/parser-controls.log",
+      "bytes": 2327,
+      "sha256": "63d5959d936fe53476c49f9cc368644705bb90c0bf194a99ba3d275558ee0161"
+    },
+    {
+      "file": "focused-driver.py",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-preparation-v1/focused-driver.py",
+      "bytes": 8633,
+      "sha256": "dbc3f2acf7d39760744c321579d0f9d5cd4d0cd8df2d3226f68cbc8e27752521"
+    }
+  ],
+  "exact_required_coverage": {
+    "cases": 6,
+    "expected": [
+      "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore",
+      "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack",
+      "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use",
+      "learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames"
+    ],
+    "failed_or_skipped": [],
+    "raw_log_rows": [
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature"
+      ],
+      [
+        "PASS",
+        "codex-hepta-agentd",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use"
+      ]
+    ],
+    "log_file": "focused-native.json.e1d602675da2437f9b48845253a8ce62.log",
+    "log_bytes": 36710,
+    "log_sha256": "9d40a859509a6d67a03412147215d9590e437b471fe294f9dc9ff78c1833d718",
+    "junit_bytes": 2122,
+    "junit_sha256": "96534bc423645459cd1fa435e95ec7dff785351e8ee2b8020aff1a32ce63e4c2",
+    "exact_pass": true
+  },
+  "ordinary_full_chain": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.cell-common.source-closure-binding.v1",
+  "recorded_at_utc": "2026-11-09T11:44:16.473645+00:00",
+  "command": [
+    "python3",
+    "scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "working_directory_at_execution": "/workspace/scratch/e1c98c14daab/candidate",
+  "source_binding": {
+    "commit": "a9c05cf352dac5a96f8f72248c25f34f80f7a5b3",
+    "tree": "136e9e44969734521270857708a9de211c7eae03",
+    "method": "Executed on the composed working tree. After completion, git diff a9c05cf352 -- CALLERS.toml codex-rs was empty; no Rust or caller-manifest edit occurred during this run.",
+    "scope": [
+      "CALLERS.toml",
+      "codex-rs/**/*.rs"
+    ],
+    "not_a_clean_checkout_or_native_execution_claim": true
+  },
+  "exit_code": 0,
+  "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "rust_files_scanned": 6166,
+  "boundaries": 181,
+  "protected_files": 164,
+  "authority_granted": false,
+  "files": [
+    {
+      "path": "receipt.json",
+      "bytes": 84384,
+      "sha256": "23830ab35f24ceef5a1bb2bf5895a125b80a20b0ba80b302a0f04e704b97151f",
+      "original_bytes_preserved": true
+    },
+    {
+      "path": "stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes_preserved": true
+    }
+  ],
+  "limitations": [
+    "Source caller closure is neither Rust compilation nor runtime, model, custody or scientific qualification.",
+    "The recorded source is A9. Later fixes and prompt changes must not inherit an exact-source native pass from this receipt.",
+    "No original Root writer, model publication or independent actor authority is granted."
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "base": "6ecaf4f7bab96ae936c2b192df2acb2d0bb7c43a",
+  "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib.rs",
+  "preimage": {
+    "sha256": "e4d09ab0e2ba7128c41eac99d4fb6531a4a45418a847f9ee0f88176cbce65c61",
+    "blob": "f0b8e6a9eb321ff5af84c6ff138c0be3239b5d9f",
+    "bytes": 9652
+  },
+  "postimage": {
+    "sha256": "086b1e41c146827e06f3171f794b75f581ac0d54e8a4253fb75ad0bc43f7c64e",
+    "blob": "b0d45af0017321092a904443556babec44aa9d08",
+    "bytes": 9849
+  },
+  "patch_sha256": "6f53936e483b0f0b410fa240f9122be719b886b25ec0eb0caa3cce80c40a30a5",
+  "original_tests": {
+    "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs",
+    "count": 3,
+    "sha256": "231c24e36636efc622c1233f15332d2ffc84de27cd365b147d7e0ccc29532fe8",
+    "blob": "485e0c3c55478a24e95c0bf6173e32e46c8fc51a",
+    "unchanged": true,
+    "helper_direct_call": false
+  },
+  "public_error_enum_unchanged": true,
+  "qualify_public_signature_unchanged": true,
+  "serialization_matrix_codes_and_digest_inputs_unchanged": true,
+  "changes": [
+    "Static Generation construction maps IdentityError to existing PositivePathFailed(String).",
+    "Private id returns Result<StableId, Error>; all three qualify callers use ?.",
+    "Private case_evidence returns Result<CaseEvidence, Error>; construction propagates id error and two existing Result caller branches return it directly."
+  ],
+  "new_dependencies": false,
+  "new_allow_unwrap_panic": false,
+  "qualification_status": "DIFF_READY_FOR_REVIEW; new-source native original tests and final fix/fmt not yet run."
+}

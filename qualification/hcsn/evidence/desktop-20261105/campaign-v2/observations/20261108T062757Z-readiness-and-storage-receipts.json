@@ -1,0 +1,76 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-readiness-storage-observation-v1",
+  "observation": {
+    "progress_updated_utc": "2026-11-08T06:27:57.683919+00:00",
+    "progress_sha256": "35f0bb21164bd107624c81a2c88589cfacbe69c707ae58419affc2c2ceea5308",
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "campaign_process_state": "running",
+    "active_stage": "full",
+    "completed_cuda_runs": 48,
+    "requested_cuda_runs": 170,
+    "no_new_run_indexes_since_06_22_snapshot": true
+  },
+  "readiness_receipts": {
+    "torch": {
+      "path_relative_to_task_root": "envsetup/TORCH_READY.json",
+      "exists": true,
+      "state": "ready",
+      "size_bytes": 547,
+      "sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2"
+    },
+    "mamba": {
+      "path_relative_to_task_root": "envsetup/MAMBA_READY.json",
+      "exists": true,
+      "state": "imports_ready",
+      "size_bytes": 650,
+      "sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76"
+    },
+    "root_level_ready_files": {
+      "TORCH_READY.json": false,
+      "MAMBA_READY.json": false
+    },
+    "shared_dependency_source_archive_sha256": "c46a6f47911adcf12298a5059bbde74ee096c49b3946d8ee10f4710719d3521c"
+  },
+  "storage_observation": {
+    "path_relative_to_task_root": "envsetup/storage-observation-latest.json",
+    "exists": true,
+    "schema": "hcsn-task-storage-observation-v1",
+    "state_in_record": "observing",
+    "observed_at_utc": "2026-11-06T05:50:58.552901+00:00",
+    "size_bytes": 1508,
+    "sha256": "ac61e2deba919701ee3d19d84bdb0e4cff6eb5c89e2bdaac6a7c705b19ff3dc0",
+    "data_free_bytes": 22438989824,
+    "control_filesystem_free_bytes": 30555836416,
+    "data_free_bytes_after_du": 22438989824,
+    "control_filesystem_free_bytes_after_du": 30555840512,
+    "thresholds": {
+      "data_below_5_gib": false,
+      "control_below_1_gib": false
+    },
+    "changes_to_training_or_installation_processes": false,
+    "installation_ready_markers_observed_at_snapshot": false,
+    "old_root_bytes_deleted_by_this_task": 0,
+    "measurement_atomic": false,
+    "legacy_dependency_observations": {
+      "torch_original_download_state": "failed",
+      "mamba_waiter_state": "blocked_dependency_terminal",
+      "mamba_waiter_automatic_install_attempts": 0
+    },
+    "freshness_note": "This is the latest retained storage-observation file, but its observed_at timestamp is 2026-11-06T05:50:58Z; do not present its free-space values as a current live measurement."
+  },
+  "safety": {
+    "no_training_started": true,
+    "no_model_budget_retried": true,
+    "no_package_installation_performed_by_this_read": true,
+    "no_unrelated_processes_stopped": true,
+    "no_files_deleted": true,
+    "no_driver_or_system_service_changed": true
+  },
+  "publication": {
+    "branch": "research/hcsn-desktop-evidence-20261105",
+    "parent_sha": "98792c030c9fb601e96500660991a4915a14bd2d",
+    "expected_sha_lease_required": true,
+    "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/observations/20261108T062757Z-readiness-and-storage-receipts.json",
+    "prior_progress_observation_blob_sha": "f1a9030d89f4931bb76d8bc0cb43f2be49388d7a"
+  }
+}

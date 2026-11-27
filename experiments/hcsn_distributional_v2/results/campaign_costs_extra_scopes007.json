@@ -1,0 +1,654 @@
+{
+  "automatic_scopes_not_repeated": [
+    "full supplemental176 audit and its supervisor",
+    "original failed SCALING002 suite and its supervisor",
+    "independent scaling summary reconstruction and its supervisor",
+    "original30 scaling workers already inside original suite",
+    "all archive publishers, seals and final archive watcher selected by enclosing receipt precedence"
+  ],
+  "created_utc": "2026-10-30T06:02:32.908888+00:00",
+  "observed_cpu_lower_bound_seconds": 43.986336107999996,
+  "prior_manifest": {
+    "path": "experiments/hcsn_distributional_v2/results/campaign_costs_extra_scopes006.json",
+    "scope_count": 25,
+    "sha256": "c29491088471a316368c2a374d671efc654c77fcc479906336ebfeb3a5cdc80f"
+  },
+  "quantity_name": "observed lower bound",
+  "schema": "hcsn-explicit-extra-costs.v1",
+  "scope": "Explicit independent support processes through final catalog and archive closure. No recursive CPU-field collection; synthetic fixture values, historical deployment scenarios, nested clocks, original training workers and archive children are not repeated.",
+  "scope_count": 70,
+  "scopes": [
+    {
+      "disjoint_scope_explanation": "Independent new seven-test tiny-fixture verification child; no main model/data inference.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests001/EXECUTION.json",
+      "receipt_sha256": "19c97bc9d2d0157d8256e94ff784213fcaa2e36ba1b251bb24d8ea060fbcb688",
+      "scope_id": "cost_audit_tests001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Separate outer test supervisor self CPU; child test tree is charged separately.",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests001/EXECUTION.json",
+      "receipt_sha256": "19c97bc9d2d0157d8256e94ff784213fcaa2e36ba1b251bb24d8ea060fbcb688",
+      "scope_id": "cost_audit_tests001_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests002/EXECUTION.json",
+      "receipt_sha256": "3544f362d48102cef50675b98870f501d0bab8996c472602e1c0341f0e0f10d5",
+      "scope_id": "campaign_costs_tests002_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added.",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests002/EXECUTION.json",
+      "receipt_sha256": "3544f362d48102cef50675b98870f501d0bab8996c472602e1c0341f0e0f10d5",
+      "scope_id": "campaign_costs_tests002_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe001/WRAPPER_EXECUTION.json",
+      "receipt_sha256": "f5d36402faef72de690d8969341b0b6e6e2689f91487953fdf8516713fdd769f",
+      "scope_id": "campaign_costs_probe001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added.",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe001/WRAPPER_EXECUTION.json",
+      "receipt_sha256": "f5d36402faef72de690d8969341b0b6e6e2689f91487953fdf8516713fdd769f",
+      "scope_id": "campaign_costs_probe001_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or previous preview invocation; complete child tree and separate supervisor self CPU. Inner generator self/body clocks are nested.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests003/EXECUTION.json",
+      "receipt_sha256": "27b2db3146e03785320e08d9224c28cbb85effa0cb79c4d8c2fbc7a2afe51edc",
+      "scope_id": "campaign_costs_tests003_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or previous preview invocation; complete child tree and separate supervisor self CPU. Inner generator self/body clocks are nested.",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests003/EXECUTION.json",
+      "receipt_sha256": "27b2db3146e03785320e08d9224c28cbb85effa0cb79c4d8c2fbc7a2afe51edc",
+      "scope_id": "campaign_costs_tests003_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or previous preview invocation; complete child tree and separate supervisor self CPU. Inner generator self/body clocks are nested.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe002/WRAPPER_EXECUTION.json",
+      "receipt_sha256": "69e48f9d98abc4db067f449d69ea980b094f95425757ac7f644f11b506b19c6f",
+      "scope_id": "campaign_costs_probe002_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent cost-audit fixture test or previous preview invocation; complete child tree and separate supervisor self CPU. Inner generator self/body clocks are nested.",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe002/WRAPPER_EXECUTION.json",
+      "receipt_sha256": "69e48f9d98abc4db067f449d69ea980b094f95425757ac7f644f11b506b19c6f",
+      "scope_id": "campaign_costs_probe002_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent preceding preview003 process; complete child tree and outer supervisor self CPU are separate. Preview003 inner self receipt is nested, not an extra charge.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe003/WRAPPER_EXECUTION.json",
+      "receipt_sha256": "759551584198721fb2cfddf61ace87c212d54ff6f224f0787d1dae5e076948ad",
+      "scope_id": "campaign_costs_probe003_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent preceding preview003 process; complete child tree and outer supervisor self CPU are separate. Preview003 inner self receipt is nested, not an extra charge.",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe003/WRAPPER_EXECUTION.json",
+      "receipt_sha256": "759551584198721fb2cfddf61ace87c212d54ff6f224f0787d1dae5e076948ad",
+      "scope_id": "campaign_costs_probe003_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent seal/closure/producer-consumer fixture invocation. All nested archive/wrapper children are contained, not additional charges.",
+      "field": "/cpu_seconds_including_children",
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/sealing_smoke001/EXECUTION.json",
+      "receipt_sha256": "7bdb9faeec41a6a793d58bdf8da4fd27f243405e652ef4b8e4ac447ea13e8822",
+      "scope_id": "sealing_smoke001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Separate supervisor self CPU through receipt for this fixture invocation; independent of its measured child tree.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/sealing_smoke001/EXECUTION.json",
+      "receipt_sha256": "7bdb9faeec41a6a793d58bdf8da4fd27f243405e652ef4b8e4ac447ea13e8822",
+      "scope_id": "sealing_smoke001_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent seal/closure/producer-consumer fixture invocation. All nested archive/wrapper children are contained, not additional charges.",
+      "field": "/cpu_seconds_including_children",
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/archive_closure_tests001/EXECUTION.json",
+      "receipt_sha256": "2d1ceaab305ba5645fcee3e9ed3d97ea84534989b5eb213b72ac4370df16b77c",
+      "scope_id": "archive_closure_tests001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Separate supervisor self CPU through receipt for this fixture invocation; independent of its measured child tree.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/archive_closure_tests001/EXECUTION.json",
+      "receipt_sha256": "2d1ceaab305ba5645fcee3e9ed3d97ea84534989b5eb213b72ac4370df16b77c",
+      "scope_id": "archive_closure_tests001_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent seal/closure/producer-consumer fixture invocation. All nested archive/wrapper children are contained, not additional charges.",
+      "field": "/cpu_seconds_including_children",
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/archive_closure_scaling_interface002/EXECUTION.json",
+      "receipt_sha256": "71ace60547f0c3687e02c40e9a59eba5591c4decd0b5f52d2e7d854ea3d997ec",
+      "scope_id": "archive_closure_scaling_interface002_child"
+    },
+    {
+      "disjoint_scope_explanation": "Separate supervisor self CPU through receipt for this fixture invocation; independent of its measured child tree.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/archive_closure_scaling_interface002/EXECUTION.json",
+      "receipt_sha256": "71ace60547f0c3687e02c40e9a59eba5591c4decd0b5f52d2e7d854ea3d997ec",
+      "scope_id": "archive_closure_scaling_interface002_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Measured independent outer-supervisor self CPU window only, not whole supervisor lifetime. The complete scheduler child is a different process and is counted by the normalized LIF core receipt.",
+      "field": "/outer_supervisor_self_window_cpu_seconds",
+      "group": "lif",
+      "measurement_kind": "partial_process_body_timer",
+      "path": "experiments/hcsn_distributional_v2/results/lif_supplement001/SCHEDULER_EXECUTION.json",
+      "receipt_sha256": "efda6065633bd5d796af694780d9561fac330baa990fa253d26179e21c860519",
+      "scope_id": "lif_scheduler_supervisor_window"
+    },
+    {
+      "disjoint_scope_explanation": "Separate pre-registration constructor/count checks plus exactly one synthetic small-T preflight; all small-case timers are nested. No formal scaling case started.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "scaling",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/scaling_preflight001/EXECUTION.json",
+      "receipt_sha256": "74e8426253fe4615679676cffcf5ca5f15eae7e65c5aa6a3b0a0ad119233d05f",
+      "scope_id": "scaling_preflight_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent preparation supervisor self CPU, including source snapshots and protocol registration; preflight child is separate.",
+      "field": "/coordinator_whole_self_cpu_seconds_through_cutoff",
+      "group": "scaling",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/scaling_preflight001/PREPARE_EXECUTION.json",
+      "receipt_sha256": "97e7c42cf9fb9926f69d67fa52cfb9fcad9baa7f13bdee97e09c5401a59e38de",
+      "scope_id": "scaling_prepare_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent targeted regression for the real LIF exit_code receipt and success-pointer mapping. Complete child and supervisor self CPU are separate.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests004/EXECUTION.json",
+      "receipt_sha256": "bf27aaacc394c180cf3528d49e33936d1d082ac1cce679668542b8c4e4da6523",
+      "scope_id": "cost_lif_exit_regression_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent targeted regression for the real LIF exit_code receipt and success-pointer mapping. Complete child and supervisor self CPU are separate.",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests004/EXECUTION.json",
+      "receipt_sha256": "bf27aaacc394c180cf3528d49e33936d1d082ac1cce679668542b8c4e4da6523",
+      "scope_id": "cost_lif_exit_regression_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent tiny-receipt regression for the new formal scaling cost scope and rejection of nested worker duplicate charging; child and supervisor are separate.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests005/EXECUTION.json",
+      "receipt_sha256": "f860fd36c024ecda67796a5d0693806dcc5502e58096bd25960d1b7fbf42b72e",
+      "scope_id": "cost_scaling_containment_regression_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent tiny-receipt regression for the new formal scaling cost scope and rejection of nested worker duplicate charging; child and supervisor are separate.",
+      "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests005/EXECUTION.json",
+      "receipt_sha256": "f860fd36c024ecda67796a5d0693806dcc5502e58096bd25960d1b7fbf42b72e",
+      "scope_id": "cost_scaling_containment_regression_parent"
+    },
+    {
+      "disjoint_scope_explanation": "Independent targeted archive gate fixtures; synthetic adapter children and inner clocks are nested.",
+      "field": "/cpu_seconds_including_children",
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/archive_closure_gate_tests003/EXECUTION.json",
+      "receipt_sha256": "a5038c0819827caa9b89b70fb9e405ea3da46e3df299ffaf0bcd5ba611ba8c2a",
+      "scope_id": "archive_closure_gate_tests003_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for archive_closure_gate_tests003; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/archive_closure_gate_tests003/EXECUTION.json",
+      "receipt_sha256": "a5038c0819827caa9b89b70fb9e405ea3da46e3df299ffaf0bcd5ba611ba8c2a",
+      "scope_id": "archive_closure_gate_tests003_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent AST and optimized-Python report guard verification; optimized child timer is nested.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "report_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/final_report_guard_tests001/EXECUTION.json",
+      "receipt_sha256": "eb99b1f6067bdd310f0b518600433e5d40710136811ecb9448aed1ba7460ff3f",
+      "scope_id": "final_report_guard_tests001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for final_report_guard_tests001; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "report_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/final_report_guard_tests001/EXECUTION.json",
+      "receipt_sha256": "eb99b1f6067bdd310f0b518600433e5d40710136811ecb9448aed1ba7460ff3f",
+      "scope_id": "final_report_guard_tests001_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent bundle-plan classification and exclusion-rule tests; no formal archive generation.",
+      "field": "/cpu_seconds_including_children",
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/final_bundle_plan_tests001/EXECUTION.json",
+      "receipt_sha256": "7a4d33d31c9a2443744da27f46b4f3c9998b8821d5f5caf88842e6b118944fe6",
+      "scope_id": "final_bundle_plan_tests001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for final_bundle_plan_tests001; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/final_bundle_plan_tests001/EXECUTION.json",
+      "receipt_sha256": "7a4d33d31c9a2443744da27f46b4f3c9998b8821d5f5caf88842e6b118944fe6",
+      "scope_id": "final_bundle_plan_tests001_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Failed first CE diagnostic process, retained in full; its unsuccessful input-key lookup is a real separate cost.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "content_integrity_diagnostics",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/content_ce_diagnostic001_measurement/EXECUTION.json",
+      "receipt_sha256": "9148e381e83279d1b96af47b795e6d4d1a9a74f1662bd243184b3a3eab86c384",
+      "scope_id": "content_ce_diagnostic001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for content_ce_diagnostic001; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "content_integrity_diagnostics",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/content_ce_diagnostic001_measurement/EXECUTION.json",
+      "receipt_sha256": "9148e381e83279d1b96af47b795e6d4d1a9a74f1662bd243184b3a3eab86c384",
+      "scope_id": "content_ce_diagnostic001_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent successful CE producer diagnostic; original training and other audit processes are separate.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "content_integrity_diagnostics",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/content_ce_diagnostic002_measurement/EXECUTION.json",
+      "receipt_sha256": "1880a1e4f3df11068fe12add08fef48828f4a12ad60980a601ca6e3f69fce4e1",
+      "scope_id": "content_ce_diagnostic002_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for content_ce_diagnostic002; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "content_integrity_diagnostics",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/content_ce_diagnostic002_measurement/EXECUTION.json",
+      "receipt_sha256": "1880a1e4f3df11068fe12add08fef48828f4a12ad60980a601ca6e3f69fce4e1",
+      "scope_id": "content_ce_diagnostic002_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Separate supplemental registration, AST derivation and producer fixtures; formal full176 audit is an automatic ledger scope, not charged here.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "content_integrity_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/content_supplement_preflight001/EXECUTION.json",
+      "receipt_sha256": "7d6f41982bd1a88b1b8f78ca19f00ed299089dbc7d2daf752ae30386eba713ed",
+      "scope_id": "content_supplement_preflight001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for content_supplement_preflight001; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "content_integrity_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/content_supplement_preflight001/EXECUTION.json",
+      "receipt_sha256": "7d6f41982bd1a88b1b8f78ca19f00ed299089dbc7d2daf752ae30386eba713ed",
+      "scope_id": "content_supplement_preflight001_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent source-snapshot process before updated admission consumers.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/admission_consumer004_snapshot_execution/EXECUTION.json",
+      "receipt_sha256": "ca99dfa385e7ecee98b3972164474337ffde6f8cd400dabeb664a114ebe51384",
+      "scope_id": "admission_consumer004_snapshot_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for admission_consumer004_snapshot; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/admission_consumer004_snapshot_execution/EXECUTION.json",
+      "receipt_sha256": "ca99dfa385e7ecee98b3972164474337ffde6f8cd400dabeb664a114ebe51384",
+      "scope_id": "admission_consumer004_snapshot_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent metadata admission consumer validation; synthetic fixtures and nested timers are not additive.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/admission_consumer004_validation_execution/EXECUTION.json",
+      "receipt_sha256": "f0e1399effe9010a02b0ae6e9e50947386e9ae1a8dc13762d97f217775b06725",
+      "scope_id": "admission_consumer004_validation_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for admission_consumer004_validation; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/admission_consumer004_validation_execution/EXECUTION.json",
+      "receipt_sha256": "f0e1399effe9010a02b0ae6e9e50947386e9ae1a8dc13762d97f217775b06725",
+      "scope_id": "admission_consumer004_validation_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Separate successful final LIF original-pointer normalization process; its inner own CPU is nested and LIF study/analyzer expenses are automatic separate scopes.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_normalization",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/lif_cost_normalization001/EXECUTION.json",
+      "receipt_sha256": "bf2822e05a49919182b08128edaab74bce1614690812244436bcd319939a53f4",
+      "scope_id": "lif_cost_normalization001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for lif_cost_normalization001; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "cost_normalization",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/lif_cost_normalization001/EXECUTION.json",
+      "receipt_sha256": "bf2822e05a49919182b08128edaab74bce1614690812244436bcd319939a53f4",
+      "scope_id": "lif_cost_normalization001_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "First independent stdlib-only SCALING002 admission validation; zero neural operations.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "scaling_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/scaling002_admission_tests001_execution/EXECUTION.json",
+      "receipt_sha256": "400fe53f07e2716c68e275b5962cf78f1da6021b5403ea96896773b755bda802",
+      "scope_id": "scaling002_admission_tests001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for scaling002_admission_tests001; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "scaling_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/scaling002_admission_tests001_execution/EXECUTION.json",
+      "receipt_sha256": "400fe53f07e2716c68e275b5962cf78f1da6021b5403ea96896773b755bda802",
+      "scope_id": "scaling002_admission_tests001_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Second independent metadata validation after preserving an existing non-execution marker for reproducibility; zero neural operations.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "scaling_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/scaling002_admission_tests002_execution/EXECUTION.json",
+      "receipt_sha256": "323f7602aa4d4c2dd273e63d26620458e22ad11dee9e40102b6dcaff8a0ca00c",
+      "scope_id": "scaling002_admission_tests002_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for scaling002_admission_tests002; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "scaling_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/scaling002_admission_tests002_execution/EXECUTION.json",
+      "receipt_sha256": "323f7602aa4d4c2dd273e63d26620458e22ad11dee9e40102b6dcaff8a0ca00c",
+      "scope_id": "scaling002_admission_tests002_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Separate SCALING002 registration and source snapshot; original preflight reused without another model operation.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "scaling_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/scaling002_registration001_execution/EXECUTION.json",
+      "receipt_sha256": "981506d80a3cf69a4b300b2c8c17019615578c883623af6da4053f84b9dfc0e3",
+      "scope_id": "scaling002_registration001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for scaling002_registration001; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "scaling_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/scaling002_registration001_execution/EXECUTION.json",
+      "receipt_sha256": "981506d80a3cf69a4b300b2c8c17019615578c883623af6da4053f84b9dfc0e3",
+      "scope_id": "scaling002_registration001_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent twelve-fixture accounting verification for preserved strict failure, supplemental audit and SCALING002 inheritance.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests006/EXECUTION.json",
+      "receipt_sha256": "797894e40a58cc5071c8c335e99e92cf54af6b9968c73cd72095a350b0b05589",
+      "scope_id": "campaign_costs_tests006_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for campaign_costs_tests006; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests006/EXECUTION.json",
+      "receipt_sha256": "797894e40a58cc5071c8c335e99e92cf54af6b9968c73cd72095a350b0b05589",
+      "scope_id": "campaign_costs_tests006_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent twelve-fixture accounting verification including original failed scaling suite and successful read-only reconstruction as distinct scopes.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests007/EXECUTION.json",
+      "receipt_sha256": "8917acb49b9ca3c047677ab4884138bc8cd15126c167d0a6781b825e39177f8e",
+      "scope_id": "campaign_costs_tests007_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for campaign_costs_tests007; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests007/EXECUTION.json",
+      "receipt_sha256": "8917acb49b9ca3c047677ab4884138bc8cd15126c167d0a6781b825e39177f8e",
+      "scope_id": "campaign_costs_tests007_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent incomplete ledger preview before scaling reconstruction admission; inner generator self timer is nested.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe004_execution/EXECUTION.json",
+      "receipt_sha256": "754d6c5804971d4fd4570c3d6dc7334575ebc6a2fbe9628c8d66f3eb5ed4b5bf",
+      "scope_id": "campaign_costs_probe004_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for campaign_costs_probe004; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe004_execution/EXECUTION.json",
+      "receipt_sha256": "754d6c5804971d4fd4570c3d6dc7334575ebc6a2fbe9628c8d66f3eb5ed4b5bf",
+      "scope_id": "campaign_costs_probe004_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent incomplete ledger preview after reconstruction admission, prior to final archive closure; inner generator self timer is nested.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe005_execution/EXECUTION.json",
+      "receipt_sha256": "89b321850ae5af5e442a0799e6fd960d1478bb5d49f5b07296dc05b5f439c45f",
+      "scope_id": "campaign_costs_probe005_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for campaign_costs_probe005; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe005_execution/EXECUTION.json",
+      "receipt_sha256": "89b321850ae5af5e442a0799e6fd960d1478bb5d49f5b07296dc05b5f439c45f",
+      "scope_id": "campaign_costs_probe005_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Separate final four-figure renderer; inner rendering self CPU is nested, with no new training or timing.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "figures_and_reports",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/figures002_execution/EXECUTION.json",
+      "receipt_sha256": "c236b55dd6077eb6572a3be8d0558977bfe62611122be116dbee9cd9c507434a",
+      "scope_id": "figures002_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for figures002; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "figures_and_reports",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/figures002_execution/EXECUTION.json",
+      "receipt_sha256": "c236b55dd6077eb6572a3be8d0558977bfe62611122be116dbee9cd9c507434a",
+      "scope_id": "figures002_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent source-snapshot process for the final archive consumer; original archive closure and normalizer identities preserved.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/scaling_summary_consumer005_snapshot_execution/EXECUTION.json",
+      "receipt_sha256": "575672b7b6da1071e7a408d9690e4a784ad4ba27d3dbb6cb9a6abf8f10f62cbc",
+      "scope_id": "scaling_summary_consumer005_snapshot_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for scaling_summary_consumer005_snapshot; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/scaling_summary_consumer005_snapshot_execution/EXECUTION.json",
+      "receipt_sha256": "575672b7b6da1071e7a408d9690e4a784ad4ba27d3dbb6cb9a6abf8f10f62cbc",
+      "scope_id": "scaling_summary_consumer005_snapshot_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Independent eleven-fixture final archive consumer verification including real original30-case coverage and separate summary reconstruction; original case timings only read.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/scaling_summary_consumer005_validation_execution/EXECUTION.json",
+      "receipt_sha256": "c8ac54e1ee3a79a896d558f49a9fc1af03db92cd340d042d72ae69c2b26dfc18",
+      "scope_id": "scaling_summary_consumer005_validation_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for scaling_summary_consumer005_validation; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/scaling_summary_consumer005_validation_execution/EXECUTION.json",
+      "receipt_sha256": "c8ac54e1ee3a79a896d558f49a9fc1af03db92cd340d042d72ae69c2b26dfc18",
+      "scope_id": "scaling_summary_consumer005_validation_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Unique final archive-closure process; inner closure own CPU is nested, and all bundle pack/restore expenses belong to separate automatic publisher scopes.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "artifact_closure",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/results/archive_closure001_execution/EXECUTION.json",
+      "receipt_sha256": "ef0f59ecc9227be4537eafc707298e8e9ad1f0be520ac0ec4c51998e50275512",
+      "scope_id": "archive_closure001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for archive_closure001; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "artifact_closure",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/archive_closure001_execution/EXECUTION.json",
+      "receipt_sha256": "ef0f59ecc9227be4537eafc707298e8e9ad1f0be520ac0ec4c51998e50275512",
+      "scope_id": "archive_closure001_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "Unique final artifact-catalog process; all inner catalog parent/worker clocks are nested in this outer wait4. Earlier list001 is a different process.",
+      "field": "/complete_child_cpu_seconds",
+      "group": "reproduction",
+      "measurement_kind": "complete_process_tree_wait4",
+      "path": "experiments/hcsn_distributional_v2/reproduction_receipts/final_catalog001_execution/EXECUTION.json",
+      "receipt_sha256": "6eadb867da85db6dba1a5d4d4a046f73a9262724a153eec876549c52579ba3c6",
+      "scope_id": "final_catalog001_child"
+    },
+    {
+      "disjoint_scope_explanation": "Independent outer supervisor self CPU through its receipt for final_catalog001; it excludes the waited child and its descendants. Final-write/exit remainder is unmeasured.",
+      "field": "/supervisor_self_cpu_seconds_through_receipt",
+      "group": "reproduction",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/reproduction_receipts/final_catalog001_execution/EXECUTION.json",
+      "receipt_sha256": "6eadb867da85db6dba1a5d4d4a046f73a9262724a153eec876549c52579ba3c6",
+      "scope_id": "final_catalog001_supervisor"
+    },
+    {
+      "disjoint_scope_explanation": "One independent planner CLI without children, measured through its receipt. It completed before the separate lif_supplement001_evidence sealer invocation, whose archive child/coordinator expenses are automatic ledger scopes.",
+      "field": "/own_cpu_seconds_through_receipt",
+      "group": "artifact_planning",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/final_bundle_plans/lif_supplement001_evidence_001/EXECUTION.json",
+      "receipt_sha256": "f6225c33e398c209def43f687ac4765cc6e265f892d1004a7d5d9d99a6a027c3",
+      "scope_id": "final_bundle_plan_lif_supplement001_evidence"
+    },
+    {
+      "disjoint_scope_explanation": "One independent planner CLI without children, measured through its receipt. It completed before the separate content002_metadata sealer invocation, whose archive child/coordinator expenses are automatic ledger scopes.",
+      "field": "/own_cpu_seconds_through_receipt",
+      "group": "artifact_planning",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/final_bundle_plans/content002_metadata_001/EXECUTION.json",
+      "receipt_sha256": "b3988a1f733b20d13c522cc99513ba2c20b3796e0a6c7b300edaeea669701689",
+      "scope_id": "final_bundle_plan_content002_metadata"
+    },
+    {
+      "disjoint_scope_explanation": "One independent planner CLI without children, measured through its receipt. It completed before the separate v2_auxiliary_evidence sealer invocation, whose archive child/coordinator expenses are automatic ledger scopes.",
+      "field": "/own_cpu_seconds_through_receipt",
+      "group": "artifact_planning",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "path": "experiments/hcsn_distributional_v2/results/final_bundle_plans/v2_auxiliary_evidence_001/EXECUTION.json",
+      "receipt_sha256": "6e16cc0d82b47e2e402a04b6fb58d79772cc4d75ea6bcbba0c705bc2e0b8d38e",
+      "scope_id": "final_bundle_plan_v2_auxiliary_evidence"
+    }
+  ],
+  "unit": "CPU seconds",
+  "unknown_work": "Untimed development, network/downloads, editing, process remainders and work after the final ledger cutoff are unknown, not zero."
+}

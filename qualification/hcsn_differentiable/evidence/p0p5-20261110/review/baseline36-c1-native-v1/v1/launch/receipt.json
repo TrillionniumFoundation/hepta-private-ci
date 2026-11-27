@@ -1,0 +1,86 @@
+{
+  "address_space_limit_bytes": 8589934592,
+  "argv": [
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/run_subset_review.py",
+    "--base",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "--output",
+    "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1"
+  ],
+  "child_peak_rss_bytes": 1112485888,
+  "complete_launcher_wall_seconds": 22.971348363906145,
+  "energy_joules": null,
+  "finished_utc": "2026-11-10T17:26:22.525799+00:00",
+  "host_load_after": [
+    12.166015625,
+    11.58544921875,
+    11.2373046875
+  ],
+  "host_load_before": [
+    12.1484375,
+    11.53125,
+    11.21044921875
+  ],
+  "idempotency_key": "hcsn-baseline36-c1-independent-review-c385-v1",
+  "launcher_sha256": "56b64f43b110635f1d4330767556465fada7e22bae2406224ddb0c4379ebaae9",
+  "nice_adjustment": 10,
+  "output": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1",
+  "pid": 1795115,
+  "program": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1",
+  "program_archive_sha256": "2f68f48b5cf4f758ab503ac1621cf4b17039ef9169a4c57cfd4dd7f6d8c25034",
+  "program_sources_unchanged": true,
+  "result_sha256": "368494d90c42339c5b8d8e7afbed7592c4cb2ef52d52a4611a3e89d7fea59052",
+  "returncode": 1,
+  "review_archive": {
+    "all_manifest_members_exact": true,
+    "bytes": 16391589,
+    "manifest_sha256": "097753167f3e7c42e1e45c968360fe657b86eadb8b965730f448e9a2e0f32889",
+    "path": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1.zip",
+    "sha256": "d882d080345c606ca8bff395db192a51da2f8b821db3d71eb6d7a529f3afda13"
+  },
+  "review_summary": {
+    "C1_audit_counts": {
+      "audit_failed": 7
+    },
+    "combined_baseline_chain_heuristic_adequacy_passes": 26,
+    "finished_utc": "2026-11-10T17:26:19.914284+00:00",
+    "full42_final_audit": false,
+    "memorization_failures_retained": [
+      "snn_plif-s101-lr0.001",
+      "cfc-s211-lr0.001",
+      "snn_plif-s307-lr0.001"
+    ],
+    "mode": "completed_baseline_subset_and_C1_phase_chains",
+    "original_baseline_audit_counts": {
+      "passed_completed_original_baseline": 36
+    },
+    "original_baseline_heuristic_adequacy_passes": 26,
+    "passed": false,
+    "peak_rss_bytes": 1105670144,
+    "result_sha256": "368494d90c42339c5b8d8e7afbed7592c4cb2ef52d52a4611a3e89d7fea59052",
+    "review_process_cpu_sample_seconds": 18.963314579,
+    "review_process_wall_seconds": 20.309695262927562,
+    "schema": "fresh42-completed-baseline36-plus-C1-independent-review-v1",
+    "scientific_admission": "HOLD",
+    "started_utc": "2026-11-10T17:26:01.787110+00:00"
+  },
+  "schema": "native-baseline36-C1-independent-review-launch-v1",
+  "scope": "Completed36 baseline subset plus7 C1; no HCSN candidate directory read, no training replay or optimizer step. May overlap original HCSN jobs.",
+  "source_copy_and_hash_seconds": 0.02492013294249773,
+  "started_utc": "2026-11-10T17:25:59.579367+00:00",
+  "status": "failed",
+  "stderr": {
+    "bytes": 407,
+    "sha256": "8662c2e88762ea62bd6f6a9e2680fa57de84dd317034bb69c774b01c2ea0c4a8"
+  },
+  "stdout": {
+    "bytes": 6304,
+    "sha256": "6d1926c5b14bbde4cfec5cb951d7f2bb9599a243abe5f08297c1d7b5601b427b"
+  },
+  "timeout_seconds": 1800,
+  "torch_threads": 1,
+  "waited_review_child_cpu_seconds": 21.723336,
+  "whole_review_process_wall_seconds": 22.93758828798309
+}

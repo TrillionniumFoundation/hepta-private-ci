@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "source_head": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+  "source_tree": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+  "actual_checkout_commit": "149c8ca2fccaf963a6a8a3f4a5ab6e9ff9ea78bb",
+  "actual_checkout_tree": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+  "same_tree": true,
+  "run_id": 43308682510,
+  "job_id": 131499033100,
+  "job_name": "rust-ci / Rust format",
+  "status": "completed",
+  "conclusion": "failure",
+  "completed_at": "2026-11-12T21:18:22Z",
+  "original_command": "cargo fmt -- --config imports_granularity=Item --check",
+  "original_exit_code": 1,
+  "original_log": {
+    "job_id": 131499033100,
+    "bytes": 135745,
+    "sha256": "6634c6356ab5865ad0154320e610afd801539306965663a011c5c5a37ef1f7bd",
+    "git_blob_sha": "d6ab768fd0a9d66c20e0177dd0c16d4c7916c0d9"
+  },
+  "reported_hunks": 2,
+  "source_candidate_tree": "9e105e3d96607c943364249113636484c5a1abc1",
+  "source_changes": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "sha": "2621dfc2c5c25bf66cac95d206d3b4e5d9cc9790",
+      "before": "    assert_eq!(\n        checked(fs::read(fixture.0.join(\"witness\"))),\n        witness_bytes\n    );",
+      "after": "    assert_eq!(checked(fs::read(fixture.0.join(\"witness\"))), witness_bytes);",
+      "base_bytes": 28714,
+      "base_sha256": "60b2cd77a6d7581f26c8a8af06c045fabb46f616f9ed053cfb80c680e982bed7",
+      "post_bytes": 28692,
+      "post_sha256": "0026362150bd5e7528cad41cb80356d585a675caf1a7ba86d91bf29dda6db3ee",
+      "post_sha": "d657dff9aa7be59bad252fe37ffd8e3171a9cb74"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "sha": "6cbc878cc2d85691dba75c9e21a4699506368164",
+      "before": "        let mut earlier: BTreeMap<_, _> =\n            history.iter().map(|entry| (entry.event_id, entry)).collect();",
+      "after": "        let mut earlier: BTreeMap<_, _> = history\n            .iter()\n            .map(|entry| (entry.event_id, entry))\n            .collect();",
+      "base_bytes": 15642,
+      "base_sha256": "f25ef2dc77eb9e5d9a6e7f6ae271e9dcfd748a3ea5250d507badc50b4d3d7e95",
+      "post_bytes": 15669,
+      "post_sha256": "043625f4275dd372c6b7b499a286f3356d10d7b381b1db6ebfac06675ad8ab48",
+      "post_sha": "6179ad309c5cbaeb7ab938acbc8aa4ee7fa13698"
+    }
+  ],
+  "scope": "Only the two exact formatter-reported whitespace edits; full non-whitespace byte sequence and original string literals unchanged; forward/reverse exact text replay checked.",
+  "qual_payloads": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-rustfmt-failure-and-minimal-fix/JOB.log",
+      "git_blob_sha": "d6ab768fd0a9d66c20e0177dd0c16d4c7916c0d9",
+      "bytes": 135745,
+      "sha256": "6634c6356ab5865ad0154320e610afd801539306965663a011c5c5a37ef1f7bd",
+      "kind": "complete original decoded terminal formatter job log"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-rustfmt-failure-and-minimal-fix/JOBS_API.json",
+      "git_blob_sha": "9360df02d437e4dcddbe2f1935cabff23ce01e2e",
+      "bytes": 63276,
+      "sha256": "e230c832524a41cb098ff8d9bd87d7624c379a70db2e102b27aa2b8017a779ed",
+      "kind": "original GitHub jobs API response"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-rustfmt-failure-and-minimal-fix/CHECKOUT_COMMIT_API.json",
+      "git_blob_sha": "4a509a3f29248f06f86984876185b49cb1633b45",
+      "bytes": 2798,
+      "sha256": "63ba9399db3d60422370b4b3df2631343503d9b951d7c67863a20745b5ab1431",
+      "kind": "original actual synthetic checkout commit API response"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-rustfmt-failure-and-minimal-fix/PATCH.diff",
+      "git_blob_sha": "588b750d61409ffc44f529191396ceaf52af64aa",
+      "bytes": 1330,
+      "sha256": "87ee8f49ab753b67131b84fbe96f6862586440000d7091d31054a0fa3a377015",
+      "kind": "derived exact replay of the two reported Rustfmt hunks"
+    }
+  ],
+  "verification": {
+    "source_postimages_git_readback_equal": true,
+    "original_payloads_git_readback_equal": true
+  },
+  "execution": {
+    "local_formatter": "NOT_RUN",
+    "source_tests": "NOT_RUN",
+    "rust": "NOT_RUN",
+    "ref_changed": false
+  },
+  "qualification": "The old formatter remains an actual failure. These postimages must be tested on a new source identity; no formatter PASS is inferred."
+}

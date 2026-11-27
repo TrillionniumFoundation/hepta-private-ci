@@ -1,0 +1,24 @@
+Loading weights:   0%|          | 0/74 [00:00<?, ?it/s]Loading weights: 100%|██████████| 74/74 [00:00<00:00, 1262.10it/s]
+{
+  "shape": [
+    624,
+    384
+  ],
+  "encoding": {
+    "wall_ns": 5616694830,
+    "cpu_ns": 21517795931,
+    "forward_calls": 39,
+    "encoded_tokens": 8853
+  },
+  "encoder_updates": 0,
+  "truncated_inputs": 0,
+  "execution": {
+    "schema": "hepta.cell-action-feature-execution.v3",
+    "at_utc": "2026-10-25T00:17:39.898817+00:00",
+    "protocol_sha256": "b24f22c9f4bd4a106ee4311d6a47cc31781de808f01fd6fa9e4a60853cf4afb3",
+    "feature_report_sha256": "2241cd41f53dca76a9ff472289b10093230c7ee2c476aaf455d9e4ad0ab7f4f8",
+    "attempts": [],
+    "withheld_open_guard": "Reject read or update opens of validation_labels.json and final_labels.json",
+    "classifier_outputs_observed": false
+  }
+}

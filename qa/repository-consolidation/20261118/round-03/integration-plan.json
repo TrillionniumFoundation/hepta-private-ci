@@ -1,0 +1,396 @@
+{
+  "base": "acb0e94275e118b813e400fc52435d7a24e5b645",
+  "applied": [
+    {
+      "kind": "batch",
+      "batch": 6,
+      "patches": [
+        "mem8-harness-family.patch"
+      ],
+      "heads": [
+        "5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+        "ca9ab8c0d07d1a236ef3c4b76a22f0a131d409ae",
+        "23d9f41532e5e6310ca791a5b849ab1cff7466eb",
+        "fe824cce50037071ff559e1aabdf36f9d5954908"
+      ]
+    },
+    {
+      "kind": "batch",
+      "batch": 7,
+      "patches": [
+        "e1a4f619-readonly-custody.patch"
+      ],
+      "heads": [
+        "90a3f642d7b66e2621da1a16c146a52c3c92b751",
+        "e1a4f619a5677d5cdc4f5307d1dc7cf1af61821e"
+      ]
+    },
+    {
+      "kind": "batch",
+      "batch": 8,
+      "patches": [
+        "a55150f9-evidence.patch"
+      ],
+      "heads": [
+        "a55150f901bf27bea8a112e03a13bc88b71ba81e"
+      ]
+    },
+    {
+      "kind": "frontier_proposal",
+      "manifest": "reviewed_c8f5_proposal.json",
+      "heads": [
+        "2bee749bd940df145bbb1ad0d891fafccc992e0f",
+        "a4f0ed76a37dc4ee0307ecc99bc12b93719e40b1"
+      ]
+    },
+    {
+      "kind": "frontier_proposal",
+      "manifest": "reviewed_fbd_proposal.json",
+      "heads": [
+        "fbd248803364477866599f1fee7dd8bef4a91fc9"
+      ]
+    },
+    {
+      "kind": "batch",
+      "batch": 9,
+      "patches": [
+        "5d82db76-terminal-journal.patch"
+      ],
+      "heads": [
+        "5d82db76436c10e684e03a0d215f19d6097b1478"
+      ]
+    },
+    {
+      "kind": "batch",
+      "batch": 10,
+      "patches": [
+        "976cd244-fixture.patch",
+        "976cd244-qualification.patch"
+      ],
+      "heads": [
+        "976cd244905fb4213cae5229ec369225f0752681"
+      ]
+    },
+    {
+      "kind": "frontier_proposal",
+      "manifest": "reviewed_15c_proposal.json",
+      "heads": [
+        "12052fb4856cd2d2bfdae524ee68f0ac8d6bdde6",
+        "f421977bfc052286afb86ac32cf82a14a3f572f7"
+      ]
+    },
+    {
+      "kind": "batch",
+      "batch": 11,
+      "patches": [
+        "9f1b330e-sdk-frozen.patch"
+      ],
+      "heads": [
+        "9f1b330e90197d25e7524864d01129b28a0a3d44"
+      ]
+    },
+    {
+      "kind": "root_small_family",
+      "manifest": "root_small_family_audit/60da-reviewed-proposal.json",
+      "heads": [
+        "60da9c1223da28642d886fa4be4e7678f13fca97"
+      ]
+    },
+    {
+      "kind": "frontier_proposal",
+      "manifest": "reviewed_540_proposal.json",
+      "heads": [
+        "4a729682ccb6c5ebff3c4e5c7040a44b23d3e8e8",
+        "d0aec9c21aadcdb63be2e6dcb8b157e0636f1af6"
+      ]
+    },
+    {
+      "kind": "remaining_batch",
+      "manifest": "remaining_history_audit/BATCH_12.json",
+      "heads": [
+        "400a3ce92a455599bb67af8cc2ebbec06384ce3d",
+        "6f0e91e1d2479d73ae28097e930e16c4ed331911",
+        "f808b370af071005fe7c8024e1896197f5c094bb"
+      ],
+      "root_receipt": "native-validation/batch12-root-application.json"
+    }
+  ],
+  "accepted_original_heads": [
+    "5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+    "ca9ab8c0d07d1a236ef3c4b76a22f0a131d409ae",
+    "23d9f41532e5e6310ca791a5b849ab1cff7466eb",
+    "fe824cce50037071ff559e1aabdf36f9d5954908",
+    "90a3f642d7b66e2621da1a16c146a52c3c92b751",
+    "e1a4f619a5677d5cdc4f5307d1dc7cf1af61821e",
+    "a55150f901bf27bea8a112e03a13bc88b71ba81e",
+    "2bee749bd940df145bbb1ad0d891fafccc992e0f",
+    "a4f0ed76a37dc4ee0307ecc99bc12b93719e40b1",
+    "fbd248803364477866599f1fee7dd8bef4a91fc9",
+    "5d82db76436c10e684e03a0d215f19d6097b1478",
+    "976cd244905fb4213cae5229ec369225f0752681",
+    "12052fb4856cd2d2bfdae524ee68f0ac8d6bdde6",
+    "f421977bfc052286afb86ac32cf82a14a3f572f7",
+    "9f1b330e90197d25e7524864d01129b28a0a3d44",
+    "60da9c1223da28642d886fa4be4e7678f13fca97",
+    "4a729682ccb6c5ebff3c4e5c7040a44b23d3e8e8",
+    "d0aec9c21aadcdb63be2e6dcb8b157e0636f1af6",
+    "400a3ce92a455599bb67af8cc2ebbec06384ce3d",
+    "6f0e91e1d2479d73ae28097e930e16c4ed331911",
+    "f808b370af071005fe7c8024e1896197f5c094bb"
+  ],
+  "paths": [
+    ".github/actions/setup-bazel-ci/action.yml",
+    ".github/fixtures/mem-native-five-plan.json",
+    ".github/fixtures/mem-native-subagent-plan.json",
+    ".github/fixtures/mem-windows-sandbox-fix-plan.json",
+    ".github/scripts/mem_native_five.py",
+    ".github/scripts/mem_native_five_support.py",
+    ".github/scripts/mem_native_subagent.py",
+    ".github/scripts/mem_native_subagent_support.py",
+    ".github/scripts/mem_windows_sandbox_fix.py",
+    ".github/scripts/mem_windows_sandbox_fix_support.py",
+    ".github/workflows/hepta-consolidated-source.yml",
+    ".github/workflows/hepta-mem-native-five.yml",
+    ".github/workflows/hepta-mem-native-subagent.yml",
+    ".github/workflows/hepta-mem-windows-sandbox-fix.yml",
+    ".github/workflows/hepta-ndu-recursion.yml",
+    ".github/workflows/hepta-windows-regression-fixtures.yml",
+    ".github/workflows/sdk.yml",
+    "MODULE.bazel.lock",
+    "README.md",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/agent-identity/Cargo.toml",
+    "codex-rs/agent-identity/src/lib.rs",
+    "codex-rs/exec-server/src/authorized_read_error.rs",
+    "codex-rs/exec-server/src/authorized_read_error_tests.rs",
+    "codex-rs/exec-server/src/client.rs",
+    "codex-rs/exec-server/src/lib.rs",
+    "codex-rs/exec-server/src/remote_file_system.rs",
+    "codex-rs/exec-server/src/remote_file_system_authorized_error_tests.rs",
+    "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+    "codex-rs/exec-server/src/server/file_system_handler.rs",
+    "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/git-utils/Cargo.toml",
+    "codex-rs/git-utils/src/baseline.rs",
+    "codex-rs/hepta-agentd/BUILD.bazel",
+    "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_learning_readback_test_support.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_local_decision_tests.rs",
+    "codex-rs/hepta-cell-roles/src/control_wal.rs",
+    "codex-rs/hepta-memory/TERMINAL_RECONCILIATION.md",
+    "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+    "codex-rs/hepta-memory/src/production_calculator_owner_tests.rs",
+    "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+    "codex-rs/hepta-memory/src/production_hos2_ordering_tests.rs",
+    "codex-rs/hepta-memory/src/production_notes_owner_tests.rs",
+    "codex-rs/hepta-memory/src/production_terminal_journal.rs",
+    "codex-rs/hepta-memory/src/production_terminal_journal_tests.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs",
+    "codex-rs/hepta-ndu/src/lib.rs",
+    "codex-rs/hepta-ndu/src/sngr_affine_shadow.rs",
+    "codex-rs/hepta-ndu/src/sngr_affine_shadow_tests.rs",
+    "codex-rs/hepta-ndu/src/sngr_graph_shadow.rs",
+    "codex-rs/hepta-ndu/src/sngr_graph_shadow_tests.rs",
+    "codex-rs/hepta-neuron/src/lib.rs",
+    "codex-rs/hepta-neuron/src/plasticity.rs",
+    "codex-rs/hepta-neuron/src/plasticity/temporal_credit.rs",
+    "codex-rs/hepta-neuron/src/plasticity/temporal_credit_tests.rs",
+    "codex-rs/network-proxy/Cargo.toml",
+    "codex-rs/network-proxy/src/network_policy.rs",
+    "codex-rs/otel/Cargo.toml",
+    "codex-rs/otel/src/events/shared.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/BUILD.bazel",
+    "codex-rs/third_party/oauth2-5.0.0-time/Cargo.toml",
+    "codex-rs/third_party/oauth2-5.0.0-time/Cargo.toml.orig",
+    "codex-rs/third_party/oauth2-5.0.0-time/HEPTA-SOURCE-PROVENANCE.json",
+    "codex-rs/third_party/oauth2-5.0.0-time/HEPTA-TIME-MIGRATION.patch.gz",
+    "codex-rs/third_party/oauth2-5.0.0-time/HEPTA.md",
+    "codex-rs/third_party/oauth2-5.0.0-time/LICENSE-APACHE",
+    "codex-rs/third_party/oauth2-5.0.0-time/LICENSE-MIT",
+    "codex-rs/third_party/oauth2-5.0.0-time/README.md",
+    "codex-rs/third_party/oauth2-5.0.0-time/UPGRADE.md.gz",
+    "codex-rs/third_party/oauth2-5.0.0-time/examples/github.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/examples/github_async.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/examples/google.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/examples/google_devicecode.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/examples/letterboxd.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/examples/microsoft_devicecode_common_user.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/examples/microsoft_devicecode_tenant_user.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/examples/msgraph.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/examples/wunderlist.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/basic.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/client.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/code.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/curl_client.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/devicecode.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/devicecode_time_tests.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/endpoint.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/error.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/helpers.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/introspection.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/lib.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/reqwest_client.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/revocation.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/tests.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/timestamp.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/timestamp_tests.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/token/mod.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/token/tests.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/types.rs",
+    "codex-rs/third_party/oauth2-5.0.0-time/src/ureq_client.rs",
+    "codex-rs/windows-sandbox-rs/Cargo.toml",
+    "codex-rs/windows-sandbox-rs/qualification/legacy-delete-20261105/README.md",
+    "codex-rs/windows-sandbox-rs/qualification/legacy-delete-20261105/original-job-127043294552.log.gz",
+    "codex-rs/windows-sandbox-rs/qualification/legacy-delete-20261105/provenance.json",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/firewall.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/sandbox_users.rs",
+    "codex-rs/windows-sandbox-rs/src/logging.rs",
+    "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/.github/scripts/sdk_diagnostic.py",
+    "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/.github/sdk-diagnostic/source.json",
+    "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/.github/sdk-diagnostic/tools.json",
+    "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/.github/workflows/a32-sdk-keyless-diagnostic.yml",
+    "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/.github/workflows/sdk.yml",
+    "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/MANIFEST.json",
+    "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/README.md",
+    "qa/repository-consolidation/20261118/a32-wine-readonly-frozen/.github/scripts/a32_wine_diagnostic.py",
+    "qa/repository-consolidation/20261118/a32-wine-readonly-frozen/.github/scripts/test_a32_wine_diagnostic.py",
+    "qa/repository-consolidation/20261118/a32-wine-readonly-frozen/.github/workflows/a32-wine-diagnostic.yml",
+    "qa/repository-consolidation/20261118/a32-wine-readonly-frozen/MANIFEST.json",
+    "qa/repository-consolidation/20261118/a32-wine-readonly-frozen/README.md",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/.github/fixtures/a32-exec-authorized-read-native/source-manifest.json.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/.github/scripts/a32_exec_authorized_read_format.py.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/.github/scripts/a32_exec_authorized_read_native.py.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/.github/workflows/a32-exec-authorized-read-native.yml.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/codex-rs/exec-server/src/authorized_read_error_tests.rs.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/codex-rs/exec-server/tests/authorized_read_rpc.rs.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/.github/fixtures/a32-exec-authorized-read-native/source-manifest.json.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/.github/scripts/a32_exec_authorized_read_format.py.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/.github/scripts/a32_exec_authorized_read_native.py.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/.github/workflows/a32-exec-authorized-read-native.yml.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/codex-rs/exec-server/src/authorized_read_error_tests.rs.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/codex-rs/exec-server/tests/authorized_read_rpc.rs.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/AUDIT.json",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/MANIFEST.json",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/README.md",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/.github/fixtures/a32-exec-authorized-read-native/source-manifest.json.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/.github/scripts/a32_exec_authorized_read_format.py.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/.github/scripts/a32_exec_authorized_read_native.py.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/.github/workflows/a32-exec-authorized-read-native.yml.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/codex-rs/exec-server/src/authorized_read_error_tests.rs.original",
+    "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/codex-rs/exec-server/tests/authorized_read_rpc.rs.original",
+    "qa/repository-consolidation/20261118/mem8-frozen-harnesses/MANIFEST.json",
+    "qa/repository-consolidation/20261118/mem8-frozen-harnesses/README.md",
+    "qa/repository-consolidation/20261118/mem8-frozen-harnesses/v10/.github/fixtures/mem-windows-sandbox-fix-plan.json",
+    "qa/repository-consolidation/20261118/mem8-frozen-harnesses/v10/.github/workflows/hepta-mem-windows-sandbox-fix.yml",
+    "qa/repository-consolidation/20261118/windows-fixture-workflow-history/MANIFEST.json",
+    "qa/repository-consolidation/20261118/windows-fixture-workflow-history/original-hepta-windows-regression-fixtures.yml",
+    "qualification/neuroscience-20261110/NATIVE_FROZEN_PREFIX_GATE.md",
+    "qualification/neuroscience-20261110/Q24_CAUSAL_PREFIX.md",
+    "qualification/pon-outcome-readback-20261112-7612/README.md",
+    "qualification/pon-outcome-readback-20261112-7612/SHA256SUMS",
+    "qualification/pon-outcome-readback-20261112-7612/adopted_acked.checkpoint.json",
+    "qualification/pon-outcome-readback-20261112-7612/adopted_acked.completion.json",
+    "qualification/pon-outcome-readback-20261112-7612/adopted_acked.initial.json",
+    "qualification/pon-outcome-readback-20261112-7612/adopted_acked.readback.json",
+    "qualification/pon-outcome-readback-20261112-7612/adopted_pending.checkpoint.json",
+    "qualification/pon-outcome-readback-20261112-7612/adopted_pending.initial.json",
+    "qualification/pon-outcome-readback-20261112-7612/adopted_pending.readback.json",
+    "qualification/pon-outcome-readback-20261112-7612/local-native-attempt-1.json",
+    "qualification/pon-outcome-readback-20261112-7612/local-native-attempt-1.log",
+    "qualification/pon-outcome-readback-20261112-7612/local_adopt.checkpoint.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_adopt.completion.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_adopt.initial.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_adopt.readback.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_defer_cold.checkpoint.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_defer_cold.completion.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_defer_cold.initial.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_defer_cold.readback.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_retain_cold.checkpoint.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_retain_cold.completion.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_retain_cold.initial.json",
+    "qualification/pon-outcome-readback-20261112-7612/local_retain_cold.readback.json",
+    "qualification/pon-outcome-readback-20261112-7612/maintenance-and-native8.json",
+    "qualification/pon-outcome-readback-20261112-7612/maintenance-final-fmt.log",
+    "qualification/pon-outcome-readback-20261112-7612/maintenance-fix.log",
+    "qualification/pon-outcome-readback-20261112-7612/maintenance-fmt.log",
+    "qualification/pon-outcome-readback-20261112-7612/native-markers.json",
+    "qualification/pon-outcome-readback-20261112-7612/native-preflight.json",
+    "qualification/pon-outcome-readback-20261112-7612/native-result.json",
+    "qualification/pon-outcome-readback-20261112-7612/native.log",
+    "qualification/pon-outcome-readback-20261112-7612/native8-result.json",
+    "qualification/pon-outcome-readback-20261112-7612/native8.log",
+    "qualification/pon-outcome-readback-20261112-7612/qualification-summary.json",
+    "qualification/pon-outcome-readback-20261112-7612/retained_acked.checkpoint.json",
+    "qualification/pon-outcome-readback-20261112-7612/retained_acked.completion.json",
+    "qualification/pon-outcome-readback-20261112-7612/retained_acked.initial.json",
+    "qualification/pon-outcome-readback-20261112-7612/retained_acked.readback.json",
+    "qualification/pon-outcome-readback-20261112-7612/retained_pending.checkpoint.json",
+    "qualification/pon-outcome-readback-20261112-7612/retained_pending.initial.json",
+    "qualification/pon-outcome-readback-20261112-7612/retained_pending.readback.json",
+    "scripts/HEPTA_SNGR_CELL_PILOT.md",
+    "scripts/HEPTA_SNGR_READER_EVAL.md",
+    "scripts/HEPTA_SNGR_SHADOW.md",
+    "scripts/hepta_sngr_cell_pilot.py",
+    "scripts/hepta_sngr_learned_shadow.py",
+    "scripts/hepta_sngr_lexical_control.py",
+    "scripts/hepta_sngr_nonlinear_shadow.py",
+    "scripts/hepta_sngr_reader_cases.json",
+    "scripts/hepta_sngr_reader_eval.py",
+    "scripts/hepta_sngr_shadow.py",
+    "scripts/hepta_sngr_two_source_cases.json",
+    "scripts/hepta_sngr_two_source_eval.py",
+    "scripts/test_hepta_sngr_cell_pilot.py",
+    "scripts/test_hepta_sngr_learned_shadow.py",
+    "scripts/test_hepta_sngr_lexical_control.py",
+    "scripts/test_hepta_sngr_nonlinear_shadow.py",
+    "scripts/test_hepta_sngr_reader_eval.py",
+    "scripts/test_hepta_sngr_shadow.py",
+    "scripts/test_hepta_sngr_two_source_eval.py"
+  ],
+  "tree_after_apply": "8b7633e92ff38bbbd6f5b4d1f7449e532f287b4e",
+  "diffcheck": {
+    "exit_code": 0,
+    "files": []
+  },
+  "independent_fixes": [
+    "Agentd exact census 4-way with flaky false",
+    "Scope-WAL exclusive test fixture allocation"
+  ],
+  "independent_fix_receipts": {
+    "scope_wal": "native-validation/scope-wal-collision-proof.json",
+    "c8_final_format": "native-validation/c8-final-format-proof.json",
+    "windows_clock": "native-validation/windows-clock-migration/manifest.json",
+    "windows_clock_lock_status": "Stage3b exact Cargo lock edge and canonical Bazel update applied and verified."
+  },
+  "dependency_migrations": [
+    {
+      "stage": 3,
+      "manifest": "required_ci_repair/chrono-migration/stage3-oauth2-time/manifest.json",
+      "patch_sha256": "ffd9999002fb329afd617823ccd0a2c87615c599ae89cdd2d13109e538ca5494",
+      "files": 42
+    },
+    {
+      "stage": "3b",
+      "manifest": "required_ci_repair/chrono-migration/stage3b-windows-clock-locks/manifest.json",
+      "patch_sha256": "c541316d7a1928ca4f977b39bd8bf0df37d74127eddd21f32ba6d9875d625e2d",
+      "files": 1
+    }
+  ],
+  "representation_changes": [
+    {
+      "manifest": "native-validation/oauth2-semantic-patch-carrier/proof.json",
+      "paths": [
+        "codex-rs/third_party/oauth2-5.0.0-time/HEPTA-TIME-MIGRATION.patch",
+        "codex-rs/third_party/oauth2-5.0.0-time/HEPTA-TIME-MIGRATION.patch.gz",
+        "codex-rs/third_party/oauth2-5.0.0-time/UPGRADE.md",
+        "codex-rs/third_party/oauth2-5.0.0-time/UPGRADE.md.gz",
+        "codex-rs/third_party/oauth2-5.0.0-time/HEPTA-SOURCE-PROVENANCE.json",
+        "codex-rs/third_party/oauth2-5.0.0-time/HEPTA.md"
+      ]
+    }
+  ],
+  "final_format_receipt": "native-validation/round03-final-format/result.json"
+}

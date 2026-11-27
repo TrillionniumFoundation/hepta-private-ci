@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.cell-parameter-field.retention-protocol.v2",
+  "base_commit": "ff5baef731f36420370c5bcc049c50a567cda06a",
+  "paper_commit": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+  "paper_revision": "revision_2026-09-26-r45",
+  "encoder": "granite97m",
+  "encoder_revision": "835ad14087e140460703cf0fae09f97d469d65c2",
+  "encoder_inventory_sha256": "08bdb7bb7eefb051ac74924787354a3638ba8a0e6fe6ffdd96ae57d6f1402db3",
+  "encoder_profile": "text",
+  "encoder_max_tokens": 192,
+  "encoder_batch_size": 16,
+  "encoder_threads": 4,
+  "feature_retention": "global",
+  "projection": {
+    "width": 8,
+    "seed": 20261024,
+    "method": "Gaussian QR; diagonal R sign fixed; label-independent"
+  },
+  "task": "UCI News Aggregator four-class headline classification",
+  "source_archive_sha256": "1f5f08691f0ce576cb0b5cfdbcb8c55e0ec14dda8f3e07933da72c500338845a",
+  "source_split": "full story/title union components; exclude cross-month, conflicts, legacy five-cohort components and all v1 components; fixed new salt",
+  "source_counts": {
+    "old_train": 48,
+    "old_probe": 32,
+    "old_test": 48,
+    "current_train": 64,
+    "current_probe": 32,
+    "future_may": 128,
+    "future_june": 128
+  },
+  "source_only_amendment": "V2 counts selected before new model outcomes from source-only feasibility: after all exclusions March health has 37 components, and this plan requires 32 per class. No post-outcome sample changes.",
+  "evaluation_scope": "historical time holdouts; no prospective or unseen pretraining claim",
+  "head_modes": [
+    "linear",
+    "gated"
+  ],
+  "classes": 4,
+  "seeds": [
+    7,
+    17,
+    29
+  ],
+  "warmup_steps": 64,
+  "optimizer": {
+    "learning_rate": 0.02,
+    "l2": 0.001,
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "epsilon": 1e-08,
+    "gradient_clip": 5.0,
+    "sampler": "full_batch"
+  },
+  "horizon": 24,
+  "h": 0.02,
+  "effort_price": 0.1,
+  "current_target_displacement": -0.03,
+  "retention_target": "one-sided squared old-probe excess above end-warmup anchor; zero tolerance; soft penalty, not hard feasibility guarantee",
+  "action_masks": [
+    "bias",
+    "all"
+  ],
+  "policies": [
+    "zero",
+    "myopic",
+    "loss2",
+    "extended",
+    "full",
+    "symmetric_loss2"
+  ],
+  "observation_extension": "two probe-gradient inner products with current first optimizer moment",
+  "noise_model": "deterministic full-batch; Q=0; no stochastic future-path certificate",
+  "reference": "24 uncontrolled current-task Adam steps from the same complete old-warmup state",
+  "action": "add h*B*u to parameter coordinates after Adam; optimizer moments unchanged by this additive action",
+  "deployment_action_clipping": false,
+  "primary_comparison": "all-mask loss2 vs zero and myopic on equally pooled May/June final NLL, plus old_test loss2 vs zero and warmup",
+  "additional_comparisons": [
+    "loss2 versus symmetric_loss2 on the same new cohort",
+    "extended versus loss2",
+    "full tangent reference versus field policies",
+    "bias versus all nested tangent action values"
+  ],
+  "final_labels_access": "only after all 72 policy paths, checkpoints, output predictions and inventory are sealed; preparer writes labels, training and pre-evaluation audits do not open final payload",
+  "failure_policy": "retain every registered condition and nonfinite/invalid failure; no tuning from final outcomes",
+  "uncertainty": "paired source-component class-stratified bootstrap conditional on fixed fitted seeds; primary 8-comparison Bonferroni nominal adjustment, secondary pointwise 95%; approximate bootstrap coverage, no finite-sample distribution-free or seed-population guarantee",
+  "bootstrap_replicates": 10000,
+  "bootstrap_seed": 820241,
+  "resources": "separate encoder, warmup, reference/derivatives, policy synthesis, online control, evaluation, state/archive bytes and recovery; energy unknown",
+  "authority": "DENY_ALL",
+  "production_authority": false,
+  "registration": "locally frozen before v2 model outcomes; publish protocol commit before feature extraction; not independent third-party preregistration",
+  "previous_protocol_sha256": "d0f3f8bc92a47bfac4afbb6595b93772b68aa248bf09d6b71fb90be6c64a64f1",
+  "previous_data_receipt_sha256": "57742ed6e70c5c33053e4092bc3f58d46f791e84ffedb2efe79fd187e2e707ea",
+  "previous_sources_sha256": "d3d8c203c2fd88966fa937d0e0b5cf2826399f558a26dc1e256e47ab479a0482",
+  "source_split_salt": "hepta-cell-retention-v2-20261024",
+  "retention_tolerance": 0.0,
+  "objective": "current reference-relative quadratic tracking unchanged; old term becomes max(0, L_old-L_old_at_warmup)^2; same running/terminal/action weights as v1",
+  "solver": {
+    "algorithm": "condensed strongly convex squared-hinge MPC; semismooth Newton with Armijo backtracking",
+    "max_iterations": 100,
+    "gap_tolerance": 1e-10,
+    "initial_guess": "zero controls at every solve; no hidden warm start",
+    "failure_policy": "retain condition failure; no silent policy fallback or oracle claim",
+    "certificate": "gradient squared norm divided by twice h*effort_price; arithmetic certificate on declared convex tangent problem, not nonlinear guarantee"
+  },
+  "controller_horizons": {
+    "zero": 0,
+    "myopic": 1,
+    "loss2": "remaining horizon",
+    "extended": "remaining horizon",
+    "full": "remaining horizon",
+    "symmetric_loss2": "legacy affine Riccati for identical quadratic objective"
+  },
+  "secondary_pairs": [
+    [
+      "loss2",
+      "myopic"
+    ],
+    [
+      "loss2",
+      "zero"
+    ],
+    [
+      "extended",
+      "loss2"
+    ],
+    [
+      "full",
+      "loss2"
+    ],
+    [
+      "loss2",
+      "symmetric_loss2"
+    ],
+    [
+      "symmetric_loss2",
+      "zero"
+    ]
+  ],
+  "primary_family": {
+    "alpha": 0.05,
+    "comparisons": 8,
+    "mask": "all",
+    "future_roles": [
+      "future_may",
+      "future_june"
+    ],
+    "future_pooling": "equal month means",
+    "retention_margin": 0.0
+  },
+  "primary_success": "per Head: both pooled future NLL difference upper bounds strictly below zero and both old_test difference upper bounds at most zero; Bonferroni-adjusted approximate bootstrap intervals over fixed 8-comparison family; no production qualification",
+  "registered_conditions": 72,
+  "objective_ablation": "symmetric_loss2 uses v1 Riccati on same new reference; verify quadratic condensed MPC first-action equivalence before treating the contrast as objective evidence",
+  "recovery_scope": "all/loss2 for all six seed/head combinations: whole 24-step and midpoint 12-step cold-process feedback recomputation",
+  "publication_scope": "new additive research files and evidence; preserve complete v1 study and negative results"
+}

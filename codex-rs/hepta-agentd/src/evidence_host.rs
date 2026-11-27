@@ -129,7 +129,9 @@ pub(crate) async fn append(
     let issuer = trust.issuer_for(&request.issuer_id, request.key_epoch, envelope.issuer_role)?;
     let message = SignedMessage {
         claims,
-        signature: hex_bytes(&request.signature_hex)?,
+        signature: codex_hepta_authbus::AuthBusSignature::Ed25519(hex_bytes(
+            &request.signature_hex,
+        )?),
     };
     let evidence_id = host
         .store

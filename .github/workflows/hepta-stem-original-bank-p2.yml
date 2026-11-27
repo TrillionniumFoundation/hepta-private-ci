@@ -1,0 +1,59 @@
+name: Hepta Equal-Size Original CPU Evidence and Source-Only Bank P2 (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-replacement-p0/physical_evidence_review.py"
+      - "qualification/stem-replacement-p0/test_physical_evidence_review.py"
+      - "qualification/stem-replacement-p0/physical_feature_bank.py"
+      - "qualification/stem-replacement-p0/test_physical_feature_bank.py"
+      - "qualification/stem-replacement-p0/P1_P2_PHYSICAL_BRIDGE_20261017.md"
+      - "qualification/stem-replacement-p0/P1_ORIGINAL_CPU_RECOUNT_20261017.json"
+      - ".github/workflows/hepta-stem-original-bank-p2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-source-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Fixed real Torch CPU for Head/feature geometry contract
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python -m pip install --only-binary=:all: "numpy==2.2.6"
+          python -m pip check
+      - name: Real P1 evidence schemas and synthetic future-bank guards
+        env:
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          cd qualification/stem-replacement-p0
+          python -m py_compile physical_evidence_review.py test_physical_evidence_review.py physical_feature_bank.py test_physical_feature_bank.py
+          python -m unittest -q test_physical_evidence_review test_physical_feature_bank
+          python -O -m unittest -q test_physical_evidence_review test_physical_feature_bank
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import physical_evidence_review as audit
+          p=Path('P1_ORIGINAL_CPU_RECOUNT_20261017.json')
+          r=json.loads(p.read_text())
+          assert r['exact_source_commit']==audit.HEAD
+          assert r['selected_replacement'] is None
+          assert r['model_promotion_permitted'] is False
+          assert r['physical_cell_split_permitted'] is False
+          assert r['observed_param_counts_same_exact_budget'] is False
+          assert len(r['source_models'])==2
+          print('original_external_receipts_reviewed_locally=true actual_public_test_scores=false production=false')
+          PY

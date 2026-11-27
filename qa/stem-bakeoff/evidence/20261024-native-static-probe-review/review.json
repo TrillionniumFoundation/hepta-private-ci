@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.memory.native-static-probe-review.v1",
+  "reviewed_at_utc": "2026-10-24T23:54:51.830911+00:00",
+  "source_head": "f2144a2451e0ca03f8c91e0c30755970cc1e4867",
+  "reviewed_file_count": 30,
+  "reviewed_files_match_head": true,
+  "review_model_calls": 0,
+  "review_rust_builds": 0,
+  "primary_checkout_modified_by_review": false,
+  "expected_if_complete": {
+    "training_processes": 1,
+    "training_updates": 96,
+    "explicit_training_forwards": 96,
+    "native_backend_dispatch_attempts": 1,
+    "native_feature_forwards": 1,
+    "native_decoder_queries": 1,
+    "base_decoder_queries": 1,
+    "shuffled_decoder_queries": 1,
+    "total_decoder_queries": 3,
+    "total_model_child_processes": 4
+  },
+  "observed": {
+    "historical_runs": {
+      "40102780899": {
+        "pretrained_probe_executed": false
+      },
+      "40103922428": {
+        "pretrained_probe_executed": false
+      }
+    },
+    "root_reported_new_local_probe_launched": false,
+    "root_reported_new_local_model_calls": 0,
+    "new_hosted_run": 40144148314,
+    "new_hosted_run_not_polled_by_reviewer": true,
+    "new_hosted_actual_model_calls": null
+  },
+  "oracle_substitution_found_in_static_source": false,
+  "scientific_task": "one previously exposed repair-ID recall, no repair execution",
+  "conclusions": {
+    "production_qualified": false,
+    "neuron_runtime_tick_executed_by_v1": false,
+    "complete_autoregressive_forward_trace": false,
+    "complete_runtime_dependency_hash_closure": false,
+    "complete_system_cost": false,
+    "raw_model_token_and_text_trace_supported": true,
+    "actual_new_success_proved_by_review": false
+  },
+  "compatibility_notes": [
+    "keep strict v1 input_digest/source_binding equality",
+    "v2 must bind real tick semantic digest without replacing source/query checks",
+    "qualification objective/NDU fixture digest is not a real context provider",
+    "new native Python helper changes runtime_digest; configure fresh pins at final exact head"
+  ]
+}

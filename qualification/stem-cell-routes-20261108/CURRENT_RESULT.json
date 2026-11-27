@@ -1,0 +1,285 @@
+{
+  "attempt_accounting": {
+    "archived_temporal_fit_executions": 24,
+    "archived_temporal_gradient_updates": 960,
+    "archived_temporal_probe_executions": 4,
+    "ci_repetitions": [
+      {
+        "fits": 6,
+        "head": "9e3cab866aa6202b99e9546f2c3c52137cc58c86",
+        "new_seed_conditions": false,
+        "run_id": 42507234997,
+        "updates_per_fit": 40,
+        "workflow": "Hepta stem Cell routes"
+      },
+      {
+        "fits": 6,
+        "head": "9e3cab866aa6202b99e9546f2c3c52137cc58c86",
+        "new_seed_conditions": false,
+        "run_id": 42507235044,
+        "updates_per_fit": 40,
+        "workflow": "Hepta stem Cell final tests and maintenance"
+      }
+    ],
+    "future_automatic_ci_runs": "not part of the frozen evidence aggregate; inspect their exact-head Actions artifacts separately",
+    "independent_seed_count": 3,
+    "local_temporal_attempts": [
+      {
+        "archive": "evidence/temporal-attempt-001.zip",
+        "fits": 6,
+        "id": "attempt-001",
+        "state": "superseded_integration_source",
+        "updates": 240
+      },
+      {
+        "archive": "evidence/temporal-attempt-002.zip",
+        "fits": 6,
+        "id": "attempt-002",
+        "state": "final_premaintenance_integration_source",
+        "updates": 240
+      }
+    ],
+    "mac_checkout": {
+      "attempts": 2,
+      "last_attempt_exit_code": 124,
+      "native_build_performed": false,
+      "retained_in": "evidence/native-initial.zip"
+    },
+    "model_metadata_failure": {
+      "http_status": 401,
+      "retained_in": "evidence/semantic-real-v1.zip"
+    },
+    "same_seeds_repeated": true,
+    "scope": "qualification probes only; unit-test training work is represented by test logs, not counted as research fits"
+  },
+  "base_branch": "codex/cell-six-contracts-20261108-r1",
+  "base_commit": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+  "branch": "codex/cell-stem-routes-20261108-5e692",
+  "evidence_archive_commit": "16cc0db01b02410e28b8f0cd5cc08a28edd17228",
+  "evidence_manifest": "evidence/manifest.json",
+  "evidence_records_commit": "209230cc1c00dde85eb17852169d21857f021473",
+  "formatted_code_commit": "b67016d8c44885afdf0df2507d214b02b141744e",
+  "implementation": {
+    "deterministic": [
+      "exact_retrieval",
+      "finite_rules",
+      "numerical_algorithm",
+      "host_injected_tool"
+    ],
+    "hcsn_registry_status": "unadmitted_research_candidate",
+    "measured_semantic_provider": "MLX Llama full-transformer final-token features",
+    "native_gate": "family-scoped local update and sealed Reset plan",
+    "owner": "experimental SQLite lifecycle with native-compatible bundles",
+    "semantic": "shared frozen backend and private trainable linear or low-rank head",
+    "temporal_comparator": "simple_diagonal_ssm",
+    "temporal_default": "gru"
+  },
+  "maintenance": {
+    "application_receipt": "evidence/maintenance-application.json",
+    "applied_patch_sha256": "329c0265580427f7e35cfab4aa67adf9c269453f6712f96bd53abc983eef91c3",
+    "archive": "evidence/ci-maintenance.zip",
+    "fix": {
+      "command": "just fix -p codex-hepta-learning-artifacts --locked",
+      "status": "success"
+    },
+    "format": {
+      "command": "just fmt --base 1eb72a1131285f5de98beeb7c95a27eab72d647e",
+      "status": "success"
+    },
+    "manual_tests_run_after_maintenance": false,
+    "original_imports_unchanged": true,
+    "python_ast_unchanged_files": 17,
+    "source_after_all_hashes_match": true,
+    "tested_sources_distinct_from_formatted_sources": true,
+    "workflow_prettier": {
+      "all_workflow_bytes_unchanged": true,
+      "archive": "evidence/prettier-evidence.zip",
+      "check_exit_code": 0,
+      "configuration_git_blob": "4c58c583e5fa327928190f625a1095a9c4d9e72f",
+      "record": "evidence/prettier-result.json",
+      "scope": "only the three new workflow YAML files; not repository-wide pnpm run format",
+      "version": "3.5.3",
+      "write_exit_code": 0
+    }
+  },
+  "premaintenance_commit": "9e3cab866aa6202b99e9546f2c3c52137cc58c86",
+  "qualification": {
+    "daemon_integration_complete": false,
+    "hcsn_formal_fits_started_by_this_change": 0,
+    "production_qualified": false,
+    "real_model_serving_measured": true,
+    "replicated_model_memory_comparison": false,
+    "scientific_winner_selected": false,
+    "semantic_generalization_evaluated": false
+  },
+  "remaining_gates": [
+    "production daemon integration and adoption authority",
+    "real-task retention and generalization",
+    "production-scale model, concurrency and memory comparison",
+    "separate formal HCSN protocol admission and execution"
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "route_a": {
+    "energy_joules": null,
+    "metal_memory": {
+      "measurement_scope": "MLX Metal allocator; excludes other processes and non-MLX allocations",
+      "mlx_active_bytes": 78111368,
+      "mlx_cached_bytes": 16729440,
+      "mlx_peak_active_bytes": 119981920
+    },
+    "model_load_count": 1,
+    "original_result": "evidence/semantic-result.json",
+    "private_candidate_training_steps": 256,
+    "private_cells": 4,
+    "process_max_rss_bytes": 284082176,
+    "runtime_completion_record": "evidence/semantic-runtime-jobs.json",
+    "runtime_host": "main",
+    "runtime_job": "1a1bc443ba0-138b0-141",
+    "shared_isolation_checks": {
+      "active_head_digests_unchanged": true,
+      "all_four_private_candidates_updated": true,
+      "frozen_parameter_values_unchanged": true,
+      "independent_retrieval_views_preserved": true,
+      "independent_state_preserved": true,
+      "one_model_load": true,
+      "source_files_unchanged": true
+    },
+    "source_snapshot": "evidence/semantic-real-v1.zip",
+    "status": "success",
+    "summary": "evidence/semantic-summary.json",
+    "timing_scope": "runner execution window after top-level imports and output-directory creation, before final NPZ/result/manifest serialization; includes warmup and training",
+    "total_process_cpu_seconds": 1.959102,
+    "total_wall_seconds": 2.4763070419430733
+  },
+  "route_b": {
+    "both_kernels_and_rule_confirmation_accuracy_by_seed": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "candidate_kernels": [
+      "gru",
+      "diag_ssm"
+    ],
+    "fits_per_attempt": 6,
+    "original_result": "evidence/temporal-result.json",
+    "protocol": "evidence/temporal-protocol.json",
+    "protocol_digest": "c9789027c6d8fe6781e144f2a9baa5c1b00c6f024852acd4f14776834fb4554b",
+    "seeds": [
+      41,
+      67,
+      89
+    ],
+    "selected_winner": null,
+    "source_manifest_digest": "75ca760f624326039a164488cf7e5113e1ecd2576c18596cb5616d8f3138d7b2",
+    "source_snapshot": "evidence/temporal-attempt-002.zip",
+    "source_snapshot_sha256": "099aa3fb835612680ea545f183241b3dd394cf3568e44fa30ae3610f08df5af9"
+  },
+  "schema": "hepta.cell.stem-routes.result.v1",
+  "status": "engineering_implementation_and_scoped_maintenance_passed",
+  "validation": {
+    "initial_native": {
+      "failed": 0,
+      "head": "a7e727468da41fe2ac826b8b38178a6958f7ffea",
+      "independently_ignored_workers": 1,
+      "passed": 111,
+      "record": "evidence/native-summary.json",
+      "run": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42506279859"
+    },
+    "local_python": {
+      "exit_code": 0,
+      "log": "evidence/python-tests.log",
+      "record": "evidence/python-tests.json",
+      "source_unchanged": true,
+      "tests": 49
+    },
+    "premaintenance_ci": {
+      "head": "9e3cab866aa6202b99e9546f2c3c52137cc58c86",
+      "maintenance_run": 42507235044,
+      "native_run": 42507234988,
+      "routes_run": 42507234997,
+      "status": "all_three_push_workflows_passed",
+      "summary": "evidence/ci-summary.json",
+      "workflows": [
+        {
+          "conclusion": "success",
+          "engineering_probe_fits": 6,
+          "event": "push",
+          "job_id": 128812389719,
+          "name": "Hepta stem Cell routes",
+          "python_tests": {
+            "errors": 0,
+            "failed": 0,
+            "passed": 49,
+            "seconds": 0.406,
+            "skipped": 0,
+            "tests": 49
+          },
+          "run_id": 42507234997,
+          "summary_path": "python-tests/summary.json",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42507234997"
+        },
+        {
+          "conclusion": "success",
+          "engineering_probe_fits": 0,
+          "event": "push",
+          "job_id": 128812389830,
+          "name": "Hepta Cell local update contracts",
+          "native_tests": {
+            "errors": 0,
+            "failed": 0,
+            "junit_path": "extracted/junit.xml",
+            "junit_sha256": "0deae42c7721b72dfb1bd7dd1856559939ff1cdbbda33ece8f65dd6ea1daadc6",
+            "junit_skipped_elements": 0,
+            "junit_testcases": 111,
+            "log_and_junit_passed_case_sets_match": true,
+            "passed": 111,
+            "seconds": 2.944,
+            "skipped": 1,
+            "skipped_case": "owner_host::tests::owner_host_process_fault_worker",
+            "skipped_case_evidence": "skipped-test-source.json",
+            "tests_run": 111
+          },
+          "run_id": 42507234988,
+          "summary_path": "native-tests/summary.json",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42507234988"
+        },
+        {
+          "conclusion": "success",
+          "engineering_probe_fits": 6,
+          "event": "push",
+          "job_id": 128812389618,
+          "maintenance_outcomes": {
+            "fix": "success",
+            "format": "success",
+            "import_identity": "success",
+            "native_tests": "success",
+            "probe": "success",
+            "python_tests": "success"
+          },
+          "name": "Hepta stem Cell final tests and maintenance",
+          "native_tests": {
+            "junit_cases": 111,
+            "junit_errors": 0,
+            "junit_failures": 0,
+            "log_and_junit_case_sets_equal": true,
+            "passed": 111,
+            "seconds": 0.857,
+            "skip_source_blob_unchanged": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b",
+            "skip_source_evidence": "../../native-initial/skipped-test.json",
+            "skipped": 1,
+            "skipped_case": "owner_host::tests::owner_host_process_fault_worker"
+          },
+          "python_tests": {
+            "count": 49,
+            "ok": true,
+            "seconds": 0.402
+          },
+          "run_id": 42507235044,
+          "summary_path": "maintenance/summary.json",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42507235044"
+        }
+      ]
+    }
+  }
+}

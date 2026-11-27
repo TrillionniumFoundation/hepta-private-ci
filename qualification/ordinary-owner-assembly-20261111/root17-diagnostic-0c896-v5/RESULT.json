@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.original-root17-failure.v3",
+  "source": "0c896bdf941f4174797ff45378bc7439075c11e4",
+  "tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+  "status": "root-component-diagnostic-failed",
+  "actual_uid": 0,
+  "executed": 17,
+  "passed": 15,
+  "failed": 2,
+  "skipped": 0,
+  "retries": 0,
+  "started_at": "2026-11-12T01:40:14.149094+00:00",
+  "finished_at": "2026-11-12T01:40:44.782704+00:00",
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "source_clean_before_after": true,
+  "evidence": [
+    {
+      "name": "root.junit.xml",
+      "blob": "5f720e248dc0952a163bd2c89791a8e9c34fddba",
+      "bytes": 10476,
+      "sha256": "77f49d4eab18ec4b02aa16dd319942d8265b21354cacdef96e8db8557cc35200"
+    },
+    {
+      "name": "root.counts.json",
+      "blob": "567ce64cba4a66a7e4f8c9d9d2875f8dbe94c3c8",
+      "bytes": 98,
+      "sha256": "3aa7c5c63701c9c42c2ead17ac64a706c7646b96c6133cdc3c46a58fbeb39261"
+    },
+    {
+      "name": "root.execution.json",
+      "blob": "70b67500e0607d06471eb6d45737b1fdc74eeecb",
+      "bytes": 3968,
+      "sha256": "f3680816599b1310f16c448646fd3b93ec87171c5b4267f408b77b247a5ad7f8"
+    },
+    {
+      "name": "root.uid.json",
+      "blob": "96924b09a707d04b3db5ea4c43a111e87bb9bc82",
+      "bytes": 47,
+      "sha256": "960bc39175feef8c194d8a43772aafc20d101f929a2ba7b7823ad0f14a53e097"
+    },
+    {
+      "name": "root.junit.summary.json",
+      "blob": "9f6b2992d2d0670364e35a9682e237b99bc226f3",
+      "bytes": 3332,
+      "sha256": "8d27453ce182554a6eeb763977e72b827b50b8a4f8a5e7b14ca65991b8109549"
+    },
+    {
+      "name": "final-source-identity.json",
+      "blob": "430631d3d691bad71e4b942a9e78065a944f5267",
+      "bytes": 127,
+      "sha256": "fbf7479573c21f0a6a3321b92e07f0b0b3fb3930b962d336858130d3a1a6813c"
+    }
+  ],
+  "first_observed_errors": {
+    "initial": "Publish, ReserveExisting and Recover original input handshakes advanced; parent later rejected Recover original serving with Unavailable after child advanced to RetiredSession.",
+    "publication": "Publish, Recover and RetiredSession reached original CURRENT connection; subsequent Revoked phase rejected original five-lane connect with InvalidTrust.",
+    "cause_not_proven": "Earlier hypothesized cache interleavings are not established as this run's failure cause. The RetiredSession fenced-cache line is not sufficient to attribute the later Revoked entry rejection."
+  },
+  "diagnosis": "Fixture phase completion and revocation timing are under source review; no error class is waived.",
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_ordinary_consumer": false,
+  "cold_process_restart": false,
+  "full_qualification": false,
+  "raw_log": {
+    "filename": "root.execution.json.e2d887ff3431418381b1611fe75d82b3.log",
+    "bytes": 48616,
+    "sha256": "3bee9168c4b56996a447642c9bf3e35d6b285f2b26664bd07d72f98b0717df40",
+    "retained_at_origin": true,
+    "single_file_transport_read": "MCP request timed out; no new native dispatch, no native timeout inferred",
+    "included_in_original_v7_export": {
+      "git_blob": "ae30082e8132df598c6f1c4b2b66a788bd21ecd3",
+      "sha256": "2a42b2f2980b8c99d5d7b7b102334e2b51d95e29f1343559b67a1ccb42526d96",
+      "transfer_status": "not yet attached; independent read-only transfer underway"
+    }
+  }
+}

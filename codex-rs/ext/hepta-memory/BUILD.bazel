@@ -1,6 +1,13 @@
 load("//:defs.bzl", "codex_rust_crate")
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "LEASE_CLOCK_TEST_DEPENDENCIES", "qualification_lease_clock_library")
 
 codex_rust_crate(
+    name = "hepta-memory",
+    crate_name = "codex_hepta_memory_extension",
+    unit_test_dependency_replacements = LEASE_CLOCK_TEST_DEPENDENCIES,
+)
+
+qualification_lease_clock_library(
     name = "hepta-memory",
     crate_name = "codex_hepta_memory_extension",
 )

@@ -1,0 +1,44 @@
+{
+  "bound_bytes": 2097152,
+  "created_utc": "2026-10-23T15:05:00.463578+00:00",
+  "exit_code": 0,
+  "files": [
+    {
+      "bytes": 2471,
+      "file": "REPORT.md",
+      "sha256": "99f6425523832f6f5e7b3779d776aca33ec4083bb1bdc7d112cb5986c641cc5a"
+    },
+    {
+      "bytes": 1402,
+      "file": "execution.json",
+      "sha256": "88f7cb00c43be46273726ecdc758e17888df1eddc2f11650ab09cc8003c5887d"
+    },
+    {
+      "bytes": 2207,
+      "file": "hepta-output-codec-handmade-first-20261023.log",
+      "sha256": "64f2be611008f8655056799276cc4ab4ef21d7bac87828179024e3a6450313d8"
+    },
+    {
+      "bytes": 2413,
+      "file": "hepta-output-codec-handmade-native-20261023.log",
+      "sha256": "80792bcf09307f94314076185e207993484baa35f1c543fe5bde0c398bac496b"
+    },
+    {
+      "bytes": 39677,
+      "file": "independent-source-suite.log",
+      "sha256": "da244742525615be53e32eb7112ca484e761ee72e4bc94bf1bc1a93485ce61aa"
+    }
+  ],
+  "formal_or_training_build_run": false,
+  "formatter": {
+    "command": "PATH=/workspace/.tools/hepta-joint/bin:$PATH /workspace/.tools/hepta-joint/bin/just fmt",
+    "cwd": "/workspace/hepta-private-ci/codex-rs",
+    "exit_code": 0,
+    "reported_no_changed_files_need_formatting": true
+  },
+  "independent_tests": 233,
+  "payload_bytes": 48170,
+  "schema": "hepta.output-codec.source-artifacts.v1",
+  "scope": "Bounded source regression deliverables only. Manifest excludes itself; no new benefit claim.",
+  "source_commit": "7a016760eadd1a86739495b50031c5ce8abd8415"
+}

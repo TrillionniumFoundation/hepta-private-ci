@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.source53.tui-root-review.v1",
+  "source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "path": "codex-rs/tui/src/lib.rs",
+  "base": {
+    "bytes": 123185,
+    "sha256": "3e098d622ead84f7865b5d4fcc07be8125715bec205a5b36029f63c081717ced",
+    "git_blob": "3d2c7385057818e11f15b32d8be8499aa51db493"
+  },
+  "post": {
+    "bytes": 123213,
+    "sha256": "91da1985177c6284914b9e248232130650d85070170eac3110c55f03980f340b",
+    "git_blob": "c67ed467eddde1e557d89d47ecabb04de4d2447c"
+  },
+  "exact_one_replacement": {
+    "before": "            logs_db_path.canonicalize()?.as_path()",
+    "after": "            AbsolutePathBuf::try_from(logs_db_path.canonicalize()?)?.as_path()"
+  },
+  "forward_and_inverse_full_bytes_equal": true,
+  "independent_review": "eff880347d343c3dd8b10ab1e65f90a7062c99fa",
+  "production_change": false,
+  "strict_path_equality_retained": true,
+  "execution": "NOT_RUN",
+  "all_blockers_closed": false,
+  "owner_decision": null
+}

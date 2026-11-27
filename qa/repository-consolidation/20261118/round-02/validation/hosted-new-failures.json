@@ -1,0 +1,72 @@
+{
+  "scope": "Complete decoded GitHub tool log text, including file-writer final newline. Original URLs retained; expected negative self-test messages alone are not interpreted as failures.",
+  "logs": [
+    {
+      "job_id": 134513723957,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44218224046/job/134513723957",
+      "head": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+      "decoded_text_bytes": 2243061,
+      "decoded_text_sha256": "f318ee9c5d8b30649d5f2febb0ecd29253d87b4e67fc3d673836e2ea8efc0afa",
+      "path": "validation/hosted-job-134513723957.log.gz",
+      "stored_bytes": 276033,
+      "stored_sha256": "e4da7e0f0189744826bc0287eae7439535946bd4395e427a4035733f59ab1673",
+      "failed_tests": [
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic",
+        "suite::subagent_notifications::subagent_notification_is_included_without_wait",
+        "suite::v2::turn_start_zsh_fork::turn_start_shell_zsh_fork_subcommand_decline_marks_parent_declined_v2"
+      ]
+    },
+    {
+      "job_id": 134513724076,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44218224046/job/134513724076",
+      "head": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+      "decoded_text_bytes": 2621084,
+      "decoded_text_sha256": "e0725b30947313026dd0c9196435320d9c250b87e4e4b52b917eadf5f8f237b2",
+      "path": "validation/hosted-job-134513724076.log.gz",
+      "stored_bytes": 483989,
+      "stored_sha256": "3131e20ff3da219b1b6e940c50cffc8d6a9c5c083f0df67c65018571e0f4304b",
+      "failed_tests": [
+        "streaming::render::tests::code_fence_tests::growing_code_fences_preserve_styles_unicode_links_and_blank_lines",
+        "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_11_cua_manually_enabled_multimodal",
+        "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_3_manually_enabled_multimodal",
+        "suite::network_approval::guardian_network_approval_preserves_action_and_outcome_routing"
+      ]
+    },
+    {
+      "job_id": 134513724257,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44218224046/job/134513724257",
+      "head": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+      "decoded_text_bytes": 582692,
+      "decoded_text_sha256": "afe2d65e548b2c6f2dc2c7531d546949721f2fbb66901b054700ae1e510a02c7",
+      "path": "validation/hosted-job-134513724257.log.gz",
+      "stored_bytes": 83558,
+      "stored_sha256": "ff836cbb78589e2754a4338852cd904560810a513ac9d6b76a4cfa1bfd1e8900",
+      "failed_tests": [
+        "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context",
+        "control_owner::control_wal::tests::scope_wal_failed_mutations_restore_only_the_local_delta"
+      ]
+    },
+    {
+      "job_id": 134513724228,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44218224046/job/134513724228",
+      "head": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+      "decoded_text_bytes": 746821,
+      "decoded_text_sha256": "5e05007ac4414eda495a9055c567f526469ca3e8828a5eebb3eb2c68185520e8",
+      "path": "validation/hosted-job-134513724228.log.gz",
+      "stored_bytes": 103576,
+      "stored_sha256": "b9fb9833d80b7e91c939471a7021f3220964f2414df3a0e69a7ff9b9daea58b7",
+      "failed_tests": [
+        "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+        "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary",
+        "unified_exec::tests::delete_permission_tests::legacy_workspace_capability_request_refuses_before_native_deletion",
+        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "unified_exec::tests::legacy_non_tty_cmd_refuses_before_child_launch",
+        "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+        "unified_exec::tests::legacy_non_tty_refuses_before_deny_read_setup",
+        "unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output",
+        "unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots",
+        "unified_exec::tests::legacy_workspace_request_refuses_before_file_or_directory_changes"
+      ]
+    }
+  ]
+}

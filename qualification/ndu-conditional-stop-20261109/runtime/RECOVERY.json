@@ -1,0 +1,39 @@
+{
+  "schema": "ndu.execution-recovery-status.v1",
+  "shared_workspace": {
+    "status": "restored",
+    "effect": "Local exec transport disconnected after the frozen source, collection, tests and source publication had completed.",
+    "source_loss": false,
+    "original_remote_collection_loss": false,
+    "restored_at_utc": "2026-11-09 08:30:05 UTC"
+  },
+  "local_raw_test_log": {
+    "sha256": "6b9a83816047d0ec2aa756f543b2c7178889e903a8aa03afa3a931b57d77f75a",
+    "result_recorded_before_disconnection": {
+      "passed": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "raw_log_recreated": false,
+    "raw_log_restored_and_hash_matched": true,
+    "bytes": 8447,
+    "published_path": "local/all-source-tests.log"
+  },
+  "remote_raw_test_log_recovery": {
+    "status": "launch_unknown",
+    "new_confirmed_tests": 0,
+    "deadline_seconds": 30,
+    "reconciled_same_idempotency_key": true,
+    "duplicate_launch_requested": false
+  },
+  "source_publication": {
+    "source_commit": "6f6d76b78349448015655de7fbba9ac89c0b94fb",
+    "matched_source_files": 81,
+    "source_sha256": "73bd281f8728191aab9865f700455f3f65bc324a03c3e1cedf5ff1aeec986ae4",
+    "method_commit": "96a79f362a4a819fa198f8cb2e470c04dc7318d8",
+    "method_files_readback": 4,
+    "method_files_match": true
+  },
+  "scope": "Recovery events are retained separately from scientific runs. A request receipt or unknown launch is not a completed test or model result."
+}

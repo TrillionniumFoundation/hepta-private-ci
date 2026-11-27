@@ -1,0 +1,400 @@
+{
+  "schema": "hepta.ctrl1.one-slow-continuation-diagnostic.v2",
+  "baseline_sha": "b2646b4cbf19817145c9cb680d95333a267d19f4",
+  "generated_utc": "2026-11-08T17:24:57.488940+00:00",
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+  },
+  "source_sha256": {
+    "patch/scripts/ndu_ctrl1_s1/__init__.py": "e2ee446e92d1e2d935b362b09abd4ed337fe4ed23de0b59d7a9252f33a039061",
+    "patch/scripts/ndu_ctrl1_s1/continuation.py": "1bfdb0d9ee825d143de6e27dc8e4357dfd95eb4c62a1bbeae36791bd3b6b5ece",
+    "patch/scripts/ndu_ctrl1_s1/test_continuation.py": "26ac1cfd1c231bfbc6157b87cf10d544ab549d96ae10fe819be2ac7d53a89ba8"
+  },
+  "counterexample": {
+    "scenario": {
+      "prior": "1/3",
+      "deadline": 8,
+      "budget": 10,
+      "horizon": 2,
+      "variable_time": false,
+      "signal_accuracy": "3/4",
+      "repair_success": "2/3",
+      "stop_reward": 0.35,
+      "outcome_correlation": 1
+    },
+    "profile": {
+      "risk": 0.25,
+      "discount_per_second": 0.97,
+      "latency_weight": 0.01,
+      "resource_weight": 0.02,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "adapter_id": "hepta.ctrl1.resource-cost.v1"
+    },
+    "root": {
+      "belief": "1/3",
+      "time_left": 8,
+      "budget_left": 10,
+      "steps_left": 2,
+      "used_mask": 0
+    },
+    "fixture_checkpoint_sha256": "6a942484e98f5d7e01930e76b62188fa559906b87af3dd990a5426c587afc160",
+    "old_decision": {
+      "action": "stop",
+      "cost": 4,
+      "duration": 1,
+      "expanded_nodes": 44,
+      "forecast_calls": 44,
+      "fallback": false,
+      "route": "slow"
+    },
+    "new_decision": {
+      "action": "repair",
+      "cost": 4,
+      "duration": 1,
+      "expanded_nodes": 19,
+      "forecast_calls": 19,
+      "fallback": false,
+      "route": "slow"
+    },
+    "old_value": 0.24949999999999994,
+    "new_value": 0.43271604931228375,
+    "new_forecast": {
+      "complete": true,
+      "root_action_values": [
+        [
+          "execute",
+          0.1285767618642784
+        ],
+        [
+          "stop",
+          0.24949999999999994
+        ],
+        [
+          "observe",
+          0.047304258914518824
+        ],
+        [
+          "recall",
+          0.062470491504748996
+        ],
+        [
+          "verify",
+          0.1902650594048932
+        ],
+        [
+          "repair",
+          0.43271604931228375
+        ]
+      ],
+      "selected_action": "repair",
+      "expanded_nodes": 19,
+      "fast_checkpoint_sha256": "6a942484e98f5d7e01930e76b62188fa559906b87af3dd990a5426c587afc160"
+    },
+    "new_actual_actions": {
+      "stop": 0.0,
+      "execute": 1.0,
+      "observe": 0.0,
+      "recall": 0.0,
+      "verify": 0.0,
+      "repair": 1.0
+    },
+    "new_controller_cost": 5.0,
+    "new_controller_seconds": 1.0,
+    "new_slow_calls": 1.0,
+    "scope": "constructed regression fixture; not a new holdout experiment"
+  },
+  "candidate_replays": [
+    {
+      "risk": 0.0,
+      "variable_time": false,
+      "root_action": "repair",
+      "prediction": 0.012272000000000033,
+      "exact_value": 0.012272000000000033,
+      "absolute_error": 0.0,
+      "controller_cost": 6.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": false,
+      "root_action": "stop",
+      "prediction": 0.18999999999999995,
+      "exact_value": 0.18999999999999995,
+      "absolute_error": 0.0,
+      "controller_cost": 4.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": false,
+      "root_action": "execute",
+      "prediction": 0.11800000000000006,
+      "exact_value": 0.11800000000000006,
+      "absolute_error": 0.0,
+      "controller_cost": 4.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": false,
+      "root_action": "observe",
+      "prediction": -0.1021472,
+      "exact_value": -0.1021472,
+      "absolute_error": 0.0,
+      "controller_cost": 6.78125,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": false,
+      "root_action": "recall",
+      "prediction": -0.005775999999999948,
+      "exact_value": -0.005775999999999948,
+      "absolute_error": 0.0,
+      "controller_cost": 6.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": false,
+      "root_action": "verify",
+      "prediction": -0.09803583999999999,
+      "exact_value": -0.09803583999999999,
+      "absolute_error": 0.0,
+      "controller_cost": 6.34375,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": true,
+      "root_action": "repair",
+      "prediction": 0.03357120000000002,
+      "exact_value": 0.03357120000000002,
+      "absolute_error": 0.0,
+      "controller_cost": 6.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": true,
+      "root_action": "stop",
+      "prediction": 0.18999999999999995,
+      "exact_value": 0.18999999999999995,
+      "absolute_error": 0.0,
+      "controller_cost": 4.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": true,
+      "root_action": "execute",
+      "prediction": 0.1532,
+      "exact_value": 0.1532,
+      "absolute_error": 0.0,
+      "controller_cost": 4.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": true,
+      "root_action": "observe",
+      "prediction": -0.10145088,
+      "exact_value": -0.10145088,
+      "absolute_error": 0.0,
+      "controller_cost": 6.78125,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": true,
+      "root_action": "recall",
+      "prediction": 0.010761600000000066,
+      "exact_value": 0.010761600000000066,
+      "absolute_error": 0.0,
+      "controller_cost": 6.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.0,
+      "variable_time": true,
+      "root_action": "verify",
+      "prediction": -0.09791039999999998,
+      "exact_value": -0.09791039999999998,
+      "absolute_error": 0.0,
+      "controller_cost": 6.34375,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": false,
+      "root_action": "repair",
+      "prediction": 0.00738303148108746,
+      "exact_value": 0.00738303148108746,
+      "absolute_error": 0.0,
+      "controller_cost": 6.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": false,
+      "root_action": "stop",
+      "prediction": 0.18999999999999995,
+      "exact_value": 0.18999999999999995,
+      "absolute_error": 0.0,
+      "controller_cost": 4.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": false,
+      "root_action": "execute",
+      "prediction": 0.08769147291304695,
+      "exact_value": 0.08769147291304695,
+      "absolute_error": 0.0,
+      "controller_cost": 4.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": false,
+      "root_action": "observe",
+      "prediction": -0.10217537621845335,
+      "exact_value": -0.10217537621845335,
+      "absolute_error": 0.0,
+      "controller_cost": 6.78125,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": false,
+      "root_action": "recall",
+      "prediction": -0.01016000821085089,
+      "exact_value": -0.01016000821085089,
+      "absolute_error": 0.0,
+      "controller_cost": 6.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": false,
+      "root_action": "verify",
+      "prediction": -0.09809101548949906,
+      "exact_value": -0.09809101548949906,
+      "absolute_error": 0.0,
+      "controller_cost": 6.34375,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": true,
+      "root_action": "repair",
+      "prediction": 0.025069079078230194,
+      "exact_value": 0.025069079078230194,
+      "absolute_error": 0.0,
+      "controller_cost": 6.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": true,
+      "root_action": "stop",
+      "prediction": 0.18999999999999995,
+      "exact_value": 0.18999999999999995,
+      "absolute_error": 0.0,
+      "controller_cost": 4.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": true,
+      "root_action": "execute",
+      "prediction": 0.11143406639931829,
+      "exact_value": 0.11143406639931829,
+      "absolute_error": 0.0,
+      "controller_cost": 4.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": true,
+      "root_action": "observe",
+      "prediction": -0.10159337764388494,
+      "exact_value": -0.10159337764388494,
+      "absolute_error": 0.0,
+      "controller_cost": 6.78125,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": true,
+      "root_action": "recall",
+      "prediction": 0.003484513169948647,
+      "exact_value": 0.003484513169948647,
+      "absolute_error": 0.0,
+      "controller_cost": 6.0,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    },
+    {
+      "risk": 0.7,
+      "variable_time": true,
+      "root_action": "verify",
+      "prediction": -0.09808415225426817,
+      "exact_value": -0.09808415225426817,
+      "absolute_error": 0.0,
+      "controller_cost": 6.34375,
+      "slow_calls": 1.0,
+      "budget_violations": 0.0
+    }
+  ],
+  "candidate_replay_count": 24,
+  "maximum_absolute_prediction_error": 0.0,
+  "nonadditivity": [
+    {
+      "risk": 0.0,
+      "nested_value": 0.04087360000000001,
+      "flattened_value": 0.04087360000000001,
+      "absolute_difference": 0.0,
+      "complete_paths": 64
+    },
+    {
+      "risk": 0.7,
+      "nested_value": 0.012765579187936929,
+      "flattened_value": 0.021718173169506055,
+      "absolute_difference": 0.008952593981569126,
+      "complete_paths": 64
+    }
+  ],
+  "training_runs": 0,
+  "independent_confirmation_runs": 0,
+  "full_physical_cost_known": false,
+  "scientific_promotion": "HOLD",
+  "adoption": {
+    "decision": "NoUpdate",
+    "native_owner_gate_invoked": false
+  },
+  "scope": "finite-model mechanical correction; synthetic checkpoints, no runtime integration"
+}

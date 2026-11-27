@@ -4,8 +4,10 @@
 
 mod decision;
 mod engram;
+mod fast_memory;
 mod generation_bound;
 mod generator;
+mod memory_cell;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -46,10 +48,20 @@ pub use engram::SynapseRelationV1;
 pub use engram::SynapseV1;
 pub use engram::recall_with_engram;
 pub use engram::settle_engram;
+pub use fast_memory::FastMemoryCandidateV1;
+pub use fast_memory::FastMemoryConfigV1;
+pub use fast_memory::FastMemoryErrorV1;
+pub use fast_memory::FastMemoryPredictionV1;
+pub use fast_memory::FastMemoryRecallV1;
+pub use fast_memory::FastMemoryScoreV1;
+pub use fast_memory::FastMemoryUpdateV1;
+pub use fast_memory::FastMemoryV1;
 pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
 pub use generation_bound::CanonicalRecallSelectionBindingV1;
 pub use generation_bound::CanonicalRecallShadowContextV1;
+pub use generation_bound::ContradictionEvidenceV1;
+pub use generation_bound::ContradictionPolarityV1;
 pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
 pub use generation_bound::MAX_GENERATION_BOUND_RESULTS;
 pub use generation_bound::MemoryCueV1;
@@ -78,6 +90,9 @@ pub use generator::build_candidate_union_from_generated;
 pub use generator::compile_cue;
 pub use generator::recall_generated;
 pub use generator::recall_generated_with_engram;
+pub use memory_cell::MemoryCellRuntimeErrorV1;
+pub use memory_cell::MemoryCellShadowTickV1;
+pub use memory_cell::run_memory_cell_tick;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 

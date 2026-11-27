@@ -1,0 +1,57 @@
+{
+  "error": {
+    "message": "caller-proof failed",
+    "type": "RuntimeError"
+  },
+  "execution_environment": "ai395 ordinary uid1000; not hosted CI",
+  "final_use_qualified": false,
+  "finished_unix_ns": 1794484959053387279,
+  "full_dynamic_tool_handler_qualified": false,
+  "learning_gain_qualified": false,
+  "owner_decision": null,
+  "production_authority": false,
+  "research_B_C_actor_calls": 0,
+  "source_inventory_unchanged": true,
+  "source_sha": "7d31bf9677748330ae17efe964de48d98ba5e542",
+  "source_tree": "cedbad6b47e4ff8db4f87efc9169a4b5c13412be",
+  "stages": [
+    {
+      "elapsed_seconds": 0.7646740518976003,
+      "exit_code": 0,
+      "log_sha256": "e233a6e51eeabfe01b748a813a62106d65b39bf4fefbff1165de763027cbc55a",
+      "stage": "source-clone"
+    },
+    {
+      "elapsed_seconds": 6.417562674963847,
+      "exit_code": 0,
+      "log_sha256": "2aad4e79acab42dc4fe778bf495b2e0a0cb20ab961ab33375f74120562aeee7b",
+      "stage": "source-fetch"
+    },
+    {
+      "elapsed_seconds": 0.516138887964189,
+      "exit_code": 0,
+      "log_sha256": "de57102756da7a08a0c5c7f4b82cd53f1b66f6c1cd822d895c124dc9637c5255",
+      "stage": "source-checkout"
+    },
+    {
+      "elapsed_seconds": 23.801552831195295,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stage": "v8-prepare"
+    },
+    {
+      "elapsed_seconds": 0.016164066968485713,
+      "exit_code": 0,
+      "log_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "stage": "rustc-version"
+    },
+    {
+      "elapsed_seconds": 120.09424627502449,
+      "exit_code": 124,
+      "log_sha256": "6542861efb1cc7fd389df21456ece6bf842e135d8d95d6a696e400bd94214503",
+      "stage": "caller-proof"
+    }
+  ],
+  "status": "FAILED",
+  "tracked_file_count": 13722
+}

@@ -1,0 +1,51 @@
+{
+  "all_closed": false,
+  "attempt": 1,
+  "coordinate_count": 1151028,
+  "deterministic_backend_qualified": false,
+  "expected_observations": {
+    "capsule_differing_bytes": 1489,
+    "exact_coordinates": 1149665,
+    "max_absolute_difference": 2.7755575615628914e-17,
+    "max_relative_eligible": 5.621079445829644e-15,
+    "max_scaled_difference": 2.7755575615628914e-17,
+    "max_ulp_distance": 50,
+    "mismatched_coordinates": 1363,
+    "packet_exact_coordinates": 1148511,
+    "packet_mismatched_coordinates": 542,
+    "relative_eligible_pairs": 851,
+    "state_exact_coordinates": 1154,
+    "state_mismatched_coordinates": 821
+  },
+  "historical_exact_byte_gate_result": "RED",
+  "hosted_artifact": {
+    "bytes": 1269318,
+    "candidate_capsule_sha256": "6750218e07dc4cc488d2b84200e32f56c3062d67e926350e1285686c31258ba3",
+    "candidate_coordinate_sha256": "d69c08c7d477161f05d1790e7ef56c22e2ae939c4396992b8da277cdbdce0d87",
+    "sha256": "a1067b156f0e29f9ec4c9ab2a9ae6a36e44a9b26e885865df2443c8e61b43b32"
+  },
+  "identity": "hcsn-n128-thirdcycle-crossruntime-readonly-audit-20261113-c06d-001",
+  "local_originals": {
+    "capsule_bytes": 302719,
+    "capsule_sha256": "41c95005e6f97e7aa22a224b5934f18e84197fe8d5a9443bdacee1b6ce091bb4",
+    "coordinate_bytes": 9208224,
+    "coordinate_sha256": "bfad7775702b865516355ffc15e1cc28a1460d8020e88e79dbb8e71852971eb8",
+    "coordinate_zip_bytes": 359546,
+    "coordinate_zip_sha256": "d338cbc8602560280800e7a39f92ba492110db945c7bb05d070a7708806f64b9"
+  },
+  "matrix_exponentials": 0,
+  "model_calls": 0,
+  "numerical_calls": 0,
+  "optimizer_updates": 0,
+  "qualification": false,
+  "relative_eligibility_floor": 1e-12,
+  "source_attempt": {
+    "artifact_id": 14005439766,
+    "job_id": 131657632608,
+    "run_id": 43355857430,
+    "source_commit": "ce0fc3e2b3f618b8e5b06b606f25735f87414fa7"
+  },
+  "state_coordinates": 1975,
+  "torch_operations": 0,
+  "unique_execution_key": "hcsn-n128-thirdcycle-crossruntime-readonly-audit-20261113-c06d-001"
+}

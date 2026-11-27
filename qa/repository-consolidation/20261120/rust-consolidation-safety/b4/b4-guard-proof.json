@@ -1,0 +1,1008 @@
+{
+  "schema": "hepta.b4-canonical-guard-preservation.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_commit": "d534106ba2c7a9d667d537bebe76f3493ad12d59",
+  "candidate_commit": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+  "baseline_manifest_sha256": "c74ab835131defb811b74fa065241503313e7fced9615e1ececc262c5b841f2d",
+  "baseline_manifest_bytes": 2992243,
+  "current_manifest_sha256": "860b25f898ef8784b1e13032dd1cce22111807bba746284a6f4558f0b01dcc48",
+  "current_manifest_bytes": 3467818,
+  "compression_integrity": "gzip CRC32, compressed part SHA256, decompressed part SHA256 and complete manifest SHA256 all verified against each exact revision CALLERS.toml",
+  "method": "Parse full inline TOML protected_file rows with strict duplicate-key rejection; require unique protected_file.path; compare every original required/forbidden/required_order/required_function_order array item as exact canonical JSON including full function, sequence, top_level and literal_calls contents. Added rule records do not replace any old record. Canonical JSON sorts object keys but preserves all array order and strings. Guard record counts are outer array items, not individual nested sequence markers.",
+  "protected_paths": 25,
+  "preserved_original_guard_records": 856,
+  "lost_original_guard_records": 0,
+  "additional_function_order_records": 22,
+  "additional_empty_required_order_fields": 3,
+  "metadata_note": "One new source_sha256 field exists on circuit_candidate_next_use_command_wire.rs. Current verify_hepta_callers.py never references this key; no verification claim relies on it.",
+  "candidate_test_changes": [
+    {
+      "path": "qa/b4-no-bypass/test_original_material_owner_source_closure.py",
+      "current_blob": "23a5a6c9b73d1967f341c38c0cf98ee54420b90c",
+      "restores_exact_ancestor": true,
+      "ancestor_blob": "b6162ec4e302dbb915a940e62367b6c6de1a0171",
+      "edits": [
+        {
+          "old": "        self.assertEqual(len(rows), {OWNER: 2, BINDING: 2, CAPTURE: 4}.get(path, 1))",
+          "new": "        self.assertEqual(len(rows), 1)"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
+      "current_blob": "bd08d138888b9d2d521c8dfdba22fbecdf21a20b",
+      "restores_exact_ancestor": true,
+      "ancestor_blob": "a63c48a600ad4f4e4445a2e20516ded64570127b",
+      "edits": [
+        {
+          "old": "        self.assertEqual(len(rows), {OWNER: 2, WIRE: 2}.get(path, 1))",
+          "new": "        self.assertEqual(len(rows), 1)"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+      "current_blob": "457927d91b71bebc464404089f82a38112d6c201",
+      "restores_exact_ancestor": true,
+      "ancestor_blob": "4e8d6e05dce61e75ca2b49eb668e315ac234a2bf",
+      "edits": [
+        {
+          "old": "        self.assertEqual(len(rows), {PAIR: 2}.get(path, 1))",
+          "new": "        self.assertEqual(len(rows), 1)"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_execution_owner_source_closure.py",
+      "current_blob": "b888699797be97f51634edc7caa409593295be81",
+      "restores_exact_ancestor": true,
+      "ancestor_blob": "96aeb70edb8c1c5a7ae1c7d73ca022418c61ee8e",
+      "edits": [
+        {
+          "old": "        self.assertEqual(len(rows), {SOURCES: 2}.get(path, 1))",
+          "new": "        self.assertEqual(len(rows), 1)"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_positive_circuit_next_use_source_closure.py",
+      "current_blob": "ad2d4fedea88a183851e472e8b280f1549efaacf",
+      "restores_exact_ancestor": false,
+      "ancestor_blob": "a2dd67541e68f0ac3247f4c7dcb1744d3dd716f2",
+      "edits": [
+        {
+          "old": "        expected_counts[AGENT + \"circuit_candidate_learning_read_service.rs\"] = 2\n        expected_counts[AGENT + \"circuit_candidate_learning_completion_readiness_service.rs\"] = 2\n",
+          "new": ""
+        }
+      ]
+    }
+  ],
+  "qualification_scope": "Static canonical guard preservation only. No native B4 success asserted by this report. Original mutation cases must still run on exact candidate. No c2d/BAO/lint/runtime/owner-edge repair included.",
+  "rows": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "original_canonical_row_sha256": "bbe9274e1378e9a67f0dfc4ad670838fab435eba4a3d162f2fbbac57df3eaea0",
+      "current_canonical_row_sha256": "01c742dcba24d16530e7161a3f86e9df1a9e9f4395123ee5d887688edbd3206c",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 17,
+          "current_records": 17,
+          "preserved_records": 17,
+          "original_sha256": "bb1b5ea2e4c1595492b2e27998733fcdb1b332c7ef9cf600f08224e32c049a7e",
+          "retained_projection_sha256": "bb1b5ea2e4c1595492b2e27998733fcdb1b332c7ef9cf600f08224e32c049a7e"
+        },
+        {
+          "field": "required",
+          "original_records": 6,
+          "current_records": 6,
+          "preserved_records": 6,
+          "original_sha256": "5f65317a36752be720275b37cb7c22cf683deea647472af1903c67828b77d6fd",
+          "retained_projection_sha256": "5f65317a36752be720275b37cb7c22cf683deea647472af1903c67828b77d6fd"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 12,
+          "current_records": 16,
+          "preserved_records": 12,
+          "original_sha256": "1bbffba5cbf8f4a9a9da0284134dcb6221bd5572726596b302051562f7cef809",
+          "retained_projection_sha256": "1bbffba5cbf8f4a9a9da0284134dcb6221bd5572726596b302051562f7cef809"
+        },
+        {
+          "field": "required_order",
+          "original_records": 4,
+          "current_records": 4,
+          "preserved_records": 4,
+          "original_sha256": "ff727249808f4a2994e15fad8ecc2a1d0d064e3e01450c854d37e3c10010f6d0",
+          "retained_projection_sha256": "ff727249808f4a2994e15fad8ecc2a1d0d064e3e01450c854d37e3c10010f6d0"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [
+        "fn create(",
+        "fn recover(",
+        "fn attest_experience(",
+        "fn read_experience("
+      ],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+      "original_canonical_row_sha256": "93969b634eb3c74be89fd27ca19c3b098533d6f145d6f96a3d7316f92d11b515",
+      "current_canonical_row_sha256": "93969b634eb3c74be89fd27ca19c3b098533d6f145d6f96a3d7316f92d11b515",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 15,
+          "current_records": 15,
+          "preserved_records": 15,
+          "original_sha256": "e4465e1a4c88fe1ec13c5da58678a62a199ed987220c887beab31ae815e182c8",
+          "retained_projection_sha256": "e4465e1a4c88fe1ec13c5da58678a62a199ed987220c887beab31ae815e182c8"
+        },
+        {
+          "field": "required",
+          "original_records": 3,
+          "current_records": 3,
+          "preserved_records": 3,
+          "original_sha256": "e9d4eb5d1ebae48478e872fce6a57f20ab030fccdfe89a19210b634e88620516",
+          "retained_projection_sha256": "e9d4eb5d1ebae48478e872fce6a57f20ab030fccdfe89a19210b634e88620516"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 15,
+          "current_records": 15,
+          "preserved_records": 15,
+          "original_sha256": "631bcda0f4792b44ded154fb7a8e0d960847ab9ebba6e5ba6c1fa75b27139c0b",
+          "retained_projection_sha256": "631bcda0f4792b44ded154fb7a8e0d960847ab9ebba6e5ba6c1fa75b27139c0b"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+      "original_canonical_row_sha256": "6ada7083e756c1033c36ec034b2d8d6e9c9576183d00217bc4ef5a5b272d9d99",
+      "current_canonical_row_sha256": "6ada7083e756c1033c36ec034b2d8d6e9c9576183d00217bc4ef5a5b272d9d99",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 24,
+          "current_records": 24,
+          "preserved_records": 24,
+          "original_sha256": "3f12023901a5f6a6a672684bfd22dd3fb7720122340fbffdd18fed8e85dff4c6",
+          "retained_projection_sha256": "3f12023901a5f6a6a672684bfd22dd3fb7720122340fbffdd18fed8e85dff4c6"
+        },
+        {
+          "field": "required",
+          "original_records": 15,
+          "current_records": 15,
+          "preserved_records": 15,
+          "original_sha256": "6897e39fc26b8980bf55986bb0f2590bd2973c06ca24a01703b9ec720535f061",
+          "retained_projection_sha256": "6897e39fc26b8980bf55986bb0f2590bd2973c06ca24a01703b9ec720535f061"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 5,
+          "current_records": 5,
+          "preserved_records": 5,
+          "original_sha256": "61a73ad6aa7593f44b458a184f033daae3e1aba56eb83c9242bc2e2993a5e1ae",
+          "retained_projection_sha256": "61a73ad6aa7593f44b458a184f033daae3e1aba56eb83c9242bc2e2993a5e1ae"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "original_canonical_row_sha256": "065406a457681c0add00d819f3fa06fd0b8970eb54b960869d75d52fb3f58e7c",
+      "current_canonical_row_sha256": "065406a457681c0add00d819f3fa06fd0b8970eb54b960869d75d52fb3f58e7c",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 11,
+          "current_records": 11,
+          "preserved_records": 11,
+          "original_sha256": "7cfb57b83d44ce255d508a70b761254ef26c31e3a88f06986f3eb446f87c7bd4",
+          "retained_projection_sha256": "7cfb57b83d44ce255d508a70b761254ef26c31e3a88f06986f3eb446f87c7bd4"
+        },
+        {
+          "field": "required",
+          "original_records": 10,
+          "current_records": 10,
+          "preserved_records": 10,
+          "original_sha256": "2d3358ce6fde2358bbca15d371a75e1a787fa10b936578539b30e2a4fb88b8e9",
+          "retained_projection_sha256": "2d3358ce6fde2358bbca15d371a75e1a787fa10b936578539b30e2a4fb88b8e9"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 15,
+          "current_records": 15,
+          "preserved_records": 15,
+          "original_sha256": "aac4a20740dac54ba54c41a5805cb28daea4d18129f9d5de7d7ab5635073a924",
+          "retained_projection_sha256": "aac4a20740dac54ba54c41a5805cb28daea4d18129f9d5de7d7ab5635073a924"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_evidence_service.rs",
+      "original_canonical_row_sha256": "b7161d2289b3b99188c98a5fe161a024d009dbd5f165ea06f5e57af29e9b5ee1",
+      "current_canonical_row_sha256": "b7161d2289b3b99188c98a5fe161a024d009dbd5f165ea06f5e57af29e9b5ee1",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 29,
+          "current_records": 29,
+          "preserved_records": 29,
+          "original_sha256": "3836994962e9de8b52ec318e4cb60593b108111fcef9eff7fa38c41284117c7a",
+          "retained_projection_sha256": "3836994962e9de8b52ec318e4cb60593b108111fcef9eff7fa38c41284117c7a"
+        },
+        {
+          "field": "required",
+          "original_records": 5,
+          "current_records": 5,
+          "preserved_records": 5,
+          "original_sha256": "982f6f4442105df785b7500901d6a2ee069980b845b25aaf85b770eb8082b978",
+          "retained_projection_sha256": "982f6f4442105df785b7500901d6a2ee069980b845b25aaf85b770eb8082b978"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 5,
+          "current_records": 5,
+          "preserved_records": 5,
+          "original_sha256": "463ff0fa305c925f295367d57528928b5e6dda707c37488a1115009fc41ee0bc",
+          "retained_projection_sha256": "463ff0fa305c925f295367d57528928b5e6dda707c37488a1115009fc41ee0bc"
+        },
+        {
+          "field": "required_order",
+          "original_records": 1,
+          "current_records": 1,
+          "preserved_records": 1,
+          "original_sha256": "d2b933e0436c151495a3ea2057e857d847def9952268e30a06f4b0a79d04fb96",
+          "retained_projection_sha256": "d2b933e0436c151495a3ea2057e857d847def9952268e30a06f4b0a79d04fb96"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+      "original_canonical_row_sha256": "9f2e93faf0bfccb83833fa5e776a6418e1b2ebf96403bdb08d0f151ab53cbb53",
+      "current_canonical_row_sha256": "9f2e93faf0bfccb83833fa5e776a6418e1b2ebf96403bdb08d0f151ab53cbb53",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 25,
+          "current_records": 25,
+          "preserved_records": 25,
+          "original_sha256": "72ba1e2e06f453ed929ac78076491f1f11ef8b7204b5b80ea28aaafd75bc7dde",
+          "retained_projection_sha256": "72ba1e2e06f453ed929ac78076491f1f11ef8b7204b5b80ea28aaafd75bc7dde"
+        },
+        {
+          "field": "required",
+          "original_records": 3,
+          "current_records": 3,
+          "preserved_records": 3,
+          "original_sha256": "82544f98b634e05e6e11b4cf92a5b7962694adab513faed51ed3ec275ee9006d",
+          "retained_projection_sha256": "82544f98b634e05e6e11b4cf92a5b7962694adab513faed51ed3ec275ee9006d"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 11,
+          "current_records": 11,
+          "preserved_records": 11,
+          "original_sha256": "762f469a393250063dd31780256d81707a84b8ed09c5c2862ee289fd888d8a9e",
+          "retained_projection_sha256": "762f469a393250063dd31780256d81707a84b8ed09c5c2862ee289fd888d8a9e"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_wire.rs",
+      "original_canonical_row_sha256": "b6f2e7bad9d76251ec0c2356feda89c337ab2e74f6d0f0718f915668ccf15635",
+      "current_canonical_row_sha256": "b6f2e7bad9d76251ec0c2356feda89c337ab2e74f6d0f0718f915668ccf15635",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 6,
+          "current_records": 6,
+          "preserved_records": 6,
+          "original_sha256": "2fff1b5f422463482ca1ce8a263f6a473c34e55130312b91a22af05e724029fc",
+          "retained_projection_sha256": "2fff1b5f422463482ca1ce8a263f6a473c34e55130312b91a22af05e724029fc"
+        },
+        {
+          "field": "required",
+          "original_records": 4,
+          "current_records": 4,
+          "preserved_records": 4,
+          "original_sha256": "364d170de708f910a0a0375e53b5ab920179d7e3f7485e6689ebb32967be1c8a",
+          "retained_projection_sha256": "364d170de708f910a0a0375e53b5ab920179d7e3f7485e6689ebb32967be1c8a"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 1,
+          "current_records": 1,
+          "preserved_records": 1,
+          "original_sha256": "793e2c7a80421425203aace7f73b18a0451868bb2b667f6da157b82e580e1947",
+          "retained_projection_sha256": "793e2c7a80421425203aace7f73b18a0451868bb2b667f6da157b82e580e1947"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+      "original_canonical_row_sha256": "f160d6a5d5f55d4a411f89187232cfc225e29bbd2f5c26e01a582b8c93ebc47c",
+      "current_canonical_row_sha256": "f160d6a5d5f55d4a411f89187232cfc225e29bbd2f5c26e01a582b8c93ebc47c",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 29,
+          "current_records": 29,
+          "preserved_records": 29,
+          "original_sha256": "e38faa266b4c851e5e78d0c37eb2b959533481bce4fbf8af9dc34030bc1d29bb",
+          "retained_projection_sha256": "e38faa266b4c851e5e78d0c37eb2b959533481bce4fbf8af9dc34030bc1d29bb"
+        },
+        {
+          "field": "required",
+          "original_records": 6,
+          "current_records": 6,
+          "preserved_records": 6,
+          "original_sha256": "5b0b5f0dd38d4f7af626f69fc22ff4597838ba10df506446200fea054a3db25b",
+          "retained_projection_sha256": "5b0b5f0dd38d4f7af626f69fc22ff4597838ba10df506446200fea054a3db25b"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 12,
+          "current_records": 12,
+          "preserved_records": 12,
+          "original_sha256": "cf7ec6faed2449f046f0b54b3c2d9b3102dd8c898fcea50468c09d1ee26ecaaf",
+          "retained_projection_sha256": "cf7ec6faed2449f046f0b54b3c2d9b3102dd8c898fcea50468c09d1ee26ecaaf"
+        },
+        {
+          "field": "required_order",
+          "original_records": 1,
+          "current_records": 1,
+          "preserved_records": 1,
+          "original_sha256": "632c324059db52d667d04e170a4bd9f324c8fbc01de02df9b4c7aab7b70ab4cd",
+          "retained_projection_sha256": "632c324059db52d667d04e170a4bd9f324c8fbc01de02df9b4c7aab7b70ab4cd"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+      "original_canonical_row_sha256": "3586ea63be65e82ff6b38e7e148e9c1c4f2b13e1a32069d166f4d41ed439de88",
+      "current_canonical_row_sha256": "3586ea63be65e82ff6b38e7e148e9c1c4f2b13e1a32069d166f4d41ed439de88",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 25,
+          "current_records": 25,
+          "preserved_records": 25,
+          "original_sha256": "011294597ba795ca45263e5accc2b3add1221cd8189f21805ae028576fd25982",
+          "retained_projection_sha256": "011294597ba795ca45263e5accc2b3add1221cd8189f21805ae028576fd25982"
+        },
+        {
+          "field": "required",
+          "original_records": 3,
+          "current_records": 3,
+          "preserved_records": 3,
+          "original_sha256": "da75cc78768aca80b67e9e1cbe1d209bcb264ed8257f1e244ea89685e00410f0",
+          "retained_projection_sha256": "da75cc78768aca80b67e9e1cbe1d209bcb264ed8257f1e244ea89685e00410f0"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 5,
+          "current_records": 5,
+          "preserved_records": 5,
+          "original_sha256": "cb26b07354a8e75719f0831ad0de9b4fa0060d8a59e9c3f8abcb7dc111764dd6",
+          "retained_projection_sha256": "cb26b07354a8e75719f0831ad0de9b4fa0060d8a59e9c3f8abcb7dc111764dd6"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store.rs",
+      "original_canonical_row_sha256": "0f6f60f259d76239e13fdaf45a950324795bdc6f7ee8a5fde7ce9299baaef6b0",
+      "current_canonical_row_sha256": "0f6f60f259d76239e13fdaf45a950324795bdc6f7ee8a5fde7ce9299baaef6b0",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 18,
+          "current_records": 18,
+          "preserved_records": 18,
+          "original_sha256": "3e8bba81338085d4592a4e6641995f0d60c6b5df9ff462cf2d86abe0dea80477",
+          "retained_projection_sha256": "3e8bba81338085d4592a4e6641995f0d60c6b5df9ff462cf2d86abe0dea80477"
+        },
+        {
+          "field": "required",
+          "original_records": 7,
+          "current_records": 7,
+          "preserved_records": 7,
+          "original_sha256": "0726124913ed888b553be1d9aade92087b3516bf13ae581eecca7f58d5f59851",
+          "retained_projection_sha256": "0726124913ed888b553be1d9aade92087b3516bf13ae581eecca7f58d5f59851"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 10,
+          "current_records": 10,
+          "preserved_records": 10,
+          "original_sha256": "2aadca99691df62517d52c641d8c8e8d419c427a788cc88db2bcad7d2329bf24",
+          "retained_projection_sha256": "2aadca99691df62517d52c641d8c8e8d419c427a788cc88db2bcad7d2329bf24"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_recovery.rs",
+      "original_canonical_row_sha256": "94f745ccfb68ed87776d780e2dd88ebbb399a83822443b3791b08c52138f86ff",
+      "current_canonical_row_sha256": "94f745ccfb68ed87776d780e2dd88ebbb399a83822443b3791b08c52138f86ff",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 20,
+          "current_records": 20,
+          "preserved_records": 20,
+          "original_sha256": "a4082c65710eff3c944dd1f5c766e6a58b90145ee48583ba88c6c53831a7aeb8",
+          "retained_projection_sha256": "a4082c65710eff3c944dd1f5c766e6a58b90145ee48583ba88c6c53831a7aeb8"
+        },
+        {
+          "field": "required",
+          "original_records": 3,
+          "current_records": 3,
+          "preserved_records": 3,
+          "original_sha256": "d345642bc6ae16874a21284d5f580ed256580549aaa191b0cfedd09f469266a9",
+          "retained_projection_sha256": "d345642bc6ae16874a21284d5f580ed256580549aaa191b0cfedd09f469266a9"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 1,
+          "current_records": 1,
+          "preserved_records": 1,
+          "original_sha256": "53fcfb73b1c89d72f5ca9bf14372866c23eef2d5698238f70f22267810cf74a5",
+          "retained_projection_sha256": "53fcfb73b1c89d72f5ca9bf14372866c23eef2d5698238f70f22267810cf74a5"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_readback.rs",
+      "original_canonical_row_sha256": "c38784ac8fe10effed622a214a41e488e5bea8b611601395a8b1a4da76e98578",
+      "current_canonical_row_sha256": "c38784ac8fe10effed622a214a41e488e5bea8b611601395a8b1a4da76e98578",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 24,
+          "current_records": 24,
+          "preserved_records": 24,
+          "original_sha256": "6a96320b5c84e024a8382af5edc81cb3a0b6e891bd303a3e858c543f4db8cf89",
+          "retained_projection_sha256": "6a96320b5c84e024a8382af5edc81cb3a0b6e891bd303a3e858c543f4db8cf89"
+        },
+        {
+          "field": "required",
+          "original_records": 2,
+          "current_records": 2,
+          "preserved_records": 2,
+          "original_sha256": "95f688f0f15e67fc4af4e4e72b2429768f953a8a7b71432a4a7a57748a044909",
+          "retained_projection_sha256": "95f688f0f15e67fc4af4e4e72b2429768f953a8a7b71432a4a7a57748a044909"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 3,
+          "current_records": 3,
+          "preserved_records": 3,
+          "original_sha256": "56296827a9f2de214e4a0aad9483e6ae5f481acd954fb771d81f9edef0046278",
+          "retained_projection_sha256": "56296827a9f2de214e4a0aad9483e6ae5f481acd954fb771d81f9edef0046278"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs",
+      "original_canonical_row_sha256": "bf3fe7b4015363ce6935d2ae7551752a9a71e4e7f557ad451352b7edc8b5eca8",
+      "current_canonical_row_sha256": "db1660ea7408d3b00db2f4414326a1ee32cc107cb46dd1a2b97b0632835202af",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 30,
+          "current_records": 30,
+          "preserved_records": 30,
+          "original_sha256": "2a178a1dadc9e25b8a4dda15f4747d21e60835e097b60bbaea5754877f4e0ce6",
+          "retained_projection_sha256": "2a178a1dadc9e25b8a4dda15f4747d21e60835e097b60bbaea5754877f4e0ce6"
+        },
+        {
+          "field": "required",
+          "original_records": 4,
+          "current_records": 4,
+          "preserved_records": 4,
+          "original_sha256": "0ea5e47ccfbeeb8f426104211576c78d6605b1b74b4e9e29771e7c743ede6f4d",
+          "retained_projection_sha256": "0ea5e47ccfbeeb8f426104211576c78d6605b1b74b4e9e29771e7c743ede6f4d"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 3,
+          "current_records": 7,
+          "preserved_records": 3,
+          "original_sha256": "95619c99f876228b2655fa44235f8892bdef728a42ba068514af815895584c31",
+          "retained_projection_sha256": "95619c99f876228b2655fa44235f8892bdef728a42ba068514af815895584c31"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [
+        "fn prepare(",
+        "fn predecessors(",
+        "fn timing(",
+        "fn read_original("
+      ],
+      "added_empty_required_order": true,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "original_canonical_row_sha256": "41c9d65c9a303fbdd0dd8649b26c960c14d5792df44ea119c05237a84b3cadb9",
+      "current_canonical_row_sha256": "41c9d65c9a303fbdd0dd8649b26c960c14d5792df44ea119c05237a84b3cadb9",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 10,
+          "current_records": 10,
+          "preserved_records": 10,
+          "original_sha256": "11ee7b0ab9e7349c7dc09e4ece14d7623d771be3cd1ec8c66bb2dc73f23629bd",
+          "retained_projection_sha256": "11ee7b0ab9e7349c7dc09e4ece14d7623d771be3cd1ec8c66bb2dc73f23629bd"
+        },
+        {
+          "field": "required",
+          "original_records": 8,
+          "current_records": 8,
+          "preserved_records": 8,
+          "original_sha256": "df0e432e35f63ebc8743b603c1d357d125e8b9ea4676d9f50f79b871b390739a",
+          "retained_projection_sha256": "df0e432e35f63ebc8743b603c1d357d125e8b9ea4676d9f50f79b871b390739a"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 4,
+          "current_records": 4,
+          "preserved_records": 4,
+          "original_sha256": "21294f8bf79463bcad57ee43cbcf1080bee7fc3c307f9c5e87a67603e92c6cad",
+          "retained_projection_sha256": "21294f8bf79463bcad57ee43cbcf1080bee7fc3c307f9c5e87a67603e92c6cad"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs",
+      "original_canonical_row_sha256": "f0b5c0b45688a44ef74f8075e7b0b870eb0867939a9fccd0f0fde3496fc74eac",
+      "current_canonical_row_sha256": "f0b5c0b45688a44ef74f8075e7b0b870eb0867939a9fccd0f0fde3496fc74eac",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 31,
+          "current_records": 31,
+          "preserved_records": 31,
+          "original_sha256": "470e9226bc77bc9ea66b95effda19ed750f9031874ea0975930d64f9f85b7a91",
+          "retained_projection_sha256": "470e9226bc77bc9ea66b95effda19ed750f9031874ea0975930d64f9f85b7a91"
+        },
+        {
+          "field": "required",
+          "original_records": 3,
+          "current_records": 3,
+          "preserved_records": 3,
+          "original_sha256": "6ff4e9d81b0cf20b9abf33ffc8f025ad6d446e44468bf191fc833d394974851e",
+          "retained_projection_sha256": "6ff4e9d81b0cf20b9abf33ffc8f025ad6d446e44468bf191fc833d394974851e"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 8,
+          "current_records": 8,
+          "preserved_records": 8,
+          "original_sha256": "7059f5e4bd352a222b271cc1a2513a0f5a37b4d8eb9bdf1815ed68996b04d0cd",
+          "retained_projection_sha256": "7059f5e4bd352a222b271cc1a2513a0f5a37b4d8eb9bdf1815ed68996b04d0cd"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_wire.rs",
+      "original_canonical_row_sha256": "ed7c65c63f84d9e549775e13ec486c8ceec45c6ec6df71089035bac3aab8237f",
+      "current_canonical_row_sha256": "ed7c65c63f84d9e549775e13ec486c8ceec45c6ec6df71089035bac3aab8237f",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 29,
+          "current_records": 29,
+          "preserved_records": 29,
+          "original_sha256": "844dd84a580d419d16da274ba5dc177ab2f717f94c0bf19b2a4d995482f70234",
+          "retained_projection_sha256": "844dd84a580d419d16da274ba5dc177ab2f717f94c0bf19b2a4d995482f70234"
+        },
+        {
+          "field": "required",
+          "original_records": 4,
+          "current_records": 4,
+          "preserved_records": 4,
+          "original_sha256": "c81282c95cc29fbbabadf0bc6664100402590d53fbeabcd89f791db45390aa37",
+          "retained_projection_sha256": "c81282c95cc29fbbabadf0bc6664100402590d53fbeabcd89f791db45390aa37"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 5,
+          "current_records": 5,
+          "preserved_records": 5,
+          "original_sha256": "d0f42071747495767f903d36f81f5fcd644dfcaea45172ceeb86786d370ab02c",
+          "retained_projection_sha256": "d0f42071747495767f903d36f81f5fcd644dfcaea45172ceeb86786d370ab02c"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs",
+      "original_canonical_row_sha256": "624c59eba4d5741b7c0e80aba7ccac6b08195c934a4cd6c9bebc1344cdd304ae",
+      "current_canonical_row_sha256": "775286726fe0ea0ed1ee984b3f75d50dc3571781b37d6b8754bdcf252697dba5",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 27,
+          "current_records": 27,
+          "preserved_records": 27,
+          "original_sha256": "6c464173e4b9cc746742ed5612eee6ad255665a12822d3105a48e1d146694286",
+          "retained_projection_sha256": "6c464173e4b9cc746742ed5612eee6ad255665a12822d3105a48e1d146694286"
+        },
+        {
+          "field": "required",
+          "original_records": 8,
+          "current_records": 8,
+          "preserved_records": 8,
+          "original_sha256": "c6844069dcd953cdfe0f71635da4813cce59166d02042f56086c3ae8311bfa3f",
+          "retained_projection_sha256": "c6844069dcd953cdfe0f71635da4813cce59166d02042f56086c3ae8311bfa3f"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 9,
+          "current_records": 19,
+          "preserved_records": 9,
+          "original_sha256": "a9bcad12a965cae6eab08fdb2593179d4238e17514d421563cf3bc7d25dbfa6d",
+          "retained_projection_sha256": "a9bcad12a965cae6eab08fdb2593179d4238e17514d421563cf3bc7d25dbfa6d"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [
+        "fn from_original_owners(",
+        "fn serve_readback(",
+        "fn serve_original_candidate_channel(",
+        "fn serve_original_next_use_channel(",
+        "fn serve_original_readiness_channel(",
+        "fn serve_channel(",
+        "fn response(",
+        "fn require_task_input_current(",
+        "fn require_original_selection(",
+        "fn read_original("
+      ],
+      "added_empty_required_order": true,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs",
+      "original_canonical_row_sha256": "69dda7f4fbf916825dafe82be52786402508c7a83672372748259f73e92132c6",
+      "current_canonical_row_sha256": "69dda7f4fbf916825dafe82be52786402508c7a83672372748259f73e92132c6",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 26,
+          "current_records": 26,
+          "preserved_records": 26,
+          "original_sha256": "a9a6604835eefae8f001c8d37d4ab90ab257ce9417fd6451a2ffa998e7530aab",
+          "retained_projection_sha256": "a9a6604835eefae8f001c8d37d4ab90ab257ce9417fd6451a2ffa998e7530aab"
+        },
+        {
+          "field": "required",
+          "original_records": 4,
+          "current_records": 4,
+          "preserved_records": 4,
+          "original_sha256": "03ccd4237e0cc90f8e2ba7888bbb2e3c7bb12c8bfcf88a3e82a2bcae081fd3b4",
+          "retained_projection_sha256": "03ccd4237e0cc90f8e2ba7888bbb2e3c7bb12c8bfcf88a3e82a2bcae081fd3b4"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 2,
+          "current_records": 2,
+          "preserved_records": 2,
+          "original_sha256": "6e3103b19a80655abb3cf72971a03fd7238cab394b4a6a5a39b9c593bb5eb75a",
+          "retained_projection_sha256": "6e3103b19a80655abb3cf72971a03fd7238cab394b4a6a5a39b9c593bb5eb75a"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs",
+      "original_canonical_row_sha256": "a442561e49bddb19e5ea39217c3d370ead0f93a98badc22bbee3e94c2b7fbf6d",
+      "current_canonical_row_sha256": "f5f1ab3d4ae9f15aecc24bd3655015fd8ebafa0c1d91f2150b9166e52656806d",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 24,
+          "current_records": 24,
+          "preserved_records": 24,
+          "original_sha256": "65e2f85eac1a50a4189a3d8daca4bbab5f8fd38480d34d661b27973f172347a2",
+          "retained_projection_sha256": "65e2f85eac1a50a4189a3d8daca4bbab5f8fd38480d34d661b27973f172347a2"
+        },
+        {
+          "field": "required",
+          "original_records": 4,
+          "current_records": 4,
+          "preserved_records": 4,
+          "original_sha256": "4bf31e5e466765d5f534109568bc926b7ee313d18b6d841ae4b2d2623fa5030e",
+          "retained_projection_sha256": "4bf31e5e466765d5f534109568bc926b7ee313d18b6d841ae4b2d2623fa5030e"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 3,
+          "current_records": 7,
+          "preserved_records": 3,
+          "original_sha256": "ce445bee553b6dd42459475aac04168be356d3fe0848f55d976c1b8ed2ac30d3",
+          "retained_projection_sha256": "ce445bee553b6dd42459475aac04168be356d3fe0848f55d976c1b8ed2ac30d3"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [
+        "fn serve_completion_readiness(",
+        "fn serve_readiness_channel(",
+        "fn readiness_response(",
+        "fn read_original_readiness("
+      ],
+      "added_empty_required_order": true,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs",
+      "original_canonical_row_sha256": "e1c1057f014047df564e0cd0ae80b856736542b3d9d9e2db0190b448b5b0b719",
+      "current_canonical_row_sha256": "e1c1057f014047df564e0cd0ae80b856736542b3d9d9e2db0190b448b5b0b719",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 29,
+          "current_records": 29,
+          "preserved_records": 29,
+          "original_sha256": "cb508fdac1d0dd23c208e3192c83cb1650c2c3e7aa90f0c4de876abd2fe2423f",
+          "retained_projection_sha256": "cb508fdac1d0dd23c208e3192c83cb1650c2c3e7aa90f0c4de876abd2fe2423f"
+        },
+        {
+          "field": "required",
+          "original_records": 3,
+          "current_records": 3,
+          "preserved_records": 3,
+          "original_sha256": "37e76d2996bb40aacc0086a06855d5bab7fe684217e0fa55d468daacd06af1da",
+          "retained_projection_sha256": "37e76d2996bb40aacc0086a06855d5bab7fe684217e0fa55d468daacd06af1da"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 9,
+          "current_records": 9,
+          "preserved_records": 9,
+          "original_sha256": "c46cbee45417876f6b45eaccb7115abc6ccf3c3052202defd90f3a99ee9a2675",
+          "retained_projection_sha256": "c46cbee45417876f6b45eaccb7115abc6ccf3c3052202defd90f3a99ee9a2675"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_stage_binding.rs",
+      "original_canonical_row_sha256": "944adc573567817025875333dc2f4c0298307fedbc22972fa68a2e2d8b22e7b4",
+      "current_canonical_row_sha256": "944adc573567817025875333dc2f4c0298307fedbc22972fa68a2e2d8b22e7b4",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 26,
+          "current_records": 26,
+          "preserved_records": 26,
+          "original_sha256": "3712acebfd5b81d691c6046444bbbfd1f7067817f3591a07cc22bb53de54857f",
+          "retained_projection_sha256": "3712acebfd5b81d691c6046444bbbfd1f7067817f3591a07cc22bb53de54857f"
+        },
+        {
+          "field": "required",
+          "original_records": 1,
+          "current_records": 1,
+          "preserved_records": 1,
+          "original_sha256": "54ad83f3a26acc8292ed0ae469b1f76b4121ba2545a61ff4ea14b2fd6ba9421c",
+          "retained_projection_sha256": "54ad83f3a26acc8292ed0ae469b1f76b4121ba2545a61ff4ea14b2fd6ba9421c"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 1,
+          "current_records": 1,
+          "preserved_records": 1,
+          "original_sha256": "97e2f116e79830a3a0fe3fa313d1f2428bb58d043d3da7215399b8b8528fa6fe",
+          "retained_projection_sha256": "97e2f116e79830a3a0fe3fa313d1f2428bb58d043d3da7215399b8b8528fa6fe"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_wire.rs",
+      "original_canonical_row_sha256": "c9508516482a6bbc8deb4a9d1233a74d525320211577f3bc534512ec4dc05026",
+      "current_canonical_row_sha256": "21586b86f3a991cdf059bbe7ab9bf6233794ec28cafc9a90d46fc67e1d3c0ad6",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 27,
+          "current_records": 27,
+          "preserved_records": 27,
+          "original_sha256": "dd12802120bfaebd4fb5082da50e4684cc0b9f5f9c18b7873b4c440e20db4c47",
+          "retained_projection_sha256": "dd12802120bfaebd4fb5082da50e4684cc0b9f5f9c18b7873b4c440e20db4c47"
+        },
+        {
+          "field": "required",
+          "original_records": 3,
+          "current_records": 3,
+          "preserved_records": 3,
+          "original_sha256": "01b50b812083ae17b4db53c1ae98c1ff135f0473c660dc01fa1418ff7b510b5e",
+          "retained_projection_sha256": "01b50b812083ae17b4db53c1ae98c1ff135f0473c660dc01fa1418ff7b510b5e"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 4,
+          "current_records": 4,
+          "preserved_records": 4,
+          "original_sha256": "7ac2691a5da57b196b56ce46a48ffc19e230b74689bbb05849a6b59fea17f0a5",
+          "retained_projection_sha256": "7ac2691a5da57b196b56ce46a48ffc19e230b74689bbb05849a6b59fea17f0a5"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": "2de5ce5300341a4e892fc7e014f66f35fc03590154f580f72a58129576698556"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_service.rs",
+      "original_canonical_row_sha256": "6d3cf2a679677859ac134f52b75fd8b54d191f2885c2749eb3e01d6a195d1b39",
+      "current_canonical_row_sha256": "6d3cf2a679677859ac134f52b75fd8b54d191f2885c2749eb3e01d6a195d1b39",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 28,
+          "current_records": 28,
+          "preserved_records": 28,
+          "original_sha256": "6cd5e4782645a0c2b275ac90ab1ee788b66e6eeed7acd990a750c62011bd11b6",
+          "retained_projection_sha256": "6cd5e4782645a0c2b275ac90ab1ee788b66e6eeed7acd990a750c62011bd11b6"
+        },
+        {
+          "field": "required",
+          "original_records": 3,
+          "current_records": 3,
+          "preserved_records": 3,
+          "original_sha256": "b42908e5049f3e8ea23dd07be98a849447c762b87a0f46a83e5a634bb6c442a9",
+          "retained_projection_sha256": "b42908e5049f3e8ea23dd07be98a849447c762b87a0f46a83e5a634bb6c442a9"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 5,
+          "current_records": 5,
+          "preserved_records": 5,
+          "original_sha256": "244a50e41304cf3449fc32136b605a076f9203f5bfa619a63345862059db9fd7",
+          "retained_projection_sha256": "244a50e41304cf3449fc32136b605a076f9203f5bfa619a63345862059db9fd7"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_evidence.rs",
+      "original_canonical_row_sha256": "4c03d1f2b4386089c1b610895085a5ec212131f1586b384b846d77dd71c698b9",
+      "current_canonical_row_sha256": "4c03d1f2b4386089c1b610895085a5ec212131f1586b384b846d77dd71c698b9",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 25,
+          "current_records": 25,
+          "preserved_records": 25,
+          "original_sha256": "ebe4748a3d90d57e9016fea3d773955ffe32739eb1b1af4be0363510dedeeb1c",
+          "retained_projection_sha256": "ebe4748a3d90d57e9016fea3d773955ffe32739eb1b1af4be0363510dedeeb1c"
+        },
+        {
+          "field": "required",
+          "original_records": 1,
+          "current_records": 1,
+          "preserved_records": 1,
+          "original_sha256": "80f37ae340e5deb197179d6903ae2fa7544e8f6d686650075ea5b748c0130305",
+          "retained_projection_sha256": "80f37ae340e5deb197179d6903ae2fa7544e8f6d686650075ea5b748c0130305"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 1,
+          "current_records": 1,
+          "preserved_records": 1,
+          "original_sha256": "c0fcbe9cd28432a3021fb4bb2dbc0c94cf3fb8eafa2de9df3b5a340152776b7c",
+          "retained_projection_sha256": "c0fcbe9cd28432a3021fb4bb2dbc0c94cf3fb8eafa2de9df3b5a340152776b7c"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_receipt_sources.rs",
+      "original_canonical_row_sha256": "f00cc2f22c178effe5b8cc3c33063cbcd0cda056d36a6e2e206527051ac80e54",
+      "current_canonical_row_sha256": "f00cc2f22c178effe5b8cc3c33063cbcd0cda056d36a6e2e206527051ac80e54",
+      "fields": [
+        {
+          "field": "forbidden",
+          "original_records": 26,
+          "current_records": 26,
+          "preserved_records": 26,
+          "original_sha256": "adef79333fd489f494c49afe2898b9b886638b4231a1bb3b1c8221a4514739fa",
+          "retained_projection_sha256": "adef79333fd489f494c49afe2898b9b886638b4231a1bb3b1c8221a4514739fa"
+        },
+        {
+          "field": "required",
+          "original_records": 2,
+          "current_records": 2,
+          "preserved_records": 2,
+          "original_sha256": "088f50376b3f62252850267cf00ef949d39369e2783afe6f82b772f6bb9d076c",
+          "retained_projection_sha256": "088f50376b3f62252850267cf00ef949d39369e2783afe6f82b772f6bb9d076c"
+        },
+        {
+          "field": "required_function_order",
+          "original_records": 5,
+          "current_records": 5,
+          "preserved_records": 5,
+          "original_sha256": "8ecd86d9b7a6a0ea92253d9950a6358b3ae8b0915706621d85cf0343e810a2ce",
+          "retained_projection_sha256": "8ecd86d9b7a6a0ea92253d9950a6358b3ae8b0915706621d85cf0343e810a2ce"
+        }
+      ],
+      "lost_records": 0,
+      "added_function_guards": [],
+      "added_empty_required_order": false,
+      "added_metadata_source_sha256": null
+    }
+  ]
+}

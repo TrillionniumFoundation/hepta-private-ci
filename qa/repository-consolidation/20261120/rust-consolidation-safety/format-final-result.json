@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.final-combined-format.v1",
+  "base": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+  "bazel_source_commit": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+  "source_file_count": 13,
+  "scope": "All changed production/configuration/test/readme files: eight original repair files and five exact B4 postimages. Original repository justfile, formatter and verbatim fixtures are retained. Generated audit artifacts are outside formatter selections.",
+  "started_unix": 1795141215.7750556,
+  "source_before": {
+    "tools/branch-consolidation/hepta_branch_consolidation.py": "d5d4047be9282be9760af63a9a0aa1e3e33e4cd85775025fbdf18b91e0aad5f7",
+    "tools/branch-consolidation/test_hepta_branch_consolidation.py": "07c86918e63b69a89923cda871a1f5daa16f5cfc6c944cbedfffb5abf300f25c",
+    "tools/branch-consolidation/protected-branches.json": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f",
+    "tools/branch-consolidation/README.md": "da95f06b1e53169c2f85761e9b1a29c91b08949f6f7ad799d1b7ba6b47300af0",
+    "defs.bzl": "4721b4acc935c55f5c34c7c38f2648b9f00687cb27df3083df3af5e0562cd576",
+    "codex-rs/ext/extension-api/BUILD.bazel": "24321aabce706f28f8c498be10b50dca5105eafa3fbe7d9699c3024ff1ae0e26",
+    "codex-rs/hepta-context-compiler/BUILD.bazel": "0e1fa46c178925ab7c160f82f8708048ad4dfe9e72f5733de136f88456bdd7e2",
+    "codex-rs/ext/hepta-prompt/BUILD.bazel": "661e6abbc064de658fc31ba6842bb95ac49e89e24fd455498e35053399d99249",
+    "qa/b4-no-bypass/test_original_material_owner_source_closure.py": "3a55d67e4e1335b31d7180d945afeb0b3be873840a26160250ceff9a8d6ede99",
+    "qa/b4-no-bypass/test_original_material_evidence_source_closure.py": "a0445168c96db880f009502a0a6a378ac85aecac3383492d872df2de272cc5c4",
+    "qa/b4-no-bypass/test_original_material_command_source_closure.py": "f1164ef653e40ae7bbed6bad4205461004b0f7f979c83e94c712bfb9079c029b",
+    "qa/b4-no-bypass/test_original_execution_owner_source_closure.py": "7a7560cda9d156fcf60ac2c8f83b29f542453939cd6bfbcc2f521f1913e2d5e1",
+    "qa/b4-no-bypass/test_positive_circuit_next_use_source_closure.py": "dbfa73b77a4bbd09f7c8b0e82bbdbb4c2cfdd593775bb1c84a307caf2f834db6"
+  },
+  "formatter_inputs": {
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "scripts/format.py": "d42fa841b1aa809d1016508d3091e4c8aedb14bcae0e86b08a4e60f98d7ad2c5",
+    "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+    "tools/buildifier": "818bfc01e21fceb0d83ddaf4614531418ea763e25499f7f9fd03c7a853948fe6"
+  },
+  "command": {
+    "args": [
+      "/home/qian-qi/.cargo/bin/just",
+      "fmt"
+    ],
+    "exit_code": 0,
+    "seconds": 0.11160469055175781,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "output": ""
+  },
+  "source_after": {
+    "tools/branch-consolidation/hepta_branch_consolidation.py": "d5d4047be9282be9760af63a9a0aa1e3e33e4cd85775025fbdf18b91e0aad5f7",
+    "tools/branch-consolidation/test_hepta_branch_consolidation.py": "07c86918e63b69a89923cda871a1f5daa16f5cfc6c944cbedfffb5abf300f25c",
+    "tools/branch-consolidation/protected-branches.json": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f",
+    "tools/branch-consolidation/README.md": "da95f06b1e53169c2f85761e9b1a29c91b08949f6f7ad799d1b7ba6b47300af0",
+    "defs.bzl": "4721b4acc935c55f5c34c7c38f2648b9f00687cb27df3083df3af5e0562cd576",
+    "codex-rs/ext/extension-api/BUILD.bazel": "24321aabce706f28f8c498be10b50dca5105eafa3fbe7d9699c3024ff1ae0e26",
+    "codex-rs/hepta-context-compiler/BUILD.bazel": "0e1fa46c178925ab7c160f82f8708048ad4dfe9e72f5733de136f88456bdd7e2",
+    "codex-rs/ext/hepta-prompt/BUILD.bazel": "661e6abbc064de658fc31ba6842bb95ac49e89e24fd455498e35053399d99249",
+    "qa/b4-no-bypass/test_original_material_owner_source_closure.py": "3a55d67e4e1335b31d7180d945afeb0b3be873840a26160250ceff9a8d6ede99",
+    "qa/b4-no-bypass/test_original_material_evidence_source_closure.py": "a0445168c96db880f009502a0a6a378ac85aecac3383492d872df2de272cc5c4",
+    "qa/b4-no-bypass/test_original_material_command_source_closure.py": "f1164ef653e40ae7bbed6bad4205461004b0f7f979c83e94c712bfb9079c029b",
+    "qa/b4-no-bypass/test_original_execution_owner_source_closure.py": "7a7560cda9d156fcf60ac2c8f83b29f542453939cd6bfbcc2f521f1913e2d5e1",
+    "qa/b4-no-bypass/test_positive_circuit_next_use_source_closure.py": "dbfa73b77a4bbd09f7c8b0e82bbdbb4c2cfdd593775bb1c84a307caf2f834db6"
+  },
+  "source_unchanged": true,
+  "complete": true,
+  "finished_unix": 1795141215.8889518
+}

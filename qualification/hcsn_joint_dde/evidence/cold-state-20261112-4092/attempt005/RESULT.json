@@ -1,0 +1,70 @@
+{
+  "status": "PASS_RESEARCH_ONLY",
+  "source_before": {
+    "qualification/hcsn_joint_dde/basis.py": "514df92e13970f2839e9bea6d03e24b4cf52fde57915425e4684fe6de866e13d",
+    "qualification/hcsn_joint_dde/graded.py": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da",
+    "qualification/hcsn_joint_dde/graded_migration.py": "ac2fc4ed94d87f20dbd6cb6ee2ba8d91342538cbef70426c4bad26a126d8a1a4",
+    "qualification/hcsn_joint_dde/model.py": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+    "qualification/hcsn_joint_dde/qualify_state.py": "339db2c38b1950ea814e83ddba94c0f7de27384869062d162825f3932d9b1a06",
+    "qualification/hcsn_joint_dde/reference.py": "9e8ea431118229c8eb1bec0fe809faffc158b3decd2157a52331551d675d18de",
+    "qualification/hcsn_joint_dde/short_gap_reference.py": "426b1b47732f7044d14b610abc9d7ab3f67a34173caec8d9f43297b38c47812c",
+    "qualification/hcsn_joint_dde/state_io.py": "9c09b22679eb63f89ebacbb24ceea6b2c94f0b973e621bf62f4122767a455c7c",
+    "qualification/hcsn_joint_dde/test_graded.py": "9b2b1453c82d0adfacc7b3211a211650c1317de2b85fae6a3f1efc24ccce4092",
+    "qualification/hcsn_joint_dde/test_migration_binding.py": "b49e3aabf8ff9efa267cd2503b0bf3ef2f1235afbf7329b91ee6dba6e9add3aa",
+    "qualification/hcsn_joint_dde/test_model.py": "195e4e43d619dbb5434154bf406a256e51ef45ec448c1f73323e03c762e675dc",
+    "qualification/hcsn_joint_dde/test_state.py": "52ac862ca2bcaccadb758d9267507d18f38cb6360d2067b08168ca30e1ea29d7",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+  },
+  "source_after": {
+    "qualification/hcsn_joint_dde/basis.py": "514df92e13970f2839e9bea6d03e24b4cf52fde57915425e4684fe6de866e13d",
+    "qualification/hcsn_joint_dde/graded.py": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da",
+    "qualification/hcsn_joint_dde/graded_migration.py": "ac2fc4ed94d87f20dbd6cb6ee2ba8d91342538cbef70426c4bad26a126d8a1a4",
+    "qualification/hcsn_joint_dde/model.py": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+    "qualification/hcsn_joint_dde/qualify_state.py": "339db2c38b1950ea814e83ddba94c0f7de27384869062d162825f3932d9b1a06",
+    "qualification/hcsn_joint_dde/reference.py": "9e8ea431118229c8eb1bec0fe809faffc158b3decd2157a52331551d675d18de",
+    "qualification/hcsn_joint_dde/short_gap_reference.py": "426b1b47732f7044d14b610abc9d7ab3f67a34173caec8d9f43297b38c47812c",
+    "qualification/hcsn_joint_dde/state_io.py": "9c09b22679eb63f89ebacbb24ceea6b2c94f0b973e621bf62f4122767a455c7c",
+    "qualification/hcsn_joint_dde/test_graded.py": "9b2b1453c82d0adfacc7b3211a211650c1317de2b85fae6a3f1efc24ccce4092",
+    "qualification/hcsn_joint_dde/test_migration_binding.py": "b49e3aabf8ff9efa267cd2503b0bf3ef2f1235afbf7329b91ee6dba6e9add3aa",
+    "qualification/hcsn_joint_dde/test_model.py": "195e4e43d619dbb5434154bf406a256e51ef45ec448c1f73323e03c762e675dc",
+    "qualification/hcsn_joint_dde/test_state.py": "52ac862ca2bcaccadb758d9267507d18f38cb6360d2067b08168ca30e1ea29d7",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+  },
+  "tests_passed": 28,
+  "skipped": 0,
+  "cold_process_restore": true,
+  "resume_clock": 0.417,
+  "maximum_absolute_errors": {
+    "active": 2.4291291200739806e-11,
+    "upper": 3.360571878012388e-13,
+    "refractory": 7.010586555722398e-11,
+    "events": 3.801525760849245e-11,
+    "discounted_events": 5.515632395258763e-11,
+    "discounted_active_time": 2.0241586184965854e-12,
+    "discounted_remaining_phase": 7.671177582047051e-11,
+    "content_residual": 8.881784197001252e-16
+  },
+  "controls": {
+    "rtol": 2e-11,
+    "atol": 2e-13,
+    "max_step": 0.01
+  },
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "checkpoints": {
+    "BEFORE.json.gz": {
+      "bytes": 33303,
+      "sha256": "b219d50fe28288a34241f1d807167dbed9c5582993c46acf0c7ee57a02e6b03c"
+    },
+    "AFTER.json.gz": {
+      "bytes": 13766,
+      "sha256": "3c4f5530ba7fdeef2b29b8ca984d9497f90c83b548606b31128792e1ddc4c767"
+    }
+  },
+  "optimizer_calls": 0,
+  "complete_c2_replays": 0,
+  "cell_adoption": false
+}

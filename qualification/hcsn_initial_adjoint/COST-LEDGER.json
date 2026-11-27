@@ -1,0 +1,75 @@
+{
+  "actual_calls": {
+    "adjoint_calls": 18,
+    "forward_basis_calls": 0,
+    "forward_dde_calls": 0,
+    "independent_matrix_exponentials": 196,
+    "optimizer_updates": 0,
+    "static_perpetual_solves": 2,
+    "torch_calls": 0,
+    "zero_horizon_adjoint_calls": 2
+  },
+  "basis_oracle_data_reused_without_solves": true,
+  "call_breakdown": {
+    "geometry_adjoint": 16,
+    "independent_matrix_exponentials": {
+      "geometries": 2,
+      "per_geometry": {
+        "atom": 2,
+        "uniform_coarse": 32,
+        "uniform_fine": 64
+      }
+    },
+    "scalar_adjoint": 2,
+    "zero_horizon_adjoint": 2
+  },
+  "execution": {
+    "attempts": 1,
+    "exit_code": 0,
+    "kind": "one local CPU process",
+    "session_id": 41682,
+    "threads_environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "global_status": "HOLD",
+  "identity": "hcsn-initial-adjoint-local-20261112-c06d-stage1",
+  "independent_review_cost": {
+    "arithmetic_review_only": true,
+    "candidate_imports_ode_adjoint_expm_static_torch_optimizer_calls": 0,
+    "receipt": "evidence/review001/REVIEW-001.json",
+    "reported_cpu_seconds": 0.6077210039999998,
+    "reported_wall_seconds": 0.10265737999907287
+  },
+  "old_native_ci_repeated": false,
+  "per_call_maxima": {
+    "internal_steps": 3056,
+    "maximum_current_jacobian_nonzeros": 147,
+    "method_segments": 9,
+    "quadrature_evaluations": 4312,
+    "rhs_evaluations": 6142,
+    "stored_scalars": 934247
+  },
+  "post_format_candidate_calls": 0,
+  "process_maximum_rss_kib": 72760,
+  "resource_caps_apply_per_adjoint_call": true,
+  "source_commit": "caba5a3f3a77d0a6eb7d54b5a906ae3bbb4fb772",
+  "stage_sums": {
+    "internal_steps": 9536,
+    "quadrature_evaluations": 15190,
+    "rhs_evaluations": 19161,
+    "stored_scalars": 2234311
+  },
+  "stored_scalar_cap_is_not_hard_rss_limit": true,
+  "validation_loop": {
+    "cpu_seconds": 2.6486159,
+    "excludes": [
+      "module import/startup",
+      "source and baseline archive admission"
+    ],
+    "total_process_wall_seconds": null,
+    "wall_seconds": 2.664148922000095
+  }
+}

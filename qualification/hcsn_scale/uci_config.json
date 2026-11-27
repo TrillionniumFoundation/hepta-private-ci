@@ -1,0 +1,20 @@
+{
+  "experiment_id": "HCSN-P4-UCI864-20261120-1d88-v1",
+  "data_dir": "/home/qian-qi/hcsn-adaptive-20261120-1d88/data/uci864-query-v1",
+  "models": ["hcsn", "gru"],
+  "widths": [4, 8, 16],
+  "seeds": [11, 29, 47],
+  "steps": 24,
+  "checkpoints": [0, 8, 24],
+  "batch_size": 2,
+  "bins": 4,
+  "stages": 2,
+  "dtype": "float64",
+  "device": "cpu",
+  "threads": 1,
+  "interop_threads": 1,
+  "learning_rate": 0.003,
+  "gradient_clip": 1.0,
+  "ridge": 0.001,
+  "budget": {"wall_seconds": 180.0}
+}

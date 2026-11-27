@@ -1,0 +1,107 @@
+{
+  "boundary_records": 223,
+  "files": [
+    {
+      "bytes": 721,
+      "path": "AFTER.json",
+      "sha256": "12a91e00dc690ec84f5cab7cbc2b8c1437c4e134b5a80ab5a66ff43cae9bca59"
+    },
+    {
+      "bytes": 0,
+      "path": "AFTER_STATUS.porcelain.z",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 721,
+      "path": "BEFORE.json",
+      "sha256": "1908436c277cbbd126ed04c68b3558cdec3fa702fc0e0f1d404d1d70b53cb0e6"
+    },
+    {
+      "bytes": 0,
+      "path": "BEFORE_STATUS.porcelain.z",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2862,
+      "path": "EXECUTION.json",
+      "sha256": "0baf115da2756e63d082d9b1cfb3920b225a67effd036eff1dfc1ac3103328ad"
+    },
+    {
+      "bytes": 140,
+      "path": "FETCH.stderr",
+      "sha256": "cce34d63d019e2a2a38586ef98f7cef41e43b63154288a16fdf3ec699ef7f92d"
+    },
+    {
+      "bytes": 0,
+      "path": "FETCH.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3376,
+      "path": "HEARTBEATS.jsonl",
+      "sha256": "68c47150a16fbc6caa1b100ac2ec86bf33d894aeaad2190737ff29acfbc72043"
+    },
+    {
+      "bytes": 1409,
+      "path": "INVOCATION.json",
+      "sha256": "8d2e2aeb72276e9880e135e5cf05f3132c4fda30ae5872a58513d47057a00bce"
+    },
+    {
+      "bytes": 605,
+      "path": "ORIGINAL_CHECKOUT.json",
+      "sha256": "3ca22f13a1499dfa1b56dfc887b8334d04501452be7b03866e09d31ff398ec3f"
+    },
+    {
+      "bytes": 0,
+      "path": "ORIGINAL_STATUS.porcelain.z",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 688,
+      "path": "PREPARATION.json",
+      "sha256": "f7efcfed1e9c90d0c22933367acc9892ce867c1243413bcdc8c0d07df18c86d9"
+    },
+    {
+      "bytes": 4670,
+      "path": "RESULTS.md",
+      "sha256": "b6f322acc330eafc9a679108124d04d83ca6e1491d74854c512a1181aef3606b"
+    },
+    {
+      "bytes": 0,
+      "path": "SCAN.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 103063,
+      "path": "SCAN.stdout.json",
+      "sha256": "83201a799a7be1e04116ad1b089b32761ae6d37ed77de35885e12d441f825c7c"
+    },
+    {
+      "bytes": 65,
+      "path": "SWITCH.stderr",
+      "sha256": "312a86c8457fb942d55a080f17832878ec9e138949f47f2b07c5176d6ed8e75a"
+    },
+    {
+      "bytes": 0,
+      "path": "SWITCH.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6782,
+      "path": "run_full_scan.py",
+      "sha256": "0fa94dfca8877df1dca3507337fcb2867026c7e60914f49e8519697175d32d3e"
+    }
+  ],
+  "invocation_key": "p0-cb0598-full-caller-scan-20261111-v1",
+  "original_stderr_preserved": true,
+  "original_stdout_preserved": true,
+  "privileged_inventory_entries": 223,
+  "protected_file_records": 218,
+  "rust_files_scanned": 6302,
+  "schema": "hepta.final-caller-scan-evidence.v1",
+  "scope": "Single complete exact-source static caller verification; no native or full-chain qualification.",
+  "source_head": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+  "unique_protected_paths": 173,
+  "verifier_status": "PASS_HEPTA_CALLER_CLOSED_SET"
+}

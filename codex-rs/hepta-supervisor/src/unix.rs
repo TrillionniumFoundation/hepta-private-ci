@@ -14,6 +14,7 @@ use std::sync::mpsc::Receiver;
 use std::sync::mpsc::SyncSender;
 use std::sync::mpsc::TryRecvError;
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 use codex_hepta_agent_protocol::AgentdPayload;
@@ -47,6 +48,23 @@ use crate::ProcessState;
 use crate::ProcessStream;
 use crate::SpawnSpec;
 use crate::driver::SpawnedProcess;
+
+#[path = "unix_health_diagnostics.rs"]
+mod health_diagnostics;
+use health_diagnostics::HealthProbeDiagnostics;
+use health_diagnostics::HealthProbeFailure;
+
+#[cfg(target_os = "linux")]
+#[path = "precreated.rs"]
+mod precreated;
+#[cfg(target_os = "linux")]
+pub use precreated::PrecreatedChild;
+#[cfg(target_os = "linux")]
+pub use precreated::PrecreatedProcessDriver;
+#[cfg(target_os = "linux")]
+pub use precreated::receive_precreated_spawn;
+#[cfg(target_os = "linux")]
+pub use precreated::receive_precreated_spawn_with_descriptor;
 
 const LOG_CHUNK_BYTES: usize = 4_096;
 const HEALTH_PROBE_INTERVAL: Duration = Duration::from_millis(50);
@@ -82,7 +100,11 @@ pub struct UnixManagedProcess {
 
 enum UnixProcessHandle {
     Child(Child),
-    Adopted { process_id: u32 },
+    Adopted {
+        process_id: u32,
+    },
+    #[cfg(target_os = "linux")]
+    Precreated(precreated::PinnedChild),
 }
 
 impl UnixProcessHandle {
@@ -90,6 +112,8 @@ impl UnixProcessHandle {
         match self {
             Self::Child(child) => child.id(),
             Self::Adopted { process_id } => *process_id,
+            #[cfg(target_os = "linux")]
+            Self::Precreated(child) => child.pid,
         }
     }
 }
@@ -119,6 +143,17 @@ impl ManagedProcess for UnixManagedProcess {
             },
             UnixProcessHandle::Adopted { process_id } => {
                 if let Some(exit) = poll_adopted_process(*process_id)? {
+                    self.health_probe.shutdown();
+                    return Ok(ProcessObservation {
+                        state: ProcessState::Exited(exit),
+                        logs,
+                    });
+                }
+                true
+            }
+            #[cfg(target_os = "linux")]
+            UnixProcessHandle::Precreated(child) => {
+                if let Some(exit) = child.poll()? {
                     self.health_probe.shutdown();
                     return Ok(ProcessObservation {
                         state: ProcessState::Exited(exit),
@@ -164,10 +199,18 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
+        #[cfg(target_os = "linux")]
+        if let UnixProcessHandle::Precreated(child) = &self.handle {
+            return child.signal(libc::SIGTERM);
+        }
         send_signal(self.handle.process_id(), libc::SIGTERM)
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
+        #[cfg(target_os = "linux")]
+        if let UnixProcessHandle::Precreated(child) = &self.handle {
+            return child.signal(libc::SIGKILL);
+        }
         send_signal(self.handle.process_id(), libc::SIGKILL)
     }
 }
@@ -497,22 +540,25 @@ fn run_health_probe(
     shutdown: Arc<AtomicBool>,
 ) {
     let mut request_id = 1_u64;
+    let mut diagnostics = HealthProbeDiagnostics::default();
     while !shutdown.load(Ordering::Acquire) {
-        ready.store(
-            probe_health_once(&identity, request_id).unwrap_or(false),
-            Ordering::Release,
-        );
+        let started = Instant::now();
+        let observation = query_health_once(&identity, request_id);
+        let next_ready = observation.as_ref().is_ok_and(|value| value.ready);
+        let previous_ready = ready.load(Ordering::Acquire);
+        ready.store(next_ready, Ordering::Release);
+        if previous_ready && !next_ready {
+            diagnostics.record(
+                identity.agent_id(),
+                request_id,
+                started.elapsed(),
+                &observation,
+            );
+        }
         request_id = request_id.wrapping_add(1).max(1);
         std::thread::sleep(HEALTH_PROBE_INTERVAL);
     }
     ready.store(false, Ordering::Release);
-}
-
-fn probe_health_once(
-    identity: &HealthProbeIdentity,
-    request_id: u64,
-) -> Result<bool, ProcessDriverError> {
-    Ok(query_health_once(identity, request_id)?.ready)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -538,7 +584,7 @@ fn prove_adoption_identity(identity: &HealthProbeIdentity) -> bool {
 fn query_health_once(
     identity: &HealthProbeIdentity,
     request_id: u64,
-) -> Result<HealthProbeObservation, ProcessDriverError> {
+) -> Result<HealthProbeObservation, HealthProbeFailure> {
     match identity {
         HealthProbeIdentity::Agentd(identity) => query_agent_health_once(identity, request_id),
         HealthProbeIdentity::Matrixd(identity) => query_matrix_health_once(identity, request_id),
@@ -548,7 +594,7 @@ fn query_health_once(
 fn query_agent_health_once(
     identity: &AgentHealthProbeIdentity,
     request_id: u64,
-) -> Result<HealthProbeObservation, ProcessDriverError> {
+) -> Result<HealthProbeObservation, HealthProbeFailure> {
     let request = AgentdRequest::health(request_id, identity.spawn_generation);
     let mut bytes = serde_json::to_vec(&request)?;
     bytes.push(b'\n');
@@ -642,12 +688,25 @@ fn query_agent_drain_once(
             "Agentd drain request exceeded the bounded control frame",
         ));
     }
-    let response_bytes = match read_agent_drain_frame(identity, &bytes) {
+    interpret_agent_drain_response(
+        identity,
+        request_id,
+        read_agent_drain_frame(identity, &bytes),
+    )
+}
+
+fn interpret_agent_drain_response(
+    identity: &AgentHealthProbeIdentity,
+    request_id: u64,
+    response: std::io::Result<Vec<u8>>,
+) -> Result<bool, ProcessDriverError> {
+    let response_bytes = match response {
         Ok(response) => response,
         Err(error)
             if matches!(
                 error.kind(),
                 std::io::ErrorKind::NotFound
+                    | std::io::ErrorKind::NotConnected
                     | std::io::ErrorKind::ConnectionRefused
                     | std::io::ErrorKind::ConnectionReset
                     | std::io::ErrorKind::ConnectionAborted
@@ -658,7 +717,7 @@ fn query_agent_drain_once(
                     | std::io::ErrorKind::Interrupted
             ) =>
         {
-            // Shutdown can remove the control socket before waitpid sees exit.
+            // Peer shutdown can disconnect or remove the socket before waitpid sees exit.
             // No response is NOT a drain acknowledgement. Preserve the existing
             // deadline/escalation path instead of aborting lifecycle observation.
             return Ok(false);
@@ -702,7 +761,7 @@ fn query_agent_drain_once(
 fn query_matrix_health_once(
     identity: &MatrixHealthProbeIdentity,
     request_id: u64,
-) -> Result<HealthProbeObservation, ProcessDriverError> {
+) -> Result<HealthProbeObservation, HealthProbeFailure> {
     let request = MatrixdRequest {
         schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
         request_id,
@@ -863,6 +922,10 @@ fn poll_adopted_process(process_id: u32) -> Result<Option<ProcessExit>, ProcessD
 #[cfg(test)]
 #[path = "unix_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "unix_health_diagnostics_tests.rs"]
+mod health_diagnostics_tests;
 
 #[cfg(test)]
 #[path = "unix_drain_tests.rs"]

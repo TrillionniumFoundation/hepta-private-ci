@@ -1,0 +1,506 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+    "decision": "Retain current typed anyhow fixture errors, complete original assertions, canonical paths, platform identity-only fixture, and runtime initialization; incoming changes mainly string error lowering and expect conversions, no unique cases.",
+    "sha256": "35e6ab8cb8f82fa3bdd7da106aecc131579e130be668a4b647a02d1160fc5bfe",
+    "bytes": 9990,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+    "decision": "Retain current typed anyhow fixture errors, complete original assertions, canonical paths, platform identity-only fixture, and runtime initialization; incoming changes mainly string error lowering and expect conversions, no unique cases.",
+    "sha256": "3618a782a02a270fe36bbb74ef971bf704f3121be6911d3af057a03d9160f499",
+    "bytes": 10955,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_current_tests.rs",
+    "decision": "Retain current typed anyhow fixture errors, complete original assertions, canonical paths, platform identity-only fixture, and runtime initialization; incoming changes mainly string error lowering and expect conversions, no unique cases.",
+    "sha256": "6ab143cc53d75b34920b46d02a03dfc908d4088638eb9bda0740293d3fa3c08a",
+    "bytes": 5776,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_host_session_tests.rs",
+    "decision": "Retain current typed anyhow fixture errors, complete original assertions, canonical paths, platform identity-only fixture, and runtime initialization; incoming changes mainly string error lowering and expect conversions, no unique cases.",
+    "sha256": "20b1eb9577f0848fcb10b2b94d6ffcd3fe0b66a4f8c01436877fdd31f4aa1ca3",
+    "bytes": 5941,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_registration_current_tests.rs",
+    "decision": "Retain current typed anyhow fixture errors, complete original assertions, canonical paths, platform identity-only fixture, and runtime initialization; incoming changes mainly string error lowering and expect conversions, no unique cases.",
+    "sha256": "51adbfcf22dcfb37b3cd00d5975c2a41bc612b69563fe059ad2a29117c34d20c",
+    "bytes": 11587,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_registration_pretrained_tests.rs",
+    "decision": "Retain current typed anyhow fixture errors, complete original assertions, canonical paths, platform identity-only fixture, and runtime initialization; incoming changes mainly string error lowering and expect conversions, no unique cases.",
+    "sha256": "b4a01fe983e865d5f2f110962c9b03a9e48ab1986f8942cf1f1220d56b17b115",
+    "bytes": 8494,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_registration_startup_tests.rs",
+    "decision": "Retain current typed anyhow fixture errors, complete original assertions, canonical paths, platform identity-only fixture, and runtime initialization; incoming changes mainly string error lowering and expect conversions, no unique cases.",
+    "sha256": "9deb75e841fe56fb6a9241f4646099b4abdb7085ea6fdc8914a2fd0f6d900088",
+    "bytes": 2973,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs",
+    "decision": "Retain current typed anyhow fixture errors, complete original assertions, canonical paths, platform identity-only fixture, and runtime initialization; incoming changes mainly string error lowering and expect conversions, no unique cases.",
+    "sha256": "c3defdd8fbe7b0fea9b25ab56bf463c29fd000c63f8a76f5b00cb5e411e7cec3",
+    "bytes": 10711,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+    "decision": "Retain current typed anyhow fixture errors, complete original assertions, canonical paths, platform identity-only fixture, and runtime initialization; incoming changes mainly string error lowering and expect conversions, no unique cases.",
+    "sha256": "5f406bbf388caae41934a60be872eb8da6920caa835c55e249750da5d8137976",
+    "bytes": 12751,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+    "decision": "Retain current typed anyhow fixture errors, complete original assertions, canonical paths, platform identity-only fixture, and runtime initialization; incoming changes mainly string error lowering and expect conversions, no unique cases.",
+    "sha256": "e5f544bbcdb3678836819dbbd95a7c0eba7f3f13376e75fa1ee3a0a37dd43009",
+    "bytes": 25042,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/BUILD.bazel",
+    "decision": "Retain real model_child.py runfile and 4 unit-test shards; preserve all other incoming automatic entries.",
+    "sha256": "6e7efb389afd2a1b67238350ea5ad428863c0e2be382aaa5166d999bfa2c0a1c",
+    "bytes": 13963,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_checkpoint_expiry_tests.rs",
+    "decision": "Retain explicit expiry-successor timestamp and endpoint assertions; incoming bytes match historical current ancestor b373b727.",
+    "sha256": "17cb3b80d8a383c5995e54f3ffa5f4fa696d3473944789c78f1f03406d144635",
+    "bytes": 9741,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "decision": "Retain diagnostic error payloads; incoming matches historical ae319812.",
+    "sha256": "c1b94cfccbf4ed940a8210ff3cd563de84444f142a2777baf256bf23f50d466c",
+    "bytes": 64610,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/automation_hcsn_pq_tests.rs",
+    "decision": "Retain existing imported request type name over fully-qualified spelling.",
+    "sha256": "f1049cdfd70a536d6085843d156b2efd810f6bac13f13ae291dd945df4b0e8a1",
+    "bytes": 15802,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/automation_hcsn_source_host_tests.rs",
+    "decision": "Retain existing imported request type name over fully-qualified spelling.",
+    "sha256": "33c88dd4d5861a7e97c61779cfb0c84c1370a5b744ad7136c540b1deec54cf01",
+    "bytes": 5648,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+    "decision": "Retain current unique imports and OriginalStateSlot lease names from d3746789; incoming duplicate imports removed.",
+    "sha256": "85d40a1fc3c67170e5bc680b038132f463092bbb338b1ab6abe85a0d1a1667d4",
+    "bytes": 14028,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+    "decision": "Retain OriginalStateSlot lease naming; same bounded operation semantics.",
+    "sha256": "f148cc0e6d59f5617180ebb5c5ff717306d23141809f56cead1103590bfdc9b0",
+    "bytes": 13076,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+    "decision": "Retain current boxed OriginalStateSlot, avoiding older duplicate StageSlot representation.",
+    "sha256": "bf4f6c9dba820421d289a25c2eb13f04ca66e4e0f5cc22976f0ded75616bb7d4",
+    "bytes": 6768,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+    "decision": "Retain current unique imports and boxed slot lease; incoming duplicate imports removed.",
+    "sha256": "7bb99fd9fc5ed2443a8563866e847e9af5ac866db9a6125ad538caa1d9b06cb9",
+    "bytes": 11473,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+    "decision": "Retain immutable state() check and OriginalStateLease, preserving failure bits and same original state without mutex guard across await.",
+    "sha256": "6ab2fe99165a8cea928ffb9310f7f6b1ed183a6cbbc0b9148349269c67bdc83f",
+    "bytes": 15109,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+    "decision": "Retain boxed OriginalStateSlot consistently across owners and fixtures.",
+    "sha256": "432f8fcf4c5a57fdfd47bf033070de2e4ff0add150d4ac52bc4c5068742c2149",
+    "bytes": 13831,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+    "decision": "Retain OriginalStateSlot lease naming.",
+    "sha256": "47fdcb1b23139d3505e829dfc82840462f1713c72fced60d0bcc06c892469639",
+    "bytes": 8336,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs",
+    "decision": "Retain inferred context type; no behavior difference.",
+    "sha256": "c139c11f6739f4e23ce64d697146d27ac2ad62eacc45767ad4cb5d6f9e093125",
+    "bytes": 9396,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+    "decision": "Retain inferred context type; no behavior difference.",
+    "sha256": "3190055a743a350a39cfda1f45cfdec45c39b32f13755d73d185ec3161e25acc",
+    "bytes": 10241,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+    "decision": "Retain Linux actual current-owner module.",
+    "sha256": "e8d5f614f8fd7248a837c5b486f0c2d11d7d1a5cc70a32c86374932eb93e3972",
+    "bytes": 15901,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+    "decision": "Retain same boxed original continuation lease.",
+    "sha256": "5d0db0f7c23a95ff27790ec7138ef5c55ba32944be387fd8d8053589c3aa8fd4",
+    "bytes": 11661,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+    "decision": "Retain OriginalStateSlot representation.",
+    "sha256": "1d842c026fef31a3d15b01481cbe598fb3fd4ec317659a186353b942c75a4b3a",
+    "bytes": 8501,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+    "decision": "Retain OriginalStateSlot and OriginalStateLease family over duplicate StageSlot. Keep alternate incoming StageSlot tests compiled under cfg(test) only; actual production lanes use boxed original state.",
+    "sha256": "85890786f8065a6c82dc62139268e2b3ca1adf34afaf041c8457a5fcf9f7256e",
+    "bytes": 7757,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs",
+    "decision": "Retain current boxed fixture initialization and direct exclusive get_mut fixture setup.",
+    "sha256": "01f0b0943380c631caf08bc6050279332746abeec8d69174af751112b4780014",
+    "bytes": 2927,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs",
+    "decision": "Retain Self type spelling.",
+    "sha256": "67e904324697d65787111470836560372a9035de8638eb06ca9654e5dfd7e3a4",
+    "bytes": 17884,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+    "decision": "Retain current canonical directory variable; incoming matches historical 590da7d9.",
+    "sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031",
+    "bytes": 6282,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_credit_ledger_test_support.rs",
+    "decision": "Retain independent observer File bytes and immutable observation API, preserving original lock ownership.",
+    "sha256": "9d13154eb7cc5e44398f3a1fc7527b093ef638cb191bf03401192a8b58f765c4",
+    "bytes": 9252,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_credit_signed_tests.rs",
+    "decision": "Retain current existing canonical directory variable; incoming matches historical dce4a291.",
+    "sha256": "9634b734b02a84cdcdf0fd5d083467c6799272ea4ec199322e5f53530a35c03e",
+    "bytes": 11400,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+    "decision": "Retain current unique module/export ordering and Self type; preserve incoming nonconflicting source.",
+    "sha256": "f5e4fe085941551efbca006bdc982a253850dab94abe202773e02b6355e9a8e3",
+    "bytes": 18382,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+    "decision": "Retain explicit original GenerationArtifactOwner receiver; incoming matches historical ca1ae598.",
+    "sha256": "ffec18a7a0de4d4ec15d6ad7ba73487c269d3934a952bd9f2f04aa1fe44bd3f7",
+    "bytes": 13971,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+    "decision": "Retain current named OriginalModelVersionState type consistently.",
+    "sha256": "b18e23b6ba7d0c7fd48df4586ab3dd90c494ad8d3e24e217788e3dc629986847",
+    "bytes": 9280,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+    "decision": "Retain inclusive expiry endpoint positive assertion and checked expiry successor negative assertion.",
+    "sha256": "77c57a1c2f02b150f01765306a196725d5ca36e42e46caafe78c5e80b961cb91",
+    "bytes": 15341,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_driver_tests.rs",
+    "decision": "Retain current canonical directory variable; incoming matches historical dce4a291.",
+    "sha256": "2fb518cb63a3d442ee6f35cf54f92a2ebccdff821d2cf3fd1bbc01cd2067da7a",
+    "bytes": 13815,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+    "decision": "Retain independently held observer reads and release locks before cold filesystem checks.",
+    "sha256": "fdc8c1d74696418b884c07a06bd26ecfb56bcf875988e55dccdb0b0a218c773f",
+    "bytes": 27673,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/main.rs",
+    "decision": "Retain current bootstrap name and expected_digest variable consistently.",
+    "sha256": "98cfe984123cca99ecf61990ae1eba6a71d813d33cb0330460fe269a23240b5a",
+    "bytes": 15632,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs",
+    "decision": "Retain current precise wire-width comments and argument-name lint annotations.",
+    "sha256": "fdf6141fc8106c67d253fde8d0cba3f0d2e76c0dcb5384dc2aa0c63b1b6b109d",
+    "bytes": 9525,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+    "decision": "Retain current OriginalTrainingOperationState name consistently.",
+    "sha256": "cc0f9473d1da39b40155b96ba0d7c07373d81b435173bb1621c87da2a2fec88a",
+    "bytes": 12766,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner_tests.rs",
+    "decision": "Retain independent observer File assertions; incoming matches historical 590da7d9.",
+    "sha256": "efe83a34e641955b9ac9279030f1d1c8d6d7f99fe5e7ec303f0206641c9fc56b",
+    "bytes": 11379,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+    "decision": "Retain current fixture-setup versus production outcome distinction.",
+    "sha256": "af7d775fe5495d49314c3f3898321a18c41bb1f4b3715a456aab5526c9478265",
+    "bytes": 15741,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "decision": "Retain precise capture-before-lease/resume comment.",
+    "sha256": "e2e14dfd3e21a761e821f4584987cce50ba13df9256041360eafbfc0e7097740",
+    "bytes": 29544,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+    "decision": "Retain typed propagated fixture errors rather than panic conversions.",
+    "sha256": "43b8eca825e80f4fcebf60fc857089c9233fc2e40f6f59a8cdbca95f9a1a5233",
+    "bytes": 30299,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+    "decision": "Retain Debug rendering for precise original typed errors.",
+    "sha256": "bfba7a937a0c59db5a87de2b0cd8c0e77c36c0a6324a7607c63071708aa19a3b",
+    "bytes": 24062,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+    "decision": "Take incoming current Dataset check before journal revalidation after potentially blocking source reads; preserve fence and captured work deadline.",
+    "sha256": "16c39df3d08e1bd6b250c2fdf6f50a5728718a9e4e3f0e0ac6f629812ca820d8",
+    "bytes": 16517,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+    "decision": "Take shared source-aware original execution helper with start timestamp returned, preserving post-attestation deadline check in both wrappers and current captured-source/lane fences.",
+    "sha256": "f06e0919623b98f030deb44f12e54ada066771fe63415ebb7528284b9c3c7518",
+    "bytes": 21281,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+    "decision": "Retain incoming per-scenario test splitting with unchanged drop/withdraw/changed-tail assertions and original watchdogs.",
+    "sha256": "a9f5fea1e57a37441b9cd8091dee5a6b42825fa785e2af33fecc518375323ac4",
+    "bytes": 9049,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+    "decision": "Retain incoming boxed intermediate fixture construction to bound future stack frames.",
+    "sha256": "d76802cd4bccac84d6dd8219495f025b23991e195deb4e0a39674f1e0d148de4",
+    "bytes": 10439,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_operation.rs",
+    "decision": "Retain typed public source adapters and shared internal source-aware training attest/readback operations.",
+    "sha256": "56eb0c3ec431ddd248576e93bc11f39619b75385cd221e27392f837d769f99cd",
+    "bytes": 6720,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+    "decision": "Match incoming source adapter helper names and explicit trainer readback trait import. Follow-up type check: preserve enum-aware Independent readback and explicitly wrap External transport at helper dispatch; keep denial of OriginalQ24 Operation observations.",
+    "sha256": "d61be09028883707dac1fc89c5469be69113dd20932ce8a8859ecea7997309af",
+    "bytes": 22446,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_operation.rs",
+    "decision": "Retain explicit original evidence-client receiver disambiguation. Follow-up type check: preserve enum-aware Independent readback and explicitly wrap External transport at helper dispatch; keep denial of OriginalQ24 Operation observations.",
+    "sha256": "e4099d8bd84b04c5e4073ef088ffc3c0cb534ebbae7407163e1d31ef9f72a355",
+    "bytes": 5962,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+    "decision": "Retain incoming Unix private opened-directory RunStart file owner.",
+    "sha256": "5d653b8fda1189a11ae048ef05a979df2a3aee7121b42e28b77e20bc96592002",
+    "bytes": 18199,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/runtime.rs",
+    "decision": "Retain incoming startup readiness gate, repeated current source preflight before attachment, and final generation release; current critical cognitive fail-closed path remains.",
+    "sha256": "67f3d1a97382f3562736e9959b9da2051c498e56c27a64c40e5aa61d5a2b2261",
+    "bytes": 39701,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+    "decision": "Preserve incoming qualification-only typed refusal imports with existing LocalOutcomeState.",
+    "sha256": "e7bc2e0eeddb2ac817f30c1bb434502fb41add807c5999391a9324314eff227f",
+    "bytes": 18835,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/support/generation_paired_fixture.rs",
+    "decision": "Retain incoming bounded source reads and size/regular-file checks with existing paired commitments.",
+    "sha256": "695634ac7772969b44aa8baea23e46fae60dccdba43f8ee515e37c402491b720",
+    "bytes": 20854,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/support/generation_terminal_fixture.rs",
+    "decision": "Retain incoming bounded pinned-source reads and hash-check status before opening unfinished outcome artifacts.",
+    "sha256": "667703811ede79c6f72c5fc00cfe4c1542912742b31b2f6b507e60a842c95424",
+    "bytes": 16514,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/lib.rs",
+    "decision": "Union current module/export graph with all 27 genuinely new incoming declarations, preserving each platform cfg and current seven-stage owner-pinned learning router; avoid duplicate reordered exports. Also retain root-added Linux AgentdHos2HistoryDevice export from 1d9b928c.",
+    "sha256": "8bb6a6d7f6fc67cd4c0ba4a64547e5c719682ccd7f99c06a390121e3b400d3fb",
+    "bytes": 97312,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs",
+    "decision": "Retain historical current file; both independent actual current/incoming suites are already separately registered as bootstrap/prepared readback and captured/prepared source operation test modules in automatic merge.",
+    "sha256": "471cae7b10575bcd337d2ee3805993caa892320cecb69666f709e9d79bb1f660",
+    "bytes": 18280,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+    "decision": "Retain historical current file; both independent actual current/incoming suites are already separately registered as bootstrap/prepared readback and captured/prepared source operation test modules in automatic merge.",
+    "sha256": "c63f61bfd0689a48fe87991126d951568b0a854b920569ba258140d4b98754e8",
+    "bytes": 10935,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner_tests.rs",
+    "decision": "Union additional direct fenced-readback and retained-byte assertions with current typed signing errors; recover same controlled witness without resetting owner uncertainty.",
+    "sha256": "a52a22855e3506cf0cf7e3a2991a5b08eea409c842ddb8d1a253562bd7aa08af",
+    "bytes": 14734,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec_tests.rs",
+    "decision": "Retain all eight current codec regressions and add incoming six original-width boundary scenarios in a separate sibling module.",
+    "sha256": "9da7f21f53200af59de840e231a18c1bb9df5869b96e6acfc95c61c75f95ab62",
+    "bytes": 4543,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_profile_tests.rs",
+    "decision": "Preserve all six independent incoming codec width/count bound scenarios in a dedicated sibling module.",
+    "sha256": "9955173e4c19df8442c37aae321cfe16112899beeecccc435e1a213d03bb87f0",
+    "bytes": 5234,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+    "decision": "Retain current critical-owner unavailable startup test for every profile and exact immutable revision/source SQL bindings; incoming older default-readiness expectation conflicts with current fail-closed gate and introduces duplicate storage aliases.",
+    "sha256": "d5a334f0c846c506192b814bbd7bc2a9565a633128679270c0c4001bd3afa4be",
+    "bytes": 102726,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+    "decision": "Retain eight current page/regression/expiry entrypoints and typed host errors; split pending/no-pending/withdrawn/current-change cases using incoming independent original fixtures, unchanged assertions and frame budgets.",
+    "sha256": "b5f7da692b58048902879475be3e88acc6d6a08f39fcce5159333eb855264b43",
+    "bytes": 15163,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_process.rs",
+    "decision": "Combine incoming final current-owner callback and cancellation double-check with current private receipts, async IO deadline, bounded drains, EOF delivery, kill-on-drop, process group cleanup and unsupported-platform refusal.",
+    "sha256": "2aa7e116fa3e7335814c50a890f2b89286126d2eff3a4e4b6d7b9bae1ce7832d",
+    "bytes": 11170,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_model.rs",
+    "decision": "Keep current runtime handle block_on for async native process; dispatch count increments only inside incoming successful final current-owner/cancellation guard, after setup and before spawn.",
+    "sha256": "0eadcb0c6e6d2680b73f0db0dc7de515675b804484697fff48b8bdc8b7d64503",
+    "bytes": 13485,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_process_tests.rs",
+    "decision": "Preserve all current timeout, EOF, secret-environment, flood and descendant cleanup tests; add both incoming actual final-guard and cancellation-before-spawn assertions against combined async backend.",
+    "sha256": "155929597012e51c5f0e34a80a54a0c56b23a221dbfccded5a92eb4969752c75",
+    "bytes": 15069,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/native_memory_process_platform_tests.rs",
+    "decision": "Adapt existing unsupported-platform test to final-guard callback without changing its fail-closed assertion or platform cfg.",
+    "sha256": "cbffc44c09104fce83c4fc40da9c395d79cd5a2cd018f0965ecfad0113750d48",
+    "bytes": 590,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/test_support.rs",
+    "decision": "Preserve explicit-context-only and explicit sandbox profiles; unify their helper paths with incoming canonical start API and actual monitor readiness, owned tasks before await, and cancellation-safe Drop.",
+    "sha256": "634a61a4dca14a609be94271f8de92657d152b1653c09072fe1f5a4db6342d4d",
+    "bytes": 16590,
+    "merge_preview": "9b498917427ae97f80b34e6ec4adaa10a49eaa38"
+  }
+]

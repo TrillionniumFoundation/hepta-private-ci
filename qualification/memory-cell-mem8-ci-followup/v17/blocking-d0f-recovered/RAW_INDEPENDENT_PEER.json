@@ -1,0 +1,845 @@
+{
+  "schema": "mem8.d0f.store-recovery.independent-selected-raw-peer.v1",
+  "reviewed_at_utc": "2026-11-11 18:43:02 UTC",
+  "status": "VERIFIED_SELECTED_RAW_BYTES_AND_NARROW_BAZEL_ACCOUNTING_WITH_EXPLICIT_LIMITS",
+  "reviewer": "mem_experiment_review",
+  "source_manifest": {
+    "bytes": 53221,
+    "sha256": "fe32da678934ee4e6b29c31ad1353302f3ffde58dfb0189c1365747227eb9b0a",
+    "git_blob": "3b5c751478f8da58d2c695d347d4c6d7e7029943",
+    "actual_git_full_readback": true
+  },
+  "original_run": {
+    "id": 43062473474,
+    "attempt": 1,
+    "event": "pull_request",
+    "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+    "snapshot_observed_at_utc": "2026-11-11 18:22:38 UTC",
+    "status_at_snapshot": "in_progress",
+    "conclusion_at_snapshot": null,
+    "total_jobs": 36,
+    "counts_at_snapshot": {
+      "success": 24,
+      "cancelled": 4,
+      "skipped": 4,
+      "failure": 3,
+      "in_progress": 1
+    },
+    "snapshot_is_not_a_terminal_full_run_result": true
+  },
+  "actual_checkout": {
+    "merge_commit": "a49776ffdea3547ed407a710bb19e93377b29535",
+    "merge_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+    "parents": [
+      "96038ccf0660154fac143ba6cbe4be81e00813e8",
+      "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9"
+    ],
+    "basis": "All six original logs name the same full merge ref in their checkout command. The immutable Git commit was independently fetched and its tree/parents verified. The tree equals the d0f source tree.",
+    "post_job_clean_worktree_audit_performed": false
+  },
+  "selected_original_jobs": [
+    {
+      "job_id": 130668671236,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "run_id": 43062473474,
+      "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T16:52:17Z",
+      "completed_at": "2026-11-11T17:17:29Z"
+    },
+    {
+      "job_id": 130668671323,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "run_id": 43062473474,
+      "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T17:10:19Z"
+    },
+    {
+      "job_id": 130668671332,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "run_id": 43062473474,
+      "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T16:52:16Z",
+      "completed_at": "2026-11-11T17:11:38Z"
+    },
+    {
+      "job_id": 130668671376,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "run_id": 43062473474,
+      "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T16:52:16Z",
+      "completed_at": "2026-11-11T17:23:31Z"
+    },
+    {
+      "job_id": 130668671426,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "run_id": 43062473474,
+      "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T16:52:16Z",
+      "completed_at": "2026-11-11T17:05:31Z"
+    },
+    {
+      "job_id": 130668671482,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "run_id": 43062473474,
+      "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T16:52:16Z",
+      "completed_at": "2026-11-11T16:59:47Z"
+    }
+  ],
+  "recovery_scope": {
+    "manifest_declares": {
+      "raw_files": 26,
+      "raw_parts": 62,
+      "raw_bytes": 13669185,
+      "aggregate_row_sums_independently_checked": true
+    },
+    "independently_retrieved_and_reconstructed": {
+      "raw_files": 6,
+      "raw_parts": 24,
+      "raw_bytes": 6023174,
+      "all_parts_full_utf8_readback": true,
+      "all_part_and_whole_size_sha256_git_sha1_equal_original_pins": true
+    },
+    "remaining_not_independently_content_checked_in_this_peer": {
+      "raw_files": 20,
+      "raw_parts": 38,
+      "raw_bytes": 7646011
+    },
+    "raw_text_identity": "The recovered object is the original tool-decoded log text. Concatenation preserved its UTF-8 bytes, all CRLF/LF, initial and internal BOM, and ANSI escapes. Hashes were checked before any interpretation.",
+    "whole_file_git_hash_is_integrity_only_when_multipart": true,
+    "selected_whole_files": [
+      {
+        "path": "raw/job-130668671236.log",
+        "bytes": 404204,
+        "sha256": "b51670bd9d4edf19b5d672ff0a697bb61731afba650f265f228828847b555c26",
+        "git_blob": "f07f665f48b1e4cde9896467ced7047bc0f3ced8",
+        "parts": 2,
+        "utf16_characters": 404202,
+        "first_codepoint": 65279,
+        "BOM_count": 1,
+        "full_identity_verified": true
+      },
+      {
+        "path": "raw/job-130668671323.log",
+        "bytes": 435599,
+        "sha256": "a95b899a3a025cd9b83c7efaeac8342c0eb1f57342940afe845547aedd8178cc",
+        "git_blob": "77d0cd2dafb52e686493281a81703788a85825c4",
+        "parts": 2,
+        "utf16_characters": 435597,
+        "first_codepoint": 65279,
+        "BOM_count": 1,
+        "full_identity_verified": true
+      },
+      {
+        "path": "raw/job-130668671332.log",
+        "bytes": 601497,
+        "sha256": "ee9fa45b6f2d59233031e96bfad2b2e3fcf005c0a08c75a395bcfefc3d86248f",
+        "git_blob": "75c4f5631ed4f037af56f8493f3396ed7ce55bf5",
+        "parts": 3,
+        "utf16_characters": 601495,
+        "first_codepoint": 65279,
+        "BOM_count": 1,
+        "full_identity_verified": true
+      },
+      {
+        "path": "raw/job-130668671376.log",
+        "bytes": 3201889,
+        "sha256": "499edf02dad83e7669006f1d788edbdca1a7d43b144086631b539f306ffaf239",
+        "git_blob": "fac09318fdd6d4272167bbbf7d13815bd9e41b94",
+        "parts": 11,
+        "utf16_characters": 3201537,
+        "first_codepoint": 65279,
+        "BOM_count": 2,
+        "full_identity_verified": true
+      },
+      {
+        "path": "raw/job-130668671426.log",
+        "bytes": 384869,
+        "sha256": "589a9b7a680e1e83a1fa35b7060057eeffa2ff1b2dc5b9ec549bb82caea0d2dd",
+        "git_blob": "92c1db32e8c44f3a42500b416f8b9d71f3fc86a1",
+        "parts": 2,
+        "utf16_characters": 384867,
+        "first_codepoint": 65279,
+        "BOM_count": 1,
+        "full_identity_verified": true
+      },
+      {
+        "path": "raw/job-130668671482.log",
+        "bytes": 995116,
+        "sha256": "9aae343f5e637c7ec550b9c3177624a58a9cb886f58d60a5dfca92c0e24a3315",
+        "git_blob": "c0d252d7dab6feed9b288376562256daba4bd184",
+        "parts": 4,
+        "utf16_characters": 995114,
+        "first_codepoint": 65279,
+        "BOM_count": 1,
+        "full_identity_verified": true
+      }
+    ],
+    "part_objects": [
+      {
+        "raw_path": "raw/job-130668671236.log",
+        "sequence": 1,
+        "git_blob": "80bbaf095cc85fd904c72717debacf244d507fee",
+        "bytes": 300002,
+        "sha256": "d0c78a18669dbe48430fb9a0c4918b0016c564a6a099cdfa1df24d346f5ce486",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671236.log",
+        "sequence": 2,
+        "git_blob": "9b89d299164b93a6a0c91c6dbeba9629fef59edc",
+        "bytes": 104202,
+        "sha256": "e64064dc14bceb3cc3cd2001f94b84f50ae5849b8a28f177d9c2937153beecf2",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671323.log",
+        "sequence": 1,
+        "git_blob": "fb70a873fef749c88dcceee624c9fda33fdf7349",
+        "bytes": 300002,
+        "sha256": "08ed6f7f35f1416334c4d604d0ade8df268f44f4e53276cce41ebdea1b6e9cae",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671323.log",
+        "sequence": 2,
+        "git_blob": "8857873ab891f93793c2cb27607690d94f1ba87a",
+        "bytes": 135597,
+        "sha256": "56fabd3991cf67db8699cf33af9bc036f77395469a67ce63b36e2a7a31caf472",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671332.log",
+        "sequence": 1,
+        "git_blob": "9163bc821103be5837206333fe88694cc8f8bb99",
+        "bytes": 300002,
+        "sha256": "1b0afcb87cdc4413558c573f11712a7a34955894552a1beb0884dcfc54f817dd",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671332.log",
+        "sequence": 2,
+        "git_blob": "8d1fd93e15f9cce3a7fcf371c8c164d5e6246154",
+        "bytes": 300000,
+        "sha256": "a35a9261732d4c0887fb281722e3ce73476c569a722ea0a873296946dd2adbaa",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671332.log",
+        "sequence": 3,
+        "git_blob": "f168ae5ada6b502f7b371c44f806ab5ef7f80417",
+        "bytes": 1495,
+        "sha256": "48ad5434c44a0d4ecf51c28bae5eb1a657760f57e278eed03e1cb292f5c0262d",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 1,
+        "git_blob": "3730a2977ee660137658d1e860b79a426db527cf",
+        "bytes": 300002,
+        "sha256": "49c82243f49accdc588f6e0b3404f864e10cd1ec8408343d8e5eb978ae91d686",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 2,
+        "git_blob": "dd51a2fa9a5acd73f23dbf924084b8738be7dcd1",
+        "bytes": 300000,
+        "sha256": "dda2ee44049445a0735bf65cea37ea03eb83894b858f306ebdf0eb981ea507f5",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 3,
+        "git_blob": "e65a600fa10750723af556dbcd8ce811e658fcf8",
+        "bytes": 300000,
+        "sha256": "747bb6c164f06e02912e957a693157c20f941614319b97c0fec19ef970c74ccd",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 4,
+        "git_blob": "ccc81b1466009e27c9505c270e934db49f5dd993",
+        "bytes": 300048,
+        "sha256": "880e45f45445954ad38641e075556d66fbc2094bb5fbf607027ecf0a140cb2f3",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 5,
+        "git_blob": "0d29d9a6dd2c38adabc0897be1e519b97840c196",
+        "bytes": 300036,
+        "sha256": "05cb0e4d3e850f67e8a5989ae431f3fec7322aabdbd279cdc1d80b80dbcad077",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 6,
+        "git_blob": "41f849c5fdd29a71be26a1b073936e55db2c8d2b",
+        "bytes": 300054,
+        "sha256": "0268a1faa66c86a397854fed3be2224da88e2de90047a65d99dde4e7a2fa2284",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 7,
+        "git_blob": "3e1920384488918997498a9f5908b768c9a98bd9",
+        "bytes": 300054,
+        "sha256": "ebfc41ba9da86c40e661e121318f9c1e794d6af76b29427dc6b292f960704901",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 8,
+        "git_blob": "eec388695e345b642ec422d84c596e6196a21843",
+        "bytes": 300056,
+        "sha256": "3a96ee4513bca29af8a87d9a03421e65f1d0d04d193d60e8eadf7d42933fc8c7",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 9,
+        "git_blob": "8aab20de0964f6446b4519bd25daa84eb6d72de7",
+        "bytes": 300054,
+        "sha256": "29d05aaaf0bbf3968c367bd9df1cb7ea697645f830266d85f0b4e17e3f003348",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 10,
+        "git_blob": "485d21a5d71532027a0a7840983f4f83b172772e",
+        "bytes": 300048,
+        "sha256": "d1d8506cb4d766e93cdf179c91b701fee263a7122089dd9c08be668be6b6c2e4",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671376.log",
+        "sequence": 11,
+        "git_blob": "41629016e85d1215a924b04c1363069689c22d45",
+        "bytes": 201537,
+        "sha256": "a59a251d30ed8bb0091586f714cda5560129c7d622b3c58195e1c4aa937fb447",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671426.log",
+        "sequence": 1,
+        "git_blob": "91d740b54f9067e4e3342a185dd1e5851d24dd35",
+        "bytes": 300002,
+        "sha256": "4d94c08977379cc1c31d0321904458a35a1986e14e0607e59e7b93865a91b1be",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671426.log",
+        "sequence": 2,
+        "git_blob": "d77b9eb45b46a35c158d8bbc0fa8c3c1e1c5a8f4",
+        "bytes": 84867,
+        "sha256": "f87b567b916a4c9da0a03374003f9358b7e473ce406088a7bbb8ef8d3da081fb",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671482.log",
+        "sequence": 1,
+        "git_blob": "9a5b0a37ccdd6712f4a40e4be83b4afc6b37892c",
+        "bytes": 300002,
+        "sha256": "03b9d34023a859bd4e65e3990fce2c6a9990a99a188af07f993ddd5bdf42a5e1",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671482.log",
+        "sequence": 2,
+        "git_blob": "443a65b80c5f66f4793e83af970ee0898dbd95ab",
+        "bytes": 300000,
+        "sha256": "a4adf67b44f75c5f0b5afba02c088feb0db8b6f7d3005f7bcdfdc500ebc8356d",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671482.log",
+        "sequence": 3,
+        "git_blob": "004a67570dead5deefcfd9cb028957db533d5bb5",
+        "bytes": 300000,
+        "sha256": "e654af87d0dbfe3822e42e9aba3e2d24d0f0c65aec80eff5afc21549d7311005",
+        "independent_full_readback_verified": true
+      },
+      {
+        "raw_path": "raw/job-130668671482.log",
+        "sequence": 4,
+        "git_blob": "8250ad4ac13ed389631390128bedd262a443240e",
+        "bytes": 95114,
+        "sha256": "36f496d8390f91b785b6e17cb2e09b87ab90f5bb63c79e82d7cae6e7dd974f3e",
+        "independent_full_readback_verified": true
+      }
+    ]
+  },
+  "metadata_readbacks": [
+    {
+      "path": "snapshots/snapshot-018/run.json",
+      "bytes": 16567,
+      "sha256": "745d64b59f314454dd7e3ab4ba6b456610de21d41d4fb8525efec9a140157e41",
+      "git_blob": "6f1abf1a0c1dd683792a878124d98ed05a2c4055",
+      "independent_full_readback_verified": true
+    },
+    {
+      "path": "snapshots/snapshot-018/jobs.json",
+      "bytes": 86221,
+      "sha256": "c6e9deac7e4f9958ebde687ca2467212653b7d93faae34d967d892ad693a1b85",
+      "git_blob": "052e313586184df005b5bc69e4e092344980cf81",
+      "independent_full_readback_verified": true
+    },
+    {
+      "path": "snapshots/snapshot-018/artifacts.json",
+      "bytes": 8087,
+      "sha256": "256b5f55b9e17c989a210a06940ace5d57d8c6358a96a111e2e59fb9fe6a0b2d",
+      "git_blob": "79a3ba789600a87d17e1715b2ce7ce427e639ecc",
+      "independent_full_readback_verified": true
+    }
+  ],
+  "independent_accounting": {
+    "parser_is_new_narrow_audit_not_recovery_of_original_full_parser": true,
+    "parser_execution": "The exact exported pure-JS functions were evaluated with only the export keyword removed for the functions environment. They perform no host/native/model actions.",
+    "parse_transform_applied_to_view_only": [
+      "GitHub timestamp prefixes",
+      "ANSI CSI display escapes",
+      "U+FEFF markers"
+    ],
+    "raw_integrity_verified_before_parse": true,
+    "target_count_unit": "Bazel test targets per invocation. The word tests in Executed summaries is not a Rust testcase count.",
+    "complete_table_invariants": [
+      "Every final target row retained exactly once in its own Executed-summary segment",
+      "Unique target labels within each table",
+      "Table row count equals original summary total",
+      "PASSED plus FLAKY equals original pass headline",
+      "FAILED plus TIMEOUT equals original fail headline",
+      "SKIPPED equals original skipped headline",
+      "Noncached observed terminal targets equal original Executed count",
+      "No unmatched pending target rows or unclassified target status"
+    ],
+    "summaries": [
+      {
+        "path": "raw/job-130668671236.log",
+        "tables": [
+          {
+            "summary_line": 3461,
+            "headline": {
+              "executed_targets": 39,
+              "total_targets": 144,
+              "pass_including_flaky": 93,
+              "failed_including_timeout": 0,
+              "skipped": 51
+            },
+            "counts": {
+              "PASSED": 92,
+              "FLAKY": 1,
+              "FAILED": 0,
+              "TIMEOUT": 0,
+              "SKIPPED": 51,
+              "NO STATUS": 0,
+              "cached_PASSED": 54,
+              "noncached_PASSED": 38,
+              "noncached_observed_targets": 39
+            },
+            "nonpass": [
+              {
+                "label": "//codex-rs/core:core-unit-tests",
+                "status": "FLAKY",
+                "cached": false,
+                "line": 3450,
+                "detail": ", failed in 1 out of 9 in 900.0s"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "raw/job-130668671323.log",
+        "tables": [
+          {
+            "summary_line": 3487,
+            "headline": {
+              "executed_targets": 54,
+              "total_targets": 143,
+              "pass_including_flaky": 110,
+              "failed_including_timeout": 0,
+              "skipped": 33
+            },
+            "counts": {
+              "PASSED": 109,
+              "FLAKY": 1,
+              "FAILED": 0,
+              "TIMEOUT": 0,
+              "SKIPPED": 33,
+              "NO STATUS": 0,
+              "cached_PASSED": 56,
+              "noncached_PASSED": 53,
+              "noncached_observed_targets": 54
+            },
+            "nonpass": [
+              {
+                "label": "//codex-rs/core:core-all-test",
+                "status": "FLAKY",
+                "cached": false,
+                "line": 3469,
+                "detail": ", failed in 1 out of 17 in 166.9s"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "raw/job-130668671332.log",
+        "tables": [
+          {
+            "summary_line": 4742,
+            "headline": {
+              "executed_targets": 61,
+              "total_targets": 151,
+              "pass_including_flaky": 107,
+              "failed_including_timeout": 2,
+              "skipped": 42
+            },
+            "counts": {
+              "PASSED": 106,
+              "FLAKY": 1,
+              "FAILED": 2,
+              "TIMEOUT": 0,
+              "SKIPPED": 42,
+              "NO STATUS": 0,
+              "cached_PASSED": 48,
+              "noncached_PASSED": 58,
+              "noncached_observed_targets": 61
+            },
+            "nonpass": [
+              {
+                "label": "//codex-rs/cli:hepta-bin-unit-tests",
+                "status": "FAILED",
+                "cached": false,
+                "line": 4706,
+                "detail": "in 18.7s"
+              },
+              {
+                "label": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+                "status": "FAILED",
+                "cached": false,
+                "line": 4708,
+                "detail": "in 109.4s"
+              },
+              {
+                "label": "//codex-rs/app-server:app-server-all-test",
+                "status": "FLAKY",
+                "cached": false,
+                "line": 4725,
+                "detail": ", failed in 1 out of 17 in 151.8s"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "raw/job-130668671376.log",
+        "tables": [
+          {
+            "summary_line": 11420,
+            "headline": {
+              "executed_targets": 9,
+              "total_targets": 584,
+              "pass_including_flaky": 409,
+              "failed_including_timeout": 3,
+              "skipped": 172
+            },
+            "counts": {
+              "PASSED": 408,
+              "FLAKY": 1,
+              "FAILED": 2,
+              "TIMEOUT": 1,
+              "SKIPPED": 172,
+              "NO STATUS": 0,
+              "cached_PASSED": 403,
+              "noncached_PASSED": 5,
+              "noncached_observed_targets": 9
+            },
+            "nonpass": [
+              {
+                "label": "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test",
+                "status": "TIMEOUT",
+                "cached": false,
+                "line": 11400,
+                "detail": "in 300.4s"
+              },
+              {
+                "label": "//codex-rs/code-mode:code-mode-unit-tests",
+                "status": "FAILED",
+                "cached": false,
+                "line": 11402,
+                "detail": "in 25.0s"
+              },
+              {
+                "label": "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+                "status": "FAILED",
+                "cached": false,
+                "line": 11404,
+                "detail": "in 268.3s"
+              },
+              {
+                "label": "//codex-rs/core:core-all-test",
+                "status": "FLAKY",
+                "cached": false,
+                "line": 11406,
+                "detail": ", failed in 6 out of 22 in 226.7s"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "raw/job-130668671426.log",
+        "tables": [
+          {
+            "summary_line": 3423,
+            "headline": {
+              "executed_targets": 44,
+              "total_targets": 147,
+              "pass_including_flaky": 102,
+              "failed_including_timeout": 0,
+              "skipped": 45
+            },
+            "counts": {
+              "PASSED": 102,
+              "FLAKY": 0,
+              "FAILED": 0,
+              "TIMEOUT": 0,
+              "SKIPPED": 45,
+              "NO STATUS": 0,
+              "cached_PASSED": 58,
+              "noncached_PASSED": 44,
+              "noncached_observed_targets": 44
+            },
+            "nonpass": []
+          }
+        ]
+      },
+      {
+        "path": "raw/job-130668671482.log",
+        "tables": [
+          {
+            "summary_line": 9337,
+            "headline": {
+              "executed_targets": 4,
+              "total_targets": 583,
+              "pass_including_flaky": 416,
+              "failed_including_timeout": 0,
+              "skipped": 167
+            },
+            "counts": {
+              "PASSED": 416,
+              "FLAKY": 0,
+              "FAILED": 0,
+              "TIMEOUT": 0,
+              "SKIPPED": 167,
+              "NO STATUS": 0,
+              "cached_PASSED": 412,
+              "noncached_PASSED": 4,
+              "noncached_observed_targets": 4
+            },
+            "nonpass": []
+          },
+          {
+            "summary_line": 9395,
+            "headline": {
+              "executed_targets": 1,
+              "total_targets": 1,
+              "pass_including_flaky": 1,
+              "failed_including_timeout": 0,
+              "skipped": 0
+            },
+            "counts": {
+              "PASSED": 1,
+              "FLAKY": 0,
+              "FAILED": 0,
+              "TIMEOUT": 0,
+              "SKIPPED": 0,
+              "NO STATUS": 0,
+              "cached_PASSED": 0,
+              "noncached_PASSED": 1,
+              "noncached_observed_targets": 1
+            },
+            "nonpass": []
+          }
+        ]
+      }
+    ],
+    "GNU_scope_boundary": "The 583-target main invocation and the later one-target operator-acceptance invocation are kept separate; neither total is converted to native testcase counts.",
+    "FLAKY_boundary": "FLAKY remains its own status. Bazel headline passing totals include it; those targets are not described as clean first-attempt/native-case passes.",
+    "cache_boundary": "Cached PASSED rows are retained as cache results, not new test executions.",
+    "retries_and_reprints": "Failed log tails and repeated stdout displays are not counted as additional test attempts. This review does not reconstruct every Rust test/shard/retry execution across these complete logs."
+  },
+  "mac_memory_failure": {
+    "source": {
+      "commit": "a49776ffdea3547ed407a710bb19e93377b29535",
+      "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+      "bytes": 17808,
+      "sha256": "e9f92be64d7a4b4b5521a1b6c98ab678ca50291f2f32ae681b4634b606c1a810",
+      "git_blob": "7f397fe3e35205bae51ef95c4475315559c2b0ea",
+      "full_exact_commit_source_read": true,
+      "line": 466,
+      "statement": "    assert_eq!(coverage.completed_peers, 16);"
+    },
+    "case": "cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation",
+    "actual_completed_peers": 0,
+    "expected_completed_peers": 16,
+    "original_native_case_terminal_lines": [
+      8675
+    ],
+    "suite_result": {
+      "passed": 419,
+      "failed": 1,
+      "ignored": 9,
+      "measured": 0,
+      "filtered_out": 0,
+      "elapsed_seconds": 267.84
+    },
+    "displayed_assertion_blocks": [
+      {
+        "start_line": 9042,
+        "terminal_line": 9058,
+        "panic_line": "thread 'cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation' (61061) panicked at hepta-memory/src/cognitive_runtime_tests.rs:466:5:",
+        "observed_left": 0,
+        "expected_right": 16,
+        "suite_result": {
+          "passed": 419,
+          "failed": 1,
+          "ignored": 9,
+          "measured": 0,
+          "filtered_out": 0,
+          "elapsed_seconds": 267.84
+        },
+        "original_selected_lines": [
+          "2026-11-11T17:15:13.6211950Z ---- cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation stdout ----",
+          "2026-11-11T17:15:13.6214050Z ",
+          "2026-11-11T17:15:13.6215840Z thread 'cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation' (61061) panicked at hepta-memory/src/cognitive_runtime_tests.rs:466:5:",
+          "2026-11-11T17:15:13.6218940Z assertion failed: `(left == right)`",
+          "2026-11-11T17:15:13.6219820Z ",
+          "2026-11-11T17:15:13.6227060Z Diff < left / right > :",
+          "2026-11-11T17:15:13.6233300Z <0",
+          "2026-11-11T17:15:13.6233910Z >16",
+          "2026-11-11T17:15:13.6234210Z ",
+          "2026-11-11T17:15:13.6234220Z ",
+          "2026-11-11T17:15:13.6235220Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-11-11T17:15:13.6238240Z ",
+          "2026-11-11T17:15:13.6238250Z ",
+          "2026-11-11T17:15:13.6238640Z failures:",
+          "2026-11-11T17:15:13.6240400Z     cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation",
+          "2026-11-11T17:15:13.6244810Z ",
+          "2026-11-11T17:15:13.6246460Z test result: FAILED. 419 passed; 1 failed; 9 ignored; 0 measured; 0 filtered out; finished in 267.84s"
+        ]
+      },
+      {
+        "start_line": 11701,
+        "terminal_line": 11717,
+        "panic_line": "thread 'cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation' (61061) panicked at hepta-memory/src/cognitive_runtime_tests.rs:466:5:",
+        "observed_left": 0,
+        "expected_right": 16,
+        "suite_result": {
+          "passed": 419,
+          "failed": 1,
+          "ignored": 9,
+          "measured": 0,
+          "filtered_out": 0,
+          "elapsed_seconds": 267.84
+        },
+        "original_selected_lines": [
+          "2026-11-11T17:23:09.1713800Z ---- cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation stdout ----",
+          "2026-11-11T17:23:09.1714680Z ",
+          "2026-11-11T17:23:09.1716660Z thread 'cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation' (61061) panicked at hepta-memory/src/cognitive_runtime_tests.rs:466:5:",
+          "2026-11-11T17:23:09.1719100Z assertion failed: `(left == right)`",
+          "2026-11-11T17:23:09.1720250Z ",
+          "2026-11-11T17:23:09.1723110Z \u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :",
+          "2026-11-11T17:23:09.1723830Z \u001b[31m<\u001b[0m\u001b[1;48;5;52;31m0\u001b[0m",
+          "2026-11-11T17:23:09.1724360Z \u001b[32m>\u001b[0m\u001b[1;48;5;22;32m16\u001b[0m",
+          "2026-11-11T17:23:09.1724690Z ",
+          "2026-11-11T17:23:09.1724690Z ",
+          "2026-11-11T17:23:09.1725140Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+          "2026-11-11T17:23:09.1725920Z ",
+          "2026-11-11T17:23:09.1725920Z ",
+          "2026-11-11T17:23:09.1726090Z failures:",
+          "2026-11-11T17:23:09.1726800Z     cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation",
+          "2026-11-11T17:23:09.1727560Z ",
+          "2026-11-11T17:23:09.1728260Z test result: FAILED. 419 passed; 1 failed; 9 ignored; 0 measured; 0 filtered out; finished in 267.84s"
+        ]
+      }
+    ],
+    "explicit_log_tail_group_line": 11518,
+    "two_displays_are_not_two_executions": true,
+    "typed_failure_category_observed": false,
+    "root_cause": "UNRESOLVED",
+    "V12_diagnostic_candidate_not_executed_by_this_review": true
+  },
+  "reproducibility_companions": [
+    {
+      "name": "independent_target_tables.json",
+      "bytes": 166667,
+      "sha256": "7156e3a5e96e8478b47994ffbf15ad0cf465e0a13577a4f56d2fb855bf7ebf85",
+      "git_blob": "b60fda336e91b8ad543a8a76983dd07b6c73dd0b",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "name": "parse_original_target_tables.mjs",
+      "bytes": 5511,
+      "sha256": "1722d1e5361cf0425b072d10df5f6b4985053633ec684ad22169245676ca3ef9",
+      "git_blob": "bee878b17f525945a9185f37dccea69fa4782cc0",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "name": "independent_utf8_hashes.mjs",
+      "bytes": 3259,
+      "sha256": "9b3727d70ae97189350a46b780161b8d2f63332b9706c80b5bc15d5ffa6169ac",
+      "git_blob": "9dcceb69531b5a8c04efba523a3717de48962784",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    }
+  ],
+  "hash_controls": {
+    "algorithms": [
+      "SHA-256",
+      "Git blob SHA-1"
+    ],
+    "known_answer_vectors": [
+      "empty",
+      "abc",
+      "56-byte abcdbc...nopq"
+    ],
+    "count": 3,
+    "original_manifest_and_source_pins_also_crosschecked": true
+  },
+  "not_recovered_or_not_verified": [
+    "The original audit_bazel_observed.py and its approximately 1.76 MB detailed output remain inaccessible scratch originals; this review does not claim to restore them.",
+    "The six selected raw log bodies and three frozen API metadata bodies are verified. The other twenty log bodies have not been independently fetched by this peer.",
+    "The original 10,555,309-byte Mac execution-log ZIP is not reconstructed or parsed here. Its listing/hash reference is not proof of its bytes being recovered in this package.",
+    "No all-platform native testcase total, full job source-after cleanliness, final required-CI success, new model request outcome, or memory-benefit claim follows from this audit.",
+    "The original run snapshot is in_progress; no later global run state was queried or inferred.",
+    "The narrow parser supplies independent final target-table accounting and the one requested Mac assertion proof; it is not the lost full parser."
+  ],
+  "actions": {
+    "local_execution": 0,
+    "H_calls": 0,
+    "native_tests": 0,
+    "CI_runs_or_reruns": 0,
+    "model_requests": 0,
+    "ref_changes": 0
+  },
+  "verdict": "The selected original log bytes are fully recoverable from their actual Git parts, and the final target summaries/one Mac failure have been independently rechecked. Preserve the manifest's nonterminal and missing-original limitations in V17."
+}

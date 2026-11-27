@@ -1,0 +1,319 @@
+{
+  "observed_utc": "2026-11-19 16:53:43 UTC",
+  "scope": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "mode": "read-only code/CI review; no root source mutation",
+    "code_source_manifest": "windows-production-map-source-bindings.json",
+    "code_source_manifest_sha256": "796a890c381b843e17e3cd82dbf6f816615f8f8a52e4d58b7009917d8696bd93",
+    "observed_root_head": "19ad97233b1cc4ac9bb336d700c7c2dc401dc5d4",
+    "observed_merge_head": "5e495946e45e7f3821e96013572c8be625eefe5d",
+    "reviewed_source_files": 22,
+    "all22_byte_identical_to_dependency_union": "797a0356670cdc5bc887b09839e534dfdfe06d2d",
+    "ci_head": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d"
+  },
+  "conclusion": "A real kernel filesystem boundary and qualified launch path are still absent. Existing prepared filesystem and FreshManagedRunnerBase ownership/readback mechanisms are useful but cannot be enabled as an isolation replacement. All original nine Windows failures reproduce at exact10fb. No inspected ordinary branch candidate supplies a qualified AppContainer/LPAC production implementation.",
+  "production_entrypoints": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "function": "run_windows_sandbox_capture_with_filesystem_overrides",
+      "line": 597,
+      "flow": "prepare_legacy_spawn_context -> prepare_legacy_session_security -> apply_legacy_session_acl_rules -> raw create_process_as_user",
+      "first_guard": "spawn_prep.rs:134 require_legacy_filesystem_isolation; always Err before persistence or spawn"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs",
+      "function": "spawn_windows_sandbox_session_legacy",
+      "line": 307,
+      "flow": "prepare_legacy_spawn_context -> prepare_legacy_session_security -> raw pipe/ConPTY backend",
+      "first_guard": "spawn_prep.rs:134; second independent refusal at :156"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+      "function": "spawn_windows_sandbox_session_for_level",
+      "line": 103,
+      "flow": "Explicit RestrictedToken or Elevated admission occurs before backend selection; neither is admitted",
+      "first_guard": "legacy at :110; elevated at :113"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "function": "run_windows_sandbox_capture_for_permission_profile",
+      "line": 59,
+      "flow": "elevated capture -> managed setup/plan -> spawn_runner_transport -> framed request -> child runner",
+      "first_guard": "require_elevated_filesystem_isolation at :62"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+      "function": "spawn_windows_sandbox_session_elevated_for_permission_profile",
+      "line": 114,
+      "flow": "elevated session -> prepare_elevated_spawn_context_for_permissions -> original root-resolution and filesystem plan -> spawn_runner_transport_task",
+      "first_guard": "require_elevated_filesystem_isolation at :134; separate global guard in spawn_prep.rs:383"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+      "function": "spawn_ipc_process",
+      "line": 243,
+      "flow": "validate original root context, exact plan/transport mirror -> get_current_token_for_restriction -> raw *_with_caps_and_user_from -> raw pipe/ConPTY launch",
+      "first_guard": "require_elevated_filesystem_isolation at :244, before hide_current_user_profile_dir or other mutation"
+    }
+  ],
+  "token_mechanism": {
+    "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+    "flag_selector_line": 580,
+    "actual_flags": "DISABLE_MAX_PRIVILEGE | LUA_TOKEN; adds WRITE_RESTRICTED only when RestrictingIdentity::Include",
+    "legacy_readonly": "create_readonly_token_with_cap[_from] and create_readonly_token_with_caps_from use Include; all public factories refuse first",
+    "legacy_writable": "create_workspace_write_token_with_caps_from uses Exclude (full restriction), with legacy refusal first",
+    "elevated_variants": "Both *_with_caps_and_user_from enter create_token_with_caps_user_and_additional_restrictions_from at :555, which explicitly chooses Exclude. They already omit WRITE_RESTRICTED. They still add base user SID plus supplied network-route SID to restricting alternatives; logon/Everyone are excluded.",
+    "stale_comments": "Raw elevated API comments at :428 and :471 describe WRITE_RESTRICTED, user/logon/Everyone, but do not match the current private Exclude implementation. Do not use those comments as proof of active flags.",
+    "consequence": "Removing WRITE_RESTRICTED again cannot repair the current elevated path. Even capability-only full restriction has retained native NULL-DACL and parent-DELETE_CHILD counterexamples."
+  },
+  "scaffolding": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl.rs",
+      "function": "prepare / prepare_roots",
+      "lines": [
+        286,
+        341
+      ],
+      "implemented": "Versioned plan validation, same-root normal-group and restrictive-role RX grants, held roots and read-ACL serialization.",
+      "limit": "This setup-private PreparedFilesystemAclContext is a different type from the library context; no token or launch owner is transported."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/prepared_filesystem.rs",
+      "function": "PreparedFilesystemAclContext::prepare",
+      "line": 312,
+      "implemented": "Exact root identities, descriptors, base-token version and positive effective-access readback; read RX and write RX|FILE_GENERIC_WRITE|DELETE. Write role deliberately omits FILE_DELETE_CHILD.",
+      "limit": "Only declared roots are retained. No descendant/object-creation lifecycle, outside NULL-DACL rejection, full-disk read semantics, loader, registry or object namespace proof."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/prepared_filesystem_existing.rs",
+      "function": "observe_existing",
+      "line": 138,
+      "implemented": "Query-only existing setup role grants and root identities, no ACL repair; exact role maximum masks and held base token.",
+      "limit": "It validates role ACEs at declared roots, not a global negative effective FILE_DELETE_CHILD invariant for all relevant principals or outside objects."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "function": "spawn_runner_transport",
+      "line": 387,
+      "implemented": "CreateProcessWithLogonW original PI -> retained query/duplicate token -> observe_existing -> OriginalManagedRunnerProcess -> FreshManagedRunnerBase::capture; authenticated PID pipe connection; revalidate before/after SpawnRequest and SpawnReady; retain until runner cleanup.",
+      "limit": "FreshManagedRunnerBase is a parent-local same-object witness, not a launch token; it is not sent over IPC or consumed by the child factory. admit_runner at runner_custody.rs:322 is registry custody capacity reservation, not filesystem admission."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/fresh_managed_base.rs",
+      "function": "FreshManagedRunnerBase::capture / revalidate",
+      "lines": [
+        44,
+        62
+      ],
+      "implemented": "Original managed process and account source continuity; permanent refusal after incomplete or changed readback; no raw-handle export/Clone/wire conversion.",
+      "limit": "Cannot be manufactured from SpawnRequest SIDs or treated as serialized launch permission."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_prepared_filesystem.rs",
+      "function": "create_full_filesystem_token_from",
+      "line": 115,
+      "implemented": "Full restricting cohort consists of read/write filesystem SIDs plus separate desktop role; retained nonadjustable source, exact token versions, noninheritable handles and privilege constraints.",
+      "limit": "Only one caller found, token_prepared_filesystem_tests.rs:55. No production caller. Constructor takes an unfiltered primary BorrowedHandle and is not connected to FreshManagedRunnerBase. Network route is not added to filesystem role cohort."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/prepared_process_context.rs",
+      "function": "PreparedProcessContext::prepare",
+      "line": 53,
+      "implemented": "Retains prepared token/filesystem/desktop owners, revalidates, creates nonbreakaway JobObject and exact private desktop.",
+      "limit": "No caller found. Comments explicitly require separate loader/lifetime qualification."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+      "function": "spawn_process_with_pipes_prepared / create_process_as_user_prepared",
+      "lines": [
+        305,
+        118
+      ],
+      "implemented": "Consumes owners and keeps them alongside pipe transport; exact child stdio list and atomically assigned job.",
+      "limit": "Only internal prepared helper-to-helper edge exists; no production entry calls the prepared pipe helper."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/conpty/mod.rs",
+      "function": "spawn_conpty_process_prepared",
+      "line": 156,
+      "implemented": "Retains prepared owners beside pseudoconsole transport and atomically assigned job.",
+      "limit": "No production caller."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+      "function": "ProcThreadAttributeList",
+      "line": 14,
+      "implemented": "Owned handle list, job list and pseudoconsole attributes.",
+      "limit": "No SECURITY_CAPABILITIES or ALL_APPLICATION_PACKAGES_POLICY attribute support and no AppContainer/LPAC production launch path. TokenIsAppContainer references only query or reject a base token."
+    }
+  ],
+  "original_nine_tests": [
+    {
+      "name": "elevated_token_includes_network_proxy_restricting_sid",
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "line": 205,
+      "assertions": "Token creation succeeds; route, filesystem capability and user restricting SIDs present; logon and Everyone absent.",
+      "current_job": 135711858098
+    },
+    {
+      "name": "elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "line": 262,
+      "assertions": "Real cmd through elevated runner, private desktop, forwarded env and stdout; exact exit23.",
+      "current_job": 135711858098
+    },
+    {
+      "name": "legacy_non_tty_refuses_before_elevated_cmd_emits_output",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "line": 906,
+      "assertions": "Legacy refusal with fixture unchanged, then explicit elevated cmd success, expected stdout, exit0.",
+      "current_job": 135711858098
+    },
+    {
+      "name": "legacy_refuses_before_elevated_delete_is_limited_to_writable_roots",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "line": 1037,
+      "assertions": "Legacy refusal is unchanged; elevated cmd deletes workspace/TEMP/TMP files, preserves outside bytes and protected .git, exits0. Exact tuple remains (0,false,false,false,Some(outside),true).",
+      "current_job": 135711858098
+    },
+    {
+      "name": "legacy_refuses_before_elevated_four_cell_delete_boundary",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "line": 30,
+      "assertions": "Ordinary host controls distinguish Neither/TargetOnly/ParentOnly/Both; legacy leaves fixtures unchanged; elevated emits all4 markers plus DONE, deletes allowed file/dir, preserves outside file/dir in all4 cells, exits0.",
+      "current_job": 135711858098
+    },
+    {
+      "name": "restricted_tokens_select_stable_routes_and_cleanup",
+      "path": "codex-rs/network-proxy/tests/windows_stable_ingress.rs",
+      "line": 73,
+      "assertions": "Real child HTTP/SOCKS route attribution and per-environment routing; denied-host behavior and shutdown cleanup. run_restricted_child_blocking:394 uses refused raw readonly+user factory at407.",
+      "current_job": 135711858199
+    },
+    {
+      "name": "windows_elevated_does_not_create_missing_workspace_metadata",
+      "path": "codex-rs/core/tests/suite/windows_sandbox.rs",
+      "line": 211,
+      "assertions": "Core process_exec_tool_call cmd completes0 while absent protected metadata remains absent.",
+      "current_job": 135711858199
+    },
+    {
+      "name": "windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "path": "codex-rs/core/tests/suite/windows_sandbox.rs",
+      "line": 264,
+      "assertions": "Globs and exact secret denied; public and bundled skill reads work; setup marker read/write denied and readiness remains intact; real cmd exit0.",
+      "current_job": 135711858199
+    },
+    {
+      "name": "windows_elevated_unified_exec_enforces_managed_deny_reads",
+      "path": "codex-rs/core/tests/suite/windows_sandbox.rs",
+      "line": 404,
+      "assertions": "Actual core tool runtime/UnifiedExec with managed deny-read policy, command output and session initialization; currently fails already while filesystem helper loads AGENTS instructions.",
+      "current_job": 135711858199
+    }
+  ],
+  "contract_conflict": {
+    "success_contract": "token_tests.rs:205 calls public raw create_readonly_token_with_caps_and_user_from with current primary + arbitrary filesystem SID + route SID and requires Ok.",
+    "refusal_contract": "elevated_admission_tests.rs:86 calls the same raw API and writable counterpart with current primary + arbitrary filesystem SID + route SID and requires ElevatedWindowsSandboxIsolationUnavailable. Capture/session refusal tests likewise require blanket unqualified rejection.",
+    "implication": "A production-only wiring patch cannot satisfy both unconditional contracts. Later qualified API migration must retain all original functional/security assertions and keep unqualified raw factories refused. Distinguishing the tests by arbitrary SID values or disabling either assertion is not acceptable.",
+    "action_now": "No production guard or test changed."
+  },
+  "next_code_step": {
+    "immediate": "Consume already prepared exact-source enumeration diagnostic results before changing any grants. If native FindFirstFileW/FILE_LIST_DIRECTORY or absolute DELETE-open fails on the allowed object, isolate that exact missing operation/ancestor in the owned fixture. If all succeed, do not claim cmd's failure is directory permission; next observation must target the cmd-specific name lookup or startup operation. LPAC missing the first command marker still needs startup evidence.",
+    "smallest_candidate_after_cause": "A private native AppContainer launch qualification helper, initially invoked only by an owned diagnostic fixture, that owns SECURITY_CAPABILITIES/profile/SID lifetimes alongside the existing job and explicit stdio attribute owners; run the unchanged cmd script under the actual same candidate launch composition. Preserve original outside NULL-DACL and parent-DELETE_CHILD negative controls, protected .git/setup descendants, positive explicit reads and terminal cleanup. No additional capability grant until an exact missing access is demonstrated.",
+    "production_wiring_required": "After qualification, a separate private admission/launch owner must bind the exact managed birth token and exact setup plan to kernel namespace/profile, prepared ACL readback, loader/read admission, private desktop, explicit inherited handles and nonbreakaway job, then retain all owners through pipe/ConPTY transport and cleanup. The current child get_current_token_for_restriction -> raw factory -> raw spawn sequence must be replaced, not relabelled. Parent-local FreshManagedRunnerBase must continue revalidation and must not be serialized as authority.",
+    "insufficient": "Simply calling PreparedProcessContext::prepare and the prepared spawn helpers, or removing WRITE_RESTRICTED, does not address full-restriction NULL-DACL counterexamples or establish loader/IPC/read behavior.",
+    "ordinary_history_candidates": "ff9846c9ab introduced prepared ownership/ACL source already present; e7286427b4 is native diagnostic only. Independent branch audit found no already qualified AppContainer/LPAC candidate; exact ca77c88 adds only Windows Cargo/ACL/test deltas and contains no AppContainer, LPAC or SECURITY_CAPABILITIES implementation."
+  },
+  "native_evidence": {
+    "exact10fb_summary": "windows-10fb-native-summary.json",
+    "native_run": 44566605077,
+    "native_job": 135709969880,
+    "facts": "Both actual C children are real Low AppContainer/LPAC tokens, delete allowed file/dir, reject outside NULL-DACL DELETE with5, and preserve .git under original user deny. Original cmd remains AppContainer exit22 and LPAC exit1. Deliberately contaminated parent FILE_DELETE_CHILD still deletes .git.",
+    "earlier_full_restriction_counterexample": "token_read_authority_tests.rs exact blob f9549826fb61fa8d54a930c6bced045b54f6a4f5, native job135677156301: full_restriction_preserves_prepared_read_and_mutation_boundaries intentionally observes outside NULL-DACL deletion and parent-DELETE_CHILD protected-child deletion. Passing this diagnostic does not qualify production."
+  },
+  "ci": {
+    "blocking_run": 44566606095,
+    "rust_format": {
+      "job": 135712478869,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "rust_required_summary": {
+      "job": 135714669009,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "caller_verifier": {
+      "job": 135711856906,
+      "status": "in_progress",
+      "step": 7,
+      "step_name": "Verify Hepta privileged caller closed set",
+      "conclusion": null,
+      "qualification": "No remote caller success claimed"
+    },
+    "hcsn_differentiable": {
+      "run": 44566601316,
+      "event_job": 135710738458,
+      "source_job": 135710739557,
+      "gate_job": 135712272316,
+      "all": "success"
+    },
+    "windows_original_nine": {
+      "shard2_job": 135711858098,
+      "shard4_job": 135711858199,
+      "all_nine": "failure; exact unchanged ElevatedWindowsSandboxIsolationUnavailable, not cancellation"
+    },
+    "additional_timing_failures": [
+      {
+        "job": 135711858098,
+        "test": "app_server_startup_refreshes_cached_remote_catalog_without_blocking_plugin_list",
+        "cause": "Remote catalog cache did not match within original deadline; expected Plugin_111..., last Plugin_000..."
+      },
+      {
+        "job": 135711858044,
+        "test": "exec_server_accepts_initialize",
+        "cause": "Timed out waiting for exec-server websocket event; 1 passed/1 failed,8.93s"
+      },
+      {
+        "job": 135711857204,
+        "test": "Codex passes approvalPolicy to exec",
+        "cause": "Jest5000ms timeout and ENOTEMPTY cleanup;46 passed/1 failed"
+      }
+    ],
+    "timing_classification": "These logs prove deadline failures, not an established infrastructure cause or permission to waive tests.",
+    "cargo_deny": {
+      "job": 135711856766,
+      "conclusion": "failure",
+      "failed_step": "Run cargo-deny",
+      "log_status": "Connector returned Transport closed twice; exact current cause not asserted from previous-head logs"
+    },
+    "linux_musl": {
+      "job": 135711858011,
+      "status": "in_progress",
+      "bazel_test_step": "failure",
+      "log_not_retrieved": true
+    },
+    "original_windows_scope": {
+      "run": 44566601458,
+      "jobs": [
+        135710550150,
+        135710550950
+      ],
+      "last_status": "in_progress"
+    },
+    "private_state": {
+      "run": 44566606123,
+      "job": 135710088765,
+      "last_status": "in_progress"
+    },
+    "unrelated_checkout_cancellation": {
+      "run": 44566600546,
+      "source_job": 135710020002,
+      "base_job": 135710020354,
+      "source_result": "cancelled during git fetch from16:29:27 to16:39:26, before test execution; workflow timeout-minutes10",
+      "base_result": "success",
+      "classification": "Checkout/job timeout, no executed source-lane test conclusion"
+    }
+  }
+}

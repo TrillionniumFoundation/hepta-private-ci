@@ -1,0 +1,51 @@
+{
+  "schema": "mem8.v17.root-narrow-fence-original-raw-review.v1",
+  "source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "run_id": 43062473474,
+  "job_id": 130668439547,
+  "attempt": 1,
+  "original_raw": {
+    "path": "raw/job-130668439547.log",
+    "bytes": 1643776,
+    "sha256": "fa73d786c462e821c1013b952e153d33a29922a6dc871ade201136d98ad5c35e",
+    "git_blob": "7ff9d1f4b6bd697918f38aeccb5e32a3a1918f78"
+  },
+  "mode": "audit",
+  "result": "healthy",
+  "controls": {
+    "network": "verified",
+    "sudo": "preserved_verified",
+    "containers": "preserved_verified",
+    "protection_available": false,
+    "readiness": "ready_observation_only",
+    "resident_health": "healthy"
+  },
+  "report_line": 9267,
+  "policy_python_summary": {
+    "pass": 7,
+    "named_verbose_rows_not_present": true,
+    "original_command": "python3 -B -m unittest discover -s scripts/tests -p test_blob_size_policy.py",
+    "actual_dot_summary": ".......",
+    "original_ran": {
+      "body": "Ran 7 tests in 1.061s",
+      "line": 8969
+    },
+    "terminal": "OK"
+  },
+  "original_range_and_threshold": {
+    "body": "Checked 224 changed file(s) against the 512000-byte limit.",
+    "line": 8983
+  },
+  "new_review_only": true,
+  "original_lost_parser_recovered": false,
+  "action_binary_archived_from_this_job": false,
+  "source_after_post_hooks_observed": false,
+  "new_native_model_or_CI_executions": 0,
+  "adoption_gate_closed": false,
+  "root_view_history": {
+    "initial_assumption_failed": "Required seven verbose named unittest rows, but original invocation was nonverbose.",
+    "narrow_correction": "Read the original seven dots, Ran 7 tests and OK without inventing testcase names.",
+    "original_log_or_CI_unchanged": true
+  }
+}

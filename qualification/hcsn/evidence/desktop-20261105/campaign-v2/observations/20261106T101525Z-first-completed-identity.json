@@ -1,0 +1,133 @@
+{
+  "schema": "hcsn-desktop-campaign-v2-observation",
+  "observation_utc": "2026-11-06T10:15:25.350032+00:00",
+  "observation_kind": "first_registered_cuda_full_budget_terminal",
+  "research_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "expected_pins": {
+    "manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "current_manifest_rehash": "not_performed_in_this_observation"
+  },
+  "campaign": {
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "process_status": "running",
+    "stage": "full",
+    "stage_started_utc": "2026-11-06T08:08:57.361720+00:00",
+    "progress_sha256": "0faa344ae61b1dfd836e673ef54dd199a5d14cc2b202207c7de83832957e7d22",
+    "progress_relative": "campaigns/full-v2/progress.json",
+    "completed_cuda_runs": 1,
+    "requested_cuda_runs": 170,
+    "completed_registered_indexes": 1,
+    "failed_registered_indexes": 0,
+    "active_next_attempt": true,
+    "global_qualification": "open",
+    "no_automatic_training_retries": true
+  },
+  "config": {
+    "sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "model_count": 17,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "train_steps": 400,
+    "batch_size": 64,
+    "length": 64,
+    "hidden_size": 64,
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "device": "cuda:0",
+    "cuda_memory_fraction": 0.5,
+    "population_checkpoint_steps": 1,
+    "uniform_B_policy": 1,
+    "split_sha256": [
+      "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+      "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+      "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+    ]
+  },
+  "runtime": {
+    "sha256": "21a9ca457133123d674a41721c3ecb904477efc42953ab51bf03ae66eacbb3e8",
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "driver": "580.178.04",
+    "torch": "2.8.0+cu128",
+    "cuda_runtime": "12.8",
+    "mamba_ssm": "2.3.1",
+    "cuda_tf32": false,
+    "precision": "float32",
+    "deterministic_requested": true
+  },
+  "completed_identity": {
+    "task": "delayed_recall",
+    "model": "hx_dual",
+    "seed": 0,
+    "status": "completed",
+    "started_utc": "2026-11-06T08:08:59.999037+00:00",
+    "finished_utc": "2026-11-06T09:44:43.065571+00:00",
+    "training_steps_completed": 400,
+    "training_examples_seen": 25600,
+    "training_tokens_seen": 1638400,
+    "trainable_parameters": 5633,
+    "checkpoint_sha256": "e1e2269e9491ecc230965a2faa0c8727a56eb139166550bbf320ff1ec77dab1b",
+    "checkpoint_file_size_bytes": 29803,
+    "checkpoint_hash_matches_receipt": true,
+    "checkpoint_relative": "campaigns/full-v2/full.runs/e41cbd25f832c0d76fc2494f0bc53d7b0c968e0be310710fff463c50c9e6b23d.attempts/3242847bfb844a46b56d4f3f78f903bb.pt",
+    "result_index_sha256": "e07edd824d0cb68cd3e3b347c4f0e035f410193f33efc860f2773ccdc43c5dae",
+    "attempt_terminal_sha256": "946025dc85137c206db9297fad4354dda3bad4fffe95b27dfce49c4e6479bec9",
+    "attempt_started_sha256": "e297f358ca12ede83287651d40e9fa14e865a73618913b89dea6de21e6d77c5a",
+    "test_mse": 0.04104330763220787,
+    "best_validation_mse": 0.03883013129234314,
+    "final_training_mse": 0.07533042132854462,
+    "training_wall_seconds_including_validation": 5227.080032530939,
+    "training_examples_per_second": 4.897571845213272,
+    "peak_gpu_allocated_bytes": 779019776,
+    "peak_gpu_reserved_bytes": 799014912,
+    "inference_examples_per_second": 14.767357456347234,
+    "latency_p50_ms": 3990.6007135286927,
+    "latency_p95_ms": 5741.459388443036,
+    "terminal_cuda_synchronized": true,
+    "physical_energy_joules": null,
+    "energy_missing_reason": "NVML NVMLError_NotSupported; CPU RAPL permission denied"
+  },
+  "next_started_identity": {
+    "task": "delayed_recall",
+    "model": "hx_dual",
+    "seed": 1,
+    "started_utc": "2026-11-06T09:44:43.087449+00:00",
+    "started_receipt_sha256": "0f26ffd58652428f2eabb826d1fc655cc9dd7f7f93975c1ff1609e789e6dede1",
+    "terminal_qualification": "not_claimed"
+  },
+  "other_qualifications": {
+    "original_B_fullshape_OOM": "retained",
+    "strict_original": "95/95 zero skip",
+    "strict_candidate": "109/109 zero skip",
+    "cpu_cuda_remat_parity": "16/16 each",
+    "B_full_budget_audit": "0/20",
+    "original_B_legacy_negative_result": "retained",
+    "exact_source_cpu_ci": {
+      "run_id": 42078258351,
+      "job_id": 127424159520,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "trusted_main_gpu_probe": {
+      "run_id": 39526325715,
+      "status": "queued"
+    },
+    "A_B_Mamba2_complete_matrix": "open",
+    "scientific_superiority": "not_claimed"
+  },
+  "privacy": "Only safe relative paths and hashes. Full raw receipts/checkpoint remain on original host. No tokens, home paths, private URLs or original binary copied.",
+  "notes": "The first completed run and active second attempt are not the terminal 170-run matrix. No further training/installation/campaign jobs launched by this observation."
+}

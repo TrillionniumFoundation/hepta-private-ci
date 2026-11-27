@@ -1,0 +1,83 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-progress-observation-v1",
+  "observation": {
+    "observed_at_utc": "2026-11-08T07:21:35.280580+00:00",
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "campaign_process_state": "running",
+    "systemd_active_state": "active",
+    "systemd_sub_state": "running",
+    "systemd_result": "success",
+    "progress_path_relative_to_task_root": "campaigns/full-v2/progress.json",
+    "progress_status": "running",
+    "progress_size_bytes": 14152,
+    "progress_sha256": "0614e748200203131a5d4afea39a084548b4c1cbde0a276da0c1950221cc1874",
+    "active_stage": "full",
+    "full_stage_status": "running",
+    "completed_cuda_runs_reported": 66,
+    "requested_cuda_runs": 170,
+    "registered_run_indexes_observed": {
+      "completed": 66,
+      "failed": 0,
+      "unavailable": 0
+    },
+    "global_qualification": "open",
+    "runtime_ready_receipts": {
+      "TORCH_READY.json": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+      "MAMBA_READY.json": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76"
+    },
+    "space_reported_by_progress_bytes": {
+      "data_filesystem_free": 147478044672,
+      "control_filesystem_free": 96780365824
+    },
+    "output_and_audit_reads": {
+      "full_json": "file_info returned FileNotFoundError while full stage was still running; no terminal result inferred",
+      "terminal_json": "not_read",
+      "full_runtime_manifest": "not_read",
+      "full_b_audit": "not_read",
+      "run_checkpoint_attempt_indexes": "not_re_read"
+    },
+    "read_limitations": {
+      "direct_ssh": "direct SSH admitted capacity exhausted; no child submitted; no automatic retry",
+      "new_indexes_checkpoint_and_weight_audit": "the 18 progress-index additions beyond the previously audited 48 were not independently re-read for checkpoint SHA, attempt history, or per-run budget receipts in this observation"
+    },
+    "safety_flags_from_progress": {
+      "no_automatic_training_retries": true,
+      "budget_change_permitted": false,
+      "physical_energy_missing_is_not_zero": true,
+      "source_branch_ci_not_claimed": true
+    }
+  },
+  "exact_source_ci": {
+    "run_id": 42078258351,
+    "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "run_status": "completed",
+    "run_conclusion": "success",
+    "job_id": 127424159520,
+    "job_name": "kernel-and-mechanisms",
+    "job_status": "completed",
+    "job_conclusion": "success",
+    "steps_completed_successfully": 10
+  },
+  "trusted_main_gpu_probe": {
+    "run_id": 39526325715,
+    "run_attempt": 5,
+    "status": "completed",
+    "conclusion": "cancelled"
+  },
+  "safety": {
+    "no_training_started_by_this_followup": true,
+    "no_model_budget_retried": true,
+    "no_source_branch_written": true,
+    "no_unrelated_processes_stopped": true,
+    "no_files_deleted": true,
+    "no_driver_or_system_service_changed": true
+  },
+  "publication": {
+    "branch": "research/hcsn-desktop-evidence-20261105",
+    "parent_sha": "601a07a731135c49d3d10f579e65b53c8381f886",
+    "expected_sha_lease_required": true,
+    "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/observations/20261108T072135Z-progress-66.json",
+    "source_commit_pin": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "manifest_pin_not_rechecked_in_this_observation": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn-campaign-bundle-independent-review-v1",
+  "reviewed_utc": "2026-11-05T17:03:36.583945+00:00",
+  "mode": "Independent static integration review plus exact local byte/hash, ZIP inventory and provenance checks; no Torch import or CUDA execution.",
+  "manifest_sha256": "90b3c9f6c6dc206362ee21f3617bd487c5484ca00ad61189195aa832382d3e40",
+  "zip_sha256": "3219e48fb0e8b28a77e1e245ad967f3be5d37948eddac24a64b05dcf17dce2a2",
+  "zip_bytes": 135416,
+  "inventory_sha256": "fb0d989f2447f094f546f37512d65ee15b24d158104af02e68b1ba6e0cc5cb1d",
+  "gate_sources_sha256": {
+    "campaign.py": "563694479c0dd5e6bfe76caae88583c9cf442f3ced86951f3cf390325114f1ea",
+    "runtime_entry.py": "8cb10553073686301fc81e15e088e356ba16e41c3bc8a0a44d1b146c06b74fb4",
+    "contracts.py": "685b20a716cb5b929e5018d742b25bb00a901be35c2e1db203bbd50af85a3a6d"
+  },
+  "external_audit_sha256": "5acbb1fa661a67db81fa5148c3c30293aaffb4827f363985e8e3905f17cd7b05",
+  "external_protocol_sha256": "4983e126099ff69221e477012034058035463bd03f853f51cea1299de60fc1db",
+  "verified_bundle_files": 38,
+  "exact_archive_regular_file_count_including_manifest": 39,
+  "archive_uncompressed_bytes": 408608,
+  "archive_all_paths_bytes_timestamp_20261105_and_modes_0644_verified": true,
+  "candidate_python_file_count": 26,
+  "candidate_source_map_sha256": "1c49f03c3525adde66be08a6be0779dccb2ed803c497bf74daba66ad6e5c2087",
+  "candidate_benchmark_source_sha256": "abff34d45fe5829f59c28fc324e6a5c25dc5c04e533ae52b8d2048740ac1e72a",
+  "baseline_python_file_count": 23,
+  "baseline_source_map_sha256": "13860b933a93966e880e64840efa0ac26b70ab62cbe7e38bf71587575d9831a3",
+  "local_frozen_task_relative_dependencies_verified": 10,
+  "remote_dependency_scope": "All ten task-relative paths were mapped to frozen local source/weight bytes. The controller independently rechecks their actual remote paths/hashes before any stage. This review did not perform a remote read.",
+  "synthetic_gate_control_receipt_sha256": "4a6da098f6e5bc1743781ceb74c55e52a6c44c10aa122cf83a6d3b33460c809e",
+  "synthetic_gate_controls": {
+    "tests_run": 9,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "source_hashes_match_final_gate_files": true,
+    "scope": "Synthetic metadata rejection and actual local flock semantics; no Torch/CUDA/model computation",
+    "reviewer_reran_tests": false
+  },
+  "resolved_findings": [
+    "Task-wide single-owner EX campaign lock and inherited shared environment lock prevent competing owners after parent death.",
+    "Actual allocator getter must equal 0.5; fixed runtime profile and source hashes are rechecked at stage boundaries.",
+    "External full-B audit accepts only explicitly bound current-process wrapper evidence when Torch is preimported.",
+    "Runtime profiles, audit claims/progress/terminal results and controller publications fsync parent directory entries.",
+    "Physical GPU energy completeness requires 170 completed rows and an interval-complete finite nonnegative reading under the exact declared GPU UUID counter.",
+    "Stage launch PID/process-group receipts and unique output directories retain ownership evidence."
+  ],
+  "disposition": "No remaining blocking defect found in this exact local bundle. It is suitable for the already authorized isolated deployment and gated wait; experiment admission still requires actual READY, strict tests, full-shape and parity gates.",
+  "not_established": [
+    "Installed pinned Torch/Mamba readiness",
+    "CUDA numerical or full-shape completion",
+    "170 trained runs",
+    "20 completed full-budget B audits",
+    "Physical GPU energy availability",
+    "Resolution independence or task advantage",
+    "GitHub CI pass"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.initial-daemon-fd.callers-ops.v1",
+  "base": "caa34b7e77f5aa134dc1335f5f143af948874157",
+  "prerequisite_manifest": "94103a58371dda99f642e82f5e5f0ccabdc59cca",
+  "rule": "Union the actual new caller into the existing Initial receive boundary from the prerequisite; preserve all other callers, rules and boundaries. Append the new inventory id/boundary once. Apply exact protected row changes or equivalent token-preserving semantic union to later formatted sources.",
+  "add_product_callers": [
+    {
+      "id": "root_initial_purpose_receive",
+      "symbol": "receive_root_generation_initial_handoff",
+      "expected_original_callers": [],
+      "paths": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "original_definition": {
+        "id": "root_initial_purpose_receive",
+        "symbol": "receive_root_generation_initial_handoff",
+        "definition_path": "codex-rs/hepta-agentd/src/root_generation_initial_handoff.rs",
+        "definition_markers": [
+          "fn receive_root_generation_initial_handoff(",
+          "libc::MSG_CMSG_CLOEXEC",
+          "descriptors.len() != 2",
+          "require_root_pin(&root_pidfd, peer.pid as u32)?"
+        ],
+        "product_callers": [],
+        "caller_markers": [],
+        "call_pattern": "\\breceive_root_generation_initial_handoff\\s*\\("
+      }
+    }
+  ],
+  "new_required_boundary_ids": [
+    "root_initial_launch_handoff_take"
+  ],
+  "new_boundaries": [
+    {
+      "id": "root_initial_launch_handoff_take",
+      "symbol": "AgentdProductionLaunch::take_generation_initial_handoff",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "definition_markers": [
+        "pub fn take_generation_initial_handoff(",
+        "self.initial_publication.take()"
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "AgentdProductionLaunch"
+    }
+  ],
+  "protected_exact_edits": [
+    {
+      "kind": "replace_exact",
+      "id": "protected:initial-descriptor-parse",
+      "count": 1,
+      "before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/production_launcher_inputs.rs\"\nrequired = [\"--root-generation-publication-handoff-fd\", \"publication_handoff.is_some() && learning_handoff.is_none()\", \"--root-learning-handoff-fd\", \"original production descriptors must be distinct\", \"flags | libc::FD_CLOEXEC\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"initialize_host_authority\", \"create_protected\"]\nrequired_function_order = [{ function = \"fn parse(\", sequence = [\"let handoff = descriptor_number(\",\"let learning_handoff = selected\",\"let publication_handoff = selected\",\"publication_handoff.is_some() && learning_handoff.is_none()\",\"let numbers = [\",\"learning_handoff,\",\"publication_handoff,\",\"numbers.iter().copied().collect::<BTreeSet<_>>().len() != numbers.len()\",\"let handoff = UnixDatagram::from(take_descriptor(handoff)?)\",\"learning_handoff\\n        .map(take_descriptor)\",\"publication_handoff\\n        .map(take_descriptor)\"] }]\n\n",
+      "after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/production_launcher_inputs.rs\"\nrequired = [\"--root-generation-publication-handoff-fd\",\"publication_handoff.is_some() && learning_handoff.is_none()\",\"--root-learning-handoff-fd\",\"original production descriptors must be distinct\",\"flags | libc::FD_CLOEXEC\",\"--root-generation-initial-handoff-fd\",\"initial_handoff.is_some() && publication_handoff.is_some()\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"initialize_host_authority\", \"create_protected\"]\nrequired_function_order = [{ function = \"fn parse(\", sequence = [\"let handoff = descriptor_number(\",\"let learning_handoff = selected\",\"let publication_handoff = selected\",\"publication_handoff.is_some() && learning_handoff.is_none()\",\"let initial_handoff = selected\",\"initial_handoff.is_some() && publication_handoff.is_some()\",\"let numbers = [\",\"learning_handoff,\",\"publication_handoff,\",\"initial_handoff,\",\"numbers.iter().copied().collect::<BTreeSet<_>>().len() != numbers.len()\",\"let handoff = UnixDatagram::from(take_descriptor(handoff)?)\",\"learning_handoff\\n        .map(take_descriptor)\",\"publication_handoff\\n        .map(take_descriptor)\",\"initial_handoff\\n        .map(take_descriptor)\"] }]\n\n"
+    },
+    {
+      "kind": "replace_exact",
+      "id": "protected:initial-original-launch",
+      "count": 1,
+      "before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/production_launcher.rs\"\nrequired = [\"let learning: crate::RootLearningHandoffV1 = learning;\",\"config.require_root_learning_assembled()?\",\"pub fn take_generation_publication_connection(\",\"let inputs: &mut AgentdRootProductionInputs = &mut self.root;\",\"publication: Option<crate::RootGenerationPublicationHandoffV1>\",\"crate::receive_root_generation_publication_handoff(\",\"pub fn take_generation_publication_handoff(\",\"self.publication.is_some()\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"initialize_host_authority\", \"create_protected\"]\nrequired_function_order = [{ function = \"fn from_process_environment(\", sequence = [\"inputs::parse(arguments)?\", \"AgentdConfig::from_process_environment()?\", \"config.prepare_root_handoff(uid, gid)?.drop_to_owner()?\", \"crate::receive_root_production_handoff(\", \"crate::receive_root_learning_handoff(\", \"crate::receive_root_generation_publication_handoff(\", \"Startup::Root(\"] }, { function = \"fn receive(\", sequence = [\"crate::receive_root_production_inputs(\", \"finish(&root)?\", \"let learning: crate::RootLearningHandoffV1 = learning;\", \"session_end\\n                        .checked_duration_since(Instant::now())\", \"learning\\n                        .connect(\", \"config.with_root_learning_inputs(inputs)?\"] }, { function = \"fn run(\", top_level = [\"config.require_root_learning_assembled()?\"], sequence = [\"config.require_root_learning_assembled()?\", \"self.publication.is_some()\", \"let RuntimeInputs {\", \"let mut mcp: Option<codex_app_server::ConfiguredMcpRuntime> = None\", \"codex_app_server::initialize_configured_mcp_server(\"] }, { function = \"fn take_generation_publication_connection(\", sequence = [\"let inputs: &mut AgentdRootProductionInputs = &mut self.root;\", \"inputs.take_generation_publication_connection()\"] }, { function = \"fn take_generation_publication_handoff(\", sequence = [\"self.publication.take()\", \"AgentdError::Invalid(\"] }]\n\n",
+      "after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/production_launcher.rs\"\nrequired = [\"let learning: crate::RootLearningHandoffV1 = learning;\",\"config.require_root_learning_assembled()?\",\"pub fn take_generation_publication_connection(\",\"let inputs: &mut AgentdRootProductionInputs = &mut self.root;\",\"publication: Option<crate::RootGenerationPublicationHandoffV1>\",\"crate::receive_root_generation_publication_handoff(\",\"pub fn take_generation_publication_handoff(\",\"self.publication.is_some()\",\"initial_publication: Option<crate::RootGenerationInitialHandoffV1>\",\"crate::receive_root_generation_initial_handoff(\",\"pub fn take_generation_initial_handoff(\",\"self.initial_publication.is_some()\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"initialize_host_authority\", \"create_protected\"]\nrequired_function_order = [{ function = \"fn from_process_environment(\", sequence = [\"inputs::parse(arguments)?\", \"AgentdConfig::from_process_environment()?\", \"config.prepare_root_handoff(uid, gid)?.drop_to_owner()?\", \"crate::receive_root_production_handoff(\", \"crate::receive_root_learning_handoff(\", \"crate::receive_root_generation_publication_handoff(\", \"crate::receive_root_generation_initial_handoff(\",\"Startup::Root(\"] }, { function = \"fn receive(\", sequence = [\"crate::receive_root_production_inputs(\", \"finish(&root)?\", \"let learning: crate::RootLearningHandoffV1 = learning;\", \"session_end\\n                        .checked_duration_since(Instant::now())\", \"learning\\n                        .connect(\", \"config.with_root_learning_inputs(inputs)?\"] }, { function = \"fn run(\", top_level = [\"config.require_root_learning_assembled()?\"], sequence = [\"config.require_root_learning_assembled()?\", \"self.initial_publication.is_some()\",\"self.publication.is_some()\", \"let RuntimeInputs {\", \"let mut mcp: Option<codex_app_server::ConfiguredMcpRuntime> = None\", \"codex_app_server::initialize_configured_mcp_server(\"] }, { function = \"fn take_generation_publication_connection(\", sequence = [\"let inputs: &mut AgentdRootProductionInputs = &mut self.root;\", \"inputs.take_generation_publication_connection()\"] }, { function = \"fn take_generation_publication_handoff(\", sequence = [\"self.publication.take()\", \"AgentdError::Invalid(\"] }, { function = \"fn take_generation_initial_handoff(\", sequence = [\"self.initial_publication.take()\",\"AgentdError::Invalid(\"] }]\n\n"
+    }
+  ],
+  "compiler_executed": false,
+  "tests_executed": false,
+  "official_caller_scan_executed": false
+}

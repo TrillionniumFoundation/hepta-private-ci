@@ -1,0 +1,45 @@
+{
+  "actual_numerical_review": {
+    "bytes": 6481,
+    "sha256": "90e16848c01894b94ef7d72a2a4e52f3640da909189acb2010f3589ad8ab7670"
+  },
+  "formal_task_optimizer_updates": 0,
+  "formal_training_fits": 0,
+  "hepta_ndu_completion_credit": 0,
+  "independence_limit": "The control-review author is also the author of the two formal-execution test files. Those tests are not represented as independently authored. Actual numerical evidence was separately reviewed.",
+  "original_campaign_completion_credit": 0,
+  "projection_at_utc": "2026-11-07T23:36:53.461997+00:00",
+  "reviews": [
+    {
+      "disposition": "The existing pinned native observer already checked the actual private-intent Boolean before accepting every observation, including the terminal result. Its exact request and actual native execution are bound by the evidence guard. The final freeze wrapper also checks the actual Boolean.",
+      "evidence": {
+        "bytes": 7724,
+        "sha256": "449662247d1ad54a1544e56d2c5b7d83f749ae03e96284d7f15b9825956a885a"
+      },
+      "original_finding": "The public guard did not itself duplicate the private-intent Boolean check.",
+      "reviewer_authored_reviewed_controls": false,
+      "scope": "Read-only seven-source qualification-control review and actual native observer bridge.",
+      "timing": "This observation was raised after the authorized qualification submit; the seven packed sources were not changed and the numerical run was not repeated."
+    },
+    {
+      "capsule_source_entire_bytes_unchanged": true,
+      "evidence": {
+        "bytes": 8663,
+        "sha256": "a8ca8e692c113521feab79889ef4e516b685b12de092cd439ad302845d6d58b1"
+      },
+      "resolved_finding": "The CPU finalizer receipt now reads the actual CPU resource lineage instead of a legacy Colab-only config field.",
+      "reviewer_authored_six_production_files": false,
+      "reviewer_authored_two_test_files": true,
+      "scope": "Read-only production diff for six execution modules; the reviewer authored the two accompanying test modules.",
+      "unchanged_original_core_symbols": 11
+    }
+  ],
+  "schema": "hcsn-kaggle-cpu-v1-public-independent-control-review-v1",
+  "scope_limits": [
+    "No scientific benefit, successful formal fit, external retention or full deployment cost is inferred.",
+    "Freeze, Git readback, unique native owner admission and actual finalizer binding are separate execution gates.",
+    "The production recovery logic is covered by bounded control fixtures; numerical fresh-process recovery is not a claim of production owner recovery qualification."
+  ],
+  "status": "NO_REMAINING_SUBSTANTIVE_CONTROL_BLOCKER_IDENTIFIED_IN_REVIEWED_SCOPE",
+  "study_id": "hcsn-regenerative-mechanisms-fv-pilot-20261107-1631115f163f-cpu-v1"
+}

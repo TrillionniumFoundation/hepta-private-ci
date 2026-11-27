@@ -1,0 +1,39 @@
+{
+  "all_closed": false,
+  "artifact_crc_ok": true,
+  "artifact_member_count": 1,
+  "artifact_sha256_ok": true,
+  "checks": {
+    "all_closed_false": true,
+    "artifact_and_member_hashes_match": true,
+    "executed_counts_are_zero": true,
+    "identity_matches_source_request": true,
+    "qualification_false": true,
+    "result_status_is_static_hold_only": true,
+    "source_commit_and_parent_match": true,
+    "unique_key_matches": true
+  },
+  "executed_by_review": {
+    "candidate_calls": 0,
+    "dynamic_segments": 0,
+    "matrix_exponentials": 0,
+    "optimizer_updates": 0,
+    "oracle_calls": 0,
+    "torch_operations": 0
+  },
+  "historical_negative_results_preserved": true,
+  "qualification": false,
+  "review_status": "PASS_EVIDENCE_BYTES_HOLD_ONLY",
+  "scope_not_granted": [
+    "third-cycle numerical execution",
+    "target-4 serializer and full-state implementation",
+    "fresh-process restore",
+    "actual resource profile",
+    "arbitrary histories",
+    "N256 or N512",
+    "finite-domain qualification",
+    "full-network training",
+    "async complete cost",
+    "production adoption"
+  ]
+}

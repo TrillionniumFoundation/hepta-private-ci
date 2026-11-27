@@ -1,0 +1,612 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs
+@@ -338,0 +339,12 @@
++    let started = std::time::Instant::now();
++    let phase = |name: &str| {
++        eprintln!(
++            "HEPTA_CANDIDATE_FAULTS phase={name} elapsed_ms={}",
++            started.elapsed().as_millis()
++        );
++    };
++    phase("wire-bootstrap");
++    // These faults change only a reply after the original owner has read it.
++    // Keep that completed owner, but consume a separate transport for each fault.
++    let run = completed_candidate().await?;
++    let mut wire_pages = 0_u64;
+@@ -347,1 +359,2 @@
+-        let run = completed_candidate().await?;
++        phase("wire-case");
++        eprintln!("HEPTA_CANDIDATE_FAULTS fault={fault:?}");
+@@ -400,0 +414,1 @@
++        let page_count = peer.frames.load(Ordering::Acquire);
+@@ -413,1 +427,1 @@
+-        run.close()?;
++        wire_pages += page_count;
+@@ -414,0 +429,3 @@
++    let counts = run.close()?;
++    eprintln!("HEPTA_CANDIDATE_FAULTS pages={wire_pages} material_counts={counts:?}");
++    assert!(counts.iter().all(|count| *count < 128));
+@@ -415,0 +433,1 @@
++    phase("renewal-bootstrap");
+@@ -416,0 +435,1 @@
++    phase("renewal-ready");
+@@ -432,0 +452,5 @@
++    let original_end = run.training.attestation().expires_at;
++    let after_original_end = original_end
++        .checked_add(1)
++        .ok_or_else(|| anyhow::anyhow!("fixture evidence expiry overflow"))?;
++    // Signed evidence includes its final second; the next second is expired.
+@@ -438,1 +462,10 @@
+-            run.training.attestation().expires_at,
++            original_end,
++        )
++        .is_ok()
++    );
++    assert!(
++        wire::authenticate_receipt(
++            &context,
++            run.training.receipt().clone(),
++            run.training.attestation().clone(),
++            after_original_end,
+@@ -447,1 +480,1 @@
+-            run.training.attestation().expires_at,
++            after_original_end,
+@@ -526,0 +560,1 @@
++    phase("withdrawal-bootstrap");
+@@ -527,0 +562,1 @@
++    phase("withdrawal-ready");
+@@ -553,0 +589,1 @@
++    phase("withdrawal-response-held");
+@@ -582,0 +619,1 @@
++    phase("cancel-bootstrap");
+@@ -583,0 +621,1 @@
++    phase("cancel-ready");
+@@ -609,0 +648,1 @@
++    phase("cancel-response-held");
+@@ -628,0 +668,1 @@
++    phase("complete");
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs
+@@ -148,1 +148,2 @@
+-        .await?;
++        .await
++        .map_err(|error| anyhow::anyhow!("first original completed C attestation: {error:?}"))?;
+@@ -285,0 +287,2 @@
++// Each fault retains its own fresh original owners and the original test timeout.
++// The pre-existing test name covers Trainer; the two siblings complete the roster.
+@@ -289,13 +292,78 @@
+-    for predecessor in ["trainer", "evaluator", "selector"] {
+-        let mut f = Box::pin(PublicationFixture::ready()).await?;
+-        let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;
+-        let trainer = Arc::new(trainer);
+-        let evaluator = Arc::new(evaluator);
+-        let selection_files = SelectorFiles::new()?;
+-        let mut original_s = selection_files.owner(&f, OpenReceipt::Fresh)?;
+-        let selected = original_s
+-            .attest_original_evaluated_selection(sources(
+-                f.evaluation.snapshot(),
+-                &c,
+-                &trainer,
+-                &evaluator,
++    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Trainer)).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_c_refuses_original_evaluator_without_claim() -> anyhow::Result<()> {
++    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Evaluator)).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_c_refuses_original_selector_without_claim() -> anyhow::Result<()> {
++    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Selector)).await
++}
++
++#[derive(Clone, Copy, Eq, PartialEq)]
++enum OriginalPredecessorFault {
++    Trainer,
++    Evaluator,
++    Selector,
++}
++
++async fn refuses_original_predecessor(predecessor: OriginalPredecessorFault) -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;
++    let trainer = Arc::new(trainer);
++    let evaluator = Arc::new(evaluator);
++    let selection_files = SelectorFiles::new()?;
++    let mut original_s = selection_files.owner(&f, OpenReceipt::Fresh)?;
++    let selected = original_s
++        .attest_original_evaluated_selection(sources(
++            f.evaluation.snapshot(),
++            &c,
++            &trainer,
++            &evaluator,
++        ))
++        .await?;
++    let (host, selector, selector_thread) =
++        selector_peer(original_s, &selected, &c, &trainer, &evaluator, None)?;
++    execute(&c, 1).await?;
++    let files = SelectorFiles::new()?;
++    let mut owner = observer(&files, &f, &selected, OpenReceipt::Fresh)?;
++    let before = files.bytes()?;
++    let published_before = f.publication_bytes()?;
++    match predecessor {
++        OriginalPredecessorFault::Trainer => f.host.original.withdraw_original_dataset()?,
++        OriginalPredecessorFault::Evaluator => f.host.retention_b.withdraw_target()?,
++        OriginalPredecessorFault::Selector => {
++            OpenOptions::new()
++                .write(true)
++                .open(selection_files.0.path().join("journal"))?
++                .set_len(0)?;
++        }
++    }
++    let result = owner
++        .attest_original_evaluated_completion(next_sources(
++            selected.snapshot(),
++            &c,
++            &trainer,
++            &evaluator,
++            &selector,
++        ))
++        .await;
++    match predecessor {
++        OriginalPredecessorFault::Trainer => assert!(matches!(
++            result,
++            Err(NextUseError::Evaluated(PublicationError::Training(
++                crate::OriginalCellQ24TrainingCommandErrorV1::CommitUncertain
++            )))
++        )),
++        OriginalPredecessorFault::Evaluator => assert!(matches!(
++            result,
++            Err(NextUseError::Evaluated(PublicationError::Evaluation(
++                crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable
++            )))
++        )),
++        OriginalPredecessorFault::Selector => assert!(matches!(
++            result,
++            Err(NextUseError::Connection(
++                crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(_)
+@@ -303,26 +371,14 @@
+-            .await?;
+-        let (host, selector, selector_thread) =
+-            selector_peer(original_s, &selected, &c, &trainer, &evaluator, None)?;
+-        execute(&c, 1).await?;
+-        let files = SelectorFiles::new()?;
+-        let mut owner = observer(&files, &f, &selected, OpenReceipt::Fresh)?;
+-        let before = files.bytes()?;
+-        let published_before = f.publication_bytes()?;
+-        match predecessor {
+-            "trainer" => f.host.original.withdraw_original_dataset()?,
+-            "evaluator" => f.host.retention_b.withdraw_target()?,
+-            "selector" => {
+-                OpenOptions::new()
+-                    .write(true)
+-                    .open(selection_files.0.path().join("journal"))?
+-                    .set_len(0)?;
+-            }
+-            _ => unreachable!(),
+-        }
+-        let result = owner
+-            .attest_original_evaluated_completion(next_sources(
+-                selected.snapshot(),
+-                &c,
+-                &trainer,
+-                &evaluator,
+-                &selector,
++        )),
++    }
++    assert_eq!(files.bytes()?, before);
++    assert_eq!(f.publication_bytes()?, published_before);
++    drop(owner);
++    drop(selector);
++    let served = selector_thread
++        .join()
++        .expect("same original S evidence service");
++    if predecessor == OriginalPredecessorFault::Selector {
++        assert!(matches!(
++            served,
++            Err(OriginalCircuitEvaluatedSelectionReadbackErrorV1::Transport(
++                codex_hepta_contracts::HostIssuerTransportError::InvalidRequest
+@@ -330,1 +386,9 @@
+-            .await;
++        ));
++    } else {
++        assert_eq!(served?, 0);
++    }
++    drop(host);
++    drop(trainer);
++    drop(evaluator);
++    assert_eq!(
++        peers.finish()?,
+@@ -332,19 +396,3 @@
+-            "trainer" => assert!(matches!(
+-                result,
+-                Err(NextUseError::Evaluated(PublicationError::Training(
+-                    crate::OriginalCellQ24TrainingCommandErrorV1::CommitUncertain
+-                )))
+-            )),
+-            "evaluator" => assert!(matches!(
+-                result,
+-                Err(NextUseError::Evaluated(PublicationError::Evaluation(
+-                    crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
+-                )))
+-            )),
+-            "selector" => assert!(matches!(
+-                result,
+-                Err(NextUseError::Connection(
+-                    crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(_)
+-                ))
+-            )),
+-            _ => unreachable!(),
++            OriginalPredecessorFault::Trainer => [7, 6],
++            OriginalPredecessorFault::Evaluator => [7, 7],
++            OriginalPredecessorFault::Selector => [8, 8],
+@@ -352,33 +400,4 @@
+-        assert_eq!(files.bytes()?, before);
+-        assert_eq!(f.publication_bytes()?, published_before);
+-        drop(owner);
+-        drop(selector);
+-        let served = selector_thread
+-            .join()
+-            .expect("same original S evidence service");
+-        if predecessor == "selector" {
+-            assert!(matches!(
+-                served,
+-                Err(OriginalCircuitEvaluatedSelectionReadbackErrorV1::Transport(
+-                    codex_hepta_contracts::HostIssuerTransportError::InvalidRequest
+-                ))
+-            ));
+-        } else {
+-            assert_eq!(served?, 0);
+-        }
+-        drop(host);
+-        drop(trainer);
+-        drop(evaluator);
+-        assert_eq!(
+-            peers.finish()?,
+-            match predecessor {
+-                "trainer" => [7, 6],
+-                "evaluator" => [7, 7],
+-                "selector" => [8, 8],
+-                _ => unreachable!(),
+-            }
+-        );
+-        c.stop().await?;
+-        drop(c);
+-        f.finish().await?;
+-    }
++    );
++    c.stop().await?;
++    drop(c);
++    f.finish().await?;
+@@ -419,12 +438,14 @@
+-    assert!(matches!(
+-        owner
+-            .attest_original_evaluated_completion(next_sources(
+-                selected.snapshot(),
+-                &c,
+-                &trainer,
+-                &evaluator,
+-                &selector,
+-            ))
+-            .await,
+-        Err(NextUseError::Observation(_))
+-    ));
++    let result = owner
++        .attest_original_evaluated_completion(next_sources(
++            selected.snapshot(),
++            &c,
++            &trainer,
++            &evaluator,
++            &selector,
++        ))
++        .await;
++    assert!(
++        matches!(&result, Err(NextUseError::Observation(_))),
++        "after the final actual S response: {:?}",
++        result.as_ref().err()
++    );
+@@ -493,14 +514,19 @@
+-    assert!(matches!(
+-        recovered
+-            .attest_original_evaluated_completion(next_sources(
+-                selected.snapshot(),
+-                &c,
+-                &trainer,
+-                &evaluator,
+-                &selector,
+-            ))
+-            .await,
+-        Err(NextUseError::Owner(OwnerError::Store(
+-            ProductEvaluationExecutionStoreErrorV1::Missing
+-        )))
+-    ));
++    let result = recovered
++        .attest_original_evaluated_completion(next_sources(
++            selected.snapshot(),
++            &c,
++            &trainer,
++            &evaluator,
++            &selector,
++        ))
++        .await;
++    assert!(
++        matches!(
++            &result,
++            Err(NextUseError::Owner(OwnerError::Store(
++                ProductEvaluationExecutionStoreErrorV1::Missing
++            )))
++        ),
++        "original recovered missing C: {:?}",
++        result.as_ref().err()
++    );
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs
+@@ -53,1 +53,1 @@
+-    pub(super) host: HostFixture,
++    pub(super) host: Box<HostFixture>,
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs
+@@ -391,1 +391,1 @@
+-                        crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
++                        crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable
+diff --git a/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs
+@@ -156,3 +156,46 @@
+-        evidence_diagnostic_marker("transport_loop_begin", 0);
+-        let result = owner.serve_evidence_channel(&mut channel);
+-        evidence_diagnostic_marker("transport_loop_return", 0);
++        evidence_diagnostic_marker("transport_loop_begin", /*request_id*/ 0);
++        let mut result = Err(Error::Unavailable);
++        for request_id in 1..=128_u64 {
++            let exchange_started = std::time::Instant::now();
++            let mut callback_started_after = None;
++            let mut callback_elapsed = None;
++            let mut response_bytes = None;
++            let mut callback_error = None;
++            let exchange = channel.exchange(|bytes| {
++                // The first-byte wait is lifetime-bounded, not part of the
++                // 500-ms exchange deadline. Measure the real callback once.
++                let callback_started = std::time::Instant::now();
++                callback_started_after = Some(callback_started.duration_since(exchange_started));
++                let original = owner.fixture_original_evidence_response(bytes, request_id);
++                callback_elapsed = Some(callback_started.elapsed());
++                match original {
++                    Ok(response) => {
++                        response_bytes = Some(response.len());
++                        Ok(response)
++                    }
++                    Err(error) => {
++                        callback_error = Some(error);
++                        Err(HostIssuerTransportError::InvalidRequest)
++                    }
++                }
++            });
++            flush_evidence_diagnostics();
++            // Emit after exchange returns, so diagnostics do not consume its
++            // deadline. No payload, signature or replacement read is logged.
++            eprintln!(
++                "ORIGINAL_C_EVIDENCE_EXCHANGE request_id={request_id} callback_started_after={callback_started_after:?} callback_elapsed={callback_elapsed:?} response_bytes={response_bytes:?} callback_error={callback_error:?} exchange_elapsed={:?} result={exchange:?}",
++                exchange_started.elapsed()
++            );
++            match exchange {
++                Ok(true) => {}
++                Ok(false) => {
++                    result = Ok(request_id - 1);
++                    break;
++                }
++                Err(error) => {
++                    result = Err(error.into());
++                    break;
++                }
++            }
++        }
++        evidence_diagnostic_marker("transport_loop_return", /*request_id*/ 0);
+@@ -164,3 +207,64 @@
+-/// One test-process monotonic clock. These markers neither send a request nor
+-/// change a peer, receipt, channel lifetime, or response deadline.
+-pub(crate) fn evidence_diagnostic_marker(stage: &str, request_id: u64) {
++/// Same monotonic clock as the upstream markers. Callback events are stored in
++/// a fixed eight-entry buffer and printed only after the original exchange.
++#[derive(Clone, Copy)]
++enum EvidenceDiagnosticEvent {
++    Stage {
++        stage: &'static str,
++        request_id: u64,
++        elapsed_us: u128,
++    },
++    Handler {
++        request_id: u64,
++        elapsed_us: u128,
++    },
++}
++
++struct EvidenceDiagnostics {
++    events: [Option<EvidenceDiagnosticEvent>; 8],
++    length: usize,
++    dropped: usize,
++}
++
++std::thread_local! {
++    static EVIDENCE_DIAGNOSTICS: std::cell::RefCell<Option<EvidenceDiagnostics>> =
++        const { std::cell::RefCell::new(None) };
++}
++
++fn record_evidence_diagnostic(event: EvidenceDiagnosticEvent) {
++    let buffered = EVIDENCE_DIAGNOSTICS.with(|slot| {
++        let mut slot = slot.borrow_mut();
++        let Some(buffer) = slot.as_mut() else {
++            return false;
++        };
++        if buffer.length < buffer.events.len() {
++            buffer.events[buffer.length] = Some(event);
++            buffer.length += 1;
++        } else {
++            buffer.dropped = buffer.dropped.saturating_add(1);
++        }
++        true
++    });
++    if !buffered {
++        emit_evidence_diagnostic(event);
++    }
++}
++
++fn emit_evidence_diagnostic(event: EvidenceDiagnosticEvent) {
++    match event {
++        EvidenceDiagnosticEvent::Stage {
++            stage,
++            request_id,
++            elapsed_us,
++        } => eprintln!(
++            "HEPTA_C_EVIDENCE_DIAGNOSTIC stage={stage} request_id={request_id} elapsed_us={elapsed_us}"
++        ),
++        EvidenceDiagnosticEvent::Handler {
++            request_id,
++            elapsed_us,
++        } => eprintln!(
++            "HEPTA_C_EVIDENCE_DIAGNOSTIC request_id={request_id} handler_elapsed_us={elapsed_us}"
++        ),
++    }
++}
++
++pub(crate) fn evidence_diagnostic_marker(stage: &'static str, request_id: u64) {
+@@ -169,4 +273,30 @@
+-    eprintln!(
+-        "HEPTA_C_EVIDENCE_DIAGNOSTIC stage={stage} request_id={request_id} elapsed_us={}",
+-        elapsed.as_micros()
+-    );
++    record_evidence_diagnostic(EvidenceDiagnosticEvent::Stage {
++        stage,
++        request_id,
++        elapsed_us: elapsed.as_micros(),
++    });
++}
++
++/// The native evidence loop holds this test-only guard outside exchange, so
++/// failure and EOF also flush after the callback has left its deadline window.
++pub(super) struct EvidenceDiagnosticsFlush;
++
++impl Drop for EvidenceDiagnosticsFlush {
++    fn drop(&mut self) {
++        flush_evidence_diagnostics();
++    }
++}
++
++pub(super) fn flush_evidence_diagnostics() {
++    let buffered = EVIDENCE_DIAGNOSTICS.with(|slot| slot.borrow_mut().take());
++    if let Some(buffer) = buffered {
++        for event in buffer.events.into_iter().flatten() {
++            emit_evidence_diagnostic(event);
++        }
++        if buffer.dropped != 0 {
++            eprintln!(
++                "HEPTA_C_EVIDENCE_DIAGNOSTIC dropped_events={}",
++                buffer.dropped
++            );
++        }
++    }
+@@ -181,0 +312,10 @@
++        EVIDENCE_DIAGNOSTICS.with(|slot| {
++            let mut slot = slot.borrow_mut();
++            if slot.is_none() {
++                *slot = Some(EvidenceDiagnostics {
++                    events: [None; 8],
++                    length: 0,
++                    dropped: 0,
++                });
++            }
++        });
+@@ -191,0 +332,1 @@
++        let elapsed = self.started.elapsed();
+@@ -193,5 +334,4 @@
+-        eprintln!(
+-            "HEPTA_C_EVIDENCE_DIAGNOSTIC request_id={} handler_elapsed_us={}",
+-            self.request_id,
+-            self.started.elapsed().as_micros()
+-        );
++        record_evidence_diagnostic(EvidenceDiagnosticEvent::Handler {
++            request_id: self.request_id,
++            elapsed_us: elapsed.as_micros(),
++        });
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
+@@ -23,5 +23,5 @@
+-    pub(super) original: PositiveFixture,
+-    pub(super) primary_b: BFixture,
+-    pub(super) retention_b: BFixture,
+-    primary: PanelMemberFixture,
+-    retention: PanelMemberFixture,
++    pub(super) original: Box<PositiveFixture>,
++    pub(super) primary_b: Box<BFixture>,
++    pub(super) retention_b: Box<BFixture>,
++    primary: Box<PanelMemberFixture>,
++    retention: Box<PanelMemberFixture>,
+@@ -35,1 +35,1 @@
+-    pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Self> {
++    pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Box<Self>> {
+@@ -40,1 +40,1 @@
+-    pub(super) async fn before_adoption() -> anyhow::Result<Self> {
++    pub(super) async fn before_adoption() -> anyhow::Result<Box<Self>> {
+@@ -44,1 +44,3 @@
+-    pub(super) async fn before_publication(publication: PublicationMode) -> anyhow::Result<Self> {
++    pub(super) async fn before_publication(
++        publication: PublicationMode,
++    ) -> anyhow::Result<Box<Self>> {
+@@ -53,1 +55,1 @@
+-    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Self> {
++    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Box<Self>> {
+@@ -77,1 +79,1 @@
+-        let mut fixture = Self {
++        let mut fixture = Box::new(Self {
+@@ -87,1 +89,1 @@
+-        };
++        });
+@@ -98,1 +100,1 @@
+-        let mut host = evaluator.into_original_evaluation_host(panel)?;
++        let mut host = evaluator.into_original_evaluation_host(*panel)?;
+@@ -182,1 +184,1 @@
+-        self.original.finish().await?;
++        Box::pin(self.original.finish()).await?;
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs
+@@ -28,6 +28,6 @@
+-    panel: Panel,
+-    original: PositiveFixture,
+-    primary_b: BFixture,
+-    retention_b: BFixture,
+-    primary: PanelMemberFixture,
+-    retention: PanelMemberFixture,
++    panel: Box<Panel>,
++    original: Box<PositiveFixture>,
++    primary_b: Box<BFixture>,
++    retention_b: Box<BFixture>,
++    primary: Box<PanelMemberFixture>,
++    retention: Box<PanelMemberFixture>,
+@@ -42,1 +42,1 @@
+-) -> anyhow::Result<PanelMemberFixture> {
++) -> anyhow::Result<Box<PanelMemberFixture>> {
+@@ -92,1 +92,1 @@
+-        let (original, mut primary_b, mut retention_b, registration) =
++        let (original, primary_b, retention_b, registration) =
+@@ -93,0 +94,5 @@
++        // Pinning child futures does not move their large owned outputs out of
++        // this parent. Keep each original owner aggregate on the heap as well.
++        let original = Box::new(original);
++        let mut primary_b = Box::new(primary_b);
++        let mut retention_b = Box::new(retention_b);
+@@ -118,1 +123,1 @@
+-        let panel = Panel::from_original_owners(
++        let panel = Box::new(Panel::from_original_owners(
+@@ -122,1 +127,1 @@
+-        )?;
++        )?);
+@@ -168,1 +173,1 @@
+-            self.original.finish().await?;
++            Box::pin(self.original.finish()).await?;

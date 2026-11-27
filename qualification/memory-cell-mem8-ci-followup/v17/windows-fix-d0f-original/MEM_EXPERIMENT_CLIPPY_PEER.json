@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "NO_STATIC_MUST_FIX_ACTUAL_CLIPPY_EQUIVALENCE_ONLY",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "run_id": 43062162500,
+  "job_id": 130667533098,
+  "path": "codex-rs/windows-sandbox-rs/src/setup_process.rs",
+  "preimage": {
+    "bytes": 12409,
+    "sha256": "602c989a1b3a7e32ebd78c327e1e1a2b260601626ee2fc9447b7cebc8c35d1ae",
+    "git_blob": "1e112219d0844dfda16263b14404dc14ed27b6e6"
+  },
+  "postimage": {
+    "bytes": 12410,
+    "sha256": "6d0f48bd28cf4f348118ee9071d9b1db4f482c61054dc7067ee6c689ad1deeec",
+    "git_blob": "9e40662b31d10cf3231c3e69e5bcb6b258ad4248"
+  },
+  "patch": {
+    "bytes": 656,
+    "sha256": "85acadd4ae337e3d63d95ae78c53cf20e8f60166764cc270173621410263c4a3",
+    "git_blob": "f94b5699cd88a11a32be1832a96be5491cc9bc49"
+  },
+  "full_inverse_bytes_equal": true,
+  "semantic_review": [
+    "directory is the same owned optional UTF-16 vector used by CreateProcessW throughout the call.",
+    "Option::as_ref yields the same borrowed Vec; direct Vec::as_ptr and the original closure both produce its unchanged buffer pointer.",
+    "None still maps to null. No allocation, mutation, ownership transfer, handle change, environment or process-token change occurs.",
+    "This is the original Clippy-generated postimage, not a hand recreated approximation."
+  ],
+  "original_gate": "FAIL_DIRTY_SOURCE despite original command exit 0",
+  "new_native_execution": false,
+  "qualification_on_new_source": "NOT_EVALUATED",
+  "ref_changes": false
+}

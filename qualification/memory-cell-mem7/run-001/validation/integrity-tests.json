@@ -1,0 +1,36 @@
+{
+  "base_sha": "",
+  "before": {
+    "commit": "32a19ec3b1894c3afc41eb978edaefb213d9eeed",
+    "dirty": false,
+    "parents": [
+      "39d895547fa7a50c45d580d3e30236c87f99d322"
+    ],
+    "tree": "bebb56d64e68ea7076eafdf771add8c1e9d7b22d"
+  },
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "ndu_real_runtime.test_episodic_memory",
+    "ndu_real_runtime.test_episodic_retrieval",
+    "ndu_real_runtime.test_episodic_qualification"
+  ],
+  "command_exit_code": null,
+  "elapsed_seconds": 0.4080934459998389,
+  "error": "invalid source_sha",
+  "exit_code": 2,
+  "finished_at": "2026-11-10T14:35:30.737933+00:00",
+  "job": null,
+  "lane": "",
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "",
+  "started_at": "2026-11-10T14:35:30.328792+00:00",
+  "status": "rejected",
+  "tested_sha": "",
+  "working_directory": "/workspace/scratch/73df58fb9a78/integrity-check"
+}

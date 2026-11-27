@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.candidate.v19",
+  "parent": "0c896bdf941f4174797ff45378bc7439075c11e4",
+  "parent_tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+  "scope": "Evidence-only addition; no Rust source or checker changes.",
+  "status": "unqualified-candidate-with-original-evidence",
+  "archive": {
+    "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz",
+    "bytes": 1894408,
+    "sha256": "b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9",
+    "git_blob": "891109a74a5484451195bdaed03629de505dc131",
+    "members": 182,
+    "payload_files": 181,
+    "manifest_sha256": "3fb01629112ad5ca52d9324d7918efa15f804146e9c6eacba2dbe7704e35e63e"
+  },
+  "registry": {
+    "sections": {
+      "boundary": 492,
+      "protected_file": 358
+    },
+    "git_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+    "bytes": 649761,
+    "sha256": "ba5227700100722f935b710674225c0880a6a771dec418ad6a72c62100065e72",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "checkers_modified": false
+  },
+  "source_diagnostic_candidate": "0c896bdf941f4174797ff45378bc7439075c11e4",
+  "root17_diagnostic_running_source": "0c896bdf941f4174797ff45378bc7439075c11e4",
+  "ordinary_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "daemon_and_root_os_restart_accepted": false
+  },
+  "no_qualification_inheritance": true,
+  "no_main_merge": true,
+  "allowlist_change": "Exactly one SHA256-bound archive path appended; original bytes and global512000 retained."
+}

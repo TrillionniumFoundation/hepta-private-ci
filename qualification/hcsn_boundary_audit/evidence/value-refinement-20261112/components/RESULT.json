@@ -1,0 +1,139 @@
+{
+  "cost_scope": "one uncached table build and Bellman solve per row; shared CPU, no inference throughput claim",
+  "cpu_seconds": 1.487718608,
+  "fixed_dt": 0.001,
+  "initial_law_exactly_preserved_by_uniform_subdivision": true,
+  "input_identities": {
+    "/dev/shm/hcsn-training-domain-hosted-001/audit/seed11-c0_b0.audit.json": "69edd3e81cb18db014032c09f291eccbf32ec36b8c03dc3e4703779390dfc67f",
+    "/dev/shm/hcsn-training-domain-hosted-001/audit/seed11-c0_b0.derived.jsonl": "7c3ec231c245674ad8d57a6e1cf6d1ce1449a635eae82e30a924890539fb647b",
+    "/dev/shm/hcsn-value-refinement-001/RESULT.json": "ee724f8fae03751643c773bad798b3299c48084c1b80d04716d226afa91131ba"
+  },
+  "numerical_domain_qualified": false,
+  "physical_parameters": {
+    "absolute_reset": 1.3771277643359572,
+    "discount": 0.15,
+    "log_boundary": 0.0,
+    "mu": -0.11999999999999998,
+    "sigma": 0.35
+  },
+  "probe_source_sha256": "012c3c9820487957bb57216c1012373f827763103161767459d114d271ac82df",
+  "rows": [
+    {
+      "bellman_residual_maximum": 1.7763568394002505e-15,
+      "continuum_initial_law_difference": 0.0,
+      "continuum_value": 4.451977681702048,
+      "grid": {
+        "active_cells": 16,
+        "endpoint": 4.8,
+        "initial_log_std": 0.08,
+        "phase_cells": 8,
+        "quadrature_order": 32,
+        "refractory": 0.2,
+        "tail_rate": 1.0
+      },
+      "matrix_build_and_solve_cpu_seconds": 0.010151000000000021,
+      "matrix_build_and_solve_wall_seconds": 0.010151591999601806,
+      "meets_original_one_percent_limit": false,
+      "name": "common_q32",
+      "probability_content_bytes_width4": 1000,
+      "rounded_residual_error_estimate": 1.1843267129966988e-11,
+      "scaled_value_error": 0.7224952661866555,
+      "state_count": 25,
+      "value": 7.668510481900419
+    },
+    {
+      "bellman_residual_maximum": 8.881784197001252e-16,
+      "continuum_initial_law_difference": 0.0,
+      "continuum_value": 4.451977681702048,
+      "grid": {
+        "active_cells": 256,
+        "endpoint": 4.8,
+        "initial_log_std": 0.08,
+        "phase_cells": 8,
+        "quadrature_order": 32,
+        "refractory": 0.2,
+        "tail_rate": 1.0
+      },
+      "matrix_build_and_solve_cpu_seconds": 1.1036302460000003,
+      "matrix_build_and_solve_wall_seconds": 1.1036739159999343,
+      "meets_original_one_percent_limit": false,
+      "name": "active_only",
+      "probability_content_bytes_width4": 10600,
+      "rounded_residual_error_estimate": 5.921633565075542e-12,
+      "scaled_value_error": 0.057093589958711326,
+      "state_count": 265,
+      "value": 4.706157069966479
+    },
+    {
+      "bellman_residual_maximum": 1.7763568394002505e-15,
+      "continuum_initial_law_difference": 0.0,
+      "continuum_value": 4.451977681702048,
+      "grid": {
+        "active_cells": 16,
+        "endpoint": 4.8,
+        "initial_log_std": 0.08,
+        "phase_cells": 128,
+        "quadrature_order": 32,
+        "refractory": 0.2,
+        "tail_rate": 1.0
+      },
+      "matrix_build_and_solve_cpu_seconds": 0.10301263199999999,
+      "matrix_build_and_solve_wall_seconds": 0.10300621199985471,
+      "meets_original_one_percent_limit": false,
+      "name": "phase_only",
+      "probability_content_bytes_width4": 5800,
+      "rounded_residual_error_estimate": 1.1843267129966988e-11,
+      "scaled_value_error": 0.7220912038056978,
+      "state_count": 145,
+      "value": 7.66671160519838
+    }
+  ],
+  "schema": "hcsn-retrospective-active-phase-isolation-v1",
+  "scientific_admission": "HOLD_NO_GO",
+  "selected_case": {
+    "continuum_value": [
+      4.451977681702048
+    ],
+    "dt": [
+      0.001
+    ],
+    "episode_id": "pair_composition/train/00001",
+    "gradient_basis_count": 25,
+    "gradient_posterior_count": 1,
+    "gradient_reference": "80-digit central differences; relative parameter step 1e-25",
+    "gradient_scope": "all basis coefficients, all retained batch posteriors held fixed",
+    "index": 39,
+    "maximum_basis_gradient_absolute_error": 1.4210854715202004e-14,
+    "maximum_event_replay_error": 0.0,
+    "maximum_mass_error": 2.220446049250313e-16,
+    "maximum_scaled_value_error": 0.7225534899552492,
+    "model_sha256": "8a5d3de90ad771e6cf3b0f8428ec063f9c281dab513f8067ddddf478e4d471c8",
+    "posterior_phase_mass": [
+      0.034491200631470736
+    ],
+    "posterior_tail_mass": [
+      5.103233785799933e-08
+    ],
+    "projected_value": [
+      7.668769692818742
+    ],
+    "scaled_continuum_gradient_error": 9.770200714922312e-16,
+    "status": "failed",
+    "update_index": 0,
+    "zero_dt_continuation_probe": 0.1
+  },
+  "selection": "Same post-hoc maximum case in seed11/c0_b0 as parent refinement; not an independent test source.",
+  "source_identity": {
+    "contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "training_domain.py": "424074b02a9f04fc2cf0eecc491318ce846ca696c68dcdeebfa88f5242e05881",
+    "training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+    "value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+  },
+  "status": "completed",
+  "training_repeated": false,
+  "wall_seconds": 1.4877491959996405
+}

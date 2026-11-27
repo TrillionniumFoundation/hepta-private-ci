@@ -135,6 +135,10 @@ pub struct VerifiedArtifactSelectionV1 {
 }
 
 impl VerifiedArtifactSelectionV1 {
+    pub(crate) fn pin(&self) -> &PinnedCandidateSpec {
+        &self.pin
+    }
+
     #[must_use]
     pub fn artifact_id(&self) -> &StableId {
         &self.pin.manifest.artifact_id
@@ -340,7 +344,13 @@ impl ArtifactSelectionVerifierV1 {
             selector_credential_digest: signed.selector_credential_digest,
             authority_epoch: signed.authority_epoch,
             issued_at: signed.issued_at,
-            expires_at: signed.expires_at,
+            // Later lifecycle writes must still respect the enrolled key window.
+            // Expiry is inclusive; scheduled revocation is exclusive.
+            expires_at: signed.expires_at.min(selector.expires_at).min(
+                selector
+                    .revoked_at
+                    .map_or(u64::MAX, |at| at.saturating_sub(1)),
+            ),
             trust_digest: self.trust_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
@@ -682,6 +692,29 @@ mod tests {
     }
 
     #[test]
+    fn art_12_verified_selection_carries_the_intersection_of_the_trust_windows() {
+        let key = SigningKey::from_bytes(&[44; 32]);
+        let selector = id("selector");
+        let manifest = manifest(id("producer"));
+        let owner_key = SigningKey::from_bytes(&[13; 32]);
+        let owner_trust = owner_trust(&owner_key);
+        let current = current_view(&manifest, &owner_trust);
+        let signed = signed_selection(&key, selector.clone(), &manifest, &current);
+
+        for (key_expiry, revocation, expected_expiry) in
+            [(100, None, 80), (40, None, 40), (100, Some(40), 39)]
+        {
+            let mut enrolled = trust(&key, selector.clone());
+            enrolled.selectors[0].expires_at = key_expiry;
+            enrolled.selectors[0].revoked_at = revocation;
+            let verifier = must(ArtifactSelectionVerifierV1::new(enrolled, &owner_trust));
+            let verified = must(verifier.verify(&signed, &current, expected_expiry));
+            assert_eq!(verified.expires_at, expected_expiry);
+            assert_eq!(verified.authority(), AuthorityPosture::DENY_ALL);
+        }
+    }
+
+    #[test]
     fn art_12_verified_selection_records_only_selected_transition() {
         let key = SigningKey::from_bytes(&[43; 32]);
         let producer = id("producer");
@@ -776,3 +809,6 @@ mod tests {
         assert_eq!(last.actor.role, LifecycleActorRoleV2::Selector);
     }
 }
+
+#[path = "selection_guard.rs"]
+mod guard;

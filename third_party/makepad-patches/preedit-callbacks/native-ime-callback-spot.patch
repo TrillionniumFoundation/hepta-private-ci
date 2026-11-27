@@ -1,0 +1,38 @@
+diff --git a/platform/src/os/linux/x11/xlib_window.rs b/platform/src/os/linux/x11/xlib_window.rs
+index 6590f6441e7263e6aae57c077c824b107cb071fa..238f9585f373f6a9f4ab8a3cd7c21301c1201545 100644
+--- a/platform/src/os/linux/x11/xlib_window.rs
++++ b/platform/src/os/linux/x11/xlib_window.rs
+@@ -748,14 +748,25 @@ pub fn set_ime_rect(&mut self, rect: Rect, area_rect: Rect) {
+                 }
+             }
+ 
+-            let preedit_attr = x11_sys::XVaCreateNestedList(
+-                0,
+-                x11_sys::XNSpotLocation.as_ptr(),
+-                &spot_px,
+-                x11_sys::XNArea.as_ptr(),
+-                &area_px,
+-                ptr::null_mut::<c_void>(),
+-            );
++            let preedit_attr = if xim_context.preedit_style == XimPreeditStyle::Callback {
++                // Xlib 1.8.2 supports SpotLocation in callback mode, but Area
++                // was added in 1.8.11. Send only the attributes this mode needs.
++                x11_sys::XVaCreateNestedList(
++                    0,
++                    x11_sys::XNSpotLocation.as_ptr(),
++                    &spot_px,
++                    ptr::null_mut::<c_void>(),
++                )
++            } else {
++                x11_sys::XVaCreateNestedList(
++                    0,
++                    x11_sys::XNSpotLocation.as_ptr(),
++                    &spot_px,
++                    x11_sys::XNArea.as_ptr(),
++                    &area_px,
++                    ptr::null_mut::<c_void>(),
++                )
++            };
+             if preedit_attr.is_null() {
+                 return;
+             }

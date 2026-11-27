@@ -1,6 +1,7 @@
 import os
 import subprocess
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -25,6 +26,18 @@ class ScopeTests(unittest.TestCase):
         for unknown in ["scripts/tests/other.py", "scripts/tests/test_hepta.rs"]:
             with self.subTest(path=unknown):
                 self.assertTrue(select([unknown])["full_repo"])
+
+    def test_plasticity_process_fixture_requires_full_repo_bazel_validation(self):
+        scope = select(["codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs"])
+        self.assertTrue(all(scope[key] for key in GROUPS))
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["full_repo"])
+
+    def test_taskflow_migration_fixture_requires_full_repo_bazel_validation(self):
+        scope = select(["codex-rs/hepta-automation/tests/automation.rs"])
+        self.assertTrue(all(scope[key] for key in GROUPS))
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["full_repo"])
 
     def test_readme_and_ordinary_prose_do_not_prepare_native_dependencies(self):
         self.assertFalse(
@@ -66,6 +79,29 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["learning"])
         self.assertFalse(scope["objective"])
         self.assertFalse(scope["full_repo"])
+
+    def test_locked_rustix_v1_resolution_is_unified(self):
+        # Keep compatible rustix 1.x dependency edges on the repository's
+        # unified locked resolution as direct and transitive consumers evolve.
+        lock = tomllib.loads(
+            (Path(__file__).resolve().parents[2] / "codex-rs/Cargo.lock").read_text()
+        )
+        packages = lock["package"]
+        versions = {
+            package["version"]
+            for package in packages
+            if package["name"] == "rustix" and package["version"].startswith("1.")
+        }
+        self.assertEqual(len(versions), 1, f"split rustix v1 lock entries: {versions}")
+        (resolved_version,) = versions
+        for package in packages:
+            for dependency in package.get("dependencies", []):
+                if dependency.startswith("rustix 1."):
+                    self.assertEqual(
+                        dependency,
+                        f"rustix {resolved_version}",
+                        f"{package['name']} carries a stale rustix v1 edge",
+                    )
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [
@@ -146,6 +182,48 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["native"])
         self.assertFalse(scope["full_repo"])
 
+    def test_dossier_detail_only_trusts_markdown_as_prose(self):
+        prose = select(["qualification/module-execution-dossiers/detail/owner.md"])
+        self.assertTrue(prose["derived"])
+        self.assertFalse(prose["native"])
+        self.assertFalse(prose["full_repo"])
+
+        for suffix in (".py", ".rs", ".sh", ".json", ".yaml", ".txt"):
+            path = "qualification/module-execution-dossiers/detail/unsafe" + suffix
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["derived"])
+                self.assertTrue(scope["full_repo"])
+                self.assertTrue(scope["native"])
+                self.assertTrue(all(scope[group] for group in GROUPS))
+
+    def test_hepta_prefix_only_shortcuts_direct_python_helpers(self):
+        for python_helper in (
+            "scripts/hepta_repository_controls.py",
+            "scripts/test_hepta_control_hardening.py",
+            "scripts/tests/test_hepta_ci_exec.py",
+        ):
+            with self.subTest(path=python_helper):
+                scope = select([python_helper])
+                self.assertTrue(scope["derived"])
+                self.assertFalse(scope["native"])
+                self.assertFalse(scope["full_repo"])
+
+        for untrusted in (
+            "scripts/hepta_custom.rs",
+            "scripts/hepta_custom.sh",
+            "scripts/hepta_noextension",
+            "scripts/test_hepta_custom.toml",
+            "scripts/hepta_nested/driver.py",
+            "scripts/test_hepta_special/run.py",
+        ):
+            with self.subTest(path=untrusted):
+                scope = select([untrusted])
+                self.assertTrue(scope["derived"])
+                self.assertTrue(scope["full_repo"])
+                self.assertTrue(scope["native"])
+                self.assertTrue(all(scope[group] for group in GROUPS))
+
     def test_bad_paths_fail_instead_of_selecting_nothing(self):
         for path in [
             "",
@@ -154,9 +232,58 @@ class ScopeTests(unittest.TestCase):
             "docs/../foo.md",
             "docs\\foo.md",
             "docs/a\0.md",
+            "docs/a\nb.md",
+            "docs/a\rb.md",
+            "docs/a\tb.md",
+            "docs/a\x7fb.md",
+            "docs/control-plane/\nOBJECTIVES.json",
         ]:
             with self.subTest(path=path), self.assertRaises(ValueError):
                 select([path])
+
+    def test_required_workflow_concurrency_is_scoped_by_source_repository(self):
+        # Branch names are not globally unique: two forks can both use "fix".
+        # Keep repositories isolated; exact-source PR lanes also bind PR and SHA.
+        root = Path(__file__).resolve().parents[2]
+        workflows = (
+            "blocking-ci.yml",
+            "v8-canary.yml",
+            "automation-taskflow-focused.yml",
+            "hepta-architecture-convergence.yml",
+        )
+        source_identities = {
+            "blocking-ci.yml": (
+                "${{ github.event.pull_request.number || github.ref_name }}::"
+                "${{ github.event.pull_request.head.sha || 'main' }}"
+            ),
+            "hepta-architecture-convergence.yml": (
+                "${{ github.event.pull_request.number || github.ref_name }}::"
+                "${{ github.event.pull_request.head.sha || 'manual' }}"
+            ),
+        }
+        for name in workflows:
+            with self.subTest(workflow=name):
+                content = (root / ".github" / "workflows" / name).read_text(
+                    encoding="utf-8"
+                )
+                keys = [
+                    line.strip()
+                    for line in content.splitlines()
+                    if line.startswith("  group: ")
+                ]
+                self.assertEqual(len(keys), 1)
+                key = keys[0]
+                self.assertIn(
+                    "::${{ github.event.pull_request.head.repo.full_name || github.repository }}::",
+                    key,
+                )
+                self.assertIn(
+                    source_identities.get(
+                        name,
+                        "${{ github.event.pull_request.head.ref || github.ref_name }}",
+                    ),
+                    key,
+                )
 
     def test_commit_id_validation_precedes_subprocess(self):
         with patch("subprocess.run") as run, self.assertRaises(ValueError):
@@ -177,6 +304,8 @@ class ScopeTests(unittest.TestCase):
                 )
 
             git("init", "-q")
+            # Finish Git maintenance before the fixture removes its repository.
+            git("config", "maintenance.autoDetach", "false")
             git("config", "user.name", "Scope Test")
             git("config", "user.email", "scope@localhost")
             old = root / "codex-rs/hepta-infer-core/src/old.rs"
@@ -200,6 +329,30 @@ class ScopeTests(unittest.TestCase):
             self.assertIn("codex-rs/hepta-infer-core/src/old.rs", paths)
             self.assertIn("docs/new name.md", paths)
             self.assertTrue(select(paths)["inference"])
+
+
+class CliCrateRootRegressionTests(unittest.TestCase):
+    def test_both_cli_binaries_have_explicit_query_depth_roots(self):
+        import tomllib
+
+        repository_root = Path(__file__).resolve().parents[2]
+        cli_root = repository_root / "codex-rs" / "cli"
+        manifest = tomllib.loads((cli_root / "Cargo.toml").read_text())
+        self.assertIs(manifest["package"]["autobins"], False)
+        binaries = {entry["name"]: entry["path"] for entry in manifest["bin"]}
+        # Cargo selects main.rs explicitly for the codex binary.
+        # Both binaries must own their recursion limit before including the
+        # shared implementation, which must never become a separate binary.
+        self.assertEqual(binaries["codex"], "src/main.rs")
+        self.assertEqual(binaries["hepta"], "src/hepta.rs")
+        self.assertNotIn("src/main_impl.rs", binaries.values())
+        implementation = (cli_root / "src/main_impl.rs").read_text()
+        self.assertNotRegex(implementation, r"(?m)^#!\[recursion_limit\b")
+        for name in ("codex", "hepta"):
+            with self.subTest(binary=name):
+                source = (cli_root / binaries[name]).read_text()
+                self.assertTrue(source.startswith('#![recursion_limit = "256"]\n'))
+                self.assertRegex(source, r'(?m)^include!\("main_impl\.rs"\);$')
 
 
 if __name__ == "__main__":

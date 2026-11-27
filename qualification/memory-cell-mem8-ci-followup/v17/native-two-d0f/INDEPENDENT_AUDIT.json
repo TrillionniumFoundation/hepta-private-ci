@@ -1,0 +1,312 @@
+{
+  "actual_helper_bindings": [
+    {
+      "bytes": 35408896,
+      "name": "codex-windows-sandbox-setup",
+      "sha256": "05e6531aad5aa8575a6381d542a7e9c18a2575620e31c6584d1d7f9f497f54d3",
+      "source": "D:\\a\\_temp\\mem-native-subagent-target-43061843610-1\\dev-small\\codex-windows-sandbox-setup.exe",
+      "testSibling": "D:\\a\\_temp\\mem-native-subagent-target-43061843610-1\\dev-small\\deps\\codex-windows-sandbox-setup.exe"
+    },
+    {
+      "bytes": 24122368,
+      "name": "codex-command-runner",
+      "sha256": "f51c98421178d889757f82d668c62cf43680dc23060f8976a1e8cd4c85841f23",
+      "source": "D:\\a\\_temp\\mem-native-subagent-target-43061843610-1\\dev-small\\codex-command-runner.exe",
+      "testSibling": "D:\\a\\_temp\\mem-native-subagent-target-43061843610-1\\dev-small\\deps\\codex-command-runner.exe"
+    }
+  ],
+  "attempt": 1,
+  "binary_boundary": "Helper/tool full SHA values were computed by the original frozen runner and independently checked for receipt/source/artifact consistency; the executable bytes themselves are not included in this artifact.",
+  "checks": [
+    {
+      "detail": null,
+      "name": "complete_original_member_manifest",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "original_budget_identity",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "original_run_and_source_identity",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "actual_harness_files_bound",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source_before_exact_and_clean",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "required_actual_tools_recorded",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "pinned_tool_versions_and_hash_shapes",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:original_intent_bound",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:same_remaining_budget",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:full_raw_bound",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:source_clean",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:tools_unchanged",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "two_actual_helper_bindings",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "helper_artifact:codex-windows-sandbox-setup",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "helper_artifact:codex-command-runner",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-1-build-sandbox-helpers:helper_bindings",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:original_intent_bound",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:same_remaining_budget",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:full_raw_bound",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:source_clean",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:tools_unchanged",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:helper_bindings",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:exact_native_command",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-2-v2-subagent-request-routing:original_junit_before_move_retained",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:original_intent_bound",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:same_remaining_budget",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:full_raw_bound",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:source_clean",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:tools_unchanged",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:helper_bindings",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase-3-fix-codex-core:exact_fix_command",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "source_final_and_collection_exact",
+      "passed": true
+    }
+  ],
+  "clean_scoped_fix_packages": [
+    "codex-core"
+  ],
+  "count_boundary": "Original terminal lines are preserved. Within one zero-retry native phase, repeated summary lines for the same binary/case are counted once; contradictory terminal statuses remain ambiguous. Absent or interrupted groups remain explicitly unevidenced. Selected counts and the driver accepted-pass count are not executed counts.",
+  "findings": [],
+  "harness_head": "ca9ab8c0d07d1a236ef3c4b76a22f0a131d409ae",
+  "independently_qualified_native_cases": [
+    "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context",
+    "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child"
+  ],
+  "job_id": 130666210831,
+  "model_requests_started_by_auditor": 0,
+  "native_executions_started_by_auditor": 0,
+  "observed_at": "2026-11-11T17:37:32.838596+00:00",
+  "observed_status_counts": {
+    "PASS": 2
+  },
+  "observed_terminal_execution_count": 2,
+  "observed_terminal_test_executions": [
+    {
+      "binary_id": "codex-core::all",
+      "case": "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child",
+      "phase": "phase-2-v2-subagent-request-routing",
+      "status": "PASS",
+      "statuses": [
+        "PASS"
+      ],
+      "terminal_line_occurrences": 1
+    },
+    {
+      "binary_id": "codex-core::all",
+      "case": "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context",
+      "phase": "phase-2-v2-subagent-request-routing",
+      "status": "PASS",
+      "statuses": [
+        "PASS"
+      ],
+      "terminal_line_occurrences": 1
+    }
+  ],
+  "observed_unique_terminal_case_count": 2,
+  "original_collection_status": "qualified_results_retained",
+  "original_driver_error": null,
+  "original_driver_status": "passed_two_named_cases_and_one_clean_scoped_fix",
+  "phases": [
+    {
+      "driver_status": "passed_clean",
+      "elapsed_seconds": 722.1719999999999,
+      "error": null,
+      "exact_source_and_locks_before_after": true,
+      "exit_code": 0,
+      "helper_bindings_unchanged": true,
+      "id": "phase-1-build-sandbox-helpers",
+      "integrity_error": null,
+      "kind": "helpers",
+      "tools_unchanged": true
+    },
+    {
+      "driver_status": "passed_clean",
+      "elapsed_seconds": 1134.203,
+      "error": null,
+      "exact_source_and_locks_before_after": true,
+      "exit_code": 0,
+      "helper_bindings_unchanged": true,
+      "id": "phase-2-v2-subagent-request-routing",
+      "independent_junit_all_pass": true,
+      "independent_raw_all_pass": true,
+      "integrity_error": null,
+      "kind": "native",
+      "observed_terminal_status_counts": {
+        "PASS": 2
+      },
+      "original_junit": {
+        "attributes": {
+          "errors": "0",
+          "failures": "0",
+          "name": "nextest-run",
+          "tests": "2",
+          "time": "0.919",
+          "timestamp": "2026-11-11T17:20:03.881+00:00",
+          "uuid": "07dcdede-3eb9-4b48-9f6e-f7f87644ca11"
+        },
+        "bytes": 766,
+        "case_names": [
+          "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child",
+          "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context"
+        ],
+        "path": "phase-2-v2-subagent-request-routing.junit.xml",
+        "sha256": "0b015ca8b1278a10337e858621fa45227a97b0aba4a28f5422b37d0481b55e7a",
+        "testcase_status_elements": {
+          "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child": [],
+          "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context": []
+        },
+        "uuid": "07dcdede-3eb9-4b48-9f6e-f7f87644ca11"
+      },
+      "original_terminal_lines": [
+        {
+          "binary_id": "codex-core::all",
+          "case": "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child",
+          "status": "PASS"
+        },
+        {
+          "binary_id": "codex-core::all",
+          "case": "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context",
+          "status": "PASS"
+        }
+      ],
+      "selected_counts": [
+        2
+      ],
+      "tools_unchanged": true
+    },
+    {
+      "driver_status": "passed_clean",
+      "elapsed_seconds": 909.078,
+      "error": null,
+      "exact_source_and_locks_before_after": true,
+      "exit_code": 0,
+      "helper_bindings_unchanged": true,
+      "id": "phase-3-fix-codex-core",
+      "integrity_error": null,
+      "kind": "fix",
+      "tools_unchanged": true
+    }
+  ],
+  "qualification": "PASS_TWO_NATIVE_AND_ONE_CLEAN_FIX",
+  "run_id": 43061843610,
+  "schema": "mem-native-two-independent-original-audit-v1",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+}

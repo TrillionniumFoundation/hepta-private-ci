@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.original-initial.test-roster.v1",
+  "source_base": "05acfd02b53d2165ef91ddd0d000070af59031de",
+  "static_only": true,
+  "executed": false,
+  "root_parent": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+  "root_parent_count_delta": 1,
+  "root_parent_roster_after": 17,
+  "child_helper": "neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child",
+  "child_counts_as_parent": false,
+  "new_normal_methods": 2,
+  "modified_existing_normal_methods": [
+    "unwritten_target_is_not_reported_as_actual_genesis_and_wrong_context_is_refused"
+  ],
+  "tests": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_root_tests.rs",
+      "name": "initial_feature_preflight_rejects_inexecutable_target_before_current",
+      "ignored": false,
+      "baseline_exists": false,
+      "classification": "deterministic_worker_preflight_component",
+      "executed": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_root_tests.rs",
+      "name": "root_initial_publication_uses_original_consumer_and_readonly_recovery",
+      "ignored": true,
+      "baseline_exists": false,
+      "classification": "root_component_parent",
+      "executed": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "name": "original_initial_dedicated_uid_child",
+      "ignored": true,
+      "baseline_exists": false,
+      "classification": "dedicated_uid_child_not_parent",
+      "executed": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer_tests.rs",
+      "name": "observer_reads_exact_live_owner_and_keeps_both_writer_fences",
+      "ignored": false,
+      "baseline_exists": true,
+      "classification": "physical_observer_component",
+      "executed": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer_tests.rs",
+      "name": "observer_refuses_partial_suffix_until_the_actual_writer_recovers",
+      "ignored": false,
+      "baseline_exists": true,
+      "classification": "physical_observer_component",
+      "executed": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer_tests.rs",
+      "name": "observer_rejects_acknowledged_journal_or_physical_witness_rollback",
+      "ignored": false,
+      "baseline_exists": true,
+      "classification": "physical_observer_component",
+      "executed": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer_tests.rs",
+      "name": "unwritten_target_is_not_reported_as_actual_genesis_and_wrong_context_is_refused",
+      "ignored": false,
+      "baseline_exists": true,
+      "classification": "physical_observer_component",
+      "executed": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer_tests.rs",
+      "name": "fresh_initial_observer_refuses_uninitialized_witness_and_existing_genesis",
+      "ignored": false,
+      "baseline_exists": false,
+      "classification": "physical_observer_component",
+      "executed": false
+    }
+  ]
+}

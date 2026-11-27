@@ -1,0 +1,17 @@
+# Historical session and lease reference collection
+
+This is an append-only source-and-document reference publication, not a runnable release of the latest product. The three original collections are copied in full, including their original manifests and independent reviews. Historical statements such as local-only, NO_RELEASE, pending platform approval or account-suspended403 describe their original review/delivery time. These statements are preserved; the present publication does not reinterpret a local review as authority. Current permission is limited to publishing reviewed material on the existing audit branch, not merge, deployment, production owner activation or lifting data/access restrictions.
+
+## Reading order and useful distinctions
+
+1. content-session-publication-qualified-addendum-v2 binds two later runs to the unchanged17-file V3 runtime: the controlled-cancel chronological chain and full-output success. It is compact evidence, not the original V3 source/raw-evidence bundle.
+2. content-shared-lease-publication-assessment-v1 retains20 exact historical runtime files, notably training_root_lease.py and training_writer.py, plus original compact evidence. Those training-side sources are not supplied by the six newer delivery capsules. The reference needs explicit runtime and runtime/legacy import paths and external compatible Python/NumPy/Linux; no automatic installation, service router or production owner integration is provided. The unused lazy RGB8 serve path remains excluded.
+3. publication-engineering-version-addendum-20261101 explains which later training/continuation/interrupt profiles reuse those20 runtime files and which extra modules and distinct frozen identities they require. It prevents attributing later qualifications to the older runtime solely because some files share bytes. Its historical build script is preserved for provenance, not an instruction to rerun or overwrite the final amended document.
+
+## Completeness and limits
+
+All files in each of these three original local collections are included byte-for-byte. Their external local-path bindings are provenance references, not remotely downloadable objects or an assurance of a self-contained replay environment. Full raw models, journals and complete later RUN_ONCE trees were never part of these compact collections and are not manufactured here. A reader can inspect the exact source and preserved receipts/reviews, but cannot independently repeat all saved-state audits from this publication alone. Original proof scopes, provenance corrections, discarded work, unknown effects and CPU tails remain in the original records. No aggregate proof or new scientific benefit is claimed.
+
+The original277-file content-session-publication-assessment-v3 is intentionally NOT included: it promises complete selected raw RUN_ONCE trees and includes eight oversized model JSON objects. We do not trim, repack, or substitute pointers for that bundle, and do not read or republish its restricted owner-source assessment subtree. This collection is not a replacement for it.
+
+No model, test, training, inference or historical runner was executed for this publication. Validation is only exact manifests/source copying, applicability and incremental repository policy. The existing58 historical oversized blobs and any full-branch CI issue remain separate. No original source/manifest/marker, earlier release, CI allowlist or policy is changed.

@@ -1,0 +1,32 @@
+{
+  "archive": "/workspace/scratch/d741f7769aeb/c2-continuation-download/c2-continuation-exact-artifact.tar.xz",
+  "command": [
+    "/workspace/scratch/d741f7769aeb/hcsn-venv/bin/python",
+    "-u",
+    "/workspace/scratch/d741f7769aeb/worktrees/n256-c2/qualification/hcsn_c2_continuation_20261119/audit.py",
+    "--archive",
+    "/workspace/scratch/d741f7769aeb/c2-continuation-download/c2-continuation-exact-artifact.tar.xz",
+    "--receipt",
+    "/workspace/scratch/d741f7769aeb/worktrees/n256-c2/qualification/hcsn_c2_continuation_20261119/evidence/ARTIFACT.json"
+  ],
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "affinity": [
+      0
+    ],
+    "cpu_hard_seconds": 310,
+    "cpu_soft_seconds": 300,
+    "threads": 1,
+    "wall_seconds": 360
+  },
+  "reader_identity": {
+    "bytes": 38742,
+    "sha256": "d3da9e6357473d2440fdc0bca46f6880b056489b71935b1253941dbab0945776"
+  },
+  "receipt": "/workspace/scratch/d741f7769aeb/worktrees/n256-c2/qualification/hcsn_c2_continuation_20261119/evidence/ARTIFACT.json",
+  "scope": "Separate postprocessing only. No model, optimizer, inference or training replay is requested.",
+  "wrapper_identity": {
+    "bytes": 5231,
+    "sha256": "5850ed14d40b39599be365a927a71b79fe418fe9828e461585cd2fb78c174d01"
+  }
+}

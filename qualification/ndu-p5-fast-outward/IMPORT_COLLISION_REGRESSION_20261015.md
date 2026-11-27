@@ -1,0 +1,5 @@
+# P5 source import boundary — exact hosted CI failure
+
+Original P5 decision, roundoff and fast-outward workflows failed their exact SHA because decision and audit scripts prepended the upstream coupled-study directory to `sys.path`. The upstream also exports `study.py`, so `from study import plan` resolved the unrelated coupled study. This minimal repair changes those dependency-path registrations to `sys.path.append(...)`; the invoking module directory retains precedence. Solver algorithms, sealed task sets, numeric profiles, historical outcomes and authority boundaries are unchanged.
+
+The original failed workflow runs 38585740375 / 38589160652 / 38594105801 remain failed historical receipts. Local assembled repository test with a real same-named upstream `study.py`: decision tests 28/28, roundoff 28/28, fast 26/26, in both ordinary and `python -O` modes. Exact-head hosted CI and blocking-ci must pass independently. These repairs are not evidence of faster online reasoning or continuous FBSDE existence. DENY_ALL.

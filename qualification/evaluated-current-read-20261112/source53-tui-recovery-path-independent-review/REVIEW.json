@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "base_source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "candidate_tree": "a8651c1f937428da6362de2c26d77728de6062b9",
+  "candidate_manifest": "84a79fa9596d237cc7cbbedec7f8516ef8fe41a4",
+  "scope": "Independent static review of exactly one expected-path expression; no source edits or execution",
+  "path": "codex-rs/tui/src/lib.rs",
+  "before": {
+    "sha": "3d2c7385057818e11f15b32d8be8499aa51db493",
+    "bytes": 123185,
+    "sha256": "3e098d622ead84f7865b5d4fcc07be8125715bec205a5b36029f63c081717ced"
+  },
+  "after": {
+    "sha": "c67ed467eddde1e557d89d47ecabb04de4d2447c",
+    "bytes": 123213,
+    "sha256": "91da1985177c6284914b9e248232130650d85070170eac3110c55f03980f340b"
+  },
+  "verified": {
+    "exact_one_expression_substitution": true,
+    "inverse_restores_entire_original_file": true,
+    "production_bytes_unchanged": true,
+    "existing_AbsolutePathBuf_import": true,
+    "canonicalize_errors_still_propagate": true,
+    "full_strict_path_equality_retained": true,
+    "typed_startup_error_and_SQLite_corruption_assertions_unchanged": true,
+    "temporary_borrow_confined_to_assert_statement": true,
+    "new_test_methods": 0,
+    "new_runtime_io": 0
+  },
+  "contract": {
+    "runtime": {
+      "path": "codex-rs/state/src/runtime.rs",
+      "sha": "10b3f4534e426645f12e3737c0056a0dde5e85ea",
+      "sha256": "a66df99290fd941f33789cd33c15e6ba1e95405a4afda38e649b9ca8c3032881",
+      "evidence": "init_inner canonicalizes sqlite.home() then reconstructs SqliteConfig using AbsolutePathBuf::try_from(canonical_home) before deriving database paths."
+    },
+    "absolute_path": {
+      "path": "codex-rs/utils/absolute-path/src/lib.rs",
+      "sha": "fc26cc4f56a97659e9c593570a1b847d3bb345e5",
+      "sha256": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+      "evidence": "TryFrom<PathBuf> returns std::io::Result and delegates to from_absolute_path; existing platform normalization handles Windows device path aliases. No normalization implementation is changed."
+    },
+    "recovery": {
+      "path": "codex-rs/state/src/runtime/recovery.rs",
+      "sha": "d9cf0bcdc9b88319d8af05974f3f434349588c86",
+      "sha256": "b5c6c819db4c7636b39c39ac8be6710e62c6b27ef8f6603af7dbc6deb7123567",
+      "evidence": "Existing corruption recovery returns the stored original database path; candidate changes only the expected test representation."
+    }
+  },
+  "guard_scan": {
+    "files_present": 61,
+    "qa_source": "61 original source84 QA bodies, with source53's only QA change independently confirmed to replace the SERVICE checksum literal; that edit introduces neither searched needle.",
+    "needles": [
+      "codex-rs/tui/src/lib.rs",
+      "embedded_state_db_corruption_preserves_failed_database_for_cli_recovery"
+    ],
+    "qa_hits": 0,
+    "full_callers_blob": "73fdfb4db43bee14530701784ab163a64dbb5956",
+    "callers_hits": 0
+  },
+  "assessment": "No concrete static type, lifetime, or semantic blocker found. Expected-value normalization follows the existing production path type contract while preserving the full path and error checks. This review does not claim a new Windows execution, formatting success, or broader sandbox/recovery qualification.",
+  "execution": {
+    "rust": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "bazel": "NOT_RUN",
+    "ref_changed": false
+  }
+}

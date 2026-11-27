@@ -1,0 +1,123 @@
+{
+  "independent_local_validation": {
+    "actor_worker_profile_equal_mem12": true,
+    "arms": 10,
+    "outer_deadline_seconds": 21600,
+    "plan_sha256": "1aa291205146cffec039a583640be9c9c33a4afedff8dc31d2cdf32874d4c8e0",
+    "prepare_new_model_calls": 0,
+    "request_id_overlap": 0,
+    "retrieval_records": 1,
+    "rows": 320,
+    "schema": "hepta.mem14.controlled-diagnostic.v1",
+    "selector_version": "v2",
+    "source_count": 32,
+    "validated_before_generation": true
+  },
+  "model_run_submitted": false,
+  "new_model_calls": 0,
+  "prepare_job_id": "1a1cec24875-2564-181d",
+  "remote_preparation": {
+    "analysis": {
+      "alpha": 0.05,
+      "difference_range": [
+        -1,
+        1
+      ],
+      "method": "one-sided Hoeffding; Bonferroni for all nine contrasts",
+      "missing": "use conservative per-source difference bounds; retain planned denominator",
+      "population": "independent fresh generated sources under one fixed task template",
+      "primary_contrast": "on_bm25 minus off",
+      "simultaneous_contrasts": 9
+    },
+    "ended_at_unix_ns": 1794470223543324567,
+    "limits": {
+      "context_bytes": 2048,
+      "input_tokens": 1024,
+      "output_tokens": 32,
+      "provider_seconds": 60,
+      "retrieval_records": 1
+    },
+    "model_assets": {
+      "config.json": {
+        "bytes": 861,
+        "sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a"
+      },
+      "generation_config.json": {
+        "bytes": 132,
+        "sha256": "87b916edaaab66b3899b9d0dd0752727dff6666686da0504d89ae0a6e055a013"
+      },
+      "merges.txt": {
+        "bytes": 466391,
+        "sha256": "0b54e8aa4e53d5383e2e4bc635a56b43f9647f7b13832d5d9ecd8f82dac4f510"
+      },
+      "model.safetensors": {
+        "bytes": 269060552,
+        "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+      },
+      "special_tokens_map.json": {
+        "bytes": 655,
+        "sha256": "2b7379f3ae813529281a5c602bc5a11c1d4e0a99107aaa597fe936c1e813ca52"
+      },
+      "tokenizer.json": {
+        "bytes": 2104556,
+        "sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c"
+      },
+      "tokenizer_config.json": {
+        "bytes": 3764,
+        "sha256": "4ec77d44f62efeb38d7e044a1db318f6a939438425312dfa333b8382dbad98df"
+      },
+      "vocab.json": {
+        "bytes": 800662,
+        "sha256": "82b84012e3add4d01d12ba14442026e49b8cbbaead1f79ecf3d919784f82dc79"
+      }
+    },
+    "namespace_probe_status": "EXECUTED",
+    "new_model_calls": 0,
+    "old_actor_worker_profile_identical": true,
+    "old_request_ids_overlap": 0,
+    "old_source_keys_overlap": 0,
+    "outer_deadline_seconds": 21600,
+    "plan_pin": {
+      "bytes": 30299,
+      "sha256": "1aa291205146cffec039a583640be9c9c33a4afedff8dc31d2cdf32874d4c8e0"
+    },
+    "plan_sha256": "1aa291205146cffec039a583640be9c9c33a4afedff8dc31d2cdf32874d4c8e0",
+    "planned_rows": 320,
+    "planned_sources": 32,
+    "runtime": {
+      "bytes": 1071646901,
+      "entries": 29573,
+      "files": 26827,
+      "sha256": "d0814616180cc42103dbae19274f2a63fc02b7da75fd82d3d49ddd4553d0d76a"
+    },
+    "scientific_acceptance": "HOLD",
+    "selector_version": "v2",
+    "source_commit": "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d",
+    "source_tree": "491484a45e05d05d2b72fec472f96405c37decac",
+    "started_at_unix_ns": 1794470202765319641,
+    "status": "PREPARED"
+  },
+  "spec": {
+    "cohort_id": "mem14-ef0c-20261112-v2",
+    "host": "ai395",
+    "independent_task_templates": 1,
+    "legacy_cohort_unchanged": "mem12-ef0c-20261112-v1",
+    "outer_run_deadline_seconds": 21600,
+    "per_model_process_deadline_seconds": 60,
+    "planned_arms": 10,
+    "planned_generation_rows": 320,
+    "planned_sources": 32,
+    "prepare_key": "mem14-causal-prepare-20261112-ef0c-v1",
+    "retrieval_records": 1,
+    "root": "/home/qq/work/mem14-causal-20261112-ef0c",
+    "run_helper_sha256": "3329cecaabcaed30d733e40af322942f5486cc53db387e804416e1d9c10524f2",
+    "run_key": "mem14-causal-execute-20261112-ef0c-v1",
+    "schema": "hepta.mem14.outer-execution.v1",
+    "scientific_acceptance": "HOLD",
+    "selector_version": "v2",
+    "source_commit": "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d",
+    "source_tree": "491484a45e05d05d2b72fec472f96405c37decac",
+    "unknown_action_policy": "read original job and files; never reissue with a new key"
+  },
+  "status": "FROZEN_BEFORE_GENERATION"
+}

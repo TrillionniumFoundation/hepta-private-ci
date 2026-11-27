@@ -1,0 +1,112 @@
+{
+  "version": "hepta-independent-numerical-release-binding-20261029-v1",
+  "created_unix": 1793275563.5723968,
+  "new_execution": true,
+  "active_receipt": "research_evidence/hepta_stable_flow_20261029/numerical_qualification/independent_run004_execution_optimized/receipt.json",
+  "active_receipt_sha256": "bef0f0b32296a04cbef59f62b78408567efcf4d857366c48e47d6c03fd57a4e4",
+  "numerical_qualification_passed": true,
+  "selected_max_step": 0.0625,
+  "sources_sha256": {
+    "audit.py": "061d56ba79e3ada0dbd0706de65b4a2885db6ecaba89ad68ee70b6af1f578f8d",
+    "flow.py": "0c2cff8aba381a6498bd7d666da1500c561f52ea8d2b9ec1a3f81332fb7dd3a9",
+    "numerics.py": "6499df238499265211cc3d8baaffef5ddc94a9501ffdae0b9599ffa6e367802f"
+  },
+  "sources_ast_sha256": {
+    "audit.py": "450236a6f998fbf6dfd6136e2b238a695a5dc47a4444df90f16ae423183b72b1",
+    "flow.py": "8e1ffa037e8a4e7d7ebaf5a430a447f242ec9824a59b3fd82a412b88cc4f49eb",
+    "numerics.py": "6f4e0c7c0ee68c0c790a06250bd8db3441936eaa047f2e905681503d196df9a0"
+  },
+  "formatting_note": "If final formatting changes bytes only, verify canonical AST identity and retain both byte hashes; a semantic change needs targeted requalification.",
+  "receipt_integrity": {
+    "independent_run001": {
+      "integrity_passed": true,
+      "qualification_passed": false,
+      "receipt_sha256": "18e54de9b00ab7314501d46edce6257492b509baa55d96fb2c473754dee1abdf"
+    },
+    "independent_run002": {
+      "integrity_passed": true,
+      "qualification_passed": true,
+      "receipt_sha256": "8bdb7b9f9f111be3c0738570caf6a0714a0182b3b47cd7f95733f5d288aabe7c"
+    },
+    "independent_run003_prepared": {
+      "integrity_passed": true,
+      "qualification_passed": true,
+      "receipt_sha256": "7a2e7f9b1706d27a4ae41ef9908b9671030c35f7f9d1cf94ccc5449b15f6bdcc"
+    },
+    "independent_run004_execution_optimized": {
+      "integrity_passed": true,
+      "qualification_passed": true,
+      "receipt_sha256": "bef0f0b32296a04cbef59f62b78408567efcf4d857366c48e47d6c03fd57a4e4"
+    }
+  },
+  "selected_probe_maxima": {
+    "scaled_state_error": 0.00030783829324354105,
+    "directional_gradient_l2_relative": 0.001173742783190546,
+    "same_step_fp32_fp64_scaled_state": 4.869536430536308e-07,
+    "same_step_fp32_fp64_directional_gradient_relative": 9.238265411079361e-07,
+    "prepared_vs_per_tick_scaled_state": 0.0,
+    "prepared_vs_per_tick_directional_gradient_relative": 4.3400124633531346e-16
+  },
+  "structural": {
+    "analytic": {
+      "batch_composition_max_abs": 0.0,
+      "zero_dt_max_abs": 0.0,
+      "passed": true
+    },
+    "matched_c1": {
+      "batch_composition_max_abs": 0.0,
+      "zero_dt_max_abs": 0.0,
+      "passed": true
+    },
+    "sigmoid": {
+      "batch_composition_max_abs": 0.0,
+      "zero_dt_max_abs": 0.0,
+      "passed": true
+    }
+  },
+  "stress_report_only": [
+    {
+      "mode": "analytic",
+      "max_step": 0.0625,
+      "scaled_state_error": 0.012939465232846078,
+      "finite": true,
+      "bounds_observed": {
+        "v_abs": 3.0,
+        "q_offset_abs": 15.0,
+        "z_min": 0.0,
+        "z_max": 4.0
+      }
+    },
+    {
+      "mode": "matched_c1",
+      "max_step": 0.0625,
+      "scaled_state_error": 0.023650297717463638,
+      "finite": true,
+      "bounds_observed": {
+        "v_abs": 3.0,
+        "q_offset_abs": 15.0,
+        "z_min": 0.0,
+        "z_max": 4.0
+      }
+    },
+    {
+      "mode": "sigmoid",
+      "max_step": 0.0625,
+      "scaled_state_error": 0.0008782606063393961,
+      "finite": true,
+      "bounds_observed": {
+        "v_abs": 3.0,
+        "q_offset_abs": 15.0,
+        "z_min": 0.0,
+        "z_max": 4.0
+      }
+    }
+  ],
+  "limitations": [
+    "Four directional derivatives do not certify the full gradient",
+    "Local probes do not guarantee every learned parameter trajectory",
+    "Adaptive numerical reference and finite differences have finite tolerances",
+    "Not a universal accuracy certificate over learned parameter trajectories",
+    "No learned task result or comparative network advantage is established by these numerical probes"
+  ]
+}

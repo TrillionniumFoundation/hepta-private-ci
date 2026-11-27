@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "base_source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "code_files": 1,
+  "change_summary": "One original timeout method split into four already independent scenarios; 3 new methods, all original cases and assertions retained",
+  "source": {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+    "base": {
+      "git_blob_sha": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+      "bytes": 12053,
+      "sha256": "eedd8c08d5123b86888cefaee90e0d12048e2e6a00141083248f6dfb652e4fed"
+    },
+    "post": {
+      "bytes": 13985,
+      "sha256": "3c79aea5e8bcf03fdfed514ac9f8e0a0b71047d220e0ec62822154d993c53746",
+      "git_blob_sha": "5cc4db827487dd487cecebe8766fc7e6bab92b0c"
+    }
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "bytes": 13985,
+      "sha256": "3c79aea5e8bcf03fdfed514ac9f8e0a0b71047d220e0ec62822154d993c53746",
+      "git_blob_sha": "5cc4db827487dd487cecebe8766fc7e6bab92b0c",
+      "origin": "candidate source postimage"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-model-material-split-candidate/PATCH.diff",
+      "bytes": 12281,
+      "sha256": "17b624e4a9f17e4ebf0531ef33cd2d8cc842d92eb7950f2d87fbc4240c36662d",
+      "git_blob_sha": "bd57edc9bcd9fcc0fa9c40b5fda5cc772ad06046",
+      "origin": "exact replacement diff for the original method region"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-model-material-split-candidate/STATEMENT_COVERAGE.json",
+      "bytes": 9502,
+      "sha256": "283e5a76f71940283e8196e344fbc18100f5ee3b07834cf773c5c5d66ef7ab53",
+      "git_blob_sha": "fbca4ac2df335121eefcbefd15a58536cffc42b6",
+      "origin": "derived exact original operation-segment and four-case mapping"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-model-material-split-candidate/REVIEW.json",
+      "bytes": 4716,
+      "sha256": "1e7c1a9c7f654e92e5d2a495a26d04a67e89b846c14bac66bc99f960695a4f37",
+      "git_blob_sha": "39298d4e4bae135a72824f353f592b0c2ee5496a",
+      "origin": "static review and preserved-original-failure boundary"
+    }
+  ],
+  "execution": "STATIC_ONLY_NOT_FMT_NOT_RUN",
+  "required_all_pass": [
+    "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+    "original_evaluation_model_material_rejects_completed_missing_and_cold_regression",
+    "original_evaluation_model_material_rejects_completed_pending_and_cold_regression",
+    "original_evaluation_model_material_rejects_renewed_evidence_and_expired_window"
+  ],
+  "ref_changed": false
+}

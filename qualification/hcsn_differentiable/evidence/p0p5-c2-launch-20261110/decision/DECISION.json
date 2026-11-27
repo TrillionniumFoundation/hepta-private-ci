@@ -1,0 +1,106 @@
+{
+  "P5_benefit_gate": "unchanged",
+  "RSS_stop_bytes_per_fit": 6442450944,
+  "actual_optimization_trace_scope": "Prospectively selected first actual microbatches after resume and declared epoch milestones; sparse empirical visits, not whole-trajectory coverage.",
+  "actual_optimization_visit_policy_sha256": "a1d5d5b8c11194506e9dea49e6b48eaa9c1edc72c6bc975d1e98bdc241b34875",
+  "address_space_bytes_per_fit": 8589934592,
+  "authority": "User authorized full P0-P5 work and the existing bounded native-host research workflow; this is a concrete execution decision within that request.",
+  "automatic_retry": false,
+  "before_first_step_full_state_witness_required": true,
+  "budget_scope": "Original complete outer wall is charged before new work. Prelaunch, imports, discarded-partial replay, all recording, evaluation and finalization consume the same remaining fit allowance. Actual polling/exit overhead is measured and not hidden.",
+  "candidate": "reporting-only-v4",
+  "confirmation_E_access": false,
+  "contract_sha256": "bc814b8913f5d5777f771030623bcd1f862a526f35144a8da0164e1da60f8e51",
+  "cumulative_active_wall_seconds_per_fit": 43200,
+  "decided_utc": "2026-11-10T20:58:52.535711+00:00",
+  "evidence_inputs": {
+    "/workspace/scratch/c385a7439f8e/c2-execution-independent-review-v1/RESULT.json": {
+      "bytes": 4253,
+      "sha256": "c5829717f3fefd04524115003b4a97db55bd6610e77e1eda62f61919f2ab3680"
+    },
+    "/workspace/scratch/c385a7439f8e/c2-execution-validation-attempt-05/RESULT.json": {
+      "bytes": 18023,
+      "sha256": "123450967295041fbd77fa8bb566b4f1c48d6c8a72acc5ba3fe07acf09501f9c"
+    },
+    "/workspace/scratch/c385a7439f8e/c2-execution-validation-attempt-05/TESTED-SOURCE.zip": {
+      "bytes": 209455,
+      "sha256": "95d53c9a8fd7b6d0d60388b29d58519160c1d04357069bd805e5f4bfa2c91079"
+    },
+    "/workspace/scratch/c385a7439f8e/c2-native-preflight-recovered-v1/RESULT.json": {
+      "bytes": 65033,
+      "sha256": "61552a97bfffb9e35ac7c7068c411231089cb175b3f36d303f09fca0a51548d7"
+    },
+    "/workspace/scratch/c385a7439f8e/c2-v4-budget-reporting-independent-review-v1/RESULT.json": {
+      "bytes": 27902,
+      "sha256": "39e52f422138b2012d4a670f0fcb193819073db0caaf3c1a117b6896dc570028"
+    },
+    "/workspace/scratch/c385a7439f8e/final-numerics-provisional-2056-v1/hcsn-s101-lr0.003__finite-best-2.json": {
+      "bytes": 19040,
+      "sha256": "4fd9974d31a98dcab3af1e31933378cd26279d17dc63918a5e253179694f6088"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/original42/receipts-v1/HCSN-TERMINAL-SUMMARY.json": {
+      "bytes": 14778,
+      "sha256": "58aa588c9c1323000316624e923644be90a264522dcc998c780c25da0f4b64af"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/STATUS.json": {
+      "bytes": 2287,
+      "sha256": "9fe707c9a8f249dcfd0200a2ba8e7996bc96fbdf7d9c86b90105e364916822e3"
+    },
+    "/workspace/scratch/c385a7439f8e/logrisk-json-independent-review-v1/RESULT.json": {
+      "bytes": 7555,
+      "sha256": "267eb602aed3790e65cd8453acdd3d9204738c1464f8f6e520e250f843104578"
+    },
+    "/workspace/scratch/c385a7439f8e/six-logrisk-query-confirmation-v1/RESULT.json": {
+      "bytes": 14183,
+      "sha256": "e0a90a92bed30ab84ecffb1c362c08aaf43a555acf64554a350f99525a0880ee"
+    }
+  },
+  "execution_authorized": true,
+  "finalization_reserve_scope": "Training stops early at the reserve; this is not a guarantee that two terminal capture slots, full-D evaluation and I/O finish. Each capture slot shares one 120-second soft timer across three episodes. Finalization failure, recording_hold or timeout cannot grant adequacy.",
+  "finalization_reserve_seconds_inside_cap": 600,
+  "fit_names": [
+    "hcsn-s101-lr0.001",
+    "hcsn-s101-lr0.003",
+    "hcsn-s211-lr0.001",
+    "hcsn-s211-lr0.003",
+    "hcsn-s307-lr0.001",
+    "hcsn-s307-lr0.003"
+  ],
+  "gradient_evidence_scope": "The retained log-risk ordinary-FP64-FD confirmation gate remains failed/inconclusive. At the one above-resolution disagreement, AD, 80-digit derivative and high-precision FD agree; discount is fixed in this experiment. This does not grant a full training-gradient qualification.",
+  "known_numeric_limits": [
+    "Original traces retain only update0, no post-update states.",
+    "Repeated-tiny-gap perpetual-pressure cases fail and remain failures.",
+    "Scaled finite errors do not certify relative rare-event/count precision.",
+    "Learnable drift/noise/boundary/reset domains and entire training trajectory remain unqualified."
+  ],
+  "learnable_physics": false,
+  "main_merge_authorized": false,
+  "maximum_cumulative_epochs": 200,
+  "maximum_new_summed_fit_active_wall_seconds_before_exit_overhead": 172938.8845898183,
+  "new_learning_rates": false,
+  "new_memorization_diagnostic": false,
+  "new_seeds": false,
+  "numerical_evidence_scope": "The separate frozen terminal audit is still running. Its observed first14 finite fixtures passed the original scaled-error criterion; this is not completion or domain qualification. The bound rare-count example has about4.14 percent relative count error despite passing the scaled gate.",
+  "optimized_GPU_or_energy_claim": false,
+  "parent_partial_work_refund_seconds": 0,
+  "program_capsule_sha256": "95d53c9a8fd7b6d0d60388b29d58519160c1d04357069bd805e5f4bfa2c91079",
+  "program_manifest_sha256": "322eb8f76cce589ba44ed66eff822f7b497e6507106a1ad56a65bdc8c83f7f57",
+  "reason_to_continue": "All six original diagnostics passed and all six fits stopped on resource limits before declared adequacy. All six strict-best full-D predictions reproduced independently. A bounded all-candidate extension is needed to assess whether inadequate optimization explains the remaining development-quality gap.",
+  "release_publication_authorized": false,
+  "resume_only_last_complete_epoch": true,
+  "same_budget_comparison": "Original 300/900/1800-second results are unchanged. C2 is a separately labeled longer-resource/calendar phase, not retroactive original-protocol completion.",
+  "schema": "hcsn-c2-root-diagnostic-execution-decision-v1",
+  "scientific_admission": "HOLD",
+  "scope": "six-original-hcsn-c2-only",
+  "software_evidence_scope": "v3: 53 native synthetic tests and six actual parent bind-only checks. v4: five cloud targeted tests including a tiny complete-state resume, plus independent exact AST/source-delta review. v4 is not claimed to have a second full native preflight.",
+  "source_model_and_data": "Unchanged original v8 source, six original HCSN parents and manifest bound in CONTRACT.json.",
+  "source_or_architecture_changes": false,
+  "stopping": "Inherited min30/patience10/delta.002, maximum200 complete epochs and cumulative wall cap. Strict-best selection remains separate from plateau adequacy.",
+  "supplemental_checkpoint_policy_sha256": "8be888e29389321a1e41921244931b7950aa2db63a0d870d55cc5e3fc412a137",
+  "terminal_acceptance": "Collect every attempted fit, including failed, truncated, missing and hard-timeout outcomes; verify immutable source/parent chains, full-state witness, complete-epoch commits, costs and fresh logits independently before any further claim.",
+  "threads_per_fit": 1,
+  "unique_launch_key": "hcsn-c2-native-execution-c385-v1",
+  "unknown_launch_rule": "Reconcile the same launch identity; never create a second independent execution after an unknown acknowledgement.",
+  "whole_training_numerical_admission": "HOLD",
+  "workers": 6
+}

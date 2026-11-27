@@ -30,6 +30,8 @@ use tracing::debug;
 use tracing::instrument::WithSubscriber;
 
 use crate::ProcessId;
+use crate::authorized_read_error::AuthorizedReadFailure;
+use crate::authorized_read_error::AuthorizedReadRpcError;
 use crate::client::http_client::response_body_stream::MAX_QUEUED_HTTP_BODY_BYTES;
 use crate::client::http_client::response_body_stream::QueuedHttpBodyDelta;
 use crate::client_api::ExecServerClientConnectOptions;
@@ -52,6 +54,7 @@ use crate::protocol::ENVIRONMENT_STATUS_METHOD;
 use crate::protocol::EXEC_CLOSED_METHOD;
 use crate::protocol::EXEC_EXITED_METHOD;
 use crate::protocol::EXEC_METHOD;
+use crate::protocol::EXEC_OBSERVATION_FAILED_METHOD;
 use crate::protocol::EXEC_OUTPUT_DELTA_METHOD;
 use crate::protocol::EXEC_READ_METHOD;
 use crate::protocol::EXEC_SIGNAL_METHOD;
@@ -63,6 +66,7 @@ use crate::protocol::EnvironmentInfo;
 use crate::protocol::EnvironmentStatus;
 use crate::protocol::ExecClosedNotification;
 use crate::protocol::ExecExitedNotification;
+use crate::protocol::ExecObservationFailedNotification;
 use crate::protocol::ExecOutputDeltaNotification;
 use crate::protocol::ExecParams;
 use crate::protocol::ExecResponse;
@@ -232,6 +236,10 @@ struct OrderedSessionEvents {
     pending: BTreeMap<u64, ExecProcessEvent>,
     pending_bytes: usize,
     failure: Option<String>,
+    observation_failure: Option<String>,
+    // Some(None) is an observed native exit without a numeric code.
+    observed_exit: Option<Option<i32>>,
+    observed_closed: bool,
 }
 
 #[derive(Clone)]
@@ -741,9 +749,15 @@ impl ExecServerClient {
                     &InitializeParams {
                         client_name,
                         resume_session_id,
+                        process_exit_observation: true,
                     },
                 )
                 .await?;
+            if !response.process_exit_observation {
+                return Err(ExecServerError::Protocol(
+                    "exec-server does not support process exit observation".to_string(),
+                ));
+            }
             let session_id = self
                 .inner
                 .session_id
@@ -878,6 +892,21 @@ impl ExecServerClient {
         params: FsReadFileAuthorizedParams,
     ) -> Result<FsReadFileResponse, ExecServerError> {
         self.call(FS_READ_FILE_AUTHORIZED_METHOD, &params).await
+    }
+
+    pub(crate) async fn fs_read_file_authorized_classified(
+        &self,
+        params: FsReadFileAuthorizedParams,
+    ) -> Result<FsReadFileResponse, AuthorizedReadRpcError> {
+        let rpc_client = self
+            .rpc_client()
+            .await
+            .map_err(AuthorizedReadRpcError::unclassified)?;
+        map_authorized_read_rpc_result(
+            rpc_client
+                .call(FS_READ_FILE_AUTHORIZED_METHOD, &params)
+                .await,
+        )
     }
 
     pub async fn fs_open(&self, params: FsOpenParams) -> Result<FsOpenResponse, ExecServerError> {
@@ -1194,6 +1223,16 @@ impl ExecServerClient {
     }
 }
 
+fn map_authorized_read_rpc_result<T>(
+    result: Result<T, RpcCallError>,
+) -> Result<T, AuthorizedReadRpcError> {
+    let failure = match &result {
+        Err(RpcCallError::Server(error)) => AuthorizedReadFailure::from_rpc_error(error),
+        _ => None,
+    };
+    map_rpc_call_result(result).map_err(|error| AuthorizedReadRpcError { failure, error })
+}
+
 fn map_rpc_call_result<T>(result: Result<T, RpcCallError>) -> Result<T, ExecServerError> {
     result.map_err(|error| {
         let error = ExecServerError::from(error);
@@ -1291,6 +1330,9 @@ impl SessionState {
             .ordered_events
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
+        if let ExecProcessEvent::Exited { exit_code, .. } = &event {
+            ordered_events.observed_exit.get_or_insert(Some(*exit_code));
+        }
         // We have already delivered this sequence number or moved past it,
         // so accepting it again would duplicate output or lifecycle events.
         if ordered_events.failure.is_some()
@@ -1318,6 +1360,7 @@ impl SessionState {
             ordered_events.exit_published |= matches!(&event, ExecProcessEvent::Exited { .. });
             let is_closed = matches!(&event, ExecProcessEvent::Closed { .. });
             ordered_events.closed_published |= is_closed;
+            ordered_events.observed_closed |= is_closed && ordered_events.observed_exit.is_some();
             published_closed |= is_closed;
             self.events.publish(event);
         }
@@ -1342,25 +1385,57 @@ impl SessionState {
     }
 
     fn failed_response(&self) -> Option<ReadResponse> {
-        self.ordered_events
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .failure
-            .clone()
-            .map(|message| self.synthesized_failure(message))
+        let failure = {
+            self.ordered_events
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .failure
+                .clone()
+        };
+        failure.map(|message| self.synthesized_failure(message))
     }
 
     fn synthesized_failure(&self, message: String) -> ReadResponse {
-        let next_seq = (*self.wake_tx.borrow()).saturating_add(1);
+        let observed = self
+            .ordered_events
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         ReadResponse {
             chunks: Vec::new(),
-            next_seq,
-            exited: true,
-            exit_code: None,
-            closed: true,
+            next_seq: observed.last_published_seq.saturating_add(1),
+            exited: observed.observed_exit.is_some(),
+            exit_code: observed.observed_exit.flatten(),
+            closed: observed.observed_closed,
             failure: Some(message),
             sandbox_denied: false,
         }
+    }
+
+    fn observe_read_response(&self, response: &ReadResponse) {
+        let mut observed = self
+            .ordered_events
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        if response.exited {
+            observed.observed_exit.get_or_insert(response.exit_code);
+            observed.observed_closed |= response.closed;
+        }
+    }
+
+    fn set_observation_failure(&self, message: String) {
+        let mut observed = self
+            .ordered_events
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        if observed.observation_failure.is_some() || observed.observed_exit.is_some() {
+            return;
+        }
+        observed.observation_failure = Some(message.clone());
+        // Keep ordered output and the route alive; a failed observation is not Closed.
+        self.events.publish(ExecProcessEvent::Failed(message));
+        drop(observed);
+        self.wake_tx
+            .send_modify(|current| *current = current.saturating_add(1));
     }
 
     fn next_write_id(&self) -> String {
@@ -1470,7 +1545,10 @@ impl Session {
                 })
                 .await
             {
-                Ok(response) => return Ok(response),
+                Ok(response) => {
+                    self.state.observe_read_response(&response);
+                    return Ok(response);
+                }
                 Err(error)
                     if is_transport_closed_error(&error) && !self.client.inner.is_failed() =>
                 {
@@ -1618,7 +1696,7 @@ fn fail_all_sessions(inner: &Arc<Inner>, message: String) {
     for (_, session) in sessions {
         session.network_policy.cancelled.cancel();
         session.network_policy.controller.store(None);
-        // Sessions synthesize a closed read response and emit a pushed Failed
+        // Sessions synthesize a failed read response and emit a pushed Failed
         // event. That covers both polling consumers and streaming consumers
         // such as environment-backed MCP stdio.
         session.set_failure(message.clone());
@@ -1682,6 +1760,18 @@ async fn handle_server_notification(
                 finish_process_event(inner, &params.process_id, &session, result);
             }
         }
+        EXEC_OBSERVATION_FAILED_METHOD => {
+            let params: ExecObservationFailedNotification =
+                serde_json::from_value(notification.params.unwrap_or(Value::Null))?;
+            if let Some(session) = inner.get_session(&params.process_id) {
+                match params.reason {
+                    crate::protocol::ProcessObservationFailureReason::ExitObservationLost => {
+                        session
+                            .set_observation_failure("process exit observation lost".to_string());
+                    }
+                }
+            }
+        }
         HTTP_REQUEST_BODY_DELTA_METHOD => {
             inner
                 .handle_http_body_delta_notification(notification.params)
@@ -1714,6 +1804,57 @@ async fn handle_server_notification(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn authorized_read_call_preserves_only_recognized_metadata_and_transport_behavior() {
+        use super::AuthorizedReadFailure;
+        use super::RpcCallError;
+        use super::map_authorized_read_rpc_result;
+
+        let failure = AuthorizedReadFailure::BoundExceeded;
+        let error =
+            map_authorized_read_rpc_result::<()>(Err(RpcCallError::Server(failure.rpc_error())))
+                .expect_err("typed server error");
+        assert_eq!(error.failure, Some(failure));
+        let error = map_authorized_read_rpc_result::<()>(Err(RpcCallError::Closed))
+            .expect_err("closed transport");
+        assert_eq!(error.failure, None);
+        assert!(matches!(
+            error.error,
+            super::ExecServerError::Disconnected(_)
+        ));
+        assert!(map_authorized_read_rpc_result(Ok(())).is_ok());
+    }
+
+    #[test]
+    fn authorized_read_call_does_not_classify_old_or_unrecognized_peer_errors() {
+        for data in [
+            None,
+            Some(
+                serde_json::json!({"method": "fs/readFileAuthorized", "version": 2, "kind": "permissionDenied"}),
+            ),
+            Some(
+                serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "unknown"}),
+            ),
+            Some(
+                serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "boundExceeded"}),
+            ),
+        ] {
+            let error = super::map_authorized_read_rpc_result::<()>(Err(
+                super::RpcCallError::Server(codex_exec_server_protocol::JSONRPCErrorError {
+                    code: -32600,
+                    message: "secret peer detail".to_string(),
+                    data,
+                }),
+            ))
+            .expect_err("unrecognized metadata remains an error");
+            assert_eq!(error.failure, None);
+            assert!(matches!(
+                error.error,
+                super::ExecServerError::Server { code: -32600, .. }
+            ));
+        }
+    }
+
     use codex_exec_server_protocol::JSONRPCMessage;
     use codex_exec_server_protocol::JSONRPCNotification;
     use codex_exec_server_protocol::JSONRPCResponse;
@@ -1788,7 +1929,9 @@ mod tests {
     use crate::protocol::WriteResponse;
     use crate::protocol::WriteStatus;
 
-    async fn read_jsonrpc_line<R>(lines: &mut tokio::io::Lines<BufReader<R>>) -> JSONRPCMessage
+    pub(super) async fn read_jsonrpc_line<R>(
+        lines: &mut tokio::io::Lines<BufReader<R>>,
+    ) -> JSONRPCMessage
     where
         R: tokio::io::AsyncRead + Unpin,
     {
@@ -1800,7 +1943,7 @@ mod tests {
         serde_json::from_str(&line).expect("json-rpc line should parse")
     }
 
-    async fn write_jsonrpc_line<W>(writer: &mut W, message: JSONRPCMessage)
+    pub(super) async fn write_jsonrpc_line<W>(writer: &mut W, message: JSONRPCMessage)
     where
         W: AsyncWrite + Unpin,
     {
@@ -1827,6 +1970,7 @@ mod tests {
                 JSONRPCMessage::Response(JSONRPCResponse {
                     id: initialize.id,
                     result: serde_json::to_value(InitializeResponse {
+                        process_exit_observation: true,
                         session_id: "trace-test".to_string(),
                         environment_info: None,
                     })
@@ -2008,6 +2152,7 @@ mod tests {
             JSONRPCMessage::Response(JSONRPCResponse {
                 id: request.id,
                 result: serde_json::to_value(InitializeResponse {
+                    process_exit_observation: true,
                     session_id: session_id.to_string(),
                     environment_info,
                 })
@@ -2032,7 +2177,7 @@ mod tests {
                 program: "sh".to_string(),
                 args: vec![
                     "-c".to_string(),
-                    "read _line; printf '%s\\n' '{\"id\":1,\"result\":{\"sessionId\":\"stdio-test\"}}'; read _line; sleep 60".to_string(),
+                    "read _line; printf '%s\\n' '{\"id\":1,\"result\":{\"sessionId\":\"stdio-test\",\"processExitObservation\":true}}'; read _line; sleep 60".to_string(),
                 ],
                 env: HashMap::new(),
                 cwd: None,
@@ -2056,7 +2201,7 @@ mod tests {
                     program: "sh".to_string(),
                     args: vec![
                         "-c".to_string(),
-                        "read _line; printf '%s\\n' '{\"id\":1,\"result\":{\"sessionId\":\"stdio-test\"}}'; read _line; sleep 60".to_string(),
+                        "read _line; printf '%s\\n' '{\"id\":1,\"result\":{\"sessionId\":\"stdio-test\",\"processExitObservation\":true}}'; read _line; sleep 60".to_string(),
                     ],
                     env: HashMap::new(),
                     cwd: None,
@@ -2076,13 +2221,30 @@ mod tests {
     #[cfg(windows)]
     #[tokio::test]
     async fn connect_stdio_command_initializes_json_rpc_client_on_windows() {
+        let fixture = tempfile::tempdir().expect("stdio fixture directory");
+        let server = fixture.path().join("stdio-server.cmd");
+        // CMD builtins exercise the same child stdio handshake without charging
+        // a cold PowerShell runtime to the client's one-second protocol budget.
+        // The last read keeps the child alive until the client closes its stdin.
+        std::fs::write(
+            &server,
+            concat!(
+                "@echo off\r\n",
+                "set /p initialize=\r\n",
+                "echo {\"id\":1,\"result\":{\"sessionId\":\"stdio-test\",\"processExitObservation\":true}}\r\n",
+                "set /p initialized=\r\n",
+                "set /p client_eof=\r\n",
+            ),
+        )
+        .expect("write stdio server fixture");
         let client = ExecServerClient::connect_stdio_command(StdioExecServerConnectArgs {
             command: StdioExecServerCommand {
-                program: "powershell".to_string(),
+                program: "cmd.exe".to_string(),
                 args: vec![
-                    "-NoProfile".to_string(),
-                    "-Command".to_string(),
-                    "$null = [Console]::In.ReadLine(); [Console]::Out.WriteLine('{\"id\":1,\"result\":{\"sessionId\":\"stdio-test\"}}'); $null = [Console]::In.ReadLine(); Start-Sleep -Seconds 60".to_string(),
+                    "/d".to_string(),
+                    "/q".to_string(),
+                    "/c".to_string(),
+                    server.to_string_lossy().into_owned(),
                 ],
                 env: HashMap::new(),
                 cwd: None,
@@ -2107,7 +2269,7 @@ mod tests {
             "read _line; \
              echo \"$$\" > {}; \
              sleep 60 >/dev/null 2>&1 & echo \"$!\" > {}; \
-             printf '%s\\n' '{{\"id\":1,\"result\":{{\"sessionId\":\"stdio-test\"}}}}'; \
+             printf '%s\\n' '{{\"id\":1,\"result\":{{\"sessionId\":\"stdio-test\",\"processExitObservation\":true}}}}'; \
              read _line; \
              wait",
             shell_quote(pid_file.as_path()),
@@ -2232,6 +2394,7 @@ mod tests {
                 JSONRPCMessage::Response(JSONRPCResponse {
                     id: request.id,
                     result: serde_json::to_value(InitializeResponse {
+                        process_exit_observation: true,
                         session_id: "session-1".to_string(),
                         environment_info: None,
                     })
@@ -2378,6 +2541,7 @@ mod tests {
                 JSONRPCMessage::Response(JSONRPCResponse {
                     id: request.id,
                     result: serde_json::to_value(InitializeResponse {
+                        process_exit_observation: true,
                         session_id: "session-1".to_string(),
                         environment_info: None,
                     })
@@ -2436,7 +2600,9 @@ mod tests {
             response.failure.as_deref(),
             Some("exec-server transport disconnected")
         );
-        assert!(response.closed);
+        assert!(!response.exited);
+        assert_eq!(response.exit_code, None);
+        assert!(!response.closed);
 
         let new_session = client.register_session(&ProcessId::from("new")).await;
         assert!(matches!(
@@ -2720,6 +2886,7 @@ mod tests {
                 JSONRPCMessage::Response(JSONRPCResponse {
                     id: request.id,
                     result: serde_json::to_value(InitializeResponse {
+                        process_exit_observation: true,
                         session_id: "session-1".to_string(),
                         environment_info: None,
                     })
@@ -3038,6 +3205,7 @@ mod tests {
                 JSONRPCMessage::Response(JSONRPCResponse {
                     id: request.id,
                     result: serde_json::to_value(InitializeResponse {
+                        process_exit_observation: true,
                         session_id: "session-1".to_string(),
                         environment_info: None,
                     })
@@ -3128,3 +3296,7 @@ mod tests {
 
     mod network_policy_tests;
 }
+
+#[cfg(test)]
+#[path = "client_observation_tests.rs"]
+mod observation_tests;

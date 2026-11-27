@@ -1,0 +1,297 @@
+{
+  "schema": "hcsn-execution-candidate-v1",
+  "prepared_at_utc": "2026-11-05T16:03:50.983628+00:00",
+  "status": "prepared_only_pending_external_gates",
+  "baseline_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+  "candidate_git_commit": null,
+  "staged_to_gpu": false,
+  "training_matrix_executed": false,
+  "cuda_executed": false,
+  "torch_model_tests_executed": false,
+  "required_external_gates": [
+    "original full-shape B OOM under declared resource profile",
+    "frozen 16-case CPU parity passed",
+    "frozen 16-case CUDA parity passed",
+    "candidate-only full-shape CUDA probe passed",
+    "root review and strict CPU integration suite passed"
+  ],
+  "baseline_package": {
+    "verified_git_blob_files": 28,
+    "python_source_files": 23,
+    "canonical_source_map_sha256": "13860b933a93966e880e64840efa0ac26b70ab62cbe7e38bf71587575d9831a3",
+    "benchmark_source_sha256": "f6debd63e6ac6979144a923efdaad5d1f4a99ad2cd602b9174831bcebc6bb2ad",
+    "files": {
+      "qualification/hcsn/MATH.md": {
+        "git_blob_sha1": "7a3ea0c93992209cbe7b0441d8b3e0327e6ba3b9",
+        "sha256": "240abe1e5ba2c2db9f1bbc56be8f14f9f70663ad8ef7d68f6276384e8d352da8"
+      },
+      "qualification/hcsn/README.md": {
+        "git_blob_sha1": "9c532b841351e06f5fe3737085b4331c1d94b513",
+        "sha256": "b25b63ce8c0f3b5c65d0cb81607a3381b025dac8749c93a4ec3e3d3f19d261b7"
+      },
+      "qualification/hcsn/__init__.py": {
+        "git_blob_sha1": "8b44a01fbad4e7adfbefb5cebfb8613bc0c81eac",
+        "sha256": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d"
+      },
+      "qualification/hcsn/attempts.py": {
+        "git_blob_sha1": "961fa6a8ae9372b3fbebb74573a803d2ebe434c3",
+        "sha256": "9c43646b29a2f5fbecd7f8adf0f5da2ee25d0e23768ec3b420d5c79bacc4d470"
+      },
+      "qualification/hcsn/audit_population.py": {
+        "git_blob_sha1": "cacf5845af9013016892543c30defdf487fc2d40",
+        "sha256": "97e6d7cae07ddf35448e8e6f67c42bf3c75dc9216b4a52df320a1dbdbe0dcee8"
+      },
+      "qualification/hcsn/baselines.py": {
+        "git_blob_sha1": "195defadf560f21f00527d7efb41125e53cb4b6d",
+        "sha256": "914a244abe4014a919b35539c4db04a9d334f627981d07fda20935af90026408"
+      },
+      "qualification/hcsn/benchmark.py": {
+        "git_blob_sha1": "766477512b7626151197918382526644a1dc258b",
+        "sha256": "fc55f0f71cf35af742a423a407e42defb828c84285b9a6602b91d9b314ac2830"
+      },
+      "qualification/hcsn/cells.py": {
+        "git_blob_sha1": "3541ac98a51ffef1d383c5bd2020371a1d7d1c59",
+        "sha256": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6"
+      },
+      "qualification/hcsn/checks.py": {
+        "git_blob_sha1": "538b8e7a0ab9c2b3ea3446815c919340b182b6d3",
+        "sha256": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c"
+      },
+      "qualification/hcsn/configs/full.json": {
+        "git_blob_sha1": "59c1004a7be2990192be14cab01e2fa4c6cc3597",
+        "sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a"
+      },
+      "qualification/hcsn/configs/smoke.json": {
+        "git_blob_sha1": "440a9834706c733cff81cda0535e44780c9592f8",
+        "sha256": "3c0e9eb10d1ae13035ba7d455a2fd280531d43c0af15329f49a814722a4a3a57"
+      },
+      "qualification/hcsn/mechanisms.py": {
+        "git_blob_sha1": "78abe762600e85c52bffae766fb1f115e27e5173",
+        "sha256": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed"
+      },
+      "qualification/hcsn/population.py": {
+        "git_blob_sha1": "54f73e10a9bad9c1881c313208ef7a5f072c335c",
+        "sha256": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178"
+      },
+      "qualification/hcsn/population_torch.py": {
+        "git_blob_sha1": "499b8a97772081be02dc9e58ca560f8543e4fd47",
+        "sha256": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d"
+      },
+      "qualification/hcsn/reference.py": {
+        "git_blob_sha1": "34dbca501eb633788845be7ab0c128ecba1d1320",
+        "sha256": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2"
+      },
+      "qualification/hcsn/requirements.txt": {
+        "git_blob_sha1": "07febf063d98f85d790a7080cdfd2e3f6a214e97",
+        "sha256": "168e95da616ce7f1535ebb13b5575a708c6d4e41a7f788d6afdef8ceff121f9b"
+      },
+      "qualification/hcsn/tensor.py": {
+        "git_blob_sha1": "f11fe85d57515bb75924a6751118571a57b5b9f9",
+        "sha256": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc"
+      },
+      "qualification/hcsn/tests/__init__.py": {
+        "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "qualification/hcsn/tests/test_audit_population.py": {
+        "git_blob_sha1": "480453a48d1e8a34d6913cc340d739af4879fd95",
+        "sha256": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d"
+      },
+      "qualification/hcsn/tests/test_benchmark.py": {
+        "git_blob_sha1": "7f2c0f83c7064f1b390a42e6a1b04486706d5043",
+        "sha256": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2"
+      },
+      "qualification/hcsn/tests/test_cells.py": {
+        "git_blob_sha1": "6b9f3570fdeca2be4f88d9fee6934b12323ccc64",
+        "sha256": "efa7459f38a3f9a8b1bdce5e18c259a4f77cc86c51e27f032b4eeea33c780740"
+      },
+      "qualification/hcsn/tests/test_checks.py": {
+        "git_blob_sha1": "d736df6a24b6575c9d92149ffc65e962ad2d85ca",
+        "sha256": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f"
+      },
+      "qualification/hcsn/tests/test_hx_tensor.py": {
+        "git_blob_sha1": "0adbf5f83e5cdc8e19e8766bc13155b43c0b2135",
+        "sha256": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4"
+      },
+      "qualification/hcsn/tests/test_population.py": {
+        "git_blob_sha1": "091aafc7548d19ca52860499f95257c1f426d864",
+        "sha256": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95"
+      },
+      "qualification/hcsn/tests/test_population_torch.py": {
+        "git_blob_sha1": "6c91a6fd62f90eaa225b876bb57341713f483f38",
+        "sha256": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076"
+      },
+      "qualification/hcsn/tests/test_reference.py": {
+        "git_blob_sha1": "5b8398aff3c411797c2b04a762306bc5b0c2379d",
+        "sha256": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d"
+      },
+      "qualification/hcsn/tests/test_tensor.py": {
+        "git_blob_sha1": "f4574966a64a91c1ee1e4dc3c1dd1276e0458216",
+        "sha256": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f"
+      },
+      "qualification/hcsn/validate.py": {
+        "git_blob_sha1": "f908ac0fd04c36e937f6085395ebf498073ecac2",
+        "sha256": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045"
+      }
+    }
+  },
+  "candidate_source": {
+    "python_source_files": 26,
+    "canonical_source_map_sha256": "1c49f03c3525adde66be08a6be0779dccb2ed803c497bf74daba66ad6e5c2087",
+    "benchmark_source_sha256": "abff34d45fe5829f59c28fc324e6a5c25dc5c04e533ae52b8d2048740ac1e72a",
+    "source_files_sha256": {
+      "__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+      "attempts.py": "4b1ea35d42f2a88307228c4d039b5654395c0648058855e7b1a51e3a78437b22",
+      "audit_population.py": "2154a964a2722a0859ae3b1dda98af9a40c4376d4580146e4b3c1b7079e15136",
+      "baselines.py": "a98cbbe7b1ba15486a44a2dd06542b64e39560012df395a2f2f393e67561640d",
+      "benchmark.py": "dcf60a9cf4683a35c9a2b2cf2e608c3bf1d8bf3e213e0f8f30c8c06183caade7",
+      "cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+      "checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+      "execution.py": "6794762ec760edd7d847e73f802128813c507f538b515973e8367df73c2d8a73",
+      "mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+      "population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+      "population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+      "reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+      "rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+      "tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+      "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests/test_audit_population.py": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d",
+      "tests/test_benchmark.py": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2",
+      "tests/test_cells.py": "e579936cb01bd810636ab5de963ed2f24a64013da0056d8568d45d42d5ebd79b",
+      "tests/test_checks.py": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f",
+      "tests/test_execution.py": "c2dfc42ccdb134d42c4772153278dd4b54182812a382d9fab53876b741f61a68",
+      "tests/test_hx_tensor.py": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4",
+      "tests/test_population.py": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95",
+      "tests/test_population_torch.py": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076",
+      "tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+      "tests/test_tensor.py": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f",
+      "validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045"
+    },
+    "package_files_sha256": {
+      "qualification/hcsn/MATH.md": "240abe1e5ba2c2db9f1bbc56be8f14f9f70663ad8ef7d68f6276384e8d352da8",
+      "qualification/hcsn/README.md": "b25b63ce8c0f3b5c65d0cb81607a3381b025dac8749c93a4ec3e3d3f19d261b7",
+      "qualification/hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+      "qualification/hcsn/attempts.py": "4b1ea35d42f2a88307228c4d039b5654395c0648058855e7b1a51e3a78437b22",
+      "qualification/hcsn/audit_population.py": "2154a964a2722a0859ae3b1dda98af9a40c4376d4580146e4b3c1b7079e15136",
+      "qualification/hcsn/baselines.py": "a98cbbe7b1ba15486a44a2dd06542b64e39560012df395a2f2f393e67561640d",
+      "qualification/hcsn/benchmark.py": "dcf60a9cf4683a35c9a2b2cf2e608c3bf1d8bf3e213e0f8f30c8c06183caade7",
+      "qualification/hcsn/cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+      "qualification/hcsn/checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+      "qualification/hcsn/configs/full-rematerialized.json": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+      "qualification/hcsn/configs/full.json": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+      "qualification/hcsn/configs/smoke.json": "3c0e9eb10d1ae13035ba7d455a2fd280531d43c0af15329f49a814722a4a3a57",
+      "qualification/hcsn/execution.py": "6794762ec760edd7d847e73f802128813c507f538b515973e8367df73c2d8a73",
+      "qualification/hcsn/mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+      "qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+      "qualification/hcsn/population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+      "qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+      "qualification/hcsn/rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+      "qualification/hcsn/requirements.txt": "168e95da616ce7f1535ebb13b5575a708c6d4e41a7f788d6afdef8ceff121f9b",
+      "qualification/hcsn/tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+      "qualification/hcsn/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "qualification/hcsn/tests/test_audit_population.py": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d",
+      "qualification/hcsn/tests/test_benchmark.py": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2",
+      "qualification/hcsn/tests/test_cells.py": "e579936cb01bd810636ab5de963ed2f24a64013da0056d8568d45d42d5ebd79b",
+      "qualification/hcsn/tests/test_checks.py": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f",
+      "qualification/hcsn/tests/test_execution.py": "c2dfc42ccdb134d42c4772153278dd4b54182812a382d9fab53876b741f61a68",
+      "qualification/hcsn/tests/test_hx_tensor.py": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4",
+      "qualification/hcsn/tests/test_population.py": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95",
+      "qualification/hcsn/tests/test_population_torch.py": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076",
+      "qualification/hcsn/tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+      "qualification/hcsn/tests/test_tensor.py": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f",
+      "qualification/hcsn/validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045"
+    }
+  },
+  "predeclared_execution": {
+    "config": "qualification/hcsn/configs/full-rematerialized.json",
+    "config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "original_full_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "added_config_keys": {
+      "population_checkpoint_steps": 1,
+      "cuda_memory_fraction": 0.5
+    },
+    "original_config_values_and_order_preserved": true,
+    "requested_matrix_identities": 170,
+    "requested_b_identities": 20,
+    "matrix_identity_sha256": "d9688a6ab6bd49834cbfcc44d341a6850ba64fde306aaa945b6bf0b22f3caa22",
+    "training_examples_per_fit": 25600,
+    "training_tokens_per_fit": 1638400,
+    "declared_b_segment_steps": 1
+  },
+  "invariants": {
+    "original_package_git_blobs_match": true,
+    "original_full_bytes_unchanged": true,
+    "frozen_remat_module_byte_exact": true,
+    "original_population_encoder_class_text_unchanged": true,
+    "cpu_and_cuda_audit_mse_checks_unchanged": true,
+    "baseline_agents_copy_identical": true,
+    "root_workflow_copy_identical": true,
+    "protected_external_files_unchanged": true
+  },
+  "protected_external_files_sha256": {
+    "cuda-preflight/probe.py": "70331f392c9695e0522da52817b3511b544304a6f4e23a169a016a07ea9f1285",
+    "cuda-preflight/probe-rematerialized.py": "f8a2b7c193d2750cafb95446eff314195ca54ebb0305c008a35336f6bd874e08",
+    "remat-candidate/qualification/hcsn/rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+    "remat-candidate/check_rematerialization.py": "664a508d7e1c70ee81efe077225b5f4f751bb790efc83cecfc6f1494a09bb509",
+    "remat-candidate/CANDIDATE.json": "d864fdb4819a7f21c7e1a8178686b6bf9ec82df92cf88609240faa918876f51b",
+    "numeric-audit/smoke-replay/smoke.json": "42d9224251fcee5e5a71f9da88542f72c06636fabd335986785b6fda7b412aae"
+  },
+  "package_diff": {
+    "path": "candidate.diff",
+    "sha256": "dabd7b1c84c343ffe3bedd3efeb5231fecc0ed2cc8c60865e22c278811cf16f5",
+    "changed": [
+      "attempts.py",
+      "audit_population.py",
+      "baselines.py",
+      "benchmark.py",
+      "tests/test_cells.py"
+    ],
+    "added": [
+      "configs/full-rematerialized.json",
+      "execution.py",
+      "rematerialization.py",
+      "tests/test_execution.py"
+    ]
+  },
+  "inherited_root_workflow_change": {
+    "path": ".github/workflows/hepta-hcsn-research.yml",
+    "original_git_blob_sha1": "0ec6bd0daa931be22af4c0f3ba33666a76482019",
+    "current_sha256": "1fd67f477363ff126f8a8e0adc3340604e44d93d77cb0def39d8713148ad4bd2",
+    "purpose": "root-owned artifact retention: upload hcsn-training-smoke.runs alongside hcsn-*.json; pre-existing before candidate copy",
+    "diff": "inherited-workflow.diff",
+    "diff_sha256": "0fb8b8df3e1e2b21d8f2798b4dd1f0ffce0f6db63d54be9bf7b6650a8753af1d"
+  },
+  "preparation_validation": {
+    "available": {
+      "path": "preparation-checks/local-available-tests-v4.json",
+      "sha256": "11d0b4f85c0173209b908b3b8e9f4e7cabb01dbdc3a37c3ea4bd685c4b64dac1",
+      "exit_code": 0,
+      "status": "partial",
+      "tests_run": 104,
+      "passed": 47,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 57
+    },
+    "strict": {
+      "path": "preparation-checks/local-strict-unavailable-v4.json",
+      "sha256": "97471828322f366a67efa120765e128f6b76eb0ff440cb619e00227a509e8459",
+      "exit_code": 2,
+      "status": "unavailable",
+      "tests_run": 0,
+      "passed": 0,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "independent_static_review": {
+    "path": "preparation-checks/independent-static-review-v2.json",
+    "sha256": "680f0fd93493665d2414793d5a9a76820e3fd022a944ce54cc3c6800f31b6d0e",
+    "blocking_findings": []
+  },
+  "review_document": {
+    "path": "EXECUTION-CANDIDATE.md",
+    "sha256": "c815c876a2faa13504083229ae0e082c3a2597b945ef8f70481e0017ffba08ea"
+  }
+}

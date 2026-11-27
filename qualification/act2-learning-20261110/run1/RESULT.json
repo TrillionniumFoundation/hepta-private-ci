@@ -1,0 +1,2783 @@
+{
+  "schema_version": 1,
+  "status": "CONTROLLED_RESEARCH_COMPLETED",
+  "promotion": false,
+  "fixed_skill_library_retained": true,
+  "source_files_sha256": {
+    "models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+    "run.py": "1693c1f81708d755aae92405ade26fcad7055eef9ebf9860a45012671fec0b2f",
+    "sqlite_destination.py": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4"
+  },
+  "training_collection_ns": 88074549,
+  "training_collection_calls": 448,
+  "training_trajectories": 80,
+  "independent_training_repeats": 8,
+  "fits": 16,
+  "optimizer_steps_per_fit": 220,
+  "gradient_checks": [
+    {
+      "model": "head",
+      "parameter": "W",
+      "absolute_error": 2.9536338652658145e-12
+    },
+    {
+      "model": "head",
+      "parameter": "b",
+      "absolute_error": 8.278933094629792e-13
+    },
+    {
+      "model": "gru",
+      "parameter": "Wz",
+      "absolute_error": 3.0440300887585314e-12
+    },
+    {
+      "model": "gru",
+      "parameter": "Wr",
+      "absolute_error": 1.3535944156785698e-12
+    },
+    {
+      "model": "gru",
+      "parameter": "Wn",
+      "absolute_error": 2.6578947376343365e-12
+    },
+    {
+      "model": "gru",
+      "parameter": "Uz",
+      "absolute_error": 8.467015359575115e-12
+    },
+    {
+      "model": "gru",
+      "parameter": "Ur",
+      "absolute_error": 4.1820614964213805e-13
+    },
+    {
+      "model": "gru",
+      "parameter": "Un",
+      "absolute_error": 8.718612230828107e-12
+    },
+    {
+      "model": "gru",
+      "parameter": "bz",
+      "absolute_error": 1.000474134554884e-11
+    },
+    {
+      "model": "gru",
+      "parameter": "br",
+      "absolute_error": 9.426771568340564e-12
+    },
+    {
+      "model": "gru",
+      "parameter": "bn",
+      "absolute_error": 6.210733316525108e-12
+    },
+    {
+      "model": "gru",
+      "parameter": "V",
+      "absolute_error": 8.078945932382675e-12
+    },
+    {
+      "model": "gru",
+      "parameter": "c",
+      "absolute_error": 9.124145883276924e-12
+    }
+  ],
+  "training_cost_ns": {
+    "B3_head": 209296930,
+    "B4_gru": 1389072134
+  },
+  "training_cpu_cost_ns": {
+    "B3_head": 208083189,
+    "B4_gru": 1388175813
+  },
+  "summary": {
+    "B0_workflow": {
+      "episodes": 640,
+      "actual_complete": 512,
+      "reported_success": 512,
+      "unknown": 128,
+      "false_success": 0,
+      "duplicate_effects": 0,
+      "partial_effect": 128,
+      "right_censored": 128,
+      "missing_goal_labels": 0,
+      "primitive_calls": {
+        "sum": 6144,
+        "mean": 9.6,
+        "median": 10.0,
+        "p95": 14.0
+      },
+      "readback_queries": {
+        "sum": 3072,
+        "mean": 4.8,
+        "median": 5.0,
+        "p95": 6.0
+      },
+      "independent_oracle_queries": {
+        "sum": 2944,
+        "mean": 4.6,
+        "median": 5.0,
+        "p95": 6.0
+      },
+      "write_transactions": {
+        "sum": 3072,
+        "mean": 4.8,
+        "median": 5.0,
+        "p95": 8.0
+      },
+      "inference_ns": {
+        "sum": 7750284,
+        "mean": 12109.81875,
+        "median": 11683.5,
+        "p95": 17070.449999999986
+      },
+      "inference_cpu_ns": {
+        "sum": 6566843,
+        "mean": 10260.6921875,
+        "median": 10044.0,
+        "p95": 14903.44999999999
+      },
+      "setup_ns": {
+        "sum": 225159993,
+        "mean": 351812.4890625,
+        "median": 318619.5,
+        "p95": 557729.5
+      },
+      "duration_ns": {
+        "sum": 759287025,
+        "mean": 1186385.9765625,
+        "median": 1195449.5,
+        "p95": 1780841.4999999993
+      }
+    },
+    "B1_macro": {
+      "episodes": 640,
+      "actual_complete": 512,
+      "reported_success": 512,
+      "unknown": 128,
+      "false_success": 0,
+      "duplicate_effects": 0,
+      "partial_effect": 128,
+      "right_censored": 128,
+      "missing_goal_labels": 0,
+      "primitive_calls": {
+        "sum": 6144,
+        "mean": 9.6,
+        "median": 10.0,
+        "p95": 14.0
+      },
+      "readback_queries": {
+        "sum": 3072,
+        "mean": 4.8,
+        "median": 5.0,
+        "p95": 6.0
+      },
+      "independent_oracle_queries": {
+        "sum": 2944,
+        "mean": 4.6,
+        "median": 5.0,
+        "p95": 6.0
+      },
+      "write_transactions": {
+        "sum": 3072,
+        "mean": 4.8,
+        "median": 5.0,
+        "p95": 8.0
+      },
+      "inference_ns": {
+        "sum": 7051992,
+        "mean": 11018.7375,
+        "median": 9323.5,
+        "p95": 16935.09999999998
+      },
+      "inference_cpu_ns": {
+        "sum": 5208202,
+        "mean": 8137.815625,
+        "median": 7641.5,
+        "p95": 13360.19999999999
+      },
+      "setup_ns": {
+        "sum": 231273174,
+        "mean": 361364.334375,
+        "median": 317909.0,
+        "p95": 563955.7999999998
+      },
+      "duration_ns": {
+        "sum": 775335080,
+        "mean": 1211461.0625,
+        "median": 1210262.0,
+        "p95": 1977974.8999999997
+      }
+    },
+    "B2_flat": {
+      "episodes": 640,
+      "actual_complete": 512,
+      "reported_success": 512,
+      "unknown": 128,
+      "false_success": 0,
+      "duplicate_effects": 0,
+      "partial_effect": 128,
+      "right_censored": 128,
+      "missing_goal_labels": 0,
+      "primitive_calls": {
+        "sum": 6144,
+        "mean": 9.6,
+        "median": 10.0,
+        "p95": 14.0
+      },
+      "readback_queries": {
+        "sum": 3072,
+        "mean": 4.8,
+        "median": 5.0,
+        "p95": 6.0
+      },
+      "independent_oracle_queries": {
+        "sum": 2944,
+        "mean": 4.6,
+        "median": 5.0,
+        "p95": 6.0
+      },
+      "write_transactions": {
+        "sum": 3072,
+        "mean": 4.8,
+        "median": 5.0,
+        "p95": 8.0
+      },
+      "inference_ns": {
+        "sum": 7973510,
+        "mean": 12458.609375,
+        "median": 11828.5,
+        "p95": 18771.85
+      },
+      "inference_cpu_ns": {
+        "sum": 7037763,
+        "mean": 10996.5046875,
+        "median": 10234.5,
+        "p95": 16551.899999999998
+      },
+      "setup_ns": {
+        "sum": 231152880,
+        "mean": 361176.375,
+        "median": 322420.5,
+        "p95": 563254.2
+      },
+      "duration_ns": {
+        "sum": 771564558,
+        "mean": 1205569.621875,
+        "median": 1220332.5,
+        "p95": 1851328.5999999992
+      }
+    },
+    "B3_head": {
+      "episodes": 640,
+      "actual_complete": 512,
+      "reported_success": 512,
+      "unknown": 128,
+      "false_success": 0,
+      "duplicate_effects": 0,
+      "partial_effect": 128,
+      "right_censored": 128,
+      "missing_goal_labels": 0,
+      "primitive_calls": {
+        "sum": 6144,
+        "mean": 9.6,
+        "median": 10.0,
+        "p95": 14.0
+      },
+      "readback_queries": {
+        "sum": 3072,
+        "mean": 4.8,
+        "median": 5.0,
+        "p95": 6.0
+      },
+      "independent_oracle_queries": {
+        "sum": 2944,
+        "mean": 4.6,
+        "median": 5.0,
+        "p95": 6.0
+      },
+      "write_transactions": {
+        "sum": 3072,
+        "mean": 4.8,
+        "median": 5.0,
+        "p95": 8.0
+      },
+      "inference_ns": {
+        "sum": 53315463,
+        "mean": 83305.4109375,
+        "median": 80901.5,
+        "p95": 130995.24999999997
+      },
+      "inference_cpu_ns": {
+        "sum": 51309766,
+        "mean": 80171.509375,
+        "median": 78917.5,
+        "p95": 126596.49999999999
+      },
+      "setup_ns": {
+        "sum": 220555935,
+        "mean": 344618.6484375,
+        "median": 315084.5,
+        "p95": 528860.0499999999
+      },
+      "duration_ns": {
+        "sum": 824620443,
+        "mean": 1288469.4421875,
+        "median": 1302035.0,
+        "p95": 1913828.7
+      }
+    },
+    "B4_gru": {
+      "episodes": 640,
+      "actual_complete": 464,
+      "reported_success": 464,
+      "unknown": 176,
+      "false_success": 0,
+      "duplicate_effects": 0,
+      "partial_effect": 176,
+      "right_censored": 176,
+      "missing_goal_labels": 0,
+      "primitive_calls": {
+        "sum": 6000,
+        "mean": 9.375,
+        "median": 9.0,
+        "p95": 14.0
+      },
+      "readback_queries": {
+        "sum": 3024,
+        "mean": 4.725,
+        "median": 5.0,
+        "p95": 6.0
+      },
+      "independent_oracle_queries": {
+        "sum": 2896,
+        "mean": 4.525,
+        "median": 5.0,
+        "p95": 6.0
+      },
+      "write_transactions": {
+        "sum": 2976,
+        "mean": 4.65,
+        "median": 4.0,
+        "p95": 8.0
+      },
+      "inference_ns": {
+        "sum": 184246008,
+        "mean": 287884.3875,
+        "median": 283281.5,
+        "p95": 480428.79999999993
+      },
+      "inference_cpu_ns": {
+        "sum": 182155913,
+        "mean": 284618.6140625,
+        "median": 279020.0,
+        "p95": 466866.79999999976
+      },
+      "setup_ns": {
+        "sum": 238587546,
+        "mean": 372793.040625,
+        "median": 329401.0,
+        "p95": 575921.5499999999
+      },
+      "duration_ns": {
+        "sum": 1014943527,
+        "mean": 1585849.2609375,
+        "median": 1571665.5,
+        "p95": 2410834.6999999997
+      }
+    }
+  },
+  "by_training_seed": {
+    "700": {
+      "B0_workflow": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 893302,
+          "mean": 11166.275,
+          "median": 11277.5,
+          "p95": 15586.999999999998
+        },
+        "inference_cpu_ns": {
+          "sum": 753017,
+          "mean": 9412.7125,
+          "median": 9779.5,
+          "p95": 13647.9
+        },
+        "setup_ns": {
+          "sum": 25666345,
+          "mean": 320829.3125,
+          "median": 312941.0,
+          "p95": 370378.2999999998
+        },
+        "duration_ns": {
+          "sum": 89311348,
+          "mean": 1116391.85,
+          "median": 1144032.5,
+          "p95": 1493382.5499999998
+        }
+      },
+      "B1_macro": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 720284,
+          "mean": 9003.55,
+          "median": 9407.5,
+          "p95": 12003.949999999999
+        },
+        "inference_cpu_ns": {
+          "sum": 624404,
+          "mean": 7805.05,
+          "median": 7586.5,
+          "p95": 10149.949999999999
+        },
+        "setup_ns": {
+          "sum": 25343486,
+          "mean": 316793.575,
+          "median": 297438.0,
+          "p95": 399454.89999999985
+        },
+        "duration_ns": {
+          "sum": 87036672,
+          "mean": 1087958.4,
+          "median": 1142890.5,
+          "p95": 1435142.65
+        }
+      },
+      "B2_flat": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 901931,
+          "mean": 11274.1375,
+          "median": 11487.0,
+          "p95": 15496.05
+        },
+        "inference_cpu_ns": {
+          "sum": 886857,
+          "mean": 11085.7125,
+          "median": 9920.0,
+          "p95": 13779.05
+        },
+        "setup_ns": {
+          "sum": 25758753,
+          "mean": 321984.4125,
+          "median": 302050.0,
+          "p95": 424330.6
+        },
+        "duration_ns": {
+          "sum": 90024244,
+          "mean": 1125303.05,
+          "median": 1188268.5,
+          "p95": 1557255.1
+        }
+      },
+      "B3_head": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 6816826,
+          "mean": 85210.325,
+          "median": 80707.0,
+          "p95": 154172.9
+        },
+        "inference_cpu_ns": {
+          "sum": 6562050,
+          "mean": 82025.625,
+          "median": 78641.5,
+          "p95": 129292.29999999997
+        },
+        "setup_ns": {
+          "sum": 26104945,
+          "mean": 326311.8125,
+          "median": 304748.5,
+          "p95": 430898.44999999995
+        },
+        "duration_ns": {
+          "sum": 98999651,
+          "mean": 1237495.6375,
+          "median": 1278970.0,
+          "p95": 1793996.7999999998
+        }
+      },
+      "B4_gru": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 21982474,
+          "mean": 274780.925,
+          "median": 287533.5,
+          "p95": 402605.09999999986
+        },
+        "inference_cpu_ns": {
+          "sum": 21813998,
+          "mean": 272674.975,
+          "median": 286271.5,
+          "p95": 401453.14999999985
+        },
+        "setup_ns": {
+          "sum": 27095748,
+          "mean": 338696.85,
+          "median": 317282.5,
+          "p95": 471459.5
+        },
+        "duration_ns": {
+          "sum": 118063968,
+          "mean": 1475799.6,
+          "median": 1533984.0,
+          "p95": 2020862.8499999999
+        }
+      }
+    },
+    "701": {
+      "B0_workflow": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 891546,
+          "mean": 11144.325,
+          "median": 11492.0,
+          "p95": 15140.55
+        },
+        "inference_cpu_ns": {
+          "sum": 773953,
+          "mean": 9674.4125,
+          "median": 9804.0,
+          "p95": 13865.05
+        },
+        "setup_ns": {
+          "sum": 26499694,
+          "mean": 331246.175,
+          "median": 307728.5,
+          "p95": 453198.14999999997
+        },
+        "duration_ns": {
+          "sum": 90330155,
+          "mean": 1129126.9375,
+          "median": 1143451.5,
+          "p95": 1612592.95
+        }
+      },
+      "B1_macro": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 728651,
+          "mean": 9108.1375,
+          "median": 9095.5,
+          "p95": 12288.0
+        },
+        "inference_cpu_ns": {
+          "sum": 601523,
+          "mean": 7519.0375,
+          "median": 7367.0,
+          "p95": 10228.0
+        },
+        "setup_ns": {
+          "sum": 26600836,
+          "mean": 332510.45,
+          "median": 302851.0,
+          "p95": 510601.1
+        },
+        "duration_ns": {
+          "sum": 87636350,
+          "mean": 1095454.375,
+          "median": 1111868.5,
+          "p95": 1614143.9
+        }
+      },
+      "B2_flat": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 873300,
+          "mean": 10916.25,
+          "median": 11584.0,
+          "p95": 15623.05
+        },
+        "inference_cpu_ns": {
+          "sum": 750240,
+          "mean": 9378.0,
+          "median": 9915.5,
+          "p95": 13184.599999999999
+        },
+        "setup_ns": {
+          "sum": 25612932,
+          "mean": 320161.65,
+          "median": 298003.5,
+          "p95": 424499.3499999999
+        },
+        "duration_ns": {
+          "sum": 86396235,
+          "mean": 1079952.9375,
+          "median": 1144167.5,
+          "p95": 1439181.25
+        }
+      },
+      "B3_head": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 6079060,
+          "mean": 75988.25,
+          "median": 78744.5,
+          "p95": 105480.49999999999
+        },
+        "inference_cpu_ns": {
+          "sum": 5981868,
+          "mean": 74773.35,
+          "median": 77541.0,
+          "p95": 103386.4
+        },
+        "setup_ns": {
+          "sum": 26691740,
+          "mean": 333646.75,
+          "median": 309491.0,
+          "p95": 468147.6
+        },
+        "duration_ns": {
+          "sum": 98245453,
+          "mean": 1228068.1625,
+          "median": 1260443.0,
+          "p95": 1654690.2
+        }
+      },
+      "B4_gru": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 21449764,
+          "mean": 268122.05,
+          "median": 273927.0,
+          "p95": 375502.0999999999
+        },
+        "inference_cpu_ns": {
+          "sum": 21278320,
+          "mean": 265979.0,
+          "median": 272857.0,
+          "p95": 374291.4499999999
+        },
+        "setup_ns": {
+          "sum": 26625219,
+          "mean": 332815.2375,
+          "median": 316596.5,
+          "p95": 452550.95
+        },
+        "duration_ns": {
+          "sum": 117372778,
+          "mean": 1467159.725,
+          "median": 1528180.5,
+          "p95": 2093610.8499999999
+        }
+      }
+    },
+    "702": {
+      "B0_workflow": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 850964,
+          "mean": 10637.05,
+          "median": 11584.0,
+          "p95": 14985.449999999999
+        },
+        "inference_cpu_ns": {
+          "sum": 731364,
+          "mean": 9142.05,
+          "median": 9987.0,
+          "p95": 12913.4
+        },
+        "setup_ns": {
+          "sum": 26014719,
+          "mean": 325183.9875,
+          "median": 305229.0,
+          "p95": 429799.19999999995
+        },
+        "duration_ns": {
+          "sum": 87172692,
+          "mean": 1089658.65,
+          "median": 1143972.0,
+          "p95": 1475158.1
+        }
+      },
+      "B1_macro": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 691027,
+          "mean": 8637.8375,
+          "median": 9028.5,
+          "p95": 12464.999999999998
+        },
+        "inference_cpu_ns": {
+          "sum": 561901,
+          "mean": 7023.7625,
+          "median": 7341.0,
+          "p95": 10089.099999999999
+        },
+        "setup_ns": {
+          "sum": 25027476,
+          "mean": 312843.45,
+          "median": 302409.5,
+          "p95": 351638.85
+        },
+        "duration_ns": {
+          "sum": 88974402,
+          "mean": 1112180.025,
+          "median": 1136866.0,
+          "p95": 1670275.3499999999
+        }
+      },
+      "B2_flat": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 1003526,
+          "mean": 12544.075,
+          "median": 11112.0,
+          "p95": 17361.749999999996
+        },
+        "inference_cpu_ns": {
+          "sum": 893326,
+          "mean": 11166.575,
+          "median": 9409.0,
+          "p95": 14675.049999999997
+        },
+        "setup_ns": {
+          "sum": 26603950,
+          "mean": 332549.375,
+          "median": 319215.5,
+          "p95": 435736.9999999999
+        },
+        "duration_ns": {
+          "sum": 89773442,
+          "mean": 1122168.025,
+          "median": 1134097.0,
+          "p95": 1584848.1499999994
+        }
+      },
+      "B3_head": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 6486492,
+          "mean": 81081.15,
+          "median": 82530.5,
+          "p95": 123956.45
+        },
+        "inference_cpu_ns": {
+          "sum": 6380530,
+          "mean": 79756.625,
+          "median": 81009.0,
+          "p95": 122906.95
+        },
+        "setup_ns": {
+          "sum": 27352725,
+          "mean": 341909.0625,
+          "median": 315670.5,
+          "p95": 475773.84999999986
+        },
+        "duration_ns": {
+          "sum": 101189547,
+          "mean": 1264869.3375,
+          "median": 1268805.0,
+          "p95": 1815464.8
+        }
+      },
+      "B4_gru": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 23071834,
+          "mean": 288397.925,
+          "median": 297252.0,
+          "p95": 461998.75
+        },
+        "inference_cpu_ns": {
+          "sum": 22757394,
+          "mean": 284467.425,
+          "median": 286180.5,
+          "p95": 460926.39999999997
+        },
+        "setup_ns": {
+          "sum": 28379873,
+          "mean": 354748.4125,
+          "median": 331614.0,
+          "p95": 482147.14999999997
+        },
+        "duration_ns": {
+          "sum": 122555935,
+          "mean": 1531949.1875,
+          "median": 1546243.0,
+          "p95": 2194899.7
+        }
+      }
+    },
+    "703": {
+      "B0_workflow": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 979500,
+          "mean": 12243.75,
+          "median": 11513.5,
+          "p95": 23609.849999999984
+        },
+        "inference_cpu_ns": {
+          "sum": 839027,
+          "mean": 10487.8375,
+          "median": 9700.0,
+          "p95": 20456.049999999985
+        },
+        "setup_ns": {
+          "sum": 28672959,
+          "mean": 358411.9875,
+          "median": 323061.0,
+          "p95": 581816.25
+        },
+        "duration_ns": {
+          "sum": 97683257,
+          "mean": 1221040.7125,
+          "median": 1172980.5,
+          "p95": 1877265.0499999982
+        }
+      },
+      "B1_macro": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 879544,
+          "mean": 10994.3,
+          "median": 10601.5,
+          "p95": 19847.45
+        },
+        "inference_cpu_ns": {
+          "sum": 742373,
+          "mean": 9279.6625,
+          "median": 8898.0,
+          "p95": 16502.5
+        },
+        "setup_ns": {
+          "sum": 31763475,
+          "mean": 397043.4375,
+          "median": 335084.5,
+          "p95": 611947.4999999999
+        },
+        "duration_ns": {
+          "sum": 108347018,
+          "mean": 1354337.725,
+          "median": 1342666.5,
+          "p95": 2349966.5999999996
+        }
+      },
+      "B2_flat": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 1182863,
+          "mean": 14785.7875,
+          "median": 12465.5,
+          "p95": 18206.699999999997
+        },
+        "inference_cpu_ns": {
+          "sum": 878922,
+          "mean": 10986.525,
+          "median": 10631.5,
+          "p95": 15424.25
+        },
+        "setup_ns": {
+          "sum": 29772873,
+          "mean": 372160.9125,
+          "median": 333407.0,
+          "p95": 574082.45
+        },
+        "duration_ns": {
+          "sum": 98862717,
+          "mean": 1235783.9625,
+          "median": 1187858.5,
+          "p95": 1875749.0999999996
+        }
+      },
+      "B3_head": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 6890547,
+          "mean": 86131.8375,
+          "median": 81090.5,
+          "p95": 129889.19999999995
+        },
+        "inference_cpu_ns": {
+          "sum": 6408866,
+          "mean": 80110.825,
+          "median": 79704.0,
+          "p95": 126977.05
+        },
+        "setup_ns": {
+          "sum": 28348488,
+          "mean": 354356.1,
+          "median": 322646.0,
+          "p95": 540968.35
+        },
+        "duration_ns": {
+          "sum": 103767766,
+          "mean": 1297097.075,
+          "median": 1316731.5,
+          "p95": 1870299.9
+        }
+      },
+      "B4_gru": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 29274417,
+          "mean": 365930.2125,
+          "median": 350162.0,
+          "p95": 623204.6
+        },
+        "inference_cpu_ns": {
+          "sum": 28826318,
+          "mean": 360328.975,
+          "median": 348784.5,
+          "p95": 611428.35
+        },
+        "setup_ns": {
+          "sum": 38480629,
+          "mean": 481007.8625,
+          "median": 453152.5,
+          "p95": 686827.0499999998
+        },
+        "duration_ns": {
+          "sum": 161878410,
+          "mean": 2023480.125,
+          "median": 1896725.0,
+          "p95": 3285132.9
+        }
+      }
+    },
+    "704": {
+      "B0_workflow": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 1070822,
+          "mean": 13385.275,
+          "median": 12393.5,
+          "p95": 19293.29999999999
+        },
+        "inference_cpu_ns": {
+          "sum": 967700,
+          "mean": 12096.25,
+          "median": 10767.0,
+          "p95": 16673.79999999999
+        },
+        "setup_ns": {
+          "sum": 31189726,
+          "mean": 389871.575,
+          "median": 343452.0,
+          "p95": 702484.75
+        },
+        "duration_ns": {
+          "sum": 105174382,
+          "mean": 1314679.775,
+          "median": 1348730.5,
+          "p95": 2126889.6
+        }
+      },
+      "B1_macro": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 903649,
+          "mean": 11295.6125,
+          "median": 10180.0,
+          "p95": 18877.0
+        },
+        "inference_cpu_ns": {
+          "sum": 759111,
+          "mean": 9488.8875,
+          "median": 8637.0,
+          "p95": 16017.0
+        },
+        "setup_ns": {
+          "sum": 37313280,
+          "mean": 466416.0,
+          "median": 444073.5,
+          "p95": 747267.6
+        },
+        "duration_ns": {
+          "sum": 121770566,
+          "mean": 1522132.075,
+          "median": 1433268.0,
+          "p95": 2300314.35
+        }
+      },
+      "B2_flat": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 1085047,
+          "mean": 13563.0875,
+          "median": 13079.5,
+          "p95": 22473.499999999996
+        },
+        "inference_cpu_ns": {
+          "sum": 943382,
+          "mean": 11792.275,
+          "median": 11332.5,
+          "p95": 19525.45
+        },
+        "setup_ns": {
+          "sum": 33257663,
+          "mean": 415720.7875,
+          "median": 390337.5,
+          "p95": 572360.2
+        },
+        "duration_ns": {
+          "sum": 111838878,
+          "mean": 1397985.975,
+          "median": 1369291.0,
+          "p95": 2116042.55
+        }
+      },
+      "B3_head": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 6725406,
+          "mean": 84067.575,
+          "median": 80986.0,
+          "p95": 127542.74999999999
+        },
+        "inference_cpu_ns": {
+          "sum": 6359865,
+          "mean": 79498.3125,
+          "median": 79583.0,
+          "p95": 123464.9
+        },
+        "setup_ns": {
+          "sum": 26092210,
+          "mean": 326152.625,
+          "median": 309756.0,
+          "p95": 404966.9499999999
+        },
+        "duration_ns": {
+          "sum": 101801870,
+          "mean": 1272523.375,
+          "median": 1294679.0,
+          "p95": 1836101.5499999998
+        }
+      },
+      "B4_gru": {
+        "episodes": 80,
+        "actual_complete": 40,
+        "reported_success": 40,
+        "unknown": 40,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 40,
+        "right_censored": 40,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 696,
+          "mean": 8.7,
+          "median": 8.5,
+          "p95": 12.0
+        },
+        "readback_queries": {
+          "sum": 360,
+          "mean": 4.5,
+          "median": 4.5,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 344,
+          "mean": 4.3,
+          "median": 4.5,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 336,
+          "mean": 4.2,
+          "median": 4.0,
+          "p95": 6.0
+        },
+        "inference_ns": {
+          "sum": 20860221,
+          "mean": 260752.7625,
+          "median": 275655.5,
+          "p95": 379020.05
+        },
+        "inference_cpu_ns": {
+          "sum": 20433027,
+          "mean": 255412.8375,
+          "median": 271353.0,
+          "p95": 375499.6
+        },
+        "setup_ns": {
+          "sum": 26842083,
+          "mean": 335526.0375,
+          "median": 313306.5,
+          "p95": 434251.64999999985
+        },
+        "duration_ns": {
+          "sum": 112400359,
+          "mean": 1405004.4875,
+          "median": 1501189.5,
+          "p95": 1934895.05
+        }
+      }
+    },
+    "705": {
+      "B0_workflow": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 1006035,
+          "mean": 12575.4375,
+          "median": 11846.5,
+          "p95": 18111.999999999996
+        },
+        "inference_cpu_ns": {
+          "sum": 813296,
+          "mean": 10166.2,
+          "median": 10149.0,
+          "p95": 15233.5
+        },
+        "setup_ns": {
+          "sum": 30246882,
+          "mean": 378086.025,
+          "median": 327112.0,
+          "p95": 582415.5
+        },
+        "duration_ns": {
+          "sum": 101260982,
+          "mean": 1265762.275,
+          "median": 1286732.0,
+          "p95": 1896568.7999999998
+        }
+      },
+      "B1_macro": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 847885,
+          "mean": 10598.5625,
+          "median": 9152.5,
+          "p95": 12898.9
+        },
+        "inference_cpu_ns": {
+          "sum": 593113,
+          "mean": 7413.9125,
+          "median": 7520.5,
+          "p95": 10513.149999999998
+        },
+        "setup_ns": {
+          "sum": 28542469,
+          "mean": 356780.8625,
+          "median": 318769.5,
+          "p95": 547034.45
+        },
+        "duration_ns": {
+          "sum": 95208433,
+          "mean": 1190105.4125,
+          "median": 1234608.0,
+          "p95": 1766276.0499999998
+        }
+      },
+      "B2_flat": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 939642,
+          "mean": 11745.525,
+          "median": 11839.0,
+          "p95": 18067.699999999997
+        },
+        "inference_cpu_ns": {
+          "sum": 841637,
+          "mean": 10520.4625,
+          "median": 10159.5,
+          "p95": 16359.249999999998
+        },
+        "setup_ns": {
+          "sum": 30064426,
+          "mean": 375805.325,
+          "median": 328805.0,
+          "p95": 597455.0499999999
+        },
+        "duration_ns": {
+          "sum": 99997829,
+          "mean": 1249972.8625,
+          "median": 1226742.0,
+          "p95": 1888146.8499999999
+        }
+      },
+      "B3_head": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 6958904,
+          "mean": 86986.3,
+          "median": 79850.0,
+          "p95": 138565.9999999999
+        },
+        "inference_cpu_ns": {
+          "sum": 6633257,
+          "mean": 82915.7125,
+          "median": 78482.0,
+          "p95": 131815.34999999998
+        },
+        "setup_ns": {
+          "sum": 28285290,
+          "mean": 353566.125,
+          "median": 331248.5,
+          "p95": 535877.0499999999
+        },
+        "duration_ns": {
+          "sum": 105795891,
+          "mean": 1322448.6375,
+          "median": 1310062.0,
+          "p95": 1945671.45
+        }
+      },
+      "B4_gru": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 22935454,
+          "mean": 286693.175,
+          "median": 291488.5,
+          "p95": 430094.1
+        },
+        "inference_cpu_ns": {
+          "sum": 22722524,
+          "mean": 284031.55,
+          "median": 285846.0,
+          "p95": 429508.6
+        },
+        "setup_ns": {
+          "sum": 29974725,
+          "mean": 374684.0625,
+          "median": 329140.5,
+          "p95": 645605.35
+        },
+        "duration_ns": {
+          "sum": 128697696,
+          "mean": 1608721.2,
+          "median": 1657871.0,
+          "p95": 2248600.75
+        }
+      }
+    },
+    "706": {
+      "B0_workflow": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 896611,
+          "mean": 11207.6375,
+          "median": 11501.5,
+          "p95": 15616.0
+        },
+        "inference_cpu_ns": {
+          "sum": 808411,
+          "mean": 10105.1375,
+          "median": 9864.5,
+          "p95": 14769.5
+        },
+        "setup_ns": {
+          "sum": 27211293,
+          "mean": 340141.1625,
+          "median": 304593.5,
+          "p95": 501517.3999999999
+        },
+        "duration_ns": {
+          "sum": 91186214,
+          "mean": 1139827.675,
+          "median": 1174022.0,
+          "p95": 1716127.0999999999
+        }
+      },
+      "B1_macro": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 1527645,
+          "mean": 19095.5625,
+          "median": 9319.0,
+          "p95": 29174.049999999977
+        },
+        "inference_cpu_ns": {
+          "sum": 702740,
+          "mean": 8784.25,
+          "median": 7641.5,
+          "p95": 11126.949999999999
+        },
+        "setup_ns": {
+          "sum": 27427214,
+          "mean": 342840.175,
+          "median": 321409.0,
+          "p95": 514017.85
+        },
+        "duration_ns": {
+          "sum": 92143887,
+          "mean": 1151798.5875,
+          "median": 1168919.0,
+          "p95": 1693806.1999999995
+        }
+      },
+      "B2_flat": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 1027059,
+          "mean": 12838.2375,
+          "median": 12129.0,
+          "p95": 16988.35
+        },
+        "inference_cpu_ns": {
+          "sum": 1011732,
+          "mean": 12646.65,
+          "median": 10311.0,
+          "p95": 14923.949999999999
+        },
+        "setup_ns": {
+          "sum": 30283757,
+          "mean": 378546.9625,
+          "median": 326907.0,
+          "p95": 712816.8499999999
+        },
+        "duration_ns": {
+          "sum": 98394553,
+          "mean": 1229931.9125,
+          "median": 1312726.0,
+          "p95": 1739221.2
+        }
+      },
+      "B3_head": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 6547308,
+          "mean": 81841.35,
+          "median": 82192.0,
+          "p95": 127512.65
+        },
+        "inference_cpu_ns": {
+          "sum": 6351520,
+          "mean": 79394.0,
+          "median": 80615.5,
+          "p95": 125796.59999999999
+        },
+        "setup_ns": {
+          "sum": 28011616,
+          "mean": 350145.2,
+          "median": 319265.5,
+          "p95": 532293.8499999999
+        },
+        "duration_ns": {
+          "sum": 104279688,
+          "mean": 1303496.1,
+          "median": 1368410.0,
+          "p95": 1970560.9999999998
+        }
+      },
+      "B4_gru": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 22218019,
+          "mean": 277725.2375,
+          "median": 279466.5,
+          "p95": 426499.1499999999
+        },
+        "inference_cpu_ns": {
+          "sum": 22001959,
+          "mean": 275024.4875,
+          "median": 278888.5,
+          "p95": 422347.3
+        },
+        "setup_ns": {
+          "sum": 28464183,
+          "mean": 355802.2875,
+          "median": 319841.5,
+          "p95": 518969.44999999995
+        },
+        "duration_ns": {
+          "sum": 121537791,
+          "mean": 1519222.3875,
+          "median": 1607029.0,
+          "p95": 2142613.2499999995
+        }
+      }
+    },
+    "707": {
+      "B0_workflow": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 1161504,
+          "mean": 14518.8,
+          "median": 12382.5,
+          "p95": 17815.649999999998
+        },
+        "inference_cpu_ns": {
+          "sum": 880075,
+          "mean": 11000.9375,
+          "median": 11015.5,
+          "p95": 16239.949999999999
+        },
+        "setup_ns": {
+          "sum": 29658375,
+          "mean": 370729.6875,
+          "median": 317253.0,
+          "p95": 655226.1499999999
+        },
+        "duration_ns": {
+          "sum": 97167995,
+          "mean": 1214599.9375,
+          "median": 1277638.0,
+          "p95": 1751713.25
+        }
+      },
+      "B1_macro": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 753307,
+          "mean": 9416.3375,
+          "median": 9414.5,
+          "p95": 12812.399999999998
+        },
+        "inference_cpu_ns": {
+          "sum": 623037,
+          "mean": 7787.9625,
+          "median": 7540.0,
+          "p95": 10549.999999999998
+        },
+        "setup_ns": {
+          "sum": 29254938,
+          "mean": 365686.725,
+          "median": 321144.0,
+          "p95": 547769.6
+        },
+        "duration_ns": {
+          "sum": 94217752,
+          "mean": 1177721.9,
+          "median": 1229150.5,
+          "p95": 1681403.2999999998
+        }
+      },
+      "B2_flat": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 960142,
+          "mean": 12001.775,
+          "median": 12387.5,
+          "p95": 16005.599999999999
+        },
+        "inference_cpu_ns": {
+          "sum": 831667,
+          "mean": 10395.8375,
+          "median": 10579.5,
+          "p95": 14083.05
+        },
+        "setup_ns": {
+          "sum": 29798526,
+          "mean": 372481.575,
+          "median": 323076.5,
+          "p95": 620976.5999999999
+        },
+        "duration_ns": {
+          "sum": 96276660,
+          "mean": 1203458.25,
+          "median": 1309706.5,
+          "p95": 1728451.7999999998
+        }
+      },
+      "B3_head": {
+        "episodes": 80,
+        "actual_complete": 64,
+        "reported_success": 64,
+        "unknown": 16,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 16,
+        "right_censored": 16,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 768,
+          "mean": 9.6,
+          "median": 10.0,
+          "p95": 14.0
+        },
+        "readback_queries": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "independent_oracle_queries": {
+          "sum": 368,
+          "mean": 4.6,
+          "median": 5.0,
+          "p95": 6.0
+        },
+        "write_transactions": {
+          "sum": 384,
+          "mean": 4.8,
+          "median": 5.0,
+          "p95": 8.0
+        },
+        "inference_ns": {
+          "sum": 6810920,
+          "mean": 85136.5,
+          "median": 85538.5,
+          "p95": 140643.19999999998
+        },
+        "inference_cpu_ns": {
+          "sum": 6631810,
+          "mean": 82897.625,
+          "median": 81281.0,
+          "p95": 139070.34999999998
+        },
+        "setup_ns": {
+          "sum": 29668921,
+          "mean": 370861.5125,
+          "median": 332911.0,
+          "p95": 560606.9999999998
+        },
+        "duration_ns": {
+          "sum": 110540577,
+          "mean": 1381757.2125,
+          "median": 1397584.0,
+          "p95": 2045032.6
+        }
+      },
+      "B4_gru": {
+        "episodes": 80,
+        "actual_complete": 40,
+        "reported_success": 40,
+        "unknown": 40,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "partial_effect": 40,
+        "right_censored": 40,
+        "missing_goal_labels": 0,
+        "primitive_calls": {
+          "sum": 696,
+          "mean": 8.7,
+          "median": 9.0,
+          "p95": 11.0
+        },
+        "readback_queries": {
+          "sum": 360,
+          "mean": 4.5,
+          "median": 5.0,
+          "p95": 5.0
+        },
+        "independent_oracle_queries": {
+          "sum": 344,
+          "mean": 4.3,
+          "median": 5.0,
+          "p95": 5.0
+        },
+        "write_transactions": {
+          "sum": 336,
+          "mean": 4.2,
+          "median": 4.0,
+          "p95": 6.0
+        },
+        "inference_ns": {
+          "sum": 22453825,
+          "mean": 280672.8125,
+          "median": 278970.5,
+          "p95": 435189.74999999994
+        },
+        "inference_cpu_ns": {
+          "sum": 22322373,
+          "mean": 279029.6625,
+          "median": 277807.5,
+          "p95": 434761.85
+        },
+        "setup_ns": {
+          "sum": 32725086,
+          "mean": 409063.575,
+          "median": 332360.5,
+          "p95": 736785.4999999999
+        },
+        "duration_ns": {
+          "sum": 132436590,
+          "mean": 1655457.375,
+          "median": 1619773.5,
+          "p95": 2460890.3
+        }
+      }
+    }
+  },
+  "primitive_frontier_criterion": {
+    "B3_head": false,
+    "B4_gru": false
+  },
+  "process_work_ns": 6378214331,
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41"
+  },
+  "holds": [
+    "controlled SQLite fixture is not product FinalUse integration",
+    "destination-family holdout absent",
+    "production authority and independent field acceptance absent",
+    "no learned-hierarchy promotion from this bounded research run"
+  ]
+}

@@ -38,9 +38,9 @@ pub enum SignedIntentStatus {
     Committed,
     RolledBack,
     RecoveryRequired,
-    /// Explicit operator terminalization after fencing the ambiguous effect.
-    /// This does not assert that the source release remained active; it only
-    /// records that the signed grant must not be resumed or inferred complete.
+    /// Legacy serialized label, not a verified production recovery outcome.
+    /// Loading it does not clear a signed recovery fence. Current recovery
+    /// requires a verified decision or a matching terminal owner transaction.
     Aborted,
 }
 
@@ -66,6 +66,9 @@ pub enum SignedIntentRecoveryAction {
     Abort,
 }
 
+/// Legacy digest-only request retained for inspection/audit compatibility.
+/// It has no independent signature and cannot authorize production recovery;
+/// the supervisor does not consume it to clear a signed recovery fence.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct SignedIntentRecoveryDirective {

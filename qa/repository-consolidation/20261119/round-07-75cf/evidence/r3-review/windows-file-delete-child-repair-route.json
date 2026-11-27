@@ -1,0 +1,52 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "status": "BLOCKED_BACKEND_QUALIFICATION; safe repair architecture and qualification route identified, no production fix claimed",
+  "observed_repo_guard": {
+    "path": "codex-rs/windows-sandbox-rs/src/elevated_admission.rs",
+    "blob": "dab5c85fff38ca88517e555ba2afc9fcbf43d2f3",
+    "fact": "The base deliberately returns ElevatedWindowsSandboxIsolationUnavailable before elevated provisioning, ACL edits and spawn; it also states that an original native four-cell deletion matrix found an ambient parent FILE_DELETE_CHILD escape even after narrowing restricting SIDs."
+  },
+  "token_source": {
+    "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+    "blob": "64f1cc5fb31a8d42a46e837a2c3fb7d8770d829c",
+    "fact": "Capability-only workspace token construction already omits WRITE_RESTRICTED and removes broad Everyone/logon restricting SIDs; dedicated-account token construction additionally retains the dedicated user SID for owner-scoped named pipes. Token construction success alone does not qualify child launch/read/IPC or deletion containment."
+  },
+  "primary_sources": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens",
+      "ref": "turn545545395view0",
+      "support": "Enabled token SIDs and restricting SIDs undergo two checks; both must allow the access."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+      "ref": "turn545545395view1",
+      "support": "WRITE_RESTRICTED applies restricting SIDs only to writes. Creating from an already restricted token intersects the restricting SID lists."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/fileio/file-access-rights-constants",
+      "ref": "turn545545395view2",
+      "support": "FILE_DELETE_CHILD is a directory-specific access right; checking only DELETE on the child is insufficient to explain an actual delete result."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/implementing-an-appcontainer",
+      "ref": "turn545545395view3",
+      "support": "AppContainer access is an intersection of user/group and package/capability grants, with low integrity; LPAC needs further explicit capabilities for otherwise common system resources."
+    }
+  ],
+  "safe_repair_route": [
+    "Keep the elevated admission refusal in production until the same actual-child backend proves the original isolation invariants and positive functionality. A refusal test is not a passing execution test.",
+    "Use the existing native diagnostic harness to record the first failing system API, GetLastError, actual spawned-child token SID/restricted SID/integrity information, requested access and effective ACLs. Repair the narrow missing read/launch/IPC capability at that API boundary; do not guess based only on a synthetic AccessCheck.",
+    "One candidate architecture is a fully restricted capability token with explicit grants needed for system image/DLL reads, selected roots and authenticated IPC. A second is an AppContainer/LPAC process with an explicit resource capability list. Both remain unqualified here: dropping WRITE_RESTRICTED or successfully creating a token alone is not a complete repair.",
+    "For the selected architecture run the existing four-cell deletion matrix through a real production child and unchanged budgets, exercising the child DELETE and parent FILE_DELETE_CHILD routes independently for in-root permitted and out-of-root denied effects. Retain assertions on actual file existence/results, not just token masks or API setup.",
+    "Then preserve ordinary reads, process and DLL launch, root-scoped writes/deletes, authenticated broker/owner-local IPC, constrained network behavior, cancellation and cleanup. Keep all existing required CI failures visible until these pass.",
+    "The separate frozen dependency-lock digest mismatch can be repaired by regenerating canonical metadata for reviewed dependency changes, inspecting it, then updating exact frozen pins; this does not justify weakening ACL or source/test identity preflight predicates."
+  ],
+  "rejected_shortcuts": [
+    "Removing or bypassing the admission guard before positive and negative native evidence",
+    "Changing original successful-execution tests to accept refusal or skipping Windows required jobs",
+    "Adding Everyone/logon broad granting SIDs to make launch or IPC pass",
+    "Rewriting arbitrary real parent-directory ACLs to hide FILE_DELETE_CHILD instead of isolating the child token",
+    "Treating a passing AccessCheck emulation, token creation, or standalone diagnostic as production backend qualification"
+  ],
+  "scope_limit": "No new Windows native run was performed by this report. Earlier CI log evidence is historical and is not asserted to describe every current SHA/job. No remote refs or existing worktrees were changed."
+}

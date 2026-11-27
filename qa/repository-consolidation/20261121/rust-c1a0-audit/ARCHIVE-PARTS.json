@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "description": "Lossless binary parts of the two original published archives. Concatenate only in the recorded order and verify all digests before use.",
+  "original_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+  "repository_directory": "qa/repository-consolidation/20261121/rust-c1a0-audit",
+  "maximum_part_bytes": 491520,
+  "repository_blob_limit_bytes": 512000,
+  "archives": [
+    {
+      "name": "complete-known-parent-graph-7812.tsv.gz",
+      "format": "gzip",
+      "original_repository_path": "qa/repository-consolidation/20261121/rust-c1a0-audit/complete-known-parent-graph-7812.tsv.gz",
+      "bytes": 3796298,
+      "sha256": "4faa440281f85412a8d3c5463cac94842ec14dde8429eb6737d05201ec827bfb",
+      "git_blob": "72fcbf78c81216213f02426968ea22b753bdbf08",
+      "parts": [
+        {
+          "index": 1,
+          "offset": 0,
+          "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-001.bin",
+          "bytes": 491520,
+          "sha256": "d8acb00f0e8a13fc22bc0dcde600f3ea1e48f995bfa13be96f47048b19b421ee",
+          "git_blob": "912126e3e3558491a8cb1ee342de99b258bd7e56"
+        },
+        {
+          "index": 2,
+          "offset": 491520,
+          "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-002.bin",
+          "bytes": 491520,
+          "sha256": "500a360b83c254bdc3e484c8e1981ebcb5cca71ecb68b7046209cb66dd4bc184",
+          "git_blob": "cae430d8c165f237396cfe0815b83d1a67e92d90"
+        },
+        {
+          "index": 3,
+          "offset": 983040,
+          "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-003.bin",
+          "bytes": 491520,
+          "sha256": "6032fb28e1cd0e1c0584a207769b00587aff05df9016855e8df76ce0404adc11",
+          "git_blob": "4e3455274d7dfa68bc8f05d7e366c3cf781a958d"
+        },
+        {
+          "index": 4,
+          "offset": 1474560,
+          "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-004.bin",
+          "bytes": 491520,
+          "sha256": "38a27aeb20065bf7bb6564eecc0c15d31067566bcd3f5709a15c1c60c508456c",
+          "git_blob": "c7a470f209370856b9db60c0aad909651b87aa0d"
+        },
+        {
+          "index": 5,
+          "offset": 1966080,
+          "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-005.bin",
+          "bytes": 491520,
+          "sha256": "897b4383a55b3556e3f1538dd634b34616899e61a77268fe2ad1b118d285e51c",
+          "git_blob": "01cb7d1edd089bab6d81094c7493b1c54d55a2a9"
+        },
+        {
+          "index": 6,
+          "offset": 2457600,
+          "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-006.bin",
+          "bytes": 491520,
+          "sha256": "5e9a98ef1d0f4ed6534adf93221f75d4d81ccd0478e4285077c646d78dff0a8d",
+          "git_blob": "7f2f7fc9519a0c900a8847553bbc9d9e0ee95ee3"
+        },
+        {
+          "index": 7,
+          "offset": 2949120,
+          "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-007.bin",
+          "bytes": 491520,
+          "sha256": "b14e274488fefd23c93e197bfa4c6d30cea42d46975c1e7b52bc83832559dff5",
+          "git_blob": "c159b976751082b2e49278cee4cdbc5197a533cb"
+        },
+        {
+          "index": 8,
+          "offset": 3440640,
+          "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-008.bin",
+          "bytes": 355658,
+          "sha256": "6b6e30e31b4d9eda7c52699e2408dd6dc6a74de72b244a9fbaa7997892a25254",
+          "git_blob": "27a936aea8000bb138fc1190ff3b846ebcf09da6"
+        }
+      ]
+    },
+    {
+      "name": "native-evidence-PUBLIC.zip",
+      "format": "zip",
+      "original_repository_path": "qa/repository-consolidation/20261121/rust-c1a0-audit/native-evidence-PUBLIC.zip",
+      "bytes": 1605908,
+      "sha256": "1fe917ebc21b0e4e9ddae589623d6bdab2327c62897a07920e658336cd8141b0",
+      "git_blob": "d06c664be3e073f8b1c96029d0f97e5d233e9d5b",
+      "parts": [
+        {
+          "index": 1,
+          "offset": 0,
+          "path": "archive-parts/native-evidence-PUBLIC.zip/part-001.bin",
+          "bytes": 491520,
+          "sha256": "a9d9251e8be991b053191fa5d430af36824215665cf7fdb0a372e29a98241fda",
+          "git_blob": "5e304003b96a7881fdb67d288e4e89ce5abc3560"
+        },
+        {
+          "index": 2,
+          "offset": 491520,
+          "path": "archive-parts/native-evidence-PUBLIC.zip/part-002.bin",
+          "bytes": 491520,
+          "sha256": "4f2226fc405bd0248e382d047cc7da5271990043499f83aec793cba4d1bf54e3",
+          "git_blob": "036512f825fb7c19dda2d8c665374e88a2c49f45"
+        },
+        {
+          "index": 3,
+          "offset": 983040,
+          "path": "archive-parts/native-evidence-PUBLIC.zip/part-003.bin",
+          "bytes": 491520,
+          "sha256": "6db22a514b67af4dd9ac739a8a8b1eb33cbbabc897284bc3f7d421667c22d17a",
+          "git_blob": "5391e161dd4a7cbc171b878418b4ca096ad5c678"
+        },
+        {
+          "index": 4,
+          "offset": 1474560,
+          "path": "archive-parts/native-evidence-PUBLIC.zip/part-004.bin",
+          "bytes": 131348,
+          "sha256": "96220fc54d388740fa61998e56625c4990e4d4cff023a0661fc246fd8a21a233",
+          "git_blob": "b6e580df88830857e8b098f1a240f51c98701f2d"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "source_sha256": "e0ea12e9c346adf023e6e88f0fa33fe86174d0f2fd6eb1d3c377a208a3d1ea32",
+  "test_sha256": "4065d853071ed13b47c4b30a07f027c2eba18d735d93420bde02e3c60e8655e9",
+  "review": "No blocking defect found in hidden-index/fsmonitor change. Root pathspec and NUL splitting retain filename boundaries; lowercase/S tags reject assume-unchanged/skip-worktree. Explicit command-line fsmonitor=false overrides repository/env config; no-optional-locks preserves index bytes. Existing no-replace-objects remains applied to all git operations.",
+  "independent_command": "python3 -B -m unittest test_hepta_ci_exec.IndexTrustExecutionTests -v",
+  "passed": 5,
+  "skipped": 0,
+  "full_suite_rerun": false
+}

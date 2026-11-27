@@ -1,0 +1,10 @@
+{
+  "schema": "hcsn-secondcycle-invocation-record-v1",
+  "provenance": "Commands transcribed verbatim from the tool invocations; this post-execution record is not an executing-input guard.",
+  "source_commit": "c3a5b3d64693222dc44687c82079084860a01dd9",
+  "cwd": "/workspace/scratch/c06d659c1e72/secondcycle",
+  "kernels": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m qualification.hcsn_secondcycle.audit --stage kernels --repository-root /workspace/scratch/c06d659c1e72/dense-v3-reproduction --output evidence/kernels-attempt001 --source-commit c3a5b3d64693222dc44687c82079084860a01dd9 > kernels-attempt001.stdout 2> kernels-attempt001.stderr",
+  "references": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m qualification.hcsn_secondcycle.audit --stage references --repository-root /workspace/scratch/c06d659c1e72/dense-v3-reproduction --output evidence/references-attempt001 --source-commit c3a5b3d64693222dc44687c82079084860a01dd9 --kernel-root /workspace/scratch/c06d659c1e72/secondcycle/evidence/kernels-attempt001 --kernel-summary-sha256 43e8608570ce8847f89d4411e68adfc6feb14793a2c284721a5a15083a396e25 > references-attempt001.stdout 2> references-attempt001.stderr",
+  "restorable_from_git": "Read-only verifier paths are relocatable. Reference-only numerical resume of the original strict absolute-path source guard is not automatically supported after relocation; do not edit original receipts or rerun kernels implicitly.",
+  "no_automatic_retries": true
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "hcsn-adjoint-four-amplitude-adam-originals-readback-v1",
+  "source_commit": "994def0b188c5105d0ceb9ace281af7f4bd0e3b2",
+  "request_identity": "hcsn-adjoint-four-amplitudes-adam-resume-20261112-c06d-stage1",
+  "run_id": 43228409724,
+  "job_id": 131217519039,
+  "artifact_id": 13948404632,
+  "run_attempt": 1,
+  "original_zip_bytes": 944384,
+  "original_zip_sha256": "31cca7713e060283efc00f55792cb5a30c032355244110836800241a8b46311f",
+  "original_members": 66,
+  "all_outer_crc_passed": true,
+  "inner_torch_pt_or_pending_zip_members_checked": 17,
+  "full_large_RESULT_ACTORS_retained_in_original_zip_and_lossless_mirrors": true,
+  "producer_summary": {
+    "actors": 8,
+    "actual_calls": {
+      "adam_updates": 9,
+      "adjoints": 13,
+      "forwards": 13
+    },
+    "calls_status": "EXACT_FOR_ALL_STARTED_ACTORS",
+    "checks": 46,
+    "error": null,
+    "observed_calls_only": {
+      "adam_updates": 9,
+      "adjoints": 13,
+      "forwards": 13
+    },
+    "status": "PASS",
+    "unknown_actor_costs": []
+  },
+  "full_process_cost": {
+    "exit_code": 0,
+    "full_child_tree_cpu_seconds": 25.452279,
+    "full_child_tree_wall_seconds": 27.20721355,
+    "includes_imports_and_all_fresh_actors": true,
+    "maximum_adam_updates": 9,
+    "maximum_adjoints": 13,
+    "maximum_forwards": 13,
+    "reported_child_tree_max_rss_kib": 416776,
+    "source_commit": "994def0b188c5105d0ceb9ace281af7f4bd0e3b2",
+    "wrapper_cpu_seconds": 0.0003306699999999982
+  },
+  "RUSAGE_CHILDREN_peak_is_not_simultaneous_aggregate_memory": true,
+  "source_files_freshly_sha256_rehashed": 13,
+  "unknown_actor_costs": [],
+  "actual_independent_audit": {
+    "receipt": "independent-review/ADAM-ACTUAL-001.json",
+    "receipt_sha256": "682817254a2fc2651b608ab62bffa4d014b242871c3715033a54b6b43a091457",
+    "source_commit": "994def0b188c5105d0ceb9ace281af7f4bd0e3b2",
+    "passed": true,
+    "audit_calls": {
+      "Torch_imports": 0,
+      "adjoint_solves": 0,
+      "candidate_imports": 0,
+      "expm_or_static_kernel": 0,
+      "model_forwards": 0,
+      "optimizer_calls": 0
+    },
+    "full_state_payloads_read": 17,
+    "four_tensor_update_records": 36,
+    "maxima": {
+      "Adam_first_moment_abs": 5.421010862427522e-20,
+      "Adam_parameter_update_abs": 0,
+      "Adam_second_moment_abs": 1.6543612251060553e-24,
+      "cotangent_abs": 0,
+      "raw_forward_oldG_abs": 6.538127461305776e-11,
+      "raw_live_vjp_oldG_transpose_abs": 8.281787148428643e-12
+    },
+    "overlapping_protocol_checks": 46,
+    "review_wall_seconds": 0.29025198399904184,
+    "review_cpu_seconds": 0.3224990430000001
+  },
+  "archiver_new_candidate_model_torch_ode_adjoint_optimizer_calls": 0,
+  "old_6248_source_changed": false,
+  "workflow_rerun_requested": false,
+  "scientific_admission": "HOLD_NO_GO",
+  "limits": [
+    "Same fixed source/runtime N7/N12 four raw initial-amplitude tensors and first-order synthetic MSE at optimizer boundaries only.",
+    "Process crash publication is not power-loss/directory durability, hostile-checkpoint or dependency-binary attestation.",
+    "No physical/support/migration AD, in-flight autograd/DDE-history checkpoint, n512/full-network, historical training, task benefit or adoption qualification.",
+    "Other failure/UNKNOWN ledger branches were static-only in this probe; expected omit/crash controls are actual.",
+    "Existing #6248 warning/RED remain in their separate original records; this stage has nine zero-byte actor/controller stderr files."
+  ]
+}

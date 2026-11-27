@@ -1,0 +1,615 @@
+{
+  "schema": "hepta.learn.original-compiled-entry-reservations.v1",
+  "source_commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+  "evidence_commit": "5ad5f7ad54a9a34e3a9b0c2c4e4110ef3a578ea1",
+  "evidence_tree": "f5b705baca274d2b5f20e8a8dd2725a18b5bb93f",
+  "export_manifest_blob": "21b97a17511e168954f69941a2f2a2240ef51158",
+  "full_raw_validation": {
+    "fileCount": 38,
+    "allRawHashByteChecks": true,
+    "completeSymbolValuesEqual": true,
+    "jsonObjectKeyOrderIgnored": true
+  },
+  "git_validation": {
+    "commit": "5ad5f7ad54a9a34e3a9b0c2c4e4110ef3a578ea1",
+    "tree": "f5b705baca274d2b5f20e8a8dd2725a18b5bb93f",
+    "parent": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "canonicalCommit": {
+      "timezone": "-0500",
+      "extraLF": 1
+    },
+    "canonicalTree": true,
+    "fullCompareFiles": 39,
+    "all38RawFiles": true,
+    "exactResultSymbolProjection": true
+  },
+  "result_blob": "7175893c9664da9c991842bf3a269004db7ebd73",
+  "symbols_blob": "21679dae1f0bd42ae8a7d346b1544bc15f5037c5",
+  "original_result_bytes": 77325,
+  "original_result_sha256": "4316893cfebf21e9022cb5371eafa83856962fda951d13898c46864c4b001536",
+  "elf_sha256": "6be8aa9483e58df56f8cac926f0c76bda85a17ecc1675605cf749efee41e46c2",
+  "elf_before_after_hash_equal": true,
+  "source_before_after_clean": true,
+  "missing_families": [
+    "HostFixture.new"
+  ],
+  "entries": [
+    {
+      "index": 0,
+      "prologue": "prologue-000.txt",
+      "blob": "bb61fb799385b086a1534b78871c94412a47886e",
+      "family": "PanelFixture.completed",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed",
+      "address": 81796272,
+      "entry_rsp_displacement_bytes": null,
+      "proof": null
+    },
+    {
+      "index": 1,
+      "prologue": "prologue-001.txt",
+      "blob": "0dd2f3ab1b070364c6f3d2c2f2128d415422b515",
+      "family": "PanelFixture.completed",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}",
+      "address": 81796304,
+      "entry_rsp_displacement_bytes": 2423592,
+      "proof": {
+        "probe_target_delta": 2420736,
+        "page_iterations": 591,
+        "tail_subtract": 2856,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "4e01cd0",
+            "op": "mov",
+            "args": "%rsp,%r11"
+          },
+          {
+            "address": "4e01cd3",
+            "op": "sub",
+            "args": "$0x24f000,%r11"
+          },
+          {
+            "address": "4e01cda",
+            "op": "sub",
+            "args": "$0x1000,%rsp"
+          },
+          {
+            "address": "4e01ce1",
+            "op": "movq",
+            "args": "$0x0,(%rsp)"
+          },
+          {
+            "address": "4e01ce9",
+            "op": "cmp",
+            "args": "%r11,%rsp"
+          },
+          {
+            "address": "4e01cec",
+            "op": "jne",
+            "args": "4e01cda <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members12PanelFixture9completed28_$u7b$$u7b$closure$u7d$$u7d$17h2c21aec63681edabE+0xa>"
+          },
+          {
+            "address": "4e01cee",
+            "op": "sub",
+            "args": "$0xb28,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "prologue": "prologue-002.txt",
+      "blob": "fb1c206b06814df73ceb05096888f497241d0d99",
+      "family": "completed_member",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::completed_member",
+      "address": 81817968,
+      "entry_rsp_displacement_bytes": null,
+      "proof": null
+    },
+    {
+      "index": 3,
+      "prologue": "prologue-003.txt",
+      "blob": "643773069904998675dcc2102b538eb629296f31",
+      "family": "completed_member",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::completed_member::{{closure}}",
+      "address": 81818016,
+      "entry_rsp_displacement_bytes": 493544,
+      "proof": {
+        "probe_target_delta": 491520,
+        "page_iterations": 120,
+        "tail_subtract": 2024,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "4e071a0",
+            "op": "mov",
+            "args": "%rsp,%r11"
+          },
+          {
+            "address": "4e071a3",
+            "op": "sub",
+            "args": "$0x78000,%r11"
+          },
+          {
+            "address": "4e071aa",
+            "op": "sub",
+            "args": "$0x1000,%rsp"
+          },
+          {
+            "address": "4e071b1",
+            "op": "movq",
+            "args": "$0x0,(%rsp)"
+          },
+          {
+            "address": "4e071b9",
+            "op": "cmp",
+            "args": "%r11,%rsp"
+          },
+          {
+            "address": "4e071bc",
+            "op": "jne",
+            "args": "4e071aa <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members16completed_member28_$u7b$$u7b$closure$u7d$$u7d$17h76edf0fe91c2df96E+0xa>"
+          },
+          {
+            "address": "4e071be",
+            "op": "sub",
+            "args": "$0x7e8,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 4,
+      "prologue": "prologue-004.txt",
+      "blob": "08700dbc476b6a63ae6fbe405c42ccc111e711d7",
+      "family": "original_panel_test",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "address": 81822672,
+      "entry_rsp_displacement_bytes": 1656232,
+      "proof": {
+        "probe_target_delta": 1654784,
+        "page_iterations": 404,
+        "tail_subtract": 1448,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "4e083d0",
+            "op": "mov",
+            "args": "%rsp,%r11"
+          },
+          {
+            "address": "4e083d3",
+            "op": "sub",
+            "args": "$0x194000,%r11"
+          },
+          {
+            "address": "4e083da",
+            "op": "sub",
+            "args": "$0x1000,%rsp"
+          },
+          {
+            "address": "4e083e1",
+            "op": "movq",
+            "args": "$0x0,(%rsp)"
+          },
+          {
+            "address": "4e083e9",
+            "op": "cmp",
+            "args": "%r11,%rsp"
+          },
+          {
+            "address": "4e083ec",
+            "op": "jne",
+            "args": "4e083da <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures17h8760cb85d08dac43E+0xa>"
+          },
+          {
+            "address": "4e083ee",
+            "op": "sub",
+            "args": "$0x5a8,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 5,
+      "prologue": "prologue-005.txt",
+      "blob": "27dd91436769f4a6a15ac3a5aaab5e64a2e66cae",
+      "family": "original_panel_test",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}",
+      "address": 81823136,
+      "entry_rsp_displacement_bytes": 3242984,
+      "proof": {
+        "probe_target_delta": 3239936,
+        "page_iterations": 791,
+        "tail_subtract": 3048,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "4e085a0",
+            "op": "mov",
+            "args": "%rsp,%r11"
+          },
+          {
+            "address": "4e085a3",
+            "op": "sub",
+            "args": "$0x317000,%r11"
+          },
+          {
+            "address": "4e085aa",
+            "op": "sub",
+            "args": "$0x1000,%rsp"
+          },
+          {
+            "address": "4e085b1",
+            "op": "movq",
+            "args": "$0x0,(%rsp)"
+          },
+          {
+            "address": "4e085b9",
+            "op": "cmp",
+            "args": "%r11,%rsp"
+          },
+          {
+            "address": "4e085bc",
+            "op": "jne",
+            "args": "4e085aa <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE+0xa>"
+          },
+          {
+            "address": "4e085be",
+            "op": "sub",
+            "args": "$0xbe8,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 6,
+      "prologue": "prologue-006.txt",
+      "blob": "1f5997d540a16c63bd68f9ef845c9c8fd6c147ff",
+      "family": "original_panel_test",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}",
+      "address": 81831216,
+      "entry_rsp_displacement_bytes": 24,
+      "proof": {
+        "direct_subtract": 24,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "4e0a530",
+            "op": "sub",
+            "args": "$0x18,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 7,
+      "prologue": "prologue-007.txt",
+      "blob": "d0c843089216bcff13f4f35bf0b3c163876b4192",
+      "family": "preregistered",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered",
+      "address": 85532592,
+      "entry_rsp_displacement_bytes": null,
+      "proof": null
+    },
+    {
+      "index": 8,
+      "prologue": "prologue-008.txt",
+      "blob": "33d7776646fb29c2146df00991dad59a488c78b5",
+      "family": "preregistered",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered::{{closure}}",
+      "address": 85532608,
+      "entry_rsp_displacement_bytes": 1427528,
+      "proof": {
+        "probe_target_delta": 1425408,
+        "page_iterations": 348,
+        "tail_subtract": 2120,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "5191fc0",
+            "op": "mov",
+            "args": "%rsp,%r11"
+          },
+          {
+            "address": "5191fc3",
+            "op": "sub",
+            "args": "$0x15c000,%r11"
+          },
+          {
+            "address": "5191fca",
+            "op": "sub",
+            "args": "$0x1000,%rsp"
+          },
+          {
+            "address": "5191fd1",
+            "op": "movq",
+            "args": "$0x0,(%rsp)"
+          },
+          {
+            "address": "5191fd9",
+            "op": "cmp",
+            "args": "%r11,%rsp"
+          },
+          {
+            "address": "5191fdc",
+            "op": "jne",
+            "args": "5191fca <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13preregistered28_$u7b$$u7b$closure$u7d$$u7d$17h81e9cae01c803934E+0xa>"
+          },
+          {
+            "address": "5191fde",
+            "op": "sub",
+            "args": "$0x848,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 9,
+      "prologue": "prologue-009.txt",
+      "blob": "7a40b0563432ece5332f9448106795e682426acb",
+      "family": "PositiveFixture.ready_with_profile",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_profile",
+      "address": 94378448,
+      "entry_rsp_displacement_bytes": null,
+      "proof": null
+    },
+    {
+      "index": 10,
+      "prologue": "prologue-010.txt",
+      "blob": "787353c354c0ff7d8e7144940afc7f0b87b6b15c",
+      "family": "PositiveFixture.ready_with_profile",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_profile::{{closure}}",
+      "address": 94378496,
+      "entry_rsp_displacement_bytes": 865000,
+      "proof": {
+        "probe_target_delta": 864256,
+        "page_iterations": 211,
+        "tail_subtract": 744,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "5a01a00",
+            "op": "mov",
+            "args": "%rsp,%r11"
+          },
+          {
+            "address": "5a01a03",
+            "op": "sub",
+            "args": "$0xd3000,%r11"
+          },
+          {
+            "address": "5a01a0a",
+            "op": "sub",
+            "args": "$0x1000,%rsp"
+          },
+          {
+            "address": "5a01a11",
+            "op": "movq",
+            "args": "$0x0,(%rsp)"
+          },
+          {
+            "address": "5a01a19",
+            "op": "cmp",
+            "args": "%r11,%rsp"
+          },
+          {
+            "address": "5a01a1c",
+            "op": "jne",
+            "args": "5a01a0a <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture18ready_with_profile28_$u7b$$u7b$closure$u7d$$u7d$17h133af8d6e8287622E+0xa>"
+          },
+          {
+            "address": "5a01a1e",
+            "op": "sub",
+            "args": "$0x2e8,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 11,
+      "prologue": "prologue-011.txt",
+      "blob": "6a36632b96a7f78e653190797bdfd6438d6c63a9",
+      "family": "PositiveFixture.ready_with_admission",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_admission",
+      "address": 94381920,
+      "entry_rsp_displacement_bytes": 40,
+      "proof": {
+        "direct_subtract": 40,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "5a02760",
+            "op": "sub",
+            "args": "$0x28,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 12,
+      "prologue": "prologue-012.txt",
+      "blob": "fca06efa85acf6fc139d94ac44a0fdd4c0a3d161",
+      "family": "PositiveFixture.ready_with_admission",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_admission::{{closure}}",
+      "address": 94382048,
+      "entry_rsp_displacement_bytes": 1980664,
+      "proof": {
+        "probe_target_delta": 1978368,
+        "page_iterations": 483,
+        "tail_subtract": 2280,
+        "pushed_bytes": 16,
+        "instructions": [
+          {
+            "address": "5a027e0",
+            "op": "push",
+            "args": "%r14"
+          },
+          {
+            "address": "5a027e2",
+            "op": "push",
+            "args": "%rbx"
+          },
+          {
+            "address": "5a027e3",
+            "op": "mov",
+            "args": "%rsp,%r11"
+          },
+          {
+            "address": "5a027e6",
+            "op": "sub",
+            "args": "$0x1e3000,%r11"
+          },
+          {
+            "address": "5a027ed",
+            "op": "sub",
+            "args": "$0x1000,%rsp"
+          },
+          {
+            "address": "5a027f4",
+            "op": "movq",
+            "args": "$0x0,(%rsp)"
+          },
+          {
+            "address": "5a027fc",
+            "op": "cmp",
+            "args": "%r11,%rsp"
+          },
+          {
+            "address": "5a027ff",
+            "op": "jne",
+            "args": "5a027ed <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$17h0e4054f6a1345fb5E+0xd>"
+          },
+          {
+            "address": "5a02801",
+            "op": "sub",
+            "args": "$0x8e8,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 13,
+      "prologue": "prologue-013.txt",
+      "blob": "565588ba674d56e0d8b39b2baa709745dbdb3c54",
+      "family": "PositiveFixture.ready_with_admission",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_admission::{{closure}}::{{closure}}",
+      "address": 94430752,
+      "entry_rsp_displacement_bytes": 1688,
+      "proof": {
+        "direct_subtract": 1688,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "5a0e620",
+            "op": "sub",
+            "args": "$0x698,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 14,
+      "prologue": "prologue-014.txt",
+      "blob": "e51d3df92ecb5fbc97053b7f331fca248da5e1ff",
+      "family": "PositiveFixture.ready_with_admission",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_admission::{{closure}}::{{closure}}",
+      "address": 94431280,
+      "entry_rsp_displacement_bytes": 2824,
+      "proof": {
+        "direct_subtract": 2824,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "5a0e830",
+            "op": "sub",
+            "args": "$0xb08,%rsp"
+          }
+        ]
+      }
+    },
+    {
+      "index": 15,
+      "prologue": "prologue-015.txt",
+      "blob": "04438c494fccd7a8f357ef2491e16572977c9480",
+      "family": "PositiveFixture.ready",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready",
+      "address": 94436976,
+      "entry_rsp_displacement_bytes": null,
+      "proof": null
+    },
+    {
+      "index": 16,
+      "prologue": "prologue-016.txt",
+      "blob": "9c6feb71409a89b6e1f1d21a073a49f410fa5b5d",
+      "family": "PositiveFixture.ready",
+      "symbol": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready::{{closure}}",
+      "address": 94436992,
+      "entry_rsp_displacement_bytes": 716328,
+      "proof": {
+        "probe_target_delta": 712704,
+        "page_iterations": 174,
+        "tail_subtract": 3624,
+        "pushed_bytes": 0,
+        "instructions": [
+          {
+            "address": "5a0fe80",
+            "op": "mov",
+            "args": "%rsp,%r11"
+          },
+          {
+            "address": "5a0fe83",
+            "op": "sub",
+            "args": "$0xae000,%r11"
+          },
+          {
+            "address": "5a0fe8a",
+            "op": "sub",
+            "args": "$0x1000,%rsp"
+          },
+          {
+            "address": "5a0fe91",
+            "op": "movq",
+            "args": "$0x0,(%rsp)"
+          },
+          {
+            "address": "5a0fe99",
+            "op": "cmp",
+            "args": "%r11,%rsp"
+          },
+          {
+            "address": "5a0fe9c",
+            "op": "jne",
+            "args": "5a0fe8a <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0xa>"
+          },
+          {
+            "address": "5a0fe9e",
+            "op": "sub",
+            "args": "$0xe28,%rsp"
+          }
+        ]
+      }
+    }
+  ],
+  "interpretive_limit": "These are static requested entry stack-pointer displacements if the complete prologue executes, not measured dynamic peak stack. The exact 4KiB loop is evaluated from its original target/cmp/backedge; a single per-page subtraction is not mistaken for the total.",
+  "conditional_source_chain": {
+    "indices": [
+      4,
+      5,
+      1,
+      8,
+      12
+    ],
+    "sum_bytes": 10731000,
+    "excludes": "Runtime frames, return addresses, unknown callees and any unobserved HostFixture.new frame.",
+    "claim": "The source's nested constructor path makes these large entry reservations a concrete reason to reduce the common fixture/future value copies. This sum is not an observed peak-stack measurement."
+  },
+  "literal_large_copy": {
+    "prologue": "prologue-004.txt",
+    "instruction": "mov $0xca1f8,%edx; call memcpy@plt",
+    "bytes": 827896,
+    "claim": "The direct test wrapper copies this many bytes between its own stack locations; the full finite original prologue is preserved in the evidence."
+  },
+  "no_new_tools_or_test_execution_by_this_analysis": true
+}

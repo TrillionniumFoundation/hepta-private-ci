@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "requested_at_utc": "2026-11-06T08:23:49.332Z",
+  "received_at_utc": "2026-11-06T08:23:58.986Z",
+  "observation": "successful bounded read of a partial progress file",
+  "remote_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/progress.json",
+  "progress_status": "running",
+  "campaign_pid": 357002,
+  "returned_lines": [
+    1,
+    250
+  ],
+  "source_line_count_reported": 392,
+  "complete_progress_file_observed": false,
+  "source_updated_utc": null,
+  "completed_cuda_runs": null,
+  "run_count_note": "The final 142 lines were outside the single bounded view; total completed runs and progress updated_utc were not visible, and no further remote read was attempted.",
+  "fully_visible_stage_receipts": [
+    {
+      "name": "baseline-strict-tests",
+      "status": "returned",
+      "exit_code": 0,
+      "started_utc": "2026-11-06T07:55:06.358030+00:00",
+      "finished_utc": "2026-11-06T07:55:51.948490+00:00",
+      "result_sha256": "02a5d1263744cbae6e2f60b64452b13dc5c1b9bd0353968b62b2d423a68144b8"
+    },
+    {
+      "name": "candidate-strict-tests",
+      "status": "returned",
+      "exit_code": 0,
+      "started_utc": "2026-11-06T07:55:52.158792+00:00",
+      "finished_utc": "2026-11-06T07:56:37.910348+00:00",
+      "result_sha256": "cf42cc90b6dbaf9755c554a118ad1eca38b8fca476515fa44075e43ee66093b0"
+    },
+    {
+      "name": "original-a-fullshape",
+      "status": "returned",
+      "exit_code": 0,
+      "started_utc": "2026-11-06T07:56:38.104343+00:00",
+      "finished_utc": "2026-11-06T07:57:08.393796+00:00",
+      "result_sha256": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98"
+    },
+    {
+      "name": "original-b-fullshape",
+      "status": "returned",
+      "exit_code": 1,
+      "started_utc": "2026-11-06T07:57:08.600101+00:00",
+      "finished_utc": "2026-11-06T07:57:23.847728+00:00",
+      "result_sha256": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1"
+    },
+    {
+      "name": "parity-cpu",
+      "status": "returned",
+      "exit_code": 0,
+      "started_utc": "2026-11-06T07:57:24.073069+00:00",
+      "finished_utc": "2026-11-06T07:57:39.309355+00:00",
+      "result_sha256": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6"
+    },
+    {
+      "name": "parity-cuda",
+      "status": "returned",
+      "exit_code": 0,
+      "started_utc": "2026-11-06T07:57:39.514289+00:00",
+      "finished_utc": "2026-11-06T07:58:09.923550+00:00",
+      "result_sha256": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2"
+    },
+    {
+      "name": "candidate-fullshape-population_flux",
+      "status": "returned",
+      "exit_code": 0,
+      "started_utc": "2026-11-06T07:58:10.141501+00:00",
+      "finished_utc": "2026-11-06T07:58:25.383966+00:00",
+      "result_sha256": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0"
+    }
+  ],
+  "partially_visible_next_stage": "candidate-fullshape-population_flux_no_recovery",
+  "remote_view_attempts": 1,
+  "remote_retry_attempts": 0,
+  "shell_start_calls": 0,
+  "training_or_install_or_cancel_operations": 0,
+  "source_path_provenance": "Exact remote_path found in existing local /workspace/scratch/b45d21c0650a/cuda-reconcile/private-raw/MANIFEST.json; no guessed path used.",
+  "repository_evidence_modified": false,
+  "raw_receipt_sha256": "cdae53e3a0b1521f3f75fc15b980c688d0021629db4f33ed5273b810c1045418",
+  "excerpt_note": "view-excerpt.txt removes tool line labels only; it is a partial derived rendering, not a full raw-file byte copy."
+}

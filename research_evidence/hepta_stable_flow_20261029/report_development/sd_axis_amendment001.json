@@ -1,0 +1,40 @@
+{
+  "all_other_input_bindings_identical": true,
+  "canonical_receipt_sha256": "e531f9be028d52a20e9c92e987557c70b8bb4c7ed2cabd3426bb7462a2436c8a",
+  "canonical_report": "research_evidence/hepta_stable_flow_20261029/report002",
+  "change_scope": "Only accuracy upper axis range and task-quality figure caption; raw points, mean, sample SD, reference line and all scientific evidence unchanged.",
+  "changed_inputs": [
+    {
+      "new_sha256": "e6e2b5e0c780d7b3118486ab31bdf0d112f5837e77edb327c78fa21eee3e6a2b",
+      "old_sha256": "d74849d3d2cffec1677fccdc0688d8d5c659cebca977fc04ab949e7153db6222",
+      "path": "experiments/call_put_stable_flow_analysis/report_figures.py",
+      "preserved_original_source": "research_evidence/hepta_stable_flow_20261029/report_development/source_before_sd_axis/report_figures.py"
+    },
+    {
+      "new_sha256": "38a19525e79ef27575e27f2f75e5385b092444741e903f348ae0cf7678aa4d5f",
+      "old_sha256": "a59b2b3958042c61828109ee7adb30b38d8a688304e697fa45245d92ccf40018",
+      "path": "experiments/call_put_stable_flow_analysis/report_sections.py",
+      "preserved_original_source": "research_evidence/hepta_stable_flow_20261029/report_development/source_before_sd_axis/report_sections.py"
+    }
+  ],
+  "created_utc": "2026-10-29T14:54:05.927525+00:00",
+  "historical_source_resolution": "When checking report001 input bindings, use the two exact preserved_original_source snapshots for the amended live source paths; do not substitute the modified live files.",
+  "input_count": 734,
+  "maximum_mean_plus_sd": {
+    "mqar": 1.0,
+    "selective_copy": 1.1059736126486035
+  },
+  "new_accuracy_upper_limits": {
+    "mqar": 1.03,
+    "selective_copy": 1.1359736126486035
+  },
+  "new_experiments_run": false,
+  "no_science_protocol_or_threshold_changes": true,
+  "old_report_outputs_verified_unchanged": true,
+  "original_dop_presentation_amendment": "research_evidence/hepta_stable_flow_20261029/report_development/dop_summary_amendment001.json",
+  "previous_receipt_sha256": "d3c5b281f9592fa057c3e6e340ff45fd942be7f43ba748ed9838c19fcbff3b30",
+  "previous_report": "research_evidence/hepta_stable_flow_20261029/report001",
+  "reason": "Prevent clipping of two sample-SD upper endpoints in selective_copy CPU30 accuracy panel; distinguish SD dispersion from probability confidence intervals.",
+  "schema": "hepta-report-sd-display-amendment-v1",
+  "scientific_summary_equal_after_excluding_generated_time_and_input_bindings": true
+}

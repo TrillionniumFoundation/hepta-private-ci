@@ -1,0 +1,153 @@
+{
+  "left": "3676f3adfab5781c765ed99b263993de2e1efcbe",
+  "right": "cd4b4327b35ae142578fb7a42574964d0ed029ae",
+  "merge_base": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "tree": "bfccf4de95b9b0d68a84a344c9071171edd005b1",
+  "boundaries": 480,
+  "protected_rows": 368,
+  "full_row_multiset_verified": true,
+  "boundary_representation_changes": [
+    {
+      "id": "root_learning_completed_circuit_source",
+      "before": {
+        "id": "root_learning_completed_circuit_source",
+        "symbol": "AgentdState::require_circuit_learning_source",
+        "receiver_type": "AgentdState",
+        "definition_path": "codex-rs/hepta-agentd/src/objective_learning_source.rs",
+        "definition_markers": [
+          "pub(crate) async fn require_circuit_learning_source(",
+          "!self\n                .circuit_learning_sources()\n                .contains(&request.source_run_id)",
+          "host.learning_source_record(request)?",
+          "self.require_learning_source_authentication(&original.0)?",
+          "self.circuit_task_store()?",
+          "trace.history_digest() != &intent.completed_task_receipt",
+          "host.learning_source_record(request)? != original"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+          "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
+        ],
+        "caller_markers": [
+          "state.require_circuit_learning_source(request)"
+        ]
+      },
+      "after": {
+        "id": "root_learning_completed_circuit_source",
+        "symbol": "AgentdState::require_circuit_learning_source",
+        "receiver_type": "AgentdState",
+        "definition_path": "codex-rs/hepta-agentd/src/objective_learning_source.rs",
+        "definition_markers": [
+          "pub(crate) async fn require_circuit_learning_source(",
+          "!self\n                .circuit_learning_sources()\n                .contains(&request.source_run_id)",
+          "host.learning_source_record(request)?",
+          "self.require_learning_source_authentication(&original.0)?",
+          "self.circuit_task_store()?",
+          "trace.history_digest() != &intent.completed_task_receipt",
+          "host.learning_source_record(request)? != original"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+          "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
+        ],
+        "caller_markers": [
+          ".require_circuit_learning_source(request)"
+        ]
+      }
+    },
+    {
+      "id": "learning_original_evaluation_panel_member_current",
+      "before": {
+        "id": "learning_original_evaluation_panel_member_current",
+        "symbol": "OriginalCellEvaluationPanelMemberOwnersV1::read_original",
+        "receiver_type": "OriginalCellEvaluationPanelMemberOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+        "definition_markers": [
+          "pub(super) async fn read_original(",
+          "self.read_cells()?",
+          "self.qualification.completed_bytes()?",
+          "sources.prepare(&self.qualification.config, started_at).await?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs"
+        ],
+        "caller_markers": [
+          "OriginalCellEvaluationPanelMemberOwnersV1::read_original("
+        ]
+      },
+      "after": {
+        "id": "learning_original_evaluation_panel_member_current",
+        "symbol": "OriginalCellEvaluationPanelMemberOwnersV1::read_original",
+        "receiver_type": "OriginalCellEvaluationPanelMemberOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+        "definition_markers": [
+          "pub(super) async fn read_original(",
+          "self.read_cells()?",
+          "self.qualification.completed_bytes()?",
+          "sources\n            .prepare(&self.qualification.config, started_at)\n            .await?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs"
+        ],
+        "caller_markers": [
+          "OriginalCellEvaluationPanelMemberOwnersV1::read_original("
+        ]
+      }
+    }
+  ],
+  "entries": [
+    {
+      "path": "CALLERS.toml",
+      "sha": "8e4cabfa6fba487b03e298fdf8a844ce6990cc88",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 957982,
+      "sha256": "4e1c0b4b408f04c5f88659c1fef751e868eca80a859cdf8016b53162a22ed7e6",
+      "novel": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "sha": "18dd7c7191f510433b8b4523671daf10d537240d",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 15010,
+      "sha256": "cf02867b1ab02c2518c95a3d0ae766947f52d3db2a906a1575c782d5c27d8c7a",
+      "novel": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "sha": "4da0873c757803beb46256d84e27e63b12991347",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 12997,
+      "sha256": "5a3a115cd814464248a0b00229d79c5bf65b85f8812fae3689a5134863ffd071",
+      "novel": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "sha": "bdc147bfc4aa9167e8d7128614ca3fa576c6007a",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 17334,
+      "sha256": "e3ff5842bf97007b16b2c425c9e721ba46cd937d8ca824ca630b9ed25d659f3b",
+      "novel": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "sha": "bb42cc5c55cee6efb93a3d896d95520030eb603b",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 9620,
+      "sha256": "42a699783b1756f8f787ff1f4a1d6fe464fa83cec0b8f4fffade97044abb702d",
+      "novel": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "sha": "11270dc312fdbc70afb11f73a473ed98e706d3c9",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 23579,
+      "sha256": "b6bd89dc6c7354558776d583718596174fc6df23e781fab418aeb2ae416cb4a0",
+      "novel": false
+    }
+  ]
+}

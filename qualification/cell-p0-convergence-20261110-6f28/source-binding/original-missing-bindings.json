@@ -1,0 +1,32 @@
+{
+  "base_sha": "",
+  "before": {
+    "commit": "c98dfd02b2537e590e95f91d7e65d204e9bdea53",
+    "dirty": false,
+    "parents": [],
+    "tree": "547ed5781f40362c5a269366feb53fa1b2832662"
+  },
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-v"
+  ],
+  "command_exit_code": null,
+  "elapsed_seconds": 0.008152221000045756,
+  "error": "invalid source_sha",
+  "exit_code": 2,
+  "finished_at": "2026-11-10T13:05:13.376147+00:00",
+  "job": null,
+  "lane": "",
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "",
+  "started_at": "2026-11-10T13:05:13.367053+00:00",
+  "status": "rejected",
+  "tested_sha": "",
+  "working_directory": "/tmp/cell-source-binding-0_bkl89_/repo"
+}

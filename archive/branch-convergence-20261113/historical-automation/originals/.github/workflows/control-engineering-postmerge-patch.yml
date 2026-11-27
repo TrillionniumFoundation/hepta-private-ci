@@ -1,0 +1,269 @@
+name: control.engineering post-merge provenance repair
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-postmerge-provenance-20260925
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-engineering-postmerge-provenance-20260925
+  cancel-in-progress: false
+
+jobs:
+  patch-test-and-push:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/control-engineering-postmerge-provenance-20260925
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply squash-safe provenance repair and regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "scripts/hepta-implementation-maps.py",
+              '''def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
+              if not isinstance(value, dict) or any(
+                  not isinstance(value.get(key), str)
+                  or not re.fullmatch(r"[0-9a-f]{40}", value[key])
+                  for key in ("commit", "tree")
+              ):
+                  raise ValueError("source identity requires literal commit/tree SHA-1 values")
+              commit, tree = value["commit"], value["tree"]
+              if git("cat-file", "-t", commit) != "commit":
+                  raise ValueError("source identity does not identify a commit")
+              if git("rev-parse", f"{commit}^{{tree}}") != tree:
+                  raise ValueError("source tree mismatch")
+              git("merge-base", "--is-ancestor", commit, candidate["commit"])
+              return {"commit": commit, "tree": tree}
+          ''',
+              '''def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
+              """Validate an exact object identity in the candidate repository history.
+
+              Implementation-map identities are content/provenance observations, not
+              branch bases.  A squash merge can retain the exact observed bytes while
+              making the source commit a connected sibling rather than an ancestor.
+              Currentness remains enforced separately by mapped HEAD blobs and the
+              complete evidence-path diff.
+              """
+              if not isinstance(value, dict) or any(
+                  not isinstance(value.get(key), str)
+                  or not re.fullmatch(r"[0-9a-f]{40}", value[key])
+                  for key in ("commit", "tree")
+              ):
+                  raise ValueError("source identity requires literal commit/tree SHA-1 values")
+              commit, tree = value["commit"], value["tree"]
+              if git("cat-file", "-t", commit) != "commit":
+                  raise ValueError("source identity does not identify a commit")
+              if git("rev-parse", f"{commit}^{{tree}}") != tree:
+                  raise ValueError("source tree mismatch")
+              try:
+                  merge_base = git("merge-base", commit, candidate["commit"])
+              except subprocess.CalledProcessError as exc:
+                  raise ValueError(
+                      "source identity is disconnected from candidate history"
+                  ) from exc
+              if re.fullmatch(r"[0-9a-f]{40}", merge_base) is None:
+                  raise ValueError("invalid source identity merge base")
+              return {"commit": commit, "tree": tree}
+          ''',
+          )
+
+          replace_once(
+              "scripts/hepta-lane-b-truth.py",
+              '''        return verify_source_base(row.get("sourceBase"), label)
+          ''',
+              '''        # The shared verifier has already authenticated commit/tree,
+                  # repository-history connectivity and the exact mapped bytes.  Do not
+                  # reimpose ancestry here: squash merges intentionally turn a valid
+                  # provenance observation into a connected sibling commit.
+                  source_base = row["sourceBase"]
+                  return source_base["commit"], source_base["tree"]
+          ''',
+          )
+
+          replace_once(
+              "docs/modules/control.engineering/IMPLEMENTATION_BINDING.md",
+              '''set; and the global verifier requires the provenance commit to be an ancestor, recomputes
+          every `HEAD:<sourcePath>` blob and rejects a missing or stale current observation. A
+          ''',
+              '''set; and the global verifier requires the provenance commit/tree to be a real
+          object connected to the candidate repository history, recomputes every
+          `HEAD:<sourcePath>` blob and rejects a missing or stale current observation. A
+          ''',
+          )
+
+          Path("scripts/test_hepta_implementation_map_squash.py").write_text(r'''"""Squash-merge regressions for implementation-map provenance identities."""
+
+          from __future__ import annotations
+
+          import importlib.util
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+          import tempfile
+          import unittest
+          from unittest.mock import patch
+
+          SCRIPTS = Path(__file__).resolve().parent
+          if str(SCRIPTS) not in sys.path:
+              sys.path.insert(0, str(SCRIPTS))
+
+          def load(name: str, filename: str):
+              spec = importlib.util.spec_from_file_location(name, SCRIPTS / filename)
+              assert spec is not None and spec.loader is not None
+              module = importlib.util.module_from_spec(spec)
+              sys.modules[name] = module
+              spec.loader.exec_module(module)
+              return module
+
+          MAPS = load("squash_identity_maps", "hepta-implementation-maps.py")
+          LANE_B = load("squash_identity_lane_b", "hepta-lane-b-truth.py")
+
+          class SquashProvenanceTests(unittest.TestCase):
+              def setUp(self) -> None:
+                  self.temporary = tempfile.TemporaryDirectory()
+                  self.addCleanup(self.temporary.cleanup)
+                  self.root = Path(self.temporary.name)
+                  self.git("init", "-q")
+                  self.git("config", "user.name", "Squash identity test")
+                  self.git("config", "user.email", "squash-test@example.invalid")
+                  self.git("config", "commit.gpgsign", "false")
+                  self.write("src/alpha/lib.rs", "pub fn alpha() {}\n")
+                  self.write("docs/modules/alpha/TECHNICAL.md", "# alpha\n")
+                  self.seed = self.commit("seed")
+                  self.git("switch", "-q", "-c", "feature")
+                  self.write("feature-only.txt", "feature\n")
+                  self.feature = self.commit("feature observation")
+                  self.git("switch", "-q", "-c", "mainline", self.seed["commit"])
+                  self.write("mainline-only.txt", "mainline\n")
+                  self.candidate = self.commit("squash result")
+
+              def git(self, *args: str, input_text: str | None = None) -> str:
+                  env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+                  return subprocess.run(
+                      ["git", *args], cwd=self.root, env=env, input=input_text,
+                      text=True, capture_output=True, check=True,
+                  ).stdout.strip()
+
+              def write(self, relative: str, content: str) -> None:
+                  path = self.root / relative
+                  path.parent.mkdir(parents=True, exist_ok=True)
+                  path.write_text(content, encoding="utf-8")
+
+              def commit(self, message: str) -> dict[str, str]:
+                  self.git("add", "-A")
+                  self.git("commit", "-qm", message)
+                  return {
+                      "commit": self.git("rev-parse", "HEAD"),
+                      "tree": self.git("rev-parse", "HEAD^{tree}"),
+                  }
+
+              def row(self) -> dict:
+                  return {
+                      "technicalGuide": "docs/modules/alpha/TECHNICAL.md",
+                      "declaredRoots": ["src/alpha"],
+                      "resolvedRoots": ["src/alpha"],
+                      "sourceBase": dict(self.feature),
+                      "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+                      "mappingSourceIdentityMode": "exact_blob",
+                      "observedAtHead": dict(self.feature),
+                      "observedSourcePaths": ["src/alpha"],
+                      "operations": [{
+                          "operation": "alpha",
+                          "nativeSymbol": "alpha",
+                          "sourcePath": "src/alpha/lib.rs",
+                          "sourceBlob": self.git("rev-parse", "HEAD:src/alpha/lib.rs"),
+                          "tests": [],
+                          "delegatedCallees": [],
+                      }],
+                  }
+
+              def test_connected_sibling_observation_survives_squash(self) -> None:
+                  with patch.object(MAPS, "ROOT", self.root):
+                      paths = MAPS.verify_source_identity(
+                          self.row(), ["src/alpha"], self.candidate,
+                          check_checkout=False,
+                      )
+                  self.assertIn("src/alpha", paths)
+
+              def test_mapped_source_drift_still_rejects_after_squash(self) -> None:
+                  row = self.row()
+                  self.write("src/alpha/lib.rs", "pub fn alpha() { panic!(); }\n")
+                  changed = self.commit("mapped drift")
+                  with patch.object(MAPS, "ROOT", self.root):
+                      with self.assertRaises(MAPS.SourceDrift):
+                          MAPS.verify_source_identity(
+                              row, ["src/alpha"], changed, check_checkout=False,
+                          )
+
+              def test_disconnected_commit_is_not_provenance(self) -> None:
+                  empty_tree = self.git("mktree", input_text="")
+                  orphan = self.git("commit-tree", empty_tree, "-m", "orphan")
+                  identity = {
+                      "commit": orphan,
+                      "tree": self.git("rev-parse", f"{orphan}^{{tree}}"),
+                  }
+                  with patch.object(MAPS, "ROOT", self.root):
+                      with self.assertRaisesRegex(ValueError, "disconnected"):
+                          MAPS.checked_identity(identity, self.candidate)
+
+              def test_lane_b_does_not_reimpose_ancestry(self) -> None:
+                  with patch.object(LANE_B, "ROOT", self.root):
+                      self.assertEqual(
+                          LANE_B.verify_module_source_base(self.row(), "fixture"),
+                          (self.feature["commit"], self.feature["tree"]),
+                      )
+
+          if __name__ == "__main__":
+              unittest.main()
+          ''', encoding="utf-8")
+          PY
+          git diff --check
+      - name: Run source identity regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            scripts.test_hepta_implementation_map_squash \
+            scripts.test_hepta_implementation_maps \
+            scripts.test_hepta_ci_source_identity
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+      - name: Run complete control engineering suite and repository gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v \
+            -s tools/hepta-engineering-control -p 'test_*.py'
+          python3 scripts/hepta-gap-closure.py verify
+      - name: Commit tested repair and remove staging workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/control-engineering-postmerge-patch.yml
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -s -m "fix(control.engineering): preserve provenance across squash"
+          git push origin HEAD:codex/control-engineering-postmerge-provenance-20260925

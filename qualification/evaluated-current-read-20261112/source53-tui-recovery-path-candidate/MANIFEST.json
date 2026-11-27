@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.immutable-candidate-manifest.v1",
+  "base_head": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "source_files": 1,
+  "test_only": true,
+  "changes": [
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "base": {
+        "git_blob_sha": "3d2c7385057818e11f15b32d8be8499aa51db493",
+        "bytes": 123185,
+        "sha256": "3e098d622ead84f7865b5d4fcc07be8125715bec205a5b36029f63c081717ced"
+      },
+      "post": {
+        "git_blob_sha": "c67ed467eddde1e557d89d47ecabb04de4d2447c",
+        "bytes": 123213,
+        "sha256": "91da1985177c6284914b9e248232130650d85070170eac3110c55f03980f340b"
+      },
+      "before": "            logs_db_path.canonicalize()?.as_path()",
+      "after": "            AbsolutePathBuf::try_from(logs_db_path.canonicalize()?)?.as_path()",
+      "scope": "One expected-value expression inside the existing tokio test. Existing AbsolutePathBuf import is reused; no runtime code or dependency change."
+    }
+  ],
+  "evidence": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-tui-recovery-path-candidate/PATCH.diff",
+      "git_blob_sha": "17f60c17d2135b32f57b8a06a611929ae74f2e0c",
+      "bytes": 396,
+      "sha256": "afdde05fe3fed317e1be8cdc6f3f03896f5af02ae67b72e9a0bdb2a98a8ef50b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-tui-recovery-path-candidate/REVIEW.json",
+      "git_blob_sha": "279cd0f58bbec521462854d27f98797cf0ff5b53",
+      "bytes": 6645,
+      "sha256": "88eb34993cd35dca722e6d089a2a0a11179e1b1ca3c571859f0709a38ab130e1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-tui-recovery-path-candidate/SOURCE_PINS.json",
+      "git_blob_sha": "bf499fbb77cb0d4d357d11fce9de6b1b0110bd7c",
+      "bytes": 2216,
+      "sha256": "ebb236af5f66f07d404ba37903bbd18e12341c4f4c1e648bc582154c9daaa26c"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-tui-recovery-path-candidate/FAILURE_EXCERPTS.json",
+      "git_blob_sha": "86a3caa617054d0d44567538e6cb48dc5070d99e",
+      "bytes": 6687,
+      "sha256": "0c6fb60b8aa758ec482201b4cf399ce3800049c321ea1a2cee35dcb1cacfd5d3"
+    }
+  ],
+  "execution": "STATIC_ONLY_NOT_FMT_NOT_RUN",
+  "ref_updated": false
+}

@@ -1,0 +1,56 @@
+{
+  "stage4_manifest_paths": 199,
+  "exact_stage4_paths": 190,
+  "differences": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "qualified_sha256": "651f42dd153058710895b07b594f90b7af99aa0787efc050d81e89c0715b85b6",
+      "final_sha256": "2f3aa756eac4628d357c91cbcf6aabf3263852d25aa28a2514015d16424ea6b6"
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/HEPTA-SOURCE-PROVENANCE.json",
+      "qualified_sha256": "a1f535c382cc3a87bb49444c066ca5d2d836284bd59cb3e59bdab6cc3c27cbfd",
+      "final_sha256": "79a0a65e54ed46f842cad450aa3640a768d407eb30c9bffc32ed69f6cccdc38a"
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/HEPTA.md",
+      "qualified_sha256": "bf5603989b669bcdfdb53ac7b98a8c7e8608ea30a6def90860eaf64fc25f9ffc",
+      "final_sha256": "4c758f36e9b9f7327fd6007eab49b49a8f874d025a7f2c901f76db47d942ee8d"
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/auth.rs",
+      "qualified_sha256": "c5038d66a68f5a2157c6f050cee7b6c93b31f0f09af963fe67074842859dd73b",
+      "final_sha256": "fe407fb14acc773a6e1976b41c1f7d52a7c55015f065dfea61cafc6f954a7729"
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/src/transport/common/client_side_sse.rs",
+      "qualified_sha256": "79b7ed82603d70644847c288978fb146a04651ab78446590f2c9cf707ca0b549",
+      "final_sha256": "58973a2feff52fac81a4b5f2f62e85358f615971cbbe601fbdc22da499e7fb03"
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js/client.js",
+      "qualified_sha256": "1f1b26431e26706dc2d380f9fc3475bc78ada1c0c0ebe7302c1c59267a64b123",
+      "final_sha256": "920549dcddc346f2c8f154f53af0994f62cb9f22c506300936923d307ce72489"
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js/server.js",
+      "qualified_sha256": "760f0721c1b9f44272cc3416a71172a9163044c12d2b58310c72d3286081df81",
+      "final_sha256": "8961e5b24d72b9310722191ca487eae1fdc97748d1b49df01d6bc7320abfe01f"
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js/streamable_client.js",
+      "qualified_sha256": "af4ccaf89ec0b34cda1b2af71edf9acd04924410a4ed4f579a0ccbd1360ec18a",
+      "final_sha256": "b11ea11c6d62b1afa2495e4d3be8f0583946a312edac0b0bb20d464fc5a0d9e6"
+    },
+    {
+      "path": "codex-rs/third_party/rmcp-3.9.0-time/tests/test_with_js/streamable_server.js",
+      "qualified_sha256": "01074613ae942d99028c3f31b1ff35e64817c6de30ab8beabeb3823cb97e7498",
+      "final_sha256": "98353ca2578d23b07dfb7bd47b1656009097e8b92549fd5372a12695c856837b"
+    }
+  ],
+  "difference_disposition": "Independent Stage5 Cargo edge, two Rust comment edits, four normalized-AST-preserving JavaScript formatting edits, and updated exact provenance/documentation. Original qualified package retained byte exact.",
+  "native_source_binding": "native-source-binding.json",
+  "external_agent_source_binding": "external-agent-validated-source.json",
+  "rmcp_comment_proof": "rmcp-comment-spelling.json",
+  "rmcp_javascript_proof": "rmcp-javascript-format.json"
+}

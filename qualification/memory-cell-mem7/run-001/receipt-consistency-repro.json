@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.mem6.receipt-consistency-repro.v1",
+  "original_source_commit": "39d895547fa7a50c45d580d3e30236c87f99d322",
+  "candidate_files": [
+    {
+      "path": "scripts/ndu_real_runtime/episodic_retrieval.py",
+      "sha256": "88b7d77b75a206cc49228192a58c4d6a3dfd41b14b6acf748f8954747c699f41"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_episodic_retrieval.py",
+      "sha256": "97674da66f09839d766bf42253f7bbbfccecc001c5463e916c1010bebe8626d2"
+    }
+  ],
+  "recomputed_receipt_cases": [
+    {
+      "mutation": "mode",
+      "original_verifier_accepted": true,
+      "candidate_verifier_accepted": false
+    },
+    {
+      "mutation": "source_ids",
+      "original_verifier_accepted": true,
+      "candidate_verifier_accepted": false
+    },
+    {
+      "mutation": "retrieved_ids",
+      "original_verifier_accepted": true,
+      "candidate_verifier_accepted": false
+    },
+    {
+      "mutation": "provenance",
+      "original_verifier_accepted": true,
+      "candidate_verifier_accepted": false
+    },
+    {
+      "mutation": "association_called",
+      "original_verifier_accepted": true,
+      "candidate_verifier_accepted": false
+    }
+  ],
+  "authentication_established": false,
+  "scientific_acceptance": "HOLD"
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "hcsn-stream-content-evidence-manifest-v1",
+  "source_commit": "5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1",
+  "executed_local_commit": "89c6d21e03038d896d57b22149ea4deb23813228",
+  "qualified_source_tree": "172f18c50e4b643127c42dd772ec4f06c49b37d5",
+  "scope": "engineering checks and read-only real-media readiness, not scientific superiority",
+  "self_excluded": true,
+  "files": {
+    "README.md": {
+      "bytes": 6926,
+      "sha256": "4ad4a5559dc9deb95d4ceba73e333ea640f8714f215331c2042e3b0520c73107"
+    },
+    "SOURCE_ACCEPTANCE.json": {
+      "bytes": 4476,
+      "sha256": "e5b915160461a14990b32731a7b784787f660f9588529fb12cd2da37285db97c"
+    },
+    "content-fixture-development-v1.json": {
+      "bytes": 35638,
+      "sha256": "8c8b93063d8e97787506404a2537cc0454c487bc2cf5a203f4e3d9a312368095"
+    },
+    "content-fixture-development-v2.json": {
+      "bytes": 81929,
+      "sha256": "7c69d0c7bb203502c603a3471af87deae8e15c443bda9e8d7305f9660a2bfc5b"
+    },
+    "content-fixtures-final.json": {
+      "bytes": 42776,
+      "sha256": "bd96e4ee05af0408962684aa2f7b430b20ddcab35362e6bcda2bfa047d5371b3"
+    },
+    "content-time-probes-final.json": {
+      "bytes": 7039,
+      "sha256": "7d4068515276daf07b7a02fe21d222eb8231cce1f0ab7a133124bcc921e10132"
+    },
+    "final-cpu-tests.json": {
+      "bytes": 30173,
+      "sha256": "e21966797f6a04faa7c7f0e2f8e6c24866d55f5d3fb99895075d749f7f119576"
+    },
+    "final-cpu-tests.log": {
+      "bytes": 23107,
+      "sha256": "57341532ee1405aaeac1df2ba175dbd7fc986ee40e9950c5069d47d138ff10fb"
+    },
+    "multimodal-readiness.json": {
+      "bytes": 104478,
+      "sha256": "48586eee0240927cdf39c3dae9a3a188f267b0a91231a2a1a700ec725c936e7e"
+    },
+    "parent-cpu-tests.json": {
+      "bytes": 24663,
+      "sha256": "85e301bdc986d47bb8dbc4ce4fb7314a9ac5618fd819eab9d82b68097a5a9b30"
+    },
+    "parent-source-review.json": {
+      "bytes": 442,
+      "sha256": "cfe75429a3d41bef0fae3bfc996cf830fc042d902e19d489aeb9bd8a93098619"
+    },
+    "publication-review-addendum.json": {
+      "bytes": 3777,
+      "sha256": "3eda317d535dc47d2cc8fca81af3f31f5e04a4bdc2a939b8314dad997bb6ee3a"
+    },
+    "publication-review-v1.json": {
+      "bytes": 6672,
+      "sha256": "8f538a587f7e93c9a2800a39b55bf7d6708f10ad030fbbed2d5d32a52e9990ff"
+    },
+    "verify_content_fixture.py": {
+      "bytes": 8683,
+      "sha256": "014604fca7804bc980ca77f398ee1b4d33562b14709b50ea7a5c9fdd59aa45b7"
+    },
+    "verify_stream_fixture.py": {
+      "bytes": 2908,
+      "sha256": "82cb7203f9e17671aa9e7a00b4dfee73b7e508f7ae592e524bb5b0546946010d"
+    }
+  },
+  "post_review_format_adjustments": [
+    {
+      "file": "README.md",
+      "change": "Remove one empty EOF line; no text or evidence changes",
+      "before_sha256": "375612c07c3615da6284db49fc2279eae72f019b1ec8366860b53d35aee0f147",
+      "after_sha256": "4ad4a5559dc9deb95d4ceba73e333ea640f8714f215331c2042e3b0520c73107"
+    }
+  ]
+}

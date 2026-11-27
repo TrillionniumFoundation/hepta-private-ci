@@ -1474,7 +1474,7 @@ pub fn parse_command_impl(command: &[String]) -> Vec<ParsedCommand> {
             if let Some(dir) = cd_target(tail) {
                 cwd = Some(match &cwd {
                     Some(base) => join_paths(base, &dir),
-                    None => dir.clone(),
+                    None => dir,
                 });
             }
             continue;
@@ -2021,7 +2021,7 @@ pub fn parse_shell_script(script: &str) -> Vec<ParsedCommand> {
                 if let Some(dir) = cd_target(tail) {
                     cwd = Some(match &cwd {
                         Some(base) => join_paths(base, &dir),
-                        None => dir.clone(),
+                        None => dir,
                     });
                 }
                 continue;

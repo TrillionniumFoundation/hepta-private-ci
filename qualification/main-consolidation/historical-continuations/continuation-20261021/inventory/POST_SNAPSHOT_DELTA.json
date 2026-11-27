@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "does_not_restate_global_counts": true,
+  "known_additions": [
+    {
+      "number": 2968,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2968",
+      "title": "Bind CI receipts to original Git objects and repair Memory test Clippy failures",
+      "state": "open",
+      "draft": false,
+      "head": {
+        "ref": "agents/hepta-p0-provenance-clippy-20261021",
+        "sha": "f740aaef183e0c1724871189fe1d72fc5204a49d"
+      },
+      "base": {
+        "ref": "codex/hepta-blocker-convergence-20261020",
+        "sha": "603238ba4721b2e9656c4647ce41c5f1664c1154"
+      },
+      "collected_at_utc": "2026-10-21T01:01:45.413Z",
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2968",
+      "relation_to_initial_snapshot": "CREATED_AFTER_INITIAL_ENUMERATION"
+    },
+    {
+      "number": 2969,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2969",
+      "title": "fix(research): bind Reader receipts to declared evidence context",
+      "state": "open",
+      "draft": true,
+      "head": {
+        "ref": "agents/hepta-reader-evidence-bindings-20261021",
+        "sha": "ca2768978429a2c9a98641fa2d58a8f587b88874"
+      },
+      "base": {
+        "ref": "research/real-reader-intake-p4-20261017",
+        "sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd"
+      },
+      "collected_at_utc": "2026-10-21T01:01:45.569Z",
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2969",
+      "relation_to_initial_snapshot": "CREATED_AFTER_INITIAL_ENUMERATION"
+    }
+  ],
+  "later_observations": [
+    {
+      "number": 2968,
+      "title": "fix(ci): harden source receipts and repair native test fixtures",
+      "collected_at_utc": "2026-10-21T01:17:47.250Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2968",
+      "head": {
+        "ref": "agents/hepta-p0-provenance-clippy-20261021",
+        "sha": "0cb777545966333a96be265a69d03c9982231bc7"
+      },
+      "base": {
+        "ref": "codex/hepta-blocker-convergence-20261020",
+        "sha": "603238ba4721b2e9656c4647ce41c5f1664c1154"
+      },
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "merged_at": null,
+      "closed_at": null,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merge_commit_sha": "6b074e52621d77338112f02119beb0cb1a6f869f",
+      "updated_at": "2026-10-21T01:10:44Z",
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2968",
+      "relation_to_initial_snapshot": "CREATED_AFTER_INITIAL_ENUMERATION"
+    },
+    {
+      "number": 2969,
+      "title": "fix(research): bind Reader receipts to declared evidence context",
+      "collected_at_utc": "2026-10-21T01:17:47.282Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2969",
+      "head": {
+        "ref": "agents/hepta-reader-evidence-bindings-20261021",
+        "sha": "ca2768978429a2c9a98641fa2d58a8f587b88874"
+      },
+      "base": {
+        "ref": "research/real-reader-intake-p4-20261017",
+        "sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd"
+      },
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "closed_at": null,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merge_commit_sha": "1aeb57e168bd3c5465a386f99fd541e31c3555b3",
+      "updated_at": "2026-10-21T01:00:27Z",
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2969",
+      "relation_to_initial_snapshot": "CREATED_AFTER_INITIAL_ENUMERATION"
+    },
+    {
+      "number": 2968,
+      "title": "fix(ci): preserve source identity and repair Memory, Bazel and TLS blockers",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2968",
+      "collected_at_utc": "2026-10-21T01:35:43.844Z",
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2968",
+      "head": {
+        "ref": "agents/hepta-p0-provenance-clippy-20261021",
+        "sha": "b11459f46519e814ab9036c34a0cd7d3c3028e2b"
+      },
+      "base": {
+        "ref": "codex/hepta-blocker-convergence-20261020",
+        "sha": "98b40cb04a23a36a07212ef7d826024f37536057"
+      },
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merge_commit_sha": "16bb2793df22fd1120ff1f436ef134459bfd8b2d",
+      "relation_to_initial_snapshot": "CREATED_AFTER_INITIAL_ENUMERATION",
+      "observation_type": "FINAL_P0_SOURCE_AND_CURRENT_REF_CONFIRMATION",
+      "source_commit": {
+        "sha": "b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+        "tree": "0e52330db78ca9fbc9f42dd3554f08d66b9d4268",
+        "parents": [
+          "0cb777545966333a96be265a69d03c9982231bc7",
+          "98b40cb04a23a36a07212ef7d826024f37536057"
+        ]
+      },
+      "direct_head_ref": {
+        "ref": "refs/heads/agents/hepta-p0-provenance-clippy-20261021",
+        "sha": "b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+        "collected_at_utc": "2026-10-21T01:35:43.844Z"
+      },
+      "direct_base_ref": {
+        "ref": "refs/heads/codex/hepta-blocker-convergence-20261020",
+        "sha": "98b40cb04a23a36a07212ef7d826024f37536057",
+        "collected_at_utc": "2026-10-21T01:35:43.844Z"
+      },
+      "consistency_status": "PR_REST_HEAD_AND_BASE_MATCH_DIRECT_REFS_AT_THIS_OBSERVATION",
+      "validation_scope": "Read-only source/ref identity confirmation. No current-CI or semantic-merge qualification is inferred."
+    }
+  ],
+  "later_observations_do_not_rewrite_initial_additions": true,
+  "consistency_events": [
+    {
+      "status": "REPORTED_EVENTUAL_CONSISTENCY_DELAY_AFTER_REF_UPDATE",
+      "reported_by": "parent task coordinator",
+      "observed_at_utc": null,
+      "source": "Parent message after successful expected-old-value update from 0cb to b114; this agent did not independently capture the stale REST result after that update.",
+      "pr_number": 2968,
+      "reported_rest_head_sha": "0cb777545966333a96be265a69d03c9982231bc7",
+      "reported_rest_base_sha": "603238ba4721b2e9656c4647ce41c5f1664c1154",
+      "updated_direct_head_sha": "b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+      "actual_base_ref_sha": "98b40cb04a23a36a07212ef7d826024f37536057"
+    },
+    {
+      "status": "OBSERVED_CONVERGED",
+      "collected_at_utc": "2026-10-21T01:35:43.844Z",
+      "pr_number": 2968,
+      "rest_head_matches_direct_ref": true,
+      "rest_base_matches_direct_ref": true
+    }
+  ],
+  "final_identity_source_index": [
+    {
+      "key": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+      "collected_at_utc": "2026-10-21T01:35:43.844Z",
+      "isError": false,
+      "local_original_file": "commit.json",
+      "raw_response_bundled": false,
+      "raw_response_bytes": 2122,
+      "raw_response_sha256": "1175eef2d0f15849850a05c35f1cc0c130eac01096227658badf55a9700727c4"
+    },
+    {
+      "key": "head-ref",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/agents/hepta-p0-provenance-clippy-20261021",
+      "collected_at_utc": "2026-10-21T01:35:43.844Z",
+      "isError": false,
+      "local_original_file": "head-ref.json",
+      "raw_response_bundled": false,
+      "raw_response_bytes": 506,
+      "raw_response_sha256": "20f9acdc65120dafc597b450abd1d8243a4b436ed61f0a17964f2c4d53c51cae"
+    },
+    {
+      "key": "base-ref",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/hepta-blocker-convergence-20261020",
+      "collected_at_utc": "2026-10-21T01:35:43.844Z",
+      "isError": false,
+      "local_original_file": "base-ref.json",
+      "raw_response_bundled": false,
+      "raw_response_bytes": 500,
+      "raw_response_sha256": "bdb3063558e482a016dcc0e05826570bc010e796fed3f3a2798e1d54c96c826a"
+    },
+    {
+      "key": "pr2968",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2968",
+      "collected_at_utc": "2026-10-21T01:35:43.844Z",
+      "isError": false,
+      "local_original_file": "pr2968.json",
+      "raw_response_bundled": false,
+      "raw_response_bytes": 23889,
+      "raw_response_sha256": "cc1ab6343d8451446a920da67fdd8f9b0a83d49269bfd9e02098d056a24780be"
+    }
+  ]
+}

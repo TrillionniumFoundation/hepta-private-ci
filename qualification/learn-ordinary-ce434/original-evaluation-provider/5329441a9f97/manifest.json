@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.original-evaluation-provider.python-qualification.v1",
+  "source_sha": "5329441a9f97ca63225fc03de2732f474b98d11a",
+  "source_tree": "f85ea68a16c4a5020a81c21a2b6945ab067d7949",
+  "source_branch": "codex/learn-original-evaluation-provider-ce434-20261112-v1",
+  "true_base": "7def806cbf94dead7560ea598c435795cfd7e4d6",
+  "final": {
+    "source_tests": 8,
+    "source_passed": 8,
+    "parser_tests": 16,
+    "parser_passed": 16,
+    "py_compile_exit": 0,
+    "committed_diff_check_exit": 0,
+    "source_unchanged": true,
+    "dirty_before": "",
+    "dirty_after": ""
+  },
+  "rustfmt": "not-run",
+  "native_executed": 0,
+  "full_repository_caller_proof": "not-run",
+  "ordinary_fullchain": 0,
+  "prior": [
+    {
+      "source_sha": "7ab547ba0174e38748d9b618d3903305a17e7eab",
+      "source_passed": 5,
+      "source_errors": 3,
+      "reason": "Explicit lifetime on private free function did not match the existing exact-function guard."
+    },
+    {
+      "source_sha": "9aa053abe07b262f6e6fbe6a5c0f9699bcbc74bc",
+      "source_passed": 7,
+      "source_failed": 1,
+      "reason": "Mutation targeted the earlier map lookup argument; corrected to target the actual ledger-bound run call."
+    }
+  ],
+  "files": [
+    {
+      "path": "7ab547ba/result.json",
+      "bytes": 2098,
+      "sha256": "9432090e66754c2d1a8dd882a63cd3eac30662a254464c433e66545c0deeb401"
+    },
+    {
+      "path": "7ab547ba/provider-source-guards.log",
+      "bytes": 6281,
+      "sha256": "7130bd244d3d5a312fafd75ee64a792679d636bcf66dd704d4ce5cf398f222c2"
+    },
+    {
+      "path": "7ab547ba/coverage-parser.log",
+      "bytes": 3123,
+      "sha256": "e9a883f768ae77a31773bb887e970a30fbc983d57061eb539d2ceebb3d0293ba"
+    },
+    {
+      "path": "7ab547ba/py-compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "9aa053ab/result.json",
+      "bytes": 2388,
+      "sha256": "6f3edb8ced306c8c752cfb7582892595708678300cf8b7b98e9d12a4f51e7f00"
+    },
+    {
+      "path": "9aa053ab/provider-source-guards.log",
+      "bytes": 3081,
+      "sha256": "0fb96ffe1a44971e04e7d9d992cf352a10c29432959439dd5f018452c83cf495"
+    },
+    {
+      "path": "9aa053ab/coverage-parser.log",
+      "bytes": 3123,
+      "sha256": "6d00613eec4a970338cf15bad4e3064651f7455ceed8270d62be2f34eddccf04"
+    },
+    {
+      "path": "9aa053ab/py-compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "9aa053ab/git-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "5329441a/result.json",
+      "bytes": 2499,
+      "sha256": "45a1fb5eefbeab63413e96aefa5217ab1d02f347d3e4f4f7e0909fa8c66ab53c"
+    },
+    {
+      "path": "5329441a/provider-source-guards.log",
+      "bytes": 2038,
+      "sha256": "77d2ac15e8f896c2659a7aaf42bdc7965f6ea0f8f1989108d505861b3ca0eaec"
+    },
+    {
+      "path": "5329441a/coverage-parser.log",
+      "bytes": 3123,
+      "sha256": "fab112c4305f233ebbe4e07275d76df7c5ae0aef96b89dce8bde5202a776d9c4"
+    },
+    {
+      "path": "5329441a/py-compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "5329441a/committed-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

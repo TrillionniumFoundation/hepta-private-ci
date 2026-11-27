@@ -1,0 +1,51 @@
+{
+  "observation": "Unpatched executor accepts replaced source bytes under original exact SHA",
+  "returncode": 0,
+  "record": {
+    "after": {
+      "commit": "c4e8a164aa5457e1de5056eb6e8532c26176a161",
+      "dirty": false,
+      "parents": [
+        "c4e8a164aa5457e1de5056eb6e8532c26176a161"
+      ],
+      "tree": "752c7c7f1cc3ef5d88c875bbaadab8a515f3263d"
+    },
+    "base_sha": "",
+    "before": {
+      "commit": "c4e8a164aa5457e1de5056eb6e8532c26176a161",
+      "dirty": false,
+      "parents": [
+        "c4e8a164aa5457e1de5056eb6e8532c26176a161"
+      ],
+      "tree": "752c7c7f1cc3ef5d88c875bbaadab8a515f3263d"
+    },
+    "command": [
+      "python",
+      "-c",
+      "from pathlib import Path; assert Path(\"data.txt\").read_text() == \"ALTERED\\n\""
+    ],
+    "command_exit_code": 0,
+    "elapsed_seconds": 0.03955392198986374,
+    "exit_code": 0,
+    "finished_at": "2026-10-21T00:43:21.892921+00:00",
+    "job": null,
+    "lane": "source-head",
+    "log_bytes": 0,
+    "log_file": "receipt.json.ec31fd6de567432f9399a8becbdce945.log",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "minimum_tests": 0,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 0,
+    "run_attempt": null,
+    "run_id": null,
+    "schema_version": 1,
+    "source_sha": "c4e8a164aa5457e1de5056eb6e8532c26176a161",
+    "started_at": "2026-10-21T00:43:21.852447+00:00",
+    "status": "passed",
+    "tested_sha": "c4e8a164aa5457e1de5056eb6e8532c26176a161",
+    "timed_out": false,
+    "working_directory": "/tmp/hepta-ci-replace-probe-285ohdci/repo"
+  }
+}

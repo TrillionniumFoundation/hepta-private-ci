@@ -1,0 +1,193 @@
+{
+  "archive_sha256": "a1a32db092bce32db2d5e75804cbca316d4bab02080cc57ace5f6490390c0b79",
+  "archive_unchanged": true,
+  "checks": [
+    {
+      "crc": true,
+      "files": 188,
+      "name": "zip_and_extracted_manifest",
+      "passed": true,
+      "zip_members": 189
+    },
+    {
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "episodes": [
+        "A01-0",
+        "A01-256",
+        "A04-3072"
+      ],
+      "name": "three_A_episodes_bind_official_preparation",
+      "no_D_or_E_episode": true,
+      "passed": true
+    },
+    {
+      "changed_tensor_names": [
+        "layers.0.state_embedding",
+        "layers.0.likelihood.weight",
+        "layers.0.likelihood.bias",
+        "layers.0.write_gate.weight",
+        "layers.0.write_gate.bias",
+        "layers.0.content_proposal.weight",
+        "layers.0.content_proposal.bias",
+        "readout.weight",
+        "readout.bias"
+      ],
+      "distinction": "Serialized file SHA and canonical tensor-state SHA are different intentional identities.",
+      "initial_tensor_state_sha256": "7c8e7ddfe68677065ff3d09abcf91e2310f46ef857cd7ada39ae57da5261d36a",
+      "model_file_sha256": "cef66283de5f7175eca02ce2de8f441a0d72a60163019594418f91cee61b1584",
+      "model_tensor_state_sha256": "4bc4a16fcf546178fbe106b0224bd1ffa5c596abdf343719d7001ded1256d3d9",
+      "name": "trained_checkpoint_and_all_256_post_update_visits",
+      "original_optimizer_update_lines": [
+        {
+          "episode": "A01-0",
+          "events": 32,
+          "loss": 2.15063605014915,
+          "model_sha256": "754c3cda8cec14bc8e017688e933dd255b8c74f831823c84cba2f2d7f5b15f3e",
+          "update": 0,
+          "wall_seconds": 11.91466906100004
+        },
+        {
+          "episode": "A01-256",
+          "events": 32,
+          "loss": 2.1975379507875727,
+          "model_sha256": "4bc4a16fcf546178fbe106b0224bd1ffa5c596abdf343719d7001ded1256d3d9",
+          "update": 1,
+          "wall_seconds": 14.645160474000022
+        }
+      ],
+      "passed": true,
+      "physical_tensors_unchanged": true,
+      "recorded_visits": 256,
+      "source_files": 18,
+      "update_index": 2
+    },
+    {
+      "name": "exit137_to_separate_numerical_resume",
+      "original_completed": false,
+      "passed": true,
+      "prior_file_links": 4,
+      "restored_model_tensor_state_sha256": "4bc4a16fcf546178fbe106b0224bd1ffa5c596abdf343719d7001ded1256d3d9",
+      "scope": "Numerical checks resumed from saved weights/trace; no optimizer state or training-resume claim.",
+      "stop_cause": "unknown",
+      "unchanged_source": true
+    },
+    {
+      "fixtures": [
+        {
+          "artifact": "numerics-real-posterior-v2/finite-31-32.json",
+          "intervals": 32,
+          "maximum_scaled_error": 0.003122315819058641,
+          "minimum_dt": 0.027029,
+          "no_future_observations_by_runner_inspection": true,
+          "source_scope": "Original or separately source-bound numerical continuation."
+        },
+        {
+          "artifact": "numerics-real-posterior-v2/finite-127-32.json",
+          "intervals": 32,
+          "maximum_scaled_error": 0.0025564980650967795,
+          "minimum_dt": 0.027029,
+          "no_future_observations_by_runner_inspection": true,
+          "source_scope": "Original or separately source-bound numerical continuation."
+        },
+        {
+          "artifact": "numerics-real-posterior-v2-resume/finite-A01-0-223-32.json",
+          "intervals": 32,
+          "maximum_scaled_error": 0.002165299229965112,
+          "minimum_dt": 0.027029,
+          "no_future_observations_by_runner_inspection": true,
+          "source_scope": "Original or separately source-bound numerical continuation."
+        },
+        {
+          "artifact": "numerics-real-posterior-v2-resume/finite-A04-3072-47-8.json",
+          "intervals": 8,
+          "maximum_scaled_error": 0.0005989129422660777,
+          "minimum_dt": 1e-07,
+          "no_future_observations_by_runner_inspection": true,
+          "source_scope": "Original or separately source-bound numerical continuation."
+        },
+        {
+          "artifact": "numerics-real-posterior-v2-resume/finite-A04-3072-47-32.json",
+          "intervals": 32,
+          "maximum_scaled_error": 0.0027245649351384515,
+          "minimum_dt": 1e-07,
+          "no_future_observations_by_runner_inspection": true,
+          "source_scope": "Original or separately source-bound numerical continuation."
+        },
+        {
+          "artifact": "numerics-longsequence-v1/report.json",
+          "intervals": 128,
+          "maximum_scaled_error": 0.007027211492402487,
+          "minimum_dt": 0.027029,
+          "no_future_observations_by_runner_inspection": true,
+          "source_scope": "Eight common files before/after; finite helper separately hashed at start and present in frozen snapshot."
+        }
+      ],
+      "future_label_scope": "Runner training uses only two A prefixes; finite continuation consumes probability/physics/durations, not future labels.",
+      "name": "six_finite_fixtures_bind_actual_gaps_and_summary",
+      "passed": true
+    },
+    {
+      "all_drifts_negative": true,
+      "coarse_grid_numerical_admission": "HOLD",
+      "complete_forward_FD_checked_post_update_states": [
+        1,
+        2
+      ],
+      "complete_forward_FD_maximum_absolute_error": 7.633235710180486e-11,
+      "four_raw_parameters_change_after_each_actual_update": true,
+      "name": "learnable_physics_three_saved_states_and_48_visits",
+      "passed": true,
+      "states": [
+        {
+          "file_sha256": "d745f0a2f5dea18e119386736898892a6ae8af6422f9acc6c225029937daeb49",
+          "mu": -0.11999999999999998,
+          "tensor_digest": "6593133dcdffe6b1f4de669cae1c2d99b98b225ed63b99f560cbee1d4ce8ea27",
+          "updates_completed": 0
+        },
+        {
+          "file_sha256": "a3d1facf5334e1ceaa47d31680387f7454372c01bd0ef5309c74f8645ce5671d",
+          "mu": -0.11921788322132523,
+          "tensor_digest": "3c62e9d5ffd26af406d7b7bd9298c23538351f3fd5c848d8fe461d49c563d950",
+          "updates_completed": 1
+        },
+        {
+          "file_sha256": "7ddd9d1844d01262e465753fb9bca77fec59d9aef1ff921f6fc2d48dc11d492a",
+          "mu": -0.1184357468694147,
+          "tensor_digest": "cee034a77f711396785f7f8339fbc244c4669b9380faee424cf65d638f50665e",
+          "updates_completed": 2
+        }
+      ]
+    },
+    {
+      "failed_positions": [
+        31,
+        127,
+        223
+      ],
+      "interpretation": "The 128 and 256 grids use separately initialized and trained state encoders/posteriors; this is not an isolated common-posterior grid-convergence comparison.",
+      "maximum_scaled_error": 0.016404365048025116,
+      "name": "all_three_active128_finite_failures_preserved",
+      "passed": true
+    },
+    {
+      "finite_schedule_success_does_not_override_perpetual_stress_failure": true,
+      "name": "failed_pressure_gate_is_preserved",
+      "passed": true,
+      "passing_rows": 0,
+      "rows": 135
+    }
+  ],
+  "created_utc": "2026-11-10T14:24:15.378676+00:00",
+  "manifest_sha256": "0b67283f7b9c2e1328d7da8041199713909e5d8c256bb4c9bccfaeacd37cc04c",
+  "passed": true,
+  "recomputed_slow_oracles": false,
+  "review_source_sha256": "795db6fde6ae2822cdff5f0a0dfcf2733b570830c34f71115fcee257478c28b2",
+  "reviewer": "/root/math_contract",
+  "schema": "hcsn-independent-p1-provenance-review-v3",
+  "scientific_admission": "HOLD",
+  "supersedes": {
+    "reason": "Adds initial-versus-trained tensor comparison, original optimizer-update log linkage, and the maximum over all three coarse-grid finite failures. Earlier reviewer-parser failure is preserved in v1.",
+    "receipt": "p1-independent-provenance-review-v2.json"
+  },
+  "wall_seconds": 0.28154322800037335
+}

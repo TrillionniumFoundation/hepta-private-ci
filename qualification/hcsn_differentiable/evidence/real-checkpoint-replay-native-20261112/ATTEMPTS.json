@@ -1,0 +1,86 @@
+{
+  "schema": "hcsn-real-checkpoint-replay-attempt-ledger-v1",
+  "source_commit": "5cb83d9c76beedf4c1c917e4bf561f5f26261ce7",
+  "source_pr": 6130,
+  "recorded_utc": "2026-11-12T06:58:29.989622+00:00",
+  "native_attempts": [
+    {
+      "attempt": "v1",
+      "host": "desktop",
+      "job_id": "1a1ce727d17-2564-167b",
+      "idempotency_key": "hcsn-real-six-checkpoint-26updates-5cb83d9-c06d-v1",
+      "output": "/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1",
+      "state": "cancelled",
+      "exit_code": -15,
+      "cancelled": true,
+      "timed_out": false,
+      "terminal_publication_confirmed": true,
+      "stdout_next_offset": 1056,
+      "stderr_next_offset": 0,
+      "actual_optimizer_steps": null,
+      "completed_recovery_diagnostics": 0,
+      "preexecution_bytes": 806826,
+      "preexecution_sha256": "49a624205233078044c3dcf5d53f26ca83a76f4e0e897dc39c98ffb9d5f41653"
+    },
+    {
+      "attempt": "v2",
+      "host": "desktop",
+      "job_id": "1a1ce768bc3-2564-1695",
+      "idempotency_key": "hcsn-real-six-checkpoint-26updates-5cb83d9-c06d-v2-after-confirmed-cancel",
+      "output": "/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v2",
+      "state": "cancelled",
+      "exit_code": -15,
+      "cancelled": true,
+      "timed_out": false,
+      "terminal_publication_confirmed": true,
+      "stdout_next_offset": 0,
+      "stderr_next_offset": 0,
+      "actual_optimizer_steps": null,
+      "completed_recovery_diagnostics": 0
+    }
+  ],
+  "cumulative_actual_optimizer_steps": null,
+  "cumulative_step_count_scope": "UNKNOWN; a later complete26 cannot replace these unknown attempts",
+  "cancel_caller_or_cause": "UNKNOWN; no cancellation requested by parent or this lane",
+  "descendants_stopped": "UNKNOWN; typed service_status failed with SSH connection closed, process inventory page alone cannot associate descendants",
+  "readonly_forensics": {
+    "idempotency_key": "hcsn-real-replay-readonly-cancel-forensics-c06d-v1",
+    "dispatch_receipt": "MCP_TIMEOUT",
+    "job_id": null,
+    "automatic_retry": false
+  },
+  "readonly_git_probe": {
+    "idempotency_key": "hcsn-c2-readonly-git-channel-probe-c06d-v1",
+    "dispatch_receipt": "MCP_TIMEOUT",
+    "job_id": null,
+    "write_attempted": false
+  },
+  "readonly_export": {
+    "job_id": "1a1ce7e3837-2564-16c9",
+    "state": "succeeded",
+    "exit_code": 0,
+    "model_executions": 0,
+    "path": "/home/qian-qi/hcsn-real-replay-c06d-export-v1.zip",
+    "bytes": 11397159,
+    "sha256": "37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75",
+    "entries": 555,
+    "uncompressed_bytes": 56675710,
+    "wall_seconds": 0.9787229909561574,
+    "stdout_next_offset": 266,
+    "stderr_next_offset": 0
+  },
+  "archive_local_complete": false,
+  "archive_read_attempts": [
+    {
+      "limit": 65536,
+      "result": "MCP_TIMEOUT"
+    },
+    {
+      "limit": 32768,
+      "result": "MCP_TIMEOUT"
+    }
+  ],
+  "next_profile": "explicit ubuntu-latest CPU amendment; identical real checkpoint bytes, derived relocated plans, pinned active Torch identities; no native third rerun",
+  "new_independent_complete_training_replays": 0,
+  "scientific_admission": "HOLD_NO_GO"
+}

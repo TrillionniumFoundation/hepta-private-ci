@@ -1,0 +1,224 @@
+{
+  "tool": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+    "run",
+    "--frozen",
+    "--project",
+    "scripts",
+    "ruff",
+    "format"
+  ],
+  "files": [
+    {
+      "path": ".github/scripts/apply_runtime_supervisor_qualification_closure.py",
+      "before_sha256": "2bc76ebda0d2d64a071bea1d8a87db0911462741367d088c80989b8e31a42191",
+      "after_sha256": "2a9448be37fadbee0ab96e8c72cbc01bebcf17d6e45ee749adde04d1cd1cfb66",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": ".github/scripts/fix_runtime_supervisor_qualification_closure.py",
+      "before_sha256": "82cf0014af1d934acab4c5d48955a22aee11ffbc2a86bf709edbd3a301b40f88",
+      "after_sha256": "fed0970ef4b5ea5da478d6057f9215ea089504c4674e3e429ca6abbd92d2fcec",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": ".github/scripts/hepta_artifact_fetch.py",
+      "before_sha256": "b924c8860a12a0d516ac7d26dfe85629a358f835980598293bb0f6ba5cc02cff",
+      "after_sha256": "7bb62bc90db3317daf7d18f12d4a172199c4476b471ebfa68145d77d134cbac5",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": ".github/scripts/test_hepta_artifact_fetch.py",
+      "before_sha256": "0174987597399292c8f6bed66b2746d53bf8d1ef29ef5cb32f384c3ba980bfaf",
+      "after_sha256": "4e39e07e43922d775e69f26bd23df2ca8bd1ccd5bb14e6d137e73600ab1610d1",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/apply_authbus_authority_hardening.py",
+      "before_sha256": "fca47a841fc97defd8b639d028e6f208b5503caafda82545991588ea3a8e268e",
+      "after_sha256": "d9850c2e94ee2c48c726943af8b1edce5058ddadc19af6c3095f26f1786a92e2",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/apply_context_compiler_v3_core.py",
+      "before_sha256": "5832382a7aab6b69317d6aa10936ba98f016b4a923ffcd910ac8c8d0b060d61f",
+      "after_sha256": "c6ea36e9ca3895492e3c33f05b0afcb7c594c0e1e649162b7da036274d1b0f67",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/apply_context_compiler_v3_source.py",
+      "before_sha256": "6ff59547d32fb065d3920efc1bf65c5f5da7261facfbdad27e6b702115c3955c",
+      "after_sha256": "b283760010c937f14ccf398f4132b174a27582194ba01d65ebbb5fe9abdec1ce",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/apply_memory_retrieval_qualification_docs.py",
+      "before_sha256": "c652bbe8a42c0581b36a094d58f46d9f5a9e20183f45ea7691fcaace54cea0f8",
+      "after_sha256": "29a15a07429e390b5f5a97126ab7a2cc43ff34e3426d0b414ef33169df73adc2",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/bootstrap_control_engineering_phase1.py",
+      "before_sha256": "a32658b245ea777a0fcf72c5b20a6555b7ced10e21b4379d6829282aeabdccfa",
+      "after_sha256": "b28663b5035bd872dd65d9c4432876b99d36ae61e8585a047ae1da17e0055695",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/bootstrap_memory_retrieval_convergence.py",
+      "before_sha256": "101bd63d63f912276e3215bba68f7de3d46cd2023f9c01613aa71949dbbaf9b4",
+      "after_sha256": "5a74a5b196418b8d62774ad2fdd42952d0b4f8641a2d99567be4da779599a15e",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/context-compiler-truth.py",
+      "before_sha256": "aaba3a48420a23601c6a7200f98b7f358337c4b1f48a8c9ca50bdc2d32c6c67f",
+      "after_sha256": "0f98efdb12b6064f18867dda14a6c8bf9497c51ee9fe7f597385e629afeeef14",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/generate-context-compiler-docs.py",
+      "before_sha256": "10a4c118ac12aaa7b421ed28c399f1a6e65670ba51218317d947567c95912f3f",
+      "after_sha256": "2098eb76087f8319d213f7b1bb267731dd72a9ad6c656febb46b532c17c5ef6a",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/hepta-learning-operator-map.py",
+      "before_sha256": "eea41bb041809adc064722baf6b40562e041033d8a7c0f68cbbf05dcf657823f",
+      "after_sha256": "c95da52e039ad66c07c32289cb1f456da1377e84b0edff550830f4c4702ec8de",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/hepta-learning-operator-mutation.py",
+      "before_sha256": "c631b85fd6a6fbfdf8faa43c1fb1142296394927fea790610d2649dd21051d23",
+      "after_sha256": "4cf8543a3ff6b5fafb48b5e5ec5eca1bc1d62f1dfc8219e260ebe74afb7ed840",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/hepta-learning-operator-receipt.py",
+      "before_sha256": "95c428df1e112387bc364a223ea42793d63ef9e7b8a6efe7919b0a4a40319b95",
+      "after_sha256": "3b020205978038191690015d27c95aa899f40d65eff8ef13e48fec0f85e5a131",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/hepta-windows-merged-audit.py",
+      "before_sha256": "f53a7c05a08ee9325da631dbcb0f56876417484e2cb734d416c1f9317751e003",
+      "after_sha256": "85b3a2b070491291fa5e457fb36b8bca7232bffcfadd566ce58c78c7cda17cd1",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/hepta_cells/population.py",
+      "before_sha256": "c47a03962fa268f11882fe833d87d3d437533324571b10b80a1ae183f631f1f7",
+      "after_sha256": "ca0abcef8b77bc7cc2bd4fbff1c3c121ae2b6e861951da3d12d6aa4b058e5260",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/hepta_sngr_cell_pilot.py",
+      "before_sha256": "9e5115156016cb8d79b612829405456dc77fd1848868f0ddc27e0050d5fed7ad",
+      "after_sha256": "6a7dc94a68d8c8183e3e2bc004fec4224dbb00cf0fded5648cbb4b2a96259b4d",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/hepta_sngr_learned_shadow.py",
+      "before_sha256": "ca631eea1b96c8a947e4c9842f845815e288837a5c5808fab1b67cd061d31af9",
+      "after_sha256": "a1b58657ae69958ea296108254cac77f14b3387e23b5523da38095ce43c9641e",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/hepta_sngr_shadow.py",
+      "before_sha256": "bd8e551b733d1fe6f3afc5c56d0d363f6edc003d00377e0f1e9bc20df8f0e2bc",
+      "after_sha256": "f532a1a52ad67b0162ad13e65c3ddff338f3c368f73c99746ae7e38da9e0606a",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/memory_cell/test_laya_source_binding.py",
+      "before_sha256": "5936c38a63fe5579ce3de3ed7d6d18f40035e1d28d3307f194ed1a8d31732d8a",
+      "after_sha256": "dc14915fb5a24476e10d9d31a390765f791f747beeb2db291c39f7d6f635dbf3",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/memory_federation_qualification.py",
+      "before_sha256": "4553b83267ca336a0677ba846fe8bb85fb8df0d3ff3442b16c9db9eba91368dc",
+      "after_sha256": "9208c036fc192532fec9d0c40d9b1a80c1c3e5ed7df115ffeca01c17b94df496",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/test_generate_context_compiler_docs.py",
+      "before_sha256": "67fcac6a6ac25f65b6af38a9f11351833945481a9bc4544e8a96363d9b1ea21d",
+      "after_sha256": "1db4bb912670f3eb56321716881a1efb57b1ef473f2d4cbd922fab7d023bf9db",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/test_hepta_cells_bundle_canonical.py",
+      "before_sha256": "bf60f24cbd2c2cbff25c55caa71b7657cde7259be696baa378f25ff8b200db9e",
+      "after_sha256": "f27db3ee1df3664525d59ff7a3f39b76c1fca3a0230cf79b130b4199af64281e",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/test_hepta_cells_population_plan.py",
+      "before_sha256": "4ff3e7904f7bc2f6315a6144a6932cbcf0a09f0bf6515272a58d406c408e4c86",
+      "after_sha256": "db2ce52dc29954e6deb78852e40fa8239c2efd23f1b4f2a8463ee769eb5b3f6c",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/test_hepta_sngr_reader_eval.py",
+      "before_sha256": "411eaad5eb1dda409c107857769599583a68b2b8467b0e6e7cbf4ec0b1426a8d",
+      "after_sha256": "22287924f40eddb7fb9627eed0843e6d79244022995e71c22d2820ee839f9a79",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/tests/test_verify_memory_retrieval_benchmark.py",
+      "before_sha256": "ef86bce7b146e45f4a4e13396b494aa5c78010d2f2cf0ff24c9a0734cc7dd41d",
+      "after_sha256": "2cf273f21b6e4939bdc2b90e46d8debb4af24c1ba279ba29754b382a9dc9c1b7",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/tests/test_verify_memory_retrieval_review.py",
+      "before_sha256": "deeca1a84b935af00e4949fb33e8801b5e4714b9588c855544b3ecd1493a5a17",
+      "after_sha256": "da93120252c86b98f4dfe20323a2f9c32b3a6f57a1e616437695a036c365f066",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/verify_memory_retrieval_benchmark.py",
+      "before_sha256": "7539a6cc9501add43f8b93fd0966d6b590594843b838bae7594252de1476e428",
+      "after_sha256": "86ac4d1afa82a240c6eacaca8d61b0f07807fe78dd34a9f0c02381046cca25f0",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    },
+    {
+      "path": "scripts/verify_memory_retrieval_review.py",
+      "before_sha256": "91c14f2eac8b16267fd3094ae74bcaccdc5647fca8e713bb4efdde3f85fb9cc7",
+      "after_sha256": "2dc00be2d9ee5cd90c5ce5bdba26905e3d82be12e1cf0c050081723f693c5355",
+      "ast_equal": true,
+      "active_workflow_old_hash_references": []
+    }
+  ],
+  "ast_equal_all": true
+}

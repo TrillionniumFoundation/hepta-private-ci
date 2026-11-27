@@ -1,0 +1,6236 @@
+[
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8800,
+      "frontend": 544,
+      "groups": {
+        "boundary": 32,
+        "content": 8392,
+        "dynamics": 1120,
+        "refractory": 32,
+        "reset": 32
+      },
+      "readout": 264,
+      "total": 9608
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.018161339999999804,
+      "cpu_median_seconds": 0.01732387599999985,
+      "cpu_min_seconds": 0.01706762500000014,
+      "repeats": [
+        {
+          "cpu_seconds": 0.01732387599999985,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.0021165229999997592
+          },
+          "wall_seconds": 0.017325140004686546
+        },
+        {
+          "cpu_seconds": 0.018161339999999804,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.0025597209999999038
+          },
+          "wall_seconds": 0.018163831999117974
+        },
+        {
+          "cpu_seconds": 0.01706762500000014,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.002269099000000274
+          },
+          "wall_seconds": 0.01707054500002414
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0023151143333333124,
+      "root_fraction_of_measured_cpu": 0.13215922998339832,
+      "wall_median_seconds": 0.017325140004686546
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 283521024,
+    "process_peak_rss_before_bytes": 269434880,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.06805034500000007,
+      "cpu_median_seconds": 0.064945904,
+      "cpu_min_seconds": 0.06494070700000032,
+      "repeats": [
+        {
+          "cpu_seconds": 0.06805034500000007,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.00027517899999995876,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.0021080410000000604
+          },
+          "wall_seconds": 0.06805464799981564
+        },
+        {
+          "cpu_seconds": 0.064945904,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0002175929999999049,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.002558609000000267
+          },
+          "wall_seconds": 0.06494785600079922
+        },
+        {
+          "cpu_seconds": 0.06494070700000032,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.00024314099999989125,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.0024325730000001045
+          },
+          "wall_seconds": 0.06494327000109479
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.00024530433333325163,
+      "root_forward_cpu_mean_seconds": 0.002366407666666811,
+      "root_fraction_of_measured_cpu": 0.03958399764418006,
+      "wall_median_seconds": 0.06494785600079922
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.02348615700000023,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.0024202439999996272
+        },
+        "wall_seconds": 0.023488897997594904
+      },
+      "train_step": {
+        "cpu_seconds": 0.06946568600000003,
+        "root": {
+          "backward_calls": 1,
+          "backward_cpu_seconds": 0.00047715899999989375,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.002414314999999778
+        },
+        "wall_seconds": 0.06954214000143111
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8800,
+      "frontend": 544,
+      "groups": {
+        "boundary": 32,
+        "content": 8392,
+        "dynamics": 1120,
+        "refractory": 32,
+        "reset": 32
+      },
+      "readout": 264,
+      "total": 9608
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0371582199999998,
+      "cpu_median_seconds": 0.03175707900000013,
+      "cpu_min_seconds": 0.03074855199999993,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0371582199999998,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.0029114929999995987
+          },
+          "wall_seconds": 0.037159949002671055
+        },
+        {
+          "cpu_seconds": 0.03074855199999993,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.002400245000000023
+          },
+          "wall_seconds": 0.030751603000680916
+        },
+        {
+          "cpu_seconds": 0.03175707900000013,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.0024871440000002742
+          },
+          "wall_seconds": 0.031761113001266494
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0025996273333332987,
+      "root_fraction_of_measured_cpu": 0.07825186285446573,
+      "wall_median_seconds": 0.031761113001266494
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 290205696,
+    "process_peak_rss_before_bytes": 283521024,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.14524039200000027,
+      "cpu_median_seconds": 0.1424780710000002,
+      "cpu_min_seconds": 0.13154380300000001,
+      "repeats": [
+        {
+          "cpu_seconds": 0.14524039200000027,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.00043060999999999794,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.003109497000000072
+          },
+          "wall_seconds": 0.14524543399602408
+        },
+        {
+          "cpu_seconds": 0.1424780710000002,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0003239110000001766,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.003310927000000241
+          },
+          "wall_seconds": 0.14255174400022952
+        },
+        {
+          "cpu_seconds": 0.13154380300000001,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.00025030199999998004,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.0033173760000000385
+          },
+          "wall_seconds": 0.13154726100037806
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0003349410000000515,
+      "root_forward_cpu_mean_seconds": 0.0032459333333334506,
+      "root_fraction_of_measured_cpu": 0.0256226802914825,
+      "wall_median_seconds": 0.14255174400022952
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.035512776000000024,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.0026840259999998395
+        },
+        "wall_seconds": 0.035515923002094496
+      },
+      "train_step": {
+        "cpu_seconds": 0.2782011489999996,
+        "root": {
+          "backward_calls": 1,
+          "backward_cpu_seconds": 0.0007334789999999813,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.002623194999999967
+        },
+        "wall_seconds": 0.2784142879972933
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8800,
+      "frontend": 544,
+      "groups": {
+        "boundary": 32,
+        "content": 8392,
+        "dynamics": 1120,
+        "refractory": 32,
+        "reset": 32
+      },
+      "readout": 264,
+      "total": 9608
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.06362874899999982,
+      "cpu_median_seconds": 0.06275382000000018,
+      "cpu_min_seconds": 0.0617841290000003,
+      "repeats": [
+        {
+          "cpu_seconds": 0.06362874899999982,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.003473667999999819
+          },
+          "wall_seconds": 0.06363224399683531
+        },
+        {
+          "cpu_seconds": 0.06275382000000018,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.0031320410000001964
+          },
+          "wall_seconds": 0.06276584700390231
+        },
+        {
+          "cpu_seconds": 0.0617841290000003,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.003603871999999342
+          },
+          "wall_seconds": 0.06178989700129023
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.003403193666666452,
+      "root_fraction_of_measured_cpu": 0.05425817165585454,
+      "wall_median_seconds": 0.06276584700390231
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 303443968,
+    "process_peak_rss_before_bytes": 290205696,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.3192096659999999,
+      "cpu_median_seconds": 0.2685764690000001,
+      "cpu_min_seconds": 0.24675520200000012,
+      "repeats": [
+        {
+          "cpu_seconds": 0.24675520200000012,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.000589635999999949,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.0036175019999999947
+          },
+          "wall_seconds": 0.2467708819967811
+        },
+        {
+          "cpu_seconds": 0.2685764690000001,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0003195549999999159,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.004200126999999831
+          },
+          "wall_seconds": 0.26876590899337316
+        },
+        {
+          "cpu_seconds": 0.3192096659999999,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0004339240000001965,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.005198109000000173
+          },
+          "wall_seconds": 0.31922295699769165
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.00044770500000002045,
+      "root_forward_cpu_mean_seconds": 0.004338579333333333,
+      "root_fraction_of_measured_cpu": 0.017205682167425167,
+      "wall_median_seconds": 0.26876590899337316
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0629736460000001,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.0035386639999996916
+        },
+        "wall_seconds": 0.06297863800136838
+      },
+      "train_step": {
+        "cpu_seconds": 0.2558228859999998,
+        "root": {
+          "backward_calls": 1,
+          "backward_cpu_seconds": 0.0006273110000001303,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.003664330999999965
+        },
+        "wall_seconds": 0.25589983799727634
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8800,
+      "frontend": 544,
+      "groups": {
+        "boundary": 32,
+        "content": 8392,
+        "dynamics": 1120,
+        "refractory": 32,
+        "reset": 32
+      },
+      "readout": 264,
+      "total": 9608
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.036981758000000475,
+      "cpu_median_seconds": 0.036921258000000456,
+      "cpu_min_seconds": 0.03673261800000027,
+      "repeats": [
+        {
+          "cpu_seconds": 0.036981758000000475,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.012316329999999986
+          },
+          "wall_seconds": 0.0369855769968126
+        },
+        {
+          "cpu_seconds": 0.036921258000000456,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.012317140999999587
+          },
+          "wall_seconds": 0.036932546994648874
+        },
+        {
+          "cpu_seconds": 0.03673261800000027,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.012382387000000605
+          },
+          "wall_seconds": 0.03673795399663504
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.012338619333333392,
+      "root_fraction_of_measured_cpu": 0.33457446449847955,
+      "wall_median_seconds": 0.036932546994648874
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 303587328,
+    "process_peak_rss_before_bytes": 303443968,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.0871442999999994,
+      "cpu_median_seconds": 0.07732712099999972,
+      "cpu_min_seconds": 0.07552982200000002,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0871442999999994,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0007492319999995445,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.012742512000000872
+          },
+          "wall_seconds": 0.08714868199604098
+        },
+        {
+          "cpu_seconds": 0.07552982200000002,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0006898849999998902,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.00935618400000049
+          },
+          "wall_seconds": 0.07553199700487312
+        },
+        {
+          "cpu_seconds": 0.07732712099999972,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0008057570000001846,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.009671081999999664
+          },
+          "wall_seconds": 0.07732872299675364
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0007482913333332064,
+      "root_forward_cpu_mean_seconds": 0.010589926000000341,
+      "root_fraction_of_measured_cpu": 0.1417269826390056,
+      "wall_median_seconds": 0.07732872299675364
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.037581899000000085,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.012617567000000385
+        },
+        "wall_seconds": 0.037619852999341674
+      },
+      "train_step": {
+        "cpu_seconds": 0.10869217800000008,
+        "root": {
+          "backward_calls": 1,
+          "backward_cpu_seconds": 0.0007697530000001507,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.012502105999999458
+        },
+        "wall_seconds": 0.10873395099770278
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8800,
+      "frontend": 544,
+      "groups": {
+        "boundary": 32,
+        "content": 8392,
+        "dynamics": 1120,
+        "refractory": 32,
+        "reset": 32
+      },
+      "readout": 264,
+      "total": 9608
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0703484870000004,
+      "cpu_median_seconds": 0.05734160199999927,
+      "cpu_min_seconds": 0.05688584599999924,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0703484870000004,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.023044672000000155
+          },
+          "wall_seconds": 0.07036117399547948
+        },
+        {
+          "cpu_seconds": 0.05688584599999924,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.019259691000000245
+          },
+          "wall_seconds": 0.0568914639952709
+        },
+        {
+          "cpu_seconds": 0.05734160199999927,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.01848505999999972
+          },
+          "wall_seconds": 0.057353431002411526
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.02026314100000004,
+      "root_fraction_of_measured_cpu": 0.32934641777651286,
+      "wall_median_seconds": 0.057353431002411526
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 309932032,
+    "process_peak_rss_before_bytes": 303587328,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.20502758499999985,
+      "cpu_median_seconds": 0.1576495290000004,
+      "cpu_min_seconds": 0.15356258,
+      "repeats": [
+        {
+          "cpu_seconds": 0.1576495290000004,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.002386452999999733,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.018227818000000617
+          },
+          "wall_seconds": 0.15767798000160838
+        },
+        {
+          "cpu_seconds": 0.20502758499999985,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0023431900000003836,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.02368814699999966
+          },
+          "wall_seconds": 0.2050317220055149
+        },
+        {
+          "cpu_seconds": 0.15356258,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0020490830000001736,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.018173948999999467
+          },
+          "wall_seconds": 0.15356576300109737
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.00225957533333343,
+      "root_forward_cpu_mean_seconds": 0.020029971333333247,
+      "root_fraction_of_measured_cpu": 0.12953021779840124,
+      "wall_median_seconds": 0.15767798000160838
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.052715211999999845,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.018136391999999724
+        },
+        "wall_seconds": 0.052720450003107544
+      },
+      "train_step": {
+        "cpu_seconds": 0.1669019580000004,
+        "root": {
+          "backward_calls": 1,
+          "backward_cpu_seconds": 0.002462405999999362,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.0179543019999997
+        },
+        "wall_seconds": 0.16692735800461378
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8800,
+      "frontend": 544,
+      "groups": {
+        "boundary": 32,
+        "content": 8392,
+        "dynamics": 1120,
+        "refractory": 32,
+        "reset": 32
+      },
+      "readout": 264,
+      "total": 9608
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.14802160200000003,
+      "cpu_median_seconds": 0.1342074689999997,
+      "cpu_min_seconds": 0.11592202000000018,
+      "repeats": [
+        {
+          "cpu_seconds": 0.1342074689999997,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.03846002300000073
+          },
+          "wall_seconds": 0.13421115600067424
+        },
+        {
+          "cpu_seconds": 0.14802160200000003,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.06992413800000019
+          },
+          "wall_seconds": 0.14802910800062818
+        },
+        {
+          "cpu_seconds": 0.11592202000000018,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.034820399
+          },
+          "wall_seconds": 0.11592728700634325
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.04773485333333364,
+      "root_fraction_of_measured_cpu": 0.3596739108269854,
+      "wall_median_seconds": 0.13421115600067424
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 309932032,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.3786797739999992,
+      "cpu_median_seconds": 0.3664582920000008,
+      "cpu_min_seconds": 0.3494465179999988,
+      "repeats": [
+        {
+          "cpu_seconds": 0.3786797739999992,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.00493281500000009,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.04129210299999997
+          },
+          "wall_seconds": 0.3786911909992341
+        },
+        {
+          "cpu_seconds": 0.3664582920000008,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.005849527000000521,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.03463519299999973
+          },
+          "wall_seconds": 0.3665772800013656
+        },
+        {
+          "cpu_seconds": 0.3494465179999988,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.003838679999999428,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.039392376999998646
+          },
+          "wall_seconds": 0.3494635289971484
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.004873674000000013,
+      "root_forward_cpu_mean_seconds": 0.03843989099999945,
+      "root_fraction_of_measured_cpu": 0.1187123379037088,
+      "wall_median_seconds": 0.3665772800013656
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.10482014799999995,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.03837675000000029
+        },
+        "wall_seconds": 0.10482705399772385
+      },
+      "train_step": {
+        "cpu_seconds": 0.45725243999999954,
+        "root": {
+          "backward_calls": 1,
+          "backward_cpu_seconds": 0.004912544999999824,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.036318953999999515
+        },
+        "wall_seconds": 0.4572851470002206
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8608,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 32,
+        "n_parameters": 8608,
+        "parameter_padding": false,
+        "relative_gap": 0.02181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9416
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.009744871000000543,
+      "cpu_median_seconds": 0.009677339999999646,
+      "cpu_min_seconds": 0.009384755999999328,
+      "repeats": [
+        {
+          "cpu_seconds": 0.009744871000000543,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.009746286996232811
+        },
+        {
+          "cpu_seconds": 0.009384755999999328,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.00938767700426979
+        },
+        {
+          "cpu_seconds": 0.009677339999999646,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.00968011799704982
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.00968011799704982
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "legacy_hcsn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.052520101999999014,
+      "cpu_median_seconds": 0.045978958999999264,
+      "cpu_min_seconds": 0.038022362999999615,
+      "repeats": [
+        {
+          "cpu_seconds": 0.045978958999999264,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.045984068005054723
+        },
+        {
+          "cpu_seconds": 0.052520101999999014,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.052528880994941574
+        },
+        {
+          "cpu_seconds": 0.038022362999999615,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0380236210039584
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.045984068005054723
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.01003249799999928,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.01003502300591208
+      },
+      "train_step": {
+        "cpu_seconds": 0.03909985299999974,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.03910563099634601
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8608,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 32,
+        "n_parameters": 8608,
+        "parameter_padding": false,
+        "relative_gap": 0.02181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9416
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.020650396000000626,
+      "cpu_median_seconds": 0.018459191999999902,
+      "cpu_min_seconds": 0.018201189000000895,
+      "repeats": [
+        {
+          "cpu_seconds": 0.018459191999999902,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01846040000236826
+        },
+        {
+          "cpu_seconds": 0.018201189000000895,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.018217092998384032
+        },
+        {
+          "cpu_seconds": 0.020650396000000626,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.020654416002798826
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.01846040000236826
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "legacy_hcsn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.08759644100000052,
+      "cpu_median_seconds": 0.08698622999999905,
+      "cpu_min_seconds": 0.08557716199999987,
+      "repeats": [
+        {
+          "cpu_seconds": 0.08698622999999905,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.08699705899925902
+        },
+        {
+          "cpu_seconds": 0.08759644100000052,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.08762435000244295
+        },
+        {
+          "cpu_seconds": 0.08557716199999987,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.08557901700260118
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.08699705899925902
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.01934273399999853,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.01934590400196612
+      },
+      "train_step": {
+        "cpu_seconds": 0.07693248500000038,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.07693837599799735
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8608,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 32,
+        "n_parameters": 8608,
+        "parameter_padding": false,
+        "relative_gap": 0.02181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9416
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.03903490700000134,
+      "cpu_median_seconds": 0.038955908999998456,
+      "cpu_min_seconds": 0.03678478500000004,
+      "repeats": [
+        {
+          "cpu_seconds": 0.038955908999998456,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03895831000409089
+        },
+        {
+          "cpu_seconds": 0.03678478500000004,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.036788871002499945
+        },
+        {
+          "cpu_seconds": 0.03903490700000134,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03903912199893966
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.03895831000409089
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "legacy_hcsn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.18804107300000084,
+      "cpu_median_seconds": 0.179596557,
+      "cpu_min_seconds": 0.16096397099999926,
+      "repeats": [
+        {
+          "cpu_seconds": 0.16096397099999926,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.1609759999992093
+        },
+        {
+          "cpu_seconds": 0.179596557,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.17960905600193655
+        },
+        {
+          "cpu_seconds": 0.18804107300000084,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.18806946000404423
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.17960905600193655
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.04254790399999919,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.04255224599910434
+      },
+      "train_step": {
+        "cpu_seconds": 0.16297007000000008,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.1629812219980522
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8608,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 32,
+        "n_parameters": 8608,
+        "parameter_padding": false,
+        "relative_gap": 0.02181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9416
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.018187248000000267,
+      "cpu_median_seconds": 0.016198595000000537,
+      "cpu_min_seconds": 0.01574910699999954,
+      "repeats": [
+        {
+          "cpu_seconds": 0.016198595000000537,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.016198942001210526
+        },
+        {
+          "cpu_seconds": 0.01574910699999954,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.015755102002003696
+        },
+        {
+          "cpu_seconds": 0.018187248000000267,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.018193347998021636
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.016198942001210526
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "legacy_hcsn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.06729778599999925,
+      "cpu_median_seconds": 0.06512301800000131,
+      "cpu_min_seconds": 0.0565511979999993,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0565511979999993,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.05656105800153455
+        },
+        {
+          "cpu_seconds": 0.06729778599999925,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.06730171199887991
+        },
+        {
+          "cpu_seconds": 0.06512301800000131,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.06512684599874774
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.06512684599874774
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.024966093999999828,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.024970981998194475
+      },
+      "train_step": {
+        "cpu_seconds": 0.06715332300000121,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.06715968000207795
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8608,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 32,
+        "n_parameters": 8608,
+        "parameter_padding": false,
+        "relative_gap": 0.02181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9416
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.040760448999998644,
+      "cpu_median_seconds": 0.03606371500000094,
+      "cpu_min_seconds": 0.03422953099999937,
+      "repeats": [
+        {
+          "cpu_seconds": 0.040760448999998644,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.04076721700403141
+        },
+        {
+          "cpu_seconds": 0.03606371500000094,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03606856500118738
+        },
+        {
+          "cpu_seconds": 0.03422953099999937,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03445308999653207
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.03606856500118738
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "legacy_hcsn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.1283243219999992,
+      "cpu_median_seconds": 0.11598417600000133,
+      "cpu_min_seconds": 0.10593679700000003,
+      "repeats": [
+        {
+          "cpu_seconds": 0.1283243219999992,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.1283315750042675
+        },
+        {
+          "cpu_seconds": 0.11598417600000133,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.11600283600273542
+        },
+        {
+          "cpu_seconds": 0.10593679700000003,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.10594859400589485
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.11600283600273542
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.04010695800000086,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.040128343003743794
+      },
+      "train_step": {
+        "cpu_seconds": 0.12556310200000098,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.1255690420002793
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8608,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 32,
+        "n_parameters": 8608,
+        "parameter_padding": false,
+        "relative_gap": 0.02181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9416
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.06664348600000025,
+      "cpu_median_seconds": 0.06356890999999898,
+      "cpu_min_seconds": 0.05553268599999939,
+      "repeats": [
+        {
+          "cpu_seconds": 0.05553268599999939,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.05553340900223702
+        },
+        {
+          "cpu_seconds": 0.06664348600000025,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0666755700003705
+        },
+        {
+          "cpu_seconds": 0.06356890999999898,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.06357399599801283
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.06357399599801283
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "legacy_hcsn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.2614979490000007,
+      "cpu_median_seconds": 0.25519471299999985,
+      "cpu_min_seconds": 0.17308280900000028,
+      "repeats": [
+        {
+          "cpu_seconds": 0.25519471299999985,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.25521220300288405
+        },
+        {
+          "cpu_seconds": 0.2614979490000007,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.26151966400357196
+        },
+        {
+          "cpu_seconds": 0.17308280900000028,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.1731416340044234
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.25521220300288405
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.056597047000000344,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.05660208900371799
+      },
+      "train_step": {
+        "cpu_seconds": 0.30429045099999996,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.30447242899390403
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8810,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8810,
+        "parameter_padding": false,
+        "relative_gap": 0.0011363636363636363,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9618
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0018422750000013366,
+      "cpu_median_seconds": 0.0016956379999992777,
+      "cpu_min_seconds": 0.0014827920000008987,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0018422750000013366,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0018433079967508093
+        },
+        {
+          "cpu_seconds": 0.0016956379999992777,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0016974890022538602
+        },
+        {
+          "cpu_seconds": 0.0014827920000008987,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.001483865999034606
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0016974890022538602
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "two_gates",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.007386239000000572,
+      "cpu_median_seconds": 0.006926335999999367,
+      "cpu_min_seconds": 0.0065605529999999135,
+      "repeats": [
+        {
+          "cpu_seconds": 0.007386239000000572,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.00738808299502125
+        },
+        {
+          "cpu_seconds": 0.006926335999999367,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006927269001607783
+        },
+        {
+          "cpu_seconds": 0.0065605529999999135,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006561207999766339
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.006927269001607783
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.00204374499999993,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.002045321998593863
+      },
+      "train_step": {
+        "cpu_seconds": 0.008003275000000087,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.00800571400031913
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8810,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8810,
+        "parameter_padding": false,
+        "relative_gap": 0.0011363636363636363,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9618
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.003419046999999509,
+      "cpu_median_seconds": 0.0031868129999992334,
+      "cpu_min_seconds": 0.0028563410000010947,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0031868129999992334,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.003188194998074323
+        },
+        {
+          "cpu_seconds": 0.003419046999999509,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.003421014997002203
+        },
+        {
+          "cpu_seconds": 0.0028563410000010947,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.002857726998627186
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.003188194998074323
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "two_gates",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.014386544000000612,
+      "cpu_median_seconds": 0.013909346000000156,
+      "cpu_min_seconds": 0.01280190099999956,
+      "repeats": [
+        {
+          "cpu_seconds": 0.014386544000000612,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.014389436000783462
+        },
+        {
+          "cpu_seconds": 0.013909346000000156,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.013910883004427887
+        },
+        {
+          "cpu_seconds": 0.01280190099999956,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.012804507001419552
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.013910883004427887
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0031206439999991176,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.003122105001239106
+      },
+      "train_step": {
+        "cpu_seconds": 0.014751334999999699,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.014753653995285276
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8810,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8810,
+        "parameter_padding": false,
+        "relative_gap": 0.0011363636363636363,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9618
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.006074842000000302,
+      "cpu_median_seconds": 0.006067190000001332,
+      "cpu_min_seconds": 0.005707024999999533,
+      "repeats": [
+        {
+          "cpu_seconds": 0.006067190000001332,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006067833004635759
+        },
+        {
+          "cpu_seconds": 0.005707024999999533,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.005709825003577862
+        },
+        {
+          "cpu_seconds": 0.006074842000000302,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006085410997911822
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.006067833004635759
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "two_gates",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.0319555239999989,
+      "cpu_median_seconds": 0.03079050399999872,
+      "cpu_min_seconds": 0.030710935000000106,
+      "repeats": [
+        {
+          "cpu_seconds": 0.03079050399999872,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03079544800129952
+        },
+        {
+          "cpu_seconds": 0.0319555239999989,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03195715900073992
+        },
+        {
+          "cpu_seconds": 0.030710935000000106,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.030711662002431694
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.03079544800129952
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.005789196000000274,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.005791288000182249
+      },
+      "train_step": {
+        "cpu_seconds": 0.027584071999999793,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.027589076998992823
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8810,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8810,
+        "parameter_padding": false,
+        "relative_gap": 0.0011363636363636363,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9618
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0024103390000007607,
+      "cpu_median_seconds": 0.0023247620000006464,
+      "cpu_min_seconds": 0.0021266180000001356,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0024103390000007607,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0024107429999276064
+        },
+        {
+          "cpu_seconds": 0.0023247620000006464,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0023269369994523004
+        },
+        {
+          "cpu_seconds": 0.0021266180000001356,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0021279270004015416
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0023269369994523004
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "two_gates",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.011017710999999153,
+      "cpu_median_seconds": 0.010872044999999275,
+      "cpu_min_seconds": 0.010830261999998925,
+      "repeats": [
+        {
+          "cpu_seconds": 0.010872044999999275,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.010874378000153229
+        },
+        {
+          "cpu_seconds": 0.011017710999999153,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.011021418999007437
+        },
+        {
+          "cpu_seconds": 0.010830261999998925,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01083198499691207
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.010874378000153229
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.003283425999999423,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0032854509991011582
+      },
+      "train_step": {
+        "cpu_seconds": 0.011287340999999174,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.01129016400227556
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8810,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8810,
+        "parameter_padding": false,
+        "relative_gap": 0.0011363636363636363,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9618
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.004546001000001354,
+      "cpu_median_seconds": 0.004328748000000715,
+      "cpu_min_seconds": 0.0042677980000007665,
+      "repeats": [
+        {
+          "cpu_seconds": 0.004328748000000715,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004329985000367742
+        },
+        {
+          "cpu_seconds": 0.0042677980000007665,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0042702959981397726
+        },
+        {
+          "cpu_seconds": 0.004546001000001354,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0045472729980247095
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.004329985000367742
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "two_gates",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.020260657999999765,
+      "cpu_median_seconds": 0.019916666000000305,
+      "cpu_min_seconds": 0.018657816999999355,
+      "repeats": [
+        {
+          "cpu_seconds": 0.020260657999999765,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.02026458900218131
+        },
+        {
+          "cpu_seconds": 0.018657816999999355,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.018659970002772752
+        },
+        {
+          "cpu_seconds": 0.019916666000000305,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01991943799657747
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.01991943799657747
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.004624487000000954,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.004625801004294772
+      },
+      "train_step": {
+        "cpu_seconds": 0.0187240649999989,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.018728483002632856
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8810,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8810,
+        "parameter_padding": false,
+        "relative_gap": 0.0011363636363636363,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9618
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.009804349999999573,
+      "cpu_median_seconds": 0.008576916999999185,
+      "cpu_min_seconds": 0.007848564999999752,
+      "repeats": [
+        {
+          "cpu_seconds": 0.009804349999999573,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.009811226002057083
+        },
+        {
+          "cpu_seconds": 0.008576916999999185,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008578446999308653
+        },
+        {
+          "cpu_seconds": 0.007848564999999752,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.00785085200186586
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.008578446999308653
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "two_gates",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.03975730900000052,
+      "cpu_median_seconds": 0.038353285000001236,
+      "cpu_min_seconds": 0.03797433199999922,
+      "repeats": [
+        {
+          "cpu_seconds": 0.03797433199999922,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.037980114997480996
+        },
+        {
+          "cpu_seconds": 0.038353285000001236,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03836346299794968
+        },
+        {
+          "cpu_seconds": 0.03975730900000052,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03975966799771413
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.03836346299794968
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.012933805999999493,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.01293690500460798
+      },
+      "train_step": {
+        "cpu_seconds": 0.04458249500000022,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0445944840030279
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8924,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 52,
+        "n_parameters": 8924,
+        "parameter_padding": false,
+        "relative_gap": 0.014090909090909091,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9732
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.002331843000000333,
+      "cpu_median_seconds": 0.0011013359999996197,
+      "cpu_min_seconds": 0.0010134250000000122,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0011013359999996197,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0011021309983334504
+        },
+        {
+          "cpu_seconds": 0.0010134250000000122,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.001014568995742593
+        },
+        {
+          "cpu_seconds": 0.002331843000000333,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.002332824995392002
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0011021309983334504
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "continuous_rnn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.006129463000000612,
+      "cpu_median_seconds": 0.006017125999999706,
+      "cpu_min_seconds": 0.005446518000001177,
+      "repeats": [
+        {
+          "cpu_seconds": 0.006017125999999706,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006018488995323423
+        },
+        {
+          "cpu_seconds": 0.006129463000000612,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0061307190044317394
+        },
+        {
+          "cpu_seconds": 0.005446518000001177,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0054482609994011
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.006018488995323423
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0016408860000005632,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0016430059986305423
+      },
+      "train_step": {
+        "cpu_seconds": 0.006175211000000402,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.006177830997330602
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8924,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 52,
+        "n_parameters": 8924,
+        "parameter_padding": false,
+        "relative_gap": 0.014090909090909091,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9732
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.002316771000000273,
+      "cpu_median_seconds": 0.0020072809999991392,
+      "cpu_min_seconds": 0.0018324720000002515,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0020072809999991392,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.002008207004109863
+        },
+        {
+          "cpu_seconds": 0.002316771000000273,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0023181939977803268
+        },
+        {
+          "cpu_seconds": 0.0018324720000002515,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.001840944001742173
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.002008207004109863
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "continuous_rnn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.010423289000000224,
+      "cpu_median_seconds": 0.009565525000001074,
+      "cpu_min_seconds": 0.00932369599999916,
+      "repeats": [
+        {
+          "cpu_seconds": 0.010423289000000224,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.010425461005070247
+        },
+        {
+          "cpu_seconds": 0.009565525000001074,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.009566576998622622
+        },
+        {
+          "cpu_seconds": 0.00932369599999916,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.009325282997451723
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.009566576998622622
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0020060789999991613,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0020077260051039048
+      },
+      "train_step": {
+        "cpu_seconds": 0.00974835699999943,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.009751145000336692
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8924,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 52,
+        "n_parameters": 8924,
+        "parameter_padding": false,
+        "relative_gap": 0.014090909090909091,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9732
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.007263216000000128,
+      "cpu_median_seconds": 0.00658220500000084,
+      "cpu_min_seconds": 0.006324933000000144,
+      "repeats": [
+        {
+          "cpu_seconds": 0.007263216000000128,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0072643669991521165
+        },
+        {
+          "cpu_seconds": 0.006324933000000144,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006328627001494169
+        },
+        {
+          "cpu_seconds": 0.00658220500000084,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006584623006347101
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.006584623006347101
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "continuous_rnn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.026304532000001046,
+      "cpu_median_seconds": 0.021564283000000017,
+      "cpu_min_seconds": 0.020438002000000566,
+      "repeats": [
+        {
+          "cpu_seconds": 0.026304532000001046,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0263087369967252
+        },
+        {
+          "cpu_seconds": 0.021564283000000017,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.021572350000496954
+        },
+        {
+          "cpu_seconds": 0.020438002000000566,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.02053459599846974
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.021572350000496954
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.004436337999999651,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.004439520998857915
+      },
+      "train_step": {
+        "cpu_seconds": 0.026656474999999347,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.02666199899977073
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8924,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 52,
+        "n_parameters": 8924,
+        "parameter_padding": false,
+        "relative_gap": 0.014090909090909091,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9732
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.003991507000000283,
+      "cpu_median_seconds": 0.002674772000000658,
+      "cpu_min_seconds": 0.002596717000001192,
+      "repeats": [
+        {
+          "cpu_seconds": 0.002674772000000658,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.002676222997251898
+        },
+        {
+          "cpu_seconds": 0.003991507000000283,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004030292999232188
+        },
+        {
+          "cpu_seconds": 0.002596717000001192,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0026240539955324493
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.002676222997251898
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "continuous_rnn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.010793999000000554,
+      "cpu_median_seconds": 0.008694331000000943,
+      "cpu_min_seconds": 0.00802266400000029,
+      "repeats": [
+        {
+          "cpu_seconds": 0.010793999000000554,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.010797672002809122
+        },
+        {
+          "cpu_seconds": 0.00802266400000029,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008023009999305941
+        },
+        {
+          "cpu_seconds": 0.008694331000000943,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008696646997123025
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.008696646997123025
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.002456818000000638,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.002459056006046012
+      },
+      "train_step": {
+        "cpu_seconds": 0.012699879000001246,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.012705547000223305
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8924,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 52,
+        "n_parameters": 8924,
+        "parameter_padding": false,
+        "relative_gap": 0.014090909090909091,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9732
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.00575671800000066,
+      "cpu_median_seconds": 0.004661693000000966,
+      "cpu_min_seconds": 0.0038546440000004623,
+      "repeats": [
+        {
+          "cpu_seconds": 0.00575671800000066,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.005757195998739917
+        },
+        {
+          "cpu_seconds": 0.004661693000000966,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004664489002607297
+        },
+        {
+          "cpu_seconds": 0.0038546440000004623,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0038569329990423284
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.004664489002607297
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "continuous_rnn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.02307497600000019,
+      "cpu_median_seconds": 0.019980200999999198,
+      "cpu_min_seconds": 0.017969154000001097,
+      "repeats": [
+        {
+          "cpu_seconds": 0.017969154000001097,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.017972913999983575
+        },
+        {
+          "cpu_seconds": 0.019980200999999198,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.019983546000730712
+        },
+        {
+          "cpu_seconds": 0.02307497600000019,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0230775870004436
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.019983546000730712
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.003400209000000487,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.003400964997126721
+      },
+      "train_step": {
+        "cpu_seconds": 0.01808215199999985,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.018086766998749226
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8924,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 52,
+        "n_parameters": 8924,
+        "parameter_padding": false,
+        "relative_gap": 0.014090909090909091,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9732
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.010098215999999383,
+      "cpu_median_seconds": 0.007850657999998845,
+      "cpu_min_seconds": 0.007620275999999038,
+      "repeats": [
+        {
+          "cpu_seconds": 0.010098215999999383,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.010099419996549841
+        },
+        {
+          "cpu_seconds": 0.007620275999999038,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.007624899997608736
+        },
+        {
+          "cpu_seconds": 0.007850657999998845,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.007854447001591325
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.007854447001591325
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "continuous_rnn",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.045277147000000184,
+      "cpu_median_seconds": 0.0440550420000001,
+      "cpu_min_seconds": 0.03283885499999961,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0440550420000001,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.04406124099477893
+        },
+        {
+          "cpu_seconds": 0.045277147000000184,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0452796270037652
+        },
+        {
+          "cpu_seconds": 0.03283885499999961,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0328410209986032
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.04406124099477893
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.007620507000000387,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.007623557998158503
+      },
+      "train_step": {
+        "cpu_seconds": 0.04975433499999937,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.04976582599920221
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8876,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8876,
+        "parameter_padding": false,
+        "relative_gap": 0.008636363636363636,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9684
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0031173800000008356,
+      "cpu_median_seconds": 0.003052873999999761,
+      "cpu_min_seconds": 0.002709052000000156,
+      "repeats": [
+        {
+          "cpu_seconds": 0.002709052000000156,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.002709653002966661
+        },
+        {
+          "cpu_seconds": 0.0031173800000008356,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0031192499955068342
+        },
+        {
+          "cpu_seconds": 0.003052873999999761,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0030609329987782985
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0030609329987782985
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "cfc",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.01785394299999865,
+      "cpu_median_seconds": 0.01527648499999934,
+      "cpu_min_seconds": 0.011890998000000153,
+      "repeats": [
+        {
+          "cpu_seconds": 0.011890998000000153,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01189363300363766
+        },
+        {
+          "cpu_seconds": 0.01527648499999934,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.015285715999198146
+        },
+        {
+          "cpu_seconds": 0.01785394299999865,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01785612900130218
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.015285715999198146
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.004933835999999303,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.004935097000270616
+      },
+      "train_step": {
+        "cpu_seconds": 0.018280617000000277,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.018284484998730477
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8876,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8876,
+        "parameter_padding": false,
+        "relative_gap": 0.008636363636363636,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9684
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.008551619000000343,
+      "cpu_median_seconds": 0.007001005999999421,
+      "cpu_min_seconds": 0.006159187000001509,
+      "repeats": [
+        {
+          "cpu_seconds": 0.007001005999999421,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0070025620007072575
+        },
+        {
+          "cpu_seconds": 0.006159187000001509,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006161634999443777
+        },
+        {
+          "cpu_seconds": 0.008551619000000343,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008554211002774537
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0070025620007072575
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "cfc",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.02605333900000062,
+      "cpu_median_seconds": 0.025527227999999624,
+      "cpu_min_seconds": 0.025039022999999716,
+      "repeats": [
+        {
+          "cpu_seconds": 0.02605333900000062,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.02606584900058806
+        },
+        {
+          "cpu_seconds": 0.025527227999999624,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.025530292004987132
+        },
+        {
+          "cpu_seconds": 0.025039022999999716,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.02504146700084675
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.025530292004987132
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.006697085000000769,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.006699215999105945
+      },
+      "train_step": {
+        "cpu_seconds": 0.03425326700000042,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0342580669966992
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8876,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8876,
+        "parameter_padding": false,
+        "relative_gap": 0.008636363636363636,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9684
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.013622810000001095,
+      "cpu_median_seconds": 0.013282775000000413,
+      "cpu_min_seconds": 0.01299245400000082,
+      "repeats": [
+        {
+          "cpu_seconds": 0.013622810000001095,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.013622988997667562
+        },
+        {
+          "cpu_seconds": 0.013282775000000413,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01328653200471308
+        },
+        {
+          "cpu_seconds": 0.01299245400000082,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.012996574994758703
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.01328653200471308
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "cfc",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.05261955000000107,
+      "cpu_median_seconds": 0.05164712500000057,
+      "cpu_min_seconds": 0.05157315699999998,
+      "repeats": [
+        {
+          "cpu_seconds": 0.05261955000000107,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.05262396200123476
+        },
+        {
+          "cpu_seconds": 0.05157315699999998,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.05160060899652308
+        },
+        {
+          "cpu_seconds": 0.05164712500000057,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.051684986996406224
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.051684986996406224
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.012365833000000492,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.012369268995826133
+      },
+      "train_step": {
+        "cpu_seconds": 0.054597408000001124,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.054618638001556974
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8876,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8876,
+        "parameter_padding": false,
+        "relative_gap": 0.008636363636363636,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9684
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.004851844999999244,
+      "cpu_median_seconds": 0.004079518000001059,
+      "cpu_min_seconds": 0.003113393000001352,
+      "repeats": [
+        {
+          "cpu_seconds": 0.003113393000001352,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0031142329971771687
+        },
+        {
+          "cpu_seconds": 0.004079518000001059,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004081500999745913
+        },
+        {
+          "cpu_seconds": 0.004851844999999244,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004852792997553479
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.004081500999745913
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "cfc",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.015572626000000866,
+      "cpu_median_seconds": 0.014253867000000753,
+      "cpu_min_seconds": 0.012988589000000772,
+      "repeats": [
+        {
+          "cpu_seconds": 0.014253867000000753,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.014256504997320008
+        },
+        {
+          "cpu_seconds": 0.012988589000000772,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.012989324000955094
+        },
+        {
+          "cpu_seconds": 0.015572626000000866,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01557583200337831
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.014256504997320008
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.00466667000000065,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.004668004003178794
+      },
+      "train_step": {
+        "cpu_seconds": 0.017069578000000973,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.01707285799784586
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8876,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8876,
+        "parameter_padding": false,
+        "relative_gap": 0.008636363636363636,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9684
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.008988807999999793,
+      "cpu_median_seconds": 0.008908939999999532,
+      "cpu_min_seconds": 0.008900677000001522,
+      "repeats": [
+        {
+          "cpu_seconds": 0.008988807999999793,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008990928996354342
+        },
+        {
+          "cpu_seconds": 0.008908939999999532,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008912671000871342
+        },
+        {
+          "cpu_seconds": 0.008900677000001522,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.00890394800080685
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.008912671000871342
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "cfc",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.03763640999999929,
+      "cpu_median_seconds": 0.03575650800000041,
+      "cpu_min_seconds": 0.03447737800000006,
+      "repeats": [
+        {
+          "cpu_seconds": 0.03575650800000041,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03576157000497915
+        },
+        {
+          "cpu_seconds": 0.03447737800000006,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03449304999958258
+        },
+        {
+          "cpu_seconds": 0.03763640999999929,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03764083200076129
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.03576157000497915
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0074298339999998575,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.00743128800240811
+      },
+      "train_step": {
+        "cpu_seconds": 0.036029843999999756,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.03603471300448291
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8876,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 33,
+        "n_parameters": 8876,
+        "parameter_padding": false,
+        "relative_gap": 0.008636363636363636,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9684
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.01802703000000072,
+      "cpu_median_seconds": 0.017779122000000314,
+      "cpu_min_seconds": 0.017127153999998868,
+      "repeats": [
+        {
+          "cpu_seconds": 0.01802703000000072,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01802819800650468
+        },
+        {
+          "cpu_seconds": 0.017779122000000314,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.017782417002308648
+        },
+        {
+          "cpu_seconds": 0.017127153999998868,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.017130874999566004
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.017782417002308648
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "cfc",
+    "process_peak_rss_after_bytes": 341590016,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.06096857899999897,
+      "cpu_median_seconds": 0.05793187899999985,
+      "cpu_min_seconds": 0.04793166899999868,
+      "repeats": [
+        {
+          "cpu_seconds": 0.06096857899999897,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.06098037500487408
+        },
+        {
+          "cpu_seconds": 0.04793166899999868,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.047941614997398574
+        },
+        {
+          "cpu_seconds": 0.05793187899999985,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.057934355005272664
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.057934355005272664
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.020673078999999817,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.02067596799315652
+      },
+      "train_step": {
+        "cpu_seconds": 0.07528484800000079,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.07529004800016992
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8872,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 26,
+        "n_parameters": 8872,
+        "parameter_padding": false,
+        "relative_gap": 0.008181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9680
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0018603629999986993,
+      "cpu_median_seconds": 0.0017092280000010618,
+      "cpu_min_seconds": 0.0013530189999997333,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0017092280000010618,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0017098570024245419
+        },
+        {
+          "cpu_seconds": 0.0013530189999997333,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.001354902000457514
+        },
+        {
+          "cpu_seconds": 0.0018603629999986993,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0018620760019985028
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0017098570024245419
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "mamba1",
+    "process_peak_rss_after_bytes": 343818240,
+    "process_peak_rss_before_bytes": 341590016,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.010241539000000799,
+      "cpu_median_seconds": 0.009806101999998873,
+      "cpu_min_seconds": 0.00977161099999968,
+      "repeats": [
+        {
+          "cpu_seconds": 0.00977161099999968,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.009773817997484002
+        },
+        {
+          "cpu_seconds": 0.010241539000000799,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.010242974996799603
+        },
+        {
+          "cpu_seconds": 0.009806101999998873,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.009808009999687783
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.009808009999687783
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.00346664799999985,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0034690280008362606
+      },
+      "train_step": {
+        "cpu_seconds": 0.013242215000000002,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.013245141002698801
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8872,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 26,
+        "n_parameters": 8872,
+        "parameter_padding": false,
+        "relative_gap": 0.008181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9680
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.00512899599999983,
+      "cpu_median_seconds": 0.005070119000000872,
+      "cpu_min_seconds": 0.002756053000000591,
+      "repeats": [
+        {
+          "cpu_seconds": 0.005070119000000872,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.005071311999927275
+        },
+        {
+          "cpu_seconds": 0.002756053000000591,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0027583359988057055
+        },
+        {
+          "cpu_seconds": 0.00512899599999983,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.005132022997713648
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.005071311999927275
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "mamba1",
+    "process_peak_rss_after_bytes": 343949312,
+    "process_peak_rss_before_bytes": 343818240,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.025841555000001293,
+      "cpu_median_seconds": 0.023632655000000113,
+      "cpu_min_seconds": 0.01998762100000029,
+      "repeats": [
+        {
+          "cpu_seconds": 0.025841555000001293,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.025860509995254688
+        },
+        {
+          "cpu_seconds": 0.01998762100000029,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01999025400436949
+        },
+        {
+          "cpu_seconds": 0.023632655000000113,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.02363549899746431
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.02363549899746431
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.003483333000000144,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0034855129997595213
+      },
+      "train_step": {
+        "cpu_seconds": 0.020399553000000736,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.020403717004228383
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8872,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 26,
+        "n_parameters": 8872,
+        "parameter_padding": false,
+        "relative_gap": 0.008181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9680
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.009684620999999893,
+      "cpu_median_seconds": 0.006692408999999344,
+      "cpu_min_seconds": 0.005165219999998527,
+      "repeats": [
+        {
+          "cpu_seconds": 0.009684620999999893,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.009685945995443035
+        },
+        {
+          "cpu_seconds": 0.005165219999998527,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.005170211996301077
+        },
+        {
+          "cpu_seconds": 0.006692408999999344,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0066965210062335245
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0066965210062335245
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "mamba1",
+    "process_peak_rss_after_bytes": 343949312,
+    "process_peak_rss_before_bytes": 343949312,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.05068432599999895,
+      "cpu_median_seconds": 0.04797088699999996,
+      "cpu_min_seconds": 0.042237963999999906,
+      "repeats": [
+        {
+          "cpu_seconds": 0.042237963999999906,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.04227725099917734
+        },
+        {
+          "cpu_seconds": 0.05068432599999895,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.05068467900127871
+        },
+        {
+          "cpu_seconds": 0.04797088699999996,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.04798053400008939
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.04798053400008939
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0068209689999996215,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.006823782998253591
+      },
+      "train_step": {
+        "cpu_seconds": 0.04093535899999878,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.04094028499821434
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8872,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 26,
+        "n_parameters": 8872,
+        "parameter_padding": false,
+        "relative_gap": 0.008181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9680
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.004443578000000059,
+      "cpu_median_seconds": 0.0039096359999994945,
+      "cpu_min_seconds": 0.0037546159999983786,
+      "repeats": [
+        {
+          "cpu_seconds": 0.004443578000000059,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004444517006049864
+        },
+        {
+          "cpu_seconds": 0.0037546159999983786,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0037566609971690923
+        },
+        {
+          "cpu_seconds": 0.0039096359999994945,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.003911965002771467
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.003911965002771467
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "mamba1",
+    "process_peak_rss_after_bytes": 343949312,
+    "process_peak_rss_before_bytes": 343949312,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.018094400000000732,
+      "cpu_median_seconds": 0.017229976999999508,
+      "cpu_min_seconds": 0.016635243999999716,
+      "repeats": [
+        {
+          "cpu_seconds": 0.017229976999999508,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.017234702994755935
+        },
+        {
+          "cpu_seconds": 0.016635243999999716,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01663682100479491
+        },
+        {
+          "cpu_seconds": 0.018094400000000732,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01809687000059057
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.017234702994755935
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.004774399999998735,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0047767389987711795
+      },
+      "train_step": {
+        "cpu_seconds": 0.019470272999999594,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.01947457699861843
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8872,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 26,
+        "n_parameters": 8872,
+        "parameter_padding": false,
+        "relative_gap": 0.008181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9680
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.006964883000000199,
+      "cpu_median_seconds": 0.006502056000000422,
+      "cpu_min_seconds": 0.00554187000000006,
+      "repeats": [
+        {
+          "cpu_seconds": 0.006964883000000199,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006965797001612373
+        },
+        {
+          "cpu_seconds": 0.00554187000000006,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.005545186999370344
+        },
+        {
+          "cpu_seconds": 0.006502056000000422,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006504782002593856
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.006504782002593856
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "mamba1",
+    "process_peak_rss_after_bytes": 343949312,
+    "process_peak_rss_before_bytes": 343949312,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.041236706999999484,
+      "cpu_median_seconds": 0.0340249969999995,
+      "cpu_min_seconds": 0.031266751000000426,
+      "repeats": [
+        {
+          "cpu_seconds": 0.041236706999999484,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.04127088299719617
+        },
+        {
+          "cpu_seconds": 0.031266751000000426,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.031269551000150386
+        },
+        {
+          "cpu_seconds": 0.0340249969999995,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03402557600202272
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.03402557600202272
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.006861519000000982,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0068629429952125065
+      },
+      "train_step": {
+        "cpu_seconds": 0.03924293600000084,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.039248143999429885
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8872,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 26,
+        "n_parameters": 8872,
+        "parameter_padding": false,
+        "relative_gap": 0.008181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9680
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.014438700999999554,
+      "cpu_median_seconds": 0.014225183999998947,
+      "cpu_min_seconds": 0.013840714000000531,
+      "repeats": [
+        {
+          "cpu_seconds": 0.014438700999999554,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.014442264000535943
+        },
+        {
+          "cpu_seconds": 0.014225183999998947,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.014228871994419023
+        },
+        {
+          "cpu_seconds": 0.013840714000000531,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.013844301996869035
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.014228871994419023
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "mamba1",
+    "process_peak_rss_after_bytes": 345128960,
+    "process_peak_rss_before_bytes": 343949312,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.09278766000000083,
+      "cpu_median_seconds": 0.09075733399999919,
+      "cpu_min_seconds": 0.08338855199999884,
+      "repeats": [
+        {
+          "cpu_seconds": 0.09278766000000083,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.09280725599819561
+        },
+        {
+          "cpu_seconds": 0.09075733399999919,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.09076994600036414
+        },
+        {
+          "cpu_seconds": 0.08338855199999884,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0833926990017062
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.09076994600036414
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.015318528000001663,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.015321729006245732
+      },
+      "train_step": {
+        "cpu_seconds": 0.09351274600000004,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.09351872800471028
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8816,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 24,
+        "n_parameters": 8816,
+        "parameter_padding": false,
+        "relative_gap": 0.0018181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9624
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0005941920000012146,
+      "cpu_median_seconds": 0.0005785290000019927,
+      "cpu_min_seconds": 0.0003809960000005219,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0005941920000012146,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0005952670035185292
+        },
+        {
+          "cpu_seconds": 0.0003809960000005219,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0003820959973381832
+        },
+        {
+          "cpu_seconds": 0.0005785290000019927,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.00042224600474582985
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.00042224600474582985
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "transformer",
+    "process_peak_rss_after_bytes": 345853952,
+    "process_peak_rss_before_bytes": 345128960,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.002353535000001017,
+      "cpu_median_seconds": 0.0019486139999997931,
+      "cpu_min_seconds": 0.0018048499999991918,
+      "repeats": [
+        {
+          "cpu_seconds": 0.002353535000001017,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0023551490012323484
+        },
+        {
+          "cpu_seconds": 0.0018048499999991918,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.001805981999495998
+        },
+        {
+          "cpu_seconds": 0.0019486139999997931,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0019497180037433282
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0019497180037433282
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0019148830000013106,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0019171290041413158
+      },
+      "train_step": {
+        "cpu_seconds": 0.002920646999999832,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0029227949999039993
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8816,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 24,
+        "n_parameters": 8816,
+        "parameter_padding": false,
+        "relative_gap": 0.0018181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9624
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0008324160000015013,
+      "cpu_median_seconds": 0.0005764859999999317,
+      "cpu_min_seconds": 0.0004192930000002093,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0008324160000015013,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0008337660037796013
+        },
+        {
+          "cpu_seconds": 0.0005764859999999317,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0005773399971076287
+        },
+        {
+          "cpu_seconds": 0.0004192930000002093,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.00042030299664475024
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0005773399971076287
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "transformer",
+    "process_peak_rss_after_bytes": 345853952,
+    "process_peak_rss_before_bytes": 345853952,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.006022953999998748,
+      "cpu_median_seconds": 0.003931827999998916,
+      "cpu_min_seconds": 0.0036855130000006397,
+      "repeats": [
+        {
+          "cpu_seconds": 0.006022953999998748,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0060260210011620075
+        },
+        {
+          "cpu_seconds": 0.003931827999998916,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0039332170053967275
+        },
+        {
+          "cpu_seconds": 0.0036855130000006397,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.003687376003654208
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0039332170053967275
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.001393619999998208,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0013946110047982074
+      },
+      "train_step": {
+        "cpu_seconds": 0.0024172890000002667,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.002418895994196646
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8816,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 24,
+        "n_parameters": 8816,
+        "parameter_padding": false,
+        "relative_gap": 0.0018181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9624
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0007894030000024088,
+      "cpu_median_seconds": 0.0007405400000024542,
+      "cpu_min_seconds": 0.0006749319999990178,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0007894030000024088,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0007906410028226674
+        },
+        {
+          "cpu_seconds": 0.0007405400000024542,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0007411770056933165
+        },
+        {
+          "cpu_seconds": 0.0006749319999990178,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0006759379975846969
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0007411770056933165
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "transformer",
+    "process_peak_rss_after_bytes": 345853952,
+    "process_peak_rss_before_bytes": 345853952,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.003127493999997455,
+      "cpu_median_seconds": 0.0029539270000000784,
+      "cpu_min_seconds": 0.0029165410000011605,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0029165410000011605,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0029179470002418384
+        },
+        {
+          "cpu_seconds": 0.0029539270000000784,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.002955002993985545
+        },
+        {
+          "cpu_seconds": 0.003127493999997455,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.003128654003376141
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.002955002993985545
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0012109679999987577,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0012126079964218661
+      },
+      "train_step": {
+        "cpu_seconds": 0.004226936999998543,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.004229402999044396
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8816,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 24,
+        "n_parameters": 8816,
+        "parameter_padding": false,
+        "relative_gap": 0.0018181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9624
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0014027629999979752,
+      "cpu_median_seconds": 0.001212449999997034,
+      "cpu_min_seconds": 0.000936540000001429,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0014027629999979752,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0014045760035514832
+        },
+        {
+          "cpu_seconds": 0.001212449999997034,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0012143400017521344
+        },
+        {
+          "cpu_seconds": 0.000936540000001429,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0009383139986312017
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0012143400017521344
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "transformer",
+    "process_peak_rss_after_bytes": 345853952,
+    "process_peak_rss_before_bytes": 345853952,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.004132206999997834,
+      "cpu_median_seconds": 0.0036632699999969986,
+      "cpu_min_seconds": 0.003580156999998252,
+      "repeats": [
+        {
+          "cpu_seconds": 0.003580156999998252,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0035815579976770096
+        },
+        {
+          "cpu_seconds": 0.004132206999997834,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004133978996833321
+        },
+        {
+          "cpu_seconds": 0.0036632699999969986,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.003665003001515288
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.003665003001515288
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0015895609999994065,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.001590577005117666
+      },
+      "train_step": {
+        "cpu_seconds": 0.004623145000000051,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.004625029003364034
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8816,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 24,
+        "n_parameters": 8816,
+        "parameter_padding": false,
+        "relative_gap": 0.0018181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9624
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.002800339000000207,
+      "cpu_median_seconds": 0.0027618409999980997,
+      "cpu_min_seconds": 0.002230722000000185,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0027618409999980997,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0027627129966276698
+        },
+        {
+          "cpu_seconds": 0.002800339000000207,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.002801782000460662
+        },
+        {
+          "cpu_seconds": 0.002230722000000185,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.002232544997241348
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0027627129966276698
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "transformer",
+    "process_peak_rss_after_bytes": 345853952,
+    "process_peak_rss_before_bytes": 345853952,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.011606386000000413,
+      "cpu_median_seconds": 0.009708215999999936,
+      "cpu_min_seconds": 0.00806465499999831,
+      "repeats": [
+        {
+          "cpu_seconds": 0.00806465499999831,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008075789002759848
+        },
+        {
+          "cpu_seconds": 0.011606386000000413,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.011610947003646288
+        },
+        {
+          "cpu_seconds": 0.009708215999999936,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.009711575003166217
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.009711575003166217
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.003573806999998652,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.003575157003069762
+      },
+      "train_step": {
+        "cpu_seconds": 0.007431946999997052,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0074344339955132455
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8816,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 24,
+        "n_parameters": 8816,
+        "parameter_padding": false,
+        "relative_gap": 0.0018181818181818182,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9624
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.0046439159999991375,
+      "cpu_median_seconds": 0.004470298000001094,
+      "cpu_min_seconds": 0.0042843029999986015,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0046439159999991375,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004644989996450022
+        },
+        {
+          "cpu_seconds": 0.004470298000001094,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004472400003578514
+        },
+        {
+          "cpu_seconds": 0.0042843029999986015,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004286338997189887
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.004472400003578514
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "transformer",
+    "process_peak_rss_after_bytes": 345985024,
+    "process_peak_rss_before_bytes": 345853952,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.0209966399999999,
+      "cpu_median_seconds": 0.018207899000000083,
+      "cpu_min_seconds": 0.01495664100000127,
+      "repeats": [
+        {
+          "cpu_seconds": 0.01495664100000127,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01496114600013243
+        },
+        {
+          "cpu_seconds": 0.0209966399999999,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.02100237799459137
+        },
+        {
+          "cpu_seconds": 0.018207899000000083,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.018212186005257536
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.018212186005257536
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.006681091000000805,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.006684082996798679
+      },
+      "train_step": {
+        "cpu_seconds": 0.023926061000000942,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.023931003001052886
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8702,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 51,
+        "n_parameters": 8702,
+        "parameter_padding": false,
+        "relative_gap": 0.011136363636363637,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9510
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.003201224000001446,
+      "cpu_median_seconds": 0.0025525410000000193,
+      "cpu_min_seconds": 0.002339994999999817,
+      "repeats": [
+        {
+          "cpu_seconds": 0.0025525410000000193,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0025529170015943237
+        },
+        {
+          "cpu_seconds": 0.002339994999999817,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0023419390054186806
+        },
+        {
+          "cpu_seconds": 0.003201224000001446,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.003203127002052497
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0025529170015943237
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "lif_snn",
+    "process_peak_rss_after_bytes": 345985024,
+    "process_peak_rss_before_bytes": 345985024,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.01075732500000015,
+      "cpu_median_seconds": 0.009477273000001674,
+      "cpu_min_seconds": 0.009055647000000278,
+      "repeats": [
+        {
+          "cpu_seconds": 0.01075732500000015,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.010759584001789335
+        },
+        {
+          "cpu_seconds": 0.009055647000000278,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.00905738900473807
+        },
+        {
+          "cpu_seconds": 0.009477273000001674,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.009478714993747417
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.009478714993747417
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.003421210999999147,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0034248819938511588
+      },
+      "train_step": {
+        "cpu_seconds": 0.010568994999999859,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.01057282299734652
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8702,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 51,
+        "n_parameters": 8702,
+        "parameter_padding": false,
+        "relative_gap": 0.011136363636363637,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9510
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.006165696000000054,
+      "cpu_median_seconds": 0.005531684000001036,
+      "cpu_min_seconds": 0.004353114000000602,
+      "repeats": [
+        {
+          "cpu_seconds": 0.005531684000001036,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.005531075003091246
+        },
+        {
+          "cpu_seconds": 0.004353114000000602,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004355662997113541
+        },
+        {
+          "cpu_seconds": 0.006165696000000054,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.006168436004372779
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.005531075003091246
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "lif_snn",
+    "process_peak_rss_after_bytes": 345985024,
+    "process_peak_rss_before_bytes": 345985024,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.1470103199999997,
+      "cpu_median_seconds": 0.02093463399999962,
+      "cpu_min_seconds": 0.018918264999999934,
+      "repeats": [
+        {
+          "cpu_seconds": 0.1470103199999997,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.14704448900010902
+        },
+        {
+          "cpu_seconds": 0.018918264999999934,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.018925409000075888
+        },
+        {
+          "cpu_seconds": 0.02093463399999962,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.020937296001648065
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.020937296001648065
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.004099277999998208,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.004100398997252341
+      },
+      "train_step": {
+        "cpu_seconds": 0.02050865500000043,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.02051371300331084
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 1,
+    "counts": {
+      "backbone": 8702,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 51,
+        "n_parameters": 8702,
+        "parameter_padding": false,
+        "relative_gap": 0.011136363636363637,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9510
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.008542044999998666,
+      "cpu_median_seconds": 0.008526071000002133,
+      "cpu_min_seconds": 0.008152777000002942,
+      "repeats": [
+        {
+          "cpu_seconds": 0.008152777000002942,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008153547001711559
+        },
+        {
+          "cpu_seconds": 0.008542044999998666,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008544675998564344
+        },
+        {
+          "cpu_seconds": 0.008526071000002133,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008528842001396697
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.008528842001396697
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "lif_snn",
+    "process_peak_rss_after_bytes": 345985024,
+    "process_peak_rss_before_bytes": 345985024,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.04178999799999872,
+      "cpu_median_seconds": 0.038529976999999604,
+      "cpu_min_seconds": 0.03807744499999899,
+      "repeats": [
+        {
+          "cpu_seconds": 0.04178999799999872,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.041794712997216266
+        },
+        {
+          "cpu_seconds": 0.038529976999999604,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.038530914003786165
+        },
+        {
+          "cpu_seconds": 0.03807744499999899,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.038084200998127926
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.038530914003786165
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.008668873000001298,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.008671186995343305
+      },
+      "train_step": {
+        "cpu_seconds": 0.048826035999997686,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.04883923799934564
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8702,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 51,
+        "n_parameters": 8702,
+        "parameter_padding": false,
+        "relative_gap": 0.011136363636363637,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9510
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.004293155999999243,
+      "cpu_median_seconds": 0.0034142110000026094,
+      "cpu_min_seconds": 0.003222495999999353,
+      "repeats": [
+        {
+          "cpu_seconds": 0.004293155999999243,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.004294712001865264
+        },
+        {
+          "cpu_seconds": 0.003222495999999353,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0032346150037483312
+        },
+        {
+          "cpu_seconds": 0.0034142110000026094,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.0034156080000684597
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.0034156080000684597
+    },
+    "interface": "full_sequence",
+    "length": 32,
+    "model": "lif_snn",
+    "process_peak_rss_after_bytes": 345985024,
+    "process_peak_rss_before_bytes": 345985024,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.015436242999999905,
+      "cpu_median_seconds": 0.01512928600000052,
+      "cpu_min_seconds": 0.014153819000000567,
+      "repeats": [
+        {
+          "cpu_seconds": 0.014153819000000567,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.014157504003378563
+        },
+        {
+          "cpu_seconds": 0.01512928600000052,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.015130750995012932
+        },
+        {
+          "cpu_seconds": 0.015436242999999905,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.015440017996297684
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.015130750995012932
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0049734649999990665,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.004977119999239221
+      },
+      "train_step": {
+        "cpu_seconds": 0.017786412999999612,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.017790299003536347
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8702,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 51,
+        "n_parameters": 8702,
+        "parameter_padding": false,
+        "relative_gap": 0.011136363636363637,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9510
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.011982283000001814,
+      "cpu_median_seconds": 0.009156352000001533,
+      "cpu_min_seconds": 0.008403679000000608,
+      "repeats": [
+        {
+          "cpu_seconds": 0.011982283000001814,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.011984019001829438
+        },
+        {
+          "cpu_seconds": 0.009156352000001533,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.009159436995105352
+        },
+        {
+          "cpu_seconds": 0.008403679000000608,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.008417084005486686
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.009159436995105352
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "lif_snn",
+    "process_peak_rss_after_bytes": 345985024,
+    "process_peak_rss_before_bytes": 345985024,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.039533857999998645,
+      "cpu_median_seconds": 0.034899701000000505,
+      "cpu_min_seconds": 0.032351878000000056,
+      "repeats": [
+        {
+          "cpu_seconds": 0.032351878000000056,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03235791699989932
+        },
+        {
+          "cpu_seconds": 0.039533857999998645,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03954138799599605
+        },
+        {
+          "cpu_seconds": 0.034899701000000505,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.03490121899812948
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.03490121899812948
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.0068860850000014295,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.006888560994411819
+      },
+      "train_step": {
+        "cpu_seconds": 0.034663295000001426,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.03466856500017457
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8702,
+      "frontend": 544,
+      "matching": {
+        "hidden_width": 51,
+        "n_parameters": 8702,
+        "parameter_padding": false,
+        "relative_gap": 0.011136363636363637,
+        "target_parameters": 8800,
+        "within_five_percent": true
+      },
+      "readout": 264,
+      "total": 9510
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.013201253999998386,
+      "cpu_median_seconds": 0.012903682000001027,
+      "cpu_min_seconds": 0.012439442999998107,
+      "repeats": [
+        {
+          "cpu_seconds": 0.013201253999998386,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.01320204499643296
+        },
+        {
+          "cpu_seconds": 0.012439442999998107,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.012443952000467107
+        },
+        {
+          "cpu_seconds": 0.012903682000001027,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.012907691001601052
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.012907691001601052
+    },
+    "interface": "full_sequence",
+    "length": 128,
+    "model": "lif_snn",
+    "process_peak_rss_after_bytes": 345985024,
+    "process_peak_rss_before_bytes": 345985024,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.0632273320000003,
+      "cpu_median_seconds": 0.06281460099999947,
+      "cpu_min_seconds": 0.06279989799999797,
+      "repeats": [
+        {
+          "cpu_seconds": 0.06279989799999797,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.06280639599572169
+        },
+        {
+          "cpu_seconds": 0.06281460099999947,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.06282301199826179
+        },
+        {
+          "cpu_seconds": 0.0632273320000003,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 0,
+            "forward_cpu_seconds": 0.0
+          },
+          "wall_seconds": 0.06322948400338646
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.0,
+      "root_fraction_of_measured_cpu": 0.0,
+      "wall_median_seconds": 0.06282301199826179
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.011385318000002087,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.01138905299740145
+      },
+      "train_step": {
+        "cpu_seconds": 0.05758139900000003,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 0,
+          "forward_cpu_seconds": 0.0
+        },
+        "wall_seconds": 0.0575894249996054
+      }
+    },
+    "width": 32
+  }
+]

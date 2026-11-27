@@ -1,6 +1,8 @@
 use anyhow::Result;
 use codex_core::TurnInputRequest;
+use codex_history::RolloutItem;
 use codex_protocol::items::TurnItem;
+use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::AdditionalContextEntry;
 use codex_protocol::protocol::AdditionalContextKind;
 use codex_protocol::protocol::EventMsg;
@@ -9,6 +11,7 @@ use codex_protocol::user_input::UserInput;
 use core_test_support::context_snapshot;
 use core_test_support::context_snapshot::ContextSnapshotOptions;
 use core_test_support::context_snapshot::ContextSnapshotRenderMode;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
 use core_test_support::responses::mount_sse_once;
@@ -21,16 +24,18 @@ use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Result<()> {
+async fn additional_context_is_model_visible_but_not_a_user_message_item_for_first_party_provider()
+-> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let request = mount_sse_once(
         &server,
         sse(vec![ev_response_created("resp-1"), ev_completed("resp-1")]),
     )
     .await;
-    let test = test_codex()
+    let test = server
+        .test_codex()
         .with_config(|config| config.include_environment_context = false)
         .build(&server)
         .await?;
@@ -84,6 +89,139 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
     assert!(request.has_content_kinds(&["additional_content.automation_info"]));
     assert!(request.has_content_kinds(&["additional_content.browser_info"]));
     assert!(request.has_content_kinds(&["user.text"]));
+    insta::assert_snapshot!(
+        "additional_context_simple_input",
+        context_snapshot::format_labeled_requests_snapshot(
+            "additional context is inserted before the user turn input.",
+            &[("Request", &request)],
+            &ContextSnapshotOptions::default()
+                .strip_capability_instructions()
+                .render_mode(ContextSnapshotRenderMode::KindWithTextPrefix { max_chars: 160 }),
+        )
+    );
+    let developer_context_texts = request
+        .message_input_texts("developer")
+        .into_iter()
+        .filter(|text| text.starts_with("<automation_info>"))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        developer_context_texts,
+        vec!["<automation_info>run one</automation_info>"]
+    );
+    assert_eq!(
+        request.message_input_texts("user"),
+        vec![
+            "<external_browser_info>tab one</external_browser_info>",
+            "inspect the active tab",
+        ]
+    );
+
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Result<()> {
+    skip_if_no_network!(Ok(()));
+
+    let server = start_mock_server().await;
+    let request = mount_sse_once(
+        &server,
+        sse(vec![ev_response_created("resp-1"), ev_completed("resp-1")]),
+    )
+    .await;
+    let test = test_codex()
+        .with_config(|config| {
+            config.include_environment_context = false;
+            config.model_provider.mock_internal_chat_metadata = None;
+        })
+        .build(&server)
+        .await?;
+    assert!(
+        !test
+            .config
+            .model_provider
+            .accepts_internal_chat_message_metadata_for_request(&format!("{}/v1", server.uri()),)
+    );
+
+    test.codex
+        .start_or_steer_turn(
+            TurnInputRequest::user_input(vec![UserInput::Text {
+                text: "inspect the active tab".to_string(),
+                text_elements: Vec::new(),
+            }])
+            .with_additional_context(BTreeMap::from([
+                (
+                    "browser_info".to_string(),
+                    AdditionalContextEntry {
+                        value: "tab one".to_string(),
+                        kind: AdditionalContextKind::Untrusted,
+                    },
+                ),
+                (
+                    "automation_info".to_string(),
+                    AdditionalContextEntry {
+                        value: "run one".to_string(),
+                        kind: AdditionalContextKind::Application,
+                    },
+                ),
+            ])),
+        )
+        .await?;
+
+    let user_item = wait_for_event_match(&test.codex, |event| match event {
+        EventMsg::ItemCompleted(ItemCompletedEvent {
+            item: TurnItem::UserMessage(item),
+            ..
+        }) => Some(item.clone()),
+        _ => None,
+    })
+    .await;
+    assert_eq!(
+        user_item.content,
+        vec![UserInput::Text {
+            text: "inspect the active tab".to_string(),
+            text_elements: Vec::new(),
+        }]
+    );
+    wait_for_event_match(&test.codex, |event| {
+        matches!(event, EventMsg::TurnComplete(_)).then_some(())
+    })
+    .await;
+
+    // The local provider correctly strips internal metadata on the wire;
+    // classifications must remain on the original durable history items.
+    test.codex.flush_rollout().await?;
+    let history = test.codex.load_history(/*include_archived*/ false).await?;
+    let persisted_kinds = history
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            RolloutItem::ResponseItem(envelope) => match &envelope.item {
+                ResponseItem::Message {
+                    internal_chat_message_metadata_passthrough: Some(metadata),
+                    ..
+                } => metadata.content_item_kinds.as_ref(),
+                _ => None,
+            },
+            _ => None,
+        })
+        .flatten()
+        .map(|kind| kind.0.as_str())
+        .filter(|kind| kind.starts_with("additional_content.") || *kind == "user.text")
+        .collect::<Vec<_>>();
+    assert_eq!(
+        persisted_kinds,
+        vec![
+            "additional_content.automation_info",
+            "additional_content.browser_info",
+            "user.text",
+        ]
+    );
+    let request = request.single_request();
+    assert!(request.input().iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
     insta::assert_snapshot!(
         "additional_context_simple_input",
         context_snapshot::format_labeled_requests_snapshot(

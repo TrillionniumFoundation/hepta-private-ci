@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.learn.candidate-expiry-boundary-fixture-repair.v1",
+  "status": "source_prepared_native_not_run",
+  "parent": {
+    "commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9"
+  },
+  "file": {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+    "before_blob": "b974191f9a27368db425da2efc9e903d905cf088",
+    "after_blob": "a66b07c2f084692e51896dde2f18daf2f1fc4af7",
+    "before_bytes": 25728,
+    "after_bytes": 26029,
+    "full_api_readback": true
+  },
+  "native_failure_provenance": {
+    "source": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "reporting_owner": "Root",
+    "report": "Original 201-case run reached the renewal section after all eight response-fault branches; the original assertion at line477 incorrectly expected authentication at the original exact expiry to fail.",
+    "result_bytes_reported": 51057,
+    "result_sha256_reported": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71",
+    "complete_raw_result_independently_retrieved_by_this_peer": false,
+    "unchanged_case": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel"
+  },
+  "verified_production_semantics": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+      "blob": "a24dbbf280dcfff9c3d52deeaa087ffc8a11bdc8",
+      "function": "authenticate_receipt",
+      "fact": "The original receipt/context checks remain; verifier.verify(..., at)? maps the exact signed-evidence error through the original Training command error."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "blob": "2b0c33cc53b52cde683ebc8c651198e12d827113",
+      "fact": "Evidence(#[from] SignedEvidenceError) is the actual error wrapper. OriginalCellQ24TrainingCommandReceiptV1 derives Clone, Debug, Eq, PartialEq, permitting full-object positive comparison."
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+      "function": "LearningEvidenceVerifierV1::verify",
+      "fact": "The expiry rejection is now > evidence.expires_at and returns SignedEvidenceError::ValidityWindow. Equality with the expiry is accepted if all other original checks hold."
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+      "blob": "2bd6de5896b2cf1db2a65d82aeb3046dfa1a36af",
+      "function": "AuthenticatedPrincipalV1::validate",
+      "fact": "The original principal validity also rejects now > self.expires_at, preserving the closed upper endpoint."
+    }
+  ],
+  "exact_edits": [
+    {
+      "before": "    let mut renewed = run.training.attestation().clone();\n    renewed.expires_at += 1;",
+      "after": "    let after_original_expiry = run\n        .training\n        .attestation()\n        .expires_at\n        .checked_add(/*rhs*/ 1)\n        .expect(\"fixture expiry permits a one-second renewal\");\n    let mut renewed = run.training.attestation().clone();\n    renewed.expires_at = after_original_expiry;"
+    },
+    {
+      "before": "    assert!(\n        wire::authenticate_receipt(\n            &context,\n            run.training.receipt().clone(),\n            run.training.attestation().clone(),\n            run.training.attestation().expires_at,\n        )\n        .is_err()\n    );\n    assert!(\n        wire::authenticate_receipt(\n            &context,\n            renewed.receipt().clone(),\n            renewed.attestation().clone(),\n            run.training.attestation().expires_at,\n        )\n        .is_ok()\n    );",
+      "after": "    assert!(matches!(\n        wire::authenticate_receipt(\n            &context,\n            run.training.receipt().clone(),\n            run.training.attestation().clone(),\n            after_original_expiry,\n        ),\n        Err(CommandError::Evidence(\n            codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow\n        ))\n    ));\n    assert_eq!(\n        wire::authenticate_receipt(\n            &context,\n            renewed.receipt().clone(),\n            renewed.attestation().clone(),\n            after_original_expiry,\n        )?,\n        renewed\n    );"
+    }
+  ],
+  "effect_of_change": [
+    "Compute after_original_expiry once via the original expiry.checked_add(1), with an explicit fixture overflow failure.",
+    "Set the already-existing synthetic one-second renewed attestation expiry to that same value before the unchanged fixture signing operation.",
+    "At exactly that shared time, require the original signature to return precisely CommandError::Evidence(SignedEvidenceError::ValidityWindow). No blanket is_err remains for this expiry control.",
+    "Authenticate the already-renewed signature at the same time and compare the complete returned opaque Training receipt to the complete renewed object. Any other error propagates via ?.",
+    "The existing current-time verification and all later rejection of the changed original signature remain unchanged."
+  ],
+  "preserved": {
+    "exact_two_reversible_text_hunks": true,
+    "entire_file_prefix_before_renewal_and_suffix_after_the_two_controls_exact": true,
+    "original_three_case_names": [
+      "original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+      "original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+      "original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel"
+    ],
+    "original_case_inventory_ids_unchanged": true,
+    "all_duration_expressions_exact": [
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(300)",
+      "Duration::from_millis(40)",
+      "Duration::from_millis(80)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(30)",
+      "Duration::from_secs(300)",
+      "Duration::from_secs(30)"
+    ],
+    "all_eight_response_fault_branches_and_handler_success_counters_exact": true,
+    "all_wire_frames_original_peer_deadlines_and_60_second_case_limit_unchanged": true,
+    "original_renewal_binding_rejections_withdrawal_cancel_and_physical_byte_assertions_unchanged": true,
+    "no_production_file_or_interface_changes": true,
+    "caller_manifest_blob_unchanged": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+    "protected_records_matching_this_test_path": 0,
+    "native_inventory_unchanged": true
+  },
+  "validation": {
+    "api_full_blob_reads": true,
+    "exact_forward_inverse_patch": true,
+    "source_scope_and_duration_comparison": true,
+    "python_or_rust_execution": false,
+    "h_queries_or_start": false,
+    "new_native_pass_claim": false
+  },
+  "ordinary_acceptance": 0
+}

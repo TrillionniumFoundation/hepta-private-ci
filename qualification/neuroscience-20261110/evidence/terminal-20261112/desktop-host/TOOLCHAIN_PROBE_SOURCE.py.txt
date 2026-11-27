@@ -1,0 +1,72 @@
+import json, os, pathlib, shutil, signal, stat, subprocess, sys, time
+def emit(event, **fields):
+    print(json.dumps({"event": event, **fields}, sort_keys=True), flush=True)
+def timeout(signum, frame):
+    raise TimeoutError("Read-only probe exceeded 30 seconds")
+signal.signal(signal.SIGALRM, timeout)
+signal.setitimer(signal.ITIMER_REAL, 30)
+began = time.monotonic()
+emit("identity", schema="hepta.readonly-build-host-probe.v1", uid=os.getuid(), euid=os.geteuid(), gid=os.getgid(), egid=os.getegid(), default_cwd=os.getcwd(), python=sys.executable, python_version=sys.version, machine=os.uname().machine, cpu_count=os.cpu_count(), available_cpu_count=len(os.sched_getaffinity(0)), load_average=list(os.getloadavg()), script_file_write_calls=0, build_calls=0, install_calls=0)
+def small(path, ceiling=4096):
+    try:
+        with open(path, "rb") as stream:
+            value = stream.read(ceiling + 1)
+        return {"text": value[:ceiling].decode("utf-8", "replace"), "truncated": len(value) > ceiling}
+    except OSError as exc:
+        return {"error": type(exc).__name__, "errno": exc.errno}
+for resource in ("cpu", "memory", "io"):
+    emit("pressure", resource=resource, value=small("/proc/pressure/" + resource))
+try:
+    tmp = "/tmp"
+    st, fs = os.stat(tmp), os.statvfs(tmp)
+    effective = os.access in os.supports_effective_ids
+    access = os.access(tmp, os.W_OK | os.X_OK, **({"effective_ids": True} if effective else {}))
+    emit("tmp_metadata", path=tmp, resolved=os.path.realpath(tmp), mode=oct(stat.S_IMODE(st.st_mode)), owner_uid=st.st_uid, owner_gid=st.st_gid, is_directory=stat.S_ISDIR(st.st_mode), access_write_and_traverse=access, access_uses_effective_ids=effective, available_bytes=fs.f_bavail * fs.f_frsize, available_inodes=fs.f_favail, read_only_mount=bool(fs.f_flag & getattr(os, "ST_RDONLY", 1)), noexec_mount=bool(fs.f_flag & getattr(os, "ST_NOEXEC", 8)), actual_create_test_performed=False, policy_permission_inferred=False)
+except OSError as exc:
+    emit("tmp_metadata", error=type(exc).__name__, errno=exc.errno)
+membership = small("/proc/self/cgroup")
+cgroup = None
+for line in membership.get("text", "").splitlines():
+    if line.startswith("0::"):
+        candidate = os.path.realpath(os.path.join("/sys/fs/cgroup", line[3:].lstrip("/")))
+        if os.path.commonpath(("/sys/fs/cgroup", candidate)) == "/sys/fs/cgroup":
+            cgroup = candidate
+if cgroup:
+    emit("cgroup_limits", values={name: small(os.path.join(cgroup, name), 1024) for name in ("memory.max", "memory.high", "memory.current", "cpu.max", "pids.max", "pids.current")})
+else:
+    emit("cgroup_limits", status="unified_cgroup_not_resolved")
+rustup = shutil.which("rustup")
+def inspect(label, path, argv):
+    if not path:
+        emit("tool", tool=label, found=False)
+        return
+    try:
+        st = os.stat(path)
+        resolved = os.path.realpath(path)
+        proxies = [rustup, os.path.join(os.path.dirname(path), "rustup")]
+        proxy = os.path.basename(resolved) == "rustup"
+        for candidate in proxies:
+            try:
+                proxy = proxy or (candidate is not None and os.path.samefile(path, candidate))
+            except OSError:
+                pass
+        with open(path, "rb") as stream:
+            elf = stream.read(4) == b"\x7fELF"
+        fields = dict(tool=label, found=True, path=path, resolved=resolved, bytes=st.st_size, owner_uid=st.st_uid, executable=os.access(path, os.X_OK), regular=stat.S_ISREG(st.st_mode), elf=elf, rustup_proxy=proxy)
+        if proxy or not elf or not fields["executable"] or not fields["regular"]:
+            emit("tool", **fields, version_status="NOT_EXECUTED_PROXY_OR_NON_ELF")
+            return
+        environment = {"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "RUSTUP_AUTO_INSTALL": "0"}
+        result = subprocess.run([path, *argv], cwd="/", env=environment, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=3, check=False)
+        emit("tool", **fields, version_exit_code=result.returncode, stdout=result.stdout[:4096].decode("utf-8", "replace"), stderr=result.stderr[:4096].decode("utf-8", "replace"), output_truncated=len(result.stdout) > 4096 or len(result.stderr) > 4096)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        emit("tool", tool=label, path=path, error=type(exc).__name__, errno=getattr(exc, "errno", None))
+for name in ("git", "cargo", "just", "rustc"):
+    inspect(name, shutil.which(name), ["-vV"] if name == "rustc" else ["--version"])
+# Only the exact repository-pinned toolchain paths; no home directory scan.
+rustup_root = os.environ.get("RUSTUP_HOME") or str(pathlib.Path.home() / ".rustup")
+pinned = pathlib.Path(rustup_root) / "toolchains" / "1.96.0-x86_64-unknown-linux-gnu" / "bin"
+for name in ("rustc", "cargo"):
+    path = pinned / name
+    inspect("pinned_1.96.0_" + name, str(path) if path.is_file() else None, ["-vV"] if name == "rustc" else ["--version"])
+emit("complete", elapsed_seconds=time.monotonic() - began, build_calls=0, install_calls=0, actor_calls=0, script_file_write_calls=0, temp_files_created=0, rustup_proxies_executed=0)

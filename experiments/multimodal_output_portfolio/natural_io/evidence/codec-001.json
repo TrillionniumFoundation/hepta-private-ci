@@ -1,0 +1,531 @@
+{
+  "schema": "hepta.natural-pretrained-codec-smoke.v1",
+  "status": "passed_codec_interfaces_only",
+  "completed_at_utc": "2026-10-23T05:12:55.202925+00:00",
+  "source_code_sha256": "0558110a88c41f045fc8d12e49a86635b894512355148ce4e218edb7f42c6eef",
+  "input_receipt": "/tmp/hepta-portfolio-work/experiments/multimodal_output_portfolio/natural_io/evidence/ingestion-001.json",
+  "input_receipt_sha256": "5fa4c522455436a660307fb050aa9cfbf594a8dfe4b04a62409f5ded00acb32c",
+  "source_media_sha256": "bc957c8a0382d9a4d2d54acbfc61c61e5fd57bcef909364bad3f41a5957c91ef",
+  "model": {
+    "repository": "https://github.com/madebyollin/taesd",
+    "commit": "fdbae2df989db95761f482efb8977e1182fb68d2",
+    "license": "MIT",
+    "assets": {
+      "taesd.py": {
+        "url": "https://raw.githubusercontent.com/madebyollin/taesd/fdbae2df989db95761f482efb8977e1182fb68d2/taesd.py",
+        "path": "/tmp/hepta-taesd-assets/taesd.py",
+        "bytes": 10719,
+        "sha256": "5943493eb291f768e0a87dd9b54c60461d3be0a9141003db7f62bd6b8e9efa6f"
+      },
+      "LICENSE": {
+        "url": "https://raw.githubusercontent.com/madebyollin/taesd/fdbae2df989db95761f482efb8977e1182fb68d2/LICENSE",
+        "path": "/tmp/hepta-taesd-assets/LICENSE",
+        "bytes": 1073,
+        "sha256": "261497cf8e9ed613ed1fa5ddf48af32cdf50545b2ccd9edd7eacc91fb9255d6e"
+      },
+      "README.md": {
+        "url": "https://raw.githubusercontent.com/madebyollin/taesd/fdbae2df989db95761f482efb8977e1182fb68d2/README.md",
+        "path": "/tmp/hepta-taesd-assets/README.md",
+        "bytes": 8973,
+        "sha256": "3e4df28e304aaae5d87a25282a78ce6f662c6dfbd5605e667294f8cf24481e22"
+      },
+      "taesd_encoder.pth": {
+        "url": "https://raw.githubusercontent.com/madebyollin/taesd/fdbae2df989db95761f482efb8977e1182fb68d2/taesd_encoder.pth",
+        "path": "/tmp/hepta-taesd-assets/taesd_encoder.pth",
+        "bytes": 4912826,
+        "sha256": "15bc6128f0ac51c673d3427216082ebfa62402ffc89763af74edfe259b32d49d"
+      },
+      "taesd_decoder.pth": {
+        "url": "https://raw.githubusercontent.com/madebyollin/taesd/fdbae2df989db95761f482efb8977e1182fb68d2/taesd_decoder.pth",
+        "path": "/tmp/hepta-taesd-assets/taesd_decoder.pth",
+        "bytes": 4913399,
+        "sha256": "02873377c3f4659cd9f9adb2f718dcb434ba4c7bba3af3ee7bb95cbdabe2d3cf"
+      }
+    },
+    "wall_seconds": 0.04320361700047215,
+    "process_cpu_seconds": 0.03907648400000019,
+    "weights_only": true,
+    "strict_state_dict": true,
+    "trainable_parameters": 0,
+    "encoder_parameters": 1222532,
+    "decoder_parameters": 1222531
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "torch": "2.5.1+cpu",
+    "numpy": "1.26.4",
+    "pillow": "12.3.0",
+    "device": "cpu",
+    "dtype": "float32",
+    "torch_threads": 1,
+    "interop_threads": 1,
+    "batch_size": 1,
+    "warmup_forwards": 0
+  },
+  "roundtrips": [
+    {
+      "name": "image",
+      "input": {
+        "shape": [
+          1,
+          3,
+          144,
+          256
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": 0.03529411926865578,
+        "max": 1.0,
+        "mean": 0.43797433376312256,
+        "std": 0.16098003089427948
+      },
+      "latent": {
+        "shape": [
+          1,
+          4,
+          18,
+          32
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": -1.6077154874801636,
+        "max": 2.9067530632019043,
+        "mean": 0.15222181379795074,
+        "std": 0.6308019161224365
+      },
+      "output_raw": {
+        "shape": [
+          1,
+          3,
+          144,
+          256
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": 0.049547284841537476,
+        "max": 1.047315001487732,
+        "mean": 0.4389879107475281,
+        "std": 0.14300325512886047
+      },
+      "raw_error": {
+        "mse": 0.01324824196441808,
+        "psnr_db_peak_1": 18.77841748580635,
+        "mae": 0.08529383652485531
+      },
+      "clipped_error": {
+        "mse": 0.013245881231052446,
+        "psnr_db_peak_1": 18.779191433650624,
+        "mae": 0.08528456936400525
+      },
+      "out_of_range_fraction": 0.0006781683769077063,
+      "encoder_work": {
+        "wall_seconds": 0.22806833800132154,
+        "process_cpu_seconds": 0.22270000299999992,
+        "conv2d_calls": 35,
+        "conv2d_macs": 8600961024,
+        "conv2d_bias_adds": 16406784
+      },
+      "decoder_work": {
+        "wall_seconds": 0.2648619800002052,
+        "process_cpu_seconds": 0.26104891399999985,
+        "conv2d_calls": 35,
+        "conv2d_macs": 9938681856,
+        "conv2d_bias_adds": 14192640
+      }
+    },
+    {
+      "name": "video_frame_0",
+      "input": {
+        "shape": [
+          1,
+          3,
+          72,
+          128
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": 0.09803921729326248,
+        "max": 1.0,
+        "mean": 0.4500921666622162,
+        "std": 0.14371280372142792
+      },
+      "latent": {
+        "shape": [
+          1,
+          4,
+          9,
+          16
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": -1.539055347442627,
+        "max": 1.8530480861663818,
+        "mean": 0.13510984182357788,
+        "std": 0.6090932488441467
+      },
+      "output_raw": {
+        "shape": [
+          1,
+          3,
+          72,
+          128
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": 0.0910709798336029,
+        "max": 1.0024079084396362,
+        "mean": 0.4513777494430542,
+        "std": 0.13284435868263245
+      },
+      "raw_error": {
+        "mse": 0.011794529580631345,
+        "psnr_db_peak_1": 19.28319376067928,
+        "mae": 0.08071833232491
+      },
+      "clipped_error": {
+        "mse": 0.011794510927997695,
+        "psnr_db_peak_1": 19.283200628899174,
+        "mae": 0.08071824523331425
+      },
+      "out_of_range_fraction": 3.616898175096139e-05,
+      "encoder_work": {
+        "wall_seconds": 0.05704964600045059,
+        "process_cpu_seconds": 0.056713232999999974,
+        "conv2d_calls": 35,
+        "conv2d_macs": 2150240256,
+        "conv2d_bias_adds": 4101696
+      },
+      "decoder_work": {
+        "wall_seconds": 0.0610231950013258,
+        "process_cpu_seconds": 0.06079274599999973,
+        "conv2d_calls": 35,
+        "conv2d_macs": 2484670464,
+        "conv2d_bias_adds": 3548160
+      }
+    },
+    {
+      "name": "video_frame_1",
+      "input": {
+        "shape": [
+          1,
+          3,
+          72,
+          128
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": 0.03529411926865578,
+        "max": 1.0,
+        "mean": 0.44549351930618286,
+        "std": 0.14330986142158508
+      },
+      "latent": {
+        "shape": [
+          1,
+          4,
+          9,
+          16
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": -1.7981115579605103,
+        "max": 1.8927018642425537,
+        "mean": 0.15122227370738983,
+        "std": 0.6151818037033081
+      },
+      "output_raw": {
+        "shape": [
+          1,
+          3,
+          72,
+          128
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": 0.13256268203258514,
+        "max": 0.9800957441329956,
+        "mean": 0.446811318397522,
+        "std": 0.13339199125766754
+      },
+      "raw_error": {
+        "mse": 0.011192642502816777,
+        "psnr_db_peak_1": 19.510673675459913,
+        "mae": 0.07801091136921227
+      },
+      "clipped_error": {
+        "mse": 0.011192642502816777,
+        "psnr_db_peak_1": 19.510673675459913,
+        "mae": 0.07801091136921227
+      },
+      "out_of_range_fraction": 0.0,
+      "encoder_work": {
+        "wall_seconds": 0.05184443399957672,
+        "process_cpu_seconds": 0.051844900000000305,
+        "conv2d_calls": 35,
+        "conv2d_macs": 2150240256,
+        "conv2d_bias_adds": 4101696
+      },
+      "decoder_work": {
+        "wall_seconds": 0.05953331300042919,
+        "process_cpu_seconds": 0.05953599200000026,
+        "conv2d_calls": 35,
+        "conv2d_macs": 2484670464,
+        "conv2d_bias_adds": 3548160
+      }
+    },
+    {
+      "name": "video_frame_2",
+      "input": {
+        "shape": [
+          1,
+          3,
+          72,
+          128
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": 0.062745101749897,
+        "max": 1.0,
+        "mean": 0.4441395103931427,
+        "std": 0.1455356329679489
+      },
+      "latent": {
+        "shape": [
+          1,
+          4,
+          9,
+          16
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": -1.4763330221176147,
+        "max": 1.8366633653640747,
+        "mean": 0.14882317185401917,
+        "std": 0.6142753958702087
+      },
+      "output_raw": {
+        "shape": [
+          1,
+          3,
+          72,
+          128
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": 0.1171310693025589,
+        "max": 0.9889793992042542,
+        "mean": 0.44318631291389465,
+        "std": 0.12848606705665588
+      },
+      "raw_error": {
+        "mse": 0.011466179090455842,
+        "psnr_db_peak_1": 19.405812792551057,
+        "mae": 0.07953089871174328
+      },
+      "clipped_error": {
+        "mse": 0.011466179090455842,
+        "psnr_db_peak_1": 19.405812792551057,
+        "mae": 0.07953089871174328
+      },
+      "out_of_range_fraction": 0.0,
+      "encoder_work": {
+        "wall_seconds": 0.05091694200018537,
+        "process_cpu_seconds": 0.05091810500000005,
+        "conv2d_calls": 35,
+        "conv2d_macs": 2150240256,
+        "conv2d_bias_adds": 4101696
+      },
+      "decoder_work": {
+        "wall_seconds": 0.05783024700031092,
+        "process_cpu_seconds": 0.05783281500000026,
+        "conv2d_calls": 35,
+        "conv2d_macs": 2484670464,
+        "conv2d_bias_adds": 3548160
+      }
+    },
+    {
+      "name": "video_frame_3",
+      "input": {
+        "shape": [
+          1,
+          3,
+          72,
+          128
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": 0.0784313753247261,
+        "max": 1.0,
+        "mean": 0.4465668201446533,
+        "std": 0.1455678790807724
+      },
+      "latent": {
+        "shape": [
+          1,
+          4,
+          9,
+          16
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": -1.5156245231628418,
+        "max": 1.8989272117614746,
+        "mean": 0.1419242024421692,
+        "std": 0.6077907085418701
+      },
+      "output_raw": {
+        "shape": [
+          1,
+          3,
+          72,
+          128
+        ],
+        "dtype": "torch.float32",
+        "all_finite": true,
+        "min": 0.10055200755596161,
+        "max": 0.9657450914382935,
+        "mean": 0.44524893164634705,
+        "std": 0.13240866363048553
+      },
+      "raw_error": {
+        "mse": 0.01156063053330967,
+        "psnr_db_peak_1": 19.370184782278447,
+        "mae": 0.08037023299995646
+      },
+      "clipped_error": {
+        "mse": 0.01156063053330967,
+        "psnr_db_peak_1": 19.370184782278447,
+        "mae": 0.08037023299995646
+      },
+      "out_of_range_fraction": 0.0,
+      "encoder_work": {
+        "wall_seconds": 0.05047084699981497,
+        "process_cpu_seconds": 0.05047129100000003,
+        "conv2d_calls": 35,
+        "conv2d_macs": 2150240256,
+        "conv2d_bias_adds": 4101696
+      },
+      "decoder_work": {
+        "wall_seconds": 0.05234872700020787,
+        "process_cpu_seconds": 0.05235145199999991,
+        "conv2d_calls": 35,
+        "conv2d_macs": 2484670464,
+        "conv2d_bias_adds": 3548160
+      }
+    }
+  ],
+  "total_forward_work": {
+    "conv2d_calls": 350,
+    "conv2d_macs": 37079285760,
+    "conv2d_bias_adds": 61198848
+  },
+  "cost_scope": "Actual Conv2d hook MACs and bias adds; activations, resize, residual adds and memory operations excluded. CPU/wall measures include them.",
+  "video_aggregate": {
+    "raw_error": {
+      "mse": 0.01150349542680341,
+      "psnr_db_peak_1": 19.39170175827744,
+      "mae": 0.0796575938514555
+    },
+    "clipped_error": {
+      "mse": 0.011503490763644996,
+      "psnr_db_peak_1": 19.39170351877223,
+      "mae": 0.07965757207855656
+    },
+    "input_mean_absolute_temporal_difference": 0.07959922403097153,
+    "reconstruction_mean_absolute_temporal_difference": 0.07209409028291702
+  },
+  "video_export_command": [
+    "ffmpeg",
+    "-v",
+    "error",
+    "-nostdin",
+    "-framerate",
+    "1",
+    "-i",
+    "/tmp/hepta-natural-codec-001/video-reconstructed-%02d.png",
+    "-frames:v",
+    "4",
+    "-c:v",
+    "libvpx-vp9",
+    "-threads",
+    "1",
+    "-lossless",
+    "1",
+    "/tmp/hepta-natural-codec-001/video-reconstructed.webm"
+  ],
+  "artifacts": {
+    "ATTRIBUTION.json": {
+      "path": "/tmp/hepta-natural-codec-001/ATTRIBUTION.json",
+      "bytes": 1495,
+      "sha256": "9acb9ee80690a69858d8f68e9990ce0a2a94dbf9ff616b89e4a7ff4a17e08049"
+    },
+    "TAESD-LICENSE.txt": {
+      "path": "/tmp/hepta-natural-codec-001/TAESD-LICENSE.txt",
+      "bytes": 1073,
+      "sha256": "261497cf8e9ed613ed1fa5ddf48af32cdf50545b2ccd9edd7eacc91fb9255d6e"
+    },
+    "codec-tensors.npz": {
+      "path": "/tmp/hepta-natural-codec-001/codec-tensors.npz",
+      "bytes": 791118,
+      "sha256": "6494e18ea4ffb00172e463ae339c5626f6b4fca57d019691f7cf8095b5528187"
+    },
+    "image-comparison.png": {
+      "path": "/tmp/hepta-natural-codec-001/image-comparison.png",
+      "bytes": 168051,
+      "sha256": "4efc0c60ecb3011e14cd90e6aaabc6865cba0c70d7ac87d131ec03b2dc5519ab"
+    },
+    "image-reconstructed.png": {
+      "path": "/tmp/hepta-natural-codec-001/image-reconstructed.png",
+      "bytes": 79644,
+      "sha256": "e1d959fe73a4157a23455c57888ce5aee04d1a6319334798a317d91f2b024974"
+    },
+    "video-comparison.png": {
+      "path": "/tmp/hepta-natural-codec-001/video-comparison.png",
+      "bytes": 165058,
+      "sha256": "1df9e284984905f57cfcb31266b25d368f4b729b86276c9768b9fceb974838f7"
+    },
+    "video-reconstructed-00.png": {
+      "path": "/tmp/hepta-natural-codec-001/video-reconstructed-00.png",
+      "bytes": 20960,
+      "sha256": "9f3b8cd98047a988f71ba91a348e83987fa4807f4918cbf494c8b03b188db12e"
+    },
+    "video-reconstructed-01.png": {
+      "path": "/tmp/hepta-natural-codec-001/video-reconstructed-01.png",
+      "bytes": 20489,
+      "sha256": "1d4cea882d800f22344143c6c0240b474078110c814d364c08229f5be7f70af7"
+    },
+    "video-reconstructed-02.png": {
+      "path": "/tmp/hepta-natural-codec-001/video-reconstructed-02.png",
+      "bytes": 20566,
+      "sha256": "9d525e0f5eec244767306a34291b813574490c76d1b30effc8cdabc3035e2ce5"
+    },
+    "video-reconstructed-03.png": {
+      "path": "/tmp/hepta-natural-codec-001/video-reconstructed-03.png",
+      "bytes": 20375,
+      "sha256": "68525ff59cb6ec075e4b06009e2f7617c5f3456f6b47a4d6c3fa1112d7b21025"
+    },
+    "video-reconstructed.webm": {
+      "path": "/tmp/hepta-natural-codec-001/video-reconstructed.webm",
+      "bytes": 82825,
+      "sha256": "ecb1394b84015fd3e22a0e3ac706866fc40f8a47b1e7095262afbf3b8ecb6dff"
+    }
+  },
+  "total_wall_seconds": 1.6578729579996434,
+  "total_process_cpu_seconds": 2.624327679,
+  "timing_scope": "Main function after Python/Torch imports, including asset checks, model load, all five measured roundtrips and artifact export; no unreported warmup. Each forward has separate CPU/wall timing.",
+  "child_cpu_seconds": 0.26997499999999997,
+  "peak_process_rss_kib_linux": 300240,
+  "scope": {
+    "pretrained_codec_loaded": true,
+    "actual_natural_image_video_roundtrip": true,
+    "audio_or_text_codec_executed": false,
+    "conditional_generation_performed": false,
+    "temporal_video_model": false,
+    "semantic_understanding_evaluated": false,
+    "training_performed": false,
+    "ndu_benefit_evaluated": false,
+    "natural_foundation_model_blocker_closed": false,
+    "formal_v3_experiment_changed": false
+  }
+}

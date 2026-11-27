@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "captured_utc": "2026-11-16 14:56:30 UTC",
+  "base_published_head": "285e971b3af3a93a79169b56a42263069e473057",
+  "source_and_history_head": "ca414120a713eaa0ecb9d5a75c21b9edf5c922fe",
+  "source_tree": "c2edb469712d59a01005c97be0009db02d7762b7",
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "scope": {
+    "snapshot_utc": "2026-11-16T14:54:53Z",
+    "heads": 7315,
+    "protected_hia": 84,
+    "original_nonprotected": 7230,
+    "contained_by_ancestry": 1733,
+    "remaining": 5497,
+    "protected_markers": [
+      "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+      "3aa1f85ba90c79d220a5cadf2261def176892867"
+    ],
+    "protection_uses_ancestry_not_name_only": true
+  },
+  "review": {
+    "native_v7": "Complete four-file diff reviewed; profile changes restricted to sha2 0.10.9 optimization, test diagnostics restricted to closed categories. Original runtime semantics and qualification limits retained.",
+    "authentication": "Complete four-file source diff and broadcast producer path reviewed. Known authentication fields redacted only in diagnostic copies; explicit interactive instructions remain. Independent review accepted the source change before native validation.",
+    "caller_storage": "Complete loader, tests, verifier, workflow and CI-scope changes reviewed. Exact raw-byte and parsed-object equivalence, inverse AST preservation, source custody and all 162 immutable blobs verified.",
+    "six_histories": "Seven unique incoming commits, seven conflict paths, and nine current Rust files reviewed, including exact locked Rama dependency behavior. Six ordinary two-parent merges independently verified; source tree unchanged.",
+    "historical_artifacts": "All 164 earlier artifacts retained byte-identical; historical counts and test statuses are not rewritten."
+  },
+  "observed": {
+    "b4": {
+      "passed": 1331,
+      "failed": 0,
+      "pinned_inputs": 14349,
+      "changed_inputs": 0,
+      "log_sha256": "8c0b1c15d02cca82ed36c0c2a825715fde9f8ae074806be4613683d494f1d7aa"
+    },
+    "security_full_packages": {
+      "passed": 666,
+      "failed": 0,
+      "skipped": 0,
+      "candidate": "a70540b51842034678171fc2278e7b3ecfcf022d",
+      "changed_inputs": 0,
+      "receipt_sha256": "831eb80af50b4626bbb85698b5e79b454d887f23983ffcad9eb18705595c5743",
+      "log_sha256": "5384be2f59ea52c2b24733dfaded0efdf1092bf19905bb2a8935b8ce864ea124"
+    },
+    "native_v7": {
+      "candidate": "095fb1d50cc9ac7e53ea5027cf3cfdd2c86b2feb",
+      "passed": 10,
+      "timed_out": 16,
+      "filtered": 1584,
+      "exit_code": 100,
+      "pinned_inputs": 7749,
+      "changed_inputs": 0,
+      "test_threads": 4,
+      "retries": 0,
+      "timeout_seconds": 60,
+      "stack_bytes": 8388608,
+      "deep_readonly_passed": true
+    },
+    "provider_single_debugger": {
+      "qualification": false,
+      "child_exit_code": 0,
+      "execution_seconds": 20.80485043700901,
+      "source_inputs_unchanged": true,
+      "binary_unchanged": true,
+      "owned_pid_absent": true
+    },
+    "caller_cli": {
+      "exit_code": 0,
+      "boundaries": 1645,
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "seconds": 1830.188,
+      "pinned_inputs": 14349,
+      "changed_inputs": 0,
+      "log_sha256": "4b16ccec00d9aa2641713aba1491660b622665c1b181a2163b2408bf485ebdd8"
+    }
+  },
+  "pending": [
+    "full-tree spelling and custody after complete materialization",
+    "scoped Agentd Clippy after the four-file native change",
+    "repair and original qualification of 16 provider-related native timeouts",
+    "native Windows positive admission qualification",
+    "fresh hosted CI and CodeQL on the published combined head",
+    "remaining original nonprotected histories"
+  ],
+  "policy": {
+    "remote_branch_deletions": 0,
+    "main_merge_authorized_only_after_required_gates": true,
+    "required_checks": ["CI required", "Architecture required"],
+    "blob_default_bytes": 512000,
+    "blob_allowlist_unchanged": true,
+    "no_codeql_dismissals_or_suppressions": true,
+    "no_blanket_conflict_resolution": true
+  }
+}

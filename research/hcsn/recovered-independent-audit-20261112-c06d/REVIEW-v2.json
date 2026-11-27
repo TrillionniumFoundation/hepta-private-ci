@@ -1,0 +1,227 @@
+{
+  "schema": "hcsn-recovered-audit-independent-review-v2",
+  "parent_commit": "3d2451ebfcaf19912a77a5a888d01c55f7a9dca3",
+  "passed": true,
+  "method": "Independent fresh Git connector reads of frozen SUMMARY, SELECTION and auditor; configured desktop read_multiple_files of original AUDIT and ARCHIVE; exact JSON field, roster, receipt and byte-identity comparison in V8. No Torch import or checkpoint deserialization in this reviewer.",
+  "raw_inputs": [
+    {
+      "eof": true,
+      "path": "/home/qian-qi/hcsn-real-recovery-20261112-4092/AUDIT.json",
+      "sha256": "342ce2498e6e95c9233564aa7210058fc0abb98115059f5a6b86d156bb96af70",
+      "size": 5562,
+      "immutable_read_version": "2050:10029672:5562:1794466560775705030:1794466560775705030"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/hcsn-real-recovery-20261112-4092/ARCHIVE.json",
+      "sha256": "e1a0213e3f8a86c902912f7f9fb67605681f8d3dc033bc1feb839f1d5b993e45",
+      "size": 550,
+      "immutable_read_version": "2050:10030059:550:1794469433392292290:1794469433392292290"
+    }
+  ],
+  "git_inputs": [
+    {
+      "path": "qualification/hcsn_differentiable/replay_v1/evidence/real-recovery-20261112-4092/SUMMARY.json",
+      "bytes": 53740,
+      "sha256": "c8dcd62b2391a730c5d21ecd6dfa4b4b1ad0e4d71ae9c23fbaafa29f2502eeb5",
+      "git_blob": "8c8dc1d72dda02426e146d587e9a67e9a77aff2f"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/replay_v1/SELECTION.json",
+      "bytes": 2644,
+      "sha256": "6271b8dd1859b8a124f5ecd06ba307c0f9ebcdc5e6f86a9d164c4ac374cdbd55",
+      "git_blob": "2adba4aadb5d693fcf2df5abc027d72c814d7d78"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/replay_v1/audit_replay.py",
+      "bytes": 10297,
+      "sha256": "1174ad3615ebfaa27c21f308f7f2cce16fad6ddada8e0c416c8653bc04e9a48e",
+      "git_blob": "1cb218ac6b9727e59c87eeb1ccf2559a345307c9"
+    }
+  ],
+  "arithmetic": {
+    "schema": "hcsn-independent-git-summary-recheck-v1",
+    "parent": "3d2451ebfcaf19912a77a5a888d01c55f7a9dca3",
+    "passed": true,
+    "rows": [
+      {
+        "fit": "hcsn-s101-lr0.001",
+        "origin_epoch": 116,
+        "origin": {
+          "bytes": 450552,
+          "sha256": "eb017f86a0e3f7a1268591b10ef4f2727c36daf2edeed3aa9e5316d6eaa6c30b"
+        },
+        "reference": {
+          "bytes": 451768,
+          "sha256": "a6f147856b94484c412a9e04c0896ccf3b7e8de5bab86c549546111b96885587"
+        },
+        "resume": {
+          "bytes": 451768,
+          "sha256": "a6f147856b94484c412a9e04c0896ccf3b7e8de5bab86c549546111b96885587"
+        },
+        "physical_calls": 4,
+        "logical_increment": 2,
+        "batch_loss_gradient_receipts_equal": true,
+        "summary_claims_full_state_equal": true
+      },
+      {
+        "fit": "hcsn-s101-lr0.003",
+        "origin_epoch": 76,
+        "origin": {
+          "bytes": 450552,
+          "sha256": "bdd2342af17e2e04bd4403af6c4f0aef5875bb192faa254396ad3b5d56c810e5"
+        },
+        "reference": {
+          "bytes": 451768,
+          "sha256": "16a58405e6b98e7a8149ea1c3c300f58b7fd4be85280e6034df4f6f2cf86f797"
+        },
+        "resume": {
+          "bytes": 451768,
+          "sha256": "16a58405e6b98e7a8149ea1c3c300f58b7fd4be85280e6034df4f6f2cf86f797"
+        },
+        "physical_calls": 4,
+        "logical_increment": 2,
+        "batch_loss_gradient_receipts_equal": true,
+        "summary_claims_full_state_equal": true
+      },
+      {
+        "fit": "hcsn-s211-lr0.001",
+        "origin_epoch": 126,
+        "origin": {
+          "bytes": 450552,
+          "sha256": "e98973d5d41621727444a2c117b89a7f33925b96066f092136c2f945b1453da3"
+        },
+        "reference": {
+          "bytes": 451832,
+          "sha256": "9f02647e5cddc2ececb9ac74da39407100ec18933902ffaf42dded8a6dd130b6"
+        },
+        "resume": {
+          "bytes": 451832,
+          "sha256": "9f02647e5cddc2ececb9ac74da39407100ec18933902ffaf42dded8a6dd130b6"
+        },
+        "physical_calls": 4,
+        "logical_increment": 2,
+        "batch_loss_gradient_receipts_equal": true,
+        "summary_claims_full_state_equal": true
+      },
+      {
+        "fit": "hcsn-s211-lr0.003",
+        "origin_epoch": 50,
+        "origin": {
+          "bytes": 450552,
+          "sha256": "1fd9f82188a7e376cc5f81b190144f72e477f3043d87d3c0612618fa7a2e1a0f"
+        },
+        "reference": {
+          "bytes": 451832,
+          "sha256": "b59e9955b2733d9605a3555b0fee33bf0ddaa388462f580cf86e2273a0eb0de6"
+        },
+        "resume": {
+          "bytes": 451832,
+          "sha256": "b59e9955b2733d9605a3555b0fee33bf0ddaa388462f580cf86e2273a0eb0de6"
+        },
+        "physical_calls": 4,
+        "logical_increment": 2,
+        "batch_loss_gradient_receipts_equal": true,
+        "summary_claims_full_state_equal": true
+      },
+      {
+        "fit": "hcsn-s307-lr0.001",
+        "origin_epoch": 127,
+        "origin": {
+          "bytes": 450552,
+          "sha256": "032d43dc0e6f20a6d4113102ae32faa57809c714875beec4ab2ab76358e93441"
+        },
+        "reference": {
+          "bytes": 451832,
+          "sha256": "2f5957d512581202aba77c42f1b6c9ed74d43db5e06b930c81f920cc6b26c22d"
+        },
+        "resume": {
+          "bytes": 451832,
+          "sha256": "2f5957d512581202aba77c42f1b6c9ed74d43db5e06b930c81f920cc6b26c22d"
+        },
+        "physical_calls": 4,
+        "logical_increment": 2,
+        "batch_loss_gradient_receipts_equal": true,
+        "summary_claims_full_state_equal": true
+      },
+      {
+        "fit": "hcsn-s307-lr0.003",
+        "origin_epoch": 72,
+        "origin": {
+          "bytes": 450616,
+          "sha256": "31241e7158ef0b921fe80bd8f1ebc32614e3b6a8bc270ead1997ed49df93b2ee"
+        },
+        "reference": {
+          "bytes": 451768,
+          "sha256": "d00d42820be8305ec141c40e75f83870609858d1f6490fb13383e18ff2658253"
+        },
+        "resume": {
+          "bytes": 451768,
+          "sha256": "d00d42820be8305ec141c40e75f83870609858d1f6490fb13383e18ff2658253"
+        },
+        "physical_calls": 4,
+        "logical_increment": 2,
+        "batch_loss_gradient_receipts_equal": true,
+        "summary_claims_full_state_equal": true
+      }
+    ],
+    "physical_positive_calls": 24,
+    "control_calls_preexisting_summary": 2,
+    "total_preexisting_calls": 26,
+    "new_model_optimizer_calls": 0,
+    "scope": "JSON arithmetic and frozen Git lineage only; no checkpoint deserialization performed by this computation"
+  },
+  "frozen_auditor_review": {
+    "freeze_commit": "d8bcfac912c3cc24faeadf3bb234d1df5107f088",
+    "independently_defines_recursive_exact": true,
+    "imports_producer_model_or_comparison_helper": false,
+    "syntactic_torch_load_sites": 6,
+    "all_load_sites_weights_only_cpu": true,
+    "training_method_calls_found": false,
+    "runtime": "Uses producer Torch deserializer/runtime and operator-controlled files. This is consistency checking with separately defined recursive tensor comparison; it is not independent hostile-host attestation.",
+    "hardening_limits": [
+      "read_json rejects duplicate keys but accepts JSON NaN/Infinity constants; actual frozen producer uses allow_nan=False.",
+      "Adam increment all(...) would be vacuously true for an empty optimizer state map; no evidence the fixed-byte selected trained checkpoints use an empty map.",
+      "This reviewer did not independently deserialize the six-fit checkpoint files; decoded-state equality is a report of the frozen recovered auditor, supported here by matching final serialized hashes in recovered audit and original Git summary."
+    ]
+  },
+  "archive_scope": {
+    "metadata_observed": true,
+    "entire_archive_read_in_this_review": false,
+    "entire_archive_git_publication_observed": false,
+    "original_files_reported": 118,
+    "tar_member_count_independently_verified": false,
+    "note": "Archive creation source adds ORIGINALS-MANIFEST.json in addition to the selected original files; do not equate original_files with tar member count."
+  },
+  "execution_scope": {
+    "new_torch_or_model_calls": 0,
+    "new_optimizer_calls": 0,
+    "independent_complete_training_replays": 0,
+    "original_full_training_replays": "0/6",
+    "original_c2_job": "1a1c74f3308-be2a-75",
+    "original_c2_job_status": "UNKNOWN",
+    "two_sigterm_attempt_lifetime_optimizer_totals": "UNKNOWN",
+    "separate_input_zip_publisher_effect": "Observed native output in retained reconciliation-v2 and independently fetched Draft PR #6214 at head 917e4886658ae9f0c342eb1fa0f545d79c39e2c8; authoritative native terminal status not retrieved here.",
+    "newer_uniform_graded_or_dense_operators_qualified": false
+  },
+  "scientific_admission": "HOLD_NO_GO",
+  "operation_lineage": {
+    "v1": {
+      "git_blob": "77919176055d8a47a1ca07134396baabad758b60",
+      "bytes": 13207,
+      "identity_scope": "Retained tool-object reencoding; local original-file SHA256 is pending because scratch is unavailable. This file is not claimed byte-identical to the inaccessible earlier scratch file."
+    },
+    "v2": {
+      "git_blob": "09d37d2cd44625d221c274b71b11f86f20eae6b7",
+      "previous_record_preserved": true,
+      "additional_publication_pr": 6214,
+      "independently_observed_pr_head": "917e4886658ae9f0c342eb1fa0f545d79c39e2c8"
+    },
+    "earlier_review": {
+      "bytes": 5840,
+      "sha256": "3697cb24512f8ccdba5ad11550598e79578fd18fa9a8fad00727feff853ebaee",
+      "raw_bytes_included": false,
+      "status": "Unavailable scratch artifact; this v2 review was freshly generated from current exact Git and desktop reads and does not impersonate the earlier bytes."
+    }
+  }
+}

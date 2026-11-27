@@ -1,0 +1,37 @@
+{
+  "base_repository_commit": "eef3acecfbe333af0877c47c7d5ea08f50b7209e",
+  "format_check": {
+    "exact_recipe_fallback": "python -I -B scripts/format.py",
+    "just_command": "unavailable: command not found",
+    "recipe_exit": 0,
+    "scope": "repository formatter has no owning formatter for qualification Python; exact source bytes preserved"
+  },
+  "local_independent_review_sha256": "4c6cae3c51af438e26500f02d0b39565e9e81d92006149eceaaff096f3a4e716",
+  "new_scientific_execution_authorized": false,
+  "original_budget_failure_and_negative_quality_not_reclassified": true,
+  "original_local_source_freeze_sha256": "c2591aae687f831377bb7f4be6d72bb82607c154f2ecd48c81b32f23f821253c",
+  "patch_publication_format": "zero context to avoid whitespace-only context in nested patch; reproduced exact postimages",
+  "private_data_models_receipts_uploaded": false,
+  "publication_files": {
+    "QUALIFICATION.json": "1df5520802446711d1fe8569862f41cc933b8633752a1bcef2ec59dce83a20bc",
+    "README.md": "6aba6dd02265d20a83f6a99e8257cd6873584fadcd829b4b9c4c3c5aa110a3cd",
+    "accounting.py": "a7c93cbbc7d328b6f60572c7f4f78520c6eff7f7adfd1ecd3ffe6d2c7b9399a5",
+    "eval_controller.py": "b37a52c68425678a89c0c7527b241f89451c505fbf9851aa4ad246970748f5d4",
+    "integration.patch": "8a98d8889e5190f5e266ede6e4ede0b587d054c0904b92e7fc3a69b4c0bea84c",
+    "reference/accounting.py": "c9e9bad9bbccc1772018596476e862c39b8ef3daccc74172049271bf43202d4d",
+    "reference/eval_controller.py": "dfe30923b538a3e99056c7b1ba217d73a16b980e258d000995c93126818a7258",
+    "support.py": "38f886ba9ef875e3b249750202ba893b86b1aa9a70ce38cd4397437ecdce94d0",
+    "test_batch_accounting.py": "b0f37f527c63d7ae9e60b1db22c635fc2a700e526fee046dbb6b234e8595f990"
+  },
+  "schema": "local-accounting-batch-source-patch-v1",
+  "scope": "exact reviewed source fix plus portable literal tests; not a scientific campaign runner",
+  "source_files": {
+    "accounting.py": "a7c93cbbc7d328b6f60572c7f4f78520c6eff7f7adfd1ecd3ffe6d2c7b9399a5",
+    "eval_controller.py": "b37a52c68425678a89c0c7527b241f89451c505fbf9851aa4ad246970748f5d4",
+    "integration.patch": "8a98d8889e5190f5e266ede6e4ede0b587d054c0904b92e7fc3a69b4c0bea84c",
+    "reference/accounting.py": "c9e9bad9bbccc1772018596476e862c39b8ef3daccc74172049271bf43202d4d",
+    "reference/eval_controller.py": "dfe30923b538a3e99056c7b1ba217d73a16b980e258d000995c93126818a7258",
+    "support.py": "38f886ba9ef875e3b249750202ba893b86b1aa9a70ce38cd4397437ecdce94d0",
+    "test_batch_accounting.py": "b0f37f527c63d7ae9e60b1db22c635fc2a700e526fee046dbb6b234e8595f990"
+  }
+}

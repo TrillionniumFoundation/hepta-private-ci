@@ -1,0 +1,21 @@
+{
+  "files": [
+    {
+      "bytes": 43582,
+      "git_blob": "00c05c540be2f17cbefb5553d621ad4beb4c738b",
+      "path": "qualification/hcsn_initial_adjoint/evidence/LOCAL001-ORIGINALS.tar.gz",
+      "sha256": "b25571b3acbfd52e6a85d81d54acc0b48a731c0b31bed6a1ac3d6d69a86ff736"
+    },
+    {
+      "bytes": 125877,
+      "git_blob": "a0e0afeb49949c1654f5488c10def03018f93573",
+      "path": "qualification/hcsn_initial_vjp/evidence/NUMPY001-ORIGINALS.tar.gz",
+      "sha256": "85e543dc770257e5470af867415d6d1f55e859fac116f37204fc0e5a6bb2348e"
+    }
+  ],
+  "head": "06856b0bba5c26c8aa72dc15a4f2a6e34e253bc5",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reproduction": "Materialize the two pinned archives at GIT-LOCAL001-ORIGINALS.tar.gz and GIT-BASELINE-ORIGINALS.tar.gz beside the included published-source copies and GIT-FORMAT.json; run inspect_retained.py --folder <folder> --output <new-file>. This only reads archives, evaluates scalar closed forms/linear algebra residuals and recomputes retained array arithmetic.",
+  "retrieval": "Both archives were read through GitHub connector as base64 and decoded/hash-verified. No original candidate or reference solver was imported or executed.",
+  "schema": "hcsn-adjoint-independent-review-git-inputs-v1"
+}

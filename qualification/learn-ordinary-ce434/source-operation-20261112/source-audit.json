@@ -1,0 +1,1453 @@
+{
+  "schema": 1,
+  "source_parent": "a8e8e5544b000da2942deba96ed855791c4af104",
+  "rust_checkpoint": {
+    "commit": "e2c0a3dd1fa86ccddc47ea83b2a7402761bd5e37",
+    "tree": "95a266099902a5dc320c8c0f1c299e49fca6db1b",
+    "branch": "codex/learn-source-operation-checkpoint-ce434-20261112-v1",
+    "blob_readback": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+        "sha": "a7b47e3df989a64add3a96074add11466b70fc48",
+        "equal": true,
+        "length": 17423
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+        "sha": "4903cc941af34b0a609d9e21b6443dc1e956c435",
+        "equal": true,
+        "length": 16498
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "sha": "78b6d07e699d05a1e5c89c98c5e40814a49c6a78",
+        "equal": true,
+        "length": 7232
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+        "sha": "89890de1b159091af3906113bc67e6df9d075a26",
+        "equal": true,
+        "length": 7499
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_remote.rs",
+        "sha": "2a06c53a3e188338f476b91fd0e544d34a84c187",
+        "equal": true,
+        "length": 17912
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+        "sha": "a7ab721fa3943ebd5d4ed09241bb889b3e3dc3e9",
+        "equal": true,
+        "length": 4343
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "sha": "2cb1f11b89b05f5ec70b7974144aa6100ab7a617",
+        "equal": true,
+        "length": 16375
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+        "sha": "d2a4a35582cdfac6a225d0f152fddb03b95a19af",
+        "equal": true,
+        "length": 8069
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+        "sha": "062144530d7680831985c460bea0fa919d2da7ae",
+        "equal": true,
+        "length": 13647
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_tests.rs",
+        "sha": "5a0cdd909c07f33062fcb81615cadc061db42463",
+        "equal": true,
+        "length": 19755
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "sha": "fd7bab02cd7243f6c9b6b97beba5ad19087cbfcc",
+        "equal": true,
+        "length": 10509
+      }
+    ]
+  },
+  "validation": {
+    "rust_format": "not_run",
+    "rust_compile": "not_run",
+    "python_source_qa": "not_run",
+    "native_mechanisms": "not_run",
+    "full_repository_caller_scan": "not_run",
+    "ordinary_acceptance": 0,
+    "positive_adoption_acceptance": 0,
+    "no_update_or_rollback_acceptance": 0,
+    "cold_restart_acceptance": 0
+  },
+  "lexical_record_audit": {
+    "kind": "JavaScript lexical and complete-record audit; not Python/native execution",
+    "protectedChecked": 27,
+    "functionGuards": 75,
+    "globalOrders": 13,
+    "genericScoped": 3,
+    "errors": [],
+    "recordCounterResidual": [],
+    "oldBoundaries": 528,
+    "newBoundaries": 544,
+    "oldProtected": 384,
+    "newProtected": 392,
+    "inventoryMissing": [],
+    "duplicateBoundaryIds": []
+  },
+  "changed_existing_complete_records": [
+    {
+      "type": "boundary",
+      "id": "learning_source_bound_training_admission",
+      "old_record": "[[boundary]]\nid = \"learning_source_bound_training_admission\"\nsymbol = \"CellQ24TrainingOwnerV1::require_original_source_capture\"\nreceiver_type = \"CellQ24TrainingOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\ndefinition_markers = [\"pub(crate) fn require_original_source_capture(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"]\ncaller_markers = []\n\n\n\n",
+      "new_record": "[[boundary]]\nid = \"learning_source_bound_training_admission\"\nsymbol = \"CellQ24TrainingOwnerV1::require_original_source_capture\"\nreceiver_type = \"CellQ24TrainingOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\ndefinition_markers = [\"pub(crate) fn require_original_source_capture(\"]\nproduct_callers = []\ncaller_markers = []\n\n\n\n"
+    },
+    {
+      "type": "boundary",
+      "id": "learning_source_bound_training_live_check",
+      "old_record": "[[boundary]]\nid = \"learning_source_bound_training_live_check\"\nsymbol = \"CellQ24TrainingOwnerV1::require_live_source_if_captured\"\nreceiver_type = \"CellQ24TrainingOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\ndefinition_markers = [\"pub(crate) fn require_live_source_if_captured(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"]\ncaller_markers = []\n\n\n\n",
+      "new_record": "[[boundary]]\nid = \"learning_source_bound_training_live_check\"\nsymbol = \"CellQ24TrainingOwnerV1::require_live_source_if_captured\"\nreceiver_type = \"CellQ24TrainingOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\ndefinition_markers = [\"pub(crate) fn require_live_source_if_captured(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"]\ncaller_markers = []\n\n\n\n"
+    },
+    {
+      "type": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "old_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\nrequired = [\"struct OriginalCellQ24TrainingStageV1\", \"Arc<Mutex<Owners<TW, RW>>>\", \"Semaphore::new(/*permits*/ 1)\", \"AnchorWitnessStore + Send + 'static\"]\nforbidden = [\"SigningKey\", \"File::open\", \"UnixStream::connect\", \".sign(\", \".claim(\", \".complete(\", \"LearningIterationStageOwnerPortsV1\", \"with_root_learning_stage_owners(\", \".acquire().await\", \".acquire_owned().await\", \"unwrap_or\", \"permit_all\", \"if false\"]\nrequired_order = [[\"async fn in_lane<T:\", \"let permit = Arc::clone(&self.lane)\", \".try_acquire_owned()\", \"Error::Busy\", \"tokio::task::spawn_blocking(move ||\", \"let _permit = permit;\", \"owners.try_lock()\", \"training\\n                .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?\", \"work(&mut owners)\"]]\nrequired_function_order = [\n  { function = \"fn from_original_owners(\", sequence = [\"dataset: receipts.config.dataset.clone()\", \"stage\", \".in_lane(\", \"super::validate_config(\", \"owners.receipts.journal.read(&owners.receipts.saved)\", \"Ok(_) => owners.read_original_completion().map(|_| ())\", \"ProductEvaluationExecutionStoreErrorV1::Missing\", \"Ok(stage)\"], top_level = [] },\n  { function = \"fn execute_training(\", sequence = [\"self.require_dataset(dataset)?\", \".in_lane(\", \"owners.receipts.journal.read(&owners.receipts.saved)\", \"Ok(_) => owners\", \"Err(LearningOriginalOwnerErrorV1::Store(\", \"ProductEvaluationExecutionStoreErrorV1::Missing\", \"let retained_outcome = match CellQ24TrainingOwnerV1::readback(training)\", \"Ok(outcome) => Some(outcome)\", \"Err(CellQ24TrainingOwnerErrorV1::Store(\", \"ProductEvaluationExecutionStoreErrorV1::Missing\", \")) => None\", \"Err(error) => return Err(error.into())\", \"super::now()\", \".require_signer_binding(\", \"LearningEvidenceRoleV1::Generator\", \"if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds\", \"return Err(Error::DeadlineExceeded)\", \"let outcome = match retained_outcome\", \"Some(outcome) => outcome\", \"None => training.fit_or_readback(&cancellation)?\", \"receipts.attest_original_completion(training)?\"], top_level = [\"self.require_dataset(dataset)?;\"] },\n  { function = \"fn readback(\", sequence = [\"self.require_dataset(dataset)?\", \"self.in_lane(Owners::read_original_completion).await\"], top_level = [\"self.require_dataset(dataset)?;\"] },\n  { function = \"fn receipt_attestation(\", sequence = [\"OriginalCellQ24TrainingStageV1::readback(self, dataset).await?\", \"if &completed.receipt != expected\", \"return Err(Error::Binding(\", \"Ok(completed.attestation)\"], top_level = [\"let completed = OriginalCellQ24TrainingStageV1::readback(self, dataset).await?;\", \"if &completed.receipt != expected\"] },\n  { function = \"fn require_dataset(\", sequence = [\"if dataset != &self.dataset\", \"return Err(Error::Binding(\", \"Ok(())\"], top_level = [\"if dataset != &self.dataset\"] },\n  { function = \"fn read_original_completion(\", sequence = [\"OriginalCellQ24TrainingReceiptOwnerV1::readback(&mut self.receipts, training)?\", \"CellQ24TrainingOwnerV1::readback(training)?\", \"Ok(OriginalCellQ24TrainingCompletionV1\"], top_level = [] },\n]\n\n\n\n",
+      "new_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\nrequired = [\"struct OriginalCellQ24TrainingStageV1\", \"Arc<Mutex<Owners<TW, RW>>>\", \"Semaphore::new(/*permits*/ 1)\", \"AnchorWitnessStore + Send + 'static\"]\nforbidden = [\"SigningKey\", \"File::open\", \"UnixStream::connect\", \".sign(\", \".claim(\", \".complete(\", \"LearningIterationStageOwnerPortsV1\", \"with_root_learning_stage_owners(\", \".acquire().await\", \".acquire_owned().await\", \"unwrap_or\", \"permit_all\", \"if false\"]\nrequired_order = [[\"async fn in_lane<T:\", \"let permit = Arc::clone(&self.lane)\", \".try_acquire_owned()\", \"Error::Busy\", \"tokio::task::spawn_blocking(move ||\", \"let _permit = permit;\", \"owners.try_lock()\", \"training\\n                .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?\", \"work(&mut owners, &proof)\"]]\nrequired_function_order = [\n  { function = \"fn from_original_owners(\", sequence = [\"dataset: receipts.config.dataset.clone()\", \"stage\", \".in_lane(\", \"super::validate_config(\", \"owners.receipts.journal.read(&owners.receipts.saved)\", \"Ok(_) => owners.read_original_completion().map(|_| ())\", \"ProductEvaluationExecutionStoreErrorV1::Missing\", \"Ok(stage)\"], top_level = [] },\n  { function = \"fn execute_training(\", sequence = [\"self.require_dataset(dataset)?\", \".in_lane(\", \"owners.receipts.journal.read(&owners.receipts.saved)\", \"Ok(_) => owners\", \"Err(LearningOriginalOwnerErrorV1::Store(\", \"ProductEvaluationExecutionStoreErrorV1::Missing\", \"let retained_outcome = match CellQ24TrainingOwnerV1::readback(training)\", \"Ok(outcome) => Some(outcome)\", \"Err(CellQ24TrainingOwnerErrorV1::Store(\", \"ProductEvaluationExecutionStoreErrorV1::Missing\", \")) => None\", \"Err(error) => return Err(error.into())\", \"super::now()\", \".require_signer_binding(\", \"LearningEvidenceRoleV1::Generator\", \"if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds\", \"return Err(Error::DeadlineExceeded)\", \"let outcome = match retained_outcome\", \"Some(outcome) => outcome\", \"None => training.fit_or_readback(&cancellation)?\", \"receipts.attest_original_completion(training)?\"], top_level = [\"self.require_dataset(dataset)?;\"] },\n  { function = \"fn readback(\", sequence = [\"self.require_dataset(dataset)?\", \"self.in_lane(|owners, _source| owners.read_original_completion())\", \".await\"], top_level = [\"self.require_dataset(dataset)?;\"] },\n  { function = \"fn receipt_attestation(\", sequence = [\"OriginalCellQ24TrainingStageV1::readback(self, dataset).await?\", \"if &completed.receipt != expected\", \"return Err(Error::Binding(\", \"Ok(completed.attestation)\"], top_level = [\"let completed = OriginalCellQ24TrainingStageV1::readback(self, dataset).await?;\", \"if &completed.receipt != expected\"] },\n  { function = \"fn require_dataset(\", sequence = [\"if dataset != &self.dataset\", \"return Err(Error::Binding(\", \"Ok(())\"], top_level = [\"if dataset != &self.dataset\"] },\n  { function = \"fn read_original_completion(\", sequence = [\"OriginalCellQ24TrainingReceiptOwnerV1::readback(&mut self.receipts, training)?\", \"CellQ24TrainingOwnerV1::readback(training)?\", \"Ok(OriginalCellQ24TrainingCompletionV1\"], top_level = [] },\n]\n\n\n\n"
+    },
+    {
+      "type": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "old_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\nrequired = [\"source: Some(source)\",\"hepta.cell.q24.original-source-training-job.v1\\\\0\",\"ordinary Training requires original source capture\"]\nforbidden = [\"SigningKey\",\".sign(\",\"File::open\",\"UnixStream::connect\",\"FrozenLearningScopeV2::freeze(\",\"unwrap_or\",\"permit_all\",\"if false\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn create_from_original_source(\"\nsequence = [\"source.native_inputs()?\",\"captured_job_key(&plan, &batch, rule, &source)?\",\"witness.current()?.is_some()\",\"LockedFileProductEvaluationExecutionStoreV1::create(\",\".compare_and_swap(None, anchor(journal.anchor()))\",\"source: Some(source)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn recover_from_original_source(\"\nsequence = [\"source.native_inputs()?\",\"captured_job_key(&plan, &batch, rule, &source)?\",\"let minimum = witness\",\"LockedFileProductEvaluationExecutionStoreV1::recover(\",\"key.binding_digest\",\"let current = anchor(journal.anchor())\",\"compare_and_swap(Some(minimum), current)\",\"source: Some(source)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn captured_job_key(\"\nsequence = [\"let original = job_key(plan, batch, rule)?\",\"binding_digest: Digest32::of_parts(&[\",\"original.binding_digest.as_array()\",\"source.source_capture_binding().as_array()\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_source_capture(\"\nsequence = [\"if self.fenced\",\"return Err(Error::CommitUncertain)\",\"let result = self\",\".source\",\".as_ref()\",\".ok_or(Error::Binding(\",\"OriginalCellQ24TrainingSourceV1::require_current_in_lane(source)\",\"if result.is_err()\",\"self.fenced = true\",\"result\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_live_source_if_captured(\"\nsequence = [\"if self.source.is_some()\",\"self.require_original_source_capture()?\",\"Ok(true)\",\"Ok(false)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_captured_work_deadline(\"\nsequence = [\"if self.source.is_some()\",\"std::time::SystemTime::now()\",\"duration_since(std::time::UNIX_EPOCH)\",\"now >= self.plan.prefix.request.envelope.expiry_unix_seconds\",\"CellQ24TrainingErrorV1::DeadlineExceeded.into()\"]\ntop_level = []\n\n\n\n",
+      "new_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\nrequired = [\"source: Some(Arc::new(source))\",\"hepta.cell.q24.original-source-training-job.v1\\\\0\",\"ordinary Training requires original source capture\"]\nforbidden = [\"SigningKey\",\".sign(\",\"File::open\",\"UnixStream::connect\",\"FrozenLearningScopeV2::freeze(\",\"unwrap_or\",\"permit_all\",\"if false\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn create_from_original_source(\"\nsequence = [\"source.native_inputs()?\",\"captured_job_key(&plan, &batch, rule, &source)?\",\"witness.current()?.is_some()\",\"LockedFileProductEvaluationExecutionStoreV1::create(\",\".compare_and_swap(None, anchor(journal.anchor()))\",\"source: Some(Arc::new(source))\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn recover_from_original_source(\"\nsequence = [\"source.native_inputs()?\",\"captured_job_key(&plan, &batch, rule, &source)?\",\"let minimum = witness\",\"LockedFileProductEvaluationExecutionStoreV1::recover(\",\"key.binding_digest\",\"let current = anchor(journal.anchor())\",\"compare_and_swap(Some(minimum), current)\",\"source: Some(Arc::new(source))\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn captured_job_key(\"\nsequence = [\"let original = job_key(plan, batch, rule)?\",\"binding_digest: Digest32::of_parts(&[\",\"original.binding_digest.as_array()\",\"source.source_capture_binding().as_array()\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_source_capture(\"\nsequence = [\"if self.fenced\",\"return Err(Error::CommitUncertain)\",\"let result = self\",\".source\",\".as_ref()\",\".ok_or(Error::Binding(\",\"OriginalCellQ24TrainingSourceV1::require_current_in_lane(source)\",\"if result.is_err()\",\"self.fenced = true\",\"result\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_live_source_if_captured(\"\nsequence = [\"if self.source.is_some()\",\"self.require_original_source_capture()?\",\"Ok(true)\",\"Ok(false)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_captured_work_deadline(\"\nsequence = [\"if self.source.is_some()\",\"std::time::SystemTime::now()\",\"duration_since(std::time::UNIX_EPOCH)\",\"now >= self.plan.prefix.request.envelope.expiry_unix_seconds\",\"CellQ24TrainingErrorV1::DeadlineExceeded.into()\"]\ntop_level = []\n\n\n\n"
+    },
+    {
+      "type": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "old_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs\"\nrequired = [\"source: Option<crate::OriginalCellQ24TrainingSourceV1>\",\"source: None\"]\nforbidden = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn fit_or_readback(\"\nsequence = [\"self.require_current()?\",\"self.require_live_source_if_captured()?\",\"self.require_current()?\",\"self.require_captured_work_deadline()?\",\"self.journal.claim(&self.key)?\",\"self.plan.fit(self.batch.clone(), self.rule, cancellation)?\",\"self.require_live_source_if_captured()?\",\"self.require_current()?\",\"self.require_captured_work_deadline()?\",\"self.journal.complete(&self.key, &payload)?\"]\ntop_level = []\n\n\n\n",
+      "new_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs\"\nrequired = [\"source: Option<std::sync::Arc<crate::OriginalCellQ24TrainingSourceV1>>\",\"source: None\"]\nforbidden = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn fit_or_readback(\"\nsequence = [\"self.require_current()?\",\"self.require_live_source_if_captured()?\",\"self.require_current()?\",\"self.require_captured_work_deadline()?\",\"self.journal.claim(&self.key)?\",\"self.plan.fit(self.batch.clone(), self.rule, cancellation)?\",\"self.require_live_source_if_captured()?\",\"self.require_current()?\",\"self.require_captured_work_deadline()?\",\"self.journal.complete(&self.key, &payload)?\"]\ntop_level = []\n\n\n\n"
+    },
+    {
+      "type": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "old_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\nrequired = []\nforbidden = []\nrequired_order = [[\"async fn in_lane<T:\",\"training.require_live_source_if_captured()?\",\"let result = work(&mut owners)\",\"if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)\",\".map_err(|_| Error::CommitUncertain)?\",\"if owners.require_captured_tail_current().is_err()\",\"owners.source_fenced = true\",\"return Err(Error::CommitUncertain)\",\"result\"]]\nrequired_function_order = [\n  { function = \"fn require_captured_tail_current(\", sequence = [\".require_original_dataset_scope(\", \"&self.receipts.config.dataset,\", \"&self.receipts.config.scope,\", \")?\", \"match self.receipts.journal.read(&self.receipts.saved)\", \"Ok(_) =>\", \"self.read_original_completion()?\", \"self.require_retained_attestation_current(&completed)?\", \"ProductEvaluationExecutionStoreErrorV1::Missing\", \"LearningOriginalOwnerErrorV1::Pending\", \"Err(error) => return Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into())\", \"Ok(())\"] },\n  { function = \"fn require_retained_attestation_current(\", sequence = [\"learning_iteration_receipt_signing_bytes_v1(\", \"&completed.receipt\", \"self.receipts\", \".verifier\", \".verify(\", \"LearningEvidenceRoleV1::Generator\", \"&completed.attestation\", \"&payload\", \"super::now()\", \".map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?\", \"Ok(())\"] },\n]\n\n\n\n",
+      "new_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\nrequired = []\nforbidden = []\nrequired_order = [[\"async fn in_lane<T:\",\"training.original_source_for_operation()?\",\"OriginalCellQ24TrainingSourceV1::begin_source_operation(source)\",\"work(&mut owners, &proof)\",\"OriginalCellQ24TrainingSourceOperationV1::read_after_native(\",\"owners.source_fenced = true\",\"return Err(Error::CommitUncertain)\",\"if owners.require_captured_tail_current().is_err()\",\"SourceLaneCancellationState::require_live(&worker_cancellation)\",\"owners.source_fenced = true\",\"return Err(Error::CommitUncertain)\",\"OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)\",\"result\"]]\nrequired_function_order = [\n  { function = \"fn require_captured_tail_current(\", sequence = [\".require_original_dataset_scope(\", \"&self.receipts.config.dataset,\", \"&self.receipts.config.scope,\", \")?\", \"match self.receipts.journal.read(&self.receipts.saved)\", \"Ok(_) =>\", \"self.read_original_completion()?\", \"self.require_retained_attestation_current(&completed)?\", \"ProductEvaluationExecutionStoreErrorV1::Missing\", \"LearningOriginalOwnerErrorV1::Pending\", \"Err(error) => return Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into())\", \"Ok(())\"] },\n  { function = \"fn require_retained_attestation_current(\", sequence = [\"learning_iteration_receipt_signing_bytes_v1(\", \"&completed.receipt\", \"self.receipts\", \".verifier\", \".verify(\", \"LearningEvidenceRoleV1::Generator\", \"&completed.attestation\", \"&payload\", \"super::now()\", \".map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?\", \"Ok(())\"] },\n]\n\n\n\n"
+    },
+    {
+      "type": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "old_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"\nrequired = []\nforbidden = []\nrequired_order = [[\"fn in_model_lane<T>\",\"training.require_live_source_if_captured()?\",\"let original = owners.read_original_completion()?\",\"let result = work(&mut owners.training, &original)\",\"let source_bound\",\"CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)\",\".map_err(|_| Error::CommitUncertain)?\",\"let current = owners\",\".read_original_completion().map_err(\",\"if source_bound\",\"owners.source_fenced = true\",\"Error::CommitUncertain\",\"if source_bound\",\"if owners\",\".require_retained_attestation_current(&current)\",\".is_err()\",\"owners.source_fenced = true\",\"return Err(Error::CommitUncertain)\",\"current.receipt != original.receipt || current.attestation != original.attestation\",\"result\"]]\n\n\n\n",
+      "new_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"\nrequired = []\nforbidden = []\nrequired_order = [[\"fn in_model_lane<T>\",\"training.original_source_for_operation()?\",\"OriginalCellQ24TrainingSourceV1::begin_source_operation(source)\",\"let original = owners.read_original_completion()?\",\"work(&mut owners.training, &original, &proof)\",\"let source_bound\",\"OriginalCellQ24TrainingSourceOperationV1::read_after_native(\",\"let current = owners\",\".read_original_completion().map_err(\",\"if source_bound\",\"owners.source_fenced = true\",\"Error::CommitUncertain\",\"if source_bound\",\"if owners\",\".require_retained_attestation_current(&current)\",\".is_err()\",\"owners.source_fenced = true\",\"return Err(Error::CommitUncertain)\",\"current.receipt != original.receipt || current.attestation != original.attestation\",\"OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)\",\"result\"]]\n\n\n\n"
+    },
+    {
+      "type": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "old_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\nrequired = [\"source_fenced: bool\", \"source_fenced: false\"]\nforbidden = []\nrequired_order = [[\"async fn in_lane<T:\", \"owners.try_lock()\", \"if owners.source_fenced\", \"return Err(Error::CommitUncertain)\", \"let result = work(&mut owners)\", \"if owners.require_captured_tail_current().is_err()\", \"owners.source_fenced = true\", \"return Err(Error::CommitUncertain)\"]]\n\n\n\n",
+      "new_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\nrequired = [\"source_fenced: bool\", \"source_fenced: false\"]\nforbidden = []\nrequired_order = [[\"async fn in_lane<T:\", \"owners.try_lock()\", \"if owners.source_fenced\", \"return Err(Error::CommitUncertain)\", \"work(&mut owners, &proof)\", \"if owners.require_captured_tail_current().is_err()\", \"owners.source_fenced = true\", \"return Err(Error::CommitUncertain)\"]]\n\n\n\n"
+    },
+    {
+      "type": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+      "old_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs\"\nrequired = []\nforbidden = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_command_context(\"\nsequence = [\"self.original.require_dataset(dataset)?\",\"let scope = scope.clone()\",\"self.original\",\".in_lane(move |owners|\",\"if owners.receipts.config.scope != scope\",\"return Err(Error::Binding(\",\"Ok(())\",\".await\"]\ntop_level = []\n\n\n\n",
+      "new_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs\"\nrequired = []\nforbidden = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_command_context(\"\nsequence = [\"self.original.require_dataset(dataset)?\",\"let scope = scope.clone()\",\"self.original\",\".in_lane(move |owners, _source|\",\"if owners.receipts.config.scope != scope\",\"return Err(Error::Binding(\",\"Ok(())\",\".await\"]\ntop_level = []\n\n\n\n"
+    },
+    {
+      "type": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "old_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"\nrequired = [\"bounded blocking lane\", \"let training: &mut CellQ24TrainingOwnerV1<TW> = training\", \"fn in_model_lane<T>\"]\nforbidden = [\"SigningKey\", \".sign(\", \"File::open\", \"OpenOptions\", \".try_clone(\", \"CellQ24TrainingOwnerV1::create(\", \"CellQ24TrainingOwnerV1::recover(\", \".fit_or_readback(\", \".attest_original_completion(\", \"pub fn in_model_lane\", \"LearningIterationStageOwnerPortsV1\", \"with_root_learning_stage_owners(\", \".acquire().await\", \".acquire_owned().await\", \"unwrap_or\", \"permit_all\", \"if false\"]\nrequired_order = [\n  [\"fn create_model_owner<\", \"self.in_model_lane(\", \"CellQ24ModelProposalOwnerV1::create(file, witness, training, self.dataset.clone())\"],\n  [\"fn recover_model_owner<\", \"self.in_model_lane(\", \"CellQ24ModelProposalOwnerV1::recover(file, witness, training, self.dataset.clone())\"],\n  [\"fn commit_model_or_readback<\", \"self.in_model_lane(\", \"require_original_training(inputs, completed)?\", \"CellQ24ModelProposalOwnerV1::commit_or_readback(model, training, inputs)\"],\n  [\"fn read_model_proposal<\", \"self.in_model_lane(\", \"require_original_training(inputs, completed)?\", \"CellQ24ModelProposalOwnerV1::readback(model, training, inputs)\"],\n  [\"fn in_model_lane<T>\", \"let _permit = Arc::clone(&self.lane)\", \".try_acquire_owned()\", \"Error::Busy\", \"self.owners.try_lock()\", \"Error::CommitUncertain\", \"training\\n            .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?\", \"let original = owners.read_original_completion()?\", \"let result = work(&mut owners.training, &original)\", \"let current = owners\", \".read_original_completion().map_err(\", \"Error::CommitUncertain\", \"if current.receipt != original.receipt || current.attestation != original.attestation\", \"return Err(Error::CommitUncertain)\", \"result\"],\n]\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_training(\"\nsequence = [\"if inputs.training_cut.receipts.last() != Some(&completed.receipt)\", \"|| inputs.training_attestation != &completed.attestation\", \"return Err(Error::Binding(\", \"Ok(())\"]\ntop_level = [\"if inputs.training_cut.receipts.last() != Some(&completed.receipt)\", \"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_candidate_material(\"\nsequence = [\"self.in_model_lane(|training, completed|\",\"CellQ24TrainingOwnerV1::require_original_source_capture(training)?\",\"CellQ24TrainingOwnerV1::readback(training)?\",\"crate::CellQ24TrainingOutcomeV1::Candidate(candidate) => *candidate\",\"crate::CellQ24TrainingOutcomeV1::NoUpdate\",\"return Err(crate::OriginalCellQ24CandidateMaterialErrorV1::NoCandidate.into())\",\"crate::OriginalCellQ24CandidateMaterialV1::from_original_candidate(\",\"&self.dataset\",\"candidate\",\"completed.receipt.clone()\",\"completed.attestation.clone()\"]\ntop_level = [\"self.in_model_lane(|training, completed|\"]\n\n\n\n",
+      "new_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"\nrequired = [\"bounded blocking lane\", \"let training: &mut CellQ24TrainingOwnerV1<TW> = training\", \"fn in_model_lane<T>\"]\nforbidden = [\"SigningKey\", \".sign(\", \"File::open\", \"OpenOptions\", \".try_clone(\", \"CellQ24TrainingOwnerV1::create(\", \"CellQ24TrainingOwnerV1::recover(\", \".fit_or_readback(\", \".attest_original_completion(\", \"pub fn in_model_lane\", \"LearningIterationStageOwnerPortsV1\", \"with_root_learning_stage_owners(\", \".acquire().await\", \".acquire_owned().await\", \"unwrap_or\", \"permit_all\", \"if false\"]\nrequired_order = [\n  [\"fn create_model_owner<\", \"self.in_model_lane(\", \"CellQ24ModelProposalOwnerV1::create(file, witness, training, self.dataset.clone())\"],\n  [\"fn recover_model_owner<\", \"self.in_model_lane(\", \"CellQ24ModelProposalOwnerV1::recover(file, witness, training, self.dataset.clone())\"],\n  [\"fn commit_model_or_readback<\", \"self.in_model_lane(\", \"require_original_training(inputs, completed)?\", \"CellQ24ModelProposalOwnerV1::commit_or_readback(model, training, inputs)\"],\n  [\"fn read_model_proposal<\", \"self.in_model_lane(\", \"require_original_training(inputs, completed)?\", \"CellQ24ModelProposalOwnerV1::readback(model, training, inputs)\"],\n  [\"fn in_model_lane<T>\", \"let _permit = Arc::clone(&self.lane)\", \".try_acquire_owned()\", \"Error::Busy\", \"self.owners.try_lock()\", \"Error::CommitUncertain\", \"training\\n            .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?\", \"let original = owners.read_original_completion()?\", \"work(&mut owners.training, &original, &proof)\", \"let current = owners\", \".read_original_completion().map_err(\", \"Error::CommitUncertain\", \"if current.receipt != original.receipt || current.attestation != original.attestation\", \"return Err(Error::CommitUncertain)\", \"result\"],\n]\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_training(\"\nsequence = [\"if inputs.training_cut.receipts.last() != Some(&completed.receipt)\", \"|| inputs.training_attestation != &completed.attestation\", \"return Err(Error::Binding(\", \"Ok(())\"]\ntop_level = [\"if inputs.training_cut.receipts.last() != Some(&completed.receipt)\", \"Ok(())\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_candidate_material(\"\nsequence = [\"self.in_model_lane(|training, completed, source|\",\"SourceLaneProof::require_original(source, training)?\",\"CellQ24TrainingOwnerV1::readback(training)?\",\"crate::CellQ24TrainingOutcomeV1::Candidate(candidate) => *candidate\",\"crate::CellQ24TrainingOutcomeV1::NoUpdate\",\"return Err(crate::OriginalCellQ24CandidateMaterialErrorV1::NoCandidate.into())\",\"crate::OriginalCellQ24CandidateMaterialV1::from_original_candidate(\",\"&self.dataset\",\"candidate\",\"completed.receipt.clone()\",\"completed.attestation.clone()\"]\ntop_level = [\"self.in_model_lane(|training, completed, source|\"]\n\n\n\n"
+    },
+    {
+      "type": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+      "old_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs\"\nrequired = [\"original: OriginalCellQ24TrainingStageV1<TW, RW>\"]\nforbidden = [\"SigningKey\",\".sign(\",\"CellQ24TrainingBatchV1::new(\",\"File::open\",\"UnixStream::connect\",\"permit_all\",\"unwrap_or\",\"if false\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original_stage(\"\nsequence = [\"original\",\".in_lane(|owners| {\",\"CellQ24TrainingOwnerV1::require_original_source_capture(&mut owners.training)?\",\"Ok(())\",\".await?\",\"Ok(Self { original })\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn execute_training(\"\nsequence = [\"OriginalCellQ24TrainingStageV1::execute_training(\",\"&self.original\",\".await\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn readback(\"\nsequence = [\"OriginalCellQ24TrainingStageV1::readback(\",\"&self.original\",\".await\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn receipt_attestation(\"\nsequence = [\"OriginalCellQ24TrainingStageV1::receipt_attestation(\",\"&self.original\",\".await\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn commit_model_or_readback(\"\nsequence = [\"OriginalCellQ24TrainingStageV1::commit_model_or_readback(\",\"&self.original\",\"model\",\"inputs\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_model_proposal(\"\nsequence = [\"OriginalCellQ24TrainingStageV1::read_model_proposal(\",\"&self.original\",\"model\",\"inputs\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_candidate_material(\"\nsequence = [\"self.original.require_dataset(dataset)?\",\"OriginalCellQ24TrainingStageV1::read_candidate_material(&self.original)\"]\ntop_level = [\"self.original.require_dataset(dataset)?\",\"OriginalCellQ24TrainingStageV1::read_candidate_material(&self.original)\"]\n\n\n\n",
+      "new_record": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs\"\nrequired = [\"original: OriginalCellQ24TrainingStageV1<TW, RW>\"]\nforbidden = [\"SigningKey\",\".sign(\",\"CellQ24TrainingBatchV1::new(\",\"File::open\",\"UnixStream::connect\",\"permit_all\",\"unwrap_or\",\"if false\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_original_stage(\"\nsequence = [\"original\",\".in_lane(|owners, source| {\",\"SourceLaneProof::require_original(source, &mut owners.training)?\",\"Ok(())\",\".await?\",\"Ok(Self { original })\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn execute_training(\"\nsequence = [\"OriginalCellQ24TrainingStageV1::execute_training(\",\"&self.original\",\".await\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn readback(\"\nsequence = [\"OriginalCellQ24TrainingStageV1::readback(\",\"&self.original\",\".await\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn receipt_attestation(\"\nsequence = [\"OriginalCellQ24TrainingStageV1::receipt_attestation(\",\"&self.original\",\".await\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn commit_model_or_readback(\"\nsequence = [\"OriginalCellQ24TrainingStageV1::commit_model_or_readback(\",\"&self.original\",\"model\",\"inputs\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_model_proposal(\"\nsequence = [\"OriginalCellQ24TrainingStageV1::read_model_proposal(\",\"&self.original\",\"model\",\"inputs\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_candidate_material(\"\nsequence = [\"self.original.require_dataset(dataset)?\",\"OriginalCellQ24TrainingStageV1::read_candidate_material(&self.original)\"]\ntop_level = [\"self.original.require_dataset(dataset)?\",\"OriginalCellQ24TrainingStageV1::read_candidate_material(&self.original)\"]\n\n\n\n"
+    }
+  ],
+  "added_complete_boundaries": [
+    {
+      "id": "learning_original_source_operation_handle",
+      "symbol": "CellQ24TrainingOwnerV1::original_source_for_operation",
+      "receiver": "CellQ24TrainingOwnerV1",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "markers": [
+        "pub(crate) fn original_source_for_operation("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_handle\"\nsymbol = \"CellQ24TrainingOwnerV1::original_source_for_operation\"\nreceiver_type = \"CellQ24TrainingOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\ndefinition_markers = [\"pub(crate) fn original_source_for_operation(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_begin",
+      "symbol": "OriginalCellQ24TrainingSourceV1::begin_source_operation",
+      "receiver": "OriginalCellQ24TrainingSourceV1",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "markers": [
+        "pub(crate) fn begin_source_operation("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_begin\"\nsymbol = \"OriginalCellQ24TrainingSourceV1::begin_source_operation\"\nreceiver_type = \"OriginalCellQ24TrainingSourceV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs\"\ndefinition_markers = [\"pub(crate) fn begin_source_operation(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_owner_proof",
+      "symbol": "CellQ24TrainingOwnerV1::require_original_source_operation",
+      "receiver": "CellQ24TrainingOwnerV1",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs"
+      ],
+      "markers": [
+        "pub(crate) fn require_original_source_operation("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_owner_proof\"\nsymbol = \"CellQ24TrainingOwnerV1::require_original_source_operation\"\nreceiver_type = \"CellQ24TrainingOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\ndefinition_markers = [\"pub(crate) fn require_original_source_operation(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_same",
+      "symbol": "OriginalCellQ24TrainingSourceOperationV1::require_original_source",
+      "receiver": "OriginalCellQ24TrainingSourceOperationV1",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
+      ],
+      "markers": [
+        "pub(crate) fn require_original_source("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_same\"\nsymbol = \"OriginalCellQ24TrainingSourceOperationV1::require_original_source\"\nreceiver_type = \"OriginalCellQ24TrainingSourceOperationV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs\"\ndefinition_markers = [\"pub(crate) fn require_original_source(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_after",
+      "symbol": "OriginalCellQ24TrainingSourceOperationV1::read_after_native",
+      "receiver": "OriginalCellQ24TrainingSourceOperationV1",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "markers": [
+        "pub(crate) fn read_after_native("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_after\"\nsymbol = \"OriginalCellQ24TrainingSourceOperationV1::read_after_native\"\nreceiver_type = \"OriginalCellQ24TrainingSourceOperationV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs\"\ndefinition_markers = [\"pub(crate) fn read_after_native(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_finish",
+      "symbol": "OriginalCellQ24TrainingSourceOperationV1::finish",
+      "receiver": "OriginalCellQ24TrainingSourceOperationV1",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "markers": [
+        "pub(crate) fn finish("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_finish\"\nsymbol = \"OriginalCellQ24TrainingSourceOperationV1::finish\"\nreceiver_type = \"OriginalCellQ24TrainingSourceOperationV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs\"\ndefinition_markers = [\"pub(crate) fn finish(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_fenced",
+      "symbol": "OriginalCellQ24TrainingSourceV1::source_operation_fenced",
+      "receiver": "OriginalCellQ24TrainingSourceV1",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+      ],
+      "markers": [
+        "pub(crate) fn source_operation_fenced("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_fenced\"\nsymbol = \"OriginalCellQ24TrainingSourceV1::source_operation_fenced\"\nreceiver_type = \"OriginalCellQ24TrainingSourceV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs\"\ndefinition_markers = [\"pub(crate) fn source_operation_fenced(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_source.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\",\"codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_freeze",
+      "symbol": "OriginalCellQ24DatasetV1::require_original_freeze_current",
+      "receiver": "OriginalCellQ24DatasetV1",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_remote.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs"
+      ],
+      "markers": [
+        "pub(crate) fn require_original_freeze_current("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_freeze\"\nsymbol = \"OriginalCellQ24DatasetV1::require_original_freeze_current\"\nreceiver_type = \"OriginalCellQ24DatasetV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_dataset_remote.rs\"\ndefinition_markers = [\"pub(crate) fn require_original_freeze_current(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_lane_proof",
+      "symbol": "SourceLaneProof::from_operation",
+      "receiver": "SourceLaneProof",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "markers": [
+        "pub(super) fn from_operation("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_lane_proof\"\nsymbol = \"SourceLaneProof::from_operation\"\nreceiver_type = \"SourceLaneProof\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\ndefinition_markers = [\"pub(super) fn from_operation(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_lane_admission",
+      "symbol": "SourceLaneProof::require_original",
+      "receiver": "SourceLaneProof",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "markers": [
+        "pub(super) fn require_original<"
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_lane_admission\"\nsymbol = \"SourceLaneProof::require_original\"\nreceiver_type = \"SourceLaneProof\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\ndefinition_markers = [\"pub(super) fn require_original<\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs\",\"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_cancel_create",
+      "symbol": "SourceLaneCancellation::new",
+      "receiver": "SourceLaneCancellation",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+      ],
+      "markers": [
+        "pub(in super::super) fn new("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_cancel_create\"\nsymbol = \"SourceLaneCancellation::new\"\nreceiver_type = \"SourceLaneCancellation\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\ndefinition_markers = [\"pub(in super::super) fn new(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_cancel_worker",
+      "symbol": "SourceLaneCancellation::worker",
+      "receiver": "SourceLaneCancellation",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+      ],
+      "markers": [
+        "pub(in super::super) fn worker("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_cancel_worker\"\nsymbol = \"SourceLaneCancellation::worker\"\nreceiver_type = \"SourceLaneCancellation\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\ndefinition_markers = [\"pub(in super::super) fn worker(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_cancel_joined",
+      "symbol": "SourceLaneCancellation::joined",
+      "receiver": "SourceLaneCancellation",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+      ],
+      "markers": [
+        "pub(in super::super) fn joined("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_cancel_joined\"\nsymbol = \"SourceLaneCancellation::joined\"\nreceiver_type = \"SourceLaneCancellation\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\ndefinition_markers = [\"pub(in super::super) fn joined(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_cancel_bind",
+      "symbol": "SourceLaneCancellationState::bind_source",
+      "receiver": "SourceLaneCancellationState",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+      ],
+      "markers": [
+        "pub(in super::super) fn bind_source("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_cancel_bind\"\nsymbol = \"SourceLaneCancellationState::bind_source\"\nreceiver_type = \"SourceLaneCancellationState\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\ndefinition_markers = [\"pub(in super::super) fn bind_source(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_cancel_live",
+      "symbol": "SourceLaneCancellationState::require_live",
+      "receiver": "SourceLaneCancellationState",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+      ],
+      "markers": [
+        "pub(in super::super) fn require_live("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_cancel_live\"\nsymbol = \"SourceLaneCancellationState::require_live\"\nreceiver_type = \"SourceLaneCancellationState\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\ndefinition_markers = [\"pub(in super::super) fn require_live(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"]\ncaller_markers = []\n\n"
+    },
+    {
+      "id": "learning_original_source_operation_cancel_fenced",
+      "symbol": "SourceLaneCancellationState::stage_is_fenced",
+      "receiver": "SourceLaneCancellationState",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+      ],
+      "markers": [
+        "pub(in super::super) fn stage_is_fenced("
+      ],
+      "body": "[[boundary]]\nid = \"learning_original_source_operation_cancel_fenced\"\nsymbol = \"SourceLaneCancellationState::stage_is_fenced\"\nreceiver_type = \"SourceLaneCancellationState\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\ndefinition_markers = [\"pub(in super::super) fn stage_is_fenced(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"]\ncaller_markers = []\n\n"
+    }
+  ],
+  "added_complete_protected_records": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+      "required": [
+        "struct OriginalCellQ24TrainingSourceOperationV1<'a>",
+        "source: &'a Arc<OriginalCellQ24TrainingSourceV1>",
+        "config: Arc<OriginalCellQ24TrainingSourceConfigV1>",
+        "baseline: Arc<LoadedCellQ24ModelV1>",
+        "const IDLE: u8 = 0",
+        "const ACTIVE: u8 = 1",
+        "const FENCED: u8 = 2",
+        "impl Drop for OriginalCellQ24TrainingSourceOperationV1<'_>"
+      ],
+      "forbidden": [
+        "SigningKey",
+        ".sign(",
+        ".claim(",
+        ".complete(",
+        "UnixStream::connect",
+        "File::open",
+        "FrozenLearningScopeV2::freeze(",
+        "permit_all",
+        "unwrap_or",
+        "if false",
+        "impl Clone",
+        "#[derive(Clone",
+        "#[derive(Copy",
+        "Deserialize",
+        "pub fn begin_source_operation",
+        "pub fn read_after_native",
+        "pub fn finish",
+        "fit_or_readback(",
+        "current_material(&self.config)"
+      ],
+      "guards": [
+        {
+          "function": "fn begin_source_operation(",
+          "sequence": [
+            "source",
+            ".operation_state",
+            ".compare_exchange(IDLE, ACTIVE, Ordering::AcqRel, Ordering::Acquire)",
+            "if state == FENCED",
+            "Error::CaptureUncertain",
+            "let mut operation = OriginalCellQ24TrainingSourceOperationV1",
+            "source,",
+            "config: Arc::clone(&source.config)",
+            "baseline: Arc::clone(&source.live.baseline)",
+            "before: None",
+            "phase: Phase::BeforeRead",
+            "operation.started_at = now()?",
+            "source.live.material_once_for_operation(&operation.config)",
+            "require_same_material(&source.material, &before)?",
+            "capture_binding(&operation.config, &before) != source.binding",
+            "operation.before = Some(before)",
+            "operation.phase = Phase::NativeWork",
+            "operation.require_original_source(source)?",
+            "Ok(operation)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn source_operation_fenced(",
+          "sequence": [
+            "self.operation_state.load(Ordering::Acquire) == FENCED"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_original_source(",
+          "sequence": [
+            "if !matches!(self.phase, Phase::NativeWork)",
+            "return Err(Error::Binding(",
+            "self.require_same_identity(source)?",
+            "self.require_fresh()"
+          ],
+          "top_level": [
+            "if !matches!(self.phase, Phase::NativeWork)",
+            "self.require_same_identity(source)?",
+            "self.require_fresh()"
+          ]
+        },
+        {
+          "function": "fn require_same_identity(",
+          "sequence": [
+            "!Arc::ptr_eq(self.source, source)",
+            "!Arc::ptr_eq(&self.config, &source.config)",
+            "!Arc::ptr_eq(&self.baseline, &source.live.baseline)",
+            "source.operation_state.load(Ordering::Acquire) != ACTIVE",
+            "return Err(Error::Binding(",
+            "let before = self",
+            ".before",
+            ".as_ref()",
+            "require_same_material(&source.material, before)?",
+            "capture_binding(&self.config, before) != source.binding",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn read_after_native(",
+          "sequence": [
+            "self.require_original_source(source)?",
+            "self.phase = Phase::ReadingAfter",
+            "source.live.material_once_for_operation(&self.config)",
+            "let before = self",
+            ".before",
+            ".as_ref()",
+            "require_same_material(before, &after)?",
+            "require_same_material(&source.material, &after)?",
+            "capture_binding(&self.config, &after) != source.binding",
+            "self.phase = Phase::AfterRead",
+            "self.require_same_identity(source)?",
+            "self.require_fresh()"
+          ],
+          "top_level": [
+            "self.require_original_source(source)?",
+            "self.phase = Phase::ReadingAfter",
+            "require_same_material(before, &after)?",
+            "require_same_material(&source.material, &after)?",
+            "self.phase = Phase::AfterRead",
+            "self.require_same_identity(source)?",
+            "self.require_fresh()"
+          ]
+        },
+        {
+          "function": "fn finish(",
+          "sequence": [
+            "mut self",
+            "if !matches!(self.phase, Phase::AfterRead)",
+            "return Err(Error::Binding(",
+            "self.require_same_identity(source)?",
+            "self.require_fresh()?",
+            "source.operation_state.store(IDLE, Ordering::Release)",
+            "self.phase = Phase::Finished",
+            "Ok(())"
+          ],
+          "top_level": [
+            "if !matches!(self.phase, Phase::AfterRead)",
+            "self.require_same_identity(source)?",
+            "self.require_fresh()?",
+            "source.operation_state.store(IDLE, Ordering::Release)",
+            "self.phase = Phase::Finished"
+          ]
+        },
+        {
+          "function": "fn require_fresh(",
+          "sequence": [
+            "let fresh_now = now()?",
+            "if fresh_now < self.started_at",
+            "return Err(Error::Binding(",
+            "verify_original_evidence(&self.config, fresh_now)?",
+            "OriginalCellQ24DatasetV1::require_original_freeze_current(",
+            "&self.source.material",
+            "&self.config",
+            "fresh_now",
+            "Ok(())"
+          ],
+          "top_level": [
+            "let fresh_now = now()?",
+            "if fresh_now < self.started_at",
+            "verify_original_evidence(&self.config, fresh_now)?"
+          ]
+        },
+        {
+          "function": "fn drop(",
+          "sequence": [
+            "if !matches!(self.phase, Phase::Finished)",
+            "self.source",
+            ".operation_state",
+            ".store(FENCED, Ordering::Release)"
+          ],
+          "top_level": [
+            "if !matches!(self.phase, Phase::Finished)"
+          ]
+        },
+        {
+          "function": "fn material_once_for_operation(",
+          "sequence": [
+            "let started_at = now()?",
+            "verify_original_evidence(config, started_at)?",
+            "self.read_original_evidence(config).await?",
+            "let material = self",
+            ".original",
+            ".read_current_material(config, &self.baseline)",
+            ".await?",
+            "require_observations(config, &material)?",
+            "let fresh_now = now()?",
+            "if fresh_now < started_at",
+            "verify_original_evidence(config, fresh_now)?",
+            "OriginalCellQ24DatasetV1::require_original_freeze_current(&material, config, fresh_now)",
+            "Ok(material)"
+          ],
+          "top_level": [
+            "let started_at = now()?",
+            "verify_original_evidence(config, started_at)?",
+            "self.read_original_evidence(config).await?",
+            "require_observations(config, &material)?",
+            "let fresh_now = now()?",
+            "if fresh_now < started_at",
+            "verify_original_evidence(config, fresh_now)?"
+          ]
+        }
+      ],
+      "body": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs\"\nrequired = [\"struct OriginalCellQ24TrainingSourceOperationV1<'a>\",\"source: &'a Arc<OriginalCellQ24TrainingSourceV1>\",\"config: Arc<OriginalCellQ24TrainingSourceConfigV1>\",\"baseline: Arc<LoadedCellQ24ModelV1>\",\"const IDLE: u8 = 0\",\"const ACTIVE: u8 = 1\",\"const FENCED: u8 = 2\",\"impl Drop for OriginalCellQ24TrainingSourceOperationV1<'_>\"]\nforbidden = [\"SigningKey\",\".sign(\",\".claim(\",\".complete(\",\"UnixStream::connect\",\"File::open\",\"FrozenLearningScopeV2::freeze(\",\"permit_all\",\"unwrap_or\",\"if false\",\"impl Clone\",\"#[derive(Clone\",\"#[derive(Copy\",\"Deserialize\",\"pub fn begin_source_operation\",\"pub fn read_after_native\",\"pub fn finish\",\"fit_or_readback(\",\"current_material(&self.config)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn begin_source_operation(\"\nsequence = [\"source\",\".operation_state\",\".compare_exchange(IDLE, ACTIVE, Ordering::AcqRel, Ordering::Acquire)\",\"if state == FENCED\",\"Error::CaptureUncertain\",\"let mut operation = OriginalCellQ24TrainingSourceOperationV1\",\"source,\",\"config: Arc::clone(&source.config)\",\"baseline: Arc::clone(&source.live.baseline)\",\"before: None\",\"phase: Phase::BeforeRead\",\"operation.started_at = now()?\",\"source.live.material_once_for_operation(&operation.config)\",\"require_same_material(&source.material, &before)?\",\"capture_binding(&operation.config, &before) != source.binding\",\"operation.before = Some(before)\",\"operation.phase = Phase::NativeWork\",\"operation.require_original_source(source)?\",\"Ok(operation)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn source_operation_fenced(\"\nsequence = [\"self.operation_state.load(Ordering::Acquire) == FENCED\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_source(\"\nsequence = [\"if !matches!(self.phase, Phase::NativeWork)\",\"return Err(Error::Binding(\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\ntop_level = [\"if !matches!(self.phase, Phase::NativeWork)\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_same_identity(\"\nsequence = [\"!Arc::ptr_eq(self.source, source)\",\"!Arc::ptr_eq(&self.config, &source.config)\",\"!Arc::ptr_eq(&self.baseline, &source.live.baseline)\",\"source.operation_state.load(Ordering::Acquire) != ACTIVE\",\"return Err(Error::Binding(\",\"let before = self\",\".before\",\".as_ref()\",\"require_same_material(&source.material, before)?\",\"capture_binding(&self.config, before) != source.binding\",\"return Err(Error::Binding(\",\"Ok(())\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn read_after_native(\"\nsequence = [\"self.require_original_source(source)?\",\"self.phase = Phase::ReadingAfter\",\"source.live.material_once_for_operation(&self.config)\",\"let before = self\",\".before\",\".as_ref()\",\"require_same_material(before, &after)?\",\"require_same_material(&source.material, &after)?\",\"capture_binding(&self.config, &after) != source.binding\",\"self.phase = Phase::AfterRead\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\ntop_level = [\"self.require_original_source(source)?\",\"self.phase = Phase::ReadingAfter\",\"require_same_material(before, &after)?\",\"require_same_material(&source.material, &after)?\",\"self.phase = Phase::AfterRead\",\"self.require_same_identity(source)?\",\"self.require_fresh()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn finish(\"\nsequence = [\"mut self\",\"if !matches!(self.phase, Phase::AfterRead)\",\"return Err(Error::Binding(\",\"self.require_same_identity(source)?\",\"self.require_fresh()?\",\"source.operation_state.store(IDLE, Ordering::Release)\",\"self.phase = Phase::Finished\",\"Ok(())\"]\ntop_level = [\"if !matches!(self.phase, Phase::AfterRead)\",\"self.require_same_identity(source)?\",\"self.require_fresh()?\",\"source.operation_state.store(IDLE, Ordering::Release)\",\"self.phase = Phase::Finished\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_fresh(\"\nsequence = [\"let fresh_now = now()?\",\"if fresh_now < self.started_at\",\"return Err(Error::Binding(\",\"verify_original_evidence(&self.config, fresh_now)?\",\"OriginalCellQ24DatasetV1::require_original_freeze_current(\",\"&self.source.material\",\"&self.config\",\"fresh_now\",\"Ok(())\"]\ntop_level = [\"let fresh_now = now()?\",\"if fresh_now < self.started_at\",\"verify_original_evidence(&self.config, fresh_now)?\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn drop(\"\nsequence = [\"if !matches!(self.phase, Phase::Finished)\",\"self.source\",\".operation_state\",\".store(FENCED, Ordering::Release)\"]\ntop_level = [\"if !matches!(self.phase, Phase::Finished)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn material_once_for_operation(\"\nsequence = [\"let started_at = now()?\",\"verify_original_evidence(config, started_at)?\",\"self.read_original_evidence(config).await?\",\"let material = self\",\".original\",\".read_current_material(config, &self.baseline)\",\".await?\",\"require_observations(config, &material)?\",\"let fresh_now = now()?\",\"if fresh_now < started_at\",\"verify_original_evidence(config, fresh_now)?\",\"OriginalCellQ24DatasetV1::require_original_freeze_current(&material, config, fresh_now)\",\"Ok(material)\"]\ntop_level = [\"let started_at = now()?\",\"verify_original_evidence(config, started_at)?\",\"self.read_original_evidence(config).await?\",\"require_observations(config, &material)?\",\"let fresh_now = now()?\",\"if fresh_now < started_at\",\"verify_original_evidence(config, fresh_now)?\"]\n\n",
+      "scoped_generic": [],
+      "required_order": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs",
+      "required": [
+        "struct SourceLaneProof<'a>",
+        "operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>",
+        "struct SourceLaneCancellation",
+        "struct SourceLaneCancellationState",
+        "const SOURCE_BOUND: u8 = 1",
+        "const CANCELLED: u8 = 2",
+        "impl Drop for SourceLaneCancellation"
+      ],
+      "forbidden": [
+        "SigningKey",
+        ".sign(",
+        ".claim(",
+        ".complete(",
+        "UnixStream::connect",
+        "File::open",
+        "FrozenLearningScopeV2::freeze(",
+        "permit_all",
+        "unwrap_or",
+        "if false",
+        "impl Clone",
+        "#[derive(Clone",
+        "#[derive(Copy",
+        "Deserialize",
+        "pub fn from_operation",
+        "pub fn require_original",
+        "pub fn worker",
+        "source: Arc<OriginalCellQ24TrainingSourceV1>",
+        ".store(false"
+      ],
+      "guards": [
+        {
+          "function": "fn from_operation(",
+          "sequence": [
+            "operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>",
+            "Self {",
+            "operation,",
+            "_lane: PhantomData"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn new(",
+          "sequence": [
+            "stage_fenced: Arc<AtomicBool>",
+            "state: Arc::new(AtomicU8::new(0))",
+            "stage_fenced,",
+            "armed: true"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn worker(",
+          "sequence": [
+            "SourceLaneCancellationState {",
+            "state: Arc::clone(&self.state)",
+            "stage_fenced: Arc::clone(&self.stage_fenced)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn joined(",
+          "sequence": [
+            "self.armed = false"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn drop(",
+          "sequence": [
+            "if self.armed",
+            "self.state.fetch_or(CANCELLED, Ordering::AcqRel)",
+            "if before & SOURCE_BOUND != 0",
+            "self.stage_fenced.store(true, Ordering::Release)"
+          ],
+          "top_level": [
+            "if self.armed"
+          ]
+        },
+        {
+          "function": "fn bind_source(",
+          "sequence": [
+            "self.state.fetch_or(SOURCE_BOUND, Ordering::AcqRel)",
+            "if before & CANCELLED != 0",
+            "self.stage_fenced.store(true, Ordering::Release)",
+            "return Err(Error::CommitUncertain)",
+            "self.require_live()"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_live(",
+          "sequence": [
+            "self.state.load(Ordering::Acquire) & CANCELLED != 0",
+            "self.stage_fenced.load(Ordering::Acquire)",
+            "return Err(Error::CommitUncertain)",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn stage_is_fenced(",
+          "sequence": [
+            "self.stage_fenced.load(Ordering::Acquire)"
+          ],
+          "top_level": []
+        }
+      ],
+      "body": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs\"\nrequired = [\"struct SourceLaneProof<'a>\",\"operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>\",\"struct SourceLaneCancellation\",\"struct SourceLaneCancellationState\",\"const SOURCE_BOUND: u8 = 1\",\"const CANCELLED: u8 = 2\",\"impl Drop for SourceLaneCancellation\"]\nforbidden = [\"SigningKey\",\".sign(\",\".claim(\",\".complete(\",\"UnixStream::connect\",\"File::open\",\"FrozenLearningScopeV2::freeze(\",\"permit_all\",\"unwrap_or\",\"if false\",\"impl Clone\",\"#[derive(Clone\",\"#[derive(Copy\",\"Deserialize\",\"pub fn from_operation\",\"pub fn require_original\",\"pub fn worker\",\"source: Arc<OriginalCellQ24TrainingSourceV1>\",\".store(false\"]\nrequired_order = [[\"fn require_original<\",\"let operation = self.operation.ok_or(CellQ24TrainingOwnerErrorV1::Binding(\",\"CellQ24TrainingOwnerV1::require_original_source_operation(training, operation)?\",\"Ok(())\"]]\n\n[[protected_file.required_function_order]]\nfunction = \"fn from_operation(\"\nsequence = [\"operation: Option<&'a OriginalCellQ24TrainingSourceOperationV1<'a>>\",\"Self {\",\"operation,\",\"_lane: PhantomData\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn new(\"\nsequence = [\"stage_fenced: Arc<AtomicBool>\",\"state: Arc::new(AtomicU8::new(0))\",\"stage_fenced,\",\"armed: true\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn worker(\"\nsequence = [\"SourceLaneCancellationState {\",\"state: Arc::clone(&self.state)\",\"stage_fenced: Arc::clone(&self.stage_fenced)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn joined(\"\nsequence = [\"self.armed = false\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn drop(\"\nsequence = [\"if self.armed\",\"self.state.fetch_or(CANCELLED, Ordering::AcqRel)\",\"if before & SOURCE_BOUND != 0\",\"self.stage_fenced.store(true, Ordering::Release)\"]\ntop_level = [\"if self.armed\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn bind_source(\"\nsequence = [\"self.state.fetch_or(SOURCE_BOUND, Ordering::AcqRel)\",\"if before & CANCELLED != 0\",\"self.stage_fenced.store(true, Ordering::Release)\",\"return Err(Error::CommitUncertain)\",\"self.require_live()\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_live(\"\nsequence = [\"self.state.load(Ordering::Acquire) & CANCELLED != 0\",\"self.stage_fenced.load(Ordering::Acquire)\",\"return Err(Error::CommitUncertain)\",\"Ok(())\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn stage_is_fenced(\"\nsequence = [\"self.stage_fenced.load(Ordering::Acquire)\"]\ntop_level = []\n\n",
+      "scoped_generic": [
+        {
+          "function": "fn require_original<",
+          "sequence": [
+            "let operation = self.operation.ok_or(CellQ24TrainingOwnerErrorV1::Binding(",
+            "CellQ24TrainingOwnerV1::require_original_source_operation(training, operation)?",
+            "Ok(())"
+          ],
+          "top_level": []
+        }
+      ],
+      "required_order": [
+        [
+          "fn require_original<",
+          "let operation = self.operation.ok_or(CellQ24TrainingOwnerErrorV1::Binding(",
+          "CellQ24TrainingOwnerV1::require_original_source_operation(training, operation)?",
+          "Ok(())"
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "required": [
+        "config: Arc<OriginalCellQ24TrainingSourceConfigV1>",
+        "operation_state: AtomicU8"
+      ],
+      "forbidden": [],
+      "guards": [
+        {
+          "function": "fn capture_live_original_source(",
+          "sequence": [
+            "runtime.block_on(live.current_material(&config))?",
+            "material.training_plan(",
+            "capture_binding(&config, &material)",
+            "config: Arc::new(config)",
+            "operation_state: AtomicU8::new(0)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_current_in_lane(",
+          "sequence": [
+            "OriginalCellQ24TrainingSourceV1::source_operation_fenced(self)",
+            "return Err(Error::CaptureUncertain)",
+            "self.live.current_material(&self.config)",
+            "require_same_material(&self.material, &material)?"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_same_material(",
+          "sequence": [
+            "before.provenance_digest() != after.provenance_digest()",
+            "before.receipt() != after.receipt()",
+            "before.experience_observation() != after.experience_observation()",
+            "before.dataset_observation() != after.dataset_observation()",
+            "before.batch().encoded() != after.batch().encoded()",
+            "before.batch().digest() != after.batch().digest()",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": [
+            "if before.provenance_digest() != after.provenance_digest()"
+          ]
+        },
+        {
+          "function": "fn now(",
+          "sequence": [
+            "SystemTime::now()",
+            "duration_since(UNIX_EPOCH)",
+            "value.as_secs()"
+          ],
+          "top_level": []
+        }
+      ],
+      "body": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_source.rs\"\nrequired = [\"config: Arc<OriginalCellQ24TrainingSourceConfigV1>\",\"operation_state: AtomicU8\"]\nforbidden = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn capture_live_original_source(\"\nsequence = [\"runtime.block_on(live.current_material(&config))?\",\"material.training_plan(\",\"capture_binding(&config, &material)\",\"config: Arc::new(config)\",\"operation_state: AtomicU8::new(0)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_current_in_lane(\"\nsequence = [\"OriginalCellQ24TrainingSourceV1::source_operation_fenced(self)\",\"return Err(Error::CaptureUncertain)\",\"self.live.current_material(&self.config)\",\"require_same_material(&self.material, &material)?\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_same_material(\"\nsequence = [\"before.provenance_digest() != after.provenance_digest()\",\"before.receipt() != after.receipt()\",\"before.experience_observation() != after.experience_observation()\",\"before.dataset_observation() != after.dataset_observation()\",\"before.batch().encoded() != after.batch().encoded()\",\"before.batch().digest() != after.batch().digest()\",\"return Err(Error::Binding(\",\"Ok(())\"]\ntop_level = [\"if before.provenance_digest() != after.provenance_digest()\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn now(\"\nsequence = [\"SystemTime::now()\",\"duration_since(UNIX_EPOCH)\",\"value.as_secs()\"]\ntop_level = []\n\n",
+      "scoped_generic": [],
+      "required_order": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "required": [
+        "source: Some(Arc::new(source))",
+        "use crate::cell_q24_training_source::OriginalCellQ24TrainingSourceOperationV1;"
+      ],
+      "forbidden": [
+        "pub fn original_source_for_operation",
+        "pub fn require_original_source_operation"
+      ],
+      "guards": [
+        {
+          "function": "fn original_source_for_operation(",
+          "sequence": [
+            "if self.fenced",
+            "return Err(Error::CommitUncertain)",
+            "if let Some(source) = &self.source",
+            "OriginalCellQ24TrainingSourceV1::source_operation_fenced(source)",
+            "return Err(Error::CommitUncertain)",
+            "Ok(Some(Arc::clone(source)))",
+            "Ok(None)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_original_source_operation(",
+          "sequence": [
+            "operation: &OriginalCellQ24TrainingSourceOperationV1<'_>",
+            "if self.fenced",
+            "return Err(Error::CommitUncertain)",
+            "let result = self",
+            ".source",
+            ".as_ref()",
+            "OriginalCellQ24TrainingSourceOperationV1::require_original_source(operation, source)",
+            "if result.is_err()",
+            "self.fenced = true",
+            "result"
+          ],
+          "top_level": []
+        }
+      ],
+      "body": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs\"\nrequired = [\"source: Some(Arc::new(source))\",\"use crate::cell_q24_training_source::OriginalCellQ24TrainingSourceOperationV1;\"]\nforbidden = [\"pub fn original_source_for_operation\",\"pub fn require_original_source_operation\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn original_source_for_operation(\"\nsequence = [\"if self.fenced\",\"return Err(Error::CommitUncertain)\",\"if let Some(source) = &self.source\",\"OriginalCellQ24TrainingSourceV1::source_operation_fenced(source)\",\"return Err(Error::CommitUncertain)\",\"Ok(Some(Arc::clone(source)))\",\"Ok(None)\"]\ntop_level = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_source_operation(\"\nsequence = [\"operation: &OriginalCellQ24TrainingSourceOperationV1<'_>\",\"if self.fenced\",\"return Err(Error::CommitUncertain)\",\"let result = self\",\".source\",\".as_ref()\",\"OriginalCellQ24TrainingSourceOperationV1::require_original_source(operation, source)\",\"if result.is_err()\",\"self.fenced = true\",\"result\"]\ntop_level = []\n\n",
+      "scoped_generic": [],
+      "required_order": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "required": [],
+      "forbidden": [],
+      "guards": [
+        {
+          "function": "fn require_current(",
+          "sequence": [
+            "self",
+            ".source",
+            ".as_ref()",
+            ".is_some_and(|source|",
+            "crate::OriginalCellQ24TrainingSourceV1::source_operation_fenced(source)",
+            "self.fenced = true",
+            "if self.fenced",
+            "return Err(Error::CommitUncertain)",
+            "self.witness.current()?",
+            "self.journal.read_current_anchor()?",
+            "self.witness.current()?"
+          ],
+          "top_level": []
+        }
+      ],
+      "body": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs\"\nrequired = []\nforbidden = []\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_current(\"\nsequence = [\"self\",\".source\",\".as_ref()\",\".is_some_and(|source|\",\"crate::OriginalCellQ24TrainingSourceV1::source_operation_fenced(source)\",\"self.fenced = true\",\"if self.fenced\",\"return Err(Error::CommitUncertain)\",\"self.witness.current()?\",\"self.journal.read_current_anchor()?\",\"self.witness.current()?\"]\ntop_level = []\n\n",
+      "scoped_generic": [],
+      "required_order": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "required": [
+        "source_abandoned: Arc<AtomicBool>",
+        "source_abandoned: Arc::new(AtomicBool::new(false))"
+      ],
+      "forbidden": [
+        "pub fn in_lane",
+        "pub async fn in_lane",
+        ".store(false"
+      ],
+      "guards": [],
+      "body": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\nrequired = [\"source_abandoned: Arc<AtomicBool>\",\"source_abandoned: Arc::new(AtomicBool::new(false))\"]\nforbidden = [\"pub fn in_lane\",\"pub async fn in_lane\",\".store(false\"]\nrequired_order = [[\"fn in_lane<\",\"&SourceLaneProof<'_>\",\".try_acquire_owned()\",\"SourceLaneCancellation::new(Arc::clone(&self.source_abandoned))\",\"SourceLaneCancellation::worker(&cancellation)\",\"tokio::task::spawn_blocking(move ||\",\"let _permit = permit\",\"owners.try_lock()\",\"owners.source_fenced\",\"SourceLaneCancellationState::stage_is_fenced(&worker_cancellation)\",\"training\",\".require_original_dataset_scope(\",\"training.original_source_for_operation()?\",\"if source.is_some()\",\"SourceLaneCancellationState::bind_source(&worker_cancellation)?\",\"OriginalCellQ24TrainingSourceV1::begin_source_operation(source)\",\"SourceLaneProof::from_operation(operation.as_ref())\",\"work(&mut owners, &proof)\",\"OriginalCellQ24TrainingSourceOperationV1::read_after_native(\",\"owners.require_captured_tail_current().is_err()\",\"SourceLaneCancellationState::require_live(&worker_cancellation)\",\"OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)\",\"result\",\"})\",\".await\",\".map_err(|_| Error::CommitUncertain)\",\"SourceLaneCancellation::joined(&mut cancellation)\",\"completed?\"]]\n\n\n",
+      "scoped_generic": [
+        {
+          "function": "fn in_lane<",
+          "sequence": [
+            "&SourceLaneProof<'_>",
+            ".try_acquire_owned()",
+            "SourceLaneCancellation::new(Arc::clone(&self.source_abandoned))",
+            "SourceLaneCancellation::worker(&cancellation)",
+            "tokio::task::spawn_blocking(move ||",
+            "let _permit = permit",
+            "owners.try_lock()",
+            "owners.source_fenced",
+            "SourceLaneCancellationState::stage_is_fenced(&worker_cancellation)",
+            "training",
+            ".require_original_dataset_scope(",
+            "training.original_source_for_operation()?",
+            "if source.is_some()",
+            "SourceLaneCancellationState::bind_source(&worker_cancellation)?",
+            "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)",
+            "SourceLaneProof::from_operation(operation.as_ref())",
+            "work(&mut owners, &proof)",
+            "OriginalCellQ24TrainingSourceOperationV1::read_after_native(",
+            "owners.require_captured_tail_current().is_err()",
+            "SourceLaneCancellationState::require_live(&worker_cancellation)",
+            "OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)",
+            "result",
+            "})",
+            ".await",
+            ".map_err(|_| Error::CommitUncertain)",
+            "SourceLaneCancellation::joined(&mut cancellation)",
+            "completed?"
+          ],
+          "top_level": []
+        }
+      ],
+      "required_order": [
+        [
+          "fn in_lane<",
+          "&SourceLaneProof<'_>",
+          ".try_acquire_owned()",
+          "SourceLaneCancellation::new(Arc::clone(&self.source_abandoned))",
+          "SourceLaneCancellation::worker(&cancellation)",
+          "tokio::task::spawn_blocking(move ||",
+          "let _permit = permit",
+          "owners.try_lock()",
+          "owners.source_fenced",
+          "SourceLaneCancellationState::stage_is_fenced(&worker_cancellation)",
+          "training",
+          ".require_original_dataset_scope(",
+          "training.original_source_for_operation()?",
+          "if source.is_some()",
+          "SourceLaneCancellationState::bind_source(&worker_cancellation)?",
+          "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)",
+          "SourceLaneProof::from_operation(operation.as_ref())",
+          "work(&mut owners, &proof)",
+          "OriginalCellQ24TrainingSourceOperationV1::read_after_native(",
+          "owners.require_captured_tail_current().is_err()",
+          "SourceLaneCancellationState::require_live(&worker_cancellation)",
+          "OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)",
+          "result",
+          "})",
+          ".await",
+          ".map_err(|_| Error::CommitUncertain)",
+          "SourceLaneCancellation::joined(&mut cancellation)",
+          "completed?"
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "required": [],
+      "forbidden": [
+        ".store(false"
+      ],
+      "guards": [],
+      "body": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"\nrequired = []\nforbidden = [\".store(false\"]\nrequired_order = [[\"fn in_model_lane<\",\"&SourceLaneProof<'_>\",\".try_acquire_owned()\",\"self.owners.try_lock()\",\"if owners.source_fenced\",\"source_abandoned\",\".load(std::sync::atomic::Ordering::Acquire)\",\"require_original_dataset_scope(\",\"training.original_source_for_operation()?\",\"OriginalCellQ24TrainingSourceV1::begin_source_operation(source)\",\"let original = owners.read_original_completion()?\",\"SourceLaneProof::from_operation(operation.as_ref())\",\"work(&mut owners.training, &original, &proof)\",\"OriginalCellQ24TrainingSourceOperationV1::read_after_native(\",\"let current = owners\",\"read_original_completion()\",\"require_retained_attestation_current(&current)\",\"current.receipt != original.receipt || current.attestation != original.attestation\",\"source_abandoned\",\".load(std::sync::atomic::Ordering::Acquire)\",\"OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)\",\"result\"]]\n\n\n",
+      "scoped_generic": [
+        {
+          "function": "fn in_model_lane<",
+          "sequence": [
+            "&SourceLaneProof<'_>",
+            ".try_acquire_owned()",
+            "self.owners.try_lock()",
+            "if owners.source_fenced",
+            "source_abandoned",
+            ".load(std::sync::atomic::Ordering::Acquire)",
+            "require_original_dataset_scope(",
+            "training.original_source_for_operation()?",
+            "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)",
+            "let original = owners.read_original_completion()?",
+            "SourceLaneProof::from_operation(operation.as_ref())",
+            "work(&mut owners.training, &original, &proof)",
+            "OriginalCellQ24TrainingSourceOperationV1::read_after_native(",
+            "let current = owners",
+            "read_original_completion()",
+            "require_retained_attestation_current(&current)",
+            "current.receipt != original.receipt || current.attestation != original.attestation",
+            "source_abandoned",
+            ".load(std::sync::atomic::Ordering::Acquire)",
+            "OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)",
+            "result"
+          ],
+          "top_level": []
+        }
+      ],
+      "required_order": [
+        [
+          "fn in_model_lane<",
+          "&SourceLaneProof<'_>",
+          ".try_acquire_owned()",
+          "self.owners.try_lock()",
+          "if owners.source_fenced",
+          "source_abandoned",
+          ".load(std::sync::atomic::Ordering::Acquire)",
+          "require_original_dataset_scope(",
+          "training.original_source_for_operation()?",
+          "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)",
+          "let original = owners.read_original_completion()?",
+          "SourceLaneProof::from_operation(operation.as_ref())",
+          "work(&mut owners.training, &original, &proof)",
+          "OriginalCellQ24TrainingSourceOperationV1::read_after_native(",
+          "let current = owners",
+          "read_original_completion()",
+          "require_retained_attestation_current(&current)",
+          "current.receipt != original.receipt || current.attestation != original.attestation",
+          "source_abandoned",
+          ".load(std::sync::atomic::Ordering::Acquire)",
+          "OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)",
+          "result"
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_remote.rs",
+      "required": [],
+      "forbidden": [
+        "pub fn require_original_freeze_current"
+      ],
+      "guards": [
+        {
+          "function": "fn require_original_freeze_current(",
+          "sequence": [
+            "let receipt = self.receipt()",
+            "let snapshot = &receipt.snapshot",
+            "snapshot.snapshot_id != config.freeze_plan.snapshot_id",
+            "snapshot.objective_digest != config.freeze_plan.objective_digest",
+            "receipt.inclusion_policy_digest != config.freeze_plan.inclusion_policy_digest",
+            "return Err(Error::Binding(",
+            "let payload = freeze_payload(",
+            "snapshot.ledger_head_digest",
+            "snapshot.eligible_frontier",
+            "snapshot.outcome_watermark",
+            "receipt.correction_cut_digest",
+            "receipt.revocation_cut_digest",
+            "&snapshot.source_record_digests",
+            "let verified = config.verifier.verify(",
+            "LearningEvidenceRoleV1::Evaluator",
+            "&config.freeze_evidence",
+            "&payload",
+            "at",
+            "if verified.principal() != &receipt.producer",
+            "return Err(Error::Binding(",
+            "verify_dataset_snapshot_receipt_v3(receipt, at)?",
+            "Ok(())"
+          ],
+          "top_level": []
+        }
+      ],
+      "body": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_dataset_remote.rs\"\nrequired = []\nforbidden = [\"pub fn require_original_freeze_current\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_original_freeze_current(\"\nsequence = [\"let receipt = self.receipt()\",\"let snapshot = &receipt.snapshot\",\"snapshot.snapshot_id != config.freeze_plan.snapshot_id\",\"snapshot.objective_digest != config.freeze_plan.objective_digest\",\"receipt.inclusion_policy_digest != config.freeze_plan.inclusion_policy_digest\",\"return Err(Error::Binding(\",\"let payload = freeze_payload(\",\"snapshot.ledger_head_digest\",\"snapshot.eligible_frontier\",\"snapshot.outcome_watermark\",\"receipt.correction_cut_digest\",\"receipt.revocation_cut_digest\",\"&snapshot.source_record_digests\",\"let verified = config.verifier.verify(\",\"LearningEvidenceRoleV1::Evaluator\",\"&config.freeze_evidence\",\"&payload\",\"at\",\"if verified.principal() != &receipt.producer\",\"return Err(Error::Binding(\",\"verify_dataset_snapshot_receipt_v3(receipt, at)?\",\"Ok(())\"]\ntop_level = []\n\n",
+      "scoped_generic": [],
+      "required_order": []
+    }
+  ],
+  "typed_caller_audit": {
+    "scope": "Explicit static calls and explicit typed-local receiver calls within all changed production files; not the repository Python verifier.",
+    "records": [
+      {
+        "id": "learning_original_source_operation_handle",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true,
+        "kind": "explicit typed local receiver"
+      },
+      {
+        "id": "learning_original_source_operation_begin",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_owner_proof",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_lane.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_same",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_after",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_finish",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_fenced",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_freeze",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_lane_proof",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_lane_admission",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_cancel_create",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_cancel_worker",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_cancel_joined",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_cancel_bind",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_cancel_live",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true
+      },
+      {
+        "id": "learning_original_source_operation_cancel_fenced",
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "explicitObserved": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+        ],
+        "equal": true
+      }
+    ]
+  },
+  "existing_qa_edits": [
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "old": "\"learning_source_bound_training_admission\": (BOUND, MODEL),",
+      "new": "\"learning_source_bound_training_admission\": (),"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "old": "\"learning_source_bound_training_live_check\": (NATIVE, STAGE, MODEL),",
+      "new": "\"learning_source_bound_training_live_check\": (NATIVE, STAGE),"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "old": "\"CellQ24TrainingOwnerV1::require_original_source_capture(&mut owners.training)?\"",
+      "new": "\"SourceLaneProof::require_original(source, &mut owners.training)?\""
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "old": "for marker in (\"training.require_live_source_if_captured()?\", \"CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)\"):",
+      "new": "for marker in (\n                \"OriginalCellQ24TrainingSourceV1::begin_source_operation(source)\",\n                \"OriginalCellQ24TrainingSourceOperationV1::read_after_native(\",\n                \"OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)\",\n            ):"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+      "old": "\"CellQ24TrainingOwnerV1::require_original_source_capture(training)?\"",
+      "new": "\"SourceLaneProof::require_original(source, training)?\""
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+      "old": "(MODEL, \"fn in_model_lane<\", \"training.require_live_source_if_captured()?\"),",
+      "new": "(MODEL, \"fn in_model_lane<\", \"OriginalCellQ24TrainingSourceV1::begin_source_operation(source)\"),"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+      "old": "(MODEL, \"fn in_model_lane<\", \"CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)\"),",
+      "new": "(MODEL, \"fn in_model_lane<\", \"OriginalCellQ24TrainingSourceOperationV1::read_after_native(\"),\n            (MODEL, \"fn in_model_lane<\", \"OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)\"),"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "old": "\".in_lane(move |owners|\"",
+      "new": "\".in_lane(move |owners, _source|\""
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "old": "\"let result = work(&mut owners.training, &original)\"",
+      "new": "\"work(&mut owners.training, &original, &proof)\""
+    }
+  ],
+  "existing_qa_unrelated_byte_preservation": [
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "exactUnrelatedBytesPreserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+      "exactUnrelatedBytesPreserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "exactUnrelatedBytesPreserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "exactUnrelatedBytesPreserved": true
+    }
+  ],
+  "new_qa": {
+    "file": "qa/b4-no-bypass/test_original_source_operation_source_closure.py",
+    "test_methods": 8,
+    "mutation_marker_lexical_audit": {
+      "cases": 52,
+      "missing": []
+    },
+    "executed": false
+  },
+  "byte_identical_critical_functions": [
+    {
+      "file": "cell_q24_training_source.rs",
+      "function": "fn current_material(",
+      "byteIdentical": true
+    },
+    {
+      "file": "cell_composed_q24_training_owner.rs",
+      "function": "fn fit_or_readback(",
+      "byteIdentical": true
+    },
+    {
+      "file": "cell_q24_training_source_owner.rs",
+      "function": "fn require_original_source_capture(",
+      "byteIdentical": true
+    }
+  ],
+  "native_mechanisms": [
+    {
+      "name": "source_operation_candidate_and_model_keep_two_reads_per_lane",
+      "expected_experience_dataset_counts": [
+        20,
+        20
+      ],
+      "scope": "Actual Source/Ledger, native Candidate fit, original Generator receipt, actual Model owner creation, Candidate material and completion rereads.",
+      "status": "authored_not_executed"
+    },
+    {
+      "name": "source_operation_after_read_withdrawal_fences_completed_native_result",
+      "expected_experience_dataset_counts": [
+        16,
+        16
+      ],
+      "scope": "Gate a real native witness read after the Source before read, withdraw the actual Source, require uncertain completion and no changed native/Generator bytes.",
+      "status": "authored_not_executed"
+    },
+    {
+      "name": "source_operation_cancelled_waiter_keeps_lane_then_fences",
+      "expected_experience_dataset_counts": [
+        16,
+        16
+      ],
+      "scope": "Cancel the async waiter while a real native witness blocks; retain the lane permit, then fence the same original SourceBound stage.",
+      "status": "authored_not_executed"
+    },
+    {
+      "name": "source_operation_rejects_equal_capture_from_different_arc",
+      "expected_experience_dataset_counts": [
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ]
+      ],
+      "scope": "Identical captured bytes do not allow another Source/config Arc to replace the borrowed operation; standalone capture remains a full two-read API.",
+      "status": "authored_not_executed"
+    },
+    {
+      "name": "source_operation_abandoned_finish_preserves_real_native_effect_and_fences",
+      "expected_experience_dataset_counts": [
+        [
+          7,
+          7
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "scope": "Drop the unfinished operation after a real native completion; retain durable bytes, fence readback, and recover the same completed native journal without Generator claim.",
+      "status": "authored_not_executed"
+    }
+  ],
+  "reads": {
+    "unit": "One actual read per original channel; a remote request/response exchange contains two directional frames.",
+    "standalone_capture": {
+      "experience": 2,
+      "dataset": 2,
+      "material": 2,
+      "unchanged": true
+    },
+    "original_training_or_model_lane": {
+      "before": {
+        "experience": 1,
+        "dataset": 1,
+        "material": 1
+      },
+      "after": {
+        "experience": 1,
+        "dataset": 1,
+        "material": 1
+      },
+      "total": {
+        "experience": 2,
+        "dataset": 2,
+        "material": 2
+      },
+      "prior_total": {
+        "experience": 4,
+        "dataset": 4,
+        "material": 4
+      }
+    },
+    "candidate_material_lane": {
+      "experience": 2,
+      "dataset": 2,
+      "material": 2,
+      "extra_inner_full_capture_removed_by": "same borrowed private SourceLaneProof"
+    },
+    "first_training_execute": {
+      "outer_lane": 2,
+      "native_prefit_capture": 2,
+      "native_post_optimizer_precomplete_capture": 2,
+      "stage_presign_capture": 2,
+      "total_each_channel": 8
+    },
+    "production_training_build_minimum": {
+      "initial_capture": 2,
+      "bootstrap_explicit_standalone_current": 2,
+      "original_stage_admission": 2,
+      "source_bound_admission": 2,
+      "command_owner_context_lane": 2,
+      "total_each_channel": 10
+    },
+    "excluded_from_build_minimum": [
+      "first Execute (8 each)",
+      "later Ready/completed readback",
+      "downstream actual Training/Model/Candidate lane visits",
+      "any external launcher work or unknown/error path"
+    ],
+    "remote_material_wire": {
+      "source": "cell_q24_material_source.rs::read_current and cell_q24_material_source_service.rs::respond_material",
+      "exchanges_per_read": 1,
+      "frames_per_read": 2,
+      "response_bound_bytes": 16384,
+      "begin_page_finish": false,
+      "actual_response_bytes": "not_measured",
+      "oversize": "failure; no paging fallback"
+    },
+    "candidate_paging": "Different protocol; Model agent owns Begin/Pages/Finish. Each actual candidate-material invocation independently costs 2 reads per Source channel.",
+    "total_128_budget": "not_claimed_closed; Root must aggregate every actual original channel and all bootstrap/downstream calls"
+  },
+  "ownership": {
+    "source": "Same sealed Source retained in a private Arc by the original native Training owner; no new owner, channel, journal, path, key, UID, grant, or scope.",
+    "operation": "Non-Clone, non-Deserialize borrowed operation; full before/after material and signed context, same Source/config/baseline Arc identity, once-only finish.",
+    "uncertainty": "Unfinished/error Drop fences the original Source; cancelled SourceBound async waiter retains the blocking permit and fences the same original stage; old non-Source cancellation behavior remains.",
+    "final_freshness": "After Source after reads, physically reread native/Generator ownership, then verify exact retained E/D and original Freeze signature/producer at the real clock."
+  },
+  "integration": "Source-only branch. Positive C/read checkpoint c331386c7542d397fabab5d825498222df37e6b0 is separate and already integrated by E at 9570f8fe3aa39ef3555f95c24e8fbadce52e71a4. Ordinary launcher/custody and positive A/B/C/restart acceptance are not supplied by these mechanisms."
+}

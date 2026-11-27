@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "base": "770179d123b879355b53db1d75f8f9f301280d3e",
+  "incoming": "0e378dd351e0fca99d32f67613639b37c85605da",
+  "ancestor_union_commits": 40860,
+  "ancestor_union_sha256": "b3330803efeeaf5917d57be7cdc924b41e09aba0c352eac4bc8322ab89306849",
+  "missing_parent_nodes": [],
+  "protected_snapshot_source": "/workspace/scratch/a28fa6a6513a/audit/protected-hia-refs-before-next-batch.tsv",
+  "protected_snapshot_sha256": "acba9465f6e0f7768fbabeee8b4044093b4f84c745f0488107514d0b776b4c6c",
+  "protected_ref_count": 366,
+  "protected_unique_tip_count": 365,
+  "protected_refs_present_in_union": [],
+  "roots_and_anchor": {
+    "codex_hia_root": {
+      "sha": "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+      "in_union": false
+    },
+    "cell_hia_root": {
+      "sha": "3aa1f85ba90c79d220a5cadf2261def176892867",
+      "in_union": false
+    },
+    "known_cell_hia_descendant_anchor": {
+      "sha": "8347769bab248a287efa2e4e82f667b55a0f29bc",
+      "in_union": false
+    }
+  },
+  "supersedes_for_boundary": "ancestry-review.json captures the earlier 356-ref boundary; this report uses the newer 366-ref snapshot. Both originals remain preserved.",
+  "remote_ref_mutations": false,
+  "local_review_merge_commit": "b3957ba39ffb9e0378b4ab652e2cb6463acb7004",
+  "candidate_ancestor_count": 40861,
+  "candidate_parents": [
+    "770179d123b879355b53db1d75f8f9f301280d3e",
+    "0e378dd351e0fca99d32f67613639b37c85605da"
+  ],
+  "new_candidate_node_equals_any_protected_tip_or_root": false,
+  "candidate_ancestry_basis": "Candidate object has exactly the two audited union roots as parents; only candidate itself is added to the complete 40,860-node union."
+}

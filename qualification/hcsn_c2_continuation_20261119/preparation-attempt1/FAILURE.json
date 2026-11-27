@@ -1,0 +1,41 @@
+{
+  "native_status": {
+    "at_unix_ms": 1795069332387,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1f27846ae-ffbe-b3b",
+    "launch_nonce": "69e7bf381880197feeaef8e1452707d3",
+    "log_bytes": {
+      "stderr": {
+        "seen": 965,
+        "stored": 965
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "stderr": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-continuation-20261119-d741/prepare.py\", line 147, in <module>\n    main()\n  File \"/home/qian-qi/hepta-c2-continuation-20261119-d741/prepare.py\", line 80, in main\n    require(bind(path, expected[\"sha256\"]) == expected, \"original admitted parent input\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-continuation-20261119-d741/prepare.py\", line 47, in bind\n    value = identity(path)\n            ^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-continuation-20261119-d741/prepare.py\", line 20, in identity\n    require(path.is_file() and not path.is_symlink(), \"regular immutable input required: \" + str(path))\n  File \"/home/qian-qi/hepta-c2-continuation-20261119-d741/prepare.py\", line 16, in require\n    raise ValueError(message)\nValueError: regular immutable input required: /home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.001/initial.pt\n",
+  "stdout": ""
+}

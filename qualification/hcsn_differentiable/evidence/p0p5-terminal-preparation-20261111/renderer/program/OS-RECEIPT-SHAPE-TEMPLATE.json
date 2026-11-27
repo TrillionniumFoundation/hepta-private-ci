@@ -1,0 +1,96 @@
+{
+  "schema": "c2-resource-analysis-complete-os-envelope-v1",
+  "template_only": true,
+  "execution_authorized": false,
+  "status": "not_executed",
+  "process_started": false,
+  "returncode": null,
+  "timed_out": null,
+  "child_terminal_unknown": null,
+  "unreaped_descendants": null,
+  "direct_child_CPU_complete": false,
+  "total_attempt_CPU_unknown_or_lower_bound": null,
+  "adopted_child_wait4": null,
+  "limits": {
+    "whole_wall_seconds": 120,
+    "peak_RSS_bytes": 536870912,
+    "workers": 1,
+    "threads": 1,
+    "automatic_retry": false
+  },
+  "whole_child_wall_seconds": null,
+  "wait4_child_CPU_seconds": null,
+  "wait4_peak_RSS_bytes": null,
+  "sampled_peak_RSS_bytes": null,
+  "supervisor_source_sha256": null,
+  "supervisor_source_sha256_before": null,
+  "supervisor_source_sha256_after": null,
+  "source_inputs_unchanged": false,
+  "program_manifest_sha256": "f2d1ce683591a9b8575aab2d0981bf67b9e465bf9686a8da2e87a2246a0ea70e",
+  "artifacts": {
+    "core_receipt": {
+      "bytes": null,
+      "sha256": null
+    },
+    "RESULT": {
+      "bytes": null,
+      "sha256": null
+    },
+    "ZIP": {
+      "bytes": null,
+      "sha256": null
+    }
+  },
+  "process_observations": {
+    "subreaper_enabled": null,
+    "before_start": null,
+    "after_direct_wait4": {
+      "observer_pid": null,
+      "core_pid": null,
+      "core_pgid": null,
+      "same_group_pids": null,
+      "tracked_live_descendants": null,
+      "adopted_children": null,
+      "records": null,
+      "scan_errors": null,
+      "observed_monotonic": null
+    },
+    "after_cleanup": {
+      "observer_pid": null,
+      "core_pid": null,
+      "core_pgid": null,
+      "same_group_pids": null,
+      "tracked_live_descendants": null,
+      "adopted_children": null,
+      "records": null,
+      "scan_errors": null,
+      "observed_monotonic": null
+    },
+    "tracked_identities": null,
+    "unreadable": null
+  },
+  "scope_note": "Shape only; null is unobserved. Analysis launcher child complete Popen-to-wait4 <=120s; supervisor metadata <=30s and native complete envelope <=155s are separate scopes. No default false/empty entries stand in for actual process evidence.",
+  "process_gate_passed": false,
+  "cleanup_errors": null,
+  "argv": null,
+  "popen_started_monotonic": null,
+  "wait4_completed_monotonic": null,
+  "supervisor_main_wall_prefix_seconds": null,
+  "metadata_finalization_wall_prefix_seconds": null,
+  "supervisor_CPU_prefix_seconds": null,
+  "supervisor_peak_RSS_bytes": null,
+  "source_and_input_identities": null,
+  "artifact_paths": {
+    "core_receipt": null,
+    "RESULT": null,
+    "ZIP": null
+  },
+  "authorization": {
+    "bytes": null,
+    "sha256": null
+  },
+  "binding": {
+    "bytes": null,
+    "sha256": null
+  }
+}

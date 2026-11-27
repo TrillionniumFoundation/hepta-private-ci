@@ -1,0 +1,99 @@
+{
+  "created_utc": "2026-11-10T18:55:09.931600+00:00",
+  "execution_still_requires": "Source-frozen wrapper, input binding tests, terminal evidence and stable report/checkpoint identities. Tail representative, ordinary FD step rule and stage granularity must be declared in the execution wrapper or pre-execution addendum.",
+  "findings": [
+    {
+      "action": "Define a finite representative for the infinite tail, or explicitly select the largest nonzero finite cell center. Do not call a representative the maximum of unbounded support.",
+      "id": "PLAN-01",
+      "scope": "tail query selection"
+    },
+    {
+      "action": "Freeze ordinary FD representable-step rule, per-stage granularity and fixed execution order before any final-model read. Preserve cap-triggered untested cases and do not adapt tolerance or roster to outcomes.",
+      "id": "PLAN-02",
+      "scope": "reproducible finite differences and cost caps"
+    }
+  ],
+  "fixed_episode_bytes_and_metadata_verified": 6,
+  "inputs_unchanged": true,
+  "last_future_gap_slice_verified": true,
+  "model_forward_performed": false,
+  "model_or_native_fit_read": false,
+  "numerical_oracle_run": false,
+  "plan_sha256": "6ae8bb984d994f0d3fa6963e37d0f4180366a3a7bafd316d887e74f2ef1c7d26",
+  "potential_finite_fixtures": 60,
+  "primary_future_gap_slices_verified": 9,
+  "review_process_CPU_sample_before_serialization_seconds": 0.067344565,
+  "review_wall_sample_before_serialization_seconds": 0.020944659001543187,
+  "schema": "independent-terminal-HCSN-plan-static-review-v1",
+  "scientific_admission": "HOLD",
+  "source_data_and_plan_inputs": {
+    "/workspace/scratch/c385a7439f8e/final-hcsn-numerical-plan-v1/MANIFEST.json": {
+      "bytes": 1201,
+      "sha256": "892676cd088a9427085d4c8521b6bef84d015cb37041cc09579aee0762974a26"
+    },
+    "/workspace/scratch/c385a7439f8e/final-hcsn-numerical-plan-v1/PLAN.json": {
+      "bytes": 29310,
+      "sha256": "6ae8bb984d994f0d3fa6963e37d0f4180366a3a7bafd316d887e74f2ef1c7d26"
+    },
+    "/workspace/scratch/c385a7439f8e/final-hcsn-numerical-plan-v1/README.md": {
+      "bytes": 6917,
+      "sha256": "15a5572820c6abfcf7b2f111a32383ed635b61970a1c9fbddece478ab23461a6"
+    },
+    "/workspace/scratch/c385a7439f8e/final-hcsn-numerical-plan-v1/freeze_plan.py": {
+      "bytes": 14964,
+      "sha256": "e0246cde7ef18d1fe377df4961bb4b692b89cf47bfbbfefa43558d8e9bcf06b9"
+    },
+    "/workspace/scratch/c385a7439f8e/final-hcsn-numerical-plan-v1/recorder-scope-MANIFEST.json": {
+      "bytes": 416,
+      "sha256": "63f35ccd06811b777f73ea8de9b999b88ad6775b5e7946c719206fe8c4823e80"
+    },
+    "/workspace/scratch/c385a7439f8e/final-hcsn-numerical-plan-v1/recorder-scope-RESULT.json": {
+      "bytes": 7661,
+      "sha256": "7a0672c5ee703cb61c218d6b0723ea376845de55c26c3948a0e4624f95efe678"
+    },
+    "/workspace/scratch/c385a7439f8e/final-hcsn-numerical-plan-v1/recorder-scope-REVIEW.md": {
+      "bytes": 4983,
+      "sha256": "e6bad03d294500a78ac3639b0a46a80b2dea20bf938e909dd6317b3400480341"
+    },
+    "/workspace/scratch/c385a7439f8e/final-hcsn-numerical-plan-v1/recorder-scope-fact_check.py": {
+      "bytes": 8360,
+      "sha256": "f0a3157ca9f8da6a2c0a061da3a714c42c30e2047187dafbaf760f33faa27693"
+    },
+    "/workspace/scratch/c385a7439f8e/final-hcsn-numerical-plan-v1/training-source-v8.zip": {
+      "bytes": 121388,
+      "sha256": "288283cae2b2cf4e7b68432e040e643a5e1b00a7de961fc848dd5cf20eb46102"
+    },
+    "/workspace/scratch/c385a7439f8e/uci-cloud-prepared-v1/data-manifest.json": {
+      "bytes": 101622,
+      "sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb"
+    },
+    "/workspace/scratch/c385a7439f8e/uci-cloud-prepared-v1/episodes/A01-0.json": {
+      "bytes": 100415,
+      "sha256": "c34c00ec2bfdea546424955dc506fd9c899196bdbdfe88af3c57d51d7e0e4867"
+    },
+    "/workspace/scratch/c385a7439f8e/uci-cloud-prepared-v1/episodes/A01-256.json": {
+      "bytes": 100628,
+      "sha256": "c069117134b8d352d332bccb4dc9f53ef396bfb48d234910c4b3c29dad5eecc2"
+    },
+    "/workspace/scratch/c385a7439f8e/uci-cloud-prepared-v1/episodes/A04-3072.json": {
+      "bytes": 101370,
+      "sha256": "8669facd24f314ea053a0b6a5fc495f4a593eb462f773a351fb3b939b0887f6b"
+    },
+    "/workspace/scratch/c385a7439f8e/uci-cloud-prepared-v1/episodes/B01-0.json": {
+      "bytes": 101306,
+      "sha256": "24862de577a4ccf997238d9c9191787b2f5679f2c5d646e944fc8b01cebe374b"
+    },
+    "/workspace/scratch/c385a7439f8e/uci-cloud-prepared-v1/episodes/C01-0.json": {
+      "bytes": 101309,
+      "sha256": "2ff5eb5853f6942b2e6a6e0a308bfa7b305f136f2452e01146c9d4eaf769b7ab"
+    },
+    "/workspace/scratch/c385a7439f8e/uci-cloud-prepared-v1/episodes/D01-0.json": {
+      "bytes": 101233,
+      "sha256": "523ec3ab54e011b62f8ea57cd74a3261e84c864da569716baf494fd766fa1971"
+    }
+  },
+  "source_files_exact_to_v8_capsule": 13,
+  "static_binding_passed": true,
+  "training_performed": false,
+  "whole_training_domain_admission": "HOLD"
+}

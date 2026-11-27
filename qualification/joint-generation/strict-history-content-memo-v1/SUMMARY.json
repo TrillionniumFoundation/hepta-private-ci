@@ -1,0 +1,485 @@
+{
+  "result": {
+    "CPU_prefix_seconds": 0.166882681,
+    "no_numpy_or_model_import": true,
+    "post_barrier": true,
+    "pre_barrier": true,
+    "scope": "exact fresh-bytes payload SHA work diagnostic; no models, no256, no speed claim or strict total-CPU proof",
+    "status": "COMPLETE",
+    "tests": [
+      {
+        "name": "saved128_exact_original_comparison",
+        "results": [
+          {
+            "cache_cleared_after_call": null,
+            "error": null,
+            "mode": "original",
+            "payload_SHA": {
+              "calls": 256,
+              "entries": 0,
+              "hash_bytes": 1680512,
+              "hash_calls": 256,
+              "hits": 0,
+              "retained_payload_bytes": 0
+            },
+            "work": {
+              "history_leaves_validated": 128,
+              "history_walks": 1,
+              "payload_bytes_read": 1680512,
+              "payload_read_calls": 256
+            }
+          },
+          {
+            "cache_cleared_after_call": true,
+            "error": null,
+            "mode": "memo",
+            "payload_SHA": {
+              "calls": 256,
+              "entries": 16,
+              "hash_bytes": 1612780,
+              "hash_calls": 174,
+              "hits": 82,
+              "retained_payload_bytes": 13216
+            },
+            "work": {
+              "history_leaves_validated": 128,
+              "history_walks": 1,
+              "payload_bytes_read": 1680512,
+              "payload_read_calls": 256
+            }
+          }
+        ]
+      },
+      {
+        "name": "second_call_fresh_cache",
+        "result": {
+          "cache_cleared_after_call": true,
+          "error": null,
+          "mode": "memo",
+          "payload_SHA": {
+            "calls": 256,
+            "entries": 16,
+            "hash_bytes": 1612780,
+            "hash_calls": 174,
+            "hits": 82,
+            "retained_payload_bytes": 13216
+          },
+          "work": {
+            "history_leaves_validated": 128,
+            "history_walks": 1,
+            "payload_bytes_read": 1680512,
+            "payload_read_calls": 256
+          }
+        }
+      },
+      {
+        "name": "boundary_0",
+        "results": [
+          {
+            "cache_cleared_after_call": null,
+            "error": "boundary state mismatch",
+            "mode": "original",
+            "payload_SHA": {
+              "calls": 256,
+              "entries": 0,
+              "hash_bytes": 1680512,
+              "hash_calls": 256,
+              "hits": 0,
+              "retained_payload_bytes": 0
+            },
+            "work": {
+              "history_leaves_validated": 128,
+              "history_walks": 1,
+              "payload_bytes_read": 1680512,
+              "payload_read_calls": 256
+            }
+          },
+          {
+            "cache_cleared_after_call": true,
+            "error": "boundary state mismatch",
+            "mode": "memo",
+            "payload_SHA": {
+              "calls": 256,
+              "entries": 16,
+              "hash_bytes": 1612780,
+              "hash_calls": 174,
+              "hits": 82,
+              "retained_payload_bytes": 13216
+            },
+            "work": {
+              "history_leaves_validated": 128,
+              "history_walks": 1,
+              "payload_bytes_read": 1680512,
+              "payload_read_calls": 256
+            }
+          }
+        ]
+      },
+      {
+        "name": "boundary_64",
+        "results": [
+          {
+            "cache_cleared_after_call": null,
+            "error": "boundary state mismatch",
+            "mode": "original",
+            "payload_SHA": {
+              "calls": 128,
+              "entries": 0,
+              "hash_bytes": 840256,
+              "hash_calls": 128,
+              "hits": 0,
+              "retained_payload_bytes": 0
+            },
+            "work": {
+              "history_leaves_validated": 64,
+              "history_walks": 1,
+              "payload_bytes_read": 840256,
+              "payload_read_calls": 128
+            }
+          },
+          {
+            "cache_cleared_after_call": true,
+            "error": "boundary state mismatch",
+            "mode": "memo",
+            "payload_SHA": {
+              "calls": 128,
+              "entries": 16,
+              "hash_bytes": 800608,
+              "hash_calls": 80,
+              "hits": 48,
+              "retained_payload_bytes": 13216
+            },
+            "work": {
+              "history_leaves_validated": 64,
+              "history_walks": 1,
+              "payload_bytes_read": 840256,
+              "payload_read_calls": 128
+            }
+          }
+        ]
+      },
+      {
+        "name": "boundary_128",
+        "results": [
+          {
+            "cache_cleared_after_call": null,
+            "error": "boundary state mismatch",
+            "mode": "original",
+            "payload_SHA": {
+              "calls": 0,
+              "entries": 0,
+              "hash_bytes": 0,
+              "hash_calls": 0,
+              "hits": 0,
+              "retained_payload_bytes": 0
+            },
+            "work": {
+              "history_leaves_validated": 0,
+              "history_walks": 1,
+              "payload_bytes_read": 0,
+              "payload_read_calls": 0
+            }
+          },
+          {
+            "cache_cleared_after_call": true,
+            "error": "boundary state mismatch",
+            "mode": "memo",
+            "payload_SHA": {
+              "calls": 0,
+              "entries": 0,
+              "hash_bytes": 0,
+              "hash_calls": 0,
+              "hits": 0,
+              "retained_payload_bytes": 0
+            },
+            "work": {
+              "history_leaves_validated": 0,
+              "history_walks": 1,
+              "payload_bytes_read": 0,
+              "payload_read_calls": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "fresh_file_mutation_refusals",
+        "results": [
+          {
+            "cache_cleared_after_sequence": null,
+            "observations": [
+              {
+                "case": "first",
+                "error": null,
+                "returned_sha256": "3f04a14abaeed43d93d71863024d4186c91b41b32cb7dbba39bbeb0a42b619b1",
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "different_path_identical_bytes",
+                "error": null,
+                "returned_sha256": "3f04a14abaeed43d93d71863024d4186c91b41b32cb7dbba39bbeb0a42b619b1",
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "cache_hit_wrong_expected_digest",
+                "error": "payload identity",
+                "returned_sha256": null,
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "same_path_mutated_old_reference",
+                "error": "payload identity",
+                "returned_sha256": null,
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "same_path_new_correct_reference",
+                "error": null,
+                "returned_sha256": "33976089329125adcab85298a3f7f5953971548de78f4f56c34fe89d97c20050",
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "restored_content",
+                "error": null,
+                "returned_sha256": "3f04a14abaeed43d93d71863024d4186c91b41b32cb7dbba39bbeb0a42b619b1",
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "appended_byte",
+                "error": "payload identity",
+                "returned_sha256": null,
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 12,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "truncated_byte",
+                "error": "payload identity",
+                "returned_sha256": null,
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 10,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "symlink_refusal",
+                "error": "payload symlink",
+                "returned_sha256": null,
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 0,
+                  "payload_read_calls": 0
+                }
+              }
+            ],
+            "payload_SHA": {
+              "calls": 6,
+              "entries": 0,
+              "hash_bytes": 66,
+              "hash_calls": 6,
+              "hits": 0,
+              "retained_payload_bytes": 0
+            }
+          },
+          {
+            "cache_cleared_after_sequence": true,
+            "observations": [
+              {
+                "case": "first",
+                "error": null,
+                "returned_sha256": "3f04a14abaeed43d93d71863024d4186c91b41b32cb7dbba39bbeb0a42b619b1",
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "different_path_identical_bytes",
+                "error": null,
+                "returned_sha256": "3f04a14abaeed43d93d71863024d4186c91b41b32cb7dbba39bbeb0a42b619b1",
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "cache_hit_wrong_expected_digest",
+                "error": "payload identity",
+                "returned_sha256": null,
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "same_path_mutated_old_reference",
+                "error": "payload identity",
+                "returned_sha256": null,
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "same_path_new_correct_reference",
+                "error": null,
+                "returned_sha256": "33976089329125adcab85298a3f7f5953971548de78f4f56c34fe89d97c20050",
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "restored_content",
+                "error": null,
+                "returned_sha256": "3f04a14abaeed43d93d71863024d4186c91b41b32cb7dbba39bbeb0a42b619b1",
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 11,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "appended_byte",
+                "error": "payload identity",
+                "returned_sha256": null,
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 12,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "truncated_byte",
+                "error": "payload identity",
+                "returned_sha256": null,
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 10,
+                  "payload_read_calls": 1
+                }
+              },
+              {
+                "case": "symlink_refusal",
+                "error": "payload symlink",
+                "returned_sha256": null,
+                "work": {
+                  "history_leaves_validated": 0,
+                  "history_walks": 0,
+                  "payload_bytes_read": 0,
+                  "payload_read_calls": 0
+                }
+              }
+            ],
+            "payload_SHA": {
+              "calls": 6,
+              "entries": 2,
+              "hash_bytes": 22,
+              "hash_calls": 2,
+              "hits": 4,
+              "retained_payload_bytes": 22
+            }
+          }
+        ]
+      },
+      {
+        "name": "bounded_capacity_and_type",
+        "rejected_nonbytes": true,
+        "stats": {
+          "calls": 21,
+          "entries": 16,
+          "hash_bytes": 81922,
+          "hash_calls": 20,
+          "hits": 1,
+          "retained_payload_bytes": 65536
+        }
+      }
+    ],
+    "work": {
+      "history_leaves_validated": 768,
+      "history_walks": 9,
+      "payload_bytes_read": 10083248,
+      "payload_read_calls": 1552
+    }
+  },
+  "source_freeze": {
+    "INPUTS.json": "867464d08da0a782d818b6bc9ad721b677b39c72b6e6436d834ef52d0211e6c0",
+    "PLAN.md": "b63657285ddddb36ae087e75585927b1ffc3bb1439e85e54848f314559516710",
+    "content_memo.py": "d093eab7fe4dbb4a5ed46266caa62f31394fd5233555527cd32f650266c09dcb",
+    "run_once.py": "f2d0e02ba09d92cee884df6880a625355f84284c885a91c2e9b68abbe929883a",
+    "worker.py": "8bf9b253f83f6ac62b76b1a04f008448074ffa1dc81c474a7f6af810b185360b"
+  },
+  "whole_child_receipt": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_MiB": 256,
+      "child_CPU_seconds": 4,
+      "child_wall_alarm_seconds": 45,
+      "file_MiB": 2,
+      "outer_CPU_seconds": 6,
+      "outer_wall_alarm_seconds": 60
+    },
+    "max_rss_kib": 12708,
+    "outer_CPU_prefix_seconds": 0.031517557,
+    "outer_final_tail": "unknown_nonzero",
+    "preparation_review_and_history": "additional_nonzero",
+    "raw_wait_status": 0,
+    "result_sha256": "a10c9d466c0bbb7d982e8511979d565d370b60618d2b74ca773011da964075bc",
+    "scope": "stdlib fresh-bytes content memo only; NOT strict256 admission",
+    "source_freeze_sha256": "4b0653dddd7465e9740e4d723ee492db89a9587320b287bc082c4b8adcc68828",
+    "system_CPU_seconds": 0.04179,
+    "user_CPU_seconds": 0.136007,
+    "wall_seconds": 0.1799031179980375,
+    "whole_child_CPU_seconds": 0.17779699999999998
+  }
+}

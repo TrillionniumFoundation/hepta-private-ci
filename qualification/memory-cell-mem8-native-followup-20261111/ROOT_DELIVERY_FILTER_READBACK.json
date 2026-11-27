@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.mem.native-followup.root-delivery-zero-execution-audit.v1",
+  "status": "RETAINED_SELECTION_FAILURE_ZERO_EXECUTED",
+  "archive": {
+    "path": "delivery-filter-failed.tar.xz",
+    "git_blob": "6a460db9a7394b84a13d5e71d5cf447fc5e8c2e8",
+    "bytes": 32140,
+    "sha256": "a8ac659ee5768b17dc86b16cebd91506d995a27fada3ca33679dc271256de380",
+    "regular_members": 38,
+    "member_manifest_verified": 37
+  },
+  "github_readback_commit": "e17632bf62a1a0bb1bffea5995f8993650670b05",
+  "source": {
+    "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+    "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+    "status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+  },
+  "source_unchanged": true,
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--lib",
+    "-E",
+    "test(native_context) or test(native_run_control)",
+    "--no-capture",
+    "--retries",
+    "0"
+  ],
+  "command_exit": 4,
+  "seconds": 166.1729666381143,
+  "raw_bytes": 32617,
+  "raw_sha256": "2bdbf0e1f7dd3881137c15d7a14b9df44b9e8d1331fd9a5a2f0cd81cd0cee866",
+  "native_test_executions": 0,
+  "passed": 0,
+  "failed_test_assertions": 0,
+  "unselected": 52,
+  "nextest_uuid": "4c08fe7a-116b-41a9-b71b-fc92852f38cc",
+  "compilation_completed": true,
+  "junit_empty_confirmed": true,
+  "github_reconstructed_tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+  "source_postimages_full_readback_verified": 6,
+  "root_audit_correction": "Initial extraction gate required all members to be files. The archive also has normal directories; inspection confirmed only regular files/directories and safe paths, then safe extraction and complete member verification passed. No native action was repeated.",
+  "scientific_adoption": "HOLD",
+  "new_scored_actor_episodes": 0,
+  "runtime_terminal": {
+    "at_unix_ms": 1794402903151,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1cabcb509-2564-83f",
+    "launch_nonce": "00e35e7c764664830f9df7012e4f29c5",
+    "log_bytes": {
+      "stderr": {
+        "seen": 200,
+        "stored": 200
+      },
+      "stdout": {
+        "seen": 970,
+        "stored": 970
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "runtime_metadata_blob": "cd3f0b0d907c90a6436465fae5ea388a62d27a15"
+}

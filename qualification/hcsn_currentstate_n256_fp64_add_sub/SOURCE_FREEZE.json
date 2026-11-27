@@ -1,0 +1,20 @@
+{
+  "files": {
+    ".github/workflows/hcsn-currentstate-n256-fp64-add-sub.yml": "01cec44e0c070715345fac5fcd72ba488595f45aae955887cf0a51c48bcf27b3",
+    "qualification/hcsn_currentstate_n256_fp64_add_sub/README.md": "8f51ce92f683472356231dd0faa222ae026dc8cafa403b673632ad187f73f469",
+    "qualification/hcsn_currentstate_n256_fp64_add_sub/REQUEST.json": "b2477221d64bb33ada2f0f05fd6c8e03fab21a009dc2ec81466ce2fb383068d2",
+    "qualification/hcsn_currentstate_n256_fp64_add_sub/__init__.py": "442be9f39c12e53289061c21d887070034135720ee30da0d92ac0d53abda5be4",
+    "qualification/hcsn_currentstate_n256_fp64_add_sub/fp64_add_sub.py": "3f58cfac6c5cc150ecfe9a3cf1c9fcbe1c019c1972aa2395974b4d1b83b75ba4",
+    "qualification/hcsn_currentstate_n256_fp64_add_sub/test_fp64_add_sub.py": "41b512957514b984a9397689eb7e5d88fa49f35294b1aa2c4136798366a328b3",
+    "qualification/hcsn_currentstate_n256_fp64_add_sub/verify_source.py": "a7c09c1e27de4be82008ce5f027ad35b349e59bae6db9c27931bde16f0856dc2",
+    "qualification/hcsn_currentstate_n256_fp64_mul_div/fp64_mul_div.py": "1b22b733e3a7b4fa12ea907ebfd4c7459ac30556aee13c936d6fa4567b09abcf",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py": "4179ddeb850b62e4a239a7fbbcaf3de249b2f052d21a0db28374923795ae0917"
+  },
+  "forbidden_source_tokens": [
+    "hcsn_currentstate_n256_sparse_dynamic_intent",
+    "hcsn_currentstate_n256_independent_oracle_intent",
+    "expm_multiply"
+  ],
+  "identity": "hcsn-n256-exact-binary64-add-sub-source-20261114-c06d-v1",
+  "scope": "source-only finite binary64 single add/subtract roundTiesToEven"
+}

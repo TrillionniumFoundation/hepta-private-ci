@@ -1,0 +1,438 @@
+{
+  "CPU_seconds_before_receipt": 0.183743701,
+  "cached_base_logits": [
+    {
+      "binding": "pre-adaptation supervised base, not selected dense H/A weights",
+      "fields": {
+        "fit_h": {
+          "dtype": "float64",
+          "shape": [
+            2304,
+            32
+          ]
+        },
+        "fit_i": {
+          "dtype": "float64",
+          "shape": [
+            2304,
+            12
+          ]
+        },
+        "fit_t": {
+          "dtype": "float64",
+          "shape": [
+            2304,
+            12
+          ]
+        },
+        "inner_h": {
+          "dtype": "float64",
+          "shape": [
+            768,
+            32
+          ]
+        },
+        "inner_i": {
+          "dtype": "float64",
+          "shape": [
+            768,
+            12
+          ]
+        },
+        "inner_t": {
+          "dtype": "float64",
+          "shape": [
+            768,
+            12
+          ]
+        }
+      },
+      "path": "runs/content-control-train-r2-20261023/features-11.npz",
+      "seed": 11
+    },
+    {
+      "binding": "pre-adaptation supervised base, not selected dense H/A weights",
+      "fields": {
+        "fit_h": {
+          "dtype": "float64",
+          "shape": [
+            2304,
+            32
+          ]
+        },
+        "fit_i": {
+          "dtype": "float64",
+          "shape": [
+            2304,
+            12
+          ]
+        },
+        "fit_t": {
+          "dtype": "float64",
+          "shape": [
+            2304,
+            12
+          ]
+        },
+        "inner_h": {
+          "dtype": "float64",
+          "shape": [
+            768,
+            32
+          ]
+        },
+        "inner_i": {
+          "dtype": "float64",
+          "shape": [
+            768,
+            12
+          ]
+        },
+        "inner_t": {
+          "dtype": "float64",
+          "shape": [
+            768,
+            12
+          ]
+        }
+      },
+      "path": "runs/content-control-train-r2-20261023/features-23.npz",
+      "seed": 23
+    },
+    {
+      "binding": "pre-adaptation supervised base, not selected dense H/A weights",
+      "fields": {
+        "fit_h": {
+          "dtype": "float64",
+          "shape": [
+            2304,
+            32
+          ]
+        },
+        "fit_i": {
+          "dtype": "float64",
+          "shape": [
+            2304,
+            12
+          ]
+        },
+        "fit_t": {
+          "dtype": "float64",
+          "shape": [
+            2304,
+            12
+          ]
+        },
+        "inner_h": {
+          "dtype": "float64",
+          "shape": [
+            768,
+            32
+          ]
+        },
+        "inner_i": {
+          "dtype": "float64",
+          "shape": [
+            768,
+            12
+          ]
+        },
+        "inner_t": {
+          "dtype": "float64",
+          "shape": [
+            768,
+            12
+          ]
+        }
+      },
+      "path": "runs/content-control-train-r2-20261023/features-47.npz",
+      "seed": 47
+    }
+  ],
+  "input_artifact_sha256": {
+    "runs/content-block-train-v1-20261023/build.json": "4aa829f61b27deffb1633d7c1b3fb1e78de57e356b90149dd480c8a8c50d619a",
+    "runs/content-block-train-v1-20261023/train-result.json": "0d59c7a2130480029e2adc530b40062d50b53239bed70b3f30f38aa84bb621f8",
+    "runs/content-control-train-r2-20261023/A-11-0.01/model.npz": "1feacc1c643e382f429c5cfe520684208011796e5918f4fca2b3c67a3d959505",
+    "runs/content-control-train-r2-20261023/A-23-0.01/model.npz": "8d28adfbd98bd29942656d91483987d605a3cee31950791f3228f314e0c8c086",
+    "runs/content-control-train-r2-20261023/A-47-0.01/model.npz": "847d42e4cc0879766137761c746578859190b0ede7179329bf336fb219925b35",
+    "runs/content-control-train-r2-20261023/H-11-0.01/model.npz": "77baab23cb40665818f4ba04710671982e2049a82f1aeb968766830f6a81bd8b",
+    "runs/content-control-train-r2-20261023/H-23-0.01/model.npz": "e500ba305bebbcba79bd2f41f2ea47fc5af1af9d6da78fff10aaa69747b5a5b8",
+    "runs/content-control-train-r2-20261023/H-47-0.01/model.npz": "f1f38e1a3f6f2911a6d58d65e45ceefaddff03bada5ff2f60ae50c2e75fe8c15",
+    "runs/content-control-train-r2-20261023/base-11.npz": "71e085b079c1148af15f0986ccf4b40fe658e239bfe905f73fba148cfb042db0",
+    "runs/content-control-train-r2-20261023/base-23.npz": "9431e72401c427ef0abbb7e969cd79bf4ae8601fe219a1233d9e459307490a8c",
+    "runs/content-control-train-r2-20261023/base-47.npz": "5b8a5a152ca56bc704106888795b7b24d287c32b7f5493cb56d249a4735ec84c",
+    "runs/content-control-train-r2-20261023/build.json": "69041da185310f1453c1d2896487379104fca1f0a63a64333c0c4b74597d646d",
+    "runs/content-control-train-r2-20261023/features-11.npz": "5a8c361db24f90a7273bd6aacde12ee25d487513ec88e5db9c55ac4dba9c0ff3",
+    "runs/content-control-train-r2-20261023/features-23.npz": "3caeb438dbd6b07d88413d32a02a3e7893628eb5d0fcd6729d896229db5a3e3d",
+    "runs/content-control-train-r2-20261023/features-47.npz": "01a1b707c219dfbabc88756de6ed1f0171dafc5bef39b95fe6d48dd6dfa3ea9b",
+    "runs/content-control-train-r2-20261023/train-result.json": "db7145293943e0e8413b121598dafa7be5097dd02c9c9c3fb542f0bde5989644"
+  },
+  "limits": [
+    "semantic consistency is an external decoded endpoint, forbidden as runtime reconciliation input",
+    "selected dense p/q and raw original argmax pairs were not persisted",
+    "R must be recovered from frozen decoder using original observer only after separate authorization and billed work",
+    "base logits cannot be substituted for stronger adapted H/A models",
+    "sparse first-row sampled pairs do not identify population disagreement or threshold decisions"
+  ],
+  "npz_inventory": [
+    {
+      "explicit_probability_reward_joint_or_greedy_fields": [],
+      "npz_files": 142,
+      "per_row_endpoint_fields": [
+        "consistency",
+        "greedy_joint_success",
+        "joint_success",
+        "pixel_mse",
+        "task_utility"
+      ],
+      "run": "content-control-train-r2-20261023",
+      "single_first_row_samples": {
+        "A": [
+          {
+            "image": 11,
+            "seed": 11,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 23,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 47,
+            "text": 11
+          }
+        ],
+        "H": [
+          {
+            "image": 11,
+            "seed": 11,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 23,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 47,
+            "text": 11
+          }
+        ]
+      }
+    },
+    {
+      "explicit_probability_reward_joint_or_greedy_fields": [],
+      "npz_files": 108,
+      "per_row_endpoint_fields": [
+        "consistency",
+        "greedy_joint_success",
+        "joint_success",
+        "pixel_mse",
+        "task_utility"
+      ],
+      "run": "content-block-train-v1-20261023",
+      "single_first_row_samples": {
+        "A_alt": [
+          {
+            "image": 11,
+            "seed": 11,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 23,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 47,
+            "text": 11
+          }
+        ],
+        "A_joint": [
+          {
+            "image": 11,
+            "seed": 11,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 23,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 47,
+            "text": 11
+          }
+        ],
+        "H_alt": [
+          {
+            "image": 11,
+            "seed": 11,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 23,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 47,
+            "text": 11
+          }
+        ],
+        "H_joint": [
+          {
+            "image": 11,
+            "seed": 11,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 23,
+            "text": 11
+          },
+          {
+            "image": 11,
+            "seed": 47,
+            "text": 11
+          }
+        ]
+      }
+    }
+  ],
+  "scope": "saved TRAIN availability only; no softmax/model/decoder/observer/repair executed",
+  "semantic_disagreement": [
+    {
+      "expected_decoded_semantic_disagreement": 0.01928197994245362,
+      "group": "H",
+      "rows": 768,
+      "run": "content-control-train-r2-20261023",
+      "seed": 11
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.021876001644456033,
+      "group": "H",
+      "rows": 768,
+      "run": "content-control-train-r2-20261023",
+      "seed": 23
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.01854519767963446,
+      "group": "H",
+      "rows": 768,
+      "run": "content-control-train-r2-20261023",
+      "seed": 47
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.016833371466643873,
+      "group": "A",
+      "rows": 768,
+      "run": "content-control-train-r2-20261023",
+      "seed": 11
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.019288705756383105,
+      "group": "A",
+      "rows": 768,
+      "run": "content-control-train-r2-20261023",
+      "seed": 23
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.015409823700005309,
+      "group": "A",
+      "rows": 768,
+      "run": "content-control-train-r2-20261023",
+      "seed": 47
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.019484559278583436,
+      "group": "H_joint",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 11
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.021848314626817564,
+      "group": "H_joint",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 23
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.018474850876056177,
+      "group": "H_joint",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 47
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.01694229971477298,
+      "group": "A_joint",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 11
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.01943540653248855,
+      "group": "A_joint",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 23
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.015481304126814718,
+      "group": "A_joint",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 47
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.01933133373042158,
+      "group": "H_alt",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 11
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.02304556282450731,
+      "group": "H_alt",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 23
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.019785049990367825,
+      "group": "H_alt",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 47
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.01702827700089161,
+      "group": "A_alt",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 11
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.019667126487566074,
+      "group": "A_alt",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 23
+    },
+    {
+      "expected_decoded_semantic_disagreement": 0.016514445539975484,
+      "group": "A_alt",
+      "rows": 768,
+      "run": "content-block-train-v1-20261023",
+      "seed": 47
+    }
+  ]
+}

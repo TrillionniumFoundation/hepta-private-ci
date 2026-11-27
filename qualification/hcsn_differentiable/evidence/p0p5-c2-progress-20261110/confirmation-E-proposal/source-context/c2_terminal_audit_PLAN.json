@@ -1,0 +1,133 @@
+{
+  "E_access": false,
+  "cost_checks": {
+    "CPU": "C2 per-PID wait4 is exact for each waited child; original parent exit CPU is unavailable, so cumulative per-fit CPU remains a lower bound. GNU/bootstrap/controller/child/inner timers overlap and are not added.",
+    "all_six_opportunities": true,
+    "memory": "Complete process max RSS and sampled prefix RSS have different scopes; neither is GPU VRAM or memory at the quality target.",
+    "no_additive_nested_total": true,
+    "no_refund_for_parent_partial_work": true,
+    "unknowns": "Unknown launch, missing terminal cost, energy and billing remain unknown/lower-bound, never zero.",
+    "views": [
+      "Original 300/900/1800 curves remain byte-bound and unchanged.",
+      "Original parent process wall plus the separately labelled C2 active phase.",
+      "Full six-candidate opportunity cost, every failure, extra recording/evaluation and audit cost."
+    ]
+  },
+  "execution_authorized": false,
+  "fit_roster": [
+    "hcsn-s101-lr0.001",
+    "hcsn-s101-lr0.003",
+    "hcsn-s211-lr0.001",
+    "hcsn-s211-lr0.003",
+    "hcsn-s307-lr0.001",
+    "hcsn-s307-lr0.003"
+  ],
+  "fixed_identities": {
+    "C2_contract_sha256": "bc814b8913f5d5777f771030623bcd1f862a526f35144a8da0164e1da60f8e51",
+    "C2_program_capsule_sha256": "95d53c9a8fd7b6d0d60388b29d58519160c1d04357069bd805e5f4bfa2c91079",
+    "C2_program_manifest_sha256": "322eb8f76cce589ba44ed66eff822f7b497e6507106a1ad56a65bdc8c83f7f57",
+    "optimization_policy_sha256": "a1d5d5b8c11194506e9dea49e6b48eaa9c1edc72c6bc975d1e98bdc241b34875",
+    "original_campaign_result_sha256": "362bc0345635bb5c9438670c13efa5908140527463aa4f373479235686b5683b",
+    "original_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+    "original_runtime_receipt_sha256": "dc6af342718078939396ec3eed1f438b0e769c892569b49a652b9a885948d0b8",
+    "original_source_capsule_sha256": "288283cae2b2cf4e7b68432e040e643a5e1b00a7de961fc848dd5cf20eb46102",
+    "root_decision_sha256": "bee192193f0f12599f783f348b6dea8c10b2a18df359487c3cc0c0c44d071370",
+    "supplement_policy_sha256": "8be888e29389321a1e41921244931b7950aa2db63a0d870d55cc5e3fc412a137"
+  },
+  "independent_chain_checks": [
+    "Compare original parent last complete checkpoint with resume-start.pt deeply: model tensors/configuration, full AdamW state/groups, Torch RNG, Python order RNG, completed epochs/updates, manifest. Deserialize optimizer metadata without constructing or stepping an optimizer.",
+    "Bind RESUME-START.json and resume_start_committed journal event before the first optimizer_started record. Source sequencing and archived witness support ordering; this is not a claim of an independent live observation.",
+    "Reconstruct parent complete prefix and strict-best/plateau state independently. Count all original logged partial updates as executed work; rollback changes the logical anchor, never refunds original full process wall or CPU.",
+    "Verify every complete-epoch immutable checkpoint/commit, previous-commit hash, strict first-maximum best rule and unchanged inherited best unless strictly improved. Extra uncommitted checkpoints are inventoried but never admitted as completed epochs.",
+    "Reconstruct epoch sample orders from parent order RNG including a final partial epoch. Bind event counts, batch/micro boundaries, logical updates, actual optimizer completions, incomplete calls, frozen common/physical tensors, and finite compatible optimizer state.",
+    "Recompute all saved epoch confusion-matrix accuracy and 11-class macro-F1 independently; verify plateau delta .002, patience10 and min30/max200. Completed roster, completed fit, adequacy and evidence integrity stay separate.",
+    "For each success, require complete finalization artifacts and matching source/parent/shared state. Preserve original failed/censored/recording_hold outcomes even when a stable best checkpoint permits a diagnostic replay."
+  ],
+  "native_paths": {
+    "GNU_time": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1.time.txt",
+    "bootstrap": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-bootstrap-20261110-c385-v1",
+    "controller": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1",
+    "model_source": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8",
+    "original_campaign": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2",
+    "program": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385",
+    "python": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python"
+  },
+  "optimization_trace_checks": {
+    "requirements": [
+      "Independently derive expected labels from actually started epochs; distinguish not_reached, capture failure, complete capture without step completion, and capture followed by a completed step.",
+      "Bind CAPTURE.json, STEP-COMPLETED.json, pre-step complete checkpoint, event journal, source hashes, full model and inner-network digests. Deduplicate a shared physical capture referenced by two schedule labels.",
+      "Independently reconstruct the exact first effective batch and first microbatch of at most8 episodes. For every retained position verify valid batch indices, actual dt, episode IDs, update index, layer and probability width.",
+      "Reconcile seen/retained/dropped records, source footer, valid sample-position-layer states and excluded padding. Read streams incrementally; do not count record slots as sample states.",
+      "Check finite nonnegative state values and declared normalization as consistency diagnostics only; no new continuum approximation or derivative qualification.",
+      "Sparse sampled visits do not qualify the whole trajectory and do not repair the original update0-only trace."
+    ],
+    "scope": "Actual recorded first gradient microbatch after resume and at absolute epoch milestones 50/75/100/125/150/175/200."
+  },
+  "output_statuses": [
+    "PASSED_BOUND_EVIDENCE_ONLY",
+    "FAILED_OR_INCOMPLETE_CHAIN",
+    "UNRUN_WITHIN_AUDIT_BUDGET"
+  ],
+  "preparation_validation": {
+    "program_freeze_required_before_terminal_input_read": true,
+    "reused_review_primitives": "Exact previous independent metrics/replay helpers may be copied with hashes; producer admission logic will not be called as the independent verdict.",
+    "tests_before_native_execution": "Meaningful synthetic metadata/state fixtures for corrupt witness, bad prefix/commit, duplicate step, wrong dt/batch/padding/model digest, missing failed result/cost, wrong best and missing seed. No production model inputs."
+  },
+  "prepared_utc": "2026-11-10T21:08:32.533318+00:00",
+  "production_models_read_during_preparation": false,
+  "proposed_audit_budget": {
+    "RSS_bytes": 2147483648,
+    "address_space_bytes": 8589934592,
+    "allocation_rule": "Fixed stage order; each stage gets min(its ceiling, actual remaining whole allowance minus final receipt reserve). No reset, retry, substitution or separate hidden allowance.",
+    "budget_scope": "Whole audit starts before imports/input verification and includes metadata, all forwards, hashes, checkpoint I/O, fresh logits, logs, final manifests and packaging. These limits do not guarantee completion.",
+    "each_full_D_replay_hard_wall_seconds": 210,
+    "final_receipt_reserve_seconds_inside_total": 60,
+    "metadata_and_all_six_chain_checks_total_soft_wall_seconds": 360,
+    "requires_separate_root_approval": true,
+    "threads": 1,
+    "timeout_rule": "Keep partial artifacts, every attempted cost, and explicit unrun stages. Kill/unknown outcome remains HOLD; no automatic rerun.",
+    "whole_hard_wall_seconds": 1800,
+    "workers": 1
+  },
+  "purpose": "Independently check original-to-C2 recovery, all six opportunities, complete checkpoints, sparse trace provenance, recorded quality and costs; no numerical oracle or scientific-benefit admission.",
+  "quality_replay": {
+    "aggregate_selection": "One common LR by all-three-seed mean D with both LRs retained, only if all required identities/metrics are independently available. Otherwise withhold common-LR mean; do not drop a failed seed.",
+    "candidate_roster": "All six fixed seed/LR candidates; no best-seed-only replay.",
+    "checkpoint": "Strict-best over inherited parent complete epochs plus committed C2 complete epochs; never substitute last.",
+    "dataset": "Entire D only, original manifest order:128 windows and31952 valid events; no E records read.",
+    "metrics": "Independent accuracy, all11-class macro-F1, confusion matrix, NLL, Brier and ECE; exact confusion matrix and absolute scalar tolerance2e-12.",
+    "no_backward": true,
+    "no_optimizer_construct_restore_or_step": true,
+    "outputs": "Complete fresh logits/labels plus episode/position/source-row order, checkpoint/data/source hashes before and after, every batch receipt and outer cost.",
+    "runtime": "Exact original native Python/Torch/source; CPU float64, batch32, one thread, no_grad, cold cache after strict checkpoint load.",
+    "saved_logits": "When terminal saved logits exist, verify their labels/order/hash and recompute all metrics; compare fresh logits and metrics. If absent in a failed fit, compare bound best-epoch metrics and clearly retain absence.",
+    "scientific_scope": "Same tuning subject only; no E confirmation or sufficient-training credit created by reproducibility.",
+    "unused_serialized_optimizer_RNG_read_permitted": true
+  },
+  "schema": "independent-c2-terminal-audit-plan-v1",
+  "scientific_admission": "HOLD",
+  "stage_order": [
+    "0 terminal barrier, immutable source/data/runtime/input inventory, all-six outer roster and aggregate opportunity-cost reconciliation",
+    "1 metadata and checkpoint audit for each fixed candidate in seed/LR order; stream traces and keep only a bounded number of checkpoints in memory",
+    "2 full-D fresh replay for each candidate in the same order, only when its best-checkpoint source chain can be bound; failures remain in the roster",
+    "3 aggregate all candidates without selecting a favorable subset, verify inputs unchanged, publish terminal receipt and bounded archive"
+  ],
+  "status": "proposed_budget_and_protocol_before_terminal_inputs",
+  "supplemental_trace_checks": {
+    "requirements": "Bind each checkpoint/episode/model/source/header/footer, all256 positions and dt, reported neutrality and original 120-second whole-slot soft timer. Explicit missing/truncated/over-budget slots remain failures; do not infer optimizer-time coverage from replay.",
+    "scope": "Separate no-grad checkpoint captures on A01-0, A01-256, A04-3072; resume, milestone and terminal last/best slots.",
+    "separate_from_optimization_counts": true,
+    "whole_training_credit": false
+  },
+  "terminal_barrier": {
+    "all_six_attempts_terminal_required": true,
+    "failed_timeout_and_never_launched_roster_members_retained": true,
+    "input_snapshot": "New immutable read-only inventory binds decision, C2 source, original parent/source/runtime/data, all reports/journals/commits/checkpoints and trace artifacts. Missing artifacts remain explicit.",
+    "no_live_file_or_model_reads_during_preparation": true,
+    "requires_all_known_PIDs_nonexecuting": true,
+    "requires_controller_or_bound_postmortem_terminal_receipt": true,
+    "single_post_terminal_input_snapshot_before_audit": true,
+    "unknown_process_or_launch_blocks_model_reads": true
+  },
+  "whole_training_numerical_admission": "HOLD"
+}

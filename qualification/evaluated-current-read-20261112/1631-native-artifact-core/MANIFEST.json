@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.original-native-artifact-core.v1",
+  "source_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "source_tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+  "run_id": 43243479903,
+  "job_id": 131269839345,
+  "artifact": {
+    "id": 13957905861,
+    "name": "daemon-learning-native-1631e01fd086f79bef8bf19bd6fe5859565b7976-1",
+    "bytes": 3818349,
+    "sha256": "617a4b7e897d586de5e2172983523dde2fcef50df9fe314ea1b99a973a312199",
+    "zip_status": "Original ZIP downloaded, hashed and safely extracted by fixed read-only reader; original ZIP binary not yet exported to Git."
+  },
+  "reader": {
+    "key": "owner6213-ai395-1631e01-hosted-artifacts-862531d11598-v1",
+    "launch_acknowledgement": "UNKNOWN: original start returned MCP timeout; not redispatched",
+    "original_result_status": "ORIGINAL_ARTIFACT_BYTES_VERIFIED",
+    "ordinary_uid": 1000,
+    "no_build_or_test_dispatch": true
+  },
+  "files": [
+    {
+      "name": "before-tests.json",
+      "path": "qualification/evaluated-current-read-20261112/1631-native-artifact-core/before-tests.json",
+      "blob": "85fce8641b3eb78a6999494b52fc5c05e22704ff",
+      "bytes": 237,
+      "sha256": "9a779d39b979224fc99791cb1a5e83ff8a2d8e6b9fbabf8b64400420d8f011d0"
+    },
+    {
+      "name": "final.json",
+      "path": "qualification/evaluated-current-read-20261112/1631-native-artifact-core/final.json",
+      "blob": "85fce8641b3eb78a6999494b52fc5c05e22704ff",
+      "bytes": 237,
+      "sha256": "9a779d39b979224fc99791cb1a5e83ff8a2d8e6b9fbabf8b64400420d8f011d0"
+    },
+    {
+      "name": "ordinary.json",
+      "path": "qualification/evaluated-current-read-20261112/1631-native-artifact-core/ordinary.json",
+      "blob": "abc6bff2c9f9c7f8b91dccfc2b64f4800585fd9f",
+      "bytes": 1855,
+      "sha256": "319b9e0d9b5d6eea47524ba003c8ace60fe9c561b1b24087748f69ff98b89ac3"
+    },
+    {
+      "name": "ordinary.summary.json",
+      "path": "qualification/evaluated-current-read-20261112/1631-native-artifact-core/ordinary.summary.json",
+      "blob": "5a8d5e3333f35ba4bdf6fb2bd024644bd59ba62e",
+      "bytes": 1223,
+      "sha256": "5f41c1c49f17269ee0db7201be89cdd2f65d81ad0537cd3a3b337d1110f2c821"
+    },
+    {
+      "name": "source-closure.json",
+      "path": "qualification/evaluated-current-read-20261112/1631-native-artifact-core/source-closure.json",
+      "blob": "4444d0013bdf9f8dff11e9b9c950ef9e8b7c21fb",
+      "bytes": 1489,
+      "sha256": "1e860a46ad512d2273e9fffa40894649c65034fdafd2e119414c7629424ff225"
+    },
+    {
+      "name": "helpers/manifest.json",
+      "path": "qualification/evaluated-current-read-20261112/1631-native-artifact-core/helpers/manifest.json",
+      "blob": "27ae1089c6781a5a0b5820ced37e94a406046cb0",
+      "bytes": 1823,
+      "sha256": "cde88276751db06e1503ca0d59dc3f91a1baa70506becea3c8fdcad97ad06173"
+    },
+    {
+      "name": "qualification-status.json",
+      "path": "qualification/evaluated-current-read-20261112/1631-native-artifact-core/qualification-status.json",
+      "blob": "97550a4ee42f865dca5da57c502528f23e7ce866",
+      "bytes": 146,
+      "sha256": "0b051a771b866fb6416343be892d44a9b151567f52efb9b0cbbce03951477a50"
+    },
+    {
+      "name": "driver-error.json",
+      "path": "qualification/evaluated-current-read-20261112/1631-native-artifact-core/driver-error.json",
+      "blob": "d4c074dd043d0b7a6144840707a20f07b1ad70b7",
+      "bytes": 82,
+      "sha256": "86505d1fc0dd5e5b70aa70276c48b9e0f658ed38674c66776c1d535b9d351868"
+    },
+    {
+      "name": "ordinary.xml",
+      "path": "qualification/evaluated-current-read-20261112/1631-native-artifact-core/ordinary.xml",
+      "blob": "5eaaad428185f63c6086825e862d30a70355364f",
+      "bytes": 443996,
+      "sha256": "1ff4d6e623e62f03e88233c9f007348b1db70591698952aa7fc6c6b25aea9d2f"
+    },
+    {
+      "name": "INGEST_RESULT.original.json",
+      "path": "qualification/evaluated-current-read-20261112/1631-native-artifact-core/INGEST_RESULT.original.json",
+      "blob": "433661846c91eafff6842a978745304de6726657",
+      "bytes": 90001,
+      "sha256": "1001c58284a36c99128eebde123078d181dab48f55409c6f978330439b598d3d"
+    }
+  ],
+  "byte_preservation": "All listed original member bytes match ZIP-reader manifest hashes; original JSON was not parsed and reserialized. Timestamps and integer precision are unchanged.",
+  "source_before_after_original_bytes_equal": true,
+  "actual_xml": {
+    "counts": {
+      "testcases": 1733,
+      "failures": 36,
+      "errors": 0,
+      "skipped": 0
+    },
+    "positive": [
+      {
+        "attributes": " name=\"runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners\" classname=\"codex-hepta-agentd\" timestamp=\"2026-11-12T15:21:37.215+00:00\" time=\"0.166\"",
+        "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners&apos; (29949) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+      }
+    ],
+    "head": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<testsuites name=\"nextest-run\" tests=\"1733\" failures=\"36\" errors=\"0\" uuid=\"9cd0ebd0-b8bc-4b71-a925-d3e428435b94\" timestamp=\"2026-11-12T15:17:55.710+00:00\" time=\"311.042\">\n    <testsuite name=\"codex-hepta-agentd\" tests=\"1089\" disabled=\"0\" errors=\"0\" failures=\"36\">\n        <testcase name=\"android_runtime::tests::android_runtime_invalidation_after_start_keeps_job_without_accepting_late_ack\" classname=\"codex-hepta-agentd\" timestamp=\"2026-11-12T15:17:55.719+00:00\" time=\"0.012\">\n        </testcase>\n        <testcase name=\"android_runtime::tests::android_runtime_fixed_helper_uses_original_bytes_then_independent_read_job\" classname=\"codex-hepta-agentd\" timestamp=\"2026-11-12T15:17:55.719+00:00\" time=\"0.015\">\n        </testcase>\n        <testcase name=\"android_runtime::tests::android_runtime_invalidation_allows_only_original_readback_and_payload_drift_sends_nothing\" classname=\"codex-hepta-agentd\" timestamp=\"2026-11-12T15:17:55.733+00:00\" time=\"0.012\">\n        </testcase>\n        <testcase name=\"android_runtime::tests::android_runtime_requires_terminal_success_complete_lossless_same_job_output\" classname=\"codex-hepta-agentd\" timestamp=\"2026-11-12T15:17:5"
+  },
+  "qualification_boundary": "Original ordinary run failed. Root tests and maintenance did not run. Positive CURRENT test aborted on stack overflow. No later source inherits any original pass.",
+  "inventory_boundary": "Three original full inventory gzip members are present and hashed in INGEST_RESULT; their binary payloads are not included in this core export."
+}

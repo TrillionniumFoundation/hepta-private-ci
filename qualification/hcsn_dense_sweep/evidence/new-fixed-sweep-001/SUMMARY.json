@@ -1,0 +1,367 @@
+{
+  "schema": "hcsn-fixed-dense-reset-sweep-v1",
+  "status": "HOLD_NO_GO",
+  "all_closed": false,
+  "prospective_gate": false,
+  "source_base": "2e04c22b7860320127a9efe3a83c57654adf788d",
+  "fixed_profiles_not_tuned": true,
+  "parameters": {
+    "mu": -0.11999999999999998,
+    "sigma": 0.35,
+    "absolute_reset": 1.3771277643359572,
+    "discount": 0.15
+  },
+  "original_positions": 14336,
+  "original_physics": 184,
+  "original_resets": 184,
+  "resets_with_supplemental": 188,
+  "panels": [
+    {
+      "profile": "near800",
+      "rows": [
+        {
+          "time": 0.001,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 0,
+          "below_floor_rows": 188,
+          "maximum_eligible_relative_M": null,
+          "worst_reset": null,
+          "maximum_absolute_M": 2.4003875800868557e-155
+        },
+        {
+          "time": 0.003,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 0,
+          "below_floor_rows": 188,
+          "maximum_eligible_relative_M": null,
+          "worst_reset": null,
+          "maximum_absolute_M": 5.702369387589982e-61
+        },
+        {
+          "time": 0.02,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 188,
+          "below_floor_rows": 0,
+          "maximum_eligible_relative_M": 0.01543763014839961,
+          "worst_reset": 0.3279167232298848,
+          "maximum_absolute_M": 1.9492665389864475e-13
+        },
+        {
+          "time": 0.04,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 188,
+          "below_floor_rows": 0,
+          "maximum_eligible_relative_M": 0.0022479840996824743,
+          "worst_reset": 0.32725,
+          "maximum_absolute_M": 2.9067866752348186e-09
+        },
+        {
+          "time": 0.08,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 188,
+          "below_floor_rows": 0,
+          "maximum_eligible_relative_M": 0.0003455505934546996,
+          "worst_reset": 0.3265743017580183,
+          "maximum_absolute_M": 2.827305262097235e-07
+        },
+        {
+          "time": 0.16,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 188,
+          "below_floor_rows": 0,
+          "maximum_eligible_relative_M": 4.481847748112395e-05,
+          "worst_reset": 0.3265743017580183,
+          "maximum_absolute_M": 1.0597556512857709e-06
+        }
+      ],
+      "series": [
+        {
+          "nu": 465907.0611187095,
+          "terms": 870,
+          "truncation_bound": 3.971436441498555e-64,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        },
+        {
+          "nu": 465907.0611187095,
+          "terms": 2023,
+          "truncation_bound": 1.7648061592973544e-56,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        },
+        {
+          "nu": 465907.0611187095,
+          "terms": 10771,
+          "truncation_bound": 3.472675710343854e-49,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        },
+        {
+          "nu": 465907.0611187095,
+          "terms": 20649,
+          "truncation_bound": 1.1688211540447095e-47,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        },
+        {
+          "nu": 465907.0611187095,
+          "terms": 40077,
+          "truncation_bound": 1.7593895185383e-46,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        },
+        {
+          "nu": 465907.0611187095,
+          "terms": 78469,
+          "truncation_bound": 1.4973017798385654e-45,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        }
+      ],
+      "forward_backward_crosschecks": [
+        {
+          "reset": 0.32,
+          "time": 0.02,
+          "forward_M": 4.82175192313584e-12,
+          "backward_M": 4.821751923135844e-12,
+          "absolute_difference": 4.0389678347315804e-27
+        },
+        {
+          "reset": 0.32,
+          "time": 0.16,
+          "forward_M": 0.02360661982391328,
+          "backward_M": 0.02360661982391331,
+          "absolute_difference": 3.122502256758253e-17
+        },
+        {
+          "reset": 0.32725,
+          "time": 0.02,
+          "forward_M": 1.755386266993783e-12,
+          "backward_M": 1.755386266993785e-12,
+          "absolute_difference": 2.0194839173657902e-27
+        },
+        {
+          "reset": 0.32725,
+          "time": 0.16,
+          "forward_M": 0.02052429727157582,
+          "backward_M": 0.020524297271575814,
+          "absolute_difference": 6.938893903907228e-18
+        }
+      ]
+    },
+    {
+      "profile": "near960",
+      "rows": [
+        {
+          "time": 0.001,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 0,
+          "below_floor_rows": 188,
+          "maximum_eligible_relative_M": null,
+          "worst_reset": null,
+          "maximum_absolute_M": 2.140450138055764e-161
+        },
+        {
+          "time": 0.003,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 0,
+          "below_floor_rows": 188,
+          "maximum_eligible_relative_M": null,
+          "worst_reset": null,
+          "maximum_absolute_M": 1.9217697511455322e-61
+        },
+        {
+          "time": 0.02,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 188,
+          "below_floor_rows": 0,
+          "maximum_eligible_relative_M": 0.009849900298404367,
+          "worst_reset": 0.32725,
+          "maximum_absolute_M": 1.2768408189951879e-13
+        },
+        {
+          "time": 0.04,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 188,
+          "below_floor_rows": 0,
+          "maximum_eligible_relative_M": 0.0014445204527160289,
+          "worst_reset": 0.32725,
+          "maximum_absolute_M": 1.8789751365700885e-09
+        },
+        {
+          "time": 0.08,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 188,
+          "below_floor_rows": 0,
+          "maximum_eligible_relative_M": 0.0002227248446669533,
+          "worst_reset": 0.32725,
+          "maximum_absolute_M": 1.8033395919028663e-07
+        },
+        {
+          "time": 0.16,
+          "relative_reference_floor": 1e-12,
+          "eligible_rows": 188,
+          "below_floor_rows": 0,
+          "maximum_eligible_relative_M": 2.8754067572642854e-05,
+          "worst_reset": 0.32725,
+          "maximum_absolute_M": 6.652108953918157e-07
+        }
+      ],
+      "series": [
+        {
+          "nu": 490000.0000000536,
+          "terms": 901,
+          "truncation_bound": 1.6590755423181466e-63,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        },
+        {
+          "nu": 490000.0000000536,
+          "terms": 2108,
+          "truncation_bound": 3.992263183236298e-56,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        },
+        {
+          "nu": 490000.0000000536,
+          "terms": 11287,
+          "truncation_bound": 4.6437753234475994e-49,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        },
+        {
+          "nu": 490000.0000000536,
+          "terms": 21662,
+          "truncation_bound": 1.3207704600829474e-47,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        },
+        {
+          "nu": 490000.0000000536,
+          "terms": 42073,
+          "truncation_bound": 2.0511794887169076e-46,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        },
+        {
+          "nu": 490000.0000000536,
+          "terms": 82422,
+          "truncation_bound": 1.5889785134844545e-45,
+          "minimum_power_probability": 0.0,
+          "maximum_power_probability": 1.0,
+          "roundoff_certified": false
+        }
+      ],
+      "forward_backward_crosschecks": [
+        {
+          "reset": 0.32,
+          "time": 0.02,
+          "forward_M": 4.798933269725621e-12,
+          "backward_M": 4.79893326972562e-12,
+          "absolute_difference": 1.6155871338926322e-27
+        },
+        {
+          "reset": 0.32,
+          "time": 0.16,
+          "forward_M": 0.023606393092291685,
+          "backward_M": 0.023606393092294804,
+          "absolute_difference": 3.119032809806299e-15
+        },
+        {
+          "reset": 0.32725,
+          "time": 0.02,
+          "forward_M": 1.7458119698919143e-12,
+          "backward_M": 1.7458119698919109e-12,
+          "absolute_difference": 3.4331226595218434e-27
+        },
+        {
+          "reset": 0.32725,
+          "time": 0.16,
+          "forward_M": 0.020523973760551727,
+          "backward_M": 0.020523973760551897,
+          "absolute_difference": 1.700029006457271e-16
+        }
+      ]
+    }
+  ],
+  "source_sha256_before": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/controlled_core.py": "07c360508a8f5a30f5329856e6c19a36db6222854490eb401cfad12f15c79ec5",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/positive_phase.py": "771f1c310297f49d14880cd6b220699228fc78c545d7e71b3c06324fa32c384a",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/profile.py": "dd0b77c7535e1ff4ac4ff7e14a13e036285679c96446407defe6fbfecf0a4abb",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/sweep.py": "fc609b7dd91e6ccba8a50ff1126b07faac891363d505724f52f20c169216db65",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "source_sha256_after": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/controlled_core.py": "07c360508a8f5a30f5329856e6c19a36db6222854490eb401cfad12f15c79ec5",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/positive_phase.py": "771f1c310297f49d14880cd6b220699228fc78c545d7e71b3c06324fa32c384a",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/profile.py": "dd0b77c7535e1ff4ac4ff7e14a13e036285679c96446407defe6fbfecf0a4abb",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/sweep.py": "fc609b7dd91e6ccba8a50ff1126b07faac891363d505724f52f20c169216db65",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "input_sha256_before": {
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c0_b0/training.jsonl": "0fd1fa70b2428a0d50da547febefe480111a37359359a2f2d458473b2391f820",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c0_b1/training.jsonl": "b757b97f974aea32e0fe0366a252199003b1383f91a8b669eed9ca229b3dd93a",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c1_b0/training.jsonl": "6c77fdba9cfbcf5743c4e8ddd5fdcdb3309b55156e8348f5e6a5c8a9d669e6e1",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c1_b1/training.jsonl": "05b08cf28b066a7f86638c14f8bbe853c7bddb91986eaea4a12842fa7fd3d7b8",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c0_b0/training.jsonl": "6588e50a1df7dfef947a6ae6638166fbfc4a8ce6fdaa4e1543a2ef28f117090f",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c0_b1/training.jsonl": "72251897aadb65f19e88d61746e6f682508db65055b5b4df3b2b08f3d1995741",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c1_b0/training.jsonl": "8566fdcf6b0803a3a9c811960b5dbe0d36c8e45d1200fbefd6bdb794a21ba9dd",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c1_b1/training.jsonl": "4036de3db6428fa9ae0d2c240387b8b46fdcfdb3ff8c55d652c3bff8a4bbaed9",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c0_b0/training.jsonl": "85b94839521504b2ea8648b8bcadd88eaabebc1d1d1745dd2061693ab34a410b",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c0_b1/training.jsonl": "2a9fc79e38311147451511c5b6ecc17449faa544cc38bcaab567e4f9cbe08517",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c1_b0/training.jsonl": "371bce4001b6c72733fc25c872630e4192fd25afc67757b67a4ee6a43837b8a3",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c1_b1/training.jsonl": "519d82e453bb3fdbdf12b1d67df5faea2012aab2a0cf84d649fb32f8b793c1d9",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/SUMMARY.json": "c60378ffc2a51f580a9b7cfd11a09cec5f53d9a9cc37c03b81605bedc54b8715"
+  },
+  "input_sha256_after": {
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c0_b0/training.jsonl": "0fd1fa70b2428a0d50da547febefe480111a37359359a2f2d458473b2391f820",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c0_b1/training.jsonl": "b757b97f974aea32e0fe0366a252199003b1383f91a8b669eed9ca229b3dd93a",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c1_b0/training.jsonl": "6c77fdba9cfbcf5743c4e8ddd5fdcdb3309b55156e8348f5e6a5c8a9d669e6e1",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c1_b1/training.jsonl": "05b08cf28b066a7f86638c14f8bbe853c7bddb91986eaea4a12842fa7fd3d7b8",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c0_b0/training.jsonl": "6588e50a1df7dfef947a6ae6638166fbfc4a8ce6fdaa4e1543a2ef28f117090f",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c0_b1/training.jsonl": "72251897aadb65f19e88d61746e6f682508db65055b5b4df3b2b08f3d1995741",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c1_b0/training.jsonl": "8566fdcf6b0803a3a9c811960b5dbe0d36c8e45d1200fbefd6bdb794a21ba9dd",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c1_b1/training.jsonl": "4036de3db6428fa9ae0d2c240387b8b46fdcfdb3ff8c55d652c3bff8a4bbaed9",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c0_b0/training.jsonl": "85b94839521504b2ea8648b8bcadd88eaabebc1d1d1745dd2061693ab34a410b",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c0_b1/training.jsonl": "2a9fc79e38311147451511c5b6ecc17449faa544cc38bcaab567e4f9cbe08517",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c1_b0/training.jsonl": "371bce4001b6c72733fc25c872630e4192fd25afc67757b67a4ee6a43837b8a3",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c1_b1/training.jsonl": "519d82e453bb3fdbdf12b1d67df5faea2012aab2a0cf84d649fb32f8b793c1d9",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/SUMMARY.json": "c60378ffc2a51f580a9b7cfd11a09cec5f53d9a9cc37c03b81605bedc54b8715"
+  },
+  "source_and_inputs_unchanged": true,
+  "raw_sha256": "6d24444cd034e5e3518031b3a6c545f922e1fb67db15a28d8ed4f3d70b9fa6c8",
+  "wall_seconds": 7.428315242000053,
+  "cpu_seconds": 7.41070329,
+  "peak_rss_kib_linux": 75324,
+  "versions": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "new_dde_runs": 0,
+  "new_training_runs": 0,
+  "limitations": [
+    "post-failure exposed reset sweep, no new scientific admission",
+    "phase U[0,.025] only, first-cycle horizon <=.16<delay",
+    "no relative qualification below fixed 1e-12 reference floor",
+    "no time below .001 or finite horizon above .16",
+    "no physical-parameter box coverage",
+    "Poisson bound excludes floating point roundoff",
+    "no actual old-state rollout or gradient qualification"
+  ]
+}

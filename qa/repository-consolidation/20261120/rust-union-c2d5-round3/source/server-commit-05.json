@@ -1,0 +1,47 @@
+{
+  "step": 5,
+  "local_commit": "82574295993f14689045d7f5ddfe83f1b33144fd",
+  "server_commit": "7f616cb22d3b2b567e0fc25d5799ef4b3f0cc2d7",
+  "tree": "50600ef174c114ef8b77683d43b6085ad669c76d",
+  "ordered_parents": [
+    "a77de5192593836ccd0b1321ba9f678b6f7dcbad"
+  ],
+  "created": {
+    "sha": "7f616cb22d3b2b567e0fc25d5799ef4b3f0cc2d7"
+  },
+  "official_get": {
+    "sha": "7f616cb22d3b2b567e0fc25d5799ef4b3f0cc2d7",
+    "node_id": "C_kwDOTrgxoNoAKDdmNjE2Y2IyMmQzYjJiNTY3ZTBmYzI1ZDU3OTllZjRiM2YwY2MyZDc",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/7f616cb22d3b2b567e0fc25d5799ef4b3f0cc2d7",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/7f616cb22d3b2b567e0fc25d5799ef4b3f0cc2d7",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T05:13:03Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T05:13:03Z"
+    },
+    "tree": {
+      "sha": "50600ef174c114ef8b77683d43b6085ad669c76d",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/50600ef174c114ef8b77683d43b6085ad669c76d"
+    },
+    "message": "test: propagate prepared-input fixture errors across child tests\n\nReturn a private boxed-error Result from input and prepared_request and\npropagate every call through the existing prepared-input and compaction\ntest modules. Preserve all11 tests and45 assertions, including the actual\nchild environment/selector/exit contract, negative identity cases and\nthe complete compaction held-file observation helper.\n\nThis separate follow-up removes an ordinary-helper expect introduced by\nthe earlier Windows fixture correction; preserve that frozen source and\nits review history. No lint relaxation, new skip, fallback or dependency\nis introduced. Source review and exact patch-preservation checks passed.\nNative Rust, Windows, formatter and strict Clippy gates remain pending CI.",
+    "parents": [
+      {
+        "sha": "a77de5192593836ccd0b1321ba9f678b6f7dcbad",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/a77de5192593836ccd0b1321ba9f678b6f7dcbad",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/a77de5192593836ccd0b1321ba9f678b6f7dcbad"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  }
+}

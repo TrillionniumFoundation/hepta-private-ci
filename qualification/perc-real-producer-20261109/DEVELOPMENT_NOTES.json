@@ -1,0 +1,50 @@
+{
+  "schema": "perc1.document-development-observations.v1",
+  "initial_quote": 1000000,
+  "initial_cap": 2000000,
+  "original_1m_trial": {
+    "evidence_kind": "session command result",
+    "result": "Invalid: measured cost exceeded reservation; full failure retained",
+    "numeric_actual_cost": null,
+    "local_receipt_available": false,
+    "scope": "TemporaryDirectory development smoke cleaned on exit; failure exception preserved in session, not a durable receipt artifact"
+  },
+  "subsequent_pre_adjustment_development_neural_costs": {
+    "global": 677634,
+    "dense": 936757,
+    "unit": "microcredits_v1",
+    "artifact_available": false,
+    "scope": "session-observed development calls before persistence fixes and final OCR engine pin"
+  },
+  "pre_holdout_adjustment": {
+    "read_quote": 2000000,
+    "cap": 4000000,
+    "authorized_by_root": true,
+    "basis": "development timing variability; not a resource guarantee",
+    "holdout_pixels_or_targets_used": false
+  },
+  "persistent_seven_condition_smoke": {
+    "summary": "summary.json",
+    "index": "collector/index.json",
+    "tests": 3,
+    "skips": 0,
+    "conditions": 7,
+    "records": 12,
+    "maximum_observed_read_cost": 750262,
+    "maximum_observed_read_condition": {
+      "mode": "random",
+      "representation": "global"
+    },
+    "unit": "microcredits_v1",
+    "scope": "engineering contracts on TRAIN images with synthetic diagnostic heads; no efficacy evaluation"
+  },
+  "mechanical_extraction_after_smoke": {
+    "files": [
+      "scripts/perc1/document_actor.py",
+      "scripts/perc1/document_collector.py"
+    ],
+    "semantic_changes": false,
+    "syntax_validation": "PASS",
+    "note": "Root final format and complete experiment freeze follow this engineering smoke."
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.e403-current-qa-incremental-merge.v1",
+  "ancestor": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "ours_tree": "ff564227a417febe21a8187e650d5d80223dff42",
+  "theirs": "e403c45570ad313851ca71392625e5572882405f",
+  "theirs_tree": "70e0953a49cb203acbed270a853fce2e72164a18",
+  "status": "STATIC_ONLY_NOT_EXECUTED",
+  "posts": [
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "edit_base": "927b7de74c4a84faf3037d40a86c383cf0ac223e",
+      "ours_before": "fc413cecd9165679090f5b866a7b7c698e8c46d5",
+      "sha": "22fa8dbec391212ff675c682f45ff98f8d2c64de",
+      "sha256": "07946758785060c11580590c338773abaa48d25e8d969cd81638c66581c0f616",
+      "bytes": 13812,
+      "edits": [
+        {
+          "before": "            with self.subTest(marker=marker): self.rejects(path, \"fn read_learning_next_use_with_current<\", marker)",
+          "after": "            with self.subTest(marker=marker): self.rejects(path, \"fn read_learning_next_use_set(\", marker)"
+        },
+        {
+          "before": "        current = AGENT + \"circuit_feature_current_read.rs\"\n",
+          "after": "        for marker in (\".read_learning_next_use_set(coordinator, source, identity, current)?\",\n                       \".into_parts()\"):\n            with self.subTest(same_call_next_use=marker):\n                self.rejects(path, \"fn read_learning_next_use_with_current<\", marker)\n        current = AGENT + \"circuit_feature_current_read.rs\"\n"
+        }
+      ],
+      "reason": "Preserve all e403 Individual/public physical-CURRENT refusal cases; point the eight native checks at the actual same-call ReadSet body and additionally guard its current-wrapper delegation."
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "edit_base": "4203887e7a6b43f6cf8fbbfbe27f46e689e15c46",
+      "ours_before": "b2c90bc01cd0cd6f23e1e7cbc04b087e4f8eb959",
+      "sha": "4203887e7a6b43f6cf8fbbfbe27f46e689e15c46",
+      "sha256": "f09e819bbd565dd83dbcaa725df6e5dc9017d3d60ffb7fca19ae57de907ce218",
+      "bytes": 11022,
+      "edits": [],
+      "reason": "Exact e403 postimage; it contains ours four real Selection-body guard migrations plus the new public Individual and physical-CURRENT refusal cases."
+    }
+  ]
+}

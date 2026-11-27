@@ -1,0 +1,35 @@
+{
+  "sha": "60e508e44f3419985e275e1131c87a812981c711",
+  "node_id": "C_kwDOTrgxoNoAKDYwZTUwOGU0NGYzNDE5OTg1ZTI3NWUxMTMxYzg3YTgxMjk4MWM3MTE",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/60e508e44f3419985e275e1131c87a812981c711",
+  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/60e508e44f3419985e275e1131c87a812981c711",
+  "author": {
+    "name": "Qian QI",
+    "email": "102159240+ProfHepta@users.noreply.github.com",
+    "date": "2026-11-19T17:29:55Z"
+  },
+  "committer": {
+    "name": "Qian QI",
+    "email": "102159240+ProfHepta@users.noreply.github.com",
+    "date": "2026-11-19T17:29:55Z"
+  },
+  "tree": {
+    "sha": "f7d93be21c4a524a3d2f0ff204732843cfe0fb70",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/f7d93be21c4a524a3d2f0ff204732843cfe0fb70"
+  },
+  "message": "fix(ci): bind exact PR SHA and restore the CLI crate root\n\nRepair the three observed architecture-scope regressions without disabling\nrequired gates. Select the preexisting byte-identical main.rs root for the\ncodex binary and retain repository isolation while including PR identity\nand exact source SHA in required-workflow concurrency keys.\n\nPreserve existing test scope and original source/experiment content;\nrecord the source-head and synthetic-merge failures for native recheck.",
+  "parents": [
+    {
+      "sha": "ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ceb13e41b9d0f6505e98b155a4fd72b09c127901"
+    }
+  ],
+  "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+  }
+}

@@ -1,0 +1,206 @@
+{
+  "schema": "hepta.learn.ordinary-qualification.v2",
+  "status": "HOLD_ORDINARY_CHAIN_NOT_ESTABLISHED",
+  "previous_published_round": "016d9ac793f4e8cf888ae95423245233c2401e12",
+  "tested_source": "bbab98d805f5c44c1a70a91f0dfd98821adddecc",
+  "tested_tree": "e11487778d16d8eb30900e2c5dcc62e39372cf41",
+  "tested_source_clean_before_and_after": true,
+  "engineering_validation": {
+    "native_component_slice": {
+      "status": "PASS",
+      "tests": 510,
+      "failures": 0,
+      "errors": 0,
+      "retries": 0,
+      "scope_skipped": 1068,
+      "by_crate": {
+        "codex-hepta-agentd": 211,
+        "codex-hepta-automation": 55,
+        "codex-hepta-intelligence-eval": 2,
+        "codex-hepta-learning-artifacts": 22,
+        "codex-hepta-learning-ledger": 6,
+        "codex-hepta-neuron": 214
+      },
+      "archive": "final-bbab-v1-evidence.tar.gz",
+      "record": "final-bbab-v1/ordinary.json",
+      "junit": "final-bbab-v1/ordinary.xml",
+      "junit_sha256": "9db128644966692df72e0d20b57eb7ff1c84a33fdfb845bcb9249f025f086cb9"
+    },
+    "native_root_component_slice": {
+      "status": "PASS",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "retries": 0,
+      "scope_skipped": 902,
+      "effective_uid": 0,
+      "archive": "final-bbab-v1-evidence.tar.gz",
+      "record": "final-bbab-v1/root.json",
+      "junit": "final-bbab-v1/root.xml",
+      "junit_sha256": "c5d39bdc0d65abe50ff50be59f50221cee321ce481a77c36e8b5e239228d1899"
+    },
+    "unique_native_tests": 516,
+    "overlapping_native_case_keys": [],
+    "source_mutation_checks": {
+      "status": "PASS",
+      "tests": 63,
+      "failures": 0,
+      "errors": 0,
+      "archive": "source-checks-bbab.tar.gz",
+      "record": "source-checks/mutations/result.json"
+    },
+    "whole_repository_caller_proof": {
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "boundaries": 211,
+      "protected_rows": 215,
+      "unique_protected_files": 171,
+      "rust_files_scanned": 6223,
+      "authority_granted": false,
+      "archive": "source-checks-bbab.tar.gz",
+      "record": "source-checks/callers-final-bbab.json",
+      "sha256": "54d13bafa1f838f32366ce0a789693a3f85566d3fe1f8a19f3515845cc10e028"
+    },
+    "same_source_helper_build_and_verification": "PASS",
+    "native_archive_integrity_review": "NATIVE_INTEGRITY.json"
+  },
+  "mechanism_results": {
+    "ordinary_signed_a_and_distinct_fresh_c_with_parent_retained": "PASS_NATIVE_WITH_FIXTURE_ISSUER_AND_SELECTION",
+    "actual_a_input_to_durable_sgd_to_actual_candidate_consumption_by_c": "PASS_NATIVE_WITH_FIXTURE_DATASET_TARGET_AND_SELECTION",
+    "all_task_owners_and_completion_token_dropped_then_original_files_reopened": "PASS_NATIVE_SAME_GENERATION_MECHANISM_TEST",
+    "historical_read_rejects_empty_unacknowledged_and_torn_cell_history_without_repair": "PASS_NATIVE",
+    "withdrawal_unknown_dispatch_and_lost_ack_preserve_original_evidence": "PASS_NATIVE",
+    "native_quantized_weights_unchanged_training_no_update": "PASS_NATIVE_COMPONENT",
+    "original_evaluator_sealed_request_signing_and_exact_signed_readback": "PASS_NATIVE_WITH_FIXTURE_CUSTODY",
+    "observer_source_and_cell_handles_without_write_or_retirement_capability": "PASS_NATIVE_AND_SOURCE_GUARDS"
+  },
+  "ordinary_engineering_case_names": [
+    "runtime::tests::circuit_task_ingress::q24_tests::cold_recovery::q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retained_token_or_repairs",
+    "runtime::tests::circuit_task_ingress::q24_tests::q24_ordinary_signed_tasks_consume_real_current_model_and_fresh_input_after_drain",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::q24_ordinary_fresh_task_consumes_original_trainer_changed_head_after_version_publication"
+  ],
+  "ordinary_acceptance": {
+    "ordinary_a_completed_with_original_deployment_custody": "NOT_ESTABLISHED",
+    "original_dataset_targets_and_training_automatically_connected_from_a": "NOT_ESTABLISHED",
+    "independent_b_and_old_capability_retention_panel": "NOT_ESTABLISHED",
+    "original_qualified_model_proposal_selector_and_version_adoption": "NOT_ESTABLISHED",
+    "fresh_c_consumption_under_that_complete_original_learning_decision": "NOT_ESTABLISHED",
+    "full_daemon_and_root_os_cold_restart": "NOT_ESTABLISHED",
+    "complete_chains": 0,
+    "positive_adoptions": 0,
+    "no_update_or_rollback_chains": 0,
+    "multiple_time_window_benefit_research_started": false
+  },
+  "responsibility_boundaries": {
+    "training": "Actual bounded optimizer and anchored candidate/NoUpdate; no quality or adoption authority.",
+    "evaluator": "Native sealed execution request and original enrolled signer; supplies no invented holdout, qualification or outcome.",
+    "selector": "Existing original signed selection; explicit fixture selection in engineering cases is not a production decision.",
+    "observer": "Unsigned readback of actual source, Cell and CURRENT; no Cell/source/version writer capability.",
+    "version_owner": "Original artifact/CURRENT/FinalUse prepare, publish, drain and recover with exact predecessor and new task binding."
+  },
+  "remaining_gaps": [
+    "Production LearningIterationStageOwnerPortsV1 implementation and CLI original Q24 profile producer.",
+    "Original live task/AuthBus, Root learning checkpoint, stage evidence, artifact/CURRENT and FinalUse custody and registrations.",
+    "Original Dataset freeze, genuine supervised targets and precommitted materialization rules.",
+    "Independent B/retention data and providers, actual holdout/qualification owners, matched training history and complete measured Wall/CPU.",
+    "An explicitly registered original Model Proposal profile for frozen Q24 SGD, or genuinely V3-generated Parameter candidates under newly frozen original evidence; existing Parameter/Topology payloads cannot stand in for this.",
+    "Actual original daemon/Root lifecycle restart with new process identities, reauthentication and state/unknown-effect readback."
+  ],
+  "custody_inspection": {
+    "original_learn_custody_verified": false,
+    "scope": "Only observed main launch-agent/ai395 systemd bindings and bounded known state/task-registry paths; not full-disk absence proof.",
+    "services_changed": false,
+    "private_keys_or_tokens_output": false,
+    "archive": "custody-evidence.tar.gz",
+    "record": "custody/CUSTODY_FINDINGS.json"
+  },
+  "limits": [
+    "The three ordinary integration cases use fixture issuer, Dataset/stage target metadata and artifact-selection credentials.",
+    "Actual SGD loss reduction and candidate consumption are not independent quality, retention or adoption evidence.",
+    "Trainer NoUpdate and parent-retained ordinary use are separate mechanism cases, not one complete original registered NoUpdate chain.",
+    "Feature is reset-only; nonempty temporal checkpoint input is rejected.",
+    "Native Feature wall/queue/allocation-capacity measurements do not claim full-process RSS, CPU, energy or all-stage comparison costs.",
+    "The evaluator signature journal retains signed payload/evidence, not a substitute for a missing native execution body.",
+    "Cold file/owner recovery retains only owner-free validated configuration and does not invent a Fleet transition or restart two original OS processes.",
+    "All preexisting first-round qualification bytes are preserved; earlier branch/test outcomes are not counted as current-source passes."
+  ],
+  "maintenance": {
+    "status": "PASS_NATIVE_FIX_FORMAT_COMPILE_AND_STATIC_MARKER_READBACK",
+    "native_rust_postimage_commit": "13880c9fca1a3ce89df0a2720f385137c7abe867",
+    "source_and_guard_delivery_commit": "fde7c2ae0e7874b101563fea6bad394bbf899f03",
+    "behavior_tests_after_maintenance": false,
+    "source_mutation_tests_after_maintenance": false,
+    "full_caller_scan_after_maintenance": false,
+    "record": "MAINTENANCE.json"
+  },
+  "failed_attempts_retained": [
+    {
+      "source": "46fc7b6124f46e6cf62e4e70e61c1f5858ee4ffb",
+      "archive": "warm-46fc-v1-evidence.tar.gz",
+      "helper_build_exit_code": 0,
+      "ordinary_exit_code": 101,
+      "tests_executed": 0,
+      "failure": "Ambiguous assert_eq imports prevented test compilation; no JUnit pass was synthesized."
+    },
+    {
+      "source": "dfbed4f4a2dbaa1573b2f4fabdca377e22c8ac6f",
+      "archive": "warm-dfbed-v1-evidence.tar.gz",
+      "helper_build_exit_code": 0,
+      "ordinary_exit_code": 100,
+      "tests_executed": 172,
+      "passed": 167,
+      "failures": 5,
+      "scope": "Four-package intermediate filter; neuron and learning-ledger were not included.",
+      "failure": "Two failures exposed the source completion digest formula; three used a test model width outside the existing production boundary."
+    },
+    {
+      "source": "13f3c134e69741c054fa56e65eabaf358e47e1cf",
+      "archive": "warm-13f3-assembly-v1-evidence.tar.gz",
+      "helper_build_exit_code": 1,
+      "tests_executed": 0,
+      "failure": "E0433: production helper used an undeclared direct infer-core path; corrected through the existing neuron facade."
+    },
+    {
+      "source": "718b9d648d52a9de3559d01ff56d836379250c52",
+      "archive": "warm-718b-assembly-v1-evidence.tar.gz",
+      "helper_build_exit_code": 0,
+      "ordinary_exit_code": 101,
+      "tests_executed": 0,
+      "failure": "Nineteen E0659 ambiguous assert_eq imports in the test modules."
+    },
+    {
+      "source": "852c9fe224f5eb601156c5879c02b582094d5b7a",
+      "archive": "warm-852c-assembly-v1-evidence.tar.gz",
+      "helper_build_exit_code": 0,
+      "ordinary_exit_code": 101,
+      "tests_executed": 0,
+      "failure": "E0277: a String parse error in circuit_q24_task_test_support.rs required explicit conversion to anyhow."
+    },
+    {
+      "source": "95d31a17c081bbf761a94e6cc75a78617149c2e5",
+      "archive": "source-checks-bbab.tar.gz",
+      "record": "source-checks/failed-95d31-inventory.stderr",
+      "failure": "The full caller proof refused eight new boundary IDs missing from the closed privileged inventory; bbab registers them without changing Rust."
+    },
+    {
+      "source": "bbab98d805f5c44c1a70a91f0dfd98821adddecc",
+      "archive": "maintenance-bbab-complete-v1.tar.xz",
+      "record": "evidence/maintenance-bbab-v1/maintenance-status.json",
+      "fix_exit_code": 0,
+      "fmt_exit_code": 2,
+      "compile_only_exit_code": 0,
+      "failure": "Original format-baseline Git tree objects were missing; retained the failed formatter attempt before the successful format-only retry."
+    }
+  ],
+  "artifacts_manifest": "ARTIFACTS.json",
+  "assembly_report": "OWNER_ASSEMBLY_GAPS.md",
+  "source_and_guard_delivery_commit": "fde7c2ae0e7874b101563fea6bad394bbf899f03",
+  "source_and_guard_delivery_tree": "b09caa90a3d4b76bbe8e98d368708ea88d186a6b",
+  "intermediate_focused_pass": {
+    "source": "fe612eb2b52d696fc079b2e60359b65fe0c0d2de",
+    "archive": "warm-fe612-focused-v1-evidence.tar.gz",
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "counts_toward_fixed_bbab_result": false
+  }
+}

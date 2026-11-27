@@ -1,0 +1,446 @@
+{
+  "source_merge": "35db0d7a7f73bf3f5c9757deb7e570bb52ee9890",
+  "scope": "Reviewed source decisions, original failures, complete logs, immutable B4 results, and explicitly limited native qualification. No main merge eligibility implied.",
+  "files": [
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/README.md",
+      "bytes": 8219,
+      "sha256": "5265e40a4195d3bae0fc493ea854ec514ad125d31e5befa65621daf31c60d616"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/additional-parent-edges.json",
+      "bytes": 3003,
+      "sha256": "a6d8785c253aa2bcdb65d79278bfd0657c96f3de6921729420d58f9e43d8036c"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/agentd-helper-error-propagation.json",
+      "bytes": 765,
+      "sha256": "e4352fa6b55c9dd971d188396989f2c33ae2510424bfae3514cbe94bd9e69a26"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/ancestry.json",
+      "bytes": 1772,
+      "sha256": "59de27d43567f0221e4f2e7852c306602bb98464b868b4cdb692aaf787269792"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/branch-advertisement-manifest.json",
+      "bytes": 359,
+      "sha256": "0eb18d32f6e72bd2c5cd8e67b50c7e666d765b043c8c77dbd8fc883d63d43882"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/branch-advertisement.json.gz",
+      "bytes": 280744,
+      "sha256": "21b1b20616ed2a5c4bbd4253c04cd9e9c4b2dcac3f4a6bc01809117f9de45cc9"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/canonical-four-commit.json",
+      "bytes": 1221,
+      "sha256": "0f8354c1af2f1e8240defad762618ab893bb5fec20b3e85de384a29dc31ffda0"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/ci-fix-commit.json",
+      "bytes": 740,
+      "sha256": "52ba31b453fed1d9f877a060f624e5d233e9c56c057ccf23a2bca5f43516ae33"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/compressed-artifacts.json",
+      "bytes": 1224,
+      "sha256": "d8b7b98e9d49f027d7a5410898940a6fdb34409b7f66df22f574f374c753276f"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/external-ref-changes.json",
+      "bytes": 989,
+      "sha256": "6c43d797c512d862d6e43816f7ad17be2a300974c4ab3387b253f5ea40bbe102"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/fdd-full-source-review.json",
+      "bytes": 32394,
+      "sha256": "3a22eab83ef88945499f7b3f597ef5f1ee8547903210ff24d6357f4c94c4e7a0"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/fleet-clock-review.json",
+      "bytes": 1791,
+      "sha256": "d8a5c737d86b4b45250b6cb33221536576203dc758f344cc97cebc9fb7564ef8"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/hnmf-fuzz-repair.json",
+      "bytes": 3400,
+      "sha256": "b46ef18fbe81a56cb4428204fd052d129871912a10b76adc58e8c0d976f44cbe"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/hosted-checks-6ffe9e1-0232.json.gz",
+      "bytes": 25399,
+      "sha256": "91f55504c5fff6471a1bbb9c897e3beb55aa33e75177c6f411e73be1cb58c667"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/hosted-checks-6ffe9e1-latest.json.gz",
+      "bytes": 28349,
+      "sha256": "76a40b92798b877257094801e72f6ef883eecc581f2385035678389844776e58"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/hosted-checks-6ffe9e1.json",
+      "bytes": 76368,
+      "sha256": "07507c487d86f6881ebabe5e142bc2307ff3b75d10e68a6ffe5f3904955c0223"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/hosted-ci-diagnosis.json",
+      "bytes": 5063,
+      "sha256": "63fd3df5b84c2c9e7c1213c45904db47beaca66e92aa600b8d7f476b53591779"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/integration-preflight.json",
+      "bytes": 3875,
+      "sha256": "bff7ba4e378a149ba9ae7bea867cdf07a17f49df0ee417a32277e670d5fcbc45"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/mem11-evidence-review.json",
+      "bytes": 10620,
+      "sha256": "62fd0a13caab73a294da635c10ce579304a1dfff93d226e9cee36b5851162462"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/metrics-family-review.json",
+      "bytes": 2776,
+      "sha256": "87c1cae8177cd9708966aba60502494f174063a7eff6a2666ce4472d5a9cd4e8"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/original-output-carriers.json",
+      "bytes": 3983,
+      "sha256": "e3c331bc979053e134d776cdde23221072f02a9a8a05b6aa7ed3c9377fb7411e"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/pending-frontier-heads.txt",
+      "bytes": 161983,
+      "sha256": "1fcfdda1b5d8ec5da96d5344c90d2d42c771bf9837d420435a861543380a27f2"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/reviewed-batch-01.json",
+      "bytes": 4877,
+      "sha256": "85dfec51c69197363d7de287bff9716c99572ec4a7cc7610e46a49cd301bbb91"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/reviewed-batch-02.json",
+      "bytes": 16283,
+      "sha256": "38a73cba77884371db469ecef574ed15213fd174b4f2ca36d9bac42dc0c4c451"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/reviewed-batch-03.json",
+      "bytes": 13658,
+      "sha256": "4008b3b157c1b0b3ac20160ccf654c4fb17a6264d74db474b873a4adf8a47b54"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/reviewed-batch-04.json",
+      "bytes": 6138,
+      "sha256": "72795b8fe38f500dbc87414800f625c03f9aa18f279af5c6bc365419d89d8685"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/reviewed-batch-05.json",
+      "bytes": 10482,
+      "sha256": "f480a06eac7851550d22953c01f06c12badb0a00726cbc981b179ec7b0b5c5cf"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/source-merge-commit.json",
+      "bytes": 987,
+      "sha256": "0725c4e3c686bfe30cc57e0fa1a9215294d29c7903e4c231f1bf0ce710e14f9f"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/b4-all-modules-manifest.json",
+      "bytes": 59961,
+      "sha256": "df1dba68ef098f927b7487f7723b565ff96a4dafd4aca100188be5ff3e29bc46"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/b4-all-modules-summary.json",
+      "bytes": 440,
+      "sha256": "22f78f61619e67e0d6d1e12e21d65e259f46e28e1ef9dd1e3f96a5b1d31fca13"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/b4-all-modules.tar.gz",
+      "bytes": 65807,
+      "sha256": "670f272d0ad437fd39c8b2ead4939c63765ef3e1f49b4e35402246fdc88153ac"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/b4-interrupted-result.json",
+      "bytes": 549,
+      "sha256": "bfc3027c5972a07bbb198bf2cf6b0f2ec8f4f88ca371a3a9168eb9c47707decb"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/b4-interrupted.log",
+      "bytes": 526,
+      "sha256": "c3b1356221b923c5c86a3005f2b324462d911201c896a0fc59929134d4121f58"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/canonical-four-fix.log",
+      "bytes": 19443,
+      "sha256": "203db9d00c81e0195479ad1ccfffcde88ff7001cdb6d930361689a2260adad8a"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/canonical-four-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/canonical-four-tests.log",
+      "bytes": 29401,
+      "sha256": "6624393bbc0d44251e30ae960e8a44621ee22eb3447003d37ff49e6a360fddb0"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/canonical-four.result.json",
+      "bytes": 981,
+      "sha256": "bec56063131755fbc66847dfdd60ab37f3fa05ccc9b0486a3116bc3f09175cb9"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-advisory-source.json",
+      "bytes": 749,
+      "sha256": "9bf1aa443db31facb30d4a4be70f195080ea79c977698d96a7e6b901e9ff2cb9"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-complete.manifest.json",
+      "bytes": 2430,
+      "sha256": "677aead7b37c8d8ac4f1dd63eb36b08d9e4389897f8ff939fb9fec90cfa2a400"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-complete.part-00.log.gz",
+      "bytes": 116158,
+      "sha256": "acafde30746c03bed41185fc1e77b9e9caa1a788a5a681606437c516bf82b711"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-complete.part-01.log.gz",
+      "bytes": 113708,
+      "sha256": "f0c7d166abf4fa82fc3336172e1abc036d80f1f2a2594cec4ab2bddbbad598dc"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-complete.part-02.log.gz",
+      "bytes": 108160,
+      "sha256": "016f69fca24fc77e97d3803370c7b7a036813ff1fa0d2ebf1b4a11038036f30c"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-complete.part-03.log.gz",
+      "bytes": 113952,
+      "sha256": "2654654925e7c472571017cb7b2b7d51c2a94c60603264f4daeaea5ebf2e6a4c"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-complete.part-04.log.gz",
+      "bytes": 120376,
+      "sha256": "40721c384f111c2ccdae54f10d0a50fcefdff184022c8c3b8e5efb49718dd526"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-complete.part-05.log.gz",
+      "bytes": 108630,
+      "sha256": "ae179946c70460f7efe41cc4e483b5a6657e602e1b3eb8ca7493c0dd69812297"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-complete.part-06.log.gz",
+      "bytes": 58329,
+      "sha256": "c3e85ff27841d72ebf6128886fe0adbe906a57e7968c276a5615c820cae72be1"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-errors.txt.gz",
+      "bytes": 495,
+      "sha256": "960c5cbdb5b8d38acda7e84300452347fc75679749439d3b6716f634d001e817"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/cargo-deny-result.json",
+      "bytes": 1306,
+      "sha256": "bdcfb1f5929c748c483c5ba990af936e1a4cdb451a82c1a8ab883235864ada64"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/credit-mem-budget-test.log",
+      "bytes": 104,
+      "sha256": "056be428f93d5c221fb5111f4d266e542ea3d7ce13f6fa95f050091739b87b53"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/development-docs-gate.log",
+      "bytes": 683,
+      "sha256": "079e958668a861388c9af0daaf22c4b2cc90f112ba6d715178b3d8955aa3e934"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/fleet-baseline-regression.log",
+      "bytes": 7710,
+      "sha256": "611be90ab3aa3651f8c870746162e5b405a5c3f1dc82ba67eb1b8a73ef91171b"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/fleet-fixed-tests.log",
+      "bytes": 8096,
+      "sha256": "8ca1115f20e3a18e114fc17ce56506d22a5dc7fd6998502700d0ff3fdf9fcde7"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/fleet-supervisor-neuron-fix.log",
+      "bytes": 33292,
+      "sha256": "22a3bf58fc91dd5f01395c1f20d344546d6a052ceb7e2dc95cc0ab01d267e15f"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/fleet-supervisor-neuron-fix.result.json",
+      "bytes": 315,
+      "sha256": "44a4baccbc32eee0332ad3553896f1d6778965611da53be745a2d1fa941fe68f"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hnmf-fuzz-check-locked.log",
+      "bytes": 1845,
+      "sha256": "8bbf13e8dea5116583eae412719c812eca59edc9135cf6147c3269a57f8df770"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hnmf-native-validation.json",
+      "bytes": 512,
+      "sha256": "5d8c08f7b59c45971f6fc777e421c24819a95b8ed9df549c1ccafcfb74efaab3"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hosted-contract-gate.log.gz",
+      "bytes": 368,
+      "sha256": "320af4b41e22d9136ac4eae037e47ca5d327be8168efb28a6741d33a46cfb90c"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hosted-gnu-clippy.log.gz",
+      "bytes": 4528,
+      "sha256": "b9b1d355a812df5ddc82cde6d69dc228f315d527cda3f44b4ac600b3aac3679e"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hosted-job-134513723957.log.gz",
+      "bytes": 276033,
+      "sha256": "e4da7e0f0189744826bc0287eae7439535946bd4395e427a4035733f59ab1673"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hosted-job-134513724076.log.gz",
+      "bytes": 483989,
+      "sha256": "3131e20ff3da219b1b6e940c50cffc8d6a9c5c083f0df67c65018571e0f4304b"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hosted-job-134513724228.log.gz",
+      "bytes": 103576,
+      "sha256": "b9fb9833d80b7e91c939471a7021f3220964f2414df3a0e69a7ff9b9daea58b7"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hosted-job-134513724257.log.gz",
+      "bytes": 83558,
+      "sha256": "ff836cbb78589e2754a4338852cd904560810a513ac9d6b76a4cfa1bfd1e8900"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hosted-new-failures.json",
+      "bytes": 4469,
+      "sha256": "17aab2813014ef597cfbf31110a4eadefa32879af2fb69c0554850e1dfd83145"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hosted-windows-shard-3.log.gz",
+      "bytes": 4837,
+      "sha256": "7e8377b1b5b59ead5c72ddf613d158ff744882d60ba70a8b4966d727241b7d1b"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/hosted-windows-shard-4.log.gz",
+      "bytes": 5396,
+      "sha256": "ec152572b4d1f79a936f8b7da7869ff2bcf96e2a8e2e8595736792bb990535d8"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-baseline-tests.log",
+      "bytes": 60857,
+      "sha256": "c296941a8670776dda537520ae466b4cdc2226046b7f0d0036b3eb03d110e092"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-composed-metrics-tests.log",
+      "bytes": 2412,
+      "sha256": "47f8f4def2bdfce4bfd8c7fa055e635099f2ed66febb4890fbd6cda69b62058f"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-01/codex-hepta-infer-worker-host.jsonl.gz",
+      "bytes": 14309,
+      "sha256": "3bbd1a0405e8cc4afc803b585e88a2a99ba16804790c58166a729641afe71c1c"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-01/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 25428,
+      "sha256": "8030750541e57592083ba2029f6d9a9d4418b96652446e5f02933010c6508b64"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-01/env.json",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-01/manifest.json",
+      "bytes": 1197,
+      "sha256": "12b0cc9fb743484ba765ca6b12801130e92ca1cc934f3ee7872471e00fe8d2d4"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-02/codex-hepta-infer-worker-host.jsonl.gz",
+      "bytes": 68641,
+      "sha256": "052573a8b4f1436a32db17295e13a9c3e65699da196213f09039d2bb9e6b30ea"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-02/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 68969,
+      "sha256": "fe1add0be2a51de1cc9e1a69234840949ef8fe836dfa556077195d94583508b0"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-02/env.json",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-02/manifest.json",
+      "bytes": 1197,
+      "sha256": "9b0b34459359ee72636692f9234c8b35d99f063c6d2884cf6bc58dcbf9afa07b"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-03/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 105861,
+      "sha256": "574e6c73ba081292a04ab08bc099e3ac78708cb88a2f4d5893ef05048d59bb1f"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-03/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 3127,
+      "sha256": "34441bae58be0eaa955948bdb2843871691f9856e373c8b10e8cbd6deba4762d"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-03/env.json",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-attempt-03/manifest.json",
+      "bytes": 1108,
+      "sha256": "547d226e4b5f0bfceaf152f15ce32efd1b5d588c842e00ced2531fae5fff3465"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/neuron-helper-gate-receipt.json",
+      "bytes": 8194,
+      "sha256": "db25cbc6cd441211f5c1dc388b3c120d5e466e3a5c09a7eddf22eef90dece901"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/rog-agentd-worker-result.json",
+      "bytes": 957,
+      "sha256": "8ea99a94d6ba33a0d2dd550245157326e739048e43a8b28ff172b6e8ebd75f7c"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/rog-linker-diagnostic-journal.log.gz",
+      "bytes": 720,
+      "sha256": "87efe0fc99ee4967b65d9e004e13ec0254b4b180087c57a648a5ea4b653350ff"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/run_b4_modules.py",
+      "bytes": 3974,
+      "sha256": "3c353636913f0ad3eddddb5bdfac5b024896ab5916671a6f364c89d702c6624b"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/supervisor-restart-budget-test.log",
+      "bytes": 48415,
+      "sha256": "844931ce4b1b3adc443ff3955118f4592a5db2153d907996dc5ee93d08be8189"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/supervisor-signed-intent-tests.log",
+      "bytes": 24193,
+      "sha256": "f4f57ac6af1e6f7847baee40f4520c86af2ea698abf4e157203314e73d89bad1"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/v3-cost-reproduction.json",
+      "bytes": 3204,
+      "sha256": "aefcd74b784dceb5f77ea74ce00b905421383b90761681f880bf46869626d3ad"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/windows-acl.junit.xml",
+      "bytes": 4970,
+      "sha256": "1a3f48f7f1280b936010f41f6c5cd6990bdae941d6d6858f93f6df62e6f2ca05"
+    },
+    {
+      "path": "qa/repository-consolidation/20261118/round-02/validation/windows-appcontainer-observation.json.gz",
+      "bytes": 7427,
+      "sha256": "fffc7ad37683404463cd6e168e8b3635a898e20a3628bcb24b53daede3399a6b"
+    }
+  ]
+}

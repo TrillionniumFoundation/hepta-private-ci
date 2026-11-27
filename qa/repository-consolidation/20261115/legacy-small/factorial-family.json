@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-11-15T15:48:22.042322+00:00",
+  "base": "25d6ad080a3b40dde4e79c6964507fbf05dfbce4",
+  "incoming": "9e11892e80b3cbb990d3d2dc8a897bc670dad8fc",
+  "preview_tree": "7af523278ed2dee2202f34d05640ceef8783c84f",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Complete dataclass schema, family cohort locks, net/cost/retention contrasts and tests reviewed. Paired four-arm identity/budget contracts, per-seed frozen model/evaluator/cohort and balanced family roster remain mandatory. Missing outcomes suppress all inferential/family net summaries; missing retention/resources stay null. Exact signflip uses seed clusters only, with four-contrast Holm correction; no owner/signature/scientific gate is promoted.",
+  "all_incoming_paths_byte_identical": true,
+  "path_sha256": {
+    "qualification/neuroscience-20261110/FACTORIAL_PROTOCOL.md": "bff595911edce0a512cca34921c5f7218dec6c7adcb08c788bad1b2936cded33",
+    "qualification/neuroscience-20261110/factorial.py": "febd0a08cefd2b33bdb3846be812ca5fb6506b525fc7ffb174ecfb2cf8898add",
+    "qualification/neuroscience-20261110/test_factorial.py": "8fb24b0d0a5d431da4498b766f8cad71be156d874f95ed25f4505f332fd14ba9"
+  },
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qualification/neuroscience-20261110",
+    "-p",
+    "test_factorial.py",
+    "-v"
+  ],
+  "test_exit": 0,
+  "reported_tests": 17,
+  "qualification": false
+}

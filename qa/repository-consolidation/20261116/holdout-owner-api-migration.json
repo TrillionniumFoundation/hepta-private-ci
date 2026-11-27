@@ -1,0 +1,321 @@
+{
+  "schema": "hepta.holdout-owner-api-source-migration.v1",
+  "before_manifest_sha256": "4f354b6844d64bb7ffbfd4c378b7e5cde62350b87e500e8e7cae2311ea377921",
+  "after_manifest_sha256": "175a7a1557e7faed14fd48f1b33a9de281f223e60c08b614c225d0d1ad8d76bf",
+  "boundary_count_before": 1644,
+  "boundary_count_after": 1645,
+  "protected_record_count_before": 818,
+  "protected_record_count_after": 818,
+  "changed_boundaries": [
+    "product_original_holdout_consumption_read",
+    "product_original_holdout_execution_read"
+  ],
+  "changed_protected_paths": [
+    "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+    "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+    "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_replay.rs"
+  ],
+  "original_boundary": {
+    "id": "product_original_holdout_consumption_read",
+    "symbol": "FencedFinalHoldoutOwnerV1::read_consumption",
+    "receiver_type": "FencedFinalHoldoutOwnerV1",
+    "definition_path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+    "definition_markers": [
+      "pub(crate) fn read_consumption(",
+      "let current = match self.store.load(self.binding)",
+      "Err(FinalHoldoutCasStoreError::Indeterminate) =>",
+      "self.poisoned = true;",
+      "if current.fence != self.fence",
+      "if current.state_digest != self.state_digest"
+    ],
+    "product_callers": [
+      "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "codex-rs/hepta-intelligence-eval/src/product_holdout_release.rs"
+    ],
+    "caller_markers": ["read_consumption("]
+  },
+  "original_protected_records": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+      "required": [
+        "pub(crate) fn read_consumption(",
+        "authority: codex_hepta_types::AuthorityPosture::DENY_ALL,",
+        "let current = match self.store.load(self.binding)",
+        "Err(FinalHoldoutCasStoreError::Indeterminate)",
+        "return Err(FencedHoldoutError::Indeterminate)"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "LearningEvidenceVerifierV1::new",
+        "File::open",
+        "std::fs::read",
+        "try_clone("
+      ],
+      "required_function_order": [
+        {
+          "function": "fn read_consumption(",
+          "sequence": [
+            "if self.poisoned",
+            "return Err(FencedHoldoutError::Poisoned)",
+            ".load(self.binding)",
+            ".ok_or(FencedHoldoutError::Missing)?",
+            "current.validate(self.binding)?",
+            "if current.fence != self.fence",
+            "self.poisoned = true",
+            "return Err(FencedHoldoutError::StaleFence)",
+            "if current.state_digest != self.state_digest",
+            "self.poisoned = true",
+            "return Err(FencedHoldoutError::Conflict)",
+            "FinalHoldoutJournalV1::from_snapshot_with_record_limit(current.journal, MAX_RECORDS)",
+            "if journal.snapshot() != self.journal.snapshot()",
+            ".find(|record| record.plan.plan_id == plan.plan_id)",
+            "if &record.plan != plan",
+            "return Err(FencedHoldoutError::Binding)",
+            "Some(FinalHoldoutJournalReceiptV1",
+            "record_digest: record.record_digest",
+            "use_receipt: record.use_receipt.clone()"
+          ],
+          "top_level": [
+            "if self.poisoned",
+            "current.validate(self.binding)?",
+            "if current.fence != self.fence",
+            "if current.state_digest != self.state_digest",
+            "if journal.snapshot() != self.journal.snapshot()",
+            "if &record.plan != plan"
+          ]
+        },
+        {
+          "function": "fn read_consumption(",
+          "sequence": [
+            "if self.poisoned",
+            "return Err(FencedHoldoutError::Poisoned)",
+            "let current = match self.store.load(self.binding)",
+            "Ok(current) => current.ok_or(FencedHoldoutError::Missing)?",
+            "Err(FinalHoldoutCasStoreError::Indeterminate)",
+            "self.poisoned = true",
+            "return Err(FencedHoldoutError::Indeterminate)",
+            "Err(error) => return Err(FencedHoldoutError::Store(error))",
+            "current.validate(self.binding)?",
+            "if current.fence != self.fence",
+            "self.poisoned = true",
+            "return Err(FencedHoldoutError::StaleFence)",
+            "if current.state_digest != self.state_digest",
+            "self.poisoned = true",
+            "return Err(FencedHoldoutError::Conflict)",
+            "FinalHoldoutJournalV1::from_snapshot_with_record_limit",
+            "if journal.snapshot() != self.journal.snapshot()",
+            "return Err(FencedHoldoutError::Corrupt)",
+            "return Ok((self.binding, None))",
+            "if &record.plan != plan",
+            "return Err(FencedHoldoutError::Binding)",
+            "authority: codex_hepta_types::AuthorityPosture::DENY_ALL"
+          ],
+          "top_level": [
+            "if self.poisoned",
+            "let current = match self.store.load(self.binding)",
+            "current.validate(self.binding)?"
+          ]
+        },
+        {
+          "function": "fn read_consumption(",
+          "sequence": [
+            "let current = match self.store.load(self.binding)",
+            "Err(FinalHoldoutCasStoreError::Indeterminate)",
+            "self.poisoned = true",
+            "return Err(FencedHoldoutError::Indeterminate)",
+            "current.validate(self.binding)?"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "required": [
+        "ProductEvaluationExecutionErrorV1::Pending",
+        "restored.execution_evaluator = Some(request.evaluator.clone())"
+      ],
+      "forbidden": [
+        "SigningKey",
+        ".sign(",
+        "UnixStream::connect",
+        "File::open",
+        "unwrap_or",
+        "permit_all"
+      ],
+      "required_order": [
+        [
+          "pub fn evaluate_or_readback_temporal_comparison<",
+          "let (key, previous) = self.execution_context(request)?",
+          "executions.claim(&key)?",
+          "ProductEvaluationExecutionStateV1::Pending",
+          "return Err(ProductEvaluationExecutionErrorV1::Pending)",
+          "ProductEvaluationExecutionStateV1::Completed(bytes)",
+          "ProductEvaluationExecutionClaimV1::Claimed",
+          "if previous.is_some()",
+          "let executed = self.evaluate_temporal_comparison(",
+          "execution_codec::encode_execution(&executed)?",
+          ".attest_execution(",
+          "authenticate(request, &signed, &signing_payload)?",
+          "executions.complete(&key, &encoded)?",
+          "executions.readback(&key)?",
+          "self.authenticate_completed_execution(request, key, &bytes)"
+        ]
+      ],
+      "required_function_order": [
+        {
+          "function": "fn readback_temporal_comparison(",
+          "sequence": [
+            "let (key, _) = self.execution_context(request)?",
+            "let bytes = match executions.readback(&key)?",
+            "ProductEvaluationExecutionStateV1::Pending",
+            "return Err(ProductEvaluationExecutionErrorV1::Pending)",
+            "ProductEvaluationExecutionStateV1::Completed(bytes) => bytes",
+            "self.authenticate_completed_execution(request, key, &bytes)"
+          ],
+          "top_level": [
+            "let (key, _) = self.execution_context(request)?",
+            "let bytes = match executions.readback(&key)?",
+            "self.authenticate_completed_execution(request, key, &bytes)"
+          ]
+        },
+        {
+          "function": "fn execution_context(",
+          "sequence": [
+            "request.plan.validate_integrity()?",
+            "actual.plan_digest != expected",
+            ".canonical_digest()",
+            "actual.objective_digest != request.plan.frozen_plan.objective_digest",
+            ".read_consumption(&request.plan.frozen_plan)",
+            "product_evaluation_execution_key_v1(request.plan, namespace, request.evaluator)?",
+            "Ok((key, previous))"
+          ],
+          "top_level": [
+            "request.plan.validate_integrity()?",
+            "let (namespace, previous) =",
+            "let key = product_evaluation_execution_key_v1(request.plan, namespace, request.evaluator)?",
+            "Ok((key, previous))"
+          ]
+        },
+        {
+          "function": "fn authenticate_completed_execution(",
+          "sequence": [
+            "execution_codec::decode_envelope(bytes)?",
+            "authenticate(request, &signed, &signing_payload(&key, body))?",
+            ".read_consumption(&request.plan.frozen_plan)",
+            "consumed.ok_or(ProductEvaluationExecutionErrorV1::MissingExecution)?",
+            "execution_codec::decode_execution(body, request.plan, &consumed)?",
+            "if restored.candidate.plan_digest",
+            ".read_consumption(&request.plan.frozen_plan)",
+            "if current.as_ref() != Some(&consumed)",
+            "restored.execution_evaluator = Some(request.evaluator.clone())",
+            "Ok(restored)"
+          ],
+          "top_level": [
+            "authenticate(request, &signed, &signing_payload(&key, body))?",
+            "let mut restored =",
+            "if current.as_ref() != Some(&consumed)",
+            "restored.execution_evaluator = Some(request.evaluator.clone())"
+          ]
+        },
+        {
+          "function": "fn authenticate(",
+          "sequence": [
+            "let now = (request.clock)()?",
+            ".verify(LearningEvidenceRoleV1::Evaluator, signed, payload, now)",
+            "verified.principal() != request.evaluator",
+            "verified.objective_digest() != request.plan.frozen_plan.objective_digest",
+            "Ok(())"
+          ]
+        },
+        {
+          "function": "fn product_evaluation_execution_key_v1(",
+          "sequence": [
+            "plan.validate_integrity()?",
+            "if namespace.is_zero()",
+            "evaluator\n        .validate(evaluator.authenticated_at)",
+            "namespace.as_array()",
+            "plan.receipt_seal.as_array()",
+            "super::push_principal(&mut binding, evaluator)",
+            "Ok(ProductEvaluationExecutionKeyV1"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_replay.rs",
+      "required": [],
+      "forbidden": [
+        ".set_len(",
+        ".write_all(",
+        ".sync_all(",
+        ".truncate(",
+        "OpenOptions",
+        "File::open",
+        "unsafe"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn read_stable_image(",
+          "sequence": [
+            "let first = read_image(file)?",
+            "if read_image(file)? != first",
+            "return Err(LockedFileCasErrorV1::Indeterminate)",
+            "Ok(first)"
+          ],
+          "top_level": [
+            "let first = read_image(file)?",
+            "if read_image(file)? != first",
+            "Ok(first)"
+          ]
+        },
+        {
+          "function": "fn read_image(",
+          "sequence": [
+            "let length = file.metadata().map_err(io_error)?.len()",
+            "length > MAX_BYTES",
+            "file.seek(SeekFrom::Start(0))",
+            ".take(MAX_BYTES + 1)",
+            ".read_to_end(&mut bytes)",
+            "bytes.len() as u64 != length",
+            "file.metadata().map_err(io_error)?.len() != length",
+            "return Err(LockedFileCasErrorV1::Corrupt)",
+            "Ok(bytes)"
+          ]
+        },
+        {
+          "function": "fn replay_image(",
+          "sequence": [
+            "bytes.len() < HEADER",
+            "bytes.len() as u64 > MAX_BYTES",
+            "&bytes[..8] != MAGIC",
+            "&bytes[8..40] != binding.as_array()",
+            "&bytes[40..HEADER] != Digest32::of_bytes(&bytes[..40]).as_array()",
+            "let mut minimum_witnessed = minimum.is_none()",
+            "while cursor < bytes.len()",
+            "!(1..=MAX_FRAME).contains(&count)",
+            "let payload = bytes",
+            "let checksum = bytes",
+            "checksum != Digest32::of_bytes(payload).as_array()",
+            "state = Some(replay_event(binding, state, payload)?)",
+            "minimum.is_some_and(|anchor|",
+            "record_anchor(record) == anchor",
+            "minimum_witnessed = true",
+            "validate_minimum(state.as_ref(), minimum, minimum_witnessed)?",
+            "Ok(state)"
+          ]
+        }
+      ]
+    }
+  ],
+  "semantic_mapping": [
+    "Raw release observation retains Store(Indeterminate) but permanently latches the read error before returning; repeated reads reject before store I/O.",
+    "The execution-only crate-private method delegates to the same owner and plan, marks the owner poisoned and translates Store(Indeterminate) to Indeterminate; all other results are preserved.",
+    "Only product_holdout_release remains an external caller of the raw observation; only product_execution may call the execution wrapper, at the same three guarded positions.",
+    "consume rejects latched uncertainty before candidate state or CAS, and is_poisoned includes the latch; original fence, digest, journal, exact-plan and DENY_ALL checks remain.",
+    "The two physical reads and exact comparison remain inside one immediately invoked closure. The same file descriptor cursor is captured before observation, restored with propagated failure before returning either observed outcome, and no fallback read or reopen is introduced."
+  ],
+  "strict_verifier_changed": false,
+  "other_manifest_fields_unchanged": true,
+  "source_bundle": "holdout-fix-formatted-bundle-v2.json",
+  "authority_granted": false
+}

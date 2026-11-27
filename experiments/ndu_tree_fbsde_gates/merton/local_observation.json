@@ -1,0 +1,114 @@
+{
+  "audited_policy_rows_per_mode": 75,
+  "cases": 15,
+  "conclusion": "No NDU-specific efficacy demonstrated. Same-profile augmented-state Bellman equivalence holds; endogenous control can lower the common external expected utility.",
+  "controllers": 5,
+  "execution_scope": "ChatGPT isolated execution container; not dot; not complete repository checkout; not hosted Actions",
+  "full_repository_ci_verified": false,
+  "general_fbsde_solver": false,
+  "hosted_ci_verified": false,
+  "independent_organization_or_signer": false,
+  "inherited_tests_normal": 8,
+  "inherited_tests_optimized": 8,
+  "manifest_sha256": "577509cf38e2948d3806a8fb83ea1dc34f7188ec0c2cc0eefb75efee932f293b",
+  "new_tests_normal": 44,
+  "new_tests_optimized": 44,
+  "normal_optimized_semantic_equalities": 75,
+  "parent_sha": "dcc92f52ea105ef371f9d792a5d411519dd92b90",
+  "posture": "RESEARCH_ONLY_DENY_ALL",
+  "raw_evidence_delivery": "Conversation ZIP contains source, full public-history policies, per-mode audits and logs. CI reproduces outputs and uploads artifacts when actually executed.",
+  "raw_evidence_sha256": {
+    "audit-normal.json": "74aa185f221d2f171d689a243475738f9e00274d3ebdfbcbcdf3b34214d04aef",
+    "audit-optimized.json": "f73d32a62a27f51fe95364481ee489fae730e30dccea0f3c87a9889f06ff5fbb",
+    "inherited-normal.log": "2a55fbf31235b98d0c7298180be98033742f936f7b3829a614f682b28cf043c8",
+    "inherited-optimized.log": "2a55fbf31235b98d0c7298180be98033742f936f7b3829a614f682b28cf043c8",
+    "run-normal/manifest.json": "577509cf38e2948d3806a8fb83ea1dc34f7188ec0c2cc0eefb75efee932f293b",
+    "run-normal/policies.json": "a13b7b0384c239bee198da8e3ad43386cf7f828626b3db72cdc066e371a992f4",
+    "run-optimized/manifest.json": "577509cf38e2948d3806a8fb83ea1dc34f7188ec0c2cc0eefb75efee932f293b",
+    "run-optimized/policies.json": "3cab69abf9d6f2c53ec45e945efb00b42c554f10ba5f95d0495bb9ca130fc286",
+    "tests-normal.log": "e38826dbbd4818970e314e80d31e27fab43b9d6b9b021e96648a009e47bad02d",
+    "tests-optimized.log": "efd7acabf3ec3f378ad30d9f89282ae56f39fbee538cbed6dd2b1930701dd83c"
+  },
+  "real_model_calls": 0,
+  "real_optimizer_steps": 0,
+  "same_profile_oracle_equalities_per_mode": 45,
+  "schema": "hepta.ndu-merton-local-observation.v1",
+  "selected_results": [
+    {
+      "case": "xor-complementarity",
+      "expected_net_by_arm": {
+        "bellman_neutral": "21/25",
+        "myopic_voi": "1/2",
+        "ndu_discrete": "21/25",
+        "no_compute": "1/2",
+        "recursive_fixed": "21/25"
+      },
+      "optimal_neutral_root": "bit0"
+    },
+    {
+      "case": "and-short-circuit",
+      "expected_net_by_arm": {
+        "bellman_neutral": "22/25",
+        "myopic_voi": "3/4",
+        "ndu_discrete": "22/25",
+        "no_compute": "3/4",
+        "recursive_fixed": "22/25"
+      },
+      "optimal_neutral_root": "bit0"
+    },
+    {
+      "case": "investment-one-task",
+      "expected_net_by_arm": {
+        "bellman_neutral": "21/25",
+        "myopic_voi": "1/2",
+        "ndu_discrete": "21/25",
+        "no_compute": "1/2",
+        "recursive_fixed": "21/25"
+      },
+      "optimal_neutral_root": "bit0"
+    },
+    {
+      "case": "investment-three-tasks",
+      "expected_net_by_arm": {
+        "bellman_neutral": "261/100",
+        "myopic_voi": "3/2",
+        "ndu_discrete": "261/100",
+        "no_compute": "3/2",
+        "recursive_fixed": "261/100"
+      },
+      "optimal_neutral_root": "invest"
+    },
+    {
+      "case": "resource-shock",
+      "expected_net_by_arm": {
+        "bellman_neutral": "37/25",
+        "myopic_voi": "1",
+        "ndu_discrete": "37/25",
+        "no_compute": "1",
+        "recursive_fixed": "37/25"
+      },
+      "optimal_neutral_root": "invest"
+    },
+    {
+      "case": "dynamic-outcome-preference",
+      "expected_net_by_arm": {
+        "bellman_neutral": "21/10",
+        "myopic_voi": "21/10",
+        "ndu_discrete": "20757/10000",
+        "no_compute": "51/25",
+        "recursive_fixed": "51/25"
+      },
+      "optimal_neutral_root": "submit0"
+    }
+  ],
+  "source_class": "known-law exact rational synthetic mechanism panel",
+  "source_git_blobs": {
+    ".github/workflows/hepta-ndu-merton.yml": "020cebaf06d2f934d6a511289bb3e6207fca2b70",
+    "experiments/ndu_tree_fbsde_gates/merton/README.md": "69be2590529f56a7c4716074db022729912f3c68",
+    "experiments/ndu_tree_fbsde_gates/merton/audit.py": "cee9ffc9b0a334fb5a7daaf754146db3b180e8f1",
+    "experiments/ndu_tree_fbsde_gates/merton/portfolio.py": "8a76346109ca4a017ba6546d9b8f18f8e7551388",
+    "experiments/ndu_tree_fbsde_gates/merton/test_portfolio.py": "7a02d8f47dfcb1b1c2701e18564fe517eafb8620"
+  },
+  "workflow_bash_blocks_checked": 3,
+  "workflow_yaml_parsed": true
+}

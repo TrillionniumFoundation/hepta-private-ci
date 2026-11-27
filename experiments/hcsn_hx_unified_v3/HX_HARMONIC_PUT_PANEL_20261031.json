@@ -1,0 +1,46 @@
+{
+  "all_scientific_blockers_closed": false,
+  "cases": [
+    {
+      "barrier_f64": 64.62517667527493,
+      "held_policy_equity_f64": 2306.514041044718,
+      "new_abs_error_upper": "1.640608880051",
+      "new_fixed_equity_lower": "2305.806020476897",
+      "new_fixed_equity_upper": "2308.154649924768",
+      "old_fixed_equity_upper": "2308.154649924768",
+      "old_put_upper": "0.000000000000",
+      "r_harmonic_exponent_lower": "1.097654100294",
+      "r_harmonic_exponent_upper": "1.097654100295",
+      "r_harmonic_optional_premium_upper": "0.000000000000",
+      "rational_power": "549/500",
+      "sale_fraction": 0.015
+    },
+    {
+      "barrier_f64": 101.32402860907811,
+      "held_policy_equity_f64": 3477.8581010446687,
+      "new_abs_error_upper": "3.465966337770",
+      "new_fixed_equity_lower": "3474.392134706899",
+      "new_fixed_equity_upper": "3481.069398696214",
+      "old_fixed_equity_upper": "3482.113788505947",
+      "old_put_upper": "3.663960206662",
+      "r_harmonic_exponent_lower": "1.097654100294",
+      "r_harmonic_exponent_upper": "1.097654100295",
+      "r_harmonic_optional_premium_upper": "2.619570396928",
+      "rational_power": "549/500",
+      "sale_fraction": 0.2
+    }
+  ],
+  "complete_debt_error_budget": false,
+  "global_equilibrium_certified": false,
+  "limits": [
+    "fixed financial barrier; only put premium tighter",
+    "no independent coupled obstacle or interval interior PDE error",
+    "no fully authenticated host recovery, GPU or real hardware energy"
+  ],
+  "main_observed_sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "parent_head_sha": "be808f2a05ad6f3761e7b8d15c1792fcb958e3e6",
+  "parent_pr": 4516,
+  "production_activation": false,
+  "schema": "hcsn-p0-r-harmonic-optional-put-v1",
+  "status": "RESEARCH_ONLY_DENY_ALL_NO_GO"
+}

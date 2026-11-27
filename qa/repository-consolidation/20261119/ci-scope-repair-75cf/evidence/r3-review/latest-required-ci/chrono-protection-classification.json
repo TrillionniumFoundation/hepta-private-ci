@@ -1,0 +1,115 @@
+{
+  "pin_count": 498,
+  "protected_name_count": 478,
+  "pins_sha256": "5ca70d69d8018f4e65f743250efcc72c086a547650a3ac5395f490b914d96ea9",
+  "map_sha256": "08e3cb4d932ded33a4cb3a11051cbe052081fbd57ec64e33302bf08bcda6e460",
+  "branches": [
+    {
+      "name": "codex/chrono-agent-identity-joint-20261118-2e9b",
+      "sha": "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+      "protected_by_name_map": true,
+      "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+      "protected_map_value": {
+        "sha": "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+        "reasons": [
+          "explicit_protected_name",
+          "previous_protected_name",
+          "protected_tip_or_alias",
+          "hia_ancestor:f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+        ],
+        "previous_frozen_sha": "7e28e13e82045f936cb66f9fea4a27ad4368f896"
+      }
+    },
+    {
+      "name": "codex/chrono-cloud-cache-joint-20261118-2e9b",
+      "sha": "902a8ccdff0326877515683717fe6e5db4356df7",
+      "protected_by_name_map": true,
+      "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+      "protected_map_value": {
+        "sha": "902a8ccdff0326877515683717fe6e5db4356df7",
+        "reasons": [
+          "explicit_protected_name",
+          "previous_protected_name",
+          "protected_tip_or_alias",
+          "hia_ancestor:f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+        ],
+        "previous_frozen_sha": "902a8ccdff0326877515683717fe6e5db4356df7"
+      }
+    },
+    {
+      "name": "codex/chrono-git-utils-joint-20261118-2e9b",
+      "sha": "03d782a7af68da6f0572be029693aba22548b415",
+      "protected_by_name_map": true,
+      "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+      "protected_map_value": {
+        "sha": "03d782a7af68da6f0572be029693aba22548b415",
+        "reasons": [
+          "explicit_protected_name",
+          "previous_protected_name",
+          "protected_tip_or_alias",
+          "hia_ancestor:f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+        ],
+        "previous_frozen_sha": "03d782a7af68da6f0572be029693aba22548b415"
+      }
+    },
+    {
+      "name": "dot/qualify-git-unix-seconds-without-chrono",
+      "sha": "a63fc3da30495f2d594f3cfab392024d7b66cd10",
+      "protected_by_name_map": true,
+      "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+      "protected_map_value": {
+        "sha": "a63fc3da30495f2d594f3cfab392024d7b66cd10",
+        "reasons": [
+          "explicit_protected_name",
+          "previous_protected_name",
+          "protected_tip_or_alias",
+          "hia_ancestor:ca80ff9feef37fc6d03afdc593ddd7da243f4be7",
+          "hia_ancestor:f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "previous_frozen_sha": "a63fc3da30495f2d594f3cfab392024d7b66cd10"
+      }
+    },
+    {
+      "name": "codex/chrono-otel-joint-20261118-2e9b",
+      "sha": "a4d52eadab774ad651825fb2bcc07ab2ec89893a",
+      "sha_observation_source": "root latest protected-name map",
+      "protected_by_name_map": true,
+      "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+      "protected_map_value": {
+        "sha": "a4d52eadab774ad651825fb2bcc07ab2ec89893a",
+        "reasons": [
+          "explicit_protected_name",
+          "previous_protected_name",
+          "protected_tip_or_alias",
+          "hia_ancestor:f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+        ],
+        "previous_frozen_sha": "a4d52eadab774ad651825fb2bcc07ab2ec89893a"
+      }
+    },
+    {
+      "name": "codex/hia-chrono-retirement-audit-20261118",
+      "sha": "fe2a15fcc538e88249ee3a27875b9a656edeb042",
+      "sha_observation_source": "root latest protected-name map",
+      "protected_by_name_map": true,
+      "decision": "PROTECTED_SKIP_SOURCE_REVIEW",
+      "protected_map_value": {
+        "sha": "fe2a15fcc538e88249ee3a27875b9a656edeb042",
+        "reasons": [
+          "hia_branch_name",
+          "explicit_protected_name",
+          "previous_protected_name",
+          "protected_tip_or_alias",
+          "hia_ancestor:ca80ff9feef37fc6d03afdc593ddd7da243f4be7",
+          "hia_ancestor:f02bb9f3344cdff4e361cca4353540ca0193bd21"
+        ],
+        "previous_frozen_sha": "fe2a15fcc538e88249ee3a27875b9a656edeb042"
+      }
+    }
+  ],
+  "explicitly_excluded_without_source_read": [
+    "codex/chrono-otel-joint-20261118-2e9b",
+    "codex/hia-chrono-retirement-audit-20261118"
+  ],
+  "pins_path": "root-review/final-scope-audit/protection-pins-498.json",
+  "map_path": "root-review/final-scope-audit/protected-478-latest.json"
+}

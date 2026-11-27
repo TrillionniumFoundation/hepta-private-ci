@@ -1,0 +1,57 @@
+{
+  "schema": "HPCA-NATIVE-RAW-REVIEW-1",
+  "review_scope": "same-session separate-agent arithmetic and consistency review, not external authenticated custody",
+  "execution_source": "0b75caf446a18807e527f8e2ed9937ae3cae515d",
+  "result": {
+    "bytes": 103557,
+    "sha256": "90f8025d20df63aa2be140b4f5b8f688d538e16b3e96a783e58b1d0c88d5c61e",
+    "blob": "ef1a6636a5e073e6c79a7c22cae519d718bc4caf",
+    "conditions": 9,
+    "distinct_tasks": 24,
+    "rows": 216,
+    "all_generated_token_ids": [
+      2
+    ],
+    "all_generated_text": "",
+    "valid": 0,
+    "correct": 0,
+    "agreement_with_historical_two_choice": 0,
+    "total_generated_tokens": 216
+  },
+  "journal": {
+    "bytes": 120807,
+    "sha256": "ceebabbcc323247c9afe2065f9f3be0fea7e09e2e261106cf524bf235c043e04",
+    "blob": "49991e4d828bb95325c7923d1ac3b1e2eb5e610e",
+    "records": 433,
+    "sequence_first": 0,
+    "sequence_last": 432,
+    "run_id": "ae7e08d4dd7f4e2792149b6e030c1b54",
+    "unique_started": 216,
+    "unique_completed": 216,
+    "unclosed_starts": 0,
+    "adjacent_start_completion_pairs": true,
+    "completed_rows_equal_result": true,
+    "unique_terminal_rows_complete": 216
+  },
+  "checked": [
+    "condition and task rosters",
+    "family and truth bindings",
+    "frozen prompt references",
+    "all per-condition aggregate scores",
+    "preexecution SHA256",
+    "source hashes against executed 0b75 source",
+    "full native asset and input bindings",
+    "effective is_assistant=false",
+    "original native 39-test stderr",
+    "each start/completion pair and every row field"
+  ],
+  "limitations": [
+    "two_choice_prediction is a historical archived reference, not an additional scoring forward in this run",
+    "24 exposed tasks do not become 216 independent tasks",
+    "independent calibration MISSING",
+    "independent future sources MISSING",
+    "old-task retention MISSING",
+    "successor 1609 guard not used for this model execution",
+    "no energy or useful-output efficiency claim"
+  ]
+}

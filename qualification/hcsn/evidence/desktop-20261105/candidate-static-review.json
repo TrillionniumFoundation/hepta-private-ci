@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-execution-candidate-independent-review-v2",
+  "reviewed_at": "2026-11-05T16:01:20Z",
+  "extends_review": "ci-audit/execution-candidate-static-review.json",
+  "scope": "Read-only review of accounting and GPU peak follow-up deltas. No test execution, candidate execution, deployment or edits.",
+  "files_sha256": {
+    "qualification/hcsn/execution.py": "6794762ec760edd7d847e73f802128813c507f538b515973e8367df73c2d8a73",
+    "qualification/hcsn/benchmark.py": "dcf60a9cf4683a35c9a2b2cf2e608c3bf1d8bf3e213e0f8f30c8c06183caade7",
+    "qualification/hcsn/attempts.py": "4b1ea35d42f2a88307228c4d039b5654395c0648058855e7b1a51e3a78437b22"
+  },
+  "blocking_findings": [],
+  "delta_observations": [
+    "Energy aggregation uses identity checks for explicit true/false; missing, legacy and non-boolean interval flags stay unknown. Complete/incomplete/unknown measured-attempt counts and per-counter subtotals remain separate.",
+    "Existing any-reading attempt totals remain intact; the new scope explicitly distinguishes complete observed interval from completed training budget.",
+    "GPU peak helper validates both readbacks as nonnegative Python integers before marking measured. A failed readback retains null values and unavailable status; no partial read result is promoted.",
+    "CPU peaks are not_applicable_cpu with null peak_gpu_interval_complete on both normal and exceptional paths. CUDA success sets completion only when both peak readbacks are measured; exceptional paths preserve false."
+  ],
+  "remaining_limits": [
+    "This does not change the prior review's real-CUDA/runtime/gradient/memory qualification gaps.",
+    "Complete energy interval still does not establish any accessible physical counter; judge counter availability independently from non-null measured values."
+  ]
+}

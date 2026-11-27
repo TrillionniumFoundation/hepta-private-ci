@@ -1,0 +1,19 @@
+{
+  "dependencies": "../explicit-semantic-transport/{control.py,transport.py} and ../semantic-coupling/coupling.py, unchanged qualified scalar source",
+  "parity_gate": true,
+  "public_boundary": "Literal policies only; no model/data/validation/Test payloads or private paths",
+  "rust_checks": "Not run: no Rust changed; portable Python scope",
+  "scope": "Selected literal parity and CPU microbenchmark, not proof over all floating inputs or end-to-end service speed; old science gates unchanged",
+  "source_sha256": {
+    "PLAN.md": "4047cc02ffedbbcc645cd44879972d65fc14d31b14a5d7b1071ceaf9b987bc86",
+    "batch.py": "26111ac62afb704e809d8dc97fe6b5c5691fd3a2f44c7f96f4a9935e9c79275c",
+    "test_batch.py": "0ba7f0982258653b637a00e3ca053558c43c509963fb9552c467c866acb354bb"
+  },
+  "speed_gate": true,
+  "status": "PASS_SIX_TESTS_PARITY_AND_FIXED_MICROBENCHMARK_GATE",
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 6
+  }
+}

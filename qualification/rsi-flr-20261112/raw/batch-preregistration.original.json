@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.flr.reference-batch.v1",
+  "created_at": "2026-11-12T06:35:58.612204+00:00",
+  "source_commit": "29ef370999d3f4beb9b6efdf98d142ff0e5e6fe3",
+  "source_tree": "2ae06f03aca3eb068a8609ffa551b12f740257f7",
+  "seeds": [
+    41,
+    67,
+    101
+  ],
+  "generations": 3,
+  "candidate_attempts_per_learning_arm_round": 3,
+  "learner_trials_per_r_round": 8,
+  "sample_unit": "one synthetic generator; seeds are repeats, not independent real sources",
+  "independent_real_sources": 0,
+  "confirmatory": false,
+  "horizon_fixed_before_first_run": true
+}

@@ -9,19 +9,58 @@ use std::fs::{self};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
+use std::io::Seek;
 use std::io::Write;
+#[cfg(unix)]
+use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::Instant;
 
+use codex_hepta_types::Digest32;
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
+
+use serde::Deserialize;
+use serde::Serialize;
+
+#[path = "generation_control.rs"]
+pub mod generation;
 #[path = "native_control.rs"]
 pub mod native;
+#[cfg(target_os = "linux")]
+#[path = "durable_control_file.rs"]
+mod owned_file;
+
+#[path = "journal_checkpoint_frame.rs"]
+mod checkpoint_frame;
+#[path = "journal_maintenance.rs"]
+mod maintenance;
+#[cfg(feature = "qualification-owned-file-read")]
+#[path = "durable_control_observation.rs"]
+mod observation;
+use maintenance::compaction_path;
+use maintenance::legacy_record_headroom;
+use maintenance::push_image_line;
+use maintenance::replace_headroom;
+use maintenance::replay_legacy_checkpoint;
+use maintenance::required_headroom;
+
+const LEGACY_CHECKPOINT_PREFIX: &str = "legacy-checkpoint-v1|";
+const LEGACY_TERMINAL_HEADROOM_BYTES: u64 = 16 * 1024;
+const COMPACTION_TEMP_SUFFIX: &str = ".compact.tmp";
 
 const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_TOKENS: u32 = 1_000_000;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RequestState {
     Pending,
     Reserved,
@@ -69,7 +108,8 @@ impl RequestState {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct InferenceRequest {
     pub request_id: String,
     pub principal_id: String,
@@ -80,7 +120,8 @@ pub struct InferenceRequest {
     pub semantic_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Reservation {
     pub reservation_id: String,
     pub quota_units: u64,
@@ -89,14 +130,16 @@ pub struct Reservation {
     pub valid_until_ms: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Assignment {
     pub worker_id: String,
     pub worker_generation: u64,
     pub assignment_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct TerminalObservation {
     pub request_id: String,
     pub reservation_id: String,
@@ -111,7 +154,8 @@ pub struct TerminalObservation {
     pub usage_units: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct RequestRecord {
     pub request: InferenceRequest,
     pub revision: u64,
@@ -130,6 +174,27 @@ pub struct ControlReceipt {
     pub state: RequestState,
     pub idempotent: bool,
     pub terminal_observed: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct JournalCompactionReceipt {
+    pub before_bytes: u64,
+    pub after_bytes: u64,
+    pub legacy_records: usize,
+    pub native_records: usize,
+    pub generation_records: usize,
+    pub reserved_headroom_bytes: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct JournalCapacityStatus {
+    pub journal_bytes: u64,
+    pub maximum_journal_bytes: u64,
+    pub reserved_headroom_bytes: u64,
+    pub admissible_bytes: u64,
+    pub legacy_records: usize,
+    pub native_records: usize,
+    pub generation_records: usize,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -171,14 +236,132 @@ impl From<std::io::Error> for Error {
 pub struct DurableInferenceControl {
     path: PathBuf,
     file: File,
+    // Only path constructors own directory-entry replacement capability.
+    _writer_lock: Option<File>,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
+    generation: generation::GenerationJournal,
     capacity: usize,
     journal_bytes: u64,
+    // Legacy/native liabilities; generation retains its independently derived reserve.
+    reserved_headroom_bytes: u64,
     poisoned: bool,
+    metrics: Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metrics: AtomicU64,
+}
+
+impl Drop for DurableInferenceControl {
+    fn drop(&mut self) {
+        // A concurrent fork can retain the open file description until exec.
+        // Release this owner's lock even while such a descriptor is still open.
+        let _ = self.file.unlock();
+        if let Some(writer_lock) = &self._writer_lock {
+            let _ = writer_lock.unlock();
+        }
+    }
 }
 
 impl DurableInferenceControl {
+    /// Production serving entrance: the WAL must reside in a pre-provisioned,
+    /// non-world-writable directory, with an owner-private, unaliased file.
+    ///
+    /// Callers must already control the complete directory namespace. These
+    /// checks inspect only the immediate parent and final file; they do not
+    /// verify ownership IDs or bind ancestors against concurrent replacement.
+    /// Opening may create an empty WAL before the final identity comparison.
+    ///
+    /// This is stricter than `open`, which remains available for migration,
+    /// repair and qualification. The read-only checks cannot authorize a
+    /// dispatch: the existing single-writer lock and effect owner still apply.
+    #[cfg(unix)]
+    pub fn open_production(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
+        let path = path.as_ref();
+        Self::check_production_path(path)?;
+        let opened = Self::open(path, capacity)?;
+        // Reject an observed final-path mismatch after open; callers retain
+        // responsibility for preventing namespace changes throughout opening.
+        Self::check_production_path(path)?;
+        let actual = opened.file.metadata()?;
+        let on_path = fs::symlink_metadata(path)?;
+        if !actual.is_file() || !on_path.file_type().is_file() {
+            return Err(Error::InvalidIdentity("unsafe production WAL file"));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            use std::os::unix::fs::PermissionsExt;
+            if actual.permissions().mode() & 0o077 != 0
+                || on_path.permissions().mode() & 0o077 != 0
+                || actual.nlink() != 1
+                || actual.dev() != on_path.dev()
+                || actual.ino() != on_path.ino()
+            {
+                return Err(Error::InvalidIdentity("unsafe production WAL inode"));
+            }
+        }
+        Ok(opened)
+    }
+
+    /// The non-Unix implementation has no audited owner-only ACL and
+    /// directory-entry durability guarantee. Even direct callers of the core
+    /// API must not bypass the worker's fail-closed production startup.
+    #[cfg(not(unix))]
+    pub fn open_production(_path: impl AsRef<Path>, _capacity: usize) -> Result<Self, Error> {
+        Err(Error::InvalidIdentity(
+            "production WAL durability is unverified on this platform",
+        ))
+    }
+
+    #[cfg(unix)]
+    fn check_production_path(path: &Path) -> Result<(), Error> {
+        if !path.is_absolute()
+            || path.file_name().is_none()
+            || path
+                .components()
+                .any(|component| component == Component::ParentDir)
+        {
+            return Err(Error::InvalidIdentity(
+                "production WAL path must be absolute and free of parent traversal",
+            ));
+        }
+        let directory = path
+            .parent()
+            .ok_or(Error::InvalidIdentity("production WAL parent missing"))?;
+        let parent = fs::symlink_metadata(directory)?;
+        if !parent.is_dir() || parent.file_type().is_symlink() {
+            return Err(Error::InvalidIdentity("unsafe production WAL directory"));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if parent.permissions().mode() & 0o022 != 0 {
+                return Err(Error::InvalidIdentity(
+                    "production WAL directory is writable by others",
+                ));
+            }
+        }
+        match fs::symlink_metadata(path) {
+            Ok(metadata) => {
+                if !metadata.file_type().is_file() {
+                    return Err(Error::InvalidIdentity("unsafe production WAL path"));
+                }
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::MetadataExt;
+                    use std::os::unix::fs::PermissionsExt;
+                    if metadata.permissions().mode() & 0o077 != 0 || metadata.nlink() != 1 {
+                        return Err(Error::InvalidIdentity(
+                            "production WAL file must be private",
+                        ));
+                    }
+                }
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(Error::from(error)),
+        }
+        Ok(())
+    }
+
     pub fn open(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {
             return Err(Error::CapacityExceeded);
@@ -194,15 +377,99 @@ impl DurableInferenceControl {
             use std::os::unix::fs::OpenOptionsExt;
             options.mode(0o600);
         }
+        // A path owner must have an actual durable containing directory. This
+        // preflight also keeps diagnostic procfs aliases from creating locks.
+        #[cfg(unix)]
+        {
+            let parent = path
+                .parent()
+                .filter(|parent| !parent.as_os_str().is_empty())
+                .unwrap_or_else(|| Path::new("."));
+            File::open(parent)?.sync_all()?;
+        }
+        let mut lock_path = path.as_os_str().to_os_string();
+        lock_path.push(".writer.lock");
+        let writer_lock = options.open(PathBuf::from(lock_path))?;
+        writer_lock
+            .try_lock()
+            .map_err(|_| Error::WriterUnavailable)?;
+        // Open the data inode only after the stable ownership lock is held.
         let file = options.open(&path)?;
+        let control = Self::replay_file(file, path, capacity, Some(writer_lock))?;
+        // Preserve recovery evidence if replay failed. Descriptor-only owners
+        // never enter this pathname cleanup or rename path.
+        match fs::remove_file(compaction_path(&control.path)) {
+            Ok(()) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(error.into()),
+        }
+        #[cfg(unix)]
+        {
+            let parent = control
+                .path
+                .parent()
+                .filter(|parent| !parent.as_os_str().is_empty())
+                .unwrap_or_else(|| Path::new("."));
+            File::open(parent)?.sync_all()?;
+        }
+        Ok(control)
+    }
+
+    /// Replay an already opened, host-selected Linux read/append file. This method
+    /// never accesses the diagnostic pathname or its parent. The host chooses
+    /// create-new versus reopen, retains responsibility for storage identity,
+    /// and syncs the actual containing directory when creating an entry. Replay,
+    /// locking and append-sync use only the supplied descriptor. Its flags must
+    /// be readable and append-mode; the caller must not retain a writer or change
+    /// the shared descriptor flags afterwards.
+    #[cfg(target_os = "linux")]
+    pub fn open_file(file: File, path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
+        owned_file::validate_read_append(&file)?;
+        Self::replay_file(file, path, capacity, /*writer_lock*/ None)
+    }
+
+    fn replay_file(
+        mut file: File,
+        path: impl AsRef<Path>,
+        capacity: usize,
+        writer_lock: Option<File>,
+    ) -> Result<Self, Error> {
+        if capacity == 0 || capacity > MAX_RECORDS {
+            return Err(Error::CapacityExceeded);
+        }
+        if !file.metadata()?.is_file() {
+            return Err(Error::CorruptJournal("journal is not a regular file"));
+        }
+        let path = path.as_ref().to_path_buf();
         // Lock before replay: two owners must never admit from the same stale cut.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        file.rewind()?;
+        if file.metadata()?.len() > MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
+        let mut generation = generation::GenerationJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
+        let mut checkpoint_frame = checkpoint_frame::CheckpointFrame::default();
         loop {
+            // Empty historical lines carry no state. Consume a whole buffered
+            // run instead of entering the semantic parser once per byte.
+            let blank_bytes = reader
+                .fill_buf()?
+                .iter()
+                .take_while(|byte| **byte == b'\n')
+                .count();
+            if blank_bytes > 0 {
+                journal_bytes += blank_bytes as u64;
+                if journal_bytes > MAX_JOURNAL_BYTES {
+                    return Err(Error::CapacityExceeded);
+                }
+                reader.consume(blank_bytes);
+                continue;
+            }
             line.clear();
             // Bound actual reads and allocation, including files whose metadata
             // races with open. One extra byte distinguishes EOF from overflow.
@@ -226,34 +493,104 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
-                native.replay(json)?;
-            } else {
-                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+            if checkpoint_frame.observe(line, capacity)? {
+                continue;
             }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
+            // Each validated frame changes one identity. Previously accepted
+            // frames are already disjoint, so inspect only this frame's ID.
+            let collision = if let Some(json) = line.strip_prefix(native::CHECKPOINT_PREFIX) {
+                let id = native.replay_checkpoint(json)?;
+                records.contains_key(&id) || generation.records.contains_key(&id)
+            } else if let Some(json) = line.strip_prefix(native::LEGACY_CHECKPOINT_PREFIX) {
+                let id = native.replay_legacy_checkpoint(json)?;
+                records.contains_key(&id) || generation.records.contains_key(&id)
+            } else if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
+                let id = replay_legacy_checkpoint(&mut records, json)?;
+                native.records.contains_key(&id) || generation.records.contains_key(&id)
+            } else if let Some(json) = line.strip_prefix(generation::CHECKPOINT_PREFIX) {
+                let id = generation.replay_checkpoint(json)?;
+                records.contains_key(&id) || native.records.contains_key(&id)
+            } else if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                let id = native.replay(json)?;
+                records.contains_key(&id) || generation.records.contains_key(&id)
+            } else if let Some(json) = line.strip_prefix(generation::JOURNAL_PREFIX) {
+                let id = generation.replay(json)?;
+                records.contains_key(&id) || native.records.contains_key(&id)
+            } else {
+                let event = decode_event(line)?;
+                apply_event(&mut records, &event, /*replay*/ true)?;
+                native.records.contains_key(event.request_id())
+                    || generation.records.contains_key(event.request_id())
+            };
+            if records.len() + native.records.len() + generation.records.len() > capacity
+                || collision
+                || journal_bytes
+                    .checked_add(generation.reserved_bytes()?)
+                    .ok_or(Error::ArithmeticOverflow)?
+                    > MAX_JOURNAL_BYTES
             {
                 return Err(Error::CapacityExceeded);
             }
         }
-        #[cfg(unix)]
+        // Replay checks the three bounded namespaces once, after every
+        // event has been validated. No owner is returned for a colliding ID.
+        if records
+            .keys()
+            .any(|id| native.records.contains_key(id) || generation.records.contains_key(id))
+            || native
+                .records
+                .keys()
+                .any(|id| generation.records.contains_key(id))
         {
-            let parent = path
-                .parent()
-                .filter(|parent| !parent.as_os_str().is_empty())
-                .unwrap_or_else(|| Path::new("."));
-            File::open(parent)?.sync_all()?;
+            return Err(Error::CapacityExceeded);
+        }
+        checkpoint_frame.finish()?;
+        let reserved_headroom_bytes = required_headroom(&records, &native)?;
+        if journal_bytes
+            .checked_add(generation.reserved_bytes()?)
+            .ok_or(Error::ArithmeticOverflow)?
+            > MAX_JOURNAL_BYTES
+        {
+            return Err(Error::CapacityExceeded);
         }
         Ok(Self {
             path,
             file,
+            _writer_lock: writer_lock,
             records,
             native,
+            generation,
             capacity,
             journal_bytes,
+            reserved_headroom_bytes,
             poisoned: false,
+            metrics: None,
+            failed_metrics: AtomicU64::new(0),
         })
+    }
+
+    /// Evidence owns WAL telemetry persistence; attaching a sink grants no authority.
+    pub fn with_metrics_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        self.metrics = Some(sink);
+        self
+    }
+
+    /// Strict qualification requires a healthy, non-lossy sink and a durable flush.
+    pub fn production_metrics_ready(&self) -> bool {
+        !self.poisoned
+            && self.metrics.as_ref().is_some_and(|sink| sink.healthy())
+            && self.failed_metrics.load(Ordering::Acquire) == 0
+    }
+
+    pub fn flush_production_metrics(&self) -> bool {
+        let Some(sink) = &self.metrics else {
+            return false;
+        };
+        if sink.flush().is_err() {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+            return false;
+        }
+        self.production_metrics_ready()
     }
 
     pub fn submit(
@@ -268,10 +605,14 @@ impl DurableInferenceControl {
             }
             return Err(Error::Conflict);
         }
-        if self.native.records.contains_key(&request.request_id) {
+        if self.native.records.contains_key(&request.request_id)
+            || self.generation.records.contains_key(&request.request_id)
+        {
             return Err(Error::Conflict);
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
+        if self.records.len() + self.native.records.len() + self.generation.records.len()
+            >= self.capacity
+        {
             return Err(Error::CapacityExceeded);
         }
         let event = Event::Submit(request);
@@ -433,44 +774,144 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        // Reject invalid transitions before durable append; a rejected command
-        // must not poison the next reopen with an invalid journal event.
-        let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
-        let encoded = format!("{}\n", encode_event(&event));
-        self.append(&encoded)?;
+        // Validate only the affected immutable predecessor. Events have no
+        // cross-record transitions; global capacity/namespace admission remains
+        // with submit. A rejected event or uncertain append leaves every live
+        // record untouched, without cloning unrelated historical payloads.
         let request_id = event.request_id().to_string();
-        self.records = next;
-        let record = self
+        let mut staged = BTreeMap::new();
+        if let Some(previous) = self.records.get(&request_id) {
+            staged.insert(request_id.clone(), previous.clone());
+        }
+        apply_event(&mut staged, &event, /*replay*/ false)?;
+        let prepared = staged.remove(&request_id).ok_or(Error::RequestNotFound)?;
+        let result = receipt(&prepared, /*idempotent*/ false);
+        let previous_headroom = self
             .records
             .get(&request_id)
-            .ok_or(Error::RequestNotFound)?;
-        Ok(receipt(record, /*idempotent*/ false))
+            .map_or(0, legacy_record_headroom);
+        let next_headroom = legacy_record_headroom(&prepared);
+        let headroom_after = replace_headroom(
+            self.reserved_headroom_bytes,
+            previous_headroom,
+            next_headroom,
+        )?;
+        let encoded = format!("{}\n", encode_event(&event));
+        self.append_preserving_headroom(&encoded, headroom_after)?;
+        self.records.insert(request_id, prepared);
+        self.reserved_headroom_bytes = headroom_after;
+        Ok(result)
     }
 
+    #[cfg(test)]
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
+        self.append_with_generation_reserve(encoded, self.generation.reserved_bytes()?)
+    }
+
+    fn ensure_append_capacity(
+        &self,
+        encoded: &str,
+        generation_reserved: u64,
+    ) -> Result<u64, Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        let next_bytes = self
-            .journal_bytes
-            .checked_add(encoded.len() as u64)
+        let required = self
+            .reserved_headroom_bytes
+            .checked_add(generation_reserved)
             .ok_or(Error::ArithmeticOverflow)?;
-        if encoded.len() > MAX_JOURNAL_LINE_BYTES || next_bytes > MAX_JOURNAL_BYTES {
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES
+            || !self.append_fits(self.journal_bytes, encoded.len() as u64, required)?
+        {
             return Err(Error::CapacityExceeded);
         }
+        self.journal_bytes
+            .checked_add(encoded.len() as u64)
+            .ok_or(Error::ArithmeticOverflow)
+    }
+
+    fn append_with_generation_reserve(
+        &mut self,
+        encoded: &str,
+        generation_reserved: u64,
+    ) -> Result<(), Error> {
+        self.append_with_reserves(encoded, self.reserved_headroom_bytes, generation_reserved)
+    }
+
+    pub(super) fn append_preserving_headroom(
+        &mut self,
+        encoded: &str,
+        required_headroom_after: u64,
+    ) -> Result<(), Error> {
+        self.append_with_reserves(
+            encoded,
+            required_headroom_after,
+            self.generation.reserved_bytes()?,
+        )
+    }
+
+    fn append_with_reserves(
+        &mut self,
+        encoded: &str,
+        required_headroom_after: u64,
+        generation_reserved: u64,
+    ) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+        let encoded_bytes = encoded.len() as u64;
+        let required = required_headroom_after
+            .checked_add(generation_reserved)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if !self.append_fits(self.journal_bytes, encoded_bytes, required)? {
+            // A diagnostic pathname is not a directory-entry capability.
+            if self._writer_lock.is_none() {
+                return Err(Error::CapacityExceeded);
+            }
+            let image = self.checkpoint_image()?;
+            if !self.append_fits(image.len() as u64, encoded_bytes, required)? {
+                return Err(Error::CapacityExceeded);
+            }
+            self.replace_with_checkpoint_image(&image)?;
+        }
+        let next_bytes = self
+            .journal_bytes
+            .checked_add(encoded_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
+        let started = Instant::now();
+        // Unwinding from observational callbacks after an append must not
+        // leave a live writer whose in-memory history missed durable bytes.
+        self.poisoned = true;
         let persisted = self
             .file
             .write_all(encoded.as_bytes())
             .and_then(|()| self.file.flush())
             .and_then(|()| self.file.sync_all());
+        // WAL telemetry is observational only. An Evidence outage never masks a
+        // successfully fsynced event or makes the control owner retry its effect.
+        if let Some(sink) = &self.metrics
+            && sink
+                .record(PhaseMetricEventV1 {
+                    scope_digest: Digest32::of_bytes(self.path.to_string_lossy().as_bytes()),
+                    operation_digest: Digest32::of_bytes(encoded.as_bytes()),
+                    phase: PhaseMetricKindV1::Wal,
+                    latency_micros: u64::try_from(started.elapsed().as_micros())
+                        .unwrap_or(u64::MAX),
+                    succeeded: persisted.is_ok(),
+                })
+                .is_err()
+        {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+        }
         if let Err(error) = persisted {
-            // A partial write or failed sync has an unknown durable outcome.
-            // Keep this owner fenced until explicit inspection and reopen.
             self.poisoned = true;
             return Err(error.into());
         }
         self.journal_bytes = next_bytes;
+        self.poisoned = false;
         Ok(())
     }
 }
@@ -892,3 +1333,15 @@ mod tests;
 #[cfg(test)]
 #[path = "durable_history_tests.rs"]
 mod history_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "durable_control_file_tests.rs"]
+mod file_tests;
+
+#[cfg(test)]
+#[path = "durable_scaling_tests.rs"]
+mod scaling_tests;
+
+#[cfg(test)]
+#[path = "durable_metrics_panic_tests.rs"]
+mod metrics_panic_tests;

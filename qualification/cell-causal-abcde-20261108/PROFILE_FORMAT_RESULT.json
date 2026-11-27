@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.cell-causal.exact-format.v1",
+  "tool_sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97",
+  "version": "ruff 0.15.13",
+  "config": "target-version = \"py310\"\nline-length = 88\n",
+  "input_archive_sha256": "97868fa52272d0fb35e7c0d84725b78d7052c7b5d58ac978574a23af65c107c4",
+  "files": [
+    {
+      "path": "execution/aggregate_b_profiles.py",
+      "before_sha256": "a25805f5a996ecc05359f05d933efd37bf91ed5ef1375c2a5f554848e091972f",
+      "after_sha256": "88715e29c1976af21bc4a1aaf6e2ae79a0e3800fe86457a68f3317c6b4c9a442",
+      "ast_equal": true
+    }
+  ],
+  "status": "PASS",
+  "behavioral_test_claim": false,
+  "output_archive_sha256": "1fee535c1686f3ab6ff669cb6f72919e2633b93eacb6138dedf0d69094847781",
+  "output_archive_bytes": 3267
+}

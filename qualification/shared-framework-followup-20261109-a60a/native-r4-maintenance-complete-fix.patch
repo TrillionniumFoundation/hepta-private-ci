@@ -1,0 +1,13 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_temporal_q24_tests.rs b/codex-rs/hepta-agentd/src/cell_temporal_q24_tests.rs
+index 79ab55c5..6d43e129 100644
+--- a/codex-rs/hepta-agentd/src/cell_temporal_q24_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_temporal_q24_tests.rs
+@@ -203,7 +203,7 @@ fn temporal_q24_owner_restores_and_continues_recurrence_then_stop_preserves_stat
+     assert_eq!(proposal.output_delta, output(3 * codec::Q / 2));
+     let receipt = owner.commit(proposal, /*now_micros*/ 11)?;
+     assert_eq!(
+-        owner.admit(second.clone(), /*now_micros*/ 11)?,
++        owner.admit(second, /*now_micros*/ 11)?,
+         Some(receipt)
+     );
+     let chunk = owner.pending_output()?.unwrap().clone();

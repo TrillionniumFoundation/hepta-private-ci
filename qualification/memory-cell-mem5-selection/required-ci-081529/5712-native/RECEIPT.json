@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.mem5.fixture-exact-source-native.v1",
+  "date_utc": "2026-11-10",
+  "candidate_parent": "c733addf7703f8671d2e029891ad5fb3b99c1098",
+  "tree_before_evidence": "47d2862c356047f746bfb72bea0e10383feef864",
+  "host": "ai395",
+  "source_checkout": "/home/qq/mem5-fixture-five-native-5712-20261110",
+  "head_before_and_after": "c733addf7703f8671d2e029891ad5fb3b99c1098",
+  "tracked_tree_clean_before_and_after": true,
+  "command": "cargo test --locked -p codex-hepta-automation --lib -- --test-threads=2",
+  "private_tmpdir": "/home/qq/mem5-fixture-five-tmp-5712-v1",
+  "target_dir": "/home/qq/mem5-fixture-five-target-5712-v1",
+  "runs": [
+    {
+      "phase": "initial",
+      "job_id": "1a1c555a2c1-2e65-81",
+      "exit_code": 101,
+      "all_log_files_complete": true,
+      "stdout": {
+        "bytes": 460,
+        "sha256": "112da51d5b9d21efb2513792db3969b86fef66307739f4ba941b9c0967b83ae9"
+      },
+      "stderr": {
+        "bytes": 23642,
+        "sha256": "70b678db3d12a3f8ecd0a4504e61fe471fd853d7da82006451ef5bae1b624ff4"
+      },
+      "result": "FAIL: aws-lc-sys 0.46.0 bindgen lacked stddef.h, no automation tests executed",
+      "special_env": {}
+    },
+    {
+      "phase": "corrected",
+      "job_id": "1a1c5580c5d-2e65-89",
+      "exit_code": 0,
+      "all_log_files_complete": true,
+      "stdout": {
+        "bytes": 8175,
+        "sha256": "b25de107c99f84cb98f42680000c083009d6a799ab5053df3d7ed763e33d34da"
+      },
+      "stderr": {
+        "bytes": 18070,
+        "sha256": "c68518ec055ca308a9f736624eb74c2bcb6f4cc708be9990ceb85a9f077d02be"
+      },
+      "result": "PASS: 77 lib tests, 0 failed, 0 ignored, 0 filtered; exit 0",
+      "special_env": {
+        "BINDGEN_EXTRA_CLANG_ARGS": "-I/usr/lib/gcc/x86_64-linux-gnu/15/include",
+        "gcc": "15.2.0"
+      }
+    }
+  ],
+  "qualified": "Linux exact-head Automation library tests only",
+  "unqualified": [
+    "macOS ARM/Intel Bazel",
+    "Windows Bazel and sandbox",
+    "cargo-deny 4 RustSec advisories",
+    "Architecture aggregate/whole repository CI",
+    "cross-version owner-authenticated transition",
+    "sealed science and independent provider",
+    "full owner cold recovery and full physical costs"
+  ],
+  "frozen_actor_source": "5fa0d0e462cd1393f4f9e95565ff5993e9bad29a",
+  "actor_reruns": 0,
+  "archive_regenerated": false,
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false
+}

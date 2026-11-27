@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.rust-consolidation-readback.v2",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "captured_date_utc": "2026-11-19",
+  "state": "partial_current_remote_inventory_not_approved_for_branch_retirement",
+  "source": "GitHub REST /branches?per_page=100&page=N",
+  "inventory_non_atomic": true,
+  "pages_read": 77,
+  "page_78_empty": true,
+  "branch_count": 7643,
+  "unique_branch_names": 7643,
+  "inventory_fragments": [
+    {
+      "path": "qa/repository-consolidation/20261119/round-02/live-refs-pages-001-010.json",
+      "blob": "c1772954a3be88247f4e79f162c0ecebed8af841",
+      "entries": 1000
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-02/live-refs-pages-011-020.json",
+      "blob": "90f687ae79620afa3247da88c94a3d74b82fcaf3",
+      "entries": 1000
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-02/live-refs-pages-021-030.json",
+      "blob": "cc2bb4b814b60904d8702052f6864b39f00b71ae",
+      "entries": 1000
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-02/live-refs-pages-031-040.json",
+      "blob": "2aa6fc360069379431a80a10c7b387f521f607dd",
+      "entries": 1000
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-02/live-refs-pages-041-050.json",
+      "blob": "6bb5d22454825536898c92ba6ec69a581f607d67",
+      "entries": 1000
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-02/live-refs-pages-051-060.json",
+      "blob": "5806089070dd9b9505b2f39c18e560791e11abe0",
+      "entries": 1000
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-02/live-refs-pages-061-070.json",
+      "blob": "0025f482fba662d89a0d91bc84138f7b820622c5",
+      "entries": 1000
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-02/live-refs-pages-071-077.json",
+      "blob": "fffa688c3693d3f451c6740e6a058015f7d0a4f5",
+      "entries": 643
+    }
+  ],
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "integration_source": "21a0697fb3bc47392116f2d85696bdc2a6d084c0",
+  "protected_hia": {
+    "protected_named_heads_in_prior_manifest": 393,
+    "protected_named_heads_present_in_inventory": 393,
+    "new_explicitly_pinned_hia_branch": {
+      "name": "codex/hia-example-validation-transport-20261119-r11",
+      "sha": "1ebf105bb04173315e0d728d2cf91b652d4f83e1",
+      "ancestor_roots": [
+        "ca80ff9feef37fc6d03afdc593ddd7da243f4be7",
+        "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+      ]
+    },
+    "protected_named_heads_after_update": 394,
+    "source_manifest": "tools/branch-consolidation/protected-branches.json",
+    "root_tip_integration_ancestry_status": [
+      "diverged",
+      "diverged",
+      "diverged"
+    ],
+    "no_hia_branch_ref_writes": true,
+    "unnamed_descendants_require_full_graph_verification": true
+  },
+  "ordinary_coverage": {
+    "last_fully_classified_census": {
+      "branch_count": 7615,
+      "ordinary": 7225,
+      "protected_hia": 389,
+      "covered": 2083,
+      "pending": 5142
+    },
+    "current_7643_exact_covered_and_pending": "NOT_VERIFIED",
+    "newly_merged_ordinary_tips_in_this_checkpoint": 0,
+    "warning": "Do not derive a new ordinary count by subtracting named-HIA refs; unnamed HIA descendants are possible."
+  },
+  "published_fix": {
+    "commit": "21a0697fb3bc47392116f2d85696bdc2a6d084c0",
+    "tree": "560bb2bdbb2290b31f81208097d69cfd9d9bb3eb",
+    "parent": "8047312e93277de56726d5535f02bbbf7c985572",
+    "file": "codex-rs/hepta-agentd/src/client_control.rs",
+    "exact_change": "ControlStream remains the Windows owner-local pipe; Unix uses an explicit UnixStream::connect under the same original deadline.",
+    "checked": "Protected 14-marker function-order sequence and single-file GitHub compare; no native suite passed in this run.",
+    "required_ci": "PENDING_ON_NEW_HEAD"
+  },
+  "pre_fix_ci_8047312": {
+    "architecture_required": "PASS",
+    "windows_shards": {
+      "1/4": "PASS",
+      "2/4": "FAIL",
+      "3/4": "PASS",
+      "4/4": "FAIL"
+    },
+    "windows_diagnostics": [
+      "Windows elevated FILE_DELETE_CHILD admission fail-closed",
+      "plugin-list and thread-archive test failures"
+    ],
+    "linux_musl": "FAIL: original_next_use_evidence_timing_diagnostic and plugin-list remote-catalog test",
+    "caller_verifier": "FAIL: required UnixStream::connect order missing after platform-specific transport refactor",
+    "exact_19_group_aggregate": "FAIL_DECLARED_WINDOWS_SCOPE"
+  },
+  "branch_deletions": 0,
+  "main_updates": 0,
+  "limitations": [
+    "Raw GitHub paged inventory is not an atomic ls-remote snapshot.",
+    "Current full ancestry coverage and live HIA classifications require an independent Git graph pass.",
+    "Required CI and Architecture must pass on the exact prospective main merge before publishing to main.",
+    "No ref-delete API is available in the connected GitHub actions."
+  ]
+}

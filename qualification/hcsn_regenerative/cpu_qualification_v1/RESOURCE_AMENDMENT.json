@@ -1,0 +1,651 @@
+{
+  "additional_source_paths": [
+    "qualification/hcsn_regenerative/cpu_qualification_v1/__init__.py",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/qualification_runner.py",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/build_qualification.py",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/evidence_guard.py",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/freeze_cpu.py",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/RESOURCE_AMENDMENT.json",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/test_cpu_controls.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/__init__.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/native_owner.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/cloud_batch.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/capsule_contract.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/finalize_mechanism.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/test_kaggle_execution.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/kaggle_provider.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/test_kaggle_provider.py"
+  ],
+  "bundle_member": "inputs/prior-qualified-bundle/operators-s81.npz",
+  "bundle_metadata_sha256": "bbfb5372e8642f05d19bd54bfba69ba7404d8d90b057cc6380eb08bd40505f64",
+  "bundle_sha256": "a1d7168201def0ec0503ab753fe431fc66de12adde22be5c984da0a3e5eaef8a",
+  "cost_policy": {
+    "external_budget_counted_once": true,
+    "full_physical_energy_joules": null,
+    "nested_intervals_not_summed": true,
+    "provider_charges": null
+  },
+  "cpu_execution_environment": {
+    "cpu_threads": 1,
+    "cuda_build": null,
+    "deterministic_algorithms": true,
+    "device": "cpu",
+    "numpy": "2.1.3",
+    "python": "3.13.18",
+    "torch": "2.11.0+cpu"
+  },
+  "execution_source_paths": [
+    "qualification/hcsn_regenerative/kaggle_execution_v1/__init__.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/native_owner.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/cloud_batch.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/capsule_contract.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/finalize_mechanism.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/test_kaggle_execution.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/kaggle_provider.py",
+    "qualification/hcsn_regenerative/kaggle_execution_v1/test_kaggle_provider.py"
+  ],
+  "expansion_admission": "HOLD",
+  "external_budget": {
+    "actual_wall_seconds": 92.814166441,
+    "archive": {
+      "bytes": 379194,
+      "sha256": "23343b6a4bf75f2ddc27b81e76280547195e34d4f01a01ec909b8e213df9c0df"
+    },
+    "formal_task_completion_credit": 0,
+    "independent_actual_review_sha256": "e95ce7aba34d29484411ad9f063e2bbe86cf3dac6fde6bbf75480ed0de1f3e00",
+    "internal_window_seconds": 480,
+    "native_launch_request_sha256": {
+      "observer": "8062c4966b82ed6f144cb8eb43ddb9daa6895f413fb270df71adb76d25af7611",
+      "submit": "e933ce7798cbe8f8f24ee0eb600446a86f87235c2222eec02c5319f90704e8c1"
+    },
+    "observed_updates": 400,
+    "observer_sha256": "5717d90b47c62dcfc5bb81e05b986f1bfee640899990d2da842d6f0f9e972113",
+    "payload_sha256": "0a7ae61c9580749423a8605ea4b8d20ec5953bb0f1590803296f17d911ce95d8",
+    "prepared_manifest_sha256": "c93b858ef548da4b3b437b05ee2229d9a87f40833aa8662bd3beee4cad695ae3",
+    "probe_source_pins": {
+      "qualification/hcsn_regenerative/__init__.py": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319",
+      "qualification/hcsn_regenerative/mechanism_budget_probe.py": "40cd0730e924af42c81ee15c603a8fa83a0206fd6d331896e8cecc111090511c",
+      "qualification/hcsn_regenerative/mechanism_contract.py": "790b253974f482514e9cb95c4a5291616cbcb52e84f05934d36fe71859171f39",
+      "qualification/hcsn_regenerative/mechanism_model.py": "16465538c2d91932a4414eaca3165e670f378947da744250487326ee7ae2922f",
+      "qualification/hcsn_regenerative/mechanism_qualify.py": "6a6e8ca3d5fac968e0380890e45740c76353b27f929b04c3a59d25c1cb9e022b",
+      "qualification/hcsn_regenerative/mechanism_training.py": "a5c8ddf7f8f4170a1391644dd9e679c8d150f45798e6b01e657f180106416c4f",
+      "qualification/hcsn_regenerative/mechanism_worker.py": "d2f5079c59530a9eda7253f427165d853753ff17c27a8f068ded769e5c3e1a48",
+      "qualification/hcsn_regenerative/tests/test_mechanism_training.py": "60eaa2856fad47ed7b68c167a02b2585d0391c26552d5b1984c7a874e4a9e55e"
+    },
+    "registered_updates": 400,
+    "request_id_sha256": "0e4f9a38661ad7f0e94f4989ef0ae9773088afe7bd424b5c55f019f7c0b84c1d",
+    "result": {
+      "bytes": 14389,
+      "member": "evidence/cpu-budget/result.json",
+      "sha256": "149f8d6b4a88e0d3bda27b48ff52b8e6ba0767a59600176d5a7c472710771bb1"
+    },
+    "role": "external_fresh_budget_executed_once",
+    "stage_timeout_seconds": 540,
+    "strict_admission_wall_seconds": 450
+  },
+  "external_retention_status": "unmeasured",
+  "final_freeze_requirements": [
+    "All eight fresh CPU stages and six source-bound slots pass unchanged scientific gates.",
+    "The current budget slot must remain the original verified400-update result.",
+    "All15 new qualification/execution controls must have actual final source hashes and reviewed control evidence before freeze.",
+    "Only a real frozen plan may later be published and admitted to a separate formal owner."
+  ],
+  "fixed_input_files": {
+    "inputs/prior-qualified-bundle/operators-s81.json": {
+      "bytes": 312796,
+      "sha256": "bbfb5372e8642f05d19bd54bfba69ba7404d8d90b057cc6380eb08bd40505f64"
+    },
+    "inputs/prior-qualified-bundle/operators-s81.npz": {
+      "bytes": 2211490,
+      "sha256": "a1d7168201def0ec0503ab753fe431fc66de12adde22be5c984da0a3e5eaef8a"
+    }
+  },
+  "formal_training_fits_before_freeze": 0,
+  "metadata_member": "inputs/prior-qualified-bundle/operators-s81.json",
+  "ndu_completion_credit": 0,
+  "numerical_parent_plan_sha256": "8d06c97c1bd13fce531ca7e913ab2b099edfce9388523716e7565b1295221085",
+  "original170_completion_credit": 0,
+  "original42_source_pins": {
+    "qualification/hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "qualification/hcsn_regenerative/DISTRIBUTION_PROTOCOL.md": "f4d7e5bb3cd9ed713ba640c997cfa401a2249002801d4e80ef61ecf8924d8492",
+    "qualification/hcsn_regenerative/FIXED_RENEWAL.md": "b80c5f3abaa799f6586f172f8493cf58943e250180a4737fac0aa343547c9799",
+    "qualification/hcsn_regenerative/MECHANISM_EXECUTION_AMENDMENT_20261107.md": "0f8f8d8218a3c66329e828045b7a64389744128cb0fad5617755c5a109f4022f",
+    "qualification/hcsn_regenerative/MECHANISM_PILOT_PROTOCOL.md": "d3cfc8198cd915e238c3ebd0f06247959f43e6f9862f36c8bb26050728659694",
+    "qualification/hcsn_regenerative/MECHANISM_RESOLUTION_RESULT.json": "a5a286d46f15964c52413ebe594936fba6267c67de1fe5beafe526ebd06c0588",
+    "qualification/hcsn_regenerative/MECHANISM_RESOLUTION_RESULT.md": "2668b634fab73a63d5664081c7a1dd1fb0453f0b71168386823d06abe72589df",
+    "qualification/hcsn_regenerative/MECHANISM_SEQUENCE_PROTOCOL.md": "b29d7342bd421625baca6bd8109e7b43ed95f001767a1c774457ae40ef28a2e7",
+    "qualification/hcsn_regenerative/__init__.py": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319",
+    "qualification/hcsn_regenerative/distribution.py": "7cdc0c45ec2d22334a5cc57e5b583ccf0fcc1ae04a96b8b3536c88104d9636af",
+    "qualification/hcsn_regenerative/distribution_kernel.py": "97be7116e7b7d4fb86529f13197b684e5b39d1bead394c1f561858caefae3ac4",
+    "qualification/hcsn_regenerative/distribution_manifest.py": "3faffcc5e1b42c0285979100c6434036dd0ab48e52ee4a071a3203835a3d3cc1",
+    "qualification/hcsn_regenerative/distribution_operator.py": "7593edd1f70eab0d21551a2e61ac7ebcce69655f5bf2b7bd2d6f35c3767295b4",
+    "qualification/hcsn_regenerative/fixed_renewal.py": "b6f0a3da026797886fe38c78cff44a063cf27de85e5088f0b8b4cfc8ee2b38d3",
+    "qualification/hcsn_regenerative/freeze_mechanism_plan.py": "53b35c2dfe178f0ecc5b6f6616ceb9440638bf95b1bc5259b40d269b5c9d591a",
+    "qualification/hcsn_regenerative/mechanism_analysis.py": "92a9b6e26e2de812d159a995dbd5170a67d21fe71069720770c5a544c015ca42",
+    "qualification/hcsn_regenerative/mechanism_budget_probe.py": "40cd0730e924af42c81ee15c603a8fa83a0206fd6d331896e8cecc111090511c",
+    "qualification/hcsn_regenerative/mechanism_contract.py": "790b253974f482514e9cb95c4a5291616cbcb52e84f05934d36fe71859171f39",
+    "qualification/hcsn_regenerative/mechanism_model.py": "16465538c2d91932a4414eaca3165e670f378947da744250487326ee7ae2922f",
+    "qualification/hcsn_regenerative/mechanism_operators.py": "dff77f43076868ce54263a52aa7dc511e3bb4095cc8cefb1ab803527f1884ea2",
+    "qualification/hcsn_regenerative/mechanism_qualify.py": "6a6e8ca3d5fac968e0380890e45740c76353b27f929b04c3a59d25c1cb9e022b",
+    "qualification/hcsn_regenerative/mechanism_sequence_probe.py": "4be9c431bf1f75041cce38e16ede6b50b3466ee73019c966ed847ec9f5c9518f",
+    "qualification/hcsn_regenerative/mechanism_training.py": "a5c8ddf7f8f4170a1391644dd9e679c8d150f45798e6b01e657f180106416c4f",
+    "qualification/hcsn_regenerative/mechanism_worker.py": "d2f5079c59530a9eda7253f427165d853753ff17c27a8f068ded769e5c3e1a48",
+    "qualification/hcsn_regenerative/process.py": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67",
+    "qualification/hcsn_regenerative/run_distribution_audit.py": "20487cd0c8e881d870b960b119ac7579d39b20fb08c87ebf26404f406bcc5d19",
+    "qualification/hcsn_regenerative/run_distribution_recovery.py": "5c010c9c64da6ae93210d20a46790979665c2d19e7d439dd9384ba071874a345",
+    "qualification/hcsn_regenerative/run_fixed_renewal_audit.py": "da26546f297e1372067cb73922efd30658494b5c169948c1811e306a1acf091b",
+    "qualification/hcsn_regenerative/tensor.py": "1cf419e0c9af02c434d0492d4269e427a3c4783c683456c1eb514f6cb90cbc56",
+    "qualification/hcsn_regenerative/tensor_normal.py": "d1423414112361bd5fe2c218ccc297a93972a6f9b79517abef343d4fc9c918e8",
+    "qualification/hcsn_regenerative/tensor_short.py": "a49ba3a629d8198a9176e1b9ced30edd447309bdb7139a22fcc1c0084d2db07b",
+    "qualification/hcsn_regenerative/tensor_state.py": "173c8fb75d1bc669ce316d03d26d545af6cbf460539c2a6f57e778db11d65f7f",
+    "qualification/hcsn_regenerative/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification/hcsn_regenerative/tests/test_distribution.py": "375ba90b16686bfb5c090adc1c0baadbfd3ffe17f7d62f4ce64be4e48b859427",
+    "qualification/hcsn_regenerative/tests/test_fixed_renewal.py": "41fc1e6dd233f9f1bf395d3ea5b4b01f6e2c67f33e56c0b5fad9e39901bc922c",
+    "qualification/hcsn_regenerative/tests/test_mechanism_analysis.py": "952f641799c616fa0d5f67989d955f9c1d41c560392d5da0daf48ac2dfd5f670",
+    "qualification/hcsn_regenerative/tests/test_mechanism_training.py": "60eaa2856fad47ed7b68c167a02b2585d0391c26552d5b1984c7a874e4a9e55e",
+    "resolution_scope/RESOLUTION_PROTOCOL.md": "3cb878a4c4969a89384d0de8caf33002be2f38722518ff3475d77b07fa8bf527",
+    "resolution_scope/resolution_reference.py": "d40e2ad74bf16ddf473d0ab46310c7fa66154f8cac5bef76811a02f9e4a980dd",
+    "resolution_scope/run_resolution_probe.py": "07b6d8225d47196cd900a53d2c7a8a1134bd62378a5801a26d8bfc88149cf1b8"
+  },
+  "preserved_parent_source_pins": {
+    "qualification/hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "qualification/hcsn_regenerative/DISTRIBUTION_PROTOCOL.md": "f4d7e5bb3cd9ed713ba640c997cfa401a2249002801d4e80ef61ecf8924d8492",
+    "qualification/hcsn_regenerative/FIXED_RENEWAL.md": "b80c5f3abaa799f6586f172f8493cf58943e250180a4737fac0aa343547c9799",
+    "qualification/hcsn_regenerative/MECHANISM_EXECUTION_AMENDMENT_20261107.md": "0f8f8d8218a3c66329e828045b7a64389744128cb0fad5617755c5a109f4022f",
+    "qualification/hcsn_regenerative/MECHANISM_PILOT_PROTOCOL.md": "d3cfc8198cd915e238c3ebd0f06247959f43e6f9862f36c8bb26050728659694",
+    "qualification/hcsn_regenerative/MECHANISM_RESOLUTION_RESULT.json": "a5a286d46f15964c52413ebe594936fba6267c67de1fe5beafe526ebd06c0588",
+    "qualification/hcsn_regenerative/MECHANISM_RESOLUTION_RESULT.md": "2668b634fab73a63d5664081c7a1dd1fb0453f0b71168386823d06abe72589df",
+    "qualification/hcsn_regenerative/MECHANISM_SEQUENCE_PROTOCOL.md": "b29d7342bd421625baca6bd8109e7b43ed95f001767a1c774457ae40ef28a2e7",
+    "qualification/hcsn_regenerative/__init__.py": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319",
+    "qualification/hcsn_regenerative/colab_execution_v3/__init__.py": "54430866fc730f46799d680d4c96ceddc6675ecaec092a3eb2ff24d3db526258",
+    "qualification/hcsn_regenerative/colab_execution_v3/capsule_contract.py": "cbbe763b8b70e7c3a753a95ace99b8e6c58268a392695e3b3de0101882f8df0c",
+    "qualification/hcsn_regenerative/colab_execution_v3/cloud_batch.py": "ac2828f5b09460444cc24b8f8cc7261c0b7a0cfb047bfbde9c975d4c80fe1999",
+    "qualification/hcsn_regenerative/colab_execution_v3/finalize_mechanism.py": "4b12d7b6651ee3b8fca0dcb90ad4867031b80a11ecb5d9f8ea9e35a94db65a45",
+    "qualification/hcsn_regenerative/colab_execution_v3/fixed_kernel_provider.py": "70dd63111800d98131550810b0e3119290888d2b630c7f6d5a66ab2148508cb2",
+    "qualification/hcsn_regenerative/colab_execution_v3/native_owner.py": "6f43a1512393599c7f0ba49240457419d772d311312eb2af84689f5dd71ff518",
+    "qualification/hcsn_regenerative/colab_execution_v3/test_colab_execution.py": "0cad0221b48ccb1b857992a64276babed9ceb79157d7bac9f72b83dcbb020a06",
+    "qualification/hcsn_regenerative/colab_execution_v3/test_fixed_kernel_provider.py": "092ea4b6074e1723bfd8b9ab1c802015702b4c75f30c032eddca97852971a9a3",
+    "qualification/hcsn_regenerative/colab_qualification_v3/__init__.py": "11bf395a20454dc14ab75ebf0462f573bce5c2e33e17fd6318c8622583835e87",
+    "qualification/hcsn_regenerative/colab_qualification_v3/asset_transport.py": "35836ca2b5eaba579052111478e8db3d10ca5b52bdf3c6ac68e7eec85e98eec6",
+    "qualification/hcsn_regenerative/colab_qualification_v3/build_qualification.py": "8eb356e3be483c716c17eb87be0798ad905e653fb500c1990c446ee70ddcf0aa",
+    "qualification/hcsn_regenerative/colab_qualification_v3/qualification_runner.py": "b289641fed81a004fb446c451a72a6e750ba855c87cf3bd7d3b4d3384e0d1e9a",
+    "qualification/hcsn_regenerative/colab_qualification_v3/test_asset_transport.py": "0dda15c4c43b5bc01a626c6450551d6e998706b907b073f6dec0c634a2c507b3",
+    "qualification/hcsn_regenerative/distribution.py": "7cdc0c45ec2d22334a5cc57e5b583ccf0fcc1ae04a96b8b3536c88104d9636af",
+    "qualification/hcsn_regenerative/distribution_kernel.py": "97be7116e7b7d4fb86529f13197b684e5b39d1bead394c1f561858caefae3ac4",
+    "qualification/hcsn_regenerative/distribution_manifest.py": "3faffcc5e1b42c0285979100c6434036dd0ab48e52ee4a071a3203835a3d3cc1",
+    "qualification/hcsn_regenerative/distribution_operator.py": "7593edd1f70eab0d21551a2e61ac7ebcce69655f5bf2b7bd2d6f35c3767295b4",
+    "qualification/hcsn_regenerative/fixed_renewal.py": "b6f0a3da026797886fe38c78cff44a063cf27de85e5088f0b8b4cfc8ee2b38d3",
+    "qualification/hcsn_regenerative/freeze_mechanism_plan.py": "53b35c2dfe178f0ecc5b6f6616ceb9440638bf95b1bc5259b40d269b5c9d591a",
+    "qualification/hcsn_regenerative/mechanism_analysis.py": "92a9b6e26e2de812d159a995dbd5170a67d21fe71069720770c5a544c015ca42",
+    "qualification/hcsn_regenerative/mechanism_budget_probe.py": "40cd0730e924af42c81ee15c603a8fa83a0206fd6d331896e8cecc111090511c",
+    "qualification/hcsn_regenerative/mechanism_contract.py": "790b253974f482514e9cb95c4a5291616cbcb52e84f05934d36fe71859171f39",
+    "qualification/hcsn_regenerative/mechanism_model.py": "16465538c2d91932a4414eaca3165e670f378947da744250487326ee7ae2922f",
+    "qualification/hcsn_regenerative/mechanism_operators.py": "dff77f43076868ce54263a52aa7dc511e3bb4095cc8cefb1ab803527f1884ea2",
+    "qualification/hcsn_regenerative/mechanism_qualify.py": "6a6e8ca3d5fac968e0380890e45740c76353b27f929b04c3a59d25c1cb9e022b",
+    "qualification/hcsn_regenerative/mechanism_sequence_probe.py": "4be9c431bf1f75041cce38e16ede6b50b3466ee73019c966ed847ec9f5c9518f",
+    "qualification/hcsn_regenerative/mechanism_training.py": "a5c8ddf7f8f4170a1391644dd9e679c8d150f45798e6b01e657f180106416c4f",
+    "qualification/hcsn_regenerative/mechanism_worker.py": "d2f5079c59530a9eda7253f427165d853753ff17c27a8f068ded769e5c3e1a48",
+    "qualification/hcsn_regenerative/process.py": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67",
+    "qualification/hcsn_regenerative/resource_migration_v3/RESOURCE_AMENDMENT.json": "a9e07eabf5d48733b0c825906db1e0887b740067186f0d944f278f09f2a1ef88",
+    "qualification/hcsn_regenerative/resource_migration_v3/__init__.py": "3935a26584ef198a2a53a2a536f1cd2a3a4937ac5881707a4eebd13c1ac3a03d",
+    "qualification/hcsn_regenerative/resource_migration_v3/freeze_v3.py": "38455477e617a9619c22397aea1da3bf985a0d8810dfb2707a0555496daebfd0",
+    "qualification/hcsn_regenerative/resource_migration_v3/rawdiff_guard.py": "a754b107eaee765d94630bb66199f1bbed4ea44a9e64543c8c8d1c2176909d88",
+    "qualification/hcsn_regenerative/resource_migration_v3/test_resource_migration.py": "6757a05adc02a075aa6daf0f3ef23d078f13e469fea6797eade7022072dfc938",
+    "qualification/hcsn_regenerative/run_distribution_audit.py": "20487cd0c8e881d870b960b119ac7579d39b20fb08c87ebf26404f406bcc5d19",
+    "qualification/hcsn_regenerative/run_distribution_recovery.py": "5c010c9c64da6ae93210d20a46790979665c2d19e7d439dd9384ba071874a345",
+    "qualification/hcsn_regenerative/run_fixed_renewal_audit.py": "da26546f297e1372067cb73922efd30658494b5c169948c1811e306a1acf091b",
+    "qualification/hcsn_regenerative/tensor.py": "1cf419e0c9af02c434d0492d4269e427a3c4783c683456c1eb514f6cb90cbc56",
+    "qualification/hcsn_regenerative/tensor_normal.py": "d1423414112361bd5fe2c218ccc297a93972a6f9b79517abef343d4fc9c918e8",
+    "qualification/hcsn_regenerative/tensor_short.py": "a49ba3a629d8198a9176e1b9ced30edd447309bdb7139a22fcc1c0084d2db07b",
+    "qualification/hcsn_regenerative/tensor_state.py": "173c8fb75d1bc669ce316d03d26d545af6cbf460539c2a6f57e778db11d65f7f",
+    "qualification/hcsn_regenerative/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification/hcsn_regenerative/tests/test_distribution.py": "375ba90b16686bfb5c090adc1c0baadbfd3ffe17f7d62f4ce64be4e48b859427",
+    "qualification/hcsn_regenerative/tests/test_fixed_renewal.py": "41fc1e6dd233f9f1bf395d3ea5b4b01f6e2c67f33e56c0b5fad9e39901bc922c",
+    "qualification/hcsn_regenerative/tests/test_mechanism_analysis.py": "952f641799c616fa0d5f67989d955f9c1d41c560392d5da0daf48ac2dfd5f670",
+    "qualification/hcsn_regenerative/tests/test_mechanism_training.py": "60eaa2856fad47ed7b68c167a02b2585d0391c26552d5b1984c7a874e4a9e55e",
+    "resolution_scope/RESOLUTION_PROTOCOL.md": "3cb878a4c4969a89384d0de8caf33002be2f38722518ff3475d77b07fa8bf527",
+    "resolution_scope/resolution_reference.py": "d40e2ad74bf16ddf473d0ab46310c7fa66154f8cac5bef76811a02f9e4a980dd",
+    "resolution_scope/run_resolution_probe.py": "07b6d8225d47196cd900a53d2c7a8a1134bd62378a5801a26d8bfc88149cf1b8"
+  },
+  "prior160_completion_credit": 0,
+  "prior_attempt_policy": {
+    "all_prior_failures_and_unknown_costs_retained": true,
+    "new_owner_genesis": "A later reviewed CPU owner uses a new160-entry ledger; it never releases or inherits prior reservations.",
+    "old_ledgers_modified": false,
+    "prior_failure_provenance_sha256": "ac12487d08321ba5505f0c2639ff5ea776fc26a1ccbfa5df6a7f1b79b03bd50f",
+    "prior_resource_status_sha256": "5084e1baf56aadacad4aa8f43645fdc100e61aaea7a74c47f8dae3b1c71d3638",
+    "v3_20_reserved_140_unstarted_reassigned": false,
+    "v4_formal_training_fits": 0,
+    "v4_full_qualification_runs": 0
+  },
+  "provider_timeout_seconds": 3000,
+  "public_disclosure_policy": "Publish producer commitments, source/artifact hashes and actual numerical/environment/cost summaries only; no account/ref/kernel/native paths or raw inventories.",
+  "publication_branch": "codex/hcsn-mechanisms-s81-cpu-v1-20261107",
+  "published_parent_commit": "2bc8e41ce4305e57f775665b1f4953b57a3b4f87",
+  "published_parent_tree": "e6ce169234c531030a25c365a2f3b96c9d329572",
+  "qualification_commands": [
+    {
+      "args": [
+        "-m",
+        "qualification.hcsn_regenerative.cpu_qualification_v1.qualification_runner",
+        "--capability",
+        "--request-id",
+        "{request_id}",
+        "--output",
+        "evidence/capability.json"
+      ],
+      "name": "capability",
+      "timeout_seconds": 60
+    },
+    {
+      "args": [
+        "-m",
+        "unittest",
+        "qualification.hcsn_regenerative.tests.test_distribution",
+        "-v"
+      ],
+      "name": "fv-unit",
+      "timeout_seconds": 120,
+      "unit_methods_expected": 8
+    },
+    {
+      "accepted_statuses": [
+        "pass"
+      ],
+      "args": [
+        "-m",
+        "qualification.hcsn_regenerative.run_distribution_audit",
+        "--device",
+        "cpu",
+        "--output",
+        "evidence/fv-audit-cpu.json"
+      ],
+      "check_key": "pass_",
+      "checks_expected": 12,
+      "name": "fv-audit-cpu",
+      "result_json": "evidence/fv-audit-cpu.json",
+      "timeout_seconds": 300
+    },
+    {
+      "accepted_statuses": [
+        "BOUNDED_FP64_CONSTRUCTION_CHECKS_PASS"
+      ],
+      "args": [
+        "-m",
+        "qualification.hcsn_regenerative.run_fixed_renewal_audit",
+        "--output",
+        "evidence/fixed-renewal-audit-s81.json"
+      ],
+      "name": "fixed-renewal-audit",
+      "result_json": "evidence/fixed-renewal-audit-s81.json",
+      "timeout_seconds": 120
+    },
+    {
+      "accepted_statuses": [
+        "complete"
+      ],
+      "args": [
+        "-m",
+        "resolution_scope.run_resolution_probe",
+        "--device",
+        "cpu",
+        "--output",
+        "evidence/resolution-s81-fixed.json"
+      ],
+      "name": "resolution-s81-fixed",
+      "result_json": "evidence/resolution-s81-fixed.json",
+      "timeout_seconds": 300
+    },
+    {
+      "args": [
+        "-m",
+        "unittest",
+        "qualification.hcsn_regenerative.tests.test_mechanism_training",
+        "-v"
+      ],
+      "name": "mechanism-unit",
+      "timeout_seconds": 120,
+      "unit_methods_expected": 13
+    },
+    {
+      "accepted_statuses": [
+        "pass"
+      ],
+      "args": [
+        "-m",
+        "qualification.hcsn_regenerative.mechanism_qualify",
+        "--bundle",
+        "inputs/prior-qualified-bundle/operators-s81.npz",
+        "--device",
+        "cpu",
+        "--output",
+        "evidence/mechanism-graph-cpu.json"
+      ],
+      "check_key": "passed",
+      "checks_expected": 47,
+      "name": "mechanism-graph-cpu",
+      "result_json": "evidence/mechanism-graph-cpu.json",
+      "timeout_seconds": 120
+    },
+    {
+      "accepted_statuses": [
+        "pass"
+      ],
+      "args": [
+        "-m",
+        "qualification.hcsn_regenerative.mechanism_sequence_probe",
+        "--bundle",
+        "inputs/prior-qualified-bundle/operators-s81.npz",
+        "--device",
+        "cpu",
+        "--output",
+        "evidence/sequence-cpu"
+      ],
+      "check_key": "passed",
+      "checks_expected": 42,
+      "name": "mechanism-sequence-cpu",
+      "result_json": "evidence/sequence-cpu/receipt.json",
+      "timeout_seconds": 300
+    }
+  ],
+  "qualification_materialized_source_scope": {
+    "exact_retained_process_helpers": 3,
+    "new_cpu_controls": 7,
+    "scope": "Materialized and byte-verified sources; this count does not assert that every file is executed.",
+    "total": 45,
+    "unchanged_original35": 35
+  },
+  "qualification_request_id_sha256": "e6ea4893f69a3b6bf6005f9fc6f984b06742b014a0fe14269b544984ec2afd0e",
+  "qualification_source_paths": [
+    "qualification/hcsn_regenerative/cpu_qualification_v1/__init__.py",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/qualification_runner.py",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/build_qualification.py",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/evidence_guard.py",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/freeze_cpu.py",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/RESOURCE_AMENDMENT.json",
+    "qualification/hcsn_regenerative/cpu_qualification_v1/test_cpu_controls.py"
+  ],
+  "qualification_stage_seconds": 1440,
+  "registered_source_count_after_final_controls": 93,
+  "resource_difference": {
+    "budget_slot": "Original actual result/journal/checkpoint reused by source/archive/member binding, with no repeated400 updates.",
+    "device": {
+      "new": "cpu",
+      "old": "cuda"
+    },
+    "execution_gpu_index": null,
+    "gpu_uuid_policy": "not_applicable",
+    "historical_cuda_claim": "No fresh CUDA qualification is claimed. Historical CUDA results retain their actual identities.",
+    "provider": {
+      "new": "kaggle",
+      "old": "colab"
+    },
+    "qualification_slots": 6
+  },
+  "retained_source_count": 78,
+  "retained_source_map_sha256": "7e8c8b9e61d86f30a0c8a1c85011fec1d966b1508858b95bfb0f50a4b685296c",
+  "retained_source_pins": {
+    "qualification/hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "qualification/hcsn_regenerative/DISTRIBUTION_PROTOCOL.md": "f4d7e5bb3cd9ed713ba640c997cfa401a2249002801d4e80ef61ecf8924d8492",
+    "qualification/hcsn_regenerative/FIXED_RENEWAL.md": "b80c5f3abaa799f6586f172f8493cf58943e250180a4737fac0aa343547c9799",
+    "qualification/hcsn_regenerative/MECHANISM_EXECUTION_AMENDMENT_20261107.md": "0f8f8d8218a3c66329e828045b7a64389744128cb0fad5617755c5a109f4022f",
+    "qualification/hcsn_regenerative/MECHANISM_PILOT_PROTOCOL.md": "d3cfc8198cd915e238c3ebd0f06247959f43e6f9862f36c8bb26050728659694",
+    "qualification/hcsn_regenerative/MECHANISM_RESOLUTION_RESULT.json": "a5a286d46f15964c52413ebe594936fba6267c67de1fe5beafe526ebd06c0588",
+    "qualification/hcsn_regenerative/MECHANISM_RESOLUTION_RESULT.md": "2668b634fab73a63d5664081c7a1dd1fb0453f0b71168386823d06abe72589df",
+    "qualification/hcsn_regenerative/MECHANISM_SEQUENCE_PROTOCOL.md": "b29d7342bd421625baca6bd8109e7b43ed95f001767a1c774457ae40ef28a2e7",
+    "qualification/hcsn_regenerative/__init__.py": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319",
+    "qualification/hcsn_regenerative/colab_execution_v3/__init__.py": "54430866fc730f46799d680d4c96ceddc6675ecaec092a3eb2ff24d3db526258",
+    "qualification/hcsn_regenerative/colab_execution_v3/capsule_contract.py": "cbbe763b8b70e7c3a753a95ace99b8e6c58268a392695e3b3de0101882f8df0c",
+    "qualification/hcsn_regenerative/colab_execution_v3/cloud_batch.py": "ac2828f5b09460444cc24b8f8cc7261c0b7a0cfb047bfbde9c975d4c80fe1999",
+    "qualification/hcsn_regenerative/colab_execution_v3/finalize_mechanism.py": "4b12d7b6651ee3b8fca0dcb90ad4867031b80a11ecb5d9f8ea9e35a94db65a45",
+    "qualification/hcsn_regenerative/colab_execution_v3/fixed_kernel_provider.py": "70dd63111800d98131550810b0e3119290888d2b630c7f6d5a66ab2148508cb2",
+    "qualification/hcsn_regenerative/colab_execution_v3/native_owner.py": "6f43a1512393599c7f0ba49240457419d772d311312eb2af84689f5dd71ff518",
+    "qualification/hcsn_regenerative/colab_execution_v3/test_colab_execution.py": "0cad0221b48ccb1b857992a64276babed9ceb79157d7bac9f72b83dcbb020a06",
+    "qualification/hcsn_regenerative/colab_execution_v3/test_fixed_kernel_provider.py": "092ea4b6074e1723bfd8b9ab1c802015702b4c75f30c032eddca97852971a9a3",
+    "qualification/hcsn_regenerative/colab_execution_v4/__init__.py": "54430866fc730f46799d680d4c96ceddc6675ecaec092a3eb2ff24d3db526258",
+    "qualification/hcsn_regenerative/colab_execution_v4/capsule_contract.py": "cbbe763b8b70e7c3a753a95ace99b8e6c58268a392695e3b3de0101882f8df0c",
+    "qualification/hcsn_regenerative/colab_execution_v4/cloud_batch.py": "4deaf02a388a942603bc1aa3ba0915363e47e4496f4935da194d7edc96f6fb97",
+    "qualification/hcsn_regenerative/colab_execution_v4/finalize_mechanism.py": "cb14f03833caeae18c61ce925e8d966fc82486df9dcc4bc98769cbb174e56dbe",
+    "qualification/hcsn_regenerative/colab_execution_v4/fixed_kernel_provider.py": "70dd63111800d98131550810b0e3119290888d2b630c7f6d5a66ab2148508cb2",
+    "qualification/hcsn_regenerative/colab_execution_v4/native_owner.py": "2d93f59e8d109311bd50773d074649784047983773dde5b8425bdb19d9f64ec4",
+    "qualification/hcsn_regenerative/colab_execution_v4/test_colab_execution.py": "0b3303b636639575cc12ee347c7331d2e28454fb97afadd6792c5f999c35f4e4",
+    "qualification/hcsn_regenerative/colab_execution_v4/test_fixed_kernel_provider.py": "092ea4b6074e1723bfd8b9ab1c802015702b4c75f30c032eddca97852971a9a3",
+    "qualification/hcsn_regenerative/colab_qualification_v3/__init__.py": "11bf395a20454dc14ab75ebf0462f573bce5c2e33e17fd6318c8622583835e87",
+    "qualification/hcsn_regenerative/colab_qualification_v3/asset_transport.py": "35836ca2b5eaba579052111478e8db3d10ca5b52bdf3c6ac68e7eec85e98eec6",
+    "qualification/hcsn_regenerative/colab_qualification_v3/build_qualification.py": "8eb356e3be483c716c17eb87be0798ad905e653fb500c1990c446ee70ddcf0aa",
+    "qualification/hcsn_regenerative/colab_qualification_v3/qualification_runner.py": "b289641fed81a004fb446c451a72a6e750ba855c87cf3bd7d3b4d3384e0d1e9a",
+    "qualification/hcsn_regenerative/colab_qualification_v3/test_asset_transport.py": "0dda15c4c43b5bc01a626c6450551d6e998706b907b073f6dec0c634a2c507b3",
+    "qualification/hcsn_regenerative/colab_qualification_v4/__init__.py": "11bf395a20454dc14ab75ebf0462f573bce5c2e33e17fd6318c8622583835e87",
+    "qualification/hcsn_regenerative/colab_qualification_v4/asset_transport.py": "22c379f0006aab4487a587f92f9599e16881ee50fb3effe281e69cfa8c939f62",
+    "qualification/hcsn_regenerative/colab_qualification_v4/build_qualification.py": "df5ef0e17e4f06a76ee2959d804e09e486812c2b1e85f8de85411ff9cce65bf9",
+    "qualification/hcsn_regenerative/colab_qualification_v4/qualification_runner.py": "6ef1af0f76454e7570578f5f755d1c260e311b05483e697c4f3411335472e4f9",
+    "qualification/hcsn_regenerative/colab_qualification_v4/test_asset_transport.py": "4fe16df96155022ff617d07deffb179c2c32556599bb505819f42c9e4539789a",
+    "qualification/hcsn_regenerative/distribution.py": "7cdc0c45ec2d22334a5cc57e5b583ccf0fcc1ae04a96b8b3536c88104d9636af",
+    "qualification/hcsn_regenerative/distribution_kernel.py": "97be7116e7b7d4fb86529f13197b684e5b39d1bead394c1f561858caefae3ac4",
+    "qualification/hcsn_regenerative/distribution_manifest.py": "3faffcc5e1b42c0285979100c6434036dd0ab48e52ee4a071a3203835a3d3cc1",
+    "qualification/hcsn_regenerative/distribution_operator.py": "7593edd1f70eab0d21551a2e61ac7ebcce69655f5bf2b7bd2d6f35c3767295b4",
+    "qualification/hcsn_regenerative/fixed_renewal.py": "b6f0a3da026797886fe38c78cff44a063cf27de85e5088f0b8b4cfc8ee2b38d3",
+    "qualification/hcsn_regenerative/freeze_mechanism_plan.py": "53b35c2dfe178f0ecc5b6f6616ceb9440638bf95b1bc5259b40d269b5c9d591a",
+    "qualification/hcsn_regenerative/mechanism_analysis.py": "92a9b6e26e2de812d159a995dbd5170a67d21fe71069720770c5a544c015ca42",
+    "qualification/hcsn_regenerative/mechanism_budget_probe.py": "40cd0730e924af42c81ee15c603a8fa83a0206fd6d331896e8cecc111090511c",
+    "qualification/hcsn_regenerative/mechanism_contract.py": "790b253974f482514e9cb95c4a5291616cbcb52e84f05934d36fe71859171f39",
+    "qualification/hcsn_regenerative/mechanism_model.py": "16465538c2d91932a4414eaca3165e670f378947da744250487326ee7ae2922f",
+    "qualification/hcsn_regenerative/mechanism_operators.py": "dff77f43076868ce54263a52aa7dc511e3bb4095cc8cefb1ab803527f1884ea2",
+    "qualification/hcsn_regenerative/mechanism_qualify.py": "6a6e8ca3d5fac968e0380890e45740c76353b27f929b04c3a59d25c1cb9e022b",
+    "qualification/hcsn_regenerative/mechanism_sequence_probe.py": "4be9c431bf1f75041cce38e16ede6b50b3466ee73019c966ed847ec9f5c9518f",
+    "qualification/hcsn_regenerative/mechanism_training.py": "a5c8ddf7f8f4170a1391644dd9e679c8d150f45798e6b01e657f180106416c4f",
+    "qualification/hcsn_regenerative/mechanism_worker.py": "d2f5079c59530a9eda7253f427165d853753ff17c27a8f068ded769e5c3e1a48",
+    "qualification/hcsn_regenerative/process.py": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67",
+    "qualification/hcsn_regenerative/resource_migration_v3/RESOURCE_AMENDMENT.json": "a9e07eabf5d48733b0c825906db1e0887b740067186f0d944f278f09f2a1ef88",
+    "qualification/hcsn_regenerative/resource_migration_v3/__init__.py": "3935a26584ef198a2a53a2a536f1cd2a3a4937ac5881707a4eebd13c1ac3a03d",
+    "qualification/hcsn_regenerative/resource_migration_v3/freeze_v3.py": "38455477e617a9619c22397aea1da3bf985a0d8810dfb2707a0555496daebfd0",
+    "qualification/hcsn_regenerative/resource_migration_v3/rawdiff_guard.py": "a754b107eaee765d94630bb66199f1bbed4ea44a9e64543c8c8d1c2176909d88",
+    "qualification/hcsn_regenerative/resource_migration_v3/test_resource_migration.py": "6757a05adc02a075aa6daf0f3ef23d078f13e469fea6797eade7022072dfc938",
+    "qualification/hcsn_regenerative/resource_migration_v4/RESOURCE_AMENDMENT.json": "c1a949d80fdd6a6f3b577cb8f9e652dc0fe32db6173e423a74e4733778e70363",
+    "qualification/hcsn_regenerative/resource_migration_v4/__init__.py": "3935a26584ef198a2a53a2a536f1cd2a3a4937ac5881707a4eebd13c1ac3a03d",
+    "qualification/hcsn_regenerative/resource_migration_v4/freeze_v4.py": "21807dd87b18b151d8212bbca0dbbcb8ffb858dd4c600bf1e8143435ed9c9ef6",
+    "qualification/hcsn_regenerative/resource_migration_v4/rawdiff_guard.py": "153a0a574df1cc50a9005353da461b0972e5db532c81985350f4fa090453e2fd",
+    "qualification/hcsn_regenerative/resource_migration_v4/test_resource_migration.py": "9363537f736f039cb9389df9858916a49f2b5f1eae887db74c5f24d10ab5aa64",
+    "qualification/hcsn_regenerative/run_distribution_audit.py": "20487cd0c8e881d870b960b119ac7579d39b20fb08c87ebf26404f406bcc5d19",
+    "qualification/hcsn_regenerative/run_distribution_recovery.py": "5c010c9c64da6ae93210d20a46790979665c2d19e7d439dd9384ba071874a345",
+    "qualification/hcsn_regenerative/run_fixed_renewal_audit.py": "da26546f297e1372067cb73922efd30658494b5c169948c1811e306a1acf091b",
+    "qualification/hcsn_regenerative/tensor.py": "1cf419e0c9af02c434d0492d4269e427a3c4783c683456c1eb514f6cb90cbc56",
+    "qualification/hcsn_regenerative/tensor_normal.py": "d1423414112361bd5fe2c218ccc297a93972a6f9b79517abef343d4fc9c918e8",
+    "qualification/hcsn_regenerative/tensor_short.py": "a49ba3a629d8198a9176e1b9ced30edd447309bdb7139a22fcc1c0084d2db07b",
+    "qualification/hcsn_regenerative/tensor_state.py": "173c8fb75d1bc669ce316d03d26d545af6cbf460539c2a6f57e778db11d65f7f",
+    "qualification/hcsn_regenerative/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification/hcsn_regenerative/tests/test_distribution.py": "375ba90b16686bfb5c090adc1c0baadbfd3ffe17f7d62f4ce64be4e48b859427",
+    "qualification/hcsn_regenerative/tests/test_fixed_renewal.py": "41fc1e6dd233f9f1bf395d3ea5b4b01f6e2c67f33e56c0b5fad9e39901bc922c",
+    "qualification/hcsn_regenerative/tests/test_mechanism_analysis.py": "952f641799c616fa0d5f67989d955f9c1d41c560392d5da0daf48ac2dfd5f670",
+    "qualification/hcsn_regenerative/tests/test_mechanism_training.py": "60eaa2856fad47ed7b68c167a02b2585d0391c26552d5b1984c7a874e4a9e55e",
+    "resolution_scope/RESOLUTION_PROTOCOL.md": "3cb878a4c4969a89384d0de8caf33002be2f38722518ff3475d77b07fa8bf527",
+    "resolution_scope/resolution_reference.py": "d40e2ad74bf16ddf473d0ab46310c7fa66154f8cac5bef76811a02f9e4a980dd",
+    "resolution_scope/run_resolution_probe.py": "07b6d8225d47196cd900a53d2c7a8a1134bd62378a5801a26d8bfc88149cf1b8"
+  },
+  "reused_control_source_paths": [
+    "qualification/hcsn_regenerative/colab_qualification_v4/__init__.py",
+    "qualification/hcsn_regenerative/colab_qualification_v4/qualification_runner.py",
+    "qualification/hcsn_regenerative/colab_qualification_v4/asset_transport.py"
+  ],
+  "schema": "hcsn-s81-cpu-qualification-resource-amendment-v1",
+  "scientific_contract_unchanged": {
+    "batch_size": 64,
+    "concurrent_fits": 1,
+    "fit_timeout_seconds": 480,
+    "learning_rates": [
+      0.001,
+      0.003
+    ],
+    "minimum_remaining_before_operation_seconds": 720,
+    "registered_fits": 160,
+    "schedule_seed": 78137,
+    "sequence_length": 64,
+    "split_seed": 20261107,
+    "statistical_families": 20,
+    "test_count": 1024,
+    "test_episode_seeds": [
+      4703,
+      5801
+    ],
+    "train_count": 2048,
+    "training_seeds": [
+      1103,
+      2207,
+      3301,
+      4409
+    ],
+    "updates_per_fit": 400,
+    "validation_count": 512
+  },
+  "scientific_source_files": {
+    "qualification/hcsn/__init__.py": {
+      "bytes": 84,
+      "sha256": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d"
+    },
+    "qualification/hcsn/population.py": {
+      "bytes": 8894,
+      "sha256": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178"
+    },
+    "qualification/hcsn/reference.py": {
+      "bytes": 15847,
+      "sha256": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2"
+    },
+    "qualification/hcsn_regenerative/DISTRIBUTION_PROTOCOL.md": {
+      "bytes": 7854,
+      "sha256": "f4d7e5bb3cd9ed713ba640c997cfa401a2249002801d4e80ef61ecf8924d8492"
+    },
+    "qualification/hcsn_regenerative/FIXED_RENEWAL.md": {
+      "bytes": 4869,
+      "sha256": "b80c5f3abaa799f6586f172f8493cf58943e250180a4737fac0aa343547c9799"
+    },
+    "qualification/hcsn_regenerative/MECHANISM_SEQUENCE_PROTOCOL.md": {
+      "bytes": 5618,
+      "sha256": "b29d7342bd421625baca6bd8109e7b43ed95f001767a1c774457ae40ef28a2e7"
+    },
+    "qualification/hcsn_regenerative/__init__.py": {
+      "bytes": 87,
+      "sha256": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319"
+    },
+    "qualification/hcsn_regenerative/distribution.py": {
+      "bytes": 12570,
+      "sha256": "7cdc0c45ec2d22334a5cc57e5b583ccf0fcc1ae04a96b8b3536c88104d9636af"
+    },
+    "qualification/hcsn_regenerative/distribution_kernel.py": {
+      "bytes": 5673,
+      "sha256": "97be7116e7b7d4fb86529f13197b684e5b39d1bead394c1f561858caefae3ac4"
+    },
+    "qualification/hcsn_regenerative/distribution_manifest.py": {
+      "bytes": 2078,
+      "sha256": "3faffcc5e1b42c0285979100c6434036dd0ab48e52ee4a071a3203835a3d3cc1"
+    },
+    "qualification/hcsn_regenerative/distribution_operator.py": {
+      "bytes": 12828,
+      "sha256": "7593edd1f70eab0d21551a2e61ac7ebcce69655f5bf2b7bd2d6f35c3767295b4"
+    },
+    "qualification/hcsn_regenerative/fixed_renewal.py": {
+      "bytes": 13444,
+      "sha256": "b6f0a3da026797886fe38c78cff44a063cf27de85e5088f0b8b4cfc8ee2b38d3"
+    },
+    "qualification/hcsn_regenerative/mechanism_budget_probe.py": {
+      "bytes": 8799,
+      "sha256": "40cd0730e924af42c81ee15c603a8fa83a0206fd6d331896e8cecc111090511c"
+    },
+    "qualification/hcsn_regenerative/mechanism_contract.py": {
+      "bytes": 15954,
+      "sha256": "790b253974f482514e9cb95c4a5291616cbcb52e84f05934d36fe71859171f39"
+    },
+    "qualification/hcsn_regenerative/mechanism_model.py": {
+      "bytes": 12111,
+      "sha256": "16465538c2d91932a4414eaca3165e670f378947da744250487326ee7ae2922f"
+    },
+    "qualification/hcsn_regenerative/mechanism_operators.py": {
+      "bytes": 18582,
+      "sha256": "dff77f43076868ce54263a52aa7dc511e3bb4095cc8cefb1ab803527f1884ea2"
+    },
+    "qualification/hcsn_regenerative/mechanism_qualify.py": {
+      "bytes": 10705,
+      "sha256": "6a6e8ca3d5fac968e0380890e45740c76353b27f929b04c3a59d25c1cb9e022b"
+    },
+    "qualification/hcsn_regenerative/mechanism_sequence_probe.py": {
+      "bytes": 19925,
+      "sha256": "4be9c431bf1f75041cce38e16ede6b50b3466ee73019c966ed847ec9f5c9518f"
+    },
+    "qualification/hcsn_regenerative/mechanism_training.py": {
+      "bytes": 28832,
+      "sha256": "a5c8ddf7f8f4170a1391644dd9e679c8d150f45798e6b01e657f180106416c4f"
+    },
+    "qualification/hcsn_regenerative/mechanism_worker.py": {
+      "bytes": 13445,
+      "sha256": "d2f5079c59530a9eda7253f427165d853753ff17c27a8f068ded769e5c3e1a48"
+    },
+    "qualification/hcsn_regenerative/process.py": {
+      "bytes": 19818,
+      "sha256": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67"
+    },
+    "qualification/hcsn_regenerative/run_distribution_audit.py": {
+      "bytes": 10081,
+      "sha256": "20487cd0c8e881d870b960b119ac7579d39b20fb08c87ebf26404f406bcc5d19"
+    },
+    "qualification/hcsn_regenerative/run_distribution_recovery.py": {
+      "bytes": 15042,
+      "sha256": "5c010c9c64da6ae93210d20a46790979665c2d19e7d439dd9384ba071874a345"
+    },
+    "qualification/hcsn_regenerative/run_fixed_renewal_audit.py": {
+      "bytes": 4337,
+      "sha256": "da26546f297e1372067cb73922efd30658494b5c169948c1811e306a1acf091b"
+    },
+    "qualification/hcsn_regenerative/tensor.py": {
+      "bytes": 14807,
+      "sha256": "1cf419e0c9af02c434d0492d4269e427a3c4783c683456c1eb514f6cb90cbc56"
+    },
+    "qualification/hcsn_regenerative/tensor_normal.py": {
+      "bytes": 1969,
+      "sha256": "d1423414112361bd5fe2c218ccc297a93972a6f9b79517abef343d4fc9c918e8"
+    },
+    "qualification/hcsn_regenerative/tensor_short.py": {
+      "bytes": 5046,
+      "sha256": "a49ba3a629d8198a9176e1b9ced30edd447309bdb7139a22fcc1c0084d2db07b"
+    },
+    "qualification/hcsn_regenerative/tensor_state.py": {
+      "bytes": 6157,
+      "sha256": "173c8fb75d1bc669ce316d03d26d545af6cbf460539c2a6f57e778db11d65f7f"
+    },
+    "qualification/hcsn_regenerative/tests/__init__.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_regenerative/tests/test_distribution.py": {
+      "bytes": 9859,
+      "sha256": "375ba90b16686bfb5c090adc1c0baadbfd3ffe17f7d62f4ce64be4e48b859427"
+    },
+    "qualification/hcsn_regenerative/tests/test_fixed_renewal.py": {
+      "bytes": 6683,
+      "sha256": "41fc1e6dd233f9f1bf395d3ea5b4b01f6e2c67f33e56c0b5fad9e39901bc922c"
+    },
+    "qualification/hcsn_regenerative/tests/test_mechanism_training.py": {
+      "bytes": 24069,
+      "sha256": "60eaa2856fad47ed7b68c167a02b2585d0391c26552d5b1984c7a874e4a9e55e"
+    },
+    "resolution_scope/RESOLUTION_PROTOCOL.md": {
+      "bytes": 2901,
+      "sha256": "3cb878a4c4969a89384d0de8caf33002be2f38722518ff3475d77b07fa8bf527"
+    },
+    "resolution_scope/resolution_reference.py": {
+      "bytes": 5883,
+      "sha256": "d40e2ad74bf16ddf473d0ab46310c7fa66154f8cac5bef76811a02f9e4a980dd"
+    },
+    "resolution_scope/run_resolution_probe.py": {
+      "bytes": 9450,
+      "sha256": "07b6d8225d47196cd900a53d2c7a8a1134bd62378a5801a26d8bfc88149cf1b8"
+    }
+  },
+  "scientific_source_set_sha256": "ad130bd8cd307ae4e6971a11978863ed6771ccc269b1f40b468d530f1f9f9c4e",
+  "status": "PROSPECTIVE_CONTROLS_NOT_A_FROZEN_PLAN",
+  "study_id": "hcsn-regenerative-mechanisms-fv-pilot-20261107-1631115f163f-cpu-v1"
+}

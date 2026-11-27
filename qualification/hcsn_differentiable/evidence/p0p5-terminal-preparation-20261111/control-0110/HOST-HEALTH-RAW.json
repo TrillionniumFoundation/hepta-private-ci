@@ -1,0 +1,20 @@
+{
+  "request": {
+    "tool": "h_host_health",
+    "args": {
+      "host": "desktop"
+    }
+  },
+  "started": "2026-11-11T01:10:40.707Z",
+  "finished": "2026-11-11T01:10:42.909Z",
+  "control_wall_seconds": 2.202,
+  "raw": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.host_health`\n\nCaused by:\n    Mcp error: -32603: Internal error"
+      }
+    ],
+    "isError": true
+  }
+}

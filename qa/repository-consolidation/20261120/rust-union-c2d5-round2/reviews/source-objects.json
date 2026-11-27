@@ -1,0 +1,368 @@
+{
+  "status": "EXACT_LOCAL_OBJECTS_AND_SOURCE_IDENTITIES_VERIFIED_NATIVE_PENDING",
+  "head": "1a1e97962c9aad4a08e5f147790b234d4ab0bb51",
+  "tree": "2326dfb516d4db967fd106265517c8c9e34c6b3f",
+  "baseline_local": "d7d1726532ef42b22cc805777dc67ce761edf618",
+  "baseline_server": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "baseline_tree": "75127f7175708277f28974daff78cc6e7d92ab0c",
+  "known_server_mapping": {
+    "d7d1726532ef42b22cc805777dc67ce761edf618": "73a96f64bfcf13380a62f6271b65d18ebf290799"
+  },
+  "plan_sha256": "1d89227922214d2920f853d9c23dd7a17ce5d6e663c9ae24eb50586dff3acd9a",
+  "steps": [
+    {
+      "commit": "c4645254c08034a0532913b6bfee6c49701c3038",
+      "tree": "7ce624df213c54b6e7505225b40427474bd1ee82",
+      "ordered_parents": [
+        "d7d1726532ef42b22cc805777dc67ce761edf618",
+        "90bb831d030e6aba8c6be546833e535e67483295"
+      ],
+      "changed_paths": 2,
+      "raw_sha256": "75bf7ed9c5490218bf4911162a9576e6493a5ab2a01c1d4c718ed462b560b940"
+    },
+    {
+      "commit": "a0f7c91dd1d011d2d2e1abbbdbfd811d2beb2915",
+      "tree": "7ce624df213c54b6e7505225b40427474bd1ee82",
+      "ordered_parents": [
+        "c4645254c08034a0532913b6bfee6c49701c3038",
+        "6612074c96fb379ffac29affe389a1f37ca6f336"
+      ],
+      "changed_paths": 0,
+      "raw_sha256": "a4288d165335562b380e0d885078fe17fa487d22c18b525f41a25c23c066ce14"
+    },
+    {
+      "commit": "c48f74c5ee4671f1f88995d3e813116282c8fd55",
+      "tree": "7ce624df213c54b6e7505225b40427474bd1ee82",
+      "ordered_parents": [
+        "a0f7c91dd1d011d2d2e1abbbdbfd811d2beb2915",
+        "086de626c32183822e47b04fbba17fb0cdc1005d"
+      ],
+      "changed_paths": 0,
+      "raw_sha256": "64c2a237567466442d3978ab3efb101eb215d4fd131c259561acd0568d55463b"
+    },
+    {
+      "commit": "875e0a26b15d9e1268d391dc4a1f6de5a62a302d",
+      "tree": "e74380d32b3f5d31ec2a29371e7e3b67dcc729dd",
+      "ordered_parents": [
+        "c48f74c5ee4671f1f88995d3e813116282c8fd55"
+      ],
+      "changed_paths": 10,
+      "raw_sha256": "061a1772669345d7b5aa4e794c021181ca8ceee758f36ed6633c8ff0430ed57d"
+    },
+    {
+      "commit": "3be393c9d888f7741ddf7fd055942db0ab2ade46",
+      "tree": "a2f0c2e44f85bbc7b2369708c5b131262f198787",
+      "ordered_parents": [
+        "875e0a26b15d9e1268d391dc4a1f6de5a62a302d"
+      ],
+      "changed_paths": 2,
+      "raw_sha256": "c3ff0698647bbbb629b80fd981463dc426122692dce638973e068a7e6f1c08ec"
+    },
+    {
+      "commit": "cf5add887747e675e29c11478622d760ce5c55b0",
+      "tree": "7fc46f3f9aaca35504b487fc71b7595fff2e43ec",
+      "ordered_parents": [
+        "3be393c9d888f7741ddf7fd055942db0ab2ade46"
+      ],
+      "changed_paths": 3,
+      "raw_sha256": "04f12b7a3d17171e794c282cc6ef0f9fea8e4402255f157f3d712ea77cabbc0b"
+    },
+    {
+      "commit": "674102bd42ee11807d941e0f91b56dad63c2e945",
+      "tree": "e1abde2f90e25e8c3e462a570c2c5bba0d7a66b3",
+      "ordered_parents": [
+        "cf5add887747e675e29c11478622d760ce5c55b0"
+      ],
+      "changed_paths": 15,
+      "raw_sha256": "39d8a2a1bda394ef087e49b0896a64bd4a911c755c7ce32bdbe342cdc9816ddc"
+    },
+    {
+      "commit": "98e627e8f55dfd781d2b43943557d5dbd2ad6cbe",
+      "tree": "639abd80146e2f65ce3879c030c3b9f4592e8ae8",
+      "ordered_parents": [
+        "674102bd42ee11807d941e0f91b56dad63c2e945"
+      ],
+      "changed_paths": 1,
+      "raw_sha256": "97f0b7ea0027a22505338225c70edd96548b972a9567fb871bb66829404d02a4"
+    },
+    {
+      "commit": "1a1e97962c9aad4a08e5f147790b234d4ab0bb51",
+      "tree": "2326dfb516d4db967fd106265517c8c9e34c6b3f",
+      "ordered_parents": [
+        "98e627e8f55dfd781d2b43943557d5dbd2ad6cbe"
+      ],
+      "changed_paths": 1,
+      "raw_sha256": "6d8280bf9cbe421a1711a9f50764e606896f072db252ae9ac823886b1c253cf0"
+    }
+  ],
+  "true_two_parent_merges": 3,
+  "actual_delta_paths": 32,
+  "actual_after_bytes": 1390921,
+  "sources": [
+    {
+      "path": ".github/scripts/codespell_custody.py",
+      "mode": "100644",
+      "before_blob": "ef4f9da2e3af40f51bcde9663495b67a4ba41aba",
+      "after_blob": "1d76cedb418650d3a3a8153e213ccc6610148d34",
+      "bytes": 21494,
+      "sha256": "e459309830593a2223be13eef36e95c727de48e99ec2dc393d0f3655e6c14f8e"
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/cmd_entry_probe.py",
+      "mode": "100644",
+      "before_blob": "32877b4f86b3ede0032b0247ab5a64c65280c065",
+      "after_blob": "cf68a6d91770b0569ae64512dc89795d6b95ca56",
+      "bytes": 16379,
+      "sha256": "c3b5d892a4305d2d8709ab6b42350f0d5bf6346f12220366de057670a6ff5fe5"
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/win32_api.py",
+      "mode": "100644",
+      "before_blob": "bf577171eab8c2d7852e62e06089e1d141e3e01b",
+      "after_blob": "2813c85e5c3eb5fbf297e5ad89d1c42c1568edd9",
+      "bytes": 27348,
+      "sha256": "74da42fd9a09ff09e9b5e16f15a5d8176582fc7cc85da383dbcfce11b3bc6208"
+    },
+    {
+      "path": ".github/workflows/hepta-keyring-sync-advisory.yml",
+      "mode": "100644",
+      "before_blob": "81d907e7abbd9f47e9e5bbd31a1e041fbc28f633",
+      "after_blob": "be21510dfd87f81ebb582e5cdec7d26f7ddb202e",
+      "bytes": 3503,
+      "sha256": "fd946333e16afb1fc76f2da9defbdcc5446677e146b056a8442ecc18be776d73"
+    },
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "mode": "100644",
+      "before_blob": "a408b10142b06a445831b0c15ed2e188658fe1ce",
+      "after_blob": "bb17a7e382665d9f5ef20b4f133a770b8564cad5",
+      "bytes": 58833,
+      "sha256": "2f5d8fb75779218fd1b3068206447076047a3b7dafac29f54ceff7c372b662f2"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor_tests.rs",
+      "mode": "100644",
+      "before_blob": "2b608ef0738f54c455565866e92d90e66e480156",
+      "after_blob": "d5f05481849b7441e17de109a67efed59ce184b1",
+      "bytes": 57788,
+      "sha256": "bcd5beb67c99de5c74c436014ce6797dba4a00ce0bd3cd90ee830a8a7638d6c9"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/rollout.rs",
+      "mode": "100644",
+      "before_blob": "58925ef00fe2ff3dff237e22cf47cfd59d725c31",
+      "after_blob": "28365554da578b5723e0a2baffd5788b4e093664",
+      "bytes": 12605,
+      "sha256": "e8c283c6de59478c47b170f8c64a0d022ef940fbacd82196acae93749ccf7c22"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/rollout_tests.rs",
+      "mode": "100644",
+      "before_blob": "b7554ef03989ed199efe83582df053b0e512c5d6",
+      "after_blob": "16ccc343432f0a19b2b4f7bedc1fb11dc846575f",
+      "bytes": 1301,
+      "sha256": "3bb4a467e6437650ce3e13c54f1665f4dcc1f81ef6c3941bfd770dc45500536c"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_list.rs",
+      "mode": "100644",
+      "before_blob": "60a8683da6529cba031112483555f9a800a5bff2",
+      "after_blob": "73134fa2d2a1af3ba17e30749f382a29b4c8f8ce",
+      "bytes": 78701,
+      "sha256": "ec8a2104c2982a68f3e7c90a02f9a1c40ed8cf7bf8196e0a3f1e2d3a6daf283a"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "mode": "100644",
+      "before_blob": "a13ae5ee872d9ac889c1ee2f0a4d393cf9286a2a",
+      "after_blob": "efc0c62ce6326637e5626f943375197035973cd3",
+      "bytes": 194861,
+      "sha256": "a0df96d0717a0c0c026586138585f01ea5cd1ba7bff5303571291f98201234c7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "mode": "100644",
+      "before_blob": "83e289ed8012721dbdebc3e9f8a57ab33f0e81e2",
+      "after_blob": "b49f26518847103ca41b66c9fbb4ee1ee03b395c",
+      "bytes": 15174,
+      "sha256": "40e47be0dcc25a54eb7a150f2b26fb92382508b864b6e8d00c3d386670cdda16"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_history_tests.rs",
+      "mode": "100644",
+      "before_blob": "189e634f6685c27c4b163263d879724646ee1d28",
+      "after_blob": "f017dd6f3e5d0861faa7ee3c4244f3a0ac1ceff9",
+      "bytes": 8165,
+      "sha256": "a5287aa5875cbb99d9cd6208c506e78f640101ce2b4b7c2e62ab295523364376"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "mode": "100644",
+      "before_blob": "1974bc6355cbe6f9cfce96eb91ae93bbb03ea778",
+      "after_blob": "4cb19cd82cf986b78900539cb352e0b1058dcffa",
+      "bytes": 26092,
+      "sha256": "a5ad71eb62ff5dea339e1d1112e78746f5d0cb9146095b2360f64423a8c97654"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+      "mode": "100644",
+      "before_blob": "3546571b4cb448383c76b7ff11bf14a19104e86f",
+      "after_blob": "1a6da84fd666213a8753f071e1bcbaebed092e22",
+      "bytes": 2296,
+      "sha256": "2f5d49bc5d215002aa054c9784da9dc6a1bbc0d88ae9f3b7791129ef6d24b881"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "mode": "100644",
+      "before_blob": "8b70bdb504fda547e75e7942803f3b440540a68c",
+      "after_blob": "b17c3a262913b8cd05b80adafd62d6df027eda37",
+      "bytes": 20991,
+      "sha256": "69437d6ccfe9f923623449b042300afe63aa525f7db3bb62494d9b4f50614f9e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "mode": "100644",
+      "before_blob": "2e206a84941f699d1faf98518a6f31c675115cb0",
+      "after_blob": "780b341a7792f68a2b13f3015622fa1e41b4472f",
+      "bytes": 2410,
+      "sha256": "00d11a3c37687e7090dcc8c8d8bdb7008cc077a2d61a6e52c575ef1bfcd4bb9a"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+      "mode": "100644",
+      "before_blob": "3cc279a9bfe85443c7a64f40d39898397a23618f",
+      "after_blob": "9925c81e4f5df5ba7122c59c896eac4388c07ed6",
+      "bytes": 5886,
+      "sha256": "7682ecfc8efe9ff2718689153eb3723b929d17409a764fc5971034bff1802946"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+      "mode": "100644",
+      "before_blob": "42f35deccbf558be66ddd906fb423a18ebfb84f7",
+      "after_blob": "495984a21073698ce27cfac61304b37b9884ce4d",
+      "bytes": 8009,
+      "sha256": "b1e8f43485e2c8b2e9c070c082b233bbc9129ae70a2829ce22fde864f017142c"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_release_tests.rs",
+      "mode": "100644",
+      "before_blob": "ad138da131010cc303c746513406c4da9bce3887",
+      "after_blob": "278ab8b722ba844c68f456396f69613bb83e92a9",
+      "bytes": 11324,
+      "sha256": "914b14ec1f6bf08c6ad205697e18fba55ad59b5102d48db4edbf6a16e05026d6"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/research/native_stem_abcd/exact_two_step/test_tamper.py",
+      "mode": "100644",
+      "before_blob": "130e02b1693325682878dd9a4d1b8bebef10adc9",
+      "after_blob": "5972d5726ebd32aca815887cb3cf1e0e9048094f",
+      "bytes": 3869,
+      "sha256": "ff234db34df0b5d44e71f9bc5fd45cd0f456f109b7781c31e63b63500a81837e"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+      "mode": "100644",
+      "before_blob": "b0db350b9cd2acca3af6de5edec204c119223656",
+      "after_blob": "0a027058e4f8eb206ab7d4f0336f23eab3d9ee96",
+      "bytes": 1114,
+      "sha256": "445230f3c99508b4762382328e42e3db6b6f2676b536c7cfdcf2ada3b8011da3"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+      "mode": "100644",
+      "before_blob": "8a9645104e1308f0080943896d685d33f75ce88a",
+      "after_blob": "ae529b89b7334ea6355b5038c855bbdbd138229c",
+      "bytes": 29406,
+      "sha256": "19401bdd4835f1fc3248e91a21690800cf78f0afd44cf5cd2b6a988ee375ade8"
+    },
+    {
+      "path": "codex-rs/tui/src/bottom_pane/chat_composer.rs",
+      "mode": "100644",
+      "before_blob": "2d380c56c37cd667cfe37f3f045286db109f0fa1",
+      "after_blob": "fd07ca585c019205eb3299b77cef1cfd7de3a717",
+      "bytes": 507869,
+      "sha256": "b83dd76a4b7b3852ede526a3aeed2e112e95be4628efcf5bf1aa3455d7ab94e8"
+    },
+    {
+      "path": "codex-rs/tui/src/bottom_pane/chat_composer_shift_tests.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "after_blob": "da88d735dcb532045c8f32d209fc94c51cd53ff7",
+      "bytes": 1014,
+      "sha256": "5f11cd7b05a1e81864a92ea33c71a75e8b30c7cc4eee08d43a6c47cc65cbfa29"
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "mode": "100644",
+      "before_blob": "7400fdb968a00926b979ddcd2c6dadb66befb741",
+      "after_blob": "bde176578cba8f8dc7890c2a3f85574460e19c2e",
+      "bytes": 123328,
+      "sha256": "fe41a089e5d3046c23258cf1739133f0bc797ff0f7117e3767986e1e7f7dce79"
+    },
+    {
+      "path": "codex-rs/tui/src/named_session_lookup_tests.rs",
+      "mode": "100644",
+      "before_blob": "9a218d14b3e8e4030bceb8229ae876837a5a2f66",
+      "after_blob": "5904c01a8f4edd2bd164cabe50fce05c011303de",
+      "bytes": 16363,
+      "sha256": "8bcdb53279c475dcb091a9df27b4a4a681c5d5cdce9c056de566a15cf219b12b"
+    },
+    {
+      "path": "codex-rs/tui/src/session_archive_commands_tests.rs",
+      "mode": "100644",
+      "before_blob": "f864858c50b7a67555aef8e6a9e61076167f2fb8",
+      "after_blob": "6bdeb9d1408e9b6eaf4b1ff0f42f32face01c7f8",
+      "bytes": 15531,
+      "sha256": "49494245579ce28b44077d52d25b5775f5d7d5bb8f1fb7a3dabcc2bcdfd963f3"
+    },
+    {
+      "path": "codex-rs/utils/time/src/lib.rs",
+      "mode": "100644",
+      "before_blob": "ada3d522975c221122fd2df318d98075c72143fd",
+      "after_blob": "da9eefdc92e9e1e29a23d99b2b31a0a3291501fd",
+      "bytes": 15473,
+      "sha256": "a1e49c21db9ee909b7720c17488b472e2b8d1c55bd6c4c7c016084a3908f689d"
+    },
+    {
+      "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+      "mode": "100644",
+      "before_blob": "6f174dd0722f9bb8c3bbdb244b5396b3aa5ead25",
+      "after_blob": "06dfc4157651fe72d23400bb834e15278633724b",
+      "bytes": 11591,
+      "sha256": "f702e0efc037b79c4553dab223902d00385bc53f33baaa4260466b36e53a9655"
+    },
+    {
+      "path": "defs.bzl",
+      "mode": "100644",
+      "before_blob": "51274a0b4d6aec875723993e2b16cb94ed4114a7",
+      "after_blob": "9894b3dd30ee58b734120db72103138f4f8d80c1",
+      "bytes": 39757,
+      "sha256": "493f4a32487ec80e0dba03496a2be7449653844545d9735bad67073f646a3508"
+    },
+    {
+      "path": "scripts/format.py",
+      "mode": "100644",
+      "before_blob": "5ec5819cd6441798f406a77514736baa7294ef4a",
+      "after_blob": "44eedef2a4a6d7d9e6bff953267d534416b2bb74",
+      "bytes": 22851,
+      "sha256": "e6f3588ee95b656518b55552d65753cc09e0a7c7a5abf81a2ef88ab362dd062f"
+    },
+    {
+      "path": "scripts/test_hepta_format_scope.py",
+      "mode": "100644",
+      "before_blob": "859c862b4fa0a527b97c0f9466289fffc34c8084",
+      "after_blob": "c4fd93bf57b0982d74e618df8c0c0526e5174e7f",
+      "bytes": 29595,
+      "sha256": "66a15cb6d668142c8dd62c17c870a3aea821ed8b94363d300398517d4bb30210"
+    }
+  ],
+  "upload_blob_count_including_intermediate_trees": 34,
+  "upload_bytes_including_intermediate_trees": 1410955,
+  "full_source_checkout_or_blob_closure_claimed": false,
+  "all_previous_step_snapshots_and_original_seventeen_step_plans_unchanged": true,
+  "local_refs_created": 0,
+  "remote_writes_by_this_worker": 0,
+  "native_Rust_and_Windows_qualification": "NOT_RUN",
+  "Rustfmt": "NOT_RUN",
+  "fresh_HIA_proof": "See the separate independent branch-audit receipt; this local check does not assert ref freshness."
+}

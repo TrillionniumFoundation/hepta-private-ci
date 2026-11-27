@@ -1,0 +1,151 @@
+{
+  "source": "57ffff832355d75937045f240fed2c2d48783029",
+  "tree": "f2b297cf94da0029c02e26b644694f7653fa12d7",
+  "clean_before_and_after": true,
+  "tracked_rust_files": 6699,
+  "source_index_digest_sha256": "51b7f910ccce9fc2ef9e7866b329d42c47404869ebbebfcc95326c7a869dc8eb",
+  "roots": [
+    "apps",
+    "bazel",
+    "codex-rs",
+    "qualification",
+    "tools"
+  ],
+  "excluded_product_paths": [
+    "/tests/",
+    "/examples/",
+    "_tests.rs"
+  ],
+  "masking": "repository _strip_rust_non_code then _strip_cfg_test_items; typed receiver caller verifier",
+  "elapsed_seconds": 144.94535006999922,
+  "boundaries": [
+    {
+      "id": "learning_original_training_bootstrap_create",
+      "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::from_original_custody",
+      "callPattern": null,
+      "receiverType": "OriginalCellQ24TrainingBootstrapOwnerV1",
+      "receiverMethods": [],
+      "productCallers": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_original_training_bootstrap_recover",
+      "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::recover_original_custody",
+      "callPattern": null,
+      "receiverType": "OriginalCellQ24TrainingBootstrapOwnerV1",
+      "receiverMethods": [],
+      "productCallers": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_original_candidate_stage_create",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams",
+      "callPattern": null,
+      "receiverType": "OriginalCellQ24CandidateStageOwnersV1",
+      "receiverMethods": [],
+      "productCallers": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_original_candidate_stage_recover",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams",
+      "callPattern": null,
+      "receiverType": "OriginalCellQ24CandidateStageOwnersV1",
+      "receiverMethods": [],
+      "productCallers": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_original_no_update_stage_create",
+      "symbol": "OriginalCellQ24NoUpdateStageOwnersV1::from_original_streams",
+      "callPattern": null,
+      "receiverType": "OriginalCellQ24NoUpdateStageOwnersV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_original_no_update_stage_recover",
+      "symbol": "OriginalCellQ24NoUpdateStageOwnersV1::recover_original_streams",
+      "callPattern": null,
+      "receiverType": "OriginalCellQ24NoUpdateStageOwnersV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_retained_version_host_create",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::from_original_owners",
+      "callPattern": null,
+      "receiverType": "OriginalCircuitRetainedVersionHostV1",
+      "receiverMethods": [],
+      "productCallers": [],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_retained_version_host_recover",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::recover_from_original_owners",
+      "callPattern": null,
+      "receiverType": "OriginalCircuitRetainedVersionHostV1",
+      "receiverMethods": [],
+      "productCallers": [],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_original_selector_readonly_host",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::into_command_owner_from_original_readbacks",
+      "callPattern": null,
+      "receiverType": "OriginalCircuitSelectionReceiptOwnerV1",
+      "receiverMethods": [],
+      "productCallers": [],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_original_observer_readonly_host",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::into_command_owner_from_original_readbacks",
+      "callPattern": null,
+      "receiverType": "OriginalCircuitNextUseReceiptOwnerV1",
+      "receiverMethods": [],
+      "productCallers": [],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_original_training_readonly_first_ready",
+      "symbol": "OriginalCellQ24TrainingReadbackConnectionV1::read_original_training",
+      "callPattern": null,
+      "receiverType": "OriginalCellQ24TrainingReadbackConnectionV1",
+      "receiverMethods": [],
+      "productCallers": [],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "status": "matched_explicit_caller_set"
+    },
+    {
+      "id": "learning_original_selection_readonly_first_ready",
+      "symbol": "OriginalCircuitSelectionReadbackConnectionV1::read_original_selection",
+      "callPattern": null,
+      "receiverType": "OriginalCircuitSelectionReadbackConnectionV1",
+      "receiverMethods": [],
+      "productCallers": [],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "status": "matched_explicit_caller_set"
+    }
+  ],
+  "scope": "12 selected bootstrap/initial handoff/readonly boundaries; not the full caller proof",
+  "ordinary_adoption": 0,
+  "ordinary_no_update_or_fallback": 0,
+  "actual_daemon_root_cold_restart": 0
+}

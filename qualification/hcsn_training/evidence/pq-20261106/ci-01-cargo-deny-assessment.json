@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only static source comparison; no cargo-deny invocation, Rust compilation, dependency edit or policy edit",
+  "base": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "head": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+  "final_head": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "workflow_identical_to_base": true,
+  "deny_policy_identical_to_base": true,
+  "final_head_workflow_policy_lock_and_contract_manifest_identical_to_first_head": true,
+  "pinned_action": {
+    "repository": "EmbarkStudios/cargo-deny-action",
+    "ref": "82eb9f621fbc699dd0918f3ea06864c14cc84246",
+    "default_arguments": "--all-features",
+    "workflow_overrides_arguments": false,
+    "effective_all_features": true,
+    "command": "check",
+    "command_arguments": "",
+    "log_level": "warn",
+    "deny_warnings_requested_by_workflow_or_action_defaults": false
+  },
+  "direct_new_dependency": {
+    "manifest": "codex-rs/hepta-contracts/Cargo.toml",
+    "name": "ml-dsa",
+    "version": "=0.1.1",
+    "default_features": false,
+    "features": [
+      "alloc",
+      "zeroize"
+    ]
+  },
+  "lock_change": {
+    "base_entries": 1517,
+    "head_entries": 1527,
+    "added_package_identities": 12,
+    "removed_package_identities": 2,
+    "updated_versions": [
+      "cmov 0.5.3 -> 0.5.4",
+      "ctutils 0.4.2 -> 0.4.6"
+    ],
+    "additional_existing_dependency_edges": "Recorded without attribution in lock-comparison.json, including windows-sys/socket2/base64/itertools resolution edges."
+  },
+  "static_checks": {
+    "added_sources_all_allowed_crates_io": true,
+    "added_git_sources": [],
+    "explicit_banned_package_names": [
+      "async-trait",
+      "reqwest"
+    ],
+    "added_names_matching_explicit_ban": [],
+    "new_edges_to_explicit_banned_names": [],
+    "multiple_versions_policy": "warn"
+  },
+  "license_metadata": {
+    "status": "unknown",
+    "reason": "Cargo.lock has no license metadata; selected MODULE.bazel.lock crate facts contain dependency/features data only. Exact-version crates.io and docs.rs metadata attempts were inaccessible. No license conclusion is inferred from crate family/name."
+  },
+  "advisory_verdict": {
+    "status": "unknown",
+    "reason": "No exact advisory database snapshot or readable cargo-deny job log; unchanged advisory ignore list does not establish pass/failure for new or existing crates."
+  },
+  "runtime_failure": {
+    "run_id": 42240138319,
+    "job_id": 127995822924,
+    "failed_step": "Run cargo-deny",
+    "attribution": "unknown",
+    "reason": "Dedicated log fetch attempts returned Transport closed; supported run artifacts are empty. Sign-in-gated UI did not expose log body. Static checks do not identify the actual failed check."
+  },
+  "conclusion": "No newly forbidden package source, explicitly banned package name, or new edge to an explicitly banned name was found in the available static lock comparison. This is not a cargo-deny pass claim. New dependency licensing/advisory verdicts and the old CI failure cause remain unknown; the failure is not classified as baseline or infrastructure."
+}

@@ -168,6 +168,24 @@ def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
                             "Rust test identity does not name a source function"
                         )
                 paths.add(path)
+    # Explicit witnesses are part of the observation scope even when no native
+    # operation or caller refers to them. Omitting them would let a source-only
+    # rebind renew execution claims after those witnesses changed.
+    manifests = [row.get("sourceObjects", [])]
+    evidence = row.get("exactSourceEvidence")
+    if isinstance(evidence, dict) and evidence.get("kind") == "path_blob_manifest_v1":
+        manifests.append(evidence.get("entries"))
+    for entries in manifests:
+        if not isinstance(entries, list):
+            raise ValueError("invalid explicit source witness manifest")
+        for entry in entries:
+            if (
+                not isinstance(entry, dict)
+                or not isinstance(entry.get("path"), str)
+                or not entry["path"]
+            ):
+                raise ValueError("invalid explicit source witness path")
+            paths.add(entry["path"])
     for path in paths:
         local = checked_source_path(ROOT, path)
         if not local.exists():
@@ -441,6 +459,90 @@ def validate_path_blob_manifest(
         failures.append(f"{mid}: exact source manifest omits mapped paths {missing}")
 
 
+def verify_explicit_source_pins(
+    row: dict,
+    candidate: dict[str, str],
+    *,
+    profile: str = "qualification",
+) -> None:
+    """Check original pins before rebinding any executable evidence.
+
+    A newer source observation cannot repair stale operation, caller or manifest
+    pins. Source objects may name trees as well as blobs; equality is against the
+    exact path object, not an assumed object kind.
+    """
+    if profile not in {"development", "qualification"}:
+        raise ValueError("unknown verification profile")
+    evidence = row.get("exactSourceEvidence")
+    if isinstance(evidence, dict) and evidence.get("kind") == "path_blob_manifest_v1":
+        failures: list[str] = []
+        validate_path_blob_manifest(
+            row, row.get("module", "<unknown>"), failures, profile=profile
+        )
+        if failures:
+            raise ValueError("; ".join(failures))
+    source_objects = row.get("sourceObjects")
+    if source_objects is not None:
+        if (
+            not isinstance(source_objects, list)
+            or not source_objects
+            or any(
+                not isinstance(entry, dict)
+                or set(entry) != {"path", "object"}
+                or not isinstance(entry["path"], str)
+                or not isinstance(entry["object"], str)
+                or re.fullmatch(r"[0-9a-f]{40}", entry["object"]) is None
+                for entry in source_objects
+            )
+        ):
+            raise ValueError("source objects")
+        if len({entry["path"] for entry in source_objects}) != len(source_objects):
+            raise ValueError("duplicate source object paths")
+        if profile == "qualification" and source_objects != current_source_objects(row):
+            raise ValueError("stale source objects")
+        if profile == "development" and {
+            entry["path"] for entry in source_objects
+        } != set(tracked_source_paths(row)):
+            raise ValueError("source object path coverage")
+    pins = []
+    for operation in row.get("operations", []):
+        if not isinstance(operation, dict):
+            raise ValueError("invalid operation record")
+        if (
+            row.get("mappingSourceIdentityMode") == "exact_blob"
+            or "sourceBlob" in operation
+        ):
+            pins.append(
+                (
+                    "source blob",
+                    operation.get("sourcePath"),
+                    operation.get("sourceBlob"),
+                )
+            )
+    for caller in row.get("productCallers", []):
+        if not isinstance(caller, dict):
+            raise ValueError("invalid product caller")
+        if "blobSha" in caller:
+            source = caller.get("sourcePath", caller.get("path"))
+            if "path" in caller and "sourcePath" in caller and caller["path"] != source:
+                raise ValueError("conflicting product caller sourcePath")
+            pins.append(("product caller blob", source, caller["blobSha"]))
+    for label, path, object_id in pins:
+        if (
+            not isinstance(path, str)
+            or not path
+            or not isinstance(object_id, str)
+            or re.fullmatch(r"[0-9a-f]{40}", object_id) is None
+        ):
+            raise ValueError(f"invalid exact {label}")
+        if not checked_source_path(ROOT, path).is_file():
+            raise ValueError(f"missing {label} source: {path}")
+        if profile == "qualification" and (
+            git("rev-parse", f"{candidate['commit']}:{path}") != object_id
+        ):
+            raise SourceDrift(f"{label} drift: {path}")
+
+
 def _ephemeral_untracked_artifact(path: str) -> bool:
     """Ignore interpreter cache bytes without ignoring hidden source files."""
     parts = Path(path).parts
@@ -578,6 +680,17 @@ EXECUTION_CLAIMS = frozenset(
     {
         "productionImplementation",
         "productExecutionProved",
+        # Legacy and module-specific spellings retain executable evidence too.
+        # A navigation rebind must not carry them across changed source bytes.
+        "productExecutionComplete",
+        "deploymentQualificationComplete",
+        "independentAcceptanceComplete",
+        "targetHostQualified",
+        "requestLocalReadOnlyProductExecutionProved",
+        "authenticatedProductionProductExecutionProved",
+        "productionWriterActivated",
+        "independentDecisionEvidenceProved",
+        "namedHostQualificationReceiptProved",
         "independentAcceptance",
         "activation",
         "release",
@@ -648,9 +761,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     """
     if validate_claim_types(row):
         # Rebinding navigation cannot transfer old executable evidence to new code.
-        verify_source_identity(
-            row, resolve_source_roots(ROOT, module), current_source_base()
-        )
+        candidate = current_source_base()
+        verify_source_identity(row, resolve_source_roots(ROOT, module), candidate)
+        verify_explicit_source_pins(row, candidate)
     roots = [x["path"] for x in module["rootBindings"]]
     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
     if isinstance(declared, str):
@@ -795,10 +908,15 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         migrated["sourceObjects"] = current_source_objects(migrated)
     evidence = migrated.get("exactSourceEvidence")
     if isinstance(evidence, dict) and evidence.get("kind") == "path_blob_manifest_v1":
-        evidence["entries"] = [
-            {**entry, "blobSha": git("rev-parse", f"HEAD:{entry['path']}")}
-            for entry in evidence.get("entries", [])
-        ]
+        # Keep the input record intact for both the no-op check and historical
+        # custody. Mutating its nested manifest could suppress the pending write.
+        migrated["exactSourceEvidence"] = {
+            **evidence,
+            "entries": [
+                {**entry, "blobSha": git("rev-parse", f"HEAD:{entry['path']}")}
+                for entry in evidence.get("entries", [])
+            ],
+        }
     return migrated
 
 
@@ -851,6 +969,7 @@ def migrate(selected_modules: list[str] | None = None):
                 migrated, resolved, source_base, check_checkout=False
             )
         checked_paths.update(paths)
+        verify_explicit_source_pins(migrated, source_base)
         # Preserve original formatting and anchors when nothing changed. Even a
         # later prose commit must not trigger a global metadata refresh.
         if migrated != row:
@@ -1357,11 +1476,7 @@ def verify(
                         raise ValueError(
                             f"invalid exact source blob: {op['operation']}"
                         )
-                    if profile == "qualification" and (
-                        git("rev-parse", f"{candidate['commit']}:{source}")
-                        != source_blob
-                    ):
-                        raise ValueError(f"source blob drift: {op['operation']}")
+            verify_explicit_source_pins(row, candidate, profile=profile)
             checked_paths.update(
                 verify_source_identity(
                     row,
@@ -1419,44 +1534,7 @@ def verify(
                     row.get("productCallerState") != "not_composed"
                 ):
                     raise ValueError("composition status disagreement")
-            if (
-                row.get("exactSourceEvidence", {}).get("kind")
-                == "path_blob_manifest_v1"
-            ):
-                manifest_failures = []
-                validate_path_blob_manifest(
-                    row, mid, manifest_failures, profile=profile
-                )
-                if manifest_failures:
-                    raise ValueError("; ".join(manifest_failures))
             source_objects = row.get("sourceObjects")
-            if source_objects is not None:
-                if (
-                    not isinstance(source_objects, list)
-                    or not source_objects
-                    or any(
-                        not isinstance(entry, dict)
-                        or set(entry) != {"path", "object"}
-                        or not isinstance(entry["path"], str)
-                        or not isinstance(entry["object"], str)
-                        or re.fullmatch(r"[0-9a-f]{40}", entry["object"]) is None
-                        for entry in source_objects
-                    )
-                ):
-                    raise ValueError("source objects")
-                if len({entry["path"] for entry in source_objects}) != len(
-                    source_objects
-                ):
-                    raise ValueError("duplicate source object paths")
-                if (
-                    profile == "qualification"
-                    and source_objects != current_source_objects(row)
-                ):
-                    raise ValueError("stale source objects")
-                if profile == "development" and {
-                    entry["path"] for entry in source_objects
-                } != set(tracked_source_paths(row)):
-                    raise ValueError("source object path coverage")
             if row.get("productCallerState", "not_composed") != "not_composed":
                 callers = row.get("productCallers")
                 if not isinstance(callers, list) or not callers:

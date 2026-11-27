@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.learn.provider-objective-preimage-peer.v1",
+  "review": "narrow static peer review; not a native result",
+  "fixed_source_commit": "8eda34a7121dc332645b59a7e4d7e1c04dc8266e",
+  "parent": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "reviewed_blobs": {
+    "before": "c46beab25b849632a6b5dd37abd05c7ee2fd6181",
+    "after": "2be5923507a86c65555ce525b273d05a6d3243a2",
+    "author_audit": "7af224d90dcec1ff31b82ffdbc5e4deecfbb8b03",
+    "original_codec": "59b25f0c4e38b192e8357e86ad06564ac3da7342",
+    "positive_fixture": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a",
+    "native_terminal": "efe2855cc997b1af10824cd5499dd0ee7a76f807"
+  },
+  "actual_terminal_full_api_readback": true,
+  "actual_provider_errors": [
+    {
+      "package": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "diagnostics": [
+        "Error: agentd protocol error: original Circuit source: Circuit task does not match its original admitted task"
+      ]
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+      "diagnostics": [
+        "Error: agentd protocol error: original Circuit source: Circuit task does not match its original admitted task"
+      ]
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+      "diagnostics": [
+        "Error: agentd protocol error: original Circuit source: Circuit task does not match its original admitted task"
+      ]
+    }
+  ],
+  "checks": {
+    "six_exact_edits_unique_forward_and_reverse_reproduce_whole_sources": true,
+    "existing_three_execute_callsites_retained": true,
+    "actual_preimage_origin": "original.previous is CircuitTaskSourcePublicationV1; PositiveFixture obtains it through execute(&a, 1).await after original admitted runtime start. populate borrows this original record's complete objective_semantic_bytes.",
+    "transfer": "The same immutable byte slice reaches all three existing execute paths (history, heldout baseline, heldout candidate), and is copied into each independently constructed fixture record before original Source create/build.",
+    "original_validation": "The unchanged original codec rejects an empty semantic body or Digest32::of_bytes(objective_semantic_bytes) != snapshot.objective_digest. This fix supplies the original preimage while preserving that check.",
+    "unchanged_scope": "Only the supplied fixture support source changes. No production codec, new identity, grant, inference permission, metric, threshold, deadline or test assertion is added or relaxed.",
+    "full_provider_semantics_beyond_this_preimage_path_not_reproved": true
+  },
+  "findings": [],
+  "conclusion": "No blocking finding in the specified digest/preimage consistency repair. It is an appropriate narrow fixture correction for the three observed TaskMismatch results, subject to the actual same-candidate native run.",
+  "limits": {
+    "rust_compilation": false,
+    "native_execution": false,
+    "h_dispatched": false,
+    "ordinary_acceptance": 0,
+    "source_edits_by_reviewer": 0
+  }
+}

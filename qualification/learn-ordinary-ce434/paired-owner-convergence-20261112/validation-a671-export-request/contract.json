@@ -1,0 +1,145 @@
+{
+  "schema": "hepta.learn.a671.full-validation-evidence-export-request.v1",
+  "purpose": "Preserve complete original 443-source-method and 201-native-case validation evidence, including failures, without rerunning tests or claiming acceptance.",
+  "source": {
+    "sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "checkout": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "must_remain_clean": true
+  },
+  "original_exporter": {
+    "git_blob": "5f481b44c4cfce909f6d65e75591041f85d160fc",
+    "bytes": 9297,
+    "sha256": "58bac74e4a962931a8995e302cdf8f2e5315477e9318542abd9c0ac61a55d90c"
+  },
+  "script": {
+    "git_blob": "e48609203bc9fc60a5142619666875838393759e",
+    "bytes": 10412,
+    "sha256": "ac9bd6ab2b59ceab22d7246aaced661160a3fad8b9d743a51ebe642f76f2960d"
+  },
+  "request": {
+    "git_blob": "9bb5b88a73c9dc4de178c0ac5b291876badb6ec9",
+    "bytes": 11345,
+    "sha256": "4bab69c6dadc87edcf3ecbd7ddcf672ba9764e340c73989eed412c8cdb66e5af"
+  },
+  "inputs": {
+    "outer_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-a6717d722804-validation-v1",
+    "native_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1",
+    "original_outer_driver_blob": "b5838b5f994f112f85b0bf93566174e8ab8ee18f",
+    "original_outer_driver_readback_bytes": 93522,
+    "original_outer_fields": {
+      "completed_step": "steps[].name/exit_code/seconds/bytes/sha256",
+      "source_json": "source_suite.bytes/sha256",
+      "native_json": "native_result_file.bytes/sha256"
+    }
+  },
+  "outputs": {
+    "fresh_observer_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/native-export-a6717d722804-full-v1",
+    "new_evidence_branch": "codex/learn-a671-full-validation-evidence-ce434-20261112-v1",
+    "path_prefix": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/",
+    "initial_parent": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "later_parent": "The prior evidence commit returned by this same observer; original compare-and-push checks retained.",
+    "old_data_names": [
+      "outer-as-observed.json",
+      "native-as-observed.json",
+      "outer-native.log",
+      "v8-private-input-readback.json",
+      "target-initialization-readback.json",
+      "helper-build.driver.log",
+      "helper-verify.driver.log",
+      "focused-native.driver.log",
+      "focused-junit.driver.log",
+      "focused-native.json",
+      "focused-native.junit.xml",
+      "focused-native.junit.summary.json",
+      "helpers-manifest.json",
+      "helpers-env.json",
+      "helpers-codex-hepta-infer-worker-host.jsonl",
+      "helpers-codex-hepta-infer-worker-host.stderr.log",
+      "focused-native.execution.log"
+    ],
+    "added_data_names": [
+      "source-suite.json",
+      "source-suite.log",
+      "caller-scanner-self-test.log"
+    ],
+    "optional_absent_files": "An unavailable file remains absent; no content is fabricated. Captured stable files are complete as read. Initial unstable inflight files are explicitly listed. Once the original source step exists, its source log is mandatory and must match its complete bytes and SHA256. An outer source_suite pin similarly makes its full JSON mandatory."
+  },
+  "integrity": {
+    "reads": "Original lstat owner/regular/nlink/64MiB cap, O_NOFOLLOW/O_CLOEXEC/O_NONBLOCK, full fd/path identity stability and exact byte length preserved.",
+    "result_identity": "Both original outer and native source SHA/tree must match the fixed source; clean HEAD/tree/status checked before and around publication.",
+    "source_step": "At most one completed source-suite step. Full source-suite.log must equal its bytes and sha256 even during an initial native-inflight snapshot; no pass or exit-code rewrite.",
+    "source_json": "If original outer source_suite pin exists, full source-suite.json must equal both bytes and sha256; otherwise capture is only a complete stable as-observed file, not a completed-suite assertion.",
+    "native": "Original terminal native step/full outer-native log, native-result JSON pin, original execution log path regexp and full execution log bytes/SHA256 gates unchanged.",
+    "storage": "Private per-label GIT_INDEX_FILE; original index environment restored; no checkout or source index mutation.",
+    "encoding": "UTF8 complete file <=524288 B; larger raw files split at393216 B and each part base64-encoded with LF. Whole original bytes/SHA256 and every part blob/bytes/SHA256 retained.",
+    "publication": "Original SOCKS transport, existing forward -D endpoint check, fresh evidence branch, parent chain, remote branch-current checks, full commit push/readback remain unchanged. No credentials minted/read into output.",
+    "scope": "Observer can write its exclusive evidence directory, Git objects and the new evidence branch; it does not modify source, target/env, running test process or production authority."
+  },
+  "timing": {
+    "observation_seconds": 7200,
+    "poll_seconds": 10,
+    "no_signals": true,
+    "no_kill": true,
+    "no_test_rerun": true,
+    "no_repeated_dispatch": true,
+    "limit_semantics": "7200 bounds the active observation loop after initial publication, not total file/Git wall time. On observation timeout it exports an observer-timeout snapshot and exits2; this does not mean native failure, completion, cancellation or absence of effects.",
+    "terminal_semantics": "Only the original outer passed/failed state plus actual original-full-native step permits a terminal export. Failed terminal results are preserved as failures; exporter exit0 means evidence exported, not tests passed."
+  },
+  "typed_request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "final_arg": "The exact full script postimage, checked byte-for-byte against the script blob.",
+    "cwd": "/home/qian-qi",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "idempotency_key": "learn-ce434-a671-full-validation-evidence-watch-v1",
+    "fields_exact": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "env",
+      "idempotency_key"
+    ],
+    "timeout_or_resources_added": false,
+    "execution_owner": "Root only; request prepared but not dispatched by this agent."
+  },
+  "parent_reported_observations_not_reexecuted": {
+    "source": {
+      "exit_code": 1,
+      "seconds": 310.094943,
+      "log_bytes": 129213,
+      "log_sha256": "95a9f8b5f26286230c6a30a4fc8320cb97c1813577fa037d693296b228ad10a0"
+    },
+    "native": {
+      "exact_cases": 201,
+      "failed_cases": 17,
+      "exit_code": 100,
+      "seconds": 637.1568,
+      "collector_exit_code": 1,
+      "json_bytes": 51057,
+      "json_sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71",
+      "execution_log_bytes": 187839,
+      "execution_log_sha256": "7b87ec048219bacd146d9f7f4de5df7a73f2eceb2d635a4808f34f13a74a4664"
+    },
+    "usage": "These are Root's original observations, not enforced replacement content. The exporter validates actual original files against their original outer/execution pins."
+  },
+  "verification": {
+    "exact_edits": 13,
+    "full_forward_and_inverse_byte_equality": true,
+    "old17_data_inventory_retained": true,
+    "new3_data_entries": true,
+    "full_api_readback": true,
+    "python_or_h_execution": false,
+    "actual_pass_claim": false,
+    "ordinary_acceptance": 0
+  }
+}

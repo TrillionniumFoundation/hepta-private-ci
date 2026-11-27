@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.mem8.source-v6.assembly.v1",
+  "base_commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "base_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+  "parent_commit": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "parent_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "candidate_tree": "df293c7709860ecfc3889e4cabb1f970fb649d8e",
+  "full_parent_entries": 14048,
+  "full_candidate_entries": 14050,
+  "cumulative_paths": 109,
+  "changed_paths_vs_parent": 10,
+  "original_formatted_103_paths_verified": true,
+  "input": {
+    "bytes": 348524,
+    "sha256": "265cb24707274661cf7777a7988f7b67a97a8a842f2ff02c20d4dbe2e08860ec",
+    "git_blob": "7d1603b9dd24bec70c9a5345e195c71192f85dd4"
+  },
+  "golden_caller_receipt": {
+    "bytes": 75046,
+    "sha256": "17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96",
+    "git_blob": "d783a943bb7278256bc86dc04dfe99d168c7e013"
+  },
+  "files": [
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "mode": "100644",
+      "group": "caller-conservative-performance",
+      "preimage_git_blob": "d7a6981ee7775c7254a9c596ac47bb1bb5e43171",
+      "bytes": 30488,
+      "sha256": "b295188f217066cf5eb704d1c9c0e267c3d7a293c46bab703bf797146e4dd2c2",
+      "git_blob": "e08795f541d877852c80f482614347e7554869b9"
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "mode": "100644",
+      "group": "caller-conservative-performance",
+      "preimage_git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "bytes": 7898,
+      "sha256": "0a2c9a2d40a749f6e3db38b82244a8684d5df5368d79ae2ec69e9834391066cb",
+      "git_blob": "655d7a95d281e937e52b6b8d93c26d7897a4973f"
+    },
+    {
+      "path": "scripts/test_hepta_typed_callers.py",
+      "mode": "100644",
+      "group": "caller-conservative-performance",
+      "preimage_git_blob": "52989efbcc02a8b56c21f1857766685016352040",
+      "bytes": 4881,
+      "sha256": "3f46c582bbd242c6f14836f22622f46c178b90ce2fb8f5921a8c539cfa114ac0",
+      "git_blob": "3122da4d55304353716dbe837524531634a8abe0"
+    },
+    {
+      "path": "scripts/test_hepta_caller_cache.py",
+      "mode": "100644",
+      "group": "caller-conservative-performance",
+      "preimage_git_blob": null,
+      "bytes": 2838,
+      "sha256": "9887e2f973dbf92eb8af78ab5caa3aeed1882da452ce2e1b3e666cf242cb33fa",
+      "git_blob": "4c31e93cea1af2674474268ccf65b4c6c6f1ab22"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_control_tests.rs",
+      "mode": "100644",
+      "group": "neuron-bounded-original-readback",
+      "preimage_git_blob": "a9cd9b8f9c246f6f266b2ca8506da40eefa0bc44",
+      "bytes": 23206,
+      "sha256": "2023d5249c534d8f55352f9e73ec6666329414499bf308843938f4d0a41f26ed",
+      "git_blob": "d81a69390659f1fa9d8a67000565a00c54cb0ac0"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/apply_patch_cli.rs",
+      "mode": "100644",
+      "group": "hardlink-public-error-contract",
+      "preimage_git_blob": "a41fc531be015f02aa5f7aef58b16cd4db2e0ada",
+      "bytes": 87145,
+      "sha256": "f7d06ffaa7aa7374c840c75682d727a84e073fa4110172e7e40c8e064f76651a",
+      "git_blob": "dd76ce5536f75a4e66b7310a2fbf91c96663e78d"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_control_tests.rs",
+      "mode": "100644",
+      "group": "ordinary-host-delete-control-token",
+      "preimage_git_blob": null,
+      "bytes": 16802,
+      "sha256": "abc95340c06f26bd5b4191c6ec72206774c70e5867185de67a7f62d73a81f999",
+      "git_blob": "d2d220c002715474a6187b4b4e6ee8ae6d93f0f8"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "mode": "100644",
+      "group": "ordinary-host-delete-control-token",
+      "preimage_git_blob": "b8b04b2455422194487e6665599c44e2de66cd49",
+      "bytes": 31313,
+      "sha256": "ffae596933c17603adf2255450fc022d84b914f381a2f2ab2e93beed1d057927",
+      "git_blob": "22185fc9765823265a99b27e851cd142fcd80e6d"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "mode": "100644",
+      "group": "ordinary-host-delete-control-token",
+      "preimage_git_blob": "1f16623dbea1b021a6b67d5e52ff9f90973d5d26",
+      "bytes": 19310,
+      "sha256": "e8474d0987bc4d877d6be2154f273beb48169fb31ad077c12a75888b45725a48",
+      "git_blob": "dc0727567a8321afcd7920db2f3087c2328695cc"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "mode": "100644",
+      "group": "ordinary-host-delete-control-token",
+      "preimage_git_blob": "5e33c4fbea42cf69fcd5e8da2bbbef0943fdd31f",
+      "bytes": 7047,
+      "sha256": "dc6105fb5ee5dbf6d63ff0ea493c8c9b7b37580ac60c395ff4989191d530e100",
+      "git_blob": "05623f4354e478853584ef702985869a1beb9c4c"
+    }
+  ],
+  "source_commit_created": false,
+  "source_ref_changed": false,
+  "source_gate_executed": false,
+  "native_tests_executed": 0,
+  "model_requests_executed": 0,
+  "assembly_is_new_work_not_recovery_of_a_lost_original": true
+}

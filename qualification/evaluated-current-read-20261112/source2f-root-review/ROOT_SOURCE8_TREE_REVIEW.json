@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "scope": "complete changed-subtree comparison",
+  "base": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "prepared_head": "82d36ec843a07936f03d69ec73e068e15e71212a",
+  "prepared_tree": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+  "tree_pairs": [
+    {
+      "before": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+      "after": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+      "prefix": ""
+    },
+    {
+      "before": "3475b14b9d6b0e5b6c00b3758c1a407fe6a6a2c3",
+      "after": "9c41ae77703686ac7818dec2f16ac9be30eba37e",
+      "prefix": "codex-rs/"
+    },
+    {
+      "before": "fba6edac14d20b25ee570ef43119eb6d852b780f",
+      "after": "d42591a80f9b0b0aaf62006123385a5fc6436242",
+      "prefix": "codex-rs/hepta-agentd/"
+    },
+    {
+      "before": "986d6fc7f97923ffd2c71e37576813003fe5e124",
+      "after": "4be689a6c2868df9e051cebcd5c3ff14f1a6c0e6",
+      "prefix": "codex-rs/hepta-neuron/"
+    },
+    {
+      "before": "9e6e03495788a9b0c67f52ddb9baed665a91250d",
+      "after": "09372b9bb804a44910ec4abf76c9036d95d7bab9",
+      "prefix": "codex-rs/tui/"
+    },
+    {
+      "before": "c387ed3dd7b2f2ebfa4b905cc2552f2846b4ece7",
+      "after": "288a1283f30e9e80438ed32a491a83d56c2082e5",
+      "prefix": "codex-rs/hepta-agentd/src/"
+    },
+    {
+      "before": "28ad2d9022c3c6c6a81ad68c08f18238a705a650",
+      "after": "43ac92eee5e88bac19af8887275718e9d3405f79",
+      "prefix": "codex-rs/hepta-neuron/src/"
+    },
+    {
+      "before": "f693f294a298fa435d24782106ca833d8f963d9a",
+      "after": "021f24c868f8077a67a3610428b16d90737c7884",
+      "prefix": "codex-rs/tui/src/"
+    }
+  ],
+  "changed_paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_tests.rs",
+      "before": "3970943404e829a6025e7b89f0cfda0215e94eb6",
+      "after": "81791260cc665b9717df81a6596e2c422caa1784",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_tests.rs",
+      "before": "bb93de64ccb9467b2e7c3f31bf3c13cc309ed9fb",
+      "after": "7356d3a3431b89ba62fcb0884320c2e835447f32",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "before": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+      "after": "5cc4db827487dd487cecebe8766fc7e6bab92b0c",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "before": "085bcfd745c7a06426d90e5ee881d04694238ff7",
+      "after": "67141c6af0edbe68eeaf93ac943f083c1449e3c6",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "before": "dac17a5a338563fe3466637a3c8b405b1fc10753",
+      "after": "2621dfc2c5c25bf66cac95d206d3b4e5d9cc9790",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "before": "c73cb763cbf2bd753ae44ce74e33da0a3f951772",
+      "after": "6cbc878cc2d85691dba75c9e21a4699506368164",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost_tests.rs",
+      "before": "37f607609a62e4e35ead10faccce366a2714b3cd",
+      "after": "0e11345a3456c0140be1d609a16be0175b375fc6",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "before": "3d2c7385057818e11f15b32d8be8499aa51db493",
+      "after": "c67ed467eddde1e557d89d47ecabb04de4d2447c",
+      "mode": "100644"
+    }
+  ],
+  "exact_eight_paths": true,
+  "no_other_leaves_changed": true,
+  "execution": "NOT_RUN",
+  "all_blockers_closed": false
+}

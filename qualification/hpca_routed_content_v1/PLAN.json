@@ -1,0 +1,91 @@
+{
+  "architecture": "Frozen SmolLM2-135M body and LM head; two private normalized-hidden linear heads adjust only first-token Yes/No logits. All vocabulary tokens compete.",
+  "arms": [
+    "routed",
+    "shuffled",
+    "no_eligibility",
+    "scalar"
+  ],
+  "base_source": "0e6634cadf4497c653e191e50e6394387190ca55",
+  "body_updates": 0,
+  "claims_excluded": [
+    "independent future B",
+    "full LM or LoRA training",
+    "old624generation experiment",
+    "NDU2x2",
+    "production Owner",
+    "adoption",
+    "energy savings"
+  ],
+  "cold_runtime_wall_seconds": 300,
+  "cold_task_ids": [
+    "content-0-00",
+    "content-0-01",
+    "content-0-02",
+    "content-0-03",
+    "content-1-00",
+    "content-1-01",
+    "content-1-02",
+    "content-1-03",
+    "retention-01",
+    "retention-02",
+    "retention-03",
+    "retention-04"
+  ],
+  "custody": "Operator-authored synthetic development task worlds, labels visible to investigators; no sealed curator/independent evaluator.",
+  "data_sha256": {
+    "EVAL_LABELS.json": "7eb030572f8dccc0b9728966dc29307efed00d4424104e02aea916851018bdb1",
+    "TASKS.json": "87a8caa9539642d7c0e0e0cd0b400b134a456e4565d01bf06521618471b31756",
+    "TRAIN_FEEDBACK.json": "6eb1856e01ad94462b44d1fdcc6ee2a32d93801da45652eaef642d3d2e756de7"
+  },
+  "decay": 0.95,
+  "decision": "HOLD_NO_GO",
+  "delay_steps": 3,
+  "eligibility": "Frozen action-time hidden feature and prediction expectation; receipt delivered exactly3 paired-action clock steps later. Sequence delay is not a biological/real-time claim.",
+  "epochs": 8,
+  "eval_label_access": "Evaluation file bytes are hashed for source and data pins before training; labels are first parsed as JSON and used for scoring only after all16 candidates are saved and frozen.",
+  "failure_policy": "One exclusive attempt, per-task generation failures retained in fixed denominators; setup failures and partial journals retained, uncertain jobs reconciled without new key.",
+  "feedback": "Same external ordered two-coordinate label vector for every arm; only routed vs swapped uses identical full information. Scalar projects mean; no_eligibility zeroes recorded trace.",
+  "groups": "Content prompt domain (color or shape), never target label. Retention group fixed by source-cluster index.",
+  "head_norm_limit": 8.0,
+  "heads": 2,
+  "independent_future_B": false,
+  "learning_rate": 0.2,
+  "main_runtime_wall_seconds": 1200,
+  "max_new_tokens": 8,
+  "max_prompt_tokens": 192,
+  "memory_max_bytes": 4294967296,
+  "model_sha256": {
+    "config.json": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+    "generation_config.json": "87b916edaaab66b3899b9d0dd0752727dff6666686da0504d89ae0a6e055a013",
+    "model.safetensors": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "special_tokens_map.json": "2b7379f3ae813529281a5c602bc5a11c1d4e0a99107aaa597fe936c1e813ca52",
+    "tokenizer.json": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+    "tokenizer_config.json": "4ec77d44f62efeb38d7e044a1db318f6a939438425312dfa333b8382dbad98df"
+  },
+  "parser": "Full string, optional single period or exclamation mark; explanations and extra words invalid.",
+  "planned_cold_generation_attempts": 204,
+  "planned_main_generation_attempts": 1632,
+  "planned_manual_sgd_calls": 4096,
+  "planned_torch_optimizer_calls": 0,
+  "planned_training_prefills": 64,
+  "primary_metric": "Exact YES/NO answer correct/64. Invalid or failed generations count incorrect.",
+  "required_runtime": {
+    "python": "3.14.4",
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3"
+  },
+  "retention_competency_gate": "Base correct>=24/32 and valid>=28/32; otherwise no retention adequacy claim.",
+  "retention_origin_source": "#6132 0e6634cadf4497c653e191e50e6394387190ca55 prospective retention32; deliberately reused descriptive development control, not new independent tasks.",
+  "schema": "hpca-routed-content-development-plan-v1",
+  "seeds": [
+    11,
+    17,
+    23,
+    29
+  ],
+  "supersedes_unexecuted_source": "878faaba7388bc679027c0af34203192e8a3f319 had content template/label confounding; zero model execution on that source, preserved as preparation history.",
+  "template_balance": "Within each content group and each of two paraphrase templates: eight YES and eight NO; template index floor(pair/4)%2 is independent of both label parities.",
+  "threads": 4,
+  "tokenizer_material": "Only fast tokenizer, with vocabulary and merges contained in pinned tokenizer.json. No separate vocab.json/merges.txt are present or used in this native model directory."
+}

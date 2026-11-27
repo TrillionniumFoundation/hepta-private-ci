@@ -16,10 +16,122 @@ use wiremock::ResponseTemplate;
 use wiremock::matchers::header_exists;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
+use zip::System;
+use zip::ZipArchive;
 use zip::ZipWriter;
 use zip::write::SimpleFileOptions;
 
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
+
+#[cfg(unix)]
+#[test]
+fn zip_archive_never_restores_privileged_mode_bits() {
+    assert_eq!(safe_zip_file_mode(0o104755), 0o755);
+    assert_eq!(safe_zip_file_mode(0o102644), 0o644);
+    assert_eq!(safe_zip_file_mode(0o17777), 0o755);
+}
+
+#[cfg(unix)]
+#[test]
+fn curated_zip_extracts_files_with_constrained_modes() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let staging = tempdir().expect("create private staging directory");
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    let files = [
+        ("script.txt", b"executable fixture".as_slice(), 0o777, 0o755),
+        ("private.txt", b"private fixture".as_slice(), 0o600, 0o600),
+    ];
+    for (name, content, archived_mode, _) in files {
+        let options = SimpleFileOptions::default().unix_permissions(archived_mode);
+        writer
+            .start_file(format!("archive/plugins/example/{name}"), options)
+            .expect("start archive file");
+        writer.write_all(content).expect("write archive file");
+    }
+
+    let archive = writer.finish().expect("finish archive").into_inner();
+    extract_zipball_to_dir(&archive, staging.path()).expect("extract curated archive");
+
+    for (name, content, _, expected_mode) in files {
+        let path = staging.path().join("plugins/example").join(name);
+        assert_eq!(std::fs::read(&path).expect("read extracted file"), content);
+        let mode = std::fs::metadata(&path)
+            .expect("read extracted metadata")
+            .permissions()
+            .mode();
+        assert_eq!(mode & 0o7777, expected_mode, "archive entry {name}");
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn zip_archive_rejects_symlinked_extraction_root() {
+    let temp = tempdir().expect("create staging parent");
+    let destination = temp.path().join("staging");
+    let outside = temp.path().join("outside");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, &destination).expect("symlink staging");
+    let archive = curated_repo_zipball_bytes(TEST_CURATED_PLUGIN_SHA);
+
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("staging symlink must not redirect extraction");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join(".agents").exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn zip_archive_rejects_preexisting_symlink_in_staging_tree() {
+    let temp = tempdir().expect("create staging parent");
+    let destination = temp.path().join("staging");
+    let outside = temp.path().join("outside");
+    std::fs::create_dir_all(&destination).expect("create staging");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, destination.join("plugins")).expect("symlink directory");
+
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    writer
+        .start_file("root/plugins/untrusted.txt", SimpleFileOptions::default())
+        .expect("start archive file");
+    writer
+        .write_all(b"must not escape")
+        .expect("write archive file");
+    let archive = writer.finish().expect("finish archive").into_inner();
+
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("preexisting symlink must not be traversed");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join("untrusted.txt").exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn downloaded_zip_permissions_do_not_preserve_privileged_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory = tempfile::tempdir().unwrap_or_else(|error| panic!("{error:?}"));
+    let path = directory.path().join("payload");
+    std::fs::write(&path, b"fixture").unwrap_or_else(|error| panic!("{error:?}"));
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    let options = SimpleFileOptions::default()
+        .system(System::Unix)
+        .external_attributes(0o104755 << 16);
+    writer
+        .start_file("payload", options)
+        .expect("permission entry");
+    writer.write_all(b"fixture").expect("permission payload");
+    let bytes = writer.finish().expect("permission archive").into_inner();
+    let mut archive = ZipArchive::new(std::io::Cursor::new(bytes)).expect("permission archive");
+    let entry = archive.by_name("payload").expect("permission entry");
+    assert_eq!(entry.external_attributes() >> 16, 0o104755);
+    let output = File::open(&path).unwrap_or_else(|error| panic!("{error:?}"));
+    apply_zip_permissions(entry.unix_mode(), &output, &path)
+        .unwrap_or_else(|error| panic!("{error:?}"));
+    let metadata = std::fs::metadata(&path).unwrap_or_else(|error| panic!("{error:?}"));
+    assert_eq!(metadata.permissions().mode() & 0o7777, 0o755);
+}
 
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
@@ -1300,10 +1412,37 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
     assert!(err.contains("invalid path components"));
 }
 
+#[test]
+fn curated_repo_archive_fixtures_cover_stored_and_deflated_entries() {
+    for (bytes, expected_method) in [
+        (
+            curated_repo_zipball_bytes(TEST_CURATED_PLUGIN_SHA),
+            zip::CompressionMethod::Deflated,
+        ),
+        (
+            curated_repo_backup_archive_zip_bytes(TEST_CURATED_PLUGIN_SHA),
+            zip::CompressionMethod::Stored,
+        ),
+    ] {
+        let mut archive =
+            ZipArchive::new(std::io::Cursor::new(bytes)).expect("read archive fixture");
+        assert!(!archive.is_empty(), "archive fixture must contain entries");
+        for index in 0..archive.len() {
+            let entry = archive.by_index(index).expect("read fixture entry");
+            assert_eq!(
+                entry.compression(),
+                expected_method,
+                "fixture entry {index} must use its declared compression method",
+            );
+        }
+    }
+}
+
 fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let options = SimpleFileOptions::default();
+    // Exercise DEFLATE decoding; the backup archive fixture still covers stored entries.
+    let options = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Deflated);
     let root = format!("openai-plugins-{sha}");
     writer
         .start_file(format!("{root}/.agents/plugins/marketplace.json"), options)
@@ -1340,7 +1479,7 @@ fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
 fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let options = SimpleFileOptions::default();
+    let options = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
 
     writer
         .start_file("plugins/.git/HEAD", options)
@@ -1381,4 +1520,78 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
         .expect("write plugin manifest");
 
     writer.finish().expect("finish zip writer").into_inner()
+}
+
+#[test]
+fn extract_zipball_rejects_symlink_entries() {
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    let options = SimpleFileOptions::default().system(System::Unix);
+    writer
+        .add_symlink("root/link", "../../outside", options)
+        .expect("add symlink entry");
+    let bytes = writer.finish().expect("finish zip").into_inner();
+    {
+        let mut archive =
+            ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read symlink fixture");
+        let entry = archive.by_name("root/link").expect("read symlink entry");
+        assert!(
+            entry.is_symlink(),
+            "fixture must contain a real symlink entry"
+        );
+    }
+    let destination = tempdir().expect("destination");
+
+    let err = extract_zipball_to_dir(&bytes, destination.path())
+        .expect_err("symlink archive entries must be rejected");
+    assert!(err.contains("is a symlink"));
+    assert_eq!(
+        std::fs::symlink_metadata(destination.path().join("link"))
+            .expect_err("rejected symlink must not be created")
+            .kind(),
+        std::io::ErrorKind::NotFound
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn extract_zipball_masks_special_and_shared_write_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let cases = [
+        ("executable", 0o107777, 0o755),
+        ("group-writable-data", 0o100660, 0o640),
+        ("private-data", 0o100600, 0o600),
+    ];
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    for (name, archive_mode, _) in cases {
+        // unix_permissions() masks special bits before the archive is written.
+        let options = SimpleFileOptions::default()
+            .system(System::Unix)
+            .external_attributes(archive_mode << 16);
+        writer
+            .start_file(format!("root/{name}"), options)
+            .expect("start permission fixture");
+        writer.write_all(name.as_bytes()).expect("write fixture");
+    }
+    let bytes = writer.finish().expect("finish zip").into_inner();
+    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read fixture");
+    for (name, archive_mode, _) in cases {
+        let entry = archive
+            .by_name(&format!("root/{name}"))
+            .expect("read permission fixture");
+        assert_eq!(entry.external_attributes() >> 16, archive_mode, "{name}");
+    }
+    let destination = tempdir().expect("destination");
+    extract_zipball_to_dir(&bytes, destination.path()).expect("extract archive");
+
+    for (name, _, expected) in cases {
+        let path = destination.path().join(name);
+        let mode = std::fs::metadata(&path)
+            .expect("fixture metadata")
+            .permissions()
+            .mode();
+        assert_eq!(mode & 0o7777, expected, "{name}");
+        assert_eq!(std::fs::read(path).expect("read fixture"), name.as_bytes());
+    }
 }

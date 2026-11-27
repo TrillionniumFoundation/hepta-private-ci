@@ -1,0 +1,99 @@
+{
+  "execution_result_files": {
+    "qualification-001/result.json": {
+      "bytes": 6587,
+      "sha256": "a562928a2de212169806cd0a7ff9ad6d3ed02b620ba50708904e066952b4ca58"
+    },
+    "qualification-002/historical-merged.json": {
+      "bytes": 3591,
+      "sha256": "b05182f3d3dc32535a4995cc6c2ab19f62d67c5014206684b7dad664e995d47f"
+    },
+    "qualification-002/result.json": {
+      "bytes": 6746,
+      "sha256": "4d0c00071e47d480846de05d340a0555a1c0fce9d0789067970901f131477899"
+    },
+    "qualification-002/single-real-r8.json": {
+      "bytes": 20773,
+      "sha256": "1c7a717aa7e1f905e53c4d19c70bcc103b68c4f7c3a80c4fd43bb353d223571d"
+    },
+    "qualification-002/two-real-r8.json": {
+      "bytes": 40713,
+      "sha256": "851131d3b6bb2e808e89a0eaee22f381bb46fca1a6fc230caa2f6b10db55beab"
+    }
+  },
+  "new_models": 0,
+  "new_training": 0,
+  "old_source_changed_by_this_cycle": false,
+  "qa_files": {
+    "qualification-plan-001.json": {
+      "bytes": 10575,
+      "sha256": "64fefa97b77a8fa4a4fd0035769bc9b0f2f28564f7f9b8738a3771ff5ee47a9e"
+    },
+    "qualification-plan-002.json": {
+      "bytes": 11226,
+      "sha256": "c22aec16a7015110df722b4814eb32e34e0c174bab7f834e3c7b958a3ca71bdd"
+    },
+    "qualification-summary.json": {
+      "bytes": 13127,
+      "sha256": "5773e8feace9f09b6d29c5b571fc341157a950c2dc1bea0f7ec30f1f7f3c17a2"
+    },
+    "stage-plan.json": {
+      "bytes": 1450,
+      "sha256": "0f361a384d8f7026c278da218689fdc1a8253025aba25d1e54fa60d0311c831d"
+    }
+  },
+  "schema": "hepta.memory-budget-v2.final-manifest.v1",
+  "source_files": {
+    "scripts/memory_cell_budget_v2/README.md": {
+      "bytes": 5594,
+      "lines": 92,
+      "sha256": "08dc5d53f60c1570dd0f653308d3091f43937078b811498daffa5ed6976bfdb4"
+    },
+    "scripts/memory_cell_budget_v2/arm_controller.py": {
+      "bytes": 7748,
+      "lines": 160,
+      "sha256": "8279853eb3913fab019f3fdc40f10c17d71adb9fc0879324b53f0cb603779ac5"
+    },
+    "scripts/memory_cell_budget_v2/common.py": {
+      "bytes": 1916,
+      "lines": 55,
+      "sha256": "dc1695aeef715a74d1399bdffa503ae01a3a656d2283fd09821beeddc56595e4"
+    },
+    "scripts/memory_cell_budget_v2/qualify.py": {
+      "bytes": 6002,
+      "lines": 127,
+      "sha256": "d7d923dd671d8ad05743bd8e39f760211b187c9c55cacb9e843769375b207136"
+    },
+    "scripts/memory_cell_budget_v2/receipt_bridge.py": {
+      "bytes": 7227,
+      "lines": 159,
+      "sha256": "1997290ebbd46ecbd6f0bd85d31b7c8ea7b25e9ccddb19a20e12e57d570794e5"
+    },
+    "scripts/memory_cell_budget_v2/tensor_capacity.py": {
+      "bytes": 8048,
+      "lines": 158,
+      "sha256": "f4ccd0ff3a02d8964b1acd4f51c5936b6ff4dccb13f6dfb80ada5d17bd247644"
+    },
+    "scripts/memory_cell_budget_v2/test_arm_controller.py": {
+      "bytes": 8185,
+      "lines": 147,
+      "sha256": "79bcc3f732ee47d180035599d0b63cb93b3bf2eb7e25e6a16d056498281ce03a"
+    },
+    "scripts/memory_cell_budget_v2/test_receipt_bridge.py": {
+      "bytes": 4622,
+      "lines": 93,
+      "sha256": "72a507ebf52bef8a332c285cbc3e1d1755bd0c7a92a2f659042940e168f41164"
+    },
+    "scripts/memory_cell_budget_v2/test_support.py": {
+      "bytes": 3067,
+      "lines": 79,
+      "sha256": "b470917ffc2dce66f45897091e450253738316695ec948b8614525be8f3ed4d1"
+    },
+    "scripts/memory_cell_budget_v2/test_tensor_capacity.py": {
+      "bytes": 4513,
+      "lines": 97,
+      "sha256": "e0e1c69dddf087f2ea623da4feae3a0bf820cfffef2da864e1503b05f864fdd0"
+    }
+  },
+  "source_snapshot": "executed-sources-002"
+}

@@ -56,6 +56,10 @@ use crate::freeze_dataset_receipt_v3;
 use crate::validate_candidate_set_completeness;
 use crate::verify_dataset_snapshot_receipt_v3;
 
+#[path = "production_reconciliation.rs"]
+mod reconciliation;
+pub use reconciliation::CommittedLearningAppendV1;
+
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -235,6 +239,12 @@ impl LedgerWriter {
         self.trust.verifier()
     }
 
+    /// Immutable host-authorized domain shared by this ledger and its witness.
+    /// It identifies a logical ledger, not a file path or its current head.
+    pub fn binding_digest(&self) -> Digest32 {
+        self.backend.binding()
+    }
+
     #[must_use]
     pub fn trust_distribution_digest(&self) -> Digest32 {
         self.trust.distribution_digest()
@@ -243,6 +253,25 @@ impl LedgerWriter {
     #[must_use]
     pub const fn trust_generation(&self) -> u64 {
         self.trust.generation()
+    }
+
+    /// Qualification-only physical bytes from the original locked durable
+    /// ledger and witness. The exclusive borrow serializes observation with
+    /// writes. Each file is bounded by `maximum_bytes` (at most 8 MiB), and its
+    /// cursor is restored. No handle is cloned, reopened, unlocked or synced;
+    /// read/restoration errors fail instead of substituting cached state.
+    #[cfg(feature = "qualification-legacy-write")]
+    pub fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<[Vec<u8>; 2], ProductionLedgerError> {
+        let LedgerBackend::Durable(ledger) = &mut self.backend else {
+            return Err(ProductionLedgerError::UnsupportedBackend);
+        };
+        Ok([
+            ledger.qualification_file_bytes(maximum_bytes)?,
+            self.witness.qualification_file_bytes(maximum_bytes)?,
+        ])
     }
 
     pub fn snapshot(&self) -> Result<LedgerSnapshot, ProductionLedgerError> {
@@ -362,6 +391,22 @@ impl LedgerWriter {
         self.commit(expected_predecessor, event)
     }
 
+    /// Validate a real Observer outcome against the current original trust and
+    /// active durable Decision, without appending or granting a write token.
+    /// Historical Generator validity is established by that accepted record;
+    /// the new Observer still needs its current role, window and independence.
+    /// A subsequent append repeats these checks under the original writer.
+    pub fn validate_observed_outcome(
+        &self,
+        outcome: &AuthenticatedOutcomeV1,
+        evidence: &SignedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<(), ProductionLedgerError> {
+        let event = self.authenticated_outcome_event(outcome.clone(), evidence, now)?;
+        self.backend.core()?.prepare(event)?;
+        Ok(())
+    }
+
     pub fn append_outcome(
         &mut self,
         expected_predecessor: Digest32,
@@ -369,6 +414,16 @@ impl LedgerWriter {
         evidence: &SignedLearningEvidenceV1,
         now: u64,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
+        let event = self.authenticated_outcome_event(outcome, evidence, now)?;
+        self.commit(expected_predecessor, event)
+    }
+
+    fn authenticated_outcome_event(
+        &self,
+        outcome: AuthenticatedOutcomeV1,
+        evidence: &SignedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<LedgerEvent, ProductionLedgerError> {
         let payload = outcome_signing_payload_v2(&outcome);
         let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::Observer,
@@ -414,7 +469,7 @@ impl LedgerWriter {
             finalized_at: outcome.watermark.finalized_at,
             authentication_digest: signed_evidence_digest(evidence),
         });
-        self.commit(expected_predecessor, event)
+        Ok(event)
     }
 
     pub fn append_credit_batch(
@@ -464,6 +519,30 @@ impl LedgerWriter {
             authentication_digest: signed_evidence_digest(evidence),
         });
         self.commit(expected_predecessor, event)
+    }
+
+    /// Append conserved, independently authenticated credit at this owner's
+    /// current head. Recovery of an already committed batch uses its original
+    /// predecessor; a new batch may follow unrelated intervening facts. The
+    /// existing append path still validates active Outcome and independent
+    /// roles for new credit, and exact historical identity for replay. Current
+    /// signatures and the durable witness are required in both cases.
+    pub fn append_credit_batch_current(
+        &mut self,
+        batch: CreditAllocationBatchV1,
+        evidence: &SignedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<AppendReceipt, ProductionLedgerError> {
+        let core = self.backend.core()?;
+        let predecessor = core.record_by_id(&batch.batch_id)?.map_or_else(
+            || {
+                core.records()
+                    .last()
+                    .map_or(Digest32::ZERO, |record| record.chain_digest)
+            },
+            |record| record.predecessor_chain_digest,
+        );
+        self.append_credit_batch(predecessor, batch, evidence, now)
     }
 
     pub fn append_unlearning(
@@ -590,14 +669,7 @@ impl LedgerWriter {
     ) -> Result<(), ProductionLedgerError> {
         verify_dataset_snapshot_receipt_v3(receipt, now)?;
         let ledger = self.backend.core()?;
-        for digest in &receipt.snapshot.source_record_digests {
-            if ledger.active_record_by_digest(digest)?.is_none() {
-                return Err(ProductionLedgerError::Binding(
-                    "dataset source revoked, corrected or unavailable",
-                ));
-            }
-        }
-        Ok(())
+        LearningLedger::require_active_dataset_sources(ledger, receipt)
     }
 
     /// Resolve only the bounded frozen dataset through the replay-built digest
@@ -616,18 +688,7 @@ impl LedgerWriter {
         }
         self.revalidate_dataset_snapshot(receipt, now)?;
         let ledger = self.backend.core()?;
-        let mut records = receipt
-            .snapshot
-            .source_record_digests
-            .iter()
-            .map(|digest| {
-                ledger
-                    .active_record_by_digest(digest)?
-                    .ok_or(ProductionLedgerError::Binding("dataset source unavailable"))
-            })
-            .collect::<Result<Vec<_>, ProductionLedgerError>>()?;
-        records.sort_unstable_by_key(|record| record.sequence);
-        Ok(records)
+        LearningLedger::resolve_active_dataset_records(ledger, receipt)
     }
 
     /// Build a dataset receipt from the current anchored ledger. Source records,
@@ -1244,3 +1305,6 @@ impl From<DatasetReceiptError> for ProductionLedgerError {
 #[cfg(test)]
 #[path = "production_tests.rs"]
 mod tests;
+
+#[path = "production_current.rs"]
+mod current;

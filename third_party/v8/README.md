@@ -114,3 +114,101 @@ under `rusty-v8-v<crate_version>`.
 
 Do not mix artifacts across crate versions. The archive and binding must match
 the exact resolved `v8` crate version in `codex-rs/Cargo.lock`.
+
+## Local Hepta Cargo commands
+
+Hepta's code-mode runtime enables `v8_enable_sandbox`. A bare local Cargo
+command can therefore request a sandbox archive that `denoland/rusty_v8` does
+not publish. The repository already resolves the matching Codex-built archive,
+generated bindings, and checksum file in `scripts/codex_package/v8.py`. Use
+the same resolver for a local command:
+
+```bash
+# Run from the repository root. The child runs in codex-rs.
+CODEX_REPO_ROOT="$PWD" python3 scripts/hepta_ci_v8.py --run \
+  cargo build --locked --offline -p codex-code-mode-host --bin codex-code-mode-host
+
+CODEX_REPO_ROOT="$PWD" python3 scripts/hepta_ci_v8.py --run \
+  just test -p codex-app-server --locked --offline --test-threads 1
+```
+
+The launcher preserves the command, its arguments, inherited Cargo profile
+settings, output streams, and normal-exit status. It only obtains the host-specific
+archive/binding pair using the existing resolver and supplies its two environment
+variables. It does not prepare other test helper binaries or change test
+assertions, retries, or deadlines. A failed resolver never starts the command.
+CI calls without `--run` retain their existing `GITHUB_ENV` export behavior.
+
+The resolver may download release inputs before the child starts, including when
+the child uses Cargo's `--offline` option. Fully offline operation requires an
+already verified local pair supplied together as `RUSTY_V8_ARCHIVE` and
+`RUSTY_V8_SRC_BINDING_PATH`. Explicit pairs and `V8_FROM_SOURCE` retain the
+existing resolver behavior; passing an override is not proof of its integrity.
+Never set just one half of a pair or substitute a non-sandbox archive.
+
+### Verified 150.4.0 GNU sandbox release input
+
+The existing resolver selects `openai/codex` release
+[`rusty-v8-v150.4.0`](https://github.com/openai/codex/releases/tag/rusty-v8-v150.4.0)
+(release ID `361445880`, published July 29, 2026, marked prerelease). These
+are Codex-produced artifacts, not denoland's non-sandbox prebuilts. The
+November 4, 2026 dependency preparation downloaded all three inputs through the
+unchanged Hepta resolver and independently matched the release API digests:
+
+| Input for `x86_64-unknown-linux-gnu` | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz` | 29,366,352 | `a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583` |
+| `src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs` | 39,884 | `7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506` |
+| `rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256` | 262 | `6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be` |
+
+That preparation used Hepta `14e2d89b3367232ec5dbe6187f09feed0f2b68d3`
+and its unchanged Cargo.lock, SHA-256
+`5bd3faaf16a79eb12bcdcb89054e93da388bbd858f36439b9d6bcfb72f77d522`.
+Resolved V8 features were `default`, `use_custom_libcxx`,
+`v8_enable_pointer_compression`, and `v8_enable_sandbox`.
+Dependency verification does not establish helper, App Server, native-kernel,
+or device runtime acceptance. Those commands still need their original gates.
+
+### Independent source-build fallback (not yet qualified)
+
+The November 4, 2026 independent source attempt did **not** produce a usable
+archive/binding pair. With the original lock and feature set, Cargo exited 101
+after 204.24 seconds: the upstream `tools/ninja_gn_binaries.py` could not reach
+CIPD while resolving its GN tool and raised `OSError: [Errno 101] Network is
+unreachable`; upstream `build.rs:637` then failed its tool-download assertion.
+The source tree and lock remained unchanged. No successful native source-build
+or helper acceptance is claimed. The commands below describe the intended
+fallback and its remaining prerequisite, while the verified release pair above
+is the available consumer path.
+
+When rebuilding this exact dependency, use the locked original helper's Cargo
+graph so Cargo selects the actual unified feature set. Preserve Rust's default
+dev profile separately from the C++ release configuration used by the original
+prebuilt path. The upstream crate supports this preparation:
+
+```bash
+# Inside an isolated Ubuntu 24.04 x86_64 GNU build environment:
+# Rust 1.96.0, Python 3, pkg-config, build-essential, libglib2.0-dev,
+# libssl-dev, and libclang-19-dev must be available.
+# Fetch the original locked Cargo graph before disconnected Cargo operation.
+CARGO_BUILD_JOBS=2 V8_FROM_SOURCE=1 LIBCLANG_PATH=/usr/lib/llvm-19/lib \
+  GN_ARGS=is_debug=false cargo build --locked --offline \
+  -p codex-code-mode-host --bin codex-code-mode-host --message-format=json
+```
+
+Upstream V8 toolchain downloads are separate from Cargo's offline resolution.
+Do not combine source-build mode with archive, mirror, binding, docs, or trybuild
+overrides. The audited preparation used an 8 GiB memory cap, two CPUs/two jobs,
+and a fresh host admission check requiring at least 32 GiB available memory to
+retain a 24 GiB reserve. Record the container image, GNU libc baseline, original
+source/tree/lock, crate checksum, effective GN arguments, tool versions and
+digests, and the real Cargo result. Ubuntu 24.04 provides the audited GNU libc
+2.39 baseline; another host ABI requires separate qualification.
+
+Only after successful source compilation may its
+`debug/gn_out/obj/librusty_v8.a` and
+`debug/gn_out/src_binding.rs` be exported together. Record the uncompressed
+archive hash, compressed archive hash, binding hash, and actual linked helper
+identity from that same build. Give each pair a new immutable artifact path;
+do not replace bytes behind a previously consumed archive path. A local source
+build is a separate supplier result and must not claim the release hashes above.

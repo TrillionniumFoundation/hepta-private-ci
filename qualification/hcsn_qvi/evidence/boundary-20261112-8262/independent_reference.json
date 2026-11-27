@@ -1,0 +1,118 @@
+{
+  "schema": "hcsn-independent-reference-execution-v1",
+  "source_repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_blob_sha": "09d2908e6982e15329bd691625a91ef479c01fc6",
+  "source_path": "qualification/hcsn_qvi/evidence/boundary-20261112-8262/independent_reference.js",
+  "execution_engine": "functions.exec V8 JavaScript isolate",
+  "engine_version": null,
+  "execution_environment_id": null,
+  "code_loaded_from_retained_blob": true,
+  "source_readback_equal": true,
+  "execution_start_utc": "2026-11-12 00:29:13 UTC",
+  "execution_end_utc": "2026-11-12 00:29:13 UTC",
+  "timestamp_scope": "UTC clock-tool observations bracketing evaluation; not a process-resource measurement",
+  "cpu_seconds": null,
+  "process_wall_seconds": null,
+  "peak_rss_bytes": null,
+  "energy_joules": null,
+  "note": "Fresh execution of these retained bytes; earlier exploratory JS evaluations are not charged as zero and were not source-bound to this blob. No Node/Python/CI/Torch execution is claimed.",
+  "result": {
+    "schema": "hcsn-independent-js-boundary-reference-v1",
+    "problem": {
+      "mu": -0.2,
+      "sigma": 0.35,
+      "discount": 0.15,
+      "upper": 2,
+      "reset": 1.37,
+      "delay": 0.2,
+      "cost": 0.6,
+      "initial": 0.8
+    },
+    "arithmetic": "JavaScript Number binary64; no arbitrary precision",
+    "continuum": {
+      "boundary": 0.6782168028357083,
+      "initial_value": 6.222342068936393,
+      "characteristic_roots": [
+        3.894186967705318,
+        -0.6288808452563379
+      ],
+      "endpoint_matching_residuals": [
+        -2.1718343911033435,
+        0.9096596155724495
+      ],
+      "value_matching_residual": 0,
+      "smooth_pasting_residual": 8.881784197001252e-16,
+      "upper_reflection_residual": -4.440892098500626e-16,
+      "maximum_sampled_continuation_ode_residual": 7.771561172376096e-16,
+      "maximum_intervention_generator_residual": -0.25071479293256205
+    },
+    "finite_policy_iteration": [
+      {
+        "nodes": 21,
+        "spacing": 0.1,
+        "policy_evaluations": 3,
+        "initial_value": 6.347546226325314,
+        "initial_value_absolute_error": 0.12520415738892154,
+        "maximum_grid_value_error": 0.1747913579466882,
+        "bellman_residual": 8.881784197001252e-16,
+        "discrete_policy_boundary_bracket": [
+          0.7000000000000001,
+          0.8
+        ]
+      },
+      {
+        "nodes": 41,
+        "spacing": 0.05,
+        "policy_evaluations": 6,
+        "initial_value": 6.28382093036641,
+        "initial_value_absolute_error": 0.06147886143001724,
+        "maximum_grid_value_error": 0.08690145001223648,
+        "bellman_residual": 8.881784197001252e-16,
+        "discrete_policy_boundary_bracket": [
+          0.65,
+          0.7000000000000001
+        ]
+      },
+      {
+        "nodes": 81,
+        "spacing": 0.025,
+        "policy_evaluations": 7,
+        "initial_value": 6.253428643552466,
+        "initial_value_absolute_error": 0.031086574616073115,
+        "maximum_grid_value_error": 0.043666153229850124,
+        "bellman_residual": 3.552713678800501e-15,
+        "discrete_policy_boundary_bracket": [
+          0.675,
+          0.7000000000000001
+        ]
+      },
+      {
+        "nodes": 121,
+        "spacing": 0.016666666666666666,
+        "policy_evaluations": 8,
+        "initial_value": 6.242630301667454,
+        "initial_value_absolute_error": 0.02028823273106095,
+        "maximum_grid_value_error": 0.02887797421984928,
+        "bellman_residual": 1.7763568394002505e-15,
+        "discrete_policy_boundary_bracket": [
+          0.6833333333333333,
+          0.7
+        ]
+      }
+    ],
+    "interpretation": {
+      "finite_bellman_residual_is_not_continuum_error": true,
+      "discrete_policy_brackets_are_not_continuum_certificates": true,
+      "refinement_is_empirical_for_this_single_fixture": true,
+      "tested_candidate_python": false,
+      "tested_ci": false,
+      "trained_models": 0,
+      "independent_value_iteration_performed": false,
+      "high_precision_performed": false,
+      "gradient_validation_performed": false,
+      "general_continuum_certificate": false,
+      "hcsn_half_line_qualification": false,
+      "neural_task_benefit_established": false
+    }
+  }
+}

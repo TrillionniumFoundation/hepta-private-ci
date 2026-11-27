@@ -1,0 +1,160 @@
+{
+  "checks": {
+    "compileall": "passed",
+    "full_repository": "not_run",
+    "git_diff_cached_check": "passed",
+    "native_target": "not_run",
+    "old_population_validator_ast_preserved": true,
+    "remote_actions": "not_observed_this_increment",
+    "remote_python_blob_matches": 9,
+    "rust_fmt": "not_run_no_full_codex_rs_checkout_or_just"
+  },
+  "code_candidate": "5babf2b0a85ef3c5c3ad4468d78c176871b8dee1",
+  "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v",
+  "date": "2026-10-13",
+  "development_failure": {
+    "first_full_suite": {
+      "errors": 1,
+      "tests": 203
+    },
+    "reason": "test assumed direct synthetic candidate acceptance; actual original-retention gate rejected it",
+    "resolution": "preserve genuine rejection and correct test; no acceptance gate relaxed"
+  },
+  "diagnostic": {
+    "direct": "rejected internal synthetic fixture 896-to-448, live peak1344",
+    "split": "accepted internal synthetic fixture 896-to-448, live peak1792",
+    "successful_paired_experiment": false
+  },
+  "independent_future_retention_established": false,
+  "installed_hf_check": {
+    "defined": 3,
+    "executed": 0,
+    "exit_code": 1,
+    "failure": "ModuleNotFoundError: transformers",
+    "log": "evidence/hf-check.log"
+  },
+  "logs_in_package_evidence": {
+    "baseline.log": {
+      "bytes": 30426,
+      "sha256": "cc95914c49fb74a0387f48c5c005c7e5b29ac3c0fc8b986088e715e80ffa8c16"
+    },
+    "core-development.log": {
+      "bytes": 2600,
+      "sha256": "d27a7c4e7e7131e3955347b67026730f32284161aeda1d932a7b94aee77f1849"
+    },
+    "diagnostic.json": {
+      "bytes": 16186,
+      "sha256": "c6a5c6fa20a3d9a63570aa6fdae31ba7bb010a7ffe8531762552965ee070e6c2"
+    },
+    "diagnostic.py": {
+      "bytes": 1105,
+      "sha256": "d04299a02acfde17116464086e58c5e7dd7a68039f833e3fbbb3b7b2cafa842c"
+    },
+    "diagnostic.stderr.log": {
+      "bytes": 1064,
+      "sha256": "0858511e5820c11277b4e59e0671df4cdd9fe516812ef658845d63c8649e1dbf"
+    },
+    "fixture-selection-diagnostic.log": {
+      "bytes": 3383,
+      "sha256": "19ec68e8fa1dbeec1c91350f1db6927243975197de279b4c83f560c6dfcbcfa9"
+    },
+    "full-final1.log": {
+      "bytes": 33714,
+      "sha256": "010a5165d67604f5f5f0bb862b653e7131f3846e880ba3e0d49f7944ea84882e"
+    },
+    "full-final2.log": {
+      "bytes": 33714,
+      "sha256": "8319a2f0dd90305d323869d2038bbc708b246fdf518e56e156979ba98c102aba"
+    },
+    "full1.log": {
+      "bytes": 35713,
+      "sha256": "c17ffda2b5bc9569c8382393768b9a0cd67c6c9ad5983bae6ce1fc3d0c7dd019"
+    },
+    "hf-check.log": {
+      "bytes": 1405,
+      "sha256": "2b4f45c19924ac5462902a06196cb494132aa456f051e804c3f9ce297f8490fb"
+    },
+    "integration-smoke.log": {
+      "bytes": 1398,
+      "sha256": "3c842fbd17110abb930552bae2946ca261a4e491cde33b9bf563f0482e765050"
+    },
+    "integration-tests1.log": {
+      "bytes": 5011,
+      "sha256": "2710cf2f2ea4aa6a0631af2e233babd895d68047a3516096c1c682e3248cc782"
+    },
+    "validator-refactor.json": {
+      "bytes": 53,
+      "sha256": "9526d0a88bad4d205d53672f62bb1059535fa3c72ee830ff0e49f3cfcaa30748"
+    }
+  },
+  "parameter_compression_executed": true,
+  "parameter_compression_scope": "actual Head plus gate bank only; shared Encoder not compressed",
+  "pretrained_execution": false,
+  "production_authorized": false,
+  "runtime": {
+    "cuda_available": false,
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu",
+    "transformers_installed": false
+  },
+  "schema": "hepta.consolidation-local-tests.v1",
+  "source_baseline": "2e3b16df48918ecfcbac756447ed9fe66e3db6a6",
+  "source_blobs": {
+    "consolidation_record.py": {
+      "git_blob_sha1": "48f2d64261bd8ca31ccc08c26d57ceec3048bd87",
+      "sha256": "69307d0d01d085d1122aaf7b6274fbeb68e91737878fb5fde38f9a2903d5351a"
+    },
+    "consolidation_training.py": {
+      "git_blob_sha1": "4611db875a146faaa130dea0f7d3970ccabe13b9",
+      "sha256": "7faf016e69745b005e42c437a3e661bfea276eb8a5d02d5e63ff46e589b10d7a"
+    },
+    "matrix_export.py": {
+      "git_blob_sha1": "614b1e0e2959b9393373d68f29a8b16daef899ce",
+      "sha256": "e4a923f1c3f4436a4f0c47792214c7679c6c7448c391dcecef0c373d766cc830"
+    },
+    "matrix_growth.py": {
+      "git_blob_sha1": "e5e8baba7dfb169f884ebf319eb7f84e3f52c107",
+      "sha256": "55a58a6ec86fd18f3fa6d77ac0a08e8ebc34d257dfeadf4aadea1cbc8e87cb38"
+    },
+    "matrix_materials.py": {
+      "git_blob_sha1": "6d7b25914ed71a5a276ed12b22dd28c89411a304",
+      "sha256": "e1d34a11c60c1983782aa1ce5d47d0bad619af35b576d68c2b38573a800a568c"
+    },
+    "matrix_runtime.py": {
+      "git_blob_sha1": "f57da10c3d30e15ed970aa2cef03d1ec96360ffa",
+      "sha256": "a9d07a9d7e8c2634e65bd2cb1ab70cfba666d0c1851a5cfb16bd83b97e38cb84"
+    },
+    "paired_execution.py": {
+      "git_blob_sha1": "83959a23bc9e1ac849ffc0b8f6735b54cfe05cca",
+      "sha256": "97d0126feb9a19984def009d9feaa8fd5b0506087c7641fbb14c192ec9162a7b"
+    },
+    "test_consolidation_export.py": {
+      "git_blob_sha1": "8f56ca1859255b9e3dcb4f89c58dab43301cb1a0",
+      "sha256": "0a113a1c1037559e3e9629558227f78fab330fcb7bb58119028cf9295ccf2d73"
+    },
+    "test_consolidation_training.py": {
+      "git_blob_sha1": "630bcea858e214ed1b1e7eb1617ab5082650f2df",
+      "sha256": "2e6b5100a4c4abaca44fc50935aa6bbc7bed9aa6e401b8acf37997b08327e57d"
+    }
+  },
+  "source_startup_warning": "unrelated artifact_tool spreadsheet warmup RemoteError retained in raw logs",
+  "surface": "session CPU source slice; not project cloud or full repository checkout",
+  "tests": {
+    "baseline_passed": 185,
+    "distinct_test_ids": 204,
+    "errors": 0,
+    "failures": 0,
+    "final_runs": 2,
+    "final_seconds": [
+      43.617,
+      38.395
+    ],
+    "new_export": 10,
+    "new_training": 9,
+    "passed": 204,
+    "run": 204,
+    "skips": 0
+  }
+}

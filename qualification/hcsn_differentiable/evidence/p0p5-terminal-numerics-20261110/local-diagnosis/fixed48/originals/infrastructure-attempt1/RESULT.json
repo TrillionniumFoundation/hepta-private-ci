@@ -1,0 +1,33 @@
+{
+  "complete_process_CPU_seconds": null,
+  "complete_process_wall_seconds": null,
+  "exit_code": 127,
+  "infrastructure_attempt": 1,
+  "launcher_started": false,
+  "missing_executable": "/usr/bin/time",
+  "program_manifest_sha256": "8b7015a93d3da6f158b11e330b3dc7e5af5d01a4521585e5f7578a7e1842e966",
+  "proof": "timeout stderr records missing command; Python launcher execution directory and GNU output are absent. Missing executable was before Python in argv.",
+  "retry_performed_by_this_capture": false,
+  "scalar_cases_started": 0,
+  "schema": "hcsn-scalar-infrastructure-launch-failure-v1",
+  "stdout_stderr_and_intent": {
+    "p1-short-time-toy-execution-v1.launch-intent.json": {
+      "bytes": 948,
+      "sha256": "d6fe4f2dc737e4a4fe964326d69afe973707e7b42ba92eb4db943432c611b5b6"
+    },
+    "p1-short-time-toy-execution-v1.launcher.stderr": {
+      "bytes": 78,
+      "sha256": "edbe47204943cdd0e2c73b656876576a393789ba9a090b2cef9ce504500c3189"
+    },
+    "p1-short-time-toy-execution-v1.launcher.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "tool_metadata_only": {
+    "exit_code": 127,
+    "scope": "tool-return timing, not independently established full operating-system process cost",
+    "wall_time_seconds": 2.002e-05
+  },
+  "worker_started": false
+}

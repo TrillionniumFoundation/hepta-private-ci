@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.immutable-code-review-manifest.v1",
+  "base_tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "three_way": {
+    "ancestor": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+    "ours": "c7ba93274c0e6ccf764120defc642689df499273",
+    "theirs": "374aa919931e8ee5446b4ccdc49e651b7848cc5d"
+  },
+  "status": "STATIC_ONLY_NOT_FMT_NOT_COMPILED_NOT_EXECUTED",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "ancestor_blob": "63295654af4ba14e56b564dee3f09db5d18d8253",
+      "ours_blob": "752bee454a024280be6d5033b826abff398d2edf",
+      "base_blob": "1e8022df625af5004456ce60924dda1a7279de5b",
+      "bytes": 18476,
+      "sha256": "3acbf74dad10e32f371ab2d910560ca44539e951d6853e3551f6acdb3abe7f62",
+      "git_blob_sha": "5b0d2ae93eabfc79ecbf576d4143fed361fd4812"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "ancestor_blob": "96c2e18be1761e4c81da04bf5081a1bd57313305",
+      "ours_blob": "47969e32eaeec0e48479c9ec7f05b10ee17a7412",
+      "base_blob": "0c05c74915c38595cf98a22b6552e1a66c9253eb",
+      "bytes": 11512,
+      "sha256": "3a0155769db94f769b45eb5a697dec2a89572ba51349203e29f369f873b45838",
+      "git_blob_sha": "9c806b1319cfc9ccd326e58a230a79bd42d2ba00"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "ancestor_blob": "7f2fd5d54dfb0a391a260db864d4d989c87cac8e",
+      "ours_blob": "e6d04aef9a58c2db7e78d73d78e2ba6de2320d4a",
+      "base_blob": "ff7dc74a1bb6f74178f4cfe76c5d937eb1238439",
+      "bytes": 8026,
+      "sha256": "2b401c2ea7c861c27d72d684eda7d9481dfa7500ea7648a302cf88ac3753ac4e",
+      "git_blob_sha": "a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "ancestor_blob": null,
+      "ours_blob": null,
+      "base_blob": "5c71c629246309e7dfa5793d776aa56aa608aa78",
+      "bytes": 6860,
+      "sha256": "3ca47e2ebc224f0fed5cdea44b3ab2ceedba90e2bcc6a732c6d40fb5652ca174",
+      "git_blob_sha": "1177429c6cff407e9220929f79dce4805ed03bb6"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-fixture-three-way/REVIEW.json",
+      "bytes": 10595,
+      "sha256": "b33867394beec8967bb882fd41e22953294a7dde5503ce60ea4b92085ff9905b",
+      "git_blob_sha": "c6dde7a14c0e3f5371bca6ce26c36d13d2631342"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/374-fixture-three-way/DIFF.patch",
+      "bytes": 7438,
+      "sha256": "0e87472be255ba7d86ce4d40275c5cca03848c702d289d61bdc7e691765bb1cb",
+      "git_blob_sha": "50850e0999f56a35bc1d3fffbfb4dac9908e6cb8"
+    }
+  ]
+}

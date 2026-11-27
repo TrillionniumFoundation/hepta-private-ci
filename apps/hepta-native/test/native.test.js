@@ -43,7 +43,8 @@ test("native intent requires exact payload binding", () => {
 
 test("payload drift fails closed", () => {
   assert.throws(
-    () => buildNativeIntent(intentInput({ leasePayloadDigest: "ab".repeat(32) })),
+    () =>
+      buildNativeIntent(intentInput({ leasePayloadDigest: "ab".repeat(32) })),
     /does not match/,
   );
 });
@@ -70,11 +71,17 @@ test("intent rejects zero digests and missing or unknown fields", () => {
 
   const symbolField = intentInput();
   symbolField[Symbol("authority")] = true;
-  assert.throws(() => buildNativeIntent(symbolField), /missing or unknown fields/);
+  assert.throws(
+    () => buildNativeIntent(symbolField),
+    /missing or unknown fields/,
+  );
 
   const hiddenField = intentInput();
   Object.defineProperty(hiddenField, "authority", { value: true });
-  assert.throws(() => buildNativeIntent(hiddenField), /fields must be enumerable/);
+  assert.throws(
+    () => buildNativeIntent(hiddenField),
+    /fields must be enumerable/,
+  );
 });
 
 test("intent snapshots data descriptors without invoking accessors", () => {
@@ -167,11 +174,13 @@ test("caller-supplied matching digests cannot authenticate a terminal claim", ()
 
 test("terminal syntax is checked before the unavailable receipt boundary", () => {
   assert.throws(
-    () => observeNativeOutcome(terminalInput({ terminalStatus: "unregistered" })),
+    () =>
+      observeNativeOutcome(terminalInput({ terminalStatus: "unregistered" })),
     /terminalStatus is not registered/,
   );
   assert.throws(
-    () => observeNativeOutcome(terminalInput({ outcomeDigest: "0".repeat(64) })),
+    () =>
+      observeNativeOutcome(terminalInput({ outcomeDigest: "0".repeat(64) })),
     /non-zero/,
   );
 });

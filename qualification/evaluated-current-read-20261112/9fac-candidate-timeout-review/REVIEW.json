@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "kind": "single-test-file static candidate; not executed",
+  "source_head": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "source_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "candidate_tree": "f20f2bbfa54420bd8938bfd55a9eb0bc3d295df4",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "base": {
+        "bytes": 22543,
+        "sha256": "4ebd16d971c3cfed39eb529338d65315fba171241133dc1b01192004f648749c",
+        "blob_sha": "a40ba47f4f6fea4975cb68a0585b1cf42c1c73d6"
+      },
+      "post": {
+        "bytes": 23597,
+        "sha256": "b2a8ff84ebfb1db4e66ba0bb0fcc6c07bdc4c8d4ecbd43d8e4b0513797147b01",
+        "blob_sha": "2c787e9e1faea7eb11dc525ddd549229341ec06a"
+      },
+      "added_lines": 28,
+      "removed_lines": 2
+    }
+  ],
+  "observed_failure": {
+    "job_id": 131309678676,
+    "run_id": 43254705812,
+    "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+    "result": "TIMEOUT",
+    "seconds": 60.007,
+    "original_log_bytes": 3745971,
+    "original_log_sha256": "f98ec2b7790efae1808fbc4696e3f6fc5a59bc81aeedf6e1e811a3994f4ea6cc",
+    "original_failure_index_blob": "3d9e6598abd60bb22af198b74d3210492e9dcc86",
+    "limits": "Only running one test and then timeout were printed. The exact last subcase was not observed. Repeated fixture construction is verified in source; its share of measured timeout is not isolated."
+  },
+  "change": {
+    "fresh_completed_fixture_constructions_before": 9,
+    "fresh_completed_fixture_constructions_after": 4,
+    "wire_faults": [
+      "WrongPage",
+      "WrongCompletion",
+      "WrongOffset",
+      "WrongTotal",
+      "CorruptHeads",
+      "CloseAfterFirst"
+    ],
+    "wire_fault_fixture": "One completed original Trainer/Material owner. Each case still obtains its own fresh original Candidate transport/session, executes actual owner reads, and consumes that transport on rejection.",
+    "independent_fixture_cohorts_retained": [
+      "renewal/original-window/lifetime",
+      "actual Source withdrawal",
+      "cancelled in-flight response"
+    ],
+    "test_methods_before": 3,
+    "test_methods_after": 3,
+    "original_assertions": 77,
+    "post_assertions": 78,
+    "old_assertion_payloads_changed": 0,
+    "new_assertion": "All four original Material peer counters remain < 128.",
+    "production_changes": 0,
+    "cap_and_deadline_changes": 0,
+    "diagnostics": "Bounded phase elapsed_ms, wire fault identity, total actual Candidate frames and original Material peer counts; no full source data or signatures printed."
+  },
+  "wire_fault_budget": {
+    "pages": [
+      1,
+      1,
+      1,
+      1,
+      3,
+      1
+    ],
+    "total_pages": 8,
+    "source_captures_per_candidate_page": 3,
+    "frames_per_capture_per_original_source_experience_dataset_peer": 2,
+    "wire_fault_frames_per_original_peer": 48,
+    "fresh_bootstrap_captures": {
+      "initial_live_capture": 1,
+      "pre_writer_recapture": 1,
+      "original_stage_admission": 2,
+      "source_bound_stage_admission": 3,
+      "command_owner_binding": 2,
+      "first_fit_and_original_training_receipt": 5,
+      "total": 14
+    },
+    "bootstrap_frames_per_original_peer": 28,
+    "combined_static_expected_frames_per_original_peer": 76,
+    "material_dataset_bootstrap_command_is_separate": true,
+    "qualification": "Static successful-path count, not measured. Existing original handlers and unchanged 128-frame fixture loops are used. A new actual counter assertion checks the bound in the eventual run."
+  },
+  "dependency_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_support_tests.rs",
+      "blob_sha": "52439de8d370c9ba6835575bf0e033f246b22b11",
+      "role": "Each page calls actual original candidate_material_response before fault injection; Completed.close drops owner and joins the four original Material peers."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+      "blob_sha": "e61df55e1611d5fa3f9622b464a1e5abb41e9024",
+      "role": "Every page reads the actual SourceBound Stage."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "blob_sha": "9dd91ec0e81aff907a7760cdcee880226945993d",
+      "role": "Two outer source captures and one explicit candidate body capture per page."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "blob_sha": "bd124d3f287e1e3b5783aec5f51e2d083d8b21d8",
+      "role": "Each capture reads each retained E/D peer and Remote Material source twice."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+      "blob_sha": "826f48120730196081bb7e0bcd6427d30763579e",
+      "role": "Original source capture, pre-writer reread and typed stage construction."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "blob_sha": "692bccc629b4b073d958a5dd3b1d0e48d3ad9fa4",
+      "role": "Original occupied lane brackets work with source before/after; first Training has one post-fit capture."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+      "blob_sha": "3eeb581ffafbd80957dcf87ad02923f27d8acb29",
+      "role": "Original admission adds an explicit actual source read inside its occupied lane."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+      "blob_sha": "05a0d4c37348c8cdfc686c6e2b6c93af4fb26e63",
+      "role": "Retains exact Stage Arc; command-context binding enters original current lane."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "blob_sha": "0dd866b63bf3bb2de5155750e7c817a18416d550",
+      "role": "Fresh fit has two source reads; ordinary native readback checks original native journal and witness without extra source RPC."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_material_ports_tests.rs",
+      "blob_sha": "d30794234278ce7e934b78c27a3330db49628d06",
+      "role": "Unchanged 128-frame counters for original Source, Experience and Dataset fixture services."
+    }
+  ],
+  "execution": {
+    "formatter": "NOT_RUN",
+    "rust_compilation": "NOT_RUN",
+    "native_tests": "NOT_RUN",
+    "source_closure": "NOT_RUN"
+  },
+  "next_gate": "Root may integrate this single postimage and run the unchanged actual CI gates. The new attempt must observe this same old method completing with all old subcases and all peer bounds; no success is claimed here.",
+  "postimage_git_readback_equal": true
+}

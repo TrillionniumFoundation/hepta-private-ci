@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.hia-fresh-ref-protection-review.v1",
+  "snapshot": {
+    "path": "/workspace/scratch/75cf41417dcc/refs-fresh-20261119.tsv",
+    "sha256": "5154aeb3218d08df91c247110cb1bfd7cbb4cc69f64e5cf95fd1e773a1ed4497"
+  },
+  "previous_classification_sha256": {
+    "/workspace/scratch/75cf41417dcc/hia-audit/frozen-census-audit/protected-reclassified.json": "a461be096f0934b882c0a65b43933e7629a9a69a88132c2b2ca03dbc6520d728",
+    "/workspace/scratch/75cf41417dcc/hia-audit/frozen-census-audit/ordinary-reclassified.json": "723df48ab82450ceef0439efeebf480beb6b7376fe6dc1601417ee6efa9e1fd9"
+  },
+  "counts": {
+    "total": 7647,
+    "protected": 477,
+    "ordinary": 7169,
+    "main": 1,
+    "unresolved": 0
+  },
+  "main_sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "integration_sha_in_this_snapshot": "c0b8960ea2ed8f0c8c6e27176260d6b6ef494d8d",
+  "new_protected": [
+    {
+      "name": "codex/hia-native36-exact-source-admission-20261119-gpt6",
+      "sha": "6ef1889a41d117ba61c148846f3c913245dd6147"
+    }
+  ],
+  "missing_previously_protected_names": [],
+  "changed_previously_protected_name_sha_pairs": [],
+  "all_476_previous_protected_pairs_unchanged": true,
+  "changed_ordinary": [
+    {
+      "name": "integration/hepta-single-main-20261113-ab5b",
+      "before": "b51d9ca526fe06447e6bc58227b615b68df09ba0",
+      "after": "c0b8960ea2ed8f0c8c6e27176260d6b6ef494d8d"
+    }
+  ],
+  "new_unclassified_names": [],
+  "new_tip_object_lookup": {
+    "command": [
+      "git",
+      "--no-replace-objects",
+      "--git-dir=/workspace/scratch/75cf41417dcc/consolidation.git",
+      "cat-file",
+      "--batch-check"
+    ],
+    "exit_code": 0,
+    "stdout": "6ef1889a41d117ba61c148846f3c913245dd6147 missing\n",
+    "stderr": ""
+  },
+  "scope": "Exact supplied snapshot only. Later reported integration changes are not relabeled as part of this advertisement.",
+  "new_hia_tip_local_ancestry_status": "NOT_RUN_MISSING_LOCAL_COMMIT; the exact branch is unconditionally preserved by name",
+  "ordinary_changed_tip_ancestry_status": "requires independent current-candidate ancestry audit before any retirement",
+  "mutations": {
+    "git_refs": 0,
+    "existing_input_files": 0,
+    "fetches": 0
+  }
+}

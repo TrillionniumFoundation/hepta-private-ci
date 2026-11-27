@@ -1,0 +1,327 @@
+{
+  "schema": "hepta.ca77.file-search.native-qualification.v1",
+  "source_commit": "bfee28015da7d92b51272017d59ee09532f16fc5",
+  "base": "68f3b2ce54098b23f1416232d0b7c0103331442e",
+  "platform": "Linux x86_64",
+  "native_job": "1a1f5e22acf-ffbe-1403",
+  "source_import_job": "1a1f5dfa242-ffbe-1400",
+  "result_sha256": "636f7700a728988cd41db2b20a79470c25713294475576090c9f8a660a7f6cb2",
+  "scope": "The single original ca77 file-search source leaf. Neither whole ca77 nor whole workspace qualification.",
+  "source_prepare": {
+    "files_verified": 1180,
+    "original_manifests_parsed": 238,
+    "original_target_entrypoints": 916,
+    "strict_index_pack_passed": true,
+    "missing_selected_objects": 0,
+    "history_scope": "Original raw commit/tree and selected checkout only; own shallow boundary. Local complete protected DAG proof remains separate."
+  },
+  "before": {
+    "selected_cases": 1,
+    "failed_cases": 1,
+    "filtered_out": 16,
+    "configured_nextest_attempts": 2,
+    "runtime_assertion": "active matching must not depend on another callback",
+    "compile_failure": false
+  },
+  "candidate": {
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "test_names": [
+      "cancel_exits_run",
+      "dropping_session_does_not_cancel_siblings_with_shared_cancel_flag",
+      "file_name_from_path_falls_back_to_full_path",
+      "file_name_from_path_uses_basename",
+      "git_repo_still_respects_local_gitignore_when_enabled",
+      "matcher_completes_without_a_worker_notification",
+      "parent_gitignore_outside_repo_does_not_hide_repo_files",
+      "run_classifies_followed_directory_symlink_as_directory",
+      "run_returns_directory_matches_for_query",
+      "run_returns_matches_for_query",
+      "session_accepts_query_updates_after_walk_complete",
+      "session_emits_complete_when_query_changes_with_no_matches",
+      "session_emits_updates_when_query_changes",
+      "session_scanned_file_count_is_monotonic_across_queries",
+      "session_streams_updates_before_walk_complete",
+      "tie_breakers_sort_by_path_when_scores_equal",
+      "verify_score_is_none_for_non_match"
+    ]
+  },
+  "steps": [
+    {
+      "name": "before-original-regression",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-file-search",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-E",
+        "test(matcher_completes_without_a_worker_notification)"
+      ],
+      "toolchain": "1.96.0",
+      "exit_code": 100,
+      "elapsed_seconds": 32.116705656051636,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_sha256": "512b44d03ac7e8296a187ffac88074f092e42f9bcf9df76a58dfd48cf589563f",
+      "stderr_bytes": 4430,
+      "resource_after": {
+        "time": 1795126636.211901,
+        "memory": {
+          "MemTotal": 128039604224,
+          "MemAvailable": 18423263232,
+          "SwapFree": 225280
+        },
+        "disk": {
+          "/": {
+            "total": 1005867986944,
+            "used": 994353295360,
+            "free": 1267118080
+          },
+          "/dev/shm": {
+            "total": 64019800064,
+            "used": 45476270080,
+            "free": 18543529984
+          }
+        },
+        "own_cgroup": {
+          "memory.current": "927391744",
+          "memory.peak": "1387233280",
+          "memory.max": "3221225472",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "cpu.max": "100000 100000"
+        }
+      }
+    },
+    {
+      "name": "candidate-full-library-suite",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-file-search",
+        "--lib",
+        "--locked",
+        "--offline"
+      ],
+      "toolchain": "1.96.0",
+      "exit_code": 0,
+      "elapsed_seconds": 1.5034904479980469,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_sha256": "c25dd8d3e09318c554d0023515ffea7f3ebcc17699c0ad7b06db5ea0df0b7c89",
+      "stderr_bytes": 2254,
+      "resource_after": {
+        "time": 1795126637.7161412,
+        "memory": {
+          "MemTotal": 128039604224,
+          "MemAvailable": 18200678400,
+          "SwapFree": 225280
+        },
+        "disk": {
+          "/": {
+            "total": 1005867986944,
+            "used": 994353373184,
+            "free": 1267040256
+          },
+          "/dev/shm": {
+            "total": 64019800064,
+            "used": 45476282368,
+            "free": 18543517696
+          }
+        },
+        "own_cgroup": {
+          "memory.current": "932663296",
+          "memory.peak": "1387233280",
+          "memory.max": "3221225472",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "cpu.max": "100000 100000"
+        }
+      }
+    },
+    {
+      "name": "candidate-stable-strict-clippy",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "clippy",
+        "-p",
+        "codex-file-search",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "toolchain": "stable",
+      "exit_code": 0,
+      "elapsed_seconds": 15.358973026275635,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_sha256": "8841a50cb699781ae0d2c084eaf1e6a7ce0feb38ed8652016c5e642c6a45e5eb",
+      "stderr_bytes": 3213,
+      "resource_after": {
+        "time": 1795126653.0758681,
+        "memory": {
+          "MemTotal": 128039604224,
+          "MemAvailable": 18442936320,
+          "SwapFree": 225280
+        },
+        "disk": {
+          "/": {
+            "total": 1005867986944,
+            "used": 994353491968,
+            "free": 1266921472
+          },
+          "/dev/shm": {
+            "total": 64019800064,
+            "used": 45556375552,
+            "free": 18463424512
+          }
+        },
+        "own_cgroup": {
+          "memory.current": "1016094720",
+          "memory.peak": "1441693696",
+          "memory.max": "3221225472",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "cpu.max": "100000 100000"
+        }
+      }
+    },
+    {
+      "name": "candidate-final-scoped-fix",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fix",
+        "-p",
+        "codex-file-search",
+        "--locked",
+        "--offline"
+      ],
+      "toolchain": "stable",
+      "exit_code": 0,
+      "elapsed_seconds": 0.5738518238067627,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_sha256": "e3ef77b060f63af0c8efa0198b06ee34155acd740662e756173198c750e25b1a",
+      "stderr_bytes": 903,
+      "resource_after": {
+        "time": 1795126653.650519,
+        "memory": {
+          "MemTotal": 128039604224,
+          "MemAvailable": 18427703296,
+          "SwapFree": 225280
+        },
+        "disk": {
+          "/": {
+            "total": 1005867986944,
+            "used": 994353491968,
+            "free": 1266921472
+          },
+          "/dev/shm": {
+            "total": 64019800064,
+            "used": 45556383744,
+            "free": 18463416320
+          }
+        },
+        "own_cgroup": {
+          "memory.current": "1021153280",
+          "memory.peak": "1441693696",
+          "memory.max": "3221225472",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "cpu.max": "100000 100000"
+        }
+      }
+    },
+    {
+      "name": "candidate-final-repository-fmt",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "toolchain": "1.96.0",
+      "exit_code": 0,
+      "elapsed_seconds": 0.36636924743652344,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "resource_after": {
+        "time": 1795126654.0177162,
+        "memory": {
+          "MemTotal": 128039604224,
+          "MemAvailable": 18413539328,
+          "SwapFree": 225280
+        },
+        "disk": {
+          "/": {
+            "total": 1005867986944,
+            "used": 994353496064,
+            "free": 1266917376
+          },
+          "/dev/shm": {
+            "total": 64019800064,
+            "used": 45556383744,
+            "free": 18463416320
+          }
+        },
+        "own_cgroup": {
+          "memory.current": "1091248128",
+          "memory.peak": "1441693696",
+          "memory.max": "3221225472",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "cpu.max": "100000 100000"
+        }
+      }
+    }
+  ],
+  "tool_versions": {
+    "1.96.0": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "stable": "rustc 1.100.0 (0ef1bc386 2026-11-09)"
+  },
+  "cargo_manifest_warnings_retained": [
+    "unused workspace dependency codex-v8-poc",
+    "unused workspace dependency sentry",
+    "unused workspace dependency syntect"
+  ],
+  "strict_scope": "The original just clippy recipe with --tests and rustc -D warnings passed. Cargo manifest warnings are a separate retained workspace condition.",
+  "final_source_sha256": "4190cf829450aa70c37dd511059691c00087e2c790e758a1115a99d52f7f00ad",
+  "cargo_lock_sha256": "847b14141eb7839a826835e2de27adb8adb6e42c5ac9c9e81acbdb710f5ca203",
+  "final_source_and_lock_unchanged": true,
+  "tests_repeated_after_final_fix_format": false,
+  "final_resources": {
+    "time": 1795126654.0665922,
+    "memory": {
+      "MemTotal": 128039604224,
+      "MemAvailable": 18413191168,
+      "SwapFree": 225280
+    },
+    "disk": {
+      "/": {
+        "total": 1005867986944,
+        "used": 994353496064,
+        "free": 1266917376
+      },
+      "/dev/shm": {
+        "total": 64019800064,
+        "used": 45556387840,
+        "free": 18463412224
+      }
+    },
+    "own_cgroup": {
+      "memory.current": "1106366464",
+      "memory.peak": "1441693696",
+      "memory.max": "3221225472",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+      "cpu.max": "100000 100000"
+    }
+  },
+  "archive_manifest_sha256": "75673bedbf55a9c43a409a50fe217430e196c6cf85c95fd8d192a5f725325dfb",
+  "limits": [
+    "Linux native only; Windows and macOS not run.",
+    "No remote branch, main or HIA mutation.",
+    "No whole-ca77 ancestry attached."
+  ]
+}

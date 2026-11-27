@@ -1,0 +1,4 @@
+{"name": "add-origin", "command": ["git", "remote", "add", "origin", "https://github.com/TrillionniumFoundation/hepta-private-ci.git"], "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source", "exit_code": 0, "seconds": 0.09882521629333496, "stdout": "", "stderr": ""}
+{"name": "promisor", "command": ["git", "config", "remote.origin.promisor", "true"], "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source", "exit_code": 0, "seconds": 0.01592540740966797, "stdout": "", "stderr": ""}
+{"name": "filter", "command": ["git", "config", "remote.origin.partialclonefilter", "blob:none"], "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source", "exit_code": 0, "seconds": 0.0037033557891845703, "stdout": "", "stderr": ""}
+{"preflight_error": "Command '['git', 'checkout', '--detach', '3247636513f4cddaede6e9b45110925e9065d507']' timed out after 150 seconds"}

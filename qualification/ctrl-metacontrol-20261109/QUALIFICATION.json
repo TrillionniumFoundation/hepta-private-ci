@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.ctrl.qualification.v1",
+  "decision": "HOLD_NO_GO",
+  "production_update": "no-update",
+  "historical_5450_root_cause_established": false,
+  "prospective_native_policy_evaluation_performed": false,
+  "complete_cost_policy_gain_established": false,
+  "original_base_sha": "f6a7d5307f888d30faa8803d23487c78789b99fe",
+  "parallel_5451_unchanged_sha": "de9cf9d3eba7ac48706e030ed323ac72da10c1a3",
+  "validation_batches": [
+    {
+      "scope": "initial_regression_before_final_head_hardening",
+      "passed": 87
+    },
+    {
+      "scope": "final_substantive_heads_checkpoint_and_study_integration",
+      "passed": 21,
+      "mechanism": 14,
+      "study": 7
+    },
+    {
+      "scope": "historical_audit_with_create_only_cli",
+      "passed": 6
+    },
+    {
+      "scope": "local_native_fixture",
+      "executed": 0,
+      "setup_errors": 1
+    },
+    {
+      "scope": "hosted_native_fixture",
+      "passed": 3,
+      "skipped": 0,
+      "run_id": 42613427363
+    }
+  ],
+  "batch_overlap": "Do not add overlapping software checks or fixture IDs as independent tasks.",
+  "repository_format": "just fmt completed",
+  "evidence_limit": "Native test artifact retains test outcomes and assertions, not raw temporary episode files.",
+  "open_gates": [
+    "historical_raw_trace_access_and_six_episode_root_cause",
+    "independent_real_stop_continuation_collection",
+    "authenticated_labels_and_full_lifecycle_costs",
+    "frozen_prospective_native_policy_comparison_against_strong_light",
+    "general_ci_cargo_deny_failure_root_cause"
+  ]
+}

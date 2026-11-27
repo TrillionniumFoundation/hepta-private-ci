@@ -500,8 +500,8 @@ async fn oauth_access_denied_unknown_reason_uses_generic_error_page() -> Result<
         "generic oauth denial should use the generic error page title"
     );
     assert!(
-        body.contains("Sign-in failed: some_other_reason"),
-        "generic oauth denial should preserve the oauth error details"
+        body.contains("Sign-in failed: access_denied"),
+        "generic oauth denial should preserve the fixed oauth error category"
     );
     assert!(
         body.contains("Return to Codex to retry"),
@@ -512,8 +512,8 @@ async fn oauth_access_denied_unknown_reason_uses_generic_error_page() -> Result<
         "generic oauth denial should include the oauth error code"
     );
     assert!(
-        body.contains("some_other_reason"),
-        "generic oauth denial should include the oauth error description"
+        !body.contains("some_other_reason"),
+        "generic oauth denial must not echo the external error description"
     );
     assert!(
         !body.contains("You do not have access to Codex"),
@@ -529,9 +529,8 @@ async fn oauth_access_denied_unknown_reason_uses_generic_error_page() -> Result<
     let err = result.unwrap_err();
     assert_eq!(err.kind(), io::ErrorKind::PermissionDenied);
     assert!(
-        err.to_string()
-            .contains("Sign-in failed: some_other_reason"),
-        "terminal error should preserve generic oauth details"
+        err.to_string().contains("Sign-in failed: access_denied"),
+        "terminal error should preserve the fixed oauth category"
     );
 
     let auth_path = codex_home.join("auth.json");

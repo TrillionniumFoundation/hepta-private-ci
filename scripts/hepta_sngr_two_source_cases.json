@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.sngr.two_source_reasoning_fixture.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "parent_manifest_sha256": "eb869c45c77db4e85bf9e6013aa62925c3981d804c1709d0b2bb4a6e9a1edc89",
+  "evidence_class": "designed_two_source_truth_table_cases_not_heldout_or_model_evidence",
+  "tasks": [
+    {
+      "id": "ndu_cell_mutation",
+      "source_task_ids": [
+        "ndu_ownership",
+        "neuron_weights"
+      ],
+      "claim_one": "The utility.ndu module owns bounded preference and recursive-utility projections.",
+      "claim_two": "Neuron runtime changes selected Cell weights during a run.",
+      "truths": [
+        true,
+        false
+      ]
+    },
+    {
+      "id": "goal_effect_terminal",
+      "source_task_ids": [
+        "objective_owner",
+        "circuit_effect"
+      ],
+      "claim_one": "The inference.control module supplies the immutable goals and legal action classes.",
+      "claim_two": "An acknowledgment of an effect does not by itself prove terminal success.",
+      "truths": [
+        false,
+        true
+      ]
+    },
+    {
+      "id": "covariance_laya",
+      "source_task_ids": [
+        "z_covariance",
+        "neuron_backend"
+      ],
+      "claim_one": "The centered backward regression solves Z_k Sigma_k = B_k.",
+      "claim_two": "Laya is the initial trainable backend candidate for DecisionCell.",
+      "truths": [
+        true,
+        true
+      ]
+    },
+    {
+      "id": "future_feature_cache",
+      "source_task_ids": [
+        "future_leakage",
+        "inference_reuse"
+      ],
+      "claim_one": "Future task outcomes are permitted as features for inference-time NDU predictions.",
+      "claim_two": "Matching state text alone is sufficient to reuse question-conditioned embeddings.",
+      "truths": [
+        false,
+        false
+      ]
+    },
+    {
+      "id": "learned_activation_spin",
+      "source_task_ids": [
+        "stochastic_qualification",
+        "circuit_join"
+      ],
+      "claim_one": "The current NDU specification does not establish activation of a learned stochastic FBSDE.",
+      "claim_two": "Wait/Join is permitted to spin indefinitely until its selected branch finishes.",
+      "truths": [
+        true,
+        false
+      ]
+    },
+    {
+      "id": "native_fbsde_privacy",
+      "source_task_ids": [
+        "ndu_zero_noise",
+        "ndu_hard_constraints"
+      ],
+      "claim_one": "The native recursive.rs implementation is a trained stochastic FBSDE solver.",
+      "claim_two": "Privacy and authority constraints cannot be compensated by a larger NDU utility value.",
+      "truths": [
+        false,
+        true
+      ]
+    },
+    {
+      "id": "terminal_observer_decide",
+      "source_task_ids": [
+        "outcome_owner",
+        "circuit_decision"
+      ],
+      "claim_one": "The NDU terminal outcome is independently observed rather than a self-generated utility score.",
+      "claim_two": "A Neural Circuit Decide node invokes a declared DecisionCell through its inference or Intuition owner.",
+      "truths": [
+        true,
+        true
+      ]
+    },
+    {
+      "id": "sharing_effect_ack",
+      "source_task_ids": [
+        "neuron_sharing",
+        "circuit_effect"
+      ],
+      "claim_one": "Shared Cell tensors are live-mutable across the participating Cells during inference.",
+      "claim_two": "An effect acknowledgment is sufficient to count an external action as terminally successful.",
+      "truths": [
+        false,
+        false
+      ]
+    }
+  ]
+}

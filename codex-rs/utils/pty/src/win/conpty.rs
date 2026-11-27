@@ -79,7 +79,9 @@ impl RawConPty {
     }
 
     pub fn pseudoconsole_handle(&self) -> RawHandle {
-        self.con.raw_handle()
+        // The winapi HPCON and std RawHandle use distinct c_void types.
+        // Only translate the opaque pointer type; never dereference the handle.
+        self.con.raw_handle().cast()
     }
 
     pub fn into_handles(self) -> (PsuedoCon, FileDescriptor, FileDescriptor) {
@@ -190,3 +192,7 @@ impl SlavePty for ConPtySlavePty {
         Ok(Box::new(child))
     }
 }
+
+#[cfg(test)]
+#[path = "conpty_handle_type_tests.rs"]
+mod winapi_handle_type_tests;

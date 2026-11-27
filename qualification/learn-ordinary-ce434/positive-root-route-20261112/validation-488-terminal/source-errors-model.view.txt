@@ -1,0 +1,91 @@
+850:e0|ERROR: test_candidate_closes_actual_prefix_inside_the_same_model_operation (test_original_model_continuation_source_closure.OriginalModelContinuationClosureTests.test_candidate_closes_actual_prefix_inside_the_same_model_operation)
+851:4e|----------------------------------------------------------------------
+852:a2|Traceback (most recent call last):
+853:e8|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_continuation_source_closure.py", line 316, in test_candidate_closes_actual_prefix_inside_the_same_model_operation
+854:ae|    self.rejects(EVIDENCE, "fn authenticate_result(", marker)
+855:63|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_continuation_source_closure.py", line 98, in rejects
+856:77|    first, cursor = source_marker_span(source, marker, cursor, end + 1)
+857:8b|                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+858:7a|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/rust_source_marker_support.py", line 35, in source_marker_span
+859:85|    raise ValueError(f"Rust mutation marker not found: {marker!r}")
+860:21|ValueError: Rust mutation marker not found: 'self.model_completion.is_some() || self.evaluation.snapshot() != snapshot'
+861:c5|
+862:0f|======================================================================
+863:2b|ERROR: test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed) (boundary='learning_original_owner_snapshot_encode')
+864:4e|----------------------------------------------------------------------
+865:a2|Traceback (most recent call last):
+866:e2|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 129, in test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed
+867:20|    PROOF._verify_boundary(ROOT, row, sources, ())
+868:8e|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 544, in _verify_boundary
+869:1b|    raise VerificationFailure(
+870:9a|original_model_root_proof.VerificationFailure: learning_original_owner_snapshot_encode: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_learning_model_context.rs']
+871:c5|
+872:0f|======================================================================
+873:c6|ERROR: test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed) (boundary='learning_original_material_initial_context_check')
+874:4e|----------------------------------------------------------------------
+875:a2|Traceback (most recent call last):
+876:b7|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+877:eb|    matched = any(
+878:19|              ^^^^
+879:92|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+880:20|    has_authority_call(code, boundary.receiver_type, method, fields)
+881:2b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+882:f1|    raise UnresolvedTypedReceiver(
+883:0d|hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial receiver
+884:c5|
+885:8d|The above exception was the direct cause of the following exception:
+886:c5|
+887:a2|Traceback (most recent call last):
+888:e2|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 129, in test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed
+889:20|    PROOF._verify_boundary(ROOT, row, sources, ())
+890:51|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 533, in _verify_boundary
+891:1b|    raise VerificationFailure(
+892:d3|original_model_root_proof.VerificationFailure: learning_original_material_initial_context_check: codex-rs/hepta-agentd/src/circuit_model_version_host.rs: unresolved possible OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial receiver
+893:c5|
+894:0f|======================================================================
+895:b5|ERROR: test_every_non_model_receipt_keeps_one_original_role_signature (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_every_non_model_receipt_keeps_one_original_role_signature) (marker='snapshot.receipts.len() != 5')
+896:4e|----------------------------------------------------------------------
+897:a2|Traceback (most recent call last):
+898:2b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 192, in test_every_non_model_receipt_keeps_one_original_role_signature
+899:22|    self.rejects(AUTH, "fn verify_non_model_attestations(", marker)
+900:8e|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 107, in rejects
+901:58|    offset, cursor = source_marker_span(source, marker, cursor, end + 1)
+902:cb|                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+903:7a|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/rust_source_marker_support.py", line 35, in source_marker_span
+904:85|    raise ValueError(f"Rust mutation marker not found: {marker!r}")
+905:7f|ValueError: Rust mutation marker not found: 'snapshot.receipts.len() != 5'
+906:c5|
+907:0f|======================================================================
+908:ee|ERROR: test_model_record_codec_reconstructs_only_original_proposal (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_model_record_codec_reconstructs_only_original_proposal) (function='fn require_initial(', marker='self.schema != 1')
+909:4e|----------------------------------------------------------------------
+910:a2|Traceback (most recent call last):
+911:d3|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 334, in test_model_record_codec_reconstructs_only_original_proposal
+912:60|    self.rejects(COMMAND_WIRE, function, marker)
+913:20|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 108, in rejects
+914:59|    self.verifies(path, source)
+915:92|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 96, in verifies
+916:50|    PROOF._verify_protected_files(root, {"protected_file": rows})
+917:21|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+918:4a|    _verify_required_order(row, code, relative)
+919:30|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+920:1b|    raise VerificationFailure(
+921:80|original_model_root_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs: required_order must contain marker sequences
+922:c5|
+923:0f|======================================================================
+924:8c|ERROR: test_model_record_codec_reconstructs_only_original_proposal (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_model_record_codec_reconstructs_only_original_proposal) (function='fn require_initial(', marker='self.purpose != PURPOSE')
+925:4e|----------------------------------------------------------------------
+926:a2|Traceback (most recent call last):
+927:d3|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 334, in test_model_record_codec_reconstructs_only_original_proposal
+928:60|    self.rejects(COMMAND_WIRE, function, marker)
+929:20|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 108, in rejects
+930:59|    self.verifies(path, source)
+931:92|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 96, in verifies
+932:50|    PROOF._verify_protected_files(root, {"protected_file": rows})
+933:21|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+934:4a|    _verify_required_order(row, code, relative)
+935:30|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+936:1b|    raise VerificationFailure(
+937:80|original_model_root_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs: required_order must contain marker sequences
+938:c5|
+939:0f|======================================================================
+[... 1523 more lines, 2462 total]

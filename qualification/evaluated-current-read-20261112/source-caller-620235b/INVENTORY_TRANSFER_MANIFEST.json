@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "source_sha": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+  "source_tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a",
+  "gate_job_id": "1a1cf762917-2564-1a36",
+  "export_job_id": "1a1cf936187-2564-1a5a",
+  "encoding": "binary Git blobs; concatenate in listed order",
+  "compression": "exact original gzip bytes; no decompression/recompression or JSON reserialization performed during transfer",
+  "originals": [
+    {
+      "bytes": 769626,
+      "original_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/source-after.files.json.gz",
+      "original_stat": {
+        "ctime_ns": "1794482455432050828",
+        "inode": "76589288",
+        "mtime_ns": "1794482455432050828",
+        "size": 769626
+      },
+      "path": "source-after.files.json.gz",
+      "sha256": "9b3937132faa2814443672b78a1676f700406dd3a3abbada5c64b1692bfb8560"
+    },
+    {
+      "bytes": 769626,
+      "original_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/source-before.files.json.gz",
+      "original_stat": {
+        "ctime_ns": "1794482056128573122",
+        "inode": "76589276",
+        "mtime_ns": "1794482056128573122",
+        "size": 769626
+      },
+      "path": "source-before.files.json.gz",
+      "same_original_bytes_as": "source-after.files.json.gz",
+      "sha256": "9b3937132faa2814443672b78a1676f700406dd3a3abbada5c64b1692bfb8560"
+    }
+  ],
+  "full_gzip": {
+    "bytes": 769626,
+    "sha256": "9b3937132faa2814443672b78a1676f700406dd3a3abbada5c64b1692bfb8560"
+  },
+  "source_before_original_record": {
+    "files": 14886,
+    "head": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+    "inventory_compressed_bytes": 769626,
+    "inventory_compressed_sha256": "9b3937132faa2814443672b78a1676f700406dd3a3abbada5c64b1692bfb8560",
+    "inventory_sha256": "b0c607c7db8b936e7629323e8688e4f836bee8b995024fcc26cacd1b41662f75",
+    "status": "",
+    "tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a"
+  },
+  "original_before_after_bytes_equal": true,
+  "parts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-files.original.json.gz.part000",
+      "offset": 0,
+      "bytes": 350000,
+      "sha256": "087bcf30a6945e0c80b203f372c4d582730482f1b86f6c39b30f91ff9de92e67",
+      "git_blob_sha": "8e1db7d40688f802e891aad8bd31e4edc7243568"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-files.original.json.gz.part001",
+      "offset": 350000,
+      "bytes": 350000,
+      "sha256": "be69b066f08e1499626ac7182c5907c1e36a90e09ffce61a6c3038ae8108e17b",
+      "git_blob_sha": "58b269551b27f85eee8c424843771e9e7f36568c"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-files.original.json.gz.part002",
+      "offset": 700000,
+      "bytes": 69626,
+      "sha256": "2622effe817585d66949268c2af1e44228a43d0bebf0306d19d3e684282d2429",
+      "git_blob_sha": "24bad2b9ed4886f5a0639afcfb2bca393c9f55f0"
+    }
+  ]
+}

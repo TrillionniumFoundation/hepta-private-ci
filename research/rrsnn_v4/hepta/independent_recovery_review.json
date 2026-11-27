@@ -1,0 +1,35 @@
+{
+  "schema": "rrsnn.bootstrap-recovery-independent-review.1",
+  "reviewed_at_utc": "2026-10-29T14:38:04.449882+00:00",
+  "reviewer": "root, distinct from implementation owner",
+  "result": "conditionally_passed",
+  "patch_sha256": "4a1276bb8b57402949b28025b898159e350eda560ff1bf495e1c6f9e4e76616f",
+  "proof_sha256": "2a684268e7dbfe7f43cc570d7400f8b01224b415ea7cd14360a18eee0913f825",
+  "reviewed_sources": [
+    "bootstrap_recovery.patch",
+    "native_owner/src/repair.rs",
+    "bootstrap_repair.py",
+    "bootstrap_repair_results/proof_latest.json"
+  ],
+  "accepted_contract": [
+    "configuration validated against native configuration before access",
+    "externally supplied expected anchor must be sequence 1 and nonzero",
+    "witness must positively report None; existing witness rejects initialization recovery",
+    "existing anchored journal reader checks independently supplied expected anchor before tail repair",
+    "recovered complete journal must end exactly at first anchor",
+    "real witness compare-and-swap durably publishes first anchor",
+    "no model call during recovery, one exact continuation afterward",
+    "no persistent format change and no fallback added to ordinary recover",
+    "fixture controller retains current lifecycle frontier separately and rejects published generation even with old matching intent and both stores rolled back"
+  ],
+  "qualifications": [
+    "The public API accepts an anchor, not a production authorization certificate; caller authentication and current pending-initialization status are mandatory external preconditions.",
+    "The fixture controller uses independently retained in-process pins and fsynced history; it is not proof of a production controller surviving arbitrary simultaneous rollback or supervisor compromise.",
+    "This is a fresh-generation, single-writer, first-publication recovery contract; it does not authorize deletion, revocation, acknowledged-history repair or adopting trust from checksums.",
+    "No full Cell or trained RR model was exercised by the fixed-projection owner benchmark."
+  ],
+  "new_api_safe_under_stated_contract": true,
+  "production_permission_granted": false,
+  "production_dual_rollback_blocker_closed": false,
+  "activation_allowed": false
+}

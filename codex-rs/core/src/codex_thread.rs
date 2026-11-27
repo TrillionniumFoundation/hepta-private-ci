@@ -1,6 +1,7 @@
 use crate::agent::AgentStatus;
+use crate::agent::control::TurnStartCapacity;
 use crate::config::ConstraintResult;
-use crate::context::ContextualUserFragment;
+use crate::context::SubagentNotification;
 use crate::elicitation::ElicitationRegistration;
 use crate::session::SessionIo;
 use crate::session::SessionSettingsUpdate;
@@ -52,6 +53,7 @@ use codex_protocol::protocol::TokenUsageInfo;
 use codex_protocol::protocol::TurnEnvironmentSelection;
 use codex_protocol::protocol::TurnEnvironmentSelections;
 use codex_protocol::protocol::W3cTraceContext;
+use codex_protocol::turn_input::NotSubmittedReason;
 use codex_protocol::turn_input::RecoverTurnRequest;
 use codex_protocol::turn_input::StartIfIdleSubmission;
 use codex_protocol::turn_input::SteerSubmission;
@@ -69,6 +71,7 @@ use codex_thread_store::ThreadStoreResult;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::LegacyAppPathString;
 use codex_utils_path_uri::PathUri;
+use futures::future::BoxFuture;
 use rmcp::model::ReadResourceRequestParams;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -320,6 +323,28 @@ impl CodexThread {
         }
     }
 
+    /// Observes completion of the admission fences that are currently pending.
+    ///
+    /// An idle lifecycle callback may run while its terminalizer still owns a
+    /// fence. Move this future to an independent owned task before awaiting it;
+    /// awaiting the callback's own fence inside that callback would deadlock.
+    /// Completion grants no admission authority: normal StartIfIdle routing
+    /// must recheck thread state and every fence before accepting input.
+    pub fn pending_admission_fence_completion(&self) -> Option<BoxFuture<'static, ()>> {
+        self.session.pending_admission_fence_completion()
+    }
+
+    /// Waits only for the finish owner of an observed normal TurnComplete.
+    ///
+    /// This must not be used for TurnAborted, whose turn ID may be reused by
+    /// recovery. It grants no admission authority and ignores unrelated turns.
+    pub fn pending_normal_turn_finish_completion(
+        &self,
+        turn_id: &str,
+    ) -> Option<BoxFuture<'static, ()>> {
+        self.session.pending_normal_turn_finish_completion(turn_id)
+    }
+
     pub async fn emit_thread_idle_lifecycle_if_idle(&self, cause: ThreadIdleCause) {
         self.session.emit_thread_idle_lifecycle_if_idle(cause).await;
     }
@@ -329,6 +354,24 @@ impl CodexThread {
         self.session
             .ensure_rollout_materialized(PersistContext::Standard)
             .await;
+    }
+
+    /// Materializes this live owner's history and its pending thread metadata.
+    ///
+    /// Readers that need paginated history must await both through the original live handle.
+    /// Persisting only the store writer can leave durable JSONL without its metadata row.
+    pub async fn materialize_thread(&self) -> ThreadStoreResult<()> {
+        let live_thread = self
+            .session
+            .live_thread_for_persistence("materialize thread")
+            .map_err(|err| ThreadStoreError::Internal {
+                message: err.to_string(),
+            })?;
+        let result = live_thread.persist(PersistContext::Standard).await;
+        if result.is_err() {
+            self.session.mark_rollout_persistence_failure();
+        }
+        result
     }
 
     #[doc(hidden)]
@@ -396,12 +439,32 @@ impl CodexThread {
                 ));
             }
         };
-        self.session
-            .services
-            .agent_control
-            .ensure_execution_capacity_for_turn_start(self)
-            .await
-            .map_err(UserMessageAdmissionError::Admission)?;
+        let capacity = match &mode {
+            TurnInputMode::StartIfIdle => self
+                .session
+                .services
+                .agent_control
+                .check_execution_capacity_for_turn_start(self)
+                .await
+                .map_err(UserMessageAdmissionError::Admission)?,
+            TurnInputMode::StartOrSteer | TurnInputMode::Steer { .. } => {
+                self.session
+                    .services
+                    .agent_control
+                    .ensure_execution_capacity_for_turn_start(self)
+                    .await
+                    .map_err(UserMessageAdmissionError::Admission)?;
+                TurnStartCapacity::Available
+            }
+        };
+        if capacity == TurnStartCapacity::Terminalizing {
+            return Ok((
+                TurnInputSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::NotIdle,
+                },
+                None,
+            ));
+        }
 
         let submission_id = crate::session::new_submission_id();
         let (_pending_admission, admission) = self
@@ -644,6 +707,18 @@ impl CodexThread {
         self.session.recovery_epoch_if_idle(turn_id).await
     }
 
+    /// Observes recovery authority after the current terminalizer retires.
+    ///
+    /// This waits only for the owner and epoch captured when called. A running
+    /// task or any intervening task, mutation, or shutdown invalidates recovery.
+    pub async fn recovery_epoch_after_terminalization(&self, turn_id: &str) -> Option<u64> {
+        tokio::select! {
+            biased;
+            () = self.wait_until_terminated() => None,
+            epoch = self.session.recovery_epoch_after_terminalization(turn_id) => epoch,
+        }
+    }
+
     /// Resumes an interrupted regular turn only when the thread is idle.
     ///
     /// Recovery starts no new user input and preserves the turn ID that was
@@ -751,12 +826,28 @@ impl CodexThread {
         request: TurnInputRequest,
         mode: TurnInputMode,
     ) -> CodexResult<TurnInputSubmission> {
-        if !matches!(mode, TurnInputMode::Steer { .. }) {
-            self.session
-                .services
-                .agent_control
-                .ensure_execution_capacity_for_turn_start(self)
-                .await?;
+        let capacity = match &mode {
+            TurnInputMode::StartIfIdle => {
+                self.session
+                    .services
+                    .agent_control
+                    .check_execution_capacity_for_turn_start(self)
+                    .await?
+            }
+            TurnInputMode::StartOrSteer => {
+                self.session
+                    .services
+                    .agent_control
+                    .ensure_execution_capacity_for_turn_start(self)
+                    .await?;
+                TurnStartCapacity::Available
+            }
+            TurnInputMode::Steer { .. } => TurnStartCapacity::Available,
+        };
+        if capacity == TurnStartCapacity::Terminalizing {
+            return Ok(TurnInputSubmission::NotSubmitted {
+                reason: NotSubmittedReason::NotIdle,
+            });
         }
         self.io.submit_turn_input(request, mode).await
     }
@@ -892,11 +983,8 @@ impl CodexThread {
     }
 
     /// Records a context fragment without creating a new user turn boundary.
-    pub(crate) async fn inject_fragment_without_turn(&self, fragment: impl ContextualUserFragment) {
-        let item = ContextualUserFragment::into(fragment);
-        self.session
-            .inject_no_new_turn(vec![item], /*current_turn_context*/ None)
-            .await;
+    pub(crate) async fn inject_fragment_without_turn(&self, fragment: SubagentNotification) {
+        self.session.inject_subagent_notification(fragment).await;
     }
 
     /// Record raw Responses API items without starting a new turn.

@@ -1,0 +1,129 @@
+{
+  "base_commit": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+  "base_tree": "491eace326f335498334fb051c9e8f298ca7a04c",
+  "publication": "No commit, branch, remote write, production caller or release is created by this capsule.",
+  "schema_version": 1,
+  "stage_execution": "Only the composed final overlay was natively tested; intermediate stages were not separately compiled.",
+  "stages": [
+    {
+      "added_lines": 600,
+      "changed_lines": 600,
+      "deleted_lines": 0,
+      "files": [
+        {
+          "added_lines": 15,
+          "artifact_path": "stages/01-reports/codex-rs/hepta-evidence/src/lib.rs",
+          "bytes": 5499,
+          "deleted_lines": 0,
+          "expected_old_git_blob": "83f2429dc3cca6af819085574705b1f51eed2dac",
+          "new_git_blob": "f130d49fd3c9294b1904caa4b31d8f0a45d113bb",
+          "path": "codex-rs/hepta-evidence/src/lib.rs",
+          "sha256": "c4f7bc22f879588ae6b0c63fd3967ce55d96b11810f749cfe2ec67525d47fc3d"
+        },
+        {
+          "added_lines": 4,
+          "artifact_path": "source/codex-rs/hepta-evidence/src/qualification.rs",
+          "bytes": 51709,
+          "deleted_lines": 0,
+          "expected_old_git_blob": "4266cd8e4b3639108f1dfe592eb47c05494c3c46",
+          "new_git_blob": "0f838dd86ef0749949dd211b4e25e2d68de4de26",
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "sha256": "40fb1f84cedc023d28362f37f161804d268c98ea29a9072f8e042dd236031739"
+        },
+        {
+          "added_lines": 410,
+          "artifact_path": "source/codex-rs/hepta-evidence/src/verify1_report.rs",
+          "bytes": 14415,
+          "deleted_lines": 0,
+          "expected_old_git_blob": null,
+          "new_git_blob": "a23808aa4fb7f639a0dfbfb182a9d840bfc20113",
+          "path": "codex-rs/hepta-evidence/src/verify1_report.rs",
+          "sha256": "d57340509ae8798c2f08357d5148030144af4f82def12a399e52aa9756cecd7b"
+        },
+        {
+          "added_lines": 171,
+          "artifact_path": "source/codex-rs/hepta-evidence/src/verify1_report_tests.rs",
+          "bytes": 6828,
+          "deleted_lines": 0,
+          "expected_old_git_blob": null,
+          "new_git_blob": "c49a15c22ce898dafb7f67cb109f325e632b8953",
+          "path": "codex-rs/hepta-evidence/src/verify1_report_tests.rs",
+          "sha256": "2c6d7ef9a0dda079b99a67b6ff24591980376c069970547e0689fb31d4fc90de"
+        }
+      ],
+      "id": "01-typed-reports",
+      "patch": "stages/01-typed-reports.diff",
+      "purpose": "Validate three scoped report types and their original inner JSON digest."
+    },
+    {
+      "added_lines": 568,
+      "changed_lines": 568,
+      "deleted_lines": 0,
+      "files": [
+        {
+          "added_lines": 19,
+          "artifact_path": "source/codex-rs/hepta-evidence/examples/verify1_fixture_check.rs",
+          "bytes": 891,
+          "deleted_lines": 0,
+          "expected_old_git_blob": null,
+          "new_git_blob": "7e53f5b6dc7793995c3d22ca1d274d442bc212c4",
+          "path": "codex-rs/hepta-evidence/examples/verify1_fixture_check.rs",
+          "sha256": "2aa0234fb7c72a139fc8fa86924bb3683dd1f5a029e60203f9b8e3c8c162b996"
+        },
+        {
+          "added_lines": 7,
+          "artifact_path": "source/codex-rs/hepta-evidence/src/lib.rs",
+          "bytes": 5690,
+          "deleted_lines": 0,
+          "expected_old_git_blob": "f130d49fd3c9294b1904caa4b31d8f0a45d113bb",
+          "new_git_blob": "4628c25302dcd228388dd2332352faa1c0756614",
+          "path": "codex-rs/hepta-evidence/src/lib.rs",
+          "sha256": "db88c09b3650d1522572e1bc10ad1f13e1d2449090f0ad998c6eb1f397a7e72e"
+        },
+        {
+          "added_lines": 299,
+          "artifact_path": "source/codex-rs/hepta-evidence/src/verify1_checker.rs",
+          "bytes": 11177,
+          "deleted_lines": 0,
+          "expected_old_git_blob": null,
+          "new_git_blob": "23b493d5384bec372bbcc2bdb0787d8834d6673a",
+          "path": "codex-rs/hepta-evidence/src/verify1_checker.rs",
+          "sha256": "d32f181cd9e2f4385d25330601c2f6343d3abe1e9980c9db3de9fcc5827f5eae"
+        },
+        {
+          "added_lines": 243,
+          "artifact_path": "source/codex-rs/hepta-evidence/src/verify1_checker_tests.rs",
+          "bytes": 8589,
+          "deleted_lines": 0,
+          "expected_old_git_blob": null,
+          "new_git_blob": "d0d793b4218791a5b2d5619eb5e249bec19d449f",
+          "path": "codex-rs/hepta-evidence/src/verify1_checker_tests.rs",
+          "sha256": "817cf249cb8dd0cfe3258c820a4bf1da811cb55d9669a9d7c3abfe983e413982"
+        }
+      ],
+      "id": "02-snapshot-checker",
+      "patch": "stages/02-snapshot-checker.diff",
+      "purpose": "Recompute the trusted two-field fixture prefix from a read-only SQLite snapshot."
+    },
+    {
+      "added_lines": 383,
+      "changed_lines": 383,
+      "deleted_lines": 0,
+      "files": [
+        {
+          "added_lines": 383,
+          "artifact_path": "source/codex-rs/hepta-agentd/tests/verify1_kernel_evidence_product.rs",
+          "bytes": 14892,
+          "deleted_lines": 0,
+          "expected_old_git_blob": null,
+          "new_git_blob": "ee6dbc355d45899b4c2111f90f0c8e710e26f702",
+          "path": "codex-rs/hepta-agentd/tests/verify1_kernel_evidence_product.rs",
+          "sha256": "19f343364c6ddb3f5fc73713463fb3e2f6f4d11e84b2b53ca4e0b39077ea37b3"
+        }
+      ],
+      "id": "03-agentd-roundtrip",
+      "patch": "stages/03-agentd-roundtrip.diff",
+      "purpose": "Exercise actual signed append/query/current-trust verification without granting effects."
+    }
+  ]
+}

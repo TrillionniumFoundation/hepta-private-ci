@@ -1,0 +1,238 @@
+{
+  "actual_remote_ref_mutations": 0,
+  "candidate": "6d972c3f0db26b9b138aa293e85e5aa6613d1dcb",
+  "candidate_ancestor_commits": 44818,
+  "candidate_pin_intersection": [],
+  "candidate_protected_tip_intersection": [],
+  "complete_candidate_graph": {
+    "cycles": false,
+    "missing_parents": [],
+    "nodes": 78748,
+    "path": "/workspace/scratch/c2d514464ab5/branch-audit/policy-refresh/candidate-6d972/complete-parent-graph.tsv",
+    "sha256": "80bcb4d9185a5cd23920970324a9f6e53b5a865bea3f99f41d25e545e3addcc6"
+  },
+  "covered_file": {
+    "bytes": 273797,
+    "path": "/workspace/scratch/c2d514464ab5/branch-audit/policy-refresh/candidate-6d972/ordinary-covered.json",
+    "sha256": "6a5f8478d36a66d363a9cf413cf4214fb0e0ca5e596f593860d2ec9b95f52e55"
+  },
+  "frontier_distinct_tips": 1710,
+  "frontier_names": 1781,
+  "live_refs": 7655,
+  "live_refs_observed_at": "2026-11-20T03:13:06.901Z",
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "main_retirement_eligible": {},
+  "native_jobs_started": 0,
+  "new_protected_head": {
+    "name": "codex/hia-chrono-mock-client-20261120-a11",
+    "official_metadata": "/workspace/scratch/c2d514464ab5/branch-audit/policy-refresh/new-hia-811e50dc-git-metadata.json",
+    "parents": [
+      "5653790ac0f64783c28926dcfca2fa7a48a40e77"
+    ],
+    "tip": "811e50dc4da55c2f22ac89c1ed03e471503ba78e"
+  },
+  "ordinary_covered": 2839,
+  "ordinary_names": 7170,
+  "ordinary_pending": 4331,
+  "policy_update": {
+    "after_blob": "d09a5d184b2658b8db2a5133c7ba2517d1081a99",
+    "after_sha256": "16b9784f8fd3891ed819ae7ba8eb3a97a4dba51f5d154b81ecb6717afa50addf",
+    "before_blob": "76a6a14151db8a2cc37b10f31985c0d2782a850d",
+    "new_named_branches": [
+      "codex/hia-chrono-mock-client-20261120-a11"
+    ],
+    "new_pins": [
+      "5653790ac0f64783c28926dcfca2fa7a48a40e77",
+      "811e50dc4da55c2f22ac89c1ed03e471503ba78e"
+    ],
+    "old_names_preserved": true,
+    "old_observed_c320_pin_preserved": true,
+    "old_pins_retained": 504,
+    "patch": "/workspace/scratch/c2d514464ab5/branch-audit/policy-refresh/protected-policy-refresh.patch",
+    "patch_sha256": "87759cfd57982012c7183ee3c766d0309ea98a3eb093659d1cd6c04adbf6292f",
+    "path": "/workspace/scratch/c2d514464ab5/branch-audit/policy-refresh/after/tools/branch-consolidation/protected-branches.json",
+    "prior_name_tip_changes": {
+      "codex/hia-chrono-time-network-proxy-20261119-a11": [
+        "c32019b1e1ef566419a7b6d28a34d24270cf3d27",
+        "5653790ac0f64783c28926dcfca2fa7a48a40e77"
+      ]
+    },
+    "production_freeze_is_idempotent_for_fresh_full_protection_closure": true
+  },
+  "protected_heads_file": {
+    "bytes": 45866,
+    "path": "/workspace/scratch/c2d514464ab5/branch-audit/policy-refresh/candidate-6d972/protected-heads.json",
+    "sha256": "ffb58142f67135659e6e2f76cc2e210b604e2cedb26b9f6cec66c2c98cf990d7"
+  },
+  "protected_names": 484,
+  "protected_pins": 506,
+  "protected_pins_file": {
+    "bytes": 23279,
+    "path": "/workspace/scratch/c2d514464ab5/branch-audit/policy-refresh/candidate-6d972/protected-pins.json",
+    "sha256": "354de4838d1bcc2f3fc6d512875d9e0e91ecd44cf6915e5dbebffe004b6de746"
+  },
+  "protected_without_hia_name": 391,
+  "provider_workflow_review": {
+    "after_blob": "6dd799462dfc9a61758945142bd82ddbd42010c3",
+    "before_blob": "8a10e40c4ce23733a511f82880a9211227070940",
+    "execution_order": "Existing native tests, strict Clippy, then just fmt plus diff and fmt checks; no existing required workflow gate edited.",
+    "native_execution": "Pending; no new job dispatched by reviewer.",
+    "only_change": "Final formatter step runs just fmt, rejects its diff, and retains cargo +1.96.0 fmt --all -- --check. Existing test and strict Clippy commands, pins, permissions, triggers and timeouts are byte-identical.",
+    "path": ".github/workflows/hepta-core-provider-policy-regression.yml"
+  },
+  "retirement_regressions": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "test_hepta_branch_consolidation.py"
+    ],
+    "directory": "/workspace/scratch/c2d514464ab5/branch-audit/policy-refresh/after/tools/branch-consolidation",
+    "log": "/workspace/scratch/c2d514464ab5/branch-audit/policy-refresh/retirement-regressions.log",
+    "log_sha256": "a3845423cbd5d9cdecf075f91221d52e17f3b5dabebb8c82545a36f8bd7057c7",
+    "result": "31 passed; 0 failures",
+    "scope": "Real local Git fixture remotes only. The production policy was separately verified against the complete live graph and exact production freezer. No actual repository ref was mutated.",
+    "script_blob": "9e6588e5180ab2f3650f5a52c44334400348cbde",
+    "tests_blob": "845744815d2043def57822f74eaa747e9e8d354b"
+  },
+  "reviewed_at": "2026-11-20T03:13:08.999620+00:00",
+  "schema": "hepta.fresh-protection-policy-candidate-review.v1",
+  "source_graph": {
+    "nodes": 78732,
+    "sha256": "4f0ee81702006fddefb41ee8f34c5dedc06272b2cab88503feb057f5e6c6bd4c"
+  },
+  "tree": "392e55d4b6e8373e48535df7609a0759fb99885c",
+  "verified_actual_local_commit_objects": [
+    {
+      "commit": "c30249d388d6d5038374cd8872c695096b284a37",
+      "parents": [
+        "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+        "541f880b9ab102f28e01626cc2ea0639a529080c"
+      ],
+      "raw_sha256": "2be7606cb7aed57a2a820277d70b8a5f19e0b21bb96d098c5f4882af1d9024bb",
+      "tree": "925d1c9d175ea475598328c10962604960c3428b"
+    },
+    {
+      "commit": "0985d7d4ccf70f13670776ff2e4e8e3e44fbfb7d",
+      "parents": [
+        "c30249d388d6d5038374cd8872c695096b284a37",
+        "508b5a435e562dec890e3c775adae016c2aec155"
+      ],
+      "raw_sha256": "671d30c2281282652c4c549c2ac87faa1d027d22fa438dff8956a2892d5c963b",
+      "tree": "eec1277c5a3ad2d79655e13484bc03fb93bbcf6e"
+    },
+    {
+      "commit": "74cb4621c00f9f0401075ed7263cbf94274036c6",
+      "parents": [
+        "0985d7d4ccf70f13670776ff2e4e8e3e44fbfb7d"
+      ],
+      "raw_sha256": "392623ea01eef10d7d062fb5ce648cf25e2e01a021644425b93bb69b1a7cef24",
+      "tree": "8cc81b28afe6129f29adf2a96f81a4dd15110592"
+    },
+    {
+      "commit": "bd52a8d237ce8a4f7fdd82dc31f23e9a7dd72b84",
+      "parents": [
+        "74cb4621c00f9f0401075ed7263cbf94274036c6",
+        "100e0b1a603bd7047ca77179d662dc3e9f763804"
+      ],
+      "raw_sha256": "77038809d855bd50605331ac51f602a6ccccccb516e9b0e1483d7e83c2d12732",
+      "tree": "5790d4b1812b58584a7e8dca9841178168f4780f"
+    },
+    {
+      "commit": "b763e740654959096b4996a38f6cdf93d2bc3d88",
+      "parents": [
+        "bd52a8d237ce8a4f7fdd82dc31f23e9a7dd72b84",
+        "59db1216ce3ea110b398751f2d437428bc0d25e7"
+      ],
+      "raw_sha256": "d50a9e7ff391c92a6b0a2659827733b6a4ba1a63b132b6592fde7f253c3958d3",
+      "tree": "7720b50e6607211bb8afc31e15da4be74da9d5f0"
+    },
+    {
+      "commit": "838bd6167626d02201574aedf4d75f7f012ea8a2",
+      "parents": [
+        "b763e740654959096b4996a38f6cdf93d2bc3d88",
+        "4235d49823cb408ffdbaa1127c70f27c273f20b6"
+      ],
+      "raw_sha256": "95f35f22a14abcced93430098a5a2e2f9fc75ea36af4a37baa1f3491ad5b7d45",
+      "tree": "5a786a35cbe6ae4222f49f053c773315426689c8"
+    },
+    {
+      "commit": "32728e5198f65bb4200674aace1275f23369a598",
+      "parents": [
+        "838bd6167626d02201574aedf4d75f7f012ea8a2",
+        "e1c187164e9497ca283bc73c20cbf50598ac2ebd"
+      ],
+      "raw_sha256": "fdd91d77caa89b0b45af2d9ca9f333db5dbd9047492da342feeaf607653ffe35",
+      "tree": "84161fe5c672385deb4637eae1e912bff81a3e75"
+    },
+    {
+      "commit": "ca110d443bc8f87e4276cabbcab2d83b999dffb5",
+      "parents": [
+        "32728e5198f65bb4200674aace1275f23369a598",
+        "48b6ba885f41a458928cd495307109ccc81b17c1"
+      ],
+      "raw_sha256": "5a47f3c34c26b56b3d1e8ee22936b1d6058f7327920d774955c6f148dd84dfaf",
+      "tree": "d911b2ed15607ae6889f0ec30a6a6167894dab76"
+    },
+    {
+      "commit": "1d015d05f0ddf020416dedf0b1fc46898fdf2ff3",
+      "parents": [
+        "ca110d443bc8f87e4276cabbcab2d83b999dffb5"
+      ],
+      "raw_sha256": "570b7eae8d07b774d16f8ee106f9fd3e67d3b7b95d2c6e49728b23fb4bc48ece",
+      "tree": "0f99d79955c6b9b0a681d47eba92393a9476daff"
+    },
+    {
+      "commit": "6022d8233ae6ce6a6c16ffe4c415b87154abb65d",
+      "parents": [
+        "1d015d05f0ddf020416dedf0b1fc46898fdf2ff3",
+        "66346496a8a7bda8d4349188c3f76631b048ebf0"
+      ],
+      "raw_sha256": "fe0925517cc7a5eb54307a4a0e0cd12f2daed7b6ed1f39c7e84377415be7874f",
+      "tree": "0f99d79955c6b9b0a681d47eba92393a9476daff"
+    },
+    {
+      "commit": "48693e0afda9472cc4f266d0fea53a35f626e08d",
+      "parents": [
+        "6022d8233ae6ce6a6c16ffe4c415b87154abb65d",
+        "7c1e29cd73325645c73d4470d7ea82e86796dbb0"
+      ],
+      "raw_sha256": "cd65a5519223237ba464388abced618b16810120ddefb8119950e1203981d5e5",
+      "tree": "0f99d79955c6b9b0a681d47eba92393a9476daff"
+    },
+    {
+      "commit": "86ed727921cede43bca5f4c8cf0016f4004762d5",
+      "parents": [
+        "48693e0afda9472cc4f266d0fea53a35f626e08d",
+        "9ba16fb20e17f292cefc54eb1d206340b9ce0b88"
+      ],
+      "raw_sha256": "8d8979264fe4a1cbf00d65b3b0ad5f9975494ee49858740279a4ca39acb52de8",
+      "tree": "0f99d79955c6b9b0a681d47eba92393a9476daff"
+    },
+    {
+      "commit": "a054c027b7c80180a157114ba1cc3d9b4ec59484",
+      "parents": [
+        "86ed727921cede43bca5f4c8cf0016f4004762d5"
+      ],
+      "raw_sha256": "095cd131f04b1ca34f6a9208113aa061b3d84a000a48874b73519be31612dc7f",
+      "tree": "17377f0a5659d00d4c3fa5fd114318ddebbc5f26"
+    },
+    {
+      "commit": "7d667faba0fbcefb1880e97064b1137209290964",
+      "parents": [
+        "a054c027b7c80180a157114ba1cc3d9b4ec59484"
+      ],
+      "raw_sha256": "a08d0dec0360aafe1483a01215bacecc2a55bfad6a3b765d7c5bcaea134bab27",
+      "tree": "ff9eea5832290f63b823e29e15ed4fc6f683d94b"
+    },
+    {
+      "commit": "6d972c3f0db26b9b138aa293e85e5aa6613d1dcb",
+      "parents": [
+        "7d667faba0fbcefb1880e97064b1137209290964"
+      ],
+      "raw_sha256": "aba11544f9739e8b6046c9f391021f9b4367e24873ca434d3f57e60aa73d132b",
+      "tree": "392e55d4b6e8373e48535df7609a0759fb99885c"
+    }
+  ]
+}

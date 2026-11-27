@@ -1,0 +1,136 @@
+{
+  "schema": "learn.original-target-v3-preparation-contract.v1",
+  "status": "prepared for Root review and Root-only dispatch; not executed",
+  "source": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "repo": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+    "unchanged": true
+  },
+  "preserved_source": {
+    "sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "repo": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "unchanged": true
+  },
+  "inputs": {
+    "v2_creation_script": "a1d3c18689b0957ec11190c24a58b73d60854567",
+    "v2_original_request": "3d3b7900e8345cd7a2522e4712207e5670ec1340",
+    "v2_original_creation_record": "344a692e8ccf9cdb3262b1b8404a995d525c6ba2",
+    "current_typed_envelope": "8c6d6935cbd1d78cb9b711889bd33dbfc30e1f38",
+    "design": "b914dfa0f4e072c9ad586065fe1a9059ec5bc54e",
+    "actual_677_byte_native_failure": "a02cbaf22fe79ef3af3fd7978b96e0b72f200fdd"
+  },
+  "script": {
+    "sha": "67c8ae900edfdecef3816a4cc40849be9043f7c4",
+    "bytes": 8992,
+    "sha256": "e2737b180ce360497344d3571736a2d72cb85fec58f4e1a97e72eef8be906270"
+  },
+  "request": {
+    "sha": "15d6e1c17bf2bbb72f855cbe45ff334fa45040e9",
+    "bytes": 9656,
+    "sha256": "46d5c63032eaeb755f6f1ef17b0182e831469ae517080d217ea3fd3cac7a746a"
+  },
+  "key": "learn-ce434-453-private-build-target-recovery-v3",
+  "outputs": {
+    "runtime_root": "/data/hepta-learn-ce434-runtime-20261112-v3",
+    "target": "/data/hepta-learn-ce434-runtime-20261112-v3/target",
+    "evidence_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-4537458b51b6-v3",
+    "actual_new_identity": null,
+    "actual_creation_record_hash": null
+  },
+  "unchanged_preconditions": {
+    "data": {
+      "path": "/data",
+      "canonical_directory": true,
+      "uid": "actual normal invoking UID",
+      "device": 2067,
+      "inode": 2,
+      "minimum_free_bytes": 68719476736
+    },
+    "original_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+    "original_dependency_recovery_sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc",
+    "e5c_v2_creation_record_sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb",
+    "v8_inputs": [
+      {
+        "key": "RUSTY_V8_ARCHIVE",
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "bytes": 29366352,
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+      },
+      {
+        "key": "RUSTY_V8_SRC_BINDING_PATH",
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "bytes": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+      }
+    ],
+    "asset_owner": "actual invoking UID",
+    "asset_nlink": 1,
+    "asset_exact_mode": "0o100400",
+    "full_no_follow_stable_sha256_before_any_mkdir_and_after_creation": true
+  },
+  "ordering": [
+    "Reject root/euid mismatch and inherited Git location overrides.",
+    "Actually check exact new453 and preserveda671 canonical owned repo roots, HEAD/tree and full clean status.",
+    "Actually lstat exclusive v3 root/output and old v1/v2 target paths; only FileNotFoundError is accepted as absent. Other filesystem errors propagate. No API refusal is interpreted as absence.",
+    "Actually inspect /data directory identity and disk free space, emit only bounded fixed-purpose metadata, then enforce the unchanged2067/2/owner/64GiB gate.",
+    "Fully verify originalmanifest/recovery/e5c record and both original0400 V8 artifacts through unchanged stable no-follow hash helper before any mkdir.",
+    "Exclusively mkdir evidence0700; save starting receipt; exclusively mkdir root0700 and target0700 with parents=False/exist_ok=False.",
+    "Record actual new directory identities; rehash original assets and compare complete recorded metadata; require both original source observations exactly equal.",
+    "Write success with source453 and current new identities. Historicale5c receipt has used_as_new_target_identity=false.",
+    "On failure preserve created paths; record failed state and best-effort read-only original source observations. No cleanup, signal or automatic replay."
+  ],
+  "original_failure": {
+    "stage": "native driver21cb line36 target_root.lstat; before helper-build and tests",
+    "path": "/data/hepta-learn-ce434-runtime-20261112-v2/target",
+    "log_sha256": "79c38dfbe3da9022f5529dd3e45eeb829261f35bbe73c5ca0eb2933181f3cbd8",
+    "cause_of_absence": "unknown",
+    "prior_record_currently_unchanged": "Root separately H-read original2506B cbd559 record; script independently full-hashes it again"
+  },
+  "prior_directory_API_refusal": "The directory file_info refusal provides no lstat identity or absence evidence; script decisions use actual filesystem observations.",
+  "subprocess_boundary": {
+    "commands": "read-only Git observations only",
+    "helper": "Popen+communicate+wait of the same owned handle including exceptions",
+    "signals": false,
+    "timeout": false,
+    "installation": false
+  },
+  "no_other_effects": {
+    "production_source_edits": false,
+    "old_root_or_output_removal": false,
+    "original_receipt_rewrite": false,
+    "downloads": false,
+    "copies": false,
+    "authority_or_policy_creation": false,
+    "tests_executed": 0
+  },
+  "native_only_boundary": {
+    "frozen": false,
+    "driver21cb_rewritten": false,
+    "actual_v3_receipt_required_before_binding": true,
+    "unchanged_budget": "201cases/43groups/fourpackages; original just test argv; threads2,retries0; original60s nextest,8MiB stack and3600s CI bound; same V8/helper versions and original v1 dependency receipt",
+    "successful_source_suite": "Keep Root-verified443/62 full PASS in its original failedouter provenance. Do not rerun it as part of creation or synthesize an aggregate main PASS.",
+    "subsequent_driver_changes": "Only exacttarget, actualnewreceipt path/hash and actual453 creation provenance, retaining strict comparison of current new target dev/inode/UID/mode. Requires separate reviewed native-only request.",
+    "unchanged_CARGO_BUILD_JOBS": "4"
+  },
+  "static_verification": {
+    "exact_edit_count": 8,
+    "full_forward_and_inverse_equal": true,
+    "original_functions_equal": [
+      "identity",
+      "meta",
+      "hash_owned",
+      "save"
+    ],
+    "original_mkdir_block_equal": true,
+    "original_pins_and_data_gate_equal": true,
+    "Python_parser_run": false,
+    "H_run": false
+  },
+  "design_wording_clarification": {
+    "initial_design_blob": "b914dfa0f4e072c9ad586065fe1a9059ec5bc54e",
+    "phrase": "No new jobs",
+    "meaning": "No increase to original CARGO_BUILD_JOBS=4 or any native test parallelism/resource budget. Root may dispatch this distinct, explicitly authorized creation request as one new H job; creation itself launches read-only Git children and no Cargo/helper/test job."
+  }
+}

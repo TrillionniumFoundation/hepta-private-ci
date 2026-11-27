@@ -1,0 +1,66 @@
+{
+  "added_independent_complete_training_replays": 0,
+  "artifact_id": 13931438328,
+  "basis_forward_calls_recounted": 39,
+  "fixture_flags_and_errors": [
+    {
+      "full_vjp_maximum_error": 2.220446049250313e-15,
+      "geometry": "uniform",
+      "normal_and_unsafe_guards_all_four_inputs": true,
+      "normalized_client_graph_gradcheck": true,
+      "normalized_native_graph_vjp_maximum_error": 4.197442393660822e-11,
+      "old_physical_only_rejects_trainable_prior": true,
+      "primal_maximum_error": 7.268012580663452e-12,
+      "raw_gradcheck": true,
+      "uniform_native_graph_vjp_maximum_error": 1.3119838548902862e-10
+    },
+    {
+      "full_vjp_maximum_error": 3.8413716652030416e-13,
+      "geometry": "graded",
+      "primal_maximum_error": 6.536535852516567e-11,
+      "raw_gradcheck": true
+    }
+  ],
+  "job_id": 131098507245,
+  "journal_records": 39,
+  "limits": [
+    "Archival readback checks bytes, CRC, call-journal arithmetic, source commitments and retained flags; it does not recompute VJPs, DDE flows or Torch gradients.",
+    "Two uniform oracle forwards are recorded by the existing RESULT; no oracle forward was run by this archiver.",
+    "Normalized-client flags and scalar discrepancy are preserved; separate raw normalized-gradient vectors are absent.",
+    "Fixed physics/support small fixtures only; no n512, full network/prior/normalization, complete training or production admission.",
+    "Probe wall/CPU/RSS exclude complete hosted job setup and dependency installation."
+  ],
+  "log_sha256": "8300c4c458b7244fe5117c7aac911397f82a48862e1469c824d5001fbb6188c0",
+  "log_utf8_bytes": 55275,
+  "native_uniform_oracle_forward_calls_reported": 2,
+  "new_candidate_executions": 0,
+  "new_model_executions": 0,
+  "new_optimizer_calls": 0,
+  "new_torch_calls": 0,
+  "normalized_raw_gradient_vectors_retained": false,
+  "optimizer_updates": 0,
+  "original_zip_bytes": 11609,
+  "original_zip_members": 4,
+  "original_zip_sha256": "e95849561120270999ec2f3add8ebb863b1ed72d159e851c0569190f716587c6",
+  "probe_cpu_seconds": 12.851068008,
+  "probe_maximum_rss_kib": 422920,
+  "probe_wall_seconds": 12.909670168000005,
+  "pull_request": 6241,
+  "raw_input_gradient_coordinates": 69,
+  "result_arrays_sha256": "2d16eb397bdf99b595f039ee8076c07275bbf9e1bf5070d0cc789c85c73ad920",
+  "retained_development_arrays_sha256": "2dcfe03f2911cb0b6c55b2c24f095d7688d150eb84177d1bb7e4970daa8fa305",
+  "run_id": 43193514377,
+  "runtime": {
+    "device": "cpu",
+    "numpy": "2.3.5",
+    "python": "3.12.16",
+    "scipy": "1.17.0",
+    "threads": 1,
+    "torch": "2.8.0+cpu",
+    "torch_build": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7"
+  },
+  "schema": "hcsn-hosted-initial-amplitude-readback-v1",
+  "scientific_admission": "HOLD_NO_GO",
+  "source_commit": "8945243ae3f0832c01e317498be71483413b8b7b",
+  "source_files_freshly_rehashed": 13
+}

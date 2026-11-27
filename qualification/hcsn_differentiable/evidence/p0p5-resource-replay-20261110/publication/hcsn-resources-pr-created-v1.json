@@ -1,0 +1,51 @@
+{
+  "observed_utc": "2026-11-10T20:05:41.021Z",
+  "body": "## Why\n\nThe terminal training scores alone do not answer what quality was actually observed under a fixed resource ceiling, or how much the complete candidate search cost.\n\n## Changes\n\nAdd a read-only, SHA-pinned analysis of the original42 and separate C1 curve export. It verifies every report binding, confusion matrix and recorded clock; preserves both learning rates and all seeds; retains missing observations and right-censored target crossings; and charges all six candidates per core. C1 cumulative CPU remains a lower bound and full-attempt RSS remains an upper bound for a prefix.\n\nThe plan explicitly labels this as post-terminal descriptive analysis. It executes no model and grants no scientific or training-domain admission.\n\n## Validation\n\n- Five focused behavior tests pass: missing cutoffs, no interpolation, before-training evaluation scope, first strict ties/crossings, incomplete seed rosters and CM denominators.\n- Actual data: 49 report hashes, 2,969 confusion matrices and 351 C1 clock intervals verified.\n- Seven terminal core rows reconcile with the separately reviewed baseline table and six-HCSN summary.\n- A separate reviewer independently reproduced both views, 56 aggregate rows and 336 candidate members using exact rational CM arithmetic, without importing this producer.\n- Formatter entry point passed. Remote tree 103dbd2b97c70115a12ee9a4c1a492dad3790b9a matches local fec88f31ae6cd9222f01f0f5e1d7deca11d1423b exactly.\n\nThe large immutable inputs, raw outputs, independent review and cost receipts follow in a mechanical evidence archive. Stacked on draft #5838.",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5841",
+      "number": 5841,
+      "state": "open",
+      "merged": false,
+      "mergeable": false,
+      "draft": true,
+      "body": "## Why\n\nThe terminal training scores alone do not answer what quality was actually observed under a fixed resource ceiling, or how much the complete candidate search cost.\n\n## Changes\n\nAdd a read-only, SHA-pinned analysis of the original42 and separate C1 curve export. It verifies every report binding, confusion matrix and recorded clock; preserves both learning rates and all seeds; retains missing observations and right-censored target crossings; and charges all six candidates per core. C1 cumulative CPU remains a lower bound and full-attempt RSS remains an upper bound for a prefix.\n\nThe plan explicitly labels this as post-terminal descriptive analysis. It executes no model and grants no scientific or training-domain admission.\n\n## Validation\n\n- Five focused behavior tests pass: missing cutoffs, no interpolation, before-training evaluation scope, first strict ties/crossings, incomplete seed rosters and CM denominators.\n- Actual data: 49 report hashes, 2,969 confusion matrices and 351 C1 clock intervals verified.\n- Seven terminal core rows reconcile with the separately reviewed baseline table and six-HCSN summary.\n- A separate reviewer independently reproduced both views, 56 aggregate rows and 336 candidate members using exact rational CM arithmetic, without importing this producer.\n- Formatter entry point passed. Remote tree 103dbd2b97c70115a12ee9a4c1a492dad3790b9a matches local fec88f31ae6cd9222f01f0f5e1d7deca11d1423b exactly.\n\nThe large immutable inputs, raw outputs, independent review and cost receipts follow in a mechanical evidence archive. Stacked on draft #5838.",
+      "title": "analysis(hcsn): account for observed quality and complete candidate cost",
+      "base": "codex/hcsn-current-api-20261110-c385",
+      "base_sha": "cd3b7ac49294174a98e02636247615534c19bd89",
+      "head": "codex/hcsn-resources-api-20261110-c385",
+      "head_sha": "23696a3ed36e89320f80c530e98f6bf9d23b8f1c",
+      "head_repo_id": 1320694176,
+      "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+      "merge_commit_sha": null,
+      "user": {
+        "login": "ProfHepta",
+        "name": "ProfHepta",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+        "id": 102159240
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2026-11-10T20:05:40Z",
+      "updated_at": "2026-11-10T20:05:40Z",
+      "closed_at": null,
+      "merged_at": null,
+      "commits": 1,
+      "changed_files": 4,
+      "additions": 435,
+      "deletions": 0,
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5841",
+      "display_title": "analysis(hcsn): account for observed quality and complete candidate cost"
+    },
+    "isError": false
+  }
+}

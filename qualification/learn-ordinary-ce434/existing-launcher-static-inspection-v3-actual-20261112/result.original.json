@@ -1,0 +1,93 @@
+{
+  "assessment": "unknown_static_purpose",
+  "current_runtime_instance_observed": false,
+  "limitations": [
+    "Only the same pinned target is read; no referenced file or directory is opened.",
+    "The target script is parsed, never imported, evaluated, executed or spawned.",
+    "Unknown literals, paths, environment names and values, argv values and source lines are omitted.",
+    "Known tokens are represented only by fixed enums; original CI cases only by fixed-list indices.",
+    "An exact original test selector is a static declaration, not a verified command or actual fixture execution.",
+    "No token or shape grants authority, proves ordinary deployment, or proves absence of a launcher.",
+    "Negative or ambiguous matching stays unknown; no other file, symbol or source value is searched.",
+    "Metadata equality is sampled; no filesystem lock or external supervisor guarantee is claimed."
+  ],
+  "ordinary_execution_authority_proven": false,
+  "prior_result_git_blob": "24ea024bbcb7bc8d13ab6b9bd56a3fadc198c91f",
+  "projection": {
+    "assessment": "unknown_static_purpose",
+    "ast_nodes_visited": 233,
+    "binary_path_classification": "static_absolute_literal_omitted",
+    "binding_checks_are_syntactic_not_runtime_dataflow": true,
+    "case_index_base": 1,
+    "command_slot_count": 10,
+    "command_slots": [
+      {
+        "classification": "head_sudo",
+        "index": 0
+      },
+      {
+        "classification": "flag_noninteractive",
+        "index": 1
+      },
+      {
+        "classification": "wrapper_env",
+        "index": 2
+      },
+      {
+        "classification": "unknown_literal_omitted",
+        "index": 3
+      },
+      {
+        "classification": "unknown_literal_omitted",
+        "index": 4
+      },
+      {
+        "classification": "pinned_binary_reference_syntax",
+        "index": 5
+      },
+      {
+        "classification": "flag_exact",
+        "index": 6
+      },
+      {
+        "classification": "unknown_literal_omitted",
+        "index": 7
+      },
+      {
+        "classification": "unknown_literal_omitted",
+        "index": 8
+      },
+      {
+        "classification": "flag_nocapture",
+        "index": 9
+      }
+    ],
+    "declared_original_test_selector": null,
+    "fixed_slots": {
+      "binary_assignment_line": 7,
+      "command_assignment_line": 8,
+      "command_use_line": 10
+    },
+    "frozen_test_inventory_blob": "5553a141941861e63f50204904c1c28bc20def16",
+    "frozen_test_inventory_count": 29,
+    "full_command_semantics_proven": false,
+    "referenced_binary_identity_proven": false,
+    "slot_index_base": 0,
+    "summary_complete": true
+  },
+  "runtime_owner_custody_observed": false,
+  "schema": "hepta.service-root01.safe-static-token-classification.v3",
+  "source": {
+    "ctime_ns": "1792775306676468050",
+    "device": 2067,
+    "inode": 83,
+    "mode": "0o664",
+    "mtime_ns": "1792775306676468050",
+    "nlink": 1,
+    "read_before_after_identity_equal": true,
+    "sha256": "9919f15ae0ba3c58fa1630345b51adb566fc1ba18914c0d0051e50075246ef77",
+    "size_bytes": 1379
+  },
+  "status": "ok",
+  "target": "/data/hepta-service-root-01.py"
+}

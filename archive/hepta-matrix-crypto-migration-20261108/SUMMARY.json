@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.matrix.migration-evidence.v1",
+  "created_at": "2026-11-08T19:21:06.157123+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline": "7b142f8478c711409e4a585a5c62c1ef0dff9ebb",
+  "code_head": "d5a4f5b0f7794bbb93f3539032473ec3a7f2bb4c",
+  "code_tree": "344bc7bd41747f12b1994ada89b36039f583e4e9",
+  "draft_stack": [
+    {
+      "number": 5398,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5398",
+      "head": "research/matrix-019-01-upstream-20261108",
+      "head_sha": "d6ee1aed27d4ad3dac96a7ee015fedcaae2d9bab",
+      "base": "research/pin-parent-02-backport-20261108",
+      "draft": true
+    },
+    {
+      "number": 5399,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5399",
+      "head": "research/matrix-019-02-compat-20261108",
+      "head_sha": "a5ed96bc8b61bc8f6251df1b84d37411491b0426",
+      "base": "research/matrix-019-01-upstream-20261108",
+      "draft": true
+    },
+    {
+      "number": 5400,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5400",
+      "head": "research/matrix-019-03-crypto-fixture-20261108",
+      "head_sha": "9c4082d55caabdfce0460578e95d00cc900b7c5c",
+      "base": "research/matrix-019-02-compat-20261108",
+      "draft": true
+    },
+    {
+      "number": 5401,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5401",
+      "head": "research/matrix-019-04-migration-20261108",
+      "head_sha": "d5a4f5b0f7794bbb93f3539032473ec3a7f2bb4c",
+      "base": "research/matrix-019-03-crypto-fixture-20261108",
+      "draft": true
+    }
+  ],
+  "cargo_sha256": "867f40566419d5df633e24eb8589fe3993c43fec7e1a41a572c9f77b070edf8b",
+  "module_sha256": "1458ee6157be7d5cc98e2bd7c4bb0aa8d5625acfcc5a3aef74278bc479810d04",
+  "final_handwritten_patch_sha256": "4449876fbc91e29855fe8f88c6f744e489d20d23a3ded77b92fb632471eda979",
+  "source_imports": [
+    "fff45b076c78a6f7d94f05c4e2db3d4b08767c5a",
+    "035bbd0551b6c58a304a32947f202dd89576782a",
+    "d6ee1aed27d4ad3dac96a7ee015fedcaae2d9bab"
+  ],
+  "handwritten_stage_line_counts": [
+    188,
+    188,
+    327
+  ],
+  "generated_stage_line_count": 818,
+  "default_suite": {
+    "native_job": "1a1bc83c81a-138b0-2f9",
+    "packages": [
+      "codex-hepta-matrix-sdk",
+      "codex-network-proxy",
+      "codex-execpolicy",
+      "codex-aws-auth"
+    ],
+    "passed": 289,
+    "ignored": 2,
+    "test_seconds": 8.777,
+    "command_seconds": 14.40241259598406
+  },
+  "old_producer": {
+    "native_job": "1a1bc6aa048-138b0-255",
+    "selected_passed": 1,
+    "other_tests_filtered": 2,
+    "product_baseline": "ad1e07b004d96b748411db655249dc6a7cf2409c",
+    "product_sdk": "0.18.0",
+    "lock_note": "One separately audited test-only direct matrix-sdk-crypto 0.18 edge; original lock bytes are not claimed unchanged."
+  },
+  "new_consumer": {
+    "native_job": "1a1bc7a6a9a-138b0-2bc",
+    "selected_passed": 1,
+    "other_tests_filtered": 2,
+    "test_seconds": 3.95,
+    "command_seconds": 121.25243339600274,
+    "fixture_copy": true,
+    "original_unchanged": true
+  },
+  "phase_accounting": "Report the 289 default-suite passes and the two explicit source-bound phase executions separately; do not assert a duplicated unique-test total.",
+  "crypto_coverage": [
+    "existing account and device identity",
+    "old established Olm Normal ratchet ciphertext decrypted from saved session",
+    "old Megolm ciphertext decrypted from saved inbound group session"
+  ],
+  "state_coverage": {
+    "session": true,
+    "custom_state": true,
+    "outbox": "All fields listed in stored_values compared",
+    "inbox": "Old-event deduplication plus cursor continuation; not a full payload byte comparison"
+  },
+  "schema_versions": {
+    "crypto": [
+      17,
+      19
+    ],
+    "state": [
+      15,
+      16
+    ],
+    "event_cache": [
+      14,
+      18
+    ],
+    "media": [
+      2,
+      2
+    ]
+  },
+  "production_constraints": {
+    "same_physical_store_directory": "matrix-sdk-0.18",
+    "same_human_passphrase": true,
+    "five_second_startup_unchanged": true,
+    "real_user_data_touched": false
+  },
+  "cargo_deny": {
+    "version": "0.19.0",
+    "exit_code": 0,
+    "inputs_unchanged": true,
+    "policy_unchanged": true,
+    "rustsec_2026_0441_present": false,
+    "rustsec_2026_0451_present": false
+  },
+  "wrapper_failure": {
+    "native_job": "1a1bc83c81a-138b0-2f9",
+    "exit_code": 1,
+    "cause": "Malformed report-extraction regex after test and deny subprocesses exited 0",
+    "reconstruction": "Original durable command records and raw logs verified by hash; neither test nor deny repeated"
+  },
+  "post_validation_changes": {
+    "review_corrections": "Comment names the test-only crypto edge; SQLite metadata scopes graph unchanged to original import",
+    "scoped_fix_changed_files": 0,
+    "format_changes": "Two Rust fixture layouts/import ordering and Rama BUILD layout only",
+    "tests_after_fix_or_format": false
+  },
+  "rollback_boundary": "No reverse migration or safe old-binary reopen guarantee. Restore an independent consistent pre-upgrade backup for rollback.",
+  "canonical_records": [
+    "raw/MATRIX_FINAL_CODE_CANDIDATE.json.gz",
+    "raw/MATRIX_MINIMAL_GRAPH_VERIFIED.json.gz",
+    "raw/MATRIX_NATIVE_GATES_V2_RESULT.json.gz",
+    "raw/MATRIX_ACTUAL_SCHEMA_MIGRATION.json.gz",
+    "raw/MATRIX_POST_REVIEW_CORRECTIONS.json.gz",
+    "raw/MATRIX_FINAL_FORMAT_RESULT.json.gz"
+  ],
+  "historical_record_note": "MATRIX_FINAL_GRAPH_REVIEW.json is the retained pre-minimization graph, including rejected Windows edge drift. MATRIX_MINIMAL_GRAPH_VERIFIED.json is the final strict locked graph.",
+  "fixture_archive_sha256": "80155510e73d9ab63c1e9b54c95a3340422f8d7e712e733d0b01763e9ee65ef5",
+  "upgraded_fixture_archive_sha256": "be78acea3a11594a66880625ce7841674403f70ce3b33a4361932f61ca9b52d0",
+  "scientific_gate": "HOLD; no owner admission or S1-S5 qualification is changed by this dependency repair."
+}

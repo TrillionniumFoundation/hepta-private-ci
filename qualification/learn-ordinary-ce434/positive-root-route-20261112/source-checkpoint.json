@@ -1,0 +1,175 @@
+{
+  "parent": "3270e8e8d310e205b4e76eabdce164bd75fab311",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "chars": 13860,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+      "chars": 10372,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+      "chars": 7168,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "chars": 8213,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+      "chars": 21210,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "chars": 13085,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "chars": 6683,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "chars": 13037,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+      "chars": 13415,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "chars": 12294,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "chars": 10224,
+      "braces": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "chars": 7819,
+      "braces": 0
+    }
+  ],
+  "retained": [
+    "post-CAS helper exact",
+    "Root positive execution gate exact",
+    "generic Candidate execute_stage exact",
+    "Proposal original_model exact",
+    "all existing NoUpdate State functions exact"
+  ],
+  "checks_executed": "V8 source text / exact preserved function and balanced-brace checks only",
+  "rust_compiled": false,
+  "source_QA_executed": false,
+  "native_executed": false,
+  "ordinary": 0,
+  "positive_gates_retained": true,
+  "actual_b_eligible": false,
+  "page_budget_measured": false,
+  "ordinary_external_launcher_proven": false,
+  "scope": "Reviewable gated source draft; no authority, protocol capacity or existing OPE changes",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "127ebac10af813a04e4844efdb9e7fa2d381fe71",
+      "chars": 13860
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f4f6a01ccee08f81d6de9d3084c7cece551a7921",
+      "chars": 10372
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fc7639e90284d2a46c48643ef169e90c2bbb2aa9",
+      "chars": 7168
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e8400d75ebd2822e5477b38cf49e44ce38ad0733",
+      "chars": 8213
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d66c79cd8ee3890275543c949e554f6bed487f4",
+      "chars": 21210
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d467d499a6d20e4e77a913889294d05c7159d91f",
+      "chars": 13085
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46d4b587667f88e7de2580f7d3f605524543871a",
+      "chars": 6683
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fe1f76d21dd51fa67199425fa35bb7752f15ce51",
+      "chars": 13037
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "63562a09f837577990ed2e8405f7a04c22ce1d6b",
+      "chars": 13415
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ed240ecbe3ce939bb382c455a17f5f2441c5477",
+      "chars": 12294
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f57849b69797889c719f97a89d7823435eb9747e",
+      "chars": 10224
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5029e958937808468d2cef7ad1d0e9e291a51cfc",
+      "chars": 7819
+    }
+  ],
+  "known_remaining_work": [
+    "Exact CALLERS records and source guards will be supplied as a separate pinned checkpoint; existing QA expectations have not been migrated.",
+    "Root/Candidate positive execute refusals intentionally preserved.",
+    "Real SharedBehavior B cannot become Eligible; paired on-policy domain is separate pending work.",
+    "Actual E material pages and extra partial Root CURRENT polling remain unmeasured.",
+    "No verified ordinary external capability launcher or original custody assembly."
+  ]
+}

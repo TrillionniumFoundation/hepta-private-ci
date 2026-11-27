@@ -1,0 +1,548 @@
+{
+  "action_budget_seconds": 40.0,
+  "cohort": {
+    "arms": [
+      {
+        "arm_id": "tuned-fixed",
+        "content_mode": "off",
+        "content_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+        "control_mode": "off",
+        "critic_context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+        "policy": "tuned-fixed"
+      },
+      {
+        "arm_id": "conditional",
+        "content_mode": "off",
+        "content_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+        "control_mode": "on",
+        "critic_context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+        "policy": "conditional"
+      }
+    ],
+    "contexts": [
+      {
+        "case_id": "case-6132a3f806804b12f08cb095",
+        "seed": 130363,
+        "source_id": "merchant-8be0cc526665e1b3713e88d9"
+      }
+    ],
+    "factorial": null,
+    "one_off_costs": {
+      "conditional": {
+        "calibration": null,
+        "fit": null,
+        "tuning": null
+      },
+      "tuned-fixed": {
+        "calibration": null,
+        "fit": null,
+        "tuning": null
+      }
+    },
+    "partitions": {
+      "calibration": [
+        "merchant-03aae37ad4f4ad8c8ad0944e",
+        "merchant-0c33b8cb557a1c71e01357da",
+        "merchant-1201a5bb478c190e196c6fea",
+        "merchant-16ac5095cbab37d6a4beeecd",
+        "merchant-1c5081feae9b550140ec86cb",
+        "merchant-203f77bf803003c33121fe35",
+        "merchant-2d4f59a602bd0c185e8606af",
+        "merchant-69c63e3abd97234884c69dad",
+        "merchant-6d5a1b2fed9d08df4291eb49",
+        "merchant-6dd6bc1cee9282a3df96c05e",
+        "merchant-75b47ee8168019293e1cf32b",
+        "merchant-7b3647263d44c496a5e484a2",
+        "merchant-9fa2f6563cdeebc029a0c464",
+        "merchant-9ff2a942290576d7554881f5",
+        "merchant-aed2f9f0bb5b67ff098bf209",
+        "merchant-d5edfe942c45361da38fc849",
+        "merchant-dcf206507ae7c5dde2cd1010",
+        "merchant-ecae8cf994fefe3ad1e69322"
+      ],
+      "evaluation": [
+        "merchant-8be0cc526665e1b3713e88d9"
+      ],
+      "fit": [
+        "merchant-311891ad56272ccc25cbb13d",
+        "merchant-50f46908878b39ed0bd3853f",
+        "merchant-53d609f32d26c4af265269fe",
+        "merchant-58be5300ebeed60df7b53412",
+        "merchant-5c0e813f616a4362d46f91a9",
+        "merchant-5d4b99c3062c5faa80efd221",
+        "merchant-68a3ce1760cdbfc23690d940",
+        "merchant-7027cec87ad982afb10a81b6",
+        "merchant-77373c612cf6f484499c237d",
+        "merchant-81a74a14a3243f4a7caceaf0",
+        "merchant-8b02fd486d08f02ccd063336",
+        "merchant-8e162dc70b702e24dacc7db4",
+        "merchant-97640bd2b749bf214e2685b3",
+        "merchant-a00334471fe4253ed529ff1e",
+        "merchant-aad9008f95d8de8b69949ee5",
+        "merchant-bd1804bb290a96349b65a9ab",
+        "merchant-be4b468c89b8dbbe18c10a39",
+        "merchant-bf774f31334b830df22ec52d",
+        "merchant-d23242452060c104ee056a58",
+        "merchant-e7e178522dc7bb97834dd1ea",
+        "merchant-e92afbe9a45feef1da5bd489",
+        "merchant-ea9b41f5d08e33143d643448",
+        "merchant-eab91830c3a77d7309c019dd",
+        "merchant-f76aded3d78a0e21cf2d3f40"
+      ]
+    },
+    "schema": "ndu.real.macro-cohort.v1",
+    "shared": {
+      "action_sha256": "5a56136caad965d07690732c3d2b799783d1c328381a3744ca9d4d9e6f2b0dc6",
+      "evaluator_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+      "legal_actions_sha256": "ddaae2d22f2ec1b013d60a78ea31989b1d348f6e38d724e8b0ca12b1cd0dfd15",
+      "settlement_sha256": "65858a9e5d9c5c0afeac539111ae22205bb368ea32067fac112ea1683ca0175e",
+      "tariff_sha256": "949b87daf6439c7bf3a740c18cbf28da0e358cde1ccae54282327710e631d835",
+      "utility_sha256": "75a253874e8a4f9ae86da3e4fb87463a4d862c97aa2a0c2228999f534e182f0d"
+    }
+  },
+  "cohort_sha256": "96d170840eb9951c2b034a3d2ebd75f9037fc4749b54cf59d155b7a488d9917e",
+  "config": {
+    "episode_wall_seconds": 60,
+    "evaluator_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+    "isolator_sha256": "03e23e125465984d794b011eab2ecf82a84a8b0f6b91ec6ef670fcd421652354",
+    "latency_weight": 0.01,
+    "material_root": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2",
+    "ocr_library_dir": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/lib/x86_64-linux-gnu",
+    "pillow_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps",
+    "python": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "reference_index_sha256": "d8086b7cd34b1d8c30463d8fc4cc8ada59d9973e2d8b5248090d4ab1be2b3cb2",
+    "repository_root": "/home/qq/ctrl-real-policy-20261112-1333-v3",
+    "rubric_sha256": "fee667c32ec08286bbaf4e9f70b6489aff55bc7d790dca37fc657e5350084300",
+    "runtime_roots": [
+      "/usr",
+      "/lib",
+      "/lib64",
+      "/etc/ld.so.cache",
+      "/proc/cpuinfo",
+      "/dev/urandom",
+      "/dev/null",
+      "/home/qq/hepta-smollm2-weight-research-20261103/ci-env",
+      "/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu",
+      "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps",
+      "/home/qq/ctrl-real-policy-20261112-1333-v3",
+      "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root"
+    ],
+    "scripts_root": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts",
+    "source_exposure_ledger_path": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2/public-source-exposure-20261107-v3.json",
+    "source_exposure_ledger_sha256": "6722edfc88e1089bcaf0fba9727c233416830fdc6682b461422d26bdfd4cb6af",
+    "tessdata_dir": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/share/tesseract-ocr/5/tessdata",
+    "tesseract": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/bin/tesseract"
+  },
+  "observer_sha256": "203d51e2e1586b5738ba2d59a47dca319854b4ebd844510ab2b51c4ade478a90",
+  "profiles": {
+    "conditional": {
+      "arm": "fresh_matched_macro_collection",
+      "control_plan": "/home/qq/ndu-portfolio-frozen-20261109-eb02e89/preparation/control-plan.json",
+      "control_plan_sha256": "74066034f59241184a98e04c1171af08ba1ff7e4a91e77391b2b5a0c07b68426",
+      "controller": "tuned_fixed",
+      "core": "ordinary",
+      "episode_seed": 0,
+      "fit_id": "fresh-control-collection",
+      "fit_run_id": "ctrl-real-policy-20261112-1333",
+      "macro_policy": {
+        "path": "/home/qq/neuro-rv-bc-development-862531d11598-v1/B-conditional-deployment.json",
+        "sha256": "71677c4e1f0a4255a83d4d014ea0ca395d187c3c89498166110ec3cb3ed9d20d"
+      },
+      "memory_mode": "reset",
+      "model_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+      "original_operation_id": "ctrl-real-policy-20261112-1333",
+      "policy_sha256": "33812f6d34c23bda7726f904ca4f4260293bd4630b8de7be966d7d0ce39a924b",
+      "regime": "frozen",
+      "retry_of": null,
+      "study_id": "ctrl-real-policy-20261112-1333",
+      "training_receipt_sha256": "53d1494186db9e43b1e9c8d2f004f5dfadd86d44c4614ba10841179da5bde74f",
+      "training_seed": 271828,
+      "weights": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/pilot-run-v1/models/common-collector-content/weights.pt"
+    },
+    "tuned-fixed": {
+      "arm": "fresh_matched_macro_collection",
+      "control_plan": "/home/qq/ndu-portfolio-frozen-20261109-eb02e89/preparation/control-plan.json",
+      "control_plan_sha256": "74066034f59241184a98e04c1171af08ba1ff7e4a91e77391b2b5a0c07b68426",
+      "controller": "tuned_fixed",
+      "core": "ordinary",
+      "episode_seed": 0,
+      "fit_id": "fresh-control-collection",
+      "fit_run_id": "ctrl-real-policy-20261112-1333",
+      "macro_policy": {
+        "path": "/home/qq/neuro-rv-bc-development-862531d11598-v1/B-tuned-fixed-deployment.json",
+        "sha256": "b31150f6a90ee244f924d8a2e183e350d8ba48a8d90df4c14e176f41cd31e758"
+      },
+      "memory_mode": "reset",
+      "model_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+      "original_operation_id": "ctrl-real-policy-20261112-1333",
+      "policy_sha256": "33812f6d34c23bda7726f904ca4f4260293bd4630b8de7be966d7d0ce39a924b",
+      "regime": "frozen",
+      "retry_of": null,
+      "study_id": "ctrl-real-policy-20261112-1333",
+      "training_receipt_sha256": "53d1494186db9e43b1e9c8d2f004f5dfadd86d44c4614ba10841179da5bde74f",
+      "training_seed": 271828,
+      "weights": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/pilot-run-v1/models/common-collector-content/weights.pt"
+    }
+  },
+  "registered_cases": [
+    {
+      "case": {
+        "episode_group": "X51005719863",
+        "id": "case-6132a3f806804b12f08cb095",
+        "packet": {
+          "bytes": 1240,
+          "path": "public/development/case-6132a3f806804b12f08cb095/case.json",
+          "sha256": "514a3605bf2254d8fc6730b9afa8ef1bd39d08f3375be8d10474653ae153b512"
+        },
+        "reference": {
+          "bytes": 787,
+          "path": "private/references/case-6132a3f806804b12f08cb095.json",
+          "sha256": "81da2eac17cb5da462814a1364a14db8992876d800a2133c4bea454a44f006bd"
+        },
+        "role": "development",
+        "source_id": "merchant-8be0cc526665e1b3713e88d9",
+        "source_sha256": "a752e3036ab6d810457cf751e67cdad75163b449bd735261adb32592add55332",
+        "task_family": "text_sufficient"
+      },
+      "case_id": "case-6132a3f806804b12f08cb095",
+      "read_condition": "original",
+      "seed": 130363,
+      "source_id": "merchant-8be0cc526665e1b3713e88d9"
+    }
+  ],
+  "schema": "ndu.real.macro-execution-plan.v1",
+  "source_pins": [
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py",
+      "sha256": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_materials/__init__.py",
+      "sha256": "1f0a2d2286ae48aa399b8759c8326e878b4de73bbec0fcc9c2617b58463187a9"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_materials/acquire.py",
+      "sha256": "0dac9af6017cef053b117d5c9f72c264fd01412c4bff1816694c502eb35c7d6d"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_materials/common.py",
+      "sha256": "85a70ee45bfdea796f5ddf632aa7c6a93e60ccf3ca75e8925fd76e8b07cf2ce0"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_materials/coverage.py",
+      "sha256": "f164e862dc5c9c48bcc5eab732e8e0dbbd0f375610b1c64ed201434394259796"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_materials/evaluator.py",
+      "sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_materials/groups.py",
+      "sha256": "60ed62f2df57cfbfc7441f5504ad39cfcebe4bb3114e2cedd55ca80dc213b3fa"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_materials/isolate.py",
+      "sha256": "03e23e125465984d794b011eab2ecf82a84a8b0f6b91ec6ef670fcd421652354"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_materials/isolation_probe.py",
+      "sha256": "f2c7cc52ccffb8bba27082c0ffbb9b80d1b4d3488ce835b8c4c2c0c903b1acac"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_materials/register.py",
+      "sha256": "85383349aec4388756f9a96755611c94e78cf756fa2ae3ea5a061ca78c9228e0"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/__init__.py",
+      "sha256": "cb8063131308ce06b535be86ae276281fa6c0cc0f21a1752f29d0c59018ef8a4"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/_causal_checks.py",
+      "sha256": "c17c073a94cf29ba442926b2def9e52008b226c13658480f9110e29bc9aa410d"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/actor.py",
+      "sha256": "1f45f0e5e01eed2fe6fb080e162a5faf917e14f4ad1fed0c3eec078ca70fa4ff"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/candidate_coverage.py",
+      "sha256": "3d44b74354a3a56b69467e1c019606de7f360666d7fa09a8cee4fe2f71c5872b"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/candidate_coverage_legacy.py",
+      "sha256": "daba119e74d2f306731c063c30da9a6fb1a8717636ab4061d20e71e138632799"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/candidate_expansion.py",
+      "sha256": "90cac89c232015d9611d6fda5486c3c5f90cb244ceaeb85310761499c0b73fc0"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/candidate_gap_diagnostic.py",
+      "sha256": "1da02aea4aabb7e21486110fc0ec545fe9d683e5e0383311df568e33f649753e"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/causal_ace.py",
+      "sha256": "09150a7722e76d116a5761927f9687ba53e7ec1fe7718bb364fd5a39dbad2c65"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/causal_analysis.py",
+      "sha256": "2c29852eefe11d3e5294e43bb27974037455754650402ca2ed931fb195c09f3e"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/causal_b.py",
+      "sha256": "6f270394edd7f474810fbbefcf3638cca43d03ddc2476ec81a17879e26dd8f6a"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/causal_b_contract.py",
+      "sha256": "953e946c9d0c020c5aa1ceb9e1d41e7030f91729260f01e81895b76cdc6d290c"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/causal_composition.py",
+      "sha256": "7735155426f12ff31fe31b453a7a29da9ca8e18b1e8593884dd0a0379895d90a"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/causal_improver.py",
+      "sha256": "d07e75fcfec61393427e138ed39ecfd0ec284ec6600364b889abd404d6b29ea0"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/causal_protocol.py",
+      "sha256": "a450ca58bdb923cc7dd11ecf5ef08fbca55a975ad41e9475df8b0ce8327df8a2"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/causal_topology.py",
+      "sha256": "65e41055e2d1d5e0681b4c2477c3771af1c7a9737ca081f4b6cf139c4be1a068"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/conditional_particles.py",
+      "sha256": "0f55b75e46ba792f0099118a69561f2763fa57f05a4b35f6193b48e5edbf91f0"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/content_audit.py",
+      "sha256": "4fb042093c74389d8ecc42d3ac9e66d43a5e670f2e0953689b32d889bf77493c"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/content_identity.py",
+      "sha256": "56885e92be48f5460dc1ccdc9a33d974fa77aacc3590da06cb86bd93bb0d130a"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/controllers.py",
+      "sha256": "0cd9c8da5122d6b7940e322382e9118607d54b14246ee3449feb05904728824b"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/critic_context.py",
+      "sha256": "425c8765faada326f3e600b0fcac8fff6b17b60affff73e1f8341ad907de282c"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/episode.py",
+      "sha256": "aa789464bcfb5ff0857b56992285d28d4e4cbed6c9ccd28158d7899a787db8aa"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/evolve1.py",
+      "sha256": "29b00f3f913787f12a7915f5a4d7728ccb2a149c7d17b4a39c25cd02daeed0f6"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/evolve1_pilot.py",
+      "sha256": "a66a436e82f702e3e0318e968056797077a0038817e1f18bd0ae787685f1087f"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/evolve1_reference.py",
+      "sha256": "dcbb79d0b40d87bb3f977a15dd00019b987487a6b558e337fe230b509aec2cee"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/fit_loop.py",
+      "sha256": "ffed1b606594e637812a01d004c394518d88e497b7ba9720c13466027f1bf8e5"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/gradient_check.py",
+      "sha256": "0311796a3f37654fe53e8c1d8d6141b95381787d0f84b0699477889d60a6732e"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/interval_costs.py",
+      "sha256": "47e5aeba99a3d7763d607f2a796937ceda4e429ab72b0e41909ce78a8ee3828c"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/macro_actor.py",
+      "sha256": "bc2a54b9476c0d5d797f189e1f8636675f45384ff3af5dcd5344e675e6b194bf"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/macro_attribution.py",
+      "sha256": "03378c0f286559e582c116d8a1f514b1ea9e2f50403f7677b2a8a2789e9c38ea"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/macro_cohort.py",
+      "sha256": "60ba56f797129a03afe1e46a92dfbbe9edb62222f36a4ac0fb5aad3e27f1a701"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/macro_execution.py",
+      "sha256": "7861ccbdf09a6181c577c36f6bae5abb782b0ffc8246b31532c19a8e2741133b"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/macro_execution_plan.py",
+      "sha256": "6ea407e2ac35fccebbb4179e50e4c9b7c0e22b2fdd9bdfa74472bc1b8f7d7506"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/macro_policy.py",
+      "sha256": "179bfcd6d436e7a28d1171d58715e96993cfc81b1e3c7af9fa08e037324d885b"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/macro_policy_checkpoint.py",
+      "sha256": "829098d6eca3851ccc11eceaf7d8efdc468826f032a97ccb4ccc27c9654f371a"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/macro_public_state.py",
+      "sha256": "be578497e21dfd72fc97786cf89b1a4875b786fb809c060def9dde0588fa228e"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/macro_realization.py",
+      "sha256": "dc72412f60e449e68d99e592299f6f6e2148d10aaf4411cab6137f9f50c8fbfb"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/macro_training_pairs.py",
+      "sha256": "6c9b1290f2d8d4ccbb5e6b7fc6b550ee921c26f6f7dc570570b7c3c2a3ed0514"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/matrix.py",
+      "sha256": "c3f1792e73a0c92f953568a924f686e1865f97f728210982eee51b5dbfbe4d10"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/metacontrol.py",
+      "sha256": "fe8bc87a6e75cbe63fe831a7974ee76373e1a584b168420a81d33bc2063efe01"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/metacontrol_checkpoint.py",
+      "sha256": "70678e682c154627e8d9219643880a58e195e811f25e7db88b55bde848ed0a40"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/metacontrol_macro_contract.py",
+      "sha256": "6fb926e56ef82b85ab28e9b64861c398a567f029d316dcb35b7a3a782e2f35ea"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/metacontrol_native_pairs.py",
+      "sha256": "cba30a25b082b955a2b64968854a35d9d5b5c78367b4fa4ebb7cb723f7c084c1"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/metacontrol_study.py",
+      "sha256": "a23baabb9d0e6b1cbf0df28df13e24b5850e6e2cb9f5dbdfffa8bc7b64e1fbb7"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/metacontrol_value_gate.py",
+      "sha256": "d8b8238c0bd52a445e17a72f8e7b6c8734d46dee5b065f954dbe629009f1f4cc"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/meter_diagnostic.py",
+      "sha256": "0d2c0a6a1e1df89b28351f22a759470078a30bc9df559f6c4b26859671a57670"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/metering.py",
+      "sha256": "268966957ddf16d9824e08041c63f09cb14f6f3e6e14a11aceaf104857089226"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/native_worker.py",
+      "sha256": "566e4cd00294998923a08675f90640bfae1ea63c5d540390bdd22e712dbada76"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/neural.py",
+      "sha256": "816cf398cb8fa76e13bec7f699a1bf56324788de99c400c9c0a96d2a9484b6f4"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/objective.py",
+      "sha256": "cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/ocr.py",
+      "sha256": "5cbcaca04a4843b51379bbcc3911ae4453c25b3f0585970ae4d9d414624a47f1"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/organization_artifacts.py",
+      "sha256": "b47db312199308c884691097468ca92f02e66f234144e07220981a8d0aec3981"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/organization_policy.py",
+      "sha256": "ef1b631fe4c01c4acd5b7c2116540fb32c04c4eeb1e79ba754fe20c6040c408d"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/organization_reference.py",
+      "sha256": "e27bdecab60a8792490f2522071be6000f3cbebda315c54c33ba78807c3e3bf6"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/organization_reference_artifacts.py",
+      "sha256": "e643f62f8f2a2e3b6529ea4d63aef4f1eba3ee8550e1d3d34f29377809dc0921"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/organization_review.py",
+      "sha256": "188786ebecdc5b4bd174cd73fff0711df9a8737f87b4fa8c7957ccef18359a51"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/pipeline.py",
+      "sha256": "55e64da2995bd685bf5b24b7ce74e6ce821dacb0d65cf94e68e8ab53a9eb9d6c"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/recursive_objective.py",
+      "sha256": "c811ddff6f4bb31aeae28a47b23265fb7b0255a8a1cc7250a5ff591e96f946f9"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/score_worker.py",
+      "sha256": "e40818170025960efd7a45fbc3dd8beba45cdaa872de0bd37038dcaeb626f887"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/span_meter.py",
+      "sha256": "3ef63104c27aeb2ee64478ad7461f579dd5f06be05aa4f4c9bcc709e8826a70b"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/state_codec.py",
+      "sha256": "c0a52c8fbb456ffb1fd506609ed3b86781ff08ad6992706ff5546cf1d7b93b54"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/stopped_calibration_run.py",
+      "sha256": "c0e768f5e276ba60c86a84ae260d51f5c0072bfea7981935bc3d2e76a4e16a73"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/stopped_collect.py",
+      "sha256": "22cdf76323664b336286f169cece0b241762d9d0c55b77ee041c8a3132a2ed6c"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/stopped_collect_contract.py",
+      "sha256": "475a2c9a0a3dad5530ebae006cbc4901da6d36f1efb2fa518713300dfd830e38"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/stopped_control.py",
+      "sha256": "200f640aaeda7f1cd1e5ad772b75aa3ae34fa8dc82683bf1d1c06d039a8f5bb2"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/stopped_diagnostics.py",
+      "sha256": "e80eeeef29236980ede57aa970ab8fd6d19a6b6abfbc2787c4684a24fb5526b6"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/stopped_torch.py",
+      "sha256": "17885741d5f267e0c7ee59367ed0ee08c2bb606b585d4d5abc50af7811c07b60"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/study.py",
+      "sha256": "3c475c7c36927819b646df001399c68fd30dc03541c355f1f20e55c8c2cbfdd0"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/subprocess_supervisor.py",
+      "sha256": "2679c877f630148edddd17183e6d3766b9c690d57ce8465308eb8d84a5aafb81"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/training.py",
+      "sha256": "593518b351073dc213f0bc9c139ca7d7fa61c0bc7783ccd9646a79b84155570f"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/training_grid.py",
+      "sha256": "af8bbf410207c86363ca05203d99f68f73c4ebeedf49f5858945e869df54d331"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/training_job_result.py",
+      "sha256": "68b2971750b38992622b8b853c7b58727f3a549dfe9802e323d5085e8d4a7284"
+    },
+    {
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v3/scripts/ndu_real_runtime/trajectory.py",
+      "sha256": "700a66b30d24dbe39d75c2cd1293cd0ae2719526695a3fa71e725eb56670320e"
+    },
+    {
+      "path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/pilot-run-v1/models/common-collector-content/receipt.json",
+      "sha256": "53d1494186db9e43b1e9c8d2f004f5dfadd86d44c4614ba10841179da5bde74f"
+    }
+  ]
+}

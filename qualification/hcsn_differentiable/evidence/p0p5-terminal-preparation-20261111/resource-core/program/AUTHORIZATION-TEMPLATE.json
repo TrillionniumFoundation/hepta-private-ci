@@ -1,0 +1,19 @@
+{
+  "schema": "c2-resource-analysis-authorization-template-v2",
+  "execution_authorized": false,
+  "scope": "c2-terminal-resource-metadata-only",
+  "confirmation_E_access": false,
+  "program_manifest_sha256": "REPLACE_ONLY_IN_A_LATER_SEPARATE_AUTHORIZATION",
+  "plan_sha256": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b",
+  "binding_sha256": null,
+  "resources": {
+    "whole_hard_wall_seconds": 120,
+    "peak_RSS_bytes": 536870912,
+    "workers": 1,
+    "threads": 1,
+    "automatic_retry": false
+  },
+  "preparation_only": true,
+  "actual_analysis_executed": false,
+  "note": "Requires the new v2 full-source qualification and separately verified native auditor complete exit; this disabled template grants no execution."
+}

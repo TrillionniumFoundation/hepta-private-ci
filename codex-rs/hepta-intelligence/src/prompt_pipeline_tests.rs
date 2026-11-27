@@ -25,7 +25,7 @@ fn fixture() -> (
     SelectedPromptPortfolioV1,
     PromptExerciseRequestV1,
 ) {
-    let temp = tempfile::tempdir().expect("tempdir");
+    let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error:?}"));
     let (registry, tuple, _, _, _) = admitted_registry(&temp.path().join("registry"), b"payload:a");
     let selected = canonical_selection(&registry, &tuple, 100);
     (

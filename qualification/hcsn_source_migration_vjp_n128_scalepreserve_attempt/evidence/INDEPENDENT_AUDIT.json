@@ -1,0 +1,94 @@
+{
+  "schema": "hcsn-visit897-n128-scalepreserve-vjp-independent-audit-v1",
+  "audit_execution": {
+    "candidate_imports": 0,
+    "candidate_forwards": 0,
+    "adjoints": 0,
+    "backward_attempts": 0,
+    "optimizer_updates": 0
+  },
+  "inputs": {
+    "workflow_run_id": 43308685765,
+    "workflow_job_id": 131498644834,
+    "artifact_id": 13984194091,
+    "artifact_zip_sha256": "a14aa34f73fb9b05f3563c0a0674df765d03d281444d47eb12e697c352c8613f",
+    "artifact_members": 10,
+    "raw_npz_sha256": "fa5b4f70100481dd8c8bc522f7424729e5edb4b7e42c4392ded648ac461aab59"
+  },
+  "binding": {
+    "source_commit": "373e7c35eb245e25fbc8ad451d3d3cf814ad6172",
+    "parent_commit": "0bee628a473e278be4f305791aa361cf0fdab2df",
+    "identity": "hcsn-visit897-n128-scalepreserve-vjp-20261112-c06d",
+    "unique_execution_key": "hcsn-visit897-n128-scalepreserve-vjp-20261112-c06d-001",
+    "source_bind_equals_frozen_source": true,
+    "source_unchanged": true
+  },
+  "preimport_review": {
+    "status": "CLEAR_NUMERICAL_ADMISSION_PREIMPORT",
+    "checks_passed": 67,
+    "checks_failed": 0,
+    "candidate_imports": 0,
+    "candidate_forwards": 0,
+    "adjoints": 0,
+    "optimizer_updates": 0
+  },
+  "result": {
+    "status": "PASS_LIMITED_N128_ONE_LAW",
+    "directional_checks_passed": 10,
+    "directional_checks_total": 10,
+    "maximum_directional_absolute_error": 2.5979669804332417e-12,
+    "maximum_directional_relative_error_among_eligible": 4.667805088709208e-8,
+    "transpose_coordinates_checked": 125,
+    "maximum_transpose_absolute_error": 2.168404344971009e-19,
+    "negative_guards_rejected": 12,
+    "negative_guards_total": 12,
+    "forwards": 42,
+    "continuous_adjoints": 2,
+    "backward_attempts": 2,
+    "optimizer_updates": 0
+  },
+  "raw_scale_guard": {
+    "scale": 1.25,
+    "source_mass": 1.2500000000000002,
+    "migrated_mass": 1.2500000000000002,
+    "absolute_difference": 1.1303121693203942e-17,
+    "exact_rounding_bound": 9.1189502923888e-17,
+    "bound_passed": true,
+    "silently_normalized": false
+  },
+  "raw_npz": {
+    "all_values_finite": true,
+    "arrays": {
+      "amplitude_vjp": {"shape": [136, 5], "dtype": "float64"},
+      "content": {"shape": [25, 4], "dtype": "float64"},
+      "cotangent": {"shape": [1, 133, 5], "dtype": "float64"},
+      "normalized_gradient_logits": {"shape": [25], "dtype": "float64"},
+      "normalized_gradient_marks": {"shape": [25, 4], "dtype": "float64"},
+      "probability": {"shape": [25], "dtype": "float64"},
+      "raw_gradient_content": {"shape": [25, 4], "dtype": "float64"},
+      "raw_gradient_probability": {"shape": [25], "dtype": "float64"}
+    }
+  },
+  "preserved_warning": {
+    "bytes": 445,
+    "message_class": "torch_requires_grad_scalar_conversion_user_warning",
+    "affects_recorded_pass": false,
+    "removed_or_suppressed": false
+  },
+  "scope": {
+    "qualified": "one original visit-897 law on actual graded N128 with fixed physics_geometry_support and first-cycle T=0.02 input-VJP admission",
+    "not_qualified": [
+      "N256_or_N512_scalability",
+      "full_posterior_or_finite_domain",
+      "trainable_physics_support_delay_or_migration",
+      "second_cycle_feedback",
+      "fullnetwork_training_or_task_benefit",
+      "C2_full_replay",
+      "HPCA_external_sealed_custody",
+      "production_adoption",
+      "global_closure"
+    ]
+  },
+  "global_status": "HOLD",
+  "all_closed": false
+}

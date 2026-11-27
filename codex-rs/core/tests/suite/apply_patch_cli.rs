@@ -1178,6 +1178,8 @@ async fn apply_patch_cli_preserves_existing_hard_link_outside_workspace() -> Res
     let harness_work_dir = work_dir.clone();
     let harness = apply_patch_harness_with(move |builder| {
         builder.with_config(move |config| {
+            #[cfg(windows)]
+            config.set_windows_sandbox_enabled(/*value*/ true);
             config.workspace_roots = vec![harness_work_dir.clone()];
             config
                 .permissions
@@ -1213,9 +1215,12 @@ async fn apply_patch_cli_preserves_existing_hard_link_outside_workspace() -> Res
 
     let out = harness.apply_patch_output(call_id).await;
     if cfg!(windows) {
+        #[cfg(windows)]
         assert!(
-            out.contains("patch rejected: writing outside of the project"),
-            "Windows sandboxing intentionally rejects writes through existing hard links to files outside the workspace; tool output: {out}"
+            out.contains(
+                &codex_windows_sandbox::LegacyWindowsSandboxIsolationUnavailable.to_string()
+            ),
+            "legacy Windows sandbox admission must refuse before filesystem access; tool output: {out}"
         );
         assert_eq!(
             std::fs::read_to_string(&outside_file)?,

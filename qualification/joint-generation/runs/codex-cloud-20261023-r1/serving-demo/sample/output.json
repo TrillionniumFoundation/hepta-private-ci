@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.joint-generation.output.v1",
+  "run_id": "codex-cloud-20261023-r1-external-1",
+  "objective_id": "scene-transform-v1",
+  "model_digest": "dcce55e7b0d0cc8da2e9620b610e1d90e390f9395fc68b50c3a4d69e63b27fca",
+  "bundle_digest": "a9a628ba087c56fcf5a400ef576ef49077f753634becaf98e6b5f1095f7380c9",
+  "utility_profile": {
+    "behavior_policy": "independent-categorical-v1",
+    "compute_price": 0.02,
+    "rho": 1.5
+  },
+  "decoding": {
+    "mode": "sample",
+    "seed": 42
+  },
+  "choices": {
+    "text": 11,
+    "image": 11
+  },
+  "controller_sha256": "2c5b3ceb1dce699ff3fc82a96baa10e2269f87b344c9069de7ff287d2c5132e7",
+  "caption": "blue cross right",
+  "image_sha256": "c6765fd611d6347ea48765af88835e3c130cbf0560191848b02028535fd5a620",
+  "continued": false,
+  "spent": {
+    "controller": 328,
+    "generator": 14848,
+    "output_bytes": 107
+  },
+  "model_macs": 7232,
+  "decoder_scalar_operations": 384,
+  "controller_estimate": {
+    "scalar_operations": 328,
+    "log_evaluations": 24,
+    "sort_items": 24
+  },
+  "compute_profile": "two-scalar-ops-per-model-MAC-plus-control-and-decoder-estimate-v1",
+  "latency_ns": 23964815,
+  "qualification_only": true
+}

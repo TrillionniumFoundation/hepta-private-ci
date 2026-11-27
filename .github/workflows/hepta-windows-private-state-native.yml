@@ -1,0 +1,256 @@
+name: Hepta Windows private-state native (security qualification only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/utils/path-utils/**"
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/network-proxy/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - ".github/workflows/hepta-windows-private-state-native.yml"
+      - "scripts/hepta_windows_learn_regressions.py"
+      - "scripts/test_hepta_windows_learn_regressions.py"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/hepta_ci_junit.py"
+      - "scripts/run-nextest.py"
+      - "codex-rs/.config/nextest.toml"
+      - "justfile"
+      - "scripts/just-shell.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-private-state-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  windows-secure-private-state:
+    name: ACL, anti-reparse, signed-owner durability and recovery on Windows
+    runs-on: windows-latest
+    timeout-minutes: 65
+    env:
+      CARGO_BUILD_TARGET: "x86_64-pc-windows-msvc"
+    steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
+      - name: Checkout immutable PR head without saved credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify exact source identity and pinned native compiler
+        shell: pwsh
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne "${{ github.event.pull_request.head.sha || github.sha }}") { throw "unqualified head SHA" }
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Set-Location codex-rs
+          rustc --version --verbose
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise private file handles, ACL, reparse and hardlink invariants
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-utils-path --lib -E 'test(private_state_windows::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise actual Prompt Registry Windows durable owner
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-prompt-registry --lib -E 'test(durable::windows::tests::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise signed final-use and authority-lease durable stores
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-contracts --lib -E 'test(final_use::store::windows::tests::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          just test --locked -p codex-hepta-contracts --lib -E 'test(authority_lease::windows::tests::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Validate Agentd Prompt Runtime integration and reopened state
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-agentd --lib -E 'test(prompt_runtime::tests::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Enforce source-level Rust formatting for durable owners
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          cargo fmt --package codex-utils-path --package codex-hepta-prompt-registry --package codex-hepta-contracts --package codex-hepta-agentd --package codex-hepta-intelligence-eval --package codex-hepta-learning-ledger -- --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise the original signed-credit case on the exact Windows source
+        shell: pwsh
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          Set-Location codex-rs
+          @'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import sys
+          import time
+          from datetime import datetime, timezone
+
+          sys.path.insert(0, str(Path.cwd().parent / "scripts"))
+          from hepta_ci_exec import identity, observed_test_counts
+
+          records = Path(os.environ["RUNNER_TEMP"]) / "mem8-windows-credit-fixture"
+          records.mkdir(parents=True, exist_ok=False)
+          receipt = records / "credit-fixture.json"
+          log = records / "credit-fixture.log"
+          case = (
+              "circuit_cell::tests::credit_tests::signed_tests::"
+              "signed_credit_rejects_cross_owner_ledger_episode_before_any_append"
+          )
+          command = [
+              "just", "test", "--locked", "-p", "codex-hepta-agentd", "--lib",
+              "-E", f"test(={case})", "--test-threads", "1",
+              "--no-tests", "fail", "--retries", "0",
+          ]
+          record = {
+              "schema": "mem8.windows-credit-fixture.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": os.environ["SOURCE_SHA"],
+              "base_sha": os.environ["BASE_SHA"],
+              "lane": "source-head",
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "job": os.environ["GITHUB_JOB"],
+              "case": case,
+              "command": command,
+              "working_directory": str(Path.cwd().resolve()),
+              "minimum_tests": 1,
+              "status": "running",
+              "command_exit_code": None,
+              "started_at": datetime.now(timezone.utc).isoformat(),
+              "supervision": "Existing Windows Actions job timeout; no POSIX process-group claim.",
+          }
+          with receipt.open("x", encoding="utf-8") as stream:
+              json.dump(record, stream, sort_keys=True)
+              stream.flush()
+              os.fsync(stream.fileno())
+          started = time.monotonic()
+          exit_code = 1
+          try:
+              before = identity()
+              record["before"] = before
+              if not re.fullmatch(r"[0-9a-f]{40}", record["tested_sha"]):
+                  raise ValueError("invalid tested SHA")
+              if before["dirty"] or before["commit"] != record["tested_sha"]:
+                  raise ValueError("checkout differs from the clean exact source")
+              with log.open("xb") as stream:
+                  completed = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT)
+                  stream.flush()
+                  os.fsync(stream.fileno())
+              record["command_exit_code"] = completed.returncode
+              data = log.read_bytes()
+              record["log_file"] = log.name
+              record["log_bytes"] = len(data)
+              record["log_sha256"] = hashlib.sha256(data).hexdigest()
+              text = re.sub(r"\x1b\[[0-9;]*m", "", data.decode("utf-8", errors="replace"))
+              passed, failed = observed_test_counts(text)
+              record["observed_passed_tests"] = passed
+              record["observed_failed_tests"] = failed
+              record["named_pass_rows"] = len(re.findall(
+                  r"^\s*PASS\s+\[[^\]]+\]\s+\S+\s+" + re.escape(case) + r"\s*$",
+                  text, re.MULTILINE,
+              ))
+              after = identity()
+              record["after"] = after
+              sys.stdout.buffer.write(data)
+              sys.stdout.buffer.flush()
+              if completed.returncode:
+                  raise ValueError(f"native test command exited {completed.returncode}")
+              if passed != 1 or failed or record["named_pass_rows"] != 1:
+                  raise ValueError("exact named case was not observed passing once")
+              if after != before:
+                  raise ValueError("source identity or bytes changed during the native test")
+              record["status"] = "passed"
+              exit_code = 0
+          except (OSError, ValueError, subprocess.SubprocessError) as error:
+              record["status"] = "failed"
+              record["error"] = str(error)
+          finally:
+              record["finished_at"] = datetime.now(timezone.utc).isoformat()
+              record["elapsed_seconds"] = time.monotonic() - started
+              record["exit_code"] = exit_code
+              pending = receipt.with_suffix(".pending")
+              with pending.open("x", encoding="utf-8") as stream:
+                  json.dump(record, stream, indent=2, sort_keys=True)
+                  stream.write("\n")
+                  stream.flush()
+                  os.fsync(stream.fileno())
+              pending.replace(receipt)
+              print(json.dumps(record, sort_keys=True), flush=True)
+          sys.exit(exit_code)
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise exact Windows LEARN file and CURRENT regressions
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python -m unittest discover -s scripts -p test_hepta_windows_learn_regressions.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/hepta_windows_learn_regressions.py --expected-head "$env:SOURCE_SHA" --output "$env:RUNNER_TEMP/hepta-windows-learn-regressions"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Confirm no generated or modified tracked source
+        if: always()
+        shell: pwsh
+        run: |
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $trackedChanges = @(git status --porcelain --untracked-files=no)
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($trackedChanges.Count -ne 0) { throw "unqualified worktree mutation" }
+      - name: Retain the exact signed-credit execution receipt and raw output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem8-windows-credit-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem8-windows-credit-fixture
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Retain native LEARN logs, exact case coverage and original JUnit
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-learn-regressions-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-windows-learn-regressions/
+          if-no-files-found: error
+          retention-days: 14

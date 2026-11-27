@@ -1,0 +1,42 @@
+{
+  "caveat": "2.5-second tail and0.5-second global guard are prospective empirical safeguards, not universal CPU bounds; any observed violation fails and is retained",
+  "measured_worst_core_tail_CPU": 1.120075113999997,
+  "model_work": 0,
+  "old_all_inclusive_tail_CPU": 2.2760751139999966,
+  "old_failed_result_unchanged": true,
+  "plans": {
+    "10.0": {
+      "cap_CPU": 10.0,
+      "cap_units": 12000000000,
+      "common_CPU": 4.4953785569999996,
+      "common_units": 3713763611,
+      "global_guard_CPU": 0.5,
+      "slots": 6,
+      "tail_CPU": 2.5,
+      "tail_units": 500000000,
+      "training_CPU_per_slot": 0.41743690716666676,
+      "training_units_per_slot": 1297706064
+    },
+    "11.0": {
+      "cap_CPU": 11.0,
+      "cap_units": 12000000000,
+      "common_CPU": 4.4953785569999996,
+      "common_units": 3713763611,
+      "global_guard_CPU": 0.5,
+      "slots": 6,
+      "tail_CPU": 2.5,
+      "tail_units": 500000000,
+      "training_CPU_per_slot": 0.5841035738333334,
+      "training_units_per_slot": 1297706064
+    }
+  },
+  "scope": "prospective boundary/allocation calculation only; no training permission or execution",
+  "tail_unit_quote": {
+    "final_observation": 145984104,
+    "final_summary_envelope": 5000,
+    "mandatory_self_check_envelope": 25000000,
+    "service": 22159872,
+    "setup_and_final_delta_envelope": 1000000,
+    "total": 194148976
+  }
+}

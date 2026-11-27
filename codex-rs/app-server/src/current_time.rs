@@ -5,8 +5,6 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
 use anyhow::bail;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_app_server_protocol::CurrentTimeReadParams;
 use codex_app_server_protocol::CurrentTimeReadResponse;
 use codex_app_server_protocol::ServerRequestPayload;
@@ -63,8 +61,8 @@ impl TimeProvider for AppServerTimeProvider {
                 request_current_time(outgoing.clone(), thread_state_manager.clone(), thread_id)
                     .await?;
             let wake_at = started_at
-                .checked_add_signed(
-                    chrono::Duration::from_std(duration)
+                .checked_add(
+                    codex_utils_time::duration_from_std(duration)
                         .context("external sleep duration is outside the supported range")?,
                 )
                 .context("external sleep deadline is outside the supported range")?;
@@ -86,7 +84,7 @@ async fn request_current_time(
     outgoing: Arc<OutgoingMessageSender>,
     thread_state_manager: ThreadStateManager,
     thread_id: ThreadId,
-) -> Result<DateTime<Utc>> {
+) -> Result<codex_utils_time::Timestamp> {
     let deadline = Instant::now() + CURRENT_TIME_REQUEST_TIMEOUT;
     timeout_at(
         deadline,
@@ -135,7 +133,7 @@ async fn request_current_time(
     let response: CurrentTimeReadResponse =
         serde_json::from_value(result).context("invalid current-time response")?;
 
-    DateTime::from_timestamp(response.current_time_at, 0)
+    codex_utils_time::Timestamp::from_timestamp(response.current_time_at, /*nanoseconds*/ 0)
         .ok_or_else(|| anyhow!("current-time response is outside the supported range"))
 }
 

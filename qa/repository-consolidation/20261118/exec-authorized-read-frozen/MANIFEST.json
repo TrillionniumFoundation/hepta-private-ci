@@ -1,0 +1,477 @@
+{
+  "schema": "hepta.repository-consolidation.exec-authorized-read.v1",
+  "status": "historical source custody with common production port; no native macOS qualification",
+  "source_baseline_for_port": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "heads": [
+    {
+      "head": "400a3ce92a455599bb67af8cc2ebbec06384ce3d",
+      "parent": "a32d73f00cfc292ff1ed4ac5cef958ca9f238020",
+      "tree": "705faa2e782bf1ba5275f82416ef66d14e238fd5",
+      "branch": "diagnostic/a32-exec-authorized-read-native-v2-20261022",
+      "variant": "v2: strict complete-log parser and repository/package/rule closure classifier; noncritical ignored cases remain allowed by the original collector.",
+      "retained_files": [
+        {
+          "original_path": ".github/fixtures/a32-exec-authorized-read-native/source-manifest.json",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/.github/fixtures/a32-exec-authorized-read-native/source-manifest.json.original",
+          "blob": "f1834ddfbb902caf880da4a36abbe082fe8765c6",
+          "sha256": "6a93a0d536c0803b8503b6fa6c5d4d52521da3632f68eb182ecbd07a47999eea",
+          "bytes": 6742,
+          "byte_exact": true
+        },
+        {
+          "original_path": ".github/scripts/a32_exec_authorized_read_format.py",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/.github/scripts/a32_exec_authorized_read_format.py.original",
+          "blob": "c17b569944bc158dcbce7fa529d47b103da2b99d",
+          "sha256": "266d391ef2a9f7ff7892307f2e278d558cf3f3263173e81ef99169ccb2b3b3cf",
+          "bytes": 18342,
+          "byte_exact": true
+        },
+        {
+          "original_path": ".github/scripts/a32_exec_authorized_read_native.py",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/.github/scripts/a32_exec_authorized_read_native.py.original",
+          "blob": "321e9d7c7fd3b3d2ab443dbc1be23597d4116b71",
+          "sha256": "bc6f02520d070490196474abdf5e71d9fbba56423271927067be2e072156ad18",
+          "bytes": 34295,
+          "byte_exact": true
+        },
+        {
+          "original_path": ".github/workflows/a32-exec-authorized-read-native.yml",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/.github/workflows/a32-exec-authorized-read-native.yml.original",
+          "blob": "b280677216d07c8c8249913a108f1cfa324a87e5",
+          "sha256": "da01c29525e6fcbe490e05e241d82fa372d217458fd6fa09933c7722adeb5efc",
+          "bytes": 4622,
+          "byte_exact": true
+        },
+        {
+          "original_path": "codex-rs/exec-server/src/authorized_read_error_tests.rs",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/codex-rs/exec-server/src/authorized_read_error_tests.rs.original",
+          "blob": "c7187096e96213e9ffdfb61203afc8d9b51491ca",
+          "sha256": "31b6ac62377ba100ff5cc72bbc09681e3e395f4e60a8a5297f0cd8ebe5820313",
+          "bytes": 2955,
+          "byte_exact": true
+        },
+        {
+          "original_path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/400a3ce9/original/codex-rs/exec-server/tests/authorized_read_rpc.rs.original",
+          "blob": "57f54e2b68d12ba0a80002b4578a90a89ca4cd00",
+          "sha256": "ee1e7812a638ba74bab65ba29ab2045198f2aaf612914140477cdb7421e6bb2f",
+          "bytes": 4823,
+          "byte_exact": true
+        }
+      ],
+      "complete_changed_path_count": 14,
+      "all_original_changed_path_hashes": [
+        {
+          "path": ".github/fixtures/a32-exec-authorized-read-native/source-manifest.json",
+          "blob": "f1834ddfbb902caf880da4a36abbe082fe8765c6",
+          "sha256": "6a93a0d536c0803b8503b6fa6c5d4d52521da3632f68eb182ecbd07a47999eea",
+          "bytes": 6742
+        },
+        {
+          "path": ".github/scripts/a32_exec_authorized_read_format.py",
+          "blob": "c17b569944bc158dcbce7fa529d47b103da2b99d",
+          "sha256": "266d391ef2a9f7ff7892307f2e278d558cf3f3263173e81ef99169ccb2b3b3cf",
+          "bytes": 18342
+        },
+        {
+          "path": ".github/scripts/a32_exec_authorized_read_native.py",
+          "blob": "321e9d7c7fd3b3d2ab443dbc1be23597d4116b71",
+          "sha256": "bc6f02520d070490196474abdf5e71d9fbba56423271927067be2e072156ad18",
+          "bytes": 34295
+        },
+        {
+          "path": ".github/workflows/a32-exec-authorized-read-native.yml",
+          "blob": "b280677216d07c8c8249913a108f1cfa324a87e5",
+          "sha256": "da01c29525e6fcbe490e05e241d82fa372d217458fd6fa09933c7722adeb5efc",
+          "bytes": 4622
+        },
+        {
+          "path": "codex-rs/exec-server/src/authorized_read_error.rs",
+          "blob": "b4b51dc9a77b799585740ae6090902dc5b565de7",
+          "sha256": "bcaba3dee0612b8fc856a68bc75ff68cd1044443c26179b1ca53b528780e6d98",
+          "bytes": 3046
+        },
+        {
+          "path": "codex-rs/exec-server/src/authorized_read_error_tests.rs",
+          "blob": "c7187096e96213e9ffdfb61203afc8d9b51491ca",
+          "sha256": "31b6ac62377ba100ff5cc72bbc09681e3e395f4e60a8a5297f0cd8ebe5820313",
+          "bytes": 2955
+        },
+        {
+          "path": "codex-rs/exec-server/src/client.rs",
+          "blob": "7aed890bc0e4622c77ca9b2a32a630d596a20832",
+          "sha256": "cbdf9174270b8ad181652fd9bf8d6da60245ae4c46a63a64befb4bc9222f0e30",
+          "bytes": 122471
+        },
+        {
+          "path": "codex-rs/exec-server/src/lib.rs",
+          "blob": "096f712446110133d3b77fe7179c18434de04ff2",
+          "sha256": "09708562836a74a29104d51ee7acd839b241e8f5c46f1d6c7b3614f2fc55a5c0",
+          "bytes": 8871
+        },
+        {
+          "path": "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+          "blob": "96bb01ad55e75e932f9b4dba5603f6ddc4d03101",
+          "sha256": "7c7934c1166f6a5d9b4e882392447ca277859872c38da4732714690549eedd3b",
+          "bytes": 14235
+        },
+        {
+          "path": "codex-rs/exec-server/src/remote_file_system.rs",
+          "blob": "d2e06d780e1a291dcf036114e0f8ef1b63b56093",
+          "sha256": "3fd2f36072551c0e3c874a0070490c22b59af48834f51682cea0ada3cd621cf0",
+          "bytes": 24966
+        },
+        {
+          "path": "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+          "blob": "134b5c85e8a7368946b97df04ed14827095099fb",
+          "sha256": "d36f301f99f4c2563b8c40e555313bd1814b6c536c9a7146a1296684d053174b",
+          "bytes": 41891
+        },
+        {
+          "path": "codex-rs/exec-server/src/server/file_system_handler.rs",
+          "blob": "cd54ebe251ceefc3368850ffb19b7a855fe0ef63",
+          "sha256": "48fc0c9c61afe0350fa7f8a80656059e6b91e04b3e9f6e8f828e65dd905b0ba6",
+          "bytes": 17715
+        },
+        {
+          "path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+          "blob": "57f54e2b68d12ba0a80002b4578a90a89ca4cd00",
+          "sha256": "ee1e7812a638ba74bab65ba29ab2045198f2aaf612914140477cdb7421e6bb2f",
+          "bytes": 4823
+        },
+        {
+          "path": "codex-rs/exec-server/tests/file_system_unix.rs",
+          "blob": "542dbbf52283b03a360a9bf915b5330d3675604f",
+          "sha256": "77eca15b11cc8eedb13b4573299735f67653926bad7a930e5b34c05dbc21b2c4",
+          "bytes": 59109
+        }
+      ],
+      "complete_product_tree_verified": "b4456af1940c8b386339cacf3a61baecfa8235a8",
+      "selected_product_tree_and_overlay_digest": "Historical declarations retained, not independently rederived by this audit."
+    },
+    {
+      "head": "6f0e91e1d2479d73ae28097e930e16c4ed331911",
+      "parent": "a32d73f00cfc292ff1ed4ac5cef958ca9f238020",
+      "tree": "2ee70cc8368d50774ce555fa371cbde08300e68e",
+      "branch": "diagnostic/a32-exec-authorized-read-native-v3-20261022",
+      "variant": "v3: v2 source plus exact bounded stderr interleaving for two existing sequential process-exit tests, and rejection of all ignored/measured/filtered cases.",
+      "retained_files": [
+        {
+          "original_path": ".github/fixtures/a32-exec-authorized-read-native/source-manifest.json",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/.github/fixtures/a32-exec-authorized-read-native/source-manifest.json.original",
+          "blob": "38b6d0e83fd5395cc949ede6a1594e9b6a33fac4",
+          "sha256": "92c945b708826a1de72e3e508e37886df79dd5fd4b8016d712a3f111f33eb8c4",
+          "bytes": 6742,
+          "byte_exact": true
+        },
+        {
+          "original_path": ".github/scripts/a32_exec_authorized_read_format.py",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/.github/scripts/a32_exec_authorized_read_format.py.original",
+          "blob": "c17b569944bc158dcbce7fa529d47b103da2b99d",
+          "sha256": "266d391ef2a9f7ff7892307f2e278d558cf3f3263173e81ef99169ccb2b3b3cf",
+          "bytes": 18342,
+          "byte_exact": true
+        },
+        {
+          "original_path": ".github/scripts/a32_exec_authorized_read_native.py",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/.github/scripts/a32_exec_authorized_read_native.py.original",
+          "blob": "f0422e0b7d8c68400ffffa345afc98122caa96bd",
+          "sha256": "b03298f0be4d05da067f595b8b5662805de97928147a15317062b3c91e7ada14",
+          "bytes": 36443,
+          "byte_exact": true
+        },
+        {
+          "original_path": ".github/workflows/a32-exec-authorized-read-native.yml",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/.github/workflows/a32-exec-authorized-read-native.yml.original",
+          "blob": "ca9c9157f820153b5387898c7f380d9f99f0d067",
+          "sha256": "865dfd9312a450ed0c94a3b03d1714a72e6acb24d874b96931b8b4546dd25f01",
+          "bytes": 4622,
+          "byte_exact": true
+        },
+        {
+          "original_path": "codex-rs/exec-server/src/authorized_read_error_tests.rs",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/codex-rs/exec-server/src/authorized_read_error_tests.rs.original",
+          "blob": "c7187096e96213e9ffdfb61203afc8d9b51491ca",
+          "sha256": "31b6ac62377ba100ff5cc72bbc09681e3e395f4e60a8a5297f0cd8ebe5820313",
+          "bytes": 2955,
+          "byte_exact": true
+        },
+        {
+          "original_path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/6f0e91e1/original/codex-rs/exec-server/tests/authorized_read_rpc.rs.original",
+          "blob": "57f54e2b68d12ba0a80002b4578a90a89ca4cd00",
+          "sha256": "ee1e7812a638ba74bab65ba29ab2045198f2aaf612914140477cdb7421e6bb2f",
+          "bytes": 4823,
+          "byte_exact": true
+        }
+      ],
+      "complete_changed_path_count": 14,
+      "all_original_changed_path_hashes": [
+        {
+          "path": ".github/fixtures/a32-exec-authorized-read-native/source-manifest.json",
+          "blob": "38b6d0e83fd5395cc949ede6a1594e9b6a33fac4",
+          "sha256": "92c945b708826a1de72e3e508e37886df79dd5fd4b8016d712a3f111f33eb8c4",
+          "bytes": 6742
+        },
+        {
+          "path": ".github/scripts/a32_exec_authorized_read_format.py",
+          "blob": "c17b569944bc158dcbce7fa529d47b103da2b99d",
+          "sha256": "266d391ef2a9f7ff7892307f2e278d558cf3f3263173e81ef99169ccb2b3b3cf",
+          "bytes": 18342
+        },
+        {
+          "path": ".github/scripts/a32_exec_authorized_read_native.py",
+          "blob": "f0422e0b7d8c68400ffffa345afc98122caa96bd",
+          "sha256": "b03298f0be4d05da067f595b8b5662805de97928147a15317062b3c91e7ada14",
+          "bytes": 36443
+        },
+        {
+          "path": ".github/workflows/a32-exec-authorized-read-native.yml",
+          "blob": "ca9c9157f820153b5387898c7f380d9f99f0d067",
+          "sha256": "865dfd9312a450ed0c94a3b03d1714a72e6acb24d874b96931b8b4546dd25f01",
+          "bytes": 4622
+        },
+        {
+          "path": "codex-rs/exec-server/src/authorized_read_error.rs",
+          "blob": "b4b51dc9a77b799585740ae6090902dc5b565de7",
+          "sha256": "bcaba3dee0612b8fc856a68bc75ff68cd1044443c26179b1ca53b528780e6d98",
+          "bytes": 3046
+        },
+        {
+          "path": "codex-rs/exec-server/src/authorized_read_error_tests.rs",
+          "blob": "c7187096e96213e9ffdfb61203afc8d9b51491ca",
+          "sha256": "31b6ac62377ba100ff5cc72bbc09681e3e395f4e60a8a5297f0cd8ebe5820313",
+          "bytes": 2955
+        },
+        {
+          "path": "codex-rs/exec-server/src/client.rs",
+          "blob": "7aed890bc0e4622c77ca9b2a32a630d596a20832",
+          "sha256": "cbdf9174270b8ad181652fd9bf8d6da60245ae4c46a63a64befb4bc9222f0e30",
+          "bytes": 122471
+        },
+        {
+          "path": "codex-rs/exec-server/src/lib.rs",
+          "blob": "096f712446110133d3b77fe7179c18434de04ff2",
+          "sha256": "09708562836a74a29104d51ee7acd839b241e8f5c46f1d6c7b3614f2fc55a5c0",
+          "bytes": 8871
+        },
+        {
+          "path": "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+          "blob": "96bb01ad55e75e932f9b4dba5603f6ddc4d03101",
+          "sha256": "7c7934c1166f6a5d9b4e882392447ca277859872c38da4732714690549eedd3b",
+          "bytes": 14235
+        },
+        {
+          "path": "codex-rs/exec-server/src/remote_file_system.rs",
+          "blob": "d2e06d780e1a291dcf036114e0f8ef1b63b56093",
+          "sha256": "3fd2f36072551c0e3c874a0070490c22b59af48834f51682cea0ada3cd621cf0",
+          "bytes": 24966
+        },
+        {
+          "path": "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+          "blob": "134b5c85e8a7368946b97df04ed14827095099fb",
+          "sha256": "d36f301f99f4c2563b8c40e555313bd1814b6c536c9a7146a1296684d053174b",
+          "bytes": 41891
+        },
+        {
+          "path": "codex-rs/exec-server/src/server/file_system_handler.rs",
+          "blob": "cd54ebe251ceefc3368850ffb19b7a855fe0ef63",
+          "sha256": "48fc0c9c61afe0350fa7f8a80656059e6b91e04b3e9f6e8f828e65dd905b0ba6",
+          "bytes": 17715
+        },
+        {
+          "path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+          "blob": "57f54e2b68d12ba0a80002b4578a90a89ca4cd00",
+          "sha256": "ee1e7812a638ba74bab65ba29ab2045198f2aaf612914140477cdb7421e6bb2f",
+          "bytes": 4823
+        },
+        {
+          "path": "codex-rs/exec-server/tests/file_system_unix.rs",
+          "blob": "542dbbf52283b03a360a9bf915b5330d3675604f",
+          "sha256": "77eca15b11cc8eedb13b4573299735f67653926bad7a930e5b34c05dbc21b2c4",
+          "bytes": 59109
+        }
+      ],
+      "complete_product_tree_verified": "b4456af1940c8b386339cacf3a61baecfa8235a8",
+      "selected_product_tree_and_overlay_digest": "Historical declarations retained, not independently rederived by this audit."
+    },
+    {
+      "head": "f808b370af071005fe7c8024e1896197f5c094bb",
+      "parent": "a32d73f00cfc292ff1ed4ac5cef958ca9f238020",
+      "tree": "15ed17e840e0aee7d8f6fdf192561d950e3d7486",
+      "branch": "diagnostic/a32-exec-closure-refreeze-20261022",
+      "variant": "refreeze: different raw formatting pins with the same normalized Rust; alternative UUID-v8-aware closure classifier has a reproduced bare libv8.a rule gap and retains the v2 log parser.",
+      "retained_files": [
+        {
+          "original_path": ".github/fixtures/a32-exec-authorized-read-native/source-manifest.json",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/.github/fixtures/a32-exec-authorized-read-native/source-manifest.json.original",
+          "blob": "adc4057de317531ab514f62419c62d2feecd0b9b",
+          "sha256": "c7230780dc85ac84a6b39a7c6a2ddee9289911f086f1be2284ed1f104fb8df94",
+          "bytes": 6733,
+          "byte_exact": true
+        },
+        {
+          "original_path": ".github/scripts/a32_exec_authorized_read_format.py",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/.github/scripts/a32_exec_authorized_read_format.py.original",
+          "blob": "c17b569944bc158dcbce7fa529d47b103da2b99d",
+          "sha256": "266d391ef2a9f7ff7892307f2e278d558cf3f3263173e81ef99169ccb2b3b3cf",
+          "bytes": 18342,
+          "byte_exact": true
+        },
+        {
+          "original_path": ".github/scripts/a32_exec_authorized_read_native.py",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/.github/scripts/a32_exec_authorized_read_native.py.original",
+          "blob": "2324e07850f883a47d31910eda36666a72c2f5fc",
+          "sha256": "8ef06c7921db254158aa8e4cdba6d284b7c382fbb0d59c4745d3add7350fd016",
+          "bytes": 34069,
+          "byte_exact": true
+        },
+        {
+          "original_path": ".github/workflows/a32-exec-authorized-read-native.yml",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/.github/workflows/a32-exec-authorized-read-native.yml.original",
+          "blob": "da22616dd8df6470eb24a8f7f3090896ee1bb353",
+          "sha256": "3ca5e5a7012efec7eed142f52a3e3edf7b573b2dc0b514cc21a97fc02a1b5992",
+          "bytes": 4604,
+          "byte_exact": true
+        },
+        {
+          "original_path": "codex-rs/exec-server/src/authorized_read_error_tests.rs",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/codex-rs/exec-server/src/authorized_read_error_tests.rs.original",
+          "blob": "9eba834eeb48afb14656bf48d6cd427c2fd1d93e",
+          "sha256": "562b7566c773bef94d82ed16e9eb9fbc4d7d3c26d9ee07d2a6ebb7fff083ff4f",
+          "bytes": 2754,
+          "byte_exact": true
+        },
+        {
+          "original_path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+          "retained_path": "qa/repository-consolidation/20261118/exec-authorized-read-frozen/f808b370/original/codex-rs/exec-server/tests/authorized_read_rpc.rs.original",
+          "blob": "57f54e2b68d12ba0a80002b4578a90a89ca4cd00",
+          "sha256": "ee1e7812a638ba74bab65ba29ab2045198f2aaf612914140477cdb7421e6bb2f",
+          "bytes": 4823,
+          "byte_exact": true
+        }
+      ],
+      "complete_changed_path_count": 14,
+      "all_original_changed_path_hashes": [
+        {
+          "path": ".github/fixtures/a32-exec-authorized-read-native/source-manifest.json",
+          "blob": "adc4057de317531ab514f62419c62d2feecd0b9b",
+          "sha256": "c7230780dc85ac84a6b39a7c6a2ddee9289911f086f1be2284ed1f104fb8df94",
+          "bytes": 6733
+        },
+        {
+          "path": ".github/scripts/a32_exec_authorized_read_format.py",
+          "blob": "c17b569944bc158dcbce7fa529d47b103da2b99d",
+          "sha256": "266d391ef2a9f7ff7892307f2e278d558cf3f3263173e81ef99169ccb2b3b3cf",
+          "bytes": 18342
+        },
+        {
+          "path": ".github/scripts/a32_exec_authorized_read_native.py",
+          "blob": "2324e07850f883a47d31910eda36666a72c2f5fc",
+          "sha256": "8ef06c7921db254158aa8e4cdba6d284b7c382fbb0d59c4745d3add7350fd016",
+          "bytes": 34069
+        },
+        {
+          "path": ".github/workflows/a32-exec-authorized-read-native.yml",
+          "blob": "da22616dd8df6470eb24a8f7f3090896ee1bb353",
+          "sha256": "3ca5e5a7012efec7eed142f52a3e3edf7b573b2dc0b514cc21a97fc02a1b5992",
+          "bytes": 4604
+        },
+        {
+          "path": "codex-rs/exec-server/src/authorized_read_error.rs",
+          "blob": "b4b51dc9a77b799585740ae6090902dc5b565de7",
+          "sha256": "bcaba3dee0612b8fc856a68bc75ff68cd1044443c26179b1ca53b528780e6d98",
+          "bytes": 3046
+        },
+        {
+          "path": "codex-rs/exec-server/src/authorized_read_error_tests.rs",
+          "blob": "9eba834eeb48afb14656bf48d6cd427c2fd1d93e",
+          "sha256": "562b7566c773bef94d82ed16e9eb9fbc4d7d3c26d9ee07d2a6ebb7fff083ff4f",
+          "bytes": 2754
+        },
+        {
+          "path": "codex-rs/exec-server/src/client.rs",
+          "blob": "4417df29495880c89fbe299d560955d82383d2c1",
+          "sha256": "0c43690252574dbc2632071e7731f03fe777eb5ef5fb0a4ee80f8d32e90e441e",
+          "bytes": 122225
+        },
+        {
+          "path": "codex-rs/exec-server/src/lib.rs",
+          "blob": "096f712446110133d3b77fe7179c18434de04ff2",
+          "sha256": "09708562836a74a29104d51ee7acd839b241e8f5c46f1d6c7b3614f2fc55a5c0",
+          "bytes": 8871
+        },
+        {
+          "path": "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+          "blob": "96bb01ad55e75e932f9b4dba5603f6ddc4d03101",
+          "sha256": "7c7934c1166f6a5d9b4e882392447ca277859872c38da4732714690549eedd3b",
+          "bytes": 14235
+        },
+        {
+          "path": "codex-rs/exec-server/src/remote_file_system.rs",
+          "blob": "da7b3bbfcc1c303686a088b4540bbe548492ed8f",
+          "sha256": "7f26680bfa25105b0d3f0e5c84d5921a455b7e4779baa688f898813d4c5e1f67",
+          "bytes": 24348
+        },
+        {
+          "path": "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+          "blob": "5e558fa6bb21f9fcdb10c960e4942a4b1ddc0b11",
+          "sha256": "b8ec660a3ff6b1aa5e1ae4e29a983a71195c554546b6b7e09eb9d8a8e716acdd",
+          "bytes": 41717
+        },
+        {
+          "path": "codex-rs/exec-server/src/server/file_system_handler.rs",
+          "blob": "f4ba6b28cf8726756fb24a8186d2e2d414561513",
+          "sha256": "a7f86c8778c27f0ea9a2745fa539be835e2d1a70c49f1daea5af401ad4f186bd",
+          "bytes": 17574
+        },
+        {
+          "path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+          "blob": "57f54e2b68d12ba0a80002b4578a90a89ca4cd00",
+          "sha256": "ee1e7812a638ba74bab65ba29ab2045198f2aaf612914140477cdb7421e6bb2f",
+          "bytes": 4823
+        },
+        {
+          "path": "codex-rs/exec-server/tests/file_system_unix.rs",
+          "blob": "542dbbf52283b03a360a9bf915b5330d3675604f",
+          "sha256": "77eca15b11cc8eedb13b4573299735f67653926bad7a930e5b34c05dbc21b2c4",
+          "bytes": 59109
+        }
+      ],
+      "complete_product_tree_verified": "df4a7fc6d08258604ce0a0a1b03d024161470a83",
+      "selected_product_tree_and_overlay_digest": "Historical declarations retained, not independently rederived by this audit."
+    }
+  ],
+  "production_resolution": [
+    "All ten historical Rust postimages across the three heads normalize identically with the current pinned Rust 1.96 formatter. One common port retains their functional additions.",
+    "Recognized method/version/kind metadata preserves PermissionDenied and historical typed BoundExceeded errors; unknown, malformed, wrong-method or code-inconsistent metadata uses the existing redacted fallback. The public ExecServerClient API is unchanged.",
+    "The production server retains the current dedicated -32012 bound-exceeded error and exact overflow-message guard. Other InvalidData errors remain generic. Existing exact legacy overflow fallback, fixed denial wording, and encoded/decoded response bounds remain intact.",
+    "Current canonical sandbox-root helpers and the independent Unix statx birth-time oracle already cover the fixture corrections and remain intact.",
+    "The common production native capability assertion is compiled only on macOS ARM; other hosts retain their existing unsupported-capability refusal paths. The historical diagnostic assertions and native host guard are preserved here byte-for-byte without conditional suppression.",
+    "The historical workflows remain inert carriers. No automatic push/PR/main workflow is added or changed by this family."
+  ],
+  "source_guards_preserved": [
+    "Exactly one direct child of a32d73f with ten reviewed Rust paths and exactly four new auxiliary paths.",
+    "Complete tree, stage-zero index, raw file modes/blobs, hidden-index flags, no untracked files and before/after command boundaries.",
+    "Real macOS ARM identity, pinned Python 3.12.10, Rust 1.95.0, Bazel 9.3.0 and DotSlash 0.5.9; no test-selection environment overrides.",
+    "Full three-owner census, mandatory executed capability and refusal regressions, native ARM64 Mach-O binaries, local uncached single-run/single-attempt unsharded BEP, exact collected log hashes.",
+    "Observation timeouts latch an unsettled writer, preserve immutable partial prefixes, and never qualify unsettled or changing evidence."
+  ],
+  "audit": {
+    "postimages_verified": 42,
+    "distinct_modified_parent_preimages_verified_by_git_blob_and_sha256": 8,
+    "complete_product_trees_verified": 3,
+    "synthetic_python_fixture_checks_passed": 119,
+    "fixture_scope": "exact historical source and synthetic Python fixtures; no Rust, Bazel, native macOS, download, or remote write",
+    "proof_file": "AUDIT.json",
+    "rust_normalized_equivalence": "All three normalized byte sequences match independently for all ten changed Rust paths."
+  },
+  "limits": [
+    "No historical native macOS ARM job, Bazel build, external tool download or Windows run was performed by this audit.",
+    "Synthetic Python fixtures verify source admission and evidence parsers only; they are not native test execution evidence.",
+    "The refreeze classifier accepts a bare @foo//:libv8.a rule; it is retained as historical input and is not promoted into an active closure guard.",
+    "The v2 and refreeze collectors allow ignored noncritical tests; the v3 collector requires all cases to execute. These variants are preserved distinctly.",
+    "The original selected_exec_product_tree and diagnostic_only_test_overlay digest are preserved historical declarations; their separate derivation was not reproduced. The complete product tree and all modified source preimages/postimages were independently verified.",
+    "A consolidated source tree cannot satisfy the original one-parent source freeze. Reproduction must use the exact retained original commit, not relaxed source checks."
+  ]
+}

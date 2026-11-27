@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-11-15T15:49:29.787486+00:00",
+  "base": "62b0c19e895f6d23892b1102e479cf263640d38c",
+  "incoming": "c940b15f5359eccda233ff70d78a89db4ae5321c",
+  "normal_merge": true,
+  "preview_exit": 1,
+  "conflict_paths": [
+    "qualification/neuroscience-20261110/factorial.py",
+    "qualification/neuroscience-20261110/test_factorial.py"
+  ],
+  "stages": [
+    "100644 243572cbbbcf96e91d481491eac69db087f82628 2\tqualification/neuroscience-20261110/factorial.py",
+    "100644 d70f55004d680a6feb7c04b5c9271312c768f1b2 3\tqualification/neuroscience-20261110/factorial.py",
+    "100644 b847d9f3bf6fd29d179a1b2fce9e72ead98827ad 2\tqualification/neuroscience-20261110/test_factorial.py",
+    "100644 9f3abd156ebe0983f815d117cee968f1f3dde589 3\tqualification/neuroscience-20261110/test_factorial.py"
+  ],
+  "resolution": [
+    {
+      "original_path": "qualification/neuroscience-20261110/factorial.py",
+      "retained_current_path": "qualification/neuroscience-20261110/factorial.py",
+      "incoming_path": "qualification/neuroscience-20261110/hpca_factorial.py",
+      "current_sha256": "febd0a08cefd2b33bdb3846be812ca5fb6506b525fc7ffb174ecfb2cf8898add",
+      "incoming_original_sha256": "20ee6494cbbc9af6217924e2884894db6cec5fec191e34c79101ce2a540065fd",
+      "incoming_resolved_sha256": "20ee6494cbbc9af6217924e2884894db6cec5fec191e34c79101ce2a540065fd",
+      "test_change": null
+    },
+    {
+      "original_path": "qualification/neuroscience-20261110/test_factorial.py",
+      "retained_current_path": "qualification/neuroscience-20261110/test_factorial.py",
+      "incoming_path": "qualification/neuroscience-20261110/test_hpca_factorial.py",
+      "current_sha256": "8fb24b0d0a5d431da4498b766f8cad71be156d874f95ed25f4505f332fd14ba9",
+      "incoming_original_sha256": "b46d1681acc858f70aab19b2facc54370a7a89de567f7fa41a6ab42b13a4c759",
+      "incoming_resolved_sha256": "7f326bd79dba2416eddd1d46140c9fa03d05d6e2c8e83d379aabc13269d121fd",
+      "test_change": "module import only"
+    }
+  ],
+  "review": "Complete both factorial implementations/tests/docs read. Different schemas and APIs require separate modules. Original family/cohort module and its tests retain exact bytes; incoming HPCA production source retains exact bytes at hpca_factorial.py; its tests change only the import module. No constants, thresholds, missingness handling, HOLD/DENY_ALL flags or assertions removed. HPCA architecture-only/trained-weight limitation documented.",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qualification/neuroscience-20261110",
+    "-p",
+    "test_*factorial.py",
+    "-v"
+  ],
+  "test_exit": 0,
+  "reported_tests": 32,
+  "tests_skipped": 0,
+  "qualification": false
+}

@@ -1,0 +1,32 @@
+{
+  "cases": {
+    "regenerative_recovery": 3.0,
+    "restoring": 1.5
+  },
+  "duration": 180.0,
+  "external_step": 0.125,
+  "initial_q_offset": 0.02,
+  "internal_steps": [
+    0.0625,
+    0.03125
+  ],
+  "parameters": {
+    "external_drive": 0.0,
+    "g_call": 1.0,
+    "g_recovery": "equals g_put",
+    "kappa": 1.0,
+    "tau_q": 1.0,
+    "tau_z": 6.0,
+    "v": 0.0,
+    "x_star": 0.0
+  },
+  "purpose": "Establish possible decay and autonomous oscillatory regimes, not trained spiking or accuracy",
+  "reference": "Independent NumPy RHS with DOP853 rtol=2e-11 atol=2e-13; no production RHS",
+  "registered_before_simulation_unix": 1793279030.137635,
+  "schema": "hepta-untrained-planar-feedback-diagnostic-v1",
+  "source_formula": "kappa=1 normalized Call=1-sech(x) for x>0, zero otherwise; normalized Put piecewise exponential",
+  "source_sha256": "e39b3d7783f44c0e419f9defecbfc7066a0866cc32f45a904eef27203b43b90b",
+  "tail_start": 90.0,
+  "uses_formal_data_or_trained_checkpoints": false,
+  "verification_gate_scaled_max_state_error": 0.005
+}

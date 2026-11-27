@@ -622,47 +622,9 @@ impl HeptaEvidenceStore {
         key: &ProviderEffectKey,
     ) -> Result<Option<StoredProviderEffect>, EvidenceError> {
         let mut transaction = self.pool.begin().await.map_err(classify_sqlx_error)?;
-        let intent = load_effect_intent_in_transaction(&mut transaction, key).await?;
-        let Some(intent) = intent else {
-            transaction.commit().await.map_err(classify_sqlx_error)?;
-            return Ok(None);
-        };
-        let rows = sqlx::query(
-            "SELECT seq, effect_key, payload_sha256,
-                    provider_operation_id_sha256, status, source, schema_version,
-                    payload_json, record_sha256, recorded_at_ms
-             FROM provider_effect_acknowledgements
-             WHERE effect_key = ? ORDER BY seq ASC",
-        )
-        .bind(key.as_str())
-        .fetch_all(&mut *transaction)
-        .await
-        .map_err(classify_sqlx_error)?;
-        let mut acknowledgements = Vec::with_capacity(rows.len());
-        for row in rows {
-            acknowledgements.push(decode_effect_ack_row(&row, &intent.intent)?);
-        }
-        let uncertainty_rows = sqlx::query(
-            "SELECT seq, effect_key, payload_sha256, reason_code,
-                    schema_version, payload_json, record_sha256, recorded_at_ms
-             FROM provider_effect_uncertainties
-             WHERE effect_key = ? ORDER BY recorded_at_ms ASC, seq ASC",
-        )
-        .bind(key.as_str())
-        .fetch_all(&mut *transaction)
-        .await
-        .map_err(classify_sqlx_error)?;
-        let mut uncertainties = Vec::with_capacity(uncertainty_rows.len());
-        for row in uncertainty_rows {
-            uncertainties.push(decode_effect_uncertainty_row(&row, &intent.intent)?);
-        }
-        acknowledgements.sort_by_key(|ack| (ack.recorded_at_ms, ack.seq));
+        let effect = load_provider_effect_in_transaction(&mut transaction, key).await?;
         transaction.commit().await.map_err(classify_sqlx_error)?;
-        Ok(Some(StoredProviderEffect {
-            intent,
-            acknowledgements,
-            uncertainties,
-        }))
+        Ok(effect)
     }
 
     /// Reconciles a lookup and appends a matching ACK. Unknown, not-found,
@@ -990,7 +952,7 @@ fn decode_effect_uncertainty_row(
     })
 }
 
-async fn verify_effect_intent(
+pub(crate) async fn verify_effect_intent(
     transaction: &mut Transaction<'_, Sqlite>,
     intent: &ProviderEffectIntent,
     payload_json: &str,
@@ -1370,4 +1332,50 @@ fn binding_invalid(error: ProviderEffectBindingError) -> EvidenceError {
 
 fn binding_corrupt(error: ProviderEffectBindingError) -> EvidenceError {
     EvidenceError::Corrupt(format!("provider effect binding is corrupt: {error:?}"))
+}
+
+/// Read the original intent and its observations from the caller's snapshot.
+pub(crate) async fn load_provider_effect_in_transaction(
+    transaction: &mut Transaction<'_, Sqlite>,
+    key: &ProviderEffectKey,
+) -> Result<Option<StoredProviderEffect>, EvidenceError> {
+    let intent = load_effect_intent_in_transaction(transaction, key).await?;
+    let Some(intent) = intent else {
+        return Ok(None);
+    };
+    let rows = sqlx::query(
+        "SELECT seq, effect_key, payload_sha256,
+                provider_operation_id_sha256, status, source, schema_version,
+                payload_json, record_sha256, recorded_at_ms
+         FROM provider_effect_acknowledgements
+         WHERE effect_key = ? ORDER BY seq ASC",
+    )
+    .bind(key.as_str())
+    .fetch_all(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
+    let mut acknowledgements = Vec::with_capacity(rows.len());
+    for row in rows {
+        acknowledgements.push(decode_effect_ack_row(&row, &intent.intent)?);
+    }
+    let uncertainty_rows = sqlx::query(
+        "SELECT seq, effect_key, payload_sha256, reason_code,
+                schema_version, payload_json, record_sha256, recorded_at_ms
+         FROM provider_effect_uncertainties
+         WHERE effect_key = ? ORDER BY recorded_at_ms ASC, seq ASC",
+    )
+    .bind(key.as_str())
+    .fetch_all(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
+    let mut uncertainties = Vec::with_capacity(uncertainty_rows.len());
+    for row in uncertainty_rows {
+        uncertainties.push(decode_effect_uncertainty_row(&row, &intent.intent)?);
+    }
+    acknowledgements.sort_by_key(|ack| (ack.recorded_at_ms, ack.seq));
+    Ok(Some(StoredProviderEffect {
+        intent,
+        acknowledgements,
+        uncertainties,
+    }))
 }

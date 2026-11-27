@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.campaign_costs",
+    "--allow-incomplete",
+    "--output",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/campaign_costs_probe001",
+    "--extra-scopes",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/campaign_costs_test_scopes001.json"
+  ],
+  "exit_code": 1,
+  "complete_child_cpu_seconds": 0.052604,
+  "outer_parent_self_cpu_seconds_to_cutoff": 0.046130803,
+  "wall_seconds": 0.12383326100007253,
+  "log_sha256": "bdfecece527d71c4df7f510d46ab42f755897e41d23da9aa53d0fe18c4a20ec3",
+  "scope": "Complete cost-ledger preview child; its own EXECUTION self timer is nested. Preview reads only receipt metadata and no heldout predictions, weights or scores."
+}

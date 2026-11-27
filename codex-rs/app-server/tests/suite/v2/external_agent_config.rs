@@ -300,7 +300,8 @@ async fn external_agent_config_detect_does_not_block_configuration_reads() -> Re
         timeout(DEFAULT_TIMEOUT, mcp.read_response(import_request_id)).await??;
     assert!(!import_response.import_id.is_empty());
 
-    let recent_timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    let recent_timestamp = codex_utils_time::Timestamp::now()
+        .to_rfc3339_opts(codex_utils_time::SecondsFormat::Secs, /*use_z*/ true);
     let session_contents = serde_json::json!({
         "type": "user",
         "cwd": &project_root,
@@ -1473,7 +1474,8 @@ async fn external_agent_config_import_reports_session_config_error_subtype() -> 
     let project_root = codex_home.path().join("repo");
     let session_dir = external_agent_home(codex_home.path()).join("projects/repo");
     let session_path = session_dir.join("session.jsonl");
-    let recent_timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    let recent_timestamp = codex_utils_time::Timestamp::now()
+        .to_rfc3339_opts(codex_utils_time::SecondsFormat::Secs, /*use_z*/ true);
     std::fs::create_dir_all(&project_root)?;
     std::fs::create_dir_all(&session_dir)?;
     std::fs::write(
@@ -1825,9 +1827,9 @@ async fn external_agent_config_import_creates_session_rollouts() -> Result<()> {
     let source_created_at_text = "2024-01-02T03:04:05Z";
     let source_updated_at_text = "2024-03-01T04:05:06Z";
     let source_created_at =
-        chrono::DateTime::parse_from_rfc3339(source_created_at_text)?.timestamp();
+        codex_utils_time::Timestamp::parse_from_rfc3339(source_created_at_text)?.timestamp();
     let source_updated_at =
-        chrono::DateTime::parse_from_rfc3339(source_updated_at_text)?.timestamp();
+        codex_utils_time::Timestamp::parse_from_rfc3339(source_updated_at_text)?.timestamp();
     let session_dir = external_agent_home(codex_home.path()).join("projects/repo");
     let session_path = session_dir.join("session.jsonl");
     let manifest_dir = connector_metadata_root(codex_home.path())
@@ -2106,7 +2108,8 @@ required = true
     );
     std::fs::write(codex_home.path().join("config.toml"), config)?;
     let project_root = codex_home.path().join("repo");
-    let recent_timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    let recent_timestamp = codex_utils_time::Timestamp::now()
+        .to_rfc3339_opts(codex_utils_time::SecondsFormat::Secs, /*use_z*/ true);
     let session_dir = external_agent_home(codex_home.path()).join("projects/repo");
     let session_path = session_dir.join("session.jsonl");
     std::fs::create_dir_all(&project_root)?;
@@ -2189,7 +2192,8 @@ async fn external_agent_config_import_accepts_detected_session_payload_after_res
     let codex_home = TempDir::new()?;
     MockResponsesConfig::new(&server.uri()).write(codex_home.path())?;
     let project_root = codex_home.path().join("repo");
-    let recent_timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    let recent_timestamp = codex_utils_time::Timestamp::now()
+        .to_rfc3339_opts(codex_utils_time::SecondsFormat::Secs, /*use_z*/ true);
     let session_dir = external_agent_home(codex_home.path()).join("projects/repo");
     let session_path = session_dir.join("session.jsonl");
     std::fs::create_dir_all(&project_root)?;
@@ -2273,7 +2277,8 @@ async fn external_agent_config_import_skips_already_imported_session_versions() 
     let codex_home = TempDir::new()?;
     MockResponsesConfig::new(&server.uri()).write(codex_home.path())?;
     let project_root = codex_home.path().join("repo");
-    let recent_timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    let recent_timestamp = codex_utils_time::Timestamp::now()
+        .to_rfc3339_opts(codex_utils_time::SecondsFormat::Secs, /*use_z*/ true);
     let session_dir = external_agent_home(codex_home.path()).join("projects/repo");
     let session_path = session_dir.join("session.jsonl");
     std::fs::create_dir_all(&project_root)?;
@@ -2357,7 +2362,8 @@ async fn external_agent_config_import_returns_before_background_session_import_f
     let codex_home = TempDir::new()?;
     MockResponsesConfig::new(&server.uri()).write(codex_home.path())?;
     let project_root = codex_home.path().join("repo");
-    let recent_timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    let recent_timestamp = codex_utils_time::Timestamp::now()
+        .to_rfc3339_opts(codex_utils_time::SecondsFormat::Secs, /*use_z*/ true);
     let session_dir = external_agent_home(codex_home.path()).join("projects/repo");
     let session_path = session_dir.join("session.jsonl");
     std::fs::create_dir_all(&project_root)?;
@@ -2504,7 +2510,8 @@ async fn external_agent_config_import_compacts_huge_session_before_first_follow_
         .write(codex_home.path())?;
 
     let project_root = codex_home.path().join("repo");
-    let recent_timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    let recent_timestamp = codex_utils_time::Timestamp::now()
+        .to_rfc3339_opts(codex_utils_time::SecondsFormat::Secs, /*use_z*/ true);
     let session_dir = external_agent_home(codex_home.path()).join("projects/repo");
     let session_path = session_dir.join("session.jsonl");
     std::fs::create_dir_all(&project_root)?;

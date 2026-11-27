@@ -1,0 +1,28 @@
+{
+  "base": "454ec4af726c15ce7718400fd1268a9a51ac31c2",
+  "native_base": "1e681e550a5c5d4584b5882529e531599459dc31",
+  "patch_sha256": "2f751f6f5414eaf02fedf38400cff24066d905ef02cbecb062dedfd77a4da50d",
+  "files": {
+    "codex-rs/hepta-agentd/src/cell_q24_material_source.rs": {
+      "before_sha256": "e14fb867f863489ee0b1e1e8582eca63e22c8dc427c354ff0c9742f15cd10a9f",
+      "after_sha256": "7873901b4834f3309336430c7fbcc99216f8920d6bd05aad82a3250e6d737a8f"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs": {
+      "before_sha256": "3abcabc16af8e423f218cff40cecf017555f8ef1f2fe5215a6f96e2831cc694c",
+      "after_sha256": "6a5cc3bfaff2463b83ca6e726f05bf681d4e7285911e0289c750b1b2cfedb34d"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_source.rs": {
+      "before_sha256": "45912c1f3740d88c7c0318a116ba324bfff59546b60615dbd7a9bbc8634a9f16",
+      "after_sha256": "5f52f30a3ab46f9ab16af5734671ed910ee87f29bcabf6769317b600a787b051"
+    }
+  },
+  "decision": "Delete one duplicate alias import per file. The root OriginalCellQ24DatasetErrorV1 export and retained private cell_q24_dataset::CellQ24DatasetErrorV1 import name the exact same enum, distinct from the new composed root CellQ24DatasetErrorV1. No type/function/guard/test body changes.",
+  "checks": {
+    "protected_rows_passed": [
+      "codex-rs/hepta-agentd/src/cell_q24_material_source.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_source.rs"
+    ],
+    "root_alias_target_verified": true
+  }
+}

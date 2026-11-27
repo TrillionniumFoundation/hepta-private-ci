@@ -1,0 +1,320 @@
+{
+  "accounting": {
+    "arm": "frozen_flow",
+    "discrete_state_dtypes": [
+      "write_count:int64",
+      "read_count:int64",
+      "cued:bool"
+    ],
+    "group_trainable": {
+      "boundary_dynamics": 0,
+      "boundary_input": 0,
+      "content": 648,
+      "rate_head": 4
+    },
+    "interpretation": "frozen controller parameters; evolving states; fewer trainable parameters",
+    "model_config": {
+      "heads": 1,
+      "initial_leak": 0.001953125,
+      "initial_write": 1.0,
+      "key_dim": 16,
+      "max_step": 0.0625,
+      "value_dim": 8
+    },
+    "parameters_total": 726,
+    "parameters_trainable": 652,
+    "persistent_float_state_per_episode": 147,
+    "persistent_integer_state_per_episode": 3,
+    "state_components": {
+      "flow": 3,
+      "matrix": 128,
+      "pending_key": 16,
+      "write_counter_read_counter_cue_flag": 3
+    }
+  },
+  "checkpoints": {
+    "cpu15": {
+      "file": "cpu15.npz",
+      "sha256": "8d352293f36229531f100db5cf797a5be9e77d763ce04978d96b8babc9769dbe",
+      "training_cpu_seconds": 14.978173170000002,
+      "updates": 25
+    },
+    "cpu30": {
+      "file": "cpu30.npz",
+      "sha256": "43af3154ef99d9cd9f970529140f55ab66d87c451715700a96a5676c70f33b16",
+      "training_cpu_seconds": 29.656309735999997,
+      "updates": 50
+    },
+    "step0": {
+      "file": "step0.npz",
+      "sha256": "d6749986e37b7441889482f6e8a302a8243882dd72b17b9886c6b84d135df5f0",
+      "training_cpu_seconds": 0.0,
+      "updates": 0
+    },
+    "update192": {
+      "file": "update192.npz",
+      "sha256": "d420de521f09e89bd7af68cc2ef9cc095f7b197a586e9241b3379697c16097b5",
+      "training_cpu_seconds": 105.81482094799998,
+      "updates": 192
+    },
+    "update384": {
+      "file": "update384.npz",
+      "sha256": "6f08feee5b85112ecbea5750e9a8e83025de67c44abb74e9622d82d95a4be001",
+      "training_cpu_seconds": 212.89276614400023,
+      "updates": 384
+    }
+  },
+  "diagnostic_features": {
+    "call": {
+      "max": 0.4473373293876648,
+      "mean": 0.03730320185422897,
+      "min": 0.0,
+      "std": 0.0668712928891182
+    },
+    "leak": {
+      "max": 0.000810698140412569,
+      "mean": 0.0007950940635055304,
+      "min": 0.0006373368669301271,
+      "std": 2.7375219360692427e-05
+    },
+    "margin": {
+      "max": 1.1991822719573975,
+      "mean": 0.03159724175930023,
+      "min": -1.1549568176269531,
+      "std": 0.3966820538043976
+    },
+    "put": {
+      "max": 0.8424644470214844,
+      "mean": 0.48740845918655396,
+      "min": 0.15072029829025269,
+      "std": 0.15073749423027039
+    },
+    "write_before_role_mask": {
+      "max": 2.5509395599365234,
+      "mean": 2.0031003952026367,
+      "min": 1.51694655418396,
+      "std": 0.22614790499210358
+    }
+  },
+  "diagnostic_sha256": "e09f49cbd7284012255c73ec7c8a59df2c9f9b02f2ff55702de9eef7f8b42558",
+  "final_train": {
+    "accuracy": 1.0,
+    "cross_entropy": 0.023902336950413883,
+    "examples": 1024,
+    "queries": 4096,
+    "sequence_accuracy": 1.0
+  },
+  "parameter_activity": {
+    "boundary_dynamics": {
+      "gradient_l1_sum": 0.0,
+      "parameters": [
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.raw.g_call",
+          "numel": 1,
+          "requires_grad": false,
+          "update_l2": 0.0
+        },
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.raw.g_put",
+          "numel": 1,
+          "requires_grad": false,
+          "update_l2": 0.0
+        },
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.raw.g_recovery",
+          "numel": 1,
+          "requires_grad": false,
+          "update_l2": 0.0
+        },
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.raw.kappa",
+          "numel": 1,
+          "requires_grad": false,
+          "update_l2": 0.0
+        },
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.raw.tau_q",
+          "numel": 1,
+          "requires_grad": false,
+          "update_l2": 0.0
+        },
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.raw.tau_v",
+          "numel": 1,
+          "requires_grad": false,
+          "update_l2": 0.0
+        },
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.raw.tau_z_fraction",
+          "numel": 1,
+          "requires_grad": false,
+          "update_l2": 0.0
+        },
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.raw.x_star",
+          "numel": 1,
+          "requires_grad": false,
+          "update_l2": 0.0
+        }
+      ],
+      "update_l2": 0.0
+    },
+    "boundary_input": {
+      "gradient_l1_sum": 0.0,
+      "parameters": [
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.drive_v.weight",
+          "numel": 32,
+          "requires_grad": false,
+          "update_l2": 0.0
+        },
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.drive_v.bias",
+          "numel": 1,
+          "requires_grad": false,
+          "update_l2": 0.0
+        },
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.drive_q.weight",
+          "numel": 32,
+          "requires_grad": false,
+          "update_l2": 0.0
+        },
+        {
+          "changed_numel": 0,
+          "gradient_l1_sum": 0.0,
+          "name": "flow.drive_q.bias",
+          "numel": 1,
+          "requires_grad": false,
+          "update_l2": 0.0
+        }
+      ],
+      "update_l2": 0.0
+    },
+    "content": {
+      "gradient_l1_sum": 1119.9572604235727,
+      "parameters": [
+        {
+          "changed_numel": 256,
+          "gradient_l1_sum": 275.9842864125967,
+          "name": "key_projection.weight",
+          "numel": 256,
+          "requires_grad": true,
+          "update_l2": 2.1535017490386963
+        },
+        {
+          "changed_numel": 256,
+          "gradient_l1_sum": 262.2553058117628,
+          "name": "query_projection.weight",
+          "numel": 256,
+          "requires_grad": true,
+          "update_l2": 2.2592897415161133
+        },
+        {
+          "changed_numel": 64,
+          "gradient_l1_sum": 273.14522567391396,
+          "name": "value_projection.weight",
+          "numel": 64,
+          "requires_grad": true,
+          "update_l2": 6.372579574584961
+        },
+        {
+          "changed_numel": 64,
+          "gradient_l1_sum": 279.3641207963228,
+          "name": "readout.weight",
+          "numel": 64,
+          "requires_grad": true,
+          "update_l2": 6.21348237991333
+        },
+        {
+          "changed_numel": 8,
+          "gradient_l1_sum": 29.208321728976443,
+          "name": "readout.bias",
+          "numel": 8,
+          "requires_grad": true,
+          "update_l2": 0.5457407236099243
+        }
+      ],
+      "update_l2": 9.447588400038912
+    },
+    "rate_head": {
+      "gradient_l1_sum": 37.12173728529717,
+      "parameters": [
+        {
+          "changed_numel": 1,
+          "gradient_l1_sum": 0.04872232189075021,
+          "name": "rate_raw.call_gain",
+          "numel": 1,
+          "requires_grad": true,
+          "update_l2": 0.8801007270812988
+        },
+        {
+          "changed_numel": 1,
+          "gradient_l1_sum": 1.2504031978778585,
+          "name": "rate_raw.leak_bias",
+          "numel": 1,
+          "requires_grad": true,
+          "update_l2": 0.9407567977905273
+        },
+        {
+          "changed_numel": 1,
+          "gradient_l1_sum": 5.487744129670318,
+          "name": "rate_raw.put_gain",
+          "numel": 1,
+          "requires_grad": true,
+          "update_l2": 1.0000704526901245
+        },
+        {
+          "changed_numel": 1,
+          "gradient_l1_sum": 30.334867635858245,
+          "name": "rate_raw.write_bias",
+          "numel": 1,
+          "requires_grad": true,
+          "update_l2": 0.9926780462265015
+        }
+      ],
+      "update_l2": 1.9092279214913062
+    }
+  },
+  "specification": {
+    "arm": "frozen_flow",
+    "id": "mqar__frozen_flow__s81303__lr0.003",
+    "learning_rate": 0.003,
+    "seed": 81303,
+    "task": "mqar"
+  },
+  "status": "complete",
+  "step0_train": {
+    "accuracy": 0.134765625,
+    "cross_entropy": 2.095686227083206,
+    "examples": 1024,
+    "queries": 4096,
+    "sequence_accuracy": 0.0
+  },
+  "total_process_cpu_seconds": 227.85543879300002,
+  "training_cpu_seconds": 212.89276614400023,
+  "updates": 384,
+  "wall_seconds": 244.93289351600106
+}

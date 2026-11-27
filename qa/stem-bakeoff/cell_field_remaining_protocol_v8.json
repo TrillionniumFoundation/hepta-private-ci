@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.remaining-terminal-study.v8",
+  "revision": "remaining-terminal-commit1-20261026",
+  "status": "FROZEN",
+  "scope": "Separate development mechanism study, frozen before executing any of the24 original warmups. The externally pinned Git commit and complete source closure identify execution bytes.",
+  "scientific_acceptance": false,
+  "production_authority": false,
+  "new_sources_accessed": false,
+  "control_selection_labels_accessed": false,
+  "post_seal_historical_development_scoring": true,
+  "versions": ["v5", "v6"],
+  "tasks": ["agnews", "dbpedia"],
+  "head_modes": ["linear", "gated"],
+  "seeds": [7, 17, 29],
+  "registered_fits": 24,
+  "registered_outputs": 96,
+  "methods": ["myopic_h1", "loss2_remaining", "full_adjoint_remaining", "terminal_field8_remaining"],
+  "execution_order": "version, task, head, seed; rotate the four declared methods left by fit ordinal modulo4; all96 slots mandatory",
+  "base_inputs": {
+    "source_commit": "147a67868afb68511a5152f7f944fb26df34843b",
+    "protocol_sha256": "e1827b6a0a4de9a083fca5c9401751b6063e63b447617a90719e64a089b4da7d",
+    "executed_source_sha256": "1a112e348eeaa06645896f1121c2ceab3f73e36caa967d1abda72bc462c7f110",
+    "seal_sha256": "e3ad867157e293e0c80eee6a2985583688e851fee9ff98c68323f6fa83af6131",
+    "planning_index_sha256": "fee97efebd8b20ef2a996cecc3ccc97e901b1272fceecde8e4671749000a0b26"
+  },
+  "mechanism": {
+    "steps": 32,
+    "commit_stride": 1,
+    "dt": 0.02,
+    "effort_price": 0.03,
+    "action_bound": 4.0,
+    "current_mean_weight": 1.0,
+    "old_mean_weight": 0.25,
+    "current_dispersion_weight": 0.0,
+    "free_actions_per_proposal": 1,
+    "nominal_continuation": "zero_control",
+    "safety_filter": "fixed_old_first_portfolio"
+  },
+  "proposal": {
+    "myopic": "H1 uses one-step current4 mean plus0.25 old4 mean. It is an explicitly different proposal endpoint, scored at the same actual32-step terminal.",
+    "remaining": "At committed step k, Full, Loss2 and terminal-field predict the same absolute terminal32 with horizon32-k from the observed complete state and a zero-intervention Adam continuation.",
+    "local_problem": "Linearized weighted endpoint loss plus(dt*rho/2)*norm(u)^2, with one free first action and coordinate box[-4/sqrt(p),4/sqrt(p)]. No predicted old hard constraint.",
+    "prefix_equivalence": "For this separable linear-risk, diagonal-effort box QP, the first action equals that of any longer free prefix. This does not equate nonlinear block safety, future actions, H8 controllers or replanned trajectories.",
+    "first_step_parity": "All four forecast maps coincide when remaining=1. Loss2 preserves8-output immediate feedthrough while its transported state contains only two aggregate losses.",
+    "terminal_field": "R_k=C_T A_(T-1)...A_k has eight rows; z_(k+1)=z_k+R_(k+1)B_k du_k preserves the local terminal output. Complete state supplies its coefficients. Not an autonomous nonlinear Markov observer or an intermediate-path certificate.",
+    "adaptive_tail": "Future policy replans and future safety-filter decisions are not differentiated. Predictions are conditional on the nominal zero tail, not forecasts of the subsequent adaptive closed loop.",
+    "oracle_cost": "Full computes terminal panel derivatives only. Field also forms its eight-row initial observable. Loss2 computes intermediate aggregate panel observations. Charge each actual method construction separately; no shared result cache or free Full oracle."
+  },
+  "safety": {
+    "order": "Same intended one-step proposal and complete origin: try the bounded V7 single-ray search first, then the bounded actual-old joint search only if the first fails to certify. No prefix splice or Full-risk fallback.",
+    "bounds": "Original four warmup old-panel losses, original post-Adam action box, zero acceptance slack. Recheck complete metadata, receipts, physical action and all four actual losses before adoption.",
+    "information": "All methods share the same full-state old-gradient safety layer. Loss2 limits the risk proposer, not the information available to the complete executing system.",
+    "failure": "Retain every failed paid attempt. Any nested actual error stops without adopting that step, even if a later portfolio branch produced a certificate. Finite search exhaustion is not global infeasibility. No zero-action substitution or anchor reset.",
+    "retention_scope": "Repeated empirical panel protection only. These adaptively reused labels cannot supply an independent population-retention certificate."
+  },
+  "post_seal_development_evaluation": {
+    "when": "Only after all96 control slots and complete available physical prefixes are sealed; score into a separate directory without changing the control seal.",
+    "data": "Exactly the already disclosed historical V5/V6 future_test512 and old_test512 roles, with existing pinned source identities and cached features. No new cohort or evaluator key is accessed.",
+    "report": "All24 fits by four methods: future/old NLL and accuracy, paired differences versus H1 and Loss2, old versus original warmup, per-seed variability and eight cohort-task-head means. Report stopped/error outcomes without substituting32-step outcomes.",
+    "selection": "No additional policy/configuration selection within this study. terminal_field8_remaining is the declared candidate; Full is its matched endpoint/frequency information-equivalent reference.",
+    "limits": "These are development outcomes, not new confirmation. Do not relax the original future upper CI<-.001, old upper CI<=0, complete32 and CPU<=3 requirements or select a fresh cohort in response to these labels."
+  },
+  "cost_scope": "Measure entire per-policy caller interval: complete-state preparation, proposal, all failed safety work, cloning, contracts and adoption/terminal checks. Common historical input loading, disk persistence, independent replay and historical DEV scoring are separate. Report candidate/H1 and field/Full for all complete pairs, marking incomplete comparisons unavailable; no assumed3x pass.",
+  "evidence": "Every available state/action/receipt/old-panel path; retained complete checkpoints0,16,17,32 and actual terminal; all attempted proposal maps and nominal terminal vectors, field initial observable, full paid search ledgers. No native handoff qualification is claimed.",
+  "runtime": {"OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1", "record_versions_and_actual_threadpools": true},
+  "freeze_contract": "Host-pinned source commit, canonical executed source map and protocol byte hash. Status must be FROZEN before any real fit. Local hashes bind bytes; they are not independent authentication or scientific approval.",
+  "infrastructure_failure": "Retain partial artifacts and paid measurements, stop without a complete control seal. Never recode failed storage as a scientific model outcome or claim an unavailable prefix was verified."
+}

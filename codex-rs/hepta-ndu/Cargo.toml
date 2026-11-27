@@ -10,14 +10,23 @@ name = "codex_hepta_ndu"
 path = "src/lib.rs"
 doctest = false
 
+[[bin]]
+name = "ndu-feedback-generation"
+path = "src/bin/ndu-feedback-generation.rs"
+
 [lints]
 workspace = true
 
 [dependencies]
 codex-hepta-contracts = { path = "../hepta-contracts" }
+codex-hepta-neuron = { path = "../hepta-neuron" }
 codex-hepta-types = { path = "../hepta-types" }
+ed25519-dalek = { workspace = true }
+rustix = { workspace = true, features = ["fs", "process"] }
 
 [dev-dependencies]
-ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
+
+[target.'cfg(unix)'.dev-dependencies]
+nix = { workspace = true, features = ["fs"] }

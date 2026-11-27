@@ -1,0 +1,169 @@
+{
+  "state": "failed",
+  "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "source_methods_expected": 443,
+  "native_cases_expected": 201,
+  "native_groups_expected": 43,
+  "steps": [
+    {
+      "name": "fetch-exact-source",
+      "exit_code": 0,
+      "seconds": 3.543500754982233,
+      "bytes": 235,
+      "sha256": "99cca8bc7f6d83f07cb770473b495fa4f38f6bac53b13e3bab56d64e218cd438",
+      "cwd": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111"
+    },
+    {
+      "name": "create-isolated-fixed-worktree",
+      "exit_code": 0,
+      "seconds": 1.842900768853724,
+      "bytes": 1851,
+      "sha256": "1a188d245d332be8e2ba614a9c168a1164867aba366967faa212ac837e9bc127",
+      "cwd": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111"
+    },
+    {
+      "name": "original-full-native",
+      "exit_code": 1,
+      "seconds": 0.2964633130468428,
+      "bytes": 677,
+      "sha256": "79c38dfbe3da9022f5529dd3e45eeb829261f35bbe73c5ca0eb2933181f3cbd8",
+      "cwd": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1"
+    },
+    {
+      "name": "source-suite",
+      "exit_code": 0,
+      "seconds": 298.4196590699721,
+      "bytes": 99501,
+      "sha256": "1faf5789bbf30108144cc7797c9e1f045b83506d86d756062db164373b632490",
+      "cwd": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1"
+    },
+    {
+      "name": "caller-scanner-self-test",
+      "exit_code": 0,
+      "seconds": 0.2584571619518101,
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "cwd": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1"
+    }
+  ],
+  "native_result": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-4537458b51b6-isolated-v1/result.json",
+  "formatter_executed": false,
+  "full_caller_executed": false,
+  "new_version_full_actual_E_coverage_claim": false,
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "started_unix_ms": 1794499769984,
+  "original_worktree": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+  "isolated_worktree": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+  "old_source_before": {
+    "path": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "head": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "status": ""
+  },
+  "old_root_identity": {
+    "device": 2050,
+    "inode": 52497821,
+    "uid": 1000,
+    "mode": "0o40700"
+  },
+  "home_identity": {
+    "device": 2050,
+    "inode": 49938433,
+    "uid": 1000,
+    "mode": "0o40750"
+  },
+  "evidence_parent_identity": {
+    "device": 2050,
+    "inode": 53373834,
+    "uid": 1000,
+    "mode": "0o40700"
+  },
+  "original_common_git_directory": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git",
+  "original_terminal_records": {
+    "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-a6717d722804-validation-v1/result.json": {
+      "bytes": 2396,
+      "sha256": "3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60"
+    },
+    "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1/result.json": {
+      "bytes": 51057,
+      "sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71"
+    }
+  },
+  "cleanup_attempted": false,
+  "old_checkout_command_issued": false,
+  "home_before_fetch": {
+    "available_bytes": 22970646528,
+    "available_inodes": 44004898
+  },
+  "old_source_after_fetch": {
+    "path": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "head": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "status": ""
+  },
+  "checkout_space": {
+    "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "listing_bytes": 1912988,
+    "listing_sha256": "1996d3380c40c1c43299b804c94388cd7180e7da979bbec7960506959060851d",
+    "blob_entries": 15048,
+    "gitlinks_not_initialized": 0,
+    "directories": 1838,
+    "logical_blob_bytes": 233362313,
+    "rounded_file_bytes": 270925824,
+    "index_estimate_bytes": 2958232,
+    "git_admin_reserve_bytes": 67108864,
+    "filesystem_unit_bytes": 4096,
+    "required_checkout_bytes": 348525464,
+    "available_home_bytes": 22995349504,
+    "required_inodes": 16919,
+    "available_home_inodes": 44007095,
+    "scope": "checkout allocation only; no claim that subsequent Cargo build fits"
+  },
+  "isolated_root_identity": {
+    "device": 2050,
+    "inode": 13007679,
+    "uid": 1000,
+    "mode": "0o40700"
+  },
+  "isolated_source_before": {
+    "path": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+    "head": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "status": ""
+  },
+  "old_source_after_worktree_create": {
+    "path": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "head": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "status": ""
+  },
+  "old_source_before_tests": {
+    "path": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "head": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "status": ""
+  },
+  "tracked_rust_files": 6777,
+  "manifest_sha256": "e4f12ac5efe26e375609aefde7c59769f5a4acb72f435f3934a101315db5202e",
+  "native_runner_sha256": "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb",
+  "source_runner_sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4",
+  "source_after": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "source_status_after": "",
+  "source_suite": {
+    "bytes": 89701,
+    "sha256": "3e43193067b7f73768968f00835ae8908fea916fed19645c9032051a7baa9f89"
+  },
+  "old_source_after": {
+    "path": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "head": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "status": ""
+  }
+}

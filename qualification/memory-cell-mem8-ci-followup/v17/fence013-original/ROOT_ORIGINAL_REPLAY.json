@@ -1,0 +1,168 @@
+{
+  "action_commit": "c7675fea986c29f1d655753a7a61fd6b4141be8f",
+  "actual_action_files": {
+    "action.yml": {
+      "bytes": 1520,
+      "git_blob": "97e91823b99e6b549291901818ebb918116c06d6",
+      "mode_after": "0o644",
+      "mode_before": "0o644",
+      "sha256": "26aa17917f78b69320d412e5d4c42617bc458e4f9787afe93055f18e3931430b"
+    },
+    "action/bin/fence": {
+      "bytes": 2203880,
+      "git_blob": "77eb796b522a7ae83eb83c42d579f85a41945b3d",
+      "mode_after": "0o555",
+      "mode_before": "0o644",
+      "sha256": "1a1ac7ad60216e7803403645c202e8c8a4e738326350ce340f8138df1c9a5e04"
+    },
+    "action/bundle-manifest.json": {
+      "bytes": 592,
+      "git_blob": "3f0b00d990f9eca9b630feae63f5b6803379bb03",
+      "mode_after": "0o444",
+      "mode_before": "0o644",
+      "sha256": "ac88a81a8b0a228862a9e286a235c2d219c3b400b739708e3da4c92195465134"
+    },
+    "action/lib.cts": {
+      "bytes": 112721,
+      "git_blob": "61fdf3a2a5561fb8810eb01270c693f7ce5f7859",
+      "mode_after": "0o444",
+      "mode_before": "0o644",
+      "sha256": "386fa3848d8cf62c3a3874963d3089f48a7992fc7e17555769e1531cbb20eb46"
+    },
+    "action/log.cts": {
+      "bytes": 7961,
+      "git_blob": "37fff84b487b402162f6b2f60cf39f2834cb105f",
+      "mode_after": "0o444",
+      "mode_before": "0o644",
+      "sha256": "b2b5c364e23671db2c27d60d6c107fe338cbeb7f80788092ef9ac0380dd16947"
+    },
+    "action/main.cts": {
+      "bytes": 30803,
+      "git_blob": "01364e676225b40748f2d9d6b815c012b52dcb76",
+      "mode_after": "0o444",
+      "mode_before": "0o644",
+      "sha256": "5613a1cb18d1e2ca412160a167963742fb191e585011e7bf0eacf2d6cfb7529f"
+    },
+    "action/post.cts": {
+      "bytes": 19042,
+      "git_blob": "753f48a7c8dc642ad80abb690191b8a3b3e274f6",
+      "mode_after": "0o444",
+      "mode_before": "0o644",
+      "sha256": "e9c0ed0860922861b494cfaaf1ecd56b9203195d1e0844358070b5f8a7e2f772"
+    }
+  },
+  "actual_python_tests": 7,
+  "all_manifest_entries_verified": 113,
+  "attempt": 1,
+  "branch": "codex/mem8-fence013-qualification-20261111-ed353817",
+  "bundle_manifest": {
+    "artifact_name": "fence_v0.13.0_linux-amd64",
+    "artifact_sha256": "1a1ac7ad60216e7803403645c202e8c8a4e738326350ce340f8138df1c9a5e04",
+    "bundle_path": "action/bin/fence",
+    "release_channel": "stable",
+    "release_tag": "v0.13.0",
+    "release_url": "https://github.com/openai/fence/releases/tag/v0.13.0",
+    "repository": "openai/fence",
+    "schema_version": 4,
+    "signer_digest": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+    "signer_workflow": "openai/fence/.github/workflows/release.yml",
+    "source_commit": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+    "source_ref": "refs/heads/main"
+  },
+  "capture": {
+    "bytes": 11520,
+    "git_blob": "9a976f1d3bc1ff22fec4c2475f4425e08ee89d62",
+    "sha256": "dcfeedbd7c96bab509c0cb38e43824c57fae8651cf84fafd020b10c5fde21f13"
+  },
+  "changed_files_checked": 1,
+  "completed_at": "2026-11-11T16:13:15Z",
+  "event": "push",
+  "final_qualification": "PASS_FOR_THIS_AUDIT_MODE_ACTION_AND_ORIGINAL_POLICY_JOB",
+  "full_raw": {
+    "bytes": 1636940,
+    "git_blob": "5f63461a8ca8070bf1598611ed89f88234b51e9e",
+    "sha256": "3743a63be1479793b42f4ba35415e6a4e5c26af43ff744909dc54196e08acb27"
+  },
+  "harness": {
+    "head": "0e92c37a012733882ce4c120afc38b6757edb7cb",
+    "leaf_entries": 14054,
+    "tree": "60f86e9520355850e289769a83dc2bcca2f26811"
+  },
+  "job_conclusion": "success",
+  "job_id": 130642329146,
+  "limitations": [
+    "Audit mode observes traffic; protection_available=false is retained. No block-mode protection claim.",
+    "The original changed-file range is the isolated one-workflow child of c895, not the full PR5935 diff.",
+    "Original capture remains NOT_FINAL; the terminal API and complete original raw provide the later post outcome.",
+    "Source snapshots bracket the original checks and precede action post hooks; no post-hook source snapshot was taken.",
+    "This fresh original qualification does not establish the historical v0.10 unavailable subreason.",
+    "No complete hosted CI, product owner custody, memory benefit or adoption gate is inferred."
+  ],
+  "model_requests_started_by_qualification": 0,
+  "offline_verification": "PASS",
+  "original_blob_threshold_bytes": 512000,
+  "original_capture_qualification_result": "NOT_FINAL",
+  "original_steps_success": 14,
+  "original_tar": {
+    "bytes": 1251032,
+    "git_blob": "f5ee5dad9829d317aec24bdc7a6b0dd29f30bd89",
+    "sha256": "895c0a1cfc36d539bf554a14d0c5412bd4ff4912b0b61ab67dd153690f851b99"
+  },
+  "original_tar_regular_members": 114,
+  "original_zip": {
+    "bytes": 1259429,
+    "git_blob": "9faaca6c831f89da9136e2673f3a256a3d336121",
+    "sha256": "f6659c76f23a24d2a0b1e160f4874f2b6494922d39b016a65e4071455ce64574"
+  },
+  "original_zip_members": 4,
+  "post_api_success": true,
+  "post_controls": {
+    "containers": "preserved_verified",
+    "network": "verified",
+    "protection_available": false,
+    "readiness": "ready_observation_only",
+    "resident_health": "healthy",
+    "sudo": "preserved_verified"
+  },
+  "post_mode": "audit",
+  "post_report_json_utf8": {
+    "bytes": 4731,
+    "git_blob": "386b40df6f816e45eafb06ae016c484344477624",
+    "sha256": "bfe9fc61eeef07ad0e8f03de2f347303944210b7661d975195e47cb47c325a1d"
+  },
+  "post_report_line": 9282,
+  "post_result": "healthy",
+  "python_summary": "OK",
+  "raw_markers": {
+    "one_file_original_threshold": 9181,
+    "post_controls": 9264,
+    "post_healthy": 9262,
+    "post_verified": 9284,
+    "ready_audit_only": 281,
+    "seven_python_tests": 9167
+  },
+  "reviewed_action_source": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+  "run_conclusion": "success",
+  "run_id": 43055103354,
+  "rust_native_tests_started": 0,
+  "schema": "mem-fence013-original-offline-audit-v1",
+  "source_anchor": {
+    "head": "c89540598693697577cda8cba31cb07f6ce65317",
+    "leaf_entries": 14053,
+    "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae"
+  },
+  "source_before_after": {
+    "clean_after_original_checks": true,
+    "clean_before": true,
+    "five_original_policy_files_equal": true,
+    "full_tree_bytes_equal": true,
+    "recaptured_after_action_post": false,
+    "whole_identity_equal": true
+  },
+  "started_at": "2026-11-11T16:08:48Z",
+  "workflow": {
+    "bytes": 17930,
+    "git_blob": "3e302bd517fcf58eafd314c65afdb864a7d82b06",
+    "sha256": "7174a2c51e265731df14838bc52ddde4986bbbcf8a1290fa769ba1eb6a68b91c"
+  }
+}

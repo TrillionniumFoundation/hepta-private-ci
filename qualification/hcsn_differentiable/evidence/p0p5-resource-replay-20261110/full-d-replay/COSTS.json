@@ -1,0 +1,499 @@
+{
+  "additive_rule": "Local synthetic validation, bootstrap/native validation+replay, v1 packaging/publication failure, and v2 asset-only publication are distinct. Native validation/controller/per-fit times are nested in bootstrap; package/gh times are nested in publication. Do not add nested terms. Network-tool transport and unmeasured preparation costs are not an exact experiment total.",
+  "archive_build_nested_in_attempt_v1": {
+    "all_member_sha_and_crc_verified": true,
+    "archive": {
+      "bytes": 19144412,
+      "original_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-upload-v1/hcsn-best-full-D-independent-replay-20261110-v1.zip",
+      "sha256": "ff41e5ef909708a5c2472f6786d0e82b6d69a80d968047de2746bcaf84daaac5"
+    },
+    "copied_original_models": false,
+    "members": 254,
+    "original_controller_container_zip_preserved_native_not_reuploaded": {
+      "bytes": 16811170,
+      "path": "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1.zip",
+      "sha256": "88183d8933634e83a6a48d70393c8e81bc738b377af35f0940b1704dd284b7b0"
+    },
+    "originals_unchanged": true,
+    "package_CPU_seconds": 3.2066186780000003,
+    "package_wall_seconds": 3.2191201529931277,
+    "replay_file_member_coverage": "Every original replay-directory file is included byte-for-byte under replay/; this combined archive is a distinct container.",
+    "scientific_admission": "HOLD",
+    "small_handoff": {
+      "bytes": 257038,
+      "original_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-upload-v1/hcsn-best-full-D-small-originals-20261110-v1.zip",
+      "sha256": "82f0d43ec6921e0a2b4bb42180d37000f400e13657186264679c382ca393f04d"
+    },
+    "status": "packaged_all_six_readonly_replays",
+    "summary_sha256": "a258f3c7d5ff27d78377bce15a1bf97427f3b5e9f92646b3b64f4c135ecfff0a",
+    "training_adequacy_established": false
+  },
+  "energy_joules": null,
+  "original_training_costs": "Separate existing campaign ledger; no original training cost is refunded or repeated here.",
+  "publication_attempt_v1": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-launch-v1/archive_upload_native.py",
+      "--summary-sha",
+      "a258f3c7d5ff27d78377bce15a1bf97427f3b5e9f92646b3b64f4c135ecfff0a",
+      "--bootstrap-sha",
+      "b1a3c7c1b89d188fdbc163aa517d1a7678e0dca95a9ecef105feb3d5cc879374",
+      "--launch-sha",
+      "c7164b329b8dfbf6df7ee27892be361e7aa804226f21a1b80862d16a09da7ce4"
+    ],
+    "child_peak_rss_bytes": 32915456,
+    "complete_child_wall_seconds": 8.536668789805844,
+    "complete_waited_child_and_descendant_CPU_seconds": 3.818212,
+    "finished_utc": "2026-11-10T20:04:51.253237+00:00",
+    "hard_wall_seconds": 2400,
+    "own_process_CPU_seconds": 0.066720312,
+    "pid": 2037073,
+    "process_started": true,
+    "publish_release": false,
+    "returncode": 2,
+    "schema": "best-D-archive-publication-outer-v1",
+    "scope": "Complete packaging/publication child spawn/import/all network descendants/exit. Main and command times are nested; replay was a separate earlier measured process.",
+    "source_sha256": "a8b1ff0338d82bc4665f73f6d18aaa7d49031fd8ec1a75abdac95cc4901ebb98",
+    "stable_key": "hcsn-best-full-d-archive-upload-c385-v1",
+    "started_utc": "2026-11-10T20:04:42.716866+00:00",
+    "status": "failed_preserved",
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 111,
+      "sha256": "34e7d4fb67f302b9a2db4b6f3117b2c1ca3594b28f50bb71a190384d84342259"
+    },
+    "training_steps": 0
+  },
+  "publication_attempt_v2": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-asset-launch-v2/archive_upload_native.py"
+    ],
+    "child_peak_rss_bytes": 34168832,
+    "complete_child_wall_seconds": 37.78007707209326,
+    "complete_waited_child_and_descendant_CPU_seconds": 4.05913,
+    "finished_utc": "2026-11-10T20:08:18.317522+00:00",
+    "hard_wall_seconds": 2400,
+    "own_process_CPU_seconds": 0.113045243,
+    "pid": 2041101,
+    "process_started": true,
+    "publish_release": false,
+    "returncode": 0,
+    "schema": "best-D-archive-publication-outer-v1",
+    "scope": "Complete packaging/publication child spawn/import/all network descendants/exit. Main and command times are nested; replay was a separate earlier measured process.",
+    "source_sha256": "66fd8d70141ca681ff6ee71977b6644a8766ee8dfb2f732a6a32bfd3a1a4bfe4",
+    "stable_key": "hcsn-best-full-d-asset-upload-c385-v2",
+    "started_utc": "2026-11-10T20:07:40.537725+00:00",
+    "status": "completed",
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 961,
+      "sha256": "947fc6f2dcc0dfca62ee073bda90f619b516bd4b62fb159e36b5e8917188ef22"
+    },
+    "training_steps": 0
+  },
+  "replay_and_validation": {
+    "additive_scope": "Bootstrap and controller/per-fit timers overlap; do not sum them. Local validation is additional. Archive/upload process is separately recorded after this package is sealed.",
+    "bootstrap_including_controller": {
+      "actual_checkpoint_replay_started": true,
+      "bootstrap_script_wall_seconds": 733.1799741440918,
+      "bootstrap_source_sha256": "7a91182d8723dee34549fe0dc7fec851e5cf65d00558c30e83bc0f596b99a21e",
+      "child_peak_rss_bytes": 920285184,
+      "concurrency": "May overlap one independent numerical-audit worker; no idle-host or speed-comparison claim.",
+      "confirmation_E_access": false,
+      "cost_scope": "Bootstrap script interval after stdlib import, including extraction, native synthetic validation, controller/fit group, serialization and archive SHA. Nested values are not additional; source upload transport excluded.",
+      "energy_joules": null,
+      "finished_utc": "2026-11-10T20:00:18.725826+00:00",
+      "native_validation": {
+        "actual_trained_checkpoint_read": false,
+        "argv": [
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "backward_calls": 0,
+        "child_peak_rss_bytes": 640815104,
+        "observed_tests": 16,
+        "optimizer_steps": 0,
+        "passed": true,
+        "program_after": {
+          "manifest_sha256": "8cd0fdcf94a5af733173d6fc513b2b379df8bdd9f28604116658fe40a7c19e12",
+          "verified_members": 13
+        },
+        "returncode": 0,
+        "stderr_sha256": "59eafa888ddfc56384f12078553bee86b59cd371a5a2717c70c9321b79ca9453",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false,
+        "unittest_seconds": 0.199,
+        "waited_child_CPU_seconds": 2.478329,
+        "whole_child_wall_seconds": 2.672905263956636
+      },
+      "original_training_adequacy": false,
+      "own_peak_rss_bytes": 35438592,
+      "own_process_CPU_seconds": 0.184126431,
+      "program_after": {
+        "manifest_sha256": "8cd0fdcf94a5af733173d6fc513b2b379df8bdd9f28604116658fe40a7c19e12",
+        "verified_members": 13
+      },
+      "program_before": {
+        "manifest_sha256": "8cd0fdcf94a5af733173d6fc513b2b379df8bdd9f28604116658fe40a7c19e12",
+        "verified_members": 13
+      },
+      "program_sha256": "a748888f26409ff6f5fff8db8a9266cf67d0a5f5516dc88b566cd3c296fca206",
+      "replay_archive": {
+        "bytes": 16811170,
+        "path": "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1.zip",
+        "sha256": "88183d8933634e83a6a48d70393c8e81bc738b377af35f0940b1704dd284b7b0"
+      },
+      "replay_argv": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1/launch.py",
+        "--output",
+        "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1",
+        "--launch-directory",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-replay-launch-v1"
+      ],
+      "replay_started_utc": "2026-11-10T19:48:08.234241+00:00",
+      "returncode": 0,
+      "schema": "independent-six-best-D-bootstrap-v1",
+      "scientific_admission": "HOLD",
+      "stable_key": "hcsn-best-full-d-replay-c385-v1",
+      "started_utc": "2026-11-10T19:48:05.546197+00:00",
+      "status": "completed",
+      "waited_children_CPU_seconds": 739.440259
+    },
+    "controller_complete": {
+      "child_peak_rss_bytes": 920285184,
+      "confirmation_E_access": false,
+      "energy_joules": null,
+      "finished_utc": "2026-11-10T20:00:18.611157+00:00",
+      "hard_wall_seconds": 3600,
+      "own_CPU_seconds": 1.200734538,
+      "pid": 2013597,
+      "process_started": true,
+      "program_manifest_sha256_after": "8cd0fdcf94a5af733173d6fc513b2b379df8bdd9f28604116658fe40a7c19e12",
+      "program_manifest_sha256_before": "8cd0fdcf94a5af733173d6fc513b2b379df8bdd9f28604116658fe40a7c19e12",
+      "returncode": 0,
+      "schema": "independent-six-HCSN-best-D-hard-launch-v1",
+      "scientific_admission": "HOLD",
+      "scope": "Complete controller process group including fits and final serialization/archive; nested timers not additional.",
+      "started_utc": "2026-11-10T19:48:08.302455+00:00",
+      "status": "completed",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 540,
+        "sha256": "839f37455a4d9b1ae5c50812dbcdd0afd2f15019bd1e6664731f0f2a738efd6f"
+      },
+      "training_steps": 0,
+      "waited_controller_and_descendant_CPU_seconds": 735.7465609999999,
+      "whole_controller_wall_seconds": 730.3087067739107
+    },
+    "energy_joules": null,
+    "exploratory_local_tests": {
+      "passed": 16,
+      "process_CPU_seconds": null,
+      "process_wall_seconds": null,
+      "reason": "First tool-only exploratory test run; no separate complete process cost retained."
+    },
+    "local_validation": {
+      "E_access": false,
+      "actual_trained_checkpoint_read": false,
+      "argv": [
+        "/workspace/scratch/c385a7439f8e/hcsn-env/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/workspace/scratch/c385a7439f8e/hcsn-best-full-d-replay-v1/program",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "backward_calls": 0,
+      "child_peak_rss_bytes": 215515136,
+      "cost_scope": "Exact test subprocess import-to-exit. No real trained model, training, or numerical oracle.",
+      "observed_utc": "2026-11-10T19:45:58.673801+00:00",
+      "optimizer_steps": 0,
+      "own_driver_cpu_seconds": 0.078358496,
+      "passed": true,
+      "returncode": 0,
+      "schema": "synthetic-six-best-replay-validation-v1",
+      "source_after": {
+        "PLAN.json": "b8fd38b25ba63f2dd837b0ef73383463f8fc24c39c55854643aa5bed070b3c2a",
+        "README.md": "08047671c2020aa54d7eb387ccf874a25d749e0ef6eee6f2ed3997a42b2da15d",
+        "audit_io.py": "170d057d4b33d9e13a15c1f3c8e7db6ce06087c7bd1edb32412fb753f79e3714",
+        "independent_metrics.py": "7687fbba275dad706b1a4d8d6f7e76f360429b49ddbb3d83515e6308b3665f1a",
+        "launch.py": "416a5aef493cabcd84ce426e389febf07f763a40b310b8638fe2ae12967f6f50",
+        "replay_fit.py": "b07c77e7c5c0b8d5c9c3d035a09a340d09bf462098594958d29dc96ae6ac123f",
+        "run_controller.py": "37634e8668ebda4ab2b4a019daedd95f90aa6a4dd7bcb835e82364b0756ea356",
+        "terminal-snapshot.json": "17df82cc70fce7d42ad1389c5770ba42a8039522ab07f36f6b6403b1d0156c49",
+        "test_replay.py": "9c6bcdedcd07e8b53e270cfdf25672fd7f17a14cc991e7a48e1a52510780c11e"
+      },
+      "source_before": {
+        "PLAN.json": "b8fd38b25ba63f2dd837b0ef73383463f8fc24c39c55854643aa5bed070b3c2a",
+        "README.md": "08047671c2020aa54d7eb387ccf874a25d749e0ef6eee6f2ed3997a42b2da15d",
+        "audit_io.py": "170d057d4b33d9e13a15c1f3c8e7db6ce06087c7bd1edb32412fb753f79e3714",
+        "independent_metrics.py": "7687fbba275dad706b1a4d8d6f7e76f360429b49ddbb3d83515e6308b3665f1a",
+        "launch.py": "416a5aef493cabcd84ce426e389febf07f763a40b310b8638fe2ae12967f6f50",
+        "replay_fit.py": "b07c77e7c5c0b8d5c9c3d035a09a340d09bf462098594958d29dc96ae6ac123f",
+        "run_controller.py": "37634e8668ebda4ab2b4a019daedd95f90aa6a4dd7bcb835e82364b0756ea356",
+        "terminal-snapshot.json": "17df82cc70fce7d42ad1389c5770ba42a8039522ab07f36f6b6403b1d0156c49",
+        "test_replay.py": "9c6bcdedcd07e8b53e270cfdf25672fd7f17a14cc991e7a48e1a52510780c11e"
+      },
+      "source_unchanged": true,
+      "stderr": {
+        "bytes": 1973,
+        "sha256": "05e54c64d73f68b10e13939c29041599559287560fce2c6632240deebd8398cd"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "waited_child_CPU_seconds": 1.6853509999999998,
+      "whole_child_wall_seconds": 1.8205574470011925
+    },
+    "per_fit": [
+      {
+        "name": "hcsn-s101-lr0.001",
+        "outer": {
+          "RSS_limit_bytes": 2147483648,
+          "argv": [
+            "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+            "-B",
+            "-c",
+            "import resource,runpy,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__(\"pathlib\").Path(script).parent));runpy.run_path(script,run_name=\"__main__\")",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1/replay_fit.py",
+            "--name",
+            "hcsn-s101-lr0.001",
+            "--output",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1/hcsn-s101-lr0.001"
+          ],
+          "cost_scope": "Complete child spawn/import/input-check/forward/serialization/exit; nested fit timers not additional.",
+          "finished_utc": "2026-11-10T19:50:08.523330+00:00",
+          "pid": 2013598,
+          "process_started": true,
+          "returncode": 0,
+          "sampled_peak_rss_bytes": 907976704,
+          "started_utc": "2026-11-10T19:48:08.371765+00:00",
+          "status": "completed",
+          "stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "waited_child_CPU_seconds": 120.08205699999999,
+          "wall_limit_seconds": 900,
+          "whole_child_wall_seconds": 120.15156568703242
+        }
+      },
+      {
+        "name": "hcsn-s101-lr0.003",
+        "outer": {
+          "RSS_limit_bytes": 2147483648,
+          "argv": [
+            "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+            "-B",
+            "-c",
+            "import resource,runpy,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__(\"pathlib\").Path(script).parent));runpy.run_path(script,run_name=\"__main__\")",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1/replay_fit.py",
+            "--name",
+            "hcsn-s101-lr0.003",
+            "--output",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1/hcsn-s101-lr0.003"
+          ],
+          "cost_scope": "Complete child spawn/import/input-check/forward/serialization/exit; nested fit timers not additional.",
+          "finished_utc": "2026-11-10T19:52:10.554257+00:00",
+          "pid": 2016717,
+          "process_started": true,
+          "returncode": 0,
+          "sampled_peak_rss_bytes": 909770752,
+          "started_utc": "2026-11-10T19:50:08.526979+00:00",
+          "status": "completed",
+          "stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "waited_child_CPU_seconds": 121.98139600000002,
+          "wall_limit_seconds": 900,
+          "whole_child_wall_seconds": 122.02727339696139
+        }
+      },
+      {
+        "name": "hcsn-s211-lr0.001",
+        "outer": {
+          "RSS_limit_bytes": 2147483648,
+          "argv": [
+            "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+            "-B",
+            "-c",
+            "import resource,runpy,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__(\"pathlib\").Path(script).parent));runpy.run_path(script,run_name=\"__main__\")",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1/replay_fit.py",
+            "--name",
+            "hcsn-s211-lr0.001",
+            "--output",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1/hcsn-s211-lr0.001"
+          ],
+          "cost_scope": "Complete child spawn/import/input-check/forward/serialization/exit; nested fit timers not additional.",
+          "finished_utc": "2026-11-10T19:54:12.251745+00:00",
+          "pid": 2019452,
+          "process_started": true,
+          "returncode": 0,
+          "sampled_peak_rss_bytes": 921694208,
+          "started_utc": "2026-11-10T19:52:10.557789+00:00",
+          "status": "completed",
+          "stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "waited_child_CPU_seconds": 121.61179099999995,
+          "wall_limit_seconds": 900,
+          "whole_child_wall_seconds": 121.69395308895037
+        }
+      },
+      {
+        "name": "hcsn-s211-lr0.003",
+        "outer": {
+          "RSS_limit_bytes": 2147483648,
+          "argv": [
+            "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+            "-B",
+            "-c",
+            "import resource,runpy,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__(\"pathlib\").Path(script).parent));runpy.run_path(script,run_name=\"__main__\")",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1/replay_fit.py",
+            "--name",
+            "hcsn-s211-lr0.003",
+            "--output",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1/hcsn-s211-lr0.003"
+          ],
+          "cost_scope": "Complete child spawn/import/input-check/forward/serialization/exit; nested fit timers not additional.",
+          "finished_utc": "2026-11-10T19:56:13.942423+00:00",
+          "pid": 2022178,
+          "process_started": true,
+          "returncode": 0,
+          "sampled_peak_rss_bytes": 900300800,
+          "started_utc": "2026-11-10T19:54:12.255082+00:00",
+          "status": "completed",
+          "stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "waited_child_CPU_seconds": 121.66127600000002,
+          "wall_limit_seconds": 900,
+          "whole_child_wall_seconds": 121.68733861413784
+        }
+      },
+      {
+        "name": "hcsn-s307-lr0.001",
+        "outer": {
+          "RSS_limit_bytes": 2147483648,
+          "argv": [
+            "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+            "-B",
+            "-c",
+            "import resource,runpy,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__(\"pathlib\").Path(script).parent));runpy.run_path(script,run_name=\"__main__\")",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1/replay_fit.py",
+            "--name",
+            "hcsn-s307-lr0.001",
+            "--output",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1/hcsn-s307-lr0.001"
+          ],
+          "cost_scope": "Complete child spawn/import/input-check/forward/serialization/exit; nested fit timers not additional.",
+          "finished_utc": "2026-11-10T19:58:14.953288+00:00",
+          "pid": 2025137,
+          "process_started": true,
+          "returncode": 0,
+          "sampled_peak_rss_bytes": 911966208,
+          "started_utc": "2026-11-10T19:56:13.958888+00:00",
+          "status": "completed",
+          "stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "waited_child_CPU_seconds": 120.94371899999994,
+          "wall_limit_seconds": 900,
+          "whole_child_wall_seconds": 120.99439737084322
+        }
+      },
+      {
+        "name": "hcsn-s307-lr0.003",
+        "outer": {
+          "RSS_limit_bytes": 2147483648,
+          "argv": [
+            "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+            "-B",
+            "-c",
+            "import resource,runpy,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__(\"pathlib\").Path(script).parent));runpy.run_path(script,run_name=\"__main__\")",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1/replay_fit.py",
+            "--name",
+            "hcsn-s307-lr0.003",
+            "--output",
+            "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1/hcsn-s307-lr0.003"
+          ],
+          "cost_scope": "Complete child spawn/import/input-check/forward/serialization/exit; nested fit timers not additional.",
+          "finished_utc": "2026-11-10T20:00:17.396077+00:00",
+          "pid": 2027940,
+          "process_started": true,
+          "returncode": 0,
+          "sampled_peak_rss_bytes": 915492864,
+          "started_utc": "2026-11-10T19:58:14.956652+00:00",
+          "status": "completed",
+          "stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "waited_child_CPU_seconds": 122.40198200000007,
+          "wall_limit_seconds": 900,
+          "whole_child_wall_seconds": 122.43942100391723
+        }
+      }
+    ],
+    "schema": "independent-best-D-replay-cost-scopes-v1",
+    "scientific_admission": "HOLD"
+  },
+  "schema": "six-best-D-full-lifecycle-scopes-v1",
+  "scientific_admission": "HOLD",
+  "transport_CPU_seconds": null
+}

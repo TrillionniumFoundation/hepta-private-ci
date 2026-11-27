@@ -1,0 +1,11 @@
+# Real G1 non-training partition result
+
+One authorized fixed-asset manager attempt, executed after SOURCE PASS through python -I -S -B run_once.py. Final freeze0c55be575808a0209d94165f93ff451551966ec931854e3f3f89c1949aea7552. Existing shared lock dev27/inode536619; fresh RUN_ONCE, no other observed qualification worker. Exit0, complete_wait true, one child started and reaped. No retries or source edits after execution.
+
+Public aggregates:1797 unique image groups; TRAIN1096, selection324, final377. TRAIN class group counts111,109,120,103,99,108,111,115,104,116. Fixed minimum checks passed. These do not establish class coverage of heldout partitions, statistical power, writer-independent separation or model quality. Original UCI TEST subset provenance remains: this is not original unseen benchmark TEST. No model initialization, training, inference, selection score or final evaluation occurred.
+
+The manager necessarily decoded all source rows/labels for schema, conflict and grouping checks. This is explicitly management exposure. No sample, heldout label, per-group identifier or row mapping was printed or released to a development worker. Data files remain in private_manager under a trusted local access workflow; directory naming is not OS isolation. Publication will omit all data/private manifest bodies and publish only code, reviews, aggregates and whole-file byte/hash bindings.
+
+Child wait4 CPU0.16140300000000002s + parent observed prefix0.034220418s = known lower bound0.19562341800000002s plus unknown final tail. Peak child RSS14136KiB; observed prefix wall0.18540435197064653s. Retained bytes before parent receipt671996; final count/size independently reviewed. Preparation, synthetic qualification, metadata and reviews cost additional nonzero CPU outside this run. Do not double-add nested operations or call this strict aggregate CPU proof.
+
+Real lexical compatibility and minima passed for this exact asset and profile. Parent process-death, hard real-time, hostile filesystem and crash-durability limitations are unchanged. A successful partition does not authorize TRAIN use, selection opening, final evaluation, Fashion/all-FIT or strict256. Next scientific admission needs matched model/computation plans, controlled predicted-class dependence, finite selection and full cost budgets.

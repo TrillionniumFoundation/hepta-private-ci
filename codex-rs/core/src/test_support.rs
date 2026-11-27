@@ -4,6 +4,8 @@
 //! We prefer this to using a crate feature to avoid building multiple
 //! permutations of the crate.
 
+pub use crate::client::test_transport::FirstPartyTestTransport;
+
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -205,6 +207,11 @@ pub fn responses_metadata(
 
 pub fn with_parent_turn(mut metadata: CodexResponsesMetadata, id: &str) -> CodexResponsesMetadata {
     metadata.parent_turn_id = Some(id.to_string());
+    metadata
+}
+
+pub fn with_root_turn(mut metadata: CodexResponsesMetadata, id: &str) -> CodexResponsesMetadata {
+    metadata.root_turn_id = Some(id.to_string());
     metadata
 }
 

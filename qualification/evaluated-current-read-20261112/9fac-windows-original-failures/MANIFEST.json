@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "head": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "run_id": 43254706563,
+  "reconstruction": "Concatenate each job's ordered original UTF-8 parts without added separators.",
+  "logs": [
+    {
+      "job_id": 131310622783,
+      "bytes": 859515,
+      "sha256": "76bc57cb5bbfeb8a57c74629779a10456cebf3b4e11dbabc6e90b20bd3a35d6d",
+      "git_blob_sha": "50539b124687f4656228a91da24b440586603a39",
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622783.job.log.part00",
+          "bytes": 350000,
+          "sha256": "e56b623e2d409f1495089281060a6ffd8004c1805d30b2847a366dbc8d87939b",
+          "git_blob_sha": "6db29d58f88e8c43e479abde8063dc88beadda00",
+          "start_byte": 0,
+          "end_byte_exclusive": 350000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622783.job.log.part01",
+          "bytes": 350000,
+          "sha256": "492d9f416c0dcb9c614ab7bc546c50fe4d520cc70d11faa1c9d99dbd0b6a717c",
+          "git_blob_sha": "2187ef869baa425109257b947ad0e46dea689e80",
+          "start_byte": 350000,
+          "end_byte_exclusive": 700000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622783.job.log.part02",
+          "bytes": 159515,
+          "sha256": "077140888f8b833f1be94d478fd3e36ae1a0973706b030e2389d648bb4d89f30",
+          "git_blob_sha": "40ca0a5154bda4ed8f4d83790a05f23f43d1a00a",
+          "start_byte": 700000,
+          "end_byte_exclusive": 859515
+        }
+      ],
+      "execution_checkout_original_lines": [
+        "2026-11-12T16:08:35.2179751Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" checkout --progress --force refs/remotes/pull/6213/merge\r\n2026-11-12T16:08:36.3328739Z Updating files:  27% (4134/15220)\r\n2026-11-12T16:08:36.3647411Z Updating files:  28% (4262/15220)\r\n2026-11-12T16:08:36.4207003Z Updating files:  29% (4414/15220)\r",
+        "2026-11-12T16:08:39.7584538Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H\r\n2026-11-12T16:08:39.7985717Z 6344842074357063c00dce9f2b67d789b2988c6f\r\n2026-11-12T16:08:39.8053412Z ##[group]Removing auth\r\n2026-11-12T16:08:39.8053747Z Removing SSH command configuration\r"
+      ]
+    },
+    {
+      "job_id": 131310622818,
+      "bytes": 498556,
+      "sha256": "c333cb3674a8e70752ca2a610cd858bb19facde465fbfead61d0feb8054a1cd3",
+      "git_blob_sha": "ba0b740fd259afb8231cbb4d21b7aea7e30b9d17",
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622818.job.log.part00",
+          "bytes": 350000,
+          "sha256": "ae7ce55862ab266f2aaa4d9143a3dc539c260930813bde481842dc82f9ced1ef",
+          "git_blob_sha": "2c50e35e90f0d01592281a7ff38f3ee71b768688",
+          "start_byte": 0,
+          "end_byte_exclusive": 350000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622818.job.log.part01",
+          "bytes": 148556,
+          "sha256": "4f41a16e4c69aee9855a2a3053440bc186ac74c8ef4ea883deef955a9fed7972",
+          "git_blob_sha": "5dd3f6c9a7d13bc64428317bab2d702e915c3fa0",
+          "start_byte": 350000,
+          "end_byte_exclusive": 498556
+        }
+      ],
+      "execution_checkout_original_lines": [
+        "2026-11-12T16:08:39.7492618Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" checkout --progress --force refs/remotes/pull/6213/merge\r\n2026-11-12T16:08:40.8753464Z Updating files:  22% (3351/15220)\r\n2026-11-12T16:08:40.9289293Z Updating files:  23% (3501/15220)\r\n2026-11-12T16:08:40.9713196Z Updating files:  24% (3653/15220)\r",
+        "2026-11-12T16:08:44.9119165Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H\r\n2026-11-12T16:08:44.9637489Z 6344842074357063c00dce9f2b67d789b2988c6f\r\n2026-11-12T16:08:44.9689713Z ##[group]Removing auth\r\n2026-11-12T16:08:44.9690107Z Removing SSH command configuration\r"
+      ]
+    }
+  ],
+  "scope": "Existing hosted blocking jobs only; no rerun. Windows shard output includes original existing retries of some unrelated targets; do not describe whole job as zero retry. Hepta Os33 locked-file reads and canonical fixture CR are observed; independent causes in exec-server, TUI and core are preserved, not bypassed or silently closed.",
+  "fixes_prepared_not_executed": [
+    {
+      "path": ".gitattributes",
+      "base_blob": "17da38650745923743630d38d3eb0327b7a55d1f",
+      "post_blob": "97699ed2b4cdf3f4a1a4080f07b67680da9717f7",
+      "reason": "Original Windows job 131310622783 exposes exactly one extra byte 13 after the canonical perception JSON; fixture Git bytes end in one LF and their pre-LF SHA256 equals the existing immutable test digest. Pin only this fixture's checkout LF; keep its bytes, digest and assertions unchanged.",
+      "status": "STATIC_ONLY_NOT_PUSHED"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "base_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+      "post_blob": "526596aa073290c60bf3e8d44f52d2812910b158",
+      "reason": "Keep the exact owner.lock path in every full byte snapshot and assert it is a zero-length regular file. All nonempty original publication/checkpoint/current files remain byte-read. Product owner/fence code unchanged.",
+      "status": "STATIC_ONLY_NOT_PUSHED"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+      "base_blob": "cddb72f40d437dffa9cfc3d3c478924006f16ac8",
+      "post_blob": "32fbe36826cc43fb4af106d820d82a4a11222425",
+      "reason": "Release the finished original owner before final raw-byte comparison; preserve five methods and 39 assertions.",
+      "status": "STATIC_ONLY_NOT_PUSHED"
+    }
+  ]
+}

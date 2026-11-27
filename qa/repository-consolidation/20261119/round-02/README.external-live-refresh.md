@@ -1,0 +1,9 @@
+# Rust consolidation — 2026-11-19 live-head refresh
+
+This is an **unqualified, non-atomic branch inventory**, not authority to delete or merge refs. Eight UTF-8 JSON shards preserve the exact 7,643 branch name/SHA entries returned by GitHub REST pages 1–77 (page 78 empty). Each shard is an independently stored Git blob. Duplicate names were not observed. A separate fresh Git graph pass remains mandatory before assigning ordinary/HIA ancestry and merge coverage.
+
+The prior round-01 evidence at `qa/repository-consolidation/20261119/round-01` remains unchanged. Its 7,615-head classification (2,083 ordinary covered, 5,142 outstanding, 389 HIA) **does not describe the new census**. In the later 7,643-head reading, all 393 then-manifest-pinned HIA branch names were still present. The additional HIA descendant `codex/hia-example-validation-transport-20261119-r11` at `1ebf105bb04173315e0d728d2cf91b652d4f83e1` was independently compared against two original HIA roots and pinned in the protection manifest. HIA protection also applies to differently named descendants such as the chrono/OTEL joint branch. No HIA branch was changed.
+
+The current integration-only source fix `21a0697fb3bc47392116f2d85696bdc2a6d084c0` retains authenticated Windows owner-local transport and original Unix transport, request framing, identity binding and original deadline. The protected function-order markers were checked locally; exact native Windows/Linux tests and new required gates are not yet qualified. The prior integration head `8047312` passed Architecture but failed Windows shards 2/4 and 4/4, Linux-musl tests, the caller guard and the 19-group Windows aggregate. The Windows elevated sandbox must remain fail-closed until proven safe; no failure was ignored or downgraded.
+
+**No ordinary branch was merged or deleted in this refresh. Main remains unchanged.** This inventory is for subsequent conservative full-history and Windows regression reviews only.

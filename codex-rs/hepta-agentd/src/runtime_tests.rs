@@ -1,4 +1,7 @@
 use std::sync::Arc;
+
+#[path = "circuit_task_ingress_tests.rs"]
+mod circuit_task_ingress;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -53,11 +56,8 @@ use super::drain_runtime;
 use super::monitor_runtime;
 use super::open_automation_store_after_generation_fence;
 use super::open_cognitive_runtime_after_generation_fence;
-use super::require_cognitive_retrieval_context_for_mode;
-use super::require_cognitive_runtime_for_profile;
 use crate::AgentdMethod;
 use crate::AgentdPayload;
-use crate::CognitiveRetrievalMode;
 #[cfg(feature = "qualification-cognitive-write")]
 use crate::app_runtime::app_server_runtime_options_for_agent;
 use crate::automation::DispatchRetryBudget;
@@ -78,25 +78,33 @@ struct RuntimeFixture {
 }
 
 fn runtime_fixture() -> RuntimeFixture {
-    let temp = tempfile::tempdir().expect("temporary root");
+    let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("temporary root: {error:?}"));
     let root = temp
         .path()
         .canonicalize()
-        .expect("canonical temporary root");
+        .unwrap_or_else(|error| panic!("canonical temporary root: {error:?}"));
     let fleet_path = root.join("fleet");
-    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("valid fleet root");
-    let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
+    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())
+        .unwrap_or_else(|error| panic!("valid fleet root: {error:?}"));
+    let registry = FleetRegistry::initialize(fleet_root.clone())
+        .unwrap_or_else(|error| panic!("initialize registry: {error:?}"));
     let workspace = root.join("workspace");
-    std::fs::create_dir(&workspace).expect("create workspace");
-    let workspace = workspace.canonicalize().expect("canonical workspace");
-    let agent_id = AgentId::parse(AGENT_ID).expect("valid agent id");
-    let binding = WorkspaceBinding::new(&workspace, &fleet_root).expect("workspace binding");
+    std::fs::create_dir(&workspace).unwrap_or_else(|error| panic!("create workspace: {error:?}"));
+    let workspace = workspace
+        .canonicalize()
+        .unwrap_or_else(|error| panic!("canonical workspace: {error:?}"));
+    let agent_id =
+        AgentId::parse(AGENT_ID).unwrap_or_else(|error| panic!("valid agent id: {error:?}"));
+    let binding = WorkspaceBinding::new(&workspace, &fleet_root)
+        .unwrap_or_else(|error| panic!("workspace binding: {error:?}"));
     let manifest = AgentManifest::new(agent_id.clone(), binding, ResourceBudget::local_default())
-        .expect("agent manifest");
-    let record = registry.register(manifest).expect("register agent");
+        .unwrap_or_else(|error| panic!("agent manifest: {error:?}"));
+    let record = registry
+        .register(manifest)
+        .unwrap_or_else(|error| panic!("register agent: {error:?}"));
     registry
         .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)
-        .expect("start generation");
+        .unwrap_or_else(|error| panic!("start generation: {error:?}"));
     let identity = AgentdIdentity {
         agent_id,
         layout: record.layout.clone(),
@@ -110,7 +118,8 @@ fn runtime_fixture() -> RuntimeFixture {
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
     let state = Arc::new(
-        AgentdState::new(identity.clone(), registry.clone(), EVENT_CAPACITY).expect("agent state"),
+        AgentdState::new(identity.clone(), registry.clone(), EVENT_CAPACITY)
+            .unwrap_or_else(|error| panic!("agent state: {error:?}")),
     );
     RuntimeFixture {
         _temp: temp,
@@ -123,21 +132,29 @@ fn runtime_fixture() -> RuntimeFixture {
 async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
     let store = codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
         .await
-        .expect("real cognitive owner");
+        .unwrap_or_else(|error| panic!("real cognitive owner: {error:?}"));
     fixture
         .state
         .attach_cognitive_store(Arc::new(store))
-        .expect("owner attachment");
+        .unwrap_or_else(|error| panic!("owner attachment: {error:?}"));
     fixture
         .state
         .mark_runtime_prerequisites_ready()
-        .expect("owner prerequisites");
+        .unwrap_or_else(|error| panic!("owner prerequisites: {error:?}"));
 }
 
 #[tokio::test]
 async fn drain_runtime_keeps_control_reconciliation_live_until_terminal_observation() {
     let fixture = runtime_fixture();
     attach_runtime_prerequisites(&fixture).await;
+    fixture
+        .state
+        .attach_automation_store(
+            AutomationStore::open(&fixture.identity.layout)
+                .await
+                .expect("real empty automation owner"),
+        )
+        .expect("attach automation owner for verified drain");
     fixture
         .registry
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
@@ -325,48 +342,6 @@ async fn unavailable_cognitive_store_degrades_without_leaking_open_error() {
     assert!(!format!("{reason:?}").contains("/private/raw"));
 }
 
-#[test]
-fn compatibility_retrieval_mode_does_not_require_hnmf_context() {
-    require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::Compatibility, false)
-        .expect("compatibility mode may run without an HNMF context");
-}
-
-#[test]
-fn compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile() {
-    let result =
-        require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::Compatibility, true);
-    assert!(matches!(
-        result,
-        Err(crate::AgentdError::Invalid(message))
-            if message.contains("select HnmfRequired explicitly")
-    ));
-}
-
-#[test]
-fn hnmf_required_retrieval_mode_fails_closed_without_current_context() {
-    let result =
-        require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::HnmfRequired, false);
-    assert!(matches!(
-        result,
-        Err(crate::AgentdError::Invalid(message))
-            if message.contains("HNMF-required retrieval profile")
-    ));
-    require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::HnmfRequired, true)
-        .expect("HNMF-required mode accepts an explicitly configured current context");
-}
-
-#[cfg(feature = "production-cognitive-write")]
-#[test]
-fn product_write_profile_fails_closed_when_cognitive_store_is_unavailable() {
-    let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
-        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
-    ));
-    assert!(matches!(
-        result,
-        Err(crate::AgentdError::CognitiveWriteRuntimeUnavailable)
-    ));
-}
-
 #[cfg(feature = "qualification-cognitive-write")]
 #[tokio::test]
 async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
@@ -397,6 +372,7 @@ async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
         Arc::clone(&fixture.state),
         runtime,
         /*production_cognitive_mutation*/ None,
+        crate::app_runtime::AppServerModelToolProfile::Standard,
     )
     .expect("runtime options");
     assert!(
@@ -597,7 +573,19 @@ async fn qualification_prepare_takes_over_expired_registry_head_without_evidence
 #[tokio::test]
 async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence() {
     let fixture = runtime_fixture();
-    attach_runtime_prerequisites(&fixture).await;
+    let (store, clock) =
+        CognitiveStore::open_new_with_qualification_lease_clock(&fixture.identity.layout)
+            .await
+            .expect("fresh qualification store");
+    let store = Arc::new(store);
+    fixture
+        .state
+        .attach_cognitive_store(Arc::clone(&store))
+        .expect("owner attachment");
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready()
+        .expect("owner prerequisites");
     fixture
         .registry
         .compare_and_transition(
@@ -612,11 +600,6 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         .mark_app_server_ready()
         .expect("mark App Server ready");
 
-    let store = Arc::new(
-        CognitiveStore::open(&fixture.identity.layout)
-            .await
-            .expect("open cognitive store"),
-    );
     let fleet_generation = fixture
         .state
         .qualification_turn_authority()
@@ -629,11 +612,21 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         Sha256Digest::for_bytes(format!("qualification:logical-binding:v1:{turn_id}").as_bytes()),
     )
     .expect("logical request");
-    let expires_at = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock")
-        .as_secs()
-        + 1;
+    let fixture_started = std::time::Instant::now();
+    let minted_at = Duration::from_secs(clock.now_unix_seconds().expect("clock"));
+    let expires_at = minted_at.as_secs() + 1;
+    let expiry_stage = |stage: &str| {
+        let observed_at = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|duration| duration.as_millis());
+        format!(
+            "expired-registry fixture stage={stage}, qualification_minted_at_unix_ms={}, expires_at_unix_seconds={expires_at}, remaining_ms_at_mint={}, elapsed_ms={}, observed_wall_unix_ms={observed_at:?}, observed_lease_clock_seconds={:?}",
+            minted_at.as_millis(),
+            (u128::from(expires_at) * 1_000).saturating_sub(minted_at.as_millis()),
+            fixture_started.elapsed().as_millis(),
+            clock.now_unix_seconds(),
+        )
+    };
     let old = LogicalTurnAttemptRequest::new(
         "seed-terminal-attempt",
         "seed-terminal-lease",
@@ -650,14 +643,14 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     let reservation = store
         .reserve_or_replay_logical_turn(logical, old)
         .await
-        .expect("seed registry attempt");
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("seed registry attempt")));
     let codex_hepta_memory::LogicalTurnReservation::Acquired { attempt } = reservation else {
         panic!("seed must acquire registry attempt")
     };
     let head = store
         .inspect_local_lease_head(&attempt.lease_id)
         .await
-        .expect("inspect seeded head")
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("inspect seeded head")))
         .head
         .expect("seeded head");
     let lease = store
@@ -668,7 +661,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
             attempt.lease_expires_at_unix_seconds,
         )
         .await
-        .expect("reopen seeded lease");
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("reopen seeded lease")));
     let fence = CompactFence::new(
         attempt.authority_epoch,
         attempt.owner_epoch,
@@ -679,7 +672,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     let executor = store
         .open_local_compact_executor_bound(attempt.journal_id.clone(), fence, &lease)
         .await
-        .expect("open compact executor");
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("open compact executor")));
     let binding =
         LocalTurnLifecycleBinding::from_handles(turn_id, &lease, &executor).expect("binding");
     let payload = r#"{"schema_version":1,"external_effect":false,"kg_write_authority":false,"production_caller":false}"#;
@@ -690,7 +683,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
             payload,
         )
         .await
-        .expect("admit local intent")
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("admit local intent")))
     {
         LocalAdmission::Queued(receipt) | LocalAdmission::Replay(receipt) => receipt,
     };
@@ -720,7 +713,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         ..
     } = append_h7_trajectory_event_bound(&lease, &executor, &binding, &start)
         .await
-        .expect("append H7 start")
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("append H7 start")))
     else {
         panic!("start must be inserted")
     };
@@ -743,11 +736,15 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     .expect("terminal trajectory");
     append_h7_trajectory_event_bound(&lease, &executor, &binding, &terminal)
         .await
-        .expect("append H7 terminal");
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("append H7 terminal")));
     drop(binding);
     drop(executor);
     drop(lease);
     tokio::time::sleep(Duration::from_secs(2)).await;
+    // Both H7 writes completed while live; now cross the original +1 deadline.
+    clock
+        .advance_to(expires_at)
+        .expect("advance to lease expiry");
 
     let result = prepare_qualification_turn_writer_input(
         Arc::clone(&fixture.state),
@@ -764,27 +761,12 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     let inspected = store
         .inspect_local_lease_head(&attempt.lease_id)
         .await
-        .expect("inspect recovered head");
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("inspect recovered head")));
     assert_eq!(
         inspected.disposition,
         LocalLeaseHeadDisposition::ExpiredActive,
         "registry-backed H7 quarantine must not mutate the active registry head"
     );
-}
-
-#[cfg(not(feature = "production-cognitive-write"))]
-#[test]
-fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
-    let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
-        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
-    ))
-    .expect("read-only profile remains availability tolerant");
-    assert!(matches!(
-        result,
-        CognitiveRuntime::Unavailable(
-            codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable
-        )
-    ));
 }
 
 #[tokio::test]
@@ -1068,3 +1050,7 @@ async fn generation_monitor_honors_host_cancellation_during_readiness_probe()
     result?;
     Ok(())
 }
+
+#[cfg(target_os = "linux")]
+#[path = "control_source_capture_tests.rs"]
+mod source_capture_tests;

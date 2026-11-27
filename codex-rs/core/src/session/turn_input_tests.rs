@@ -4,7 +4,11 @@ use crate::session::session::RolloutPersistenceFault;
 use crate::session::tests::attach_in_memory_thread_store;
 use crate::session::tests::make_session_and_context_with_rx;
 use crate::state::DurableRecoveryState;
+use crate::state::StartTransitionCompletion;
 use crate::state::TaskKind;
+use crate::state::TaskTerminalization;
+use crate::state::TaskTerminalizationKind;
+use crate::state::TaskTerminalizationPhase;
 use crate::state::TurnRecoveryAuthority;
 use crate::tasks::RecoveryReadyForSampling;
 use crate::tasks::SessionTask;
@@ -2346,4 +2350,222 @@ async fn rejects_non_regular_turns() {
 
         session.abort_all_tasks(TurnAbortReason::Interrupted).await;
     }
+}
+
+async fn register_recovery_terminalizer(
+    session: &Session,
+    turn_context: &Arc<TurnContext>,
+    kind: TaskTerminalizationKind,
+) -> (Arc<()>, Arc<StartTransitionCompletion>) {
+    let mut active = session.active_turn.lock().await;
+    let identity = Arc::new(());
+    let completion = StartTransitionCompletion::new();
+    let mut turn = ActiveTurn::default();
+    turn.task_terminalization = Some(TaskTerminalization {
+        identity: Arc::clone(&identity),
+        task_identity: Arc::new(CompletingTask),
+        turn_context: Arc::clone(turn_context),
+        turn_state: Arc::clone(&turn.turn_state),
+        attach_epoch: session.turn_epoch.load(Ordering::Acquire),
+        kind,
+        phase: TaskTerminalizationPhase::Terminalizing,
+        completion: Arc::clone(&completion),
+    });
+    *active = Some(turn);
+    session
+        .pending_task_terminalization_completions
+        .lock()
+        .expect("terminalizer registry")
+        .push((
+            Arc::clone(&identity),
+            Arc::clone(&completion),
+            kind,
+            None,
+            None,
+            None,
+            turn_context.sub_id.clone(),
+        ));
+    (identity, completion)
+}
+
+async fn retire_recovery_terminalizer(
+    session: &Session,
+    identity: &Arc<()>,
+    completion: &StartTransitionCompletion,
+) {
+    let mut active = session.active_turn.lock().await;
+    if active
+        .as_ref()
+        .and_then(|turn| turn.task_terminalization.as_ref())
+        .is_some_and(|owner| Arc::ptr_eq(&owner.identity, identity))
+    {
+        *active = None;
+    }
+    session
+        .pending_task_terminalization_completions
+        .lock()
+        .expect("terminalizer registry")
+        .retain(|(registered, _, _, _, _, _, _)| !Arc::ptr_eq(registered, identity));
+    completion.complete();
+}
+
+#[tokio::test]
+async fn recovery_wait_observes_exact_terminalizer_before_accepting_idle_epoch() {
+    for kind in [
+        TaskTerminalizationKind::Finish,
+        TaskTerminalizationKind::Abort,
+    ] {
+        let (session, turn_context, _rx) = make_turn_recovery_session_and_context_with_rx().await;
+        let turn_id = &turn_context.sub_id;
+        assert!(
+            session
+                .recovery_candidate
+                .lock()
+                .expect("recovery candidate")
+                .is_none()
+        );
+        let (identity, completion) =
+            register_recovery_terminalizer(&session, &turn_context, kind).await;
+        assert_eq!(session.recovery_epoch_if_idle(turn_id).await, None);
+        let mut wait = Box::pin(session.recovery_epoch_after_terminalization(turn_id));
+        assert!(futures::poll!(wait.as_mut()).is_pending());
+
+        // Recovery publication happens after the active marker is cleared but
+        // before its independently owned registry fence is retired.
+        *session.active_turn.lock().await = None;
+        let mut after_clear = Box::pin(session.recovery_epoch_after_terminalization(turn_id));
+        assert!(futures::poll!(after_clear.as_mut()).is_pending());
+        let mut cancelled = Box::pin(session.recovery_epoch_after_terminalization(turn_id));
+        assert!(futures::poll!(cancelled.as_mut()).is_pending());
+        drop(cancelled);
+        assert!(session.has_pending_task_terminalization());
+        assert!(!completion.is_complete());
+
+        let epoch = seed_recovery_candidate(&session, turn_id).await;
+        assert_eq!(session.recovery_epoch_if_idle(turn_id).await, None);
+        retire_recovery_terminalizer(&session, &identity, &completion).await;
+        assert_eq!(wait.await, Some(epoch));
+        assert_eq!(after_clear.await, Some(epoch));
+        assert_eq!(session.recovery_epoch_if_idle(turn_id).await, Some(epoch));
+    }
+}
+
+#[tokio::test]
+async fn recovery_wait_rejects_reused_turn_id_after_epoch_changes() {
+    let (session, turn_context, _rx) = make_turn_recovery_session_and_context_with_rx().await;
+    let turn_id = &turn_context.sub_id;
+    let epoch = seed_recovery_candidate(&session, turn_id).await;
+    let (identity, completion) =
+        register_recovery_terminalizer(&session, &turn_context, TaskTerminalizationKind::Abort)
+            .await;
+    let mut wait = Box::pin(session.recovery_epoch_after_terminalization(turn_id));
+    assert!(futures::poll!(wait.as_mut()).is_pending());
+    retire_recovery_terminalizer(&session, &identity, &completion).await;
+
+    // Before the observer is polled again, a later attempt with the same ID
+    // has attached and interrupted. It owns a different recovery generation.
+    session.turn_epoch.fetch_add(1, Ordering::AcqRel);
+    let replacement_epoch = seed_recovery_candidate(&session, turn_id).await;
+    assert!(replacement_epoch > epoch);
+    assert_eq!(wait.await, None);
+    assert_eq!(
+        session.recovery_epoch_if_idle(turn_id).await,
+        Some(replacement_epoch)
+    );
+}
+
+#[tokio::test]
+async fn recovery_wait_does_not_follow_a_replacement_terminalizer() {
+    let (session, turn_context, _rx) = make_turn_recovery_session_and_context_with_rx().await;
+    let turn_id = &turn_context.sub_id;
+    seed_recovery_candidate(&session, turn_id).await;
+    let (identity, completion) =
+        register_recovery_terminalizer(&session, &turn_context, TaskTerminalizationKind::Abort)
+            .await;
+    let mut wait = Box::pin(session.recovery_epoch_after_terminalization(turn_id));
+    assert!(futures::poll!(wait.as_mut()).is_pending());
+    retire_recovery_terminalizer(&session, &identity, &completion).await;
+
+    session.turn_epoch.fetch_add(1, Ordering::AcqRel);
+    seed_recovery_candidate(&session, turn_id).await;
+    let (replacement_identity, replacement_completion) =
+        register_recovery_terminalizer(&session, &turn_context, TaskTerminalizationKind::Abort)
+            .await;
+    assert_eq!(futures::poll!(wait.as_mut()), std::task::Poll::Ready(None));
+    assert!(!replacement_completion.is_complete());
+    assert!(session.has_pending_task_terminalization());
+    retire_recovery_terminalizer(&session, &replacement_identity, &replacement_completion).await;
+}
+
+#[tokio::test]
+async fn recovery_wait_rejects_unrelated_and_nonterminal_owners() {
+    let (session, turn_context, _rx) = make_turn_recovery_session_and_context_with_rx().await;
+    let turn_id = &turn_context.sub_id;
+    session
+        .spawn_task(
+            Arc::clone(&turn_context),
+            Vec::new(),
+            NeverEndingTask {
+                kind: TaskKind::Regular,
+                listen_to_cancellation_token: true,
+            },
+        )
+        .await
+        .expect("start an ordinary task with the same turn ID");
+    let mut active_wait = Box::pin(session.recovery_epoch_after_terminalization(turn_id));
+    assert_eq!(
+        futures::poll!(active_wait.as_mut()),
+        std::task::Poll::Ready(None)
+    );
+    drop(active_wait);
+    session.abort_all_tasks(TurnAbortReason::Interrupted).await;
+
+    seed_recovery_candidate(&session, turn_id).await;
+    *session.active_turn.lock().await = Some(ActiveTurn::default());
+    assert_eq!(
+        session.recovery_epoch_after_terminalization(turn_id).await,
+        None
+    );
+    session
+        .active_turn
+        .lock()
+        .await
+        .as_mut()
+        .expect("active slot")
+        .reserve_start(turn_id.clone())
+        .expect("reserve a start");
+    assert_eq!(
+        session.recovery_epoch_after_terminalization(turn_id).await,
+        None
+    );
+    *session.active_turn.lock().await = None;
+
+    let (identity, completion) =
+        register_recovery_terminalizer(&session, &turn_context, TaskTerminalizationKind::Suspend)
+            .await;
+    assert_eq!(
+        session.recovery_epoch_after_terminalization(turn_id).await,
+        None
+    );
+    assert!(!completion.is_complete());
+    retire_recovery_terminalizer(&session, &identity, &completion).await;
+
+    let (identity, completion) =
+        register_recovery_terminalizer(&session, &turn_context, TaskTerminalizationKind::Abort)
+            .await;
+    assert_eq!(
+        session
+            .recovery_epoch_after_terminalization("unrelated-turn")
+            .await,
+        None
+    );
+    *session.active_turn.lock().await = None;
+    assert_eq!(
+        session
+            .recovery_epoch_after_terminalization("unrelated-turn")
+            .await,
+        None
+    );
+    assert!(!completion.is_complete());
+    retire_recovery_terminalizer(&session, &identity, &completion).await;
 }

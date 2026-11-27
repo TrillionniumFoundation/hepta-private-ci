@@ -1,0 +1,36 @@
+{
+  "schema": "c2-resource-core-v2-recovery-scope-v1",
+  "explicitly_new_program": true,
+  "old_manifest_sha256": "3ac51d32012f274f8a5a6afc4967569d0b9707b993cab0f5f9550c4e6495dbc1",
+  "unchanged_plan_sha256": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b",
+  "old24_test_receipt_inherited": false,
+  "original_source_restored_exact": [
+    "metadata_io.py",
+    "launch_analysis.py",
+    "analysis_worker.py",
+    "build_report.py"
+  ],
+  "exact_restored_sources_kept_unchanged": [
+    "metadata_io.py",
+    "launch_analysis.py",
+    "analysis_worker.py"
+  ],
+  "restored_source_modified_in_new_v2": {
+    "build_report.py": "Require exact historical baseline_v1/v2 independent report bindings before inheriting adequacy and retain original-native admission evidence in output."
+  },
+  "missing_old_runtime_replaced_with_new_source": [
+    "resource_arithmetic.py",
+    "old_metadata.py",
+    "audit_evidence.py",
+    "candidate_accounting.py"
+  ],
+  "new_provenance_module": "historical_review.py",
+  "old_original_test_receipts_recreated": false,
+  "actual_analysis_executed": false,
+  "confirmation_E_access": false,
+  "loss_inventory_scope": "Original v1 source/manifest/receipt loss remains in the separate exact-recovery appendix; new v2 validation does not erase it.",
+  "new_native_modules": [
+    "native_parsers.py",
+    "native_envelope.py"
+  ]
+}

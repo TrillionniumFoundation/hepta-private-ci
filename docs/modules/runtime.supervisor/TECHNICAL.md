@@ -399,3 +399,79 @@ This receipt records repository source bindings for the current documentation ca
 - The daemon product never executes unsigned `Upgrade` or `Rollback`; those wire variants are compatibility rejection surfaces. Ordinary `Supervisor::upgrade/rollback` remain library-level qualification/fault-injection APIs.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+### Precreated native children and terminal capability transfer
+
+The Linux `PrecreatedProcessDriver` consumes the original Supervisor's real
+`Starting` record and `SpawnSpec`. It does not write another Registry, generate
+an Agent identity, fork a replacement or grant a native kernel role. Each of
+its at most two actual children is bound to the original parent, held pidfd,
+process birth and exact executable/argv before the protected channel is used.
+An attempted delivery consumes that child even when its acknowledgement is
+unknown. The original health probe, PIDFD kill/reap and Registry lifecycle
+remain in use; a successful handoff does not mark Agentd healthy.
+
+`PrecreatedChild::with_startup_descriptor` optionally retains exactly one
+already-created startup FD for that child. After the child acknowledges the
+exact original `SpawnSpec` hash, `spawn` invokes the same pinned channel's
+consuming `send_one_descriptor`. The recipient selects
+`receive_precreated_spawn_with_descriptor`, which retains the original parent
+and command checks and requires this terminal transfer; it cannot fall back
+to the descriptor-free handshake. The original descriptor-free API remains
+available for its existing callers.
+
+The terminal wire is one `0xa7` byte with exactly one `SCM_RIGHTS` descriptor,
+followed by EOF. Both operations retain the existing peer pidfd and deadline.
+Extra bytes/rights, ancillary truncation, missing EOF, owner exit or timeout
+close all received rights and the channel. The safe `rustix` ancillary API
+preserves the contracts crate's `forbid(unsafe_code)` boundary. There is no
+reconnect, authority request, second issuance or new delivery ledger.
+
+This permits a native Root to create its real late-handoff datagram pair after
+the kernel has precreated its children, then transfer that pair endpoint
+through the already verified original parent channel. The received descriptor
+is still only an existing capability: the original Agentd Root-handoff
+validator must verify its socket type, actual Root creator, sealed bootstrap
+and held Root lifetime. It must then use the same original Config/Registry,
+writer, lease, checkpoint and FinalUse owners. The finite HOS2 entry, actual
+guest execution and original 8 MiB ELF / 16 MiB load limits remain separate
+gates; these transport and real-child regressions do not qualify those gates.
+
+### 2026-11-05 candidate: writer-handoff lock lifetime
+
+The candidate takes only the four writer-handoff files from fixed R6 source
+`eac9ca08f2414c619a5058868ebbedf683b18685`. The journal's private File becomes a
+`LockedHandoffFile` guard before fallible create/recovery I/O. Its destructor
+explicitly unlocks in the acquiring process, so a passive duplicated descriptor
+does not retain a departed logical owner's lock, including after recovery errors.
+
+A fork child shares the inherited open-file description and must only close its
+copied descriptor. The acquiring PID suppresses explicit unlock in that child;
+it is not durable writer identity or authority. Independently opened contenders,
+the domain writer's durable generation fence and the exact acknowledged minimum
+remain required. The journal format, phase transitions, unknown-effect refusal,
+receipt digest, bounded recovery, tail repair and poisoning rules are unchanged.
+
+| Regression boundary | Required native observation |
+| --- | --- |
+| Owner drop with passive duplicate | Independent recovery stays Busy while the owner lives, then succeeds after owner drop even while the duplicate remains open. |
+| Failed recovery with passive duplicate | Missing-header recovery releases only its acquired lock, and an independently opened successor can lock the file. |
+| Actual Unix fork-copy drop | The child exits after dropping its copied guard; the parent observes that exact child and verifies its own lock remains held until parent drop. |
+| Broader supervisor regression | Existing handoff and full supervisor cases run on the recorded candidate with terminal receipts. |
+
+The fork fixture retains its fixed two-second observation/cleanup window. If that
+window expires, missing terminal observation remains failed/unknown; the fixture's
+deadline checks can prevent further cleanup attempts, so a clean child exit must
+not be inferred. The source transplant does not change runtime process deadlines,
+Root handoff, signed admission, R4/R5 app-server behavior or production defaults.
+
+Native RED/GREEN and full-suite results are recorded separately under their actual
+execution commit/tree, command, terminal status and raw artifacts. This source
+addendum does not assert an execution result, transfer historical execution evidence
+or change
+production implementation, product execution, activation or release claims.
+
+The sourceReviewAddendum reviewedPostimages entries retain the bytes inspected
+during the pre-format review and its historical integration base. They are not
+final candidate or execution hashes; current source-object observations and
+execution receipts are bound separately.

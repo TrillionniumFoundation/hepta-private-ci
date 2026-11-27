@@ -1,0 +1,91 @@
+{
+  "authority": "DENY_ALL_HOLD_NO_GO",
+  "budgets": {
+    "max_new_tokens": 8,
+    "memory_max_bytes": 4294967296,
+    "planned_generations": 624,
+    "runtime_wall_seconds": 900,
+    "threads": 4,
+    "tuning_budget": "exactly2 base wrappers oncal16; zero model/threshold/hyperparameter changes"
+  },
+  "calibration": {
+    "format_adequacy": "selected valid >=14/16; no threshold/label inversion",
+    "max_wrapper_candidates": 2,
+    "model": "base only",
+    "n": 16,
+    "rule": "largest valid-count, then largest correct-count, then original_chat fixed tie priority",
+    "wrappers": [
+      "original_chat",
+      "explicit_binary_chat"
+    ]
+  },
+  "conditions": "base and original8 V2 adapters only",
+  "contrasts": "all8 adapter-minus-base and4 bursty-minus-interleaved differences; descriptive operator diagnostics, no winner/adoption or confirmatory inference",
+  "custody": "operator-generated, visible-to-investigator development tasks; no external curator or authenticated independent Owner",
+  "decision": "HOLD_NO_GO",
+  "failure_policy": "retain partial journals and any zero-inference setup failure; uncertain durable job reconciled with same idempotency key, never silently rerun",
+  "independent_future_B": false,
+  "input_sha256": {
+    "PROSPECTIVE_DEVEL_DATA.json": "be79c90026289e0dcfe88617382b64e69fe172bceecf896160888de38292f327",
+    "PROSPECTIVE_EXPOSURE_REGISTRY.json": "084ec54efe9b35f865fcb0aebdc1b98d4b056c35a1d708ed4543177b3af1384b",
+    "freegen_contract.py": "daf7e381992bb7fd131f67aaa09eb21433a1804e423deccacd87edf342a2da5b",
+    "native_lora_ood_probe.py": "b9f61e8133f67af2d126c3730588c1386efcfb2788259f618e092081c2454af8",
+    "real_cpu_clock_v2_RESULT.json": "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c"
+  },
+  "model_asset_witnesses": {
+    "config.json": {
+      "bytes": 861,
+      "sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a"
+    },
+    "generation_config.json": {
+      "bytes": 132,
+      "sha256": "87b916edaaab66b3899b9d0dd0752727dff6666686da0504d89ae0a6e055a013"
+    },
+    "merges.txt": {
+      "bytes": 466391,
+      "sha256": "0b54e8aa4e53d5383e2e4bc635a56b43f9647f7b13832d5d9ecd8f82dac4f510"
+    },
+    "model.safetensors": {
+      "bytes": 269060552,
+      "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+    },
+    "special_tokens_map.json": {
+      "bytes": 655,
+      "sha256": "2b7379f3ae813529281a5c602bc5a11c1d4e0a99107aaa597fe936c1e813ca52"
+    },
+    "tokenizer.json": {
+      "bytes": 2104556,
+      "sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c"
+    },
+    "tokenizer_config.json": {
+      "bytes": 3764,
+      "sha256": "4ec77d44f62efeb38d7e044a1db318f6a939438425312dfa333b8382dbad98df"
+    },
+    "vocab.json": {
+      "bytes": 800662,
+      "sha256": "82b84012e3add4d01d12ba14442026e49b8cbbaead1f79ecf3d919784f82dc79"
+    }
+  },
+  "new_training_updates": 0,
+  "old_development": {
+    "model": "base only",
+    "n": 16,
+    "use": "descriptive; never wrapper selection or task replacement"
+  },
+  "original_training_sha256": "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c",
+  "primary_metric": "correct/32 for every condition and split, invalid outputs counted incorrect",
+  "primary_splits": {
+    "context_worlds": 32,
+    "retention": 32
+  },
+  "retention_competency_gate": "base correct>=24/32 and valid>=28/32; otherwise uninformative descriptive panel",
+  "runtime": {
+    "peft": "0.18.0",
+    "python": "3.14.4",
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3"
+  },
+  "schema": "hpca-prospective-development-plan-v1",
+  "selection": "DENY_ALL",
+  "source_binding": "launcher verifies every execution source byte against immutable published GitHub commit; materialized source hashes retained, full Git tree not claimed"
+}

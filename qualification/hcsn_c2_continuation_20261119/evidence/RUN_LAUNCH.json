@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-c",
+      "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python /home/qian-qi/hepta-c2-continuation-20261119-d741/controller.py"
+    ],
+    "created_unix_ms": 1795070274137,
+    "cwd": null,
+    "env_keys": [
+      "CUDA_VISIBLE_DEVICES",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONNOUSERSITE"
+    ],
+    "executable": "/bin/sh",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1f286aa59-ffbe-b5c",
+    "idempotency_key": "hcsn-c2-independent-continuation-20261119-d741-001",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1f286aa59-ffbe-b5c",
+    "request_digest": "9ae6593d0451f697d0ee5982b5ed46c9e336410cb6845d450e1e10caae627f04",
+    "request_fingerprint": 11161706845084710000,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1f286aa59-ffbe-b5c"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1f286aa59-ffbe-b5c"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

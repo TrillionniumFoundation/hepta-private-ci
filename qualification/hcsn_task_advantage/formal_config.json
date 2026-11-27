@@ -1,0 +1,24 @@
+{
+  "experiment_id": "HCSN-TASK-ADVANTAGE-20261121-1d88-v1",
+  "data_dir": "/home/qian-qi/hcsn-adaptive-20261120-1d88/data/future_return-formal-v1",
+  "seeds": [11, 29, 47],
+  "train_limit": 64,
+  "partition_seed": 20261121,
+  "horizon": 4,
+  "event_cost": 0.01,
+  "readout_ridge": 0.001,
+  "critic_ridge": 0.01,
+  "device": "cpu",
+  "dtype": "float64",
+  "threads": 1,
+  "interop_threads": 1,
+  "flow": {
+    "bins": 4,
+    "stages": 2,
+    "content_size": 2,
+    "upper_mode": "reflecting",
+    "transport_precision": "float64"
+  },
+  "shared_budget": {"wall_seconds": 120.0, "development_queries": 1},
+  "budget": {"wall_seconds": 120.0, "development_queries": 9, "proposals": 9}
+}

@@ -1,0 +1,26 @@
+440:2e|   Compiling codex-hepta-governance v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/hepta-governance)
+441:08|   Compiling codex-git-attribution v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/git-attribution)
+442:0f|   Compiling codex-hepta-automation v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-automation)
+443:e2|   Compiling codex-hepta-cognitive-store v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-cognitive-store)
+444:76|   Compiling codex-hepta-intelligence v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-intelligence)
+445:39|   Compiling codex-hepta-bellman-operator v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-bellman-operator)
+446:82|   Compiling codex-hepta-learning-artifacts v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-learning-artifacts)
+447:27|error[E0659]: `assert_eq` is ambiguous
+448:98|   --> hepta-learning-artifacts/src/owner_service_readback_support_tests.rs:109:9
+449:19|    |
+450:21|109 |         assert_eq!(
+451:7b|    |         ^^^^^^^^^ ambiguous name
+452:19|    |
+453:f5|    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+454:1a|note: `assert_eq` could refer to the macro imported here
+461:a1|note: `assert_eq` could also refer to the macro defined here
+462:5f|   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+463:19|    |
+464:69|162 |     pub use super::v1::*;
+465:45|    |             ^^^^^^^^^
+466:c5|
+467:06|For more information about this error, try `rustc --explain E0659`.
+468:d3|error: could not compile `codex-hepta-learning-artifacts` (lib test) due to 1 previous error
+469:68|warning: build failed, waiting for other jobs to finish...
+470:f7|error: command `/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --package codex-hepta-intelligence-eval --package codex-hepta-learning-artifacts --package codex-hepta-neuron --lib --locked --offline` exited with code 101
+471:b0|error: recipe `test` failed on line 89 with exit code 101

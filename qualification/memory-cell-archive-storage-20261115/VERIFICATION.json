@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.archive-storage-verification.v1",
+  "source_commit": "a5ca2bae54d0bca65e72f1920f8157f44b5a4fb8",
+  "scope": "Three existing compressed evidence archives, stored as ordered original byte slices.",
+  "original_archive_bytes_changed": false,
+  "historical_evidence_json_changed": false,
+  "experiment_results_changed": false,
+  "model_or_native_jobs_started": false,
+  "blob_size_policy_limit_bytes": 512000,
+  "part_size_limit_bytes": 500000,
+  "archives": [
+    {
+      "archive": "qualification/memory-cell-mem12-native-recovered-20261112/continuation-02-recovery.tar.xz",
+      "parts_manifest": "qualification/memory-cell-mem12-native-recovered-20261112/continuation-02-recovery.tar.xz.parts.json",
+      "original_sha256": "d5f3ab431dcb4de41256f94bddf64e0bed0c2d9091ddb430b5cb4472d0045017",
+      "original_bytes": 596784,
+      "original_git_blob": "21682a78f1f47d94c8d94b3585cf1b719213e0d3",
+      "ordered_part_bytes": [
+        500000,
+        96784
+      ],
+      "ordered_part_sha256": [
+        "bace2fbd8e3f549f26773944697f64af08008ed5cd4e17e3c4efac901298b780",
+        "3b1ea8a04cfae3df432cb93e1be037e5804adf915f546f46a18c27e8aa3e88c4"
+      ],
+      "reconstructed_byte_identical": true,
+      "xz_integrity_valid": true,
+      "archive_verification": {
+        "lzma_integrity_valid": true,
+        "tar_member_count": 65,
+        "regular_file_count": 65,
+        "uncompressed_tar_bytes": 1382400,
+        "source_manifest_member_count": 65,
+        "source_manifest_all_member_hashes_match": true,
+        "source_manifest_name_set_exact": true
+      }
+    },
+    {
+      "archive": "qualification/memory-cell-mem14-preregistered-20261112/independent-audit-completed.tar.xz",
+      "parts_manifest": "qualification/memory-cell-mem14-preregistered-20261112/independent-audit-completed.tar.xz.parts.json",
+      "original_sha256": "f37b8560dc79e86bbd5351c17164d4b62ca8d6e2bb4a9398412701a6c6ad02c4",
+      "original_bytes": 803660,
+      "original_git_blob": "ba064b137347b32e985c694976e49831b82badda",
+      "ordered_part_bytes": [
+        500000,
+        303660
+      ],
+      "ordered_part_sha256": [
+        "4053bb88a91909d4fa49e89875271fc8d3da6e2b1e5d0143068ab4feb819ac74",
+        "fb47f8f85471ed3fbc3691cf1dda6952329b7fd7ea83537d5a39d3761e28f7a4"
+      ],
+      "reconstructed_byte_identical": true,
+      "xz_integrity_valid": true,
+      "archive_verification": {
+        "lzma_integrity_valid": true,
+        "tar_member_count": 21,
+        "regular_file_count": 21,
+        "uncompressed_tar_bytes": 2539520
+      }
+    },
+    {
+      "archive": "qualification/memory-cell-mem14-preregistered-20261112/run-original.tar.xz",
+      "parts_manifest": "qualification/memory-cell-mem14-preregistered-20261112/run-original.tar.xz.parts.json",
+      "original_sha256": "36c1526898eb7c117e013c0235cfa322fcc46790f984fa330302cbbf0be4821b",
+      "original_bytes": 597704,
+      "original_git_blob": "fec79d6417ab42685b24e609be2caf1b6791aba9",
+      "ordered_part_bytes": [
+        500000,
+        97704
+      ],
+      "ordered_part_sha256": [
+        "b482d04c44dbfeab5df226b84ab60a4ecaf0ec9d59131005462c1126c1a55d57",
+        "c7e091565a591871b0988738a71ddd8a461e528857e162d39c62760821350c4d"
+      ],
+      "reconstructed_byte_identical": true,
+      "xz_integrity_valid": true,
+      "archive_verification": {
+        "lzma_integrity_valid": true,
+        "tar_member_count": 5598,
+        "regular_file_count": 5598,
+        "uncompressed_tar_bytes": 24616960
+      }
+    }
+  ],
+  "reference_audit": {
+    "direct_runtime_or_test_code_consumers_found": false,
+    "retained_historical_references": [
+      "qualification/memory-cell-mem12-native-recovered-20261112/CONTINUATION_02_MANIFEST.json",
+      "qualification/memory-cell-mem12-native-recovered-20261112/EVIDENCE.json",
+      "qualification/memory-cell-mem12-native-recovered-20261112/SHA256SUMS",
+      "qualification/memory-cell-mem14-preregistered-20261112/EVIDENCE.json"
+    ],
+    "documentation_navigation_updated": [
+      "qualification/memory-cell-mem12-native-recovered-20261112/RESULTS.md",
+      "qualification/memory-cell-mem14-preregistered-20261112/RESULTS.md"
+    ]
+  },
+  "documented_restoration_checks": [
+    {
+      "archive": "qualification/memory-cell-mem12-native-recovered-20261112/continuation-02-recovery.tar.xz",
+      "readme_restoration_passed": true,
+      "manifest_commands_passed": true,
+      "existing_original_not_overwritten": true,
+      "byte_equality": true,
+      "xz_integrity": true,
+      "tar_members": 65
+    },
+    {
+      "archive": "qualification/memory-cell-mem14-preregistered-20261112/independent-audit-completed.tar.xz",
+      "readme_restoration_passed": true,
+      "manifest_commands_passed": true,
+      "existing_original_not_overwritten": true,
+      "byte_equality": true,
+      "xz_integrity": true,
+      "tar_members": 21
+    },
+    {
+      "archive": "qualification/memory-cell-mem14-preregistered-20261112/run-original.tar.xz",
+      "readme_restoration_passed": true,
+      "manifest_commands_passed": true,
+      "existing_original_not_overwritten": true,
+      "byte_equality": true,
+      "xz_integrity": true,
+      "tar_members": 5598
+    }
+  ],
+  "readme_existing_original_refused": true,
+  "archive_hash_declarations_changed": false,
+  "navigation_hash_bindings_updated": [
+    {
+      "path": "qualification/memory-cell-mem12-native-recovered-20261112/RESULTS.md",
+      "source_bytes": 8787,
+      "source_sha256": "2d8a474c830407a19b7b438ff1a09c4d8be70ea19f10f03a3cd5a87289df49f5",
+      "current_bytes": 9060,
+      "current_sha256": "522e39de67a9277a8f15ab8d8a9cbb1d3139af9490178458c98d82bff78bbede",
+      "change": "archive storage navigation only; experimental conclusions unchanged"
+    },
+    {
+      "path": "qualification/memory-cell-mem14-preregistered-20261112/RESULTS.md",
+      "source_bytes": 11217,
+      "source_sha256": "e4dc535aafd2f19f8b391167fab10c0d509d0d56c5da89aadea10350915797b0",
+      "current_bytes": 11641,
+      "current_sha256": "b141ef5d02d47864b112a3430110824f53b283f29618615ee50c9d63a4ec66f5",
+      "change": "archive storage navigation only; experimental conclusions unchanged"
+    }
+  ],
+  "existing_blob_policy_regression_tests": {
+    "command": "python3 -B -m unittest discover -s scripts/tests -p test_blob_size_policy.py",
+    "passed": 10,
+    "failed": 0
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "command": [
+    "uv",
+    "tool",
+    "run",
+    "--offline",
+    "--from",
+    "ruff==0.15.13",
+    "ruff",
+    "format",
+    "/workspace/scratch/c2d514464ab5/publication-round3/audit-source/verify_evidence.py"
+  ],
+  "version": "ruff 0.15.13",
+  "exit_code": 0,
+  "stdout": "1 file left unchanged\n",
+  "stderr": "",
+  "before": {
+    "bytes": 3996,
+    "sha256": "3ba6018f487110e198b3d1843f62a7001bb77c2a98e42da181355e6749ce68b9",
+    "git_blob": "b4b9e0ae5e882b546f57c642f7ebe80434cce3f9"
+  },
+  "after": {
+    "bytes": 3996,
+    "sha256": "3ba6018f487110e198b3d1843f62a7001bb77c2a98e42da181355e6749ce68b9",
+    "git_blob": "b4b9e0ae5e882b546f57c642f7ebe80434cce3f9"
+  },
+  "complete_ast_unchanged": true,
+  "scope": "Audit evidence verifier only; original history reconstruction script reused unchanged.",
+  "native_formatters_executed": false
+}

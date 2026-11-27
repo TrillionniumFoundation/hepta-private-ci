@@ -1,0 +1,47 @@
+{
+  "schema": "rrsnn-v4-final-delivery-manifest-1",
+  "scientific_report_commit": "c210500bd975a100c2723b83ac17891c397f4b0c",
+  "restored_source_snapshot": "fa46e1413cdf10402892bd6ca84bf4fbeeae9c9c",
+  "report_sha256": "c028fdf05d387af79598c6474a677f02e0062a7e152b3723fde9ce18072a48e6",
+  "archives": {
+    "core": {
+      "library_file_id": "libfile_ee2829448e808191baadc855491e0f81",
+      "sha256": "239e3ba9f786929135a505d001148df5cb82116d0422e8e483f9da37ca272792",
+      "bytes": 77386526,
+      "raw_files": 3086,
+      "raw_bytes": 91251786
+    },
+    "resources": {
+      "library_file_id": "libfile_c6a224f547c88191a196832e246fce5c",
+      "sha256": "3a993c1060e2e4ff7ec769513d99bc7773acb0ce0e3a97183d8c6e03d3105e82",
+      "bytes": 1500989,
+      "raw_files": 143,
+      "raw_bytes": 6784040
+    }
+  },
+  "restoration": {
+    "status": "passed",
+    "receipt_path": "report_audit/fresh_directory_restore.json",
+    "receipt_sha256": "66c7120d7842b72e96debd6f223489bf38f6a2686e91edfab44afa1bf6f572cf",
+    "git_files": 179,
+    "raw_files": 3229,
+    "metadata_files": 4,
+    "total_files": 3412,
+    "read_only_verification_commands_passed": 2,
+    "result_files_and_tree_objects_unchanged": true,
+    "same_environment": true,
+    "fresh_remote_download_performed": false,
+    "fresh_environment_retraining_performed": false,
+    "total_tree_objects": 3943
+  },
+  "candidate_disposition": "reject_current_frozen_candidate_for_promotion",
+  "all_declared_experimental_matrices_completed": true,
+  "all_blockers_closed": false,
+  "production_activation_allowed": false,
+  "independent_delivery_review": {
+    "path": "report_audit/independent_delivery_closeout_review.json",
+    "sha256": "2c189cf9c6877cc123b8cb7ef0f4a6c350ff095febb136a8846995b70f9fd913",
+    "remaining_blockers_within_delivery_review_scope": 0
+  },
+  "original_archive_coverage_gaps_closed": true
+}

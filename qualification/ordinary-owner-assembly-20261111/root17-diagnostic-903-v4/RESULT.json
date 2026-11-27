@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.original-root17-failure.v2",
+  "source": "903b6fbae86acff2db2ab0422b9852421d938032",
+  "tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f",
+  "status": "root-component-diagnostic-failed",
+  "actual_uid": 0,
+  "executed": 17,
+  "passed": 15,
+  "failed": 2,
+  "skipped": 0,
+  "retries": 0,
+  "started_at": "2026-11-12T01:12:15.508835+00:00",
+  "finished_at": "2026-11-12T01:12:50.843808+00:00",
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "source_clean_before_after": true,
+  "evidence": [
+    {
+      "name": "root.counts.json",
+      "blob": "567ce64cba4a66a7e4f8c9d9d2875f8dbe94c3c8",
+      "bytes": 98,
+      "sha256": "3aa7c5c63701c9c42c2ead17ac64a706c7646b96c6133cdc3c46a58fbeb39261"
+    },
+    {
+      "name": "root.execution.json",
+      "blob": "b5e89ca3bf9889569a9b4e34539234131b219152",
+      "bytes": 3968,
+      "sha256": "af4a92c731c3b961d7ccabc023cc75263c0a1a8beb2803046952d0313702dd7c"
+    },
+    {
+      "name": "root.junit.xml",
+      "blob": "4641d85d6d54c41c3b31621d545937b2985226f0",
+      "bytes": 9203,
+      "sha256": "9cfad38d30ffcc18759c9cc3c5ace21361c727312d178133f6aa4d68950f2274"
+    },
+    {
+      "name": "root.uid.json",
+      "blob": "266757e59e0faa35f7a0e7fbbe9b0f5d0287921e",
+      "bytes": 47,
+      "sha256": "36aad66676d9ef95e33be889a498b63c7cc042e436967c6a40562c1cf671f6f1"
+    },
+    {
+      "name": "root.junit.summary.json",
+      "blob": "c42647e5af87696cf76662dcd26e13dd61e0c80d",
+      "bytes": 3331,
+      "sha256": "d0fdf50e0de3928fdf6b0a58ed63fe7490a6dc57cfdf002b300f92820285b3fa"
+    },
+    {
+      "name": "final-source-identity.json",
+      "blob": "997a3bbeb0e1a2a0bf437c01d59dd806acb6aa33",
+      "bytes": 127,
+      "sha256": "72ddd20360227e181c9091ce7ec17ff919eb2efd9cfb6e8a1d066ac8b408b17e"
+    },
+    {
+      "name": "root.execution.json.957f373ac3e24b74af635da321147f65.log",
+      "blob": "390186ba594322aaa045c42c9aed16cb937d19cc",
+      "bytes": 46878,
+      "sha256": "009e76b5d35fe2aa4ce06c35218fbd8f33be329c7ac07a2a9cca2146bf4bc8a9"
+    }
+  ],
+  "first_observed_errors": {
+    "initial": "Original five-lane inputs connected; original Feature CURRENT publish returned Invalid(Unavailable).",
+    "publication": "Original inputs connected and Learning ready; connect original CURRENT purpose returned root writer observation unavailable or fenced.",
+    "parent": "Later PeerDenied can also report original owner process exit; it does not establish the first failure was peer identity."
+  },
+  "diagnosis": "Not uniquely established. Test-only failure observations are added without refresh, warmup, retry, extra clock sampling, altered window or weakened checks.",
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_ordinary_consumer": false,
+  "cold_process_restart": false,
+  "full_qualification": false
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "archived_utc": "2026-11-06T08:09:04.163334+00:00",
+  "evidence_date_utc": "2026-11-06",
+  "scope": "Dated read-only audit snapshot; not a fresh statement of current campaign state. This archival task only copied local evidence.",
+  "last_campaign_observed_utc": "2026-11-06T07:44:50.884304+00:00",
+  "last_campaign_observation": {
+    "status": "waiting_for_pinned_runtime",
+    "completed_cuda_runs": 0,
+    "requested_cuda_runs": 170
+  },
+  "second_cuda_campaign_started": false,
+  "installer_started_by_this_review_or_archive": false,
+  "cuda_or_install_retries": 0,
+  "remote_access_during_archival": false,
+  "installer_ownership": "The existing offline runtime installer is being repaired by another conversation; this archive neither started that installer nor claims recovery completion.",
+  "cargo_cache_evidence": "Top-level exact-version Cargo-cache import receipts and lock checksum list are retained. Reproducible third-party crate/base64 transfer payloads are inventoried only, remain at their original scratch paths, and are omitted from Git.",
+  "credential_screen": "No common private-key, provider-token, Authorization bearer or named-secret-value patterns were found in copied evidence; tensor ZIP contents were also inspected without execution."
+}

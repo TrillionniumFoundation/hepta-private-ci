@@ -1,0 +1,217 @@
+{
+  "schema": "hepta.p0.current-head-ci-readback.v1",
+  "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+  "api_snapshot_captured_at": "2026-11-11T03:08:32.473Z",
+  "analysis_recorded_at": "2026-11-11T03:09:55.507063+00:00",
+  "workflows": [
+    {
+      "run_id": 42942991449,
+      "name": "v8-canary",
+      "status": "completed",
+      "conclusion": "success",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 130268989068,
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 130270062963,
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 130270064405,
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "run_id": 42942991204,
+      "name": "Production HOS2 owner proposal",
+      "status": "completed",
+      "conclusion": "skipped",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 130268991127,
+          "name": "owner-candidate",
+          "status": "completed",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "run_id": 42942991404,
+      "name": "blocking-ci",
+      "status": "pending",
+      "conclusion": null,
+      "attempt": 1,
+      "jobs": []
+    },
+    {
+      "run_id": 42942991263,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "status": "completed",
+      "conclusion": "success",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 130268988496,
+          "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run_id": 42942991296,
+      "name": "Hepta Cell research stage evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 130268988245,
+          "name": "evidence-gate",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run_id": 42942991572,
+      "name": "Hepta architecture convergence",
+      "status": "queued",
+      "conclusion": null,
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 130283127854,
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 130283128229,
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null
+        }
+      ]
+    },
+    {
+      "run_id": 42942991273,
+      "name": "Hepta Cell local update contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 130268988435,
+          "name": "native-local-update",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run_id": 42942991327,
+      "name": "Hepta shared Cell framework",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 130268988024,
+          "name": "owners",
+          "status": "completed",
+          "conclusion": "failure"
+        }
+      ]
+    },
+    {
+      "run_id": 42942991526,
+      "name": "Hepta daemon learning native",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 130268988425,
+          "name": "native",
+          "status": "completed",
+          "conclusion": "failure"
+        }
+      ]
+    }
+  ],
+  "shared_failure": {
+    "run_id": 42942991327,
+    "job_id": 130268988024,
+    "actual_source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+    "error": "E0659: assert_eq is ambiguous",
+    "compiler_error_count": 22,
+    "first_source_location": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs:31:9",
+    "glob_import_location": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs:10:5",
+    "same_root_cause_as_already_reported_daemon": true,
+    "additional_distinct_compiler_error_found": false,
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib"
+    ],
+    "returncode": 101,
+    "elapsed_seconds": 225.936693408,
+    "actual_native_cases_executed": 0,
+    "training_stage_cases_executed": 0,
+    "junit_status": "rejected: native compilation produced no junit.xml",
+    "helper_post_build_verify_only_succeeded": true,
+    "failure_of_fresh_junit_step_is_consequential_not_a_second_native_test_failure": true,
+    "python_execution_gate_actual_passes": 15,
+    "source_before_after_clean": true,
+    "full_decoded_job_log_bytes": 149223,
+    "full_decoded_job_log_sha256": "dac9884b26314dde8a1da04b91593540fbb363ff62393e9f8dbcb04627b1abb4",
+    "raw_test_command_log": {
+      "name": "tests.json.ba8d5ed0ac354ed284c8907295790e0f.log",
+      "bytes": 50511,
+      "sha256": "b79beee3ff67b2fd76edeaf541c0bd4bfd5665c28bbc23c954e3ce3b3e9b7e9e"
+    },
+    "original_artifact": {
+      "id": 13823319099,
+      "bytes": 99915,
+      "sha256": "42806e3791070372d115ef796ac210f2180c05a7c879d0fc4e8fa2da9c22eeee",
+      "member_count": 13,
+      "github_digest_and_crc_verified": true
+    }
+  },
+  "scope_limits": [
+    "No old-source CI rerun or local native build/test was started.",
+    "The daemon/Windows terminal evidence was not downloaded again; this snapshot reuses their independently verified terminal job metadata.",
+    "Architecture has two queued jobs and blocking has no created jobs in this snapshot; neither is a pass or an observed new failure.",
+    "Research/local-update success is run/job status only in this snapshot, not a new independent audit of their test artifacts.",
+    "V8 success is metadata only: both build jobs are skipped. HOS2 owner-candidate is skipped.",
+    "Shared native compilation executes zero tests; the 15 Python execution-gate tests are separate and are not the new six Training stage cases.",
+    "No scientific adoption claim, independent task sample count, or transfer to the forthcoming corrected source is made."
+  ],
+  "unmeasured_costs": {
+    "cpu_seconds": null,
+    "peak_rss_bytes": null,
+    "monetary_cost": null
+  },
+  "new_native_or_ci_jobs_started": 0
+}

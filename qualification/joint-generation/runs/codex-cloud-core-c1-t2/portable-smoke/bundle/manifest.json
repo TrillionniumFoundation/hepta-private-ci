@@ -1,0 +1,33 @@
+{
+  "behavior_policy": "independent-categorical-v1",
+  "controller_sha256": null,
+  "input_profile": "rgb8-instruction10-v1",
+  "mode": "full",
+  "model_digest": "3bc3d59f6ff87cbd334dd4771aef42713708e1d660ac9e466d8aa74664cd2484",
+  "model_sha256": "df97426079823fd12fe469f537640eca303c364449aba2d791f04274c7db7531",
+  "native_abi": {
+    "machine": "x86_64",
+    "system": "Linux"
+  },
+  "native_sha256": "ca84652442d6258ab67f2d553fb55742e0cc4c08222cb5e0fad02504c7ad32a0",
+  "provenance": {
+    "calibration_inputs_sha256": null,
+    "controller_calibration": null,
+    "controller_calibration_sha256": null,
+    "plan_sha256": "94d84d8eb1af73c4c766604b3ddbcac0be2d9a2b1638b2afa10acf8216c2762b",
+    "selection_ready": true,
+    "selection_sha256": "8141ed76433b8663f51f4c3adb39ef0313b05d35e3804458b293185941f96881",
+    "source_commit": "cff9562102a21eb2a852daa61810e2e0b576ed9d"
+  },
+  "runtime": {
+    "compute_price": 0.02,
+    "cost_ratio": null,
+    "decision_price": null,
+    "inference_cap_full_equivalents": 2.0,
+    "rho": 1.5,
+    "runtime_batch_size": 64
+  },
+  "schema": "hepta.joint-generation.native-bundle.v2",
+  "seed": 11,
+  "system": "ndu"
+}

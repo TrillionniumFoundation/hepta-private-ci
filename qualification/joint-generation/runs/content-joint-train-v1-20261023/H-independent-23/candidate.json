@@ -1,0 +1,221 @@
+{
+  "checkpoints": [
+    {
+      "CPU": 0.05942793299999849,
+      "units": 11699400,
+      "update": 1,
+      "values": {
+        "KEEP": {
+          "greedy": {
+            "both_wrong": 0.0078125,
+            "code_disagreement": 0.0078125,
+            "image_correct": 0.984375,
+            "image_only_correct": 0.0,
+            "joint_success": 0.984375,
+            "pixel_mse": 0.000839114646155123,
+            "semantic_disagreement": 0.0078125,
+            "text_correct": 0.9921875,
+            "text_only_correct": 0.0078125,
+            "wrong_agreement": 0.0078125
+          },
+          "means": {
+            "both_wrong": 0.023276425334005032,
+            "ce": 0.7281081738462272,
+            "code_disagreement": 0.16178211889302618,
+            "image_correct": 0.9006061803305798,
+            "image_only_correct": 0.07534168097468291,
+            "joint_success": 0.8252644993558967,
+            "pixel_mse": 0.007702846726793371,
+            "raw_reward": 0.82847089171006,
+            "semantic_disagreement": 0.16178211889302618,
+            "text_correct": 0.901381893691312,
+            "text_only_correct": 0.07611739433541523,
+            "wrong_agreement": 0.012953381751077011,
+            "wrong_disagreement": 0.01032304358292802
+          }
+        },
+        "log2": {
+          "greedy": {
+            "both_wrong": 0.0078125,
+            "code_disagreement": 0.0078125,
+            "image_correct": 0.984375,
+            "image_only_correct": 0.0,
+            "joint_success": 0.984375,
+            "pixel_mse": 0.000839114646155123,
+            "semantic_disagreement": 0.0078125,
+            "text_correct": 0.9921875,
+            "text_only_correct": 0.0078125,
+            "wrong_agreement": 0.0078125
+          },
+          "means": {
+            "both_wrong": 0.025346995194645755,
+            "ce": 0.955777492800445,
+            "code_disagreement": 0.004744450694315731,
+            "image_correct": 0.9726542285278987,
+            "image_only_correct": 0.0012138671153776757,
+            "joint_success": 0.9714403614125209,
+            "pixel_mse": 0.0017053449189852713,
+            "raw_reward": 0.9729174225785142,
+            "semantic_disagreement": 0.004744450694315731,
+            "text_correct": 0.9734391376899766,
+            "text_only_correct": 0.0019987762774556017,
+            "wrong_agreement": 0.02381518789316331,
+            "wrong_disagreement": 0.0015318073014824439
+          }
+        }
+      }
+    },
+    {
+      "CPU": 0.26064575499999876,
+      "units": 308510760,
+      "update": 128,
+      "values": {
+        "KEEP": {
+          "greedy": {
+            "both_wrong": 0.0078125,
+            "code_disagreement": 0.0,
+            "image_correct": 0.9921875,
+            "image_only_correct": 0.0,
+            "joint_success": 0.9921875,
+            "pixel_mse": 0.00020542121652061953,
+            "semantic_disagreement": 0.0,
+            "text_correct": 0.9921875,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.0078125
+          },
+          "means": {
+            "both_wrong": 0.00951357101745825,
+            "ce": 0.9220447248046653,
+            "code_disagreement": 0.04213705372083043,
+            "image_correct": 0.9704253783027763,
+            "image_only_correct": 0.02035396491631885,
+            "joint_success": 0.9500714133864574,
+            "pixel_mse": 0.0018283924801689852,
+            "raw_reward": 0.9517094509322787,
+            "semantic_disagreement": 0.04213705372083043,
+            "text_correct": 0.9701324640662228,
+            "text_only_correct": 0.02006105067976545,
+            "wrong_agreement": 0.00779153289271211,
+            "wrong_disagreement": 0.0017220381247461372
+          }
+        },
+        "log2": {
+          "greedy": {
+            "both_wrong": 0.0078125,
+            "code_disagreement": 0.0,
+            "image_correct": 0.9921875,
+            "image_only_correct": 0.0,
+            "joint_success": 0.9921875,
+            "pixel_mse": 0.00020542121652061953,
+            "semantic_disagreement": 0.0,
+            "text_correct": 0.9921875,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.0078125
+          },
+          "means": {
+            "both_wrong": 0.011039038663735661,
+            "ce": 0.9864644463650045,
+            "code_disagreement": 0.00017076767506783762,
+            "image_correct": 0.9889609613362642,
+            "image_only_correct": 0.0,
+            "joint_success": 0.9889609613362642,
+            "pixel_mse": 0.00041714631358208984,
+            "raw_reward": 0.9898382379909312,
+            "semantic_disagreement": 0.00017076767506783762,
+            "text_correct": 0.9889609613362642,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.010868270988667834,
+            "wrong_disagreement": 0.00017076767506782732
+          }
+        }
+      }
+    },
+    {
+      "CPU": 0.43193117899999933,
+      "units": 607583976,
+      "update": 256,
+      "values": {
+        "KEEP": {
+          "greedy": {
+            "both_wrong": 0.0078125,
+            "code_disagreement": 0.01171875,
+            "image_correct": 0.9921875,
+            "image_only_correct": 0.01171875,
+            "joint_success": 0.98046875,
+            "pixel_mse": 0.00020542121652061953,
+            "semantic_disagreement": 0.01171875,
+            "text_correct": 0.98046875,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.0078125
+          },
+          "means": {
+            "both_wrong": 0.011332753826429988,
+            "ce": 0.9502413098450564,
+            "code_disagreement": 0.0245042350425195,
+            "image_correct": 0.9778927402275581,
+            "image_only_correct": 0.013276015585568141,
+            "joint_success": 0.96461672464199,
+            "pixel_mse": 0.0010297002912643212,
+            "raw_reward": 0.9663818462558773,
+            "semantic_disagreement": 0.0245042350425195,
+            "text_correct": 0.9753912305880018,
+            "text_only_correct": 0.010774505946011932,
+            "wrong_agreement": 0.01087904031549055,
+            "wrong_disagreement": 0.0004537135109394396
+          }
+        },
+        "log2": {
+          "greedy": {
+            "both_wrong": 0.0078125,
+            "code_disagreement": 0.0078125,
+            "image_correct": 0.9921875,
+            "image_only_correct": 0.0078125,
+            "joint_success": 0.984375,
+            "pixel_mse": 0.00020542121652061953,
+            "semantic_disagreement": 0.0078125,
+            "text_correct": 0.984375,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.0078125
+          },
+          "means": {
+            "both_wrong": 0.011587331170935092,
+            "ce": 0.9833994001111133,
+            "code_disagreement": 0.003925835790249875,
+            "image_correct": 0.9867727352177003,
+            "image_only_correct": 0.002245852835716101,
+            "joint_success": 0.9845268823819842,
+            "pixel_mse": 0.00037827010793423885,
+            "raw_reward": 0.9857145795081488,
+            "semantic_disagreement": 0.003925835790249875,
+            "text_correct": 0.9861668159933488,
+            "text_only_correct": 0.001639933611364679,
+            "wrong_agreement": 0.011547281827765987,
+            "wrong_disagreement": 4.0049343169104857e-05
+          }
+        }
+      }
+    }
+  ],
+  "clocks": {
+    "bias": 399,
+    "encoder": 399,
+    "image": 399,
+    "image_bias": 399,
+    "text": 399,
+    "text_bias": 399
+  },
+  "digest": "d0a0728e9797313377c3f1983fe545e88afe934f45f6a527cdfe3f8d71574cf6",
+  "family": "H",
+  "initialization_CPU": 0.0007219450000004457,
+  "initialization_ledger_end": 7000729231,
+  "initialization_units": 7288,
+  "ordinal": 14,
+  "per_step_kernel_units": 2248286,
+  "recipe": "independent",
+  "rng_seed": 10023,
+  "seed": 23,
+  "stop": "slot_CPU_preflight",
+  "training_CPU": 0.5742250649999985,
+  "training_units_including_checkpoints": 931175816,
+  "updates": 399
+}

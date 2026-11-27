@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.ordered-artifact-parts.v1",
+  "archive_name": "run-original.tar.xz",
+  "archive_bytes": 597704,
+  "archive_sha256": "36c1526898eb7c117e013c0235cfa322fcc46790f984fa330302cbbf0be4821b",
+  "original_repository_path": "qualification/memory-cell-mem14-preregistered-20261112/run-original.tar.xz",
+  "original_git_commit": "a5ca2bae54d0bca65e72f1920f8157f44b5a4fb8",
+  "original_git_blob": "fec79d6417ab42685b24e609be2caf1b6791aba9",
+  "max_part_bytes": 500000,
+  "ordered_parts": [
+    {
+      "path": "run-original.tar.xz.part000",
+      "offset": 0,
+      "bytes": 500000,
+      "sha256": "b482d04c44dbfeab5df226b84ab60a4ecaf0ec9d59131005462c1126c1a55d57"
+    },
+    {
+      "path": "run-original.tar.xz.part001",
+      "offset": 500000,
+      "bytes": 97704,
+      "sha256": "c7e091565a591871b0988738a71ddd8a461e528857e162d39c62760821350c4d"
+    }
+  ],
+  "restoration": {
+    "working_directory": "qualification/memory-cell-mem14-preregistered-20261112",
+    "command": "( set -C; cat run-original.tar.xz.part000 run-original.tar.xz.part001 > run-original.tar.xz )",
+    "verification_command": "printf '%s  %s\\n' '36c1526898eb7c117e013c0235cfa322fcc46790f984fa330302cbbf0be4821b' 'run-original.tar.xz' | sha256sum -c -",
+    "no_overwrite": true,
+    "instructions": "../memory-cell-archive-storage-20261115/README.md"
+  },
+  "storage_only": true,
+  "compression_bytes_unchanged": true
+}

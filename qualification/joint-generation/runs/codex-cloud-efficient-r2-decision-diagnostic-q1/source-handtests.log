@@ -1,0 +1,5 @@
+Command: PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 python -W error -m unittest independent.test_diagnose_decisions -v
+CWD: /workspace/hepta-private-ci/qualification/joint-generation
+Result: exit 0; 7 tests passed in 0.057 s.
+Coverage: MSE and weighted normal equations; held labels excluded from fit; physical-source folds and shuffle stability; regret metrics/concentration; budget rejection; invalid/zero-weight inputs; NativeGenerator autospec keyword constructor and low/full dispatch.
+No dataset construction, actual native dispatch, experiment execution, START marker, validation/test access, training or compilation.

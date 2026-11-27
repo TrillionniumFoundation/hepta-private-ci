@@ -1,0 +1,62 @@
+{
+  "schema": "notes-buffered-read-delivery-v1",
+  "code_commit": "a4f85fef87942a414a26051e8dd403f6aeea8319",
+  "code_tree": "3620ec70533bec5e39396321dfeb59ec8461b83b",
+  "base": "f49128e503b24bb52ccdb32a860939e6392c8e08",
+  "archive": {
+    "path": "qualification/notes-darwin-buffered-read-20261108/evidence.zip",
+    "bytes": 101188,
+    "sha256": "21c511ebe9bd1f825b80be3bc687f353aa0a94e8972c8b49dd21dc719a6c590e",
+    "members": 48
+  },
+  "tests": {
+    "mac_original": {
+      "run": 9,
+      "passed": 6,
+      "failed": 3,
+      "filtered": 310,
+      "failing_tests_each_retried_once": true,
+      "actual_test_exit": 100
+    },
+    "mac_fixed": {
+      "run": 9,
+      "passed": 9,
+      "failed": 0,
+      "filtered": 310,
+      "retries": 0,
+      "actual_test_exit": 0
+    },
+    "linux_fixed": {
+      "run": 9,
+      "passed": 9,
+      "failed": 0,
+      "filtered": 742,
+      "retries": 0,
+      "actual_test_exit": 0
+    }
+  },
+  "helper_diagnostic": {
+    "original_failed": 2,
+    "fixed_passed": 2,
+    "scope": "Extracted functions only; distinct from the official crate tests"
+  },
+  "source_hashes": {
+    "codex-rs/hepta-agentd/src/notes_channel.rs": "ae0a99589ff068a01bef264f5d996ccffc0589c7860749a8e2b38b2016c533c0",
+    "codex-rs/hepta-agentd/src/notes_channel_tests.rs": "705bfa0690293ea66cbd05acacbf882658adfd4ee7c40c28b23366dde57d6ec7",
+    "codex-rs/Cargo.lock": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c"
+  },
+  "total_deadline_seconds": 2,
+  "format": {
+    "command": "just fmt",
+    "exit_code": 0,
+    "source_bytes_unchanged": true,
+    "tests_rerun_afterward": false
+  },
+  "scope": "Unit transport behavior over native UnixStream pairs; not application delivery, scientific gain or complete workspace validation",
+  "native_jobs": {
+    "mac_official_red": "1a1bc878850-138b0-312",
+    "mac_official_green": "1a1bc8e7cbb-138b0-33a",
+    "linux_official_green": "1a1bc8cf03b-138b0-32e",
+    "mac_helper_diagnostic": "1a1bc8bde84-138b0-327"
+  }
+}

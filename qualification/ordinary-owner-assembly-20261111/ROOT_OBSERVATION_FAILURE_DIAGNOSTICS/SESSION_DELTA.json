@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "purpose": "test-only first-cause observation; no acceptance or production repair",
+  "base_head": "903b6fbae86acff2db2ab0422b9852421d938032",
+  "base_tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f",
+  "files": [
+    {
+      "schema_version": 1,
+      "base_head": "903b6fbae86acff2db2ab0422b9852421d938032",
+      "base_tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "before": {
+        "git_blob": "c1af9340a0044b1159d65f5e631d2e918a14f544",
+        "bytes": 16197,
+        "sha256": "4ddfe5b8a630433726fd530060608c52f6906cf25b6479a646449a1b1bac495e"
+      },
+      "after": {
+        "git_blob": "c10e077d4dc36f1d6cebf829f24b68164def548a",
+        "bytes": 19872,
+        "sha256": "539c7677c4bfeb2e97d7257692d3565ff0b7c2a00ace34e6461b0f7b43ae8cf0"
+      },
+      "operations": [
+        {
+          "label": "current lifetime and existing boottime failure",
+          "old_text": "        if check_lifetime(self.root.get_ref()).is_err()\n            || boottime_ns().map_or(true, |now| now >= self.end_boottime_ns)",
+          "new_text": "        if check_lifetime(self.root.get_ref())\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=current-pre-lifetime error={_error:?}\");\n            })\n            .is_err()\n            || boottime_ns()\n                .inspect_err(|_error| {\n                    #[cfg(test)]\n                    eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=current-boottime error={_error:?}\");\n                })\n                .inspect(|_now| {\n                    #[cfg(test)]\n                    if *_now >= self.end_boottime_ns {\n                        eprintln!(\n                            \"ROOT_SESSION_DIAGNOSTIC phase=current-session-expired now_ns={} end_ns={}\",\n                            _now, self.end_boottime_ns,\n                        );\n                    }\n                })\n                .map_or(true, |now| now >= self.end_boottime_ns)"
+        },
+        {
+          "label": "current cache and proof failure",
+          "old_text": "        let (observation, now) = self.cache.current()?;\n        if self.proof.matches_observation(&observation).is_err()",
+          "new_text": "        let (observation, now) = self.cache.current().inspect_err(|_error| {\n            #[cfg(test)]\n            eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=current-cache error={_error:?}\");\n        })?;\n        if self\n            .proof\n            .matches_observation(&observation)\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=current-proof error={_error:?}\");\n            })\n            .is_err()"
+        },
+        {
+          "label": "current original final failure",
+          "old_text": "            || check_lifetime(self.root.get_ref()).is_err()\n        {\n            self.cache.fence();\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        Ok((observation, now))",
+          "new_text": "            || check_lifetime(self.root.get_ref())\n                .inspect_err(|_error| {\n                    #[cfg(test)]\n                    eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=current-post-lifetime error={_error:?}\");\n                })\n                .is_err()\n        {\n            #[cfg(test)]\n            eprintln!(\n                \"ROOT_SESSION_DIAGNOSTIC phase=current-final-check now_unix_ms={} lease_expiry_seconds={}\",\n                now, self.proof.authority().lease_expires_at_unix_seconds,\n            );\n            self.cache.fence();\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        Ok((observation, now))"
+        },
+        {
+          "label": "background original refresh error",
+          "old_text": "                    if refresh(&background, &stream, &background_file)\n                        .await\n                        .is_err()",
+          "new_text": "                    if refresh(&background, &stream, &background_file)\n                        .await\n                        .inspect_err(|_error| {\n                            #[cfg(test)]\n                            eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}\");\n                        })\n                        .is_err()"
+        },
+        {
+          "label": "original session drop",
+          "old_text": "    fn drop(&mut self) {\n        self.live.cache.fence();\n        self.worker.abort();",
+          "new_text": "    fn drop(&mut self) {\n        #[cfg(test)]\n        eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=session-drop\");\n        self.live.cache.fence();\n        self.worker.abort();"
+        },
+        {
+          "label": "original worker drop",
+          "old_text": "impl Drop for FenceOnDrop {\n    fn drop(&mut self) {\n        self.0.cache.fence();",
+          "new_text": "impl Drop for FenceOnDrop {\n    fn drop(&mut self) {\n        #[cfg(test)]\n        eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=worker-drop\");\n        self.0.cache.fence();"
+        },
+        {
+          "label": "refresh serial and existing start sample",
+          "old_text": "    let _serial = live\n        .serial\n        .acquire()\n        .await\n        .map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n    let started = boottime_ns()?;",
+          "new_text": "    let _serial = live\n        .serial\n        .acquire()\n        .await\n        .map_err(|_| AgentdRootAuthorityError::Unavailable)\n        .inspect_err(|_error| {\n            #[cfg(test)]\n            eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=refresh-serial error={_error:?}\");\n        })?;\n    let started = boottime_ns().inspect_err(|_error| {\n        #[cfg(test)]\n        eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=refresh-start-boottime error={_error:?}\");\n    })?;"
+        },
+        {
+          "label": "refresh original stream end sample and proof",
+          "old_text": "            operation: HOST_AUTHORITY_OBSERVATION_V2.into(),\n        })\n        .await?;\n    let ended = boottime_ns()?;\n    live.proof.matches_observation(&observation)?;",
+          "new_text": "            operation: HOST_AUTHORITY_OBSERVATION_V2.into(),\n        })\n        .await\n        .inspect_err(|_error| {\n            #[cfg(test)]\n            eprintln!(\n                \"ROOT_SESSION_DIAGNOSTIC phase=refresh-stream started_ns={started} error={_error:?}\"\n            );\n        })?;\n    let ended = boottime_ns().inspect_err(|_error| {\n        #[cfg(test)]\n        eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=refresh-end-boottime error={_error:?}\");\n    })?;\n    live.proof.matches_observation(&observation).inspect_err(|_error| {\n        #[cfg(test)]\n        eprintln!(\n            \"ROOT_SESSION_DIAGNOSTIC phase=refresh-proof started_ns={started} ended_ns={ended} error={_error:?}\"\n        );\n    })?;"
+        },
+        {
+          "label": "refresh original accept failure",
+          "old_text": "    live.cache.accept(observation, started, ended)?;",
+          "new_text": "    live.cache.accept(observation, started, ended).inspect_err(|_error| {\n        #[cfg(test)]\n        eprintln!(\n            \"ROOT_SESSION_DIAGNOSTIC phase=refresh-accept started_ns={started} ended_ns={ended} error={_error:?}\"\n        );\n    })?;"
+        },
+        {
+          "label": "refresh original consumer sync failure",
+          "old_text": "        let consumers = live\n            .consumers\n            .lock()\n            .map_err(|_| AgentdRootAuthorityError::Unavailable)?\n            .clone();\n        synchronize_consumers(consumers, head, started, writer_file).await?;",
+          "new_text": "        let consumers = live\n            .consumers\n            .lock()\n            .map_err(|_| AgentdRootAuthorityError::Unavailable)\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=refresh-consumers-lock error={_error:?}\");\n            })?\n            .clone();\n        synchronize_consumers(consumers, head, started, writer_file)\n            .await\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_SESSION_DIAGNOSTIC phase=refresh-consumer-sync started_ns={started} ended_ns={ended} error={_error:?}\"\n                );\n            })?;"
+        },
+        {
+          "label": "refresh final current error",
+          "old_text": "    live.current()?;\n    Ok(())\n}\nasync fn synchronize_consumers(",
+          "new_text": "    live.current().inspect_err(|_error| {\n        #[cfg(test)]\n        eprintln!(\n            \"ROOT_SESSION_DIAGNOSTIC phase=refresh-final-current started_ns={started} ended_ns={ended} error={_error:?}\"\n        );\n    })?;\n    Ok(())\n}\nasync fn synchronize_consumers("
+        }
+      ]
+    }
+  ],
+  "projection": {
+    "removed_inspect": 16,
+    "removed_test_logs": 3,
+    "original_tokens_ignoring_whitespace_equal": true,
+    "no_original_control_call_removed": true,
+    "not_rust_compile": true
+  },
+  "constraints": {
+    "original_checks": true,
+    "original_error_variants": true,
+    "original_fence": true,
+    "original_short_circuit_order": true,
+    "original_refresh_request_count": true,
+    "original_boottime_call_count": true,
+    "no_extra_state_reads": true,
+    "no_ttl_change": true,
+    "no_credential_or_identifier_logging": true,
+    "no_native_or_cargo_run": true
+  }
+}

@@ -1,0 +1,72 @@
+name: Hepta merged candidate native Windows audit
+
+on:
+  push:
+    branches:
+      - audit/windows-merged-native-20261116
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-merged-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows-packages:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      EXPECTED_HEAD: ${{ github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - name: Preserve committed source bytes and long paths
+        shell: pwsh
+        run: |
+          git config --global core.autocrlf false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git config --global core.longpaths true
+          exit $LASTEXITCODE
+      - name: Check out the exact candidate and source parent
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Freeze the exact product source
+        shell: pwsh
+        run: |
+          python -B scripts/hepta-windows-merged-audit.py preflight
+          exit $LASTEXITCODE
+      - name: Install the committed Rust release
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal
+          exit $LASTEXITCODE
+      - name: Install the standard test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run both complete Windows packages
+        shell: pwsh
+        run: |
+          python -B scripts/hepta-windows-merged-audit.py run
+          exit $LASTEXITCODE
+      - name: Verify unchanged product source
+        if: always()
+        shell: pwsh
+        run: |
+          python -B scripts/hepta-windows-merged-audit.py postflight
+          exit $LASTEXITCODE
+      - name: Preserve native results and complete command logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-windows-merged-audit-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-windows-merged-audit
+          if-no-files-found: error

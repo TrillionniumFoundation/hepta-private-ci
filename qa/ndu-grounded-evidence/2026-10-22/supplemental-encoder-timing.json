@@ -1,0 +1,587 @@
+{
+  "schema": "hepta.supplemental-encoder-timing.v1",
+  "status": "complete",
+  "started_utc": "2026-10-22T13:21:33.692242+00:00",
+  "scope": "Post-primary-test encoder-only repeatability probe; one resident worker and four torch threads.",
+  "limitations": [
+    "Different worker/concurrency conditions from the primary comparison.",
+    "No host telemetry establishes a specific cause of primary timing outliers.",
+    "No primary results are replaced, excluded, rescored, or retuned by this probe."
+  ],
+  "protocol": {
+    "rounds": 3,
+    "task_order": [
+      "ggv1_e01f69ec9958977c743198f3",
+      "ggv1_42dfadfc934ac3d2e1fd030a",
+      "ggv1_2c062619e9ca28bd85156727",
+      "ggv1_431b5915e2ffa520a56ce15a"
+    ],
+    "order_rule": "Two prespecified timeout task IDs, then first two other test observation rows.",
+    "warmup_calls": 0,
+    "discarded_calls": 0,
+    "retries": 0,
+    "decoder_calls": 0,
+    "generation_calls": 0,
+    "scoring_calls": 0,
+    "references_loaded": false,
+    "max_planned_encoder_calls": 12,
+    "timing_scope": "Wall and process CPU surround encode(); input hashing for metadata, serialization, and model loading are outside each timed call."
+  },
+  "primary_sha256_before": {
+    "test.episodes.jsonl": "b9e7e0a53622b9b87e29507684684389aaf798e97bf53b0d4e93f44570786e39",
+    "test.run.json": "a765ab234169a654c15cada01222e684e2c218f5ad0ef9d212ad5161508c7655",
+    "report.json": "90e8866d199376e74335158566ee0b8dbe29a696748ab6fcd1d02b0d4c599b91"
+  },
+  "test_observations_sha256": "fdd6eb39417ef76f48ac89730a3639061c21fd6a19be2a35a8f4f5ec44bb907c",
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "executable": "/workspace/scratch/19dd72e63851/stem-venv/bin/python",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "torch": "2.10.0+cpu",
+    "transformers": "5.20.2",
+    "numpy": "2.2.6",
+    "pillow": "11.3.0",
+    "worker_pid": 2,
+    "backend_sha256": "3fd05ef337b16596c85f95ccf6803ae725de6afefff248395c908b8a683dd1b3",
+    "single_resident_worker": true,
+    "torch_threads": 4,
+    "torch_interop_threads": 9,
+    "resident_load_wall_seconds": 2.18069131700031,
+    "resident_load_process_cpu_seconds": 2.897851608,
+    "model_revision": "00921df66db728a9ceb750f5eca43e5c203a2051",
+    "checkpoint_sha256": "62f3e696da74f8869a68ddb529a9b3e14eb25b21c592cb3dea6179bf944df6a0"
+  },
+  "probe_source": {
+    "sha256": "c2fd79139381dc1a91feae135a4ca9a70d14f6500542ec3c410f37ae1a86be67",
+    "text": "\"\"\"Bounded, observational, single-resident-worker encoder-only timing probe.\"\"\"\nfrom datetime import datetime, timezone\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport platform\nimport statistics\nimport sys\nimport time\n\nsys.dont_write_bytecode = True\nROOT = Path('/workspace/scratch/79ec3697a4ed/ndu-run')\nCODE = Path('/workspace/scratch/79ec3697a4ed/hepta-ndu/qa/ndu-grounded-generation')\nsys.path.insert(0, str(CODE))\nimport backend as backend_module\nimport numpy\nimport PIL\nimport torch\nimport transformers\n\n\ndef sha(path):\n    with path.open('rb') as stream:\n        return hashlib.file_digest(stream, 'sha256').hexdigest()\n\n\ndef utc():\n    return datetime.now(timezone.utc).isoformat()\n\n\ndef save(value):\n    target = ROOT / 'supplemental-encoder-timing.json'\n    temporary = target.with_suffix('.json.tmp')\n    temporary.write_text(json.dumps(value, indent=2, allow_nan=False) + '\\n')\n    temporary.replace(target)\n\n\nobservations_path = ROOT / 'cohort/test.observations.jsonl'\nobservations = [json.loads(line) for line in observations_path.read_text().splitlines() if line.strip()]\nrequested = ['ggv1_e01f69ec9958977c743198f3', 'ggv1_42dfadfc934ac3d2e1fd030a']\nlookup = {row['task_id']: row for row in observations}\nselected = [lookup[key] for key in requested] + [row for row in observations if row['task_id'] not in requested][:2]\nassert len(selected) == 4 and len({row['task_id'] for row in selected}) == 4\nassert not (ROOT / 'supplemental-encoder-timing.json').exists()\nprimary_paths = ('test.episodes.jsonl', 'test.run.json', 'report.json')\nrecord = {\n    'schema': 'hepta.supplemental-encoder-timing.v1', 'status': 'running', 'started_utc': utc(),\n    'scope': 'Post-primary-test encoder-only repeatability probe; one resident worker and four torch threads.',\n    'limitations': ['Different worker/concurrency conditions from the primary comparison.',\n                    'No host telemetry establishes a specific cause of primary timing outliers.',\n                    'No primary results are replaced, excluded, rescored, or retuned by this probe.'],\n    'protocol': {'rounds': 3, 'task_order': [row['task_id'] for row in selected],\n                 'order_rule': 'Two prespecified timeout task IDs, then first two other test observation rows.',\n                 'warmup_calls': 0, 'discarded_calls': 0, 'retries': 0,\n                 'decoder_calls': 0, 'generation_calls': 0, 'scoring_calls': 0,\n                 'references_loaded': False, 'max_planned_encoder_calls': 12,\n                 'timing_scope': 'Wall and process CPU surround encode(); input hashing for metadata, serialization, and model loading are outside each timed call.'},\n    'primary_sha256_before': {name: sha(ROOT / name) for name in primary_paths},\n    'test_observations_sha256': sha(observations_path),\n    'runtime': {'python': sys.version, 'executable': sys.executable, 'platform': platform.platform(),\n                'torch': torch.__version__, 'transformers': transformers.__version__,\n                'numpy': numpy.__version__, 'pillow': PIL.__version__, 'worker_pid': os.getpid(),\n                'backend_sha256': sha(CODE / 'backend.py'), 'single_resident_worker': True},\n    'probe_source': {'sha256': sha(Path(__file__)), 'text': Path(__file__).read_text()},\n    'measurements': []}\nsave(record)\nload_wall, load_cpu = time.perf_counter(), time.process_time()\nbackend = backend_module.FlorenceBackend(ROOT / 'model', threads=4)\nrecord['runtime'].update(torch_threads=torch.get_num_threads(), torch_interop_threads=torch.get_num_interop_threads(),\n                         resident_load_wall_seconds=time.perf_counter() - load_wall,\n                         resident_load_process_cpu_seconds=time.process_time() - load_cpu,\n                         model_revision=backend_module.MODEL_REVISION,\n                         checkpoint_sha256=backend_module.WEIGHT_SHA256)\nfor round_index in range(3):\n    for order, observation in enumerate(selected):\n        measurement = {'index': len(record['measurements']) + 1, 'round': round_index + 1,\n                       'order_in_round': order + 1, 'task_id': observation['task_id'],\n                       'source_image_sha256': observation['image_sha256'],\n                       'actual_input_image_sha256': sha(Path(observation['image_path'])),\n                       'started_utc': utc()}\n        started_wall, started_cpu = time.perf_counter(), time.process_time()\n        try:\n            encoded = backend.encode(observation)\n            measurement.update(wall_seconds=time.perf_counter() - started_wall,\n                               process_cpu_seconds=time.process_time() - started_cpu, status='ok',\n                               encoder_output_shape=list(encoded.encoder_outputs.last_hidden_state.shape),\n                               encoder_feature_shape=list(encoded.encoder_feature.shape),\n                               attention_mask_shape=list(encoded.attention_mask.shape),\n                               image_size=list(encoded.image_size), backend_costs=encoded.costs)\n            del encoded\n        except Exception as error:\n            measurement.update(wall_seconds=time.perf_counter() - started_wall,\n                               process_cpu_seconds=time.process_time() - started_cpu,\n                               status='error', error_type=type(error).__name__, error=str(error))\n        record['measurements'].append(measurement)\n        save(record)\n        print(json.dumps({key: measurement[key] for key in ('index', 'task_id', 'wall_seconds', 'process_cpu_seconds', 'status')}), flush=True)\nrecord['frozen_model_receipt'] = backend.frozen_receipt()\nrecord['primary_sha256_after'] = {name: sha(ROOT / name) for name in primary_paths}\nrecord['primary_files_unchanged'] = record['primary_sha256_before'] == record['primary_sha256_after']\nrecord['summary_by_task'] = []\nfor observation in selected:\n    rows = [row for row in record['measurements'] if row['task_id'] == observation['task_id']]\n    record['summary_by_task'].append({'task_id': observation['task_id'], 'calls': len(rows),\n        'errors': sum(row['status'] != 'ok' for row in rows),\n        **{field: {'min': min(row[field] for row in rows), 'median': statistics.median(row[field] for row in rows),\n                   'max': max(row[field] for row in rows)} for field in ('wall_seconds', 'process_cpu_seconds')}})\nrecord.update(status='complete', completed_utc=utc(), completed_encoder_calls=len(record['measurements']))\nsave(record)\nprint(json.dumps({'status': record['status'], 'calls': record['completed_encoder_calls'],\n                  'primary_files_unchanged': record['primary_files_unchanged'],\n                  'output_sha256': sha(ROOT / 'supplemental-encoder-timing.json')}), flush=True)\n"
+  },
+  "measurements": [
+    {
+      "index": 1,
+      "round": 1,
+      "order_in_round": 1,
+      "task_id": "ggv1_e01f69ec9958977c743198f3",
+      "source_image_sha256": "7d6095aecac5e38f60d699e76d26ed74dc0ac4cc8d48ce42e7ef10e17048013c",
+      "actual_input_image_sha256": "7d6095aecac5e38f60d699e76d26ed74dc0ac4cc8d48ce42e7ef10e17048013c",
+      "started_utc": "2026-10-22T13:21:35.899581+00:00",
+      "wall_seconds": 2.1323454740049783,
+      "process_cpu_seconds": 8.401930855,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        600,
+        354
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.1320128890001797,
+        "preprocessor_seconds": 0.023912837998068426,
+        "vision_seconds": 1.9154655140009709,
+        "text_encoder_seconds": 0.19263453700114042,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 2,
+      "round": 1,
+      "order_in_round": 2,
+      "task_id": "ggv1_42dfadfc934ac3d2e1fd030a",
+      "source_image_sha256": "7cfb2fecb604d1f7e5429ab118ecda7fe84c296067ce8038a89e7ea8af836a0f",
+      "actual_input_image_sha256": "7cfb2fecb604d1f7e5429ab118ecda7fe84c296067ce8038a89e7ea8af836a0f",
+      "started_utc": "2026-10-22T13:21:38.032838+00:00",
+      "wall_seconds": 1.760945433001325,
+      "process_cpu_seconds": 6.956553862999998,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        640,
+        480
+      ],
+      "backend_costs": {
+        "encoder_seconds": 1.760743683000328,
+        "preprocessor_seconds": 0.010111476003658026,
+        "vision_seconds": 1.6317107289942214,
+        "text_encoder_seconds": 0.11892147800244857,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 3,
+      "round": 1,
+      "order_in_round": 3,
+      "task_id": "ggv1_2c062619e9ca28bd85156727",
+      "source_image_sha256": "c523e93db4e127f191d892ddc1bbe8db14e894d76bf0231624a5cba918963254",
+      "actual_input_image_sha256": "c523e93db4e127f191d892ddc1bbe8db14e894d76bf0231624a5cba918963254",
+      "started_utc": "2026-10-22T13:21:39.794722+00:00",
+      "wall_seconds": 2.0829845379994367,
+      "process_cpu_seconds": 8.269250672000002,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        640,
+        480
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.082738327997504,
+        "preprocessor_seconds": 0.008448857995972503,
+        "vision_seconds": 1.8598515210032929,
+        "text_encoder_seconds": 0.21443794899823843,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 4,
+      "round": 1,
+      "order_in_round": 4,
+      "task_id": "ggv1_431b5915e2ffa520a56ce15a",
+      "source_image_sha256": "6d73f5967db3ef19680f17791dd7252e1acf189ddb0cf6590ed211f8da123475",
+      "actual_input_image_sha256": "6d73f5967db3ef19680f17791dd7252e1acf189ddb0cf6590ed211f8da123475",
+      "started_utc": "2026-10-22T13:21:41.878579+00:00",
+      "wall_seconds": 2.0838615289976588,
+      "process_cpu_seconds": 8.256905910000004,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        320,
+        216
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.0835987289974582,
+        "preprocessor_seconds": 0.006394304997229483,
+        "vision_seconds": 1.8758719789984752,
+        "text_encoder_seconds": 0.2013324450017535,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 5,
+      "round": 2,
+      "order_in_round": 1,
+      "task_id": "ggv1_e01f69ec9958977c743198f3",
+      "source_image_sha256": "7d6095aecac5e38f60d699e76d26ed74dc0ac4cc8d48ce42e7ef10e17048013c",
+      "actual_input_image_sha256": "7d6095aecac5e38f60d699e76d26ed74dc0ac4cc8d48ce42e7ef10e17048013c",
+      "started_utc": "2026-10-22T13:21:43.963521+00:00",
+      "wall_seconds": 2.1807340319937794,
+      "process_cpu_seconds": 8.628494897000003,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        600,
+        354
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.180500643000414,
+        "preprocessor_seconds": 0.008515528999851085,
+        "vision_seconds": 1.9752218569992692,
+        "text_encoder_seconds": 0.19676325700129382,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 6,
+      "round": 2,
+      "order_in_round": 2,
+      "task_id": "ggv1_42dfadfc934ac3d2e1fd030a",
+      "source_image_sha256": "7cfb2fecb604d1f7e5429ab118ecda7fe84c296067ce8038a89e7ea8af836a0f",
+      "actual_input_image_sha256": "7cfb2fecb604d1f7e5429ab118ecda7fe84c296067ce8038a89e7ea8af836a0f",
+      "started_utc": "2026-10-22T13:21:46.145740+00:00",
+      "wall_seconds": 2.10757219199877,
+      "process_cpu_seconds": 8.330441217999997,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        640,
+        480
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.107348568002635,
+        "preprocessor_seconds": 0.011056677001761273,
+        "vision_seconds": 1.9071412710036384,
+        "text_encoder_seconds": 0.18915061999723548,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 7,
+      "round": 2,
+      "order_in_round": 3,
+      "task_id": "ggv1_2c062619e9ca28bd85156727",
+      "source_image_sha256": "c523e93db4e127f191d892ddc1bbe8db14e894d76bf0231624a5cba918963254",
+      "actual_input_image_sha256": "c523e93db4e127f191d892ddc1bbe8db14e894d76bf0231624a5cba918963254",
+      "started_utc": "2026-10-22T13:21:48.254469+00:00",
+      "wall_seconds": 2.080107770001632,
+      "process_cpu_seconds": 8.255000013000007,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        640,
+        480
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.0798430909999297,
+        "preprocessor_seconds": 0.008981227998447139,
+        "vision_seconds": 1.8784138839982916,
+        "text_encoder_seconds": 0.192447979003191,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 8,
+      "round": 2,
+      "order_in_round": 4,
+      "task_id": "ggv1_431b5915e2ffa520a56ce15a",
+      "source_image_sha256": "6d73f5967db3ef19680f17791dd7252e1acf189ddb0cf6590ed211f8da123475",
+      "actual_input_image_sha256": "6d73f5967db3ef19680f17791dd7252e1acf189ddb0cf6590ed211f8da123475",
+      "started_utc": "2026-10-22T13:21:50.335596+00:00",
+      "wall_seconds": 2.0834729689959204,
+      "process_cpu_seconds": 8.256951404000006,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        320,
+        216
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.0832463209953858,
+        "preprocessor_seconds": 0.006692833994748071,
+        "vision_seconds": 1.8847776100010378,
+        "text_encoder_seconds": 0.19177587699959986,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 9,
+      "round": 3,
+      "order_in_round": 1,
+      "task_id": "ggv1_e01f69ec9958977c743198f3",
+      "source_image_sha256": "7d6095aecac5e38f60d699e76d26ed74dc0ac4cc8d48ce42e7ef10e17048013c",
+      "actual_input_image_sha256": "7d6095aecac5e38f60d699e76d26ed74dc0ac4cc8d48ce42e7ef10e17048013c",
+      "started_utc": "2026-10-22T13:21:52.420301+00:00",
+      "wall_seconds": 2.113454799000465,
+      "process_cpu_seconds": 8.364864037000004,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        600,
+        354
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.1131557850021636,
+        "preprocessor_seconds": 0.008876806001353543,
+        "vision_seconds": 1.9120337220010697,
+        "text_encoder_seconds": 0.19224525699974038,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 10,
+      "round": 3,
+      "order_in_round": 2,
+      "task_id": "ggv1_42dfadfc934ac3d2e1fd030a",
+      "source_image_sha256": "7cfb2fecb604d1f7e5429ab118ecda7fe84c296067ce8038a89e7ea8af836a0f",
+      "actual_input_image_sha256": "7cfb2fecb604d1f7e5429ab118ecda7fe84c296067ce8038a89e7ea8af836a0f",
+      "started_utc": "2026-10-22T13:21:54.534938+00:00",
+      "wall_seconds": 2.0564327979955124,
+      "process_cpu_seconds": 8.143495393999999,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        640,
+        480
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.05621214400162,
+        "preprocessor_seconds": 0.009672959997260477,
+        "vision_seconds": 1.8564448580000317,
+        "text_encoder_seconds": 0.19009432600432774,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 11,
+      "round": 3,
+      "order_in_round": 3,
+      "task_id": "ggv1_2c062619e9ca28bd85156727",
+      "source_image_sha256": "c523e93db4e127f191d892ddc1bbe8db14e894d76bf0231624a5cba918963254",
+      "actual_input_image_sha256": "c523e93db4e127f191d892ddc1bbe8db14e894d76bf0231624a5cba918963254",
+      "started_utc": "2026-10-22T13:21:56.592565+00:00",
+      "wall_seconds": 2.0852746790042147,
+      "process_cpu_seconds": 8.247656122999999,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        640,
+        480
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.085048034998181,
+        "preprocessor_seconds": 0.00856701799784787,
+        "vision_seconds": 1.8858196220026002,
+        "text_encoder_seconds": 0.1906613949977327,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    },
+    {
+      "index": 12,
+      "round": 3,
+      "order_in_round": 4,
+      "task_id": "ggv1_431b5915e2ffa520a56ce15a",
+      "source_image_sha256": "6d73f5967db3ef19680f17791dd7252e1acf189ddb0cf6590ed211f8da123475",
+      "actual_input_image_sha256": "6d73f5967db3ef19680f17791dd7252e1acf189ddb0cf6590ed211f8da123475",
+      "started_utc": "2026-10-22T13:21:58.678998+00:00",
+      "wall_seconds": 2.2688396959929378,
+      "process_cpu_seconds": 8.652475554999995,
+      "status": "ok",
+      "encoder_output_shape": [
+        1,
+        588,
+        768
+      ],
+      "encoder_feature_shape": [
+        768
+      ],
+      "attention_mask_shape": [
+        1,
+        588
+      ],
+      "image_size": [
+        320,
+        216
+      ],
+      "backend_costs": {
+        "encoder_seconds": 2.2686107460031053,
+        "preprocessor_seconds": 0.00630429400189314,
+        "vision_seconds": 1.8832890210032929,
+        "text_encoder_seconds": 0.3790174309979193,
+        "encoder_calls": 1,
+        "input_tokens": 588,
+        "visual_tokens": 577
+      }
+    }
+  ],
+  "frozen_model_receipt": {
+    "repository": "florence-community/Florence-2-base",
+    "revision": "00921df66db728a9ceb750f5eca43e5c203a2051",
+    "checkpoint_sha256": "62f3e696da74f8869a68ddb529a9b3e14eb25b21c592cb3dea6179bf944df6a0",
+    "tensor_sha256_before": "3f9608404767fe85ef707e8788cd18994c93aac3233d5ab407918f18f840c02b",
+    "tensor_sha256_after": "3f9608404767fe85ef707e8788cd18994c93aac3233d5ab407918f18f840c02b",
+    "frozen_unchanged": true,
+    "trainable_parameters": 0,
+    "parameters": 231443968,
+    "load_seconds": 2.1806338759997743,
+    "device": "cpu",
+    "dtype": "float32"
+  },
+  "primary_sha256_after": {
+    "test.episodes.jsonl": "b9e7e0a53622b9b87e29507684684389aaf798e97bf53b0d4e93f44570786e39",
+    "test.run.json": "a765ab234169a654c15cada01222e684e2c218f5ad0ef9d212ad5161508c7655",
+    "report.json": "90e8866d199376e74335158566ee0b8dbe29a696748ab6fcd1d02b0d4c599b91"
+  },
+  "primary_files_unchanged": true,
+  "summary_by_task": [
+    {
+      "task_id": "ggv1_e01f69ec9958977c743198f3",
+      "calls": 3,
+      "errors": 0,
+      "wall_seconds": {
+        "min": 2.113454799000465,
+        "median": 2.1323454740049783,
+        "max": 2.1807340319937794
+      },
+      "process_cpu_seconds": {
+        "min": 8.364864037000004,
+        "median": 8.401930855,
+        "max": 8.628494897000003
+      }
+    },
+    {
+      "task_id": "ggv1_42dfadfc934ac3d2e1fd030a",
+      "calls": 3,
+      "errors": 0,
+      "wall_seconds": {
+        "min": 1.760945433001325,
+        "median": 2.0564327979955124,
+        "max": 2.10757219199877
+      },
+      "process_cpu_seconds": {
+        "min": 6.956553862999998,
+        "median": 8.143495393999999,
+        "max": 8.330441217999997
+      }
+    },
+    {
+      "task_id": "ggv1_2c062619e9ca28bd85156727",
+      "calls": 3,
+      "errors": 0,
+      "wall_seconds": {
+        "min": 2.080107770001632,
+        "median": 2.0829845379994367,
+        "max": 2.0852746790042147
+      },
+      "process_cpu_seconds": {
+        "min": 8.247656122999999,
+        "median": 8.255000013000007,
+        "max": 8.269250672000002
+      }
+    },
+    {
+      "task_id": "ggv1_431b5915e2ffa520a56ce15a",
+      "calls": 3,
+      "errors": 0,
+      "wall_seconds": {
+        "min": 2.0834729689959204,
+        "median": 2.0838615289976588,
+        "max": 2.2688396959929378
+      },
+      "process_cpu_seconds": {
+        "min": 8.256905910000004,
+        "median": 8.256951404000006,
+        "max": 8.652475554999995
+      }
+    }
+  ],
+  "completed_utc": "2026-10-22T13:22:01.853723+00:00",
+  "completed_encoder_calls": 12
+}

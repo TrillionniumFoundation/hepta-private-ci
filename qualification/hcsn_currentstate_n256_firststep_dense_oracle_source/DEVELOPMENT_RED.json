@@ -1,0 +1,20 @@
+{
+  "schema": "hcsn-n256-firststep-dense-oracle-development-red-v1",
+  "identity": "hcsn-n256-firststep-dense-oracle-source-20261117-c06d-local001",
+  "command": "python -O -m unittest qualification.hcsn_currentstate_n256_firststep_dense_oracle_source.test_source -v",
+  "tests_run": 6,
+  "passed": 5,
+  "failed": 1,
+  "failed_test": "test_reset_weights_are_interior_interpolation",
+  "failure": "exact list equality compared two equivalent interpolation expressions with different binary64 rounding",
+  "observed_weights": [0.33333333333333326, 0.6666666666666667],
+  "expected_expression_weights": [0.3333333333333333, 0.6666666666666666],
+  "minimal_correction": "compare each interpolation weight with assertAlmostEqual",
+  "oracle_source_changed": false,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "preserved": true
+}

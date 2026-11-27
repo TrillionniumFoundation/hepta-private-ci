@@ -1,0 +1,94 @@
+{
+  "P5": "benefit-gated",
+  "all_six_terminal": false,
+  "confirmation_E": "separate unexecuted proposal; not the original formal confirmation recipe",
+  "confirmation_E_read": false,
+  "independent_terminal_audit": "prepared, frozen, not executed",
+  "independently_admitted_adequate_count": 0,
+  "new_common_LR_selection": false,
+  "numerical_audit": "separate original job; this snapshot does not assert its later terminal outcome",
+  "producer_adequate_count": 1,
+  "producer_terminal_count": 1,
+  "resource_analysis": "plan frozen after launch and first outcomes; analysis not executed",
+  "roster": [
+    {
+      "epoch": 54,
+      "fit_terminal_report_observed": false,
+      "name": "hcsn-s101-lr0.001",
+      "pid_exists": true,
+      "stopping": {
+        "best": 0.23994459177529304,
+        "best_epoch": 52,
+        "plateau_anchor": 0.23994459177529304,
+        "stale_epochs": 2
+      }
+    },
+    {
+      "epoch": 55,
+      "fit_terminal_report_observed": false,
+      "name": "hcsn-s101-lr0.003",
+      "pid_exists": true,
+      "stopping": {
+        "best": 0.36077029751081513,
+        "best_epoch": 54,
+        "plateau_anchor": 0.3594838559253407,
+        "stale_epochs": 4
+      }
+    },
+    {
+      "epoch": 54,
+      "fit_terminal_report_observed": false,
+      "name": "hcsn-s211-lr0.001",
+      "pid_exists": true,
+      "stopping": {
+        "best": 0.26877768975555716,
+        "best_epoch": 52,
+        "plateau_anchor": 0.26877768975555716,
+        "stale_epochs": 2
+      }
+    },
+    {
+      "epoch": 50,
+      "fit_terminal_report_observed": true,
+      "name": "hcsn-s211-lr0.003",
+      "pid_exists": false,
+      "stopping": {
+        "best": 0.3910932361454862,
+        "best_epoch": 40,
+        "plateau_anchor": 0.3910932361454862,
+        "stale_epochs": 10
+      }
+    },
+    {
+      "epoch": 54,
+      "fit_terminal_report_observed": false,
+      "name": "hcsn-s307-lr0.001",
+      "pid_exists": true,
+      "stopping": {
+        "best": 0.20436349514264887,
+        "best_epoch": 54,
+        "plateau_anchor": 0.20436349514264887,
+        "stale_epochs": 0
+      }
+    },
+    {
+      "epoch": 54,
+      "fit_terminal_report_observed": false,
+      "name": "hcsn-s307-lr0.003",
+      "pid_exists": true,
+      "stopping": {
+        "best": 0.3350217497123568,
+        "best_epoch": 52,
+        "plateau_anchor": 0.3350217497123568,
+        "stale_epochs": 2
+      }
+    }
+  ],
+  "schema": "c2-progress-and-preparation-v1",
+  "scientific_benefit": "HOLD",
+  "terminal_best_checkpoint_changed": false,
+  "training_job": "1a1c74f3308-be2a-75",
+  "training_key": "hcsn-c2-native-execution-c385-v1",
+  "training_observed_utc": "2026-11-10T22:00:42.152837+00:00",
+  "whole_training_numerical_admission": "HOLD"
+}

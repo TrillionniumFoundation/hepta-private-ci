@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -31,7 +31,8 @@
       "sourcePathExists": true,
       "designOperation": "build_targets",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "ce6a9d5156da7846197ffd233e117d1ebe254922"
     },
     {
       "operation": "build_sensor_core",
@@ -43,7 +44,8 @@
       "sourcePathExists": true,
       "designOperation": "build_sensor_core",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "f25b30be042dc7922311d8b43a3ade746a3b0df6"
     },
     {
       "operation": "evaluate_bellman_reference",
@@ -55,7 +57,8 @@
       "sourcePathExists": true,
       "designOperation": "evaluate_bellman_reference",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "f25b30be042dc7922311d8b43a3ade746a3b0df6"
     },
     {
       "operation": "validate_applicability_certificate",
@@ -67,7 +70,8 @@
       "sourcePathExists": true,
       "designOperation": "validate_applicability_certificate",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "f25b30be042dc7922311d8b43a3ade746a3b0df6"
     },
     {
       "operation": "validate_applicability_with_signed_evidence_v2",
@@ -79,7 +83,8 @@
       "sourcePathExists": true,
       "designOperation": "validate_applicability_with_signed_evidence_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "b051815e3f38374fd4a3261d5e977de0a897e47c"
     },
     {
       "operation": "fit_tabular_operator",
@@ -91,7 +96,8 @@
       "sourcePathExists": true,
       "designOperation": "fit_tabular_operator",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "b46e5e448e53abada8c72b54c9b7bab6eee00e4a"
     },
     {
       "operation": "fit_tabular_operator_strict_v2",
@@ -103,7 +109,8 @@
       "sourcePathExists": true,
       "designOperation": "fit_tabular_operator_strict_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2418059ce3b842a89716004c63123bb4d5cf8d4c"
     },
     {
       "operation": "verify_tabular_operator_plan_v2",
@@ -115,7 +122,8 @@
       "sourcePathExists": true,
       "designOperation": "verify_tabular_operator_plan_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "8ac1e1cc98d989a64e45781aecfce968acc1af61"
     },
     {
       "operation": "fit_tabular_operator_verified_v2",
@@ -127,7 +135,8 @@
       "sourcePathExists": true,
       "designOperation": "fit_tabular_operator_verified_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "8ac1e1cc98d989a64e45781aecfce968acc1af61"
     },
     {
       "operation": "predict_tabular_operator",
@@ -139,7 +148,8 @@
       "sourcePathExists": true,
       "designOperation": "predict_tabular_operator",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "b46e5e448e53abada8c72b54c9b7bab6eee00e4a"
     },
     {
       "operation": "encode_tabular_payload_v1",
@@ -151,7 +161,8 @@
       "sourcePathExists": true,
       "designOperation": "encode_tabular_payload_v1",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2f8452594305cf0d05ce1c034a33a6e004be55b2"
     },
     {
       "operation": "load_pinned_tabular_operator_v1",
@@ -163,7 +174,8 @@
       "sourcePathExists": true,
       "designOperation": "load_pinned_tabular_operator_v1",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2f8452594305cf0d05ce1c034a33a6e004be55b2"
     },
     {
       "operation": "admit_operator_regularity",
@@ -175,7 +187,8 @@
       "sourcePathExists": true,
       "designOperation": "admit_operator_regularity",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "f25b30be042dc7922311d8b43a3ade746a3b0df6"
     },
     {
       "operation": "admit_operator_regularity_with_signed_evidence_v2",
@@ -187,7 +200,8 @@
       "sourcePathExists": true,
       "designOperation": "admit_operator_regularity_with_signed_evidence_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "b051815e3f38374fd4a3261d5e977de0a897e47c"
     },
     {
       "operation": "fit_transition_model",
@@ -199,7 +213,8 @@
       "sourcePathExists": true,
       "designOperation": "fit_transition_model",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "e75c084fcb807226078b6fd60b0038e7f4494545"
     },
     {
       "operation": "verify_world_model_dataset_v2",
@@ -211,7 +226,8 @@
       "sourcePathExists": true,
       "designOperation": "verify_world_model_dataset_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "8ac1e1cc98d989a64e45781aecfce968acc1af61"
     },
     {
       "operation": "fit_transition_model_verified_v2",
@@ -223,7 +239,8 @@
       "sourcePathExists": true,
       "designOperation": "fit_transition_model_verified_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "8ac1e1cc98d989a64e45781aecfce968acc1af61"
     },
     {
       "operation": "predict_transition",
@@ -235,7 +252,8 @@
       "sourcePathExists": true,
       "designOperation": "predict_transition",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "e75c084fcb807226078b6fd60b0038e7f4494545"
     },
     {
       "operation": "freeze_terminal_cell_from_owner_v1",
@@ -249,7 +267,8 @@
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "0f6bbce29e0ef18a80e5839177b273773f996b0e"
     },
     {
       "operation": "fit_terminal_cell_from_owner_v1",
@@ -263,7 +282,8 @@
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "0f6bbce29e0ef18a80e5839177b273773f996b0e"
     }
   ],
   "repositoryControlledGaps": [
@@ -294,8 +314,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -316,11 +336,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "d9017832152a2cf56ca0f92d16d6a1b39587b27c"
     },
     {
       "path": "codex-rs/hepta-bellman-operator",
-      "object": "ed9f5bcd8b01a4cf3280ad749f6999c83ee24944"
+      "object": "47ed7f833946e62bd5bf48bea3820a5b8af1ce6c"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
@@ -332,15 +352,15 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/learned.rs",
-      "object": "893f0d5bf8f1313cd0c20fdd13ab50fad3257293"
+      "object": "b46e5e448e53abada8c72b54c9b7bab6eee00e4a"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
-      "object": "63efa2f84b011b41d8a4bc58c24aced6cef2b873"
+      "object": "2418059ce3b842a89716004c63123bb4d5cf8d4c"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/lib.rs",
-      "object": "4ab6f3074524e87a66777e9dfbb34b1426adbe72"
+      "object": "ce6a9d5156da7846197ffd233e117d1ebe254922"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/loaded.rs",
@@ -348,7 +368,7 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
-      "object": "a66b1b9098116911a79ffee154caa8c94e857ce2"
+      "object": "0f6bbce29e0ef18a80e5839177b273773f996b0e"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/reference.rs",
@@ -356,11 +376,18 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/world_model.rs",
-      "object": "0c1494d4a627f1eeaffd8315a1cc4aed048ca7eb"
+      "object": "e75c084fcb807226078b6fd60b0038e7f4494545"
     },
     {
       "path": "docs/modules/learning.operator/TECHNICAL.md",
       "object": "9fa795685e26a6074e893d4d8ae6f514c554d2e3"
     }
-  ]
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "learning.operator",
+    "previousMapBlob": "89a7280561c415d049a2af5cdd6091fb30586b07",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }

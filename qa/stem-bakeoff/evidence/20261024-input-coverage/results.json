@@ -1,0 +1,3042 @@
+{
+  "all_replays_bitwise_equal": true,
+  "artifacts": {
+    "cohorts-v1/manifest.json": {
+      "bytes": 297295,
+      "sha256": "db5577c1c999eb0580866e917e49323ca27ca91d7d2751fd3a664a0b047cb7c7"
+    },
+    "execution_journal_v2.jsonl": {
+      "bytes": 1386,
+      "sha256": "3085964c6b28a410ac609b880aaef4f4e2bd2dc622b69d28a335c5778941e9a5"
+    },
+    "execution_plan_v2.json": {
+      "bytes": 2109,
+      "sha256": "70d26fe67c8e2bce10a92259bb364e9dfeca557aaf245c748a8bc927e74fcc19"
+    },
+    "features-v2/report.json": {
+      "bytes": 24877,
+      "sha256": "4be0b97197633b4f68cd0744b28c05df0a968e24c058f6edd3034b2bc407f2d5"
+    },
+    "fitted-v2/fit_manifest.json": {
+      "bytes": 765198,
+      "sha256": "47c872451e9d11114b86c9b01048f7572e6680f8738afd74b8f7129e263a12c3"
+    },
+    "requirements-resolved.txt": {
+      "bytes": 694,
+      "sha256": "4e2038e1c1bdc16c83742741b9a9ec225065dc3839b8ba0ad3f1ad7d79e55364"
+    },
+    "score-v2/results.json": {
+      "bytes": 948204,
+      "sha256": "d8815322cef532a42616872c9b3c0221543f81b43ce5650332d1357186964491"
+    }
+  },
+  "checkpoint_parity": {
+    "body_state_sha256": "9e60a219c803d76ef893207e08268c544333abd9e9bbdf4897c54bb26c36e52a",
+    "body_state_tensor_bytes": 918772736,
+    "body_state_tensor_count": 132,
+    "checkpoint_files": {
+      "model.safetensors": {
+        "bytes": 918787216,
+        "sha256": "e2365f4805d311697d46c9aa326e50862466dab0b62c94b67c22b61aa779e45d"
+      }
+    },
+    "checkpoint_revision": "0b649ad0c684378b03d4d8304f7577a662ab89bc",
+    "custom_code_sha256": "f171f518be2a07da48b17fdea5655cad0a2452ab548e90e8ae903143686647e2",
+    "encoder_forwards": 0,
+    "evaluation_labels_read": false,
+    "every_body_tensor_bitwise_equal_to_checkpoint": true,
+    "loader": "AutoModelForMaskedLM native outer, then .lfm2",
+    "loading_info": {
+      "error_msgs": [],
+      "mismatched_keys": [],
+      "missing_keys": [],
+      "unexpected_keys": []
+    },
+    "native_output_embedding_tie_verified": true
+  },
+  "claims_not_established": [
+    "future qualification",
+    "autonomous repair quality",
+    "cell split benefit",
+    "learned edge benefit",
+    "production or general intelligence"
+  ],
+  "dataset": {
+    "boundary_crossing_groups": 17,
+    "counts": {
+      "calibration": 128,
+      "evaluation": 256,
+      "train": 512
+    },
+    "excluded_train_records": 0,
+    "input_receipts": {
+      "dev": {
+        "bytes": 1382594,
+        "repository": "princeton-nlp/SWE-bench",
+        "revision": "e48e2bd1e9fecd5bbd641e9414ac59da9f2e69f6",
+        "sha256": "d758d54540aa4140d0274ed0cc93b8288aa6f323c3c603e2557e7666a47fc41b"
+      },
+      "test": {
+        "bytes": 12097227,
+        "repository": "princeton-nlp/SWE-bench",
+        "revision": "e48e2bd1e9fecd5bbd641e9414ac59da9f2e69f6",
+        "sha256": "db4f70ef735b3162c74801ddcdf8d7bae8d704193788c6d844f898c20b571cbb"
+      },
+      "train": {
+        "bytes": 106606519,
+        "repository": "princeton-nlp/SWE-bench",
+        "revision": "e48e2bd1e9fecd5bbd641e9414ac59da9f2e69f6",
+        "sha256": "0ba403a7060af657e1f0476937a703726c07da15b759836694b16e553705a10f"
+      }
+    },
+    "invalid": [
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "ipython__ipython-8783",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-10262",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-10743",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-10853",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-11197",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-11340",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-12731",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-13559",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-13561",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-13641",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-13769",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-13800",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-13881",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14069",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14112",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14117",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14245",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14752",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14754",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14755",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14832",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14853",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14884",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14906",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14907",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14913",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14920",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14926",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14936",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14952",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-14957",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-15013",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-15051",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-15114",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-15134",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-15233",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-15255",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-15546",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-15776",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16029",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16094",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16238",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16500",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16526",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16528",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16539",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16629",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16670",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16671",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16744",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16809",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16810",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-16977",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-17051",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-17186",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-17366",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-17538",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-17622",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-17664",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-17733",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-17748",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-18097",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-18128",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-18136",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-18428",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-18649",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-18847",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-18873",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-18984",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19001",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19045",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19052",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19072",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19091",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19127",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19128",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19440",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19446",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19490",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19536",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19753",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-19987",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-20006",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-20059",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-20337",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-20489",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-20550",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-20574",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-20689",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-20781",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-20906",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-21105",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-21190",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-21307",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-21393",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-21453",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-21514",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-21572",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-21696",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-21928",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-21994",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-22165",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-22223",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-22294",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-22354",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-22467",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-22470",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-22515",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-22588",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-22908",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-23116",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-23261",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-23304",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-23756",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-23762",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-23776",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-23797",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-23799",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-23806",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-23879",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-24047",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-24307",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-24654",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-24701",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-24707",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-24736",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-24797",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-24868",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-24921",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25032",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25095",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25215",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25277",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25310",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25327",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25366",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25400",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25432",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25496",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25589",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25631",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25645",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25874",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25931",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-25935",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-26083",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-26231",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-26240",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-26441",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-26492",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-26726",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-26737",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-26755",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-2677",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27107",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27114",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27120",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27192",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27245",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27348",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27359",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27360",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27362",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27378",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27443",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27537",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-27788",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28016",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28450",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28498",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-2857",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28626",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28693",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28710",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28736",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28803",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28809",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28942",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-28964",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29030",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29063",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29067",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29071",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29083",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29093",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29097",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29209",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29211",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29220",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29226",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29269",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29329",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29338",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29339",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29342",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29344",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29345",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29346",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29348",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29352",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29354",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29355",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29356",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29358",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29359",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29365",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29367",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29369",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29370",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29372",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29378",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29438",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29448",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29455",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29497",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29498",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29504",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29510",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29515",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29519",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29521",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29522",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29523",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29531",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29533",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29535",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29694",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29760",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29761",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29763",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-29866",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30153",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30222",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30327",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30345",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30376",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30444",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30447",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30450",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30554",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30558",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30602",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30625",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30645",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30646",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30653",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30674",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30687",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-30769",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31161",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31171",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31196",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31229",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31249",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31267",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31311",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31323",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31483",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31538",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31545",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31621",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-31659",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-32152",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-32155",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-32281",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-32292",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-32451",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-32560",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-32725",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-32866",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33080",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33096",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33098",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33105",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33185",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33265",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33267",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33345",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33362",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33458",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33482",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33506",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33508",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33566",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33577",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33588",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33638",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33674",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33728",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33829",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33905",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33938",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-33939",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34021",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34071",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34087",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34090",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34132",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34175",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34179",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34268",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34355",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34363",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34385",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34417",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34443",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34517",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34572",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34610",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34622",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34627",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34647",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34705",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34755",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34851",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34879",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34880",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34886",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34889",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34897",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34906",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34911",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34917",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34919",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34920",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34949",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34987",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-34996",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35022",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35039",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35044",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35055",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35072",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35074",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35184",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35225",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35233",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35234",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35236",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35237",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35424",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35494",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35504",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35630",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35692",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35742",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35772",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35775",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35799",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-35987",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36164",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36192",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36202",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36236",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36278",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36283",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36326",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36389",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36486",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36491",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36520",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36556",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36605",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36635",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36648",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36671",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36715",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36735",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36737",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36783",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36789",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36841",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-36987",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37063",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37090",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37131",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37154",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37182",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37228",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37376",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37380",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37387",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37402",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37407",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37428",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37492",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37513",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37655",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37669",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37687",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37719",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37720",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37726",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37762",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37770",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37835",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37840",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37852",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37972",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-37988",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38085",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38096",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38206",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38241",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38242",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38324",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38354",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38383",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38403",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38430",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38659",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38693",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38711",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38717",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38719",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38772",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38873",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38967",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-38986",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-3906",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-39062",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-39285",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-39356",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-39491",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-39496",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-39638",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-39707",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-3974",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-39806",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-39868",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4048",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4162",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4176",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4257",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4276",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4307",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4310",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4509",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4592",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4813",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-4891",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-5095",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-5139",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-5149",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-5151",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-5318",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-5362",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-5538",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-5598",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-5791",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-6097",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-6101",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-6184",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7221",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7248",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7260",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7266",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7290",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7343",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7393",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7537",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7595",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7598",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7625",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7675",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-7810",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-8054",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-8098",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-8099",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-8170",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-8504",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-8651",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-9137",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-9296",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "pandas-dev__pandas-9839",
+        "upstream_split": "train"
+      },
+      {
+        "reason": "patch lacks an ordinary changed-line diff",
+        "source_id": "twisted__twisted-11577",
+        "upstream_split": "train"
+      }
+    ],
+    "tasks": {
+      "at_least_twenty_changed_lines": {
+        "available": true,
+        "rule": "both classes need 64 training groups for fixed n=128 budget",
+        "training_class_counts": [
+          288,
+          224
+        ]
+      },
+      "multiple_hunks": {
+        "available": true,
+        "rule": "both classes need 64 training groups for fixed n=128 budget",
+        "training_class_counts": [
+          140,
+          372
+        ]
+      },
+      "multiple_paths": {
+        "available": true,
+        "rule": "both classes need 64 training groups for fixed n=128 budget",
+        "training_class_counts": [
+          250,
+          262
+        ]
+      },
+      "net_added_lines": {
+        "available": true,
+        "rule": "both classes need 64 training groups for fixed n=128 budget",
+        "training_class_counts": [
+          137,
+          375
+        ]
+      }
+    },
+    "valid_records": 21051
+  },
+  "descriptive_secondary_unadjusted": [
+    {
+      "budget": 128,
+      "ci95": [
+        -0.03441782135008895,
+        0.01932333858122816
+      ],
+      "conditioning": "fixed historical tasks, training sources, seeds, and fitted states",
+      "difference": -0.007950445991385158,
+      "left": [
+        "head_tail",
+        "linear"
+      ],
+      "negative_interval": false,
+      "paired_source_group_draws": 2000,
+      "positive_interval": false,
+      "rejected_absent_class_draws": 0,
+      "right": [
+        "head_tail",
+        "prototype"
+      ],
+      "status": "measured"
+    },
+    {
+      "budget": 128,
+      "ci95": [
+        -0.02396597380599165,
+        0.028608780554523965
+      ],
+      "conditioning": "fixed historical tasks, training sources, seeds, and fitted states",
+      "difference": 0.002320121729280507,
+      "left": [
+        "head_tail",
+        "linear"
+      ],
+      "negative_interval": false,
+      "paired_source_group_draws": 2000,
+      "positive_interval": false,
+      "rejected_absent_class_draws": 0,
+      "right": [
+        "head_tail",
+        "dense_topk"
+      ],
+      "status": "measured"
+    },
+    {
+      "budget": 128,
+      "ci95": [
+        -0.004770961073220645,
+        0.05671696540135454
+      ],
+      "conditioning": "fixed historical tasks, training sources, seeds, and fitted states",
+      "difference": 0.025156144789598857,
+      "left": [
+        "head_tail",
+        "linear"
+      ],
+      "negative_interval": false,
+      "paired_source_group_draws": 2000,
+      "positive_interval": false,
+      "rejected_absent_class_draws": 0,
+      "right": [
+        "head_tail",
+        "bm25_topk"
+      ],
+      "status": "measured"
+    }
+  ],
+  "encoder_environment": {
+    "packages": {
+      "numpy": "2.2.6",
+      "safetensors": "0.8.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.10.0+cpu",
+      "transformers": "5.1.0"
+    },
+    "peak_rss_bytes": 1546813440,
+    "torch_threads": 2
+  },
+  "encoding": {
+    "head_tail": {
+      "attention_length_squared": 33030144,
+      "cpu_ns": 1032928447394,
+      "effective_tokens": 146851,
+      "forward_calls": 112,
+      "padded_tokens": 172032,
+      "wall_ns": 529246465732
+    },
+    "prefix": {
+      "attention_length_squared": 33030144,
+      "cpu_ns": 1028944173207,
+      "effective_tokens": 146851,
+      "forward_calls": 112,
+      "padded_tokens": 172032,
+      "wall_ns": 526801399244
+    }
+  },
+  "environment": {
+    "cuda_compiled": null,
+    "numpy": "2.2.6",
+    "pyarrow": "21.0.0",
+    "python": "3.13.12 (main, Mar 10 2026, 18:17:38) [Clang 21.1.4 ]",
+    "sklearn": "1.7.2",
+    "torch": "2.10.0+cpu",
+    "transformers": "5.1.0"
+  },
+  "executed_commit": "c3eb451a8b2bb18d2f2011989d346223ef08ca6e",
+  "feature_shapes": {
+    "head_tail": [
+      896,
+      1024
+    ],
+    "prefix": [
+      896,
+      1024
+    ]
+  },
+  "feature_tensor_bytes": {
+    "head_tail": 3670016,
+    "prefix": 3670016
+  },
+  "fitting": {
+    "cpu_ns": 29801259356,
+    "encoder_calls": 0,
+    "head_example_updates": 768000,
+    "head_training_wall_ns": 6463064740,
+    "peak_rss_bytes": 71413760,
+    "wall_ns": 30325599661
+  },
+  "model_load": {
+    "cpu_ns": 9853121488,
+    "parameter_tensor_bytes": 918772736,
+    "parameters": 229693184,
+    "wall_ns": 7919146167
+  },
+  "preparation": {
+    "cpu_ns": 8638751388,
+    "native_prefix_parity_rows": 896,
+    "wall_ns": 8737925007
+  },
+  "primary": {
+    "budget": 128,
+    "ci95": [
+      -0.015346479616153628,
+      0.03579345166982965
+    ],
+    "conditioning": "fixed historical tasks, training sources, seeds, and fitted states",
+    "difference": 0.00944794662894712,
+    "left": [
+      "head_tail",
+      "linear"
+    ],
+    "negative_interval": false,
+    "paired_source_group_draws": 2000,
+    "positive_interval": false,
+    "rejected_absent_class_draws": 0,
+    "right": [
+      "prefix",
+      "linear"
+    ],
+    "status": "measured"
+  },
+  "protocol_sha256": "a25e8d586b706b7240548aecacf1efbef7c5e52193407eac3b390b8f0fb61acf",
+  "replayed_heads": 48,
+  "schema": "hepta.input-coverage-summary.v1",
+  "short_input_bitwise_parity_rows": 297,
+  "summaries": [
+    {
+      "arm": "linear",
+      "balanced_accuracy": 0.5066207688973926,
+      "budget": 32,
+      "coverage": 0.4098307291666667,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5130208333333334,
+      "nll": 0.7835949428649882,
+      "overall_success": 0.2236328125,
+      "policy": "prefix",
+      "positive_recall": 0.5339439794345691
+    },
+    {
+      "arm": "prototype",
+      "balanced_accuracy": 0.5077050850283126,
+      "budget": 32,
+      "coverage": 0.043619791666666664,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5081380208333334,
+      "nll": 0.6939898792009657,
+      "overall_success": 0.027669270833333332,
+      "policy": "prefix",
+      "positive_recall": 0.46850798611260597
+    },
+    {
+      "arm": "dense_topk",
+      "balanced_accuracy": 0.5184858496392896,
+      "budget": 32,
+      "coverage": 0.062174479166666664,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.517578125,
+      "nll": 0.6963171316959564,
+      "overall_success": 0.036783854166666664,
+      "policy": "prefix",
+      "positive_recall": 0.5218401104322218
+    },
+    {
+      "arm": "bm25_topk",
+      "balanced_accuracy": 0.5182979814400993,
+      "budget": 32,
+      "coverage": 0.12174479166666667,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5856119791666666,
+      "nll": 0.6703107690576694,
+      "overall_success": 0.0859375,
+      "policy": "prefix",
+      "positive_recall": 0.7327596538579376
+    },
+    {
+      "arm": "class_prior",
+      "balanced_accuracy": 0.5,
+      "budget": 32,
+      "coverage": 0.5,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.6103515625,
+      "nll": 0.645926242257458,
+      "overall_success": 0.369140625,
+      "policy": "prefix",
+      "positive_recall": 0.75
+    },
+    {
+      "arm": "untrained",
+      "balanced_accuracy": 0.472506253403038,
+      "budget": 32,
+      "coverage": 0.0,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.4677734375,
+      "nll": 0.693614873594863,
+      "overall_success": 0.0,
+      "policy": "prefix",
+      "positive_recall": 0.4449211120791592
+    },
+    {
+      "arm": "off",
+      "balanced_accuracy": 0.5,
+      "budget": 32,
+      "coverage": 0.0,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.3916015625,
+      "nll": 0.6931471805599453,
+      "overall_success": 0.0,
+      "policy": "prefix",
+      "positive_recall": 0.0
+    },
+    {
+      "arm": "linear",
+      "balanced_accuracy": 0.5397159486880895,
+      "budget": 128,
+      "coverage": 0.20768229166666666,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5348307291666666,
+      "nll": 0.7228292008459517,
+      "overall_success": 0.1142578125,
+      "policy": "prefix",
+      "positive_recall": 0.5534478461259182
+    },
+    {
+      "arm": "prototype",
+      "balanced_accuracy": 0.537630465729792,
+      "budget": 128,
+      "coverage": 0.042317708333333336,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5315755208333334,
+      "nll": 0.6910011455210339,
+      "overall_success": 0.03125,
+      "policy": "prefix",
+      "positive_recall": 0.4744556071180175
+    },
+    {
+      "arm": "dense_topk",
+      "balanced_accuracy": 0.531345433931597,
+      "budget": 128,
+      "coverage": 0.060872395833333336,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5260416666666666,
+      "nll": 0.7081479169384418,
+      "overall_success": 0.037760416666666664,
+      "policy": "prefix",
+      "positive_recall": 0.5024186347072082
+    },
+    {
+      "arm": "bm25_topk",
+      "balanced_accuracy": 0.5240077505274378,
+      "budget": 128,
+      "coverage": 0.11881510416666667,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5826822916666666,
+      "nll": 0.6799110546560035,
+      "overall_success": 0.08138020833333333,
+      "policy": "prefix",
+      "positive_recall": 0.7214362493255354
+    },
+    {
+      "arm": "class_prior",
+      "balanced_accuracy": 0.5,
+      "budget": 128,
+      "coverage": 0.5,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.6103515625,
+      "nll": 0.645926242257458,
+      "overall_success": 0.369140625,
+      "policy": "prefix",
+      "positive_recall": 0.75
+    },
+    {
+      "arm": "untrained",
+      "balanced_accuracy": 0.472506253403038,
+      "budget": 128,
+      "coverage": 0.0,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.4677734375,
+      "nll": 0.693614873594863,
+      "overall_success": 0.0,
+      "policy": "prefix",
+      "positive_recall": 0.4449211120791592
+    },
+    {
+      "arm": "off",
+      "balanced_accuracy": 0.5,
+      "budget": 128,
+      "coverage": 0.0,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.3916015625,
+      "nll": 0.6931471805599453,
+      "overall_success": 0.0,
+      "policy": "prefix",
+      "positive_recall": 0.0
+    },
+    {
+      "arm": "linear",
+      "balanced_accuracy": 0.5218909145865324,
+      "budget": 32,
+      "coverage": 0.40625,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5419921875,
+      "nll": 0.7623520166210708,
+      "overall_success": 0.234375,
+      "policy": "head_tail",
+      "positive_recall": 0.5432013240733168
+    },
+    {
+      "arm": "prototype",
+      "balanced_accuracy": 0.5330247168512324,
+      "budget": 32,
+      "coverage": 0.040364583333333336,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.54296875,
+      "nll": 0.6770096714161004,
+      "overall_success": 0.0302734375,
+      "policy": "head_tail",
+      "positive_recall": 0.5288612841967916
+    },
+    {
+      "arm": "dense_topk",
+      "balanced_accuracy": 0.5363731082550314,
+      "budget": 32,
+      "coverage": 0.061197916666666664,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5693359375,
+      "nll": 0.6764443256834908,
+      "overall_success": 0.046223958333333336,
+      "policy": "head_tail",
+      "positive_recall": 0.5807190616558728
+    },
+    {
+      "arm": "bm25_topk",
+      "balanced_accuracy": 0.5182979814400993,
+      "budget": 32,
+      "coverage": 0.12174479166666667,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5856119791666666,
+      "nll": 0.6703107690576694,
+      "overall_success": 0.0859375,
+      "policy": "head_tail",
+      "positive_recall": 0.7327596538579376
+    },
+    {
+      "arm": "class_prior",
+      "balanced_accuracy": 0.5,
+      "budget": 32,
+      "coverage": 0.5,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.6103515625,
+      "nll": 0.645926242257458,
+      "overall_success": 0.369140625,
+      "policy": "head_tail",
+      "positive_recall": 0.75
+    },
+    {
+      "arm": "untrained",
+      "balanced_accuracy": 0.46958030939282974,
+      "budget": 32,
+      "coverage": 0.0,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.4638671875,
+      "nll": 0.6936026214994279,
+      "overall_success": 0.0,
+      "policy": "head_tail",
+      "positive_recall": 0.43428584047022145
+    },
+    {
+      "arm": "off",
+      "balanced_accuracy": 0.5,
+      "budget": 32,
+      "coverage": 0.0,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.3916015625,
+      "nll": 0.6931471805599453,
+      "overall_success": 0.0,
+      "policy": "head_tail",
+      "positive_recall": 0.0
+    },
+    {
+      "arm": "linear",
+      "balanced_accuracy": 0.5491638953170367,
+      "budget": 128,
+      "coverage": 0.19921875,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.537109375,
+      "nll": 0.7126819631918818,
+      "overall_success": 0.1181640625,
+      "policy": "head_tail",
+      "positive_recall": 0.5175023140624201
+    },
+    {
+      "arm": "prototype",
+      "balanced_accuracy": 0.5571143413084217,
+      "budget": 128,
+      "coverage": 0.029947916666666668,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5439453125,
+      "nll": 0.6811680748699639,
+      "overall_success": 0.019856770833333332,
+      "policy": "head_tail",
+      "positive_recall": 0.48321153917790416
+    },
+    {
+      "arm": "dense_topk",
+      "balanced_accuracy": 0.5468437735877562,
+      "budget": 128,
+      "coverage": 0.0791015625,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5416666666666666,
+      "nll": 0.6954125191089693,
+      "overall_success": 0.0537109375,
+      "policy": "head_tail",
+      "positive_recall": 0.5141493582481045
+    },
+    {
+      "arm": "bm25_topk",
+      "balanced_accuracy": 0.5240077505274378,
+      "budget": 128,
+      "coverage": 0.11881510416666667,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.5826822916666666,
+      "nll": 0.6799110546560035,
+      "overall_success": 0.08138020833333333,
+      "policy": "head_tail",
+      "positive_recall": 0.7214362493255354
+    },
+    {
+      "arm": "class_prior",
+      "balanced_accuracy": 0.5,
+      "budget": 128,
+      "coverage": 0.5,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.6103515625,
+      "nll": 0.645926242257458,
+      "overall_success": 0.369140625,
+      "policy": "head_tail",
+      "positive_recall": 0.75
+    },
+    {
+      "arm": "untrained",
+      "balanced_accuracy": 0.46958030939282974,
+      "budget": 128,
+      "coverage": 0.0,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.4638671875,
+      "nll": 0.6936026214994279,
+      "overall_success": 0.0,
+      "policy": "head_tail",
+      "positive_recall": 0.43428584047022145
+    },
+    {
+      "arm": "off",
+      "balanced_accuracy": 0.5,
+      "budget": 128,
+      "coverage": 0.0,
+      "fixed_task_seed_rows": 12,
+      "forced_accuracy": 0.3916015625,
+      "nll": 0.6931471805599453,
+      "overall_success": 0.0,
+      "policy": "head_tail",
+      "positive_recall": 0.0
+    }
+  ],
+  "token_coverage": {
+    "calibration": {
+      "original_source_tokens": 74865,
+      "rows": 128,
+      "truncated": 88
+    },
+    "evaluation": {
+      "original_source_tokens": 198555,
+      "rows": 256,
+      "truncated": 209
+    },
+    "train": {
+      "original_source_tokens": 257232,
+      "rows": 512,
+      "truncated": 302
+    }
+  },
+  "trained_head_count": 48,
+  "trained_head_parameters": [
+    2050
+  ],
+  "warmup": {
+    "cpu_ns": 17836211088,
+    "effective_tokens": 2922,
+    "forward_calls": 2,
+    "included_in_measured_features": false,
+    "wall_ns": 9413257259
+  }
+}

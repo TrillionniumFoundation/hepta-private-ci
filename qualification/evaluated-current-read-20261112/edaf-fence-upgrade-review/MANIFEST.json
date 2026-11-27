@@ -1,0 +1,369 @@
+{
+  "schema": "hepta.fence-released-compatibility-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "candidate": {
+    "bare_tree": "eb9de9b1495bc747b37326b0d8fd98c11825d6bf",
+    "path": ".github/workflows/blob-size-policy.yml",
+    "base_blob": "d867cbc5cae69837bbcaf4646b41da387d0a49f4",
+    "post_blob": "fb50b3579ad793aae702528c0e7bc5976e182151",
+    "post_bytes": 1859,
+    "post_sha256": "3fc9e0ac52b158ca2ffb5f75d03648e30849e62d5ecb7abeca544ed102c3df53",
+    "delta": "1 removed line / 1 added line; full Action pin and version comment only",
+    "status": "POSTIMAGE_READBACK_VERIFIED; NOT_PUSHED; NOT_RUN",
+    "preserved": [
+      "mode audit",
+      "ACTIONS_STEP_DEBUG true",
+      "first step before checkout",
+      "workflow and job contents read",
+      "zero user network allowlist",
+      "all original remaining workflow steps and failure behavior"
+    ]
+  },
+  "original_failure": {
+    "run": 43267839274,
+    "job": 131356473762,
+    "log_blob": "51fe55903ee5f24b0e138a265602732fd64324b2",
+    "sha256": "ed46a8e0e8f8b8b2781349a903dd3af0bb2d12bc41cd4677c8419d8ab2bc8538",
+    "bytes": 9222,
+    "source": "735375fadb54cc11a7d2d10642b3150f93fe8720",
+    "action": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+    "version": "v0.10.0",
+    "runner": "2.338.2",
+    "os": "Ubuntu 24.04.5",
+    "image": "ubuntu-24.04 20261111.370.1",
+    "phase": "before readiness and checkout",
+    "code": "local_control_inventory_unavailable",
+    "unavailable_inputs": null,
+    "startup_check": null,
+    "ownership_detail": null,
+    "cause": "UNCLASSIFIED; visible probe commands are not the failure classification"
+  },
+  "published_action": {
+    "version": "v0.13.0",
+    "action_commit": "c7675fea986c29f1d655753a7a61fd6b4141be8f",
+    "source_commit": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+    "distribution_tree": "e19987188c430cdbf901557955ca537a644bbbbd",
+    "source_tree": "228ce4925c73cf194b76094cbaf70494f2ff4ad9",
+    "only_parent_matches_source": true,
+    "github_distribution_signature_verified": true,
+    "github_source_signature_verified": true,
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-11-09T19:44:13Z",
+    "binary_sha256_manifest_and_asset_metadata": "1a1ac7ad60216e7803403645c202e8c8a4e738326350ce340f8138df1c9a5e04",
+    "verification_scope": "Read finalized release metadata, exact manifest and official hosted verify-release original log; no local binary download or independent attestation invocation."
+  },
+  "official_release_execution": {
+    "run": 42684760545,
+    "source": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+    "attempt": 1,
+    "run_conclusion": "success",
+    "verify_release_job": 129393561886,
+    "job_conclusion": "success",
+    "log_blob": "33400ebf0705bca38519883fcc30ac40ec396a9f"
+  },
+  "official_canary_execution": {
+    "run": 43218455499,
+    "source": "e150b7ff6db3152b55bd7a313fc326f2cc747ce8",
+    "workflow_blob": "859f4007e86442d247715e235785860432ca6429",
+    "attempt": 1,
+    "action_commit": "c7675fea986c29f1d655753a7a61fd6b4141be8f",
+    "ubuntu24_jobs": [
+      {
+        "job": 131183598570,
+        "mode": "audit",
+        "conclusion": "success",
+        "post_evidence_verified": true,
+        "log_blob": "0e3d94a565b0216705e614c776d2e4f9dfbc1e00"
+      },
+      {
+        "job": 131183598903,
+        "mode": "block",
+        "conclusion": "success",
+        "post_evidence_verified": true,
+        "log_blob": "93d0fd726781a5c55fcf2041e9d6e709a8eae2a4"
+      }
+    ],
+    "runner": "2.338.2",
+    "os": "Ubuntu 24.04.5",
+    "image": "ubuntu-24.04 20261101.360.1",
+    "same_image_as_original_failure": false,
+    "coverage": "Actual complete first-step same-mode audit success on older image; does not close compatibility on 20261111.370.1 or classify original cause."
+  },
+  "unchanged_complete_inventory_verifier": {
+    "old_blob": "491baa1c3b9ee9131b4f36775f44190787935269",
+    "new_blob": "cc867eb4cec7f59f5c700cf0fab1007e1c1a7ac2",
+    "function": "verify_complete_local_control_observation",
+    "identical_bytes": true,
+    "excerpt_blob": "7dead9c85d00c457217f8705afa855f70f943c9f",
+    "original_limits_preserved": {
+      "stability_attempts": 3,
+      "stability_interval_ms": 50,
+      "observation_timeout_seconds": 5,
+      "socket_probe_timeout_seconds": 1,
+      "max_processes": 2048,
+      "max_fds_per_process": 2048,
+      "max_total_fds": 32768,
+      "max_owners_per_socket": 4,
+      "max_unix_listeners": 40,
+      "max_tcp_listeners": 40,
+      "max_container_processes": 16
+    }
+  },
+  "minimum_versions": "Per-mechanism minima are recorded in RELEASE_FEATURES.json. No minimum fixed version is provable for the unclassified original failure; v0.12.6 is the earliest richer ownership diagnostic, v0.13.0 the first reviewed snapd activation change.",
+  "additional_read_source_pins": [
+    {
+      "key": "action_old",
+      "blob": "97e91823b99e6b549291901818ebb918116c06d6",
+      "bytes": 1520,
+      "sha256": "26aa17917f78b69320d412e5d4c42617bc458e4f9787afe93055f18e3931430b"
+    },
+    {
+      "key": "action_new",
+      "blob": "97e91823b99e6b549291901818ebb918116c06d6",
+      "bytes": 1520,
+      "sha256": "26aa17917f78b69320d412e5d4c42617bc458e4f9787afe93055f18e3931430b"
+    },
+    {
+      "key": "main_old",
+      "blob": "019d85e877d1ef75434eeb683913ecdbacbe03cf",
+      "bytes": 19629,
+      "sha256": "6a155e92555a5b2fbd9696820af1b881fff88dff39766868a13a77ccaec654a3"
+    },
+    {
+      "key": "main_new",
+      "blob": "01364e676225b40748f2d9d6b815c012b52dcb76",
+      "bytes": 30803,
+      "sha256": "5613a1cb18d1e2ca412160a167963742fb191e585011e7bf0eacf2d6cfb7529f"
+    },
+    {
+      "key": "lib_new",
+      "blob": "61fdf3a2a5561fb8810eb01270c693f7ce5f7859",
+      "bytes": 112721,
+      "sha256": "386fa3848d8cf62c3a3874963d3089f48a7992fc7e17555769e1531cbb20eb46"
+    },
+    {
+      "key": "hosted_new",
+      "blob": "a4bbad0b4f58c78a53ae56cc8d693430fb09e19d",
+      "bytes": 34164,
+      "sha256": "dcccff8106f6890ece72b3b9bc1da608263b745ce1f2485c79a65090f3bede59"
+    },
+    {
+      "key": "lockdown_new",
+      "blob": "f64ed6535b4eb53e50a43a7b5c5308c4f56960a6",
+      "bytes": 117485,
+      "sha256": "0c1802cad9ec9fbd6784181f52b84eeceee006d2016ced132c0b7446cd08140f"
+    },
+    {
+      "key": "troubleshoot_new",
+      "blob": "decda1841fb33aa825dac0c858ffa00db64ec7e0",
+      "bytes": 7388,
+      "sha256": "a449cdcd6eb849b10a0f48319534699b1d42079aa152370cf40db0cb4bde272b"
+    },
+    {
+      "key": "provenance_new",
+      "blob": "7c8b57dd88fa254f12f17d4a13aba377f25b871e",
+      "bytes": 2791,
+      "sha256": "2664be35925b7126c5e97767fbed21087322e215d62a0ba3369df363d58e0bd8"
+    },
+    {
+      "key": "canary_source13",
+      "blob": "53a1c7a4b14fec992d314f7c81eb5a58754d13dd",
+      "bytes": 18929,
+      "sha256": "952c6c1dfb85b275edce71dca984af62e9de7a7bbd78cacd43d5d2a9ad96a466"
+    },
+    {
+      "key": "canary_latest",
+      "blob": "859f4007e86442d247715e235785860432ca6429",
+      "bytes": 18929,
+      "sha256": "a370a1f0b2f5df04944209c2ec60011adba6f9305bf63f42bbb6f871e4dc41d3"
+    },
+    {
+      "key": "hepta_blob_policy",
+      "blob": "d867cbc5cae69837bbcaf4646b41da387d0a49f4",
+      "bytes": 1859,
+      "sha256": "b42ed6aeb9651f771edf01d8d31147f724ad4d36af92e195171da93ad02f48de"
+    }
+  ],
+  "official_issue": {
+    "number": 223,
+    "url": "https://github.com/openai/fence/issues/223",
+    "state": "open",
+    "last_read_comment": "v0.12.6 first-step block canaries passed, original socket ownership cause still unknown; no root-cause closure"
+  },
+  "review_boundary": {
+    "local_control_and_action_contract": "STATIC_REVIEW",
+    "official_logs": "READ_ONLY_ORIGINAL_RESULTS",
+    "full_fence_security_recertification": false,
+    "new_runner_image": "NOT_VERIFIED",
+    "new_workflow_dispatch": false,
+    "branch_or_ref_changed": false,
+    "h_used": false,
+    "actor_used": false,
+    "original_failure_closed": false
+  },
+  "files": [
+    {
+      "path": "AUDIT.md",
+      "blob": "ceddbda40bc993738c65edf4094aa99c5b09668b",
+      "bytes": 7102,
+      "sha256": "9f4078d32c46b8759d71b30b6b30f45fbd5ea645aa6fc53557b9ce925ccddeab",
+      "kind": "static_review"
+    },
+    {
+      "path": "WORKFLOW.diff",
+      "blob": "1c02ab2d1b555433a45edae643e86e478238d8b5",
+      "bytes": 486,
+      "sha256": "f6f0a50dc5f8a7ee7ac8d234b25bd831f8355ace20945875497ac3fb82357fb2",
+      "kind": "source_delta"
+    },
+    {
+      "path": "RELEASE_FEATURES.json",
+      "blob": "18487b4acddd5778b21f6416ac86ce46bdafc7ef",
+      "bytes": 8932,
+      "sha256": "8f158c190df027bf83e868fc68186e662e56d103b4c1c22d22c2012dc074b9a0",
+      "kind": "derived_source_index"
+    },
+    {
+      "path": "UNCHANGED_VERIFIER.rs.txt",
+      "blob": "7dead9c85d00c457217f8705afa855f70f943c9f",
+      "bytes": 1611,
+      "sha256": "a53160eb8d8a7dd41584d2ec4dcd9ad57666125458f20b0ac6d72d8f96afb361",
+      "kind": "exact_common_function_excerpt"
+    },
+    {
+      "path": "source/v0.10.0-local_control.rs.txt",
+      "blob": "491baa1c3b9ee9131b4f36775f44190787935269",
+      "bytes": 139437,
+      "sha256": "6c2df9563957e1230057a9a5315ecf63d9b854836625e3cc89315309202b0eec",
+      "kind": "official_source"
+    },
+    {
+      "path": "source/v0.11.1-local_control.rs.txt",
+      "blob": "9946488c42373d4e1cfe27793f74aa3e8ffa2ada",
+      "bytes": 156895,
+      "sha256": "6db7318713fb9d941e376c6333ac9d9982544d217062e31fce4812890161fbd5",
+      "kind": "official_source"
+    },
+    {
+      "path": "source/v0.12.4-local_control.rs.txt",
+      "blob": "254cd5c1decf965c20de7364bbe47af3b7343c69",
+      "bytes": 175592,
+      "sha256": "74731e06e65d1d960a88424b757f69381fb9ce4fa10798a91e55bdf467b8b5ea",
+      "kind": "official_source"
+    },
+    {
+      "path": "source/v0.12.6-local_control.rs.txt",
+      "blob": "f5152707ff3daacd7bc091153d137cd3467ddbd6",
+      "bytes": 185852,
+      "sha256": "0cb956f0302e4071f71dc92922a30b1e21b249ad3607c17f2ce2c67d2a72a495",
+      "kind": "official_source"
+    },
+    {
+      "path": "source/v0.13.0-local_control.rs.txt",
+      "blob": "cc867eb4cec7f59f5c700cf0fab1007e1c1a7ac2",
+      "bytes": 219013,
+      "sha256": "3f9058e1479bec467d070616ba6c5aad40bd8edd51d4ade1024c36ff384c6d80",
+      "kind": "official_source"
+    },
+    {
+      "path": "source/action.yml.txt",
+      "blob": "97e91823b99e6b549291901818ebb918116c06d6",
+      "bytes": 1520,
+      "sha256": "26aa17917f78b69320d412e5d4c42617bc458e4f9787afe93055f18e3931430b",
+      "kind": "official_source_old_new_identical"
+    },
+    {
+      "path": "source/v0.13.0-main.cts.txt",
+      "blob": "01364e676225b40748f2d9d6b815c012b52dcb76",
+      "bytes": 30803,
+      "sha256": "5613a1cb18d1e2ca412160a167963742fb191e585011e7bf0eacf2d6cfb7529f",
+      "kind": "official_source"
+    },
+    {
+      "path": "source/v0.13.0-bundle-manifest.json",
+      "blob": "3f0b00d990f9eca9b630feae63f5b6803379bb03",
+      "bytes": 592,
+      "sha256": "ac88a81a8b0a228862a9e286a235c2d219c3b400b739708e3da4c92195465134",
+      "kind": "official_source"
+    },
+    {
+      "path": "official/v0.13.0-release.json",
+      "blob": "375130603be09d19ceb37ea1d6a953aad1e9a1fc",
+      "bytes": 8687,
+      "sha256": "e67d23d58a84a605d02cc13759e4d86fd227fdccb0d3fa4f90768bcfae355a14",
+      "kind": "github_api_text"
+    },
+    {
+      "path": "official/v0.13.0-distribution-commit.json",
+      "blob": "0fde652c8e0177b4c5fa2a47b5e64e50145f914d",
+      "bytes": 6303,
+      "sha256": "54778fcb727200cbd15e6617a4ed6abdb4b28857bfec4a9b59d16c6e56e3bc70",
+      "kind": "github_api_text"
+    },
+    {
+      "path": "official/v0.13.0-source-commit.json",
+      "blob": "3fc0b08f593bf47a0861a59fdf9b4f7a72bd1ed9",
+      "bytes": 6004,
+      "sha256": "57800c41d24f3e3135d217ad34d30eb79f6032492c91915eb2d4936be73a9c2a",
+      "kind": "github_api_text"
+    },
+    {
+      "path": "official/issue223.json",
+      "blob": "06fbc5344b6e5b616e81808a5ad842fa3db1f523",
+      "bytes": 4336,
+      "sha256": "972ad8ff3d2dc76837b3ee3e7af52feda2c80c18727595233c20a60986f92407",
+      "kind": "github_api_text"
+    },
+    {
+      "path": "official/issue223-comments.json",
+      "blob": "15bc155fe04de682691b81beed1c9e8119243727",
+      "bytes": 7715,
+      "sha256": "e4df4edb093abf672398fdfcaabff51e1defb58fb7be41df84e99d4852d303d4",
+      "kind": "github_api_text"
+    },
+    {
+      "path": "official/canary43218455499-jobs.json",
+      "blob": "053e539dfcee592a80b8b99ae2ac49be8c9cb02f",
+      "bytes": 25807,
+      "sha256": "96162ba24610236a257991d8ba4393d94a837fd8158b008870b81605f31264f6",
+      "kind": "github_api_text"
+    },
+    {
+      "path": "official/release42684760545-jobs.json",
+      "blob": "ba697806b440a9abefeb10279a2564365880faab",
+      "bytes": 178074,
+      "sha256": "ab52ed2c3cb2ab3fc52b3bf6b3aa1454f5c63fa2c96091cc28c2458735e3d52d",
+      "kind": "github_api_text"
+    },
+    {
+      "path": "logs/original-edaf-fence.job.log",
+      "blob": "51fe55903ee5f24b0e138a265602732fd64324b2",
+      "bytes": 9222,
+      "sha256": "ed46a8e0e8f8b8b2781349a903dd3af0bb2d12bc41cd4677c8419d8ab2bc8538",
+      "kind": "original_failed_job_log"
+    },
+    {
+      "path": "logs/official-131183598570.job.log",
+      "blob": "0e3d94a565b0216705e614c776d2e4f9dfbc1e00",
+      "bytes": 23457,
+      "sha256": "09548aeb5247607ca41716e5044ecb80cc5e2826ae9cfce399c1329a1659da3d",
+      "kind": "official_completed_job_log"
+    },
+    {
+      "path": "logs/official-131183598903.job.log",
+      "blob": "93d0fd726781a5c55fcf2041e9d6e709a8eae2a4",
+      "bytes": 23507,
+      "sha256": "4ae43d1fb7043eef9830045b7e73af62d9a381d6adb7b45ee3af4c1638acb63e",
+      "kind": "official_completed_job_log"
+    },
+    {
+      "path": "logs/official-129393561886.job.log",
+      "blob": "33400ebf0705bca38519883fcc30ac40ec396a9f",
+      "bytes": 23765,
+      "sha256": "12116a86247542117772e3a37271ea6e3ba688ee2e6fe055316e5f8971b3e8d5",
+      "kind": "official_completed_job_log"
+    }
+  ]
+}

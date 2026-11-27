@@ -1,0 +1,193 @@
+{
+  "best_checkpoint": {
+    "bytes": 450552,
+    "sha256": "14a9c527bf87ad6524c771ab7da5a1ccf32723cd1f2fc6c7d8f6d8797d1b2ed9"
+  },
+  "best_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/checkpoints/epoch-0126.pt",
+  "checkpoint": {
+    "bytes": 450552,
+    "sha256": "032d43dc0e6f20a6d4113102ae32faa57809c714875beec4ab2ab76358e93441"
+  },
+  "checkpoint_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/checkpoints/epoch-0127.pt",
+  "epoch": {
+    "complete": true,
+    "cumulative_process_cpu_seconds": null,
+    "cumulative_process_wall_seconds": 37186.457580900285,
+    "development": {
+      "accuracy": 0.650851276915373,
+      "balanced_accuracy_present_classes": 0.343638917438804,
+      "brier_half_sum": 0.2518153643748077,
+      "brier_mean_classes": 0.045784611704510494,
+      "confusion_matrix": [
+        [
+          5755,
+          12,
+          53,
+          1,
+          0,
+          484,
+          32,
+          0,
+          90,
+          0,
+          182
+        ],
+        [
+          122,
+          33,
+          0,
+          19,
+          0,
+          265,
+          33,
+          0,
+          144,
+          0,
+          15
+        ],
+        [
+          316,
+          0,
+          580,
+          24,
+          0,
+          169,
+          6,
+          0,
+          4,
+          0,
+          41
+        ],
+        [
+          1,
+          4,
+          466,
+          9076,
+          0,
+          97,
+          1382,
+          234,
+          106,
+          0,
+          134
+        ],
+        [
+          188,
+          0,
+          0,
+          0,
+          0,
+          106,
+          2,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          841,
+          0,
+          20,
+          1,
+          0,
+          4115,
+          14,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          172,
+          0,
+          418,
+          946,
+          0,
+          119,
+          909,
+          21,
+          0,
+          0,
+          669
+        ],
+        [
+          4,
+          17,
+          149,
+          108,
+          0,
+          67,
+          439,
+          240,
+          2,
+          0,
+          0
+        ],
+        [
+          5,
+          19,
+          0,
+          208,
+          0,
+          255,
+          1106,
+          0,
+          10,
+          0,
+          342
+        ],
+        [
+          76,
+          0,
+          0,
+          0,
+          0,
+          121,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          42,
+          0,
+          0,
+          2,
+          0,
+          5,
+          234,
+          0,
+          0,
+          0,
+          78
+        ]
+      ],
+      "ece_15_equal_width_bins": 0.10551910187239406,
+      "events": 31952,
+      "macro_f1_11_classes": 0.3240208595860532,
+      "macro_f1_present_classes": 0.3240208595860532,
+      "nll": 1.2178108454901484
+    },
+    "epoch": 127,
+    "events": 89216,
+    "phase_process_cpu_seconds": 22798.017438502,
+    "phase_process_wall_seconds": 22810.91307456419,
+    "training_target_weight_sum": 47014.67413821177,
+    "training_weighted_loss": 1.0888447345432661,
+    "training_weighted_loss_numerator": 51191.68038165935
+  },
+  "logical_main_updates": 1524,
+  "previous_commit": {
+    "bytes": 3900,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/commits/epoch-0126.json",
+    "sha256": "f56dfe47b224888199f5c4aaaa413a024e788604e3500eaab8f0519ecc3970c5"
+  },
+  "schema": "hcsn-c2-complete-epoch-commit-v1",
+  "stopping": {
+    "best": 0.33231907785802234,
+    "best_epoch": 126,
+    "plateau_anchor": 0.33231907785802234,
+    "stale_epochs": 1
+  }
+}

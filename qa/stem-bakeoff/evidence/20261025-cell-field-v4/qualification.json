@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.cell-field-v4.qualification",
+  "python_suites": {
+    "test_cell_field_data_v4.py": {
+      "test_count": 4,
+      "source_sha256": "8b366fa86bad0b98328996dc228455e98328ff183fd05d81d4cc040fda850fe9",
+      "suite_status": "passed"
+    },
+    "test_cell_field_dynamics_v4.py": {
+      "test_count": 6,
+      "source_sha256": "eb47e426d332832361526e7be5394ccbd27dbeef1e85fd2874fb39bbf41d1c1b",
+      "suite_status": "passed"
+    },
+    "test_cell_field_evaluate_v4.py": {
+      "test_count": 7,
+      "source_sha256": "18c653f49028306237eab8ee64ef32f85da358382cafe76137ccfab5cd7bd429",
+      "suite_status": "passed"
+    },
+    "test_cell_field_joint_v4.py": {
+      "test_count": 3,
+      "source_sha256": "8cbbaff748fb4cb77419038bcab08660d1c5536b816b84b965363ed0e6773c65",
+      "suite_status": "passed"
+    },
+    "test_cell_field_pressure_v4.py": {
+      "test_count": 6,
+      "source_sha256": "440c826ba9085af27db9cb4ed3d2b5cacc102f0f2646e49ca901a487a76161ad",
+      "suite_status": "passed"
+    },
+    "test_cell_field_replay_v4.py": {
+      "test_count": 5,
+      "source_sha256": "ca3115be7e4f0372ee6d22fea26423bdfc692df0e6403af944793db548dd2a21",
+      "suite_status": "passed"
+    },
+    "test_cell_field_summary_v4.py": {
+      "test_count": 6,
+      "source_sha256": "db2fb2c8c0baaf80147372dded044dd8fc3a7fd9069688ead24d0d869e823e9d",
+      "suite_status": "passed"
+    },
+    "test_cell_field_tradeoffs_v4.py": {
+      "test_count": 3,
+      "source_sha256": "a5f09f83ff6037044ad6da5d12bdba933bf0fe7912ffed2c3ed1709536d5ccd9",
+      "suite_status": "passed"
+    }
+  },
+  "unique_python_tests": 40,
+  "tests_are_synthetic_integrity_fixtures_not_task_efficacy": true,
+  "core_integrated_run": {
+    "tests": 28,
+    "seconds": 19.316,
+    "status": "passed"
+  },
+  "final_joint_suite": {
+    "tests": 3,
+    "seconds": 9.9,
+    "status": "passed"
+  },
+  "final_summary_suite": {
+    "tests": 6,
+    "seconds": 0.266,
+    "status": "passed"
+  },
+  "final_replay_suite": {
+    "tests": 5,
+    "seconds": 9.926,
+    "status": "passed"
+  },
+  "format": {
+    "command": "just fmt",
+    "status": "passed",
+    "message": "No changed files need formatting; repository formatter has no qa Python route"
+  },
+  "native_qualification": "native branch qualification/scientific-candidate-review/qualification.json",
+  "protocol_commit": "b05a6c823ba7f7651aa5709c2828405e8333b061",
+  "executed_code_commit": "55d078fa1182006a4694aabfa48bbab23de9878a",
+  "registration_scope": "remote protocol before model outcomes; local executed-source hash snapshot, then identical source staged remotely; not independent preregistration",
+  "audit_corrections": "post-run auditor CLI-pin and original-versus-canonical protocol-copy validation corrections; original run and inference rules unchanged"
+}

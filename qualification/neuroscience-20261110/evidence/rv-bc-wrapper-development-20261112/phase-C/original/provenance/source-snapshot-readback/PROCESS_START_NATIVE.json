@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-B",
+      "-c",
+      "import hashlib\nimport json\nimport os\nimport stat\nimport sys\n\nPATHS = (\n    \"/home/qq/neuro-rv-bc-inputs-862531d11598-v1/B-source-after.json\",\n    \"/home/qq/neuro-rv-bc-inputs-862531d11598-v1/C-source-before.json\",\n    \"/home/qq/neuro-rv-bc-inputs-862531d11598-v1/C-source-after.json\",\n)\nEXPECTED_SHA256 = \"d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da\"\nEXPECTED_BYTES = 40017\nMAX_BYTES = 65536\nDENIED = {\n    \"os.system\", \"os.fork\", \"os.forkpty\", \"os.posix_spawn\", \"os.exec\",\n    \"os.remove\", \"os.rename\", \"os.mkdir\", \"os.rmdir\", \"os.chmod\",\n    \"os.chown\", \"os.truncate\", \"os.utime\", \"os.symlink\", \"os.link\",\n    \"os.putenv\", \"os.unsetenv\", \"shutil.copyfile\", \"shutil.rmtree\",\n}\n\n\ndef audit(event, args):\n    if event in DENIED or event.startswith((\"subprocess.\", \"socket.\", \"pty.\")):\n        raise RuntimeError(\"Read-only audit denied \" + event)\n    if event == \"open\":\n        path, _, flags = args\n        if path not in PATHS or flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND):\n            raise RuntimeError(\"Read-only audit denied file open\")\n\n\ndef identity(info):\n    return (info.st_dev, info.st_ino, info.st_mode, info.st_nlink,\n            info.st_uid, info.st_gid, info.st_size, info.st_mtime_ns,\n            info.st_ctime_ns)\n\n\ndef observe(path):\n    first_path = os.stat(path, follow_symlinks=False)\n    fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW)\n    try:\n        before = os.fstat(fd)\n        if identity(first_path) != identity(before):\n            raise RuntimeError(\"Path changed before read\")\n        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:\n            raise RuntimeError(\"Regular unlinked-alias-free file required\")\n        if not 0 <= before.st_size <= MAX_BYTES:\n            raise RuntimeError(\"Snapshot exceeds fixed byte ceiling\")\n        raw = bytearray()\n        while True:\n            part = os.read(fd, 8192)\n            if not part:\n                break\n            raw.extend(part)\n            if len(raw) > MAX_BYTES:\n                raise RuntimeError(\"Snapshot grew past fixed byte ceiling\")\n        after = os.fstat(fd)\n    finally:\n        os.close(fd)\n    after_path = os.stat(path, follow_symlinks=False)\n    if identity(before) != identity(after) or identity(before) != identity(after_path):\n        raise RuntimeError(\"Snapshot changed during read\")\n    if len(raw) != before.st_size:\n        raise RuntimeError(\"Snapshot byte count mismatch\")\n    digest = hashlib.sha256(raw).hexdigest()\n    return {\n        \"path\": path, \"bytes\": len(raw), \"sha256\": digest,\n        \"version\": \":\".join(str(item) for item in (\n            before.st_dev, before.st_ino, before.st_size,\n            before.st_mtime_ns, before.st_ctime_ns)),\n        \"uid\": before.st_uid, \"gid\": before.st_gid,\n        \"mode\": stat.S_IMODE(before.st_mode), \"link_count\": before.st_nlink,\n        \"stat_before_after_equal\": True,\n        \"matches_frozen_snapshot\": len(raw) == EXPECTED_BYTES and digest == EXPECTED_SHA256,\n    }\n\n\nif os.geteuid() != 1000:\n    raise RuntimeError(\"Expected ordinary uid 1000\")\nsys.addaudithook(audit)\nfiles = []\nfor path in PATHS:\n    try:\n        files.append(observe(path))\n    except Exception as error:\n        files.append({\"path\": path, \"error\": {\"type\": type(error).__name__, \"message\": str(error)},\n                      \"matches_frozen_snapshot\": False})\nmatched = all(item[\"matches_frozen_snapshot\"] for item in files)\nprint(json.dumps({\n    \"schema\": \"hepta.rv.source-snapshot-readback.v1\",\n    \"scope\": \"read-only file content/version observation; not owner attestation\",\n    \"expected_sha256\": EXPECTED_SHA256, \"expected_bytes\": EXPECTED_BYTES,\n    \"files\": files, \"all_match_frozen_snapshot\": matched,\n    \"actor_calls\": 0, \"written_files\": 0,\n    \"python\": {\"executable\": sys.executable, \"version\": sys.version, \"uid\": os.geteuid()},\n}, sort_keys=True, allow_nan=False))\nraise SystemExit(0 if matched else 2)\n"
+    ],
+    "created_unix_ms": 1794489777628,
+    "cwd": "/home/qq",
+    "env_keys": [
+      "PYTHONUNBUFFERED"
+    ],
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "execution_mode": "operator",
+    "host": "ai395",
+    "id": "1a1cfecfddc-2564-1ae8",
+    "idempotency_key": "neuro4-rv-final-source-stat-862531d-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1cfecfddc-2564-1ae8",
+    "request_digest": "d8dfd22d12d6b161ea7ca4e2318f0028651ff779dcb5f4695b7a60b26417430c",
+    "request_fingerprint": 15627440323030331745,
+    "ssh_target": "ai395-lan",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1cfecfddc-2564-1ae8"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1cfecfddc-2564-1ae8"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

@@ -1,0 +1,126 @@
+{
+  "base_commit": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+  "base_tree": "08f5d464bedff1c1acbb3abe1d7f28e43827854f",
+  "candidate_commit": "8016166226cd6206ba09c83fa64acc91eca368ba",
+  "candidate_tree": "8616ba3b3667549340e0ec10eb15fc3df745ad3d",
+  "candidate_parent": [
+    "6cbad406a4a203201edc0e103c1377d3664e3fbe"
+  ],
+  "full_tree_leaves": 59349,
+  "all_modes_preserved": true,
+  "exact_changed_paths": [
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_learning_readback_test_support.rs",
+    "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs"
+  ],
+  "untouched_leaves": 59345,
+  "assertion_macro_counts": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "before": {
+        "assert": 0,
+        "assert_eq": 0,
+        "assert_ne": 0,
+        "debug_assert": 0,
+        "debug_assert_eq": 0,
+        "debug_assert_ne": 0,
+        "ensure": 0,
+        "bail": 0
+      },
+      "after": {
+        "assert": 0,
+        "assert_eq": 0,
+        "assert_ne": 0,
+        "debug_assert": 0,
+        "debug_assert_eq": 0,
+        "debug_assert_ne": 0,
+        "ensure": 0,
+        "bail": 0
+      },
+      "counts_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+      "before": {
+        "assert": 0,
+        "assert_eq": 0,
+        "assert_ne": 0,
+        "debug_assert": 0,
+        "debug_assert_eq": 0,
+        "debug_assert_ne": 0,
+        "ensure": 0,
+        "bail": 0
+      },
+      "after": {
+        "assert": 0,
+        "assert_eq": 0,
+        "assert_ne": 0,
+        "debug_assert": 0,
+        "debug_assert_eq": 0,
+        "debug_assert_ne": 0,
+        "ensure": 0,
+        "bail": 0
+      },
+      "counts_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback_test_support.rs",
+      "before": {
+        "assert": 0,
+        "assert_eq": 18,
+        "assert_ne": 0,
+        "debug_assert": 0,
+        "debug_assert_eq": 0,
+        "debug_assert_ne": 0,
+        "ensure": 0,
+        "bail": 0
+      },
+      "after": {
+        "assert": 0,
+        "assert_eq": 18,
+        "assert_ne": 0,
+        "debug_assert": 0,
+        "debug_assert_eq": 0,
+        "debug_assert_ne": 0,
+        "ensure": 0,
+        "bail": 0
+      },
+      "counts_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "before": {
+        "assert": 0,
+        "assert_eq": 0,
+        "assert_ne": 0,
+        "debug_assert": 0,
+        "debug_assert_eq": 0,
+        "debug_assert_ne": 0,
+        "ensure": 0,
+        "bail": 0
+      },
+      "after": {
+        "assert": 0,
+        "assert_eq": 0,
+        "assert_ne": 0,
+        "debug_assert": 0,
+        "debug_assert_eq": 0,
+        "debug_assert_ne": 0,
+        "ensure": 0,
+        "bail": 0
+      },
+      "counts_equal": true
+    }
+  ],
+  "checkpoint_non_test_difference": false,
+  "readback_non_test_difference": false,
+  "readback_verifier_function_bodies_byte_identical": true,
+  "material_only_change_is_last_use_clone_to_move": true,
+  "deleted_helper_cfg_test": true,
+  "deleted_helper_global_rust_references": [
+    "one declaration, zero callers at baseline"
+  ],
+  "no_native_compilation_or_tests_run": true,
+  "no_git_index_refs_mutated": true
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "renderer-v2-source-recovery-and-delta-v1",
+  "v1_runtime_source_exact_recovered": {
+    "input_contract.py": {
+      "bytes": 13178,
+      "sha256": "4e8d0db3a0cb80735e40aa2cd2afabb4d637cbc9653ec3f56204c3aad1ffb921"
+    },
+    "render_c2_resources.py": {
+      "bytes": 14032,
+      "sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef"
+    }
+  },
+  "recovery_basis": "Original tool-call source text, followed by exact SHA256 agreement with pre-reset source identities. This is source recovery, not recreation of old test execution.",
+  "plan_source": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/resource-plan/PLAN.json",
+  "plan_identity": {
+    "bytes": 8456,
+    "sha256": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b"
+  },
+  "upstream_git_commit": "b908827abcf60b7ce22fe1b8b299206a31484550",
+  "upstream_git_tree": "573c6399fcc2c2b9ef4197f4f503520cde3cad51",
+  "v1_archive_original_bytes_recovered": false,
+  "v1_compile_original_receipt_recovered": false,
+  "v1_compile_historical_hash_only": "02e1c1470477509bde344f35f1d617a11139b0247a748680e817f25616c19e46",
+  "v1_review_raw_proc_artifacts_recovered": false,
+  "v2_delta": "Only three independent complete-OS outer guards: direct_child_CPU_complete is true; total_attempt_CPU_unknown_or_lower_bound is false; adopted_child_wait4 is empty. Main plotting/report source is byte-identical.",
+  "v2_actual_inputs_read": false,
+  "v2_render_executed": false,
+  "production_version_adopted": false,
+  "execution_authorized": false
+}

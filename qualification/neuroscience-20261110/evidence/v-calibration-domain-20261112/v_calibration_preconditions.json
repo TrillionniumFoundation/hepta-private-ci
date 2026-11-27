@@ -1,0 +1,110 @@
+{
+  "schema": "ctrl.v-calibration-next-study-preconditions.v1",
+  "status": "HOLD",
+  "owner_evaluation": "not_evaluated",
+  "owner_decision": null,
+  "execution_authorized_by_this_artifact": false,
+  "fixed_parameters": {
+    "alpha": 0.1,
+    "ridge": 0.001,
+    "read_seconds_bound": 30,
+    "finalizer_seconds_reserve": 5,
+    "action_budget_seconds": 40,
+    "episode_wall_seconds": 60
+  },
+  "source_count_gate": {
+    "formula": "rank = floor((n_independent_source_groups + 1) * alpha)",
+    "finite_lower_bound_requires": "rank >= 1",
+    "minimum_at_alpha_0_1": 9,
+    "target_cells": {
+      "[false,false,1]": {
+        "public_category": "date",
+        "minimum_sources": 9,
+        "observed_sources_each_model": 9
+      },
+      "[false,false,3]": {
+        "public_category": "total",
+        "minimum_sources": 9,
+        "observed_sources_each_model": 9
+      }
+    },
+    "current_disjoint_cell_layout_total": 18,
+    "source_rank_shortfall": 0,
+    "replicates_are_not_independent_sources": true,
+    "shared_sources_across_models_are_not_doubled": true,
+    "not_a_power_or_conditional_coverage_guarantee": true
+  },
+  "completeness_gate": {
+    "required": "Every originally planned calibration row has known paired gain and every raw coordinate lies within the train-only observed minimum/maximum; no discarded rows",
+    "observed": {
+      "frozen": {
+        "known": 54,
+        "planned": 54,
+        "eligible": 45,
+        "rejected": 9
+      },
+      "adapted": {
+        "known": 54,
+        "planned": 54,
+        "eligible": 47,
+        "rejected": 7
+      }
+    },
+    "passes": false,
+    "adding_calibration_rows_cannot_repair_retained_outliers_with_fixed_training_envelope": true
+  },
+  "next_prerequisites": [
+    {
+      "id": "new_immutable_protocol",
+      "required": "A separately frozen new development plan, exact current source/model/context/receipt identities, honest retained historical denominators, disjoint registered fit/calibration/evaluation sources; no old evaluation material repurposed as calibration or independent confirmation."
+    },
+    {
+      "id": "real_training_domain_coverage",
+      "required": "A priori training-domain coverage using actual permitted training observations; refit only through the original admitted-input path. Do not clip live/calibration inputs, expand limits from evaluation, drop planned outliers, change alpha, relabel a source or overwrite a checkpoint."
+    },
+    {
+      "id": "complete_independent_calibration",
+      "required": "Before evaluating benefit, both content-specific checkpoints must recompute complete=true over every registered calibration row and retain at least nine distinct admitted sources per registered target cell, with unchanged rank and strict checkpoint parser. Diagnostic-consumed material must retain its exposure status."
+    },
+    {
+      "id": "identity_and_cold_load",
+      "required": "Use authentic new fit/adaptation/freeze/cold-load artifacts as required by the original API; the adaptation receipt binds the frozen-study SHA and fit-source set. Never copy an old receipt, pin, export or START under a new run identity."
+    },
+    {
+      "id": "decision_and_cost_acceptance",
+      "required": "Only an in-envelope, budget-valid public state with finite fitted score plus the original non-null residual correction can reach the existing score>0 READ decision. Calibration gate success may correctly yield nonpositive_value/STOP; do not force READ. Preserve full-cost unknowns until provider, energy, fit, calibration and tuning costs are actually measured."
+    }
+  ],
+  "budget_example_preserving_current_layout": {
+    "scope": "Planning counts only; no new run dispatched; this baseline is not evidence that 24 training sources cover the required domain or that statistical power is adequate",
+    "fit_sources": 24,
+    "calibration_sources": 18,
+    "evaluation_sources": 16,
+    "cases_per_source": 3,
+    "content_modes": 2,
+    "methods_per_mode": 6,
+    "fit_pairs_per_mode": 72,
+    "calibration_pairs_per_mode": 54,
+    "all_collection_pairs_per_mode": 126,
+    "macro_executions_per_pair": 2,
+    "collection_macro_executions_both_modes": 504,
+    "calibration_macro_executions_both_modes": 216,
+    "factorial_macro_executions": 576,
+    "total_collection_plus_factorial_macro_executions": 1080,
+    "formula": "4 * cases_per_source * (fit_sources + calibration_sources) + 12 * evaluation_sources * evaluation_cases_per_source",
+    "additional_training_coverage_sources_required": null,
+    "physical_full_cost_budget": null,
+    "optimizer_steps_accounted_separately": true
+  },
+  "acceptance": {
+    "mechanical_calibration": [
+      "Original planned/exported counts agree; zero UNKNOWN rows admitted to fitting",
+      "All four selected fit/calibration canonical input digests match original checkpoints",
+      "Training envelope remains train-only and unaltered; every planned calibration row is inside it",
+      "Both checkpoint complete flags are true and all target-cell ranks are >=1",
+      "Authentic cold readback binds the exact source/model/context and frozen time budget"
+    ],
+    "scientific_benefit": "Still requires the original predeclared source-level effect/power/confirmation and full-cost criteria; nine sources and one READ do not satisfy these criteria.",
+    "current_V_effect_status": "NOT_ESTABLISHED"
+  }
+}

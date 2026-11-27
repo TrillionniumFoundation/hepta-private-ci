@@ -1,0 +1,59 @@
+{
+  "RUN_exists": false,
+  "additional_limits": [
+    "Only fixed acknowledgedsafe-point command arrival isplanned; no arbitrarykernelpreemption/latencytest.",
+    "Allrestoredlive-controlviews nowreadonly; this candidate narrows functionality relative to previousreconnect and doesnotqualify continuedpublication fromrestore.",
+    "FrameReader parsesoneboundedframe percall; no claim arbitrarymulti-commandstream or adversarial flood/sessionauthentication.",
+    "Realclock origin/deadline45s andsupervisor-heldepoch continuity; no OSreboot/foreignhostvalidationexperiment.",
+    "Unknown/fault afterenteredgeneration remainsblocked; presentqualification doesnotinject thoseactualbackendfaults ordeadlinecrossingduringcompute.",
+    "Parentharddeath/kernel/storage/cleanup receiptsnotuniversallyguaranteed; terminal5CPU16MiB100files notstrictglobalquota."
+  ],
+  "counts": {
+    "Adam": 0,
+    "allocation_restores": 4,
+    "metadata_128bit_nonce": 1,
+    "new_selective_Actor_encode": 1,
+    "producer_checks": 10,
+    "producer_refusals": 3,
+    "protocol_checks": 2,
+    "protocol_refusals": 9,
+    "recovery_checks": 8,
+    "recovery_refusals": 1,
+    "reference_calls": 0,
+    "supervisor_checks": 2,
+    "supervisor_refusals": 1,
+    "total_checks": 22,
+    "total_refusals": 14
+  },
+  "execution_status": "No RUN exists at review; no module/model/protocol execution byreviewer. Source readiness only; parentseparate single-runadmission required.",
+  "findings": [
+    {
+      "detail": "A restored generated midpoint with no cancellation/fault marker is advertised as audit-only. Calling public await_cancel with valid incoming command or replay_control with clock.command reaches _cancel and writes control-observed/cancel-intent/cancelled/control-ack. This contradicts all-restores read-only / no-new-effects narrowing, even though no model rerun occurs. Existing cancelled recovery test is masked by terminal markers and does not expose this path.",
+      "fix": "Reject restored read-only views before any polling or _cancel side effect in every public effect entrypoint; retain check in publish. Add minimal current live midpoint restored-view negatives before cancellation so terminal guard cannot mask readonly failure, verify no journal/backend changes and no command consumption.",
+      "id": "readonly_restore_not_enforced_by_all_public_effect_methods",
+      "location": "live_core.restore sets _live_readonly; publish checks it, await_cancel/replay_control do not",
+      "resolution": "await_cancel and replay_control now reject _live_readonly before validation/poll/sideeffect; _cancel also defends. Producer after ack2 restoresview beforeREADY publication, tests both exact readonly refusals and savesREADONLY inventories. No commandyet/no terminal marker, so refusal notmasked. Original liveattempt remainsunmodified; noextra modelwork.",
+      "resolved": true
+    },
+    {
+      "detail": "It validates intent/final wire against pinned oldwire and first.route==last.route, but never requires these routes to equal independently reconstructed oldroute with currentartifact/requestidentity (or exact acknowledged midpoint route). Two mutually matching changed numeric routes would satisfy this portion if checksums/refs supplied consistently. verify earlier midpoint does not carry its route into this later check. Not external authentication, but insufficient independent producer-output consistency versus stated complete route binding.",
+      "fix": "Independently reconstruct expected route in verify_ack as verify does and compare both cancelled/intent routes exactly (including current request/artifact/feature/value/action). No new model call needed.",
+      "id": "ack_verifier_not_exact_route_to_midpoint_reference",
+      "location": "verify_control.verify_ack last state checks",
+      "resolution": "verify_ack rebuilds expectedoldroute pluscurrentartifact/requestidentity, checks bothintent/finalroutesexact plusREADY route/wireSHA. Historicalnumericroute remains independentpinned evidence, notselfcomparison.",
+      "resolved": true
+    }
+  ],
+  "method": "Static source/AST/hash only; no candidate/module/protocol/model execution.",
+  "other_source_review": [
+    "Real clock.live samples drive admission/predispatch/preappend; _saveobserve permits knownbytes audit after expiry. Boundary deadline detection cancels without new output; expiredrestore still rejected. Literal oldAPIs remain separate.",
+    "Four events correct partialorder; local ack aftercancelintent/final/controlmetadata. Duplicate liveinmemory request returns existingrefs; channelfault blocked withreadonlyrestore intended.",
+    "Nonblocking framedpipe strictcanonical/2048 header+body, EOF/partial/timeout faultreader. Explicit pass(cr,aw)/close(cw,ar); supervisor closes childends immediately and parentends before recovery. No readerthread; fork caps/ownership inherited.",
+    "Final10producer+8recovery+2controls+2supervisor=22checks;3+1+9+1=14refusals.1serve4restore0Adam/reference. Protocol negatives including splitwrites/EOF/expired/injectedclock are metadata-only, not backendfaults.",
+    "Normalclock deadline45s underworker30/sup60/outer90; not strict latency/globalbudget proof. Capacity60files/16MiB terminal notlivequota."
+  ],
+  "prior_review_sha256": "a550c537d48ef04f4f071a34a136f86a6a1191b2ef985f2290b8f9ea2040b3f7",
+  "source_freeze_sha256": "ace422cc766e54fa4fb21884815d6a173fcb53e84f507b2dcdc68cc910082129",
+  "status": "PASS_SOURCE_SCOPED_LOCAL_ASYNC_CONTROL_BOUNDARY",
+  "verified_freeze_files": 31
+}

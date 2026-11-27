@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/workspace/scratch/e42bf1712d56/tooling/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "--check",
+    "--edition",
+    "2024",
+    "--config-path",
+    "/workspace/scratch/e42bf1712d56/windows-work/codex-rs/rustfmt.toml",
+    "sources/2909/codex-rs/hepta-control-plane/src/scope_lane_wal.rs",
+    "sources/2909/codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs"
+  ],
+  "returncode": 0,
+  "output": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n"
+}

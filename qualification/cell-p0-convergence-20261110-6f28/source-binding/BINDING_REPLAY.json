@@ -1,0 +1,51 @@
+{
+  "kind": "synthetic-event-real-recorder",
+  "results": [
+    {
+      "case": "original-missing-bindings",
+      "exit_code": 2,
+      "status": "rejected",
+      "command_dispatched": false,
+      "error": "invalid source_sha"
+    },
+    {
+      "case": "push",
+      "exit_code": 0,
+      "status": "passed",
+      "command_dispatched": true,
+      "error": null
+    },
+    {
+      "case": "manual",
+      "exit_code": 0,
+      "status": "passed",
+      "command_dispatched": true,
+      "error": null
+    },
+    {
+      "case": "pull-request-head",
+      "exit_code": 0,
+      "status": "passed",
+      "command_dispatched": true,
+      "error": null
+    },
+    {
+      "case": "wrong-event-source",
+      "exit_code": 2,
+      "status": "rejected",
+      "command_dispatched": false,
+      "error": "checkout does not match the clean tested identity"
+    },
+    {
+      "case": "dirty-source",
+      "exit_code": 2,
+      "status": "rejected",
+      "command_dispatched": false,
+      "error": "checkout does not match the clean tested identity"
+    }
+  ],
+  "runner_sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+  "workflow_sha256": "7d3013696084d55222eacdaacbea5ead11520afeee53b7d104b398e8531e48a5",
+  "hosted_run_verified": false,
+  "native_execution_verified": false
+}

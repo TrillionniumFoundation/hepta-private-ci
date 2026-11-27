@@ -1,0 +1,232 @@
+{
+  "schema": "hepta.original-1026-inventory-archive.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_claim": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "original_asset": {
+    "bytes": 777704,
+    "original_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-1026-source-caller-v2/source-after.files.json.gz",
+    "path": "source-after.files.json.gz",
+    "sha256": "a9a65b8ff183f5f359e64ca6179ba9d6de760aede16d841a1d078eb3dd2b4cc8",
+    "stat": {
+      "ctime_ns": "1794487123682982529",
+      "inode": "76589385",
+      "mtime_ns": "1794487123682982529"
+    },
+    "transport": {
+      "bytes": 777704,
+      "codec": "identity",
+      "gzip_is_transfer_only": false,
+      "original_bytes_preserved": true,
+      "sha256": "a9a65b8ff183f5f359e64ca6179ba9d6de760aede16d841a1d078eb3dd2b4cc8"
+    }
+  },
+  "reconstruction": {
+    "ordered_paths": [
+      "original/source-after.files.json.gz.part000",
+      "original/source-after.files.json.gz.part001",
+      "original/source-after.files.json.gz.part002"
+    ],
+    "operation": "binary concatenate in ascending offset without separator",
+    "total_bytes": 777704,
+    "sha256": "a9a65b8ff183f5f359e64ca6179ba9d6de760aede16d841a1d078eb3dd2b4cc8",
+    "original_gzip_stays_original": true,
+    "base64_transport_decode_is_lossless": true
+  },
+  "verification": {
+    "gzip_bytes": 777704,
+    "gzip_sha256": "a9a65b8ff183f5f359e64ca6179ba9d6de760aede16d841a1d078eb3dd2b4cc8",
+    "gap_free_original_spans": 32,
+    "gzip_flags": 0,
+    "decoded_bytes": 2739429,
+    "decoded_sha256": "8de3eb210fd92cbf1810930ce7a86cca766689ca188386d3a8bdde677a21e6e2",
+    "gzip_crc32": "92b91083",
+    "deflate_blocks": 37,
+    "decoder_reference_blob": "3a42efacae76ecb8522ed90e9204cccfe72d8255",
+    "json_type": "array",
+    "json_keys": null,
+    "json_length": 15046,
+    "raw_original_gzip_preserved": true,
+    "raw_original_json_not_reserialized": true,
+    "tests_or_jobs_started": false,
+    "actors_started": 0,
+    "unique_paths": 15046,
+    "duplicate_paths": 0,
+    "selected_original_inventory_records": [
+      {
+        "bytes": 12803,
+        "mode": "100644",
+        "path": ".github/blob-size-allowlist.txt",
+        "sha256": "007182d5c7e351e5d227b732706a520d2ef8b5dafdd059c6877dd22b1e17cb18"
+      },
+      {
+        "bytes": 1108372,
+        "mode": "100644",
+        "path": "CALLERS.toml",
+        "sha256": "64153616508ffa8319f06cdf209dba5b1b19d4f6dc202293cfe286c8dafbbf02"
+      },
+      {
+        "bytes": 38402,
+        "mode": "100644",
+        "path": "scripts/verify_hepta_callers.py",
+        "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+      }
+    ],
+    "source_claim_from_original_handoff": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "original_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-1026-source-caller-v2/source-after.files.json.gz",
+    "original_captured_stat": {
+      "ctime_ns": "1794487123682982529",
+      "inode": "76589385",
+      "mtime_ns": "1794487123682982529"
+    },
+    "original_source_inventory_is_after_snapshot": true,
+    "original_file_was_not_written_or_recomputed": true,
+    "remote_read_scope": "Existing create-only base64 transfer files of the original source-after gzip; no process_start, test, actor, config or source mutation.",
+    "new_read_operations": 1,
+    "continued_existing_read_operations": 1,
+    "transport_timeout_count": 1,
+    "timeout_resolution": "Same original completed operation, same offset212992 and same limit16384 returned immutable matching page on one subsequent read.",
+    "original_jobs_replayed": 0,
+    "candidate_results_inferred": false,
+    "source_identity_limit": "The 1026 source association comes from the original handoff and run evidence. This transfer does not qualify the later a96 merge candidate or prove execution from inventory alone."
+  },
+  "leaf_files": [
+    {
+      "path": "original/source-after.files.json.gz.part000",
+      "blob_sha": "536e3bcc150c33d72ffaae1246c75493d6c7120c",
+      "offset": 0,
+      "bytes": 294912,
+      "sha256": "ff96aafe129dd511f30f33366f84a5fa187468e09b2c226df41690b842da5116",
+      "kind": "unchanged original gzip contiguous binary span"
+    },
+    {
+      "path": "original/source-after.files.json.gz.part001",
+      "blob_sha": "0d542a8c604e0c7a88c3a8ee0e4268e3ebedc5cb",
+      "offset": 294912,
+      "bytes": 147456,
+      "sha256": "9f11a75bef33f25db5480285f6f29caa54199eec96e8fa193308142ef57bf58e",
+      "kind": "unchanged original gzip contiguous binary span"
+    },
+    {
+      "path": "original/source-after.files.json.gz.part002",
+      "offset": 442368,
+      "bytes": 335336,
+      "sha256": "13860f36c11b7d4be99b125172461917198d8cbcea5a6ef723ec902796c83b2b",
+      "blob_sha": "bef6a98ad1dc8ba0c179d6e5433a8d48195a3cc8",
+      "complete_original_gzip": false,
+      "kind": "unchanged original gzip contiguous binary span"
+    },
+    {
+      "path": "transport/part000.base64.txt",
+      "blob_sha": "9330d3ea7cc754807f1de3403ec34f6f3179c994",
+      "bytes": 393216,
+      "sha256": "ca3e15faf3a312e4a194037963afaa042f17223863ae6c34cadd692caad76dd5",
+      "decoded_bytes": 294912,
+      "decoded_sha256": "ff96aafe129dd511f30f33366f84a5fa187468e09b2c226df41690b842da5116",
+      "kind": "UTF-8 transfer encoding only; not replacement source bytes"
+    },
+    {
+      "path": "transport/part001.base64.txt",
+      "blob_sha": "0a110cadbe2eed7f36407a4777518659a442d439",
+      "bytes": 196608,
+      "sha256": "7d94d15a79d406666291752101fd08476a0c7858653b80c8b3fb0b5492c3f700",
+      "decoded_bytes": 147456,
+      "decoded_sha256": "9f11a75bef33f25db5480285f6f29caa54199eec96e8fa193308142ef57bf58e",
+      "kind": "UTF-8 transfer encoding only; not replacement source bytes"
+    },
+    {
+      "path": "transport/part002.base64.txt",
+      "blob_sha": "ac74d1b06aa6fdbf8d2f3076416e1ab1d63100e8",
+      "bytes": 447116,
+      "sha256": "80e0148054804ed2ea37fc0aadfa9f5fd9b54a3cc5e45f9a17001cbd0dc9845c",
+      "decoded_sha256": "13860f36c11b7d4be99b125172461917198d8cbcea5a6ef723ec902796c83b2b",
+      "decoded_bytes": 335336,
+      "kind": "UTF-8 transfer encoding only; not replacement source bytes"
+    },
+    {
+      "path": "ORIGINAL_HANDOFF.json",
+      "blob_sha": "87128af38a7be26bc62f48afba200e1ba5ebb5f4",
+      "bytes": 16041,
+      "sha256": "e6c288ddde5e041f38f4035e5e5a3811b064bdc822699f28a0e72c4b0b02eab2",
+      "kind": "original prior-agent handoff; source and prior transfer pins"
+    },
+    {
+      "path": "READ18_ORIGINAL_SDK.json",
+      "blob_sha": "0f2627291211a27e1f62909f7dcc4c51d0dd0d14",
+      "bytes": 198717,
+      "sha256": "2cc4a583a2a5a6b2a176d7b9ef7eb88f9319c38bae62da6c7786a5aacdd90c79",
+      "kind": "complete original native SDK bytes; exact full SHA verified"
+    },
+    {
+      "path": "READ24_ORIGINAL_SDK.json",
+      "blob_sha": "4321219e99adf2c5a21b5c6cbcd52937b8bb2e60",
+      "bytes": 253253,
+      "sha256": "f82e79652b9e438a406161b022ce4342d69f910e88a10fa3284cda61ac49914d",
+      "kind": "complete original native SDK bytes; exact full SHA verified"
+    },
+    {
+      "path": "READ18_REQUEST.json",
+      "blob_sha": "df70f8e0b903efa05e886e593ae07a64ed2899a1",
+      "bytes": 965,
+      "sha256": "f9e07173f6aba2c9db32ed5c69ba9571d85f80c45f1863a9f405724220267fa8",
+      "kind": "typed request retained from original handoff"
+    },
+    {
+      "path": "READ24_REQUEST.json",
+      "blob_sha": "f274018417c651c05042322e6de1b2e0f73254db",
+      "bytes": 1195,
+      "sha256": "1cb4ce80697e50cb4e0fe2a76029a675c9ea73928acad9fe0d4d4e521c70fd42",
+      "kind": "exact new read-only typed request"
+    },
+    {
+      "path": "READ24_ACK_ORIGINAL_TEXT.json",
+      "blob_sha": "720d70005ed4246fac7faed523ba2e584361aec3",
+      "bytes": 553,
+      "sha256": "e4050283f3d493733cf24b3e8085055f50432a87258c110a5cd262e82e3a9e4c",
+      "kind": "original SDK text block"
+    },
+    {
+      "path": "READ24_STATUS_ORIGINAL_TEXT.json",
+      "blob_sha": "6a87698032a332d1c2241292ee829716baab010b",
+      "bytes": 810,
+      "sha256": "fc4233c0d62a8af327bf89336ccc10856e3cfe101b8d84a517c75b55aa861134",
+      "kind": "original SDK text block"
+    },
+    {
+      "path": "READ24_OFFSET_212992_TIMEOUT.txt",
+      "blob_sha": "4bb2c227d65989bb5c7a02fff2fbc937276aa18f",
+      "bytes": 126,
+      "sha256": "522bb5550845648717b9df3f5354c8786ff8e41a3146bc2c74e916904c9bac8b",
+      "kind": "original transport error text block; retained"
+    },
+    {
+      "path": "READ24_OFFSET_212992_RECOVERED_PAGE.json",
+      "blob_sha": "c667308055d27cd1ea5e41b7794b6821ad2d91a2",
+      "bytes": 22541,
+      "sha256": "21b1b33cae420c604674e517ac5fd92970163b37a4963eff295be3ea683fc33e",
+      "kind": "original successful same-operation same-offset response text block"
+    },
+    {
+      "path": "PAGE_RECEIPTS.json",
+      "blob_sha": "e6904189de5d2a7aeae5dfc8d57aa2bd7485241f",
+      "bytes": 35430,
+      "sha256": "eae11cca6b9656f218997a092c7c4323e6179cd0059782aaec257421e93c966b",
+      "kind": "derived page index; raw SDK bytes separately preserved"
+    },
+    {
+      "path": "VERIFICATION.json",
+      "blob_sha": "dac41ea9f706c3efd1f10de2586917bcc82542ea",
+      "bytes": 2421,
+      "sha256": "568cde741d35cd5260be9d035847362221335dfcbecbf31d52973b6177914bd6",
+      "kind": "derived checks; no source JSON reserialization"
+    }
+  ],
+  "artifact_readback_scope": "All source bytes assembled and SHA-verified in memory; UTF-8 transport blobs independently re-fetched and decoded. Original binary blob readback can be repeated through GitHub fetch_file encoding=base64 once attached to a commit. The parts' combined byte identity is fully pinned here.",
+  "not_claimed": [
+    "new a96 candidate test pass",
+    "new native runtime acceptance",
+    "owner decision",
+    "scientific benefit",
+    "independent new sources"
+  ],
+  "no_new_process_job_or_actor": true
+}

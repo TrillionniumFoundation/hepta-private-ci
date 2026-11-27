@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "ndu_real_runtime.test_candidate_retention_report",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/cfe0b879a8b4/retention_stage",
+  "environment_overrides": {
+    "PYTHONPATH": "scripts"
+  },
+  "returncode": 0,
+  "started_unix_ns": 1794276689557343260,
+  "finished_unix_ns": 1794276690377819356,
+  "elapsed_wall_ns": 820476096,
+  "scope": "reader behavior tests only; not scientific samples or full workflow cost",
+  "maintenance": "just fmt pending in complete repository; no fix/fmt run in this reduced checkout",
+  "streams": {
+    "tests.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests.stderr.log": {
+      "bytes": 2626,
+      "sha256": "1e426edf0f8e97ae888cf5023a726739f2df79142574b29f06f7e1a50f387375"
+    }
+  }
+}

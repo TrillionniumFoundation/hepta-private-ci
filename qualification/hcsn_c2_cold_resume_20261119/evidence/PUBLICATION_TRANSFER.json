@@ -1,0 +1,24 @@
+{
+  "scope": "Publication transfer only; no model, optimizer, ref or branch changes in the failed native attempt",
+  "failed_native_transfer": {
+    "host": "desktop",
+    "job_id": "1a1f2794fb6-ffbe-b3f",
+    "state": "failed",
+    "exit_code": 1,
+    "output_complete": true,
+    "stdout": "{\"exit_code\": 1, \"stderr\": \"gh: Bad credentials (HTTP 401)\\n\"}\n",
+    "stderr": ""
+  },
+  "successful_connected_github_blob": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "git_blob_sha": "3aa2ab4b0c863c81989a8500086cbd8e35386061",
+    "bytes": 4153098,
+    "archive_sha256": "04b96233a5421433b8ef9fe1d8e019ba28721fc1543d187591a742ee4bc55261",
+    "encoding": "base64",
+    "base64_characters": 5537464,
+    "local_chunk_bytes": 12288,
+    "all_chunk_lengths_checked": true,
+    "git_blob_matches_local_bytes": true
+  },
+  "prepared_base": "aaf21cfe196d53aaf5c80e15777fd36d4509e981"
+}

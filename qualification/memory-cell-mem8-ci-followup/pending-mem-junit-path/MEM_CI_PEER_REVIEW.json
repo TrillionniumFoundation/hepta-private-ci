@@ -1,0 +1,30 @@
+{
+  "schema": "mem8.junit-path.ci-peer-review.v1",
+  "source_head": "189711e3563ea13a5328d52e99a286f082045b98",
+  "preimage_git_blob": "ca292ac9882fc6cfcb804f4b2312d34453f736ac",
+  "postimage_git_blob": "f6926400461f7fefa503df46299a91c2795e1999",
+  "postimage_bytes": 23608,
+  "postimage_sha256": "e0e94ceaf14e373a7df7b7cf00ac1bab337e694eb90411ff6bab3e3aeb1c77ad",
+  "patch_sha256": "1d73c78d5e20d085d79048bb059dcd3cdc7aad440c11d661aff258eff6b7d860",
+  "verdict": "NO_STATIC_MUST_FIX",
+  "independently_verified": [
+    "Seven complete pinned source files match listed bytes/SHA256/Git blobs.",
+    "Nextest 0.9.103 make_profile uses workspace_root.join(store.dir).join(profile). Default store.dir is target/nextest. The repository does not override store.dir.",
+    "Exact repository just test sets NEXTEST_PROFILE=local and runs from codex-rs; the configuration enables local JUnit at junit.xml.",
+    "The run-nextest wrapper retains the original workspace_root in its supplied Cargo metadata; no workspace-remap/store override in these commands.",
+    "The three path replacements and two comment lines inverse-reconstruct the original full workflow byte for byte.",
+    "Preceding default-Agentd JUnit mv, feature selection, 1200-second phase budget, minimum-tests 1, zero retries, exactly-one-case/UUID/timestamp guards, later protocol selection and final dirty-source checks remain unchanged.",
+    "No-capture does not disable EventAggregator/JUnit creation in the pinned reporter source."
+  ],
+  "limits": [
+    "This is static peer review, not a new native/JUnit-producing execution.",
+    "The original 189 qualification step stopped at a guard with no phase receipt; raw output does not identify which individual test guard returned 1.",
+    "Future first actual feature-profile execution can still expose separate build/test failures."
+  ],
+  "actions": {
+    "native_runs": 0,
+    "host_commands": 0,
+    "workflow_dispatches": 0,
+    "ref_changes": 0
+  }
+}

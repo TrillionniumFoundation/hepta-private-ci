@@ -1,0 +1,74 @@
+{
+  "result": {
+    "dataset_rows": 0,
+    "literal_tests": {
+      "errors": 0,
+      "failures": 0,
+      "run": 13
+    },
+    "measurements": {
+      "global": {
+        "complete_anchor_FD_coordinates": 8,
+        "max_complete_FD": 4.8792513730527495e-11,
+        "max_utility_FD": 5.890636473748637e-11,
+        "utility_FD_coordinates": 8
+      },
+      "legacy_group": {
+        "finite_difference_coordinates": 8,
+        "max_FD_error": 5.73196221390071e-11
+      },
+      "legacy_integration": {
+        "aligned_anchor_FD_coordinates": 8,
+        "aligned_group_utility_FD_coordinates": 8,
+        "maximum_aligned_anchor_FD_error": 3.481658852281383e-11,
+        "maximum_aligned_group_utility_FD_error": 3.346549345826415e-11
+      }
+    },
+    "model_restores": 0,
+    "objective_key": "7823c39562003ed4bf3dfd1285a03c6a7edb5676d8230e13b76f4e479411ba09",
+    "objective_profile": {
+      "anchor": "excluded; caller adds ordinary mean separately",
+      "batch_rows": 64,
+      "grouping": "one whole64-row batch; heterogeneous content allowed",
+      "mode": "global-batch-input-output-entropic-risk-v1",
+      "rho": 1.5,
+      "row_gradient": "negative mean rowCE includes1/64",
+      "schema": "rgb-global64-risk-objective-v1"
+    },
+    "scope": "Literal global64 input/output chain qualification only; no scientific benefit, training, models or scientific datasets.",
+    "source_freeze_sha256": "611cbd1070645be7061ac38b4ff6170751db1deba117531281f8ff85afb523b8",
+    "status": "COMPLETE_PAYLOAD_FREE_GLOBAL_BATCH_RISK",
+    "training_updates": 0
+  },
+  "scientific_benefit": "NOT_EVALUATED; literal chain qualification only",
+  "whole_waited_child": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 5,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 30
+    },
+    "max_rss_kib": 30912,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "result_sha256": "b7e76072a129a6e666b37a1bffcc2fee359783972cbc994f22ec5bed0faca11c",
+    "source_freeze_sha256": "611cbd1070645be7061ac38b4ff6170751db1deba117531281f8ff85afb523b8",
+    "status": "COMPLETE_PAYLOAD_FREE_GLOBAL_BATCH_RISK",
+    "supervisor_CPU_observed_prefix_seconds": 0.0029959640000000037,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.020723,
+    "timed_out": false,
+    "user_CPU_seconds": 0.22641899999999998,
+    "wall_seconds": 0.268821793000825,
+    "whole_child_CPU_seconds": 0.24714199999999997
+  }
+}

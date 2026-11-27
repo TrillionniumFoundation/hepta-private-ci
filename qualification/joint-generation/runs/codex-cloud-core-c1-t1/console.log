@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 994, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 987, in main
+    return train(args.freeze, args.out, experiment=args.experiment)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 731, in train
+    shared, bases, train_data, val, common = prepare_shared(plan, run, runtime_plan)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 302, in prepare_shared
+    take = stratified_indices(train, plan["calibration_per_class"], plan["calibration_salt"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/calibration.py", line 93, in stratified_indices
+    raise ValueError(f"training source/target matching failed: source class {scene}, target {target}")
+ValueError: training source/target matching failed: source class 4, target 3
